@@ -5,7 +5,6 @@ function GarrisonFollowerTooltip_Show(garrisonFollowerID, collected, quality, le
 	GARRISON_FOLLOWER_TOOLTIP.followerTypeID = C_Garrison.GetFollowerTypeByID(garrisonFollowerID);
 	GARRISON_FOLLOWER_TOOLTIP.collected = collected;
 	GARRISON_FOLLOWER_TOOLTIP.hyperlink = false;
-	GARRISON_FOLLOWER_TOOLTIP.displayID = C_Garrison.GetFollowerDisplayIDByID(garrisonFollowerID);
 	GARRISON_FOLLOWER_TOOLTIP.name = C_Garrison.GetFollowerNameByID(garrisonFollowerID);
 	GARRISON_FOLLOWER_TOOLTIP.spec = C_Garrison.GetFollowerClassSpecByID(garrisonFollowerID);
 	GARRISON_FOLLOWER_TOOLTIP.portraitIconID = C_Garrison.GetFollowerPortraitIconIDByID(garrisonFollowerID);

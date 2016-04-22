@@ -245,7 +245,12 @@ function TargetFrame_OnEvent (self, event, ...)
 			if ( self:IsShown() ) then
 				TargetFrame_UpdateAuras(self);
 			end
-		end		
+		elseif ( arg1 == "SHOW_ALL_ENEMY_PLAYER_DEBUFFS_TEXT" ) then
+            SHOW_ALL_ENEMY_PLAYER_DEBUFFS = GetCVar("showAllEnemyPlayerDebuffs");
+            if ( self:IsShown() ) then
+                TargetFrame_UpdateAuras(self);
+            end
+        end
 	end
 end
 
@@ -664,7 +669,7 @@ end
 
 function TargetFrame_ShouldShowDebuff(unit, index, filter)
 	--This is an enemy
-	if ( SHOW_ALL_ENEMY_DEBUFFS == "1" or not UnitCanAttack("player", unit) ) then
+    if ( not UnitCanAttack("player", unit) or (UnitIsPlayer(unit) and SHOW_ALL_ENEMY_PLAYER_DEBUFFS == "1") or SHOW_ALL_ENEMY_DEBUFFS == "1" ) then
 		return true;
 	else		
 		local name, rank, icon, count, debuffType, duration, expirationTime, unitCaster, canStealOrPurge, _, spellId, canApplyAura, isBossDebuff, isCastByPlayer = UnitDebuff(unit, index, filter);
@@ -1056,9 +1061,6 @@ function TargetFrame_CreateSpellbar(self, event, boss)
 		spellbar.updateEvent = event;
 		spellbar:RegisterEvent(event);
 	end
-	
-	local barIcon =_G[name.."Icon"];
-	barIcon:Show();
 	
 	-- check to see if the castbar should be shown
 	if ( GetCVar("showTargetCastbar") == "0") then

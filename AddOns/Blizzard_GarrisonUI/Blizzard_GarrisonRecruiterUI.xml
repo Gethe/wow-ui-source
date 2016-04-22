@@ -405,8 +405,9 @@
 					</EditBox>
 				</Frames>
 				<Scripts>
-					<OnShow>self:OnShow();</OnShow>
-					<OnHide>self:OnHide();</OnHide>
+					<OnShow method="OnShow"/>
+					<OnHide method="OnHide"/>
+					<OnEvent method="OnEvent"/>
 				</Scripts>
 			</Frame>
 			<Frame parentKey="FollowerSelection" inherits="GarrisonMissionBaseFrameTemplate">

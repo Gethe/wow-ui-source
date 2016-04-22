@@ -23,7 +23,6 @@ function FloatingGarrisonFollower_Show(floatingTooltip, garrisonFollowerID, foll
 		GARRISON_FOLLOWER_FLOATING_TOOLTIP.followerTypeID = followerTypeID;
 		GARRISON_FOLLOWER_FLOATING_TOOLTIP.collected = false;
 		GARRISON_FOLLOWER_FLOATING_TOOLTIP.hyperlink = true;
-		GARRISON_FOLLOWER_FLOATING_TOOLTIP.displayID = C_Garrison.GetFollowerDisplayIDByID(garrisonFollowerID);
 		GARRISON_FOLLOWER_FLOATING_TOOLTIP.name = C_Garrison.GetFollowerNameByID(garrisonFollowerID);
 		GARRISON_FOLLOWER_FLOATING_TOOLTIP.spec = C_Garrison.GetFollowerClassSpecByID(garrisonFollowerID);
 		GARRISON_FOLLOWER_FLOATING_TOOLTIP.portraitIconID = C_Garrison.GetFollowerPortraitIconIDByID(garrisonFollowerID);

@@ -273,11 +273,11 @@ function AlertFrameMixin:OnEvent(event, ...)
 			end
 		end
 	elseif ( event == "GARRISON_FOLLOWER_ADDED" ) then
-		local followerID, name, class, displayID, level, quality, isUpgraded, texPrefix, followerType = ...;
+		local followerID, name, class, level, quality, isUpgraded, texPrefix, followerType = ...;
 		if (followerType == LE_FOLLOWER_TYPE_SHIPYARD_6_2) then
 			GarrisonShipFollowerAlertSystem:AddAlert(followerID, name, class, texPrefix, level, quality, isUpgraded);
 		else
-			GarrisonFollowerAlertSystem:AddAlert(followerID, name, displayID, level, quality, isUpgraded);
+			GarrisonFollowerAlertSystem:AddAlert(followerID, name, level, quality, isUpgraded);
 		end
 	elseif ( event == "GARRISON_RANDOM_MISSION_ADDED" ) then
 		GarrisonRandomMissionAlertSystem:AddAlert(select(2, ...));

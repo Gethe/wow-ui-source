@@ -228,6 +228,7 @@ end
 function QuestMapFrame_ShowQuestDetails(questID)
 	local questLogIndex = GetQuestLogIndexByID(questID);
 	SelectQuestLogEntry(questLogIndex);
+	QuestMapFrame.DetailsFrame.questID = questID;
 	QuestInfo_Display(QUEST_TEMPLATE_MAP_DETAILS, QuestMapFrame.DetailsFrame.ScrollFrame.Contents);
 	QuestInfo_Display(QUEST_TEMPLATE_MAP_REWARDS, QuestMapFrame.DetailsFrame.RewardsFrame, nil, nil, true);
 	QuestMapFrame.DetailsFrame.ScrollFrame.ScrollBar:SetValue(0);
@@ -241,14 +242,18 @@ function QuestMapFrame_ShowQuestDetails(questID)
 	end
 		
 	-- height
-	local height = MapQuestInfoRewardsFrame:GetHeight() + 49;
+	local height;
+	if ( MapQuestInfoRewardsFrame:IsShown() ) then
+		height = MapQuestInfoRewardsFrame:GetHeight() + 49;
+	else
+		height = 59;
+	end
 	height = min(height, 275);
 	QuestMapFrame.DetailsFrame.RewardsFrame:SetHeight(height);
 	QuestMapFrame.DetailsFrame.RewardsFrame.Background:SetTexCoord(0, 1, 0, height / 275);
 
 	QuestMapFrame.QuestsFrame:Hide();
 	QuestMapFrame.DetailsFrame:Show();
-	QuestMapFrame.DetailsFrame.questID = questID;
 	
 	-- save current view
 	QuestMapFrame.DetailsFrame.continent = GetCurrentMapContinent();

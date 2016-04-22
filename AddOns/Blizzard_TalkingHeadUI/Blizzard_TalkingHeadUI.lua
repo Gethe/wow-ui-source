@@ -179,7 +179,7 @@ function TalkingHeadFrame_PlayCurrent()
 		end
 		
 		
-		local success, voHandle = PlaySoundKitID(vo, "SFX", true, true);
+		local success, voHandle = PlaySoundKitID(vo, "Talking Head", true, true);
 		if ( success ) then
 			frame.voHandle = voHandle;
 		end
@@ -193,6 +193,7 @@ function TalkingHeadFrame_Close()
 		if( frame.finishTimer ) then
 			frame.finishTimer:Cancel();
 		end
+		StopSound(frame.voHandle, 2000);
 		frame.finishTimer = C_Timer.NewTimer(1, function()
 			TalkingHeadFrame_FadeoutFrames();
 			frame.finishTimer = nil;

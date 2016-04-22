@@ -303,8 +303,9 @@
 			</ScrollFrame>
 		</Frames>
 		<Scripts>
-			<OnShow>self:OnShow();</OnShow>
-			<OnHide>self:OnHide();</OnHide>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
 		</Scripts>
 	</Frame>
 
@@ -651,7 +652,7 @@
 				</Scripts>
 			</Frame>
 
-			<Frame name="GarrisonLandingPageFollowerList" parentKey="FollowerList" inherits="BaseLandingPageFollowerListTemplate" mixin="GarrisonFollowerList, OrderHallFollowerList">
+			<Frame name="GarrisonLandingPageFollowerList" parentKey="FollowerList" inherits="BaseLandingPageFollowerListTemplate" mixin="GarrisonFollowerList">
 				<KeyValues>
 					<KeyValue key="showUncollected" value="true" type="boolean"/>
 					<KeyValue key="canCastSpellsOnFollowers" value="true" type="boolean"/>
@@ -776,40 +777,7 @@
 							</Layer>
 						</Layers>
 					</StatusBar>
-					<CinematicModel parentKey="Model" inherits="ModelTemplate" hidden="true">
-						<Size x="325" y="300"/>
-						<Anchors>
-							<Anchor point="TOPLEFT" x="0" y="-74"/>
-						</Anchors>
-						<Layers>
-							<Layer level="BACKGROUND">
-								<Texture atlas="GarrFollower-Shadow" useAtlasSize="true">
-									<Anchors>
-										<Anchor point="BOTTOM" x="-2" y="-60"/>
-									</Anchors>
-								</Texture>
-							</Layer>
-						</Layers>
-						<Frames>
-							<Frame parentKey="UpgradeFrame" inherits="GarrisonFollowerModelUpgradeTemplate">
-								<Anchors>
-									<Anchor point="BOTTOM" x="0" y="0"/>
-								</Anchors>
-							</Frame>
-						</Frames>
-						<Scripts>
-							<OnModelLoaded>
-								self:SetAlpha(1);
-							</OnModelLoaded>
-							<OnShow>
-								self:SetTargetDistance(0);
-								self:SetFacing(.2);
-								GarrisonMission_SetFollowerModelItems(self);
-							</OnShow>
-							<OnMouseDown function="GarrisonFollowerPageModel_OnMouseDown"/>
-							<OnMouseUp function="GarrisonFollowerPageModel_OnMouseUp"/>
-						</Scripts>
-					</CinematicModel>
+					<ScrollFrame parentKey="ModelCluster" inherits="GarrisonFollowerTabModelCluster" setAllPoints="true"/>
 					<Frame parentKey="AbilitiesFrame" setAllPoints="true">
 						<Layers>
 							<Layer level="ARTWORK">
@@ -836,11 +804,6 @@
 							</Frame>
 							<Frame parentArray="Counters" inherits="GarrisonMissionAbilityCounterTemplate" hidden="true"/>
 						</Frames>
-						<Scripts>
-							<OnLoad>
-								self:SetFrameLevel(self:GetParent().Model:GetFrameLevel() + 1);
-							</OnLoad>
-						</Scripts>
 					</Frame>
 					<Frame parentKey="Source">
 						<Size x="300" y="80"/>

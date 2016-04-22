@@ -2221,7 +2221,7 @@
 						<Anchor point="TOPLEFT" x="107" y="-31"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="ItemName" inherits="GameFontNormalMed3" justifyH="LEFT" justifyV="MIDDLE" text="Val'anyr, Hammer of Ancient Kings" name="zz">
+				<FontString parentKey="ItemName" inherits="GameFontNormalMed3" justifyH="LEFT" justifyV="MIDDLE">
 					<Size x="165" y="33"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPRIGHT" x="11" y="-16"/>

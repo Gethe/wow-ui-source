@@ -35,6 +35,9 @@ LootJournalMixin = { };
 function LootJournalMixin:OnLoad()
 	self:SetView(LOOT_JOURNAL_LEGENDARIES);
 	self:RegisterEvent("LOOT_JOURNAL_LIST_UPDATE");
+	local _, _, classID = UnitClass("player");
+	local specID = GetSpecializationInfo(GetSpecialization());
+	C_LootJournal.SetClassAndSpecFilters(classID, specID);
 end
 
 function LootJournalMixin:OnEvent(event)

@@ -410,6 +410,28 @@ function CreateTexturePool(parent, layer, subLayer, textureTemplate, resetterFun
 	return texturePool;
 end
 
+FontStringPoolMixin = Mixin({}, ObjectPoolMixin);
+
+local function FontStringPoolFactory(fontStringPool)
+	return fontStringPool.parent:CreateFontString(nil, fontStringPool.layer, fontStringPool.fontStringTemplate, fontStringPool.subLayer);
+end
+
+function FontStringPoolMixin:OnLoad(parent, layer, subLayer, fontStringTemplate, resetterFunc)
+	ObjectPoolMixin.OnLoad(self, FontStringPoolFactory, resetterFunc);
+	self.parent = parent;
+	self.layer = layer;
+	self.subLayer = subLayer;
+	self.fontStringTemplate = fontStringTemplate;
+end
+
+FontStringPool_Hide = FramePool_Hide;
+FontStringPool_HideAndClearAnchors = FramePool_HideAndClearAnchors;
+
+function CreateFontStringPool(parent, layer, subLayer, fontStringTemplate, resetterFunc)
+	local fontStringPool = CreateFromMixins(FontStringPoolMixin);
+	fontStringPool:OnLoad(parent, layer, subLayer, fontStringTemplate, resetterFunc or FontStringPool_HideAndClearAnchors);
+	return fontStringPool;
+end
 
 RectangleMixin = {};
 

@@ -120,7 +120,7 @@
 		</Scripts>
 	</Button>
 
-	<Frame name="QuestLogPopupDetailFrame" toplevel="true" enableMouse="true" parent="UIParent" hidden="true" inherits="ButtonFrameTemplate">
+	<Frame name="QuestLogPopupDetailFrame" toplevel="true" enableMouse="true" parent="UIParent" hidden="true" inherits="ButtonFrameTemplate, QuestFramePanelTemplate">
 		<Size x="338" y="496"/>
 		<Layers>
 			<Layer level="OVERLAY" textureSubLevel="-1">
@@ -128,14 +128,6 @@
 					<Size x="64" y="64"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="-6" y="7"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="BACKGROUND">
-				<Texture name="$parentPageBg" file="Interface\QuestFrame\QuestBG">
-					<Size x="512" y="620"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="6" y="-62"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -501,6 +493,15 @@
 							<Anchors>
 								<Anchor point="TOPLEFT" x="0" y="45"/>
 							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER" textureSubLevel="-1">	
+						<Texture parentKey="SealMaterialBG" hidden="true">
+							<Size x="285" y="407"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="0" y="6"/>
+							</Anchors>
+							<TexCoords left="0.0468" right="1" top="0" bottom="1"/>
 						</Texture>
 					</Layer>
 					<Layer level="ARTWORK">

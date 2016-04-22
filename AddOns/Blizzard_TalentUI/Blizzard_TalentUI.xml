@@ -111,9 +111,7 @@
 			<OnEnter>
 				PlayerTalentFrameTalent_OnEnter(self);
 			</OnEnter>
-			<OnLeave>
-				GameTooltip_Hide();
-			</OnLeave>
+			<OnLeave function="PlayerTalentFrameTalent_OnLeave"/>
 			<OnDragStart>
 				PlayerTalentFrameTalent_OnDrag(self);
 			</OnDragStart>
@@ -187,6 +185,19 @@
 					<TexCoords left="0" right="1" top="1" bottom="0"/>
 					<Color r="1" g="1" b="1" a="0.5"/>
 				</Texture>
+				<Texture parentKey="TopGlowLine" atlas="_talent-green-glow" horizTile="true" alpha="0" alphaMode="ADD">
+					<Size x="629" y = "14"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="14"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BottomGlowLine" atlas="_talent-green-glow" horizTile="true" alpha="0" alphaMode="ADD">
+					<Size x="629" y = "14"/>
+					<Anchors>
+						<Anchor point="BOTTOM" x="0" y="-14"/>
+					</Anchors>
+					<TexCoords left="0" right="1" top="1" bottom="0"/>
+				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -206,6 +217,18 @@
 				</Anchors>
 			</Button>
 		</Frames>
+		<Animations>
+			<AnimationGroup parentKey="GlowAnim" looping="REPEAT">
+				<Alpha childKey="TopGlowLine" order="1" fromAlpha="0.2" toAlpha="0.7" duration="1"/>
+				<Alpha childKey="BottomGlowLine" order="1" fromAlpha="0.2" toAlpha="0.7" duration="1"/>
+				<Alpha childKey="TopGlowLine" order="2" fromAlpha="0.7" toAlpha="0.2" duration="1"/>
+				<Alpha childKey="BottomGlowLine" order="2" fromAlpha="0.7" toAlpha="0.2" duration="1"/>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnEnter function="PlayerTalentFrameRow_OnEnter"/>
+			<OnLeave function="PlayerTalentFrameRow_OnLeave"/>
+		</Scripts>
 	</Frame>
 
 	<Button name="PlayerSpecButtonTemplate" virtual="true">
@@ -1152,7 +1175,7 @@
 			<OnClick function="PlayerTalentFramePVPTalentsTalent_OnClick"/>
 			<OnDragStart function="PlayerTalentFramePVPTalentsTalent_OnDrag"/>
 			<OnEnter function="PlayerTalentFramePVPTalentsTalent_OnEnter"/>
-			<OnLeave function="GameTooltip_Hide"/>
+			<OnLeave function="PlayerTalentFramePVPTalentsTalent_OnLeave"/>
 		</Scripts>
 	</Button>
 
@@ -1183,6 +1206,19 @@
 					<TexCoords left="0" right="1" top="1" bottom="0"/>
 					<Color r="1" g="1" b="1" a="0.5"/>
 				</Texture>
+				<Texture parentKey="TopGlowLine" atlas="_talent-green-glow" horizTile="true" alpha="0">
+					<Size x="629" y = "14"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="14"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BottomGlowLine" atlas="_talent-green-glow" horizTile="true" alpha="0">
+					<Size x="629" y = "14"/>
+					<Anchors>
+						<Anchor point="BOTTOM" x="0" y="-14"/>
+					</Anchors>
+					<TexCoords left="0" right="1" top="1" bottom="0"/>
+				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -1211,6 +1247,18 @@
 				</KeyValues>
 			</Button>
 		</Frames>
+		<Animations>
+			<AnimationGroup parentKey="GlowAnim" looping="REPEAT">
+				<Alpha childKey="TopGlowLine" order="1" fromAlpha="0.2" toAlpha="0.7" duration="1"/>
+				<Alpha childKey="BottomGlowLine" order="1" fromAlpha="0.2" toAlpha="0.7" duration="1"/>
+				<Alpha childKey="TopGlowLine" order="2" fromAlpha="0.7" toAlpha="0.2" duration="1"/>
+				<Alpha childKey="BottomGlowLine" order="2" fromAlpha="0.7" toAlpha="0.2" duration="1"/>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnEnter function="PlayerTalentFrameRow_OnEnter"/>
+			<OnLeave function="PlayerTalentFrameRow_OnLeave"/>
+		</Scripts>
 	</Frame>
 
 	<Frame name="PlayerTalentFramePVPTalents" useParentLevel="true" setAllPoints="true" parent="PlayerTalentFrame">
@@ -1234,6 +1282,12 @@
 						<Anchor point="TOPLEFT" relativeTo="PlayerTalentFrame" relativePoint="TOPLEFT" x="-12" y="-19" />
 					</Anchors>
 				</Texture>
+                <FontString parentKey="NotAvailableYet" inherits="GameFontRedLarge" justifyH="CENTER" hidden="true">
+                    <Size x="471" y="0"/>
+                    <Anchors>
+					    <Anchor point="TOP" relativeTo="PlayerTalentFrame" x="0" y="-57"/>
+				    </Anchors>
+                </FontString>
 			</Layer>
 		</Layers>
 		<Frames>

@@ -441,87 +441,13 @@ function InterfaceOptionsCombatPanelFocusCastKeyDropDown_Initialize()
 	UIDropDownMenu_AddButton(info);
 end
 
--- Loss of Control Options --
-
-function InterfaceOptionsLossOfControl_OnEvent (self, event, ...)
-	if ( event == "VARIABLES_LOADED" ) then
-		-- set up dropdowns
-		InterfaceOptionsLossOfControl_SetUpDropdown(InterfaceOptionsCombatPanelLossOfControlFullDropDown, "lossOfControlFull", self, OPTION_LOSS_OF_CONTROL_FULL);
-		InterfaceOptionsLossOfControl_SetUpDropdown(InterfaceOptionsCombatPanelLossOfControlSilenceDropDown, "lossOfControlSilence", self, OPTION_LOSS_OF_CONTROL_SILENCE);
-		InterfaceOptionsLossOfControl_SetUpDropdown(InterfaceOptionsCombatPanelLossOfControlInterruptDropDown, "lossOfControlInterrupt", self, OPTION_LOSS_OF_CONTROL_INTERRUPT);
-		InterfaceOptionsLossOfControl_SetUpDropdown(InterfaceOptionsCombatPanelLossOfControlDisarmDropDown, "lossOfControlDisarm", self, OPTION_LOSS_OF_CONTROL_DISARM);
-		InterfaceOptionsLossOfControl_SetUpDropdown(InterfaceOptionsCombatPanelLossOfControlRootDropDown, "lossOfControlRoot", self, OPTION_LOSS_OF_CONTROL_ROOT);
-	end
-end
-
-function InterfaceOptionsLossOfControlDropDown_SetValue(self, value)
-	self.value = value;
-	UIDropDownMenu_SetSelectedValue(self, value);
-	SetCVar(self.cvar, value);
-end
-
-function InterfaceOptionsLossOfControlDropDown_GetValue(self)
-	return UIDropDownMenu_GetSelectedValue(self);
-end
-
-function InterfaceOptionsLossOfControlDropDown_RefreshValue(self)
-	UIDropDownMenu_Initialize(self, InterfaceOptionsLossOfControlDropDown_Initialize);
-	UIDropDownMenu_SetSelectedValue(self, self.value);
-end
-
-function InterfaceOptionsLossOfControl_SetUpDropdown(dropDown, cvar, checkBox, tooltip)
-	dropDown.cvar = cvar;
-	dropDown.value = GetCVar(cvar);
-	dropDown.defaultValue = GetCVarDefault(cvar);
-	dropDown.oldValue = dropDown.value;
-	dropDown.tooltip = tooltip;
-
-	UIDropDownMenu_SetWidth(dropDown, 130);
-	UIDropDownMenu_Initialize(dropDown, InterfaceOptionsLossOfControlDropDown_Initialize);
-	UIDropDownMenu_SetSelectedValue(dropDown, dropDown.value);
-
-	dropDown.SetValue = InterfaceOptionsLossOfControlDropDown_SetValue;
-	dropDown.GetValue = InterfaceOptionsLossOfControlDropDown_GetValue;
-	dropDown.RefreshValue = InterfaceOptionsLossOfControlDropDown_RefreshValue;
-
-	BlizzardOptionsPanel_SetupDependentControl(checkBox, dropDown);	
-end
-
-function InterfaceOptionsLossOfControlDropDown_OnClick(self)
-	local dropDown = UIDropDownMenu_GetCurrentDropDown();
-	dropDown:SetValue(self.value);
-end
-
-function InterfaceOptionsLossOfControlDropDown_Initialize(self)
-	local selectedValue = UIDropDownMenu_GetSelectedValue(self);
-	local info = UIDropDownMenu_CreateInfo();
-
-	info.text = LOC_OPTION_FULL;
-	info.func = InterfaceOptionsLossOfControlDropDown_OnClick;
-	info.value = "2";
-	info.checked = (info.value == selectedValue);
-	UIDropDownMenu_AddButton(info);
-
-	info.text = LOC_OPTION_ALERT;
-	info.func = InterfaceOptionsLossOfControlDropDown_OnClick;
-	info.value = "1";
-	info.checked = (info.value == selectedValue);
-	UIDropDownMenu_AddButton(info);
-
-	info.text = LOC_OPTION_OFF;
-	info.func = InterfaceOptionsLossOfControlDropDown_OnClick;
-	info.value = "0";
-	info.checked = (info.value == selectedValue);
-	UIDropDownMenu_AddButton(info);
-end
-
 -- [[ Display Options Panel ]] --
 
 DisplayPanelOptions = {
 	rotateMinimap = { text = "ROTATE_MINIMAP" },
 	hideAdventureJournalAlerts = { text = "HIDE_ADVENTURE_JOURNAL_ALERTS" };
-    chatBubbles = { text="CHAT_BUBBLES_TEXT" },
     showTutorials = { text = "SHOW_TUTORIALS" },
+    enableFloatingCombatText = { text = "SHOW_COMBAT_TEXT_TEXT" },
 }
 
 function InterfaceOptionsDisplayPanel_OnLoad (self)
@@ -714,6 +640,96 @@ function InterfaceOptionsDisplayPanelSelfHighlightDropDown_Initialize()
     info.value = "-1";
     info.checked = info.value == selectedValue;
     UIDropDownMenu_AddButton(info);
+end
+
+function InterfaceOptionsDisplayPanelChatBubblesDropDown_GetValue(self)
+    if (GetCVarBool(self.cvar) and GetCVarBool(self.partyCvar)) then
+        return 1;
+    elseif (GetCVarBool(self.cvar)) then
+        return 3;
+    else
+        return 2;
+    end
+end
+
+function InterfaceOptionsDisplayPanelChatBubblesDropDown_SetValue(self, value)
+    if (value == 1) then
+        SetCVar(self.cvar, "1");
+        SetCVar(self.partyCvar, "1");
+    elseif (value == 2) then
+        SetCVar(self.cvar, "0");
+        SetCVar(self.partyCvar, "0");
+    else
+        SetCVar(self.cvar, "1");
+        SetCVar(self.partyCvar, "0");
+    end
+end
+
+function InterfaceOptionsDisplayPanelChatBubblesDropDown_OnShow(self)
+	self.cvar = "chatBubbles";
+    self.partyCvar = "chatBubblesParty";
+
+    local value = InterfaceOptionsDisplayPanelChatBubblesDropDown_GetValue(self);
+	self.value = value;
+
+	UIDropDownMenu_SetWidth(self, 110);
+	UIDropDownMenu_Initialize(self, InterfaceOptionsDisplayPanelChatBubbles_Initialize);
+	UIDropDownMenu_SetSelectedValue(self, value);
+
+	self.SetValue = 
+		function (self, value)
+			self.value = value;
+			InterfaceOptionsDisplayPanelChatBubblesDropDown_SetValue(self, value);
+			UIDropDownMenu_SetSelectedValue(self, self.value);
+		end
+	self.GetValue =
+		function (self)
+			return UIDropDownMenu_GetSelectedValue(self);
+		end
+	self.RefreshValue =
+		function (self)
+			UIDropDownMenu_Initialize(self, InterfaceOptionsDisplayPanelChatBubbles_Initialize);
+			UIDropDownMenu_SetSelectedValue(self, self.value);
+		end
+end
+
+function InterfaceOptionsDisplayPanelChatBubblesDropDown_OnClick(self)
+	InterfaceOptionsDisplayPanelChatBubblesDropDown:SetValue(self.value);
+end
+
+function InterfaceOptionsDisplayPanelChatBubbles_Initialize()
+	local selectedValue = UIDropDownMenu_GetSelectedValue(InterfaceOptionsDisplayPanelChatBubblesDropDown);
+	local info = UIDropDownMenu_CreateInfo();
+
+	info.text = ALL;
+	info.func = InterfaceOptionsDisplayPanelChatBubblesDropDown_OnClick;
+	info.value = 1;
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	UIDropDownMenu_AddButton(info);
+
+	info.text =NONE;
+	info.func = InterfaceOptionsDisplayPanelChatBubblesDropDown_OnClick;
+	info.value = 2;
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	UIDropDownMenu_AddButton(info);
+
+	info.text = CHAT_BUBBLES_EXCLUDE_PARTY_CHAT;
+	info.func = InterfaceOptionsDisplayPanelChatBubblesDropDown_OnClick;
+	info.value = 3;
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	UIDropDownMenu_AddButton(info);
 end
 
 -- [[ Social Options Panel ]] --
@@ -1285,7 +1301,7 @@ function InterfaceOptionsLargerNamePlate_OnLoad(self)
 			SetCVar("NamePlateHorizontalScale", self.normalHorizontalScale);
 			SetCVar("NamePlateVerticalScale", self.normalVerticalScale);
 		end
-		NamePlateDriverMixin:ApplySizes();
+		NamePlateDriverFrame:UpdateNamePlateOptions();
 	end
 
 	self.type = CONTROLTYPE_CHECKBOX;

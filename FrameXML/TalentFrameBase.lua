@@ -39,7 +39,6 @@ function TalentFrame_Update(TalentFrame, talentUnit)
 	if ( not TalentFrame ) then
 		return;
 	end
-
 	-- have to disable stuff if not active talent group
 	local disable;
 	if ( TalentFrame.inspect ) then
@@ -65,9 +64,11 @@ function TalentFrame_Update(TalentFrame, talentUnit)
 				TalentFrame.talentInfo[tier] = nil;
 			end
 			
+			local rowShouldGlow = false;
 			for column=1, NUM_TALENT_COLUMNS do
 				-- Set the button info
 				local talentID, name, iconTexture, selected, available = GetTalentInfo(tier, column, TalentFrame.talentGroup, TalentFrame.inspect, talentUnit);
+				rowShouldGlow = rowShouldGlow or (available and not selected);
 				local button = talentRow["talent"..column];
 				button.tier = tier;
 				button.column = column;
@@ -103,7 +104,16 @@ function TalentFrame_Update(TalentFrame, talentUnit)
 					button:Hide();
 				end
 			end
-			
+			if ( rowShouldGlow and talentUnit == "player" ) then
+				talentRow.shouldGlow = true;
+				talentRow.TopGlowLine:Show();
+				talentRow.BottomGlowLine:Show();
+				talentRow.GlowAnim:Play();
+			else
+				talentRow.shouldGlow = false;
+				talentRow.TopGlowLine:Hide();
+				talentRow.BottomGlowLine:Hide();
+			end
 			-- do tier level number after every row
 			if(talentRow.level ~= nil) then
 				if ( selectedTalent == 0 and tierAvailable) then

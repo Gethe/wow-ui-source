@@ -948,9 +948,6 @@
 	<Binding name="TOGGLECHARACTER0" header="BLANK8" category="BINDING_HEADER_INTERFACE">
 		ToggleCharacter("PaperDollFrame");
 	</Binding>
-	<Binding name="TOGGLECHARACTER3" category="BINDING_HEADER_INTERFACE">
-		ToggleCharacter("PetPaperDollFrame");
-	</Binding>
 	<Binding name="TOGGLECHARACTER2" category="BINDING_HEADER_INTERFACE">
 		ToggleCharacter("ReputationFrame");
 	</Binding>

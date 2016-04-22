@@ -125,41 +125,8 @@
 					</Layer>
 				</Layers>
 			</StatusBar>
-			<CinematicModel parentKey="Model" inherits="ModelTemplate">
-				<Size x="305" y="370"/>
-				<Anchors>
-					<Anchor point="TOPLEFT" x="12" y="-78"/>
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture atlas="GarrFollower-Shadow" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="BOTTOM" x="0" y="-35"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Frames>
-					<Frame parentKey="UpgradeFrame" inherits="GarrisonFollowerModelUpgradeTemplate">
-						<Anchors>
-							<Anchor point="BOTTOM" x="0" y="35"/>
-						</Anchors>
-					</Frame>
-				</Frames>
-				<Scripts>
-					<OnModelLoaded>
-						self:SetAlpha(1);
-					</OnModelLoaded>
-					<OnShow>
-						self:SetTargetDistance(0);
-						self:SetFacing(.2);
-						GarrisonMission_SetFollowerModelItems(self);
-					</OnShow>
-					<OnMouseDown function="GarrisonFollowerPageModel_OnMouseDown"/>
-					<OnMouseUp function="GarrisonFollowerPageModel_OnMouseUp"/>
-				</Scripts>
-			</CinematicModel>
-			<Frame parentKey="AbilitiesFrame" setAllPoints="true" mixin="GarrisonAbilitiesFrameMixin">
+			<ScrollFrame parentKey="ModelCluster" inherits="GarrisonFollowerTabModelCluster" setAllPoints="true"/>
+			<Frame parentKey="AbilitiesFrame" setAllPoints="true" mixin="GarrisonAbilitiesFrameMixin" frameLevel="20">
 				<Layers>
 					<Layer level="ARTWORK">
 						<FontString parentKey="SpecializationLabel" inherits="GameFontNormalLarge2" justifyH="LEFT" text="SPECIALIZATION">
@@ -180,13 +147,19 @@
 						</FontString>
 						<FontString parentKey="ZoneSupportLabel" inherits="GameFontNormalLarge2" justifyH="LEFT" text="ORDER_HALL_ZONE_SUPPORT">
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.AbilitiesText" relativePoint="BOTTOMLEFT" y="-150"/>
+								<Anchor point="TOPLEFT" relativeKey="$parent.AbilitiesText" relativePoint="BOTTOMLEFT" x="0" y="-150"/>
 							</Anchors>
 						</FontString>
 						<FontString parentKey="ZoneSupportDescriptionLabel" inherits="GameFontHighlight" justifyV="TOP" justifyH="LEFT" text="ORDER_HALL_ZONE_SUPPORT_DESCRIPTION">
 							<Size x="280" y="40"/>
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.ZoneSupportLabel" relativePoint="BOTTOMLEFT" y="-4"/>
+								<Anchor point="TOPLEFT" relativeKey="$parent.ZoneSupportLabel" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="FlavorText" inherits="GameFontNormalLarge" justifyH="LEFT" hidden="true">
+							<Size x="250" y="0"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.ZoneSupportLabel"/>
 							</Anchors>
 						</FontString>
 					</Layer>
@@ -217,11 +190,6 @@
 					</Button>
 
 				</Frames>
-				<Scripts>
-					<OnLoad>
-						self:SetFrameLevel(self:GetParent().Model:GetFrameLevel() + 1);
-					</OnLoad>
-				</Scripts>
 			</Frame>
 			<Button parentKey="UpgradeClickTarget" hidden="true">
 				<Anchors>
@@ -285,7 +253,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
-						<Texture parentKey="Icon" inherits="GameFontHighlight">
+						<Texture parentKey="Icon">
 							<Color r="1" g="1" b="1"/>
 							<Size x="16" y="16"/>
 							<Anchors>
@@ -582,8 +550,9 @@
 					</Frame>
 				</Frames>
 				<Scripts>
-					<OnShow>self:OnShow();</OnShow>
-					<OnHide>self:OnHide();</OnHide>
+					<OnShow method="OnShow"/>
+					<OnHide method="OnHide"/>
+					<OnEvent method="OnEvent"/>
 				</Scripts>
 			</Frame>
 			<Frame parentKey="MapTab" mixin="MapCanvasMixin, AdventureMapMixin, OrderHallMissionAdventureMapMixin" setAllPoints="true" useParentLevel="true">
@@ -727,6 +696,17 @@
 													<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" relativeKey="$parent.PortraitFrame" x="14" y="-4"/>
 												</Anchors>
 											</Frame>
+											<Button parentKey="Unassign" inherits="UIPanelButtonTemplate" text="COMBAT_ALLY_END_MISSION">
+												<Size x="100" y="22"/>
+												<Anchors>
+													<Anchor point="RIGHT" x="-20" y="0"/>
+												</Anchors>
+												<Scripts>
+													<OnClick>
+														self:GetParent():GetParent():UnassignAlly();
+													</OnClick>
+												</Scripts>
+											</Button>
 										</Frames>
 										<Layers>
 											<Layer level="ARTWORK">
@@ -783,13 +763,6 @@
 										<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="-4"/>
 									</Anchors>
 								</Texture>
-								<FontString parentKey="MissionTime" inherits="GameFontNormalMed2" justifyH="LEFT" text="Time: ">
-									<Size x="140" y="20"/>
-									<Anchors>
-										<Anchor point="LEFT" relativeKey="$parent.ButtonFrame" x="50" y="1"/>
-									</Anchors>
-									<Color r="1" g="1" b="1"/>
-								</FontString>
 								<FontString parentKey="ZoneSupportDescriptionLabel" inherits="GameFontHighlight" wordwrap="true" text="ORDER_HALL_ZONE_SUPPORT_DESCRIPTION_IN_ZONE">
 									<Size x="290" y="40"></Size>
 									<Anchors>
@@ -804,6 +777,12 @@
 									<Anchor point="TOPRIGHT" x="4" y="435"/>
 								</Anchors>
 							</Button>
+							<Frame parentKey="CostFrame" inherits="GarrisonMissionPageCostFrameTemplate">
+								<Anchors>
+									<Anchor point="LEFT" relativeKey="$parent.ButtonFrame" x="50"/>
+									<Anchor point="RIGHT" relativeKey="$parent.ButtonFrame" relativePoint="CENTER" />
+								</Anchors>
+							</Frame>
 							<Frame parentKey="Follower1" parentArray="Followers" inherits="GarrisonMissionPageFollowerTemplate" hidden="false">
 								<Anchors>
 									<Anchor point="CENTER" x="-140" y="3"/>
@@ -877,6 +856,18 @@
 					</Button>
 
 					<Button parentKey="MissionPage" inherits="OrderHallMissionPageTemplate" hidden="true" mixin="GarrisonMissionPageMixin,GarrisonFollowerMissionPageMixin,OrderHallFollowerMissionPageMixin"/>
+
+					<!-- We need 13 preload models; 
+						potentially (2 troops with 5 displayIDs each) + (1 follower with 2 displayIDs) + (1 enemy model)
+						= 10 + 2 + 1 = 13 
+						TODO: Convert these to use a frame pool			-->
+					<PlayerModel parentArray="MissionCompletePreloadModels" inherits="MissionCompletePreloadModelTemplate"/>
+					<PlayerModel parentArray="MissionCompletePreloadModels" inherits="MissionCompletePreloadModelTemplate"/>
+					<PlayerModel parentArray="MissionCompletePreloadModels" inherits="MissionCompletePreloadModelTemplate"/>
+					<PlayerModel parentArray="MissionCompletePreloadModels" inherits="MissionCompletePreloadModelTemplate"/>
+					<PlayerModel parentArray="MissionCompletePreloadModels" inherits="MissionCompletePreloadModelTemplate"/>
+					<PlayerModel parentArray="MissionCompletePreloadModels" inherits="MissionCompletePreloadModelTemplate"/>
+					<PlayerModel parentArray="MissionCompletePreloadModels" inherits="MissionCompletePreloadModelTemplate"/>
 					<PlayerModel parentArray="MissionCompletePreloadModels" inherits="MissionCompletePreloadModelTemplate"/>
 					<PlayerModel parentArray="MissionCompletePreloadModels" inherits="MissionCompletePreloadModelTemplate"/>
 					<PlayerModel parentArray="MissionCompletePreloadModels" inherits="MissionCompletePreloadModelTemplate"/>

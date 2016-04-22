@@ -238,6 +238,11 @@ function CharacterSelect_OnShow(self)
 		GlueDialog_Hide();
 		C_Login.DisconnectFromServer();
 	end
+    
+    if (not HasCheckedSystemRequirements()) then
+        CheckSystemRequirements();
+        SetCheckedSystemRequirements(true);
+    end
 end
 
 function CharacterSelect_OnHide(self)

@@ -3,7 +3,8 @@ ClassNameplateBar = {};
 function ClassNameplateBar:OnLoad()
 	-- Initialize these variables in the class-specific OnLoad mixin function. Also make sure to implement
 	-- an UpdatePower() mixin function that handles UI changes for whenever the power display changes
-	
+
+	self:SetScale(self.scale or 1);
 	self:Setup();
 end
 
@@ -108,6 +109,12 @@ ClassNameplateManaBar = {};
 local NameplatePowerBarColor = {
 	["MANA"] = { r = 0.1, g = 0.25, b = 1.00 }
 };
+
+function ClassNameplateManaBar:OnLoad()
+	ClassNameplateBar.OnLoad(self);
+
+	self.Border:SetVertexColor(0, 0, 0, .8);
+end
 
 function ClassNameplateManaBar:OnEvent(event, ...)
 	if (event == "UNIT_DISPLAYPOWER" or event == "PLAYER_ENTERING_WORLD" or event == "UNIT_MAXPOWER") then

@@ -759,7 +759,7 @@ function GarrisonCommonFollowerAlertFrame_SetUp(frame, followerID, name, quality
 	PlaySound("UI_Garrison_Toast_FollowerGained");
 end
 
-function GarrisonFollowerAlertFrame_SetUp(frame, followerID, name, displayID, level, quality, isUpgraded)
+function GarrisonFollowerAlertFrame_SetUp(frame, followerID, name, level, quality, isUpgraded)
 	frame.followerInfo = C_Garrison.GetFollowerInfo(followerID);
 	frame.PortraitFrame:SetupPortrait(frame.followerInfo);
 	if ( isUpgraded ) then

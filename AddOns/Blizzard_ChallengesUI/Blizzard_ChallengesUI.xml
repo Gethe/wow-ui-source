@@ -358,6 +358,208 @@
 		</Scripts>
 	</Frame>
 
+    <Frame name="ChallengeModeBannerPartyMemberTemplate" parentArray="PartyMembers" alpha="0" virtual="true" mixin="ChallengeModeBannerPartyMemberMixin">
+        <Size x="61" y="61"/>
+        <Layers>
+            <Layer level="OVERLAY">
+                <Texture parentKey="Border" atlas="BossBanner-PortraitBorder" setAllPoints="true"/>
+            </Layer>
+            <Layer level="OVERLAY" textureSubLevel="1">
+                 <Texture parentKey="RoleIcon" file="Interface\LFGFrame\UI-LFG-ICON-PORTRAITROLES">
+					<Size x="20" y="20"/>
+					<Anchors>
+						<Anchor point="BOTTOM" relativeKey="$parent.Border" x="0" y="-8"/>
+					</Anchors>
+				</Texture>
+            </Layer>
+            <Layer level="ARTWORK">
+                <Texture parentKey="Portrait">
+                    <Size x="59" y="59"/>
+                    <Anchors>
+                        <Anchor point="CENTER" relativeKey="$parent.Border"/>
+                    </Anchors>
+                </Texture>
+                <FontString parentKey="Name" inherits="GameFontNormal">
+                    <Anchors>
+                        <Anchor point="TOP" relativeKey="$parent.Border" relativePoint="BOTTOM" x="0" y="-8"/>
+                    </Anchors>
+                </FontString>
+             </Layer>        
+        </Layers>
+        <Animations>
+			<AnimationGroup parentKey="AnimIn" setToFinalAlpha="true">
+				<Alpha startDelay="0.2" duration="0.25" order="2" fromAlpha="0" toAlpha="1"/>
+            </AnimationGroup>
+            <AnimationGroup parentKey="AnimOut" setToFinalAlpha="true">
+				<Alpha duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+            </AnimationGroup>
+        </Animations>
+    </Frame>
+    
+    <Frame name="ChallengeModeCompleteBanner" parent="UIParent" hidden="true" alpha="1" mixin="ChallengeModeCompleteBannerMixin">
+		<Size x="128" y="336"/>
+		<Anchors>
+			<Anchor point="TOP" x="0" y="-120"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BORDER">
+				<Texture parentKey="BannerTop" hidden="false" alpha="0" alphaMode="BLEND" atlas="BossBanner-BgBanner-Top" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-44"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BannerTopGlow" hidden="false" alpha="0" alphaMode="ADD" atlas="BossBanner-BgBanner-Top" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-44"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BannerBottom" hidden="false" alpha="0" alphaMode="BLEND" atlas="BossBanner-BgBanner-Bottom" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOM" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BannerBottomGlow" hidden="false" alpha="0" alphaMode="ADD" atlas="BossBanner-BgBanner-Bottom" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOM" x="0" y="0"/>
+					</Anchors>
+				</Texture>	
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="BannerMiddle" alpha="0" atlas="BossBanner-BgBanner-Mid" alphaMode="BLEND" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.BannerTop" x="-100" y="-34"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BannerBottom" x="100" y="25"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BannerMiddleGlow" alpha="0" atlas="BossBanner-BgBanner-Mid" alphaMode="ADD" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.BannerTop" x="-100" y="-34"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BannerBottom" x="100" y="25"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="SkullCircle" hidden="false" alpha="0" alphaMode="BLEND" atlas="ChallengeMode-SpikeyStar">
+                    <Size x="100" y="100"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.BannerTop" x="0" y="46"/>
+					</Anchors>
+				</Texture>
+                 <FontString parentKey="Level" inherits="GameFontNormalWTF2Outline" text="13">
+                    <Anchors>
+                        <Anchor point="CENTER" relativeKey="$parent.SkullCircle"/>
+                    </Anchors>
+                </FontString>
+			</Layer>			
+			<Layer level="ARTWORK">
+				<Texture parentKey="BottomFillagree" hidden="false" alpha="0" alphaMode="BLEND" atlas="BossBanner-BottomFillagree" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOM" x="0" y="8"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RightFillagree" hidden="false" alpha="0" alphaMode="BLEND" atlas="BossBanner-RightFillagree" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.SkullCircle" x="10" y="6"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="LeftFillagree" hidden="false" alpha="0" alphaMode="BLEND" atlas="BossBanner-LeftFillagree" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.SkullCircle" x="-10" y="6"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Title" inherits="QuestFont_Enormous" justifyH="CENTER" alpha="0">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.BannerTop" x="0" y="-67"/>
+					</Anchors>
+				</FontString>
+                <FontString parentKey="DescriptionLineOne" inherits="GameFontHighlightLarge" justifyH="CENTER" alpha="0">
+                    <Anchors>
+                        <Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="0" y="-10"/>
+                    </Anchors>
+                </FontString>
+                <FontString parentKey="DescriptionLineTwo" inherits="GameFontHighlightLarge" justifyH="CENTER" alpha="0">
+                    <Anchors>
+                        <Anchor point="TOP" relativeKey="$parent.DescriptionLineOne" relativePoint="BOTTOM" x="0" y="-10"/>
+                    </Anchors>
+                </FontString>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="2">
+                <Texture parentKey="Glow" hidden="false" atlas="ChallengeMode-SoftYellowGlow">
+                    <Size x="106" y="106"/>
+                    <Anchors>
+                        <Anchor point="CENTER" relativeKey="$parent.SkullCircle"/>
+                    </Anchors>
+                </Texture>
+			</Layer>
+		</Layers>       
+        <Frames>
+            <Frame hidden="true" inherits="ChallengeModeBannerPartyMemberTemplate"/>
+        </Frames>     
+		<Animations>
+			<AnimationGroup parentKey="AnimIn" setToFinalAlpha="true">
+				<Scale childKey="SkullCircle" duration="0.15" order="1" fromScaleX="5" fromScaleY="5" toScaleX="1" toScaleY="1"/>
+				<Alpha childKey="SkullCircle" duration="0.1" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="BannerTop" startDelay="0.2" duration="0.25" order="2" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="BannerTop" startDelay="0.1" duration="0.3" order="2" fromScaleX="0.1" fromScaleY="1" toScaleX="1" toScaleY="1"/>
+				<Alpha childKey="BannerBottom" startDelay="0.2" duration="0.25" order="2" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="BannerBottom" startDelay="0.1" duration="0.3" order="2" fromScaleX="0.1" fromScaleY="1" toScaleX="1" toScaleY="1"/>
+				<Alpha childKey="BannerMiddle" startDelay="0.2" duration="0.25" order="2" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="BannerMiddle" startDelay="0.1" duration="0.3" order="2" fromScaleX="0.1" fromScaleY="1" toScaleX="1" toScaleY="1"/>				
+				<Alpha childKey="BottomFillagree" duration="0.15" order="2" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="RightFillagree" duration="0.1" order="2" fromAlpha="0" toAlpha="1"/>
+				<Translation childKey="RightFillagree" startDelay="0.15" duration="0.15" order="2" offsetX="37" offsetY="0"/>
+				<Scale childKey="RightFillagree" startDelay="0.15" duration="0.15" order="2" fromScaleX="0.5" fromScaleY="0.5" toScaleX="1" toScaleY="1">
+					<Origin point="BOTTOMLEFT">
+						<Offset x="0" y="0"/>
+					</Origin>
+				</Scale>
+				<Alpha childKey="LeftFillagree" duration="0.1" order="2" fromAlpha="0" toAlpha="1"/>
+				<Translation childKey="LeftFillagree" startDelay="0.15" duration="0.15" order="2" offsetX="-37" offsetY="0"/>
+				<Scale childKey="LeftFillagree" startDelay="0.15" duration="0.15" order="2" fromScaleX="0.5" fromScaleY="0.5" toScaleX="1" toScaleY="1">
+					<Origin point="BOTTOMRIGHT">
+						<Offset x="0" y="0"/>
+					</Origin>
+				</Scale>
+				<Alpha childKey="BannerTopGlow" startDelay="0.9" duration="0.25" order="2" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="BannerTopGlow" startDelay="0.9" duration="0.5" order="2" fromScaleX="0.5" fromScaleY="1" toScaleX="1.6" toScaleY="1"/>
+				<Alpha childKey="BannerTopGlow" startDelay="1.1" duration="0.6" order="2" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="BannerBottomGlow" startDelay="0.9" duration="0.25" order="2" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="BannerBottomGlow" startDelay="0.9" duration="0.5" order="2" fromScaleX="0.5" fromScaleY="1" toScaleX="1.6" toScaleY="1"/>
+				<Alpha childKey="BannerBottomGlow" startDelay="1.1" duration="0.6" order="2" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="BannerMiddleGlow" startDelay="0.9" duration="0.25" order="2" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="BannerMiddleGlow" startDelay="0.9" duration="0.5" order="2" fromScaleX="0.5" fromScaleY="1" toScaleX="1.6" toScaleY="1"/>
+				<Alpha childKey="BannerMiddleGlow" startDelay="1.1" duration="0.6" order="2" fromAlpha="1" toAlpha="0"/>							
+				<Alpha childKey="Title" startDelay="0.2" duration="0.25" order="2" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="DescriptionLineOne" startDelay="0.2" duration="0.25" order="2" fromAlpha="0" toAlpha="1"/>
+                <Alpha childKey="DescriptionLineTwo" startDelay="0.2" duration="0.25" order="2" fromAlpha="0" toAlpha="1"/>
+                <Alpha childKey="Glow" duration="0.1" order="2" fromAlpha="0" toAlpha="1"/>
+				<Scripts>
+					<OnPlay>
+						local banner = self:GetParent();
+						banner.LeftFillagree:SetPoint("CENTER", banner.SkullCircle, "CENTER", -10, 0);
+						banner.RightFillagree:SetPoint("CENTER", banner.SkullCircle, "CENTER", 10, 0);
+					</OnPlay>
+					<OnFinished>
+						local banner = self:GetParent();
+						banner.LeftFillagree:SetPoint("CENTER", banner.SkullCircle, "CENTER", -47, 0);
+						banner.RightFillagree:SetPoint("CENTER", banner.SkullCircle, "CENTER", 47, 0);
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+			<AnimationGroup parentKey="AnimOut">
+				<Alpha duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+				<Scripts>
+					<OnFinished function="ChallengeModeCompleteBanner_OnAnimOutFinished"/>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnUpdate method="OnUpdate"/>
+		</Scripts>
+	</Frame>
+    
     <Frame name="ChallengesDungeonIconFrameTemplate" parentArray="DungeonIcons" mixin="ChallengesDungeonIconMixin" virtual="true">
         <Size x="52" y="52"/>
         <Layers>
@@ -394,7 +596,7 @@
     </Frame>
     
     <Frame name="ChallengesGuildBestTemplate" parentArray="GuildBests" virtual="true" mixin="ChallengesGuildBestMixin">
-        <Size x="176" y="18"/>
+        <Size x="220" y="18"/>
         <Layers>
             <Layer level="ARTWORK">
                 <FontString parentKey="CharacterName" inherits="GameFontNormal" justifyH="LEFT">
@@ -427,23 +629,23 @@
 			</Frame>
             
             <Frame parentKey="WeeklyChest" hidden="true">
-                <Size x="182" y="129"/>
+                <Size x="98" y="73"/>
                 <Anchors>
-                    <Anchor point="BOTTOMLEFT" x="62" y="72"/>
+                    <Anchor point="TOPRIGHT" x="-7" y="-27"/>
                 </Anchors>
                 <Layers>
                     <Layer level="ARTWORK">
                         <Texture atlas="ChallengeMode-Chest">
-                            <Size x="182" y="129"/>
+                            <Size x="98" y="73"/>
                             <Anchors>
-                                <Anchor point="BOTTOM"/>
+                                <Anchor point="TOPRIGHT"/>
                             </Anchors>
                         </Texture>
                     </Layer>
                 </Layers>
                 <Scripts>
                     <OnEnter>
-                        GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -30, -22);
+                        GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -20, -15);
                         GameTooltip:SetText(CHALLENGE_MODE_WEEKLY_REWARD_AVAILABLE, nil, nil, nil, nil, true);
                         GameTooltip:Show();
                     </OnEnter>
@@ -451,38 +653,7 @@
                 </Scripts>
             </Frame>
             
-            <Frame parentKey="GuildBest" mixin="ChallengesFrameGuildBestMixin" hidden="true">
-                <Size x="200" y="110"/>
-                <Anchors>
-                    <Anchor point="LEFT" relativeKey="$parent.WeeklyChest" relativePoint="RIGHT" x="16" y="0"/>
-                </Anchors>
-                <Layers>
-                    <Layer level="BACKGROUND">
-                        <Texture file="Interface\Tooltips\UI-Tooltip-Background" setAllPoints="true">
-                            <Color r="0" g="0" b="0" a=".75"/>
-                        </Texture>
-                    </Layer>
-                    <Layer level="ARTWORK">
-                        <FontString parentKey="Title" inherits="GameFontNormalMed2" text="CHALLENGE_MODE_GUILD_BEST">
-                            <Anchors>
-                                <Anchor point="TOPLEFT" x="12" y="-4"/>
-                            </Anchors>
-                        </FontString>
-                        <Texture parentKey="Line" atlas="ChallengeMode-RankLineDivider" useAtlasSize="true">
-                            <Anchors>
-                                <Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" x="-8" y="2"/>
-                            </Anchors>
-                        </Texture>
-                    </Layer>
-                </Layers>
-                <Frames>
-                    <Frame inherits="ChallengesGuildBestTemplate" hidden="true">
-                        <Anchors>
-                            <Anchor point="TOP" relativeKey="$parent.Line" relativePoint="BOTTOM"/>
-                        </Anchors>
-                    </Frame>
-                </Frames>
-            </Frame>
+
             <Frame parentKey="WeeklyBest" mixin="ChallengesFrameWeeklyBestMixin">
                 <Size x="500" y="352"/>
                 <Anchors>
@@ -551,6 +722,38 @@
                 <Anchors>
                     <Anchor point="BOTTOMLEFT" x="8" y="8"/>
                 </Anchors>
+            </Frame>
+			
+			<Frame parentKey="GuildBest" mixin="ChallengesFrameGuildBestMixin" hidden="true">
+                <Size x="250" y="110"/>
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeKey="$parent.WeeklyBest.Star" relativePoint="BOTTOMRIGHT" x="-16" y="10"/>
+                </Anchors>
+                <Layers>
+                    <Layer level="BACKGROUND">
+                        <Texture atlas="ChallengeMode-guild-background" setAllPoints="true" alpha="0.4"/>
+                    </Layer>
+                    <Layer level="ARTWORK">
+                        <FontString parentKey="Title" inherits="GameFontNormalMed2" text="CHALLENGE_MODE_GUILD_BEST">
+                            <Anchors>
+                                <Anchor point="TOPLEFT" x="15" y="-7"/>
+                            </Anchors>
+                        </FontString>
+                        <Texture parentKey="Line" atlas="ChallengeMode-RankLineDivider" useAtlasSize="false">
+							<Size x="240" y="9"/>
+                            <Anchors>
+                                <Anchor point="TOP" x="0" y="-20"/>
+                            </Anchors>
+                        </Texture>
+                    </Layer>
+                </Layers>
+                <Frames>
+                    <Frame inherits="ChallengesGuildBestTemplate" hidden="true">
+                        <Anchors>
+                            <Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" y="-7"/>
+                        </Anchors>
+                    </Frame>
+                </Frames>
             </Frame>
 		</Frames>
         <Layers>

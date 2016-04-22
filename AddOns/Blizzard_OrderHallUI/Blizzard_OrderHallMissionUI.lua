@@ -33,6 +33,10 @@ function OrderHallMission:OnLoadMainFrame()
 	self.MissionTab.MissionPage.CostFrame.CostIcon:SetSize(18, 18);
 	self.MissionTab.MissionPage.CostFrame.Cost:SetPoint("RIGHT", self.MissionTab.MissionPage.CostFrame.CostIcon, "LEFT", -8, -1);
 
+	self.MissionTab.ZoneSupportMissionPage.CostFrame.CostIcon:SetTexture(currencyTexture);
+	self.MissionTab.ZoneSupportMissionPage.CostFrame.CostIcon:SetSize(18, 18);
+	self.MissionTab.ZoneSupportMissionPage.CostFrame.Cost:SetPoint("RIGHT", self.MissionTab.ZoneSupportMissionPage.CostFrame.CostIcon, "LEFT", -8, -1);
+
 	SetupMaterialFrame(self.FollowerList.MaterialFrame, primaryCurrency, currencyTexture);
 	SetupMaterialFrame(self.MissionTab.MissionList.MaterialFrame, primaryCurrency, currencyTexture);
 
@@ -58,32 +62,35 @@ function OrderHallMission:OnEventMainFrame(event, ...)
 end
 
 function OrderHallMission:DefaultTab()
-	local playerLevel = UnitLevel("player");
-	if (playerLevel < 110) then
-		return 3;	-- Adventure Map
-	else
-		return 1;	-- Missions
-	end
+	return 1;	-- Missions
 end
 
 function OrderHallMission:SetupTabs()
 	local tabList = { };
 	local validTabs = { };
 	local defaultTab;
+
+	local lastShowMissionsAndFollowersTabs = self.lastShowMissionsAndFollowersTabs;
+
 	-- If we don't have any followers, hide followers and missions tabs
 	if (C_Garrison.GetNumFollowers(self.followerTypeID) > 0) then
 		table.insert(tabList, 1);
 		table.insert(tabList, 2);
 		validTabs[1] = true;
 		validTabs[2] = true;
+		self.lastShowMissionsAndFollowersTabs = true;
 		defaultTab = 1;
+	else
+		self.lastShowMissionsAndFollowersTabs = false;
 	end
 
 	-- If we have completed all sandbox choice quests, hide the adventure map
 	if ((#tabList == 0) or C_Garrison.ShouldShowMapTab(GarrisonFollowerOptions[self.followerTypeID].garrisonType)) then
 		table.insert(tabList, 3);
 		validTabs[3] = true;
-		defaultTab = 3;
+		if (not defaultTab) then
+			defaultTab = 3;
+		end
 	end
 
 	self.Tab1:Hide();
@@ -107,9 +114,9 @@ function OrderHallMission:SetupTabs()
 		end
 	end
 
-	-- If the selected tab is not a valid one, switch to the default
+	-- If the selected tab is not a valid one, switch to the default. Additionally, if the missions tab is newly available, then select it.
 	local selectedTab = PanelTemplates_GetSelectedTab(self);
-	if (not validTabs[selectedTab]) then
+	if (not validTabs[selectedTab] or lastShowMissionsAndFollowersTabs ~= self.lastShowMissionsAndFollowersTabs) then
 		self:SelectTab(defaultTab);
 	end
 end
@@ -193,12 +200,6 @@ function OrderHallMission:ShowMission(missionInfo)
 	end
 end
 
-function OrderHallMission:UpdateCostFrame(missionPage, amount)
-	if (not missionPage.missionInfo.isZoneSupport) then
-		GarrisonMission.UpdateCostFrame(self, missionPage, amount);
-	end
-end
-
 function OrderHallMission:UpdateZoneSupportMissionData(missionPage)
 	local texture;
 	local spellID;
@@ -208,9 +209,6 @@ function OrderHallMission:UpdateZoneSupportMissionData(missionPage)
 		local _, _, spellTexture = GetSpellInfo(spellID);
 		texture = spellTexture;
 	end
-
-	local totalTimeString = C_Garrison.GetPartyMissionInfo(missionPage.missionInfo.missionID);
-	missionPage.MissionTime:SetFormattedText(GARRISON_MISSION_TIME_TOTAL, totalTimeString);
 
 	missionPage.ZoneSupport.iconTexture:SetTexture(texture);
 	missionPage.ZoneSupport:SetShown(texture ~= nil);
@@ -360,7 +358,7 @@ function OrderHallMissionPageEnemyMixin:OnEnter()
 		GameTooltip:AddLine(" ");
 		local str;
 		if (self.mechanicEffectIcon) then
-			str = "|T"..self.mechanicEffectIcon..":0:0:0:0|t "
+			str = "|T"..self.mechanicEffectIcon..":16:16:0:0|t "
 		else
 			str = "";
 		end
@@ -544,35 +542,20 @@ function OrderHallFollowerTabMixin:ShowFollower(followerID, followerList)
 
 	local lastUpdate = self.lastUpdate;
 	local followerInfo = C_Garrison.GetFollowerInfo(followerID);
-
 	local missionFrame = self:GetParent();
 
-	if (followerInfo) then
-		self.followerID = followerID;
-		self.NoFollowersLabel:Hide();
-		self.PortraitFrame:Show();
-		self.Model:SetAlpha(0);
-		GarrisonMission_SetFollowerModel(self.Model, followerInfo.followerID, followerInfo.displayID);
-		if (followerInfo.displayHeight) then
-			self.Model:SetHeightFactor(followerInfo.displayHeight);
-		end
-		if (followerInfo.displayScale) then
-			self.Model:InitializeCamera(followerInfo.displayScale);
-		end		
-	else
-		self.followerID = nil;
-		self.NoFollowersLabel:Show();
+	self.followerID = followerID;
+	self.ModelCluster.followerID = followerID;
+
+	self:ShowFollowerModel(followerInfo);
+
+	if (not followerInfo) then
 		followerInfo = { };
 		followerInfo.followerTypeID = missionFrame.followerTypeID;
 		followerInfo.quality = 1;
 		followerInfo.abilities = { };
 		followerInfo.unlockableAbilities = { };
-		self.PortraitFrame:Hide();
-		self.Model:ClearModel();
 	end
-
-	GarrisonFollowerPageModelUpgrade_Update(self.Model.UpgradeFrame);
-
 	missionFrame:SetFollowerPortrait(self.PortraitFrame, followerInfo);
 	self.Name:SetText(followerInfo.name);
 	local color = ITEM_QUALITY_COLORS[followerInfo.quality];	
@@ -805,6 +788,13 @@ function OrderHallFollowerTabMixin:ShowFollower(followerID, followerList)
 		self.AbilitiesFrame.ZoneSupport[i]:Hide();
 	end
 
+	if (followerInfo.flavorText) then
+		self.AbilitiesFrame.FlavorText:SetText(followerInfo.flavorText);
+		self.AbilitiesFrame.FlavorText:Show();
+	else
+		self.AbilitiesFrame.FlavorText:Hide();
+	end
+
 	self.lastUpdate = self:IsShown() and GetTime() or nil;
 end
 
@@ -884,6 +874,8 @@ end
 OrderHallMissionListMixin = { }
 
 function OrderHallMissionListMixin:UpdateCombatAllyMission()
+	GarrisonMissionListMixin.UpdateCombatAllyMission(self);
+
 	if (self.combatAllyMission) then
 		self:SetHeight(440);
 	else
@@ -897,9 +889,11 @@ OrderHallCombatAllyMixin = { }
 function OrderHallCombatAllyMixin:SetMission(missionInfo)
 	self.missionInfo = missionInfo;
 	if (missionInfo) then
-		self.Available:SetShown(not missionInfo.inProgress);
-		self.InProgress:SetShown(missionInfo.inProgress);
-		if (missionInfo.inProgress) then
+		local followerIsAssigned = missionInfo.inProgress or missionInfo.completed;
+		local completed = (missionInfo.inProgress and missionInfo.timeLeftSeconds == 0) or missionInfo.completed;
+		self.Available:SetShown(not followerIsAssigned);
+		self.InProgress:SetShown(followerIsAssigned);
+		if (followerIsAssigned) then
 			local followerInfo = C_Garrison.GetFollowerInfo(missionInfo.followers[1]);
 			self.InProgress.PortraitFrame:SetupPortrait(followerInfo);
 			self.InProgress.Name:SetText(followerInfo.name);
@@ -909,11 +903,17 @@ function OrderHallCombatAllyMixin:SetMission(missionInfo)
 			self.InProgress.ZoneSupport.iconTexture:SetTexture(texture);
 			self.InProgress.ZoneSupport.spellID = followerInfo.zoneSupportSpellID;
 			self.InProgress.ZoneSupportName:SetText(name or "");
+
+			self.InProgress.Unassign:SetEnabled(completed);
 		end
 		self:Show();
 	else
 		self:Hide();
 	end
+end
+
+function OrderHallCombatAllyMixin:UnassignAlly()
+	C_Garrison.MarkMissionComplete(self.missionInfo.missionID);
 end
 
 function OrderHallCombatAllyMixin:GetMissionFrame()

@@ -179,7 +179,7 @@ end
 
 function ArtifactAppearanceSlotMixin:OnEnter()
 	if self.unlockFailureReason then
-		GameTooltip:SetOwner(self, "ANCHOR_TOPLEFT", 20, 0);
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 0, 0);
 		GameTooltip:SetText(self.unlockFailureReason, nil, nil, nil, nil, true);
 		GameTooltip:Show();
 	end

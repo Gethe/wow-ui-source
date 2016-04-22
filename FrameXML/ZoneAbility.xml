@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
-	<Script file="DraenorZoneAbility.lua"/>
-	<Frame name="DraenorZoneAbilityFrame" parent="UIParent" hidden="true">
+	<Script file="ZoneAbility.lua"/>
+	<Frame name="ZoneAbilityFrame" parent="UIParent" hidden="true">
 		<Size x="64" y="64"/>
 		<Anchors>
 			<Anchor point="BOTTOM" x="0" y="160"/>
@@ -62,16 +62,16 @@
 			</Button>
 		</Frames>		
 		<Scripts>
-			<OnLoad function="DraenorZoneAbilityFrame_OnLoad"/>
-			<OnEvent function="DraenorZoneAbilityFrame_OnEvent"/>
-			<OnShow function="DraenorZoneAbilityFrame_OnShow"/>
-			<OnHide function="DraenorZoneAbilityFrame_OnHide"/>
+			<OnLoad function="ZoneAbilityFrame_OnLoad"/>
+			<OnEvent function="ZoneAbilityFrame_OnEvent"/>
+			<OnShow function="ZoneAbilityFrame_OnShow"/>
+			<OnHide function="ZoneAbilityFrame_OnHide"/>
 		</Scripts>
 	</Frame>
 
-	<Frame name="DraenorZoneAbilityButtonAlert" inherits="MicroButtonAlertTemplate" parent="DraenorZoneAbilityFrame" frameStrata="MEDIUM" topLevel="false">
+	<Frame name="ZoneAbilityButtonAlert" inherits="MicroButtonAlertTemplate" parent="ZoneAbilityFrame" frameStrata="MEDIUM" topLevel="false">
 		<Anchors>
-			<Anchor point="BOTTOM" relativeTo="DraenorZoneAbilityFrame" relativePoint="TOP" x="0" y="8"/>
+			<Anchor point="BOTTOM" relativeTo="ZoneAbilityFrame" relativePoint="TOP" x="0" y="8"/>
 		</Anchors>
 		<Scripts>
 			<OnLoad>

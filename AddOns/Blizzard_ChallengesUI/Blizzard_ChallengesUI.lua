@@ -425,13 +425,13 @@ function ChallengesKeystoneFrameAffixMixin:SetUp(affixInfo)
 		local info = affixInfo;
 
 		SetPortraitToTexture(self.Portrait, CHALLENGE_MODE_EXTRA_AFFIX_INFO[info.key].texture);
-	
+	    
         if (info.pct > 999) then
             self.Percent:SetFontObject("SystemFont_Shadow_Med1_Outline");
         else
             self.Percent:SetFontObject("SystemFont_Shadow_Large_Outline");
         end
-        
+                
 		self.Percent:SetText(("+%d%%"):format(info.pct));
 		self.Percent:Show();
 
@@ -449,4 +449,170 @@ function ChallengesKeystoneFrameAffixMixin:SetUp(affixInfo)
 	end
 
 	self:Show();
+end
+
+ChallengeModeCompleteBannerMixin = {};
+
+function ChallengeModeCompleteBannerMixin:OnLoad()
+    self.timeToHold = 5;
+    self.unitTokens = { "player", "party1", "party2", "party3", "party4" };
+    self:RegisterEvent("CHALLENGE_MODE_COMPLETED");
+end
+
+function ChallengeModeCompleteBannerMixin:OnEvent(event, ...)
+    if (event == "CHALLENGE_MODE_COMPLETED") then
+        local mapID, level, time, onTime, keystoneUpgradeLevels = C_ChallengeMode.GetCompletionInfo();
+    
+        TopBannerManager_Show(self, { mapID = mapID, level = level, time = time, onTime = onTime, keystoneUpgradeLevels = keystoneUpgradeLevels });
+    end
+end
+
+function ChallengeModeCompleteBannerMixin:PlayBanner(data)
+    local name, _, timeLimit = C_ChallengeMode.GetMapInfo(data.mapID);
+    
+    self.Title:SetText(name);
+    
+    self.Level:SetText(data.level);
+	self.Level:Show();
+	
+    if (data.onTime) then
+        self.DescriptionLineOne:SetText(CHALLENGE_MODE_COMPLETE_BEAT_TIMER);
+        self.DescriptionLineTwo:SetFormattedText(CHALLENGE_MODE_COMPLETE_KEYSTONE_UPGRADED, data.keystoneUpgradeLevels);
+    else
+        self.DescriptionLineOne:SetText(CHALLENGE_MODE_COMPLETE_TIME_EXPIRED);
+        self.DescriptionLineTwo:SetText(CHALLENGE_MODE_COMPLETE_TRY_AGAIN);
+    end
+    
+    local sortedUnitTokens = self:GetSortedPartyMembers();
+    
+    self:Show();
+    self.AnimIn:Play();
+    
+    self:CreateAndPositionPartyMembers(#sortedUnitTokens);
+	for i = 1, #sortedUnitTokens do
+        self.PartyMembers[i]:SetUp(sortedUnitTokens[i]);
+    end
+    
+    
+    C_Timer.After(self.timeToHold, function()
+        self:PerformAnimOut();
+    end);
+end
+
+function ChallengeModeCompleteBannerMixin:StopBanner()
+    self.AnimIn:Stop();
+    self:Hide();
+end
+
+function ChallengeModeCompleteBannerMixin:GetSortedPartyMembers()
+    local unitRoleMap = {};
+    
+    local sortedUnitTokens = {};
+    
+    for i = 1, #self.unitTokens do
+        if (UnitExists(self.unitTokens[i])) then
+            local role = UnitGroupRolesAssigned(self.unitTokens[i]);
+            if (role == "DAMAGER" or role == "NONE") then
+                if (not unitRoleMap[role]) then
+                    unitRoleMap[role] = {};
+                end
+                tinsert(unitRoleMap[role], self.unitTokens[i]);
+            else
+                unitRoleMap[role] = self.unitTokens[i];
+            end
+        end
+    end
+    
+    if (unitRoleMap["TANK"]) then
+        tinsert(sortedUnitTokens, unitRoleMap["TANK"]);
+    end
+    
+    if (unitRoleMap["HEALER"]) then
+        tinsert(sortedUnitTokens, unitRoleMap["HEALER"]);
+    end
+    
+    if (unitRoleMap["DAMAGER"]) then
+        for i = 1, #unitRoleMap["DAMAGER"] do
+            tinsert(sortedUnitTokens, unitRoleMap["DAMAGER"][i]);
+        end
+    end
+     
+    if (unitRoleMap["NONE"]) then
+        for i = 1, #unitRoleMap["NONE"] do
+            tinsert(sortedUnitTokens, unitRoleMap["NONE"][i]);
+        end
+    end
+    
+    return sortedUnitTokens;
+end
+
+function ChallengeModeCompleteBannerMixin:CreateAndPositionPartyMembers(num)
+	local index = #self.PartyMembers + 1;
+	local frameWidth, spacing, distance = 61, 22, -100;
+	while (#self.PartyMembers < num) do
+		local frame = CreateFrame("Frame", nil, self, "ChallengeModeBannerPartyMemberTemplate");
+		local prev = self.PartyMembers[index - 1];
+		frame:SetPoint("LEFT", prev, "RIGHT", spacing, 0);
+		index = index + 1;
+	end
+	-- Figure out where to place the leftmost party member
+	local frame = self.PartyMembers[1];
+	frame:ClearAllPoints();
+	if (num % 2 == 1) then
+		local x = (num - 1) / 2;
+		frame:SetPoint("TOPLEFT", self.Title, "TOP", -((frameWidth / 2) + (frameWidth * x) + (spacing * x)), distance);
+	else
+		local x = num / 2;
+		frame:SetPoint("TOPLEFT", self.Title, "TOP", -((frameWidth * x) + (spacing * (x - 1)) + (spacing / 2)), distance);
+	end
+	
+	for i = num + 1, #self.PartyMembers do
+		self.PartyMembers[i]:Hide();
+	end
+end
+
+function ChallengeModeCompleteBannerMixin:PerformAnimOut()
+    self.AnimOut:Play()
+    for i = 1, #self.PartyMembers do
+        if (self.PartyMembers[i]:IsShown()) then
+            self.PartyMembers[i].AnimOut:Play();
+        end
+    end
+end
+
+function ChallengeModeCompleteBanner_OnAnimOutFinished(self)
+	local banner = self:GetParent();
+	banner:Hide();
+	banner.BannerTop:SetAlpha(0);
+	banner.BannerBottom:SetAlpha(0);
+	banner.BannerMiddle:SetAlpha(0);
+	banner.BottomFillagree:SetAlpha(0);
+	banner.RightFillagree:SetAlpha(0);
+	banner.LeftFillagree:SetAlpha(0);
+	banner.Title:SetAlpha(0);
+	TopBannerManager_BannerFinished();
+end
+
+ChallengeModeBannerPartyMemberMixin = {};
+
+function ChallengeModeBannerPartyMemberMixin:SetUp(unitToken)
+    SetPortraitTexture(self.Portrait, unitToken);
+    
+    local name = UnitName(unitToken);
+    local _, classFileName = UnitClass(unitToken);
+    
+    local classColorStr = RAID_CLASS_COLORS[classFileName].colorStr;
+    self.Name:SetText(("|c%s%s|r"):format(classColorStr, name));
+    
+    local role = UnitGroupRolesAssigned(unitToken);
+    if ( role == "TANK" or role == "HEALER" or role == "DAMAGER" ) then
+		self.RoleIcon:SetTexCoord(GetTexCoordsForRoleSmallCircle(role));
+		self.RoleIcon:Show();
+	else
+		self.RoleIcon:Hide();
+	end
+    
+    self:SetAlpha(0);
+    self:Show();
+    self.AnimIn:Play();
 end

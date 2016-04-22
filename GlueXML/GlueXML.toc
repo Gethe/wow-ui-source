@@ -20,6 +20,8 @@ GlueDropDownMenu.xml
 ..\SharedXML\HybridScrollFrame.xml
 ..\SharedXML\ModelFrames.xml
 ..\SharedXML\ModelPreviewFrame.xml
+## IME.xml needs to be loaded after GlueFonts.xml
+..\SharedXML\IME.xml
 
 ##New stuff!!!
 GlueParent.xml

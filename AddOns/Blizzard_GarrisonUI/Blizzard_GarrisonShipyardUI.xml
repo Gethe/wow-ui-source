@@ -885,8 +885,7 @@
 					<Anchor point="CENTER"/>
 				</Anchors>
 				<Scripts>
-					<OnLoad>
-						GarrisonCinematicModelBase_OnLoad(self);
+					<OnLoad inherit="prepend">
 						self:Show();
 						self:SetDisplayInfo(11686); <!-- 11686 is invisible stalker -->
 					</OnLoad>
@@ -1780,8 +1779,9 @@
 					</Frame>
 				</Frames>
 				<Scripts>
-					<OnShow>self:OnShow();</OnShow>
-					<OnHide>self:OnHide();</OnHide>
+					<OnShow method="OnShow"/>
+					<OnHide method="OnHide"/>
+					<OnEvent method="OnEvent"/>
 				</Scripts>
 			</Frame>
 

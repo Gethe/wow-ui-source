@@ -1537,40 +1537,7 @@
 					</Layer>
 				</Layers>
 			</StatusBar>
-			<CinematicModel parentKey="Model" inherits="ModelTemplate">
-				<Size x="305" y="370"/>
-				<Anchors>
-					<Anchor point="TOPLEFT" x="12" y="-78"/>
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture atlas="GarrFollower-Shadow" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="BOTTOM" x="0" y="-35"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Frames>
-					<Frame parentKey="UpgradeFrame" inherits="GarrisonFollowerModelUpgradeTemplate">
-						<Anchors>
-							<Anchor point="BOTTOM" x="0" y="35"/>
-						</Anchors>
-					</Frame>
-				</Frames>
-				<Scripts>
-					<OnModelLoaded>
-						self:SetAlpha(1);
-					</OnModelLoaded>
-					<OnShow>
-						self:SetTargetDistance(0);
-						self:SetFacing(.2);
-						GarrisonMission_SetFollowerModelItems(self);
-					</OnShow>
-					<OnMouseDown function="GarrisonFollowerPageModel_OnMouseDown"/>
-					<OnMouseUp function="GarrisonFollowerPageModel_OnMouseUp"/>
-				</Scripts>
-			</CinematicModel>
+			<ScrollFrame parentKey="ModelCluster" inherits="GarrisonFollowerTabModelCluster" setAllPoints="true"/>
 			<Frame parentKey="AbilitiesFrame" setAllPoints="true">
 				<Layers>
 					<Layer level="ARTWORK">
@@ -1597,11 +1564,6 @@
 					</Frame>
 					<Frame parentArray="Counters" inherits="GarrisonMissionAbilityCounterTemplate" hidden="true"/>
 				</Frames>
-				<Scripts>
-					<OnLoad>
-						self:SetFrameLevel(self:GetParent().Model:GetFrameLevel() + 1);
-					</OnLoad>
-				</Scripts>
 			</Frame>
 			<Button parentKey="UpgradeClickTarget" hidden="true">
 				<Anchors>
@@ -1780,7 +1742,7 @@
 					</OnLoad>
 				</Scripts>
 			</Frame>
-			<Frame parentKey="FollowersFrame">
+			<Frame parentKey="FollowersFrame" frameLevel="20">
 				<Size x="556" y="285"/>
 				<Anchors>
 					<Anchor point="TOP"/>
@@ -1807,11 +1769,6 @@
 						</Anchors>
 					</Frame>
 				</Frames>
-				<Scripts>
-					<OnLoad>
-						self:SetFrameLevel(self:GetParent():GetFrameLevel() + 3);
-					</OnLoad>
-				</Scripts>
 			</Frame>
 			<Frame parentKey="MissionInfo">
 				<Size x="556" y="285"/>
@@ -1992,8 +1949,9 @@
 					</Frame>
 				</Frames>
 				<Scripts>
-					<OnShow>self:OnShow();</OnShow>
-					<OnHide>self:OnHide();</OnHide>
+					<OnShow method="OnShow"/>
+					<OnHide method="OnHide"/>
+					<OnEvent method="OnEvent"/>
 				</Scripts>
 			</Frame>
 			<Frame parentKey="MissionTab" setAllPoints="true" useParentLevel="true">

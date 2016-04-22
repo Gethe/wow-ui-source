@@ -195,7 +195,7 @@
 			</Frame>
 			<Button parentKey="PerksTabButton" name="$parentTab1" inherits="ArtifactFrameTabButtonTemplate" id="1" text="ARTIFACTS_PERK_TAB">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="11" y="-9" />
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="11" y="-7" />
 				</Anchors>
 			</Button>
 			<Button parentKey="AppearancesTabButton" name="$parentTab2" inherits="ArtifactFrameTabButtonTemplate" id="2" text="ARTIFACTS_APPEARANCE_TAB">

@@ -157,19 +157,6 @@ function GarrisonMission:ShowMission(missionInfo)
 		missionPage.Stage.MissionTime:SetPoint("TOPLEFT", missionPage.Stage.Header, "BOTTOMLEFT", 7, -7);
 	end
 	
-	missionPage.CostFrame:SetPoint("LEFT", missionPage.ButtonFrame, "LEFT", 50, 0);
-	missionPage.CostFrame:SetPoint("RIGHT", missionPage.ButtonFrame, "CENTER");
-	
-	if (missionInfo.cost > 0) then
-		missionPage.CostFrame:Show();
-		missionPage.StartMissionButton:ClearAllPoints();
-		missionPage.StartMissionButton:SetPoint("RIGHT", missionPage.ButtonFrame, "RIGHT", -50, 1);
-	else
-		missionPage.CostFrame:Hide();
-		missionPage.StartMissionButton:ClearAllPoints();
-		missionPage.StartMissionButton:SetPoint("CENTER", missionPage.ButtonFrame, "CENTER", 0, 1);
-	end
-
 	self:SetPartySize(missionPage, missionInfo.numFollowers, #enemies);
 	self:SetEnemies(missionPage, enemies, missionInfo.numFollowers);
 	
@@ -398,6 +385,7 @@ function GarrisonMission:UpdateMissionData(missionPage)
 		missionPage.Stage.MissionEnv:SetFormattedText(GARRISON_MISSION_ENVIRONMENT, env);
 	end	
 
+	rewardsFrame.MissionXP:Show();
 	rewardsFrame.OvermaxItem:Hide();
 	if (GarrisonFollowerOptions[self.followerTypeID].usesOvermaxMechanic) then
 		local overmaxSuccess = Clamp(successChance - 100, 0, 100);
@@ -424,6 +412,9 @@ function GarrisonMission:UpdateMissionData(missionPage)
 			rewardsFrame.OvermaxItem.Icon:SetTexture("Interface\\Icons\\inv_misc_coin_01");
 			rewardsFrame.OvermaxItem.money = missionPage.missionInfo.overmaxRewardMoney;
 			rewardsFrame.OvermaxItem:Show();
+		else
+			rewardsFrame.OvermaxItem:Hide();
+			rewardsFrame.MissionXP:Hide();
 		end
 
 	else
@@ -443,14 +434,26 @@ function GarrisonMission:UpdateMissionData(missionPage)
 	missionPage.lastUpdate = GetTime();
 end
 
-function GarrisonMission:UpdateCostFrame(missionPage, amount)
-	local baseCost, cost = C_Garrison.GetMissionCost(missionPage.missionInfo.missionID);
-	if ( amount < cost ) then
+function GarrisonMission:UpdateCostFrame(missionPage, baseCost, cost, owned)
+	if ( owned < cost ) then
 		missionPage.CostFrame.Cost:SetText(RED_FONT_COLOR_CODE..BreakUpLargeNumbers(cost)..FONT_COLOR_CODE_CLOSE);
 	elseif (cost < baseCost) then
 		missionPage.CostFrame.Cost:SetText(GREEN_FONT_COLOR_CODE..BreakUpLargeNumbers(cost)..FONT_COLOR_CODE_CLOSE);
 	else
 		missionPage.CostFrame.Cost:SetText(BreakUpLargeNumbers(cost));
+	end
+
+	missionPage.CostFrame:SetPoint("LEFT", missionPage.ButtonFrame, "LEFT", 50, 0);
+	missionPage.CostFrame:SetPoint("RIGHT", missionPage.ButtonFrame, "CENTER");
+	
+	if (baseCost > 0) then
+		missionPage.CostFrame:Show();
+		missionPage.StartMissionButton:ClearAllPoints();
+		missionPage.StartMissionButton:SetPoint("RIGHT", missionPage.ButtonFrame, "RIGHT", -50, 1);
+	else
+		missionPage.CostFrame:Hide();
+		missionPage.StartMissionButton:ClearAllPoints();
+		missionPage.StartMissionButton:SetPoint("CENTER", missionPage.ButtonFrame, "CENTER", 0, 1);
 	end
 end
 
@@ -466,14 +469,53 @@ function GarrisonMission:UpdateStartButton(missionPage)
 		disableError = GARRISON_MAX_FOLLOWERS_MISSION_TOOLTIP;
 	end
 	
-	local currencyName, amount, currencyTexture = GetCurrencyInfo(missionInfo.costCurrencyTypesID);
-	if ( not disableError and amount < missionInfo.cost ) then
+	local currencyName, amountOwned, currencyTexture = GetCurrencyInfo(missionInfo.costCurrencyTypesID);
+	if ( not disableError and amountOwned < missionInfo.cost ) then
 		disableError = GARRISON_NOT_ENOUGH_MATERIALS_TOOLTIP;
 	end
-	self:UpdateCostFrame(missionPage, amount);
 
+	local baseCost, cost = C_Garrison.GetMissionCost(missionPage.missionInfo.missionID);
+	self:UpdateCostFrame(missionPage, baseCost, cost, amountOwned);
+
+	-- specific required champions
 	if ( not disableError ) then
-		local requiredChampions = missionPage.missionInfo.requiredChampionFollowers;
+		local requiredChampions = missionPage.missionInfo.requiredChampions;
+		if (requiredChampions) then
+			local count = 0;
+		    for i, followerFrame in ipairs(missionPage.Followers) do
+			    if ( followerFrame.info ) then
+					for i, required in ipairs(requiredChampions) do
+				        if (followerFrame.info.garrFollowerID == required) then
+					        count = count + 1;
+				        end
+					end
+			    end
+		    end
+			if (count < #requiredChampions) then
+				local errorStr;
+				if (#requiredChampions == 1) then
+					errorStr = ORDER_HALL_MISSION_REQUIRED_CHAMPION;
+				else
+					errorStr = ORDER_HALL_MISSION_REQUIRED_CHAMPIONS;
+				end
+
+				local str = "";
+				for i, followerID in ipairs(requiredChampions) do
+					if (i ~= 1) then
+						str = str..", ";
+					end
+					local requiredInfo = C_Garrison.GetFollowerNameByID(followerID);
+					str = str..requiredInfo;
+				end
+
+				disableError = string.format(errorStr, str);
+			end
+		end
+	end
+	
+	-- required number of champions
+	if ( not disableError ) then
+		local requiredChampionCount = missionPage.missionInfo.requiredChampionCount;
 		local numChampions = 0;
 		local followers = missionPage.Followers;
 		for followerIndex = 1, #followers do
@@ -484,7 +526,7 @@ function GarrisonMission:UpdateStartButton(missionPage)
 				end
 			end
 		end
-		if ( numChampions < requiredChampions ) then
+		if ( numChampions < requiredChampionCount ) then
 			disableError = GarrisonFollowerOptions[self.followerTypeID].partyNotFullText;
 		end
 	end
@@ -726,6 +768,7 @@ function GarrisonMission:CheckCompleteMissions(onShow)
 	end
 	
 	self.MissionComplete.completeMissions = C_Garrison.GetCompleteMissions(self.followerTypeID);
+	self.MissionTab.MissionList:UpdateCombatAllyMission();
 	if ( #self.MissionComplete.completeMissions > 0 ) then
 		if ( self:IsShown() ) then
 			self:GetCompleteDialog().BorderFrame.Model.Summary:SetFormattedText(GARRISON_NUM_COMPLETED_MISSIONS, #self.MissionComplete.completeMissions);
@@ -772,37 +815,39 @@ function GarrisonMission:NextMission()
 end
 
 function GarrisonMission:MissionCompleteInitialize(missionList, index)
-	local frame = self.MissionComplete;
-	frame.NextMissionButton:Enable();
+	local missionCompleteFrame = self.MissionComplete;
+	missionCompleteFrame.NextMissionButton:Enable();
 	if (not missionList or #missionList == 0 or index == 0) then
 		self:CloseMissionComplete();
 		return false;
 	end
 	if (index > #missionList) then
-		frame.completeMissions = nil;
+		missionCompleteFrame.completeMissions = nil;
 		self:CloseMissionComplete();
 		return false;
 	end
 	local mission = missionList[index];
-	frame.currentMission = mission;
+	missionCompleteFrame.currentMission = mission;
 
-	local stage = frame.Stage;
+	local stage = missionCompleteFrame.Stage;
 	stage.FollowersFrame:Hide();
 	stage.EncountersFrame.FadeOut:Stop();
 	stage.EncountersFrame:Show();
 
-	for i = 1, #stage.Models do
-		stage.Models[i].FadeIn:Stop();
-		stage.Models[i]:StopPan();
+	for _, cluster in ipairs(stage.ModelCluster) do
+		for _, model in next, cluster.Model do 
+			model.FadeIn:Stop();
+			model:StopPan();
+		end
 	end
 
 	stage.MissionInfo.Title:SetText(mission.name);
 	GarrisonTruncationFrame_Check(stage.MissionInfo.Title);
 
-	frame.LoadingFrame:Hide();
+	missionCompleteFrame.LoadingFrame:Hide();
 	
-	frame:StopAnims();
-	frame.rollCompleted = false;
+	missionCompleteFrame:StopAnims();
+	missionCompleteFrame.rollCompleted = false;
 
 	-- rare
 	if ( mission.isRare ) then
@@ -838,51 +883,50 @@ function GarrisonMission:MissionCompleteInitialize(missionList, index)
 		self:SetEnemyPortrait(encounter, encounters[i], encounter.Elite, #enemies[i].mechanics);
 	end
 
-	frame.animInfo = {};
+	missionCompleteFrame.animInfo = {};
 	stage.followers = {};
-	local stageFollowerIndex = 1;
+	local encounterIndex = 1;
 	for missionFollowerIndex=1, #mission.followers do
-		local follower = stage.FollowersFrame.Followers[stageFollowerIndex];
-			local name, displayID, level, quality, currXP, maxXP, height, scale, movementType, impactDelay, castID, 
-				  castSoundID, impactID, impactSoundID, targetImpactID, targetImpactSoundID, className, classAtlas, portraitIconID, texPrefix, isTroop = 
-						C_Garrison.GetFollowerMissionCompleteInfo(mission.followers[missionFollowerIndex]);
+		local followerFrame = stage.FollowersFrame.Followers[missionFollowerIndex];
+		local name, displayIDs, level, quality, currXP, maxXP, height, scale, movementType, impactDelay, castID, 
+				castSoundID, impactID, impactSoundID, targetImpactID, targetImpactSoundID, className, classAtlas, portraitIconID, texPrefix, isTroop = 
+					C_Garrison.GetFollowerMissionCompleteInfo(mission.followers[missionFollowerIndex]);
 
-			if (not isTroop) then
-				follower.followerID = mission.followers[missionFollowerIndex];
-				frame:SetFollowerData(follower, name, className, classAtlas, portraitIconID, texPrefix);
-				local followerInfo = C_Garrison.GetFollowerInfo(follower.followerID);
-				frame:SetFollowerLevel(follower, followerInfo);
+		followerFrame.followerID = mission.followers[missionFollowerIndex];
+		missionCompleteFrame:SetFollowerData(followerFrame, name, className, classAtlas, portraitIconID, texPrefix);
+		local followerInfo = C_Garrison.GetFollowerInfo(followerFrame.followerID);
+		missionCompleteFrame:SetFollowerLevel(followerFrame, followerInfo);
 
-				stage.followers[stageFollowerIndex] = { displayID = displayID, height = height, scale = scale, followerID = mission.followers[missionFollowerIndex] };
-				if (encounters[stageFollowerIndex]) then --cannot have more animations than encounters
-					frame.animInfo[stageFollowerIndex] = { 	displayID = displayID,
-											height = height, 
-											scale = scale, 
-											movementType = movementType,
-											impactDelay = impactDelay,
-											castID = castID,
-											castSoundID = castSoundID,
-											impactID = impactID,
-											impactSoundID = impactSoundID,
-											targetImpactID = targetImpactID,
-											targetImpactSoundID = targetImpactSoundID,
-											enemyDisplayID = encounters[stageFollowerIndex].displayID,
-											enemyScale = encounters[stageFollowerIndex].scale,
-											enemyHeight = encounters[stageFollowerIndex].height,
-											followerID = mission.followers[missionFollowerIndex],
-										}
-				stageFollowerIndex = stageFollowerIndex + 1;
-			    if (GarrisonFollowerOptions[self.followerTypeID].showSingleMissionCompleteAnimation) then
-				    break;
-			    end
+		stage.followers[missionFollowerIndex] = { displayIDs = displayIDs, height = height, scale = scale, followerID = mission.followers[missionFollowerIndex] };
+
+		if (not isTroop) then
+			if (encounters[encounterIndex]) then --cannot have more animations than encounters
+				missionCompleteFrame.animInfo[encounterIndex] = { 	
+										displayID = displayIDs[1] and displayIDs[1].id,	-- for the fights we only show the first display ID
+										height = height, 
+										scale = scale * (displayIDs[1].followerPageScale or 1), 
+										movementType = movementType,
+										impactDelay = impactDelay,
+										castID = castID,
+										castSoundID = castSoundID,
+										impactID = impactID,
+										impactSoundID = impactSoundID,
+										targetImpactID = targetImpactID,
+										targetImpactSoundID = targetImpactSoundID,
+										enemyDisplayID = encounters[encounterIndex].displayID,
+										enemyScale = encounters[encounterIndex].scale,
+										enemyHeight = encounters[encounterIndex].height,
+										followerID = mission.followers[missionFollowerIndex],
+									}
+				encounterIndex = encounterIndex + 1;
 			end
 		end
 	end
 	-- if there are fewer followers than encounters, cycle through followers to match up against encounters
-	for i = #mission.followers + 1, #encounters do
-		local index = mod(i, #mission.followers) + 1;
-		local animInfo = frame.animInfo[index];
-		frame.animInfo[i] = { 	displayID = animInfo.displayID,
+	for i = encounterIndex, #encounters do
+		local index = mod(i, encounterIndex) + 1;
+		local animInfo = missionCompleteFrame.animInfo[index];
+		missionCompleteFrame.animInfo[i] = { 	displayID = animInfo.displayID,
 								height = animInfo.height, 
 								scale = animInfo.scale, 
 								movementType = animInfo.movementType,
@@ -900,58 +944,58 @@ function GarrisonMission:MissionCompleteInitialize(missionList, index)
 							};
 	end
 
-	local currencyMultipliers, goldMultiplier = select(8, C_Garrison.GetPartyMissionInfo(frame.currentMission.missionID));
-	frame.currentMission.currencyMultipliers = currencyMultipliers;
-	frame.currentMission.goldMultiplier = goldMultiplier;
+	local currencyMultipliers, goldMultiplier = select(8, C_Garrison.GetPartyMissionInfo(missionCompleteFrame.currentMission.missionID));
+	missionCompleteFrame.currentMission.currencyMultipliers = currencyMultipliers;
+	missionCompleteFrame.currentMission.goldMultiplier = goldMultiplier;
 
-	frame.BonusRewards.ChestModel.OpenAnim:Stop();
-	frame.BonusRewards.ChestModel.LockBurstAnim:Stop();
-	frame.BonusRewards.ChestModel:SetAlpha(1);
-	for i = 1, #frame.BonusRewards.Rewards do
-		frame.BonusRewards.Rewards[i]:Hide();
+	missionCompleteFrame.BonusRewards.ChestModel.OpenAnim:Stop();
+	missionCompleteFrame.BonusRewards.ChestModel.LockBurstAnim:Stop();
+	missionCompleteFrame.BonusRewards.ChestModel:SetAlpha(1);
+	for i = 1, #missionCompleteFrame.BonusRewards.Rewards do
+		missionCompleteFrame.BonusRewards.Rewards[i]:Hide();
 	end
-	frame.BonusRewards.ChestModel.LockBurstAnim:Stop();
-	frame.ChanceFrame.SuccessChanceInAnim:Stop();
-	frame.ChanceFrame.ResultAnim:Stop();
-	frame.BonusRewards.timerMissionID = nil;
+	missionCompleteFrame.BonusRewards.ChestModel.LockBurstAnim:Stop();
+	missionCompleteFrame.ChanceFrame.SuccessChanceInAnim:Stop();
+	missionCompleteFrame.ChanceFrame.ResultAnim:Stop();
+	missionCompleteFrame.BonusRewards.timerMissionID = nil;
 	if (mission.completed) then
 		-- if the mission is in this state, it's a success
-		frame.currentMission.succeeded = true;
-		frame:SetScript("OnUpdate", nil);
+		missionCompleteFrame.currentMission.succeeded = true;
+		missionCompleteFrame:SetScript("OnUpdate", nil);
 
 		stage.EncountersFrame:Hide();
-		frame.BonusRewards.Saturated:Show();
-		frame.BonusRewards.ChestModel.Lock:Hide();
-		frame.BonusRewards.ChestModel:SetAnimation(0, 0);
-		frame.BonusRewards.ChestModel.ClickFrame:Show();
-		frame.ChanceFrame.ChanceText:SetAlpha(0);
-		frame.ChanceFrame.ResultText:SetText(GARRISON_MISSION_SUCCESS);
-		frame.ChanceFrame.ResultText:SetTextColor(0.1, 1, 0.1);
-		frame.ChanceFrame.ResultText:SetAlpha(1);
+		missionCompleteFrame.BonusRewards.Saturated:Show();
+		missionCompleteFrame.BonusRewards.ChestModel.Lock:Hide();
+		missionCompleteFrame.BonusRewards.ChestModel:SetAnimation(0, 0);
+		missionCompleteFrame.BonusRewards.ChestModel.ClickFrame:Show();
+		missionCompleteFrame.ChanceFrame.ChanceText:SetAlpha(0);
+		missionCompleteFrame.ChanceFrame.ResultText:SetText(GARRISON_MISSION_SUCCESS);
+		missionCompleteFrame.ChanceFrame.ResultText:SetTextColor(0.1, 1, 0.1);
+		missionCompleteFrame.ChanceFrame.ResultText:SetAlpha(1);
 
-		frame.ChanceFrame.Banner:SetAlpha(1);
-		frame.ChanceFrame.Banner:SetWidth(GARRISON_MISSION_COMPLETE_BANNER_WIDTH);
+		missionCompleteFrame.ChanceFrame.Banner:SetAlpha(1);
+		missionCompleteFrame.ChanceFrame.Banner:SetWidth(GARRISON_MISSION_COMPLETE_BANNER_WIDTH);
 
-		frame:AnimFollowersIn();
+		missionCompleteFrame:AnimFollowersIn();
 	else
 		stage.ModelMiddle:Hide();
 		stage.ModelRight:Hide();
 		stage.ModelLeft:Hide();
-		frame.BonusRewards.Saturated:Hide();
-		frame.BonusRewards.ChestModel.Lock:SetAlpha(1);
-		frame.BonusRewards.ChestModel.Lock:Show();
-		frame.BonusRewards.ChestModel:SetAnimation(148);
-		frame.BonusRewards.ChestModel.ClickFrame:Hide();		
-		frame.ChanceFrame.ChanceText:SetAlpha(1);
-		frame.ChanceFrame.ChanceText:SetFormattedText(GARRISON_MISSION_PERCENT_CHANCE, C_Garrison.GetMissionSuccessChance(mission.missionID));
-		frame.ChanceFrame.ResultText:SetAlpha(0);
-		frame.ChanceFrame.Banner:SetAlpha(0);
-		frame.ChanceFrame.Banner:SetWidth(200);
-		frame.ChanceFrame.SuccessChanceInAnim:Play();		
+		missionCompleteFrame.BonusRewards.Saturated:Hide();
+		missionCompleteFrame.BonusRewards.ChestModel.Lock:SetAlpha(1);
+		missionCompleteFrame.BonusRewards.ChestModel.Lock:Show();
+		missionCompleteFrame.BonusRewards.ChestModel:SetAnimation(148);
+		missionCompleteFrame.BonusRewards.ChestModel.ClickFrame:Hide();		
+		missionCompleteFrame.ChanceFrame.ChanceText:SetAlpha(1);
+		missionCompleteFrame.ChanceFrame.ChanceText:SetFormattedText(GARRISON_MISSION_PERCENT_CHANCE, C_Garrison.GetMissionSuccessChance(mission.missionID));
+		missionCompleteFrame.ChanceFrame.ResultText:SetAlpha(0);
+		missionCompleteFrame.ChanceFrame.Banner:SetAlpha(0);
+		missionCompleteFrame.ChanceFrame.Banner:SetWidth(200);
+		missionCompleteFrame.ChanceFrame.SuccessChanceInAnim:Play();		
 		PlaySound("UI_Garrison_Mission_Complete_Encounter_Chance");
 		C_Garrison.MarkMissionComplete(mission.missionID);
 	end
-	frame.NextMissionButton:Disable();
+	missionCompleteFrame.NextMissionButton:Disable();
 	return true;
 end
 
@@ -1026,7 +1070,7 @@ function GarrisonMissionComplete:OnEvent(event, ...)
 	end
 end
 
-function GarrisonMissionComplete:OnModelLoaded()
+function GarrisonMissionComplete_OnModelLoaded(self)
 	-- making sure we didn't give up on loading this model
 	if ( self.state == "loading" ) then
 		self.state = "loaded";
@@ -1104,36 +1148,65 @@ local ENDINGS = {
 	},
 	[2] = { ["ModelMiddle"] = { hidden = true },
 			["ModelLeft"] = { dist = 0.2, facing = -0.2, followerIndex = 1 },	
-			["ModelRight"] = { dist = 0.2, facing = 0.2, followerIndex = 2 },
+			["ModelRight"] = { dist = 0.2, facing = 0.2, followerIndex = 2 },	-- Note, ModelRight frames have the facingLeft property. That's why the same dist value results in the model moving to the right instead of to the left.
 	},
 	[3] = { ["ModelMiddle"] = { dist = 0, facing = 0.1, followerIndex = 2 },
 			["ModelLeft"] = { dist = 0.25, facing = -0.3, followerIndex = 1 },	
 			["ModelRight"] = { dist = 0.275, facing = 0.3, followerIndex = 3 },
 	},
-	[4] = { ["ModelMiddle"] = { hidden = true },
-			["ModelLeft"] = { dist = 0.1, facing = -0.2, followerIndex = 2 },
-			["ModelRight"] = { dist = 0.1, facing = 0.2, followerIndex = 3 },
+};
+
+local positionData = {
+	[1] = {
+		[1] = { scale=1.0,	facing=0,			x=0,	y=0		}
 	},
-	[5] = { ["ModelMiddle"] = { dist = 0, facing = 0.1, followerIndex = 3 },
-			["ModelLeft"] = { dist = 0.15, facing = -0.4, followerIndex = 2 },
-			["ModelRight"] = { dist = 0.15, facing = 0.4, followerIndex = 4 },
+	[2] = {
+		[1] = { scale=1.0/0.7,	facing=0.1,		x=0.04,	y=0		},
+		[2] = { scale=1.0/0.7,	facing=-0.1,	x=-0.04,y=0		},
 	},
+	[3] = {
+		[1] = { scale=1.0/0.6,	facing=0,		x=0,	y=0,	},
+		[2] = { scale=1.0/0.6,	facing=0,		x=-.06,	y=-0.05,	},
+		[3] = { scale=1.0/0.6,	facing=0,	    x=.03,	y=-0.1,	},
+	},
+	[4] = {
+		[1] = { scale=1.0/0.6,	facing=0,		x=0,	y=0,	},
+		[2] = { scale=1.0/0.6,	facing=0,		x=0,	y=0,	},
+		[3] = { scale=1.0/0.6,	facing=0,	    x=0,	y=0,	},
+		[4] = { scale=1.0/0.6,	facing=0,		x=0,	y=0,	},
+	},
+	[5] = {
+		[1] = { scale=1.0/0.6,	facing=0,		x=0,	y=0,	},
+		[2] = { scale=1.0/0.6,	facing=0,		x=-.06,	y=-.05,	},
+		[3] = { scale=1.0/0.6,	facing=0,	    x=.03,	y=-0.1,	},
+		[4] = { scale=1.0/0.6,	facing=0,		x=-.05,	y=-0.2,		},
+		[5] = { scale=1.0/0.6,	facing=0,		x=.04,	y=-0.2,	},
+	}
 };
 
 function GarrisonMissionComplete:SetupEnding(numFollowers)
 	for model, data in pairs(ENDINGS[numFollowers]) do
-		local modelFrame = self.Stage[model];
+		local modelClusterFrame = self.Stage[model];
 		if ( data.hidden ) then
-			modelFrame:Hide();
+			modelClusterFrame:Hide();
 		else
-			modelFrame:Show();
-			modelFrame:SetAlpha(1);
-			modelFrame:SetTargetDistance(data.dist);
-			modelFrame:SetFacing(data.facing);
 			local followerInfo = self.Stage.followers[data.followerIndex];
-			GarrisonMission_SetFollowerModel(modelFrame, followerInfo.followerID, followerInfo.displayID);
-			modelFrame:SetHeightFactor(followerInfo.height);
-			modelFrame:InitializeCamera(followerInfo.scale);
+			local pos = positionData[#followerInfo.displayIDs];
+			for i = 1, #followerInfo.displayIDs do
+				local modelFrame = modelClusterFrame.Model[i];
+				modelFrame:SetAlpha(1);
+				local displayInfo = followerInfo.displayIDs[i];
+				GarrisonMission_SetFollowerModel(modelFrame, followerInfo.followerID, displayInfo and displayInfo.id);
+				modelFrame:InitializeCamera((followerInfo.scale or 1) * (displayInfo and displayInfo.followerPageScale or 1) * pos[i].scale);
+				modelFrame:SetHeightFactor(followerInfo.height + pos[i].y);
+				modelFrame:SetTargetDistance(data.dist + pos[i].x);
+				modelFrame:SetFacing(data.facing + pos[i].facing);
+				modelFrame:Show();
+			end
+			for i = #followerInfo.displayIDs + 1, #modelClusterFrame.Model do
+				modelClusterFrame.Model[i]:Hide();
+			end
+			modelClusterFrame:Show();
 		end
 	end
 end
@@ -1181,15 +1254,26 @@ end
 ---------------------------------------------------------------------------------
 
 function GarrisonMissionComplete:SetEncounterModels(index)
-	local modelLeft = self.Stage.ModelLeft;
-	modelLeft:SetAlpha(0);	
+	local modelLeftCluster = self.Stage.ModelLeft;
+	for i, model in ipairs(modelLeftCluster.Model) do
+		model:Hide();
+		model:ClearModel();
+	end
+	local modelLeft = modelLeftCluster.Model[1];
+	modelLeft:SetAlpha(0);
 	modelLeft:Show();
-	modelLeft:ClearModel();
+	modelLeftCluster:Show();
 
-	local modelRight = self.Stage.ModelRight;	
-	modelRight:SetAlpha(0);	
+	local modelRightCluster = self.Stage.ModelRight;
+	for i, model in ipairs(modelRightCluster.Model) do
+		model:Hide();
+		model:ClearModel();
+	end
+	local modelRight = modelRightCluster.Model[1];
+
+	modelRight:SetAlpha(0);
 	modelRight:Show();
-	modelRight:ClearModel();
+	modelRightCluster:Show();
 
 	if ( self.animInfo and index and self.animInfo[index] ) then
 		local currentAnim = self.animInfo[index];
@@ -1249,13 +1333,14 @@ function GarrisonMissionComplete:ShowEncounterMechanics(encountersFrame, mechani
 end
 
 function GarrisonMissionComplete:AnimCheckModels(entry)
+	-- Check whether animations are loaded for the fight scene. Only the first displayID (first model) is used in fight scenes.
 	self.animNumModelHolds = 0;
 	local modelLeft = self.Stage.ModelLeft;
-	if ( modelLeft.state == "loading" ) then
+	if ( modelLeft.Model[1].state == "loading" ) then
 		self.animNumModelHolds = self.animNumModelHolds + 1;
 	end
 	local modelRight = self.Stage.ModelRight;
-	if ( modelRight.state == "loading" ) then
+	if ( modelRight.Model[1].state == "loading" ) then
 		self.animNumModelHolds = self.animNumModelHolds + 1;
 	end
 
@@ -1271,8 +1356,9 @@ GARRISON_ANIMATION_LENGTH = 1;
 
 function GarrisonMissionComplete:AnimModels(entry, failPanType, successPanType, startPositionScale, speedMultiplier)
 	self.animNumModelHolds = nil;
-	local modelLeft = self.Stage.ModelLeft;
-	local modelRight = self.Stage.ModelRight;
+	local modelLeft = self.Stage.ModelLeft.Model[1];
+	local modelRight = self.Stage.ModelRight.Model[1];
+
 	local currentAnim = self.animInfo[self.encounterIndex];
 	currentAnim.playImpactSound = false;
 	currentAnim.playTargetImpactSound = false;
@@ -1376,10 +1462,12 @@ function GarrisonMissionComplete:AnimLockBurst(entry)
 end
 
 function GarrisonMissionComplete:AnimCleanUp(entry)
-	local models = self.Stage.Models;
-	for i = 1, #models do
-		models[i]:StopPan();
-		models[i]:ClearModel();
+	local models = self.Stage.ModelCluster;
+	for _, cluster in ipairs(self.Stage.ModelCluster) do
+		for _, model in next, cluster.Model do
+			model:StopPan();
+			model:ClearModel();
+		end
 	end
 end
 
@@ -1663,12 +1751,15 @@ function GarrisonMissionComplete:AnimXPBarOnFinish(xpBar)
 			xpBar.remainingXP = 0;
 		end
 		-- visual
-		local models = self.Stage.Models;
-		for i = 1, #models do
-			if ( models[i].followerID == followerFrame.followerID and models[i]:IsShown() ) then
-				models[i]:SetSpellVisualKit(6375);	-- level up visual
-				PlaySound("UI_Garrison_CommandTable_Follower_LevelUp");
-				break;
+		for _, cluster in ipairs(self.Stage.ModelCluster) do
+			if (cluster:IsShown()) then
+				for _, model in ipairs(cluster.Model) do
+					if ( model.followerID == followerFrame.followerID and model:IsShown() ) then
+						model:SetSpellVisualKit(6375);	-- level up visual
+						PlaySound("UI_Garrison_CommandTable_Follower_LevelUp");
+						break;
+					end
+				end
 			end
 		end
 	end
@@ -2433,44 +2524,56 @@ end
 --- Mission Complete: Preloading Models	                                      ---
 ---------------------------------------------------------------------------------
 
-local PRELOADING_NUM_MODELS = 0;
+local PRELOADING_NUM_MODELS_TOTAL = 0;
+local PRELOADING_NUM_MODELS_LOADED = 0;
 local PRELOADING_MISSION_ID = 0;
 
-function MissionCompletePreload_LoadMission(mainFrame, missionID, singleModel)
+function MissionCompletePreload_LoadMission(mainFrame, missionID, singleFollower, singleEncounter)
 	if ( missionID == PRELOADING_MISSION_ID ) then
 		return;		
 	end
 
 	PRELOADING_MISSION_ID = missionID;
-	local allDisplayIDs = C_Garrison.GetMissionDisplayIDs(missionID);
-	local displayIDs = {};
+	-- followersDisplayIDs is an array of arrays of displayIDs.
+	-- enemies can only have one displayID each.
+	local followersDisplayIDs, enemyDisplayIDs = C_Garrison.GetMissionDisplayIDs(missionID);
 	
-	if (singleModel) then
-		-- Only load the first follower model and first encounter model
+	if (singleFollower) then
+		-- Only load the first follower model
 		local missionInfo = C_Garrison.GetBasicMissionInfo(missionID);
-		for index = 1, missionInfo.numFollowers do
+		for index = 1, #followersDisplayIDs do
 			if (not C_Garrison.GetFollowerIsTroop(missionInfo.followers[index])) then
-				table.insert(displayIDs, allDisplayIDs[index]);
-				break;
+				followersDisplayIDs = { followersDisplayIDs[index] };
 			end
 		end
-		table.insert(displayIDs, allDisplayIDs[missionInfo.numFollowers + 1]);
-	else
-		displayIDs = allDisplayIDs;
+	end
+
+	if (singleEncounter) then
+		enemyDisplayIDs = { enemyDisplayIDs[1] };
 	end
 	
 	local models = mainFrame.MissionTab.MissionCompletePreloadModels;
 	-- clean up if needed
-	if ( PRELOADING_NUM_MODELS > 0 ) then
+	if ( not MissionCompletePreload_IsReady() ) then
 		MissionCompletePreload_Cancel(mainFrame);
 	end
 	-- load models
-	PRELOADING_NUM_MODELS = #displayIDs;
-	for i = 1, PRELOADING_NUM_MODELS do
-		local model = models[i];
-		model.loading = true;
-		model:SetDisplayInfo(displayIDs[i]);
+	local index = 0;
+	for i = 1, #followersDisplayIDs do
+		for j = 1, #followersDisplayIDs[i] do
+			index = index + 1;
+			local model = models[index];
+			model.loading = true;
+			model:SetDisplayInfo(followersDisplayIDs[i][j].id);
+		end
 	end
+	for i = 1, #enemyDisplayIDs do
+		index = index + 1;
+		local model = models[index];
+		model.loading = true;
+		model:SetDisplayInfo(enemyDisplayIDs[i]);
+	end
+	PRELOADING_NUM_MODELS_TOTAL = index;
 end
 
 function MissionCompletePreload_Cancel(mainFrame)
@@ -2479,25 +2582,26 @@ function MissionCompletePreload_Cancel(mainFrame)
 		models[i].loading = nil;
 		models[i]:ClearModel();
 	end
-	PRELOADING_NUM_MODELS = 0;
+	PRELOADING_NUM_MODELS_LOADED = 0;
+	PRELOADING_NUM_MODELS_TOTAL = 0;
 	PRELOADING_MISSION_ID = 0;
 	models[1]:SetScript("OnUpdate", nil);
 end
 
 function MissionCompletePreload_IsReady()
-	return PRELOADING_NUM_MODELS == 0;
+	return PRELOADING_NUM_MODELS_LOADED == PRELOADING_NUM_MODELS_TOTAL;
 end
 
 function MissionCompletePreload_OnModelLoaded(self)
 	if ( self.loading ) then
 		self.loading = nil;
-		PRELOADING_NUM_MODELS = PRELOADING_NUM_MODELS - 1;
+		PRELOADING_NUM_MODELS_LOADED = PRELOADING_NUM_MODELS_LOADED + 1;
 	end
 end
 
 function MissionCompletePreload_OnUpdate(self, elapsed)
 	local callback = self.callbackFunc;
-	if ( PRELOADING_NUM_MODELS == 0 ) then
+	if ( MissionCompletePreload_IsReady() ) then
 		self:SetScript("OnUpdate", nil);
 		self.callbackFunc(self.mainFrame);
 	else

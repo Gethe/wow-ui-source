@@ -69,6 +69,16 @@ function AUTO_QUEST_POPUP_TRACKER_MODULE:Update()
 						elseif ( popUpType == "OFFER" ) then
 							local blockContents = block.ScrollChild;
 							blockContents.QuestionMark:Hide();
+                            if (questID == QUEST_FRAME_AUTO_ACCEPT_QUEST_ID and QUEST_FRAME_AUTO_ACCEPT_QUEST_START_ITEM_ID ~= 0) then
+                                local texture = select(10, GetItemInfo(QUEST_FRAME_AUTO_ACCEPT_QUEST_START_ITEM_ID));
+                                blockContents.Exclamation:SetTexCoord(0, 1, 0, 1);
+                                blockContents.Exclamation:SetSize(33, 33);
+                                SetPortraitToTexture(blockContents.Exclamation, texture);
+                            else
+                                blockContents.Exclamation:SetTexture("Interface\\QuestFrame\\AutoQuest-Parts");
+                                blockContents.Exclamation:SetTexCoord(0.13476563, 0.17187500, 0.01562500, 0.53125000);
+                                blockContents.Exclamation:SetSize(19, 33);
+                            end
 							blockContents.Exclamation:Show();
 							blockContents.TopText:SetText(QUEST_WATCH_POPUP_QUEST_DISCOVERED);
 							blockContents.BottomText:Show();

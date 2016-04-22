@@ -19,7 +19,7 @@ SEX_MALE = 2;
 SEX_FEMALE = 3;
 
 function GlueParent_OnLoad(self)
-	local width = GetScreenWidth();
+   	local width = GetScreenWidth();
 	local height = GetScreenHeight();
 
 	if ( width / height > 16 / 9) then
@@ -46,7 +46,6 @@ function GlueParent_OnEvent(self, event, ...)
 		GlueParent_CheckCinematic();
 		if ( AccountLogin:IsVisible() ) then
 			SetExpansionLogo(AccountLogin.UI.GameLogo, GetClientDisplayExpansionLevel());
-			CheckSystemRequirements();
 		end
 	elseif ( event == "LOGIN_STATE_CHANGED" ) then
 		GlueParent_EnsureValidScreen();

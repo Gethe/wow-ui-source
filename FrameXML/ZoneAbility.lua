@@ -1,6 +1,4 @@
-DraenorZoneAbilitySpellID = 161691;
-
-DRAENOR_ZONE_SPELL_ABILITY_TEXTURES_BASE = {
+ZONE_SPELL_ABILITY_TEXTURES_BASE = {
 	[161676] = "Interface\\ExtraButton\\GarrZoneAbility-BarracksAlliance",
 	[161332] = "Interface\\ExtraButton\\GarrZoneAbility-BarracksHorde",
 	[162075] = "Interface\\ExtraButton\\GarrZoneAbility-Armory",
@@ -17,13 +15,9 @@ DRAENOR_ZONE_SPELL_ABILITY_TEXTURES_BASE = {
 	[160241] = "Interface\\ExtraButton\\GarrZoneAbility-Workshop",
 };
 
--- Make sure we only cache the proper spells
-DRAENOR_ZONE_FACTION_SPECIFIC_SPELLS = {
-	[161676] = PLAYER_FACTION_GROUP[1],
-	[161332] = PLAYER_FACTION_GROUP[0],
-};
+ZONE_SPELL_ABILITY_TEXTURES_BASE_FALLBACK = "Interface\\ExtraButton\\GarrZoneAbility-Armory";
 
-function DraenorZoneAbilityFrame_OnLoad(self)
+function ZoneAbilityFrame_OnLoad(self)
 	self:RegisterUnitEvent("UNIT_AURA", "player");
 	self:RegisterEvent("SPELL_UPDATE_COOLDOWN");
 	self:RegisterEvent("SPELL_UPDATE_USABLE");
@@ -31,38 +25,37 @@ function DraenorZoneAbilityFrame_OnLoad(self)
 	self:RegisterEvent("SPELLS_CHANGED");
 	self:RegisterEvent("ACTIONBAR_SLOT_CHANGED");
 
-	self.SpellButton.spellID = DraenorZoneAbilitySpellID;
-	DraenorZoneAbilityFrame_Update(self);
+	ZoneAbilityFrame_Update(self);
 end
 
-function DraenorZoneAbilityFrame_OnEvent(self, event)
-	if (event == "SPELLS_CHANGED") then
-		if (not self.baseName) then
-			self.baseName = GetSpellInfo(DraenorZoneAbilitySpellID);
-		end
+function ZoneAbilityFrame_OnEvent(self, event)
+	local spellID, garrisonType = GetZoneAbilitySpellInfo();
+	if ((event == "SPELLS_CHANGED" or event=="UNIT_AURA") and self.SpellButton.spellID ~= spellID) then
+		self.baseName = GetSpellInfo(spellID);
 	end
 
 	if (not self.baseName) then
 		return;
 	end
 
+	self.SpellButton.spellID = spellID;
 	local lastState = self.BuffSeen;
-	self.BuffSeen = HasDraenorZoneAbility();
+	self.BuffSeen = (spellID ~= 0);
 
 	if (self.BuffSeen) then
-		if (not HasDraenorZoneSpellOnBar(self)) then
-			if ( not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_GARRISON_ZONE_ABILITY) ) then
-				DraenorZoneAbilityButtonAlert:SetHeight(DraenorZoneAbilityButtonAlert.Text:GetHeight()+42);
-				DraenorZoneAbilityButtonAlert:Show();
+		if (not HasZoneAbilitySpellOnBar(self)) then
+			if ( not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_GARRISON_ZONE_ABILITY) and garrisonType == LE_GARRISON_TYPE_6_0 ) then
+				ZoneAbilityButtonAlert:SetHeight(ZoneAbilityButtonAlert.Text:GetHeight()+42);
+				ZoneAbilityButtonAlert:Show();
 				SetCVarBitfield( "closedInfoFrames", LE_FRAME_TUTORIAL_GARRISON_ZONE_ABILITY, true );
 			end
 			self:Show();
 		else
-			DraenorZoneAbilityButtonAlert:Hide();
+			ZoneAbilityButtonAlert:Hide();
 			self:Hide();
 		end
 
-		DraenorZoneAbilityFrame_Update(self);
+		ZoneAbilityFrame_Update(self);
 	else
 		if (not self.CurrentTexture) then
 			self.CurrentTexture = select(3, GetSpellInfo(self.baseName));
@@ -76,15 +69,15 @@ function DraenorZoneAbilityFrame_OnEvent(self, event)
 	end
 end
 
-function DraenorZoneAbilityFrame_OnShow(self)
-	DraenorZoneAbilityFrame_Update(self);
+function ZoneAbilityFrame_OnShow(self)
+	ZoneAbilityFrame_Update(self);
 end
 
-function DraenorZoneAbilityFrame_OnHide(self)
-	DraenorZoneAbilityButtonAlert:Hide();
+function ZoneAbilityFrame_OnHide(self)
+	ZoneAbilityButtonAlert:Hide();
 end
 
-function DraenorZoneAbilityFrame_Update(self)
+function ZoneAbilityFrame_Update(self)
 	if (not self.baseName) then
 		return;
 	end
@@ -93,7 +86,7 @@ function DraenorZoneAbilityFrame_Update(self)
 	self.CurrentTexture = tex;
 	self.CurrentSpell = name;
 
-	self.SpellButton.Style:SetTexture(DRAENOR_ZONE_SPELL_ABILITY_TEXTURES_BASE[spellID]);
+	self.SpellButton.Style:SetTexture(ZONE_SPELL_ABILITY_TEXTURES_BASE[spellID] or ZONE_SPELL_ABILITY_TEXTURES_BASE_FALLBACK);
 	self.SpellButton.Icon:SetTexture(tex);
 
 	local charges, maxCharges, chargeStart, chargeDuration = GetSpellCharges(spellID);
@@ -119,7 +112,7 @@ function DraenorZoneAbilityFrame_Update(self)
 	self.SpellButton.currentSpellID = spellID;
 end
 
-function HasDraenorZoneSpellOnBar(self)
+function HasZoneAbilitySpellOnBar(self)
 	if (not self.baseName) then
 		return false;
 	end
@@ -140,6 +133,11 @@ function HasDraenorZoneSpellOnBar(self)
 	return false;
 end
 
-function GetLastDraenorSpellTexture()
-	return DraenorZoneAbilityFrame.CurrentTexture;
+function HasZoneAbility()
+	local spellID, garrisonType = GetZoneAbilitySpellInfo();
+	return (spellID ~= 0);
+end
+
+function GetLastZoneAbilitySpellTexture()
+	return ZoneAbilityFrame.CurrentTexture;
 end

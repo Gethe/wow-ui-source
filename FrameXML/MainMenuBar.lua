@@ -100,7 +100,7 @@ function MainMenuBar_OnEvent(self, event, ...)
 					MicroButtonPulse(CharacterMicroButton, 60);
 				end
 				if ( not TokenFrame:IsVisible() ) then
-					SetButtonPulse(CharacterFrameTab4, 60, 1);
+					SetButtonPulse(CharacterFrameTab3, 60, 1);
 				end
 			end
 			
@@ -109,7 +109,7 @@ function MainMenuBar_OnEvent(self, event, ...)
 				TokenFrame_Update();
 				BackpackTokenFrame_Update();
 			else
-				CharacterFrameTab4:Hide();
+				CharacterFrameTab3:Hide();
 			end
 		else
 			TokenFrame_LoadUI();

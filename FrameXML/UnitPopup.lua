@@ -49,7 +49,6 @@ UnitPopupButtons = {
 	["FOLLOW"] = { text = FOLLOW, dist = 4 },
 	["PET_DISMISS"] = { text = PET_DISMISS, dist = 0 },
 	["PET_ABANDON"] = { text = PET_ABANDON, dist = 0 },
-	["PET_PAPERDOLL"] = { text = PET_PAPERDOLL, dist = 0 },
 	["PET_RENAME"] = { text = PET_RENAME, dist = 0 },
 	["PET_SHOW_IN_JOURNAL"] = { text = PET_SHOW_IN_JOURNAL, dist = 0 },
 	["LOOT_METHOD"] = { text = LOOT_METHOD, dist = 0, nested = 1},
@@ -203,7 +202,7 @@ UnitPopupButtons = {
 -- First level menus
 UnitPopupMenus = {
 	["SELF"] = { "RAID_TARGET_ICON", "SET_FOCUS", "PVP_FLAG", "LOOT_SUBSECTION_TITLE", "LOOT_METHOD", "LOOT_THRESHOLD", "OPT_OUT_LOOT_TITLE", "LOOT_PROMOTE", "SELECT_LOOT_SPECIALIZATION", "INSTANCE_SUBSECTION_TITLE", "CONVERT_TO_RAID", "CONVERT_TO_PARTY", "DUNGEON_DIFFICULTY", "RAID_DIFFICULTY", "RESET_INSTANCES", "RESET_CHALLENGE_MODE", "GARRISON_VISIT", "OTHER_SUBSECTION_TITLE", "SELECT_ROLE", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "INSTANCE_LEAVE", "LEAVE", "CANCEL" },
-	["PET"] = { "RAID_TARGET_ICON", "SET_FOCUS", "PET_PAPERDOLL", "INTERACT_SUBSECTION_TITLE", "PET_RENAME", "PET_DISMISS", "PET_ABANDON", "OTHER_SUBSECTION_TITLE", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "CANCEL" },
+	["PET"] = { "RAID_TARGET_ICON", "SET_FOCUS", "INTERACT_SUBSECTION_TITLE", "PET_RENAME", "PET_DISMISS", "PET_ABANDON", "OTHER_SUBSECTION_TITLE", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "CANCEL" },
 	["OTHERPET"] = { "RAID_TARGET_ICON", "SET_FOCUS", "OTHER_SUBSECTION_TITLE", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME",  "REPORT_PET", "CANCEL" },
 	["BATTLEPET"] = { "PET_SHOW_IN_JOURNAL", "SET_FOCUS", "OTHER_SUBSECTION_TITLE", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "CANCEL" },
 	["OTHERBATTLEPET"] = { "PET_SHOW_IN_JOURNAL", "SET_FOCUS", "OTHER_SUBSECTION_TITLE", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "REPORT_BATTLE_PET", "CANCEL" },
@@ -230,7 +229,7 @@ UnitPopupMenus = {
 	-- Second level menus
 	["ADD_FRIEND_MENU"] = { "BATTLETAG_FRIEND", "CHARACTER_FRIEND" },
 	["PVP_FLAG"] = { "PVP_ENABLE", "PVP_DISABLE"},
-	["LOOT_METHOD"] = { "FREE_FOR_ALL", "MASTER_LOOTER", "GROUP_LOOT", "PERSONAL_LOOT", "CANCEL" },
+	["LOOT_METHOD"] = { "PERSONAL_LOOT", "GROUP_LOOT", "FREE_FOR_ALL", "MASTER_LOOTER", "CANCEL" },
 	["LOOT_THRESHOLD"] = { "ITEM_QUALITY2_DESC", "ITEM_QUALITY3_DESC", "ITEM_QUALITY4_DESC", "CANCEL" },
 	["SELECT_LOOT_SPECIALIZATION"] = { "LOOT_SPECIALIZATION_DEFAULT","LOOT_SPECIALIZATION_SPEC1", "LOOT_SPECIALIZATION_SPEC2", "LOOT_SPECIALIZATION_SPEC3", "LOOT_SPECIALIZATION_SPEC4"},
 	["OPT_OUT_LOOT_TITLE"] = { "OPT_OUT_LOOT_ENABLE", "OPT_OUT_LOOT_DISABLE"},
@@ -246,10 +245,10 @@ UnitPopupMenus = {
 UnitPopupShown = { {}, {}, {}, };
 
 UnitLootMethod = {
+    ["personalloot"] = { text = LOOT_PERSONAL_LOOT, tooltipText = NEWBIE_TOOLTIP_UNIT_PERSONAL },
+    ["group"] = { text = LOOT_GROUP_LOOT, tooltipText = NEWBIE_TOOLTIP_UNIT_GROUP_LOOT },
 	["freeforall"] = { text = LOOT_FREE_FOR_ALL, tooltipText = NEWBIE_TOOLTIP_UNIT_FREE_FOR_ALL },
 	["master"] = { text = LOOT_MASTER_LOOTER, tooltipText = NEWBIE_TOOLTIP_UNIT_MASTER_LOOTER },
-	["group"] = { text = LOOT_GROUP_LOOT, tooltipText = NEWBIE_TOOLTIP_UNIT_GROUP_LOOT },
-	["personalloot"] = { text = LOOT_PERSONAL_LOOT, tooltipText = NEWBIE_TOOLTIP_UNIT_PERSONAL },
 };
 
 UnitPopupFrames = {
@@ -1109,10 +1108,6 @@ function UnitPopup_HideButtons ()
 			if( not IsReferAFriendLinked(dropdownMenu.unit) ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
-		elseif ( value == "PET_PAPERDOLL" ) then
-			if( not PetCanBeAbandoned() ) then
-				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
-			end
 		elseif ( value == "PET_RENAME" ) then
 			if( not PetCanBeAbandoned() or not PetCanBeRenamed() ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
@@ -1512,6 +1507,10 @@ function UnitPopup_OnUpdate (elapsed)
 								enable = false;
 							end
 						end
+                    elseif ( value == "MASTER_LOOTER" ) then
+						if (not InGuildParty()) then
+	                        enable = false;
+						end
 					end
 
 					local diff = (level > 1) and 0 or 1;
@@ -1692,10 +1691,6 @@ function UnitPopup_OnClick (self)
 		end
 	elseif ( button == "PET_ABANDON" ) then
 		StaticPopup_Show("ABANDON_PET");
-	elseif ( button == "PET_PAPERDOLL" ) then
-		if (not PetPaperDollFrame:IsVisible()) then
-			ToggleCharacter("PetPaperDollFrame");
-		end
 	elseif ( button == "PET_RENAME" ) then
 		StaticPopup_Show("RENAME_PET");
 	elseif ( button == "PET_SHOW_IN_JOURNAL" ) then

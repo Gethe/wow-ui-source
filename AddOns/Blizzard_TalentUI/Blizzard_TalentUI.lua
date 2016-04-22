@@ -48,9 +48,6 @@ local THREE_SPEC_LGBUTTON_HEIGHT = 95;
 local SPEC_SCROLL_HEIGHT = 282;
 local SPEC_SCROLL_PREVIEW_HEIGHT = 228;
 
-local lastTopLineHighlight = nil;
-local lastBottomLineHighlight = nil;
-
 -- speed references
 local next = next;
 local ipairs = ipairs;
@@ -118,18 +115,18 @@ SPEC_SPELLS_DISPLAY[64] = { 116,10,	30455,10,	84714,10,	112965,10,	190447,10,	31
 
 SPEC_SPELLS_DISPLAY[65] = { 19750,10,	82326,10,	20473,10,	183998,10,	53563,10,	85222,10	}; --Holy
 SPEC_SPELLS_DISPLAY[66] = { 31935,10,	53595,10,	53600,10,	184092,10,	26573,10,	31850,10	}; --Protection
-SPEC_SPELLS_DISPLAY[70] = { 35395,10,	184575,10,	20271,10,	85256,10,	53385,10,	183222,10	}; --Retribution
+SPEC_SPELLS_DISPLAY[70] = { 35395,10,	184575,10,	20271,10,	85256,10,	53385,10,	19750,10	}; --Retribution
 
 SPEC_SPELLS_DISPLAY[71] = { 12294,10,	167105,10,	1464,10,	163201,10,	1680,10,	184783,10	}; --Arms
 SPEC_SPELLS_DISPLAY[72] = { 23881,10,	184367,10,	85288,10,	100130,10,	190411,10,	184361,10	}; --Fury
 SPEC_SPELLS_DISPLAY[73] = { 23922,10,	20243,10,	2565,10,	190456,10,	6572,10,	6343,10		}; --Protection
 
 SPEC_SPELLS_DISPLAY[102] = { 190984,10,	194153,10,	78674,10,	8921,10,	93402,10,	191034,10	}; --Balance
-SPEC_SPELLS_DISPLAY[103] = { 5221,10,	1822,10,	1079,10,	22568,10,	106832,10,	106785,10	}; --Feral
+SPEC_SPELLS_DISPLAY[103] = { 5221,10,	1822,10,	1079,10,	22568,10,	106832,10,	213764,10	}; --Feral
 SPEC_SPELLS_DISPLAY[104] = { 33917,10,	213764,10,	192081,10,	22842,10,	106832,10,	22812,10	}; --Guardian
 SPEC_SPELLS_DISPLAY[105] = { 774,10,	5185,10,	8936,10,	33763,10,	48438,10,	740,10		}; --Restoration
 
-SPEC_SPELLS_DISPLAY[250] = { 45902,10,	49998,10,	195182,10,	43265,10,	50842,10,	49576,10	}; --Blood
+SPEC_SPELLS_DISPLAY[250] = { 206930,10,	49998,10,	195182,10,	43265,10,	50842,10,	49576,10	}; --Blood
 SPEC_SPELLS_DISPLAY[251] = { 49020,10,	49143,10,	49184,10,	196770,10,	51128,10,	59057,10	}; --Frost
 SPEC_SPELLS_DISPLAY[252] = { 85948,10,	55090,10,	77575,10,	47541,10,	43265,10,	46584,10	}; --Unholy
 
@@ -691,6 +688,24 @@ function PlayerTalentFrame_ToggleTutorial()
 	end
 end
 
+-- PlayerTalentFrameRows
+
+function PlayerTalentFrameRow_OnEnter(self)
+	self.TopLine:Show();
+	self.BottomLine:Show();
+	self.TopGlowLine:Hide();
+	self.BottomGlowLine:Hide();
+end
+
+function PlayerTalentFrameRow_OnLeave(self)
+	self.TopLine:Hide();
+	self.BottomLine:Hide();
+	if ( self.shouldGlow ) then
+		self.TopGlowLine:Show();
+		self.BottomGlowLine:Show();
+	end
+end
+
 -- PlayerTalentFrameTalents
 function PlayerTalentFrameTalent_OnClick(self, button)
 	if ( IsModifiedClick("CHATLINK") ) then
@@ -727,30 +742,21 @@ end
 function PlayerTalentFrameTalent_OnEvent(self, event, ...)
 	if ( GameTooltip:IsOwned(self) ) then
 		GameTooltip:SetTalent(self:GetID(),
-			PlayerTalentFrame.inspect, PlayerTalentFrame.talentGroup);
+		PlayerTalentFrame.inspect, PlayerTalentFrame.talentGroup);
 	end
 end
 
 function PlayerTalentFrameTalent_OnEnter(self)
-	
-	-- Highlight the whole row to give the idea that you can only select one talent per row.
-	if(lastTopLineHighlight ~= nil and lastTopLineHighlight ~= self:GetParent().TopLine) then
-		lastTopLineHighlight:Hide();
-	end
-	if(lastBottomLineHighlight ~= nil and lastBottomLineHighlight ~= self:GetParent().BottomLine) then
-		lastBottomLineHighlight:Hide();
-	end
-		
-	self:GetParent().TopLine:Show();
-	self:GetParent().BottomLine:Show();
-	lastTopLineHighlight = self:GetParent().TopLine;
-	lastBottomLineHighlight = self:GetParent().BottomLine;
-
-	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");	
+	PlayerTalentFrameRow_OnEnter(self:GetParent());
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip:SetTalent(self:GetID(),
 		PlayerTalentFrame.inspect, PlayerTalentFrame.talentGroup);
 end
 
+function PlayerTalentFrameTalent_OnLeave(self)
+	PlayerTalentFrameRow_OnLeave(self:GetParent());
+	GameTooltip_Hide();
+end
 
 -- Controls
 
@@ -1549,6 +1555,15 @@ function PlayerTalentFramePVPTalents_Update(self)
 	local factionGroup = UnitFactionGroup("player");
 	local prestigeLevel = UnitPrestige("player");
 	
+    if ( UnitLevel("player") < MAX_PLAYER_LEVEL_TABLE[LE_EXPANSION_LEVEL_CURRENT] ) then
+        self.XPBar:Hide();
+        self.NotAvailableYet:SetFormattedText(PVP_TALENTS_BECOME_AVAILABLE_AT_LEVEL, MAX_PLAYER_LEVEL_TABLE[GetExpansionLevel()]);
+        self.NotAvailableYet:Show();
+    else
+        self.NotAvailableYet:Hide();
+        self.XPBar:Show();
+    end
+    
 	local numTalentSelections = 0;
 	for tier = 1, MAX_PVP_TALENT_TIERS do
 		local talentRow = self.Talents["Tier"..tier];
@@ -1558,9 +1573,11 @@ function PlayerTalentFramePVPTalents_Update(self)
 			self.talentInfo[tier] = nil;
 		end
 		
+		local rowShouldGlow = false;
 		for column = 1, MAX_PVP_TALENT_COLUMNS do
 			local button = talentRow["Talent"..column];
 			local id, name, icon, selected, available, _, unlocked = GetPvpTalentInfo(tier, column, PlayerTalentFrame.talentGroup);
+			rowShouldGlow = rowShouldGlow or (available and not selected);
 			button.Name:SetText(name);
 			button.Icon:SetTexture(icon);
 			button.pvpTalentID = id;
@@ -1574,6 +1591,16 @@ function PlayerTalentFramePVPTalents_Update(self)
 	
 				button.knownSelection:SetShown(self.talentInfo[tier] == id or (selected and not self.talentInfo[tier]));
 			end
+		end
+		if ( rowShouldGlow ) then
+			talentRow.shouldGlow = true;
+			talentRow.TopGlowLine:Show();
+			talentRow.BottomGlowLine:Show();
+			talentRow.GlowAnim:Play();
+		else
+			talentRow.shouldGlow = false;
+			talentRow.TopGlowLine:Hide();
+			talentRow.BottomGlowLine:Hide();
 		end
 	end
 end
@@ -1592,23 +1619,15 @@ function PlayerTalentFramePVPTalents_UnlockButton(button, isActiveTalentGroup)
 end
 
 function PlayerTalentFramePVPTalentsTalent_OnEnter(self)
-	local frame = PlayerTalentFramePVPTalents;
-
-	-- Highlight the whole row to give the idea that you can only select one talent per row.
-	if (frame.lastTopLineHighlight ~= nil and frame.lastTopLineHighlight ~= self:GetParent().TopLine) then
-		frame.lastTopLineHighlight:Hide();
-	end
-	if (frame.lastBottomLineHighlight ~= nil and frame.lastBottomLineHighlight ~= self:GetParent().BottomLine) then
-		frame.lastBottomLineHighlight:Hide();
-	end
-		
-	self:GetParent().TopLine:Show();
-	self:GetParent().BottomLine:Show();
-	frame.lastTopLineHighlight = self:GetParent().TopLine;
-	frame.lastBottomLineHighlight = self:GetParent().BottomLine;
+	PlayerTalentFrameRow_OnEnter(self:GetParent());
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip:SetPvpTalent(self.pvpTalentID, PlayerTalentFrame.inspect, GetActiveSpecGroup());
 	GameTooltip:Show();
+end
+
+function PlayerTalentFramePVPTalentsTalent_OnLeave(self)
+	PlayerTalentFrameRow_OnLeave(self:GetParent());
+	GameTooltip:Hide();
 end
 
 function PlayerTalentFramePVPTalentsTalent_OnClick(self, button)

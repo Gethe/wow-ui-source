@@ -287,7 +287,7 @@
 		</Scripts>
 	</Button>
 	
-	<Frame name="ReputationFrame" setAllPoints="true" enableMouse="true" parent="CharacterFrame" useParentLevel="true" hidden="true" id="3">
+	<Frame name="ReputationFrame" setAllPoints="true" enableMouse="true" parent="CharacterFrame" useParentLevel="true" hidden="true" id="2">
 		<HitRectInsets>
 			<AbsInset left="0" right="30" top="0" bottom="75"/>
 		</HitRectInsets>

@@ -88,23 +88,24 @@ function OrderHallCommandBarMixin:RefreshCategories()
 	local numCategories = #categoryInfo;
 	local prevCategory, firstCategory;
 	local xSpacing = 20;	-- space between categories
-	for index, category in pairs(categoryInfo) do
-		local categoryInfo = self.categoryPool:Acquire();
-		categoryInfo.Icon:SetTexture(category.icon);
-		categoryInfo.Icon:SetTexCoord(0, 1, 0.25, 0.75);
-		categoryInfo.name = category.name;
+	for index, category in ipairs(categoryInfo) do
+		local categoryInfoFrame = self.categoryPool:Acquire();
+		categoryInfoFrame.Icon:SetTexture(category.icon);
+		categoryInfoFrame.Icon:SetTexCoord(0, 1, 0.25, 0.75);
+		categoryInfoFrame.name = category.name;
+		categoryInfoFrame.description = category.description;
 
-		categoryInfo.Count:SetText(string.format("%d/%d", category.count, category.limit));
-		categoryInfo:ClearAllPoints();
+		categoryInfoFrame.Count:SetFormattedText(ORDER_HALL_COMMANDBAR_CATEGORY_COUNT, category.count, category.limit);
+		categoryInfoFrame:ClearAllPoints();
 		if (not firstCategory) then
 			-- calculate positioning so that the set of categories ends up being centered
-			categoryInfo:SetPoint("LEFT", self, "LEFT", (self:GetWidth() - (numCategories * categoryInfo:GetWidth()))/2 - (numCategories - 1)*xSpacing, 0);
-			firstCategory = categoryInfo;
+			categoryInfoFrame:SetPoint("LEFT", self, "LEFT", (self:GetWidth() - (numCategories * categoryInfoFrame:GetWidth()))/2 - (numCategories - 1)*xSpacing, 0);
+			firstCategory = categoryInfoFrame;
 		else
-			categoryInfo:SetPoint("LEFT", prevCategory, "RIGHT", xSpacing, 0);
+			categoryInfoFrame:SetPoint("LEFT", prevCategory, "RIGHT", xSpacing, 0);
 		end
-		categoryInfo:Show();
-		prevCategory = categoryInfo;
+		categoryInfoFrame:Show();
+		prevCategory = categoryInfoFrame;
 	end
 
 end
@@ -129,6 +130,9 @@ function OrderHallClassSpecCategory:OnEnter()
 		GameTooltip:ClearAllPoints();
 		GameTooltip:SetPoint("TOPLEFT", self.Count, "BOTTOMRIGHT", -20, -20);
 		GameTooltip:AddLine(self.name);
+		if (self.description) then
+			GameTooltip:AddLine(self.description, 1, 1, 1, true);
+		end
 		GameTooltip:Show();
 	end
 end

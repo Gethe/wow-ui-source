@@ -359,15 +359,14 @@ end
 
 function HonorLevelUpBanner_OnLoad(self)
 	self:RegisterEvent("HONOR_LEVEL_UPDATE");
-	self.currentLevel = UnitHonorLevel("player");
 end
 
 function HonorLevelUpBanner_OnEvent(self, event, ...)
 	if (event == "HONOR_LEVEL_UPDATE") then
-		local level = UnitHonorLevel("player");
-		-- Talk to Pat McKellar about race condition
-		if (level > self.currentLevel) then
-			self.Title:SetText(HONOR_LEVEL_LABEL:format(level));
+        local showBanner = ...;
+        if (showBanner) then
+		    local level = UnitHonorLevel("player");
+            self.Title:SetText(HONOR_LEVEL_LABEL:format(level));
 			self.TitleFlash:SetText(HONOR_LEVEL_LABEL:format(level));
 			self:Show();
 			self.Anim:Play();

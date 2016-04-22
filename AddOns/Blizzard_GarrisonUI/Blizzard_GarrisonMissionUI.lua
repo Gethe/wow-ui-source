@@ -330,7 +330,12 @@ function GarrisonFollowerMission:AssignFollowerToMission(frame, info)
 		return;
 	end
 
-	PlaySound("UI_Garrison_CommandTable_AssignFollower");
+	if info.slotSoundKitID then
+		PlaySoundKitID(info.slotSoundKitID);
+	else
+		PlaySound("UI_Garrison_CommandTable_AssignFollower");
+	end
+
 	frame.Name:Show();
 	frame.Name:SetText(info.name);
 	if (frame.Class) then
@@ -397,7 +402,9 @@ function GarrisonFollowerMission:CheckCompleteMissions(onShow)
 	end
 
 	-- preload all follower and enemy models
-	MissionCompletePreload_LoadMission(self, self.MissionComplete.completeMissions[1].missionID, GarrisonFollowerOptions[self.followerTypeID].showSingleMissionCompleteAnimation);
+	MissionCompletePreload_LoadMission(self, self.MissionComplete.completeMissions[1].missionID, 
+		GarrisonFollowerOptions[self.followerTypeID].showSingleMissionCompleteFollower,
+		GarrisonFollowerOptions[self.followerTypeID].showSingleMissionCompleteAnimation);
 
 	-- go to the right tab if window is being open
 	if ( onShow ) then
@@ -769,8 +776,6 @@ end
 function GarrisonMissionListMixin:OnUpdate()
 	if (self.showInProgress) then
 		C_Garrison.GetInProgressMissions(self.inProgressMissions, self:GetMissionFrame().followerTypeID);
-		self:SeparateCombatAllyMission();
-		self:UpdateCombatAllyMission();
 		self.Tab2:SetText(WINTERGRASP_IN_PROGRESS.." - "..#self.inProgressMissions)
 		self:Update();
 	else
@@ -782,6 +787,7 @@ function GarrisonMissionListMixin:OnUpdate()
 			end
 		end
 	end
+	self:UpdateCombatAllyMission();
 end
 
 function GarrisonMissionListTab_OnClick(self, button)
@@ -809,32 +815,14 @@ function GarrisonMissonListTab_SetSelected(tab, isSelected)
 	tab.SelectedMid:SetShown(isSelected);
 end
 
-function GarrisonMissionListMixin:SeparateCombatAllyMission()
-	self.combatAllyMission = nil;
-	for i = #self.availableMissions, 1, -1 do
-		if (self.availableMissions[i].isZoneSupport) then
-			self.combatAllyMission = self.availableMissions[i];
-			table.remove(self.availableMissions, i);
-		end
-	end
-
-	for i = #self.inProgressMissions, 1, -1 do
-		if (self.inProgressMissions[i].isZoneSupport) then
-			self.combatAllyMission = self.inProgressMissions[i];
-			table.remove(self.inProgressMissions, i);
-		end
-	end
-
-end
-
 -- overridden by subclasses
 function GarrisonMissionListMixin:UpdateCombatAllyMission()
+	self.combatAllyMission = C_Garrison.GetCombatAllyMission(self:GetMissionFrame().followerTypeID);
 end
 
 function GarrisonMissionListMixin:UpdateMissions()
 	C_Garrison.GetInProgressMissions(self.inProgressMissions, self:GetMissionFrame().followerTypeID);
 	C_Garrison.GetAvailableMissions(self.availableMissions, self:GetMissionFrame().followerTypeID);
-	self:SeparateCombatAllyMission();
 	self:UpdateCombatAllyMission();
 	Garrison_SortMissions(self.availableMissions);
 	self.Tab1:SetText(AVAILABLE.." - "..#self.availableMissions)
@@ -1232,9 +1220,11 @@ function GarrisonFollowerMissionPageMixin:UpdateFollowerModel(info)
 		local model = self.FollowerModel;
 		model:Show();
 		model:SetTargetDistance(0);
-		GarrisonMission_SetFollowerModel(model, info.followerID, info.displayID);
+		-- TODO: Support a ModelCluster here; this follower could have multiple models (like Rexxar)
+		local displayInfo = info.displayIDs and info.displayIDs[1];
+		GarrisonMission_SetFollowerModel(model, info.followerID, displayInfo and displayInfo.id);
 		model:SetHeightFactor(info.height or 1);
-		model:InitializeCamera(info.scale or 1);
+		model:InitializeCamera((info.scale or 1) * (displayInfo and displayInfo.followerPageScale or 1));
 		model:SetFacing(-.2);
 		self.EmptyFollowerModel:Hide();
 	end
@@ -1473,25 +1463,16 @@ function GarrisonFollowerMissionComplete:AnimFollowersIn(entry)
 	self:SetNumFollowers(numFollowers);
 	self:SetupEnding(numFollowers);
 	local stage = self.Stage;
-	if (stage.ModelLeft:IsShown()) then
-		if ( self.skipAnimations ) then
-			stage.ModelLeft:SetAlpha(1);
-		else
-			stage.ModelLeft.FadeIn:Play();		-- no OnFinished
-		end
-	end
-	if (stage.ModelRight:IsShown()) then
-		if ( self.skipAnimations ) then
-			stage.ModelRight:SetAlpha(1);
-		else	
-			stage.ModelRight.FadeIn:Play();		-- no OnFinished
-		end
-	end
-	if (stage.ModelMiddle:IsShown()) then
-		if ( self.skipAnimations ) then
-			stage.ModelMiddle:SetAlpha(1);
-		else	
-			stage.ModelMiddle.FadeIn:Play();	-- no OnFinished
+
+	for _, cluster in ipairs(stage.ModelCluster) do
+		if (cluster:IsShown()) then
+			for _, model in ipairs(cluster.Model) do
+				if ( self.skipAnimations ) then
+					model:SetAlpha(1);
+				else
+					model.FadeIn:Play();		-- no OnFinished
+				end
+			end
 		end
 	end
 	for i = 1, numFollowers do
@@ -1508,7 +1489,9 @@ function GarrisonFollowerMissionComplete:AnimFollowersIn(entry)
 	-- preload next set
 	local nextIndex = self.currentIndex + 1;
 	if ( self.completeMissions[nextIndex] ) then
-		MissionCompletePreload_LoadMission(self:GetParent(), self.completeMissions[nextIndex].missionID, GarrisonFollowerOptions[self.followerTypeID].showSingleMissionCompleteAnimation);
+		MissionCompletePreload_LoadMission(self:GetParent(), self.completeMissions[nextIndex].missionID, 
+		GarrisonFollowerOptions[self.followerTypeID].showSingleMissionCompleteFollower,
+		GarrisonFollowerOptions[self.followerTypeID].showSingleMissionCompleteAnimation);
 	end
 	
 	if ( entry ) then

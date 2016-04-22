@@ -358,172 +358,16 @@
 					<OnLoad>
 						self.type = CONTROLTYPE_CHECKBOX;
 						self.cvar = "lossOfControl";
-						self:RegisterEvent("VARIABLES_LOADED");
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 					<OnEvent function="InterfaceOptionsLossOfControl_OnEvent"/>
 				</Scripts>
 			</CheckButton>
-			<Frame name="$parentLossOfControlFullDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
+            <Slider name="$parentSpellAlertOpacitySlider" inherits="OptionsSliderTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentLossOfControl" relativePoint="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="100" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<FontString name="$parentLabel" inherits="GameFontNormalSmall" text="LOC_TYPE_FULL">
-							<Anchors>
-								<Anchor point="RIGHT" relativePoint="LEFT" x="6" y="3"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnLoad>
-						self.type = CONTROLTYPE_DROPDOWN;
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-					</OnLoad>
-					<OnEnter>
-						if ( not self.isDisabled ) then
-							GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
-							GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
-						end
-					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
-				</Scripts>
-			</Frame>
-			<Frame name="$parentLossOfControlSilenceDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentLossOfControlFullDropDown" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="0" y="-6"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<FontString name="$parentLabel" inherits="GameFontNormalSmall" text="LOC_TYPE_SILENCE">
-							<Anchors>
-								<Anchor point="RIGHT" relativePoint="LEFT" x="6" y="3"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnLoad>
-						self.type = CONTROLTYPE_DROPDOWN;
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-					</OnLoad>
-					<OnEnter>
-						if ( not self.isDisabled ) then
-							GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
-							GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
-						end
-					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
-				</Scripts>
-			</Frame>
-			<Frame name="$parentLossOfControlInterruptDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentLossOfControlSilenceDropDown" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="0" y="-6"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<FontString name="$parentLabel" inherits="GameFontNormalSmall" text="LOC_TYPE_INTERRUPT">
-							<Anchors>
-								<Anchor point="RIGHT" relativePoint="LEFT" x="6" y="3"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnLoad>
-						self.type = CONTROLTYPE_DROPDOWN;
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-					</OnLoad>
-					<OnEnter>
-						if ( not self.isDisabled ) then
-							GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
-							GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
-						end
-					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
-				</Scripts>
-			</Frame>
-			<Frame name="$parentLossOfControlDisarmDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentLossOfControlInterruptDropDown" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="0" y="-6"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<FontString name="$parentLabel" inherits="GameFontNormalSmall" text="LOC_TYPE_DISARM">
-							<Anchors>
-								<Anchor point="RIGHT" relativePoint="LEFT" x="6" y="3"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnLoad>
-						self.type = CONTROLTYPE_DROPDOWN;
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-					</OnLoad>
-					<OnEnter>
-						if ( not self.isDisabled ) then
-							GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
-							GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
-						end
-					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
-				</Scripts>
-			</Frame>
-			<Frame name="$parentLossOfControlRootDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentLossOfControlDisarmDropDown" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="0" y="-6"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<FontString name="$parentLabel" inherits="GameFontNormalSmall" text="LOC_TYPE_ROOT">
-							<Anchors>
-								<Anchor point="RIGHT" relativePoint="LEFT" x="6" y="3"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnLoad>
-						self.type = CONTROLTYPE_DROPDOWN;
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-					</OnLoad>
-					<OnEnter>
-						if ( not self.isDisabled ) then
-							GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
-							GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
-						end
-					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
-				</Scripts>
-			</Frame>
-            <Slider name="$parentSpellAlertOpacitySlider" inherits="OptionsSliderTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentLossOfControlRootDropDown" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="-76" y="-32"/>
+							<AbsDimension x="24" y="-32"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -670,25 +514,9 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
-            <CheckButton name="$parentChatBubbles" inherits="InterfaceOptionsCheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentAJAlerts" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="0" y="-8"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self.type = CONTROLTYPE_CHECKBOX;
-						self.cvar = "chatBubbles";
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-					</OnLoad>
-				</Scripts>
-			</CheckButton>
             <CheckButton name="$parentShowTutorials" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentChatBubbles" relativePoint="BOTTOMLEFT">
+					<Anchor point="TOPLEFT" relativeTo="$parentAJAlerts" relativePoint="BOTTOMLEFT">
 						<Offset>
 							<AbsDimension x="0" y="-8"/>
 						</Offset>
@@ -700,6 +528,22 @@
 						self.cvar = "showTutorials";
 						self.defaultValue = "1";
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+            <CheckButton name="$parentEnableFloatingCombatText" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentShowTutorials" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "enableFloatingCombatText";
+                        BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
@@ -792,6 +636,31 @@
 					</OnEnter>
 					<OnEvent function="InterfaceOptionsStatusTextDisplayDropDown_OnEvent"/>
 					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Frame>
+            <Frame name="$parentChatBubblesDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentDisplayDropDown" relativePoint="BOTTOMLEFT" x="0" y="-24"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="GameFontNormal" text="CHAT_BUBBLES_TEXT">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="16" y="3"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_DROPDOWN;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+					<OnShow function="InterfaceOptionsDisplayPanelChatBubblesDropDown_OnShow"/>
 				</Scripts>
 			</Frame>
 		</Frames>
@@ -1666,10 +1535,10 @@
 							<KeyValue key="label" value="MakeLarger" type="string"/>
 
 							<KeyValue key="normalHorizontalScale" value="1.0" type="number"/>
-							<KeyValue key="largeHorizontalScale" value="1.1" type="number"/>
+							<KeyValue key="largeHorizontalScale" value="1.4" type="number"/>
 
 							<KeyValue key="normalVerticalScale" value="1.0" type="number"/>
-							<KeyValue key="largeVerticalScale" value="2.1" type="number"/>
+							<KeyValue key="largeVerticalScale" value="2.7" type="number"/>
 						</KeyValues>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentPersonalResourceOnEnemy" relativePoint="BOTTOMLEFT" x="-10" y="-12"/>

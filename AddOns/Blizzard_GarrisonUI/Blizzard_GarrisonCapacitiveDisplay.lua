@@ -50,8 +50,6 @@ function GarrisonCapacitiveDisplayFrame_Update(self, success, maxShipments, plot
 		
 	    local reagents = display.Reagents;
 
-	    local hasReagents = true;
-
 	    for i = 1, #reagents do
 	    	reagents[i]:Hide();
 	    end
@@ -78,7 +76,6 @@ function GarrisonCapacitiveDisplayFrame_Update(self, success, maxShipments, plot
 			if ( quantity < needed ) then
 				reagent.Icon:SetVertexColor(0.5, 0.5, 0.5);
 				reagent.Name:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
-				hasReagents = false;
 				self.available = 0;
 			else
 				reagent.Icon:SetVertexColor(1.0, 1.0, 1.0);
@@ -124,7 +121,6 @@ function GarrisonCapacitiveDisplayFrame_Update(self, success, maxShipments, plot
 					if ( quantity < currencyNeeded ) then
 						reagent.Icon:SetVertexColor(0.5, 0.5, 0.5);
 						reagent.Name:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
-						hasReagents = false;
 						self.available = 0;
 					else
 						reagent.Icon:SetVertexColor(1.0, 1.0, 1.0);
@@ -147,6 +143,24 @@ function GarrisonCapacitiveDisplayFrame_Update(self, success, maxShipments, plot
 		end
 
 	    local name, texture, quality, itemID, followerID, duration = C_Garrison.GetShipmentItemInfo();
+		if ( followerID ) then
+			local followerInfo = C_Garrison.GetFollowerInfo(followerID);
+			local followerCount, followerLimit;
+			if ( followerInfo ) then
+				local categoryInfo = C_Garrison.GetClassSpecCategoryInfo(followerInfo.followerTypeID);
+				for index, category in pairs(categoryInfo) do
+					if ( category.classSpec == followerInfo.classSpec ) then
+						followerCount = category.count;
+						followerLimit = category.limit;
+						break;
+					end
+				end
+			end
+			if ( followerCount and followerLimit ) then
+				local maxFollowerAvailable = followerLimit - followerCount - numPending;
+				self.available = min(self.available, maxFollowerAvailable);
+			end
+		end
 
 		if (not quality) then
 			quality = LE_ITEM_QUALITY_COMMON;
@@ -161,7 +175,7 @@ function GarrisonCapacitiveDisplayFrame_Update(self, success, maxShipments, plot
 		local _, buildingName = C_Garrison.GetOwnedBuildingInfoAbbrev(self.plotID);
 
 		self.TitleText:SetText(buildingName);
-		self.StartWorkOrderButton:SetEnabled(hasReagents and available > 0);
+		self.StartWorkOrderButton:SetEnabled(self.available > 0);
 		
 		if ( UnitExists("npc") ) then
 			SetPortraitTexture(self.portrait, "npc");
@@ -190,6 +204,8 @@ function GarrisonCapacitiveDisplayFrame_Update(self, success, maxShipments, plot
 			display.ShipmentIconFrame.Icon:Show();
 		end
 
+		-- check the original available here. we dont' want to say 0 if you don't have the reagents.
+		-- should we say 0 if you can't make any due to follower limits?
 		if (available > 0) then
 			if (shipmentUpdater) then
 				shipmentUpdater:Cancel();

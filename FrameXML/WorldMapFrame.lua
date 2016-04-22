@@ -384,6 +384,9 @@ function WorldMapFrame_OnHide(self)
 	self.bonusObjectiveUpdateTimeLeft = nil;
 
 	WorldMapOverlayHighlights = {};
+
+	self.UIElementsFrame.ActionButton:SetMapAreaID(nil);
+	self.UIElementsFrame.ActionButton:SetHasWorldQuests(false);
 end
 
 function WorldMapFrame_OnEvent(self, event, ...)
@@ -1679,14 +1682,12 @@ function WorldMap_AddQuestTimeToTooltip(questID)
 			-- Grace period, show the actual time left
 			color = RED_FONT_COLOR;
 			timeString = SecondsToTime(timeLeftMinutes * 60);
-		elseif timeLeftMinutes < 2 * 60 then
+		elseif timeLeftMinutes <= 60 + WORLD_QUESTS_TIME_CRITICAL_MINUTES then
 			timeString = SecondsToTime((timeLeftMinutes - WORLD_QUESTS_TIME_CRITICAL_MINUTES) * 60);
-		elseif timeLeftMinutes < 12 * 60 then
-			timeString = TIME_LEFT_MEDIUM;
-		elseif timeLeftMinutes < 24 * 60 then
-			timeString = TIME_LEFT_LONG;
+		elseif timeLeftMinutes < 24 * 60 + WORLD_QUESTS_TIME_CRITICAL_MINUTES then
+			timeString = D_HOURS:format(math.floor(timeLeftMinutes - WORLD_QUESTS_TIME_CRITICAL_MINUTES) / 60);
 		else
-			timeString = TIME_LEFT_VERY_LONG;
+			timeString = D_DAYS:format(math.floor(timeLeftMinutes - WORLD_QUESTS_TIME_CRITICAL_MINUTES) / 1440);
 		end
 
 		WorldMapTooltip:AddLine(BONUS_OBJECTIVE_TIME_LEFT:format(timeString), color.r, color.g, color.b);

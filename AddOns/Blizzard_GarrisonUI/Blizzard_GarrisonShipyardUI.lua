@@ -443,7 +443,9 @@ function GarrisonShipyardMission:CheckCompleteMissions(onShow)
 	end
 	
 	-- preload one follower and one enemy model for the mission
-	MissionCompletePreload_LoadMission(self, self.MissionComplete.completeMissions[1].missionID, GarrisonFollowerOptions[self.followerTypeID].showSingleMissionCompleteAnimation);
+	MissionCompletePreload_LoadMission(self, self.MissionComplete.completeMissions[1].missionID, 
+		GarrisonFollowerOptions[self.followerTypeID].showSingleMissionCompleteFollower,
+		GarrisonFollowerOptions[self.followerTypeID].showSingleMissionCompleteAnimation);
 end
 
 function GarrisonShipyardMission:MissionCompleteInitialize(missionList, index)
@@ -625,7 +627,9 @@ function GarrisonShipyardMissionComplete:AnimFollowersIn(entry)
 	local nextIndex = self.currentIndex + 1;
 	local missionList = self.completeMissions;
 	if ( missionList[nextIndex] ) then
-		MissionCompletePreload_LoadMission(self:GetParent(), missionList[nextIndex].missionID, GarrisonFollowerOptions[self.followerTypeID].showSingleMissionCompleteAnimation);
+		MissionCompletePreload_LoadMission(self:GetParent(), missionList[nextIndex].missionID, 
+			GarrisonFollowerOptions[self.followerTypeID].showSingleMissionCompleteFollower,
+			GarrisonFollowerOptions[self.followerTypeID].showSingleMissionCompleteAnimation);
 	end
 	
 	if ( entry ) then
@@ -1790,13 +1794,10 @@ function GarrisonShipyardFollowerList:ShowFollower(followerID, hideCounters)
 	self.followerID = followerID;
 	self.Portrait:Show();
 	self.Model:SetAlpha(0);
-	GarrisonMission_SetFollowerModel(self.Model, followerInfo.followerID, followerInfo.displayID);
-	if (followerInfo.displayHeight) then
-		self.Model:SetHeightFactor(followerInfo.displayHeight);
-	end
-	if (followerInfo.displayScale) then
-		self.Model:InitializeCamera(followerInfo.displayScale);
-	end
+	local displayInfo = followerInfo.displayIDs and followerInfo.displayIDs[1];
+	GarrisonMission_SetFollowerModel(self.Model, followerInfo.followerID, displayInfo and displayInfo.id);
+	self.Model:SetHeightFactor(followerInfo.displayHeight or 0.5);
+	self.Model:InitializeCamera((followerInfo.displayScale or 1) * (displayInfo.followerPageScale or 1));
 
 	local atlas = followerInfo.texPrefix .. "-List";
 	self.Portrait:SetAtlas(atlas, false);

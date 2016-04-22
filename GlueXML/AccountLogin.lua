@@ -74,6 +74,7 @@ end
 
 function AccountLogin_Update()
 	local showButtonsAndStuff = true;
+    local shouldCheckSystemReqs = true;
 	if ( SHOW_KOREAN_RATINGS ) then
 		KoreanRatings:Show();
 		showButtonsAndStuff = false;
@@ -84,15 +85,24 @@ function AccountLogin_Update()
 	if ( C_Login.IsLauncherLogin() ) then
 		ServerAlert_Disable(ServerAlertFrame);
 		showButtonsAndStuff = false;
+        shouldCheckSystemReqs = false;
 	else
 		ServerAlert_Enable(ServerAlertFrame);
 	end
+
+	--Cached login
+	CachedLoginFrameContainer_Update(AccountLogin.UI.CachedLoginFrameContainer);
+
 	for _, region in pairs(AccountLogin.UI.NormalLoginRegions) do
 		region:SetShown(showButtonsAndStuff);
 	end
 	if ( AccountLogin.UI.AccountsDropDown.active ) then
 		AccountLogin.UI.AccountsDropDown:SetShown(showButtonsAndStuff);
 	end
+    if ( shouldCheckSystemReqs and not HasCheckedSystemRequirements() ) then
+    	CheckSystemRequirements();
+        SetCheckedSystemRequirements(true);
+    end
 end
 
 function AccountLogin_UpdateSavedData(self)
@@ -117,21 +127,60 @@ function AccountLogin_UpdateSavedData(self)
 	AccountLoginDropDown_SetupList();
 end
 
-function AccountLogin_CachedLogin()
+function CachedLoginFrameContainer_Update(self)
+	local cachedLogins = C_Login.GetCachedCredentials();
+	if ( cachedLogins ) then
+		if ( not self.Frames ) then
+			self.Frames = {};
+		end
+		local frames = self.Frames;
+		for i=1, #cachedLogins do
+			local frame = frames[i];
+			if ( not frame ) then
+				frame = CreateFrame("FRAME", nil, self, "CachedLoginFrameTemplate");
+				if ( i == 1 ) then
+					frame:SetPoint("TOPRIGHT", self, "TOPRIGHT", -5, -5);
+				else
+					frame:SetPoint("TOP", frames[i-1], "BOTTOM", 0, 5);
+				end
+			end
+
+			frame.account = cachedLogins[i];
+			frame.LoginButton:SetText(frame.account);
+			frame:Show();
+		end
+
+		for i=#cachedLogins + 1, #frames do
+			frames[i]:Hide();
+		end
+	elseif ( self.Frames ) then
+		for i=1, #self.Frames do
+			self.Frames[i]:Hide();
+		end
+	end
+end
+
+function CachedLoginButton_OnClick(self)
 	PlaySound("gsLogin");
 
-	local username = AccountLogin.UI.AccountEditBox:GetText();
-	C_Login.CachedLogin(string.gsub(username, "||", "|"));
+	local account = self:GetParent().account;
+	C_Login.CachedLogin(account);
 	if ( AccountLoginDropDown:IsShown() ) then
 		C_Login.SelectGameAccount(GlueDropDownMenu_GetSelectedValue(AccountLoginDropDown));
 	end
 
 	AccountLogin.UI.PasswordEditBox:SetText("");
 	if ( AccountLogin.UI.SaveAccountNameCheckButton:GetChecked() ) then
-		SetSavedAccountName(AccountLogin.UI.AccountEditBox:GetText());
+		SetSavedAccountName(account);
 	else
 		SetUsesToken(false);
 	end
+end
+
+function CachedLoginDeleteButton_OnClick(self)
+	local account = self:GetParent().account;
+	C_Login.DeleteCachedCredentials(account);
+	CachedLoginFrameContainer_Update(AccountLogin.UI.CachedLoginFrameContainer);
 end
 
 function AccountLogin_Login()

@@ -11,8 +11,8 @@ function NamePlateDriverMixin:OnLoad()
 	self:RegisterEvent("CVAR_UPDATE");
 	self:RegisterEvent("RAID_TARGET_UPDATE");
 	self:RegisterEvent("UNIT_FACTION");
-	
-	self:ApplySizes();
+
+	self:SetBaseNamePlateSize(110, 45);
 end
 
 function NamePlateDriverMixin:OnEvent(event, ...)
@@ -28,7 +28,7 @@ function NamePlateDriverMixin:OnEvent(event, ...)
 	elseif event == "PLAYER_TARGET_CHANGED" then
 		self:OnTargetChanged();
 	elseif event == "DISPLAY_SIZE_CHANGED" then
-		self:ApplySizes();
+		self:UpdateNamePlateOptions();
 	elseif event == "UNIT_AURA" then
 		self:OnUnitAuraUpdate(...);
 	elseif event == "VARIABLES_LOADED" then
@@ -43,13 +43,6 @@ function NamePlateDriverMixin:OnEvent(event, ...)
 	elseif ( event == "UNIT_FACTION" ) then
 		self:OnUnitFactionChanged(...);
 	end
-end
-
-function NamePlateDriverMixin:ApplySizes()
-	local horizontalScale = tonumber(GetCVar("NamePlateHorizontalScale"));
-	C_NamePlate.SetNamePlateSizes(110 * horizontalScale, 45);
-
-	self:UpdateNamePlateOptions();
 end
 
 function NamePlateDriverMixin:OnNamePlateCreated(namePlateFrameBase)
@@ -77,9 +70,9 @@ function NamePlateDriverMixin:ApplyFrameOptions(namePlateFrameBase, namePlateUni
 	if UnitIsUnit("player", namePlateUnitToken) then
 		CompactUnitFrame_SetUpFrame(namePlateFrameBase.UnitFrame, DefaultCompactNamePlatePlayerFrameSetup);
 	elseif UnitIsFriend("player", namePlateUnitToken) then
-		CompactUnitFrame_SetUpFrame(namePlateFrameBase.UnitFrame, DefaultCompactNamePlateTargetFriendlyFrameSetup);
+		CompactUnitFrame_SetUpFrame(namePlateFrameBase.UnitFrame, DefaultCompactNamePlateFriendlyFrameSetup);
 	else
-		CompactUnitFrame_SetUpFrame(namePlateFrameBase.UnitFrame, DefaultCompactNamePlateTargetEnemyFrameSetup);
+		CompactUnitFrame_SetUpFrame(namePlateFrameBase.UnitFrame, DefaultCompactNamePlateEnemyFrameSetup);
 	end
 
 	namePlateFrameBase:OnOptionsUpdated();
@@ -215,11 +208,40 @@ function NamePlateDriverMixin:SetClassNameplateManaBar(frame)
 	self:SetupClassNameplateBars();
 end
 
+function NamePlateDriverMixin:SetBaseNamePlateSize(width, height)
+	if self.baseNamePlateWidth ~= width or self.baseNamePlateHeight ~= height then
+		self.baseNamePlateWidth = width;
+		self.baseNamePlateHeight = height;
+
+		self:UpdateNamePlateOptions();
+	end
+end
+
 function NamePlateDriverMixin:UpdateNamePlateOptions()
-	DefaultCompactNamePlateTargetEnemyFrameOptions.useClassColors = GetCVarBool("ShowClassColorInNameplate");
-	DefaultCompactNamePlateTargetEnemyFrameOptions.playLoseAggroHighlight = GetCVarBool("ShowNamePlateLoseAggroFlash");
-	DefaultCompactNamePlateTargetFrameSetUpOptions.healthBarHeight = 4 * tonumber(GetCVar("NamePlateVerticalScale"));
-	
+	DefaultCompactNamePlateEnemyFrameOptions.useClassColors = GetCVarBool("ShowClassColorInNameplate");
+	DefaultCompactNamePlateEnemyFrameOptions.playLoseAggroHighlight = GetCVarBool("ShowNamePlateLoseAggroFlash");
+
+	local namePlateVerticalScale = tonumber(GetCVar("NamePlateVerticalScale"));
+	DefaultCompactNamePlateFrameSetUpOptions.healthBarHeight = 4 * namePlateVerticalScale;
+
+	local zeroBasedScale = namePlateVerticalScale - 1.0;
+	local clampedZeroBasedScale = Saturate(zeroBasedScale);
+	DefaultCompactNamePlateFrameSetUpOptions.nameFontHeight = Lerp(10, 14, clampedZeroBasedScale);
+
+	DefaultCompactNamePlateFrameSetUpOptions.castBarHeight = math.min(Lerp(12, 16, zeroBasedScale), DefaultCompactNamePlateFrameSetUpOptions.healthBarHeight * 2);
+	DefaultCompactNamePlateFrameSetUpOptions.castBarFontHeight = Lerp(8, 12, clampedZeroBasedScale);
+
+	DefaultCompactNamePlateFrameSetUpOptions.castBarShieldWidth = Lerp(10, 15, clampedZeroBasedScale);
+	DefaultCompactNamePlateFrameSetUpOptions.castBarShieldHeight = Lerp(12, 18, clampedZeroBasedScale);
+
+	DefaultCompactNamePlateFrameSetUpOptions.castIconWidth = Lerp(10, 15, clampedZeroBasedScale);
+	DefaultCompactNamePlateFrameSetUpOptions.castIconHeight = Lerp(10, 15, clampedZeroBasedScale);
+
+	local horizontalScale = tonumber(GetCVar("NamePlateHorizontalScale"));
+	C_NamePlate.SetNamePlateOtherSize(self.baseNamePlateWidth * horizontalScale, self.baseNamePlateHeight);
+
+	C_NamePlate.SetNamePlateSelfSize(self.baseNamePlateWidth, self.baseNamePlateHeight);
+
 	for i, frame in ipairs(C_NamePlate.GetNamePlates()) do
 		self:ApplyFrameOptions(frame, frame.namePlateUnitToken);
 		CompactUnitFrame_UpdateAll(frame.UnitFrame);
@@ -343,4 +365,13 @@ function NameplateBuffContainerMixin:UpdateBuffs(unit, filter)
 		end
 	end
 	self:Layout();
+end
+
+NamePlateBorderTemplateMixin = {};
+
+function NamePlateBorderTemplateMixin:SetVertexColor(r, g, b, a)
+	a = a / self.numLayers;
+	for i, texture in ipairs(self.Textures) do
+		texture:SetVertexColor(r, g, b, a);
+	end
 end

@@ -163,16 +163,16 @@
 			<xs:element ref="AbsDimension"/>
 			<xs:element ref="RelDimension"/>
 		</xs:choice>
-		<xs:attribute name="x" type="xs:int" use="optional"/>
-		<xs:attribute name="y" type="xs:int" use="optional"/>
+		<xs:attribute name="x" type="xs:float" use="optional"/>
+		<xs:attribute name="y" type="xs:float" use="optional"/>
 	</xs:complexType>
 
 	<xs:element name="AbsInset">
 		<xs:complexType>
-			<xs:attribute name="left" type="xs:int" use="optional"/>
-			<xs:attribute name="right" type="xs:int" use="optional"/>
-			<xs:attribute name="top" type="xs:int" use="optional"/>
-			<xs:attribute name="bottom" type="xs:int" use="optional"/>
+			<xs:attribute name="left" type="xs:float" use="optional"/>
+			<xs:attribute name="right" type="xs:float" use="optional"/>
+			<xs:attribute name="top" type="xs:float" use="optional"/>
+			<xs:attribute name="bottom" type="xs:float" use="optional"/>
 		</xs:complexType>
 	</xs:element>
 

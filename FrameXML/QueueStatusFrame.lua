@@ -914,7 +914,8 @@ function QueueStatusDropDown_AddLFGButtons(info, category)
 		info.disabled = true;
 		UIDropDownMenu_AddButton(info);
 	end
-	if ( statuses.queued or statuses.suspended ) then
+    local canLeaveQueue = not IsLFGModeActive(category) or IsAllowedToLeaveQueue();
+	if ( ( statuses.queued or statuses.suspended ) and canLeaveQueue ) then
 		local manyQueues = (category == LE_LFG_CATEGORY_RF) and (statuses.queued or 0) + (statuses.suspended or 0) > 1;
 		info.text = manyQueues and LEAVE_ALL_QUEUES or LEAVE_QUEUE;
 		info.func = wrapFunc(LeaveLFG);

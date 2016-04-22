@@ -7,6 +7,7 @@ local REMOVE_TRANSMOG_ID = 0;
 
 function WardrobeFrame_OnLoad(self)
 	SetPortraitToTexture(WardrobeFramePortrait, "Interface\\Icons\\INV_Arcane_Orb");
+	WardrobeFrameTitleText:SetText(TRANSMOGRIFY);
 end
 
 function WardrobeFrame_OnShow(self)
@@ -1442,6 +1443,10 @@ function WardrobeCollectionFrameModel_OnEnter(self)
 		local visualID, name = C_TransmogCollection.GetIllusionSourceInfo(self.visualInfo.sourceID);
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 		GameTooltip:SetText(name);
+		if ( self.visualInfo.sourceText ) then
+			GameTooltip:AddLine(self.visualInfo.sourceText, 1, 1, 1, 1);
+		end
+		GameTooltip:Show();
 	else
 		if ( self.visualInfo.isHideVisual ) then
 			GameTooltip:SetOwner(self, "ANCHOR_RIGHT");

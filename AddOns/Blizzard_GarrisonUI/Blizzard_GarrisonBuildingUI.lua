@@ -797,7 +797,7 @@ function GarrisonBuildingInfoBox_ShowFollowerPortrait(owned, hasFollowerSlot, in
 	
 	infoBox.AddFollowerButton.greyedOut = (isBuilding or canActivate or not owned);
 	
-	local followerName, level, quality, displayID, followerID, garrFollowerID, status, portraitIconID = C_Garrison.GetFollowerInfoForBuilding(ID);
+	local followerName, level, quality, followerID, garrFollowerID, status, portraitIconID = C_Garrison.GetFollowerInfoForBuilding(ID);
 	if (followerName) then
 		infoBox.AddFollowerButton:Hide();
 		local button = infoBox.FollowerPortrait;

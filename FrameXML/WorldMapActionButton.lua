@@ -30,8 +30,12 @@ function WorldMapActionButtonMixin:SetOnCastChangedCallback(onCastChangedCallbac
 	self.onCastChangedCallback = onCastChangedCallback;
 end
 
+function WorldMapActionButtonMixin:IsUsingAction()
+	return SpellCanTargetQuest();
+end
+
 function WorldMapActionButtonMixin:UpdateCastingState()
-	local isUsingAction = SpellCanTargetQuest();
+	local isUsingAction = self:IsUsingAction();
 	if self.castingState ~= isUsingAction then
 		self.castingState = isUsingAction;
 		if self.onCastChangedCallback then
@@ -46,6 +50,10 @@ function WorldMapActionButtonMixin:Clear()
 	self.spellID = nil;
 	self.castingState = nil;
 	self:Hide();
+
+	if self:IsUsingAction() then
+		SpellStopTargeting();
+	end
 end
 
 function WorldMapActionButtonMixin:Refresh()

@@ -819,6 +819,7 @@
 	</Frame>
 
 	<CinematicModel name="GarrisonMissionCompleteModelTemplate" virtual="true" inherits="GarrisonCinematicModelBaseTemplate">
+		<Size x="540" y="285"/>
 		<Animations>
 			<AnimationGroup parentKey="FadeIn" setToFinalAlpha="true">
 				<Alpha fromAlpha="0" toAlpha="1" duration=".5" order="1"/>
@@ -826,8 +827,113 @@
 		</Animations>
 		<Scripts>
 			<OnShow function="GarrisonMission_SetFollowerModelItems"/>
+			<OnModelLoaded function="GarrisonMissionComplete_OnModelLoaded"/>
 		</Scripts>
 	</CinematicModel>
+
+	<CinematicModel name="GarrisonFollowerTabModelClusterModel" inherits="ModelTemplate" hidden="true" virtual="true" enableMouse="false">
+		<Size x="305" y="370"/>
+		<Scripts>
+			<OnModelLoaded>
+				self:SetAlpha(1);
+				self:SetFacing(self.facing or -0.2);
+			</OnModelLoaded>
+			<OnShow>
+				self:SetTargetDistance(0);
+				GarrisonMission_SetFollowerModelItems(self);
+			</OnShow>
+		</Scripts>
+	</CinematicModel>
+
+	<Frame name="GarrisonMissionCompleteModelCluster" virtual="true">
+		<Size x="540" y="285"/>
+		<Frames>
+			<CinematicModel parentArray="Model" parentKey="Model1" inherits="GarrisonMissionCompleteModelTemplate" frameLevel="15" setAllPoints="true"/>
+			<CinematicModel parentArray="Model" parentKey="Model2" inherits="GarrisonMissionCompleteModelTemplate" frameLevel="14" setAllPoints="true"/>
+			<CinematicModel parentArray="Model" parentKey="Model3" inherits="GarrisonMissionCompleteModelTemplate" frameLevel="13" setAllPoints="true"/>
+			<CinematicModel parentArray="Model" parentKey="Model4" inherits="GarrisonMissionCompleteModelTemplate" frameLevel="12" setAllPoints="true"/>
+			<CinematicModel parentArray="Model" parentKey="Model5" inherits="GarrisonMissionCompleteModelTemplate" frameLevel="11" setAllPoints="true"/>
+		</Frames>
+	</Frame>
+	<Frame name="GarrisonMissionCompleteModelClusterFacingLeft" virtual="true">
+		<Size x="540" y="285"/>
+		<Frames>
+			<CinematicModel parentArray="Model" parentKey="Model1" facingLeft="true" inherits="GarrisonMissionCompleteModelTemplate" frameLevel="15" setAllPoints="true"/>
+			<CinematicModel parentArray="Model" parentKey="Model2" facingLeft="true" inherits="GarrisonMissionCompleteModelTemplate" frameLevel="14" setAllPoints="true"/>
+			<CinematicModel parentArray="Model" parentKey="Model3" facingLeft="true" inherits="GarrisonMissionCompleteModelTemplate" frameLevel="13" setAllPoints="true"/>
+			<CinematicModel parentArray="Model" parentKey="Model4" facingLeft="true" inherits="GarrisonMissionCompleteModelTemplate" frameLevel="12" setAllPoints="true"/>
+			<CinematicModel parentArray="Model" parentKey="Model5" facingLeft="true" inherits="GarrisonMissionCompleteModelTemplate" frameLevel="11" setAllPoints="true"/>
+		</Frames>
+	</Frame>
+	<ScrollFrame name="GarrisonFollowerTabModelCluster" virtual="true">
+		<ScrollChild>
+			<Frame parentKey="Child">
+				<Size x="580" y="565"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="0" y="0"/>
+				</Anchors>
+				<Frames>
+					<CinematicModel parentArray="Model" parentKey="Model1" inherits="GarrisonFollowerTabModelClusterModel" frameLevel="15">
+						<Scripts>
+							<OnMouseDown function="Model_OnMouseDown"/>
+							<OnMouseUp function="Model_OnMouseUp"/>
+						</Scripts>
+					</CinematicModel>
+					<CinematicModel parentArray="Model" parentKey="Model2" inherits="GarrisonFollowerTabModelClusterModel" frameLevel="14"/>
+					<CinematicModel parentArray="Model" parentKey="Model3" inherits="GarrisonFollowerTabModelClusterModel" frameLevel="13"/>
+					<CinematicModel parentArray="Model" parentKey="Model4" inherits="GarrisonFollowerTabModelClusterModel" frameLevel="12"/>
+					<CinematicModel parentArray="Model" parentKey="Model5" inherits="GarrisonFollowerTabModelClusterModel" frameLevel="11"/>
+					<Frame frameLevel="10" parentKey="Shadows">
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture parentArray="Shadow" atlas="GarrFollower-Shadow" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="BOTTOM" x="0" y="-35" relativeKey="$parent.$parent.Model1"/>
+									</Anchors>
+								</Texture>
+								<Texture parentArray="Shadow" atlas="GarrFollower-Shadow" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="BOTTOM" x="0" y="-35" relativeKey="$parent.$parent.Model2"/>
+									</Anchors>
+								</Texture>
+								<Texture parentArray="Shadow" atlas="GarrFollower-Shadow" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="BOTTOM" x="0" y="-35" relativeKey="$parent.$parent.Model3"/>
+									</Anchors>
+								</Texture>
+								<Texture parentArray="Shadow" atlas="GarrFollower-Shadow" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="BOTTOM" x="0" y="-35" relativeKey="$parent.$parent.Model4"/>
+									</Anchors>
+								</Texture>
+								<Texture parentArray="Shadow" atlas="GarrFollower-Shadow" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="BOTTOM" x="0" y="-35" relativeKey="$parent.$parent.Model5"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
+				</Frames>
+			</Frame>
+		</ScrollChild>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
+		</Scripts>
+		<Frames>
+			<Frame parentKey="UpgradeFrame" inherits="GarrisonFollowerModelUpgradeTemplate">
+				<Anchors>
+					<Anchor point="BOTTOM" x="164" y="-423" relativePoint="TOPLEFT"/>
+				</Anchors>
+				<Scripts>
+					<OnMouseDown function="GarrisonFollowerPageModel_SpellCast_OnMouseDown"/>
+					<OnMouseUp function="GarrisonFollowerPageModel_SpellCast_OnMouseUp"/>
+				</Scripts>
+			</Frame>
+		</Frames>
+	</ScrollFrame>
 
 	<Frame name="GarrisonMissionChanceFrameTemplate" virtual="true">
 		<Size x="100" y="100"/>
@@ -1014,8 +1120,7 @@
 					</Frame>
 				</Frames>
 				<Scripts>
-					<OnLoad>
-						GarrisonCinematicModelBase_OnLoad(self);
+					<OnLoad inherit="prepend">
 						self:SetDisplayInfo(54912);
 						self:SetTargetDistance(0);
 						self:SetHeightFactor(.25);
@@ -1115,32 +1220,21 @@
 	<Frame name="GarrisonMissionCompleteStageTemplate" virtual="true">
 		<Size x="556" y="285"/>
 		<Frames>
-			<CinematicModel parentArray="Models" parentKey="ModelLeft" inherits="GarrisonMissionCompleteModelTemplate">
-				<Size x="540" y="285"/>
+			<Frame parentArray="ModelCluster" parentKey="ModelLeft" inherits="GarrisonMissionCompleteModelCluster">
 				<Anchors>
 					<Anchor point="TOP"/>
 				</Anchors>
-				<Scripts>
-					<OnLoad>
-						GarrisonCinematicModelBase_OnLoad(self);
-						self:SetFrameLevel(self:GetParent():GetFrameLevel() + 2);
-					</OnLoad>
-					<OnModelLoaded method="OnModelLoaded"/>
-				</Scripts>
-			</CinematicModel>
-			<CinematicModel parentArray="Models" parentKey="ModelRight" facingLeft="true" inherits="GarrisonMissionCompleteModelTemplate">
-				<Size x="540" y="285"/>
+			</Frame>
+			<Frame parentArray="ModelCluster" parentKey="ModelRight" inherits="GarrisonMissionCompleteModelClusterFacingLeft">
 				<Anchors>
 					<Anchor point="TOP"/>
 				</Anchors>
-				<Scripts>
-					<OnLoad>
-						GarrisonCinematicModelBase_OnLoad(self);
-						self:SetFrameLevel(self:GetParent():GetFrameLevel() + 1);
-					</OnLoad>
-					<OnModelLoaded method="OnModelLoaded"/>
-				</Scripts>
-			</CinematicModel>
+			</Frame>
+			<Frame parentArray="ModelCluster" parentKey="ModelMiddle" hidden="true" inherits="GarrisonMissionCompleteModelCluster">
+				<Anchors>
+					<Anchor point="TOP"/>
+				</Anchors>
+			</Frame>
 			<Frame parentKey="Miss" frameStrata="HIGH">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.ModelRight"/>
@@ -1168,18 +1262,6 @@
 					</AnimationGroup>
 				</Animations>
 			</Frame>
-			<CinematicModel parentArray="Models" parentKey="ModelMiddle" hidden="true" inherits="GarrisonMissionCompleteModelTemplate">
-				<Size x="540" y="285"/>
-				<Anchors>
-					<Anchor point="TOP"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						GarrisonCinematicModelBase_OnLoad(self);
-						self:SetFrameLevel(self:GetParent():GetFrameLevel() + 2);
-					</OnLoad>
-				</Scripts>
-			</CinematicModel>
 		</Frames>
 		<Scripts>
 			<OnUpdate function="GarrisonMissionController_OnStageUpdate"/>
