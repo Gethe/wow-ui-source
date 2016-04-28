@@ -45,3 +45,11 @@ function CollectionsSpellButton_UpdateCooldown(self)
 		cooldown:Hide();
 	end
 end
+
+function CollectionsWrappedModelFrame_OnEnter(self)
+	self:SetLight(true, false, 0, 0, 0, self.highlightIntensity, 1.0, 1.0, 1.0);
+end
+
+function CollectionsWrappedModelFrame_OnLeave(self)
+	self:SetLight(true, false, 0, 0, 0, self.normalIntensity, 1.0, 1.0, 1.0);
+end

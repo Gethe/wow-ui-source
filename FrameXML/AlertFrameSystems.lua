@@ -817,6 +817,16 @@ end
 GarrisonFollowerAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem(GarrisonFollowerAlertFrame, GarrisonFollowerAlertFrame_SetUp);
 GarrisonShipFollowerAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem(GarrisonShipFollowerAlertFrame, GarrisonShipFollowerAlertFrame_SetUp);
 
+-- [[ GarrisonTalentAlertFrame ]] --
+function GarrisonTalentAlertFrame_SetUp(frame, garrisonType)
+    local talentID = C_Garrison.GetCompleteTalent(garrisonType);
+    local talent = C_Garrison.GetTalent(talentID);
+    frame.Icon:SetTexture(talent.icon);
+	PlaySound("UI_Garrison_Toast_BuildingComplete");
+end
+
+GarrisonTalentAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem(GarrisonTalentAlertFrame, GarrisonTalentAlertFrame_SetUp);
+
 -- [[ NewRecipeLearnedAlertFrame ]] --
 function NewRecipeLearnedAlertFrame_GetStarTextureFromRank(rank)
 	if rank == 1 then

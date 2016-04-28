@@ -33,7 +33,7 @@
 			</OnLeave>
 		</Scripts>
 	</Button>
-	<Frame name="MicroButtonAlertTemplate" inherits="GlowBoxTemplate" parent="UIParent" enableMouse="true" hidden="true" frameStrata="DIALOG" frameLevel="2" topLevel="true" virtual="true">
+	<Frame name="MicroButtonAlertTemplate" inherits="GlowBoxTemplate" parent="UIParent" enableMouse="true" hidden="true" frameStrata="DIALOG" frameLevel="2" toplevel="true" virtual="true">
 		<Size x="220" y="100"/>
 		<!--KeyValues>
 			Optional
@@ -79,6 +79,7 @@
 					self:Hide();
 				end
 			</OnShow>
+			<OnHide function="MicroButtonAlert_OnHide"/>
 		</Scripts>
 	</Frame>
 	<Button name="CharacterMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">
@@ -158,7 +159,7 @@
 			</OnEnter>
 		</Scripts>
 	</Button>
-	<Button name="TalentMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">
+	<Button name="TalentMicroButton" inherits="MainMenuBarMicroButton" mixin="TalentMicroButtonMixin" parent="UIParent">
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="SpellbookMicroButton" relativePoint="BOTTOMRIGHT">
 				<Offset>
@@ -345,7 +346,7 @@
 			</OnClick>
 		</Scripts>
 	</Button>
-	<Button name="CollectionsMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">
+	<Button name="CollectionsMicroButton" inherits="MainMenuBarMicroButton" mixin="CollectionMicroButtonMixin" parent="UIParent">
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="LFDMicroButton" relativePoint="BOTTOMRIGHT">
 				<Offset>
@@ -363,6 +364,9 @@
 				self:RegisterEvent("HEIRLOOMS_UPDATED");
 				self:RegisterEvent("PET_JOURNAL_NEW_BATTLE_SLOT");
 				self:RegisterEvent("TOYS_UPDATED");
+				self:RegisterEvent("COMPANION_LEARNED");
+				self:RegisterEvent("PET_JOURNAL_LIST_UPDATE");
+				self:RegisterEvent("PLAYER_ENTERING_WORLD");
 			</OnLoad>
 			<OnClick>
 				ToggleCollectionsJournal();
@@ -370,7 +374,7 @@
 			<OnEvent function="CollectionsMicroButton_OnEvent" />
 		</Scripts>
 	</Button>
-	<Button name="EJMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">
+	<Button name="EJMicroButton" inherits="MainMenuBarMicroButton" mixin="EJMicroButtonMixin" parent="UIParent">
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="CollectionsMicroButton" relativePoint="BOTTOMRIGHT">
 				<Offset>
@@ -385,8 +389,8 @@
 					<Anchor point="RIGHT" x="8" y="2"/>
 				</Anchors>
 				<Layers>
-					<Layer level="OVERLAY" setAllPoints="true">
-						<Texture  atlas="adventureguide-microbutton-alert"/>
+					<Layer level="OVERLAY">
+						<Texture atlas="adventureguide-microbutton-alert"/>
 					</Layer>
 				</Layers>
 			</Frame>
@@ -607,17 +611,22 @@
 	</Button>
 	
 	<Frame name="TalentMicroButtonAlert" inherits="MicroButtonAlertTemplate">
+		<KeyValues>
+			<KeyValue key="MicroButton" value="TalentMicroButton" type="global"/>
+		</KeyValues>
 		<Anchors>
 			<Anchor point="BOTTOM" relativeTo="TalentMicroButton" relativePoint="TOP" x="0" y="-8"/>
 		</Anchors>
 		<Scripts>
 			<OnLoad>
 				MicroButtonAlert_OnLoad(self);
-				self.Text:SetText(TALENT_MICRO_BUTTON_SPEC_TUTORIAL);
 			</OnLoad>
 		</Scripts>
 	</Frame>
 	<Frame name="CollectionsMicroButtonAlert" inherits="MicroButtonAlertTemplate">
+		<KeyValues>
+			<KeyValue key="MicroButton" value="CollectionsMicroButton" type="global"/>
+		</KeyValues>
 		<Anchors>
 			<Anchor point="BOTTOM" relativeTo="CollectionsMicroButton" relativePoint="TOP" x="0" y="-8"/>
 		</Anchors>
@@ -639,13 +648,15 @@
 		</Scripts>
 	</Frame>
 	<Frame name="EJMicroButtonAlert" inherits="MicroButtonAlertTemplate">
+		<KeyValues>
+			<KeyValue key="MicroButton" value="EJMicroButton" type="global"/>
+		</KeyValues>
 		<Anchors>
 			<Anchor point="BOTTOM" relativeTo="EJMicroButton" relativePoint="TOP" x="0" y="-8"/>
 		</Anchors>
 		<Scripts>
 			<OnLoad>
 				MicroButtonAlert_OnLoad(self);
-				self.Text:SetText(AJ_MICRO_BUTTON_ALERT_TEXT);
 			</OnLoad>
 		</Scripts>
 	</Frame>

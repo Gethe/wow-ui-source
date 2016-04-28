@@ -1362,7 +1362,7 @@ function WardrobeCollectionFrameModel_OnLoad(self)
 	self:RegisterEvent("UI_SCALE_CHANGED");
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
 	
-	local lightValues = { enabled=1, omni=0, dirX=-1, dirY=1, dirZ=-1, ambIntensity=1.05, ambR=1, ambG=1, ambB=1, dirIntensity=0, dirR=1, dirG=1, dirB=1 };
+	local lightValues = { enabled=true, omni=false, dirX=-1, dirY=1, dirZ=-1, ambIntensity=1.05, ambR=1, ambG=1, ambB=1, dirIntensity=0, dirR=1, dirG=1, dirB=1 };
 	self:SetLight(lightValues.enabled, lightValues.omni, 
 			lightValues.dirX, lightValues.dirY, lightValues.dirZ,
 			lightValues.ambIntensity, lightValues.ambR, lightValues.ambG, lightValues.ambB,
@@ -1434,6 +1434,7 @@ function WardrobeCollectionFrameModel_OnEnter(self)
 	if ( not self.visualInfo ) then
 		return;
 	end
+	self:SetScript("OnUpdate", WardrobeCollectionFrameModel_OnUpdate);
 	if ( WardrobeCollectionFrame.newTransmogs[self.visualInfo.visualID] ) then
 		WardrobeCollectionFrame.newTransmogs[self.visualInfo.visualID] = nil;
 		self.NewString:Hide();
@@ -1461,21 +1462,33 @@ function WardrobeCollectionFrameModel_OnEnter(self)
 end
 
 function WardrobeCollectionFrameModel_OnLeave(self)
+	self:SetScript("OnUpdate", nil);
+	ResetCursor();
 	WardrobeCollectionFrame.tooltipAppearanceID = nil;
 	WardrobeCollectionFrame.tooltipCycle = nil;
 	WardrobeCollectionFrame.tooltipIndexOffset = nil;
 	GameTooltip:Hide();
 end
 
+function WardrobeCollectionFrameModel_OnUpdate(self)
+	if IsModifiedClick("DRESSUP") then
+		ShowInspectCursor();
+	else
+		ResetCursor();
+	end
+end
+
 function WardrobeCollectionFrameModel_Reload(self, reloadSlot)
 	if ( self:IsShown() ) then
-		self:SetUseTransmogSkin(WARDROBE_MODEL_SETUP[reloadSlot].useTransmogSkin);
-		self:SetUnit("player");
-		self:FreezeAnimation(0);
-		self:Undress();
-		for slot, equip in pairs(WARDROBE_MODEL_SETUP[reloadSlot].slots) do
-			if ( equip ) then
-				self:TryOn(WARDROBE_MODEL_SETUP_GEAR[slot]);
+		if ( WARDROBE_MODEL_SETUP[reloadSlot] ) then
+			self:SetUseTransmogSkin(WARDROBE_MODEL_SETUP[reloadSlot].useTransmogSkin);
+			self:SetUnit("player");
+			self:FreezeAnimation(0);
+			self:Undress();
+			for slot, equip in pairs(WARDROBE_MODEL_SETUP[reloadSlot].slots) do
+				if ( equip ) then
+					self:TryOn(WARDROBE_MODEL_SETUP_GEAR[slot]);
+				end
 			end
 		end
 		self:SetKeepModelOnHide(true);
@@ -1989,8 +2002,9 @@ end
 function WardrobeFilterDropDown_Initialize(self, level)
 	local info = UIDropDownMenu_CreateInfo();
 	info.keepShownOnClick = true;
+	local atTransmogrifier = WardrobeFrame_IsAtTransmogrifier();
 
-	if level == 1 and not WardrobeFrame_IsAtTransmogrifier() then
+	if level == 1 and not atTransmogrifier then
 		info.text = COLLECTED
 		info.func = function(_, _, _, value)
 						C_TransmogCollection.SetCollectedShown(value);
@@ -2017,7 +2031,8 @@ function WardrobeFilterDropDown_Initialize(self, level)
 		info.value = 1;
 		UIDropDownMenu_AddButton(info, level)
 	else
-		if level == 2 or WardrobeFrame_IsAtTransmogrifier() then
+		if level == 2 or atTransmogrifier then
+			local refreshLevel = atTransmogrifier and 1 or 2;
 			info.hasArrow = false;
 			info.isNotRadio = true;
 			info.notCheckable = true;
@@ -2025,14 +2040,14 @@ function WardrobeFilterDropDown_Initialize(self, level)
 			info.text = CHECK_ALL
 			info.func = function()
 							C_TransmogCollection.SetAllSourceTypeFilters(true);
-							UIDropDownMenu_Refresh(WardrobeFilterDropDown, 1, 2);
+							UIDropDownMenu_Refresh(WardrobeFilterDropDown, 1, refreshLevel);
 						end
 			UIDropDownMenu_AddButton(info, level)
 			
 			info.text = UNCHECK_ALL
 			info.func = function()
 							C_TransmogCollection.SetAllSourceTypeFilters(false);
-							UIDropDownMenu_Refresh(WardrobeFilterDropDown, 1, 2);
+							UIDropDownMenu_Refresh(WardrobeFilterDropDown, 1, refreshLevel);
 						end
 			UIDropDownMenu_AddButton(info, level)
 			info.notCheckable = false;

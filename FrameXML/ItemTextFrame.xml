@@ -66,6 +66,11 @@
 							<Anchor point="TOPLEFT" relativeTo="ItemTextFrame" relativePoint="TOPRIGHT" x="-27" y="-79"/>
 							<Anchor point="BOTTOMLEFT" relativeTo="ItemTextFrame" relativePoint="BOTTOMRIGHT" x="-27" y="22"/>
 						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self.scrollStep = 30;
+							</OnLoad>
+						</Scripts>
 					</Slider>
 				</Frames>
 				<ScrollChild>

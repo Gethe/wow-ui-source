@@ -462,11 +462,25 @@ function GarrisonFollowerAbilityTooltipTemplate_SetAbility(tooltipFrame, garrFol
 		
 		local info = C_Garrison.GetFollowerAbilityInfo(garrFollowerAbilityID);
 		tooltipFrame.Name:SetText(info.name);
-		tooltipFrame.Icon:SetTexture(info.icon);
 
 		if (tooltipFrame.AbilityBorder) then
 			tooltipFrame.AbilityBorder:SetShown(ShouldShowFollowerAbilityBorder(followerTypeID, info));
 		end
+
+		if (info.icon) then
+			tooltipFrame.Icon:SetTexture(info.icon);
+			if (tooltipFrame.AbilityBorder and tooltipFrame.AbilityBorder:IsShown()) then
+				tooltipFrame.Name:SetPoint("LEFT", tooltipFrame.AbilityBorder, "RIGHT", 2, 0);
+			else
+				tooltipFrame.Name:SetPoint("LEFT", tooltipFrame.Icon, "RIGHT", 6, 0);
+			end
+			tooltipFrame.Icon:Show();
+		else
+			tooltipFrame.Name:SetPoint("LEFT", tooltipFrame.Icon, "LEFT");
+			tooltipFrame.Icon:Hide();
+		end
+
+
 		local headerHeight = tooltipFrame.Header and tooltipFrame.Header:GetHeight() or 0;
 		tooltipFrame:SetHeight(headerHeight + tooltipFrame.abilityFrameHeightBase + tooltipFrame.Name:GetHeight());
 		

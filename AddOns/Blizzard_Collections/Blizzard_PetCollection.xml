@@ -57,6 +57,23 @@
                 </Texture>
                 <Texture atlas="PetList-ButtonSelect" parentKey="selectedTexture" hidden="true"/>
             </Layer>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<FontString parentKey="new" inherits="GameFontHighlight" wordwrap="false" justifyH="CENTER" text="NEW_CAPS" hidden="true">
+					<Anchors>
+						<Anchor point="RIGHT" x="-15" y="0"/>
+					</Anchors>
+					<Shadow>
+						<Color r="0.32" g="0.5" b="1.0"/>
+					</Shadow>
+				</FontString>
+
+				<Texture parentKey="newGlow" atlas="collections-newglow" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.new" x="-20" y="10"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.new" x="20" y="-10"/>
+					</Anchors>
+				</Texture>
+			</Layer>
         </Layers>
         <Frames>
             <Button parentKey="dragButton">
@@ -360,12 +377,12 @@
 			</CheckButton>
 			<CheckButton name="$parentSpell2" inherits="CompanionLoadOutSpellTemplate" id="2" parentKey="spell2">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentSpell1" RelativePoint="RIGHT" x="10" y="0"/>
+					<Anchor point="LEFT" relativeTo="$parentSpell1" relativePoint="RIGHT" x="10" y="0"/>
 				</Anchors>
 			</CheckButton>
 			<CheckButton name="$parentSpell3" inherits="CompanionLoadOutSpellTemplate" id="3" parentKey="spell3">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentSpell2" RelativePoint="RIGHT" x="10" y="0"/>
+					<Anchor point="LEFT" relativeTo="$parentSpell2" relativePoint="RIGHT" x="10" y="0"/>
 				</Anchors>
 			</CheckButton>
 
@@ -847,12 +864,12 @@
 							</Anchors>
 						</Texture>
 						<Texture name="$parentLockIcon" parentKey="LockIcon" file="Interface\PetBattles\PetBattle-LockIcon" setAllPoints="true" hidden="true"/>
-						<FontString name="$parentSpellName" inherits="GameFontNormal" maxLines="2" justifyH="RIGHT" parentKey="spellname" text="">
-							<Size x="75" y="0"/>
-							<Color r="1" g="1" b="1"/>
+						<FontString name="$parentSpellName" inherits="GameFontNormal" maxLines="2" justifyH="RIGHT" parentKey="spellname">
 							<Anchors>
 								<Anchor point="RIGHT" relativePoint="LEFT" relativeTo="$parentBorder" x="-2" y="0"/>
 							</Anchors>
+							<Size x="75" y="0"/>
+							<Color r="1" g="1" b="1"/>
 						</FontString>
 					</Layer>
 				</Layers>
@@ -1174,7 +1191,7 @@
 										<!-- Move it down 8 if there's no SubName -->
 									</Anchors>
 								</FontString>
-								<FontString name="$parentSubName" inherits="GameFontNormalSmall" justifyH="LEFT" parentKey="subName" text="XXXXX">
+								<FontString name="$parentSubName" inherits="GameFontNormalSmall" justifyH="LEFT" parentKey="subName">
 									<Size x="0" y="0"/>
 									<Anchors>
 										<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parentName" x="0" y="-2"/>
@@ -1194,7 +1211,7 @@
 										<Anchor point="BOTTOMRIGHT" relativeTo="$parentIcon" x="5" y="-5"/>
 									</Anchors>
 								</Texture>
-								<FontString name="$parentLevel" inherits="GameFontNormalSmall" parentKey="level" justifyH="CENTER" text="XX">
+								<FontString name="$parentLevel" inherits="GameFontNormalSmall" parentKey="level" justifyH="CENTER">
 									<Size x="0" y="0"/>
 									<Anchors>
 										<Anchor point="CENTER" relativeTo="$parentLevelBubble" x="0" y="0"/>
@@ -1203,6 +1220,23 @@
 								<Texture name="$parentFavorite" atlas="PetJournal-FavoritesIcon" useAtlasSize="true" parentKey="favorite">
 									<Anchors>
 										<Anchor point="TOPLEFT" relativeTo="$parentIcon" x="-8" y="8"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="OVERLAY" textureSubLevel="2">
+								<FontString parentKey="new" inherits="GameFontHighlight" wordwrap="false" justifyH="CENTER" text="NEW_CAPS" hidden="true">
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" relativeKey="$parent.name" relativePoint="BOTTOMLEFT" x="8" y="0"/>
+									</Anchors>
+									<Shadow>
+										<Color r="0.32" g="0.5" b="1.0"/>
+									</Shadow>
+								</FontString>
+
+								<Texture parentKey="newGlow" atlas="collections-newglow" hidden="true">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.new" x="-20" y="10"/>
+										<Anchor point="BOTTOMRIGHT" relativeKey="$parent.new" x="20" y="-10"/>
 									</Anchors>
 								</Texture>
 							</Layer>
@@ -1442,32 +1476,32 @@
 					</Frame>
 					<Button name="$parentSpell1" inherits="PetCardSpellButtonTemplate" id="1" parentKey="spell1">
 						<Anchors>
-							<Anchor point="TOPRIGHT" realtivePoint="TOPRIGHT" relativeTo="$parentAbilitiesBG1" x="-11" y="-11"/>
+							<Anchor point="TOPRIGHT" relativeTo="$parentAbilitiesBG1" x="-11" y="-11"/>
 						</Anchors>
 					</Button>
 					<Button name="$parentSpell2" inherits="PetCardSpellButtonTemplate" id="2" parentKey="spell2">
 						<Anchors>
-							<Anchor point="LEFT" relativeTo="$parentSpell1" RelativePoint="RIGHT" x="21" y="0"/>
+							<Anchor point="LEFT" relativeTo="$parentSpell1" relativePoint="RIGHT" x="21" y="0"/>
 						</Anchors>
 					</Button>
 					<Button name="$parentSpell3" inherits="PetCardSpellButtonTemplate" id="3" parentKey="spell3">
 						<Anchors>
-							<Anchor point="LEFT" relativeTo="$parentSpell2" RelativePoint="RIGHT" x="21" y="0"/>
+							<Anchor point="LEFT" relativeTo="$parentSpell2" relativePoint="RIGHT" x="21" y="0"/>
 						</Anchors>
 					</Button>
 					<Button name="$parentSpell4" inherits="PetCardSpellButtonTemplate" id="4" parentKey="spell4">
 						<Anchors>
-							<Anchor point="TOP" relativeTo="$parentSpell1" RelativePoint="BOTTOM" x="0" y="-12"/>
+							<Anchor point="TOP" relativeTo="$parentSpell1" relativePoint="BOTTOM" x="0" y="-12"/>
 						</Anchors>
 					</Button>
 					<Button name="$parentSpell5" inherits="PetCardSpellButtonTemplate" id="5" parentKey="spell5">
 						<Anchors>
-							<Anchor point="LEFT" relativeTo="$parentSpell4" RelativePoint="RIGHT" x="21" y="0"/>
+							<Anchor point="LEFT" relativeTo="$parentSpell4" relativePoint="RIGHT" x="21" y="0"/>
 						</Anchors>
 					</Button>
 					<Button name="$parentSpell6" inherits="PetCardSpellButtonTemplate" id="6" parentKey="spell6">
 						<Anchors>
-							<Anchor point="LEFT" relativeTo="$parentSpell5" RelativePoint="RIGHT" x="21" y="0"/>
+							<Anchor point="LEFT" relativeTo="$parentSpell5" relativePoint="RIGHT" x="21" y="0"/>
 						</Anchors>
 					</Button>
 					<StatusBar name="$parentXPBar" parentKey="xpBar">
@@ -1569,13 +1603,30 @@
 							</OnLeave>
 						</Scripts>
 					</StatusBar>
-					<PlayerModel name="$parentModelFrame" parentKey="model" inherits="ModelTemplate" creature="12257">
+					<PlayerModel name="$parentModelFrame" parentKey="model" inherits="ModelTemplate">
 						<Size x="173" y="135"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" x="45" y="-21"/>
 						</Anchors>
 					</PlayerModel>
+					<PlayerModel name="$parentWrappedModelFrame" parentKey="wrappedModel" inherits="CollectionsWrappedModelFrame" frameStrata="DIALOG">
+						<Size x="173" y="135"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" x="45" y="-21"/>
+						</Anchors>
+						<Scripts>
+							<OnMouseUp>
+								PetJournal_UnwrapPet(PetJournalPetCard.petID);
+							</OnMouseUp>
+						</Scripts>
+					</PlayerModel>
 				</Frames>
+				<Animations>
+					<AnimationGroup parentKey="UnwrapAnim" setToFinalAlpha="true">
+						<Alpha childKey="wrappedModel" startDelay="1.2" fromAlpha="1" toAlpha="0" duration=".3" order="1"/>
+						<Alpha childKey="model" startDelay="1.2" fromAlpha="0" toAlpha="1" duration=".3" order="1"/>
+					</AnimationGroup>
+				</Animations>
 			</Frame> <!-- PetCard -->
 
 
@@ -1609,7 +1660,7 @@
 					</OnLeave>
 				</Scripts>
 			</Button>
-			<Button name="$parentSummonButton" inherits="MagicButtonTemplate" parentKey="SummonButton" text="BATTLE_PET_SUMMON" disabled="true">
+			<Button name="$parentSummonButton" inherits="MagicButtonTemplate" parentKey="SummonButton" text="BATTLE_PET_SUMMON">
 				<Size x="160" y="22"/>
 				<Anchors>
 					<Anchor point="BOTTOMLEFT"/>
@@ -1622,9 +1673,7 @@
 					<OnClick>
 						PlaySound("igMainMenuOptionCheckBoxOn");
 						if(C_PetJournal.PetNeedsFanfare(PetJournalPetCard.petID)) then
-							C_PetJournal.ClearFanfare(PetJournalPetCard.petID);
-							PetJournal_ShowPetCardByID(PetJournalPetCard.petID);
-							PetJournalPetCard.model:ApplySpellVisualKit(6375, true); -- LEVELUP_SPELLVISUALKIT_ID
+							PetJournal_UnwrapPet(PetJournalPetCard.petID);
 						else
 							C_PetJournal.SummonPetByGUID(PetJournalPetCard.petID);
 						end

@@ -225,12 +225,13 @@ end
 function PetJournal_UpdateSummonButtonState()
 	local petID = PetJournalPetCard.petID;
 	local hasPetID = petID ~= nil;
+	local needsFanfare = hasPetID and C_PetJournal.PetNeedsFanfare(petID);
 
-	PetJournal.SummonButton:SetEnabled(hasPetID and C_PetJournal.PetIsSummonable(petID));
+	PetJournal.SummonButton:SetEnabled(hasPetID and (C_PetJournal.PetIsSummonable(petID) or needsFanfare));
 
-	if ( hasPetID and petID == C_PetJournal.GetSummonedPetGUID() ) then
+	if hasPetID and petID == C_PetJournal.GetSummonedPetGUID() then
 		PetJournal.SummonButton:SetText(PET_DISMISS);
-	elseif ( hasPetID and C_PetJournal.PetNeedsFanfare(petID)) then
+	elseif needsFanfare then
 		PetJournal.SummonButton:SetText(UNWRAP);
 	else
 		PetJournal.SummonButton:SetText(BATTLE_PET_SUMMON);
@@ -697,6 +698,7 @@ function PetJournal_UpdatePetList()
 		index = offset + i;
 		if index <= numPets then
 			local petID, speciesID, isOwned, customName, level, favorite, isRevoked, name, icon, petType, _, _, _, _, canBattle = C_PetJournal.GetPetInfoByIndex(index);
+			local needsFanfare = petID and C_PetJournal.PetNeedsFanfare(petID);
 
 			if customName then
 				pet.name:SetText(customName);
@@ -708,7 +710,10 @@ function PetJournal_UpdatePetList()
 				pet.name:SetHeight(30);
 				pet.subName:Hide();
 			end
-			pet.icon:SetTexture(icon);
+
+			pet.icon:SetTexture(needsFanfare and COLLECTIONS_FANFARE_ICON or icon);
+			pet.new:SetShown(needsFanfare);
+			pet.newGlow:SetShown(needsFanfare);
 			pet.petTypeIcon:SetTexture(GetPetTypeTexture(petType));
 			
 			if (favorite) then
@@ -1005,10 +1010,14 @@ function PetJournal_UpdatePetCard(self)
 		self.PetInfo.subName:Hide();
 		self.PetInfo.level:Hide();
 		self.PetInfo.levelBG:Hide();
+		self.PetInfo.qualityBorder:Hide();
+		self.PetInfo.favorite:Hide();
+		self.PetInfo.icon:Hide();
 		
 		self.TypeInfo:Hide();
 		
 		self.model:Hide();
+		self.wrappedModel:Hide();
 		self.shadows:Hide();
 		
 		self.AbilitiesBG1:Hide();
@@ -1028,7 +1037,10 @@ function PetJournal_UpdatePetCard(self)
 		return;
 	end
 
+	self.PetInfo.icon:Show();
+
 	local isDead = false;
+	local needsFanfare = false;
 	local speciesID, customName, level, name, icon, petType, creatureID, xp, maxXp, displayID, isFavorite, sourceText, description, isWild, canBattle, tradable, unique;
 	if PetJournalPetCard.petID then
 		speciesID, customName, level, xp, maxXp, displayID, isFavorite, name, icon, petType, creatureID, sourceText, description, isWild, canBattle, tradable, unique = C_PetJournal.GetPetInfoByPetID(PetJournalPetCard.petID);
@@ -1039,6 +1051,8 @@ function PetJournal_UpdatePetCard(self)
 		self.PetInfo.level:SetShown(canBattle);
 		self.PetInfo.levelBG:SetShown(canBattle);
 		self.PetInfo.level:SetText(level);
+
+		needsFanfare = C_PetJournal.PetNeedsFanfare(PetJournalPetCard.petID);
 		
 		self.xpBar:SetShown(level < MAX_PET_LEVEL and canBattle);
 		if (level < MAX_PET_LEVEL) then
@@ -1120,8 +1134,18 @@ function PetJournal_UpdatePetCard(self)
 		self.PetInfo.name:SetHeight(32);
 		self.PetInfo.subName:Hide();
 	end
+
 	
-	self.PetInfo.icon:SetTexture(icon);
+	self.PetInfo.new:SetShown(needsFanfare);
+	self.PetInfo.newGlow:SetShown(needsFanfare);
+	
+	if needsFanfare then
+		self.PetInfo.icon:SetTexture(COLLECTIONS_FANFARE_ICON);
+		local offsetX = math.min(self.PetInfo.name:GetStringWidth(), self.PetInfo.name:GetWidth());
+		self.PetInfo.new:SetPoint("BOTTOMLEFT", self.PetInfo.name, "BOTTOMLEFT", offsetX + 8, 0);
+	else
+		self.PetInfo.icon:SetTexture(icon);
+	end
 
 	self.PetInfo.sourceText = sourceText;
 	self.PetInfo.tradable = tradable;
@@ -1135,6 +1159,7 @@ function PetJournal_UpdatePetCard(self)
 	self.PetInfo.speciesName = name;
 
 	Model_Reset(self.model);
+	
 	self.model:Show();
 	self.shadows:Show();
 	local modelChanged = false;
@@ -1151,6 +1176,20 @@ function PetJournal_UpdatePetCard(self)
 			self.model:SetAnimation(0,-1);
 		end
 		self.model.wasDead = isDead;
+	end
+
+	if needsFanfare then
+		self.wrappedModel:Show();
+		if not self.UnwrapAnim:IsPlaying() then
+			self.model:SetAlpha(0);
+			self.wrappedModel:SetAnimation(0);
+			self.wrappedModel:SetAlpha(1);
+		end
+	else
+		self.wrappedModel:Hide();
+		if not self.UnwrapAnim:IsPlaying() then
+			self.model:SetAlpha(1);
+		end
 	end
 	
 	self.AbilitiesBG1:SetShown(canBattle);
@@ -1183,6 +1222,24 @@ function PetJournal_UpdatePetCard(self)
 			spellFrame:Hide();
 		end
 	end
+end
+
+function PetJournal_UnwrapPet(petID)
+	if PetJournalPetCard.UnwrapAnim:IsPlaying() then
+		return;
+	end
+
+	PetJournalPetCard.wrappedModel:SetAnimation(148);
+	PetJournalPetCard.UnwrapAnim:Play();
+
+	C_Timer.After(.8, function()
+		PetJournalPetCard.model:ApplySpellVisualKit(73393, true);
+	end)
+
+	C_Timer.After(1.6, function()
+		C_PetJournal.ClearFanfare(petID);
+		PetJournal_ShowPetCardByID(petID);
+	end)
 end
 
 function PetJournal_SetPendingCage(petID)
@@ -1362,76 +1419,84 @@ end
 function PetOptionsMenu_Init(self, level)
 	local info = UIDropDownMenu_CreateInfo();
 	info.notCheckable = true;
-	
-	local isRevoked = PetJournal.menuPetID and C_PetJournal.PetIsRevoked(PetJournal.menuPetID);
-	local isLockedForConvert = PetJournal.menuPetID and C_PetJournal.PetIsLockedForConvert(PetJournal.menuPetID);
-	
-	if (not isRevoked and not isLockedForConvert) then
-		info.text = BATTLE_PET_SUMMON;
-		if (PetJournal.menuPetID and C_PetJournal.GetSummonedPetGUID() == PetJournal.menuPetID) then
-			info.text = PET_DISMISS;
-		end
-		info.func = function() C_PetJournal.SummonPetByGUID(PetJournal.menuPetID); end
-		if (PetJournal.menuPetID and not C_PetJournal.PetIsSummonable(PetJournal.menuPetID)) then
-			info.disabled = true;
-		end
-		UIDropDownMenu_AddButton(info, level);
-		info.disabled = nil;
-	end
-	
-	if (not isRevoked and not isLockedForConvert) then
-		info.text = BATTLE_PET_RENAME
-		info.func = 	function() StaticPopup_Show("BATTLE_PET_RENAME", nil, nil, PetJournal.menuPetID); end 
-		info.disabled = not C_PetJournal.IsJournalUnlocked();
-		UIDropDownMenu_AddButton(info, level);
-		info.disabled = nil;
-	end
 
-	local isFavorite = PetJournal.menuPetID and C_PetJournal.PetIsFavorite(PetJournal.menuPetID);
-	if (isFavorite or (not isRevoked and not isLockedForConvert)) then
-		if (isFavorite) then
-			info.text = BATTLE_PET_UNFAVORITE;
-			info.func = function() 
-				C_PetJournal.SetFavorite(PetJournal.menuPetID, 0); 
-			end
-		else
-			info.text = BATTLE_PET_FAVORITE;
-			info.func = function() 
-				C_PetJournal.SetFavorite(PetJournal.menuPetID, 1); 
-			end
-		end
-		info.disabled = not C_PetJournal.IsJournalUnlocked();
-		UIDropDownMenu_AddButton(info, level);
-		info.disabled = nil;
-	end
+	local needsFanfare = PetJournal.menuPetID and C_PetJournal.PetNeedsFanfare(PetJournal.menuPetID);
 	
-	if(PetJournal.menuPetID and C_PetJournal.PetCanBeReleased(PetJournal.menuPetID)) then
-		info.text = BATTLE_PET_RELEASE;
-		info.func = function() StaticPopup_Show("BATTLE_PET_RELEASE", PetJournalUtil_GetDisplayName(PetJournal.menuPetID), nil, PetJournal.menuPetID); end
-		if (C_PetJournal.PetIsSlotted(PetJournal.menuPetID) or C_PetBattles.IsInBattle() or not C_PetJournal.IsJournalUnlocked()) then
-			info.disabled = true;
-		else
+	if needsFanfare then
+		info.text = UNWRAP;
+		info.func = function() PetJournal_UnwrapPet(PetJournal.menuPetID); end
+		UIDropDownMenu_AddButton(info, level);
+	else
+		local isRevoked = PetJournal.menuPetID and C_PetJournal.PetIsRevoked(PetJournal.menuPetID);
+		local isLockedForConvert = PetJournal.menuPetID and C_PetJournal.PetIsLockedForConvert(PetJournal.menuPetID);
+
+		if (not isRevoked and not isLockedForConvert) then
+			info.text = BATTLE_PET_SUMMON;
+			if (PetJournal.menuPetID and C_PetJournal.GetSummonedPetGUID() == PetJournal.menuPetID) then
+				info.text = PET_DISMISS;
+			end
+			info.func = function() C_PetJournal.SummonPetByGUID(PetJournal.menuPetID); end
+			if (PetJournal.menuPetID and not C_PetJournal.PetIsSummonable(PetJournal.menuPetID)) then
+				info.disabled = true;
+			end
+			UIDropDownMenu_AddButton(info, level);
+			info.disabled = nil;
+		end
+
+		if (not isRevoked and not isLockedForConvert) then
+			info.text = BATTLE_PET_RENAME
+			info.func = 	function() StaticPopup_Show("BATTLE_PET_RENAME", nil, nil, PetJournal.menuPetID); end 
+			info.disabled = not C_PetJournal.IsJournalUnlocked();
+			UIDropDownMenu_AddButton(info, level);
+			info.disabled = nil;
+		end
+
+		local isFavorite = PetJournal.menuPetID and C_PetJournal.PetIsFavorite(PetJournal.menuPetID);
+		if (isFavorite or (not isRevoked and not isLockedForConvert)) then
+			if (isFavorite) then
+				info.text = BATTLE_PET_UNFAVORITE;
+				info.func = function() 
+					C_PetJournal.SetFavorite(PetJournal.menuPetID, 0); 
+				end
+			else
+				info.text = BATTLE_PET_FAVORITE;
+				info.func = function() 
+					C_PetJournal.SetFavorite(PetJournal.menuPetID, 1); 
+				end
+			end
+			info.disabled = not C_PetJournal.IsJournalUnlocked();
+			UIDropDownMenu_AddButton(info, level);
+			info.disabled = nil;
+		end
+	
+		if(PetJournal.menuPetID and C_PetJournal.PetCanBeReleased(PetJournal.menuPetID)) then
+			info.text = BATTLE_PET_RELEASE;
+			info.func = function() StaticPopup_Show("BATTLE_PET_RELEASE", PetJournalUtil_GetDisplayName(PetJournal.menuPetID), nil, PetJournal.menuPetID); end
+			if (C_PetJournal.PetIsSlotted(PetJournal.menuPetID) or C_PetBattles.IsInBattle() or not C_PetJournal.IsJournalUnlocked()) then
+				info.disabled = true;
+			else
+				info.disabled = nil; 
+			end
+			UIDropDownMenu_AddButton(info, level);
 			info.disabled = nil; 
 		end
-		UIDropDownMenu_AddButton(info, level);
-		info.disabled = nil; 
-	end
 
-	if(PetJournal.menuPetID and C_PetJournal.PetIsTradable(PetJournal.menuPetID)) then
-		info.text = BATTLE_PET_PUT_IN_CAGE;
-		info.func = function() StaticPopup_Show("BATTLE_PET_PUT_IN_CAGE", nil, nil, PetJournal.menuPetID); end
-		--only if it isn't in a battle slot and has full health
-		info.disabled = nil;
-		if (not info.disabled and C_PetJournal.PetIsSlotted(PetJournal.menuPetID)) then
-			info.disabled = true;
-			info.text = BATTLE_PET_PUT_IN_CAGE_SLOTTED;
+		if(PetJournal.menuPetID and C_PetJournal.PetIsTradable(PetJournal.menuPetID)) then
+			info.text = BATTLE_PET_PUT_IN_CAGE;
+			info.func = function() StaticPopup_Show("BATTLE_PET_PUT_IN_CAGE", nil, nil, PetJournal.menuPetID); end
+			--only if it isn't in a battle slot and has full health
+			info.disabled = nil;
+			if (not info.disabled and C_PetJournal.PetIsSlotted(PetJournal.menuPetID)) then
+				info.disabled = true;
+				info.text = BATTLE_PET_PUT_IN_CAGE_SLOTTED;
+			end
+			if (not info.disabled and C_PetJournal.PetIsHurt(PetJournal.menuPetID)) then
+				info.disabled = true;
+				info.text = BATTLE_PET_PUT_IN_CAGE_HEALTH;
+			end
+			UIDropDownMenu_AddButton(info, level)
+			info.disabled = nil;
 		end
-		if (not info.disabled and C_PetJournal.PetIsHurt(PetJournal.menuPetID)) then
-			info.disabled = true;
-			info.text = BATTLE_PET_PUT_IN_CAGE_HEALTH;
-		end
-		UIDropDownMenu_AddButton(info, level)
-		info.disabled = nil;
 	end
 	
 	info.text = CANCEL
@@ -1623,15 +1688,21 @@ end
 function PetJournalAchievementStatus_OnEnter(self)
 	PetJournal.AchievementStatus.highlight:Show();
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip:SetText(BATTLE_PETS_ACHIEVEMENT, 1, 1, 1);
+	GameTooltip:SetText(BATTLE_PETS_ACHIEVEMENT, HIGHLIGHT_FONT_COLOR:GetRGB());
 	GameTooltip:AddLine(BATTLE_PETS_ACHIEVEMENT_TOOLTIP, nil, nil, nil, true);
 	GameTooltip:Show();
 end
 
 function PetJournalSummonButton_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip:SetText(self:GetText(), 1, 1, 1);
-	GameTooltip:AddLine(BATTLE_PETS_SUMMON_TOOLTIP, nil, nil, nil, true);
+	GameTooltip:SetText(self:GetText(), HIGHLIGHT_FONT_COLOR:GetRGB());
+	
+	local needsFanFare = PetJournalPetCard.petID and C_PetJournal.PetNeedsFanfare(PetJournalPetCard.petID);
+	if needsFanFare then
+		GameTooltip:AddLine(BATTLE_PETS_UNWRAP_TOOLTIP, nil, nil, nil, true);
+	else
+		GameTooltip:AddLine(BATTLE_PETS_SUMMON_TOOLTIP, nil, nil, nil, true);
+	end
 	GameTooltip:Show();
 end
 

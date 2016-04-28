@@ -64,7 +64,6 @@ local EJ_DIFFICULTIES =
 	{ size = "5", prefix = PLAYER_DIFFICULTY2, difficultyID = 2 },
 	{ size = "5", prefix = PLAYER_DIFFICULTY6, difficultyID = 23 },
 	{ size = "5", prefix = PLAYER_DIFFICULTY_TIMEWALKER, difficultyID = 24 },
-	{ size = "5", prefix = PLAYER_DIFFICULTY5, difficultyID = 8 },
 	{ size = "25", prefix = PLAYER_DIFFICULTY3, difficultyID = 7 },
 	{ size = "10", prefix = PLAYER_DIFFICULTY1, difficultyID = 3 },
 	{ size = "10", prefix = PLAYER_DIFFICULTY2, difficultyID = 5 },

@@ -386,14 +386,9 @@ function PlayerTalentFrame_OnHide()
 		wipe(info);
 	end
 	wipe(talentTabWidthCache);
-	
-	local selection = PlayerTalentFrame_GetTalentSelections();
-	if ( not GetSpecialization() ) then
-		MainMenuMicroButton_ShowAlert(TalentMicroButtonAlert, TALENT_MICRO_BUTTON_NO_SPEC);
-		StaticPopup_Hide("CONFIRM_LEARN_SPEC");
-	elseif ( GetNumUnspentTalents() > 0 and not AreTalentsLocked() ) then
-		MainMenuMicroButton_ShowAlert(TalentMicroButtonAlert, TALENT_MICRO_BUTTON_UNSPENT_TALENTS);
-	end
+
+	StaticPopup_Hide("CONFIRM_LEARN_SPEC");
+	TalentMicroButton:EvaluateAlertVisibility()
 end
 
 function PlayerTalentFrame_OnClickClose(self)
@@ -599,7 +594,7 @@ function PlayerTalentFrame_UpdateTitleText(numTalentGroups)
 	elseif ( selectedTab == PVP_TALENTS_TAB ) then
 		local prestigeLevel = UnitPrestige("player");
 		if (prestigeLevel > 0) then
-			local text = PVP_TALENTS_PRESTIGE_RANK_TITLE:format(select(2, GetPrestigeInfo(prestigeLevel)), prestigeLevel)
+			local text = PVP_TALENTS_PRESTIGE_RANK_TITLE:format(select(2, GetPrestigeInfo(prestigeLevel)));
 			if ( spec and hasMultipleTalentGroups ) then
 				if (isActiveSpec and spec.nameActive) then
 					text = text .. " " .. spec.nameActive;
@@ -1689,7 +1684,7 @@ function PlayerTalentFramePVPTalentsPortraitMouseOverFrame_OnEnter(self)
 		GameTooltip:ClearAllPoints();
 		GameTooltip:SetPoint("LEFT", self, "RIGHT", 4, 0);
 		GameTooltip:SetOwner(self, "ANCHOR_PRESERVE");
-		GameTooltip:SetText(PRESTIGE_RANK_TOOLTIP_TEXT:format(prestige, select(2, GetPrestigeInfo(prestige))));
+		GameTooltip:SetText(select(2, GetPrestigeInfo(prestige)), 1, 1, 1, nil, true);
 		GameTooltip:AddLine(" ");
 		for i = 1, GetMaxPrestigeLevel() do
 			local color;

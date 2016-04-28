@@ -346,13 +346,51 @@ function MainMenuMicroButton_SetNormal()
 	MainMenuMicroButton:SetButtonState("NORMAL");
 end
 
+MAIN_MENU_MICRO_ALERT_PRIORITY = {
+	"CollectionsMicroButtonAlert",
+	"TalentMicroButtonAlert",
+	"EJMicroButtonAlert",
+};
+
 function MainMenuMicroButton_ShowAlert(alert, text, tutorialIndex)
+	if tutorialIndex and GetCVarBitfield("closedInfoFrames", tutorialIndex) then
+		return false;
+	end
+
+	local isHighestPriority = false;
+	for i, priorityFrameName in ipairs(MAIN_MENU_MICRO_ALERT_PRIORITY) do
+		local priorityFrame = _G[priorityFrameName];
+		if alert == priorityFrame then
+			isHighestPriority = true;
+		end
+
+		if priorityFrame:IsShown() then
+			if not isHighestPriority then
+				-- Higher priority is shown
+				return false;
+			end
+
+			-- Lower priority alert is visible, kill it
+			priorityFrame:Hide();
+		end
+	end
 	alert.Text:SetText(text);
 	alert:SetHeight(alert.Text:GetHeight()+42);
 	alert.tutorialIndex = tutorialIndex;
 	alert:Show();
 
 	return alert:IsShown();
+end
+
+TalentMicroButtonMixin = {};
+
+function TalentMicroButtonMixin:EvaluateAlertVisibility()
+	-- If we just unspecced, and we have unspent talent points, it's probably spec-specific talents that were just wiped.  Show the tutorial box.
+	if not AreTalentsLocked() and GetNumUnspentTalents() > 0 and (not PlayerTalentFrame or not PlayerTalentFrame:IsShown()) then
+		if MainMenuMicroButton_ShowAlert(TalentMicroButtonAlert, TALENT_MICRO_BUTTON_UNSPENT_TALENTS) then
+			return;
+		end
+	end
 end
 
 --Talent button specific functions
@@ -364,18 +402,16 @@ function TalentMicroButton_OnEvent(self, event, ...)
 	if ( event == "PLAYER_LEVEL_UP" ) then
 		local level = ...;
 		if (level == SHOW_SPEC_LEVEL) then
-			MicroButtonPulse(self);
-			MainMenuMicroButton_ShowAlert(TalentMicroButtonAlert, TALENT_MICRO_BUTTON_SPEC_TUTORIAL);
+			if MainMenuMicroButton_ShowAlert(TalentMicroButtonAlert, TALENT_MICRO_BUTTON_SPEC_TUTORIAL) then
+				MicroButtonPulse(self);
+			end
 		elseif (level == SHOW_TALENT_LEVEL) then
-			MicroButtonPulse(self);
-			MainMenuMicroButton_ShowAlert(TalentMicroButtonAlert, TALENT_MICRO_BUTTON_TALENT_TUTORIAL);
+			if MainMenuMicroButton_ShowAlert(TalentMicroButtonAlert, TALENT_MICRO_BUTTON_TALENT_TUTORIAL) then
+				MicroButtonPulse(self);
+			end
 		end
 	elseif ( event == "PLAYER_SPECIALIZATION_CHANGED") then
-		-- If we just unspecced, and we have unspent talent points, it's probably spec-specific talents that were just wiped.  Show the tutorial box.
-		local unit = ...;
-		if(unit == "player" and GetSpecialization() == nil and GetNumUnspentTalents() > 0) then
-			MainMenuMicroButton_ShowAlert(TalentMicroButtonAlert, TALENT_MICRO_BUTTON_UNSPENT_TALENTS);
-		end
+		self:EvaluateAlertVisibility();
 	elseif ( event == "PLAYER_TALENT_UPDATE" or event == "NEUTRAL_FACTION_SELECT_RESULT" ) then
 		UpdateMicroButtons();
 		
@@ -393,11 +429,13 @@ function TalentMicroButton_OnEvent(self, event, ...)
 	elseif ( event == "PLAYER_CHARACTER_UPGRADE_TALENT_COUNT_CHANGED" ) then
 		local prev, current = ...;
 		if ( prev == 0 and current > 0 ) then
-			MicroButtonPulse(self);
-			MainMenuMicroButton_ShowAlert(TalentMicroButtonAlert, TALENT_MICRO_BUTTON_TALENT_TUTORIAL);
+			if MainMenuMicroButton_ShowAlert(TalentMicroButtonAlert, TALENT_MICRO_BUTTON_TALENT_TUTORIAL) then
+				MicroButtonPulse(self);
+			end
 		elseif ( prev ~= current ) then
-			MicroButtonPulse(self);
-			MainMenuMicroButton_ShowAlert(TalentMicroButtonAlert, TALENT_MICRO_BUTTON_UNSPENT_TALENTS);
+			if MainMenuMicroButton_ShowAlert(TalentMicroButtonAlert, TALENT_MICRO_BUTTON_UNSPENT_TALENTS) then
+				MicroButtonPulse(self);
+			end
 		end
 	end
 end
@@ -411,7 +449,33 @@ do
 		end
 	end
 
+	CollectionMicroButtonMixin = {};
+
+	function CollectionMicroButtonMixin:EvaluateAlertVisibility()
+		if CollectionsJournal and CollectionsJournal:IsShown() then
+			return;
+		end
+
+		local numMountsNeedingFanfare = C_MountJournal.GetNumMountsNeedingFanfare();
+		local numPetsNeedingFanfare = C_PetJournal.GetNumPetsNeedingFanfare();
+		if numMountsNeedingFanfare > 0 or numPetsNeedingFanfare > 0 then
+			if MainMenuMicroButton_ShowAlert(CollectionsMicroButtonAlert, numMountsNeedingFanfare + numPetsNeedingFanfare > 1 and COLLECTION_UNOPENED_PLURAL or COLLECTION_UNOPENED_SINGULAR, LE_FRAME_TUTORIAL_WRAPPED_COLLECTION_ITEMS) then
+				MicroButtonPulse(self);
+				SafeSetCollectionJournalTab(numMountsNeedingFanfare > 0 and 1 or 2);
+				return;
+			end
+		end
+	end
+
 	function CollectionsMicroButton_OnEvent(self, event, ...)
+		if (IsKioskModeEnabled()) then
+			return;
+		end
+
+		if CollectionsJournal and CollectionsJournal:IsShown() then
+			return;
+		end
+
 		if ( event == "HEIRLOOMS_UPDATED" ) then
 			local itemID, updateReason = ...;
 			if itemID and updateReason == "NEW" then
@@ -421,9 +485,10 @@ do
 				end
 			end
 		elseif ( event == "PET_JOURNAL_NEW_BATTLE_SLOT" ) then
-			MicroButtonPulse(self);
-			MainMenuMicroButton_ShowAlert(CollectionsMicroButtonAlert, COMPANIONS_MICRO_BUTTON_NEW_BATTLE_SLOT);
-			SafeSetCollectionJournalTab(2);
+			if MainMenuMicroButton_ShowAlert(CollectionsMicroButtonAlert, COMPANIONS_MICRO_BUTTON_NEW_BATTLE_SLOT) then
+				MicroButtonPulse(self);
+				SafeSetCollectionJournalTab(2);
+			end
 		elseif ( event == "TOYS_UPDATED" ) then
 			local itemID, new = ...;
 			if itemID and new then		
@@ -432,10 +497,8 @@ do
 					SafeSetCollectionJournalTab(3);
 				end
 			end
-		else
-			self.tooltipText = MicroButtonTooltipText(COLLECTIONS, "TOGGLECOLLECTIONS");
-			self.newbieText = NEWBIE_TOOLTIP_MOUNTS_AND_PETS;
-			UpdateMicroButtons();
+		elseif ( event == "COMPANION_LEARNED" or event == "PLAYER_ENTERING_WORLD" or event == "PET_JOURNAL_LIST_UPDATE" ) then
+			self:EvaluateAlertVisibility();
 		end
 	end
 end
@@ -456,12 +519,36 @@ function EJMicroButton_OnLoad(self)
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
 end
 
+EJMicroButtonMixin = {};
+
+function EJMicroButtonMixin:EvaluateAlertVisibility()
+	if self.playerEntered and self.varsLoaded and self.zoneEntered then
+		if self:IsEnabled() then
+			local showAlert = not GetCVarBool("hideAdventureJournalAlerts");
+			if( showAlert ) then
+				-- display alert if the player hasn't opened the journal for a long time
+				local lastTimeOpened = tonumber(GetCVar("advJournalLastOpened"));
+				if ( GetServerTime() - lastTimeOpened > EJ_ALERT_TIME_DIFF ) then
+					if MainMenuMicroButton_ShowAlert(EJMicroButtonAlert, AJ_MICRO_BUTTON_ALERT_TEXT) then
+						MicroButtonPulse(EJMicroButton);
+					end
+				end
+
+				if ( lastTimeOpened ~= 0 ) then
+					SetCVar("advJournalLastOpened", GetServerTime() );
+				end
+					
+				EJMicroButton_UpdateAlerts(true);
+			end
+		end
+	end
+end
+
 function EJMicroButton_OnEvent(self, event, ...)
 	if (IsKioskModeEnabled()) then
 		return;
 	end
 	
-	local arg1 = ...
 	if( event == "UPDATE_BINDINGS" ) then
 		self.tooltipText = MicroButtonTooltipText(ADVENTURE_JOURNAL, "TOGGLEENCOUNTERJOURNAL");
 		self.newbieText = NEWBIE_TOOLTIP_ENCOUNTER_JOURNAL;
@@ -472,8 +559,11 @@ function EJMicroButton_OnEvent(self, event, ...)
 	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
 		self:UnregisterEvent("PLAYER_ENTERING_WORLD");
 		self.playerEntered = true;
-	elseif ( event == "UNIT_LEVEL" and arg1 == "player" ) then		
-		EJMicroButton_UpdateNewAdventureNotice(true);
+	elseif ( event == "UNIT_LEVEL" ) then
+		local unitToken = ...;
+		if unitToken == "player" then
+			EJMicroButton_UpdateNewAdventureNotice(true);
+		end
 	elseif ( event == "PLAYER_AVG_ITEM_LEVEL_UPDATE" ) then
 		local playerLevel = UnitLevel("player");
 		if ( playerLevel == MAX_PLAYER_LEVEL_TABLE[GetExpansionLevel()]) then
@@ -485,26 +575,11 @@ function EJMicroButton_OnEvent(self, event, ...)
 	end
 	
 	if( event == "PLAYER_ENTERING_WORLD" or event == "VARIABLES_LOADED" or event == "ZONE_CHANGED_NEW_AREA" ) then
-		if( self.playerEntered and self.varsLoaded and self.zoneEntered) then
+		if self.playerEntered and self.varsLoaded and self.zoneEntered then
 			EJMicroButton_UpdateDisplay();
-			if( self:IsEnabled() ) then
+			if self:IsEnabled() then
 				C_AdventureJournal.UpdateSuggestions();
-				
-				local showAlert = not GetCVarBool("hideAdventureJournalAlerts");
-				if( showAlert ) then
-					-- display alert if the player hasn't opened the journal for a long time
-					local lastTimeOpened = tonumber(GetCVar("advJournalLastOpened"));
-					if ( GetServerTime() - lastTimeOpened > EJ_ALERT_TIME_DIFF ) then
-						EJMicroButtonAlert:Show();
-						MicroButtonPulse(EJMicroButton);
-					end
-
-					if ( lastTimeOpened ~= 0 ) then
-						SetCVar("advJournalLastOpened", GetServerTime() );
-					end
-					
-					EJMicroButton_UpdateAlerts(true);
-				end
+				self:EvaluateAlertVisibility();
 			end
 		end
 	end
@@ -562,5 +637,26 @@ function MicroButtonAlert_OnLoad(self)
 	self.Text:SetSpacing(4);
 	if ( self.label ) then
 		self.Text:SetText(self.label);
+	end
+end
+
+function MicroButtonAlert_OnHide(self)
+	-- If anything is shown, leave it in that state
+	for i, priorityFrameName in ipairs(MAIN_MENU_MICRO_ALERT_PRIORITY) do
+		local priorityFrame = _G[priorityFrameName];
+		if priorityFrame:IsShown() then
+			return;
+		end
+	end
+
+	-- Nothing shown, try evaluating its visibility
+	for i, priorityFrameName in ipairs(MAIN_MENU_MICRO_ALERT_PRIORITY) do
+		local priorityFrame = _G[priorityFrameName];
+		if priorityFrame ~= self then
+			priorityFrame.MicroButton:EvaluateAlertVisibility();
+			if priorityFrame:IsShown() then
+				break;
+			end
+		end
 	end
 end

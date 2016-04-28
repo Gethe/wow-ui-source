@@ -228,7 +228,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture parentKey="ValidSpellHighlight" atlas="GarrMission-AbilityHighlight" useAtlasSize="true">
+				<Texture parentKey="ValidSpellHighlight" atlas="GarrMission-AbilityHighlight" useAtlasSize="true" hidden="true">
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
@@ -250,7 +250,7 @@
 		</Scripts>
 	</Button>
 
-	<Frame name="GarrisonFollowerPageAbilityTemplate" virtual="true">
+	<Frame name="GarrisonFollowerPageAbilityTemplate" parentArray="Abilities" virtual="true">
 		<Size x="240" y="60"/>
 		<KeyValues>
 			<Keyvalue key="followerTypeID" value="1" type="number"/>
@@ -274,7 +274,16 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button inherits="GarrisonFollowerPageAbilityIconButtonTemplate" parentKey="IconButton"/>
+			<Button inherits="GarrisonFollowerPageAbilityIconButtonTemplate" parentKey="IconButton">
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="LockBackground" setAllPoints="true" hidden="true">
+							<Color a="0.35" r="0.0" g="0.0" b="0.0b"/>
+						</Texture>
+						<Texture parentKey="Lock" atlas="legionmission-lock" useAtlasSize="true" hidden="true"/>
+					</Layer>
+				</Layers>
+			</Button>
 		</Frames>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -1062,6 +1071,11 @@
 				<FontString parentKey="Name" inherits="GameFontNormalSmall2" justifyH="LEFT">
 					<Size x="96" y="0"/>
 				</FontString>
+				<Texture parentKey="DurabilityBackground" atlas="legionmission-hearts-background" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" relativePoint="BOTTOM" x="10" y="10"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -1084,6 +1098,11 @@
 			<Frame parentKey="LevelUpFrame" hidden="true" inherits="GarrisonFollowerLevelUpTemplate">
 				<Anchors>
 					<Anchor point="BOTTOM" x="16" y="-23"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="DurabilityFrame" inherits="GarrisonMissionFollowerDurabilityFrameTemplate" hidden="false">
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.DurabilityBackground"/>
 				</Anchors>
 			</Frame>
 		</Frames>
@@ -1502,6 +1521,11 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame parentKey="DurabilityFrame" inherits="GarrisonMissionFollowerDurabilityFrameTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Name" relativePoint="BOTTOMLEFT" y="-4"/>
+				</Anchors>
+			</Frame>
 			<Frame parentKey="QualityFrame">
 				<Size x="10" y="10"/>
 				<Anchors>
@@ -1538,31 +1562,81 @@
 				</Layers>
 			</StatusBar>
 			<ScrollFrame parentKey="ModelCluster" inherits="GarrisonFollowerTabModelCluster" setAllPoints="true"/>
-			<Frame parentKey="AbilitiesFrame" setAllPoints="true">
+			<Frame parentKey="AbilitiesFrame" inherits="VerticalLayoutFrame" mixin="GarrisonAbilitiesFrameMixin" frameLevel="20">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="290" y="-100"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="expand" value="true" type="boolean"/>
+					<KeyValue key="spacing" value="10" type="number"/>
+				</KeyValues>
 				<Layers>
 					<Layer level="ARTWORK">
+						<FontString parentKey="SpecializationLabel" inherits="GameFontNormalLarge2" justifyH="LEFT" text="SPECIALIZATION">
+							<KeyValues>
+								<KeyValue key="layoutIndex" value="100" type="number"/>
+								<KeyValue key="topPadding" value="10" type="number"/>
+								<KeyValue key="bottomPadding" value="5" type="number"/>
+							</KeyValues>
+						</FontString>
 						<FontString parentKey="AbilitiesText" inherits="GameFontNormalLarge2" justifyH="LEFT" text="ABILITIES">
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.$parent.Class" relativePoint="TOPRIGHT" x="-280" y="-80"/>
-							</Anchors>
+							<KeyValues>
+								<KeyValue key="layoutIndex" value="200" type="number"/>
+								<KeyValue key="topPadding" value="10" type="number"/>
+								<KeyValue key="bottomPadding" value="0" type="number"/>
+							</KeyValues>
 						</FontString>
 						<FontString parentKey="TraitsText" inherits="GameFontNormalLarge2" justifyH="LEFT" text="GARRISON_TRAITS">
+							<KeyValues>
+								<KeyValue key="layoutIndex" value="300" type="number"/>
+								<KeyValue key="topPadding" value="10" type="number"/>
+								<KeyValue key="bottomPadding" value="0" type="number"/>
+							</KeyValues>
+						</FontString>
+						<FontString parentKey="CombatAllyLabel" inherits="GameFontNormalLarge2" justifyH="LEFT" text="ORDER_HALL_ZONE_SUPPORT">
+							<KeyValues>
+								<KeyValue key="layoutIndex" value="400" type="number"/>
+								<KeyValue key="topPadding" value="10" type="number"/>
+							</KeyValues>
+						</FontString>
+						<FontString parentKey="CombatAllyDescriptionLabel" inherits="GameFontHighlight" justifyV="TOP" justifyH="LEFT" text="ORDER_HALL_ZONE_SUPPORT_DESCRIPTION">
+							<Size x="280" y="0"/>
+							<KeyValues>
+								<KeyValue key="layoutIndex" value="401" type="number"/>
+								<KeyValue key="bottomPadding" value="0" type="number"/>
+							</KeyValues>
+						</FontString>
+						<FontString parentKey="FlavorText" inherits="GameFontNormalLarge" justifyH="LEFT" hidden="true">
+							<Size x="280" y="0"/>
+							<KeyValues>
+								<KeyValue key="layoutIndex" value="500" type="number"/>
+								<KeyValue key="topPadding" value="30" type="number"/>
+								<KeyValue key="bottomPadding" value="5" type="number"/>
+							</KeyValues>
+						</FontString>
+
+
+						<FontString parentKey="EquipmentSlotsLabel" inherits="GameFontNormal" justifyH="CENTER" text="ORDER_HALL_EQUIPMENT_SLOTS">
+							<Size x="280" y="20"/>
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.AbilitiesText" relativePoint="BOTTOMLEFT" y="-150"/>
+								<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeKey="$parent.$parent" x="6" y="150"/>
 							</Anchors>
 						</FontString>
 					</Layer>
 				</Layers>
 				<Frames>
-					<Frame parentArray="Abilities" inherits="GarrisonFollowerPageAbilityTemplate" hidden="true">
-						<Scripts>
-							<OnShow>
-								local mainFrame = self:GetParent():GetParent():GetParent();
-								self.followerTypeID = mainFrame.followerTypeID;
-							</OnShow>
-						</Scripts>
-					</Frame>
-					<Frame parentArray="Counters" inherits="GarrisonMissionAbilityCounterTemplate" hidden="true"/>
+					<Button parentArray="CombatAllySpell" parentKey="CombatAllySpell1" inherits="GarrisonFollowerCombatAllySpellTemplate">
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="402" type="number"/>
+							<KeyValue key="topPadding" value="0" type="number"/>
+							<KeyValue key="bottomPadding" value="5" type="number"/>
+						</KeyValues>
+					</Button>
+					<Button parentArray="CombatAllySpell" parentKey="CombatAllySpell2" inherits="GarrisonFollowerCombatAllySpellTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeKey="$parent.CombatAllySpell1" x="20" y="0"/>
+						</Anchors>
+					</Button>
 				</Frames>
 			</Frame>
 			<Button parentKey="UpgradeClickTarget" hidden="true">
@@ -1576,10 +1650,10 @@
 					<OnClick function="GarrisionFollowerPageUpgradeTarget_OnClick"/>
 				</Scripts>
 			</Button>
-			<Frame parentKey="Source">
+			<Frame parentKey="Source" frameLevel="20">
 				<Size x="230" y="80"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.Model" relativePoint="BOTTOMLEFT" x="26" y="-3"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="BOTTOMLEFT" x="38" y="110"/>
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
@@ -1589,17 +1663,17 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<Frame parentKey="ItemWeapon" inherits="GarrisonFollowerItemButtonTemplate" hidden="true">
+			<Frame parentKey="ItemWeapon" inherits="GarrisonFollowerItemButtonTemplate" hidden="true" frameLevel="20">>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.Model" relativePoint="BOTTOMLEFT" x="26" y="-3"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="BOTTOMLEFT" x="38" y="110"/>
 				</Anchors>
 			</Frame>
-			<Frame parentKey="ItemArmor" inherits="GarrisonFollowerItemButtonTemplate" hidden="true">
+			<Frame parentKey="ItemArmor" inherits="GarrisonFollowerItemButtonTemplate" hidden="true" frameLevel="20">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.ItemWeapon" relativePoint="BOTTOMLEFT" x="0" y="-6"/>
 				</Anchors>
 			</Frame>
-			<Frame parentKey="ItemAverageLevel">
+			<Frame parentKey="ItemAverageLevel" frameLevel="20">
 				<Size x="230" y="20"/>
 				<Anchors>
 					<Anchor point="BOTTOM" relativeKey="$parent.ItemWeapon" relativePoint="TOP" x="0" y="0"/>
@@ -1615,6 +1689,7 @@
 			<OnHide>
 				self.lastUpdate = nil;
 			</OnHide>
+			<OnLoad method="OnLoad"/>
 		</Scripts>
 	</Frame>
 
@@ -1904,6 +1979,9 @@
 		<Anchors>
 			<Anchor point="CENTER"/>
 		</Anchors>
+		<KeyValues>
+			<KeyValue key="followerTypeID" value="LE_FOLLOWER_TYPE_GARRISON_6_0" type="global"/>
+		</KeyValues>
 		<Frames>
 			<Button name="$parentTab1" inherits="GarrisonMissionFrameTabTemplate" id="1" text="GARRISON_MISSIONS">
 				<Anchors>

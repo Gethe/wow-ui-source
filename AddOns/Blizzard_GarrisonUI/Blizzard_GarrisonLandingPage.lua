@@ -146,11 +146,22 @@ end
 ---------------------------------------------------------------------------------
 --- Report Page                                                          ---
 ---------------------------------------------------------------------------------
+
+local function OnShipmentReleased(pool, shipmentFrame)
+	FramePool_HideAndClearAnchors(pool, shipmentFrame);
+	shipmentFrame.talent = nil;
+	shipmentFrame.Done:Hide();
+	shipmentFrame.Border:Show();
+	shipmentFrame.BG:Hide();
+	shipmentFrame.Count:SetText(nil);
+end
+
 function GarrisonLandingPageReport_OnLoad(self)
 	HybridScrollFrame_CreateButtons(self.List.listScroll, "GarrisonLandingPageReportMissionTemplate", 0, 0);
 	GarrisonLandingPageReportList_Update();
 	
 	self.List.listScroll:SetScript("OnMouseWheel", function(self, ...) HybridScrollFrame_OnMouseWheel(self, ...); GarrisonLandingPageReportList_UpdateMouseOverTooltip(self); end);
+	self.shipmentsPool = CreateFramePool("FRAME", self, "GarrisonLandingPageReportShipmentStatusTemplate", OnShipmentReleased);
 end
 
 function GarrisonLandingPageReport_OnShow(self)
@@ -169,7 +180,8 @@ function GarrisonLandingPageReport_OnShow(self)
 	self:RegisterEvent("GARRISON_LANDINGPAGE_SHIPMENTS");
 	self:RegisterEvent("GARRISON_MISSION_LIST_UPDATE");
 	self:RegisterEvent("GARRISON_SHIPMENT_RECEIVED");
-
+	self:RegisterEvent("GARRISON_TALENT_UPDATE");
+	self:RegisterEvent("GARRISON_TALENT_COMPLETE");
 end
 
 function GarrisonLandingPageReport_OnHide(self)
@@ -178,10 +190,12 @@ function GarrisonLandingPageReport_OnHide(self)
 	self:UnregisterEvent("GARRISON_LANDINGPAGE_SHIPMENTS");
 	self:UnregisterEvent("GARRISON_MISSION_LIST_UPDATE");
 	self:UnregisterEvent("GARRISON_SHIPMENT_RECEIVED");
+	self:UnregisterEvent("GARRISON_TALENT_UPDATE");
+	self:UnregisterEvent("GARRISON_TALENT_COMPLETE");
 end
 
 function GarrisonLandingPageReport_OnEvent(self, event)
-	if ( event == "GARRISON_LANDINGPAGE_SHIPMENTS" ) then
+	if ( event == "GARRISON_LANDINGPAGE_SHIPMENTS" or event == "GARRISON_TALENT_UPDATE" or event == "GARRISON_TALENT_COMPLETE") then
 		GarrisonLandingPageReport_GetShipments(self);
 	elseif ( event == "GARRISON_MISSION_LIST_UPDATE" ) then
 		GarrisonLandingPageReportList_UpdateItems();
@@ -208,23 +222,26 @@ end
 ---------------------------------------------------------------------------------
 --- Report - Shipments                                                        ---
 ---------------------------------------------------------------------------------
-local function SetupShipment(shipmentFrame, texture, applyMask, name, buildingID, plotID, containerID, shipmentsReady, shipmentsTotal, creationTime, duration)
+
+local SHIPMENT_TYPE_BUILDING = 1;
+local SHIPMENT_TYPE_FOLLOWER = 2;
+local SHIPMENT_TYPE_TALENT = 3;
+
+local function SetupShipment(shipmentFrame, texture, applyMask, name, buildingID, plotID, containerID, shipmentsReady, shipmentsTotal, creationTime, duration, shipmentType, index)
 	if (applyMask) then
 		SetPortraitToTexture(shipmentFrame.Icon, texture);
 	else
 		shipmentFrame.Icon:SetTexture(texture);
 	end
-	shipmentFrame.Icon:SetDesaturated(true);
 	shipmentFrame.Name:SetText(name);
-	shipmentFrame.Done:Hide();
-	shipmentFrame.Border:Show();
-	shipmentFrame.BG:Hide();
-	shipmentFrame.Count:SetText(nil);
 	shipmentFrame.buildingID = buildingID;
 	shipmentFrame.containerID = containerID;
 	shipmentFrame.plotID = plotID;
+	shipmentFrame.shipmentType = shipmentType;
 	if (shipmentsTotal) then
-		shipmentFrame.Count:SetFormattedText(GARRISON_LANDING_SHIPMENT_COUNT, shipmentsReady, shipmentsTotal);
+		if (shipmentType ~= SHIPMENT_TYPE_TALENT) then
+			shipmentFrame.Count:SetFormattedText(GARRISON_LANDING_SHIPMENT_COUNT, shipmentsReady, shipmentsTotal);
+		end
 		if ( shipmentsReady == shipmentsTotal ) then
 			shipmentFrame.Swipe:SetCooldownUNIX(0, 0);
 			shipmentFrame.Done:Show();
@@ -234,22 +251,24 @@ local function SetupShipment(shipmentFrame, texture, applyMask, name, buildingID
 			shipmentFrame.Swipe:SetCooldownUNIX(creationTime, duration);
 		end
 	end
+	shipmentFrame:SetPoint("TOPLEFT", 60 + mod(index, 3) * 105, -105 - floor(index / 3) * 100);
 	shipmentFrame:Show();
 end
 
 function GarrisonLandingPageReport_GetShipments(self)
-	local shipmentIndex = 1;
-	local buildings = C_Garrison.GetBuildings(self:GetParent().garrTypeID);
+	self.shipmentsPool:ReleaseAll();
+
+	local shipmentIndex = 0;
+	local maxShipments = 12;
+	local garrisonType = self:GetParent().garrTypeID;
+	local buildings = C_Garrison.GetBuildings(garrisonType);
 	for i = 1, #buildings do
 		local buildingID = buildings[i].buildingID;
 		if ( buildingID) then
 			local name, texture, shipmentCapacity, shipmentsReady, shipmentsTotal, creationTime, duration, timeleftString, itemName, itemIcon, itemQuality, itemID = C_Garrison.GetLandingPageShipmentInfo(buildingID);
-			local shipment = self.Shipments[shipmentIndex];
-			if ( not shipment ) then
-				return;
-			end
-			if ( name and shipmentCapacity > 0 ) then
-				SetupShipment(shipment, texture, true, name, buildingID, buildings[i].plotID, nil, shipmentsReady, shipmentsTotal, creationTime, duration);
+			if ( name and shipmentCapacity > 0 and shipmentIndex < maxShipments ) then
+				local shipment = self.shipmentsPool:Acquire();
+				SetupShipment(shipment, texture, true, name, buildingID, buildings[i].plotID, nil, shipmentsReady, shipmentsTotal, creationTime, duration, SHIPMENT_TYPE_BUILDING, shipmentIndex);
 				shipmentIndex = shipmentIndex + 1;
 			end
 		end
@@ -258,68 +277,101 @@ function GarrisonLandingPageReport_GetShipments(self)
 	local followerShipments = C_Garrison.GetFollowerShipments(self:GetParent().garrTypeID);
 	for i = 1, #followerShipments do
 		local name, texture, shipmentCapacity, shipmentsReady, shipmentsTotal, creationTime, duration, timeleftString, _, _, _, _, followerID = C_Garrison.GetLandingPageShipmentInfoByContainerID(followerShipments[i]);
-		local shipment = self.Shipments[shipmentIndex];
-		if ( not shipment ) then
-			return;
-		end
-		if ( name and shipmentCapacity > 0 ) then
-			SetupShipment(shipment, texture, false, name, nil, nil, followerShipments[i], shipmentsReady, shipmentsTotal, creationTime, duration);
+		if ( name and shipmentCapacity > 0 and shipmentIndex < maxShipments ) then
+			local shipment = self.shipmentsPool:Acquire();
+			SetupShipment(shipment, texture, false, name, nil, nil, followerShipments[i], shipmentsReady, shipmentsTotal, creationTime, duration, SHIPMENT_TYPE_FOLLOWER, shipmentIndex);
 			shipmentIndex = shipmentIndex + 1;
 		end
 	end
-	for i = shipmentIndex, #self.Shipments do
-		self.Shipments[i]:Hide();
+
+	local talentTrees = C_Garrison.GetTalentTrees(self:GetParent().garrTypeID, select(3, UnitClass("player")));
+	-- this is a talent that has completed, but has not been seen in the talent UI yet.
+	local completeTalentID = C_Garrison.GetCompleteTalent(garrisonType);
+	if (talentTrees) then
+		for treeIndex, tree in ipairs(talentTrees) do
+			for talentIndex, talent in ipairs(tree) do
+				local showTalent = false;
+				if (talent.isBeingResearched) then
+					showTalent = true;
+				end
+				if (talent.id == completeTalentID) then
+					showTalent = true;
+				end
+				if (showTalent) then
+					local shipment = self.shipmentsPool:Acquire();
+					SetupShipment(shipment, talent.icon, true, talent.name, nil, nil, nil, talent.isBeingResearched and 0 or 1, 1, talent.researchStartTime, talent.researchDuration, SHIPMENT_TYPE_TALENT, shipmentIndex);
+					shipment.talent = talent;
+					shipmentIndex = shipmentIndex + 1;
+				end
+			end
+		end
 	end
 end
 
 function GarrisonLandingPageReportShipment_OnEnter(self)
 
-	local _, name, shipmentCapacity, shipmentsReady, shipmentsTotal, timeleftString, itemName;
-	if (self.buildingID) then
-		name, _, shipmentCapacity, shipmentsReady, shipmentsTotal, _, _, timeleftString, itemName = C_Garrison.GetLandingPageShipmentInfo(self.buildingID);
-	elseif (self.containerID) then
-		name, _, shipmentCapacity, shipmentsReady, shipmentsTotal, _, _, timeleftString, itemName = C_Garrison.GetLandingPageShipmentInfoByContainerID(self.containerID);
-	else
-		return;
-	end
+	if (self.shipmentType == SHIPMENT_TYPE_BUILDING or self.shipmentType == SHIPMENT_TYPE_FOLLOWER) then
+		local _, name, shipmentCapacity, shipmentsReady, shipmentsTotal, timeleftString, itemName;
+		if (self.shipmentType == SHIPMENT_TYPE_BUILDING) then
+			name, _, shipmentCapacity, shipmentsReady, shipmentsTotal, _, _, timeleftString, itemName = C_Garrison.GetLandingPageShipmentInfo(self.buildingID);
+		elseif (self.shipmentType == SHIPMENT_TYPE_FOLLOWER) then
+			name, _, shipmentCapacity, shipmentsReady, shipmentsTotal, _, _, timeleftString, itemName = C_Garrison.GetLandingPageShipmentInfoByContainerID(self.containerID);
+		else
+			return;
+		end
 
-	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip:SetText(itemName or name);
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip:SetText(itemName or name);
 	
-	local isBuilding, canActivate;
-	if (self.plotID) then
-		_,_,_,_,_, isBuilding, _,_, canActivate = C_Garrison.GetOwnedBuildingInfoAbbrev(self.plotID);
-	end
-
-	if (isBuilding or canActivate) then
-		GameTooltip:AddLine(GARRISON_BUILDING_UNDER_CONSTRUCTION, 1, 1, 1);
-	else
-		GameTooltip:AddLine(GARRISON_LANDING_SHIPMENT_LABEL, 1, 1, 1);
-		GameTooltip:AddLine(" ");
-
-		local shipmentsAvailable = shipmentCapacity;
-
-		if(shipmentsTotal) then
-			shipmentsAvailable = shipmentCapacity - shipmentsTotal;
+		local isBuilding, canActivate;
+		if (self.plotID) then
+			_,_,_,_,_, isBuilding, _,_, canActivate = C_Garrison.GetOwnedBuildingInfoAbbrev(self.plotID);
 		end
 
-		if shipmentsAvailable > 0 then
-			GameTooltip:AddLine(format(GARRISON_LANDING_SHIPMENT_READY_TO_START, shipmentsAvailable) , GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
-		end
+		if (isBuilding or canActivate) then
+			GameTooltip:AddLine(GARRISON_BUILDING_UNDER_CONSTRUCTION, 1, 1, 1);
+		else
+			if (self.shipmentType == SHIPMENT_TYPE_BUILDING) then
+				GameTooltip:AddLine(GARRISON_LANDING_SHIPMENT_LABEL, 1, 1, 1);
+				GameTooltip:AddLine(" ");
+			end
 
-		if (shipmentsReady and shipmentsTotal) then
-			if (shipmentsReady == shipmentsTotal) then
-				GameTooltip:AddLine(format(GARRISON_LANDING_RETURN, shipmentsTotal), GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
-			else			
-				if (timeleftString) then
-					GameTooltip:AddLine(format(GARRISON_LANDING_COMPLETED, shipmentsReady, shipmentsTotal) .. " " .. format(GARRISON_LANDING_NEXT,timeleftString), 1, 1, 1);
-				else
-					GameTooltip:AddLine(format(GARRISON_LANDING_COMPLETED, shipmentsReady, shipmentsTotal), 1, 1, 1);			
+			local shipmentsAvailable = shipmentCapacity;
+
+			if(shipmentsTotal) then
+				shipmentsAvailable = shipmentCapacity - shipmentsTotal;
+			end
+
+			if shipmentsAvailable > 0 then
+				GameTooltip:AddLine(format(GARRISON_LANDING_SHIPMENT_READY_TO_START, shipmentsAvailable) , GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
+			end
+
+			if (shipmentsReady and shipmentsTotal) then
+				if (shipmentsReady == shipmentsTotal) then
+					GameTooltip:AddLine(format(GARRISON_LANDING_RETURN, shipmentsTotal), GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
+				else			
+					if (timeleftString) then
+						GameTooltip:AddLine(format(GARRISON_LANDING_COMPLETED, shipmentsReady, shipmentsTotal) .. " " .. format(GARRISON_LANDING_NEXT,timeleftString), 1, 1, 1);
+					else
+						GameTooltip:AddLine(format(GARRISON_LANDING_COMPLETED, shipmentsReady, shipmentsTotal), 1, 1, 1);			
+					end
 				end
 			end
 		end
+		GameTooltip:Show();
+	elseif (self.shipmentType == SHIPMENT_TYPE_TALENT) then
+			
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		local talent = self.talent;
+		GameTooltip:AddLine(talent.name, 1, 1, 1);
+		GameTooltip:AddLine(talent.description, nil, nil, nil, true);
+
+		if talent.isBeingResearched then
+			GameTooltip:AddLine(" ");
+			GameTooltip:AddLine(NORMAL_FONT_COLOR_CODE..TIME_REMAINING..FONT_COLOR_CODE_CLOSE.." "..SecondsToTime(talent.researchTimeRemaining), 1, 1, 1);
+		end
+		GameTooltip:Show();
 	end
-	GameTooltip:Show();
 end
 
 ---------------------------------------------------------------------------------
@@ -688,7 +740,7 @@ end
 
 function GarrisonLandingPageReportMission_OnLeave(self)
 	GarrisonShipyardMapMissionTooltip:Hide();
-	GameTooltip_Hide(self);
+	GameTooltip:Hide();
 end
 
 function GarrisonLandingPageReportMissionReward_OnEnter(self)

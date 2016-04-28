@@ -119,6 +119,9 @@ function GarrisonFollowerList:OnShow()
 				-- empty page
 				self:ShowFollower(0);
 			end
+		else
+			-- refresh the shown follower
+			self:ShowFollower(self.followerTab.followerID);
 		end
 	end
 	if (C_Garrison.GetNumFollowers(self.followerType) >= GarrisonFollowerOptions[self.followerType].minFollowersForThreatCountersFrame) then
@@ -140,8 +143,11 @@ end
 
 function GarrisonFollowerList:StopAnimations()
 	if (self.followerTab) then
-		for i = 1, #self.followerTab.AbilitiesFrame.Abilities do
-			GarrisonFollowerPageAbility_StopAnimations(self.followerTab.AbilitiesFrame.Abilities[i]);
+		local abilities = self.followerTab.AbilitiesFrame.Abilities;
+		if (abilities) then
+		    for i, abilityFrame in ipairs(abilities) do
+			    GarrisonFollowerPageAbility_StopAnimations(abilityFrame);
+		    end
 		end
 	end
 end
@@ -1141,8 +1147,8 @@ function GarrisonFollowerPage_SetItem(itemFrame, itemID, itemLevel)
 	itemFrame:Hide();
 end
 
-function GarrisonFollowerList:UpdateValidSpellHighlight(followerID, followerInfo, hideCounters)
-	self.followerTab:UpdateValidSpellHighlight(followerID, followerInfo, hideCounters)
+function GarrisonFollowerList:UpdateValidSpellHighlight(followerID, followerInfo)
+	self.followerTab:UpdateValidSpellHighlight(followerID, followerInfo);
 end
 
 function GarrisonFollowerList:ShowFollower(followerID)
@@ -1298,10 +1304,29 @@ function GarrisonFollowerTabMixin:UpdateValidSpellHighlightOnAbilityFrame(abilit
 	end
 end
 
+function GarrisonFollowerTabMixin:UpdateValidSpellHighlightOnEquipmentFrame(equipmentFrame, followerID, followerInfo)
+	local abilityID = equipmentFrame.abilityID;
+	if ( followerInfo and followerInfo.isCollected 
+		and followerInfo.status ~= GARRISON_FOLLOWER_WORKING and followerInfo.status ~= GARRISON_FOLLOWER_ON_MISSION 
+		and abilityID and SpellCanTargetGarrisonFollowerAbility(followerID, abilityID) ) then
+		equipmentFrame.ValidSpellHighlight:Show();
+	else
+		equipmentFrame.ValidSpellHighlight:Hide();
+	end
+end
 
-function GarrisonFollowerTabMixin:UpdateValidSpellHighlight(followerID, followerInfo, hideCounters)
-	for i=1, #self.AbilitiesFrame.Abilities do
-		self:UpdateValidSpellHighlightOnAbilityFrame(self.AbilitiesFrame.Abilities[i], followerID, followerInfo, hideCounters);
+
+function GarrisonFollowerTabMixin:UpdateValidSpellHighlight(followerID, followerInfo)
+	local abilities = self.AbilitiesFrame.Abilities;
+	if (self.AbilitiesFrame.Abilities) then
+		for i, abilityFrame in ipairs(self.AbilitiesFrame.Abilities) do
+			self:UpdateValidSpellHighlightOnAbilityFrame(abilityFrame, followerID, followerInfo);
+		end
+	end
+	if (self.AbilitiesFrame.Equipment) then
+		for i, equipmentFrame in ipairs(self.AbilitiesFrame.Equipment) do
+			self:UpdateValidSpellHighlightOnEquipmentFrame(equipmentFrame, followerID, followerInfo);
+		end
 	end
 end
 
@@ -1352,26 +1377,26 @@ local positionData = {
 		[1] = { scale=1.0,	facing=0.2,		x=0,	y=0 }
 	},
 	[2] = {
-		[1] = { scale=1.0,	facing=0.2,		x=0,	y=0 },
-		[2] = { scale=1.0,	facing=0.2,		x=60,	y=0 },
+		[1] = { scale=1.0,	facing=-0.4,		x=-60,	y=0 },
+		[2] = { scale=1.0/0.95,	facing=0.4,		x=20,	y=30 },
 	},
 	[3] = {
-		[1] = { scale=1.0/0.8,	facing=0,		x=0,	y=-22 },
-		[2] = { scale=1.0/0.7,	facing=0.7,		x=60,	y=58 },
-		[3] = { scale=1.0/0.7,	facing=-0.1,	x=-60,	y=58 },
+		[1] = { scale=1.0/0.8,	facing=0,		x=-10,	y=-22 },
+		[2] = { scale=1.0/0.7,	facing=-0.4,	x=-60,	y=58 },
+		[3] = { scale=1.0/0.6,	facing=0.4,		x=35,	y=98 },
 	},
 	[4] = {
-		[1] = { scale=1.0/0.8,	facing=0,		x=0,	y=-22 },
-		[2] = { scale=1.0/0.7,	facing=0.7,		x=60,	y=58  },
-		[3] = { scale=1.0/0.7,	facing=-0.1,	x=-60,	y=58  },
-		[4] = { scale=1.0/0.6,	facing=0.1,		x=-20,	y=138 },
+		[1] = { scale=1.0/0.8,	facing=0,		x=-10,	y=-22 },
+		[2] = { scale=1.0/0.7,	facing=-0.4,	x=-60,	y=58 },
+		[3] = { scale=1.0/0.6,	facing=0.4,		x=35,	y=98 },
+		[4] = { scale=1.0/0.5,	facing=0.5,		x=-20,	y=158 },
 	},
 	[5] = {
-		[1] = { scale=1.0/0.8,	facing=0,		x=0,	y=-22 },
-		[2] = { scale=1.0/0.7,	facing=0.7,		x=60,	y=58  },
-		[3] = { scale=1.0/0.7,	facing=-0.1,	x=-60,	y=58  },
-		[4] = { scale=1.0/0.6,	facing=0.1,		x=-20,	y=138 },
-		[5] = { scale=1.0/0.5,	facing=0.2,		x=0,	y=150 },
+		[1] = { scale=1.0/0.8,	facing=0,		x=-10,	y=-22 },
+		[2] = { scale=1.0/0.7,	facing=-0.4,	x=-60,	y=58 },
+		[3] = { scale=1.0/0.6,	facing=0.4,		x=35,	y=98 },
+		[4] = { scale=1.0/0.5,	facing=-0.5,	x=-40,	y=138 },
+		[5] = { scale=1.0/0.35,	facing=0.5,		x=0,	y=190 },
 	}
 };
 
@@ -1418,58 +1443,166 @@ function GarrisonFollowerTabMixin:ShowFollowerModel(followerInfo)
 
 	GarrisonFollowerPageModelUpgrade_Update(self.ModelCluster.UpgradeFrame);
 end
-function GarrisonFollowerTabMixin:ShowFollower(followerID, followerList)
 
-	local lastUpdate = self.lastUpdate;
-	local followerInfo = C_Garrison.GetFollowerInfo(followerID);
-	local missionFrame = self:GetParent();
 
-	self.followerID = followerID;
-	self.ModelCluster.followerID = followerID;
+local function AbilityFrame_OnReleased(pool, abilityFrame)
+	FramePool_HideAndClearAnchors(pool, abilityFrame);
+	abilityFrame.IconButton.ValidSpellHighlight:Hide();
+	abilityFrame.IconButton.Lock:Hide();
+	abilityFrame.IconButton.LockBackground:Hide();
+end
 
-	self:ShowFollowerModel(followerInfo);
-	if (not followerInfo) then
-		followerInfo = { };
-		followerInfo.followerTypeID = missionFrame.followerTypeID;
-		followerInfo.quality = 1;
+local function EquipmentFrame_OnReleased(pool, equipmentFrame)
+	FramePool_HideAndClearAnchors(pool, equipmentFrame);
+	equipmentFrame:SetScale(1);
+end
+
+
+function GarrisonFollowerTabMixin:OnLoad()
+	self.abilitiesPool = CreateFramePool("FRAME", self.AbilitiesFrame, "GarrisonFollowerPageAbilityTemplate", AbilityFrame_OnReleased);
+	self.equipmentPool = CreateFramePool("BUTTON", self.AbilitiesFrame, "GarrisonFollowerEquipmentTemplate", EquipmentFrame_OnReleased);
+	self.countersPool = CreateFramePool("FRAME", self.AbilitiesFrame, "GarrisonMissionMechanicTemplate");
+end
+
+function GarrisonFollowerTabMixin:OnHide()
+	self.lastUpdate = nil;
+end
+
+function GarrisonFollowerTabMixin:IsEquipmentAbility(followerInfo, ability)
+	if (GarrisonFollowerOptions[followerInfo.followerTypeID].traitAbilitiesAreEquipment) then
+		return ability.isTrait;
+	end
+	return false;
+end
+
+function GarrisonFollowerTabMixin:IsSpecializationAbility(followerInfo, ability)
+	return ability.isSpecialization;
+end
+
+function GarrisonFollowerTabMixin:SetupAbilities(followerInfo)
+
+	if (not followerInfo.abilities or not followerInfo.unlockableAbilities or not followerInfo.equipment) then
+		local abilities, unlockables = C_Garrison.GetFollowerAbilities(followerInfo.followerID);
+
+		-- filter out equipment from abilities and place them in their own table.
 		followerInfo.abilities = { };
-		followerInfo.unlockableAbilities = { };
-	end
-	GarrisonMissionPortrait_SetFollowerPortrait(self.PortraitFrame, followerInfo);
-	self.Name:SetText(followerInfo.name);
-	local color = ITEM_QUALITY_COLORS[followerInfo.quality];	
-	self.Name:SetVertexColor(color.r, color.g, color.b);
-	self.ClassSpec:SetText(followerInfo.className);
-	self.Class:SetAtlas(followerInfo.classAtlas);
-
-	self:SetupXPBar(followerInfo);
-	GarrisonTruncationFrame_Check(self.Name);
-
-	if ( ENABLE_COLORBLIND_MODE == "1" ) then
-		self.QualityFrame:Show();
-		self.QualityFrame.Text:SetText(_G["ITEM_QUALITY"..followerInfo.quality.."_DESC"]);
-	else
-		self.QualityFrame:Hide();
-	end
-
-	self.AbilitiesFrame.TraitsText:ClearAllPoints();
-	if (not followerInfo.abilities) then
-		followerInfo.abilities = C_Garrison.GetFollowerAbilities(followerID);
-	end
-	local lastAbilityAnchor, lastTraitAnchor;
-	local numCounters = 0;
-
-	for i=1, #followerInfo.abilities do
-		local ability = followerInfo.abilities[i];
-
-		local abilityFrame = self.AbilitiesFrame.Abilities[i];
-		if ( not abilityFrame ) then
-			abilityFrame = CreateFrame("Frame", nil, self.AbilitiesFrame, "GarrisonFollowerPageAbilityTemplate");
-			self.AbilitiesFrame.Abilities[i] = abilityFrame;
+		followerInfo.equipment = { };
+		
+		for i, ability in ipairs(abilities) do
+			if (self:IsEquipmentAbility(followerInfo, ability)) then
+				tinsert(followerInfo.equipment, ability);
+			else
+				tinsert(followerInfo.abilities, ability);
+			end
 		end
 
-		abilityFrame.isSpecialization = ability.isSpecialization;
-		abilityFrame.followerTypeID = followerInfo.followerTypeID;
+		-- filter out equipment from unlockables
+		followerInfo.unlockableAbilities = { };
+		if (unlockables) then
+			for i, ability in ipairs(unlockables) do
+				if (not self:IsEquipmentAbility(followerInfo, ability)) then
+					tinsert(followerInfo.unlockableAbilities, ability);
+				end
+			end
+		end
+	end
+
+	-- Zone Support
+	if (not followerInfo.combatAllySpellIDs) then
+		followerInfo.combatAllySpellIDs = { C_Garrison.GetFollowerZoneSupportAbilities(followerInfo.followerID) };
+	end
+
+end
+
+local BASE_SPECIALIZATION_LAYOUT_INDEX = 100;
+local BASE_ABILITY_LAYOUT_INDEX = 200;
+local BASE_TRAIT_LAYOUT_INDEX = 300;
+local BASE_COMBAT_ALLY_LAYOUT_INDEX = 400;
+local BASE_FLAVORTEXT_LAYOUT_INDEX = 500;
+
+function GarrisonFollowerTabMixin:ShowAbilities(followerInfo)
+
+	local hasSpecialization;
+	local hasTrait;
+	local hasAbility;
+	
+	local numCounters = 0;
+
+	self.abilitiesPool:ReleaseAll();
+	self.countersPool:ReleaseAll();
+
+	local numAbilitiesWithUnlockables = #followerInfo.abilities + #followerInfo.unlockableAbilities;
+	for i=1, numAbilitiesWithUnlockables do
+		local ability;
+		if (i <= #followerInfo.abilities) then
+			ability = followerInfo.abilities[i];
+		else
+			ability = followerInfo.unlockableAbilities[i - #followerInfo.abilities];
+		end
+
+		local abilityFrame = self.abilitiesPool:Acquire();
+
+		if ( followerInfo.isCollected and GarrisonFollowerAbilities_IsNew(self.lastUpdate, followerInfo.followerID, ability.id, GARRISON_FOLLOWER_ABILITY_TYPE_EITHER) ) then			
+			if ( ability.temporary ) then
+				abilityFrame.LargeAbilityFeedbackGlowAnim:Play();
+				PlaySoundKitID(51324);
+			else
+				abilityFrame.IconButton.Icon:SetAlpha(0);
+				abilityFrame.IconButton.OldIcon:SetAlpha(1);
+				abilityFrame.AbilityOverwriteAnim:Play();		
+			end
+		else
+			GarrisonFollowerPageAbility_StopAnimations(abilityFrame);
+		end
+		local name;
+		local extraDescriptionText;
+		if (ability.requiredQualityLevel ~= nil) then
+			name = GRAY_FONT_COLOR:WrapTextInColorCode(ability.name);
+			extraDescriptionText = RED_FONT_COLOR:WrapTextInColorCode(string.format(GARRISON_ABILITY_UNLOCK_TOOLTIP, followerInfo.name, _G["ITEM_QUALITY"..ability.requiredQualityLevel.."_DESC"]));
+			abilityFrame.IconButton.Lock:Show();
+			abilityFrame.IconButton.LockBackground:Show();
+		else
+			name = ability.name;
+		end
+		abilityFrame.Name:SetText(name);
+		abilityFrame.IconButton.Icon:SetTexture(ability.icon);
+		abilityFrame.IconButton.Icon:SetDesaturated(ability.requiredQualityLevel ~= nil);
+		abilityFrame.IconButton.abilityID = ability.id;
+		abilityFrame.IconButton.Border:SetShown(ShouldShowFollowerAbilityBorder(followerInfo.followerTypeID, ability));
+		abilityFrame.IconButton.extraDescriptionText = extraDescriptionText;
+		abilityFrame.ability = ability;
+
+		local hasCounters = false;
+		if ( ability.counters and not ability.isTrait and not self.isLandingPage and not GarrisonFollowerOptions[followerInfo.followerTypeID].hideCountersInAbilityFrame ) then
+			for id, counter in pairs(ability.counters) do
+				numCounters = numCounters + 1;
+				local counterFrame = self.countersPool:Acquire();
+				counterFrame.mainFrame = self:GetParent();
+				counterFrame.Icon:SetTexture(counter.icon);
+				counterFrame.tooltip = counter.name;
+				if ( hasCounters ) then			
+					counterFrame:SetPoint("LEFT", self.AbilitiesFrame.Counters[numCounters - 1], "RIGHT", 10, 0);
+				else
+					counterFrame:SetPoint("LEFT", abilityFrame.CounterString, "RIGHT", 2, -2);
+				end
+				counterFrame:Show();
+				counterFrame.info = counter;
+				counterFrame.followerTypeID = followerInfo.followerTypeID;
+				hasCounters = true;
+			end
+		end
+		if ( hasCounters ) then
+			abilityFrame:SetHeight(60);
+			abilityFrame.CounterString:Show();
+		else
+			if (self.isLandingPage) then
+				abilityFrame:SetHeight(30);
+			else
+				abilityFrame:SetHeight(40);
+			end
+			abilityFrame.CounterString:Hide();
+		end
+
 		if ( self.isLandingPage ) then
 			abilityFrame.Category:SetText("");
 			abilityFrame.Name:SetFontObject("GameFontHighlightMed2");
@@ -1488,95 +1621,175 @@ function GarrisonFollowerTabMixin:ShowFollower(followerID, followerList)
 			abilityFrame.Category:SetText(categoryText);
 			abilityFrame.Name:SetFontObject("GameFontNormalLarge2");
 			abilityFrame.Name:ClearAllPoints();
-			abilityFrame.Name:SetPoint("TOPLEFT", abilityFrame.IconButton, "TOPRIGHT", 8, 0);
+			if (hasCounters) then
+				abilityFrame.Name:SetPoint("TOPLEFT", abilityFrame.IconButton, "TOPRIGHT", 8, 0);
+			else
+				abilityFrame.Name:SetPoint("LEFT", abilityFrame.IconButton, "RIGHT", 8, 0);
+			end
 			abilityFrame.Name:SetWidth(240);
 		end
-		if ( followerInfo.isCollected and GarrisonFollowerAbilities_IsNew(lastUpdate, followerInfo.followerID, ability.id, GARRISON_FOLLOWER_ABILITY_TYPE_TRAIT) ) then			
-			if ( ability.temporary ) then
-				abilityFrame.LargeAbilityFeedbackGlowAnim:Play();
-				PlaySoundKitID(51324);
-			else
-				abilityFrame.IconButton.Icon:SetAlpha(0);
-				abilityFrame.IconButton.OldIcon:SetAlpha(1);
-				abilityFrame.AbilityOverwriteAnim:Play();		
-			end
-		else
-			GarrisonFollowerPageAbility_StopAnimations(abilityFrame);
-		end
-		abilityFrame.Name:SetText(ability.name);
-		abilityFrame.IconButton.Icon:SetTexture(ability.icon);
-		abilityFrame.IconButton.abilityID = ability.id;
-		abilityFrame.ability = ability;
 
-		local hasCounters = false;
-		if ( ability.counters and not ability.isTrait and not self.isLandingPage ) then
-			for id, counter in pairs(ability.counters) do
-				numCounters = numCounters + 1;
-				local counterFrame = self.AbilitiesFrame.Counters[numCounters];
-				if ( not counterFrame ) then
-					counterFrame = CreateFrame("Frame", nil, self.AbilitiesFrame, "GarrisonMissionMechanicTemplate");
-					self.AbilitiesFrame.Counters[numCounters] = counterFrame;
-				end
-				counterFrame.mainFrame = self:GetParent();
-				counterFrame.Icon:SetTexture(counter.icon);
-				counterFrame.tooltip = counter.name;
-				counterFrame:ClearAllPoints();
-				if ( hasCounters ) then			
-					counterFrame:SetPoint("LEFT", self.AbilitiesFrame.Counters[numCounters - 1], "RIGHT", 10, 0);
-				else
-					counterFrame:SetPoint("LEFT", abilityFrame.CounterString, "RIGHT", 2, -2);
-				end
-				counterFrame:Show();
-				counterFrame.info = counter;
-				counterFrame.followerTypeID = followerInfo.followerTypeID;
-				hasCounters = true;
-			end
-		end
-		if ( hasCounters ) then
-			abilityFrame.CounterString:Show();
+		if (ability.isSpecialization) then
+			hasSpecialization = true;
+			abilityFrame.layoutIndex = BASE_SPECIALIZATION_LAYOUT_INDEX + i;
+		elseif (not ability.isTrait) then
+			hasAbility = true;
+			abilityFrame.layoutIndex = BASE_ABILITY_LAYOUT_INDEX + i;
 		else
-			abilityFrame.CounterString:Hide();
-		end
-		-- anchor ability
-		if ( ability.isTrait ) then
-			lastTraitAnchor = GarrisonFollowerPage_AnchorAbility(abilityFrame, lastTraitAnchor, self.AbilitiesFrame.TraitsText, self.isLandingPage);
-		else
-			lastAbilityAnchor = GarrisonFollowerPage_AnchorAbility(abilityFrame, lastAbilityAnchor, self.AbilitiesFrame.AbilitiesText, self.isLandingPage);
+			hasTrait = true;
+			abilityFrame.layoutIndex = BASE_TRAIT_LAYOUT_INDEX + i;
 		end
 		abilityFrame:Show();
+		abilityFrame.followerTypeID = followerInfo.followerTypeID;
 	end
-	followerList:UpdateValidSpellHighlight(followerID, followerInfo);
 
-	if ( lastAbilityAnchor ) then
-		self.AbilitiesFrame.AbilitiesText:Show();
-	else
-		self.AbilitiesFrame.AbilitiesText:Hide();
+	self.AbilitiesFrame.SpecializationLabel:SetShown(hasSpecialization);
+	self.AbilitiesFrame.AbilitiesText:SetShown(hasAbility);
+	self.AbilitiesFrame.TraitsText:SetShown(hasTrait);
+
+
+	-- Combat Ally
+	local hasCombatAllySpell = #followerInfo.combatAllySpellIDs ~= 0;
+
+	for i, combatAllySpell in ipairs(followerInfo.combatAllySpellIDs) do
+		local _, _, texture = GetSpellInfo(combatAllySpell);
+		if (i == 1) then
+			self.AbilitiesFrame.CombatAllySpell[i].layoutIndex = BASE_COMBAT_ALLY_LAYOUT_INDEX + 2;
+		else
+			self.AbilitiesFrame.CombatAllySpell[i].layoutIndex = nil;
+		end
+		self.AbilitiesFrame.CombatAllySpell[i]:Show();
+		self.AbilitiesFrame.CombatAllySpell[i].iconTexture:SetTexture(texture);
+		self.AbilitiesFrame.CombatAllySpell[i].spellID = combatAllySpell;
+		self.AbilitiesFrame.CombatAllySpell[i].followerID = followerID;
 	end
-	if ( lastTraitAnchor ) then
-		self.AbilitiesFrame.TraitsText:Show();
-		if ( lastAbilityAnchor ) then
-			self.AbilitiesFrame.TraitsText:SetPoint("LEFT", self.AbilitiesFrame.AbilitiesText, "LEFT");
-			if ( self.isLandingPage ) then
-				self.AbilitiesFrame.TraitsText:SetPoint("TOP", lastAbilityAnchor, "BOTTOM", 0, 0);
+	self.AbilitiesFrame.CombatAllyLabel:SetShown(hasCombatAllySpell);
+	self.AbilitiesFrame.CombatAllyLabel.layoutIndex = BASE_COMBAT_ALLY_LAYOUT_INDEX;
+	self.AbilitiesFrame.CombatAllyDescriptionLabel:SetShown(hasCombatAllySpell);
+	self.AbilitiesFrame.CombatAllyDescriptionLabel.layoutIndex = BASE_COMBAT_ALLY_LAYOUT_INDEX + 1;
+
+	for i = #followerInfo.combatAllySpellIDs + 1, #self.AbilitiesFrame.CombatAllySpell do
+		self.AbilitiesFrame.CombatAllySpell[i]:Hide();
+	end
+
+	if (followerInfo.flavorText) then
+		self.AbilitiesFrame.FlavorText.layoutIndex = BASE_FLAVORTEXT_LAYOUT_INDEX;
+		self.AbilitiesFrame.FlavorText:SetText(followerInfo.flavorText);
+		self.AbilitiesFrame.FlavorText:Show();
+	else
+		self.AbilitiesFrame.FlavorText:Hide();
+	end
+
+	self.AbilitiesFrame:Layout();
+end
+
+function GarrisonFollowerTabMixin:ShowEquipment(followerInfo)
+	self.equipmentPool:ReleaseAll();
+
+	local lastEquipmentFrame;
+	for i=1, #followerInfo.equipment do
+		local equipment = followerInfo.equipment[i];
+
+		local equipmentFrame = self.equipmentPool:Acquire();
+		if (self.isLandingPage) then
+			equipmentFrame:SetScale(0.7);
+		end
+
+		equipmentFrame.followerTypeID = followerInfo.followerTypeID;
+		equipmentFrame.followerList = self:GetFollowerList();
+		equipmentFrame.abilityID = equipment.id;
+		equipmentFrame.followerID = followerInfo.followerID;
+		if (equipment.icon) then
+			equipmentFrame.Icon:SetTexture(equipment.icon);
+			equipmentFrame.Icon:Show();
+			if (not hideCounters) then
+				for id, counter in pairs(equipment.counters) do
+					equipment.Counter.Icon:SetTexture(counter.icon);
+					equipment.Counter.tooltip = counter.name;
+					equipment.Counter.mainFrame = mainFrame;
+					equipment.Counter.info = counter;
+					equipment.Counter:Show();
+							
+					break;
+				end
+			end
+					
+			if (followerInfo.isCollected and GarrisonFollowerAbilities_IsNew(self.lastUpdate, followerID, equipment.id, GARRISON_FOLLOWER_ABILITY_TYPE_EITHER)) then
+				equipmentFrame.EquipAnim:Play();
 			else
-				self.AbilitiesFrame.TraitsText:SetPoint("TOP", lastAbilityAnchor, "BOTTOM", 0, -16);
+				GarrisonEquipment_StopAnimations(equipmentFrame);
 			end
 		else
-			self.AbilitiesFrame.TraitsText:SetPoint("TOPLEFT", self.AbilitiesFrame.AbilitiesText, "TOPLEFT");
+			equipmentFrame.Icon:Hide();
 		end
+
+		if (lastEquipmentFrame) then
+			equipmentFrame:SetPoint("TOPLEFT", lastEquipmentFrame, "TOPRIGHT");
+		else
+			if (self.isLandingPage) then
+				equipmentFrame:SetPoint("TOPLEFT", self.AbilitiesFrame.EquipmentSlotsLabel, "BOTTOMLEFT", 118, 0);
+			else
+				equipmentFrame:SetPoint("TOPLEFT", self.AbilitiesFrame.EquipmentSlotsLabel, "BOTTOMLEFT", 60, -20);
+			end
+		end
+		equipmentFrame:Show();
+		lastEquipmentFrame = equipmentFrame;
+	end
+	self.AbilitiesFrame.EquipmentSlotsLabel:SetShown( #followerInfo.equipment > 0 );
+end
+
+
+function GarrisonFollowerTabMixin:ShowFollower(followerID, followerList)
+
+	local followerInfo = C_Garrison.GetFollowerInfo(followerID);
+	local missionFrame = self:GetParent();
+
+	self.followerID = followerID;
+	self.ModelCluster.followerID = followerID;
+
+	self:ShowFollowerModel(followerInfo);
+	if (not followerInfo) then
+		followerInfo = { };
+		followerInfo.followerTypeID = missionFrame:GetFollowerList().followerType;
+		followerInfo.quality = 1;
+		followerInfo.abilities = { };
+		followerInfo.unlockableAbilities = { };
+		followerInfo.equipment = { };
+		followerInfo.combatAllySpellIDs = { };
+	end
+	GarrisonMissionPortrait_SetFollowerPortrait(self.PortraitFrame, followerInfo);
+	self.Name:SetText(followerInfo.name);
+	local color = ITEM_QUALITY_COLORS[followerInfo.quality];	
+	self.Name:SetVertexColor(color.r, color.g, color.b);
+
+	if (followerInfo.isTroop) then
+		self.DurabilityFrame:Show();
+		self.ClassSpec:Hide();
+		self.DurabilityFrame:SetDurability(followerInfo.durability, followerInfo.maxDurability);
 	else
-		self.AbilitiesFrame.TraitsText:Hide();
+		self.ClassSpec:Show();
+		self.DurabilityFrame:Hide();
+		self.ClassSpec:SetText(followerInfo.className);
 	end
-	
-	for i = #followerInfo.abilities + 1, #self.AbilitiesFrame.Abilities do
-		self.AbilitiesFrame.Abilities[i]:Hide();
+	self.Class:SetAtlas(followerInfo.classAtlas);
+
+	self:SetupXPBar(followerInfo);
+	GarrisonTruncationFrame_Check(self.Name);
+
+	if ( ENABLE_COLORBLIND_MODE == "1" ) then
+		self.QualityFrame:Show();
+		self.QualityFrame.Text:SetText(_G["ITEM_QUALITY"..followerInfo.quality.."_DESC"]);
+	else
+		self.QualityFrame:Hide();
 	end
-	for i = numCounters + 1, #self.AbilitiesFrame.Counters do
-		self.AbilitiesFrame.Counters[i]:Hide();
-	end
-	
+
+	self:SetupAbilities(followerInfo);
+	self:ShowAbilities(followerInfo);
+	self:ShowEquipment(followerInfo);
+
 	-- gear	/ source
-	if ( followerInfo.isCollected and not self.isLandingPage ) then
+	local showGearOption = GarrisonFollowerOptions[followerInfo.followerTypeID].followerPageShowGear;
+	if (showGearOption and followerInfo.isCollected and not self.isLandingPage) then
 		local weaponItemID, weaponItemLevel, armorItemID, armorItemLevel = C_Garrison.GetFollowerItems(followerInfo.followerID);
 		GarrisonFollowerPage_SetItem(self.ItemWeapon, weaponItemID, weaponItemLevel);
 		GarrisonFollowerPage_SetItem(self.ItemArmor, armorItemID, armorItemLevel);
@@ -1588,14 +1801,18 @@ function GarrisonFollowerTabMixin:ShowFollower(followerID, followerList)
 			self.ItemArmor:Hide();
 			self.ItemAverageLevel.Level:Hide();
 		end
-		self.Source.SourceText:Hide();
 	else
 		self.ItemWeapon:Hide();
 		self.ItemArmor:Hide();
-		self.ItemAverageLevel.Level:Hide();		
+		self.ItemAverageLevel.Level:Hide();
+	end
 
+	local showSourceTextOption = GarrisonFollowerOptions[followerInfo.followerTypeID].followerPageShowSourceText;
+	if (showSourceTextOption and not (followerInfo.isCollected and not self.isLandingPage)) then
 		self.Source.SourceText:SetText(C_Garrison.GetFollowerSourceTextByID(followerID));		
 		self.Source.SourceText:Show();
+	else
+		self.Source.SourceText:Hide();
 	end
 
 	self.lastUpdate = self:IsShown() and GetTime() or nil;
@@ -1653,10 +1870,9 @@ end
 ---------------------------------------------------------------------------------
 
 function GarrisonEquipment_AddEquipment(self)
-	local followerList = self:GetParent():GetFollowerList();
-	local followerTab = self:GetParent():GetFollowerTab();
+	local followerList = self.followerList;
 	if ( followerList.canCastSpellsOnFollowers ) then
-		local followerID = followerTab.followerID;
+		local followerID = self.followerID;
 		local popupData = {};
 		local equipmentName;
 		if ( SpellCanTargetGarrisonFollowerAbility(followerID, self.abilityID) ) then
@@ -1678,6 +1894,12 @@ function GarrisonEquipment_AddEquipment(self)
 		popupData.abilityID = self.abilityID;
 		local text = format(GarrisonFollowerOptions[followerList.followerType].strings.CONFIRM_EQUIPMENT, equipmentName);
 		StaticPopup_Show("CONFIRM_FOLLOWER_EQUIPMENT", text, nil, popupData);
+	end
+end
+
+function GarrisonEquipment_StopAnimations(frame)
+	if (frame.EquipAnim:IsPlaying()) then
+		frame.EquipAnim:Stop();
 	end
 end
 
@@ -1875,3 +2097,56 @@ function GarrisonFollowerAbilities_IsNew(lastUpdate, followerID, abilityIdToTest
 
 	return false;
 end
+
+---------------------------------------------------------------------------------
+-- Combat Ally support
+---------------------------------------------------------------------------------
+GarrisonFollowerCombatAllySpellMixin = { }
+
+function GarrisonFollowerCombatAllySpellMixin:OnEnter()
+	if ( self.spellID ) then
+		GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT");
+		GameTooltip:SetSpellByID(self.spellID);
+		GameTooltip:Show();
+	end
+end
+
+function GarrisonFollowerCombatAllySpellMixin:OnLeave()
+	GameTooltip:Hide();
+end
+
+
+---------------------------------------------------------------------------------
+-- GarrisonFollowerEquipmentMixin
+---------------------------------------------------------------------------------
+
+GarrisonFollowerEquipmentMixin = { }
+function GarrisonFollowerEquipmentMixin:OnEnter()
+	if (self.abilityID) then
+		ShowGarrisonFollowerAbilityTooltip(self, self.abilityID, self.followerTypeID);
+	end
+end
+
+function GarrisonFollowerEquipmentMixin:OnLeave()
+	HideGarrisonFollowerAbilityTooltip(self.followerTypeID);
+end
+
+function GarrisonFollowerEquipmentMixin:OnClick(button)
+	if ( IsModifiedClick("CHATLINK") and self.Icon:IsShown() ) then
+		local abilityLink = C_Garrison.GetFollowerAbilityLink(self.abilityID);
+		if (abilityLink) then
+			ChatEdit_InsertLink(abilityLink);
+		end
+	elseif (self.abilityID) then
+		if ( button == "LeftButton") then
+			GarrisonEquipment_AddEquipment(self);
+		end	
+	end
+end
+
+function GarrisonFollowerEquipmentMixin:OnReceiveDrag()
+	if (self.abilityID) then
+		GarrisonEquipment_AddEquipment(self);
+	end
+end
+

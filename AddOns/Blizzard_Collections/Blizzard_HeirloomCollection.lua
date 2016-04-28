@@ -127,8 +127,6 @@ function HeirloomsMixin:OnLoad()
 	self.heirloomLayoutData = {};
 	self.itemIDsInCurrentLayout = {};
 
-	self.validSourceTypes = {};
-
 	self.numKnownHeirlooms = 0;
 	self.numPossibleHeirlooms = 0;
 
@@ -250,11 +248,6 @@ function HeirloomsMixin:SortHeirloomsIntoEquipmentBuckets()
 		local name, itemEquipLoc, isPvP, itemTexture, upgradeLevel, source, _, effectiveLevel, minLevel, maxLevel = C_Heirloom.GetHeirloomInfo(itemID);
 		local category = GetHeirloomCategoryFromInvType(itemEquipLoc);
 		if category then
-			-- Only show source filters for heirlooms that actually have that source
-			if source then
-				self.validSourceTypes[source] = true;
-			end
-
 			if not equipBuckets[category] then
 				equipBuckets[category] = {};
 			end
@@ -658,22 +651,22 @@ function HeirloomsMixin:SetPage(page)
 	end
 end
 
-function HeirloomsMixin:SetSourceFilter(source, filtered)
-	if self:IsSourceFiltered(source) ~= filtered then
-		C_Heirloom.SetHeirloomSourceFilter(source, filtered);
+function HeirloomsMixin:SetSourceChecked(source, checked)
+	if self:IsSourceChecked(source) ~= checked then
+		C_Heirloom.SetHeirloomSourceFilter(source, checked);
 
 		self:FullRefreshIfVisible();
 	end
 end
 
-function HeirloomsMixin:IsSourceFiltered(source)
+function HeirloomsMixin:IsSourceChecked(source)
 	return C_Heirloom.GetHeirloomSourceFilter(source);
 end
 
-function HeirloomsMixin:SetAllSourcesFiltered(filtered)
+function HeirloomsMixin:SetAllSourcesChecked(checked)
 	local numSources = C_PetJournal.GetNumPetSources();
 	for i = 1, numSources do
-		C_Heirloom.SetHeirloomSourceFilter(i, filtered);
+		C_Heirloom.SetHeirloomSourceFilter(i, checked);
 	end
 
 	self:FullRefreshIfVisible();
@@ -719,14 +712,14 @@ function HeirloomsMixin:OpenCollectedFilterDropDown(level)
 		
 		info.text = CHECK_ALL;
 		info.func = function()
-						self:SetAllSourcesFiltered(false);
+						self:SetAllSourcesChecked(true);
 						UIDropDownMenu_Refresh(self.filterDropDown, 1, 2);
 					end;
 		UIDropDownMenu_AddButton(info, level);
 			
 		info.text = UNCHECK_ALL;
 		info.func = function()
-						self:SetAllSourcesFiltered(true);
+						self:SetAllSourcesChecked(false);
 						UIDropDownMenu_Refresh(self.filterDropDown, 1, 2);
 					end;
 		UIDropDownMenu_AddButton(info, level);
@@ -735,12 +728,12 @@ function HeirloomsMixin:OpenCollectedFilterDropDown(level)
 
 		local numSources = C_PetJournal.GetNumPetSources();
 		for i = 1, numSources do
-			if self.validSourceTypes[i] then
+			if C_Heirloom.IsHeirloomSourceValid(i) then
 				info.text = _G["BATTLE_PET_SOURCE_"..i];
 				info.func = function(_, _, _, value)
-							self:SetSourceFilter(i, not value);
+							self:SetSourceChecked(i, value);
 						end;
-				info.checked = function() return not self:IsSourceFiltered(i); end;
+				info.checked = function() return self:IsSourceChecked(i); end;
 				UIDropDownMenu_AddButton(info, level);
 			end
 		end

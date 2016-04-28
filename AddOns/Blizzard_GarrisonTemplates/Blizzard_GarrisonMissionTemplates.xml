@@ -845,7 +845,7 @@
 		</Scripts>
 	</CinematicModel>
 
-	<Frame name="GarrisonMissionCompleteModelCluster" virtual="true">
+	<Frame name="GarrisonMissionCompleteModelCluster" mixin="GarrisonMissionCompleteModelClusterMixin" virtual="true">
 		<Size x="540" y="285"/>
 		<Frames>
 			<CinematicModel parentArray="Model" parentKey="Model1" inherits="GarrisonMissionCompleteModelTemplate" frameLevel="15" setAllPoints="true"/>
@@ -854,16 +854,11 @@
 			<CinematicModel parentArray="Model" parentKey="Model4" inherits="GarrisonMissionCompleteModelTemplate" frameLevel="12" setAllPoints="true"/>
 			<CinematicModel parentArray="Model" parentKey="Model5" inherits="GarrisonMissionCompleteModelTemplate" frameLevel="11" setAllPoints="true"/>
 		</Frames>
-	</Frame>
-	<Frame name="GarrisonMissionCompleteModelClusterFacingLeft" virtual="true">
-		<Size x="540" y="285"/>
-		<Frames>
-			<CinematicModel parentArray="Model" parentKey="Model1" facingLeft="true" inherits="GarrisonMissionCompleteModelTemplate" frameLevel="15" setAllPoints="true"/>
-			<CinematicModel parentArray="Model" parentKey="Model2" facingLeft="true" inherits="GarrisonMissionCompleteModelTemplate" frameLevel="14" setAllPoints="true"/>
-			<CinematicModel parentArray="Model" parentKey="Model3" facingLeft="true" inherits="GarrisonMissionCompleteModelTemplate" frameLevel="13" setAllPoints="true"/>
-			<CinematicModel parentArray="Model" parentKey="Model4" facingLeft="true" inherits="GarrisonMissionCompleteModelTemplate" frameLevel="12" setAllPoints="true"/>
-			<CinematicModel parentArray="Model" parentKey="Model5" facingLeft="true" inherits="GarrisonMissionCompleteModelTemplate" frameLevel="11" setAllPoints="true"/>
-		</Frames>
+		<Animations>
+			<AnimationGroup parentKey="FadeOut" setToFinalAlpha="true">
+				<Alpha fromAlpha="1" toAlpha="0" duration="1" order="1"/>
+			</AnimationGroup>
+		</Animations>
 	</Frame>
 	<ScrollFrame name="GarrisonFollowerTabModelCluster" virtual="true">
 		<ScrollChild>
@@ -1225,7 +1220,7 @@
 					<Anchor point="TOP"/>
 				</Anchors>
 			</Frame>
-			<Frame parentArray="ModelCluster" parentKey="ModelRight" inherits="GarrisonMissionCompleteModelClusterFacingLeft">
+			<Frame parentArray="ModelCluster" parentKey="ModelRight" inherits="GarrisonMissionCompleteModelCluster">
 				<Anchors>
 					<Anchor point="TOP"/>
 				</Anchors>

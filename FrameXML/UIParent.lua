@@ -342,7 +342,6 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("GARRISON_SHIPYARD_NPC_CLOSED");
 	self:RegisterEvent("SHIPMENT_CRAFTER_OPENED");
 
-	self:RegisterEvent("GARRISON_SHOW_LANDING_PAGE");
 	self:RegisterEvent("GARRISON_MONUMENT_SHOW_UI");
 	self:RegisterEvent("GARRISON_RECRUITMENT_NPC_OPENED");
 	self:RegisterEvent("GARRISON_TALENT_NPC_OPENED");

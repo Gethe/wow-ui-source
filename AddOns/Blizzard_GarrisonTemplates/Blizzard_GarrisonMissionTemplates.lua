@@ -5,16 +5,10 @@ local MISSION_BONUS_FONT_COLOR = CreateColor(1.0, 0.82, 0.13);
 
 GarrisonMission = {};
 
--- overridden
-function GarrisonMission:InitializeFollowerType()
-	self.followerTypeID = nil;
-end
-
 function GarrisonMission:OnLoadMainFrame()
 	PanelTemplates_SetNumTabs(self, 2);
 	self.selectedTab = 1;
 	PanelTemplates_UpdateTabs(self);
-	self:InitializeFollowerType();
 end
 
 function GarrisonMission:OnShowMainFrame()
@@ -839,6 +833,8 @@ function GarrisonMission:MissionCompleteInitialize(missionList, index)
 			model.FadeIn:Stop();
 			model:StopPan();
 		end
+		cluster.FadeOut:Stop();
+		cluster:SetAlpha(1);
 	end
 
 	stage.MissionInfo.Title:SetText(mission.name);
@@ -897,7 +893,14 @@ function GarrisonMission:MissionCompleteInitialize(missionList, index)
 		local followerInfo = C_Garrison.GetFollowerInfo(followerFrame.followerID);
 		missionCompleteFrame:SetFollowerLevel(followerFrame, followerInfo);
 
-		stage.followers[missionFollowerIndex] = { displayIDs = displayIDs, height = height, scale = scale, followerID = mission.followers[missionFollowerIndex] };
+		stage.followers[missionFollowerIndex] = { 
+										displayIDs = displayIDs, 
+										height = height, 
+										scale = scale, 
+										followerID = mission.followers[missionFollowerIndex], 
+										isTroop = isTroop,
+										durability = followerInfo.durability,
+										maxDurability = followerInfo.maxDurability };
 
 		if (not isTroop) then
 			if (encounters[encounterIndex]) then --cannot have more animations than encounters
@@ -959,7 +962,8 @@ function GarrisonMission:MissionCompleteInitialize(missionList, index)
 	missionCompleteFrame.ChanceFrame.ResultAnim:Stop();
 	missionCompleteFrame.BonusRewards.timerMissionID = nil;
 	if (mission.completed) then
-		-- if the mission is in this state, it's a success
+		-- if the mission is in this state, it's a success. We get here if the player gets to the rewards screen, and then doesn't click the
+		-- chest and closes the window and then re-opens the mission complete screen.
 		missionCompleteFrame.currentMission.succeeded = true;
 		missionCompleteFrame:SetScript("OnUpdate", nil);
 
@@ -976,7 +980,8 @@ function GarrisonMission:MissionCompleteInitialize(missionList, index)
 		missionCompleteFrame.ChanceFrame.Banner:SetAlpha(1);
 		missionCompleteFrame.ChanceFrame.Banner:SetWidth(GARRISON_MISSION_COMPLETE_BANNER_WIDTH);
 
-		missionCompleteFrame:AnimFollowersIn();
+		-- don't fade in any troops that are exhausted at this point, because we've already done their fade out animation the last time this rewards pane was shown.
+		missionCompleteFrame:AnimFollowersIn(nil, true);
 	else
 		stage.ModelMiddle:Hide();
 		stage.ModelRight:Hide();
@@ -1142,56 +1147,84 @@ function GarrisonMissionComplete:FindAnimIndexFor(func)
 end
 
 local ENDINGS = {
-	[1] = { ["ModelMiddle"] = { dist = 0, facing = 0.1, followerIndex = 1 },
-			["ModelLeft"] = { hidden = true },	
-			["ModelRight"] = { hidden = true },
+	[LE_FOLLOWER_TYPE_GARRISON_6_0] = {
+	    [1] = { ["ModelMiddle"] = { dist = 0, facing = 0.1, followerIndex = 1 },
+			    ["ModelLeft"] = { hidden = true },	
+			    ["ModelRight"] = { hidden = true },
+	    },
+	    [2] = { ["ModelMiddle"] = { hidden = true },
+			    ["ModelLeft"] = { dist = 0.2, facing = -0.2, followerIndex = 1 },	
+			    ["ModelRight"] = { dist = -0.2, facing = 0.2, followerIndex = 2 },
+	    },
+	    [3] = { ["ModelMiddle"] = { dist = 0, facing = 0.1, followerIndex = 2 },
+			    ["ModelLeft"] = { dist = 0.25, facing = -0.3, followerIndex = 1 },	
+			    ["ModelRight"] = { dist = -0.275, facing = 0.3, followerIndex = 3 },
+	    },
 	},
-	[2] = { ["ModelMiddle"] = { hidden = true },
-			["ModelLeft"] = { dist = 0.2, facing = -0.2, followerIndex = 1 },	
-			["ModelRight"] = { dist = 0.2, facing = 0.2, followerIndex = 2 },	-- Note, ModelRight frames have the facingLeft property. That's why the same dist value results in the model moving to the right instead of to the left.
-	},
-	[3] = { ["ModelMiddle"] = { dist = 0, facing = 0.1, followerIndex = 2 },
-			["ModelLeft"] = { dist = 0.25, facing = -0.3, followerIndex = 1 },	
-			["ModelRight"] = { dist = 0.275, facing = 0.3, followerIndex = 3 },
-	},
-};
-
-local positionData = {
-	[1] = {
-		[1] = { scale=1.0,	facing=0,			x=0,	y=0		}
-	},
-	[2] = {
-		[1] = { scale=1.0/0.7,	facing=0.1,		x=0.04,	y=0		},
-		[2] = { scale=1.0/0.7,	facing=-0.1,	x=-0.04,y=0		},
-	},
-	[3] = {
-		[1] = { scale=1.0/0.6,	facing=0,		x=0,	y=0,	},
-		[2] = { scale=1.0/0.6,	facing=0,		x=-.06,	y=-0.05,	},
-		[3] = { scale=1.0/0.6,	facing=0,	    x=.03,	y=-0.1,	},
-	},
-	[4] = {
-		[1] = { scale=1.0/0.6,	facing=0,		x=0,	y=0,	},
-		[2] = { scale=1.0/0.6,	facing=0,		x=0,	y=0,	},
-		[3] = { scale=1.0/0.6,	facing=0,	    x=0,	y=0,	},
-		[4] = { scale=1.0/0.6,	facing=0,		x=0,	y=0,	},
-	},
-	[5] = {
-		[1] = { scale=1.0/0.6,	facing=0,		x=0,	y=0,	},
-		[2] = { scale=1.0/0.6,	facing=0,		x=-.06,	y=-.05,	},
-		[3] = { scale=1.0/0.6,	facing=0,	    x=.03,	y=-0.1,	},
-		[4] = { scale=1.0/0.6,	facing=0,		x=-.05,	y=-0.2,		},
-		[5] = { scale=1.0/0.6,	facing=0,		x=.04,	y=-0.2,	},
+	[LE_FOLLOWER_TYPE_GARRISON_7_0] = {
+	    [1] = { ["ModelMiddle"] = { dist = 0, facing = 0, followerIndex = 1 },
+			    ["ModelLeft"] = { hidden = true },	
+			    ["ModelRight"] = { hidden = true },
+	    },
+	    [2] = { ["ModelMiddle"] = { hidden = true },
+			    ["ModelLeft"] = { dist = 0.2, facing = 0, followerIndex = 1 },	
+			    ["ModelRight"] = { dist = -0.2, facing = 0, followerIndex = 2 },
+	    },
+	    [3] = { ["ModelMiddle"] = { dist = 0, facing = 0, followerIndex = 2 },
+			    ["ModelLeft"] = { dist = 0.27, facing = 0, followerIndex = 1 },	
+			    ["ModelRight"] = { dist = -0.27, facing = 0, followerIndex = 3 },
+	    },
 	}
 };
 
-function GarrisonMissionComplete:SetupEnding(numFollowers)
-	for model, data in pairs(ENDINGS[numFollowers]) do
+local positionData = {
+	[LE_FOLLOWER_TYPE_GARRISON_6_0] = {
+	    [1] = {
+		    [1] = { scale=1.0,		facing=0,		x=0,	y=0		}
+	    },
+	},
+	[LE_FOLLOWER_TYPE_GARRISON_7_0] = {
+	    [1] = {
+		    [1] = { scale=1.0,		facing=0,		x=-0.02,	y=0		}
+	    },
+	    [2] = {
+		    [1] = { scale=1.0,		facing=-0.4,	x=0.025,	y=-.1		},
+		    [2] = { scale=1.0/0.95,	facing=0.4,		x=-0.055,	y=-.1		},
+	    },
+	    [3] = {
+		    [1] = { scale=1.0/0.8,	facing=0,		x=-0.02,	y=0,	},
+		    [2] = { scale=1.0/0.7,	facing=-0.4,	x=.03,	y=-.07,	},
+		    [3] = { scale=1.0/0.6,	facing=0.4,	    x=-.07,	y=-0.12,	},
+	    },
+	    [4] = {
+		    [1] = { scale=1.0/0.8,	facing=0,		x=-0.02,	y=0,	},
+		    [2] = { scale=1.0/0.7,	facing=-0.4,	x=.03,	y=-.07,	},
+		    [3] = { scale=1.0/0.6,	facing=0.4,	    x=-.07,	y=-0.12,	},
+		    [4] = { scale=1.0/0.5,	facing=-0.5,	x=0,	y=-0.2,	},
+	    },
+	    [5] = {
+		    [1] = { scale=1.0/0.8,	facing=0,		x=-0.02,	y=0,	},
+		    [2] = { scale=1.0/0.7,	facing=-0.4,	x=.03,	y=-.07,	},
+		    [3] = { scale=1.0/0.6,	facing=0.4,	    x=-.07,	y=-0.12,	},
+		    [4] = { scale=1.0/0.5,	facing=-0.5,	x=0,	y=-0.2,	},
+		    [5] = { scale=1.0/0.35,	facing=0.5,		x=-0.04,	y=-0.26,	},
+	    }
+	}
+};
+
+function GarrisonMissionComplete:SetupEnding(numFollowers, hideExhaustedTroopModels)
+	self.Stage.ModelRight:SetFacingLeft(false);
+	local followerType = self:GetParent().followerTypeID;
+	for model, data in pairs(ENDINGS[followerType][numFollowers]) do
 		local modelClusterFrame = self.Stage[model];
 		if ( data.hidden ) then
 			modelClusterFrame:Hide();
 		else
 			local followerInfo = self.Stage.followers[data.followerIndex];
-			local pos = positionData[#followerInfo.displayIDs];
+			if (hideExhaustedTroopModels and followerInfo.isTroop and followerInfo.durability and followerInfo.durability <= 0) then
+				modelClusterFrame:SetAlpha(0);
+			end
+			local pos = positionData[followerType][#followerInfo.displayIDs];
 			for i = 1, #followerInfo.displayIDs do
 				local modelFrame = modelClusterFrame.Model[i];
 				modelFrame:SetAlpha(1);
@@ -1477,6 +1510,12 @@ function GarrisonMissionComplete:AnimXP(entry)
 	end
 end
 
+function GarrisonMissionComplete:AnimCheerAndTroopDeath(entry)
+	for i = 1, #self.currentMission.followers do
+		self:AnimFollowerCheerAndTroopDeath(self.currentMission.followers[i]);
+	end
+end
+
 function GarrisonMissionComplete:AnimSkipWait(entry)
 	if ( self.skipAnimations ) then
 		entry.duration = 1.25;
@@ -1637,11 +1676,11 @@ function GarrisonMissionComplete:AnimFollowerXP(followerID, xpAward, oldXP, oldL
 		return;
 	end
 
+	local animIndex = self:FindAnimIndexFor(self.AnimFollowersIn);
 	for i = 1, #mission.followers do
 		local followerFrame = self.Stage.FollowersFrame.Followers[i];
 		if ( followerFrame.followerID == followerID ) then
 			-- play anim now if we finished animating followers in
-			local animIndex = self:FindAnimIndexFor(self.AnimFollowersIn);
 			if ( self.animIndex and self.animIndex > animIndex and (not followerFrame.activeAnims or followerFrame.activeAnims == 0) ) then
 				if ( xpAward > 0 ) then
 					local followerInfo = C_Garrison.GetFollowerInfo(followerID);
@@ -1665,6 +1704,42 @@ function GarrisonMissionComplete:AnimFollowerXP(followerID, xpAward, oldXP, oldL
 				t.oldLevel = oldLevel;
 				t.oldQuality = oldQuality;
 				tinsert(self.pendingXPAwards, t);
+			end
+			break;
+		end
+	end
+end
+
+function GarrisonMissionComplete:AnimFollowerCheerAndTroopDeath(followerID)
+	local missionList = self.completeMissions;
+	local missionIndex = self.currentIndex;
+	local mission = missionList[missionIndex];
+	
+	if (not mission) then
+		return;
+	end
+
+	for i = 1, #mission.followers do
+		local followerFrame = self.Stage.FollowersFrame.Followers[i];
+		if ( followerFrame.followerID == followerID ) then
+			local followerInfo = C_Garrison.GetFollowerInfo(followerID);
+			self:SetFollowerLevel(followerFrame, followerInfo);
+			for _, cluster in ipairs(self.Stage.ModelCluster) do
+				if (cluster:IsShown()) then
+					if (cluster:GetFollowerID() == followerFrame.followerID) then
+						if (followerInfo.isTroop and followerInfo.durability and followerInfo.durability <= 0) then
+							cluster.FadeOut:Play();
+						else
+							for _, model in ipairs(cluster.Model) do
+								if ( model.followerID == followerFrame.followerID and model:IsShown() ) then
+									model:SetSpellVisualKit(6375);	-- level up visual
+									PlaySound("UI_Garrison_CommandTable_Follower_LevelUp");
+									break;
+								end
+							end
+						end
+					end
+				end
 			end
 			break;
 		end
@@ -2619,4 +2694,20 @@ function MissionCompletePreload_StartTimeout(waitTime, callbackFunc, mainFrame)
 	model.waitTime = waitTime;
 	model.callbackFunc = callbackFunc;
 	model.mainFrame = mainFrame;
+end
+
+---------------------------------------------------------------------------------
+--- GarrisonMissionCompleteModelClusterMixin                                  ---
+---------------------------------------------------------------------------------
+
+GarrisonMissionCompleteModelClusterMixin = {}
+
+function GarrisonMissionCompleteModelClusterMixin:SetFacingLeft(facingLeft)
+	for i, model in ipairs(self.Model) do
+		model:SetFacingLeft(facingLeft);
+	end
+end
+
+function GarrisonMissionCompleteModelClusterMixin:GetFollowerID()
+	return self.Model[1].followerID;
 end

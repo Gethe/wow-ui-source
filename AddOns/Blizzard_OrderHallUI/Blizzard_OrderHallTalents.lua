@@ -44,7 +44,7 @@ function OrderHallTalentFrameMixin:OnLoad()
 	self.portrait:SetTexture("INTERFACE\\ICONS\\crest_"..className);
 	self.TitleText:SetText(ORDER_HALL_TALENT_TITLE);
 
-	local primaryCurrency, _ = C_Garrison.GetCurrencyTypes(LE_GARRISON_TYPE_7_0);
+	local primaryCurrency, _ = C_Garrison.GetCurrencyTypes(self.garrisonType);
 	self.currency = primaryCurrency;
 end
 
@@ -52,12 +52,14 @@ function OrderHallTalentFrameMixin:OnShow()
 	self:RefreshAllData();
 	self:RegisterEvent("CURRENCY_DISPLAY_UPDATE");
 	self:RegisterEvent("GARRISON_TALENT_UPDATE");
+    self:RegisterEvent("GARRISON_TALENT_COMPLETE");
 	self:RegisterEvent("GARRISON_TALENT_NPC_CLOSED");
 end
 
 function OrderHallTalentFrameMixin:OnHide()
 	self:UnregisterEvent("CURRENCY_DISPLAY_UPDATE");
 	self:UnregisterEvent("GARRISON_TALENT_UPDATE");
+    self:UnregisterEvent("GARRISON_TALENT_COMPLETE");
 	self:UnregisterEvent("GARRISON_TALENT_NPC_CLOSED");
 
 	self:ReleaseAllPools();
@@ -66,7 +68,7 @@ function OrderHallTalentFrameMixin:OnHide()
 end
 
 function OrderHallTalentFrameMixin:OnEvent(event, ...)
-	if (event == "CURRENCY_DISPLAY_UPDATE" or event == "GARRISON_TALENT_UPDATE") then
+	if (event == "CURRENCY_DISPLAY_UPDATE" or event == "GARRISON_TALENT_UPDATE" or event == "GARRISON_TALENT_COMPLETE") then
 		self:RefreshAllData();
 	elseif (event == "GARRISON_TALENT_NPC_CLOSED") then
 		self.CloseButton:Click();
@@ -100,7 +102,7 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 	self:ReleaseAllPools();
 
 	self:RefreshCurrency();
-	self.trees = C_Garrison.GetTalentTrees(LE_GARRISON_TYPE_7_0, select(3, UnitClass("player")));
+	self.trees = C_Garrison.GetTalentTrees(self.garrisonType, select(3, UnitClass("player")));
 	if not self.trees then
 		return;
 	end
@@ -156,6 +158,8 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 			end
 		end
 
+        local completeTalent = C_Garrison.GetCompleteTalent(self.garrisonType);
+                        
 		-- position talent buttons
 		for talentIndex, talent in ipairs(tree) do
 			local currentTierCount = tierCount[talent.tier + 1];
@@ -195,6 +199,14 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 			end
 			talentFrame:SetPoint("TOPLEFT", xOffset, yOffset);
 			talentFrame:Show();
+
+            if (talent.id == completeTalent) then
+                if (talent.selected) then
+                    talentFrame.TalentDoneAnim:Play();
+                else
+                    C_Garrison.ClearCompleteTalent(self.garrisonType);
+                end
+            end
 		end
 
 

@@ -189,7 +189,8 @@ WORLDMAP_SETTINGS = {
 };
 
 WORLD_MAP_POI_FRAME_LEVEL_OFFSETS = {
-	LANDMARK = 100,
+	DUNGEON_ENTRANCE = 100,
+	LANDMARK = 200,
 
 	BONUS_OBJECTIVE = 500,
 	INVASION = 700,
@@ -975,6 +976,8 @@ end
 function WorldMap_GetFrameLevelForLandmark(landmarkType)
 	if landmarkType == LE_MAP_LANDMARK_TYPE_INVASION then
 		return WORLD_MAP_POI_FRAME_LEVEL_OFFSETS.INVASION;
+	elseif landmarkType == LE_MAP_LANDMARK_TYPE_DUNGEON_ENTRANCE then
+		return WORLD_MAP_POI_FRAME_LEVEL_OFFSETS.DUNGEON_ENTRANCE;
 	end
 	return WORLD_MAP_POI_FRAME_LEVEL_OFFSETS.LANDMARK;
 end
@@ -989,6 +992,7 @@ function WorldMap_UpdateLandmarks()
 	end
 	local numGraveyards = 0;
 	local currentGraveyard = GetCemeteryPreference();
+    local mapID = GetCurrentMapAreaID();
 	for i=1, NUM_WORLDMAP_POIS do
 		local worldMapPOIName = "WorldMapFramePOI"..i;
 		local worldMapPOI = _G[worldMapPOIName];
@@ -1287,8 +1291,8 @@ function WorldMapFrame_Update()
 	local numUsedStoryLineFrames = 0;
 	if ( not isContinent and mapID > 0 ) then
 		for i = 1, C_Questline.GetNumAvailableQuestlines() do
-			local questLineName, questName, continentID, x, y = C_Questline.GetQuestlineInfoByIndex(i);
-			if ( questLineName and x > 0 and y > 0 ) then
+			local questLineName, questName, continentID, x, y, questlineMapID = C_Questline.GetQuestlineInfoByIndex(i);
+			if ( questLineName and questlineMapID == mapID and x > 0 and y > 0 ) then
 				numUsedStoryLineFrames = numUsedStoryLineFrames + 1;
 				local frame = STORYLINE_FRAMES[numUsedStoryLineFrames];
 				if ( not frame ) then
@@ -1853,7 +1857,15 @@ end
 
 function WorldMapPOI_OnClick(self, button)
 	if ( self.mapLinkID ) then
-		ClickLandmark(self.mapLinkID);
+		if self.landmarkType == LE_MAP_LANDMARK_TYPE_DUNGEON_ENTRANCE then
+			if not EncounterJournal or not EncounterJournal:IsShown() then
+				ToggleEncounterJournal();
+			end
+			EncounterJournal_ListInstances();
+			EncounterJournal_DisplayInstance(self.mapLinkID);
+		else
+			ClickLandmark(self.mapLinkID);
+		end
 	elseif ( self.graveyard ) then
 		SetCemeteryPreference(self.graveyard);
 		WorldMapFrame_Update();

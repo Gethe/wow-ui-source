@@ -73,6 +73,10 @@ function FlightMap_FlightPathDataProviderMixin:ShowBackgroundRoutesFromCurrent()
 				local startPin = self.slotIndexToPin[sourceSlotIndex];
 				local destinationPin = self.slotIndexToPin[destinationSlotIndex];
 
+				if not startPin or not destinationPin then
+					return; -- Incorrect flight data, will look broken until the data is adjusted
+				end
+
 				if not startPin.linkedPins[destinationPin] and not destinationPin.linkedPins[startPin] then
 					startPin.linkedPins[destinationPin] = true;
 					destinationPin.linkedPins[startPin] = true;

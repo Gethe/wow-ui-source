@@ -331,6 +331,30 @@
 		</HighlightTexture>
 	</Button>
 
+	<Button name="GarrisonFollowerCombatAllySpellTemplate" virtual="true" mixin="GarrisonFollowerCombatAllySpellMixin">
+		<Size>
+			<AbsDimension x="37" y="37"/>
+		</Size>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="iconTexture" setAllPoints="true"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Button>
+
+	<Button name="GarrisonFollowerEquipmentTemplate" parentArray="Equipment" inherits="GarrisonEquipmentTemplate" virtual="true" mixin="GarrisonFollowerEquipmentMixin">
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnClick method="OnClick"/>
+			<OnReceiveDrag method="OnReceiveDrag"/>
+		</Scripts>
+	</Button>
+
 	<Texture name="GarrisonMissionFollowerButtonDurabilityTemplate" parentArray="durability" atlas="GarrisonTroops-Health" virtual="true">
 		<Size x="13" y="11"/>
 	</Texture>

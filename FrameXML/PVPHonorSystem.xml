@@ -2,6 +2,13 @@
 ..\FrameXML\UI.xsd">
 	<Script file="PVPHonorSystem.lua"/>
 
+	<Frame name="PVPHonorRewardCodeTemplate" virtual="true" mixin="PVPHonorRewardMixin">
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+
 	<Frame name="PVPHonorSystemLargeXPBar" virtual="true">
 		<Size x="521" y="45"/>
 		<Layers>
@@ -91,14 +98,14 @@
 				</Scripts>
 			</StatusBar>
 
-			<Frame parentKey="NextAvailable" enableMouse="true" hidden="true">
+			<Frame parentKey="NextAvailable" enableMouse="true" hidden="true" inherits="PVPHonorRewardCodeTemplate">
 				<Size x="39" y="39"/>
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.Frame" relativePoint="RIGHT" x="22" y="0"/>
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
-						<Texture parentKey="GoldBorder" atlas="honorsystem-bar-rewardborder">
+						<Texture parentKey="Frame" atlas="honorsystem-bar-rewardborder">
 							<Size x="39" y="39"/>
 							<Anchors>
 								<Anchor point="CENTER"/>
@@ -309,14 +316,14 @@
 					<OnLeave function="PVPHonorXPBar_OnLeave"/>
 				</Scripts>
 			</StatusBar>
-			<Frame parentKey="NextAvailable" enableMouse="true" hidden="true">
+			<Frame parentKey="NextAvailable" enableMouse="true" hidden="true" inherits="PVPHonorRewardCodeTemplate">
 				<Size x="39" y="39"/>
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.Frame" relativePoint="RIGHT" x="22" y="0"/>
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
-						<Texture parentKey="GoldBorder" atlas="honorsystem-bar-rewardborder">
+						<Texture parentKey="Frame" atlas="honorsystem-bar-rewardborder">
 							<Size x="39" y="39"/>
 							<Anchors>
 								<Anchor point="CENTER"/>
@@ -557,14 +564,9 @@
 						<Anchor point="CENTER" x="0" y="111"/>
 					</Anchors>
 				</Texture>
-				<FontString parentKey="Text1" hidden="false" alpha="0" inherits="GameFontHighlightLarge" text="Prestige Level 5">
+				<FontString parentKey="Text" hidden="false" alpha="0" inherits="QuestFont_Super_Huge">
 					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent.BG1" relativePoint="CENTER" x="0" y="26"/>
-					</Anchors>
-				</FontString>
-				<FontString parentKey="Text2" hidden="false" alpha="0" inherits="QuestFont_Super_Huge" text="Legionnaire">
-					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent.Text1" x="0" y="-18"/>
+						<Anchor point="TOP" relativeKey="$parent.BG1" relativePoint="CENTER" x="0" y="18"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -788,8 +790,7 @@
 				<Scale childKey="BG2" duration="0.33" order="1" fromScaleX="0" fromScaleY="1" toScaleX="1" toScaleY="1"/>
 				<Alpha childKey="BG2" duration="0.33" order="1" fromAlpha="0" toAlpha="1"/>
 				<Alpha childKey="BG2" startDelay="0.33" smoothing="IN" duration="0.33" order="1" fromAlpha="1" toAlpha="0"/>
-				<Alpha childKey="Text1" duration="0.33" order="1" fromAlpha="0" toAlpha="1"/>
-				<Alpha childKey="Text2" duration="0.33" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="Text" duration="0.33" order="1" fromAlpha="0" toAlpha="1"/>
 				<Alpha childKey="Level" duration="0.33" order="1" fromAlpha="0" toAlpha="1"/>
 				<Alpha childKey="IconPlate" duration="0.33" order="1" fromAlpha="0" toAlpha="1"/>
 				<Scale childKey="IconPlate" smoothing="IN" duration="0.33" order="1" fromScaleX="1.4" fromScaleY="1.4" toScaleX="1" toScaleY="1"/>
@@ -800,13 +801,11 @@
 				<Alpha childKey="IconPlate3" startDelay="0.33" smoothing="IN" duration="0.33" order="1" fromAlpha="0.35" toAlpha="0"/>
 				<Scale childKey="IconPlate3" smoothing="IN" duration="0.33" order="1" fromScaleX="1.8" fromScaleY="1.8" toScaleX="1" toScaleY="1"/>
 				<Alpha childKey="BG1" startDelay="7.5" smoothing="IN" duration="0.46" order="1" fromAlpha="1" toAlpha="0"/>
-				<Alpha childKey="Text1" startDelay="7.5" smoothing="IN" duration="0.36" order="1" fromAlpha="1" toAlpha="0"/>
-				<Alpha childKey="Text2" startDelay="7.5" smoothing="IN" duration="0.36" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="Text" startDelay="7.5" smoothing="IN" duration="0.36" order="1" fromAlpha="1" toAlpha="0"/>
 				<Alpha childKey="Level" startDelay="7.5" smoothing="IN" duration="0.46" order="1" fromAlpha="1" toAlpha="0"/>
 				<Alpha childKey="IconPlate" startDelay="7.5" smoothing="IN" duration="0.46" order="1" fromAlpha="1" toAlpha="0"/>
 				<Scale childKey="BG1" startDelay="7.5" smoothing="IN" duration="0.46" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.55" toScaleY="0.55"/>
-				<!--<Scale childKey="Text1" startDelay="7.5" smoothing="IN" duration="0.46" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.55" toScaleY="0.55"/>
-				<Scale childKey="Text2" startDelay="7.5" smoothing="IN" duration="0.46" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.55" toScaleY="0.55"/>-->
+				<!--<Scale childKey="Text" startDelay="7.5" smoothing="IN" duration="0.46" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.55" toScaleY="0.55"/>-->
 				<Scale childKey="Level" startDelay="7.5" smoothing="IN" duration="0.46" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.55" toScaleY="0.55"/>
 				<Scale childKey="IconPlate" startDelay="7.5" smoothing="IN" duration="0.46" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.55" toScaleY="0.55"/>
 				<Translation childKey="Level" startDelay="7.5" duration="0.46" order="1" offsetX="0" offsetY="26"/>

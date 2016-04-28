@@ -1364,6 +1364,13 @@ function PaperDollFrame_OnShow (self)
 	SetPaperDollBackground(CharacterModelFrame, "player");
 	PaperDollBgDesaturate(true);
 	PaperDollSidebarTabs:Show();
+
+	if HasArtifactEquipped() and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_VIEWABLE_ARTIFACT) then
+		local itemID, altItemID, name, icon, totalXP, pointsSpent, quality, artifactAppearanceID, appearanceModID, itemAppearanceID, altItemAppearanceID, altOnTop = C_ArtifactUI.GetEquippedArtifactInfo();
+		if pointsSpent > 0 then
+			PaperDollItemsFrame.ArtifactViewHelpBox:Show();
+		end
+	end
 end
  
 function PaperDollFrame_OnHide (self)

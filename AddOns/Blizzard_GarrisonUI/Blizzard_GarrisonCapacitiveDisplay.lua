@@ -143,7 +143,7 @@ function GarrisonCapacitiveDisplayFrame_Update(self, success, maxShipments, plot
 		end
 
 	    local name, texture, quality, itemID, followerID, duration = C_Garrison.GetShipmentItemInfo();
-		if ( followerID ) then
+        if ( followerID ) then
 			local followerInfo = C_Garrison.GetFollowerInfo(followerID);
 			local followerCount, followerLimit;
 			if ( followerInfo ) then
@@ -160,7 +160,12 @@ function GarrisonCapacitiveDisplayFrame_Update(self, success, maxShipments, plot
 				local maxFollowerAvailable = followerLimit - followerCount - numPending;
 				self.available = min(self.available, maxFollowerAvailable);
 			end
-		end
+            self.StartWorkOrderButton:SetText(CAPACITANCE_START_RECRUITMENT);
+            self.CreateAllWorkOrdersButton:SetText(CAPACITANCE_RECRUIT_ALL);
+		else
+            self.StartWorkOrderButton:SetText(CAPACITANCE_START_WORK_ORDER);
+            self.CreateAllWorkOrdersButton:SetText(CREATE_ALL);
+        end
 
 		if (not quality) then
 			quality = LE_ITEM_QUALITY_COMMON;
@@ -211,7 +216,11 @@ function GarrisonCapacitiveDisplayFrame_Update(self, success, maxShipments, plot
 				shipmentUpdater:Cancel();
 				shipmentUpdater = nil;
 			end
-			display.ShipmentIconFrame.ShipmentsAvailable:SetText(CAPACITANCE_SHIPMENT_COUNT:format(available, maxShipments));
+            if (followerID) then
+                display.ShipmentIconFrame.ShipmentsAvailable:SetFormattedText(CAPACITANCE_RECRUIT_COUNT, available);
+            else
+    			display.ShipmentIconFrame.ShipmentsAvailable:SetFormattedText(CAPACITANCE_SHIPMENT_COUNT, available, maxShipments);
+            end
 		else
 			local timeRemaining = select(6,C_Garrison.GetPendingShipmentInfo(1));
 			if (timeRemaining ~= 0) then
@@ -230,7 +239,11 @@ function GarrisonCapacitiveDisplayFrame_Update(self, success, maxShipments, plot
 		if (numPending > 0) then
 			local lastTimeRemaining = select(6, C_Garrison.GetPendingShipmentInfo(numPending));
 			display.Description:SetPoint("TOPLEFT", display.LastComplete, "BOTTOMLEFT", 0, -12);
-			display.LastComplete:SetText(CAPACITANCE_ALL_COMPLETE:format(SecondsToTime(lastTimeRemaining, false, true, 1)));
+            if (followerID) then
+                display.LastComplete:SetFormattedText(CAPACITANCE_ALL_RECRUITMENT_COMPLETE, SecondsToTime(lastTimeRemaining, false, true, 1));
+            else
+    			display.LastComplete:SetFormattedText(CAPACITANCE_ALL_COMPLETE, SecondsToTime(lastTimeRemaining, false, true, 1));
+            end
 			display.LastComplete:Show();
 		else
 			display.LastComplete:Hide();

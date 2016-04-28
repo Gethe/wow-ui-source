@@ -87,11 +87,6 @@ StaticPopupDialogs["GARRISON_SHIP_DECOMMISSION"] = {
 GARRISON_SHIP_OIL_CURRENCY = 1101;
 GarrisonShipyardMission = {};
 
-function GarrisonShipyardMission:InitializeFollowerType()
-	self.followerTypeID = LE_FOLLOWER_TYPE_SHIPYARD_6_2;
-end
-
-
 function GarrisonShipyardMission:OnLoadMainFrame()
 	GarrisonMission.OnLoadMainFrame(self);
 
@@ -1753,7 +1748,7 @@ end
 function GarrisonShipyardFollowerList:StopAnimations()
 	local followerFrame = self.followerTab;
 	for i = 1, #followerFrame.EquipmentFrame.Equipment do
-		GarrisonShipEquipment_StopAnimations(followerFrame.EquipmentFrame.Equipment[i]);
+		GarrisonEquipment_StopAnimations(followerFrame.EquipmentFrame.Equipment[i]);
 	end
 end
 
@@ -1761,7 +1756,7 @@ function GarrisonShipyardFollowerList:ShowThreatCountersFrame()
 	self.followerTab.ThreatCountersFrame:Show();
 end
 
-function GarrisonShipyardFollowerList:UpdateValidSpellHighlight(followerID, followerInfo, hideCounters)
+function GarrisonShipyardFollowerList:UpdateValidSpellHighlight(followerID, followerInfo)
 	local followerTab = self.followerTab;
 	for i=1, #followerTab.EquipmentFrame.Equipment do
 		followerTab.EquipmentFrame.Equipment[i].ValidSpellHighlight:Hide();
@@ -1858,6 +1853,8 @@ function GarrisonShipyardFollowerList:ShowFollower(followerID, hideCounters)
 		self.EquipmentFrame.Equipment[i].abilityID = nil;
 		self.EquipmentFrame.Equipment[i].Icon:Hide();
 		self.EquipmentFrame.Equipment[i].Counter:Hide();
+		self.EquipmentFrame.Equipment[i].followerList = self:GetFollowerList();
+		self.EquipmentFrame.Equipment[i].followerID = followerInfo.followerID;
 	end
 	self.EquipmentFrame.Equipment1.Lock:SetShown(followerInfo.quality < LE_ITEM_QUALITY_RARE);
 	self.EquipmentFrame.Equipment2.Lock:SetShown(followerInfo.quality < LE_ITEM_QUALITY_EPIC);
@@ -1921,7 +1918,7 @@ function GarrisonShipyardFollowerList:ShowFollower(followerID, hideCounters)
 					if (followerInfo.isCollected and GarrisonFollowerAbilities_IsNew(lastUpdate, followerID, ability.id, GARRISON_FOLLOWER_ABILITY_TYPE_ABILITY)) then
 						equipment.EquipAnim:Play();
 					else
-						GarrisonShipEquipment_StopAnimations(equipment);
+						GarrisonEquipment_StopAnimations(equipment);
 					end
 				else
 					equipment.Icon:Hide();
@@ -1930,7 +1927,7 @@ function GarrisonShipyardFollowerList:ShowFollower(followerID, hideCounters)
 			equipmentIndex = equipmentIndex + 1;
 		end
 	end
-	followerList:UpdateValidSpellHighlight(followerID, followerInfo, hideCounters);
+	followerList:UpdateValidSpellHighlight(followerID, followerInfo);
 	
 	self.lastUpdate = self:IsShown() and GetTime() or nil;
 end
@@ -2073,12 +2070,6 @@ end
 
 function GarrisonShipTrait_OnHide(self)
 	HideGarrisonFollowerAbilityTooltip(LE_FOLLOWER_TYPE_SHIPYARD_6_2);
-end
-
-function GarrisonShipEquipment_StopAnimations(frame)
-	if (frame.EquipAnim:IsPlaying()) then
-		frame.EquipAnim:Stop();
-	end
 end
 
 function GarrisonShipEquipment_OnClick(self, button)
@@ -2241,4 +2232,14 @@ function GarrisonShipOptionsMenu_Initialize(self, level)
 	info.tooltipTitle = nil;
 	info.disabled = nil;
 	UIDropDownMenu_AddButton(info, level)
+end
+
+---------------------------------------------------------------------------------
+--- GarrisonShipyardMissionListMixin                                                             ---
+---------------------------------------------------------------------------------
+
+GarrisonShipyardMissionListMixin = { }
+
+function GarrisonShipyardMissionListMixin:UpdateCombatAllyMission()
+	-- do nothing; there are no shipyard combat allies.
 end

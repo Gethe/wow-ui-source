@@ -22,6 +22,16 @@
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
+                <Texture parentKey="DoneCheckmark" hidden="false" alpha="0" alphaMode="BLEND" atlas="orderhalltalents-done-checkmark" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="DoneCheckmark3" hidden="false" alpha="0" alphaMode="BLEND" atlas="orderhalltalents-done-checkmark" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
 				<Texture parentKey="Border" atlas="orderhalltalents-spellborder-yellow">
@@ -30,7 +40,19 @@
 						<Anchor point="TOP" x="0" y="5"/>
 					</Anchors>
 				</Texture>
+                <Texture parentKey="DoneCheckmark2" hidden="false" alpha="0" alphaMode="ADD" atlas="orderhalltalents-done-checkmark" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
 				<Texture parentKey="Highlight" file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD" hidden="true"/>
+			</Layer>
+            <Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="DoneGlow" hidden="false" alpha="0" alphaMode="ADD" atlas="orderhalltalents-done-glow" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.DoneCheckmark" x="0" y="-3"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -42,6 +64,26 @@
 				<SwipeTexture file="Interface\Garrison\orderhalltalents-timer-fill"/>
 			</Cooldown>
 		</Frames>
+        <Animations>
+			<AnimationGroup parentKey="TalentDoneAnim" setToFinalAlpha="true">
+				<Alpha childKey="DoneCheckmark" duration="0.3" order="1" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="DoneCheckmark" duration="0.3" order="1" fromScaleX="3" fromScaleY="3" toScaleX="1" toScaleY="1"/>
+				<Alpha childKey="DoneCheckmark2" duration="0.6" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="DoneCheckmark2" startDelay="0.8" duration="0.3" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="DoneCheckmark" startDelay="4" duration="0.2" order="1" fromAlpha="1" toAlpha="0"/>
+				<Scale childKey="DoneCheckmark" startDelay="4" duration="0.2" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.5" toScaleY="0.5"/>
+				<Rotation childKey="DoneGlow" smoothing="NONE" duration="4.6" order="1" degrees="-70"/>
+				<Alpha childKey="DoneGlow" duration="0.3" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="DoneGlow" startDelay="0.3" duration="4.3" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="DoneCheckmark3" duration="0.3" order="1" fromAlpha="0.4" toAlpha="0"/>
+				<Scale childKey="DoneCheckmark3" duration="0.4" order="1" fromScaleX="6" fromScaleY="6" toScaleX="0" toScaleY="0"/>
+                <Scripts>
+                    <OnFinished>
+                        C_Garrison.ClearCompleteTalent(self:GetParent():GetParent().garrisonType);
+                    </OnFinished>
+                </Scripts>
+			</AnimationGroup>
+		</Animations>
 		<Scripts>
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>

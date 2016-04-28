@@ -174,6 +174,10 @@ function ContainerFrame_OnHide(self)
 		end
 		PlaySound("igBackPackClose");
 	end
+
+	if ArtifactRelicHelpBox:IsShown() and ArtifactRelicHelpBox.owner == self then
+		ArtifactRelicHelpBox:Hide();
+	end
 end
 
 function ContainerFrame_OnShow(self)
@@ -416,6 +420,25 @@ function ContainerFrame_GetOpenFrame()
 	end
 end
 
+function ContainerFrame_ConsiderItemButtonForRelicTutorial(itemButton, itemID)
+	if itemID and not ArtifactRelicHelpBox:IsShown() and IsArtifactRelicItem(itemID) then
+		local numRelicSlots = C_ArtifactUI.GetEquippedArtifactNumRelicSlots(true);
+		if numRelicSlots then
+			for relicSlotIndex = 1, numRelicSlots do
+				if C_ArtifactUI.CanApplyRelicItemIDToEquippedArtifactSlot(itemID, relicSlotIndex) then
+					ArtifactRelicHelpBox.owner = itemButton:GetParent();
+					ArtifactRelicHelpBox:ClearAllPoints();
+					ArtifactRelicHelpBox:SetPoint("RIGHT", itemButton, "LEFT", -27, 0);
+					ArtifactRelicHelpBox:Show();
+
+					return;
+				end
+			end
+		end
+	end
+end
+
+
 function ContainerFrame_Update(frame)
 	local id = frame:GetID();
 	local name = frame:GetName();
@@ -458,6 +481,12 @@ function ContainerFrame_Update(frame)
 		BagItemAutoSortButton:ClearAllPoints();
 		BagItemAutoSortButton:Hide();
 	end
+
+	if ArtifactRelicHelpBox:IsShown() and ArtifactRelicHelpBox.owner == frame then
+		ArtifactRelicHelpBox:Hide();
+	end
+
+	local shouldDoRelicChecks = not BagHelpBox:IsShown() and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_ARTIFACT_RELIC_MATCH);
 
 	for i=1, frame.size, 1 do
 		itemButton = _G[name.."Item"..i];
@@ -539,6 +568,9 @@ function ContainerFrame_Update(frame)
 			itemButton.searchOverlay:Show();
 		else
 			itemButton.searchOverlay:Hide();
+			if shouldDoRelicChecks then
+				ContainerFrame_ConsiderItemButtonForRelicTutorial(itemButton, itemID);
+			end
 		end
 	end
 end

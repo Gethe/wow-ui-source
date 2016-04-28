@@ -25,10 +25,6 @@ function GarrisonFollowerMission:SetupMissionList()
 	GarrisonMissionListTab_SetTab(self.MissionTab.MissionList.Tab1);
 end
 
-function GarrisonFollowerMission:InitializeFollowerType()
-	self.followerTypeID = LE_FOLLOWER_TYPE_GARRISON_6_0;
-end
-
 function GarrisonFollowerMission:OnLoadMainFrame()
 	GarrisonMission.OnLoadMainFrame(self);
 
@@ -1404,6 +1400,7 @@ function GarrisonFollowerMissionComplete:AnimLine(entry)
 end
 
 function GarrisonFollowerMissionComplete:AnimModels(entry)
+	self.Stage.ModelRight:SetFacingLeft(true);
 	local currentAnim = self.animInfo[self.encounterIndex];
 	GarrisonMissionComplete.AnimModels(self, entry, LE_PAN_NONE_RANGED, currentAnim.movementType or LE_PAN_NONE);
 end
@@ -1456,12 +1453,12 @@ function GarrisonFollowerMissionComplete:SetNumFollowers(size)
 	end
 end
 
-function GarrisonFollowerMissionComplete:AnimFollowersIn(entry)
+function GarrisonFollowerMissionComplete:AnimFollowersIn(entry, hideExhuastedTroopModels)
 	local mission = self.completeMissions[self.currentIndex];
 
 	local numFollowers = #self.Stage.followers;
 	self:SetNumFollowers(numFollowers);
-	self:SetupEnding(numFollowers);
+	self:SetupEnding(numFollowers, hideExhuastedTroopModels);
 	local stage = self.Stage;
 
 	for _, cluster in ipairs(stage.ModelCluster) do
@@ -1507,23 +1504,40 @@ end
 -- duration is irrelevant for the last entry
 -- WARNING: If you're going to alter this, make sure OnSkipKeyPressed still works
 local ANIMATION_CONTROL = {
-	[1] = { duration = nil,		onStartFunc = GarrisonFollowerMissionComplete.AnimLine },			-- line between encounters
-	[2] = { duration = nil,		onStartFunc = GarrisonMissionComplete.AnimCheckModels },			-- check that models are loaded
-	[3] = { duration = nil,		onStartFunc = GarrisonFollowerMissionComplete.AnimModels },					-- model fight
-	[4] = { duration = nil,		onStartFunc = GarrisonMissionComplete.AnimPlayImpactSound },		-- impact sound when follower hits
-	[5] = { duration = 0.45,	onStartFunc = GarrisonFollowerMissionComplete.AnimPortrait },		-- X over portrait
-	[6] = { duration = nil,		onStartFunc = GarrisonFollowerMissionComplete.AnimCheckEncounters },		-- evaluate whether to do next encounter or move on
-	[7] = { duration = 0.75,	onStartFunc = GarrisonMissionComplete.AnimRewards },				-- reward panel
-	[8] = { duration = 0,		onStartFunc = GarrisonMissionComplete.AnimLockBurst },				-- explode the lock if mission successful		
-	[9] = { duration = 0,		onStartFunc = GarrisonMissionComplete.AnimCleanUp },				-- clean up any model anims
-	[10] = { duration = nil,	onStartFunc = GarrisonFollowerMissionComplete.AnimFollowersIn },	-- show all the mission followers
-	[11] = { duration = 0,		onStartFunc = GarrisonMissionComplete.AnimXP },						-- follower xp
-	[12] = { duration = nil,	onStartFunc = GarrisonMissionComplete.AnimSkipWait },				-- wait if we're in skip mode
-	[13] = { duration = 0,		onStartFunc = GarrisonMissionComplete.AnimSkipNext },				-- click Next button if we're in skip mode
+	[LE_FOLLOWER_TYPE_GARRISON_6_0] = {
+		[1] = { duration = nil,		onStartFunc = GarrisonFollowerMissionComplete.AnimLine },			-- line between encounters
+		[2] = { duration = nil,		onStartFunc = GarrisonMissionComplete.AnimCheckModels },			-- check that models are loaded
+		[3] = { duration = nil,		onStartFunc = GarrisonFollowerMissionComplete.AnimModels },					-- model fight
+		[4] = { duration = nil,		onStartFunc = GarrisonMissionComplete.AnimPlayImpactSound },		-- impact sound when follower hits
+		[5] = { duration = 0.45,	onStartFunc = GarrisonFollowerMissionComplete.AnimPortrait },		-- X over portrait
+		[6] = { duration = nil,		onStartFunc = GarrisonFollowerMissionComplete.AnimCheckEncounters },		-- evaluate whether to do next encounter or move on
+		[7] = { duration = 0.75,	onStartFunc = GarrisonMissionComplete.AnimRewards },				-- reward panel
+		[8] = { duration = 0,		onStartFunc = GarrisonMissionComplete.AnimLockBurst },				-- explode the lock if mission successful		
+		[9] = { duration = 0,		onStartFunc = GarrisonMissionComplete.AnimCleanUp },				-- clean up any model anims
+		[10] = { duration = nil,	onStartFunc = GarrisonFollowerMissionComplete.AnimFollowersIn },	-- show all the mission followers
+		[11] = { duration = 0,		onStartFunc = GarrisonMissionComplete.AnimXP },						-- follower xp
+		[12] = { duration = nil,	onStartFunc = GarrisonMissionComplete.AnimSkipWait },				-- wait if we're in skip mode
+		[13] = { duration = 0,		onStartFunc = GarrisonMissionComplete.AnimSkipNext },				-- click Next button if we're in skip mode
+	},
+	[LE_FOLLOWER_TYPE_GARRISON_7_0] = {
+		[1] = { duration = nil,		onStartFunc = GarrisonFollowerMissionComplete.AnimLine },			-- line between encounters
+		[2] = { duration = nil,		onStartFunc = GarrisonMissionComplete.AnimCheckModels },			-- check that models are loaded
+		[3] = { duration = nil,		onStartFunc = GarrisonFollowerMissionComplete.AnimModels },					-- model fight
+		[4] = { duration = nil,		onStartFunc = GarrisonMissionComplete.AnimPlayImpactSound },		-- impact sound when follower hits
+		[5] = { duration = 0.45,	onStartFunc = GarrisonFollowerMissionComplete.AnimPortrait },		-- X over portrait
+		[6] = { duration = nil,		onStartFunc = GarrisonFollowerMissionComplete.AnimCheckEncounters },		-- evaluate whether to do next encounter or move on
+		[7] = { duration = 0.75,	onStartFunc = GarrisonMissionComplete.AnimRewards },				-- reward panel
+		[8] = { duration = 0,		onStartFunc = GarrisonMissionComplete.AnimLockBurst },				-- explode the lock if mission successful		
+		[9] = { duration = 0,		onStartFunc = GarrisonMissionComplete.AnimCleanUp },				-- clean up any model anims
+		[10] = { duration = nil,	onStartFunc = GarrisonFollowerMissionComplete.AnimFollowersIn },	-- show all the mission followers
+		[11] = { duration = 0,		onStartFunc = GarrisonMissionComplete.AnimCheerAndTroopDeath },		-- champions cheer and exhausted troops fade out
+		[12] = { duration = nil,	onStartFunc = GarrisonMissionComplete.AnimSkipWait },				-- wait if we're in skip mode
+		[13] = { duration = 0,		onStartFunc = GarrisonMissionComplete.AnimSkipNext },				-- click Next button if we're in skip mode
+	}
 };
 
 function GarrisonFollowerMissionComplete:SetAnimationControl()
-	self.animationControl = ANIMATION_CONTROL;
+	self.animationControl = ANIMATION_CONTROL[self:GetParent().followerTypeID];
 end
 
 function GarrisonFollowerMissionComplete:BeginAnims(animIndex)
@@ -1540,14 +1554,25 @@ end
 function GarrisonFollowerMissionComplete:SetFollowerLevel(followerFrame, followerInfo)
 	local maxLevel = self:GetParent().followerMaxLevel;
 	local level = min(followerInfo.level, maxLevel);
-	if ( followerInfo.levelXP and followerInfo.levelXP > 0 ) then
+	if ( followerInfo.isTroop ) then
+		followerFrame.XP:Hide();
+		followerFrame.DurabilityFrame:Show();
+		followerFrame.DurabilityBackground:Show();
+		followerFrame.DurabilityFrame:SetDurability(followerInfo.durability, followerInfo.maxDurability);
+		followerFrame.Name:ClearAllPoints();
+		followerFrame.Name:SetPoint("LEFT", 58, 6);
+	elseif ( followerInfo.levelXP and followerInfo.levelXP > 0 ) then
 		followerFrame.XP:SetMinMaxValues(0, followerInfo.levelXP);
 		followerFrame.XP:SetValue(followerInfo.xp);
 		followerFrame.XP:Show();
+		followerFrame.DurabilityFrame:Hide();
+		followerFrame.DurabilityBackground:Hide();
 		followerFrame.Name:ClearAllPoints();
 		followerFrame.Name:SetPoint("LEFT", 58, 6);
 	else
 		followerFrame.XP:Hide();
+		followerFrame.DurabilityFrame:Hide();
+		followerFrame.DurabilityBackground:Hide();
 		followerFrame.Name:ClearAllPoints();		
 		followerFrame.Name:SetPoint("LEFT", 58, 0);
 	end

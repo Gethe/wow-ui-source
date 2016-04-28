@@ -382,6 +382,12 @@ function ArtifactPowerButtonMixin:SetupButton(powerID, anchorRegion)
 
 	self:EvaluateStyle();
 
+	if totalPurchasedRanks == 0 and prereqsMet and not self.isStart then
+		self.FirstPointWaitingAnimation:Play();
+	else
+		self.FirstPointWaitingAnimation:Stop();
+	end
+
 	if totalPurchasedRanks > 1 and wasJustUnlocked then
 		self:PlayUnlockAnimation();
 	end
@@ -457,4 +463,5 @@ function ArtifactPowerButtonMixin:StopAllAnimations()
 	self.RelicAppliedAnim:Stop();
 	self.RevealAnim:Stop();
 	self.FinalPowerUnlockedAnim:Stop();
+	self.FirstPointWaitingAnimation:Stop();
 end

@@ -53,6 +53,23 @@
             <Layer level="OVERLAY" textureSubLevel="1">
                 <Texture parentKey="selectedTexture" atlas="PetList-ButtonSelect" hidden="true"/>
             </Layer>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<FontString parentKey="new" inherits="GameFontHighlight" wordwrap="false" justifyH="CENTER" text="NEW_CAPS" hidden="true">
+					<Anchors>
+						<Anchor point="RIGHT" x="-15" y="0"/>
+					</Anchors>
+					<Shadow>
+						<Color r="0.32" g="0.5" b="1.0"/>
+					</Shadow>
+				</FontString>
+
+				<Texture parentKey="newGlow" atlas="collections-newglow" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.new" x="-20" y="10"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.new" x="20" y="-10"/>
+					</Anchors>
+				</Texture>
+			</Layer>
         </Layers>
         <Frames>
             <Button parentKey="DragButton" motionScriptsWhileDisabled="true">
@@ -232,7 +249,7 @@
 						</Texture>
 					</Layer>
 					<Layer level="OVERLAY">
-						<FontString parentKey="NoMounts" inherits="GameFontHighlightLarge" JustifyH="CENTER" text="ERR_NO_RIDING_SKILL">
+						<FontString parentKey="NoMounts" inherits="GameFontHighlightLarge" justifyH="CENTER" text="ERR_NO_RIDING_SKILL">
 							<Size x="280" y="80"/>
 							<Anchors>
 								<Anchor point="CENTER" x="0" y="0"/>
@@ -257,8 +274,8 @@
 								</Texture>
 							</Layer>
 							<Layer level="OVERLAY">
-								<FontString name="$parentName" inherits="GameFontHighlightLarge" justifyH="LEFT" justifyV="CENTER" parentKey="Name">
-									<Size x="300" y="35"/>
+								<FontString name="$parentName" inherits="GameFontHighlightLarge" justifyH="LEFT" justifyV="MIDDLE" parentKey="Name" maxLines="2">
+									<Size x="270" y="35"/>
 									<Anchors>
 										<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentIcon" x="10" y="0"/>
 									</Anchors>
@@ -276,12 +293,40 @@
 									</Anchors>
 								</FontString>
 							</Layer>
+							<Layer level="OVERLAY" textureSubLevel="2">
+								<FontString parentKey="New" inherits="GameFontHighlight" wordwrap="false" justifyH="CENTER" text="NEW_CAPS" hidden="true">
+									<Anchors>
+										<Anchor point="LEFT" relativeKey="$parent.Name" relativePoint="RIGHT" x="8" y="0"/>
+									</Anchors>
+									<Shadow>
+										<Color r="0.32" g="0.5" b="1.0"/>
+									</Shadow>
+								</FontString>
+
+								<Texture parentKey="NewGlow" atlas="collections-newglow" hidden="true">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.New" x="-20" y="10"/>
+										<Anchor point="BOTTOMRIGHT" relativeKey="$parent.New" x="20" y="-10"/>
+									</Anchors>
+								</Texture>
+							</Layer>
 						</Layers>
 					</Button>
+					<PlayerModel parentKey="WrappedModelFrame" useParentLevel="true" frameStrata="DIALOG" inherits="CollectionsWrappedModelFrame">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="0" y="-160"/>
+							<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+						</Anchors>
+						<Scripts>
+							<OnMouseUp>
+								MountJournalMountButton_UseMount(MountJournal.selectedMountID);
+							</OnMouseUp>
+						</Scripts>
+					</PlayerModel>
 					<PlayerModel parentKey="ModelFrame" useParentLevel="true" inherits="ModelWithZoomTemplate">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="0" y="-160"/>
-							<Anchor point="BOTTOMRIGHT" relativeKey="$parent" x="0" y="0"/>
+							<Anchor point="TOPLEFT" x="0" y="-160"/>
+							<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
 						</Anchors>
 						<Frames>
 							<Button parentKey="RotateLeftButton">
@@ -323,7 +368,17 @@
 						</Frames>
 					</PlayerModel>
 				</Frames>
-
+				<Animations>
+					<AnimationGroup parentKey="UnwrapAnim" setToFinalAlpha="true">
+						<Alpha childKey="WrappedModelFrame" startDelay="1.2" fromAlpha="1" toAlpha="0" duration=".3" order="1"/>
+						<Alpha childKey="ModelFrame" startDelay="1.2" fromAlpha="0" toAlpha="1" duration=".3" order="1"/>
+						<Scripts>
+							<OnFinished>
+								self:GetParent().WrappedModelFrame:Hide();
+							</OnFinished>
+						</Scripts>
+					</AnimationGroup>
+				</Animations>
 			</Frame>
 			<!--Name needed for HybridScrollFrameTemplate-->
 			<ScrollFrame name="$parentListScrollFrame" parentKey="ListScrollFrame" inherits="HybridScrollFrameTemplate">

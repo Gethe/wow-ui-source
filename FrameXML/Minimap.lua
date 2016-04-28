@@ -538,9 +538,9 @@ function GarrisonLandingPageMinimapButton_OnEvent(self, event, ...)
 	elseif (event == "GARRISON_INVASION_UNAVAILABLE") then
 		GarrisonMinimap_HidePulse(self, GARRISON_ALERT_CONTEXT_INVASION);
 	elseif (event == "SHIPMENT_UPDATE") then
-		local shipmentStarted = ...;
+		local shipmentStarted, isTroop = ...;
 		if (shipmentStarted) then
-			GarrisonMinimapShipmentCreated_ShowPulse(self);
+			GarrisonMinimapShipmentCreated_ShowPulse(self, isTroop);
 		end
 	end
 end
@@ -644,8 +644,15 @@ function GarrisonMinimapInvasion_ShowPulse(self)
 	self.MinimapLoopPulseAnim:Play();
 end
 
-function GarrisonMinimapShipmentCreated_ShowPulse(self)
-	self.AlertText:SetText(GARRISON_LANDING_SHIPMENT_STARTED_ALERT);
+function GarrisonMinimapShipmentCreated_ShowPulse(self, isTroop)
+    local text;
+    if (isTroop) then
+        text = GARRISON_LANDING_RECRUITMENT_STARTED_ALERT;
+    else
+        text = GARRISON_LANDING_SHIPMENT_STARTED_ALERT;
+    end
+    
+	self.AlertText:SetText(text);
 	GarrisonMinimap_Justify(self.AlertText);
 	self.MinimapAlertAnim:Play();
 end

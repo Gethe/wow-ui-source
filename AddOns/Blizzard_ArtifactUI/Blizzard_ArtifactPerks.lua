@@ -60,7 +60,7 @@ function ArtifactsModelTemplate_OnModelLoaded(self)
 	if self.uiCameraID then
 		Model_ApplyUICamera(self, self.uiCameraID);
 	end
-	self:SetLight(1, 0, 0, 0, 0, .7, 1.0, 1.0, 1.0);
+	self:SetLight(true, false, 0, 0, 0, .7, 1.0, 1.0, 1.0);
 				
 	self:SetDesaturation(self.desaturation or .5);
 
@@ -678,6 +678,9 @@ function ArtifactTitleTemplateMixin:EvaluateRelics()
 				relicSlot.Icon:SetTexture(relicIcon);
 				relicSlot.Icon:SetMask("Interface\\CharacterFrame\\TempPortraitAlphaMask");
 				relicSlot.Glass:Show();
+
+				SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_ARTIFACT_RELIC_MATCH, true);
+				ArtifactRelicHelpBox:Hide();
 			else
 				relicSlot.Icon:SetMask(nil);
 				relicSlot.Icon:SetAtlas("Relic-SlotBG", true);

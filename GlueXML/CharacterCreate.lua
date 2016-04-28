@@ -1362,7 +1362,7 @@ function CharCreate_DisplayPreviewModels(selectionIndex)
 				model:SetCameraDistance(config.distance * scale);
 				local cx, cy, cz = model:GetCameraPosition();
 				model:SetCameraPosition(cx, cy, config.cz * scale);
-				model:SetLight(1, 0, 0, 0, 0, config.light, 1.0, 1.0, 1.0);
+				model:SetLight(true, false, 0, 0, 0, config.light, 1.0, 1.0, 1.0);
 			end
 			-- need to reset the model if it was last used to preview a different feature
 			if ( previewFrame.featureType ~= currentFeatureType ) then

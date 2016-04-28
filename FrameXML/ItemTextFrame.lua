@@ -17,7 +17,7 @@ ITEM_TEXT_FONTS = {
 		["P"]  = QuestFont,
 		["H1"] = QuestFont_Enormous,
 		["H2"] = Game20Font,
-		["H3"] = Game18Font
+		["H3"] = Game15Font
 	},
 	["default"] = {
 		["P"]  = QuestFont,
@@ -87,7 +87,7 @@ function ItemTextFrame_OnEvent(self, event, ...)
 		if (material == "ParchmentLarge") then
 			self:SetWidth(EXPANDED_ITEM_TEXT_FRAME_WIDTH);
 			self:SetHeight(EXPANDED_ITEM_TEXT_FRAME_HEIGHT);
-			ItemTextScrollFrame:SetPoint("TOPRIGHT", self, "TOPRIGHT", -46, -83);
+			ItemTextScrollFrame:SetPoint("TOPRIGHT", self, "TOPRIGHT", -46, -89);
 			ItemTextScrollFrame:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", 40, 6);
 			ItemTextPageText:SetWidth(416);
 			ItemTextPageText:SetHeight(440);
@@ -102,12 +102,19 @@ function ItemTextFrame_OnEvent(self, event, ...)
 	
 		local creator = ItemTextGetCreator();
 		if ( creator ) then
-			creator = "\n\n"..ITEM_TEXT_FROM.."\n"..creator.."\n\n\n";
+			creator = "\n\n"..ITEM_TEXT_FROM.."\n"..creator.."\n";
 			ItemTextPageText:SetText(ItemTextGetText()..creator);
 		else
-			ItemTextPageText:SetText(ItemTextGetText().."\n\n");
+			ItemTextPageText:SetText(ItemTextGetText());
 		end
 		
+		-- Add some padding at the bottom
+		ItemTextScrollFrame:GetScrollChild():SetHeight(1);
+		ItemTextScrollFrame:UpdateScrollChildRect();
+		if(ItemTextScrollFrame:GetVerticalScrollRange() > 0) then
+			ItemTextScrollFrame:GetScrollChild():SetHeight(ItemTextScrollFrame:GetHeight() + ItemTextScrollFrame:GetVerticalScrollRange() + 30);
+		end
+			
 		ItemTextScrollFrameScrollBar:SetValue(0);
 		ItemTextScrollFrame:Show();	
 		local page = ItemTextGetPage();

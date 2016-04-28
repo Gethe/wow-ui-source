@@ -10,6 +10,8 @@ GarrisonFollowerOptions[LE_FOLLOWER_TYPE_GARRISON_6_0] = {
 	followerListCounterOuterSpacingX = 8,
 	followerListCounterOuterSpacingY = 4,
 	followerListCounterScale = 1.0,
+	followerPageShowSourceText = true,
+	followerPageShowGear = true,
 	garrisonType = LE_GARRISON_TYPE_6_0,
 	hideCountersInAbilityFrame = false,
 	hideMissionTypeInLandingPage = false,
@@ -35,6 +37,7 @@ GarrisonFollowerOptions[LE_FOLLOWER_TYPE_GARRISON_6_0] = {
 		CONFIRM_EQUIPMENT = GARRISON_FOLLOWER_CONFIRM_EQUIPMENT,
 		TRAITS_LABEL = GARRISON_TRAITS,
 	},
+	traitAbilitiesAreEquipment = false,
 	useAbilityTooltipStyleWithoutCounters = false,
 	usesOvermaxMechanic = false,
 }
@@ -47,6 +50,8 @@ GarrisonFollowerOptions[LE_FOLLOWER_TYPE_SHIPYARD_6_2] = {
 	followerListCounterOuterSpacingX = 8,
 	followerListCounterOuterSpacingY = 4,
 	followerListCounterScale = 1.0,
+	followerPageShowSourceText = false,
+	followerPageShowGear = false,
 	garrisonType = LE_GARRISON_TYPE_6_0,
 	hideCountersInAbilityFrame = false,
 	hideMissionTypeInLandingPage = true,
@@ -72,6 +77,7 @@ GarrisonFollowerOptions[LE_FOLLOWER_TYPE_SHIPYARD_6_2] = {
 		CONFIRM_EQUIPMENT = GARRISON_SHIPYARD_CONFIRM_EQUIPMENT,
 		TRAITS_LABEL = nil;
 	},
+	traitAbilitiesAreEquipment = true,
 	useAbilityTooltipStyleWithoutCounters = false,
 	usesOvermaxMechanic = false,
 }
@@ -84,6 +90,8 @@ GarrisonFollowerOptions[LE_FOLLOWER_TYPE_GARRISON_7_0] = {
 	followerListCounterOuterSpacingX = 8,
 	followerListCounterOuterSpacingY = 4,
 	followerListCounterScale = 1.15,
+	followerPageShowSourceText = false,
+	followerPageShowGear = false,
 	garrisonType = LE_GARRISON_TYPE_7_0,
 	hideCountersInAbilityFrame = true,
 	hideMissionTypeInLandingPage = true,
@@ -109,6 +117,7 @@ GarrisonFollowerOptions[LE_FOLLOWER_TYPE_GARRISON_7_0] = {
 		CONFIRM_EQUIPMENT = GARRISON_FOLLOWER_CONFIRM_EQUIPMENT,
 		TRAITS_LABEL = ORDER_HALL_EQUIPMENT_SLOTS,
 	},
+	traitAbilitiesAreEquipment = true,
 	useAbilityTooltipStyleWithoutCounters = true,
 	usesOvermaxMechanic = true,
 }

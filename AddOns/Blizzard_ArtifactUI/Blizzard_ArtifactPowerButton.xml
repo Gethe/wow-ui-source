@@ -173,6 +173,17 @@
 			<!-- Animation Textures -->
 		</Layers>
 		<Animations>
+			<AnimationGroup parentKey="FirstPointWaitingAnimation" setToFinalAlpha="true" looping="repeat">
+				<Alpha childKey="RingGlow" duration=".8" order="1" smoothing="IN_OUT" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="RingGlow" startDelay=".8" smoothing="IN_OUT" duration=".8" order="1" fromAlpha="1" toAlpha="0"/>
+
+				<Alpha childKey="WhiteStarBurst" duration=".8" order="1" smoothing="IN_OUT" fromAlpha="0" toAlpha=".2"/>
+				<Alpha childKey="WhiteStarBurst" startDelay=".8" smoothing="IN_OUT" duration=".8" order="1" fromAlpha=".2" toAlpha="0"/>
+
+				<Alpha childKey="RankBorderFinal" duration=".8" order="1" smoothing="IN_OUT" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="RankBorderFinal" startDelay=".8" smoothing="IN_OUT" duration=".8" order="1" fromAlpha="1" toAlpha="0"/>
+			</AnimationGroup>
+
 			<AnimationGroup parentKey="PointSpentAnim" setToFinalAlpha="true">
 				<Alpha childKey="SpinningGlows2" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
 				<Scale childKey="SpinningGlows2" duration="0.75" order="1" fromScaleX="0.9" fromScaleY="0.9" toScaleX="0.6" toScaleY="0.6"/>

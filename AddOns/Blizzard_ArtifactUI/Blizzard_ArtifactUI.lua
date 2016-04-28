@@ -111,6 +111,23 @@ function ArtifactUIMixin:OnAppearanceChanging()
 	self.PerksTab:OnAppearanceChanging();
 end
 
+local function GetNumUnlockedAppearances()
+	local count = 0;
+	for setIndex = 1, C_ArtifactUI.GetNumAppearanceSets() do
+		local setID, _, _, _, numAppearanceSlots = C_ArtifactUI.GetAppearanceSetInfo(setIndex);
+		if setID and numAppearanceSlots > 0 then
+			for appearanceIndex = 1, numAppearanceSlots do
+				local _, _, _, appearanceUnlocked = C_ArtifactUI.GetAppearanceInfo(setIndex, appearanceIndex);
+
+				if appearanceUnlocked then
+					count = count + 1;
+				end
+			end
+		end
+	end
+	return count;
+end
+
 function ArtifactUIMixin:EvaulateForgeState()
 	local isAtForge = C_ArtifactUI.IsAtForge();
 	local isViewedArtifactEquipped = C_ArtifactUI.IsViewedArtifactEquipped();
@@ -122,6 +139,19 @@ function ArtifactUIMixin:EvaulateForgeState()
 
 		self.wasAtForge = isAtForge;
 		self.wasViewedArtifactEquipped = isViewedArtifactEquipped;
+	end
+
+	if not isAtForge and isViewedArtifactEquipped and C_ArtifactUI.GetTotalPurchasedRanks() > 0 then
+		PaperDollItemsFrame.ArtifactViewHelpBox:Hide();
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_VIEWABLE_ARTIFACT, true);
+	end
+
+	if isAtForge and not self.AppearancesTab:IsShown() and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_ARTIFACT_APPEARANCE_TAB) and C_ArtifactUI.GetTotalPurchasedRanks() > 0 then
+		if GetNumUnlockedAppearances() > 1 then
+			self.AppearanceTabHelpBox:Show();
+		end
+	else
+		self.AppearanceTabHelpBox:Hide();
 	end
 
 	ArtifactFrameUnderlay:SetShown(isAtForge);
@@ -138,6 +168,11 @@ function ArtifactUIMixin:SetTab(id)
 	end
 
 	UpdateUIPanelPositions(self);
+
+	if id == TAB_APPEARANCE then
+		self.AppearanceTabHelpBox:Hide();
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_ARTIFACT_APPEARANCE_TAB, true)
+	end
 
 	self.PerksTab:SetShown(id == TAB_PERKS);
 	self.AppearancesTab:SetShown(id == TAB_APPEARANCE);

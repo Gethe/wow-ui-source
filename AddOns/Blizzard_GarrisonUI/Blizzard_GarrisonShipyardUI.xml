@@ -1690,6 +1690,9 @@
 		<Anchors>
 			<Anchor point="CENTER"/>
 		</Anchors>
+		<KeyValues>
+			<KeyValue key="followerTypeID" value="LE_FOLLOWER_TYPE_SHIPYARD_6_2" type="global"/>
+		</KeyValues>
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="-1">
 				<Texture parentKey="BackgroundTile" atlas="Garr_WoodFrame-BackgroundTile" horizTile="true" vertTile="true">
@@ -1788,7 +1791,7 @@
 			<!-- Naval Map tab frame -->
 			<Frame parentKey="MissionTab" setAllPoints="true" useParentLevel="true">
 				<Frames>
-					<Frame parentKey="MissionList" setAllPoints="true" useParentLevel="true">
+					<Frame parentKey="MissionList" setAllPoints="true" mixin="GarrisonShipyardMissionListMixin" useParentLevel="true">
 						<Layers>
 							<Layer level="BACKGROUND" textureSubLevel="0">
 								<Texture parentKey="MapTexture" atlas="NavalMap01" useAtlasSize="true">

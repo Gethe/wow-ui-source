@@ -22,7 +22,7 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer parentKey="background" level="BACKGROUND">
+			<Layer level="BACKGROUND">
 				<Texture>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="0" y="-1"/>
@@ -48,7 +48,7 @@
 					<TexCoords left="0.04347826" right="0.95652173" top="0.04347826" bottom="0.95652173"/>
 				</Texture>
 
-				<Texture parentKey="iconTextureUncollected" setAllPoints="true" alpha=".18" hidden="true" desaturated="TRUE">
+				<Texture parentKey="iconTextureUncollected" setAllPoints="true" alpha=".18" hidden="true" desaturated="true">
 					<Size x="42" y="41" />
 					<Anchors>
 						<Anchor point="CENTER" x="0" y="2"/>
@@ -72,12 +72,12 @@
 
 			<Layer level="OVERLAY" textureSubLevel="2">
 				<FontString parentKey="new" inherits="GameFontHighlight" maxLines="1" justifyH="CENTER" text="NEW_CAPS" hidden="true">
-					<Shadow>
-						<Color r="0.32" g="0.5" b="1.0"/>
-					</Shadow>
 					<Anchors>
 						<Anchor point="CENTER" x="8" y="0" relativePoint="TOPLEFT"/>
 					</Anchors>
+					<Shadow>
+						<Color r="0.32" g="0.5" b="1.0"/>
+					</Shadow>
 				</FontString>
 
 				<Texture parentKey="newGlow" atlas="collections-newglow" hidden="true">
@@ -386,4 +386,19 @@
 		<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
 		<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 	</Button>
+
+	<PlayerModel name="CollectionsWrappedModelFrame" enableMouse="true" hidden="true" inherits="MouseDisabledModelTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="normalIntensity" value="0.75" type="number"/>
+			<KeyValue key="highlightIntensity" value="1.2" type="number"/>
+		</KeyValues>
+		<Scripts>
+			<OnShow>
+				self:SetDisplayInfo(COLLECTIONS_FANFARE_DISPLAY_ID);
+				self:SetLight(true, false, 0, 0, 0, self.normalIntensity, 1.0, 1.0, 1.0);
+			</OnShow>
+			<OnEnter function="CollectionsWrappedModelFrame_OnEnter" />
+			<OnLeave function="CollectionsWrappedModelFrame_OnLeave" />
+		</Scripts>
+	</PlayerModel>
 </Ui>

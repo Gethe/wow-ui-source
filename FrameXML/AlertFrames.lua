@@ -177,6 +177,7 @@ function AlertFrameMixin:OnLoad()
 	self:RegisterEvent("PET_BATTLE_CLOSE");
 	self:RegisterEvent("STORE_PRODUCT_DELIVERED");
 	self:RegisterEvent("GARRISON_BUILDING_ACTIVATABLE");
+    self:RegisterEvent("GARRISON_TALENT_COMPLETE");
 	self:RegisterEvent("GARRISON_MISSION_FINISHED");
 	self:RegisterEvent("GARRISON_FOLLOWER_ADDED");
 	self:RegisterEvent("GARRISON_RANDOM_MISSION_ADDED");
@@ -252,6 +253,8 @@ function AlertFrameMixin:OnEvent(event, ...)
 	elseif ( event == "GARRISON_BUILDING_ACTIVATABLE" ) then
 		GarrisonBuildingAlertSystem:AddAlert(...);
 		GarrisonLandingPageMinimapButton.MinimapLoopPulseAnim:Play();
+    elseif ( event == "GARRISON_TALENT_COMPLETE") then
+        GarrisonTalentAlertSystem:AddAlert(...);
 	elseif ( event == "GARRISON_MISSION_FINISHED" ) then
 		local validInstance = false;
 		local _, instanceType = GetInstanceInfo();

@@ -20,6 +20,11 @@ function OrderHallCommandBarMixin:OnLoad()
 	y1 = y1 + 0.25 * height;
 	y2 = y2 - 0.25 * height;
 	self.ClassIcon:SetTexCoord(x1, x2, y1, y2);
+
+	-- don't wnat to get mouse events on anything under the command bar
+	self:EnableMouse(true);
+
+	self.AreaName:SetText(_G["ORDER_HALL_"..class]);
 end
 
 function OrderHallCommandBarMixin:OnShow()
@@ -33,10 +38,13 @@ function OrderHallCommandBarMixin:OnShow()
 	self:RegisterEvent("GARRISON_FOLLOWER_CATEGORIES_UPDATED");
 	self:RegisterEvent("GARRISON_FOLLOWER_ADDED");
 	self:RegisterEvent("GARRISON_FOLLOWER_REMOVED");
-
+	self:RegisterEvent("UPDATE_BINDINGS");
 
 	self:RequestCategoryInfo();
 	self:RefreshAll();
+
+	self.WorldMapButton.tooltipText = MicroButtonTooltipText(WORLDMAP_BUTTON, "TOGGLEWORLDMAP");
+	self.WorldMapButton.newbieText = NEWBIE_TOOLTIP_WORLDMAP;
 end
 
 function OrderHallCommandBarMixin:OnHide()
@@ -48,7 +56,7 @@ function OrderHallCommandBarMixin:OnHide()
 	self:UnregisterEvent("GARRISON_FOLLOWER_CATEGORIES_UPDATED");
 	self:UnregisterEvent("GARRISON_FOLLOWER_ADDED");
 	self:UnregisterEvent("GARRISON_FOLLOWER_REMOVED");
-
+	self:UnregisterEvent("UPDATE_BINDINGS");
 
 	self.categoryPool:ReleaseAll();
 	UIParent_UpdateTopFramePositions();
@@ -57,18 +65,21 @@ end
 function OrderHallCommandBarMixin:OnEvent(event)
 	if (event == "CURRENCY_DISPLAY_UPDATE") then
 		self:RefreshCurrency();
-	elseif ( event == "DISPLAY_SIZE_CHANGED" 
+	elseif (event == "DISPLAY_SIZE_CHANGED" 
 		or event == "UI_SCALE_CHANGED" 
 		or event == "GARRISON_FOLLOWER_CATEGORIES_UPDATED" 
 		or event == "GARRISON_FOLLOWER_ADDED" 
 		or event == "GARRISON_FOLLOWER_REMOVED") then
 
 		self:RefreshCategories();
-	elseif ( event == "UNIT_AURA" ) then
+	elseif (event == "UNIT_AURA") then
 		local inOrderHall = C_Garrison.IsPlayerInGarrison(LE_GARRISON_TYPE_7_0);
 		self:SetShown(inOrderHall);
-	elseif ( event == "GARRISON_TALENT_UPDATE" ) then
+	elseif (event == "GARRISON_TALENT_UPDATE") then
 		self:RequestCategoryInfo();
+	elseif (event == "UPDATE_BINDINGS") then
+		self.WorldMapButton.tooltipText = MicroButtonTooltipText(WORLDMAP_BUTTON, "TOGGLEWORLDMAP");
+		self.WordMapButton.newbieText = NEWBIE_TOOLTIP_WORLDMAP;
 	end
 end
 
@@ -99,7 +110,7 @@ function OrderHallCommandBarMixin:RefreshCategories()
 		categoryInfoFrame:ClearAllPoints();
 		if (not firstCategory) then
 			-- calculate positioning so that the set of categories ends up being centered
-			categoryInfoFrame:SetPoint("LEFT", self, "LEFT", (self:GetWidth() - (numCategories * categoryInfoFrame:GetWidth()))/2 - (numCategories - 1)*xSpacing, 0);
+			categoryInfoFrame:SetPoint("LEFT", self, "RIGHT", (0 - (numCategories * (categoryInfoFrame:GetWidth() + xSpacing))) - 30, 0);
 			firstCategory = categoryInfoFrame;
 		else
 			categoryInfoFrame:SetPoint("LEFT", prevCategory, "RIGHT", xSpacing, 0);

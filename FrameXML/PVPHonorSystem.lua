@@ -1,3 +1,19 @@
+PVPHonorRewardMixin = {};
+
+function PVPHonorRewardMixin:OnLoad()
+    self:RegisterEvent("GET_ITEM_INFO_RECEIVED");
+end
+
+function PVPHonorRewardMixin:OnEvent(event, ...)
+    if (event == "GET_ITEM_INFO_RECEIVED" and self.rewardInfo and self.rewardInfo.waitingOnItem) then
+        local id = ...;
+        if (id == self.rewardInfo.id) then
+            self.rewardInfo:Set(id);
+            self.rewardInfo:SetUpFrame(self);
+        end
+    end
+end
+
 PVPHonorRewardInfoMixin = {};
 
 function PVPHonorRewardInfoMixin:Set(...)
@@ -21,7 +37,14 @@ function PVPHonorRewardInfoMixin:SetUpFrame(frame)
 	if (self.quantity) then
 		frame.Quantity:SetText(self.quantity);
 	end
+
+    frame.Icon:Show();
+    frame.Frame:Show();
 	frame.Quantity:SetShown(self.quantity ~= nil);
+    
+    if (frame.Text) then
+        frame.Text:Hide();
+    end
 end
 
 PVPHonorRewardTalentMixin = Mixin({}, PVPHonorRewardInfoMixin);
@@ -34,6 +57,7 @@ end
 
 function PVPHonorRewardTalentMixin:SetTooltip()
 	GameTooltip:SetPvpTalent(self.id);
+    return true;
 end
 
 PVPHonorRewardArtifactPowerMixin = Mixin({}, PVPHonorRewardInfoMixin);
@@ -47,6 +71,7 @@ end
 function PVPHonorRewardArtifactPowerMixin:SetTooltip()
 	GameTooltip:SetText(HONOR_REWARD_ARTIFACT_POWER);
 	GameTooltip:AddLine(ARTIFACT_POWER_GAIN:format(self.quantity), 1, 1, 1, true);
+    return true;
 end
 
 PVPHonorRewardItemMixin = Mixin({}, PVPHonorRewardInfoMixin);
@@ -55,10 +80,12 @@ function PVPHonorRewardItemMixin:Set(...)
 	local id = ...;
 	self.id = id;
 	self.icon = select(10, GetItemInfo(id));
+	self.waitingOnItem = not self.icon;	
 end
 
 function PVPHonorRewardItemMixin:SetTooltip()
 	GameTooltip:SetItemByID(self.id);
+    return true;
 end
 
 PVPHonorRewardCurrencyMixin = Mixin({}, PVPHonorRewardInfoMixin);
@@ -73,6 +100,7 @@ end
 
 function PVPHonorRewardCurrencyMixin:SetTooltip()
 	GameTooltip:SetCurrencyByID(self.id);
+    return true;
 end
 
 PVPHonorRewardMoneyMixin = Mixin({}, PVPHonorRewardInfoMixin);
@@ -88,8 +116,38 @@ end
 function PVPHonorRewardMoneyMixin:SetTooltip()
 	GameTooltip:SetText(HONOR_REWARD_MONEY);
 	GameTooltip:AddLine(GetMoneyString(self.realQuantity), 1, 1, 1, true);
+    return true;
 end
 
+PVPHonorRewardTitleMixin = Mixin({}, PVPHonorRewardInfoMixin);
+
+function PVPHonorRewardTitleMixin:Set(...)
+    local id = ...;
+    
+    self.text = GetRewardPackTitleName(id);
+end
+
+function PVPHonorRewardTitleMixin:SetTooltip()
+    return false;
+end
+
+-- Note this is different from the other rewards and is not suppoted on the next available
+function PVPHonorRewardTitleMixin:SetUpFrame(frame)
+    if (not frame.Text) then
+        return;
+    end
+    
+    if (frame.formatString) then
+        frame.Text:SetFormattedText(frame.formatString, self.text);
+    else
+        frame.Text:SetText(self.text);
+    end
+    
+    frame.Icon:Hide();
+    frame.Quantity:Hide();
+    frame.Frame:Hide();
+    frame.Text:Show();
+end
 
 function IsWatchingHonorAsXP()
 	return GetCVarBool("showHonorAsExperience");
@@ -188,11 +246,45 @@ function PVPHonorSystem_GetNextReward()
 			elseif (money and money > 0) then
 				rewardInfo = CreateFromMixins(PVPHonorRewardMoneyMixin);
 				rewardInfo:Set(money);
-			end
+            end
 		end
 	end
 
 	return rewardInfo;
+end
+
+function PVPHonorSystem_GetMaxPVPLevelReward(prestige)
+    if (not prestige) then
+        prestige = UnitPrestige("player");
+    end
+    
+    local rewardInfo;
+    local rewardPackID = GetHonorLevelRewardPack(GetMaxPlayerHonorLevel(), prestige);
+    if (rewardPackID) then
+        local items = GetRewardPackItems(rewardPackID);
+        local currencies = GetRewardPackCurrencies(rewardPackID);
+        local money = GetRewardPackMoney(rewardPackID);
+        local artifactPower = GetRewardPackArtifactPower(rewardPackID);
+        local title = GetRewardPackTitle(rewardPackID);
+        if (items and #items > 0) then
+            rewardInfo = CreateFromMixins(PVPHonorRewardItemMixin);
+            rewardInfo:Set(items[1]);
+        elseif (artifactPower and artifactPower > 0) then
+            rewardInfo = CreateFromMixins(PVPHonorRewardArtifactPowerMixin);
+            rewardInfo:Set(artifactPower);
+        elseif (currencies and #currencies > 0) then
+            rewardInfo = CreateFromMixins(PVPHonorRewardCurrencyMixin);
+            rewardInfo:Set(currencies[1].currencyType, currencies[1].quantity);
+        elseif (money and money > 0) then
+            rewardInfo = CreateFromMixins(PVPHonorRewardMoneyMixin);
+            rewardInfo:Set(money);
+        elseif (title and title > 0) then
+            rewardInfo = CreateFromMixins(PVPHonorRewardTitleMixin);
+            rewardInfo:Set(title);
+        end
+    end
+    
+    return rewardInfo;
 end
 
 function PVPHonorXPBar_SetNextAvailable(self)
@@ -225,8 +317,9 @@ function PVPHonorSystemXPBarNextAvailable_OnEnter(self)
 	local rewardInfo = self:GetParent().rewardInfo;
 	if (rewardInfo) then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		rewardInfo:SetTooltip();
-		GameTooltip:Show();
+		if (rewardInfo:SetTooltip()) then
+    		GameTooltip:Show();
+        end
 	end
 end	
 
@@ -256,7 +349,28 @@ function PVPHonorXPBarPrestige_OnClick(self)
 	frame.NextRankLabel:SetText(name);
 	frame.PrestigeIcon:SetTexture(texture);
 	frame.LaurelBackground:SetAtlas("honorsystem-prestige-laurel-bg-"..UnitFactionGroup("player"), false);
-	frame:Show();
+    
+    local rewardFrame = frame.MaxLevelReward;
+    
+    rewardFrame.rewardInfo = PVPHonorSystem_GetMaxPVPLevelReward(newPrestigeLevel);
+    
+    if (rewardFrame.rewardInfo) then
+        rewardFrame.rewardInfo:SetUpFrame(rewardFrame);
+        rewardFrame:Show();
+        frame.TopDivider:Show();
+		frame.NextMaxLevelReward:SetFormattedText(PVP_PRESTIGE_RANK_UP_NEXT_MAX_LEVEL_REWARD, GetMaxPlayerHonorLevel());
+        frame.NextMaxLevelReward:Show();
+        frame.BottomDivider:Show();
+        frame:SetHeight(500);
+    else
+        rewardFrame:Hide();
+        frame.TopDivider:Hide();
+        frame.NextMaxLevelReward:Hide();
+        frame.BottomDivider:Hide();
+        frame:SetHeight(440);
+    end
+    
+    frame:Show();
 end
 
 function HonorExhaustionTick_OnLoad(self)
@@ -384,8 +498,7 @@ function PrestigeLevelUpBanner_OnEvent(self, event, ...)
 		local prestige = UnitPrestige("player");
 		local factionGroup = UnitFactionGroup("player");
 		local texture, name = GetPrestigeInfo(prestige);
-		self.Text1:SetText(PRESTIGE_LEVEL_LABEL:format(prestige));
-		self.Text2:SetText(name);
+		self.Text:SetText(name);
 		self.Level:SetText(prestige);
 		self.IconPlate:SetAtlas("titleprestige-prestigeiconplate-"..factionGroup);
 		self.IconPlate2:SetAtlas("titleprestige-prestigeiconplate-"..factionGroup);
