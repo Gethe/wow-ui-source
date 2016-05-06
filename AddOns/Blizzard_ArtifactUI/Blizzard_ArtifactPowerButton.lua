@@ -382,7 +382,7 @@ function ArtifactPowerButtonMixin:SetupButton(powerID, anchorRegion)
 
 	self:EvaluateStyle();
 
-	if totalPurchasedRanks == 0 and prereqsMet and not self.isStart then
+	if totalPurchasedRanks == 0 and prereqsMet and not self.isStart and isAtForge then
 		self.FirstPointWaitingAnimation:Play();
 	else
 		self.FirstPointWaitingAnimation:Stop();

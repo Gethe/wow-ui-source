@@ -73,6 +73,7 @@ function InspectTalentFrameTalents_OnLoad(self)
 end
 
 function InspectTalentFrameTalents_OnShow(self)
+	self.talentGroup = GetActiveSpecGroup(true);
 	TalentFrame_Update(self, INSPECTED_UNIT);
 end
 

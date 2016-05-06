@@ -182,6 +182,7 @@ function AlertFrameMixin:OnLoad()
 	self:RegisterEvent("GARRISON_FOLLOWER_ADDED");
 	self:RegisterEvent("GARRISON_RANDOM_MISSION_ADDED");
 	self:RegisterEvent("NEW_RECIPE_LEARNED");
+	self:RegisterEvent("SHOW_LOOT_TOAST_LEGENDARY_LOOTED");
 
 	self.alertFrameSubSystems = {};
 end

@@ -623,7 +623,7 @@
 		<Frames>
 			<Frame name="$parentInset" useParentLevel="true" inherits="InsetFrameTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" x="4" y="-24" />
+					<Anchor point="TOPLEFT" x="4" y="-20" />
 					<Anchor point="BOTTOMRIGHT" x="-4" y="4" />
 				</Anchors>
 			</Frame>
@@ -642,6 +642,14 @@
                             </Anchors>
                         </Texture>
                     </Layer>
+                    <Layer level="HIGHLIGHT">
+                        <Texture atlas="ChallengeMode-Chest" alphaMode="ADD" alpha="0.1">
+                            <Size x="98" y="73"/>
+                            <Anchors>
+                                <Anchor point="TOPRIGHT"/>
+                            </Anchors>
+                        </Texture>
+                    </Layer>
                 </Layers>
                 <Scripts>
                     <OnEnter>
@@ -653,71 +661,126 @@
                 </Scripts>
             </Frame>
             
-
-            <Frame parentKey="WeeklyBest" mixin="ChallengesFrameWeeklyBestMixin">
-                <Size x="500" y="352"/>
+            <ScrollFrame name="ChallengesModeWeeklyBest" parentKey="WeeklyBest" mixin="ChallengesFrameWeeklyBestMixin">
+                <Size x="550" y="372"/>
                 <Anchors>
-                    <Anchor point="TOPLEFT" x="56" y="-46"/>
+                    <Anchor point="TOPLEFT" x="6" y="-26"/>
                 </Anchors>
-                <Layers>
-                    <Layer level="ARTWORK">
-                        <Texture parentKey="Star" atlas="ChallengeMode-SpikeyStar" useAtlasSize="true" alpha="0.51">
-                            <Size x="90" y="90"/>
-                            <Anchors>
-                                <Anchor point="TOPLEFT" x="-3" y="5"/>
-                            </Anchors>
-                        </Texture>
-                        <FontString parentKey="Level" inherits="CombatTextFontOutline" justifyH="CENTER">
-                            <Anchors>
-                                <Anchor point="CENTER" relativeKey="$parent.Star" y="-5"/>
-                            </Anchors>
-                        </FontString>
-                        <FontString parentKey="Label" inherits="Fancy24Font" text="CHALLENGE_MODE_WEEKLY_BEST">
-                            <Anchors>
-                                <Anchor point="TOPLEFT" relativekey="$parent.Star" relativePoint="TOPRIGHT" x="-16" y="-39"/>
-                            </Anchors>
-                            <Color r="1.0" g="1.0" b="1.0"/>
-							<Shadow>
-								<Offset>
-									<AbsDimension x="1" y="-1"/>
-								</Offset>
-								<Color r="0" g="0" b="0"/>
-							</Shadow>
-                        </FontString>
-                         <FontString parentKey="NoRunsThisWeek" inherits="GameFontNormalMed2" justifyH="LEFT" text="CHALLENGE_MODE_NO_RUNS_THIS_WEEK" hidden="true">
-                            <Size x="300" y="0"/>
-                            <Anchors>
-                                <Anchor point="TOPLEFT" relativeKey="$parent.Label" relativePoint="BOTTOMLEFT" x="0" y="-6"/>
-                            </Anchors>
-                        </FontString>
-                        <FontString parentKey="DungeonName" inherits="GameFontNormalHuge2">
-                            <Anchors>
-                                <Anchor point="TOPLEFT" relativeKey="$parent.Label" relativePoint="BOTTOMLEFT" x="0" y="-6"/>
-                            </Anchors>
-							<Shadow>
-								<Offset>
-									<AbsDimension x="1" y="-1"/>
-								</Offset>
-								<Color r="0" g="0" b="0"/>
-							</Shadow>
-                        </FontString>
-                    </Layer>
-                    <Layer level="OVERLAY">
-                        <Texture parentKey="Glow" atlas="ChallengeMode-SoftYellowGlow" useAtlasSize="true" alphaMode="ADD">
-                            <Anchors>
-                                <Anchor point="CENTER" relativeKey="$parent.Star" y="-8"/>
-                            </Anchors>
-                        </Texture>
-                    </Layer>
-                </Layers>
-                <Frames>
-                    <Frame hidden="true" inherits="ChallengesKeystoneFrameAffixTemplate">
+                <ScrollChild>
+                    <Frame parentKey="Child">
+                        <Size x="550" y="372"/>
                         <Anchors>
-                            <Anchor point="TOPLEFT" relativeKey="$parent.DungeonName" relativePOint="BOTTOMLEFT" x="0" y="-13"/>
+                            <Anchor point="TOPLEFT"/>
                         </Anchors>
+                        <Layers>
+                            <Layer level="ARTWORK">
+                                <Texture parentKey="Star" atlas="ChallengeMode-SpikeyStar" useAtlasSize="true" alpha="0.51">
+                                    <Size x="90" y="90"/>
+                                    <Anchors>
+                                        <Anchor point="TOPLEFT" x="48" y="5"/>
+                                    </Anchors>
+                                </Texture>
+                                <FontString parentKey="Level" inherits="CombatTextFontOutline" justifyH="CENTER">
+                                    <Anchors>
+                                        <Anchor point="CENTER" relativeKey="$parent.Star" y="-5"/>
+                                    </Anchors>
+                                </FontString>
+                                <FontString parentKey="Label" inherits="Fancy24Font" text="CHALLENGE_MODE_WEEKLY_BEST">
+                                    <Anchors>
+                                        <Anchor point="TOPLEFT" relativekey="$parent.Star" relativePoint="TOPRIGHT" x="-16" y="-39"/>
+                                    </Anchors>
+                                    <Color r="1.0" g="1.0" b="1.0"/>
+                                    <Shadow>
+                                        <Offset>
+                                            <AbsDimension x="1" y="-1"/>
+                                        </Offset>
+                                        <Color r="0" g="0" b="0"/>
+                                    </Shadow>
+                                </FontString>
+                                <FontString parentKey="NoRunsThisWeek" inherits="GameFontNormalMed2" justifyH="LEFT" text="CHALLENGE_MODE_NO_RUNS_THIS_WEEK" hidden="true">
+                                    <Size x="300" y="0"/>
+                                    <Anchors>
+                                        <Anchor point="TOPLEFT" relativeKey="$parent.Label" relativePoint="BOTTOMLEFT" x="0" y="-6"/>
+                                    </Anchors>
+                                </FontString>
+                                <FontString parentKey="DungeonName" inherits="GameFontNormalHuge2">
+                                    <Anchors>
+                                        <Anchor point="TOPLEFT" relativeKey="$parent.Label" relativePoint="BOTTOMLEFT" x="0" y="-6"/>
+                                    </Anchors>
+                                    <Shadow>
+                                        <Offset>
+                                            <AbsDimension x="1" y="-1"/>
+                                        </Offset>
+                                        <Color r="0" g="0" b="0"/>
+                                    </Shadow>
+                                </FontString>
+                            </Layer>
+                            <Layer level="BACKGROUND">
+                                <Texture parentKey="RunesLarge" hidden="false" alpha="0.15" alphaMode="BLEND" atlas="ChallengeMode-Runes-Large">
+                                    <Size x="296" y="296"/>
+                                    <Anchors>
+                                        <Anchor point="CENTER" relativeKey="$parent.Star"/>
+                                    </Anchors>
+                                </Texture>
+                                <Texture parentKey="RunesSmall" hidden="false" alpha="0.15" alphaMode="BLEND" atlas="ChallengeMode-Runes-Small">
+                                    <Size x="225" y="225"/>
+                                    <Anchors>
+                                        <Anchor point="CENTER" relativeKey="$parent.Star"/>
+                                    </Anchors>
+                                </Texture>
+                            </Layer>
+                            <Layer level="BACKGROUND" textureSubLevel="1">
+                                <Texture parentKey="LargeRuneGlow" hidden="false" alpha="0" alphaMode="ADD" atlas="ChallengeMode-Runes-GlowLarge">
+                                    <Size x="298" y="299"/>
+                                    <Anchors>
+                                        <Anchor point="CENTER" relativeKey="$parent.Star"/>
+                                    </Anchors>
+                                </Texture>
+                                <Texture parentKey="SmallRuneGlow" hidden="false" alpha="0" alphaMode="ADD" atlas="ChallengeMode-Runes-GlowSmall">
+                                    <Size x="229" y="229"/>
+                                    <Anchors>
+                                        <Anchor point="CENTER" relativeKey="$parent.Star"/>
+                                    </Anchors>
+                                </Texture>
+                            </Layer>
+                            <Layer level="OVERLAY">
+                                <Texture parentKey="Glow" atlas="ChallengeMode-SoftYellowGlow" useAtlasSize="true" alphaMode="ADD">
+                                    <Anchors>
+                                        <Anchor point="CENTER" relativeKey="$parent.Star" y="-8"/>
+                                    </Anchors>
+                                </Texture>
+                            </Layer>
+                        </Layers>
+                        <Frames>
+                            <Frame hidden="true" inherits="ChallengesKeystoneFrameAffixTemplate">
+                                <Anchors>
+                                    <Anchor point="TOPLEFT" relativeKey="$parent.DungeonName" relativePOint="BOTTOMLEFT" x="0" y="-13"/>
+                                </Anchors>
+                            </Frame>
+                        </Frames>
+                        <Animations>
+                            <AnimationGroup parentKey="RunesSmallRotateAnim" looping="REPEAT">
+                                <Rotation childKey="RunesSmall" duration="60" order="1" degrees="360"/>
+                                <Rotation childKey="SmallRuneGlow" duration="60" order="1" degrees="360"/>
+                            </AnimationGroup>
+                            <AnimationGroup parentKey="RunesLargeRotateAnim" looping="REPEAT">
+                                <Rotation childKey="RunesLarge" duration="60" order="1" degrees="-360"/>
+                                <Rotation childKey="LargeRuneGlow" duration="60" order="1" degrees="-360"/>
+                            </AnimationGroup>
+                        </Animations>
+                        <Scripts>
+                            <OnShow>
+                                self.RunesSmallRotateAnim:Play();
+                                self.RunesLargeRotateAnim:Play();
+                            </OnShow>
+                            <OnHide>
+                                self.RunesSmallRotateAnim:Stop();
+                                self.RunesLargeRotateAnim:Stop();
+                            </OnHide>
+                        </Scripts>
                     </Frame>
-                </Frames>
-            </Frame>
+                </ScrollChild>
+            </ScrollFrame>
             <Frame inherits="ChallengesDungeonIconFrameTemplate" hidden="true">
                 <Anchors>
                     <Anchor point="BOTTOMLEFT" x="8" y="8"/>
@@ -727,7 +790,7 @@
 			<Frame parentKey="GuildBest" mixin="ChallengesFrameGuildBestMixin" hidden="true">
                 <Size x="250" y="110"/>
                 <Anchors>
-                    <Anchor point="TOPLEFT" relativeKey="$parent.WeeklyBest.Star" relativePoint="BOTTOMRIGHT" x="-16" y="10"/>
+                    <Anchor point="TOPLEFT" relativeKey="$parent.WeeklyBest.Child.Star" relativePoint="BOTTOMRIGHT" x="20" y="10"/>
                 </Anchors>
                 <Layers>
                     <Layer level="BACKGROUND">

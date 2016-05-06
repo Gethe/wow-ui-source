@@ -1086,7 +1086,7 @@
 										CharacterSelectPanelButton_DeathKnightSwap(self);
 									</OnUpdate>
 									<OnClick>
-										CharacterSelect_CreateNewCharacter();
+										CharacterSelect_CreateNewCharacter(LE_CHARACTER_CREATE_TYPE_NORMAL);
 									</OnClick>
 									<!-- We need to override the templates script because it will reset our textures. -->
 									<OnShow/>

@@ -539,7 +539,7 @@
 							<OnShow function="Graphics_SliderOnShow"/>
 						</Scripts>
 					</Slider>
-					<Slider name="$parentEnvironmentalDetailSlider" inherits="VideoOptionsSliderTemplate" minValue="1" maxValue="7" valueStep="1" obeyStepOnDrag="true" hidden="false">
+					<Slider name="$parentEnvironmentalDetailSlider" inherits="VideoOptionsSliderTemplate" minValue="1" maxValue="10" valueStep="1" obeyStepOnDrag="true" hidden="false">
 						<Size x="126" y="17"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentViewDistanceSlider" relativePoint="BOTTOMLEFT" y="-10"/>
@@ -559,7 +559,7 @@
 							<OnShow function="Graphics_SliderOnShow"/>
 						</Scripts>
 					</Slider>
-					<Slider name="$parentGroundClutterSlider" inherits="VideoOptionsSliderTemplate" minValue="1" maxValue="7" valueStep="1" obeyStepOnDrag="true" hidden="false">
+					<Slider name="$parentGroundClutterSlider" inherits="VideoOptionsSliderTemplate" minValue="1" maxValue="10" valueStep="1" obeyStepOnDrag="true" hidden="false">
 						<Size x="126" y="17"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentEnvironmentalDetailSlider" relativePoint="BOTTOMLEFT" y="-10"/>
@@ -902,7 +902,7 @@
 							<OnShow function="Graphics_SliderOnShow"/>
 						</Scripts>
 					</Slider>
-					<Slider name="$parentEnvironmentalDetailSlider" inherits="RaidVideoOptionsSliderTemplate" minValue="1" maxValue="7" valueStep="1" obeyStepOnDrag="true" hidden="false">
+					<Slider name="$parentEnvironmentalDetailSlider" inherits="RaidVideoOptionsSliderTemplate" minValue="1" maxValue="10" valueStep="1" obeyStepOnDrag="true" hidden="false">
 						<Size x="126" y="17"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentViewDistanceSlider" relativePoint="BOTTOMLEFT" y="-10"/>
@@ -922,7 +922,7 @@
 							<OnShow function="Graphics_SliderOnShow"/>
 						</Scripts>
 					</Slider>
-					<Slider name="$parentGroundClutterSlider" inherits="RaidVideoOptionsSliderTemplate" minValue="1" maxValue="7" valueStep="1" obeyStepOnDrag="true" hidden="false">
+					<Slider name="$parentGroundClutterSlider" inherits="RaidVideoOptionsSliderTemplate" minValue="1" maxValue="10" valueStep="1" obeyStepOnDrag="true" hidden="false">
 						<Size x="126" y="17"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentEnvironmentalDetailSlider" relativePoint="BOTTOMLEFT" y="-10"/>

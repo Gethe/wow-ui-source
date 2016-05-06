@@ -388,9 +388,17 @@ function TalentMicroButtonMixin:EvaluateAlertVisibility()
 	-- If we just unspecced, and we have unspent talent points, it's probably spec-specific talents that were just wiped.  Show the tutorial box.
 	if not AreTalentsLocked() and GetNumUnspentTalents() > 0 and (not PlayerTalentFrame or not PlayerTalentFrame:IsShown()) then
 		if MainMenuMicroButton_ShowAlert(TalentMicroButtonAlert, TALENT_MICRO_BUTTON_UNSPENT_TALENTS) then
+            TalentMicroButton.suggestedTab = 2;
 			return;
 		end
 	end
+    if GetNumUnspentPvpTalents() > 0 and (not PlayerTalentFrame or not PlayerTalentFrame:IsShown()) then
+        if (MainMenuMicroButton_ShowAlert(TalentMicroButtonAlert, TALENT_MICRO_BUTTON_UNSPENT_HONOR_TALENTS)) then
+            TalentMicroButton.suggestedTab = 3;
+            return;
+        end
+    end
+    TalentMicroButton.suggestedTab = nil;
 end
 
 --Talent button specific functions
@@ -410,16 +418,17 @@ function TalentMicroButton_OnEvent(self, event, ...)
 				MicroButtonPulse(self);
 			end
 		end
-	elseif ( event == "PLAYER_SPECIALIZATION_CHANGED") then
+	elseif ( event == "PLAYER_SPECIALIZATION_CHANGED" ) then
 		self:EvaluateAlertVisibility();
-	elseif ( event == "PLAYER_TALENT_UPDATE" or event == "NEUTRAL_FACTION_SELECT_RESULT" ) then
+	elseif ( event == "PLAYER_TALENT_UPDATE" or event == "NEUTRAL_FACTION_SELECT_RESULT" or 
+        event == "HONOR_LEVEL_UPDATE" or event == "HONOR_PRESTIGE_UPDATE" or event == "PLAYER_PVP_TALENT_UPDATE" ) then
 		UpdateMicroButtons();
 		
 		-- On the first update from the server, flash the button if there are unspent points
 		-- Small hack: GetNumSpecializations should return 0 if talents haven't been initialized yet
 		if (not self.receivedUpdate and GetNumSpecializations(false) > 0) then
 			self.receivedUpdate = true;
-			local shouldPulseForTalents = GetNumUnspentTalents() > 0 and not AreTalentsLocked();
+			local shouldPulseForTalents = GetNumUnspentTalents() > 0 or GetNumUnspentPvpTalents() > 0 and not AreTalentsLocked();
 			if (UnitLevel("player") >= SHOW_SPEC_LEVEL and (not GetSpecialization() or shouldPulseForTalents)) then
 				MicroButtonPulse(self);
 			end
@@ -438,6 +447,10 @@ function TalentMicroButton_OnEvent(self, event, ...)
 			end
 		end
 	end
+end
+
+function TalentMicroButton_OnClick(self)
+    ToggleTalentFrame(self.suggestedTab);
 end
 
 do

@@ -90,17 +90,19 @@ function NamePlateDriverMixin:OnTargetChanged()
 end
 
 function NamePlateDriverMixin:OnUnitAuraUpdate(unit)
-	local filter = "HARMFUL";
-	local reaction = UnitReaction("player", unit);
-	if (UnitIsUnit("player", unit)) then
-		filter = "HELPFUL";
-	elseif (reaction and reaction <= 4) then
-		-- Reaction 4 is neutral and less than 4 becomes increasingly more hostile
-		filter = "HARMFUL";
+	local filter;
+	if UnitIsUnit("player", unit) then
+		filter = "HELPFUL|INCLUDE_NAME_PLATE_ONLY";
 	else
-		filter = "NONE";
+		local reaction = UnitReaction("player", unit);
+		if reaction and reaction <= 4 then
+		-- Reaction 4 is neutral and less than 4 becomes increasingly more hostile
+			filter = "HARMFUL|INCLUDE_NAME_PLATE_ONLY";
+		else
+			filter = "NONE";
+		end
 	end
-	
+
 	local nameplate = C_NamePlate.GetNamePlateForUnit(unit);
 	if (nameplate) then
 		nameplate.UnitFrame.BuffFrame:UpdateBuffs(unit, filter);
@@ -152,13 +154,6 @@ function NamePlateDriverMixin:SetupClassNameplateBar(onTarget, bar)
 	local showSelf = GetCVar("nameplateShowSelf");
 	if (showSelf == "0") then
 		return;
-	end
-	
-	local healthResourceAlpha = GetCVar("nameplateBarAlpha");
-	bar:SetAlpha(healthResourceAlpha);
-	local namePlatePlayer = C_NamePlate.GetNamePlateForUnit("player");
-	if (namePlatePlayer) then
-		namePlatePlayer.UnitFrame.healthBar:SetAlpha(healthResourceAlpha);
 	end
 	
 	if (onTarget and NamePlateTargetResourceFrame) then
@@ -226,7 +221,7 @@ function NamePlateDriverMixin:UpdateNamePlateOptions()
 
 	local zeroBasedScale = namePlateVerticalScale - 1.0;
 	local clampedZeroBasedScale = Saturate(zeroBasedScale);
-	DefaultCompactNamePlateFrameSetUpOptions.nameFontHeight = Lerp(10, 14, clampedZeroBasedScale);
+	DefaultCompactNamePlateFrameSetUpOptions.useLargeNameFont = clampedZeroBasedScale > .25;
 
 	DefaultCompactNamePlateFrameSetUpOptions.castBarHeight = math.min(Lerp(12, 16, zeroBasedScale), DefaultCompactNamePlateFrameSetUpOptions.healthBarHeight * 2);
 	DefaultCompactNamePlateFrameSetUpOptions.castBarFontHeight = Lerp(8, 12, clampedZeroBasedScale);
@@ -316,8 +311,7 @@ function NameplateBuffContainerMixin:UpdateAnchor()
 end
 
 function NameplateBuffContainerMixin:ShouldShowBuff(name, caster, nameplateShowPersonal, nameplateShowAll, duration)
-	if (not name or
-		GetCVar("nameplateShowBuffs") == "0") then
+	if (not name) then
 		return false;
 	end
 	return nameplateShowAll or 

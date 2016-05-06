@@ -179,6 +179,40 @@
 		</Scripts>
 	</Frame>
 
+	<Frame name="GarrisonMissionPageOvermaxRewardTemplate" virtual="true">
+		<Size x="24" y="24"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="BG" atlas="GarrMission_ItemFrame" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="RIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Icon" setAllPoints="true"/>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="IconBorder" file="Interface\Common\WhiteIconFrame" setAllPoints="true"/>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Name" justifyH="LEFT" inherits="GameFontHighlight" hidden="true">
+					<Size x="95" y="0"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.BG" x="10"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Quantity" justifyH="RIGHT" inherits="NumberFontNormal">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter function="GarrisonMissionPage_RewardOnEnter"/>
+			<OnLeave function="GarrisonMissionPage_RewardOnLeave"/>
+		</Scripts>
+	</Frame>
+
 	<Frame name="GarrisonMissionPageRewardTemplate" virtual="true">
 		<Size x="454" y="98"/>
 		<Anchors>
@@ -227,31 +261,10 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="OvermaxItem">
-				<Size x="24" y="24"/>
+			<Frame parentKey="OvermaxItem" inherits="GarrisonMissionPageOvermaxRewardTemplate">
 				<Anchors>
 					<Anchor point="LEFT" relativePoint="RIGHT" relativeKey="$parent.MissionXP" x="4"/>
 				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture parentKey="Icon" setAllPoints="true"/>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnEnter>
-						if (self.itemID) then
-							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-							GameTooltip:SetItemByID(self.itemID);
-							GameTooltip:Show();
-						elseif (self.money) then
-							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-							GameTooltip:SetText(GARRISON_REWARD_MONEY);
-							GameTooltip:AddLine(GetMoneyString(self.money));
-							GameTooltip:Show();
-						end
-					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
-				</Scripts>
 			</Frame>
 			<Frame parentKey="Reward1" parentArray="Rewards" inherits="GarrisonMissionRewardEffectsTemplate">
 				<Anchors>

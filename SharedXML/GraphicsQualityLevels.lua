@@ -675,6 +675,10 @@ VideoData["Graphics_ShadowsDropDown"]={
 			text = VIDEO_OPTIONS_ULTRA,
 			tooltip = VIDEO_OPTIONS_SHADOW_QUALITY_ULTRA;
 		},
+		[6] = {
+			text = VIDEO_OPTIONS_ULTRA_HIGH,
+			tooltip = VIDEO_OPTIONS_SHADOW_QUALITY_ULTRA_HIGH;
+		},
 	},
 	dependent = {
 		"Graphics_Quality",
@@ -705,6 +709,10 @@ VideoData["RaidGraphics_ShadowsDropDown"]={
 		[5] = {
 			text = VIDEO_OPTIONS_ULTRA,
 			tooltip = VIDEO_OPTIONS_SHADOW_QUALITY_ULTRA;
+		},
+		[6] = {
+			text = VIDEO_OPTIONS_ULTRA_HIGH,
+			tooltip = VIDEO_OPTIONS_SHADOW_QUALITY_ULTRA_HIGH;
 		},
 	},
 	dependent = {

@@ -719,4 +719,98 @@
 		</Frames>
 	</Frame>
 
+	<Frame name="OrderHallMissionTutorialFrame" frameStrata="DIALOG" enableMouse="false" hidden="true">
+		<Frames>
+			<Frame parentKey="GlowBox" inherits="GlowBoxTemplate">
+				<Size x="210" y="200"/>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="BigText" inherits="GameFontHighlight">
+							<Size x="176" y="0"/>
+							<Anchors>
+								<Anchor point="TOP" x="0" y="-26"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="SmallText" inherits="GameFontHighlightSmall">
+							<Size x="176" y="0"/>
+							<Anchors>
+								<Anchor point="TOP" relativeKey="$parent.BigText" relativePoint="BOTTOM" x="0" y="12"/>
+							</Anchors>
+						</FontString>
+						<Texture parentKey="ArrowUp" inherits="HelpPlateArrowUP">
+							<Size x="53" y="21"/>
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-1"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="ArrowDown" inherits="HelpPlateArrowDOWN">
+							<Size x="53" y="21"/>
+							<Anchors>
+								<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="1"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="ArrowLeft" inherits="HelpPlateArrowDOWN">
+							<Size x="53" y="21"/>
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT" x="1" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="ArrowRight" inherits="HelpPlateArrowDOWN">
+							<Size x="53" y="21"/>
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="RIGHT" x="-1" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER">
+						<Texture parentKey="ArrowGlowDown" inherits="HelpPlateArrow-GlowDOWN" alphaMode="ADD" alpha="0.5">
+							<Size x="53" y="21"/>
+							<Anchors>
+								<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="1"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="ArrowGlowUp" inherits="HelpPlateArrow-GlowUP" alphaMode="ADD" alpha="0.5">
+							<Size x="53" y="21"/>
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-1"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="ArrowGlowLeft" inherits="HelpPlateArrow-GlowDOWN" alphaMode="ADD" alpha="0.5">
+							<Size x="53" y="21"/>
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT" x="-1" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="ArrowGlowRight" inherits="HelpPlateArrow-GlowDOWN" alphaMode="ADD" alpha="0.5">
+							<Size x="53" y="21"/>
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="RIGHT" x="1" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
+						<Anchors>
+							<Anchor point="TOPRIGHT" x="5" y="5"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								OrderHallMissionFrame:CheckTutorials(true);
+							</OnClick>
+						</Scripts>
+					</Button>
+				</Frames>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				SetClampedTextureRotation(self.GlowBox.ArrowLeft, 90);
+				SetClampedTextureRotation(self.GlowBox.ArrowGlowLeft, 90);
+
+				SetClampedTextureRotation(self.GlowBox.ArrowRight, 270);
+				SetClampedTextureRotation(self.GlowBox.ArrowGlowRight, 270);
+			</OnLoad>
+		</Scripts>
+	</Frame>
 </Ui>

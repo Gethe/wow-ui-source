@@ -56,6 +56,7 @@ end
 function GarrisonFollowerMission:SetupCompleteDialog()
 	local completeDialog = self:GetCompleteDialog();
 	if (completeDialog) then
+		local factionGroup = UnitFactionGroup("player");
 		local chestDisplayID;
 	    if ( factionGroup == "Horde" ) then
 			chestDisplayID = 54913;
@@ -202,6 +203,7 @@ function GarrisonFollowerMission:OnClickMission(missionInfo)
 	self:ShowMission(missionInfo);
 	
 	self.FollowerList:UpdateFollowers();
+	self:CheckTutorials();
 	return true;
 end
 
@@ -217,7 +219,6 @@ function GarrisonFollowerMission:ShowMission(missionInfo)
 	GarrisonMission.ShowMission(self, missionInfo);
 
 	self:ShowMissionStage(missionInfo);	
-	self:CheckTutorials();
 end
 
 function GarrisonFollowerMission:SetPartySize(frame, size, numEnemies)
@@ -341,6 +342,8 @@ function GarrisonFollowerMission:AssignFollowerToMission(frame, info)
 	frame.PortraitFrame.Empty:Hide();
 
 	self:GetMissionPage():UpdateFollowerModel(info);
+
+	self:CheckTutorials();
 end
 
 function GarrisonFollowerMission:RemoveFollowerFromMission(frame, updateValues)
@@ -389,6 +392,7 @@ end
 function GarrisonFollowerMission:UpdateMissions()
 	if (self.MissionTab.MissionList) then
 		self.MissionTab.MissionList:UpdateMissions();
+		self:CheckTutorials();
 	end
 end
 
@@ -646,7 +650,14 @@ function GarrisonFollowerMission:UpdateRewards(itemID)
 		end
 	end
 	-- mission page
-	self:CheckRewardButtons(self:GetMissionPage().RewardsFrame.Rewards, itemID);
+	if (self:GetMissionPage().RewardsFrame.Rewards) then
+		self:CheckRewardButtons(self:GetMissionPage().RewardsFrame.Rewards, itemID);
+	end
+	if (self:GetMissionPage().RewardsFrame.OvermaxItem) then
+		if ( self:GetMissionPage().RewardsFrame.OvermaxItem.itemID == itemID ) then
+			GarrisonMissionFrame_SetItemRewardDetails(self:GetMissionPage().RewardsFrame.OvermaxItem);
+		end
+	end
 	-- mission complete
 	self:CheckRewardButtons(self.MissionComplete.BonusRewards.Rewards, itemID);
 end
@@ -910,18 +921,18 @@ function GarrisonMissionListMixin:Update()
 			else
 				button.Overlay:Hide();
 			end
-			if ( button.Title:GetWidth() + button.Summary:GetWidth() + 8 < 655 - mission.numRewards * 65 ) then
+			if ( button.Title:GetWidth() + button.Summary:GetWidth() + 8 < 655 - #mission.rewards * 65 ) then
 				button.Title:SetPoint("LEFT", 165, 0);
 				button.Summary:ClearAllPoints();
 				button.Summary:SetPoint("BOTTOMLEFT", button.Title, "BOTTOMRIGHT", 8, 0);
 			else
 				button.Title:SetPoint("LEFT", 165, 10);
-				button.Title:SetWidth(655 - mission.numRewards * 65);
+				button.Title:SetWidth(655 - #mission.rewards * 65);
 				button.Summary:ClearAllPoints();
 				button.Summary:SetPoint("TOPLEFT", button.Title, "BOTTOMLEFT", 0, -4);	
 			end			
 			button.MissionType:SetAtlas(mission.typeAtlas);
-			GarrisonMissionButton_SetRewards(button, mission.rewards, mission.numRewards);
+			GarrisonMissionButton_SetRewards(button, mission.rewards, #mission.rewards);
 			button:Show();
 
 			local isNewMission = self.newMissionIDs[mission.missionID];
@@ -958,8 +969,8 @@ function GarrisonMissionList_UpdateMouseOverTooltip(self)
 	end
 end
 
-function GarrisonMissionButton_SetRewards(self, rewards, numRewards)
-	if (numRewards > 0) then
+function GarrisonMissionButton_SetRewards(self, rewards)
+	if (#rewards > 0) then
 		local currencyMultipliers = nil;
 		local goldMultiplier = nil;
 		if (self.info.inProgress) then
@@ -1019,7 +1030,7 @@ function GarrisonMissionButton_SetRewards(self, rewards, numRewards)
 		end
 	end
 	
-	for i = (numRewards + 1), #self.Rewards do
+	for i = (#rewards + 1), #self.Rewards do
 		self.Rewards[i]:Hide();
 	end
 end

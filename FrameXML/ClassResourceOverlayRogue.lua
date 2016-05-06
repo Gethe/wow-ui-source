@@ -4,7 +4,7 @@ function RogueResourceOverlay:OnLoad()
 	self.class = "ROGUE";
 	self.powerToken = "COMBO_POINTS";
 	
-	local toAlpha = tonumber(GetCVar("comboPointAlpha")) or 0.5;
+	local toAlpha = 0.5;
 	self.Fadein.AlphaAnim:SetToAlpha(toAlpha);
 	for i = 1, #self.ComboPoints do
 		self.ComboPoints[i].Fadein.AlphaAnim:SetToAlpha(toAlpha);

@@ -51,6 +51,9 @@ WORLD_MAP_BOUNTY_BOARD_LOCK_TYPE_BY_QUEST = 2;
 WORLD_MAP_BOUNTY_BOARD_LOCK_TYPE_NO_BOUNTIES = 3;
 
 function WorldMapBountyBoardMixin:Refresh()
+	self.firstCompletedTab = nil;
+	self.TutorialBox:Hide();
+
 	self.bountyTabPool:ReleaseAll();
 	self.bountyObjectivePool:ReleaseAll();
 
@@ -79,6 +82,9 @@ function WorldMapBountyBoardMixin:Refresh()
 	end
 
 	self:Show();
+
+	self:TryShowingIntroTutorial();
+	self:TryShowingCompletionTutorial();
 end
 
 function WorldMapBountyBoardMixin:SetLockedType(lockedType)
@@ -113,7 +119,15 @@ function WorldMapBountyBoardMixin:RefreshBountyTabs()
 		local selected = self.selectedBountyIndex == bountyIndex;
 		tab:SetNormalAtlas(selected and "worldquest-tracker-ring-selected" or "worldquest-tracker-ring");
 		tab:SetHighlightAtlas("worldquest-tracker-ring-selected");
-		tab.CheckMark:SetShown(IsQuestComplete(bounty.questID));
+		if IsQuestComplete(bounty.questID) then
+			tab.CheckMark:Show();
+			if not self.firstCompletedTab then
+				self.firstCompletedTab = tab;
+			end
+		else
+			tab.CheckMark:Hide();
+		end
+		
 		tab.Icon:SetTexture(bounty.icon);
 		tab.bountyIndex = bountyIndex;
 
@@ -306,4 +320,52 @@ end
 
 function WorldMapBountyBoardMixin:OnTabClick(tab)
 	self:SetSelectedBountyIndex(tab.bountyIndex);
+end
+
+function WorldMapBountyBoardMixin:TryShowingIntroTutorial()
+	if self.lockedType == WORLD_MAP_BOUNTY_BOARD_LOCK_TYPE_NONE then
+		if not self.TutorialBox:IsShown() and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_BOUNTY_INTRO) then
+			self.TutorialBox.activeTutorial = LE_FRAME_TUTORIAL_BOUNTY_INTRO;
+
+			self.TutorialBox.Text:SetText(BOUNTY_TUTORIAL_INTRO);
+
+			SetClampedTextureRotation(self.TutorialBox.Arrow.Arrow, 90);
+			SetClampedTextureRotation(self.TutorialBox.Arrow.Glow, 90);
+
+			self.TutorialBox.Arrow:ClearAllPoints();
+			self.TutorialBox.Arrow:SetPoint("TOPLEFT", self.TutorialBox, "TOPLEFT", -17, -15);
+
+			self.TutorialBox.Arrow.Glow:ClearAllPoints();
+			self.TutorialBox.Arrow.Glow:SetPoint("CENTER", self.TutorialBox.Arrow.Arrow, "CENTER", -3, 0);
+
+			self.TutorialBox:ClearAllPoints();
+			self.TutorialBox:SetPoint("LEFT", self, "RIGHT", -10, -15);
+
+			self.TutorialBox:Show();
+		end
+	end
+end
+
+function WorldMapBountyBoardMixin:TryShowingCompletionTutorial()
+	if self.lockedType == WORLD_MAP_BOUNTY_BOARD_LOCK_TYPE_NONE and self.firstCompletedTab then
+		if not self.TutorialBox:IsShown() and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_BOUNTY_FINISHED) then
+			self.TutorialBox.activeTutorial = LE_FRAME_TUTORIAL_BOUNTY_FINISHED;
+
+			self.TutorialBox.Text:SetText(BOUNTY_TUTORIAL_BOUNTY_FINISHED);
+
+			SetClampedTextureRotation(self.TutorialBox.Arrow.Arrow, 0);
+			SetClampedTextureRotation(self.TutorialBox.Arrow.Glow, 0);
+
+			self.TutorialBox.Arrow:ClearAllPoints();
+			self.TutorialBox.Arrow:SetPoint("TOP", self.TutorialBox, "BOTTOM", 0, 4);
+
+			self.TutorialBox.Arrow.Glow:ClearAllPoints();
+			self.TutorialBox.Arrow.Glow:SetPoint("TOP", self.TutorialBox.Arrow, "TOP", 0, 0);
+
+			self.TutorialBox:ClearAllPoints();
+			self.TutorialBox:SetPoint("BOTTOM", self.firstCompletedTab, "TOP", 0, 14);
+
+			self.TutorialBox:Show();
+		end
+	end
 end

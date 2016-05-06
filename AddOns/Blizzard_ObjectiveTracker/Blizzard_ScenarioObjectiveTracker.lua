@@ -155,6 +155,7 @@ function ScenarioBlocksFrame_OnLoad(self)
 	self:RegisterEvent("SCENARIO_COMPLETED");
 	self:RegisterEvent("SPELL_UPDATE_COOLDOWN");
 	self:RegisterEvent("SCENARIO_REWARD_UPDATE");
+    self:RegisterEvent("CHALLENGE_MODE_START");
 end
 
 function ScenarioBlocksFrame_OnEvent(self, event, ...)
@@ -179,6 +180,8 @@ function ScenarioBlocksFrame_OnEvent(self, event, ...)
 	elseif (event == "SCENARIO_REWARD_UPDATE") then
 		local scenarioType = select(10, C_Scenario.GetInfo());
 		ScenarioStage_CustomizeBlock(ScenarioStageBlock, scenarioType);
+	elseif (event == "CHALLENGE_MODE_START") then
+    	ScenarioTimer_CheckTimers(GetWorldElapsedTimers());
 	end
 end
 
@@ -346,7 +349,10 @@ function Scenario_ChallengeMode_ShowBlock(timerID, elapsedTime, timeLimit)
 	if (not wasEnergized) then
 		block.wasDepleted = true;
 		block.StartedDepleted:Show();
-	end
+	else
+        block.wasDepleted = false;
+        block.StartedDepleted:Hide();
+    end
 	block.TimesUpLootStatus:Hide();
 	Scenario_ChallengeMode_SetUpAffixes(block, affixes);
 	local statusBar = block.StatusBar;

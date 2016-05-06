@@ -104,15 +104,17 @@ function TalentFrame_Update(TalentFrame, talentUnit)
 					button:Hide();
 				end
 			end
-			if ( rowShouldGlow and talentUnit == "player" ) then
-				talentRow.shouldGlow = true;
-				talentRow.TopGlowLine:Show();
-				talentRow.BottomGlowLine:Show();
-				talentRow.GlowAnim:Play();
-			else
-				talentRow.shouldGlow = false;
-				talentRow.TopGlowLine:Hide();
-				talentRow.BottomGlowLine:Hide();
+			if ( talentRow.TopGlowLine ) then
+				if ( rowShouldGlow and talentUnit == "player" ) then
+					talentRow.shouldGlow = true;
+					talentRow.TopGlowLine:Show();
+					talentRow.BottomGlowLine:Show();
+					talentRow.GlowAnim:Play();
+				else
+					talentRow.shouldGlow = false;
+					talentRow.TopGlowLine:Hide();
+					talentRow.BottomGlowLine:Hide();
+				end
 			end
 			-- do tier level number after every row
 			if(talentRow.level ~= nil) then

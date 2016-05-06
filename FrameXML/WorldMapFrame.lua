@@ -2866,11 +2866,8 @@ function WorldMapQuestPOI_SetTooltip(poiButton, questLogIndex, numObjectives)
 	WorldMapTooltip:SetOwner(poiButton or WorldMapPOIFrame, "ANCHOR_CURSOR_RIGHT", 5, 2);
 	WorldMapTooltip:SetText(title);
 	if ( poiButton and poiButton.style ~= "numeric" ) then
-		if ( IsBreadcrumbQuest(poiButton.questID) ) then
-			WorldMapTooltip:AddLine("- "..GetQuestLogCompletionText(questLogIndex), 1, 1, 1, true);
-		else
-			WorldMapTooltip:AddLine("- "..QUEST_WATCH_QUEST_READY, 1, 1, 1, true);
-		end
+		local completionText = GetQuestLogCompletionText(questLogIndex) or QUEST_WATCH_QUEST_READY;
+		WorldMapTooltip:AddLine("- "..completionText, 1, 1, 1, true);
 	else
 		local text, finished, objectiveType;
 		local numItemDropTooltips = GetNumQuestItemDrops(questLogIndex);
@@ -2905,11 +2902,8 @@ function WorldMapQuestPOI_AppendTooltip(poiButton, questLogIndex)
 	WorldMapTooltip:AddLine(" ");
 	WorldMapTooltip:AddLine(title);
 	if ( poiButton and poiButton.style ~= "numeric" ) then
-		if ( IsBreadcrumbQuest(poiButton.questID) ) then
-			WorldMapTooltip:AddLine("- "..GetQuestLogCompletionText(questLogIndex), 1, 1, 1, true);
-		else
-			WorldMapTooltip:AddLine("- "..QUEST_WATCH_QUEST_READY, 1, 1, 1, true);
-		end			
+		local completionText = GetQuestLogCompletionText(questLogIndex) or QUEST_WATCH_QUEST_READY;
+		WorldMapTooltip:AddLine("- "..completionText, 1, 1, 1, true);
 	else
 		local text, finished, objectiveType;
 		local numItemDropTooltips = GetNumQuestItemDrops(questLogIndex);

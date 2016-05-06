@@ -1233,15 +1233,15 @@ function AuctionFrameAuctions_OnEvent(self, event, ...)
 		AuctionsNumStacksEntry:ClearFocus();
 		AuctionsBlockFrame:Show();
 		AuctionProgressBar:SetMinMaxValues(0, arg1);
-		AuctionProgressBar:SetValue(0.01);		-- TEMPORARY
-		AuctionProgressBarText:SetFormattedText(AUCTION_CREATING, 0, arg1);
-		local _, iconTexture =  GetAuctionSellItemInfo();
-		AuctionProgressBarIcon:SetTexture(iconTexture);
+		AuctionProgressBar:SetValue(0.01);		-- "TEMPORARY"
+		AuctionProgressBar.Text:SetFormattedText(AUCTION_CREATING, 0, arg1);
+		local _, iconTexture = GetAuctionSellItemInfo();
+		AuctionProgressBar.Icon:SetTexture(iconTexture);
 		AuctionProgressFrame:Show();
 	elseif ( event == "AUCTION_MULTISELL_UPDATE" ) then
 		local arg1, arg2 = ...;
 		AuctionProgressBar:SetValue(arg1);
-		AuctionProgressBarText:SetFormattedText(AUCTION_CREATING, arg1, arg2);
+		AuctionProgressBar.Text:SetFormattedText(AUCTION_CREATING, arg1, arg2);
 		if ( arg1 == arg2 ) then
 			AuctionsBlockFrame:Hide();
 			AuctionProgressFrame.fadeOut = true;

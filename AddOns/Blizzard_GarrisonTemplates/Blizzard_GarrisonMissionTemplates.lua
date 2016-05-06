@@ -154,7 +154,7 @@ function GarrisonMission:ShowMission(missionInfo)
 	self:SetPartySize(missionPage, missionInfo.numFollowers, #enemies);
 	self:SetEnemies(missionPage, enemies, missionInfo.numFollowers);
 	
-	local numRewards = missionInfo.numRewards;
+	local numRewards = #missionInfo.rewards;
 	local numVisibleRewards = 0;
 	for id, reward in pairs(missionInfo.rewards) do
 		numVisibleRewards = numVisibleRewards + 1;
@@ -393,19 +393,9 @@ function GarrisonMission:UpdateMissionData(missionPage)
 		end
 		rewardsFrame.MissionXP:SetFormattedText(ORDER_HALL_MISSION_BONUS_ROLL, MISSION_BONUS_FONT_COLOR:GenerateHexColor(), color:GenerateHexColor(), overmaxSuccess);
 
-		if (missionPage.missionInfo.overmaxRewardItem ~= 0) then
-			local icon = GetItemIcon(missionPage.missionInfo.overmaxRewardItem);
-			if (icon) then
-				rewardsFrame.OvermaxItem.itemID = missionPage.missionInfo.overmaxRewardItem;
-				rewardsFrame.OvermaxItem.Icon:SetTexture(icon);
-				rewardsFrame.OvermaxItem.money = nil;
-				rewardsFrame.OvermaxItem:Show();
-			end
-		elseif (missionPage.missionInfo.overmaxRewardMoney ~= 0) then
-			rewardsFrame.OvermaxItem.title = GARRISON_REWARD_MONEY;
-			rewardsFrame.OvermaxItem.Icon:SetTexture("Interface\\Icons\\inv_misc_coin_01");
-			rewardsFrame.OvermaxItem.money = missionPage.missionInfo.overmaxRewardMoney;
-			rewardsFrame.OvermaxItem:Show();
+		if (#missionPage.missionInfo.overmaxRewards ~= 0) then
+			local overmaxReward = missionPage.missionInfo.overmaxRewards[1];
+			GarrisonMissionPage_SetReward(rewardsFrame.OvermaxItem, overmaxReward)
 		else
 			rewardsFrame.OvermaxItem:Hide();
 			rewardsFrame.MissionXP:Hide();
@@ -767,6 +757,7 @@ function GarrisonMission:CheckCompleteMissions(onShow)
 		if ( self:IsShown() ) then
 			self:GetCompleteDialog().BorderFrame.Model.Summary:SetFormattedText(GARRISON_NUM_COMPLETED_MISSIONS, #self.MissionComplete.completeMissions);
 			self:GetCompleteDialog():Show();
+			self:CheckTutorials();
 			self:GetCompleteDialog().BorderFrame.ViewButton:SetEnabled(true);
 			self:GetCompleteDialog().BorderFrame.LoadingFrame:Hide();
 			return true;
@@ -1255,7 +1246,7 @@ function GarrisonMissionComplete:ShowRewards()
 
 	self.missionRewardEffectsPool:ReleaseAll();
 
-	local numRewards = currentMission.numRewards;
+	local numRewards = #currentMission.rewards;
 	local index = 1;
 	local prevRewardFrame;
 	for id, reward in pairs(currentMission.rewards) do
@@ -1271,7 +1262,6 @@ function GarrisonMissionComplete:ShowRewards()
 				rewardFrame:SetPoint("RIGHT", bonusRewards, "RIGHT", -18, 0);
 			end
 		end
-		rewardFrame.id = id;
 		GarrisonMissionPage_SetReward(rewardFrame, reward);
 		if ( not self.skipAnimations ) then
 			rewardFrame.Anim:Play();
@@ -1723,18 +1713,20 @@ function GarrisonMissionComplete:AnimFollowerCheerAndTroopDeath(followerID)
 		local followerFrame = self.Stage.FollowersFrame.Followers[i];
 		if ( followerFrame.followerID == followerID ) then
 			local followerInfo = C_Garrison.GetFollowerInfo(followerID);
-			self:SetFollowerLevel(followerFrame, followerInfo);
-			for _, cluster in ipairs(self.Stage.ModelCluster) do
-				if (cluster:IsShown()) then
-					if (cluster:GetFollowerID() == followerFrame.followerID) then
-						if (followerInfo.isTroop and followerInfo.durability and followerInfo.durability <= 0) then
-							cluster.FadeOut:Play();
-						else
-							for _, model in ipairs(cluster.Model) do
-								if ( model.followerID == followerFrame.followerID and model:IsShown() ) then
-									model:SetSpellVisualKit(6375);	-- level up visual
-									PlaySound("UI_Garrison_CommandTable_Follower_LevelUp");
-									break;
+			if (followerInfo) then
+				self:SetFollowerLevel(followerFrame, followerInfo);
+				for _, cluster in ipairs(self.Stage.ModelCluster) do
+					if (cluster:IsShown()) then
+						if (cluster:GetFollowerID() == followerFrame.followerID) then
+							if (followerInfo.isTroop and followerInfo.durability and followerInfo.durability <= 0) then
+								cluster.FadeOut:Play();
+							else
+								for _, model in ipairs(cluster.Model) do
+									if ( model.followerID == followerFrame.followerID and model:IsShown() ) then
+										model:SetSpellVisualKit(6375);	-- level up visual
+										PlaySound("UI_Garrison_CommandTable_Follower_LevelUp");
+										break;
+									end
 								end
 							end
 						end
@@ -1958,30 +1950,6 @@ function GarrisonMissionPage_SetReward(frame, reward)
 					frame.Name:SetText(frame.title);
 				end
 			end
-		end
-	end
-	frame:Show();
-end
-
-function GarrisonMissionPage_SetOvermaxReward(frame, itemID, money)
-	frame.Quantity:Hide();
-	frame.IconBorder:Hide();
-	frame.itemID = nil;
-	frame.currencyID = nil;
-	frame.currencyQuantity = nil;
-	frame.tooltip = nil;
-	frame.bonusAbilityID = nil;
-
-	if (itemID and itemID ~= 0) then
-		frame.itemID = itemID;
-		GarrisonMissionFrame_SetItemRewardDetails(frame);
-	elseif (money and money ~= 0) then
-		frame.tooltip = GetMoneyString(money);
-		frame.currencyID = 0;
-		frame.currencyQuantity = money;
-		frame.Icon:SetTexture("Interface\\Icons\\inv_misc_coin_01");
-		if (frame.Name) then
-			frame.Name:SetText(frame.tooltip);
 		end
 	end
 	frame:Show();

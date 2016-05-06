@@ -48,11 +48,7 @@
 		<Scripts>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-				if (self:GetParent().filter == "HELPFUL") then
-					GameTooltip:SetUnitAura(self:GetParent().unit, self:GetID());
-				else
-					GameTooltip:SetUnitDebuff(self:GetParent().unit, self:GetID(), self:GetParent().filter);
-				end
+				GameTooltip:SetUnitAura(self:GetParent().unit, self:GetID(), self:GetParent().filter);
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();

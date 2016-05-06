@@ -159,12 +159,14 @@ function BonusObjectiveTracker_UntrackWorldQuest(questID)
 end
 
 function BonusObjectiveTracker_OnBlockClick(self, button)
-	if button == "LeftButton" then
-		if IsShiftKeyDown() then
-			BonusObjectiveTracker_UntrackWorldQuest(self.TrackedQuest.questID);
+	if self.module.ShowWorldQuests and IsWorldQuestWatched(self.TrackedQuest.questID) then
+		if button == "LeftButton" then
+			if IsShiftKeyDown() then
+				BonusObjectiveTracker_UntrackWorldQuest(self.TrackedQuest.questID);
+			end
+		elseif button == "RightButton" then
+			ObjectiveTracker_ToggleDropDown(self, BonusObjectiveTracker_OnOpenDropDown);
 		end
-	elseif button == "RightButton" then
-		ObjectiveTracker_ToggleDropDown(self, BonusObjectiveTracker_OnOpenDropDown);
 	end
 end
 
@@ -689,6 +691,7 @@ local function AddBonusObjectiveQuest(module, questID, posIndex, isTrackedWorldQ
 	local isInArea, isOnMap, numObjectives, taskName, displayAsObjective = InternalGetTaskInfo(questID);
 	local treatAsInArea = isTrackedWorldQuest or isInArea;
 	local isSuperTracked = questID == GetSuperTrackedQuestID();
+	local playEnterAnim = treatAsInArea and not isTrackedWorldQuest and questID == OBJECTIVE_TRACKER_UPDATE_ID and not isSuperTracked;
 	-- show task if we're in the area or on the same map and we were displaying it before
 	local existingTask = module:GetExistingBlock(questID);
 	if ( numObjectives and ( treatAsInArea or ( isOnMap and existingTask ) ) ) then
@@ -774,7 +777,9 @@ local function AddBonusObjectiveQuest(module, questID, posIndex, isTrackedWorldQ
 
 				local progressBar = module:AddProgressBar(block, block.currentLine, questID, finished);
 				if ( OBJECTIVE_TRACKER_UPDATE_REASON == OBJECTIVE_TRACKER_UPDATE_TASK_ADDED or OBJECTIVE_TRACKER_UPDATE_REASON == OBJECTIVE_TRACKER_UPDATE_WORLD_QUEST_ADDED ) then
-					progressBar.Bar.AnimIn:Play();
+					if ( playEnterAnim ) then
+						progressBar.Bar.AnimIn:Play();
+					end
 				end
 			end
 		end
@@ -810,7 +815,7 @@ local function AddBonusObjectiveQuest(module, questID, posIndex, isTrackedWorldQ
 		module:FreeUnusedLines(block);
 			
 		if ( treatAsInArea ) then
-			if ( not isTrackedWorldQuest and questID == OBJECTIVE_TRACKER_UPDATE_ID ) then
+			if ( playEnterAnim ) then
 				BonusObjectiveTracker_SetBlockState(block, "ENTERING");
 			else
 				BonusObjectiveTracker_SetBlockState(block, "PRESENT");
@@ -868,13 +873,15 @@ function BonusObjectiveTrackerModuleMixin:Update()
 	self:BeginLayout();
 	self.headerText = self.DefaultHeaderText;
 
-	if ( self.ShowWorldQuests ) then
-		UpdateTrackedWorldQuests(self);
-	else
+	if ( not self.ShowWorldQuests ) then
 		UpdateScenarioBonusObjectives(self);
 	end
 
 	UpdateQuestBonusObjectives(self);
+
+	if ( self.ShowWorldQuests ) then
+		UpdateTrackedWorldQuests(self);
+	end
 
 	if ( self.tooltipBlock ) then
 		BonusObjectiveTracker_ShowRewardsTooltip(self.tooltipBlock);
@@ -885,7 +892,7 @@ function BonusObjectiveTrackerModuleMixin:Update()
 		self.Header.Text:SetText(self.headerText);
 		-- shadow anim
 		local shadowAnim = self.Header.ShadowAnim;
-		if ( self.Header.animating and not shadowAnim:IsPlaying() ) then
+		if ( self.Header.animating and not shadowAnim:IsPlaying() and GetNumWorldQuestWatches() == 0 ) then
 			local distance = self.contentsAnimHeight - 8;
 			shadowAnim.TransAnim:SetOffset(0, -distance);
 			shadowAnim.TransAnim:SetDuration(distance * 0.33 / 50);

@@ -762,12 +762,19 @@ end
 function GarrisonFollowerAlertFrame_SetUp(frame, followerID, name, level, quality, isUpgraded)
 	frame.followerInfo = C_Garrison.GetFollowerInfo(followerID);
 	frame.PortraitFrame:SetupPortrait(frame.followerInfo);
-	if ( isUpgraded ) then
-		frame.Title:SetText(GARRISON_FOLLOWER_ADDED_UPGRADED_TOAST);
+	if ( frame.followerInfo.isTroop ) then
+		if ( isUpgraded ) then
+			frame.Title:SetText(GarrisonFollowerOptions[frame.followerInfo.followerTypeID].strings.TROOP_ADDED_UPGRADED_TOAST);
+		else
+			frame.Title:SetText(GarrisonFollowerOptions[frame.followerInfo.followerTypeID].strings.TROOP_ADDED_TOAST);
+		end
 	else
-		frame.Title:SetText(GARRISON_FOLLOWER_ADDED_TOAST);
+		if ( isUpgraded ) then
+			frame.Title:SetText(GarrisonFollowerOptions[frame.followerInfo.followerTypeID].strings.FOLLOWER_ADDED_UPGRADED_TOAST);
+		else
+			frame.Title:SetText(GarrisonFollowerOptions[frame.followerInfo.followerTypeID].strings.FOLLOWER_ADDED_TOAST);
+		end
 	end
-	
 	GarrisonCommonFollowerAlertFrame_SetUp(frame, followerID, name, quality, isUpgraded);
 end
 

@@ -139,6 +139,7 @@ function OrderHallMission:OnHideMainFrame()
 	GarrisonFollowerMission.OnHideMainFrame(self);
 	AdventureMapMixin.OnHide(self.MapTab);
 
+	OrderHallMissionTutorialFrame:Hide();
 	self.abilityCountersForMechanicTypes = nil;
 
 	self:UnregisterEvent("ADVENTURE_MAP_CLOSE");
@@ -199,6 +200,7 @@ function OrderHallMission:ShowMission(missionInfo)
 		self:UpdateMissionData(self:GetMissionPage());
 		self:GetFollowerBuffsForMission(self:GetMissionPage().missionInfo.missionID);
 		self:GetMissionPage():SetCounters(self:GetMissionPage().Followers, self:GetMissionPage().Enemies, self:GetMissionPage().missionInfo.missionID);
+		self:CheckTutorials();
 	else
 		GarrisonFollowerMission.ShowMission(self, missionInfo);
 	end
@@ -250,10 +252,12 @@ function OrderHallMission:OnSetEnemy(enemyFrame, enemyInfo)
 		
 	
 	if (mechanic and mechanic.ability) then
+		enemyFrame.mechanicEffectID = mechanic.ability.id;
 		enemyFrame.mechanicName = mechanic.name;
 		enemyFrame.mechanicAbilityName = mechanic.ability.name;
 		enemyFrame.mechanicEffectDescription = mechanic.ability.description;
 	else
+		enemyFrame.mechanicEffectID = nil;
 		enemyFrame.mechanicName = nil;
 		enemyFrame.mechanicAbilityName = nil;
 		enemyFrame.mechanicEffectDescription = nil;
@@ -295,6 +299,9 @@ function OrderHallMission:SetupCompleteDialog()
 		completeDialog.BorderFrame.Stage.LocBack:SetTexCoord(0, 1, 0, 1);
 		completeDialog.BorderFrame.Stage.LocMid:Hide();
 		completeDialog.BorderFrame.Stage.LocFore:Hide();
+
+		local neutralChestDisplayID = 71671;
+		self.MissionComplete.BonusRewards.ChestModel:SetDisplayInfo(neutralChestDisplayID);
 	end
 end
 
@@ -404,8 +411,8 @@ function OrderHallMissionComplete:ShowRewards()
 	local secondItemDelay = 1;
 
 	-- There should be exactly 1 base reward, but display them all even if there is more.
-	local hasOvermaxRewardItem = (overmaxSucceeded and currentMission.overmaxRewardItem ~= 0);
-	local numRewards = currentMission.numRewards + (hasOvermaxRewardItem and 1 or 0);
+	local hasOvermaxRewardItem = overmaxSucceeded and #currentMission.overmaxRewards ~= 0;
+	local numRewards = #currentMission.rewards + (hasOvermaxRewardItem and 1 or 0);
 	local prevRewardFrame;
 	for id, reward in pairs(currentMission.rewards) do
 		local rewardFrame = self.missionRewardEffectsPool:Acquire();
@@ -439,7 +446,7 @@ function OrderHallMissionComplete:ShowRewards()
 		prevRewardFrame = rewardFrame;
 	end
 
-	if (overmaxSucceeded and currentMission.overmaxRewardItem ~= 0) then
+	if (overmaxSucceeded and #currentMission.overmaxRewards ~= 0) then
 		local rewardFrame = self.missionRewardEffectsPool:Acquire();
 		if (prevRewardFrame) then
 			rewardFrame:SetPoint("LEFT", prevRewardFrame, "RIGHT", 9, 0);
@@ -457,12 +464,12 @@ function OrderHallMissionComplete:ShowRewards()
 			rewardFrame:Hide();
 			C_Timer.After(secondItemDelay,
 				function()
-					GarrisonMissionPage_SetOvermaxReward(rewardFrame, currentMission.overmaxRewardItem, currentMission.overmaxRewardMoney)
+					GarrisonMissionPage_SetReward(rewardFrame, currentMission.overmaxRewards[1]);
 					rewardFrame.Anim:Play();
 				end
 			);
 		else
-			GarrisonMissionPage_SetOvermaxReward(rewardFrame, currentMission.overmaxRewardItem, currentMission.overmaxRewardMoney)
+			GarrisonMissionPage_SetReward(rewardFrame, currentMission.overmaxRewards[1]);
 			if (not self.skipAnimations) then
 				Reward.Anim:Play();
 			end
@@ -553,7 +560,7 @@ function OrderHallCombatAllyMixin:SetMission(missionInfo)
 	if (missionInfo) then
 		local followerIsAssigned = missionInfo.inProgress or missionInfo.completed;
 		local completed = (missionInfo.inProgress and missionInfo.timeLeftSeconds == 0) or missionInfo.completed;
-		self.Available:SetShown(not followerIsAssigned);
+		self.Available:SetShown(not followerIsAssigned); 
 		self.InProgress:SetShown(followerIsAssigned);
 		if (followerIsAssigned) then
 			local followerInfo = C_Garrison.GetFollowerInfo(missionInfo.followers[1]);
@@ -586,8 +593,476 @@ function OrderHallCombatAllyMixin:GetMissionList()
 	return self:GetParent();
 end
 
---- Utility functions
+---------------------------------------------------------------------------------
+-- Utility functions
+---------------------------------------------------------------------------------
 
 function GarrisonFollowerFilter_MustHaveZoneSupport(followerInfo) 
 	return followerInfo.isCollected and followerInfo.zoneSupportSpellID ~= nil; 
 end
+
+---------------------------------------------------------------------------------
+-- Tutorials
+---------------------------------------------------------------------------------
+
+
+local function CheckHasMissions(missionFrame)
+	if (not missionFrame.MissionTab.MissionList:IsShown()) then
+		return false;
+	end
+
+	if (missionFrame.MissionTab.MissionList.CompleteDialog:IsShown()) then
+		return false;
+	end
+
+	return missionFrame.MissionTab.MissionList.availableMissions and #missionFrame.MissionTab.MissionList.availableMissions > 0;
+end
+
+local function CheckHasNoMissions(missionFrame)
+	if (not missionFrame.MissionTab.MissionList:IsShown()) then
+		return false;
+	end
+
+	return missionFrame.MissionTab.MissionList.availableMissions and #missionFrame.MissionTab.MissionList.availableMissions == 0;
+end
+
+local function CheckOpenMissionPage(missionFrame)
+	return missionFrame.MissionTab.MissionPage:IsShown();
+end
+
+local function CheckNotOpenMissionPage(missionFrame)
+	return not CheckOpenMissionPage(missionFrame);
+end
+
+local function CheckOpenMissionPageAndHasBossMechanic(missionFrame)
+	if (CheckNotOpenMissionPage(missionFrame)) then
+		return false;
+	end
+
+	if (not missionFrame.MissionTab.MissionPage.Enemy1.counterAbility.isSpecialization) then
+		return false;
+	end
+
+	-- see if you have a follower that has that spec
+	for _, index in ipairs(missionFrame.FollowerList.followersList) do
+		if (index ~= 0) then
+			local follower = missionFrame.FollowerList.followers[index];
+			if (not follower.status) then
+				local abilities = C_Garrison.GetFollowerAbilities(follower.followerID);
+				for _, ability in ipairs(abilities) do
+					if (ability.id == missionFrame.MissionTab.MissionPage.Enemy1.counterAbility.id) then
+						return true;
+					end
+				end
+			end
+		end
+	end
+
+	return false;
+end
+
+local function CheckOpenMissionPageAndBossCountered(missionFrame)
+	if (CheckNotOpenMissionPage(missionFrame)) then
+		return false;
+	end
+
+	return missionFrame.MissionTab.MissionPage.Enemy1.MechanicEffect.CrossLeft:IsShown();
+end
+
+local function CheckOpenMissionComplete(missionFrame)
+	return missionFrame.MissionComplete:IsShown() or missionFrame:GetCompleteDialog():IsShown();
+end
+
+local function CheckHasCombatAllyMission(missionFrame)
+	if (not missionFrame.MissionTab.MissionList.CombatAllyUI:IsShown()) then
+		return false;
+	end
+
+	if (not missionFrame.MissionTab.MissionList.CombatAllyUI.Available:IsShown()) then
+		return false;
+	end
+
+	return not CheckOpenMissionComplete(missionFrame);
+end
+
+local function CheckNotHasCombatAllyMission(missionFrame)
+	return not CheckHasCombatAllyMission(missionFrame);
+end
+
+local function CheckOpenZoneSupportMissionPage(missionFrame)
+	return missionFrame.MissionTab.ZoneSupportMissionPage:IsShown();
+end
+
+local function CheckOpenMissionCompleteOrHasNoMissions(missionFrame)
+	return CheckOpenMissionComplete(missionFrame) or CheckHasNoMissions(missionFrame);
+end
+
+local function CheckOpenMissionPageAndHasTroopInList(missionFrame)
+	if (CheckNotOpenMissionPage(missionFrame)) then
+		return false;
+	end
+
+	-- find a follower that is a troop
+	for _, index in ipairs(missionFrame.FollowerList.followersList) do
+		if (index ~= 0) then
+			local follower = missionFrame.FollowerList.followers[index];
+			if (not follower.status) then
+				if (follower.isTroop) then
+					return true;
+				end
+			end
+		end
+	end
+	return false;
+end
+
+local function CheckOpenMissionPageAndTroopInMission(missionFrame)
+	if (CheckNotOpenMissionPage(missionFrame)) then
+		return false;
+	end
+
+	for _, followerFrame in ipairs(missionFrame.MissionTab.MissionPage.Followers) do
+		if (followerFrame.info and followerFrame.info.isTroop) then
+			return true;
+		end
+	end
+	return false;
+end
+
+
+local function CheckOpenMissionPageAndHasUncounteredMechanicEffect(missionFrame, mechanicEffectID)
+	if (CheckNotOpenMissionPage(missionFrame)) then
+		return false;
+	end
+
+	for _, enemy in ipairs(missionFrame.MissionTab.MissionPage.Enemies) do
+		if (enemy.mechanicEffectID == mechanicEffectID and not enemy.MechanicEffect.CrossLeft:IsShown()) then
+			return true;
+		end
+	end
+
+	return false;
+end
+
+local function CheckClosedMissionPageOrMechanicEffectCountered(missionFrame, mechanicEffectID)
+	if (CheckNotOpenMissionPage(missionFrame)) then
+		return true;
+	end
+
+	local foundMechanic;
+	local foundIndex;
+	for index, enemy in ipairs(missionFrame.MissionTab.MissionPage.Enemies) do
+		if (enemy.mechanicEffectID == mechanicEffectID) then
+			foundMechanic = enemy.mechanic;
+			foundIndex = index;
+			break;
+		end
+	end
+
+	return foundIndex and missionFrame.MissionTab.MissionPage.Enemies[foundIndex].MechanicEffect.CrossLeft:IsShown();
+end
+
+local function PositionAtMechanicEffect(missionFrame, glowBox, tutorial, mechanicEffectID)
+	local foundMechanic;
+	local foundIndex;
+	for index, enemy in ipairs(missionFrame.MissionTab.MissionPage.Enemies) do
+		if (enemy.mechanicEffectID == mechanicEffectID) then
+			foundMechanic = enemy.mechanic;
+			foundIndex = index;
+			break;
+		end
+	end
+
+	if (foundIndex) then
+		if (foundIndex < 3) then
+			tutorial.leftArrow = true;
+			tutorial.rightArrow = false;
+			glowBox:SetPoint("LEFT", missionFrame.MissionTab.MissionPage.Enemies[foundIndex], "RIGHT", 30, -20);
+		else
+			tutorial.leftArrow = false;
+			tutorial.rightArrow = true;
+			glowBox:SetPoint("RIGHT", missionFrame.MissionTab.MissionPage.Enemies[foundIndex], "LEFT", -30, -20);
+		end
+	end
+end
+
+local function PositionAtFirstEnemy(missionFrame, glowBox, tutorial)
+	glowBox:SetPoint("LEFT", missionFrame.MissionTab.MissionPage.Enemy1, "RIGHT", 30, 0);
+end
+
+local function PositionAtFirstTroop(missionFrame, glowBox, tutorial)
+	local troopButtonIndex;
+
+	-- find a follower that is a troop
+	for buttonIndex, index in ipairs(missionFrame.FollowerList.followersList) do
+		if (index ~= 0) then
+			local follower = missionFrame.FollowerList.followers[index];
+			if (not follower.status) then
+				if (follower.isTroop) then
+					troopButtonIndex = buttonIndex;
+					break;
+				end
+			end
+		end
+	end
+
+	if (troopButtonIndex) then
+		glowBox:SetPoint("BOTTOM", OrderHallMissionFrame.FollowerList.listScroll.buttons[troopButtonIndex].Follower.DurabilityFrame, "TOP", 0, 50);
+	else
+		glowBox:SetPoint("TOPLEFT", tutorial.xOffset, tutorial.yOffset);
+	end
+end
+
+local function TextBossSpec(missionFrame, tutorial)
+	local className = UnitClass("player");
+
+	local followerName = "";
+
+	-- find a follower that has the correct spec
+	for _, index in ipairs(missionFrame.FollowerList.followersList) do
+		if (index ~= 0) then
+			local follower = missionFrame.FollowerList.followers[index];
+			local abilities = C_Garrison.GetFollowerAbilities(follower.followerID);
+			for _, ability in ipairs(abilities) do
+				if (ability.id == missionFrame.MissionTab.MissionPage.Enemy1.counterAbility.id) then
+					followerName = follower.name;
+					break;
+				end
+			end
+		end
+	end
+
+	return string.format(ORDER_HALL_MISSION_TUTORIAL_BOSS_COUNTER, 
+		missionFrame.MissionTab.MissionPage.Enemy1.counterAbility.name, 
+		className,
+		followerName); 
+end
+
+local lethalMechanicEffectID = 437;
+local cursedMechanicEffectID = 471;
+local slowingMechanicEffectID = 428;
+local disorientingMechanicEffectID = 472;
+
+local seenAllTutorials = 0x000F0004;
+
+-- tutorial numbers from 1-0xFFFF are sequential, those from 0x10000-0xFFFF0000 are bit flags and can happen in any order.
+local tutorials = {
+	-- Click to view mission details
+	[1] = {
+		id = 1,
+		text1 = ORDER_HALL_MISSION_TUTORIAL_VIEW_DETAILS, 
+		xOffset = 240, 
+		yOffset = -150, 
+		parent = "MissionList", 
+		openConditionFunc = CheckHasMissions, 
+		closeConditionFunc = CheckOpenMissionPage,
+		cancelConditionFunc = CheckOpenMissionCompleteOrHasNoMissions,
+		upArrow = true,
+		advanceOnClick = true,
+	},
+	-- This boss can be countered by specialization
+	[2] = { 
+		id = 2,
+		xOffset = 30, 
+		yOffset = 0, 
+		parent = "MissionPage", 
+		openConditionFunc = CheckOpenMissionPageAndHasBossMechanic, 
+		closeConditionFunc = CheckOpenMissionPageAndBossCountered,
+		cancelConditionFunc = CheckNotOpenMissionPage,
+		positionFunc = PositionAtFirstEnemy,
+		textFunc = TextBossSpec,
+		leftArrow = true,
+		advanceOnClick = true,
+	},
+	-- Click on Combat Ally
+	[3] = { 
+		id = 3,
+		text1 = ORDER_HALL_MISSION_TUTORIAL_COMBAT_ALLY,
+		xOffset = 150, 
+		yOffset = -500, 
+		parent = "MissionList", 
+		openConditionFunc = CheckHasCombatAllyMission, 
+		closeConditionFunc = CheckOpenZoneSupportMissionPage,
+		cancelConditionFunc = CheckNotHasCombatAllyMission,
+		leftArrow = true,
+		advanceOnClick = true,
+	 },
+	-- Troops have abilities that can increase your success chance
+	[4] = { 
+		id = 4,
+		text1 = ORDER_HALL_MISSION_TUTORIAL_TROOPS, 
+		xOffset = 150, 
+		yOffset = -500, 
+		parent = "MissionPage", 
+		openConditionFunc = CheckOpenMissionPageAndHasTroopInList, 
+		closeConditionFunc = CheckOpenMissionPageAndTroopInMission,
+		positionFunc = PositionAtFirstTroop,
+		downArrow = true,
+		advanceOnClick = true,
+	},
+	-- Lethal will always kill a troop if not countered.
+	[0x10000] = {
+		id = 0x10000,
+		text1 = ORDER_HALL_MISSION_TUTORIAL_LETHAL,
+		xOffset = 0,
+		yOffset = 0,
+		parent = "MissionPage",
+		openConditionFunc = function(missionFrame) return CheckOpenMissionPageAndHasUncounteredMechanicEffect(missionFrame, lethalMechanicEffectID); end,
+		closeConditionFunc = function(missionFrame) return CheckClosedMissionPageOrMechanicEffectCountered(missionFrame, lethalMechanicEffectID); end,
+		positionFunc = function(missionFrame, glowBox, tutorial) return PositionAtMechanicEffect(missionFrame, glowBox, tutorial, lethalMechanicEffectID); end,
+		leftArrow = true,
+	},
+	-- Cursed will not provide a bonus loot if not countered.
+	[0x20000] = {
+		id = 0x20000,
+		text1 = ORDER_HALL_MISSION_TUTORIAL_CURSED,
+		xOffset = 0,
+		yOffset = 0,
+		parent = "MissionPage",
+		openConditionFunc = function(missionFrame) return CheckOpenMissionPageAndHasUncounteredMechanicEffect(missionFrame, cursedMechanicEffectID); end,
+		closeConditionFunc = function(missionFrame) return CheckClosedMissionPageOrMechanicEffectCountered(missionFrame, cursedMechanicEffectID); end,
+		positionFunc = function(missionFrame, glowBox, tutorial) return PositionAtMechanicEffect(missionFrame, glowBox, tutorial, cursedMechanicEffectID); end,
+		leftArrow = true,
+	},
+	-- Slowing increases the mission duration if not countered.
+	[0x40000] = {
+		id = 0x40000,
+		text1 = ORDER_HALL_MISSION_TUTORIAL_SLOWING,
+		xOffset = 0,
+		yOffset = 0,
+		parent = "MissionPage",
+		openConditionFunc = function(missionFrame) return CheckOpenMissionPageAndHasUncounteredMechanicEffect(missionFrame, slowingMechanicEffectID); end,
+		closeConditionFunc = function(missionFrame) return CheckClosedMissionPageOrMechanicEffectCountered(missionFrame, slowingMechanicEffectID); end,
+		positionFunc = function(missionFrame, glowBox, tutorial) return PositionAtMechanicEffect(missionFrame, glowBox, tutorial, slowingMechanicEffectID); end,
+		leftArrow = true,
+	},
+	-- Disorienting increases the mission cost if not countered.
+	[0x80000] = {
+		id = 0x80000,
+		text1 = ORDER_HALL_MISSION_TUTORIAL_DISORIENTING,
+		xOffset = 0,
+		yOffset = 0,
+		parent = "MissionPage",
+		openConditionFunc = function(missionFrame) return CheckOpenMissionPageAndHasUncounteredMechanicEffect(missionFrame, disorientingMechanicEffectID); end,
+		closeConditionFunc = function(missionFrame) return CheckClosedMissionPageOrMechanicEffectCountered(missionFrame, disorientingMechanicEffectID); end,
+		positionFunc = function(missionFrame, glowBox, tutorial) return PositionAtMechanicEffect(missionFrame, glowBox, tutorial, disorientingMechanicEffectID); end,
+		leftArrow = true,
+	},
+
+};
+
+local function ReadTutorialCVAR()
+	local cvarVal = tonumber(GetCVar("orderHallMissionTutorial")) or 0;
+	
+	local lastTutorial = bit.band(cvarVal, 0xFFFF);
+	local tutorialFlags = bit.band(cvarVal, 0xFFFF0000);
+
+	return lastTutorial, tutorialFlags, cvarVal;
+end
+
+local function WriteTutorialCVAR(lastTutorial, tutorialFlags)
+	lastTutorial = bit.band(lastTutorial, 0xFFFF);
+	tutorialFlags = bit.band(tutorialFlags, 0xFFFF0000);
+
+	local cvarVal = bit.bor(tutorialFlags, lastTutorial);
+	SetCVar("orderHallMissionTutorial", cvarVal);
+end
+
+function OrderHallMission:CheckTutorials(advance)
+	if (not OrderHallMissionTutorialFrame) then
+		return;
+	end
+	local lastTutorial, tutorialFlags, cvarVal = ReadTutorialCVAR();
+	if (cvarVal == seenAllTutorials) then
+		return;
+	end
+
+	local tutorial = tutorials[lastTutorial + 1];
+
+	if (OrderHallMissionTutorialFrame.id) then
+		tutorial = tutorials[OrderHallMissionTutorialFrame.id];
+		if (not advance) then
+			if (tutorial.closeConditionFunc and tutorial.closeConditionFunc(self)) then
+				advance = true;
+			end
+		end
+		if ( advance ) then
+			if (tutorial.advanceOnClick) then
+				lastTutorial = OrderHallMissionTutorialFrame.id;
+			else
+				tutorialFlags = bit.bor(tutorialFlags, OrderHallMissionTutorialFrame.id);
+			end
+			WriteTutorialCVAR(lastTutorial, tutorialFlags);
+			OrderHallMissionTutorialFrame:Hide();
+			OrderHallMissionTutorialFrame.id = nil;
+		else
+			if (tutorial.cancelConditionFunc and tutorial.cancelConditionFunc(self, tutorial)) then
+				OrderHallMissionTutorialFrame:Hide();
+				OrderHallMissionTutorialFrame.id = nil;
+			end
+		end
+	end
+
+	local eligibleTutorialIDs = { }
+	if (tutorials[lastTutorial + 1]) then
+		tinsert(eligibleTutorialIDs, lastTutorial + 1);
+	end
+
+	local tutorialFlag = 0x10000;
+	while (tutorials[tutorialFlag]) do
+		if (bit.band(bit.bnot(tutorialFlags), tutorialFlag) ~= 0) then
+			tinsert(eligibleTutorialIDs, tutorialFlag);
+		end
+		tutorialFlag = bit.lshift(tutorialFlag, 1);
+	end
+
+	for _, id in ipairs(eligibleTutorialIDs) do
+		tutorial = tutorials[id];
+		if (tutorial.openConditionFunc and tutorial.openConditionFunc(self)) then
+			-- parent frame
+			OrderHallMissionTutorialFrame:SetParent(self.MissionTab[tutorial.parent]);
+			OrderHallMissionTutorialFrame:SetFrameStrata("DIALOG");
+			OrderHallMissionTutorialFrame:SetPoint("TOPLEFT", self, 0, -21);
+			OrderHallMissionTutorialFrame:SetPoint("BOTTOMRIGHT", self);
+			OrderHallMissionTutorialFrame.id = id;
+			local height = 58;	-- button height + top and bottom padding + spacing between text and button
+			local glowBox = OrderHallMissionTutorialFrame.GlowBox;
+			if (tutorial.textFunc) then
+				glowBox.BigText:SetText(tutorial.textFunc(self, tutorial));
+			else
+				glowBox.BigText:SetText(tutorial.text1);
+			end
+
+			height = height + glowBox.BigText:GetHeight();
+			if ( tutorial.text2 ) then
+				glowBox.SmallText:SetText(tutorial.text2);
+				height = height + 12 + glowBox.SmallText:GetHeight();
+				glowBox.SmallText:Show();
+			else
+				glowBox.SmallText:Hide();
+			end
+			glowBox:SetHeight(height);
+			glowBox:ClearAllPoints();
+			if ( tutorial.positionFunc ) then
+				tutorial.positionFunc(self, glowBox, tutorial);
+			else
+				glowBox:SetPoint("TOPLEFT", tutorial.xOffset, tutorial.yOffset);
+			end
+			glowBox.ArrowUp:SetShown(tutorial.upArrow);
+			glowBox.ArrowGlowUp:SetShown(tutorial.upArrow);
+
+			glowBox.ArrowDown:SetShown(tutorial.downArrow);
+			glowBox.ArrowGlowDown:SetShown(tutorial.downArrow);
+
+			glowBox.ArrowLeft:SetShown(tutorial.leftArrow);
+			glowBox.ArrowGlowLeft:SetShown(tutorial.leftArrow);
+
+			glowBox.ArrowRight:SetShown(tutorial.rightArrow);
+			glowBox.ArrowGlowRight:SetShown(tutorial.rightArrow);
+
+			OrderHallMissionTutorialFrame:Show();
+			break;
+		end
+	end
+end
+

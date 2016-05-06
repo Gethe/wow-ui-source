@@ -11,7 +11,7 @@ function PaladinResourceOverlay:OnLoad()
 		self.Runes[i].OnTexture:SetAtlas("ClassOverlay-HolyPower" .. i .. "on", true);
 	end
 	
-	self.Background:SetAlpha(tonumber(GetCVar("holyPowerAlpha")) or 0.5);
+	self.Background:SetAlpha(0.5);
 	
 	ClassResourceOverlay.OnLoad(self);
 end

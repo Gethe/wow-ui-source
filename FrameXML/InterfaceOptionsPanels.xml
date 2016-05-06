@@ -543,6 +543,13 @@
 					<OnLoad>
 						self.type = CONTROLTYPE_CHECKBOX;
 						self.cvar = "enableFloatingCombatText";
+                        self.uvar = "SHOW_COMBAT_TEXT";
+                        self.setFunc = function (value)
+							if ( value == "1" and not IsAddOnLoaded("Blizzard_CombatText") ) then
+								UIParentLoadAddOn("Blizzard_CombatText");
+							end
+							BlizzardOptionsPanel_UpdateCombatText();
+						end;
                         BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>

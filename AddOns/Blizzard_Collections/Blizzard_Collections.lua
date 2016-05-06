@@ -19,6 +19,22 @@ local function ShouldShowHeirloomTabHelpTip()
 	return C_Heirloom.ShouldShowHeirloomHelp();
 end
 
+local function ShouldShowWardrobeTabHelpTip()
+	if GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_JOURNAL_TAB) or IsKioskModeEnabled() then
+		return false;
+	end
+
+	if PetJournal_HelpPlate and HelpPlate_IsShowing(PetJournal_HelpPlate) then
+		return false;
+	end
+
+	if CollectionsJournal.HeirloomTabHelpBox:IsShown() then
+		return false;
+	end
+
+	return true;
+end
+
 function CollectionsJournal_ValidateTab(tabNum)
 	if (not IsKioskModeEnabled()) then
 		return true;
@@ -61,6 +77,7 @@ function CollectionsJournal_UpdateSelectedTab(self)
 	end
 
 	self.HeirloomTabHelpBox:SetShown(ShouldShowHeirloomTabHelpTip());
+	self.WardrobeTabHelpBox:SetShown(ShouldShowWardrobeTabHelpTip());
 end
 
 function CollectionsJournal_OnShow(self)

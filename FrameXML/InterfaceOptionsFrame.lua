@@ -342,8 +342,6 @@ UVARINFO = {
 	["SHOW_ARENA_ENEMY_FRAMES"] = { default = "1", cvar = "showArenaEnemyFrames", event = "SHOW_ARENA_ENEMY_FRAMES_TEXT" },
 	["SHOW_ARENA_ENEMY_CASTBAR"] = { default = "1", cvar = "showArenaEnemyCastbar", event = "SHOW_ARENA_ENEMY_CASTBAR_TEXT" },
 	["SHOW_ARENA_ENEMY_PETS"] = { default = "1", cvar = "showArenaEnemyPets", event = "SHOW_ARENA_ENEMY_PETS_TEXT" },
-	["SHOW_ALL_ENEMY_DEBUFFS"] = { default = "0", cvar = "showAllEnemyDebuffs", event = "SHOW_ALL_ENEMY_DEBUFFS_TEXT" },
-    ["SHOW_ALL_ENEMY_PLAYER_DEBUFFS"] = { default = "1", cvar ="showAllEnemyPlayerDebuffs", event = "SHOW_ALL_ENEMY_PLAYER_DEBUFFS_TEXT" },
 }
 
 function InterfaceOptionsFrame_InitializeUVars ()
@@ -364,6 +362,7 @@ function InterfaceOptionsFrame_LoadUVars ()
 				setting.func()
 			end
 		elseif ( cvarValue ~= setting.default or ( not ( _G[uvar] ) ) ) then
+            _G[uvar] = cvarValue;
 			if ( setting.func ) then
 				setting.func()
 			end

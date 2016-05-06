@@ -1508,7 +1508,7 @@ function UnitPopup_OnUpdate (elapsed)
 							end
 						end
                     elseif ( value == "MASTER_LOOTER" ) then
-						if (not InGuildParty()) then
+						if (not IsInGuildGroup()) then
 	                        enable = false;
 						end
 					end

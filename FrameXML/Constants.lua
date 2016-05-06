@@ -60,7 +60,7 @@ MATERIAL_TEXT_COLOR_TABLE = {
 	["Marble"] = {0, 0, 0},
 	["Silver"] = {0.12, 0.12, 0.12},
 	["Bronze"] = {0.18, 0.12, 0.06},
-	["ParchmentLarge"] = {0.027, 0.035, 0.023}
+	["ParchmentLarge"] = {.141, 0, 0}
 };
 MATERIAL_TITLETEXT_COLOR_TABLE = {
 	["Default"] = {0, 0, 0},

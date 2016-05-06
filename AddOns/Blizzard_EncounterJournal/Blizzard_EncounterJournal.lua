@@ -939,8 +939,8 @@ function EncounterJournal_SetUpOverview(self, role, index)
 	local _, _, _, _, _, _, nextSectionID =  EJ_GetSectionInfo(self.rootOverviewSectionID);
 
 	while nextSectionID do
-		title, description, _, _, _, siblingID, _, _, link, _, flag1 = EJ_GetSectionInfo(nextSectionID);
-		if (role == rolesByFlag[flag1]) then
+		title, description, _, _, _, siblingID, _, filteredByDifficulty, link, _, flag1 = EJ_GetSectionInfo(nextSectionID);
+		if (role == rolesByFlag[flag1] and not filteredByDifficulty) then
 			break;
 		end
 		nextSectionID = siblingID;

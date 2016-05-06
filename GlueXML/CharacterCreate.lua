@@ -211,6 +211,28 @@ MODEL_CAMERA_CONFIG = {
 CHAR_CUSTOMIZE_HAIR_COLOR = 4;
 CHAR_CUSTOMIZE_TATTOO_COLOR = 9;
 
+local classTrialResultToString = {
+	[LE_CHARACTER_UPGRADE_RESULT_DB_ERROR] = CLASS_TRIAL_CREATE_RESULT_ERROR_DB_ERROR,
+	[LE_CHARACTER_UPGRADE_RESULT_TRIAL_THROTTLE_HOUR] = CLASS_TRIAL_CREATE_RESULT_ERROR_THROTTLE_HOUR,
+	[LE_CHARACTER_UPGRADE_RESULT_TRIAL_THROTTLE_DAY] = CLASS_TRIAL_CREATE_RESULT_ERROR_THROTTLE_DAY,
+	[LE_CHARACTER_UPGRADE_RESULT_TRIAL_THROTTLE_WEEK] = CLASS_TRIAL_CREATE_RESULT_ERROR_THROTTLE_WEEK,
+	[LE_CHARACTER_UPGRADE_RESULT_TRIAL_THROTTLE_ACCOUNT] = CLASS_TRIAL_CREATE_RESULT_ERROR_THROTTLE_ACCOUNT,
+	[LE_CHARACTER_UPGRADE_RESULT_BOX_LEVEL] = CLASS_TRIAL_CREATE_RESULT_ERROR_BOX_LEVEL,
+	[LE_CHARACTER_UPGRADE_RESULT_TRIAL_BOOST_DISABLED] = CLASS_TRIAL_CREATE_RESULT_ERROR_BOOST_DISABLED,
+	[LE_CHARACTER_UPGRADE_RESULT_TRIAL_ACCOUNT] = CLASS_TRIAL_CREATE_RESULT_ERROR_TRIAL_ACCOUNT,
+	[LE_CHARACTER_UPGRADE_RESULT_UPGRADE_PENDING] = CLASS_TRIAL_CREATE_RESULT_ERROR_UPGRADE_PENDING,
+	[LE_CHARACTER_UPGRADE_RESULT_INVALID_CHARACTER] = CLASS_TRIAL_CREATE_RESULT_ERROR_INVALID_CHARACTER,
+	[LE_CHARACTER_UPGRADE_RESULT_NOT_FRESH_CHARACTER] = CLASS_TRIAL_CREATE_RESULT_ERROR_NOT_FRESH_CHARACTER,
+}
+
+local function HandleClassTrialCreateResult(result)
+	local resultMessage = classTrialResultToString[result];
+	if resultMessage then
+		GlueDialog_Show("OKAY", resultMessage);
+		CharacterCreate_SelectCharacterType(LE_CHARACTER_CREATE_TYPE_NORMAL)
+	end
+end
+
 function CharacterCreate_OnLoad(self)
 	self:RegisterEvent("RANDOM_CHARACTER_NAME_RESULT");
 	self:RegisterEvent("UPDATE_EXPANSION_LEVEL");
@@ -219,6 +241,7 @@ function CharacterCreate_OnLoad(self)
 	self:RegisterEvent("CUSTOMIZE_CHARACTER_RESULT");
 	self:RegisterEvent("RACE_FACTION_CHANGE_STARTED");
 	self:RegisterEvent("RACE_FACTION_CHANGE_RESULT");
+	self:RegisterEvent("CLASS_TRIAL_CHARACTER_CREATE_RESULT");
 
 	self:SetSequence(0);
 	self:SetCamera(0);
@@ -303,7 +326,6 @@ function CharacterCreate_OnShow()
 		CharacterCreateNameEdit:SetText( PaidChange_GetName() );
 	else
 		--randomly selects a combination
-		SetUsingTrialBoost(CharacterUpgrade_IsCreatedCharacterTrialBoost());
 		ResetCharCustomize();
 		CharacterCreateNameEdit:SetText("");
 		CharCreateRandomizeButton:Show();
@@ -339,7 +361,7 @@ function CharacterCreate_OnShow()
 	SetFaceCustomizeCamera(false);
 
 	CharacterCreateFrame_UpdateRecruitInfo();
-	CharacterCreate_SelectCharacterType(CHARACTER_UPGRADE_CREATE_CHARACTER);
+	CharacterCreate_SelectCharacterType(GetCharacterCreateType());
 
 	if( IsKioskModeEnabled() ) then
 		local data = KioskModeSplash_GetModeData();
@@ -450,6 +472,9 @@ function CharacterCreate_OnEvent(self, event, ...)
 		else
 			GlueDialog_Show("OKAY", _G[err]);
 		end
+	elseif ( event == "CLASS_TRIAL_CHARACTER_CREATE_RESULT" ) then
+		local result = ...
+		HandleClassTrialCreateResult(result);
 	end
 end
 
@@ -585,6 +610,7 @@ function CharacterCreateEnumerateClasses(classes)
         end
 		button.nameFrame.text:SetText(classData.className);
 		button.tooltip = CHARCREATE_CLASS_TOOLTIP[classIndex];
+		button.classFilename = classData.fileName;
 		local data = IsKioskModeEnabled() and KioskModeSplash_GetModeData();
 		local disableTexture = button.DisableTexture;
 		if ( classData.enabled == true ) then
@@ -625,6 +651,8 @@ function CharacterCreateEnumerateClasses(classes)
 					reason = DEMON_HUNTER_RESTRICTED_HAS_DEMON_HUNTER;
 				elseif ( classData.disableReason == LE_DEMON_HUNTER_CREATION_DISABLED_REASON_NEED_LEVEL_70 ) then
 					reason = DEMON_HUNTER_RESTRICTED_NEED_LEVEL_70;
+				elseif ( classData.disableReason == LE_DEMON_HUNTER_INVALID_CLASS_FOR_BOOST) then
+					reason = CANNOT_CREATE_CURRENT_CLASS_WITH_BOOST;
 				end
 			else
 				reason = _G[classIndex.."_DISABLED"];
@@ -795,7 +823,7 @@ function SetCharacterClass(id)
 	CharacterCreate_InfoTemplate_Resize(frame);
 	CharCreateClassInfoFrameScrollFrameScrollBar:SetValue(0);
 
-	CharacterCreate_UpdateTypeButtonLevels();
+	CharacterCreate_UpdateCharacterTypeButtons();
 end
 
 function CharacterCreate_OnChar()
@@ -1614,6 +1642,10 @@ function CharCreateClassButton_OnEnter(self)
 	CharacterCreateTooltip:AddLine(self.tooltip.roles, 0.510, 0.773, 1, 1, true);
 	CharacterCreateTooltip:AddLine(self.tooltip.description, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1, true);
 	CharacterCreateTooltip:AddLine(self.tooltip.footer, nil, nil, nil, nil, true);
+
+	if CharacterUpgrade_IsCreatedCharacterTrialBoost() and not CharacterCreate_IsTrialBoostAllowedForClass(self.classFilename) then
+		CharacterCreateTooltip:AddLine(CHARACTER_TYPE_FRAME_TRIAL_BOOST_CHARACTER_TOOLTIP_INVALID, 1, 0, 0, 1, true);
+	end
 end
 
 function CharCreateClassButton_OnLeave(self)
@@ -1657,7 +1689,6 @@ local classTypeData = {
 	["DEATHKNIGHT"] = { startingLevel = 55, allowBoost = true, },
 	["DEMONHUNTER"] = { startingLevel = 98, allowBoost = false, },
 	["DEFAULT"] = { startingLevel = 1, allowBoost = true, },
-	["BOOSTED"] = { startingLevel = 100, allowBoost = false, },
 };
 
 local function GetClassTypeData(classFilename)
@@ -1668,43 +1699,35 @@ local function IsBoostAllowed(classFilename)
 	return C_CharacterServices.IsTrialBoostEnabled() and GetClassTypeData(classFilename).allowBoost;
 end
 
-local function SetLevelText(levelTextFrame, classFilename)
-	local startingLevel = GetClassTypeData(classFilename).startingLevel;
-	levelTextFrame:SetText(format(CHARACTER_TYPE_FRAME_STARTING_LEVEL, startingLevel));
+local function UpdateLevelText(button, classFilename)
+	local startingLevel;
+
+	if button.characterType == LE_CHARACTER_CREATE_TYPE_TRIAL_BOOST then
+		startingLevel = 100;
+		button:SetEnabled(IsBoostAllowed(classFilename));
+	elseif button.characterType == LE_CHARACTER_CREATE_TYPE_NORMAL then
+		startingLevel = GetClassTypeData(classFilename).startingLevel;
+	end
+
+	button.levelText:SetText(CHARACTER_TYPE_FRAME_STARTING_LEVEL:format(startingLevel));
 end
-
-local characterTypeLevelUpdateFunctions = {
-	["new"] =	function(self, classFilename)
-					SetLevelText(self.levelText, classFilename);
-					if not IsBoostAllowed(classFilename) then
-						self:SetChecked(true);
-					end
-				end,
-
-	["trial"] = function(self, classFilename)
-					SetLevelText(self.levelText, "BOOSTED");
-
-					local isBoostAllowed = IsBoostAllowed(classFilename);
-					self:SetEnabled(isBoostAllowed);
-					if not isBoostAllowed then
-						self:SetChecked(false);
-					end
-				end,
-};
 
 function CharacterCreate_TypeButtonOnLoad(self)
 	self.typeText:SetText(self.titleText);
-	self.levelUpdate = characterTypeLevelUpdateFunctions[self.characterType];
 end
 
-function CharacterCreate_TypeButtonUpdateLevel(self)
+function CharacterCreate_UpdateCharacterTypeButtons()
 	local _, classFilename = GetSelectedClass();
-	self:levelUpdate(classFilename);
-end
 
-function CharacterCreate_UpdateTypeButtonLevels()
 	for index, button in ipairs(CharCreateCharacterTypeFrame.typeButtons) do
-		CharacterCreate_TypeButtonUpdateLevel(button);
+		UpdateLevelText(button, classFilename);
+	end
+
+	if CharCreateCharacterTypeFrame:IsShown() then
+		local isTrialBoost = GetCharacterCreateType() == LE_CHARACTER_CREATE_TYPE_TRIAL_BOOST;
+		if isTrialBoost and not IsBoostAllowed(classFilename) then
+			CharacterCreate_SelectCharacterType(LE_CHARACTER_CREATE_TYPE_NORMAL);
+		end
 	end
 end
 
@@ -1724,12 +1747,12 @@ local function SelectCharacterTypeButton(selectedCharacterType)
 end
 
 function CharacterCreate_SelectCharacterType(characterType)
-	characterType = characterType or "new";
-	SetUsingTrialBoost(characterType == "trial");
+	characterType = characterType or LE_CHARACTER_CREATE_TYPE_NORMAL;
+	SetCharacterCreateType(characterType);
 
 	-- If this character is actually being created because a boost token is being used, then there's no reason to display
 	-- character type selection, because of the current flow, this boost will actually be consumed.
-	if (characterType == "boost" or not C_CharacterServices.IsTrialBoostEnabled()) then
+	if (characterType == LE_CHARACTER_CREATE_TYPE_BOOST or not C_CharacterServices.IsTrialBoostEnabled()) then
 		CharCreateCharacterTypeFrame:Hide();
 		return;
 	end
@@ -1739,6 +1762,10 @@ function CharacterCreate_SelectCharacterType(characterType)
 	SelectCharacterTypeButton(characterType);
 	CharacterUpgrade_SetupFlowForNewCharacter(characterType);
 	CharacterCreate_UpdateSelectSpecFrame();
+
+	if (characterType == LE_CHARACTER_CREATE_TYPE_TRIAL_BOOST) then
+		C_SharedCharacterServices.QueryClassTrialBoostResult();
+	end
 end
 
 function CharacterCreate_TypeButtonOnClick(self)
@@ -1753,7 +1780,7 @@ end
 
 function CharacterCreate_TypeButtonOnEnable(self)
 	self.typeText:SetTextColor(1, .78, 0, 1);
-	self.levelText:SetTextColor(1, .78, 0, 1);
+	self.levelText:SetTextColor(1, 1, 1, 1);
 end
 
 function SelectSpecFrame_OnLoad(self)
@@ -1767,14 +1794,16 @@ end
 
 function CharacterCreate_UpdateSelectSpecFrame()
 	local _, classFilename = GetSelectedClass();
-	local showSpecializations = CharacterUpgrade_IsCreatedCharacterTrialBoost() and (CharacterCreateFrame.state == "CUSTOMIZATION") and IsBoostAllowed(classFilename);
+	local isTrialBoost = CharacterUpgrade_IsCreatedCharacterTrialBoost();
+	local showSpecializations = isTrialBoost and (CharacterCreateFrame.state == "CUSTOMIZATION") and IsBoostAllowed(classFilename);
 
 	if showSpecializations then
 		-- HACK:  GetSelectedSex and GetCharacterInfo return different enum types, this arbitrary - 1 compensates.
 		-- TODO: Reconcile enums?
 		local gender = GetSelectedSex() - 1;
+		local allowAllSpecs = false;
 
-		CharacterServices_UpdateSpecializationButtons(classFilename, gender, CharCreateSelectSpecFrame, CharCreateSelectSpecFrame);
+		CharacterServices_UpdateSpecializationButtons(classFilename, gender, CharCreateSelectSpecFrame, CharCreateSelectSpecFrame, allowAllSpecs, isTrialBoost);
 
 		local frameTop, frameBottom = CharCreateSelectSpecFrame:GetTop(), CharCreateSelectSpecFrame:GetBottom();
 		for index, button in pairs(CharCreateSelectSpecFrame.SpecButtons) do
@@ -1801,4 +1830,8 @@ function CharacterCreate_UpdateOkayButton()
 	end
 
 	CharCreateOkayButton:SetEnabled(enabled);
+end
+
+function CharacterCreate_IsTrialBoostAllowedForClass(classFilename)
+	return IsBoostAllowed(classFilename);
 end

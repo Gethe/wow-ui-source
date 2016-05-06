@@ -74,13 +74,13 @@ end
 function GossipFrameAvailableQuestsUpdate(...)
 	local titleIndex = 1;
 	
-	for i=1, select("#", ...), 6 do
+	for i=1, select("#", ...), 7 do
 		if ( GossipFrame.buttonIndex > NUMGOSSIPBUTTONS ) then
 			message("This NPC has too many quests and/or gossip options.");
 		end
 		local titleButton = _G["GossipTitleButton" .. GossipFrame.buttonIndex];
 		local titleButtonIcon = _G[titleButton:GetName() .. "GossipIcon"];
-		local titleText, level, isTrivial, frequency, isRepeatable, isLegendary = select(i, ...);
+		local titleText, level, isTrivial, frequency, isRepeatable, isLegendary, isIgnored = select(i, ...);
 		if ( isLegendary ) then
 			titleButtonIcon:SetTexture("Interface\\GossipFrame\\AvailableLegendaryQuestIcon");
 		elseif ( frequency == LE_QUEST_FREQUENCY_DAILY or frequency == LE_QUEST_FREQUENCY_WEEKLY ) then
@@ -90,7 +90,10 @@ function GossipFrameAvailableQuestsUpdate(...)
 		else
 			titleButtonIcon:SetTexture("Interface\\GossipFrame\\AvailableQuestIcon");
 		end
-		if ( isTrivial ) then
+		if ( isIgnored ) then
+			titleButton:SetFormattedText(IGNORED_QUEST_DISPLAY, titleText);
+			titleButtonIcon:SetVertexColor(0.5,0.5,0.5);
+		elseif ( isTrivial ) then
 			titleButton:SetFormattedText(TRIVIAL_QUEST_DISPLAY, titleText);
 			titleButtonIcon:SetVertexColor(0.5,0.5,0.5);
 		else
@@ -117,13 +120,16 @@ function GossipFrameActiveQuestsUpdate(...)
 	local titleButtonIcon;
 	local numActiveQuestData = select("#", ...);
 	GossipFrame.hasActiveQuests = (numActiveQuestData > 0);
-	for i=1, numActiveQuestData, 5 do
+	for i=1, numActiveQuestData, 6 do
 		if ( GossipFrame.buttonIndex > NUMGOSSIPBUTTONS ) then
 			message("This NPC has too many quests and/or gossip options.");
 		end
 		titleButton = _G["GossipTitleButton" .. GossipFrame.buttonIndex];
 		titleButtonIcon = _G[titleButton:GetName() .. "GossipIcon"];
-		if ( select(i+2, ...) ) then
+		if ( select(i+5, ...) ) then
+			titleButton:SetFormattedText(IGNORED_QUEST_DISPLAY, select(i, ...));
+			titleButtonIcon:SetVertexColor(0.5,0.5,0.5);
+		elseif ( select(i+2, ...) ) then
 			titleButton:SetFormattedText(TRIVIAL_QUEST_DISPLAY, select(i, ...));
 			titleButtonIcon:SetVertexColor(0.5,0.5,0.5);
 		else

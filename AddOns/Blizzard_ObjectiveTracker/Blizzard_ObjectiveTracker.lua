@@ -758,6 +758,12 @@ function ObjectiveTracker_OnSizeChanged(self)
 	ObjectiveTracker_Update();
 end
 
+function ObjectiveTracker_OnUpdate(self)
+	if self.isUpdateDirty then
+		ObjectiveTracker_Update();
+	end
+end
+
 function ObjectiveTrackerHeader_OnAnimFinished(self)
 	local header = self:GetParent();
 	header.animating = false;
@@ -1010,25 +1016,27 @@ function DEFAULT_OBJECTIVE_TRACKER_MODULE:StaticReanchor()
 	self:EndLayout(true);
 end
 
-function ObjectiveTrackerFrame_OnUpdate(self, elapsed)
-	if ( self:GetHeight() > 0 ) then
-		self:SetScript("OnUpdate", nil);
-		ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_ALL);
-	end
-end
-
 function ObjectiveTracker_Update(reason, id)
 	local tracker = ObjectiveTrackerFrame;
+	if tracker.isUpdating then
+		-- Trying to update while we're already updating, try again next frame
+		tracker.isUpdateDirty = true;
+		return;
+	end
+	tracker.isUpdating = true;
 
 	if ( not tracker.initialized ) then
+		tracker.isUpdating = false;
 		return;
 	end
 
 	tracker.BlocksFrame.maxHeight = ObjectiveTrackerFrame.BlocksFrame:GetHeight();
 	if ( tracker.BlocksFrame.maxHeight == 0 ) then
-		tracker:SetScript("OnUpdate", ObjectiveTrackerFrame_OnUpdate);
+		tracker.isUpdating = false;
 		return;
 	end
+
+	tracker.isUpdateDirty = false;
 
 	OBJECTIVE_TRACKER_UPDATE_REASON = reason or OBJECTIVE_TRACKER_UPDATE_ALL;
 	OBJECTIVE_TRACKER_UPDATE_ID = id;
@@ -1079,6 +1087,7 @@ function ObjectiveTracker_Update(reason, id)
 	end
 
 	tracker.BlocksFrame.currentBlock = nil;
+	tracker.isUpdating = false;
 end
 
 function ObjectiveTracker_CheckAndHideHeader(moduleHeader)

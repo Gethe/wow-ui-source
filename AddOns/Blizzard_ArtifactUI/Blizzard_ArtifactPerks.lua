@@ -21,9 +21,8 @@ end
 
 function ArtifactPerksMixin:RefreshModel()
 	local itemID, altItemID, _, _, _, _, _, artifactAppearanceID, appearanceModID, itemAppearanceID, altItemAppearanceID, altOnTop = C_ArtifactUI.GetArtifactInfo();
-	local _, _, _, _, _, _, uiCameraID, altHandUICameraID, _, _, _, modelAlpha, modelDesaturation, freezeAnim = C_ArtifactUI.GetAppearanceInfoByID(artifactAppearanceID);
+	local _, _, _, _, _, _, uiCameraID, altHandUICameraID, _, _, _, modelAlpha, modelDesaturation, suppressGlobalAnim = C_ArtifactUI.GetAppearanceInfoByID(artifactAppearanceID);
 
-	self.Model.freezeAnim = freezeAnim;
 	self.Model.uiCameraID = uiCameraID;
 	self.Model.desaturation = modelDesaturation;
 	if itemAppearanceID then
@@ -37,8 +36,10 @@ function ArtifactPerksMixin:RefreshModel()
 	self.Model:SetModelDrawLayer(altOnTop and "BORDER" or "ARTWORK");
 	self.AltModel:SetModelDrawLayer(altOnTop and "ARTWORK" or "BORDER");
 
+	self.Model:SetSuppressGlobalAnimationTrack(suppressGlobalAnim);
+	self.AltModel:SetSuppressGlobalAnimationTrack(suppressGlobalAnim);
+	
 	if altItemID and altHandUICameraID then
-		self.AltModel.freezeAnim = freezeAnim;
 		self.AltModel.uiCameraID = altHandUICameraID;
 		self.AltModel.desaturation = modelDesaturation;
 		if altItemAppearanceID then
@@ -64,11 +65,7 @@ function ArtifactsModelTemplate_OnModelLoaded(self)
 				
 	self:SetDesaturation(self.desaturation or .5);
 
-	if self.freezeAnim then
-		self:FreezeAnimation(animationSequence, 0);
-	else
-		self:SetAnimation(animationSequence, 0);
-	end
+	self:SetAnimation(animationSequence, 0);
 end
 
 function ArtifactPerksMixin:RefreshBackground()
@@ -246,58 +243,60 @@ end
 function ArtifactPerksMixin:RefreshDependencies(powers)
 	local numUsedLines = 0;
 
-	local textureKit, titleName, titleR, titleG, titleB, barConnectedR, barConnectedG, barConnectedB, barDisconnectedR, barDisconnectedG, barDisconnectedB = C_ArtifactUI.GetArtifactArtInfo();
+	if ArtifactUI_CanViewArtifact() then
+		local textureKit, titleName, titleR, titleG, titleB, barConnectedR, barConnectedG, barConnectedB, barDisconnectedR, barDisconnectedG, barDisconnectedB = C_ArtifactUI.GetArtifactArtInfo();
 
-	for i, fromPowerID in ipairs(powers) do
-		local fromButton = self.powerIDToPowerButton[fromPowerID];
-		local fromLinks = C_ArtifactUI.GetPowerLinks(fromPowerID);
-		if fromLinks then
-			for j, toPowerID in ipairs(fromLinks) do
-				if not fromButton.links[toPowerID] then
-					local toButton = self.powerIDToPowerButton[toPowerID];
-					if toButton and not toButton.links[fromPowerID] then
-						numUsedLines = numUsedLines + 1;
-						local lineContainer = self:GetOrCreateDependencyLine(numUsedLines);
+		for i, fromPowerID in ipairs(powers) do
+			local fromButton = self.powerIDToPowerButton[fromPowerID];
+			local fromLinks = C_ArtifactUI.GetPowerLinks(fromPowerID);
+			if fromLinks then
+				for j, toPowerID in ipairs(fromLinks) do
+					if not fromButton.links[toPowerID] then
+						local toButton = self.powerIDToPowerButton[toPowerID];
+						if toButton and not toButton.links[fromPowerID] then
+							numUsedLines = numUsedLines + 1;
+							local lineContainer = self:GetOrCreateDependencyLine(numUsedLines);
 
-						lineContainer.Fill:SetStartPoint("CENTER", fromButton);
-						lineContainer.Fill:SetEndPoint("CENTER", toButton);
+							lineContainer.Fill:SetStartPoint("CENTER", fromButton);
+							lineContainer.Fill:SetEndPoint("CENTER", toButton);
 
-						if self.hasBoughtAnyPowers or ((toButton:IsStart() or toButton.prereqsMet) and (fromButton:IsStart() or fromButton.prereqsMet)) then
-							local hasSpentAny = fromButton.hasSpentAny and toButton.hasSpentAny;
-							if hasSpentAny or (fromButton.isCompletelyPurchased and (toButton.couldSpendPoints or toButton.isMaxRank)) or (toButton.isCompletelyPurchased and (fromButton.couldSpendPoints or fromButton.isMaxRank)) then
-								if (fromButton.isCompletelyPurchased and toButton.hasSpentAny) or (toButton.isCompletelyPurchased and fromButton.hasSpentAny) then
-									lineContainer.Fill:SetVertexColor(barConnectedR, barConnectedG, barConnectedB);
-									lineContainer.FillScroll1:SetVertexColor(barConnectedR, barConnectedG, barConnectedB);
-									lineContainer.FillScroll2:SetVertexColor(barConnectedR, barConnectedG, barConnectedB);
+							if self.hasBoughtAnyPowers or ((toButton:IsStart() or toButton.prereqsMet) and (fromButton:IsStart() or fromButton.prereqsMet)) then
+								local hasSpentAny = fromButton.hasSpentAny and toButton.hasSpentAny;
+								if hasSpentAny or (fromButton.isCompletelyPurchased and (toButton.couldSpendPoints or toButton.isMaxRank)) or (toButton.isCompletelyPurchased and (fromButton.couldSpendPoints or fromButton.isMaxRank)) then
+									if (fromButton.isCompletelyPurchased and toButton.hasSpentAny) or (toButton.isCompletelyPurchased and fromButton.hasSpentAny) then
+										lineContainer.Fill:SetVertexColor(barConnectedR, barConnectedG, barConnectedB);
+										lineContainer.FillScroll1:SetVertexColor(barConnectedR, barConnectedG, barConnectedB);
+										lineContainer.FillScroll2:SetVertexColor(barConnectedR, barConnectedG, barConnectedB);
 
-									lineContainer.FillScroll1:Show();
-									lineContainer.FillScroll1:SetStartPoint("CENTER", fromButton);
-									lineContainer.FillScroll1:SetEndPoint("CENTER", toButton);
+										lineContainer.FillScroll1:Show();
+										lineContainer.FillScroll1:SetStartPoint("CENTER", fromButton);
+										lineContainer.FillScroll1:SetEndPoint("CENTER", toButton);
 
-									lineContainer.FillScroll2:Show();
-									lineContainer.FillScroll2:SetStartPoint("CENTER", fromButton);
-									lineContainer.FillScroll2:SetEndPoint("CENTER", toButton);
+										lineContainer.FillScroll2:Show();
+										lineContainer.FillScroll2:SetStartPoint("CENTER", fromButton);
+										lineContainer.FillScroll2:SetEndPoint("CENTER", toButton);
 
-									PlayLineFadeAnim(lineContainer, LINE_FADE_ANIM_TYPE_CONNECTED);
+										PlayLineFadeAnim(lineContainer, LINE_FADE_ANIM_TYPE_CONNECTED);
+									else
+										lineContainer.Fill:SetVertexColor(barDisconnectedR, barDisconnectedG, barDisconnectedB);
+
+										lineContainer.Background:SetStartPoint("CENTER", fromButton);
+										lineContainer.Background:SetEndPoint("CENTER", toButton);
+
+										PlayLineFadeAnim(lineContainer, LINE_FADE_ANIM_TYPE_UNLOCKED);
+									end
 								else
-									lineContainer.Fill:SetVertexColor(barDisconnectedR, barDisconnectedG, barDisconnectedB);
-
+									lineContainer.Fill:SetVertexColor(barConnectedR, barConnectedG, barConnectedB);
 									lineContainer.Background:SetStartPoint("CENTER", fromButton);
 									lineContainer.Background:SetEndPoint("CENTER", toButton);
 
-									PlayLineFadeAnim(lineContainer, LINE_FADE_ANIM_TYPE_UNLOCKED);
+									PlayLineFadeAnim(lineContainer, LINE_FADE_ANIM_TYPE_LOCKED);
 								end
-							else
-								lineContainer.Fill:SetVertexColor(barConnectedR, barConnectedG, barConnectedB);
-								lineContainer.Background:SetStartPoint("CENTER", fromButton);
-								lineContainer.Background:SetEndPoint("CENTER", toButton);
-
-								PlayLineFadeAnim(lineContainer, LINE_FADE_ANIM_TYPE_LOCKED);
 							end
-						end
 
-						fromButton.links[toPowerID] = lineContainer;
-						toButton.links[fromPowerID] = lineContainer;
+							fromButton.links[toPowerID] = lineContainer;
+							toButton.links[fromPowerID] = lineContainer;
+						end
 					end
 				end
 			end

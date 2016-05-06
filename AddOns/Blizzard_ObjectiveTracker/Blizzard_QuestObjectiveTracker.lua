@@ -353,15 +353,11 @@ function QUEST_TRACKER_MODULE:Update()
 
 			-- completion state
 			local questFailed = false;
-			local isBreadcrumb = false;
 			if ( isComplete and isComplete < 0 ) then
 				isComplete = false;
 				questFailed = true;
 			elseif ( numObjectives == 0 and playerMoney >= requiredMoney and not startEvent ) then
 				isComplete = true;
-				if ( requiredMoney == 0 ) then
-					isBreadcrumb = true;
-				end
 			end
 			
 			if ( requiredMoney > 0 ) then
@@ -376,8 +372,9 @@ function QUEST_TRACKER_MODULE:Update()
 						QUEST_TRACKER_MODULE:AddObjective(block, "QuestComplete", QUEST_WATCH_QUEST_COMPLETE);
 						QUEST_TRACKER_MODULE:AddObjective(block, "ClickComplete", QUEST_WATCH_CLICK_TO_COMPLETE);
 					else
-						if ( isBreadcrumb ) then
-							QUEST_TRACKER_MODULE:AddObjective(block, "QuestComplete", GetQuestLogCompletionText(questLogIndex), nil, OBJECTIVE_DASH_STYLE_HIDE);
+						local completionText = GetQuestLogCompletionText(questLogIndex);
+						if ( completionText ) then
+							QUEST_TRACKER_MODULE:AddObjective(block, "QuestComplete", completionText, nil, OBJECTIVE_DASH_STYLE_HIDE);
 						else
 							QUEST_TRACKER_MODULE:AddObjective(block, "QuestComplete", QUEST_WATCH_QUEST_READY, nil, nil, OBJECTIVE_DASH_STYLE_HIDE, OBJECTIVE_TRACKER_COLOR["Complete"]);
 						end

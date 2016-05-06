@@ -1313,7 +1313,7 @@ StaticPopupDialogs["DEATH"] = {
 				end
 			end
 		end
-		
+
 		self:UpdateRecapButton();
 	end,
 	OnHide = function(self)
@@ -1377,7 +1377,7 @@ StaticPopupDialogs["DEATH"] = {
 		else
 			self.button2:Disable();
 		end
-		
+
 		if ( self.UpdateRecapButton) then
 			self:UpdateRecapButton();
 		end
@@ -3605,6 +3605,40 @@ StaticPopupDialogs["TRANSMOG_APPLY_WARNING"] = {
 	hasItemFrame = 1,
 }
 
+StaticPopupDialogs["CONFIRM_UNLOCK_TRIAL_CHARACTER"] = {
+	text = CHARACTER_UPGRADE_FINISH_BUTTON_POPUP_TEXT,
+	button1 = OKAY,
+	button2 = CANCEL,
+	OnAccept = function()
+		ClassTrialThanksForPlayingDialog:ConfirmCharacterBoost();
+	end,
+	OnCancel = function()
+		ClassTrialThanksForPlayingDialog:ShowThanks();
+	end,
+	hideOnEscape = 0,
+	timeout = 0,
+	whileDead = 1,
+}
+
+StaticPopupDialogs["CONFIRM_UNLOCK_TRIAL_CHARACTER_PURCHASE_BOOST_FIRST"] = {
+	text = CLASS_TRIAL_CONFIRM_PURCHASE_BOOST_TO_UNLOCK,
+	button1 = OKAY,
+	button2 = CANCEL,
+	OnAccept = function()
+		if (not StoreFrame_IsShown or not StoreFrame_IsShown()) then
+			ToggleStoreUI();
+		end
+
+		StoreFrame_SetServicesCategory();
+	end,
+	OnCancel = function()
+		ClassTrialThanksForPlayingDialog:ShowThanks();
+	end,
+	hideOnEscape = 0,
+	timeout = 0,
+	whileDead = 1,
+}
+
 function StaticPopup_FindVisible(which, data)
 	local info = StaticPopupDialogs[which];
 	if ( not info ) then
@@ -3665,7 +3699,7 @@ function StaticPopup_Resize(dialog, which)
 	end
 	if ( dialog.insertedFrame ) then
 		height = height + dialog.insertedFrame:GetHeight();
-	end	
+	end
 	if ( info.hasItemFrame ) then
 		height = height + 64;
 	end

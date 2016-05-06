@@ -2387,12 +2387,12 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						AuctionProgressBarSpark:Hide();
-						AuctionProgressBarFlash:Hide();
-						AuctionProgressBarIcon:Show();
-						AuctionProgressBarIcon:SetWidth(24);
-						AuctionProgressBarIcon:SetHeight(24);
-						AuctionProgressBarIcon:SetPoint("RIGHT", "$parent", "LEFT", -10, 2);
+						AuctionProgressBar.Spark:Hide();
+						AuctionProgressBar.Flash:Hide();
+						AuctionProgressBar.Icon:Show();
+						AuctionProgressBar.Icon:SetWidth(24);
+						AuctionProgressBar.Icon:SetHeight(24);
+						AuctionProgressBar.Icon:SetPoint("RIGHT", "$parent", "LEFT", -10, 2);
 					</OnLoad>
 					<OnEvent></OnEvent>
 					<OnShow></OnShow>

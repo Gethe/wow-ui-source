@@ -289,6 +289,7 @@ function MountJournalMountButton_UseMount(mountID)
 		MountJournal.MountDisplay.WrappedModelFrame:SetAnimation(148);
 		MountJournal.MountDisplay.UnwrapAnim:Play();
 		C_Timer.After(.8, function()
+			PlaySound("UI_Store_Unwrap");
 			MountJournal.MountDisplay.ModelFrame:ApplySpellVisualKit(73393, true);
 		end)
 		C_Timer.After(1.6, function()
@@ -450,14 +451,16 @@ function MountJournalSummonRandomFavoriteButton_OnEnter(self)
 end
 
 function MountOptionsMenu_Init(self, level)
-	if not MountJournal.menuMountID then
+	if not MountJournal.menuMountIndex then
 		return;
 	end
 
 	local info = UIDropDownMenu_CreateInfo();
 	info.notCheckable = true;
 
-	if (C_MountJournal.NeedsFanfare(MountJournal.menuMountID) ) then
+	local needsFanfare = C_MountJournal.NeedsFanfare(MountJournal.menuMountID);
+
+	if (needsFanfare) then
 		info.text = UNWRAP;
 	elseif ( active ) then
 		info.text = BINDING_NAME_DISMOUNT;
@@ -467,40 +470,45 @@ function MountOptionsMenu_Init(self, level)
 	end
 
 	info.func = function()
-		local mountID = select(12, C_MountJournal.GetDisplayedMountInfo(MountJournal.menuMountID));
-		MountJournalMountButton_UseMount(mountID);
+		if needsFanfare then
+			MountJournal_Select(MountJournal.menuMountIndex);
+		end
+		MountJournalMountButton_UseMount(MountJournal.menuMountID);
 	end;
 
 	UIDropDownMenu_AddButton(info, level);
-	info.disabled = nil;
 
-	local canFavorite = false;
-	local isFavorite = false;
-	if (MountJournal.menuMountID) then
-		 isFavorite, canFavorite = C_MountJournal.GetIsFavorite(MountJournal.menuMountID);
-	end
+	if not needsFanfare then
+		info.disabled = nil;
 
-	if (isFavorite) then
-		info.text = BATTLE_PET_UNFAVORITE;
-		info.func = function() 
-			C_MountJournal.SetIsFavorite(MountJournal.menuMountID, false);
+		local canFavorite = false;
+		local isFavorite = false;
+		if (MountJournal.menuMountIndex) then
+			 isFavorite, canFavorite = C_MountJournal.GetIsFavorite(MountJournal.menuMountIndex);
 		end
-	else
-		info.text = BATTLE_PET_FAVORITE;
-		info.func = function() 
-			C_MountJournal.SetIsFavorite(MountJournal.menuMountID, true); 
+
+		if (isFavorite) then
+			info.text = BATTLE_PET_UNFAVORITE;
+			info.func = function() 
+				C_MountJournal.SetIsFavorite(MountJournal.menuMountIndex, false);
+			end
+		else
+			info.text = BATTLE_PET_FAVORITE;
+			info.func = function() 
+				C_MountJournal.SetIsFavorite(MountJournal.menuMountIndex, true); 
+			end
 		end
+
+		if (canFavorite) then
+			info.disabled = false;
+		else
+			info.disabled = true;
+		end
+
+		UIDropDownMenu_AddButton(info, level);
 	end
 
-	if (canFavorite) then
-		info.disabled = false;
-	else
-		info.disabled = true;
-	end
-
-	UIDropDownMenu_AddButton(info, level);
 	info.disabled = nil;
-	
 	info.text = CANCEL
 	info.func = nil
 	UIDropDownMenu_AddButton(info, level)
@@ -508,7 +516,8 @@ end
 
 function MountJournal_ShowMountDropdown(index, anchorTo, offsetX, offsetY)
 	if (index) then
-		MountJournal.menuMountID = index;
+		MountJournal.menuMountIndex = index;
+		MountJournal.menuMountID = select(12, C_MountJournal.GetDisplayedMountInfo(MountJournal.menuMountIndex));
 		local active, isUsable = select(4, C_MountJournal.GetDisplayedMountInfo(index));
 		MountJournal.active = active;
 		MountJournal.menuIsUsable = isUsable;

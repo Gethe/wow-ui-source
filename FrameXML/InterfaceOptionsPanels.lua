@@ -466,6 +466,10 @@ function InterfaceOptionsDisplayPanel_OnEvent (self, event, ...)
 
 		control = InterfaceOptionsDisplayPanelRotateMinimap;
 		control.setFunc(GetCVar(control.cvar));
+        
+        -- run the enable FCT button's set func to refresh floating combat text and make sure the addon is loaded
+		control = InterfaceOptionsDisplayPanelEnableFloatingCombatText;
+		control.setFunc(GetCVar(control.cvar));
 	end
 end
 
@@ -730,6 +734,14 @@ function InterfaceOptionsDisplayPanelChatBubbles_Initialize()
 		info.checked = nil;
 	end
 	UIDropDownMenu_AddButton(info);
+end
+
+function BlizzardOptionsPanel_UpdateCombatText ()
+	-- Fix for bug 106938. CombatText_UpdateDisplayedMessages only exists if the Blizzard_CombatText AddOn is loaded.
+	-- We need CombatText options to have their setFunc actually _exist_, so this function is used instead of CombatText_UpdateDisplayedMessages.
+	if ( CombatText_UpdateDisplayedMessages ) then
+		CombatText_UpdateDisplayedMessages();
+	end
 end
 
 -- [[ Social Options Panel ]] --

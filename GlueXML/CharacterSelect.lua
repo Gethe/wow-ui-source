@@ -238,7 +238,7 @@ function CharacterSelect_OnShow(self)
 		GlueDialog_Hide();
 		C_Login.DisconnectFromServer();
 	end
-    
+
     if (not HasCheckedSystemRequirements()) then
         CheckSystemRequirements();
         SetCheckedSystemRequirements(true);
@@ -925,8 +925,9 @@ function CharacterSelect_TabResize(self)
 	self:SetWidth(width + (2 * leftWidth));
 end
 
-function CharacterSelect_CreateNewCharacter()
-	CharacterSelect_SelectCharacter(CharacterSelect.createIndex)
+function CharacterSelect_CreateNewCharacter(characterType)
+	SetCharacterCreateType(characterType);
+	CharacterSelect_SelectCharacter(CharacterSelect.createIndex);
 end
 
 function CharacterSelect_SelectCharacter(index, noCreate)
@@ -1739,7 +1740,7 @@ function CharacterServicesMaster_UpdateServiceButton()
 		return;
 	end
 
-	local upgradeAmounts = C_CharacterServices.GetUpgradeDistributions();
+	local upgradeAmounts = C_SharedCharacterServices.GetUpgradeDistributions();
 	-- merge paid boosts into the free boosts of the same id and mark as having a paid boost
 	-- level 90 boosts are treated differently
 	local hasPurchasedBoost = false;
@@ -1878,7 +1879,7 @@ function CharacterUpgradePopup_OnTryNewClick(self)
 	HandleUpgradePopupButtonClick(self);
 
 	if (C_CharacterServices.IsTrialBoostEnabled()) then
-		CharacterUpgrade_BeginNewCharacterCreation("trial");
+		CharacterUpgrade_BeginNewCharacterCreation(LE_CHARACTER_CREATE_TYPE_TRIAL_BOOST);
 	end
 end
 
@@ -2510,13 +2511,13 @@ end
 
 function CharSelectLockedTrialButton_OnClick(self)
 	-- Search user upgrades to see if they have the required boost
-	local upgrades = C_CharacterServices.GetUpgradeDistributions();
+	local upgrades = C_SharedCharacterServices.GetUpgradeDistributions();
 	local hasBoost = false;
 	local useFreeBoost = false;
 
 	for id, data in pairs(upgrades) do
 		if id == LE_BATTLEPAY_PRODUCT_ITEM_LEVEL_100_CHARACTER_UPGRADE then
-			hasBoost = (data.numPaid) > 0 or (data.numFree > 0);
+			hasBoost = hasBoost or (data.numPaid) > 0 or (data.numFree > 0);
 			useFreeBoost = useFreeBoost or (data.numFree > 0);
 		end
 	end

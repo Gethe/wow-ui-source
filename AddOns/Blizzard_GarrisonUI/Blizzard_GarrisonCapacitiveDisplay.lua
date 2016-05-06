@@ -199,8 +199,9 @@ function GarrisonCapacitiveDisplayFrame_Update(self, success, maxShipments, plot
 			followerInfo = C_Garrison.GetFollowerInfo(followerID);
 		end
 		if (followerInfo) then
-			display.ShipmentIconFrame.ShipmentName:SetFormattedText(FOLLOWER_CLASSNAME_AND_NAME_TEMPLATE, followerInfo.className, followerInfo.name);
+			display.ShipmentIconFrame.ShipmentName:SetText(followerInfo.name);
 			display.ShipmentIconFrame.Follower:SetupPortrait(followerInfo);
+			display.ShipmentIconFrame.Follower:SetNoLevel();
 			display.ShipmentIconFrame.Follower:Show();
 			display.ShipmentIconFrame.Icon:Hide();
 		else

@@ -729,6 +729,14 @@
 	<Binding name="TARGETPREVIOUSENEMY" category="BINDING_HEADER_TARGETING">
 		TargetNearestEnemy(true);	-- true means reverse!
 	</Binding>
+	<Binding name="TARGETSCANENEMY" runOnUp="true" category="BINDING_HEADER_TARGETING">
+		if ( keystate == "down" ) then
+			TargetPriorityHighlightStart(true);
+		else
+			TargetNearestEnemy();
+			TargetPriorityHighlightEnd();
+		end
+	</Binding>
 	<Binding name="TARGETNEARESTFRIEND" category="BINDING_HEADER_TARGETING">
 		TargetNearestFriend();
 	</Binding>

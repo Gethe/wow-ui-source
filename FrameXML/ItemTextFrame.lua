@@ -15,9 +15,9 @@ EXPANDED_ITEM_TEXT_FRAME_HEIGHT = 560;
 ITEM_TEXT_FONTS = {
 	["ParchmentLarge"] = {
 		["P"]  = QuestFont,
-		["H1"] = QuestFont_Enormous,
+		["H1"] = Fancy48Font,
 		["H2"] = Game20Font,
-		["H3"] = Game15Font
+		["H3"] = Fancy32Font
 	},
 	["default"] = {
 		["P"]  = QuestFont,
@@ -89,7 +89,7 @@ function ItemTextFrame_OnEvent(self, event, ...)
 			self:SetHeight(EXPANDED_ITEM_TEXT_FRAME_HEIGHT);
 			ItemTextScrollFrame:SetPoint("TOPRIGHT", self, "TOPRIGHT", -46, -89);
 			ItemTextScrollFrame:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", 40, 6);
-			ItemTextPageText:SetWidth(416);
+			ItemTextPageText:SetWidth(412);
 			ItemTextPageText:SetHeight(440);
 		else
 			self:SetWidth(DEFAULT_ITEM_TEXT_FRAME_WIDTH);

@@ -399,6 +399,10 @@ function WardrobeOutfitButtonMixin:OnClick()
 	if ( self.outfitID ) then
 		WardrobeOutfitFrame.dropDown:SelectOutfit(self.outfitID, true);
 	else
+		if ( WardrobeTransmogFrame.OutfitHelpBox:IsShown() ) then
+			WardrobeTransmogFrame.OutfitHelpBox:Hide();
+			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_OUTFIT_DROPDOWN, true);
+		end
 		WardrobeOutfitFrame.dropDown:CheckOutfitForSave();
 	end
 end

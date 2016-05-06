@@ -172,6 +172,10 @@ SPEC_CORE_ABILITY_TEXT[253] = "HUNTER_BM";
 SPEC_CORE_ABILITY_TEXT[254] = "HUNTER_MM";
 SPEC_CORE_ABILITY_TEXT[255] = "HUNTER_SV";
 
+SPEC_CORE_ABILITY_TEXT[74] = "HUNTER_PET_FEROCITY";
+SPEC_CORE_ABILITY_TEXT[79] = "HUNTER_PET_CUNNING";
+SPEC_CORE_ABILITY_TEXT[81] = "HUNTER_PET_TENACITY";
+
 SPEC_CORE_ABILITY_TEXT[62] = "MAGE_ARCANE";
 SPEC_CORE_ABILITY_TEXT[63] = "MAGE_FIRE";
 SPEC_CORE_ABILITY_TEXT[64] = "MAGE_FROST";
@@ -207,7 +211,6 @@ SPEC_CORE_ABILITY_TEXT[73] = "WARRIOR_PROT";
 SPEC_CORE_ABILITY_TEXT[577] = "DH_HAVOC";
 SPEC_CORE_ABILITY_TEXT[581] = "DH_VENGEANCE";
 
-
 -- Bonus stat to string
 SPEC_STAT_STRINGS = {
 	[LE_UNIT_STAT_STRENGTH] = SPEC_FRAME_PRIMARY_STAT_STRENGTH,
@@ -217,16 +220,20 @@ SPEC_STAT_STRINGS = {
 
 -- PlayerTalentFrame
 
-function PlayerTalentFrame_Toggle(suggestedTalentGroup)
+function PlayerTalentFrame_Toggle(suggestedTalentTab)
 	local selectedTab = PanelTemplates_GetSelectedTab(PlayerTalentFrame);
 	if ( not PlayerTalentFrame:IsShown() ) then
 		ShowUIPanel(PlayerTalentFrame);
-		if (PlayerTalentFrame.lastSelectedTab) then
+        if (suggestedTalentTab) then
+            PlayerTalentTab_OnClick(_G["PlayerTalentFrameTab"..suggestedTalentTab]);
+		elseif (PlayerTalentFrame.lastSelectedTab) then
 			PlayerTalentTab_OnClick(_G["PlayerTalentFrameTab"..PlayerTalentFrame.lastSelectedTab]);
 		elseif ( not GetSpecialization() ) then
 			PlayerTalentTab_OnClick(_G["PlayerTalentFrameTab"..SPECIALIZATION_TAB]);
 		elseif ( GetNumUnspentTalents() > 0 ) then
 			PlayerTalentTab_OnClick(_G["PlayerTalentFrameTab"..TALENTS_TAB]);
+        elseif ( GetNumUnspectPvpTalents() > 0 ) then
+            PlayerTalentTab_OnClick(_G["PlayerTalentFrameTab"..PVP_TALENTS_TAB]);
 		elseif ( selectedTab ) then
 			PlayerTalentTab_OnClick(_G["PlayerTalentFrameTab"..selectedTab]);
 		elseif ( AreTalentsLocked() ) then
@@ -667,9 +674,8 @@ PlayerSpecFrame_HelpPlate = {
 PlayerTalentFrame_HelpPlate = {
 	FramePos = { x = 0,	y = -22 },
 	FrameSize = { width = 645, height = 446	},
-	[1] = { ButtonPos = { x = 300,	y = -27 }, HighLightBox = { x = 8, y = -48, width = 627, height = 65 },		ToolTipDir = "UP",		ToolTipText = TALENT_FRAME_HELP_1 },
-	[2] = { ButtonPos = { x = 15,	y = -206 }, HighLightBox = { x = 8, y = -115, width = 627, height = 298 },	ToolTipDir = "RIGHT",	ToolTipText = TALENT_FRAME_HELP_2 },
-	[3] = { ButtonPos = { x = 355,	y = -409}, HighLightBox = { x = 268, y = -418, width = 109, height = 26 },	ToolTipDir = "RIGHT",	ToolTipText = TALENT_FRAME_HELP_3 },
+	[1] = { ButtonPos = { x = 300,	y = -27 }, HighLightBox = { x = 8, y = -48, width = 627, height = 55 },		ToolTipDir = "UP",		ToolTipText = TALENT_FRAME_HELP_1 },
+	[2] = { ButtonPos = { x = 15,	y = -206 }, HighLightBox = { x = 8, y = -105, width = 627, height = 308 },	ToolTipDir = "RIGHT",	ToolTipText = TALENT_FRAME_HELP_2 },
 }
 
 function PlayerTalentFrame_ToggleTutorial()
@@ -1175,11 +1181,12 @@ function PlayerSpecTab_OnEnter(self)
 end
 
 function PlayerSpecSpellTemplate_OnEnter(self)
-	local shownSpec = PlayerTalentFrameSpecialization.previewSpec;
-	local isPet = PlayerTalentFrameSpecialization.isPet;
+    local specFrame = self:GetParent():GetParent():GetParent();
+	local shownSpec = specFrame.previewSpec;
+	local isPet = specFrame.isPet;
 	local sex = isPet and UnitSex("pet") or UnitSex("player");
 	local id = GetSpecializationInfo(shownSpec, nil, isPet, nil, sex);
-	if (not id or not self.spellID) then
+    if (not id or not self.spellID) then
 		return;
 	end
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
@@ -1188,7 +1195,7 @@ function PlayerSpecSpellTemplate_OnEnter(self)
 		local spellName = GetSpellInfo(self.spellID);
 		GameTooltip:SetText(spellName, HIGHLIGHT_FONT_COLOR:GetRGB());
 		local r, g, b = NORMAL_FONT_COLOR:GetRGB();
-		GameTooltip:AddLine(_G[SPEC_CORE_ABILITY_TEXT[id].."_CORE_ABILITY_"..self.index], r, g, b, true);
+        GameTooltip:AddLine(_G[SPEC_CORE_ABILITY_TEXT[id].."_CORE_ABILITY_"..self.index], r, g, b, true);
 	else
 		GameTooltip:SetSpellByID(self.spellID, false, false, true);
 		if ( self.extraTooltip ) then
@@ -1477,6 +1484,39 @@ function PlayerTalentFrameTalents_OnHide(self)
 	PlayerTalentFrameLockInfo:Hide();
 end
 
+
+PVP_TALENT_TUTORIAL_INFO = {};
+function PlayerTalentFramePVPTalents_SetUpTutorialInfo(self)
+    PVP_TALENT_TUTORIAL_INFO[LE_FRAME_TUTORIAL_HONOR_TALENT_FIRST_TALENT] = { 
+        anchor = self.Talents.Tier1.Talent1, 
+        anchorPoint = "LEFT",
+        relativePoint = "RIGHT",
+        xoffset = 20,
+        text = HONOR_TALENT_FIRST_TALENT,
+        direction = "left",
+        clearOnClose = false,
+    };
+    PVP_TALENT_TUTORIAL_INFO[LE_FRAME_TUTORIAL_HONOR_TALENT_HONOR_LEVELS] = {
+        anchor = self.XPBar,
+        anchorPoint = "BOTTOM",
+        relativePoint = "TOP",
+        xoffset = 14,
+        yoffset = 16,
+        text = HONOR_TALENT_HONOR_LEVELS,
+        direction = "down",
+        clearOnClose = true,
+    };
+    PVP_TALENT_TUTORIAL_INFO[LE_FRAME_TUTORIAL_HONOR_TALENT_PRESTIGE] = {
+        anchor = self.XPBar.PrestigeReward.Accept,
+        anchorPoint = "LEFT",
+        relativePoint = "RIGHT",
+        xoffset = 20,
+        text = HONOR_TALENT_CAN_NOW_PRESTIGE,
+        direction = "left",
+        clearOnClose = true,
+    };
+end
+
 function PlayerTalentFramePVPTalents_OnLoad(self)
 	self:RegisterEvent("HONOR_XP_UPDATE");
 	self:RegisterEvent("HONOR_LEVEL_UPDATE");
@@ -1486,6 +1526,8 @@ function PlayerTalentFramePVPTalents_OnLoad(self)
 	self:RegisterEvent("PRESTIGE_AND_HONOR_INVOLUNTARILY_CHANGED");
 
 	self.talentInfo = {};
+    
+    PlayerTalentFramePVPTalents_SetUpTutorialInfo(self);
 end
 
 function PlayerTalentFramePVPTalents_OnShow(self)
@@ -1585,6 +1627,10 @@ function PlayerTalentFramePVPTalents_Update(self)
 				end
 	
 				button.knownSelection:SetShown(self.talentInfo[tier] == id or (selected and not self.talentInfo[tier]));
+                if (selected or self.talentInfo[tier]) then
+                    SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_HONOR_TALENT_FIRST_TALENT, true);
+                    PlayerTalentFramePVPTalents.TutorialBox:Hide();
+                end
 			end
 		end
 		if ( rowShouldGlow ) then
@@ -1598,6 +1644,14 @@ function PlayerTalentFramePVPTalents_Update(self)
 			talentRow.BottomGlowLine:Hide();
 		end
 	end
+    
+    if (not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_HONOR_TALENT_FIRST_TALENT)) then
+        PlayerTalentFramePVPTalents_ShowTutorial(LE_FRAME_TUTORIAL_HONOR_TALENT_FIRST_TALENT);
+    elseif (not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_HONOR_TALENT_HONOR_LEVELS)) then
+        PlayerTalentFramePVPTalents_ShowTutorial(LE_FRAME_TUTORIAL_HONOR_TALENT_HONOR_LEVELS);
+    elseif (not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_HONOR_TALENT_PRESTIGE) and CanPrestige()) then
+        PlayerTalentFramePVPTalents_ShowTutorial(LE_FRAME_TUTORIAL_HONOR_TALENT_PRESTIGE);
+    end
 end
 
 function PlayerTalentFramePVPTalents_LockButton(button)
@@ -1730,6 +1784,55 @@ function PlayerTalentFramePVPTalentsXPBar_OnClick(self, button)
 		UIDropDownMenu_Initialize(self.DropDown, InitializePVPTalentsXPBarDropDown);
 		ToggleDropDownMenu(1, nil, self.DropDown, self, 310, 12);
 	end
+end
+
+function PlayerTalentFramePVPTalents_ShowTutorial(tutorial)
+    local tutorialInfo = PVP_TALENT_TUTORIAL_INFO[tutorial];
+    
+    if (not tutorialInfo) then
+        return;
+    end
+    
+    local self = PlayerTalentFramePVPTalents;
+    
+    if not self.TutorialBox:IsShown() and not GetCVarBitfield("closedInfoFrames", tutorial) then
+        self.TutorialBox.activeTutorial = tutorialInfo.clearOnClose and tutorial or nil;
+
+        self.TutorialBox.Text:SetText(tutorialInfo.text);
+
+        local orientation, offset, point, relativePoint;
+        if ( tutorialInfo.direction == "left" ) then
+            orientation = 90;
+            xoffset = 3;
+            yoffset = 0;
+            point = "RIGHT";
+            relativePoint = "LEFT";
+        elseif ( tutorialInfo.direction == "right" ) then
+            orientation = 270;
+            xoffset = -3;
+            yoffset = 0;
+            point = "LEFT";
+            relativePoint = "RIGHT";
+        elseif ( tutorialInfo.direction == "down" ) then
+            orientation = 0;
+            xoffset = 0;
+            yoffset = 3;
+            point = "TOP";
+            relativePoint = "BOTTOM";
+        end
+        
+        SetClampedTextureRotation(self.TutorialBox.Arrow.Arrow, orientation);
+        SetClampedTextureRotation(self.TutorialBox.Arrow.Glow, orientation);
+        self.TutorialBox.Arrow.Arrow:ClearAllPoints()
+        self.TutorialBox.Arrow.Glow:ClearAllPoints()
+        self.TutorialBox.Arrow.Arrow:SetPoint(point, self.TutorialBox, relativePoint, xoffset, yoffset);
+        self.TutorialBox.Arrow.Glow:SetPoint(point, self.TutorialBox, relativePoint, xoffset, yoffset);
+    
+        self.TutorialBox:ClearAllPoints();
+        self.TutorialBox:SetPoint(tutorialInfo.anchorPoint, tutorialInfo.anchor, tutorialInfo.relativePoint, tutorialInfo.xoffset or 0, tutorialInfo.yoffset or 0);
+
+        self.TutorialBox:Show();
+    end
 end
 
 function PlayerTalentButton_OnClick(self, button)

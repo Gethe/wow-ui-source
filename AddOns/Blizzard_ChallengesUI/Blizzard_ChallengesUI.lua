@@ -62,7 +62,7 @@ function ChallengesFrame_Update(self)
             frame:SetPoint("LEFT", self.DungeonIcons[i-1], "RIGHT", 2, 0);
         end
         
-        frame:SetUp(sortedMaps[i]);
+        frame:SetUp(sortedMaps[i], i == 1);
         frame:Show();
     end
     
@@ -72,7 +72,6 @@ function ChallengesFrame_Update(self)
     end
     
     self.WeeklyBest:SetUp(hasWeeklyRun, sortedMaps[1]);
-    self.WeeklyBest:Show();
     
     if (self.leadersAvailable) then
         local leaders = C_ChallengeMode.GetGuildLeaders();
@@ -89,7 +88,7 @@ end
 
 ChallengesDungeonIconMixin = {};
 
-function ChallengesDungeonIconMixin:SetUp(mapInfo)
+function ChallengesDungeonIconMixin:SetUp(mapInfo, isFirst)
     self.mapID = mapInfo.id;
     
     local _, _, _, texture = C_ChallengeMode.GetMapInfo(mapInfo.id);
@@ -102,6 +101,11 @@ function ChallengesDungeonIconMixin:SetUp(mapInfo)
     self.Icon:SetDesaturated(mapInfo.level == 0);
     if (mapInfo.level > 0) then
         self.HighestLevel:SetText(mapInfo.level);
+        if (isFirst) then
+            self.HighestLevel:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+        else
+            self.HighestLevel:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+        end
         self.HighestLevel:Show();
     else
         self.HighestLevel:Hide();
@@ -184,19 +188,24 @@ ChallengesFrameWeeklyBestMixin = {};
 
 function ChallengesFrameWeeklyBestMixin:SetUp(hasWeeklyRun, bestData)
     if (hasWeeklyRun) then
-        self.NoRunsThisWeek:Hide();
-        self.Level:SetText(bestData.level);
+        self.Child.NoRunsThisWeek:Hide();
+        local lvlStr = tostring(bestData.level);
+        if (tonumber(lvlStr:sub(1,1)) == 1) then
+            self.Child.Level:SetPoint("CENTER", self.Child.Star, -1, -5);
+        else
+            self.Child.Level:SetPoint("CENTER", self.Child.Star, 0, -5);
+        end
+        self.Child.Level:SetText(bestData.level);
         local name = C_ChallengeMode.GetMapInfo(bestData.id);
-        self.DungeonName:SetText(name);
-        self.Level:Show();
-        self.DungeonName:Show();
+        self.Child.DungeonName:SetText(name);
+        self.Child.DungeonName:Show();
         local dmgPct, healthPct = C_ChallengeMode.GetPowerLevelDamageHealthMod(bestData.level);
 
         for i = 1, #bestData.affixes + 2 do
-            local frame = self.Affixes[i];
+            local frame = self.Child.Affixes[i];
             if (not frame) then
                 frame = CreateFrame("Frame", nil, self, "ChallengesKeystoneFrameAffixTemplate");
-                frame:SetPoint("LEFT", self.Affixes[i-1], "RIGHT", 10, 0);
+                frame:SetPoint("LEFT", self.Child.Affixes[i-1], "RIGHT", 10, 0);
             end
             if (i == 1) then
                 frame:SetUp({key = "dmg", pct = dmgPct});
@@ -206,17 +215,18 @@ function ChallengesFrameWeeklyBestMixin:SetUp(hasWeeklyRun, bestData)
                 frame:SetUp(bestData.affixes[i-2]);
             end
         end
-        for i = 3 + #bestData.affixes, #self.Affixes do
-            self.Affixes[i]:Hide();
+        for i = 3 + #bestData.affixes, #self.Child.Affixes do
+            self.Child.Affixes[i]:Hide();
         end
      else
-        self.Level:Hide();
-        self.DungeonName:Hide();
-        for i = 1, #self.Affixes do
-            self.Affixes[i]:Hide();
+        self.Child.Level:SetText(0);
+        self.Child.DungeonName:Hide();
+        for i = 1, #self.Child.Affixes do
+            self.Child.Affixes[i]:Hide();
         end
-        self.NoRunsThisWeek:Show();
+        self.Child.NoRunsThisWeek:Show();
      end
+     self:Show();
 end    
         
 ChallengesKeystoneFrameMixin = {};

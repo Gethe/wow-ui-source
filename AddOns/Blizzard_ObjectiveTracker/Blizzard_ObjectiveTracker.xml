@@ -375,6 +375,7 @@
 		<Scripts>
 			<OnLoad function="ObjectiveTracker_OnLoad"/>
 			<OnEvent function="ObjectiveTracker_OnEvent"/>
+			<OnUpdate function="ObjectiveTracker_OnUpdate"/>
 			<OnSizeChanged function="ObjectiveTracker_OnSizeChanged"/>
 		</Scripts>
 	</Frame>

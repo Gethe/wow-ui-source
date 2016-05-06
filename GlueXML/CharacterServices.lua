@@ -55,7 +55,6 @@
 -- CharacterServicesMaster_Update() to advance the flow and button states.
 ----
 
-CHARACTER_UPGRADE_CREATE_CHARACTER = nil;
 CHARACTER_UPGRADE_CREATE_CHARACTER_DATA = nil;
 
 local UPGRADE_90_MAX_LEVEL = 90;
@@ -476,7 +475,7 @@ function CharacterUpgradeFlow:Finish(controller)
 
 	self:SetAutoSelectGuid(nil);
 
-	C_CharacterServices.AssignUpgradeDistribution(results.playerguid, results.faction, results.spec, results.classId, self.data.free, self.data.productId);
+	C_SharedCharacterServices.AssignUpgradeDistribution(results.playerguid, results.faction, results.spec, results.classId, self.data.free, self.data.productId);
 	return true;
 end
 
@@ -559,15 +558,15 @@ local function replaceAllScripts()
 end
 
 function CharacterUpgrade_IsCreatedCharacterUpgrade()
-	return CHARACTER_UPGRADE_CREATE_CHARACTER == "boost";
+	return GetCharacterCreateType() == LE_CHARACTER_CREATE_TYPE_BOOST;
 end
 
 function CharacterUpgrade_IsCreatedCharacterTrialBoost()
-	return CHARACTER_UPGRADE_CREATE_CHARACTER == "trial";
+	return GetCharacterCreateType() == LE_CHARACTER_CREATE_TYPE_TRIAL_BOOST;
 end
 
 function CharacterUpgrade_ResetBoostData()
-	CHARACTER_UPGRADE_CREATE_CHARACTER = nil;
+	SetCharacterCreateType(LE_CHARACTER_CREATE_TYPE_NONE);
 	CHARACTER_UPGRADE_CREATE_CHARACTER_DATA = nil;
 end
 
@@ -857,9 +856,7 @@ function CharacterUpgradeCharacterSelectBlock:OnAdvance()
 end
 
 function CharacterUpgrade_SetupFlowForNewCharacter(characterType)
-	CHARACTER_UPGRADE_CREATE_CHARACTER = characterType;
-
-	if characterType == "boost" then
+	if characterType == LE_CHARACTER_CREATE_TYPE_BOOST then
 		CharacterUpgradeCharacterSelectBlock.createNum = GetNumCharacters();
 
 		if CharacterServicesMaster.flow then
@@ -870,11 +867,11 @@ end
 
 function CharacterUpgrade_BeginNewCharacterCreation(characterType)
 	CharacterUpgrade_SetupFlowForNewCharacter(characterType);
-	CharacterSelect_CreateNewCharacter();
+	CharacterSelect_CreateNewCharacter(characterType);
 end
 
 function CharacterUpgradeCreateCharacter_OnClick(self)
-	CharacterUpgrade_BeginNewCharacterCreation("boost");
+	CharacterUpgrade_BeginNewCharacterCreation(LE_CHARACTER_CREATE_TYPE_BOOST);
 end
 
 local function GetRecommendedSpecButton(ownerFrame)
@@ -895,18 +892,23 @@ local function formatDescription(description, gender)
 	return gsub(description, "$[Gg]([^:]+):([^;]+);", "%"..gender);
 end
 
-local function createTooltipText(description, gender, isRecommended)
+local function createTooltipText(description, gender, isRecommended, isTrialBoost)
 	local tooltipText = formatDescription(description, gender);
 
 	if (not isRecommended) then
-		local warningText = CreateColor(1, 0, 0, 1):WrapTextInColorCode(CHARACTER_BOOST_RECOMMENDED_SPEC_ONLY);
+		local warningText = CHARACTER_BOOST_RECOMMENDED_SPEC_ONLY;
+		if (isTrialBoost) then
+			warningText = CHARACTER_BOOST_RECOMMENDED_SPEC_ONLY_TRIAL_VERSION;
+		end
+
+		warningText = CreateColor(1, 0, 0, 1):WrapTextInColorCode(warningText);
 		tooltipText = CreateColor(.5, .5, .5, 1):WrapTextInColorCode(tooltipText)..warningText;
 	end
 
 	return tooltipText;
 end
 
-function CharacterServices_UpdateSpecializationButtons(classFilename, gender, parentFrame, owner, allowAllSpecs)
+function CharacterServices_UpdateSpecializationButtons(classFilename, gender, parentFrame, owner, allowAllSpecs, isTrialBoost)
 	local classID = CLASS_NAME_BUTTON_ID_MAP[classFilename];
 	local numSpecs = GetNumSpecializationsForClassID(classID);
 
@@ -923,14 +925,32 @@ function CharacterServices_UpdateSpecializationButtons(classFilename, gender, pa
 
 		if i <= numSpecs then
 			local specID, name, description, icon, _, role, isRecommended = GetSpecializationInfoForClassID(classID, i, gender);
+			local allowed = isRecommended or allowAllSpecs;
+
 			button:SetID(specID);
 			button.SpecIcon:SetTexture(icon);
+			button.SpecIcon:SetDesaturated(not allowed);
 			button.SpecName:SetText(name);
 			button.RoleIcon:SetTexCoord(GetTexCoordsForRole(role));
+			button.RoleIcon:SetDesaturated(not allowed);
 			button.RoleName:SetText(_G["ROLE_"..role]);
-			button:SetEnabled(allowAllSpecs or isRecommended);
+			button:SetEnabled(allowed);
 			button.Recommended:SetShown(isRecommended);
 			button.isRecommended = isRecommended;
+
+			-- If only the one recommended spec can be picked, change the text to reflect that the user
+			-- has no real choice here.
+			if allowAllSpecs then
+				button.Recommended:SetText(CHAR_SPEC_RECOMMENEDED);
+			else
+				button.Recommended:SetText(CHAR_SPEC_AVAILABLE);
+			end
+
+			if allowed then
+				button.SpecName:SetTextColor(1, .82, 0, 1);
+			else
+				button.SpecName:SetTextColor(.5, .5, .5, 1);
+			end
 
 			if isRecommended then
 				button.SpecName:SetPoint("TOPLEFT", button.Frame, "TOPRIGHT", 6, -3);
@@ -942,8 +962,7 @@ function CharacterServices_UpdateSpecializationButtons(classFilename, gender, pa
 
 			button:SetChecked(false);
 			button:Show();
-			local masqueradeAsRecommended = isRecommended or allowAllSpecs;
-			button.tooltip = createTooltipText(description, gender, masqueradeAsRecommended);
+			button.tooltip = createTooltipText(description, gender, allowed, isTrialBoost);
 		else
 			button:Hide();
 		end

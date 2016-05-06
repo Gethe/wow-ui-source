@@ -1049,16 +1049,16 @@
 	<Button name="CharacterCreateCharacterTypeButtonTemplate" inherits="GlueHorizontalResizeDarkButtonTemplate" virtual="true">
 		<KeyValues>
 			<KeyValue key="normalOffsetX" value="0" type="number"/>
-			<KeyValue key="normalOffsetY" value="-5" type="number"/>
+			<KeyValue key="normalOffsetY" value="-8" type="number"/>
 			<KeyValue key="pressedOffsetDelta" value="2" type="number"/>
 			<KeyValue key="offsetFrameKey" value="typeText" type="string"/>
 		</KeyValues>
-		<Size x="125" y="41" />
+		<Size x="118" y="41" />
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString parentKey="typeText" inherits="GlueFontNormalLarge"/>
+				<FontString parentKey="typeText" inherits="GlueFontNormal"/>
 
-				<FontString parentKey="levelText" inherits="GlueFontNormalSmall">
+				<FontString parentKey="levelText" inherits="GameFontWhiteTiny">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.typeText" relativePoint="BOTTOMLEFT" x="0" y="0" />
 						<Anchor point="TOPRIGHT" relativeKey="$parent.typeText" relativePoint="BOTTOMRIGHT" x="0" y="0" />
@@ -1383,19 +1383,18 @@
 										</Texture>
 									</Layer>
 									<Layer level="BACKGROUND" textureSubLevel="-1">
-										<Texture file="Interface\Glues\CharacterCreate\UI-CharacterCreatePatchwerk">
-											<Size x="143" y="48"/>
+										<Texture atlas="UI-CharacterCreate-Metal-Small-Finery">
+											<Size x="35" y="32"/>
 											<Anchors>
-												<Anchor point="TOPLEFT" x="29" y="-84"/>
+												<Anchor point="TOPLEFT" x="30" y="-92"/>
 											</Anchors>
-											<TexCoords left="0.42382813" right="0.703125" top="0.68847656" bottom="0.73535156"/>
 										</Texture>
-										<Texture file="Interface\Glues\CharacterCreate\UI-CharacterCreatePatchwerk">
-											<Size x="143" y="48"/>
+										<Texture atlas="UI-CharacterCreate-Metal-Small-Finery">
+											<Size x="35" y="32"/>
 											<Anchors>
-												<Anchor point="TOPRIGHT" x="-29" y="-84"/>
+												<Anchor point="TOPRIGHT" x="-30" y="-92"/>
 											</Anchors>
-											<TexCoords left="0.61914063" right="0.89843750" top="0.68847656" bottom="0.73535156"/>
+											<TexCoords left="1" right="0" top="0" bottom="1"/>
 										</Texture>
 									</Layer>
 									<Layer level="ARTWORK">
@@ -1541,7 +1540,7 @@
 						</Frames>
 					</Frame>
 					<Frame name="CharCreateCharacterTypeFrame" inherits="CharCreateResizablePanelTemplate">
-						<Size x="310" y="104" />
+						<Size x="340" y="105" />
 						<Anchors>
 							<Anchor point="TOP" x="0" y="-3"/>
 						</Anchors>
@@ -1559,7 +1558,7 @@
 						<Frames>
 							<Button parentArray="typeButtons" inherits="CharacterCreateCharacterTypeButtonTemplate">
 								<KeyValues>
-									<KeyValue key="characterType" value="new" type="string"/>
+									<KeyValue key="characterType" value="LE_CHARACTER_CREATE_TYPE_NORMAL" type="global"/>
 									<KeyValue key="titleText" value="CHARACTER_TYPE_FRAME_NEW_CHARACTER" type="global"/>
 								</KeyValues>
 								<Anchors>
@@ -1580,7 +1579,7 @@
 
 							<Button parentArray="typeButtons" inherits="CharacterCreateCharacterTypeButtonTemplate">
 								<KeyValues>
-									<KeyValue key="characterType" value="trial" type="string"/>
+									<KeyValue key="characterType" value="LE_CHARACTER_CREATE_TYPE_TRIAL_BOOST" type="global"/>
 									<KeyValue key="titleText" value="CHARACTER_TYPE_FRAME_TRIAL_BOOST_CHARACTER" type="global"/>
 								</KeyValues>
 								<Anchors>

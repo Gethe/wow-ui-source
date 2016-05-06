@@ -44,10 +44,10 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<FontString parentKey="ItemName" inherits="GameFontNormalMed2" maxLines="1" justifyH="LEFT">
+				<FontString parentKey="ItemName" inherits="GameFontNormalMed2" maxLines="2" justifyH="LEFT">
 					<Size x="250" y="0"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="67" y="-18"/>
+						<Anchor point="LEFT" x="67" y="6"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="ItemType" inherits="GameFontNormal" text="Two Hand Axe" maxLines="1" justifyH="LEFT">

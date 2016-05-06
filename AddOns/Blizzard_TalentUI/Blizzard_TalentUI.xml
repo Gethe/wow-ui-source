@@ -1421,6 +1421,45 @@
 					</Frame>
 				</Frames>
 			</Frame>
+            <Frame parentKey="TutorialBox" inherits="GlowBoxTemplate" enableMouse="true" hidden="true" frameStrata="DIALOG">
+				<Size x="220" y="100"/>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString parentKey="Text" inherits="GameFontHighlightLeft" justifyV="TOP">
+							<Size x="188" y="0"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="16" y="-24"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
+						<Anchors>
+							<Anchor point="TOPRIGHT" x="6" y="6"/>
+						</Anchors>
+						<Scripts>
+							<OnClick inherit="append">
+								if self:GetParent().activeTutorial then
+									SetCVarBitfield("closedInfoFrames", self:GetParent().activeTutorial, true);
+								end
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Frame parentKey="Arrow" inherits="GlowBoxArrowTemplate" />
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						self.Text:SetSpacing(4);
+					</OnLoad>
+					<OnShow>
+						self:SetHeight(self.Text:GetHeight() + 42);
+					</OnShow>
+					<OnHide>
+						self.activeTutorial = nil;
+					</OnHide>
+				</Scripts>
+			</Frame>
 			<Frame name="PVPTalentPrestigeLevelDialog" parentKey="PrestigeLevelDialog" inherits="PortraitFrameTemplate" frameStrata="DIALOG" hidden="true">
 				<Size x="325" y="500"/>
 				<Anchors>

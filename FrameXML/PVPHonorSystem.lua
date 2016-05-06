@@ -335,7 +335,7 @@ function PVPHonorXPBar_SetPrestige(self)
 	if (not canPrestigeHere) then
 		self.tooltip = PVP_HONOR_XP_BAR_CANNOT_PRESTIGE_HERE;
 	end
-
+    
 	self:Show();
 end
 
@@ -370,6 +370,8 @@ function PVPHonorXPBarPrestige_OnClick(self)
         frame:SetHeight(440);
     end
     
+    SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_HONOR_TALENT_PRESTIGE, true);
+    PlayerTalentFramePVPTalents.TutorialBox:Hide();                            
     frame:Show();
 end
 

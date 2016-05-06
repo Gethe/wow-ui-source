@@ -701,8 +701,50 @@
 							<Anchor point="TOPLEFT" relativeKey="$parent.ModelR3C5" relativePoint="TOPRIGHT" x="16" y="0"/>
 						</Anchors>
 					</DressUpModel>
+					<Frame parentKey="HelpBox" inherits="GlowBoxTemplate" enableMouse="true" hidden="true" frameStrata="DIALOG">
+						<Size x="220" y="100"/>
+						<Layers>
+							<Layer level="OVERLAY">
+								<FontString parentKey="Text" inherits="GameFontHighlightLeft" justifyV="TOP" text="TRANSMOG_MOUSE_CLICK_TUTORIAL">
+									<Size x="188" y="0"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" x="16" y="-24"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
+								<Anchors>
+									<Anchor point="TOPRIGHT" x="6" y="6"/>
+								</Anchors>
+								<Scripts>
+									<OnClick>
+										self:GetParent():Hide();
+										SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_MODEL_CLICK, true);
+									</OnClick>
+								</Scripts>
+							</Button>
+							<Frame parentKey="Arrow" inherits="GlowBoxArrowTemplate">
+								<Anchors>
+									<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-3"/>
+								</Anchors>
+							</Frame>
+						</Frames>
+						<Scripts>
+							<OnLoad>
+								SetClampedTextureRotation(self.Arrow.Arrow, 180);
+								SetClampedTextureRotation(self.Arrow.Glow, 180);
+								self.Arrow.Glow:ClearAllPoints();
+								self.Arrow.Glow:SetPoint("BOTTOM", self, "TOP", 0, -3);
+							</OnLoad>
+							<OnShow>
+								self:SetHeight(self.Text:GetHeight() + 42);
+							</OnShow>
+						</Scripts>
+					</Frame>
 				</Frames>
-			</Frame>			
+			</Frame>
 			<Frame parentKey="NavigationFrame" setAllPoints="true">
 				<Layers>
 					<Layer level="OVERLAY">
@@ -1142,6 +1184,50 @@
 							<Anchor point="TOPLEFT" x="-14" y="28"/>
 						</Anchors>
 					</Frame>
+					<Frame parentKey="OutfitHelpBox" inherits="GlowBoxTemplate" enableMouse="true" hidden="true" frameStrata="DIALOG">
+						<Size x="220" y="100"/>
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.OutfitDropDown" relativePoint="RIGHT" x="8" y="-2"/>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<FontString parentKey="Text" inherits="GameFontHighlightLeft" justifyV="TOP" text="TRANSMOG_OUTFIT_DROPDOWN_TUTORIAL">
+									<Size x="188" y="0"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" x="16" y="-24"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
+								<Anchors>
+									<Anchor point="TOPRIGHT" x="6" y="6"/>
+								</Anchors>
+								<Scripts>
+									<OnClick inherit="append">
+										--SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_OUTFIT_DROPDOWN, true);
+									</OnClick>
+								</Scripts>
+							</Button>
+							<Frame parentKey="Arrow" inherits="GlowBoxArrowTemplate">
+								<Anchors>
+									<Anchor point="RIGHT" relativePoint="LEFT" x="36" y="16"/>
+								</Anchors>
+							</Frame>
+						</Frames>
+						<Scripts>
+							<OnLoad>
+								SetClampedTextureRotation(self.Arrow.Arrow, 90);
+								SetClampedTextureRotation(self.Arrow.Glow, 90);
+								self.Arrow.Glow:ClearAllPoints();
+								self.Arrow.Glow:SetPoint("CENTER", self.Arrow.Arrow, "CENTER", -3, 0);
+							</OnLoad>
+							<OnShow>
+								self:SetHeight(self.Text:GetHeight()+42);
+							</OnShow>
+						</Scripts>
+					</Frame>
 					<DressUpModel parentKey="Model" enableMouse="true" scale="2.0" inherits="ModelWithControlsTemplate">
 						<Size x="294" y="488"/>
 						<Anchors>
@@ -1337,7 +1423,7 @@
 							<OnLoad function="WardrobeTransmogFrameSpecDropDown_OnLoad"/>
 						</Scripts>
 					</Frame>
-					<Button name="SpecButton" inherits="UIMenuButtonStretchTemplate">
+					<Button parentKey="SpecButton" inherits="UIMenuButtonStretchTemplate">
 						<Size x="22" y="22"/>
 						<Anchors>
 							<Anchor point="RIGHT" relativeKey="$parent.ApplyButton" relativePoint="LEFT" x="1" y="0"/>
@@ -1357,7 +1443,9 @@
 						<Scripts>
 							<OnClick>
 								PlaySound("igMainMenuOptionCheckBoxOn");
-								ToggleDropDownMenu(1, nil, self:GetParent().SpecDropDown, self:GetName(), 0, 0);
+								ToggleDropDownMenu(1, nil, self:GetParent().SpecDropDown, self, 0, 0);
+								self:GetParent().SpecHelpBox:Hide();
+								SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_SPECS_BUTTON, true);
 							</OnClick>
 							<OnMouseDown>
 								self.Icon:SetPoint("CENTER", -1, -1);
@@ -1367,6 +1455,51 @@
 							</OnMouseUp>
 						</Scripts>
 					</Button>
+					<Frame parentKey="SpecHelpBox" inherits="GlowBoxTemplate" enableMouse="true" hidden="true" frameStrata="DIALOG">
+						<Size x="220" y="100"/>
+						<Anchors>
+							<Anchor point="TOP" relativeKey="$parent.SpecButton" relativePoint="BOTTOM" x="0" y="-22"/>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<FontString parentKey="Text" inherits="GameFontHighlightLeft" justifyV="TOP" text="TRANSMOG_SPECS_BUTTON_TUTORIAL">
+									<Size x="188" y="0"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" x="16" y="-24"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
+								<Anchors>
+									<Anchor point="TOPRIGHT" x="6" y="6"/>
+								</Anchors>
+								<Scripts>
+									<OnClick>
+										self:GetParent():Hide();
+										SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_SPECS_BUTTON, true);
+									</OnClick>
+								</Scripts>
+							</Button>
+							<Frame parentKey="Arrow" inherits="GlowBoxArrowTemplate">
+								<Anchors>
+									<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-3"/>
+								</Anchors>
+							</Frame>
+						</Frames>
+						<Scripts>
+							<OnLoad>
+								SetClampedTextureRotation(self.Arrow.Arrow, 180);
+								SetClampedTextureRotation(self.Arrow.Glow, 180);
+								self.Arrow.Glow:ClearAllPoints();
+								self.Arrow.Glow:SetPoint("BOTTOM", self, "TOP", 0, -3);
+							</OnLoad>
+							<OnShow>
+								self:SetHeight(self.Text:GetHeight() + 42);
+							</OnShow>
+						</Scripts>
+					</Frame>
 				</Frames>
 				<Scripts>
 					<OnLoad function="WardrobeTransmogFrame_OnLoad"/>

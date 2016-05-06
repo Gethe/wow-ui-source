@@ -94,7 +94,7 @@ function QuestSuperTracking_IsSuperTrackedQuestValid()
 
 	if GetQuestLogIndexByID(trackedQuestID) == 0 then
 		-- Might be a tracked world quest that isn't in our log yet
-		if QuestMapFrame_IsQuestWorldQuest(trackedQuestID) then
+		if QuestMapFrame_IsQuestWorldQuest(trackedQuestID) and IsWorldQuestWatched(trackedQuestID) then
 			return C_TaskQuest.IsActive(trackedQuestID);
 		end
 		return false;

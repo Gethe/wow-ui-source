@@ -319,7 +319,7 @@
 					</Origin>
 				</Scale>
 				<Translation childKey="IconButton.WideGlow" startDelay="0.15" duration="1" order="1" offsetX="25" offsetY="0"/>
-				<Alpha childKey="IconButton.WideGlow" startDelay="0.4" duration="0.25" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="IconButton.WideGlow" startDelay="0.65" duration="0.25" order="1" fromAlpha="1" toAlpha="0"/>
 				<Alpha childKey="IconButton.OldIcon" startDelay="0.5" duration="0.15" order="1" fromAlpha="1" toAlpha="0"/>
 				<Alpha childKey="IconButton.Icon" startDelay="0.15" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
 				<Scripts>

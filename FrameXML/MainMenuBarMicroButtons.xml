@@ -178,6 +178,9 @@
 				self:RegisterEvent("UPDATE_BINDINGS");
 				self:RegisterEvent("PLAYER_TALENT_UPDATE");
 				self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED");
+                self:RegisterEvent("HONOR_LEVEL_UPDATE");
+	            self:RegisterEvent("HONOR_PRESTIGE_UPDATE");
+	            self:RegisterEvent("PLAYER_PVP_TALENT_UPDATE");
 				self:RegisterEvent("PLAYER_CHARACTER_UPGRADE_TALENT_COUNT_CHANGED");
 			</OnLoad>
 			<OnShow>
@@ -185,7 +188,7 @@
 					self:Disable();
 				end
 			</OnShow>
-			<OnClick function="ToggleTalentFrame"/>
+			<OnClick function="TalentMicroButton_OnClick"/>
 			<OnEvent function="TalentMicroButton_OnEvent"/>
 		</Scripts>
 	</Button>

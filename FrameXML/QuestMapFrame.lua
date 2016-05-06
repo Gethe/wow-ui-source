@@ -593,14 +593,10 @@ function QuestLogQuests_Update(poiTable)
 				local requiredMoney = GetQuestLogRequiredMoney(questLogIndex);
 				local numObjectives = GetNumQuestLeaderBoards(questLogIndex);
 				-- complete?
-				local isBreadcrumb = false;		
 				if ( isComplete and isComplete < 0 ) then
 					isComplete = false;
 				elseif ( numObjectives == 0 and playerMoney >= requiredMoney and not startEvent) then
 					isComplete = true;
-					if ( requiredMoney == 0 ) then
-						isBreadcrumb = true;
-					end
 				end
 				-- objectives
 				if ( isComplete ) then
@@ -608,11 +604,8 @@ function QuestLogQuests_Update(poiTable)
 					local objectiveFrame = QuestLog_GetObjectiveFrame(objectiveIndex);
 					objectiveFrame.questID = questID;
 					objectiveFrame:Show();
-					if ( isBreadcrumb ) then
-						objectiveFrame.Text:SetText(GetQuestLogCompletionText(questLogIndex));
-					else
-						objectiveFrame.Text:SetText(QUEST_WATCH_QUEST_READY);
-					end
+					local completionText = GetQuestLogCompletionText(questLogIndex) or QUEST_WATCH_QUEST_READY;
+					objectiveFrame.Text:SetText(completionText);
 					local height = objectiveFrame.Text:GetStringHeight();
 					objectiveFrame:SetHeight(height);
 					objectiveFrame:SetPoint("TOPLEFT", button.Text, "BOTTOMLEFT", 0, -3);
@@ -825,11 +818,8 @@ function QuestMapLogTitleButton_OnEnter(self)
 
 	-- description
 	if ( isComplete and isComplete > 0 ) then
-		if ( IsBreadcrumbQuest(self.questID) ) then
-			GameTooltip:AddLine(GetQuestLogCompletionText(self.questLogIndex), 1, 1, 1, true);
-		else
-			GameTooltip:AddLine(QUEST_WATCH_QUEST_READY, 1, 1, 1, true);
-		end
+		local completionText = GetQuestLogCompletionText(self.questLogIndex) or QUEST_WATCH_QUEST_READY;
+		GameTooltip:AddLine(completionText, 1, 1, 1, true);
 		GameTooltip:AddLine(" ");
 	else
 		local needsSeparator = false;

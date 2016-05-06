@@ -1735,7 +1735,15 @@ function GarrisonFollowerTabMixin:ShowEquipment(followerInfo)
 		equipmentFrame:Show();
 		lastEquipmentFrame = equipmentFrame;
 	end
-	self.AbilitiesFrame.EquipmentSlotsLabel:SetShown( #followerInfo.equipment > 0 );
+	if (#followerInfo.equipment > 0) then
+		self.AbilitiesFrame.EquipmentSlotsLabel:Show();
+		self.ModelCluster.UpgradeFrame:ClearAllPoints();
+		self.ModelCluster.UpgradeFrame:SetPoint("BOTTOM", self.AbilitiesFrame.EquipmentSlotsLabel, "TOP", 0, 10);
+	else
+		self.AbilitiesFrame.EquipmentSlotsLabel:Hide();
+		self.ModelCluster.UpgradeFrame:ClearAllPoints();
+		self.ModelCluster.UpgradeFrame:SetPoint("BOTTOM", self.ModelCluster, "TOPLEFT", 164, -423);
+	end
 end
 
 

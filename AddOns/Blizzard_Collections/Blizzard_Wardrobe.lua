@@ -58,6 +58,12 @@ function WardrobeTransmogFrame_OnEvent(self, event, ...)
 		if ( slotButton ) then
 			WardrobeTransmogFrame_AnimateSlotButton(slotButton);
 			WardrobeTransmogFrame_UpdateSlotButton(slotButton);
+			-- transmogging a weapon might allow/disallow enchants
+			if ( slotButton.slot == "MAINHANDSLOT" ) then
+				WardrobeTransmogFrame_UpdateSlotButton(WardrobeTransmogFrame.Model.MainHandEnchantButton);
+			elseif ( slotButton.slot == "SECONDARYHANDSLOT" ) then
+				WardrobeTransmogFrame_UpdateSlotButton(WardrobeTransmogFrame.Model.SecondaryHandEnchantButton);
+			end
 			WardrobeTransmogFrame_UpdateApplyButton();
 		end
 	elseif ( event == "UNIT_MODEL_CHANGED" ) then
@@ -85,6 +91,11 @@ function WardrobeTransmogFrame_OnShow(self)
 	Model_Reset(WardrobeTransmogFrame.Model);
 
 	WardrobeTransmogFrame_Update(self);
+
+	-- specs button tutorial
+	if ( not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_SPECS_BUTTON) ) then
+		self.SpecHelpBox:Show();
+	end
 end
 
 function WardrobeTransmogFrame_OnHide(self)
@@ -93,6 +104,7 @@ function WardrobeTransmogFrame_OnHide(self)
 	self:UnregisterEvent("PLAYER_EQUIPMENT_CHANGED");
 	self:UnregisterEvent("UNIT_MODEL_CHANGED");
 	C_Transmog.Close();
+	self.OutfitHelpBox:Hide();
 end
 
 function WardrobeTransmogFrame_OnUpdate(self)
@@ -321,6 +333,13 @@ function WardrobeTransmogFrame_ApplyPending(lastAcceptedWarningIndex)
 	else
 		WardrobeTransmogFrame.applyWarningsTable = nil;
 		C_Transmog.ApplyAllPending(GetCVarBool("transmogCurrentSpecOnly"));
+		-- outfit tutorial
+		if ( not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_OUTFIT_DROPDOWN) ) then
+			local outfits = C_TransmogCollection.GetOutfits();
+			if ( #outfits == 0 ) then
+				WardrobeTransmogFrame.OutfitHelpBox:Show();
+			end
+		end
 		return false;
 	end
 end
@@ -503,7 +522,7 @@ local WARDROBE_MODEL_SETUP = {
 	["TABARDSLOT"]		= { useTransmogSkin = true,  slots = { CHESTSLOT = false, HANDSSLOT = false, LEGSSLOT = false, FEETSLOT = false, HEADSLOT = true } },
 	["SHIRTSLOT"]		= { useTransmogSkin = true,  slots = { CHESTSLOT = false, HANDSSLOT = false, LEGSSLOT = false, FEETSLOT = false, HEADSLOT = true } },
 	["WRISTSLOT"]		= { useTransmogSkin = true,  slots = { CHESTSLOT = false, HANDSSLOT = false, LEGSSLOT = false, FEETSLOT = false, HEADSLOT = true } },
-	["HANDSSLOT"]		= { useTransmogSkin = false, slots = { CHESTSLOT = true,  HANDSSLOT = false, LEGSSLOT = true,  FEETSLOT = false, HEADSLOT = true } },
+	["HANDSSLOT"]		= { useTransmogSkin = false, slots = { CHESTSLOT = true,  HANDSSLOT = false, LEGSSLOT = true,  FEETSLOT = true, HEADSLOT = true } },
 	["WAISTSLOT"]		= { useTransmogSkin = true,  slots = { CHESTSLOT = false, HANDSSLOT = false, LEGSSLOT = false, FEETSLOT = false, HEADSLOT = true } },
 	["LEGSSLOT"]		= { useTransmogSkin = true,  slots = { CHESTSLOT = false, HANDSSLOT = false, LEGSSLOT = false, FEETSLOT = false, HEADSLOT = true } },
 	["FEETSLOT"]		= { useTransmogSkin = false, slots = { CHESTSLOT = true, HANDSSLOT = true, LEGSSLOT = true,  FEETSLOT = false, HEADSLOT = true } },	
@@ -717,6 +736,9 @@ function WardrobeCollectionFrame_OnShow(self)
 		self.needsUpdateUsable = nil;
 		C_TransmogCollection.UpdateUsableAppearances();
 	end
+
+	-- tab tutorial
+	SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_JOURNAL_TAB, true);
 end
 
 function WardrobeCollectionFrame_OnHide(self)
@@ -870,6 +892,16 @@ function WardrobeCollectionFrame_GetArmorCategoryIDFromSlot(slot)
 	end
 end
 
+local function IsValidWeaponCategoryForSlot(categoryID, slot)
+	local name, isWeapon, canEnchant, canMainHand, canOffHand = C_TransmogCollection.GetCategoryInfo(categoryID);
+	if ( name and isWeapon ) then
+		if ( (slot == "MAINHANDSLOT" and canMainHand) or (slot == "SECONDARYHANDSLOT" and canOffHand) ) then
+			return true;
+		end
+	end
+	return false;
+end
+
 function WardrobeCollectionFrame_SetActiveSlot(slot, transmogType, category)
 	local previousSlot = WardrobeCollectionFrame.activeSlot;
 	WardrobeCollectionFrame.activeSlot = slot;
@@ -880,20 +912,24 @@ function WardrobeCollectionFrame_SetActiveSlot(slot, transmogType, category)
 		if ( transmogType == LE_TRANSMOG_TYPE_ILLUSION ) then
 			category = nil;
 		elseif ( transmogType == LE_TRANSMOG_TYPE_APPEARANCE ) then
-			local appliedSourceID, appliedVisualID, selectedSourceID, selectedVisualID = WardrobeCollectionFrame_GetActiveSlotInfo();
-			if ( selectedSourceID ~= NO_TRANSMOG_SOURCE_ID ) then
-				category = C_TransmogCollection.GetAppearanceSourceInfo(selectedSourceID);
+			local useLastWeaponCategory = (slot == "MAINHANDSLOT" or slot == "SECONDARYHANDSLOT") and
+										 WardrobeCollectionFrame.lastWeaponCategory and
+										 IsValidWeaponCategoryForSlot(WardrobeCollectionFrame.lastWeaponCategory, slot);
+			if ( useLastWeaponCategory ) then
+				category = WardrobeCollectionFrame.lastWeaponCategory;
+			else
+				local appliedSourceID, appliedVisualID, selectedSourceID, selectedVisualID = WardrobeCollectionFrame_GetActiveSlotInfo();
+				if ( selectedSourceID ~= NO_TRANSMOG_SOURCE_ID ) then
+					category = C_TransmogCollection.GetAppearanceSourceInfo(selectedSourceID);
+				end
 			end
 			if ( not category ) then
 				if ( slot == "MAINHANDSLOT" or slot == "SECONDARYHANDSLOT" ) then
 					-- find the first valid weapon category
 					for categoryID = FIRST_TRANSMOG_COLLECTION_WEAPON_TYPE, LAST_TRANSMOG_COLLECTION_WEAPON_TYPE do
-						local name, isWeapon, canEnchant, canMainHand, canOffHand = C_TransmogCollection.GetCategoryInfo(categoryID);
-						if ( name and isWeapon ) then
-							if ( (slot == "MAINHANDSLOT" and canMainHand) or (slot == "SECONDARYHANDSLOT" and canOffHand) ) then
-								category = categoryID;
-								break;
-							end
+						if ( IsValidWeaponCategoryForSlot(categoryID, slot) ) then
+							category = categoryID;
+							break;
 						end
 					end
 				else
@@ -948,6 +984,10 @@ function WardrobeCollectionFrame_SetActiveCategory(category)
 	WardrobeCollectionFrame.activeCategory = category;
 	if ( WardrobeCollectionFrame.transmogType == LE_TRANSMOG_TYPE_APPEARANCE ) then
 		C_TransmogCollection.SetFilterCategory(category);
+		local name, isWeapon = C_TransmogCollection.GetCategoryInfo(category);
+		if ( isWeapon ) then
+			WardrobeCollectionFrame.lastWeaponCategory = category;
+		end
 	end
 	WardrobeCollectionFrame_GetVisualsList();
 	WardrobeCollectionFrame_UpdateWeaponDropDown();
@@ -974,6 +1014,11 @@ function WardrobeCollectionFrame_ResetPage()
 		selectedVisualID = WardrobeCollectionFrame.mostRecentCollectedVisualID;
 		WardrobeCollectionFrame.mostRecentCollectedVisualID = nil;
 		WardrobeCollectionFrame.mostRecentCollectedCategoryID = nil;
+	else
+		-- don't jump pages in the journal
+		if ( not WardrobeFrame_IsAtTransmogrifier() ) then
+			selectedVisualID = NO_TRANSMOG_VISUAL_ID;
+		end
 	end
 	if ( selectedVisualID ~= NO_TRANSMOG_VISUAL_ID ) then
 		for i = 1, #WardrobeCollectionFrame.filteredVisualsList do
@@ -1094,6 +1139,10 @@ function WardrobeCollectionFrame_Update()
 		WardrobeCollectionFrame_SetCurrentPage(1);
 	end
 
+	local tutorialAnchorFrame;
+	local checkTutorialFrame = (WardrobeCollectionFrame.transmogType == LE_TRANSMOG_TYPE_APPEARANCE) and not WardrobeFrame_IsAtTransmogrifier()
+								and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_MODEL_CLICK);
+
 	local baseSourceID, baseVisualID, appliedSourceID, appliedVisualID, pendingSourceID, pendingVisualID, hasPendingUndo;
 	local showUndoIcon;
 	if ( WardrobeFrame_IsAtTransmogrifier() ) then
@@ -1184,6 +1233,15 @@ function WardrobeCollectionFrame_Update()
 			if ( GameTooltip:GetOwner() == model ) then
 				WardrobeCollectionFrameModel_OnEnter(model);
 			end
+			
+			-- find potential tutorial anchor in the 1st row
+			if ( checkTutorialFrame ) then
+				if ( i < WARDROBE_NUM_COLS and not WardrobeCollectionFrame.tutorialVisualID and visualInfo.isCollected and not visualInfo.isHideVisual ) then
+					tutorialAnchorFrame = model;
+				elseif ( WardrobeCollectionFrame.tutorialVisualID and WardrobeCollectionFrame.tutorialVisualID == visualInfo.visualID ) then
+					tutorialAnchorFrame = model;
+				end
+			end
 		else
 			model:Hide();
 			model.visualInfo = nil;
@@ -1214,6 +1272,26 @@ function WardrobeCollectionFrame_Update()
 	WardrobeCollectionFrame_UpdateNavigationButtons();
 	-- progress bar
 	WardrobeCollectionFrame_UpdateProgressBar(WardrobeCollectionFrame.filteredVisualsList);
+	-- tutorial
+	if ( checkTutorialFrame ) then
+		if ( C_TransmogCollection.HasFavorites() ) then
+			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_MODEL_CLICK, true);
+			tutorialAnchorFrame = nil;
+		elseif ( tutorialAnchorFrame ) then
+			if ( not WardrobeCollectionFrame.tutorialVisualID ) then
+				WardrobeCollectionFrame.tutorialVisualID = tutorialAnchorFrame.visualInfo.visualID;
+			end
+			if ( WardrobeCollectionFrame.tutorialVisualID ~= tutorialAnchorFrame.visualInfo.visualID ) then
+				tutorialAnchorFrame = nil;
+			end
+		end
+	end
+	if ( tutorialAnchorFrame ) then
+		WardrobeCollectionFrame.ModelsFrame.HelpBox:SetPoint("TOP", tutorialAnchorFrame, "BOTTOM", 0, -22);
+		WardrobeCollectionFrame.ModelsFrame.HelpBox:Show();
+	else
+		WardrobeCollectionFrame.ModelsFrame.HelpBox:Hide();
+	end
 end
 
 function WardrobeCollectionFrame_GetMaxPages()
@@ -1330,10 +1408,14 @@ function WardrobeCollectionFrame_OpenTransmogLink(link, transmogType)
 
 	sourceID = tonumber(sourceID);
 	local categoryID, visualID = C_TransmogCollection.GetAppearanceSourceInfo(sourceID);
-	if ( categoryID ) then
+	if ( categoryID ) then	
 		local slot = WardrobeCollectionFrame_GetSlotFromCategoryID(categoryID);
 		WardrobeCollectionFrame.linkedVisualID = visualID;
-		WardrobeCollectionFrame_SetActiveSlot(slot, LE_TRANSMOG_TYPE_APPEARANCE, categoryID);
+		if ( WardrobeCollectionFrame.activeCategory ~= categoryID or WardrobeCollectionFrame.activeSlot ~= slot ) then
+			WardrobeCollectionFrame_SetActiveSlot(slot, LE_TRANSMOG_TYPE_APPEARANCE, categoryID);
+		else
+			WardrobeCollectionFrame_ResetPage();
+		end
 	end
 end
 
@@ -1785,6 +1867,8 @@ end
 function WardrobeCollectionFrameModelDropDown_SetFavorite(self, visualID, value)
 	local set = (value == 1);
 	C_TransmogCollection.SetIsAppearanceFavorite(visualID, set);
+	SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_MODEL_CLICK, true);
+	WardrobeCollectionFrame.ModelsFrame.HelpBox:Hide();
 end
 
 -- ***** WEAPON DROPDOWN

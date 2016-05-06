@@ -1674,7 +1674,7 @@ DefaultCompactNamePlateFrameSetUpOptions = {
 	healthBarAlpha = 0.75,
 	castBarHeight = 8,
 	castBarFontHeight = 10,
-	nameFontHeight = 14,
+	useLargeNameFont = false,
 
 	castBarShieldWidth = 10,
 	castBarShieldHeight = 12,
@@ -1688,7 +1688,7 @@ DefaultCompactNamePlatePlayerFrameSetUpOptions = {
 	healthBarAlpha = 1,
 	castBarHeight = 8,
 	castBarFontHeight = 10,
-	nameFontHeight = 14,
+	useLargeNameFont = false,
 
 	castBarShieldWidth = 10,
 	castBarShieldHeight = 12,
@@ -1740,8 +1740,11 @@ function DefaultCompactNamePlateFrameSetupInternal(frame, setupOptions, frameOpt
 	local fontName, fontSize, fontFlags = frame.castBar.Text:GetFont();
 	frame.castBar.Text:SetFont(fontName, setupOptions.castBarFontHeight, fontFlags);
 
-	local fontName, fontSize, fontFlags = frame.name:GetFont();
-	frame.name:SetFont(fontName, setupOptions.nameFontHeight, fontFlags);
+	if setupOptions.useLargeNameFont then
+		frame.name:SetFontObject(SystemFont_LargeNamePlate);
+	else
+		frame.name:SetFontObject(SystemFont_NamePlate);
+	end
 
 	frame.castBar.BorderShield:SetSize(setupOptions.castBarShieldWidth, setupOptions.castBarShieldHeight);
 
