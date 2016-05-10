@@ -47,6 +47,12 @@ function WardrobeTransmogFrame_OnEvent(self, event, ...)
 					slotButton.hadUndo = nil;
 				end
 			end
+			-- specs button tutorial
+			if ( hasPending and not hasUndo ) then
+				if ( not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_SPECS_BUTTON) ) then
+					self.SpecHelpBox:Show();
+				end
+			end
 		end
 		StaticPopup_Hide("TRANSMOG_APPLY_WARNING");
 		self.dirty = true;
@@ -91,11 +97,6 @@ function WardrobeTransmogFrame_OnShow(self)
 	Model_Reset(WardrobeTransmogFrame.Model);
 
 	WardrobeTransmogFrame_Update(self);
-
-	-- specs button tutorial
-	if ( not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_SPECS_BUTTON) ) then
-		self.SpecHelpBox:Show();
-	end
 end
 
 function WardrobeTransmogFrame_OnHide(self)
@@ -105,6 +106,7 @@ function WardrobeTransmogFrame_OnHide(self)
 	self:UnregisterEvent("UNIT_MODEL_CHANGED");
 	C_Transmog.Close();
 	self.OutfitHelpBox:Hide();
+	self.SpecHelpBox:Hide();
 end
 
 function WardrobeTransmogFrame_OnUpdate(self)
@@ -134,6 +136,8 @@ function WardrobeTransmogFrame_Update()
 			end
 		end
 		WardrobeTransmogButton_Select(validButton);
+	else
+		WardrobeTransmogButton_Select(WardrobeTransmogFrame.selectedSlotButton);
 	end
 end
 
@@ -658,7 +662,9 @@ function WardrobeCollectionFrame_OnEvent(self, event, ...)
 			self.newTransmogs[visualID] = true;
 			self.mostRecentCollectedVisualID = visualID;
 			self.mostRecentCollectedCategoryID = categoryID;
-			CollectionsJournal_SetTab(CollectionsJournal, 5);
+			if ( not CollectionsJournal:IsShown() ) then
+				CollectionsJournal_SetTab(CollectionsJournal, 5);
+			end
 		elseif ( action == "remove" ) then
 			self.newTransmogs[visualID] = nil;
 			if ( self.mostRecentCollectedVisualID == visualID ) then
@@ -829,6 +835,7 @@ function WardrobeCollectionFrame_OnKeyDown(self, key)
 			visualIndex = newIndex;
 		end
 		WardrobeCollectionFrame_SelectVisual(visualsList[visualIndex].visualID);
+		WardrobeCollectionFrame.jumpToVisualID = visualsList[visualIndex].visualID;
 		WardrobeCollectionFrame_ResetPage();
 	else
 		self:SetPropagateKeyboardInput(true);
@@ -1000,27 +1007,31 @@ function WardrobeCollectionFrame_SetActiveCategory(category)
 
 	WardrobeCollectionFrame_FilterVisuals();
 	WardrobeCollectionFrame_SortVisuals();
+	if ( WardrobeFrame_IsAtTransmogrifier() ) then
+		WardrobeCollectionFrame.jumpToVisualID = select(4, WardrobeCollectionFrame_GetActiveSlotInfo());
+	else
+		WardrobeCollectionFrame.jumpToVisualID = nil;
+	end
 	WardrobeCollectionFrame_ResetPage();
 	WardrobeCollectionFrame_SwitchSearchCategory();
 end
 
 function WardrobeCollectionFrame_ResetPage()
 	local page = 1;
-	local appliedSourceID, appliedVisualID, selectedSourceID, selectedVisualID = WardrobeCollectionFrame_GetActiveSlotInfo();
-	if ( WardrobeCollectionFrame.linkedVisualID ) then
-		selectedVisualID = WardrobeCollectionFrame.linkedVisualID;
-		WardrobeCollectionFrame.linkedVisualID = nil;
-	elseif ( WardrobeCollectionFrame.mostRecentCollectedVisualID ) then
-		selectedVisualID = WardrobeCollectionFrame.mostRecentCollectedVisualID;
-		WardrobeCollectionFrame.mostRecentCollectedVisualID = nil;
-		WardrobeCollectionFrame.mostRecentCollectedCategoryID = nil;
+	local selectedVisualID = NO_TRANSMOG_VISUAL_ID;
+	if ( C_TransmogCollection.IsSearchInProgress() ) then
+		WardrobeCollectionFrame.resetPageOnSearchUpdated = true;
 	else
-		-- don't jump pages in the journal
-		if ( not WardrobeFrame_IsAtTransmogrifier() ) then
-			selectedVisualID = NO_TRANSMOG_VISUAL_ID;
+		if ( WardrobeCollectionFrame.jumpToVisualID ) then
+			selectedVisualID = WardrobeCollectionFrame.jumpToVisualID;
+			WardrobeCollectionFrame.jumpToVisualID = nil;
+		elseif ( WardrobeCollectionFrame.mostRecentCollectedVisualID ) then
+			selectedVisualID = WardrobeCollectionFrame.mostRecentCollectedVisualID;
+			WardrobeCollectionFrame.mostRecentCollectedVisualID = nil;
+			WardrobeCollectionFrame.mostRecentCollectedCategoryID = nil;
 		end
 	end
-	if ( selectedVisualID ~= NO_TRANSMOG_VISUAL_ID ) then
+	if ( selectedVisualID and selectedVisualID ~= NO_TRANSMOG_VISUAL_ID ) then
 		for i = 1, #WardrobeCollectionFrame.filteredVisualsList do
 			if ( WardrobeCollectionFrame.filteredVisualsList[i].visualID == selectedVisualID ) then
 				page = floor((i-1) / WARDROBE_PAGE_SIZE) + 1;
@@ -1410,7 +1421,7 @@ function WardrobeCollectionFrame_OpenTransmogLink(link, transmogType)
 	local categoryID, visualID = C_TransmogCollection.GetAppearanceSourceInfo(sourceID);
 	if ( categoryID ) then	
 		local slot = WardrobeCollectionFrame_GetSlotFromCategoryID(categoryID);
-		WardrobeCollectionFrame.linkedVisualID = visualID;
+		WardrobeCollectionFrame.jumpToVisualID = visualID;
 		if ( WardrobeCollectionFrame.activeCategory ~= categoryID or WardrobeCollectionFrame.activeSlot ~= slot ) then
 			WardrobeCollectionFrame_SetActiveSlot(slot, LE_TRANSMOG_TYPE_APPEARANCE, categoryID);
 		else
@@ -1973,7 +1984,12 @@ function WardrobeCollectionFrame_UpdateSearch()
 	WardrobeCollectionFrame_GetVisualsList();
 	WardrobeCollectionFrame_FilterVisuals();
 	WardrobeCollectionFrame_SortVisuals();
-	WardrobeCollectionFrame_Update();
+	if ( WardrobeCollectionFrame.resetPageOnSearchUpdated ) then
+		WardrobeCollectionFrame.resetPageOnSearchUpdated = nil;
+		WardrobeCollectionFrame_ResetPage();
+	else
+		WardrobeCollectionFrame_Update();
+	end
 end
 
 function WardrobeCollectionFrame_RestartSearchTracking()

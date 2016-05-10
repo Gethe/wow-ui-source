@@ -712,18 +712,11 @@
 
 	<!-- Target function key bindings header="TARGETING" -->
 	<Binding name="TARGETNEARESTENEMY" runOnUp="true" category="BINDING_HEADER_TARGETING">
-		local ALLOW_HOLD_TARGETING = GetCVarBool("TargetPriorityHoldHighlight");
-		if ( ALLOW_HOLD_TARGETING ) then
-			if ( keystate == "down" ) then
-				TargetPriorityHighlightStart();
-			else
-				TargetNearestEnemy();
-				TargetPriorityHighlightEnd();
-			end
+		if ( keystate == "down" ) then
+			TargetNearestEnemy();
+			TargetPriorityHighlightStart(true);
 		else
-			if ( keystate == "down" ) then
-				TargetNearestEnemy();
-			end
+			TargetPriorityHighlightEnd(true);
 		end
 	</Binding>
 	<Binding name="TARGETPREVIOUSENEMY" category="BINDING_HEADER_TARGETING">
@@ -731,10 +724,9 @@
 	</Binding>
 	<Binding name="TARGETSCANENEMY" runOnUp="true" category="BINDING_HEADER_TARGETING">
 		if ( keystate == "down" ) then
-			TargetPriorityHighlightStart(true);
+			TargetPriorityHighlightStart(false);
 		else
-			TargetNearestEnemy();
-			TargetPriorityHighlightEnd();
+			TargetPriorityHighlightEnd(true);
 		end
 	</Binding>
 	<Binding name="TARGETNEARESTFRIEND" category="BINDING_HEADER_TARGETING">

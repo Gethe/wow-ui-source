@@ -580,8 +580,8 @@ function Tutorial_LoadUI()
 	end
 end
 
-function BoostTutorial_LoadUI()
-	if (not BoostTutorial) then
+function BoostTutorial_AttemptLoad()
+	if IsBoostTutorialScenario() and not IsAddOnLoaded("Blizzard_BoostTutorial") then
 		UIParentLoadAddOn("Blizzard_BoostTutorial");
 	end
 end
@@ -1199,6 +1199,7 @@ function UIParent_OnEvent(self, event, ...)
 
 		NPETutorial_AttemptToBegin(event);
 		ClassTrial_AttemptLoad();
+		BoostTutorial_AttemptLoad();
 	elseif ( event == "GROUP_ROSTER_UPDATE" ) then
 		-- Hide/Show party member frames
 		RaidOptionsFrame_UpdatePartyFrames();
@@ -1839,10 +1840,7 @@ function UIParent_OnEvent(self, event, ...)
 			ShowUIPanel(FlightMapFrame);
 		end
 	elseif (event == "SCENARIO_UPDATE") then
-		if (IsBoostTutorialScenario()) then
-			BoostTutorial_LoadUI();
-			UIParent:UnregisterEvent("SCENARIO_UPDATE");
-		end
+		BoostTutorial_AttemptLoad();
 	end
 end
 

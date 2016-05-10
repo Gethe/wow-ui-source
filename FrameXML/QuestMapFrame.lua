@@ -214,7 +214,7 @@ function QuestMapFrame_ResetFilters()
 	for questLogIndex = 1, numEntries do
 		local title, level, suggestedGroup, isHeader, isCollapsed, isComplete, frequency, questID, startEvent, displayQuestID, isOnMap, hasLocalPOI, isTask, isBounty, isStory = GetQuestLogTitle(questLogIndex);	
 		local difficultyColor = GetQuestDifficultyColor(level);
-		if ( isHeader ) then
+		if ( isHeader and not QuestMapFrame.autoExpanded ) then
 			if (isOnMap) then
 				ExpandQuestHeader(questLogIndex);
 			else
@@ -223,6 +223,7 @@ function QuestMapFrame_ResetFilters()
 		end
 	end
 	QuestMapFrame.ignoreQuestLogUpdate = nil;
+    QuestMapFrame.autoExpanded = true;
 end
 
 function QuestMapFrame_ShowQuestDetails(questID)
@@ -1030,7 +1031,21 @@ function GetZoneStoryID()
 		-- Nagrand
 		["950-Alliance"] = {8927, 950},
 		["950-Horde"] = {8928, 950},
-		
+		-- Azsuna
+		["1015-Alliance"] = {10763, 1015},
+		["1015-Horde"] = {10763, 1015},
+		-- Highmountain
+		["1024-Alliance"] = {10763, 1024},
+		["1024-Horde"] = {10059, 1024},
+		-- Stormheim
+		["1017-Alliance"] = {10790, 1017},
+		["1017-Horde"] = {10790, 1017},
+		-- Suramar
+		["1033-Alliance"] = {11124, 1033},
+		["1033-Horde"] = {11124, 1033},
+		-- Val'sharah
+		["1018-Alliance"] = {10698, 1018},
+		["1018-Horde"] = {10698, 1018},
 	};
 	if (achievementTable[key] ~= nil) then
 		return achievementTable[key][1], achievementTable[key][2];

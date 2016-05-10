@@ -1845,7 +1845,15 @@ function CharacterServicesMaster_UpdateServiceButton()
 		popupFrame.Middle:SetAtlas(popupData.middleAtlas, false);
 		popupFrame.Bottom:SetAtlas(popupData.bottomAtlas, true);
 		popupFrame:SetWidth(popupData.width);
-		popupFrame:SetPoint("TOPRIGHT", freeFrame, "CENTER", popupData.offset.x, popupData.offset.y);
+
+		popupFrame:ClearAllPoints();
+
+		if popupData.centerScreenAnchorOverride then
+			popupFrame:SetPoint("CENTER", GlueParent, "CENTER", popupData.offset.x, popupData.offset.y);
+		else
+			popupFrame:SetPoint("TOPRIGHT", freeFrame, "CENTER", popupData.offset.x, popupData.offset.y);
+		end
+
 		popupFrame:SetHeight( popupFrame:GetTop() - popupFrame.LaterButton:GetBottom() + 33 );
 		popupFrame:Show();
 	end

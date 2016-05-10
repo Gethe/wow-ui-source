@@ -851,14 +851,14 @@ function PaperDollFrame_SetAttackSpeed(statFrame, unit)
 	local meleeHaste = GetMeleeHaste();
 	local speed, offhandSpeed = UnitAttackSpeed(unit);
 
---	local displaySpeed = format("%.2F", speed);
+	local displaySpeed = format("%.2F", speed);
 	if ( offhandSpeed ) then
 		offhandSpeed = format("%.2F", offhandSpeed);
 	end
 	if ( offhandSpeed ) then
-		displaySpeedxt =  BreakUpLargeNumbers(displaySpeed).." / ".. offhandSpeed;
+		displaySpeed =  BreakUpLargeNumbers(displaySpeed).." / ".. offhandSpeed;
 	else
-		displaySpeedxt =  BreakUpLargeNumbers(displaySpeed);
+		displaySpeed =  BreakUpLargeNumbers(displaySpeed);
 	end
 	PaperDollFrame_SetLabelAndText(statFrame, WEAPON_SPEED, displaySpeed, false, speed);
 

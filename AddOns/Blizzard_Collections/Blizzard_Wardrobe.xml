@@ -1206,7 +1206,7 @@
 								</Anchors>
 								<Scripts>
 									<OnClick inherit="append">
-										--SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_OUTFIT_DROPDOWN, true);
+										SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_OUTFIT_DROPDOWN, true);
 									</OnClick>
 								</Scripts>
 							</Button>

@@ -244,7 +244,8 @@ CharacterUpgrade_Items = {
 				title = CHARACTER_UPGRADE_FREE_100_POPUP_TITLE,
 				desc = CHARACTER_UPGRADE_FREE_100_POPUP_DESCRIPTION,
 				width = 430,
-				offset = { x = 25, y = -100 },
+				offset = { x = 0, y = 0 },
+				centerScreenAnchorOverride = true,
 				topAtlas = "boostpopup-legion-top",
 				middleAtlas = "boostpopup-legion-middle",
 				bottomAtlas = "boostpopup-legion-bottom",
@@ -731,17 +732,48 @@ function CharacterUpgradeCharacterSelectBlock:Initialize(results)
 
 	local errorFrame = CharacterUpgradeMaxCharactersFrame;
 	errorFrame:Hide();
+
 	self.frame.ControlsFrame.OrLabel:Hide();
 	self.frame.ControlsFrame.CreateCharacterButton:Hide();
+
+	-- These only show if the user can still make characters and boost feature is enabled.
+	self.frame.ControlsFrame.OrLabel2:Hide();
+	self.frame.ControlsFrame.CreateCharacterClassTrialButton:Hide();
+
 	if (num < MAX_CHARACTERS_DISPLAYED_BASE) then
 		self.frame.ControlsFrame.CreateCharacterButton:Show();
 		self.frame.ControlsFrame.CreateCharacterButton:ClearAllPoints();
 
+		local onlyShowCreateButtonsBottomFrame;
+
 		if (num > 0) then
 			self.frame.ControlsFrame.OrLabel:Show();
-			self.frame.ControlsFrame.CreateCharacterButton:SetPoint("TOPLEFT", self.frame.ControlsFrame.OrLabel, "BOTTOMLEFT", -12, 0);
+			self.frame.ControlsFrame.CreateCharacterButton:SetPoint("TOPLEFT", self.frame.ControlsFrame.OrLabel, "BOTTOMLEFT", 0, -5);
 		else
-			self.frame.ControlsFrame.CreateCharacterButton:SetPoint("LEFT", self.frame.StepNumber, "RIGHT", 20, 0);
+			onlyShowCreateButtonsBottomFrame = self.frame.ControlsFrame.CreateCharacterButton;
+		end
+
+		if C_CharacterServices.IsTrialBoostEnabled() then
+			self.frame.ControlsFrame.OrLabel2:Show();
+			self.frame.ControlsFrame.CreateCharacterClassTrialButton:Show();
+
+			if onlyShowCreateButtonsBottomFrame then
+				onlyShowCreateButtonsBottomFrame = self.frame.ControlsFrame.CreateCharacterClassTrialButton;
+			end
+		end
+
+		if onlyShowCreateButtonsBottomFrame then
+			-- HACK: Even though this flow's frame has been anchored before Initialize was called, even omitting the call to ClearAllPoints,
+			-- the createCharacterButton cannot resolve its anchors correctly.  Force anchor it to a static frame so that we can determine
+			-- the height needed to center these two buttons on the step number.
+			self.frame.ControlsFrame.CreateCharacterButton:SetPoint("TOPLEFT", CharacterServicesMaster, "TOPLEFT", 0, 0);
+
+			local buttonsHeight = self.frame.ControlsFrame.CreateCharacterButton:GetTop() - onlyShowCreateButtonsBottomFrame:GetBottom();
+			local stepLabelHeight = self.frame.StepNumber:GetHeight();
+			local offset = (stepLabelHeight - buttonsHeight) / 2;
+
+			self.frame.ControlsFrame.CreateCharacterButton:ClearAllPoints();
+			self.frame.ControlsFrame.CreateCharacterButton:SetPoint("TOPLEFT", self.frame.StepNumber, "TOPRIGHT", 20, -offset);
 		end
 	elseif (numEligible == 0) then
 		self.frame:Hide();
@@ -855,6 +887,15 @@ function CharacterUpgradeCharacterSelectBlock:OnAdvance()
 	end
 end
 
+function CharacterUpgradeSelectCharacterFrame_OnLoad(self)
+	local controls = self.ControlsFrame;
+	local buttonWidth = max(controls.CreateCharacterButton:GetTextWidth(), controls.CreateCharacterClassTrialButton:GetTextWidth()) + 50;
+	controls.CreateCharacterButton:SetWidth(buttonWidth);
+	controls.CreateCharacterClassTrialButton:SetWidth(buttonWidth);
+
+	controls.OrLabel2:SetPoint("TOPLEFT", controls.CreateCharacterButton, "BOTTOMLEFT", 0, -5);
+end
+
 function CharacterUpgrade_SetupFlowForNewCharacter(characterType)
 	if characterType == LE_CHARACTER_CREATE_TYPE_BOOST then
 		CharacterUpgradeCharacterSelectBlock.createNum = GetNumCharacters();
@@ -872,6 +913,11 @@ end
 
 function CharacterUpgradeCreateCharacter_OnClick(self)
 	CharacterUpgrade_BeginNewCharacterCreation(LE_CHARACTER_CREATE_TYPE_BOOST);
+end
+
+function CharacterUpgradeClassTrial_OnClick(self)
+	CharSelectServicesFlowFrame:Hide();
+	CharacterUpgrade_BeginNewCharacterCreation(LE_CHARACTER_CREATE_TYPE_TRIAL_BOOST);
 end
 
 local function GetRecommendedSpecButton(ownerFrame)
@@ -1040,32 +1086,34 @@ function CharacterUpgradeSelectSpecRadioButton_OnClick(self, button, down)
 		end
 	end
 
-	local specButtons = self:GetParent().SpecButtons;
-
-	for i = 1, #specButtons do
-		local button = specButtons[i];
+	for _, button in ipairs(self:GetParent().SpecButtons) do
 		if button:GetID() ~= self:GetID() then
 			button:SetChecked(false);
 		end
 	end
 end
 
-function CharacterUpgradeFactionSelectBlock:Initialize(results)
-	self.selected = nil;
-
+function CharacterServices_UpdateFactionButtons(parentFrame, owner)
 	for i = 1, 2 do
-		if (not self.frame.ControlsFrame.FactionButtons[i]) then
-			local frame = CreateFrame("CheckButton", nil, self.frame.ControlsFrame, "CharacterUpgradeSelectFactionRadioButtonTemplate");
-			frame:SetPoint("TOP", self.frame.ControlsFrame.FactionButtons[i - 1], "BOTTOM", 0, -35);
+		if (not parentFrame.FactionButtons[i]) then
+			local frame = CreateFrame("CheckButton", nil, parentFrame, "CharacterUpgradeSelectFactionRadioButtonTemplate");
+			frame:SetPoint("TOP", parentFrame.FactionButtons[i - 1], "BOTTOM", 0, -35);
 			frame:SetID(i);
-			self.frame.ControlsFrame.FactionButtons[i] = frame;
+			parentFrame.FactionButtons[i] = frame;
 		end
-		local button = self.frame.ControlsFrame.FactionButtons[i];
+		local button = parentFrame.FactionButtons[i];
+		button.owner = owner;
 		button.FactionIcon:SetTexture(factionLogoTextures[i]);
 		button.FactionName:SetText(factionLabels[i]);
 		button:SetChecked(false);
 		button:Show();
 	end
+end
+
+function CharacterUpgradeFactionSelectBlock:Initialize(results)
+	self.selected = nil;
+	CharacterUpgradeFactionSelectBlock.factionButtonClickedCallback = CharacterServicesMaster_Update;
+	CharacterServices_UpdateFactionButtons(self.frame.ControlsFrame, CharacterUpgradeFactionSelectBlock);
 end
 
 function CharacterUpgradeFactionSelectBlock:IsFinished()
@@ -1089,25 +1137,29 @@ function CharacterUpgradeFactionSelectBlock:OnSkip()
 end
 
 function CharacterUpgradeSelectFactionRadioButton_OnClick(self, button, down)
-	local owner = CharacterUpgradeFactionSelectBlock;
-	local con = owner.ContinueButton;
+	PlaySound("igMainMenuOptionCheckBoxOn");
 
-	if ( owner.selected == self:GetID() ) then
-		self:SetChecked(true);
-		return;
-	else
-		owner.selected = self:GetID();
-		self:SetChecked(true);
-	end
+	local owner = self.owner;
 
-	for i = 1, 2 do
-		local button = owner.frame.ControlsFrame.FactionButtons[i];
-		if ( button:GetID() ~= self:GetID() ) then
-			button:SetChecked(false);
+	if owner then
+		if owner.selected == self:GetID() then
+			self:SetChecked(true);
+			return;
+		else
+			owner.selected = self:GetID();
+			self:SetChecked(true);
+		end
+
+		if owner.factionButtonClickedCallback then
+			owner.factionButtonClickedCallback();
 		end
 	end
 
-	CharacterServicesMaster_Update();
+	for _, button in ipairs(self:GetParent().FactionButtons) do
+		if button:GetID() ~= self:GetID() then
+			button:SetChecked(false);
+		end
+	end
 end
 
 function CharacterUpgradeEndStep:Initialize(results)

@@ -57,11 +57,14 @@ function CollectionsJournal_UpdateSelectedTab(self)
 	PetJournal:SetShown(selected == 2);
 	ToyBox:SetShown(selected == 3);
 	HeirloomsJournal:SetShown(selected == 4);
-	if ( selected == 5 ) then
-		HideUIPanel(WardrobeFrame);
-		WardrobeCollectionFrame_SetContainer(self);
-	else
-		WardrobeCollectionFrame:Hide();
+	-- don't touch the wardrobe frame if it's used by the transmogrifier
+	if ( WardrobeCollectionFrame:GetParent() == self or not WardrobeCollectionFrame:GetParent():IsShown() ) then
+		if ( selected == 5 ) then
+			HideUIPanel(WardrobeFrame);
+			WardrobeCollectionFrame_SetContainer(self);
+		else
+			WardrobeCollectionFrame:Hide();
+		end
 	end
 
 	if ( selected == 1 ) then

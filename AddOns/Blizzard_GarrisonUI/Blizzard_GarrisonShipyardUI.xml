@@ -1586,11 +1586,8 @@
 				<Scripts>
 					<OnModelLoaded>
 						self:SetAlpha(1);
-					</OnModelLoaded>
-					<OnShow>
-						self:SetTargetDistance(0);
 						GarrisonMission_SetFollowerModelItems(self);
-					</OnShow>
+					</OnModelLoaded>
 					<OnMouseDown function="GarrisonFollowerPageModel_OnMouseDown"/>
 					<OnMouseUp function="GarrisonFollowerPageModel_OnMouseUp"/>
 				</Scripts>

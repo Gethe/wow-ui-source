@@ -439,7 +439,7 @@ function CharacterCreate_OnEvent(self, event, ...)
 		local success, errorCode = ...;
 		if ( success ) then
 			if (CharacterUpgrade_IsCreatedCharacterTrialBoost() and IsConnectedToServer()) then
-				CharacterSelect_SetPendingTrialBoost(true, CharacterCreate.selectedFactionID, CharCreateSelectSpecFrame.selected);
+				CharacterSelect_SetPendingTrialBoost(true, CharacterCreate_GetSelectedFaction(), CharCreateSelectSpecFrame.selected);
 			end
 
 			CharacterSelect.selectLast = true;
@@ -726,6 +726,7 @@ function SetCharacterRace(id)
 	CharCreateClassInfoFrame.factionBg:SetGradient("VERTICAL", 0, 0, 0, backdropColor[7], backdropColor[8], backdropColor[9]);
 	CharCreateCharacterTypeFrame.factionBg:SetGradient("VERTICAL", 0, 0, 0, backdropColor[7], backdropColor[8], backdropColor[9]);
 	CharCreateSelectSpecFrame.factionBg:SetGradient("VERTICAL", 0, 0, 0, backdropColor[7], backdropColor[8], backdropColor[9]);
+	CharCreateSelectFactionFrame.factionBg:SetGradient("VERTICAL", 0, 0, 0, backdropColor[7], backdropColor[8], backdropColor[9]);
 
 	-- race info
 	local frame = CharCreateRaceInfoFrame;
@@ -878,7 +879,7 @@ function CharacterCreate_Back()
 		CharacterCreateNameEdit:Hide();
 		CharacterCreateRandomName:Hide();
 
-		CharacterCreate_UpdateSelectSpecFrame();
+		CharacterCreate_UpdateClassTrialCustomizationFrames();
 
 		--back to awesome gear
 		SetSelectedPreviewGearType(1);
@@ -922,7 +923,7 @@ function CharacterCreate_Forward()
 		CharCreatePreviewFrame:Show();
 		CharacterTemplateConfirmDialog:Hide();
 
-		CharacterCreate_UpdateSelectSpecFrame();
+		CharacterCreate_UpdateClassTrialCustomizationFrames();
 
 		CharCreate_PrepPreviewModels();
 		if ( CharacterCreateFrame.customizationType ) then
@@ -1137,7 +1138,7 @@ function SetCharacterGender(sex)
 		CharCreate_ResetFeaturesDisplay();
 	end
 
-	CharacterCreate_UpdateSelectSpecFrame();
+	CharacterCreate_UpdateClassTrialCustomizationFrames();
 end
 
 function CharacterCustomization_Left(id)
@@ -1761,7 +1762,7 @@ function CharacterCreate_SelectCharacterType(characterType)
 
 	SelectCharacterTypeButton(characterType);
 	CharacterUpgrade_SetupFlowForNewCharacter(characterType);
-	CharacterCreate_UpdateSelectSpecFrame();
+	CharacterCreate_UpdateClassTrialCustomizationFrames();
 
 	if (characterType == LE_CHARACTER_CREATE_TYPE_TRIAL_BOOST) then
 		C_SharedCharacterServices.QueryClassTrialBoostResult();
@@ -1792,10 +1793,23 @@ function SelectSpecFrame_OnHide(self)
 	self.selected = nil;
 end
 
-function CharacterCreate_UpdateSelectSpecFrame()
+function SelectFactionFrame_OnLoad(self)
+	self.factionButtonClickedCallback = CharacterCreate_UpdateOkayButton;
+	self.selected = nil;
+end
+
+function SelectFactionFrame_OnHide(self)
+	self.selected = nil;
+end
+
+function CharacterCreate_UpdateClassTrialCustomizationFrames()
 	local _, classFilename = GetSelectedClass();
 	local isTrialBoost = CharacterUpgrade_IsCreatedCharacterTrialBoost();
-	local showSpecializations = isTrialBoost and (CharacterCreateFrame.state == "CUSTOMIZATION") and IsBoostAllowed(classFilename);
+	local isCustomization = CharacterCreateFrame.state == "CUSTOMIZATION";
+	local showTrialFrames = isTrialBoost and isCustomization and IsBoostAllowed(classFilename);
+
+	local showSpecializations = showTrialFrames;
+	local showFactions = showTrialFrames and IsNeutralRace(CharacterCreate.selectedRace);
 
 	if showSpecializations then
 		-- HACK:  GetSelectedSex and GetCharacterInfo return different enum types, this arbitrary - 1 compensates.
@@ -1815,7 +1829,13 @@ function CharacterCreate_UpdateSelectSpecFrame()
 		CharCreateSelectSpecFrame:SetHeight(frameTop - frameBottom + 25); -- Arbitrary offset for frame padding
 	end
 
+	if showFactions then
+		CharacterServices_UpdateFactionButtons(CharCreateSelectFactionFrame, CharCreateSelectFactionFrame);
+	end
+
 	CharCreateSelectSpecFrame:SetShown(showSpecializations);
+	CharCreateSelectFactionFrame:SetShown(showFactions);
+
 	CharacterCreate_UpdateOkayButton();
 end
 
@@ -1824,9 +1844,10 @@ function CharacterCreate_UpdateOkayButton()
 
 	if CharacterCreateFrame.state == "CUSTOMIZATION" then
 		local hasNameText = CharacterCreateNameEdit:GetText() ~= "";
-		local needsToPickSpec = CharacterUpgrade_IsCreatedCharacterTrialBoost();
-		local specValid = not needsToPickSpec or CharCreateSelectSpecFrame.selected ~= nil;
-		enabled = hasNameText and specValid;
+		local isTrialBoost = CharacterUpgrade_IsCreatedCharacterTrialBoost();
+		local specValid = not isTrialBoost or CharCreateSelectSpecFrame.selected ~= nil;
+		local factionValid = not isTrialBoost or CharacterCreate_GetSelectedFaction() ~= nil;
+		enabled = hasNameText and specValid and factionValid;
 	end
 
 	CharCreateOkayButton:SetEnabled(enabled);
@@ -1834,4 +1855,8 @@ end
 
 function CharacterCreate_IsTrialBoostAllowedForClass(classFilename)
 	return IsBoostAllowed(classFilename);
+end
+
+function CharacterCreate_GetSelectedFaction()
+	return CharacterCreate.selectedFactionID or CharCreateSelectFactionFrame.selected;
 end

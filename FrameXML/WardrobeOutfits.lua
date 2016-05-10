@@ -68,6 +68,12 @@ function WardrobeOutfitDropDownMixin:SelectOutfit(outfitID, loadOutfit)
 	self:UpdateSaveButton();
 end
 
+local function IsSourceArtifact(sourceID)
+	local link = select(6, C_TransmogCollection.GetAppearanceSourceInfo(sourceID));
+	local _, _, quality = GetItemInfo(link);
+	return quality == LE_ITEM_QUALITY_ARTIFACT;
+end
+
 function WardrobeOutfitDropDownMixin:IsOutfitDressed()
 	if ( not self.selectedOutfitID ) then
 		return true;
@@ -86,7 +92,10 @@ function WardrobeOutfitDropDownMixin:IsOutfitDressed()
 			local sourceID = GetDisplayedSourceIDFunc(TRANSMOG_SLOTS[i].slot, LE_TRANSMOG_TYPE_APPEARANCE);
 			local slotID = GetInventorySlotInfo(TRANSMOG_SLOTS[i].slot);
 			if ( sourceID ~= NO_TRANSMOG_SOURCE_ID and sourceID ~= appearanceSources[slotID] ) then
-				return false;
+				-- hack: ignore artifacts
+				if (not IsSourceArtifact(sourceID)) then
+					return false;
+				end
 			end
 		end
 	end
@@ -123,7 +132,10 @@ function WardrobeOutfitDropDownMixin:CheckOutfitForSave(name)
 						if ( canCollect ) then
 							isValidSource = true;
 						else
-							hadInvalidSources = true;
+							-- hack: ignore artifacts
+							if (not IsSourceArtifact(sourceID)) then
+								hadInvalidSources = true;
+							end
 						end
 					else
 						-- saving the "slot" for the sourceID
@@ -399,7 +411,7 @@ function WardrobeOutfitButtonMixin:OnClick()
 	if ( self.outfitID ) then
 		WardrobeOutfitFrame.dropDown:SelectOutfit(self.outfitID, true);
 	else
-		if ( WardrobeTransmogFrame.OutfitHelpBox:IsShown() ) then
+		if ( WardrobeTransmogFrame and WardrobeTransmogFrame.OutfitHelpBox:IsShown() ) then
 			WardrobeTransmogFrame.OutfitHelpBox:Hide();
 			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_OUTFIT_DROPDOWN, true);
 		end

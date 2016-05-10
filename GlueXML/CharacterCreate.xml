@@ -1841,7 +1841,7 @@
 							<Frame name="CharCreateSelectSpecFrame" hidden="true" inherits="CharCreateResizablePanelTemplate">
 								<Size x="240" y="250" />
 								<Anchors>
-									<Anchor point="TOP" relativeTo="CharCreateRandomizeButton" relativePoint="BOTTOM" x="0" y="-35.0" />
+									<Anchor point="TOP" relativeTo="CharCreateRandomizeButton" relativePoint="BOTTOM" x="0" y="-16"/>
 								</Anchors>
 								<Scripts>
 									<OnLoad function="SelectSpecFrame_OnLoad"/>
@@ -1849,7 +1849,7 @@
 								</Scripts>
 								<Layers>
 									<Layer level="ARTWORK">
-										<FontString parentKey="title" inherits="FactionName_Shadow_Huge" text="Specialization">
+										<FontString parentKey="Title" inherits="FactionName_Shadow_Huge" text="CLASS_TRIAL_SELECT_SPEC_TITLE">
 											<Anchors>
 												<Anchor point="TOPLEFT" x="0" y="-20.0" />
 												<Anchor point="TOPRIGHT" x="0" y="-20.0" />
@@ -1861,8 +1861,37 @@
 								<Frames>
 									<CheckButton parentArray="SpecButtons" inherits="CharacterUpgradeSelectSpecRadioButtonTemplate">
 									<Anchors>
-										<Anchor point="TOPLEFT" relativeKey="$parent.title" relativePoint="BOTTOM" x="-88.0" y="-25.0" />
+										<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOM" x="-88.0" y="-25.0" />
 									</Anchors>
+									</CheckButton>
+								</Frames>
+							</Frame>
+
+							<Frame name="CharCreateSelectFactionFrame" hidden="true" inherits="CharCreateResizablePanelTemplate">
+								<Size x="240" y="174"/>
+								<Anchors>
+									<Anchor point="TOP" relativeTo="CharCreateSelectSpecFrame" relativePoint="BOTTOM" x="0" y="23" />
+								</Anchors>
+								<Scripts>
+									<OnLoad function="SelectFactionFrame_OnLoad"/>
+									<OnHide function="SelectFactionFrame_OnHide"/>
+								</Scripts>
+								<Layers>
+									<Layer level="ARTWORK">
+										<FontString parentKey="Title" inherits="FactionName_Shadow_Huge" text="CLASS_TRIAL_SELECT_FACTION_TITLE">
+											<Anchors>
+												<Anchor point="TOPLEFT" x="0" y="-20.0" />
+												<Anchor point="TOPRIGHT" x="0" y="-20.0" />
+											</Anchors>
+											<Color r="1.0" g="0.82" b="0.0"/>
+										</FontString>
+									</Layer>
+								</Layers>
+								<Frames>
+									<CheckButton parentArray="FactionButtons" inherits="CharacterUpgradeSelectFactionRadioButtonTemplate" id="1">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOM" x="-88.0" y="-25.0" />
+										</Anchors>
 									</CheckButton>
 								</Frames>
 							</Frame>

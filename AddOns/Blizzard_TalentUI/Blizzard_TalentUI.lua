@@ -1315,7 +1315,7 @@ function PlayerTalentFrame_UpdateSpecFrame(self, spec)
 	end
 	
 	-- disable stuff if not in active spec or have picked a specialization and not looking at it
-	local disable = (selectedSpec ~= activeSpec) or ( playerTalentSpec and shownSpec ~= playerTalentSpec ) or petNotActive;
+	local disable = ( playerTalentSpec and shownSpec ~= playerTalentSpec ) or petNotActive;
 	if ( disable and not self.disabled ) then
 		self.disabled = true;
 		self.bg:SetDesaturated(true);
@@ -1353,13 +1353,15 @@ function PlayerTalentFrame_UpdateSpecFrame(self, spec)
 		scrollChild.scrollwork_bottomleft:SetDesaturated(false);
 		scrollChild.scrollwork_bottomright:SetDesaturated(false);
 	end
+
 	-- disable Learn button
-	if ( self.isPet and disable ) then
-		self.learnButton:Enable();
-		self.learnButton.Flash:Show();
-		self.learnButton.FlashAnim:Play();
+	local disableLearnButton = ( playerTalentSpec and shownSpec == playerTalentSpec ) or petNotActive;
+	if ( self.isPet and disableLearnButton ) then
+		self.learnButton:Disable();
+		self.learnButton.Flash:Hide();
+		self.learnButton.FlashAnim:Stop();
 	--elseif ( playerTalentSpec or disable or UnitLevel("player") < SHOW_SPEC_LEVEL ) then
-    elseif(not disable or UnitLevel("player") < SHOW_SPEC_LEVEL or IsKioskModeEnabled()) then
+    elseif(disableLearnButton or UnitLevel("player") < SHOW_SPEC_LEVEL or IsKioskModeEnabled()) then
 		self.learnButton:Disable();
 		self.learnButton.Flash:Hide();
 		self.learnButton.FlashAnim:Stop();

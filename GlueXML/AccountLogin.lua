@@ -96,6 +96,9 @@ function AccountLogin_Update()
 	for _, region in pairs(AccountLogin.UI.NormalLoginRegions) do
 		region:SetShown(showButtonsAndStuff);
 	end
+	if (HIDE_SAVE_ACCOUNT_NAME_CHECKBUTTON) then
+		AccountLogin.UI.SaveAccountNameCheckButton:Hide();
+	end
 	if ( AccountLogin.UI.AccountsDropDown.active ) then
 		AccountLogin.UI.AccountsDropDown:SetShown(showButtonsAndStuff);
 	end

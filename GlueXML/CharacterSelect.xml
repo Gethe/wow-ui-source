@@ -702,6 +702,11 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
+								-- This should be disabled, but due to timing of events it may not be checked yet
+								if not CharacterSelect_AllowedToEnterWorld() then
+									CharacterSelect_UpdateButtonState();
+									return;
+								end
 								CharacterSelect_EnterWorld();
 							</OnClick>
 							<OnUpdate>

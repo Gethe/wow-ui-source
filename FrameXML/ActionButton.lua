@@ -73,7 +73,7 @@ function ActionButtonUp(id)
 	else
 		button = _G["ActionButton"..id];
 	end
-	
+
 	if ( button:GetButtonState() == "PUSHED" ) then
 		button:SetButtonState("NORMAL");
 		if (not GetCVarBool("ActionButtonUseKeyDown")) then
@@ -108,7 +108,7 @@ function ActionBar_PageDown()
 			break;
 		end
 	end
-	
+
 	if ( not prevPage ) then
 		for i=NUM_ACTIONBAR_PAGES, 1, -1 do
 			if ( VIEWABLE_ACTION_BAR_PAGES[i] ) then
@@ -261,7 +261,7 @@ function ActionButton_UpdateAction (self, force)
 		self.action = action;
 		SetActionUIButton(self, action, self.cooldown);
 		ActionButton_Update(self);
-		
+
 		if ( self.NewActionTexture ) then
 			if ( GetNewActionHighlightMark(action) ) then
 				self.NewActionTexture:Show();
@@ -347,7 +347,7 @@ function ActionButton_Update (self)
 		icon:SetTexture(texture);
 		icon:Show();
 		self.rangeTimer = -1;
-		ActionButton_UpdateCount(self);	
+		ActionButton_UpdateCount(self);
 	else
 		self.Count:SetText("");
 		icon:Hide();
@@ -360,10 +360,10 @@ function ActionButton_Update (self)
 			hotkey:SetVertexColor(0.6, 0.6, 0.6);
 		end
 	end
-	
+
 	-- Update flyout appearance
 	ActionButton_UpdateFlyout(self);
-	
+
 	ActionButton_UpdateOverlayGlow(self);
 
 	-- Update tooltip
@@ -384,23 +384,23 @@ function ActionButton_ShowGrid (button)
 	if ( button.NormalTexture ) then
 		button.NormalTexture:SetVertexColor(1.0, 1.0, 1.0, 0.5);
 	end
-	
+
 	if ( button:GetAttribute("showgrid") >= 1 and not button:GetAttribute("statehidden") ) then
 		button:Show();
 	end
 end
 
-function ActionButton_HideGrid (button)	
+function ActionButton_HideGrid (button)
 	assert(button);
-	
+
 	local showgrid = button:GetAttribute("showgrid");
-	
+
 	if ( issecure() ) then
 		if ( showgrid > 0 ) then
 			button:SetAttribute("showgrid", showgrid - 1);
 		end
 	end
-	
+
 	if ( button:GetAttribute("showgrid") == 0 and not HasAction(button.action) ) then
 		button:Hide();
 	end
@@ -408,7 +408,7 @@ end
 
 function ActionButton_UpdateState (button)
 	assert(button);
-	
+
 	local action = button.action;
 	if ( IsCurrentAction(action) or IsAutoRepeatAction(action) ) then
 		button:SetChecked(true);
@@ -423,7 +423,7 @@ function ActionButton_UpdateUsable (self)
 	if ( not normalTexture ) then
 		return;
 	end
-	
+
 	local isUsable, notEnoughMana = IsUsableAction(self.action);
 	if ( isUsable ) then
 		icon:SetVertexColor(1.0, 1.0, 1.0);
@@ -477,7 +477,7 @@ function ActionButton_UpdateCooldown (self)
 			self.cooldown:SetHideCountdownNumbers(true);
 			self.cooldown.currentCooldownType = COOLDOWN_TYPE_LOSS_OF_CONTROL;
 		end
-		
+
 		CooldownFrame_SetTimer(self.cooldown, locStart, locDuration, 1, true);
 	else
 		if ( self.cooldown.currentCooldownType ~= COOLDOWN_TYPE_NORMAL ) then
@@ -486,15 +486,15 @@ function ActionButton_UpdateCooldown (self)
 			self.cooldown:SetHideCountdownNumbers(false);
 			self.cooldown.currentCooldownType = COOLDOWN_TYPE_NORMAL;
 		end
-		
+
 		if( locStart > 0 ) then
 			self.cooldown:SetScript("OnCooldownDone", ActionButton_OnCooldownDone );
 		end
-		
+
 		if ( charges and maxCharges and maxCharges > 0 and charges < maxCharges ) then
 			StartChargeCooldown(self, chargeStart, chargeDuration);
 		end
-		
+
 		CooldownFrame_SetTimer(self.cooldown, start, duration, enable);
 	end
 end
@@ -509,10 +509,13 @@ local ExtraChargeCooldowns = {}
 local numExtraChargeCooldowns = 0;
 
 function EndChargeCooldown(self)
+	local parent = self:GetParent();
+	if parent and parent ~= UIParent then
+		parent.chargeCooldown = nil;
+	end
+
 	self:Hide();
 	self:SetParent(UIParent);
-	self.parent.chargeCooldown = nil;
-	self.parent = nil;
 	tinsert(ExtraChargeCooldowns, self);
 end
 
@@ -532,7 +535,6 @@ function StartChargeCooldown(parent, chargeStart, chargeDuration)
 		cooldown:SetFrameStrata("TOOLTIP");
 		cooldown:Show();
 		parent.chargeCooldown = cooldown;
-		cooldown.parent = parent;
 	end
 	parent.chargeCooldown:SetCooldown(chargeStart, chargeDuration);
 	if ( chargeStart == 0 ) then
@@ -748,7 +750,7 @@ function ActionButton_OnUpdate (self, elapsed)
 	if ( ActionButton_IsFlashing(self) ) then
 		local flashtime = self.flashtime;
 		flashtime = flashtime - elapsed;
-		
+
 		if ( flashtime <= 0 ) then
 			local overtime = -flashtime;
 			if ( overtime >= ATTACK_BUTTON_FLASH_TIME ) then
@@ -763,10 +765,10 @@ function ActionButton_OnUpdate (self, elapsed)
 				flashTexture:Show();
 			end
 		end
-		
+
 		self.flashtime = flashtime;
 	end
-	
+
 	-- Handle range indicator
 	local rangeTimer = self.rangeTimer;
 	if ( rangeTimer ) then
@@ -794,7 +796,7 @@ function ActionButton_OnUpdate (self, elapsed)
 			end
 			rangeTimer = TOOLTIP_UPDATE_TIME;
 		end
-		
+
 		self.rangeTimer = rangeTimer;
 	end
 end
@@ -828,7 +830,7 @@ function ActionButton_IsFlashing (self)
 	if ( self.flashing == 1 ) then
 		return 1;
 	end
-	
+
 	return nil;
 end
 
@@ -850,7 +852,7 @@ function ActionButton_UpdateFlyout(self)
 			self.FlyoutBorderShadow:Hide();
 			arrowDistance = 2;
 		end
-		
+
 		-- Update arrow
 		self.FlyoutArrow:Show();
 		self.FlyoutArrow:ClearAllPoints();

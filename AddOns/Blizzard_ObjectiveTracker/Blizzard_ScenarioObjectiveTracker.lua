@@ -53,6 +53,8 @@ function ScenarioBlocksFrame_OnFinishSlideIn()
 end
 function ScenarioBlocksFrame_OnFinishSpellExpand()
 	SCENARIO_TRACKER_MODULE.BlocksFrame.slidingAction = nil;
+	ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_SCENARIO);
+	ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_SCENARIO_BONUS_DELAYED);
 end
 
 function ScenarioBlocksFrame_OnFinishSlideOut()

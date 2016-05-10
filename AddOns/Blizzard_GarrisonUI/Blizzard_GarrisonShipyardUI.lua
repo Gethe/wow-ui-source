@@ -1792,6 +1792,7 @@ function GarrisonShipyardFollowerList:ShowFollower(followerID, hideCounters)
 	local displayInfo = followerInfo.displayIDs and followerInfo.displayIDs[1];
 	GarrisonMission_SetFollowerModel(self.Model, followerInfo.followerID, displayInfo and displayInfo.id);
 	self.Model:SetHeightFactor(followerInfo.displayHeight or 0.5);
+	self.Model:SetTargetDistance(0);
 	self.Model:InitializeCamera((followerInfo.displayScale or 1) * (displayInfo.followerPageScale or 1));
 
 	local atlas = followerInfo.texPrefix .. "-List";

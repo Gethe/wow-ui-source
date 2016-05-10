@@ -37,7 +37,7 @@ function PetFrame_OnLoad (self)
 	SecureUnitButton_OnLoad(self, "pet", showmenu);
 	
 	local _, class = UnitClass("player");
-	if ( class == "DEATHKNIGHT") then	--Death Knights need the Pet frame moved down for their Runes and Druids need it moved down for the secondary power bar.
+	if ( class == "DEATHKNIGHT" or class == "ROGUE") then
 		self:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 60, -75);
 	elseif ( class == "SHAMAN" or class == "DRUID" ) then
 		self:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 60, -100);

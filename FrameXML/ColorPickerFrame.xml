@@ -171,7 +171,7 @@
 				end
 			</OnShow>
 			<OnColorSelect>
-				ColorSwatch:SetTexture(r, g, b);
+				ColorSwatch:SetColorTexture(r, g, b);
 				if ( self.func ) then
 					self.func();
 				end

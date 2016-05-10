@@ -18,7 +18,9 @@ function ToyBox_OnEvent(self, event, itemID, new)
 	if ( event == "TOYS_UPDATED" ) then
 		if (new) then
 			self.mostRecentCollectedToyID = itemID;
-			CollectionsJournal_SetTab(CollectionsJournal, 3);
+			if ( not CollectionsJournal:IsShown() ) then
+				CollectionsJournal_SetTab(CollectionsJournal, 3);
+			end
 		end
 
 		ToyBox_UpdatePages();

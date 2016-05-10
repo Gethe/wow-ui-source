@@ -144,10 +144,7 @@
 			<AbsInset left="0" right="-220" top="-20" bottom="-20"/>
 		</HitRectInsets>
 		<Scripts>
-			<OnClick>
-				PlaySound("igMainMenuOptionCheckBoxOn");
-				CharacterUpgradeSelectFactionRadioButton_OnClick(self, button, down);
-			</OnClick>
+			<OnClick function="CharacterUpgradeSelectFactionRadioButton_OnClick"/>
 		</Scripts>
 	</CheckButton>
 	<Frame name="CharacterServicesArrowTemplate" virtual="true">
@@ -196,26 +193,35 @@
 					<Layer level="ARTWORK">
 						<FontString parentKey="OrLabel" inherits="GameFontNormalMed3" text="SERVICES_CONJUNCTION_OR" hidden="true">
 							<Anchors>
-								<Anchor point="TOPLEFT" x="84" y="-69"/>
+								<Anchor point="TOPLEFT" relativeKey="$parent.$parent.StepActiveLabel" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
+							</Anchors>
+							<Color r="0.5" g="0.5" b="0.5"/>
+						</FontString>
+						<FontString parentKey="OrLabel2" inherits="GameFontNormalMed3" text="SERVICES_CONJUNCTION_OR" hidden="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="84" y="-128" />
 							</Anchors>
 							<Color r="0.5" g="0.5" b="0.5"/>
 						</FontString>
 					</Layer>
 				</Layers>
 				<Frames>
-					<Button parentKey="CreateCharacterButton" inherits="GlueButtonSmallTemplate" text="CREATE_NEW_CHARACTER" hidden="true">
-						<Size x="200" y="45"/>
+					<Button parentKey="CreateCharacterButton" inherits="UIPanelButtonTemplate" text="CREATE_NEW_CHARACTER" hidden="true">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.OrLabel" relativePoint="BOTTOMLEFT" x="-12" y="0"/>
+							<Anchor point="TOPLEFT" relativeKey="$parent.OrLabel" relativePoint="BOTTOMLEFT" x="0.0" y="-5.0" />
 						</Anchors>
 						<Scripts>
-							<OnLoad>
-								self:SetWidth(self:GetTextWidth() + 50);
-							</OnLoad>
 							<OnClick function="CharacterUpgradeCreateCharacter_OnClick"/>
-							<OnUpdate>
-								CharacterSelect_DeathKnightSwap(self);
-							</OnUpdate>
+							<OnUpdate function="CharacterSelect_DeathKnightSwap"/>
+						</Scripts>
+					</Button>
+					<Button parentKey="CreateCharacterClassTrialButton" inherits="UIPanelButtonTemplate" text="CHARACTER_UPGRADE_POPUP_TRY_NEW_CLASS" hidden="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.OrLabel2" relativePoint="BOTTOMLEFT" x="0" y="-5.0" />
+						</Anchors>
+						<Scripts>
+							<OnClick function="CharacterUpgradeClassTrial_OnClick"/>
+							<OnUpdate function="CharacterSelect_DeathKnightSwap"/>
 						</Scripts>
 					</Button>
 					<Frame parentKey="GlowBox">
@@ -352,6 +358,9 @@
 				</Scripts>
 			</Frame>
 		</Frames>
+		<Scripts>
+			<OnLoad function="CharacterUpgradeSelectCharacterFrame_OnLoad"/>
+		</Scripts>
 	</Frame>
 	<Frame name="CharacterUpgradeMaxCharactersFrame" parent="CharSelectServicesFlowFrame" hidden="true" frameStrata="DIALOG">
 		<Size x="400" y="250"/>

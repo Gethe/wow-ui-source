@@ -475,16 +475,14 @@ local largeDebuffList = {};
 function TargetFrame_UpdateAuras (self)
 	local frame, frameName;
 	local frameIcon, frameCount, frameCooldown;
-	local name, rank, icon, count, debuffType, duration, expirationTime, caster, canStealOrPurge, spellId, _;
-	local frameStealable;
 	local numBuffs = 0;
 	local playerIsTarget = UnitIsUnit(PlayerFrame.unit, self.unit);
 	local selfName = self:GetName();
 	local canAssist = UnitCanAssist("player", self.unit);
 	
-    if (TargetFrame_ShouldShowBuffs(self.unit)) then
-	    for i = 1, MAX_TARGET_BUFFS do
-            local buffName, rank, icon, count, debuffType, duration, expirationTime, caster, canStealOrPurge, _ , spellId = UnitBuff(self.unit, i, nil);
+	for i = 1, MAX_TARGET_BUFFS do
+        local buffName, rank, icon, count, debuffType, duration, expirationTime, caster, canStealOrPurge, _ , spellId = UnitBuff(self.unit, i, nil);
+		if (TargetFrame_ShouldShowBuffs(self.unit, caster)) then
             if (buffName) then 
                 frameName = selfName.."Buff"..(i);
                 frame = _G[frameName];
@@ -522,7 +520,7 @@ function TargetFrame_UpdateAuras (self)
                     end
 
                     -- Show stealable frame if the target is not the current player and the buff is stealable.
-                    frameStealable = _G[frameName.."Stealable"];
+                    local frameStealable = _G[frameName.."Stealable"];
                     if ( not playerIsTarget and canStealOrPurge ) then
                         frameStealable:Show();
                     else
@@ -545,6 +543,15 @@ function TargetFrame_UpdateAuras (self)
         end 
 	end
 
+	for i = numBuffs + 1, MAX_TARGET_BUFFS do
+		local frame = _G[selfName.."Buff"..i];
+		if ( frame ) then
+			frame:Hide();
+		else
+			break;
+		end
+	end
+
 	local color;
 	local frameBorder;
 	local numDebuffs = 0;
@@ -552,10 +559,11 @@ function TargetFrame_UpdateAuras (self)
 	local frameNum = 1;
 	local index = 1;
 	
-	if ( TargetFrame_ShouldShowDebuffs(self.unit) ) then
-	    while ( frameNum <= (self.maxDebuffs or MAX_TARGET_DEBUFFS) ) do
-		    local debuffName, rank, icon, count, debuffType, duration, expirationTime, caster = UnitDebuff(self.unit, index, nil);
-		    if ( debuffName ) then
+	local maxDebuffs = self.maxDebuffs or MAX_TARGET_DEBUFFS;
+	while ( frameNum <= maxDebuffs and index <= maxDebuffs ) do
+	    local debuffName, rank, icon, count, debuffType, duration, expirationTime, caster, _, _, _, _, _, _, nameplateShowAll = UnitDebuff(self.unit, index, "INCLUDE_NAME_PLATE_ONLY");
+		if ( debuffName ) then
+			if ( TargetFrame_ShouldShowDebuffs(self.unit, caster, nameplateShowAll) ) then
 				frameName = selfName.."Debuff"..frameNum;
 				frame = _G[frameName];
 				if ( icon ) then
@@ -606,11 +614,11 @@ function TargetFrame_UpdateAuras (self)
 					
 					frameNum = frameNum + 1;
 				end
-			else
-			    break;
-		    end
-			index = index + 1;
+			end
+		else
+			break;
 		end
+		index = index + 1;
 	end
 	
 	for i = frameNum, MAX_TARGET_DEBUFFS do
@@ -646,15 +654,43 @@ function TargetFrame_UpdateAuras (self)
 	end
 end
 
-function TargetFrame_ShouldShowBuffs(unit)
-    if (not UnitCanAttack("player", unit) and not GetCVarBool("noBuffDebuffFilterOnTarget")) then
+function TargetFrame_ShouldShowBuffs(unit, caster)
+	if (GetCVarBool("noBuffDebuffFilterOnTarget")) then
+		return true;
+	end
+
+	if (caster and UnitIsUnit("player", caster)) then
+		return true;
+	end
+
+	if (UnitIsUnit("player", unit)) then
+		return true;
+	end
+
+    if (not UnitCanAttack("player", unit)) then
         return false;
     end
     return true;
 end
 
-function TargetFrame_ShouldShowDebuffs(unit)
-    if (UnitCanAttack("player", unit) and not UnitIsPlayer(unit) and not GetCVarBool("noBuffDebuffFilterOnTarget")) then
+function TargetFrame_ShouldShowDebuffs(unit, caster, nameplateShowAll)
+	if (GetCVarBool("noBuffDebuffFilterOnTarget")) then
+		return true;
+	end
+
+	if (nameplateShowAll) then
+		return true;
+	end
+
+	if (caster and UnitIsUnit("player", caster)) then
+		return true;
+	end
+
+	if (UnitIsUnit("player", unit)) then
+		return true;
+	end
+
+    if (UnitCanAttack("player", unit) and not UnitIsPlayer(unit)) then
         return false;
     end
     return true;

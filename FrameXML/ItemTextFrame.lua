@@ -94,10 +94,19 @@ function ItemTextFrame_OnEvent(self, event, ...)
 		else
 			self:SetWidth(DEFAULT_ITEM_TEXT_FRAME_WIDTH);
 			self:SetHeight(DEFAULT_ITEM_TEXT_FRAME_HEIGHT);
-			ItemTextScrollFrame:SetPoint("TOPRIGHT", self, "TOPRIGHT", -33, -63);
-			ItemTextScrollFrame:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", 25, 6);
-			ItemTextPageText:SetWidth(270);
-			ItemTextPageText:SetHeight(304);
+			if (ItemTextIsFullPage()) then
+				ItemTextScrollFrame:SetPoint("TOPRIGHT", self, "TOPRIGHT", -31, -63);
+				ItemTextScrollFrame:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", 6, 6);
+				ItemTextPageText:SetPoint("TOPLEFT", 0, 0);
+				ItemTextPageText:SetWidth(301);
+				ItemTextPageText:SetHeight(355);
+			else
+				ItemTextScrollFrame:SetPoint("TOPRIGHT", self, "TOPRIGHT", -33, -63);
+				ItemTextScrollFrame:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", 25, 6);
+				ItemTextPageText:SetPoint("TOPLEFT", 0, -15);
+				ItemTextPageText:SetWidth(270);
+				ItemTextPageText:SetHeight(304);
+			end
 		end
 	
 		local creator = ItemTextGetCreator();

@@ -98,7 +98,11 @@ function MacroFrame_Update()
 					MacroFrameText:SetText(body);
 					MacroFrameSelectedMacroButton:SetID(i);
 					MacroFrameSelectedMacroButtonIcon:SetTexture(texture);
-					MacroPopupFrame.selectedIconTexture = gsub( strupper(texture), "INTERFACE\\ICONS\\", "");
+					if (tonumber(texture) ~= nil) then
+						MacroPopupFrame.selectedIconTexture = texture;
+					else
+						MacroPopupFrame.selectedIconTexture = gsub( strupper(texture), "INTERFACE\\ICONS\\", "");
+					end
 				else
 					macroButton:SetChecked(false);
 				end
@@ -381,7 +385,7 @@ function MacroPopupFrame_Update(self)
 		end
 		if ( MacroPopupFrame.selectedIcon and (index == MacroPopupFrame.selectedIcon) ) then
 			macroPopupButton:SetChecked(true);
-		elseif ( MacroPopupFrame.selectedIconTexture ==  texture ) then
+		elseif ( MacroPopupFrame.selectedIconTexture == texture ) then
 			macroPopupButton:SetChecked(true);
 		else
 			macroPopupButton:SetChecked(false);

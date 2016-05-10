@@ -79,7 +79,7 @@ function OrderHallCommandBarMixin:OnEvent(event)
 		self:RequestCategoryInfo();
 	elseif (event == "UPDATE_BINDINGS") then
 		self.WorldMapButton.tooltipText = MicroButtonTooltipText(WORLDMAP_BUTTON, "TOGGLEWORLDMAP");
-		self.WordMapButton.newbieText = NEWBIE_TOOLTIP_WORLDMAP;
+		self.WorldMapButton.newbieText = NEWBIE_TOOLTIP_WORLDMAP;
 	end
 end
 

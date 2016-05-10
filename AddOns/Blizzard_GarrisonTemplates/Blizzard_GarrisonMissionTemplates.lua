@@ -1023,6 +1023,9 @@ function GarrisonMission:SetMissionCompleteNumEncounters(frame, numEncounters)
 	frame.Encounter1:SetPoint("BOTTOM", -77 * (numEncounters - 1), -40);
 end
 
+-- overridden
+function GarrisonMission:CheckTutorials()
+end
 
 ---------------------------------------------------------------------------------
 --- Garrison Mission Reward Effects Functions                                 ---

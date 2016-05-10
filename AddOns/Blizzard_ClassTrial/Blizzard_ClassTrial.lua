@@ -80,6 +80,7 @@ end
 
 function ClassTrialDialogMixin:OnShow()
 	ClassTrialTimerDisplay:Hide();
+	PlaySound("igClassTrialThanksDialogShow");
 end
 
 function ClassTrialDialogMixin:OnLoad()

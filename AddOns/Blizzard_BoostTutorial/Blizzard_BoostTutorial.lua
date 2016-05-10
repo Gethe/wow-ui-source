@@ -32,6 +32,12 @@ function BoostTutorial:UPDATE_BONUS_ACTIONBAR()
 	self:UpdateQueuedActionBarHighlight();
 end
 
+function BoostTutorial:SCENARIO_UPDATE()
+	if not C_Scenario.IsInScenario() then
+		MainMenuMicroButton_SetAlertsEnabled(true);
+	end
+end
+
 function BoostTutorial:OnEvent(event, ...)
 	if (self[event]) then
 		self[event](self, ...);
@@ -189,12 +195,15 @@ function BoostTutorial:Init()
 	local eventFrame = CreateFrame("Frame");
 	eventFrame:SetScript("OnEvent", function (frame, ...) self:OnEvent(...) end);
 
+	MainMenuMicroButton_SetAlertsEnabled(false);
+
 	eventFrame:RegisterEvent("EVENT_TUTORIAL_UNHIGHLIGHT_SPELL");
 	eventFrame:RegisterEvent("EVENT_TUTORIAL_HIGHLIGHT_SPELL");
 	eventFrame:RegisterEvent("SPELL_PUSHED_TO_ACTIONBAR");
 	eventFrame:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED");
 	eventFrame:RegisterEvent("ACTIONBAR_SLOT_CHANGED");
 	eventFrame:RegisterEvent("UPDATE_BONUS_ACTIONBAR");
+	eventFrame:RegisterEvent("SCENARIO_UPDATE");
 end
 
 BoostTutorial:Init();
