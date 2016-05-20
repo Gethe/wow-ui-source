@@ -556,10 +556,6 @@ function TalkingHead_LoadUI()
 	UIParentLoadAddOn("Blizzard_TalkingHeadUI");
 end
 
-function KioskMode_LoadUI()
-	UIParentLoadAddOn("Blizzard_KioskModeUI");
-end
-
 function ChallengeMode_LoadUI()
 	UIParentLoadAddOn("Blizzard_ChallengesUI");
 end
@@ -996,9 +992,6 @@ function UIParent_OnEvent(self, event, ...)
 		TimeManager_LoadUI();
 		-- You can override this if you want a Combat Log replacement
 		CombatLog_LoadUI();
-		if (IsKioskModeEnabled()) then
-			KioskMode_LoadUI();
-		end
 	elseif ( event == "PLAYER_DEAD" ) then
 		if ( not StaticPopup_Visible("DEATH") ) then
 			CloseAllWindows(1);
@@ -2537,12 +2530,14 @@ function FramePositionDelegate:UIParentManageFramePositions()
 	-- Set up flags
 	local hasBottomLeft, hasBottomRight, hasPetBar;
 
-	if ( PlayerPowerBarAlt:IsShown() and select(10, UnitAlternatePowerInfo(PlayerPowerBarAlt.unit)) ) then
-		PlayerPowerBarAlt:ClearAllPoints();
-		UIPARENT_MANAGED_FRAME_POSITIONS["PlayerPowerBarAlt"] = UIPARENT_ALTERNATE_FRAME_POSITIONS["PlayerPowerBarAlt_Top"];
-	else
-		PlayerPowerBarAlt:ClearAllPoints();
-		UIPARENT_MANAGED_FRAME_POSITIONS["PlayerPowerBarAlt"] = UIPARENT_ALTERNATE_FRAME_POSITIONS["PlayerPowerBarAlt_Bottom"];
+	if ( not PlayerPowerBarAlt:IsUserPlaced() ) then
+		if ( PlayerPowerBarAlt:IsShown() and select(10, UnitAlternatePowerInfo(PlayerPowerBarAlt.unit)) ) then
+			PlayerPowerBarAlt:ClearAllPoints();
+			UIPARENT_MANAGED_FRAME_POSITIONS["PlayerPowerBarAlt"] = UIPARENT_ALTERNATE_FRAME_POSITIONS["PlayerPowerBarAlt_Top"];
+		else
+			PlayerPowerBarAlt:ClearAllPoints();
+			UIPARENT_MANAGED_FRAME_POSITIONS["PlayerPowerBarAlt"] = UIPARENT_ALTERNATE_FRAME_POSITIONS["PlayerPowerBarAlt_Bottom"];
+		end
 	end
 
 	if ( OverrideActionBar and OverrideActionBar:IsShown() ) then
@@ -2589,7 +2584,7 @@ function FramePositionDelegate:UIParentManageFramePositions()
 		if ( TutorialFrameAlertButton:IsShown() ) then
 			tinsert(yOffsetFrames, "tutorialAlert");
 		end
-		if ( PlayerPowerBarAlt:IsShown() ) then
+		if ( PlayerPowerBarAlt:IsShown() and not PlayerPowerBarAlt:IsUserPlaced() ) then
 			local anchorTop = select(10, UnitAlternatePowerInfo(PlayerPowerBarAlt.unit));
 			if ( not anchorTop ) then
 				tinsert(yOffsetFrames, "playerPowerBarAlt");
@@ -2621,7 +2616,7 @@ function FramePositionDelegate:UIParentManageFramePositions()
 
 	-- Iterate through frames and set anchors according to the flags set
 	for index, value in pairs(UIPARENT_MANAGED_FRAME_POSITIONS) do
-		if ( value.playerPowerBarAlt ) then
+		if ( value.playerPowerBarAlt and PlayerPowerBarAlt and not PlayerPowerBarAlt:IsUserPlaced()) then
 			value.playerPowerBarAlt = PlayerPowerBarAlt:GetHeight() + 10;
 		end
 		if ( value.extraActionBarFrame and ExtraActionBarFrame ) then

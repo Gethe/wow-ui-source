@@ -254,6 +254,18 @@ function PVPQueueFrameButton_OnClick(self)
 	PVPQueueFrame_ShowFrame(_G[frameName]);
 end
 
+function PVPQueueFrame_CheckXPBarLockState(frame)
+    local xpBar = frame.XPBar;
+    
+    PVPHonorXPBar_CheckLockState(xpBar);
+    
+    if (xpBar.locked) then
+        xpBar:SetPoint("TOPLEFT", frame, "TOPLEFT", 13, -7);
+    else
+        xpBar:SetPoint("TOPLEFT", frame, "TOPLEFT", 1, -7);
+    end
+end
+
 ---------------------------------------------------------------
 -- HONOR FRAME
 ---------------------------------------------------------------
@@ -297,6 +309,7 @@ function HonorFrame_OnLoad(self)
 	self:RegisterEvent("PVP_REWARDS_UPDATE");
 	self:RegisterEvent("LFG_LIST_ACTIVE_ENTRY_UPDATE");
 	self:RegisterEvent("LFG_LIST_SEARCH_RESULT_UPDATED");
+    self:RegisterEvent("PLAYER_LEVEL_UP");
 	
 	if( UIParent.variablesLoaded ) then
 		HonorFrame_UpdateBlackList();
@@ -305,8 +318,13 @@ function HonorFrame_OnLoad(self)
 	end
 end
 
+function HonorFrame_OnShow(self)
+    PVPQueueFrame_CheckXPBarLockState(self);
+end
+
 function HonorFrame_OnEvent(self, event, ...)
-	if (event == "PLAYER_ENTERING_WORLD") then
+	if (event == "PLAYER_ENTERING_WORLD" or event == "PLAYER_LEVEL_UP") then
+        PVPQueueFrame_CheckXPBarLockState(self);
 		HonorFrameSpecificList_Update();
 		HonorFrameBonusFrame_Update();
 		PVP_UpdateStatus();
@@ -670,7 +688,7 @@ function HonorFrameBonusFrame_Update()
 	else
 		button.Reward:Hide();
 	end
-	
+    
 	-- arena pvp
 	button = HonorFrame.BonusFrame.Arena1Button;
 	button.Contents.Title:SetText(SKIRMISH);
@@ -801,6 +819,7 @@ function ConquestFrame_OnShow(self)
 end
 
 function ConquestFrame_Update(self)
+    PVPQueueFrame_CheckXPBarLockState(self);
 	if ( GetCurrentArenaSeason() == NO_ARENA_SEASON ) then
 		ConquestFrame.NoSeason:Show();
 	else

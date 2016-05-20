@@ -588,7 +588,7 @@
 					<Layer level="ARTWORK">
 						<FontString parentKey="NoValidItemsLabel" inherits="GameFontNormalMed2" text="TRANSMOG_NO_VALID_ITEMS_EQUIPPED">
 							<Anchors>
-								<Anchor point="CENTER"/>
+								<Anchor point="CENTER" y="15"/>
 							</Anchors>
 							<Color r="0.804" g="0.725" b="0.616"/>
 						</FontString>
@@ -1187,14 +1187,14 @@
 					<Frame parentKey="OutfitHelpBox" inherits="GlowBoxTemplate" enableMouse="true" hidden="true" frameStrata="DIALOG">
 						<Size x="220" y="100"/>
 						<Anchors>
-							<Anchor point="LEFT" relativeKey="$parent.OutfitDropDown" relativePoint="RIGHT" x="8" y="-2"/>
+							<Anchor point="LEFT" relativeKey="$parent.OutfitDropDown" relativePoint="RIGHT" x="3" y="-2"/>
 						</Anchors>
 						<Layers>
 							<Layer level="OVERLAY">
 								<FontString parentKey="Text" inherits="GameFontHighlightLeft" justifyV="TOP" text="TRANSMOG_OUTFIT_DROPDOWN_TUTORIAL">
 									<Size x="188" y="0"/>
 									<Anchors>
-										<Anchor point="TOPLEFT" x="16" y="-24"/>
+										<Anchor point="TOPLEFT" x="16" y="-22"/>
 									</Anchors>
 								</FontString>
 							</Layer>

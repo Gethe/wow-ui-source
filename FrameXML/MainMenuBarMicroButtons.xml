@@ -219,7 +219,7 @@
 				end
 			</OnShow>
 			<OnEvent function="AchievementMicroButton_OnEvent"/>
-			<OnClick> 
+			<OnClick>
 				ToggleAchievementFrame();
 			</OnClick>
 		</Scripts>
@@ -510,7 +510,7 @@
 					local bandwidthIn, bandwidthOut, latencyHome, latencyWorld = GetNetStats();
 					local latency = latencyHome > latencyWorld and latencyHome or latencyWorld;
 					if (latency > PERFORMANCEBAR_MEDIUM_LATENCY) then
-						MainMenuBarPerformanceBar:SetVertexColor(1, 0, 0);									
+						MainMenuBarPerformanceBar:SetVertexColor(1, 0, 0);
 					elseif (latency > PERFORMANCEBAR_LOW_LATENCY) then
 						MainMenuBarPerformanceBar:SetVertexColor(1, 1, 0);
 					else
@@ -534,7 +534,7 @@
 							AudioOptionsFrameCancel:Click();
 						elseif ( InterfaceOptionsFrame:IsShown() ) then
 							InterfaceOptionsFrameCancel:Click();
-						end		
+						end
 						CloseMenus();
 						CloseAllWindows()
 						PlaySound("igMainMenuOpen");
@@ -560,7 +560,7 @@
 								AudioOptionsFrameCancel:Click();
 							elseif ( InterfaceOptionsFrame:IsShown() ) then
 								InterfaceOptionsFrameCancel:Click();
-							end						
+							end
 							CloseMenus();
 							CloseAllWindows()
 							PlaySound("igMainMenuOpen");
@@ -612,7 +612,7 @@
 			<OnClick function="ToggleHelpFrame"/>
 		</Scripts>
 	</Button>
-	
+
 	<Frame name="TalentMicroButtonAlert" inherits="MicroButtonAlertTemplate">
 		<KeyValues>
 			<KeyValue key="MicroButton" value="TalentMicroButton" type="global"/>
@@ -661,6 +661,9 @@
 			<OnLoad>
 				MicroButtonAlert_OnLoad(self);
 			</OnLoad>
+			<OnHide>
+				SetCVar("advJournalLastOpened", GetServerTime() );
+			</OnHide>
 		</Scripts>
 	</Frame>
 </Ui>

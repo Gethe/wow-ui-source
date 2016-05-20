@@ -377,8 +377,8 @@ function GroupLootContainer_OnLoad(self)
 	self.reservedSize = 100;
 	GroupLootContainer_CalcMaxIndex(self);
 
-	local anchorFrameSubSystem = AlertFrame:AddJustAnchorFrameSubSystem(self);
-	AlertFrame:SetSubSustemAnchorPriority(anchorFrameSubSystem, 10);
+	local alertFrameGroupLootContainerSubSystem = AlertFrame:AddSimpleAlertFrameSubSystem(self);
+	AlertFrame:SetSubSustemAnchorPriority(alertFrameGroupLootContainerSubSystem, 30);
 end
 
 function GroupLootContainer_CalcMaxIndex(self)

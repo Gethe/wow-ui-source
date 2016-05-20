@@ -164,7 +164,10 @@ function PVPHonorXPBar_OnLoad(self)
 	self:RegisterEvent("HONOR_XP_UPDATE");
 	self:RegisterEvent("HONOR_LEVEL_UPDATE");
 	self:RegisterEvent("HONOR_PRESTIGE_UPDATE");
-
+	
+	if (self.Lock) then
+        PVPHonorXPBar_CheckLockState(self);
+    end
 	PVPHonorXPBar_Update(self);
 	self.Bar:Reset();
 end
@@ -190,12 +193,52 @@ function PVPHonorXPBar_Update(self)
         self.Bar:SetStatusBarAtlas("_honorsystem-bar-fill");
     end
     
-    self.Level:SetText(UnitHonorLevel("player"));
-	PVPHonorXPBar_SetNextAvailable(self);
-	HonorExhaustionTick_Update(self.Bar.ExhaustionTick);
+    
+    if (not self.locked) then
+        self.Level:SetText(UnitHonorLevel("player"));
+	    PVPHonorXPBar_SetNextAvailable(self);
+	    HonorExhaustionTick_Update(self.Bar.ExhaustionTick);
+    end
+end
+
+function PVPHonorXPBar_CheckLockState(self)
+    if (UnitLevel("player") < MAX_PLAYER_LEVEL_TABLE[LE_EXPANSION_LEVEL_CURRENT]) then
+        PVPHonorXPBar_Lock(self);
+    else
+        PVPHonorXPBar_Unlock(self);
+    end
+end
+
+function PVPHonorXPBar_Lock(self)
+    self.NextAvailable:Hide();
+    self.Level:Hide();
+    self.Bar.ExhaustionLevelFillBar:Hide();
+    self.Bar.ExhaustionTick:Hide();
+    self.Bar.Lock:Show();
+    self.Frame:SetAlpha(.5);
+    self.Bar.Background:SetAlpha(.5);
+    self.Frame:SetDesaturated(true);
+    self.Bar.Background:SetDesaturated(true);
+
+    self.locked = true;
+end
+
+function PVPHonorXPBar_Unlock(self)
+    self.Level:Show();
+    self.Frame:SetAlpha(1);
+    self.Bar.Background:SetAlpha(1);
+    self.Bar.Lock:Hide();
+    self.Frame:SetDesaturated(false);
+    self.Bar.Background:SetDesaturated(false);
+    self.locked = false;
+    PVPHonorXPBar_Update(self);
 end
 
 function PVPHonorXPBar_OnEnter(self)
+    if (self:GetParent().locked) then
+        return;
+    end
+    
 	local current = UnitHonor("player");
 	local max = UnitHonorMax("player");
 

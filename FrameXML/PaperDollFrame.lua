@@ -647,42 +647,13 @@ function PaperDollFrame_SetStat(statFrame, unit, statIndex)
 	statFrame:Show();
 end
 
-function CharacterArmor_OnEnter (self)
-	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip:SetText(self.tooltip);
-	
-	GameTooltip:AddLine(self.tooltip2);
-	GameTooltip:Show();
-end
-
 function PaperDollFrame_SetArmor(statFrame, unit)
 	local baselineArmor, effectiveArmor, armor, posBuff, negBuff = UnitArmor(unit);
-    local bonusArmor = UnitBonusArmor(unit);
-    local nonBonusArmor = effectiveArmor - bonusArmor;
-
-    if ( nonBonusArmor < baselineArmor) then
-        baselineArmor = nonBonusArmor
-    end
-
 	PaperDollFrame_SetLabelAndText(statFrame, STAT_ARMOR, effectiveArmor, false, effectiveArmor);
-    local baseArmorReduction = PaperDollFrame_GetArmorReduction(baselineArmor, UnitEffectiveLevel(unit));
     local armorReduction = PaperDollFrame_GetArmorReduction(effectiveArmor, UnitEffectiveLevel(unit));
 	
 	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, ARMOR).." "..string.format("%s", effectiveArmor)..FONT_COLOR_CODE_CLOSE;
-	statFrame.tooltip2 = format(STAT_ARMOR_BASE_TOOLTIP, baseArmorReduction);
-	
-	if (bonusArmor > 0) then
-		statFrame.tooltip2 = statFrame.tooltip2 .. "\n" .. format(STAT_ARMOR_TOTAL_TOOLTIP, armorReduction);
-	end
-
-	if ( unit == "player" ) then
-		local petBonus = ComputePetBonus("PET_BONUS_ARMOR", effectiveArmor );
-		if( petBonus > 0 ) then
-			statFrame.tooltip2 = statFrame.tooltip2 .. "\n" .. format(PET_BONUS_TOOLTIP_ARMOR, petBonus);
-		end
-	end
-	
-	statFrame.onEnterFunc = CharacterArmor_OnEnter;
+	statFrame.tooltip2 = format(STAT_ARMOR_TOOLTIP, armorReduction);
 	statFrame:Show();
 end
 
@@ -1232,7 +1203,7 @@ function PaperDollFrame_SetItemLevel(statFrame, unit)
 		return;
 	end
 
-	local avgItemLevel, avgItemLevelEquipped, avgItemLevelPvP = GetAverageItemLevel();
+	local avgItemLevel, avgItemLevelEquipped = GetAverageItemLevel();
 	avgItemLevel = floor(avgItemLevel);
 	avgItemLevelEquipped = floor(avgItemLevelEquipped);
 	PaperDollFrame_SetLabelAndText(statFrame, STAT_AVERAGE_ITEM_LEVEL, avgItemLevel, false, avgItemLevel);
@@ -1242,10 +1213,6 @@ function PaperDollFrame_SetItemLevel(statFrame, unit)
 	end
 	statFrame.tooltip = statFrame.tooltip .. FONT_COLOR_CODE_CLOSE;
 	statFrame.tooltip2 = STAT_AVERAGE_ITEM_LEVEL_TOOLTIP;
-
-	if ( avgItemLevel ~= avgItemLevelPvP ) then
-		statFrame.tooltip2 = statFrame.tooltip2.."\n\n"..STAT_AVERAGE_PVP_ITEM_LEVEL:format(avgItemLevelPvP);
-	end
 end
 
 function MovementSpeed_OnEnter(statFrame)

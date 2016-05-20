@@ -15,7 +15,7 @@ PowerBarColor["INSANITY"] = { r = 0.40, g = 0, b = 0.80, atlas = "_Priest-Insani
 PowerBarColor["CHI"] = { r = 0.71, g = 1.0, b = 0.92 };
 PowerBarColor["ARCANE_CHARGES"] = { r = 0.1, g = 0.1, b = 0.98 };	
 PowerBarColor["FURY"] = { r = 0.788, g = 0.259, b = 0.992, atlas = "_DemonHunter-DemonicFuryBar", fullPowerAnim=true };
-PowerBarColor["PAIN"] = { r = 1, g = 0, b = 0, atlas = "_DemonHunter-DemonicPainBar", fullPowerAnim=true };
+PowerBarColor["PAIN"] = { r = 255/255, g = 156/255, b = 0, atlas = "_DemonHunter-DemonicPainBar", fullPowerAnim=true };
 -- vehicle colors
 PowerBarColor["AMMOSLOT"] = { r = 0.80, g = 0.60, b = 0.00 };
 PowerBarColor["FUEL"] = { r = 0.0, g = 0.55, b = 0.5 };

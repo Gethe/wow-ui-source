@@ -68,6 +68,7 @@ retain("IsOnGlueScreen");
 retain("math");
 retain("table");
 retain("pairs");
+retain("ipairs");
 retain("select");
 retain("unpack");
 retain("tostring");
@@ -93,6 +94,7 @@ retain("GetTime");
 retain("UnitAffectingCombat");
 retain("GetCVar");
 retain("GMError");
+retain("GetMouseFocus");
 
 --For auth challenge
 take("C_AuthChallenge");
@@ -101,9 +103,11 @@ retain("GetBindingFromClick");
 
 --For character services
 take("C_SharedCharacterServices");
+retain("C_ClassTrial");
 
 --GlobalStrings
 retain("BLIZZARD_STORE");
+retain("ACCEPT");
 take("BLIZZARD_STORE_ON_SALE");
 take("BLIZZARD_STORE_BUY");
 take("BLIZZARD_STORE_BUY_EUR");
@@ -220,6 +224,7 @@ take("CHARACTER_UPGRADE_READY");
 take("CHARACTER_UPGRADE_READY_DESCRIPTION");
 take("FREE_CHARACTER_UPGRADE_READY");
 take("FREE_CHARACTER_UPGRADE_READY_DESCRIPTION");
+take("CHARACTER_UPGRADE_CLASS_TRIAL_UNLOCK_READY_DESCRIPTION");
 take("VAS_SELECT_CHARACTER_DISABLED");
 take("VAS_SELECT_CHARACTER");
 take("VAS_CHARACTER_LABEL");

@@ -107,5 +107,5 @@ function KioskModeSplashChoice_OnClick(self, button, down)
 		KioskModeSplash_SetMode("newcharacter");
 	end
 
-	SetGlueScreen("charcreate");
+	GlueParent_SetScreen("charcreate");
 end

@@ -22,8 +22,8 @@ function WorldMapActionButtonMixin:SetHasWorldQuests(hasWorldQuests)
 	end
 end
 
-function WorldMapActionButtonMixin:GetDisplayLocation()
-	return LE_MAP_OVERLAY_DISPLAY_LOCATION_BOTTOM_RIGHT;
+function WorldMapActionButtonMixin:GetDisplayLocation(useAlternateLocation)
+	return useAlternateLocation and LE_MAP_OVERLAY_DISPLAY_LOCATION_BOTTOM_LEFT or LE_MAP_OVERLAY_DISPLAY_LOCATION_BOTTOM_RIGHT;
 end
 
 function WorldMapActionButtonMixin:SetOnCastChangedCallback(onCastChangedCallback)

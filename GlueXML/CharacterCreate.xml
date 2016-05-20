@@ -137,6 +137,11 @@
 -->
 
 	<Script file="CharacterCreate.lua"/>
+
+	<AnimationGroup name="RequirementPulseAnimationGroupTemplate" parentKey="RequirementPulse" setToFinalAlpha="true" looping="bounce" virtual="true">
+		<Alpha childKey="Title" duration="1" order="1" fromAlpha="1" toAlpha="0.2"/>
+	</AnimationGroup>
+
 	<Frame name="GlowyBorderFrame" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="-1">
@@ -1046,6 +1051,53 @@
 		</PushedTexture>
 	</CheckButton>
 
+	<CheckButton name="CharacterCreateSelectFactionRadioButtonTemplate" virtual="true">
+		<Size x="38" y="38"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="FactionIcon" setAllPoints="true" />
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="FactionName" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.FactionIcon" relativePoint="BOTTOM" x="0" y="-2"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="FactioNameShadow" file="Interface\Glues\CharacterCreate\UI-CharacterCreatePatchwerk">
+					<Size y="49"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.FactionName" x="-20.0" y="-2.0" />
+						<Anchor point="RIGHT" relativeKey="$parent.FactionName" x="20.0" y="-2.0" />
+					</Anchors>
+					<TexCoords left="0.63476563" right="0.80859375" top="0.43359375" bottom="0.48144531"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="bevel" file="Interface\Glues\CharacterCreate\UI-CharacterCreate-Highlights" setAllPoints="true">
+					<TexCoords left="0" right="0.5" top="0.5" bottom="1.0"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<HighlightTexture file="Interface\Glues\CharacterCreate\UI-CharacterCreate-Highlights" alphaMode="ADD">
+			<TexCoords left="0" right="0.5" top="0" bottom="0.5"/>
+		</HighlightTexture>
+		<CheckedTexture file="Interface\Glues\CharacterCreate\UI-CharacterCreatePatchwerk" alphaMode="ADD">
+			<Size x="48" y="48"/>
+			<Anchors>
+				<Anchor point="CENTER" />
+			</Anchors>
+			<TexCoords left="0.79296875" right="0.95312500" top="0.00097656" bottom="0.08105469"/>
+		</CheckedTexture>
+		<HitRectInsets>
+			<AbsInset left="0" right="0" top="0" bottom="-20"/>
+		</HitRectInsets>
+		<Scripts>
+			<OnClick function="CharacterUpgradeSelectFactionRadioButton_OnClick"/>
+		</Scripts>
+	</CheckButton>
+
 	<Button name="CharacterCreateCharacterTypeButtonTemplate" inherits="GlueHorizontalResizeDarkButtonTemplate" virtual="true">
 		<KeyValues>
 			<KeyValue key="normalOffsetX" value="0" type="number"/>
@@ -1238,7 +1290,7 @@
 							<OnClick function="CharacterCreate_Back"/>
 						</Scripts>
 					</Button>
-					<Button name="CharCreateOkayButton" inherits="CharCreateNavButtonTemplate" text="CUSTOMIZE">
+					<Button name="CharCreateOkayButton" inherits="CharCreateNavButtonTemplate" motionScriptsWhileDisabled="true" text="CUSTOMIZE">
 						<Anchors>
 							<Anchor point="BOTTOM" x="137" y="-6"/>
 						</Anchors>
@@ -1287,7 +1339,7 @@
 								</Texture>
 							</Layer>
 							<Layer level="ARTWORK">
-								<FontString inherits="FactionName_Shadow_Huge" text="NAME">
+								<FontString parentKey="Title" inherits="FactionName_Shadow_Huge" text="NAME">
 									<Size x="256" y="64"/>
 									<Anchors>
 										<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-23"/>
@@ -1306,6 +1358,9 @@
 								<AbsValue val="16"/>
 							</EdgeSize>
 						</Backdrop>
+						<Animations>
+							<AnimationGroup inherits="RequirementPulseAnimationGroupTemplate"/>
+						</Animations>
 						<Scripts>
 							<OnEscapePressed function="CharacterCreate_Back"/>
 							<OnEnterPressed function="CharacterCreate_TryForward"/>
@@ -1327,7 +1382,7 @@
 							</OnLoad>
 							<OnClick>
 								CharacterCreate_GenerateRandomName(self);
-								CharCreateOkayButton:Disable();
+								CharCreate_EnableNextButton(false);
 							</OnClick>
 							<OnUpdate>
 								CharacterCreate_DeathKnightSwap(self);
@@ -1865,9 +1920,12 @@
 									</Anchors>
 									</CheckButton>
 								</Frames>
+								<Animations>
+									<AnimationGroup inherits="RequirementPulseAnimationGroupTemplate"/>
+								</Animations>
 							</Frame>
 
-							<Frame name="CharCreateSelectFactionFrame" hidden="true" inherits="CharCreateResizablePanelTemplate">
+							<Frame name="CharCreateSelectFactionFrame" hidden="true">
 								<Size x="240" y="174"/>
 								<Anchors>
 									<Anchor point="TOP" relativeTo="CharCreateSelectSpecFrame" relativePoint="BOTTOM" x="0" y="23" />
@@ -1877,23 +1935,38 @@
 									<OnHide function="SelectFactionFrame_OnHide"/>
 								</Scripts>
 								<Layers>
+									<Layer level="BACKGROUND">
+										<Texture file="Interface\Glues\CharacterCreate\Pandaren-Faction-BannerCover">
+											<Anchors>
+												<Anchor point="TOP"/>
+											</Anchors>
+										</Texture>
+									</Layer>
 									<Layer level="ARTWORK">
 										<FontString parentKey="Title" inherits="FactionName_Shadow_Huge" text="CLASS_TRIAL_SELECT_FACTION_TITLE">
 											<Anchors>
-												<Anchor point="TOPLEFT" x="0" y="-20.0" />
-												<Anchor point="TOPRIGHT" x="0" y="-20.0" />
+												<Anchor point="TOPLEFT" x="0" y="-16.0" />
+												<Anchor point="TOPRIGHT" x="0" y="-16.0" />
 											</Anchors>
 											<Color r="1.0" g="0.82" b="0.0"/>
 										</FontString>
 									</Layer>
 								</Layers>
 								<Frames>
-									<CheckButton parentArray="FactionButtons" inherits="CharacterUpgradeSelectFactionRadioButtonTemplate" id="1">
+									<CheckButton parentArray="FactionButtons" inherits="CharacterCreateSelectFactionRadioButtonTemplate" id="1">
 										<Anchors>
-											<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOM" x="-88.0" y="-25.0" />
+											<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOM" x="22.0" y="-5.0" />
+										</Anchors>
+									</CheckButton>
+									<CheckButton parentArray="FactionButtons" inherits="CharacterCreateSelectFactionRadioButtonTemplate" id="2">
+										<Anchors>
+											<Anchor point="TOPRIGHT" relativeKey="$parent.Title" relativePoint="BOTTOM" x="-22.0" y="-5.0" />
 										</Anchors>
 									</CheckButton>
 								</Frames>
+								<Animations>
+									<AnimationGroup inherits="RequirementPulseAnimationGroupTemplate"/>
+								</Animations>
 							</Frame>
 
 							<CheckButton name="CharacterCreateAlternateFormTop" hidden="true">

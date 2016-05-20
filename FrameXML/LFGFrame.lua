@@ -60,6 +60,7 @@ LFG_INSTANCE_INVALID_CODES = { --Any other codes are unspecified conditions (e.g
 	"NO_VALID_ROLES",
     "ENGAGED_IN_PVP",
     "NO_SPEC",
+	"CANNOT_RUN_ANY_CHILD_DUNGEON",
 	[1001] = "LEVEL_TOO_LOW",
 	[1002] = "LEVEL_TOO_HIGH",
 	[1022] = "QUEST_NOT_COMPLETED",

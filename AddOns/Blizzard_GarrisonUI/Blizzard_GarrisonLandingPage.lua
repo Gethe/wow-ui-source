@@ -473,7 +473,13 @@ function GarrisonLandingPageReportList_UpdateAvailable()
 			end
 			button.MissionTypeIcon:Show();
 			button.MissionTypeIcon:SetAtlas(item.typeAtlas);
-			
+			if (item.followerTypeID == LE_FOLLOWER_TYPE_GARRISON_7_0) then
+				button.MissionTypeIcon:SetSize(40, 40);
+				button.MissionTypeIcon:SetPoint("TOPLEFT", 5, -3);
+			else
+				button.MissionTypeIcon:SetSize(50, 50);
+				button.MissionTypeIcon:SetPoint("TOPLEFT", 0, 2);
+			end
 			local index = 1;
 			for id, reward in pairs(item.rewards) do
 				local Reward = button.Rewards[index];

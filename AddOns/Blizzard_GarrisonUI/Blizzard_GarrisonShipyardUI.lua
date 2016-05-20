@@ -1739,7 +1739,6 @@ end
 GarrisonShipyardFollowerList = {};
 
 function GarrisonShipyardFollowerList:Initialize(followerType, followerTab)
-	self.followerCountString = GARRISON_SHIPYARD_FOLLOWER_COUNT;
 	self.followerTab = followerTab or self:GetParent().FollowerTab;
 	self.followerTab.followerList = self;
 	self:Setup(self:GetParent(), followerType, "GarrisonShipFollowerButtonTemplate", 12);

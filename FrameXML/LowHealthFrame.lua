@@ -7,7 +7,7 @@ LOW_HEALTH_FRAME_STATE_LOW_HEALTH = 2;
 function LowHealthFrameMixin:OnLoad()
 	self.inCombat = false;
 
-	self.lowHealthPercentStart = .34;
+	self.lowHealthPercentStart = .35;
 
 	self.fullscreenMaxAlpha = .75;
 	self.fullscreenMinAlpha = .2;

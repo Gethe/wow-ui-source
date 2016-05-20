@@ -560,7 +560,7 @@
 		</Scripts>
 	</Frame>
     
-    <Frame name="ChallengesDungeonIconFrameTemplate" parentArray="DungeonIcons" mixin="ChallengesDungeonIconMixin" virtual="true">
+    <Frame name="ChallengesDungeonIconFrameTemplate" parentArray="DungeonIcons" frameStrata="HIGH" mixin="ChallengesDungeonIconMixin" virtual="true">
         <Size x="52" y="52"/>
         <Layers>
             <Layer level="BORDER">
@@ -596,7 +596,7 @@
     </Frame>
     
     <Frame name="ChallengesGuildBestTemplate" parentArray="GuildBests" virtual="true" mixin="ChallengesGuildBestMixin">
-        <Size x="220" y="18"/>
+        <Size x="230" y="18"/>
         <Layers>
             <Layer level="ARTWORK">
                 <FontString parentKey="CharacterName" inherits="GameFontNormal" justifyH="LEFT">
@@ -631,7 +631,7 @@
             <Frame parentKey="WeeklyChest" hidden="true">
                 <Size x="98" y="73"/>
                 <Anchors>
-                    <Anchor point="TOPRIGHT" x="-7" y="-27"/>
+                    <Anchor point="TOPRIGHT" x="-10" y="-27"/>
                 </Anchors>
                 <Layers>
                     <Layer level="ARTWORK">
@@ -643,7 +643,7 @@
                         </Texture>
                     </Layer>
                     <Layer level="HIGHLIGHT">
-                        <Texture atlas="ChallengeMode-Chest" alphaMode="ADD" alpha="0.1">
+                        <Texture atlas="ChallengeMode-Chest" alphaMode="ADD" alpha="0.25">
                             <Size x="98" y="73"/>
                             <Anchors>
                                 <Anchor point="TOPRIGHT"/>
@@ -677,7 +677,7 @@
                                 <Texture parentKey="Star" atlas="ChallengeMode-SpikeyStar" useAtlasSize="true" alpha="0.51">
                                     <Size x="90" y="90"/>
                                     <Anchors>
-                                        <Anchor point="TOPLEFT" x="48" y="5"/>
+                                        <Anchor point="TOPLEFT" x="48" y="-15"/>
                                     </Anchors>
                                 </Texture>
                                 <FontString parentKey="Level" inherits="CombatTextFontOutline" justifyH="CENTER">
@@ -715,31 +715,32 @@
                                     </Shadow>
                                 </FontString>
                             </Layer>
-                            <Layer level="BACKGROUND">
-                                <Texture parentKey="RunesLarge" hidden="false" alpha="0.15" alphaMode="BLEND" atlas="ChallengeMode-Runes-Large">
-                                    <Size x="296" y="296"/>
+							<Layer level="BACKGROUND">
+								<Texture parentKey="RuneBG" hidden="false" alpha="0.6" alphaMode="BLEND" atlas="ChallengeMode-RuneBG" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER" relativeKey="$parent.Star" y="-3"/>
+									</Anchors>
+								</Texture>
+                                <Texture parentKey="RunesLarge" hidden="false" alpha="0.08" alphaMode="BLEND" atlas="ChallengeMode-Runes-Large" useAtlasSize="true">
                                     <Anchors>
-                                        <Anchor point="CENTER" relativeKey="$parent.Star"/>
+                                        <Anchor point="CENTER" relativeKey="$parent.Star" y="-2"/>
                                     </Anchors>
                                 </Texture>
-                                <Texture parentKey="RunesSmall" hidden="false" alpha="0.15" alphaMode="BLEND" atlas="ChallengeMode-Runes-Small">
-                                    <Size x="225" y="225"/>
+                                <Texture parentKey="RunesSmall" hidden="false" alpha="0.08" alphaMode="BLEND" atlas="ChallengeMode-Runes-Small" useAtlasSize="true">
                                     <Anchors>
-                                        <Anchor point="CENTER" relativeKey="$parent.Star"/>
+                                        <Anchor point="CENTER" relativeKey="$parent.Star" x="-1" y="0"/>
                                     </Anchors>
                                 </Texture>
                             </Layer>
                             <Layer level="BACKGROUND" textureSubLevel="1">
-                                <Texture parentKey="LargeRuneGlow" hidden="false" alpha="0" alphaMode="ADD" atlas="ChallengeMode-Runes-GlowLarge">
-                                    <Size x="298" y="299"/>
+                                <Texture parentKey="LargeRuneGlow" hidden="false" alpha="0" alphaMode="ADD" atlas="ChallengeMode-Runes-GlowLarge" useAtlasSize="true">
                                     <Anchors>
-                                        <Anchor point="CENTER" relativeKey="$parent.Star"/>
+                                        <Anchor point="CENTER" relativeKey="$parent.Star" y="-2"/>
                                     </Anchors>
                                 </Texture>
-                                <Texture parentKey="SmallRuneGlow" hidden="false" alpha="0" alphaMode="ADD" atlas="ChallengeMode-Runes-GlowSmall">
-                                    <Size x="229" y="229"/>
+                                <Texture parentKey="SmallRuneGlow" hidden="false" alpha="0" alphaMode="ADD" atlas="ChallengeMode-Runes-GlowSmall" useAtlasSize="true">
                                     <Anchors>
-                                        <Anchor point="CENTER" relativeKey="$parent.Star"/>
+                                        <Anchor point="CENTER" relativeKey="$parent.Star" x="-1" y="0"/>
                                     </Anchors>
                                 </Texture>
                             </Layer>
@@ -760,22 +761,34 @@
                         </Frames>
                         <Animations>
                             <AnimationGroup parentKey="RunesSmallRotateAnim" looping="REPEAT">
-                                <Rotation childKey="RunesSmall" duration="60" order="1" degrees="360"/>
-                                <Rotation childKey="SmallRuneGlow" duration="60" order="1" degrees="360"/>
+                                <Rotation childKey="RunesSmall" duration="160" order="1" degrees="360"/>
+                                <Rotation childKey="SmallRuneGlow" duration="160" order="1" degrees="360"/>
                             </AnimationGroup>
                             <AnimationGroup parentKey="RunesLargeRotateAnim" looping="REPEAT">
-                                <Rotation childKey="RunesLarge" duration="60" order="1" degrees="-360"/>
-                                <Rotation childKey="LargeRuneGlow" duration="60" order="1" degrees="-360"/>
+                                <Rotation childKey="RunesLarge" duration="160" order="1" degrees="-360"/>
+                                <Rotation childKey="LargeRuneGlow" duration="160" order="1" degrees="-360"/>
                             </AnimationGroup>
+							<AnimationGroup parentKey="RunesLargeAnim" looping="REPEAT">
+								<Alpha childKey="LargeRuneGlow" startDelay="0" duration="3" order="1" fromAlpha="0" toAlpha="0.05"/>
+								<Alpha childKey="LargeRuneGlow" startDelay="3" duration="3" order="1" fromAlpha="0.05" toAlpha="0"/>
+							</AnimationGroup>
+							<AnimationGroup parentKey="RunesSmallAnim" looping="REPEAT">
+								<Alpha childKey="SmallRuneGlow" startDelay="0" duration="2" order="1" fromAlpha="0" toAlpha="0.05"/>
+								<Alpha childKey="SmallRuneGlow" startDelay="2" duration="2" order="1" fromAlpha="0.05" toAlpha="0"/>
+							</AnimationGroup>
                         </Animations>
                         <Scripts>
                             <OnShow>
                                 self.RunesSmallRotateAnim:Play();
                                 self.RunesLargeRotateAnim:Play();
+								self.RunesLargeAnim:Play();
+								self.RunesSmallAnim:Play();
                             </OnShow>
                             <OnHide>
                                 self.RunesSmallRotateAnim:Stop();
                                 self.RunesLargeRotateAnim:Stop();
+								self.RunesLargeAnim:Stop();
+								self.RunesSmallAnim:Stop();
                             </OnHide>
                         </Scripts>
                     </Frame>
@@ -788,9 +801,9 @@
             </Frame>
 			
 			<Frame parentKey="GuildBest" mixin="ChallengesFrameGuildBestMixin" hidden="true">
-                <Size x="250" y="110"/>
+                <Size x="260" y="110"/>
                 <Anchors>
-                    <Anchor point="TOPLEFT" relativeKey="$parent.WeeklyBest.Child.Star" relativePoint="BOTTOMRIGHT" x="20" y="10"/>
+                    <Anchor point="TOPLEFT" relativeKey="$parent.WeeklyBest.Child.Star" relativePoint="BOTTOMRIGHT" x="-16" y="10"/>
                 </Anchors>
                 <Layers>
                     <Layer level="BACKGROUND">
@@ -803,7 +816,7 @@
                             </Anchors>
                         </FontString>
                         <Texture parentKey="Line" atlas="ChallengeMode-RankLineDivider" useAtlasSize="false">
-							<Size x="240" y="9"/>
+							<Size x="246" y="9"/>
                             <Anchors>
                                 <Anchor point="TOP" x="0" y="-20"/>
                             </Anchors>

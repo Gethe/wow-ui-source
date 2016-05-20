@@ -72,7 +72,6 @@ local GARRISON_FOLLOWER_LIST_BUTTON_FULL_XP_WIDTH = 205;
 GarrisonFollowerList = {};
 
 function GarrisonFollowerList:Initialize(followerType)
-	self.followerCountString = GARRISON_FOLLOWER_COUNT;
 	self.followerTab = self:GetParent().FollowerTab;
 	if (self.followerTab) then
 		self.followerTab.followerList = self;
@@ -247,7 +246,7 @@ end
 GarrisonMissionFollowerDurabilityMixin = { }
 
 function GarrisonMissionFollowerDurabilityMixin:SetDurability(durability, maxDurability, durabilityLoss)
-	local heartWidth = 12;
+	local heartWidth = 13;
 	local spacing = 2;
 
 	durability = Clamp(durability, 0, maxDurability);
@@ -282,7 +281,7 @@ function GarrisonMissionFollowerDurabilityMixin:SetDurability(durability, maxDur
 		self.durability[i]:Hide();
 	end
 
-	local width = max(1, maxDurability * heartWidth + spacing * (maxDurability - 1));
+	local width = max(1, maxDurability * (heartWidth + spacing));
 	self:SetWidth(width);
 end
 
@@ -364,12 +363,13 @@ function GarrisonFollowerList:UpdateFollowers()
 				countColor = RED_FONT_COLOR_CODE;
 			end
 			self.followerTab.NumFollowers:SetText(countColor..numActiveFollowers.."/"..maxFollowers..FONT_COLOR_CODE_CLOSE);
+			self.followerTab.FollowerText:SetText(GarrisonFollowerOptions[self.followerType].strings.FOLLOWER_COUNT_LABEL);
 		else
 			local countColor = NORMAL_FONT_COLOR_CODE;
 			if ( numActiveFollowers > maxFollowers ) then
 				countColor = RED_FONT_COLOR_CODE;
 			end
-			self.followerTab.NumFollowers:SetText(format(self.followerCountString, countColor, numActiveFollowers, maxFollowers, FONT_COLOR_CODE_CLOSE));
+			self.followerTab.NumFollowers:SetText(format(GarrisonFollowerOptions[self.followerType].strings.FOLLOWER_COUNT_STRING, countColor, numActiveFollowers, maxFollowers, FONT_COLOR_CODE_CLOSE));
 		end
 	end
 
@@ -481,6 +481,9 @@ function GarrisonFollowerList:UpdateData()
 				button.Follower.Status:SetTextColor(0.698, 0.941, 1);
 			end
 			button.Follower.PortraitFrame:SetupPortrait(follower);
+
+			local countersAreaWidth = GarrisonFollowerButton_UpdateCounters(self:GetParent(), button.Follower, follower, showCounters, followerFrame.lastUpdate);
+
 			if ( follower.isCollected ) then
 				-- have this follower
 				button.Follower.isCollected = true;
@@ -517,7 +520,7 @@ function GarrisonFollowerList:UpdateData()
 					button.Follower.DownArrow:SetAlpha(0);
 				end
 				-- adjust text position if we have additional text to show below name
-				if (follower.isMaxLevel or follower.status) then
+				if (follower.isMaxLevel or follower.status or follower.isTroop) then
 					button.Follower.Name:SetPoint("LEFT", button.Follower.PortraitFrame, "LEFT", 66, 8);
 				else
 					button.Follower.Name:SetPoint("LEFT", button.Follower.PortraitFrame, "LEFT", 66, 0);
@@ -525,11 +528,21 @@ function GarrisonFollowerList:UpdateData()
 				-- show iLevel for max level followers	
 				if (ShouldShowILevelInFollowerList(follower)) then
 					button.Follower.ILevel:SetText(ITEM_LEVEL_ABBR.." "..follower.iLevel);
-					button.Follower.Status:SetPoint("TOPLEFT", button.ILevel, "TOPRIGHT", 4, 0);
+					if (button.Follower.DurabilityFrame:IsShown()) then
+						button.Follower.Status:SetPoint("TOPLEFT", button.Follower.DurabilityFrame, "TOPRIGHT", 4, 0);
+					else
+						button.Follower.Status:SetPoint("TOPLEFT", button.Follower.ILevel, "TOPRIGHT", 4, 0);
+					end
 				else
 					button.Follower.ILevel:SetText(nil);
-					button.Follower.Status:SetPoint("TOPLEFT", button.ILevel, "TOPRIGHT", 0, 0);
+					if (button.Follower.DurabilityFrame:IsShown()) then
+						button.Follower.Status:SetPoint("TOPLEFT", button.Follower.DurabilityFrame, "TOPRIGHT", 0, 0);
+					else
+						button.Follower.Status:SetPoint("TOPLEFT", button.Follower.ILevel, "TOPRIGHT", 0, 0);
+					end
 				end
+				button.Follower.Status:SetPoint("RIGHT", -countersAreaWidth, 0);
+
 				if (follower.xp == 0 or follower.levelXP == 0) then 
 					button.Follower.XPBar:Hide();
 				else
@@ -541,7 +554,7 @@ function GarrisonFollowerList:UpdateData()
 				button.Follower.isCollected = nil;
 				button.Follower.Name:SetTextColor(0.25, 0.25, 0.25);
 				button.Follower.ILevel:SetText(nil);
-				button.Follower.Status:SetPoint("TOPLEFT", button.ILevel, "TOPRIGHT", 0, 0);
+				button.Follower.Status:SetPoint("TOPLEFT", button.Follower.ILevel, "TOPRIGHT", 0, 0);
 				button.Follower.Class:SetDesaturated(true);
 				button.Follower.Class:SetAlpha(0.1);
 				button.Follower.PortraitFrame.PortraitRingQuality:Hide();
@@ -553,8 +566,6 @@ function GarrisonFollowerList:UpdateData()
 				button.Follower.DownArrow:SetAlpha(0);
 				button.Follower.BusyFrame:Hide();
 			end
-
-			GarrisonFollowerButton_UpdateCounters(self:GetParent(), button.Follower, follower, showCounters, followerFrame.lastUpdate);
 
 			if (canExpand and button.Follower.id == self.expandedFollower and button.Follower.id == followerFrame.selectedFollower) then
 				self:ExpandButton(button.Follower, self);
@@ -651,6 +662,15 @@ function GarrisonFollowerButton_UpdateCounters(frame, button, follower, showCoun
 	for i = numShown + 1, #button.Counters do
 		button.Counters[i].info = nil;
 		button.Counters[i]:Hide();
+	end
+
+	-- return the counters area width
+	if (numShown == 0) then
+		return 0;
+	elseif (numShown == 1) then
+		return 2 * outerSpacingX + button.Counters[1]:GetWidth() * scale;
+	else
+		return 2 * outerSpacingX + innerSpacing + (2 * button.Counters[1]:GetWidth() * scale);
 	end
 end
 

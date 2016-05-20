@@ -5,10 +5,10 @@ function TalkingHeadFrame_OnLoad(self)
 	self:RegisterEvent("LOADING_SCREEN_ENABLED");
 	self:RegisterForClicks("RightButtonUp");
 	
-	self.NameFrame.Name:SetPoint("TOPLEFT", self.PortraitFrame.Portrait, "TOPRIGHT", 2, -22);
+	self.NameFrame.Name:SetPoint("TOPLEFT", self.PortraitFrame.Portrait, "TOPRIGHT", 2, -19);
 
 	local anchorFrameSubSystem = AlertFrame:AddJustAnchorFrameSubSystem(self);
-	AlertFrame:SetSubSustemAnchorPriority(anchorFrameSubSystem, 30);
+	AlertFrame:SetSubSustemAnchorPriority(anchorFrameSubSystem, 0);
 end
 
 function TalkingHeadFrame_OnShow(self)

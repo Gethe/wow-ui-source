@@ -809,14 +809,14 @@
 						</Layers>
 					</Button>
 					<Frame parentKey="ArtifactViewHelpBox" inherits="GlowBoxTemplate" enableMouse="true" hidden="true" frameStrata="DIALOG">
-						<Size x="180" y="100"/>
+						<Size x="185" y="100"/>
 						<Anchors>
-							<Anchor point="LEFT" relativeTo="CharacterMainHandSlot" relativePoint="RIGHT" x="35" />
+							<Anchor point="LEFT" relativeTo="CharacterMainHandSlot" relativePoint="RIGHT" x="18" />
 						</Anchors>
 						<Layers>
 							<Layer level="OVERLAY">
 								<FontString parentKey="Text" inherits="GameFontHighlightLeft" justifyV="TOP" text="ARTIFACT_TUTORIAL_VIEW_ARTIFACT">
-									<Size x="188" y="0"/>
+									<Size x="156" y="0"/>
 									<Anchors>
 										<Anchor point="TOPLEFT" x="16" y="-24"/>
 									</Anchors>

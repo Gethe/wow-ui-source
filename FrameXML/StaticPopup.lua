@@ -1360,11 +1360,16 @@ StaticPopupDialogs["DEATH"] = {
 		end
 
 		local b1_enabled = self.button1:IsEnabled();
-		self.button1:SetEnabled(not IsEncounterInProgress());
+		local encounterInProgress = IsEncounterInProgress();
+		self.button1:SetEnabled(not encounterInProgress and not HasNoReleaseAura());
 
 		if ( b1_enabled ~= self.button1:IsEnabled() ) then
 			if ( b1_enabled ) then
-				self.text:SetText(CAN_NOT_RELEASE_IN_COMBAT);
+				if ( encounterInProgress ) then
+					self.text:SetText(CAN_NOT_RELEASE_IN_COMBAT);
+				else
+					self.text:SetText(CAN_NOT_RELEASE_RIGHT_NOW);
+				end
 			else
 				self.text:SetText("");
 				StaticPopupDialogs[self.which].OnShow(self);
@@ -3611,25 +3616,6 @@ StaticPopupDialogs["CONFIRM_UNLOCK_TRIAL_CHARACTER"] = {
 	button2 = CANCEL,
 	OnAccept = function()
 		ClassTrialThanksForPlayingDialog:ConfirmCharacterBoost();
-	end,
-	OnCancel = function()
-		ClassTrialThanksForPlayingDialog:ShowThanks();
-	end,
-	hideOnEscape = 0,
-	timeout = 0,
-	whileDead = 1,
-}
-
-StaticPopupDialogs["CONFIRM_UNLOCK_TRIAL_CHARACTER_PURCHASE_BOOST_FIRST"] = {
-	text = CLASS_TRIAL_CONFIRM_PURCHASE_BOOST_TO_UNLOCK,
-	button1 = OKAY,
-	button2 = CANCEL,
-	OnAccept = function()
-		if (not StoreFrame_IsShown or not StoreFrame_IsShown()) then
-			ToggleStoreUI();
-		end
-
-		StoreFrame_SetServicesCategory();
 	end,
 	OnCancel = function()
 		ClassTrialThanksForPlayingDialog:ShowThanks();

@@ -43,7 +43,10 @@ function OrderHallMission:OnLoadMainFrame()
 	GarrisonFollowerMission.OnLoadMainFrame(self);
 	
 	self.MissionTab.MissionPage.RewardsFrame.Chest:SetAtlas("GarrMission-NeutralChest");
+	self.MissionTab.MissionPage.RewardsFrame.Chance:SetPoint("CENTER", self.MissionTab.MissionPage.RewardsFrame.Chest, -9, 6);
 
+	self.MissionTab.MissionPage.Stage.MissionEnvIcon:SetSize(48,48);
+	self.MissionTab.MissionPage.Stage.MissionEnvIcon:SetPoint("LEFT", self.MissionTab.MissionPage.Stage.MissionEnv, "RIGHT", -8, 0);
 	PanelTemplates_SetNumTabs(self, 3);
 
 	self:SelectTab(self:DefaultTab());
@@ -310,6 +313,9 @@ function OrderHallMission:MissionCompleteInitialize(missionList, index)
 	if (not GarrisonFollowerMission.MissionCompleteInitialize(self, missionList, index)) then
 		return false;
 	end
+
+	self.MissionComplete.Stage.MissionInfo.MissionType:SetSize(50, 50);
+	self.MissionComplete.Stage.MissionInfo.MissionType:SetPoint("TOPLEFT", 58, -10);
 
 	self.MissionComplete.BonusText.BonusTextGlowAnim:Stop();
 	local mission = missionList[index];

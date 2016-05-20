@@ -1,7 +1,7 @@
 MapCanvasMixin = {};
 
 function MapCanvasMixin:OnLoad()
-	self.detailTilePool = CreateTexturePool(self:GetCanvas(), "BACKGROUND", -7, "MapCanvasDetailTileTemplate");
+	self.detailLayerPool = CreateFramePool("FRAME", self:GetCanvas(), "MapCanvasDetailLayerTemplate");
 	self.dataProviders = {};
 	self.dataProviderEventsCount = {};
 	self.pinPools = {};
@@ -15,7 +15,7 @@ end
 
 function MapCanvasMixin:SetMapID(mapID)
 	if self.mapID ~= mapID then
-		self.areDetailTilesDirty = true;
+		self.areDetailLayersDirty = true;
 		self.mapID = mapID; 
 		self.expandedMapInsetsByMapID = {};
 		self.ScrollContainer:SetMapID(mapID);
@@ -271,33 +271,38 @@ function MapCanvasMixin:SetDebugAreaTriggersEnabled(enabled)
 	self.ScrollContainer:MarkAreaTriggersDirty();
 end
 
-local TILE_WIDTH = 256;
-local TILE_HEIGHT = 256;
+function MapCanvasMixin:RefreshDetailLayers()
+	if not self.areDetailLayersDirty then return end;
+	self.detailLayerPool:ReleaseAll();
 
-function MapCanvasMixin:RefreshDetailTiles()
-	if not self.areDetailTilesDirty then return end;
-	self.areDetailTilesDirty = false;
+	for layerIndex = 1, C_MapCanvas.GetNumDetailLayers(self.mapID) do
+		if layerIndex == 1 then
+			-- Layer 1 is our base layer, set the canvas to that size
+			local numDetailTilesCols, numDetailTilesRows = C_MapCanvas.GetNumDetailTiles(self.mapID, layerIndex);
+			self.ScrollContainer:SetCanvasSize(MapCanvasDetailLayer_CalculateTotalLayerSize(numDetailTilesCols, numDetailTilesRows));
+		end
 
-	self.detailTilePool:ReleaseAll();
+		local detailLayer = self.detailLayerPool:Acquire();
+		detailLayer:SetAllPoints(self:GetCanvas());
+		detailLayer:SetMapAndLayer(self.mapID, layerIndex);
+		detailLayer:Show();
+	end
 
-	local numDetailTilesCols, numDetailTilesRows = C_MapCanvas.GetNumDetailTiles(self.mapID);
-	-- The last tiles aren't fully used, we have to adjust the size slightly :(
-	local WIDTH_INSET = 175;
-	local HEIGHT_INSET = 120;
-	self.ScrollContainer:SetCanvasSize(TILE_WIDTH * numDetailTilesCols - WIDTH_INSET, TILE_HEIGHT * numDetailTilesRows - HEIGHT_INSET);
+	self:AdjustDetailLayerAlpha();
 
-	for tileCol = 1, numDetailTilesCols do
-		for tileRow = 1, numDetailTilesRows do
-			local texturePath = C_MapCanvas.GetDetailTileInfo(self.mapID, tileCol, tileRow);
-			local detailTile = self.detailTilePool:Acquire();
-			detailTile:SetTexture(texturePath);
+	self.areDetailLayersDirty = false;
+end
 
-			local offsetX = math.floor(TILE_WIDTH * (tileCol - 1));
-			local offsetY = math.floor(TILE_HEIGHT * (tileRow - 1));
+function MapCanvasMixin:AdjustDetailLayerAlpha()
+	-- For right now we're supporting just two layers, one zoomed out and one fully zoomed in
+	local zoomPercent = self:GetCanvasZoomPercent();
 
-			detailTile:ClearAllPoints();
-			detailTile:SetPoint("TOPLEFT", self:GetCanvas(), "TOPLEFT", offsetX, -offsetY);
-			detailTile:Show();
+	for layer in self.detailLayerPool:EnumerateActive() do
+		local layerIndex = layer:GetLayerIndex();
+		if layerIndex == 1 then
+			layer:SetAlpha(1);
+		else
+			layer:SetAlpha(zoomPercent);
 		end
 	end
 end
@@ -330,7 +335,7 @@ function MapCanvasMixin:AddInset(insetIndex, mapID, title, description, collapse
 end
 
 function MapCanvasMixin:RefreshAll(fromOnShow)
-	self:RefreshDetailTiles();
+	self:RefreshDetailLayers();
 	self:RefreshInsets();
 	self:RefreshAllDataProviders(fromOnShow);
 end
@@ -386,6 +391,8 @@ function MapCanvasMixin:OnMapInsetMouseLeave(mapInsetIndex)
 end
 
 function MapCanvasMixin:OnCanvasScaleChanged()
+	self:AdjustDetailLayerAlpha();
+
 	if self.mapInsetsByIndex then
 		for insetIndex, mapInset in pairs(self.mapInsetsByIndex) do
 			mapInset:OnCanvasScaleChanged();
@@ -729,18 +736,16 @@ end
 
 function MapCanvasScrollControllerMixin:CalculateLerpScaling()
 	if self:ScalingMode() == "SCALING_MODE_TRANSLATE_FASTER_THAN_SCALE" then
-		if not self:IsPanning() then
-			-- Because of the way zooming in + isLeftButtonDown is perceived, we want to reduce the zoom weight so that panning completes first
-			-- However, for zooming out we want to prefer the zoom then pan
-			local SCALE_DELTA_FACTOR = self:IsZoomingOut() and 1.5 or .01; 
-			local scaleDelta = (math.abs(self:GetCanvasScale() - self.targetScale) / (self.maxScale - self.minScale)) * SCALE_DELTA_FACTOR;
-			local scrollXDelta = math.abs(self:GetCurrentScrollX() - self.targetScrollX);
-			local scrollYDelta = math.abs(self:GetCurrentScrollY() - self.targetScrollY);
+		-- Because of the way zooming in + isLeftButtonDown is perceived, we want to reduce the zoom weight so that panning completes first
+		-- However, for zooming out we want to prefer the zoom then pan
+		local SCALE_DELTA_FACTOR = self:IsZoomingOut() and 1.5 or .01; 
+		local scaleDelta = (math.abs(self:GetCanvasScale() - self.targetScale) / (self.maxScale - self.minScale)) * SCALE_DELTA_FACTOR;
+		local scrollXDelta = math.abs(self:GetCurrentScrollX() - self.targetScrollX);
+		local scrollYDelta = math.abs(self:GetCurrentScrollY() - self.targetScrollY);
 
-			local largestDelta = math.max(math.max(scaleDelta, scrollXDelta), scrollYDelta);
-			if largestDelta ~= 0.0 then
-				return scaleDelta / largestDelta, scrollXDelta / largestDelta, scrollYDelta / largestDelta;
-			end
+		local largestDelta = math.max(math.max(scaleDelta, scrollXDelta), scrollYDelta);
+		if largestDelta ~= 0.0 then
+			return scaleDelta / largestDelta, scrollXDelta / largestDelta, scrollYDelta / largestDelta;
 		end
 		return 1.0, 1.0, 1.0;
 	elseif self:ScalingMode() == "SCALING_MODE_LINEAR" then

@@ -2239,11 +2239,11 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 			
 			if ( event == "SPELL_PERIODIC_MISSED" ) then
 				-- Miss type
-				missType = select(4, ...);
+				missType, isOffHand, amountMissed = select(4, ...);
 				
 				-- Result String
 				if ( missType == "ABSORB" ) then
-					resultStr = CombatLog_String_DamageResultString( resisted, blocked, select(7,...), critical, glancing, crushing, overhealing, textMode, spellId, overkill );
+					resultStr = CombatLog_String_DamageResultString( resisted, blocked, amountMissed, critical, glancing, crushing, overhealing, textMode, spellId, overkill );
 				else
 					resultStr = _G["ACTION_SPELL_PERIODIC_MISSED_"..missType];
 				end

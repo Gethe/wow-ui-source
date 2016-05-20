@@ -516,6 +516,8 @@ function WorldStateScoreFrame_Update()
 	
 	local firstFrameAfterCustomStats = WorldStateScoreFrameHonorGained;
 
+	WorldStateScoreFramePrestige:SetShown(UnitLevel("player") == MAX_PLAYER_LEVEL_TABLE[LE_EXPANSION_LEVEL_CURRENT]);
+	
 	if ( isArena ) then
 		-- Hide unused tabs
 		WorldStateScoreFrameTab1:Hide();
@@ -955,12 +957,12 @@ function WorldStateScoreFrame_Resize()
 	local scrollBar = 37;
 	local name;
 	
-	local width = WorldStateScoreFrameName:GetWidth() + WorldStateScoreFrameClass:GetWidth();
+	local width = WorldStateScoreFrameName:GetWidth() + WorldStateScoreFrameClass:GetWidth() + WorldStateScoreFramePrestige:GetWidth();
 
 	if ( isArena ) then
-		columns = 3;
+		columns = 4;
 		if ( isRegistered ) then
-			columns = 4;
+			columns = 5;
 			width = width + WorldStateScoreFrameTeam:GetWidth();
 		else
 			width = width + 43;
@@ -978,9 +980,27 @@ function WorldStateScoreFrame_Resize()
 	if ( WorldStateScoreScrollFrame:IsShown() ) then
 		width = width + scrollBar;
 	end
-	
+
 	WorldStateScoreFrame:SetWidth(width);
 	
+	local height = 428;
+
+	local yOffset = -64;
+	local sectionHeight = 60;
+
+	if ( UnitLevel("player") == MAX_PLAYER_LEVEL_TABLE[LE_EXPANSION_LEVEL_CURRENT]) then
+		height = height + sectionHeight;
+		yOffset = yOffset - sectionHeight;
+		WorldStateScoreFrame.XPBar:Show();
+		WorldStateScoreFrameSeparator:Show();
+	else
+		WorldStateScoreFrame.XPBar:Hide();
+		WorldStateScoreFrameSeparator:Hide();
+	end
+
+	WorldStateScoreFrame.Inset:SetPoint("TOPLEFT", PANEL_INSET_LEFT_OFFSET, yOffset);
+	WorldStateScoreFrame:SetHeight(height);
+		
 	WorldStateScoreFrame.scrollBarButtonWidth = WorldStateScoreFrame:GetWidth() - 165;
 	WorldStateScoreFrame.buttonWidth = WorldStateScoreFrame:GetWidth() - 137;
 	WorldStateScoreScrollFrame:SetWidth(WorldStateScoreFrame.scrollBarButtonWidth);

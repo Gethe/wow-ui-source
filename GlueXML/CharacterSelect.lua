@@ -397,7 +397,7 @@ function CharacterSelect_OnEvent(self, event, ...)
 				EnterWorld();
 			else
 				KioskDeleteAllCharacters();
-				SetGlueScreen("kioskmodesplash");
+				GlueParent_SetScreen("kioskmodesplash");
 			end
 		end
 		CharacterServicesMaster_OnCharacterListUpdate();

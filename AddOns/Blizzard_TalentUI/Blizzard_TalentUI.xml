@@ -219,10 +219,10 @@
 		</Frames>
 		<Animations>
 			<AnimationGroup parentKey="GlowAnim" looping="REPEAT">
-				<Alpha childKey="TopGlowLine" order="1" fromAlpha="0.2" toAlpha="0.7" duration="1"/>
-				<Alpha childKey="BottomGlowLine" order="1" fromAlpha="0.2" toAlpha="0.7" duration="1"/>
-				<Alpha childKey="TopGlowLine" order="2" fromAlpha="0.7" toAlpha="0.2" duration="1"/>
-				<Alpha childKey="BottomGlowLine" order="2" fromAlpha="0.7" toAlpha="0.2" duration="1"/>
+				<Alpha childKey="TopGlowLine" order="1" fromAlpha="0.2" toAlpha="0.9" duration="1"/>
+				<Alpha childKey="BottomGlowLine" order="1" fromAlpha="0.2" toAlpha="0.9" duration="1"/>
+				<Alpha childKey="TopGlowLine" order="2" fromAlpha="0.9" toAlpha="0.2" duration="1"/>
+				<Alpha childKey="BottomGlowLine" order="2" fromAlpha="0.9" toAlpha="0.2" duration="1"/>
 			</AnimationGroup>
 		</Animations>
 		<Scripts>
@@ -1249,10 +1249,10 @@
 		</Frames>
 		<Animations>
 			<AnimationGroup parentKey="GlowAnim" looping="REPEAT">
-				<Alpha childKey="TopGlowLine" order="1" fromAlpha="0.2" toAlpha="0.7" duration="1"/>
-				<Alpha childKey="BottomGlowLine" order="1" fromAlpha="0.2" toAlpha="0.7" duration="1"/>
-				<Alpha childKey="TopGlowLine" order="2" fromAlpha="0.7" toAlpha="0.2" duration="1"/>
-				<Alpha childKey="BottomGlowLine" order="2" fromAlpha="0.7" toAlpha="0.2" duration="1"/>
+				<Alpha childKey="TopGlowLine" order="1" fromAlpha="0.2" toAlpha="0.9" duration="1"/>
+				<Alpha childKey="BottomGlowLine" order="1" fromAlpha="0.2" toAlpha="0.9" duration="1"/>
+				<Alpha childKey="TopGlowLine" order="2" fromAlpha="0.9" toAlpha="0.2" duration="1"/>
+				<Alpha childKey="BottomGlowLine" order="2" fromAlpha="0.9" toAlpha="0.2" duration="1"/>
 			</AnimationGroup>
 		</Animations>
 		<Scripts>

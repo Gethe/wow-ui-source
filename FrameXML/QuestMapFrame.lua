@@ -110,7 +110,13 @@ function QuestMapFrame_OnEvent(self, event, ...)
 			SetMapByID(arg2);
 		end
 	elseif ( event == "PLAYER_ENTERING_WORLD" or event == "WORLD_MAP_UPDATE" ) then
+		SortQuestSortTypes();
 		SortQuests();
+		local mapID = GetCurrentMapAreaID();
+		if (mapID ~= self.currentMapID) then
+			self.autoExpanded = false;
+			self.currentMapID = mapID;
+		end
 		QuestMapFrame_ResetFilters();
 		QuestMapFrame_UpdateAll();
 	end
@@ -470,6 +476,8 @@ function QuestLogQuests_Update(poiTable)
 				completedCriteria = completedCriteria + 1;
 			end
 		end
+		local numPoints = select(3, GetAchievementInfo(storyID));
+		QuestScrollFrame.Contents.StoryHeader.Points:SetText(numPoints);
 		QuestScrollFrame.Contents.StoryHeader.Progress:SetFormattedText(QUEST_STORY_STATUS, completedCriteria, numCriteria);
 		prevButton = QuestScrollFrame.Contents.StoryHeader;
 	else

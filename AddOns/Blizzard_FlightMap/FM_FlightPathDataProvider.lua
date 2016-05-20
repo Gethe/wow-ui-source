@@ -15,6 +15,8 @@ function FlightMap_FlightPathDataProviderMixin:RefreshAllData(fromOnShow)
 
 	self.slotIndexToPin = {};
 
+	self:CalculateLineThickness();
+
 	local taxiNodes = GetAllTaxiNodes();
 	for i, taxiNodeData in ipairs(taxiNodes) do
 		self:AddFlightNode(taxiNodeData);
@@ -46,6 +48,7 @@ function FlightMap_FlightPathDataProviderMixin:HighlightRouteToPin(pin)
 		local destinationPin = self.slotIndexToPin[destinationSlotIndex];
 
 		local lineContainer = self.highlightLinePool:Acquire();
+		lineContainer.Fill:SetThickness(self.lineThickness);
 
 		lineContainer.Fill:SetStartPoint("CENTER", startPin);
 		lineContainer.Fill:SetEndPoint("CENTER", destinationPin);
@@ -82,6 +85,7 @@ function FlightMap_FlightPathDataProviderMixin:ShowBackgroundRoutesFromCurrent()
 					destinationPin.linkedPins[startPin] = true;
 
 					local lineContainer = self.backgroundLinePool:Acquire();
+					lineContainer.Fill:SetThickness(self.lineThickness);
 
 					lineContainer.Fill:SetStartPoint("CENTER", startPin);
 					lineContainer.Fill:SetEndPoint("CENTER", destinationPin);
@@ -127,17 +131,37 @@ function FlightMap_FlightPathDataProviderMixin:AddFlightNode(taxiNodeData)
 	pin.linkedPins = {};
 
 	if taxiNodeData.type == LE_FLIGHT_PATH_TYPE_CURRENT then
-		pin.Icon:SetTexture([[Interface/TaxiFrame/UI-Taxi-Icon-Green]]);
-		pin.IconHighlight:SetTexture([[Interface/TaxiFrame/UI-Taxi-Icon-White]]);
+		pin.Icon:SetAtlas("Taxi_Frame_Green");
+		pin.IconHighlight:SetAtlas("Taxi_Frame_Gray");
 		pin:Show();
 	elseif taxiNodeData.type == LE_FLIGHT_PATH_TYPE_REACHABLE then
-		pin.Icon:SetTexture([[Interface/TaxiFrame/UI-Taxi-Icon-White]]);
-		pin.IconHighlight:SetTexture([[Interface/TaxiFrame/UI-Taxi-Icon-White]]);
+		pin.Icon:SetAtlas("Taxi_Frame_Gray");
+		pin.IconHighlight:SetAtlas("Taxi_Frame_Gray");
 		pin:Show();
 	elseif taxiNodeData.type == LE_FLIGHT_PATH_TYPE_UNREACHABLE then
-		pin.Icon:SetTexture([[Interface/TaxiFrame/UI-Taxi-Icon-Nub]]);
-		pin.IconHighlight:SetTexture([[Interface/TaxiFrame/UI-Taxi-Icon-Nub]]);
+		pin.Icon:SetAtlas("UI-Taxi-Icon-Nub");
+		pin.IconHighlight:SetAtlas("UI-Taxi-Icon-Nub");
 		pin:Hide(); -- Only show if part of a route, handled in the route building functions
+	end
+end
+
+function FlightMap_FlightPathDataProviderMixin:CalculateLineThickness()
+	self.lineThickness = Lerp(1.5, 3.5, Saturate(1.25 * self:GetMap():GetCanvasZoomPercent())) * 25;
+end
+
+function FlightMap_FlightPathDataProviderMixin:OnCanvasScaleChanged()
+	self:CalculateLineThickness();
+
+	if self.backgroundLinePool then
+		for lineContainer in self.backgroundLinePool:EnumerateActive() do
+			lineContainer.Fill:SetThickness(self.lineThickness);
+		end
+	end
+
+	if self.highlightLinePool then
+		for lineContainer in self.highlightLinePool:EnumerateActive() do
+			lineContainer.Fill:SetThickness(self.lineThickness);
+		end
 	end
 end
 
@@ -145,7 +169,7 @@ end
 FlightMap_FlightPointPinMixin = CreateFromMixins(MapCanvasPinMixin);
 
 function FlightMap_FlightPointPinMixin:OnLoad()
-	self:SetScalingLimits(1.25, 3.0, 1.5);
+	self:SetScalingLimits(1.25, 3.5, 1.5);
 end
 
 function FlightMap_FlightPointPinMixin:OnAcquired()

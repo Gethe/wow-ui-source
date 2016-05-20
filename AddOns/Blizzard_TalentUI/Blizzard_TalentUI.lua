@@ -1293,8 +1293,10 @@ function PlayerTalentFrame_UpdateSpecFrame(self, spec)
 	scrollChild.specName:SetText(name);
 	scrollChild.description:SetText(description);
 	local role1 = GetSpecializationRole(shownSpec, nil, self.isPet);
-	scrollChild.roleName:SetText(_G[role1]);
-	scrollChild.roleIcon:SetTexCoord(GetTexCoordsForRole(role1));
+	if ( role1 ) then
+		scrollChild.roleName:SetText(_G[role1]);
+		scrollChild.roleIcon:SetTexCoord(GetTexCoordsForRole(role1));
+	end
 
 	-- update spec button names
 	for i = 1, numSpecs do
@@ -1304,7 +1306,7 @@ function PlayerTalentFrame_UpdateSpecFrame(self, spec)
 		button.PrimarySpecButton:SetShown(primarySpecID == id);
 	end
 	
-	if ( not self.isPet and primaryStat ~= 0 ) then
+	if ( not self.isPet and primaryStat and primaryStat ~= 0 ) then
 		scrollChild.roleName:ClearAllPoints();
 		scrollChild.roleName:SetPoint("BOTTOMLEFT", "$parentRoleIcon", "RIGHT", 3, 2);
 		scrollChild.primaryStat:SetText(SPEC_FRAME_PRIMARY_STAT:format(SPEC_STAT_STRINGS[primaryStat]));
@@ -1384,68 +1386,70 @@ function PlayerTalentFrame_UpdateSpecFrame(self, spec)
 	else
 		bonuses = SPEC_SPELLS_DISPLAY[id];
 	end
-	for i=1,#bonuses,2 do
-		local frame = scrollChild["abilityButton"..index];
-		if not frame then
-			frame = PlayerTalentFrame_CreateSpecSpellButton(self, index);
-		end
-		if ( mod(index, 2) == 0 ) then
-			frame:SetPoint("LEFT", scrollChild["abilityButton"..(index-1)], "RIGHT", 110, 0);
-		else
-			if ((#bonuses/2) > 4 ) then
-				frame:SetPoint("TOP", scrollChild["abilityButton"..(index-2)], "BOTTOM", 0, 0);
-			else
-				frame:SetPoint("TOP", scrollChild["abilityButton"..(index-2)], "BOTTOM", 0, -20);
+	if ( bonuses ) then
+		for i=1,#bonuses,2 do
+			local frame = scrollChild["abilityButton"..index];
+			if not frame then
+				frame = PlayerTalentFrame_CreateSpecSpellButton(self, index);
 			end
-		end
-
-		local name, subname = GetSpellInfo(bonuses[i]);
-		local _, icon = GetSpellTexture(bonuses[i]);
-		SetPortraitToTexture(frame.icon, icon);
-		frame.name:SetText(name);
-		frame.spellID = bonuses[i];
-		frame.extraTooltip = nil;
-		frame.isPet = self.isPet;
-		frame.index = index;
-
-		local isKnown = IsSpellKnownOrOverridesKnown(bonuses[i]);
-		if ( not isKnown and IsCharacterNewlyBoosted() and not disable ) then
-			frame.disabled = false;
-			frame.icon:SetDesaturated(true);
-			frame.icon:SetAlpha(0.5);
-			frame.ring:SetDesaturated(false);
-			frame.subText:SetTextColor(0.25, 0.1484375, 0.02);
-			frame.subText:SetText(BOOSTED_CHAR_SPELL_TEMPLOCK);
-		else
-			frame.icon:SetAlpha(1);
-			local level = GetSpellLevelLearned(bonuses[i]);
-			local spellLocked = level and level > UnitLevel("player");
-			if ( spellLocked ) then
-				frame.subText:SetFormattedText(SPELLBOOK_AVAILABLE_AT, level);
+			if ( mod(index, 2) == 0 ) then
+				frame:SetPoint("LEFT", scrollChild["abilityButton"..(index-1)], "RIGHT", 110, 0);
 			else
-				frame.subText:SetText("");
-			end
-			if ( disable ) then
-				frame.disabled = true;
-				frame.icon:SetDesaturated(true);
-				frame.icon:SetAlpha(1);
-				frame.ring:SetDesaturated(true);
-				frame.subText:SetTextColor(0.75, 0.75, 0.75);
-			else
-				frame.disabled = false;
-				if ( spellLocked ) then
-					frame.icon:SetDesaturated(true);
-					frame.icon:SetAlpha(0.5);
+				if ((#bonuses/2) > 4 ) then
+					frame:SetPoint("TOP", scrollChild["abilityButton"..(index-2)], "BOTTOM", 0, 0);
 				else
-					frame.icon:SetDesaturated(false);
-					frame.icon:SetAlpha(1);
+					frame:SetPoint("TOP", scrollChild["abilityButton"..(index-2)], "BOTTOM", 0, -20);
 				end
+			end
+
+			local name, subname = GetSpellInfo(bonuses[i]);
+			local _, icon = GetSpellTexture(bonuses[i]);
+			SetPortraitToTexture(frame.icon, icon);
+			frame.name:SetText(name);
+			frame.spellID = bonuses[i];
+			frame.extraTooltip = nil;
+			frame.isPet = self.isPet;
+			frame.index = index;
+
+			local isKnown = IsSpellKnownOrOverridesKnown(bonuses[i]);
+			if ( not isKnown and IsCharacterNewlyBoosted() and not disable ) then
+				frame.disabled = false;
+				frame.icon:SetDesaturated(true);
+				frame.icon:SetAlpha(0.5);
 				frame.ring:SetDesaturated(false);
 				frame.subText:SetTextColor(0.25, 0.1484375, 0.02);
+				frame.subText:SetText(BOOSTED_CHAR_SPELL_TEMPLOCK);
+			else
+				frame.icon:SetAlpha(1);
+				local level = GetSpellLevelLearned(bonuses[i]);
+				local spellLocked = level and level > UnitLevel("player");
+				if ( spellLocked ) then
+					frame.subText:SetFormattedText(SPELLBOOK_AVAILABLE_AT, level);
+				else
+					frame.subText:SetText("");
+				end
+				if ( disable ) then
+					frame.disabled = true;
+					frame.icon:SetDesaturated(true);
+					frame.icon:SetAlpha(1);
+					frame.ring:SetDesaturated(true);
+					frame.subText:SetTextColor(0.75, 0.75, 0.75);
+				else
+					frame.disabled = false;
+					if ( spellLocked ) then
+						frame.icon:SetDesaturated(true);
+						frame.icon:SetAlpha(0.5);
+					else
+						frame.icon:SetDesaturated(false);
+						frame.icon:SetAlpha(1);
+					end
+					frame.ring:SetDesaturated(false);
+					frame.subText:SetTextColor(0.25, 0.1484375, 0.02);
+				end
 			end
+			frame:Show();
+			index = index + 1;
 		end
-		frame:Show();
-		index = index + 1;
 	end
 
 	-- hide unused spell buttons

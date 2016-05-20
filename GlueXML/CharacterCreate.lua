@@ -427,7 +427,6 @@ function CharacterCreate_OnEvent(self, event, ...)
 			CharacterCreateNameEdit:SetText(name);
 		end
 		CharacterCreateRandomName:Enable();
-		CharCreateOkayButton:Enable();
 		PlaySound("gsCharacterCreationLook");
 	elseif ( event == "UPDATE_EXPANSION_LEVEL" ) then
 		-- Expansion level changed while online, so enable buttons as needed
@@ -726,7 +725,6 @@ function SetCharacterRace(id)
 	CharCreateClassInfoFrame.factionBg:SetGradient("VERTICAL", 0, 0, 0, backdropColor[7], backdropColor[8], backdropColor[9]);
 	CharCreateCharacterTypeFrame.factionBg:SetGradient("VERTICAL", 0, 0, 0, backdropColor[7], backdropColor[8], backdropColor[9]);
 	CharCreateSelectSpecFrame.factionBg:SetGradient("VERTICAL", 0, 0, 0, backdropColor[7], backdropColor[8], backdropColor[9]);
-	CharCreateSelectFactionFrame.factionBg:SetGradient("VERTICAL", 0, 0, 0, backdropColor[7], backdropColor[8], backdropColor[9]);
 
 	-- race info
 	local frame = CharCreateRaceInfoFrame;
@@ -886,23 +884,20 @@ function CharacterCreate_Back()
 
 		-- back to normal camera
 		SetFaceCustomizeCamera(false);
+	else
+		if( IsKioskModeEnabled() ) then
+			PlaySound("gsCharacterCreationCancel");
+			GlueParent_SetScreen("kioskmodesplash");
+		else
+			if CharacterUpgrade_IsCreatedCharacterTrialBoost() then
+				CharacterUpgrade_ResetBoostData();
+			end
 
-		return;
+			PlaySound("gsCharacterCreationCancel");
+			CHARACTER_SELECT_BACK_FROM_CREATE = true;
+			GlueParent_SetScreen("charselect");
+		end
 	end
-
-	if( IsKioskModeEnabled() ) then
-		PlaySound("gsCharacterCreationCancel");
-		GlueParent_SetScreen("kioskmodesplash");
-		return;
-	end
-
-	if CharacterUpgrade_IsCreatedCharacterTrialBoost() then
-		CharacterUpgrade_ResetBoostData();
-	end
-
-	PlaySound("gsCharacterCreationCancel");
-	CHARACTER_SELECT_BACK_FROM_CREATE = true;
-	GlueParent_SetScreen("charselect");
 end
 
 function CharacterCreate_TryForward()
@@ -1747,13 +1742,23 @@ local function SelectCharacterTypeButton(selectedCharacterType)
 	end
 end
 
+local function ShouldHideCharacterTypeFrame(characterType)
+	if (characterType == LE_CHARACTER_CREATE_TYPE_BOOST)
+	 or (not C_CharacterServices.IsTrialBoostEnabled())
+	 or (PAID_SERVICE_TYPE ~= nil) then
+		return true;
+	end
+
+	return false;
+end
+
 function CharacterCreate_SelectCharacterType(characterType)
 	characterType = characterType or LE_CHARACTER_CREATE_TYPE_NORMAL;
 	SetCharacterCreateType(characterType);
 
 	-- If this character is actually being created because a boost token is being used, then there's no reason to display
 	-- character type selection, because of the current flow, this boost will actually be consumed.
-	if (characterType == LE_CHARACTER_CREATE_TYPE_BOOST or not C_CharacterServices.IsTrialBoostEnabled()) then
+	if ShouldHideCharacterTypeFrame(characterType) then
 		CharCreateCharacterTypeFrame:Hide();
 		return;
 	end
@@ -1839,18 +1844,144 @@ function CharacterCreate_UpdateClassTrialCustomizationFrames()
 	CharacterCreate_UpdateOkayButton();
 end
 
-function CharacterCreate_UpdateOkayButton()
-	local enabled = true;
+local RequirementsFlowMixin = {};
 
-	if CharacterCreateFrame.state == "CUSTOMIZATION" then
-		local hasNameText = CharacterCreateNameEdit:GetText() ~= "";
-		local isTrialBoost = CharacterUpgrade_IsCreatedCharacterTrialBoost();
-		local specValid = not isTrialBoost or CharCreateSelectSpecFrame.selected ~= nil;
-		local factionValid = not isTrialBoost or CharacterCreate_GetSelectedFaction() ~= nil;
-		enabled = hasNameText and specValid and factionValid;
+function RequirementsFlowMixin:Initialize(completeButton, setCompleteButtonEnabledCallback, startCalloutAnimation, stopCalloutAnimation)
+	self.completeButton = completeButton;
+	self.setCompleteButtonEnabledCallback = setCompleteButtonEnabledCallback;
+	self.startCalloutAnimation = startCalloutAnimation;
+	self.stopCalloutAnimation = stopCalloutAnimation;
+	self.requirements = {};
+end
+
+function RequirementsFlowMixin:InstallScripts()
+	-- Currently the only system using this object has no OnEnter script for the completeButton,
+	-- ideally this would hook any existing script.
+
+	self.completeButton:SetScript("OnEnter", function() self:DisplayTooltip() end);
+	self.completeButton:SetScript("OnLeave", function() self:HideTooltip() end);
+end
+
+function RequirementsFlowMixin:RemoveScripts()
+	self.completeButton:SetScript("OnEnter", nil);
+	self.completeButton:SetScript("OnLeave", nil);
+end
+
+function RequirementsFlowMixin:DisplayTooltip()
+	-- Only need a tooltip if there are incomplete requirements
+	if self:GetFirstIncompleteRequirement() then
+		GlueTooltip:SetText("");
+		GlueTooltip:SetOwner(self.completeButton, "ANCHOR_TOP");
+
+		for requirementID, requirementData in ipairs(self.requirements) do
+			if not requirementData.complete then
+				GlueTooltip:AddLine(requirementData.description, 1, 0, 0, 1);
+			end
+		end
+	else
+		self:HideTooltip();
+	end
+end
+
+function RequirementsFlowMixin:HideTooltip()
+	GlueTooltip:Hide();
+end
+
+function RequirementsFlowMixin:AddRequirement(requirementID, calloutFrame, description)
+	self.requirements[requirementID] = { complete = false, calloutFrame = calloutFrame, description = description };
+end
+
+function RequirementsFlowMixin:GetCalloutFrame(requirementID)
+	if requirementID then
+		return self.requirements[requirementID].calloutFrame;
+	end
+end
+
+function RequirementsFlowMixin:UpdateCalloutAnimation(requirementID)
+	if self.currentCalloutFrame then
+		self.stopCalloutAnimation(self.currentCalloutFrame);
+		self.currentCalloutFrame = nil;
 	end
 
-	CharCreateOkayButton:SetEnabled(enabled);
+	local calloutFrame = self:GetCalloutFrame(requirementID);
+	if calloutFrame then
+		self.startCalloutAnimation(calloutFrame);
+		self.currentCalloutFrame = calloutFrame;
+	end
+end
+
+function RequirementsFlowMixin:SetRequirementComplete(requirementID, complete)
+	self.requirements[requirementID].complete = complete;
+end
+
+function RequirementsFlowMixin:GetFirstIncompleteRequirement()
+	for requirementID, requirementData in ipairs(self.requirements) do
+		if not requirementData.complete then
+			return requirementID;
+		end
+	end
+
+	return nil;
+end
+
+function RequirementsFlowMixin:UpdateInstructions()
+	local firstIncompleteRequirement = self:GetFirstIncompleteRequirement();
+	self:UpdateCalloutAnimation(firstIncompleteRequirement);
+	self.setCompleteButtonEnabledCallback(firstIncompleteRequirement == nil);
+
+	if firstIncompleteRequirement and GetMouseFocus() == self.completeButton then
+		local script = self.completeButton:GetScript("OnEnter");
+		if script then
+			script();
+		end
+	end
+end
+
+local FINALIZE_REQ_HAS_SPEC = 1
+local FINALIZE_REQ_HAS_FACTION = 2
+local FINALIZE_REQ_HAS_NAME = 3
+local finalizeRequirements;
+
+local function InitializeRequirementsFlow()
+	if not finalizeRequirements then
+		finalizeRequirements = CreateFromMixins(RequirementsFlowMixin);
+
+		local setCompleteEnabled = function(enabled)
+			CharCreate_EnableNextButton(enabled);
+		end
+
+		local startCalloutAnimation = function(frame)
+			frame.RequirementPulse:Play();
+		end
+
+		local stopCalloutAnimation = function(frame)
+			frame.RequirementPulse:Stop();
+			frame.Title:SetAlpha(1);
+		end
+
+		finalizeRequirements:Initialize(CharCreateOkayButton, setCompleteEnabled, startCalloutAnimation, stopCalloutAnimation);
+
+		finalizeRequirements:AddRequirement(FINALIZE_REQ_HAS_SPEC, CharCreateSelectSpecFrame, CHARACTER_CREATION_REQUIREMENTS_PICK_SPEC);
+		finalizeRequirements:AddRequirement(FINALIZE_REQ_HAS_FACTION, CharCreateSelectFactionFrame, CHARACTER_CREATION_REQUIREMENTS_PICK_FACTION);
+		finalizeRequirements:AddRequirement(FINALIZE_REQ_HAS_NAME, CharacterCreateNameEdit, CHARACTER_CREATION_REQUIREMENTS_PICK_NAME);
+	end
+end
+
+function CharacterCreate_UpdateOkayButton()
+	InitializeRequirementsFlow();
+
+	if CharacterCreateFrame.state == "CUSTOMIZATION" then
+		finalizeRequirements:InstallScripts();
+		finalizeRequirements:SetRequirementComplete(FINALIZE_REQ_HAS_NAME, CharacterCreateNameEdit:GetText() ~= "");
+
+		local isTrialBoost = CharacterUpgrade_IsCreatedCharacterTrialBoost();
+		finalizeRequirements:SetRequirementComplete(FINALIZE_REQ_HAS_SPEC, not isTrialBoost or CharCreateSelectSpecFrame.selected ~= nil);
+		finalizeRequirements:SetRequirementComplete(FINALIZE_REQ_HAS_FACTION, not isTrialBoost or CharacterCreate_GetSelectedFaction() ~= nil);
+		finalizeRequirements:UpdateInstructions();
+	else
+		finalizeRequirements:RemoveScripts();
+		CharCreate_EnableNextButton(true);
+	end
 end
 
 function CharacterCreate_IsTrialBoostAllowedForClass(classFilename)

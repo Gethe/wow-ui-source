@@ -5,7 +5,7 @@ EXPANSION_GLUE_AMBIENCE = {
 	[LE_EXPANSION_CATACLYSM] = "GlueScreenIntro",
 	[LE_EXPANSION_MISTS_OF_PANDARIA] = "GlueScreenIntro",
 	[LE_EXPANSION_WARLORDS_OF_DRAENOR] = "AMB_GlueScreen_WarlordsofDraenor",
-	[LE_EXPANSION_LEGION] = "GlueScreenIntro", --FIXME
+	[LE_EXPANSION_LEGION] = "AMB_GlueScreen_Legion",
 }
 
 --Music

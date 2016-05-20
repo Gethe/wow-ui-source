@@ -36,8 +36,8 @@
 					<Layer level="ARTWORK">
 						<FontString parentKey="Text" inherits="GameFontHighlightLarge" alpha="0.01" alphaMode="BLEND" justifyH="LEFT" justifyV="TOP">
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.$parent.NameFrame.Name" relativePoint="BOTTOMLEFT" x="0" y="-9"/>
-								<Anchor point="BOTTOMRIGHT" x="-42" y="6"/>
+								<Anchor point="TOPLEFT" relativeKey="$parent.$parent.NameFrame.Name" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
+								<Anchor point="BOTTOMRIGHT" x="-42" y="12"/>
 							</Anchors>
 						</FontString>
 					</Layer>

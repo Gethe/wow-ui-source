@@ -33,6 +33,7 @@ local UnrevokeWaitingForProducts = false;
 Import("C_PurchaseAPI");
 Import("C_PetJournal");
 Import("C_SharedCharacterServices");
+Import("C_ClassTrial");
 Import("C_AuthChallenge");
 Import("C_Timer");
 Import("C_WowTokenPublic");
@@ -41,6 +42,7 @@ Import("IsGMClient");
 Import("HideGMOnly");
 Import("math");
 Import("table");
+Import("ipairs");
 Import("pairs");
 Import("select");
 Import("tostring");
@@ -62,6 +64,7 @@ Import("GetTime");
 Import("UnitAffectingCombat");
 Import("GetCVar");
 Import("GMError");
+Import("GetMouseFocus");
 
 --GlobalStrings
 Import("BLIZZARD_STORE");
@@ -206,6 +209,7 @@ Import("BLIZZARD_STORE_DISCLAIMER_APPEARANCE_CHANGE_CN");
 Import("BLIZZARD_STORE_DISCLAIMER_NAME_CHANGE_CN");
 Import("BLIZZARD_STORE_DISCLAIMER_CHARACTER_TRANSFER_CN");
 Import("BLIZZARD_STORE_BOOST_UNREVOKED_CONSUMPTION");
+Import("LE_BATTLEPAY_PRODUCT_ITEM_LEVEL_100_CHARACTER_UPGRADE");
 Import("TOOLTIP_DEFAULT_COLOR");
 Import("TOOLTIP_DEFAULT_BACKGROUND_COLOR");
 Import("CHARACTER_UPGRADE_LOG_OUT_NOW");
@@ -214,6 +218,8 @@ Import("CHARACTER_UPGRADE_READY");
 Import("CHARACTER_UPGRADE_READY_DESCRIPTION");
 Import("FREE_CHARACTER_UPGRADE_READY");
 Import("FREE_CHARACTER_UPGRADE_READY_DESCRIPTION");
+Import("CHARACTER_UPGRADE_CLASS_TRIAL_UNLOCK_READY_DESCRIPTION");
+Import("ACCEPT");
 Import("VAS_SELECT_CHARACTER_DISABLED");
 Import("VAS_SELECT_CHARACTER");
 Import("VAS_CHARACTER_LABEL");
@@ -1139,8 +1145,10 @@ function StoreFrame_UpdateCard(card,entryID,discountReset)
 
 	if (entryInfo.isBoost) then
 		card.UpgradeArrow:Show();
+		card.boostProduct = entryInfo.boostProduct;
 	else
 		card.UpgradeArrow:Hide();
+		card.boostProduct = nil;
 	end
 
 	if (card.BuyButton) then
@@ -1434,6 +1442,49 @@ function StoreFrame_SetCategory()
 	StoreFrame_CheckMarketPriceUpdates();
 end
 
+function StoreFrame_FindPageForBoostProduct(boostProduct)
+	local products = C_PurchaseAPI.GetProducts(WOW_SERVICES_CATEGORY_ID);
+
+	for productIndex, entryID in ipairs(products) do
+		local entryInfo = C_PurchaseAPI.GetEntryInfo(entryID);
+		if (entryInfo and entryInfo.boostProduct == boostProduct) then
+			return math.floor(productIndex / NUM_STORE_PRODUCT_CARDS) + 1;
+		end
+	end
+end
+
+function StoreFrame_GoToPageForBoostProduct(boostProduct)
+	-- NOTE: Assumes that the store has the correct category selected.
+	local page = StoreFrame_FindPageForBoostProduct(boostProduct);
+	if page then
+		StoreFrame_SetPage(page);
+		return true;
+	end
+
+	return false;
+end
+
+function StoreFrame_FindCardForBoostProduct(boostProduct)
+	if StoreFrame_GoToPageForBoostProduct(boostProduct) then
+		for i=1, NUM_STORE_PRODUCT_CARDS do
+			local card = StoreFrame.ProductCards[i];
+
+			if card and card:IsShown() and card.boostProduct == boostProduct then
+				return card;
+			end
+		end
+	end
+end
+
+function StoreFrame_SelectBoostProductForPurchase(boostProduct)
+	local card = StoreFrame_FindCardForBoostProduct(boostProduct);
+	if (card) then
+		-- TODO: Support Click API.
+		card:GetScript("OnClick")(card)
+		StoreFrame.BuyButton:GetScript("OnClick")(StoreFrame.BuyButton);
+	end
+end
+
 function StoreFrame_CreateCards(self, num, numPerRow)
 	for i=1, num do
 		local card = self.ProductCards[i];
@@ -1667,6 +1718,8 @@ function StoreFrame_OnShow(self)
 		Outbound.UpdateMicroButtons();
 	end
 
+	UseBoostToUnlockTrialCharacter = false;
+
 	StoreFrame_UpdateCoverState();
 	PlaySound("UI_igStore_WindowOpen_Button");
 end
@@ -1692,12 +1745,14 @@ function StoreFrame_OnCharacterBoostDelivered(self)
 		_G.CharacterServicesMaster_SetFlow(_G.CharacterServicesMaster, _G.CharacterUpgradeFlow);
 	elseif (not IsOnGlueScreen()) then
 		self:Hide();
-		ServicesLogoutPopup.Background.Title:SetText(CHARACTER_UPGRADE_READY);
-		ServicesLogoutPopup.Background.Description:SetText(CHARACTER_UPGRADE_READY_DESCRIPTION);
-		ServicesLogoutPopup.forBoost = true;
-		ServicesLogoutPopup.forVasService = false;
-		ServicesLogoutPopup.forLegion = false;
-		ServicesLogoutPopup:Show();
+
+		local showReason = "forBoost";
+
+		if C_ClassTrial.IsClassTrialCharacter() and (BoostProduct == LE_BATTLEPAY_PRODUCT_ITEM_LEVEL_100_CHARACTER_UPGRADE) and UseBoostToUnlockTrialCharacter then
+			showReason = "forClassTrialUnlock";
+		end
+
+		ServicesLogoutPopup_SetShowReason(ServicesLogoutPopup, showReason);
 	end
 	JustFinishedOrdering = false;
 	JustOrderedBoost = false;
@@ -1708,12 +1763,7 @@ function StoreFrame_OnLegionDelivered(self)
 	if (IsOnGlueScreen()) then
 		_G.GlueDialog_Show("LEGION_PURCHASE_READY");
 	else
-		ServicesLogoutPopup.Background.Title:SetText(BLIZZARD_STORE_LEGION_PURCHASE_READY);
-		ServicesLogoutPopup.Background.Description:SetText(BLIZZARD_STORE_LEGION_PURCHASE_READY_DESCRIPTION);
-		ServicesLogoutPopup.forBoost = false;
-		ServicesLogoutPopup.forVasService = false;
-		ServicesLogoutPopup.forLegion = true;
-		ServicesLogoutPopup:Show();
+		ServicesLogoutPopup_SetShowReason(ServicesLogoutPopup, "forLegion");
 	end
 	JustFinishedOrdering = false;
 	JustOrderedLegion = false;
@@ -1778,6 +1828,10 @@ local function SetStoreCategoryFromAttribute(category)
 	StoreFrame_SetCategory();
 end
 
+local function SelectBoostFromAttribute(boostProduct)
+	StoreFrame_SelectBoostProductForPurchase(boostProduct);
+end
+
 function StoreFrame_OnAttributeChanged(self, name, value)
 	--Note - Setting attributes is how the external UI should communicate with this frame. That way, their taint won't be spread to this code.
 	if ( name == "action" ) then
@@ -1811,6 +1865,10 @@ function StoreFrame_OnAttributeChanged(self, name, value)
 		SetStoreCategoryFromAttribute(WOW_GAMES_CATEGORY_ID);
 	elseif ( name == "setservicescategory" ) then
 		SetStoreCategoryFromAttribute(WOW_SERVICES_CATEGORY_ID);
+	elseif ( name == "selectlevel100boostproduct") then
+		SetStoreCategoryFromAttribute(WOW_SERVICES_CATEGORY_ID);
+		SelectBoostFromAttribute(LE_BATTLEPAY_PRODUCT_ITEM_LEVEL_100_CHARACTER_UPGRADE);
+		UseBoostToUnlockTrialCharacter = true;
 	elseif ( name == "getvaserrormessage" ) then
 		if (IsOnGlueScreen()) then
 			self:SetAttribute("vaserrormessageresult", nil);
@@ -2082,6 +2140,12 @@ function StoreFramePrevPageButton_OnClick(self)
 	StoreFrame_SetCategory();
 
 	PlaySound("UI_igStore_PageNav_Button");
+end
+
+function StoreFrame_SetPage(page)
+	selectedPageNum = page;
+	selectedEntryID = nil;
+	StoreFrame_SetCategory();
 end
 
 function StoreFrameNextPageButton_OnClick(self)
@@ -2470,18 +2534,10 @@ function StoreVASValidationFrame_OnVasProductComplete(self)
 		_G.StoreFrame_ShowGlueDialog((_G.BLIZZARD_STORE_VAS_PRODUCT_READY):format(productInfo.name), guid, realmName);
 	else
 		self:GetParent():Hide();
-		ServicesLogoutPopup.Background.Title:SetText(BLIZZARD_STORE_PRODUCT_IS_READY:format(productInfo.name));
-		local desc;
-		if (productInfo.vasServiceType == LE_VAS_SERVICE_NAME_CHANGE) then
-			desc = BLIZZARD_STORE_NAME_CHANGE_READY_DESCRIPTION;
-		else
-			desc = BLIZZARD_STORE_VAS_SERVICE_READY_DESCRIPTION;
-		end
-		ServicesLogoutPopup.Background.Description:SetText(desc);
-		ServicesLogoutPopup.forVasService = true;
-		ServicesLogoutPopup.forBoost = false;
-		ServicesLogoutPopup.forLegion = false;
-		ServicesLogoutPopup:Show();
+
+		local titleOverride = BLIZZARD_STORE_PRODUCT_IS_READY:format(productInfo.name);
+		local descriptionOverride = (productInfo.vasServiceType == LE_VAS_SERVICE_NAME_CHANGE) and BLIZZARD_STORE_NAME_CHANGE_READY_DESCRIPTION or BLIZZARD_STORE_VAS_SERVICE_READY_DESCRIPTION;
+		ServicesLogoutPopup_SetShowReason(ServicesLogoutPopup, "forVasService", titleOverride, descriptionOverride);
 	end
 	VASReady = false;
 end
@@ -2507,7 +2563,7 @@ function StoreProductCard_UpdateState(card)
 		local entryInfo = C_PurchaseAPI.GetEntryInfo(entryID);
 		local enableHighlight = card:GetID() ~= selectedEntryID and not isRotating and (not entryInfo.isVasService or IsOnGlueScreen());
 		card.HighlightTexture:SetAlpha(enableHighlight and 1 or 0);
-		if (not card.Description and card:IsMouseOver()) then
+		if (not card.Description and GetMouseFocus() == card) then
 			if (isRotating) then
 				StoreTooltip:Hide()
 			else
@@ -2742,11 +2798,7 @@ function StoreProductCard_ShowIcon(self, icon, itemID, overrideTexture)
 
 	self.IconBorder:Show();
 	self.Icon:Show();
-	if (itemID) then
-		self.InvisibleMouseOverFrame:Show();
-	else
-		self.InvisibleMouseOverFrame:Hide();
-	end
+	self.InvisibleMouseOverFrame:SetShown(itemID);
 
 	if (not overrideTexture) then
 		if (self == StoreFrame.SplashSingle) then
@@ -3443,19 +3495,79 @@ function ServicesLogoutPopup_OnLoad(self)
 	self.CancelButton:SetText(CHARACTER_UPGRADE_POPUP_LATER);
 end
 
+local servicesLogoutPopupTextMapping = {
+	["forBoost"] = {
+		title = CHARACTER_UPGRADE_READY,
+		description = CHARACTER_UPGRADE_READY_DESCRIPTION,
+		logoutButton = CHARACTER_UPGRADE_LOG_OUT_NOW,
+	},
+
+	["forClassTrialUnlock"] = {
+		title = CHARACTER_UPGRADE_READY,
+		description = CHARACTER_UPGRADE_CLASS_TRIAL_UNLOCK_READY_DESCRIPTION,
+		logoutButton = ACCEPT,
+	},
+
+	["forVasService"] = {
+		title = CHARACTER_UPGRADE_READY,
+		description = CHARACTER_UPGRADE_READY_DESCRIPTION,
+		logoutButton = CHARACTER_UPGRADE_LOG_OUT_NOW,
+	},
+
+	["forLegion"] = {
+		title = BLIZZARD_STORE_LEGION_PURCHASE_READY,
+		description = BLIZZARD_STORE_LEGION_PURCHASE_READY_DESCRIPTION,
+		logoutButton = CHARACTER_UPGRADE_LOG_OUT_NOW,
+	},
+};
+
+local function GetServicesLogoutPopupText(showReason, textKey, override)
+	if override then
+		return override;
+	end
+
+	local textTable = servicesLogoutPopupTextMapping[showReason];
+	return textTable[textKey];
+end
+
+function ServicesLogoutPopup_SetShowReason(self, showReason, titleOverride, descriptionOverride)
+	local titleText = GetServicesLogoutPopupText(showReason, "title", titleOverride);
+	local description = GetServicesLogoutPopupText(showReason, "description", descriptionOverride);
+	local buttonText = GetServicesLogoutPopupText(showReason, "logoutButton");
+
+	ServicesLogoutPopup.Background.Title:SetText(titleText);
+	ServicesLogoutPopup.Background.Description:SetText(description);
+	ServicesLogoutPopup.Background.ConfirmButton:SetText(buttonText);
+
+	self.showReason = showReason;
+
+	ServicesLogoutPopup:Show();
+end
+
 function ServicesLogoutPopupConfirmButton_OnClick(self)
-	if (ServicesLogoutPopup.forBoost) then
+	local showReason = ServicesLogoutPopup.showReason;
+	local doLogoutOnConfirm = true;
+
+	if (showReason == "forClassTrialUnlock") then
+		doLogoutOnConfirm = false;
+		Outbound.ConfirmClassTrialApplyToken();
+	elseif (showReason == "forBoost") then
 		C_SharedCharacterServices.SetStartAutomatically(true, BoostProduct);
-	elseif (ServicesLogoutPopup.forVasService) then
+	elseif (showReason == "forVasService") then
 		C_PurchaseAPI.SetVASProductReady(true);
-	elseif (ServicesLogoutPopup.forLegion) then
+	elseif (showReason == "forLegion") then
 		C_PurchaseAPI.SetDisconnectOnLogout(true);
 	end
-	ServicesLogoutPopup.forBoost = false;
-	ServicesLogoutPopup.forVasService = false;
-	ServicesLogoutPopup.forLegion = false;
-	PlaySound("igMainMenuLogout");
-	Outbound.Logout();
+
+	ServicesLogoutPopup.showReason = nil;
+
+	if doLogoutOnConfirm then
+		PlaySound("igMainMenuLogout");
+		Outbound.Logout();
+	else
+		PlaySound("igMainMenuOptionCheckBoxOn");
+	end
+
 	ServicesLogoutPopup:Hide();
 end
 

@@ -852,6 +852,7 @@ end
 
 function GarrisonMissionListMixin:Update()
 	local missions;
+	local followerTypeID = self:GetMissionFrame().followerTypeID;
 	if (self.showInProgress) then
 		missions = self.inProgressMissions;
 	else
@@ -932,6 +933,13 @@ function GarrisonMissionListMixin:Update()
 				button.Summary:SetPoint("TOPLEFT", button.Title, "BOTTOMLEFT", 0, -4);	
 			end			
 			button.MissionType:SetAtlas(mission.typeAtlas);
+			if (followerTypeID == LE_FOLLOWER_TYPE_GARRISON_7_0) then
+				button.MissionType:SetSize(62, 62);
+				button.MissionType:SetPoint("TOPLEFT", 74, -6);
+			else
+				button.MissionType:SetSize(75, 75);
+				button.MissionType:SetPoint("TOPLEFT", 68, -2);
+			end
 			GarrisonMissionButton_SetRewards(button, mission.rewards, #mission.rewards);
 			button:Show();
 
@@ -1498,8 +1506,8 @@ function GarrisonFollowerMissionComplete:AnimFollowersIn(entry, hideExhuastedTro
 	local nextIndex = self.currentIndex + 1;
 	if ( self.completeMissions[nextIndex] ) then
 		MissionCompletePreload_LoadMission(self:GetParent(), self.completeMissions[nextIndex].missionID, 
-		GarrisonFollowerOptions[self.followerTypeID].showSingleMissionCompleteFollower,
-		GarrisonFollowerOptions[self.followerTypeID].showSingleMissionCompleteAnimation);
+		GarrisonFollowerOptions[self:GetParent().followerTypeID].showSingleMissionCompleteFollower,
+		GarrisonFollowerOptions[self:GetParent().followerTypeID].showSingleMissionCompleteAnimation);
 	end
 	
 	if ( entry ) then

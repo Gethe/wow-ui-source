@@ -705,7 +705,7 @@
 		<Frames>
 			<Frame parentKey="XPBar" inherits="PVPHonorSystemLargeXPBar">
 				<Anchors>
-					<Anchor point="TOP" relativePoint="TOPLEFT" x="387" y="-36"/>
+					<Anchor point="TOP" relativePoint="TOP" x="0" y="-36"/>
 				</Anchors>
 			</Frame>
 			<Button name="WorldStateScoreFramePrestige" inherits="WorldStateScoreColumnTemplate">

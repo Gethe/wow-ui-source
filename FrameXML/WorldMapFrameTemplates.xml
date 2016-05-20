@@ -260,13 +260,13 @@
 	</Button>
 
 	<Button name="WorldMapBountyBoardTabTemplate" virtual="true">
-		<Size x="42" y="43" />
+		<Size x="44" y="44" />
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="-1">
 				<Texture parentKey="Icon" mask="Interface\CharacterFrame\TempPortraitAlphaMask">
-					<Size x="32" y="32" />
+					<Size x="30" y="30" />
 					<Anchors>
-						<Anchor point="CENTER" />
+						<Anchor point="CENTER" y="1"/>
 					</Anchors>
 				</Texture>
 			</Layer>

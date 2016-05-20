@@ -110,15 +110,20 @@ function WorldMapBountyBoardMixin:RefreshBountyTabs()
 		return;
 	end
 
-	local TAB_WIDTH = 42;
-	local PADDING = 0;
+	local TAB_WIDTH = 44;
+	local PADDING = -7;
 	
 	local startX = -((#self.bounties - 1) * (TAB_WIDTH + PADDING)) / 2;
 	for bountyIndex, bounty in ipairs(self.bounties) do
 		local tab = self.bountyTabPool:Acquire();
 		local selected = self.selectedBountyIndex == bountyIndex;
 		tab:SetNormalAtlas(selected and "worldquest-tracker-ring-selected" or "worldquest-tracker-ring");
-		tab:SetHighlightAtlas("worldquest-tracker-ring-selected");
+		if selected then 
+			tab:SetHighlightTexture(nil);
+		else
+			tab:SetHighlightAtlas("worldquest-tracker-ring");
+			tab:GetHighlightTexture():SetAlpha(0.4);
+		end		
 		if IsQuestComplete(bounty.questID) then
 			tab.CheckMark:Show();
 			if not self.firstCompletedTab then
@@ -132,7 +137,7 @@ function WorldMapBountyBoardMixin:RefreshBountyTabs()
 		tab.bountyIndex = bountyIndex;
 
 		local offsetX = (PADDING + TAB_WIDTH) * (bountyIndex - 1);
-		tab:SetPoint("CENTER", self.TrackerBackground, "CENTER", startX + offsetX, 42);
+		tab:SetPoint("CENTER", self.TrackerBackground, "CENTER", startX + offsetX, 43);
 
 		tab:Show();
 	end

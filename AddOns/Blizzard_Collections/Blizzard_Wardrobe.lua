@@ -1321,8 +1321,13 @@ end
 function WardrobeCollectionFrame_UpdateProgressBar(collection)
 	local collected, total;
 	if ( WardrobeCollectionFrame.transmogType == LE_TRANSMOG_TYPE_ILLUSION ) then
-		collected = #WardrobeCollectionFrame.visualsList;
-		total = collected;
+		total = #WardrobeCollectionFrame.visualsList;
+		collected = 0;
+		for i, illusion in ipairs(WardrobeCollectionFrame.visualsList) do
+			if ( illusion.isCollected ) then
+				collected = collected + 1;
+			end
+		end
 	else
 		collected = C_TransmogCollection.GetCategoryCollectedCount(WardrobeCollectionFrame.activeCategory);
 		total = C_TransmogCollection.GetCategoryTotal(WardrobeCollectionFrame.activeCategory);

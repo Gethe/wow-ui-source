@@ -699,7 +699,7 @@ function WorldMap_SetupWorldQuestButton(button, worldQuestType, rarity, isElite,
 			button.Texture:SetAtlas("worldquest-questmarker-questionmark");
 			button.Texture:SetSize(10, 15);
 		else
-			button.Texture:SetAtlas("worldquest-icon-boss", true);
+			button.Texture:SetAtlas("worldquest-icon-dungeon", true);
 		end
 	else
 		if ( inProgress ) then
@@ -1333,7 +1333,8 @@ function WorldMapFrame_UpdateOverlayLocations()
 	end
 
 	local actionButton = WorldMapFrame.UIElementsFrame.ActionButton;
-	local actionButtonLocation = actionButton:GetDisplayLocation();
+	local useAlternateLocation = bountyBoardLocation == LE_MAP_OVERLAY_DISPLAY_LOCATION_BOTTOM_RIGHT;
+	local actionButtonLocation = actionButton:GetDisplayLocation(useAlternateLocation);
 	if actionButtonLocation then
 		WorldMapFrame_SetOverlayLocation(actionButton, actionButtonLocation);
 	end

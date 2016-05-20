@@ -162,14 +162,25 @@ function EncounterJournal_OnLoad(self)
 	if( not raidInstanceID ) then
 		instanceSelect.raidsTab.grayBox:Show();
 	end
-	if ( not dungeonInstanceID and not raidInstanceID ) then
-		UIDropDownMenu_EnableDropDown(instanceSelect.tierDropDown);
-	else
-		UIDropDownMenu_DisableDropDown(instanceSelect.tierDropDown);
-	end
 	
 	-- set the suggestion panel frame to open by default
 	EJSuggestFrame_OpenFrame();
+end
+
+function EncounterJournal_EnableTierDropDown()
+	local tierName = EJ_GetTierInfo(EJ_GetCurrentTier());
+	UIDropDownMenu_SetText(EncounterJournal.instanceSelect.tierDropDown, tierName);
+	UIDropDownMenu_EnableDropDown(EncounterJournal.instanceSelect.tierDropDown);
+end
+
+function EncounterJournal_DisableTierDropDown(removeText)
+	UIDropDownMenu_DisableDropDown(EncounterJournal.instanceSelect.tierDropDown);
+	if ( removeText ) then
+		UIDropDownMenu_SetText(EncounterJournal.instanceSelect.tierDropDown, nil);
+	else
+		local tierName = EJ_GetTierInfo(EJ_GetCurrentTier());
+		UIDropDownMenu_SetText(EncounterJournal.instanceSelect.tierDropDown, tierName);
+	end
 end
 
 function EncounterJournal_HasChangedContext(instanceID, instanceType, difficultyID)
@@ -2224,21 +2235,21 @@ function EJ_ContentTab_Select(id)
 		instanceSelect.scroll:Hide();
 		EncounterJournal.suggestFrame:Show();
 		if ( not instanceSelect.dungeonsTab.grayBox:IsShown() or not instanceSelect.raidsTab.grayBox:IsShown() ) then
-			UIDropDownMenu_DisableDropDown(instanceSelect.tierDropDown);
+			EncounterJournal_DisableTierDropDown(true);
 		else
-			UIDropDownMenu_EnableDropDown(instanceSelect.tierDropDown);
+			EncounterJournal_EnableTierDropDown();
 		end
 	elseif ( id == instanceSelect.LootJournalTab.id ) then
 		EJ_HideInstances();
 		EJ_HideSuggestPanel();
 		instanceSelect.scroll:Hide();
-		UIDropDownMenu_DisableDropDown(instanceSelect.tierDropDown);
+		EncounterJournal_DisableTierDropDown(true);
 		EncounterJournal.LootJournal:Show();
 	elseif ( id == instanceSelect.dungeonsTab.id or id == instanceSelect.raidsTab.id ) then
 		EJ_HideNonInstancePanels();	
 		instanceSelect.scroll:Show();
 		EncounterJournal_ListInstances();
-		UIDropDownMenu_EnableDropDown(instanceSelect.tierDropDown);
+		EncounterJournal_EnableTierDropDown();
 	end
 	PlaySound("igMainMenuOptionCheckBoxOn");
 end
@@ -2252,8 +2263,7 @@ function EJ_HideSuggestPanel()
 		suggestTab.selectedGlow:Hide();
 		EncounterJournal.suggestFrame:Hide();
 		
-		local tierDropDown = instanceSelect.tierDropDown;
-		UIDropDownMenu_EnableDropDown(tierDropDown);
+		EncounterJournal_EnableTierDropDown();
 
 		local tierData = EJ_TIER_DATA[EJ_GetCurrentTier()];
 		instanceSelect.bg:SetTexture(tierData.backgroundTexture);

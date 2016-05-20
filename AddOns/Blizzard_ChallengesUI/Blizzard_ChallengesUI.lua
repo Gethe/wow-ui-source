@@ -114,7 +114,7 @@ end
 
 function ChallengesDungeonIconMixin:OnEnter()
     local name = C_ChallengeMode.GetMapInfo(self.mapID);
-    GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT");
+    GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
     GameTooltip:SetText(name, 1, 1, 1);
     local _, weeklyBestTime, weeklyBestLevel = C_ChallengeMode.GetMapPlayerStats(self.mapID);
     local addSpacer = false;
@@ -159,7 +159,6 @@ function ChallengesGuildBestMixin:OnEnter()
     GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
     local name = C_ChallengeMode.GetMapInfo(leaderInfo.mapid);
     GameTooltip:SetText(CHALLENGE_MODE_GUILD_BEST_LINE_TOOLTIP_TITLE:format(name, leaderInfo.level));
-    GameTooltip:AddLine(" ");
     for i = 1, #leaderInfo.members do
         local classColorStr = RAID_CLASS_COLORS[leaderInfo.members[i].class].colorStr;
         GameTooltip:AddLine(CHALLENGE_MODE_GUILD_BEST_LINE:format(classColorStr,leaderInfo.members[i].name));
@@ -191,7 +190,7 @@ function ChallengesFrameWeeklyBestMixin:SetUp(hasWeeklyRun, bestData)
         self.Child.NoRunsThisWeek:Hide();
         local lvlStr = tostring(bestData.level);
         if (tonumber(lvlStr:sub(1,1)) == 1) then
-            self.Child.Level:SetPoint("CENTER", self.Child.Star, -1, -5);
+            self.Child.Level:SetPoint("CENTER", self.Child.Star, -4, -5);
         else
             self.Child.Level:SetPoint("CENTER", self.Child.Star, 0, -5);
         end

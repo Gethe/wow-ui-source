@@ -72,7 +72,7 @@ function ArtifactAppearancesMixin:ProcessAppearanceDeltas(lastUnlockedAppearance
 end
 
 function ArtifactAppearancesMixin:SetupAppearanceSet(setIndex, prevAppearanceSet)
-	local setID, setName, setDescription, setUnlocked, numAppearanceSlots = C_ArtifactUI.GetAppearanceSetInfo(setIndex);
+	local setID, setName, setDescription, numAppearanceSlots = C_ArtifactUI.GetAppearanceSetInfo(setIndex);
 	if setID and numAppearanceSlots > 0 then
 		local appearanceSet;
 		for appearanceIndex = 1, numAppearanceSlots do

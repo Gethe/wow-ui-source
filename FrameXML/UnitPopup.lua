@@ -1008,7 +1008,7 @@ function UnitPopup_HideButtons ()
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "RESET_CHALLENGE_MODE" ) then
-			if ( not inInstance or not C_ChallengeMode.InChallengeMode() or ( inParty and not isLeader ) ) then
+			if ( not inInstance or not C_ChallengeMode.IsChallengeModeActive() or ( inParty and not isLeader ) ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "DUNGEON_DIFFICULTY" ) then
@@ -1465,6 +1465,11 @@ function UnitPopup_OnUpdate (elapsed)
 					elseif ( value == "RESET_INSTANCES" ) then
 						if ( ( inParty and not isLeader ) or inInstance or HasLFGRestrictions() ) then
 							enable = false;			
+						end
+					elseif ( value == "RESET_CHALLENGE_MODE" ) then
+						local _, _, energized = C_ChallengeMode.GetActiveKeystoneInfo();
+						if (energized) then
+							enable = false;
 						end
 					elseif ( value == "RAF_SUMMON" ) then
 						if( not CanSummonFriend(dropdownFrame.unit) ) then

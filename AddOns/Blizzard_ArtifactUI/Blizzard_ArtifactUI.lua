@@ -114,7 +114,7 @@ end
 local function GetNumUnlockedAppearances()
 	local count = 0;
 	for setIndex = 1, C_ArtifactUI.GetNumAppearanceSets() do
-		local setID, _, _, _, numAppearanceSlots = C_ArtifactUI.GetAppearanceSetInfo(setIndex);
+		local setID, _, _, numAppearanceSlots = C_ArtifactUI.GetAppearanceSetInfo(setIndex);
 		if setID and numAppearanceSlots > 0 then
 			for appearanceIndex = 1, numAppearanceSlots do
 				local _, _, _, appearanceUnlocked = C_ArtifactUI.GetAppearanceInfo(setIndex, appearanceIndex);

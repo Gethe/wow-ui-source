@@ -898,6 +898,7 @@
 						</Frames>
 						<Scripts>
 							<OnLoad function="HonorFrame_OnLoad"/>
+                            <OnShow function="HonorFrame_OnShow"/>
 							<OnEvent function="HonorFrame_OnEvent"/>
 						</Scripts>
 					</Frame>

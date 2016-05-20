@@ -277,7 +277,9 @@ function GarrisonMission:UpdateMissionData(missionPage)
 	local totalTimeString, totalTimeSeconds, isMissionTimeImproved, successChance, partyBuffs, missionEffects, xpBonus, currencyMultipliers, goldMultiplier = C_Garrison.GetPartyMissionInfo(missionPage.missionInfo.missionID);
 
 	-- TIME
-	if ( isMissionTimeImproved ) then
+	if ( missionEffects.hasMissionTimeNegativeEffect ) then
+		totalTimeString = RED_FONT_COLOR:WrapTextInColorCode(totalTimeString);
+	elseif ( isMissionTimeImproved ) then
 		totalTimeString = GREEN_FONT_COLOR_CODE..totalTimeString..FONT_COLOR_CODE_CLOSE;
 	elseif ( totalTimeSeconds >= GARRISON_LONG_MISSION_TIME ) then
 		totalTimeString = format(GARRISON_LONG_MISSION_TIME_FORMAT, totalTimeString);
@@ -288,8 +290,7 @@ function GarrisonMission:UpdateMissionData(missionPage)
 	local rewardsFrame = missionPage.RewardsFrame;
 	-- if animating, stop it
 	if ( rewardsFrame.elapsedTime ) then
-		rewardsFrame.Chance:SetFormattedText(PERCENTAGE_STRING, rewardsFrame.endingChance);
-		rewardsFrame.currentChance = rewardsFrame.endingChance;
+		GarrisonMissionPageRewardsFrame_SetSuccessChance(rewardsFrame, rewardsFrame.endingChance, missionEffects);
 		GarrisonMissionPageRewardsFrame_StopUpdate(rewardsFrame);
 	end	
 	if ( rewardsFrame.currentChance and successChance > rewardsFrame.currentChance ) then
@@ -308,8 +309,7 @@ function GarrisonMission:UpdateMissionData(missionPage)
 		if ( rewardsFrame.currentChance and successChance < rewardsFrame.currentChance ) then
 			PlaySound("UI_Garrison_CommandTable_ReducedSuccessChance");
 		end
-		rewardsFrame.Chance:SetFormattedText(PERCENTAGE_STRING, successChance);
-		rewardsFrame.currentChance = successChance;
+		GarrisonMissionPageRewardsFrame_SetSuccessChance(rewardsFrame, successChance, missionEffects);
 	end
 
 	local followersWithAbilitiesGained = nil;
@@ -377,7 +377,12 @@ function GarrisonMission:UpdateMissionData(missionPage)
 			envCheckFrame.Check:Hide();
 		end
 		missionPage.Stage.MissionEnv:SetFormattedText(GARRISON_MISSION_ENVIRONMENT, env);
-	end	
+	elseif ( missionPage.environmentMechanic ) then
+		-- these mechanics are not counterable
+		missionPage.Stage.MissionEnv:SetFormattedText(GARRISON_MISSION_ENVIRONMENT, missionPage.environmentMechanic.name);
+	else
+		missionPage.Stage.MissionEnv:SetText(nil);
+	end
 
 	rewardsFrame.MissionXP:Show();
 	rewardsFrame.OvermaxItem:Hide();
@@ -414,6 +419,7 @@ function GarrisonMission:UpdateMissionData(missionPage)
 	
 	GarrisonMissionPage_UpdateRewardQuantities(missionPage.RewardsFrame, currencyMultipliers, goldMultiplier);
 	self:UpdateStartButton(missionPage);
+	missionPage.missionEffects = missionEffects;
 
 	missionPage.lastUpdate = GetTime();
 end
@@ -2013,13 +2019,20 @@ function GarrisonMissionPage_UpdateRewardQuantities(rewardsFrame, currencyMultip
 	end
 end
 
+function GarrisonMissionPageRewardsFrame_SetSuccessChance(self, chance, missionEffects)
+	local successChanceColor = missionEffects and missionEffects.hasSuccessChanceNegativeEffect and RED_FONT_COLOR or GREEN_FONT_COLOR;
+
+	self.Chance:SetFormattedText(successChanceColor:WrapTextInColorCode(PERCENTAGE_STRING), chance);
+	self.ChanceLabel:SetText(successChanceColor:WrapTextInColorCode(GARRISON_MISSION_CHANCE));
+	self.currentChance = chance;
+end
+
 function GarrisonMissionPageRewardsFrame_OnUpdate(self, elapsed)
 	self.elapsedTime = self.elapsedTime + elapsed;
 	-- 0 to 100 should take 1 second
 	local newChance = math.floor(self.startingChance + self.elapsedTime * 100);
 	newChance = min(newChance, self.endingChance);
-	self.Chance:SetFormattedText(PERCENTAGE_STRING, newChance);
-	self.currentChance = newChance
+	GarrisonMissionPageRewardsFrame_SetSuccessChance(self, newChance, self:GetParent().missionEffects);
 	if ( newChance == self.endingChance ) then
 		if ( newChance == 100 ) then
 			PlaySoundKitID(43507);	-- 100% chance reached

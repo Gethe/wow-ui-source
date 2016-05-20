@@ -11,6 +11,8 @@ function CreateBonusObjectiveTrackerModule()
 	module.lineTemplate = "BonusObjectiveTrackerLineTemplate";
 	module.blockOffsetX = -20;
 	module.blockOffsetY = -6;
+	module.usedProgressBars = { };
+	module.freeProgressBars = { };
 	module.fromHeaderOffsetY = -8;
 	module.blockPadding = 3;	-- need some extra room so scrollframe doesn't cut tails off gjpqy
 

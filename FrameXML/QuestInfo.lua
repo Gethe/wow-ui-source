@@ -411,10 +411,11 @@ function QuestInfo_ShowRewards()
 	end
 
 	for rewardSpellIndex = 1, numSpellRewards do
-		local texture, name, isTradeskillSpell, isSpellLearned, hideSpellLearnText, isBoostSpell, garrFollowerID = spellGetter(rewardSpellIndex);
+		local texture, name, isTradeskillSpell, isSpellLearned, hideSpellLearnText, isBoostSpell, garrFollowerID, spellID = spellGetter(rewardSpellIndex);
+		local knownSpell = IsSpellKnownOrOverridesKnown(spellID);
 
 		-- only allow the spell reward if user can learn it		
-		if ( texture and (not isBoostSpell or IsCharacterNewlyBoosted()) and (not garrFollowerID or not C_Garrison.IsFollowerCollected(garrFollowerID)) ) then
+		if ( texture and not knownSpell and (not isBoostSpell or IsCharacterNewlyBoosted()) and (not garrFollowerID or not C_Garrison.IsFollowerCollected(garrFollowerID)) ) then
 			numQuestSpellRewards = numQuestSpellRewards + 1;
 		end
 	end
@@ -522,9 +523,9 @@ function QuestInfo_ShowRewards()
 		local spellBuckets = {};
 
 		for rewardSpellIndex = 1, numSpellRewards do
-			local texture, name, isTradeskillSpell, isSpellLearned, hideSpellLearnText, isBoostSpell, garrFollowerID = spellGetter(rewardSpellIndex);
-
-			if texture and (not isBoostSpell or IsCharacterNewlyBoosted()) and (not garrFollowerID or not C_Garrison.IsFollowerCollected(garrFollowerID)) then
+			local texture, name, isTradeskillSpell, isSpellLearned, hideSpellLearnText, isBoostSpell, garrFollowerID, spellID = spellGetter(rewardSpellIndex);
+			local knownSpell = IsSpellKnownOrOverridesKnown(spellID);
+			if texture and not knownSpell and (not isBoostSpell or IsCharacterNewlyBoosted()) and (not garrFollowerID or not C_Garrison.IsFollowerCollected(garrFollowerID)) then
 				if ( isTradeskillSpell ) then
 					AddSpellToBucket(spellBuckets, QUEST_SPELL_REWARD_TYPE_TRADESKILL_SPELL, rewardSpellIndex);
 				elseif ( isBoostSpell ) then
@@ -811,7 +812,7 @@ function QuestInfo_ToggleRewardElement(frame, value, anchor)
 end
 
 QUEST_TEMPLATE_DETAIL = { questLog = nil, chooseItems = nil, contentWidth = 285,
-	canHaveSealMaterial = true, sealXOffset = 160, sealYOffset = 2,
+	canHaveSealMaterial = true, sealXOffset = 160, sealYOffset = -6,
 	elements = {
 		QuestInfo_ShowTitle, 10, -10,
 		QuestInfo_ShowDescriptionText, 0, -5,
@@ -826,7 +827,7 @@ QUEST_TEMPLATE_DETAIL = { questLog = nil, chooseItems = nil, contentWidth = 285,
 }
 
 QUEST_TEMPLATE_LOG = { questLog = true, chooseItems = nil, contentWidth = 285,
-	canHaveSealMaterial = true, sealXOffset = 160, sealYOffset = 2,
+	canHaveSealMaterial = true, sealXOffset = 160, sealYOffset = -6,
 	elements = {
 		QuestInfo_ShowTitle, 5, -5,
 		QuestInfo_ShowObjectivesText, 0, -5,
@@ -844,7 +845,7 @@ QUEST_TEMPLATE_LOG = { questLog = true, chooseItems = nil, contentWidth = 285,
 }
 
 QUEST_TEMPLATE_REWARD = { questLog = nil, chooseItems = true, contentWidth = 285,
-	canHaveSealMaterial = true, sealXOffset = 160, sealYOffset = 2,
+	canHaveSealMaterial = true, sealXOffset = 160, sealYOffset = -6,
 	elements = {
 		QuestInfo_ShowTitle, 5, -10,
 		QuestInfo_ShowRewardText, 0, -5,
@@ -854,7 +855,7 @@ QUEST_TEMPLATE_REWARD = { questLog = nil, chooseItems = true, contentWidth = 285
 }
 
 QUEST_TEMPLATE_MAP_DETAILS = { questLog = true, chooseItems = nil, contentWidth = 244,
-	canHaveSealMaterial = true, sealXOffset = 156, sealYOffset = 2,
+	canHaveSealMaterial = true, sealXOffset = 156, sealYOffset = -6,
 	elements = {
 		QuestInfo_ShowTitle, 5, -5,
 		QuestInfo_ShowObjectivesText, 0, -5,

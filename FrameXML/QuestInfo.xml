@@ -634,18 +634,18 @@
 			</Frame>
 			<Frame name="QuestInfoSealFrame">
 				<Size>
-					<AbsDimension x="257" y="70"/>
+					<AbsDimension x="257" y="78"/>
 				</Size>
 				<Layers>
 					<Layer level="ARTWORK">
 						<FontString parentKey="Text" inherits="QuestFont_Huge" justifyH="LEFT">
 							<Anchors>
-								<Anchor point="LEFT" x="5" y="-4"/>
+								<Anchor point="LEFT" x="5" y="-12"/>
 							</Anchors>
 						</FontString>
 						<Texture parentKey="Texture">
 							<Anchors>
-								<Anchor point="TOPLEFT" x="160" y="2"/>
+								<Anchor point="TOPLEFT" x="160" y="-6"/>
 							</Anchors>
 						</Texture>
 					</Layer>

@@ -599,9 +599,6 @@
 	</Frame>
 	<Frame name="GroupLootContainer" parent="UIParent" hidden="true">
 		<Size x="256" y="1"/>
-		<Anchors>
-			<Anchor point="BOTTOM" x="0" y="60"/>
-		</Anchors>
 		<Scripts>
 			<OnShow>
 				AlertFrame:UpdateAnchors();

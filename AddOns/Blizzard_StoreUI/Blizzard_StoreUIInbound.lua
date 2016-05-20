@@ -32,6 +32,10 @@ function StoreFrame_SetServicesCategory()
 	StoreFrame:SetAttribute("setservicescategory");
 end
 
+function StoreFrame_SelectLevel100BoostProduct()
+	StoreFrame:SetAttribute("selectlevel100boostproduct")
+end
+
 if (InGlue()) then
 	function StoreFrame_GetVASErrorMessage(guid, errorList)
 		local data = {};

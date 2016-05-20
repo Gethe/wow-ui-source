@@ -28,7 +28,7 @@
 	<Frame name="FlightMap_HighlightFlightLineTemplate" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="-1">
-				<Line parentKey="Fill" file="Interface/TaxiFrame/UI-Taxi-Line" thickness="28" alpha="0" alphaMode="ADD" />
+				<Line parentKey="Fill" atlas="_UI-Taxi-Line-horizontal" alpha="0" alphaMode="ADD" />
 			</Layer>
 		</Layers>
 		<Animations>
@@ -49,12 +49,12 @@
 	<Frame name="FlightMap_BackgroundFlightLineTemplate" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="-2">
-				<Line parentKey="Fill" file="Interface/TaxiFrame/UI-Taxi-Line" thickness="28" alpha="0" />
+				<Line parentKey="Fill" atlas="_UI-Taxi-Line-horizontal" alpha="0" />
 			</Layer>
 		</Layers>
 		<Animations>
 			<AnimationGroup parentKey="RevealAnim" setToFinalAlpha="true">
-				<Alpha parentKey="Alpha" childKey="Fill" duration=".15" fromAlpha="0" toAlpha=".5" order="1"/>
+				<Alpha parentKey="Alpha" childKey="Fill" duration=".15" fromAlpha="0" toAlpha=".85" order="1"/>
 				<LineScale parentKey="Scale" childKey="Fill" smoothing="IN" duration=".15" order="1" fromScaleX="0" fromScaleY="1" toScaleX="1" toScaleY="1">
 					<Origin point="LEFT">
 						<Offset x="1" y="0"/>

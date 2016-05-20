@@ -3,6 +3,11 @@
 	<Script file="MovieFrame.lua"/>
 	<MovieFrame name="MovieFrame" setAllPoints="true" hidden="true" parent="GlueParent" enableKeyboard="true">
 		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" setAllPoints="true">
+					<Color r="0" g="0" b="0" a="1"/>
+				</Texture>
+			</Layer>
 			<Layer level="OVERLAY">
 				<!-- This quad is needed to prevent stutter in movie playback in the Mac version.  -->
 				<!-- Please do not delete it from here.  It will be hidden on Windows in MovieFrame_OnLoad(). -->

@@ -9,7 +9,7 @@ function Outbound.ShowUpgradeConfirmation()
 end
 
 function Outbound.ShowStoreServices()
-	securecall("StaticPopup_Show", "CONFIRM_UNLOCK_TRIAL_CHARACTER_PURCHASE_BOOST_FIRST");
+	securecall("ClassTrial_ShowStoreServices");
 end
 
 function Outbound.SetClassTrialHasAvailableBoost(hasBoost)

@@ -112,8 +112,8 @@ function WorldQuestDataProviderMixin:AddWorldQuest(info)
 		pin.Texture:SetAtlas(WORLD_QUEST_ICONS_BY_PROFESSION[tradeskillLineID]);
 		pin.Texture:SetSize(width * 2, height * 2);
 	elseif worldQuestType == LE_QUEST_TAG_TYPE_WORLD_BOSS then
-		local _, width, height = GetAtlasInfo("worldquest-icon-boss");
-		pin.Texture:SetAtlas("worldquest-icon-boss");
+		local _, width, height = GetAtlasInfo("worldquest-icon-dungeon");
+		pin.Texture:SetAtlas("worldquest-icon-dungeon");
 		pin.Texture:SetSize(width * 2, height * 2);
 	else
 		pin.Texture:SetAtlas("worldquest-questmarker-questbang");
@@ -136,7 +136,7 @@ WorldQuestPinMixin = CreateFromMixins(MapCanvasPinMixin);
 
 function WorldQuestPinMixin:OnLoad()
 	self:SetAlphaLimits(2.0, 0.0, 1.0);
-	self:SetScalingLimits(1, 1.0, 0.65);
+	self:SetScalingLimits(1, 1.0, 0.50);
 
 	self.UpdateTooltip = self.OnMouseEnter;
 end

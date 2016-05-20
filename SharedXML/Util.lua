@@ -257,6 +257,10 @@ function PercentageBetween(value, startValue, endValue)
 	return (startValue - value) / (startValue - endValue);
 end
 
+function ClampedPercentageBetween(value, startValue, endValue)
+	return Saturate(PercentageBetween(value, startValue, endValue));
+end
+
 local TARGET_FRAME_PER_SEC = 60.0;
 local TARGET_MS_PER_FRAME = TARGET_FRAME_PER_SEC / 1000;
 function FrameDeltaLerp(startValue, endValue, amount)

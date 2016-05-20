@@ -54,6 +54,10 @@ function TradeSkillRecipeListMixin:OnUpdate()
 			self.tradeSkillChanged = nil;
 		end
 
+		if C_TradeSkillUI.IsRecipeSearchInProgress() then
+			return;
+		end
+
 		if not C_TradeSkillUI.IsTradeSkillReady() then
 			wipe(self.dataList);
 			self:SetSelectedRecipeID(nil);

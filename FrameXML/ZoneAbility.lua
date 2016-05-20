@@ -30,19 +30,20 @@ end
 
 function ZoneAbilityFrame_OnEvent(self, event)
 	local spellID, garrisonType = GetZoneAbilitySpellInfo();
-	if ((event == "SPELLS_CHANGED" or event=="UNIT_AURA") and self.SpellButton.spellID ~= spellID) then
+	if ((event == "SPELLS_CHANGED" or event=="UNIT_AURA")) then
 		self.baseName = GetSpellInfo(spellID);
 	end
 
 	if (not self.baseName) then
+		self:Hide();
 		return;
 	end
 
 	self.SpellButton.spellID = spellID;
-	local lastState = self.BuffSeen;
-	self.BuffSeen = (spellID ~= 0);
+	local lastState = self.buffSeen;
+	self.buffSeen = (spellID ~= 0);
 
-	if (self.BuffSeen) then
+	if (self.buffSeen) then
 		if (not HasZoneAbilitySpellOnBar(self)) then
 			if ( not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_GARRISON_ZONE_ABILITY) and garrisonType == LE_GARRISON_TYPE_6_0 ) then
 				ZoneAbilityButtonAlert:SetHeight(ZoneAbilityButtonAlert.Text:GetHeight()+42);
@@ -63,7 +64,7 @@ function ZoneAbilityFrame_OnEvent(self, event)
 		self:Hide();
 	end
 
-	if (lastState ~= self.BuffSeen) then
+	if (lastState ~= self.buffSeen) then
 		UIParent_ManageFramePositions();
 		ActionBarController_UpdateAll(true);
 	end

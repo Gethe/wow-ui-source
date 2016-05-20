@@ -209,7 +209,6 @@ function QuestFrameProgressItems_Update()
 	local questItemName = "QuestProgressItem";
 	local buttonIndex = 1;
 	if ( numRequiredItems > 0 or GetQuestMoneyToGet() > 0 or numRequiredCurrencies > 0) then
-		QuestProgressRequiredItemsText:Show();
 		
 		-- If there's money required then anchor and display it
 		if ( GetQuestMoneyToGet() > 0 ) then
@@ -235,17 +234,30 @@ function QuestFrameProgressItems_Update()
 			_G[questItemName..1]:SetPoint("TOPLEFT", "QuestProgressRequiredItemsText", "BOTTOMLEFT", -3, -5);
 		end
 
+		-- Keep track of how many actual required items there are, in case we hide all of them.
+		local actualNumRequiredItems = 0;
 		for i=1, numRequiredItems do	
-			local requiredItem = _G[questItemName..buttonIndex];
-			requiredItem.type = "required";
-			requiredItem.objectType = "item";
-			requiredItem:SetID(i);
-			local name, texture, numItems = GetQuestItemInfo(requiredItem.type, i);
-			SetItemButtonCount(requiredItem, numItems);
-			SetItemButtonTexture(requiredItem, texture);
-			requiredItem:Show();
-			_G[questItemName..buttonIndex.."Name"]:SetText(name);
-			buttonIndex = buttonIndex+1;
+			local hidden = IsQuestItemHidden(i);
+			if (hidden == 0) then
+				local requiredItem = _G[questItemName..buttonIndex];
+				requiredItem.type = "required";
+				requiredItem.objectType = "item";
+				requiredItem:SetID(i);
+				local name, texture, numItems = GetQuestItemInfo(requiredItem.type, i);
+				SetItemButtonCount(requiredItem, numItems);
+				SetItemButtonTexture(requiredItem, texture);
+				requiredItem:Show();
+				_G[questItemName..buttonIndex.."Name"]:SetText(name);
+				buttonIndex = buttonIndex+1;
+				actualNumRequiredItems = actualNumRequiredItems+1;
+			end
+		end
+
+		-- Show the "Required Items" text if needed.
+		if (actualNumRequiredItems ~= 0) then
+			QuestProgressRequiredItemsText:Show();
+		else
+			QuestProgressRequiredItemsText:Hide();
 		end
 		
 		for i=1, numRequiredCurrencies do	

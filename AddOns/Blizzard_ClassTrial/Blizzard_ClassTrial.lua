@@ -16,6 +16,18 @@ function ClassTrial_SetHasAvailableBoost(hasBoost)
 	ClassTrialThanksForPlayingDialog:UpdateDialogButtons(hasBoost);
 end
 
+function ClassTrial_ConfirmApplyToken()
+	ClassTrialSecureFrame:SetAttribute("upgradecharacter-confirm", UnitGUID("player"));
+end
+
+function ClassTrial_ShowStoreServices()
+	if not StoreFrame_IsShown or not StoreFrame_IsShown() then
+		ToggleStoreUI();
+	end
+
+	StoreFrame_SelectLevel100BoostProduct();
+end
+
 ClassTrialDialogMixin = {}
 
 function ClassTrialDialogMixin:ShowThanks()
@@ -40,7 +52,7 @@ function ClassTrialDialogMixin:BuyCharacterBoost()
 end
 
 function ClassTrialDialogMixin:ConfirmCharacterBoost()
-	ClassTrialSecureFrame:SetAttribute("upgradecharacter-confirm", UnitGUID("player"));
+	ClassTrial_ConfirmApplyToken();
 end
 
 function ClassTrialDialogMixin:DecideLater()

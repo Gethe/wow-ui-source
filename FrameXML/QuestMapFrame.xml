@@ -353,7 +353,7 @@
 												<Anchor point="TOP" x="-2" y="0"/>
 											</Anchors>
 										</Texture>
-										<FontString inherits="GameFontHighlightSmall" parentKey="Points" text="25">
+										<FontString inherits="GameFontHighlightSmall" parentKey="Points">
 											<Size x="42" y="16"/>
 											<Anchors>
 												<Anchor point="TOP" relativeKey="$parent.AchIcon" x="0" y="-15"/>

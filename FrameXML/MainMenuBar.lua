@@ -13,10 +13,8 @@ end
 
 
 function MainMenuBar_OnLoad(self)
-	self:RegisterEvent("BAG_UPDATE");
 	self:RegisterEvent("ACTIONBAR_PAGE_CHANGED");
 	self:RegisterEvent("CURRENCY_DISPLAY_UPDATE");
-	self:RegisterEvent("ADDON_LOADED");
 	self:RegisterEvent("UNIT_LEVEL");
 	
 	MainMenuBar.state = "player";
@@ -127,7 +125,7 @@ end
 function MainMenuBar_GetNumArtifactTraitsPurchasableFromXP(pointsSpent, artifactXP)
 	local numPoints = 0;
 	local xpForNextPoint = C_ArtifactUI.GetCostForPointAtRank(pointsSpent);
-	while artifactXP >= xpForNextPoint do
+	while artifactXP >= xpForNextPoint and xpForNextPoint > 0 do
 		artifactXP = artifactXP - xpForNextPoint;
 
 		pointsSpent = pointsSpent + 1;

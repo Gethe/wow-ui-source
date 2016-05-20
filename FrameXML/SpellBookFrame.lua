@@ -922,6 +922,7 @@ end
 
 function SpellBookFrame_OpenToPageForSlot(slot, reason)
 	local alreadyOpen = SpellBookFrame:IsShown();
+	SpellBookFrame.bookType = BOOKTYPE_SPELL;
 	ShowUIPanel(SpellBookFrame);
 	if (SpellBookFrame.selectedSkillLine ~= 2) then
 		SpellBookFrame.selectedSkillLine = 2;
