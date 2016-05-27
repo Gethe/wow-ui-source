@@ -963,7 +963,9 @@ local vasErrorData = {
 	[LE_VAS_ERROR_TOO_MUCH_MONEY_FOR_LEVEL] = {
 		msg = function(character)
 			local str = "";
-			if (character.level > 80) then
+			if (character.level >= 100) then
+				str = GetSecureMoneyString(250000 * COPPER_PER_SILVER * SILVER_PER_GOLD, true, true);
+			elseif (character.level > 80) then
 				str = GetSecureMoneyString(50000 * COPPER_PER_SILVER * SILVER_PER_GOLD, true, true);
 			elseif (character.level > 70) then
 				str = GetSecureMoneyString(20000 * COPPER_PER_SILVER * SILVER_PER_GOLD, true, true);

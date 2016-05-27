@@ -33,8 +33,9 @@ function BoostTutorial:UPDATE_BONUS_ACTIONBAR()
 end
 
 function BoostTutorial:SCENARIO_UPDATE()
-	if not C_Scenario.IsInScenario() then
+	if not IsBoostTutorialScenario() then
 		MainMenuMicroButton_SetAlertsEnabled(true);
+		self:UnhighlightSpells();
 	end
 end
 

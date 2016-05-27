@@ -905,8 +905,14 @@ function Class_ActionBarCallout:InitiatePointer()
 end
 
 function Class_ActionBarCallout:Warrior_AttemptPointer2()
-	--TODO: get this from GetSpellInfo() when implemented
-	local requiredRage = 20;
+	local requiredRage = 25; -- fallback value, something decentish
+	local costTable = GetSpellPowerCost(TutorialData.StartingAbility.WARRIOR);
+	for _, costInfo in pairs(costTable) do
+		if (costInfo.type == SPELL_POWER_RAGE) then
+			requiredRage = costInfo.cost;
+			break;
+		end
+	end
 
 	-- Callout mortal strike if they have enough rage, otherwise wait
 	if (UnitPower('player') >= requiredRage) then
@@ -1690,7 +1696,7 @@ end
 local Class_Death_ResurrectPrompt = class("Death_ResurrectPrompt", Class_TutorialBase);
 
 function Class_Death_ResurrectPrompt:OnBegin()
-	self:ShowPointerTutorial(str(NPE_RESURRECT), "LEFT", StaticPopup1);
+	self:ShowPointerTutorial(str(NPE_RESURRECT), "UP", StaticPopup1);
 	Dispatcher:RegisterEvent("PLAYER_UNGHOST", self);
 end
 

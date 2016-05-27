@@ -439,7 +439,7 @@ function HelpFrameStuckHearthstone_Update(self)
 	local hearthstoneID = PlayerHasHearthstone();
 	local cooldown = self.Cooldown;
 	local start, duration, enable = GetItemCooldown(hearthstoneID or 0);
-	CooldownFrame_SetTimer(cooldown, start, duration, enable);
+	CooldownFrame_Set(cooldown, start, duration, enable);
 	if (not hearthstoneID or duration > 0 and enable == 0) then
 		self.IconTexture:SetVertexColor(0.4, 0.4, 0.4);
 	else

@@ -393,7 +393,7 @@ function EquipmentFlyout_DisplayButton(button, paperDollItemSlot)
 
 		SetItemButtonQuality(button, quality);
 
-		CooldownFrame_SetTimer(button.cooldown, start, duration, enable);
+		CooldownFrame_Set(button.cooldown, start, duration, enable);
 
 		button.UpdateTooltip = function () GameTooltip:SetOwner(EquipmentFlyoutFrame.buttonFrame, "ANCHOR_RIGHT", 6, -EquipmentFlyoutFrame.buttonFrame:GetHeight() - 6); setTooltip(); end;
 		if ( button:IsMouseOver() ) then

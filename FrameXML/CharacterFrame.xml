@@ -196,46 +196,6 @@
 					<Anchor point="BOTTOMRIGHT"  x="-4" y="4"/>
 				</Anchors>
 			</Frame>
-			<Button name="CharacterFrameExpandButton" hidden="true">
-				<Size x="32" y="32"/>
-				<Anchors>
-					<Anchor point="BOTTOMRIGHT" relativeTo="CharacterFrameInset" x="-2" y="-1"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self:SetFrameLevel(self:GetParent():GetFrameLevel() + 2);
-					</OnLoad>
-					<OnClick>
-						if (CharacterFrame.Expanded) then
-							SetCVar("characterFrameCollapsed", "1");
-							PlaySound("igCharacterInfoClose");
-							CharacterFrame_Collapse();
-						else
-							SetCVar("characterFrameCollapsed", "0");
-							PlaySound("igCharacterInfoOpen");
-							CharacterFrame_Expand();
-						end
-						if (GameTooltip:GetOwner() == self) then
-							self:GetScript("OnEnter")(self);
-						end
-					</OnClick>
-					<OnEnter>
-						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						if (CharacterFrame.Expanded) then
-							GameTooltip:SetText(HIGHLIGHT_FONT_COLOR_CODE..self.collapseTooltip..FONT_COLOR_CODE_CLOSE);
-						else
-							GameTooltip:SetText(HIGHLIGHT_FONT_COLOR_CODE..self.expandTooltip..FONT_COLOR_CODE_CLOSE);
-						end
-					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
-				</Scripts>
-				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
-				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
-				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
-				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
-			</Button>
 			
 			<Frame name="CharacterStatsPane" hidden="true">
 				<Anchors>
@@ -266,9 +226,9 @@
 								</Texture>
 							</Layer>
 							<Layer level="ARTWORK">
-								<FontString parentKey="Value" inherits="Game22Font_o1">
+								<FontString parentKey="Value" inherits="Game15Font_o1">
 									<Anchors>
-										<Anchor point="CENTER" relativeKey="$parent.ItemLevelBackground" x="0" y="-2"/>
+										<Anchor point="CENTER" relativeKey="$parent.ItemLevelBackground" x="0" y="-1"/>
 									</Anchors>
 								</FontString>
 							</Layer>

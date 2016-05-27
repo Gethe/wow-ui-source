@@ -1790,7 +1790,16 @@ function CharacterCreate_TypeButtonOnEnable(self)
 end
 
 function SelectSpecFrame_OnLoad(self)
+	local trialBoostSpecButtonLayoutData = {
+		initialAnchor = { point = "TOPLEFT", relativeKey = "Title", relativePoint = "BOTTOM", x = -88, y = -25 },
+		subsequentAnchor = { point = "TOP", relativePoint = "BOTTOM", x = 0, y = -35 },
+		buttonInsets = { 0, -170, -20, -20 },
+		specNameWidth = 115,
+		specNameFont = "GameFontNormalMed2",
+	}
+
 	self.specButtonClickedCallback = CharacterCreate_UpdateOkayButton;
+	self.layoutData = trialBoostSpecButtonLayoutData;
 	self.selected = nil;
 end
 

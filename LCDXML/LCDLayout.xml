@@ -71,21 +71,13 @@
 			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="40" Wrap="false"/>
 			<RelOrigin RelTo="HASTE_FLD" x="0" y="8" />
 		</LCDText>
-		<LCDText name="HIT" text="HIT_LCD" id="57">
-		  <Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="28" Wrap="false"/>
-			<RelOrigin RelTo="POWER" x="0" y="8" />
-		</LCDText>
-		<LCDText name="HIT_FLD" id="11">
-			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="40" Wrap="false"/>
-			<RelOrigin RelTo="POWER_FLD" x="0" y="8" />
-		</LCDText>
 		<LCDText name="CRIT" text="CRIT_ABBR" id="58">
 			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="28" Wrap="false"/>
-			<RelOrigin RelTo="HIT" x="0" y="8" />
+			<RelOrigin RelTo="POWER" x="0" y="8" />
 		</LCDText>
 		<LCDText name="CRIT_FLD" id="11">
 			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="40" Wrap="false"/>
-			<RelOrigin RelTo="HIT_FLD" x="0" y="8" />
+			<RelOrigin RelTo="POWER_FLD" x="0" y="8" />
 		</LCDText>
     </LCDSubscreen>
     <LCDSubscreen name="Defense" id="1">
@@ -120,14 +112,6 @@
 		<LCDText name="BLOCK_FLD" id="11">
 			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="40" Wrap="false"/>
 			<RelOrigin RelTo="PARRY_FLD" x="0" y="8" />
-		</LCDText>
-		<LCDText name="RESILIENCE" text="RESILIENCE_LCD" id="48">
-			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="28" Wrap="false"/>
-			<RelOrigin RelTo="BLOCK" x="0" y="8" />
-		</LCDText>
-		<LCDText name="RESILIENCE_FLD" id="11">
-			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="40" Wrap="false"/>
-			<RelOrigin RelTo="BLOCK_FLD" x="0" y="8" />
 		</LCDText>
     </LCDSubscreen>
     <LCDSubscreen name="Spell" id="2">

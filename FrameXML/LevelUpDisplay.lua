@@ -14,11 +14,7 @@ LEVEL_UP_EVENTS = {
 --  Level  = {unlock}
 	[10] = {"SpecializationUnlocked", "BGsUnlocked"},
 	[15] = {"TalentsUnlocked","LFDUnlocked"},
-	[30] = {"DualSpec"},
-	[70] = {"HeroicBurningCrusade"},
-	[80] = {"HeroicWrathOfTheLichKing"},
-	[85] = {"HeroicCataclysm"},
-	[90] = {"HeroicMistsOfPandaria"},
+	[110]= {"HonorTalentsUnlocked"},
 }
 
 SUBICON_TEXCOOR_BOOK 	= {0.64257813, 0.72070313, 0.03710938, 0.11132813};
@@ -136,46 +132,14 @@ LEVEL_UP_TYPES = {
 										subText=LEVEL_UP_FEATURE,
 										link=LEVEL_UP_FEATURE2..LEVEL_UP_LFD_LINK
 									},
-
-	["DualSpec"] 				=	{	icon="Interface\\Icons\\INV_Misc_Coin_01",
+									
+	["HonorTalentsUnlocked"] 	= 	{	icon="Interface\\Icons\\Ability_DualWield",
 										subIcon=SUBICON_TEXCOOR_LOCK,
-										text=LEVEL_UP_DUALSPEC,
+										text=PVP_TALENTS,
 										subText=LEVEL_UP_FEATURE,
-										link=LEVEL_UP_FEATURE2..LEVEL_UP_DUAL_SPEC_LINK
+										link=LEVEL_UP_FEATURE2..LEVEL_UP_HONOR_LINK
 									},
 
-	["HeroicBurningCrusade"]	=	{	entryType = "heroicdungeon",
-										tier = 2,
-										icon="Interface\\Icons\\ExpansionIcon_BurningCrusade",
-										subIcon=SUBICON_TEXCOOR_LOCK,
-										text=EXPANSION_NAME1,
-										subText=LEVEL_UP_HEROIC,
-									},
-									
-	["HeroicWrathOfTheLichKing"]= 	{	entryType = "heroicdungeon",
-										tier = 3,
-										icon="Interface\\Icons\\ExpansionIcon_WrathoftheLichKing",
-										subIcon=SUBICON_TEXCOOR_LOCK,
-										text=EXPANSION_NAME2,
-										subText=LEVEL_UP_HEROIC,
-									},
-									
-	["HeroicCataclysm"]			=	{	entryType = "heroicdungeon",
-										tier = 4,
-										icon="Interface\\Icons\\ExpansionIcon_Cataclysm",
-										subIcon=SUBICON_TEXCOOR_LOCK,
-										text=EXPANSION_NAME3,
-										subText=LEVEL_UP_HEROIC,
-									},
-									
-	["HeroicMistsOfPandaria"]	= 	{ 	entryType = "heroicdungeon",
-										tier = 5,
-										icon="Interface\\Icons\\ExpansionIcon_MistsofPandaria",
-										subIcon=SUBICON_TEXCOOR_LOCK,
-										text=EXPANSION_NAME4,
-										subText=LEVEL_UP_HEROIC
-									},
-									
 ------ HACKS BELOW		
  	["Teleports"] 			= {	spellID=109424	},
 	["PortalsHorde"]		= {	spellID=109400	},
@@ -191,9 +155,6 @@ LEVEL_UP_TYPES = {
  	["PaliMountTauren2"] 	= {	spellID=69826	},
  	["PaliMountDraenei1"] 	= {	spellID=73629	},
  	["PaliMountDraenei2"] 	= {	spellID=73630	},
- 	
-	["Plate"]	 			= {	spellID=750, feature=true},
-	["Mail"] 				= {	spellID=8737, feature=true	},
 	
 	["TrackBeast"] 			= {	spellID=1494  },
 	["TrackHumanoid"] 		= {	spellID=19883  },
@@ -224,37 +185,25 @@ LEVEL_UP_CLASS_HACKS = {
 								[20] = {"LockMount1"},
 								[40] = {"LockMount2"},
 							},
-	["SHAMAN"] 		= {
-							--  Level  = {unlock}
-								[40] = {"Mail"},
-							},
-	["HUNTER"] 		= {
-							--  Level  = {unlock}
-								[40] = {"Mail"},
-							},
-	["WARRIOR"] 		= {
-							--  Level  = {unlock}
-								[40] = {"Plate"},
-							},
 	["PALADINHorde"] 		= {
 							--  Level  = {unlock}
 								[20] = {"PaliMountHorde1"},
-								[40] = {"PaliMountHorde2", "Plate"},
+								[40] = {"PaliMountHorde2"},
 							},
 	["PALADINAlliance"] 	= {
 							--  Level  = {unlock}
 								[20] = {"PaliMountAlliance1"},
-								[40] = {"PaliMountAlliance2", "Plate"},
+								[40] = {"PaliMountAlliance2"},
 							},
 	["PALADINTauren"]	= {
 							--  Level  = {unlock}
 								[20] = {"PaliMountTauren1"},
-								[40] = {"PaliMountTauren2", "Plate"},
+								[40] = {"PaliMountTauren2"},
 							},	
 	["PALADINDraenei"]	= {
 							--  Level  = {unlock}
 								[20] = {"PaliMountDraenei1"},
-								[40] = {"PaliMountDraenei2", "Plate"},
+								[40] = {"PaliMountDraenei2"},
 							},
 	["DEMONHUNTER"]		= {
 							--  Level  = {unlock}

@@ -291,7 +291,9 @@ function GarrisonFollowerTooltipTemplate_SetGarrisonFollower(tooltipFrame, data,
 		if ( traitCount > 0 ) then
 			tooltipFrame.UnderBiased:SetPoint("TOPLEFT", tooltipFrame.Traits[traitCount], "BOTTOMLEFT", 0, -spacingBeforeUnderBiasedString);
 		elseif ( abilityCount > 0 ) then
-			tooltipFrame.UnderBiased:SetPoint("TOPLEFT", tooltipFrame.Abilities[abilityCount], "BOTTOMLEFT", 0, -spacingBeforeUnderBiasedString);
+			tooltipFrame.UnderBiased:SetPoint("TOPLEFT", tooltipFrame.Abilities[abilityCount + specializationCount], "BOTTOMLEFT", 0, -spacingBeforeUnderBiasedString);
+		elseif ( specializationCount > 0 ) then
+			tooltipFrame.UnderBiased:SetPoint("TOPLEFT", tooltipFrame.Abilities[specializationCount], "BOTTOMLEFT", 0, -spacingBeforeUnderBiasedString);
 		else
 			tooltipFrame.UnderBiased:SetPoint("TOPLEFT", tooltipFrame.AbilitiesLabel, "TOPLEFT", 0, -spacingBeforeUnderBiasedString);
 		end

@@ -1048,7 +1048,7 @@ function WardrobeCollectionFrame_FilterVisuals()
 		local visualsList = WardrobeCollectionFrame.visualsList;
 		local filteredVisualsList = { };
 		for i = 1, #visualsList do
-			if ( visualsList[i].isUsable ) then
+			if ( visualsList[i].isUsable and visualsList[i].isCollected ) then
 				tinsert(filteredVisualsList, visualsList[i]);
 			end
 		end
@@ -1130,11 +1130,13 @@ function WardrobeCollectionFrame_Update()
 	local cameraID;
 	local appearanceVisualID;	-- for weapon when looking at enchants
 	local changeModel = false;
+	local isAtTransmogrifier = WardrobeFrame_IsAtTransmogrifier();
+
 	if ( WardrobeCollectionFrame.transmogType == LE_TRANSMOG_TYPE_ILLUSION ) then
 		-- for enchants we need to get the visual of the item in that slot
 		local appearanceSourceID;
 		appearanceSourceID, appearanceVisualID = WardrobeCollectionFrame_GetWeaponInfoForEnchant(WardrobeCollectionFrame.activeSlot);
-		cameraID = C_TransmogCollection.GetAppearanceCameraID(appearanceVisualID);
+		cameraID = C_TransmogCollection.GetAppearanceCameraIDBySource(appearanceSourceID);
 		if ( appearanceVisualID ~= WardrobeCollectionFrame.illusionWeaponVisualID ) then
 			WardrobeCollectionFrame.illusionWeaponVisualID = appearanceVisualID;
 			changeModel = true;
@@ -1156,7 +1158,7 @@ function WardrobeCollectionFrame_Update()
 
 	local baseSourceID, baseVisualID, appliedSourceID, appliedVisualID, pendingSourceID, pendingVisualID, hasPendingUndo;
 	local showUndoIcon;
-	if ( WardrobeFrame_IsAtTransmogrifier() ) then
+	if ( isAtTransmogrifier ) then
 		baseSourceID, baseVisualID, appliedSourceID, appliedVisualID, pendingSourceID, pendingVisualID, hasPendingUndo = C_Transmog.GetSlotVisualInfo(GetInventorySlotInfo(WardrobeCollectionFrame.activeSlot), WardrobeCollectionFrame.transmogType);
 		if ( appliedVisualID ~= NO_TRANSMOG_VISUAL_ID ) then
 			if ( hasPendingUndo ) then
@@ -1239,7 +1241,7 @@ function WardrobeCollectionFrame_Update()
 			-- favorite
 			model.Favorite.Icon:SetShown(visualInfo.isFavorite);
 			-- hide visual option
-			model.HideVisual.Icon:SetShown(visualInfo.isHideVisual);
+			model.HideVisual.Icon:SetShown(isAtTransmogrifier and visualInfo.isHideVisual);
 
 			if ( GameTooltip:GetOwner() == model ) then
 				WardrobeCollectionFrameModel_OnEnter(model);
@@ -1503,7 +1505,12 @@ function WardrobeCollectionFrameModel_OnMouseDown(self, button)
 	elseif ( IsModifiedClick("DRESSUP") ) then
 		if ( WardrobeCollectionFrame.transmogType == LE_TRANSMOG_TYPE_APPEARANCE ) then
 			local sourceID = WardrobeCollectionFrame_GetAnAppearanceSourceFromVisual(self.visualInfo.visualID);
-			DressUpVisual(sourceID, WardrobeCollectionFrame.activeSlot);
+			local slot = WardrobeCollectionFrame.activeSlot;
+			-- don't specify a slot for ranged weapons
+			if ( WardrobeCollectionFrame_IsCategoryRanged(WardrobeCollectionFrame.activeCategory) ) then
+				slot = nil;
+			end
+			DressUpVisual(sourceID, slot);
 		elseif ( WardrobeCollectionFrame.transmogType == LE_TRANSMOG_TYPE_ILLUSION ) then
 			local weaponSourceID = WardrobeCollectionFrame_GetWeaponInfoForEnchant(WardrobeCollectionFrame.activeSlot);
 			DressUpVisual(weaponSourceID, WardrobeCollectionFrame.activeSlot, self.visualInfo.sourceID);

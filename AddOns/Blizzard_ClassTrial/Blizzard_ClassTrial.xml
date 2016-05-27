@@ -113,8 +113,8 @@
 			<Layer level="ARTWORK">
 				<FontString parentKey="TimerText" inherits="Game13Font" justifyH="LEFT">
 				<Anchors>
-					<Anchor point="TOPLEFT" x="65.0" y="-6" />
-					<Anchor point="BOTTOMRIGHT" x="-10.0" y="6" />
+					<Anchor point="TOPLEFT" x="58" y="-6" />
+					<Anchor point="BOTTOMRIGHT" x="-22" y="6" />
 				</Anchors>
 					<Color r="1" g=".82" b="0"/>
 				</FontString>

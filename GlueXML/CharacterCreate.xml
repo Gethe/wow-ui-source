@@ -1913,13 +1913,6 @@
 										</FontString>
 									</Layer>
 								</Layers>
-								<Frames>
-									<CheckButton parentArray="SpecButtons" inherits="CharacterUpgradeSelectSpecRadioButtonTemplate">
-									<Anchors>
-										<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOM" x="-88.0" y="-25.0" />
-									</Anchors>
-									</CheckButton>
-								</Frames>
 								<Animations>
 									<AnimationGroup inherits="RequirementPulseAnimationGroupTemplate"/>
 								</Animations>
@@ -1938,7 +1931,7 @@
 									<Layer level="BACKGROUND">
 										<Texture file="Interface\Glues\CharacterCreate\Pandaren-Faction-BannerCover">
 											<Anchors>
-												<Anchor point="TOP"/>
+												<Anchor point="TOP" y="47"/>
 											</Anchors>
 										</Texture>
 									</Layer>
@@ -1955,12 +1948,12 @@
 								<Frames>
 									<CheckButton parentArray="FactionButtons" inherits="CharacterCreateSelectFactionRadioButtonTemplate" id="1">
 										<Anchors>
-											<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOM" x="22.0" y="-5.0" />
+											<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOM" x="22.0" y="-20.0" />
 										</Anchors>
 									</CheckButton>
 									<CheckButton parentArray="FactionButtons" inherits="CharacterCreateSelectFactionRadioButtonTemplate" id="2">
 										<Anchors>
-											<Anchor point="TOPRIGHT" relativeKey="$parent.Title" relativePoint="BOTTOM" x="-22.0" y="-5.0" />
+											<Anchor point="TOPRIGHT" relativeKey="$parent.Title" relativePoint="BOTTOM" x="-22.0" y="-20.0" />
 										</Anchors>
 									</CheckButton>
 								</Frames>

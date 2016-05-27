@@ -23,7 +23,7 @@ local SpecialCalloutRanges = {
 -- DRUID	= , --
 
 TutorialData.StartingAbility = {
-	WARRIOR	= 12294,	-- Mortal Strike
+	WARRIOR	= 1464,		-- Slam
 	PALADIN	= 35395,	-- Crusader Strike
 	HUNTER	= 193455,	-- Cobra Shot
 	ROGUE	= 53,		-- Backstab

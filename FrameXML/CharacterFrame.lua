@@ -152,24 +152,17 @@ end
 function CharacterFrame_Collapse()
 	CharacterFrame:SetWidth(PANEL_DEFAULT_WIDTH);
 	CharacterFrame.Expanded = false;
-	CharacterFrameExpandButton:SetNormalTexture("Interface\\Buttons\\UI-SpellbookIcon-NextPage-Up");
-	CharacterFrameExpandButton:SetPushedTexture("Interface\\Buttons\\UI-SpellbookIcon-NextPage-Down");
-	CharacterFrameExpandButton:SetDisabledTexture("Interface\\Buttons\\UI-SpellbookIcon-NextPage-Disabled");
 	for i = 1, #PAPERDOLL_SIDEBARS do
 		_G[PAPERDOLL_SIDEBARS[i].frame]:Hide();
 	end
 	CharacterFrameInsetRight:Hide();
 	UpdateUIPanelPositions(CharacterFrame);
 	PaperDollFrame_SetLevel();
-	CharacterTrialLevelErrorText:SetPoint("TOP", CharacterLevelText, "BOTTOM", 0, -3);
 end
 
 function CharacterFrame_Expand()
 	CharacterFrame:SetWidth(CHARACTERFRAME_EXPANDED_WIDTH);
 	CharacterFrame.Expanded = true;
-	CharacterFrameExpandButton:SetNormalTexture("Interface\\Buttons\\UI-SpellbookIcon-PrevPage-Up");
-	CharacterFrameExpandButton:SetPushedTexture("Interface\\Buttons\\UI-SpellbookIcon-PrevPage-Down");
-	CharacterFrameExpandButton:SetDisabledTexture("Interface\\Buttons\\UI-SpellbookIcon-PrevPage-Disabled");
 	if (PaperDollFrame:IsShown() and PaperDollFrame.currentSideBar) then
 		PaperDollFrame.currentSideBar:Show();
 	else
@@ -179,11 +172,6 @@ function CharacterFrame_Expand()
 	CharacterFrameInsetRight:Show();
 	UpdateUIPanelPositions(CharacterFrame);
 	PaperDollFrame_SetLevel();
-	-- trial edition
-	local width = CharacterTrialLevelErrorText:GetWidth();
-	if ( width > 190 ) then
-		CharacterTrialLevelErrorText:SetPoint("TOP", CharacterLevelText, "BOTTOM", -((width-190)/2), -3);
-	end
 end
 
 local function CompareFrameSize(frame1, frame2)

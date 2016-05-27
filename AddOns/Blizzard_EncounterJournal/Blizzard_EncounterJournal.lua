@@ -474,12 +474,13 @@ function EncounterJournal_DisplayInstance(instanceID, noButton)
 	EncounterJournal_LootUpdate();
 	EncounterJournal_ClearDetails()
 	
-	local iname, description, bgImage, _, loreImage, buttonImage = EJ_GetInstanceInfo();
+	local iname, description, bgImage, _, loreImage, buttonImage, dungeonAreaMapID = EJ_GetInstanceInfo();
 	self.instance.title:SetText(iname);
 	self.instance.titleBG:SetWidth(self.instance.title:GetStringWidth() + 80);
 	self.instance.loreBG:SetTexture(loreImage);
-	self.info.instanceTitle:SetText(iname);
-	
+	self.info.instanceTitle:SetText(iname);	
+	self.instance.mapButton:SetShown(dungeonAreaMapID and dungeonAreaMapID > 0);
+
 	self.instance.loreScroll.child.lore:SetText(description);
 	local loreHeight = self.instance.loreScroll.child.lore:GetHeight();
 	self.instance.loreScroll.ScrollBar:SetValue(0);
@@ -496,9 +497,10 @@ function EncounterJournal_DisplayInstance(instanceID, noButton)
 	self.info.model.dungeonBG:SetTexture(bgImage);
 	
 	local bossIndex = 1;
-	local name, description, bossID, _, link = EJ_GetEncounterInfoByIndex(bossIndex);
+	local name, description, bossID, rootSectionID, link = EJ_GetEncounterInfoByIndex(bossIndex);
 	local bossButton;
 
+	local hasBossAbilities = false;
 	while bossID do
 		bossButton = _G["EncounterJournalBossButton"..bossIndex];
 		if not bossButton then -- create a new header;
@@ -519,18 +521,18 @@ function EncounterJournal_DisplayInstance(instanceID, noButton)
 		bossImage = bossImage or "Interface\\EncounterJournal\\UI-EJ-BOSS-Default";
 		bossButton.creature:SetTexture(bossImage);
 		bossButton:UnlockHighlight();
+		if ( not hasBossAbilities ) then
+			hasBossAbilities = rootSectionID > 0;
+		end
 		
 		bossIndex = bossIndex + 1;
-		name, description, bossID, _, link = EJ_GetEncounterInfoByIndex(bossIndex);
+		name, description, bossID, rootSectionID, link = EJ_GetEncounterInfoByIndex(bossIndex);
 	end
 
+	EncounterJournal_SetTabEnabled(EncounterJournal.encounter.info.overviewTab, true);
 	--disable model tab and abilities tab, no boss selected
-	EncounterJournal.encounter.info.modelTab:Disable();
-	EncounterJournal.encounter.info.modelTab:GetDisabledTexture():SetDesaturated(true);
-	EncounterJournal.encounter.info.modelTab.unselected:SetDesaturated(true);
-	EncounterJournal.encounter.info.bossTab:Disable();
-	EncounterJournal.encounter.info.bossTab:GetDisabledTexture():SetDesaturated(true);
-	EncounterJournal.encounter.info.bossTab.unselected:SetDesaturated(true);
+	EncounterJournal_SetTabEnabled(EncounterJournal.encounter.info.modelTab, false);
+	EncounterJournal_SetTabEnabled(EncounterJournal.encounter.info.bossTab, false);
 
 	if (EncounterJournal_SearchForOverview(instanceID)) then
 		EJ_Tabs[1].frame = "overviewScroll";
@@ -542,7 +544,11 @@ function EncounterJournal_DisplayInstance(instanceID, noButton)
 	else
 		EJ_Tabs[1].frame = "detailsScroll";
 		EJ_Tabs[3].frame = "overviewScroll"; -- flip these so detailsScroll won't get hidden, overview will never be shown here
-		self.info[EJ_Tabs[1].button].tooltip = ABILITIES;
+		if ( hasBossAbilities ) then
+			self.info[EJ_Tabs[1].button].tooltip = ABILITIES;
+		else
+			self.info[EJ_Tabs[1].button].tooltip = OVERVIEW;
+		end
 		self.info[EJ_Tabs[3].button]:Hide();
 		self.info[EJ_Tabs[4].button]:SetPoint("TOP", self.info[EJ_Tabs[2].button], "BOTTOM", 0, 2)
 		self.info.overviewFound = false;
@@ -593,6 +599,8 @@ function EncounterJournal_DisplayEncounter(encounterID, noButton)
 	
 	self.info.encounterTitle:SetText(ename);
 	
+	EncounterJournal_SetTabEnabled(EncounterJournal.encounter.info.overviewTab, (rootSectionID > 0));
+
 	local overviewFound;
 	if (EncounterJournal_CheckForOverview(rootSectionID)) then
 		local _, overviewDescription = EJ_GetSectionInfo(rootSectionID);
@@ -674,12 +682,8 @@ function EncounterJournal_DisplayEncounter(encounterID, noButton)
 	end
 	
 	--enable model and abilities tab
-	EncounterJournal.encounter.info.modelTab:Enable();
-	EncounterJournal.encounter.info.modelTab:GetDisabledTexture():SetDesaturated(false);
-	EncounterJournal.encounter.info.modelTab.unselected:SetDesaturated(false);
-	EncounterJournal.encounter.info.bossTab:Enable();
-	EncounterJournal.encounter.info.bossTab:GetDisabledTexture():SetDesaturated(false);
-	EncounterJournal.encounter.info.bossTab.unselected:SetDesaturated(false);
+	EncounterJournal_SetTabEnabled(EncounterJournal.encounter.info.modelTab, true);
+	EncounterJournal_SetTabEnabled(EncounterJournal.encounter.info.bossTab, true);
 
 	if (overviewFound) then
 		EncounterJournal_ToggleHeaders(self.overviewFrame);
@@ -1458,6 +1462,11 @@ end
 
 function EncounterJournal_TabClicked(self, button)
 	local tabType = self:GetID();
+	EncounterJournal_SetTab(tabType);
+	PlaySound("igAbiliityPageTurn");
+end
+
+function EncounterJournal_SetTab(tabType)
 	local info = EncounterJournal.encounter.info;
 	info.tab = tabType;
 	for key, data in pairs(EJ_Tabs) do 
@@ -1473,7 +1482,12 @@ function EncounterJournal_TabClicked(self, button)
 			info[data.button]:UnlockHighlight();
 		end
 	end
-	PlaySound("igAbiliityPageTurn");
+end
+
+function EncounterJournal_SetTabEnabled(tab, enabled)
+	tab:SetEnabled(enabled);
+	tab:GetDisabledTexture():SetDesaturated(not enabled);
+	tab.unselected:SetDesaturated(not enabled);
 end
 
 function EncounterJournal_SetLootButton(item)

@@ -84,7 +84,7 @@ end
 
 function WorldMapActionButtonMixin:UpdateCooldown()
 	local start, duration, enable = GetSpellCooldown(self.spellID);
-	CooldownFrame_SetTimer(self.SpellButton.Cooldown, start, duration, enable);
+	CooldownFrame_Set(self.SpellButton.Cooldown, start, duration, enable);
 
 	self.SpellButton:SetEnabled(duration == 0);
 end

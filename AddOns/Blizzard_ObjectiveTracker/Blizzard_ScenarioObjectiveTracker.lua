@@ -551,7 +551,7 @@ end
 function ScenarioSpellButton_UpdateCooldown(spellButton)
 	local start, duration, enable = GetSpellCooldown(spellButton.spellID);
 	if ( start ) then
-		CooldownFrame_SetTimer(spellButton.Cooldown, start, duration, enable);
+		CooldownFrame_Set(spellButton.Cooldown, start, duration, enable);
 		if ( duration > 0 and enable == 0 ) then
 			spellButton.Icon:SetVertexColor(0.4, 0.4, 0.4);
 		else

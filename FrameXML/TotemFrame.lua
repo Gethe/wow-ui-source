@@ -143,7 +143,7 @@ function TotemButton_Update(button, startTime, duration, icon)
 	if ( duration > 0 ) then
 		buttonIcon:SetTexture(icon);
 		buttonIcon:Show();
-		CooldownFrame_SetTimer(buttonCooldown, startTime, duration, 1);
+		CooldownFrame_Set(buttonCooldown, startTime, duration, true);
 		buttonCooldown:Show();
 		button:SetScript("OnUpdate", TotemButton_OnUpdate);
 		button:Show();

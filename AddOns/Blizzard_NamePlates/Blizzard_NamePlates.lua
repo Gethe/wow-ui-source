@@ -344,12 +344,7 @@ function NameplateBuffContainerMixin:UpdateBuffs(unit, filter)
 				buff.CountFrame.Count:Hide();
 			end
 			
-			if (duration > 0) then
-				buff.Cooldown:Show();
-				CooldownFrame_SetTimer(buff.Cooldown, expirationTime - duration, duration, 1);
-			else
-				buff.Cooldown:Hide();
-			end
+			CooldownFrame_Set(buff.Cooldown, expirationTime - duration, duration, duration > 0, true);
 			
 			buff:Show();
 		else

@@ -5,96 +5,27 @@ PREPATCH_QUESTS = { Alliance = {id=36498 , text=SPLASH_BOOST_RIGHT_DESC_ALLIANCE
 
 POSTPATCH_QUEST = 34398;
 
+LEGION_PREPATCH_QUEST = { Alliance = 40519, Horde = 40518 };
+
+LEGION_POSTPATCH_QUESTS = { Alliance = { 40519, 40717, 44182, 44184 }, Horde = { 40518, 40718, 44182, 44184 }};
+
 SPLASH_SCREENS = {
-	["BASE"] =	{	id = 1,
+	["BASE"] =	{	id = 5, -- 7.0.3 patch drop
 					questID = nil,
-					leftTex = "splash-600-topleft",
-					rightTex = "splash-600-right",
-					bottomTex = "splash-600-botleft",
+					leftTex = "splash-703-topleft",
+					rightTex = "splash-703-right",
+					bottomTex = "splash-703-botleft",
 					header = SPLASH_BASE_HEADER,
-					label = SPLASH_BASE_LABEL,
-					feature1Title = SPLASH_BASE_FEATURE1_TITLE,
-					feature1Desc = SPLASH_BASE_FEATURE1_DESC,
-					feature2Title = SPLASH_BASE_FEATURE2_TITLE,
-					feature2Desc = SPLASH_BASE_FEATURE2_DESC,
-					rightTitle = SPLASH_BASE_RIGHT_TITLE,
-					rightDesc = SPLASH_BASE_RIGHT_DESC,
+					label = SPLASH_LEGION_BASE_LABEL,
+					feature1Title = SPLASH_LEGION_BASE_FEATURE1_TITLE,
+					feature1Desc = SPLASH_LEGION_BASE_FEATURE1_DESC,
+					feature2Title = SPLASH_LEGION_BASE_FEATURE2_TITLE,
+					feature2Desc = SPLASH_LEGION_BASE_FEATURE2_DESC,
+					rightTitle = SPLASH_LEGION_BASE_RIGHT_TITLE,
+					rightDesc = SPLASH_LEGION_BASE_RIGHT_DESC,
 					cVar="splashScreenNormal",
-					hideStartButton = false;
-					features = {
-						[1] = { EnterFunc = function()
-									MainMenuMicroButton_ShowAlert(CollectionsMicroButtonAlert, COLLECTIONS_MICRO_BUTTON_SPEC_TUTORIAL);
-									MicroButtonPulse(CollectionsMicroButton);
-								end,
-								LeaveFunc = function()
-									CollectionsMicroButtonAlert:Hide();
-									MicroButtonPulseStop(CollectionsMicroButton);
-								end,
-								},
-						[2] = { EnterFunc = function()
-									LFDMicroButtonAlert:Show();
-									MicroButtonPulse(LFDMicroButton);
-								end,
-								LeaveFunc = function()
-									LFDMicroButtonAlert:Hide();
-									MicroButtonPulseStop(LFDMicroButton);
-								end,
-								},
-					},
-				},
-	["BASE_90"] =	{	id = 1,
-					questID = nil,	-- questID is set in SplashFrame_OnOpen
-					leftTex = "splash-600-topleft",
-					rightTex = "splash-boost-right",
-					bottomTex = "splash-600-botleft",
-					header = SPLASH_BASE_HEADER,
-					label = SPLASH_BASE_LABEL,
-					feature1Title = SPLASH_BASE_FEATURE1_TITLE,
-					feature1Desc = SPLASH_BASE_FEATURE1_DESC,
-					feature2Title = SPLASH_BASE_FEATURE2_TITLE,
-					feature2Desc = SPLASH_BASE_FEATURE2_DESC,
-					rightTitle = SPLASH_BASE_90_RIGHT_TITLE,
-					rightDesc = SPLASH_BASE_90_RIGHT_DESC,
-					cVar="splashScreenNormal",
-					hideStartButton = false;
-					features = {
-						[1] = { EnterFunc = function() 
-									MainMenuMicroButton_ShowAlert(CollectionsMicroButtonAlert, COLLECTIONS_MICRO_BUTTON_SPEC_TUTORIAL);
-									MicroButtonPulse(CollectionsMicroButton);
-								end,
-								LeaveFunc = function()
-									CollectionsMicroButtonAlert:Hide();
-									MicroButtonPulseStop(CollectionsMicroButton);
-								end,
-								},
-						[2] = { EnterFunc = function()
-									LFDMicroButtonAlert:Show();
-									MicroButtonPulse(LFDMicroButton);
-								end,
-								LeaveFunc = function()
-									LFDMicroButtonAlert:Hide();
-									MicroButtonPulseStop(LFDMicroButton);
-								end,
-								},
-					},
-				},
-				-- 2 : 6.0
-	["NEW"] =	{	id = 4, -- 6.2
-					expansion = LE_EXPANSION_WARLORDS_OF_DRAENOR,
-					questID = nil,			
-					leftTex = "splash-620-topleft",
-					rightTex = "splash-620-right",
-					bottomTex = "splash-620-botleft",
-					header = SPLASH_NEW_HEADER,
-					label = SPLASH_NEW_6_2_LABEL,
-					feature1Title = SPLASH_NEW_6_2_FEATURE1_TITLE,
-					feature1Desc = SPLASH_NEW_6_2_FEATURE1_DESC,
-					feature2Title = SPLASH_NEW_6_2_FEATURE2_TITLE,
-					feature2Desc = SPLASH_NEW_6_2_FEATURE2_DESC,
-					rightTitle = SPLASH_NEW_6_2_RIGHT_TITLE,
-					rightDesc = SPLASH_NEW_6_2_RIGHT_DESC,
-					cVar="splashScreenNormal",
-					hideStartButton = true;
+					hideStartButton = true,
+					minLevel = 90,
 					features = {
 						[1] = { EnterFunc = function() end,
 								LeaveFunc = function() end,
@@ -104,6 +35,57 @@ SPLASH_SCREENS = {
 								},
 					},
 				},
+	["LEGION_PREPATCH"] = { id = 6, -- 7.0.3 prepatch features available
+							questID = nil,
+							leftTex = "splash-704-topleft",
+							rightTex = "splash-704-right",
+							bottomTex = "splash-704-botleft",
+							header = SPLASH_BASE_HEADER,
+							label = SPLASH_LEGION_PREPATCH_LABEL,
+							feature1Title = SPLASH_LEGION_PREPATCH_FEATURE1_TITLE,
+							feature1Desc = SPLASH_LEGION_PREPATCH_FEATURE1_DESC,
+							feature2Title = SPLASH_LEGION_PREPATCH_FEATURE2_TITLE,
+							feature2Desc = SPLASH_LEGION_PREPATCH_FEATURE2_DESC,
+							rightTitle = SPLASH_LEGION_PREPATCH_RIGHT_TITLE,
+							rightDesc = SPLASH_LEGION_PREPATCH_RIGHT_DESC,
+							cVar="splashScreenNormal",
+							hideStartButton = false,
+							minLevel = 98,
+							features = {
+									[1] = { EnterFunc = function() end,
+								            LeaveFunc = function() end,
+								            },
+						            [2] = { EnterFunc = function() end,
+								            LeaveFunc = function() end,
+								            },
+				},
+			},
+	["LEGION_BOX"] = {	id = 7, -- 7.0.3 prepatch features available
+						expansion = LE_EXPANSION_LEGION,
+						questID = nil,
+						leftTex = "splash-705-topleft",
+						rightTex = "splash-705-right",
+						bottomTex = "splash-705-botleft",
+						header = SPLASH_BASE_HEADER,
+						label = SPLASH_LEGION_BOX_LABEL,
+						feature1Title = SPLASH_LEGION_BOX_FEATURE1_TITLE,
+						feature1Desc = SPLASH_LEGION_BOX_FEATURE1_DESC,
+						feature2Title = SPLASH_LEGION_BOX_FEATURE2_TITLE,
+						feature2Desc = SPLASH_LEGION_BOX_FEATURE2_DESC,
+						rightTitle = SPLASH_LEGION_BOX_RIGHT_TITLE,
+						rightDesc = SPLASH_LEGION_BOX_RIGHT_DESC,
+						cVar="splashScreenNormal",
+						hideStartButton = false,
+						minLevel = 98,
+						features = {
+								[1] = { EnterFunc = function() end,
+								        LeaveFunc = function() end,
+								        },
+						        [2] = { EnterFunc = function() end,
+								        LeaveFunc = function() end,
+								        },
+						},
+	},
 	["BOOST"] =	{	id = 1,
 					questID = nil, -- questID is set in SplashFrame_OnLoad
 					leftTex = "splash-boost-topleft",
@@ -118,7 +100,8 @@ SPLASH_SCREENS = {
 					rightTitle = SPLASH_BOOST_RIGHT_TITLE,
 					rightDesc = SPLASH_BOOST_RIGHT_DESC,
 					cVar="splashScreenBoost",
-					hideStartButton = false;
+					hideStartButton = false,
+					minLevel = 90,
 					features = {
 						[1] = { EnterFunc = function() 
 									MainMenuMicroButton_ShowAlert(CollectionsMicroButtonAlert, COLLECTIONS_MICRO_BUTTON_SPEC_TUTORIAL);
@@ -149,7 +132,8 @@ SPLASH_SCREENS = {
 					rightTitle = SPLASH_BOOST_RIGHT_TITLE,
 					rightDesc = SPLASH_BOOST2_RIGHT_DESC,
 					cVar="splashScreenBoost",
-					hideStartButton = false;
+					hideStartButton = false,
+					minLevel = 90,
 					features = {
 							[1] = { EnterFunc = function() 
 									MainMenuMicroButton_ShowAlert(CollectionsMicroButtonAlert, COLLECTIONS_MICRO_BUTTON_SPEC_TUTORIAL);
@@ -164,7 +148,7 @@ SPLASH_SCREENS = {
 								LeaveFunc = function() end,
 								},
 					},
-				},				
+				},
 };
 
 local function GetSplashFrameTag()
@@ -177,27 +161,56 @@ local function GetSplashFrameTag()
 			tag = "BOOST";
 		end
 	else
-		if ( expansionLevel >= SPLASH_SCREENS["NEW"].expansion) then
-			tag = "NEW";
+		if ( expansionLevel >= SPLASH_SCREENS["LEGION_BOX"].expansion) then
+			tag = "LEGION_BOX";
+		elseif ( AreInvasionsAvailable() and select(2, UnitClass("player")) ~= "DEMONHUNTER" ) then
+			tag = "LEGION_PREPATCH";
 		else
-			local playerLevel = UnitLevel("player");
-			tag = (playerLevel >= 90 and "BASE_90") or "BASE";
+			tag = "BASE";
 		end
 	end
 	return tag;
 end
 
+local function GetLegionQuestID(tag)
+	local faction = UnitFactionGroup("player");
+	
+	if (tag == "LEGION_PREPATCH") then
+		return LEGION_PREPATCH_QUEST[faction];
+	elseif (tag == "LEGION_BOX") then	
+		local startIndex = 1;
+		if (select(2, UnitClass("player")) == "DEMONHUNTER") then
+			startIndex = 2;
+		end
+		
+		
+		local tbl = LEGION_POSTPATCH_QUESTS[faction];
+		
+		local questID = nil;
+		
+		if (tbl) then
+			for i = startIndex, #tbl do
+				if (not IsQuestFlaggedCompleted(tbl[i])) then
+					questID = tbl[i];
+					break;
+				end
+			end
+		end
+		
+		return questID;
+	end
+end		
+	
 function SplashFrame_OnLoad(self)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("VARIABLES_LOADED");
-	self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
 end
 
-local function ShouldShowStartButton( questID )
-	if (SPLASH_SCREENS["NEW"].hideStartButton) then
+local function ShouldShowStartButton( questID, tag )
+	if (SPLASH_SCREENS[tag].hideStartButton) then
 		return false;
 	end
-	return SplashFrame.firstTimeViewed and questID and not IsQuestFlaggedCompleted(questID) and UnitLevel("player") >= 90;
+	return SplashFrame.firstTimeViewed and questID and not IsQuestFlaggedCompleted(questID) and UnitLevel("player") >= (SPLASH_SCREENS[tag].minLevel or 90);
 end
 
 local function ShouldEnableStartButton( questID )
@@ -224,7 +237,7 @@ function SplashFrame_OnEvent(self, event)
 	if( event == "QUEST_LOG_UPDATE" ) then
 		local tag = GetSplashFrameTag();
 		if( self:IsShown() and tag )then
-			SplashFrame_SetStartButtonDisplay( ShouldShowStartButton(SPLASH_SCREENS[tag].questID) );
+			SplashFrame_SetStartButtonDisplay( ShouldShowStartButton(SPLASH_SCREENS[tag].questID, tag) );
 		end
 	elseif( event == "PLAYER_ENTERING_WORLD" ) then
 		self:UnregisterEvent("PLAYER_ENTERING_WORLD");
@@ -232,13 +245,10 @@ function SplashFrame_OnEvent(self, event)
 	elseif( event == "VARIABLES_LOADED" ) then
 		self:UnregisterEvent("VARIABLES_LOADED");
 		self.varsLoaded = true;
-	elseif( event == "ZONE_CHANGED_NEW_AREA" ) then
-		self:UnregisterEvent("ZONE_CHANGED_NEW_AREA");
-		self.zoneEntered = true;
 	end
 	
-	if( event == "PLAYER_ENTERING_WORLD" or event == "VARIABLES_LOADED" or event == "ZONE_CHANGED_NEW_AREA" ) then
-		if( self.playerEntered and self.varsLoaded and self.zoneEntered) then
+	if( event == "PLAYER_ENTERING_WORLD" or event == "VARIABLES_LOADED" ) then
+		if( self.playerEntered and self.varsLoaded ) then
 			if ( not SplashFrameCanBeShown() ) then
 				return;
 			end
@@ -342,21 +352,17 @@ function SplashFrame_Open( tag )
 		local faction = UnitFactionGroup("player");
 		local questData = PREPATCH_QUESTS[faction];
 		if( questData ) then
-			SPLASH_SCREENS["BASE_90"].questID = questData.id;
 			SPLASH_SCREENS["BOOST"].questID = questData.id;
 			SPLASH_SCREENS["BOOST"].rightDesc = questData.text;
 		end
 	end
 	
-	if( tag == "NEW" ) then
-		local displayQuest = UnitLevel("player") >= 90;
-		SPLASH_SCREENS["NEW"].questID = displayQuest and POSTPATCH_QUEST;
-		if( not SPLASH_SCREENS["NEW"].hideStartButton ) then
-			SPLASH_SCREENS["NEW"].rightDesc = displayQuest and SPLASH_NEW_90_RIGHT_DESC or SPLASH_NEW_RIGHT_DESC;
-		end
+	if (tag == "LEGION_PREPATCH" or tag == "LEGION_BOX") then
+		local displayQuest = UnitLevel("player") >= SPLASH_SCREENS[tag].minLevel;
+		SPLASH_SCREENS[tag].questID = displayQuest and GetLegionQuestID(tag);
 	end
 	
-	SplashFrame_Display( tag, ShouldShowStartButton(SPLASH_SCREENS[tag].questID) );
+	SplashFrame_Display( tag, ShouldShowStartButton(SPLASH_SCREENS[tag].questID, tag) );
 	
 	-- hide some quest elements when splash frame is up
 	ObjectiveTracker_Update();
@@ -386,7 +392,8 @@ function SplashFrame_Close()
 		local questID = SPLASH_SCREENS[tag].questID;
 		local showQuestDialog = questID and 
 								( (frame.StartButton:IsShown() and frame.StartButton:IsEnabled()) or
-								  (SPLASH_SCREENS[tag].hideStartButton and SplashFrame.firstTimeViewed and not IsQuestFlaggedCompleted(questID) and UnitLevel("player") >= 90
+								  (SPLASH_SCREENS[tag].hideStartButton and SplashFrame.firstTimeViewed and not IsQuestFlaggedCompleted(questID) and 
+								  		UnitLevel("player") >= (SPLASH_SCREENS[tag].minLevel)
 										and ShouldEnableStartButton(questID)) );
 		HideUIPanel(frame);
 		

@@ -159,8 +159,14 @@ function SetItemRef(link, text, button, chatFrame)
 	elseif ( strsub(link, 1, 3) == "lfd" ) then
 		ToggleLFDParentFrame();
 		return;
+	elseif ( strsub(link, 1, 8) == "specpane" ) then
+		ToggleTalentFrame(SPECIALIZATION_TAB);
+		return;
 	elseif ( strsub(link, 1, 10) == "talentpane" ) then
-		ToggleTalentFrame();
+		ToggleTalentFrame(TALENTS_TAB);
+		return;
+	elseif ( strsub(link, 1, 11) == "honortalent" ) then
+		ToggleTalentFrame(PVP_TALENTS_TAB);
 		return;
 	elseif ( strsub(link, 1, 7) == "journal" ) then
 		if ( not HandleModifiedItemClick(GetFixedLink(text)) ) then

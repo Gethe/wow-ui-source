@@ -1,5 +1,28 @@
 local NUM_REWARDS_PER_MEDAL = 2;
 
+local function CreateFrames(self, array, num, spacing, template)
+    local index = #self[array] + 1;
+    
+    while (#self[array] < num) do
+		local frame = CreateFrame("Frame", nil, self, template);
+		local prev = self[array][index - 1];
+		frame:SetPoint("LEFT", prev, "RIGHT", spacing, 0);
+		index = index + 1;
+	end
+    
+    for i = num + 1, #self[array] do
+		self[array][i]:Hide();
+	end
+end
+    
+local function CenterFrames(frame, num, anchorPoint, anchor, relativePoint, width, spacing, distance)
+    local fullWidth = (width*num) + (spacing * (num - 1));
+    local halfWidth = fullWidth / 2;
+    
+    frame:ClearAllPoints();
+    frame:SetPoint(anchorPoint, anchor, relativePoint, -halfWidth, distance);
+end
+
 function ChallengesFrame_OnLoad(self)
 	-- events
 	self:RegisterEvent("CHALLENGE_MODE_MAPS_UPDATE");
@@ -55,12 +78,15 @@ function ChallengesFrame_Update(self)
     
     table.sort(sortedMaps, function(a, b) return a.level > b.level end);
     
+    local frameWidth, spacing, distance = 52, 2, 8;
+    
+    local num = #sortedMaps;
+
+    CreateFrames(self, "DungeonIcons", num, spacing, "ChallengesDungeonIconFrameTemplate");
+    CenterFrames(self.DungeonIcons[1], num, "BOTTOMLEFT", self, "BOTTOM", frameWidth, spacing, distance);
+    
     for i = 1, #sortedMaps do
         local frame = self.DungeonIcons[i];
-        if (not frame) then
-            frame = CreateFrame("Frame", nil, self, "ChallengesDungeonIconFrameTemplate");
-            frame:SetPoint("LEFT", self.DungeonIcons[i-1], "RIGHT", 2, 0);
-        end
         
         frame:SetUp(sortedMaps[i], i == 1);
         frame:Show();
@@ -158,7 +184,8 @@ function ChallengesGuildBestMixin:OnEnter()
     
     GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
     local name = C_ChallengeMode.GetMapInfo(leaderInfo.mapid);
-    GameTooltip:SetText(CHALLENGE_MODE_GUILD_BEST_LINE_TOOLTIP_TITLE:format(name, leaderInfo.level));
+    GameTooltip:SetText(name, 1, 1, 1);
+    GameTooltip:AddLine(CHALLENGE_MODE_POWER_LEVEL:format(leaderInfo.level));
     for i = 1, #leaderInfo.members do
         local classColorStr = RAID_CLASS_COLORS[leaderInfo.members[i].class].colorStr;
         GameTooltip:AddLine(CHALLENGE_MODE_GUILD_BEST_LINE:format(classColorStr,leaderInfo.members[i].name));
@@ -482,6 +509,13 @@ function ChallengeModeCompleteBannerMixin:PlayBanner(data)
     self.Title:SetText(name);
     
     self.Level:SetText(data.level);
+    local lvlStr = tostring(data.level);
+    if (tonumber(lvlStr:sub(1,1)) == 1) then
+        self.Level:SetPoint("CENTER", self.SkullCircle, -4, 0);
+    else
+        self.Level:SetPoint("CENTER", self.SkullCircle, 0, 0);
+    end
+        
 	self.Level:Show();
 	
     if (data.onTime) then
@@ -556,28 +590,10 @@ function ChallengeModeCompleteBannerMixin:GetSortedPartyMembers()
 end
 
 function ChallengeModeCompleteBannerMixin:CreateAndPositionPartyMembers(num)
-	local index = #self.PartyMembers + 1;
 	local frameWidth, spacing, distance = 61, 22, -100;
-	while (#self.PartyMembers < num) do
-		local frame = CreateFrame("Frame", nil, self, "ChallengeModeBannerPartyMemberTemplate");
-		local prev = self.PartyMembers[index - 1];
-		frame:SetPoint("LEFT", prev, "RIGHT", spacing, 0);
-		index = index + 1;
-	end
-	-- Figure out where to place the leftmost party member
-	local frame = self.PartyMembers[1];
-	frame:ClearAllPoints();
-	if (num % 2 == 1) then
-		local x = (num - 1) / 2;
-		frame:SetPoint("TOPLEFT", self.Title, "TOP", -((frameWidth / 2) + (frameWidth * x) + (spacing * x)), distance);
-	else
-		local x = num / 2;
-		frame:SetPoint("TOPLEFT", self.Title, "TOP", -((frameWidth * x) + (spacing * (x - 1)) + (spacing / 2)), distance);
-	end
-	
-	for i = num + 1, #self.PartyMembers do
-		self.PartyMembers[i]:Hide();
-	end
+    
+    CreateFrames(self, "PartyMembers", num, spacing, "ChallengeModeBannerPartyMemberTemplate");
+    CenterFrames(self.PartyMembers[1], num, "TOPLEFT", self.Title, "TOP", frameWidth, spacing, distance);
 end
 
 function ChallengeModeCompleteBannerMixin:PerformAnimOut()

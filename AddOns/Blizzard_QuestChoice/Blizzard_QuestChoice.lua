@@ -130,7 +130,7 @@ function QuestChoiceFrame_Update(self)
 	
 	for i=1, numOptions do
 		local optID, buttonText, description, header, artFile, confirmationText = GetQuestChoiceOptionInfo(i);
-		local option = QuestChoiceFrame["Option"..i];
+		local option = QuestChoiceFrame.Options[i];
 		option.optID = optID;
 		option.OptionButton:SetText(buttonText);
 		option.OptionText:SetText(description);
@@ -149,7 +149,7 @@ function QuestChoiceFrame_Update(self)
 	--make window taller if there is too much stuff
 	local maxHeight = INIT_OPTION_HEIGHT;
 	for i=1, numOptions do
-		local option = QuestChoiceFrame["Option"..i];
+		local option = QuestChoiceFrame.Options[i];
 		local currHeight = OPTION_STATIC_HEIGHT;
 
 		currHeight = currHeight + option.OptionText:GetContentHeight();
@@ -157,7 +157,7 @@ function QuestChoiceFrame_Update(self)
 		maxHeight = math.max(currHeight, maxHeight);
 	end
 	for i=1, numOptions do
-		local option = QuestChoiceFrame["Option"..i];
+		local option = QuestChoiceFrame.Options[i];
 		option:SetHeight(maxHeight);
 	end
 	local heightDiff = maxHeight - INIT_OPTION_HEIGHT;
@@ -166,7 +166,11 @@ function QuestChoiceFrame_Update(self)
 	for i = 1, #QuestChoiceFrame.Options do
 		QuestChoiceFrame.Options[i]:SetShown(i <= numOptions);
 	end
-	if (numOptions == 4) then
+	if numOptions == 1 then
+		QuestChoiceFrame.leftPadding = (QuestChoiceFrame.fixedWidth - QuestChoiceFrame.Option1:GetWidth()) / 2;
+		QuestChoiceFrame.rightPadding = 0;
+		QuestChoiceFrame.spacing = 0;
+	elseif numOptions == 4 then
 		QuestChoiceFrame.leftPadding = 50;
 		QuestChoiceFrame.rightPadding = 50;
 		QuestChoiceFrame.spacing = 20;
@@ -175,6 +179,7 @@ function QuestChoiceFrame_Update(self)
 		QuestChoiceFrame.rightPadding = self.defaultRightPadding;
 		QuestChoiceFrame.spacing = self.defaultSpacing;
 	end
+
 	self:Layout();
 end
 
@@ -275,7 +280,7 @@ function QuestChoiceFrame_ShowRewards(numOptions)
 end
 
 function QuestChoiceFrame_OnItemEnter(self)
-	GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT");
+	GameTooltip:SetOwner(self, "ANCHOR_TOP");
 	if GameTooltip:SetItemByID(self.itemID) then
 		self.UpdateTooltip = QuestChoiceFrame_OnItemEnter;
 	else

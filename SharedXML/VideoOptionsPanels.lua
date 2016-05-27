@@ -419,6 +419,18 @@ function Graphics_NotifyTarget(self, masterIndex, isRaid)
 			ControlCheckCapTargets(self);
 		end
 	else
+		if(self.type == CONTROLTYPE_DROPDOWN) then
+			-- get best previous entry
+			for fallbackIndex = dropdownIndex - 1, 1, -1 do
+				local isValid = IsValid(self, fallbackIndex);
+				if (isValid) then
+					self.newValue = fallbackIndex;
+					self.selectedID = fallbackIndex;
+					VideoOptionsDropDownMenu_SetText(self, self.data[fallbackIndex].text);
+					break;
+				end
+			end
+		end
 		if ( is32BitFail ) then
 			self.warning.tooltip = string.format(SETTING_BELOW_GRAPHICSQUALITY_32BIT, self.name, value);
 		else
@@ -804,6 +816,11 @@ function VideoOptionsDropDown_OnLoad(self)
 								info.notClickable = true;
 								info.disablecolor = GREYCOLORCODE;
 							end
+						end
+					else
+						if (self.validity[mode] ~= 0) then
+							info.notClickable = true;
+							info.disablecolor = GREYCOLORCODE;
 						end
 					end
 				end

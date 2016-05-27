@@ -510,7 +510,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<FontString parentKey="Label" inherits="GameFontHighlightLarge" text="You've Reached" alpha="0">
+				<FontString parentKey="Label" inherits="GameFontHighlightLarge" text="HONOR_YOUVE_REACHED" alpha="0">
 					<Anchors>
 						<Anchor point="CENTER" relativeKey="$parent.BG1" x="0" y="16"/>
 					</Anchors>

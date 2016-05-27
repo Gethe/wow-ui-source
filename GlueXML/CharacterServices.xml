@@ -71,7 +71,7 @@
 						<Anchor point="CENTER" relativeKey="$parent.Frame" relativePoint="CENTER" x="0" y="0"/>
 					</Anchors>
 				</Texture>
-				<FontString parentKey="SpecName" inherits="GameFontNormalLarge" justifyH="LEFT">
+				<FontString parentKey="SpecName" inherits="GameFontNormalLarge" justifyH="LEFT" justifyV="TOP" wordwrap="false">
 					<Size x="150" y="0"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Frame" relativePoint="TOPRIGHT" x="6" y="-8"/>
@@ -101,7 +101,8 @@
 			<OnEnter>
 				if (self.tooltip) then
 					GlueTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT", 48, -4);
-					GlueTooltip:AddLine(self.tooltip, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1, true);
+					GlueTooltip:SetText(self.tooltipTitle);
+					GlueTooltip:AddLine(self.tooltip, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, 1, true);
 					GlueTooltip:Show();
 				end
 			</OnEnter>
@@ -391,15 +392,7 @@
 	<Frame name="CharacterUpgradeSelectSpecFrame" parent="CharSelectServicesFlowFrame" inherits="CharacterServicesBlockTemplate" hidden="true" frameStrata="DIALOG">
 		<Size x="300" y="250"/>
 		<Frames>
-			<Frame parentKey="ControlsFrame" setAllPoints="true">
-				<Frames>
-					<CheckButton parentArray="SpecButtons" inherits="CharacterUpgradeSelectSpecRadioButtonTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT" x="83" y="-73"/>
-						</Anchors>
-					</CheckButton>
-				</Frames>
-			</Frame>
+			<Frame parentKey="ControlsFrame" setAllPoints="true"/>
 		</Frames>
 	</Frame>
 	<Frame name="CharacterUpgradeSelectFactionFrame" parent="CharSelectServicesFlowFrame" inherits="CharacterServicesBlockTemplate" hidden="true" frameStrata="DIALOG">

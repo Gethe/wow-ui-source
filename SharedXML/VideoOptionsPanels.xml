@@ -65,7 +65,7 @@
 		</KeyValues>
 	</Frame>
 
-	<Frame name="VideoOptionsSliderTemplate" inherits="OptionsSliderTemplate" virtual="true">
+	<Slider name="VideoOptionsSliderTemplate" inherits="OptionsSliderTemplate" virtual="true" obeyStepOnDrag="true">
 		<Frames>
 			<Frame name="$parentWarning" enableMouse="true" hidden="true" parentKey="warning">
 				<Size x="20" y="20"/>
@@ -118,12 +118,12 @@
 				VideoOptionsSlider_OnLoad(self);
 			</OnLoad>
 		</Scripts>
-	</Frame>
-	<Frame name="RaidVideoOptionsSliderTemplate" inherits="VideoOptionsSliderTemplate" virtual="true">
+	</Slider>
+	<Slider name="RaidVideoOptionsSliderTemplate" inherits="VideoOptionsSliderTemplate" virtual="true">
 		<KeyValues>
 			<KeyValue key="raid" value="true" type="boolean"/>
 		</KeyValues>
-	</Frame>
+	</Slider>
 
 	<CheckButton name="VideoOptionsSmallCheckButtonTemplate" inherits="OptionsSmallCheckButtonTemplate" virtual="true">
 		<Scripts>

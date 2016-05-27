@@ -1128,12 +1128,12 @@ function CompactUnitFrame_UtilSetBuff(buffFrame, unit, index, filter)
 		buffFrame.count:Hide();
 	end
 	buffFrame:SetID(index);
-	if ( expirationTime and expirationTime ~= 0 ) then
+	local enabled = expirationTime and expirationTime ~= 0;
+	if enabled then
 		local startTime = expirationTime - duration;
-		buffFrame.cooldown:SetCooldown(startTime, duration);
-		buffFrame.cooldown:Show();
+		CooldownFrame_Set(buffFrame.cooldown, startTime, duration, true);
 	else
-		buffFrame.cooldown:Hide();
+		CooldownFrame_Clear(buffFrame.cooldown);
 	end
 	buffFrame:Show();
 end
@@ -1208,12 +1208,12 @@ function CompactUnitFrame_UtilSetDebuff(debuffFrame, unit, index, filter, isBoss
 		debuffFrame.count:Hide();
 	end
 	debuffFrame:SetID(index);
-	if ( expirationTime and expirationTime ~= 0 ) then
+	local enabled = expirationTime and expirationTime ~= 0;
+	if enabled then
 		local startTime = expirationTime - duration;
-		debuffFrame.cooldown:SetCooldown(startTime, duration);
-		debuffFrame.cooldown:Show();
+		CooldownFrame_Set(debuffFrame.cooldown, startTime, duration, true);
 	else
-		debuffFrame.cooldown:Hide();
+		CooldownFrame_Clear(debuffFrame.cooldown);
 	end
 	
 	local color = DebuffTypeColor[debuffType] or DebuffTypeColor["none"];

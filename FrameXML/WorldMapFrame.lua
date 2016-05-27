@@ -264,6 +264,7 @@ function WorldMapFrame_OnLoad(self)
 	self:RegisterEvent("QUESTLINE_UPDATE");
 	self:RegisterEvent("QUEST_LOG_UPDATE");
 	self:RegisterEvent("WORLD_QUEST_COMPLETED_BY_SPELL");
+	self:RegisterEvent("MINIMAP_UPDATE_TRACKING");
 	
 	self:SetClampRectInsets(0, 0, 0, -60);				-- don't overlap the xp/rep bars
 	self.poiHighlight = nil;
@@ -395,7 +396,7 @@ function WorldMapFrame_OnEvent(self, event, ...)
 		if ( self:IsShown() ) then
 			HideUIPanel(WorldMapFrame);
 		end
-	elseif ( event == "WORLD_MAP_UPDATE" or event == "REQUEST_CEMETERY_LIST_RESPONSE" or event == "QUESTLINE_UPDATE" ) then
+	elseif ( event == "WORLD_MAP_UPDATE" or event == "REQUEST_CEMETERY_LIST_RESPONSE" or event == "QUESTLINE_UPDATE" or event == "MINIMAP_UPDATE_TRACKING" ) then
 		if ( not self.blockWorldMapUpdate and self:IsShown() ) then
 			-- if we are exiting a micro dungeon we should update the world map
 			if (event == "REQUEST_CEMETERY_LIST_RESPONSE") then
@@ -1291,8 +1292,13 @@ function WorldMapFrame_Update()
 	local numUsedStoryLineFrames = 0;
 	if ( not isContinent and mapID > 0 ) then
 		for i = 1, C_Questline.GetNumAvailableQuestlines() do
-			local questLineName, questName, continentID, x, y, questlineMapID = C_Questline.GetQuestlineInfoByIndex(i);
-			if ( questLineName and questlineMapID == mapID and x > 0 and y > 0 ) then
+			local questLineName, questName, continentID, x, y, questlineMapID, questlineFloor, isHidden = C_Questline.GetQuestlineInfoByIndex(i);
+			local showQuest = questLineName and questlineMapID == mapID and x > 0 and y > 0 and questlineFloor == dungeonLevel;
+			if ( showQuest and isHidden ) then
+				local _, _, active = GetTrackingInfo(MINIMAP_TRACK_HIDDEN_QUESTS);
+				showQuest = active;
+			end
+			if ( showQuest ) then
 				numUsedStoryLineFrames = numUsedStoryLineFrames + 1;
 				local frame = STORYLINE_FRAMES[numUsedStoryLineFrames];
 				if ( not frame ) then
@@ -1301,6 +1307,11 @@ function WorldMapFrame_Update()
 				end
 				frame.index = i;
 				WorldMapPOIFrame_AnchorPOI(frame, x, y, WORLD_MAP_POI_FRAME_LEVEL_OFFSETS.STORY_LINE);
+				if ( isHidden ) then
+					frame.Texture:SetAtlas("TrivialQuests", true);
+				else
+					frame.Texture:SetAtlas("QuestNormal", true);
+				end
 				frame:Show();
 			end
 		end

@@ -512,6 +512,7 @@ function WorldStateScoreFrame_Update()
 	local isArena, isRegistered = IsActiveBattlefieldArena();
 	local isRatedBG = IsRatedBattleground();
 	local isWargame = IsWargame();
+	local isSkirmish = IsArenaSkirmish();
 	local battlefieldWinner = GetBattlefieldWinner(); 
 	
 	local firstFrameAfterCustomStats = WorldStateScoreFrameHonorGained;
@@ -530,7 +531,7 @@ function WorldStateScoreFrame_Update()
 		WorldStateScoreFrameHonorGained:Hide();
 		WorldStateScoreFrameBgRating:Hide();
 
-		if ( isWargame ) then
+		if ( isWargame or isSkirmish ) then
 			WorldStateScoreFrameRatingChange:Hide()
 		end
 		WorldStateScoreFrameName:SetWidth(325)
@@ -538,7 +539,7 @@ function WorldStateScoreFrame_Update()
 		-- Reanchor some columns.
 		WorldStateScoreFrameDamageDone:SetPoint("LEFT", WorldStateScoreFrameKB, "RIGHT", -5, 0);
 		WorldStateScoreFrameTeam:Hide();
-		if ( not isWargame ) then
+		if ( not isWargame and not isSkirmish ) then
 			WorldStateScoreFrameRatingChange:Show();
 			WorldStateScoreFrameRatingChange:SetPoint("LEFT", WorldStateScoreFrameHealingDone, "RIGHT", 0, 0);
 			WorldStateScoreFrameRatingChange.sortType = "bgratingChange";
@@ -608,7 +609,7 @@ function WorldStateScoreFrame_Update()
 		WorldStateScoreFrameTimerLabel:Show();
 		WorldStateScoreFrameTimer:Show();
 		
-		if(IsArenaSkirmish())then
+		if(isSkirmish)then
 			WorldStateScoreFrameQueueButton:Show();
 			WorldStateScoreFrameLeaveButton:SetPoint("BOTTOM", WorldStateScoreFrameLeaveButton:GetParent(), "BOTTOM", 80, 3);
 		else
@@ -789,16 +790,20 @@ function WorldStateScoreFrame_Update()
 				if ( isRegistered ) then
 					scoreButton.team:SetText(teamName);
 					scoreButton.team:Show();
-					if ( teamDataFailed == 1 ) then
-						scoreButton.ratingChange:SetText("-------");
-					else
-						if ratingChange > 0 then 
-							scoreButton.ratingChange:SetText(GREEN_FONT_COLOR_CODE..ratingChange..FONT_COLOR_CODE_CLOSE);
+					if (not isSkirmish) then
+						if ( teamDataFailed == 1 ) then
+							scoreButton.ratingChange:SetText("-------");
 						else
-							scoreButton.ratingChange:SetText(RED_FONT_COLOR_CODE..ratingChange..FONT_COLOR_CODE_CLOSE);
+							if ratingChange > 0 then 
+								scoreButton.ratingChange:SetText(GREEN_FONT_COLOR_CODE..ratingChange..FONT_COLOR_CODE_CLOSE);
+							else
+								scoreButton.ratingChange:SetText(RED_FONT_COLOR_CODE..ratingChange..FONT_COLOR_CODE_CLOSE);
+							end
 						end
+						scoreButton.ratingChange:Show();
+					else
+						scoreButton.ratingChange:Hide();
 					end
-					scoreButton.ratingChange:Show();
 				else
 					scoreButton.team:Hide();
 					scoreButton.ratingChange:Hide();
@@ -907,7 +912,7 @@ function WorldStateScoreFrame_Update()
 	end
 	
 	-- Show average matchmaking rating at the bottom	
-	if isRatedBG or (isArena and isRegistered) then
+	if isRatedBG or ((isArena and isRegistered) and not isSkirmish) then
 		local _, ourAverageMMR, theirAverageMMR;
 		local myFaction = GetBattlefieldArenaFaction();
 		_, _, _, ourAverageMMR = GetBattlefieldTeamInfo(myFaction);

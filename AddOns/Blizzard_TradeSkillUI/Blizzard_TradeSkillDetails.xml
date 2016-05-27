@@ -267,6 +267,7 @@
 						</FontString>
 
 						<FontString parentKey="SourceText" inherits="GameFontHighlight" justifyH="LEFT">
+							<Size x="290" y="0"/>
 							<Anchors>
 								<Anchor point="LEFT" relativeKey="$parent.ReagentLabel"/>
 							</Anchors>
@@ -308,12 +309,7 @@
 								self:GetParent():GetParent():OnResultMouseEnter(self);
 							</OnEnter>
 							<OnLeave function="GameTooltip_HideResetCursor"/>
-							<OnUpdate>
-								if GameTooltip:IsOwned(self) then
-									self:GetParent():GetParent():OnResultMouseEnter(self);
-								end
-								CursorOnUpdate(self);
-							</OnUpdate>
+							<OnUpdate function="CursorOnUpdate" />
 						</Scripts>
 					</Button>
 					<Frame parentKey="StarsFrame" enableMouse="true">

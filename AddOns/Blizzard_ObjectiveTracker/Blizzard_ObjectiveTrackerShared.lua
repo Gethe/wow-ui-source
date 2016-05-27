@@ -99,7 +99,7 @@ end
 function QuestObjectiveItem_UpdateCooldown(itemButton)
 	local start, duration, enable = GetQuestLogSpecialItemCooldown(itemButton:GetID());
 	if ( start ) then
-		CooldownFrame_SetTimer(itemButton.Cooldown, start, duration, enable);
+		CooldownFrame_Set(itemButton.Cooldown, start, duration, enable);
 		if ( duration > 0 and enable == 0 ) then
 			SetItemButtonTextureVertexColor(itemButton, 0.4, 0.4, 0.4);
 		else

@@ -78,6 +78,8 @@ local StatCategoryFrames = {};
 
 local STRIPE_COLOR = {r=0.9, g=0.9, b=1};
 
+MIN_PLAYER_LEVEL_FOR_ITEM_LEVEL_DISPLAY = 90;
+
 PAPERDOLL_SIDEBARS = {
 	{
 		name=PAPERDOLL_SIDEBAR_STATS;
@@ -303,6 +305,12 @@ function PaperDollFrame_OnLoad (self)
 		verticalAnchorY = 0,
 	};
 	
+
+	-- trial edition
+	local width = CharacterTrialLevelErrorText:GetWidth();
+	if ( width > 190 ) then
+		CharacterTrialLevelErrorText:SetPoint("TOP", CharacterLevelText, "BOTTOM", -((width-190)/2), 2);
+	end
 	if( GameLimitedMode_IsActive() ) then
 		CharacterTrialLevelErrorText:SetText(CAPPED_LEVEL_TRIAL);
 	end
@@ -1206,7 +1214,7 @@ function PaperDollFrame_SetItemLevel(statFrame, unit)
 	local avgItemLevel, avgItemLevelEquipped = GetAverageItemLevel();
 	avgItemLevel = floor(avgItemLevel);
 	avgItemLevelEquipped = floor(avgItemLevelEquipped);
-	PaperDollFrame_SetLabelAndText(statFrame, STAT_AVERAGE_ITEM_LEVEL, avgItemLevel, false, avgItemLevel);
+	PaperDollFrame_SetLabelAndText(statFrame, STAT_AVERAGE_ITEM_LEVEL, avgItemLevelEquipped, false, avgItemLevelEquipped);
 	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, STAT_AVERAGE_ITEM_LEVEL).." "..avgItemLevel;
 	if ( avgItemLevelEquipped ~= avgItemLevel ) then
 		statFrame.tooltip = statFrame.tooltip .. "  " .. format(STAT_AVERAGE_ITEM_LEVEL_EQUIPPED, avgItemLevelEquipped);
@@ -1319,14 +1327,7 @@ function PaperDollFrame_OnShow (self)
 	CharacterFrameTitleText:SetText(UnitPVPName("player"));
 	PaperDollFrame_SetLevel();
 	PaperDollFrame_UpdateStats();
-	if (GetCVar("characterFrameCollapsed") ~= "0") then
-		CharacterFrame_Collapse();
-	else
-		CharacterFrame_Expand();
-	end
-	CharacterFrameExpandButton:Show();
-	CharacterFrameExpandButton.collapseTooltip = STATS_COLLAPSE_TOOLTIP;
-	CharacterFrameExpandButton.expandTooltip = STATS_EXPAND_TOOLTIP;
+	CharacterFrame_Expand();
 	
 	SetPaperDollBackground(CharacterModelFrame, "player");
 	PaperDollBgDesaturate(true);
@@ -1343,7 +1344,6 @@ end
 function PaperDollFrame_OnHide (self)
 	CharacterStatsPane.initialOffsetY = 0;
 	CharacterFrame_Collapse();
-	CharacterFrameExpandButton:Hide();
 	PaperDollSidebarTabs:Hide();
 end
 
@@ -1522,7 +1522,7 @@ function PaperDollItemSlotButton_Update (self)
 		end
 		if ( cooldown ) then
 			local start, duration, enable = GetInventoryItemCooldown("player", self:GetID());
-			CooldownFrame_SetTimer(cooldown, start, duration, enable);
+			CooldownFrame_Set(cooldown, start, duration, enable);
 		end
 		self.hasItem = 1;
 	else
@@ -1702,8 +1702,18 @@ function PaperDollFrame_GetArmorReduction(armor, attackerLevel)
 end
 
 function PaperDollFrame_UpdateStats()
-	PaperDollFrame_SetItemLevel(CharacterStatsPane.ItemLevelFrame, "player");
-	CharacterStatsPane.ItemLevelFrame.Value:SetTextColor(GetItemLevelColor());
+	local level = UnitLevel("player");
+	if ( level >= MIN_PLAYER_LEVEL_FOR_ITEM_LEVEL_DISPLAY ) then
+		PaperDollFrame_SetItemLevel(CharacterStatsPane.ItemLevelFrame, "player");
+		CharacterStatsPane.ItemLevelFrame.Value:SetTextColor(GetItemLevelColor());
+		CharacterStatsPane.ItemLevelCategory:Show();
+		CharacterStatsPane.ItemLevelFrame:Show();
+		CharacterStatsPane.AttributesCategory:SetPoint("TOP", 0, -86);
+	else
+		CharacterStatsPane.ItemLevelCategory:Hide();
+		CharacterStatsPane.ItemLevelFrame:Hide();
+		CharacterStatsPane.AttributesCategory:SetPoint("TOP", 0, -6);
+	end
 
 	local spec = GetSpecialization();
 	local role = GetSpecializationRole(spec);

@@ -335,9 +335,13 @@ function TradeSkillDetailsMixin:SetPendingCreationAmount(amount)
 end
 
 function TradeSkillDetailsMixin:OnResultMouseEnter(resultButton)
-	GameTooltip:SetOwner(resultButton, "ANCHOR_RIGHT");
-	GameTooltip:SetRecipeResultItem(self.selectedRecipeID);
-	CursorUpdate(resultButton);
+	if self.selectedRecipeID then
+		GameTooltip:SetOwner(resultButton, "ANCHOR_RIGHT");
+		GameTooltip:SetRecipeResultItem(self.selectedRecipeID);
+		CursorUpdate(resultButton);
+	end
+	
+	resultButton.UpdateTooltip = resultButton.UpdateTooltip or function(owner) self:OnResultMouseEnter(owner); end;
 end
 
 function TradeSkillDetailsMixin:OnResultClicked(resultButton)

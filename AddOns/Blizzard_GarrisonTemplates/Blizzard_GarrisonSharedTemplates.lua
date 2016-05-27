@@ -249,6 +249,10 @@ function GarrisonMissionFollowerDurabilityMixin:SetDurability(durability, maxDur
 	local heartWidth = 13;
 	local spacing = 2;
 
+	self.durabilityVal = durability;
+	self.maxDurabilityVal = maxDurability;
+	self.durabilityLossVal = durabilityLoss;
+
 	durability = Clamp(durability, 0, maxDurability);
 	durabilityLoss = Clamp(durabilityLoss or 0, 0, durability);
 	durability = durability - durabilityLoss;
@@ -283,6 +287,10 @@ function GarrisonMissionFollowerDurabilityMixin:SetDurability(durability, maxDur
 
 	local width = max(1, maxDurability * (heartWidth + spacing));
 	self:SetWidth(width);
+end
+
+function GarrisonMissionFollowerDurabilityMixin:GetDurability()
+	return self.durabilityVal, self.maxDurabilityVal, self.durabilityLossVal;
 end
 
 GarrisonFollowerListButton = { };
@@ -467,7 +475,6 @@ function GarrisonFollowerList:UpdateData()
 			local follower = followers[followersList[index]];
 
 			GarrisonFollowerList_SetButtonMode(self, button, "FOLLOWER");
-			button.Follower.ILevel:SetShown(not follower.isTroop);
 			button.Follower.DurabilityFrame:SetShown(follower.isTroop);
 
 			button.Follower.id = follower.followerID;
@@ -528,6 +535,7 @@ function GarrisonFollowerList:UpdateData()
 				-- show iLevel for max level followers	
 				if (ShouldShowILevelInFollowerList(follower)) then
 					button.Follower.ILevel:SetText(ITEM_LEVEL_ABBR.." "..follower.iLevel);
+					button.Follower.ILevel:Show();
 					if (button.Follower.DurabilityFrame:IsShown()) then
 						button.Follower.Status:SetPoint("TOPLEFT", button.Follower.DurabilityFrame, "TOPRIGHT", 4, 0);
 					else
@@ -535,6 +543,7 @@ function GarrisonFollowerList:UpdateData()
 					end
 				else
 					button.Follower.ILevel:SetText(nil);
+					button.Follower.ILevel:Hide();
 					if (button.Follower.DurabilityFrame:IsShown()) then
 						button.Follower.Status:SetPoint("TOPLEFT", button.Follower.DurabilityFrame, "TOPRIGHT", 0, 0);
 					else
@@ -1394,10 +1403,10 @@ end
 
 local positionData = {
 	[1] = {
-		[1] = { scale=1.0,	facing=0.2,		x=0,	y=0 }
+		[1] = { scale=1.0,		facing=0.2,		x=0,	y=0 }
 	},
 	[2] = {
-		[1] = { scale=1.0,	facing=-0.4,		x=-60,	y=0 },
+		[1] = { scale=1.0,		facing=0,		x=-60,	y=0 },
 		[2] = { scale=1.0/0.95,	facing=0.4,		x=20,	y=30 },
 	},
 	[3] = {
@@ -1437,7 +1446,7 @@ function GarrisonFollowerTabMixin:ShowFollowerModel(followerInfo)
 			model.facing = pos[i].facing;
 			model.scale = pos[i].scale;
 			model.targetDistance= pos[i].targetDistance;
-			model:EnableMouse(numShown == 1);
+			model:EnableMouse(i == 1 and numShown <= 2);
 
 			local displayID = followerInfo.displayIDs and followerInfo.displayIDs[i] and followerInfo.displayIDs[i].id or followerInfo.displayID;
 			local followerPageScale = followerInfo.displayIDs and followerInfo.displayIDs[i] and followerInfo.displayIDs[i].followerPageScale or 1;

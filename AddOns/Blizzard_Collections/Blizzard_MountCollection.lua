@@ -288,8 +288,8 @@ function MountJournalMountButton_UseMount(mountID)
 
 		MountJournal.MountDisplay.WrappedModelFrame:SetAnimation(148);
 		MountJournal.MountDisplay.UnwrapAnim:Play();
+		PlaySound("UI_Store_Unwrap");
 		C_Timer.After(.8, function()
-			PlaySound("UI_Store_Unwrap");
 			MountJournal.MountDisplay.ModelFrame:ApplySpellVisualKit(73393, true);
 		end)
 		C_Timer.After(1.6, function()

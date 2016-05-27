@@ -353,6 +353,7 @@
 		</Animations>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
+			<OnShow method="Reset"/>
 			<OnHide method="OnHide"/>
 			<OnMouseUp method="OnMouseUp"/>
 		</Scripts>
@@ -794,11 +795,7 @@
                     </Frame>
                 </ScrollChild>
             </ScrollFrame>
-            <Frame inherits="ChallengesDungeonIconFrameTemplate" hidden="true">
-                <Anchors>
-                    <Anchor point="BOTTOMLEFT" x="8" y="8"/>
-                </Anchors>
-            </Frame>
+            <Frame inherits="ChallengesDungeonIconFrameTemplate" hidden="true"/>
 			
 			<Frame parentKey="GuildBest" mixin="ChallengesFrameGuildBestMixin" hidden="true">
                 <Size x="260" y="110"/>

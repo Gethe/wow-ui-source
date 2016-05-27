@@ -47,6 +47,7 @@ function AUTO_QUEST_POPUP_TRACKER_MODULE:Update()
 			if ( questTitle and questTitle ~= "" ) then
 				local block = AUTO_QUEST_POPUP_TRACKER_MODULE:GetBlock(questID);
 				-- fixed height, just add the block right away
+				block.height = 68;
 				if ( ObjectiveTracker_AddBlock(block) ) then
 					if ( not block.init ) then
 						local blockContents = block.ScrollChild;			

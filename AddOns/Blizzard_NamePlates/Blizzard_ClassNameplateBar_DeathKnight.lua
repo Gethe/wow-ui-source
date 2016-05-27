@@ -32,7 +32,7 @@ function ClassNameplateBarDeathKnight:UpdateRunes(runeIndex, isEnergize)
 
 		if not runeReady then
 			if start then
-				CooldownFrame_SetTimer(cooldown, start, duration, 1);
+				CooldownFrame_Set(cooldown, start, duration, true);
 			end
 		end
 	end

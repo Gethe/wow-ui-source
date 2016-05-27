@@ -1818,9 +1818,7 @@ function UIParent_OnEvent(self, event, ...)
 		if (not ChallengesKeystoneFrame) then
 			ChallengeMode_LoadUI();
 		end
-		if (not C_ChallengeMode.IsChallengeModeActive()) then
-			ChallengesKeystoneFrame:ShowKeystoneFrame();
-		end
+		ChallengesKeystoneFrame:ShowKeystoneFrame();
 	elseif (event == "UNIT_AURA") then
 		OrderHall_CheckCommandBar();
 	elseif (event == "TAXIMAP_OPENED") then
@@ -4000,7 +3998,7 @@ function RefreshBuffs(frame, unit, numBuffs, suffix, checkCVar)
 			-- setup the cooldown
 			local coolDown = _G[buffName.."Cooldown"];
 			if ( coolDown ) then
-				CooldownFrame_SetTimer(coolDown, expirationTime - duration, duration, 1);
+				CooldownFrame_Set(coolDown, expirationTime - duration, duration, true);
 			end
 
 			-- show the aura
@@ -4058,7 +4056,7 @@ function RefreshDebuffs(frame, unit, numDebuffs, suffix, checkCVar)
 			-- setup the cooldown
 			local coolDown = _G[debuffName.."Cooldown"];
 			if ( coolDown ) then
-				CooldownFrame_SetTimer(coolDown, expirationTime - duration, duration, 1);
+				CooldownFrame_Set(coolDown, expirationTime - duration, duration, true);
 			end
 
 			-- show the aura

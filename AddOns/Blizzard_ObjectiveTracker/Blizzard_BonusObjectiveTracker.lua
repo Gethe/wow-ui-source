@@ -647,6 +647,8 @@ local function UpdateScenarioBonusObjectives(module)
 				else
 					firstLine.Icon:SetAtlas("Objective-Nub", true);
 				end
+				firstLine.Icon:ClearAllPoints();
+				firstLine.Icon:SetPoint("CENTER", firstLine.IconAnchor, "CENTER", 0, 0);
 				firstLine.Icon:Show();
 			end
 			block:SetHeight(block.height + module.blockPadding);
@@ -729,6 +731,7 @@ local function AddBonusObjectiveQuest(module, questID, posIndex, isTrackedWorldQ
 		-- block header? add it as objectiveIndex 0
 		if ( taskName ) then
 			module:AddObjective(block, 0, taskName, nil, nil, OBJECTIVE_DASH_STYLE_HIDE_AND_COLLAPSE, OBJECTIVE_TRACKER_COLOR["Header"]);
+			block.currentLine.Icon:Hide();
 		end
 
 		if ( QuestMapFrame_IsQuestWorldQuest(questID) ) then
@@ -754,20 +757,27 @@ local function AddBonusObjectiveQuest(module, questID, posIndex, isTrackedWorldQ
 			if ( text ) then
 				if ( finished ) then
 					local existingLine = block.lines[objectiveIndex];
-					module:AddObjective(block, objectiveIndex, text, nil, nil, OBJECTIVE_DASH_STYLE_SHOW, OBJECTIVE_TRACKER_COLOR["Complete"]);
+					module:AddObjective(block, objectiveIndex, text, nil, nil, OBJECTIVE_DASH_STYLE_HIDE, OBJECTIVE_TRACKER_COLOR["Complete"]);
+
 					local line = block.currentLine;
 					if ( existingLine and not line.finished ) then
 						line.Glow.Anim:Play();
 						line.Sheen.Anim:Play();
 					end
 					line.finished = true;
+
+					line.Icon:SetAtlas("Tracker-Check", true);
+					-- play anim if needed
+					if ( existingTask ) then
+						line.CheckFlash.Anim:Play();
+					end
+					line.Icon:ClearAllPoints();
+					line.Icon:SetPoint("TOPLEFT", line, "TOPLEFT", 10, 0);
+					line.Icon:Show();
 				else
 					taskFinished = false;
 					module:AddObjective(block, objectiveIndex, text, nil, nil, OBJECTIVE_DASH_STYLE_SHOW);
-				end
-				if ( objectiveIndex > 1 ) then
-					local line = block.currentLine;
-					line.Icon:Hide();
+					block.currentLine.Icon:Hide();
 				end
 			end
 			if ( objectiveType == "progressbar" ) then
@@ -788,21 +798,6 @@ local function AddBonusObjectiveQuest(module, questID, posIndex, isTrackedWorldQ
 		if ( module.ShowWorldQuests and not hasAddedTimeLeft ) then
 			-- No progress bar, try adding it at the end
 			TryAddingTimeLeftLine(module, block, questID);
-		end
-		-- first line might display the check
-		local firstLine = block.lines[0] or block.lines[1];
-		if ( firstLine ) then
-			if ( taskFinished ) then
-				firstLine.Icon:SetAtlas("Tracker-Check", true);
-				-- play anim if needed
-				if ( existingTask and not block.finished ) then
-					firstLine.CheckFlash.Anim:Play();
-				end
-				block.finished = true;
-				firstLine.Icon:Show();
-			else
-				firstLine.Icon:Hide();
-			end
 		end
 		block:SetHeight(block.height + module.blockPadding);
 			

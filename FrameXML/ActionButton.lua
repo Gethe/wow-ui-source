@@ -316,9 +316,7 @@ function ActionButton_Update (self)
 			buttonCooldown:Hide();
 		end
 
-		if(self.chargeCooldown) then
-			EndChargeCooldown(self.chargeCooldown);
-		end
+		ClearChargeCooldown(self);
 	end
 
 	-- Add a green border if button is an equipped item
@@ -457,7 +455,7 @@ function ActionButton_UpdateCount (self)
 	end
 end
 
-function ActionButton_UpdateCooldown (self)
+function ActionButton_UpdateCooldown(self)
 	local locStart, locDuration;
 	local start, duration, enable, charges, maxCharges, chargeStart, chargeDuration;
 	if ( self.spellID ) then
@@ -478,7 +476,8 @@ function ActionButton_UpdateCooldown (self)
 			self.cooldown.currentCooldownType = COOLDOWN_TYPE_LOSS_OF_CONTROL;
 		end
 
-		CooldownFrame_SetTimer(self.cooldown, locStart, locDuration, 1, true);
+		CooldownFrame_Set(self.cooldown, locStart, locDuration, true, true);
+		ClearChargeCooldown(self);
 	else
 		if ( self.cooldown.currentCooldownType ~= COOLDOWN_TYPE_NORMAL ) then
 			self.cooldown:SetEdgeTexture("Interface\\Cooldown\\edge");
@@ -491,11 +490,13 @@ function ActionButton_UpdateCooldown (self)
 			self.cooldown:SetScript("OnCooldownDone", ActionButton_OnCooldownDone );
 		end
 
-		if ( charges and maxCharges and maxCharges > 0 and charges < maxCharges ) then
+		if ( charges and maxCharges and maxCharges > 1 and charges < maxCharges ) then
 			StartChargeCooldown(self, chargeStart, chargeDuration);
+		else
+			ClearChargeCooldown(self);
 		end
 
-		CooldownFrame_SetTimer(self.cooldown, start, duration, enable);
+		CooldownFrame_Set(self.cooldown, start, duration, enable);
 	end
 end
 
@@ -505,40 +506,34 @@ function ActionButton_OnCooldownDone(self)
 end
 
 -- Charge Cooldown stuff
-local ExtraChargeCooldowns = {}
-local numExtraChargeCooldowns = 0;
 
-function EndChargeCooldown(self)
-	local parent = self:GetParent();
-	if parent and parent ~= UIParent then
-		parent.chargeCooldown = nil;
-	end
+local numChargeCooldowns = 0;
+local function CreateChargeCooldownFrame(parent)
+	numChargeCooldowns = numChargeCooldowns + 1;
+	cooldown = CreateFrame("Cooldown", "ChargeCooldown"..numChargeCooldowns, parent, "CooldownFrameTemplate");
+	cooldown:SetHideCountdownNumbers(true);
+	cooldown:SetDrawSwipe(false);
 
-	self:Hide();
-	self:SetParent(UIParent);
-	tinsert(ExtraChargeCooldowns, self);
+	cooldown:SetAllPoints(parent);
+	cooldown:SetFrameStrata("TOOLTIP");
+
+	return cooldown;
 end
 
 function StartChargeCooldown(parent, chargeStart, chargeDuration)
-	if ( not parent.chargeCooldown ) then
-		local cooldown = tremove(ExtraChargeCooldowns);
-		if( not cooldown ) then
-			numExtraChargeCooldowns = numExtraChargeCooldowns + 1;
-			cooldown = CreateFrame("Cooldown", "ChargeCooldown"..numExtraChargeCooldowns, parent, "CooldownFrameTemplate");
-			cooldown:SetScript("OnCooldownDone", EndChargeCooldown );
-			cooldown:SetHideCountdownNumbers(true);
-			cooldown:SetDrawEdge(true);
-			cooldown:SetDrawSwipe(false);
-		end
-		cooldown:SetParent(parent);
-		cooldown:SetAllPoints(parent);
-		cooldown:SetFrameStrata("TOOLTIP");
-		cooldown:Show();
-		parent.chargeCooldown = cooldown;
+	if chargeStart == 0 then
+		ClearChargeCooldown(parent);
+		return;
 	end
-	parent.chargeCooldown:SetCooldown(chargeStart, chargeDuration);
-	if ( chargeStart == 0 ) then
-		EndChargeCooldown(parent.chargeCooldown);
+
+	parent.chargeCooldown = parent.chargeCooldown or CreateChargeCooldownFrame(parent);
+
+	CooldownFrame_Set(parent.chargeCooldown, chargeStart, chargeDuration, true, true);
+end
+
+function ClearChargeCooldown(parent)
+	if parent.chargeCooldown then
+		CooldownFrame_Clear(parent.chargeCooldown);
 	end
 end
 

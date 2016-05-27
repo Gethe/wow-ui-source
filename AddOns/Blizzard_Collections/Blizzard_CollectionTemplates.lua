@@ -40,7 +40,7 @@ function CollectionsSpellButton_UpdateCooldown(self)
 		else
 			cooldown:Show();
 		end
-		CooldownFrame_SetTimer(cooldown, start, duration, enable);
+		CooldownFrame_Set(cooldown, start, duration, enable);
 	else
 		cooldown:Hide();
 	end

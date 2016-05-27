@@ -151,7 +151,7 @@ end
 
 
 function ShouldShowILevelInFollowerList(followerInfo) 
-	return GarrisonFollowerOptions[followerInfo.followerTypeID].showILevelInFollowerList and followerInfo.isMaxLevel;
+	return GarrisonFollowerOptions[followerInfo.followerTypeID].showILevelInFollowerList and followerInfo.isMaxLevel and not followerInfo.isTroop;
 end
 
 

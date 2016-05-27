@@ -576,8 +576,14 @@ local function CanBoostCharacter(class, level, boostInProgress, isTrialBoost)
 		return false;
 	end
 
-	if (level >= CharacterUpgradeFlow.data.maxLevel and not isTrialBoost) then
-		return false;
+	if isTrialBoost then
+		if CharacterUpgradeFlow.data.productId ~= LE_BATTLEPAY_PRODUCT_ITEM_LEVEL_100_CHARACTER_UPGRADE then
+			return false;
+		end
+	else
+		if level >= CharacterUpgradeFlow.data.maxLevel then
+			return false;
+		end
 	end
 
 	return true;
@@ -585,6 +591,20 @@ end
 
 local function IsCharacterEligibleForVeteranBonus(level, isTrialBoost)
 	return level >= UPGRADE_BONUS_LEVEL and not isTrialBoost; -- TODO: Resolve with design on who gets the bonus
+end
+
+local function SetCharacterButtonEnabled(button, enabled)
+	if enabled then
+		button.buttonText.name:SetTextColor(1, 0.82, 0);
+		button.buttonText.Info:SetTextColor(1, 1, 1);
+		button.buttonText.Location:SetTextColor(0.5, 0.5, 0.5);
+	else
+		button.buttonText.name:SetTextColor(0.25, 0.25, 0.25);
+		button.buttonText.Info:SetTextColor(0.25, 0.25, 0.25);
+		button.buttonText.Location:SetTextColor(0.25, 0.25, 0.25);
+	end
+
+	button:SetEnabled(enabled);
 end
 
 function CharacterUpgradeCharacterSelectBlock:SaveResultInfo(characterSelectButton, playerguid)
@@ -675,23 +695,12 @@ function CharacterUpgradeCharacterSelectBlock:Initialize(results)
 		local class, _, level, _, _, _, _, _, _, _, playerguid, _, _, _, boostInProgress, _, _, isTrialBoost = select(4, GetCharacterInfo(GetCharIDFromIndex(i+CHARACTER_LIST_OFFSET)));
 		local canBoostCharacter = CanBoostCharacter(class, level, boostInProgress, isTrialBoost);
 
-		if (button.trialBoostPadlock) then
-			button.trialBoostPadlock:SetShown(not canBoostCharacter);
-		end
+		SetCharacterButtonEnabled(button, canBoostCharacter);
 
-		if (not canBoostCharacter) then
-			button.buttonText.name:SetTextColor(0.25, 0.25, 0.25);
-			button.buttonText.Info:SetTextColor(0.25, 0.25, 0.25);
-			button.buttonText.Location:SetTextColor(0.25, 0.25, 0.25);
-			button:SetEnabled(false);
-		else
+		if (canBoostCharacter) then
 			self.frame.ControlsFrame.Arrows[i]:Show();
 			self.frame.ControlsFrame.BonusIcons[i]:SetShown(IsCharacterEligibleForVeteranBonus(level, isTrialBoost));
 
-			button.buttonText.name:SetTextColor(1.0, 0.82, 0);
-			button.buttonText.Info:SetTextColor(1, 1, 1);
-			button.buttonText.Location:SetTextColor(0.5, 0.5, 0.5);
-			button:SetEnabled(true);
 			button:SetScript("OnClick", function(button)
 				self:SaveResultInfo(button, playerguid);
 
@@ -848,10 +857,7 @@ function CharacterUpgradeCharacterSelectBlock:OnHide()
 	for i = 1, num do
 		local button = _G["CharSelectCharacterButton"..i];
 		resetScripts(button);
-		button:SetEnabled(true);
-		button.buttonText.name:SetTextColor(1.0, 0.82, 0);
-		button.buttonText.Info:SetTextColor(1, 1, 1);
-		button.buttonText.Location:SetTextColor(0.5, 0.5, 0.5);
+		SetCharacterButtonEnabled(button, true);
 
 		if (button.trialBoostPadlock) then
 			button.trialBoostPadlock:Show();
@@ -879,10 +885,7 @@ function CharacterUpgradeCharacterSelectBlock:OnAdvance()
 	for i = 1, num do
 		if (i ~= index) then
 			local button = _G["CharSelectCharacterButton"..i];
-			button:SetEnabled(false);
-			button.buttonText.name:SetTextColor(0.25, 0.25, 0.25);
-			button.buttonText.Info:SetTextColor(0.25, 0.25, 0.25);
-			button.buttonText.Location:SetTextColor(0.25, 0.25, 0.25);
+			SetCharacterButtonEnabled(button, false);
 		end
 	end
 end
@@ -954,15 +957,65 @@ local function createTooltipText(description, gender, isRecommended, isTrialBoos
 	return tooltipText;
 end
 
+-- Spec selection buttons are used in two locations during character creation at this point:
+-- Boosts, and Class Trials
+-- This data allows customization of button placement, hit insets, spec name truncation, etc...
+-- Unused fields left in place as documentation for what will be referenced.
+
+local defaultSpecButtonLayoutData = {
+	initialAnchor = { point = "TOPLEFT", relativeKey = nil, relativePoint = "TOPLEFT", x = 83, y = -73 },
+	subsequentAnchor = { point = "TOP", relativePoint = "BOTTOM", x = 0, y = -35 },
+	buttonInsets = nil, -- numerically indexed, ordering matches SetHitInsets API
+	specNameWidth = nil,
+	specNameFont = nil,
+}
+
+local function CreateSpecButton(parent, buttonIndex, layoutData)
+	local frame = CreateFrame("CheckButton", nil, parent, "CharacterUpgradeSelectSpecRadioButtonTemplate");
+	local relativeFrame, anchorData;
+
+	if (buttonIndex == 1) then
+		anchorData = layoutData.initialAnchor;
+		relativeFrame = parent;
+	else
+		anchorData = layoutData.subsequentAnchor;
+		relativeFrame = parent.SpecButtons[buttonIndex - 1];
+	end
+
+	if (anchorData.relativeKey) then
+		relativeFrame = relativeFrame[anchorData.relativeKey];
+	end
+
+	frame:SetPoint(anchorData.point, relativeFrame, anchorData.relativePoint, anchorData.x, anchorData.y);
+
+	if (layoutData.buttonInsets) then
+		frame:SetHitRectInsets(unpack(layoutData.buttonInsets));
+	end
+
+	if (layoutData.specNameWidth) then
+		frame.SpecName:SetWidth(layoutData.specNameWidth);
+	end
+
+	if (layoutData.specNameFont) then
+		frame.SpecName:SetFontObject(layoutData.specNameFont);
+	end
+
+	return frame;
+end
+
 function CharacterServices_UpdateSpecializationButtons(classFilename, gender, parentFrame, owner, allowAllSpecs, isTrialBoost)
 	local classID = CLASS_NAME_BUTTON_ID_MAP[classFilename];
 	local numSpecs = GetNumSpecializationsForClassID(classID);
 
+	if not parentFrame.SpecButtons then
+		parentFrame.SpecButtons = {}
+	end
+
+	local layoutData = parentFrame.layoutData or defaultSpecButtonLayoutData;
+
 	for i = 1, 4 do
 		if not parentFrame.SpecButtons[i] then
-			local frame = CreateFrame("CheckButton", nil, parentFrame, "CharacterUpgradeSelectSpecRadioButtonTemplate");
-			frame:SetPoint("TOP", parentFrame.SpecButtons[i - 1], "BOTTOM", 0, -35);
-			parentFrame.SpecButtons[i] = frame;
+			parentFrame.SpecButtons[i] = CreateSpecButton(parentFrame, i, layoutData);
 		end
 
 		local button = parentFrame.SpecButtons[i];
@@ -1008,6 +1061,7 @@ function CharacterServices_UpdateSpecializationButtons(classFilename, gender, pa
 
 			button:SetChecked(false);
 			button:Show();
+			button.tooltipTitle = name;
 			button.tooltip = createTooltipText(description, gender, allowed, isTrialBoost);
 		else
 			button:Hide();

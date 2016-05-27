@@ -106,7 +106,7 @@ function ZoneAbilityFrame_Update(self)
 		StartChargeCooldown(self.SpellButton, chargeStart, chargeDuration, enable);
 	end
 	if (start) then
-		CooldownFrame_SetTimer(self.SpellButton.Cooldown, start, duration, enable);
+		CooldownFrame_Set(self.SpellButton.Cooldown, start, duration, enable);
 	end
 
 	self.SpellButton.spellName = self.CurrentSpell;

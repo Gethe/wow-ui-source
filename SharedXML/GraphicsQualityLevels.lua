@@ -735,16 +735,8 @@ VideoData["Graphics_TextureResolutionDropDown"]={
 			tooltip = VIDEO_OPTIONS_TEXTURE_DETAIL_FAIR,
 		},
 		[3] = {
-			text = VIDEO_OPTIONS_MEDIUM,
-			tooltip = VIDEO_OPTIONS_TEXTURE_DETAIL_MEDIUM,
-		},
-		[4] = {
 			text = VIDEO_OPTIONS_HIGH,
 			tooltip = VIDEO_OPTIONS_TEXTURE_DETAIL_HIGH,
-		},
-		[5] = {
-			text = VIDEO_OPTIONS_ULTRA,
-			tooltip = VIDEO_OPTIONS_TEXTURE_DETAIL_ULTRA,
 		},
 	},
 	dependent = {
@@ -766,16 +758,8 @@ VideoData["RaidGraphics_TextureResolutionDropDown"]={
 			tooltip = VIDEO_OPTIONS_TEXTURE_DETAIL_FAIR,
 		},
 		[3] = {
-			text = VIDEO_OPTIONS_MEDIUM,
-			tooltip = VIDEO_OPTIONS_TEXTURE_DETAIL_MEDIUM,
-		},
-		[4] = {
 			text = VIDEO_OPTIONS_HIGH,
 			tooltip = VIDEO_OPTIONS_TEXTURE_DETAIL_HIGH,
-		},
-		[5] = {
-			text = VIDEO_OPTIONS_ULTRA,
-			tooltip = VIDEO_OPTIONS_TEXTURE_DETAIL_ULTRA,
 		},
 	},
 	dependent = {
@@ -896,10 +880,6 @@ VideoData["Graphics_LiquidDetailDropDown"]={
 			tooltip = VIDEO_OPTIONS_LIQUID_DETAIL_MEDIUM,
 		},
 		[4] = {
-			text = VIDEO_OPTIONS_HIGH,
-			tooltip = VIDEO_OPTIONS_LIQUID_DETAIL_HIGH,
-		},
-		[5] = {
 			text = VIDEO_OPTIONS_ULTRA,
 			tooltip = VIDEO_OPTIONS_LIQUID_DETAIL_ULTRA,
 		},
@@ -927,10 +907,6 @@ VideoData["RaidGraphics_LiquidDetailDropDown"]={
 			tooltip = VIDEO_OPTIONS_LIQUID_DETAIL_MEDIUM,
 		},
 		[4] = {
-			text = VIDEO_OPTIONS_HIGH,
-			tooltip = VIDEO_OPTIONS_LIQUID_DETAIL_HIGH,
-		},
-		[5] = {
 			text = VIDEO_OPTIONS_ULTRA,
 			tooltip = VIDEO_OPTIONS_LIQUID_DETAIL_ULTRA,
 		},

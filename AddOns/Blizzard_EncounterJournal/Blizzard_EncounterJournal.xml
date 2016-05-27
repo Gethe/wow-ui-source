@@ -737,6 +737,10 @@
 					end
 					return;
 				end
+				local _, _, _, rootSectionID = EJ_GetEncounterInfo(self.encounterID);
+				if ( rootSectionID == 0 ) then
+					EncounterJournal_SetTab(EncounterJournal.encounter.info.lootTab:GetID());
+				end
 				EncounterJournal_DisplayEncounter(self.encounterID);
 				PlaySound("igAbiliityPageTurn");
 			</OnClick>
@@ -2359,7 +2363,7 @@
 									</Frame>
 								</ScrollChild>
 							</ScrollFrame>
-							<Button name="$parentDifficulty" parentKey="difficulty" inherits="EJButtonTemplate">
+							<Button name="$parentDifficulty" parentKey="difficulty" inherits="EJButtonTemplate" frameLevel="10">
 								<Size x="75" y="26"/>
 								<Anchors>
 									<Anchor point="TOPRIGHT" x="-19" y="-13"/>

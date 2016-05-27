@@ -84,6 +84,11 @@
 					<Color r="1.0" g="1.0" b="1.0" a="1.0"/>
 				</FontString>
 			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="-1">
+				<Texture parentKey="Cover" hidden="true" setAllPoints="true" alpha=".4">
+					<Color r="0" g="0" b="0"/>
+				</Texture>
+			</Layer>
 			<Layer level="OVERLAY">
 				<Texture name="$parentSelection" atlas="Talent-Selection" useAtlasSize="true" alphaMode="ADD" parentKey="knownSelection" hidden="true">
 					<Anchors>
@@ -105,19 +110,11 @@
 				self:RegisterForDrag("LeftButton");
 			</OnLoad>
 			<OnClick function="PlayerTalentButton_OnClick"/>
-			<OnEvent>
-				PlayerTalentFrameTalent_OnEvent(self);
-			</OnEvent>
-			<OnEnter>
-				PlayerTalentFrameTalent_OnEnter(self);
-			</OnEnter>
+			<OnEvent function="PlayerTalentFrameTalent_OnEvent" />
+			<OnEnter function="PlayerTalentFrameTalent_OnEnter" />
 			<OnLeave function="PlayerTalentFrameTalent_OnLeave"/>
-			<OnDragStart>
-				PlayerTalentFrameTalent_OnDrag(self);
-			</OnDragStart>
-			<OnReceiveDrag>
-				PlayerTalentFrameTalent_OnDrag(self);
-			</OnReceiveDrag>
+			<OnDragStart function="PlayerTalentFrameTalent_OnDrag" />
+			<OnReceiveDrag function="PlayerTalentFrameTalent_OnDrag" />
 		</Scripts>
 	</Button>
 
@@ -304,26 +301,6 @@
 				</Texture>
 			</Layer>
 		</Layers>
-		<Frames>
-			<Button parentKey="PrimarySpecButton">
-				<Size x="25" y="25"/>
-				<Anchors>
-					<Anchor point="TOPLEFT" x="24" y="14"/>
-				</Anchors>
-				<NormalTexture parentKey="Icon" atlas="PetJournal-FavoritesIcon" useAtlasSize="true"/>
-				<Scripts>
-					<OnEnter>
-						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:SetText(SPECIALIZATION_PRIMARY, nil, nil, nil, nil, true);
-						GameTooltip:AddLine(PRIMARY_SPEC_CHANGE_AT_CLASS_TRAINER, 1, 1, 1, true);
-						GameTooltip:Show();
-					</OnEnter>
-					<OnLeave>
-						GameTooltip_Hide();
-					</OnLeave>
-				</Scripts>
-			</Button>
-		</Frames>
 		<HighlightTexture file="Interface\Common\bluemenu-main" alphaMode="ADD" alpha="0.8">
 			<Size x="224" y="80"/>
 			<TexCoords left="0.00390625" right="0.87890625" top="0.75195313" bottom="0.83007813"/>
@@ -1172,7 +1149,7 @@
 				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 				self:RegisterForDrag("LeftButton");
 			</OnLoad>
-			<OnClick function="PlayerTalentFramePVPTalentsTalent_OnClick"/>
+			<OnClick function="PlayerPVPTalentButton_OnClick"/>
 			<OnDragStart function="PlayerTalentFramePVPTalentsTalent_OnDrag"/>
 			<OnEnter function="PlayerTalentFramePVPTalentsTalent_OnEnter"/>
 			<OnLeave function="PlayerTalentFramePVPTalentsTalent_OnLeave"/>
@@ -1587,6 +1564,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
+								HideUIPanel(PlayerTalentFrame);
 								self:GetParent():Hide();
 								Prestige();
 							</OnClick>

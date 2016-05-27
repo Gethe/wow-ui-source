@@ -297,8 +297,8 @@ end
 --=================================================================================================================================== 
 LootJournalLegendariesMixin = {};
 
-local LJ_LEGENDARY_X_OFFSET = 34;
-local LJ_LEGENDARY_Y_OFFSET = 25;
+local LJ_LEGENDARY_X_OFFSET = 35;
+local LJ_LEGENDARY_Y_OFFSET = 26;
 local LJ_LEGENDARY_BUTTON_SPACING = 12;
 local LJ_LEGENDARY_BOTTOM_BUFFER = 4;
 local LJ_LEGENDARY_NUM_COLS = 2;
@@ -417,7 +417,7 @@ function LootJournalLegendariesMixin:SetInvTypeFilter(newInvType)
 end
 
 function LootJournalLegendariesMixin:UpdateSlotButtonText()
-	local text = ALL;
+	local text = ALL_INVENTORY_SLOTS;
 	local invTypeFilter = self:GetInvTypeFilter();
 	if invTypeFilter ~= NO_INV_TYPE_FILTER then
 		local invTypes = C_LootJournal.GetLegendaryInventoryTypes();
@@ -449,7 +449,7 @@ do
 
 		local info = UIDropDownMenu_CreateInfo();
 
-		info.text = ALL;
+		info.text = ALL_INVENTORY_SLOTS;
 		info.checked = filterInvType == NO_INV_TYPE_FILTER;
 		info.arg1 = NO_INV_TYPE_FILTER;
 		info.func = SetInvTypeFilter;
@@ -471,7 +471,7 @@ end
 LootJournalItemSetsMixin = {}
 
 local LJ_ITEMSET_X_OFFSET = 10;
-local LJ_ITEMSET_Y_OFFSET = 28;
+local LJ_ITEMSET_Y_OFFSET = 29;
 local LJ_ITEMSET_BUTTON_SPACING = 13;
 local LJ_ITEMSET_BOTTOM_BUFFER = 4;
 

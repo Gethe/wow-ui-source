@@ -101,7 +101,7 @@ function GarrisonMission:HasMission()
 end
 
 function GarrisonMission:GetFollowerBuffsForMission(missionID)
-	self.followerCounters = C_Garrison.GetBuffedFollowersForMission(missionID)
+	self.followerCounters = C_Garrison.GetBuffedFollowersForMission(missionID, GarrisonFollowerOptions[self.followerTypeID].displayCounterAbilityInPlaceOfMechanic)
 	self.followerTraits = C_Garrison.GetFollowersTraitsForMission(missionID);
 	self.followerSpells = C_Garrison.GetFollowersSpellsForMission(missionID);
 end
@@ -1188,8 +1188,8 @@ local positionData = {
 		    [1] = { scale=1.0,		facing=0,		x=-0.02,	y=0		}
 	    },
 	    [2] = {
-		    [1] = { scale=1.0,		facing=-0.4,	x=0.025,	y=-.1		},
-		    [2] = { scale=1.0/0.95,	facing=0.4,		x=-0.055,	y=-.1		},
+		    [1] = { scale=1.0,		facing=0,		x=0.025,	y=0		},
+		    [2] = { scale=1.0/0.95,	facing=0.4,		x=-0.055,	y=0		},
 	    },
 	    [3] = {
 		    [1] = { scale=1.0/0.8,	facing=0,		x=-0.02,	y=0,	},
@@ -1721,21 +1721,39 @@ function GarrisonMissionComplete:AnimFollowerCheerAndTroopDeath(followerID)
 	for i = 1, #mission.followers do
 		local followerFrame = self.Stage.FollowersFrame.Followers[i];
 		if ( followerFrame.followerID == followerID ) then
+
+			local shouldFadeOut = false;
+			local shouldCheer = mission.succeeded;
+
 			local followerInfo = C_Garrison.GetFollowerInfo(followerID);
 			if (followerInfo) then
 				self:SetFollowerLevel(followerFrame, followerInfo);
-				for _, cluster in ipairs(self.Stage.ModelCluster) do
-					if (cluster:IsShown()) then
-						if (cluster:GetFollowerID() == followerFrame.followerID) then
-							if (followerInfo.isTroop and followerInfo.durability and followerInfo.durability <= 0) then
-								cluster.FadeOut:Play();
-							else
-								for _, model in ipairs(cluster.Model) do
-									if ( model.followerID == followerFrame.followerID and model:IsShown() ) then
-										model:SetSpellVisualKit(6375);	-- level up visual
-										PlaySound("UI_Garrison_CommandTable_Follower_LevelUp");
-										break;
-									end
+				if (followerInfo.isTroop and followerInfo.durability and followerInfo.durability <= 0) then
+					shouldFadeOut = true;
+					shouldCheer = false;
+				end
+			else
+				-- follower has been deleted; 
+				shouldFadeOut = true;
+				shouldCheer = false;
+				if (followerFrame.DurabilityFrame:IsShown()) then
+					local durability, maxDurability = followerFrame.DurabilityFrame:GetDurability();
+					followerFrame.DurabilityFrame:SetDurability(0, maxDurability);
+				end
+			end
+
+			for _, cluster in ipairs(self.Stage.ModelCluster) do
+				if (cluster:IsShown()) then
+					if (cluster:GetFollowerID() == followerFrame.followerID) then
+						if (shouldFadeOut) then
+							cluster.FadeOut:Play();
+						end
+						if (shouldCheer) then
+							for _, model in ipairs(cluster.Model) do
+								if ( model.followerID == followerFrame.followerID and model:IsShown() ) then
+									model:SetSpellVisualKit(6375);	-- level up visual
+									PlaySound("UI_Garrison_CommandTable_Follower_LevelUp");
+									break;
 								end
 							end
 						end

@@ -285,13 +285,13 @@
 			<Font font="Fonts\FRIZQT__.TTF" height ="32" outline="THICK"/>
 		</Member>
 		<Member alphabet="korean">
-			<Font font="Fonts\K_Pagetext.TTF" height="102" outline="THICK"/>
+			<Font font="Fonts\K_Pagetext.TTF" height="32" outline="THICK"/>
 		</Member>
 		<Member alphabet="simplifiedchinese">
-			<Font font="Fonts\ARKai_T.ttf" height="112" outline="THICK"/>
+			<Font font="Fonts\ARKai_T.ttf" height="32" outline="THICK"/>
 		</Member>
 		<Member alphabet="traditionalchinese">
-			<Font font="Fonts\blei00d.TTF" height="112" outline="THICK"/>
+			<Font font="Fonts\blei00d.TTF" height="32" outline="THICK"/>
 		</Member>
 		<Member alphabet="russian">
 			<Font font="Fonts\FRIZQT___CYR.TTF" height="32" outline="THICK"/>
@@ -1027,7 +1027,25 @@
 			<Font font="Fonts\MORPHEUS_CYR.ttf" height="13" outline="NORMAL"/>
 		</Member>
 	</FontFamily>
-
+	
+	<FontFamily name="Game15Font_o1" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\FRIZQT__.TTF" height="15" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="15" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\ARKai_T.ttf" height="15" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\blei00d.TTF"  height="15" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\FRIZQT___CYR.TTF" height="15" outline="NORMAL"/>
+		</Member>
+	</FontFamily>
+	
 	<FontFamily name="QuestFont_Enormous" virtual="true">
 		<Member alphabet="roman">
 			<Font font="Fonts\MORPHEUS.ttf" height="30">
@@ -1947,24 +1965,6 @@
 					<Color r="0" g="0" b="0"/>
 				</Shadow>
 			</Font>
-		</Member>
-	</FontFamily>
-	
-	<FontFamily name="Game22Font_o1" virtual="true">
-		<Member alphabet="roman">
-			<Font font="Fonts\FRIZQT__.TTF" height="22" outline="NORMAL"/>
-		</Member>
-		<Member alphabet="korean">
-			<Font font="Fonts\2002.TTF" height="22" outline="NORMAL"/>
-		</Member>
-		<Member alphabet="simplifiedchinese">
-			<Font font="Fonts\ARKai_T.ttf" height="22" outline="NORMAL"/>
-		</Member>
-		<Member alphabet="traditionalchinese">
-			<Font font="Fonts\blei00d.TTF"  height="25" outline="NORMAL"/>
-		</Member>
-		<Member alphabet="russian">
-			<Font font="Fonts\FRIZQT___CYR.TTF" height="22" outline="NORMAL"/>
 		</Member>
 	</FontFamily>
 </Ui>

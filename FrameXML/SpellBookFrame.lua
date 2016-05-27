@@ -559,7 +559,7 @@ function SpellButton_UpdateCooldown(self)
 			else
 				cooldown:Show();
 			end
-			CooldownFrame_SetTimer(cooldown, start, duration, enable);
+			CooldownFrame_Set(cooldown, start, duration, enable);
 		else
 			cooldown:Hide();
 		end
@@ -1115,7 +1115,7 @@ function UpdateProfessionButton(self)
 	
 	self.iconTexture:SetTexture(texture);
 	local start, duration, enable = GetSpellCooldown(spellIndex, SpellBookFrame.bookType);
-	CooldownFrame_SetTimer(self.cooldown, start, duration, enable);
+	CooldownFrame_Set(self.cooldown, start, duration, enable);
 	if ( enable == 1 ) then
 		self.iconTexture:SetVertexColor(1.0, 1.0, 1.0);
 	else

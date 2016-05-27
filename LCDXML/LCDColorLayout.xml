@@ -83,21 +83,13 @@
 				<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="85" Wrap="false"/>
 				<RelOrigin RelTo="POWER_FLD" x="0" y="16" />
 			</LCDText>
-			<LCDText name="HIT" text="STAT_HIT_CHANCE" id="57">
-				<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="110" Wrap="false"/>
-				<RelOrigin RelTo="HASTE" x="0" y="16" />
-			</LCDText>
-			<LCDText name="HIT_FLD" id="11">
-				<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="85" Wrap="false"/>
-				<RelOrigin RelTo="HASTE_FLD" x="0" y="16" />
-			</LCDText>
 			<LCDText name="CRIT" text="MELEE_CRIT_CHANCE" id="58">
 				<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="90" Wrap="false"/>
-				<RelOrigin RelTo="HIT" x="0" y="16" />
+				<RelOrigin RelTo="HASTE" x="0" y="16" />
 			</LCDText>
 			<LCDText name="CRIT_FLD" id="11">
 				<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="85" Wrap="false"/>
-				<RelOrigin RelTo="HIT_FLD" x="0" y="16" />
+				<RelOrigin RelTo="HASTE_FLD" x="0" y="16" />
 			</LCDText>
 		</LCDSubscreen>
 		<LCDSubscreen name="Defense" id="1">
@@ -151,21 +143,13 @@
         <Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="60" Wrap="false"/>
         <RelOrigin RelTo="SPELL_POWER_FLD" x="0" y="16" />
       </LCDText>
-      <LCDText name="SPELL_HIT" text="STAT_HIT_CHANCE">
+      <LCDText name="MANA_REGEN" text="MANA_REGEN" id="54">
         <Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="110" Wrap="false"/>
         <RelOrigin RelTo="SPELL_HASTE" x="0" y="16" />
       </LCDText>
-      <LCDText name="SPELL_HIT_FLD" text="HIT_LCD">
-        <Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="60" Wrap="false"/>
-        <RelOrigin RelTo="SPELL_HASTE_FLD" x="0" y="16" />
-      </LCDText>
-      <LCDText name="MANA_REGEN" text="MANA_REGEN" id="54">
-        <Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="110" Wrap="false"/>
-        <RelOrigin RelTo="SPELL_HIT" x="0" y="16" />
-      </LCDText>
       <LCDText name="MANA_REGEN_FLD" text="HIT_LCD">
         <Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="60" Wrap="false"/>
-        <RelOrigin RelTo="SPELL_HIT_FLD" x="0" y="16" />
+        <RelOrigin RelTo="SPELL_HASTE_FLD" x="0" y="16" />
       </LCDText>
 			<LCDText name="SPELL_CRIT" text="MELEE_CRIT_CHANCE">
 				<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="90" Wrap="false"/>

@@ -44,7 +44,7 @@ function TalkingHeadFrame_CloseImmediately()
 		frame.finishTimer:Cancel();
 		frame.finishTimer = nil;
 	end
-	frame.forceHide = true;
+	C_TalkingHead.IgnoreCurrentTalkingHead();
 	frame:Hide();
 	if ( frame.voHandle ) then
 		StopSound(frame.voHandle);
@@ -65,14 +65,10 @@ function TalkingHeadFrame_FadeinFrames()
 	local frame = TalkingHeadFrame;
 	frame.MainFrame.TalkingHeadsInAnim:Play();
 	C_Timer.After(0.5, function()
-		if ( not frame.forceHide ) then
-			frame.NameFrame.Fadein:Play();
-		end
+		frame.NameFrame.Fadein:Play();
 	end);
 	C_Timer.After(0.75, function()
-		if ( not frame.forceHide ) then
-			frame.TextFrame.Fadein:Play();
-		end
+		frame.TextFrame.Fadein:Play();
 	end);
 	frame.BackgroundFrame.Fadein:Play();
 	frame.PortraitFrame.Fadein:Play();
@@ -124,10 +120,6 @@ function TalkingHeadFrame_PlayCurrent()
 	local currentDisplayInfo = model:GetDisplayInfo();
 	local displayInfo, cameraID, vo, duration, lineNumber, numLines, name, text, isNewTalkingHead = C_TalkingHead.GetCurrentLineInfo();
 	if ( displayInfo and displayInfo ~= 0 ) then
-		if ( lineNumber > 0 and frame.forceHide ) then
-			return;
-		end
-		
 		frame:Show();
 		if ( currentDisplayInfo ~= displayInfo ) then
 			model.uiCameraID = cameraID;
@@ -143,20 +135,15 @@ function TalkingHeadFrame_PlayCurrent()
 		if ( isNewTalkingHead ) then
 			TalkingHeadFrame_Reset(frame, text, name);
 			TalkingHeadFrame_FadeinFrames();
-			frame.forceHide = false;
 		else
 			if ( text ~= frame.TextFrame.Text:GetText() ) then
 				-- Fade out the old text and fade in the new text
 				frame.TextFrame.Fadeout:Play();
 				C_Timer.After(0.25, function()
-					if ( not frame.forceHide ) then
-						frame.TextFrame.Text:SetText(text);
-					end
+					frame.TextFrame.Text:SetText(text);
 				end);
 				C_Timer.After(0.5, function()
-					if ( not frame.forceHide ) then
-						frame.TextFrame.Fadein:Play();
-					end
+					frame.TextFrame.Fadein:Play();
 				end);
 			end
 			
@@ -164,14 +151,10 @@ function TalkingHeadFrame_PlayCurrent()
 				-- Fade out the old name and fade in the new name
 				frame.NameFrame.Fadeout:Play();
 				C_Timer.After(0.25, function()
-					if ( not frame.forceHide ) then
-						frame.NameFrame.Name:SetText(name);
-					end
+					frame.NameFrame.Name:SetText(name);
 				end);
 				C_Timer.After(0.5, function()
-					if ( not frame.forceHide ) then
-						frame.NameFrame.Fadein:Play();
-					end
+					frame.NameFrame.Fadein:Play();
 				end);
 				
 				frame.MainFrame.TalkingHeadsInAnim:Play();

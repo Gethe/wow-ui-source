@@ -95,7 +95,8 @@ function TalentFrame_Update(TalentFrame, talentUnit)
 						button.border:SetShown(selected);
 					else
 						button.disabled = (not tierAvailable or disable);
-						SetDesaturation(button.icon, button.disabled or not selected);
+						SetDesaturation(button.icon, button.disabled or (selectedTalent ~= 0 and not selected));
+						button.Cover:SetShown(button.disabled);
 						button.highlight:SetAlpha((selected or not tierAvailable) and 0 or 1);
 					end
 					

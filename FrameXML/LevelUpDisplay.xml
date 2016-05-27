@@ -73,13 +73,13 @@
 				<Texture name="$parentIcon" parentKey="icon">
 					<Size x="36" y="36"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="8" y="0"/>
+						<Anchor point="TOPLEFT" x="8" y="2"/>
 					</Anchors>
 				</Texture>
 			
 				<FontString name="$parentName" inherits="GameFontNormalLarge" justifyH="LEFT" parentKey="name">
 					<Anchors>
-						<Anchor point="BOTTOMLEFT"  relativeTo="$parentIcon" relativePoint="BOTTOMRIGHT" x="10" y="2"/>
+						<Anchor point="BOTTOMLEFT"  relativeTo="$parentIcon" relativePoint="BOTTOMRIGHT" x="10" y="3"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentSubText" inherits="GameFontNormal" justifyH="LEFT" parentKey="flavorText">

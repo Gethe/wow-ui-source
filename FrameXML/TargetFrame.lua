@@ -481,66 +481,59 @@ function TargetFrame_UpdateAuras (self)
 	local canAssist = UnitCanAssist("player", self.unit);
 	
 	for i = 1, MAX_TARGET_BUFFS do
-        local buffName, rank, icon, count, debuffType, duration, expirationTime, caster, canStealOrPurge, _ , spellId = UnitBuff(self.unit, i, nil);
-		if (TargetFrame_ShouldShowBuffs(self.unit, caster)) then
-            if (buffName) then 
-                frameName = selfName.."Buff"..(i);
-                frame = _G[frameName];
-                if ( not frame ) then
-                    if ( not icon ) then
-                        break;
-                    else
-                        frame = CreateFrame("Button", frameName, self, "TargetBuffFrameTemplate");
-                        frame.unit = self.unit;
-                    end
-                end
-                if ( icon and ( not self.maxBuffs or i <= self.maxBuffs ) ) then
-                    frame:SetID(i);
-
-                    -- set the icon
-                    frameIcon = _G[frameName.."Icon"];
-                    frameIcon:SetTexture(icon);
-
-                    -- set the count
-                    frameCount = _G[frameName.."Count"];
-                    if ( count > 1 and self.showAuraCount ) then
-                        frameCount:SetText(count);
-                        frameCount:Show();
-                    else
-                        frameCount:Hide();
-                    end
-                    
-                    -- Handle cooldowns
-                    frameCooldown = _G[frameName.."Cooldown"];
-                    if ( duration > 0 ) then
-                        frameCooldown:Show();
-                        CooldownFrame_SetTimer(frameCooldown, expirationTime - duration, duration, 1);
-                    else
-                        frameCooldown:Hide();
-                    end
-
-                    -- Show stealable frame if the target is not the current player and the buff is stealable.
-                    local frameStealable = _G[frameName.."Stealable"];
-                    if ( not playerIsTarget and canStealOrPurge ) then
-                        frameStealable:Show();
-                    else
-                        frameStealable:Hide();
-                    end
-
-                    -- set the buff to be big if the buff is cast by the player or his pet
-                    largeBuffList[i] = PLAYER_UNITS[caster];
-
-                    numBuffs = numBuffs + 1;
-
-                    frame:ClearAllPoints();
-                    frame:Show();
+        local buffName, rank, icon, count, debuffType, duration, expirationTime, caster, canStealOrPurge, _ , spellId, _, _, casterIsPlayer, nameplateShowAll = UnitBuff(self.unit, i, nil);
+        if (buffName) then 
+            frameName = selfName.."Buff"..(i);
+            frame = _G[frameName];
+            if ( not frame ) then
+                if ( not icon ) then
+                    break;
                 else
-                    frame:Hide();
+                    frame = CreateFrame("Button", frameName, self, "TargetBuffFrameTemplate");
+                    frame.unit = self.unit;
                 end
-            else
-                break;
             end
-        end 
+            if ( icon and ( not self.maxBuffs or i <= self.maxBuffs ) ) then
+                frame:SetID(i);
+
+                -- set the icon
+                frameIcon = _G[frameName.."Icon"];
+                frameIcon:SetTexture(icon);
+
+                -- set the count
+                frameCount = _G[frameName.."Count"];
+                if ( count > 1 and self.showAuraCount ) then
+                    frameCount:SetText(count);
+                    frameCount:Show();
+                else
+                    frameCount:Hide();
+                end
+                    
+                -- Handle cooldowns
+                frameCooldown = _G[frameName.."Cooldown"];
+                CooldownFrame_Set(frameCooldown, expirationTime - duration, duration, duration > 0, true);
+
+                -- Show stealable frame if the target is not the current player and the buff is stealable.
+                local frameStealable = _G[frameName.."Stealable"];
+                if ( not playerIsTarget and canStealOrPurge ) then
+                    frameStealable:Show();
+                else
+                    frameStealable:Hide();
+                end
+
+                -- set the buff to be big if the buff is cast by the player or his pet
+                largeBuffList[i] = PLAYER_UNITS[caster];
+
+                numBuffs = numBuffs + 1;
+
+                frame:ClearAllPoints();
+                frame:Show();
+            else
+                frame:Hide();
+            end
+        else
+            break;
+        end
 	end
 
 	for i = numBuffs + 1, MAX_TARGET_BUFFS do
@@ -561,9 +554,9 @@ function TargetFrame_UpdateAuras (self)
 	
 	local maxDebuffs = self.maxDebuffs or MAX_TARGET_DEBUFFS;
 	while ( frameNum <= maxDebuffs and index <= maxDebuffs ) do
-	    local debuffName, rank, icon, count, debuffType, duration, expirationTime, caster, _, _, _, _, _, _, nameplateShowAll = UnitDebuff(self.unit, index, "INCLUDE_NAME_PLATE_ONLY");
+	    local debuffName, rank, icon, count, debuffType, duration, expirationTime, caster, _, _, _, _, _, casterIsPlayer, nameplateShowAll = UnitDebuff(self.unit, index, "INCLUDE_NAME_PLATE_ONLY");
 		if ( debuffName ) then
-			if ( TargetFrame_ShouldShowDebuffs(self.unit, caster, nameplateShowAll) ) then
+			if ( TargetFrame_ShouldShowDebuffs(self.unit, caster, nameplateShowAll, casterIsPlayer) ) then
 				frameName = selfName.."Debuff"..frameNum;
 				frame = _G[frameName];
 				if ( icon ) then
@@ -588,12 +581,7 @@ function TargetFrame_UpdateAuras (self)
 
 					-- Handle cooldowns
 					frameCooldown = _G[frameName.."Cooldown"];
-					if ( duration > 0 ) then
-						frameCooldown:Show();
-						CooldownFrame_SetTimer(frameCooldown, expirationTime - duration, duration, 1);
-					else
-						frameCooldown:Hide();
-					end
+					CooldownFrame_Set(frameCooldown, expirationTime - duration, duration, duration > 0, true);
 
 					-- set debuff type color
 					if ( debuffType ) then
@@ -654,26 +642,10 @@ function TargetFrame_UpdateAuras (self)
 	end
 end
 
-function TargetFrame_ShouldShowBuffs(unit, caster)
-	if (GetCVarBool("noBuffDebuffFilterOnTarget")) then
-		return true;
-	end
-
-	if (caster and UnitIsUnit("player", caster)) then
-		return true;
-	end
-
-	if (UnitIsUnit("player", unit)) then
-		return true;
-	end
-
-    if (not UnitCanAttack("player", unit)) then
-        return false;
-    end
-    return true;
-end
-
-function TargetFrame_ShouldShowDebuffs(unit, caster, nameplateShowAll)
+--
+--		Hide debuffs on mobs cast by players other than me and aren’t flagged to show to entire party on nameplates.
+--
+function TargetFrame_ShouldShowDebuffs(unit, caster, nameplateShowAll, casterIsAPlayer)
 	if (GetCVarBool("noBuffDebuffFilterOnTarget")) then
 		return true;
 	end
@@ -690,9 +662,13 @@ function TargetFrame_ShouldShowDebuffs(unit, caster, nameplateShowAll)
 		return true;
 	end
 
-    if (UnitCanAttack("player", unit) and not UnitIsPlayer(unit)) then
+	local targetIsFriendly = not UnitCanAttack("player", unit);
+	local targetIsAPlayer =  UnitIsPlayer(unit);
+
+	if (not targetIsAPlayer and not targetIsFriendly and casterIsAPlayer) then
         return false;
     end
+
     return true;
 end
 

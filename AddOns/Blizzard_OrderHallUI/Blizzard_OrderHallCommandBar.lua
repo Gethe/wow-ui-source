@@ -34,6 +34,7 @@ function OrderHallCommandBarMixin:OnShow()
 	self:RegisterEvent("CURRENCY_DISPLAY_UPDATE");
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
 	self:RegisterEvent("UI_SCALE_CHANGED");
+	self:RegisterEvent("GARRISON_TALENT_COMPLETE");
 	self:RegisterEvent("GARRISON_TALENT_UPDATE");
 	self:RegisterEvent("GARRISON_FOLLOWER_CATEGORIES_UPDATED");
 	self:RegisterEvent("GARRISON_FOLLOWER_ADDED");
@@ -52,6 +53,7 @@ function OrderHallCommandBarMixin:OnHide()
 	self:UnregisterEvent("CURRENCY_DISPLAY_UPDATE");
 	self:UnregisterEvent("DISPLAY_SIZE_CHANGED");
 	self:UnregisterEvent("UI_SCALE_CHANGED");
+	self:UnregisterEvent("GARRISON_TALENT_COMPLETE");
 	self:UnregisterEvent("GARRISON_TALENT_UPDATE");
 	self:UnregisterEvent("GARRISON_FOLLOWER_CATEGORIES_UPDATED");
 	self:UnregisterEvent("GARRISON_FOLLOWER_ADDED");
@@ -75,7 +77,7 @@ function OrderHallCommandBarMixin:OnEvent(event)
 	elseif (event == "UNIT_AURA") then
 		local inOrderHall = C_Garrison.IsPlayerInGarrison(LE_GARRISON_TYPE_7_0);
 		self:SetShown(inOrderHall);
-	elseif (event == "GARRISON_TALENT_UPDATE") then
+	elseif (event == "GARRISON_TALENT_COMPLETE" or event == "GARRISON_TALENT_UPDATE") then
 		self:RequestCategoryInfo();
 	elseif (event == "UPDATE_BINDINGS") then
 		self.WorldMapButton.tooltipText = MicroButtonTooltipText(WORLDMAP_BUTTON, "TOGGLEWORLDMAP");

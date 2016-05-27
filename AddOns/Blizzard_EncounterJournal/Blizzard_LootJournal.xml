@@ -34,6 +34,7 @@
 					<Anchors>
 						<Anchor point="TOPLEFT" x="2" y="-2"/>
 					</Anchors>
+					<TexCoords left="0.046875" right="0.953125" top="0.046875" bottom="0.953125"/>
 				</Texture>
 			</Layer>
 			<Layer level="BORDER">
@@ -47,13 +48,13 @@
 				<FontString parentKey="ItemName" inherits="GameFontNormalMed2" maxLines="2" justifyH="LEFT">
 					<Size x="250" y="0"/>
 					<Anchors>
-						<Anchor point="LEFT" x="67" y="6"/>
+						<Anchor point="LEFT" x="69" y="7"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="ItemType" inherits="GameFontNormal" text="Two Hand Axe" maxLines="1" justifyH="LEFT">
 					<Size x="250" y="0"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.ItemName" relativePoint="BOTTOMLEFT" x="0" y="-1"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.ItemName" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
 					</Anchors>
 					<Color r="0.718" g="0.561" b="0.416"/>
 				</FontString>
@@ -75,7 +76,7 @@
 			<Layer level="BORDER">
 				<Texture parentKey="Border" atlas="loottab-set-itemborder-green" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="CENTER"/>
+						<Anchor point="RIGHT" relativeKey="$parent.Icon" relativePoint="CENTER" x="20" y="1"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -96,7 +97,7 @@
 				<FontString parentKey="SetName" inherits="GameFontNormalMed2" maxLines="1" justifyH="LEFT">
 					<Size x="550" y="0"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="39" y="-7"/>
+						<Anchor point="TOPLEFT" x="39" y="-6"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="ItemLevel" inherits="GameFontNormal" text="Item Level" maxLines="1" justifyH="LEFT">
@@ -119,8 +120,8 @@
 	
 	<Frame parent="EncounterJournal" parentKey="LootJournal" hidden="true" mixin="LootJournalMixin">
 		<Anchors>
-			<Anchor point="TOPLEFT" relativeTo="$parentInset" x="5" y="-51" />
-			<Anchor point="BOTTOMRIGHT" relativeTo="$parentInset" x="-3" y="0"/>
+			<Anchor point="TOPLEFT" relativeTo="$parentInset" x="4" y="-51" />
+			<Anchor point="BOTTOMRIGHT" relativeTo="$parentInset" x="-4" y="0"/>
 		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -153,7 +154,7 @@
 				</Anchors>
 				<Frames>
 					<Button parentKey="SlotButton" inherits="EJButtonTemplate">
-						<Size x="80" y="26"/>
+						<Size x="114" y="26"/>
 						<Anchors>
 							<Anchor point="TOPRIGHT" x="-12" y="35"/>
 						</Anchors>

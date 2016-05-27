@@ -1325,8 +1325,11 @@ function InterfaceOptionsNPCNamesDropDown_OnEvent(self, event, ...)
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
 		local value = "2";
 		if ( GetCVarBool("UnitNameNPC") ) then
-			value = "3";
+			value = "4";
 			self.tooltip = NPC_NAMES_DROPDOWN_ALL_TOOLTIP;
+		elseif ( GetCVarBool("UnitNameFriendlySpecialNPCName") and GetCVarBool("UnitNameHostleNPC") and GetCVarBool("UnitNameInteractiveNPC") ) then
+			value = "3";
+			self.tooltip = NPC_NAMES_DROPDOWN_INTERACTIVE_TOOLTIP;
 		elseif ( GetCVarBool("UnitNameFriendlySpecialNPCName") and GetCVarBool("UnitNameHostleNPC") ) then
 			value = "2";
 			self.tooltip = NPC_NAMES_DROPDOWN_HOSTILE_TOOLTIP;
@@ -1334,7 +1337,7 @@ function InterfaceOptionsNPCNamesDropDown_OnEvent(self, event, ...)
 			value = "1";
 			self.tooltip = NPC_NAMES_DROPDOWN_TRACKED_TOOLTIP;
 		else
-			value = "4";
+			value = "5";
 			self.tooltip = NPC_NAMES_DROPDOWN_NONE_TOOLTIP;
 		end
 		self.defaultValue = "1";
@@ -1353,20 +1356,30 @@ function InterfaceOptionsNPCNamesDropDown_OnEvent(self, event, ...)
 					SetCVar("UnitNameFriendlySpecialNPCName", "1");
 					SetCVar("UnitNameNPC", "0");
 					SetCVar("UnitNameHostleNPC", "0");
+					SetCVar("UnitNameInteractiveNPC", "0");
 					self.tooltip = NPC_NAMES_DROPDOWN_TRACKED_TOOLTIP;
 				elseif ( value == "2" ) then
 					SetCVar("UnitNameFriendlySpecialNPCName", "1");
 					SetCVar("UnitNameHostleNPC", "1");
+					SetCVar("UnitNameInteractiveNPC", "0");
 					SetCVar("UnitNameNPC", "0");
 					self.tooltip = NPC_NAMES_DROPDOWN_HOSTILE_TOOLTIP;
 				elseif ( value == "3" ) then
+					SetCVar("UnitNameFriendlySpecialNPCName", "1");
+					SetCVar("UnitNameHostleNPC", "1");
+					SetCVar("UnitNameInteractiveNPC", "1");
+					SetCVar("UnitNameNPC", "0");
+					self.tooltip = NPC_NAMES_DROPDOWN_HOSTILE_TOOLTIP;
+				elseif ( value == "4" ) then
 					SetCVar("UnitNameFriendlySpecialNPCName", "0");
 					SetCVar("UnitNameHostleNPC", "0");
+					SetCVar("UnitNameInteractiveNPC", "0");
 					SetCVar("UnitNameNPC", "1");
 					self.tooltip = NPC_NAMES_DROPDOWN_ALL_TOOLTIP;
 				else
 					SetCVar("UnitNameFriendlySpecialNPCName", "0");
 					SetCVar("UnitNameHostleNPC", "0");
+					SetCVar("UnitNameInteractiveNPC", "0");
 					SetCVar("UnitNameNPC", "0");
 					self.tooltip = NPC_NAMES_DROPDOWN_NONE_TOOLTIP;
 				end					
@@ -1415,9 +1428,21 @@ function InterfaceOptionsNPCNamesDropDown_Initialize(self)
 	info.tooltipText = NPC_NAMES_DROPDOWN_HOSTILE_TOOLTIP;
 	UIDropDownMenu_AddButton(info);
 
-	info.text = NPC_NAMES_DROPDOWN_ALL;
+	info.text = NPC_NAMES_DROPDOWN_INTERACTIVE;
 	info.func = InterfaceOptionsNPCNamesDropDown_OnClick;
 	info.value = "3";
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	info.tooltipTitle = NPC_NAMES_DROPDOWN_INTERACTIVE;
+	info.tooltipText = NPC_NAMES_DROPDOWN_INTERACTIVE_TOOLTIP;
+	UIDropDownMenu_AddButton(info);
+	
+	info.text = NPC_NAMES_DROPDOWN_ALL;
+	info.func = InterfaceOptionsNPCNamesDropDown_OnClick;
+	info.value = "4";
 	if ( info.value == selectedValue ) then
 		info.checked = 1;
 	else
@@ -1429,7 +1454,7 @@ function InterfaceOptionsNPCNamesDropDown_Initialize(self)
 
 	info.text = NPC_NAMES_DROPDOWN_NONE;
 	info.func = InterfaceOptionsNPCNamesDropDown_OnClick;
-	info.value = "4";
+	info.value = "5";
 	if ( info.value == selectedValue ) then
 		info.checked = 1;
 	else

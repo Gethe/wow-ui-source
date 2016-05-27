@@ -54,7 +54,7 @@ function InspectTalentFrameSpec_OnClear(self)
 end
 
 function InspectTalentFrameSpec_OnEnter(self)
-	GameTooltip:SetOwner(self, "ANCHOR_TOP");
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 28, -18);
 	GameTooltip:AddLine(self.tooltip, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 	GameTooltip:SetMinimumWidth(300, true);
 	GameTooltip:Show();

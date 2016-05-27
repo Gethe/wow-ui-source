@@ -310,7 +310,7 @@ end
 function PetJournalHealPetButton_UpdateCooldown(self)
 	local cooldown = self.cooldown;
 	local start, duration, enable = GetSpellCooldown(self.spellID);
-	CooldownFrame_SetTimer(cooldown, start, duration, enable);
+	CooldownFrame_Set(cooldown, start, duration, enable);
 end
 
 function PetJournalHealPetButton_OnEnter(self)
@@ -785,7 +785,7 @@ function PetJournal_UpdatePetList()
 			if ( petID ) then
 				local start, duration, enable = C_PetJournal.GetPetCooldownByGUID(pet.petID);
 				if (start) then
-					CooldownFrame_SetTimer(pet.dragButton.Cooldown, start, duration, enable);
+					CooldownFrame_Set(pet.dragButton.Cooldown, start, duration, enable);
 				end
 			end
 		else
@@ -894,7 +894,7 @@ function PetJournalDragButton_OnEvent(self, event, ...)
 	if ( event == "SPELL_UPDATE_COOLDOWN" and self:GetParent().petID) then
 		local start, duration, enable = C_PetJournal.GetPetCooldownByGUID(self:GetParent().petID);
 		if (start) then
-			CooldownFrame_SetTimer(self.Cooldown, start, duration, enable);
+			CooldownFrame_Set(self.Cooldown, start, duration, enable);
 		end
 	end
 end
@@ -1232,9 +1232,9 @@ function PetJournal_UnwrapPet(petID)
 
 	PetJournalPetCard.wrappedModel:SetAnimation(148);
 	PetJournalPetCard.UnwrapAnim:Play();
+	PlaySound("UI_Store_Unwrap");
 
 	C_Timer.After(.8, function()
-		PlaySound("UI_Store_Unwrap");
 		PetJournalPetCard.model:ApplySpellVisualKit(73393, true);
 	end)
 

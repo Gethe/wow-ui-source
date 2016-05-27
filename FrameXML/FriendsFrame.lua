@@ -150,7 +150,7 @@ function FriendsFrame_SummonButton_Update (self)
 		icon:SetVertexColor(0.4, 0.4, 0.4);
 		normalTexture:SetVertexColor(1.0, 1.0, 1.0);
 	end
-	CooldownFrame_SetTimer(_G[self:GetName().."Cooldown"], start, duration, ((enable and 0) or 1));
+	CooldownFrame_Set(_G[self:GetName().."Cooldown"], start, duration, ((enable and 0) or 1));
 end
 
 function FriendsFrame_ClickSummonButton (self)

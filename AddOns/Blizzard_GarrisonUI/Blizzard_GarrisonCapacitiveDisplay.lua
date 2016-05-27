@@ -20,12 +20,13 @@ local shipmentUpdater;
 
 function GarrisonCapacitiveDisplayFrame_TimerUpdate()
 	local self = GarrisonCapacitiveDisplayFrame;
-	GarrisonCapacitiveDisplayFrame_Update(self, true, self.maxShipments, self.plotID);
+	GarrisonCapacitiveDisplayFrame_Update(self, true, self.maxShipments, self.ownedShipments, self.plotID);
 end
 
-function GarrisonCapacitiveDisplayFrame_Update(self, success, maxShipments, plotID)
+function GarrisonCapacitiveDisplayFrame_Update(self, success, maxShipments, ownedShipments, plotID)
 	if (success ~= 0) then
 		self.maxShipments = maxShipments;
+		self.ownedShipments = ownedShipments;
 		self.plotID = plotID;
 
 		local display = self.CapacitiveDisplay;
@@ -42,7 +43,7 @@ function GarrisonCapacitiveDisplayFrame_Update(self, success, maxShipments, plot
 			self.maxShipments = 1;
 		end
 
-		local available = maxShipments - numPending;
+		local available = maxShipments - numPending - ownedShipments;
 
 		self.available = available;
 		display.ShipmentIconFrame.itemId = nil;
@@ -175,7 +176,7 @@ function GarrisonCapacitiveDisplayFrame_Update(self, success, maxShipments, plot
 			duration = 0;
 		end
 
-		local prefix, pendingText, description = C_Garrison.GetShipmentContainerInfo();
+		local pendingText, description = C_Garrison.GetShipmentContainerInfo();
 
 		local _, buildingName = C_Garrison.GetOwnedBuildingInfoAbbrev(self.plotID);
 
@@ -264,9 +265,9 @@ function GarrisonCapacitiveDisplayFrame_OnEvent(self, event, ...)
 	if (event == "SHIPMENT_CRAFTER_OPENED") then
 		self.containerID = ...;
 	elseif (event == "SHIPMENT_CRAFTER_INFO") then
-		local success, _, maxShipments, plotID = ...;
+		local success, _, maxShipments, ownedShipments, plotID = ...;
 
-		GarrisonCapacitiveDisplayFrame_Update(self, success, maxShipments, plotID);		
+		GarrisonCapacitiveDisplayFrame_Update(self, success, maxShipments, ownedShipments, plotID);		
 	elseif (event == "SHIPMENT_CRAFTER_CLOSED") then
 		self.containerID = nil;
 
@@ -278,7 +279,7 @@ function GarrisonCapacitiveDisplayFrame_OnEvent(self, event, ...)
 		HideUIPanel(GarrisonCapacitiveDisplayFrame);
 	elseif (event == "SHIPMENT_CRAFTER_REAGENT_UPDATE") then
 		if (self.plotID and self.maxShipments) then
-			GarrisonCapacitiveDisplayFrame_Update(self, true, self.maxShipments, self.plotID);
+			GarrisonCapacitiveDisplayFrame_Update(self, true, self.maxShipments, self.ownedShipments, self.plotID);
 		end
 	elseif (event == "SHIPMENT_UPDATE") then
 		local shipmentStarted = ...;
