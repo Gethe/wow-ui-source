@@ -20,8 +20,13 @@ local function SetupMaterialFrame(materialFrame, currency, currencyTexture)
 end
 
 function OrderHallMission:OnLoadMainFrame()
-	self.followerTypeID = LE_FOLLOWER_TYPE_GARRISON_7_0;
+	self:UpdateTextures();
 
+	PanelTemplates_SetNumTabs(self, 3);
+	self:SelectTab(self:DefaultTab());
+end
+
+function OrderHallMission:UpdateTextures()
 	local primaryCurrency, _ = C_Garrison.GetCurrencyTypes(LE_GARRISON_TYPE_7_0);
 	local _, _, currencyTexture = GetCurrencyInfo(primaryCurrency);
 
@@ -46,10 +51,65 @@ function OrderHallMission:OnLoadMainFrame()
 	self.MissionTab.MissionPage.RewardsFrame.Chance:SetPoint("CENTER", self.MissionTab.MissionPage.RewardsFrame.Chest, -9, 6);
 
 	self.MissionTab.MissionPage.Stage.MissionEnvIcon:SetSize(48,48);
-	self.MissionTab.MissionPage.Stage.MissionEnvIcon:SetPoint("LEFT", self.MissionTab.MissionPage.Stage.MissionEnv, "RIGHT", -8, 0);
-	PanelTemplates_SetNumTabs(self, 3);
+	self.MissionTab.MissionPage.Stage.MissionEnvIcon:SetPoint("LEFT", self.MissionTab.MissionPage.Stage.MissionInfo.MissionEnv, "RIGHT", -11, 0);
 
-	self:SelectTab(self:DefaultTab());
+
+	self.Top:SetAtlas("_StoneFrameTile-Top", true);
+	self.Bottom:SetAtlas("_StoneFrameTile-Bottom", true);
+	self.Left:SetAtlas("!StoneFrameTile-Left", true);
+	self.Right:SetAtlas("!StoneFrameTile-Left", true);
+	self.GarrCorners.TopLeftGarrCorner:SetAtlas("StoneFrameCorner-TopLeft", true);
+	self.GarrCorners.TopRightGarrCorner:SetAtlas("StoneFrameCorner-TopLeft", true);
+	self.GarrCorners.BottomLeftGarrCorner:SetAtlas("StoneFrameCorner-TopLeft", true);
+	self.GarrCorners.BottomRightGarrCorner:SetAtlas("StoneFrameCorner-TopLeft", true);
+
+	local tabs = { OrderHallMissionFrame.MissionTab.MissionList.Tab1, OrderHallMissionFrame.MissionTab.MissionList.Tab2 };
+	for _, tab in ipairs(tabs) do
+		tab.Left:SetAtlas("ClassHall_ParchmentHeader-End-2", true);
+		tab.Right:SetAtlas("ClassHall_ParchmentHeader-End-2", true);
+		tab.Middle:SetAtlas("_ClassHall_ParchmentHeader-Mid", true);
+		tab.Middle:SetPoint("LEFT", tab.Left, "RIGHT");
+		tab.Middle:SetPoint("RIGHT", tab.Right, "LEFT");
+		tab.Middle:SetHorizTile(false);
+		tab.SelectedLeft:SetAtlas("ClassHall_ParchmentHeaderSelect-End-2", true);
+		tab.SelectedRight:SetAtlas("ClassHall_ParchmentHeaderSelect-End-2", true);
+		tab.SelectedMid:SetAtlas("_ClassHall_ParchmentHeaderSelect-Mid", true);
+		tab.SelectedMid:SetPoint("LEFT", tab.SelectedLeft, "RIGHT");
+		tab.SelectedMid:SetPoint("RIGHT", tab.SelectedRight, "LEFT");
+		tab.SelectedMid:SetHorizTile(false);
+	end
+
+	local frames = { OrderHallMissionFrame.FollowerTab, OrderHallMissionFrame.MissionTab.MissionList };
+	for _, frame in ipairs(frames) do
+		frame.BaseFrameBackground:SetAtlas("ClassHall_StoneFrame-BackgroundTile");
+		frame.BaseFrameLeft:SetAtlas("!ClassHall_InfoBoxMission-Left");
+		frame.BaseFrameRight:SetAtlas("!ClassHall_InfoBoxMission-Left");
+		frame.BaseFrameTop:SetAtlas("_ClassHall_InfoBoxMission-Top");
+		frame.BaseFrameBottom:SetAtlas("_ClassHall_InfoBoxMission-Top");
+		frame.BaseFrameTopLeft:SetAtlas("ClassHall_InfoBoxMission-Corner");
+		frame.BaseFrameTopRight:SetAtlas("ClassHall_InfoBoxMission-Corner");
+		frame.BaseFrameBottomLeft:SetAtlas("ClassHall_InfoBoxMission-Corner");
+		frame.BaseFrameBottomRight:SetAtlas("ClassHall_InfoBoxMission-Corner");
+	end
+
+	self.FollowerList.HeaderLeft:SetAtlas("ClassHall_ParchmentHeaderSelect-End-2", true);
+	self.FollowerList.HeaderLeft:SetPoint("BOTTOMLEFT", self.FollowerList, "TOPLEFT", 30, -8);
+
+	self.FollowerList.HeaderRight:SetAtlas("ClassHall_ParchmentHeaderSelect-End-2", true);
+	self.FollowerList.HeaderMid:SetAtlas("_ClassHall_ParchmentHeaderSelect-Mid", true);
+	self.FollowerList.HeaderMid:SetPoint("LEFT", self.FollowerList.HeaderLeft, "RIGHT");
+	self.FollowerList.HeaderMid:SetPoint("RIGHT", self.FollowerList.HeaderRight, "LEFT");
+	self.FollowerList.HeaderMid:SetHorizTile(false);
+	self.FollowerList.HeaderMid:SetWidth(110);
+
+
+
+	self.BackgroundTile:SetAtlas("ClassHall_InfoBoxMission-BackgroundTile");
+
+	local _, className = UnitClass("player");
+
+	self.ClassHallIcon.Icon:SetAtlas("classhall-circle-"..className);
+
 end
 
 function OrderHallMission:OnEventMainFrame(event, ...)
@@ -101,13 +161,13 @@ function OrderHallMission:SetupTabs()
 		local tab = self["Tab"..tabList[1]];
 		local prevTab = tab;
 		tab:ClearAllPoints();
-		tab:SetPoint("BOTTOMLEFT", self, 11, -42);
+		tab:SetPoint("BOTTOMLEFT", self, 7, -31);
 		tab:Show();
 
 		for i = 2, #tabList do
 			tab = self["Tab"..tabList[i]];
 			tab:ClearAllPoints();
-			tab:SetPoint("LEFT", prevTab, "RIGHT", -5, 0);
+			tab:SetPoint("LEFT", prevTab, "RIGHT", -16, 0);
 			tab:Show();
 			prevTab = tab;
 		end
@@ -166,13 +226,16 @@ function OrderHallMission:SelectTab(id)
 		self.TitleText:SetText(ORDER_HALL_MISSIONS);
 		self.FollowerList:Hide();
 		self.MapTab:Hide();
+		self.BackgroundTile:Show()
 	elseif (id == 2) then
 		self.TitleText:SetText(ORDER_HALL_FOLLOWERS);
 		self.MapTab:Hide();
+		self.BackgroundTile:Show()
 	else
 		self.TitleText:SetText(ADVENTURE_MAP_TITLE);
 		self.FollowerList:Hide();
 		self.MapTab:Show();
+		self.BackgroundTile:Hide()
 	end
 end
 

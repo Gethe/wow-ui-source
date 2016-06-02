@@ -3,17 +3,17 @@
 
   <!-- this code is shared between the Frame and Glue -->
   <Frame name="IMECandidate" hidden="false" virtual="true">
-    <Size x="120" y="20"/>
+    <Size x="120" y="24"/>
     <Layers>
       <Layer level="OVERLAY">
         <FontString font="System_IME" parentKey="label" justifyH="LEFT" justifyV="MIDDLE">
-          <Size x="20" y="20"/>
+          <Size x="22" y="22"/>
           <Anchors>
             <Anchor point="TOPLEFT"/>
           </Anchors>
         </FontString>
         <FontString font="System_IME" parentKey="candidate" justifyH="LEFT" justifyV="MIDDLE">
-          <Size x="100" y="20"/>
+          <Size x="100" y="22"/>
           <Anchors>
             <Anchor point="LEFT" relativeKey="$parent.label" relativePoint="RIGHT"/>
           </Anchors>

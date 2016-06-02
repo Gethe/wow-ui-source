@@ -118,6 +118,39 @@
 		</Scripts>
 	</Button>
 
+	<Frame name="TalentRowGlowFrameTemplate" setAllPoints="true" virtual="true" hidden="true">
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="TopGlowLine" atlas="_talent-green-glow" horizTile="true" alpha="0">
+					<Size x="629" y = "14"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0" right="1" top="1" bottom="0"/>
+				</Texture>
+				<Texture parentKey="BottomGlowLine" atlas="_talent-green-glow" horizTile="true" alpha="0">
+					<Size x="629" y = "14"/>
+					<Anchors>
+						<Anchor point="BOTTOM" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="Anim" looping="REPEAT">
+				<Alpha childKey="TopGlowLine" order="1" fromAlpha="0.2" toAlpha="0.9" duration="1"/>
+				<Alpha childKey="BottomGlowLine" order="1" fromAlpha="0.2" toAlpha="0.9" duration="1"/>
+				<Alpha childKey="TopGlowLine" order="2" fromAlpha="0.9" toAlpha="0.2" duration="1"/>
+				<Alpha childKey="BottomGlowLine" order="2" fromAlpha="0.9" toAlpha="0.2" duration="1"/>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnShow>
+				self.Anim:Play();
+			</OnShow>
+		</Scripts>
+	</Frame>
+
 	<Frame name="PlayerTalentRowTemplate" virtual="true">
 		<Size x="629" y="42"/>
 		<Layers>
@@ -182,19 +215,6 @@
 					<TexCoords left="0" right="1" top="1" bottom="0"/>
 					<Color r="1" g="1" b="1" a="0.5"/>
 				</Texture>
-				<Texture parentKey="TopGlowLine" atlas="_talent-green-glow" horizTile="true" alpha="0" alphaMode="ADD">
-					<Size x="629" y = "14"/>
-					<Anchors>
-						<Anchor point="TOP" x="0" y="14"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="BottomGlowLine" atlas="_talent-green-glow" horizTile="true" alpha="0" alphaMode="ADD">
-					<Size x="629" y = "14"/>
-					<Anchors>
-						<Anchor point="BOTTOM" x="0" y="-14"/>
-					</Anchors>
-					<TexCoords left="0" right="1" top="1" bottom="0"/>
-				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -213,15 +233,8 @@
 					<Anchor point="LEFT" relativeTo="$parentSeparator3" relativePoint="CENTER" x="0" y="0"/>
 				</Anchors>
 			</Button>
+			<Frame parentKey="GlowFrame" inherits="TalentRowGlowFrameTemplate"/>
 		</Frames>
-		<Animations>
-			<AnimationGroup parentKey="GlowAnim" looping="REPEAT">
-				<Alpha childKey="TopGlowLine" order="1" fromAlpha="0.2" toAlpha="0.9" duration="1"/>
-				<Alpha childKey="BottomGlowLine" order="1" fromAlpha="0.2" toAlpha="0.9" duration="1"/>
-				<Alpha childKey="TopGlowLine" order="2" fromAlpha="0.9" toAlpha="0.2" duration="1"/>
-				<Alpha childKey="BottomGlowLine" order="2" fromAlpha="0.9" toAlpha="0.2" duration="1"/>
-			</AnimationGroup>
-		</Animations>
 		<Scripts>
 			<OnEnter function="PlayerTalentFrameRow_OnEnter"/>
 			<OnLeave function="PlayerTalentFrameRow_OnLeave"/>
@@ -1183,19 +1196,6 @@
 					<TexCoords left="0" right="1" top="1" bottom="0"/>
 					<Color r="1" g="1" b="1" a="0.5"/>
 				</Texture>
-				<Texture parentKey="TopGlowLine" atlas="_talent-green-glow" horizTile="true" alpha="0">
-					<Size x="629" y = "14"/>
-					<Anchors>
-						<Anchor point="TOP" x="0" y="14"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="BottomGlowLine" atlas="_talent-green-glow" horizTile="true" alpha="0">
-					<Size x="629" y = "14"/>
-					<Anchors>
-						<Anchor point="BOTTOM" x="0" y="-14"/>
-					</Anchors>
-					<TexCoords left="0" right="1" top="1" bottom="0"/>
-				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -1223,15 +1223,8 @@
 					<KeyValue key="columnIndex" value="3" type="number"/>
 				</KeyValues>
 			</Button>
+			<Frame parentKey="GlowFrame" inherits="TalentRowGlowFrameTemplate"/>
 		</Frames>
-		<Animations>
-			<AnimationGroup parentKey="GlowAnim" looping="REPEAT">
-				<Alpha childKey="TopGlowLine" order="1" fromAlpha="0.2" toAlpha="0.9" duration="1"/>
-				<Alpha childKey="BottomGlowLine" order="1" fromAlpha="0.2" toAlpha="0.9" duration="1"/>
-				<Alpha childKey="TopGlowLine" order="2" fromAlpha="0.9" toAlpha="0.2" duration="1"/>
-				<Alpha childKey="BottomGlowLine" order="2" fromAlpha="0.9" toAlpha="0.2" duration="1"/>
-			</AnimationGroup>
-		</Animations>
 		<Scripts>
 			<OnEnter function="PlayerTalentFrameRow_OnEnter"/>
 			<OnLeave function="PlayerTalentFrameRow_OnLeave"/>

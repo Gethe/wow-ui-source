@@ -1318,23 +1318,6 @@
 		end
 	</Binding>
 
-	<!-- iTunes Bindings header="ITUNES_REMOTE" -->
-	<Binding name="ITUNES_PLAYPAUSE" platform="mac" category="BINDING_HEADER_ITUNES_REMOTE">
-		MusicPlayer_PlayPause();
-	</Binding>
-	<Binding name="ITUNES_NEXTTRACK" platform="mac" category="BINDING_HEADER_ITUNES_REMOTE">
-		MusicPlayer_NextTrack();
-	</Binding>
-	<Binding name="ITUNES_BACKTRACK" platform="mac" category="BINDING_HEADER_ITUNES_REMOTE">
-		MusicPlayer_BackTrack();
-	</Binding>
-	<Binding name="ITUNES_VOLUMEUP" platform="mac" category="BINDING_HEADER_ITUNES_REMOTE">
-		MusicPlayer_VolumeUp();
-	</Binding>
-	<Binding name="ITUNES_VOLUMEDOWN" platform="mac" category="BINDING_HEADER_ITUNES_REMOTE">
-		MusicPlayer_VolumeDown();
-	</Binding>
-
 	<!-- Movie Recording Bindings header="MOVIE_RECORDING_SECTION" -->
 	<Binding name="MOVIE_RECORDING_STARTSTOP" platform="mac" category="BINDING_HEADER_MOVIE_RECORDING_SECTION">
 		if (MovieRecording_IsSupported()) then

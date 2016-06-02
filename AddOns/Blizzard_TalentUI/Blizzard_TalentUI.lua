@@ -689,16 +689,16 @@ end
 function PlayerTalentFrameRow_OnEnter(self)
 	self.TopLine:Show();
 	self.BottomLine:Show();
-	self.TopGlowLine:Hide();
-	self.BottomGlowLine:Hide();
+	if ( self.GlowFrame ) then
+		self.GlowFrame:Hide();
+	end
 end
 
 function PlayerTalentFrameRow_OnLeave(self)
 	self.TopLine:Hide();
 	self.BottomLine:Hide();
 	if ( self.shouldGlow ) then
-		self.TopGlowLine:Show();
-		self.BottomGlowLine:Show();
+		self.GlowFrame:Show();
 	end
 end
 
@@ -1645,15 +1645,14 @@ function PlayerTalentFramePVPTalents_Update(self)
                 end
 			end
 		end
-		if ( rowShouldGlow ) then
-			talentRow.shouldGlow = true;
-			talentRow.TopGlowLine:Show();
-			talentRow.BottomGlowLine:Show();
-			talentRow.GlowAnim:Play();
-		else
-			talentRow.shouldGlow = false;
-			talentRow.TopGlowLine:Hide();
-			talentRow.BottomGlowLine:Hide();
+		if ( talentRow.GlowFrame ) then
+			if ( rowShouldGlow ) then
+				talentRow.shouldGlow = true;
+				talentRow.GlowFrame:Show();
+			else
+				talentRow.shouldGlow = false;
+				talentRow.GlowFrame:Hide();
+			end
 		end
 	end
 

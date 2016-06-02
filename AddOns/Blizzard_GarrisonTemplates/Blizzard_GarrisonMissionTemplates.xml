@@ -583,25 +583,6 @@
 					</Anchors>
 					<Color r="1" g="1" b="1"/>
 				</FontString>
-				<FontString parentKey="ExhaustingLabel" inherits="GameFontNormalMed2" justifyH="LEFT" text="GARRISON_MISSION_EXHAUSTING" hidden="true">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Header" relativePoint="BOTTOMLEFT" x="7" y="-7"/>
-					</Anchors>
-					<Color r="1" g="0.573" b="0.075"/>
-				</FontString>
-				<FontString parentKey="MissionTime" inherits="GameFontNormalMed2" justifyH="LEFT">
-					<Size x="300" y="0"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.ExhaustingLabel" relativePoint="BOTTOMLEFT" y="-3"/>
-					</Anchors>
-					<Color r="1" g="1" b="1"/>
-				</FontString>
-				<FontString parentKey="MissionEnv" inherits="GameFontNormalMed2" justifyH="LEFT">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.MissionTime" relativePoint="BOTTOMLEFT" y="-3"/>
-					</Anchors>
-					<Color r="1" g="1" b="1"/>
-				</FontString>
 				<FontString parentKey="MissionDescription" inherits="GameFontHighlight" justifyH="LEFT">
 					<Size x="260" y="0"/>
 					<Anchors>
@@ -611,10 +592,47 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame parentKey="MissionInfo" inherits="VerticalLayoutFrame">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Header" relativePoint="BOTTOMLEFT" x="7" y="-7"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="spacing" value="3" type="number"/>
+				</KeyValues>
+				<Layers>
+					<Layer level="OVERLAY" textureSubLevel="5">
+						<FontString parentKey="XP" inherits="GameFontNormalMed2" justifyH="LEFT" text="GARRISON_MISSION_EXHAUSTING" hidden="true">
+							<KeyValues>
+								<KeyValue key="layoutIndex" value="1" type="number"/>
+							</KeyValues>
+							<Color r="1" g="1" b="1"/>
+						</FontString>
+						<FontString parentKey="ExhaustingLabel" inherits="GameFontNormalMed2" justifyH="LEFT" text="GARRISON_MISSION_EXHAUSTING" hidden="true">
+							<KeyValues>
+								<KeyValue key="layoutIndex" value="2" type="number"/>
+							</KeyValues>
+							<Color r="1" g="0.573" b="0.075"/>
+						</FontString>
+						<FontString parentKey="MissionTime" inherits="GameFontNormalMed2" justifyH="LEFT">
+							<Size x="300" y="0"/>
+							<KeyValues>
+								<KeyValue key="layoutIndex" value="3" type="number"/>
+							</KeyValues>
+							<Color r="1" g="1" b="1"/>
+						</FontString>
+						<FontString parentKey="MissionEnv" inherits="GameFontNormalMed2" justifyH="LEFT">
+							<KeyValues>
+								<KeyValue key="layoutIndex" value="4" type="number"/>
+							</KeyValues>
+							<Color r="1" g="1" b="1"/>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
 			<Frame parentKey="MissionEnvIcon" inherits="GarrisonMissionCheckTemplate">
 				<Size x="16" y="16"/>
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.MissionEnv" relativePoint="RIGHT" x="4" y="0"/>
+					<Anchor point="LEFT" relativeKey="$parent.MissionInfo.MissionEnv" relativePoint="RIGHT" x="4" y="0"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">

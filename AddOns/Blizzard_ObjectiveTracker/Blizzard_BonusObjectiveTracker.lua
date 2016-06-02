@@ -19,6 +19,8 @@ function CreateBonusObjectiveTrackerModule()
 	return module;
 end
 
+local BONUS_OBJECTIVE_LINE_DASH_OFFSET = 20;  -- the X offset of the dash fontstring in the line
+
 local COMPLETED_BONUS_DATA = { };
 local COMPLETED_SUPERSEDED_BONUS_OBJECTIVES = { };
 -- this is to track which bonus objective is playing in the banner and shouldn't be in the tracker yet
@@ -129,6 +131,10 @@ end
 
 function BonusObjectiveTracker_OnBlockLeave(block)
 	block.module:OnBlockHeaderLeave(block);
+	GameTooltipTextLeft1:SetFontObject(GameTooltipHeaderText);
+	for i = 2, 4 do
+		_G["GameTooltipTextLeft"..i]:SetFontObject(GameTooltipText);
+	end
 	GameTooltip:Hide();
 	block.module.tooltipBlock = nil;
 end
@@ -439,12 +445,49 @@ function BonusObjectiveTracker_ShowRewardsTooltip(block)
 	GameTooltip:ClearAllPoints();
 	GameTooltip:SetPoint("TOPRIGHT", block, "TOPLEFT", 0, 0);
 	GameTooltip:SetOwner(block, "ANCHOR_PRESERVE");
-	GameTooltip:SetText(REWARDS, 1, 0.831, 0.380);
-
+	
 	if ( not HaveQuestData(questID) ) then
 		GameTooltip:AddLine(RETRIEVING_DATA, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
 	else	
 		local isWorldQuest = block.module.ShowWorldQuests;
+		
+		if (isWorldQuest) then
+			local headerLine = 1;
+			local needsSpacer = false;
+			
+			local mapID, zoneMapID = C_TaskQuest.GetQuestZoneID(questID)
+			if (mapID and zoneMapID) then
+				local name = C_MapCanvas.GetZoneInfoByID(mapID, zoneMapID); 
+							
+				if (name) then
+					GameTooltipTextLeft1:SetFontObject(GameTooltipText);
+					GameTooltip:SetText(name, 0.4, 0.733, 1.0);
+					needsSpacer = true;
+					headerLine = headerLine + 1;
+				
+					local title, factionID = C_TaskQuest.GetQuestInfoByQuestID(questID);
+
+					if ( factionID ) then
+						local factionName = GetFactionInfoByID(factionID);
+						if ( factionName ) then	
+							GameTooltip:AddLine(factionName, 0.4, 0.733, 1.0);
+							headerLine = headerLine + 1;
+						end
+					end
+				end
+			end
+				
+			if (needsSpacer) then
+				GameTooltip:AddLine(" ");
+				headerLine = headerLine + 1;
+			end
+				
+			_G["GameTooltipTextLeft"..headerLine]:SetFontObject(GameTooltipHeaderText);
+			GameTooltip:AddLine(REWARDS, 1, 0.824, 0);				
+		else
+			GameTooltip:SetText(REWARDS, 1, 0.824, 0);
+		end
+		
 		GameTooltip:AddLine(isWorldQuest and WORLD_QUEST_TOOLTIP_DESCRIPTION or BONUS_OBJECTIVE_TOOLTIP_DESCRIPTION, 1, 1, 1, 1);
 		GameTooltip:AddLine(" ");
 		-- xp
@@ -720,12 +763,13 @@ local function AddBonusObjectiveQuest(module, questID, posIndex, isTrackedWorldQ
 
 			QuestObjectiveItem_Initialize(itemButton, questLogIndex);
 
-			block.lineWidth = OBJECTIVE_TRACKER_TEXT_WIDTH - OBJECTIVE_TRACKER_ITEM_WIDTH;
+			block.lineWidth = OBJECTIVE_TRACKER_LINE_WIDTH - OBJECTIVE_TRACKER_ITEM_WIDTH - OBJECTIVE_TRACKER_DASH_WIDTH - BONUS_OBJECTIVE_LINE_DASH_OFFSET;
 		else
 			if ( itemButton ) then
 				QuestObjectiveItem_ReleaseButton(itemButton);
 				block.itemButton = nil;
 			end
+			block.lineWidth = OBJECTIVE_TRACKER_LINE_WIDTH - OBJECTIVE_TRACKER_DASH_WIDTH - BONUS_OBJECTIVE_LINE_DASH_OFFSET;
 		end
 
 		-- block header? add it as objectiveIndex 0
@@ -846,7 +890,7 @@ local function UpdateQuestBonusObjectives(module)
 			end
 		end
 	end
-	if ( OBJECTIVE_TRACKER_UPDATE_REASON == OBJECTIVE_TRACKER_UPDATE_TASK_ADDED or OBJECTIVE_TRACKER_UPDATE_REASON == OBJECTIVE_TRACKER_UPDATE_WORLD_QUEST_ADDED ) then
+	if ( OBJECTIVE_TRACKER_UPDATE_REASON == OBJECTIVE_TRACKER_UPDATE_TASK_ADDED ) then
 		PlaySound("UI_Scenario_Stage_End");
 	end
 end
@@ -1131,6 +1175,9 @@ function ObjectiveTrackerBonusBannerFrame_PlayBanner(self, questID)
 	self.TitleFlash:SetText(questTitle);
 	local isWorldQuest = QuestMapFrame_IsQuestWorldQuest(questID);
 	self.BonusLabel:SetText(isWorldQuest and WORLD_QUEST_BANNER or BONUS_OBJECTIVE_BANNER);
+	if isWorldQuest then
+		PlaySound("UI_WorldQuest_Start");
+	end
 	-- offsets for anims
 	local trackerFrame = ObjectiveTrackerFrame;
 	local xOffset = trackerFrame:GetLeft() - self:GetRight();

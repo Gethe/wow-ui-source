@@ -145,22 +145,6 @@ function GarrisonCapacitiveDisplayFrame_Update(self, success, maxShipments, owne
 
 	    local name, texture, quality, itemID, followerID, duration = C_Garrison.GetShipmentItemInfo();
         if ( followerID ) then
-			local followerInfo = C_Garrison.GetFollowerInfo(followerID);
-			local followerCount, followerLimit;
-			if ( followerInfo ) then
-				local categoryInfo = C_Garrison.GetClassSpecCategoryInfo(followerInfo.followerTypeID);
-				for index, category in pairs(categoryInfo) do
-					if ( category.classSpec == followerInfo.classSpec ) then
-						followerCount = category.count;
-						followerLimit = category.limit;
-						break;
-					end
-				end
-			end
-			if ( followerCount and followerLimit ) then
-				local maxFollowerAvailable = followerLimit - followerCount - numPending;
-				self.available = min(self.available, maxFollowerAvailable);
-			end
             self.StartWorkOrderButton:SetText(CAPACITANCE_START_RECRUITMENT);
             self.CreateAllWorkOrdersButton:SetText(CAPACITANCE_RECRUIT_ALL);
 		else
@@ -225,15 +209,23 @@ function GarrisonCapacitiveDisplayFrame_Update(self, success, maxShipments, owne
             end
 		else
 			local timeRemaining = select(6,C_Garrison.GetPendingShipmentInfo(1));
-			if (timeRemaining ~= 0) then
-				if (not shipmentUpdater) then
-					shipmentUpdater = C_Timer.NewTicker(1, GarrisonCapacitiveDisplayFrame_TimerUpdate);
+			if (timeRemaining ~= nil) then
+				if (timeRemaining ~= 0) then
+					if (not shipmentUpdater) then
+						shipmentUpdater = C_Timer.NewTicker(1, GarrisonCapacitiveDisplayFrame_TimerUpdate);
+					end
 				end
-			end
-			if (timeRemaining == 0) then
-				display.ShipmentIconFrame.ShipmentsAvailable:SetText(GREEN_FONT_COLOR_CODE..CAPACITANCE_SHIPMENT_READY..FONT_COLOR_CODE_CLOSE);
+				if (timeRemaining == 0) then
+					display.ShipmentIconFrame.ShipmentsAvailable:SetText(GREEN_FONT_COLOR_CODE..CAPACITANCE_SHIPMENT_READY..FONT_COLOR_CODE_CLOSE);
+				else
+					display.ShipmentIconFrame.ShipmentsAvailable:SetText(RED_FONT_COLOR_CODE..CAPACITANCE_SHIPMENT_COOLDOWN:format(SecondsToTime(timeRemaining, false, true, 1))..FONT_COLOR_CODE_CLOSE);
+				end
 			else
-				display.ShipmentIconFrame.ShipmentsAvailable:SetText(RED_FONT_COLOR_CODE..CAPACITANCE_SHIPMENT_COOLDOWN:format(SecondsToTime(timeRemaining, false, true, 1))..FONT_COLOR_CODE_CLOSE);
+				if (followerID) then
+					display.ShipmentIconFrame.ShipmentsAvailable:SetFormattedText(CAPACITANCE_RECRUIT_COUNT, available);
+				else
+    				display.ShipmentIconFrame.ShipmentsAvailable:SetFormattedText(CAPACITANCE_SHIPMENT_COUNT, available, maxShipments);
+				end
 			end
 		end
 

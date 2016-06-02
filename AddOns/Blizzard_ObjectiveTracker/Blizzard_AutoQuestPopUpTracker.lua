@@ -72,8 +72,8 @@ function AUTO_QUEST_POPUP_TRACKER_MODULE:Update()
 							blockContents.QuestionMark:Hide();
                             if (questID == QUEST_FRAME_AUTO_ACCEPT_QUEST_ID and QUEST_FRAME_AUTO_ACCEPT_QUEST_START_ITEM_ID ~= 0) then
                                 local texture = select(10, GetItemInfo(QUEST_FRAME_AUTO_ACCEPT_QUEST_START_ITEM_ID));
-                                blockContents.Exclamation:SetTexCoord(0, 1, 0, 1);
-                                blockContents.Exclamation:SetSize(33, 33);
+                                blockContents.Exclamation:SetTexCoord(0.078125, 0.921875, 0.078125, 0.921875);
+                                blockContents.Exclamation:SetSize(35, 35);
                                 SetPortraitToTexture(blockContents.Exclamation, texture);
                             else
                                 blockContents.Exclamation:SetTexture("Interface\\QuestFrame\\AutoQuest-Parts");

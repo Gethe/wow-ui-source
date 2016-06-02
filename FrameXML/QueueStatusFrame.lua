@@ -415,7 +415,7 @@ function QueueStatusEntry_SetUpLFG(entry, category)
 end
 
 function QueueStatusEntry_SetUpLFGListActiveEntry(entry)
-	local _, _, _, name = C_LFGList.GetActiveEntryInfo();
+	local _, _, _, _, name = C_LFGList.GetActiveEntryInfo();
 	local numApplicants, numActiveApplicants = C_LFGList.GetNumApplicants();
 	QueueStatusEntry_SetMinimalDisplay(entry, name, QUEUED_STATUS_LISTED, string.format(LFG_LIST_PENDING_APPLICANTS, numActiveApplicants));
 end
@@ -914,8 +914,8 @@ function QueueStatusDropDown_AddLFGButtons(info, category)
 		info.disabled = true;
 		UIDropDownMenu_AddButton(info);
 	end
-    local canLeaveQueue = not IsLFGModeActive(category) or IsAllowedToLeaveQueue();
-	if ( ( statuses.queued or statuses.suspended ) and canLeaveQueue ) then
+	local preventLeaveQueue = IsLFGModeActive(category) and IsServerControlledBackfill();
+	if ( ( statuses.queued or statuses.suspended ) and not preventLeaveQueue ) then
 		local manyQueues = (category == LE_LFG_CATEGORY_RF) and (statuses.queued or 0) + (statuses.suspended or 0) > 1;
 		info.text = manyQueues and LEAVE_ALL_QUEUES or LEAVE_QUEUE;
 		info.func = wrapFunc(LeaveLFG);
@@ -958,7 +958,7 @@ end
 
 function QueueStatusDropDown_AddLFGListButtons(info)
 	wipe(info);
-	local _, _, _, name = C_LFGList.GetActiveEntryInfo();
+	local _, _, _, _, name = C_LFGList.GetActiveEntryInfo();
 	info.text = name;
 	info.isTitle = 1;
 	info.notCheckable = 1;

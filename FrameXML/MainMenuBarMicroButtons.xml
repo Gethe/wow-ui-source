@@ -73,12 +73,7 @@
 		</Frames>
 		<Scripts>
 			<OnLoad function="MicroButtonAlert_OnLoad"/>
-			<OnShow>
-				self:SetHeight(self.Text:GetHeight()+42);
-				if ( self.tutorialIndex and GetCVarBitfield("closedInfoFrames", self.tutorialIndex) ) then
-					self:Hide();
-				end
-			</OnShow>
+			<OnShow function="MicroButtonAlert_OnShow"/>
 			<OnHide function="MicroButtonAlert_OnHide"/>
 		</Scripts>
 	</Frame>

@@ -1110,15 +1110,17 @@ end
 ---------------------------------------------------------------------------------
 --- Models                                                                    ---
 ---------------------------------------------------------------------------------
-function GarrisonMission_SetFollowerModel(modelFrame, followerID, displayID)
+function GarrisonMission_SetFollowerModel(modelFrame, followerID, displayID, showWeapon)
 	if ( not displayID or displayID == 0 ) then
 		modelFrame:ClearModel();
 		modelFrame:Hide();
 		modelFrame.followerID = nil;
+		modelFrame.showWeapon = nil;
 	else
 		modelFrame:Show();
 		modelFrame:SetDisplayInfo(displayID);
 		modelFrame.followerID = followerID;
+		modelFrame.showWeapon = showWeapon;
 		GarrisonMission_SetFollowerModelItems(modelFrame);
 	end
 end
@@ -1127,7 +1129,7 @@ function GarrisonMission_SetFollowerModelItems(modelFrame)
 	if ( modelFrame.followerID ) then
 		modelFrame:UnequipItems();
 		local follower =  C_Garrison.GetFollowerInfo(modelFrame.followerID);
-		if ( follower and follower.isCollected ) then
+		if ( modelFrame.showWeapon and follower and follower.isCollected ) then
 			local modelItems = C_Garrison.GetFollowerModelItems(modelFrame.followerID);
 			for i = 1, #modelItems do
 				modelFrame:EquipItem(modelItems[i]);
@@ -1448,10 +1450,11 @@ function GarrisonFollowerTabMixin:ShowFollowerModel(followerInfo)
 			model.targetDistance= pos[i].targetDistance;
 			model:EnableMouse(i == 1 and numShown <= 2);
 
-			local displayID = followerInfo.displayIDs and followerInfo.displayIDs[i] and followerInfo.displayIDs[i].id or followerInfo.displayID;
+			local displayID = followerInfo.displayIDs and followerInfo.displayIDs[i] and followerInfo.displayIDs[i].id;
+			local showWeapon = followerInfo.displayIDs and followerInfo.displayIDs[i] and followerInfo.displayIDs[i].showWeapon;
 			local followerPageScale = followerInfo.displayIDs and followerInfo.displayIDs[i] and followerInfo.displayIDs[i].followerPageScale or 1;
 
-			GarrisonMission_SetFollowerModel(model, followerInfo.followerID, displayID);
+			GarrisonMission_SetFollowerModel(model, followerInfo.followerID, displayID, showWeapon);
 								
 			model:SetPoint("TOPLEFT", 12 + pos[i].x, -78 + pos[i].y);
 			model:SetHeightFactor(followerInfo.displayHeight or 0.5);

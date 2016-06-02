@@ -5,6 +5,11 @@ function WorldMapActionButtonMixin:OnEvent(event, ...)
 		self:UpdateCooldown();
 	elseif event == "CURRENT_SPELL_CAST_CHANGED" then
 		self:UpdateCastingState();
+	elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
+		local unitTag, spellName, rank, lineID, spellID = ...;
+		if spellID == GetWorldMapActionButtonSpellInfo() then
+			PlaySound("UI_OrderHall_Talent_NukeFromOrbit");
+		end
 	end
 end
 
@@ -47,6 +52,7 @@ end
 function WorldMapActionButtonMixin:Clear()
 	self:UnregisterEvent("SPELL_UPDATE_COOLDOWN");
 	self:UnregisterEvent("CURRENT_SPELL_CAST_CHANGED");
+	self:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED");
 	self.spellID = nil;
 	self.castingState = nil;
 	self:Hide();
@@ -70,6 +76,7 @@ function WorldMapActionButtonMixin:Refresh()
 
 	self:RegisterEvent("SPELL_UPDATE_COOLDOWN");
 	self:RegisterEvent("CURRENT_SPELL_CAST_CHANGED");
+	self:RegisterUnitEvent("UNIT_SPELLCAST_SUCCEEDED", "player");
 
 	self.spellID = spellID;
 

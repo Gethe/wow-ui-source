@@ -556,6 +556,8 @@ function LFGListEntryCreation_Clear(self)
 	self.Name:SetText("");
 	self.ItemLevel.CheckButton:SetChecked(false);
 	self.ItemLevel.EditBox:SetText("");
+	self.HonorLevel.CheckButton:SetChecked(false);
+	self.HonorLevel.EditBox:SetText("");
 	self.VoiceChat.CheckButton:SetChecked(false);
 	self.VoiceChat.EditBox:SetText("");
 	self.Description.EditBox:SetText("");
@@ -566,6 +568,7 @@ end
 function LFGListEntryCreation_ClearFocus(self)
 	self.Name:ClearFocus();
 	self.ItemLevel.EditBox:ClearFocus();
+	self.HonorLevel.EditBox:ClearFocus();
 	self.VoiceChat.EditBox:ClearFocus();
 	self.Description.EditBox:ClearFocus();
 end
@@ -608,7 +611,7 @@ function LFGListEntryCreation_Select(self, filters, categoryID, groupID, activit
 	end
 
 	LFGListRequirement_Validate(self.ItemLevel, self.ItemLevel.EditBox:GetText());
-	if (useHonorLevel) then
+	if ( useHonorLevel ) then
 		LFGListRequirement_Validate(self.HonorLevel, self.HonorLevel.EditBox:GetText());
 	end
 	LFGListEntryCreation_UpdateValidState(self);
@@ -860,7 +863,7 @@ function LFGListEntryCreation_SetEditMode(self, editMode)
 		--Update edit boxes
 		self.Name:SetText(name);
 		self.ItemLevel.EditBox:SetText(ilvl ~= 0 and ilvl or "");
-		self.HonorLevel.EditBox:SetText(honorLevel ~=0 and honorLevel or "")
+		self.HonorLevel.EditBox:SetText(honorLevel ~= 0 and honorLevel or "")
 		self.VoiceChat.EditBox:SetText(voiceChat);
 		self.Description.EditBox:SetText(comment);
 
@@ -1285,7 +1288,7 @@ function LFGListApplicationViewer_UpdateApplicantMember(member, appID, memberIdx
 	local grayedOut = not pendingStatus and (status == "failed" or status == "cancelled" or status == "declined" or status == "invitedeclined" or status == "timedout");
 	local noTouchy = (status == "invited" or status == "inviteaccepted" or status == "invitedeclined");
 
-	local name, class, localizedClass, level, itemLevel, tank, healer, damage, assignedRole, relationship = C_LFGList.GetApplicantMemberInfo(appID, memberIdx);
+	local name, class, localizedClass, level, itemLevel, honorLevel, tank, healer, damage, assignedRole, relationship = C_LFGList.GetApplicantMemberInfo(appID, memberIdx);
 
 	member.memberIdx = memberIdx;
 
@@ -1405,7 +1408,7 @@ function LFGListApplicantMember_OnEnter(self)
 		GameTooltip:SetText(" ");	--Just make it empty until we get the name update
 	end
 	GameTooltip:AddLine(string.format(LFG_LIST_ITEM_LEVEL_CURRENT, itemLevel), 1, 1, 1);
-	if (useHonorLevel) then
+	if ( useHonorLevel ) then
 		GameTooltip:AddLine(string.format(LFG_LIST_HONOR_LEVEL_CURRENT_PVP, honorLevel), 1, 1, 1);
 	end
 	if ( comment and comment ~= "" ) then
@@ -2805,7 +2808,7 @@ local LFG_LIST_APPLICANT_MEMBER_MENU = {
 };
 
 function LFGListUtil_GetApplicantMemberMenu(applicantID, memberIdx)
-	local name, class, localizedClass, level, itemLevel, tank, healer, damage, assignedRole = C_LFGList.GetApplicantMemberInfo(applicantID, memberIdx);
+	local name, class, localizedClass, level, itemLevel, honorLevel, tank, healer, damage, assignedRole = C_LFGList.GetApplicantMemberInfo(applicantID, memberIdx);
 	local id, status, pendingStatus, numMembers, isNew, comment = C_LFGList.GetApplicantInfo(applicantID);
 	LFG_LIST_APPLICANT_MEMBER_MENU[1].text = name or " ";
 	LFG_LIST_APPLICANT_MEMBER_MENU[2].arg1 = name;

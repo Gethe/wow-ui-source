@@ -632,6 +632,8 @@ function UpdateCharacterList(skipSelect)
 
 	local debugText = numChars..": ";
 	local characterLimit = min(numChars, MAX_CHARACTERS_DISPLAYED);
+	local areCharServicesShown = CharSelectServicesFlowFrame:IsShown();
+
 	for i=1, characterLimit, 1 do
 		local name, race, class, classFileName, classID, level, zone, sex, ghost, PCC, PRC, PFC, PRCDisabled, guid, _, _, _, boostInProgress, _, locked, isTrialBoost, isTrialBoostLocked = GetCharacterInfo(GetCharIDFromIndex(i+CHARACTER_LIST_OFFSET));
 		local productID, vasServiceState, vasServiceErrors = C_StoreGlue.GetVASPurchaseStateInfo(guid);
@@ -650,7 +652,9 @@ function UpdateCharacterList(skipSelect)
 			local infoText = button.buttonText.Info;
 			local locationText = button.buttonText.Location;
 
-			nameText:SetTextColor(1, .82, 0, 1);
+			if (not areCharServicesShown) then
+				nameText:SetTextColor(1, .82, 0, 1);
+			end
 
 			if ( CharacterSelect.undeleting ) then
 				nameText:SetFormattedText(CHARACTER_SELECT_NAME_DELETED, name);
@@ -696,7 +700,6 @@ function UpdateCharacterList(skipSelect)
 						trialBoostPadlock:SetParent(button);
 						trialBoostPadlock:SetPoint("TOPRIGHT", button, "TOPLEFT", 5, 12);
 
-						local areCharServicesShown = CharSelectServicesFlowFrame:IsShown();
 						trialBoostPadlock:SetShown(not areCharServicesShown);
 
 						if (not areCharServicesShown) then

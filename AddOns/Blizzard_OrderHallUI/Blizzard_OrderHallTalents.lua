@@ -19,6 +19,7 @@ StaticPopupDialogs["ORDER_HALL_TALENT_RESEARCH"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnAccept = function(self)
+		PlaySound("UI_OrderHall_Talent_Select");
 		C_Garrison.ResearchTalent(self.data);
 	end,
 	timeout = 0,
@@ -202,6 +203,7 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 
             if (talent.id == completeTalent) then
                 if (talent.selected) then
+					PlaySound("UI_OrderHall_Talent_Ready_Check");
                     talentFrame.TalentDoneAnim:Play();
                 else
                     C_Garrison.ClearCompleteTalent(self.garrisonType);

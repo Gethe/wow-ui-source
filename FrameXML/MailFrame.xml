@@ -528,6 +528,7 @@
 											<OnEscapePressed function="EditBox_ClearFocus"/>
 										</Scripts>
 										<FontString inherits="MailTextFontNormal"/>
+										<HighlightColor a="1.0" r="0.82" g="0.82" b="0.82"/>
 									</EditBox>
 								</Frames>
 								<Scripts>

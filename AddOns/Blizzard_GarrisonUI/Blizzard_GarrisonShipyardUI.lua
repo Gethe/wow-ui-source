@@ -278,7 +278,7 @@ end
 
 function GarrisonShipyardMission:UpdateMissionData(frame)
 	GarrisonMission.UpdateMissionData(self, frame);
-	frame.Stage.MissionEnv:Hide();
+	frame.Stage.MissionInfo.MissionEnv:Hide();
 	
 	GarrisonShipyardMissionPage_UpdatePortraitPulse(frame);
 end
@@ -1789,7 +1789,7 @@ function GarrisonShipyardFollowerList:ShowFollower(followerID, hideCounters)
 	self.Portrait:Show();
 	self.Model:SetAlpha(0);
 	local displayInfo = followerInfo.displayIDs and followerInfo.displayIDs[1];
-	GarrisonMission_SetFollowerModel(self.Model, followerInfo.followerID, displayInfo and displayInfo.id);
+	GarrisonMission_SetFollowerModel(self.Model, followerInfo.followerID, displayInfo and displayInfo.id, displayInfo and displayInfo.showWeapon);
 	self.Model:SetHeightFactor(followerInfo.displayHeight or 0.5);
 	self.Model:SetTargetDistance(0);
 	self.Model:InitializeCamera((followerInfo.displayScale or 1) * (displayInfo.followerPageScale or 1));

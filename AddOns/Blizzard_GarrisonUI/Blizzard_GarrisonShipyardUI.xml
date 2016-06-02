@@ -1452,6 +1452,22 @@
 	</Button>
 
 	<Button name="GarrisonShipEquipmentTemplate" inherits="GarrisonEquipmentTemplate" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="BG" atlas="ShipMission_ShipFollower-EquipmentBG" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER" textureSubLevel="1">
+				<Texture parentKey="Border" atlas="ShipMission_ShipFollower-EquipmentFrame" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
 		<Scripts>
 			<OnClick function="GarrisonShipEquipment_OnClick"/>
 			<OnEnter function="GarrisonShipEquipment_OnEnter"/>

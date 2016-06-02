@@ -153,14 +153,14 @@
 					<OnLeave function="GameTooltip_Hide" />
 				</Scripts>
 			</Frame>
-			<Frame parentKey="MaxKnowledgeLevelHelpBox" inherits="GlowBoxTemplate" enableMouse="true" hidden="true" frameStrata="DIALOG">
+			<Frame parentKey="KnowledgeLevelHelpBox" inherits="GlowBoxTemplate" enableMouse="true" hidden="true" frameStrata="DIALOG">
 				<Size x="220" y="100"/>
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.ForgeLevelFrame" relativePoint="RIGHT" x="35" />
+					<Anchor point="LEFT" relativeKey="$parent.ForgeLevelFrame" relativePoint="RIGHT" x="-8" y="20"/>
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
-						<FontString parentKey="Text" inherits="GameFontHighlightLeft" justifyV="TOP" text="ARTIFACT_TUTORIAL_KNOWLEDGE_LIMIT">
+						<FontString parentKey="Text" inherits="GameFontHighlightLeft" justifyV="TOP" text="ARTIFACT_TUTORIAL_KNOWLEDGE">
 							<Size x="188" y="0"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" x="16" y="-24"/>
@@ -173,6 +173,11 @@
 						<Anchors>
 							<Anchor point="TOPRIGHT" x="6" y="6"/>
 						</Anchors>
+						<Scripts>
+							<OnClick inherit="append">
+								SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_ARTIFACT_KNOWLEDGE, true);
+							</OnClick>
+						</Scripts>
 					</Button>
 					<Frame parentKey="Arrow" inherits="GlowBoxArrowTemplate">
 						<Anchors>

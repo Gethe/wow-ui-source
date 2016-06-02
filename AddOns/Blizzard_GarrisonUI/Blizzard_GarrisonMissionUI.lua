@@ -368,6 +368,31 @@ end
 
 function GarrisonFollowerMission:UpdateMissionParty(followers)
 	GarrisonMission.UpdateMissionParty(self, followers, "GarrisonMissionAbilityLargeCounterTemplate");
+
+	local maxCountersToDisplay = GarrisonFollowerOptions[self.followerTypeID].missionPageMaxCountersInFollowerFrame;
+	local maxCountersToDisplayBeforeScaling = GarrisonFollowerOptions[self.followerTypeID].missionPageMaxCountersInFollowerFrameBeforeScaling;
+
+	for followerIndex = 1, #followers do
+		local followerFrame = followers[followerIndex];
+		if ( followerFrame.info ) then
+			local counters = self.followerCounters and followerFrame.info and self.followerCounters[followerFrame.info.followerID] or nil;
+			if ( counters ) then
+				if (#counters > maxCountersToDisplayBeforeScaling) then
+					followerFrame.Counters[1]:SetPoint("LEFT", 74, -1);
+				else
+					followerFrame.Counters[1]:SetPoint("LEFT", 64, -1);
+				end
+				for i = 1, min(#counters, maxCountersToDisplay) do
+					local Counter = followerFrame.Counters[i];
+					if (#counters > maxCountersToDisplayBeforeScaling) then
+						Counter:SetScale(0.8);
+					else
+						Counter:SetScale(1);
+					end
+				end
+			end
+		end
+	end
 end
 
 function GarrisonFollowerMission:ClearMouse()
@@ -995,6 +1020,7 @@ function GarrisonMissionButton_SetRewards(self, rewards)
 			end
 			local Reward = self.Rewards[index];
 			Reward.Quantity:Hide();
+			Reward.IconBorder:Hide();
 			Reward.itemID = nil;
 			Reward.currencyID = nil;
 			Reward.tooltip = nil;
@@ -1237,7 +1263,7 @@ function GarrisonFollowerMissionPageMixin:UpdateFollowerModel(info)
 		model:SetTargetDistance(0);
 		-- TODO: Support a ModelCluster here; this follower could have multiple models (like Rexxar)
 		local displayInfo = info.displayIDs and info.displayIDs[1];
-		GarrisonMission_SetFollowerModel(model, info.followerID, displayInfo and displayInfo.id);
+		GarrisonMission_SetFollowerModel(model, info.followerID, displayInfo and displayInfo.id, displayInfo and displayInfo.showWeapon);
 		model:SetHeightFactor(info.height or 1);
 		model:InitializeCamera((info.scale or 1) * (displayInfo and displayInfo.followerPageScale or 1));
 		model:SetFacing(-.2);
@@ -1549,9 +1575,10 @@ local ANIMATION_CONTROL = {
 		[8] = { duration = 0,		onStartFunc = GarrisonMissionComplete.AnimLockBurst },				-- explode the lock if mission successful		
 		[9] = { duration = 0,		onStartFunc = GarrisonMissionComplete.AnimCleanUp },				-- clean up any model anims
 		[10] = { duration = nil,	onStartFunc = GarrisonFollowerMissionComplete.AnimFollowersIn },	-- show all the mission followers
-		[11] = { duration = 0,		onStartFunc = GarrisonMissionComplete.AnimCheerAndTroopDeath },		-- champions cheer and exhausted troops fade out
-		[12] = { duration = nil,	onStartFunc = GarrisonMissionComplete.AnimSkipWait },				-- wait if we're in skip mode
-		[13] = { duration = 0,		onStartFunc = GarrisonMissionComplete.AnimSkipNext },				-- click Next button if we're in skip mode
+		[11] = { duration = 0,		onStartFunc = GarrisonMissionComplete.AnimXP },						-- follower xp
+		[12] = { duration = 0,		onStartFunc = GarrisonMissionComplete.AnimCheerAndTroopDeath },		-- champions cheer and exhausted troops fade out
+		[13] = { duration = nil,	onStartFunc = GarrisonMissionComplete.AnimSkipWait },				-- wait if we're in skip mode
+		[14] = { duration = 0,		onStartFunc = GarrisonMissionComplete.AnimSkipNext },				-- click Next button if we're in skip mode
 	}
 };
 

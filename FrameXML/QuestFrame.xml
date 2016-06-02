@@ -36,12 +36,14 @@
 		<TexCoords left="0.00390625" right="0.76562500" top="0.63476563" bottom="0.66992188"/>	
 	</Texture>
 
-	<Button name="QuestIgnoreButtonTemplate" inherits="UIPanelButtonTemplate" text="IGNORE" virtual="true">
-		<Size x="78" y="22"/>
+	<Button name="QuestIgnoreButtonTemplate" inherits="UIPanelButtonTemplate" text="IGNORE_QUEST" virtual="true">
 		<Scripts>
 			<OnClick function="QuestFrameIgnoreButton_OnClick"/>
-			<OnShow function="QuestFrameIgnoreButton_OnShow"/>
-			<OnHide function="QuestFrameIgnoreButton_OnHide"/>
+		</Scripts>
+	</Button>
+	<Button name="QuestUnignoreButtonTemplate" inherits="UIPanelButtonTemplate" text="UNIGNORE_QUEST" virtual="true">
+		<Scripts>
+			<OnClick function="QuestFrameUnignoreButton_OnClick"/>
 		</Scripts>
 	</Button>
 
@@ -109,6 +111,12 @@
 						</Scripts>
 					</Button>
 					<Button parentKey="IgnoreButton" inherits="QuestIgnoreButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="QuestFrameGoodbyeButton"/>
+							<Anchor point="BOTTOMRIGHT" relativeTo="QuestFrameGoodbyeButton"/>
+						</Anchors>
+					</Button>
+					<Button parentKey="UnignoreButton" inherits="QuestUnignoreButtonTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="QuestFrameGoodbyeButton"/>
 							<Anchor point="BOTTOMRIGHT" relativeTo="QuestFrameGoodbyeButton"/>
@@ -275,6 +283,12 @@
 							<Anchor point="BOTTOMRIGHT" relativeTo="QuestFrameDeclineButton"/>
 						</Anchors>
 					</Button>
+					<Button parentKey="UnignoreButton" inherits="QuestUnignoreButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="QuestFrameDeclineButton"/>
+							<Anchor point="BOTTOMRIGHT" relativeTo="QuestFrameDeclineButton"/>
+						</Anchors>
+					</Button>
 					<Button name="QuestFrameAcceptButton" inherits="UIPanelButtonTemplate" text="ACCEPT">
 						<Size x="77" y="22"/>
 						<Anchors>
@@ -296,47 +310,6 @@
 					<OnShow function="QuestFrameDetailPanel_OnShow"/>
 				</Scripts>
  			</Frame>
-			<Frame parentKey="IgnoreButtonHelpBox" inherits="GlowBoxTemplate" enableMouse="true" hidden="true" frameStrata="DIALOG">
-				<Size x="220" y="100"/>
-				<Layers>
-					<Layer level="OVERLAY">
-						<FontString parentKey="Text" inherits="GameFontHighlightLeft" justifyV="TOP" text="IGNORE_QUEST_TUTORIAL">
-							<Size x="188" y="0"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" x="16" y="-24"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-				<Frames>
-					<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
-						<Anchors>
-							<Anchor point="TOPRIGHT" x="6" y="6"/>
-						</Anchors>
-						<Scripts>
-							<OnClick inherit="append">
-								SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_IGNORE_QUEST, true);
-							</OnClick>
-						</Scripts>
-					</Button>
-					<Frame parentKey="Arrow" inherits="GlowBoxArrowTemplate">
-						<Anchors>
-							<Anchor point="RIGHT" relativePoint="LEFT" x="36" y="16"/>
-						</Anchors>
-					</Frame>
-				</Frames>
-				<Scripts>
-					<OnLoad>
-						SetClampedTextureRotation(self.Arrow.Arrow, 90);
-						SetClampedTextureRotation(self.Arrow.Glow, 90);
-						self.Arrow.Glow:ClearAllPoints();
-						self.Arrow.Glow:SetPoint("CENTER", self.Arrow.Arrow, "CENTER", -3, 0);
-					</OnLoad>
-					<OnShow>
-						self:SetHeight(self.Text:GetHeight()+42);
-					</OnShow>
-				</Scripts>
-			</Frame>
 			<Frame name="QuestFrameGreetingPanel" inherits="QuestFramePanelTemplate" hidden="true">
 				<Frames>
 					<Button name="QuestFrameGreetingGoodbyeButton" inherits="UIPanelButtonTemplate" text="GOODBYE">

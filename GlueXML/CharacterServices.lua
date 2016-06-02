@@ -20,8 +20,8 @@
 -- Blocks are opaque data structures.  Frames that belong to blocks inherit the template for blocks, and all controls used for data collection must be in the ControlsFrame.
 --
 -- Blocks must have the following methods:
---  :Initialize() - Initializes the block and any controls to the active state.
---  :IsFinished() - Returns whether or not the block is finished and its result set.
+--  :Initialize(results, wasFromRewind) - Initializes the block and any controls to the active state.  The argument wasFromRewind indicates whether or not this block is being checked due to the user returning to this step.
+--  :IsFinished(wasFromRewind) - Returns whether or not the block is finished and its result set. The argument wasFromRewind indicates whether or not this block is being checked due to the user returning to this step.
 --  :GetResult() - Gets the result from the block in a table passed back to the flow.
 --
 -- The following optional methods may be present on a block:
@@ -295,10 +295,13 @@ end
 function CharacterServicesFlowPrototype:Rewind(controller)
 	local block = self.Steps[self.step];
 	local results;
+	local wasFromRewind = true;
+
 	if (block.OnRewind) then
 		block:OnRewind();
 	end
-	if (block:IsFinished() and not block.SkipOnRewind) then
+
+	if (block:IsFinished(wasFromRewind) and not block.SkipOnRewind) then
 		if (self.step ~= 1) then
 			results = self:BuildResults(self.step - 1);
 		end
@@ -316,7 +319,7 @@ function CharacterServicesFlowPrototype:Rewind(controller)
 		if (self.step ~= 1) then
 			results = self:BuildResults(self.step - 1);
 		end
-		self:SetUpBlock(controller, results);
+		self:SetUpBlock(controller, results, wasFromRewind);
 	end
 end
 
@@ -339,7 +342,7 @@ local function moveBlock(self, block, offset)
 	end
 end
 
-function CharacterServicesFlowPrototype:SetUpBlock(controller, results)
+function CharacterServicesFlowPrototype:SetUpBlock(controller, results, wasFromRewind)
 	local block = self.Steps[self.step];
 	CharacterServicesMaster_SetCurrentBlock(controller, block);
 	if (not block.HiddenStep) then
@@ -351,7 +354,7 @@ function CharacterServicesFlowPrototype:SetUpBlock(controller, results)
 		block.frame.StepNumber:SetTexCoord(unpack(stepTextures[self.step]));
 		block.frame:Show();
 	end
-	block:Initialize(results);
+	block:Initialize(results, wasFromRewind);
 	CharacterServicesMaster_Update();
 end
 
@@ -923,12 +926,28 @@ function CharacterUpgradeClassTrial_OnClick(self)
 	CharacterUpgrade_BeginNewCharacterCreation(LE_CHARACTER_CREATE_TYPE_TRIAL_BOOST);
 end
 
-local function GetRecommendedSpecButton(ownerFrame)
-	local specButtons = ownerFrame.SpecButtons;
-	for i = 1, #specButtons do
-		if specButtons[i].isRecommended then
-			return specButtons[i];
+-- Override recommended spec for druids to Feral until we stop using recommended specs as allowed specs.
+local recommendedSpecOverride = {
+	["DRUID"] = 103,
+}
+
+function GetRecommendedSpecButton(ownerFrame, overrideSpecID)
+	-- There may be multiple recommended specs for now, so determine the best one based on class.
+	-- However, if there's an overrideSpec it wins all the time.
+	local recommendedSpecID = recommendedSpecOverride[ownerFrame.classFilename];
+	overrideSpecID = overrideSpecID or recommendedSpecID;
+
+	for _, specButton in ipairs(ownerFrame.SpecButtons) do
+		if specButton.isRecommended and (not overrideSpecID or specButton:GetID() == overrideSpecID)  then
+			return specButton;
 		end
+	end
+end
+
+function ClickRecommendedSpecButton(ownerFrame, overrideSpecID)
+	local specButton = GetRecommendedSpecButton(ownerFrame, overrideSpecID);
+	if specButton then
+		specButton:Click();
 	end
 end
 
@@ -1003,8 +1022,7 @@ local function CreateSpecButton(parent, buttonIndex, layoutData)
 	return frame;
 end
 
-function CharacterServices_UpdateSpecializationButtons(classFilename, gender, parentFrame, owner, allowAllSpecs, isTrialBoost)
-	local classID = CLASS_NAME_BUTTON_ID_MAP[classFilename];
+function CharacterServices_UpdateSpecializationButtons(classID, gender, parentFrame, owner, allowAllSpecs, isTrialBoost)
 	local numSpecs = GetNumSpecializationsForClassID(classID);
 
 	if not parentFrame.SpecButtons then
@@ -1067,21 +1085,28 @@ function CharacterServices_UpdateSpecializationButtons(classFilename, gender, pa
 			button:Hide();
 		end
 	end
+
+	if owner.OnUpdateSpecButtons then
+		owner:OnUpdateSpecButtons();
+	end
 end
 
-function CharacterUpgradeSpecSelectBlock:Initialize(results)
-	self.selected = nil;
+function CharacterUpgradeSpecSelectBlock:Initialize(results, wasFromRewind)
+	if not wasFromRewind then
+		self.selected = nil;
+	end
+
 	self.specButtonClickedCallback = CharacterServicesMaster_Update;
 
-	local _, _, _, classFilename, _, _, _, _, _, _, _, _, _, playerguid, _, _, gender = GetCharacterInfo(results.charid);
-	self.classID = CLASS_NAME_BUTTON_ID_MAP[classFilename];
+	local _, _, _, classFilename, classID, _, _, _, _, _, _, _, _, playerguid, _, _, gender = GetCharacterInfo(results.charid);
+	self.classID = classID;
+	self.frame.ControlsFrame.classFilename = classFilename;
 
-	-- When boosting to level 100, we want to prevent the selection of non-recommended specs.
-	-- TODO: Pending design discussion...if these specs are disabled, maybe we should just remove the step entirely
-	-- or at least auto-select the recommended spec and prevent the user from seeing a choice they don't really have.
+	-- When boosting to level 100, prevent the selection of non-recommended specs, but still auto-select from
+	-- the limited number of specs that the user can choose from
 	local allowAllSpecs = CharacterUpgradeFlow.data.productId ~= LE_BATTLEPAY_PRODUCT_ITEM_LEVEL_100_CHARACTER_UPGRADE;
 
-	CharacterServices_UpdateSpecializationButtons(classFilename, gender, self.frame.ControlsFrame, CharacterUpgradeSpecSelectBlock, allowAllSpecs);
+	CharacterServices_UpdateSpecializationButtons(classID, gender, self.frame.ControlsFrame, CharacterUpgradeSpecSelectBlock, allowAllSpecs);
 
 	-- Determine if this should auto-advance and cache off relevant information
 	local autoSelectGuid = CharacterUpgradeFlow:GetAutoSelectGuid();
@@ -1098,8 +1123,12 @@ function CharacterUpgradeSpecSelectBlock:Initialize(results)
 	end
 end
 
-function CharacterUpgradeSpecSelectBlock:IsFinished()
-	return self.selected ~= nil;
+function CharacterUpgradeSpecSelectBlock:OnUpdateSpecButtons()
+	ClickRecommendedSpecButton(self.frame.ControlsFrame, self.selected);
+end
+
+function CharacterUpgradeSpecSelectBlock:IsFinished(wasFromRewind)
+	return not wasFromRewind and self.selected ~= nil;
 end
 
 function CharacterUpgradeSpecSelectBlock:GetResult()

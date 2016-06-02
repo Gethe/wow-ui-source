@@ -16,6 +16,12 @@ function WorldMapBountyBoardMixin:OnEvent(event, ...)
 	end
 end
 
+function WorldMapBountyBoardMixin:OnShow()
+	if not self.isRefreshing then
+		self:Refresh();
+	end
+end
+
 function WorldMapBountyBoardMixin:SetMapAreaID(mapAreaID)
 	if self.mapAreaID ~= mapAreaID then
 		self.mapAreaID = mapAreaID;
@@ -51,6 +57,9 @@ WORLD_MAP_BOUNTY_BOARD_LOCK_TYPE_BY_QUEST = 2;
 WORLD_MAP_BOUNTY_BOARD_LOCK_TYPE_NO_BOUNTIES = 3;
 
 function WorldMapBountyBoardMixin:Refresh()
+	assert(not self.isRefreshing);
+	self.isRefreshing = true;
+
 	self.firstCompletedTab = nil;
 	self.TutorialBox:Hide();
 
@@ -59,6 +68,7 @@ function WorldMapBountyBoardMixin:Refresh()
 
 	if not self.mapAreaID then
 		self:Clear();
+		self.isRefreshing = false;
 		return;
 	end
 
@@ -66,6 +76,7 @@ function WorldMapBountyBoardMixin:Refresh()
 
 	if not self.displayLocation then
 		self:Clear();
+		self.isRefreshing = false;
 		return;
 	end
 
@@ -85,6 +96,8 @@ function WorldMapBountyBoardMixin:Refresh()
 
 	self:TryShowingIntroTutorial();
 	self:TryShowingCompletionTutorial();
+
+	self.isRefreshing = false;
 end
 
 function WorldMapBountyBoardMixin:SetLockedType(lockedType)
@@ -227,7 +240,7 @@ end
 function WorldMapBountyBoardMixin:SetSelectedBountyIndex(selectedBountyIndex)
 	if self.selectedBountyIndex ~= selectedBountyIndex then
 		self.selectedBountyIndex = selectedBountyIndex;
-		PlaySound("igMainMenuOptionCheckBoxOn");
+		PlaySound("UI_WorldQuest_Map_Select");
 		self:RefreshBountyTabs();
 		self:RefreshSelectedBounty();
 		if self.selectedBountyChangedCallback then
@@ -252,7 +265,7 @@ end
 
 function WorldMapBountyBoardMixin:ShowBountyTooltip(bountyIndex)
 	local bountyData = self.bounties[bountyIndex];
-	WorldMapTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	self:SetTooltipOwner();
 
 	local questIndex = GetQuestLogIndexByID(bountyData.questID);
 	local title, level, suggestedGroup, isHeader, isCollapsed, isComplete, frequency, questID, startEvent, displayQuestID, isOnMap, hasLocalPOI, isTask, isStory = GetQuestLogTitle(questIndex);
@@ -274,11 +287,20 @@ function WorldMapBountyBoardMixin:ShowBountyTooltip(bountyIndex)
 	end
 end
 
+function WorldMapBountyBoardMixin:SetTooltipOwner()
+	local x = self:GetRight();
+	if x >= GetScreenWidth() / 2 then
+		WorldMapTooltip:SetOwner(self, "ANCHOR_LEFT", -100, -50);
+	else
+		WorldMapTooltip:SetOwner(self, "ANCHOR_RIGHT", 0, -50);
+	end	
+end
+
 function WorldMapBountyBoardMixin:ShowLockedByQuestTooltip()
 	local questIndex = GetQuestLogIndexByID(self.lockedQuestID);
 	local title, level, suggestedGroup, isHeader, isCollapsed, isComplete, frequency, questID, startEvent, displayQuestID, isOnMap, hasLocalPOI, isTask, isStory = GetQuestLogTitle(questIndex);
 	if title then
-		WorldMapTooltip:SetOwner(self, "ANCHOR_RIGHT", 0, -50);
+		self:SetTooltipOwner();
 
 		WorldMapTooltip:SetText(BOUNTY_BOARD_LOCKED_TITLE, HIGHLIGHT_FONT_COLOR:GetRGB());
 
@@ -292,7 +314,7 @@ function WorldMapBountyBoardMixin:ShowLockedByQuestTooltip()
 end
 
 function WorldMapBountyBoardMixin:ShowLockedByNoBountiesTooltip()
-	WorldMapTooltip:SetOwner(self, "ANCHOR_RIGHT", 0, -50);
+	self:SetTooltipOwner();
 
 	WorldMapTooltip:SetText(BOUNTY_BOARD_NO_BOUNTIES, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
 

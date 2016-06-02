@@ -8,6 +8,8 @@ QUESTINFO_FADE_IN = 0.5;
 QUEST_FRAME_AUTO_ACCEPT_QUEST_ID = 0;
 QUEST_FRAME_AUTO_ACCEPT_QUEST_START_ITEM_ID = 0;
 
+local MIN_RIGHT_BUTTON_WIDTH = 78;
+
 function QuestFrame_OnLoad(self)
 	self:RegisterEvent("QUEST_GREETING");
 	self:RegisterEvent("QUEST_DETAIL");
@@ -18,6 +20,12 @@ function QuestFrame_OnLoad(self)
 	self:RegisterEvent("QUEST_LOG_UPDATE");
 	self:RegisterEvent("UNIT_PORTRAIT_UPDATE");
 	self:RegisterEvent("LEARNED_SPELL_IN_TAB");
+	self:RegisterEvent("QUEST_IGNORED");
+
+	-- Unignore is the longest button text on the right side
+	local buttonWidth = max(QuestFrameDetailPanel.UnignoreButton:GetFontString():GetStringWidth() + 30, MIN_RIGHT_BUTTON_WIDTH);
+	QuestFrameGoodbyeButton:SetWidth(buttonWidth);
+	QuestFrameDeclineButton:SetWidth(buttonWidth);
 end
 
 function QuestFrame_OnEvent(self, event, ...)
@@ -96,6 +104,12 @@ function QuestFrame_OnEvent(self, event, ...)
 		if ( QuestInfoFrame.rewardsFrame:IsVisible() ) then
 			QuestInfo_ShowRewards();
 			QuestDetailScrollFrameScrollBar:SetValue(0);
+		end
+		return;
+	elseif ( event == "QUEST_IGNORED" ) then
+		if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_IGNORE_QUEST) then
+			StaticPopup_Show("QUEST_IGNORE_TUTORIAL");
+			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_IGNORE_QUEST, true);
 		end
 		return;
 	end
@@ -198,8 +212,10 @@ function QuestFrameProgressPanel_OnShow()
 		QuestFrameCompleteButton:Disable();
 	end
 	local canIgnore = CanIgnoreQuest();
-	QuestFrameGoodbyeButton:SetShown(not canIgnore);
-	QuestFrameProgressPanel.IgnoreButton:SetShown(canIgnore);
+	local isIgnored = IsQuestIgnored();
+	QuestFrameGoodbyeButton:SetShown(not canIgnore and not isIgnored);
+	QuestFrameProgressPanel.IgnoreButton:SetShown(canIgnore and not isIgnored);
+	QuestFrameProgressPanel.UnignoreButton:SetShown(isIgnored);
 	QuestFrameProgressItems_Update();
 end
 
@@ -486,15 +502,9 @@ function QuestFrameIgnoreButton_OnClick()
 	PlaySound("igQuestCancel");
 end
 
-function QuestFrameIgnoreButton_OnShow(self)
-	if (not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_IGNORE_QUEST)) then
-		QuestFrame.IgnoreButtonHelpBox:SetPoint("LEFT", self, "RIGHT", 28, 0);
-		QuestFrame.IgnoreButtonHelpBox:Show();
-	end
-end
-
-function QuestFrameIgnoreButton_OnHide()
-	QuestFrame.IgnoreButtonHelpBox:Hide();
+function QuestFrameUnignoreButton_OnClick()
+	UnignoreQuest();
+	PlaySound("igQuestCancel");
 end
 
 function QuestFrameDetailPanel_OnShow()
@@ -504,14 +514,21 @@ function QuestFrameDetailPanel_OnShow()
 	if ( QuestGetAutoAccept() ) then
 		QuestFrameDeclineButton:Hide();
 		QuestFrameDetailPanel.IgnoreButton:Hide();
+		QuestFrameDetailPanel.UnignoreButton:Hide();
 		QuestFrameCloseButton:Disable();
 		QuestFrame.autoQuest = true;
+	elseif ( IsQuestIgnored() ) then
+		QuestFrameDeclineButton:Hide();
+		QuestFrameDetailPanel.IgnoreButton:Hide();
+		QuestFrameDetailPanel.UnignoreButton:Show();
 	elseif ( CanIgnoreQuest() ) then
 		QuestFrameDeclineButton:Hide();
 		QuestFrameDetailPanel.IgnoreButton:Show();
+		QuestFrameDetailPanel.UnignoreButton:Hide();
 	else
 		QuestFrameDeclineButton:Show();
 		QuestFrameDetailPanel.IgnoreButton:Hide();
+		QuestFrameDetailPanel.UnignoreButton:Hide();
 	end
 	local material = QuestFrame_GetMaterial();
 	QuestFrame_SetMaterial(QuestFrameDetailPanel, material);

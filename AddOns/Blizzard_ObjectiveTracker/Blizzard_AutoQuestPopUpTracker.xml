@@ -139,6 +139,13 @@
 							</Anchors>
 						</Texture>
 					</Layer>
+					<Layer level="ARTWORK" textureSubLevel="2">
+						<Texture parentKey="QuestIconBadgeBorder" atlas="AutoQuest-badgeborder" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.QuestIconBg" x="8" y="-8" />
+							</Anchors>
+						</Texture>
+					</Layer>
 					<Layer level="BORDER">
 						<FontString parentKey="QuestName" inherits="QuestFont_Large">
 							<Size x="158" y="30"/>

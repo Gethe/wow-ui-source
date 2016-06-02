@@ -262,9 +262,8 @@ function ClampedPercentageBetween(value, startValue, endValue)
 end
 
 local TARGET_FRAME_PER_SEC = 60.0;
-local TARGET_MS_PER_FRAME = TARGET_FRAME_PER_SEC / 1000;
 function FrameDeltaLerp(startValue, endValue, amount)
-	return Lerp(startValue, endValue, Saturate(amount * GetTickTimeMs() * TARGET_MS_PER_FRAME));
+	return Lerp(startValue, endValue, Saturate(amount * GetTickTime() * TARGET_FRAME_PER_SEC));
 end
 
 ----------------------------------
@@ -576,7 +575,7 @@ local g_updatingBars = {};
 local function ProcessSmoothStatusBars()
 	for bar, targetValue in pairs(g_updatingBars) do
 		local newValue = FrameDeltaLerp(bar:GetValue(), targetValue, .25);
-		if math.abs(newValue, targetValue) < .005 then
+		if math.abs(newValue - targetValue) < .005 then
 			g_updatingBars[bar] = nil;
 		end
 

@@ -340,59 +340,6 @@
 		</Scripts>
 	</Frame>
 
-
-	<Frame name="iTunesRemoteOptionsPanel" hidden="true" parent="VideoOptionsFramePanelContainer">
-		<Layers>
-			<Layer level="ARTWORK">
-				<FontString name="$parentDisplayHeader" text="BINDING_HEADER_ITUNES_REMOTE" inherits="OptionsFontHighlight" justifyH="LEFT" justifyV="TOP">
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="16" y="-16"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-				<Texture name="$parentDisplayHeaderUnderline" inherits="videoUnderline">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentDisplayHeader" relativePoint="BOTTOMLEFT">
-							<Offset>
-								<AbsDimension x="0" y="-3"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Frames>
-			<CheckButton name="iTunesRemoteOptionsFrameCheckButton7" inherits="OptionsCheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentDisplayHeaderUnderline" relativePoint="TOPLEFT">
-						<Offset>
-							<AbsDimension x="12" y="-20"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="iTunesRemoteOptionsFrameCheckButton8" inherits="OptionsCheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="iTunesRemoteOptionsFrameCheckButton7" relativePoint="TOPLEFT">
-						<Offset>
-							<AbsDimension x="0" y="-25"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</CheckButton>
-		</Frames>
-		<Scripts>
-			<OnLoad function="iTunesRemoteOptionsFrame_OnLoad"/>
-			<OnShow>
-				VideoOptionsPanel_OnShow(self);
-			</OnShow>
-		</Scripts>
-	</Frame>
-
-
 	<Frame name="MacKeyboardOptionsPanel" hidden="true" parent="VideoOptionsFramePanelContainer">
 		<Layers>
 			<Layer level="ARTWORK">

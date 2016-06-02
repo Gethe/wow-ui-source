@@ -252,7 +252,13 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="OrderHallMissionFrame" inherits="GarrisonMissionFrameTemplate, GarrisonUITemplate" mixin="GarrisonMission, GarrisonFollowerMission, OrderHallMission">
+	<Button name="OrderHallFrameTabButtonTemplate" inherits="CharacterFrameTabButtonTemplate" virtual="true">
+		<Scripts>
+			<OnClick function="GarrisonMissionController_OnClickTab"/>
+		</Scripts>
+	</Button>
+	
+	<Frame name="OrderHallMissionFrame" inherits="GarrisonMissionFrameTemplate, GarrisonUITemplate" mixin="GarrisonMission, GarrisonFollowerMission, OrderHallMission" frameLevel="1">
 		<Size x="962" y="662"/>
 		<Anchors>
 			<Anchor point="CENTER"/>
@@ -267,21 +273,20 @@
 			<OnEvent method="OnEventMainFrame"/>
 		</Scripts>
 		<Frames>
-			<Button parentKey="Tab1" name="$parentTab1" inherits="GarrisonMissionFrameTabTemplate" id="1" text="GARRISON_MISSIONS">
+			<Frame parentKey="ClassHallIcon" frameLevel="6" frameStrata="HIGH">
+				<Size x="90" y="88"/>
 				<Anchors>
-					<Anchor point="BOTTOMLEFT" x="11" y="-42"/>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="-15" y="15"/>
 				</Anchors>
-			</Button>
-			<Button parentKey="Tab2" name="$parentTab2" inherits="GarrisonMissionFrameTabTemplate" id="2" text="GARRISON_FOLLOWERS">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentTab1" relativePoint="RIGHT" x="-5" y="0"/>
-				</Anchors>
-			</Button>
-			<Button parentKey="Tab3" name="$parentTab3" inherits="GarrisonMissionFrameTabTemplate" id="3" text="ADVENTURE_MAP_TITLE">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentTab2" relativePoint="RIGHT" x="-5" y="0"/>
-				</Anchors>
-			</Button>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Icon" setAllPoints="true"/>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Button parentKey="Tab1" name="$parentTab1" inherits="OrderHallFrameTabButtonTemplate" id="1" text="GARRISON_MISSIONS"/>
+			<Button parentKey="Tab2" name="$parentTab2" inherits="OrderHallFrameTabButtonTemplate" id="2" text="GARRISON_FOLLOWERS"/>
+			<Button parentKey="Tab3" name="$parentTab3" inherits="OrderHallFrameTabButtonTemplate" id="3" text="ADVENTURE_MAP_TITLE"/>
 			<Frame parentKey="FollowerList" inherits="GarrisonListTemplateHeader" name="$parentFollowers" hidden="true" mixin="GarrisonFollowerList" frameStrata="HIGH">
 				<Size x="305" y="535"/>
 				<KeyValues>
@@ -299,7 +304,7 @@
 						</Anchors>
 					</Frame>
 					<EditBox parentKey="SearchBox" inherits="SearchBoxTemplate" letters="40">
-						<Size x="236" y="20"/>
+						<Size x="218" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.HeaderLeft" x="17" y="-10"/>
 						</Anchors>
@@ -329,7 +334,7 @@
 					<OnHide method="OnHide"/>
 				</Scripts>
 				<Frames>
-					<ScrollFrame parentKey="ScrollContainer" enableMouse="true" mixin="MapCanvasScrollControllerMixin">
+					<ScrollFrame parentKey="ScrollContainer" enableMouse="true" mixin="MapCanvasScrollControllerMixin" useParentLevel="true">
 						<Anchors>
 							<Anchor point="LEFT" relativeKey="$parent.$parent.Left" relativePoint="RIGHT" x="-6" y="0"/>
 							<Anchor point="RIGHT" relativeKey="$parent.$parent.Right" relativePoint="LEFT" x="6" y="0"/>
@@ -337,7 +342,7 @@
 							<Anchor point="BOTTOM" relativeKey="$parent.$parent.Bottom" relativePoint="TOP" x="0" y="-7"/>
 						</Anchors>
 						<ScrollChild>
-							<Frame parentKey="Child" >
+							<Frame parentKey="Child" useParentLevel="true">
 								<Anchors>
 									<Anchor point="TOPLEFT"/>
 								</Anchors>

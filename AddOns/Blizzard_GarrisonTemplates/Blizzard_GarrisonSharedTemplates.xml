@@ -78,7 +78,7 @@
 	<Frame name="GarrisonMissionBaseFrameTemplate" virtual="true">
 		<Layers>
 			<Layer level="BORDER">
-				<Texture atlas="Garr_InfoBoxMission-BackgroundTile" horizTile="true" vertTile="true">
+				<Texture parentKey="BaseFrameBackground" atlas="Garr_InfoBoxMission-BackgroundTile" horizTile="true" vertTile="true">
 					<Anchors>
 						<Anchor point="TOPLEFT"/>
 						<Anchor point="BOTTOMRIGHT"/>
@@ -86,26 +86,26 @@
 				</Texture>
 			</Layer>
 			<Layer level="BORDER" textureSubLevel="1">
-				<Texture atlas="_Garr_InfoBoxMission-Top" horizTile="true" useAtlasSize="true">
+				<Texture parentKey="BaseFrameTop" atlas="_Garr_InfoBoxMission-Top" horizTile="true" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="1" y="7"/>
 						<Anchor point="TOPRIGHT" x="-1" y="7"/>
 					</Anchors>
 				</Texture>
-				<Texture atlas="_Garr_InfoBoxMission-Top" horizTile="true" useAtlasSize="true">
+				<Texture parentKey="BaseFrameBottom" atlas="_Garr_InfoBoxMission-Top" horizTile="true" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" y="-7"/>
 						<Anchor point="BOTTOMRIGHT" y="-7"/>
 					</Anchors>
 					<TexCoords left="0.0" right="1.0" top="1.0" bottom="0.0"/>
 				</Texture>
-				<Texture atlas="!Garr_InfoBoxMission-Left" vertTile="true" useAtlasSize="true">
+				<Texture parentKey="BaseFrameLeft" atlas="!Garr_InfoBoxMission-Left" vertTile="true" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="-7"/>
 						<Anchor point="BOTTOMLEFT" x="-7"/>
 					</Anchors>
 				</Texture>
-				<Texture atlas="!Garr_InfoBoxMission-Left" vertTile="true" useAtlasSize="true">
+				<Texture parentKey="BaseFrameRight" atlas="!Garr_InfoBoxMission-Left" vertTile="true" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="TOPRIGHT" x="7"/>
 						<Anchor point="BOTTOMRIGHT" x="7"/>
@@ -114,24 +114,24 @@
 				</Texture>
 			</Layer>
 			<Layer level="BORDER" textureSubLevel="2">
-				<Texture atlas="Garr_InfoBoxMission-Corner" useAtlasSize="true">
+				<Texture parentKey="BaseFrameTopLeft" atlas="Garr_InfoBoxMission-Corner" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="-6" y="7"/>
 					</Anchors>
 				</Texture>
-				<Texture atlas="Garr_InfoBoxMission-Corner" useAtlasSize="true">
+				<Texture parentKey="BaseFrameTopRight" atlas="Garr_InfoBoxMission-Corner" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="TOPRIGHT" x="6" y="7"/>
 					</Anchors>
 					<TexCoords left="1.0" right="0.0" top="0.0" bottom="1.0"/>
 				</Texture>
-				<Texture atlas="Garr_InfoBoxMission-Corner" useAtlasSize="true">
+				<Texture parentKey="BaseFrameBottomLeft" atlas="Garr_InfoBoxMission-Corner" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" x="-7" y="-7"/>
 					</Anchors>
 					<TexCoords left="0.0" right="1.0" top="1.0" bottom="0.0"/>
 				</Texture>
-				<Texture atlas="Garr_InfoBoxMission-Corner" useAtlasSize="true">
+				<Texture parentKey="BaseFrameBottomRight" atlas="Garr_InfoBoxMission-Corner" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT" x="7" y="-7"/>
 					</Anchors>
@@ -238,7 +238,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="BORDER" textureSubLevel="6">
-				<Texture atlas="_GarrMission_ParchmentHeader-Mid" useAtlasSize="true" horizTile="true">
+				<Texture parentKey="HeaderMid" atlas="_GarrMission_ParchmentHeader-Mid" useAtlasSize="true" horizTile="true">
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.HeaderLeft" relativePoint="RIGHT" x="-35"/>
 						<Anchor point="RIGHT" relativeKey="$parent.HeaderRight" relativePoint="LEFT" x="35"/>
@@ -347,6 +347,22 @@
 	</Button>
 
 	<Button name="GarrisonFollowerEquipmentTemplate" parentArray="Equipment" inherits="GarrisonEquipmentTemplate" virtual="true" mixin="GarrisonFollowerEquipmentMixin">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="BG" atlas="ClassHall_Follower-EquipmentBG" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER" textureSubLevel="1">
+				<Texture parentKey="Border" atlas="ClassHall_Follower-EquipmentFrame" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
 		<Scripts>
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
@@ -669,25 +685,11 @@
 		</KeyValues>
 		-->
 		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture parentKey="BG" atlas="ShipMission_ShipFollower-EquipmentBG" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="TOPLEFT"/>
-					</Anchors>
-				</Texture>
-			</Layer>
 			<Layer level="BORDER" textureSubLevel="0">
 				<Texture parentKey="Icon">
 					<Size x="64" y="64"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="BORDER" textureSubLevel="1">
-				<Texture parentKey="Border" atlas="ShipMission_ShipFollower-EquipmentFrame" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="TOPLEFT"/>
 					</Anchors>
 				</Texture>
 			</Layer>

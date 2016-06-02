@@ -1799,6 +1799,7 @@ function SelectSpecFrame_OnLoad(self)
 	}
 
 	self.specButtonClickedCallback = CharacterCreate_UpdateOkayButton;
+	self.OnUpdateSpecButtons = ClickRecommendedSpecButton;
 	self.layoutData = trialBoostSpecButtonLayoutData;
 	self.selected = nil;
 end
@@ -1817,7 +1818,7 @@ function SelectFactionFrame_OnHide(self)
 end
 
 function CharacterCreate_UpdateClassTrialCustomizationFrames()
-	local _, classFilename = GetSelectedClass();
+	local _, classFilename, classID = GetSelectedClass();
 	local isTrialBoost = CharacterUpgrade_IsCreatedCharacterTrialBoost();
 	local isCustomization = CharacterCreateFrame.state == "CUSTOMIZATION";
 	local showTrialFrames = isTrialBoost and isCustomization and IsBoostAllowed(classFilename);
@@ -1831,7 +1832,8 @@ function CharacterCreate_UpdateClassTrialCustomizationFrames()
 		local gender = GetSelectedSex() - 1;
 		local allowAllSpecs = false;
 
-		CharacterServices_UpdateSpecializationButtons(classFilename, gender, CharCreateSelectSpecFrame, CharCreateSelectSpecFrame, allowAllSpecs, isTrialBoost);
+		CharCreateSelectSpecFrame.classFilename = classFilename;
+		CharacterServices_UpdateSpecializationButtons(classID, gender, CharCreateSelectSpecFrame, CharCreateSelectSpecFrame, allowAllSpecs, isTrialBoost);
 
 		local frameTop, frameBottom = CharCreateSelectSpecFrame:GetTop(), CharCreateSelectSpecFrame:GetBottom();
 		for index, button in pairs(CharCreateSelectSpecFrame.SpecButtons) do

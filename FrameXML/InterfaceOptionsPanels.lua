@@ -1357,30 +1357,35 @@ function InterfaceOptionsNPCNamesDropDown_OnEvent(self, event, ...)
 					SetCVar("UnitNameNPC", "0");
 					SetCVar("UnitNameHostleNPC", "0");
 					SetCVar("UnitNameInteractiveNPC", "0");
+					SetCVar("ShowQuestUnitCircles", "0");
 					self.tooltip = NPC_NAMES_DROPDOWN_TRACKED_TOOLTIP;
 				elseif ( value == "2" ) then
 					SetCVar("UnitNameFriendlySpecialNPCName", "1");
 					SetCVar("UnitNameHostleNPC", "1");
 					SetCVar("UnitNameInteractiveNPC", "0");
 					SetCVar("UnitNameNPC", "0");
+					SetCVar("ShowQuestUnitCircles", "1");
 					self.tooltip = NPC_NAMES_DROPDOWN_HOSTILE_TOOLTIP;
 				elseif ( value == "3" ) then
 					SetCVar("UnitNameFriendlySpecialNPCName", "1");
 					SetCVar("UnitNameHostleNPC", "1");
 					SetCVar("UnitNameInteractiveNPC", "1");
 					SetCVar("UnitNameNPC", "0");
+					SetCVar("ShowQuestUnitCircles", "1");
 					self.tooltip = NPC_NAMES_DROPDOWN_HOSTILE_TOOLTIP;
 				elseif ( value == "4" ) then
 					SetCVar("UnitNameFriendlySpecialNPCName", "0");
 					SetCVar("UnitNameHostleNPC", "0");
 					SetCVar("UnitNameInteractiveNPC", "0");
 					SetCVar("UnitNameNPC", "1");
+					SetCVar("ShowQuestUnitCircles", "1");
 					self.tooltip = NPC_NAMES_DROPDOWN_ALL_TOOLTIP;
 				else
 					SetCVar("UnitNameFriendlySpecialNPCName", "0");
 					SetCVar("UnitNameHostleNPC", "0");
 					SetCVar("UnitNameInteractiveNPC", "0");
 					SetCVar("UnitNameNPC", "0");
+					SetCVar("ShowQuestUnitCircles", "1");
 					self.tooltip = NPC_NAMES_DROPDOWN_NONE_TOOLTIP;
 				end					
 			end;	

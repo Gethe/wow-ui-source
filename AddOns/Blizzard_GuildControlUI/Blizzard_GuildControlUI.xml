@@ -652,7 +652,7 @@
 							<Anchor point="TOPLEFT" relativeTo="$parentCheckbox15" relativePoint="BOTTOMLEFT" x="0" y="1"/>
 						</Anchors>
 					</CheckButton>
-					<EditBox name="$parentGoldBox" autoFocus="false" historyLines="1" inherits="InputBoxTemplate" numeric="true" letters="6" parentKey="goldBox">
+					<EditBox name="$parentGoldBox" autoFocus="false" historyLines="1" inherits="InputBoxTemplate" numeric="true" letters="7" parentKey="goldBox">
 						<Size x="60" y="28"/>
 						<Anchors>
 							<Anchor point="LEFT" relativeTo="$parentCheckbox16" relativePoint="RIGHT" x="120" y="0"/>

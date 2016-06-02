@@ -141,11 +141,6 @@ function ArtifactUIMixin:EvaulateForgeState()
 		self.wasViewedArtifactEquipped = isViewedArtifactEquipped;
 	end
 
-	if not isAtForge and isViewedArtifactEquipped and C_ArtifactUI.GetTotalPurchasedRanks() > 0 then
-		PaperDollItemsFrame.ArtifactViewHelpBox:Hide();
-		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_VIEWABLE_ARTIFACT, true);
-	end
-
 	if isAtForge and not self.AppearancesTab:IsShown() and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_ARTIFACT_APPEARANCE_TAB) and C_ArtifactUI.GetTotalPurchasedRanks() > 0 then
 		if GetNumUnlockedAppearances() > 1 then
 			self.AppearanceTabHelpBox:Show();
@@ -211,11 +206,15 @@ function ArtifactUIMixin:RefreshKnowledgeRanks()
 		self.ForgeBadgeFrame.ForgeLevelBackground:Show();
 		self.ForgeBadgeFrame.ForgeLevelBackgroundBlack:Show();
 		self.ForgeLevelFrame:Show();
+		if (not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_ARTIFACT_KNOWLEDGE)) then
+			self.KnowledgeLevelHelpBox:Show();
+		end
 	else
 		self.ForgeBadgeFrame.ForgeLevelLabel:Hide();
 		self.ForgeBadgeFrame.ForgeLevelBackground:Hide();
 		self.ForgeBadgeFrame.ForgeLevelBackgroundBlack:Hide();
 		self.ForgeLevelFrame:Hide();
+		self.KnowledgeLevelHelpBox:Hide();
 	end
 end
 

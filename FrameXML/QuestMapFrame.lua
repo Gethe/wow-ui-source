@@ -111,12 +111,7 @@ function QuestMapFrame_OnEvent(self, event, ...)
 		end
 	elseif ( event == "PLAYER_ENTERING_WORLD" or event == "WORLD_MAP_UPDATE" ) then
 		SortQuestSortTypes();
-		SortQuests();
-		local mapID = GetCurrentMapAreaID();
-		if (mapID ~= self.currentMapID) then
-			self.autoExpanded = false;
-			self.currentMapID = mapID;
-		end
+		SortQuests();	
 		QuestMapFrame_ResetFilters();
 		QuestMapFrame_UpdateAll();
 	end
@@ -220,16 +215,15 @@ function QuestMapFrame_ResetFilters()
 	for questLogIndex = 1, numEntries do
 		local title, level, suggestedGroup, isHeader, isCollapsed, isComplete, frequency, questID, startEvent, displayQuestID, isOnMap, hasLocalPOI, isTask, isBounty, isStory = GetQuestLogTitle(questLogIndex);	
 		local difficultyColor = GetQuestDifficultyColor(level);
-		if ( isHeader and not QuestMapFrame.autoExpanded ) then
+		if ( isHeader ) then
 			if (isOnMap) then
-				ExpandQuestHeader(questLogIndex);
+				ExpandQuestHeader(questLogIndex, true);
 			else
-				CollapseQuestHeader(questLogIndex);
+				CollapseQuestHeader(questLogIndex, true);
 			end
 		end
 	end
 	QuestMapFrame.ignoreQuestLogUpdate = nil;
-    QuestMapFrame.autoExpanded = true;
 end
 
 function QuestMapFrame_ShowQuestDetails(questID)
@@ -392,7 +386,7 @@ end
 function QuestMapQuestOptions_TrackQuest(questID)
 	local questLogIndex = GetQuestLogIndexByID(questID);
 	if ( IsQuestWatched(questLogIndex) ) then
-		QuestObjectiveTracker_UntrackQuest(nil, questLogIndex);
+		QuestObjectiveTracker_UntrackQuest(nil, questID);
 	else
 		AddQuestWatch(questLogIndex, true);
 		QuestSuperTracking_OnQuestTracked(questID);
@@ -489,8 +483,9 @@ function QuestLogQuests_Update(poiTable)
 	local objectiveIndex = 0;
 	local headerCollapsed = false;
 	local headerTitle, headerOnMap, headerShown, headerLogIndex, mapHeaderButtonIndex;
+	local noHeaders = true;
 	for questLogIndex = 1, numEntries do
-		local title, level, suggestedGroup, isHeader, isCollapsed, isComplete, frequency, questID, startEvent, displayQuestID, isOnMap, hasLocalPOI, isTask, isBounty, isStory = GetQuestLogTitle(questLogIndex);	
+		local title, level, suggestedGroup, isHeader, isCollapsed, isComplete, frequency, questID, startEvent, displayQuestID, isOnMap, hasLocalPOI, isTask, isBounty, isStory = GetQuestLogTitle(questLogIndex);
 		local difficultyColor = GetQuestDifficultyColor(level);
 		if ( isHeader ) then
 			headerTitle = title;
@@ -503,6 +498,7 @@ function QuestLogQuests_Update(poiTable)
 			-- we have at least one valid entry, show the header for it
 			if ( not headerShown ) then
 				headerShown = true;
+				noHeaders = false;
 				headerIndex = headerIndex + 1;
 				button = QuestLogQuests_GetHeaderButton(headerIndex);
 				if (headerCollapsed) then
@@ -700,12 +696,12 @@ function QuestLogQuests_Update(poiTable)
 	end
 
 	-- background
-	if ( titleIndex > 0 ) then
-		QuestScrollFrame.Background:SetAtlas("QuestLogBackground", true);
-	else
+	if ( titleIndex == 0 and noHeaders ) then
 		QuestScrollFrame.Background:SetAtlas("NoQuestsBackground", true);
+	else
+		QuestScrollFrame.Background:SetAtlas("QuestLogBackground", true);
 	end
-	
+		
 	QuestPOI_SelectButtonByQuestID(QuestScrollFrame.Contents, GetSuperTrackedQuestID());
 
 	-- clean up

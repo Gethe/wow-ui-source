@@ -398,6 +398,7 @@
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad" />
+			<OnShow method="OnShow" />
 			<OnEvent method="OnEvent" />
 			<OnEnter method="OnEnter" />
 			<OnLeave method="OnLeave" />

@@ -903,7 +903,12 @@ local function IsValidWeaponCategoryForSlot(categoryID, slot)
 	local name, isWeapon, canEnchant, canMainHand, canOffHand = C_TransmogCollection.GetCategoryInfo(categoryID);
 	if ( name and isWeapon ) then
 		if ( (slot == "MAINHANDSLOT" and canMainHand) or (slot == "SECONDARYHANDSLOT" and canOffHand) ) then
-			return true;
+			if ( WardrobeFrame_IsAtTransmogrifier() ) then
+				local equippedItemID = GetInventoryItemID("player", GetInventorySlotInfo(slot));
+				return C_TransmogCollection.IsCategoryValidForItem(WardrobeCollectionFrame.lastWeaponCategory, equippedItemID);
+			else
+				return true;
+			end
 		end
 	end
 	return false;
@@ -1663,8 +1668,12 @@ function WardrobeCollectionFrameModel_SetTooltip()
 	local name, nameColor, sourceText, sourceColor = WardrobeCollectionFrameModel_GetSourceTooltipInfo(sources[headerIndex]);
 	GameTooltip:SetText(name, nameColor.r, nameColor.g, nameColor.b);
 
-	-- at the transmogrify vendor we're done after the main item name
-	if ( WardrobeFrame_IsAtTransmogrifier() ) then
+	-- at the transmogrify vendor or the appearance is collected we're done after the main item name
+	if ( WardrobeFrame_IsAtTransmogrifier() or sources[headerIndex].isCollected ) then
+		-- but extra tooltip text if not at transmogrifier
+		if ( not WardrobeFrame_IsAtTransmogrifier() ) then
+			GameTooltip:AddLine(WARDROBE_TOOLTIP_TRANSMOGRIFIER, GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b, 1, 1);
+		end
 		GameTooltip:Show();
 		return;
 	end

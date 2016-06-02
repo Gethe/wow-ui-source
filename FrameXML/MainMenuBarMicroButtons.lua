@@ -667,10 +667,19 @@ function EJMicroButton_UpdateAlerts( flag )
 end
 
 --Micro Button alerts
+function MicroButtonAlert_SetText(self, text)
+	self.Text:SetText(text or "");
+end
+
 function MicroButtonAlert_OnLoad(self)
 	self.Text:SetSpacing(4);
-	if ( self.label ) then
-		self.Text:SetText(self.label);
+	MicroButtonAlert_SetText(self, self.label);
+end
+
+function MicroButtonAlert_OnShow(self)
+	self:SetHeight(self.Text:GetHeight() + 42);
+	if ( self.tutorialIndex and GetCVarBitfield("closedInfoFrames", self.tutorialIndex) ) then
+		self:Hide();
 	end
 end
 
@@ -699,4 +708,14 @@ function MicroButtonAlert_OnHide(self)
 			end
 		end
 	end
+end
+
+function MicroButtonAlert_CreateAlert(parent, tutorialIndex, text, anchorPoint, anchorRelativeTo, anchorRelativePoint, anchorOffsetX, anchorOffsetY)
+	local alert = CreateFrame("Frame", nil, parent, "MicroButtonAlertTemplate");
+	alert.tutorialIndex = tutorialIndex;
+
+	alert:SetPoint(anchorPoint, anchorRelativeTo, anchorRelativePoint, anchorOffsetX, anchorOffsetY);
+
+	MicroButtonAlert_SetText(alert, text);
+	return alert;
 end

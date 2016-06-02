@@ -312,7 +312,7 @@ function GarrisonRecruitSelectFrame_UpdateRecruits( waiting )
 			frame.PortraitFrame:SetLevel(follower.level);
 			SetPortraitTexture(frame.PortraitFrame.Portrait, follower.displayID);
 			local displayInfo = follower.displayIDs and follower.displayIDs[1];
-			GarrisonMission_SetFollowerModel(frame.Model, follower.followerID, displayInfo and displayInfo.id);
+			GarrisonMission_SetFollowerModel(frame.Model, follower.followerID, displayInfo and displayInfo.id, displayInfo and displayInfo.showWeapon);
 			frame.Model:SetHeightFactor(follower.displayHeight or 0.5);
 			frame.Model:InitializeCamera((follower.displayScale or 1) * (displayInfo and displayInfo.followerPageScale or 1));
 			frame.Model:Show();

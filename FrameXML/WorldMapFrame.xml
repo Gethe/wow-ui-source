@@ -890,9 +890,11 @@
 				<KeyValues>
 					<KeyValue key="yspacing" value="13" type="number"/>
 				</KeyValues>
-				<OnSizeChanged inherit="prepend">
-					WorldMapTooltip_OnSizeChanged(self:GetParent());
-				</OnSizeChanged>
+				<Scripts>
+					<OnLoad inherit="prepend">
+						self.Tooltip.shoppingTooltips = { WorldMapCompareTooltip1, WorldMapCompareTooltip2 };
+					</OnLoad>
+				</Scripts>
 			</Frame>
 			<Frame parentKey="BackdropFrame" useParentLevel="true">
 				<Anchors>

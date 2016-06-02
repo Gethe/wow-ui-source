@@ -457,6 +457,7 @@ function WorldMapFrame_OnEvent(self, event, ...)
 			WorldMapFrame_UpdateUnits("WorldMapRaid", "WorldMapParty");
 		end
 	elseif ( event == "DISPLAY_SIZE_CHANGED" ) then
+		WorldMapFrame_ResetPOIHitTranslations();
 		--if ( WatchFrame.showObjectives and self:IsShown() ) then
 		--	WorldMapFrame_UpdateQuests();
 		--end
@@ -695,7 +696,7 @@ function WorldMap_SetupWorldQuestButton(button, worldQuestType, rarity, isElite,
 		else
 			button.Texture:SetAtlas(WORLD_QUEST_ICONS_BY_PROFESSION[tradeskillLineID], true);
 		end
-	elseif ( worldQuestType == LE_QUEST_TAG_TYPE_WORLD_BOSS ) then
+	elseif ( worldQuestType == LE_QUEST_TAG_TYPE_DUNGEON ) then
 		if ( inProgress ) then
 			button.Texture:SetAtlas("worldquest-questmarker-questionmark");
 			button.Texture:SetSize(10, 15);
@@ -1193,12 +1194,14 @@ function WorldMapFrame_Update()
 
 					if isShownByMouseOver == true then
 						-- keep track of the textures to show by mouseover
+						texture:SetDrawLayer("ARTWORK", 1);
 						texture:Hide();
 						if ( not WorldMapOverlayHighlights[i] ) then
 							WorldMapOverlayHighlights[i] = { };
 						end
 						table.insert(WorldMapOverlayHighlights[i], texture);
 					else
+						texture:SetDrawLayer("ARTWORK", 0);
 						texture:Show();
 					end
 
@@ -1750,6 +1753,14 @@ function WorldMap_AddQuestRewardsToTooltip(questID)
 
 			if not EmbeddedItemTooltip_SetItemByQuestReward(WorldMapTooltip.ItemTooltip, 1, questID) then  -- Only support one currently
 				WorldMapTooltip:AddLine(RETRIEVING_DATA, RED_FONT_COLOR:GetRGB());
+			end
+
+			if IsModifiedClick("COMPAREITEMS") or GetCVarBool("alwaysCompareItems") then
+				GameTooltip_ShowCompareItem(WorldMapTooltip.ItemTooltip.Tooltip, WorldMapTooltip.BackdropFrame);
+			else
+				for i, tooltip in ipairs(WorldMapTooltip.ItemTooltip.Tooltip.shoppingTooltips) do
+					tooltip:Hide();
+				end
 			end
 		end
 	end
@@ -2447,8 +2458,8 @@ function WorldMapButton_OnUpdate(self, elapsed)
 		local vehicleX, vehicleY, unitName, isPossessed, vehicleType, orientation, isPlayer, isAlive = GetBattlefieldVehicleInfo(i);
 		if ( vehicleX and isAlive and not isPlayer and VEHICLE_TEXTURES[vehicleType]) then
 			local mapVehicleFrame = MAP_VEHICLES[i];
-			vehicleX = vehicleX * WorldMapDetailFrame:GetWidth();
-			vehicleY = -vehicleY * WorldMapDetailFrame:GetHeight();
+			vehicleX = vehicleX * WorldMapDetailFrame:GetWidth() * WORLDMAP_SETTINGS.size;
+			vehicleY = -vehicleY * WorldMapDetailFrame:GetHeight() * WORLDMAP_SETTINGS.size;
 			mapVehicleFrame.texture:SetRotation(orientation);
 			mapVehicleFrame.texture:SetTexture(WorldMap_GetVehicleTexture(vehicleType, isPossessed));
 			mapVehicleFrame:SetPoint("CENTER", "WorldMapDetailFrame", "TOPLEFT", vehicleX, vehicleY);
@@ -2751,6 +2762,8 @@ function WorldMap_ToggleSizeUp()
 	-- adjust main frame
 	WorldMapFrame:SetParent(nil);
 	WorldMapTooltip:SetFrameStrata("TOOLTIP");	
+	WorldMapCompareTooltip1:SetFrameStrata("TOOLTIP");
+	WorldMapCompareTooltip2:SetFrameStrata("TOOLTIP");
 	WorldMapPlayerLower:SetFrameStrata("HIGH");
 	WorldMapPlayerUpper:SetFrameStrata("FULLSCREEN");
 	WorldMapFrame:ClearAllPoints();
@@ -2763,7 +2776,7 @@ function WorldMap_ToggleSizeUp()
 	WorldMapFrame.BorderFrame:SetSize(1022, 766);	
 	WorldMapFrameAreaFrame:SetScale(WORLDMAP_FULLMAP_SIZE);
 	WorldMapPlayersFrame:SetScale(WORLDMAP_FULLMAP_SIZE);	
-	WorldMapBlobFrame_ResetHitTranslations();
+	WorldMapFrame_ResetPOIHitTranslations();
 	QUEST_POI_FRAME_WIDTH = WorldMapDetailFrame:GetWidth() * WORLDMAP_FULLMAP_SIZE;
 	QUEST_POI_FRAME_HEIGHT = WorldMapDetailFrame:GetHeight() * WORLDMAP_FULLMAP_SIZE;
 	-- show big window elements
@@ -2805,6 +2818,8 @@ function WorldMap_ToggleSizeDown()
 	WorldMapFrame:SetParent(UIParent);
 	WorldMapFrame:SetFrameStrata("HIGH");
 	WorldMapTooltip:SetFrameStrata("TOOLTIP");
+	WorldMapCompareTooltip1:SetFrameStrata("TOOLTIP");
+	WorldMapCompareTooltip2:SetFrameStrata("TOOLTIP");
 	WorldMapPlayerLower:SetFrameStrata("HIGH");
 	WorldMapPlayerUpper:SetFrameStrata("FULLSCREEN");
 	WorldMapFrame:EnableKeyboard(false);
@@ -2812,7 +2827,7 @@ function WorldMap_ToggleSizeDown()
 	WorldMapDetailFrame:SetScale(WORLDMAP_WINDOWED_SIZE);
 	WorldMapFrameAreaFrame:SetScale(WORLDMAP_WINDOWED_SIZE);
 	WorldMapPlayersFrame:SetScale(WORLDMAP_WINDOWED_SIZE);
-	WorldMapBlobFrame_ResetHitTranslations();
+	WorldMapFrame_ResetPOIHitTranslations();
 	QUEST_POI_FRAME_WIDTH = WorldMapDetailFrame:GetWidth() * WORLDMAP_WINDOWED_SIZE;
 	QUEST_POI_FRAME_HEIGHT = WorldMapDetailFrame:GetHeight() * WORLDMAP_WINDOWED_SIZE;
 	-- hide big window elements
@@ -2857,11 +2872,45 @@ function WorldMapFrame_UpdateMap()
 	WorldMapNavBar_Update();
 end
 
-function ScenarioPOIFrame_OnUpdate()
+function ScenarioPOIFrame_OnUpdate(self)
 	ScenarioPOIFrame:DrawNone();
 	if( GetCVarBool("questPOI") ) then
 		ScenarioPOIFrame:DrawAll();
 	end
+
+	local canUpdateTooltip, mouseX, mouseY = WorldMapFrame_POITooltipUpdate(self);
+
+	if ( not canUpdateTooltip ) then
+		return;
+	end
+
+	local hasScenarioTooltip = self:UpdateMouseOverTooltip(mouseX, mouseY);
+	if ( hasScenarioTooltip ) then
+		WorldMapScenarioPOI_SetTooltip(self);
+	else
+		WorldMapTooltip:Hide();
+	end
+end
+
+function WorldMapFrame_POITooltipUpdate(self,tooltipOwner)
+	if ( not self:IsMouseOver() ) then
+		return false;
+	end
+	if ( WorldMapTooltip:IsShown() and WorldMapTooltip:GetOwner() ~= (tooltipOwner or self) ) then
+		return false;
+	end
+
+	if ( not self.scale ) then
+		WorldMapFrame_CalculateHitTranslations(self);
+	end
+	
+	local cursorX, cursorY = GetCursorPosition();
+	local frameX = cursorX / self.scale - self.offsetX;
+	local frameY = - cursorY / self.scale + self.offsetY;	
+	local adjustedX = frameX / QUEST_POI_FRAME_WIDTH;
+	local adjustedY = frameY / QUEST_POI_FRAME_HEIGHT;
+
+	return true, adjustedX, adjustedY;
 end
 
 function ArchaeologyDigSiteFrame_OnUpdate()
@@ -2871,6 +2920,13 @@ function ArchaeologyDigSiteFrame_OnUpdate()
 		local blobID = ArcheologyGetVisibleBlobID(i);
 		WorldMapArchaeologyDigSites:DrawBlob(blobID, true);
 	end
+end
+
+function WorldMapScenarioPOI_SetTooltip(self)
+	WorldMapTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT", 5, 2);
+	local description = self:GetScenarioTooltipText();
+	WorldMapTooltip:SetText(description);
+	WorldMapTooltip:Show();
 end
 
 function WorldMapQuestPOI_SetTooltip(poiButton, questLogIndex, numObjectives)
@@ -2964,24 +3020,13 @@ function WorldMapBlobFrame_OnUpdate(self)
 		self.updateBlobs = nil;
 	end
 
-	if ( not WorldMapBlobFrame:IsMouseOver() ) then
-		return;
-	end
-	if ( WorldMapTooltip:IsShown() and WorldMapTooltip:GetOwner() ~= WorldMapPOIFrame ) then
+	local canUpdateTooltip, mouseX, mouseY = WorldMapFrame_POITooltipUpdate(self,WorldMapPOIFrame);
+
+	if ( not canUpdateTooltip ) then
 		return;
 	end
 
-	if ( not self.scale ) then
-		WorldMapBlobFrame_CalculateHitTranslations();
-	end
-	
-	local cursorX, cursorY = GetCursorPosition();
-	local frameX = cursorX / self.scale - self.offsetX;
-	local frameY = - cursorY / self.scale + self.offsetY;	
-	local adjustedX = frameX / QUEST_POI_FRAME_WIDTH;
-	local adjustedY = frameY / QUEST_POI_FRAME_HEIGHT;
-
-	local questLogIndex, numObjectives = self:UpdateMouseOverTooltip(adjustedX, adjustedY);
+	local questLogIndex, numObjectives = self:UpdateMouseOverTooltip(mouseX, mouseY);
 	if ( numObjectives ) then
 		WorldMapQuestPOI_SetTooltip(nil, questLogIndex, numObjectives);
 	else
@@ -2989,12 +3034,12 @@ function WorldMapBlobFrame_OnUpdate(self)
 	end
 end
 
-function WorldMapBlobFrame_ResetHitTranslations()
+function WorldMapFrame_ResetPOIHitTranslations()
 	WorldMapBlobFrame.scale = nil;
+	ScenarioPOIFrame.scale = nil;
 end
 
-function WorldMapBlobFrame_CalculateHitTranslations()
-	local self = WorldMapBlobFrame;	
+function WorldMapFrame_CalculateHitTranslations(self)
 	if ( WorldMapFrame_InWindowedMode() ) then
 		self.scale = UIParent:GetScale();
 	else
@@ -3040,7 +3085,7 @@ end
 function WorldMapTitleButton_OnDragStop()
 	if ( not WORLDMAP_SETTINGS.locked ) then
 		WorldMapFrame:StopMovingOrSizing();
-		WorldMapBlobFrame_ResetHitTranslations();
+		WorldMapFrame_ResetPOIHitTranslations();
 		-- move the anchor
 		WorldMapScreenAnchor:StartMoving();
 		WorldMapScreenAnchor:SetPoint("TOPLEFT", WorldMapFrame);
@@ -3135,7 +3180,7 @@ function WorldMapScrollFrame_OnMouseWheel(self, delta)
 
 	WorldMapFrame_Update();
 	WorldMapScrollFrame_ReanchorQuestPOIs();
-	WorldMapBlobFrame_ResetHitTranslations();
+	WorldMapFrame_ResetPOIHitTranslations();
 	WorldMapBlobFrame_DelayedUpdateBlobs();
 end
 
@@ -3149,7 +3194,7 @@ function WorldMapScrollFrame_ResetZoom()
 	WorldMapScrollFrame.zoomedIn = false;
 	WorldMapFrame_Update();
 	WorldMapScrollFrame_ReanchorQuestPOIs();
-	WorldMapBlobFrame_ResetHitTranslations();
+	WorldMapFrame_ResetPOIHitTranslations();
 	WorldMapBlobFrame_DelayedUpdateBlobs();
 end
 
@@ -3175,7 +3220,7 @@ function WorldMapScrollFrame_OnPan(cursorX, cursorY)
 		local y = max(0, dy + WorldMapScrollFrame.y);
 		y = min(y, WorldMapScrollFrame.maxY);
 		WorldMapScrollFrame:SetVerticalScroll(y);
-		WorldMapBlobFrame_ResetHitTranslations();
+		WorldMapFrame_ResetPOIHitTranslations();
 		WorldMapBlobFrame_DelayedUpdateBlobs();
 	end
 end

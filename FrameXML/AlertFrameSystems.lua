@@ -829,7 +829,7 @@ function GarrisonTalentAlertFrame_SetUp(frame, garrisonType)
     local talentID = C_Garrison.GetCompleteTalent(garrisonType);
     local talent = C_Garrison.GetTalent(talentID);
     frame.Icon:SetTexture(talent.icon);
-	PlaySound("UI_Garrison_Toast_BuildingComplete");
+	PlaySound("UI_OrderHall_Talent_Ready_Toast");
 end
 
 GarrisonTalentAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem(GarrisonTalentAlertFrame, GarrisonTalentAlertFrame_SetUp);
@@ -895,7 +895,7 @@ function WorldQuestCompleteAlertFrame_GetIconForQuestID(questID)
 	elseif ( worldQuestType == LE_QUEST_TAG_TYPE_PROFESSION ) then
 		local tradeskillLineID = select(7, GetProfessionInfo(tradeskillLineIndex));
 		return C_TradeSkillUI.GetTradeSkillTexture(tradeskillLineID);
-	elseif ( worldQuestType == LE_QUEST_TAG_TYPE_WORLD_BOSS ) then
+	elseif ( worldQuestType == LE_QUEST_TAG_TYPE_DUNGEON ) then
 		return "Interface\\Icons\\INV_Misc_Bone_Skull_02";
 	end
 
@@ -903,7 +903,7 @@ function WorldQuestCompleteAlertFrame_GetIconForQuestID(questID)
 end
 
 function WorldQuestCompleteAlertFrame_SetUp(frame, questID)
-	PlaySound("UI_Scenario_Ending");
+	PlaySound("UI_WorldQuest_Complete");
 
 	local isInArea, isOnMap, numObjectives, taskName, displayAsObjective = GetTaskInfo(questID);
 	frame.QuestName:SetText(taskName);

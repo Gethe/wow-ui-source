@@ -36,6 +36,10 @@ end
 local SEQUENCE = { "LeftButton", "RightButton", "RightButton", "RightButton", "RightButton", "RightButton", "LeftButton", "RightButton", "RightButton", };
 function ArtifactPowerButtonMixin:OnClick(button)
 	if self.style ~= ARTIFACT_POWER_STYLE_RUNE and not self.locked then
+		if not C_ArtifactUI.IsAtForge() then
+			UIErrorsFrame:AddMessage(ARTIFACT_TRAITS_NO_FORGE_ERROR, RED_FONT_COLOR:GetRGBA());
+			return;
+		end
 		if button == "LeftButton" and C_ArtifactUI.AddPower(self:GetPowerID()) then
 			self:PlayPurchaseAnimation();
 		elseif self.isStart then

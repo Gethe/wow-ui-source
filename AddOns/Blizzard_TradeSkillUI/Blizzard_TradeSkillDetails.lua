@@ -86,7 +86,10 @@ function TradeSkillDetailsMixin:RefreshDisplay()
 		else
 			self.Background:SetAtlas("tradeskill-background-recipe-unlearned");
 		end
-		self.createVerbOverride = recipeInfo.alternateVerb;
+		
+		if ( recipeInfo.alternateVerb and recipeInfo.alternateVerb ~= "") then
+			self.createVerbOverride = recipeInfo.alternateVerb;
+		end
 
 		self.Contents.RecipeName:SetText(recipeInfo.name);
 		self:AddContentWidget(self.Contents.RecipeName);
@@ -132,7 +135,7 @@ function TradeSkillDetailsMixin:RefreshDisplay()
 		end
 		self:AddContentWidget(self.Contents.Description);
 
-		local craftable = recipeInfo.learned;
+		local craftable = recipeInfo.learned and recipeInfo.craftable;
 
 		local requiredToolsString = BuildColoredListString(C_TradeSkillUI.GetRecipeTools(self.selectedRecipeID));
 		if requiredToolsString then

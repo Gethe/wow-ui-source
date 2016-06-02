@@ -111,7 +111,7 @@ function WorldQuestDataProviderMixin:AddWorldQuest(info)
 		local _, width, height = GetAtlasInfo(WORLD_QUEST_ICONS_BY_PROFESSION[tradeskillLineID]);
 		pin.Texture:SetAtlas(WORLD_QUEST_ICONS_BY_PROFESSION[tradeskillLineID]);
 		pin.Texture:SetSize(width * 2, height * 2);
-	elseif worldQuestType == LE_QUEST_TAG_TYPE_WORLD_BOSS then
+	elseif worldQuestType == LE_QUEST_TAG_TYPE_DUNGEON then
 		local _, width, height = GetAtlasInfo("worldquest-icon-dungeon");
 		pin.Texture:SetAtlas("worldquest-icon-dungeon");
 		pin.Texture:SetSize(width * 2, height * 2);

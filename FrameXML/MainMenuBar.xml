@@ -521,11 +521,13 @@
 			<OnEnter>
 				self.OverlayFrame.Text:Show();
 				MainMenuBar_ArtifactUpdateOverlayFrameText();
+				MainMenuBar_ArtifactTick_OnEnter(self);
 			</OnEnter>
 			<OnLeave>
 				if (not self.textLocked) then
 					self.OverlayFrame.Text:Hide();
 				end
+				GameTooltip_Hide();
 			</OnLeave>
 		</Scripts>
 	</Frame>

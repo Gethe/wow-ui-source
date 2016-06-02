@@ -3625,6 +3625,14 @@ StaticPopupDialogs["CONFIRM_UNLOCK_TRIAL_CHARACTER"] = {
 	whileDead = 1,
 }
 
+StaticPopupDialogs["QUEST_IGNORE_TUTORIAL"] = {
+	text = IGNORE_QUEST_TUTORIAL,
+	button1 = OKAY,
+	hideOnEscape = 1,
+	timeout = 0,
+	whileDead = 1,
+}
+
 function StaticPopup_FindVisible(which, data)
 	local info = StaticPopupDialogs[which];
 	if ( not info ) then

@@ -29,7 +29,6 @@ function QUEST_TRACKER_MODULE:OnFreeTypedLine(line)
 end
 
 function QUEST_TRACKER_MODULE:SetBlockHeader(block, text, questLogIndex, isQuestComplete)
-	block.questLogIndex = questLogIndex;
 	-- check if there's an item
 	local link, item, charges, showItemWhenComplete = GetQuestLogSpecialItemInfo(questLogIndex);
 	local itemButton = block.itemButton;	
@@ -60,21 +59,22 @@ function QUEST_TRACKER_MODULE:SetBlockHeader(block, text, questLogIndex, isQuest
 end
 
 function QUEST_TRACKER_MODULE:OnBlockHeaderClick(block, mouseButton)
+	local questLogIndex = GetQuestLogIndexByID(block.id);
 	if ( IsModifiedClick("CHATLINK") and ChatEdit_GetActiveWindow() ) then
-		local questLink = GetQuestLink(block.questLogIndex);
+		local questLink = GetQuestLink(questLogIndex);
 		if ( questLink ) then
 			ChatEdit_InsertLink(questLink);
 		end
 	elseif ( mouseButton ~= "RightButton" ) then
 		CloseDropDownMenus();
 		if ( IsModifiedClick("QUESTWATCHTOGGLE") ) then
-			QuestObjectiveTracker_UntrackQuest(nil, block.questLogIndex);
+			QuestObjectiveTracker_UntrackQuest(nil, block.id);
 		else
-			if ( IsQuestComplete(block.id) and GetQuestLogIsAutoComplete(block.questLogIndex) ) then
+			if ( IsQuestComplete(block.id) and GetQuestLogIsAutoComplete(questLogIndex) ) then
 				AutoQuestPopupTracker_RemovePopUp(block.id);
-				ShowQuestComplete(block.questLogIndex);
+				ShowQuestComplete(questLogIndex);
 			else
-				QuestLogPopupDetailFrame_Show(block.questLogIndex);
+				QuestLogPopupDetailFrame_Show(questLogIndex);
 			end
 		end
 		return;
@@ -122,7 +122,7 @@ end
 
 function QuestObjectiveTracker_OnOpenDropDown(self)
 	local block = self.activeFrame;
-	local questLogIndex = block.questLogIndex;
+	local questLogIndex = GetQuestLogIndexByID(block.id);
 
 	local info = UIDropDownMenu_CreateInfo();
 	info.text = GetQuestLogTitle(questLogIndex);
@@ -135,40 +135,41 @@ function QuestObjectiveTracker_OnOpenDropDown(self)
 
 	info.text = OBJECTIVES_VIEW_IN_QUESTLOG;
 	info.func = QuestObjectiveTracker_OpenQuestDetails;
-	info.arg1 = questLogIndex;
+	info.arg1 = block.id;
 	info.noClickSound = 1;
 	info.checked = false;
 	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
 
 	info.text = OBJECTIVES_STOP_TRACKING;
 	info.func = QuestObjectiveTracker_UntrackQuest;
-	info.arg1 = questLogIndex;
+	info.arg1 = block.id;
 	info.checked = false;
 	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
 
 	if ( GetQuestLogPushable(questLogIndex) and IsInGroup() ) then
 		info.text = SHARE_QUEST;
 		info.func = QuestObjectiveTracker_ShareQuest;
-		info.arg1 = questLogIndex;
+		info.arg1 = block.id;
 		info.checked = false;
 		UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
 	end
 
 	info.text = OBJECTIVES_SHOW_QUEST_MAP;
 	info.func = QuestObjectiveTracker_OpenQuestMap;
-	info.arg1 = questLogIndex;
+	info.arg1 = block.id;
 	info.checked = false;
 	info.noClickSound = 1;
 	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
 end
 
-function QuestObjectiveTracker_OpenQuestDetails(dropDownButton, questLogIndex)
+function QuestObjectiveTracker_OpenQuestDetails(dropDownButton, questID)
+	local questLogIndex = GetQuestLogIndexByID(questID);
 	QuestLogPopupDetailFrame_Show(questLogIndex);
 end
 
-function QuestObjectiveTracker_UntrackQuest(dropDownButton, questLogIndex)
-	local questID = select(8, GetQuestLogTitle(questLogIndex));
+function QuestObjectiveTracker_UntrackQuest(dropDownButton, questID)
 	local superTrackedQuestID = GetSuperTrackedQuestID();
+	local questLogIndex = GetQuestLogIndexByID(questID);
 	RemoveQuestWatch(questLogIndex);
 	if ( questID == superTrackedQuestID ) then
 		QuestSuperTracking_OnQuestUntracked();
@@ -176,12 +177,12 @@ function QuestObjectiveTracker_UntrackQuest(dropDownButton, questLogIndex)
 	ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_MODULE_QUEST);
 end
 
-function QuestObjectiveTracker_OpenQuestMap(dropDownButton, questLogIndex)
-	local questID = select(8, GetQuestLogTitle(questLogIndex));
+function QuestObjectiveTracker_OpenQuestMap(dropDownButton, questID)
 	QuestMapFrame_OpenToQuestDetails(questID);
 end
 
-function QuestObjectiveTracker_ShareQuest(dropDownButton, questLogIndex)
+function QuestObjectiveTracker_ShareQuest(dropDownButton, questID)
+	local questLogIndex = GetQuestLogIndexByID(questID);
 	QuestLogPushQuest(questLogIndex);
 end
 
@@ -234,8 +235,9 @@ end
 
 function QuestObjectiveTracker_DoQuestObjectives(block, numObjectives, questCompleted, questSequenced, existingBlock)
 	local objectiveCompleting = false;
+	local questLogIndex = GetQuestLogIndexByID(block.id);
 	for objectiveIndex = 1, numObjectives do
-		local text, objectiveType, finished = GetQuestLogLeaderBoard(objectiveIndex, block.questLogIndex);
+		local text, objectiveType, finished = GetQuestLogLeaderBoard(objectiveIndex, questLogIndex);
 		if ( text ) then
 			local line = block.lines[objectiveIndex];
 			if ( questCompleted ) then

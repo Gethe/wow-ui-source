@@ -23,13 +23,13 @@
 		<Size x="85" y="20"/>
 		<Frames>
 			<Frame parentKey="Rune1" parentArray="Runes" inherits="ClassNameplateBarPaladinRuneFrame">
-				<Size x="25" y="17"/>
+				<Size x="25" y="19"/>
 				<Anchors>
 					<Anchor point="TOPLEFT"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
-						<Texture parentKey="OffTexture" atlas="nameplates-holypower1-off" useAtlasSize="true">
+						<Texture parentKey="OffTexture" atlas="nameplates-holypower1-off" useAtlasSize="true" alpha="1">
 							<Anchors>
 								<Anchor point="LEFT"/>
 							</Anchors>
@@ -43,13 +43,13 @@
 				</Layers>
 			</Frame>
 			<Frame parentKey="Rune2" parentArray="Runes" inherits="ClassNameplateBarPaladinRuneFrame">
-				<Size x="25" y="17"/>
+				<Size x="26" y="17"/>
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.Rune1" relativePoint="RIGHT" x="5"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
-						<Texture parentKey="OffTexture" atlas="nameplates-holypower2-off" useAtlasSize="true">
+						<Texture parentKey="OffTexture" atlas="nameplates-holypower2-off" useAtlasSize="true" alpha="1">
 							<Anchors>
 								<Anchor point="LEFT"/>
 							</Anchors>
@@ -63,13 +63,13 @@
 				</Layers>
 			</Frame>
 			<Frame parentKey="Rune3" parentArray="Runes" inherits="ClassNameplateBarPaladinRuneFrame">
-				<Size x="25" y="17"/>
+				<Size x="24" y="17"/>
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.Rune2" relativePoint="RIGHT" x="5"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
-						<Texture parentKey="OffTexture" atlas="nameplates-holypower3-off" useAtlasSize="true">
+						<Texture parentKey="OffTexture" atlas="nameplates-holypower3-off" useAtlasSize="true" alpha="1">
 							<Anchors>
 								<Anchor point="LEFT"/>
 							</Anchors>
@@ -83,13 +83,13 @@
 				</Layers>
 			</Frame>
 			<Frame parentKey="Rune4" parentArray="Runes" inherits="ClassNameplateBarPaladinRuneFrame">
-				<Size x="8" y="8"/>
+				<Size x="25" y="14"/>
 				<Anchors>
-					<Anchor point="BOTTOMLEFT" relativeKey="$parent.Rune2" relativePoint="BOTTOMLEFT" x="-7" y="-3"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.Rune2" relativePoint="BOTTOMLEFT" x="-11" y="-9"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
-						<Texture parentKey="OffTexture" atlas="nameplates-holypower4-off" useAtlasSize="true">
+						<Texture parentKey="OffTexture" atlas="nameplates-holypower4-off" useAtlasSize="true" alpha="1">
 							<Anchors>
 								<Anchor point="LEFT"/>
 							</Anchors>
@@ -103,21 +103,23 @@
 				</Layers>
 			</Frame>
 			<Frame parentKey="Rune5" parentArray="Runes" inherits="ClassNameplateBarPaladinRuneFrame">
-				<Size x="8" y="8"/>
+				<Size x="25" y="14"/>
 				<Anchors>
-					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Rune2" relativePoint="BOTTOMRIGHT" x="7" y="-3"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Rune2" relativePoint="BOTTOMRIGHT" x="11" y="-9"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
-						<Texture parentKey="OffTexture" atlas="nameplates-holypower4-off" useAtlasSize="true">
+						<Texture parentKey="OffTexture" atlas="nameplates-holypower4-off" useAtlasSize="true" alpha="1">
 							<Anchors>
 								<Anchor point="LEFT"/>
 							</Anchors>
+							<TexCoords left="1" right="0" top="0" bottom="1"/>
 						</Texture>
 						<Texture parentKey="OnTexture" atlas="nameplates-holypower4-on" useAtlasSize="true" alpha="0">
 							<Anchors>
 								<Anchor point="LEFT"/>
 							</Anchors>
+							<TexCoords left="1" right="0" top="0" bottom="1"/>
 						</Texture>
 					</Layer>
 				</Layers>

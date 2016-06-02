@@ -422,6 +422,11 @@ end
 
 function ContainerFrame_ConsiderItemButtonForRelicTutorial(itemButton, itemID)
 	if itemID and not ArtifactRelicHelpBox:IsShown() and IsArtifactRelicItem(itemID) then
+		if C_ArtifactUI.DoesEquippedArtifactHaveAnyRelicsSlotted() then
+			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_ARTIFACT_RELIC_MATCH, true);
+			return;
+		end
+
 		local numRelicSlots = C_ArtifactUI.GetEquippedArtifactNumRelicSlots(true);
 		if numRelicSlots then
 			for relicSlotIndex = 1, numRelicSlots do

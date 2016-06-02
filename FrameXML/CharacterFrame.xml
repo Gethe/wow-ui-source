@@ -213,7 +213,7 @@
 				</Layers>
 				<Frames>
 					<Frame parentKey="ItemLevelFrame">
-						<Size x="187" y="34"/>
+						<Size x="187" y="29"/>
 						<Anchors>
 							<Anchor point="TOP" x="0" y="-45"/>
 						</Anchors>
@@ -257,7 +257,7 @@
 							<KeyValue key="titleText" value="STAT_CATEGORY_ATTRIBUTES" type="global"/>
 						</KeyValues>
 						<Anchors>
-							<Anchor point="TOP" x="0" y="-86"/>
+							<Anchor point="TOP" x="0" y="-81"/>
 						</Anchors>
 					</Frame>
 					<Frame parentKey="EnhancementsCategory" inherits="CharacterStatFrameCategoryTemplate">

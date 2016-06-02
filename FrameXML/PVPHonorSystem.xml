@@ -512,17 +512,17 @@
 			<Layer level="ARTWORK">
 				<FontString parentKey="Label" inherits="GameFontHighlightLarge" text="HONOR_YOUVE_REACHED" alpha="0">
 					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.BG1" x="0" y="16"/>
+						<Anchor point="CENTER" relativeKey="$parent.BG1" x="0" y="18"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="Title" inherits="QuestFont_Super_Huge" alpha="0">
 					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent.Label" relativePoint="BOTTOM" x="0" y="-7"/>
+						<Anchor point="TOP" relativeKey="$parent.Label" relativePoint="BOTTOM" x="0" y="-3"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="TitleFlash" inherits="QuestFont_Super_Huge" alpha="0">
 					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent.Label" relativePoint="BOTTOM" x="0" y="-7"/>
+						<Anchor point="TOP" relativeKey="$parent.Label" relativePoint="BOTTOM" x="0" y="-3"/>
 					</Anchors>
 					<Color r="1" g="1" b="1"/>
 				</FontString>
@@ -549,12 +549,12 @@
 				<Alpha childKey="Icon3" startDelay="0.33" smoothing="IN" duration="0.33" order="1" fromAlpha="0.35" toAlpha="0"/>
 				<Scale childKey="Icon3" smoothing="IN" duration="0.33" order="1" fromScaleX="1.8" fromScaleY="1.8" toScaleX="1" toScaleY="1"/>
 				<Alpha childKey="BG1" startDelay="2.5" smoothing="IN" duration="0.46" order="1" fromAlpha="1" toAlpha="0"/>
-				<Alpha childKey="Title" startDelay="2.5" smoothing="IN" duration="0.46" order="1" fromAlpha="1" toAlpha="0"/>
-				<Alpha childKey="Label" startDelay="2.5" smoothing="IN" duration="0.46" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="Title" startDelay="2.5" smoothing="IN" duration="0.36" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="Label" startDelay="2.5" smoothing="IN" duration="0.36" order="1" fromAlpha="1" toAlpha="0"/>
 				<Alpha childKey="Icon" startDelay="2.5" smoothing="IN" duration="0.46" order="1" fromAlpha="1" toAlpha="0"/>
 				<Scale childKey="BG1" startDelay="2.5" smoothing="IN" duration="0.46" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.55" toScaleY="0.55"/>
-				<Scale childKey="Title" startDelay="2.5" smoothing="IN" duration="0.46" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.55" toScaleY="0.55"/>
-				<Scale childKey="Label" startDelay="2.5" smoothing="IN" duration="0.46" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.55" toScaleY="0.55"/>
+				<!--<Scale childKey="Title" startDelay="2.5" smoothing="IN" duration="0.46" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.55" toScaleY="0.55"/>
+				<Scale childKey="Label" startDelay="2.5" smoothing="IN" duration="0.46" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.55" toScaleY="0.55"/>-->
 				<Scale childKey="Icon" startDelay="2.5" smoothing="IN" duration="0.46" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.55" toScaleY="0.55"/>
 				<Scripts>
 					<OnFinished>

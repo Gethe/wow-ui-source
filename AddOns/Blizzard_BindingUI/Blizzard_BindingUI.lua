@@ -83,7 +83,6 @@ local defaultCategories = { BINDING_HEADER_MOVEMENT,
 							BINDING_HEADER_RAID_TARGET,
 							BINDING_HEADER_VEHICLE,
 							BINDING_HEADER_DEBUG,
-							BINDING_HEADER_ITUNES_REMOTE,
 							BINDING_HEADER_MOVIE_RECORDING_SECTION };
 
 function KeyBindingFrame_LoadCategories(self)

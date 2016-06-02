@@ -81,13 +81,13 @@ function PVPUIFrame_ToggleFrame(sidePanelName, selection)
 end
 
 function PVPUIFrame_RoleButtonClicked(self)
-	PVPUIFrame_SetRoles();
+	PVPUIFrame_SetRoles(self:GetParent():GetParent():GetParent());
 end
 
-function PVPUIFrame_SetRoles()
-	SetPVPRoles(HonorFrame.RoleInset.TankIcon.checkButton:GetChecked(),
-		HonorFrame.RoleInset.HealerIcon.checkButton:GetChecked(),
-		HonorFrame.RoleInset.DPSIcon.checkButton:GetChecked());
+function PVPUIFrame_SetRoles(frame)
+	SetPVPRoles(frame.RoleInset.TankIcon.checkButton:GetChecked(),
+		frame.RoleInset.HealerIcon.checkButton:GetChecked(),
+		frame.RoleInset.DPSIcon.checkButton:GetChecked());
 end
 
 function PVPUIFrame_UpdateRolesChangeable()

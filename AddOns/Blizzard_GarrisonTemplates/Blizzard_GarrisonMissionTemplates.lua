@@ -143,14 +143,17 @@ function GarrisonMission:ShowMission(missionInfo)
 		missionPage.ItemLevelHitboxFrame:Hide();
 	end
 
-	if ( isExhausting ) then
-		missionPage.Stage.ExhaustingLabel:Show();
-		missionPage.Stage.MissionTime:SetPoint("TOPLEFT", missionPage.Stage.ExhaustingLabel, "BOTTOMLEFT", 0, -3);
+	if (GarrisonFollowerOptions[self.followerTypeID].missionPageShowXPInMissionInfo) then
+		-- show the XP in the upper left instead
+		missionPage.Stage.MissionInfo.XP:SetFormattedText(GARRISON_MISSION_XP, missionPage.xp);
+		missionPage.Stage.MissionInfo.XP:Show();
 	else
-		missionPage.Stage.ExhaustingLabel:Hide();
-		missionPage.Stage.MissionTime:SetPoint("TOPLEFT", missionPage.Stage.Header, "BOTTOMLEFT", 7, -7);
+		missionPage.Stage.MissionInfo.XP:Hide();
 	end
+	missionPage.Stage.MissionInfo.ExhaustingLabel:SetShown(isExhausting);
 	
+	missionPage.Stage.MissionInfo:Layout();
+
 	self:SetPartySize(missionPage, missionInfo.numFollowers, #enemies);
 	self:SetEnemies(missionPage, enemies, missionInfo.numFollowers);
 	
@@ -284,7 +287,7 @@ function GarrisonMission:UpdateMissionData(missionPage)
 	elseif ( totalTimeSeconds >= GARRISON_LONG_MISSION_TIME ) then
 		totalTimeString = format(GARRISON_LONG_MISSION_TIME_FORMAT, totalTimeString);
 	end
-	missionPage.Stage.MissionTime:SetFormattedText(GARRISON_MISSION_TIME_TOTAL, totalTimeString);
+	missionPage.Stage.MissionInfo.MissionTime:SetFormattedText(GARRISON_MISSION_TIME_TOTAL, totalTimeString);
 
 	-- SUCCESS CHANCE
 	local rewardsFrame = missionPage.RewardsFrame;
@@ -315,6 +318,12 @@ function GarrisonMission:UpdateMissionData(missionPage)
 	local followersWithAbilitiesGained = nil;
 
 	-- PARTY BUFFS
+	-- copy in any spillover abilities
+	if (self.spilloverBuffs) then
+		for _, val in ipairs(self.spilloverBuffs) do
+			tinsert(partyBuffs, val);
+		end
+	end
 	local buffsFrame = missionPage.BuffsFrame;
 	local buffCount = #partyBuffs;
 	if ( buffCount == 0 ) then
@@ -376,13 +385,16 @@ function GarrisonMission:UpdateMissionData(missionPage)
 		else
 			envCheckFrame.Check:Hide();
 		end
-		missionPage.Stage.MissionEnv:SetFormattedText(GARRISON_MISSION_ENVIRONMENT, env);
+		missionPage.Stage.MissionInfo.MissionEnv:SetFormattedText(GARRISON_MISSION_ENVIRONMENT, env);
+		missionPage.Stage.MissionInfo.MissionEnv:Show();
 	elseif ( missionPage.environmentMechanic ) then
 		-- these mechanics are not counterable
-		missionPage.Stage.MissionEnv:SetFormattedText(GARRISON_MISSION_ENVIRONMENT, missionPage.environmentMechanic.name);
+		missionPage.Stage.MissionInfo.MissionEnv:SetFormattedText(GARRISON_MISSION_ENVIRONMENT, missionPage.environmentMechanic.name);
+		missionPage.Stage.MissionInfo.MissionEnv:Show();
 	else
-		missionPage.Stage.MissionEnv:SetText(nil);
+		missionPage.Stage.MissionInfo.MissionEnv:Hide();
 	end
+	missionPage.Stage.MissionInfo:Layout();
 
 	rewardsFrame.MissionXP:Show();
 	rewardsFrame.OvermaxItem:Hide();
@@ -627,6 +639,8 @@ function GarrisonMission:RemoveFollowerFromMission(frame, updateValues)
 end
 
 function GarrisonMission:UpdateMissionParty(followers, counterTemplate)
+	self.spilloverBuffs = { };
+
 	-- Update follower level and portrait color in case they have changed
 	for followerIndex = 1, #followers do
 		local followerFrame = followers[followerIndex];
@@ -641,7 +655,9 @@ function GarrisonMission:UpdateMissionParty(followers, counterTemplate)
 			local numCounters = 0;
 			local counters = self.followerCounters and followerFrame.info and self.followerCounters[followerFrame.info.followerID] or nil;
 			if (counters) then
-				for i = 1, #counters do
+				local maxCountersToDisplay = GarrisonFollowerOptions[followerInfo.followerTypeID].missionPageMaxCountersInFollowerFrame;
+
+				for i = 1, min(#counters, maxCountersToDisplay) do
 					numCounters = numCounters + 1;
 					if (not followerFrame.Counters[i]) then
 						followerFrame.Counters[i] = CreateFrame("Frame", nil, followerFrame, counterTemplate);
@@ -661,6 +677,12 @@ function GarrisonMission:UpdateMissionParty(followers, counterTemplate)
 					Counter:Show();
 					
 					Counter.followerTypeID = followerInfo.followerTypeID;
+				end
+				for i = maxCountersToDisplay + 1, #counters do
+					if (GarrisonFollowerOptions[followerInfo.followerTypeID].displayCounterAbilityInPlaceOfMechanic and counters[i].counterID) then
+						tinsert(self.spilloverBuffs, followerFrame.info.followerID);
+						tinsert(self.spilloverBuffs, counters[i].counterID);
+					end
 				end
 			end
 			for i = numCounters + 1, #followerFrame.Counters do
@@ -903,6 +925,7 @@ function GarrisonMission:MissionCompleteInitialize(missionList, index)
 			if (encounters[encounterIndex]) then --cannot have more animations than encounters
 				missionCompleteFrame.animInfo[encounterIndex] = { 	
 										displayID = displayIDs[1] and displayIDs[1].id,	-- for the fights we only show the first display ID
+										showWeapon = displayIDs[1] and displayIDs[1].showWeapon,
 										height = height, 
 										scale = scale * (displayIDs[1].followerPageScale or 1), 
 										movementType = movementType,
@@ -926,7 +949,9 @@ function GarrisonMission:MissionCompleteInitialize(missionList, index)
 	for i = encounterIndex, #encounters do
 		local index = mod(i, encounterIndex) + 1;
 		local animInfo = missionCompleteFrame.animInfo[index];
-		missionCompleteFrame.animInfo[i] = { 	displayID = animInfo.displayID,
+		missionCompleteFrame.animInfo[i] = { 	
+								displayID = animInfo.displayID,
+								showWeapon = animInfo.showWeapon,
 								height = animInfo.height, 
 								scale = animInfo.scale, 
 								movementType = animInfo.movementType,
@@ -1229,7 +1254,7 @@ function GarrisonMissionComplete:SetupEnding(numFollowers, hideExhaustedTroopMod
 				local modelFrame = modelClusterFrame.Model[i];
 				modelFrame:SetAlpha(1);
 				local displayInfo = followerInfo.displayIDs[i];
-				GarrisonMission_SetFollowerModel(modelFrame, followerInfo.followerID, displayInfo and displayInfo.id);
+				GarrisonMission_SetFollowerModel(modelFrame, followerInfo.followerID, displayInfo and displayInfo.id, displayInfo and displayInfo.showWeapon);
 				modelFrame:InitializeCamera((followerInfo.scale or 1) * (displayInfo and displayInfo.followerPageScale or 1) * pos[i].scale);
 				modelFrame:SetHeightFactor(followerInfo.height + pos[i].y);
 				modelFrame:SetTargetDistance(data.dist + pos[i].x);
@@ -1310,7 +1335,7 @@ function GarrisonMissionComplete:SetEncounterModels(index)
 	if ( self.animInfo and index and self.animInfo[index] ) then
 		local currentAnim = self.animInfo[index];
 		modelLeft.state = "loading";
-		GarrisonMission_SetFollowerModel(modelLeft, currentAnim.followerID, currentAnim.displayID);		
+		GarrisonMission_SetFollowerModel(modelLeft, currentAnim.followerID, currentAnim.displayID, currentAnim.showWeapon);
 		if ( currentAnim.enemyDisplayID ) then
 			modelRight.state = "loading";
 			modelRight:SetDisplayInfo(currentAnim.enemyDisplayID);
@@ -1727,7 +1752,6 @@ function GarrisonMissionComplete:AnimFollowerCheerAndTroopDeath(followerID)
 
 			local followerInfo = C_Garrison.GetFollowerInfo(followerID);
 			if (followerInfo) then
-				self:SetFollowerLevel(followerFrame, followerInfo);
 				if (followerInfo.isTroop and followerInfo.durability and followerInfo.durability <= 0) then
 					shouldFadeOut = true;
 					shouldCheer = false;
@@ -1751,8 +1775,18 @@ function GarrisonMissionComplete:AnimFollowerCheerAndTroopDeath(followerID)
 						if (shouldCheer) then
 							for _, model in ipairs(cluster.Model) do
 								if ( model.followerID == followerFrame.followerID and model:IsShown() ) then
-									model:SetSpellVisualKit(6375);	-- level up visual
-									PlaySound("UI_Garrison_CommandTable_Follower_LevelUp");
+									if not (followerInfo.isTroop) then
+										model:SetSpellVisualKit(75505);
+									end
+									model:PlayAnimKit(11935);
+									break;
+								end
+							end
+							PlaySound("FX_Walla_Alliance_Rally_Cheers_Medium");
+						else
+							for _, model in ipairs(cluster.Model) do
+								if ( model.followerID == followerFrame.followerID and model:IsShown() ) then
+									model:PlayAnimKit(11937);
 									break;
 								end
 							end
@@ -1845,13 +1879,16 @@ function GarrisonMissionComplete:AnimXPBarOnFinish(xpBar)
 			xpBar.remainingXP = 0;
 		end
 		-- visual
-		for _, cluster in ipairs(self.Stage.ModelCluster) do
-			if (cluster:IsShown()) then
-				for _, model in ipairs(cluster.Model) do
-					if ( model.followerID == followerFrame.followerID and model:IsShown() ) then
-						model:SetSpellVisualKit(6375);	-- level up visual
-						PlaySound("UI_Garrison_CommandTable_Follower_LevelUp");
-						break;
+		-- don't cheer for 7.0 followers because we are already cheering for mission success
+		if (self:GetParent().followerTypeID ~= LE_FOLLOWER_TYPE_GARRISON_7_0) then
+			for _, cluster in ipairs(self.Stage.ModelCluster) do
+				if (cluster:IsShown()) then
+					for _, model in ipairs(cluster.Model) do
+						if ( model.followerID == followerFrame.followerID and model:IsShown() ) then
+							model:SetSpellVisualKit(6375);	-- level up visual
+							PlaySound("UI_Garrison_CommandTable_Follower_LevelUp");
+							break;
+						end
 					end
 				end
 			end

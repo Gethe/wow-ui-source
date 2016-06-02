@@ -635,7 +635,7 @@ function MapCanvasScrollControllerMixin:OnMouseUp(button)
 	if button == "LeftButton" then
 		if not self:TryPanOrZoomOnClick() and self:IsPanning() then
 			local deltaX, deltaY = self:GetNormalizedMouseDelta();
-			self:AccumulateMouseDeltas(GetTickTimeMs() / 1000, deltaX, deltaY);
+			self:AccumulateMouseDeltas(GetTickTime(), deltaX, deltaY);
 
 			self.targetScrollX = Clamp(self.targetScrollX + self.accumulatedMouseDeltaX, self.scrollXExtentsMin, self.scrollXExtentsMax);
 			self.targetScrollY = Clamp(self.targetScrollY + self.accumulatedMouseDeltaY, self.scrollYExtentsMin, self.scrollYExtentsMax);
