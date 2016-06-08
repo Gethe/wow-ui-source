@@ -120,6 +120,7 @@ ChatTypeGroup["SYSTEM"] = {
 	"UNIT_LEVEL",
 	"CHARACTER_POINTS_CHANGED",
 	"CHAT_MSG_BN_WHISPER_PLAYER_OFFLINE",
+	"QUEST_TURNED_IN",
 };
 ChatTypeGroup["SAY"] = {
 	"CHAT_MSG_SAY",
@@ -2720,6 +2721,12 @@ function ChatFrame_SystemEventHandler(self, event, ...)
 	elseif ( event == "PLAYER_LEVEL_UP" ) then
 		local level, arg2, arg3, arg4, arg5, arg6, arg7, arg8 = ...;
 		LevelUpDisplay_ChatPrint(self, level, LEVEL_UP_TYPE_CHARACTER)
+		return true;
+	elseif ( event == "QUEST_TURNED_IN" ) then
+		local questID, xp, money = ...;
+		if questID == WORLD_QUESTS_AVAILABLE_QUEST_ID then
+			LevelUpDisplay_ChatPrint(self, nil, TOAST_WORLD_QUESTS_UNLOCKED)
+		end
 		return true;
 	elseif (event == "UNIT_LEVEL" ) then
 		local arg1 = ...;

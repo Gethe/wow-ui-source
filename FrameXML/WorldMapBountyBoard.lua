@@ -356,17 +356,31 @@ function WorldMapBountyBoardMixin:TryShowingIntroTutorial()
 
 			self.TutorialBox.Text:SetText(BOUNTY_TUTORIAL_INTRO);
 
-			SetClampedTextureRotation(self.TutorialBox.Arrow.Arrow, 90);
-			SetClampedTextureRotation(self.TutorialBox.Arrow.Glow, 90);
+			if self:GetDisplayLocation() == LE_MAP_OVERLAY_DISPLAY_LOCATION_TOP_RIGHT or self:GetDisplayLocation() == LE_MAP_OVERLAY_DISPLAY_LOCATION_BOTTOM_RIGHT then
+				SetClampedTextureRotation(self.TutorialBox.Arrow.Arrow, 270);
+				SetClampedTextureRotation(self.TutorialBox.Arrow.Glow, 270);
 
-			self.TutorialBox.Arrow:ClearAllPoints();
-			self.TutorialBox.Arrow:SetPoint("TOPLEFT", self.TutorialBox, "TOPLEFT", -17, -15);
+				self.TutorialBox.Arrow:ClearAllPoints();
+				self.TutorialBox.Arrow:SetPoint("TOPLEFT", self.TutorialBox, "TOPRIGHT", -4, -15);
 
-			self.TutorialBox.Arrow.Glow:ClearAllPoints();
-			self.TutorialBox.Arrow.Glow:SetPoint("CENTER", self.TutorialBox.Arrow.Arrow, "CENTER", -3, 0);
+				self.TutorialBox.Arrow.Glow:ClearAllPoints();
+				self.TutorialBox.Arrow.Glow:SetPoint("CENTER", self.TutorialBox.Arrow.Arrow, "CENTER", 2, 0);
 
-			self.TutorialBox:ClearAllPoints();
-			self.TutorialBox:SetPoint("LEFT", self, "RIGHT", -10, -15);
+				self.TutorialBox:ClearAllPoints();
+				self.TutorialBox:SetPoint("RIGHT", self, "LEFT", 10, -15);
+			else
+				SetClampedTextureRotation(self.TutorialBox.Arrow.Arrow, 90);
+				SetClampedTextureRotation(self.TutorialBox.Arrow.Glow, 90);
+
+				self.TutorialBox.Arrow:ClearAllPoints();
+				self.TutorialBox.Arrow:SetPoint("TOPLEFT", self.TutorialBox, "TOPLEFT", -17, -15);
+
+				self.TutorialBox.Arrow.Glow:ClearAllPoints();
+				self.TutorialBox.Arrow.Glow:SetPoint("CENTER", self.TutorialBox.Arrow.Arrow, "CENTER", -3, 0);
+
+				self.TutorialBox:ClearAllPoints();
+				self.TutorialBox:SetPoint("LEFT", self, "RIGHT", -10, -15);
+			end
 
 			self.TutorialBox:Show();
 		end

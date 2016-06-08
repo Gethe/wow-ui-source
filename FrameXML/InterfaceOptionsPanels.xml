@@ -345,6 +345,22 @@
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Frame>
+			<CheckButton name="$parentAutoSelfCast" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentSelfCastKeyDropDown" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="13" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "autoSelfCast";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
 			<!-- loss of control -->
 			<CheckButton name="$parentLossOfControl" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>

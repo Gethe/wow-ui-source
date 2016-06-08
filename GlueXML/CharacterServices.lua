@@ -574,13 +574,17 @@ function CharacterUpgrade_ResetBoostData()
 	CHARACTER_UPGRADE_CREATE_CHARACTER_DATA = nil;
 end
 
+local function IsUsingValidProductForTrialBoost()
+	return CharacterUpgradeFlow.data.productId == LE_BATTLEPAY_PRODUCT_ITEM_LEVEL_100_CHARACTER_UPGRADE;
+end
+
 local function CanBoostCharacter(class, level, boostInProgress, isTrialBoost)
 	if (boostInProgress or class == "DEMONHUNTER") then
 		return false;
 	end
 
 	if isTrialBoost then
-		if CharacterUpgradeFlow.data.productId ~= LE_BATTLEPAY_PRODUCT_ITEM_LEVEL_100_CHARACTER_UPGRADE then
+		if not IsUsingValidProductForTrialBoost() then
 			return false;
 		end
 	else
@@ -765,7 +769,7 @@ function CharacterUpgradeCharacterSelectBlock:Initialize(results)
 			onlyShowCreateButtonsBottomFrame = self.frame.ControlsFrame.CreateCharacterButton;
 		end
 
-		if C_CharacterServices.IsTrialBoostEnabled() then
+		if C_CharacterServices.IsTrialBoostEnabled() and IsUsingValidProductForTrialBoost() then
 			self.frame.ControlsFrame.OrLabel2:Show();
 			self.frame.ControlsFrame.CreateCharacterClassTrialButton:Show();
 
@@ -1031,6 +1035,22 @@ function CharacterServices_UpdateSpecializationButtons(classID, gender, parentFr
 
 	local layoutData = parentFrame.layoutData or defaultSpecButtonLayoutData;
 
+	-- Examine all specs to determine which text to show for available specs
+	local availableSpecsToChoose = 0;
+
+	if not allowAllSpecs then
+		for i = 1, 4 do
+			local specID, _, _, _, _, _, isRecommended, isAllowed = GetSpecializationInfoForClassID(classID, i, gender);
+
+			if isRecommended or isAllowed then
+				availableSpecsToChoose = availableSpecsToChoose + 1;
+			end
+		end
+	end
+
+	local hasActualChoice = (availableSpecsToChoose > 1);
+	local canChooseFromAllSpecs = allowAllSpecs or (hasActualChoice and availableSpecsToChoose == numSpecs);
+
 	for i = 1, 4 do
 		if not parentFrame.SpecButtons[i] then
 			parentFrame.SpecButtons[i] = CreateSpecButton(parentFrame, i, layoutData);
@@ -1041,8 +1061,9 @@ function CharacterServices_UpdateSpecializationButtons(classID, gender, parentFr
 		button.isRecommended = nil;
 
 		if i <= numSpecs then
-			local specID, name, description, icon, _, role, isRecommended = GetSpecializationInfoForClassID(classID, i, gender);
-			local allowed = isRecommended or allowAllSpecs;
+			local specID, name, description, icon, _, role, isRecommended, isAllowed = GetSpecializationInfoForClassID(classID, i, gender);
+			local allowed = allowAllSpecs or isAllowed or isRecommended;
+			local showRecommendedLabel = isRecommended or (hasActualChoice and not canChooseFromAllSpecs and isAllowed);
 
 			button:SetID(specID);
 			button.SpecIcon:SetTexture(icon);
@@ -1052,12 +1073,12 @@ function CharacterServices_UpdateSpecializationButtons(classID, gender, parentFr
 			button.RoleIcon:SetDesaturated(not allowed);
 			button.RoleName:SetText(_G["ROLE_"..role]);
 			button:SetEnabled(allowed);
-			button.Recommended:SetShown(isRecommended);
+			button.Recommended:SetShown(showRecommendedLabel);
 			button.isRecommended = isRecommended;
 
 			-- If only the one recommended spec can be picked, change the text to reflect that the user
 			-- has no real choice here.
-			if allowAllSpecs then
+			if isRecommended and hasActualChoice then
 				button.Recommended:SetText(CHAR_SPEC_RECOMMENEDED);
 			else
 				button.Recommended:SetText(CHAR_SPEC_AVAILABLE);
@@ -1069,7 +1090,7 @@ function CharacterServices_UpdateSpecializationButtons(classID, gender, parentFr
 				button.SpecName:SetTextColor(.5, .5, .5, 1);
 			end
 
-			if isRecommended then
+			if showRecommendedLabel then
 				button.SpecName:SetPoint("TOPLEFT", button.Frame, "TOPRIGHT", 6, -3);
 				button.RoleName:SetPoint("TOPLEFT", button.Recommended, "BOTTOMLEFT");
 			else

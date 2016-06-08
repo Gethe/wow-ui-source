@@ -678,3 +678,89 @@ end
 function ColorMixin:WrapTextInColorCode(text)
 	return ("|c%s%s|r"):format(self:GenerateHexColor(), text);
 end
+
+-- Time --
+function SecondsToTime(seconds, noSeconds, notAbbreviated, maxCount, roundUp)
+	local time = "";
+	local count = 0;
+	local tempTime;
+	seconds = roundUp and ceil(seconds) or floor(seconds);
+	maxCount = maxCount or 2;
+	if ( seconds >= 86400  ) then
+		count = count + 1;
+		if ( count == maxCount and roundUp ) then
+			tempTime = ceil(seconds / 86400);
+		else
+			tempTime = floor(seconds / 86400);
+		end
+		if ( notAbbreviated ) then
+			time = format(D_DAYS,tempTime);
+		else
+			time = format(DAYS_ABBR,tempTime);
+		end
+		seconds = mod(seconds, 86400);
+	end
+	if ( count < maxCount and seconds >= 3600  ) then
+		count = count + 1;
+		if ( time ~= "" ) then
+			time = time..TIME_UNIT_DELIMITER;
+		end
+		if ( count == maxCount and roundUp ) then
+			tempTime = ceil(seconds / 3600);
+		else
+			tempTime = floor(seconds / 3600);
+		end
+		if ( notAbbreviated ) then
+			time = time..format(D_HOURS, tempTime);
+		else
+			time = time..format(HOURS_ABBR, tempTime);
+		end
+		seconds = mod(seconds, 3600);
+	end
+	if ( count < maxCount and seconds >= 60  ) then
+		count = count + 1;
+		if ( time ~= "" ) then
+			time = time..TIME_UNIT_DELIMITER;
+		end
+		if ( count == maxCount and roundUp ) then
+			tempTime = ceil(seconds / 60);
+		else
+			tempTime = floor(seconds / 60);
+		end
+		if ( notAbbreviated ) then
+			time = time..format(D_MINUTES, tempTime);
+		else
+			time = time..format(MINUTES_ABBR, tempTime);
+		end
+		seconds = mod(seconds, 60);
+	end
+	if ( count < maxCount and seconds > 0 and not noSeconds ) then
+		if ( time ~= "" ) then
+			time = time..TIME_UNIT_DELIMITER;
+		end
+		seconds = format("%d", seconds);
+		if ( notAbbreviated ) then
+			time = time..format(D_SECONDS, seconds);
+		else
+			time = time..format(SECONDS_ABBR, seconds);
+		end
+	end
+	return time;
+end
+
+function SecondsToTimeAbbrev(seconds)
+	local tempTime;
+	if ( seconds >= 86400  ) then
+		tempTime = ceil(seconds / 86400);
+		return DAY_ONELETTER_ABBR, tempTime;
+	end
+	if ( seconds >= 3600  ) then
+		tempTime = ceil(seconds / 3600);
+		return HOUR_ONELETTER_ABBR, tempTime;
+	end
+	if ( seconds >= 60  ) then
+		tempTime = ceil(seconds / 60);
+		return MINUTE_ONELETTER_ABBR, tempTime;
+	end
+	return SECOND_ONELETTER_ABBR, seconds;
+end

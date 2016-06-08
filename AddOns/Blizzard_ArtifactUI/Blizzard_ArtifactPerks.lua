@@ -559,12 +559,11 @@ function ArtifactTitleTemplateMixin:SetRelicSlotHighlighted(relicSlotIndex, high
 	if relicSlot:IsShown() then
 		if highlighted then
 			relicSlot:LockHighlight();
-			relicSlot.HighlightTexture:Show();
 			relicSlot.CanSlotAnim:Play();
 		else
 			relicSlot:UnlockHighlight();
 			relicSlot.CanSlotAnim:Stop();
-			relicSlot.HighlightTexture:Hide();
+			relicSlot.HighlightTexture:SetAlpha(1);
 		end
 	end
 end
@@ -609,6 +608,7 @@ StaticPopupDialogs["CONFIRM_RELIC_REPLACE"] = {
 
 	OnAccept = function(self, relicSlotIndex)
 		C_ArtifactUI.ApplyCursorRelicToSlot(relicSlotIndex);
+		ArtifactFrame.PerksTab.TitleContainer.RelicSlots[relicSlotIndex].GlowAnim:Play();
 		PlaySound("UI_70_Artifact_Forge_Relic_Place");
 	end,
 	OnCancel = function()
@@ -625,11 +625,18 @@ function ArtifactTitleTemplateMixin:OnRelicSlotClicked(relicSlot)
 	for i = 1, #self.RelicSlots do
 		if self.RelicSlots[i] == relicSlot then
 			if C_ArtifactUI.CanApplyCursorRelicToSlot(i) then
-				if C_ArtifactUI.GetRelicInfo(i) then
+				local _, itemName = C_ArtifactUI.GetRelicInfo(i);
+				if itemName then
 					StaticPopup_Show("CONFIRM_RELIC_REPLACE", nil, nil, i);
 				else
 					C_ArtifactUI.ApplyCursorRelicToSlot(i);
+					self.RelicSlots[i].GlowAnim:Play();
 					PlaySound("UI_70_Artifact_Forge_Relic_Place");
+				end
+			else
+				local _, itemID = GetCursorInfo();
+				if itemID and IsArtifactRelicItem(itemID) then
+					UIErrorsFrame:AddMessage(RELIC_SLOT_INVALID, 1.0, 0.1, 0.1, 1.0);
 				end
 			end
 			break;
@@ -658,8 +665,9 @@ function ArtifactTitleTemplateMixin:EvaluateRelics()
 
 		local relicAtlasName = ("Relic-%s-Slot"):format(relicType);
 		relicSlot:GetNormalTexture():SetAtlas(relicAtlasName, true);
-		relicSlot:GetHighlightTexture():SetAtlas(relicAtlasName, true);
-
+		relicSlot.GlowBorder1:SetAtlas(relicAtlasName, true);
+		relicSlot.GlowBorder2:SetAtlas(relicAtlasName, true);
+		relicSlot.GlowBorder3:SetAtlas(relicAtlasName, true);
 		local lockedReason, relicName, relicIcon, relicLink = C_ArtifactUI.GetRelicInfo(i);
 		if lockedReason then
 			relicSlot:GetNormalTexture():SetAlpha(.5);

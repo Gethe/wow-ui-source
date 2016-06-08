@@ -1929,6 +1929,8 @@ function StoreFrame_UpdateActivePanel(self)
 		StoreFrame_HidePurchaseSent(self);
 	elseif ( WaitingOnConfirmation ) then
 		if (StoreVASValidationFrame and StoreVASValidationFrame:IsShown()) then
+			StoreVASValidationFrame.CharacterSelectionFrame.RealmSelector.Button:Disable();
+			StoreVASValidationFrame.CharacterSelectionFrame.CharacterSelector.Button:Disable();
 			StoreVASValidationFrame.CharacterSelectionFrame.ContinueButton:Hide();
 			StoreVASValidationFrame.CharacterSelectionFrame.Spinner:Show();
 		else
@@ -1961,6 +1963,8 @@ function StoreFrame_UpdateActivePanel(self)
 		StoreFrame_HideAlert(self);
 		StoreFrame_HidePurchaseSent(self);
 		if (StoreVASValidationFrame and StoreVASValidationFrame:IsShown()) then
+			StoreVASValidationFrame.CharacterSelectionFrame.RealmSelector.Button:Enable();
+			StoreVASValidationFrame.CharacterSelectionFrame.CharacterSelector.Button:Enable();
 			StoreVASValidationFrame.CharacterSelectionFrame.Spinner:Hide();
 		end
 		local info = currencyInfo();
@@ -2427,6 +2431,7 @@ function StoreVASValidationFrame_SetVASStart(self)
 	SelectedDestinationRealm = nil;
 
 	self.CharacterSelectionFrame.RealmSelector.Text:SetText(SelectedRealm);
+	self.CharacterSelectionFrame.RealmSelector.Button:Enable();
 	self.CharacterSelectionFrame.CharacterSelector.Text:SetText(VAS_SELECT_CHARACTER);
 	self.CharacterSelectionFrame.CharacterSelector.Button:Enable();
 	self.CharacterSelectionFrame.NewCharacterName:Hide();

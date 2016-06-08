@@ -57,7 +57,7 @@
 			</AnimationGroup>
 			<AnimationGroup parentKey="showAnim">
 				<Alpha fromAlpha="0" toAlpha="1" duration="0.5" order="1" />
-				<Alpha fromAlpha="1" toAlpha="0" duration="0.5" startDelay="1.8" order="2"/>
+				<Alpha fromAlpha="1" toAlpha="0" duration="0.5" startDelay="1.8" order="2" parentKey="anim2"/>
 				<Scripts>
 					<OnFinished>
 						LevelUpDisplay_AnimStep(LevelUpDisplay, false);
@@ -123,6 +123,14 @@
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentRarityIcon" relativePoint="RIGHT" x="2" y="0"/>
 					</Anchors>
+				</FontString>
+				
+				<FontString parentKey="instructionalText" inherits="GameFontNormal" justifyH="CENTER" justifyV="MIDDLE">
+					<Size x="0" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" relativePoint="BOTTOM" y="-13"/>
+					</Anchors>
+					<Color r="1" g="1" b="1"/>
 				</FontString>
 
 				<!-- Spell bucket -->
@@ -203,7 +211,12 @@
 					<Animations>
 						<AnimationGroup parentKey="grow">
 							<Scale scaleX="1.0" scaleY="0.001" duration="0.0" startDelay="1.5" order="1" parentKey="anim1">
-								 <Origin point="BOTTOM">
+								<Scripts>
+									<OnFinished>
+										self:GetParent():GetParent():Show();
+									</OnFinished>
+								</Scripts>
+								<Origin point="BOTTOM">
 									<Offset x="0" y="0"/>
 								 </Origin>
 							</Scale>
@@ -226,7 +239,13 @@
 				<Texture file="Interface\LevelUp\LevelUpTex" name="$parentGLine2" parentKey="gLine2">
 					<Animations>
 						<AnimationGroup parentKey="grow">
-							<Scale scaleX="0.001" scaleY="1.0" duration="0.0" startDelay="1.5" order="1" parentKey="anim1"/>
+							<Scale scaleX="0.001" scaleY="1.0" duration="0.0" startDelay="1.5" order="1" parentKey="anim1">
+								<Scripts>
+									<OnFinished>
+										self:GetParent():GetParent():Show();
+									</OnFinished>
+								</Scripts>
+							</Scale>
 							<Scale scaleX="1000.0" scaleY="1.0" duration="0.5" order="2"/>
 						</AnimationGroup>
 					</Animations>
@@ -242,13 +261,19 @@
 					<Size x="418" y="7"/>
 					<Animations>
 						<AnimationGroup parentKey="grow">
-							<Scale scaleX="0.001" scaleY="1.0" duration="0.0" startDelay="1.5" order="1" parentKey="anim1"/>
+							<Scale scaleX="0.001" scaleY="1.0" duration="0.0" startDelay="1.5" order="1" parentKey="anim1">
+								<Scripts>
+									<OnFinished>
+										self:GetParent():GetParent():Show();
+									</OnFinished>
+								</Scripts>
+							</Scale>
 							<Scale scaleX="1000.0" scaleY="1.0" duration="0.5" order="2"/>
 							<Scripts>
 								<OnPlay>
-									LevelUpDisplayBlackBg:Show();
-									LevelUpDisplayGLine:Show();
-									LevelUpDisplayGLine2:Show();
+									LevelUpDisplayBlackBg:Hide();
+									LevelUpDisplayGLine:Hide();
+									LevelUpDisplayGLine2:Hide();
 									LevelUpDisplayGLine2.grow:Play();
 									LevelUpDisplayBlackBg.grow:Play();
 								</OnPlay>
@@ -283,6 +308,21 @@
 							<OnFinished>
 								LevelUpDisplay_AnimStep(LevelUpDisplay, true);
 							</OnFinished>
+						</Scripts>
+					</AnimationGroup>
+					<AnimationGroup parentKey="immediateReveal">
+						<Alpha fromAlpha="0" toAlpha="1" duration="0.7" startDelay="0" order="1">
+							<Scripts>
+								<OnFinished>
+									LevelUpDisplay_AnimStep(LevelUpDisplay, false);
+								</OnFinished>
+							</Scripts>
+						</Alpha>
+						<Alpha fromAlpha="1" toAlpha="0" duration="0.5" startDelay="1.5" order="2"/>
+						<Scripts>
+							<OnPlay>
+								LevelUpDisplayGLine.grow:Play();
+							</OnPlay>
 						</Scripts>
 					</AnimationGroup>
 				</Animations>

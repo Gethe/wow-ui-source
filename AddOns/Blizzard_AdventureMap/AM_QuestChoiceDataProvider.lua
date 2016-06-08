@@ -159,6 +159,7 @@ end
 
 function AdventureMap_QuestChoicePinMixin:OnClick(button)
 	if button == "LeftButton" then
+		PlaySound("UI_Mission_Map_Zoom");
 		self:GetMap():SetDefaultMaxZoom();
 		self:PanAndZoomTo();
 	end

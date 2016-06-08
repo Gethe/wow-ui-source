@@ -98,8 +98,11 @@ do
 
 		local pin, newPin = self.pinPools[pinTemplate]:Acquire();
 
-		if pin:IsMouseEnabled() then
+		if pin:IsMouseClickEnabled() then
 			pin:SetScript("OnMouseUp", pin.OnClick);
+		end
+
+		if pin:IsMouseMotionEnabled() then
 			pin:SetScript("OnEnter", pin.OnMouseEnter);
 			pin:SetScript("OnLeave", pin.OnMouseLeave);
 		end

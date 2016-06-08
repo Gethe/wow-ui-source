@@ -6,7 +6,7 @@
 		<Size x="24" y="24"/>
 
 		<Layers>
-			<Layer level="BACKGROUND" textureSubLevel="-1">
+			<Layer level="BACKGROUND" textureSubLevel="0">
 				<Texture parentKey="Icon" file="Interface/TaxiFrame/UI-Taxi-Icon-Green" />
 			</Layer>
 			<Layer level="HIGHLIGHT">
@@ -33,8 +33,8 @@
 		</Layers>
 		<Animations>
 			<AnimationGroup parentKey="RevealAnim" setToFinalAlpha="true">
-				<Alpha parentKey="Alpha" childKey="Fill" duration=".15" fromAlpha="0" toAlpha="1" order="1"/>
-				<LineScale parentKey="Scale" childKey="Fill" duration=".15" order="1" fromScaleX="0" fromScaleY="1" toScaleX="1" toScaleY="1">
+				<Alpha parentKey="Alpha" childKey="Fill" duration=".03" fromAlpha="0" toAlpha="1" order="1"/>
+				<LineScale parentKey="Scale" childKey="Fill" duration=".03" order="1" fromScaleX="0" fromScaleY="1" toScaleX="1" toScaleY="1">
 					<Origin point="LEFT">
 						<Offset x="1" y="0"/>
 					</Origin>

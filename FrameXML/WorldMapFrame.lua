@@ -1295,8 +1295,8 @@ function WorldMapFrame_Update()
 	local numUsedStoryLineFrames = 0;
 	if ( not isContinent and mapID > 0 ) then
 		for i = 1, C_Questline.GetNumAvailableQuestlines() do
-			local questLineName, questName, continentID, x, y, questlineMapID, questlineFloor, isHidden = C_Questline.GetQuestlineInfoByIndex(i);
-			local showQuest = questLineName and questlineMapID == mapID and x > 0 and y > 0 and questlineFloor == dungeonLevel;
+			local questLineName, questName, x, y, isHidden = C_Questline.GetQuestlineInfoByIndex(i);
+			local showQuest = questLineName and x > 0 and y > 0;
 			if ( showQuest and isHidden ) then
 				local _, _, active = GetTrackingInfo(MINIMAP_TRACK_HIDDEN_QUESTS);
 				showQuest = active;

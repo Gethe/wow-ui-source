@@ -246,6 +246,7 @@ end
 -- [[ Combat Options Panel ]] --
 
 CombatPanelOptions = {
+	autoSelfCast = { text = "AUTO_SELF_CAST_TEXT" },
 	showTargetOfTarget = { text = "SHOW_TARGET_OF_TARGET_TEXT" },
 	spellActivationOverlayOpacity = { text = "SPELL_ALERT_OPACITY", minValue = 0, maxValue = 1.0, valueStep = 0.05 },
 	doNotFlashLowHealthWarning = { text = "FLASH_LOW_HEALTH_WARNING" },

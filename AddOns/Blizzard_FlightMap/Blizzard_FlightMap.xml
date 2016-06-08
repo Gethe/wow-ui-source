@@ -5,7 +5,7 @@
 	<Frame name="FlightMapFrame" inherits="MapCanvasFrameTemplate" mixin="FlightMapMixin">
 		<Size x="1004" y="689"/>
 		<Frames>
-			<Frame parentKey="BorderFrame" inherits="PortraitFrameTemplate" frameStrata="MEDIUM" setAllPoints="true">
+			<Frame parentKey="BorderFrame" inherits="PortraitFrameTemplate" frameStrata="HIGH" setAllPoints="true">
 				<Layers>
 					<Layer level="ARTWORK" textureSubLevel="5">
 						<Texture parentKey="Underlay" hidden="true">
@@ -14,7 +14,12 @@
 					</Layer>
 
 					<Layer level="BORDER" textureSubLevel="-1">
-						<Texture parentKey="TopBorder" atlas="AdventureMap_TopBorder" setAllPoints="true" />
+						<Texture parentKey="TopBorder" atlas="AdventureMap_TopBorder">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="2" y="-22"/>
+								<Anchor point="BOTTOMRIGHT" x="-3" y="2"/>
+							</Anchors>
+						</Texture>
 					</Layer>
 				</Layers>
 

@@ -181,32 +181,44 @@
 				</KeyValues>
 				<Scripts>
 					<OnLoad>
-            self:SetID(STYLE_CUSTOM_DISPLAY1);
-            self.Category:SetText(DEMONHUNTER_TATTOO_STYLE);
-          </OnLoad>
+           				 self:SetID(STYLE_CUSTOM_DISPLAY1);
+           				 self.Category:SetText(DEMONHUNTER_TATTOO_STYLE);
+          			</OnLoad>
 				</Scripts>
 			</Frame>
 			<Frame parentKey="CustomSelector2" parentArray="Selector" inherits="BarberShopSelectorTemplate" hidden="true">
-				<KeyValues>
-					<KeyValue key="layoutIndex" value="7" type="number"/>
-					<KeyValue key="align" value="center" type="string"/>
-				</KeyValues>
-				<Scripts>
-					<OnLoad>
-            self:SetID(STYLE_CUSTOM_DISPLAY2);
-            self.Category:SetText(DEMONHUNTER_HORN_STYLE);
-          </OnLoad>
-				</Scripts>
-			</Frame>
-			<Frame parentKey="CustomSelector3" parentArray="Selector" inherits="BarberShopSelectorTemplate" hidden="true">
 				<KeyValues>
 					<KeyValue key="layoutIndex" value="8" type="number"/>
 					<KeyValue key="align" value="center" type="string"/>
 				</KeyValues>
 				<Scripts>
 					<OnLoad>
-						self:SetID(STYLE_CUSTOM_DISPLAY3);
-						self.Category:SetText(DEMONHUNTER_BLINDFOLD_STYLE);
+           				 self:SetID(STYLE_CUSTOM_DISPLAY2);
+           				 self.Category:SetText(DEMONHUNTER_HORN_STYLE);
+          			</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame parentKey="CustomSelector3" parentArray="Selector" inherits="BarberShopSelectorTemplate" hidden="true">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="9" type="number"/>
+					<KeyValue key="align" value="center" type="string"/>
+				</KeyValues>
+				<Scripts>
+					<OnLoad>
+           				 self:SetID(STYLE_CUSTOM_DISPLAY3);
+           				 self.Category:SetText(DEMONHUNTER_BLINDFOLD_STYLE);
+         			 </OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame parentKey="CustomSelector4" parentArray="Selector" inherits="BarberShopSelectorTemplate" hidden="true">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="7" type="number"/>
+					<KeyValue key="align" value="center" type="string"/>
+				</KeyValues>
+				<Scripts>
+					<OnLoad>
+						self:SetID(STYLE_CUSTOM_DISPLAY4);
+						self.Category:SetText(DEMONHUNTER_TATTOO_COLOR);
 					</OnLoad>
 				</Scripts>
 			</Frame>

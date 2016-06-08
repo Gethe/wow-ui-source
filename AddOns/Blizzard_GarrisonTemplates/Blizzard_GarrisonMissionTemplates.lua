@@ -304,8 +304,10 @@ function GarrisonMission:UpdateMissionData(missionPage)
 		rewardsFrame.ChanceGlowAnim:Play();
 		if ( successChance < 100 ) then
 			PlaySound("UI_Garrison_CommandTable_IncreasedSuccessChance");
-		else
+		elseif (successChance < 200 ) then
 			PlaySound("UI_Garrison_CommandTable_100Success");
+		else
+			PlaySound("UI_Mission_200Percent");
 		end
 	else
 		-- no need to animate if chance is not increasing
@@ -567,10 +569,10 @@ end
 
 function GarrisonMission:CloseMission()
 	self:GetMissionPage():Hide();
+	self:ClearParty();
 	if (self.MissionTab.MissionList) then
 		self.MissionTab.MissionList:Show();
 	end
-	self:ClearParty();
 	self.followerCounters = nil;
 	self:GetMissionPage().missionInfo = nil;	
 end
@@ -898,6 +900,7 @@ function GarrisonMission:MissionCompleteInitialize(missionList, index)
 		self:SetEnemyPortrait(encounter, encounters[i], encounter.Elite, #enemies[i].mechanics);
 	end
 
+	missionCompleteFrame.pendingXPAwards = { };
 	missionCompleteFrame.animInfo = {};
 	stage.followers = {};
 	local encounterIndex = 1;
@@ -1752,9 +1755,12 @@ function GarrisonMissionComplete:AnimFollowerCheerAndTroopDeath(followerID)
 
 			local followerInfo = C_Garrison.GetFollowerInfo(followerID);
 			if (followerInfo) then
-				if (followerInfo.isTroop and followerInfo.durability and followerInfo.durability <= 0) then
-					shouldFadeOut = true;
-					shouldCheer = false;
+				if (followerInfo.isTroop and followerInfo.durability) then
+					if (followerInfo.durability <= 0) then
+						shouldFadeOut = true;
+						shouldCheer = false;
+					end
+					followerFrame.DurabilityFrame:SetDurability(followerInfo.durability, followerInfo.maxDurability);
 				end
 			else
 				-- follower has been deleted; 

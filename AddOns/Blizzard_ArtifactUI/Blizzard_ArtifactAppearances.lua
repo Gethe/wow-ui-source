@@ -76,7 +76,7 @@ function ArtifactAppearancesMixin:SetupAppearanceSet(setIndex, prevAppearanceSet
 	if setID and numAppearanceSlots > 0 then
 		local appearanceSet;
 		for appearanceIndex = 1, numAppearanceSlots do
-			local appearanceID, appearanceName, displayIndex, appearanceUnlocked, unlockFailureReason, uiCameraID, altHandUICameraID, swatchR, swatchG, swatchB, modelAlpha, modelDesaturation, suppressGlobalAnim = C_ArtifactUI.GetAppearanceInfo(setIndex, appearanceIndex);
+			local appearanceID, appearanceName, displayIndex, appearanceUnlocked, unlockConditionText, uiCameraID, altHandUICameraID, swatchR, swatchG, swatchB, modelAlpha, modelDesaturation, suppressGlobalAnim = C_ArtifactUI.GetAppearanceInfo(setIndex, appearanceIndex);
 
 			if appearanceID then
 				if not appearanceSet then
@@ -95,7 +95,7 @@ function ArtifactAppearancesMixin:SetupAppearanceSet(setIndex, prevAppearanceSet
 					appearanceSet:Show();
 				end
 
-				self:AddAppearanceSlot(appearanceSet, appearanceID, swatchR, swatchG, swatchB, appearanceUnlocked, unlockFailureReason);
+				self:AddAppearanceSlot(appearanceSet, appearanceID, swatchR, swatchG, swatchB, appearanceUnlocked, unlockConditionText);
 			end
 		end
 
@@ -110,7 +110,7 @@ do
 	local STARTING_Y_OFFSET = 0;
 	local SLOT_PADDING = 12;
 
-	function ArtifactAppearancesMixin:AddAppearanceSlot(appearanceSet, appearanceID, swatchR, swatchG, swatchB, appearanceUnlocked, unlockFailureReason)
+	function ArtifactAppearancesMixin:AddAppearanceSlot(appearanceSet, appearanceID, swatchR, swatchG, swatchB, appearanceUnlocked, unlockConditionText)
 		appearanceSet.numAppearanceSlots = appearanceSet.numAppearanceSlots + 1;
 
 		local appearanceSlot = self.appearanceSlotPool:Acquire();
@@ -131,7 +131,7 @@ do
 		
 		appearanceSlot.appearanceID = appearanceID;
 		appearanceSlot.appearanceUnlocked = appearanceUnlocked;
-		appearanceSlot.unlockFailureReason = unlockFailureReason;
+		appearanceSlot.unlockConditionText = unlockConditionText;
 		appearanceSlot.isActive = isActive;
 
 		appearanceSlot:Show();
@@ -178,9 +178,9 @@ function ArtifactAppearanceSlotMixin:OnClick(button)
 end
 
 function ArtifactAppearanceSlotMixin:OnEnter()
-	if self.unlockFailureReason then
+	if self.unlockConditionText then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 0, 0);
-		GameTooltip:SetText(self.unlockFailureReason, nil, nil, nil, nil, true);
+		GameTooltip:SetText(self.unlockConditionText, nil, nil, nil, nil, true);
 		GameTooltip:Show();
 	end
 end

@@ -104,7 +104,7 @@
 		</Layers>
 		<Scripts>
 			<OnEnter>
-				local questLineName, questName, continentID, x, y = C_Questline.GetQuestlineInfoByIndex(self.index);
+				local questLineName, questName = C_Questline.GetQuestlineInfoByIndex(self.index);
 				if ( questName ) then
 					WorldMapTooltip:SetOwner(self, "ANCHOR_LEFT");
 					WorldMapTooltip:SetText(questName);

@@ -250,13 +250,11 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="OutfitDropDown" name="$parentOutfitDropDown" inherits="WardrobeOutfitDropDownTemplate">
+			<Frame parentKey="OutfitDropDown" name="$parentOutfitDropDown" inherits="WardrobeOutfitDropDownTemplate" mixin="DressUpOutfitMixin">
 				<KeyValues>
 					<KeyValue key="width" value="163" type="number"/>
 					<KeyValue key="minMenuStringWidth" value="127" type="number"/>
 					<KeyValue key="maxMenuStringWidth" value="190" type="number"/>
-					<KeyValue key="LoadOutfitFunc" value="DressUpFrame_LoadOutfit" type="global"/>
-					<KeyValue key="GetDisplayedSourceIDFunc" value="DressUpFrame_GetDisplayedSourceID" type="global"/>
 				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="54" y="-40"/>

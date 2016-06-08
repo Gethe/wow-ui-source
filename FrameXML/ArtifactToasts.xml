@@ -5,7 +5,7 @@
 	<Frame name="ArtifactLevelUpToast" parent="UIParent" hidden="true" mixin="ArtifactLevelUpToastMixin">
 		<Size x="128" y="128"/>
 		<Anchors>
-			<Anchor point="TOP" x="0" y="-170"/>
+			<Anchor point="TOP" x="0" y="-123"/>
 		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -150,13 +150,19 @@
 						<Anchor point="CENTER" relativeKey="$parent.GlowLine" x="0" y="-37"/>
 					</Anchors>
 					<Color r=".901" g=".8" b=".501" />
+					<Shadow>
+						<Offset>
+							<AbsDimension x="1" y="-1"/>
+						</Offset>
+						<Color r="0.0" g="0.0" b="0.0"/>
+					</Shadow>
 				</FontString>
 				<FontString parentKey="NewTrait" text="ARTIFACT_TOAST_NEW_POWER_AVAILABLE" inherits="GameFontNormal" justifyH="CENTER" justifyV="MIDDLE">
 					<Size x="0" y="0"/>
 					<Anchors>
-						<Anchor point="CENTER" x="0" y="-74"/>
+						<Anchor point="CENTER" x="0" y="-70"/>
 					</Anchors>
-					<Color r="1" g="1" b="1"/>
+					<Color r="0" g="1" b="0"/>
 				</FontString>
 				<FontString parentKey="UnlockTrait" text="ARTIFACT_TOAST_RETURN_TO_FORGE" inherits="GameFontNormal" justifyH="CENTER" justifyV="MIDDLE">
 					<Size x="0" y="0"/>

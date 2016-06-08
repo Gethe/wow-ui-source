@@ -169,7 +169,7 @@ function QueueStatusFrame_Update(self)
 	--Try each LFG type
 	for i=1, NUM_LE_LFG_CATEGORYS do
 		local mode, submode = GetLFGMode(i);
-		if ( mode ) then
+		if ( mode and submode ~= "noteleport" ) then
 			local entry = QueueStatusFrame_GetEntry(self, nextEntry);
 			QueueStatusEntry_SetUpLFG(entry, i);
 			entry:Show();
@@ -358,7 +358,6 @@ function QueueStatusEntry_SetUpLFG(entry, category)
 				activeID = queueID;
 				activeIndex = #allNames;
 			end
-			
 		end
 	end
 
@@ -669,7 +668,7 @@ function QueueStatusDropDown_Update()
 	--All LFG types
 	for i=1, NUM_LE_LFG_CATEGORYS do
 		local mode, submode = GetLFGMode(i);
-		if ( mode ) then
+		if ( mode and submode ~= "noteleport" ) then
 			QueueStatusDropDown_AddLFGButtons(info, i);
 		end
 	end

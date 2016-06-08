@@ -18,7 +18,7 @@ end
 function WardrobeOutfitDropDownMixin:OnShow()
 	self:RegisterEvent("TRANSMOG_OUTFITS_CHANGED");
 	self:RegisterEvent("TRANSMOGRIFY_UPDATE");
-	self:SelectOutfit(nil);
+	self:SelectOutfit(self:GetLastOutfitID(), true);
 end
 
 function WardrobeOutfitDropDownMixin:OnHide()
@@ -52,7 +52,6 @@ function WardrobeOutfitDropDownMixin:UpdateSaveButton()
 end
 
 function WardrobeOutfitDropDownMixin:SelectOutfit(outfitID, loadOutfit)
-	self.selectedOutfitID = outfitID;
 	local name;
 	if ( outfitID ) then
 		name = C_TransmogCollection.GetOutfitName(outfitID);
@@ -60,12 +59,23 @@ function WardrobeOutfitDropDownMixin:SelectOutfit(outfitID, loadOutfit)
 	if ( name ) then
 		UIDropDownMenu_SetText(self, name);
 	else
+		outfitID = nil;
 		UIDropDownMenu_SetText(self, GRAY_FONT_COLOR_CODE..TRANSMOG_OUTFIT_NONE..FONT_COLOR_CODE_CLOSE);
 	end
-	if ( loadOutfit and outfitID and self.LoadOutfitFunc ) then
-		self.LoadOutfitFunc(outfitID);
+	self.selectedOutfitID = outfitID;
+	if ( loadOutfit ) then
+		self:LoadOutfit(outfitID);
 	end
 	self:UpdateSaveButton();
+	self:OnSelectOutfit(outfitID);
+end
+
+function WardrobeOutfitDropDownMixin:OnSelectOutfit(outfitID)
+	-- nothing to see here
+end
+
+function WardrobeOutfitDropDownMixin:GetLastOutfitID()
+	return nil;
 end
 
 local function IsSourceArtifact(sourceID)
@@ -82,14 +92,10 @@ function WardrobeOutfitDropDownMixin:IsOutfitDressed()
 	if ( not appearanceSources ) then
 		return true;
 	end
-	local GetDisplayedSourceIDFunc = self.GetDisplayedSourceIDFunc;
-	if ( not GetDisplayedSourceIDFunc ) then
-		return;
-	end
 
 	for i = 1, #TRANSMOG_SLOTS do
 		if ( TRANSMOG_SLOTS[i].transmogType == LE_TRANSMOG_TYPE_APPEARANCE ) then
-			local sourceID = GetDisplayedSourceIDFunc(TRANSMOG_SLOTS[i].slot, LE_TRANSMOG_TYPE_APPEARANCE);
+			local sourceID = self:GetSlotSourceID(TRANSMOG_SLOTS[i].slot, LE_TRANSMOG_TYPE_APPEARANCE);
 			local slotID = GetInventorySlotInfo(TRANSMOG_SLOTS[i].slot);
 			if ( sourceID ~= NO_TRANSMOG_SOURCE_ID and sourceID ~= appearanceSources[slotID] ) then
 				-- hack: ignore artifacts
@@ -99,11 +105,11 @@ function WardrobeOutfitDropDownMixin:IsOutfitDressed()
 			end
 		end
 	end
-	local mainHandSourceID = GetDisplayedSourceIDFunc("MAINHANDSLOT", LE_TRANSMOG_TYPE_ILLUSION);
+	local mainHandSourceID = self:GetSlotSourceID("MAINHANDSLOT", LE_TRANSMOG_TYPE_ILLUSION);
 	if ( mainHandSourceID ~= mainHandEnchant ) then
 		return false;
 	end
-	local offHandSourceID = GetDisplayedSourceIDFunc("SECONDARYHANDSLOT", LE_TRANSMOG_TYPE_ILLUSION);
+	local offHandSourceID = self:GetSlotSourceID("SECONDARYHANDSLOT", LE_TRANSMOG_TYPE_ILLUSION);
 	if ( offHandSourceID ~= offHandEnchant ) then
 		return false;
 	end
@@ -111,17 +117,13 @@ function WardrobeOutfitDropDownMixin:IsOutfitDressed()
 end
 
 function WardrobeOutfitDropDownMixin:CheckOutfitForSave(name)
-	if ( not self.GetDisplayedSourceIDFunc ) then
-		return;
-	end
-
 	local sources = { };
 	local mainHandEnchant, offHandEnchant;
 	local pendingSources = { };
 	local hadInvalidSources = false;
 
 	for i = 1, #TRANSMOG_SLOTS do
-		local sourceID = self.GetDisplayedSourceIDFunc(TRANSMOG_SLOTS[i].slot, TRANSMOG_SLOTS[i].transmogType);
+		local sourceID = self:GetSlotSourceID(TRANSMOG_SLOTS[i].slot, TRANSMOG_SLOTS[i].transmogType);
 		if ( sourceID ~= NO_TRANSMOG_SOURCE_ID ) then
 			if ( TRANSMOG_SLOTS[i].transmogType == LE_TRANSMOG_TYPE_APPEARANCE ) then
 				local slotID = GetInventorySlotInfo(TRANSMOG_SLOTS[i].slot);

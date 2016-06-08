@@ -473,7 +473,7 @@ function HonorExhaustionTick_Update(self, isMainMenuBar)
 end
 
 function HonorExhaustionToolTipText(self)
-	MainMenu_AnchorTickTooltip(self);
+	GameTooltip_SetDefaultAnchor(GameTooltip, UIParent);	
 	
 	local exhaustionStateID, exhaustionStateName, exhaustionStateMultiplier;
 	exhaustionStateID, exhaustionStateName, exhaustionStateMultiplier = GetHonorRestState();

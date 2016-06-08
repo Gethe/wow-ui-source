@@ -18,8 +18,8 @@ CHARACTER_BUTTON_HEIGHT = 57;
 CHARACTER_LIST_TOP = 688;
 AUTO_DRAG_TIME = 0.5;				-- in seconds
 
-CHARACTER_UNDELETE_COOLDOWN = 0;	-- in days
-CHARACTER_UNDELETE_COOLDOWN_REMAINING = 0; -- in days
+CHARACTER_UNDELETE_COOLDOWN = 0;	-- in seconds
+CHARACTER_UNDELETE_COOLDOWN_REMAINING = 0; -- in seconds
 
 local translationTable = { };	-- for character reordering: key = button index, value = character ID
 
@@ -462,7 +462,8 @@ function CharacterSelect_OnEvent(self, event, ...)
 		if (not enabled) then
 			CharSelectUndeleteCharacterButton.tooltip = UNDELETE_TOOLTIP_DISABLED;
 		elseif (onCooldown) then
-			CharSelectUndeleteCharacterButton.tooltip = UNDELETE_TOOLTIP_COOLDOWN:format(CHARACTER_UNDELETE_COOLDOWN_REMAINING);
+			local timeStr = SecondsToTime(remaining, false, true, 1, false);
+			CharSelectUndeleteCharacterButton.tooltip = UNDELETE_TOOLTIP_COOLDOWN:format(timeStr);
 		else
 			CharSelectUndeleteCharacterButton.tooltip = UNDELETE_TOOLTIP;
 		end
@@ -1120,7 +1121,8 @@ function CharacterSelect_PaidServiceOnClick(self, button, down, service)
 	if (CharacterSelect.undeleting) then
 		local guid = select(14, GetCharacterInfo(PAID_SERVICE_CHARACTER_ID));
 		CharacterSelect.pendingUndeleteGuid = guid;
-		GlueDialog_Show("UNDELETE_CONFIRM", UNDELETE_CONFIRMATION:format(CHARACTER_UNDELETE_COOLDOWN));
+		local timeStr = SecondsToTime(CHARACTER_UNDELETE_COOLDOWN, false, true, 1, false);
+		GlueDialog_Show("UNDELETE_CONFIRM", UNDELETE_CONFIRMATION:format(timeStr));
 	else
 		GlueParent_SetScreen("charcreate");
 	end

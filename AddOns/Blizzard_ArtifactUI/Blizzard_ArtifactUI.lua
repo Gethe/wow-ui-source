@@ -1,4 +1,4 @@
-UIPanelWindows["ArtifactFrame"] =		{ area = "doublewide",	pushable = 0, xoffset = 35, bottomClampOverride = 80, showFailedFunc = C_ArtifactUI.Clear, };
+UIPanelWindows["ArtifactFrame"] =		{ area = "doublewide",	pushable = 0, xoffset = 35, yoffset = -9, bottomClampOverride = 100, showFailedFunc = C_ArtifactUI.Clear, };
 
 StaticPopupDialogs["CONFIRM_ARTIFACT_RESPEC"] = {
 	text = ARTIFACT_RESPEC,

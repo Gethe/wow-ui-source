@@ -26,61 +26,74 @@ function GetNewActionHighlightMark(action)
 	return ACTION_HIGHLIGHT_MARKS[action];
 end
 
-local isInPetBattle = C_PetBattles.IsInBattle;
-function ActionButtonDown(id)
-	if ( isInPetBattle() ) then
-		if ( PetBattleFrame ) then
-			PetBattleFrame_ButtonDown(id);
-		end
-		return;
-	end
-
-	local button;
-	if ( OverrideActionBar and OverrideActionBar:IsShown() ) then
-		if ( id > NUM_OVERRIDE_BUTTONS ) then
+function GetActionButtonForID(id)
+	if OverrideActionBar and OverrideActionBar:IsShown() then
+		if id > NUM_OVERRIDE_BUTTONS then
 			return;
 		end
-		button = _G["OverrideActionBarButton"..id];
-	else
-		button = _G["ActionButton"..id];
+
+		return _G["OverrideActionBarButton"..id];
 	end
 
-	if ( button:GetButtonState() == "NORMAL" ) then
-		button:SetButtonState("PUSHED");
-	end
-	if (GetCVarBool("ActionButtonUseKeyDown")) then
-		if (not button.ZoneAbilityDisabled) then
+	return _G["ActionButton"..id];
+end
+
+local function CheckUseActionButton(button, checkingFromDown)
+	local actionButtonUseKeyDown = GetCVarBool("ActionButtonUseKeyDown");
+	local doAction = (checkingFromDown and actionButtonUseKeyDown) or not (checkingFromDown or actionButtonUseKeyDown);
+
+	if doAction then
+		if not button.ZoneAbilityDisabled then
 			SecureActionButton_OnClick(button, "LeftButton");
+
+			if GetNewActionHighlightMark(button.action) then
+				MarkNewActionHighlight(button.action, false);
+				ActionButton_UpdateHighlightMark(button, button.action);
+			end
 		end
 		ActionButton_UpdateState(button);
 	end
 end
 
-function ActionButtonUp(id)
-	if ( isInPetBattle() ) then
-		if ( PetBattleFrame ) then
+local isInPetBattle = C_PetBattles.IsInBattle;
+local function CheckPetActionButtonEvent(id, isDown)
+	if isInPetBattle() and PetBattleFrame then
+		if isDown then
+			PetBattleFrame_ButtonDown(id);
+		else
 			PetBattleFrame_ButtonUp(id);
 		end
+		return true;
+	end
+
+	return false;
+end
+
+function ActionButtonDown(id)
+	if CheckPetActionButtonEvent(id, true) then
 		return;
 	end
 
-	local button;
-	if ( OverrideActionBar and OverrideActionBar:IsShown() ) then
-		if ( id > NUM_OVERRIDE_BUTTONS ) then
-			return;
+	local button = GetActionButtonForID(id);
+	if button then
+		if button:GetButtonState() == "NORMAL" then
+			button:SetButtonState("PUSHED");
 		end
-		button = _G["OverrideActionBarButton"..id];
-	else
-		button = _G["ActionButton"..id];
+
+		CheckUseActionButton(button, true);
+	end
+end
+
+function ActionButtonUp(id)
+	if CheckPetActionButtonEvent(id, false) then
+		return;
 	end
 
-	if ( button:GetButtonState() == "PUSHED" ) then
-		button:SetButtonState("NORMAL");
-		if (not GetCVarBool("ActionButtonUseKeyDown")) then
-			if (not button.ZoneAbilityDisabled) then
-				SecureActionButton_OnClick(button, "LeftButton");
-			end
-			ActionButton_UpdateState(button);
+	local button = GetActionButtonForID(id);
+	if button then
+		if ( button:GetButtonState() == "PUSHED" ) then
+			button:SetButtonState("NORMAL");
+			CheckUseActionButton(button, false);
 		end
 	end
 end
@@ -261,14 +274,7 @@ function ActionButton_UpdateAction (self, force)
 		self.action = action;
 		SetActionUIButton(self, action, self.cooldown);
 		ActionButton_Update(self);
-
-		if ( self.NewActionTexture ) then
-			if ( GetNewActionHighlightMark(action) ) then
-				self.NewActionTexture:Show();
-			else
-				self.NewActionTexture:Hide();
-			end
-		end
+		ActionButton_UpdateHighlightMark(self, action);
 	end
 end
 
@@ -372,6 +378,12 @@ function ActionButton_Update (self)
 	self.feedback_action = action;
 end
 
+function ActionButton_UpdateHighlightMark(self, action)
+	if ( self.NewActionTexture ) then
+		self.NewActionTexture:SetShown(GetNewActionHighlightMark(action));
+	end
+end
+
 function ActionButton_ShowGrid (button)
 	assert(button);
 
@@ -408,11 +420,8 @@ function ActionButton_UpdateState (button)
 	assert(button);
 
 	local action = button.action;
-	if ( IsCurrentAction(action) or IsAutoRepeatAction(action) ) then
-		button:SetChecked(true);
-	else
-		button:SetChecked(false);
-	end
+	local isChecked = IsCurrentAction(action) or IsAutoRepeatAction(action);
+	button:SetChecked(isChecked);
 end
 
 function ActionButton_UpdateUsable (self)

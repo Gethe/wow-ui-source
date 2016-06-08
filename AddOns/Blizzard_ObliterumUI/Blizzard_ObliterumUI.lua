@@ -104,13 +104,21 @@ function ObliterumForgeItemSlotMixin:OnEvent(event, ...)
 		if GameTooltip:GetOwner() == self then
 			self:OnMouseEnter();
 		end
+	elseif (event == "GET_ITEM_INFO_RECEIVED") then
+		self:UnregisterEvent("GET_ITEM_INFO_RECEIVED");
+		self:RefreshIcon();
 	end
 end
 
 function ObliterumForgeItemSlotMixin:RefreshIcon()
 	local itemLink = C_TradeSkillUI.GetPendingObliterateItemLink();
+	local itemName, itemHyperLink, itemRarity, itemTexture;
 	if itemLink then
-		local itemName, itemHyperLink, itemRarity, _, _, _, _, _, _, itemTexture = GetItemInfo(itemLink);
+		itemName, itemHyperLink, itemRarity, _, _, _, _, _, _, itemTexture = GetItemInfo(itemLink);
+	else
+		self:RegisterEvent("GET_ITEM_INFO_RECEIVED");
+	end
+	if itemName then
 		self.Icon:SetTexture(itemTexture);
 
 		self.Icon:Show();

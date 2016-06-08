@@ -156,14 +156,14 @@
 			<Frame parentKey="KnowledgeLevelHelpBox" inherits="GlowBoxTemplate" enableMouse="true" hidden="true" frameStrata="DIALOG">
 				<Size x="220" y="100"/>
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.ForgeLevelFrame" relativePoint="RIGHT" x="-8" y="20"/>
+					<Anchor point="LEFT" relativeKey="$parent.ForgeLevelFrame" relativePoint="RIGHT" x="-8" y="14"/>
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
 						<FontString parentKey="Text" inherits="GameFontHighlightLeft" justifyV="TOP" text="ARTIFACT_TUTORIAL_KNOWLEDGE">
 							<Size x="188" y="0"/>
 							<Anchors>
-								<Anchor point="TOPLEFT" x="16" y="-24"/>
+								<Anchor point="TOPLEFT" x="16" y="-20"/>
 							</Anchors>
 						</FontString>
 					</Layer>
@@ -181,7 +181,7 @@
 					</Button>
 					<Frame parentKey="Arrow" inherits="GlowBoxArrowTemplate">
 						<Anchors>
-							<Anchor point="TOPLEFT" x="-17" y="-15"/>
+							<Anchor point="TOPLEFT" x="-17" y="-9"/>
 						</Anchors>
 					</Frame>
 				</Frames>

@@ -112,6 +112,7 @@ end
 
 function ZoneLabelDataProviderMixin:CalculateAnchorsForAreaTrigger(areaTrigger)
 	local TOP_Y_OFFSET = -30;
+	local BOTTOM_Y_OFFSET = 30;
 
 	if areaTrigger.isContinent then
 		return "TOPRIGHT", 0, TOP_Y_OFFSET;
@@ -121,26 +122,26 @@ function ZoneLabelDataProviderMixin:CalculateAnchorsForAreaTrigger(areaTrigger)
 	if x < .5 then
 		if x > .45 then
 			if y > .5 then
-				return "BOTTOM", 0, 0;
+				return "BOTTOM", 0, BOTTOM_Y_OFFSET;
 			else
 				return "TOP", 0, TOP_Y_OFFSET;
 			end
 		end
 		if y > .5 then
-			return "BOTTOMLEFT", 0, 0;
+			return "BOTTOMLEFT", 0, BOTTOM_Y_OFFSET;
 		else
 			return "TOPLEFT", 0, TOP_Y_OFFSET;
 		end
 	else
 		if x < .55 then
 			if y > .5 then
-				return "BOTTOM", 0, 0;
+				return "BOTTOM", 0, BOTTOM_Y_OFFSET;
 			else
 				return "TOP", 0, TOP_Y_OFFSET;
 			end
 		end
 		if y > .5 then
-			return "BOTTOMRIGHT", 0, 0;
+			return "BOTTOMRIGHT", 0, BOTTOM_Y_OFFSET;
 		else
 			return "TOPRIGHT", 0, TOP_Y_OFFSET;
 		end

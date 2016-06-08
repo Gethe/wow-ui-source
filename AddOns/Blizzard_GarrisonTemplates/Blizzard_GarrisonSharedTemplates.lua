@@ -831,7 +831,7 @@ function GarrisonFollowerListButton_OnClick(self, button)
 		PlaySound("UI_Garrison_CommandTable_SelectFollower");
 		followerFrame.selectedFollower = self.id;
 
-		if ( self.isCollected and followerList.canCastSpellsOnFollowers and SpellCanTargetGarrisonFollower() ) then
+		if ( self.isCollected and followerList.canCastSpellsOnFollowers and SpellCanTargetGarrisonFollower(self.id) ) then
 			GarrisonFollower_DisplayUpgradeConfirmation(self.id);
 		end
 		
@@ -1205,10 +1205,9 @@ end
 
 function GarrisonFollowerPageModel_SpellCast_OnMouseDown(self, button)
 	local followerList = self:GetParent().followerList;
-	if ( button == "LeftButton" and followerList.canCastSpellsOnFollowers and SpellCanTargetGarrisonFollower() ) then
+	if ( button == "LeftButton" and followerList.canCastSpellsOnFollowers and SpellCanTargetGarrisonFollower(self.followerID) ) then
 		-- no rotation if you can upgrade this follower
-		local followerID = self.followerID;
-		local followerInfo = followerID and C_Garrison.GetFollowerInfo(followerID);
+		local followerInfo = self.followerID and C_Garrison.GetFollowerInfo(self.followerID);
 		if ( followerInfo and followerInfo.isCollected and followerInfo.status ~= GARRISON_FOLLOWER_ON_MISSION ) then
 			return true;
 		end
@@ -1224,7 +1223,7 @@ end
 
 function GarrisonFollowerPageModel_SpellCast_OnMouseUp(self, button)
 	local followerList = self:GetParent().followerList;
-	if ( button == "LeftButton" and followerList.canCastSpellsOnFollowers and SpellCanTargetGarrisonFollower() ) then
+	if ( button == "LeftButton" and followerList.canCastSpellsOnFollowers and SpellCanTargetGarrisonFollower(self.followerID) ) then
 		-- no rotation if you can upgrade this follower, bring up confirmation dialog
 		if ( GarrisonFollower_DisplayUpgradeConfirmation(self.followerID) ) then
 			return true;
@@ -1248,8 +1247,8 @@ function GarrisonFollowerPageModelUpgrade_OnEvent(self, event)
 end
 
 function GarrisonFollowerPageModelUpgrade_Update(self)
-	if ( SpellCanTargetGarrisonFollower() ) then
-		local followerID = self:GetParent().followerID;
+	local followerID = self:GetParent().followerID;
+	if ( SpellCanTargetGarrisonFollower(followerID) ) then
 		local followerInfo = followerID and C_Garrison.GetFollowerInfo(followerID);
 		if ( followerInfo and followerInfo.isCollected and followerInfo.status ~= GARRISON_FOLLOWER_ON_MISSION and (not C_Garrison.TargetSpellHasFollowerTemporaryAbility() or C_Garrison.CanSpellTargetFollowerIDWithAddAbility(followerID)) ) then
 			local isValidTarget = (followerInfo.isMaxLevel or not C_Garrison.TargetSpellHasFollowerItemLevelUpgrade());
@@ -1270,8 +1269,8 @@ end
 
 function GarrisionFollowerPageUpgradeTarget_OnEvent(self, event)
 	if (event == "CURRENT_SPELL_CAST_CHANGED") then
-		if ( SpellCanTargetGarrisonFollower() ) then
-			local followerID = self:GetParent().followerID;
+		local followerID = self:GetParent().followerID;
+		if ( SpellCanTargetGarrisonFollower(followerID) ) then
 			local followerInfo = followerID and C_Garrison.GetFollowerInfo(followerID);
 			if ( followerInfo and followerInfo.isCollected and followerInfo.status ~= GARRISON_FOLLOWER_ON_MISSION and (followerInfo.isMaxLevel or not C_Garrison.TargetSpellHasFollowerItemLevelUpgrade()) ) then
 				if ( not C_Garrison.TargetSpellHasFollowerTemporaryAbility() or C_Garrison.CanSpellTargetFollowerIDWithAddAbility(followerID) ) then

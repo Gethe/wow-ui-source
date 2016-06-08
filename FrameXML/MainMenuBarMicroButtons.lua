@@ -16,6 +16,10 @@ MICRO_BUTTONS = {
 
 EJ_ALERT_TIME_DIFF = 60*60*24*7*2; -- 2 weeks
 
+local g_microButtonAlertsEnabled = true;
+local g_visibleMicroButtonAlerts = {};
+local g_flashingMicroButtons = {};
+
 function LoadMicroButtonTextures(self, name)
 	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 	self:RegisterEvent("UPDATE_BINDINGS");
@@ -239,11 +243,17 @@ function UpdateMicroButtons()
 end
 
 function MicroButtonPulse(self, duration)
+	if not g_microButtonAlertsEnabled then
+		return;
+	end
+
+	g_flashingMicroButtons[self] = true;
 	UIFrameFlash(self.Flash, 1.0, 1.0, duration or -1, false, 0, 0, "microbutton");
 end
 
 function MicroButtonPulseStop(self)
 	UIFrameFlashStop(self.Flash);
+	g_flashingMicroButtons[self] = nil;
 end
 
 function AchievementMicroButton_OnEvent(self, event, ...)
@@ -352,9 +362,6 @@ MAIN_MENU_MICRO_ALERT_PRIORITY = {
 	"EJMicroButtonAlert",
 };
 
-local g_microButtonAlertsEnabled = true;
-local g_visibleMicroButtonAlerts = {};
-
 function MainMenuMicroButton_SetAlertsEnabled(enabled)
 	g_microButtonAlertsEnabled = enabled;
 
@@ -363,7 +370,12 @@ function MainMenuMicroButton_SetAlertsEnabled(enabled)
 			alert:Hide();
 		end
 
+		for flashingButton in pairs(g_flashingMicroButtons) do
+			MicroButtonPulseStop(flashingButton);
+		end
+
 		g_visibleMicroButtonAlerts = {};
+		g_flashingMicroButtons = {};
 	end
 end
 
@@ -444,6 +456,7 @@ function TalentMicroButton_OnEvent(self, event, ...)
 	elseif ( event == "PLAYER_TALENT_UPDATE" or event == "NEUTRAL_FACTION_SELECT_RESULT" or
         event == "HONOR_LEVEL_UPDATE" or event == "HONOR_PRESTIGE_UPDATE" or event == "PLAYER_PVP_TALENT_UPDATE" ) then
 		UpdateMicroButtons();
+		self:EvaluateAlertVisibility();
 
 		-- On the first update from the server, flash the button if there are unspent points
 		-- Small hack: GetNumSpecializations should return 0 if talents haven't been initialized yet
@@ -451,7 +464,7 @@ function TalentMicroButton_OnEvent(self, event, ...)
 			self.receivedUpdate = true;
 			local shouldPulseForTalents = GetNumUnspentTalents() > 0 or GetNumUnspentPvpTalents() > 0 and not AreTalentsLocked();
 			if (UnitLevel("player") >= SHOW_SPEC_LEVEL and (not GetSpecialization() or shouldPulseForTalents)) then
-				MicroButtonPulse(self);
+				MicroButtonPulse(self);		
 			end
 		end
 	elseif ( event == "UPDATE_BINDINGS" ) then

@@ -103,6 +103,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
+						PlaySound("igQuestCancel");
 						self:GetParent():DeclineQuest();
 					</OnClick>
 				</Scripts>
@@ -252,6 +253,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
+						PlaySound("igQuestCancel");
 						self:GetParent():DeclineQuest();
 					</OnClick>
 				</Scripts>

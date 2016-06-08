@@ -9,7 +9,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="NameplateBuffButtonTemplate" virtual="true" enableMouse="true" hidden="true">
+	<Frame name="NameplateBuffButtonTemplate" virtual="true" enableMouse="true" hidden="true" mixin="NameplateBuffButtonTemplateMixin">
 		<Size x="20" y="14"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -53,6 +53,7 @@
 			<OnLeave>
 				GameTooltip:Hide();
 			</OnLeave>
+			<OnUpdate method="OnUpdate"/>
 		</Scripts>
 	</Frame>
 
@@ -368,6 +369,7 @@
 				<Scripts>
 					<OnLoad method="OnLoad"/>
 					<OnEvent method="OnEvent"/>
+					<OnUpdate method="OnUpdate"/>
 				</Scripts>
 			</Frame>
 			<Frame parentKey="RaidTargetFrame">

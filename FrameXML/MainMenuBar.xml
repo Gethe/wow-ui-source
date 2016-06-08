@@ -468,7 +468,7 @@
 	</Frame>
 	<Frame name="ArtifactWatchBar" inherits="MainMenuBarWatchBarTemplate">
 		<Frames>
-			<Button parentKey="Tick" hidden="true" frameStrata="DIALOG">
+			<Button parentKey="Tick" hidden="true" frameStrata="MEDIUM">
 				<Size x="32" y="32"/>
 				<Scripts>
 					<OnEnter function="MainMenuBar_ArtifactTick_OnEnter"/>
@@ -548,7 +548,7 @@
             </Layer>
         </Layers>
         <Frames>
-            <Button parentKey="ExhaustionTick" hidden="true" frameStrata="DIALOG">
+            <Button parentKey="ExhaustionTick" hidden="true" frameStrata="MEDIUM">
                 <Size x="32" y="32"/>
                 <Anchors>
                     <Anchor point="CENTER" relativeKey="$parent.ExhaustionLevelFillBar" relativePoint="RIGHT" x="0" y="0"/>
@@ -608,7 +608,7 @@
 			</OnLeave>
 		</Scripts>
 	</Frame>
-	<Button name="ExhaustionTick" parent="MainMenuExpBar" hidden="false" frameStrata="DIALOG">
+	<Button name="ExhaustionTick" parent="MainMenuExpBar" hidden="false" frameStrata="MEDIUM">
 		<Size>
 			<AbsDimension x="32" y="32"/>
 		</Size>

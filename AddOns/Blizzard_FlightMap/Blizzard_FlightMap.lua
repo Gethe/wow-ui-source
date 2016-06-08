@@ -8,7 +8,7 @@ function FlightMapMixin:SetupTitle()
 	self.BorderFrame.Bg:SetParent(self);
 	self.BorderFrame.TopTileStreaks:Hide();
 	
-	SetPortraitToTexture(self.BorderFrame.portrait, [[Interface/Icons/inv_misc_map02]]);
+	SetPortraitToTexture(self.BorderFrame.portrait, [[Interface/Icons/icon_petfamily_flying]]);
 end
 
 function FlightMapMixin:OnLoad()

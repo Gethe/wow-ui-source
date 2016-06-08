@@ -42,6 +42,11 @@ function ActionBarController_OnLoad(self)
 	self:RegisterEvent("PET_BATTLE_CLOSE");
 	
 	CURRENT_ACTION_BAR_STATE = LE_ACTIONBAR_STATE_MAIN;
+	
+	-- hack to fix crasy animation on bars when action bar is also animating
+	MainMenuExpBar:SetDeferAnimationCallback(ActionBarBusy);
+	HonorWatchBar.StatusBar:SetDeferAnimationCallback(ActionBarBusy);
+	ArtifactWatchBar.StatusBar:SetDeferAnimationCallback(ActionBarBusy);
 end
 
 
@@ -151,8 +156,9 @@ end
 ----------------- Animation Code -------------------
 ----------------------------------------------------
 
-
-
+function ActionBarBusy()
+	return MainMenuBar.slideOut:IsPlaying() or OverrideActionBar.slideOut:IsPlaying() or C_PetBattles.IsInBattle();
+end
 
 function BeginActionBarTransition(bar, animIn)
 	bar:Show();
@@ -160,9 +166,8 @@ function BeginActionBarTransition(bar, animIn)
 	bar.slideOut:Play(animIn);
 end
 
-
 function ValidateActionBarTransition()
-	if MainMenuBar.slideOut:IsPlaying() or OverrideActionBar.slideOut:IsPlaying() or C_PetBattles.IsInBattle() then
+	if ActionBarBusy() then
 		return; --Don't evluate and action bar state durring animations or while in Pet Battles
 	end
 	
@@ -185,6 +190,3 @@ function ValidateActionBarTransition()
 		end
 	end
 end
-
-
-

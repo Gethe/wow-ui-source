@@ -62,11 +62,30 @@
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
+				<Texture parentKey="GlowBorder1" alpha="0" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="CENTER" />
+					</Anchors>
+				</Texture>
+				<Texture parentKey="GlowBorder2" alpha="0" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="CENTER" />
+					</Anchors>
+				</Texture>
+				<Texture parentKey="GlowBorder3" alpha="0" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="CENTER" />
+					</Anchors>
+				</Texture>
 			</Layer>
 		</Layers>
 
 		<NormalTexture parentKey="NormalTexture" />
-		<HighlightTexture parentKey="HighlightTexture" alphaMode="ADD" />
+		<HighlightTexture parentKey="HighlightTexture" atlas="bags-roundhighlight" useAtlasSize="true" alphaMode="ADD">
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</HighlightTexture>
 
 		<Scripts>
 			<OnEnter>
@@ -88,6 +107,14 @@
 				<Scale childKey="HighlightTexture" duration=".75" order="1" fromScaleX="1" fromScaleY="1" toScaleX="1.1" toScaleY="1.1"/>
 
 				<Alpha childKey="HighlightTexture" smoothing="IN" duration=".75" order="2" fromAlpha="1" toAlpha="0"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="GlowAnim" setToFinalAlpha="true">
+				<Alpha childKey="GlowBorder1" fromAlpha="0" toAlpha="1" duration="0.1"/>
+				<Alpha childKey="GlowBorder1" fromAlpha="1" toAlpha="0" duration="1.5"/>
+				<Alpha childKey="GlowBorder2" fromAlpha="0" toAlpha="1" duration="0.1"/>
+				<Alpha childKey="GlowBorder2" fromAlpha="1" toAlpha="0" duration="1.5"/>
+				<Alpha childKey="GlowBorder3" fromAlpha="0" toAlpha="1" duration="0.1"/>
+				<Alpha childKey="GlowBorder3" fromAlpha="1" toAlpha="0" duration="1.5"/>
 			</AnimationGroup>
 		</Animations>
 	</Button>

@@ -949,7 +949,6 @@ function SCENARIO_CONTENT_TRACKER_MODULE:UpdateWeightedProgressCriteria(stageDes
 		objectiveBlock:Hide();
 		stageBlock:Hide();
 	end
-	progressBar.Bar.AnimIn:Play();
 end
 
 function SCENARIO_CONTENT_TRACKER_MODULE:UpdateCriteria(numCriteria, objectiveBlock)

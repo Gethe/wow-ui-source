@@ -48,8 +48,7 @@ function MainMenuBar_ArtifactOnAnimatedValueChangedCallback()
 end
 
 function MainMenuBar_ArtifactTick_OnEnter(self)
-	MainMenu_AnchorTickTooltip(self);
-
+	GameTooltip_SetDefaultAnchor(GameTooltip, UIParent);
 	GameTooltip:SetText(ARTIFACT_POWER_TOOLTIP_TITLE:format(BreakUpLargeNumbers(ArtifactWatchBar.totalXP), BreakUpLargeNumbers(ArtifactWatchBar.xp), BreakUpLargeNumbers(ArtifactWatchBar.xpForNextPoint)), HIGHLIGHT_FONT_COLOR:GetRGB());
 	GameTooltip:AddLine(" ");
 	GameTooltip:AddLine(ARTIFACT_POWER_TOOLTIP_BODY:format(ArtifactWatchBar.numPointsAvailableToSpend), nil, nil, nil, true);
@@ -398,19 +397,6 @@ function MainMenuBarVehicleLeaveButton_OnClicked(self)
 	end
 end
 
-function MainMenu_AnchorTickTooltip(self)
-	if ( self:IsShown() ) then
-		local x, y = self:GetCenter();
-		if ( x >= ( GetScreenWidth() / 2 ) ) then
-			GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-		else
-			GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		end
-	else
-		GameTooltip_SetDefaultAnchor(GameTooltip, UIParent);
-	end
-end
-
 function ExhaustionTick_OnLoad(self)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("PLAYER_XP_UPDATE");
@@ -473,8 +459,8 @@ function ExhaustionTick_OnEvent(self, event, ...)
 end
 
 function ExhaustionToolTipText()
-	MainMenu_AnchorTickTooltip(ExhaustionTick);
-	
+	GameTooltip_SetDefaultAnchor(GameTooltip, UIParent);
+
 	local exhaustionStateID, exhaustionStateName, exhaustionStateMultiplier = GetRestState();
 
 	local exhaustionCurrXP, exhaustionMaxXP;

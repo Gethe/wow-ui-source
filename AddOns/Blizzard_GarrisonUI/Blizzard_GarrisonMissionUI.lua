@@ -123,7 +123,7 @@ function GarrisonFollowerMission:OnEventMainFrame(event, ...)
 	elseif ( event == "GARRISON_RANDOM_MISSION_ADDED" ) then
 		GarrisonMissionFrame_RandomMissionAdded(self, ...);
 	elseif ( event == "CURRENT_SPELL_CAST_CHANGED" ) then
-		if ( SpellCanTargetGarrisonFollower() ) then
+		if ( SpellCanTargetGarrisonFollower(0) ) then
 			self.isTargettingGarrisonFollower = true;
 			self:GetMissionPage():UpdatePortraitPulse();
 		elseif ( self.isTargettingGarrisonFollower ) then
@@ -329,8 +329,16 @@ function GarrisonFollowerMission:AssignFollowerToMission(frame, info)
 
 	if info.slotSoundKitID then
 		PlaySoundKitID(info.slotSoundKitID);
+	end
+
+	local soundToPlay;
+	if (info.isTroop) then
+		soundToPlay = GarrisonFollowerOptions[info.followerTypeID].missionPageAssignFollowerSound;
 	else
-		PlaySound("UI_Garrison_CommandTable_AssignFollower");
+		soundToPlay = GarrisonFollowerOptions[info.followerTypeID].missionPageAssignTroopSound;
+	end
+	if (soundToPlay) then
+		PlaySound(soundToPlay);
 	end
 
 	frame.Name:Show();
@@ -406,7 +414,7 @@ end
 
 function GarrisonFollowerMission:OnMouseUpMissionFollower(frame, button)
 	if ( button == "LeftButton" ) then
-		if ( frame.info and SpellCanTargetGarrisonFollower() and C_Garrison.TargetSpellHasFollowerTemporaryAbility() ) then
+		if ( frame.info and SpellCanTargetGarrisonFollower(frame.info.followerID) and C_Garrison.TargetSpellHasFollowerTemporaryAbility() ) then
 			GarrisonFollower_DisplayUpgradeConfirmation(frame.info.followerID);
 		end
 	else

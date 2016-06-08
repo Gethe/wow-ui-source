@@ -98,10 +98,12 @@ function MacroFrame_Update()
 					MacroFrameText:SetText(body);
 					MacroFrameSelectedMacroButton:SetID(i);
 					MacroFrameSelectedMacroButtonIcon:SetTexture(texture);
-					if (tonumber(texture) ~= nil) then
+					if (type(texture) == "number") then
 						MacroPopupFrame.selectedIconTexture = texture;
-					else
+					elseif (type(texture) == "string") then
 						MacroPopupFrame.selectedIconTexture = gsub( strupper(texture), "INTERFACE\\ICONS\\", "");
+					else
+						MacroPopupFrame.selectedIconTexture = nil;
 					end
 				else
 					macroButton:SetChecked(false);

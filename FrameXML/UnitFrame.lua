@@ -134,6 +134,7 @@ function UnitFrame_Initialize (self, unit, name, portrait, healthbar, healthtext
 		self:RegisterUnitEvent("UNIT_SPELLCAST_START", unit);
 		self:RegisterUnitEvent("UNIT_SPELLCAST_STOP", unit);
 		self:RegisterUnitEvent("UNIT_SPELLCAST_FAILED", unit);
+		self:RegisterUnitEvent("UNIT_SPELLCAST_SUCCEEDED", unit);
 	end
 end
 
@@ -217,7 +218,7 @@ function UnitFrame_OnEvent(self, event, ...)
 			UnitFrameHealPredictionBars_Update(self);
 		elseif ( event == "UNIT_HEAL_ABSORB_AMOUNT_CHANGED" ) then
 			UnitFrameHealPredictionBars_Update(self);
-		elseif ( event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_STOP" or event == "UNIT_SPELLCAST_FAILED" ) then
+		elseif ( event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_STOP" or event == "UNIT_SPELLCAST_FAILED" or event == "UNIT_SPELLCAST_SUCCEEDED" ) then
 			local name, nameSubtext, text, texture, startTime, endTime, isTradeSkill, castID, notInterruptible, spellID = UnitCastingInfo(unit);
 			UnitFrameManaCostPredictionBars_Update(self, event == "UNIT_SPELLCAST_START", startTime, endTime, spellID);
 		end

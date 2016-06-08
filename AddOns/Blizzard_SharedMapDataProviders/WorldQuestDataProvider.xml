@@ -2,7 +2,7 @@
 ..\FrameXML\UI.xsd">
 	<Script file="WorldQuestDataProvider.lua"/>
 
-	<Frame name="WorldQuestPinTemplate" hidden="true" flattenRenderLayers="true" enableMouse="true" mixin="WorldQuestPinMixin" virtual="true">
+	<Frame name="WorldQuestPinTemplate" hidden="true" flattenRenderLayers="true" enableMouseMotion="true" mixin="WorldQuestPinMixin" virtual="true">
 		<Size x="50" y="50"/>
 
 		<Layers>

@@ -38,6 +38,10 @@ function AnimatedStatusBarMixin:SetOnAnimatedValueChangedCallback(animatedValueC
 	self.animatedValueChangedCallback = animatedValueChangedCallback;
 end
 
+function AnimatedStatusBarMixin:SetDeferAnimationCallback(deferAnimationCallback)
+	self.DeferAnimation = deferAnimationCallback;
+end
+
 function AnimatedStatusBarMixin:GetOnAnimatedValueChangedCallback()
 	return self.animatedValueChangedCallback;
 end
@@ -95,7 +99,7 @@ function AnimatedStatusBarMixin:GetContinuousAnimatedValue()
 end
 
 function AnimatedStatusBarMixin:OnUpdate(elapsed)
-	if not self:IsAnimating() and self.accumulationTimeout then
+	if not self:IsAnimating() and self.accumulationTimeout and (not self.DeferAnimation or not self.DeferAnimation()) then
 		if self.pendingReset then
 			self:ProcessChangesInstantly();
 			self.accumulationTimeout = nil;

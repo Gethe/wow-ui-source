@@ -348,11 +348,16 @@ function WardrobeTransmogFrame_ApplyPending(lastAcceptedWarningIndex)
 	end
 end
 
-function WardrobeTransmogFrame_LoadOutfit(outfitID)
+WardrobeOutfitMixin = { };
+
+function WardrobeOutfitMixin:LoadOutfit(outfitID)
+	if ( not outfitID ) then
+		return;
+	end
 	C_Transmog.LoadOutfit(outfitID);
 end
 
-function WardrobeTransmogFrame_GetSourceIDForOutfit(slot, transmogType)
+function WardrobeOutfitMixin:GetSlotSourceID(slot, transmogType)
 	local slotID = GetInventorySlotInfo(slot);
 	local isTransmogrified, hasPending, isPendingCollected, canTransmogrify, cannotTransmogrifyReason, hasUndo = C_Transmog.GetSlotInfo(slotID, transmogType);
 	if ( not canTransmogrify and not hasUndo ) then
@@ -361,6 +366,19 @@ function WardrobeTransmogFrame_GetSourceIDForOutfit(slot, transmogType)
 
 	local _, _, sourceID = WardrobeCollectionFrame_GetInfoForSlot(slot, transmogType);
 	return sourceID;
+end
+
+function WardrobeOutfitMixin:OnSelectOutfit(outfitID)
+	if ( outfitID ) then
+		SetCVar("lastTransmogOutfitID", outfitID);
+	else
+		-- outfitID can be 0, so use empty string for none
+		SetCVar("lastTransmogOutfitID", "");
+	end
+end
+
+function WardrobeOutfitMixin:GetLastOutfitID()
+	return tonumber(GetCVar("lastTransmogOutfitID"));
 end
 
 -- ***** BUTTONS
@@ -1049,18 +1067,21 @@ function WardrobeCollectionFrame_ResetPage()
 end
 
 function WardrobeCollectionFrame_FilterVisuals()
-	if ( WardrobeFrame_IsAtTransmogrifier() ) then
-		local visualsList = WardrobeCollectionFrame.visualsList;
-		local filteredVisualsList = { };
-		for i = 1, #visualsList do
+	local isAtTransmogrifier = WardrobeFrame_IsAtTransmogrifier();
+	local visualsList = WardrobeCollectionFrame.visualsList;
+	local filteredVisualsList = { };
+	for i = 1, #visualsList do
+		if ( isAtTransmogrifier ) then
 			if ( visualsList[i].isUsable and visualsList[i].isCollected ) then
 				tinsert(filteredVisualsList, visualsList[i]);
 			end
+		else
+			if ( not visualsList[i].isHideVisual ) then
+				tinsert(filteredVisualsList, visualsList[i]);
+			end
 		end
-		WardrobeCollectionFrame.filteredVisualsList = filteredVisualsList;
-	else
-		WardrobeCollectionFrame.filteredVisualsList = WardrobeCollectionFrame.visualsList;
 	end
+	WardrobeCollectionFrame.filteredVisualsList = filteredVisualsList;
 end
 
 function WardrobeCollectionFrame_SortVisuals()

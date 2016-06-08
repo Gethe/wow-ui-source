@@ -107,7 +107,9 @@ function DressUpFrame_OnDressModel(self)
 	end
 end
 
-function DressUpFrame_GetDisplayedSourceID(slot, transmogType)
+DressUpOutfitMixin = { };
+
+function DressUpOutfitMixin:GetSlotSourceID(slot, transmogType)
 	local slotID = GetInventorySlotInfo(slot);
 	local appearanceSourceID, illusionSourceID = DressUpModel:GetSlotTransmogSources(slotID);
 	if ( transmogType == LE_TRANSMOG_TYPE_APPEARANCE ) then
@@ -117,7 +119,7 @@ function DressUpFrame_GetDisplayedSourceID(slot, transmogType)
 	end
 end
 
-function DressUpFrame_LoadOutfit(outfitID)
+function DressUpOutfitMixin:LoadOutfit(outfitID)
 	if ( not outfitID ) then
 		return;
 	end

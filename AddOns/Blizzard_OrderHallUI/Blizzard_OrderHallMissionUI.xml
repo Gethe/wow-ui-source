@@ -379,11 +379,16 @@
 				<Frames>
 					<Frame parentKey="MissionList" inherits="GarrisonMissionListTemplate" mixin="OrderHallMissionListMixin" name="$parentMissions">
 						<Frames>
-							<Frame parentKey="CombatAllyUI" inherits="GarrisonInfoBoxFiligreeTemplate" mixin="OrderHallCombatAllyMixin">
+							<Frame parentKey="CombatAllyUI" mixin="OrderHallCombatAllyMixin">
 								<Size x="890" y="115"/>
 								<Anchors>
 									<Anchor point="TOP" relativeKey="$parent" relativePoint="BOTTOM" x="0" y="-10"/>
 								</Anchors>
+								<Layers>
+									<Layer level="BACKGROUND">
+										<Texture parentKey="Background" atlas="ClassHall-CombatAlly" setAllPoints="true"/>
+									</Layer>
+								</Layers>
 								<Frames>
 									<Frame parentKey="Available" setAllPoints="true">
 										<Frames>

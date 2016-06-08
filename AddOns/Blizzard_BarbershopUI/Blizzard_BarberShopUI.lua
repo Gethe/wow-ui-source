@@ -6,7 +6,8 @@ STYLE_FACE = 5;
 STYLE_CUSTOM_DISPLAY1 = 6;
 STYLE_CUSTOM_DISPLAY2 = 7;
 STYLE_CUSTOM_DISPLAY3 = 8;
-STYLE_NUM_CUSTOM_DISPLAY = 3;
+STYLE_CUSTOM_DISPLAY4 = 9;
+STYLE_NUM_CUSTOM_DISPLAY = 4;
 
 function BarberShop_OnLoad(self)
 	BarberShop_UpdateHairCustomization(self);
@@ -25,11 +26,7 @@ function BarberShop_OnLoad(self)
 		end
 	end
 	
-	for i = STYLE_CUSTOM_DISPLAY1, (STYLE_CUSTOM_DISPLAY1 + STYLE_NUM_CUSTOM_DISPLAY - 1) do
-		if ( IsBarberShopStyleValid(i) ) then
-			self.Selector[i]:Show();
-		end
-	end
+	BarberShop_UpdateCustomDisplays(self)
 end
 
 function BarberShop_OnShow(self)
@@ -110,6 +107,7 @@ function BarberShop_UpdateSelector(self)
 	local name, _, _, isCurrent = GetBarberShopStyleInfo(self:GetID());
 	BarberShop_UpdateBanner(name);
 	BarberShop_SetLabelColor(self.Category, isCurrent);
+	BarberShop_UpdateCustomDisplays(self:GetParent());
 end
 
 function BarberShop_UpdateHairCustomization(self)
@@ -134,4 +132,11 @@ function BarberShop_ResetLabelColors()
 	for i=1, #BarberShopFrame.Selector do
 		BarberShop_SetLabelColor(BarberShopFrame.Selector[i].Category, i);
 	end
+end
+
+function BarberShop_UpdateCustomDisplays(self)
+	for i = STYLE_CUSTOM_DISPLAY1, (STYLE_CUSTOM_DISPLAY1 + STYLE_NUM_CUSTOM_DISPLAY - 1) do
+		self.Selector[i]:SetShown(IsBarberShopStyleValid(i));
+	end
+	self:Layout();
 end

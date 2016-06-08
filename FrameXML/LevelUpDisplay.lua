@@ -9,6 +9,7 @@ TOAST_PET_BATTLE_LEVELUP = "petbattleleveluptoast";
 TOAST_PET_BATTLE_LOOT = "petbattleloot";
 TOAST_CHALLENGE_MODE_RECORD = "challengemode";
 TOAST_GARRISON_ABILITY = "garrisonability";
+TOAST_WORLD_QUESTS_UNLOCKED = "worldquestsunlocked";
 
 LEVEL_UP_EVENTS = {
 --  Level  = {unlock}
@@ -87,6 +88,12 @@ local levelUpTexCoords = {
 		goldBG = { 0.56054688, 0.99609375, 0.24218750, 0.46679688 },
 		gLine = { 0.00195313, 0.81835938, 0.01953125, 0.03320313 },
 		gLineDelay = 1.5,
+	},
+	[TOAST_WORLD_QUESTS_UNLOCKED] = {
+		dot = { 0.64257813, 0.68359375, 0.18750000, 0.23046875 },
+		goldBG = { 0.56054688, 0.99609375, 0.24218750, 0.46679688 },
+		gLine = { 0.00195313, 0.81835938, 0.01953125, 0.03320313 },
+		gLineDelay = 0,
 	},
 }
 
@@ -235,6 +242,7 @@ function LevelUpDisplay_OnLoad(self)
 	self:RegisterEvent("PET_BATTLE_LOOT_RECEIVED");
 	self:RegisterEvent("GARRISON_BUILDING_ACTIVATED");
 	self:RegisterEvent("CHARACTER_UPGRADE_SPELL_TIER_SET");
+	self:RegisterEvent("QUEST_TURNED_IN");
 	self.currSpell = 0;
 	
 	self.PlayBanner = function(self, data)
@@ -253,8 +261,6 @@ function LevelUpDisplay_OnLoad(self)
 		LevelUpDisplay_StartDisplay(self, data.unlockList);
 	end
 end
-
-
 
 function LevelUpDisplay_OnEvent(self, event, ...)
 	local arg1 = ...;
@@ -326,6 +332,13 @@ function LevelUpDisplay_OnEvent(self, event, ...)
 	elseif ( event == "CHARACTER_UPGRADE_SPELL_TIER_SET") then
 		local tierIndex = ...;
 		LevelUpDisplay_AddSpellBucketUnlockEvent(self, tierIndex);
+	elseif ( event == "QUEST_TURNED_IN") then
+		local questID, xp, money = ...;
+		
+		if questID == WORLD_QUESTS_AVAILABLE_QUEST_ID then
+			self.type = TOAST_WORLD_QUESTS_UNLOCKED;
+			LevelUpDisplay_Show(self);
+		end
 	end
 end
 
@@ -337,6 +350,7 @@ function LevelUpDisplay_StopAllAnims(self)
 	self.challengeModeFrame.challengeComplete:Stop();
 	self.levelFrame.levelUp:Stop();
 	self.levelFrame.fastReveal:Stop();
+	self.levelFrame.immediateReveal:Stop();
 end
 
 function LevelUpDisplay_PlayScenario()
@@ -506,6 +520,22 @@ function LevelUpDisplay_BuildPetBattleWinnerList(self)
 			self.winnerSoundKitID = 34091; --UI_PetBattle_PVP_Victory
 		end
 	end;
+	self.currSpell = 1;
+end
+
+function LevelUpDisplay_BuildWorldQuestBucketList(self)
+	self.unlockList = {};
+	table.insert(self.unlockList,
+			{	
+				entryType = "worldquest",
+				icon="Interface\\Icons\\icon_treasuremap",
+				subIcon=SUBICON_TEXCOOR_LOCK,
+				text=LEVEL_UP_WORLD_QUESTS,
+				subText=LEVEL_UP_FEATURE,
+				link=LEVEL_UP_FEATURE2.." "..LEVEL_UP_WORLD_QUEST_LINK,
+				instructionalText = LEVEL_UP_WORLD_QUESTS_INSTRUCTIONS,
+			}
+	);
 	self.currSpell = 1;
 end
 
@@ -845,6 +875,9 @@ function LevelUpDisplay_StartDisplay(self, beginUnlockList)
 				end
 			elseif (self.type == TOAST_GARRISON_ABILITY ) then
 				LevelUpDisplay_BuildGarrisonAbilityList(self);
+			elseif (self.type == TOAST_WORLD_QUESTS_UNLOCKED ) then
+				LevelUpDisplay_BuildWorldQuestBucketList(self);
+				playAnim = self.levelFrame.immediateReveal;
 			end
 		end
 
@@ -868,6 +901,7 @@ function LevelUpDisplay_StartDisplay(self, beginUnlockList)
 			self.gLine.grow.anim1:SetStartDelay(levelUpTexCoords[self.type].gLineDelay);
 			self.gLine2.grow.anim1:SetStartDelay(levelUpTexCoords[self.type].gLineDelay);
 			self.blackBg.grow.anim1:SetStartDelay(levelUpTexCoords[self.type].gLineDelay);
+
 			playAnim:Play();
 			if (levelUpTexCoords[self.type].subIcon) then
 				self.battlePetLevelFrame.subIcon:SetTexCoord(unpack(levelUpTexCoords[self.type].subIcon));
@@ -900,11 +934,14 @@ function LevelUpDisplay_AnimStep(self, fast)
 		self.spellFrame.rarityIcon:Hide();
 		self.spellFrame.rarityValue:SetText("");
 		self.spellFrame.rarityValue:Hide();
+		self.spellFrame.instructionalText:SetText("");
 		
 		if (not spellInfo.entryType or
 			spellInfo.entryType == "spell" or
 			spellInfo.entryType == "dungeon" or
-			spellInfo.entryType == "heroicdungeon") then
+			spellInfo.entryType == "heroicdungeon" or
+			spellInfo.entryType == "worldquest"
+			) then
 			self.spellFrame.name:SetText(spellInfo.text);
 			self.spellFrame.flavorText:SetText(spellInfo.subText);
 			self.spellFrame.icon:Show();
@@ -913,7 +950,11 @@ function LevelUpDisplay_AnimStep(self, fast)
 				self.spellFrame.subIcon:Show();
 				self.spellFrame.subIcon:SetTexCoord(unpack(spellInfo.subIcon));
 			end
+			if (spellInfo.instructionalText) then
+				self.spellFrame.instructionalText:SetText(spellInfo.instructionalText);
+			end
 			self.spellFrame:Show();
+			self.spellFrame.showAnim.anim2:SetStartDelay(spellInfo.entryType == "worldquest" and 5 or 1.8);
 			self.spellFrame.showAnim:Play();
 		elseif (spellInfo.entryType == "petlevelup") then
 			if (spellInfo.subIcon) then
@@ -1200,6 +1241,9 @@ function LevelUpDisplay_ChatPrint(self, level, levelUpType, ...)
 			LevelUpDisplay_BuildSpellBucketList(chatLevelUP);
 			levelstring = format(SPELL_BUCKET_LEVEL_UP, level, name or "");
 		end
+		info = ChatTypeInfo["SYSTEM"];
+	elseif ( levelUpType == TOAST_WORLD_QUESTS_UNLOCKED ) then
+		LevelUpDisplay_BuildWorldQuestBucketList(chatLevelUP);
 		info = ChatTypeInfo["SYSTEM"];
 	end
 

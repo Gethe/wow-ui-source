@@ -1172,13 +1172,11 @@
 							</Layer>
 						</Layers>
 					</Frame>
-					<Frame parentKey="OutfitDropDown" name="WardrobeOutfitDropDown" inherits="WardrobeOutfitDropDownTemplate">
+					<Frame parentKey="OutfitDropDown" name="WardrobeOutfitDropDown" inherits="WardrobeOutfitDropDownTemplate" mixin="WardrobeOutfitMixin">
 						<KeyValues>
 							<KeyValue key="width" value="188" type="number"/>
 							<KeyValue key="minMenuStringWidth" value="152" type="number"/>
 							<KeyValue key="maxMenuStringWidth" value="216" type="number"/>
-							<KeyValue key="LoadOutfitFunc" value="WardrobeTransmogFrame_LoadOutfit" type="global"/>
-							<KeyValue key="GetDisplayedSourceIDFunc" value="WardrobeTransmogFrame_GetSourceIDForOutfit" type="global"/>
 						</KeyValues>
 						<Anchors>
 							<Anchor point="TOPLEFT" x="-14" y="28"/>

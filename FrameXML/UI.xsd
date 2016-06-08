@@ -290,6 +290,7 @@
 				<xs:element name="OnValueChanged" type="ScriptType"/>
 				<xs:element name="OnMinMaxChanged" type="ScriptType"/>				
 				<xs:element name="OnUpdateModel" type="ScriptType"/>
+				<xs:element name="OnModelLoaded" type="ScriptType"/>
 				<xs:element name="OnAnimFinished" type="ScriptType"/>
 				<xs:element name="OnEnterPressed" type="ScriptType"/>
 				<xs:element name="OnEscapePressed" type="ScriptType"/>
@@ -324,6 +325,8 @@
 				<xs:element name="OnTooltipSetSpell" type="ScriptType"/>
 				<xs:element name="OnTooltipSetQuest" type="ScriptType"/>
 				<xs:element name="OnTooltipSetAchievement" type="ScriptType"/>
+				<xs:element name="OnTooltipSetFramestack" type="ScriptType"/>
+				<xs:element name="OnTooltipSetEquipmentSet" type="ScriptType"/>
 				<xs:element name="OnEnable" type="ScriptType"/>
 				<xs:element name="OnDisable" type="ScriptType"/>
 				<xs:element name="OnArrowPressed" type="ScriptType"/>
@@ -331,6 +334,8 @@
 				<xs:element name="OnButtonUpdate" type="ScriptType"/>
 				<xs:element name="OnError" type="ScriptType"/>
 				<xs:element name="OnDressModel" type="ScriptType"/>
+				<xs:element name="OnCooldownDone" type="ScriptType"/>
+				<xs:element name="OnPanFinished" type="ScriptType"/>
 			</xs:choice>
 		</xs:sequence>
 	</xs:complexType>
@@ -629,6 +634,8 @@
 				<xs:attribute name="frameLevel" type="xs:int"/>
 				<xs:attribute name="id" type="xs:int" default="0"/>
 				<xs:attribute name="enableMouse" type="xs:boolean" default="false"/>
+				<xs:attribute name="enableMouseClicks" type="xs:boolean" default="false"/>
+				<xs:attribute name="enableMouseMotion" type="xs:boolean" default="false"/>
 				<xs:attribute name="enableKeyboard" type="xs:boolean" default="false"/>
 				<xs:attribute name="clampedToScreen" type="xs:boolean" default="false"/>
 				<xs:attribute name="protected" type="xs:boolean" default="false"/>
