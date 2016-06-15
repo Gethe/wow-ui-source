@@ -84,15 +84,15 @@ end
 
 function ClassTrialDialogMixin:OnEvent(event, ...)
 	if event == "EVENT_CLASS_TRIAL_TIMER_START" then
-		self:ShowThanks();
+		self:ShowThanks("UI_70_Boost_ThanksforPlaying");
 	elseif event == "EVENT_CLASS_TRIAL_UPGRADE_COMPLETE" then
 		self:OnUpgradeComplete();
 	end
 end
 
-function ClassTrialDialogMixin:OnShow()
+function ClassTrialDialogMixin:OnShow(sound)
 	ClassTrialTimerDisplay:Hide();
-	PlaySound("igClassTrialThanksDialogShow");
+	PlaySound(sound or "UI_70_Boost_ThanksforPlaying_Smaller");
 end
 
 function ClassTrialDialogMixin:OnLoad()

@@ -297,6 +297,7 @@ function CompactUnitFrame_UpdateAll(frame)
 		CompactUnitFrame_UpdateReadyCheck(frame);
 		CompactUnitFrame_UpdateAuras(frame);
 		CompactUnitFrame_UpdateCenterStatusIcon(frame);
+		CompactUnitFrame_UpdateClassificationIndicator(frame);
 	end
 end
 
@@ -513,10 +514,6 @@ function CompactUnitFrame_UpdateName(frame)
 		end
 
 		frame.name:Show();
-	end
-	
-	if (frame.nameChangedCallback) then
-		frame.nameChangedCallback(frame);
 	end
 end
 
@@ -934,6 +931,23 @@ function CompactUnitFrame_UpdateCenterStatusIcon(frame)
 		else
 			frame.centerStatusIcon:Hide();
 		end
+	end
+end
+
+function CompactUnitFrame_UpdateClassificationIndicator(frame)
+	if ( frame.optionTable.showClassificationIndicator ) then
+		local classification = UnitClassification(frame.unit);
+		if ( classification == "elite" or classification == "worldboss" ) then
+			frame.classificationIndicator:SetAtlas("nameplates-icon-elite-gold");
+			frame.classificationIndicator:Show();
+		elseif ( classification == "rareelite" ) then
+			frame.classificationIndicator:SetAtlas("nameplates-icon-elite-silver");
+			frame.classificationIndicator:Show();
+		else
+			frame.classificationIndicator:Hide();
+		end
+	elseif ( frame.classificationIndicator ) then
+		frame.classificationIndicator:Hide();
 	end
 end
 
@@ -1648,6 +1662,7 @@ DefaultCompactNamePlateEnemyFrameOptions = {
 	displayNameWhenSelected = true,
 	displayNameByPlayerNameRules = true,
 	greyOutWhenTapDenied = true,
+	showClassificationIndicator = true,
 
 	selectedBorderColor = CreateColor(1, 1, 1, .55),
 	tankBorderColor = CreateColor(1, 1, 0, .6),
@@ -1727,8 +1742,8 @@ function DefaultCompactNamePlateEnemyFrameSetup(frame)
 end
 
 function DefaultCompactNamePlatePlayerFrameSetup(frame)
-	frame.healthBar:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", 12, 5);
-	frame.healthBar:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -12, 5);
+	frame.healthBar:SetPoint("LEFT", frame, "LEFT", 12, 5);
+	frame.healthBar:SetPoint("RIGHT", frame, "RIGHT", -12, 5);
 		
 	DefaultCompactNamePlateFrameSetupInternal(frame, DefaultCompactNamePlatePlayerFrameSetUpOptions, DefaultCompactNamePlatePlayerFrameOptions);
 end
@@ -1788,6 +1803,8 @@ function DefaultCompactNamePlateFrameSetupInternal(frame, setupOptions, frameOpt
 	frame.overHealAbsorbGlow:SetPoint("BOTTOMRIGHT", frame.healthBar, "BOTTOMLEFT", 7, 0);
 	frame.overHealAbsorbGlow:SetPoint("TOPRIGHT", frame.healthBar, "TOPLEFT", 7, 0);
 	frame.overHealAbsorbGlow:SetWidth(16);
+
+	frame.classificationIndicator = frame.ClassificationFrame.classificationIndicator;
 
 	frame.LoseAggroAnim:Stop();
 

@@ -465,12 +465,16 @@ function BonusObjectiveTracker_ShowRewardsTooltip(block)
 					needsSpacer = true;
 					headerLine = headerLine + 1;
 				
-					local title, factionID = C_TaskQuest.GetQuestInfoByQuestID(questID);
+					local title, factionID, capped = C_TaskQuest.GetQuestInfoByQuestID(questID);
 
 					if ( factionID ) then
 						local factionName = GetFactionInfoByID(factionID);
 						if ( factionName ) then	
-							GameTooltip:AddLine(factionName, 0.4, 0.733, 1.0);
+							if (capped) then
+								GameTooltip:AddLine(factionName, GRAY_FONT_COLOR:GetRGB());
+							else
+								GameTooltip:AddLine(factionName, 0.4, 0.733, 1.0);
+							end
 							headerLine = headerLine + 1;
 						end
 					end

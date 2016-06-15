@@ -45,6 +45,10 @@ function MountJournal_OnShow(self)
 	SetPortraitToTexture(CollectionsJournalPortrait, "Interface\\Icons\\MountJournalPortrait");
 end
 
+function MountJournal_OnHide(self)
+	C_MountJournal.ClearRecentFanfares();
+end
+
 function MountJournal_UpdateMountList()
 	local scrollFrame = MountJournal.ListScrollFrame;
 	local offset = HybridScrollFrame_GetOffset(scrollFrame);
@@ -60,7 +64,7 @@ function MountJournal_UpdateMountList()
 	else
 		MountJournal.MountDisplay.NoMounts:Hide();
 	end
-	
+
 	local numDisplayedMounts = C_MountJournal.GetNumDisplayedMounts();
 	for i=1, #buttons do
 		local button = buttons[i];
@@ -74,7 +78,7 @@ function MountJournal_UpdateMountList()
 			button.icon:SetTexture(needsFanFare and COLLECTIONS_FANFARE_ICON or icon);
 			button.new:SetShown(needsFanFare);
 			button.newGlow:SetShown(needsFanFare);
-			
+
 			button.index = index;
 			button.spellID = spellID;
 
@@ -85,7 +89,7 @@ function MountJournal_UpdateMountList()
 				button.DragButton.ActiveTexture:Hide();
 			end
 			button:Show();
-			
+
 			if ( MountJournal.selectedSpellID == spellID ) then
 				button.selected = true;
 				button.selectedTexture:Show();
@@ -102,7 +106,7 @@ function MountJournal_UpdateMountList()
 				button.additionalText = nil;
 				button.icon:SetDesaturated(false);
 				button.icon:SetAlpha(1.0);
-				button.name:SetFontObject("GameFontNormal");				
+				button.name:SetFontObject("GameFontNormal");
 			else
 				if (isCollected) then
 					button.unusable:Show();
@@ -117,7 +121,7 @@ function MountJournal_UpdateMountList()
 					button.icon:SetAlpha(0.25);
 					button.additionalText = nil;
 					button.name:SetFontObject("GameFontDisable");
-				end			
+				end
 			end
 
 			if ( isFavorite ) then
@@ -186,7 +190,7 @@ function MountJournal_UpdateMountDisplay()
 
 				local offsetX = math.min(MountJournal.MountDisplay.InfoButton.Name:GetStringWidth(), MountJournal.MountDisplay.InfoButton.Name:GetWidth());
 				MountJournal.MountDisplay.InfoButton.New:SetPoint("LEFT", MountJournal.MountDisplay.InfoButton.Name, "LEFT", offsetX + 8, 0);
-				
+
 				MountJournal.MountDisplay.InfoButton.Icon:SetTexture(COLLECTIONS_FANFARE_ICON);
 			else
 				MountJournal.MountDisplay.InfoButton.New:Hide();
@@ -199,7 +203,7 @@ function MountJournal_UpdateMountDisplay()
 			MountJournal.MountDisplay.InfoButton.Lore:SetText(descriptionText)
 
 			MountJournal.MountDisplay.lastDisplayed = spellID;
-			
+
 			if creatureDisplayID == 0 then
 				local raceID = UnitRace("player");
 				local gender = UnitSex("player");
@@ -281,7 +285,7 @@ function MountJournalMountButton_UseMount(mountID)
 	local creatureName, spellID, icon, active = C_MountJournal.GetMountInfoByID(mountID);
 	if ( active ) then
 		C_MountJournal.Dismiss();
-	elseif ( C_MountJournal.NeedsFanfare(mountID) ) then 
+	elseif ( C_MountJournal.NeedsFanfare(mountID) ) then
 		if MountJournal.MountDisplay.UnwrapAnim:IsPlaying() then
 			return;
 		end
@@ -365,13 +369,13 @@ end
 
 function MountJournalFilterDropDown_Initialize(self, level)
 	local info = UIDropDownMenu_CreateInfo();
-	info.keepShownOnClick = true;	
+	info.keepShownOnClick = true;
 
 	if level == 1 then
 		info.text = COLLECTED
 		info.func = function(_, _, _, value)
 						C_MountJournal.SetCollectedFilterSetting(LE_MOUNT_JOURNAL_FILTER_COLLECTED,value);
-					end 
+					end
 		info.checked = C_MountJournal.GetCollectedFilterSetting(LE_MOUNT_JOURNAL_FILTER_COLLECTED);
 		info.isNotRadio = true;
 		UIDropDownMenu_AddButton(info, level)
@@ -379,17 +383,17 @@ function MountJournalFilterDropDown_Initialize(self, level)
 		info.text = NOT_COLLECTED
 		info.func = function(_, _, _, value)
 						C_MountJournal.SetCollectedFilterSetting(LE_MOUNT_JOURNAL_FILTER_NOT_COLLECTED,value);
-					end 
+					end
 		info.checked = C_MountJournal.GetCollectedFilterSetting(LE_MOUNT_JOURNAL_FILTER_NOT_COLLECTED);
 		info.isNotRadio = true;
 		UIDropDownMenu_AddButton(info, level)
-	
+
 		info.checked = 	nil;
 		info.isNotRadio = nil;
 		info.func =  nil;
 		info.hasArrow = true;
 		info.notCheckable = true;
-		
+
 		info.text = SOURCES;
 		info.value = 1;
 		UIDropDownMenu_AddButton(info, level)
@@ -397,14 +401,14 @@ function MountJournalFilterDropDown_Initialize(self, level)
 		info.hasArrow = false;
 		info.isNotRadio = true;
 		info.notCheckable = true;
-			
+
 		info.text = CHECK_ALL
 		info.func = function()
 						C_MountJournal.SetAllSourceFilters(true);
 						UIDropDownMenu_Refresh(MountJournalFilterDropDown, 1, 2);
 					end
 		UIDropDownMenu_AddButton(info, level)
-		
+
 		info.text = UNCHECK_ALL
 		info.func = function()
 						C_MountJournal.SetAllSourceFilters(false);
@@ -489,13 +493,13 @@ function MountOptionsMenu_Init(self, level)
 
 		if (isFavorite) then
 			info.text = BATTLE_PET_UNFAVORITE;
-			info.func = function() 
+			info.func = function()
 				C_MountJournal.SetIsFavorite(MountJournal.menuMountIndex, false);
 			end
 		else
 			info.text = BATTLE_PET_FAVORITE;
-			info.func = function() 
-				C_MountJournal.SetIsFavorite(MountJournal.menuMountIndex, true); 
+			info.func = function()
+				C_MountJournal.SetIsFavorite(MountJournal.menuMountIndex, true);
 			end
 		end
 

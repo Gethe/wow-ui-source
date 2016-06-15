@@ -573,7 +573,6 @@ end
 
 function OrderHallMissionAdventureMapMixin:OnLoad()
 	AdventureMapMixin.OnLoad(self);
-	self.ScrollContainer:SetScalingMode("SCALING_MODE_LINEAR");
 end
 
 function OrderHallMissionAdventureMapMixin:UpdateMissions()

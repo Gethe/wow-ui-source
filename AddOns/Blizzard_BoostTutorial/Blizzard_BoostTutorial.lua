@@ -137,6 +137,21 @@ function BoostTutorial:HighlightSpell(spellID, textID)
 		end
 	end
 
+	-- Check the vehicle bar (For Illidan scenario)
+	if (not exists) then
+		if (OverrideActionBar and OverrideActionBar:IsShown()) then
+			for i = 1, NUM_OVERRIDE_BUTTONS do
+				local button = _G["OverrideActionBarButton" .. i];
+				local actionType, id = GetActionInfo(button.action);
+				if (actionType == "spell" and id == spellID) then
+					frame = button;
+					exists = true;
+					break;
+				end
+			end
+		end
+	end
+
 	-- Check pending actions (actions animating in from being learned)
 	if (not exists) then
 		if (self:IsSpellInPushQueue(spellID)) then

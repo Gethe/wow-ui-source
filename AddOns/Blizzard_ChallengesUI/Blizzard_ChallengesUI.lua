@@ -270,7 +270,15 @@ function ChallengesKeystoneFrameMixin:OnLoad()
 	end
 end
 
+function ChallengesKeystoneFrameMixin:OnShow()
+    PlaySound("UI_70_ChallengeMode_SocketPage_Open");
+    self:Reset();
+end
+
 function ChallengesKeystoneFrameMixin:OnHide()
+    if (not self.startedChallengeMode) then
+        PlaySound("UI_70_ChallengeMode_SocketPage_Close");
+    end
 	C_ChallengeMode.CloseKeystoneFrame();
 	C_ChallengeMode.ClearKeystone();
 	self:Reset();
@@ -294,6 +302,8 @@ function ChallengesKeystoneFrameMixin:Reset()
 		k:SetShown(v.shown);
 		k:SetAlpha(v.alpha);
 	end
+
+    self.startedChallengeMode = nil;
 end
 
 function ChallengesKeystoneFrameMixin:OnMouseUp()
@@ -338,6 +348,7 @@ function ChallengesKeystoneFrameMixin:CreateAndPositionAffixes(num)
 end
 
 function ChallengesKeystoneFrameMixin:OnKeystoneSlotted()
+    PlaySound("UI_70_ChallengeMode_SocketPage_Socket");
 	self.InsertedAnim:Play();
 	self.RunesLargeAnim:Play();
 	self.RunesSmallAnim:Play();
@@ -358,19 +369,22 @@ function ChallengesKeystoneFrameMixin:OnKeystoneSlotted()
 	self.Affixes[1]:SetUp({key = "dmg", pct = dmgPct});
 	self.Affixes[2]:SetUp({key = "health", pct = healthPct});
 	
-
 	for i = 1, #affixes do
 		self.Affixes[i+2]:SetUp(affixes[i]);
 	end
 end
 
 function ChallengesKeystoneFrameMixin:OnKeystoneRemoved()
+    PlaySound("UI_70_ChallengeMode_SocketPage_RemoveKeystone");
 	self:Reset();
 	self.StartButton:Disable();
 end
 
-function ChallengesKeystoneFrameMixin:OnChallengeStarted()
-	self.ActivateAnim:Play();
+function ChallengesKeystoneFrameMixin:StartChallengeMode()
+    PlaySound("UI_70_ChallengeMode_SocketPage_Activate");
+    C_ChallengeMode.StartChallengeMode();
+    self.startedChallengeMode = true;
+    self:Hide();
 end
 
 ChallengesKeystoneSlotMixin = {};
@@ -521,9 +535,11 @@ function ChallengeModeCompleteBannerMixin:PlayBanner(data)
     if (data.onTime) then
         self.DescriptionLineOne:SetText(CHALLENGE_MODE_COMPLETE_BEAT_TIMER);
         self.DescriptionLineTwo:SetFormattedText(CHALLENGE_MODE_COMPLETE_KEYSTONE_UPGRADED, data.keystoneUpgradeLevels);
+        PlaySound("UI_70_ChallengeMode_KeystoneUpgrade");
     else
         self.DescriptionLineOne:SetText(CHALLENGE_MODE_COMPLETE_TIME_EXPIRED);
         self.DescriptionLineTwo:SetText(CHALLENGE_MODE_COMPLETE_TRY_AGAIN);
+        PlaySound("UI_70_ChallengeMode_Complete_NoUpgrade");
     end
     
     local sortedUnitTokens = self:GetSortedPartyMembers();

@@ -318,7 +318,7 @@ function LevelUpDisplay_OnEvent(self, event, ...)
 		self.recordTime = recordTime;
         self.level = level;
 		LevelUpDisplay_Show(self);
-		PlaySoundKitID(33338);
+		PlaySound("UI_70_ChallengeMode_NewRecord");
 	elseif ( event == "GARRISON_BUILDING_ACTIVATED" ) then
 		local _, buildingID = ...;
 		if (GARRISON_ABILITY_HACKS[buildingID]) then

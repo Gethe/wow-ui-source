@@ -272,7 +272,7 @@ end
 function EncounterJournal_OnEvent(self, event, ...)
 	if  event == "EJ_LOOT_DATA_RECIEVED" then
 		local itemID = ...
-		if itemID then
+		if itemID and not EJ_IsLootListOutOfDate() then
 			EncounterJournal_LootCallback(itemID);
 			
 			if EncounterJournal.searchResults:IsShown() then
@@ -1526,7 +1526,7 @@ end
 function EncounterJournal_LootCallback(itemID)
 	local scrollFrame = EncounterJournal.encounter.info.lootScroll;
 	
-	for i,item in pairs(scrollFrame.buttons) do 
+	for i, item in ipairs(scrollFrame.buttons) do 
 		if item.itemID == itemID and item:IsShown() then
 			EncounterJournal_SetLootButton(item, item.index);
 		end

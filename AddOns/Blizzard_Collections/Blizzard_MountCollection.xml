@@ -162,7 +162,7 @@
 				</Scripts>
 				<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
 				<HighlightTexture name="$parentHighlight" file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
-			</Button>	
+			</Button>
 			<Frame parentKey="LeftInset" useParentLevel="true" inherits="InsetFrameTemplate">
 				<Size x="260" y="496"/>
 				<Anchors>
@@ -202,11 +202,11 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnClick> 
+					<OnClick>
 						PlaySound("igMainMenuOptionCheckBoxOn");
 						ToggleDropDownMenu(1, nil, MountJournalFilterDropDown, "MountJournalFilterButton", 74, 15);
-					</OnClick>	
-				</Scripts>						
+					</OnClick>
+				</Scripts>
 			</Button>
 			<Frame name="$parentFilterDropDown" inherits="UIDropDownMenuTemplate">
 				<Scripts>
@@ -242,10 +242,10 @@
 				<Layers>
 					<Layer level="BACKGROUND">
 						<Texture parentKey="YesMountsTex" file="Interface\PetBattles\MountJournal-BG" setAllPoints="true">
-							<TexCoords left="0" right="0.78515625" top="0" bottom="1"/>	
+							<TexCoords left="0" right="0.78515625" top="0" bottom="1"/>
 						</Texture>
 						<Texture parentKey="NoMountsTex" file="Interface\PetBattles\MountJournal-NoMounts" setAllPoints="true" hidden="true">
-							<TexCoords left="0" right="0.78515625" top="0" bottom="1"/>	
+							<TexCoords left="0" right="0.78515625" top="0" bottom="1"/>
 						</Texture>
 					</Layer>
 					<Layer level="OVERLAY">
@@ -416,6 +416,7 @@
 			<OnLoad function="MountJournal_OnLoad"/>
 			<OnEvent function="MountJournal_OnEvent"/>
 			<OnShow function="MountJournal_OnShow"/>
+			<OnHide function="MountJournal_OnHide"/>
 		</Scripts>
 	</Frame>
 </Ui>

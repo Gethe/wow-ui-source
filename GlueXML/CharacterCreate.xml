@@ -654,7 +654,7 @@
 		</Layers>
 		<Scripts>
 			<OnUpdate>
-				CharacterCreate_DeathKnightSwap(self);
+				GlueParent_DeathKnightButtonSwap(self);
 			</OnUpdate>
 		</Scripts>
 	</Button>
@@ -1385,7 +1385,7 @@
 								CharCreate_EnableNextButton(false);
 							</OnClick>
 							<OnUpdate>
-								CharacterCreate_DeathKnightSwap(self);
+								GlueParent_DeathKnightButtonSwap(self);
 							</OnUpdate>
 						</Scripts>
 					</Button>
@@ -1889,7 +1889,7 @@
 										self:SetWidth(self:GetTextWidth() + 50);
 									</OnLoad>
 									<OnClick function="CharacterCreate_Randomize"/>
-									<OnUpdate function="CharacterCreate_DeathKnightSwap"/>
+									<OnUpdate function="GlueParent_DeathKnightButtonSwap"/>
 								</Scripts>
 							</Button>
 
@@ -2307,7 +2307,7 @@
 								CreateCharacter(CharacterCreateNameEdit:GetText(), "Horde");
 							</OnClick>
 							<OnUpdate>
-								CharacterSelect_DeathKnightSwap(self);
+								GlueParent_DeathKnightButtonSwap(self);
 							</OnUpdate>
 						</Scripts>
 					</Button>
@@ -2322,7 +2322,7 @@
 								CreateCharacter(CharacterCreateNameEdit:GetText(), "Alliance");
 							</OnClick>
 							<OnUpdate>
-								CharacterSelect_DeathKnightSwap(self);
+								GlueParent_DeathKnightButtonSwap(self);
 							</OnUpdate>
 						</Scripts>
 					</Button>
@@ -2337,7 +2337,7 @@
 								PlaySound("gsTitleOptionExit");
 							</OnClick>
 							<OnUpdate>
-								CharacterSelect_DeathKnightSwap(self);
+								GlueParent_DeathKnightButtonSwap(self);
 							</OnUpdate>
 						</Scripts>
 					</Button>

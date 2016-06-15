@@ -249,6 +249,7 @@ CharacterUpgrade_Items = {
 				topAtlas = "boostpopup-legion-top",
 				middleAtlas = "boostpopup-legion-middle",
 				bottomAtlas = "boostpopup-legion-bottom",
+				closeButtonAtlas = "boostpopup-legion-exit-frame",
 			},
 
 			tooltipTitle = CHARACTER_UPGRADE_100_TOKEN_TITLE,
@@ -1038,7 +1039,9 @@ function CharacterServices_UpdateSpecializationButtons(classID, gender, parentFr
 	-- Examine all specs to determine which text to show for available specs
 	local availableSpecsToChoose = 0;
 
-	if not allowAllSpecs then
+	if allowAllSpecs then
+		availableSpecsToChoose = numSpecs;
+	else
 		for i = 1, 4 do
 			local specID, _, _, _, _, _, isRecommended, isAllowed = GetSpecializationInfoForClassID(classID, i, gender);
 

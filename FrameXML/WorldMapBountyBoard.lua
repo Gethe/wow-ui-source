@@ -6,6 +6,8 @@ function WorldMapBountyBoardMixin:OnLoad()
 	self.bountyTabPool = CreateFramePool("BUTTON", self, "WorldMapBountyBoardTabTemplate");
 
 	self.BountyName:SetFontObjectsToTry(Game13Font_o1, Game12Font_o1, Game11Font_o1);
+
+	self.minimumTabsToDisplay = 3;
 end
 
 function WorldMapBountyBoardMixin:OnEvent(event, ...)
@@ -84,6 +86,10 @@ function WorldMapBountyBoardMixin:Refresh()
 		self:SetLockedType(WORLD_MAP_BOUNTY_BOARD_LOCK_TYPE_BY_QUEST);
 	elseif #self.bounties == 0 then
 		self:SetLockedType(WORLD_MAP_BOUNTY_BOARD_LOCK_TYPE_NO_BOUNTIES);
+
+		self.selectedBountyIndex = nil;
+
+		self:RefreshBountyTabs();
 	else
 		self:SetLockedType(WORLD_MAP_BOUNTY_BOARD_LOCK_TYPE_NONE);
 		self.selectedBountyIndex = self.selectedBountyIndex or 1;
@@ -116,17 +122,22 @@ function WorldMapBountyBoardMixin:SetLockedType(lockedType)
 	end
 end
 
+function WorldMapBountyBoardMixin:AnchorBountyTab(tab)
+	local TAB_WIDTH = 44;
+	local PADDING = -7;
+	local startX = -((math.max(#self.bounties, self.minimumTabsToDisplay)  - 1) * (TAB_WIDTH + PADDING)) / 2;
+
+	local offsetX = (PADDING + TAB_WIDTH) * (tab.bountyIndex - 1);
+	tab:SetPoint("CENTER", self.TrackerBackground, "CENTER", startX + offsetX, 43);
+end
+
 function WorldMapBountyBoardMixin:RefreshBountyTabs()
 	self.bountyTabPool:ReleaseAll();
 
-	if self.lockedType ~= WORLD_MAP_BOUNTY_BOARD_LOCK_TYPE_NONE then
+	if self.lockedType ~= WORLD_MAP_BOUNTY_BOARD_LOCK_TYPE_NONE and self.lockedType ~= WORLD_MAP_BOUNTY_BOARD_LOCK_TYPE_NO_BOUNTIES then
 		return;
 	end
 
-	local TAB_WIDTH = 44;
-	local PADDING = -7;
-	
-	local startX = -((#self.bounties - 1) * (TAB_WIDTH + PADDING)) / 2;
 	for bountyIndex, bounty in ipairs(self.bounties) do
 		local tab = self.bountyTabPool:Acquire();
 		local selected = self.selectedBountyIndex == bountyIndex;
@@ -147,11 +158,27 @@ function WorldMapBountyBoardMixin:RefreshBountyTabs()
 		end
 		
 		tab.Icon:SetTexture(bounty.icon);
+		tab.Icon:Show();
+		tab.EmptyIcon:Hide();
 		tab.bountyIndex = bountyIndex;
+		tab.isEmpty = false;
 
-		local offsetX = (PADDING + TAB_WIDTH) * (bountyIndex - 1);
-		tab:SetPoint("CENTER", self.TrackerBackground, "CENTER", startX + offsetX, 43);
+		self:AnchorBountyTab(tab);
+		tab:Show();
+	end
 
+	for bountyIndex = #self.bounties + 1, self.minimumTabsToDisplay do
+		local tab = self.bountyTabPool:Acquire();
+
+		tab:SetNormalAtlas("worldquest-tracker-ring");
+		tab:SetHighlightTexture(nil);
+		tab.CheckMark:Hide();
+		tab.Icon:Hide();
+		tab.EmptyIcon:Show();
+		tab.bountyIndex = bountyIndex;
+		tab.isEmpty = true;
+
+		self:AnchorBountyTab(tab);
 		tab:Show();
 	end
 end
@@ -313,10 +340,17 @@ function WorldMapBountyBoardMixin:ShowLockedByQuestTooltip()
 	end
 end
 
-function WorldMapBountyBoardMixin:ShowLockedByNoBountiesTooltip()
+function WorldMapBountyBoardMixin:ShowLockedByNoBountiesTooltip(bountyIndex)
 	self:SetTooltipOwner();
 
-	WorldMapTooltip:SetText(BOUNTY_BOARD_NO_BOUNTIES, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
+	local tooltipText;
+	if bountyIndex then
+		local daysUntilNext = bountyIndex - #self.bounties;
+		tooltipText = _G["BOUNTY_BOARD_NO_BOUNTIES_DAYS_" .. daysUntilNext] or BOUNTY_BOARD_NO_BOUNTIES;
+	else
+		tooltipText = BOUNTY_BOARD_NO_BOUNTIES;
+	end
+	WorldMapTooltip:SetText(tooltipText, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
 
 	WorldMapTooltip:Show();
 end
@@ -329,7 +363,7 @@ function WorldMapBountyBoardMixin:OnEnter()
 	elseif self.lockedType == WORLD_MAP_BOUNTY_BOARD_LOCK_TYPE_BY_QUEST then
 		self:ShowLockedByQuestTooltip();
 	elseif self.lockedType == WORLD_MAP_BOUNTY_BOARD_LOCK_TYPE_NO_BOUNTIES then
-		self:ShowLockedByNoBountiesTooltip();
+		self:ShowLockedByNoBountiesTooltip(nil);
 	end
 end
 
@@ -338,7 +372,11 @@ function WorldMapBountyBoardMixin:OnLeave()
 end
 
 function WorldMapBountyBoardMixin:OnTabEnter(tab)
-	self:ShowBountyTooltip(tab.bountyIndex);
+	if tab.isEmpty then
+		self:ShowLockedByNoBountiesTooltip(tab.bountyIndex);
+	else
+		self:ShowBountyTooltip(tab.bountyIndex);
+	end
 end
 
 function WorldMapBountyBoardMixin:OnTabLeave(tab)
@@ -346,7 +384,9 @@ function WorldMapBountyBoardMixin:OnTabLeave(tab)
 end
 
 function WorldMapBountyBoardMixin:OnTabClick(tab)
-	self:SetSelectedBountyIndex(tab.bountyIndex);
+	if not tab.isEmpty then
+		self:SetSelectedBountyIndex(tab.bountyIndex);
+	end
 end
 
 function WorldMapBountyBoardMixin:TryShowingIntroTutorial()

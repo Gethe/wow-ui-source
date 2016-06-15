@@ -34,12 +34,14 @@ function AdventureMap_ZoneSummaryProviderMixin:RefreshAllData(fromOnShow)
 
 	local mapAreaID = self:GetMap():GetMapID();
 	for zoneIndex = 1, C_MapCanvas.GetNumZones(mapAreaID) do
-		local zoneMapID, zoneName, left, right, top, bottom = C_MapCanvas.GetZoneInfo(mapAreaID, zoneIndex);
-		if self.questsByZone[zoneMapID] or self.missionsByZone[zoneMapID] then
-			local centerX = left + (right - left) * .5;
-			local centerY = top + (bottom - top) * .35;
+		local zoneMapID, zoneName, zoneDepth, left, right, top, bottom = C_MapCanvas.GetZoneInfo(mapAreaID, zoneIndex);
+		if zoneDepth <= 1 then -- Exclude subzones
+			if self.questsByZone[zoneMapID] or self.missionsByZone[zoneMapID] then
+				local centerX = left + (right - left) * .5;
+				local centerY = top + (bottom - top) * .35;
 
-			self:AddSummaryPin(zoneName, centerX, centerY, self.questsByZone[zoneMapID], self.missionsByZone[zoneMapID]);
+				self:AddSummaryPin(zoneName, centerX, centerY, self.questsByZone[zoneMapID], self.missionsByZone[zoneMapID]);
+			end
 		end
 	end
 

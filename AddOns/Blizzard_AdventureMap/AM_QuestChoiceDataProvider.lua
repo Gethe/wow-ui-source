@@ -29,10 +29,6 @@ end
 function AdventureMap_QuestChoiceDataProviderMixin:RemoveAllData()
 	self:GetMap():RemoveAllPinsByTemplate("AdventureMap_QuestChoicePinTemplate");
 	self:GetMap():RemoveAllPinsByTemplate("AdventureMap_FogPinTemplate");
-
-	self:GetMap():ReleaseAreaTriggers("AdventureMap_QuestChoice");
-
-	self.enclosedPin = nil;
 end
 
 function AdventureMap_QuestChoiceDataProviderMixin:RefreshAllData(fromOnShow)
@@ -43,11 +39,24 @@ function AdventureMap_QuestChoiceDataProviderMixin:RefreshAllData(fromOnShow)
 		return;
 	end
 
+	self.pinsByQuestID = {};
+	local oldSelectedQuestID = self.selectedQuestID;
+	local newSelectedQuestID = nil;
+	self.selectedQuestID = nil;
+
 	for choiceIndex = 1, C_AdventureMap.GetNumZoneChoices() do
 		local questID, name, zoneDescription, normalizedX, normalizedY = C_AdventureMap.GetZoneChoiceInfo(choiceIndex);
 		if AdventureMap_IsQuestValid(questID, normalizedX, normalizedY) then
 			self:AddQuest(questID, name, zoneDescription, normalizedX, normalizedY);
+			if oldSelectedQuestID == questID then
+				newSelectedQuestID = questID;
+			end
 		end
+	end
+
+	self:SelectQuestID(newSelectedQuestID);
+	if oldSelectedQuestID and not newSelectedQuestID then
+		self:GetMap():ZoomOut();
 	end
 
 	self.playRevealAnims = false;
@@ -58,65 +67,50 @@ function AdventureMap_QuestChoiceDataProviderMixin:AddQuest(questID, name, zoneD
 	choicePin.fogPin = self:AddFogPin(questID, normalizedX, normalizedY);
 end
 
-local function OnQuestPinAreaEnclosedChanged(areaTrigger, areaEnclosed)
-	areaTrigger.owner:OnQuestPinAreaEnclosedChanged(areaTrigger.pin, areaEnclosed);
-end
-
-local APPEAR_PERCENT = .85;
-local function QuestPinAreaTriggerPredicate(areaTrigger)
-	local mapCanvas = areaTrigger.owner:GetMap();
-	return not mapCanvas:IsZoomingOut() and mapCanvas:GetCanvasZoomPercent() > APPEAR_PERCENT;
-end
-
 function AdventureMap_QuestChoiceDataProviderMixin:AddChoicePin(questID, name, zoneDescription, normalizedX, normalizedY)
 	local pin = self:GetMap():AcquirePin("AdventureMap_QuestChoicePinTemplate", self.playRevealAnims);
 	pin.questID = questID;
 	pin.Text:SetText(name);
 	pin.zoneDescription = zoneDescription;
 	pin:SetPosition(normalizedX, normalizedY);
+	pin.owner = self;
 	pin:Show();
 
-	local areaTrigger = self:GetMap():AcquireAreaTrigger("AdventureMap_QuestChoice");
-	areaTrigger.owner = self;
-	areaTrigger.pin = pin;
-
-	self:GetMap():SetAreaTriggerEnclosedCallback(areaTrigger, OnQuestPinAreaEnclosedChanged);
-	self:GetMap():SetAreaTriggerPredicate(areaTrigger, QuestPinAreaTriggerPredicate);
-
-	areaTrigger:SetCenter(normalizedX, normalizedY);
-	areaTrigger:Stretch(.1, .1);
-
-	pin.areaTrigger = areaTrigger;
+	self.pinsByQuestID[questID] = pin;
 
 	return pin;
 end
 
-function AdventureMap_QuestChoiceDataProviderMixin:OnQuestPinAreaEnclosedChanged(pin, areaEnclosed)
-	if areaEnclosed then
-		if self.enclosedPin then
-			self.enclosedPin:SetSelected(false);
+function AdventureMap_QuestChoiceDataProviderMixin:SelectQuestID(questID)
+	if self.selectedQuestID ~= questID then
+		if self.selectedQuestID then
+			local pin = self.pinsByQuestID[self.selectedQuestID];
+			pin:SetSelected(false);
 		end
 
-		local function OnClosedCallback(result)
-			if self.enclosedPin then
-				if result == QUEST_CHOICE_DIALOG_RESULT_ACCEPTED then
-					self:OnQuestAccepted(self.enclosedPin);
-				elseif result == QUEST_CHOICE_DIALOG_RESULT_DECLINED or result == QUEST_CHOICE_DIALOG_RESULT_ABSTAIN then
-					self.enclosedPin:SetSelected(false);
+		self.selectedQuestID = questID;
+
+		if self.selectedQuestID then
+			local pin = self.pinsByQuestID[self.selectedQuestID];
+			pin:PanAndZoomTo();
+			pin:SetSelected(true);
+
+			local function OnClosedCallback(result)
+				if self.selectedQuestID then
+					if result == QUEST_CHOICE_DIALOG_RESULT_ACCEPTED then
+						self:OnQuestAccepted(self.pinsByQuestID[self.selectedQuestID]);
+					elseif result == QUEST_CHOICE_DIALOG_RESULT_DECLINED then
+						self:SelectQuestID(nil);
+					end
 				end
 			end
-			self.enclosedPin = nil;
+
+			AdventureMapQuestChoiceDialog:ShowWithQuest(self:GetMap(), pin, questID, OnClosedCallback, .5);
+			AdventureMapQuestChoiceDialog:SetPortraitAtlas("QuestPortraitIcon-SandboxQuest", 38, 63, 0, 12);
+		else
+			AdventureMapQuestChoiceDialog:DeclineQuest(true);
 			self:GetMap():ZoomOut();
 		end
-
-		AdventureMapQuestChoiceDialog:ShowWithQuest(self:GetMap(), pin, pin.questID, OnClosedCallback);
-		AdventureMapQuestChoiceDialog:SetPortraitAtlas("QuestPortraitIcon-SandboxQuest", 38, 63, 0, 12);
-		
-		pin:SetSelected(true);
-
-		self.enclosedPin = pin;
-	elseif self.enclosedPin == pin then
-		AdventureMapQuestChoiceDialog:DeclineQuest(true);
 	end
 end
 
@@ -126,7 +120,7 @@ function AdventureMap_QuestChoiceDataProviderMixin:AddFogPin(questID, normalized
 	pin:Show();
 	return pin;
 end
-
+		
 function AdventureMap_QuestChoiceDataProviderMixin:OnQuestAccepted(pin)
 	local fogPin = pin.fogPin;
 	fogPin.OnQuestAcceptedAnim:SetScript("OnFinished", function()
@@ -136,7 +130,7 @@ function AdventureMap_QuestChoiceDataProviderMixin:OnQuestAccepted(pin)
 	fogPin.OnQuestAcceptedAnim:Play();
 
 	pin.fogPin = nil;
-	self:GetMap():ReleaseAreaTrigger("AdventureMap_QuestChoice", pin.areaTrigger);
+	self:GetMap():ZoomOut();
 	self:GetMap():RemovePin(pin);
 end
 
@@ -160,8 +154,7 @@ end
 function AdventureMap_QuestChoicePinMixin:OnClick(button)
 	if button == "LeftButton" then
 		PlaySound("UI_Mission_Map_Zoom");
-		self:GetMap():SetDefaultMaxZoom();
-		self:PanAndZoomTo();
+		self.owner:SelectQuestID(self.questID);
 	end
 end
 

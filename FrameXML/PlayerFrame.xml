@@ -313,7 +313,13 @@
 					</Button>
 				</Frames>
 			</Frame>
-			<StatusBar name="PlayerFrameHealthBar" inherits="TextStatusBar">
+			<StatusBar parentKey="PlayerFrameHealthBarAnimatedLoss" mixin="AnimatedHealthLossMixin" hidden="true">
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+				</Scripts>
+			</StatusBar>
+			<StatusBar name="PlayerFrameHealthBar" inherits="TextStatusBar" enableMouseMotion="true">
 				<Size x="119" y="12"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="106" y="-41"/>
@@ -324,10 +330,11 @@
 						self.textLockable = 1;
 						self.cvar = "statusText";
 						self.cvarLabel = "STATUS_TEXT_PLAYER";
+
+						self:SetMouseClickEnabled(false);
+
+						self:GetParent().PlayerFrameHealthBarAnimatedLoss:SetUnitHealthBar("player", self);
 					</OnLoad>
-					<OnMouseUp>
-						self:GetParent():Click(button);
-					</OnMouseUp>
 					<OnValueChanged function="UnitFrameHealthBar_OnValueChanged"/>
 					<OnSizeChanged>
 						UnitFrameHealPredictionBars_UpdateSize(self:GetParent());
@@ -335,7 +342,7 @@
 				</Scripts>
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 			</StatusBar>
-			<StatusBar name="PlayerFrameManaBar" inherits="TextStatusBar">
+			<StatusBar name="PlayerFrameManaBar" inherits="TextStatusBar" enableMouseMotion="true">
 				<Size x="119" y="12"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="106" y="-52"/>
@@ -346,10 +353,9 @@
 						self.textLockable = 1;
 						self.cvar = "statusText";
 						self.cvarLabel = "STATUS_TEXT_PLAYER";
+
+						self:SetMouseClickEnabled(false);
 					</OnLoad>
-					<OnMouseUp>
-						self:GetParent():Click(button);
-					</OnMouseUp>
 				</Scripts>
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 				<BarColor r="0" g="0" b="1.0"/>

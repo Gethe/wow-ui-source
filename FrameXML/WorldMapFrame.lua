@@ -1775,8 +1775,7 @@ function TaskPOI_OnEnter(self)
 		return;
 	end
 
-	local title, factionID = C_TaskQuest.GetQuestInfoByQuestID(self.questID);
-
+	local title, factionID, capped = C_TaskQuest.GetQuestInfoByQuestID(self.questID);
 	if ( self.worldQuest ) then
 		local tagID, tagName, worldQuestType, rarity, isElite, tradeskillLineIndex = GetQuestTagInfo(self.questID);
 		local color = WORLD_QUEST_QUALITY_COLORS[rarity];
@@ -1785,7 +1784,11 @@ function TaskPOI_OnEnter(self)
 		if ( factionID ) then
 			local factionName = GetFactionInfoByID(factionID);
 			if ( factionName ) then
-				WorldMapTooltip:AddLine(factionName);
+				if (capped) then
+					WorldMapTooltip:AddLine(factionName, GRAY_FONT_COLOR:GetRGB());
+				else
+					WorldMapTooltip:AddLine(factionName);
+				end
 			end
 		end
 

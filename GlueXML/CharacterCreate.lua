@@ -708,8 +708,7 @@ function SetCharacterRace(id)
 	CharacterCreate.selectedFactionID = FACTION_IDS[faction];
 
 	-- Set background
-	local backgroundFilename = GetCreateBackgroundModel(faction);
-	SetBackgroundModel(CharacterCreate, backgroundFilename);
+	SetBackgroundModel(CharacterCreate, GetCreateBackgroundModel(faction));
 
 	-- Set backdrop colors based on faction
 	local backdropColor = FACTION_BACKDROP_COLOR_TABLE[faction];
@@ -1196,25 +1195,6 @@ function SetButtonDesaturated(button, desaturated)
 	end
 
 	icon:SetDesaturated(desaturated);
-end
-
-function CharacterCreate_DeathKnightSwap(self)
-	local _, classFilename = GetSelectedClass();
-	if ( classFilename == "DEATHKNIGHT" ) then
-		if (self.currentModel ~= "DEATHKNIGHT") then
-			self.currentModel = "DEATHKNIGHT";
-			self:SetNormalTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Up-Blue");
-			self:SetPushedTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Down-Blue");
-			self:SetHighlightTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Highlight-Blue");
-		end
-	else
-		if (self.currentModel == "DEATHKNIGHT") then
-			self.currentModel = nil;
-			self:SetNormalTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Up");
-			self:SetPushedTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Down");
-			self:SetHighlightTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Highlight");
-		end
-	end
 end
 
 function CharacterChangeFixup()

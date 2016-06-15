@@ -28,17 +28,19 @@ function FlightMap_ZoneSummaryDataProvider:GatherWorldQuests()
 
 	local mapAreaID = self:GetMap():GetMapID();
 	for zoneIndex = 1, C_MapCanvas.GetNumZones(mapAreaID) do
-		local zoneMapID, zoneName, left, right, top, bottom = C_MapCanvas.GetZoneInfo(mapAreaID, zoneIndex);
-		local taskInfo = C_TaskQuest.GetQuestsForPlayerByMapID(zoneMapID, mapAreaID);
+		local zoneMapID, zoneName, zoneDepth, left, right, top, bottom = C_MapCanvas.GetZoneInfo(mapAreaID, zoneIndex);
+		if zoneDepth <= 1 then -- Exclude subzones
+			local taskInfo = C_TaskQuest.GetQuestsForPlayerByMapID(zoneMapID, mapAreaID);
 
-		if taskInfo then
-			for i, info in ipairs(taskInfo) do
-				if HaveQuestData(info.questId) then
-					if QuestMapFrame_IsQuestWorldQuest(info.questId) and WorldMap_DoesWorldQuestInfoPassFilters(info) then
-						if not self.worldQuestsByZone[zoneMapID] then
-							self.worldQuestsByZone[zoneMapID] = {};
+			if taskInfo then
+				for i, info in ipairs(taskInfo) do
+					if HaveQuestData(info.questId) then
+						if QuestMapFrame_IsQuestWorldQuest(info.questId) and WorldMap_DoesWorldQuestInfoPassFilters(info) then
+							if not self.worldQuestsByZone[zoneMapID] then
+								self.worldQuestsByZone[zoneMapID] = {};
+							end
+							table.insert(self.worldQuestsByZone[zoneMapID], info);
 						end
-						table.insert(self.worldQuestsByZone[zoneMapID], info);
 					end
 				end
 			end
@@ -53,7 +55,7 @@ function FlightMap_ZoneSummaryDataProvider:CheckMouse()
 		local zoneMapID = C_MapCanvas.FindZoneAtPosition(mapAreaID, mouseX, mouseY);
 
 		if zoneMapID then
-			local zoneName, left, right, top, bottom = C_MapCanvas.GetZoneInfoByID(mapAreaID, zoneMapID);
+			local zoneName, zoneDepth, left, right, top, bottom = C_MapCanvas.GetZoneInfoByID(mapAreaID, zoneMapID);
 
 			GameTooltip:SetOwner(self:GetMap(), "ANCHOR_CURSOR_RIGHT", 30);
 

@@ -178,10 +178,12 @@ end
 function FullResourcePulse:StartAnimIfFull(oldValue, newValue)
 	-- If going to max and in combat, show alert/pulse animations
 	if ( newValue == self.maxValue and UnitAffectingCombat("player") ) then
+		if ( self.FadeoutAnim:IsPlaying() or not self.PulseFrame.PulseAnim:IsPlaying() ) then
+			self.SpikeFrame.SpikeAnim:Play();
+		end
 		self.FadeoutAnim:Stop();
 		self:SetAlpha(1);
 		self.PulseFrame.PulseAnim:Play();
-		self.SpikeFrame.SpikeAnim:Play();
 	-- If going from max to less than max and anims are playing, fade out anims
 	elseif ( oldValue == self.maxValue and (self.PulseFrame.PulseAnim:IsPlaying() or self.SpikeFrame.SpikeAnim:IsPlaying()) ) then
 		self.FadeoutAnim:Play();

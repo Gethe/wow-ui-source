@@ -133,14 +133,17 @@ function FlightMap_FlightPathDataProviderMixin:AddFlightNode(taxiNodeData)
 	if taxiNodeData.type == LE_FLIGHT_PATH_TYPE_CURRENT then
 		pin.Icon:SetAtlas("Taxi_Frame_Green");
 		pin.IconHighlight:SetAtlas("Taxi_Frame_Gray");
+		pin:SetSize(24, 24);
 		pin:Show();
 	elseif taxiNodeData.type == LE_FLIGHT_PATH_TYPE_REACHABLE then
 		pin.Icon:SetAtlas("Taxi_Frame_Gray");
 		pin.IconHighlight:SetAtlas("Taxi_Frame_Gray");
+		pin:SetSize(24, 24);
 		pin:Show();
 	elseif taxiNodeData.type == LE_FLIGHT_PATH_TYPE_UNREACHABLE then
 		pin.Icon:SetAtlas("UI-Taxi-Icon-Nub");
 		pin.IconHighlight:SetAtlas("UI-Taxi-Icon-Nub");
+		pin:SetSize(14, 14);
 		pin:Hide(); -- Only show if part of a route, handled in the route building functions
 	end
 end

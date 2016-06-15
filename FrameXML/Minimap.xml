@@ -619,7 +619,7 @@
 										</Anchors>
 										<Layers>
 											<Layer level="OVERLAY">
-												<FontString parentKey="Text" inherits="GameFontHighlightLeft" justifyV="TOP" text="GARRISON_VIEW_MISSION_PROGRESS_HERE">
+												<FontString parentKey="Text" inherits="GameFontHighlightLeft" justifyV="TOP">
 													<Size x="188" y="0"/>
 													<Anchors>
 														<Anchor point="TOPLEFT" x="16" y="-24"/>
@@ -650,6 +650,7 @@
 										</Frames>
 										<Scripts>
 											<OnLoad>
+												self.label = GARRISON_VIEW_MISSION_PROGRESS_HERE;
 												MicroButtonAlert_OnLoad(self);
 												SetClampedTextureRotation(self.Arrow, 270);--make arrow face right
 											</OnLoad>

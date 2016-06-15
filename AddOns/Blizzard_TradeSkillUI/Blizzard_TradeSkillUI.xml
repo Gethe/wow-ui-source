@@ -100,9 +100,9 @@
 			</StatusBar>
 
 			<EditBox parentKey="SearchBox" autoFocus="false" inherits="SearchBoxTemplate">
-				<Size x="130" y="20"/>
+				<Size x="112" y="20"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" x="200" y="-54"/>
+					<Anchor point="TOPLEFT" x="220" y="-54"/>
 				</Anchors>
 				<Scripts>
 					<OnShow>

@@ -269,6 +269,11 @@
 						<Anchor point="CENTER" y="1"/>
 					</Anchors>
 				</Texture>
+				<Texture parentKey="EmptyIcon" atlas="worldquest-tracker-bg-noemissary" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" y="2"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>

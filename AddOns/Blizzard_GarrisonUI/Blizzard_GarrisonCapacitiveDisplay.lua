@@ -43,7 +43,7 @@ function GarrisonCapacitiveDisplayFrame_Update(self, success, maxShipments, owne
 			self.maxShipments = 1;
 		end
 
-		local available = maxShipments - numPending - ownedShipments;
+		local available = max(maxShipments - numPending - ownedShipments, 0);
 
 		self.available = available;
 		display.ShipmentIconFrame.itemId = nil;

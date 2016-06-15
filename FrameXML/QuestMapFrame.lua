@@ -1039,7 +1039,7 @@ function GetZoneStoryID()
 		["1015-Alliance"] = {10763, 1015},
 		["1015-Horde"] = {10763, 1015},
 		-- Highmountain
-		["1024-Alliance"] = {10763, 1024},
+		["1024-Alliance"] = {10059, 1024},
 		["1024-Horde"] = {10059, 1024},
 		-- Stormheim
 		["1017-Alliance"] = {10790, 1017},

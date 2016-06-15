@@ -717,6 +717,11 @@ function UnitPopup_HideButtons ()
 	local inBattleground = UnitInBattleground("player");
 	local canCoop = dropdownMenu.unit and UnitCanCooperate("player", dropdownMenu.unit);
 	local isPlayer = dropdownMenu.unit and UnitIsPlayer(dropdownMenu.unit);
+	local partyLFGSlot = GetPartyLFGID();
+	local partyLFGCategory = nil;
+	if ( partyLFGSlot ) then
+		partyLFGCategory = GetLFGCategoryForID(partyLFGSlot);
+	end
 
 	local haveBattleTag;
 	if ( BNFeaturesEnabledAndConnected() ) then
@@ -895,7 +900,7 @@ function UnitPopup_HideButtons ()
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "INSTANCE_LEAVE" ) then
-			if ( not inParty or not IsInGroup(LE_PARTY_CATEGORY_INSTANCE) or IsPartyWorldPVP() or instanceType == "pvp" or instanceType == "arena" ) then
+			if ( not inParty or not IsInGroup(LE_PARTY_CATEGORY_INSTANCE) or IsPartyWorldPVP() or instanceType == "pvp" or instanceType == "arena" or partyLFGCategory == LE_LFG_CATEGORY_WORLDPVP ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "FREE_FOR_ALL" ) then

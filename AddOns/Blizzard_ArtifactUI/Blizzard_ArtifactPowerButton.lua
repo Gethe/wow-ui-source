@@ -78,15 +78,18 @@ function ArtifactPowerButtonMixin:PlayPurchaseAnimation()
 			self.RingGlow:SetVertexColor(1, 0.81960784313725, 0.3921568627451);
 			self.PointBurstLeft:SetVertexColor(1, 0.81960784313725, 0.3921568627451);
 			self.PointBurstRight:SetVertexColor(1, 0.81960784313725, 0.3921568627451);
-							
 			self.FinalPointSpentAnim:Play();
-			PlaySound("UI_70_Artifact_Forge_Trait_FinalRank");
+			if C_ArtifactUI.GetTotalPurchasedRanks() > 0 then
+				PlaySound("UI_70_Artifact_Forge_Trait_FinalRank");
+			end
 		else
 			self.RingGlow:SetVertexColor(0.30980392156863, 1, 0.2156862745098);
 			self.PointBurstLeft:SetVertexColor(0.30980392156863, 1, 0.2156862745098);
 			self.PointBurstRight:SetVertexColor(0.30980392156863, 1, 0.2156862745098);
 			self.PointSpentAnim:Play();
-			PlaySound("UI_70_Artifact_Forge_Trait_RankUp");
+			if C_ArtifactUI.GetTotalPurchasedRanks() > 0 then
+				PlaySound("UI_70_Artifact_Forge_Trait_RankUp");
+			end
 		end
 	end
 end
@@ -417,7 +420,7 @@ function ArtifactPowerButtonMixin:EvaluateStyle()
 			self:SetStyle(ARTIFACT_POWER_STYLE_UNPURCHASED_LOCKED);
 		end
 	else
-		if C_ArtifactUI.GetTotalPurchasedRanks() == 0 then
+		if C_ArtifactUI.GetTotalPurchasedRanks() == 0 and C_ArtifactUI.GetNumObtainedArtifacts() <= 1 then
 			self:SetStyle(ARTIFACT_POWER_STYLE_RUNE);
 		elseif C_ArtifactUI.IsPowerKnown(self.powerID) then
 			self:SetStyle(ARTIFACT_POWER_STYLE_PURCHASED_READ_ONLY);

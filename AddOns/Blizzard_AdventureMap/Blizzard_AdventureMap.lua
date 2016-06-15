@@ -19,7 +19,6 @@ function AdventureMapMixin:OnLoad()
 	self:SetMapInsetPool(mapInsetPool);
 
 	self:RegisterEvent("ADVENTURE_MAP_UPDATE_INSETS");
-	self:RegisterEvent("QUEST_LOG_UPDATE");
 	
 	self:SetupTitle();
 
@@ -28,7 +27,6 @@ end
 
 function AdventureMapMixin:AddStandardDataProviders()
 	self:AddDataProvider(CreateFromMixins(AdventureMap_QuestChoiceDataProviderMixin));
-	self:AddDataProvider(CreateFromMixins(AdventureMap_QuestOfferDataProviderMixin));
 end
 
 function AdventureMapMixin:ClearAreaTableIDAvailableForInsets()
@@ -56,11 +54,7 @@ end
 
 -- Override
 function AdventureMapMixin:OnEvent(event, ...)
-	if event == "QUEST_LOG_UPDATE" then
-		if C_AdventureMap.ForceUpdate then
-			C_AdventureMap.ForceUpdate();
-		end
-	elseif event == "ADVENTURE_MAP_UPDATE_INSETS" then
+	if event == "ADVENTURE_MAP_UPDATE_INSETS" then
 		self:RefreshInsets();
 	end
 

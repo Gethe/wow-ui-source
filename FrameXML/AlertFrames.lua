@@ -228,10 +228,10 @@ function AlertFrameMixin:OnEvent(event, ...)
 	elseif ( event == "SHOW_LOOT_TOAST" ) then
 		local typeIdentifier, itemLink, quantity, specID, sex, isPersonal, lootSource, lessAwesome, isUpgraded = ...;
 		if ( typeIdentifier == "item" ) then
-			LootAlertSystem:AddAlert(itemLink, quantity, nil, nil, specID, nil, nil, nil, lessAwesome, isUpgraded);
+			LootAlertSystem:AddAlert(itemLink, quantity, nil, nil, specID, nil, nil, nil, lessAwesome, isUpgraded, isPersonal);
 		elseif ( typeIdentifier == "money" ) then
 			MoneyWonAlertSystem:AddAlert(quantity);
-		elseif ( (isPersonal == true) and (typeIdentifier == "currency") ) then
+		elseif ( isPersonal and (typeIdentifier == "currency") ) then
 			-- only toast currency for personal loot
 			LootAlertSystem:AddAlert(itemLink, quantity, nil, nil, specID, true, false, lootSource);
 		end

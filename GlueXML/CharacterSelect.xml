@@ -710,7 +710,7 @@
 								CharacterSelect_EnterWorld();
 							</OnClick>
 							<OnUpdate>
-								CharacterSelect_DeathKnightSwap(self);
+								GlueParent_DeathKnightButtonSwap(self);
 							</OnUpdate>
 						</Scripts>
 					</Button>
@@ -784,7 +784,7 @@
 								CharacterSelect_Exit();
 							</OnClick>
 							<OnUpdate>
-								CharacterSelect_DeathKnightSwap(self);
+								GlueParent_DeathKnightButtonSwap(self);
 							</OnUpdate>
 						</Scripts>
 					</Button>
@@ -807,7 +807,7 @@
 							</OnClick>
 							<OnUpdate>
 								GlueButtonMaster_OnUpdate(self, elapsed);
-								CharacterSelect_DeathKnightSwap(self);
+								GlueParent_DeathKnightButtonSwap(self);
 							</OnUpdate>
 						</Scripts>
 					</Button>
@@ -836,7 +836,7 @@
 							</OnClick>
 							<OnUpdate>
 								GlueButtonMaster_OnUpdate(self, elapsed);
-								CharacterSelect_DeathKnightSwap(self);
+								GlueParent_DeathKnightButtonSwap(self);
 							</OnUpdate>
 						</Scripts>
 					</Button>
@@ -906,7 +906,7 @@
 								CharacterSelect_Delete();
 							</OnClick>
 							<OnUpdate>
-								CharacterSelect_DeathKnightSwap(self);
+								GlueParent_DeathKnightButtonSwap(self);
 							</OnUpdate>
 						</Scripts>
 					</Button>
@@ -996,7 +996,7 @@
 										CharacterSelect_ChangeRealm();
 									</OnClick>
 									<OnUpdate>
-										CharacterSelect_DeathKnightSwap(self);
+										GlueParent_DeathKnightButtonSwap(self);
 									</OnUpdate>
 								</Scripts>
 							</Button>
@@ -1113,7 +1113,7 @@
 										CharacterSelect_EndCharacterUndelete();
 									</OnClick>
 									<OnUpdate>
-										CharacterSelect_DeathKnightSwap(self);
+										GlueParent_DeathKnightButtonSwap(self);
 									</OnUpdate>
 								</Scripts>
 							</Button>
@@ -1352,6 +1352,12 @@
 										<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Bottom" relativePoint="TOPRIGHT" x="0" y="0"/>
 									</Anchors>
 								</Texture>
+								<Texture parentKey="CloseButtonBG">
+									<Size x="24" y="24"/>
+									<Anchors>
+										<Anchor point="TOPRIGHT" x="-12" y="-12"/>
+									</Anchors>
+								</Texture>
 							</Layer>
 							<Layer level="ARTWORK">
 								<FontString parentKey="Title" inherits="GameFontNormalHugeOutline" justifyH="CENTER" justifyV="TOP">
@@ -1372,14 +1378,14 @@
 						<Frames>
 							<Button parentKey="CloseButton" inherits="UIPanelCloseButtonNoScripts">
 								<Anchors>
-									<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-13" y="-14" />
+									<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-8" y="-8"/>
 								</Anchors>
 								<Scripts>
 									<OnClick function="CharacterUpgradePopup_OnCloseClick"/>
 								</Scripts>
 							</Button>
-							<Button parentKey="GetStartedButton" inherits="GlueButtonSmallTemplate" text="CHARACTER_UPGRADE_POPUP_BOOST_EXISTING_CHARACTER">
-								<Size x="250" y="36"/>
+							<Button parentKey="GetStartedButton" inherits="UIPanelButtonTemplate" text="CHARACTER_UPGRADE_POPUP_BOOST_EXISTING_CHARACTER">
+								<Size x="250" y="22"/>
 								<Anchors>
 									<Anchor point="TOP" relativeKey="$parent.Description" relativePoint="BOTTOM" x="0" y="-20"/>
 								</Anchors>
@@ -1394,8 +1400,8 @@
 									<OnClick function="CharacterUpgradePopup_OnStartClick"/>
 								</Scripts>
 							</Button>
-							<Button parentKey="LaterButton" inherits="GlueButtonSmallTemplate" text="CHARACTER_UPGRADE_POPUP_TRY_NEW_CLASS" motionScriptsWhileDisabled="true">
-								<Size x="250" y="36"/>
+							<Button parentKey="LaterButton" inherits="UIPanelButtonTemplate" text="CHARACTER_UPGRADE_POPUP_TRY_NEW_CLASS" motionScriptsWhileDisabled="true">
+								<Size x="250" y="22"/>
 								<Anchors>
 									<Anchor point="TOP" relativeKey="$parent.GetStartedButton" relativePoint="BOTTOM" x="0" y="-6"/>
 								</Anchors>
@@ -1483,7 +1489,7 @@
 								<Scripts>
 									<OnClick function="CharacterServicesMasterBackButton_OnClick"/>
 									<OnUpdate>
-		 								CharacterSelect_DeathKnightSwap(self);
+		 								GlueParent_DeathKnightButtonSwap(self);
 									</OnUpdate>
 								</Scripts>
 							</Button>
@@ -1512,7 +1518,7 @@
 								<Scripts>
 									<OnClick function="CharacterServicesMasterNextButton_OnClick"/>
 									<OnUpdate>
-		 								CharacterSelect_DeathKnightSwap(self);
+		 								GlueParent_DeathKnightButtonSwap(self);
 									</OnUpdate>
 									<OnSizeChanged>
 										self.Flash:SetSize(self:GetWidth()*1.06, self:GetHeight()*1.15);
@@ -1638,7 +1644,7 @@
 								GlueParent_SetScreen("charcreate");
 							</OnClick>
 							<OnUpdate>
-								CharacterSelect_DeathKnightSwap(self);
+								GlueParent_DeathKnightButtonSwap(self);
 							</OnUpdate>
 						</Scripts>
 					</Button>
@@ -1963,7 +1969,7 @@
 								CharacterSelect_DeleteCharacter(GetCharIDFromIndex(CharacterSelect.selectedIndex));
 							</OnClick>
 							<OnUpdate>
-								CharacterSelect_DeathKnightSwap(self);
+								GlueParent_DeathKnightButtonSwap(self);
 							</OnUpdate>
 						</Scripts>
 					</Button>
@@ -1977,7 +1983,7 @@
 								PlaySound("gsTitleOptionExit");
 							</OnClick>
 							<OnUpdate>
-								CharacterSelect_DeathKnightSwap(self);
+								GlueParent_DeathKnightButtonSwap(self);
 							</OnUpdate>
 						</Scripts>
 					</Button>
@@ -2088,7 +2094,7 @@
 								end
 							</OnClick>
 							<OnUpdate>
-								CharacterSelect_DeathKnightSwap(self);
+								GlueParent_DeathKnightButtonSwap(self);
 							</OnUpdate>
 						</Scripts>
 					</Button>
@@ -2101,7 +2107,7 @@
 								CharacterRenameDialog:Hide();
 							</OnClick>
 							<OnUpdate>
-								CharacterSelect_DeathKnightSwap(self);
+								GlueParent_DeathKnightButtonSwap(self);
 							</OnUpdate>
 						</Scripts>
 					</Button>

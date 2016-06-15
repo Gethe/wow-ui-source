@@ -372,16 +372,25 @@
 					<OnUpdate method="OnUpdate"/>
 				</Scripts>
 			</Frame>
+			<Frame parentKey="ClassificationFrame" frameStrata="HIGH">
+				<Size x="14" y="13" />
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.healthBar" relativePoint="LEFT" x="0" />
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="classificationIndicator" />
+					</Layer>
+				</Layers>
+			</Frame>
 			<Frame parentKey="RaidTargetFrame">
-				<Size x="32" y="32"/>
+				<Size x="22" y="22"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.healthBar" relativePoint="LEFT" x="-15" />
+				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
-						<Texture parentKey="RaidTargetIcon" file="Interface\TargetingFrame\UI-RaidTargetingIcons" hidden="true">
-							<Size x="32" y="32"/>
-							<Anchors>
-								<Anchor point="CENTER"/>
-							</Anchors>
-						</Texture>
+						<Texture parentKey="RaidTargetIcon" file="Interface\TargetingFrame\UI-RaidTargetingIcons" setAllPoints="true" />
 					</Layer>
 				</Layers>
 			</Frame>

@@ -226,6 +226,7 @@ end
 local SHIPMENT_TYPE_BUILDING = 1;
 local SHIPMENT_TYPE_FOLLOWER = 2;
 local SHIPMENT_TYPE_TALENT = 3;
+local SHIPMENT_TYPE_LOOSE = 4;
 
 local function SetupShipment(shipmentFrame, texture, applyMask, name, buildingID, plotID, containerID, shipmentsReady, shipmentsTotal, creationTime, duration, shipmentType, index)
 	if (applyMask) then
@@ -274,7 +275,7 @@ function GarrisonLandingPageReport_GetShipments(self)
 		end
 	end
 
-	local followerShipments = C_Garrison.GetFollowerShipments(self:GetParent().garrTypeID);
+	local followerShipments = C_Garrison.GetFollowerShipments(garrisonType);
 	for i = 1, #followerShipments do
 		local name, texture, shipmentCapacity, shipmentsReady, shipmentsTotal, creationTime, duration, timeleftString, _, _, _, _, followerID = C_Garrison.GetLandingPageShipmentInfoByContainerID(followerShipments[i]);
 		if ( name and shipmentCapacity > 0 and shipmentIndex < maxShipments ) then
@@ -284,7 +285,17 @@ function GarrisonLandingPageReport_GetShipments(self)
 		end
 	end
 
-	local talentTrees = C_Garrison.GetTalentTrees(self:GetParent().garrTypeID, select(3, UnitClass("player")));
+	local looseShipments = C_Garrison.GetLooseShipments(garrisonType);
+	for i = 1, #looseShipments do
+		local name, texture, shipmentCapacity, shipmentsReady, shipmentsTotal, creationTime, duration, timeleftString = C_Garrison.GetLandingPageShipmentInfoByContainerID(looseShipments[i]);
+		if ( name and shipmentCapacity > 0 and shipmentIndex < maxShipments ) then
+			local shipment = self.shipmentsPool:Acquire();
+			SetupShipment(shipment, texture, true, name, nil, nil, looseShipments[i], shipmentsReady, shipmentsTotal, creationTime, duration, SHIPMENT_TYPE_LOOSE, shipmentIndex);
+			shipmentIndex = shipmentIndex + 1;
+		end
+	end
+
+	local talentTrees = C_Garrison.GetTalentTrees(garrisonType, select(3, UnitClass("player")));
 	-- this is a talent that has completed, but has not been seen in the talent UI yet.
 	local completeTalentID = C_Garrison.GetCompleteTalent(garrisonType);
 	if (talentTrees) then
@@ -310,11 +321,11 @@ end
 
 function GarrisonLandingPageReportShipment_OnEnter(self)
 
-	if (self.shipmentType == SHIPMENT_TYPE_BUILDING or self.shipmentType == SHIPMENT_TYPE_FOLLOWER) then
+	if (self.shipmentType == SHIPMENT_TYPE_BUILDING or self.shipmentType == SHIPMENT_TYPE_FOLLOWER or self.shipmentType == SHIPMENT_TYPE_LOOSE) then
 		local _, name, shipmentCapacity, shipmentsReady, shipmentsTotal, timeleftString, itemName;
 		if (self.shipmentType == SHIPMENT_TYPE_BUILDING) then
 			name, _, shipmentCapacity, shipmentsReady, shipmentsTotal, _, _, timeleftString, itemName = C_Garrison.GetLandingPageShipmentInfo(self.buildingID);
-		elseif (self.shipmentType == SHIPMENT_TYPE_FOLLOWER) then
+		elseif (self.shipmentType == SHIPMENT_TYPE_FOLLOWER or self.shipmentType == SHIPMENT_TYPE_LOOSE) then
 			name, _, shipmentCapacity, shipmentsReady, shipmentsTotal, _, _, timeleftString, itemName = C_Garrison.GetLandingPageShipmentInfoByContainerID(self.containerID);
 		else
 			return;

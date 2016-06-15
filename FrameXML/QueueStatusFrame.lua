@@ -900,7 +900,7 @@ function QueueStatusDropDown_AddLFGButtons(info, category)
 				UIDropDownMenu_AddButton(info);
 			end
 		end
-		info.text = INSTANCE_PARTY_LEAVE;
+		info.text = (category == LE_LFG_CATEGORY_WORLDPVP) and LEAVE_BATTLEGROUND or INSTANCE_PARTY_LEAVE;
 		info.func = wrapFunc(ConfirmOrLeaveLFGParty);
 		info.arg1 = nil;
 		info.disabled = false;

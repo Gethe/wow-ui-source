@@ -213,7 +213,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick function="CharacterUpgradeCreateCharacter_OnClick"/>
-							<OnUpdate function="CharacterSelect_DeathKnightSwap"/>
+							<OnUpdate function="GlueParent_DeathKnightButtonSwap"/>
 						</Scripts>
 					</Button>
 					<Button parentKey="CreateCharacterClassTrialButton" inherits="UIPanelButtonTemplate" text="CHARACTER_UPGRADE_POPUP_TRY_NEW_CLASS" hidden="true">
@@ -222,7 +222,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick function="CharacterUpgradeClassTrial_OnClick"/>
-							<OnUpdate function="CharacterSelect_DeathKnightSwap"/>
+							<OnUpdate function="GlueParent_DeathKnightButtonSwap"/>
 						</Scripts>
 					</Button>
 					<Frame parentKey="GlowBox">

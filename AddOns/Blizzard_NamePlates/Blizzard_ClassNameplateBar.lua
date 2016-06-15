@@ -97,6 +97,9 @@ end
 function ClassNameplateBar:UpdatePower()
 end
 
+function ClassNameplateBar:OnOptionsUpdated()
+end
+
 
 --------------------------------------------------------------------------------
 --
@@ -187,6 +190,7 @@ function ClassNameplateManaBar:SetupBar()
 	self:UpdatePower();
 	local predictedCost = self.predictedPowerCost or 0;
 	self.currValue = UnitPower("player", self.powerType) - predictedCost;
+	self:OnOptionsUpdated();
 end
 
 function ClassNameplateManaBar:UpdateMaxPower()
@@ -213,10 +217,16 @@ function ClassNameplateManaBar:UpdatePower()
 	end
 end
 
+function ClassNameplateManaBar:OnOptionsUpdated()
+	local horizontalScale = tonumber(GetCVar("NamePlateHorizontalScale"));
+	self:SetWidth(NamePlateDriverFrame:GetBaseNamePlateWidth() * horizontalScale - 24);
+	self:SetHeight(DefaultCompactNamePlatePlayerFrameSetUpOptions.healthBarHeight)
+end
+
 function ClassNameplateManaBar_OnUpdate(self)
 	local predictedCost = self.predictedPowerCost or 0;
 	local currValue = UnitPower("player", self.powerType) - predictedCost;
-	if ( currValue ~= self.currValue ) then
+	if ( currValue ~= self.currValue or currValue == self.FeedbackFrame.maxValue ) then
 		-- Only show anim if change is more than 10%
 		if ( math.abs(currValue - self.currValue) / self.FeedbackFrame.maxValue > 0.1 ) then
 			self.FeedbackFrame:StartFeedbackAnim(self.currValue or 0, currValue);

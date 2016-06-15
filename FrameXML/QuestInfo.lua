@@ -735,7 +735,7 @@ function QuestInfo_ShowRewards()
 				questItem:Show();
 				-- For the tooltip
 				questItem.Name:SetText(name);
-				questItem.Count:SetText(AbbreviateNumbers(numItems));
+				SetItemButtonCount(questItem, numItems, true);
 				SetItemButtonTexture(questItem, texture);
 				SetItemButtonTextureVertexColor(questItem, 1.0, 1.0, 1.0);
 				SetItemButtonNameFrameVertexColor(questItem, 1.0, 1.0, 1.0);

@@ -297,21 +297,21 @@ function LootFrame_Show(self)
 		x = x / self:GetEffectiveScale();
 		y = y / self:GetEffectiveScale();
 
-		local posX = x - 175;
-		local posY = y + 25;
-		
+		local posX = x + 50;
+		local posY = y + 30;
+--[[		
 		if (self.numLootItems > 0) then
 			posX = x - 40;
 			posY = y + 55;
 			posY = posY + 40;
 		end
-
+]]
 		if( posY < 350 ) then
 			posY = 350;
 		end
 
 		self:ClearAllPoints();
-		self:SetPoint("TOPLEFT", nil, "BOTTOMLEFT", posX, posY);
+		self:SetPoint("TOPRIGHT", nil, "BOTTOMLEFT", posX, posY);
 		self:GetCenter();
 		self:Raise();
 	else

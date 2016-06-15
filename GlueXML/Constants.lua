@@ -6,7 +6,7 @@ EXPANSION_GLUE_AMBIENCE = {
 	[LE_EXPANSION_MISTS_OF_PANDARIA] = "GlueScreenIntro",
 	[LE_EXPANSION_WARLORDS_OF_DRAENOR] = "AMB_GlueScreen_WarlordsofDraenor",
 	[LE_EXPANSION_LEGION] = "AMB_GlueScreen_Legion",
-}
+};
 
 --Music
 EXPANSION_GLUE_MUSIC = {
@@ -16,7 +16,7 @@ EXPANSION_GLUE_MUSIC = {
 	[LE_EXPANSION_MISTS_OF_PANDARIA] = "MUS_50_HeartofPandaria_MainTitle",
 	[LE_EXPANSION_WARLORDS_OF_DRAENOR] = "MUS_60_MainTitle",
 	[LE_EXPANSION_LEGION] = "MUS_70_MainTitle",
-}
+};
 
 --Logos
 EXPANSION_LOGOS = {
@@ -33,27 +33,31 @@ EXPANSION_LOGOS = {
 };
 
 GLUE_AMBIENCE_TRACKS = {
-	["HUMAN"] = "AMB_GlueScreen_Human";
-	["ORC"] = "AMB_GlueScreen_Orc";
-	["TROLL"] = "AMB_GlueScreen_Troll";
-	["DWARF"] = "AMB_GlueScreen_Dwarf";
-	["GNOME"] = "AMB_GlueScreen_Gnome";
-	["TAUREN"] = "AMB_GlueScreen_Tauren";
-	["SCOURGE"] = "AMB_GlueScreen_Undead";
-	["NIGHTELF"] = "AMB_GlueScreen_NightElf";
-	["DRAENEI"] = "AMB_GlueScreen_Draenei";
-	["BLOODELF"] = "AMB_GlueScreen_BloodElf";
-	["GOBLIN"] = "AMB_GlueScreen_Goblin";
-	["WORGEN"] = "AMB_GlueScreen_Worgen";
-	["DEATHKNIGHT"] = "AMB_GlueScreen_Deathknight";
-	["CHARACTERSELECT"] = "GlueScreenIntro";
-	["PANDAREN"] = "AMB_GlueScreen_Pandaren";
-	["HORDE"] = "AMB_50_GlueScreen_HORDE";
-	["ALLIANCE"] = "AMB_50_GlueScreen_ALLIANCE";
-	["NEUTRAL"] = "AMB_50_GlueScreen_PANDAREN_NEUTRAL";
-	["PANDARENCHARACTERSELECT"] = "AMB_50_GlueScreen_PANDAREN_NEUTRAL";
-	["DEMONHUNTER"] = "AMB_GlueScreen_DemonHunter";
-}
+	["HUMAN"] = "AMB_GlueScreen_Human",
+	["ORC"] = "AMB_GlueScreen_Orc",
+	["TROLL"] = "AMB_GlueScreen_Troll",
+	["DWARF"] = "AMB_GlueScreen_Dwarf",
+	["GNOME"] = "AMB_GlueScreen_Gnome",
+	["TAUREN"] = "AMB_GlueScreen_Tauren",
+	["SCOURGE"] = "AMB_GlueScreen_Undead",
+	["NIGHTELF"] = "AMB_GlueScreen_NightElf",
+	["DRAENEI"] = "AMB_GlueScreen_Draenei",
+	["BLOODELF"] = "AMB_GlueScreen_BloodElf",
+	["GOBLIN"] = "AMB_GlueScreen_Goblin",
+	["WORGEN"] = "AMB_GlueScreen_Worgen",
+	["DEATHKNIGHT"] = "AMB_GlueScreen_Deathknight",
+	["CHARACTERSELECT"] = "GlueScreenIntro",
+	["PANDAREN"] = "AMB_GlueScreen_Pandaren",
+	["HORDE"] = "AMB_50_GlueScreen_HORDE",
+	["ALLIANCE"] = "AMB_50_GlueScreen_ALLIANCE",
+	["NEUTRAL"] = "AMB_50_GlueScreen_PANDAREN_NEUTRAL",
+	["PANDARENCHARACTERSELECT"] = "AMB_50_GlueScreen_PANDAREN_NEUTRAL",
+	["DEMONHUNTER"] = "AMB_GlueScreen_DemonHunter",
+};
+
+GLUE_BUTTON_SWAPS = {
+	["DEATHKNIGHT"] = true,
+};
 
 CHAR_MODEL_FOG_INFO = {
 	["SCOURGE"] = { r=0, g=0.22, b=0.22, far=26 };
@@ -65,7 +69,7 @@ CHAR_MODEL_FOG_INFO = {
 	["TAUREN"] = { r=1.0, g=0.61, b=0.42, far=153 };
 	["CHARACTERSELECT"] = { r=0.8, g=0.65, b=0.73, far=222 };
 	]]
-}
+};
 
 CHAR_MODEL_GLOW_INFO = {
 	--[[
@@ -75,7 +79,7 @@ CHAR_MODEL_GLOW_INFO = {
 	["DWARF"] = 0.15;
 	["CHARACTERSELECT"] = 0.3;
 	]]
-}
+};
 
 -- for WoW accounts list
 MAX_ACCOUNTNAME_DISPLAYED = 8;
@@ -90,7 +94,7 @@ CREDITS_TITLES = {
 	[LE_EXPANSION_MISTS_OF_PANDARIA] = CREDITS_WOW_MOP,
 	[LE_EXPANSION_WARLORDS_OF_DRAENOR] = CREDITS_WOW_WOD,
 	[LE_EXPANSION_LEGION] = CREDITS_WOW_LEGION,
-}
+};
 
 --Backgrounds
 EXPANSION_HIGH_RES_BG = {
@@ -100,7 +104,7 @@ EXPANSION_HIGH_RES_BG = {
 	[LE_EXPANSION_MISTS_OF_PANDARIA] = "Interface\\Glues\\Models\\UI_MainMenu_Pandaria\\UI_MainMenu_Pandaria.m2",
 	[LE_EXPANSION_WARLORDS_OF_DRAENOR] = "Interface\\Glues\\Models\\UI_MainMenu_Warlords\\UI_MainMenu_Warlords.m2",
 	[LE_EXPANSION_LEGION] = "Interface\\Glues\\Models\\UI_MainMenu_Legion\\UI_MainMenu_Legion.m2",	-- TODO: Fix for 7.0
-}
+};
 
 EXPANSION_LOW_RES_BG = {
 	[LE_EXPANSION_BURNING_CRUSADE] =  "Interface\\Glues\\Models\\UI_MAINMENU\\UI_MainMenu.m2",
@@ -109,7 +113,7 @@ EXPANSION_LOW_RES_BG = {
 	[LE_EXPANSION_MISTS_OF_PANDARIA] =  "Interface\\Glues\\Models\\UI_MainMenu_LowBandwidth\\UI_MainMenu_LowBandwidth.m2",
 	[LE_EXPANSION_WARLORDS_OF_DRAENOR] =  "Interface\\Glues\\Models\\UI_MainMenu_Warlords\\UI_MainMenu_Warlords_LowBandwidth.m2",
 	[LE_EXPANSION_LEGION] =  "Interface\\Glues\\Models\\UI_MainMenu_Legion\\UI_MainMenu_Legion_LowBandwidth.m2",	-- TODO: Fix for 7.0
-}
+};
 
 --Tooltip
 DEFAULT_TOOLTIP_COLOR = {0.8, 0.8, 0.8, 0.09, 0.09, 0.09};
@@ -130,7 +134,7 @@ MOVIE_LIST = {
   { 115 },
   -- Movie sequence 6 = WoD
   { 195 },
-}
+};
 
 --Credits
 CREDITS_SCROLL_RATE_REWIND = -160;

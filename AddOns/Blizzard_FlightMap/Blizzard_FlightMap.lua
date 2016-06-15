@@ -20,7 +20,7 @@ function FlightMapMixin:OnLoad()
 	self:SetupTitle();
 
 	self:SetShouldZoomInOnClick(true);
-	self:SetShouldPanOnClick(true);
+	self:SetShouldPanOnClick(false);
 
 	self:AddStandardDataProviders();
 end

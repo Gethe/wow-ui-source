@@ -35,7 +35,6 @@ function CharacterSelect_OnLoad(self)
 	self.createIndex = 0;
 	self.selectedIndex = 0;
 	self.selectLast = false;
-	self.currentBGTag = nil;
 	self.trialBoostPadlockPool = CreateFramePool("BUTTON", self, "CharSelectLockedTrialButtonTemplate");
 	self:RegisterEvent("ADDON_LIST_UPDATE");
 	self:RegisterEvent("CHARACTER_LIST_UPDATE");
@@ -90,12 +89,6 @@ function CharacterSelect_OnShow(self)
 
 	-- request account data times from the server (so we know if we should refresh keybindings, etc...)
 	CheckCharacterUndeleteCooldown();
-
-	local bgTag = CharacterSelect.currentBGTag;
-
-	if ( bgTag ) then
-		PlayGlueAmbience(GLUE_AMBIENCE_TRACKS[bgTag], 4.0);
-	end
 
 	UpdateAddonButton();
 
@@ -696,6 +689,7 @@ function UpdateCharacterList(skipSelect)
 
 						local trialBoostPadlock = CharacterSelect.trialBoostPadlockPool:Acquire();
 						button.trialBoostPadlock = trialBoostPadlock;
+						trialBoostPadlock.characterSelectButton = button;
 
 						trialBoostPadlock.guid = guid;
 						trialBoostPadlock:SetParent(button);
@@ -976,8 +970,7 @@ function CharacterSelect_SelectCharacter(index, noCreate)
 			AccountReactivate_RecheckEligibility();
 		end
 		ReactivateAccountDialog_Open();
-		local backgroundFileName = GetSelectBackgroundModel(charID);
-		CharacterSelect.currentBGTag = SetBackgroundModel(CharacterSelectModel, backgroundFileName);
+		SetBackgroundModel(CharacterSelectModel, GetSelectBackgroundModel(charID));
 	end
 end
 
@@ -1128,26 +1121,6 @@ function CharacterSelect_PaidServiceOnClick(self, button, down, service)
 	end
 end
 
-function CharacterSelect_DeathKnightSwap(self)
-	local deathKnightTag = "DEATHKNIGHT";
-		if ( CharacterSelect.currentBGTag == deathKnightTag ) then
-			if (self.currentBGTag ~= deathKnightTag) then
-				self.currentBGTag = deathKnightTag;
-				self:SetNormalTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Up-Blue");
-				self:SetPushedTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Down-Blue");
-				self:SetHighlightTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Highlight-Blue");
-			end
-		else
-			if (self.currentBGTag == deathKnightTag) then
-				self.currentBGTag = nil;
-				self:SetNormalTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Up");
-				self:SetPushedTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Down");
-				self:SetHighlightTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Highlight");
-			end
-		end
-end
-
-
 function CharacterSelectPanelButton_DeathKnightSwap(self)
 	local textureBase;
 	if ( not self:IsEnabled() ) then
@@ -1159,26 +1132,19 @@ function CharacterSelectPanelButton_DeathKnightSwap(self)
 	end
 
 	local deathKnightTag = "DEATHKNIGHT";
-	if ( CharacterSelect.currentBGTag == deathKnightTag ) then
-		if (self.currentBGTag ~= deathKnightTag or self.texture ~= textureBase) then
-			self.currentBGTag = deathKnightTag;
-			self.texture = textureBase;
-			local suffix;
-			if ( self:IsEnabled() ) then
-				suffix = "-Blue";
-			else
-				suffix = "";
-			end
+	local currentGlueTag = GetCurrentGlueTag();
 
+	if ( self.currentGlueTag ~= currentGlueTag or self.textureBase ~= textureBase ) then
+		self.currentGlueTag = currentGlueTag;
+		self.textureBase = textureBase;
+
+		if ( currentGlueTag == deathKnightTag ) then
+			local suffix = self:IsEnabled() and "-Blue" or "";
 			self.Left:SetTexture(textureBase..suffix);
 			self.Middle:SetTexture(textureBase..suffix);
 			self.Right:SetTexture(textureBase..suffix);
 			self:SetHighlightTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Highlight-Blue");
-		end
-	else
-		if (self.currentBGTag == deathKnightTag or self.texture ~= textureBase) then
-			self.currentBGTag = nil;
-			self.texture = textureBase;
+		else
 			if ( self.Left ) then
 				self.Left:SetTexture(textureBase);
 				self.Middle:SetTexture(textureBase);
@@ -1200,11 +1166,13 @@ function CharacterSelectGoldPanelButton_DeathKnightSwap(self)
 	end
 
 	local deathKnightTag = "DEATHKNIGHT";
-	if ( CharacterSelect.currentBGTag == deathKnightTag ) then
-		if (self.currentBGTag ~= deathKnightTag or self.state ~= state) then
-			self.currentBGTag = deathKnightTag;
-			self.state = state;
+	local currentGlueTag = GetCurrentGlueTag();
 
+	if ( self.currentGlueTag ~= currentGlueTag or self.state ~= state ) then
+		self.currentGlueTag = currentGlueTag;
+		self.state = state;
+
+		if ( currentGlueTag == deathKnightTag ) then
 			if (state == "disabled") then
 				local textureBase = "Interface\\Buttons\\UI-DialogBox-goldbutton-disabled";
 
@@ -1219,12 +1187,7 @@ function CharacterSelectGoldPanelButton_DeathKnightSwap(self)
 				self.Right:SetAtlas(textureBase.."-right-blue");
 			end
 			self:SetHighlightTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Highlight-Blue");
-		end
-	else
-		if (self.currentBGTag == deathKnightTag or self.state ~= state) then
-			self.currentBGTag = nil;
-			self.state = state;
-
+		else
 			local textureBase = "Interface\\Buttons\\UI-DialogBox-goldbutton-" .. state;
 
 			self.Left:SetTexture(textureBase.."-left");
@@ -1877,6 +1840,15 @@ function CharacterServicesMaster_UpdateServiceButton()
 		popupFrame.Top:SetAtlas(popupData.topAtlas, true);
 		popupFrame.Middle:SetAtlas(popupData.middleAtlas, false);
 		popupFrame.Bottom:SetAtlas(popupData.bottomAtlas, true);
+
+		local hasCloseButton = popupData.closeButtonAtlas ~= nil;
+		popupFrame.CloseButtonBG:SetShown(hasCloseButton);
+		popupFrame.CloseButton:SetShown(hasCloseButton);
+
+		if hasCloseButton then
+			popupFrame.CloseButtonBG:SetAtlas(popupData.closeButtonAtlas, true);
+		end
+
 		popupFrame:SetWidth(popupData.width);
 
 		popupFrame:ClearAllPoints();
@@ -1887,7 +1859,7 @@ function CharacterServicesMaster_UpdateServiceButton()
 		popupFrame:SetPoint("TOPRIGHT", freeFrame, "CENTER", popupData.offset.x, popupData.offset.y);
 		end
 
-		popupFrame:SetHeight( popupFrame:GetTop() - popupFrame.LaterButton:GetBottom() + 33 );
+		popupFrame:SetHeight( popupFrame:GetTop() - popupFrame.LaterButton:GetBottom() + 45 );
 		popupFrame:Show();
 	end
 end
@@ -2551,6 +2523,8 @@ function CopyCharacterCharacterNameEditBox_OnTabPressed(self)
 end
 
 function CharSelectLockedTrialButton_OnClick(self)
+	CharacterSelectButton_OnClick(self.characterSelectButton);
+
 	-- Search user upgrades to see if they have the required boost
 	local upgrades = C_SharedCharacterServices.GetUpgradeDistributions();
 	local hasBoost = false;

@@ -1546,6 +1546,7 @@
 					<Anchor point="TOPLEFT" x="13" y="-13"/>
 				</Anchors>
 			</Frame>
+			<ScrollFrame parentKey="ModelCluster" inherits="GarrisonFollowerTabModelCluster" setAllPoints="true"/>
 			<StatusBar parentKey="XPBar" inherits="GarrisonFollowerXPBarTemplate" enableMouse="true">
 				<Size x="500" y="9"/>
 				<Anchors>
@@ -1560,8 +1561,12 @@
 						</FontString>
 					</Layer>
 				</Layers>
+				<Scripts>
+					<OnLoad inherit="append">
+						self:SetFrameLevel(self:GetParent().ModelCluster:GetFrameLevel() + 1);
+					</OnLoad>
+				</Scripts>
 			</StatusBar>
-			<ScrollFrame parentKey="ModelCluster" inherits="GarrisonFollowerTabModelCluster" setAllPoints="true"/>
 			<Frame parentKey="AbilitiesFrame" inherits="VerticalLayoutFrame" mixin="GarrisonAbilitiesFrameMixin" frameLevel="20">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="290" y="-100"/>

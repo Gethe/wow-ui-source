@@ -3414,7 +3414,7 @@ StaticPopupDialogs["CONFIRM_LAUNCH_URL"] = {
 }
 
 StaticPopupDialogs["CONFIRM_LEAVE_INSTANCE_PARTY"] = {
-	text = CONFIRM_LEAVE_INSTANCE_PARTY,
+	text = "%s",
 	button1 = YES,
 	button2 = CANCEL,
 	OnAccept = function(self, data)
@@ -3904,24 +3904,18 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 		_G[dialog:GetName().."MoneyInputFrame"]:Hide();
 	end
 
+	dialog.ItemFrame.itemID = nil;
 	-- Show or hide item button
 	if ( info.hasItemFrame ) then
-		_G[dialog:GetName().."ItemFrame"]:Show();
+		dialog.ItemFrame:Show();
 		if ( data and type(data) == "table" ) then
-			_G[dialog:GetName().."ItemFrame"].link = data.link
-			_G[dialog:GetName().."ItemFrameIconTexture"]:SetTexture(data.texture);
-			local nameText = _G[dialog:GetName().."ItemFrameText"];
-			nameText:SetTextColor(unpack(data.color or {1, 1, 1, 1}));
-			nameText:SetText(data.name);
-			if ( data.count and data.count > 1 ) then
-				_G[dialog:GetName().."ItemFrameCount"]:SetText(data.count);
-				_G[dialog:GetName().."ItemFrameCount"]:Show();
-			else
-				_G[dialog:GetName().."ItemFrameCount"]:Hide();
+			if ( data.useLinkForItemInfo ) then
+				StaticPopupItemFrame_RetrieveInfo(dialog.ItemFrame, data);
 			end
+			StaticPopupItemFrame_DisplayInfo(dialog.ItemFrame, data.link, data.name, data.color, data.texture, data.count);
 		end
 	else
-		_G[dialog:GetName().."ItemFrame"]:Hide();
+		dialog.ItemFrame:Hide();
 	end
 
 	-- Set the miscellaneous variables for the dialog
@@ -4421,5 +4415,47 @@ function StaticPopup_HideExclusive()
 			end
 			break;
 		end
+	end
+end
+
+function StaticPopupItemFrame_OnEvent(self, event, ...)
+	if ( event == "GET_ITEM_INFO_RECEIVED" ) then
+		local itemID = ...;
+		if ( itemID == self.itemID ) then
+			local data = self:GetParent().data;
+			StaticPopupItemFrame_RetrieveInfo(self, data);
+			StaticPopupItemFrame_DisplayInfo(self, data.link, data.name, data.color, data.texture, data.count);
+		end	
+	end
+end
+
+function StaticPopupItemFrame_RetrieveInfo(self, data)
+	local itemName, _, itemQuality, _, _, _, _, _, _, texture = GetItemInfo(data.link);
+	if ( itemName ) then
+		data.name = itemName;
+		local r, g, b = GetItemQualityColor(itemQuality);
+		data.color = {r, g, b, 1};
+		data.texture = texture;
+		self.itemID = nil;
+	else
+		local itemID, _, _, _, texture = GetItemInfoInstant(data.link);
+		data.name = RETRIEVING_ITEM_INFO;
+		data.color = {RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, 1};
+		data.texture = texture;
+		self.itemID = itemID;
+	end
+end
+
+function StaticPopupItemFrame_DisplayInfo(self, link, name, color, texture, count)
+	self.link = link;
+	_G[self:GetName().."IconTexture"]:SetTexture(texture);
+	local nameText = _G[self:GetName().."Text"];
+	nameText:SetTextColor(unpack(color or {1, 1, 1, 1}));
+	nameText:SetText(name);
+	if ( count and count > 1 ) then
+		_G[self:GetName().."Count"]:SetText(count);
+		_G[self:GetName().."Count"]:Show();
+	else
+		_G[self:GetName().."Count"]:Hide();
 	end
 end

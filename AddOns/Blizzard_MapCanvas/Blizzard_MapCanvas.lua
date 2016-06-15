@@ -91,6 +91,12 @@ do
 		pin.owningMap = nil;
 	end
 
+	local function OnPinMouseUp(pin, button, upInside)
+		if upInside then
+			pin:OnClick(button);
+		end
+	end
+
 	function MapCanvasMixin:AcquirePin(pinTemplate, ...)
 		if not self.pinPools[pinTemplate] then
 			self.pinPools[pinTemplate] = CreateFramePool("FRAME", self:GetCanvas(), pinTemplate, OnPinReleased);
@@ -99,7 +105,7 @@ do
 		local pin, newPin = self.pinPools[pinTemplate]:Acquire();
 
 		if pin:IsMouseClickEnabled() then
-			pin:SetScript("OnMouseUp", pin.OnClick);
+			pin:SetScript("OnMouseUp", OnPinMouseUp);
 		end
 
 		if pin:IsMouseMotionEnabled() then
@@ -608,7 +614,7 @@ function MapCanvasScrollControllerMixin:FindBestZoneLocationForClick()
 
 		local zoneMapID = C_MapCanvas.FindZoneAtPosition(self.mapID, normalizedCursorX, normalizedCursorY);
 		if zoneMapID then
-			local zoneName, left, right, top, bottom = C_MapCanvas.GetZoneInfoByID(self.mapID, zoneMapID);
+			local zoneName, zoneDepth, left, right, top, bottom = C_MapCanvas.GetZoneInfoByID(self.mapID, zoneMapID);
 			local centerX = left + (right - left) * .5;
 			local centerY = top + (bottom - top) * .5;
 
@@ -627,6 +633,7 @@ function MapCanvasScrollControllerMixin:TryPanOrZoomOnClick()
 				if shouldZoomOnClick then
 					self:ZoomIn();
 				end
+				return true;
 			end
 		end
 	end

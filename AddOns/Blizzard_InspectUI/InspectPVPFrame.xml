@@ -3,18 +3,18 @@
 	<Script file="InspectPVPFrame.lua"/>
 	
 	<Frame name="InspectPvpStatTemplate" virtual="true">
-		<Size x="320" y="88"/>
+		<Size x="160" y="60"/>
 		<Layers>
 			<Layer level="BORDER">
-				<FontString name="$parentBGType" parentKey="BGType" inherits="GameFontNormalLarge">
+				<FontString name="$parentBGType" parentKey="BGType" inherits="Game13FontShadow">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="32" y="-28"/>
+						<Anchor point="TOPLEFT" x="22" y="0"/>
 					</Anchors>
 					<Color r="1" g="1" b="1"/>
 				</FontString>
 				<FontString parentKey="RatingLabel" inherits="GameFontNormal" text="PVP_RATING">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.BGType" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.BGType" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="Rating" inherits="GameFontHighlight" text="0">
@@ -22,20 +22,79 @@
 						<Anchor point="LEFT" relativeKey="$parent.RatingLabel" relativePoint="RIGHT" x="4" y="0"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="WinsLabel" inherits="GameFontNormal" text="WINS">
+				<FontString parentKey="RecordLabel" inherits="GameFontNormal" text="PVP_RECORD">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.BGType" relativePoint="BOTTOMLEFT" x="110" y="-8"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.RatingLabel" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="Wins" inherits="GameFontHighlight" text="0">
+				<FontString parentKey="Record" inherits="GameFontHighlight" text="0">
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.WinsLabel" relativePoint="RIGHT" x="4" y="0"/>
+						<Anchor point="LEFT" relativeKey="$parent.RecordLabel" relativePoint="RIGHT" x="4" y="0"/>
 					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>
 	</Frame>
 	
+	<Button name="InspectPvPTalentButtonTemplate" virtual="true">
+		<Size x="26" y="26"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentIconTexture" parentKey="Icon">
+					<Size x="26" y="26"/>
+					<Anchors>
+						<Anchor point="CENTER" x="-1" y="2"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture name="$parentSlot" inherits="Talent-SingleBorder" parentKey="Slot">
+					<Size x="26" y="26"/>
+					<Anchors>
+						<Anchor point="CENTER" x="-1" y="2"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="$parentBorder" parentKey="border" atlas="inspect-talent-selected" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" x="-1" y="2"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter>
+				InspectPvPTalentFrameTalent_OnEnter(self);
+			</OnEnter> 
+			<OnLeave>
+				GameTooltip_Hide();
+			</OnLeave>
+			<OnClick function="InspectPvPTalentFrameTalent_OnClick" />
+		</Scripts>
+	</Button>
+	
+	<Frame name="InspectPvPTalentRowTemplate" virtual="true">
+		<Size x="110" y="26"/>
+		<Frames>
+			<Button name="$parentTalent1" inherits="InspectPvPTalentButtonTemplate" parentKey="Talent1">
+				<Anchors>
+					<Anchor point="LEFT" x="0" y="0"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentTalent2" inherits="InspectPvPTalentButtonTemplate" parentKey="Talent2">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentTalent1" relativePoint="RIGHT" x="16"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentTalent3" inherits="InspectPvPTalentButtonTemplate" parentKey="Talent3">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentTalent2" relativePoint="RIGHT" x="16"/>
+				</Anchors>
+			</Button>
+		</Frames>
+	</Frame>
+
 	<Frame name="InspectPVPFrame" enableMouse="true" parent="InspectFrame" hidden="true" useParentLevel="true" setAllPoints="true" id="2">
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -47,23 +106,29 @@
 					<TexCoords left="0.00097656" right="0.31445313" top="0.33789063" bottom="0.888"/>
 				</Texture>
 			</Layer>
-			<Layer level="BORDER">
-				<Texture parentKey="Div1" file="Interface\Common\UI-TooltipDivider">
-					<Size x="315" y="8"/>
+			<Layer level="ARTWORK">
+				<FontString parentKey="HKs" inherits="GameFontHighlight">
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.BG" relativePoint="TOPLEFT" x="2" y="-88"/>
+						<Anchor point="TOP" x="0" y="-36"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="PortraitBackground" hidden="true">
+					<Size x="60" y="60"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="InspectFrame" relativePoint="TOPLEFT" x="-6" y="7" />
 					</Anchors>
 				</Texture>
-				<Texture parentKey="Div2" file="Interface\Common\UI-TooltipDivider">
-					<Size x="315" y="8"/>
+				<FontString parentKey="HonorLevel" inherits="GameFontNormalLarge">
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.Div1" x="0" y="-88"/>
+						<Anchor point="TOP" x="0" y="-84"/>
 					</Anchors>
-				</Texture>
-				<Texture parentKey="Div3" file="Interface\Common\UI-TooltipDivider">
-					<Size x="315" y="8"/>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="SmallWreath" atlas="honorsystem-prestige-smallwreath" useAtlasSize="false" hidden="true">
+					<Size x="73" y="43"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.Div2" x="0" y="-88"/>
+						<Anchor point="TOPLEFT" relativeTo="InspectFrame" relativePoint="TOPLEFT" x="-12" y="-19" />
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -71,7 +136,7 @@
 		<Frames>
 			<Frame parentKey="RatedBG" inherits="InspectPvpStatTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.BG"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.BG" x="0" y="-60"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
@@ -81,7 +146,7 @@
 			</Frame>
 			<Frame parentKey="Arena2v2" inherits="InspectPvpStatTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.RatedBG" relativePoint="BOTTOMLEFT"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.RatedBG" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
@@ -91,7 +156,7 @@
 			</Frame>
 			<Frame parentKey="Arena3v3" inherits="InspectPvpStatTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.Arena2v2" relativePoint="BOTTOMLEFT"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Arena2v2" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
@@ -99,20 +164,59 @@
 					</OnLoad>
 				</Scripts>
 			</Frame>
-			<Frame parentKey="Arena5v5" inherits="InspectPvpStatTemplate">
+			<Frame parentKey="Talents">
+				<Size x="300" y="300"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.Arena3v3" relativePoint="BOTTOMLEFT"/>
+					<Anchor point="TOP" x="0" y="0"/>
+				</Anchors>
+				<Frames>
+					<Frame name="$parentTalentRow1" inherits="InspectPvPTalentRowTemplate" parentKey="Tier1" id="1">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.$parent.RatedBG" relativePoint="TOPRIGHT" x="32" y="0"/>
+						</Anchors>				
+					</Frame>
+					<Frame name="$parentTalentRow2" inherits="InspectPvPTalentRowTemplate" parentKey="Tier2" id="2">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentTalentRow1" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
+						</Anchors>				
+					</Frame>
+					<Frame name="$parentTalentRow3" inherits="InspectPvPTalentRowTemplate" parentKey="Tier3" id="3">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentTalentRow2" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
+						</Anchors>				
+					</Frame>
+					<Frame name="$parentTalentRow4" inherits="InspectPvPTalentRowTemplate" parentKey="Tier4" id="4">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentTalentRow3" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
+						</Anchors>				
+					</Frame>
+					<Frame name="$parentTalentRow5" inherits="InspectPvPTalentRowTemplate" parentKey="Tier5" id="5">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentTalentRow4" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
+						</Anchors>				
+					</Frame>
+					<Frame name="$parentTalentRow6" inherits="InspectPvPTalentRowTemplate" parentKey="Tier6" id="6">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentTalentRow5" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
+						</Anchors>				
+					</Frame>
+				</Frames>
+			</Frame>
+			<Frame parentKey="PortraitMouseOverFrame">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="InspectFramePortraitFrame" relativePoint="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="InspectFramePortraitFrame" relativePoint="BOTTOMRIGHT"/>
 				</Anchors>
 				<Scripts>
-					<OnLoad>
-						self.BGType:SetText(ARENA_BATTLES_5V5);
-					</OnLoad>
+					<OnEnter function="InspectPVPFramePortraitMouseOverFrame_OnEnter"/>
+					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad function="InspectPVPFrame_OnLoad"/>
 			<OnShow function="InspectPVPFrame_OnShow"/>
+			<OnHide function="InspectPVPFrame_OnHide"/>
 			<OnEvent function="InspectPVPFrame_OnEvent"/>
 		</Scripts>
 	</Frame>

@@ -682,8 +682,8 @@ function ArtifactTitleTemplateMixin:EvaluateRelics()
 			relicSlot.LockedIcon:Hide();
 			if relicIcon then
 				relicSlot.Icon:SetSize(34, 34);
-				relicSlot.Icon:SetTexture(relicIcon);
 				relicSlot.Icon:SetMask("Interface\\CharacterFrame\\TempPortraitAlphaMask");
+				relicSlot.Icon:SetTexture(relicIcon);
 				relicSlot.Glass:Show();
 
 				SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_ARTIFACT_RELIC_MATCH, true);

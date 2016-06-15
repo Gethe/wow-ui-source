@@ -1,30 +1,4 @@
 
-local INV_TYPE_SORT_ORDER = {
-	[1]	 = "INVTYPE_HEAD",
-	[2]  = "INVTYPE_NECK",
-	[3]  = "INVTYPE_SHOULDER",
-	[4]  = "INVTYPE_CLOAK",
-	[5]  = "INVTYPE_CHEST",
-	[6]  = "INVTYPE_ROBE",
-	[7]  = "INVTYPE_BODY",
-	[8]  = "INVTYPE_TABARD",
-	[9]  = "INVTYPE_WRIST",
-	[10] = "INVTYPE_HAND",
-	[11] = "INVTYPE_WAIST",
-	[12] = "INVTYPE_LEGS",
-	[13] = "INVTYPE_FEET",
-	[14] = "INVTYPE_FINGER",
-	[15] = "INVTYPE_TRINKET",
-	[16] = "INVTYPE_WEAPONMAINHAND",
-	[17] = "INVTYPE_WEAPON",
-	[18] = "INVTYPE_RANGEDRIGHT",
-	[19] = "INVTYPE_RANGED",
-	[20] = "INVTYPE_THROWN",
-	[21] = "INVTYPE_WEAPONOFFHAND",
-	[22] = "INVTYPE_SHIELD",
-	[23] = "INVTYPE_HOLDABLE",
- };
-
 local NO_SPEC_FILTER = 0;
 local NO_CLASS_FILTER = 0;
 local NO_INV_TYPE_FILTER = 0;
@@ -432,6 +406,12 @@ function LootJournalLegendariesMixin:UpdateSlotButtonText()
 end
 
 do
+	local function SortLegendaryInventoryTypes(entry1, entry2)
+		local order1 = EJ_GetInvTypeSortOrder(entry1.invType);
+		local order2 = EJ_GetInvTypeSortOrder(entry2.invType);
+		return order1 < order2;
+	end
+
 	local function OpenSlotFilterDropDown(self)
 		self:GetParent():OpenSlotFilterDropDown();
 	end
@@ -456,11 +436,11 @@ do
 		UIDropDownMenu_AddButton(info);
 		
 		local invTypes = C_LootJournal.GetLegendaryInventoryTypes();
-		table.sort(invTypes, SortEntriesByInventoryType);
+		table.sort(invTypes, SortLegendaryInventoryTypes);
 		for i = 1, #invTypes do
-			info.text = _G[invTypes[i].invType];
-			info.checked = filterInvType == invTypes[i].invTypeIndex;
-			info.arg1 = invTypes[i].invTypeIndex;
+			info.text = _G[invTypes[i].invTypeName];
+			info.checked = filterInvType == invTypes[i].invType;
+			info.arg1 = invTypes[i].invType;
 			info.func = SetInvTypeFilter;
 			UIDropDownMenu_AddButton(info);
 		end
@@ -521,18 +501,9 @@ function LootJournalItemSetsMixin:ConfigureItemButton(button)
 	self:CheckItemButtonTooltip(button);
 end
 
-local function GetInventoryTypeSortOrder(invType)
-	for i = 1, #INV_TYPE_SORT_ORDER do
-		if ( INV_TYPE_SORT_ORDER[i] == invType ) then
-			return i;
-		end
-	end
-	return math.huge;
-end
-
-function SortEntriesByInventoryType(entry1, entry2)
-	local order1 = GetInventoryTypeSortOrder(entry1.invType);
-	local order2 = GetInventoryTypeSortOrder(entry2.invType);
+function SortItemSetItems(entry1, entry2)
+	local order1 = EJ_GetInvTypeSortOrder(entry1.invType);
+	local order2 = EJ_GetInvTypeSortOrder(entry2.invType);
 	if ( order1 ~= order2 ) then
 		return order1 < order2;
 	end
@@ -571,7 +542,7 @@ function LootJournalItemSetsMixin:UpdateList()
 			button.SetName:SetText(self.itemSets[index].name);
 			button.ItemLevel:SetFormattedText(ITEM_LEVEL, self.itemSets[index].itemLevel);
 			local items = C_LootJournal.GetItemSetItems(self.itemSets[index].setID);
-			table.sort(items, SortEntriesByInventoryType);
+			table.sort(items, SortItemSetItems);
 			for j = 1, #items do
 				local itemButton = button.ItemButtons[j];
 				if ( not itemButton ) then

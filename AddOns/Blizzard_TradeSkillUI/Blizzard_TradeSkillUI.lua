@@ -76,12 +76,13 @@ end
 
 function TradeSkillUIMixin:OnShow()
 	self:RefreshRetrievingDataFrame();
+	PlaySound("UI_ProfessionsWindow_Open");
 end
 
 function TradeSkillUIMixin:OnHide()
 	C_TradeSkillUI.CloseTradeSkill();
 	C_Garrison.CloseGarrisonTradeskillNPC();
-	PlaySound("igCharacterInfoClose");
+	PlaySound("UI_ProfessionsWindow_Close");
 end
 
 function TradeSkillUIMixin:OnDataSourceChanged()

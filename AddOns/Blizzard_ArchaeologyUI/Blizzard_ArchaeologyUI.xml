@@ -81,6 +81,7 @@
 		<Layers>
 			<Layer>
 				<FontString inherits="SystemFont_Med1" justifyH="CENTER" text="RACES" parentKey="raceName">
+					<Size x="118"/>
 					<Anchors>
 						<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="6"/>
 					</Anchors>

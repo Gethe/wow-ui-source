@@ -156,3 +156,82 @@ function TalentFrame_UpdateSpecInfoCache(cache, inspect, pet, talentGroup)
 	end
 end
 
+function PVPTalentFrame_Update(self, talentUnit)
+	local parent = self:GetParent();
+	local activeTalentGroup = GetActiveSpecGroup(false);
+	local factionGroup = UnitFactionGroup("player");
+	local prestigeLevel = UnitPrestige("player");
+
+	if ( not self.inspect ) then
+		if ( UnitLevel("player") < MAX_PLAYER_LEVEL_TABLE[LE_EXPANSION_LEVEL_CURRENT] ) then
+			self.XPBar:Hide();
+			self.NotAvailableYet:SetFormattedText(PVP_TALENTS_BECOME_AVAILABLE_AT_LEVEL, MAX_PLAYER_LEVEL_TABLE[GetExpansionLevel()]);
+			self.NotAvailableYet:Show();
+		else
+			self.NotAvailableYet:Hide();
+			self.XPBar:Show();
+		end
+	end
+
+	local numTalentSelections = 0;
+	for tier = 1, MAX_PVP_TALENT_TIERS do
+		local talentRow = self.Talents["Tier"..tier];
+		local isRowFree, prevSelected = GetPvpTalentRowSelectionInfo(tier);
+
+		if ( not self.inspect and prevSelected == self.talentInfo[tier] ) then
+			self.talentInfo[tier] = nil;
+		end
+
+		local rowShouldGlow = false;
+		for column = 1, MAX_PVP_TALENT_COLUMNS do
+			local button = talentRow["Talent"..column];
+			local id, name, icon, selected, available, _, unlocked = GetPvpTalentInfo(tier, column, self.talentGroup, self.inspect, talentUnit);
+			rowShouldGlow = rowShouldGlow or (available and not selected);
+			if ( button.Name ) then
+				button.Name:SetText(name);
+			end
+			button.Icon:SetTexture(icon);
+			button.pvpTalentID = id;
+			if ( self.inspect ) then
+				SetDesaturation(button.Icon, not selected);
+				button.border:SetShown(selected);
+			else
+				if ( not unlocked ) then
+					PlayerTalentFramePVPTalents_LockButton(button);
+				else
+					PlayerTalentFramePVPTalents_UnlockButton(button, activeTalentGroup == self.talentGroup);
+					if (talentRow.selectionId == id) then
+						numTalentSelections = numTalentSelections + 1;
+					end
+
+					button.knownSelection:SetShown(self.talentInfo[tier] == id or (selected and not self.talentInfo[tier]));
+					if ( selected or self.talentInfo[tier] ) then
+						SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_HONOR_TALENT_FIRST_TALENT, true);
+						PlayerTalentFramePVPTalents.TutorialBox:Hide();
+					end
+				end
+			end
+		end
+		if ( talentRow.GlowFrame ) then
+			if ( rowShouldGlow ) then
+				talentRow.shouldGlow = true;
+				talentRow.GlowFrame:Show();
+			else
+				talentRow.shouldGlow = false;
+				talentRow.GlowFrame:Hide();
+			end
+		end
+	end
+
+	if ( not self.inspect ) then
+		if ( UnitLevel("player") >= MAX_PLAYER_LEVEL_TABLE[LE_EXPANSION_LEVEL_CURRENT] ) then
+			if ( not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_HONOR_TALENT_FIRST_TALENT) ) then
+				PlayerTalentFramePVPTalents_ShowTutorial(LE_FRAME_TUTORIAL_HONOR_TALENT_FIRST_TALENT);
+			elseif ( not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_HONOR_TALENT_HONOR_LEVELS) ) then
+				PlayerTalentFramePVPTalents_ShowTutorial(LE_FRAME_TUTORIAL_HONOR_TALENT_HONOR_LEVELS);
+			elseif ( not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_HONOR_TALENT_PRESTIGE) and CanPrestige() ) then
+				PlayerTalentFramePVPTalents_ShowTutorial(LE_FRAME_TUTORIAL_HONOR_TALENT_PRESTIGE);
+			end
+		end
+	end
+end

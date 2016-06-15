@@ -35,8 +35,10 @@ function ZoneLabelDataProviderMixin:RefreshAllData(fromOnShow)
 
 	local mapAreaID = self:GetMap():GetMapID();
 	for zoneIndex = 1, C_MapCanvas.GetNumZones(mapAreaID) do
-		local zoneMapID, zoneName, left, right, top, bottom = C_MapCanvas.GetZoneInfo(mapAreaID, zoneIndex);
-		self:AddZone(zoneMapID, zoneName, left, right, top, bottom);
+		local zoneMapID, zoneName, zoneDepth, left, right, top, bottom = C_MapCanvas.GetZoneInfo(mapAreaID, zoneIndex);
+		if zoneDepth <= 1 then -- Exclude subzones
+			self:AddZone(zoneMapID, zoneName, left, right, top, bottom);
+		end
 	end
 
 	self:AddContinent();
@@ -175,6 +177,12 @@ local function OnAreaEnclosedChanged(areaTrigger, areaEnclosed)
 end
 
 function ZoneLabelDataProviderMixin:AddZone(zoneMapID, zoneName, left, right, top, bottom)
+	local width = (right - left);
+	local height = (bottom - top);
+	if width <= 0 or height <= 0 then
+		return;
+	end
+
 	local areaTrigger = self:GetMap():AcquireAreaTrigger("ZoneLabelDataProvider_ZoneLabel");
 	areaTrigger.owner = self;
 	areaTrigger.name = zoneName;
@@ -185,13 +193,12 @@ function ZoneLabelDataProviderMixin:AddZone(zoneMapID, zoneName, left, right, to
 
 	local maxViewRect = self:GetMap():GetMaxZoomViewRect();
 
-	local width = (right - left);
-	local height = (bottom - top);
 	areaTrigger:SetCenter(left + width * .5, top + height * .5);
 
 	local MAX_VIEW_RECT_PERCENT = .5;
-	local halfWidth = math.min(maxViewRect:GetWidth() * MAX_VIEW_RECT_PERCENT, width) * .5;
-	local halfHeight = math.min(maxViewRect:GetHeight() * MAX_VIEW_RECT_PERCENT, height) * .5;
+	local MIN_VIEW_RECT_PERCENT = .05;
+	local halfWidth = Clamp(width, maxViewRect:GetWidth() * MIN_VIEW_RECT_PERCENT, maxViewRect:GetWidth() * MAX_VIEW_RECT_PERCENT) * .5;
+	local halfHeight = Clamp(height, maxViewRect:GetWidth() * MIN_VIEW_RECT_PERCENT, maxViewRect:GetHeight() * MAX_VIEW_RECT_PERCENT) * .5;
 	areaTrigger:Stretch(halfWidth, halfHeight);
 end
 

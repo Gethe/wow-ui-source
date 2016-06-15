@@ -50,16 +50,13 @@ function NamePlateDriverMixin:OnNamePlateCreated(namePlateFrameBase)
 
 	CreateFrame("BUTTON", "$parentUnitFrame", namePlateFrameBase, "NamePlateUnitFrameTemplate");
 	namePlateFrameBase.UnitFrame:EnableMouse(false);
-	namePlateFrameBase.UnitFrame.nameChangedCallback = function(frame)
-		self:UpdateRaidTargetIconPosition(frame);
-	end
 end
 
 function NamePlateDriverMixin:OnNamePlateAdded(namePlateUnitToken)
 	local namePlateFrameBase = C_NamePlate.GetNamePlateForUnit(namePlateUnitToken);
 	self:ApplyFrameOptions(namePlateFrameBase, namePlateUnitToken);
 	
-	namePlateFrameBase:OnAdded(namePlateUnitToken);
+	namePlateFrameBase:OnAdded(namePlateUnitToken, self);
 	self:SetupClassNameplateBars();
 	
 	self:OnUnitAuraUpdate(namePlateUnitToken);
@@ -108,18 +105,6 @@ function NamePlateDriverMixin:OnUnitAuraUpdate(unit)
 		nameplate.UnitFrame.BuffFrame:UpdateBuffs(nameplate.namePlateUnitToken, filter);
 	end
 end
-
-function NamePlateDriverMixin:UpdateRaidTargetIconPosition(frame)
-	if (frame.RaidTargetFrame.RaidTargetIcon:IsShown()) then
-		local namePos = frame.name:IsShown() and frame.name:GetRect() or nil;
-		local barPos = frame.healthBar:IsShown() and frame.healthBar:GetRect() or nil;
-		if (not barPos or (namePos and namePos < barPos)) then
-			frame.RaidTargetFrame:SetPoint("RIGHT", frame.name, "LEFT", -5, 0);
-		else
-			frame.RaidTargetFrame:SetPoint("RIGHT", frame.healthBar, "LEFT", -5, 0);
-		end
-	end
-end
 		
 function NamePlateDriverMixin:OnRaidTargetUpdate()
 	for _, frame in pairs(C_NamePlate.GetNamePlates()) do
@@ -128,7 +113,6 @@ function NamePlateDriverMixin:OnRaidTargetUpdate()
 		if ( index ) then
 			SetRaidTargetIconTexture(icon, index);
 			icon:Show();
-			self:UpdateRaidTargetIconPosition(frame.UnitFrame);
 		else
 			icon:Hide();
 		end
@@ -187,7 +171,11 @@ function NamePlateDriverMixin:SetupClassNameplateBars()
 	self:SetupClassNameplateBar(false, self.nameplateManaBar);
 
 	if targetMode and self.nameplateBar then
-		C_NamePlate.SetTargetClampingInsets(tonumber(GetCVar("nameplateClassResourceTopInset")) * UIParent:GetHeight(), 0.0);
+		local percentOffset = tonumber(GetCVar("nameplateClassResourceTopInset"));
+		if self:IsUsingLargerNamePlateStyle() then
+			percentOffset = percentOffset + .1;
+		end
+		C_NamePlate.SetTargetClampingInsets(percentOffset * UIParent:GetHeight(), 0.0);
 	else
 		C_NamePlate.SetTargetClampingInsets(0.0, 0.0);
 	end
@@ -212,12 +200,26 @@ function NamePlateDriverMixin:SetBaseNamePlateSize(width, height)
 	end
 end
 
+function NamePlateDriverMixin:GetBaseNamePlateWidth()
+	return self.baseNamePlateWidth;
+end
+
+function NamePlateDriverMixin:GetBaseNamePlateHeight()
+	return self.baseNamePlateHeight;
+end
+
+function NamePlateDriverMixin:IsUsingLargerNamePlateStyle()
+	local namePlateVerticalScale = tonumber(GetCVar("NamePlateVerticalScale"));
+	return namePlateVerticalScale > 1.0;
+end
+
 function NamePlateDriverMixin:UpdateNamePlateOptions()
 	DefaultCompactNamePlateEnemyFrameOptions.useClassColors = GetCVarBool("ShowClassColorInNameplate");
 	DefaultCompactNamePlateEnemyFrameOptions.playLoseAggroHighlight = GetCVarBool("ShowNamePlateLoseAggroFlash");
 
 	local namePlateVerticalScale = tonumber(GetCVar("NamePlateVerticalScale"));
 	DefaultCompactNamePlateFrameSetUpOptions.healthBarHeight = 4 * namePlateVerticalScale;
+	DefaultCompactNamePlatePlayerFrameSetUpOptions.healthBarHeight = 4 * namePlateVerticalScale;
 
 	local zeroBasedScale = namePlateVerticalScale - 1.0;
 	local clampedZeroBasedScale = Saturate(zeroBasedScale);
@@ -234,19 +236,28 @@ function NamePlateDriverMixin:UpdateNamePlateOptions()
 
 	local horizontalScale = tonumber(GetCVar("NamePlateHorizontalScale"));
 	C_NamePlate.SetNamePlateOtherSize(self.baseNamePlateWidth * horizontalScale, self.baseNamePlateHeight);
-
-	C_NamePlate.SetNamePlateSelfSize(self.baseNamePlateWidth, self.baseNamePlateHeight);
+	C_NamePlate.SetNamePlateSelfSize(self.baseNamePlateWidth * horizontalScale, self.baseNamePlateHeight);
 
 	for i, frame in ipairs(C_NamePlate.GetNamePlates()) do
 		self:ApplyFrameOptions(frame, frame.namePlateUnitToken);
 		CompactUnitFrame_UpdateAll(frame.UnitFrame);
 	end
+
+	
+	if self.nameplateBar then
+		self.nameplateBar:OnOptionsUpdated();
+	end
+	if self.nameplateManaBar then
+		self.nameplateManaBar:OnOptionsUpdated();
+	end
+	self:SetupClassNameplateBars();
 end
 
 NamePlateBaseMixin = {};
 
-function NamePlateBaseMixin:OnAdded(namePlateUnitToken)
+function NamePlateBaseMixin:OnAdded(namePlateUnitToken, driverFrame)
 	self.namePlateUnitToken = namePlateUnitToken;
+	self.driverFrame = driverFrame;
 	
 	CompactUnitFrame_SetUnit(self.UnitFrame, namePlateUnitToken);
 
@@ -255,15 +266,24 @@ end
 
 function NamePlateBaseMixin:OnRemoved()
 	self.namePlateUnitToken = nil;
+	self.driverFrame = nil;
 
 	CompactUnitFrame_SetUnit(self.UnitFrame, nil);
 end
 
 function NamePlateBaseMixin:OnOptionsUpdated()
-	self:ApplyOffsets();
+	if self.driverFrame then
+		self:ApplyOffsets();
+	end
 end
 
 function NamePlateBaseMixin:ApplyOffsets()
+	if self.driverFrame:IsUsingLargerNamePlateStyle() then
+		self.UnitFrame.BuffFrame:SetBaseYOffset(20);
+	else
+		self.UnitFrame.BuffFrame:SetBaseYOffset(0);
+	end
+
 	local targetMode = GetCVarBool("nameplateResourceOnTarget");
 	if targetMode then
 		self.UnitFrame.BuffFrame:SetTargetYOffset(18);
@@ -283,6 +303,7 @@ NameplateBuffContainerMixin = {};
 function NameplateBuffContainerMixin:OnLoad()
 	self.buffList = {};
 	self.targetYOffset = 0;
+	self.baseYOffset = 0;
 	self.BuffFrameUpdateTime = 0;
 	self:RegisterEvent("PLAYER_TARGET_CHANGED");
 end
@@ -309,9 +330,17 @@ function NameplateBuffContainerMixin:GetTargetYOffset()
 	return self.targetYOffset;
 end
 
+function NameplateBuffContainerMixin:SetBaseYOffset(baseYOffset)
+	self.baseYOffset = baseYOffset;
+end
+
+function NameplateBuffContainerMixin:GetBaseYOffset()
+	return self.baseYOffset;
+end
+
 function NameplateBuffContainerMixin:UpdateAnchor()
 	local isTarget = self:GetParent().unit and UnitIsUnit(self:GetParent().unit, "target");
-	local targetYOffset = isTarget and self:GetTargetYOffset() or 0.0;
+	local targetYOffset = self:GetBaseYOffset() + (isTarget and self:GetTargetYOffset() or 0.0);
 	if (self:GetParent().unit and ShouldShowName(self:GetParent())) then
 		self:SetPoint("BOTTOM", self:GetParent(), "TOP", 0, targetYOffset);
 	else

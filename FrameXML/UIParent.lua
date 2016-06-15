@@ -3614,6 +3614,14 @@ function GetMaterialTextColors(material)
 	return textColor, titleColor;
 end
 
+function OrderHallMissionFrame_EscapePressed()
+	return OrderHallMissionFrame and OrderHallMissionFrame.EscapePressed and OrderHallMissionFrame:EscapePressed();
+end
+
+function OrderHallTalentFrame_EscapePressed()
+	return OrderHallTalentFrame and OrderHallTalentFrame.EscapePressed and OrderHallTalentFrame:EscapePressed();
+end
+
 -- Function that handles the escape key functions
 function ToggleGameMenu()
 	if ( not UIParent:IsShown() ) then
@@ -3655,8 +3663,8 @@ function ToggleGameMenu()
 	elseif ( GarrisonShipyardFrame_ClearMouse and securecall("GarrisonShipyardFrame_ClearMouse") ) then
 	elseif ( GarrisonShipyardFrame and GarrisonShipyardFrame.MissionTab and GarrisonShipyardFrame.MissionTab.MissionPage and GarrisonShipyardFrame.MissionTab.MissionPage:IsVisible() ) then
 		GarrisonShipyardFrame.MissionTab.MissionPage.CloseButton:Click();
-	elseif ( OrderHallMissionFrame and OrderHallMissionFrame.EscapePressed and OrderHallMissionFrame:EscapePressed() ) then
-	elseif ( OrderHallTalentFrame and OrderHallTalentFrame.EscapePressed and OrderHallTalentFrame:EscapePressed() ) then
+	elseif ( securecall("OrderHallMissionFrame_EscapePressed") ) then
+	elseif ( securecall("OrderHallTalentFrame_EscapePressed") ) then
 	elseif ( SpellStopCasting() ) then
 	elseif ( SpellStopTargeting() ) then
 	elseif ( securecall("CloseAllWindows") ) then
@@ -4491,7 +4499,12 @@ function ConfirmOrLeaveLFGParty()
 	end
 
 	if ( IsPartyLFG() and not IsLFGComplete() ) then
-		StaticPopup_Show("CONFIRM_LEAVE_INSTANCE_PARTY");
+		local partyLFGSlot = GetPartyLFGID();
+		local partyLFGCategory = nil;
+		if ( partyLFGSlot ) then
+			partyLFGCategory = GetLFGCategoryForID(partyLFGSlot);
+		end
+		StaticPopup_Show("CONFIRM_LEAVE_INSTANCE_PARTY", partyLFGCategory == LE_LFG_CATEGORY_WORLDPVP and CONFIRM_LEAVE_BATTLEFIELD or CONFIRM_LEAVE_INSTANCE_PARTY);
 	else
 		LeaveParty();
 	end

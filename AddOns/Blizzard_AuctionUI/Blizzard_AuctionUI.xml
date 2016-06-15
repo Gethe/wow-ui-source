@@ -126,16 +126,16 @@
 							<Anchors>
 								<Anchor point="TOPLEFT">
 									<Offset>
-										<AbsDimension x="80" y="-41"/>
+										<AbsDimension x="80" y="-38"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
 						</FontString>
 						<FontString name="BrowseLevelText" inherits="GameFontHighlightSmall" text="LEVEL_RANGE">
 							<Anchors>
-								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+								<Anchor point="TOPLEFT">
 									<Offset>
-										<AbsDimension x="230" y="-47"/>
+										<AbsDimension x="230" y="-38"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
@@ -901,7 +901,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="BrowseNameText" relativePoint="BOTTOMLEFT">
 								<Offset>
-									<AbsDimension x="3" y="-2"/>
+									<AbsDimension x="3" y="-5"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -927,7 +927,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="BrowseLevelText" relativePoint="BOTTOMLEFT">
 								<Offset>
-									<AbsDimension x="3" y="-6"/>
+									<AbsDimension x="3" y="-5"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -979,9 +979,9 @@
 					</EditBox>
 					<Frame name="BrowseDropDown" inherits="UIDropDownMenuTemplate" id="1">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="BrowseLevelText" relativePoint="BOTTOMRIGHT">
+							<Anchor point="TOPLEFT" relativeTo="BrowseMaxLevel" relativePoint="TOPRIGHT">
 								<Offset>
-									<AbsDimension x="-5" y="-1"/>
+									<AbsDimension x="-6" y="5"/>
 								</Offset>
 							</Anchor>
 						</Anchors>

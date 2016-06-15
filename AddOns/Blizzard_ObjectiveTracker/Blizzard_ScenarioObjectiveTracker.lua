@@ -775,14 +775,7 @@ function ScenarioStage_CustomizeBlock(stageBlock, scenarioType)
 	if (scenarioType == LE_SCENARIO_TYPE_LEGION_INVASION) then
 		stageBlock.Stage:SetTextColor(0.753, 1, 0);
 		stageBlock.NormalBG:SetAtlas("legioninvasion-ScenarioTrackerToast", true);
-		local name, texture, itemID = C_Scenario.GetScenarioLastStepRewardInfo();
-		if itemID and texture then
-			stageBlock.RewardButton.RewardIcon:SetTexture(texture);
-			stageBlock.RewardButton.rewardID = itemID;
-			stageBlock.RewardButton:Show();
-		else
-			stageBlock.RewardButton:Hide();
-		end
+		stageBlock.RewardButton:Hide();
 	else
 		stageBlock.Stage:SetTextColor(1, 0.914, 0.682);
 		stageBlock.NormalBG:SetAtlas("ScenarioTrackerToast", true);

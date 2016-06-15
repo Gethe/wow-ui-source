@@ -490,7 +490,7 @@ function PlayerTalentFrame_Refresh()
 	local selectedTab = PanelTemplates_GetSelectedTab(PlayerTalentFrame);
 	selectedSpec = PlayerTalentFrame.selectedPlayerSpec;
 	PlayerTalentFrame.talentGroup = specs[selectedSpec].talentGroup;
-
+	PlayerTalentFramePVPTalents.talentGroup = specs[selectedSpec].talentGroup;
 	local name, count, texture, spellID;
 
 	if (selectedTab == TALENTS_TAB) then
@@ -514,7 +514,7 @@ function PlayerTalentFrame_Refresh()
 		PlayerTalentFrame_ShowPVPTalentTab();
 		PlayerTalentFrame_HideSpecsTab();
 		PlayerTalentFrame_HidePetSpecTab();
-		PlayerTalentFramePVPTalents_Update(PlayerTalentFramePVPTalents);
+		PVPTalentFrame_Update(PlayerTalentFramePVPTalents);
 	elseif (selectedTab == PET_SPECIALIZATION_TAB) then
 		ButtonFrameTemplate_HideAttic(PlayerTalentFrame);
 		PlayerTalentFrame_HideTalentTab();
@@ -1543,7 +1543,7 @@ function PlayerTalentFramePVPTalents_OnLoad(self)
 end
 
 function PlayerTalentFramePVPTalents_OnShow(self)
-	PlayerTalentFramePVPTalents_Update(self);
+	PVPTalentFrame_Update(self);
 end
 
 function PlayerTalentFramePVPTalents_SetUp(self)
@@ -1580,9 +1580,9 @@ end
 
 function PlayerTalentFramePVPTalents_OnEvent(self, event)
 	if (event == "HONOR_XP_UPDATE" or event == "HONOR_PRESTIGE_UPDATE" or event == "HONOR_LEVEL_UPDATE" or event == "PRESTIGE_AND_HONOR_INVOLUNTARILY_CHANGED") then
-		PlayerTalentFramePVPTalents_Update(self);
+		PVPTalentFrame_Update(self);
 	elseif (event == "PLAYER_PVP_TALENT_UPDATE") then
-		PlayerTalentFramePVPTalents_Update(self);
+		PVPTalentFrame_Update(self);
 	elseif (event == "PLAYER_LEARN_PVP_TALENT_FAILED") then
 		local failedTalents = GetFailedPVPTalentIDs();
 
@@ -1593,77 +1593,8 @@ function PlayerTalentFramePVPTalents_OnEvent(self, event)
 				self.talentInfo[row] = nil;
 			end
 		end
-		PlayerTalentFramePVPTalents_Update(self);
+		PVPTalentFrame_Update(self);
 		ClearFailedPVPTalentIDs();
-	end
-end
-
-function PlayerTalentFramePVPTalents_Update(self)
-	local parent = self:GetParent();
-	local activeTalentGroup = GetActiveSpecGroup(false);
-	local factionGroup = UnitFactionGroup("player");
-	local prestigeLevel = UnitPrestige("player");
-
-    if ( UnitLevel("player") < MAX_PLAYER_LEVEL_TABLE[LE_EXPANSION_LEVEL_CURRENT] ) then
-        self.XPBar:Hide();
-        self.NotAvailableYet:SetFormattedText(PVP_TALENTS_BECOME_AVAILABLE_AT_LEVEL, MAX_PLAYER_LEVEL_TABLE[GetExpansionLevel()]);
-        self.NotAvailableYet:Show();
-    else
-        self.NotAvailableYet:Hide();
-        self.XPBar:Show();
-    end
-
-	local numTalentSelections = 0;
-	for tier = 1, MAX_PVP_TALENT_TIERS do
-		local talentRow = self.Talents["Tier"..tier];
-		local isRowFree, prevSelected = GetPvpTalentRowSelectionInfo(tier);
-
-		if (prevSelected == self.talentInfo[tier]) then
-			self.talentInfo[tier] = nil;
-		end
-
-		local rowShouldGlow = false;
-		for column = 1, MAX_PVP_TALENT_COLUMNS do
-			local button = talentRow["Talent"..column];
-			local id, name, icon, selected, available, _, unlocked = GetPvpTalentInfo(tier, column, PlayerTalentFrame.talentGroup);
-			rowShouldGlow = rowShouldGlow or (available and not selected);
-			button.Name:SetText(name);
-			button.Icon:SetTexture(icon);
-			button.pvpTalentID = id;
-			if (not unlocked) then
-				PlayerTalentFramePVPTalents_LockButton(button);
-			else
-				PlayerTalentFramePVPTalents_UnlockButton(button, activeTalentGroup == PlayerTalentFrame.talentGroup);
-				if (talentRow.selectionId == id) then
-					numTalentSelections = numTalentSelections + 1;
-				end
-
-				button.knownSelection:SetShown(self.talentInfo[tier] == id or (selected and not self.talentInfo[tier]));
-                if (selected or self.talentInfo[tier]) then
-                    SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_HONOR_TALENT_FIRST_TALENT, true);
-                    PlayerTalentFramePVPTalents.TutorialBox:Hide();
-                end
-			end
-		end
-		if ( talentRow.GlowFrame ) then
-			if ( rowShouldGlow ) then
-				talentRow.shouldGlow = true;
-				talentRow.GlowFrame:Show();
-			else
-				talentRow.shouldGlow = false;
-				talentRow.GlowFrame:Hide();
-			end
-		end
-	end
-
-	if (UnitLevel("player") >= MAX_PLAYER_LEVEL_TABLE[LE_EXPANSION_LEVEL_CURRENT]) then
-		if (not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_HONOR_TALENT_FIRST_TALENT)) then
-			PlayerTalentFramePVPTalents_ShowTutorial(LE_FRAME_TUTORIAL_HONOR_TALENT_FIRST_TALENT);
-		elseif (not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_HONOR_TALENT_HONOR_LEVELS)) then
-			PlayerTalentFramePVPTalents_ShowTutorial(LE_FRAME_TUTORIAL_HONOR_TALENT_HONOR_LEVELS);
-		elseif (not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_HONOR_TALENT_PRESTIGE) and CanPrestige()) then
-			PlayerTalentFramePVPTalents_ShowTutorial(LE_FRAME_TUTORIAL_HONOR_TALENT_PRESTIGE);
-		end
 	end
 end
 
@@ -1723,7 +1654,7 @@ function PlayerTalentFramePVPTalentsTalent_OnClick(self, button)
 				if (not LearnPvpTalent(id)) then
 					talentsFrame.talentInfo[row] = nil;
 				end
-				PlayerTalentFramePVPTalents_Update(PlayerTalentFramePVPTalents);
+				PVPTalentFrame_Update(PlayerTalentFramePVPTalents);
 			end
 		end
 	end

@@ -2244,7 +2244,7 @@
 						</Texture>
 
 						<FontString parentKey="ItemQualityText" text="COLORBLIND_ITEM_QUALITY" inherits="OptionsFontSmall" justifyH="LEFT">
-							<Size x="92" y="10"/>
+							<Size x="112" y="10"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.Friendly" relativePoint="BOTTOMLEFT" x="5" y="-16"/>
 							</Anchors>

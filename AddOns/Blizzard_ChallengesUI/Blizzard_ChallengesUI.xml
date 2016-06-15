@@ -261,8 +261,7 @@
 						self:SetWidth(self:GetTextWidth() + 60);
 					</OnShow>
 					<OnClick>
-						C_ChallengeMode.StartChallengeMode();
-						self:GetParent():Hide();
+						self:GetParent():StartChallengeMode();
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -353,7 +352,7 @@
 		</Animations>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
-			<OnShow method="Reset"/>
+			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
 			<OnMouseUp method="OnMouseUp"/>
 		</Scripts>

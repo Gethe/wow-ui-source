@@ -55,6 +55,7 @@ function OrderHallTalentFrameMixin:OnShow()
 	self:RegisterEvent("GARRISON_TALENT_UPDATE");
     self:RegisterEvent("GARRISON_TALENT_COMPLETE");
 	self:RegisterEvent("GARRISON_TALENT_NPC_CLOSED");
+	PlaySound("OrderHallTalentFrame");
 end
 
 function OrderHallTalentFrameMixin:OnHide()
@@ -66,6 +67,7 @@ function OrderHallTalentFrameMixin:OnHide()
 	self:ReleaseAllPools();
 	StaticPopup_Hide("ORDER_HALL_TALENT_RESEARCH");
 	C_Garrison.CloseTalentNPC();
+	PlaySound("OrderHallTalentFrameCloseButton");
 end
 
 function OrderHallTalentFrameMixin:OnEvent(event, ...)

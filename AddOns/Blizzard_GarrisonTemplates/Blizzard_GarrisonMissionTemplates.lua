@@ -798,13 +798,13 @@ function GarrisonMission:CheckCompleteMissions(onShow)
 end
 
 function GarrisonMission:OnClickViewCompletedMissionsButton()
-	PlaySound("UI_Garrison_CommandTable_ViewMissionReport");
 	if ( not MissionCompletePreload_IsReady() ) then
 		self:GetCompleteDialog().BorderFrame.ViewButton:SetEnabled(false);
 		self:GetCompleteDialog().BorderFrame.LoadingFrame:Show();
 		MissionCompletePreload_StartTimeout(GARRISON_MODEL_PRELOAD_TIME, self.OnClickViewCompletedMissionsButton, self);
 		return;
 	end
+	PlaySound("UI_Garrison_CommandTable_ViewMissionReport");
 
 	self:GetCompleteDialog():Hide();
 	self.FollowerTab:Hide();
@@ -1746,6 +1746,10 @@ function GarrisonMissionComplete:AnimFollowerCheerAndTroopDeath(followerID)
 		return;
 	end
 
+	if (mission.succeeded) then
+		PlaySound("UI_Mission_Success_Cheers");
+	end
+
 	for i = 1, #mission.followers do
 		local followerFrame = self.Stage.FollowersFrame.Followers[i];
 		if ( followerFrame.followerID == followerID ) then
@@ -1788,7 +1792,6 @@ function GarrisonMissionComplete:AnimFollowerCheerAndTroopDeath(followerID)
 									break;
 								end
 							end
-							PlaySound("FX_Walla_Alliance_Rally_Cheers_Medium");
 						else
 							for _, model in ipairs(cluster.Model) do
 								if ( model.followerID == followerFrame.followerID and model:IsShown() ) then

@@ -26,7 +26,7 @@ function GlueParent_OnLoad(self)
 		local maxWidth = height * 16 / 9;
 		local barWidth = ( width - maxWidth ) / 2;
 		self:ClearAllPoints();
-		self:SetPoint("TOPLEFT", barWidth, 0); 
+		self:SetPoint("TOPLEFT", barWidth, 0);
 		self:SetPoint("BOTTOMRIGHT", -barWidth, 0);
 	end
 
@@ -181,7 +181,7 @@ function GlueParent_UpdateDialogs()
 		GlueDialog_Show("CANCEL", GAME_SERVER_LOGIN);
 	elseif ( wowConnectionState == LE_WOW_CONNECTION_STATE_IN_QUEUE ) then
 		local waitPosition, waitMinutes, hasFCM = C_Login.GetWaitQueueInfo();
-		
+
 		if ( hasFCM ) then
 			GlueDialog_Show("QUEUED_WITH_FCM", _G["QUEUE_FCM"]);
 		elseif ( waitMinutes == 0 ) then
@@ -235,6 +235,10 @@ local function GlueParent_ChangeScreen(screenInfo, screenTable)
 
 	--Actually show this screen
 	_G[screenInfo.frame]:Show();
+end
+
+function GlueParent_GetCurrentScreen()
+	return GlueParent.currentScreen;
 end
 
 function GlueParent_SetScreen(screen)
@@ -348,19 +352,6 @@ function SetLoginScreenModel(model)
 	model:SetSequence(0);
 end
 
--- Function to get the background tag from a full path ( '..\UI_tagName.m2' )
-function GetBackgroundModelTag(path)
-	local pathUpper = strupper(path);
-	local matchStart;
-	local matchEnd;
-	local tag;
-	matchStart, matchEnd, tag = string.find(pathUpper, 'UI_(%a+).M2');
-	if ( not tag ) then
-		tag = "CHARACTERSELECT"; -- default
-	end
-	return tag;
-end
-
 function ResetLighting(model)
 	--model:SetSequence(0);
 	model:SetCamera(0);
@@ -370,20 +361,149 @@ function ResetLighting(model)
     model:ResetLights();
 end
 
+local glueScreenTags =
+{
+	["charselect"] =
+	{
+		["PANDAREN"] = "PANDARENCHARACTERSELECT",
+	},
+
+	["charcreate"] =
+	{
+		-- Classes
+		["DEATHKNIGHT"] = true,
+		["DEMONHUNTER"] = true,
+
+		-- Races
+		["PANDAREN"] = true,
+
+		-- Factions
+		["HORDE"] = true,
+		["ALLIANCE"] = true,
+		["NEUTRAL"] = true,
+	},
+
+	["default"] =
+	{
+		-- Classes
+		["DEATHKNIGHT"] = true,
+		["DEMONHUNTER"] = true,
+
+		-- Races
+		["HUMAN"] = true,
+		["ORC"] = true,
+		["TROLL"] = true,
+		["DWARF"] = true,
+		["GNOME"] = true,
+		["TAUREN"] = true,
+		["SCOURGE"] = true,
+		["NIGHTELF"] = true,
+		["DRAENEI"] = true,
+		["BLOODELF"] = true,
+		["GOBLIN"] = true,
+		["WORGEN"] = true,
+	},
+};
+
+local function GetGlueTagFromKey(subTable, key)
+	if ( subTable and key ) then
+		local value = subTable[key];
+		local valueType = type(value);
+		if ( valueType == "boolean" ) then
+			return key;
+		elseif ( valueType == "string" ) then
+			return value;
+		end
+	end
+end
+
+local function UpdateGlueTagWithOrdering(subTable, ...)
+	for i = 1, select("#", ...) do
+		local tag = GetGlueTagFromKey(subTable, select(i, ...));
+		if ( tag ) then
+			GlueParent.currentTag = tag;
+			return true;
+		end
+	end
+
+	return false;
+end
+
+local function UpdateGlueTag()
+	local currentScreen = GlueParent_GetCurrentScreen();
+
+	local _, race, class, faction, currentTag;
+
+	-- Determine which API to use to get character information
+	if ( currentScreen == "charselect") then
+		class = select(4, GetCharacterInfo(GetCharacterSelection()));
+		race = select(2, GetCharacterRace(GetCharacterSelection()));
+		faction = ""; -- Don't need faction for character selection, its currently irrelevant
+
+	elseif ( currentScreen == "charcreate" ) then
+		_, class = GetSelectedClass();
+		_, race = GetNameForRace();
+		_, faction = GetFactionForRace(GetSelectedRace());
+	end
+
+	-- Once valid information is available, determine the current tag
+	if ( race and class and faction ) then
+		race, class, faction = strupper(race), strupper(class), strupper(faction);
+
+		-- Try lookup from current screen (current screen may have fixed bg's)
+		if ( UpdateGlueTagWithOrdering(glueScreenTags[currentScreen], class, race, faction) ) then
+			return;
+		end
+
+		-- Try lookup from defaults
+		if ( UpdateGlueTagWithOrdering(glueScreenTags["default"], class, race, faction) ) then
+			return;
+		end
+	end
+
+	-- Fallback default value for the current glue tag
+	GlueParent.currentTag = "CHARACTERSELECT";
+end
+
+function GetCurrentGlueTag()
+	return GlueParent.currentTag;
+end
+
+local function PlayGlueAmbienceFromTag()
+	PlayGlueAmbience(GLUE_AMBIENCE_TRACKS[GetCurrentGlueTag()], 4.0);
+end
+
+function GlueParent_DeathKnightButtonSwap(self)
+	local currentTag = GetCurrentGlueTag();
+	if ( self.currentGlueTag ~= currentTag ) then
+		local needsSwap = GLUE_BUTTON_SWAPS[currentTag];
+		if (needsSwap) then
+			-- Not currently needed, but could support other swaps here.
+			self:SetNormalTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Up-Blue");
+			self:SetPushedTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Down-Blue");
+			self:SetHighlightTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Highlight-Blue");
+		else
+			self:SetNormalTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Up");
+			self:SetPushedTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Down");
+			self:SetHighlightTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Highlight");
+		end
+
+		self.currentGlueTag = currentTag;
+	end
+end
+
 -- Function to set the background model for character select and create screens
 function SetBackgroundModel(model, path)
-	local nameupper = GetBackgroundModelTag(path);
 	if ( model == CharacterCreate ) then
 		SetCharCustomizeBackground(path);
 	else
 		SetCharSelectBackground(path);
 	end
-	if ( GLUE_AMBIENCE_TRACKS[nameupper] ) then
-		PlayGlueAmbience(GLUE_AMBIENCE_TRACKS[nameupper], 4.0);
-	end
-	ResetLighting(model);
 
-	return nameupper;
+	UpdateGlueTag();
+	PlayGlueAmbienceFromTag();
+
+	ResetLighting(model);
 end
 
 -- =============================================================
@@ -462,7 +582,7 @@ function CheckSystemRequirements( previousCheck )
 		end
 		previousCheck = nil;
 	end
-	
+
 	if ( not previousCheck or previousCheck == "SSE" ) then
 		if ( not IsShaderModelSupported() ) then
 			GlueDialog_Show("FIXEDFUNCTION_UNSUPPORTED");
@@ -470,7 +590,7 @@ function CheckSystemRequirements( previousCheck )
 		end
 		previousCheck = nil;
 	end
-	
+
 	if ( not previousCheck or previousCheck == "SHADERMODEL" ) then
 		if ( VideoDeviceState() == 1 ) then
 			GlueDialog_Show("DEVICE_BLACKLISTED");
@@ -478,7 +598,7 @@ function CheckSystemRequirements( previousCheck )
 		end
 		previousCheck = nil;
 	end
-	
+
 	if ( not previousCheck or previousCheck == "DEVICE" ) then
 		if ( VideoDriverState() == 2 ) then
 			GlueDialog_Show("DRIVER_OUTOFDATE");
@@ -486,7 +606,7 @@ function CheckSystemRequirements( previousCheck )
 		end
 		previousCheck = nil;
 	end
-	
+
 	if ( not previousCheck or previousCheck == "DRIVER_OOD" ) then
 		if ( VideoDriverState() == 1 ) then
 			GlueDialog_Show("DRIVER_BLACKLISTED");

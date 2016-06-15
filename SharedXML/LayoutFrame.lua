@@ -15,29 +15,13 @@ function LayoutMixin:GetPadding(frame)
 	end
 end
 
-function LayoutMixin:GetSortedLayoutChildren(frames, regions)
-	local layoutChildren = {};
-	
-	for i = 1, #frames do
-		if (frames[i].layoutIndex and frames[i]:IsVisible()) then
-			table.insert(layoutChildren, frames[i]);
+function LayoutMixin:AddLayoutChildren(layoutChildren, ...)
+	for i = 1, select("#", ...) do
+		local region = select(i, ...);
+		if region.layoutIndex and region:IsVisible() then
+			layoutChildren[#layoutChildren + 1] = region;
 		end
 	end
-	for i = 1, #regions do
-		if (regions[i].layoutIndex and regions[i]:IsVisible()) then
-			table.insert(layoutChildren, regions[i]);
-		end
-	end
-	
-	table.sort(layoutChildren, 
-		function(left, right)
-			if (left.layoutIndex == right.layoutIndex and left ~= right) then
-				GMError("Duplicate layoutIndex found: " .. left.layoutIndex);
-			end
-			return left.layoutIndex < right.layoutIndex;
-		end);
-	
-	return layoutChildren;
 end
 
 function LayoutMixin:CalculateFrameSize(childrenWidth, childrenHeight)
@@ -62,10 +46,21 @@ function LayoutMixin:CalculateFrameSize(childrenWidth, childrenHeight)
 	return frameWidth, frameHeight;
 end
 
+local function LayoutIndexComparator(left, right)
+	if (left.layoutIndex == right.layoutIndex and left ~= right) then
+		GMError("Duplicate layoutIndex found: " .. left.layoutIndex);
+	end
+	return left.layoutIndex < right.layoutIndex;
+end
+
 function LayoutMixin:Layout()
 	local leftPadding, rightPadding, topPadding, bottomPadding = self:GetPadding(self);
 	
-	local children = self:GetSortedLayoutChildren({self:GetChildren()}, {self:GetRegions()});
+	local children = {};
+	self:AddLayoutChildren(children, self:GetChildren());
+	self:AddLayoutChildren(children, self:GetRegions());
+	table.sort(children, LayoutIndexComparator);
+
 	local childrenWidth, childrenHeight, hasExpandableChild = self:LayoutChildren(children);
 	
 	local frameWidth, frameHeight = self:CalculateFrameSize(childrenWidth, childrenHeight);
@@ -90,8 +85,7 @@ function VerticalLayoutMixin:LayoutChildren(children, expandToWidth)
 	local hasExpandableChild = false;
 	
 	-- Calculate width and height based on children
-	for i = 1, #children do
-		local child = children[i];
+	for i, child in ipairs(children) do
 		local childWidth, childHeight = child:GetSize();
 		local leftPadding, rightPadding, topPadding, bottomPadding = self:GetPadding(child);
 		if (child.expand) then
@@ -140,8 +134,7 @@ function HorizontalLayoutMixin:LayoutChildren(children, ignored, expandToHeight)
 	local hasExpandableChild = false;
 	
 	-- Calculate width and height based on children
-	for i = 1, #children do
-		local child = children[i];
+	for i, child in ipairs(children) do
 		local childWidth, childHeight = child:GetSize();
 		local leftPadding, rightPadding, topPadding, bottomPadding = self:GetPadding(child);
 		if (child.expand) then

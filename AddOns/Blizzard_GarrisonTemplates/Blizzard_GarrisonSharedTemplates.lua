@@ -221,10 +221,10 @@ function GarrisonFollowerList:OnEvent(event, ...)
 		end
 		return true;
 	elseif (event == "GARRISON_FOLLOWER_UPGRADED") then
-		if ( self.followerTab and self.followerTab.Model and self.followerTab:IsVisible() ) then
+		if ( self.followerTab and self.followerTab.followerID and self.followerTab:IsVisible() ) then
 			local followerID = ...;
-			if ( followerID == self.followerTab.Model.followerID ) then
-				self.followerTab.Model:SetSpellVisualKit(6375);	-- level up visual
+			if ( followerID == self.followerTab.followerID ) then
+				self.followerTab.ModelCluster.Child.Model[1]:SetSpellVisualKit(6375);	-- level up visual;
 				PlaySound("UI_Garrison_CommandTable_Follower_LevelUp");
 			end
 		end

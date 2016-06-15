@@ -38,7 +38,7 @@ StaticPopupDialogs["NOT_ENOUGH_POWER_ARTIFACT_RESPEC"] = {
 }
 
 function ArtifactUI_CanViewArtifact()
-	return C_ArtifactUI.IsAtForge() or C_ArtifactUI.GetTotalPurchasedRanks() > 0;
+	return C_ArtifactUI.IsAtForge() or C_ArtifactUI.GetTotalPurchasedRanks() > 0 or C_ArtifactUI.GetNumObtainedArtifacts() > 1;
 end
 
 local TAB_PERKS = 1;
@@ -229,14 +229,16 @@ function ArtifactUIMixin:OnKnowledgeEnter(knowledgeFrame)
 
 	local knowledgeLevel = C_ArtifactUI.GetArtifactKnowledgeLevel();
 	if knowledgeLevel and knowledgeLevel > 0 then
-		if addedAnyMetaPowers then
-			GameTooltip:AddLine(" ");
-		end
-
 		local knowledgeMultiplier = C_ArtifactUI.GetArtifactKnowledgeMultiplier();
+		local percentIncrease = math.floor(((knowledgeMultiplier - 1.0) * 100) + .5);
+		if percentIncrease > 0.0 then
+			if addedAnyMetaPowers then
+				GameTooltip:AddLine(" ");
+			end
 
-		GameTooltip:AddLine(ARTIFACTS_KNOWLEDGE_TOOLTIP_LEVEL:format(knowledgeLevel), HIGHLIGHT_FONT_COLOR:GetRGB());
-		GameTooltip:AddLine(ARTIFACTS_KNOWLEDGE_TOOLTIP_DESC:format(BreakUpLargeNumbers(knowledgeMultiplier * 100)), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
+			GameTooltip:AddLine(ARTIFACTS_KNOWLEDGE_TOOLTIP_LEVEL:format(knowledgeLevel), HIGHLIGHT_FONT_COLOR:GetRGB());
+			GameTooltip:AddLine(ARTIFACTS_KNOWLEDGE_TOOLTIP_DESC:format(BreakUpLargeNumbers(percentIncrease)), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
+		end
 	end
 	
 	GameTooltip:Show();

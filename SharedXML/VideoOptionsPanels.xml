@@ -1677,7 +1677,7 @@
 		<!-- stereo -->
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString name="$parentStereoHeader" text="STEREO_VIDEO_LABEL" inherits="OptionsFontHighlight" justifyH="LEFT" justifyV="TOP">
+				<FontString name="$parentStereoHeader" parentKey="StereoHeader" text="STEREO_VIDEO_LABEL" inherits="OptionsFontHighlight" justifyH="LEFT" justifyV="TOP">
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
@@ -1706,6 +1706,13 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
+						if(not InGlue()) then
+							local parent = self:GetParent();
+							local header = parent.StereoHeader;
+							header:ClearAllPoints();
+							header:SetPoint("TOPLEFT", parent, "TOPLEFT", 16, -445);
+						end
+
 						local name = self:GetName();
 						self.cvar = "gxStereoEnabled";
 						self.SetValue = function (self, value)

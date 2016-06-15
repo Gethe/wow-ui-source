@@ -41,15 +41,17 @@ function WorldQuestDataProviderMixin:RefreshAllData(fromOnShow)
 
 	local mapAreaID = self:GetMap():GetMapID();
 	for zoneIndex = 1, C_MapCanvas.GetNumZones(mapAreaID) do
-		local zoneMapID, zoneName, left, right, top, bottom = C_MapCanvas.GetZoneInfo(mapAreaID, zoneIndex);
-		local taskInfo = C_TaskQuest.GetQuestsForPlayerByMapID(zoneMapID, mapAreaID);
+		local zoneMapID, zoneName, zoneDepth, left, right, top, bottom = C_MapCanvas.GetZoneInfo(mapAreaID, zoneIndex);
+		if zoneDepth <= 1 then -- Exclude subzones
+			local taskInfo = C_TaskQuest.GetQuestsForPlayerByMapID(zoneMapID, mapAreaID);
 
-		if taskInfo then
-			for i, info in ipairs(taskInfo) do
-				if HaveQuestData(info.questId) then
-					if QuestMapFrame_IsQuestWorldQuest(info.questId) then
-						if self:DoesWorldQuestInfoPassFilters(info) then
-							self:AddWorldQuest(info);
+			if taskInfo then
+				for i, info in ipairs(taskInfo) do
+					if HaveQuestData(info.questId) then
+						if QuestMapFrame_IsQuestWorldQuest(info.questId) then
+							if self:DoesWorldQuestInfoPassFilters(info) then
+								self:AddWorldQuest(info);
+							end
 						end
 					end
 				end

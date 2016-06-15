@@ -332,6 +332,7 @@
 					<OnShow method="OnShow"/>
 					<OnEvent method="OnEvent"/>
 					<OnHide method="OnHide"/>
+					<OnMouseWheel function="nop" />
 				</Scripts>
 				<Frames>
 					<ScrollFrame parentKey="ScrollContainer" enableMouse="true" mixin="MapCanvasScrollControllerMixin" useParentLevel="true">

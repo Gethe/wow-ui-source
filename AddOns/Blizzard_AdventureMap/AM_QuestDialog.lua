@@ -10,7 +10,8 @@ function AdventureMapQuestChoiceDialogMixin:OnLoad()
 end
 
 function AdventureMapQuestChoiceDialogMixin:ShowWithQuest(parent, anchorRegion, questID, onClosedCallback, animDelay)
-	if self:IsShown() then
+	local newQuest = self.questID ~= questID;
+	if self:IsShown() and newQuest then
 		-- Already open, cancel the current
 		self:DeclineQuest(true);
 	end
@@ -23,10 +24,12 @@ function AdventureMapQuestChoiceDialogMixin:ShowWithQuest(parent, anchorRegion, 
 	self:ClearAllPoints();
 	self:SetPoint("CENTER", anchorRegion);
 
-	self.FadeIn:Stop();
-	local delayAnim = self.FadeIn:GetAnimations();
-	delayAnim:SetDuration(animDelay or .3);
-	self.FadeIn:Play();
+	if newQuest then
+		self.FadeIn:Stop();
+		local delayAnim = self.FadeIn:GetAnimations();
+		delayAnim:SetDuration(animDelay or .3);
+		self.FadeIn:Play();
+	end
 
 	self:Show();
 end
@@ -68,11 +71,14 @@ function AdventureMapQuestChoiceDialogMixin:Finalize()
 		self.onClosedCallback(result);
 		self.onClosedCallback = nil;
 	end
+	self.questID = nil;
 end
 
 function AdventureMapQuestChoiceDialogMixin:Refresh()
-	self:RefreshRewards();
-	self:RefreshDetails();
+	if self.questID then
+		self:RefreshRewards();
+		self:RefreshDetails();
+	end
 end
 
 local REWARD_FRAME_WIDTH = 135;

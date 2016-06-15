@@ -3,8 +3,6 @@
 	<Script file="FM_FlightPathDataProvider.lua"/>
 
 	<Frame name="FlightMap_FlightPointPinTemplate" frameStrata="MEDIUM" hidden="true" enableMouse="true" mixin="FlightMap_FlightPointPinMixin" virtual="true">
-		<Size x="24" y="24"/>
-
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="0">
 				<Texture parentKey="Icon" file="Interface/TaxiFrame/UI-Taxi-Icon-Green" />

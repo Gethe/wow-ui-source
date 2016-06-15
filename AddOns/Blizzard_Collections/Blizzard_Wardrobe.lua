@@ -29,11 +29,12 @@ function WardrobeTransmogFrame_OnLoad(self)
 	self.Inset.BG:SetAtlas(atlas);
 
 	self:RegisterEvent("TRANSMOGRIFY_UPDATE");
+	self:RegisterEvent("TRANSMOGRIFY_ITEM_UPDATE");
 	self:RegisterEvent("TRANSMOGRIFY_SUCCESS");
 end
 
 function WardrobeTransmogFrame_OnEvent(self, event, ...)
-	if ( event == "TRANSMOGRIFY_UPDATE" ) then
+	if ( event == "TRANSMOGRIFY_UPDATE" or event == "TRANSMOGRIFY_ITEM_UPDATE" ) then
 		local slotID, transmogType = ...;
 		-- play sound?
 		local slotButton = WardrobeTransmogFrame_GetSlotButton(slotID, transmogType);
@@ -54,7 +55,11 @@ function WardrobeTransmogFrame_OnEvent(self, event, ...)
 				end
 			end
 		end
-		StaticPopup_Hide("TRANSMOG_APPLY_WARNING");
+		if ( event == "TRANSMOGRIFY_UPDATE" ) then
+			StaticPopup_Hide("TRANSMOG_APPLY_WARNING");
+		elseif ( event == "TRANSMOGRIFY_ITEM_UPDATE" and self.redoApply ) then
+			WardrobeTransmogFrame_ApplyPending(0);
+		end
 		self.dirty = true;
 	elseif ( event == "PLAYER_EQUIPMENT_CHANGED" ) then
 		C_Transmog.ValidateAllPending();
@@ -318,16 +323,12 @@ function WardrobeTransmogFrame_ApplyPending(lastAcceptedWarningIndex)
 	if ( lastAcceptedWarningIndex == 0 or not WardrobeTransmogFrame.applyWarningsTable ) then
 		WardrobeTransmogFrame.applyWarningsTable = C_Transmog.GetApplyWarnings();
 	end
+	WardrobeTransmogFrame.redoApply = nil;
 	if ( WardrobeTransmogFrame.applyWarningsTable and lastAcceptedWarningIndex < #WardrobeTransmogFrame.applyWarningsTable ) then
 		lastAcceptedWarningIndex = lastAcceptedWarningIndex + 1;
-		local itemLink = WardrobeTransmogFrame.applyWarningsTable[lastAcceptedWarningIndex].itemLink;
-		local itemName, _, itemQuality, _, _, _, _, _, _, texture = GetItemInfo(itemLink);
-		local r, g, b = GetItemQualityColor(itemQuality);
 		local data = {
-			["texture"] = texture,
-			["name"] = itemName,
-			["color"] = {r, g, b, 1},
-			["link"] = itemLink,
+			["link"] = WardrobeTransmogFrame.applyWarningsTable[lastAcceptedWarningIndex].itemLink,
+			["useLinkForItemInfo"] = true,
 			["warningIndex"] = lastAcceptedWarningIndex;
 		};
 		StaticPopup_Show("TRANSMOG_APPLY_WARNING", WardrobeTransmogFrame.applyWarningsTable[lastAcceptedWarningIndex].text, nil, data);
@@ -335,14 +336,19 @@ function WardrobeTransmogFrame_ApplyPending(lastAcceptedWarningIndex)
 		-- return true to keep static popup open when chaining warnings
 		return true;
 	else
-		WardrobeTransmogFrame.applyWarningsTable = nil;
-		C_Transmog.ApplyAllPending(GetCVarBool("transmogCurrentSpecOnly"));
-		-- outfit tutorial
-		if ( not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_OUTFIT_DROPDOWN) ) then
-			local outfits = C_TransmogCollection.GetOutfits();
-			if ( #outfits == 0 ) then
-				WardrobeTransmogFrame.OutfitHelpBox:Show();
+		local success = C_Transmog.ApplyAllPending(GetCVarBool("transmogCurrentSpecOnly"));
+		if ( success ) then
+			WardrobeTransmogFrame.applyWarningsTable = nil;
+			-- outfit tutorial
+			if ( not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_OUTFIT_DROPDOWN) ) then
+				local outfits = C_TransmogCollection.GetOutfits();
+				if ( #outfits == 0 ) then
+					WardrobeTransmogFrame.OutfitHelpBox:Show();
+				end
 			end
+		else
+			-- it's retrieving item info
+			WardrobeTransmogFrame.redoApply = true;
 		end
 		return false;
 	end
@@ -1689,8 +1695,8 @@ function WardrobeCollectionFrameModel_SetTooltip()
 	local name, nameColor, sourceText, sourceColor = WardrobeCollectionFrameModel_GetSourceTooltipInfo(sources[headerIndex]);
 	GameTooltip:SetText(name, nameColor.r, nameColor.g, nameColor.b);
 
-	-- at the transmogrify vendor or the appearance is collected we're done after the main item name
-	if ( WardrobeFrame_IsAtTransmogrifier() or sources[headerIndex].isCollected ) then
+	-- at the transmogrify vendor or the appearance is collected and usable we're done after the main item name
+	if ( WardrobeFrame_IsAtTransmogrifier() or (sources[headerIndex].isCollected and sources[headerIndex].isUsable) ) then
 		-- but extra tooltip text if not at transmogrifier
 		if ( not WardrobeFrame_IsAtTransmogrifier() ) then
 			GameTooltip:AddLine(WARDROBE_TOOLTIP_TRANSMOGRIFIER, GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b, 1, 1);

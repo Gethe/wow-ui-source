@@ -292,7 +292,7 @@
 		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
 			<EdgeSize val="16"/>
 			<TileSize val="16"/>
-			<BackgroundInsets left="5" right="5" top="5" bottom="5"/>
+			<BackgroundInsets left="4" right="4" top="4" bottom="4"/>
 		</Backdrop>
 		<Frames>
 			<Frame parentKey="BonusArea" parentArray="BonusAreas" inherits="GarrisonBonusAreaTooltipFrameTemplate">
@@ -314,7 +314,7 @@
 		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
 			<EdgeSize val="16"/>
 			<TileSize val="16"/>
-			<BackgroundInsets left="5" right="5" top="5" bottom="5"/>
+			<BackgroundInsets left="4" right="4" top="4" bottom="4"/>
 		</Backdrop>
 		<Anchors>
 			<Anchor point="CENTER"/>
