@@ -117,11 +117,11 @@ function LossOfControlFrame_SetUpDisplay(self, animate, locType, spellID, text, 
 		local timeLeftFrame = self.TimeLeft;
 		if ( displayType == DISPLAY_TYPE_ALERT ) then
 			timeRemaining = duration;
-			self.Cooldown:SetCooldown(0, 0);
+			CooldownFrame_Clear(self.Cooldown);
 		elseif ( not startTime ) then
-			self.Cooldown:SetCooldown(0, 0);
+			CooldownFrame_Clear(self.Cooldown);
 		else
-			self.Cooldown:SetCooldown(startTime, duration);
+			CooldownFrame_Set(self.Cooldown, startTime, duration, true);
 		end
 		LossOfControlTimeLeftFrame_SetTime(timeLeftFrame, timeRemaining);
 		-- align stuff
@@ -165,7 +165,7 @@ function LossOfControlFrame_UpdateDisplay(self)
 			LossOfControlFrame_SetUpDisplay(self, false, locType, spellID, text, iconTexture, startTime, timeRemaining, duration, lockoutSchool, priority, displayType);
 		end
 		if ( not self.Anim:IsPlaying() and startTime ) then
-			self.Cooldown:SetCooldown(startTime, duration);
+			CooldownFrame_Set(self.Cooldown, startTime, duration, true, true);
 		end
 		LossOfControlTimeLeftFrame_SetTime(self.TimeLeft, timeRemaining);
 	else

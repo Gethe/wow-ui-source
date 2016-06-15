@@ -13,6 +13,7 @@ end
 function RolePollPopup_Show(self)
 	--First, update what roles are usable
 	PlaySound("ReadyCheck");
+	FlashClientIcon();
 	local canBeTank, canBeHealer, canBeDamager = UnitGetAvailableRoles("player");
 	if ( canBeTank ) then
 		RolePollPopupRoleButton_Enable(RolePollPopupRoleButtonTank);

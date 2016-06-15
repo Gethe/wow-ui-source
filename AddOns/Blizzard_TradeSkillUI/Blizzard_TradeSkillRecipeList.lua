@@ -54,6 +54,10 @@ function TradeSkillRecipeListMixin:OnUpdate()
 			self.tradeSkillChanged = nil;
 		end
 
+		if C_TradeSkillUI.IsRecipeSearchInProgress() then
+			return;
+		end
+
 		if not C_TradeSkillUI.IsTradeSkillReady() then
 			wipe(self.dataList);
 			self:SetSelectedRecipeID(nil);
@@ -66,6 +70,10 @@ function TradeSkillRecipeListMixin:OnUpdate()
 			self:RefreshDisplay();
 		end
 		self.pendingRefresh = nil;
+		if self.pendingForceRecipeIDIntoView then
+			self:SelectedAndForceRecipeIDIntoView(self.pendingForceRecipeIDIntoView);
+			self.pendingForceRecipeIDIntoView = nil;
+		end
 	end
 end
 
@@ -122,12 +130,16 @@ function TradeSkillRecipeListMixin:OnLearnedTabClicked()
 	PanelTemplates_SetTab(self, LEARNED_TAB);
 	C_TradeSkillUI.SetOnlyShowLearnedRecipes(true);
 	C_TradeSkillUI.SetOnlyShowUnlearnedRecipes(false);
+
+	self:Refresh();
 end
 
 function TradeSkillRecipeListMixin:OnUnlearnedTabClicked()
 	PanelTemplates_SetTab(self, UNLEARNED_TAB);
 	C_TradeSkillUI.SetOnlyShowLearnedRecipes(false);
 	C_TradeSkillUI.SetOnlyShowUnlearnedRecipes(true);
+
+	self:Refresh();
 end
 
 function TradeSkillRecipeListMixin:Refresh()
@@ -357,14 +369,12 @@ function TradeSkillRecipeListMixin:UpdateFilterBar()
 		end
 	end
 
-	if C_TradeSkillUI.AreAnyRecipeSourceTypesFiltered() then
+	if not TradeSkillFrame_AreAllSourcesUnfiltered() then
 		local numSources = C_PetJournal.GetNumPetSources();
 		for i = 1, numSources do
-			if C_TradeSkillUI.IsAnyRecipeFromSource(i) then
-				if not C_TradeSkillUI.IsRecipeSourceTypeFiltered(i) then
-					filters = filters or {};
-					filters[#filters + 1] = _G["BATTLE_PET_SOURCE_"..i];
-				end
+			if C_TradeSkillUI.IsAnyRecipeFromSource(i) and C_TradeSkillUI.IsRecipeSourceTypeFiltered(i) then
+				filters = filters or {};
+				filters[#filters + 1] = _G["BATTLE_PET_SOURCE_"..i];
 			end
 		end
 	end
@@ -374,14 +384,14 @@ function TradeSkillRecipeListMixin:UpdateFilterBar()
 		self:SetHeight(LIST_FULL_HEIGHT);
 
 		self:SetPoint("TOPLEFT", 7, -83);
-		self.LearnedTab:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 18, 3);
+		self.LearnedTab:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 10, 3);
 		self.scrollBar:SetPoint("TOPLEFT", self, "TOPRIGHT", 1, -14);
 	else
 		self:SetHeight(LIST_FULL_HEIGHT - ROW_HEIGHT);
 		self.FilterBar:Show();
 
 		self:SetPoint("TOPLEFT", 7, -83 - ROW_HEIGHT);
-		self.LearnedTab:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 18, 3 + ROW_HEIGHT);
+		self.LearnedTab:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 10, 3 + ROW_HEIGHT);
 		self.scrollBar:SetPoint("TOPLEFT", self, "TOPRIGHT", 1, -14 + ROW_HEIGHT);
 
 		self.FilterBar.Text:SetFormattedText("%s: %s", FILTER, table.concat(filters, PLAYER_LIST_DELIMITER));
@@ -414,8 +424,41 @@ function TradeSkillRecipeListMixin:RefreshDisplay()
 	HybridScrollFrame_Update(self, #self.dataList * ROW_HEIGHT, 405);
 end
 
+function TradeSkillRecipeListMixin:FindRecipeIndexInCurrentList(recipeID)
+	for i, listData in ipairs(self.dataList) do
+		if listData.type == "recipe" and recipeID == listData.recipeID then
+			return i;
+		end
+	end
+	return nil;
+end
+
+function TradeSkillRecipeListMixin:IsRecipeInCurrentList(recipeID)
+	return self:FindRecipeIndexInCurrentList(recipeID) ~= nil;
+end
+
+function TradeSkillRecipeListMixin:ForceRecipeIntoView(recipeID)
+	local dataIndex = self:FindRecipeIndexInCurrentList(recipeID);
+	if dataIndex then
+		local offset = HybridScrollFrame_GetOffset(self);
+		if dataIndex - 1 < offset or dataIndex - 1 > offset + math.floor(self:GetHeight() / ROW_HEIGHT) then
+			local centerish = ((dataIndex - 1) - math.floor((self:GetHeight() * .5) / ROW_HEIGHT)) * ROW_HEIGHT;
+			self.scrollBar:SetValue(centerish);
+		end
+	end
+end
+
+function TradeSkillRecipeListMixin:SelectedAndForceRecipeIDIntoView(recipeID)
+	if self.pendingRefresh then
+		self.pendingForceRecipeIDIntoView = recipeID;
+	elseif self:IsRecipeInCurrentList(recipeID) then
+		self:SetSelectedRecipeID(recipeID);
+		self:ForceRecipeIntoView(recipeID);
+	end
+end
+
 function TradeSkillRecipeListMixin:SetSelectedRecipeID(recipeID)
-	if self.selectedRecipeID ~= recipeID then
+	if self.selectedRecipeID ~= recipeID and (not recipeID or self:IsRecipeInCurrentList(recipeID)) then
 		self.selectedRecipeID = recipeID;
 		self:RefreshDisplay();
 		if self.recipeChangedCallback then

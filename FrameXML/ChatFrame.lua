@@ -108,6 +108,7 @@ ChatTypeInfo["BN_WHISPER_PLAYER_OFFLINE"] 				= { sticky = 0, flashTab = false, 
 ChatTypeInfo["COMBAT_GUILD_XP_GAIN"]					= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["PET_BATTLE_COMBAT_LOG"]					= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["PET_BATTLE_INFO"]							= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
+ChatTypeInfo["GUILD_ITEM_LOOTED"]						= ChatTypeInfo["GUILD_ACHIEVEMENT"];
 
 --NEW_CHAT_TYPE -Add the info here.
 
@@ -119,6 +120,7 @@ ChatTypeGroup["SYSTEM"] = {
 	"UNIT_LEVEL",
 	"CHARACTER_POINTS_CHANGED",
 	"CHAT_MSG_BN_WHISPER_PLAYER_OFFLINE",
+	"QUEST_TURNED_IN",
 };
 ChatTypeGroup["SAY"] = {
 	"CHAT_MSG_SAY",
@@ -161,7 +163,6 @@ ChatTypeGroup["INSTANCE_CHAT_LEADER"] = {
 ChatTypeGroup["GUILD"] = {
 	"CHAT_MSG_GUILD",
 	"GUILD_MOTD",
-	"UNIT_GUILD_LEVEL",
 };
 ChatTypeGroup["OFFICER"] = {
 	"CHAT_MSG_OFFICER",
@@ -243,7 +244,8 @@ ChatTypeGroup["ACHIEVEMENT"] = {
 	"CHAT_MSG_ACHIEVEMENT";
 };
 ChatTypeGroup["GUILD_ACHIEVEMENT"] = {
-	"CHAT_MSG_GUILD_ACHIEVEMENT";
+	"CHAT_MSG_GUILD_ACHIEVEMENT",
+	"CHAT_MSG_GUILD_ITEM_LOOTED",
 };
 ChatTypeGroup["CHANNEL"] = {
 	"CHAT_MSG_CHANNEL_JOIN",
@@ -286,7 +288,7 @@ end
 CHAT_CATEGORY_LIST = {
 	PARTY = { "PARTY_LEADER", "PARTY_GUIDE", "MONSTER_PARTY" },
 	RAID = { "RAID_LEADER", "RAID_WARNING" },
-	GUILD = { "GUILD_ACHIEVEMENT" },
+	GUILD = { "GUILD_ACHIEVEMENT", "GUILD_ITEM_LOOTED" },
 	WHISPER = { "WHISPER_INFORM", "AFK", "DND" },
 	CHANNEL = { "CHANNEL_JOIN", "CHANNEL_LEAVE", "CHANNEL_NOTICE", "CHANNEL_USER" },
 	INSTANCE_CHAT = { "INSTANCE_CHAT_LEADER" },
@@ -607,7 +609,13 @@ EMOTE450_TOKEN = "OBJECT"
 EMOTE451_TOKEN = "SWEAT"
 EMOTE452_TOKEN = "YW"
 EMOTE453_TOKEN = "READ"
-local MAXEMOTEINDEX = 453;
+EMOTE454_TOKEN = "FORTHEALLIANCE"
+EMOTE455_TOKEN = "FORTHEHORDE"
+EMOTE517_TOKEN = "WHOA"
+EMOTE518_TOKEN = "OOPS"
+
+-- NOTE: This indices used to iterate the tokens may not be contiguous, keep that in mind when updating this value.
+local MAXEMOTEINDEX = 518;
 
 
 ICON_LIST = {
@@ -1165,35 +1173,6 @@ SecureCmdList["CANCELFORM"] = function(msg)
 	end
 end
 
--- Allow friendly names for glyph slots (needs to be local)
-local GLYPH_SLOTS = {
-	minor1 = GLYPH_ID_MINOR_1;
-	minor2 = GLYPH_ID_MINOR_2;
-	minor3 = GLYPH_ID_MINOR_3;
-
-	major1 = GLYPH_ID_MAJOR_1;
-	major2 = GLYPH_ID_MAJOR_2;
-	major3 = GLYPH_ID_MAJOR_3;
-
---	prime1 = GLYPH_ID_PRIME_1;
---	prime2 = GLYPH_ID_PRIME_2;
---	prime3 = GLYPH_ID_PRIME_3;
-};
-
-SecureCmdList["CASTGLYPH"] = function(msg)
-	local action = SecureCmdOptionParse(msg);
-	if ( action ) then
-		local glyph, slot = strmatch(action, "^(.+)%s+(%S+)$");
-		slot = (slot and GLYPH_SLOTS[slot]) or tonumber(slot);
-		local glyphID = tonumber(glyph);
-		if ( glyphID and slot ) then
-			CastGlyphByID(glyphID, slot);
-		elseif ( glyph and slot ) then
-			CastGlyphByName(glyph, slot);
-		end
-	end
-end
-
 SecureCmdList["EQUIP"] = function(msg)
 	local item = SecureCmdOptionParse(msg);
 	if ( item ) then
@@ -1702,6 +1681,9 @@ SlashCmdList["TRADE"] = function(msg)
 end
 
 SlashCmdList["INSPECT"] = function(msg)
+	if (IsKioskModeEnabled()) then
+		return;
+	end
 	InspectUnit("target");
 end
 
@@ -1710,6 +1692,9 @@ SlashCmdList["LOGOUT"] = function(msg)
 end
 
 SlashCmdList["QUIT"] = function(msg)
+	if (IsKioskModeEnabled()) then
+		return;
+	end
 	Quit();
 end
 
@@ -2003,6 +1988,9 @@ SlashCmdList["CHAT_DND"] = function(msg)
 end
 
 SlashCmdList["WHO"] = function(msg)
+	if (IsKioskModeEnabled()) then
+		return;
+	end
 	if ( msg == "" ) then
 		msg = WhoFrame_GetDefaultWhoCommand();
 		ShowWhoPanel();
@@ -2055,15 +2043,13 @@ SlashCmdList["UNIGNORE"] = function(msg)
 end
 
 SlashCmdList["SCRIPT"] = function(msg)
-	RunScript(msg);
+	if ( not ScriptsDisallowedForBeta() ) then
+		RunScript(msg);
+	end
 end
 
 SlashCmdList["LOOT_FFA"] = function(msg)
 	SetLootMethod("freeforall");
-end
-
-SlashCmdList["LOOT_ROUNDROBIN"] = function(msg)
-	SetLootMethod("roundrobin");
 end
 
 SlashCmdList["LOOT_MASTER"] = function(msg)
@@ -2072,10 +2058,6 @@ end
 
 SlashCmdList["LOOT_GROUP"] = function(msg)
 	SetLootMethod("group");
-end
-
-SlashCmdList["LOOT_NEEDBEFOREGREED"] = function(msg)
-	SetLootMethod("needbeforegreed");
 end
 
 SlashCmdList["LOOT_SETTHRESHOLD"] = function(msg)
@@ -2278,7 +2260,7 @@ SlashCmdList["USE_TALENT_SPEC"] = function(msg)
 	if ( group ) then
 		local groupNumber = tonumber(group);
 		if ( groupNumber ) then
-			SetActiveSpecGroup(groupNumber);
+			--SetActiveSpecGroup(groupNumber);
 		end
 	end
 end
@@ -2313,8 +2295,10 @@ SlashCmdList["EVENTTRACE"] = function(msg)
 end
 
 SlashCmdList["DUMP"] = function(msg)
-	UIParentLoadAddOn("Blizzard_DebugTools");
-	DevTools_DumpCommand(msg);
+	if (not IsKioskModeEnabled() and not ScriptsDisallowedForBeta()) then
+		UIParentLoadAddOn("Blizzard_DebugTools");
+		DevTools_DumpCommand(msg);
+	end
 end
 
 SlashCmdList["RELOAD"] = function(msg)
@@ -2417,7 +2401,7 @@ function ChatFrame_ImportEmoteTokensToHash()
 	while ( i <= MAXEMOTEINDEX ) do
 		local token = _G["EMOTE"..i.."_TOKEN"];
 		-- if the code in here changes - change the corresponding code above
-		if ( token ) then
+		if ( token and cmdString) then
 			hash_EmoteTokenList[strupper(cmdString)] = token;	-- add to hash
 		end
 		j = j + 1;
@@ -2735,8 +2719,14 @@ function ChatFrame_SystemEventHandler(self, event, ...)
 		ChatFrame_DisplayTimePlayed(self, arg1, arg2);
 		return true;
 	elseif ( event == "PLAYER_LEVEL_UP" ) then
-		local level, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9 = ...;
+		local level, arg2, arg3, arg4, arg5, arg6, arg7, arg8 = ...;
 		LevelUpDisplay_ChatPrint(self, level, LEVEL_UP_TYPE_CHARACTER)
+		return true;
+	elseif ( event == "QUEST_TURNED_IN" ) then
+		local questID, xp, money = ...;
+		if questID == WORLD_QUESTS_AVAILABLE_QUEST_ID then
+			LevelUpDisplay_ChatPrint(self, nil, TOAST_WORLD_QUESTS_UNLOCKED)
+		end
 		return true;
 	elseif (event == "UNIT_LEVEL" ) then
 		local arg1 = ...;
@@ -2795,11 +2785,6 @@ function ChatFrame_SystemEventHandler(self, event, ...)
 	elseif ( event == "BN_DISCONNECTED" ) then
 		local info = ChatTypeInfo["SYSTEM"];
 		self:AddMessage(BN_CHAT_DISCONNECTED, info.r, info.g, info.b, info.id);
-	elseif ( event == "UNIT_GUILD_LEVEL" ) then
-		local unit, level = ...;
-		if ( unit == "player" ) then
-			LevelUpDisplay_ChatPrint(self, level, LEVEL_UP_TYPE_GUILD);
-		end
 	elseif ( event == "PLAYER_REPORT_SUBMITTED" ) then
 		local guid = ...;
 		FCF_RemoveAllMessagesFromChanSender(self, guid);
@@ -2938,7 +2923,7 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 			if ( self.privateMessageList and not self.privateMessageList[strlower(arg2)] ) then
 				return true;
 			elseif ( self.excludePrivateMessageList and self.excludePrivateMessageList[strlower(arg2)] 
-				and ( (chatGroup == "WHISPER" and GetCVar("whisperMode") ~= "popout_and_inline") or (chatGroup == "BN_WHISPER" and GetCVar("bnWhisperMode") ~= "popout_and_inline") ) ) then
+				and ( (chatGroup == "WHISPER" and GetCVar("whisperMode") ~= "popout_and_inline") or (chatGroup == "BN_WHISPER" and GetCVar("whisperMode") ~= "popout_and_inline") ) ) then
 				return true;
 			end
 		end
@@ -3187,6 +3172,8 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 						body = format(_G["CHAT_"..type.."_GET"]..message, pflag..playerLink..coloredName.."|h");
 					elseif ( type == "TEXT_EMOTE") then
 						body = string.gsub(message, arg2, pflag..playerLink..coloredName.."|h", 1);
+					elseif (type == "GUILD_ITEM_LOOTED") then
+						body = string.gsub(message, "$s", "|Hplayer:"..arg2.."|h".."["..coloredName.."]".."|h");
 					else
 						body = format(_G["CHAT_"..type.."_GET"]..message, pflag..playerLink.."["..coloredName.."]".."|h");
 					end
@@ -3449,19 +3436,13 @@ function ChatFrame_ReplyTell2(chatFrame)
 	end
 end
 
-function ChatFrame_DisplayStartupText(frame)
+function ChatFrame_DisplayHelpTextSimple(frame)
 	if ( not frame ) then
 		return;
 	end
 
 	local info = ChatTypeInfo["SYSTEM"];
-	local i = 1;
-	local text = _G["STARTUP_TEXT_LINE"..i];
-	while text do
-		frame:AddMessage(text, info.r, info.g, info.b, info.id);
-		i = i + 1;
-		text = _G["STARTUP_TEXT_LINE"..i];
-	end
+	frame:AddMessage(HELP_TEXT_SIMPLE, info.r, info.g, info.b, info.id);
 
 end
 
@@ -3820,15 +3801,13 @@ function ChatEdit_InsertLink(text)
 		end
 		return true;
 	end
-	if ( TradeSkillFrame and TradeSkillFrame:IsShown() )  then
+	if ( TradeSkillFrame and TradeSkillFrame.SearchBox:HasFocus() )  then
 		local item;
 		if ( strfind(text, "item:", 1, true) ) then
 			item = GetItemInfo(text);
 		end
 		if ( item ) then
-			TradeSkillFrameSearchBox:SetFontObject("ChatFontSmall");
-			TradeSkillFrameSearchBoxSearchIcon:SetVertexColor(1.0, 1.0, 1.0);
-			TradeSkillFrameSearchBox:SetText(item);
+			TradeSkillFrame.SearchBox:SetText(item);
 			return true;
 		end
 	end
@@ -4343,16 +4322,18 @@ function ChatEdit_ParseText(editBox, send, parseIfNoSpaces)
 		return;
 	elseif ( hash_EmoteTokenList[command] ) then
 		-- if the code in here changes - change the corresponding code below
-		DoEmote(hash_EmoteTokenList[command], msg);
-		editBox:AddHistoryLine(text);
-		ChatEdit_ClearChat(editBox);
-		return;
+		local restricted = DoEmote(hash_EmoteTokenList[command], msg);
+		-- If the emote is restricted, we want to treat it as if the player entered an unrecognized chat command.
+		if ( not restricted ) then
+		    editBox:AddHistoryLine(text);
+			ChatEdit_ClearChat(editBox);
+			return;
+		end
 	end
 
 	-- Unrecognized chat command, show simple help text
 	if ( editBox.chatFrame ) then
-		local info = ChatTypeInfo["SYSTEM"];
-		editBox.chatFrame:AddMessage(HELP_TEXT_SIMPLE, info.r, info.g, info.b, info.id);
+		ChatFrame_DisplayHelpTextSimple(editBox.chatFrame);
 	end
 	
 	-- Reset the chat type and clear the edit box's contents

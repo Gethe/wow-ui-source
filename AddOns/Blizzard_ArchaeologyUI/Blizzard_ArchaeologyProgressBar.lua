@@ -31,6 +31,7 @@ function ArcheologyDigsiteProgressBar_OnShow(self)
 	self:UnregisterEvent("ARCHAEOLOGY_SURVEY_CAST");
 	self:RegisterEvent("ARCHAEOLOGY_FIND_COMPLETE");
 	self:RegisterEvent("ARTIFACT_DIGSITE_COMPLETE");
+	UIParent_ManageFramePositions();
 end
 
 function ArcheologyDigsiteProgressBar_OnHide(self)
@@ -38,6 +39,7 @@ function ArcheologyDigsiteProgressBar_OnHide(self)
 	self:RegisterEvent("ARCHAEOLOGY_SURVEY_CAST");
 	self:UnregisterEvent("ARCHAEOLOGY_FIND_COMPLETE");
 	self:UnregisterEvent("ARTIFACT_DIGSITE_COMPLETE");
+	UIParent_ManageFramePositions();
 end
 
 function ArcheologyDigsiteProgressBarFillBar_OnUpdate(self, elapsed)

@@ -377,7 +377,7 @@ function EquipmentFlyout_DisplayButton(button, paperDollItemSlot)
 		return;
 	end
 
-	local id, name, textureName, count, durability, maxDurability, invType, locked, start, duration, enable, setTooltip, _, _, _, quality = EquipmentManager_GetItemInfoByLocation(location);
+	local id, name, textureName, count, durability, maxDurability, invType, locked, start, duration, enable, setTooltip, quality = EquipmentManager_GetItemInfoByLocation(location);
 
 	local broken = ( maxDurability and durability == 0 );
 	if ( textureName ) then
@@ -390,15 +390,10 @@ function EquipmentFlyout_DisplayButton(button, paperDollItemSlot)
 			SetItemButtonTextureVertexColor(button, 1.0, 1.0, 1.0);
 			SetItemButtonNormalTextureVertexColor(button, 1.0, 1.0, 1.0);
 		end
-		
-		if (quality and quality > LE_ITEM_QUALITY_COMMON and BAG_ITEM_QUALITY_COLORS[quality]) then
-			button.IconBorder:Show();
-			button.IconBorder:SetVertexColor(BAG_ITEM_QUALITY_COLORS[quality].r, BAG_ITEM_QUALITY_COLORS[quality].g, BAG_ITEM_QUALITY_COLORS[quality].b);
-		else
-			button.IconBorder:Hide();
-		end
 
-		CooldownFrame_SetTimer(button.cooldown, start, duration, enable);
+		SetItemButtonQuality(button, quality);
+
+		CooldownFrame_Set(button.cooldown, start, duration, enable);
 
 		button.UpdateTooltip = function () GameTooltip:SetOwner(EquipmentFlyoutFrame.buttonFrame, "ANCHOR_RIGHT", 6, -EquipmentFlyoutFrame.buttonFrame:GetHeight() - 6); setTooltip(); end;
 		if ( button:IsMouseOver() ) then

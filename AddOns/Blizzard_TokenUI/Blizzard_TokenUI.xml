@@ -144,7 +144,7 @@
 			<TexCoords left="0" right="1" top="0.609375" bottom="0.796875"/>
 		</HighlightTexture>
 	</Button>
-	<Frame name="TokenFrame" setAllPoints="true" parent="CharacterFrame" useParentLevel="true" enableMouse="true" hidden="true" id="4">
+	<Frame name="TokenFrame" setAllPoints="true" parent="CharacterFrame" useParentLevel="true" enableMouse="true" hidden="true" id="3">
         <Frames>
 			<ScrollFrame name="$parentContainer" inherits="HybridScrollFrameTemplate">
 				<!-- See TokenFrame_OnShow for anchors -->

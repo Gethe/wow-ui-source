@@ -163,6 +163,9 @@
 					<EditBox name="MacroFrameText" multiLine="true" letters="255" autoFocus="false" countInvisibleLetters="true">
 						<Size x="286" y="85"/>
 						<Scripts>
+							<OnLoad>
+								ScrollingEdit_OnCursorChanged(self, 0, 0, 0, 0);
+							</OnLoad>
 							<OnTextChanged>
 								MacroFrame.textChanged = 1;
 								if ( MacroPopupFrame.mode == "new" ) then

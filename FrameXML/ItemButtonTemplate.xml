@@ -111,58 +111,34 @@
 		<CheckedTexture alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight"/>
 	</CheckButton>
 	<Button name="LargeItemButtonTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="147" y="41"/>
-		</Size>
+		<Size x="147" y="41" />
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentIconTexture" parentKey="Icon">
-					<Size>
-						<AbsDimension x="39" y="39"/>
-					</Size>
+					<Size x="39" y="39" />
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" />
 					</Anchors>
 				</Texture>
 				<Texture name="$parentNameFrame" file="Interface\QuestFrame\UI-QuestItemNameFrame" parentKey="NameFrame">
-					<Size>
-						<AbsDimension x="128" y="64"/>
-					</Size>
+					<Size x="128" y="64" />
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentIconTexture" relativePoint="RIGHT">
-							<Offset>
-								<AbsDimension x="-10" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="-10" y="0" />
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="BORDER">
 				<FontString name="$parentName" inherits="GameFontHighlight" justifyH="LEFT" parentKey="Name">
-					<Size>
-						<AbsDimension x="90" y="36"/>
-					</Size>
+					<Size x="90" y="36" />
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentNameFrame">
-							<Offset>
-								<AbsDimension x="15" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="LEFT" relativeKey="$parent.NameFrame" x="15" y="0" />
 					</Anchors>
 				</FontString>
 			</Layer>
 			<Layer level="ARTWORK">
 				<FontString name="$parentCount" inherits="NumberFontNormal" justifyH="RIGHT" parentKey="Count">
 					<Anchors>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentIconTexture">
-							<Offset>
-								<AbsDimension x="-1" y="1"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" x="-1" y="1" />
 					</Anchors>
 				</FontString>
 			</Layer>

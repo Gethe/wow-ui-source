@@ -1,0 +1,290 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+  <Script file="InsanityBar.lua"/>
+
+	<Frame name="InsanityBarFrame" inherits="ClassPowerBarFrame" mixin="ClassPowerBar, InsanityPowerBar">
+		<Size x="128" y="128"/>
+		<Anchors>
+			<Anchor point="TOPLEFT" x="-25" y="56"/>
+		</Anchors>
+		<Frames>
+			<Frame parentKey="InsanityOn" alpha="0">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+				<Size x="128" y="128"/>
+				<Layers>
+					<Layer level="ARTWORK" textureSubLevel="3">
+						<Texture parentKey="PortraitOverlay" hidden="false" alpha="1" alphaMode="ADD" atlas="Insanity-PortraitOverlay" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK" textureSubLevel="4">
+						<Texture parentKey="Tentacles" hidden="false" alpha="1" alphaMode="BLEND" atlas="Insanity-Tentacles" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.PortraitOverlay" x="62" y="-24"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="ShadowBurstOn" hidden="false" alpha="1" alphaMode="BLEND" atlas="Insanity-ShadowBurstOn" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.PortraitOverlay" x="32" y="-15"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="ShadowBurst2" hidden="false" alpha="1" alphaMode="BLEND" atlas="Insanity-ShadowBurstOn" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.PortraitOverlay" x="32" y="-15"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="TopShadowStay" hidden="false" alpha="1" alphaMode="ADD" atlas="Insanity-TopPurpleShadow">
+							<Size x="90" y="52"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.PortraitOverlay" x="-60" y="20"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="3">
+						<Texture parentKey="PurpleBurstOn" hidden="false" alpha="1" alphaMode="ADD" atlas="Insanity-PurpleBurstOn" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.PortraitOverlay" x="32" y="-22"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="4">
+						<Texture parentKey="PurpleBurstHorizontal" hidden="false" alpha="1" alphaMode="ADD" atlas="Insanity-PurpleBurstOn" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.PortraitOverlay" x="32" y="-20"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="Anim" setToFinalAlpha="true">
+						<Alpha childKey="PurpleBurstOn" smoothing="OUT" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="PurpleBurstOn" startDelay="0.5" smoothing="IN" duration="0.75" order="1" fromAlpha="1" toAlpha="0"/>
+						<Scale childKey="PurpleBurstOn" smoothing="OUT" duration="0.25" order="1" fromScaleX="1" fromScaleY="0.5" toScaleX="1" toScaleY="1">
+							<Origin point="TOP">
+								<Offset x="0" y="0"/>
+							</Origin>
+						</Scale>
+						<Alpha childKey="ShadowBurstOn" smoothing="OUT" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="ShadowBurstOn" startDelay="0.25" smoothing="IN" duration="1" order="1" fromAlpha="1" toAlpha="0"/>
+						<Scale childKey="ShadowBurstOn" smoothing="IN_OUT" duration="0.35" order="1" fromScaleX="1" fromScaleY="0.5" toScaleX="1" toScaleY="1.5">
+							<Origin point="TOP">
+								<Offset x="0" y="-10"/>
+							</Origin>
+						</Scale>
+						<Scale childKey="ShadowBurstOn" startDelay="0.35" smoothing="OUT" duration="0.5" order="1" fromScaleX="1" fromScaleY="1" toScaleX="1" toScaleY="1.25">
+							<Origin point="TOP">
+								<Offset x="0" y="-10"/>
+							</Origin>
+						</Scale>
+						<Alpha childKey="PurpleBurstHorizontal" smoothing="OUT" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="PurpleBurstHorizontal" startDelay="0.25" smoothing="IN" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+						<Scale childKey="PurpleBurstHorizontal" smoothing="OUT" duration="0.25" order="1" fromScaleX="0.7" fromScaleY="0.4" toScaleX="1.4" toScaleY="0.4"/>
+						<Alpha childKey="ShadowBurst2" startDelay="0.15" smoothing="OUT" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="ShadowBurst2" startDelay="0.4" smoothing="IN" duration="1" order="1" fromAlpha="1" toAlpha="0"/>
+						<Scale childKey="ShadowBurst2" startDelay="0.15" smoothing="IN_OUT" duration="0.35" order="1" fromScaleX="1" fromScaleY="0.5" toScaleX="1" toScaleY="1.5">
+							<Origin point="TOP">
+								<Offset x="0" y="-10"/>
+							</Origin>
+						</Scale>
+						<Scale childKey="ShadowBurst2" startDelay="0.5" smoothing="OUT" duration="0.8" order="1" fromScaleX="1" fromScaleY="1" toScaleX="1.25" toScaleY="1.5">
+							<Origin point="TOP">
+								<Offset x="0" y="-10"/>
+							</Origin>
+						</Scale>
+						<Alpha childKey="PortraitOverlay" smoothing="IN" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="Tentacles" startDelay="0.15" smoothing="IN" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+						<Scale childKey="Tentacles" startDelay="0.25" smoothing="OUT" duration="0.75" order="1" fromScaleX="1" fromScaleY="0.5" toScaleX="1" toScaleY="1">
+							<Origin point="TOP">
+								<Offset x="0" y="0"/>
+							</Origin>
+						</Scale>
+						<Alpha childKey="TopShadowStay" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+						<Scripts>
+							<OnPlay>
+								self:GetParent():SetAlpha(1);
+							</OnPlay>
+						</Scripts>
+					</AnimationGroup>
+					<AnimationGroup parentKey="Fadeout" setToFinalAlpha="true">
+						<Alpha duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+			
+			<Frame parentKey="DrippyPurpleMid" alpha="0">
+				<Size x="128" y="128"/>
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK" textureSubLevel="6">
+						<Texture parentKey="DrippyPurpleMid" hidden="false" alpha="1" alphaMode="BLEND" atlas="Insanity-DrippyPurple1">
+							<Size x="49" y="33"/>
+							<Anchors>
+								<Anchor point="CENTER" x="120" y="-67"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="Anim" setToFinalAlpha="true" looping="REPEAT">
+						<Alpha childKey="DrippyPurpleMid" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
+						<Scale childKey="DrippyPurpleMid" smoothing="OUT" duration="1.2" order="1" fromScaleX="1" fromScaleY="0.75" toScaleX="1" toScaleY="1.25">
+							<Origin point="TOP">
+								<Offset x="0" y="0"/>
+							</Origin>
+						</Scale>
+						<Alpha childKey="DrippyPurpleMid" startDelay="1" smoothing="OUT" duration="0.9" order="1" fromAlpha="1" toAlpha="0"/>
+						<Scripts>
+							<OnPlay>
+								self:GetParent():SetAlpha(1);
+							</OnPlay>
+						</Scripts>
+					</AnimationGroup>
+					<AnimationGroup parentKey="Fadeout" setToFinalAlpha="true">
+						<Alpha duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+						<Scripts>
+							<OnPlay>
+								self:GetParent().Anim:Stop();
+							</OnPlay>
+						</Scripts>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+	
+			<Frame parentKey="DrippyPurpleLoop" alpha="0">
+				<Size x="128" y="128"/>
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="DrippyPurple1" hidden="false" alpha="0" alphaMode="BLEND" atlas="Insanity-DrippyPurple1" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" x="140" y="-67"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="DrippyPurple2" hidden="false" alpha="0" alphaMode="BLEND" atlas="Insanity-DrippyPurple2" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" x="100" y="-67"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="Anim" setToFinalAlpha="false" looping="REPEAT">
+						<Alpha childKey="DrippyPurple1" duration="0.3" order="1" fromAlpha="0" toAlpha="1"/>
+						<Scale childKey="DrippyPurple1" smoothing="OUT" duration="1.25" order="1" fromScaleX="1" fromScaleY="0.5" toScaleX="1" toScaleY="1.15">
+							<Origin point="TOP">
+								<Offset x="0" y="0"/>
+							</Origin>
+						</Scale>
+						<Alpha childKey="DrippyPurple1" startDelay="0.75" smoothing="OUT" duration="0.8" order="1" fromAlpha="1" toAlpha="0"/>
+						
+						<Alpha childKey="DrippyPurple2" startDelay="0.4" duration="0.3" order="1" fromAlpha="0" toAlpha="1"/>
+						<Scale childKey="DrippyPurple2" startDelay="0.4" smoothing="OUT" duration="1.3" order="1" fromScaleX="1" fromScaleY="0.5" toScaleX="1" toScaleY="1.15">
+							<Origin point="TOP">
+								<Offset x="0" y="0"/>
+							</Origin>
+						</Scale>
+						<Alpha childKey="DrippyPurple2" startDelay="1.4" smoothing="OUT" duration="1.3" order="1" fromAlpha="1" toAlpha="0"/>
+						<Scripts>
+							<OnPlay>
+								self:GetParent():SetAlpha(1);
+							</OnPlay>
+						</Scripts>
+					</AnimationGroup>
+					<AnimationGroup parentKey="Fadeout" setToFinalAlpha="true">
+						<Alpha duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+						<Scripts>
+							<OnPlay>
+								self:GetParent().Anim:Stop();
+							</OnPlay>
+						</Scripts>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+			
+			<Frame parentKey="InsanitySpark" alpha="0">
+				<Size x="25" y="33"/>
+				<Anchors>
+					<Anchor point="CENTER" relativePoint="RIGHT" relativeKey="$parent.InsanityOn.Tentacles"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK" textureSubLevel="2">
+						<Texture parentKey="SparkDrip1" hidden="false" alpha="0" alphaMode="BLEND" atlas="Insanity-DrippyPurple1">
+							<Size x="20" y="33"/>
+							<Anchors>
+								<Anchor point="CENTER" x="-2" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK" textureSubLevel="3">
+						<Texture parentKey="SparkDrip2" hidden="false" alpha="0" alphaMode="BLEND" atlas="Insanity-DrippyPurple1">
+							<Size x="25" y="33"/>
+							<Anchors>
+								<Anchor point="CENTER" x="-8" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="1">
+						<Texture parentKey="Spark" hidden="false" alpha="1" alphaMode="BLEND" atlas="Insanity-Spark" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="5"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="2">
+						<Texture parentKey="SparkGlow" hidden="false" alpha="1" alphaMode="ADD" atlas="Insanity-Spark" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="Anim" setToFinalAlpha="true" looping="REPEAT">
+						<Alpha childKey="SparkDrip1" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+						<Scale childKey="SparkDrip1" duration="0.75" order="1" fromScaleX="1" fromScaleY="0.75" toScaleX="1" toScaleY="1.5">
+							<Origin point="TOP">
+								<Offset x="0" y="0"/>
+							</Origin>
+						</Scale>
+						<Alpha childKey="SparkDrip1" startDelay="0.5" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+						<Alpha childKey="SparkGlow" smoothing="IN" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
+						<Scale childKey="SparkGlow" startDelay="0.75" duration="0.5" order="1" fromScaleX="0.5" fromScaleY="1" toScaleX="0.5" toScaleY="1.25"/>
+						<Translation childKey="SparkGlow" smoothing="OUT" duration="1" order="1" offsetX="0" offsetY="-5"/>
+						<Alpha childKey="SparkGlow" startDelay="0.75" smoothing="IN" duration="0.75" order="1" fromAlpha="1" toAlpha="0"/>
+						<Alpha childKey="SparkDrip2" startDelay="0.3" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+						<Scale childKey="SparkDrip2" startDelay="0.3" duration="1" order="1" fromScaleX="1" fromScaleY="0.75" toScaleX="1" toScaleY="1.75">
+							<Origin point="TOP">
+								<Offset x="0" y="0"/>
+							</Origin>
+						</Scale>
+						<Alpha childKey="SparkDrip2" startDelay="0.8" duration="0.75" order="1" fromAlpha="1" toAlpha="0"/>
+						<Scripts>
+							<OnPlay>
+								self:GetParent():SetAlpha(1);
+							</OnPlay>
+						</Scripts>
+					</AnimationGroup>
+					<AnimationGroup parentKey="Fadeout" setToFinalAlpha="true">
+						<Alpha duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+						<Scripts>
+							<OnPlay>
+								self:GetParent().Anim:Stop();
+							</OnPlay>
+						</Scripts>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+			
+		</Frames>
+	</Frame>
+</Ui>

@@ -33,6 +33,41 @@
 			</Anchors>
 		</PushedTexture>
 	</Button>
+	<Frame name="CachedLoginFrameTemplate" virtual="true" parentArray="Frames" hidden="true">
+		<Size x="230" y="45"/>
+		<Frames>
+			<Button parentKey="LoginButton" inherits="GlueButtonTemplateBlue">
+				<Size x="220" y="45"/>
+				<Anchors>
+					<Anchor point="LEFT"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="CachedLoginButton_OnClick"/>
+					<OnUpdate>
+						self:SetEnabled(C_Login.IsLoginReady());
+					</OnUpdate>
+				</Scripts>
+				<HitRectInsets>
+					<AbsInset left="20" right="20" top="10" bottom="10"/>
+				</HitRectInsets>
+			</Button>
+			<Button parentKey="DeleteButton" inherits="GlueButtonTemplateBlue" text="X">
+				<Size x="30" y="45"/>
+				<Anchors>
+					<Anchor point="RIGHT"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="CachedLoginDeleteButton_OnClick"/>
+					<OnUpdate>
+						self:SetEnabled(C_Login.IsLoginReady());
+					</OnUpdate>
+				</Scripts>
+				<HitRectInsets>
+					<AbsInset left="0" right="0" top="10" bottom="10"/>
+				</HitRectInsets>
+			</Button>
+		</Frames>
+	</Frame>
 
 	<Button name="KoreanRatings" toplevel="true" setAllPoints="true" parent="GlueParent" enableMouse="true" enableKeyboard="true" frameStrata="DIALOG" hidden="true">
 		<Anchors>
@@ -90,8 +125,18 @@
 			<OnShow function="KoreanRatings_OnShow"/>
 		</Scripts>
 	</Button>
-	<ModelFFX name="AccountLogin" toplevel="true" parent="GlueParentScreenFrame" setAllPoints="true" enableKeyboard="true" hidden="false" fogNear="0" fogFar="1200" glow="0.08">
+	<Frame name="AccountLogin" toplevel="true" parent="GlueParentScreenFrame" setAllPoints="true" enableKeyboard="true" hidden="false">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="BlackLoginBackground">
+					<Color r="0" g="0" b="0" a="1"/>
+				</Texture>
+			</Layer>
+		</Layers>
 		<Frames>
+			<ModelFFX name="LoginBackgroundModel" setAllPoints="true" fogNear="0" fogFar="1200" glow="0.08">
+				<FogColor r="0.25" g="0.06" b="0.015"/>
+			</ModelFFX>
 			<Frame parentKey="UI" setAllPoints="true">
 				<Layers>
 					<Layer level="ARTWORK">
@@ -147,7 +192,7 @@
 										</Anchor>
 									</Anchors>
 								</FontString>
-								<FontString parentKey="Fill" inherits="GlueFontDisableSmall" justifyH="LEFT" justifyV="MIDDLE" text="ENTER_EMAIL">
+								<FontString parentKey="Fill" inherits="GlueFontDisableSmall" justifyH="LEFT" justifyV="MIDDLE" text="ENTER_YOUR_EMAIL">
 									<Anchors>
 										<Anchor point="CENTER" relativePoint="CENTER">
 											<Offset>
@@ -246,27 +291,12 @@
 							<AbsInset left="12" right="5" bottom="5"/>
 						</TextInsets>
 					</EditBox>
-					<Button parentKey="CachedLoginButton" hidden="true" parentArray="NormalLoginRegions" inherits="GlueButtonTemplateBlue" text="(DEV)Cached Login">
-						<Size x="220" y="45"/>
+					<Frame parentKey="CachedLoginFrameContainer" parentArray="NormalLoginRegions">
+						<Size x="230" y="45"/>
 						<Anchors>
-							<Anchor point="TOPRIGHT" relativeTo="AccountLogin" x="-5" y="-5"/>
+							<Anchor point="TOPRIGHT" relativeTo="AccountLogin" x="-5" y="5"/>
 						</Anchors>
-						<Scripts>
-							<OnClick function="AccountLogin_CachedLogin"/>
-							<OnUpdate>
-								if ( C_Login.HasCachedCredentials() ) then
-									self:Show();
-									if ( C_Login.IsLoginReady() ) then
-										self:Enable();
-									else
-										self:Disable();
-									end
-								else
-									self:Hide();
-								end
-							</OnUpdate>
-						</Scripts>
-					</Button>
+					</Frame>
 					<Button parentKey="LoginButton" parentArray="NormalLoginRegions" inherits="GlueButtonTemplateBlue" text="LOGIN">
 						<Size x="220" y="45"/>
 						<Anchors>
@@ -800,18 +830,22 @@
 						</Scripts>
 					</Frame>
 				</Frames>
+				<Animations>
+					<AnimationGroup parentKey="FadeIn" setToFinalAlpha="true">
+						<Alpha fromAlpha="0" toAlpha="1" duration="0.75" order="1"/>
+					</AnimationGroup>
+				</Animations>
 				<Scripts>
 					<OnShow>
-						GlueFrameFadeIn(self, 0.75);
+						self.FadeIn:Play();
 					</OnShow>
 				</Scripts>
 			</Frame>
 		</Frames>
-		<FogColor r="0.25" g="0.06" b="0.015"/>
 		<Scripts>
 			<OnLoad function="AccountLogin_OnLoad"/>
 			<OnEvent function="AccountLogin_OnEvent"/>
 			<OnShow function="AccountLogin_OnShow"/>
 		</Scripts>
-	</ModelFFX>
+	</Frame>
 </Ui>

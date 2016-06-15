@@ -1,27 +1,27 @@
  <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="QuestInfo.lua"/>
-	
+
 	<Font name="QuestMapRewardsFont" inherits="GameFontBlackSmall" virtual="true">
 		<Color r="0.902" g="0.788" b="0.671"/>
 	</Font>
-	
+
 	<Button name="QuestInfoRewardSpellCodeTemplate" virtual="true">
 		<Scripts>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 				if ( QuestInfoFrame.questLog ) then
-					GameTooltip:SetQuestLogRewardSpell();
+					GameTooltip:SetQuestLogRewardSpell(self.rewardSpellIndex);
 				else
-					GameTooltip:SetQuestRewardSpell();
+					GameTooltip:SetQuestRewardSpell(self.rewardSpellIndex);
 				end
 			</OnEnter>
 			<OnClick>
 				if ( IsModifiedClick("CHATLINK") ) then
 					if ( QuestInfoFrame.questLog ) then
-						ChatEdit_InsertLink(GetQuestLogSpellLink());
+						ChatEdit_InsertLink(GetQuestLogSpellLink(self.rewardSpellIndex));
 					else
-						ChatEdit_InsertLink(GetQuestSpellLink());
+						ChatEdit_InsertLink(GetQuestSpellLink(self.rewardSpellIndex));
 					end
 				end
 			</OnClick>
@@ -75,54 +75,15 @@
 			</OnUpdate>
 		</Scripts>
 	</Button>
-	
-	<Button name="QuestInfoRewardFollowerTemplate" virtual="true">
-		<Size x="195" y="59"/>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture parentKey="BG" atlas="GarrMission_FollowerListButton">
-					<Size x="172" y="51"/>
-					<Anchors>
-						<Anchor point="TOPRIGHT" x="0" y="-4"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="BACKGROUND" textureSubLevel="2">
-				<Texture parentKey="Class" atlas="GarrMission_ClassIcon-DeathKnight" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="TOPRIGHT" x="0" y="-4"/>
-					</Anchors>
-					<Color r="1" g="1" b="1" a=".2"/>
-				</Texture>
-			</Layer>
-			<Layer level="ARTWORK">
-				<FontString parentKey="Name" inherits="GameFontNormal" justifyH="LEFT" text="Goblin Freeman">
-					<Size x="120" y="0"/>
-					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.PortraitFrame" relativePoint="LEFT" x="66" y="0"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-		<Frames>
-			<Frame parentKey="PortraitFrame" inherits="GarrisonFollowerPortraitTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" x="4" y="2"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self:SetFrameLevel(self:GetParent():GetFrameLevel() + 2);
-					</OnLoad>
-				</Scripts>
-			</Frame>
-		</Frames>
+
+	<Button name="QuestInfoRewardFollowerCodeTemplate" virtual="true">
 		<Scripts>
 			<OnEnter>
 				GarrisonFollowerTooltip:ClearAllPoints();
 				GarrisonFollowerTooltip:SetPoint("BOTTOMLEFT", self, "TOPRIGHT");
 				local link = C_Garrison.GetFollowerLinkByID(self.ID);
-				local _, garrisonFollowerID, quality, level, itemLevel, ability1, ability2, ability3, ability4, trait1, trait2, trait3, trait4 = strsplit(":", link);
-				GarrisonFollowerTooltip_Show(tonumber(garrisonFollowerID), false, tonumber(quality), tonumber(level), 0, 0, tonumber(itemLevel), tonumber(ability1), tonumber(ability2), tonumber(ability3), tonumber(ability4), tonumber(trait1), tonumber(trait2), tonumber(trait3), tonumber(trait4));
+				local _, garrisonFollowerID, quality, level, itemLevel, ability1, ability2, ability3, ability4, trait1, trait2, trait3, trait4, spec1 = strsplit(":", link);
+				GarrisonFollowerTooltip_Show(tonumber(garrisonFollowerID), false, tonumber(quality), tonumber(level), 0, 0, tonumber(itemLevel), tonumber(spec1), tonumber(ability1), tonumber(ability2), tonumber(ability3), tonumber(ability4), tonumber(trait1), tonumber(trait2), tonumber(trait3), tonumber(trait4));
 			</OnEnter>
 			<OnClick>
 				if ( IsModifiedClick("CHATLINK") ) then
@@ -130,21 +91,109 @@
 					if ( followerLink ) then
 						ChatEdit_InsertLink(followerLink);
 					end
-				end			
+				end
 			</OnClick>
 			<OnLeave>
 				GarrisonFollowerTooltip:Hide();
 			</OnLeave>
 		</Scripts>
 	</Button>
-	
-	<Frame name="QuestInfoObjectivesFrame" hidden="true">					
+
+	<Button name="LargeQuestInfoRewardFollowerTemplate" inherits="QuestInfoRewardFollowerCodeTemplate" virtual="true">
+		<Size x="144" y="55" />
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="BG" atlas="GarrMission_FollowerListButton">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="30" y="-7"/>
+						<Anchor point="BOTTOMRIGHT" x="0" y="7"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="2">
+				<Texture parentKey="Class" alpha=".2">
+					<Size x="41" />
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.BG"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BG"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Name" inherits="GameFontNormal" justifyH="LEFT" justifyV="MIDDLE">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.BG" x="18" y="0"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BG" x="-5" y="2"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="PortraitFrame" inherits="GarrisonFollowerPortraitTemplate">
+				<Anchors>
+					<Anchor point="LEFT" x="4" y="1"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self:SetFrameLevel(self:GetParent():GetFrameLevel() + 2);
+						self:SetScale(.8);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+		</Frames>
+	</Button>
+
+	 <Button name="SmallQuestInfoRewardFollowerTemplate" inherits="QuestInfoRewardFollowerCodeTemplate" virtual="true">
+		 <Size x="134" y="30"/>
+		 <Layers>
+			 <Layer level="BACKGROUND">
+				 <Texture parentKey="BG" atlas="GarrMission_FollowerListButton">
+					 <Anchors>
+						 <Anchor point="TOPLEFT" x="30" y="2"/>
+						 <Anchor point="BOTTOMRIGHT" x="0" y="-2"/>
+					 </Anchors>
+				 </Texture>
+			 </Layer>
+			 <Layer level="BACKGROUND" textureSubLevel="2">
+				 <Texture parentKey="Class" alpha=".2">
+					 <Size x="33" />
+					 <Anchors>
+						 <Anchor point="TOPRIGHT" relativeKey="$parent.BG"/>
+						 <Anchor point="BOTTOMRIGHT" relativeKey="$parent.BG"/>
+					 </Anchors>
+				 </Texture>
+			 </Layer>
+			 <Layer level="ARTWORK">
+				 <FontString parentKey="Name" inherits="GameFontNormalSmall" justifyH="LEFT" justifyV="MIDDLE">
+					 <Anchors>
+						 <Anchor point="TOPLEFT" relativeKey="$parent.BG" x="10" y="0"/>
+						 <Anchor point="BOTTOMRIGHT" relativeKey="$parent.BG" x="-5" y="2"/>
+					 </Anchors>
+				 </FontString>
+			 </Layer>
+		 </Layers>
+		 <Frames>
+			 <Frame parentKey="PortraitFrame" inherits="GarrisonFollowerPortraitTemplate">
+				 <Anchors>
+					 <Anchor point="LEFT" x="4" y="1"/>
+				 </Anchors>
+				 <Scripts>
+					 <OnLoad>
+						 self:SetFrameLevel(self:GetParent():GetFrameLevel() + 2);
+						 self:SetScale(.65);
+					 </OnLoad>
+				 </Scripts>
+			 </Frame>
+		 </Frames>
+	 </Button>
+
+	<Frame name="QuestInfoObjectivesFrame" hidden="true">
 		<Size>
 			<AbsDimension x="285" y="10"/>
 		</Size>
 		<Anchors>
 			<Anchor point="CENTER" />
-		</Anchors>						
+		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<FontString name="QuestInfoObjective1" inherits="QuestFontNormalSmall" justifyH="LEFT" hidden="true" parentArray="Objectives">
@@ -158,7 +207,7 @@
 			</Layer>
 		</Layers>
 	</Frame>
-	
+
 	<Frame name="QuestInfoSpecialObjectivesFrame" hidden="true">
 		<Size x="285" y="10"/>
 		<Anchors>
@@ -173,7 +222,7 @@
 			<Button name="QuestInfoSpellObjectiveFrame" inherits="QuestSpellTemplate" hidden="true"/>
 		</Frames>
 	</Frame>
-	
+
 	<Frame name="QuestInfoTimerFrame" hidden="true">
 		<Size>
 			<AbsDimension x="1" y="1"/>
@@ -189,16 +238,16 @@
 					</Size>
 					<Anchors>
 						<Anchor point="TOPLEFT" />
-					</Anchors>							
+					</Anchors>
 					<Color r="0" g="0" b="0" />
-				</FontString>				
+				</FontString>
 			</Layer>
 		</Layers>
 		<Scripts>
 			<OnUpdate function="QuestInfoTimerFrame_OnUpdate"/>
-		</Scripts>				
+		</Scripts>
 	</Frame>
-			
+
 	<Frame name="QuestInfoRequiredMoneyFrame">
 		<Size>
 			<AbsDimension x="285" y="28"/>
@@ -209,7 +258,7 @@
 					<Anchors>
 						<Anchor point="LEFT"/>
 					</Anchors>
-				</FontString>							
+				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -227,17 +276,19 @@
 						MoneyFrame_SetType(self, "STATIC");
 					</OnLoad>
 				</Scripts>
-			</Frame>						
+			</Frame>
 		</Frames>
 	</Frame>
-									
+
+	<FontString name="QuestInfoSpellHeaderTemplate" inherits="QuestFont" justifyH="LEFT" virtual="true" />
+
 	<Frame name="QuestInfoRewardsFrame" hidden="true">
 		<Size>
 			<AbsDimension x="285" y="10" />
 		</Size>
 		<Anchors>
 			<Anchor point="CENTER" />
-		</Anchors>						
+		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<FontString parentKey="Header" inherits="QuestTitleFont" text="QUEST_REWARDS" justifyH="LEFT">
@@ -248,19 +299,14 @@
 				</FontString>
 				<FontString parentKey="ItemChooseText" inherits="QuestFont" text="REWARD_CHOICES" hidden="true" justifyH="LEFT">
 					<Size x="285" y="0"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Header" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
-					</Anchors>
 				</FontString>
 				<FontString parentKey="ItemReceiveText" inherits="QuestFont" hidden="true" justifyH="LEFT" />
-				<FontString parentKey="SpellLearnText" inherits="QuestFont" hidden="true" justifyH="LEFT" />
 				<FontString parentKey="PlayerTitleText" inherits="QuestFont" text="REWARD_TITLE" hidden="true" justifyH="LEFT" />
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button parentKey="SpellFrame" name="QuestInfoRewardSpell" inherits="QuestSpellTemplate, QuestInfoRewardSpellCodeTemplate" hidden="true"/>
-			<Button parentKey="FollowerFrame" inherits="QuestInfoRewardFollowerTemplate"/>
-			<Button name="$parentQuestInfoItem1" inherits="LargeItemButtonTemplate, QuestInfoRewardItemCodeTemplate" hidden="true" parentArray="RewardButtons"/>
+			<Button parentKey="HonorFrame" inherits="LargeItemButtonTemplate" hidden="true"/>
+			<Button parentArray="RewardButtons" name="$parentQuestInfoItem1" inherits="LargeItemButtonTemplate, QuestInfoRewardItemCodeTemplate" hidden="true"/>
 			<Frame parentKey="MoneyFrame" name="QuestInfoMoneyFrame" inherits="MoneyFrameTemplate">
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.ItemReceiveText" relativePoint="RIGHT">
@@ -332,6 +378,26 @@
 					</Layer>
 				</Layers>
 			</Frame>
+			<Button parentKey="ArtifactXPFrame" inherits="LargeItemButtonTemplate" hidden="true">
+				<Layers>
+					<Layer level="BORDER">
+						<Texture parentKey="Overlay" file="Interface\Artifacts\ArtifactPower-QuestBorder">
+							<Size x="64" y="64" />
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.Icon" />
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetText(ARTIFACT_XP_REWARD, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, nil, true);
+					</OnEnter>
+
+					<OnLeave function="GameTooltip_Hide" />
+				</Scripts>
+			</Button>
 			<Frame parentKey="TitleFrame" name="QuestInfoPlayerTitleFrame">
 				<Size x="500" y="39"/>
 				<Layers>
@@ -396,21 +462,27 @@
 				<Scripts>
 					<OnLoad function="RaiseFrameLevel"/>
 				</Scripts>
-			</Frame>		
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad>
 				self.buttonTemplate = "LargeItemButtonTemplate, QuestInfoRewardItemCodeTemplate";
+				self.spellRewardPool = CreateFramePool("BUTTON", self, "QuestSpellTemplate, QuestInfoRewardSpellCodeTemplate");
+				self.followerRewardPool = CreateFramePool("BUTTON", self, "LargeQuestInfoRewardFollowerTemplate");
+				self.spellHeaderPool = CreateFontStringPool(self, "BACKGROUND", 0, "QuestInfoSpellHeaderTemplate");
 			</OnLoad>
 		</Scripts>
 	</Frame>
+	 
+	<FontString name="MapQuestInfoSpellHeaderTemplate" inherits="QuestMapRewardsFont" justifyH="LEFT" virtual="true"/>
+	 
 	<Frame name="MapQuestInfoRewardsFrame" hidden="true">
 		<Size>
 			<AbsDimension x="285" y="10" />
 		</Size>
 		<Anchors>
 			<Anchor point="CENTER" />
-		</Anchors>						
+		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<FontString parentKey="ItemChooseText" inherits="QuestMapRewardsFont" text="REWARD_CHOICES" hidden="true" justifyH="LEFT">
@@ -421,7 +493,6 @@
 					<Color r="0.902" g="0.788" b="0.671"/>
 				</FontString>
 				<FontString parentKey="ItemReceiveText" inherits="QuestMapRewardsFont" hidden="true" justifyH="LEFT"/>
-				<FontString parentKey="SpellLearnText" inherits="QuestMapRewardsFont" hidden="true" justifyH="LEFT"/>
 				<FontString parentKey="PlayerTitleText" inherits="QuestMapRewardsFont" text="REWARD_TITLE" hidden="true" justifyH="LEFT"/>
 			</Layer>
 		</Layers>
@@ -431,12 +502,31 @@
 				<Size x="1" y="1"/>
 				<Anchors>
 					<Anchor point="TOPLEFT"/>
-				</Anchors>				
+				</Anchors>
 			</Frame>
-			<Button parentKey="SpellFrame" inherits="SmallItemButtonTemplate, QuestInfoRewardSpellCodeTemplate" hidden="true"/>
-			<Button parentKey="FollowerFrame" inherits="QuestInfoRewardFollowerTemplate"/>
-			<Button name="$parentQuestInfoItem1" inherits="SmallItemButtonTemplate, QuestInfoRewardItemCodeTemplate" hidden="true" parentArray="RewardButtons"/>
+			<Button parentArray="RewardButtons" name="$parentQuestInfoItem1" inherits="SmallItemButtonTemplate, QuestInfoRewardItemCodeTemplate" hidden="true"/>
 			<Button parentKey="XPFrame" inherits="SmallItemButtonTemplate" hidden="true"/>
+            <Button parentKey="HonorFrame" inherits="SmallItemButtonTemplate" hidden="true"/>
+			<Button parentKey="ArtifactXPFrame" inherits="SmallItemButtonTemplate" hidden="true">
+				<Layers>
+					<Layer level="BORDER">
+						<Texture parentKey="Overlay" file="Interface\Artifacts\ArtifactPower-QuestBorder">
+							<Size x="49" y="49" />
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.Icon" />
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetText(ARTIFACT_XP_REWARD, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, nil, true);
+					</OnEnter>
+
+					<OnLeave function="GameTooltip_Hide" />
+				</Scripts>
+			</Button>
 			<Button parentKey="MoneyFrame" inherits="SmallItemButtonTemplate" hidden="true"/>
 			<Button parentKey="SkillPointFrame" inherits="SmallItemButtonTemplate">
 				<Layers>
@@ -475,17 +565,22 @@
 					<OnLeave>
 						GameTooltip:Hide();
 					</OnLeave>
-				</Scripts>			
+				</Scripts>
 			</Button>
 			<Button parentKey="TitleFrame" inherits="SmallItemButtonTemplate"/>
 		</Frames>
 		<Scripts>
 			<OnLoad>
 				self.buttonTemplate = "SmallItemButtonTemplate, QuestInfoRewardItemCodeTemplate";
+				self.spellRewardPool = CreateFramePool("BUTTON", self, "SmallItemButtonTemplate, QuestInfoRewardSpellCodeTemplate");
+				self.followerRewardPool = CreateFramePool("BUTTON", self, "SmallQuestInfoRewardFollowerTemplate");
+				self.spellHeaderPool = CreateFontStringPool(self, "BACKGROUND", 0, "MapQuestInfoSpellHeaderTemplate");
+
 				self.MoneyFrame.Icon:SetTexture("Interface\\Icons\\inv_misc_coin_01");
 				self.MoneyFrame.Name:SetFontObject("GameFontHighlight");
 				self.XPFrame.Icon:SetTexture("Interface\\Icons\\XP_Icon");
 				self.XPFrame.Name:SetFontObject("NumberFontNormal");
+				self.ArtifactXPFrame.Name:SetFontObject("NumberFontNormal");
 				self.TitleFrame.Icon:SetTexture("Interface\\Icons\\INV_Misc_Note_02");
 			</OnLoad>
 		</Scripts>
@@ -536,7 +631,26 @@
 				<Size>
 					<AbsDimension x="5" y="5"/>
 				</Size>
-			</Frame>			
+			</Frame>
+			<Frame name="QuestInfoSealFrame">
+				<Size>
+					<AbsDimension x="257" y="78"/>
+				</Size>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Text" inherits="QuestFont_Huge" justifyH="LEFT">
+							<Anchors>
+								<Anchor point="LEFT" x="5" y="-12"/>
+							</Anchors>
+						</FontString>
+						<Texture parentKey="Texture">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="160" y="-6"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad>
@@ -544,5 +658,5 @@
 				self.rewardsFrame = QuestInfoRewardsFrame;
 			</OnLoad>
 		</Scripts>
-	</Frame>	
+	</Frame>
 </Ui>

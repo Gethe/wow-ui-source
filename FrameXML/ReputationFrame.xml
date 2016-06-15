@@ -52,7 +52,7 @@
 				</CheckedTexture>
 				<Animations>
 					<AnimationGroup parentKey="GlowAnim" looping="BOUNCE">
-						<Alpha childKey="Glow" change="-0.75" duration="1.0" smoothing="IN_OUT" order="1"/>
+						<Alpha childKey="Glow" fromAlpha="0.75" toAlpha="0" duration="1.0" smoothing="IN_OUT" order="1"/>
 						<Scripts>
 							<OnPlay>
 								self.loopsRemaining = 5;
@@ -287,7 +287,7 @@
 		</Scripts>
 	</Button>
 	
-	<Frame name="ReputationFrame" setAllPoints="true" enableMouse="true" parent="CharacterFrame" useParentLevel="true" hidden="true" id="3">
+	<Frame name="ReputationFrame" setAllPoints="true" enableMouse="true" parent="CharacterFrame" useParentLevel="true" hidden="true" id="2">
 		<HitRectInsets>
 			<AbsInset left="0" right="30" top="0" bottom="75"/>
 		</HitRectInsets>
@@ -730,11 +730,12 @@
 								if ( self:GetChecked() ) then
 									PlaySound("igMainMenuOptionCheckBoxOn");
 									SetWatchedFactionIndex(GetSelectedFaction());
+									SetWatchingHonorAsXP(false);
 								else
 									PlaySound("igMainMenuOptionCheckBoxOff");
 									SetWatchedFactionIndex(0);
 								end
-								ReputationWatchBar_Update();
+								MainMenuBar_UpdateExperienceBars();
 							</OnClick>
 							<OnEnter>
 								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
@@ -787,133 +788,7 @@
 			<OnMouseWheel function=""/>
 		</Scripts>
 	</Frame>
-	<Frame name="ReputationWatchBar" enableMouse="true" parent="MainMenuBar" hidden="true">
-		<Size>
-			<AbsDimension x="1024" y="11"/>
-		</Size>
-		<Anchors>
-			<Anchor point="BOTTOM" relativeTo="MainMenuBar" relativePoint="TOP">
-				<Offset>
-					<AbsDimension x="0" y="-3"/>
-				</Offset>
-			</Anchor>
-		</Anchors>
-		<Frames>
-			<StatusBar name="ReputationWatchStatusBar" drawLayer="ARTWORK">
-				<Size>
-					<AbsDimension x="1024" y="8"/>
-				</Size>
-				<Anchors>
-					<Anchor point="TOP"/>
-				</Anchors>
-				<Layers>
-					<Layer level="OVERLAY">
-						<Texture name="ReputationWatchBarTexture0" file="Interface\PaperDollInfoFrame\UI-ReputationWatchBar">
-							<Size>
-								<AbsDimension x="256" y="11"/>
-							</Size>
-							<Anchors>
-								<Anchor point="TOPLEFT">
-									<Offset>
-										<AbsDimension x="0" y="2"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-							<TexCoords left="0" right="1.0" top="0" bottom="0.171875"/>
-						</Texture>
-						<Texture name="ReputationWatchBarTexture1" file="Interface\PaperDollInfoFrame\UI-ReputationWatchBar">
-							<Size>
-								<AbsDimension x="256" y="11"/>
-							</Size>
-							<Anchors>
-								<Anchor point="LEFT" relativeTo="ReputationWatchBarTexture0" relativePoint="RIGHT"/>
-							</Anchors>
-							<TexCoords left="0" right="1.0" top="0.171875" bottom="0.34375"/>
-						</Texture>
-						<Texture name="ReputationWatchBarTexture2" file="Interface\PaperDollInfoFrame\UI-ReputationWatchBar">
-							<Size>
-								<AbsDimension x="256" y="11"/>
-							</Size>
-							<Anchors>
-								<Anchor point="LEFT" relativeTo="ReputationWatchBarTexture1" relativePoint="RIGHT"/>
-							</Anchors>
-							<TexCoords left="0" right="1.0" top="0.34375" bottom="0.515625"/>
-						</Texture>
-						<Texture name="ReputationWatchBarTexture3" file="Interface\PaperDollInfoFrame\UI-ReputationWatchBar">
-							<Size>
-								<AbsDimension x="256" y="11"/>
-							</Size>
-							<Anchors>
-								<Anchor point="LEFT" relativeTo="ReputationWatchBarTexture2" relativePoint="RIGHT"/>
-							</Anchors>
-							<TexCoords left="0" right="1.0" top="0.515625" bottom="0.6875"/>
-						</Texture>
-						<Texture name="ReputationXPBarTexture0" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
-							<Size>
-								<AbsDimension x="256" y="10"/>
-							</Size>
-							<Anchors>
-								<Anchor point="TOPLEFT">
-									<Offset>
-										<AbsDimension x="0" y="0"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-							<TexCoords left="0" right="1.0" top="0.79296875" bottom="0.83203125"/>
-						</Texture>
-						<Texture name="ReputationXPBarTexture1" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
-							<Size>
-								<AbsDimension x="256" y="10"/>
-							</Size>
-							<Anchors>
-								<Anchor point="LEFT" relativeTo="ReputationXPBarTexture0" relativePoint="RIGHT"/>
-							</Anchors>
-							<TexCoords left="0" right="1.0" top="0.54296875" bottom="0.58203125"/>
-						</Texture>
-						<Texture name="ReputationXPBarTexture2" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
-							<Size>
-								<AbsDimension x="256" y="10"/>
-							</Size>
-							<Anchors>
-								<Anchor point="LEFT" relativeTo="ReputationXPBarTexture1" relativePoint="RIGHT"/>
-							</Anchors>
-							<TexCoords left="0" right="1.0" top="0.29296875" bottom="0.33203125"/>
-						</Texture>
-						<Texture name="ReputationXPBarTexture3" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
-							<Size>
-								<AbsDimension x="256" y="10"/>
-							</Size>
-							<Anchors>
-								<Anchor point="LEFT" relativeTo="ReputationXPBarTexture2" relativePoint="RIGHT"/>
-							</Anchors>
-							<TexCoords left="0" right="1.0" top="0.04296875" bottom="0.08203125"/>
-						</Texture>
-					</Layer>
-					<Layer level="BACKGROUND">
-						<Texture name="ReputationWatchStatusBarBackground">
-							<Color r="0.0" g="0.0" b="0.0" a="0.5"/>
-						</Texture>
-					</Layer>
-				</Layers>
-				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
-				<BarColor r="0.58" g="0.0" b="0.55"/>
-			</StatusBar>
-			<Frame name="ReputationWatchBarOverlayFrame" frameStrata="DIALOG" setAllPoints="true">
-				<Layers>
-					<Layer level="ARTWORK">
-						<FontString name="ReputationWatchStatusBarText" inherits="TextStatusBarText" hidden="true">
-							<Anchors>
-								<Anchor point="CENTER">
-									<Offset>
-										<AbsDimension x="0" y="3"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-			</Frame>
-		</Frames>
+	<Frame name="ReputationWatchBar" enableMouse="true" parent="MainMenuBar" hidden="true" inherits="MainMenuBarWatchBarTemplate">
 		<Scripts>
 			<OnLoad>
 				self:RegisterEvent("UPDATE_FACTION");
@@ -929,32 +804,32 @@
 					if ( self:IsShown() ) then
 						ReputationFrame_Update();
 					end
-					ReputationWatchBar_Update();
+					MainMenuBar_UpdateExperienceBars();
 				elseif( event == "PLAYER_LEVEL_UP" or event == "ENABLE_XP_GAIN" or event == "DISABLE_XP_GAIN" or event == "UPDATE_EXPANSION_LEVEL" ) then
 					ReputationWatchBar_UpdateMaxLevel();
-					ReputationWatchBar_Update(arg1);
+					MainMenuBar_UpdateExperienceBars(arg1);
 					UIParent_ManageFramePositions();
 				elseif( event == "CVAR_UPDATE" and arg1 == "XP_BAR_TEXT" ) then
 					if( arg2 == "1" ) then
-						ShowWatchedReputationBarText("lock");
+						ShowWatchBarText(ReputationWatchBar, "lock");
 					else
-						HideWatchedReputationBarText("unlock");
+						HideWatchBarText(ReputationWatchBar, "unlock");
 					end
 				end
 			</OnEvent>
 			<OnShow>
-				if ( GetCVar("xpBarText") == "1" ) then
-					ShowWatchedReputationBarText("lock");
+				if ( GetCVarBool("xpBarText") ) then
+					ShowWatchBarText(ReputationWatchBar, "lock");
 				end
 				UIParent_ManageFramePositions();
 			</OnShow>
 			<OnHide function="UIParent_ManageFramePositions"/>
 			<OnEnter>
-				ReputationWatchStatusBarText:Show();
+				self.OverlayFrame.Text:Show();
 			</OnEnter>
 			<OnLeave>
 				if(not ReputationWatchBar.textLocked) then
-					ReputationWatchStatusBarText:Hide();
+					self.OverlayFrame.Text:Hide();
 				end
 			</OnLeave>
 		</Scripts>

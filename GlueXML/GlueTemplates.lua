@@ -35,7 +35,7 @@ function GlueScrollFrame_Update(frame, numItems, numToDisplay, valueStep, highli
 		else
 			scrollChildFrame:Hide();
 		end
-		scrollBar:SetMinMaxValues(0, scrollFrameHeight); 
+		scrollBar:SetMinMaxValues(0, scrollFrameHeight);
 		scrollBar:SetValueStep(valueStep);
 		scrollChildFrame:SetHeight(scrollChildHeight);
 
@@ -131,7 +131,7 @@ function GlueTemplates_TabResize(padding, tab, absoluteSize)
 	local sideWidths = 2 * _G[tabName.."Left"]:GetWidth();
 	local tabText = _G[tab:GetName().."Text"];
 	local width, tabWidth;
-	
+
 	-- If there's an absolute size specified then use it
 	if ( absoluteSize ) then
 		if ( absoluteSize < sideWidths) then
@@ -152,14 +152,14 @@ function GlueTemplates_TabResize(padding, tab, absoluteSize)
 		tabWidth = width + sideWidths;
 		tabText:SetWidth(0);
 	end
-	
+
 	if ( buttonMiddle ) then
 		buttonMiddle:SetWidth(width);
 	end
 	if ( buttonMiddleDisabled ) then
 		buttonMiddleDisabled:SetWidth(width);
 	end
-	
+
 	tab:SetWidth(tabWidth);
 	local highlightTexture = _G[tabName.."HighlightTexture"];
 	if ( highlightTexture ) then
@@ -248,3 +248,65 @@ function GlueTemplates_SetDisabledTabState(tab)
 	_G[name.."RightDisabled"]:Hide();
 end
 
+HorizontalResizableCheckButtonMixin = {};
+
+function HorizontalResizableCheckButtonMixin:OnLoad()
+	self:SetPressed(false);
+end
+
+function HorizontalResizableCheckButtonMixin:OnMouseDown()
+	if( self:IsEnabled() ) then
+		self.checkedLeft:Show();
+		self.checkedRight:Show();
+		self.checkedMiddle:Show();
+
+		self:SetPressed(true);
+	end
+end
+
+function HorizontalResizableCheckButtonMixin:OnMouseUp()
+	self:UpdateCheckState();
+	self:SetPressed(false);
+end
+
+function HorizontalResizableCheckButtonMixin:OnEnter()
+	if( self:IsEnabled() ) then
+		self.mouseoverLeft:Show();
+		self.mouseoverRight:Show();
+		self.mouseoverMiddle:Show();
+	end
+end
+
+function HorizontalResizableCheckButtonMixin:OnLeave()
+	self.mouseoverLeft:Hide();
+	self.mouseoverRight:Hide();
+	self.mouseoverMiddle:Hide();
+end
+
+function HorizontalResizableCheckButtonMixin:SetChecked(checked)
+	if checked ~= self.checked then
+		self.checked = checked and self:IsEnabled();
+		self:UpdateCheckState();
+	end
+end
+
+function HorizontalResizableCheckButtonMixin:UpdateCheckState()
+	local checked = self.checked;
+	self.checkedLeft:SetShown(checked);
+	self.checkedRight:SetShown(checked);
+	self.checkedMiddle:SetShown(checked);
+end
+
+function HorizontalResizableCheckButtonMixin:SetPressed(isPressed)
+	self.isPressed = isPressed;
+	self:UpdatePressedState();
+end
+
+function HorizontalResizableCheckButtonMixin:UpdatePressedState()
+	local offsetFrame = self[self.offsetFrameKey];
+	local delta = self.isPressed and self.pressedOffsetDelta or 0;
+
+	offsetFrame:ClearAllPoints();
+	offsetFrame:SetPoint("TOPLEFT", offsetFrame:GetParent(), "TOPLEFT", self.normalOffsetX + delta, self.normalOffsetY - delta);
+	offsetFrame:SetPoint("TOPRIGHT", offsetFrame:GetParent(), "TOPRIGHT", self.normalOffsetX + delta, self.normalOffsetY - delta);
+end

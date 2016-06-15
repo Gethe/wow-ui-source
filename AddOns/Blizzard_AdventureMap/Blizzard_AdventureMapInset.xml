@@ -1,0 +1,75 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="Blizzard_AdventureMapInset.lua"/>
+
+	<Frame name="AdventureMapInsetTemplate" mixin="AdventureMapInsetMixin" useParentLevel="true" virtual="true">
+		<Size x="1002" y="668"/>
+
+		<Frames>
+			<Frame parentKey="ExpandedFrame" useParentLevel="true" setAllPoints="true">
+				<Layers>
+					<Layer level="BORDER">
+						<Texture parentKey="Border" atlas="AdventureMap-InsetMapBorder">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-22" y="22" />
+								<Anchor point="BOTTOMRIGHT" x="22" y="-22" />
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button parentKey="CloseButton" inherits="UIPanelCloseButtonNoScripts">
+						<Anchors>
+							<Anchor point="TOPRIGHT" x="-2" y="-2"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								self:GetParent():GetParent():Collapse();
+							</OnClick>
+						</Scripts>
+					</Button>
+				</Frames>
+			</Frame>
+
+			<Frame parentKey="CollapsedFrame" enableMouse="true" useParentLevel="true">
+				<Anchors>
+					<Anchor point="CENTER" />
+				</Anchors>
+				<Layers>
+					<Layer level="BORDER">
+						<Texture parentKey="Icon" />
+					</Layer>
+
+					<Layer level="ARTWORK">
+						<FontString parentKey="Text" inherits="SystemFont_Small2">
+							<Anchors>
+								<Anchor point="TOP" relativePoint="BOTTOM" y="0" />
+							</Anchors>
+							<Color r="0.38" g="0.24" b="0.06" a="1"/>
+						</FontString>
+					</Layer>
+
+					<Layer level="BORDER" textureSubLevel="1">
+						<Texture parentKey="TextBackground" atlas="AdventureMap-textlabelglow" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.Text"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Animations>
+			<AnimationGroup parentKey="CollapseExpandAnim" setToFinalAlpha="true">
+				<Alpha parentKey="ExpandedFrameAnim" childKey="ExpandedFrame" duration=".3" order="1"/>
+				<Alpha parentKey="CollapsedFrameAnim" childKey="CollapsedFrame" duration=".3" order="1"/>
+
+				<Scripts>
+					<OnFinished>
+						self:GetParent():OnCollapseExpandAnimFinished();
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+</Ui>

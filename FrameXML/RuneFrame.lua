@@ -4,70 +4,21 @@ local RUNETYPE_UNHOLY = 2;
 local RUNETYPE_FROST = 3;
 local RUNETYPE_DEATH = 4;
 
-local MAX_RUNES = 6;
+local CURRENT_MAX_RUNES = 0;
+local MAX_RUNE_CAPACITY = 7;
+local POWER_TYPE_RUNES = 5;
+local RUNES_DISPLAY_MODIFIER = 10;
 
-
-local iconTextures = {};
-iconTextures[RUNETYPE_BLOOD] = "Interface\\PlayerFrame\\UI-PlayerFrame-Deathknight-Blood";
-iconTextures[RUNETYPE_UNHOLY] = "Interface\\PlayerFrame\\UI-PlayerFrame-Deathknight-Unholy";
-iconTextures[RUNETYPE_FROST] = "Interface\\PlayerFrame\\UI-PlayerFrame-Deathknight-Frost";
-iconTextures[RUNETYPE_DEATH] = "Interface\\PlayerFrame\\UI-PlayerFrame-Deathknight-Death";
-
-local runeTextures = {
-	[RUNETYPE_BLOOD] = "Interface\\PlayerFrame\\UI-PlayerFrame-DeathKnight-Blood-Off.tga",
-	[RUNETYPE_UNHOLY] = "Interface\\PlayerFrame\\UI-PlayerFrame-DeathKnight-Death-Off.tga",
-	[RUNETYPE_FROST] = "Interface\\PlayerFrame\\UI-PlayerFrame-DeathKnight-Frost-Off.tga",
-	[RUNETYPE_DEATH] = "Interface\\PlayerFrame\\UI-PlayerFrame-Deathknight-Chromatic-Off.tga",
-}
-
-
-
-local runeEnergizeTextures = {
-	[RUNETYPE_BLOOD] = "Interface\\PlayerFrame\\Deathknight-Energize-Blood",
-	[RUNETYPE_UNHOLY] = "Interface\\PlayerFrame\\Deathknight-Energize-Unholy",
-	[RUNETYPE_FROST] = "Interface\\PlayerFrame\\Deathknight-Energize-Frost",
-	[RUNETYPE_DEATH] = "Interface\\PlayerFrame\\Deathknight-Energize-White",
-}
-
-local runeColors = {
-	[RUNETYPE_BLOOD] = {1, 0, 0},
-	[RUNETYPE_UNHOLY] = {0, 0.5, 0},
-	[RUNETYPE_FROST] = {0, 1, 1},
-	[RUNETYPE_DEATH] = {0.8, 0.1, 1},
-}
-RUNE_MAPPING = {
-	[1] = "BLOOD",
-	[2] = "UNHOLY",
-	[3] = "FROST",
-	[4] = "DEATH",
-}
+local runeColor = {0.8, 0.1, 1};
 
 function RuneButton_OnLoad (self)
-	self.fill = _G[self:GetName().."Fill"];
-	self.shine = _G[self:GetName().."ShineTexture"];
-	self.colorOrb = _G[self:GetName().."RuneColorGlow"];
+	self.shine = self.Textures.Shine;
+	self.tooltipText = _G["COMBAT_TEXT_RUNE_DEATH"];
 end
 
-function RuneButton_Update (self, rune, dontFlash)
-	local runeType = GetRuneType(rune);
-	
-	if ( (not dontFlash) and (runeType) and (runeType ~= self.rune.runeType)) then
-		self.shine:SetVertexColor(unpack(runeColors[runeType]));
-		RuneButton_ShineFadeIn(self.shine)
-	end
-	
-	self.colorOrb:SetTexture(runeEnergizeTextures[runeType]);
-	
-	if (runeType) then
-		self.rune:SetTexture(iconTextures[runeType]);
-		self.rune:Show();
-		self.rune.runeType = runeType;
-		self.tooltipText = _G["COMBAT_TEXT_RUNE_"..RUNE_MAPPING[runeType]];
-	else
-		self.rune:Hide();
-		self.tooltipText = nil;
-	end
-
+function RuneButton_Flash (self)
+	self.shine:SetVertexColor(unpack(runeColor));
+	RuneButton_ShineFadeIn(self.shine)
 end
 
 function RuneButton_OnEnter(self)
@@ -89,52 +40,88 @@ function RuneFrame_OnLoad (self)
 	
 	if ( class ~= "DEATHKNIGHT" ) then
 		self:Hide();
+		return;
 	end
 	
 	self:RegisterEvent("RUNE_POWER_UPDATE");
 	self:RegisterEvent("RUNE_TYPE_UPDATE");
+	self:RegisterUnitEvent("UNIT_MAXPOWER", "player");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
-	
 	self:SetScript("OnEvent", RuneFrame_OnEvent);
 end
 
 function RuneFrame_OnEvent (self, event, ...)
-	if ( event == "PLAYER_ENTERING_WORLD" ) then
-		for i=1,MAX_RUNES do
-			local runeButton = _G["RuneButtonIndividual"..i];
-			if runeButton then
-				RuneButton_Update(runeButton, i, true);
-			end
+	if ( event == "UNIT_MAXPOWER") then
+		RuneFrame_UpdateNumberOfShownRunes();
+	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
+		RuneFrame_UpdateNumberOfShownRunes();
+		for i=1, CURRENT_MAX_RUNES do
+			RuneFrame_RunePowerUpdate(i, false);
 		end
-	elseif ( event == "RUNE_POWER_UPDATE" ) then
+	elseif ( event == "RUNE_POWER_UPDATE") then
 		local runeIndex, isEnergize = ...;
-		if runeIndex and runeIndex >= 1 and runeIndex <= MAX_RUNES  then 
-			local runeButton = _G["RuneButtonIndividual"..runeIndex];
-			local cooldown = _G[runeButton:GetName().."Cooldown"];
+		RuneFrame_RunePowerUpdate(runeIndex, isEnergize)
+		
+	elseif ( event == "RUNE_TYPE_UPDATE" ) then
+		local runeIndex = ...;
+		if ( runeIndex and runeIndex >= 1 and runeIndex <= CURRENT_MAX_RUNES ) then
+			RuneButton_Flash(_G["RuneButtonIndividual"..runeIndex]);
+		end
+	end
+end
+
+function RuneFrame_RunePowerUpdate(runeIndex, isEnergize)
+	if runeIndex and runeIndex >= 1 and runeIndex <= CURRENT_MAX_RUNES  then 
+		local runeButton = _G["RuneButtonIndividual"..runeIndex];
+		local cooldown = runeButton.Cooldown;
 			
-			local start, duration, runeReady = GetRuneCooldown(runeIndex);
+		local start, duration, runeReady = GetRuneCooldown(runeIndex);
 			
-			if not runeReady  then
-				if start then
-					CooldownFrame_SetTimer(cooldown, start, duration, 1);
-				end
-				runeButton.energize:Stop();
-			else
-				cooldown:Hide();
+		if not runeReady  then
+			if start then
+				CooldownFrame_Set(cooldown, start, duration, true, true);
+			end
+			runeButton.energize:Stop();
+		else
+			cooldown:Hide();
+			if (not isEnergize and not runeButton.energize:IsPlaying()) then 
 				runeButton.shine:SetVertexColor(1, 1, 1);
 				RuneButton_ShineFadeIn(runeButton.shine)
 			end
-			
-			if isEnergize  then
-				runeButton.energize:Play();
-			end
-		else 
-			assert(false, "Bad rune index")
 		end
-	elseif ( event == "RUNE_TYPE_UPDATE" ) then
-		local runeIndex = ...;
-		if ( runeIndex and runeIndex >= 1 and runeIndex <= MAX_RUNES ) then
-			RuneButton_Update(_G["RuneButtonIndividual"..runeIndex], runeIndex);
+			
+		if isEnergize  then
+			runeButton.energize:Play();
+		end
+	else 
+		assert(false, "Bad rune index")
+	end
+end
+
+function RuneFrame_UpdateNumberOfShownRunes()
+	CURRENT_MAX_RUNES = UnitPowerMax(RuneFrame:GetParent().unit, SPELL_POWER_RUNES);
+	for i=1, MAX_RUNE_CAPACITY do
+		local runeButton = _G["RuneButtonIndividual"..i];
+		if(i <= CURRENT_MAX_RUNES) then
+			runeButton:Show();
+		else
+			runeButton:Hide();
+		end
+		-- Shrink the runes sizes if you have all 7
+		if (CURRENT_MAX_RUNES == MAX_RUNE_CAPACITY) then
+			runeButton.Border:SetSize(21, 21);
+			runeButton.rune:SetSize(21, 21);
+			runeButton.Textures.Shine:SetSize(52, 31);
+			runeButton.energize.RingScale:SetFromScale(0.6, 0.7);
+			runeButton.energize.RingScale:SetToScale(0.7, 0.7);
+			runeButton:SetSize(15, 15);
+		else
+			runeButton.Border:SetSize(24, 24);
+			runeButton.rune:SetSize(24, 24);
+			runeButton.Textures.Shine:SetSize(60, 35);
+			runeButton.energize.RingScale:SetFromScale(0.7, 0.8);
+			runeButton.energize.RingScale:SetToScale(0.8, 0.8);
+			runeButton:SetSize(18, 18);
 		end
 	end
 end

@@ -1,0 +1,126 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="Blizzard_ArtifactAppearances.lua"/>
+
+	<Frame name="ArtifactAppearanceSetTemplate" virtual="true">
+		<Size x="460" y="103" />
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-6">
+				<Texture parentKey="Background" atlas="Forge-AppearanceStrip" useAtlasSize="true" alpha=".6">
+					<Anchors>
+						<Anchor point="TOPLEFT" />
+						<Anchor point="BOTTOMRIGHT" />
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Name" inherits="GameFontNormalLarge">
+					<Size x="180" y="65" />
+					<Anchors>
+						<Anchor point="CENTER" relativePoint="LEFT" x="116" />
+					</Anchors>
+					<Color r=".6" g=".59" b=".49" />
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="DescriptionTooltipArea" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Name" />
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Name" />
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						if self.tooltip then
+							GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 0, 0);
+							GameTooltip:SetText(self.tooltip , 1, 1, 1, true);
+						end
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide" />
+				</Scripts>
+			</Frame>
+		</Frames>
+	</Frame>
+
+	<Button name="ArtifactAppearanceSlotTemplate" mixin="ArtifactAppearanceSlotMixin" frameStrata="HIGH" motionScriptsWhileDisabled="true" virtual="true">
+		<Size x="45" y="44"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="Forge-ColorSwatchBackground" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="SwatchTexture" atlas="Forge-ColorSwatch" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Border" atlas="Forge-ColorSwatchBorder" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="LockedIcon" atlas="Forge-Lock" useAtlasSize="true" alpha=".5">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="Selected" atlas="Forge-ColorSwatchSelection" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<HighlightTexture parentKey="HighlightTexture" atlas="Forge-ColorSwatchHighlight" useAtlasSize="true" alphaMode="ADD">
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</HighlightTexture>
+		<Scripts>
+			<OnLoad method="OnLoad" />
+			<OnClick method="OnClick" />
+			<OnEnter method="OnEnter" />
+			<OnLeave function="GameTooltip_Hide" />
+		</Scripts>
+	</Button>
+
+	<Frame name="ArtifactAppearancesTabTemplate" mixin="ArtifactAppearancesMixin" useParentLevel="true" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-6">
+				<Texture parentKey="Background" atlas="Forge-Background" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" />
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Title" inherits="Fancy24Font" text="ARTIFACTS_APPEARANCE_TAB_TITLE">
+					<Size x="400" y="80" />
+					<Anchors>
+						<Anchor point="TOP" />
+					</Anchors>
+					<Color r=".94" g=".733" b=".215" />
+					<Shadow>
+						<Offset x="1" y="-1" />
+						<Color r="0" g="0" b="0"/>
+					</Shadow>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEvent method="OnEvent" />
+			<OnShow method="OnShow" />
+			<OnHide method="OnHide" />
+		</Scripts>
+	</Frame>
+</Ui>

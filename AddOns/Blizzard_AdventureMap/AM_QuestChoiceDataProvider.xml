@@ -1,0 +1,70 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="AM_QuestChoiceDataProvider.lua"/>
+
+	<Frame name="AdventureMap_QuestChoicePinTemplate" hidden="true" enableMouse="true" mixin="AdventureMap_QuestChoicePinMixin" virtual="true">
+		<Size x="33" y="55"/>
+
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-1">
+				<Texture parentKey="Icon" atlas="QuestPortraitIcon-SandboxQuest" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" />
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="HIGHLIGHT">
+				<Texture parentKey="IconHighlight" atlas="QuestPortraitIcon-SandboxQuest" useAtlasSize="true" alphaMode="ADD" alpha=".25">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon" />
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Text" inherits="SystemFont_Large">
+					<Anchors>
+						<Anchor point="TOP" relativePoint="BOTTOM" y="-10" />
+					</Anchors>
+					<Color r="1.0" g="0.82" b="0"/>
+				</FontString>
+			</Layer>
+
+			<Layer level="BACKGROUND">
+				<Texture parentKey="TextBackground" atlas="AdventureMapLabel-Small" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.Text" x="-30" y="-10" />
+						<Anchor point="TOPRIGHT" relativeKey="$parent.Text" x="30" y="10" />
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="OnAddAnim">
+				<Alpha fromAlpha="0" toAlpha="1" duration=".3" order="1"/>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnUpdate method="OnUpdate" />
+		</Scripts>
+	</Frame>
+
+	<Frame name="AdventureMap_FogPinTemplate" hidden="true" mixin="AdventureMap_FogPinMixin" virtual="true">
+		<Size x="341" y="371"/>
+
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-2">
+				<Texture parentKey="Fog" atlas="FogofWar" />
+			</Layer>
+		</Layers>
+
+		<Animations>
+			<AnimationGroup parentKey="OnQuestAcceptedAnim">
+				<Alpha fromAlpha="1" toAlpha="0" duration=".3" order="1"/>
+				<Scale fromScaleX="1" toScaleX=".85" fromScaleY="1" toScaleY=".85" duration=".3" order="1"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="OnAddAnim">
+				<Alpha fromAlpha="0" toAlpha="1" duration=".3" order="1"/>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+</Ui>

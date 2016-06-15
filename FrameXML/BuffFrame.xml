@@ -5,7 +5,7 @@
 		<Size x="30" y="30"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentIcon" nonBlocking="true"/>
+				<Texture name="$parentIcon"/>
 				<FontString name="$parentCount" inherits="NumberFontNormal" parentKey="count">
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT">
@@ -119,127 +119,13 @@
 			<OnUpdate function="BuffFrame_OnUpdate"/>
 		</Scripts>
 	</Frame>
-	
-	<Button name="ConsolidatedBuffs" parent="UIParent" inherits="AuraButtonTemplate" hidden="true">
-		<Anchors>
-			<Anchor point="TOPRIGHT" relativeTo="BuffFrame" relativePoint="TOPRIGHT">
-				<Offset>
-					<AbsDimension x="0" y="0"/>
-				</Offset>
-			</Anchor>
-		</Anchors>
-		<Scripts>
-			<OnLoad>
-				ConsolidatedBuffsIcon:SetTexture("Interface\\Buttons\\BuffConsolidation");
-				ConsolidatedBuffsIcon:SetTexCoord(0, 0.5, 0, 1);
-				ConsolidatedBuffsIcon:ClearAllPoints();
-				ConsolidatedBuffsIcon:SetPoint("CENTER");
-				ConsolidatedBuffsIcon:SetWidth(64);
-				ConsolidatedBuffsIcon:SetHeight(64);
-			</OnLoad>
-			<OnUpdate function="ConsolidatedBuffs_OnUpdate" />
-			<OnEnter function="ConsolidatedBuffs_OnEnter" />
-			<OnShow function="ConsolidatedBuffs_OnShow" />
-			<OnHide function="ConsolidatedBuffs_OnHide" />
-		</Scripts>
-	</Button>
-	
-	<Button name="ConsolidatedBuffTemplate" virtual="true">
-		<Size x="100" y="18"/>
-		<Layers>
-			<Layer level="OVERLAY">
-				<Texture name="$parentIcon" parentKey="icon" nonBlocking="true">
-					<Size x="18" y="18"/>
-					<Anchors>
-						<Anchor point="LEFT"/>
-					</Anchors>
-				</Texture>
-				<FontString name="$parentLabel" inherits="GameFontNormalSmall" justifyH="LEFT" parentKey="label">
-					<Size x="70" y="0"/>
-					<Anchors>
-						<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentIcon" x="5"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnEnter>
-				if self.index then
-					GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT");
-					GameTooltip:SetFrameLevel(self:GetFrameLevel() + 2);
-					GameTooltip:SetUnitConsolidatedBuff(PlayerFrame.unit, self.id);
-				end
-			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
-			<OnLoad function="BuffButton_OnLoad"/>
-			<OnClick function="ConsolidatedBuffButton_OnClick"/>
-		</Scripts>
-	</Button>
-	
-	<Frame name="ConsolidatedBuffsTooltip" parent="UIParent" frameStrata="TOOLTIP" clampedToScreen="true" hidden="true">
-		<Anchors>
-			<Anchor point="TOPRIGHT" />
-		</Anchors>	
-		<Size x="226" y="10"/>
-		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-			<EdgeSize>
-				<AbsValue val="16"/>
-			</EdgeSize>
-			<TileSize>
-				<AbsValue val="16"/>
-			</TileSize>
-			<BackgroundInsets>
-				<AbsInset left="4" right="4" top="4" bottom="4"/>
-			</BackgroundInsets>
-		</Backdrop>
-		<Frames>
-			<Button name="$parentBuff1" parentKey="Buff1" inherits="ConsolidatedBuffTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" x="8" y="-8"/>
-				</Anchors>			
-			</Button>
-		</Frames>
-		<Scripts>
-			<OnLoad>
-				self:SetHeight(ceil(NUM_LE_RAID_BUFF_TYPES/2) * CONSOLIDATED_BUFF_ROW_HEIGHT + 11);
-				self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
-				self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
-			
-				self["Buff1"].labelString = RAID_BUFF_1;
-				self["Buff1"].label:SetText(RAID_BUFF_1);
-				self["Buff1"].id = 1;
-				local anchorNextTo = true;
-				for i=2,NUM_LE_RAID_BUFF_TYPES do
-					self["Buff"..i] = CreateFrame("BUTTON", "ConsolidatedBuffsTooltipBuff"..i, self, "ConsolidatedBuffTemplate");
-					self["Buff"..i].labelString = _G["RAID_BUFF_"..i];
-					self["Buff"..i].label:SetText(_G["RAID_BUFF_"..i]);
-					if anchorNextTo then
-						self["Buff"..i]:SetPoint("LEFT", self["Buff"..(i-1)], "RIGHT", 10, 0);
-					else
-						self["Buff"..i]:SetPoint("TOP", self["Buff"..(i-2)], "BOTTOM", 0, -5);
-					end
-					self["Buff"..i].id = i;
-					anchorNextTo = not anchorNextTo;
-				end
-				
-				self:SetScale(0.85);
-			</OnLoad>
-			<OnUpdate>
-				if ( not ConsolidatedBuffs.mousedOver and not self:IsMouseOver() ) then
-					self:Hide();
-				end
-			</OnUpdate>
-		</Scripts>
-	</Frame>
 
 	<Frame name="TemporaryEnchantFrame" parent="UIParent" frameStrata="LOW" toplevel="true">
 		<Size>
 			<AbsDimension x="36" y="36"/>
 		</Size>
 		<Anchors>
-			<Anchor point="TOPRIGHT" relativeTo="ConsolidatedBuffs" relativePoint="TOPRIGHT" />
+			<Anchor point="TOPRIGHT" relativeTo="BuffFrame" relativePoint="TOPRIGHT" />
 		</Anchors>
 		<Frames>
 			<Button name="TempEnchant1" inherits="TempEnchantButtonTemplate">

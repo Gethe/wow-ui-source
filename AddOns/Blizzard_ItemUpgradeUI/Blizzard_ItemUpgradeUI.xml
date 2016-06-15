@@ -151,8 +151,8 @@
 				<FontString parentKey="ItemUpgradedNotification" inherits="GameFontNormalLarge" justifyH="CENTER" text="ITEM_UPGRADE_ITEM_UPGRADED_NOTIFICATION" hidden="true">
 					<Animations>
 						<AnimationGroup parentKey="FinishedAnim">
-							<Alpha change="1" duration="0.1" order="1" />
-							<Alpha startDelay="2" change="-1" duration="0.5" order="2" />
+							<Alpha fromAlpha="0" toAlpha="1" duration="0.1" order="1" />
+							<Alpha startDelay="2" fromAlpha="1" toAlpha="0" duration="0.5" order="2" />
 							<Scripts>
 								<OnFinished>
 									self:GetParent():Hide();
@@ -455,8 +455,8 @@
 			<Frame parentKey="FinishedGlow" setAllPoints="true">
 				<Animations>
 					<AnimationGroup parentKey="FinishedAnim">
-						<Alpha change="1" duration="0.1" order="1" />
-						<Alpha startDelay="0.1" change="-1" duration="0.5" order="2" />
+						<Alpha fromAlpha="0" toAlpha="1" duration="0.1" order="1" />
+						<Alpha startDelay="0.1" fromAlpha="1" toAlpha="0" duration="0.5" order="2" />
 					</AnimationGroup>
 				</Animations>
 				<Layers>

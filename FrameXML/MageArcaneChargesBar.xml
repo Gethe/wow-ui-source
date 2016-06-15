@@ -1,0 +1,121 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+  <Script file="MageArcaneChargesBar.lua"/>
+	
+	<Frame name="ArcaneChargeTemplate" virtual="true">
+		<Size x="39" y="39"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="ChargeTexture" atlas="Mage-ArcaneCharge" useAtlasSize="true" alpha="0.3">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="ChargeOff" alpha="0" alphaMode="BLEND" atlas="Mage-ArcaneCharge" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="ChargeOn" alpha="0" alphaMode="ADD" atlas="Mage-ArcaneCharge" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Rune" alpha="0" alphaMode="ADD" atlas="Mage-ArcaneCharge-Rune" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" x="-1" y="1"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="LargeSpark" alpha="0" alphaMode="ADD" atlas="Mage-ArcaneCharge-Spark" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="SmallSpark" alpha="0" alphaMode="ADD" atlas="Mage-ArcaneCharge-SmallSpark" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="CircleGlow" alpha="0" alphaMode="ADD" atlas="Mage-ArcaneCharge-CircleGlow" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="TurnOff" setToFinalAlpha="true">
+				<Alpha childKey="ChargeOn" smoothing="OUT" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="ChargeOn" startDelay="0.25" smoothing="NONE" duration="0.75" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="CircleGlow" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="CircleGlow" smoothing="OUT" duration="0.4" order="1" fromScaleX="0.7" fromScaleY="0.7" toScaleX="1.25" toScaleY="1.25"/>
+				<Alpha childKey="CircleGlow" startDelay="0.5" smoothing="OUT" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="Rune" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
+				<Rotation childKey="Rune" smoothing="OUT" duration="0.75" order="1" degrees="20"/>
+				<Scale childKey="Rune" smoothing="IN" duration="0.25" order="1" fromScaleX="0.6" fromScaleY="0.6" toScaleX="0.8" toScaleY="0.8"/>
+				<Alpha childKey="Rune" startDelay="0.5" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="LargeSpark" smoothing="OUT" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="LargeSpark" smoothing="OUT" duration="0.3" order="1" fromScaleX="0.5" fromScaleY="0.25" toScaleX="0.5" toScaleY="1.25"/>
+				<Alpha childKey="LargeSpark" startDelay="0.4" smoothing="OUT" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="ChargeTexture" duration="1.0" order="1" fromAlpha="1" toAlpha="0.3"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="TurnOn" setToFinalAlpha="true">
+				<Alpha childKey="ChargeOff" startDelay="0.25" smoothing="OUT" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="CircleGlow" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="CircleGlow" smoothing="OUT" duration="0.4" order="1" fromScaleX="1.5" fromScaleY="1.5" toScaleX="1" toScaleY="1"/>
+				<Alpha childKey="CircleGlow" startDelay="0.5" smoothing="OUT" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="SmallSpark" smoothing="OUT" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="SmallSpark" smoothing="OUT" duration="0.3" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.5" toScaleY="1.5"/>
+				<Alpha childKey="SmallSpark" startDelay="0.4" smoothing="OUT" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="ChargeTexture" duration="1.0" order="1" fromAlpha="0.3" toAlpha="1"/>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+
+	<Frame name="MageArcaneChargesFrame" inherits="ClassPowerBarFrame" mixin="ClassPowerBar, MagePowerBar">
+		<Size>
+		  <AbsDimension x="125" y="39"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOP" relativeTo="PlayerFrame" relativePoint="BOTTOM" x="50" y="34"/>
+		</Anchors>
+
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="Mage-ArcaneChargeBar" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOP"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Charge1" parentArray="Charges" inherits="ArcaneChargeTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="3" y="4"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="Charge2" parentArray="Charges" inherits="ArcaneChargeTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Charge1" x="27" y="0"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="Charge3" parentArray="Charges" inherits="ArcaneChargeTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Charge2" x="27" y="0"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="Charge4" parentArray="Charges" inherits="ArcaneChargeTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Charge3" x="27" y="0"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+	</Frame>
+</Ui>

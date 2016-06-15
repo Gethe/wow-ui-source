@@ -77,12 +77,18 @@ function DeathRecapFrame_OpenRecap( recapID )
 		dmgInfo.spellName = spellName;
 		if( not evtData.hideCaster ) then
 			dmgInfo.caster = evtData.sourceName or COMBATLOG_UNKNOWN_UNIT
+			dmgInfo.casterPrestige = evtData.casterPrestige;
 		else
 			dmgInfo.caster = nil;
+			dmgInfo.casterPrestige = nil;
 		end
 		dmgInfo.school = evtData.school;
 		
-		entry.SpellInfo.Caster:SetText(dmgInfo.caster);
+		if (dmgInfo.casterPrestige and dmgInfo.casterPrestige > 0) then
+			entry.SpellInfo.Caster:SetText(("|T%d:16:16:0:2|t %s"):format(GetPrestigeInfo(dmgInfo.casterPrestige) or 0, dmgInfo.caster));
+		else
+			entry.SpellInfo.Caster:SetText(dmgInfo.caster);
+		end
 		entry.SpellInfo.Name:SetText(spellName);
 		entry.SpellInfo.Icon:SetTexture(texture);		
 

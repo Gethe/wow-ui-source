@@ -37,6 +37,7 @@ function TradeSkillDetailsMixin:SetSelectedRecipeID(recipeID)
 	if self.selectedRecipeID ~= recipeID then
 		self.selectedRecipeID = recipeID;
 		self.craftable = false;
+		self.hasReagentDataByIndex = {};
 		self.createVerbOverride = nil;
 		self.GuildFrame:Clear();
 		self:RefreshButtons();
@@ -74,7 +75,7 @@ function TradeSkillDetailsMixin:CalculateContentHeight()
 	return height;
 end
 
-local SPACING_BETWEEN_LINES = 8;
+local SPACING_BETWEEN_LINES = 11;
 function TradeSkillDetailsMixin:RefreshDisplay()
 	self.activeContentWidgets = {};
 
@@ -85,7 +86,10 @@ function TradeSkillDetailsMixin:RefreshDisplay()
 		else
 			self.Background:SetAtlas("tradeskill-background-recipe-unlearned");
 		end
-		self.createVerbOverride = recipeInfo.alternateVerb;
+		
+		if ( recipeInfo.alternateVerb and recipeInfo.alternateVerb ~= "") then
+			self.createVerbOverride = recipeInfo.alternateVerb;
+		end
 
 		self.Contents.RecipeName:SetText(recipeInfo.name);
 		self:AddContentWidget(self.Contents.RecipeName);
@@ -124,14 +128,14 @@ function TradeSkillDetailsMixin:RefreshDisplay()
 		local recipeDescription = C_TradeSkillUI.GetRecipeDescription(self.selectedRecipeID);
 		if recipeDescription and #recipeDescription > 0 then
 			self.Contents.Description:SetText(recipeDescription);
-			self.Contents.RequirementLabel:SetPoint("TOPLEFT", self.Contents.Description, "BOTTOMLEFT", 0, -SPACING_BETWEEN_LINES);
+			self.Contents.RequirementLabel:SetPoint("TOPLEFT", self.Contents.Description, "BOTTOMLEFT", 0, -18);
 		else
 			self.Contents.Description:SetText("");
 			self.Contents.RequirementLabel:SetPoint("TOPLEFT", self.Contents.Description, "BOTTOMLEFT", 0, 0);
 		end
 		self:AddContentWidget(self.Contents.Description);
 
-		local craftable = recipeInfo.learned;
+		local craftable = recipeInfo.learned and recipeInfo.craftable;
 
 		local requiredToolsString = BuildColoredListString(C_TradeSkillUI.GetRecipeTools(self.selectedRecipeID));
 		if requiredToolsString then
@@ -190,31 +194,38 @@ function TradeSkillDetailsMixin:RefreshDisplay()
 			local reagentName, reagentTexture, reagentCount, playerReagentCount = C_TradeSkillUI.GetRecipeReagentInfo(self.selectedRecipeID, reagentIndex);
 			local reagentButton = self.Contents.Reagents[reagentIndex];
 
-			if not reagentName or not reagentTexture then
-				reagentButton:Hide();
-			else
-				reagentButton:Show();
-				self:AddContentWidget(reagentButton);
-				reagentButton.Icon:SetTexture(reagentTexture);
-				reagentButton.Name:SetText(reagentName);
+			reagentButton:Show();
+			self:AddContentWidget(reagentButton);
 
-				if playerReagentCount < reagentCount then
-					reagentButton.Icon:SetVertexColor(0.5, 0.5, 0.5);
-					reagentButton.Name:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
-					craftable = false;
+			if not self.hasReagentDataByIndex[reagentIndex] then
+				if not reagentName or not reagentTexture then
+					reagentButton.Icon:SetTexture("");
+					reagentButton.Name:SetText("");
 				else
-					reagentButton.Icon:SetVertexColor(1.0, 1.0, 1.0);
-					reagentButton.Name:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-				end
+					reagentButton.Icon:SetTexture(reagentTexture);
+					reagentButton.Name:SetText(reagentName);
 
-				local playerReagentCountAbbreviated = AbbreviateNumbers(playerReagentCount);
-				reagentButton.Count:SetFormattedText(TRADESKILL_REAGENT_COUNT, playerReagentCountAbbreviated, reagentCount);
-				--fix text overflow when the reagentButton count is too high
-				if math.floor(reagentButton.Count:GetStringWidth()) > math.floor(reagentButton.Icon:GetWidth() + .5) then 
-					--round count width down because the leftmost number can overflow slightly without looking bad
-					--round icon width because it should always be an int, but sometimes it's a slightly off float
-					reagentButton.Count:SetFormattedText("%s\n/%s", playerReagentCountAbbreviated, reagentCount);
+					self.hasReagentDataByIndex[reagentIndex] = true;
 				end
+			end
+
+
+			if playerReagentCount < reagentCount then
+				reagentButton.Icon:SetVertexColor(0.5, 0.5, 0.5);
+				reagentButton.Name:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+				craftable = false;
+			else
+				reagentButton.Icon:SetVertexColor(1.0, 1.0, 1.0);
+				reagentButton.Name:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+			end
+
+			local playerReagentCountAbbreviated = AbbreviateNumbers(playerReagentCount);
+			reagentButton.Count:SetFormattedText(TRADESKILL_REAGENT_COUNT, playerReagentCountAbbreviated, reagentCount);
+			--fix text overflow when the reagentButton count is too high
+			if math.floor(reagentButton.Count:GetStringWidth()) > math.floor(reagentButton.Icon:GetWidth() + .5) then 
+				--round count width down because the leftmost number can overflow slightly without looking bad
+				--round icon width because it should always be an int, but sometimes it's a slightly off float
+				reagentButton.Count:SetFormattedText("%s\n/%s", playerReagentCountAbbreviated, reagentCount);
 			end
 		end
 
@@ -327,9 +338,13 @@ function TradeSkillDetailsMixin:SetPendingCreationAmount(amount)
 end
 
 function TradeSkillDetailsMixin:OnResultMouseEnter(resultButton)
-	GameTooltip:SetOwner(resultButton, "ANCHOR_RIGHT");
-	GameTooltip:SetRecipeResultItem(self.selectedRecipeID);
-	CursorUpdate(resultButton);
+	if self.selectedRecipeID then
+		GameTooltip:SetOwner(resultButton, "ANCHOR_RIGHT");
+		GameTooltip:SetRecipeResultItem(self.selectedRecipeID);
+		CursorUpdate(resultButton);
+	end
+	
+	resultButton.UpdateTooltip = resultButton.UpdateTooltip or function(owner) self:OnResultMouseEnter(owner); end;
 end
 
 function TradeSkillDetailsMixin:OnResultClicked(resultButton)

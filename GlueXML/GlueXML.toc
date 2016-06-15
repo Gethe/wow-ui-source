@@ -1,5 +1,4 @@
 ##DebugHook.lua
-GlueStrings.lua
 Constants.lua
 GlueFonts.xml
 GlueFontStyles.xml
@@ -16,10 +15,13 @@ GlueDropDownMenu.xml
 ..\SharedXML\C_TimerAugment.lua
 
 ..\SharedXML\Util.lua
+..\SharedXML\LayoutFrame.xml
 ..\SharedXML\HybridScrollFrame.lua
 ..\SharedXML\HybridScrollFrame.xml
 ..\SharedXML\ModelFrames.xml
 ..\SharedXML\ModelPreviewFrame.xml
+## IME.xml needs to be loaded after GlueFonts.xml
+..\SharedXML\IME.xml
 
 ##New stuff!!!
 GlueParent.xml
@@ -46,6 +48,7 @@ AudioOptionsPanels.xml
 MovieFrame.xml
 CinematicsFrame.xml
 CreditsFrame.xml
+KioskModeSplash.xml
 GlueMenuFrame.xml
 
 ## Should only load internally

@@ -1,4 +1,4 @@
-## Interface: 60200
+## Interface: 70000
 ## Title: Blizzard Collections
 ## Notes: Collections
 ## Secure: 1
@@ -11,4 +11,5 @@ Blizzard_MountCollection.xml
 Blizzard_PetCollection.xml
 Blizzard_ToyBox.xml
 Blizzard_HeirloomCollection.xml
+Blizzard_Wardrobe.xml
 Localization.lua

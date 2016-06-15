@@ -139,6 +139,13 @@
 							</Anchors>
 						</Texture>
 					</Layer>
+					<Layer level="ARTWORK" textureSubLevel="2">
+						<Texture parentKey="QuestIconBadgeBorder" atlas="AutoQuest-badgeborder" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.QuestIconBg" x="8" y="-8" />
+							</Anchors>
+						</Texture>
+					</Layer>
 					<Layer level="BORDER">
 						<FontString parentKey="QuestName" inherits="QuestFont_Large">
 							<Size x="158" y="30"/>
@@ -168,8 +175,8 @@
 						<Texture parentKey="Shine" alphaMode="ADD" alpha="0" hidden="true">
 							<Animations>
 								<AnimationGroup parentKey="Flash">
-									<Alpha startDelay="0" change="0.4" duration="0.25" order="1"/>
-									<Alpha startDelay="0.05" change="-0.4" duration="0.25" order="2"/>
+									<Alpha startDelay="0" duration="0.25" order="1" fromAlpha="0" toAlpha="0.4"/>
+									<Alpha startDelay="0.05" duration="0.25" order="2" fromAlpha="0.4" toAlpha="0"/>
 									<Scripts>
 										<OnStop>
 											self:GetParent():Hide();
@@ -194,8 +201,8 @@
 							</Anchors>
 							<Animations>
 								<AnimationGroup parentKey="Flash">
-									<Alpha change="0.9" duration="0.25" order="1"/>
-									<Alpha startDelay="0.05" change="-0.9" duration="0.25" order="2"/>
+									<Alpha duration="0.25" order="1" fromAlpha="0" toAlpha="0.9"/>
+									<Alpha startDelay="0.05" duration="0.25" order="2" fromAlpha="0.9" toAlpha="0"/>
 									<Scripts>
 										<OnStop>
 											self:GetParent():Hide();

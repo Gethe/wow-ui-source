@@ -330,10 +330,8 @@ local SPELL_POWER_ENERGY = SPELL_POWER_ENERGY
 local SPELL_POWER_RUNES = SPELL_POWER_RUNES
 local SPELL_POWER_RUNIC_POWER = SPELL_POWER_RUNIC_POWER
 local SPELL_POWER_SOUL_SHARDS = SPELL_POWER_SOUL_SHARDS;
-local SPELL_POWER_ECLIPSE = SPELL_POWER_ECLIPSE;
 local SPELL_POWER_HOLY_POWER = SPELL_POWER_HOLY_POWER;
 local SPELL_POWER_ALTERNATE_POWER = SPELL_POWER_ALTERNATE_POWER;
-local SPELL_POWER_BURNING_EMBERS = SPELL_POWER_BURNING_EMBERS;
 local SCHOOL_MASK_NONE = SCHOOL_MASK_NONE
 local SCHOOL_MASK_PHYSICAL = SCHOOL_MASK_PHYSICAL
 local SCHOOL_MASK_HOLY = SCHOOL_MASK_HOLY
@@ -1821,22 +1819,22 @@ local function CombatLog_String_PowerType(powerType, amount, alternatePowerType)
 		return RUNIC_POWER;
 	elseif ( powerType == SPELL_POWER_SOUL_SHARDS ) then
 		return SOUL_SHARDS;
-	elseif ( powerType == SPELL_POWER_ECLIPSE ) then
-		if amount and  amount > 0 then
-			return BALANCE_POSITIVE_ENERGY;
-		else
-			return BALANCE_NEGATIVE_ENERGY;
-		end
 	elseif ( powerType == SPELL_POWER_HOLY_POWER ) then
 		return HOLY_POWER;
 	elseif ( powerType == SPELL_POWER_CHI ) then
 		return CHI_POWER; -- "Chi"
-	elseif ( powerType == SPELL_POWER_BURNING_EMBERS ) then
-		return BURNING_EMBERS_POWER;
-	elseif ( powerType == SPELL_POWER_SHADOW_ORBS ) then
-		return SHADOW_ORBS_POWER;
-	elseif ( powerType == SPELL_POWER_DEMONIC_FURY) then
-		return DEMONIC_FURY
+	elseif ( powerType == SPELL_POWER_MAELSTROM ) then
+		return MAELSTROM_POWER;
+	elseif ( powerType == SPELL_POWER_ARCANE_CHARGES ) then
+		return ARCANE_CHARGES_POWER;
+	elseif ( powerType == SPELL_POWER_LUNAR_POWER ) then
+		return LUNAR_POWER;
+	elseif ( powerType == SPELL_POWER_INSANITY ) then
+		return INSANITY_POWER;
+	elseif ( powerType == SPELL_POWER_FURY) then
+		return FURY
+	elseif ( powerType == SPELL_POWER_PAIN) then
+		return PAIN
 	elseif ( powerType == SPELL_POWER_ALTERNATE_POWER and alternatePowerType ) then
 		local costName = select(12, GetAlternatePowerInfoByID(alternatePowerType));
 		return costName;	--costName could be nil if we didn't get the alternatePowerType for some reason (e.g. target out of AOI)
@@ -1854,13 +1852,13 @@ local function CombatLog_String_SchoolString(school)
 end
 _G.CombatLog_String_SchoolString = CombatLog_String_SchoolString
 
-local function CombatLog_String_DamageResultString( resisted, blocked, absorbed, critical, glancing, crushing, overhealing, textMode, spellId, overkill, multistrike )
+local function CombatLog_String_DamageResultString( resisted, blocked, absorbed, critical, glancing, crushing, overhealing, textMode, spellId, overkill )
 	local resultStr;
 	-- Result String formatting
 	local useOverhealing = overhealing and overhealing > 0;
 	local useOverkill = overkill and overkill > 0;
 	local useAbsorbed = absorbed and absorbed > 0;
-	if ( resisted or blocked or critical or glancing or crushing or useOverhealing or useOverkill or useAbsorbed or multistrike) then
+	if ( resisted or blocked or critical or glancing or crushing or useOverhealing or useOverkill or useAbsorbed ) then
 		resultStr = nil;
 		
 		if ( resisted ) then
@@ -1921,13 +1919,6 @@ local function CombatLog_String_DamageResultString( resisted, blocked, absorbed,
 				resultStr = resultStr.." "..critString;
 			else
 				resultStr = critString;
-			end
-		end
-		if ( multistrike ) then
-			if ( resultStr ) then
-				resultStr = resultStr.." "..TEXT_MODE_A_STRING_RESULT_MULTISTRIKE;
-			else
-				resultStr = TEXT_MODE_A_STRING_RESULT_MULTISTRIKE;
 			end
 		end
 	end
@@ -2091,7 +2082,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 	local nameIsNotSpell, extraNameIsNotSpell; 
 
 	-- Damage standard order
-	local amount, overkill, school, resisted, blocked, absorbed, critical, glancing, crushing, overhealing, multistrike;
+	local amount, overkill, school, resisted, blocked, absorbed, critical, glancing, crushing, overhealing;
 	-- Miss argument order
 	local missType, isOffHand, amountMissed;
 	-- Aura arguments
@@ -2132,10 +2123,10 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 	-- Break out the arguments into variable
 	if ( event == "SWING_DAMAGE" ) then 
 		-- Damage standard
-		amount, overkill, school, resisted, blocked, absorbed, critical, glancing, crushing, isOffHand, multistrike = ...;
+		amount, overkill, school, resisted, blocked, absorbed, critical, glancing, crushing, isOffHand = ...;
 
 		-- Parse the result string
-		resultStr = CombatLog_String_DamageResultString( resisted, blocked, absorbed, critical, glancing, crushing, overhealing, textMode, spellId, overkill, multistrike );
+		resultStr = CombatLog_String_DamageResultString( resisted, blocked, absorbed, critical, glancing, crushing, overhealing, textMode, spellId, overkill );
 
 		if ( not resultStr ) then
 			resultEnabled = false;
@@ -2149,21 +2140,13 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 		spellName = ACTION_SWING;
 
 		-- Miss type
-		missType, isOffHand, multistrike, amountMissed = ...;
+		missType, isOffHand, amountMissed = ...;
 
 		-- Result String
 		if( missType == "RESIST" or missType == "BLOCK" or missType == "ABSORB" ) then
 			resultStr = format(_G["TEXT_MODE_A_STRING_RESULT_"..missType], amountMissed);
 		else
 			resultStr = _G["ACTION_SWING_MISSED_"..missType];
-		end
-
-		if ( multistrike ) then
-			if ( resultStr ) then
-				resultStr = resultStr.." "..TEXT_MODE_A_STRING_RESULT_MULTISTRIKE;
-			else
-				resultStr = TEXT_MODE_A_STRING_RESULT_MULTISTRIKE;
-			end
 		end
 
 		-- Miss Type
@@ -2181,10 +2164,10 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 
 		if ( event == "SPELL_DAMAGE" or event == "SPELL_BUILDING_DAMAGE") then
 			-- Damage standard
-			amount, overkill, school, resisted, blocked, absorbed, critical, glancing, crushing, isOffHand, multistrike = select(4, ...);
+			amount, overkill, school, resisted, blocked, absorbed, critical, glancing, crushing, isOffHand = select(4, ...);
 
 			-- Parse the result string
-			resultStr = CombatLog_String_DamageResultString( resisted, blocked, absorbed, critical, glancing, crushing, overhealing, textMode, spellId, overkill, multistrike );
+			resultStr = CombatLog_String_DamageResultString( resisted, blocked, absorbed, critical, glancing, crushing, overhealing, textMode, spellId, overkill );
 
 			if ( not resultStr ) then
 				resultEnabled = false
@@ -2195,7 +2178,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 			end
 		elseif ( event == "SPELL_MISSED" ) then 
 			-- Miss type
-			missType,  isOffHand, multistrike, amountMissed = select(4, ...);
+			missType,  isOffHand, amountMissed = select(4, ...);
 
 			resultEnabled = true;
 			-- Result String
@@ -2209,15 +2192,6 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 				resultStr = _G["ACTION_SWING_MISSED_"..missType];
 			end
 
-
-			if ( multistrike ) then
-				if ( resultStr ) then
-					resultStr = resultStr.." "..TEXT_MODE_A_STRING_RESULT_MULTISTRIKE;
-				else
-					resultStr = TEXT_MODE_A_STRING_RESULT_MULTISTRIKE;
-				end
-			end
-
 			-- Miss Event
 			if ( missType ) then
 				event = format("%s_%s", event, missType);
@@ -2227,10 +2201,10 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 			valueEnabled = false;
 		elseif ( event == "SPELL_HEAL" or event == "SPELL_BUILDING_HEAL") then 
 			-- Did the heal crit?
-			amount, overhealing, absorbed, critical, multistrike = select(4, ...);
+			amount, overhealing, absorbed, critical = select(4, ...);
 			
 			-- Parse the result string
-			resultStr = CombatLog_String_DamageResultString( resisted, blocked, absorbed, critical, glancing, crushing, overhealing, textMode, spellId, overkill, multistrike );
+			resultStr = CombatLog_String_DamageResultString( resisted, blocked, absorbed, critical, glancing, crushing, overhealing, textMode, spellId, overkill );
 
 			if ( not resultStr ) then
 				resultEnabled = false
@@ -2265,11 +2239,11 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 			
 			if ( event == "SPELL_PERIODIC_MISSED" ) then
 				-- Miss type
-				missType = select(4, ...);
+				missType, isOffHand, amountMissed = select(4, ...);
 				
 				-- Result String
 				if ( missType == "ABSORB" ) then
-					resultStr = CombatLog_String_DamageResultString( resisted, blocked, select(7,...), critical, glancing, crushing, overhealing, textMode, spellId, overkill );
+					resultStr = CombatLog_String_DamageResultString( resisted, blocked, amountMissed, critical, glancing, crushing, overhealing, textMode, spellId, overkill );
 				else
 					resultStr = _G["ACTION_SPELL_PERIODIC_MISSED_"..missType];
 				end
@@ -2284,10 +2258,10 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 				resultEnabled = true;
 			elseif ( event == "SPELL_PERIODIC_DAMAGE" ) then
 				-- Damage standard
-				amount, overkill, school, resisted, blocked, absorbed, critical, glancing, crushing, isOffHand, multistrike = select(4, ...);
+				amount, overkill, school, resisted, blocked, absorbed, critical, glancing, crushing, isOffHand = select(4, ...);
 
 				-- Parse the result string
-				resultStr = CombatLog_String_DamageResultString( resisted, blocked, absorbed, critical, glancing, crushing, overhealing, textMode, spellId, overkill, multistrike );
+				resultStr = CombatLog_String_DamageResultString( resisted, blocked, absorbed, critical, glancing, crushing, overhealing, textMode, spellId, overkill );
 
 				-- Disable appropriate sections
 				if ( not resultStr ) then
@@ -2299,10 +2273,10 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 				end
 			elseif ( event == "SPELL_PERIODIC_HEAL" ) then
 				-- Did the heal crit?
-				amount, overhealing, absorbed, critical, multistrike = select(4, ...);
+				amount, overhealing, absorbed, critical = select(4, ...);
 				
 				-- Parse the result string
-				resultStr = CombatLog_String_DamageResultString( resisted, blocked, absorbed, critical, glancing, crushing, overhealing, textMode, spellId, overkill, multistrike );
+				resultStr = CombatLog_String_DamageResultString( resisted, blocked, absorbed, critical, glancing, crushing, overhealing, textMode, spellId, overkill );
 
 				if ( not resultStr ) then
 					resultEnabled = false
@@ -2605,10 +2579,10 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 		spellId, spellName, spellSchool = ...;
 		if ( event == "RANGE_DAMAGE" ) then 
 			-- Damage standard
-			amount, overkill, school, resisted, blocked, absorbed, critical, glancing, crushing, isOffHand, multistrike = select(4, ...);
+			amount, overkill, school, resisted, blocked, absorbed, critical, glancing, crushing, isOffHand = select(4, ...);
 
 			-- Parse the result string
-			resultStr = CombatLog_String_DamageResultString( resisted, blocked, absorbed, critical, glancing, crushing, overhealing, textMode, spellId, overkill, multistrike);
+			resultStr = CombatLog_String_DamageResultString( resisted, blocked, absorbed, critical, glancing, crushing, overhealing, textMode, spellId, overkill);
 
 			if ( not resultStr ) then
 				resultEnabled = false
@@ -2624,21 +2598,13 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 			spellName = ACTION_RANGED;
 
 			-- Miss type
-			missType, isOffHand, multistrike, amountMissed = select(4,...);
+			missType, isOffHand, amountMissed = select(4,...);
 
 			-- Result String
 			if( missType == "RESIST" or missType == "BLOCK" or missType == "ABSORB" ) then
 				resultStr = format(_G["TEXT_MODE_A_STRING_RESULT_"..missType], amountMissed);
 			else
 				resultStr = _G["ACTION_RANGE_MISSED_"..missType];
-			end
-
-			if ( multistrike ) then
-				if ( resultStr ) then
-					resultStr = resultStr.." "..TEXT_MODE_A_STRING_RESULT_MULTISTRIKE;
-				else
-					resultStr = TEXT_MODE_A_STRING_RESULT_MULTISTRIKE;
-				end
 			end
 
 			-- Miss Type
@@ -3209,7 +3175,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 		if ( nameIsNotSpell ) then
 			spellString = format(TEXT_MODE_A_STRING_ACTION, originalEvent, spellNameStr);
 		else
-			spellString = format(TEXT_MODE_A_STRING_SPELL, spellId, originalEvent, spellNameStr, spellId);
+			spellString = format(TEXT_MODE_A_STRING_SPELL, spellId, 0, originalEvent, spellNameStr, spellId);
 		end
 	end
 	
@@ -3226,7 +3192,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 			if ( extraNameIsNotSpell ) then
 				valueString = extraSpellNameStr;
 			else
-				valueString = format(TEXT_MODE_A_STRING_SPELL_EXTRA, extraSpellId, originalEvent, extraSpellNameStr, spellId);
+				valueString = format(TEXT_MODE_A_STRING_SPELL_EXTRA, extraSpellId, 0, originalEvent, extraSpellNameStr, spellId);
 			end
 		elseif ( valueIsItem and itemNameStr ) then
 			valueString = format(TEXT_MODE_A_STRING_ITEM, itemId, itemNameStr);
@@ -3564,12 +3530,13 @@ function SetItemRef(link, text, button, chatFrame)
 		end
 		return;
 	elseif ( strsub(link, 1,5) == "spell" ) then 
-		local _, spellId, event = strsplit(":", link);	
+		local _, spellId, glyphId, event = strsplit(":", link);	
 		spellId = tonumber (spellId);
+		glyphId = tonumber (glyphId);
 
 		if ( IsModifiedClick("CHATLINK") ) then
 			if ( spellId > 0 ) then
-				if ( ChatEdit_InsertLink(GetSpellLink(spellId)) ) then
+				if ( ChatEdit_InsertLink(GetSpellLink(spellId, glyphId)) ) then
 					return;
 				end
 			else
@@ -3594,6 +3561,13 @@ function SetItemRef(link, text, button, chatFrame)
 			ChatEdit_InsertLink (link);
 			return;
 		end
+	elseif ( strsub(link, 1, 19) == "garrfollowerability") then
+		if ( IsModifiedClick("CHATLINK") ) then
+			local _, abilityID = strsplit(":", link);
+			local link = C_Garrison.GetFollowerAbilityLink(abilityID);
+			ChatEdit_InsertLink (link);
+			return;
+		end
 	end
 	oldSetItemRef(link, text, button, chatFrame);
 end
@@ -3611,9 +3585,12 @@ function Blizzard_CombatLog_Update_QuickButtons()
 		maxWidth = COMBATLOG:GetWidth() - 31;
 	end
 	
+	local additionalFilterButton = CombatLogQuickButtonFrame_CustomAdditionalFilterButton;
+	
 	local totalWidth = 0;
 	local padding = 13;
 	local showMoreQuickButtons = true;
+	local hasOffBar = false;
 	for index, filter in ipairs(_G.Blizzard_CombatLog_Filters.filters) do
 		buttonName = baseName.."Button"..buttonIndex;
 		button = _G[buttonName];
@@ -3643,6 +3620,7 @@ function Blizzard_CombatLog_Update_QuickButtons()
 			else
 				-- Don't show anymore buttons if the maxwidth has been exceeded
 				showMoreQuickButtons = false;
+				hasOffBar = true;
 				button:Hide();
 				filter.onQuickBar = false;
 			end
@@ -3663,6 +3641,8 @@ function Blizzard_CombatLog_Update_QuickButtons()
 		end
 		buttonIndex = buttonIndex+1;
 	until not button;
+
+	additionalFilterButton:SetShown(hasOffBar);
 end
 _G.Blizzard_CombatLog_Update_QuickButtons = Blizzard_CombatLog_Update_QuickButtons
 

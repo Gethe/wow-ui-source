@@ -6,7 +6,6 @@ MAX_SPELL_PAGES = ceil(MAX_SPELLS / SPELLS_PER_PAGE);
 BOOKTYPE_SPELL = "spell";
 BOOKTYPE_PROFESSION = "professions";
 BOOKTYPE_PET = "pet";
-BOOKTYPE_CORE_ABILITIES = "core";
 
 local MaxSpellBookTypes = 5;
 local SpellBookInfo = {};
@@ -24,13 +23,10 @@ SpellBookInfo[BOOKTYPE_PET] 		= { 	showFrames = {"SpellBookSpellIconsFrame", "Sp
 											title = PET,
 											updateFunc =  function() SpellBook_UpdatePetTab(); end
 										};										
-SpellBookInfo[BOOKTYPE_CORE_ABILITIES]= { 	showFrames = {"SpellBookCoreAbilitiesFrame", "SpellBookPageNavigationFrame"}, 		
-											title = CORE_ABILITIES,
-											updateFunc =  function() SpellBook_UpdateCoreAbilitiesTab(); end
-										};										
+								
 SPELLBOOK_PAGENUMBERS = {};
 
-SpellBookFrames = {	"SpellBookSpellIconsFrame", "SpellBookProfessionFrame",  "SpellBookSideTabsFrame", "SpellBookPageNavigationFrame", "SpellBookCoreAbilitiesFrame"};
+SpellBookFrames = {	"SpellBookSpellIconsFrame", "SpellBookProfessionFrame",  "SpellBookSideTabsFrame", "SpellBookPageNavigationFrame" };
 
 PROFESSION_RANKS =  {};
 PROFESSION_RANKS[1] = {75,  APPRENTICE};
@@ -42,10 +38,11 @@ PROFESSION_RANKS[6] = {450, GRAND_MASTER};
 PROFESSION_RANKS[7] = {525, ILLUSTRIOUS};
 PROFESSION_RANKS[8] = {600, ZEN_MASTER};
 PROFESSION_RANKS[9] = {700, DRAENOR_MASTER};
+PROFESSION_RANKS[10] = {800, LEGION_MASTER};
 
 
-
-
+OPEN_REASON_PENDING_GLYPH = "pendingglyph";
+OPEN_REASON_ACTIVATED_GLYPH = "activatedglyph";
 
 local ceil = ceil;
 local strlen = strlen;
@@ -74,7 +71,7 @@ function ToggleSpellBook(bookType)
 	local tutorial, helpPlate = SpellBookFrame_GetTutorialEnum()
 	if ( tutorial and not GetCVarBitfield("closedInfoFrames", tutorial) and GetCVarBool("showTutorials") ) then
 		if ( helpPlate and not HelpPlate_IsShowing(helpPlate) and SpellBookFrame:IsShown()) then
-			HelpPlate_Show( helpPlate, SpellBookFrame, SpellBookFrame.MainHelpButton );
+			HelpPlate_ShowTutorialPrompt( helpPlate, SpellBookFrame.MainHelpButton );
 			SetCVarBitfield( "closedInfoFrames", tutorial, true );
 		end
 	end
@@ -89,9 +86,6 @@ function SpellBookFrame_GetTutorialEnum()
 	elseif ( SpellBookFrame.bookType == BOOKTYPE_PROFESSION ) then
 		helpPlate = ProfessionsFrame_HelpPlate;
 		tutorial = LE_FRAME_TUTORIAL_PROFESSIONS;
-	elseif ( SpellBookFrame.bookType == BOOKTYPE_CORE_ABILITIES ) then
-		helpPlate = CoreAbilitiesFrame_HelpPlate;
-		tutorial = LE_FRAME_TUTORIAL_CORE_ABILITITES;
 	end
 	return tutorial, helpPlate;
 end
@@ -102,6 +96,9 @@ function SpellBookFrame_OnLoad(self)
 	self:RegisterEvent("SKILL_LINES_CHANGED");
 	self:RegisterEvent("PLAYER_GUILD_UPDATE");
 	self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED");
+	self:RegisterEvent("USE_GLYPH");
+	self:RegisterEvent("CANCEL_GLYPH_CAST");
+	self:RegisterEvent("ACTIVATE_GLYPH");
 
 	SpellBookFrame.bookType = BOOKTYPE_SPELL;
 	-- Init page nums
@@ -165,11 +162,19 @@ function SpellBookFrame_OnEvent(self, event, ...)
 			SpellBookFrame.selectedSkillLine = 2; -- number of skilllines will change!
 			SpellBookFrame_Update();
 		end
+	elseif ( event == "USE_GLYPH" ) then
+		local slot = ...;
+		SpellBookFrame_OpenToPageForSlot(slot, OPEN_REASON_PENDING_GLYPH);
+	elseif ( event == "CANCEL_GLYPH_CAST" ) then
+		SpellBookFrame_ClearAbilityHighlights();
+		SpellFlyout:Hide();
+	elseif ( event == "ACTIVATE_GLYPH" ) then
+		local slot = ...;
+		SpellBookFrame_OpenToPageForSlot(slot, OPEN_REASON_ACTIVATED_GLYPH);
 	end
 end
 
 function SpellBookFrame_OnShow(self)
-	SpellBookCoreAbilitiesFrame.selectedSpec = GetSpecialization() or 1;
 	SpellBookFrame_Update();
 	
 	-- If there are tabs waiting to flash, then flash them... yeah..
@@ -242,15 +247,6 @@ function SpellBookFrame_Update()
 	end
 	
 	local level = UnitLevel("player");
-	
-	if ( level >= 20 ) then
-		local nextTab = _G["SpellBookFrameTabButton"..tabIndex];
-		nextTab:Show();
-		nextTab.bookType = BOOKTYPE_CORE_ABILITIES;
-		nextTab.binding = "TOGGLECOREABILITIESBOOK";
-		nextTab:SetText(SpellBookInfo[BOOKTYPE_CORE_ABILITIES].title);
-		tabIndex = tabIndex+1;
-	end
 	
 	
 	-- Make sure the correct tab is selected
@@ -455,6 +451,30 @@ function SpellButton_OnClick(self, button)
 	if ( slot > MAX_SPELLS or slotType == "FUTURESPELL") then
 		return;
 	end
+
+	if ( HasPendingGlyphCast() and SpellBookFrame.bookType == BOOKTYPE_SPELL ) then
+		local slotType, spellID = GetSpellBookItemInfo(slot, SpellBookFrame.bookType);
+		if (slotType == "SPELL") then
+			if ( HasAttachedGlyph(spellID) ) then
+				if ( IsPendingGlyphRemoval() ) then
+					StaticPopup_Show("CONFIRM_GLYPH_REMOVAL", nil, nil, {name = GetCurrentGlyphNameForSpell(spellID), id = spellID});
+				else
+					StaticPopup_Show("CONFIRM_GLYPH_PLACEMENT", nil, nil, {name = GetPendingGlyphName(), currentName = GetCurrentGlyphNameForSpell(spellID), id = spellID});
+				end
+			else
+				AttachGlyphToSpell(spellID);
+			end
+		elseif (slotType == "FLYOUT") then
+			SpellFlyout:Toggle(spellID, self, "RIGHT", 1, false, self.offSpecID, true);
+			SpellFlyout:SetBorderColor(181/256, 162/256, 90/256);
+		end
+		return;
+	end
+
+	if (self.isPassive) then 
+		return;
+	end
+
 	if ( button ~= "LeftButton" and SpellBookFrame.bookType == BOOKTYPE_PET ) then
 		if ( self.offSpecID == 0 ) then
 			ToggleSpellAutocast(slot, SpellBookFrame.bookType);
@@ -539,7 +559,7 @@ function SpellButton_UpdateCooldown(self)
 			else
 				cooldown:Show();
 			end
-			CooldownFrame_SetTimer(cooldown, start, duration, enable);
+			CooldownFrame_Set(cooldown, start, duration, enable);
 		else
 			cooldown:Hide();
 		end
@@ -575,7 +595,7 @@ function SpellButton_UpdateButton(self)
 	local slotFrame = _G[name.."SlotFrame"];
 
 	-- Hide flyout if it's currently open
-	if (SpellFlyout:IsShown() and SpellFlyout:GetParent() == self)  then
+	if (SpellFlyout:IsShown() and SpellFlyout:GetParent() == self and not HasPendingGlyphCast() and not SpellFlyout.glyphActivating)  then
 		SpellFlyout:Hide();
 	end
 
@@ -585,8 +605,8 @@ function SpellButton_UpdateButton(self)
 		texture = GetSpellBookItemTexture(slot, SpellBookFrame.bookType);
 	end
 
-	-- If no spell, hide everything and return
-	if ( not texture or (strlen(texture) == 0) ) then
+	-- If no spell, hide everything and return, or kiosk mode and future spell
+	if ( not texture or (strlen(texture) == 0) or (slotType == "FUTURESPELL" and IsKioskModeEnabled())) then
 		iconTexture:Hide();
 		spellString:Hide();
 		subSpellString:Hide();
@@ -605,6 +625,9 @@ function SpellButton_UpdateButton(self)
 		self.TrainTextBackground:Hide();
 		self.TrainBook:Hide();
 		self.FlyoutArrow:Hide();
+		self.AbilityHighlightAnim:Stop();
+		self.AbilityHighlight:Hide();
+		self.GlyphIcon:Hide();
 		self:Disable();
 		self.TextBackground:SetDesaturated(isOffSpec);
 		self.TextBackground2:SetDesaturated(isOffSpec);
@@ -692,6 +715,26 @@ function SpellButton_UpdateButton(self)
 		self.SpellName:SetShadowOffset(self.SpellName.shadowX, self.SpellName.shadowY);
 		self.SpellName:SetPoint("LEFT", self, "RIGHT", 8, 4);
 		self.SpellSubName:SetTextColor(0, 0, 0);
+		if ( slotType == "SPELL" and not isOffSpec ) then
+			local _, spellID = GetSpellBookItemInfo(slot, SpellBookFrame.bookType);
+			if (IsSpellValidForPendingGlyph(spellID)) then
+				self.AbilityHighlight:Show();
+				self.AbilityHighlightAnim:Play();
+			else
+				self.AbilityHighlightAnim:Stop();
+				self.AbilityHighlight:Hide();
+			end
+			if (HasAttachedGlyph(spellID)) then
+				self.GlyphIcon:Show();
+			else
+				self.GlyphIcon:Hide();
+			end
+		else
+			self.AbilityHighlightAnim:Stop();
+			self.AbilityHighlight:Hide();
+			self.GlyphIcon:Hide();
+		end
+		
 		if ( slotType == "SPELL" and isOffSpec ) then
 			local level = GetSpellLevelLearned(slotID);
 			if ( level and level > UnitLevel("player") ) then
@@ -703,6 +746,9 @@ function SpellButton_UpdateButton(self)
 	else
 		local level = GetSpellAvailableLevel(slot, SpellBookFrame.bookType);
 		slotFrame:Hide();
+		self.AbilityHighlightAnim:Stop();
+		self.AbilityHighlight:Hide();
+		self.GlyphIcon:Hide();
 		self.IconTextureBg:Show();
 		iconTexture:SetAlpha(0.5);
 		iconTexture:SetDesaturated(true);
@@ -801,7 +847,7 @@ end
 
 function SpellBookFrame_OnMouseWheel(self, value, scrollBar)
 	--do nothing if not on an appropriate book type
-	if(SpellBookFrame.bookType ~= BOOKTYPE_SPELL and SpellBookFrame.bookType ~= BOOKTYPE_CORE_ABILITIES) then
+	if(SpellBookFrame.bookType ~= BOOKTYPE_SPELL) then
 		return;
 	end
 
@@ -865,6 +911,75 @@ function SpellBook_GetSpellBookSlot(spellButton)
 	end
 end
 
+function SpellBook_GetButtonForID(id)
+	-- Currently the spell book is mapped such that odd numbered buttons from 1 - 11 match id 1 - 6, while even numbered buttons from 2 - 12 match 7 - 12
+	if (id > 6) then
+		return _G["SpellButton"..((id - 6) * 2)];
+	else
+		return _G["SpellButton"..(((id - 1) * 2) + 1)];
+	end
+end
+
+function SpellBookFrame_OpenToPageForSlot(slot, reason)
+	local alreadyOpen = SpellBookFrame:IsShown();
+	SpellBookFrame.bookType = BOOKTYPE_SPELL;
+	ShowUIPanel(SpellBookFrame);
+	if (SpellBookFrame.selectedSkillLine ~= 2) then
+		SpellBookFrame.selectedSkillLine = 2;
+		SpellBookFrame_Update();
+	end
+
+	if (alreadyOpen and reason == OPEN_REASON_PENDING_GLYPH) then
+		local page = SPELLBOOK_PAGENUMBERS[SpellBookFrame.selectedSkillLine];
+		for i = 1, 12 do
+			local slot = (i + ( SPELLS_PER_PAGE * (page - 1))) + SpellBookFrame.selectedSkillLineOffset;
+			local slotType, spellID = GetSpellBookItemInfo(slot, SpellBookFrame.bookType);
+			if (slotType == "SPELL") then
+				if (IsSpellValidForPendingGlyph(spellID)) then
+					SpellBookFrame_Update();
+					return;
+				end
+			end
+		end
+	end
+
+	local slotType, spellID = GetSpellBookItemInfo(slot, SpellBookFrame.bookType);
+	local relativeSlot = slot - SpellBookFrame.selectedSkillLineOffset;
+	local page = math.floor((relativeSlot - 1)/ SPELLS_PER_PAGE) + 1;
+	SPELLBOOK_PAGENUMBERS[SpellBookFrame.selectedSkillLine] = page;
+	SpellBookFrame_Update();
+	local id = relativeSlot - ( SPELLS_PER_PAGE * (page - 1) );
+	local button = SpellBook_GetButtonForID(id);
+	if (slotType == "FLYOUT") then
+		if (SpellFlyout:IsShown() and SpellFlyout:GetParent() == button) then
+			SpellFlyout:Hide();
+		end
+
+		SpellFlyout:Toggle(spellID, button, "RIGHT", 1, false, button.offSpecID, true, reason);
+		SpellFlyout:SetBorderColor(181/256, 162/256, 90/256);
+	else
+		if (reason == OPEN_REASON_PENDING_GLYPH) then
+			button.AbilityHighlight:Show();
+			button.AbilityHighlightAnim:Play();
+		elseif (reason == OPEN_REASON_ACTIVATED_GLYPH) then
+			button.AbilityHighlightAnim:Stop();
+			button.AbilityHighlight:Hide();
+			button.GlyphActivate:Show();
+			button.GlyphIcon:Show();
+			button.GlyphTranslation:Show();
+			button.GlyphActivateAnim:Play();
+		end
+	end
+end
+
+function SpellBookFrame_ClearAbilityHighlights()
+	for i = 1, SPELLS_PER_PAGE do
+		local button = _G["SpellButton"..i];
+		button.AbilityHighlightAnim:Stop();
+		button.AbilityHighlight:Hide();
+	end
+end
+
 function SpellBook_GetCurrentPage()
 	local currentPage, maxPages;
 	local numPetSpells = HasPetSpells() or 0;
@@ -875,9 +990,6 @@ function SpellBook_GetCurrentPage()
 		currentPage = SPELLBOOK_PAGENUMBERS[SpellBookFrame.selectedSkillLine];
 		local name, texture, offset, numSlots = GetSpellTabInfo(SpellBookFrame.selectedSkillLine);
 		maxPages = ceil(numSlots/SPELLS_PER_PAGE);
-	elseif ( SpellBookFrame.bookType == BOOKTYPE_CORE_ABILITIES) then
-		currentPage = 1;
-		maxPages = 1;
 	end
 	return currentPage, maxPages;
 end
@@ -1003,7 +1115,7 @@ function UpdateProfessionButton(self)
 	
 	self.iconTexture:SetTexture(texture);
 	local start, duration, enable = GetSpellCooldown(spellIndex, SpellBookFrame.bookType);
-	CooldownFrame_SetTimer(self.cooldown, start, duration, enable);
+	CooldownFrame_Set(self.cooldown, start, duration, enable);
 	if ( enable == 1 ) then
 		self.iconTexture:SetVertexColor(1.0, 1.0, 1.0);
 	else
@@ -1131,248 +1243,6 @@ function SpellBook_UpdateProfTab()
 	SpellBookPage2:SetDesaturated(false);	
 end
 
-
--- *************************************************************************************
-
--- String prefixes for text
-SPEC_CORE_ABILITY_TEXT = {}
-SPEC_CORE_ABILITY_TEXT[250] = "DK_BLOOD";
-SPEC_CORE_ABILITY_TEXT[251] = "DK_FROST";
-SPEC_CORE_ABILITY_TEXT[252] = "DK_UNHOLY";
-
-SPEC_CORE_ABILITY_TEXT[102] = "DRUID_BALANCE";
-SPEC_CORE_ABILITY_TEXT[103] = "DRUID_FERAL";
-SPEC_CORE_ABILITY_TEXT[104] = "DRUID_GUARDIAN";
-SPEC_CORE_ABILITY_TEXT[105] = "DRUID_RESTO";
-
-SPEC_CORE_ABILITY_TEXT[253] = "HUNTER_BM";
-SPEC_CORE_ABILITY_TEXT[254] = "HUNTER_MM";
-SPEC_CORE_ABILITY_TEXT[255] = "HUNTER_SV";
-
-SPEC_CORE_ABILITY_TEXT[62] = "MAGE_ARCANE";
-SPEC_CORE_ABILITY_TEXT[63] = "MAGE_FIRE";
-SPEC_CORE_ABILITY_TEXT[64] = "MAGE_FROST";
-
-SPEC_CORE_ABILITY_TEXT[268] = "MONK_BREW";
-SPEC_CORE_ABILITY_TEXT[270] = "MONK_MIST";
-SPEC_CORE_ABILITY_TEXT[269] = "MONK_WIND";
-
-SPEC_CORE_ABILITY_TEXT[65] = "PALADIN_HOLY";
-SPEC_CORE_ABILITY_TEXT[66] = "PALADIN_PROT";
-SPEC_CORE_ABILITY_TEXT[70] = "PALADIN_RET";
-
-SPEC_CORE_ABILITY_TEXT[256] = "PRIEST_DISC";
-SPEC_CORE_ABILITY_TEXT[257] = "PRIEST_HOLY";
-SPEC_CORE_ABILITY_TEXT[258] = "PRIEST_SHADOW";
-
-SPEC_CORE_ABILITY_TEXT[259] = "ROGUE_ASS";
-SPEC_CORE_ABILITY_TEXT[260] = "ROGUE_COMBAT";
-SPEC_CORE_ABILITY_TEXT[261] = "ROGUE_SUB";
-
-SPEC_CORE_ABILITY_TEXT[262] = "SHAMAN_ELE";
-SPEC_CORE_ABILITY_TEXT[263] = "SHAMAN_ENHANCE";
-SPEC_CORE_ABILITY_TEXT[264] = "SHAMAN_RESTO";
-
-SPEC_CORE_ABILITY_TEXT[265] = "WARLOCK_AFFLICTION";
-SPEC_CORE_ABILITY_TEXT[266] = "WARLOCK_DEMO";
-SPEC_CORE_ABILITY_TEXT[267] = "WARLOCK_DESTRO";
-
-SPEC_CORE_ABILITY_TEXT[71] = "WARRIOR_ARMS";
-SPEC_CORE_ABILITY_TEXT[72] = "WARRIOR_FURY";
-SPEC_CORE_ABILITY_TEXT[73] = "WARRIOR_PROT";
-
--- Hardcoded spell id's for spec display
-SPEC_CORE_ABILITY_DISPLAY = {}
-SPEC_CORE_ABILITY_DISPLAY[250] = {	45462,	45477,	50842,	47541,	49998,	48982,	}; --Blood
-SPEC_CORE_ABILITY_DISPLAY[251] = {	45462,	49184,	49020,	49143,	130735,		}; --Frost
-SPEC_CORE_ABILITY_DISPLAY[252] = {	45462,	85948,	47541,	130736,	46584,	63560,	}; --Unholy
-
-SPEC_CORE_ABILITY_DISPLAY[102] = {	8921,	93402,	5176,	2912,	78674,  79577,	}; --Balance
-SPEC_CORE_ABILITY_DISPLAY[103] = {	1822,	5221,	52610,	1079, 	22568,		}; --Feral
-SPEC_CORE_ABILITY_DISPLAY[104] = {	33917,	33745,	106832,	6807,	62606,	22842,	}; --Guardian
-SPEC_CORE_ABILITY_DISPLAY[105] = {	33763,	774,	5185, 	8936,	48438,	18562,	}; --Restoration
-
-SPEC_CORE_ABILITY_DISPLAY[253] = {	3044, 	77767, 	82692, 	34026,	53351,		}; --Beast Mastery
-SPEC_CORE_ABILITY_DISPLAY[254] = {	19434,	53209,	56641,	53351,			}; --Marskmanship
-SPEC_CORE_ABILITY_DISPLAY[255] = {	3674,	53301,	77767,	3044,			}; --Survival
-
-SPEC_CORE_ABILITY_DISPLAY[62] = {	30451,	44425,	5143, 	114664,	12051,		}; --Arcane
-SPEC_CORE_ABILITY_DISPLAY[63] = {	133,	11366,	108853,	2948,	11129,		}; --Fire
-SPEC_CORE_ABILITY_DISPLAY[64] = {	116,	30455,	44614,	31687,	44549,	112965,	}; --Frost
-
-SPEC_CORE_ABILITY_DISPLAY[268] = {	121253, 100780,	100784,	100787,	119582,	115308, }; --Brewmaster
-SPEC_CORE_ABILITY_DISPLAY[270] = {	115175,	116694,	124682,	115072,	115151, 116670,	}; --Mistweaver
-SPEC_CORE_ABILITY_DISPLAY[269] = {	100780,	100787,	100784,	107428,	113656,	116740,	}; --Windwalker
-
-SPEC_CORE_ABILITY_DISPLAY[65] = {	20473,	85673,	82326,	19750,	53563,	82327,	}; --Holy
-SPEC_CORE_ABILITY_DISPLAY[66] = {	31935,	35395,	20271,	85673,	53600,	31801,	}; --Protection
-SPEC_CORE_ABILITY_DISPLAY[70] = {	35395,	20271,	85256,	879,	24275,	31801,	}; --Retribution
-
-SPEC_CORE_ABILITY_DISPLAY[256] = {	47540,	17,	2060,	2061,	132157,	596,	}; --Discipline
-SPEC_CORE_ABILITY_DISPLAY[257] = {	2060,	2061,	139,	33076,	34861,	596,	}; --Holy
-SPEC_CORE_ABILITY_DISPLAY[258] = {	589,	34914,	8092,	15407,	2944,	32379,	}; --Shadow
-
-SPEC_CORE_ABILITY_DISPLAY[259] = {	8676,	111240,	1329,	5171,	1943,	32645,	}; --Assassination
-SPEC_CORE_ABILITY_DISPLAY[260] = {	8676,	84617,	1752,	5171,	2098,		}; --Combat
-SPEC_CORE_ABILITY_DISPLAY[261] = {	8676,	16511,	53,	5171,	1943,	2098,	}; --Subtlety
-
-SPEC_CORE_ABILITY_DISPLAY[262] = {	8050,	51505,	403,	8042,	324,		}; --Elemental
-SPEC_CORE_ABILITY_DISPLAY[263] = {	8050,	17364,	60103,	403,	73680,	51530,	}; --Enhancement
-SPEC_CORE_ABILITY_DISPLAY[264] = {	974,	77472,	8004,	61295,	73920,	1064,	}; --Restoration
-
-SPEC_CORE_ABILITY_DISPLAY[265] = {	172,	980,	30108,	48181,	103103,	74434,	}; --Affliction
-SPEC_CORE_ABILITY_DISPLAY[266] = {	172,	686,	6353,	105174,	103958,	122351,	}; --Demonology
-SPEC_CORE_ABILITY_DISPLAY[267] = {	348,	17962,	116858,	29722,	17877,		}; --Destruction
-
-SPEC_CORE_ABILITY_DISPLAY[71] = {	100,	167105,	12294,	772,	1680,	163201,	}; --Arms
-SPEC_CORE_ABILITY_DISPLAY[72] = {	100,	23881,	85288,	100130,	5308,	}; --Fury	
-SPEC_CORE_ABILITY_DISPLAY[73] = {	100,	23922,	20243,	6572,	112048,	2565,	}; --Protection
-
-function SpellBook_GetCoreAbilityButton(index)
-	local button = SpellBookCoreAbilitiesFrame.Abilities[index];
-	if ( not button ) then
-		SpellBookCoreAbilitiesFrame.Abilities[index] = CreateFrame("BUTTON", nil, SpellBookCoreAbilitiesFrame, "CoreAbilitySpellTemplate");
-		button = SpellBookCoreAbilitiesFrame.Abilities[index];
-		button:SetPoint("TOP", SpellBookCoreAbilitiesFrame.Abilities[index-1], "BOTTOM", 0, -29);
-	end
-	return button;
-end
-
-function SpellBook_GetCoreAbilitySpecTab(index)
-	local tab = SpellBookCoreAbilitiesFrame.SpecTabs[index];
-	if ( not tab ) then
-		SpellBookCoreAbilitiesFrame.SpecTabs[index] = CreateFrame("CHECKBUTTON", nil, SpellBookCoreAbilitiesFrame, "CoreAbilitiesSkillLineTabTemplate");
-		tab = SpellBookCoreAbilitiesFrame.SpecTabs[index]
-		tab:SetPoint("TOPLEFT", SpellBookCoreAbilitiesFrame.SpecTabs[index-1], "BOTTOMLEFT", 0, -17);
-	end
-	return tab;
-end
-
-function SpellBookCoreAbilitiesTab_OnClick(self)
-	PlaySound("igAbiliityPageTurn");
-	SpellBookCoreAbilitiesFrame.selectedSpec = self:GetID();
-	SpellBook_UpdateCoreAbilitiesTab();
-end
-
-function SpellBookCoreAbilities_UpdateTabs()
-	local numSpecs = GetNumSpecializations();
-	local currentSpec = GetSpecialization();
-	local sex = UnitSex("player")
-	local index = 1;
-	local tab;
-	if ( currentSpec ) then
-		tab = SpellBook_GetCoreAbilitySpecTab(index);
-		local id, name, description, icon = GetSpecializationInfo(currentSpec, nil, nil, nil, sex);
-		tab:SetID(currentSpec);
-		tab:SetNormalTexture(icon);
-		tab:SetChecked(SpellBookCoreAbilitiesFrame.selectedSpec == tab:GetID());
-		tab.tooltip = name;
-		tab:Show();
-		index = index + 1;
-	end
-	
-	tab = SpellBook_GetCoreAbilitySpecTab(2);
-	if ( currentSpec ) then
-		tab:SetPoint("TOPLEFT", SpellBookCoreAbilitiesFrame.SpecTabs[1], "BOTTOMLEFT", 0, -40);
-	else
-		tab:SetPoint("TOPLEFT", SpellBookCoreAbilitiesFrame.SpecTabs[1], "BOTTOMLEFT", 0, -17);
-	end
-	
-	for i=1, numSpecs do
-		if ( not currentSpec or currentSpec ~= i ) then
-			tab = SpellBook_GetCoreAbilitySpecTab(index);
-			local id, name, description, icon = GetSpecializationInfo(i, nil, nil, nil, sex);
-			tab:SetID(i);
-			tab:SetNormalTexture(icon);
-			tab:SetChecked(SpellBookCoreAbilitiesFrame.selectedSpec == tab:GetID());
-			tab:GetNormalTexture():SetDesaturated(currentSpec and not (currentSpec == i));
-			tab.tooltip = name;
-			tab:Show();
-			index = index + 1;
-		end
-	end
-	for i = numSpecs + 1, #SpellBookCoreAbilitiesFrame.SpecTabs do
-		SpellBook_GetCoreAbilitySpecTab(i):Hide();
-	end
-end
-
-function SpellBook_UpdateCoreAbilitiesTab()
-	SpellBookFrame_UpdatePages();
-	SpellBookCoreAbilities_UpdateTabs();
-	
-	local currentSpec = GetSpecialization();
-	local sex = UnitSex("player");
-	local desaturate = currentSpec and (currentSpec ~= SpellBookCoreAbilitiesFrame.selectedSpec);
-	local specID, displayName = GetSpecializationInfo(SpellBookCoreAbilitiesFrame.selectedSpec, nil, nil, nil, sex);
-	local draggable = false;
-	if ( GetSpecialization() == SpellBookCoreAbilitiesFrame.selectedSpec ) then
-		draggable = true;
-	end
-	
-	SpellBookCoreAbilitiesFrame.SpecName:SetText(displayName);
-	
-	local abilityList = SPEC_CORE_ABILITY_DISPLAY[specID];
-	if ( abilityList ) then
-		for i=1, #abilityList do
-			local name, subname = GetSpellInfo(abilityList[i]);
-			local _, icon = GetSpellTexture(abilityList[i]);
-			local button = SpellBook_GetCoreAbilityButton(i);
-			local level = GetSpellLevelLearned(abilityList[i]);
-			local showLevel = (level and level > UnitLevel("player"));
-			local isPassive = IsPassiveSpell(abilityList[i]);
-			local isKnown = IsSpellKnownOrOverridesKnown(abilityList[i]);
-			
-			button.spellID = abilityList[i];
-			button.Name:SetText(name);
-			button.InfoText:SetText(_G[SPEC_CORE_ABILITY_TEXT[specID].."_CORE_ABILITY_"..i]);
-
-			button.iconTexture:SetTexture(icon);
-			
-			if ( not isKnown and IsCharacterNewlyBoosted() and not desaturate ) then
-				button.ActiveTexture:Hide();
-				button.RequiredLevel:SetText(BOOSTED_CHAR_SPELL_TEMPLOCK);
-				button.iconTexture:SetAlpha(0.5);
-				button.iconTexture:SetDesaturated(true);
-				button.FutureTexture:Show();
-				button.FutureTexture:SetDesaturated(false);
-				button.EmptySlot:SetDesaturated(false);
-				button.draggable = false;
-			else
-				button.iconTexture:SetDesaturated(showLevel or desaturate);
-				button.iconTexture:SetAlpha(1);
-				
-				button.ActiveTexture:SetShown(not showLevel and not isPassive);
-				button.ActiveTexture:SetDesaturated(desaturate);
-				button.FutureTexture:SetShown(showLevel);
-				button.FutureTexture:SetDesaturated(desaturate);
-				button.EmptySlot:SetDesaturated(desaturate);
-				button.draggable = draggable and not isPassive and not showLevel;
-			
-				if ( showLevel ) then
-					button.RequiredLevel:SetFormattedText(SPELLBOOK_AVAILABLE_AT, level);
-				else
-					button.RequiredLevel:SetText("");
-				end
-		
-				if ( showLevel or isPassive ) then
-					button.highlightTexture:SetTexture("Interface\\Buttons\\UI-PassiveHighlight");
-				else
-					button.highlightTexture:SetTexture("Interface\\Buttons\\ButtonHilight-Square");
-				end
-			end
-	
-			button:Show();
-		end
-	end
-	for i = #abilityList + 1, #SpellBookCoreAbilitiesFrame.Abilities do
-		SpellBook_GetCoreAbilityButton(i):Hide();
-	end
-
-	SpellBookPage1:SetDesaturated(desaturate);
-	SpellBookPage2:SetDesaturated(desaturate);
-end
-
-
 -- *************************************************************************************
 
 SpellBookFrame_HelpPlate = {
@@ -1390,16 +1260,10 @@ ProfessionsFrame_HelpPlate = {
 	[2] = { ButtonPos = { x = 150,	y = -325}, HighLightBox = { x = 60, y = -235, width = 460, height = 240 }, ToolTipDir = "UP",	ToolTipText = PROFESSIONS_HELP_2 },
 }
 
-CoreAbilitiesFrame_HelpPlate = {
-	FramePos = { x = 5,	y = -22 },
-	FrameSize = { width = 580, height = 500	},
-	[1] = { ButtonPos = { x = 430,	y = -30}, HighLightBox = { x = 65, y = -15, width = 460, height = 472 }, ToolTipDir = "RIGHT",	ToolTipText = CORE_ABILITIES_HELP_1 },
-}
-
 function SpellBook_ToggleTutorial()
 	local tutorial, helpPlate = SpellBookFrame_GetTutorialEnum();
 	if ( helpPlate and not HelpPlate_IsShowing(helpPlate) and SpellBookFrame:IsShown()) then
-		HelpPlate_Show( helpPlate, SpellBookFrame, SpellBookFrame.MainHelpButton, true );
+		HelpPlate_Show( helpPlate, SpellBookFrame, SpellBookFrame.MainHelpButton );
 		SetCVarBitfield( "closedInfoFrames", tutorial, true );
 	else
 		HelpPlate_Hide(true);

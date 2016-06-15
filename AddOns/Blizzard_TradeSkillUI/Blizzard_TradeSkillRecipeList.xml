@@ -11,7 +11,7 @@
 		<Frames>
 			<Button parentKey="LearnedTab" parentArray="Tabs" inherits="TabButtonTemplate" text="TRADE_SKILLS_LEARNED_TAB">
 				<Anchors>
-					<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="18" y="3"/>
+					<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="10" y="3"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>
@@ -29,7 +29,7 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			
+
 			<Slider inherits="HybridScrollBarTemplate">
 				<KeyValues>
 					<KeyValue key="doNotHide" value="true" type="boolean" />
@@ -43,7 +43,7 @@
 			<Frame name="TradeSkillRecipeOptionsMenu" parentKey="RecipeOptionsMenu" inherits="UIDropDownMenuTemplate" enableMouse="true"/>
 
 			<Frame parentKey="FilterBar" hidden="true">
-				<Size x="293" y="16"/>
+				<Size x="300" y="16"/>
 				<Anchors>
 					<Anchor point="BOTTOM" relativePoint="TOP"/>
 				</Anchors>
@@ -95,7 +95,7 @@
 								C_TradeSkillUI.ClearRecipeSourceTypeFilter();
 								C_TradeSkillUI.SetOnlyShowMakeableRecipes(false);
 								C_TradeSkillUI.SetOnlyShowSkillUpRecipes(false);
-								
+
 								CloseDropDownMenus();
 							</OnClick>
 						</Scripts>

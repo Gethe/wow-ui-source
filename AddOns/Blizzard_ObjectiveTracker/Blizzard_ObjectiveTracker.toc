@@ -1,7 +1,8 @@
-## Interface: 60200
+## Interface: 70000
 ## Title: Blizzard Objective Tracker UI
 ## Secure: 1
 ## LoadOnDemand: 0
+Blizzard_ObjectiveTrackerShared.xml
 Blizzard_ObjectiveTracker.xml
 Blizzard_QuestSuperTracking.lua
 Blizzard_QuestObjectiveTracker.xml

@@ -341,9 +341,7 @@ function GuildNewsDropDown_Initialize(self)
 	local info = UIDropDownMenu_CreateInfo();
 	info.notCheckable = 1;
 	info.isTitle = 1;
-	if ( newsType == NEWS_GUILD_LEVEL ) then
-		info.text = string.format(GUILD_LEVEL, text2);
-	elseif ( newsType == NEWS_GUILD_CREATE ) then
+	if ( newsType == NEWS_GUILD_CREATE ) then
 		info.text = GUILD_CREATION;
 	else
 		info.text = text2;

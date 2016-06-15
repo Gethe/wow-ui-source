@@ -161,6 +161,7 @@
 		<Scripts>
 			<OnShow>
 				PlaySound("ReadyCheck");
+				FlashClientIcon();
 				LFDRoleCheckPopup_Update();
 			</OnShow>
 		</Scripts>
@@ -219,10 +220,11 @@
 		<Scripts>
 			<OnShow>
 				PlaySound("ReadyCheck");
+				FlashClientIcon();
 			</OnShow>
 		</Scripts>
 	</Frame>
-	<Frame name="LFDParentFrame" toplevel="true" hidden="true" parent="GroupFinderFrame" useParentLevel="true">
+	<Frame name="LFDParentFrame" hidden="true" parent="GroupFinderFrame" useParentLevel="true">
 		<Size x="338" y="428"/>
 		<Anchors>
 			<Anchor point="TOPLEFT" x="224" y="0"/>
@@ -245,7 +247,7 @@
 				</Texture>
 				<Texture name="$parentBtnCornerRight" inherits="UI-Frame-BtnCornerRight" hidden="false">
 					<Anchors>
-						<Anchor point="BOTTOMRIGHT" x="0" y="-1"/>
+						<Anchor point="BOTTOMRIGHT" x="1" y="-1"/>
 					</Anchors>
 				</Texture>
 				<Texture name="$parentButtonBottomBorder" inherits="_UI-Frame-BtnBotTile">

@@ -57,6 +57,23 @@
                 </Texture>
                 <Texture atlas="PetList-ButtonSelect" parentKey="selectedTexture" hidden="true"/>
             </Layer>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<FontString parentKey="new" inherits="GameFontHighlight" wordwrap="false" justifyH="CENTER" text="NEW_CAPS" hidden="true">
+					<Anchors>
+						<Anchor point="RIGHT" x="-15" y="0"/>
+					</Anchors>
+					<Shadow>
+						<Color r="0.32" g="0.5" b="1.0"/>
+					</Shadow>
+				</FontString>
+
+				<Texture parentKey="newGlow" atlas="collections-newglow" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.new" x="-20" y="10"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.new" x="20" y="-10"/>
+					</Anchors>
+				</Texture>
+			</Layer>
         </Layers>
         <Frames>
             <Button parentKey="dragButton">
@@ -148,11 +165,11 @@
 					<Color r="1.0" g="0.1" b="0.1"/> <!-- RED_FONT_COLOR -->
 				</FontString>
 				<Texture name="$parentFlyoutArrow" file="Interface\Buttons\ActionBarFlyoutButton" parentKey="FlyoutArrow">
-					<Size x="23" y="11"/>	
+					<Size x="23" y="11"/>
 					<Anchors>
 						<Anchor point="BOTTOM" x="0" y="-3"/>
 					</Anchors>
-					<TexCoords left="0.62500000" right="0.98437500" top="0.82812500" bottom="0.74218750"/>	
+					<TexCoords left="0.62500000" right="0.98437500" top="0.82812500" bottom="0.74218750"/>
 				</Texture>
 				<Texture name="$parentSelected" file="Interface\Buttons\CheckButtonHilight" parentKey="selected" alphaMode="ADD"/>
 			</Layer>
@@ -214,15 +231,15 @@
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" x="0" y="0"/>
 					</Anchors>
-					<Size x="60" y="60"/>	
-					<TexCoords left="0.00781250" right="0.47656250" top="0.50390625" bottom="0.73828125"/>	
+					<Size x="60" y="60"/>
+					<TexCoords left="0.00781250" right="0.47656250" top="0.50390625" bottom="0.73828125"/>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="1">
 				<Texture name="$parentIconBorder" atlas="PetJournal-BattleSlot-IconBorder" useAtlasSize="true" parentKey="iconBorder">
 					<Anchors>
 						<Anchor point="CENTER" relativeTo="$parentIcon" x="0" y="0"/>
-					</Anchors>	
+					</Anchors>
 				</Texture>
 				<FontString name="$parentName" inherits="GameFontNormal" justifyH="LEFT" justifyV="BOTTOM" parentKey="name">
 					<Size x="210" y="0"/>
@@ -303,18 +320,18 @@
 								<Texture name="$parentLeft" atlas="PetJournal-HealthBar-Left" useAtlasSize="true">
 									<Anchors>
 										<Anchor point="RIGHT" relativePoint="LEFT"  x="9" y="0"/>
-									</Anchors>	
+									</Anchors>
 								</Texture>
 								<Texture name="$parentRight" atlas="PetJournal-HealthBar-Right" useAtlasSize="true">
 									<Anchors>
 										<Anchor point="LEFT" relativePoint="RIGHT"  x="-9" y="0"/>
-									</Anchors>										
+									</Anchors>
 								</Texture>
 								<Texture name="$parentMiddle" atlas="PetJournal-HealthBar-Mid">
 									<Anchors>
 										<Anchor point="TOPLEFT" relativeTo="$parentLeft" relativePoint="TOPRIGHT"/>
 										<Anchor point="BOTTOMRIGHT" relativeTo="$parentRight" relativePoint="BOTTOMLEFT"/>
-									</Anchors>	
+									</Anchors>
 								</Texture>
 							</Layer>
 							<Layer level="BACKGROUND">
@@ -352,7 +369,7 @@
 					</OnLeave>
 				</Scripts>
 			</Frame>
-			
+
 			<CheckButton name="$parentSpell1" inherits="CompanionLoadOutSpellTemplate" id="1" parentKey="spell1">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$parentHealthFrame" x="15" y="0"/>
@@ -360,12 +377,12 @@
 			</CheckButton>
 			<CheckButton name="$parentSpell2" inherits="CompanionLoadOutSpellTemplate" id="2" parentKey="spell2">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentSpell1" RelativePoint="RIGHT" x="10" y="0"/>
+					<Anchor point="LEFT" relativeTo="$parentSpell1" relativePoint="RIGHT" x="10" y="0"/>
 				</Anchors>
 			</CheckButton>
 			<CheckButton name="$parentSpell3" inherits="CompanionLoadOutSpellTemplate" id="3" parentKey="spell3">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentSpell2" RelativePoint="RIGHT" x="10" y="0"/>
+					<Anchor point="LEFT" relativeTo="$parentSpell2" relativePoint="RIGHT" x="10" y="0"/>
 				</Anchors>
 			</CheckButton>
 
@@ -391,8 +408,8 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			
-			
+
+
 			<Frame name="$parentRequirement" parentKey="requirement">
 				<Size x="371" y="20"/>
 				<Anchors>
@@ -410,8 +427,8 @@
 					</OnLeave>
 				</Scripts>
 			</Frame>
-			
-			
+
+
 			<StatusBar name="$parentXPBar" parentKey="xpBar">
 				<Size x="332" y="11"/>
 				<Anchors>
@@ -427,18 +444,18 @@
 						<Texture name="$parentLeft" atlas="PetJournal-ExpBar-Left" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="RIGHT" relativePoint="LEFT"  x="9" y="0"/>
-							</Anchors>	
+							</Anchors>
 						</Texture>
 						<Texture name="$parentRight" atlas="PetJournal-ExpBar-Right" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="LEFT" relativePoint="RIGHT"  x="-9" y="0"/>
-							</Anchors>						
+							</Anchors>
 						</Texture>
 						<Texture name="$parentMiddle" atlas="PetJournal-ExpBar-Mid">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="$parentLeft" relativePoint="TOPRIGHT"/>
 								<Anchor point="BOTTOMRIGHT" relativeTo="$parentRight" relativePoint="BOTTOMLEFT"/>
-							</Anchors>	
+							</Anchors>
 						</Texture>
 					</Layer>
 					<Layer level="OVERLAY" textureSubLevel="1">
@@ -535,8 +552,8 @@
 			<Button name="$parentSetButton" parentKey="setButton" setAllPoints="true" hidden="true">
 				<Animations>
 					<AnimationGroup parentKey="glow" looping="REPEAT">
-						<Alpha change="-1.0" duration="0.9" order="1"/>
-						<Alpha change="1.0" duration="0.9" order="2"/>
+						<Alpha fromAlpha="1" toAlpha="0" duration="0.9" order="1"/>
+						<Alpha fromAlpha="0" toAlpha="1" duration="0.9" order="2"/>
 					</AnimationGroup>
 				</Animations>
 				<Layers>
@@ -570,7 +587,7 @@
 							PetJournal_UpdatePetLoadOut();
 							ClearCursor();
 						end
-					</OnClick>	
+					</OnClick>
 					<OnReceiveDrag>
 						local type, petID = GetCursorInfo();
 						if type == "battlepet" then
@@ -598,7 +615,7 @@
 				</Anchors>
 				<HighlightTexture name="$parentHighlight" file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
 				<Scripts>
-					<OnClick function="PetJournalPetLoadoutDragButton_OnClick"/>	
+					<OnClick function="PetJournalPetLoadoutDragButton_OnClick"/>
 					<OnLoad>
 						self:RegisterForDrag("LeftButton");
 						self:RegisterForClicks("RightButtonUp");
@@ -730,7 +747,7 @@
 			</OnEnter>
 			<OnLeave>
 				PetJournal_HideAbilityTooltip(self);
-			</OnLeave>			
+			</OnLeave>
 			<OnClick>
 				if ( IsModifiedClick() ) then
 					HandleModifiedItemClick(PetJournal_GetPetAbilityHyperlink(self.abilityID, self.petID));
@@ -847,12 +864,12 @@
 							</Anchors>
 						</Texture>
 						<Texture name="$parentLockIcon" parentKey="LockIcon" file="Interface\PetBattles\PetBattle-LockIcon" setAllPoints="true" hidden="true"/>
-						<FontString name="$parentSpellName" inherits="GameFontNormal" maxLines="2" justifyH="RIGHT" parentKey="spellname" text="">
-							<Size x="75" y="0"/>
-							<Color r="1" g="1" b="1"/>
+						<FontString name="$parentSpellName" inherits="GameFontNormal" maxLines="2" justifyH="RIGHT" parentKey="spellname">
 							<Anchors>
 								<Anchor point="RIGHT" relativePoint="LEFT" relativeTo="$parentBorder" x="-2" y="0"/>
 							</Anchors>
+							<Size x="75" y="0"/>
+							<Color r="1" g="1" b="1"/>
 						</FontString>
 					</Layer>
 				</Layers>
@@ -875,7 +892,7 @@
 				</Scripts>
 				<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
 				<HighlightTexture name="$parentHighlight" file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
-			</Button>			
+			</Button>
 			<Frame name="$parentLeftInset" useParentLevel="true" inherits="InsetFrameTemplate" parentKey="LeftInset">
 				<Size x="260" y="496"/>
 				<Anchors>
@@ -920,11 +937,11 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnClick> 
+					<OnClick>
 						PlaySound("igMainMenuOptionCheckBoxOn");
 						ToggleDropDownMenu(1, nil, PetJournalFilterDropDown, "PetJournalFilterButton", 74, 15);
-					</OnClick>	
-				</Scripts>						
+					</OnClick>
+				</Scripts>
 			</Button>
 			<Frame name="$parentFilterDropDown" inherits="UIDropDownMenuTemplate">
 				<Scripts>
@@ -967,35 +984,35 @@
 							<Anchors>
 								<Anchor point="TOPRIGHT" x="1" y="1"/>
 							</Anchors>
-							<Size x="17" y="17"/>	
-							<TexCoords left="1.0" right="0.0" top="0.0" bottom="1.0"/>  	
+							<Size x="17" y="17"/>
+							<TexCoords left="1.0" right="0.0" top="0.0" bottom="1.0"/>
 						</Texture>
 						<Texture name="$parentBottomLeft" atlas="PetJournal-BattleSlotFrame-Corner" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="BOTTOMLEFT" x="-1" y="-1"/>
 							</Anchors>
-							<Size x="17" y="17"/>	
-							<TexCoords left="0.0" right="1.0" top="1.0" bottom="0.0"/>	
+							<Size x="17" y="17"/>
+							<TexCoords left="0.0" right="1.0" top="1.0" bottom="0.0"/>
 						</Texture>
 						<Texture name="$parentBottomRight" atlas="PetJournal-BattleSlotFrame-Corner" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="BOTTOMRIGHT" x="1" y="-1"/>
 							</Anchors>
-							<Size x="17" y="17"/>	
-							<TexCoords left="1.0" right="0.0" top="1.0" bottom="0.0"/>	
+							<Size x="17" y="17"/>
+							<TexCoords left="1.0" right="0.0" top="1.0" bottom="0.0"/>
 						</Texture>
 						<Texture name="$parentTop" atlas="_BattleSlotFrame-Top" horizTile="true">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$parentTopLeft" x="0" y="0"/>
 								<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" relativeTo="$parentTopRight" x="0" y="1"/>
-							</Anchors>	
+							</Anchors>
 						</Texture>
 						<Texture name="$parentBottom" atlas="_BattleSlotFrame-Top" horizTile="true">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$parentBottomLeft" x="0" y="-1"/>
 								<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" relativeTo="$parentBottomRight" x="0" y="0"/>
 							</Anchors>
-							<TexCoords left="0.0" right="1.0" top="1.0" bottom="0.0" />	
+							<TexCoords left="0.0" right="1.0" top="1.0" bottom="0.0" />
 						</Texture>
 						<Texture name="$parentLeft" file="Interface\PetBattles\!BattleSlotFrame-Left" vertTile="true">
 							<Anchors>
@@ -1008,7 +1025,7 @@
 								<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parentTopRight" x="1" y="0"/>
 								<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" relativeTo="$parentBottomRight" x="0" y="0"/>
 							</Anchors>
-							<TexCoords left="1" right="0" top="0" bottom="1"/>	
+							<TexCoords left="1" right="0" top="0" bottom="1"/>
 						</Texture>
 					</Layer>
 					<Layer level="ARTWORK" textureSubLevel="1">
@@ -1092,8 +1109,8 @@
 					</Button>
  				</Frames>
 			</Frame>
-			
-			
+
+
 			<Frame name="$parentPetCard" parentKey="PetCard">
 				<Size x="405" y="168"/>
 				<Anchors>
@@ -1102,7 +1119,7 @@
 				<Layers>
 					<Layer level="BACKGROUND">
 						<Texture name="$parentBG" atlas="PetJournal-PetCard-BG">
-							<Size x="405" y="166"/>	
+							<Size x="405" y="166"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" x="0" y="0"/>
 							</Anchors>
@@ -1110,19 +1127,19 @@
 					</Layer>
 					<Layer level="BACKGROUND" textureSubLevel="2">
 						<Texture name="$parentAbilitiesBG1" parentKey="AbilitiesBG1" atlas="PetJournal-PetCard-Abilities">
-							<Size x="57" y="104"/>	
+							<Size x="57" y="104"/>
 							<Anchors>
 								<Anchor point="TOPRIGHT" x="-119" y="-45"/>
 							</Anchors>
 						</Texture>
 						<Texture name="$parentAbilitiesBG2" parentKey="AbilitiesBG2" atlas="PetJournal-PetCard-Abilities">
-							<Size x="57" y="104"/>	
+							<Size x="57" y="104"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="$parentAbilitiesBG1" relativePoint="TOPRIGHT" x="0" y="0"/>
 							</Anchors>
 						</Texture>
 						<Texture name="$parentAbilitiesBG3" parentKey="AbilitiesBG3" atlas="PetJournal-PetCard-Abilities">
-							<Size x="57" y="104"/>	
+							<Size x="57" y="104"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="$parentAbilitiesBG2" relativePoint="TOPRIGHT" x="0" y="0"/>
 							</Anchors>
@@ -1131,7 +1148,7 @@
 							<Anchors>
 								<Anchor point="TOPLEFT" x="25" y="-67"/>
 							</Anchors>
-							<Size x="207" y="108"/>		
+							<Size x="207" y="108"/>
 						</Texture>
 					</Layer>
 					<Layer level="OVERLAY">
@@ -1174,7 +1191,7 @@
 										<!-- Move it down 8 if there's no SubName -->
 									</Anchors>
 								</FontString>
-								<FontString name="$parentSubName" inherits="GameFontNormalSmall" justifyH="LEFT" parentKey="subName" text="XXXXX">
+								<FontString name="$parentSubName" inherits="GameFontNormalSmall" justifyH="LEFT" parentKey="subName">
 									<Size x="0" y="0"/>
 									<Anchors>
 										<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parentName" x="0" y="-2"/>
@@ -1194,7 +1211,7 @@
 										<Anchor point="BOTTOMRIGHT" relativeTo="$parentIcon" x="5" y="-5"/>
 									</Anchors>
 								</Texture>
-								<FontString name="$parentLevel" inherits="GameFontNormalSmall" parentKey="level" justifyH="CENTER" text="XX">
+								<FontString name="$parentLevel" inherits="GameFontNormalSmall" parentKey="level" justifyH="CENTER">
 									<Size x="0" y="0"/>
 									<Anchors>
 										<Anchor point="CENTER" relativeTo="$parentLevelBubble" x="0" y="0"/>
@@ -1203,6 +1220,23 @@
 								<Texture name="$parentFavorite" atlas="PetJournal-FavoritesIcon" useAtlasSize="true" parentKey="favorite">
 									<Anchors>
 										<Anchor point="TOPLEFT" relativeTo="$parentIcon" x="-8" y="8"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="OVERLAY" textureSubLevel="2">
+								<FontString parentKey="new" inherits="GameFontHighlight" wordwrap="false" justifyH="CENTER" text="NEW_CAPS" hidden="true">
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" relativeKey="$parent.name" relativePoint="BOTTOMLEFT" x="8" y="0"/>
+									</Anchors>
+									<Shadow>
+										<Color r="0.32" g="0.5" b="1.0"/>
+									</Shadow>
+								</FontString>
+
+								<Texture parentKey="newGlow" atlas="collections-newglow" hidden="true">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.new" x="-20" y="10"/>
+										<Anchor point="BOTTOMRIGHT" relativeKey="$parent.new" x="20" y="-10"/>
 									</Anchors>
 								</Texture>
 							</Layer>
@@ -1253,7 +1287,7 @@
 									<Size x="0" y="0"/>
 									<Anchors>
 										<Anchor point="RIGHT" relativePoint="LEFT" relativeTo="$parentTypeIcon" x="-4" y="2"/>
-									</Anchors> 
+									</Anchors>
 								</FontString>
 							</Layer>
 						</Layers>
@@ -1293,7 +1327,7 @@
 											<Anchors>
 												<Anchor point="TOPLEFT" relativeTo="$parentLeft" relativePoint="TOPRIGHT"/>
 												<Anchor point="BOTTOMRIGHT" relativeTo="$parentRight" relativePoint="BOTTOMLEFT"/>
-											</Anchors>	
+											</Anchors>
 										</Texture>
 									</Layer>
 									<Layer level="BACKGROUND">
@@ -1442,32 +1476,32 @@
 					</Frame>
 					<Button name="$parentSpell1" inherits="PetCardSpellButtonTemplate" id="1" parentKey="spell1">
 						<Anchors>
-							<Anchor point="TOPRIGHT" realtivePoint="TOPRIGHT" relativeTo="$parentAbilitiesBG1" x="-11" y="-11"/>
+							<Anchor point="TOPRIGHT" relativeTo="$parentAbilitiesBG1" x="-11" y="-11"/>
 						</Anchors>
 					</Button>
 					<Button name="$parentSpell2" inherits="PetCardSpellButtonTemplate" id="2" parentKey="spell2">
 						<Anchors>
-							<Anchor point="LEFT" relativeTo="$parentSpell1" RelativePoint="RIGHT" x="21" y="0"/>
+							<Anchor point="LEFT" relativeTo="$parentSpell1" relativePoint="RIGHT" x="21" y="0"/>
 						</Anchors>
 					</Button>
 					<Button name="$parentSpell3" inherits="PetCardSpellButtonTemplate" id="3" parentKey="spell3">
 						<Anchors>
-							<Anchor point="LEFT" relativeTo="$parentSpell2" RelativePoint="RIGHT" x="21" y="0"/>
+							<Anchor point="LEFT" relativeTo="$parentSpell2" relativePoint="RIGHT" x="21" y="0"/>
 						</Anchors>
 					</Button>
 					<Button name="$parentSpell4" inherits="PetCardSpellButtonTemplate" id="4" parentKey="spell4">
 						<Anchors>
-							<Anchor point="TOP" relativeTo="$parentSpell1" RelativePoint="BOTTOM" x="0" y="-12"/>
+							<Anchor point="TOP" relativeTo="$parentSpell1" relativePoint="BOTTOM" x="0" y="-12"/>
 						</Anchors>
 					</Button>
 					<Button name="$parentSpell5" inherits="PetCardSpellButtonTemplate" id="5" parentKey="spell5">
 						<Anchors>
-							<Anchor point="LEFT" relativeTo="$parentSpell4" RelativePoint="RIGHT" x="21" y="0"/>
+							<Anchor point="LEFT" relativeTo="$parentSpell4" relativePoint="RIGHT" x="21" y="0"/>
 						</Anchors>
 					</Button>
 					<Button name="$parentSpell6" inherits="PetCardSpellButtonTemplate" id="6" parentKey="spell6">
 						<Anchors>
-							<Anchor point="LEFT" relativeTo="$parentSpell5" RelativePoint="RIGHT" x="21" y="0"/>
+							<Anchor point="LEFT" relativeTo="$parentSpell5" relativePoint="RIGHT" x="21" y="0"/>
 						</Anchors>
 					</Button>
 					<StatusBar name="$parentXPBar" parentKey="xpBar">
@@ -1490,13 +1524,13 @@
 								<Texture name="$parentRight" atlas="PetJournal-ExpBar-Right" useAtlasSize="true">
 									<Anchors>
 										<Anchor point="LEFT" relativePoint="RIGHT"  x="-9" y="0"/>
-									</Anchors>	
+									</Anchors>
 								</Texture>
 								<Texture name="$parentMiddle" atlas="PetJournal-ExpBar-Mid">
 									<Anchors>
 										<Anchor point="TOPLEFT" relativeTo="$parentLeft" relativePoint="TOPRIGHT"/>
 										<Anchor point="BOTTOMRIGHT" relativeTo="$parentRight" relativePoint="BOTTOMLEFT"/>
-									</Anchors>	
+									</Anchors>
 								</Texture>
 							</Layer>
 							<Layer level="OVERLAY" textureSubLevel="1">
@@ -1541,7 +1575,7 @@
 									<Anchors>
 										<Anchor point="TOPLEFT" relativeTo="$parentLeft" x="2"/>
 										<Anchor point="BOTTOMRIGHT" relativeTo="$parentRight" x="-2"/>
-									</Anchors>	
+									</Anchors>
 								</Texture>
 							</Layer>
 						</Layers>
@@ -1569,13 +1603,30 @@
 							</OnLeave>
 						</Scripts>
 					</StatusBar>
-					<PlayerModel name="$parentModelFrame" parentKey="model" inherits="ModelTemplate" creature="12257">
+					<PlayerModel name="$parentModelFrame" parentKey="model" inherits="ModelTemplate">
 						<Size x="173" y="135"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" x="45" y="-21"/>
 						</Anchors>
 					</PlayerModel>
+					<PlayerModel name="$parentWrappedModelFrame" parentKey="wrappedModel" inherits="CollectionsWrappedModelFrame" frameStrata="DIALOG">
+						<Size x="173" y="135"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" x="45" y="-21"/>
+						</Anchors>
+						<Scripts>
+							<OnMouseUp>
+								PetJournal_UnwrapPet(PetJournalPetCard.petID);
+							</OnMouseUp>
+						</Scripts>
+					</PlayerModel>
 				</Frames>
+				<Animations>
+					<AnimationGroup parentKey="UnwrapAnim" setToFinalAlpha="true">
+						<Alpha childKey="wrappedModel" startDelay="1.2" fromAlpha="1" toAlpha="0" duration=".3" order="1"/>
+						<Alpha childKey="model" startDelay="1.2" fromAlpha="0" toAlpha="1" duration=".3" order="1"/>
+					</AnimationGroup>
+				</Animations>
 			</Frame> <!-- PetCard -->
 
 
@@ -1609,7 +1660,7 @@
 					</OnLeave>
 				</Scripts>
 			</Button>
-			<Button name="$parentSummonButton" inherits="MagicButtonTemplate" parentKey="SummonButton" text="BATTLE_PET_SUMMON" disabled="true">
+			<Button name="$parentSummonButton" inherits="MagicButtonTemplate" parentKey="SummonButton" text="BATTLE_PET_SUMMON">
 				<Size x="160" y="22"/>
 				<Anchors>
 					<Anchor point="BOTTOMLEFT"/>
@@ -1621,7 +1672,11 @@
 					</OnLoad>
 					<OnClick>
 						PlaySound("igMainMenuOptionCheckBoxOn");
-						C_PetJournal.SummonPetByGUID(PetJournalPetCard.petID);
+						if(C_PetJournal.PetNeedsFanfare(PetJournalPetCard.petID)) then
+							PetJournal_UnwrapPet(PetJournalPetCard.petID);
+						else
+							C_PetJournal.SummonPetByGUID(PetJournalPetCard.petID);
+						end
 					</OnClick>
 					<OnEnter function="PetJournalSummonButton_OnEnter"/>
 					<OnLeave>
@@ -1630,7 +1685,7 @@
 				</Scripts>
 			</Button>
 			<Button name="$parentAchievementStatus" parentKey="AchievementStatus">
-				<Size x="60" y="40"/>	
+				<Size x="60" y="40"/>
 				<Anchors>
 					<Anchor point="TOP" x="0" y="-21"/>
 				</Anchors>
@@ -1646,7 +1701,7 @@
 						<Texture atlas="PetJournal-PetBattleAchievementBG">
 							<Anchors>
 								<Anchor point="TOP" x="55" y="-12"/>
-							</Anchors>	
+							</Anchors>
 							<Color r="1" g="1" b="1" a="1"/>
 							<Size x="46" y="18"/>
 							<TexCoords left="1.0" right="0" top="0" bottom="1.0"/>
@@ -1657,7 +1712,7 @@
 							<Anchors>
 								<Anchor point="CENTER" x="0" y="0"/>
 							</Anchors>
-							<Size x="210" y="40"/>		
+							<Size x="210" y="40"/>
 						</Texture>
 					</Layer>
 					<Layer level="OVERLAY">
@@ -1672,7 +1727,7 @@
 							<Anchors>
 								<Anchor point="RIGHT" relativePoint="LEFT" relativeTo="$parentIcon" x="-4" y="4"/>
 							</Anchors>
-							<Size x="0" y="0"/>	
+							<Size x="0" y="0"/>
 							<TexCoords left="0.75683594" right="0.98632813" top="0.00097656" bottom="0.04882813"/>
 						</Fontstring>
 					</Layer>
@@ -1687,7 +1742,7 @@
 								button:Click();
 								return;
 							end
-							
+
 							i = i + 1;
 							button = _G["AchievementFrameCategoriesContainerButton"..i];
 						end
@@ -1700,15 +1755,15 @@
 				</Scripts>
 			</Button>
 			<Frame name="$parentSpellSelect" parentKey="SpellSelect" hidden="true">
-				<Size x="28" y="69"/>	
+				<Size x="28" y="69"/>
 				<Layers>
 					<Layer level="BACKGROUND">
 						<Texture parentKey="BgEnd" file="Interface\Buttons\ActionBarFlyoutButton">
-							<Size x="37" y="22"/>	
+							<Size x="37" y="22"/>
 							<Anchors>
 								<Anchor point="BOTTOM"/>
 							</Anchors>
-							<TexCoords left="0.01562500" right="0.59375000" top="0.91406250" bottom="0.74218750"/>	
+							<TexCoords left="0.01562500" right="0.59375000" top="0.91406250" bottom="0.74218750"/>
 						</Texture>
 						<Texture parentKey="BgTiled" file="Interface\Buttons\ActionBarFlyoutButton-FlyoutMid" vertTile="true">
 							<Size x="37" y="32"/>

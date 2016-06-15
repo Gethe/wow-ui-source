@@ -5,180 +5,180 @@
 	<!-- Button templates
 	size=256,256
 	<Texture name="BigPaperButton-highlight.png" >
-		<Size x="199" y="54"/>	
-		<TexCoords left="0.00390625" right="0.78125000" top="0.00390625" bottom="0.21484375"/>	
+		<Size x="199" y="54"/>
+		<TexCoords left="0.00390625" right="0.78125000" top="0.00390625" bottom="0.21484375"/>
 	</Texture>
 	<Texture name="BigPaperButton-down.png" >
-		<Size x="199" y="54"/>	
-		<TexCoords left="0.00390625" right="0.78125000" top="0.22265625" bottom="0.43359375"/>	
+		<Size x="199" y="54"/>
+		<TexCoords left="0.00390625" right="0.78125000" top="0.22265625" bottom="0.43359375"/>
 	</Texture>
 	<Texture name="BigPaperButton-up.png" >
-		<Size x="199" y="54"/>	
-		<TexCoords left="0.00390625" right="0.78125000" top="0.44140625" bottom="0.65234375"/>	
+		<Size x="199" y="54"/>
+		<TexCoords left="0.00390625" right="0.78125000" top="0.44140625" bottom="0.65234375"/>
 	</Texture>
 	<Texture name="BigPaperButton-select.png" >
-		<Size x="199" y="54"/>	
-		<TexCoords left="0.00390625" right="0.78125000" top="0.66015625" bottom="0.87109375"/>	
+		<Size x="199" y="54"/>
+		<TexCoords left="0.00390625" right="0.78125000" top="0.66015625" bottom="0.87109375"/>
 	</Texture-->
 
-	
+
 	<!-- Knowledgebase Buttons.
 	size=512,128
 	<Texture name="KnowledgeBaseButttonLeft-Up.png" >
-		<Size x="64" y="25"/>	
-		<TexCoords left="0.00195313" right="0.12695313" top="0.00781250" bottom="0.20312500"/>	
+		<Size x="64" y="25"/>
+		<TexCoords left="0.00195313" right="0.12695313" top="0.00781250" bottom="0.20312500"/>
 	</Texture>
 	<Texture name="KnowledgeBaseButttonLeft-Down.png" >
-		<Size x="64" y="25"/>	
-		<TexCoords left="0.00195313" right="0.12695313" top="0.21875000" bottom="0.41406250"/>	
+		<Size x="64" y="25"/>
+		<TexCoords left="0.00195313" right="0.12695313" top="0.21875000" bottom="0.41406250"/>
 	</Texture>
 	<Texture name="KnowledgeBaseButttonRight-Up.png" >
-		<Size x="64" y="25"/>	
-		<TexCoords left="0.00195313" right="0.12695313" top="0.42968750" bottom="0.62500000"/>	
+		<Size x="64" y="25"/>
+		<TexCoords left="0.00195313" right="0.12695313" top="0.42968750" bottom="0.62500000"/>
 	</Texture>
 	<Texture name="KnowledgeBaseButttonRight-Down.png" >
-		<Size x="64" y="25"/>	
-		<TexCoords left="0.00195313" right="0.12695313" top="0.64062500" bottom="0.83593750"/>	
+		<Size x="64" y="25"/>
+		<TexCoords left="0.00195313" right="0.12695313" top="0.64062500" bottom="0.83593750"/>
 	</Texture>
 	<Texture name="KnowledgeBaseButttonHighlight.png" >
-		<Size x="256" y="25"/>	
-		<TexCoords left="0.13085938" right="0.63085938" top="0.00781250" bottom="0.20312500"/>	
+		<Size x="256" y="25"/>
+		<TexCoords left="0.13085938" right="0.63085938" top="0.00781250" bottom="0.20312500"/>
 	</Texture>
 	<Texture name="KnowledgeBaseButttonMid-Up.png" >
-		<Size x="256" y="25"/>	
-		<TexCoords left="0.13085938" right="0.63085938" top="0.21875000" bottom="0.41406250"/>	
+		<Size x="256" y="25"/>
+		<TexCoords left="0.13085938" right="0.63085938" top="0.21875000" bottom="0.41406250"/>
 	</Texture>
 	<Texture name="KnowledgeBaseButttonMid-Down.png" >
-		<Size x="256" y="25"/>	
-		<TexCoords left="0.13085938" right="0.63085938" top="0.42968750" bottom="0.62500000"/>	
+		<Size x="256" y="25"/>
+		<TexCoords left="0.13085938" right="0.63085938" top="0.42968750" bottom="0.62500000"/>
 	</Texture-->
-	
-	
+
+
 	<!-- Nav bar tiled textures.
 	size=128,512
 	<Texture name="_GMChat-TitleBar.png" horizTile="true" >
-		<Size x="128" y="3"/>	
-		<TexCoords left="0.00000000" right="1.00000000" top="0.00195313" bottom="0.00781250"/>	
+		<Size x="128" y="3"/>
+		<TexCoords left="0.00000000" right="1.00000000" top="0.00195313" bottom="0.00781250"/>
 	</Texture>
 	<Texture name="_GMChat-TitleBG.png" horizTile="true" >
-		<Size x="128" y="24"/>	
-		<TexCoords left="0.00000000" right="1.00000000" top="0.01171875" bottom="0.05859375"/>	
+		<Size x="128" y="24"/>
+		<TexCoords left="0.00000000" right="1.00000000" top="0.01171875" bottom="0.05859375"/>
 	</Texture>
 	<Texture name="_NavMenu-Button-Up.png" horizTile="true" >
-		<Size x="128" y="30"/>	
-		<TexCoords left="0.00000000" right="1.00000000" top="0.06250000" bottom="0.12109375"/>	
+		<Size x="128" y="30"/>
+		<TexCoords left="0.00000000" right="1.00000000" top="0.06250000" bottom="0.12109375"/>
 	</Texture>
 	<Texture name="_NavMenu-Button-Down.png" horizTile="true" >
-		<Size x="128" y="30"/>	
-		<TexCoords left="0.00000000" right="1.00000000" top="0.12500000" bottom="0.18359375"/>	
+		<Size x="128" y="30"/>
+		<TexCoords left="0.00000000" right="1.00000000" top="0.12500000" bottom="0.18359375"/>
 	</Texture>
 	<Texture name="_NavMenu-BarBG.png" horizTile="true" >
-		<Size x="128" y="34"/>	
-		<TexCoords left="0.00000000" right="1.00000000" top="0.18750000" bottom="0.25390625"/>	
+		<Size x="128" y="34"/>
+		<TexCoords left="0.00000000" right="1.00000000" top="0.18750000" bottom="0.25390625"/>
 	</Texture>
 	<Texture name="_NavMenu-BarOverlay.png" horizTile="true" >
-		<Size x="128" y="34"/>	
-		<TexCoords left="0.00000000" right="1.00000000" top="0.25781250" bottom="0.32421875"/>	
+		<Size x="128" y="34"/>
+		<TexCoords left="0.00000000" right="1.00000000" top="0.25781250" bottom="0.32421875"/>
 	</Texture>
 	<Texture name="_GMChatRequest-Mid.png" horizTile="true" >
-		<Size x="128" y="72"/>	
-		<TexCoords left="0.00000000" right="1.00000000" top="0.32812500" bottom="0.46875000"/>	
+		<Size x="128" y="72"/>
+		<TexCoords left="0.00000000" right="1.00000000" top="0.32812500" bottom="0.46875000"/>
 	</Texture>
 	<Texture name="_GMChatRequestGlow-Mid.png" horizTile="true" >
-		<Size x="128" y="72"/>	
-		<TexCoords left="0.00000000" right="1.00000000" top="0.47265625" bottom="0.61328125"/>	
+		<Size x="128" y="72"/>
+		<TexCoords left="0.00000000" right="1.00000000" top="0.47265625" bottom="0.61328125"/>
 	</Texture>
 	-->
 
-	
+
 	<!-- Navbar Textures
 	size=512,128
 	<Texture name="Divider.png" >
-		<Size x="229" y="45"/>	
-		<TexCoords left="0.00195313" right="0.44921875" top="0.00781250" bottom="0.35937500"/>	
+		<Size x="229" y="45"/>
+		<TexCoords left="0.00195313" right="0.44921875" top="0.00781250" bottom="0.35937500"/>
 	</Texture>
 	<Texture name="NavMenu-ButtonSelection.png" >
-		<Size x="128" y="34"/>	
-		<TexCoords left="0.00195313" right="0.25195313" top="0.37500000" bottom="0.64062500"/>	
+		<Size x="128" y="34"/>
+		<TexCoords left="0.00195313" right="0.25195313" top="0.37500000" bottom="0.64062500"/>
 	</Texture>
 	<Texture name="NavMenu-ButtonHighlight.png" >
-		<Size x="128" y="34"/>	
-		<TexCoords left="0.00195313" right="0.25195313" top="0.65625000" bottom="0.92187500"/>	
+		<Size x="128" y="34"/>
+		<TexCoords left="0.00195313" right="0.25195313" top="0.65625000" bottom="0.92187500"/>
 	</Texture>
 	<Texture name="GMChatRequest-Left.png" >
-		<Size x="49" y="72"/>	
-		<TexCoords left="0.25585938" right="0.35156250" top="0.37500000" bottom="0.93750000"/>	
+		<Size x="49" y="72"/>
+		<TexCoords left="0.25585938" right="0.35156250" top="0.37500000" bottom="0.93750000"/>
 	</Texture>
 	<Texture name="GMChatRequest-Right.png" >
-		<Size x="40" y="72"/>	
-		<TexCoords left="0.35546875" right="0.43359375" top="0.37500000" bottom="0.93750000"/>	
+		<Size x="40" y="72"/>
+		<TexCoords left="0.35546875" right="0.43359375" top="0.37500000" bottom="0.93750000"/>
 	</Texture>
 	<Texture name="GMChat-TitleBarNubRight.png" >
-		<Size x="4" y="10"/>	
-		<TexCoords left="0.43750000" right="0.44531250" top="0.37500000" bottom="0.45312500"/>	
+		<Size x="4" y="10"/>
+		<TexCoords left="0.43750000" right="0.44531250" top="0.37500000" bottom="0.45312500"/>
 	</Texture>
 	<Texture name="GMChat-TitleBarNubLeft.png" >
-		<Size x="4" y="10"/>	
-		<TexCoords left="0.43750000" right="0.44531250" top="0.46875000" bottom="0.54687500"/>	
+		<Size x="4" y="10"/>
+		<TexCoords left="0.43750000" right="0.44531250" top="0.46875000" bottom="0.54687500"/>
 	</Texture>
 	<Texture name="NavMenu-HomeButton-up.png" >
-		<Size x="128" y="30"/>	
-		<TexCoords left="0.45312500" right="0.70312500" top="0.00781250" bottom="0.24218750"/>	
+		<Size x="128" y="30"/>
+		<TexCoords left="0.45312500" right="0.70312500" top="0.00781250" bottom="0.24218750"/>
 	</Texture>
 	<Texture name="NavMenu-HomeButton-down.png" >
-		<Size x="128" y="30"/>	
-		<TexCoords left="0.45312500" right="0.70312500" top="0.25781250" bottom="0.49218750"/>	
+		<Size x="128" y="30"/>
+		<TexCoords left="0.45312500" right="0.70312500" top="0.25781250" bottom="0.49218750"/>
 	</Texture>
 	<Texture name="NavMenu-HomeButton-highlight.png" >
-		<Size x="128" y="30"/>	
-		<TexCoords left="0.45312500" right="0.70312500" top="0.50781250" bottom="0.74218750"/>	
+		<Size x="128" y="30"/>
+		<TexCoords left="0.45312500" right="0.70312500" top="0.50781250" bottom="0.74218750"/>
 	</Texture>
 	<Texture name="NavMenu-ButtonOverflow-down.png" >
-		<Size x="44" y="30"/>	
-		<TexCoords left="0.45312500" right="0.53906250" top="0.75781250" bottom="0.99218750"/>	
+		<Size x="44" y="30"/>
+		<TexCoords left="0.45312500" right="0.53906250" top="0.75781250" bottom="0.99218750"/>
 	</Texture>
 	<Texture name="NavMenu-ButtonOverflow-up.png" >
-		<Size x="44" y="30"/>	
-		<TexCoords left="0.54296875" right="0.62890625" top="0.75781250" bottom="0.99218750"/>	
+		<Size x="44" y="30"/>
+		<TexCoords left="0.54296875" right="0.62890625" top="0.75781250" bottom="0.99218750"/>
 	</Texture>
 	<Texture name="NavMenu-Arrow-down.png" >
-		<Size x="21" y="30"/>	
-		<TexCoords left="0.63281250" right="0.67382813" top="0.75781250" bottom="0.99218750"/>	
+		<Size x="21" y="30"/>
+		<TexCoords left="0.63281250" right="0.67382813" top="0.75781250" bottom="0.99218750"/>
 	</Texture>
 	<Texture name="NavMenu-SelectedArrowIcon.png" >
-		<Size x="8" y="13"/>	
-		<TexCoords left="0.67773438" right="0.69335938" top="0.75781250" bottom="0.85937500"/>	
+		<Size x="8" y="13"/>
+		<TexCoords left="0.67773438" right="0.69335938" top="0.75781250" bottom="0.85937500"/>
 	</Texture>
 	<Texture name="GMChatRequestGlow-Left.png" >
-		<Size x="49" y="72"/>	
-		<TexCoords left="0.70703125" right="0.80273438" top="0.00781250" bottom="0.57031250"/>	
+		<Size x="49" y="72"/>
+		<TexCoords left="0.70703125" right="0.80273438" top="0.00781250" bottom="0.57031250"/>
 	</Texture>
 	<Texture name="TicketBadge.png" >
-		<Size x="34" y="35"/>	
-		<TexCoords left="0.70703125" right="0.77343750" top="0.58593750" bottom="0.85937500"/>	
+		<Size x="34" y="35"/>
+		<TexCoords left="0.70703125" right="0.77343750" top="0.58593750" bottom="0.85937500"/>
 	</Texture>
 	<Texture name="GMChatRequestGlow-Right.png" >
-		<Size x="40" y="72"/>	
-		<TexCoords left="0.80664063" right="0.88476563" top="0.00781250" bottom="0.57031250"/>	
+		<Size x="40" y="72"/>
+		<TexCoords left="0.80664063" right="0.88476563" top="0.00781250" bottom="0.57031250"/>
 	</Texture>
 	<Texture name="TicketBadge-Highlight.png" >
-		<Size x="34" y="35"/>	
-		<TexCoords left="0.80664063" right="0.87304688" top="0.58593750" bottom="0.85937500"/>	
+		<Size x="34" y="35"/>
+		<TexCoords left="0.80664063" right="0.87304688" top="0.58593750" bottom="0.85937500"/>
 	</Texture>
 	<Texture name="TicketBadge-Down.png" >
-		<Size x="34" y="35"/>	
-		<TexCoords left="0.88867188" right="0.95507813" top="0.00781250" bottom="0.28125000"/>	
+		<Size x="34" y="35"/>
+		<TexCoords left="0.88867188" right="0.95507813" top="0.00781250" bottom="0.28125000"/>
 	</Texture>
 	<Texture name="NavMenu-Arrow-up.png" >
-		<Size x="21" y="30"/>	
-		<TexCoords left="0.88867188" right="0.92968750" top="0.29687500" bottom="0.53125000"/>	
+		<Size x="21" y="30"/>
+		<TexCoords left="0.88867188" right="0.92968750" top="0.29687500" bottom="0.53125000"/>
 	</Texture>
 
 	-->
 
 
-	
-	
+
+
 	<Button name="HelpFrameButtonTemplate" motionScriptsWhileDisabled="true" virtual="true">
 		<Size x="174" y="54"/>
 		<Layers>
@@ -204,11 +204,11 @@
 				if data.icon  then
 					self.icon:SetTexture(data.icon);
 				end
-				
+
 				if data.text then
 					self:SetText(data.text);
 				end
-				
+
 				self.tooltip = data.tooltipTex;
 				self.newbieText = data.newbieText;
 				data.button = self;
@@ -224,7 +224,7 @@
 			<OnLeave function="GameTooltip_Hide" />
 			<OnMouseDown>
 				if self:IsEnabled() then
-					self.icon:SetPoint("LEFT", 4, -1);	
+					self.icon:SetPoint("LEFT", 4, -1);
 				end
 			</OnMouseDown>
 			<OnMouseUp>
@@ -240,8 +240,8 @@
 			</OnClick>
 		</Scripts>
 		<NormalTexture file="Interface\HelpFrame\HelpButtons">
-			<TexCoords left="0.00390625" right="0.68359375" top="0.44140625" bottom="0.65234375"/>	
-		</NormalTexture>		
+			<TexCoords left="0.00390625" right="0.68359375" top="0.44140625" bottom="0.65234375"/>
+		</NormalTexture>
 		<PushedTexture file="Interface\HelpFrame\HelpButtons">
 			<TexCoords left="0.00390625" right="0.68359375" top="0.22265625" bottom="0.43359375"/>
 		</PushedTexture>
@@ -266,11 +266,11 @@
 			</OnClick>
 		</Scripts>
 	</Button>
-	
+
 	<Button name="KnowledgeBaseArticleTemplate" virtual="true">
 		<Size>
 			<AbsDimension x="445" y="25"/>
-		</Size>	
+		</Size>
 		<Layers>
 			<Layer level="ARTWORK" textureSubLevel="2">
 				<Texture name="$parentLEndDown" file="Interface\HelpFrame\KnowledgeBaseButtton" parentKey="ldown" hidden="true">
@@ -299,16 +299,16 @@
 					<Anchors>
 						<Anchor point="RIGHT" x="5" y="0"/>
 					</Anchors>
-					<TexCoords left="0.00195313" right="0.12695313" top="0.42968750" bottom="0.62500000"/>	
+					<TexCoords left="0.00195313" right="0.12695313" top="0.42968750" bottom="0.62500000"/>
 				</Texture>
 			</Layer>
-			<Layer level="OVERLAY">			
+			<Layer level="OVERLAY">
 				<FontString name="$parentNumber" inherits="GameFontNormal" justifyH="RIGHT" parentKey="number">
 					<Size x="0" y="12"/>
 					<Anchors>
 						<Anchor point="RIGHT" relativePoint="LEFT" x="30" y="0"/>
 					</Anchors>
-				</FontString>				
+				</FontString>
 				<FontString name="$parentTitle" inherits="GameFontNormal" justifyH="LEFT" parentKey="title">
 					<Size x="0" y="12"/>
 					<Anchors>
@@ -335,8 +335,8 @@
 			</OnMouseUp>
 		</Scripts>
 		<NormalTexture file="Interface\HelpFrame\KnowledgeBaseButtton">
-			<TexCoords left="0.13085938" right="0.63085938" top="0.21875000" bottom="0.41406250"/>	
-		</NormalTexture>		
+			<TexCoords left="0.13085938" right="0.63085938" top="0.21875000" bottom="0.41406250"/>
+		</NormalTexture>
 		<PushedTexture file="Interface\HelpFrame\KnowledgeBaseButtton">
 			<TexCoords left="0.13085938" right="0.63085938" top="0.42968750" bottom="0.62500000"/>
 		</PushedTexture>
@@ -344,7 +344,7 @@
 			<TexCoords left="0.13085938" right="0.63085938" top="0.00781250" bottom="0.20312500"/>
 		</HighlightTexture>
 	</Button>
-	
+
 	<Button name="BrowserButtonTemplate" virtual="true">
 		<Size x="32" y="32"/>
 		<NormalTexture file="Interface\Buttons\UI-SquareButton-Up"/>
@@ -375,7 +375,7 @@
 			<OnLeave function="GameTooltip_Hide" />
 		</Scripts>
 	</Button>
-	
+
 	<Browser name="BrowserTemplate" frameStrata="HIGH" IMEFont="ChatFontNormal" virtual="true">
 		<Frames>
 			<Frame parentKey="BrowserInset" inherits="InsetFrameTemplate" frameStrata="MEDIUM">
@@ -580,8 +580,8 @@
 			</OnError>
 		</Scripts>
 	</Browser>
-			
-	
+
+
 	<Frame name="HelpFrame" toplevel="true" parent="UIParent" inherits="TranslucentFrameTemplate" hidden="true" enableMouse="true" >
 		<Size x="974" y="524"/>
 		<Anchors>
@@ -728,7 +728,7 @@
 								<Anchor point="TOPLEFT" relativeTo="$parentText1Header" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
 							</Anchors>
 						</FontString>
-						
+
 						<FontString name="$parentText2Header" inherits="GameFontNormal" text="HELPFRAME_ACCOUNTSECURITY_TEXT2_HEADER" justifyH="LEFT">
 							<Size x="710" y="0"/>
 							<Anchors>
@@ -741,7 +741,7 @@
 								<Anchor point="TOPLEFT" relativeTo="$parentText2Header" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
 							</Anchors>
 						</FontString>
-						
+
 						<FontString name="$parentText3Header" inherits="GameFontNormal" text="HELPFRAME_ACCOUNTSECURITY_TEXT3_HEADER" justifyH="LEFT">
 							<Size x="710" y="0"/>
 							<Anchors>
@@ -754,7 +754,7 @@
 								<Anchor point="TOPLEFT" relativeTo="$parentText3Header" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
 							</Anchors>
 						</FontString>
-						
+
 						<FontString name="$parentFooter" inherits="GameFontHighlight" text="HELPFRAME_ACCOUNTSECURITY_FOOTER" justifyH="LEFT">
 							<Size x="710" y="0"/>
 							<Anchors>
@@ -1394,7 +1394,7 @@
 									self.icon:SetVertexColor(1.0, 1.0, 1.0);
 									self.inactive = false;
 								end
-								
+
 								self.clearButton:Show();
 								self:GetParent().searchButton:Enable();
 							</OnEditFocusGained>
@@ -1546,7 +1546,7 @@
 										</Texture>
 									</Layer>
 									<Layer level="OVERLAY">
-										<FontString name="$parentText" inherits="ErrorFont" text="ERROR" justifyH="CENTER" parentKey="text">			
+										<FontString name="$parentText" inherits="ErrorFont" text="ERROR" justifyH="CENTER" parentKey="text">
 											<Size x="300" y="0"/>
 										</FontString>
 									</Layer>
@@ -1755,7 +1755,7 @@
 						tinsert(HelpFrameWindows, self);
 						HelpFrameGMResponse_IssueText:Disable();
 						HelpFrameGMResponse_GMText:Disable();
-						
+
 					</OnLoad>
 				</Scripts>
 			</Frame>
@@ -1794,7 +1794,7 @@
 			<OnHide function="HelpFrame_OnHide"/>
 		</Scripts>
 	</Frame>
-	
+
 	<Frame name="BrowserSettingsTooltip" inherits="TooltipBorderedFrameTemplate" paernt="UIParent" frameStrata="FULLSCREEN_DIALOG" hidden="true" >
 		<Size x="250" y="100"/>
 		<Layers>
@@ -1960,7 +1960,7 @@
 			<AbsInset left="4" right="4" top="4" bottom="4"/>
 		</HitRectInsets>
 		<NormalTexture file="Interface\HelpFrame\CS_HelpTextures">
-			<TexCoords left="0.70703125" right="0.77343750" top="0.58593750" bottom="0.85937500"/>	
+			<TexCoords left="0.70703125" right="0.77343750" top="0.58593750" bottom="0.85937500"/>
 		</NormalTexture>
 		<PushedTexture file="Interface\HelpFrame\CS_HelpTextures">
 			<TexCoords left="0.88867188" right="0.95507813" top="0.00781250" bottom="0.28125000"/>
@@ -1969,7 +1969,7 @@
 			<TexCoords left="0.80664063" right="0.87304688" top="0.58593750" bottom="0.85937500"/>
 		</HighlightTexture>
 	</Button>
-	
+
 	<Button name="HelpOpenWebTicketButton" parent="HelpMicroButton" hidden="true">
 		<Size x="34" y="35"/>
 		<Anchors>
@@ -1990,7 +1990,7 @@
 					HelpBrowser:OpenTicket(self.caseIndex)
 				else
 					HelpBrowser:NavigateHome("GMTicketStatus")
-				end	
+				end
 			</OnClick>
 			<OnEvent function="HelpOpenWebTicketButton_OnEvent"/>
 			<OnEnter function="HelpOpenWebTicketButton_OnEnter"/>
@@ -2002,7 +2002,7 @@
 			<AbsInset left="4" right="4" top="4" bottom="4"/>
 		</HitRectInsets>
 		<NormalTexture file="Interface\HelpFrame\CS_HelpTextures">
-			<TexCoords left="0.70703125" right="0.77343750" top="0.58593750" bottom="0.85937500"/>	
+			<TexCoords left="0.70703125" right="0.77343750" top="0.58593750" bottom="0.85937500"/>
 		</NormalTexture>
 		<PushedTexture file="Interface\HelpFrame\CS_HelpTextures">
 			<TexCoords left="0.88867188" right="0.95507813" top="0.00781250" bottom="0.28125000"/>
@@ -2011,20 +2011,14 @@
 			<TexCoords left="0.80664063" right="0.87304688" top="0.58593750" bottom="0.85937500"/>
 		</HighlightTexture>
 	</Button>
-	
+
 	<!-- Ticket Status -->
 	<!-- It might be a good idea to put this in a separate file and convert the HelpFrame stuff into an addon -->
 	<Frame name="TicketStatusFrame" toplevel="true" parent="UIParent" hidden="true">
 		<Size>
 			<AbsDimension x="208" y="75"/>
 		</Size>
-		<Anchors>
-			<Anchor point="TOPRIGHT">
-				<Offset>
-					<AbsDimension x="-180" y="0"/>
-				</Offset>
-			</Anchor>
-		</Anchors>
+		<!-- This frame gets positioned in UIParent_UpdateTopFramePositions() -->
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString name="TicketStatusTitleText" inherits="GameFontNormalSmall" justifyH="LEFT">
@@ -2236,13 +2230,6 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Button name="$parentFocusButton" setAllPoints="true" parentKey="FocusButton">
-						<Scripts>
-							<OnClick>
-								self:GetParent().EditBox:SetFocus();
-							</OnClick>
-						</Scripts>
-					</Button>
 					<EditBox name="$parentEditBox" multiLine="true" letters="255" setAllPoints="true" parentKey="EditBox" autoFocus="false">
 						<Anchors>
 							<Anchor point="TOPLEFT" x="5" y="-5"/>
@@ -2255,11 +2242,9 @@
 						</Layers>
 						<Scripts>
 							<OnEditFocusGained>
-								self:GetParent().FocusButton:Hide();
 								self.InformationText:Hide();
 							</OnEditFocusGained>
 							<OnEditFocusLost>
-								self:GetParent().FocusButton:Show();
 								if ( self:GetText() == "" ) then
 									self.InformationText:Show();
 								end
@@ -2271,6 +2256,11 @@
 						<FontString inherits="GameFontHighlightSmall"/>
 					</EditBox>
 				</Frames>
+				<Scripts>
+					<OnMouseDown>
+						self.EditBox:SetFocus();
+					</OnMouseDown>
+				</Scripts>
 			</Frame>
 			<Button name="$parentReportButton" inherits="UIPanelButtonTemplate" text="REPORT_PLAYER" parentKey="reportButton">
 				<Size x="120" y="22"/>
@@ -2415,13 +2405,6 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Button name="$parentFocusButton" setAllPoints="true" parentKey="FocusButton">
-						<Scripts>
-							<OnClick>
-								self:GetParent().EditBox:SetFocus();
-							</OnClick>
-						</Scripts>
-					</Button>
 					<EditBox name="$parentEditBox" multiLine="true" letters="255" setAllPoints="true" parentKey="EditBox" autoFocus="false">
 						<Anchors>
 							<Anchor point="TOPLEFT" x="5" y="-5"/>
@@ -2434,11 +2417,9 @@
 						</Layers>
 						<Scripts>
 							<OnEditFocusGained>
-								self:GetParent().FocusButton:Hide();
 								self.InformationText:Hide();
 							</OnEditFocusGained>
 							<OnEditFocusLost>
-								self:GetParent().FocusButton:Show();
 								if ( self:GetText() == "" ) then
 									self.InformationText:Show();
 								end
@@ -2457,6 +2438,11 @@
 						<FontString inherits="GameFontHighlightSmall"/>
 					</EditBox>
 				</Frames>
+				<Scripts>
+					<OnMouseDown>
+						self.EditBox:SetFocus();
+					</OnMouseDown>
+				</Scripts>
 			</Frame>
 			<Button name="$parentReportButton" inherits="UIPanelButtonTemplate" text="REPORT_PLAYER" parentKey="reportButton">
 				<Size x="120" y="22"/>

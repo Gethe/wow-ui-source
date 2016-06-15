@@ -1,0 +1,114 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+
+  <!-- this code is shared between the Frame and Glue -->
+  <Frame name="IMECandidate" hidden="false" virtual="true">
+    <Size x="120" y="24"/>
+    <Layers>
+      <Layer level="OVERLAY">
+        <FontString font="System_IME" parentKey="label" justifyH="LEFT" justifyV="MIDDLE">
+          <Size x="22" y="22"/>
+          <Anchors>
+            <Anchor point="TOPLEFT"/>
+          </Anchors>
+        </FontString>
+        <FontString font="System_IME" parentKey="candidate" justifyH="LEFT" justifyV="MIDDLE">
+          <Size x="100" y="22"/>
+          <Anchors>
+            <Anchor point="LEFT" relativeKey="$parent.label" relativePoint="RIGHT"/>
+          </Anchors>
+        </FontString>
+      </Layer>
+    </Layers>
+  </Frame>
+
+  <Frame name="IMECandidatesFrame" frameStrata="TOOLTIP" hidden="true" parent="UIParent" virtual="false">
+    <Anchors>
+      <Anchor point="TOPLEFT"/>
+    </Anchors>
+    <Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+      <EdgeSize>
+        <AbsValue val="16"/>
+      </EdgeSize>
+      <TileSize>
+        <AbsValue val="16"/>
+      </TileSize>
+    </Backdrop>
+    <Frames>
+      <Frame parentKey="c1" inherits="IMECandidate">
+        <Anchors>
+          <Anchor point="TOPLEFT" x="15" y="-10"/>
+        </Anchors>
+      </Frame>
+      <Frame parentKey="c2" inherits="IMECandidate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeKey="$parent.c1"/>
+        </Anchors>
+      </Frame>
+      <Frame parentKey="c3" inherits="IMECandidate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeKey="$parent.c2"/>
+        </Anchors>
+      </Frame>
+      <Frame parentKey="c4" inherits="IMECandidate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeKey="$parent.c3"/>
+        </Anchors>
+      </Frame>
+      <Frame parentKey="c5" inherits="IMECandidate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeKey="$parent.c4"/>
+        </Anchors>
+      </Frame>
+      <Frame parentKey="c6" inherits="IMECandidate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeKey="$parent.c5"/>
+        </Anchors>
+      </Frame>
+      <Frame parentKey="c7" inherits="IMECandidate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeKey="$parent.c6"/>
+        </Anchors>
+      </Frame>
+      <Frame parentKey="c8" inherits="IMECandidate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeKey="$parent.c7"/>
+        </Anchors>
+      </Frame>
+      <Frame parentKey="c9" inherits="IMECandidate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeKey="$parent.c8"/>
+        </Anchors>
+      </Frame>
+      <Frame parentKey="c10" inherits="IMECandidate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeKey="$parent.c9"/>
+        </Anchors>
+      </Frame>
+    </Frames>
+    <Layers>
+      <Layer level="BACKGROUND">
+        <Texture parentKey="background">
+          <Color a="0.9" r="0.0" g="0.0" b="0.0"/>
+          <Anchors>
+            <Anchor point="TOPLEFT" x="3" y="-3"/>
+            <Anchor point="BOTTOMRIGHT" x="-3" y="3"/>
+          </Anchors>
+        </Texture>
+      </Layer>
+      <Layer level="ARTWORK">
+         <Texture parentKey="selection">
+          <Color a="0.2" r="0.6" g="0.6" b="0.6"/>
+        </Texture>
+      </Layer>
+       <Layer level="OVERLAY">
+         <FontString font="System_IME" parentKey="reading" justifyH="LEFT" justifyV="MIDDLE">
+           <Size x="200" y="20"/>
+           <Anchors>
+             <Anchor point="LEFT" x="15" y="0"/>
+           </Anchors>
+         </FontString>
+       </Layer>
+     </Layers>
+  </Frame>
+</Ui>

@@ -90,6 +90,16 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
+				<FontString name="$parentTextLeft5" inherits="GlueFontNormalSmall" justifyH="LEFT" hidden="true" parentKey="TextLeft5">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentTextLeft4" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentTextRight5" inherits="GlueFontNormalSmall" justifyH="RIGHT" hidden="true" parentKey="TextRight5">
+					<Anchors>
+						<Anchor point="RIGHT" relativeTo="$parentTextLeft5" relativePoint="LEFT" x="40" y="0"/>
+					</Anchors>
+				</FontString>
 			</Layer>
 		</Layers>
 		<Scripts>

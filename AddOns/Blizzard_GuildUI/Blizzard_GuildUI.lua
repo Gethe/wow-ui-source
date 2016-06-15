@@ -503,7 +503,7 @@ function GuildPerks_Update()
 		button = buttons[i];
 		index = offset + i;
 		if ( index <= numPerks ) then
-			local name, spellID, iconTexture, _ = GetGuildPerkInfo(index);
+			local name, spellID, iconTexture = GetGuildPerkInfo(index);
 			button.name:SetText(name);
 			button.icon:SetTexture(iconTexture);
 			button.spellID = spellID;

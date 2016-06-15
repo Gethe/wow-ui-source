@@ -1,0 +1,229 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="Blizzard_ArtifactPerks.lua"/>
+
+	<Frame name="ArtifactDependencyLineTemplate" parentArray="DependencyLines" virtual="true">
+		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="-3">
+				<Line parentKey="Background" file="Interface/Artifacts/_Artifacts-DependencyBar-BG" thickness="12" horizTile="true" alpha="0" />
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="-2">
+				<Line parentKey="Fill" file="Interface/Artifacts/_Artifacts-DependencyBar-Fill" thickness="12" horizTile="true" alpha="0" />
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="-1">
+				<Line parentKey="FillScroll1" file="Interface/Artifacts/_Artifacts-DependencyBar-FillScroll1" thickness="12" horizTile="true" alphaMode="ADD" alpha="0" />
+				<Line parentKey="FillScroll2" file="Interface/Artifacts/_Artifacts-DependencyBar-FillScroll2" thickness="12" horizTile="true" alphaMode="ADD" alpha="0" />
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="ScrollAnim" setToFinalAlpha="true" looping="REPEAT">
+				<TextureCoordTranslation childKey="FillScroll1" duration="8" order="1" offsetU="1" offsetV="0" />
+				<TextureCoordTranslation childKey="FillScroll2" duration="8" order="1" offsetU="-1" offsetV="0" />
+			</AnimationGroup>
+			<AnimationGroup parentKey="FadeAnim" setToFinalAlpha="true">
+				<Alpha parentKey="Background" childKey="Background" duration=".25" order="0"/>
+				<Alpha parentKey="Fill" childKey="Fill" duration=".25" order="0"/>
+				<Alpha parentKey="FillScroll1" childKey="FillScroll1" duration=".25" order="0"/>
+				<Alpha parentKey="FillScroll2" childKey="FillScroll2" duration=".25" order="0"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="RevealAnim" setToFinalAlpha="true">
+				<Alpha parentKey="Start1" childKey="FillScroll1" duration=".001" order="1" fromAlpha="0" toAlpha="0"/>
+				<Alpha parentKey="Start2" childKey="FillScroll2" duration=".001" order="1" fromAlpha="0" toAlpha="0"/>
+				
+				<Alpha childKey="Fill" duration="0.1" order="2" fromAlpha="0" toAlpha="1"/>
+				<LineScale parentKey="LineScale" childKey="Fill" smoothing="IN" duration="0.75" order="2" fromScaleX="0" fromScaleY="1" toScaleX="1" toScaleY="1"/>
+				<Alpha childKey="Fill" duration="1" order="3" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="Background" smoothing="OUT" duration="0.75" order="3" fromAlpha="0" toAlpha="1"/>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+
+	<Button name="ArtifactsRelicSlotTemplate" motionScriptsWhileDisabled="true" virtual="true">
+		<Size x="72" y="72" />
+
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Icon">
+					<Anchors>
+						<Anchor point="CENTER" />
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="Glass" atlas="Relic-SlotBG-Glass" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" />
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="LockedIcon" atlas="Forge-Lock" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="GlowBorder1" alpha="0" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="CENTER" />
+					</Anchors>
+				</Texture>
+				<Texture parentKey="GlowBorder2" alpha="0" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="CENTER" />
+					</Anchors>
+				</Texture>
+				<Texture parentKey="GlowBorder3" alpha="0" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="CENTER" />
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+
+		<NormalTexture parentKey="NormalTexture" />
+		<HighlightTexture parentKey="HighlightTexture" atlas="bags-roundhighlight" useAtlasSize="true" alphaMode="ADD">
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</HighlightTexture>
+
+		<Scripts>
+			<OnEnter>
+				self:GetParent():OnRelicSlotMouseEnter(self);
+			</OnEnter>
+			<OnLeave>
+				self:GetParent():OnRelicSlotMouseLeave(self);
+			</OnLeave>
+			<OnClick>
+				self:GetParent():OnRelicSlotClicked(self);
+			</OnClick>
+			<OnReceiveDrag>
+				self:GetParent():OnRelicSlotClicked(self);
+			</OnReceiveDrag>
+		</Scripts>
+		<Animations>
+			<AnimationGroup parentKey="CanSlotAnim" looping="REPEAT">
+				<Alpha childKey="HighlightTexture" smoothing="OUT" duration=".75" order="1" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="HighlightTexture" duration=".75" order="1" fromScaleX="1" fromScaleY="1" toScaleX="1.1" toScaleY="1.1"/>
+
+				<Alpha childKey="HighlightTexture" smoothing="IN" duration=".75" order="2" fromAlpha="1" toAlpha="0"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="GlowAnim" setToFinalAlpha="true">
+				<Alpha childKey="GlowBorder1" fromAlpha="0" toAlpha="1" duration="0.1"/>
+				<Alpha childKey="GlowBorder1" fromAlpha="1" toAlpha="0" duration="1.5"/>
+				<Alpha childKey="GlowBorder2" fromAlpha="0" toAlpha="1" duration="0.1"/>
+				<Alpha childKey="GlowBorder2" fromAlpha="1" toAlpha="0" duration="1.5"/>
+				<Alpha childKey="GlowBorder3" fromAlpha="0" toAlpha="1" duration="0.1"/>
+				<Alpha childKey="GlowBorder3" fromAlpha="1" toAlpha="0" duration="1.5"/>
+			</AnimationGroup>
+		</Animations>
+	</Button>
+	
+	<PlayerModel name="ArtifactsModelTemplate" useParentLevel="true" virtual="true">
+		<Size x="719" y="615" />
+		<Anchors>
+			<Anchor point="BOTTOMLEFT"/>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				self:RegisterEvent("UI_SCALE_CHANGED");
+				self:RegisterEvent("DISPLAY_SIZE_CHANGED");
+			</OnLoad>
+			<OnEvent>
+				self:RefreshCamera();
+				if self.uiCameraID then
+					Model_ApplyUICamera(self, self.uiCameraID);
+				end
+			</OnEvent>
+			<OnModelLoaded function="ArtifactsModelTemplate_OnModelLoaded" />
+		</Scripts>
+	</PlayerModel>
+
+	<Frame name="ArtifactPerksTabTemplate" mixin="ArtifactPerksMixin" virtual="true" useParentLevel="true">
+		<Layers>
+			<Layer level="BORDER" textureSubLevel="-5">
+				<Texture parentKey="BackgroundBack" />
+			</Layer>
+			<Layer level="BORDER" textureSubLevel="-4">
+				<Texture parentKey="BackgroundBackShadow" atlas="Artifacts-BG-Shadow" useAtlasSize="true" />
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="-6">
+				<Texture parentKey="HeaderBackground" atlas="Artifacts-HeaderBG" />
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="TitleContainer" mixin="ArtifactTitleTemplateMixin" useParentLevel="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" />
+					<Anchor point="TOPRIGHT" />
+				</Anchors>
+				
+				<Layers>
+					<Layer level="OVERLAY" textureSubLevel="-1">
+						<Texture parentKey="Background">
+							<Anchors>
+								<Anchor point="TOP" />
+							</Anchors>
+						</Texture>
+					</Layer>
+			
+					<Layer level="OVERLAY">
+						<FontString parentKey="ArtifactName" inherits="Fancy24Font">
+							<Anchors>
+								<Anchor point="TOP" y="-8" />
+							</Anchors>
+							<Shadow>
+								<Offset x="1" y="-1" />
+								<Color r="0" g="0" b="0"/>
+							</Shadow>
+						</FontString>
+
+						<FontString parentKey="PointsRemainingLabel" inherits="SystemFont_Shadow_Large" mixin="AnimatedNumericFontStringMixin">
+							<Anchors>
+								<Anchor point="BOTTOM" y="-2"/>
+							</Anchors>
+							<Color r="1" g="1" b="1"/>
+						</FontString>
+
+						<FontString parentKey="ArtifactPower" inherits="SystemFont_Shadow_Large" text="ARTIFACT_POWER">
+							<Anchors>
+								<Anchor point="BOTTOM" relativeKey="$parent.PointsRemainingLabel" relativePoint="TOP" />
+							</Anchors>
+							<Color r=".901" g=".8" b=".501" />
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button parentKey="RelicSlot1" parentArray="RelicSlots" inherits="ArtifactsRelicSlotTemplate" />
+					<Button parentKey="RelicSlot2" parentArray="RelicSlots" inherits="ArtifactsRelicSlotTemplate" />
+					<Button parentKey="RelicSlot3" parentArray="RelicSlots" inherits="ArtifactsRelicSlotTemplate" />
+				</Frames>
+				<Scripts>
+					<OnShow method="OnShow" />
+					<OnHide method="OnHide" />
+					<OnEvent method="OnEvent" />
+					<OnUpdate method="OnUpdate" />
+				</Scripts>
+			</Frame>
+			<PlayerModel parentKey="AltModel" inherits="ArtifactsModelTemplate"/>
+			<PlayerModel parentKey="Model" inherits="ArtifactsModelTemplate">
+				<Layers>
+					<Layer level="OVERLAY" textureSubLevel="-7">
+						<Texture parentKey="BackgroundFront" alpha=".5">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.$parent.BackgroundBack"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.$parent.BackgroundBack"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</PlayerModel>
+		</Frames>
+		<Scripts>
+			<OnShow method="OnShow" />
+			<OnHide method="OnHide" />
+			<OnEvent method="OnEvent" />
+			<OnUpdate method="OnUpdate" />
+		</Scripts>
+	</Frame>
+</Ui>

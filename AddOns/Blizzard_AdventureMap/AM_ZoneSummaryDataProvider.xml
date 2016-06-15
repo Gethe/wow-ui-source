@@ -1,0 +1,73 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="AM_ZoneSummaryDataProvider.lua"/>
+
+	<Frame name="AdventureMap_ZoneSummaryPinTemplate" hidden="true" enableMouse="true" mixin="AdventureMap_ZoneSummaryPinMixin" virtual="true">
+		<Size x="34" y="54"/>
+
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-1">
+				<Texture parentKey="Icon" atlas="FXAM-QuestBang" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" />
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="HIGHLIGHT">
+				<Texture parentKey="IconHighlight" atlas="FXAM-QuestBang" useAtlasSize="true" alphaMode="ADD" alpha=".25">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon" />
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Text" inherits="SystemFont_Large">
+					<Anchors>
+						<Anchor point="TOP" relativePoint="BOTTOM" y="-0" />
+					</Anchors>
+					<Color r="1.0" g="0.82" b="0"/>
+				</FontString>
+			</Layer>
+
+			<Layer level="BACKGROUND">
+				<Texture parentKey="TextBackground" atlas="AdventureMapLabel-Small" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.Text" x="-30" y="-10" />
+						<Anchor point="TOPRIGHT" relativeKey="$parent.Text" x="30" y="10" />
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="OnAddAnim">
+				<Alpha fromAlpha="0" toAlpha="1" duration=".3" order="1"/>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+
+	<Frame name="AdventureMap_ZoneSummaryInsetPinTemplate" hidden="true" frameStrata="HIGH" enableMouse="false" mixin="AdventureMap_ZoneSummaryInsetPinMixin" virtual="true">
+		<Size x="96" y="98"/>
+
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Icon" atlas="FXAM-QuestBang" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT" />
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="IconHighlight" atlas="FXAM-QuestBang" useAtlasSize="true" alphaMode="ADD" alpha=".25" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon" />
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="OnAddAnim">
+				<Alpha fromAlpha="0" toAlpha="1" duration=".3" order="1"/>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+</Ui>

@@ -59,7 +59,7 @@
 		</Scripts>
 		<NormalTexture file="Interface\TargetingFrame\UI-RaidTargetingIcons"/>
 	</Button>
-	<Frame name="CompactRaidFrameManager" enableMouse="true" frameStrata="LOW" hidden="true" parent="UIParent">
+	<Frame name="CompactRaidFrameManager" enableMouse="true" frameStrata="LOW" hidden="true" toplevel="true" parent="UIParent">
 		<Size x="200" y="140"/>
 		<Anchors>
 			<Anchor point="TOPLEFT" relativeTo="UIParent" relativePoint="TOPLEFT" x="7" y="-140"/>
@@ -127,7 +127,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame name="$parentContainerResizeFrame" frameStrata="LOW" resizable="true" movable="true" dontSavePosition="true" clampedToScreen="true"  parentKey="containerResizeFrame">
+			<Frame name="$parentContainerResizeFrame" frameStrata="LOW" resizable="true" movable="true" dontSavePosition="true" clampedToScreen="true" parentKey="containerResizeFrame">
 				<Size x="300" y="200"/>
 				<Layers>
 					<Layer level="BORDER">
@@ -277,15 +277,12 @@
 						local tex = self:GetNormalTexture();
 						tex:SetAllPoints();
 					</OnMouseUp>
-					<OnShow>
-						self:SetFrameLevel(self:GetParent().displayFrame:GetFrameLevel() + 2);
-					</OnShow>
 				</Scripts>
 				<NormalTexture file="Interface\RaidFrame\RaidPanel-Toggle">
 					<TexCoords left="0" right="0.5" top="0" bottom="1"/>
 				</NormalTexture>
 			</Button>
-			<Frame name="$parentDisplayFrame" parentKey="displayFrame" setAllPoints="true">
+			<Frame name="$parentDisplayFrame" parentKey="displayFrame" flattenRenderLayers="true" setAllPoints="true">
 				<Layers>
 					<Layer level="BACKGROUND">
 						<Texture name="$parentHeaderBackground">

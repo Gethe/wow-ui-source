@@ -159,11 +159,17 @@ function SetItemRef(link, text, button, chatFrame)
 	elseif ( strsub(link, 1, 3) == "lfd" ) then
 		ToggleLFDParentFrame();
 		return;
-	elseif ( strsub(link, 1, 9) == "glyphpane" ) then
-		ToggleGlyphFrame();
+	elseif ( strsub(link, 1, 8) == "specpane" ) then
+		ToggleTalentFrame(SPECIALIZATION_TAB);
 		return;
 	elseif ( strsub(link, 1, 10) == "talentpane" ) then
-		ToggleTalentFrame();
+		ToggleTalentFrame(TALENTS_TAB);
+		return;
+	elseif ( strsub(link, 1, 11) == "honortalent" ) then
+		ToggleTalentFrame(PVP_TALENTS_TAB);
+		return;
+	elseif ( strsub(link, 1, 10) == "worldquest" ) then
+		ShowUIPanel(WorldMapFrame);
 		return;
 	elseif ( strsub(link, 1, 7) == "journal" ) then
 		if ( not HandleModifiedItemClick(GetFixedLink(text)) ) then
@@ -193,7 +199,7 @@ function SetItemRef(link, text, button, chatFrame)
 	elseif ( strsub(link, 1, 9) == "battlepet" ) then
 		local _, speciesID, level, breedQuality, maxHealth, power, speed, battlePetID = strsplit(":", link);
 		if ( IsModifiedClick() ) then
-			local fixedLink = GetFixedLink(text);
+			local fixedLink = GetFixedLink(text, tonumber(breedQuality));
 			HandleModifiedItemClick(fixedLink);
 		else
 			FloatingBattlePet_Toggle(tonumber(speciesID), tonumber(level), tonumber(breedQuality), tonumber(maxHealth), tonumber(power), tonumber(speed), string.gsub(string.gsub(text, "^(.*)%[", ""), "%](.*)$", ""), battlePetID);
@@ -209,12 +215,12 @@ function SetItemRef(link, text, button, chatFrame)
 		end
 		return;
 	elseif ( strsub(link, 1, 12) == "garrfollower" ) then
-		local _, garrisonFollowerID, quality, level, itemLevel, ability1, ability2, ability3, ability4, trait1, trait2, trait3, trait4 = strsplit(":", link);
+		local _, garrisonFollowerID, quality, level, itemLevel, ability1, ability2, ability3, ability4, trait1, trait2, trait3, trait4, spec1 = strsplit(":", link);
 		if ( IsModifiedClick() ) then
-			local fixedLink = GetFixedLink(text);
+			local fixedLink = GetFixedLink(text, tonumber(quality));
 			HandleModifiedItemClick(fixedLink);
 		else
-			FloatingGarrisonFollower_Toggle(tonumber(garrisonFollowerID), tonumber(quality), tonumber(level), tonumber(itemLevel), tonumber(ability1), tonumber(ability2), tonumber(ability3), tonumber(ability4), tonumber(trait1), tonumber(trait2), tonumber(trait3), tonumber(trait4));
+			FloatingGarrisonFollower_Toggle(tonumber(garrisonFollowerID), tonumber(quality), tonumber(level), tonumber(itemLevel), tonumber(spec1), tonumber(ability1), tonumber(ability2), tonumber(ability3), tonumber(ability4), tonumber(trait1), tonumber(trait2), tonumber(trait3), tonumber(trait4));
 		end
 		return;
 	elseif ( strsub(link, 1, 11) == "garrmission" ) then
@@ -245,6 +251,26 @@ function SetItemRef(link, text, button, chatFrame)
 		SocialFrame_LoadUI();
 		Social_ShowItem(itemID, creationContext, StringToBoolean(earned));
 		return;
+	elseif ( strsub(link, 1, 16) == "transmogillusion" ) then
+		local fixedLink = GetFixedLink(text);
+		if ( not HandleModifiedItemClick(fixedLink) ) then
+			DressUpTransmogLink(link);
+		end
+		return;
+	elseif ( strsub(link, 1, 18) == "transmogappearance" ) then
+		if ( IsModifiedClick("CHATLINK") ) then
+			local _, sourceID = strsplit(":", link);
+			local itemLink = select(6, C_TransmogCollection.GetAppearanceSourceInfo(sourceID));
+			HandleModifiedItemClick(itemLink);
+		else
+			if ( not CollectionsJournal ) then
+				CollectionsJournal_LoadUI();
+			end
+			if ( CollectionsJournal ) then
+				WardrobeCollectionFrame_OpenTransmogLink(link);
+			end
+		end
+		return;
 	end
 
 	if ( IsModifiedClick() ) then
@@ -259,10 +285,12 @@ function SetItemRef(link, text, button, chatFrame)
 	end
 end
 
-function GetFixedLink(text)
+function GetFixedLink(text, quality)
 	local startLink = strfind(text, "|H");
 	if ( not strfind(text, "|c") ) then
-		if ( strsub(text, startLink + 2, startLink + 6) == "quest" ) then
+		if ( quality ) then
+			return (gsub(text, "(|H.+|h.+|h)", ITEM_QUALITY_COLORS[quality].hex.."%1|r", 1));
+		elseif ( strsub(text, startLink + 2, startLink + 6) == "quest" ) then
 			--We'll always color it yellow. We really need to fix this for Cata. (It will appear the correct color in the chat log)
 			return (gsub(text, "(|H.+|h.+|h)", "|cffffff00%1|r", 1));
 		elseif ( strsub(text, startLink + 2, startLink + 12) == "achievement" ) then
@@ -281,6 +309,12 @@ function GetFixedLink(text)
 			return (gsub(text, "(|H.+|h.+|h)", "|cff4e96f7%1|r", 1));
 		elseif ( strsub(text, startLink + 2, startLink + 10) == "battlepet" ) then
 			return (gsub(text, "(|H.+|h.+|h)", "|cffffd200%1|r", 1)); -- s_defaultColorString (yellow)
+		elseif ( strsub(text, startLink + 2, startLink + 12) == "garrmission" ) then
+			return (gsub(text, "(|H.+|h.+|h)", "|cffffff00%1|r", 1));
+		elseif ( strsub(text, startLink + 2, startLink + 17) == "transmogillusion" ) then
+			return (gsub(text, "(|H.+|h.+|h)", "|cffff80ff%1|r", 1));
+		elseif ( strsub(text, startLink + 2, startLink + 19) == "transmogappearance" ) then
+			return (gsub(text, "(|H.+|h.+|h)", "|cffff80ff%1|r", 1));
 		end
 	end
 	--Nothing to change.

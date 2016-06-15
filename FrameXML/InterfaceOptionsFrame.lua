@@ -266,6 +266,10 @@ function InterfaceOptionsFrameDefaults_OnClick (self, button)
 	StaticPopup_Show("CONFIRM_RESET_INTERFACE_SETTINGS");
 end
 
+function InterfaceOptionsSocialPanelResetChat_OnClick ()
+	FCF_ResetAllWindows();
+end
+
 function InterfaceOptionsFrame_SetAllToDefaults ()
 	--Iterate through registered panels and run their default methods in a taint-safe fashion
 
@@ -310,35 +314,34 @@ UVARINFO = {
 	["LOCK_ACTIONBAR"] = { default = "0", cvar = "lockActionBars", event = "LOCK_ACTIONBAR_TEXT" },
 	["SHOW_BUFF_DURATIONS"] = { default = "1", cvar = "buffDurations", event = "SHOW_BUFF_DURATION_TEXT", func = function () SHOW_BUFF_DURATIONS = GetCVar("buffDurations"); BuffFrame_UpdatePositions(); end},
 	["ALWAYS_SHOW_MULTIBARS"] = { default = "0", cvar = "alwaysShowActionBars", event = "ALWAYS_SHOW_MULTIBARS_TEXT" },
-	["SHOW_PARTY_PETS"] = { default = "1", cvar = "showPartyPets", event = "SHOW_PARTY_PETS_TEXT" },
+	["SHOW_PARTY_PETS"] = { default = "0", cvar = "showPartyPets", event = "SHOW_PARTY_PETS_TEXT" },
 	["SHOW_PARTY_BACKGROUND"] = { default = "0", cvar = "showPartyBackground", event = "SHOW_PARTY_BACKGROUND_TEXT" },
 	["SHOW_TARGET_OF_TARGET"] = { default = "0", cvar = "showTargetOfTarget", event = "SHOW_TARGET_OF_TARGET_TEXT" },
 	["SHOW_TARGET_OF_TARGET_STATE"] = { default = "5", cvar = "targetOfTargetMode", event = "SHOW_TARGET_OF_TARGET_STATE" },
 	["AUTO_QUEST_WATCH"] = { default = "1", cvar = "autoQuestWatch", event = "AUTO_QUEST_WATCH_TEXT" },
 	["LOOT_UNDER_MOUSE"] = { default = "0", cvar = "lootUnderMouse", event = "LOOT_UNDER_MOUSE_TEXT" },
 	["AUTO_LOOT_DEFAULT"] = { default = "0", cvar = "autoLootDefault", event = "AUTO_LOOT_DEFAULT_TEXT" },
-	["SHOW_COMBAT_TEXT"] = { default = "1", cvar = "enableCombatText", event = "SHOW_COMBAT_TEXT_TEXT" },
-	["COMBAT_TEXT_SHOW_LOW_HEALTH_MANA"] = { default = "1", cvar = "fctLowManaHealth", event = "COMBAT_TEXT_SHOW_LOW_HEALTH_MANA_TEXT" },
-	["COMBAT_TEXT_SHOW_AURAS"] = { default = "0", cvar = "fctAuras", event = "COMBAT_TEXT_SHOW_AURAS_TEXT" },
-	["COMBAT_TEXT_SHOW_AURA_FADE"] = { default = "0", cvar = "fctAuras", event = "COMBAT_TEXT_SHOW_AURAS_TEXT" },
-	["COMBAT_TEXT_SHOW_COMBAT_STATE"] = { default = "0", cvar = "fctCombatState", event = "COMBAT_TEXT_SHOW_COMBAT_STATE_TEXT" },
-	["COMBAT_TEXT_SHOW_DODGE_PARRY_MISS"] = { default = "0", cvar = "fctDodgeParryMiss", event = "COMBAT_TEXT_SHOW_DODGE_PARRY_MISS_TEXT" },
-	["COMBAT_TEXT_SHOW_RESISTANCES"] = { default = "0", cvar = "fctDamageReduction", event = "COMBAT_TEXT_SHOW_RESISTANCES_TEXT" },
-	["COMBAT_TEXT_SHOW_REPUTATION"] = { default = "1", cvar = "fctRepChanges", event = "COMBAT_TEXT_SHOW_REPUTATION_TEXT" },
-	["COMBAT_TEXT_SHOW_REACTIVES"] = { default = "0", cvar = "fctReactives", event = "COMBAT_TEXT_SHOW_REACTIVES_TEXT" },
-	["COMBAT_TEXT_SHOW_FRIENDLY_NAMES"] = { default = "0", cvar = "fctFriendlyHealers", event = "COMBAT_TEXT_SHOW_FRIENDLY_NAMES_TEXT" },
-	["COMBAT_TEXT_SHOW_COMBO_POINTS"] = { default = "0", cvar = "fctComboPoints", event = "COMBAT_TEXT_SHOW_COMBO_POINTS_TEXT" },
-	["COMBAT_TEXT_SHOW_ENERGIZE"] = { default = "0", cvar = "fctEnergyGains", event = "COMBAT_TEXT_SHOW_ENERGIZE_TEXT" },
-	["COMBAT_TEXT_SHOW_PERIODIC_ENERGIZE"] = { default = "0", cvar = "fctPeriodicEnergyGains", event = "COMBAT_TEXT_SHOW_PERIODIC_ENERGIZE_TEXT" },
-	["COMBAT_TEXT_FLOAT_MODE"] = { default = "1", cvar = "combatTextFloatMode", event = "COMBAT_TEXT_FLOAT_MODE" },
-	["COMBAT_TEXT_SHOW_HONOR_GAINED"] = { default = "0", cvar = "fctHonorGains", event = "COMBAT_TEXT_SHOW_HONOR_GAINED_TEXT" },
+	["SHOW_COMBAT_TEXT"] = { default = "1", cvar = "enableFloatingCombatText", event = "SHOW_COMBAT_TEXT_TEXT" },
+	["COMBAT_TEXT_SHOW_LOW_HEALTH_MANA"] = { default = "1", cvar = "floatingCombatTextLowManaHealth", event = "COMBAT_TEXT_SHOW_LOW_HEALTH_MANA_TEXT" },
+	["COMBAT_TEXT_SHOW_AURAS"] = { default = "0", cvar = "floatingCombatTextAuras", event = "COMBAT_TEXT_SHOW_AURAS_TEXT" },
+	["COMBAT_TEXT_SHOW_AURA_FADE"] = { default = "0", cvar = "floatingCombatTextAuras", event = "COMBAT_TEXT_SHOW_AURAS_TEXT" },
+	["COMBAT_TEXT_SHOW_COMBAT_STATE"] = { default = "0", cvar = "floatingCombatTextCombatState", event = "COMBAT_TEXT_SHOW_COMBAT_STATE_TEXT" },
+	["COMBAT_TEXT_SHOW_DODGE_PARRY_MISS"] = { default = "0", cvar = "floatingCombatTextDodgeParryMiss", event = "COMBAT_TEXT_SHOW_DODGE_PARRY_MISS_TEXT" },
+	["COMBAT_TEXT_SHOW_RESISTANCES"] = { default = "0", cvar = "floatingCombatTextDamageReduction", event = "COMBAT_TEXT_SHOW_RESISTANCES_TEXT" },
+	["COMBAT_TEXT_SHOW_REPUTATION"] = { default = "1", cvar = "floatingCombatTextRepChanges", event = "COMBAT_TEXT_SHOW_REPUTATION_TEXT" },
+	["COMBAT_TEXT_SHOW_REACTIVES"] = { default = "0", cvar = "floatingCombatTextReactives", event = "COMBAT_TEXT_SHOW_REACTIVES_TEXT" },
+	["COMBAT_TEXT_SHOW_FRIENDLY_NAMES"] = { default = "0", cvar = "floatingCombatTextFriendlyHealers", event = "COMBAT_TEXT_SHOW_FRIENDLY_NAMES_TEXT" },
+	["COMBAT_TEXT_SHOW_COMBO_POINTS"] = { default = "0", cvar = "floatingCombatTextComboPoints", event = "COMBAT_TEXT_SHOW_COMBO_POINTS_TEXT" },
+	["COMBAT_TEXT_SHOW_ENERGIZE"] = { default = "0", cvar = "floatingCombatTextEnergyGains", event = "COMBAT_TEXT_SHOW_ENERGIZE_TEXT" },
+	["COMBAT_TEXT_SHOW_PERIODIC_ENERGIZE"] = { default = "0", cvar = "floatingCombatTextPeriodicEnergyGains", event = "COMBAT_TEXT_SHOW_PERIODIC_ENERGIZE_TEXT" },
+	["COMBAT_TEXT_FLOAT_MODE"] = { default = "1", cvar = "floatingCombatTextFloatMode", event = "COMBAT_TEXT_FLOAT_MODE" },
+	["COMBAT_TEXT_SHOW_HONOR_GAINED"] = { default = "0", cvar = "floatingCombatTextHonorGains", event = "COMBAT_TEXT_SHOW_HONOR_GAINED_TEXT" },
 	["ALWAYS_SHOW_MULTIBARS"] = { default = "0", cvar = "alwaysShowActionBars", },
 	["SHOW_CASTABLE_BUFFS"] = { default = "0", cvar = "showCastableBuffs", event = "SHOW_CASTABLE_BUFFS_TEXT" },
 	["SHOW_DISPELLABLE_DEBUFFS"] = { default = "1", cvar = "showDispelDebuffs", event = "SHOW_DISPELLABLE_DEBUFFS_TEXT" },
 	["SHOW_ARENA_ENEMY_FRAMES"] = { default = "1", cvar = "showArenaEnemyFrames", event = "SHOW_ARENA_ENEMY_FRAMES_TEXT" },
 	["SHOW_ARENA_ENEMY_CASTBAR"] = { default = "1", cvar = "showArenaEnemyCastbar", event = "SHOW_ARENA_ENEMY_CASTBAR_TEXT" },
 	["SHOW_ARENA_ENEMY_PETS"] = { default = "1", cvar = "showArenaEnemyPets", event = "SHOW_ARENA_ENEMY_PETS_TEXT" },
-	["SHOW_ALL_ENEMY_DEBUFFS"] = { default = "0", cvar = "showAllEnemyDebuffs", event = "SHOW_ALL_ENEMY_DEBUFFS_TEXT" },
 }
 
 function InterfaceOptionsFrame_InitializeUVars ()
@@ -359,6 +362,7 @@ function InterfaceOptionsFrame_LoadUVars ()
 				setting.func()
 			end
 		elseif ( cvarValue ~= setting.default or ( not ( _G[uvar] ) ) ) then
+            _G[uvar] = cvarValue;
 			if ( setting.func ) then
 				setting.func()
 			end

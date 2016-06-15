@@ -1,6 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\FrameXML\UI.xsd">
-	<Button name="AuctionClassButtonTemplate" virtual="true">
+	<Button name="AuctionClassButtonTemplate" parentArray="FilterButtons" virtual="true">
 		<Size>
 			<AbsDimension x="136" y="20"/>
 		</Size>
@@ -320,7 +320,7 @@
 					</Layer>
 					<Layer level="OVERLAY">
 						<Texture parentKey="IconBorder" file="Interface\Common\WhiteIconFrame" hidden="true">
-							<Size x="37" y="37"/>
+							<Size x="32" y="32"/>
 							<Anchors>
 								<Anchor point="CENTER"/>
 							</Anchors>
@@ -661,7 +661,7 @@
 					</Layer>
 					<Layer level="OVERLAY">
 						<Texture parentKey="IconBorder" file="Interface\Common\WhiteIconFrame" hidden="true">
-							<Size x="37" y="37"/>
+							<Size x="32" y="32"/>
 							<Anchors>
 								<Anchor point="CENTER"/>
 							</Anchors>
@@ -913,7 +913,7 @@
 					</Layer>
 					<Layer level="OVERLAY">
 						<Texture parentKey="IconBorder" file="Interface\Common\WhiteIconFrame" hidden="true">
-							<Size x="37" y="37"/>
+							<Size x="32" y="32"/>
 							<Anchors>
 								<Anchor point="CENTER"/>
 							</Anchors>

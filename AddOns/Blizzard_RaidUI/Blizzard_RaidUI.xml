@@ -709,6 +709,11 @@
 			</OnMouseUp> 
 		</Scripts>
 	</Button>
+	<Button name="RaidClassButton15"  parent="RaidFrame" inherits="RaidClassButtonTemplate" id="14">
+		<Anchors>
+			<Anchor point="BOTTOMLEFT" relativeTo="RaidFrame" relativePoint="BOTTOMRIGHT" x="0" y="16"/>
+		</Anchors>
+	</Button>
 	<Button name="RaidClassButton14"  parent="RaidFrame" inherits="RaidClassButtonTemplate" id="14">
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="RaidFrame" relativePoint="BOTTOMRIGHT" x="-2" y="16"/>

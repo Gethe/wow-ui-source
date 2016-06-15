@@ -199,7 +199,8 @@ function HybridScrollFrame_CreateButtons (self, buttonTemplate, initialOffsetX, 
 	local scrollChild = self.scrollChild;
 	local button, buttonHeight, buttons, numButtons;
 	
-	local buttonName = self:GetName() .. "Button";
+	local parentName = self:GetName();
+	local buttonName = parentName and (parentName .. "Button") or nil;
 	
 	initialPoint = initialPoint or "TOPLEFT";
 	initialRelative = initialRelative or "TOPLEFT";
@@ -212,7 +213,7 @@ function HybridScrollFrame_CreateButtons (self, buttonTemplate, initialOffsetX, 
 		buttons = self.buttons;
 		buttonHeight = buttons[1]:GetHeight();
 	else
-		button = CreateFrame("BUTTON", buttonName .. 1, scrollChild, buttonTemplate);
+		button = CreateFrame("BUTTON", buttonName and (buttonName .. 1) or nil, scrollChild, buttonTemplate);
 		buttonHeight = button:GetHeight();
 		button:SetPoint(initialPoint, scrollChild, initialRelative, initialOffsetX, initialOffsetY);
 		buttons = {}
@@ -224,7 +225,7 @@ function HybridScrollFrame_CreateButtons (self, buttonTemplate, initialOffsetX, 
 	local numButtons = math.ceil(self:GetHeight() / buttonHeight) + 1;
 	
 	for i = #buttons + 1, numButtons do
-		button = CreateFrame("BUTTON", buttonName .. i, scrollChild, buttonTemplate);
+		button = CreateFrame("BUTTON", buttonName and (buttonName .. i) or nil, scrollChild, buttonTemplate);
 		button:SetPoint(point, buttons[i-1], relativePoint, offsetX, offsetY);
 		tinsert(buttons, button);
 	end

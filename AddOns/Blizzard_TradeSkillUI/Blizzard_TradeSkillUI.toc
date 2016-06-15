@@ -1,6 +1,10 @@
-## Interface: 60200
+## Interface: 70000
 ## Title: Blizzard Trade Skill UI
 ## Secure: 1
 ## LoadOnDemand: 1
+Blizzard_TradeSkillUtils.lua
+Blizzard_TradeSkillRecipeButton.xml
+Blizzard_TradeSkillDetails.xml
+Blizzard_TradeSkillRecipeList.xml
 Blizzard_TradeSkillUI.xml
 Localization.lua

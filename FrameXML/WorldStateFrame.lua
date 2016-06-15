@@ -34,21 +34,6 @@ FILTERED_BG_CHAT_END = {};
 ADDED_PLAYERS = {};
 SUBTRACTED_PLAYERS = {};
 
-CLASS_BUTTONS = {
-	["WARRIOR"]	= {0, 0.25, 0, 0.25},
-	["MAGE"]		= {0.25, 0.49609375, 0, 0.25},
-	["ROGUE"]		= {0.49609375, 0.7421875, 0, 0.25},
-	["DRUID"]		= {0.7421875, 0.98828125, 0, 0.25},
-	["HUNTER"]		= {0, 0.25, 0.25, 0.5},
-	["SHAMAN"]	 	= {0.25, 0.49609375, 0.25, 0.5},
-	["PRIEST"]		= {0.49609375, 0.7421875, 0.25, 0.5},
-	["WARLOCK"]	= {0.7421875, 0.98828125, 0.25, 0.5},
-	["PALADIN"]		= {0, 0.25, 0.5, 0.75},
-	["DEATHKNIGHT"]	= {0.25, 0.49609375, 0.5, 0.75},
-	["MONK"]	= {0.49609375, 0.7421875, 0.5, 0.75},
-};
-
-
 ExtendedUI = {};
 
 -- Always up stuff (i.e. capture the flag indicators)
@@ -494,9 +479,10 @@ function WorldStateScoreFrame_OnLoad(self)
 	-- Tab Handling code
 	PanelTemplates_SetNumTabs(self, 3);
 
-	UIDropDownMenu_Initialize( ScorePlayerDropDown, ScorePlayerDropDown_Initialize, "MENU");
+	UIDropDownMenu_Initialize( WorldStateButtonDropDown, WorldStateButtonDropDown_Initialize, "MENU");
 	
 	ButtonFrameTemplate_HidePortrait(self);
+	self.Inset:SetPoint("TOPLEFT", PANEL_INSET_LEFT_OFFSET, -124);
 	self.Inset:SetPoint("BOTTOMRIGHT", PANEL_INSET_RIGHT_OFFSET, 40);
 	_G[self:GetName() .. "BtnCornerLeft"]:Hide();
 	_G[self:GetName() .. "BtnCornerRight"]:Hide();
@@ -511,14 +497,28 @@ function WorldStateScoreFrame_OnLoad(self)
 	end
 end
 
+function WorldStateButtonDropDown_Initialize()
+	UnitPopup_ShowMenu(WorldStateButtonDropDown, "WORLD_STATE_SCORE", nil, WorldStateButtonDropDown.name);
+end
+
+function WorldStateScoreFrame_ShowWorldStateButtonDropDown(self, name, battlefieldScoreIndex)
+	WorldStateButtonDropDown.name = name;
+	WorldStateButtonDropDown.battlefieldScoreIndex = battlefieldScoreIndex;
+	WorldStateButtonDropDown.initialize = WorldStateButtonDropDown_Initialize;
+	ToggleDropDownMenu(1, nil, WorldStateButtonDropDown, self:GetName(), 0, 0);
+end
+
 function WorldStateScoreFrame_Update()
 	local isArena, isRegistered = IsActiveBattlefieldArena();
 	local isRatedBG = IsRatedBattleground();
 	local isWargame = IsWargame();
+	local isSkirmish = IsArenaSkirmish();
 	local battlefieldWinner = GetBattlefieldWinner(); 
 	
 	local firstFrameAfterCustomStats = WorldStateScoreFrameHonorGained;
 
+	WorldStateScoreFramePrestige:SetShown(UnitLevel("player") == MAX_PLAYER_LEVEL_TABLE[LE_EXPANSION_LEVEL_CURRENT]);
+	
 	if ( isArena ) then
 		-- Hide unused tabs
 		WorldStateScoreFrameTab1:Hide();
@@ -531,7 +531,7 @@ function WorldStateScoreFrame_Update()
 		WorldStateScoreFrameHonorGained:Hide();
 		WorldStateScoreFrameBgRating:Hide();
 
-		if ( isWargame ) then
+		if ( isWargame or isSkirmish ) then
 			WorldStateScoreFrameRatingChange:Hide()
 		end
 		WorldStateScoreFrameName:SetWidth(325)
@@ -539,7 +539,7 @@ function WorldStateScoreFrame_Update()
 		-- Reanchor some columns.
 		WorldStateScoreFrameDamageDone:SetPoint("LEFT", WorldStateScoreFrameKB, "RIGHT", -5, 0);
 		WorldStateScoreFrameTeam:Hide();
-		if ( not isWargame ) then
+		if ( not isWargame and not isSkirmish ) then
 			WorldStateScoreFrameRatingChange:Show();
 			WorldStateScoreFrameRatingChange:SetPoint("LEFT", WorldStateScoreFrameHealingDone, "RIGHT", 0, 0);
 			WorldStateScoreFrameRatingChange.sortType = "bgratingChange";
@@ -609,7 +609,7 @@ function WorldStateScoreFrame_Update()
 		WorldStateScoreFrameTimerLabel:Show();
 		WorldStateScoreFrameTimer:Show();
 		
-		if(IsArenaSkirmish())then
+		if(isSkirmish)then
 			WorldStateScoreFrameQueueButton:Show();
 			WorldStateScoreFrameLeaveButton:SetPoint("BOTTOM", WorldStateScoreFrameLeaveButton:GetParent(), "BOTTOM", 80, 3);
 		else
@@ -738,11 +738,11 @@ function WorldStateScoreFrame_Update()
 			scoreButton:SetWidth(WorldStateScoreFrame.buttonWidth);
 		end
 		if ( index <= numScores ) then
-			
-			name, killingBlows, honorableKills, deaths, honorGained, faction, race, class, classToken, damageDone, healingDone, bgRating, ratingChange, preMatchMMR, mmrChange, talentSpec = GetBattlefieldScore(index);
+			scoreButton.index = index;
+			name, killingBlows, honorableKills, deaths, honorGained, faction, race, class, classToken, damageDone, healingDone, bgRating, ratingChange, preMatchMMR, mmrChange, talentSpec, prestige = GetBattlefieldScore(index);
 			
 			if ( classToken ) then
-				coords = CLASS_BUTTONS[classToken];
+				coords = CLASS_ICON_TCOORDS[classToken];
 				scoreButton.class.icon:SetTexture("Interface\\WorldStateFrame\\Icons-Classes");
 				scoreButton.class.icon:SetTexCoord(coords[1], coords[2], coords[3], coords[4]);
 				scoreButton.class:Show();
@@ -750,6 +750,13 @@ function WorldStateScoreFrame_Update()
 				scoreButton.class:Hide();
 			end
 			
+			if ( prestige > 0 ) then
+				scoreButton.prestige.icon:SetTexture(GetPrestigeInfo(prestige) or 0);
+				scoreButton.prestige:Show();
+			else
+				scoreButton.prestige:Hide();
+			end
+
 			scoreButton.name.text:SetText(name);
 			if ( not race ) then
 				race = "";
@@ -783,16 +790,20 @@ function WorldStateScoreFrame_Update()
 				if ( isRegistered ) then
 					scoreButton.team:SetText(teamName);
 					scoreButton.team:Show();
-					if ( teamDataFailed == 1 ) then
-						scoreButton.ratingChange:SetText("-------");
-					else
-						if ratingChange > 0 then 
-							scoreButton.ratingChange:SetText(GREEN_FONT_COLOR_CODE..ratingChange..FONT_COLOR_CODE_CLOSE);
+					if (not isSkirmish) then
+						if ( teamDataFailed == 1 ) then
+							scoreButton.ratingChange:SetText("-------");
 						else
-							scoreButton.ratingChange:SetText(RED_FONT_COLOR_CODE..ratingChange..FONT_COLOR_CODE_CLOSE);
+							if ratingChange > 0 then 
+								scoreButton.ratingChange:SetText(GREEN_FONT_COLOR_CODE..ratingChange..FONT_COLOR_CODE_CLOSE);
+							else
+								scoreButton.ratingChange:SetText(RED_FONT_COLOR_CODE..ratingChange..FONT_COLOR_CODE_CLOSE);
+							end
 						end
+						scoreButton.ratingChange:Show();
+					else
+						scoreButton.ratingChange:Hide();
 					end
-					scoreButton.ratingChange:Show();
 				else
 					scoreButton.team:Hide();
 					scoreButton.ratingChange:Hide();
@@ -901,7 +912,7 @@ function WorldStateScoreFrame_Update()
 	end
 	
 	-- Show average matchmaking rating at the bottom	
-	if isRatedBG or (isArena and isRegistered) then
+	if isRatedBG or ((isArena and isRegistered) and not isSkirmish) then
 		local _, ourAverageMMR, theirAverageMMR;
 		local myFaction = GetBattlefieldArenaFaction();
 		_, _, _, ourAverageMMR = GetBattlefieldTeamInfo(myFaction);
@@ -951,12 +962,12 @@ function WorldStateScoreFrame_Resize()
 	local scrollBar = 37;
 	local name;
 	
-	local width = WorldStateScoreFrameName:GetWidth() + WorldStateScoreFrameClass:GetWidth();
+	local width = WorldStateScoreFrameName:GetWidth() + WorldStateScoreFrameClass:GetWidth() + WorldStateScoreFramePrestige:GetWidth();
 
 	if ( isArena ) then
-		columns = 3;
+		columns = 4;
 		if ( isRegistered ) then
-			columns = 4;
+			columns = 5;
 			width = width + WorldStateScoreFrameTeam:GetWidth();
 		else
 			width = width + 43;
@@ -974,9 +985,27 @@ function WorldStateScoreFrame_Resize()
 	if ( WorldStateScoreScrollFrame:IsShown() ) then
 		width = width + scrollBar;
 	end
-	
+
 	WorldStateScoreFrame:SetWidth(width);
 	
+	local height = 428;
+
+	local yOffset = -64;
+	local sectionHeight = 60;
+
+	if ( UnitLevel("player") == MAX_PLAYER_LEVEL_TABLE[LE_EXPANSION_LEVEL_CURRENT]) then
+		height = height + sectionHeight;
+		yOffset = yOffset - sectionHeight;
+		WorldStateScoreFrame.XPBar:Show();
+		WorldStateScoreFrameSeparator:Show();
+	else
+		WorldStateScoreFrame.XPBar:Hide();
+		WorldStateScoreFrameSeparator:Hide();
+	end
+
+	WorldStateScoreFrame.Inset:SetPoint("TOPLEFT", PANEL_INSET_LEFT_OFFSET, yOffset);
+	WorldStateScoreFrame:SetHeight(height);
+		
 	WorldStateScoreFrame.scrollBarButtonWidth = WorldStateScoreFrame:GetWidth() - 165;
 	WorldStateScoreFrame.buttonWidth = WorldStateScoreFrame:GetWidth() - 137;
 	WorldStateScoreScrollFrame:SetWidth(WorldStateScoreFrame.scrollBarButtonWidth);
@@ -1018,6 +1047,10 @@ function WorldStateScoreFrame_Resize()
 	return width;
 end
 
+function WorldStateScoreFrame_OnHide(self)
+	CloseDropDownMenus();
+end
+
 function WorldStateScoreFrameTab_OnClick(tab)
 	local faction = tab:GetID();
 	PanelTemplates_SetTab(WorldStateScoreFrame, faction);
@@ -1053,39 +1086,12 @@ function ToggleWorldStateScoreFrame()
 	end
 end
 
--- Report AFK feature
-local AFK_PLAYER_CLICKED = nil;
-
 function ScorePlayer_OnClick(self, mouseButton)
 	if ( mouseButton == "RightButton" ) then
-		if ( not UnitIsUnit(self.name,"player") and UnitInRaid(self.name)) then
-			AFK_PLAYER_CLICKED = self.name;
-			ToggleDropDownMenu(1, nil, ScorePlayerDropDown, self:GetName(), 0, -5);
+		if ( not UnitIsUnit(self.name,"player") ) then
+			WorldStateScoreFrame_ShowWorldStateButtonDropDown(self, self.name, self:GetParent().index);
 		end
 	elseif ( mouseButton == "LeftButton" and IsModifiedClick("CHATLINK") and ChatEdit_GetActiveWindow() ) then
 		ChatEdit_InsertLink(self.text:GetText());
 	end
-end
-
-function ScorePlayerDropDown_OnClick()
-	ReportPlayerIsPVPAFK(AFK_PLAYER_CLICKED);
-	PlaySound("UChatScrollButton");
-	AFK_PLAYER_CLICKED = nil;
-end
-
-function ScorePlayerDropDown_Cancel()
-	AFK_PLAYER_CLICKED = nil;
-	PlaySound("UChatScrollButton");
-end
-
-function ScorePlayerDropDown_Initialize()
-	local info = UIDropDownMenu_CreateInfo();
-	info.text = PVP_REPORT_AFK;
-	info.func = ScorePlayerDropDown_OnClick;
-	UIDropDownMenu_AddButton(info);
-
-	info = UIDropDownMenu_CreateInfo();
-	info.text = CANCEL;
-	info.func = ScorePlayerDropDown_Cancel;
-	UIDropDownMenu_AddButton(info);
 end

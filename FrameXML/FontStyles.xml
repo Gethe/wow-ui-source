@@ -240,7 +240,10 @@
 	<Font name="InvoiceTextFontSmall" inherits="InvoiceFont_Small" justifyH="LEFT" virtual="true">
 		<Color r="0.18" g="0.12" b="0.06"/>
 	</Font>
-	<Font name="CombatTextFont" inherits="SystemFont_Shadow_Huge3" virtual="true">
+	<Font name="CombatTextFont" inherits="SystemFont_World" virtual="true">
+		<Color r="1.0" g="0.82" b="0"/>
+	</Font>
+    <Font name="CombatTextFontOutline" inherits="SystemFont_World_ThickOutline" virtual="true">
 		<Color r="1.0" g="0.82" b="0"/>
 	</Font>
 	<Font name="MovieSubtitleFont" inherits="GameFontNormalHugeOutline2" virtual="true">
@@ -277,5 +280,11 @@
 	</Font>
 	<Font name="ObjectiveFont" inherits="GameFontHighlight" justifyH="LEFT" justifyV="TOP" virtual="true">
 		<Color r="0.8" g="0.8" b="0.8"/>
-	</Font>	
+	</Font>
+	<Font name="ArtifactAppearanceSetNormalFont" inherits="Fancy24Font" virtual="true">
+		<Color r="1.0" g="0.82" b="0"/>
+	</Font>
+	<Font name="ArtifactAppearanceSetHighlightFont" inherits="Fancy24Font" virtual="true">
+		<Color r="1.0" g="1.0" b="1.0"/>
+	</Font>
 </Ui>

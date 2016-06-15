@@ -143,7 +143,7 @@ function TotemButton_Update(button, startTime, duration, icon)
 	if ( duration > 0 ) then
 		buttonIcon:SetTexture(icon);
 		buttonIcon:Show();
-		CooldownFrame_SetTimer(buttonCooldown, startTime, duration, 1);
+		CooldownFrame_Set(buttonCooldown, startTime, duration, true);
 		buttonCooldown:Show();
 		button:SetScript("OnUpdate", TotemButton_OnUpdate);
 		button:Show();
@@ -159,7 +159,9 @@ end
 function TotemFrame_AdjustPetFrame()
 	local _, class = UnitClass("player");
 	if ( class == "WARLOCK" ) then
-		if ( PetFrame and PetFrame:IsShown() and TotemFrameTotem2:IsShown() ) then
+		if ( PetFrame:IsShown() and TotemFrameTotem3:IsShown() ) then
+			PetFrame:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 123, -90);
+		elseif ( PetFrame:IsShown() and TotemFrameTotem2:IsShown() ) then
 			PetFrame:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 93, -90);
 		else
 			PetFrame:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 60, -90);

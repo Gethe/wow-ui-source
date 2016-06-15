@@ -654,6 +654,7 @@
 					</OnLoad>
 					<OnShow function="GarrisonBuildingFollowerList_OnShow"/>
 					<OnHide function="GarrisonBuildingFollowerList_OnHide"/>
+					<OnEvent method="OnEvent"/>
 				</Scripts>
 			</Frame>
 			<Frame parentKey="InfoBox" inherits="GarrisonInfoBoxFiligreeTemplate">
@@ -664,11 +665,11 @@
 				
 				<Animations>
 					<AnimationGroup parentKey="UpgradeAnim">
-						<Alpha childKey="UpgradeGlow" change="1.0" duration="0.9" order="1"/>
-						<Alpha childKey="UpgradeGlow" change="-1.0" duration="0.9" order="2"/>
-						<Alpha childKey="UpgradeGlow" change="1.0" duration="0.9" order="3"/>
-						<Alpha childKey="UpgradeGlow" change="-1.0" duration="0.9" order="4"/>
-						<Alpha childKey="UpgradeGlow" change="1.0" duration="0.9" order="5"/>
+						<Alpha childKey="UpgradeGlow" fromAlpha="0" toAlpha="1" duration="0.9" order="1"/>
+						<Alpha childKey="UpgradeGlow" fromAlpha="1" toAlpha="0" duration="0.9" order="2"/>
+						<Alpha childKey="UpgradeGlow" fromAlpha="0" toAlpha="1" duration="0.9" order="3"/>
+						<Alpha childKey="UpgradeGlow" fromAlpha="1" toAlpha="0" duration="0.9" order="4"/>
+						<Alpha childKey="UpgradeGlow" fromAlpha="0" toAlpha="1" duration="0.9" order="5"/>
 						<Scripts>
 							<OnPlay>
 								self:GetParent().UpgradeGlow:SetAlpha(0);
@@ -1076,11 +1077,11 @@
 				
 				<Animations>
 					<AnimationGroup parentKey="UpgradeAnim">
-						<Alpha childKey="UpgradeGlow" change="1.0" duration="0.9" order="1"/>
-						<Alpha childKey="UpgradeGlow" change="-1.0" duration="0.9" order="2"/>
-						<Alpha childKey="UpgradeGlow" change="1.0" duration="0.9" order="3"/>
-						<Alpha childKey="UpgradeGlow" change="-1.0" duration="0.9" order="4"/>
-						<Alpha childKey="UpgradeGlow" change="1.0" duration="0.9" order="5"/>
+						<Alpha childKey="UpgradeGlow" fromAlpha="0" toAlpha="1" duration="0.9" order="1"/>
+						<Alpha childKey="UpgradeGlow" fromAlpha="1" toAlpha="0" duration="0.9" order="2"/>
+						<Alpha childKey="UpgradeGlow" fromAlpha="0" toAlpha="1" duration="0.9" order="3"/>
+						<Alpha childKey="UpgradeGlow" fromAlpha="1" toAlpha="0" duration="0.9" order="4"/>
+						<Alpha childKey="UpgradeGlow" fromAlpha="0" toAlpha="1" duration="0.9" order="5"/>
 						<Scripts>
 							<OnPlay>
 								self:GetParent().UpgradeGlow:SetAlpha(0);

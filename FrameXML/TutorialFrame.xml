@@ -4,10 +4,10 @@
 	<Frame name="TutorialFrame" toplevel="true" parent="UIParent" movable="true" clampedToScreen="true" enableMouse="true" frameStrata="HIGH" hidden="true" propagateKeyboardInput="true">
 		<Animations>
 			<AnimationGroup name="AnimateMouse" looping="BOUNCE">
-				<Alpha target="TutorialFrameMouse" change="1" duration="0.8" smoothing="IN_OUT"/>
+				<Alpha target="TutorialFrameMouse" fromAlpha="0" toAlpha="1" duration="0.8" smoothing="IN_OUT"/>
 			</AnimationGroup>
 			<AnimationGroup name="AnimateCallout" looping="BOUNCE">
-				<Alpha target="TutorialFrameCallOut" change="-0.5" duration="0.8" smoothing="IN_OUT"/>
+				<Alpha target="TutorialFrameCallOut"  fromAlpha="0.5" toAlpha="0" duration="0.8" smoothing="IN_OUT"/>
 			</AnimationGroup>
 		</Animations>
 		<Anchors>
@@ -165,7 +165,7 @@
 			<Frame name="$parentCallOut" frameStrata="TOOLTIP" hidden="true">
  				<Animations>
 					<AnimationGroup looping="BOUNCE">
-						<Alpha name="$parentPulser" change="-.7" duration=".75"/>
+						<Alpha name="$parentPulser"  fromAlpha="0.7" toAlpha="0" duration=".75"/>
 					</AnimationGroup>
 				</Animations>
 				<Backdrop edgeFile="Interface\TutorialFrame\UI-TutorialFrame-CalloutGlow" alphaMode="ADD">

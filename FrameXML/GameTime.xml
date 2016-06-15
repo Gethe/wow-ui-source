@@ -52,6 +52,11 @@
 		</Layers>
 		<Scripts>
 			<OnLoad function="GameTimeFrame_OnLoad"/>
+			<OnShow>
+				if (IsKioskModeEnabled()) then
+					self:Disable();
+				end
+			</OnShow>
 			<OnEnter function="GameTimeFrame_OnEnter"/>
 			<OnLeave function="GameTooltip_Hide"/>
 			<OnEvent function="GameTimeFrame_OnEvent"/>

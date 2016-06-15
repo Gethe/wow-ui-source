@@ -21,13 +21,13 @@
 	<Frame name="UnitPowerBarAltPillTemplate" inherits="UnitPowerBarAltTexturableTemplate" hidden="true" virtual="true">
 		<Animations>
 			<AnimationGroup parentKey="flashAnim">	<!--Don't give me a name or $parentFlash below won't resolve correctly. (We should really fix that.)-->
-				<Alpha change="1" duration="0.3" order="1" target="$parentFlash"/>
-				<Alpha change="-1" duration="0.3" order="2" target="$parentFlash"/>
+				<Alpha fromAlpha="0" toAlpha="1" duration="0.3" order="1" target="$parentFlash"/>
+				<Alpha fromAlpha="1" toAlpha="0" duration="0.3" order="2" target="$parentFlash"/>
 			</AnimationGroup>
 			<AnimationGroup parentKey="flashAway">	<!--Don't give me a name or $parentFlash below won't resolve correctly. (We should really fix that.)-->
-				<Alpha change="1" duration="0.3" order="1" target="$parentFlash"/>
-				<Alpha change="-1" duration="0.3" order="2" target="$parentFlash"/>
-				<Alpha change="-1" duration="0.3" order="2" target="$parentFill"/>
+				<Alpha fromAlpha="0" toAlpha="1" duration="0.3" order="1" target="$parentFlash"/>
+				<Alpha fromAlpha="1" toAlpha="0" duration="0.3" order="2" target="$parentFlash"/>
+				<Alpha fromAlpha="1" toAlpha="0" duration="0.3" order="2" target="$parentFill"/>
 				<Scripts>
 					<OnFinished function="UnitPowerBarAlt_Pill_OnFlashAwayFinished"/>
 				</Scripts>
@@ -133,14 +133,14 @@
 	<Frame name="UnitPowerBarAltTemplate" hidden="true" inherits="UnitPowerBarAltTexturableTemplate" virtual="true">
 		<Animations>
 			<AnimationGroup parentKey="flashAnim">	<!--Don't give me a name or $parentFlash below won't resolve correctly. (We should really fix that.)-->
-				<Alpha change="1" duration="0.6" order="1" target="$parentFlash"/>
+				<Alpha fromAlpha="0" toAlpha="1" duration="0.6" order="1" target="$parentFlash"/>
 				<Scripts>
 					<OnPlay function="UnitPowerBarAlt_OnFlashPlay"/>
 					<OnFinished function="UnitPowerBarAlt_OnFlashFinished"/>
 				</Scripts>
 			</AnimationGroup>
 			<AnimationGroup parentKey="flashOutAnim">	<!--Don't give me a name or $parentFlash below won't resolve correctly. (We should really fix that.)-->
-				<Alpha change="-1" duration="0.2" target="$parentFlash"/>
+				<Alpha fromAlpha="1" toAlpha="0" duration="0.2" target="$parentFlash"/>
 				<Scripts>
 					<OnFinished function="UnitPowerBarAlt_OnFlashOutFinished"/>
 				</Scripts>

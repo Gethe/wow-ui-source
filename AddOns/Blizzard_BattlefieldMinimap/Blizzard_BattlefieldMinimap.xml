@@ -24,7 +24,6 @@
 		</Layers>
 	<Scripts>
 		<OnLoad>
-			WorldMapUnit_OnLoad(self);
 			self.unit = "player";
 			self.icon:SetTexture("Interface\\Minimap\\MinimapArrow");
 		</OnLoad>
@@ -33,7 +32,6 @@
 <Frame name="BattlefieldMinimapPartyUnitTemplate" inherits="BattlefieldMinimapUnitTemplate" virtual="true">
 	<Scripts>
 		<OnLoad>
-			WorldMapUnit_OnLoad(self);
 			self.unit = "party"..self:GetID();
 			self.icon:SetTexture("Interface\\WorldMap\\WorldMapPartyIcon");
 		</OnLoad>
@@ -42,7 +40,6 @@
 <Frame name="BattlefieldMinimapRaidUnitTemplate" inherits="BattlefieldMinimapUnitTemplate" virtual="true">
 	<Scripts>
 		<OnLoad>
-			WorldMapUnit_OnLoad(self);
 			self.unit = "raid"..self:GetID();
 			self.icon:SetTexture("Interface\\WorldMap\\WorldMapPartyIcon");
 		</OnLoad>

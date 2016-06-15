@@ -1,6 +1,108 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="MainMenuBar.lua"/>
+	<Frame name="MainMenuBarWatchBarTemplate" enableMouse="true" parent="MainMenuBar" hidden="true" virtual="true">
+		<Size x="1024" y="11"/>
+		<Anchors>
+			<Anchor point="BOTTOM" relativeTo="MainMenuBar" relativePoint="TOP" x="0" y="-3"/>
+		</Anchors>
+		<Frames>
+			<StatusBar parentKey="StatusBar" drawLayer="ARTWORK" inherits="AnimatedStatusBarTemplate">
+				<Size x="1024" y="8"/>
+				<Anchors>
+					<Anchor point="TOP"/>
+				</Anchors>
+				<BarTexture parentKey="BarTexture" file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarColor r="0.58" g="0.0" b="0.55"/>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="WatchBarTexture0" file="Interface\PaperDollInfoFrame\UI-ReputationWatchBar">
+							<Size x="256" y="11"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="0" y="2"/>
+							</Anchors>
+							<TexCoords left="0" right="1.0" top="0" bottom="0.171875"/>
+						</Texture>
+						<Texture parentKey="WatchBarTexture1" file="Interface\PaperDollInfoFrame\UI-ReputationWatchBar">
+							<Size x="256" y="11"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.WatchBarTexture0" relativePoint="RIGHT"/>
+							</Anchors>
+							<TexCoords left="0" right="1.0" top="0.1875" bottom="0.359375"/>
+						</Texture>
+						<Texture parentKey="WatchBarTexture2" file="Interface\PaperDollInfoFrame\UI-ReputationWatchBar">
+							<Size x="256" y="11"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.WatchBarTexture1" relativePoint="RIGHT"/>
+							</Anchors>
+							<TexCoords left="0" right="1.0" top="0.375" bottom="0.546875"/>
+						</Texture>
+						<Texture parentKey="WatchBarTexture3" file="Interface\PaperDollInfoFrame\UI-ReputationWatchBar">
+							<Size x="256" y="11"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.WatchBarTexture2" relativePoint="RIGHT"/>
+							</Anchors>
+							<TexCoords left="0" right="1.0" top="0.5625" bottom="0.734375"/>
+						</Texture>
+						<Texture parentKey="XPBarTexture0" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
+							<Size x="256" y="10"/>
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+							</Anchors>
+							<TexCoords left="0" right="1.0" top="0.79296875" bottom="0.83203125"/>
+						</Texture>
+						<Texture parentKey="XPBarTexture1" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
+							<Size x="256" y="10"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.XPBarTexture0" relativePoint="RIGHT"/>
+							</Anchors>
+							<TexCoords left="0" right="1.0" top="0.54296875" bottom="0.58203125"/>
+						</Texture>
+						<Texture parentKey="XPBarTexture2" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
+							<Size x="256" y="10"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.XPBarTexture1" relativePoint="RIGHT"/>
+							</Anchors>
+							<TexCoords left="0" right="1.0" top="0.29296875" bottom="0.33203125"/>
+						</Texture>
+						<Texture parentKey="XPBarTexture3" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
+							<Size x="256" y="10"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.XPBarTexture2" relativePoint="RIGHT"/>
+							</Anchors>
+							<TexCoords left="0" right="1.0" top="0.04296875" bottom="0.08203125"/>
+						</Texture>
+					</Layer>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Background">
+							<Color r="0.0" g="0.0" b="0.0" a="0.5"/>
+						</Texture>
+					</Layer>
+					<Layer level="BACKGROUND" textureSubLevel="1">
+						<Texture parentKey="Underlay" hidden="true" file="Interface\TargetingFrame\UI-StatusBar">
+							<Color r=".502" g=".443" b=".278" />
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK" textureSubLevel="-1">
+						<Texture parentKey="Overlay" hidden="true" atlas="XPBarAnim-OrangeGain" alphaMode="ADD">
+							<Color r=".901" g=".8" b=".601" />
+						</Texture>
+					</Layer>
+				</Layers>
+			</StatusBar>
+			<Frame parentKey="OverlayFrame" frameStrata="DIALOG" setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Text" inherits="TextStatusBarText" hidden="true">
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="3"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+	</Frame>
 	<Frame name="MainMenuBar" enableMouse="true" parent="UIParent">
 		<Animations>
 			<AnimationGroup parentKey="slideOut">
@@ -22,7 +124,7 @@
 			<Anchor point="BOTTOM"/>
 		</Anchors>
 		<Frames>
-			<StatusBar name="MainMenuExpBar" inherits="TextStatusBar">
+			<StatusBar name="MainMenuExpBar" inherits="TextStatusBar, AnimatedStatusBarTemplate">
 				<Size>
 					<AbsDimension x="1024" y="11"/>
 				</Size>
@@ -30,24 +132,6 @@
 					<Anchor point="TOP"/>
 				</Anchors>
 				<Layers>
-																				<!-- Patchwerk INFO
-					<Texture name="UI-VehicleXP-Divider.png" >
-						<Size x="9" y="10"/>	
-						<TexCoords left="0.01562500" right="0.15625000" top="0.01562500" bottom="0.17187500"/>	
-					</Texture>
-					<Texture name="UI-VehicleXP-Left.png" >
-						<Size x="16" y="16"/>	
-						<TexCoords left="0.18750000" right="0.43750000" top="0.01562500" bottom="0.26562500"/>	
-					</Texture>
-					<Texture name="UI-VehicleXP-Mid.png" >
-						<Size x="16" y="16"/>	
-						<TexCoords left="0.46875000" right="0.71875000" top="0.01562500" bottom="0.26562500"/>	
-					</Texture>
-					<Texture name="UI-VehicleXP-Right.png" >
-						<Size x="16" y="16"/>	
-						<TexCoords left="0.18750000" right="0.43750000" top="0.29687500" bottom="0.54687500"/>	
-					</Texture-->
-
 					<Layer level="BORDER">
 						<Texture name="ExhaustionLevelFillBar">
 							<Size>
@@ -120,21 +204,24 @@
 						<Scripts>
 							<OnLoad>
 								MainMenuExpBar.lockShow = 0;
-								SetTextStatusBarText(MainMenuExpBar, MainMenuBarExpText);
-								ExpBar_Update();
 							</OnLoad>
 						</Scripts>
 					</Frame>
 				</Frames>
 				<Scripts>
-					<OnLoad>
+					<OnLoad inherit="prepend">
 						TextStatusBar_Initialize(self);
+
+						SetTextStatusBarText(MainMenuExpBar, MainMenuBarExpText);
+						ExpBar_Update();
+
 						self:RegisterEvent("PLAYER_ENTERING_WORLD");
 						self:RegisterEvent("PLAYER_XP_UPDATE");
 						self.textLockable = 1;
 						self.cvar = "xpBarText";
 						self.cvarLabel = "XP_BAR_TEXT";
 						self.alwaysPrefix = true;
+						self.alwaysShow = true;
 						MainMenuExpBar_SetWidth(1024);
 					</OnLoad>
 					<OnEvent>
@@ -160,7 +247,7 @@
 								label = label.." "..RED_FONT_COLOR_CODE..CAP_REACHED_TRIAL.."|r";
 							end
 						end
-						
+
 						GameTooltip_AddNewbieTip(self, label, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_XPBAR, 1);
 						GameTooltip.canAddRestStateLine = 1;
 						ExhaustionToolTipText();
@@ -170,7 +257,7 @@
 						GameTooltip:Hide();
 						ExhaustionTick.timer = nil;
 					</OnLeave>
-					<OnUpdate>
+					<OnUpdate inherit="prepend">
 						ExhaustionTick_OnUpdate(ExhaustionTick, elapsed);
 					</OnUpdate>
 					<OnValueChanged>
@@ -249,7 +336,7 @@
 					<Anchor point="BOTTOMRIGHT" relativeTo="MainMenuBar"/>
 				</Anchors>
 				<Layers>
-					<Layer level="ARTWORK">
+					<Layer level="BACKGROUND">
 						<Texture name="MainMenuBarTexture0" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
 							<Size>
 								<AbsDimension x="256" y="43"/>
@@ -303,7 +390,7 @@
 							<TexCoords left="0" right="1.0" top="0.08203125" bottom="0.25"/>
 						</Texture>
 					</Layer>
-					<Layer level="OVERLAY">
+					<Layer level="OVERLAY" textureSubLevel="5">
 						<Texture name="MainMenuBarLeftEndCap" file="Interface\MainMenuBar\UI-MainMenuBar-EndCap-Dwarf">
 							<Size>
 								<AbsDimension x="128" y="128"/>
@@ -373,16 +460,155 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				RaiseFrameLevel(MainMenuBarArtFrame);
-			</OnLoad>
 			<OnShow>
 				UpdateMicroButtonsParent(MainMenuBarArtFrame);
 				MoveMicroButtons("BOTTOMLEFT", MainMenuBarArtFrame, "BOTTOMLEFT", 556, 2, false);
 			</OnShow>
 		</Scripts>
 	</Frame>
-	<Button name="ExhaustionTick" parent="MainMenuExpBar" hidden="false" frameStrata="DIALOG">
+	<Frame name="ArtifactWatchBar" inherits="MainMenuBarWatchBarTemplate">
+		<Frames>
+			<Button parentKey="Tick" hidden="true" frameStrata="MEDIUM">
+				<Size x="32" y="32"/>
+				<Scripts>
+					<OnEnter function="MainMenuBar_ArtifactTick_OnEnter"/>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+				<NormalTexture parentKey="Normal" file="Interface\MainMenuBar\UI-ExhaustionTickNormal"/>
+				<HighlightTexture parentKey="Highlight" file="Interface\MainMenuBar\UI-ExhaustionTickHighlight" alphaMode="ADD"/>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				self:RegisterEvent("PLAYER_ENTERING_WORLD");
+				self:RegisterEvent("UNIT_INVENTORY_CHANGED");
+				self:RegisterEvent("ARTIFACT_XP_UPDATE");
+				self:RegisterEvent("CVAR_UPDATE");
+				self.StatusBar:SetStatusBarColor(.901, .8, .601);
+				self.StatusBar:SetAnimatedTextureColors(.901, .8, .601);
+
+				self.StatusBar.Overlay:SetAllPoints(self.StatusBar:GetStatusBarTexture());
+
+				self.StatusBar:SetOnAnimatedValueChangedCallback(MainMenuBar_ArtifactOnAnimatedValueChangedCallback);
+			</OnLoad>
+			<OnEvent>
+				if ( event == "UNIT_INVENTORY_CHANGED" ) then
+					local unitTag = ...;
+					if ( unitTag == "player" ) then
+						MainMenuBar_UpdateExperienceBars();
+					end
+				elseif ( event == "ARTIFACT_XP_UPDATE") then
+					MainMenuBar_UpdateExperienceBars();
+				elseif ( event == "CVAR_UPDATE" ) then
+					local name, value = ...;
+					if ( name == "XP_BAR_TEXT" ) then
+						if( value == "1" ) then
+							ShowWatchBarText(ArtifactWatchBar, "lock");
+						else
+							HideWatchBarText(ArtifactWatchBar, "unlock");
+						end
+						MainMenuBar_UpdateExperienceBars();
+					end
+				end
+			</OnEvent>
+			<OnShow>
+				if ( GetCVarBool("xpBarText") ) then
+					ShowWatchBarText(ArtifactWatchBar, "lock");
+				end
+				UIParent_ManageFramePositions();
+			</OnShow>
+			<OnHide function="UIParent_ManageFramePositions"/>
+			<OnEnter>
+				self.OverlayFrame.Text:Show();
+				MainMenuBar_ArtifactUpdateOverlayFrameText();
+				MainMenuBar_ArtifactTick_OnEnter(self);
+			</OnEnter>
+			<OnLeave>
+				if (not self.textLocked) then
+					self.OverlayFrame.Text:Hide();
+				end
+				GameTooltip_Hide();
+			</OnLeave>
+		</Scripts>
+	</Frame>
+	<Frame name="HonorWatchBar" enableMouse="true" parent="MainMenuBar" inherits="MainMenuBarWatchBarTemplate" hidden="true">
+		<Size x="1024" y="11"/>
+		<Anchors>
+			<Anchor point="BOTTOM" relativeTo="MainMenuBar" relativePoint="TOP" x="0" y="-3"/>
+		</Anchors>
+        <Layers>
+            <Layer level="BORDER">
+                <Texture parentKey="ExhaustionLevelFillBar">
+                    <Size x="0" y="10"/>
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeTo="HonorWatchBar" x="0" y="0"/>
+                    </Anchors>
+                    <Color r="1.0" g="1.0" b="1.0" a="1.0"/>
+                </Texture>
+            </Layer>
+        </Layers>
+        <Frames>
+            <Button parentKey="ExhaustionTick" hidden="true" frameStrata="MEDIUM">
+                <Size x="32" y="32"/>
+                <Anchors>
+                    <Anchor point="CENTER" relativeKey="$parent.ExhaustionLevelFillBar" relativePoint="RIGHT" x="0" y="0"/>
+                </Anchors>
+                <Scripts>
+                    <OnLoad function="HonorExhaustionTick_OnLoad"/>
+                    <OnEvent>
+						MainMenuBar_UpdateExperienceBars();
+					</OnEvent>
+                    <OnEnter function="HonorExhaustionToolTipText"/>
+                    <OnLeave function="GameTooltip_Hide"/>
+                </Scripts>
+                <NormalTexture parentKey="Normal" file="Interface\MainMenuBar\UI-ExhaustionTickNormal"/>
+                <HighlightTexture parentKey="Highlight" file="Interface\MainMenuBar\UI-ExhaustionTickHighlight" alphaMode="ADD"/>
+            </Button>
+			<Frame parentKey="OverlayFrame" frameStrata="DIALOG" setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Text" inherits="TextStatusBarText" hidden="true">
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="3"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad function="HonorWatchBar_OnLoad"/>
+			<OnEvent>
+				local arg1, arg2 = ...;
+				if( event == "CVAR_UPDATE" and arg1 == "XP_BAR_TEXT" ) then
+					if( arg2 == "1" ) then
+						ShowWatchBarText(HonorWatchBar, "lock");
+					else
+						HideWatchBarText(HonorWatchBar, "unlock");
+					end
+				else
+					MainMenuBar_UpdateExperienceBars();
+				end
+			</OnEvent>
+			<OnShow>
+				if ( GetCVarBool("xpBarText") ) then
+					ShowWatchBarText(HonorWatchBar, "lock");
+				end
+				UIParent_ManageFramePositions();
+			</OnShow>
+			<OnHide function="UIParent_ManageFramePositions"/>
+			<OnEnter>
+				self.OverlayFrame.Text:Show();
+				MainMenuBar_HonorUpdateOverlayFrameText();
+			</OnEnter>
+			<OnLeave>
+				if (not self.textLocked) then
+					self.OverlayFrame.Text:Hide();
+				end
+			</OnLeave>
+		</Scripts>
+	</Frame>
+	<Button name="ExhaustionTick" parent="MainMenuExpBar" hidden="false" frameStrata="MEDIUM">
 		<Size>
 			<AbsDimension x="32" y="32"/>
 		</Size>

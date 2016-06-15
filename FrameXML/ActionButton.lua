@@ -26,61 +26,74 @@ function GetNewActionHighlightMark(action)
 	return ACTION_HIGHLIGHT_MARKS[action];
 end
 
-local isInPetBattle = C_PetBattles.IsInBattle;
-function ActionButtonDown(id)
-	if ( isInPetBattle() ) then
-		if ( PetBattleFrame ) then
-			PetBattleFrame_ButtonDown(id);
-		end
-		return;
-	end
-
-	local button;
-	if ( OverrideActionBar and OverrideActionBar:IsShown() ) then
-		if ( id > NUM_OVERRIDE_BUTTONS ) then
+function GetActionButtonForID(id)
+	if OverrideActionBar and OverrideActionBar:IsShown() then
+		if id > NUM_OVERRIDE_BUTTONS then
 			return;
 		end
-		button = _G["OverrideActionBarButton"..id];
-	else
-		button = _G["ActionButton"..id];
+
+		return _G["OverrideActionBarButton"..id];
 	end
 
-	if ( button:GetButtonState() == "NORMAL" ) then
-		button:SetButtonState("PUSHED");
-	end
-	if (GetCVarBool("ActionButtonUseKeyDown")) then
-		if (not button.draenorZoneDisabled) then
+	return _G["ActionButton"..id];
+end
+
+local function CheckUseActionButton(button, checkingFromDown)
+	local actionButtonUseKeyDown = GetCVarBool("ActionButtonUseKeyDown");
+	local doAction = (checkingFromDown and actionButtonUseKeyDown) or not (checkingFromDown or actionButtonUseKeyDown);
+
+	if doAction then
+		if not button.ZoneAbilityDisabled then
 			SecureActionButton_OnClick(button, "LeftButton");
+
+			if GetNewActionHighlightMark(button.action) then
+				MarkNewActionHighlight(button.action, false);
+				ActionButton_UpdateHighlightMark(button, button.action);
+			end
 		end
 		ActionButton_UpdateState(button);
 	end
 end
 
-function ActionButtonUp(id)
-	if ( isInPetBattle() ) then
-		if ( PetBattleFrame ) then
+local isInPetBattle = C_PetBattles.IsInBattle;
+local function CheckPetActionButtonEvent(id, isDown)
+	if isInPetBattle() and PetBattleFrame then
+		if isDown then
+			PetBattleFrame_ButtonDown(id);
+		else
 			PetBattleFrame_ButtonUp(id);
 		end
+		return true;
+	end
+
+	return false;
+end
+
+function ActionButtonDown(id)
+	if CheckPetActionButtonEvent(id, true) then
 		return;
 	end
 
-	local button;
-	if ( OverrideActionBar and OverrideActionBar:IsShown() ) then
-		if ( id > NUM_OVERRIDE_BUTTONS ) then
-			return;
+	local button = GetActionButtonForID(id);
+	if button then
+		if button:GetButtonState() == "NORMAL" then
+			button:SetButtonState("PUSHED");
 		end
-		button = _G["OverrideActionBarButton"..id];
-	else
-		button = _G["ActionButton"..id];
+
+		CheckUseActionButton(button, true);
 	end
-	
-	if ( button:GetButtonState() == "PUSHED" ) then
-		button:SetButtonState("NORMAL");
-		if (not GetCVarBool("ActionButtonUseKeyDown")) then
-			if (not button.draenorZoneDisabled) then
-				SecureActionButton_OnClick(button, "LeftButton");
-			end
-			ActionButton_UpdateState(button);
+end
+
+function ActionButtonUp(id)
+	if CheckPetActionButtonEvent(id, false) then
+		return;
+	end
+
+	local button = GetActionButtonForID(id);
+	if button then
+		if ( button:GetButtonState() == "PUSHED" ) then
+			button:SetButtonState("NORMAL");
+			CheckUseActionButton(button, false);
 		end
 	end
 end
@@ -108,7 +121,7 @@ function ActionBar_PageDown()
 			break;
 		end
 	end
-	
+
 	if ( not prevPage ) then
 		for i=NUM_ACTIONBAR_PAGES, 1, -1 do
 			if ( VIEWABLE_ACTION_BAR_PAGES[i] ) then
@@ -261,14 +274,7 @@ function ActionButton_UpdateAction (self, force)
 		self.action = action;
 		SetActionUIButton(self, action, self.cooldown);
 		ActionButton_Update(self);
-		
-		if ( self.NewActionTexture ) then
-			if ( GetNewActionHighlightMark(action) ) then
-				self.NewActionTexture:Show();
-			else
-				self.NewActionTexture:Hide();
-			end
-		end
+		ActionButton_UpdateHighlightMark(self, action);
 	end
 end
 
@@ -278,15 +284,15 @@ function ActionButton_Update (self)
 	local buttonCooldown = self.cooldown;
 	local texture = GetActionTexture(action);
 
-	self.draenorZoneDisabled = false;
+	self.zoneAbilityDisabled = false;
 	icon:SetDesaturated(false);
 	local type, id = GetActionInfo(action);
-	if ((type == "spell" or type == "companion") and DraenorZoneAbilityFrame and DraenorZoneAbilityFrame.baseName and not HasDraenorZoneAbility()) then
-		local name = GetSpellInfo(DraenorZoneAbilityFrame.baseName);
+	if ((type == "spell" or type == "companion") and ZoneAbilityFrame and ZoneAbilityFrame.baseName and not HasZoneAbility()) then
+		local name = GetSpellInfo(ZoneAbilityFrame.baseName);
 		local abilityName = GetSpellInfo(id);
 		if (name == abilityName) then
-			texture = GetLastDraenorSpellTexture();
-			self.draenorZoneDisabled = true;
+			texture = GetLastZoneAbilitySpellTexture();
+			self.zoneAbilityDisabled = true;
 			icon:SetDesaturated(true);
 		end
 	end
@@ -316,9 +322,7 @@ function ActionButton_Update (self)
 			buttonCooldown:Hide();
 		end
 
-		if(self.chargeCooldown) then
-			EndChargeCooldown(self.chargeCooldown);
-		end
+		ClearChargeCooldown(self);
 	end
 
 	-- Add a green border if button is an equipped item
@@ -347,7 +351,7 @@ function ActionButton_Update (self)
 		icon:SetTexture(texture);
 		icon:Show();
 		self.rangeTimer = -1;
-		ActionButton_UpdateCount(self);	
+		ActionButton_UpdateCount(self);
 	else
 		self.Count:SetText("");
 		icon:Hide();
@@ -360,10 +364,10 @@ function ActionButton_Update (self)
 			hotkey:SetVertexColor(0.6, 0.6, 0.6);
 		end
 	end
-	
+
 	-- Update flyout appearance
 	ActionButton_UpdateFlyout(self);
-	
+
 	ActionButton_UpdateOverlayGlow(self);
 
 	-- Update tooltip
@@ -372,6 +376,12 @@ function ActionButton_Update (self)
 	end
 
 	self.feedback_action = action;
+end
+
+function ActionButton_UpdateHighlightMark(self, action)
+	if ( self.NewActionTexture ) then
+		self.NewActionTexture:SetShown(GetNewActionHighlightMark(action));
+	end
 end
 
 function ActionButton_ShowGrid (button)
@@ -384,23 +394,23 @@ function ActionButton_ShowGrid (button)
 	if ( button.NormalTexture ) then
 		button.NormalTexture:SetVertexColor(1.0, 1.0, 1.0, 0.5);
 	end
-	
+
 	if ( button:GetAttribute("showgrid") >= 1 and not button:GetAttribute("statehidden") ) then
 		button:Show();
 	end
 end
 
-function ActionButton_HideGrid (button)	
+function ActionButton_HideGrid (button)
 	assert(button);
-	
+
 	local showgrid = button:GetAttribute("showgrid");
-	
+
 	if ( issecure() ) then
 		if ( showgrid > 0 ) then
 			button:SetAttribute("showgrid", showgrid - 1);
 		end
 	end
-	
+
 	if ( button:GetAttribute("showgrid") == 0 and not HasAction(button.action) ) then
 		button:Hide();
 	end
@@ -408,13 +418,10 @@ end
 
 function ActionButton_UpdateState (button)
 	assert(button);
-	
+
 	local action = button.action;
-	if ( IsCurrentAction(action) or IsAutoRepeatAction(action) ) then
-		button:SetChecked(true);
-	else
-		button:SetChecked(false);
-	end
+	local isChecked = IsCurrentAction(action) or IsAutoRepeatAction(action);
+	button:SetChecked(isChecked);
 end
 
 function ActionButton_UpdateUsable (self)
@@ -423,7 +430,7 @@ function ActionButton_UpdateUsable (self)
 	if ( not normalTexture ) then
 		return;
 	end
-	
+
 	local isUsable, notEnoughMana = IsUsableAction(self.action);
 	if ( isUsable ) then
 		icon:SetVertexColor(1.0, 1.0, 1.0);
@@ -457,7 +464,7 @@ function ActionButton_UpdateCount (self)
 	end
 end
 
-function ActionButton_UpdateCooldown (self)
+function ActionButton_UpdateCooldown(self)
 	local locStart, locDuration;
 	local start, duration, enable, charges, maxCharges, chargeStart, chargeDuration;
 	if ( self.spellID ) then
@@ -477,8 +484,9 @@ function ActionButton_UpdateCooldown (self)
 			self.cooldown:SetHideCountdownNumbers(true);
 			self.cooldown.currentCooldownType = COOLDOWN_TYPE_LOSS_OF_CONTROL;
 		end
-		
-		CooldownFrame_SetTimer(self.cooldown, locStart, locDuration, 1, true);
+
+		CooldownFrame_Set(self.cooldown, locStart, locDuration, true, true);
+		ClearChargeCooldown(self);
 	else
 		if ( self.cooldown.currentCooldownType ~= COOLDOWN_TYPE_NORMAL ) then
 			self.cooldown:SetEdgeTexture("Interface\\Cooldown\\edge");
@@ -486,16 +494,18 @@ function ActionButton_UpdateCooldown (self)
 			self.cooldown:SetHideCountdownNumbers(false);
 			self.cooldown.currentCooldownType = COOLDOWN_TYPE_NORMAL;
 		end
-		
+
 		if( locStart > 0 ) then
 			self.cooldown:SetScript("OnCooldownDone", ActionButton_OnCooldownDone );
 		end
-		
-		if ( charges and maxCharges and maxCharges > 0 and charges < maxCharges ) then
+
+		if ( charges and maxCharges and maxCharges > 1 and charges < maxCharges ) then
 			StartChargeCooldown(self, chargeStart, chargeDuration);
+		else
+			ClearChargeCooldown(self);
 		end
-		
-		CooldownFrame_SetTimer(self.cooldown, start, duration, enable);
+
+		CooldownFrame_Set(self.cooldown, start, duration, enable);
 	end
 end
 
@@ -505,38 +515,34 @@ function ActionButton_OnCooldownDone(self)
 end
 
 -- Charge Cooldown stuff
-local ExtraChargeCooldowns = {}
-local numExtraChargeCooldowns = 0;
 
-function EndChargeCooldown(self)
-	self:Hide();
-	self:SetParent(UIParent);
-	self.parent.chargeCooldown = nil;
-	self.parent = nil;
-	tinsert(ExtraChargeCooldowns, self);
+local numChargeCooldowns = 0;
+local function CreateChargeCooldownFrame(parent)
+	numChargeCooldowns = numChargeCooldowns + 1;
+	cooldown = CreateFrame("Cooldown", "ChargeCooldown"..numChargeCooldowns, parent, "CooldownFrameTemplate");
+	cooldown:SetHideCountdownNumbers(true);
+	cooldown:SetDrawSwipe(false);
+
+	cooldown:SetAllPoints(parent);
+	cooldown:SetFrameStrata("TOOLTIP");
+
+	return cooldown;
 end
 
 function StartChargeCooldown(parent, chargeStart, chargeDuration)
-	if ( not parent.chargeCooldown ) then
-		local cooldown = tremove(ExtraChargeCooldowns);
-		if( not cooldown ) then
-			numExtraChargeCooldowns = numExtraChargeCooldowns + 1;
-			cooldown = CreateFrame("Cooldown", "ChargeCooldown"..numExtraChargeCooldowns, parent, "CooldownFrameTemplate");
-			cooldown:SetScript("OnCooldownDone", EndChargeCooldown );
-			cooldown:SetHideCountdownNumbers(true);
-			cooldown:SetDrawEdge(true);
-			cooldown:SetDrawSwipe(false);
-		end
-		cooldown:SetParent(parent);
-		cooldown:SetAllPoints(parent);
-		cooldown:SetFrameStrata("TOOLTIP");
-		cooldown:Show();
-		parent.chargeCooldown = cooldown;
-		cooldown.parent = parent;
+	if chargeStart == 0 then
+		ClearChargeCooldown(parent);
+		return;
 	end
-	parent.chargeCooldown:SetCooldown(chargeStart, chargeDuration);
-	if ( chargeStart == 0 ) then
-		EndChargeCooldown(parent.chargeCooldown);
+
+	parent.chargeCooldown = parent.chargeCooldown or CreateChargeCooldownFrame(parent);
+
+	CooldownFrame_Set(parent.chargeCooldown, chargeStart, chargeDuration, true, true);
+end
+
+function ClearChargeCooldown(parent)
+	if parent.chargeCooldown then
+		CooldownFrame_Clear(parent.chargeCooldown);
 	end
 end
 
@@ -748,7 +754,7 @@ function ActionButton_OnUpdate (self, elapsed)
 	if ( ActionButton_IsFlashing(self) ) then
 		local flashtime = self.flashtime;
 		flashtime = flashtime - elapsed;
-		
+
 		if ( flashtime <= 0 ) then
 			local overtime = -flashtime;
 			if ( overtime >= ATTACK_BUTTON_FLASH_TIME ) then
@@ -763,10 +769,10 @@ function ActionButton_OnUpdate (self, elapsed)
 				flashTexture:Show();
 			end
 		end
-		
+
 		self.flashtime = flashtime;
 	end
-	
+
 	-- Handle range indicator
 	local rangeTimer = self.rangeTimer;
 	if ( rangeTimer ) then
@@ -794,7 +800,7 @@ function ActionButton_OnUpdate (self, elapsed)
 			end
 			rangeTimer = TOOLTIP_UPDATE_TIME;
 		end
-		
+
 		self.rangeTimer = rangeTimer;
 	end
 end
@@ -828,7 +834,7 @@ function ActionButton_IsFlashing (self)
 	if ( self.flashing == 1 ) then
 		return 1;
 	end
-	
+
 	return nil;
 end
 
@@ -850,7 +856,7 @@ function ActionButton_UpdateFlyout(self)
 			self.FlyoutBorderShadow:Hide();
 			arrowDistance = 2;
 		end
-		
+
 		-- Update arrow
 		self.FlyoutArrow:Show();
 		self.FlyoutArrow:ClearAllPoints();

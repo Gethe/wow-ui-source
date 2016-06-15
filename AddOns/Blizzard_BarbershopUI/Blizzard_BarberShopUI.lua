@@ -1,32 +1,38 @@
-local STYLE_HAIR_COLOR = 2;
-local STYLE_SKIN = 4;
+STYLE_HAIR_STYLE = 1;
+STYLE_HAIR_COLOR = 2;
+STYLE_FACIAL_HAIR = 3;
+STYLE_SKIN = 4;
+STYLE_FACE = 5;
+STYLE_CUSTOM_DISPLAY1 = 6;
+STYLE_CUSTOM_DISPLAY2 = 7;
+STYLE_CUSTOM_DISPLAY3 = 8;
+STYLE_CUSTOM_DISPLAY4 = 9;
+STYLE_NUM_CUSTOM_DISPLAY = 4;
 
 function BarberShop_OnLoad(self)
-	BarberShop_UpdateHairCustomization();
-	BarberShop_UpdateFacialHairCustomization();
+	BarberShop_UpdateHairCustomization(self);
+	BarberShop_UpdateFacialHairCustomization(self);
 	self:RegisterEvent("BARBER_SHOP_APPEARANCE_APPLIED");
 	self:RegisterEvent("BARBER_SHOP_SUCCESS");
 	
 	if ( IsBarberShopStyleValid(STYLE_SKIN) ) then
 		if ( IsBarberShopStyleValid(STYLE_HAIR_COLOR) ) then
 			-- tauren, worgen, female pandaren
-			BarberShop_ToFiveAttributeFormat();
+			self.SkinColorSelector:Show();
 		else
 			-- male pandaren
-			BarberShopFrameSelector2:Hide();
-			BarberShopFrameSelector3:SetPoint("TOPLEFT", BarberShopFrameSelector1, "BOTTOMLEFT", 0, -1);
-			BarberShopFrameSelector4:Show();
-			BarberShopFrameSelector4:SetPoint("TOPLEFT", BarberShopFrameSelector3, "BOTTOMLEFT", 0, -1);
-			BarberShopFrameMoneyFrame:SetPoint("TOP", BarberShopFrameSelector4, "BOTTOM", 7, -10);
-			BarberShopFrameOkayButton:SetPoint("RIGHT", BarberShopFrameSelector4, "BOTTOM", -2, -48);
+			self.HairColorSelector:Hide();
+			self.SkinColorSelector:Show();
 		end
 	end
+	
+	BarberShop_UpdateCustomDisplays(self)
 end
 
 function BarberShop_OnShow(self)
 	CloseAllBags();
 	BarberShop_ResetLabelColors();
-	BarberShop_UpdateCost();
+	BarberShop_UpdateCost(self);
 	if ( BarberShopBannerFrame ) then
 		BarberShopBannerFrame:Show();
 		BarberShopBannerFrame.caption:SetText(BARBERSHOP);
@@ -67,18 +73,21 @@ function BarberShop_OnEvent(self, event, ...)
 	BarberShop_Update(self);
 end
 
-function BarberShop_UpdateCost()
+function BarberShop_UpdateCost(self)
 	MoneyFrame_Update(BarberShopFrameMoneyFrame:GetName(), GetBarberShopTotalCost());
 	-- The 4th return from GetBarberShopStyleInfo is whether the selected style is the active character style
-	local defaultHairColor = not BarberShopFrameSelector2:IsShown() or select(4, GetBarberShopStyleInfo(2));
-	local defaultSkinColor = not BarberShopFrameSelector4:IsShown() or select(4, GetBarberShopStyleInfo(4));
-	if ( select(4, GetBarberShopStyleInfo(1)) and defaultHairColor and select(4, GetBarberShopStyleInfo(3)) and defaultSkinColor and select(4, GetBarberShopStyleInfo(5)) ) then
-		BarberShopFrameOkayButton:Disable();
-		BarberShopFrameResetButton:Disable();
-	else
-		BarberShopFrameOkayButton:Enable();
-		BarberShopFrameResetButton:Enable();
+	-- Enable the okay and reset buttons if anything has changed
+	for i=1, #self.Selector do
+		if ( self.Selector[i]:IsShown() ) then
+			if ( not select(4, GetBarberShopStyleInfo( self.Selector[i]:GetID() ) ) ) then
+				BarberShopFrameOkayButton:Enable();
+				BarberShopFrameResetButton:Enable();
+				return;
+			end
+		end
 	end
+	BarberShopFrameOkayButton:Disable();
+	BarberShopFrameResetButton:Disable();
 end
 
 function BarberShop_UpdateBanner(name)
@@ -88,29 +97,27 @@ function BarberShop_UpdateBanner(name)
 end
 
 function BarberShop_Update(self)
-	BarberShop_UpdateCost();
-	BarberShop_UpdateSelector(BarberShopFrameSelector4);
-	BarberShop_UpdateSelector(BarberShopFrameSelector3);
-	BarberShop_UpdateSelector(BarberShopFrameSelector2);
-	BarberShop_UpdateSelector(BarberShopFrameSelector1);
-	BarberShop_UpdateSelector(BarberShopFrameSelector5);
+	BarberShop_UpdateCost(self);
+	for i=1, #self.Selector do
+		BarberShop_UpdateSelector(self.Selector[i]);
+	end
 end
 
 function BarberShop_UpdateSelector(self)
 	local name, _, _, isCurrent = GetBarberShopStyleInfo(self:GetID());
 	BarberShop_UpdateBanner(name);
-	local frameName = self:GetName();
-	BarberShop_SetLabelColor(_G[frameName.."Category"], isCurrent);
+	BarberShop_SetLabelColor(self.Category, isCurrent);
+	BarberShop_UpdateCustomDisplays(self:GetParent());
 end
 
-function BarberShop_UpdateHairCustomization()
+function BarberShop_UpdateHairCustomization(self)
 	local hairCustomization = GetHairCustomization();
-	BarberShopFrameSelector1Category:SetText(_G["HAIR_"..hairCustomization.."_STYLE"]);
-	BarberShopFrameSelector2Category:SetText(_G["HAIR_"..hairCustomization.."_COLOR"]);
+	self.HairStyleSelector.Category:SetText(_G["HAIR_"..hairCustomization.."_STYLE"]);
+	self.HairColorSelector.Category:SetText(_G["HAIR_"..hairCustomization.."_COLOR"]);
 end
 
-function BarberShop_UpdateFacialHairCustomization()
-	BarberShopFrameSelector3Category:SetText(_G["FACIAL_HAIR_"..GetFacialHairCustomization()]);
+function BarberShop_UpdateFacialHairCustomization(self)
+	self.FacialHairSelector.Category:SetText(_G["FACIAL_HAIR_"..GetFacialHairCustomization()]);
 end
 
 function BarberShop_SetLabelColor(label, isCurrent)
@@ -122,17 +129,14 @@ function BarberShop_SetLabelColor(label, isCurrent)
 end
 
 function BarberShop_ResetLabelColors()
-	BarberShop_SetLabelColor(BarberShopFrameSelector5Category, 1);
-	BarberShop_SetLabelColor(BarberShopFrameSelector1Category, 1);
-	BarberShop_SetLabelColor(BarberShopFrameSelector2Category, 1);
-	BarberShop_SetLabelColor(BarberShopFrameSelector3Category, 1);
-	BarberShop_SetLabelColor(BarberShopFrameSelector4Category, 1);
+	for i=1, #BarberShopFrame.Selector do
+		BarberShop_SetLabelColor(BarberShopFrame.Selector[i].Category, i);
+	end
 end
 
-function BarberShop_ToFiveAttributeFormat()
-	BarberShopFrameSelector2:SetPoint("TOPLEFT", BarberShopFrameSelector1, "BOTTOMLEFT", 0, 3);
-	BarberShopFrameSelector3:SetPoint("TOPLEFT", BarberShopFrameSelector2, "BOTTOMLEFT", 0, 3);
-	BarberShopFrameSelector4:Show();
-	BarberShopFrameMoneyFrame:SetPoint("TOP", BarberShopFrameSelector4, "BOTTOM", 7, -7);
-	BarberShopFrameOkayButton:SetPoint("RIGHT", BarberShopFrameSelector4, "BOTTOM", -2, -36);
+function BarberShop_UpdateCustomDisplays(self)
+	for i = STYLE_CUSTOM_DISPLAY1, (STYLE_CUSTOM_DISPLAY1 + STYLE_NUM_CUSTOM_DISPLAY - 1) do
+		self.Selector[i]:SetShown(IsBarberShopStyleValid(i));
+	end
+	self:Layout();
 end

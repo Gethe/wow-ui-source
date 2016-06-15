@@ -1,0 +1,30 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="AM_QuestOfferDataProvider.lua"/>
+
+	<Frame name="AdventureMap_QuestOfferPinTemplate" hidden="true" enableMouse="true" mixin="AdventureMap_QuestOfferPinMixin" virtual="true">
+		<Size x="24" y="41"/>
+
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-1">
+				<Texture parentKey="Icon">
+					<Anchors>
+						<Anchor point="CENTER" />
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="HIGHLIGHT">
+				<Texture parentKey="IconHighlight" alphaMode="ADD" alpha=".25">
+					<Anchors>
+						<Anchor point="CENTER" />
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="OnAddAnim">
+				<Alpha fromAlpha="0" toAlpha="1" duration=".3" order="1"/>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+</Ui>

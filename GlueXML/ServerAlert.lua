@@ -5,10 +5,6 @@ end
 function ServerAlert_OnEvent(self, event, ...)
 	if ( event == "SHOW_SERVER_ALERT" ) then
 		local text = ...;
-		--We need to call SetWidth(0) so that GetWidth() doesn't return 0.
-		--Clearly.
-		--(Not needed in 7.0, see bug 449258)
-		self.ScrollFrame:SetWidth(0);
 		--We have to resize before calling SetText because SimpleHTML frames won't resize correctly.
 		self.ScrollFrame.Text:SetWidth(self.ScrollFrame:GetWidth());
 		self.ScrollFrame.Text:SetText(text);

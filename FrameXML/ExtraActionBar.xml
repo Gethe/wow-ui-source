@@ -68,7 +68,7 @@
 		</Anchors>
 		<Animations>
 			<AnimationGroup parentKey="intro">
-				<Alpha change="1.0" duration="0.3" order="1"/>
+				<Alpha fromAlpha="0" toAlpha="1" duration="0.3" order="1"/>
 				<Scripts>
 					<OnFinished>
 						self:GetParent():SetAlpha(1.0);
@@ -76,7 +76,7 @@
 				</Scripts>
 			</AnimationGroup>
 			<AnimationGroup parentKey="outro">
-				<Alpha change="-1.0" duration="0.3" order="1"/>
+				<Alpha fromAlpha="1" toAlpha="0" duration="0.3" order="1"/>
 				<Scripts>
 					<OnFinished>
 						self:GetParent():SetAlpha(0.0);

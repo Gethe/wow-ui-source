@@ -256,11 +256,46 @@
 			<OnLoad function="CompactUnitFrame_OnLoad"/>
 			<OnEnter function="UnitFrame_OnEnter"/>
 			<OnLeave function="UnitFrame_OnLeave"/>
-			<!--
-			<OnEvent function="PlayerFrame_OnEvent"/>
-			<OnUpdate function="PlayerFrame_OnUpdate"/>
-			<OnReceiveDrag function="PlayerFrame_OnReceiveDrag"/>
-			-->
 		</Scripts>
 	</Button>
+	<StatusBar name="CompactUnitFrameCastBarTemplate" parentKey="castBar" hidden="true" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="2">
+				<Texture parentKey="Background" setAllPoints="true"/>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<FontString parentKey="Text" inherits="SystemFont_Shadow_Small">
+					<Size x="0" y="16" />
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="BorderShield" atlas="nameplates-InterruptShield" hidden="true" forceAlpha="true">
+					<Size x="10" y="12" />
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="LEFT" x="-2" y="-1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Spark" file="Interface\CastingBar\UI-CastingBar-Spark" alphaMode="ADD">
+					<Size x="16" y="16" />
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Flash" file="Interface\TargetingFrame\UI-TargetingFrame-BarFill" alphaMode="ADD" />
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				CastingBarFrame_OnLoad(self, nil, false, true);
+			</OnLoad>
+			<OnEvent function="CastingBarFrame_OnEvent" />
+			<OnUpdate function="CastingBarFrame_OnUpdate" />
+			<OnShow function="CastingBarFrame_OnShow" />
+		</Scripts>
+		<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+		<BarColor r="1.0" g="0.7" b="0.0"/>
+	</StatusBar>
 </Ui>

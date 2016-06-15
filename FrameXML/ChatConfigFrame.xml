@@ -602,11 +602,7 @@
 					</Frame>
 				</Frames>
 				<Scripts>
-					<OnShow>
-						ChatConfig_UpdateCheckboxes(ChatConfigChatSettingsLeft);
-						ChatConfigFrameDefaultButton:Show();
-						CombatLogDefaultButton:Hide();
-					</OnShow>
+					<OnShow function="ChatConfigChatSettings_OnShow"/>
 				</Scripts>
 			</Frame>
 			<Frame name="ChatConfigChannelSettings" hidden="true">
@@ -632,14 +628,7 @@
 					</Frame>
 				</Frames>
 				<Scripts>
-					<OnShow>
-						-- Have to build it here since the channel list doesn't exist on load
-						CreateChatChannelList(self, GetChannelList());
-						ChatConfig_CreateCheckboxes(ChatConfigChannelSettingsLeft, CHAT_CONFIG_CHANNEL_LIST, "ChatConfigCheckBoxWithSwatchAndClassColorTemplate", CHANNELS);
-						ChatConfig_UpdateCheckboxes(ChatConfigChannelSettingsLeft);
-						ChatConfigFrameDefaultButton:Show();
-						CombatLogDefaultButton:Hide();
-					</OnShow>
+					<OnShow function="ChatConfigChannelSettings_OnShow"/>
 				</Scripts>
 			</Frame>
 			<Frame name="ChatConfigOtherSettings">
@@ -682,14 +671,7 @@
 					</Frame>
 				</Frames>
 				<Scripts>
-					<OnShow>
-						ChatConfig_UpdateCheckboxes(ChatConfigOtherSettingsCombat);
-						ChatConfig_UpdateCheckboxes(ChatConfigOtherSettingsPVP);
-						ChatConfig_UpdateCheckboxes(ChatConfigOtherSettingsSystem);
-						ChatConfig_UpdateCheckboxes(ChatConfigOtherSettingsCreature);
-						ChatConfigFrameDefaultButton:Show();
-						CombatLogDefaultButton:Hide();
-					</OnShow>
+					<OnShow function="ChatConfigOtherSettings_OnShow"/>
 				</Scripts>
 			</Frame>
 			<Frame name="ChatConfigCombatSettings">
@@ -1957,31 +1939,30 @@
 				</Frames>
 				<Scripts>
 					<OnLoad function="ChatConfigCombat_OnLoad"/>
-					<OnShow>
-						ChatConfigBackgroundFrame:SetPoint("TOPLEFT", ChatConfigCategoryFrame, "TOPRIGHT", 1, -135);
-						ChatConfig_ShowCombatTabs();
-						ChatConfigFrameDefaultButton:Hide();
-						CombatLogDefaultButton:Show();
-					</OnShow>
+					<OnShow function="ChatConfigCombat_OnShow"/>
 					<OnHide>
 						ChatConfigBackgroundFrame:SetPoint("TOPLEFT", ChatConfigCategoryFrame, "TOPRIGHT", 1, 0);
 						ChatConfig_HideCombatTabs();
 					</OnHide>
 				</Scripts>
 			</Frame>
-			<Button name="$parentDefaultButton" inherits="UIPanelButtonTemplate" text="CHAT_DEFAULTS">
-				<Size>
-					<AbsDimension x="130" y="22"/>
-				</Size>
+			<Button name="$parentDefaultButton" parentKey="DefaultButton" inherits="UIPanelButtonTemplate" text="CHAT_DEFAULTS">
+				<Size x="130" y="22"/>
 				<Anchors>
-					<Anchor point="BOTTOMLEFT">
-						<Offset x="11" y="12"/>
-					</Anchor>
+					<Anchor point="BOTTOMLEFT" x="11" y="12"/>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						StaticPopup_Show("RESET_CHAT");
-					</OnClick>
+					<OnClick function="ChatConfigFrameDefaultButton_OnClick"/>
+				</Scripts>
+			</Button>
+			<Button name="$parentRedockButton" parentKey="RedockButton" inherits="UIPanelButtonTemplate" text="RESET_CHAT_WINDOW_POSITIONS">
+				<Size x="148" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.DefaultButton" relativePoint="BOTTOMRIGHT"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="ChatConfigFrameRedockButton_OnClick"/>
+					<OnLoad function="ChatConfigFrameRedockButton_OnLoad"/>
 				</Scripts>
 			</Button>
 			<Button name="CombatLogDefaultButton" inherits="UIPanelButtonTemplate" text="COMBATLOG_DEFAULTS">

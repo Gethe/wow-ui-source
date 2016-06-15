@@ -58,7 +58,7 @@ function TokenFrame_OnShow(self)
 		end
 	end
 
-	SetButtonPulse(CharacterFrameTab4, 0, 1);	--Stop the button pulse
+	SetButtonPulse(CharacterFrameTab3, 0, 1);	--Stop the button pulse
 	CharacterFrameTitleText:SetText(UnitPVPName("player"));
 	TokenFrame_Update();
 end
@@ -67,9 +67,9 @@ function TokenFrame_Update()
 	local numTokenTypes = GetCurrencyListSize();
 	
 	if ( numTokenTypes == 0 ) then
-		CharacterFrameTab4:Hide();
+		CharacterFrameTab3:Hide();
 	else
-		CharacterFrameTab4:Show();
+		CharacterFrameTab3:Show();
 	end
 
 	if (not TokenFrameContainer.buttons) then

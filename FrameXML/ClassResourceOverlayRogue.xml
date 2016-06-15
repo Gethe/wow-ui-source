@@ -1,0 +1,76 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+  <Script file="ClassResourceOverlayRogue.lua"/>
+
+  
+	<Frame name="RogueResourceOverlayComboFrame" virtual="true">
+		<Size x="20" y="20"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Point" atlas="ClassOverlay-ComboPoint" useAtlasSize="true" alpha="0">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="Fadein" setToFinalAlpha="true">
+				<Alpha parentKey="AlphaAnim" childKey="Point" fromAlpha="0" toAlpha="1" duration="0.5"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="Fadeout" setToFinalAlpha="true">
+				<Alpha parentKey="AlphaAnim" childKey="Point" fromAlpha="1" toAlpha="0" duration="0.5"/>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+		
+	<Frame name="RogueResourceOverlayFrame" inherits="ClassResourceOverlayFrame" mixin="ClassResourceOverlay, RogueResourceOverlay">
+		<Size x="125" y="25"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="ClassOverlay-ComboPointBg" useAtlasSize="true" alpha="0">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Combo1" parentArray="ComboPoints" inherits="RogueResourceOverlayComboFrame">
+				<Anchors>
+					<Anchor point="LEFT" x="2" y="0"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="Combo2" parentArray="ComboPoints" inherits="RogueResourceOverlayComboFrame">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Combo1" relativePoint="RIGHT" x="5" y="0"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="Combo3" parentArray="ComboPoints" inherits="RogueResourceOverlayComboFrame">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Combo2" relativePoint="RIGHT" x="5" y="0"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="Combo4" parentArray="ComboPoints" inherits="RogueResourceOverlayComboFrame">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Combo3" relativePoint="RIGHT" x="5" y="0"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="Combo5" parentArray="ComboPoints" inherits="RogueResourceOverlayComboFrame">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Combo4" relativePoint="RIGHT" x="5" y="0"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Animations>
+			<AnimationGroup parentKey="Fadein" setToFinalAlpha="true">
+				<Alpha parentKey="AlphaAnim" childKey="Background" fromAlpha="0" toAlpha="1" duration="0.5"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="Fadeout" setToFinalAlpha="true">
+				<Alpha parentKey="AlphaAnim" childKey="Background" fromAlpha="1" toAlpha="0" duration="0.5"/>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+</Ui>
+
+

@@ -81,12 +81,6 @@ COMBAT_TEXT_TYPE_INFO["HEAL_CRIT_ABSORB"] = {r = 0.1, g = 1, b = 0.1, show = 1};
 COMBAT_TEXT_TYPE_INFO["HEAL_ABSORB"] = {r = 0.1, g = 1, b = 0.1, show = 1};
 COMBAT_TEXT_TYPE_INFO["ABSORB_ADDED"] = {r = 0.1, g = 1, b = 0.1, show = 1};
 
-COMBAT_TEXT_RUNE = {};
-COMBAT_TEXT_RUNE[1] = COMBAT_TEXT_RUNE_BLOOD;
-COMBAT_TEXT_RUNE[2] = COMBAT_TEXT_RUNE_UNHOLY;
-COMBAT_TEXT_RUNE[3] = COMBAT_TEXT_RUNE_FROST;
-COMBAT_TEXT_RUNE[4] = COMBAT_TEXT_RUNE_DEATH;
-
 function CombatText_OnLoad(self)
 	CombatText_UpdateDisplayedMessages();
 	CombatText.previousMana = {};
@@ -251,31 +245,31 @@ function CombatText_OnEvent(self, event, ...)
 			message = "+"..BreakUpLargeNumbers(arg3).." "..format(ABSORB_TRAILER, arg4);
 		end
 	elseif ( messageType == "ENERGIZE" or messageType == "PERIODIC_ENERGIZE") then
-		local count =  tonumber(data) 
+		local count =  tonumber(data);
 		if (count > 0 ) then
 			data = "+"..BreakUpLargeNumbers(data);
+		else
+			return; --If we didnt actually gain anything, dont show it
 		end
 		if( arg3 == "MANA"
 			or arg3 == "RAGE"
 			or arg3 == "FOCUS"
 			or arg3 == "ENERGY"
 			or arg3 == "RUNIC_POWER"
-			or arg3 == "SOUL_SHARDS"
-			or arg3 == "CHI"
 			or arg3 == "DEMONIC_FURY") then
 			message = data.." ".._G[arg3];
 			info = PowerBarColor[arg3];
-		elseif ( arg3 == "HOLY_POWER" ) then
-			local numHolyPower = UnitPower( PaladinPowerBar:GetParent().unit, SPELL_POWER_HOLY_POWER );
-			message = "<"..numHolyPower.." ".._G[arg3]..">";
+		elseif ( arg3 == "HOLY_POWER" 
+				or arg3 == "SOUL_SHARDS" 
+				or arg3 == "CHI" 
+				or arg3 == "COMBO_POINTS" 
+				or arg3 == "ARCANE_CHARGES" ) then
+			local numPower = UnitPower( "player" , GetPowerEnumFromEnergizeString(arg3) );
+			message = "<"..numPower.." ".._G[arg3]..">";
 			info = PowerBarColor[arg3];
-		elseif ( arg3 == "ECLIPSE" ) then
-			if ( count < 0 ) then
-				message = "+"..abs(count).." "..BALANCE_NEGATIVE_ENERGY;
-				info = PowerBarColor[arg3].negative;
-			else
-				message = data.." "..BALANCE_POSITIVE_ENERGY;
-				info = PowerBarColor[arg3].positive;
+			--Display as crit if we're at max power
+			if ( UnitPower( "player" , GetPowerEnumFromEnergizeString(arg3)) == UnitPowerMax(self.unit, GetPowerEnumFromEnergizeString(arg3))) then
+				displayType = "crit";
 			end
 		end
 	elseif ( messageType == "FACTION" ) then
@@ -335,22 +329,7 @@ function CombatText_OnEvent(self, event, ...)
 		message = format(COMBAT_TEXT_COMBO_POINTS, data);
 	elseif ( messageType == "RUNE" ) then
 		if ( data == true ) then
-			local runeType = GetRuneType(arg1);
-			message = COMBAT_TEXT_RUNE[runeType];
-			-- Alex Brazie had me use these values. Feel free to correct them
-			if( runeType == 1 ) then 
-				info.r = .75;
-				info.g = 0;
-				info.b = 0;
-			elseif( runeType == 2 ) then
-				info.r = .75;
-				info.g = 1;
-				info.b = 0;
-			elseif (runeType == 3 ) then
-				info.r = 0;
-				info.g = 1;
-				info.b = 1;
-			end
+			message = COMBAT_TEXT_RUNE_DEATH;
 		else
 			message = nil;
 		end
@@ -371,6 +350,32 @@ function CombatText_OnEvent(self, event, ...)
 	if ( message ) then
 		CombatText_AddMessage(message, COMBAT_TEXT_SCROLL_FUNCTION, info.r, info.g, info.b, displayType, isStaggered);
 	end	
+end
+
+function GetPowerEnumFromEnergizeString(power)
+	if (power == "MANA") then 
+		return SPELL_POWER_MANA;
+	elseif ( power == "RAGE") then 
+		return SPELL_POWER_RAGE;
+	elseif ( power == "FOCUS") then 
+		return SPELL_POWER_FOCUS;
+	elseif ( power == "ENERGY") then 
+		return SPELL_POWER_ENERGY;
+	elseif ( power == "RUNIC_POWER") then 
+		return SPELL_POWER_RUNIC_POWER;
+	elseif ( power == "DEMONIC_FURY") then
+		return SPELL_POWER_DEMONIC_FURY;
+	elseif ( power == "HOLY_POWER" ) then
+		return SPELL_POWER_HOLY_POWER;
+	elseif ( power == "SOUL_SHARDS" ) then
+		return SPELL_POWER_SOUL_SHARDS;
+	elseif ( power == "CHI" ) then
+		return SPELL_POWER_CHI;
+	elseif ( power == "COMBO_POINTS" ) then
+		return SPELL_POWER_COMBO_POINTS;
+	elseif ( power == "ARCANE_CHARGES" ) then
+		return SPELL_POWER_ARCANE_CHARGES;
+	end
 end
 
 function CombatText_OnUpdate(self, elapsed)

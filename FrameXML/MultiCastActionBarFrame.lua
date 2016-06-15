@@ -895,7 +895,7 @@ end
 function MultiCastSpellButton_UpdateCooldown(self)
 	local cooldown = _G[self:GetName().."Cooldown"];
 	local start, duration, enable = GetSpellCooldown(self.spellId);
-	CooldownFrame_SetTimer(cooldown, start, duration, enable);
+	CooldownFrame_Set(cooldown, start, duration, enable);
 end
 
 function MultiCastSpellButton_UpdateState(self)

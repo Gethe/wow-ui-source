@@ -1,0 +1,84 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+  <Script file="Blizzard_ClassNameplateBar_RogueDruid.lua"/>
+  
+	<Frame name="ClassNameplateBarComboPointFrame" virtual="true">
+		<Size x="13" y="13"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="ClassOverlay-ComboPoint-Off" useAtlasSize="false">
+					<Size x="13" y="13"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Point" atlas="ClassOverlay-ComboPoint" useAtlasSize="false" alpha="0">
+					<Size x="13" y="13"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="Fadein" setToFinalAlpha="true">
+				<Alpha parentKey="AlphaAnim" childKey="Point" fromAlpha="0" toAlpha="1" duration="0.2"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="Fadeout" setToFinalAlpha="true">
+				<Alpha parentKey="AlphaAnim" childKey="Point" fromAlpha="1" toAlpha="0" duration="0.2"/>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+		
+	<Frame name="ClassNameplateBarRogueDruidFrame" inherits="ClassNameplateBarFrame" mixin="ClassNameplateBar, ComboPointPowerBar, ClassNameplateBarRogueDruid">
+		<Size x="80" y="13"/>
+		<Frames>
+			<Frame parentKey="Combo1" parentArray="ComboPoints" inherits="ClassNameplateBarComboPointFrame">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="0" y="0"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="Combo2" parentArray="ComboPoints" inherits="ClassNameplateBarComboPointFrame">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Combo1" relativePoint="RIGHT" x="4" y="0"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="Combo3" parentArray="ComboPoints" inherits="ClassNameplateBarComboPointFrame">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Combo2" relativePoint="RIGHT" x="4" y="0"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="Combo4" parentArray="ComboPoints" inherits="ClassNameplateBarComboPointFrame">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Combo3" relativePoint="RIGHT" x="4" y="0"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="Combo5" parentArray="ComboPoints" inherits="ClassNameplateBarComboPointFrame">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Combo4" relativePoint="RIGHT" x="4" y="0"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="Combo6" parentArray="ComboPoints" inherits="ClassNameplateBarComboPointFrame">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Combo5" relativePoint="RIGHT" x="4" y="0"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="Combo7" parentArray="ComboPoints" inherits="ClassNameplateBarComboPointFrame">
+				<Size x="10" y="10"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Combo6" relativePoint="RIGHT" x="4" y="0"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="Combo8" parentArray="ComboPoints" inherits="ClassNameplateBarComboPointFrame">
+				<Size x="10" y="10"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Combo7" relativePoint="RIGHT" x="4" y="0"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+	</Frame>
+</Ui>
+
+

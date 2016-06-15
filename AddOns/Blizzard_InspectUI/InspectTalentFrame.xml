@@ -1,11 +1,10 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\FrameXML\UI.xsd">
 	<Script file="InspectTalentFrame.lua"/>
-	<Script file="Blizzard_GlyphUI.lua"/>
 	
 	<!-- Talent button template, taken from PlayerTalentButtonTemplate in Blizzard_TalentUI.xml -->
 	<Button name="InspectTalentButtonTemplate" virtual="true">
-		<Size x="54" y="54"/>
+		<Size x="26" y="26"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentIconTexture" parentKey="icon">
@@ -17,19 +16,17 @@
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="1">
 				<Texture name="$parentSlot" inherits="Talent-SingleBorder" parentKey="Slot">
-					<Size x="27" y="26"/>
+					<Size x="26" y="26"/>
 					<Anchors>
 						<Anchor point="CENTER" x="-1" y="2"/>
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="BORDER">
-				<Texture name="$parentBorder" file="Interface\AchievementFrame\UI-Achievement-Progressive-IconBorder" parentKey="border">
+			<Layer level="OVERLAY">
+				<Texture name="$parentBorder" parentKey="border" atlas="inspect-talent-selected" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="TOPLEFT"/>
-						<Anchor point="BOTTOMRIGHT"/>
+						<Anchor point="CENTER" x="-1" y="2"/>
 					</Anchors>
-					<TexCoords left="0" right="0.65625" top="0" bottom="0.65625"/>
 				</Texture>
 			</Layer>
 		</Layers>
@@ -46,68 +43,25 @@
 	
 	<!-- Row of player talents, taken from PlayerTalentRowTemplate in Blizzard_TalentUI.xml -->
 	<Frame name="InspectTalentRowTemplate" virtual="true">
-		<Size x="627" y="42"/>
+		<Size x="110" y="26"/>
 		<Frames>
 			<Button name="$parentTalent1" inherits="InspectTalentButtonTemplate" parentKey="talent1">
 				<Anchors>
-					<Anchor point="LEFT" x="-10" y="0"/>
+					<Anchor point="LEFT" x="0" y="0"/>
 				</Anchors>
 			</Button>
 			<Button name="$parentTalent2" inherits="InspectTalentButtonTemplate" parentKey="talent2">
 				<Anchors>
-					<Anchor point="LEFT" x="32" y="0"/>
+					<Anchor point="LEFT" relativeTo="$parentTalent1" relativePoint="RIGHT" x="16"/>
 				</Anchors>
 			</Button>
 			<Button name="$parentTalent3" inherits="InspectTalentButtonTemplate" parentKey="talent3">
 				<Anchors>
-					<Anchor point="LEFT" x="74" y="0"/>
+					<Anchor point="LEFT" relativeTo="$parentTalent2" relativePoint="RIGHT" x="16"/>
 				</Anchors>
 			</Button>
 		</Frames>
 	</Frame>
-	
-	<!-- Glyphy icons (major and minor), taken from GlyphTemplate in Blizzard_GlyphUI.xml, line 138 -->
-	<Button name="InspectGlyphTemplate" virtual="true">
-		<Animations>
-			<AnimationGroup looping="REPEAT" parentKey="glow">
-				<Alpha target="$parentHighlight"  change="0.5" duration="0.8" smoothing="IN_OUT" order="1"/>
-				<Alpha target="$parentHighlight" change="-0.5" duration="0.8" smoothing="IN_OUT" order="2"/>
-			</AnimationGroup>
-		</Animations>
-		<Size x="72" y="72"/>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture name="$parentGlyph" parentKey="glyph">
-					<Size x="57" y="57"/>
-					<Anchors>
-						<Anchor point="CENTER" x="0" y="0"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="BORDER">
-				<Texture name="$parentHighlight" file="Interface\TalentFrame\glyph-main" alphaMode="ADD" parentKey="highlight">
-					<Anchors>
-						<Anchor point="CENTER" x="0" y="0"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="OVERLAY">
-				<Texture name="$parentRing" file="Interface\TalentFrame\glyph-main" parentKey="ring">
-					<Anchors>
-						<Anchor point="CENTER" x="0" y="0"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnLoad function="InspectGlyphFrameGlyph_OnLoad"/>
-			<OnShow function="InspectGlyphFrameGlyph_UpdateSlot"/>
-			<OnClick function="InspectGlyphFrameGlyph_OnClick"/>
-			<OnEnter function="InspectGlyphFrameGlyph_OnEnter"/>
-			<OnLeave function="InspectGlyphFrameGlyph_OnLeave"/>
-			<OnUpdate function="InspectGlyphFrameGlyph_OnUpdate"/>
-		</Scripts>
-	</Button>
 	
 	<Frame name="InspectTalentFrame" setAllPoints="true" useParentLevel="true" enableMouse="true" parent="InspectFrame" hidden="true" id="4">
 		<Layers>
@@ -193,42 +147,42 @@
 			<Frame name="Talents" parentKey="InspectTalents">
 				<Size x="300" y="300"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" x="12" y="0"/>
+					<Anchor point="TOP" x="0" y="0"/>
 				</Anchors>
 				<Frames>
 					<Frame name="$parentTalentRow1" inherits="InspectTalentRowTemplate" parentKey="tier1" id="1">
 						<Anchors>
-							<Anchor point="TOPLEFT" x="20" y="-146"/>
+							<Anchor point="TOP" x="0" y="-152"/>
 						</Anchors>				
 					</Frame>
 					<Frame name="$parentTalentRow2" inherits="InspectTalentRowTemplate" parentKey="tier2" id="2">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentTalentRow1" relativePoint="BOTTOMLEFT" x="0" y="4"/>
+							<Anchor point="TOPLEFT" relativeTo="$parentTalentRow1" relativePoint="BOTTOMLEFT" x="0" y="-12"/>
 						</Anchors>				
 					</Frame>
 					<Frame name="$parentTalentRow3" inherits="InspectTalentRowTemplate" parentKey="tier3" id="3">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentTalentRow2" relativePoint="BOTTOMLEFT" x="0" y="4"/>
+							<Anchor point="TOPLEFT" relativeTo="$parentTalentRow2" relativePoint="BOTTOMLEFT" x="0" y="-12"/>
 						</Anchors>				
 					</Frame>
 					<Frame name="$parentTalentRow4" inherits="InspectTalentRowTemplate" parentKey="tier4" id="4">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentTalentRow3" relativePoint="BOTTOMLEFT" x="0" y="4"/>
+							<Anchor point="TOPLEFT" relativeTo="$parentTalentRow3" relativePoint="BOTTOMLEFT" x="0" y="-12"/>
 						</Anchors>				
 					</Frame>
 					<Frame name="$parentTalentRow5" inherits="InspectTalentRowTemplate" parentKey="tier5" id="5">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentTalentRow4" relativePoint="BOTTOMLEFT" x="0" y="4"/>
+							<Anchor point="TOPLEFT" relativeTo="$parentTalentRow4" relativePoint="BOTTOMLEFT" x="0" y="-12"/>
 						</Anchors>				
 					</Frame>
 					<Frame name="$parentTalentRow6" inherits="InspectTalentRowTemplate" parentKey="tier6" id="6">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentTalentRow5" relativePoint="BOTTOMLEFT" x="0" y="4"/>
+							<Anchor point="TOPLEFT" relativeTo="$parentTalentRow5" relativePoint="BOTTOMLEFT" x="0" y="-12"/>
 						</Anchors>				
 					</Frame>
 					<Frame name="$parentTalentRow7" inherits="InspectTalentRowTemplate" parentKey="tier7" id="7">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentTalentRow6" relativePoint="BOTTOMLEFT" x="0" y="4"/>
+							<Anchor point="TOPLEFT" relativeTo="$parentTalentRow6" relativePoint="BOTTOMLEFT" x="0" y="-12"/>
 						</Anchors>
 					</Frame>
 				</Frames>
@@ -236,49 +190,6 @@
 					<OnShow function="InspectTalentFrameTalents_OnShow"/>
 					<OnLoad function="InspectTalentFrameTalents_OnLoad"/>
 				</Scripts>
-			</Frame>
-			
-			<!-- Glyphs -->
-			<Frame name="InspectGlyphs" parentKey="InspectGlyphs">
-			<Size x="300" y="300"/>
-				<Anchors>
-					<Anchor point="TOPLEFT" x="180" y="-150"/>
-				</Anchors>
-				<Frames>
-					<!-- Minor Glyphs -->
-					<Button name="$parentGlyph1" parentKey="Glyph1" inherits="InspectGlyphTemplate" id="1">
-						<Anchors>
-							<Anchor point="TOPLEFT" x="65" y="0"/>
-						</Anchors>
-					</Button>
-					<Button name="$parentGlyph3" parentKey="Glyph3" inherits="InspectGlyphTemplate" id="3">
-						<Anchors>
-							<Anchor point="TOPLEFT" x="65" y="-90"/>
-						</Anchors>
-					</Button>
-					<Button name="$parentGlyph5" parentKey="Glyph5" inherits="InspectGlyphTemplate" id="5">
-						<Anchors>
-							<Anchor point="TOPLEFT" x="65" y="-180"/>
-						</Anchors>
-					</Button>	
-					
-					<!-- Major Glyphs -->
-					<Button name="$parentGlyph2" parentKey="Glyph2" inherits="InspectGlyphTemplate" id="2">
-						<Anchors>
-							<Anchor point="TOPLEFT" x="0" y="0"/>
-						</Anchors>
-					</Button>
-					<Button name="$parentGlyph4" parentKey="Glyph4" inherits="InspectGlyphTemplate" id="4">
-						<Anchors>
-							<Anchor point="TOPLEFT" x="0" y="-90"/>
-						</Anchors>
-					</Button>
-					<Button name="$parentGlyph6" parentKey="Glyph6" inherits="InspectGlyphTemplate" id="6">
-						<Anchors>
-							<Anchor point="TOPLEFT" x="0" y="-180"/>
-						</Anchors>
-					</Button>
-				</Frames>
 			</Frame>
 			
 		</Frames>

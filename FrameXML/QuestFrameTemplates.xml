@@ -39,6 +39,12 @@
 						<Anchor point="TOPLEFT" relativeTo="$parentMaterialTopLeft" relativePoint="BOTTOMRIGHT"/>
 					</Anchors>
 				</Texture>
+				<Texture parentKey="SealMaterialBG" hidden="true">
+					<Size x="299" y="407"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="7" y="-62"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 		</Layers>
 	</Frame>
@@ -76,29 +82,29 @@
 		<HitRectInsets left="0" right="0" top="0" bottom="14"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentIconTexture" parentKey="Icon">
+				<Texture parentKey="Icon" name="$parentIconTexture">
 					<Size x="39" y="39"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="10" y="-2"/>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentNameFrame" file="Interface\QuestFrame\UI-QuestItemNameFrame">
+				<Texture parentKey="NameFrame" name="$parentNameFrame" file="Interface\QuestFrame\UI-QuestItemNameFrame">
 					<Size x="128" y="64"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentIconTexture" relativePoint="RIGHT" x="-12" y="0"/>
+						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="-12" y="0"/>
 					</Anchors>
 				</Texture>
-				<FontString name="$parentName" inherits="GameFontHighlight" justifyH="LEFT" parentKey="Name">
+				<FontString parentKey="Name" name="$parentName" inherits="GameFontHighlight" justifyH="LEFT" >
 					<Size  x="90" y="36"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentNameFrame"  x="17" y="0"/>
+						<Anchor point="LEFT" relativeKey="$parent.NameFrame"  x="17" y="0"/>
 					</Anchors>
 				</FontString>
 			</Layer>
 			<Layer level="OVERLAY">
 				<Texture name="$parentSpellBorder" inherits="Spellbook-SlotFrame">
 					<Anchors>
-						<Anchor point="CENTER" relativeTo="$parentIconTexture" x="2" y="0"/>
+						<Anchor point="CENTER" relativeKey="$parent.Icon" x="2" y="0"/>
 					</Anchors>
 				</Texture>
 			</Layer>

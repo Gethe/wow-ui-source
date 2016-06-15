@@ -12,7 +12,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="BACKGROUND">
-				<Texture name="InboxFrameBg" file="Interface\QuestFrame\QuestBG">
+				<Texture name="ItemTextFramePageBg" file="Interface\QuestFrame\QuestBG">
 					<Size x="512" y="543"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="7" y="-62"/>
@@ -46,12 +46,6 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<FontString name="ItemTextTitleText" inherits="GameFontNormal">
-					<Size x="224" y="14"/>
-					<Anchors>
-						<Anchor point="CENTER" x="15" y="200"/>
-					</Anchors>
-				</FontString>
 				<FontString name="ItemTextCurrentPage" inherits="GameFontNormal">
 					<Size x="192" y="0"/>
 					<Anchors>
@@ -61,38 +55,24 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<ScrollFrame name="ItemTextScrollFrame" inherits="UIPanelScrollFrameTemplate">
-				<Size x="280" y="355"/>
+			<ScrollFrame name="ItemTextScrollFrame" inherits="UIPanelScrollFrameCodeTemplate">
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="-33" y="-63"/>
+					<Anchor point="TOPRIGHT" x="-33" y="-83"/>
+					<Anchor point="BOTTOMLEFT" x="25" y="6"/>
 				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture name="$parentTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-							<Size x="28" y="256"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="5"/>
-							</Anchors>
-							<TexCoords left="0" right="0.484375" top="0" bottom="1.0"/>
-						</Texture>
-						<Texture name="$parentBottom" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-							<Size x="28" y="107"/>
-							<Anchors>
-								<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="-3"/>
-							</Anchors>
-							<TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
-						</Texture>
-					</Layer>
-					<Layer level="BACKGROUND">
-						<Texture name="$parentMiddle">
-							<Size x="25" y="365"/>
-							<Anchors>
-								<Anchor point="TOPRIGHT" relativeTo="$parentTop"/>
-							</Anchors>
-							<Color r="0" g="0" b="0" a="0.8"/>
-						</Texture>
-					</Layer>
-				</Layers>
+				<Frames>
+					<Slider name="$parentScrollBar" inherits="UIPanelStretchableArtScrollBarTemplate" parentKey="ScrollBar">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="ItemTextFrame" relativePoint="TOPRIGHT" x="-27" y="-79"/>
+							<Anchor point="BOTTOMLEFT" relativeTo="ItemTextFrame" relativePoint="BOTTOMRIGHT" x="-27" y="22"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self.scrollStep = 30;
+							</OnLoad>
+						</Scripts>
+					</Slider>
+				</Frames>
 				<ScrollChild>
 					<Frame name="ItemTextPageScrollChild">
 						<Size x="10" y="10"/>

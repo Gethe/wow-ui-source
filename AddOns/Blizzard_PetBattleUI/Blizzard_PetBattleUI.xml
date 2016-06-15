@@ -687,8 +687,8 @@
 		<Animations>
 			<AnimationGroup parentKey="CooldownFlashAnim">
 				<Rotation childKey="CooldownFlash" degrees="-90" duration="0.5" order="1"/>
-				<Alpha childKey="CooldownFlash" change="0.50" duration="0.1667" order="1"/>
-				<Alpha childKey="CooldownFlash" change="-0.50" duration="0.3333" order="2"/>
+				<Alpha childKey="CooldownFlash" duration="0.1667" order="1" fromAlpha="0" toAlpha="0.5"/>
+				<Alpha childKey="CooldownFlash" duration="0.3333" order="2" fromAlpha="0.5" toAlpha="0"/>
 			</AnimationGroup>
 		</Animations>
 	</Button>
@@ -1057,18 +1057,18 @@
 				</Frames>
 				<Animations>
 					<AnimationGroup parentKey="SpeedFlash">
-						<Alpha childKey="BorderFlash" change="1.0" duration="0.34" smoothing="IN_OUT" order="1"/>
-						<Alpha childKey="BorderFlash" change="-0.90" duration="0.33" smoothing="IN_OUT" order="2"/>
-						<Alpha childKey="BorderFlash" change="0.90" duration="0.33" smoothing="IN_OUT" order="3"/>
-						<Alpha childKey="BorderFlash" change="-0.90" duration="0.33" smoothing="IN_OUT" order="4"/>
-						<Alpha childKey="BorderFlash" change="0.90" duration="0.33" smoothing="IN_OUT" order="5"/>
-						<Alpha childKey="BorderFlash" change="-0.90" duration="0.33" smoothing="IN_OUT" order="6"/>
-						<Alpha childKey="BorderFlash" change="0.90" duration="0.33" smoothing="IN_OUT" order="7"/>
-						<Alpha childKey="BorderFlash" change="-0.90" duration="0.33" smoothing="IN_OUT" order="8"/>
-						<Alpha childKey="BorderFlash" change="0.90" duration="0.33" smoothing="IN_OUT" order="9"/>
-						<Alpha childKey="BorderFlash" change="-0.90" duration="0.33" smoothing="IN_OUT" order="10"/>
-						<Alpha childKey="BorderFlash" change="0.90" duration="0.33" smoothing="IN_OUT" order="11"/>
-						<Alpha childKey="BorderFlash" change="-1.0" duration="0.34" smoothing="IN_OUT" order="12"/>
+						<Alpha childKey="BorderFlash" fromAlpha="0" toAlpha="1" duration="0.34" smoothing="IN_OUT" order="1"/>
+						<Alpha childKey="BorderFlash" fromAlpha="0.9" toAlpha="0" duration="0.33" smoothing="IN_OUT" order="2"/>
+						<Alpha childKey="BorderFlash" fromAlpha="0" toAlpha="0.9" duration="0.33" smoothing="IN_OUT" order="3"/>
+						<Alpha childKey="BorderFlash" fromAlpha="0.9" toAlpha="0" duration="0.33" smoothing="IN_OUT" order="4"/>
+						<Alpha childKey="BorderFlash" fromAlpha="0" toAlpha="0.9" duration="0.33" smoothing="IN_OUT" order="5"/>
+						<Alpha childKey="BorderFlash" fromAlpha="0.9" toAlpha="0" duration="0.33" smoothing="IN_OUT" order="6"/>
+						<Alpha childKey="BorderFlash" fromAlpha="0" toAlpha="0.9" duration="0.33" smoothing="IN_OUT" order="7"/>
+						<Alpha childKey="BorderFlash" fromAlpha="0.9" toAlpha="0" duration="0.33" smoothing="IN_OUT" order="8"/>
+						<Alpha childKey="BorderFlash" fromAlpha="0" toAlpha="0.9" duration="0.33" smoothing="IN_OUT" order="9"/>
+						<Alpha childKey="BorderFlash" fromAlpha="0.9" toAlpha="0" duration="0.33" smoothing="IN_OUT" order="10"/>
+						<Alpha childKey="BorderFlash" fromAlpha="0" toAlpha="0.9" duration="0.33" smoothing="IN_OUT" order="11"/>
+						<Alpha childKey="BorderFlash" fromAlpha="1" toAlpha="0" duration="0.34" smoothing="IN_OUT" order="12"/>
 					</AnimationGroup>
 				</Animations>
 				<Scripts>
@@ -1224,18 +1224,18 @@
 				</Frames>
 				<Animations>
 					<AnimationGroup parentKey="SpeedFlash">
-						<Alpha childKey="BorderFlash" change="1.0" duration="0.34" smoothing="IN_OUT" order="1"/>
-						<Alpha childKey="BorderFlash" change="-0.90" duration="0.33" smoothing="IN_OUT" order="2"/>
-						<Alpha childKey="BorderFlash" change="0.90" duration="0.33" smoothing="IN_OUT" order="3"/>
-						<Alpha childKey="BorderFlash" change="-0.90" duration="0.33" smoothing="IN_OUT" order="4"/>
-						<Alpha childKey="BorderFlash" change="0.90" duration="0.33" smoothing="IN_OUT" order="5"/>
-						<Alpha childKey="BorderFlash" change="-0.90" duration="0.33" smoothing="IN_OUT" order="6"/>
-						<Alpha childKey="BorderFlash" change="0.90" duration="0.33" smoothing="IN_OUT" order="7"/>
-						<Alpha childKey="BorderFlash" change="-0.90" duration="0.33" smoothing="IN_OUT" order="8"/>
-						<Alpha childKey="BorderFlash" change="0.90" duration="0.33" smoothing="IN_OUT" order="9"/>
-						<Alpha childKey="BorderFlash" change="-0.90" duration="0.33" smoothing="IN_OUT" order="10"/>
-						<Alpha childKey="BorderFlash" change="0.90" duration="0.33" smoothing="IN_OUT" order="11"/>
-						<Alpha childKey="BorderFlash" change="-1.0" duration="0.34" smoothing="IN_OUT" order="12"/>
+						<Alpha childKey="BorderFlash" fromAlpha="0" toAlpha="1" duration="0.34" smoothing="IN_OUT" order="1"/>
+						<Alpha childKey="BorderFlash" fromAlpha="0.9" toAlpha="0" duration="0.33" smoothing="IN_OUT" order="2"/>
+						<Alpha childKey="BorderFlash" fromAlpha="0" toAlpha="0.9" duration="0.33" smoothing="IN_OUT" order="3"/>
+						<Alpha childKey="BorderFlash" fromAlpha="0.9" toAlpha="0" duration="0.33" smoothing="IN_OUT" order="4"/>
+						<Alpha childKey="BorderFlash" fromAlpha="0" toAlpha="0.9" duration="0.33" smoothing="IN_OUT" order="5"/>
+						<Alpha childKey="BorderFlash" fromAlpha="0.9" toAlpha="0" duration="0.33" smoothing="IN_OUT" order="6"/>
+						<Alpha childKey="BorderFlash" fromAlpha="0" toAlpha="0.9" duration="0.33" smoothing="IN_OUT" order="7"/>
+						<Alpha childKey="BorderFlash" fromAlpha="0.9" toAlpha="0" duration="0.33" smoothing="IN_OUT" order="8"/>
+						<Alpha childKey="BorderFlash" fromAlpha="0" toAlpha="0.9" duration="0.33" smoothing="IN_OUT" order="9"/>
+						<Alpha childKey="BorderFlash" fromAlpha="0.9" toAlpha="0" duration="0.33" smoothing="IN_OUT" order="10"/>
+						<Alpha childKey="BorderFlash" fromAlpha="0" toAlpha="0.9" duration="0.33" smoothing="IN_OUT" order="11"/>
+						<Alpha childKey="BorderFlash" fromAlpha="1" toAlpha="0" duration="0.34" smoothing="IN_OUT" order="12"/>
 					</AnimationGroup>
 				</Animations>
 				<Scripts>
@@ -1621,12 +1621,12 @@
 				</Anchors>
 				<Animations>
 					<AnimationGroup parentKey="splashAnim">
-						<Alpha change="1" duration="0.1" startDelay="0" order="1" />
+						<Alpha fromAlpha="0" toAlpha="1" duration="0.1" startDelay="0" order="1" />
 						<Scale scaleX="2.0" scaleY="2.0" duration="0.15" startDelay="0" order="1" />
 										
 						<Scale scaleX="0.67" scaleY="0.67" duration="0.3" startDelay="0.0" order="2" />
 						
-						<Alpha change="-1" duration="0.3" startDelay="0.5" order="3"/>
+						<Alpha fromAlpha="1" toAlpha="0" duration="0.3" startDelay="0.5" order="3"/>
 						
 						<Scripts>
 							<OnPlay>
@@ -1659,7 +1659,7 @@
 				</Anchors>
 				<Animations>
 					<AnimationGroup parentKey="TextAnim">
-						<Alpha change="1" duration="0.3" startDelay="0.1" order="1"/>
+						<Alpha fromAlpha="0" toAlpha="1" duration="0.3" startDelay="0.1" order="1"/>
 						<Scripts>
 							<OnPlay>
 								self:GetParent():SetAlpha(0);

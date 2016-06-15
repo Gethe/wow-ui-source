@@ -73,28 +73,16 @@
 		</Layers>
 		<Frames>
 			<Button name="MinimapZoneTextButton">
-				<Size>
-					<AbsDimension x="150" y="12"/>
-				</Size>
+				<Size x="140" y="12"/>
 				<Anchors>
-					<Anchor point="CENTER">
-						<Offset>
-							<AbsDimension x="7" y="83"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="CENTER" x="0" y="83"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
 						<FontString name="MinimapZoneText" inherits="GameFontNormal" nonspacewrap="true">
-							<Size>
-								<AbsDimension x="140" y="12"/>
-							</Size>
+							<Size x="140" y="12"/>
 							<Anchors>
-								<Anchor point="CENTER" relativePoint="TOP">
-									<Offset>
-										<AbsDimension x="-5" y="-6"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="CENTER" relativePoint="TOP" x="0" y="-6"/>
 							</Anchors>
 						</FontString>
 					</Layer>
@@ -631,7 +619,7 @@
 										</Anchors>
 										<Layers>
 											<Layer level="OVERLAY">
-												<FontString parentKey="Text" inherits="GameFontHighlightLeft" justifyV="TOP" text="GARRISON_VIEW_MISSION_PROGRESS_HERE">
+												<FontString parentKey="Text" inherits="GameFontHighlightLeft" justifyV="TOP">
 													<Size x="188" y="0"/>
 													<Anchors>
 														<Anchor point="TOPLEFT" x="16" y="-24"/>
@@ -662,6 +650,7 @@
 										</Frames>
 										<Scripts>
 											<OnLoad>
+												self.label = GARRISON_VIEW_MISSION_PROGRESS_HERE;
 												MicroButtonAlert_OnLoad(self);
 												SetClampedTextureRotation(self.Arrow, 270);--make arrow face right
 											</OnLoad>
@@ -678,8 +667,8 @@
 									<OnClick function="GarrisonLandingPageMinimapButton_OnClick"/>
 									<OnEnter>
 										GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-										GameTooltip:SetText(GARRISON_LANDING_PAGE_TITLE, 1, 1, 1);
-										GameTooltip:AddLine(MINIMAP_GARRISON_LANDING_PAGE_TOOLTIP, nil, nil, nil, true);
+										GameTooltip:SetText(self.title, 1, 1, 1);
+										GameTooltip:AddLine(self.description, nil, nil, nil, true);
 										GameTooltip:Show();
 									</OnEnter>
 									<OnLeave>

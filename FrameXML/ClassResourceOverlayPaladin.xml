@@ -1,0 +1,82 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+  <Script file="ClassResourceOverlayPaladin.lua"/>
+  
+	<Frame name="PaladinResourceOverlayRuneFrame" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="OffTexture" atlas="ClassOverlay-HolyPower1off" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="OnTexture" atlas="ClassOverlay-HolyPower1on" useAtlasSize="true" alpha="0">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="TurnOn" setToFinalAlpha="true">
+				<Alpha childKey="OnTexture" fromAlpha="0" toAlpha="1" duration="0.5"/>
+				<Scripts>
+					<OnFinished>self:GetParent().on = true;</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+			<AnimationGroup parentKey="TurnOff" setToFinalAlpha="true">
+				<Alpha childKey="OnTexture" fromAlpha="1" toAlpha="0" duration="0.5"/>
+				<Scripts>
+					<OnFinished>self:GetParent().on = false;</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+		
+	<Frame name="PaladinResourceOverlayFrame" inherits="ClassResourceOverlayFrame" mixin="ClassResourceOverlay, PaladinResourceOverlay">
+		<Size x="133" y="33"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="ClassOverlay-HolyPowerBG" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Rune1" parentArray="Runes" inherits="PaladinResourceOverlayRuneFrame">
+				<Size x="32" y="22"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="8" y="-3"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="Rune2" parentArray="Runes" inherits="PaladinResourceOverlayRuneFrame">
+				<Size x="33" y="20"/>
+				<Anchors>
+					<Anchor point="TOP" x="3" y="-3"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="Rune3" parentArray="Runes" inherits="PaladinResourceOverlayRuneFrame">
+				<Size x="32" y="24"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-5" y="-3"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="Rune4" parentArray="Runes" inherits="PaladinResourceOverlayRuneFrame">
+				<Size x="33" y="17"/>
+				<Anchors>
+					<Anchor point="BOTTOM" x="-14" y="-2"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="Rune5" parentArray="Runes" inherits="PaladinResourceOverlayRuneFrame">
+				<Size x="33" y="17"/>
+				<Anchors>
+					<Anchor point="BOTTOM" x="16" y="-2"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+	</Frame>
+</Ui>
+
+

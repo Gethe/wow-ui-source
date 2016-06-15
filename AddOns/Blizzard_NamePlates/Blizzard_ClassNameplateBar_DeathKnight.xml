@@ -1,0 +1,62 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+  <Script file="Blizzard_ClassNameplateBar_DeathKnight.lua"/>
+	<Button name="ClassNameplateBarDeathKnightRuneFrame" virtual="true">
+		<Size x="18" y="20"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Rune" atlas="ClassOverlay-Rune" useAtlasSize="false">
+					<Size x="18" y="20"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Cooldown parentKey="Cooldown" drawEdge="true" hideCountdownNumbers="true" inherits="CooldownFrameTemplate">
+				<Anchors>
+					<Anchor point="CENTER" x="0" y="0"/>
+				</Anchors>
+				<SwipeTexture file="Interface\PlayerFrame\ClassOverlay-RuneCooldown"/>
+			</Cooldown>
+		</Frames>
+	</Button>
+	
+	<Frame name="DeathKnightResourceOverlayFrame" inherits="ClassNameplateBarFrame" mixin="ClassNameplateBar, ClassNameplateBarDeathKnight">
+		<Size x="98" y="20"/>
+		<Frames>
+			<Button parentKey="Rune1" parentArray="Runes" inherits="ClassNameplateBarDeathKnightRuneFrame">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="Rune2" parentArray="Runes" inherits="ClassNameplateBarDeathKnightRuneFrame">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Rune1" relativePoint="RIGHT" x="-2" y="0"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="Rune3" parentArray="Runes" inherits="ClassNameplateBarDeathKnightRuneFrame">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Rune2" relativePoint="RIGHT" x="-2" y="0"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="Rune4" parentArray="Runes" inherits="ClassNameplateBarDeathKnightRuneFrame">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Rune3" relativePoint="RIGHT" x="-2" y="0"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="Rune5" parentArray="Runes" inherits="ClassNameplateBarDeathKnightRuneFrame">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Rune4" relativePoint="RIGHT" x="-2" y="0"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="Rune6" parentArray="Runes" inherits="ClassNameplateBarDeathKnightRuneFrame">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Rune5" relativePoint="RIGHT" x="-2" y="0"/>
+				</Anchors>
+			</Button>
+		</Frames>
+	</Frame>
+
+	</Ui>

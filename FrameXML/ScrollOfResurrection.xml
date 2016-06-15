@@ -400,19 +400,9 @@
 							<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT" x="6" y="-6"/>
 							<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT" x="0" y="6"/>
 						</Anchors>
-						<Frames>
-							<Button name="$parentFocusButton" setAllPoints="true" parentKey="focusButton">
-								<Scripts>
-									<OnClick>
-										self:GetParent().editBox:SetFocus();
-									</OnClick>
-								</Scripts>
-							</Button>
-						</Frames>
 						<Scripts>
 							<OnLoad>
 								local scrollBar = _G[self:GetName().."ScrollBar"];
-								scrollBar:SetFrameLevel(_G[self:GetName().."FocusButton"]:GetFrameLevel() + 2);
 								scrollBar:ClearAllPoints();
 								scrollBar:SetPoint("TOPLEFT", self, "TOPRIGHT", -18, -10);
 								scrollBar:SetPoint("BOTTOMLEFT", self, "BOTTOMRIGHT", -18, 8);
@@ -424,6 +414,9 @@
 								self.scrollBarHideable = 1;
 								scrollBar:Hide();
 							</OnLoad>
+							<OnMouseDown>
+								self.editBox:SetFocus();
+							</OnMouseDown>
 						</Scripts>
 						<ScrollChild>
 							<EditBox name="$parentEditBox" multiLine="true" letters="250" countInvisibleLetters="true" autoFocus="false" parentKey="editBox">

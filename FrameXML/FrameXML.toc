@@ -1,18 +1,24 @@
 # Do not delete the following line!
-## Interface: 60200
-GlobalStrings.lua
-Constants.lua
-Localization.xml
-Fonts.xml
-FontStyles.xml
+## Interface: 70000
 
 ## add C namespace augmentations here
 ..\SharedXML\C_TimerAugment.lua
 
 ## add snippets independent of modules here
 ..\SharedXML\Util.lua
+MixinUtil.lua
+AnimatedStatusBar.xml
 FlowContainer.lua
 FrameLocks.lua
+
+
+Constants.lua
+Localization.xml
+Fonts.xml
+FontStyles.xml
+
+## This needs to be loaded after Fonts.xml
+..\SharedXML\IME.xml
 
 ## add new modules below here
 
@@ -33,6 +39,7 @@ SecureTemplates.xml
 SecureHandlerTemplates.xml
 SecureGroupHeaders.xml
 ..\SharedXML\ModelFrames.xml
+WardrobeOutfits.xml
 DressUpFrames.xml
 ItemButtonTemplate.xml
 NavigationBar.xml
@@ -58,14 +65,18 @@ AudioOptionsPanels.xml
 InterfaceOptionsFrame.xml
 InterfaceOptionsPanels.xml
 ..\SharedXML\AddonList.xml
+GarrisonBaseUtils.xml
 AlertFrames.xml
+AlertFrameSystems.xml
 MirrorTimer.xml
 CoinPickupFrame.xml
 StackSplitFrame.xml
 FadingFrame.xml
 ZoneText.xml
+BuilderSpenderFrame.xml
 UnitFrame.xml
 Cooldown.xml
+PVPHonorSystem.xml
 ActionBarController.xml
 TutorialFrame.xml
 Minimap.xml
@@ -73,6 +84,7 @@ GameTime.xml
 ##ActionWindow.xml
 EquipmentFlyout.xml
 BuffFrame.xml
+LowHealthFrame.xml
 CombatFeedback.xml
 UnitPowerBarAlt.xml
 CastingBarFrame.xml
@@ -92,7 +104,6 @@ StatsFrame.xml
 SpellBookFrame.xml
 CharacterFrame.xml
 PaperDollFrame.xml
-PetPaperDollFrame.xml
 ReputationFrame.xml
 QuestFrame.xml
 QuestPOI.xml
@@ -139,9 +150,12 @@ MovieRecordingProgress.xml
 RatingMenuFrame.xml
 TalentFrameBase.lua
 TalentFrameTemplates.xml
+ClassPowerBar.xml
 RuneFrame.xml
 ShardBar.xml
 EclipseBarFrame.xml
+ComboFramePlayer.xml
+InsanityBar.xml
 EasyMenu.lua
 ChatConfigFrame.xml
 MovieFrame.xml
@@ -156,6 +170,7 @@ CompactPartyFrame.xml
 RolePoll.xml
 SpellFlyout.xml
 PaladinPowerBar.xml
+MageArcaneChargesBar.xml
 SpellActivationOverlay.xml
 GuildInviteFrame.xml
 GhostFrame.xml
@@ -178,9 +193,11 @@ LossOfControlFrame.xml
 PVPHelper.xml
 MapBar.xml
 ProductChoice.xml
-DraenorZoneAbility.xml
+ZoneAbility.xml
+ArtifactToasts.xml
 ..\SharedXML\ModelPreviewFrame.xml
 SplashFrame.xml
+..\SharedXML\LayoutFrame.xml
 
 #Save off whatever we need available unmodified.
 SecureCapsule.lua

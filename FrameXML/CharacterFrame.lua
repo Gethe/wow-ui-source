@@ -1,7 +1,7 @@
-CHARACTERFRAME_SUBFRAMES = { "PaperDollFrame", "PetPaperDollFrame", "ReputationFrame", "TokenFrame" };
+CHARACTERFRAME_SUBFRAMES = { "PaperDollFrame", "ReputationFrame", "TokenFrame" };
 CHARACTERFRAME_EXPANDED_WIDTH = 540;
 
-local NUM_CHARACTERFRAME_TABS = 4;
+local NUM_CHARACTERFRAME_TABS = 3;
 function ToggleCharacter (tab, onlyShow)
 	local subFrame = _G[tab];
 	if ( subFrame ) then
@@ -43,10 +43,8 @@ function CharacterFrameTab_OnClick (self, button)
 	if ( name == "CharacterFrameTab1" ) then
 		ToggleCharacter("PaperDollFrame");
 	elseif ( name == "CharacterFrameTab2" ) then
-		ToggleCharacter("PetPaperDollFrame");
-	elseif ( name == "CharacterFrameTab3" ) then
 		ToggleCharacter("ReputationFrame");	
-	elseif ( name == "CharacterFrameTab4" ) then
+	elseif ( name == "CharacterFrameTab3" ) then
 		ToggleCharacter("TokenFrame");	
 	end
 	PlaySound("igCharacterInfoTab");
@@ -94,14 +92,12 @@ function CharacterFrame_OnEvent (self, event, ...)
 	
 	local arg1 = ...;
 	if ( event == "UNIT_NAME_UPDATE" ) then
-		if ( arg1 == "player" and not PetPaperDollFrame:IsShown()) then
+		if ( arg1 == "player" ) then
 			CharacterFrameTitleText:SetText(UnitPVPName("player"));
 		end
 		return;
 	elseif ( event == "PLAYER_PVP_RANK_CHANGED" ) then
-		if (not PetPaperDollFrame:IsShown()) then
-			CharacterFrameTitleText:SetText(UnitPVPName("player"));
-		end
+		CharacterFrameTitleText:SetText(UnitPVPName("player"));
 	elseif (	event == "PREVIEW_TALENT_POINTS_CHANGED"
 				or event == "PLAYER_TALENT_UPDATE"
 				or event == "ACTIVE_TALENT_GROUP_CHANGED") then
@@ -127,7 +123,7 @@ function CharacterFrame_OnShow (self)
 	ShowTextStatusBarText(MainMenuExpBar);
 	ShowTextStatusBarText(PetFrameHealthBar);
 	ShowTextStatusBarText(PetFrameManaBar);
-	ShowWatchedReputationBarText();
+	ShowWatchBarText(ReputationWatchBar);
 	
 	MicroButtonPulseStop(CharacterMicroButton);	--Stop the button pulse
 end
@@ -149,31 +145,24 @@ function CharacterFrame_OnHide (self)
 	HideTextStatusBarText(MainMenuExpBar);
 	HideTextStatusBarText(PetFrameHealthBar);
 	HideTextStatusBarText(PetFrameManaBar);
-	HideWatchedReputationBarText();
+	HideWatchBarText(ReputationWatchBar);
 	PaperDollFrame.currentSideBar = nil;
 end
 
 function CharacterFrame_Collapse()
 	CharacterFrame:SetWidth(PANEL_DEFAULT_WIDTH);
 	CharacterFrame.Expanded = false;
-	CharacterFrameExpandButton:SetNormalTexture("Interface\\Buttons\\UI-SpellbookIcon-NextPage-Up");
-	CharacterFrameExpandButton:SetPushedTexture("Interface\\Buttons\\UI-SpellbookIcon-NextPage-Down");
-	CharacterFrameExpandButton:SetDisabledTexture("Interface\\Buttons\\UI-SpellbookIcon-NextPage-Disabled");
 	for i = 1, #PAPERDOLL_SIDEBARS do
 		_G[PAPERDOLL_SIDEBARS[i].frame]:Hide();
 	end
 	CharacterFrameInsetRight:Hide();
 	UpdateUIPanelPositions(CharacterFrame);
 	PaperDollFrame_SetLevel();
-	CharacterTrialLevelErrorText:SetPoint("TOP", CharacterLevelText, "BOTTOM", 0, -3);
 end
 
 function CharacterFrame_Expand()
 	CharacterFrame:SetWidth(CHARACTERFRAME_EXPANDED_WIDTH);
 	CharacterFrame.Expanded = true;
-	CharacterFrameExpandButton:SetNormalTexture("Interface\\Buttons\\UI-SpellbookIcon-PrevPage-Up");
-	CharacterFrameExpandButton:SetPushedTexture("Interface\\Buttons\\UI-SpellbookIcon-PrevPage-Down");
-	CharacterFrameExpandButton:SetDisabledTexture("Interface\\Buttons\\UI-SpellbookIcon-PrevPage-Disabled");
 	if (PaperDollFrame:IsShown() and PaperDollFrame.currentSideBar) then
 		PaperDollFrame.currentSideBar:Show();
 	else
@@ -183,11 +172,6 @@ function CharacterFrame_Expand()
 	CharacterFrameInsetRight:Show();
 	UpdateUIPanelPositions(CharacterFrame);
 	PaperDollFrame_SetLevel();
-	-- trial edition
-	local width = CharacterTrialLevelErrorText:GetWidth();
-	if ( width > 190 ) then
-		CharacterTrialLevelErrorText:SetPoint("TOP", CharacterLevelText, "BOTTOM", -((width-190)/2), -3);
-	end
 end
 
 local function CompareFrameSize(frame1, frame2)
@@ -206,7 +190,7 @@ function CharacterFrame_TabBoundsCheck(self)
 	
 	local diff = _G["CharacterFrameTab"..NUM_CHARACTERFRAME_TABS]:GetRight() - CharacterFrame:GetRight();
 	
-	if ( diff > 0 and CharacterFrameTab4:IsShown() and CharacterFrameTab2:IsShown()) then
+	if ( diff > 0 and CharacterFrameTab3:IsShown() ) then
 		--Find the biggest tab
 		for i=1, NUM_CHARACTERFRAME_TABS do
 			CharTabtable[i]=_G["CharacterFrameTab"..i];

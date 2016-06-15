@@ -174,6 +174,10 @@ function ContainerFrame_OnHide(self)
 		end
 		PlaySound("igBackPackClose");
 	end
+
+	if ArtifactRelicHelpBox:IsShown() and ArtifactRelicHelpBox.owner == self then
+		ArtifactRelicHelpBox:Hide();
+	end
 end
 
 function ContainerFrame_OnShow(self)
@@ -416,13 +420,37 @@ function ContainerFrame_GetOpenFrame()
 	end
 end
 
+function ContainerFrame_ConsiderItemButtonForRelicTutorial(itemButton, itemID)
+	if itemID and not ArtifactRelicHelpBox:IsShown() and IsArtifactRelicItem(itemID) then
+		if C_ArtifactUI.DoesEquippedArtifactHaveAnyRelicsSlotted() then
+			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_ARTIFACT_RELIC_MATCH, true);
+			return;
+		end
+
+		local numRelicSlots = C_ArtifactUI.GetEquippedArtifactNumRelicSlots(true);
+		if numRelicSlots then
+			for relicSlotIndex = 1, numRelicSlots do
+				if C_ArtifactUI.CanApplyRelicItemIDToEquippedArtifactSlot(itemID, relicSlotIndex) then
+					ArtifactRelicHelpBox.owner = itemButton:GetParent();
+					ArtifactRelicHelpBox:ClearAllPoints();
+					ArtifactRelicHelpBox:SetPoint("RIGHT", itemButton, "LEFT", -27, 0);
+					ArtifactRelicHelpBox:Show();
+
+					return;
+				end
+			end
+		end
+	end
+end
+
+
 function ContainerFrame_Update(frame)
 	local id = frame:GetID();
 	local name = frame:GetName();
 	local itemButton;
-	local texture, itemCount, locked, quality, readable, _, isFiltered, noValue;
+	local texture, itemCount, locked, quality, readable, _, isFiltered, noValue, itemID;
 	local isQuestItem, questId, isActive, questTexture;
-	local isNewItem, isBattlePayItem, battlepayItemTexture, newItemTexture, flash, newItemAnim;
+	local battlepayItemTexture, newItemTexture, flash, newItemAnim;
 	local tooltipOwner = GameTooltip:GetOwner();
 	
 	frame.FilterIcon:Hide();
@@ -459,13 +487,20 @@ function ContainerFrame_Update(frame)
 		BagItemAutoSortButton:Hide();
 	end
 
+	if ArtifactRelicHelpBox:IsShown() and ArtifactRelicHelpBox.owner == frame then
+		ArtifactRelicHelpBox:Hide();
+	end
+
+	local shouldDoRelicChecks = not BagHelpBox:IsShown() and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_ARTIFACT_RELIC_MATCH);
+
 	for i=1, frame.size, 1 do
 		itemButton = _G[name.."Item"..i];
 		
-		texture, itemCount, locked, quality, readable, _, _, isFiltered, noValue = GetContainerItemInfo(id, itemButton:GetID());
+		texture, itemCount, locked, quality, readable, _, _, isFiltered, noValue, itemID = GetContainerItemInfo(id, itemButton:GetID());
 		isQuestItem, questId, isActive = GetContainerItemQuestInfo(id, itemButton:GetID());
 		
 		SetItemButtonTexture(itemButton, texture);
+		SetItemButtonQuality(itemButton, quality, itemID);
 		SetItemButtonCount(itemButton, itemCount);
 		SetItemButtonDesaturated(itemButton, locked);
 		
@@ -480,8 +515,9 @@ function ContainerFrame_Update(frame)
 			questTexture:Hide();
 		end
 		
-		isNewItem = C_NewItems.IsNewItem(id, itemButton:GetID());
-		isBattlePayItem = IsBattlePayItem(id, itemButton:GetID());
+		local isNewItem = C_NewItems.IsNewItem(id, itemButton:GetID());
+		local isBattlePayItem = IsBattlePayItem(id, itemButton:GetID());
+
 		battlepayItemTexture = _G[name.."Item"..i].BattlepayItemTexture;
 		newItemTexture = _G[name.."Item"..i].NewItemTexture;
 		flash = _G[name.."Item"..i].flashAnim;
@@ -512,22 +548,8 @@ function ContainerFrame_Update(frame)
 				newItemAnim:Stop();
 			end
 		end
-		
-		itemButton.JunkIcon:Hide();
-		if (quality) then
-			if (quality >= LE_ITEM_QUALITY_COMMON and BAG_ITEM_QUALITY_COLORS[quality]) then
-				itemButton.IconBorder:Show();
-				itemButton.IconBorder:SetVertexColor(BAG_ITEM_QUALITY_COLORS[quality].r, BAG_ITEM_QUALITY_COLORS[quality].g, BAG_ITEM_QUALITY_COLORS[quality].b);
-			else
-				itemButton.IconBorder:Hide();
-			end
 
-			if (quality == LE_ITEM_QUALITY_POOR and not noValue and MerchantFrame:IsShown()) then
-				itemButton.JunkIcon:Show();
-			end
-		else
-			itemButton.IconBorder:Hide();
-		end
+		itemButton.JunkIcon:SetShown(quality == LE_ITEM_QUALITY_POOR and not noValue and MerchantFrame:IsShown());
 				
 		if ( texture ) then
 			ContainerFrame_UpdateCooldown(id, itemButton);
@@ -551,6 +573,9 @@ function ContainerFrame_Update(frame)
 			itemButton.searchOverlay:Show();
 		else
 			itemButton.searchOverlay:Hide();
+			if shouldDoRelicChecks then
+				ContainerFrame_ConsiderItemButtonForRelicTutorial(itemButton, itemID);
+			end
 		end
 	end
 end
@@ -616,7 +641,7 @@ end
 function ContainerFrame_UpdateCooldown(container, button)
 	local cooldown = _G[button:GetName().."Cooldown"];
 	local start, duration, enable = GetContainerItemCooldown(container, button:GetID());
-	CooldownFrame_SetTimer(cooldown, start, duration, enable);
+	CooldownFrame_Set(cooldown, start, duration, enable);
 	if ( duration > 0 and enable == 0 ) then
 		SetItemButtonTextureVertexColor(button, 0.4, 0.4, 0.4);
 	else
@@ -1024,17 +1049,40 @@ function ContainerFrameItemButton_OnModifiedClick(self, button)
 	end
 end
 
-function ContainerFrameItemButton_OnEnter(self)
-	local x;
-	x = self:GetRight();
-	if ( x >= ( GetScreenWidth() / 2 ) ) then
-		GameTooltip:SetOwner(self, "ANCHOR_LEFT");
+function ContainerFrameItemButton_CalculateItemTooltipAnchors(self, mainTooltip, secondaryTooltip)
+	local x = self:GetRight();
+
+	local anchorFromLeft = x < GetScreenWidth() / 2;
+
+	if ( secondaryTooltip and secondaryTooltip:IsShown() ) then
+		-- Always put the primary tooltip on the left
+		if ( anchorFromLeft ) then
+			mainTooltip:SetPoint("BOTTOMLEFT", self, "TOPRIGHT");
+			secondaryTooltip:SetPoint("TOPLEFT", mainTooltip, "TOPRIGHT", 0, 0);
+			mainTooltip.overrideComparisonAnchorFrame = secondaryTooltip;
+			mainTooltip.overrideComparisonAnchorSide = "right";
+		else
+			secondaryTooltip:SetPoint("BOTTOMRIGHT", self, "TOPLEFT");
+			mainTooltip:SetPoint("TOPRIGHT", secondaryTooltip, "TOPLEFT", 0, 0);
+			mainTooltip.overrideComparisonAnchorSide = "left";
+		end
+		return true;
 	else
-		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		if ( anchorFromLeft ) then
+			mainTooltip:SetPoint("BOTTOMLEFT", self, "TOPRIGHT");
+		else
+			mainTooltip:SetPoint("BOTTOMRIGHT", self, "TOPLEFT");
+		end
 	end
+	return false;
+end
+
+function ContainerFrameItemButton_OnEnter(self)
+	GameTooltip:SetOwner(self, "ANCHOR_NONE");
 
 	-- Keyring specific code
 	if ( self:GetParent():GetID() == KEYRING_CONTAINER ) then
+		ContainerFrameItemButton_CalculateItemTooltipAnchors(self, GameTooltip);
 		GameTooltip:SetInventoryItem("player", KeyRingButtonIDToInvSlotID(self:GetID()));
 		CursorUpdate(self);
 		return;
@@ -1058,12 +1106,19 @@ function ContainerFrameItemButton_OnEnter(self)
 	local showSell = nil;
 	local hasCooldown, repairCost, speciesID, level, breedQuality, maxHealth, power, speed, name = GameTooltip:SetBagItem(self:GetParent():GetID(), self:GetID());
 	if(speciesID and speciesID > 0) then
+		ContainerFrameItemButton_CalculateItemTooltipAnchors(self, GameTooltip); -- Battle pet tooltip uses the GameTooltip's anchor
 		BattlePetToolTip_Show(speciesID, level, breedQuality, maxHealth, power, speed, name);
 		return;
 	else
 		if (BattlePetTooltip) then
 			BattlePetTooltip:Hide();
 		end
+	end
+
+	local requiresCompareTooltipReanchor = ContainerFrameItemButton_CalculateItemTooltipAnchors(self, GameTooltip);
+
+	if ( requiresCompareTooltipReanchor and (IsModifiedClick("COMPAREITEMS") or GetCVarBool("alwaysCompareItems")) ) then
+		GameTooltip_ShowCompareItem(GameTooltip);
 	end
 
 	if ( InRepairMode() and (repairCost and repairCost > 0) ) then
@@ -1083,6 +1138,74 @@ function ContainerFrameItemButton_OnEnter(self)
 	else
 		ResetCursor();
 	end
+
+	if ArtifactFrame and self.hasItem then
+		ArtifactFrame:OnInventoryItemMouseEnter(self:GetParent():GetID(), self:GetID());
+	end
+end
+
+function ContainerFrameItemButton_OnLeave(self)
+	GameTooltip_Hide();
+	ResetCursor();
+
+	if ArtifactFrame then
+		ArtifactFrame:OnInventoryItemMouseLeave(self:GetParent():GetID(), self:GetID());
+	end
+end
+
+function ContainerFramePortraitButton_OnEnter(self)
+	self.Highlight:Show();
+	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
+	local waitingOnData = false;
+	if ( self:GetID() == 0 ) then
+		GameTooltip:SetText(BACKPACK_TOOLTIP, 1.0, 1.0, 1.0);
+		if (GetBindingKey("TOGGLEBACKPACK")) then
+			GameTooltip:AppendText(" "..NORMAL_FONT_COLOR_CODE.."("..GetBindingKey("TOGGLEBACKPACK")..")"..FONT_COLOR_CODE_CLOSE)
+		end
+	else
+		local parent = self:GetParent();
+		local id = parent:GetID();
+		local link = GetInventoryItemLink("player", ContainerIDToInventoryID(id));
+		local name, _, quality = GetItemInfo(link);
+		if name and quality then
+			local r, g, b = GetItemQualityColor(quality);
+			GameTooltip:SetText(name, r, g, b);
+		else
+			GameTooltip:SetText(RETRIEVING_ITEM_INFO, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
+			waitingOnData = true;
+		end
+
+		if (not IsInventoryItemProfessionBag("player", ContainerIDToInventoryID(id))) then
+			if (parent.localFlag and BAG_FILTER_LABELS[parent.localFlag]) then
+				GameTooltip:AddLine(BAG_FILTER_ASSIGNED_TO:format(BAG_FILTER_LABELS[parent.localFlag]));
+			elseif (not parent.localFlag) then
+				for i = LE_BAG_FILTER_FLAG_EQUIPMENT, NUM_LE_BAG_FILTER_FLAGS do
+					local active = false;
+					if ( self:GetID() > NUM_BAG_SLOTS ) then
+						active = GetBankBagSlotFlag(id - NUM_BAG_SLOTS, i);
+					else
+						active = GetBagSlotFlag(id, i);
+					end
+					if ( active ) then
+						GameTooltip:AddLine(BAG_FILTER_ASSIGNED_TO:format(BAG_FILTER_LABELS[i]));
+						break;
+					end
+				end
+			end
+		end
+		local binding = GetBindingKey("TOGGLEBAG"..(4 - self:GetID() + 1));
+		if ( binding ) then
+			GameTooltip:AppendText(" "..NORMAL_FONT_COLOR_CODE.."("..binding..")"..FONT_COLOR_CODE_CLOSE);
+		end
+	end
+	GameTooltip:AddLine(CLICK_BAG_SETTINGS);
+	self.UpdateTooltip = waitingOnData and ContainerFramePortraitButton_OnEnter or nil;
+	GameTooltip:Show();
+end
+
+function ContainerFramePortraitButton_OnLeave(self)
+	self.Highlight:Hide();
+	GameTooltip_Hide();
 end
 
 function ToggleAllBags()

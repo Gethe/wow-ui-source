@@ -13,7 +13,7 @@
 				ActionButton_OnEvent(self, event, ...);
 			</OnEvent>
 			<OnClick>
-				if (not self.draenorZoneDisabled) then
+				if (not self.zoneAbilityDisabled) then
   					SecureActionButton_OnClick(self, button);
   	 			end
   	 		</OnClick>
@@ -60,17 +60,17 @@
 		<Animations>
 			<AnimationGroup parentKey="animIn">
 				<Scale target="$parentSpark" duration="0.2" scaleX="1.5" scaleY="1.5" order="1"/>
-				<Alpha target="$parentSpark" duration="0.2" change="1" order="1"/>
+				<Alpha target="$parentSpark" duration="0.2" fromAlpha="0" toAlpha="1" order="1"/>
 				<Scale target="$parentInnerGlow" 			duration="0.3" scaleX="2" scaleY="2" order="1"/>
 				<Scale target="$parentInnerGlowOver" 	duration="0.3" scaleX="2" scaleY="2" order="1"/>
-				<Alpha target="$parentInnerGlowOver"	duration="0.3" change="-1" order="1"/>
+				<Alpha target="$parentInnerGlowOver"	duration="0.3" fromAlpha="1" toAlpha="0" order="1"/>
 				<Scale target="$parentOuterGlow" 			duration="0.3" scaleX="0.5" scaleY="0.5" order="1"/>
 				<Scale target="$parentOuterGlowOver" 	duration="0.3" scaleX="0.5" scaleY="0.5" order="1"/>
-				<Alpha target="$parentOuterGlowOver"	duration="0.3" change="-1" order="1"/>
+				<Alpha target="$parentOuterGlowOver"	duration="0.3" fromAlpha="1" toAlpha="0" order="1"/>
 				<Scale target="$parentSpark" startDelay="0.2" duration="0.2" scaleX="0.666666" scaleY="0.666666" order="1"/>
-				<Alpha target="$parentSpark" startDelay="0.2" duration="0.2" change="-1" order="1"/>
-				<Alpha target="$parentInnerGlow" startDelay="0.3" duration="0.2" change="-1" order="1"/>
-				<Alpha target="$parentAnts"	startDelay="0.3" duration="0.2" change="1" order="1"/>
+				<Alpha target="$parentSpark" startDelay="0.2" duration="0.2" fromAlpha="1" toAlpha="0" order="1"/>
+				<Alpha target="$parentInnerGlow" startDelay="0.3" duration="0.2" fromAlpha="1" toAlpha="0" order="1"/>
+				<Alpha target="$parentAnts"	startDelay="0.3" duration="0.2" fromAlpha="0" toAlpha="1" order="1"/>
 				<Scripts>
 					<OnPlay>
 						local frame = self:GetParent();
@@ -102,10 +102,10 @@
 				</Scripts>
 			</AnimationGroup>
 			<AnimationGroup parentKey="animOut">
-				<Alpha target="$parentOuterGlowOver" duration="0.2" change="1" order="1"/>
-				<Alpha target="$parentAnts"	duration="0.2" change="-1" order="1"/>
-				<Alpha target="$parentOuterGlowOver" duration="0.2" change="-1" order="2"/>
-				<Alpha target="$parentOuterGlow" duration="0.2" change="-1" order="2"/>
+				<Alpha target="$parentOuterGlowOver" duration="0.2" fromAlpha="0" toAlpha="1" order="1"/>
+				<Alpha target="$parentAnts"	duration="0.2" fromAlpha="1" toAlpha="0" order="1"/>
+				<Alpha target="$parentOuterGlowOver" duration="0.2" fromAlpha="1" toAlpha="0" order="2"/>
+				<Alpha target="$parentOuterGlow" duration="0.2" fromAlpha="1" toAlpha="0" order="2"/>
 				<Scripts>
 					<OnFinished>
 						ActionButton_OverlayGlowAnimOutFinished(self);

@@ -4,6 +4,9 @@
 	<Texture name="MyHealPredictionBarTemplate" virtual="true" file="Interface\TargetingFrame\UI-StatusBar">
 		<Color r="0.0" g="0.827" b="0.765"/>
 	</Texture>
+	<Texture name="MyManaCostPredictionBarTemplate" virtual="true" file="Interface\TargetingFrame\UI-StatusBar">
+		<Color r="0.0" g="0.447" b="1.0"/>
+	</Texture>
 	<Texture name="OtherHealPredictionBarTemplate" virtual="true" file="Interface\TargetingFrame\UI-StatusBar">
 		<Color r="0.0" g="0.631" b="0.557"/>
 	</Texture>
@@ -13,7 +16,7 @@
 	<Texture name="HealAbsorbBarRightShadowTemplate" virtual="true" file="Interface\RaidFrame\Absorb-Edge">
 		<TexCoords left="1" right="0" top="0" bottom="1"/>
 	</Texture>
-	
+
 	<!--The tile size is set up in UnitFrame_Initialize-->
 	<Texture name="TotalAbsorbBarOverlayTemplate" virtual="true" file="Interface\RaidFrame\Shield-Overlay" vertTile="true" horizTile="true"/>
 	<Texture name="OverAbsorbGlowTemplate" virtual="true" file="Interface\RaidFrame\Shield-Overshield" alphaMode="ADD">

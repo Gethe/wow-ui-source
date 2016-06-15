@@ -1,6 +1,110 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\FrameXML\UI.xsd">
-
+	
+	<Button name="AchievementSearchPreviewButton" parentArray="searchPreview" virtual="true">
+		<Size x="206" y="27"/>
+		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="3">
+				<Texture parentKey="selectedTexture" atlas="search-highlight">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<Texture parentKey="iconFrame" atlas="search-iconframe-large">
+					<Size x="21" y="21"/>
+					<Anchors>
+						<Anchor point="LEFT" x="5" y="1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture file="Interface\Icons\Ability_ThunderClap" parentKey="icon">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.iconFrame" x="1" y="-2"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.iconFrame" x="-1" y="1"/>
+					</Anchors>
+				</Texture>
+				<FontString inherits="GameFontNormalSmall" justifyH="LEFT" parentKey="name" text="ACHIEVEMENT_NAME">
+					<Size x="400" y="0"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.icon" relativePoint="RIGHT" x="5" y="0"/>
+						<Anchor point="RIGHT" x="-5" y="0"/>
+					</Anchors>
+					<Color r="0.96875" g="0.8984375" b="0.578125" a="1"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<NormalTexture atlas="_search-rowbg">
+		</NormalTexture>
+		<PushedTexture atlas="_search-rowbg">
+		</PushedTexture>
+		<!-- This is highlighted by hand so that we can use arrow keys to move the highlight.
+		<HighlightTexture atlas="search-highlight">
+		</HighlightTexture>
+		-->
+		<Scripts>
+			<OnLoad function="AchievementSearchPreviewButton_OnLoad"/>
+			<OnShow function="AchievementSearchPreviewButton_OnShow"/>
+			<OnEnter function="AchievementSearchPreviewButton_OnEnter"/>
+			<OnClick function="AchievementSearchPreviewButton_OnClick"/>
+		</Scripts>
+	</Button>
+	
+	<Button name="AchievementFullSearchResultsButton" virtual="true">
+		<Size x="575" y="49"/>
+		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<Texture parentKey="iconFrame" atlas="search-iconframe-large">
+					<Size x="38" y="38"/>
+					<Anchors>
+						<Anchor point="LEFT" x="10" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture file="Interface\Icons\Ability_ThunderClap" parentKey="icon">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.iconFrame" x="1" y="-2"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.iconFrame" x="-1" y="1"/>
+					</Anchors>
+				</Texture>
+				<FontString inherits="GameFontNormalLarge" justifyH="LEFT" parentKey="name" text="ACHIEVEMENT">
+					<Size x="400" y="12"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.icon" relativePoint="TOPRIGHT" x="10" y="0"/>
+					</Anchors>
+					<Color r="0.96875" g="0.8984375" b="0.578125" a="1"/>
+				</FontString>
+				<FontString inherits="GameFontNormal" justifyH="LEFT" parentKey="path" text="ACHIEVEMENT">
+					<Size x="400" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.name" relativePoint="BOTTOMLEFT" x="0" y="-7"/>
+					</Anchors>
+					<Color r="0.66796875" g="0.51171875" b="0.3359375" a="1"/>
+				</FontString>
+				<FontString inherits="GameFontNormal" justifyH="RIGHT" parentKey="resultType" text="ACHIEVEMENT">
+					<Size x="140" y="0"/>
+					<Anchors>
+						<Anchor point="RIGHT" x="-14" y="0"/>
+					</Anchors>
+					<Color r="0.66796875" g="0.51171875" b="0.3359375" a="1"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<NormalTexture inherits="_SearchBarLg">
+		</NormalTexture>
+		<PushedTexture inherits="_SearchBarLg">
+		</PushedTexture>
+		<HighlightTexture atlas="search-highlight-large">
+		</HighlightTexture>
+		<Scripts>
+			<OnClick function="AcheivementFullSearchResultsButton_OnClick"/>
+		</Scripts>
+	</Button>
+	
 	<StatusBar name="AchievementFrameSummaryCategoryTemplate" drawLayer="BORDER" virtual="true">
 		<Size x="234" y="21"/>
 		<Layers>
@@ -1659,7 +1763,13 @@
 								<Anchor point="TOP" relativeTo="AchievementFrameHeaderPointBorder" relativePoint="TOP" x="0" y="7"/>
 							</Anchors>
 						</FontString>
-						<Texture name="$parentRightDDLInset" file="Interface\AchievementFrame\UI-Achievement-RightDDLInset" hidden="true">
+						<Texture name="$parentLeftDDLInset" file="Interface\AchievementFrame\UI-Achievement-RightDDLInset" hidden="true">
+							<Size x="128" y="32"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="112" y="-56"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentRightDDLInset" file="Interface\AchievementFrame\UI-Achievement-RightDDLInset" hidden="false">
 							<Size x="128" y="32"/>
 							<Anchors>
 								<Anchor point="TOPRIGHT" x="-76" y="-56"/>
@@ -1764,7 +1874,7 @@
 					<OnEvent function="AchievementFrameAchievements_OnEvent"/>
 					<OnHide>
 						AchievementFrameFilterDropDown:Hide();
-						AchievementFrameHeaderRightDDLInset:Hide();
+						AchievementFrameHeaderLeftDDLInset:Hide();
 					</OnHide>
 					<OnShow function="AchievementFrameAchievements_OnShow"/>
 				</Scripts>
@@ -2388,7 +2498,7 @@
 			<Frame name="$parentFilterDropDown" hidden="true">
 				<Size x="110" y="32"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="-98" y="10"/>
+					<Anchor point="TOPLEFT" x="148" y="10"/>
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
@@ -2454,6 +2564,352 @@
 					<OnLoad function="AchievementFrameFilterDropDown_OnLoad"/>
 					<OnHide>
 						CloseDropDownMenus()
+					</OnHide>
+				</Scripts>
+			</Frame>
+			<EditBox parentKey="searchBox" inherits="SearchBoxTemplate" letters="40" hidden="false">
+				<Size x="107" y="30"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentHeaderRightDDLInset" relativePoint="TOPLEFT" x="12" y="2"/>
+				</Anchors>
+				<Scripts>
+					<OnShow function="AchievementFrameSearchBox_OnShow"/>
+					<OnEnterPressed function="AchievementFrameSearchBox_OnEnterPressed"/>
+					<OnTextChanged function="AchievementFrameSearchBox_OnTextChanged"/>
+					<OnEditFocusLost function="AchievementFrameSearchBox_OnFocusLost"/>
+					<OnEditFocusGained function="AchievementFrameSearchBox_OnFocusGained"/>
+					<OnKeyDown function="AchievementFrameSearchBox_OnKeyDown"/>
+				</Scripts>
+			</EditBox>
+			<Frame parentKey="searchPreviewContainer" hidden="true">
+				<Size x="206" y="27"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.searchBox" relativePoint="BOTTOMLEFT" x="-4" y="3"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="background" atlas="_search-rowbg">
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+								<Anchor point="BOTTOMRIGHT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture inherits="UI-Frame-BotCornerLeft" parentKey="borderAnchor">
+							<Anchors>
+								<Anchor point="LEFT" x="-7" y="0"/>
+								<Anchor point="BOTTOM" x="0" y="-5"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="botRightCorner" inherits="UI-Frame-BotCornerRight">
+							<Anchors>
+								<Anchor point="BOTTOM" relativeKey="$parent.borderAnchor" x="0" y="0"/>
+								<Anchor point="RIGHT" x="4" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="bottomBorder" inherits="_UI-Frame-Bot">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativeKey="$parent.borderAnchor" relativePoint="BOTTOMRIGHT" y="0"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.botRightCorner" relativePoint="BOTTOMLEFT" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="leftBorder" inherits="!UI-Frame-LeftTile">
+							<Anchors>
+								<Anchor point="TOP" x="0" y="1" />
+								<Anchor point="BOTTOMLEFT" relativeKey="$parent.borderAnchor" relativePoint="TOPLEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="rightBorder" inherits="!UI-Frame-RightTile">
+							<Anchors>
+								<Anchor point="TOP" x="0" y="1" />
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.botRightCorner" relativePoint="TOPRIGHT" x="1" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="topBorder" inherits="_UI-Frame-Bot">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="-2" y="3"/>
+								<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="2" y="-3"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnShow>
+						self:SetFrameLevel(self:GetParent():GetFrameLevel() + 11);
+					</OnShow>
+				</Scripts>
+			</Frame>
+			<StatusBar parentKey="searchProgressBar" hidden="false">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.searchPreviewContainer" relativePoint="TOPLEFT" x="20" y="-5"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.searchPreviewContainer" relativePoint="BOTTOMRIGHT" x="-20" y="10"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="bg">
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+								<Anchor point="BOTTOMRIGHT"/>
+							</Anchors>
+							<Color r="0" g="0" b="0" a=".4"/>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString parentKey="text" inherits="GameFontHighlightSmall" text="SEARCH_PROGRESS_BAR_TEXT" justifyV="TOP">
+							<Size x="0" y="0"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="0"/>
+							</Anchors>
+						</FontString>			
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture parentKey="borderLeft" file="Interface\AchievementFrame\UI-Achievement-ProgressBar-Border">
+							<Size x="16" y="0"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-6" y="5"/>
+								<Anchor point="BOTTOMLEFT" x="-6" y="-5"/>
+							</Anchors>
+							<TexCoords left="0" right="0.0625" top="0" bottom="0.75"/>
+						</Texture>
+						<Texture parentKey="borderRight" file="Interface\AchievementFrame\UI-Achievement-ProgressBar-Border">
+							<Size x="16" y="0"/>
+							<Anchors>
+								<Anchor point="TOPRIGHT" x="6" y="5"/>
+								<Anchor point="BOTTOMRIGHT" x="6" y="-5"/>
+							</Anchors>
+							<TexCoords left="0.812" right="0.8745" top="0" bottom="0.75"/>
+						</Texture>
+						<Texture parentKey="borderCenter" file="Interface\AchievementFrame\UI-Achievement-ProgressBar-Border">
+							<Size x="16"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.borderLeft" relativePoint="TOPRIGHT"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.borderRight" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+							<TexCoords left="0.0625" right="0.812" top="0" bottom="0.75"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnShow>
+						self:SetFrameLevel(self:GetParent():GetFrameLevel() + 15);
+					</OnShow>
+					<OnLoad>
+						self:SetStatusBarColor(0, .6, 0, 1);
+						self:SetMinMaxValues(0, 1000);
+						self:SetValue(0);
+						self:GetStatusBarTexture():SetDrawLayer("BORDER");
+					</OnLoad>
+					<OnHide>
+						self:SetScript("OnUpdate", nil);
+					</OnHide>
+				</Scripts>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+			</StatusBar>
+			<Button inherits="AchievementSearchPreviewButton" parentKey="searchPreview1" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.searchPreviewContainer" relativePoint="TOPLEFT" x="0" y="0"/>
+				</Anchors>
+			</Button>
+			<Button inherits="AchievementSearchPreviewButton" parentKey="searchPreview2" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.searchPreview1" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<Button inherits="AchievementSearchPreviewButton" parentKey="searchPreview3" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.searchPreview2" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<Button inherits="AchievementSearchPreviewButton" parentKey="searchPreview4" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.searchPreview3" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<Button inherits="AchievementSearchPreviewButton" parentKey="searchPreview5" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.searchPreview4" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="showAllSearchResults" hidden="true">
+				<Size x="275" y="24"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.searchPreview1" x="0" y="0"/>
+					<Anchor point="RIGHT" relativeKey="$parent.searchPreview1" x="0" y="0"/>
+					<Anchor point="TOP" relativeKey="$parent.searchPreview5" relativePoint="BOTTOM" x="0" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY" textureSubLevel="2">
+						<Texture parentKey="selectedTexture" atlas="search-highlight">
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+								<Anchor point="BOTTOMRIGHT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString parentKey="text" inherits="GameFontNormal" justifyH="LEFT" text="SHOW_ALL_RESULTS">
+							<Size x="0" y="0"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<NormalTexture atlas="_search-rowbg">
+				</NormalTexture>
+				<PushedTexture atlas="_search-rowbg">
+				</PushedTexture>
+				<!-- This is highlighted by hand so that we can use arrow keys to move the highlight.
+				<HighlightTexture atlas="search-highlight">
+				</HighlightTexture>
+				-->
+				<Scripts>
+					<OnShow>
+						self:SetFrameLevel(self:GetParent():GetFrameLevel() + 10);
+					</OnShow>
+					<OnClick>
+						AchievementFrame_ShowFullSearch();
+						PlaySound("igMainMenuOptionCheckBoxOn");
+					</OnClick>
+					<OnEnter function="AchievementFrameShowAllSearchResults_OnEnter"/>
+				</Scripts>
+			</Button>
+			<Frame parentKey="searchResults" hidden="true">
+				<Size x="600" y="382"/>
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="7"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture file="Interface\FrameGeneral\UI-Background-Rock" horizTile="true" vertTile="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="0" y="0"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.bottomRightCorner" x="0" y="8"/>
+							</Anchors>
+							<Color r="0.9" g="0.8" b="0.7" a="1"/>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER">
+						<FontString inherits="GameFontNormal" text="" parentKey="titleText">
+							<Anchors>
+								<Anchor point="TOP" x="0" y="-7"/>
+								<Anchor point="LEFT" x="60"/>
+								<Anchor point="RIGHT" x="-60"/>
+							</Anchors>
+						</FontString>
+						<Texture parentKey="topLeftCorner" inherits="UI-Frame-TopCornerLeft">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-7" y="4"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="topRightCorner" inherits="UI-Frame-TopCornerRightSimple">
+							<Anchors>
+								<Anchor point="TOPRIGHT" x="4" y="4"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="topBorder" inherits="_UI-Frame-Top">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.topLeftCorner" relativePoint="TOPRIGHT" y="0"/>
+								<Anchor point="TOPRIGHT" relativeKey="$parent.topRightCorner" relativePoint="TOPLEFT" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="bottomLeftCorner" inherits="UI-Frame-BotCornerLeft">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" x="-7" y="4"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="bottomRightCorner" inherits="UI-Frame-BotCornerRight">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" x="4" y="4"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="bottomBorder" inherits="_UI-Frame-Bot">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativeKey="$parent.bottomLeftCorner" relativePoint="BOTTOMRIGHT" y="0"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.bottomRightCorner" relativePoint="BOTTOMLEFT" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="leftBorder" inherits="!UI-Frame-LeftTile">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativeKey="$parent.bottomLeftCorner" relativePoint="TOPLEFT"/>
+								<Anchor point="TOPLEFT" relativeKey="$parent.topLeftCorner" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="rightBorder" inherits="!UI-Frame-RightTile">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.bottomRightCorner" relativePoint="TOPRIGHT"/>
+								<Anchor point="TOPRIGHT" relativeKey="$parent.topRightCorner" relativePoint="BOTTOMRIGHT" x="1" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER" textureSubLevel="-1">
+						<Texture parentKey="topTileStreaks" inherits="_UI-Frame-TopTileStreaks">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="0" y="0"/>
+								<Anchor point="TOPRIGHT" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER" textureSubLevel="1">
+						<Texture parentKey="topLeftCorner2" inherits="UI-Frame-TopCornerLeft">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-7" y="-20"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="topRightCorner2" inherits="UI-Frame-TopCornerRightSimple">
+							<Anchors>
+								<Anchor point="TOPRIGHT" x="4" y="-20"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="topBorder2" inherits="_UI-Frame-Top">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.topLeftCorner2" relativePoint="TOPRIGHT" y="0"/>
+								<Anchor point="TOPRIGHT" relativeKey="$parent.topRightCorner2" relativePoint="TOPLEFT" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button parentKey="closeButton" inherits="UIPanelCloseButton">
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeKey="$parent.topRightCorner" x="0" y="-2"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								self:GetParent():Hide();
+							</OnClick>
+						</Scripts>
+					</Button>
+					<ScrollFrame name="$parentScrollFrame" parentKey="scrollFrame" inherits="HybridScrollFrameTemplate">
+						<Anchors>
+							<Anchor point="TOPEFT" relativeKey="$parent.topLeftCorner2" x="4" y="-8"/>
+							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.bottomRightCorner" x="-24" y="8"/>
+						</Anchors>
+						<Frames>
+							<Slider name="$parentScrollBar" parentKey="scrollBar" inherits="HybridScrollBarTrimTemplate">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="-16"/>
+									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="14"/>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										self.trackBG:Show();
+										self.trackBG:SetVertexColor(0, 0, 0, 1);
+									</OnLoad>
+								</Scripts>
+							</Slider>
+						</Frames>
+					</ScrollFrame>
+				</Frames>
+				<Scripts>
+					<OnShow>
+						--always on top
+						self:SetFrameLevel(self:GetParent():GetFrameLevel()+10);
+						PlaySound("igSpellBookOpen");
+					</OnShow>
+					<OnHide>
+						PlaySound("igSpellBookClose");
 					</OnHide>
 				</Scripts>
 			</Frame>

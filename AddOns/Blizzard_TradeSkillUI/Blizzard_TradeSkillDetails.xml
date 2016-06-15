@@ -28,11 +28,11 @@
 				<Texture parentKey="UnearnedStar" atlas="tradeskills-star-off" alpha=".28" />
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture parentKey="EarnedStar" atlas="tradeskills-star" alpha=".65" />
+				<Texture parentKey="EarnedStar" atlas="tradeskills-star"/>
 			</Layer>
 		</Layers>
 	</Frame>
-	
+
 	<Button name="TradeSkillGuildCrafterButtonTemplate" virtual="true">
 		<Size x="136" y="16"/>
 		<ButtonText parentKey="Text">
@@ -50,7 +50,7 @@
 				ChatFrame_SendTell(self.fullName);
 			</OnClick>
 		</Scripts>
-	</Button>	
+	</Button>
 
 	<ScrollFrame name="TradeSkillDetailsFrameTemplate" inherits="UIPanelScrollFrameCodeTemplate" mixin="TradeSkillDetailsMixin" virtual="true">
 		<Size x="300" y="385"/>
@@ -88,7 +88,7 @@
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Button>
-			
+
 			<Button parentKey="ViewGuildCraftersButton" inherits="MagicButtonTemplate" text="GUILD_TRADE_SKILL_VIEW_CRAFTERS" hidden="true">
 				<Size x="140" y="22"/>
 				<Anchors>
@@ -233,13 +233,13 @@
 							</Anchors>
 						</FontString>
 
-						<FontString parentKey="Description" inherits="GameFontHighlight" justifyH="LEFT">
+						<FontString parentKey="Description" inherits="GameFontHighlightSmall2" justifyH="LEFT">
 							<Size x="290" y="0"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" x="8" y="-85"/>
 							</Anchors>
 						</FontString>
-						
+
 						<FontString parentKey="RequirementLabel" inherits="GameFontNormalSmall" text="REQUIRES_LABEL">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.Description" relativePoint="BOTTOMLEFT"/>
@@ -266,7 +266,8 @@
 							</Anchors>
 						</FontString>
 
-						<FontString parentKey="SourceText" inherits="GameFontNormal">
+						<FontString parentKey="SourceText" inherits="GameFontHighlight" justifyH="LEFT">
+							<Size x="290" y="0"/>
 							<Anchors>
 								<Anchor point="LEFT" relativeKey="$parent.ReagentLabel"/>
 							</Anchors>
@@ -283,6 +284,15 @@
 							<Anchor point="TOPLEFT" x="10" y="-20"/>
 						</Anchors>
 						<Layers>
+							<Layer level="OVERLAY">
+								<Texture parentKey="Background" atlas="tradeskills-iconborder">
+									<Size x="47" y="47"/>
+									<Anchors>
+										<Anchor point="CENTER" x="0"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+
 							<Layer level="ARTWORK">
 								<FontString parentKey="Count" inherits="NumberFontNormal" justifyH="RIGHT" hidden="false">
 									<Anchors>
@@ -299,18 +309,13 @@
 								self:GetParent():GetParent():OnResultMouseEnter(self);
 							</OnEnter>
 							<OnLeave function="GameTooltip_HideResetCursor"/>
-							<OnUpdate>
-								if GameTooltip:IsOwned(self) then
-									self:GetParent():GetParent():OnResultMouseEnter(self);
-								end
-								CursorOnUpdate(self);
-							</OnUpdate>
+							<OnUpdate function="CursorOnUpdate" />
 						</Scripts>
 					</Button>
 					<Frame parentKey="StarsFrame" enableMouse="true">
 						<Size x="45" y="16"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.RecipeName" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
+							<Anchor point="TOPLEFT" relativeKey="$parent.RecipeName" relativePoint="BOTTOMLEFT" x="1" y="-5"/>
 						</Anchors>
 						<Frames>
 							<Frame parentKey="Star1" inherits="TradeSkillDetailsStarTemplate">
@@ -320,12 +325,12 @@
 							</Frame>
 							<Frame parentKey="Star2" inherits="TradeSkillDetailsStarTemplate">
 								<Anchors>
-									<Anchor point="LEFT" relativeKey="$parent.Star1" relativePoint="RIGHT" />
+									<Anchor point="LEFT" relativeKey="$parent.Star1" relativePoint="RIGHT" x="2" y="0"/>
 								</Anchors>
 							</Frame>
 							<Frame parentKey="Star3" inherits="TradeSkillDetailsStarTemplate">
 								<Anchors>
-									<Anchor point="LEFT" relativeKey="$parent.Star2" relativePoint="RIGHT" />
+									<Anchor point="LEFT" relativeKey="$parent.Star2" relativePoint="RIGHT" x="2" y="0"/>
 								</Anchors>
 							</Frame>
 						</Frames>
@@ -341,7 +346,7 @@
 							<KeyValue key="reagentIndex" type="number" value="1"/>
 						</KeyValues>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.ReagentLabel" relativePoint="BOTTOMLEFT" x="-2" y="-3"/>
+							<Anchor point="TOPLEFT" relativeKey="$parent.ReagentLabel" relativePoint="BOTTOMLEFT" x="-5" y="-6"/>
 						</Anchors>
 					</Button>
 					<Button parentKey="Reagent2" inherits="TradeSkillReagentTemplate">

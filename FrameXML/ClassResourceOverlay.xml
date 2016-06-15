@@ -1,0 +1,24 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+  <Script file="ClassResourceOverlay.lua"/>
+	
+	<Frame name="ClassResourceOverlayParentFrame" parent="UIParent" mixin="ClassResourceOverlayParent">
+		<Scripts>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+ 
+	<Frame name="ClassResourceOverlayFrame" parent="ClassResourceOverlayParentFrame" useParentLevel="true" virtual="true">
+		<Anchors>
+			<Anchor point="TOPLEFT"/>
+		</Anchors>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+	
+</Ui>
+
+

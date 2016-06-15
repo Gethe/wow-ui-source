@@ -5,7 +5,7 @@
 			<AbsDimension x="176" y="18"/>
 		</Size>
 		<Frames>
-			<EditBox parentKey="gold" name="$parentGold" letters="6" historyLines="0" numeric="true" autoFocus="false">
+			<EditBox parentKey="gold" name="$parentGold" letters="7" historyLines="0" numeric="true" autoFocus="false">
 				<Size>
 					<AbsDimension x="70" y="20"/>
 				</Size>

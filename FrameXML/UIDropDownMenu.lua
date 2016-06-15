@@ -271,13 +271,13 @@ function UIDropDownMenu_AddButton(info, level)
 	
 	-- If not clickable then disable the button and set it white
 	if ( info.notClickable ) then
-		info.disabled = 1;
+		info.disabled = true;
 		button:SetDisabledFontObject(GameFontHighlightSmallLeft);
 	end
 
 	-- Set the text color and disable it if its a title
 	if ( info.isTitle ) then
-		info.disabled = 1;
+		info.disabled = true;
 		button:SetDisabledFontObject(GameFontNormalSmallLeft);
 	end
 	
@@ -1013,6 +1013,9 @@ function UIDropDownMenu_OnHide(self)
 	end
 	CloseDropDownMenus(id+1);
 	OPEN_DROPDOWNMENUS[id] = nil;
+	if (id == 1) then
+		UIDROPDOWNMENU_OPEN_MENU = nil;
+	end
 end
 
 function UIDropDownMenu_SetWidth(frame, width, padding)

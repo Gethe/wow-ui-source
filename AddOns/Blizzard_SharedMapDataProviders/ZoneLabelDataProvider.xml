@@ -1,0 +1,39 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="ZoneLabelDataProvider.lua"/>
+
+	<Frame name="ZoneLabelDataProvider_ZoneLabelTemplate" alpha="0" virtual="true">
+		<Size x="455" y="63"/>
+
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="TextBackground" atlas="AdventureMapLabel-Large" />
+			</Layer>
+			<Layer level="BORDER">
+				<FontString parentKey="Text" inherits="SystemFont_Shadow_Huge3" setAllPoints="true" justifyH="CENTER" justifyV="MIDDLE">
+					<Color r="1.0" g="0.82" b="0"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="FadeInAnim" setToFinalAlpha="true">
+				<Alpha fromAlpha="0" toAlpha="1" duration=".3" order="1" smoothing="IN" />
+
+				<Scripts>
+					<OnFinished>
+						self:GetParent().dataProvider:OnFadeInFinished();
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+			<AnimationGroup parentKey="FadeOutAnim" setToFinalAlpha="true">
+				<Alpha fromAlpha="1" toAlpha="0" duration=".3" order="1" smoothing="OUT"  />
+
+				<Scripts>
+					<OnFinished>
+						self:GetParent().dataProvider:OnFadeOutFinished();
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+</Ui>

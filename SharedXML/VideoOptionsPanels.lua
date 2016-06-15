@@ -69,41 +69,53 @@ function Graphics_PrepareTooltip(self)
 	if(self.description ~= nil) then
 		tooltip = tooltip .. self.description .. "|n";
 	end
-
-	-- get validation data
-	if (self.data ~= nil) then
-		self.validity = {}
-		for i, value in ipairs(self.data) do
-			if(value.cvars ~= nil) then
-				for cvar_name, cvar_value in pairs(value.cvars) do
-					if(self.validity[cvar_name] == nil) then
-						self.validity[cvar_name] = {};
+	
+	if(self.data ~= nil) then
+		if (self.graphicsCVar ~= nil) then
+			self.validity = {GetCVarSettingValidity(self.graphicsCVar, #self.data, self.raid)};
+		else
+			self.validity = {}
+			for i, value in ipairs(self.data) do
+				if(value.cvars ~= nil) then
+					for cvar_name, cvar_value in pairs(value.cvars) do
+						if(self.validity[cvar_name] == nil) then
+							self.validity[cvar_name] = {};
+						end
+						self.validity[cvar_name][cvar_value] = 0;
 					end
-					self.validity[cvar_name][cvar_value] = 0;
 				end
 			end
-		end
-		for cvar_name, table in pairs(self.validity) do
-			local cvar_data = {}
-			tinsert(cvar_data, cvar_name);
-			for cvar_value, valid in pairs(table) do
-				tinsert(cvar_data, cvar_value);
-			end
-			local validity = {GetToolTipInfo(1, #cvar_data - 1, unpack(cvar_data) )};
-			local index = 1;
-			for cvar_value, valid in pairs(table) do
-				self.validity[cvar_name][cvar_value] = validity[index] or 0;
-				index = index + 1;
+			for cvar_name, table in pairs(self.validity) do
+				local cvar_data = {}
+				tinsert(cvar_data, cvar_name);
+				for cvar_value, valid in pairs(table) do
+					tinsert(cvar_data, cvar_value);
+				end
+				local validity = {GetToolTipInfo(1, #cvar_data - 1, unpack(cvar_data) )};
+				local index = 1;
+				for cvar_value, valid in pairs(table) do
+					self.validity[cvar_name][cvar_value] = validity[index] or 0;
+					index = index + 1;
+				end
 			end
 		end
 		-- we now have a table of bit fields which will tell us yes/no/maybe, etc, with each option.
 
+		local recommendedIndex = nil;
+		if(self.graphicsCVar ~= nil) then
+			recommendedIndex = GetDefaultVideoOption(self.graphicsCVar, false);
+		end
+		
 		local recommendedValue = nil;
 		for i, value in ipairs(self.data) do
 			local invalid = false;
 			local recommended = false;
 			local errorValue = nil;
-			if(value.cvars ~= nil) then
+			if(recommendedIndex ~= nil) then
+				if (recommendedIndex == i) then
+					recommended = true;
+				end
+			elseif(value.cvars ~= nil) then
 				recommended = true;
 				local validity = 0;
 				for cvar_name, cvar_value in pairs(value.cvars) do
@@ -142,9 +154,6 @@ function Graphics_PrepareTooltip(self)
 			if(errorValue ~= nil) then
 				tooltip = tooltip .. "|cffff0000" .. errorValue .. "|r";
 			end
-			-- if(i ~= #self.data) then
-			--	tooltip = tooltip .. "|n";	-- no space after the last item (unless recommended is coming)
-			-- end
 		end
 		if(recommendedValue ~= nil) then
 			tooltip = tooltip .. "|n" .. VIDEO_OPTIONS_RECOMMENDED .. HEADER_COLON .. " " .. GREENCOLORCODE .. recommendedValue .. "|r|n";
@@ -346,8 +355,12 @@ function Advanced_Default (self)
 end
 
 function Graphics_TableSetValue(self, value)
-	if(self.data[value].cvars ~= nil) then
+	if(self.graphicsCVar) then
+		--New method: Call into helper functions and let the C-side handle values.
+		SetCVar(self.graphicsCVar, value);
+	elseif(self.data[value] and self.data[value].cvars ~= nil) then
 		for cvar, cvar_value in pairs(self.data[value].cvars) do
+			--Old method: Set CVars directly.
 			BlizzardOptionsPanel_SetCVarSafe(cvar, cvar_value);
 		end
 	end
@@ -359,8 +372,15 @@ local function IsValid(self,index)
 	end
 	local valid = true;
 	local is32BitFail = false;
-	if(self.data ~= nil) then
-		if(self.data[index].cvars ~= nil) then
+	if(self.graphicsCVar ~= nil) then
+		if(self.validity[index] ~= 0) then
+			valid = false;
+		end
+		if(self.validity[index] == VR_WINDOWS_32BIT) then
+			is32BitFail = true;
+		end
+	elseif(self.data ~= nil) then
+		if(self.data[index] and self.data[index].cvars ~= nil) then
 			for cvar_name, cvar_value in pairs(self.data[index].cvars) do
 				if(self.validity[cvar_name][cvar_value] ~= 0) then
 					valid = false;
@@ -373,6 +393,54 @@ local function IsValid(self,index)
 	end
 	return valid, is32BitFail;
 end
+
+function Graphics_NotifyTarget(self, masterIndex, isRaid)
+	local dropdownIndex = GetGraphicsDropdownIndexByMasterIndex(self.graphicsCVar, masterIndex, isRaid);
+	local value = nil;
+	if(self.type == CONTROLTYPE_DROPDOWN) then
+		value = self.data[dropdownIndex].text;
+	elseif(self.type == CONTROLTYPE_SLIDER) then
+		value = dropdownIndex;
+	end
+		
+	local isValid, is32BitFail = IsValid(self, dropdownIndex);
+	if(isValid) then
+		self.selectedName = nil;
+		self.selectedValue = nil;
+		self.newValue = dropdownIndex;
+		self.selectedID = dropdownIndex;
+		if(self.type == CONTROLTYPE_DROPDOWN) then
+			VideoOptionsDropDownMenu_SetText(self, value);
+		elseif(self.type == CONTROLTYPE_SLIDER) then
+			self:SetDisplayValue(dropdownIndex);
+		end
+		self.warning:Hide();
+		if ( self.capTargets ) then
+			ControlCheckCapTargets(self);
+		end
+	else
+		if(self.type == CONTROLTYPE_DROPDOWN) then
+			-- get best previous entry
+			for fallbackIndex = dropdownIndex - 1, 1, -1 do
+				local isValid = IsValid(self, fallbackIndex);
+				if (isValid) then
+					self.newValue = fallbackIndex;
+					self.selectedID = fallbackIndex;
+					VideoOptionsDropDownMenu_SetText(self, self.data[fallbackIndex].text);
+					break;
+				end
+			end
+		end
+		if ( is32BitFail ) then
+			self.warning.tooltip = string.format(SETTING_BELOW_GRAPHICSQUALITY_32BIT, self.name, value);
+		else
+			self.warning.tooltip = string.format(SETTING_BELOW_GRAPHICSQUALITY, self.name, value);
+		end
+		self.warning:Show();
+	end
+	return;
+end
+
 -------------------------------------------------------------------------------------------------------
 -- try to keep the same selection when a table has been changed
 function VideoOptionsDropDownMenu_dependtarget_refreshtable(self)
@@ -404,6 +472,29 @@ function Graphics_TableLookupSafe(self, val)
 end
 -------------------------------------------------------------------------------------------------------
 function Graphics_TableGetValue(self)
+	if(self.graphicsCVar) then
+		return tonumber(GetCVar(self.graphicsCVar));
+	end
+	
+	if(self.childOptions) then
+		for i = 1, self.numQualityLevels do
+			local allMatch = true;
+			for _, child in pairs(self.childOptions) do
+				if(_G[child].graphicsCVar) then
+					local childValue = _G[child].newValue or tonumber(GetCVar(_G[child].graphicsCVar));
+					if(GetGraphicsDropdownIndexByMasterIndex(_G[child].graphicsCVar, i, self.raid) ~= childValue) then
+						allMatch = false;
+						break;
+					end
+				end
+			end
+			if(allMatch) then
+				return i;
+			end
+		end
+		return self.numQualityLevels + 1;
+	end
+	
 	local readCvars = {};
 	for key, value in ipairs(self.data) do
 		local match = true;
@@ -447,11 +538,9 @@ end
 -- 
 function VideoOptions_OnClick(self, value)
 	-- other values to change?
-	if((self.data ~= nil) and 
-	   (self.data[value]~= nil) and 
-	   (self.data[value].notify ~= nil)) then
-		for key, notify_value in pairs(self.data[value].notify) do
-			_G[key].notifytarget(_G[key], notify_value);
+	if(self.childOptions ~= nil) then
+		for _, child in pairs(self.childOptions) do
+			_G[child]:notifytarget(value, self.raid);
 		end
 	end
 	-- check whether it is valid	
@@ -593,39 +682,25 @@ function Graphics_DropDownRefreshValue(self)
 		if ( checkWarning ) then
 			local isValid = true;
 			local is32BitFail = false;
-			local qualityValue;
+			local masterIndex;
 			if (self.raid) then
-				qualityValue = BlizzardOptionsPanel_GetCVarSafe("RAIDgraphicsQuality");
+				masterIndex = BlizzardOptionsPanel_GetCVarSafe("RAIDgraphicsQuality");
 			else
-				qualityValue = BlizzardOptionsPanel_GetCVarSafe("graphicsQuality");
+				masterIndex = BlizzardOptionsPanel_GetCVarSafe("graphicsQuality");
 			end
-			local settings = VideoData[graphicsQuality].data[qualityValue];
-			local value;
-			if ( settings and settings.notify ) then
-				local key = self:GetName();
-				value = settings.notify[key];
-				-- if there is a setting for this control at the current quality setting
-				if ( value ) then
-					local index;
-					-- find the index of that setting in the dropdown options
-					for i, val in ipairs(self.table) do
-						if(val == value) then
-							index = i;
-							break;
-						end
+			if(self.cvar) then
+				local index = GetGraphicsDropdownIndexByMasterIndex(self.cvar, masterIndex, self.raid);
+				isValid, is32BitFail = IsValid(self, index);
+				if ( not isValid ) then
+					if ( is32BitFail ) then
+						self.warning.tooltip = string.format(SETTING_BELOW_GRAPHICSQUALITY_32BIT, self.name, value);
+					else
+						self.warning.tooltip = string.format(SETTING_BELOW_GRAPHICSQUALITY, self.name, value);
 					end
-					isValid, is32BitFail = IsValid(self, index);
-				end
-			end
-			if ( not isValid ) then
-				if ( is32BitFail ) then
-					self.warning.tooltip = string.format(SETTING_BELOW_GRAPHICSQUALITY_32BIT, self.name, value);
+					self.warning:Show();
 				else
-					self.warning.tooltip = string.format(SETTING_BELOW_GRAPHICSQUALITY, self.name, value);
+					self.warning:Hide();
 				end
-				self.warning:Show();
-			else
-				self.warning:Hide();
 			end
 		end
 	end
@@ -742,6 +817,11 @@ function VideoOptionsDropDown_OnLoad(self)
 								info.disablecolor = GREYCOLORCODE;
 							end
 						end
+					else
+						if (self.validity[mode] ~= 0) then
+							info.notClickable = true;
+							info.disablecolor = GREYCOLORCODE;
+						end
 					end
 				end
 				if ( self.capMaxValue and mode > self.capMaxValue ) then
@@ -776,38 +856,12 @@ function VideoOptionsDropDown_OnLoad(self)
 	end
 	VideoOptionsDropDownMenu_SetWidth(self, self.width);
 	-- force another control to change to a value
-	self.notifytarget = self.notifytarget or
-		function (self, value)
-			local index;
-			if(self.table == nil) then
-				return nil;
-			end
-			for i, val in ipairs(self.table) do
-				if(val == value) then
-					index = i;
-					break;
-				end
-			end
-			local isValid, is32BitFail = IsValid(self, index);
-			if(isValid) then
-				self.selectedName = nil;
-				self.selectedValue = nil;
-				self.newValue = index;
-				self.selectedID = index;
-				VideoOptionsDropDownMenu_SetText(self, value);
-				self.warning:Hide();
-				if ( self.capTargets ) then
-					ControlCheckCapTargets(self);
-				end
-			else
-				if ( is32BitFail ) then
-					self.warning.tooltip = string.format(SETTING_BELOW_GRAPHICSQUALITY_32BIT, self.name, value);
-				else
-					self.warning.tooltip = string.format(SETTING_BELOW_GRAPHICSQUALITY, self.name, value);
-				end
-				self.warning:Show();
-			end
-		end
+	if(self.graphicsCVar) then
+		self.notifytarget = self.notifytarget or Graphics_NotifyTarget;
+	else
+		-- Only settings that use the new graphicsCVars can be notified.
+		self.notifytarget = nil;
+	end
 
 	self.lookup = self.lookup or Graphics_TableLookup;
 	self.RefreshValue = self.RefreshValue or Graphics_ControlRefreshValue;
@@ -894,10 +948,6 @@ function Advanced_OnLoad (self)
 		_G[name .. "EyeSeparation"]:Hide();
 		_G[name .. "StereoHeader"]:Hide();
 		_G[name .. "StereoHeaderUnderline"]:Hide();
-	end
-	if ( IsMacClient() ) then
-		Advanced_UIScaleSlider:SetPoint("TOPLEFT", Advanced_ResampleQualityDropDown, "BOTTOMLEFT", -90, -20);
-		Advanced_GraphicsAPIDropDown:Hide();
 	end
 end
 
@@ -1175,4 +1225,50 @@ function InterfaceOptionsLanguagesPanelLocaleDropDown_InitializeChoice(createInf
 	createInfo.iconInfo.tSizeY = 22;
 	createInfo.func = InterfaceOptionsLanguagesPanelLocaleDropDown_OnClick;
 	createInfo.value = value;
+end
+
+function Graphics_SliderOnLoad(self)
+	VideoOptionsSlider_OnLoad(self);
+	
+	local name = self:GetName();
+	local _, maxValue = self:GetMinMaxValues();
+	self.type = CONTROLTYPE_SLIDER;
+	
+	self.validity = {GetCVarSettingValidity(self.graphicsCVar, maxValue, self.raid)};
+	
+	self.SetDisplayValue = self.SetValue;
+	
+	self.SetValue = Graphics_TableSetValue;
+		
+	self.GetCurrentValue = function(self)
+		return self.newValue or tonumber(GetCVar(self.graphicsCVar));
+	end;
+		
+	if(self.graphicsCVar) then
+		self.notifytarget = self.notifytarget or Graphics_NotifyTarget;
+	else
+		-- Only settings that use the new graphicsCVars can be notified.
+		self.notifytarget = nil;
+	end
+	
+	_G[name.."Text"]:SetFontObject("OptionsFontSmall");
+	_G[name.."Text"]:SetText("");
+	_G[name.."High"]:Hide();
+
+	self.Label = _G[name.."Low"];
+	self.Label:ClearAllPoints();
+	self.Label:SetPoint("LEFT", self, "RIGHT", 3, 2);
+end
+
+function Graphics_SliderOnValueChanged(self, value, userInput)
+	if(userInput) then
+		Graphics_EnableApply(self);
+		self.newValue = value;
+		VideoOptions_OnClick(self, value);
+	end
+	self.Label:SetText(value);
+end
+
+function Graphics_SliderOnShow(self)
+	self:SetDisplayValue(self:GetCurrentValue());
 end

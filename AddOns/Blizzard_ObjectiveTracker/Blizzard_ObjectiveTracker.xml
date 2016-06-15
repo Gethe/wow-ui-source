@@ -161,8 +161,8 @@
 							<Scale parentKey="ScaleGlow" startDelay="0.067" scaleX="3" scaleY="1" duration="0.433" order="1">
 								<Origin point="LEFT"/>
 							</Scale>
-							<Alpha startDelay="0.067" change="1.0" duration="0.1" order="1"/>
-							<Alpha startDelay="0.467" change="-1.0" duration="0.267" order="1"/>
+							<Alpha startDelay="0.067" fromAlpha="0" toAlpha="1" duration="0.1" order="1"/>
+							<Alpha startDelay="0.467" fromAlpha="1" toAlpha="0" duration="0.267" order="1"/>
 						</AnimationGroup>
 					</Animations>
 				</Texture>				
@@ -175,9 +175,9 @@
 					</Anchors>
 					<Animations>
 						<AnimationGroup parentKey="Anim">
-							<Alpha change="1.0" duration="0.067" order="1"/>
+							<Alpha fromAlpha="0" toAlpha="1" duration="0.067" order="1"/>
 							<Scale scaleX="1.25" scaleY="1.25" duration="0.2" order="2"/>
-							<Alpha change="-1.0" startDelay="0.167" duration="0.23" order="2"/>
+							<Alpha fromAlpha="1" toAlpha="0" startDelay="0.167" duration="0.23" order="2"/>
 						</AnimationGroup>
 					</Animations>
 				</Texture>			
@@ -191,8 +191,8 @@
 					<Animations>
 						<AnimationGroup parentKey="Anim">
 							<Translation startDelay="0.067" offsetX="155" offsetY="0" duration="0.467" order="1"/>
-							<Alpha startDelay="0.067" change="1.0" duration="0.133" order="1"/>
-							<Alpha startDelay="0.2" change="-1.0" duration="0.133" order="1" smoothing="IN"/>
+							<Alpha startDelay="0.067" fromAlpha="0" toAlpha="1" duration="0.133" order="1"/>
+							<Alpha startDelay="0.2" fromAlpha="1" toAlpha="0" duration="0.133" order="1" smoothing="IN"/>
 						</AnimationGroup>
 					</Animations>
 				</Texture>				
@@ -300,7 +300,7 @@
 						</Texture>
 						<FontString parentKey="Label" inherits="GameFontHighlightMedium" justifyH="LEFT">
 						  <Anchors>
-							<Anchor point="CENTER" x="0" y="-2"/>
+							<Anchor point="CENTER" x="0" y="-1"/>
 						  </Anchors>
 						</FontString>
 					</Layer>
@@ -312,14 +312,6 @@
 				</Layers>
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 				<BarColor r="0.26" g="0.42" b="1"/>
-				<Scripts>
-					<OnEnter>
-						self.Label:Show();
-					</OnEnter>
-					<OnLeave>
-						self.Label:Hide();
-					</OnLeave>
-				</Scripts>
 			</StatusBar>
 		</Frames>
 		<Scripts>
@@ -383,6 +375,7 @@
 		<Scripts>
 			<OnLoad function="ObjectiveTracker_OnLoad"/>
 			<OnEvent function="ObjectiveTracker_OnEvent"/>
+			<OnUpdate function="ObjectiveTracker_OnUpdate"/>
 			<OnSizeChanged function="ObjectiveTracker_OnSizeChanged"/>
 		</Scripts>
 	</Frame>

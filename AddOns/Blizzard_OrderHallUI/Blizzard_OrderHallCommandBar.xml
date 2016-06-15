@@ -1,0 +1,111 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="Blizzard_OrderHallCommandBar.lua"/>
+
+	<Frame name="OrderHallClassSpecCategoryTemplate" parentArray="TroopSummary" virtual="true" mixin="OrderHallClassSpecCategory">
+		<Size x="80" y="23"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon">
+					<Size x="46" y="23"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="5" y="1"/>
+					</Anchors>
+				</Texture>
+				<FontString inherits="GameFontNormal" justifyH="LEFT" parentKey="Count">
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT" relativeKey="$parent.Icon" x="5" y="1"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="TroopPortraitCover" atlas="orderhall-commandbar-iconmask" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativePoint="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Frame>
+	<Frame name="OrderHallCommandBar" toplevel="true" parent="UIParent" mixin="OrderHallCommandBarMixin" hidden="true" frameStrata="MEDIUM">
+		<Size x="0" y="25"/>
+		<Anchors>
+			<Anchor point="TOPLEFT"/>
+			<Anchor point="TOPRIGHT"/>
+		</Anchors>
+
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="_orderhall-commandbar-bg" horizTile="true"/>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="ClassIcon" alphaMode="ADD" alpha=".55">
+					<Size x="46" y="23"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="5" y="2"/>
+					</Anchors>
+				</Texture>
+				<FontString inherits="GameFontHighlight" parentKey="Currency">
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT" relativeKey="$parent.ClassIcon" x="15" y="1"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="CurrencyIcon" atlas="legionmission-icon-currency" useAtlasSize="false">
+					<Size x="27" y="26"/>
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT" relativeKey="$parent.Currency" x="1" y="-1"/>
+					</Anchors>
+				</Texture>
+				<FontString inherits="GameFontHighlight" justifyH="CENTER" parentKey="AreaName">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="2"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="CurrencyHitTest">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Currency"/>
+					<Anchor point="RIGHT" relativeKey="$parent.CurrencyIcon"/>
+					<Anchor point="TOP"/>
+					<Anchor point="BOTTOM"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT");
+						GameTooltip:SetCurrencyTokenByID(self:GetParent().currency);
+						GameTooltip:Show();
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Frame>
+			<Button parentKey="WorldMapButton">
+				<Size x="27" y="27"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT"/>
+				</Anchors>
+				<NormalTexture parentKey="Normal" atlas="orderhall-commandbar-mapbutton-up"/>
+				<PushedTexture parentKey="Pushed" atlas="orderhall-commandbar-mapbutton-down"/>
+				<Scripts>
+					<OnEnter>
+						GameTooltip_AddNewbieTip(self, self.tooltipText, 1.0, 1.0, 1.0, self.newbieText);
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+					<OnClick function="ToggleWorldMap"/>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+
+</Ui>

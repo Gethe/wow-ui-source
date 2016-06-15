@@ -1,0 +1,54 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+  <Script file="Blizzard_ClassNameplateBar_Mage.lua"/>
+  
+	<Frame name="ClassNameplateBarArcaneChargeFrame" virtual="true">
+		<Size x="22" y="22"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="ChargeTexture" atlas="Mage-ArcaneCharge" useAtlasSize="false" alpha="0.3">
+					<Size x="22" y="22"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="Fadein" setToFinalAlpha="true">
+				<Alpha parentKey="AlphaAnim" childKey="ChargeTexture" fromAlpha="0.3" toAlpha="1" duration="0.2"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="Fadeout" setToFinalAlpha="true">
+				<Alpha parentKey="AlphaAnim" childKey="ChargeTexture" fromAlpha="1" toAlpha="0.3" duration="0.2"/>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+		
+	<Frame name="ClassNameplateBarMageFrame" inherits="ClassNameplateBarFrame" mixin="ClassNameplateBar, ClassNameplateBarMage">
+		<Size x="82" y="20"/>
+		<Frames>
+			<Frame parentKey="Charge1" parentArray="Charges" inherits="ClassNameplateBarArcaneChargeFrame">
+				<Anchors>
+					<Anchor point="LEFT" x="0" y="0"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="Charge2" parentArray="Charges" inherits="ClassNameplateBarArcaneChargeFrame">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Charge1" relativePoint="RIGHT" x="-2" y="0"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="Charge3" parentArray="Charges" inherits="ClassNameplateBarArcaneChargeFrame">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Charge2" relativePoint="RIGHT" x="-2" y="0"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="Charge4" parentArray="Charges" inherits="ClassNameplateBarArcaneChargeFrame">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Charge3" relativePoint="RIGHT" x="-2" y="0"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+	</Frame>
+</Ui>
+
+

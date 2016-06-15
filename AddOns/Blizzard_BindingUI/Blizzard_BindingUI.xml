@@ -289,6 +289,7 @@
 			<OnShow function="KeyBindingFrame_OnShow"/>
 			<OnHide function="KeyBindingFrame_OnHide"/>
 			<OnLoad function="KeyBindingFrame_OnLoad"/>
+			<OnEvent function="KeyBindingFrame_OnEvent"/>
 			<OnMouseWheel function="KeyBindingFrame_OnMouseWheel"/>
 		</Scripts>
 	</Button>

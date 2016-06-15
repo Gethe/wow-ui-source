@@ -72,6 +72,7 @@
 				<Scripts>
 					<OnShow>
 						PlaySound("ReadyCheck");
+						FlashClientIcon();
 					</OnShow>
 				</Scripts>
 			</Frame>

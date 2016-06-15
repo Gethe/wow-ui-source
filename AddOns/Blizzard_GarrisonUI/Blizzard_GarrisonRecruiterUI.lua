@@ -265,7 +265,7 @@ end
 --- GarrisonRecruitSelectFrame ---
 ----------------------------------
 function GarrisonRecruitSelectFrame_OnLoad(self)
-	self.FollowerList:Load(LE_FOLLOWER_TYPE_GARRISON_6_0);
+	self.FollowerList:Initialize(LE_FOLLOWER_TYPE_GARRISON_6_0);
 	self:RegisterEvent("GARRISON_RECRUIT_FOLLOWER_RESULT");
 	self:RegisterEvent("GARRISON_RECRUITMENT_FOLLOWERS_GENERATED");
 end
@@ -309,22 +309,18 @@ function GarrisonRecruitSelectFrame_UpdateRecruits( waiting )
 		if(follower)then
 			frame:Show();
 			frame.Name:SetText(follower.name);
-			frame.PortraitFrame.Level:SetText(follower.level);
+			frame.PortraitFrame:SetLevel(follower.level);
 			SetPortraitTexture(frame.PortraitFrame.Portrait, follower.displayID);
-			GarrisonMission_SetFollowerModel(frame.Model, follower.followerID, follower.displayID);
-			if (follower.displayHeight) then
-				frame.Model:SetHeightFactor(follower.displayHeight);
-			end
-			if (follower.displayScale) then
-				frame.Model:InitializeCamera(follower.displayScale);
-			end	
+			local displayInfo = follower.displayIDs and follower.displayIDs[1];
+			GarrisonMission_SetFollowerModel(frame.Model, follower.followerID, displayInfo and displayInfo.id, displayInfo and displayInfo.showWeapon);
+			frame.Model:SetHeightFactor(follower.displayHeight or 0.5);
+			frame.Model:InitializeCamera((follower.displayScale or 1) * (displayInfo and displayInfo.followerPageScale or 1));
 			frame.Model:Show();
 			frame.Class:SetAtlas(follower.classAtlas);
 			
 			local color = ITEM_QUALITY_COLORS[follower.quality];
 			frame.Name:SetVertexColor(color.r, color.g, color.b);
-			frame.PortraitFrame.LevelBorder:SetVertexColor(color.r, color.g, color.b);
-			frame.PortraitFrame.PortraitRingQuality:SetVertexColor(color.r, color.g, color.b);
+			frame.PortraitFrame:SetQuality(follower.quality);
 
 			local abilities = C_Garrison.GetRecruitAbilities(i);
 			local abilityIndex = 0;

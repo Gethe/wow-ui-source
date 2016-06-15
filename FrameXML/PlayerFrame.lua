@@ -13,8 +13,8 @@ function PlayerFrame_OnLoad(self)
 						 PlayerFrameMyHealPredictionBar, PlayerFrameOtherHealPredictionBar,
 						 PlayerFrameTotalAbsorbBar, PlayerFrameTotalAbsorbBarOverlay, PlayerFrameOverAbsorbGlow,
 						 PlayerFrameOverHealAbsorbGlow, PlayerFrameHealAbsorbBar, PlayerFrameHealAbsorbBarLeftShadow,
-						 PlayerFrameHealAbsorbBarRightShadow);
-						 
+						 PlayerFrameHealAbsorbBarRightShadow, PlayerFrameManaCostPredictionBar);
+	
 	self.statusCounter = 0;
 	self.statusSign = -1;
 	CombatFeedback_Initialize(self, PlayerHitIndicator, 30);
@@ -42,9 +42,10 @@ function PlayerFrame_OnLoad(self)
 	self:RegisterEvent("PLAYER_FLAGS_CHANGED");
 	self:RegisterEvent("PLAYER_ROLES_ASSIGNED");
 	self:RegisterEvent("VARIABLES_LOADED");
+	self:RegisterEvent("HONOR_PRESTIGE_UPDATE");
 	self:RegisterUnitEvent("UNIT_COMBAT", "player", "vehicle");
 	self:RegisterUnitEvent("UNIT_MAXPOWER", "player", "vehicle");
-
+	
 	-- Chinese playtime stuff
 	self:RegisterEvent("PLAYTIME_CHANGED");
 
@@ -56,6 +57,7 @@ function PlayerFrame_OnLoad(self)
 	local showmenu = function()
 		ToggleDropDownMenu(1, nil, PlayerFrameDropDown, "PlayerFrame", 106, 27);
 	end
+	UIParent_UpdateTopFramePositions();
 	SecureUnitButton_OnLoad(self, "player", showmenu);
 end
 
@@ -117,8 +119,19 @@ function PlayerFrame_UpdatePvPStatus()
 		if ( not PlayerPVPIcon:IsShown() ) then
 			PlaySound("igPVPUpdate");
 		end
-		PlayerPVPIcon:SetTexture("Interface\\TargetingFrame\\UI-PVP-FFA");
-		PlayerPVPIcon:Show();
+		local prestige = UnitPrestige("player");
+		if (prestige > 0) then
+			PlayerPrestigePortrait:SetAtlas("honorsystem-portrait-neutral", false);
+			PlayerPrestigeBadge:SetTexture(GetPrestigeInfo(prestige));
+			PlayerPrestigePortrait:Show();
+			PlayerPrestigeBadge:Show();
+			PlayerPVPIcon:Hide();
+		else
+			PlayerPrestigePortrait:Hide();
+			PlayerPrestigeBadge:Hide();
+			PlayerPVPIcon:SetTexture("Interface\\TargetingFrame\\UI-PVP-FFA");
+			PlayerPVPIcon:Show();
+		end
 
 		-- Setup newbie tooltip
 		PlayerPVPIconHitArea.tooltipTitle = PVPFFA;
@@ -131,14 +144,35 @@ function PlayerFrame_UpdatePvPStatus()
 		if ( not PlayerPVPIcon:IsShown() ) then
 			PlaySound("igPVPUpdate");
 		end
-		PlayerPVPIcon:SetTexture("Interface\\TargetingFrame\\UI-PVP-"..factionGroup);
 
-		-- ugly special case handling for mercenary mode
-		if ( UnitIsMercenary("player") ) then
-			if ( factionGroup == "Horde" ) then
-				PlayerPVPIcon:SetTexture("Interface\\TargetingFrame\\UI-PVP-Alliance");
-			elseif ( factionGroup == "Alliance" ) then
-				PlayerPVPIcon:SetTexture("Interface\\TargetingFrame\\UI-PVP-Horde");
+		local prestige = UnitPrestige("player");
+		if (prestige > 0) then
+			-- ugly special case handling for mercenary mode
+			if ( UnitIsMercenary("player") ) then
+				if ( factionGroup == "Horde" ) then
+					factionGroup = "Alliance";
+				elseif ( factionGroup == "Alliance" ) then
+					factionGroup = "Horde";
+				end
+			end
+
+			PlayerPrestigePortrait:SetAtlas("honorsystem-portrait-"..factionGroup, false);
+			PlayerPrestigeBadge:SetTexture(GetPrestigeInfo(prestige));
+			PlayerPrestigePortrait:Show();
+			PlayerPrestigeBadge:Show();
+			PlayerPVPIcon:Hide();
+		else
+			PlayerPrestigePortrait:Hide();
+			PlayerPrestigeBadge:Hide();
+			PlayerPVPIcon:SetTexture("Interface\\TargetingFrame\\UI-PVP-"..factionGroup);
+
+			-- ugly special case handling for mercenary mode
+			if ( UnitIsMercenary("player") ) then
+				if ( factionGroup == "Horde" ) then
+					PlayerPVPIcon:SetTexture("Interface\\TargetingFrame\\UI-PVP-Alliance");
+				elseif ( factionGroup == "Alliance" ) then
+					PlayerPVPIcon:SetTexture("Interface\\TargetingFrame\\UI-PVP-Horde");
+				end
 			end
 		end
 		
@@ -149,6 +183,8 @@ function PlayerFrame_UpdatePvPStatus()
 		PlayerPVPIconHitArea.tooltipText = _G["NEWBIE_TOOLTIP_"..strupper(factionGroup)];
 		PlayerPVPIconHitArea:Show();
 	else
+		PlayerPrestigePortrait:Hide();
+		PlayerPrestigeBadge:Hide();
 		PlayerPVPIcon:Hide();
 		PlayerPVPIconHitArea:Hide();
 		PlayerPVPTimerText:Hide();
@@ -204,15 +240,9 @@ function PlayerFrame_OnEvent(self, event, ...)
 	elseif ( event == "PLAYER_REGEN_DISABLED" ) then
 		self.onHateList = 1;
 		PlayerFrame_UpdateStatus();
-
-		if ( GetCVarBool("screenEdgeFlash") ) then
-			CombatFeedback_StartFullscreenStatus();
-		end
 	elseif ( event == "PLAYER_REGEN_ENABLED" ) then
 		self.onHateList = nil;
 		PlayerFrame_UpdateStatus();
-
-		CombatFeedback_StopFullscreenStatus();
 	elseif ( event == "PLAYER_UPDATE_RESTING" ) then
 		PlayerFrame_UpdateStatus();
 	elseif ( event == "PARTY_LEADER_CHANGED" or event == "GROUP_ROSTER_UPDATE" ) then
@@ -289,6 +319,8 @@ function PlayerFrame_OnEvent(self, event, ...)
 		if ( PLAYER_FRAME_CASTBARS_SHOWN ) then
 			PlayerFrame_AttachCastBar();
 		end
+	elseif ( event == "HONOR_PRESTIGE_UPDATE" ) then
+		PlayerFrame_UpdatePvPStatus();
 	end
 end
 
@@ -311,9 +343,8 @@ end
 
 function PlayerFrame_ResetPosition(self)
 	CancelAnimations(PlayerFrame);
-	if ( not self:IsUserPlaced() ) then
-		self:SetPoint(PlayerFrame_AnimPos(self, 0));
-	end
+	self.isAnimatedOut = false;
+	UIParent_UpdateTopFramePositions();
 	self.inSequence = false;
 	PetFrame_Update(PetFrame);
 end
@@ -327,6 +358,7 @@ function PlayerFrame_AnimateOut(self)
 	self.inSeat = false;
 	self.animFinished = false;
 	self.inSequence = true;
+	self.isAnimatedOut = true;
 	if ( self:IsUserPlaced() ) then
 		PlayerFrame_AnimFinished(PlayerFrame);
 	else
@@ -337,6 +369,10 @@ end
 function PlayerFrame_AnimFinished(self)
 	self.animFinished = true;
 	PlayerFrame_UpdateArt(self);
+end
+
+function PlayerFrame_IsAnimatedOut(self)
+	return self.isAnimatedOut;
 end
 
 function PlayerFrame_UpdateArt(self)
@@ -373,7 +409,7 @@ function PlayerFrame_ToVehicleArt(self, vehicleType)
 	PetFrame_Update(PetFrame);
 	PlayerFrame_Update();
 	BuffFrame_Update();
-	ComboFrame_Update();
+	ComboFrame_Update(ComboFrame);
 			
 	PlayerFrameTexture:Hide();
 	if ( vehicleType == "Natural" ) then
@@ -414,7 +450,7 @@ function PlayerFrame_ToPlayerArt(self)
 	PetFrame_Update(PetFrame);
 	PlayerFrame_Update();
 	BuffFrame_Update();
-	ComboFrame_Update();
+	ComboFrame_Update(ComboFrame);
 			
 	PlayerFrameTexture:Show();
 	PlayerFrame_HideVehicleTexture();
@@ -732,20 +768,16 @@ function PlayerFrame_ShowVehicleTexture()
 	PlayerFrameVehicleTexture:Show();
 	
 	local _, class = UnitClass("player");	
-	if ( class == "WARLOCK" ) then
-		WarlockPowerFrame:Hide();
+	if ( PlayerFrame.classPowerBar ) then
+		PlayerFrame.classPowerBar:Hide();
 	elseif ( class == "SHAMAN" ) then
 		TotemFrame:Hide();
 	elseif ( class == "DRUID" ) then
 		EclipseBarFrame:Hide();
-	elseif ( class == "PALADIN" ) then
-		PaladinPowerBar:Hide();
 	elseif ( class == "DEATHKNIGHT" ) then
 		RuneFrame:Hide();
 	elseif ( class == "PRIEST" ) then
 		PriestBarFrame:Hide();
-	elseif ( class == "MONK" ) then
-		MonkHarmonyBar:Hide();
 	end
 end
 
@@ -754,20 +786,16 @@ function PlayerFrame_HideVehicleTexture()
 	PlayerFrameVehicleTexture:Hide();
 	
 	local _, class = UnitClass("player");	
-	if ( class == "WARLOCK" ) then
-		WarlockPowerFrame_SetUpCurrentPower();
+	if ( PlayerFrame.classPowerBar ) then
+		PlayerFrame.classPowerBar:Setup();
 	elseif ( class == "SHAMAN" ) then
 		TotemFrame_Update();
 	elseif ( class == "DRUID" ) then
 		EclipseBar_UpdateShown(EclipseBarFrame);
-	elseif ( class == "PALADIN" ) then
-		PaladinPowerBar:Show();
 	elseif ( class == "DEATHKNIGHT" ) then
 		RuneFrame:Show();
 	elseif ( class == "PRIEST" ) then
 		PriestBarFrame_CheckAndShow();
-	elseif ( class == "MONK" ) then
-		MonkHarmonyBar:Show();
 	end
 end
 
@@ -792,10 +820,10 @@ end
 
 function PlayerFrame_ResetUserPlacedPosition()
 	PlayerFrame:ClearAllPoints();
-	PlayerFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", -19, -4);
 	PlayerFrame:SetUserPlaced(false);
 	PlayerFrame:SetClampedToScreen(false);
 	PlayerFrame_SetLocked(true);
+	UIParent_UpdateTopFramePositions();
 end
 
 --
