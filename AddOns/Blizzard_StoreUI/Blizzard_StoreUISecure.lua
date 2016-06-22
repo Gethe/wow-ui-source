@@ -1182,7 +1182,7 @@ function StoreFrame_UpdateCard(card,entryID,discountReset)
 	if (entryInfo.overrideTextColor) then
 		card.ProductName:SetTextColor(entryInfo.overrideTextColor.r, entryInfo.overrideTextColor.g, entryInfo.overrideTextColor.b);
 	else
-		card.ProductName:SetTextColor(1.0, 0.82, 0.0);
+		card.ProductName:SetTextColor(1, 1, 1);
 	end
 
 	if (not card.isSplash) then
@@ -1721,6 +1721,7 @@ function StoreFrame_OnShow(self)
 	end
 
 	UseBoostToUnlockTrialCharacter = false;
+	BoostTrialCharacterGuid = nil;
 
 	StoreFrame_UpdateCoverState();
 	PlaySound("UI_igStore_WindowOpen_Button");
@@ -1741,10 +1742,14 @@ end
 function StoreFrame_OnCharacterBoostDelivered(self)
 	if (IsOnGlueScreen() and not _G.CharacterSelect.undeleting) then
 		self:Hide();
-		_G.CharacterUpgradeFlow:SetTarget(false);
-		_G.CharSelectServicesFlowFrame:Show();
-		_G.CharacterUpgradeFlow.data = _G.CharacterUpgrade_Items[BoostProduct].paid;
-		_G.CharacterServicesMaster_SetFlow(_G.CharacterServicesMaster, _G.CharacterUpgradeFlow);
+
+		local flowData = _G.CharacterUpgrade_Items[BoostProduct].paid;
+
+		if (BoostProduct == LE_BATTLEPAY_PRODUCT_ITEM_LEVEL_100_CHARACTER_UPGRADE) and UseBoostToUnlockTrialCharacter then
+			_G.CharacterUpgradePopup_BeginUnlockTrialCharacter(flowData, BoostTrialCharacterGuid);
+		else
+			_G.CharacterUpgradePopup_BeginCharacterUpdgradeFlow(flowData);
+		end
 	elseif (not IsOnGlueScreen()) then
 		self:Hide();
 
@@ -1871,6 +1876,10 @@ function StoreFrame_OnAttributeChanged(self, name, value)
 		SetStoreCategoryFromAttribute(WOW_SERVICES_CATEGORY_ID);
 		SelectBoostFromAttribute(LE_BATTLEPAY_PRODUCT_ITEM_LEVEL_100_CHARACTER_UPGRADE);
 		UseBoostToUnlockTrialCharacter = true;
+
+		if ( value ) then
+			BoostTrialCharacterGuid = value;
+		end
 	elseif ( name == "getvaserrormessage" ) then
 		if (IsOnGlueScreen()) then
 			self:SetAttribute("vaserrormessageresult", nil);

@@ -391,6 +391,9 @@ function OrderHallMission:MissionCompleteInitialize(missionList, index)
 		self.MissionComplete.BonusRewards.BonusChanceLabel:Hide();
 	end
 
+	self.MissionComplete.BonusChanceFail.CrossLeft:Hide();
+	self.MissionComplete.BonusChanceFail.CrossRight:Hide();
+
 	return true;
 end
 
@@ -544,6 +547,13 @@ function OrderHallMissionComplete:ShowRewards()
 			end
 		end
 		prevRewardFrame = rewardFrame;
+	end
+	if (self.BonusRewards.BonusChanceLabel:IsShown() and not overmaxSucceeded) then
+		self.BonusChanceFail.CrossLeft:SetAlpha(1);
+		self.BonusChanceFail.CrossRight:SetAlpha(1);
+		self.BonusChanceFail.CrossLeft:Show();
+		self.BonusChanceFail.CrossRight:Show();
+		self.BonusChanceFail.BonusFailed:Play();
 	end
 	GarrisonMissionPage_UpdateRewardQuantities(bonusRewards, currentMission.currencyMultipliers, currentMission.goldMultiplier);
 end

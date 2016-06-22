@@ -50,7 +50,9 @@ function VideoOptionsFrameOkay_OnClick (self, button, down, apply)
 end
 
 function VideoOptionsFrameCancel_OnClick (self, button)
-	OptionsFrameCancel_OnClick(VideoOptionsFrame);
+	if ( VideoOptionsFrameApply:IsEnabled() ) then
+		OptionsFrameCancel_OnClick(VideoOptionsFrame);
+	end
 	VideoOptionsFrame.logout = nil;
 	VideoOptionsFrame_Toggle();
 end

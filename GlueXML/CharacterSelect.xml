@@ -1088,7 +1088,7 @@
 										self.down = false;
 									</OnMouseUp>
 									<OnUpdate>
-										CharacterSelectPanelButton_DeathKnightSwap(self);
+										GlueParent_DeathKnightButtonSwap(self);
 									</OnUpdate>
 									<OnClick>
 										CharacterSelect_CreateNewCharacter(LE_CHARACTER_CREATE_TYPE_NORMAL);
@@ -1150,7 +1150,7 @@
 										self.down = false;
 									</OnMouseUp>
 									<OnUpdate>
-										CharacterSelectPanelButton_DeathKnightSwap(self);
+										GlueParent_DeathKnightButtonSwap(self);
 									</OnUpdate>
 									<!-- We need to override the templates script because it will reset our textures. -->
 									<OnShow/>
@@ -1496,7 +1496,7 @@
 							<Button parentKey="NextButton" inherits="GlueButtonSmallTemplate" text="NEXT" hidden="true">
 								<Size x="140" y="38"/>
 								<Animations>
-									<AnimationGroup parentKey="PulseAnim">
+									<AnimationGroup parentKey="PulseAnim" setToFinalAlpha="true">
 										<Alpha childKey="Flash" fromAlpha="0" toAlpha="1" duration="0.5" order="1"/>
 										<Alpha childKey="Flash" fromAlpha="1" toAlpha="0" duration="0.5" order="2"/>
 									</AnimationGroup>
@@ -1593,6 +1593,7 @@
 												</Anchors>
 												<Scripts>
 													<OnClick function="CharacterUpgradeSecondChanceWarningFrameConfirmButton_OnClick"/>
+													<OnUpdate function="GlueParent_DeathKnightButtonSwap"/>
 												</Scripts>
 											</Button>
 											<Button parentKey="CancelButton" inherits="GlueButtonSmallTemplate" text="CANCEL">
@@ -1602,6 +1603,7 @@
 												</Anchors>
 												<Scripts>
 													<OnClick function="CharacterUpgradeSecondChanceWarningFrameCancelButton_OnClick"/>
+													<OnUpdate function="GlueParent_DeathKnightButtonSwap"/>
 												</Scripts>
 											</Button>
 										</Frames>

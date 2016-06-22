@@ -1,5 +1,5 @@
 GARRISON_MISSION_COMPLETE_BANNER_WIDTH = 300;
-GARRISON_MODEL_PRELOAD_TIME = 2;
+GARRISON_MODEL_PRELOAD_TIME = .25;
 GARRISON_LONG_MISSION_TIME = 8 * 60 * 60;	-- 8 hours
 GARRISON_LONG_MISSION_TIME_FORMAT = "|cffff7d1a%s|r";
 
@@ -683,12 +683,14 @@ function GarrisonFollowerMission:UpdateRewards(itemID)
 		end
 	end
 	-- mission page
-	if (self:GetMissionPage().RewardsFrame.Rewards) then
-		self:CheckRewardButtons(self:GetMissionPage().RewardsFrame.Rewards, itemID);
-	end
-	if (self:GetMissionPage().RewardsFrame.OvermaxItem) then
-		if ( self:GetMissionPage().RewardsFrame.OvermaxItem.itemID == itemID ) then
-			GarrisonMissionFrame_SetItemRewardDetails(self:GetMissionPage().RewardsFrame.OvermaxItem);
+	if (self:GetMissionPage().RewardsFrame) then
+		if (self:GetMissionPage().RewardsFrame.Rewards) then
+			self:CheckRewardButtons(self:GetMissionPage().RewardsFrame.Rewards, itemID);
+		end
+		if (self:GetMissionPage().RewardsFrame.OvermaxItem) then
+			if ( self:GetMissionPage().RewardsFrame.OvermaxItem.itemID == itemID ) then
+				GarrisonMissionFrame_SetItemRewardDetails(self:GetMissionPage().RewardsFrame.OvermaxItem);
+			end
 		end
 	end
 	-- mission complete
@@ -762,7 +764,9 @@ function GarrisonFollowerOptionDropDown_Initialize(self)
 			info.func = function()
 				StaticPopup_Show("DEACTIVATE_FOLLOWER", follower.name, nil, self.followerID);
 			end
-			if ( followerStatus == GARRISON_FOLLOWER_ON_MISSION ) then
+			if ( follower.isTroop ) then
+				info.disabled = 1;
+			elseif ( followerStatus == GARRISON_FOLLOWER_ON_MISSION ) then
 				info.disabled = 1;
 				info.tooltipWhileDisabled = 1;
 				info.tooltipTitle = GARRISON_DEACTIVATE_FOLLOWER;

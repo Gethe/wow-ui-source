@@ -40,6 +40,8 @@ function FlightMap_ZoneSummaryDataProvider:GatherWorldQuests()
 								self.worldQuestsByZone[zoneMapID] = {};
 							end
 							table.insert(self.worldQuestsByZone[zoneMapID], info);
+
+							C_TaskQuest.RequestPreloadRewardData(info.questId);
 						end
 					end
 				end

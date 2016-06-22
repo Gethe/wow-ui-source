@@ -629,6 +629,13 @@ function GarrisonLandingPageReportList_Update()
 				button.Title:SetWidth(322 - button.TimeLeft:GetWidth());
 			end
 			button.MissionTypeIcon:SetAtlas(item.typeAtlas);
+			if (item.followerTypeID == LE_FOLLOWER_TYPE_GARRISON_7_0) then
+				button.MissionTypeIcon:SetSize(40, 40);
+				button.MissionTypeIcon:SetPoint("TOPLEFT", 5, -3);
+			else
+				button.MissionTypeIcon:SetSize(50, 50);
+				button.MissionTypeIcon:SetPoint("TOPLEFT", 0, 2);
+			end
 			button.MissionTypeIcon:SetShown(not item.isBuilding);
 			button.Status:SetShown(not item.isComplete);
 			button.TimeLeft:SetShown(not item.isComplete);

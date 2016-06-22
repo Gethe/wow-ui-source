@@ -302,6 +302,25 @@
 							<Color r=".2" g=".2" b=".2" a=".85"/>
 						</Texture>
 					</Layer>
+					<Layer level="BORDER" textureSubLevel="5">
+						<Texture parentKey="myHealPrediction" file="Interface/TargetingFrame/UI-TargetingFrame-BarFill"/>
+						<Texture parentKey="otherHealPrediction" file="Interface/TargetingFrame/UI-TargetingFrame-BarFill"/>
+						<Texture parentKey="totalAbsorb"/>
+					</Layer>
+					<Layer level="BORDER" textureSubLevel="6">
+						<Texture parentKey="totalAbsorbOverlay"/>
+					</Layer>
+					<Layer level="ARTWORK" textureSubLevel="1">
+						<Texture parentKey="myHealAbsorb"/>
+						<Texture parentKey="myHealAbsorbLeftShadow" file="Interface\RaidFrame\Absorb-Edge"/>
+						<Texture parentKey="myHealAbsorbRightShadow" file="Interface\RaidFrame\Absorb-Edge">
+							<TexCoords left="1" right="0" top="0" bottom="1"/>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK" textureSubLevel="2">
+						<Texture parentKey="overAbsorbGlow"/>
+						<Texture parentKey="overHealAbsorbGlow"/>
+					</Layer>
 				</Layers>
 				<BarTexture parentKey="barTexture" file="Interface/TargetingFrame/UI-TargetingFrame-BarFill" />
 			</StatusBar>
@@ -396,14 +415,7 @@
 			</Frame>
 		</Frames>
 		<Layers>
-			<Layer level="BORDER" textureSubLevel="5">
-				<Texture parentKey="myHealPrediction"/>
-				<Texture parentKey="otherHealPrediction"/>
-				<Texture parentKey="totalAbsorb"/>
-			</Layer>
-			<Layer level="BORDER" textureSubLevel="6">
-				<Texture parentKey="totalAbsorbOverlay"/>
-			</Layer>
+			
 			<Layer level="ARTWORK">
 				<FontString parentKey="name" inherits="SystemFont_NamePlate" wordwrap="false" justifyH="CENTER">
 					<Anchors>
@@ -412,17 +424,7 @@
 				</FontString>
 				<FontString parentKey="statusText" inherits="GameFontDisable" />
 			</Layer>
-			<Layer level="ARTWORK" textureSubLevel="1">
-				<Texture parentKey="myHealAbsorb"/>
-				<Texture parentKey="myHealAbsorbLeftShadow" file="Interface\RaidFrame\Absorb-Edge"/>
-				<Texture parentKey="myHealAbsorbRightShadow" file="Interface\RaidFrame\Absorb-Edge">
-					<TexCoords left="1" right="0" top="0" bottom="1"/>
-				</Texture>
-			</Layer>
-			<Layer level="ARTWORK" textureSubLevel="2">
-				<Texture parentKey="overAbsorbGlow"/>
-				<Texture parentKey="overHealAbsorbGlow"/>
-			</Layer>
+			
 			<Layer level="OVERLAY">
 				<Texture parentKey="selectionHighlight" file="Interface/TargetingFrame/UI-TargetingFrame-BarFill" alpha=".25" forceAlpha="true" alphaMode="ADD">
 					<Anchors>

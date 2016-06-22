@@ -2,7 +2,7 @@
 ..\FrameXML\UI.xsd">
 	<Script file="Blizzard_TalkingHeadUI.lua"/>
 
-	<Button name="TalkingHeadFrame" toplevel="true" parent="UIParent" hidden="true" frameStrata="DIALOG" frameLevel="1">
+	<Button name="TalkingHeadFrame" toplevel="true" parent="UIParent" hidden="true" frameStrata="HIGH" frameLevel="1">
 		<Size x="570" y="155"/>
 		<Anchors>
 			<Anchor point="BOTTOM" x="0" y="96"/>
@@ -11,7 +11,7 @@
 			<Frame parentKey="NameFrame" setAllPoints="true" useParentLevel="true">
 				<Layers>
 					<Layer level="ARTWORK">
-						<FontString parentKey="Name" inherits="Fancy22Font" alpha="0.01" alphaMode="BLEND" justifyH="LEFT">
+						<FontString parentKey="Name" inherits="Fancy22Font" alpha="0.01" justifyH="LEFT">
 							<Anchors>
 								<Anchor point="RIGHT" x="-12" y="0"/>
 							</Anchors>
@@ -34,11 +34,12 @@
 			<Frame parentKey="TextFrame" setAllPoints="true" useParentLevel="true">
 				<Layers>
 					<Layer level="ARTWORK">
-						<FontString parentKey="Text" inherits="GameFontHighlightLarge" alpha="0.01" alphaMode="BLEND" justifyH="LEFT" justifyV="TOP">
+						<FontString parentKey="Text" inherits="GameFontHighlightLarge" alpha="0.01" justifyH="LEFT" justifyV="TOP" mixin="ShrinkUntilTruncateFontStringMixin">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.$parent.NameFrame.Name" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
 								<Anchor point="BOTTOMRIGHT" x="-42" y="12"/>
 							</Anchors>
+							<Color r="1" g="1" b="1"/>
 						</FontString>
 					</Layer>
 				</Layers>
@@ -58,7 +59,7 @@
 				<Layers>
 					<Layer level="BACKGROUND">
 						<Texture parentKey="TextBackground" hidden="false" alpha="0.01" alphaMode="BLEND" atlas="TalkingHeads-TextBackground" useAtlasSize="true"/>
-					</Layer>	
+					</Layer>
 				</Layers>
 				<Animations>
 					<AnimationGroup parentKey="Fadein" setToFinalAlpha="true">
@@ -160,7 +161,7 @@
 					</Frame>
 					<Button parentKey="CloseButton" inherits="UIPanelCloseButtonNoScripts" alpha="0.01" alphaMode="BLEND">
 						<Anchors>
-							<Anchor point="TOPRIGHT" x="-12" y="-12"/> 
+							<Anchor point="TOPRIGHT" x="-12" y="-12"/>
 						</Anchors>
 						<Scripts>
 							<OnClick>

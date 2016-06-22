@@ -147,7 +147,7 @@
 		</Layers>
 		<Scripts>
 			<OnClick>
-				PlaySound("igMainMenuOptionCheckBoxOn");
+				PlaySound("UI_Transmog_GearSlotClick");
 				WardrobeCollectionFrame_SetActiveSlot(self.slot, self.transmogType);
 			</OnClick>
 			<OnEnter>
@@ -1411,7 +1411,6 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								PlaySound("UI_Transmogrify_Apply");
 								WardrobeTransmogFrame_ApplyPending(0);
 							</OnClick>
 						</Scripts>

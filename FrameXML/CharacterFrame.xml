@@ -249,7 +249,7 @@
 							<KeyValue key="titleText" value="STAT_AVERAGE_ITEM_LEVEL" type="global"/>
 						</KeyValues>
 						<Anchors>
-							<Anchor point="TOP" x="0" y="-6"/>
+							<Anchor point="TOP" x="0" y="-4"/>
 						</Anchors>
 					</Frame>
 					<Frame parentKey="AttributesCategory" inherits="CharacterStatFrameCategoryTemplate">
@@ -264,9 +264,6 @@
 						<KeyValues>
 							<KeyValue key="titleText" value="STAT_CATEGORY_ENHANCEMENTS" type="global"/>
 						</KeyValues>
-						<Anchors>
-							<Anchor point="TOP" x="0" y="-136"/>
-						</Anchors>
 					</Frame>
 				</Frames>
 				<Scripts>

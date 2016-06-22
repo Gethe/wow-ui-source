@@ -971,6 +971,16 @@ function CharacterSelect_SelectCharacter(index, noCreate)
 		end
 		ReactivateAccountDialog_Open();
 		SetBackgroundModel(CharacterSelectModel, GetSelectBackgroundModel(charID));
+
+		-- Update the text of the EnterWorld button based on the type of character that's selected, default to "enter world"
+		local text = ENTER_WORLD;
+
+		local isTrialBoostLocked = select(22,GetCharacterInfo(GetCharacterSelection()));
+		if ( isTrialBoostLocked ) then
+			text = ENTER_WORLD_UNLOCK_TRIAL_CHARACTER;
+		end
+
+		CharSelectEnterWorldButton:SetText(text);
 	end
 end
 
@@ -1002,11 +1012,18 @@ end
 function CharacterSelect_EnterWorld()
 	CharacterSelect_SaveCharacterOrder();
 	PlaySound("gsCharacterSelectionEnterWorld");
-	local locked = select(20,GetCharacterInfo(GetCharacterSelection()));
+	local guid, _, _, _, boostInProgress, _, locked, isTrialBoost, isTrialBoostLocked = select(14,GetCharacterInfo(GetCharacterSelection()));
+
 	if ( locked ) then
 		SubscriptionRequestDialog_Open();
 		return;
 	end
+
+	if ( isTrialBoost and isTrialBoostLocked ) then
+		CharacterSelect_CheckApplyBoostToUnlockTrialCharacter(guid);
+		return;
+	end
+
 	StopGlueAmbience();
 	EnterWorld();
 end
@@ -1118,40 +1135,6 @@ function CharacterSelect_PaidServiceOnClick(self, button, down, service)
 		GlueDialog_Show("UNDELETE_CONFIRM", UNDELETE_CONFIRMATION:format(timeStr));
 	else
 		GlueParent_SetScreen("charcreate");
-	end
-end
-
-function CharacterSelectPanelButton_DeathKnightSwap(self)
-	local textureBase;
-	if ( not self:IsEnabled() ) then
-		textureBase = "Interface\\Glues\\Common\\Glue-Panel-Button-Disabled";
-	elseif ( self.down ) then
-		textureBase = "Interface\\Glues\\Common\\Glue-Panel-Button-Down";
-	else
-		textureBase = "Interface\\Glues\\Common\\Glue-Panel-Button-Up";
-	end
-
-	local deathKnightTag = "DEATHKNIGHT";
-	local currentGlueTag = GetCurrentGlueTag();
-
-	if ( self.currentGlueTag ~= currentGlueTag or self.textureBase ~= textureBase ) then
-		self.currentGlueTag = currentGlueTag;
-		self.textureBase = textureBase;
-
-		if ( currentGlueTag == deathKnightTag ) then
-			local suffix = self:IsEnabled() and "-Blue" or "";
-			self.Left:SetTexture(textureBase..suffix);
-			self.Middle:SetTexture(textureBase..suffix);
-			self.Right:SetTexture(textureBase..suffix);
-			self:SetHighlightTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Highlight-Blue");
-		else
-			if ( self.Left ) then
-				self.Left:SetTexture(textureBase);
-				self.Middle:SetTexture(textureBase);
-				self.Right:SetTexture(textureBase);
-				self:SetHighlightTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Highlight");
-			end
-		end
 	end
 end
 
@@ -1372,7 +1355,7 @@ ACCOUNT_UPGRADE_FEATURES = {
 		  [3] = { icon = "Interface\\Icons\\Ability_Mount_CelestialHorse", text = UPGRADE_FEATURE_9 },
 		  logo = "Interface\\Glues\\Common\\Glues-WoW-CCLogo",
 		  banner = "accountupgradebanner-cataclysm",
-		  buttonText =  UPGRADE,
+		  buttonText =  UPGRADE_ACCOUNT_SHORT,
 		  displayCheck =  function() return GameLimitedMode_IsActive() or CanUpgradeExpansion() end,
 		  upgradeOnClick = UpgradeAccount,
 		  },
@@ -1382,7 +1365,7 @@ ACCOUNT_UPGRADE_FEATURES = {
 		  [3] = { icon = "Interface\\Icons\\Ability_Mount_CelestialHorse", text = UPGRADE_FEATURE_9 },
 		  logo = "Interface\\Glues\\Common\\Glues-WoW-CCLogo",
 		  banner = "accountupgradebanner-cataclysm",
-		  buttonText =  UPGRADE,
+		  buttonText =  UPGRADE_ACCOUNT_SHORT,
 		  displayCheck =  function() return GameLimitedMode_IsActive() or CanUpgradeExpansion() end,
 		  upgradeOnClick = UpgradeAccount,
 		  },
@@ -1392,7 +1375,7 @@ ACCOUNT_UPGRADE_FEATURES = {
 		  [3] = { icon = "Interface\\Icons\\achievement_zone_jadeforest", text = UPGRADE_FEATURE_12 },
 		  logo = "Interface\\Glues\\Common\\Glues-WoW-MPLogo",
 		  banner = "accountupgradebanner-mop",
-		  buttonText =  UPGRADE,
+		  buttonText =  UPGRADE_ACCOUNT_SHORT,
 		  displayCheck =  function() return GameLimitedMode_IsActive() or CanUpgradeExpansion() end,
 		  upgradeOnClick = UpgradeAccount,
 		  },
@@ -1402,7 +1385,7 @@ ACCOUNT_UPGRADE_FEATURES = {
 		  [3] = { icon = "Interface\\Icons\\UI_Promotion_Garrisons", text = UPGRADE_FEATURE_15 },
 		  logo = "Interface\\Glues\\Common\\Glues-WoW-WODLOGO",
 		  banner = "accountupgradebanner-wod",
-		  buttonText =  UPGRADE,
+		  buttonText =  UPGRADE_ACCOUNT_SHORT,
 		  displayCheck =  function() return GameLimitedMode_IsActive() or CanUpgradeExpansion() end,
 		  upgradeOnClick = UpgradeAccount,
 		  },
@@ -1412,7 +1395,7 @@ ACCOUNT_UPGRADE_FEATURES = {
 		  [3] = { icon = "Interface\\Icons\\UI_Promotion_CharacterBoost", text = UPGRADE_FEATURE_18 },
 		  atlasLogo = "Glues-WoW-LegionLogo",
 		  banner = "accountupgradebanner-legion",
-		  buttonText = UPGRADE,
+		  buttonText = UPGRADE_ACCOUNT_SHORT,
 		  displayCheck =  function() return GameLimitedMode_IsActive() or CanUpgradeExpansion() end,
 		  upgradeOnClick = function()
 			if ( CharacterSelect_IsStoreAvailable() and C_PurchaseAPI.HasProductType(LE_BATTLEPAY_PRODUCT_ITEM_7_0_BOX_LEVEL) ) then
@@ -1878,7 +1861,7 @@ function CharacterUpgradePopup_BeginCharacterUpdgradeFlow(data)
 	CharacterServicesMaster_SetFlow(CharacterServicesMaster, CharacterUpgradeFlow);
 end
 
-local function BeginUnlockTrialCharacter(flowData, guid)
+function CharacterUpgradePopup_BeginUnlockTrialCharacter(flowData, guid)
 	CharacterUpgradeFlow:SetAutoSelectGuid(guid);
 	CharacterUpgradePopup_BeginCharacterUpdgradeFlow(flowData);
 end
@@ -1977,7 +1960,7 @@ function CharacterServicesMaster_SetFlow(self, flow)
 	end
 end
 
-function CharacterServicesMaster_SetCurrentBlock(self, block)
+function CharacterServicesMaster_SetCurrentBlock(self, block, wasFromRewind)
 	local parent = self:GetParent();
 	if (not block.HiddenStep) then
 		CharacterServicesMaster_SetBlockActiveState(block);
@@ -1990,8 +1973,27 @@ function CharacterServicesMaster_SetCurrentBlock(self, block)
 	if (block.Finish) then
 		self.FinishTime = GetTime();
 	end
-	parent.NextButton:SetEnabled(block:IsFinished());
-	parent.FinishButton:SetEnabled(block:IsFinished());
+
+	-- Some blocks may remember user choices when the user returns to
+	-- them.  As such, even though the block isn't finished for purposes
+	-- of advancing to the next step, the next button should still be
+	-- enabled.  This addresses an issue where the "alert, next is ready!"
+	-- animation was playing even though from the user's point of view
+	-- the next button never really appeared disabled.
+
+	local isFinished = block:IsFinished(wasFromRewind);
+
+	if wasFromRewind then
+		local forwardStateWouldBeFinished = block:IsFinished();
+		parent.NextButton:SetEnabled(forwardStateWouldBeFinished);
+	else
+		parent.NextButton:SetEnabled(isFinished);
+	end
+
+	-- Since there's no way to finish the entire flow and then go back,
+	-- the finishButton is always enabled based on the block actually
+	-- being finished.
+	parent.FinishButton:SetEnabled(isFinished);
 end
 
 function CharacterServicesMaster_Restart()
@@ -2006,10 +2008,12 @@ function CharacterServicesMaster_Update()
 	local self = CharacterServicesMaster;
 	local parent = self:GetParent();
 	local block = self.currentBlock;
+
 	if (block and block:IsFinished()) then
 		if (not block.HiddenStep and (block.AutoAdvance or self.blockComplete)) then
 			CharacterServicesMaster_SetBlockFinishedState(block);
 		end
+
 		if (block.AutoAdvance) then
 			self.flow:Advance(self);
 		else
@@ -2017,6 +2021,7 @@ function CharacterServicesMaster_Update()
 				if (not parent.NextButton:IsEnabled()) then
 					parent.NextButton:SetEnabled(true);
 					if ( parent.NextButton:IsVisible() ) then
+						parent.NextButton.Flash:Show();
 						parent.NextButton.PulseAnim:Play();
 					end
 				end
@@ -2027,6 +2032,11 @@ function CharacterServicesMaster_Update()
 	elseif (block) then
 		if (block.Next) then
 			parent.NextButton:SetEnabled(false);
+
+			if ( parent.NextButton:IsVisible() ) then
+				parent.NextButton.PulseAnim:Stop();
+				parent.NextButton.Flash:Hide();
+			end
 		elseif (block.Finish) then
 			parent.FinishButton:SetEnabled(false);
 		end
@@ -2524,7 +2534,10 @@ end
 
 function CharSelectLockedTrialButton_OnClick(self)
 	CharacterSelectButton_OnClick(self.characterSelectButton);
+	CharacterSelect_CheckApplyBoostToUnlockTrialCharacter(self.guid);
+end
 
+function CharacterSelect_CheckApplyBoostToUnlockTrialCharacter(guid)
 	-- Search user upgrades to see if they have the required boost
 	local upgrades = C_SharedCharacterServices.GetUpgradeDistributions();
 	local hasBoost = false;
@@ -2546,8 +2559,12 @@ function CharSelectLockedTrialButton_OnClick(self)
 			flowData = flowData.paid;
 		end
 
-		BeginUnlockTrialCharacter(flowData, self.guid);
+		CharacterUpgradePopup_BeginUnlockTrialCharacter(flowData, guid);
 	else
-		-- TODO: Direct user to the shop to buy a token?  Popup error dialog?  Resolve this with design
+		if not StoreFrame_IsShown or not StoreFrame_IsShown() then
+			ToggleStoreUI();
+		end
+
+		StoreFrame_SelectLevel100BoostProduct(guid);
 	end
 end

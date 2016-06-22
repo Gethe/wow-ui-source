@@ -27,13 +27,13 @@
 
 	<Button name="InvasionAlertFrameRewardTemplate" parentArray="RewardFrames" virtual="true" inherits="DungeonCompletionAlertFrameRewardTemplate">
 		<Scripts>
-			<OnEnter function="InvasionAlertFrameReward_OnEnter"/>
+			<OnEnter function="StandardRewardAlertFrame_OnEnter"/>
 		</Scripts>
 	</Button>
 
 	<Button name="WorldQuestFrameRewardTemplate" parentArray="RewardFrames" virtual="true" inherits="DungeonCompletionAlertFrameRewardTemplate">
 		<Scripts>
-			<OnEnter function="WorldQuestCompleteFrameReward_OnEnter"/>
+			<OnEnter function="StandardRewardAlertFrame_OnEnter"/>
 		</Scripts>
 	</Button>
 
@@ -748,7 +748,6 @@
 				<Layers>
 					<Layer level="OVERLAY">
 						<Texture name="$parentGlow" atlas="Toast-Flash" useAtlasSize="true" alphaMode="ADD" hidden="true" parentKey="glow">
-							<Anchors point="CENTER" x="0" y="0"/>
 							<Animations>
 								<AnimationGroup name="$parentAnimIn" parentKey="animIn">
 									<Alpha fromAlpha="0" toAlpha="1" duration="0.2" order="1"/>
@@ -1027,7 +1026,7 @@
 	</Button>
 
 	<Texture name="LootUpgradeFrame_ArrowTemplate" hidden="false" alpha="0" alphaMode="BLEND" atlas="loottoast-arrow-blue" useAtlasSize="true" virtual ="true"/>
-	<FontString name="LootUpgradeFrame_ItemNameTemplate" inherits="GameFontNormalMed3"  justifyH="LEFT" justifyV="MIDDLE" hidden="false" alpha="1" wordwrap="true" virtual ="true">
+	<FontString name="LootUpgradeFrame_ItemNameTemplate" inherits="GameFontNormalMed3"  justifyH="LEFT" justifyV="MIDDLE" hidden="false" wordwrap="true" virtual ="true">
 		<Size x="160" y="34"/>
 		<Color r="1" g="1" b="1"/>
 	</FontString>

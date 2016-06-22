@@ -80,7 +80,9 @@ end
 
 function ClassNameplateBar:HideNameplateBar()
 	self:Hide();
-	NamePlateDriverFrame:SetClassNameplateBar(nil);
+	if (NamePlateDriverFrame:GetClassNameplateBar() == self) then
+		NamePlateDriverFrame:SetClassNameplateBar(nil);
+	end
 end
 
 function ClassNameplateBar:TurnOn(frame, texture, toAlpha)
@@ -115,7 +117,7 @@ local NameplatePowerBarColor = {
 
 function ClassNameplateManaBar:OnLoad()
 	ClassNameplateBar.OnLoad(self);
-
+	self.currValue = 0;
 	self.Border:SetVertexColor(0, 0, 0, .8);
 end
 
@@ -139,6 +141,8 @@ function ClassNameplateManaBar:OnEvent(event, ...)
 		end
 		self.predictedPowerCost = cost;
 		self:SetupBar();
+	elseif ( event == "PLAYER_REGEN_DISABLED" ) then
+		self:UpdatePower(true);
 	else
 		ClassNameplateBar.OnEvent(self, event, ...);
 	end
@@ -152,6 +156,7 @@ function ClassNameplateManaBar:Setup()
 	self:RegisterUnitEvent("UNIT_SPELLCAST_STOP", "player");
 	self:RegisterUnitEvent("UNIT_SPELLCAST_FAILED", "player");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+	self:RegisterEvent("PLAYER_REGEN_DISABLED");
 	
 	local tex = self:GetStatusBarTexture();
 	local bar = self.ManaCostPredictionBar;
@@ -174,7 +179,6 @@ function ClassNameplateManaBar:SetupBar()
 		self:SetStatusBarColor(info.r, info.g, info.b);
 
 		self.FeedbackFrame:Initialize(info, "player", powerType);
-		self:SetScript("OnUpdate", ClassNameplateManaBar_OnUpdate);
 			
 		self.FullPowerFrame:SetSize(86, 6);
 		self.FullPowerFrame.SpikeFrame:SetSize(86, 6);
@@ -184,12 +188,13 @@ function ClassNameplateManaBar:SetupBar()
 		self.FullPowerFrame.PulseFrame.SoftGlow:SetSize(20, 20);
 		self.FullPowerFrame:Initialize(info.fullPowerAnim);
 	end
-	self.powerToken = powerToken;
-	self.powerType = powerType;
+	if ( self.powerType ~= powerType ) then
+		self.powerToken = powerToken;
+		self.powerType = powerType;
+		self.currValue = UnitPower("player", powerType);
+	end
 	self:UpdateMaxPower();
 	self:UpdatePower();
-	local predictedCost = self.predictedPowerCost or 0;
-	self.currValue = UnitPower("player", self.powerType) - predictedCost;
 	self:OnOptionsUpdated();
 end
 
@@ -199,7 +204,7 @@ function ClassNameplateManaBar:UpdateMaxPower()
 	self.FullPowerFrame:SetMaxValue(maxValue);
 end
 
-function ClassNameplateManaBar:UpdatePower()
+function ClassNameplateManaBar:UpdatePower(forceAnimUpdate)
 	local predictedCost = self.predictedPowerCost or 0;
 	local currValue = UnitPower("player", self.powerType) - predictedCost;
 	self:SetValue(currValue);
@@ -215,18 +220,7 @@ function ClassNameplateManaBar:UpdatePower()
 		bar:SetWidth(barSize);
 		bar:Show();
 	end
-end
-
-function ClassNameplateManaBar:OnOptionsUpdated()
-	local horizontalScale = tonumber(GetCVar("NamePlateHorizontalScale"));
-	self:SetWidth(NamePlateDriverFrame:GetBaseNamePlateWidth() * horizontalScale - 24);
-	self:SetHeight(DefaultCompactNamePlatePlayerFrameSetUpOptions.healthBarHeight)
-end
-
-function ClassNameplateManaBar_OnUpdate(self)
-	local predictedCost = self.predictedPowerCost or 0;
-	local currValue = UnitPower("player", self.powerType) - predictedCost;
-	if ( currValue ~= self.currValue or currValue == self.FeedbackFrame.maxValue ) then
+	if ( self.currValue ~= currValue or forceAnimUpdate ) then
 		-- Only show anim if change is more than 10%
 		if ( math.abs(currValue - self.currValue) / self.FeedbackFrame.maxValue > 0.1 ) then
 			self.FeedbackFrame:StartFeedbackAnim(self.currValue or 0, currValue);
@@ -236,4 +230,10 @@ function ClassNameplateManaBar_OnUpdate(self)
 		end
 		self.currValue = currValue;
 	end
+end
+
+function ClassNameplateManaBar:OnOptionsUpdated()
+	local width, height = C_NamePlate.GetNamePlateSelfSize();
+	self:SetWidth(width - 24);
+	self:SetHeight(DefaultCompactNamePlatePlayerFrameSetUpOptions.healthBarHeight);
 end

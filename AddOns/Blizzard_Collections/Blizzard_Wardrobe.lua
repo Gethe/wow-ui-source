@@ -338,6 +338,7 @@ function WardrobeTransmogFrame_ApplyPending(lastAcceptedWarningIndex)
 	else
 		local success = C_Transmog.ApplyAllPending(GetCVarBool("transmogCurrentSpecOnly"));
 		if ( success ) then
+			PlaySound("UI_Transmog_Apply");
 			WardrobeTransmogFrame.applyWarningsTable = nil;
 			-- outfit tutorial
 			if ( not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_OUTFIT_DROPDOWN) ) then
@@ -1493,7 +1494,8 @@ end
 function WardrobeCollectionFrameModel_OnLoad(self)
 	self:RegisterEvent("UI_SCALE_CHANGED");
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
-	
+	self:SetAutoDress(false);
+
 	local lightValues = { enabled=true, omni=false, dirX=-1, dirY=1, dirZ=-1, ambIntensity=1.05, ambR=1, ambG=1, ambB=1, dirIntensity=0, dirR=1, dirG=1, dirB=1 };
 	self:SetLight(lightValues.enabled, lightValues.omni, 
 			lightValues.dirX, lightValues.dirY, lightValues.dirZ,
@@ -1621,7 +1623,6 @@ function WardrobeCollectionFrameModel_Reload(self, reloadSlot)
 			self:SetUseTransmogSkin(WARDROBE_MODEL_SETUP[reloadSlot].useTransmogSkin);
 			self:SetUnit("player");
 			self:FreezeAnimation(0);
-			self:Undress();
 			for slot, equip in pairs(WARDROBE_MODEL_SETUP[reloadSlot].slots) do
 				if ( equip ) then
 					self:TryOn(WARDROBE_MODEL_SETUP_GEAR[slot]);
@@ -1696,7 +1697,7 @@ function WardrobeCollectionFrameModel_SetTooltip()
 	GameTooltip:SetText(name, nameColor.r, nameColor.g, nameColor.b);
 
 	-- at the transmogrify vendor or the appearance is collected and usable we're done after the main item name
-	if ( WardrobeFrame_IsAtTransmogrifier() or (sources[headerIndex].isCollected and sources[headerIndex].isUsable) ) then
+	if ( WardrobeFrame_IsAtTransmogrifier() or (sources[headerIndex].isCollected and not sources[headerIndex].useError) ) then
 		-- but extra tooltip text if not at transmogrifier
 		if ( not WardrobeFrame_IsAtTransmogrifier() ) then
 			GameTooltip:AddLine(WARDROBE_TOOLTIP_TRANSMOGRIFIER, GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b, 1, 1);

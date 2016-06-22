@@ -623,8 +623,8 @@ function GarrisonShipyardMissionComplete:AnimFollowersIn(entry)
 	local missionList = self.completeMissions;
 	if ( missionList[nextIndex] ) then
 		MissionCompletePreload_LoadMission(self:GetParent(), missionList[nextIndex].missionID, 
-			GarrisonFollowerOptions[self.followerTypeID].showSingleMissionCompleteFollower,
-			GarrisonFollowerOptions[self.followerTypeID].showSingleMissionCompleteAnimation);
+			GarrisonFollowerOptions[self:GetParent().followerTypeID].showSingleMissionCompleteFollower,
+			GarrisonFollowerOptions[self:GetParent().followerTypeID].showSingleMissionCompleteAnimation);
 	end
 	
 	if ( entry ) then

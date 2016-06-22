@@ -32,8 +32,8 @@ function StoreFrame_SetServicesCategory()
 	StoreFrame:SetAttribute("setservicescategory");
 end
 
-function StoreFrame_SelectLevel100BoostProduct()
-	StoreFrame:SetAttribute("selectlevel100boostproduct")
+function StoreFrame_SelectLevel100BoostProduct(optionalGuid)
+	StoreFrame:SetAttribute("selectlevel100boostproduct", optionalGuid)
 end
 
 if (InGlue()) then

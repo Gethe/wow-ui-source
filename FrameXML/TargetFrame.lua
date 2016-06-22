@@ -664,8 +664,9 @@ function TargetFrame_ShouldShowDebuffs(unit, caster, nameplateShowAll, casterIsA
 
 	local targetIsFriendly = not UnitCanAttack("player", unit);
 	local targetIsAPlayer =  UnitIsPlayer(unit);
+	local targetIsAPlayerPet = UnitIsOtherPlayersPet(unit);
 
-	if (not targetIsAPlayer and not targetIsFriendly and casterIsAPlayer) then
+	if (not targetIsAPlayer and not targetIsAPlayerPet and not targetIsFriendly and casterIsAPlayer) then
         return false;
     end
 

@@ -223,6 +223,9 @@ PAPERDOLL_STATCATEGORIES= {
 			[4] = { stat = "VERSATILITY", hideAt = 0 },
 			[5] = { stat = "LIFESTEAL", hideAt = 0 },
 			[6] = { stat = "AVOIDANCE", hideAt = 0 },
+			[7] = { stat = "DODGE", roles =  { "TANK" } },
+			[8] = { stat = "PARRY", hideAt = 0, roles =  { "TANK" } },
+			[9] = { stat = "BLOCK", hideAt = -1, roles =  { "TANK" } },
 		},
 	},
 };
@@ -1703,16 +1706,21 @@ end
 
 function PaperDollFrame_UpdateStats()
 	local level = UnitLevel("player");
+	local categoryYOffset = -5;
+	local statYOffset = 0;
+
 	if ( level >= MIN_PLAYER_LEVEL_FOR_ITEM_LEVEL_DISPLAY ) then
 		PaperDollFrame_SetItemLevel(CharacterStatsPane.ItemLevelFrame, "player");
 		CharacterStatsPane.ItemLevelFrame.Value:SetTextColor(GetItemLevelColor());
 		CharacterStatsPane.ItemLevelCategory:Show();
 		CharacterStatsPane.ItemLevelFrame:Show();
-		CharacterStatsPane.AttributesCategory:SetPoint("TOP", 0, -81);
+		CharacterStatsPane.AttributesCategory:SetPoint("TOP", 0, -76);
 	else
 		CharacterStatsPane.ItemLevelCategory:Hide();
 		CharacterStatsPane.ItemLevelFrame:Hide();
-		CharacterStatsPane.AttributesCategory:SetPoint("TOP", 0, -6);
+		CharacterStatsPane.AttributesCategory:SetPoint("TOP", 0, -20);
+		categoryYOffset = -12;
+		statYOffset = -6;
 	end
 
 	local spec = GetSpecialization();
@@ -1753,12 +1761,12 @@ function PaperDollFrame_UpdateStats()
 				if ( not stat.hideAt or stat.hideAt ~= statFrame.numericValue ) then
 					if ( numStatInCat == 0 ) then
 						if ( lastAnchor ) then
-							catFrame:SetPoint("TOP", lastAnchor, "BOTTOM", 0, -8);
+							catFrame:SetPoint("TOP", lastAnchor, "BOTTOM", 0, categoryYOffset);
 						end
 						lastAnchor = catFrame;
-						statFrame:SetPoint("TOP", catFrame, "BOTTOM", 0, -3);
+						statFrame:SetPoint("TOP", catFrame, "BOTTOM", 0, -2);
 					else
-						statFrame:SetPoint("TOP", lastAnchor, "BOTTOM", 0, 0);
+						statFrame:SetPoint("TOP", lastAnchor, "BOTTOM", 0, statYOffset);
 					end
 					numStatInCat = numStatInCat + 1;
 					statFrame.Background:SetShown((numStatInCat % 2) == 0);

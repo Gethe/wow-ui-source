@@ -528,6 +528,7 @@
 				<xs:attribute name="justifyH" type="JUSTIFYHTYPE" default="CENTER"/>
 				<xs:attribute name="maxLines" type="xs:unsignedInt" default="0"/>
 				<xs:attribute name="indented" type="xs:boolean" default="false"/>
+				<xs:attribute name="alpha" type="xs:float" default="1.0"/>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>

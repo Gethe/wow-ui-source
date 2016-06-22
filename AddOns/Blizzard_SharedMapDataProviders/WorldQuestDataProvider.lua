@@ -131,6 +131,8 @@ function WorldQuestDataProviderMixin:AddWorldQuest(info)
 
 	pin:SetPosition(info.x, info.y);
 	pin:Show();
+
+	C_TaskQuest.RequestPreloadRewardData(info.questId);
 end
 
 --[[ World Quest Pin ]]--
@@ -146,11 +148,23 @@ end
 function WorldQuestPinMixin:OnMouseEnter()
 	WorldMapTooltip:SetParent(self:GetMap());
 	WorldMapTooltip:SetFrameStrata("TOOLTIP");
+
+	for i, tooltip in ipairs(WorldMapTooltip.ItemTooltip.Tooltip.shoppingTooltips) do
+		tooltip:SetParent(self:GetMap());
+		tooltip:SetFrameStrata("TOOLTIP");
+	end
+
 	TaskPOI_OnEnter(self);
 end
 
 function WorldQuestPinMixin:OnMouseLeave()
 	TaskPOI_OnLeave(self);
+
+	for i, tooltip in ipairs(WorldMapTooltip.ItemTooltip.Tooltip.shoppingTooltips) do
+		tooltip:SetParent(WorldMapFrame);
+		tooltip:SetFrameStrata("TOOLTIP");
+	end
+
 	WorldMapTooltip:SetParent(WorldMapFrame);
 	WorldMapTooltip:SetFrameStrata("TOOLTIP");
 end

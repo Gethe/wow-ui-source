@@ -204,6 +204,8 @@ function LFGEventFrame_OnEvent(self, event, ...)
 		LFG_UpdateAllRoleCheckboxes();
 	elseif ( event == "LFG_PROPOSAL_UPDATE" ) then
 		LFGDungeonReadyPopup_Update();
+	elseif ( event == "LFG_UPDATE_RANDOM_INFO" ) then
+		LFG_UpdateFramesIfShown();
 	elseif ( event == "LFG_PROPOSAL_SHOW" ) then
 		LFGDungeonReadyPopup.closeIn = nil;
 		LFGDungeonReadyPopup:SetScript("OnUpdate", nil);

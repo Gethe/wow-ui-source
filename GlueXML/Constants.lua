@@ -55,10 +55,6 @@ GLUE_AMBIENCE_TRACKS = {
 	["DEMONHUNTER"] = "AMB_GlueScreen_DemonHunter",
 };
 
-GLUE_BUTTON_SWAPS = {
-	["DEATHKNIGHT"] = true,
-};
-
 CHAR_MODEL_FOG_INFO = {
 	["SCOURGE"] = { r=0, g=0.22, b=0.22, far=26 };
 	--[[

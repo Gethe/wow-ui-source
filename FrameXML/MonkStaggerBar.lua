@@ -5,9 +5,9 @@ STAGGER_YELLOW_TRANSITION = .30
 STAGGER_RED_TRANSITION = .60
 
 -- table indices of bar colors
-local GREEN_INDEX = 1;
-local YELLOW_INDEX = 2;
-local RED_INDEX = 3;
+STAGGER_GREEN_INDEX = 1;
+STAGGER_YELLOW_INDEX = 2;
+STAGGER_RED_INDEX = 3;
 
 function MonkStaggerBar_OnLoad(self)
 	self.specRestriction = SPEC_MONK_BREWMASTER;
@@ -71,8 +71,8 @@ function MonkStaggerBar_UpdateValue(self)
 		return;
 	end
 	self:SetValue(currstagger);
-	self.value = currstagger
-	MonkStaggerBar_UpdateMaxValues(self)
+	self.value = currstagger;
+	MonkStaggerBar_UpdateMaxValues(self);
 	
 	local _, maxstagger = self:GetMinMaxValues();
 	local percent = currstagger/maxstagger;
@@ -80,11 +80,11 @@ function MonkStaggerBar_UpdateValue(self)
 	
 	
 	if (percent > STAGGER_YELLOW_TRANSITION and percent < STAGGER_RED_TRANSITION) then
-		info = info[YELLOW_INDEX];
+		info = info[STAGGER_YELLOW_INDEX];
 	elseif (percent > STAGGER_RED_TRANSITION) then
-		info = info[RED_INDEX];
+		info = info[STAGGER_RED_INDEX];
 	else
-		info = info[GREEN_INDEX];
+		info = info[STAGGER_GREEN_INDEX];
 	end
 	self:SetStatusBarColor(info.r, info.g, info.b);
 end
