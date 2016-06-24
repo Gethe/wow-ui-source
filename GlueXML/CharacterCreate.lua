@@ -1725,7 +1725,9 @@ end
 local function ShouldHideCharacterTypeFrame(characterType)
 	if (characterType == LE_CHARACTER_CREATE_TYPE_BOOST)
 	 or (not C_CharacterServices.IsTrialBoostEnabled())
-	 or (PAID_SERVICE_TYPE ~= nil) then
+	 or (PAID_SERVICE_TYPE ~= nil)
+	 or IsUsingCharacterTemplate()
+	 or IsForcingCharacterTemplate() then
 		return true;
 	end
 
@@ -1769,6 +1771,12 @@ function CharacterCreate_TypeButtonOnEnable(self)
 	self.levelText:SetTextColor(1, 1, 1, 1);
 end
 
+local function SelectSpecFrame_OnUpdateSpecButtons(self, allowAllSpecs)
+	if not allowAllSpecs then
+		ClickRecommendedSpecButton(self);
+	end
+end
+
 function SelectSpecFrame_OnLoad(self)
 	local trialBoostSpecButtonLayoutData = {
 		initialAnchor = { point = "TOPLEFT", relativeKey = "Title", relativePoint = "BOTTOM", x = -88, y = -25 },
@@ -1779,7 +1787,7 @@ function SelectSpecFrame_OnLoad(self)
 	}
 
 	self.specButtonClickedCallback = CharacterCreate_UpdateOkayButton;
-	self.OnUpdateSpecButtons = ClickRecommendedSpecButton;
+	self.OnUpdateSpecButtons = SelectSpecFrame_OnUpdateSpecButtons;
 	self.layoutData = trialBoostSpecButtonLayoutData;
 	self.selected = nil;
 end

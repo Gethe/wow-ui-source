@@ -103,7 +103,7 @@ SPLASH_SCREENS = {
 					hideStartButton = false,
 					minLevel = 90,
 					features = {
-						[1] = { EnterFunc = function() 
+						[1] = { EnterFunc = function()
 									MainMenuMicroButton_ShowAlert(CollectionsMicroButtonAlert, COLLECTIONS_MICRO_BUTTON_SPEC_TUTORIAL);
 									MicroButtonPulse(CollectionsMicroButton);
 								end,
@@ -135,7 +135,7 @@ SPLASH_SCREENS = {
 					hideStartButton = false,
 					minLevel = 90,
 					features = {
-							[1] = { EnterFunc = function() 
+							[1] = { EnterFunc = function()
 									MainMenuMicroButton_ShowAlert(CollectionsMicroButtonAlert, COLLECTIONS_MICRO_BUTTON_SPEC_TUTORIAL);
 									MicroButtonPulse(CollectionsMicroButton);
 								end,
@@ -151,43 +151,50 @@ SPLASH_SCREENS = {
 				},
 };
 
-local function GetSplashFrameTag()
-	local tag;
-	local expansionLevel = GetExpansionLevel();
-	if ( IsCharacterNewlyBoosted() ) then
-		if ( expansionLevel >= SPLASH_SCREENS["BOOST2"].expansion ) then		
-			tag = "BOOST2";
-		else
-			tag = "BOOST";
-		end
-	else
-		if ( expansionLevel >= SPLASH_SCREENS["LEGION_BOX"].expansion) then
-			tag = "LEGION_BOX";
-		elseif ( AreInvasionsAvailable() and select(2, UnitClass("player")) ~= "DEMONHUNTER" ) then
-			tag = "LEGION_PREPATCH";
-		else
-			tag = "BASE";
+local function GetBoostedCharacterTag(expansionLevel, characterLevel, ...)
+	for i = 1, select("#", ...) do
+		local splashTag = select(i, ...);
+		local splashData = SPLASH_SCREENS[splashTag];
+
+		if not splashData.expansion or expansionLevel >= splashData.expansion then
+			if not splashData.minLevel or characterLevel == splashData.minLevel then
+				return splashTag;
+			end
 		end
 	end
-	return tag;
+end
+
+local function GetSplashFrameTag()
+	if ( IsCharacterNewlyBoosted() ) then
+		-- Check tags in decreasing order of boost type (newest to oldest)
+		return GetBoostedCharacterTag(GetExpansionLevel(), UnitLevel("player"), "BOOST2", "BOOST");
+	else
+		if ( GetExpansionLevel() >= SPLASH_SCREENS["LEGION_BOX"].expansion) then
+			return "LEGION_BOX";
+		elseif ( AreInvasionsAvailable() and select(2, UnitClass("player")) ~= "DEMONHUNTER" ) then
+			return "LEGION_PREPATCH";
+		else
+			return "BASE";
+		end
+	end
 end
 
 local function GetLegionQuestID(tag)
 	local faction = UnitFactionGroup("player");
-	
+
 	if (tag == "LEGION_PREPATCH") then
 		return LEGION_PREPATCH_QUEST[faction];
-	elseif (tag == "LEGION_BOX") then	
+	elseif (tag == "LEGION_BOX") then
 		local startIndex = 1;
 		if (select(2, UnitClass("player")) == "DEMONHUNTER") then
 			startIndex = 2;
 		end
-		
-		
+
+
 		local tbl = LEGION_POSTPATCH_QUESTS[faction];
-		
+
 		local questID = nil;
-		
+
 		if (tbl) then
 			for i = startIndex, #tbl do
 				if (not IsQuestFlaggedCompleted(tbl[i])) then
@@ -196,11 +203,11 @@ local function GetLegionQuestID(tag)
 				end
 			end
 		end
-		
+
 		return questID;
 	end
-end		
-	
+end
+
 function SplashFrame_OnLoad(self)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("VARIABLES_LOADED");
@@ -217,7 +224,7 @@ local function ShouldEnableStartButton( questID )
 	if( questID ) then
 		local autoQuest = false;
 		for i = 1, GetNumAutoQuestPopUps() do
-			local id, popUpType = GetAutoQuestPopUp(i);	
+			local id, popUpType = GetAutoQuestPopUp(i);
 			if( id == questID and popUpType ) then
 				autoQuest = true;
 				break;
@@ -225,7 +232,7 @@ local function ShouldEnableStartButton( questID )
 		end
 		return autoQuest or GetQuestLogIndexByID(questID) > 0;
 	end
-	
+
 	return false;
 end
 
@@ -246,19 +253,23 @@ function SplashFrame_OnEvent(self, event)
 		self:UnregisterEvent("VARIABLES_LOADED");
 		self.varsLoaded = true;
 	end
-	
+
 	if( event == "PLAYER_ENTERING_WORLD" or event == "VARIABLES_LOADED" ) then
 		if( self.playerEntered and self.varsLoaded ) then
 			if ( not SplashFrameCanBeShown() ) then
 				return;
 			end
-			
+
 			local tag = GetSplashFrameTag();
+			if ( not tag ) then
+				return;
+			end
+
 			-- check if they've seen this screen already
 			local lastScreenID = tonumber(GetCVar(SPLASH_SCREENS[tag].cVar)) or 0;
 			if( lastScreenID >= SPLASH_SCREENS[tag].id ) then
 				return;
-			end	
+			end
 
 			SplashFrame_Open(tag);
 			SplashFrame.firstTimeViewed = true;
@@ -281,7 +292,7 @@ function SplashFrame_Display(tag, showStartButton)
 	frame.Feature2.Title:SetText(screenInfo.feature2Title);
 	frame.Feature2.Description:SetText(screenInfo.feature2Desc);
 	frame.RightTitle:SetText(screenInfo.rightTitle);
-	frame.RightTitle:SetSize( 400, 32 );	
+	frame.RightTitle:SetSize( 400, 32 );
 	frame.RightTitle:SetWordWrap( false );
 
 	local fontSizeFound = false;
@@ -295,7 +306,7 @@ function SplashFrame_Display(tag, showStartButton)
 		"Game24Font",
 		"Game18Font",
 	}
-	
+
 	for _, font in pairs(fonts) do
 		frame.RightTitle:SetFontObject(font);
 		if( frame.RightTitle:GetStringWidth() < 310 ) then
@@ -306,11 +317,11 @@ function SplashFrame_Display(tag, showStartButton)
 	if( not fontSizeFound ) then
 		frame.RightTitle:SetSize( 300, 40 );
 		frame.RightTitle:SetWordWrap( true );
-	end	
+	end
 
 	SplashFrame_SetStartButtonDisplay(showStartButton);
 	frame:Show();
-	
+
 	frame:RegisterEvent("QUEST_LOG_UPDATE");
 end
 
@@ -337,15 +348,14 @@ function SplashFrame_SetStartButtonDisplay( showStartButton )
 		frame.StartButton:Hide();
 		frame.RightDescription:SetWidth(234);
 		frame.RightDescription:SetPoint("BOTTOM", 164, 133);
-		frame.BottomCloseButton:Show();		
+		frame.BottomCloseButton:Show();
 	end
 end
 
 function SplashFrame_Open( tag )
-	if( not tag ) then
-		tag = GetSplashFrameTag();
-	end
-	
+	tag = tag or GetSplashFrameTag();
+	if not tag then return end
+
 	-- need an event for expansion becoming active
 	if( not SplashFrame.initialized ) then
 		SplashFrame.initialized = true;
@@ -356,14 +366,14 @@ function SplashFrame_Open( tag )
 			SPLASH_SCREENS["BOOST"].rightDesc = questData.text;
 		end
 	end
-	
+
 	if (tag == "LEGION_PREPATCH" or tag == "LEGION_BOX") then
 		local displayQuest = UnitLevel("player") >= SPLASH_SCREENS[tag].minLevel;
 		SPLASH_SCREENS[tag].questID = displayQuest and GetLegionQuestID(tag);
 	end
-	
+
 	SplashFrame_Display( tag, ShouldShowStartButton(SPLASH_SCREENS[tag].questID, tag) );
-	
+
 	-- hide some quest elements when splash frame is up
 	ObjectiveTracker_Update();
 	if( QuestFrame:IsShown() )then
@@ -390,16 +400,16 @@ function SplashFrame_Close()
 	local tag = frame.tag;
 	if( tag ) then
 		local questID = SPLASH_SCREENS[tag].questID;
-		local showQuestDialog = questID and 
+		local showQuestDialog = questID and
 								( (frame.StartButton:IsShown() and frame.StartButton:IsEnabled()) or
-								  (SPLASH_SCREENS[tag].hideStartButton and SplashFrame.firstTimeViewed and not IsQuestFlaggedCompleted(questID) and 
+								  (SPLASH_SCREENS[tag].hideStartButton and SplashFrame.firstTimeViewed and not IsQuestFlaggedCompleted(questID) and
 								  		UnitLevel("player") >= (SPLASH_SCREENS[tag].minLevel)
 										and ShouldEnableStartButton(questID)) );
 		HideUIPanel(frame);
-		
+
 		if( showQuestDialog ) then
 			OpenQuestDialog();
-		end	
+		end
 	end
 	PlaySound("igMainMenuQuit");
 end
@@ -422,12 +432,17 @@ function SplashFeature_OnLeave(self)
 	SPLASH_SCREENS[frame.tag].features[self:GetID()].LeaveFunc();
 end
 
+function SplashFrame_OnShow(self)
+	C_TalkingHead.SetConversationsDeferred(true);
+end
+
 function SplashFrame_OnHide(self)
 	self:UnregisterEvent("PLAYER_ENTERING_WORLD");
 	self:UnregisterEvent("QUEST_LOG_UPDATE");
 	self:SetScript("OnUpdate", nil);
-	
+
 	SplashFrame.firstTimeViewed = false;
-	
+	C_TalkingHead.SetConversationsDeferred(false);
+
 	ObjectiveTracker_Update();
 end

@@ -12,6 +12,73 @@ local MAX_SHOWN_BATTLEGROUNDS = 8;
 local NUM_BLACKLIST_INFO_LINES = 2;
 local NO_ARENA_SEASON = 0;
 
+local RANDOM_BG_REWARD = "randombg";
+local SKIRMISH_REWARD = "skirmish";
+local BONUS_BG_REWARD = "bonusbg";
+local ARENA_REWARD = "arena";
+
+local REWARDS_AT_MAX_LEVEL = {
+	[RANDOM_BG_REWARD] = {
+		["Horde"] = 141901,
+		["Alliance"] = 141899,
+	},
+	[SKIRMISH_REWARD] = {
+		["Horde"] = 141902,
+		["Alliance"] = 141903,
+	},
+	[BONUS_BG_REWARD] = {
+		["Horde"] = 141905,
+		["Alliance"] = 141904,
+	},
+	[ARENA_REWARD] = {
+		["Horde"] = 141906,
+		["Alliance"] = 141907,
+	},
+}
+
+function GetMaxLevelReward(bracketType)
+	local factionGroup = UnitFactionGroup("player");
+	if (UnitLevel("player") < MAX_PLAYER_LEVEL_TABLE[LE_EXPANSION_LEVEL_CURRENT]) then
+		return nil;
+	end
+
+	
+	local id;
+
+	if (bracketType == RANDOM_BATTLEGROUNDS) then
+		id = REWARDS_AT_MAX_LEVEL[RANDOM_BG_REWARD][factionGroup];
+	elseif (bracketType == SKIRMISH) then
+		id = REWARDS_AT_MAX_LEVEL[SKIRMISH_REWARD][factionGroup];
+	else
+		local RATED_BG_ID = 4;
+		local numCompleted, total = GetWeeklyPVPRewardInfo(bracketType);
+		if (numCompleted and numCompleted < total) then
+			if (bracketType == RATED_BG_ID) then
+				id = REWARDS_AT_MAX_LEVEL[BONUS_BG_REWARD][factionGroup];
+			else
+				id = REWARDS_AT_MAX_LEVEL[ARENA_REWARD][factionGroup];
+			end
+		else
+			if (bracketType == RATED_BG_ID) then
+				id = REWARDS_AT_MAX_LEVEL[RANDOM_BG_REWARD][factionGroup];
+			else
+				id = REWARDS_AT_MAX_LEVEL[SKIRMISH_REWARD][factionGroup];
+			end
+		end
+	end
+
+	if (not id) then
+		return nil;
+	end
+
+	local name, _, _, _, _, _, _, _, _, texture = GetItemInfo(id);
+
+	if (not name) then
+		PVPUIFrame_AddItemWait(id);
+	end
+	return { { id, name, texture, 1 } };
+end
+
 ---------------------------------------------------------------
 -- PVP FRAME
 ---------------------------------------------------------------
@@ -37,6 +104,9 @@ function PVPUIFrame_OnLoad(self)
 		
 	self.update = function(self, panel) return PVPQueueFrame_Update(PVPQueueFrame, panel); end
 	self.getSelection = function(self) return PVPQueueFrame_GetSelection(PVPQueueFrame); end
+
+	self.waitingOnItems = {};
+	
 	PVPQueueFrame_ShowFrame(HonorFrame);
 end
 
@@ -68,6 +138,27 @@ function PVPUIFrame_OnEvent(self, event, ...)
 		PVPUIFrame_UpdateRolesChangeable();
 	elseif ( event == "UPDATE_BATTLEFIELD_STATUS" ) then
 		PVPUIFrame_UpdateRolesChangeable();
+	elseif ( event == "GET_ITEM_INFO_RECEIVED" ) then
+		local id = ...;
+		if (tContains(self.waitingOnItems, id)) then
+			tDeleteItem(self.waitingOnItems, id);
+			
+			HonorFrameBonusFrame_Update();
+			ConquestFrame_Update(ConquestFrame);
+		end
+
+		if (#self.waitingOnItems == 0) then
+			self:UnregisterEvent("GET_ITEM_INFO_RECEIVED");
+		end
+	end
+end
+
+function PVPUIFrame_AddItemWait(itemid)
+	local self = PVPUIFrame;
+
+	if (not tContains(self.waitingOnItems, itemid)) then
+		tinsert(self.waitingOnItems, itemid);
+		self:RegisterEvent("GET_ITEM_INFO_RECEIVED");
 	end
 end
 
@@ -679,7 +770,11 @@ function HonorFrameBonusFrame_Update()
 	
 	local honor, rewards = GetRandomBGRewards();
 
-	if (#rewards > 0) then
+	if (not rewards) then
+		rewards = GetMaxLevelReward(RANDOM_BATTLEGROUNDS);
+	end
+
+	if (rewards and #rewards > 0) then
 		local id, name, texture, quantity = unpack(rewards[1]);
 		SetPortraitToTexture(button.Reward.Icon, texture);
 		button.Reward.honor = honor;
@@ -697,7 +792,11 @@ function HonorFrameBonusFrame_Update()
 	
 	local honor, rewards = GetArenaSkirmishRewards();
 
-	if (#rewards > 0) then
+	if (not rewards) then
+		rewards = GetMaxLevelReward(SKIRMISH);
+	end
+
+	if (rewards and #rewards > 0) then
 		local id, name, texture, quantity = unpack(rewards[1]);
 		SetPortraitToTexture(button.Reward.Icon, texture);
 		button.Reward.honor = honor;
@@ -839,7 +938,11 @@ function ConquestFrame_Update(self)
 				honor, rewards = GetArenaRewards();
 			end
 
-			if (#rewards > 0) then
+			if (not rewards) then
+				rewards = GetMaxLevelReward(CONQUEST_BRACKET_INDEXES[i]);
+			end
+
+			if (rewards and #rewards > 0) then
 				local id, name, texture, quantity = unpack(rewards[1]);
 				SetPortraitToTexture(button.Reward.Icon, texture);
 				button.Reward.honor = honor;

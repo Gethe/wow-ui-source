@@ -792,7 +792,9 @@ function WorldMap_TryCreatingWorldQuestPOI(info, taskIconIndex)
 	taskPOI.worldQuest = true;
 	taskPOI.Texture:SetDrawLayer("OVERLAY");
 
-	WorldMap_SetupWorldQuestButton(taskPOI, worldQuestType, rarity, isElite, tradeskillLineIndex, info.inProgress, selected, isCriteria, isSpellTarget)
+	WorldMap_SetupWorldQuestButton(taskPOI, worldQuestType, rarity, isElite, tradeskillLineIndex, info.inProgress, selected, isCriteria, isSpellTarget);
+
+	C_TaskQuest.RequestPreloadRewardData(info.questId);
 
 	return taskPOI;
 end
@@ -2058,7 +2060,7 @@ function WorldMapLevelDropDown_Update()
 	UIDropDownMenu_SetWidth(WorldMapLevelDropDown, 130);
 
 	local dungeonLevels = { GetNumDungeonMapLevels() };
-	if ( #dungeonLevels == 0 ) then
+	if ( #dungeonLevels <= 1 ) then
 		UIDropDownMenu_ClearAll(WorldMapLevelDropDown);
 		WorldMapLevelDropDown:Hide();
 	else
@@ -2461,8 +2463,8 @@ function WorldMapButton_OnUpdate(self, elapsed)
 		local vehicleX, vehicleY, unitName, isPossessed, vehicleType, orientation, isPlayer, isAlive = GetBattlefieldVehicleInfo(i);
 		if ( vehicleX and isAlive and not isPlayer and VEHICLE_TEXTURES[vehicleType]) then
 			local mapVehicleFrame = MAP_VEHICLES[i];
-			vehicleX = vehicleX * WorldMapDetailFrame:GetWidth() * WORLDMAP_SETTINGS.size;
-			vehicleY = -vehicleY * WorldMapDetailFrame:GetHeight() * WORLDMAP_SETTINGS.size;
+			vehicleX = vehicleX * WorldMapDetailFrame:GetWidth() * WorldMapDetailFrame:GetScale();
+			vehicleY = -vehicleY * WorldMapDetailFrame:GetHeight() * WorldMapDetailFrame:GetScale();
 			mapVehicleFrame.texture:SetRotation(orientation);
 			mapVehicleFrame.texture:SetTexture(WorldMap_GetVehicleTexture(vehicleType, isPossessed));
 			mapVehicleFrame:SetPoint("CENTER", "WorldMapDetailFrame", "TOPLEFT", vehicleX, vehicleY);

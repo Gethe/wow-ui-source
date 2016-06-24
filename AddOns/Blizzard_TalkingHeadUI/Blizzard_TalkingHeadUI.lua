@@ -6,6 +6,7 @@ function TalkingHeadFrame_OnLoad(self)
 	self:RegisterForClicks("RightButtonUp");
 	
 	self.NameFrame.Name:SetPoint("TOPLEFT", self.PortraitFrame.Portrait, "TOPRIGHT", 2, -19);
+	self.TextFrame.Text:SetFontObjectsToTry(SystemFont_Shadow_Large, SystemFont_Shadow_Med2, SystemFont_Shadow_Med1);
 
 	local anchorFrameSubSystem = AlertFrame:AddJustAnchorFrameSubSystem(self);
 	AlertFrame:SetSubSustemAnchorPriority(anchorFrameSubSystem, 0);
@@ -29,7 +30,7 @@ function TalkingHeadFrame_OnEvent(self, event, ...)
 	elseif ( event == "SOUNDKIT_FINISHED" ) then
 		local voHandle = ...;
 		if ( self.voHandle == voHandle ) then
-			TalkingHeadFrame_IdleAnim(self.MainFrame.Model);
+			TalkingHeadFrame_VOComplete(self.MainFrame.Model);
 			self.voHandle = nil;
 		end
 	elseif ( event == "LOADING_SCREEN_ENABLED" ) then
@@ -100,8 +101,8 @@ function TalkingHeadFrame_Reset(frame, text, name)
 	frame.MainFrame.CloseButton:SetAlpha(0.01);
 	
 	frame.MainFrame:SetAlpha(1);
-	frame.TextFrame.Text:SetText(text);
 	frame.NameFrame.Name:SetText(name);
+	frame.TextFrame.Text:SetText(text);
 end
 
 function TalkingHeadFrame_PlayCurrent()
@@ -119,6 +120,7 @@ function TalkingHeadFrame_PlayCurrent()
 	
 	local currentDisplayInfo = model:GetDisplayInfo();
 	local displayInfo, cameraID, vo, duration, lineNumber, numLines, name, text, isNewTalkingHead = C_TalkingHead.GetCurrentLineInfo();
+	local textFormatted = string.format(text);
 	if ( displayInfo and displayInfo ~= 0 ) then
 		frame:Show();
 		if ( currentDisplayInfo ~= displayInfo ) then
@@ -133,20 +135,9 @@ function TalkingHeadFrame_PlayCurrent()
 		end
 		
 		if ( isNewTalkingHead ) then
-			TalkingHeadFrame_Reset(frame, text, name);
+			TalkingHeadFrame_Reset(frame, textFormatted, name);
 			TalkingHeadFrame_FadeinFrames();
 		else
-			if ( text ~= frame.TextFrame.Text:GetText() ) then
-				-- Fade out the old text and fade in the new text
-				frame.TextFrame.Fadeout:Play();
-				C_Timer.After(0.25, function()
-					frame.TextFrame.Text:SetText(text);
-				end);
-				C_Timer.After(0.5, function()
-					frame.TextFrame.Fadein:Play();
-				end);
-			end
-			
 			if ( name ~= frame.NameFrame.Name:GetText() ) then
 				-- Fade out the old name and fade in the new name
 				frame.NameFrame.Fadeout:Play();
@@ -158,6 +149,17 @@ function TalkingHeadFrame_PlayCurrent()
 				end);
 				
 				frame.MainFrame.TalkingHeadsInAnim:Play();
+			end
+
+			if ( textFormatted ~= frame.TextFrame.Text:GetText() ) then
+				-- Fade out the old text and fade in the new text
+				frame.TextFrame.Fadeout:Play();
+				C_Timer.After(0.25, function()
+					frame.TextFrame.Text:SetText(textFormatted);
+				end);
+				C_Timer.After(0.5, function()
+					frame.TextFrame.Fadein:Play();
+				end);
 			end
 		end
 		
@@ -171,6 +173,7 @@ end
 
 function TalkingHeadFrame_Close()
 	local frame = TalkingHeadFrame;
+	TalkingHeadFrame_VOComplete(frame.MainFrame.Model);
 	TalkingHeadFrame_IdleAnim(frame.MainFrame.Model);
 	if( frame.voHandle ) then
 		if( frame.finishTimer ) then
@@ -201,7 +204,7 @@ function TalkingHeadFrame_OnModelLoaded(self)
 end
 
 function TalkingHeadFrame_SetupAnimations(self)
-	local animKit = C_TalkingHead.GetCurrentLineAnimationInfo();
+	local animKit, animIntro, animLoop, lineDuration = C_TalkingHead.GetCurrentLineAnimationInfo();
 	if ( animKit == nil ) then
 		return;
 	end
@@ -211,35 +214,60 @@ function TalkingHeadFrame_SetupAnimations(self)
 	
 	if ( animKit > 0 ) then
 		self.animKit = animKit;
+	-- If intro is 0 (stand) we are assuming that is no-op and skipping to loop.
+	elseif (animIntro > 0) then
+		self.animIntro = animIntro;
+		self.animLoop = animLoop;
 	else
-		self.anim = 60; -- Talking emote
+		self.animLoop = animLoop;
 	end
 	
-	self.idleAnimEnabled = false;
 	if (self.animKit) then
 		self:PlayAnimKit(self.animKit, true);
 		self:SetScript("OnAnimFinished", nil);
-	elseif (self.anim) then
-		self:SetAnimation(self.anim, 0, true);
+		self.shouldLoop = false;
+	elseif (self.animIntro) then
+		self:SetAnimation(self.animIntro, 0);
+		self.shouldLoop = true;
 		self:SetScript("OnAnimFinished", TalkingHeadFrame_IdleAnim);
 	else
-		self:SetScript("OnAnimFinished", nil);
+		self:SetAnimation(self.animLoop, 0);
+		self.shouldLoop = true;
+		self:SetScript("OnAnimFinished", TalkingHeadFrame_IdleAnim);
+	end
+
+	self.lineAnimDone = false;
+	if (lineDuration and self.shouldLoop) then
+		if (lineDuration > 1.5) then
+			C_Timer.After(lineDuration - 1.5, function()
+				self.shouldLoop = false;
+				end);
+		end
 	end
 end
 
+function TalkingHeadFrame_VOComplete(self)
+	self.shouldLoop = false;
+end
+
 function TalkingHeadFrame_IdleAnim(self)
-	-- Stop looping
-	self.anim = nil;
-	self:SetScript("OnAnimFinished", nil);
-	
-	-- play idle animation
+	if (self.lineAnimDone) then
+		return;
+	end
+
+	-- Stop the animKit
 	if ( self.animKit ) then
 		self:StopAnimKit();
 		self.animKit = nil;
-	elseif ( not self.idleAnimEnabled ) then
-		self:SetAnimation(0, 0);
 	end
-	self.idleAnimEnabled = true;
+	-- Keep looping
+	if (self.animLoop and self.shouldLoop) then
+		self:SetAnimation(self.animLoop, 0);
+	else
+		self:SetAnimation(0, 0);
+		self:SetScript("OnAnimFinished", nil);
+		self.lineAnimDone = true;
+	end
 end
 
 function TalkingHeadFrame_Close_OnFinished(self)

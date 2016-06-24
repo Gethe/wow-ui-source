@@ -473,11 +473,47 @@ local function PlayGlueAmbienceFromTag()
 	PlayGlueAmbience(GLUE_AMBIENCE_TRACKS[GetCurrentGlueTag()], 4.0);
 end
 
-function GlueParent_DeathKnightButtonSwap(self)
+function GlueParent_DeathKnightButtonSwapMultiTexture(self)
+	local textureBase;
+	local highlightBase = "Interface\\Glues\\Common\\Glue-Panel-Button-Highlight";
+
+	if ( not self:IsEnabled() ) then
+		textureBase = "Interface\\Glues\\Common\\Glue-Panel-Button-Disabled";
+	elseif ( self.down ) then
+		textureBase = "Interface\\Glues\\Common\\Glue-Panel-Button-Down";
+	else
+		textureBase = "Interface\\Glues\\Common\\Glue-Panel-Button-Up";
+	end
+
+	local currentGlueTag = GetCurrentGlueTag();
+
+	if ( self.currentGlueTag ~= currentGlueTag or self.textureBase ~= textureBase ) then
+		self.currentGlueTag = currentGlueTag;
+		self.textureBase = textureBase;
+
+		if ( currentGlueTag == "DEATHKNIGHT" ) then
+			local suffix = self:IsEnabled() and "-Blue" or "";
+			local texture = textureBase..suffix;
+			local highlight = highlightBase..suffix;
+			self.Left:SetTexture(texture);
+			self.Middle:SetTexture(texture);
+			self.Right:SetTexture(texture);
+			self:SetHighlightTexture(highlight);
+		else
+			self.Left:SetTexture(textureBase);
+			self.Middle:SetTexture(textureBase);
+			self.Right:SetTexture(textureBase);
+			self:SetHighlightTexture(highlightBase);
+		end
+	end
+end
+
+function GlueParent_DeathKnightButtonSwapSingleTexture(self)
 	local currentTag = GetCurrentGlueTag();
 	if ( self.currentGlueTag ~= currentTag ) then
-		local needsSwap = GLUE_BUTTON_SWAPS[currentTag];
-		if (needsSwap) then
+		self.currentGlueTag = currentTag;
+
+		if (currentTag == "DEATHKNIGHT") then
 			-- Not currently needed, but could support other swaps here.
 			self:SetNormalTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Up-Blue");
 			self:SetPushedTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Down-Blue");
@@ -487,8 +523,14 @@ function GlueParent_DeathKnightButtonSwap(self)
 			self:SetPushedTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Down");
 			self:SetHighlightTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Highlight");
 		end
+	end
+end
 
-		self.currentGlueTag = currentTag;
+function GlueParent_DeathKnightButtonSwap(self)
+	if ( self.Left ) then
+		GlueParent_DeathKnightButtonSwapMultiTexture(self);
+	else
+		GlueParent_DeathKnightButtonSwapSingleTexture(self);
 	end
 end
 

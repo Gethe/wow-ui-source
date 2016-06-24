@@ -801,6 +801,12 @@
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.IconBorder" relativePoint="TOPRIGHT" x="-45" y="-70" />
 						</Anchors>
+						<Shadow>
+							<Offset>
+								<AbsDimension x="1" y="-1"/>
+							</Offset>
+							<Color r="0" g="0" b="0"/>
+						</Shadow>
 						<Color r="1" g="1" b="1" />
 					</FontString>
 					<FontString parentKey="Description" inherits="GameFontNormalLarge" justifyH="LEFT" justifyV="TOP">

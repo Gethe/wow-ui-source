@@ -1,20 +1,31 @@
 -- [[ AlertFrameSimpleMixin ]] --
 -- Used for simple alert frames that only hold one frame at a time
-function CreateSimpleAlertFrameSystem(alertFrame, setUpFunction)
+function CreateSimpleAlertFrameSystem(alertFrame, setUpFunction, coalesceFunction)
 	local simpleAlertFrameSystem = CreateFromMixins(AlertFrameSimpleMixin);
-	simpleAlertFrameSystem:OnLoad(alertFrame, setUpFunction);
+	simpleAlertFrameSystem:OnLoad(alertFrame, setUpFunction, coalesceFunction);
 	return simpleAlertFrameSystem;
 end
 
+ALERT_FRAME_COALESCE_CONTINUE = 1; -- Return to run setup function, coalescing failed
+ALERT_FRAME_COALESCE_STOP = 2; -- Return to signal coalescing was a success or not relevant, do not run setup function
+
 AlertFrameSimpleMixin = {};
 
-function AlertFrameSimpleMixin:OnLoad(alertFrame, setUpFunction)
+function AlertFrameSimpleMixin:OnLoad(alertFrame, setUpFunction, coalesceFunction)
 	assert(alertFrame);
 	self.alertFrame = alertFrame;
 	self.setUpFunction = setUpFunction;
+	self.coalesceFunction = coalesceFunction;
 end
 
 function AlertFrameSimpleMixin:AddAlert(...)
+	if self.coalesceFunction and self.alertFrame:IsShown() then
+		local coalescedResult = self.coalesceFunction(self.alertFrame, ...);
+		if coalesced ~= ALERT_FRAME_COALESCE_CONTINUE then
+			return true;
+		end
+	end
+
 	if self.setUpFunction then
 		local result = self.setUpFunction(self.alertFrame, ...);
 		if result == false then -- nil is success
@@ -183,6 +194,8 @@ function AlertFrameMixin:OnLoad()
 	self:RegisterEvent("GARRISON_RANDOM_MISSION_ADDED");
 	self:RegisterEvent("NEW_RECIPE_LEARNED");
 	self:RegisterEvent("SHOW_LOOT_TOAST_LEGENDARY_LOOTED");
+	self:RegisterEvent("QUEST_TURNED_IN");
+	self:RegisterEvent("QUEST_LOOT_RECEIVED");
 
 	self.alertFrameSubSystems = {};
 end
@@ -220,7 +233,10 @@ function AlertFrameMixin:OnEvent(event, ...)
 	elseif ( event == "SCENARIO_COMPLETED" ) then
 		local scenarioType = select(10, C_Scenario.GetInfo());
 		if scenarioType == LE_SCENARIO_TYPE_LEGION_INVASION then
-			InvasionAlertSystem:AddAlert();
+			local rewardQuestID = ...;
+			if rewardQuestID then
+				InvasionAlertSystem:AddAlert(rewardQuestID);
+			end
 		end
 	elseif ( event == "LOOT_ITEM_ROLL_WON" ) then
 		local itemLink, quantity, rollType, roll, isUpgraded = ...;
@@ -290,6 +306,19 @@ function AlertFrameMixin:OnEvent(event, ...)
 	elseif ( event == "SHOW_LOOT_TOAST_LEGENDARY_LOOTED") then
 		local itemLink = ...;
 		LegendaryItemAlertSystem:AddAlert(itemLink);
+	elseif ( event == "QUEST_TURNED_IN" ) then
+		local questID = ...;
+		if QuestMapFrame_IsQuestWorldQuest(questID) then
+			WorldQuestCompleteAlertSystem:AddAlert(questID);
+		end
+	elseif ( event == "QUEST_LOOT_RECEIVED" ) then
+		local questID, rewardItemLink = ...;
+		if QuestMapFrame_IsQuestWorldQuest(questID) then
+			WorldQuestCompleteAlertSystem:AddAlert(questID, rewardItemLink);
+		else
+			-- May be invasion reward
+			InvasionAlertSystem:AddAlert(questID, rewardItemLink);
+		end
 	end
 end
 
@@ -297,8 +326,8 @@ function AlertFrameMixin:AddJustAnchorFrameSubSystem(anchorFrame)
 	return self:AddAlertFrameSubSystem(CreateJustAnchorAlertSystem(anchorFrame));
 end
 
-function AlertFrameMixin:AddSimpleAlertFrameSubSystem(alertFrame, setUpFunction)
-	return self:AddAlertFrameSubSystem(CreateSimpleAlertFrameSystem(alertFrame, setUpFunction));
+function AlertFrameMixin:AddSimpleAlertFrameSubSystem(alertFrame, setUpFunction, coalesceFunction)
+	return self:AddAlertFrameSubSystem(CreateSimpleAlertFrameSystem(alertFrame, setUpFunction, coalesceFunction));
 end
 
 function AlertFrameMixin:AddQueuedAlertFrameSubSystem(alertFrameTemplate, setUpFunction, maxAlerts, maxQueue)

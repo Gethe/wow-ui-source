@@ -55,6 +55,7 @@ do
 
 	function LootJournalViewDropDown_OnLoad(self)
 		UIDropDownMenu_JustifyText(self, "LEFT");
+		UIDropDownMenu_SetWidth(self, 115);
 		UIDropDownMenu_Initialize(self, OpenViewDropDown);
 	end
 

@@ -197,74 +197,29 @@ end
 
 ScenarioAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem(ScenarioAlertFrame, ScenarioAlertFrame_SetUp);
 
--- [[ScenarioLegionInvasionAlertFrame ]] --
-function ScenarioLegionInvasionAlertFrame_SetUp(frame)
-	PlaySound("UI_Scenario_Ending");
-
-	local scenarioName, currentStage, numStages, flags, hasBonusStep, isBonusStepComplete, _, xp, money, scenarioType, areaName = C_Scenario.GetInfo();
-	local rewardName, rewardTexture, rewardItemID = C_Scenario.GetScenarioLastStepRewardInfo();
-
-	frame.ZoneName:SetText(areaName or scenarioName);
-	frame.BonusStar:SetShown(hasBonusStep and isBonusStepComplete);
-
-	local numUsedRewardFrames = 0;
-	if money > 0 then
-		local rewardFrame = frame.RewardFrames and frame.RewardFrames[i] or CreateFrame("FRAME", nil, frame, "InvasionAlertFrameRewardTemplate");
-
-		SetPortraitToTexture(rewardFrame.texture, "Interface\\Icons\\inv_misc_coin_02");
-		rewardFrame.itemID = nil;
-		rewardFrame.money = money;
-		rewardFrame.xp = nil;
-		rewardFrame:Show();
-
-		numUsedRewardFrames = numUsedRewardFrames + 1;
-	end
-
-	if xp > 0 and UnitLevel("player") < MAX_PLAYER_LEVEL then
-		local rewardFrame = frame.RewardFrames and frame.RewardFrames[i] or CreateFrame("FRAME", nil, frame, "InvasionAlertFrameRewardTemplate");
-
-		SetPortraitToTexture(rewardFrame.texture, "Interface\\Icons\\xp_icon");
-		rewardFrame.itemID = nil;
-		rewardFrame.money = nil;
-		rewardFrame.xp = xp;
-		rewardFrame:Show();
-
-		numUsedRewardFrames = numUsedRewardFrames + 1;
-	end
-
-	if rewardItemID then
-		local rewardFrame = frame.RewardFrames and frame.RewardFrames[numUsedRewardFrames + 1] or CreateFrame("FRAME", nil, frame, "InvasionAlertFrameRewardTemplate");
-		SetPortraitToTexture(rewardFrame.texture, rewardTexture);
-		rewardFrame.itemID = rewardItemID;
-		rewardFrame.money = nil;
-		rewardFrame.xp = nil;
-		rewardFrame:Show();
-
-		numUsedRewardFrames = numUsedRewardFrames + 1;
-	end
-
+function StandardRewardAlertFrame_AdjustRewardAnchors(frame)
 	if frame.RewardFrames then
 		local SPACING = 36;
-		for i = 1, numUsedRewardFrames do
+		for i = 1, frame.numUsedRewardFrames do
 			if frame.RewardFrames[i - 1] then
 				frame.RewardFrames[i]:SetPoint("CENTER", frame.RewardFrames[i - 1], "CENTER", SPACING, 0);
 			else
-				frame.RewardFrames[i]:SetPoint("TOP", frame, "TOP", -SPACING / 2 * numUsedRewardFrames + 41, 8);
+				frame.RewardFrames[i]:SetPoint("TOP", frame, "TOP", -SPACING / 2 * frame.numUsedRewardFrames + 41, 8);
 			end
 		end
 
-		for i = numUsedRewardFrames + 1, #frame.RewardFrames do
+		for i = frame.numUsedRewardFrames + 1, #frame.RewardFrames do
 			frame.RewardFrames[i]:Hide();
 		end
 	end
 end
 
-function InvasionAlertFrameReward_OnEnter(self)
+function StandardRewardAlertFrame_OnEnter(self)
 	AlertFrame_StopOutAnimation(self:GetParent());
 
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	if self.itemID then
-		GameTooltip:SetItemByID(self.itemID);
+	if self.itemLink then
+		GameTooltip:SetHyperlink(self.itemLink);
 	elseif self.money then
 		GameTooltip:AddLine(YOU_RECEIVED);
 		SetTooltipMoney(GameTooltip, self.money, nil);
@@ -275,7 +230,66 @@ function InvasionAlertFrameReward_OnEnter(self)
 	GameTooltip:Show();
 end
 
-InvasionAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem(ScenarioLegionInvasionAlertFrame, ScenarioLegionInvasionAlertFrame_SetUp);
+-- [[ScenarioLegionInvasionAlertFrame ]] --
+function ScenarioLegionInvasionAlertFrame_SetUp(frame, rewardQuestID, rewardItemLink)
+	if rewardItemLink then
+		-- If we're seeing this with a reward the scenario hasn't been completed yet, no toast until scenario complete is triggered
+		return false;
+	end
+
+	PlaySound("UI_Scenario_Ending");
+
+	local scenarioName, currentStage, numStages, flags, hasBonusStep, isBonusStepComplete, _, xp, money, scenarioType, areaName = C_Scenario.GetInfo();
+
+	frame.questID = rewardQuestID;
+	frame.ZoneName:SetText(areaName or scenarioName);
+	frame.BonusStar:SetShown(hasBonusStep and isBonusStepComplete);
+
+	frame.numUsedRewardFrames = 0;
+	if money > 0 then
+		frame.numUsedRewardFrames = frame.numUsedRewardFrames + 1;
+		local rewardFrame = frame.RewardFrames and frame.RewardFrames[frame.numUsedRewardFrames] or CreateFrame("FRAME", nil, frame, "InvasionAlertFrameRewardTemplate");
+
+		SetPortraitToTexture(rewardFrame.texture, "Interface\\Icons\\inv_misc_coin_02");
+		rewardFrame.itemLink = nil;
+		rewardFrame.money = money;
+		rewardFrame.xp = nil;
+		rewardFrame:Show();
+	end
+
+	if xp > 0 and UnitLevel("player") < MAX_PLAYER_LEVEL then
+		frame.numUsedRewardFrames = frame.numUsedRewardFrames + 1;
+		local rewardFrame = frame.RewardFrames and frame.RewardFrames[frame.numUsedRewardFrames] or CreateFrame("FRAME", nil, frame, "InvasionAlertFrameRewardTemplate");
+
+		SetPortraitToTexture(rewardFrame.texture, "Interface\\Icons\\xp_icon");
+		rewardFrame.itemLink = nil;
+		rewardFrame.money = nil;
+		rewardFrame.xp = xp;
+		rewardFrame:Show();
+	end
+
+	StandardRewardAlertFrame_AdjustRewardAnchors(frame);
+end
+
+function ScenarioLegionInvasionAlertFrame_Coalesce(frame, questID, rewardItemLink)
+	if frame.questID == questID then
+		frame.numUsedRewardFrames = frame.numUsedRewardFrames + 1;
+		local rewardFrame = frame.RewardFrames and frame.RewardFrames[frame.numUsedRewardFrames] or CreateFrame("FRAME", nil, frame, "WorldQuestFrameRewardTemplate");
+		
+		local _, _, _, _, texture = GetItemInfoInstant(rewardItemLink);
+		SetPortraitToTexture(rewardFrame.texture, texture);
+		rewardFrame.itemLink = rewardItemLink;
+		rewardFrame.money = nil;
+		rewardFrame.xp = nil;
+		rewardFrame:Show();
+
+		StandardRewardAlertFrame_AdjustRewardAnchors(frame);
+	end
+
+	return ALERT_FRAME_COALESCE_STOP;
+end
+
+InvasionAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem(ScenarioLegionInvasionAlertFrame, ScenarioLegionInvasionAlertFrame_SetUp, ScenarioLegionInvasionAlertFrame_Coalesce);
 
 -- [[ AchievementAlertFrame ]] --
 function AchievementAlertFrame_SetUp(frame, achievementID, alreadyEarned)
@@ -471,7 +485,7 @@ function LootWonAlertFrame_SetUp(self, itemLink, quantity, rollType, roll, specI
 		itemName, itemHyperLink, itemRarity, _, _, _, _, _, _, itemTexture = GetItemInfo(itemLink);
 	end
 
-	local windowInfo = isPersonal and LOOTWONALERTFRAME_VALUES.DefaultPersonal or LOOTWONALERTFRAME_VALUES.Default;
+	local windowInfo = (isPersonal or isCurrency) and LOOTWONALERTFRAME_VALUES.DefaultPersonal or LOOTWONALERTFRAME_VALUES.Default;
 	if( showFactionBG ) then
 		local factionGroup = UnitFactionGroup("player");
 		windowInfo = LOOTWONALERTFRAME_VALUES[factionGroup]
@@ -691,6 +705,13 @@ function GarrisonMissionAlertFrame_SetUp(frame, missionID)
 
 	frame.Name:SetText(missionInfo.name);
 	frame.MissionType:SetAtlas(missionInfo.typeAtlas);
+	if (missionInfo.followerTypeID == LE_FOLLOWER_TYPE_GARRISON_7_0) then
+		frame.MissionType:SetSize(50, 50);
+		frame.MissionType:SetPoint("TOPLEFT", frame, "TOPLEFT", 21, -14);
+	elseif (missionInfo.followerTypeID == LE_FOLLOWER_TYPE_GARRISON_6_0) then
+		frame.MissionType:SetSize(64, 64);
+		frame.MissionType:SetPoint("TOPLEFT", frame, "TOPLEFT", 14, -8);
+	end
 
 	PlaySound("UI_Garrison_Toast_MissionComplete");
 end
@@ -769,12 +790,14 @@ function GarrisonFollowerAlertFrame_SetUp(frame, followerID, name, level, qualit
 		else
 			frame.Title:SetText(GarrisonFollowerOptions[frame.followerInfo.followerTypeID].strings.TROOP_ADDED_TOAST);
 		end
+		frame.PortraitFrame:SetPoint("LEFT", 23, -1);
 	else
 		if ( isUpgraded ) then
 			frame.Title:SetText(GarrisonFollowerOptions[frame.followerInfo.followerTypeID].strings.FOLLOWER_ADDED_UPGRADED_TOAST);
 		else
 			frame.Title:SetText(GarrisonFollowerOptions[frame.followerInfo.followerTypeID].strings.FOLLOWER_ADDED_TOAST);
 		end
+		frame.PortraitFrame:SetPoint("LEFT", 23, 3);
 	end
 	GarrisonCommonFollowerAlertFrame_SetUp(frame, followerID, name, quality, isUpgraded);
 end
@@ -905,88 +928,67 @@ function WorldQuestCompleteAlertFrame_GetIconForQuestID(questID)
 	return "Interface\\Icons\\Achievement_Quests_Completed_TwilightHighlands";
 end
 
-function WorldQuestCompleteAlertFrame_SetUp(frame, questID)
+function WorldQuestCompleteAlertFrame_SetUp(frame, questID, rewardItemLink)
 	PlaySound("UI_WorldQuest_Complete");
 
+	frame.questID = questID;
 	local isInArea, isOnMap, numObjectives, taskName, displayAsObjective = GetTaskInfo(questID);
 	frame.QuestName:SetText(taskName);
 
 	local icon = WorldQuestCompleteAlertFrame_GetIconForQuestID(questID);
 	frame.QuestTexture:SetTexture(icon);
 
-	local numUsedRewardFrames = 0;
+	frame.numUsedRewardFrames = 0;
 	local money = GetQuestLogRewardMoney(questID);
 	if money > 0 then
-		local rewardFrame = frame.RewardFrames and frame.RewardFrames[i] or CreateFrame("FRAME", nil, frame, "WorldQuestFrameRewardTemplate");
+		frame.numUsedRewardFrames = frame.numUsedRewardFrames + 1;
+		local rewardFrame = frame.RewardFrames and frame.RewardFrames[frame.numUsedRewardFrames] or CreateFrame("FRAME", nil, frame, "WorldQuestFrameRewardTemplate");
 
 		SetPortraitToTexture(rewardFrame.texture, "Interface\\Icons\\inv_misc_coin_02");
-		rewardFrame.itemID = nil;
+		rewardFrame.itemLink = nil;
 		rewardFrame.money = money;
 		rewardFrame.xp = nil;
 		rewardFrame:Show();
-
-		numUsedRewardFrames = numUsedRewardFrames + 1;
 	end
 
 	local xp = GetQuestLogRewardXP(questID);
 	if xp > 0 and UnitLevel("player") < MAX_PLAYER_LEVEL then
-		local rewardFrame = frame.RewardFrames and frame.RewardFrames[i] or CreateFrame("FRAME", nil, frame, "WorldQuestFrameRewardTemplate");
+		frame.numUsedRewardFrames = frame.numUsedRewardFrames + 1;
+		local rewardFrame = frame.RewardFrames and frame.RewardFrames[frame.numUsedRewardFrames] or CreateFrame("FRAME", nil, frame, "WorldQuestFrameRewardTemplate");
 
 		SetPortraitToTexture(rewardFrame.texture, "Interface\\Icons\\xp_icon");
-		rewardFrame.itemID = nil;
+		rewardFrame.itemLink = nil;
 		rewardFrame.money = nil;
 		rewardFrame.xp = xp;
 		rewardFrame:Show();
-
-		numUsedRewardFrames = numUsedRewardFrames + 1;
 	end
 
-	local numItems = GetNumQuestLogRewards(questID);
-	for i = 1, numItems do
-		local name, texture, count, quality, isUsable, itemID = GetQuestLogRewardInfo(i, questID);
-		local rewardFrame = frame.RewardFrames and frame.RewardFrames[numUsedRewardFrames + 1] or CreateFrame("FRAME", nil, frame, "WorldQuestFrameRewardTemplate");
+	if rewardItemLink then
+		WorldQuestCompleteAlertFrame_Coalesce(frame, questID, rewardItemLink)
+	else
+		StandardRewardAlertFrame_AdjustRewardAnchors(frame);
+	end
+end
+
+function WorldQuestCompleteAlertFrame_Coalesce(frame, questID, rewardItemLink)
+	if frame.questID == questID and rewardItemLink then
+		frame.numUsedRewardFrames = frame.numUsedRewardFrames + 1;
+		local rewardFrame = frame.RewardFrames and frame.RewardFrames[frame.numUsedRewardFrames] or CreateFrame("FRAME", nil, frame, "WorldQuestFrameRewardTemplate");
+		local _, _, _, _, texture = GetItemInfoInstant(rewardItemLink);
 		SetPortraitToTexture(rewardFrame.texture, texture);
-		rewardFrame.itemID = itemID;
+		rewardFrame.itemLink = rewardItemLink;
 		rewardFrame.money = nil;
 		rewardFrame.xp = nil;
 		rewardFrame:Show();
 
-		numUsedRewardFrames = numUsedRewardFrames + 1;
+		StandardRewardAlertFrame_AdjustRewardAnchors(frame);
+		return ALERT_FRAME_COALESCE_STOP;
 	end
 
-	if frame.RewardFrames then
-		local SPACING = 36;
-		for i = 1, numUsedRewardFrames do
-			if frame.RewardFrames[i - 1] then
-				frame.RewardFrames[i]:SetPoint("CENTER", frame.RewardFrames[i - 1], "CENTER", SPACING, 0);
-			else
-				frame.RewardFrames[i]:SetPoint("TOP", frame, "TOP", -SPACING / 2 * numUsedRewardFrames + 41, 8);
-			end
-		end
-
-		for i = numUsedRewardFrames + 1, #frame.RewardFrames do
-			frame.RewardFrames[i]:Hide();
-		end
-	end
+	return ALERT_FRAME_COALESCE_CONTINUE;
 end
 
-function WorldQuestCompleteFrameReward_OnEnter(self)
-	AlertFrame_StopOutAnimation(self:GetParent());
-
-	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	if self.itemID then
-		GameTooltip:SetItemByID(self.itemID);
-	elseif self.money then
-		GameTooltip:AddLine(YOU_RECEIVED);
-		SetTooltipMoney(GameTooltip, self.money, nil);
-	elseif self.xp then
-		GameTooltip:AddLine(YOU_RECEIVED);
-		GameTooltip:AddLine(BONUS_OBJECTIVE_EXPERIENCE_FORMAT:format(self.xp), HIGHLIGHT_FONT_COLOR:GetRGB());
-	end
-	GameTooltip:Show();
-end
-
-WorldQuestCompleteAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem(WorldQuestCompleteAlertFrame, WorldQuestCompleteAlertFrame_SetUp);
+WorldQuestCompleteAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem(WorldQuestCompleteAlertFrame, WorldQuestCompleteAlertFrame_SetUp, WorldQuestCompleteAlertFrame_Coalesce);
 
 -- [[LegendaryItemAlertFrame ]] --
 function LegendaryItemAlertFrame_SetUp(frame, itemLink)

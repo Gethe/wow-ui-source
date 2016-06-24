@@ -1632,7 +1632,7 @@ DefaultCompactNamePlateFriendlyFrameOptions = {
 	displayName = true,
 	fadeOutOfRange = false,
 	--displayStatusText = true,
-	displayHealPrediction = false,
+	displayHealPrediction = true,
 	--displayDispelDebuffs = true,
 	colorNameBySelection = true,
 	colorNameWithExtendedColors = true,
@@ -1654,7 +1654,7 @@ DefaultCompactNamePlateEnemyFrameOptions = {
 	playLoseAggroHighlight = true,
 	displayName = true,
 	fadeOutOfRange = false,
-	displayHealPrediction = false,
+	displayHealPrediction = true,
 	colorNameBySelection = true,
 	colorHealthBySelection = true,
 	considerSelectionInCombatAsHostile = true,
@@ -1674,7 +1674,7 @@ DefaultCompactNamePlatePlayerFrameOptions = {
 	displayAggroHighlight = false,
 	displayName = false,
 	fadeOutOfRange = false,
-	displayHealPrediction = false,
+	displayHealPrediction = true,
 	colorNameBySelection = true,
 	smoothHealthUpdates = false,
 	displayNameWhenSelected = false,
@@ -1774,35 +1774,50 @@ function DefaultCompactNamePlateFrameSetupInternal(frame, setupOptions, frameOpt
 
 	frame.selectionHighlight:SetParent(frame.healthBar);
 	frame.aggroHighlight:SetParent(frame.healthBar);
+
+	frame.myHealPrediction = frame.healthBar.myHealPrediction;
+	frame.otherHealPrediction = frame.healthBar.otherHealPrediction;
+	frame.totalAbsorb = frame.healthBar.totalAbsorb;
+	frame.totalAbsorbOverlay = frame.healthBar.totalAbsorbOverlay;
+	frame.overAbsorbGlow = frame.healthBar.overAbsorbGlow;
+	frame.myHealAbsorb = frame.healthBar.myHealAbsorb;
+	frame.myHealAbsorbLeftShadow = frame.healthBar.myHealAbsorbLeftShadow;
+	frame.myHealAbsorbRightShadow = frame.healthBar.myHealAbsorbRightShadow;
+	frame.overHealAbsorbGlow = frame.healthBar.overHealAbsorbGlow;
 	
 	frame.myHealPrediction:ClearAllPoints();
-	frame.myHealPrediction:SetColorTexture(1,1,1);
-	frame.myHealPrediction:SetGradient("VERTICAL", 8/255, 93/255, 72/255, 11/255, 136/255, 105/255);
+	frame.myHealPrediction:SetVertexColor(0.0, 0.659, 0.608);
+
 	frame.myHealAbsorb:ClearAllPoints();
 	frame.myHealAbsorb:SetTexture("Interface\\RaidFrame\\Absorb-Fill", true, true);
+
 	frame.myHealAbsorbLeftShadow:ClearAllPoints();
 	frame.myHealAbsorbRightShadow:ClearAllPoints();
+
 	frame.otherHealPrediction:ClearAllPoints();
-	frame.otherHealPrediction:SetColorTexture(1,1,1);
-	frame.otherHealPrediction:SetGradient("VERTICAL", 3/255, 72/255, 5/255, 2/255, 101/255, 18/255);
+	frame.otherHealPrediction:SetVertexColor(0.0, 0.659, 0.608);
+
 	frame.totalAbsorb:ClearAllPoints();
 	frame.totalAbsorb:SetTexture("Interface\\RaidFrame\\Shield-Fill");
 	frame.totalAbsorb.overlay = frame.totalAbsorbOverlay;
+
 	frame.totalAbsorbOverlay:SetTexture("Interface\\RaidFrame\\Shield-Overlay", true, true);	--Tile both vertically and horizontally
 	frame.totalAbsorbOverlay:SetAllPoints(frame.totalAbsorb);
-	frame.totalAbsorbOverlay.tileSize = 32;
+	frame.totalAbsorbOverlay.tileSize = 20;
+
 	frame.overAbsorbGlow:ClearAllPoints();
 	frame.overAbsorbGlow:SetTexture("Interface\\RaidFrame\\Shield-Overshield");
 	frame.overAbsorbGlow:SetBlendMode("ADD");
-	frame.overAbsorbGlow:SetPoint("BOTTOMLEFT", frame.healthBar, "BOTTOMRIGHT", -7, 0);
-	frame.overAbsorbGlow:SetPoint("TOPLEFT", frame.healthBar, "TOPRIGHT", -7, 0);
-	frame.overAbsorbGlow:SetWidth(16);
+	frame.overAbsorbGlow:SetPoint("BOTTOMLEFT", frame.healthBar, "BOTTOMRIGHT", -4, -1);
+	frame.overAbsorbGlow:SetPoint("TOPLEFT", frame.healthBar, "TOPRIGHT", -4, 1);
+	frame.overAbsorbGlow:SetWidth(8);
+
 	frame.overHealAbsorbGlow:ClearAllPoints();
 	frame.overHealAbsorbGlow:SetTexture("Interface\\RaidFrame\\Absorb-Overabsorb");
 	frame.overHealAbsorbGlow:SetBlendMode("ADD");
-	frame.overHealAbsorbGlow:SetPoint("BOTTOMRIGHT", frame.healthBar, "BOTTOMLEFT", 7, 0);
-	frame.overHealAbsorbGlow:SetPoint("TOPRIGHT", frame.healthBar, "TOPLEFT", 7, 0);
-	frame.overHealAbsorbGlow:SetWidth(16);
+	frame.overHealAbsorbGlow:SetPoint("BOTTOMRIGHT", frame.healthBar, "BOTTOMLEFT", 2, -1);
+	frame.overHealAbsorbGlow:SetPoint("TOPRIGHT", frame.healthBar, "TOPLEFT", 2, 1);
+	frame.overHealAbsorbGlow:SetWidth(8);
 
 	frame.classificationIndicator = frame.ClassificationFrame.classificationIndicator;
 

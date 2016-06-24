@@ -6,7 +6,7 @@
 			<TexCoords left="0.1" right="0.9" top="0.1" bottom="0.9"/>
 		</CheckedTexture>
 	</CheckButton>
-	
+
 	<Frame name="MovePadFrame" parent="UIParent" movable="true" toplevel="true" frameStrata="BACKGROUND">
 		<Size x="126" y="124" />
 		<Anchors>
@@ -85,28 +85,21 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						self:RegisterForClicks("AnyDown", "AnyUp");
 						self.icon:SetTexture("Interface\\Buttons\\JumpUpArrow");
 						self.icon:SetTexCoord(0,1,0,1);
 						self.icon:SetSize(18,18);
 					</OnLoad>
 					<OnMouseDown>
-						self.jump = true;
 						if self:IsEnabled() then
 							self.icon:SetPoint("CENTER", -1, -1);
 						end
+
+						RunBinding("JUMP", "down");
 					</OnMouseDown>
 					<OnMouseUp>
-						self.jump = nil;
 						self.icon:SetPoint("CENTER", 0, 0);
+						RunBinding("JUMP", "up");
 					</OnMouseUp>
-					<OnClick>
-						if ( self.jump ) then
-							JumpOrAscendStart();
-						else
-							AscendStop();
-						end
-					</OnClick>
 				</Scripts>
 			</Button>
 			<CheckButton name="MovePadBackward" inherits="MovePadCheckboxTemplate">

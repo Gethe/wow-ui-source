@@ -200,6 +200,22 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
+			<CheckButton name="$parentLootAtMouse" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentInteractOnLeftClick" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "lootUnderMouse";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
 		</Frames>
 		<Scripts>
 			<OnLoad>
@@ -376,12 +392,34 @@
 						self.cvar = "lossOfControl";
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
-					<OnEvent function="InterfaceOptionsLossOfControl_OnEvent"/>
+				</Scripts>
+			</CheckButton>
+            <CheckButton name="$parentEnableFloatingCombatText" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentLossOfControl" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "enableFloatingCombatText";
+                        self.uvar = "SHOW_COMBAT_TEXT";
+                        self.setFunc = function (value)
+							if ( value == "1" and not IsAddOnLoaded("Blizzard_CombatText") ) then
+								UIParentLoadAddOn("Blizzard_CombatText");
+							end
+							BlizzardOptionsPanel_UpdateCombatText();
+						end;
+                        BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
 				</Scripts>
 			</CheckButton>
             <Slider name="$parentSpellAlertOpacitySlider" inherits="OptionsSliderTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentLossOfControl" relativePoint="BOTTOMLEFT">
+					<Anchor point="TOPLEFT" relativeTo="$parentEnableFloatingCombatText" relativePoint="BOTTOMLEFT">
 						<Offset>
 							<AbsDimension x="24" y="-32"/>
 						</Offset>
@@ -425,11 +463,7 @@
 			</Slider>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				self.name = COMBAT_LABEL;
-				self.options = CombatPanelOptions;
-				InterfaceOptionsPanel_OnLoad(self);
-			</OnLoad>
+			<OnLoad function="InterfaceOptionsCombatPanel_OnLoad"/>
 		</Scripts>
 	</Frame>
 
@@ -544,29 +578,6 @@
 						self.cvar = "showTutorials";
 						self.defaultValue = "1";
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-					</OnLoad>
-				</Scripts>
-			</CheckButton>
-            <CheckButton name="$parentEnableFloatingCombatText" inherits="InterfaceOptionsCheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentShowTutorials" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="0" y="-8"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self.type = CONTROLTYPE_CHECKBOX;
-						self.cvar = "enableFloatingCombatText";
-                        self.uvar = "SHOW_COMBAT_TEXT";
-                        self.setFunc = function (value)
-							if ( value == "1" and not IsAddOnLoaded("Blizzard_CombatText") ) then
-								UIParentLoadAddOn("Blizzard_CombatText");
-							end
-							BlizzardOptionsPanel_UpdateCombatText();
-						end;
-                        BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
@@ -1811,9 +1822,38 @@
 					</OnValueChanged>
 				</Scripts>
 			</Slider>
-			<Frame name="$parentStyleDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
+			<Slider name="$parentFollowSpeedSlider" inherits="OptionsSliderTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentMaxDistanceSlider" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-32"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_SLIDER;
+						self.cvar = "cameraYawSmoothSpeed";
+						_G[self:GetName().."Low"]:SetText(SLOW);
+						_G[self:GetName().."High"]:SetText(FAST);
+						self.SetDisplayValue = self.SetValue;
+						self.SetValue = function (self, value)
+							self:SetDisplayValue(value);
+							self.value = value;
+							SetCVar(self.cvar, value);
+							SetCVar("cameraPitchSmoothSpeed", value/4);
+						end
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+					<OnValueChanged>
+						self.value = value;
+						SetCVar(self.cvar, value);
+					</OnValueChanged>
+				</Scripts>
+			</Slider>
+			<Frame name="$parentStyleDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentFollowSpeedSlider" relativePoint="BOTTOMLEFT">
 						<Offset>
 							<AbsDimension x="-28" y="-40"/>
 						</Offset>

@@ -1,6 +1,6 @@
-ClassNameplateBarMonk = {};
+ClassNameplateBarWindwalkerMonk = {};
 
-function ClassNameplateBarMonk:OnLoad()
+function ClassNameplateBarWindwalkerMonk:OnLoad()
 	self.class = "MONK";
 	self.spec = SPEC_MONK_WINDWALKER;
 	self.powerToken = "CHI";
@@ -11,13 +11,13 @@ function ClassNameplateBarMonk:OnLoad()
 	ClassNameplateBar.OnLoad(self);
 end
 
-function ClassNameplateBarMonk:UpdateMaxPower()
+function ClassNameplateBarWindwalkerMonk:UpdateMaxPower()
 	local maxOrbs = UnitPowerMax("player", SPELL_POWER_CHI);
 	self.Chi6:SetShown(maxOrbs == 6);
 	self:SetWidth(self.Chi1:GetWidth() * maxOrbs);
 end
 
-function ClassNameplateBarMonk:UpdatePower()
+function ClassNameplateBarWindwalkerMonk:UpdatePower()
 	local chi = UnitPower("player", SPELL_POWER_CHI);
 	for i = 1, min(chi, #self.Chi) do
 		if (not self.Chi[i].on) then
@@ -29,4 +29,61 @@ function ClassNameplateBarMonk:UpdatePower()
 			self:TurnOff(self.Chi[i], self.Chi[i].Orb, 0);
 		end
 	end
+end
+
+
+--------------------------------------------------------------------------------
+--
+-- ClassNameplateBarBrewmasterMonk
+--
+--------------------------------------------------------------------------------
+
+ClassNameplateBarBrewmasterMonk = {};
+
+function ClassNameplateBarBrewmasterMonk:OnLoad()
+	self.class = "MONK";
+	self.spec = SPEC_MONK_BREWMASTER;
+	self.powerToken = "STAGGER";
+	self.overrideTargetMode = false;
+	self.currValue = 0;
+	self.Border:SetVertexColor(0, 0, 0, .8);
+	ClassNameplateBar.OnLoad(self);
+end
+
+function ClassNameplateBarBrewmasterMonk:UpdateMaxPower()
+	local maxhealth = UnitHealthMax("player");
+	self:SetMinMaxValues(0, maxhealth);
+end
+
+function ClassNameplateBarBrewmasterMonk:OnUpdate()
+	self:UpdatePower();
+end
+
+function ClassNameplateBarBrewmasterMonk:UpdatePower()
+	local currstagger = UnitStagger("player");
+	if (not currstagger) then
+		return;
+	end
+	self:SetValue(currstagger);
+	self.value = currstagger;
+	self:UpdateMaxPower();
+	
+	local _, maxstagger = self:GetMinMaxValues();
+	local percent = currstagger/maxstagger;
+	local info = PowerBarColor[BREWMASTER_POWER_BAR_NAME];
+	
+	if (percent > STAGGER_YELLOW_TRANSITION and percent < STAGGER_RED_TRANSITION) then
+		info = info[STAGGER_YELLOW_INDEX];
+	elseif (percent > STAGGER_RED_TRANSITION) then
+		info = info[STAGGER_RED_INDEX];
+	else
+		info = info[STAGGER_GREEN_INDEX];
+	end
+	self:SetStatusBarColor(info.r, info.g, info.b);
+end
+
+function ClassNameplateBarBrewmasterMonk:OnOptionsUpdated()
+	local width, height = C_NamePlate.GetNamePlateSelfSize();
+	self:SetWidth((width - 24)* 0.8);
+	self:SetHeight(DefaultCompactNamePlatePlayerFrameSetUpOptions.healthBarHeight);
 end

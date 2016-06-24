@@ -208,7 +208,7 @@ function GarrisonCapacitiveDisplayFrame_Update(self, success, maxShipments, owne
     			display.ShipmentIconFrame.ShipmentsAvailable:SetFormattedText(CAPACITANCE_SHIPMENT_COUNT, available, maxShipments);
             end
 		else
-			local timeRemaining = select(6,C_Garrison.GetPendingShipmentInfo(1));
+			local timeRemaining = select(7,C_Garrison.GetPendingShipmentInfo(1));
 			if (timeRemaining ~= nil) then
 				if (timeRemaining ~= 0) then
 					if (not shipmentUpdater) then
@@ -231,7 +231,7 @@ function GarrisonCapacitiveDisplayFrame_Update(self, success, maxShipments, owne
 
 		display.Description:ClearAllPoints();
 		if (numPending > 0) then
-			local lastTimeRemaining = select(6, C_Garrison.GetPendingShipmentInfo(numPending));
+			local lastTimeRemaining = select(7, C_Garrison.GetPendingShipmentInfo(numPending));
 			display.Description:SetPoint("TOPLEFT", display.LastComplete, "BOTTOMLEFT", 0, -12);
             if (followerID) then
                 display.LastComplete:SetFormattedText(CAPACITANCE_ALL_RECRUITMENT_COMPLETE, SecondsToTime(lastTimeRemaining, false, true, 1));

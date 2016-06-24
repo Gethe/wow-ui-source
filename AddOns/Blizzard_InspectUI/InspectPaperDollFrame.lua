@@ -169,16 +169,10 @@ function InspectPaperDollItemSlotButton_Update(button)
 end
 
 function InspectPaperDollViewButton_OnLoad(self)
-	self:SetWidth(40 + self:GetFontString():GetStringWidth());
+	self:SetWidth(30 + self:GetFontString():GetStringWidth());
 end
 
 function InspectPaperDollViewButton_OnClick(self)
 	PlaySound("igMainMenuOptionCheckBoxOn");
-	if ( not CollectionsJournal ) then
-		CollectionsJournal_LoadUI();
-	end
-	if ( CollectionsJournal ) then
-		ToggleCollectionsJournal(5);
-		WardrobeCollectionFramePreview_SetSources(C_TransmogCollection.GetInspectSources());
-	end
+	DressUpSources(C_TransmogCollection.GetInspectSources());
 end

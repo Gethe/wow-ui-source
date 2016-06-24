@@ -26,16 +26,7 @@ function DressUpVisual(...)
 		end
 		SideDressUpModel:TryOn(...);
 	else
-		if ( not DressUpFrame:IsShown() or DressUpFrame.mode ~= "player") then
-			DressUpFrame.mode = "player";
-			DressUpFrame.ResetButton:Show();
-
-			local race, fileName = UnitRace("player");
-			SetDressUpBackground(DressUpFrame, fileName);
-
-			ShowUIPanel(DressUpFrame);
-			DressUpModel:SetUnit("player");
-		end
+		DressUpFrame_Show();
 		DressUpModel:TryOn(...);
 	end
 	return true;
@@ -107,6 +98,39 @@ function DressUpFrame_OnDressModel(self)
 	end
 end
 
+function DressUpFrame_Show()
+	if ( not DressUpFrame:IsShown() or DressUpFrame.mode ~= "player") then
+		DressUpFrame.mode = "player";
+		DressUpFrame.ResetButton:Show();
+
+		local race, fileName = UnitRace("player");
+		SetDressUpBackground(DressUpFrame, fileName);
+
+		ShowUIPanel(DressUpFrame);
+		DressUpModel:SetUnit("player");
+	end
+end
+
+function DressUpSources(appearanceSources, mainHandEnchant, offHandEnchant)
+	if ( not appearanceSources ) then
+		return true;
+	end
+
+	DressUpFrame_Show();
+	local mainHandSlotID = GetInventorySlotInfo("MAINHANDSLOT");
+	local secondaryHandSlotID = GetInventorySlotInfo("SECONDARYHANDSLOT");
+	for i = 1, #appearanceSources do
+		if ( i ~= mainHandSlotID and i ~= secondaryHandSlotID ) then
+			if ( appearanceSources[i] and appearanceSources[i] ~= NO_TRANSMOG_SOURCE_ID ) then
+				DressUpModel:TryOn(appearanceSources[i]);
+			end
+		end
+	end
+
+	DressUpModel:TryOn(appearanceSources[mainHandSlotID], "MAINHANDSLOT", mainHandEnchant);
+	DressUpModel:TryOn(appearanceSources[secondaryHandSlotID], "SECONDARYHANDSLOT", offHandEnchant);
+end
+
 DressUpOutfitMixin = { };
 
 function DressUpOutfitMixin:GetSlotSourceID(slot, transmogType)
@@ -123,23 +147,7 @@ function DressUpOutfitMixin:LoadOutfit(outfitID)
 	if ( not outfitID ) then
 		return;
 	end
-	local appearanceSources, mainHandEnchant, offHandEnchant = C_TransmogCollection.GetOutfitSources(outfitID);
-	if ( not appearanceSources ) then
-		return true;
-	end
-
-	local mainHandSlotID = GetInventorySlotInfo("MAINHANDSLOT");
-	local secondaryHandSlotID = GetInventorySlotInfo("SECONDARYHANDSLOT");
-	for i = 1, #appearanceSources do
-		if ( i ~= mainHandSlotID and i ~= secondaryHandSlotID ) then
-			if ( appearanceSources[i] ~= NO_TRANSMOG_SOURCE_ID ) then
-				DressUpModel:TryOn(appearanceSources[i]);
-			end
-		end
-	end
-
-	DressUpModel:TryOn(appearanceSources[mainHandSlotID], "MAINHANDSLOT", mainHandEnchant);
-	DressUpModel:TryOn(appearanceSources[secondaryHandSlotID], "SECONDARYHANDSLOT", offHandEnchant);
+	DressUpSources(C_TransmogCollection.GetOutfitSources(outfitID))
 end
 
 function SideDressUpFrame_OnShow(self)

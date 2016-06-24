@@ -167,6 +167,9 @@ end
 
 function NamePlateDriverMixin:SetupClassNameplateBars()
 	local targetMode = GetCVarBool("nameplateResourceOnTarget");
+	if (self.nameplateBar and self.nameplateBar.overrideTargetMode ~= nil) then
+		targetMode = self.nameplateBar.overrideTargetMode;
+	end
 	self:SetupClassNameplateBar(targetMode, self.nameplateBar);
 	self:SetupClassNameplateBar(false, self.nameplateManaBar);
 
@@ -184,6 +187,10 @@ end
 function NamePlateDriverMixin:SetClassNameplateBar(frame)
 	self.nameplateBar = frame;
 	self:SetupClassNameplateBars();
+end
+
+function NamePlateDriverMixin:GetClassNameplateBar()
+	return self.nameplateBar;
 end
 
 function NamePlateDriverMixin:SetClassNameplateManaBar(frame)
@@ -218,11 +225,12 @@ function NamePlateDriverMixin:UpdateNamePlateOptions()
 	DefaultCompactNamePlateEnemyFrameOptions.playLoseAggroHighlight = GetCVarBool("ShowNamePlateLoseAggroFlash");
 
 	local namePlateVerticalScale = tonumber(GetCVar("NamePlateVerticalScale"));
-	DefaultCompactNamePlateFrameSetUpOptions.healthBarHeight = 4 * namePlateVerticalScale;
-	DefaultCompactNamePlatePlayerFrameSetUpOptions.healthBarHeight = 4 * namePlateVerticalScale;
-
 	local zeroBasedScale = namePlateVerticalScale - 1.0;
 	local clampedZeroBasedScale = Saturate(zeroBasedScale);
+	DefaultCompactNamePlateFrameSetUpOptions.healthBarHeight = 4 * namePlateVerticalScale;
+	DefaultCompactNamePlatePlayerFrameSetUpOptions.healthBarHeight = 4 * namePlateVerticalScale * Lerp(1.2, 1.0, clampedZeroBasedScale);
+
+
 	DefaultCompactNamePlateFrameSetUpOptions.useLargeNameFont = clampedZeroBasedScale > .25;
 
 	DefaultCompactNamePlateFrameSetUpOptions.castBarHeight = math.min(Lerp(12, 16, zeroBasedScale), DefaultCompactNamePlateFrameSetUpOptions.healthBarHeight * 2);
@@ -236,7 +244,7 @@ function NamePlateDriverMixin:UpdateNamePlateOptions()
 
 	local horizontalScale = tonumber(GetCVar("NamePlateHorizontalScale"));
 	C_NamePlate.SetNamePlateOtherSize(self.baseNamePlateWidth * horizontalScale, self.baseNamePlateHeight);
-	C_NamePlate.SetNamePlateSelfSize(self.baseNamePlateWidth * horizontalScale, self.baseNamePlateHeight);
+	C_NamePlate.SetNamePlateSelfSize(self.baseNamePlateWidth * horizontalScale * Lerp(1.1, 1.0, clampedZeroBasedScale), self.baseNamePlateHeight);
 
 	for i, frame in ipairs(C_NamePlate.GetNamePlates()) do
 		self:ApplyFrameOptions(frame, frame.namePlateUnitToken);

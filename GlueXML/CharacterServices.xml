@@ -207,7 +207,7 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Button parentKey="CreateCharacterButton" inherits="UIPanelButtonTemplate" text="CREATE_NEW_CHARACTER" hidden="true">
+					<Button parentKey="CreateCharacterButton" inherits="GlueButtonTemplate" text="CREATE_NEW_CHARACTER" hidden="true">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.OrLabel" relativePoint="BOTTOMLEFT" x="0.0" y="-5.0" />
 						</Anchors>
@@ -216,7 +216,7 @@
 							<OnUpdate function="GlueParent_DeathKnightButtonSwap"/>
 						</Scripts>
 					</Button>
-					<Button parentKey="CreateCharacterClassTrialButton" inherits="UIPanelButtonTemplate" text="CHARACTER_UPGRADE_POPUP_TRY_NEW_CLASS" hidden="true">
+					<Button parentKey="CreateCharacterClassTrialButton" inherits="GlueButtonTemplate" text="CHARACTER_UPGRADE_POPUP_TRY_NEW_CLASS" hidden="true">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.OrLabel2" relativePoint="BOTTOMLEFT" x="0" y="-5.0" />
 						</Anchors>

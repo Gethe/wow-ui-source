@@ -142,18 +142,23 @@ function UnitFrame_SetUnit (self, unit, healthbar, manabar)
 	-- update unit events if unit changes
 	if ( self.unit ~= unit ) then
 		if ( self.myHealPredictionBar ) then
+			self:UnregisterEvent("UNIT_MAXHEALTH");
+			self:UnregisterEvent("UNIT_HEAL_PREDICTION");
 			self:RegisterUnitEvent("UNIT_MAXHEALTH", unit);
 			self:RegisterUnitEvent("UNIT_HEAL_PREDICTION", unit);
 		end
 		if ( self.totalAbsorbBar ) then
+			self:UnregisterEvent("UNIT_ABSORB_AMOUNT_CHANGED");
 			self:RegisterUnitEvent("UNIT_ABSORB_AMOUNT_CHANGED", unit);
 		end
 		if ( not healthbar.frequentUpdates ) then
+			healthbar:UnregisterEvent("UNIT_HEALTH");
 			healthbar:RegisterUnitEvent("UNIT_HEALTH", unit);
 		end
-		if ( manabar and not manabar.frequentUpdates ) then
-			UnitFrameManaBar_RegisterDefaultEvents(manabar);
+		if ( manabar ) then
+			UnitFrameManaBar_RegisterDefaultEvents(manabar, unit);
 		end
+		healthbar:UnregisterEvent("UNIT_MAXHEALTH");
 		healthbar:RegisterUnitEvent("UNIT_MAXHEALTH", unit);
 	end
 
@@ -515,8 +520,11 @@ function UnitFrameManaBar_UpdateType (manaBar)
 			end
 		end
 	end
-	manaBar.powerType = powerType;
-	manaBar.powerToken = powerToken;
+	if ( manaBar.powerType ~= powerType ) then
+		manaBar.powerType = powerType;
+		manaBar.powerToken = powerToken;
+		manaBar.currValue = UnitPower(manaBar.unit, powerType);
+	end
 
 	-- Update the manabar text
 	if ( not unitFrame.noTextPrefix ) then
@@ -769,12 +777,11 @@ function UnitFrameHealthBar_OnValueChanged(self, value)
 	HealthBar_OnValueChanged(self, value);
 end
 
-function UnitFrameManaBar_UnregisterDefaultEvents(self)
+function UnitFrameManaBar_RegisterDefaultEvents(self, unit)
 	self:UnregisterEvent("UNIT_POWER");
-end
-
-function UnitFrameManaBar_RegisterDefaultEvents(self)
-	self:RegisterUnitEvent("UNIT_POWER", self.unit);
+	self:UnregisterEvent("UNIT_POWER_FREQUENT");
+	self:RegisterUnitEvent("UNIT_POWER", unit);
+	self:RegisterUnitEvent("UNIT_POWER_FREQUENT", unit);
 end
 
 function UnitFrameManaBar_Initialize (unit, statusbar, statustext, frequentUpdates)
@@ -786,14 +793,8 @@ function UnitFrameManaBar_Initialize (unit, statusbar, statustext, frequentUpdat
 	SetTextStatusBarText(statusbar, statustext);
 
 	statusbar.frequentUpdates = frequentUpdates;
-	if ( frequentUpdates ) then
-		statusbar:RegisterEvent("VARIABLES_LOADED");
-	end
-	if ( GetCVarBool("predictedPower") and frequentUpdates ) then
-		statusbar:SetScript("OnUpdate", UnitFrameManaBar_OnUpdate);
-	else
-		UnitFrameManaBar_RegisterDefaultEvents(statusbar);
-	end
+	UnitFrameManaBar_RegisterDefaultEvents(statusbar, unit);
+
 	statusbar:RegisterEvent("UNIT_DISPLAYPOWER");
 	statusbar:RegisterUnitEvent("UNIT_MAXPOWER", unit);
 	if ( statusbar.unit == "player" ) then
@@ -802,51 +803,18 @@ function UnitFrameManaBar_Initialize (unit, statusbar, statustext, frequentUpdat
 		statusbar:RegisterEvent("PLAYER_UNGHOST");
 	end
 	statusbar:SetScript("OnEvent", UnitFrameManaBar_OnEvent);
+	statusbar.currValue = 0;
+	statusbar:SetValue(0);
 end
 
 function UnitFrameManaBar_OnEvent(self, event, ...)
 	if ( event == "CVAR_UPDATE" ) then
 		TextStatusBar_OnEvent(self, event, ...);
-	elseif ( event == "VARIABLES_LOADED" ) then
-		self:UnregisterEvent("VARIABLES_LOADED");
-		if ( GetCVarBool("predictedPower") and self.frequentUpdates ) then
-			self:SetScript("OnUpdate", UnitFrameManaBar_OnUpdate);
-			UnitFrameManaBar_UnregisterDefaultEvents(self);
-		else
-			UnitFrameManaBar_RegisterDefaultEvents(self);
-			self:SetScript("OnUpdate", nil);
-		end
 	elseif ( event == "PLAYER_ALIVE"  or event == "PLAYER_DEAD" or event == "PLAYER_UNGHOST" ) then
 		UnitFrameManaBar_UpdateType(self);
 	else
 		if ( not self.ignoreNoUnit or UnitGUID(self.unit) ) then
 			UnitFrameManaBar_Update(self, ...);
-		end
-	end
-end
-
-function UnitFrameManaBar_OnUpdate(self)
-	if ( not self.disconnected and not self.lockValues ) then
-		local predictedCost = self:GetParent().predictedPowerCost;
-		local currValue = UnitPower(self.unit, self.powerType);
-		if (predictedCost) then
-			currValue = currValue - predictedCost;
-		end
-		if ( currValue ~= self.currValue or (self.FullPowerFrame and currValue == self.FullPowerFrame.maxValue ) ) then
-			if ( not self.ignoreNoUnit or UnitGUID(self.unit) ) then
-				if ( self.FeedbackFrame ) then
-					-- Only show anim if change is more than 10%
-					if ( math.abs(currValue - self.currValue) / self.FeedbackFrame.maxValue > 0.1 ) then
-						self.FeedbackFrame:StartFeedbackAnim(self.currValue or 0, currValue);
-					end
-				end
-				if ( self.FullPowerFrame and self.FullPowerFrame.active ) then
-					self.FullPowerFrame:StartAnimIfFull(self.currValue or 0, currValue);
-				end
-				self:SetValue(currValue);
-				self.currValue = currValue;
-				TextStatusBar_UpdateTextString(self);
-			end
 		end
 	end
 end
@@ -860,31 +828,44 @@ function UnitFrameManaBar_Update(statusbar, unit)
 		-- be sure to update the power type before grabbing the max power!
 		UnitFrameManaBar_UpdateType(statusbar);
 
+		local currValue;
 		local maxValue = UnitPowerMax(unit, statusbar.powerType);
 
 		statusbar:SetMinMaxValues(0, maxValue);
 
 		statusbar.disconnected = not UnitIsConnected(unit);
 		if ( statusbar.disconnected ) then
-			statusbar:SetValue(maxValue);
-			statusbar.currValue = maxValue;
+			currValue = maxValue;
 			if ( not statusbar.lockColor ) then
 				statusbar:SetStatusBarColor(0.5, 0.5, 0.5);
 			end
 		else
 			local predictedCost = statusbar:GetParent().predictedPowerCost;
-			local currValue = UnitPower(unit, statusbar.powerType);
+			currValue = UnitPower(unit, statusbar.powerType);
 			if (predictedCost) then
 				currValue = currValue - predictedCost;
 			end
 			if ( statusbar.FullPowerFrame ) then
 				statusbar.FullPowerFrame:SetMaxValue(maxValue);
 			end
-
-			statusbar:SetValue(currValue);
+		end
+		statusbar:SetValue(currValue);
+		if ( statusbar.currValue ~= currValue ) then
+			if ( not statusbar.ignoreNoUnit or UnitGUID(statusbar.unit) ) then
+				if ( statusbar.FeedbackFrame ) then
+					-- Only show anim if change is more than 10%
+					if ( math.abs(currValue - statusbar.currValue) / statusbar.FeedbackFrame.maxValue > 0.1 ) then
+						statusbar.FeedbackFrame:StartFeedbackAnim(statusbar.currValue or 0, currValue);
+					end
+				end
+				if ( statusbar.FullPowerFrame and statusbar.FullPowerFrame.active ) then
+					statusbar.FullPowerFrame:StartAnimIfFull(statusbar.currValue or 0, currValue);
+				end
+			end
 			statusbar.currValue = currValue;
 		end
 	end
+
 	TextStatusBar_UpdateTextString(statusbar);
 end
 

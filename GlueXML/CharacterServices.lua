@@ -345,7 +345,7 @@ end
 
 function CharacterServicesFlowPrototype:SetUpBlock(controller, results, wasFromRewind)
 	local block = self.Steps[self.step];
-	CharacterServicesMaster_SetCurrentBlock(controller, block);
+	CharacterServicesMaster_SetCurrentBlock(controller, block, wasFromRewind);
 	if (not block.HiddenStep) then
 		if (self.step == 1) then
 			block.frame:SetPoint("TOP", CharacterServicesMaster, "TOP", -30, 0);
@@ -934,7 +934,7 @@ end
 -- Override recommended spec for druids to Feral until we stop using recommended specs as allowed specs.
 local recommendedSpecOverride = {
 	["DRUID"] = 103,
-}
+};
 
 function GetRecommendedSpecButton(ownerFrame, overrideSpecID)
 	-- There may be multiple recommended specs for now, so determine the best one based on class.
@@ -943,7 +943,9 @@ function GetRecommendedSpecButton(ownerFrame, overrideSpecID)
 	overrideSpecID = overrideSpecID or recommendedSpecID;
 
 	for _, specButton in ipairs(ownerFrame.SpecButtons) do
-		if specButton.isRecommended and (not overrideSpecID or specButton:GetID() == overrideSpecID)  then
+		if overrideSpecID and (specButton:GetID() == overrideSpecID) then
+			return specButton;
+		elseif not overrideSpecID and specButton.isRecommended then
 			return specButton;
 		end
 	end
@@ -1111,7 +1113,7 @@ function CharacterServices_UpdateSpecializationButtons(classID, gender, parentFr
 	end
 
 	if owner.OnUpdateSpecButtons then
-		owner:OnUpdateSpecButtons();
+		owner:OnUpdateSpecButtons(allowAllSpecs);
 	end
 end
 
@@ -1147,8 +1149,10 @@ function CharacterUpgradeSpecSelectBlock:Initialize(results, wasFromRewind)
 	end
 end
 
-function CharacterUpgradeSpecSelectBlock:OnUpdateSpecButtons()
-	ClickRecommendedSpecButton(self.frame.ControlsFrame, self.selected);
+function CharacterUpgradeSpecSelectBlock:OnUpdateSpecButtons(allowAllSpecs)
+	if not allowAllSpecs or self.selected then
+		ClickRecommendedSpecButton(self.frame.ControlsFrame, self.selected);
+	end
 end
 
 function CharacterUpgradeSpecSelectBlock:IsFinished(wasFromRewind)

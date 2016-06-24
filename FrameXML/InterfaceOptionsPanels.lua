@@ -133,6 +133,7 @@ ControlsPanelOptions = {
 	autoLootDefault = { text = "AUTO_LOOT_DEFAULT_TEXT" }, -- When this gets changed, the function SetAutoLootDefault needs to get run with its value.
 	autoLootKey = { text = "AUTO_LOOT_KEY_TEXT", default = "NONE" },
 	interactOnLeftClick = { text = "INTERACT_ON_LEFT_CLICK_TEXT" },
+	lootUnderMouse = { text = "LOOT_UNDER_MOUSE_TEXT" },
 }
 
 function InterfaceOptionsControlsPanelAutoLootKeyDropDown_OnEvent (self, event, ...)
@@ -251,6 +252,7 @@ CombatPanelOptions = {
 	spellActivationOverlayOpacity = { text = "SPELL_ALERT_OPACITY", minValue = 0, maxValue = 1.0, valueStep = 0.05 },
 	doNotFlashLowHealthWarning = { text = "FLASH_LOW_HEALTH_WARNING" },
 	lossOfControl = { text = "LOSS_OF_CONTROL" },
+    enableFloatingCombatText = { text = "SHOW_COMBAT_TEXT_TEXT" },
 }
 
 function InterfaceOptionsCombatPanelReducedLagTolerance_UpdateText()
@@ -442,13 +444,32 @@ function InterfaceOptionsCombatPanelFocusCastKeyDropDown_Initialize()
 	UIDropDownMenu_AddButton(info);
 end
 
+function InterfaceOptionsCombatPanel_OnLoad(self)
+	self.name = COMBAT_LABEL;
+	self.options = CombatPanelOptions;
+	InterfaceOptionsPanel_OnLoad(self);
+
+	self:SetScript("OnEvent", InterfaceOptionsCombatPanel_OnEvent);
+end
+
+function InterfaceOptionsCombatPanel_OnEvent (self, event, ...)
+	BlizzardOptionsPanel_OnEvent(self, event, ...);
+
+	if ( event == "PLAYER_ENTERING_WORLD" ) then
+		local control;
+
+        -- run the enable FCT button's set func to refresh floating combat text and make sure the addon is loaded
+		control = InterfaceOptionsCombatPanelEnableFloatingCombatText;
+		control.setFunc(GetCVar(control.cvar));
+	end
+end
+
 -- [[ Display Options Panel ]] --
 
 DisplayPanelOptions = {
 	rotateMinimap = { text = "ROTATE_MINIMAP" },
 	hideAdventureJournalAlerts = { text = "HIDE_ADVENTURE_JOURNAL_ALERTS" };
     showTutorials = { text = "SHOW_TUTORIALS" },
-    enableFloatingCombatText = { text = "SHOW_COMBAT_TEXT_TEXT" },
 }
 
 function InterfaceOptionsDisplayPanel_OnLoad (self)
@@ -466,10 +487,6 @@ function InterfaceOptionsDisplayPanel_OnEvent (self, event, ...)
 		local control;
 
 		control = InterfaceOptionsDisplayPanelRotateMinimap;
-		control.setFunc(GetCVar(control.cvar));
-        
-        -- run the enable FCT button's set func to refresh floating combat text and make sure the addon is loaded
-		control = InterfaceOptionsDisplayPanelEnableFloatingCombatText;
 		control.setFunc(GetCVar(control.cvar));
 	end
 end
@@ -1709,6 +1726,7 @@ end
 
 CameraPanelOptions = {
 	cameraWaterCollision = { text = "WATER_COLLISION" },
+	cameraYawSmoothSpeed = { text = "AUTO_FOLLOW_SPEED", minValue = 90, maxValue = 270, valueStep = 10 },
 	cameraDistanceMaxFactor = { text = "MAX_FOLLOW_DIST", minValue = 1, maxValue = 1.9, valueStep = 0.1 },
 }
 

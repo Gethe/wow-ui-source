@@ -159,7 +159,6 @@ function ScenarioBlocksFrame_OnLoad(self)
 	self:RegisterEvent("PROVING_GROUNDS_SCORE_UPDATE");
 	self:RegisterEvent("SCENARIO_COMPLETED");
 	self:RegisterEvent("SPELL_UPDATE_COOLDOWN");
-	self:RegisterEvent("SCENARIO_REWARD_UPDATE");
     self:RegisterEvent("CHALLENGE_MODE_START");
     self:RegisterEvent("SCENARIO_CRITERIA_SHOW_STATE_UPDATE");
 end
@@ -177,15 +176,12 @@ function ScenarioBlocksFrame_OnEvent(self, event, ...)
 		local score = ...
 		ScenarioProvingGroundsBlock.Score:SetText(score);
 	elseif (event == "SCENARIO_COMPLETED") then
-		local xp, money = ...;
-		if( ( xp > 0 and UnitLevel("player") < MAX_PLAYER_LEVEL ) or money > 0 ) then
+		local rewardQuestID, xp, money = ...;
+		if( ( xp and xp > 0 and UnitLevel("player") < MAX_PLAYER_LEVEL ) or ( money and money > 0 ) ) then
 			ScenarioObjectiveTracker_AnimateReward( xp, money );
 		end
 	elseif (event == "SPELL_UPDATE_COOLDOWN") then
 		ScenarioSpellButtons_UpdateCooldowns();
-	elseif (event == "SCENARIO_REWARD_UPDATE") then
-		local scenarioType = select(10, C_Scenario.GetInfo());
-		ScenarioStage_CustomizeBlock(ScenarioStageBlock, scenarioType);
 	elseif (event == "CHALLENGE_MODE_START") then
     	ScenarioTimer_CheckTimers(GetWorldElapsedTimers());
     elseif (event == "SCENARIO_CRITERIA_SHOW_STATE_UPDATE") then
@@ -932,6 +928,7 @@ function SCENARIO_CONTENT_TRACKER_MODULE:UpdateWeightedProgressCriteria(stageDes
 	-- A progress bar here is the entire tree for scenarios
 	SCENARIO_TRACKER_MODULE.lineSpacing = 2;
 	SCENARIO_TRACKER_MODULE:AddObjective(objectiveBlock, 1, stageDescription);
+	objectiveBlock.currentLine.Icon:Hide();
 	local progressBar = SCENARIO_TRACKER_MODULE:AddProgressBar(objectiveBlock, objectiveBlock.currentLine);
 	objectiveBlock:SetHeight(objectiveBlock.height);
 	if ( ObjectiveTracker_AddBlock(objectiveBlock) ) then
@@ -959,6 +956,7 @@ function SCENARIO_CONTENT_TRACKER_MODULE:UpdateCriteria(numCriteria, objectiveBl
 			if ( completed ) then
 				local existingLine = objectiveBlock.lines[criteriaIndex];
 				SCENARIO_TRACKER_MODULE:AddObjective(objectiveBlock, criteriaIndex, criteriaString, nil, nil, OBJECTIVE_DASH_STYLE_SHOW, OBJECTIVE_TRACKER_COLOR["Complete"]);
+				objectiveBlock.currentLine.Icon:Show();
 				objectiveBlock.currentLine.Icon:SetAtlas("Tracker-Check", true);
 				if ( existingLine and not existingLine.completed ) then
 					existingLine.Glow.Anim:Play();
@@ -968,6 +966,7 @@ function SCENARIO_CONTENT_TRACKER_MODULE:UpdateCriteria(numCriteria, objectiveBl
 				objectiveBlock.currentLine.completed = true;
 			else
 				SCENARIO_TRACKER_MODULE:AddObjective(objectiveBlock, criteriaIndex, criteriaString);
+				objectiveBlock.currentLine.Icon:Show();
 				objectiveBlock.currentLine.Icon:SetAtlas("Objective-Nub", true);
 			end
 			local line = objectiveBlock.currentLine;

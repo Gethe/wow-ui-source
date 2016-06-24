@@ -120,13 +120,6 @@
 							</Anchors>
 						</Texture>
 					</Layer>
-					<Layer level="ARTWORK" textureSubLevel="1">
-						<FontString parentKey="Quantity" inherits="NumberFontNormal">
-							<Anchors>
-								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
-							</Anchors>
-						</FontString>
-					</Layer>
 				</Layers>
 				<Scripts>
 					<OnEnter function="PVPHonorSystemXPBarNextAvailable_OnEnter"/>
@@ -360,13 +353,6 @@
 							</Anchors>
 						</Texture>
 					</Layer>
-					<Layer level="ARTWORK" textureSubLevel="1">
-						<FontString parentKey="Quantity" inherits="NumberFontNormal">
-							<Anchors>
-								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
-							</Anchors>
-						</FontString>
-					</Layer>
 				</Layers>
 				<Scripts>
 					<OnEnter function="PVPHonorSystemXPBarNextAvailable_OnEnter"/>
@@ -471,7 +457,7 @@
 	<Frame name="HonorLevelUpBanner" hidden="true">
 		<Size x="128" y="128"/>
 		<Anchors>
-			<Anchor point="TOP" x="0" y="-170"/>
+			<Anchor point="TOP" x="0" y="-133"/>
 		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">

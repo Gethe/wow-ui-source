@@ -73,7 +73,7 @@ function GarrisonFollowerTooltipTemplate_SetGarrisonFollower(tooltipFrame, data,
 		end
 	end
 
-	if (not data.collected) then
+	if (not data.collected or data.isTroop) then
 		tooltipFrame.ILevel:Hide();
 		tooltipFrame.XP:Hide();
 		tooltipFrame.XPBar:Hide();

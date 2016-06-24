@@ -3,7 +3,9 @@ AnimatedStatusBarMixin = {};
 local DEFAULT_ACCUMULATION_TIMEOUT_SEC = .1;
 
 function AnimatedStatusBarMixin:OnLoad()
-	self:GetStatusBarTexture():SetDrawLayer("BORDER");
+	if self:GetStatusBarTexture() then
+		self:GetStatusBarTexture():SetDrawLayer("BORDER");
+	end
 	self.OnFinishedCallback = function(...) self:OnAnimFinished(...); end;
 	self.OnSetStatusBarAnimUpdateCallback = function(...) self:OnSetStatusBarAnimUpdate(...); end;
 	self.accumulationTimeoutInterval = DEFAULT_ACCUMULATION_TIMEOUT_SEC;

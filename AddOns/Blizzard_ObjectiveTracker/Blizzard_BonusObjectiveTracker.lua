@@ -231,12 +231,6 @@ function BonusObjectiveTracker_OnTaskCompleted(questID, xp, money)
 	if ( block ) then
 		BonusObjectiveTracker_AddReward(questID, block, xp, money);
 	end
-
-	local block = WORLD_QUEST_TRACKER_MODULE:GetExistingBlock(questID);
-	if ( block ) then
-		-- Don't animate rewards on WQs, toast instead
-		WorldQuestCompleteAlertSystem:AddAlert(questID);
-	end
 end
 
 function BonusObjectiveTracker_AddReward(questID, block, xp, money)

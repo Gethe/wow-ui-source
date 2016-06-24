@@ -271,12 +271,14 @@ ARTIFACT_ITEM_SPEED_FACTOR = 0.15;
 ARTIFACT_ITEM_BASE_Y_ROTATION = 0;
 
 function ArtifactFrameUnderlayMixin:OnUpdate(elapsed)
-	if self.draggingStartX and self.draggingStartY then
-		local dx, dy = self:CalculateDeltas();
-		C_ArtifactUI.SetForgeRotation(0, ARTIFACT_ITEM_BASE_Y_ROTATION, dx + (self.rotationOffsetX or 0));
-	else
-		self.rotationOffsetX = (self.rotationOffsetX or 0) + ARTIFACT_ITEM_SPEED_FACTOR * elapsed;
-		C_ArtifactUI.SetForgeRotation(0, ARTIFACT_ITEM_BASE_Y_ROTATION, self.rotationOffsetX);
+	if not C_ArtifactUI.ShouldSuppressForgeRotation() then
+		if self.draggingStartX and self.draggingStartY then
+			local dx, dy = self:CalculateDeltas();
+			C_ArtifactUI.SetForgeRotation(0, ARTIFACT_ITEM_BASE_Y_ROTATION, dx + (self.rotationOffsetX or 0));
+		else
+			self.rotationOffsetX = (self.rotationOffsetX or 0) + ARTIFACT_ITEM_SPEED_FACTOR * elapsed;
+			C_ArtifactUI.SetForgeRotation(0, ARTIFACT_ITEM_BASE_Y_ROTATION, self.rotationOffsetX);
+		end
 	end
 end
 

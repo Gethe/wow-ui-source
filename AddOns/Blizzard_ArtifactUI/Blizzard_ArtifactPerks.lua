@@ -682,6 +682,8 @@ function ArtifactTitleTemplateMixin:EvaluateRelics()
 			relicSlot.LockedIcon:Hide();
 			if relicIcon then
 				relicSlot.Icon:SetSize(34, 34);
+				relicSlot.Icon:SetMask(nil);
+				relicSlot.Icon:SetTexCoord(0, 1, 0, 1); -- Masks may overwrite our tex coords (even ones set by an atlas), force it back to using the full item icon texture
 				relicSlot.Icon:SetMask("Interface\\CharacterFrame\\TempPortraitAlphaMask");
 				relicSlot.Icon:SetTexture(relicIcon);
 				relicSlot.Glass:Show();

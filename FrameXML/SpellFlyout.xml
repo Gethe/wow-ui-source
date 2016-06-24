@@ -81,7 +81,7 @@
 		<NormalTexture/>
 	</CheckButton>
 
-	<Frame name="SpellFlyout" hidden="true" frameStrata="DIALOG" frameLevel="10" inherits="SecureFrameTemplate" enableMouse="true">
+	<Frame name="SpellFlyout" toplevel="true" hidden="true" frameStrata="DIALOG" frameLevel="10" inherits="SecureFrameTemplate" enableMouse="true">
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="SpellFlyoutBackgroundEnd" inherits="ActionBarFlyoutButton-FlyoutTop" parentKey="BgEnd"/>

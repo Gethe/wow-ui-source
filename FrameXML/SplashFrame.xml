@@ -17,7 +17,7 @@
 					<Anchors>
 						<Anchor point="BOTTOM" relativeKey="$parent.Description" relativePoint="TOP" x="0" y="6"/>
 					</Anchors>
-				</FontString>				
+				</FontString>
 			</Layer>
 		</Layers>
 		<Scripts>
@@ -29,8 +29,8 @@
 	<Frame name="SplashFrame" parent="UIParent" toplevel="true" frameStrata="DIALOG" enableMouse="true" hidden="true" >
 		<Size x="882" y="584"/>
 		<Anchors>
-			<Anchor point="CENTER"/>
-		</Anchors>		
+			<Anchor point="CENTER" y="60"/>
+		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="LeftTexture" atlas="splash-600-topleft" useAtlasSize="true">
@@ -57,7 +57,7 @@
 				<Texture parentKey="BottomLine" atlas="splash-botleft" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.BottomTexture" relativePoint="BOTTOMLEFT" x="3" y="0"/>
-					</Anchors>	
+					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
@@ -88,9 +88,9 @@
 							<AbsDimension x="1" y="-1"/>
 						</Offset>
 						<Color r="0" g="0" b="0"/>
-					</Shadow>	
+					</Shadow>
 					<Color r="1" g=".82" b="0"/>
-				</FontString>				
+				</FontString>
 			</Layer>
 			<Layer level="BORDER">
 				<Texture>
@@ -126,10 +126,10 @@
 									<AbsDimension x="1" y="-1"/>
 								</Offset>
 								<Color r="0" g="0" b="0"/>
-							</Shadow>	
+							</Shadow>
 							<Color r="1" g=".82" b="0"/>
 						</FontString>
-					</Layer>				
+					</Layer>
 				</Layers>
 				<HighlightTexture atlas="splash-bigbutton" useAtlasSize="true" alphaMode="ADD" alpha="0.1">
 					<Anchors>
@@ -142,7 +142,7 @@
 					</OnEnter>
 					<OnLeave>
 						self.Text:SetTextColor(1, 0.82, 0);
-					</OnLeave>					
+					</OnLeave>
 					<OnMouseDown>
 						if( self:IsEnabled() ) then
 							self.Text:SetPoint("CENTER", 22, -2);
@@ -169,7 +169,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick function="SplashFrame_Close"/>
-				</Scripts>				
+				</Scripts>
 			</Button>
 			<Frame parentKey="Feature1" inherits="SplashFeatureFrameTemplate" id="1">
 				<Anchors>
@@ -180,11 +180,12 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" x="67" y="-326"/>
 				</Anchors>
-			</Frame>			
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad function="SplashFrame_OnLoad"/>
 			<OnEvent function="SplashFrame_OnEvent"/>
+			<OnShow function="SplashFrame_OnShow"/>
 			<OnHide function="SplashFrame_OnHide"/>
 		</Scripts>
 	</Frame>

@@ -34,14 +34,15 @@ end
 
 function PVPHonorRewardInfoMixin:SetUpFrame(frame)
 	frame.Icon:SetTexture(self.icon);
-	if (self.quantity) then
-		frame.Quantity:SetText(self.quantity);
+	if (self.texCoords) then
+		frame.Icon:SetTexCoord(unpack(self.texCoords));
+	else
+		frame.Icon:SetTexCoord(0, 1, 0, 1);
 	end
 
     frame.Icon:Show();
     frame.Frame:Show();
-	frame.Quantity:SetShown(self.quantity ~= nil);
-    
+
     if (frame.Text) then
         frame.Text:Hide();
     end
@@ -124,19 +125,30 @@ PVPHonorRewardTitleMixin = Mixin({}, PVPHonorRewardInfoMixin);
 function PVPHonorRewardTitleMixin:Set(...)
     local id = ...;
     
+	self.icon = "Interface\\PaperDollInfoFrame\\PaperDollSidebarTabs";
+	self.texCoords = {0.01562500, 0.53125000, 0.32421875, 0.46093750};
     self.text = GetRewardPackTitleName(id);
 end
 
 function PVPHonorRewardTitleMixin:SetTooltip()
-    return false;
+	if (not self.showTooltip) then
+		return false;
+	end
+
+	GameTooltip:SetText(HONOR_REWARD_TITLE_TOOLTIP);
+	GameTooltip:AddLine(self.text, 1, 1, 1, true);
+	return true;
 end
 
--- Note this is different from the other rewards and is not suppoted on the next available
 function PVPHonorRewardTitleMixin:SetUpFrame(frame)
     if (not frame.Text) then
-        return;
+		self.showTooltip = true;
+       	PVPHonorRewardInfoMixin.SetUpFrame(self, frame);
+		return;
     end
     
+	self.showTooltip = false;
+
     if (frame.formatString) then
         frame.Text:SetFormattedText(frame.formatString, self.text);
     else
@@ -144,7 +156,6 @@ function PVPHonorRewardTitleMixin:SetUpFrame(frame)
     end
     
     frame.Icon:Hide();
-    frame.Quantity:Hide();
     frame.Frame:Hide();
     frame.Text:Show();
 end
@@ -263,13 +274,30 @@ function PVPHonorXPBar_OnLeave(self)
 	self.OverlayFrame.Text:Hide();
 end
 
-function PVPHonorSystem_GetNextReward()
-	local talentID = GetPvpTalentUnlock();
-		
+local function CreateHackRewardInfo()
 	local rewardInfo;
+	local factionGroup = UnitFactionGroup("player");
+	local itemID;
+	if ( factionGroup == "Horde" ) then
+		itemID = 138996;
+	else
+		itemID = 138992;
+	end
+	rewardInfo = CreateFromMixins(PVPHonorRewardItemMixin);
+	rewardInfo:Set(itemID);
+	return rewardInfo;
+end
+
+function PVPHonorSystem_GetNextReward()
+	local rewardInfo;
+			
+	local talentID = GetPvpTalentUnlock();	
 	if (talentID) then
 		 rewardInfo = CreateFromMixins(PVPHonorRewardTalentMixin);
 		 rewardInfo:Set(talentID);
+	-- TODO:  Remove this when we can figure this out in a better way
+	elseif (UnitPrestige("player") == 1 and UnitHonorLevel("player") == 49) then
+		rewardInfo = CreateHackRewardInfo();
 	else
 		local rewardPackID = GetHonorLevelRewardPack();
 		if (rewardPackID) then
@@ -277,6 +305,7 @@ function PVPHonorSystem_GetNextReward()
 			local currencies = GetRewardPackCurrencies(rewardPackID);
 			local money = GetRewardPackMoney(rewardPackID);
 			local artifactPower = GetRewardPackArtifactPower(rewardPackID);
+			local title = GetRewardPackTitle(rewardPackID);
 			if (items and #items > 0) then
 				rewardInfo = CreateFromMixins(PVPHonorRewardItemMixin);
 				rewardInfo:Set(items[1]);
@@ -289,7 +318,10 @@ function PVPHonorSystem_GetNextReward()
 			elseif (money and money > 0) then
 				rewardInfo = CreateFromMixins(PVPHonorRewardMoneyMixin);
 				rewardInfo:Set(money);
-            end
+            elseif (title and title > 0) then
+            	rewardInfo = CreateFromMixins(PVPHonorRewardTitleMixin);
+            	rewardInfo:Set(title);
+        	end
 		end
 	end
 
@@ -302,31 +334,37 @@ function PVPHonorSystem_GetMaxPVPLevelReward(prestige)
     end
     
     local rewardInfo;
-    local rewardPackID = GetHonorLevelRewardPack(GetMaxPlayerHonorLevel(), prestige);
-    if (rewardPackID) then
-        local items = GetRewardPackItems(rewardPackID);
-        local currencies = GetRewardPackCurrencies(rewardPackID);
-        local money = GetRewardPackMoney(rewardPackID);
-        local artifactPower = GetRewardPackArtifactPower(rewardPackID);
-        local title = GetRewardPackTitle(rewardPackID);
-        if (items and #items > 0) then
-            rewardInfo = CreateFromMixins(PVPHonorRewardItemMixin);
-            rewardInfo:Set(items[1]);
-        elseif (artifactPower and artifactPower > 0) then
-            rewardInfo = CreateFromMixins(PVPHonorRewardArtifactPowerMixin);
-            rewardInfo:Set(artifactPower);
-        elseif (currencies and #currencies > 0) then
-            rewardInfo = CreateFromMixins(PVPHonorRewardCurrencyMixin);
-            rewardInfo:Set(currencies[1].currencyType, currencies[1].quantity);
-        elseif (money and money > 0) then
-            rewardInfo = CreateFromMixins(PVPHonorRewardMoneyMixin);
-            rewardInfo:Set(money);
-        elseif (title and title > 0) then
-            rewardInfo = CreateFromMixins(PVPHonorRewardTitleMixin);
-            rewardInfo:Set(title);
-        end
-    end
-    
+	
+	-- TODO:  Remove this when we can figure this out in a better way
+	if (UnitPrestige("player") == 0) then
+		rewardInfo = CreateHackRewardInfo();
+	else
+		local rewardPackID = GetHonorLevelRewardPack(GetMaxPlayerHonorLevel(), prestige);
+		if (rewardPackID) then
+			local items = GetRewardPackItems(rewardPackID);
+			local currencies = GetRewardPackCurrencies(rewardPackID);
+			local money = GetRewardPackMoney(rewardPackID);
+			local artifactPower = GetRewardPackArtifactPower(rewardPackID);
+			local title = GetRewardPackTitle(rewardPackID);
+			if (items and #items > 0) then
+				rewardInfo = CreateFromMixins(PVPHonorRewardItemMixin);
+				rewardInfo:Set(items[1]);
+			elseif (artifactPower and artifactPower > 0) then
+				rewardInfo = CreateFromMixins(PVPHonorRewardArtifactPowerMixin);
+				rewardInfo:Set(artifactPower);
+			elseif (currencies and #currencies > 0) then
+				rewardInfo = CreateFromMixins(PVPHonorRewardCurrencyMixin);
+				rewardInfo:Set(currencies[1].currencyType, currencies[1].quantity);
+			elseif (money and money > 0) then
+				rewardInfo = CreateFromMixins(PVPHonorRewardMoneyMixin);
+				rewardInfo:Set(money);
+			elseif (title and title > 0) then
+				rewardInfo = CreateFromMixins(PVPHonorRewardTitleMixin);
+				rewardInfo:Set(title);
+			end
+		end
+	end
+
     return rewardInfo;
 end
 

@@ -473,12 +473,16 @@ function GarrisonMission:UpdateStartButton(missionPage)
 		disableError = GARRISON_MAX_FOLLOWERS_MISSION_TOOLTIP;
 	end
 	
+	local baseCost, cost = C_Garrison.GetMissionCost(missionPage.missionInfo.missionID);
+	if( cost ~= nil) then
+		missionInfo.cost = cost;
+	end
+
 	local currencyName, amountOwned, currencyTexture = GetCurrencyInfo(missionInfo.costCurrencyTypesID);
 	if ( not disableError and amountOwned < missionInfo.cost ) then
 		disableError = GARRISON_NOT_ENOUGH_MATERIALS_TOOLTIP;
 	end
 
-	local baseCost, cost = C_Garrison.GetMissionCost(missionPage.missionInfo.missionID);
 	self:UpdateCostFrame(missionPage, baseCost, cost, amountOwned);
 
 	-- specific required champions
@@ -2259,7 +2263,7 @@ end
 function GarrisonMissionController_OnEnterMissionStartButton(self)
 	if (not self:IsEnabled()) then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
+		GameTooltip:SetText(self.tooltip, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, RED_FONT_COLOR.a, true);
 		GameTooltip:Show();
 	end
 end
