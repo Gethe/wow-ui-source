@@ -92,7 +92,7 @@ function WorldMapBountyBoardMixin:Refresh()
 		self:RefreshBountyTabs();
 	else
 		self:SetLockedType(WORLD_MAP_BOUNTY_BOARD_LOCK_TYPE_NONE);
-		self.selectedBountyIndex = self.selectedBountyIndex or 1;
+		self.selectedBountyIndex = self.bounties[self.selectedBountyIndex] and self.selectedBountyIndex or 1;
 
 		self:RefreshBountyTabs();
 		self:RefreshSelectedBounty();

@@ -254,8 +254,8 @@ function GarrisonRecruiterFrame_SetAbilityPreference(data)
 		
 		frame.Counter.Title:SetText(data.name);
 		frame.Counter.Description:SetText(data.description);
-		frame.Counter.Icon:SetTexture(data.icon);
 		frame.Counter.Icon:SetMask("Interface\\CharacterFrame\\TempPortraitAlphaMask");
+		frame.Counter.Icon:SetTexture(data.icon);
 		
 		UIDropDownMenu_SetText(frame.ThreatDropDown, data.name);
 	end
@@ -339,8 +339,8 @@ function GarrisonRecruitSelectFrame_UpdateRecruits( waiting )
 						local traitID, counterName = C_Garrison.GetFollowerAbilityCounterMechanicInfo(ability.id);
 						if( prefName == counterName )then
 							frame.Counter:Show();
-							frame.Counter.Icon:SetTexture(prefIcon);
 							frame.Counter.Icon:SetMask("Interface\\CharacterFrame\\TempPortraitAlphaMask");
+							frame.Counter.Icon:SetTexture(prefIcon);
 						end
 					end
 				end

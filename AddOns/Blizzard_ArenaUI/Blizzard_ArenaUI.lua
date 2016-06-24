@@ -191,6 +191,10 @@ function ArenaEnemyFrame_OnEvent(self, event, arg1, arg2)
 					self.healthbar:SetScript("OnUpdate", UnitFrameHealthBar_OnUpdate);
 					self.healthbar:UnregisterEvent("UNIT_HEALTH");
 				end
+				if ( self.manabar.frequentUpdates and GetCVarBool("predictedPower") ) then
+					self.manabar:SetScript("OnUpdate", UnitFrameManaBar_OnUpdate);
+					UnitFrameManaBar_UnregisterDefaultEvents(self.manabar);
+				end
 				ArenaEnemyFrame_UpdatePet(self);
 				UpdateArenaEnemyBackground();
 				UIParent_ManageFramePositions();
@@ -199,6 +203,8 @@ function ArenaEnemyFrame_OnEvent(self, event, arg1, arg2)
 				
 				self.healthbar:RegisterEvent("UNIT_HEALTH");
 				self.healthbar:SetScript("OnUpdate", nil);
+				UnitFrameManaBar_RegisterDefaultEvents(self.manabar);
+				self.manabar:SetScript("OnUpdate", nil);
 			elseif ( arg2 == "cleared" ) then
 				ArenaEnemyFrame_Unlock(self);
 				self:Hide();
@@ -279,10 +285,16 @@ function ArenaEnemyPetFrame_OnEvent(self, event, ...)
 				self.healthbar:SetScript("OnUpdate", UnitFrameHealthBar_OnUpdate);
 				self.healthbar:UnregisterEvent("UNIT_HEALTH");
 			end
+			if ( self.manabar.frequentUpdates and GetCVarBool("predictedPower") ) then
+				self.manabar:SetScript("OnUpdate", UnitFrameManaBar_OnUpdate);
+				UnitFrameManaBar_UnregisterDefaultEvents(self.manabar);
+			end
 		elseif ( arg2 == "unseen" ) then
 			ArenaEnemyFrame_Lock(self);
 			self.healthbar:RegisterEvent("UNIT_HEALTH");
 			self.healthbar:SetScript("OnUpdate", nil);
+			UnitFrameManaBar_RegisterDefaultEvents(self.manabar);
+			self.manabar:SetScript("OnUpdate", nil);
 		elseif ( arg2 == "cleared" ) then
 			ArenaEnemyFrame_Unlock(self);
 			self:Hide()

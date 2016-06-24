@@ -1339,7 +1339,8 @@ function GarrisonFollowerTabMixin:UpdateValidSpellHighlightOnEquipmentFrame(equi
 	local abilityID = equipmentFrame.abilityID;
 	if ( followerInfo and followerInfo.isCollected 
 		and followerInfo.status ~= GARRISON_FOLLOWER_WORKING and followerInfo.status ~= GARRISON_FOLLOWER_ON_MISSION 
-		and abilityID and SpellCanTargetGarrisonFollowerAbility(followerID, abilityID) ) then
+		and abilityID and SpellCanTargetGarrisonFollowerAbility(followerID, abilityID) 
+		and not equipmentFrame.Lock:IsShown()) then
 		equipmentFrame.ValidSpellHighlight:Show();
 	else
 		equipmentFrame.ValidSpellHighlight:Hide();
@@ -1513,7 +1514,7 @@ end
 
 function GarrisonFollowerTabMixin:SetupAbilities(followerInfo)
 
-	if (not followerInfo.abilities or not followerInfo.unlockableAbilities or not followerInfo.equipment) then
+	if (not followerInfo.abilities or not followerInfo.unlockableAbilities or not followerInfo.equipment or not followerInfo.unlockableEquipment) then
 		local abilities, unlockables = C_Garrison.GetFollowerAbilities(followerInfo.followerID);
 
 		-- filter out equipment from abilities and place them in their own table.
@@ -1530,9 +1531,12 @@ function GarrisonFollowerTabMixin:SetupAbilities(followerInfo)
 
 		-- filter out equipment from unlockables
 		followerInfo.unlockableAbilities = { };
+		followerInfo.unlockableEquipment = { };
 		if (unlockables) then
 			for i, ability in ipairs(unlockables) do
-				if (not self:IsEquipmentAbility(followerInfo, ability)) then
+				if (self:IsEquipmentAbility(followerInfo, ability)) then
+					tinsert(followerInfo.unlockableEquipment, ability);
+				else
 					tinsert(followerInfo.unlockableAbilities, ability);
 				end
 			end
@@ -1718,9 +1722,16 @@ end
 function GarrisonFollowerTabMixin:ShowEquipment(followerInfo)
 	self.equipmentPool:ReleaseAll();
 
+	local numEquipmentWithUnlockables = #followerInfo.equipment + #followerInfo.unlockableEquipment;
+
 	local lastEquipmentFrame;
-	for i=1, #followerInfo.equipment do
-		local equipment = followerInfo.equipment[i];
+	for i=1, numEquipmentWithUnlockables do
+		local equipment;
+		if (i <= #followerInfo.equipment) then
+			equipment = followerInfo.equipment[i];
+		else
+			equipment = followerInfo.unlockableEquipment[i - #followerInfo.equipment];
+		end
 
 		local equipmentFrame = self.equipmentPool:Acquire();
 		if (self.isLandingPage) then
@@ -1755,6 +1766,15 @@ function GarrisonFollowerTabMixin:ShowEquipment(followerInfo)
 			equipmentFrame.Icon:Hide();
 		end
 
+		local tooltipText;
+		if (equipment.requiredQualityLevel ~= nil) then
+			tooltipText = RED_FONT_COLOR:WrapTextInColorCode(string.format(GARRISON_EQUIPMENT_SLOT_UNLOCK_TOOLTIP, followerInfo.name, _G["ITEM_QUALITY"..equipment.requiredQualityLevel.."_DESC"]));
+			equipmentFrame.Lock:Show();
+		else
+			equipmentFrame.Lock:Hide();
+		end
+		equipmentFrame.tooltipText = tooltipText;
+
 		if (lastEquipmentFrame) then
 			equipmentFrame:SetPoint("TOPLEFT", lastEquipmentFrame, "TOPRIGHT");
 		else
@@ -1767,7 +1787,7 @@ function GarrisonFollowerTabMixin:ShowEquipment(followerInfo)
 		equipmentFrame:Show();
 		lastEquipmentFrame = equipmentFrame;
 	end
-	if (#followerInfo.equipment > 0) then
+	if (numEquipmentWithUnlockables > 0) then
 		self.AbilitiesFrame.EquipmentSlotsLabel:Show();
 		self.ModelCluster.UpgradeFrame:ClearAllPoints();
 		self.ModelCluster.UpgradeFrame:SetPoint("BOTTOM", self.AbilitiesFrame.EquipmentSlotsLabel, "TOP", 0, 10);
@@ -1855,6 +1875,7 @@ function GarrisonFollowerTabMixin:ShowFollower(followerID, followerList)
 		self.Source.SourceText:Hide();
 	end
 
+	self:UpdateValidSpellHighlight(followerID, followerInfo);
 	self.lastUpdate = self:IsShown() and GetTime() or nil;
 end
 
@@ -2162,16 +2183,24 @@ end
 
 GarrisonFollowerEquipmentMixin = { }
 function GarrisonFollowerEquipmentMixin:OnEnter()
-	if (self.abilityID) then
+	if (self.tooltipText) then
+		GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT");
+		GameTooltip:SetText(self.tooltipText, RED_FONT_COLOR_CODE.r, RED_FONT_COLOR_CODE.g, RED_FONT_COLOR_CODE.b, RED_FONT_COLOR_CODE.a, true);
+	elseif (self.abilityID) then
 		ShowGarrisonFollowerAbilityTooltip(self, self.abilityID, self.followerTypeID);
 	end
 end
 
 function GarrisonFollowerEquipmentMixin:OnLeave()
+	GameTooltip:Hide();
 	HideGarrisonFollowerAbilityTooltip(self.followerTypeID);
 end
 
 function GarrisonFollowerEquipmentMixin:OnClick(button)
+	if (self.Lock:IsShown()) then
+		return;
+	end
+
 	if ( IsModifiedClick("CHATLINK") and self.Icon:IsShown() ) then
 		local abilityLink = C_Garrison.GetFollowerAbilityLink(self.abilityID);
 		if (abilityLink) then

@@ -214,6 +214,14 @@
 				<NormalTexture atlas="StreamCinematic-WOD-Up" />
 				<PushedTexture atlas="StreamCinematic-WOD-Down" />
 			</Button>
+			<Button name="CinematicsButton7" inherits="CinematicsButtonTemplate" text="LEGION" hidden="true" id="7">
+				<Size x="176" y="78"/>
+				<Anchors>
+					<Anchor point="TOP" relativeTo="CinematicsButton6" relativePoint="BOTTOM" x="0" y="-8"/>
+				</Anchors>
+				<NormalTexture atlas="StreamCinematic-Legion-Up" />
+				<PushedTexture atlas="StreamCinematic-Legion-Down" />
+			</Button>
 			<CheckButton name="CinematicSubtitlesCheckBox" inherits="GlueCheckButtonTemplate">
 				<Size x="20" y="20"/>
 				<Anchors>

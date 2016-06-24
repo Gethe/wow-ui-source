@@ -130,6 +130,8 @@ MOVIE_LIST = {
   { 115 },
   -- Movie sequence 6 = WoD
   { 195 },
+  -- Movie sequence 7 = Legion
+  { 470 },
 };
 
 --Credits

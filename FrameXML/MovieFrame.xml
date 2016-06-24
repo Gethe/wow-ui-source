@@ -3,6 +3,11 @@
 	<Script file="MovieFrame.lua"/>
 	<MovieFrame name="MovieFrame" setAllPoints="true" hidden="true" enableKeyboard="true">
 		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" setAllPoints="true">
+					<Color r="0" g="0" b="0" a="1"/>
+				</Texture>
+			</Layer>
 			<Layer level="OVERLAY">
 				<FontString name="MovieFrameSubtitleString" inherits="MovieSubtitleFont" hidden="true">
 					<Size>

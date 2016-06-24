@@ -225,7 +225,7 @@ PAPERDOLL_STATCATEGORIES= {
 			[6] = { stat = "AVOIDANCE", hideAt = 0 },
 			[7] = { stat = "DODGE", roles =  { "TANK" } },
 			[8] = { stat = "PARRY", hideAt = 0, roles =  { "TANK" } },
-			[9] = { stat = "BLOCK", hideAt = -1, roles =  { "TANK" } },
+			[9] = { stat = "BLOCK", hideAt = 0, roles =  { "TANK" } },
 		},
 	},
 };

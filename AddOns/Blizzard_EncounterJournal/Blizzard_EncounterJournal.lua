@@ -491,8 +491,8 @@ function EncounterJournal_DisplayInstance(instanceID, noButton)
 	end
 	
 	self.info.instanceButton.instanceID = instanceID;
-	self.info.instanceButton.icon:SetTexture(buttonImage);
 	self.info.instanceButton.icon:SetMask("Interface\\CharacterFrame\\TempPortraitAlphaMask");
+	self.info.instanceButton.icon:SetTexture(buttonImage);
 	
 	self.info.model.dungeonBG:SetTexture(bgImage);
 	
@@ -2543,8 +2543,8 @@ function EJSuggestFrame_UpdateRewards(suggestion)
 		if ( rewardData.isRewardTable ) then
 			texture = "Interface\\Icons\\achievement_guildperk_mobilebanking";
 		end
-		suggestion.reward.icon:SetTexture(texture);
 		suggestion.reward.icon:SetMask("Interface\\CharacterFrame\\TempPortraitAlphaMask");
+		suggestion.reward.icon:SetTexture(texture);
 		suggestion.reward:Show();
 	end
 end
@@ -2639,11 +2639,11 @@ function EJSuggestFrame_RefreshDisplay()
 		suggestion.icon:Show();
 		suggestion.iconRing:Show();
 		if ( data.iconPath ) then
+			suggestion.icon:SetMask("Interface\\CharacterFrame\\TempPortraitAlphaMask");
 			suggestion.icon:SetTexture(data.iconPath);
-			suggestion.icon:SetMask("Interface\\CharacterFrame\\TempPortraitAlphaMask");
 		else
-			suggestion.icon:SetTexture("INTERFACE\\ICONS\\INV_MISC_QUESTIONMARK.BLP");
 			suggestion.icon:SetMask("Interface\\CharacterFrame\\TempPortraitAlphaMask");
+			suggestion.icon:SetTexture("INTERFACE\\ICONS\\INV_MISC_QUESTIONMARK.BLP");
 		end
 		
 		suggestion.prevButton:SetEnabled(C_AdventureJournal.GetPrimaryOffset() > 0);
@@ -2712,11 +2712,11 @@ function EJSuggestFrame_RefreshDisplay()
 			suggestion.icon:Show();
 			suggestion.iconRing:Show();
 			if ( data.iconPath ) then
+				suggestion.icon:SetMask("Interface\\CharacterFrame\\TempPortraitAlphaMask");
 				suggestion.icon:SetTexture(data.iconPath);
-				suggestion.icon:SetMask("Interface\\CharacterFrame\\TempPortraitAlphaMask");
 			else
-				suggestion.icon:SetTexture("INTERFACE\\ICONS\\INV_MISC_QUESTIONMARK.BLP");
 				suggestion.icon:SetMask("Interface\\CharacterFrame\\TempPortraitAlphaMask");
+				suggestion.icon:SetTexture("INTERFACE\\ICONS\\INV_MISC_QUESTIONMARK.BLP");
 			end
 			
 			EJSuggestFrame_UpdateRewards(suggestion);

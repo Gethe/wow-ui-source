@@ -24,7 +24,8 @@ local HIDE_MOST = {
 	FocusFrame			= "hidden",
 	TemporaryEnchantFrame = "hidden",
 	WorldStateAlwaysUpFrame = "hidden",
-	ZoneAbilityFrame = "hidden",
+	ZoneAbilityFrame	= "hidden",
+	OrderHallCommandBar	= "hidden",
 }
 
 --------Data on what locks exist and what frames are ruled by them--------

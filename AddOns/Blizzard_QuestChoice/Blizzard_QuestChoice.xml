@@ -30,8 +30,8 @@
 						<Anchor point="TOPLEFT" x="0" y="0"/>
 					</Anchors>
 				</Texture>
-				<FontString parentKey="Name" inherits="GameFontBlack" justifyH="LEFT" nonspacewrap="true">
-					<Size x="90" y="36"/>
+				<FontString parentKey="Name" inherits="GameFontBlack" justifyH="LEFT">
+					<Size x="110" y="36"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentIconTexture" relativePoint="RIGHT" x="5"/>
 					</Anchors>

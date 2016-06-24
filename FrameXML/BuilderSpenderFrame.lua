@@ -109,6 +109,10 @@ function BuilderSpender:StartFeedbackAnim(oldValue, newValue)
 		return;
 	end
 	
+	if (oldValue > self.maxValue) then
+		oldValue = self.maxValue;
+	end
+	
 	if ( newValue > oldValue and showBuilderFeedback ) then -- Gaining power
 		self.updatingGain = true;
 		self:SetScript("OnUpdate", BuilderSpender_OnUpdateFeedback);
@@ -188,4 +192,10 @@ function FullResourcePulse:StartAnimIfFull(oldValue, newValue)
 	elseif ( oldValue == self.maxValue and (self.PulseFrame.PulseAnim:IsPlaying() or self.SpikeFrame.SpikeAnim:IsPlaying()) ) then
 		self.FadeoutAnim:Play();
 	end
+end
+
+function FullResourcePulse:RemoveAnims()
+	self:SetAlpha(0);
+	self.PulseFrame.PulseAnim:Stop();
+	self.SpikeFrame.SpikeAnim:Stop();
 end
