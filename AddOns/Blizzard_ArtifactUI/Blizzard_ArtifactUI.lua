@@ -206,7 +206,9 @@ function ArtifactUIMixin:RefreshKnowledgeRanks()
 		self.ForgeBadgeFrame.ForgeLevelBackground:Show();
 		self.ForgeBadgeFrame.ForgeLevelBackgroundBlack:Show();
 		self.ForgeLevelFrame:Show();
-		if (not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_ARTIFACT_KNOWLEDGE)) then
+
+		local knowledgeLevel = C_ArtifactUI.GetArtifactKnowledgeLevel();
+		if knowledgeLevel and knowledgeLevel > 0 and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_ARTIFACT_KNOWLEDGE) then
 			self.KnowledgeLevelHelpBox:Show();
 		end
 	else

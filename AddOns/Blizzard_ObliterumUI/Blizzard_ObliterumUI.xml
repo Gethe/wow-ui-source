@@ -57,50 +57,10 @@
 				</Scripts>
 			</Button>
 
-			<Frame parentKey="ReagentFrame" hidden="true" enableMouse="true">
-				<Size x="175" y="23" />
-				<Anchors>
-					<Anchor point="BOTTOMLEFT" x="8" y="2" />
-				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture parentKey="ReagentIcon">
-							<Size x="16" y="16" />
-							<Anchors>
-								<Anchor point="LEFT" />
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="ARTWORK" textureSubLevel="1">
-						<FontString parentKey="ReagentName" font="GameFontNormal" justifyH="LEFT" justifyV="MIDDLE">
-							<Size y="21" />
-							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.ReagentIcon" relativePoint="RIGHT" x="5" />
-								<Anchor point="RIGHT" />
-							</Anchors>
-						</FontString>
-
-						<FontString parentKey="ReagentCount" font="NumberFontNormal">
-							<Anchors>
-								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ReagentIcon" x="3" />
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnEnter>
-						GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -160, 0);
-						GameTooltip:SetSpellByID(C_TradeSkillUI.GetObliterateSpellID());
-						GameTooltip:Show();
-					</OnEnter>
-					<OnLeave function="GameTooltip_Hide" />
-				</Scripts>
-			</Frame>
-
 			<Button parentKey="ObliterateButton" inherits="MagicButtonTemplate" text="OBLITERATE_BUTTON">
 				<Size x="150" y="22"/>
 				<Anchors>
-					<Anchor point="BOTTOMRIGHT" />
+					<Anchor point="BOTTOM" />
 				</Anchors>
 				<Scripts>
 					<OnClick>

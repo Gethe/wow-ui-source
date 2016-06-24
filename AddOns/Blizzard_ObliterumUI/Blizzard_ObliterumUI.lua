@@ -8,15 +8,10 @@ function ObliterumForgeMixin:OnLoad()
 	
 	self:RegisterEvent("OBLITERUM_FORGE_CLOSE");
 	self:RegisterEvent("OBLITERUM_FORGE_PENDING_ITEM_CHANGED");
-	self:RegisterEvent("OBLITERUM_FORGE_REAGENTS_UPDATED");
 end
 
 function ObliterumForgeMixin:OnEvent(event, ...)
-	if event == "OBLITERUM_FORGE_REAGENTS_UPDATED" then
-		self:UpdateReagent();
-	elseif event == "BAG_UPDATE" then
-		self:UpdateReagent();
-	elseif event == "OBLITERUM_FORGE_PENDING_ITEM_CHANGED" then
+	if event == "OBLITERUM_FORGE_PENDING_ITEM_CHANGED" then
 		self:UpdateObliterateButtonState();
 	elseif event == "UNIT_SPELLCAST_START" then
 		local unitTag, spellName, rank, lineID, spellID = ...;
@@ -40,12 +35,10 @@ end
 
 function ObliterumForgeMixin:OnShow()
 	self:UpdateObliterateButtonState();
-	self:UpdateReagent();
 
 	self:RegisterUnitEvent("UNIT_SPELLCAST_START", "player");
 	self:RegisterUnitEvent("UNIT_SPELLCAST_INTERRUPTED", "player");
 	self:RegisterUnitEvent("UNIT_SPELLCAST_STOP", "player");
-	self:RegisterEvent("BAG_UPDATE");
 end
 
 function ObliterumForgeMixin:OnHide()
@@ -54,7 +47,6 @@ function ObliterumForgeMixin:OnHide()
 	self:UnregisterEvent("UNIT_SPELLCAST_START");
 	self:UnregisterEvent("UNIT_SPELLCAST_INTERRUPTED");
 	self:UnregisterEvent("UNIT_SPELLCAST_STOP");
-	self:UnregisterEvent("BAG_UPDATE");
 
 	self.obliterateCastLineID = nil;
 end
@@ -65,27 +57,6 @@ end
 
 function ObliterumForgeMixin:UpdateObliterateButtonState()
 	self.ObliterateButton:SetEnabled(C_TradeSkillUI.GetPendingObliterateItemID() ~= nil); 
-end
-
-function ObliterumForgeMixin:UpdateReagent()
-	local name, texture, required, numInInventory = C_TradeSkillUI.GetObliterateReagentInfo();
-	if name then
-		self.ReagentFrame.ReagentName:SetText(name);
-
-		local numInInventoryAbbreviated = AbbreviateNumbers(numInInventory);
-		self.ReagentFrame.ReagentCount:SetText(numInInventoryAbbreviated);
-		if required > numInInventory then
-			self.ReagentFrame.ReagentCount:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
-		else
-			self.ReagentFrame.ReagentCount:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-		end
-
-		self.ReagentFrame.ReagentIcon:SetTexture(texture);
-
-		self.ReagentFrame:Show();
-	else
-		self.ReagentFrame:Hide();
-	end
 end
 
 ObliterumForgeItemSlotMixin = {};

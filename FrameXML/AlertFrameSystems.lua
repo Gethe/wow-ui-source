@@ -226,6 +226,8 @@ function StandardRewardAlertFrame_OnEnter(self)
 	elseif self.xp then
 		GameTooltip:AddLine(YOU_RECEIVED);
 		GameTooltip:AddLine(BONUS_OBJECTIVE_EXPERIENCE_FORMAT:format(self.xp), HIGHLIGHT_FONT_COLOR:GetRGB());
+	elseif self.currencyIndex then
+		GameTooltip:SetQuestLogCurrency("reward", self.currencyIndex, self:GetParent().questID);
 	end
 	GameTooltip:Show();
 end
@@ -877,8 +879,8 @@ function NewRecipeLearnedAlertFrame_SetUp(self, recipeID)
 		if recipeName then
 			PlaySound("UI_Professions_NewRecipeLearned_Toast");
 
-			self.Icon:SetTexture(C_TradeSkillUI.GetTradeSkillTexture(tradeSkillID));
 			self.Icon:SetMask("Interface\\CharacterFrame\\TempPortraitAlphaMask");
+			self.Icon:SetTexture(C_TradeSkillUI.GetTradeSkillTexture(tradeSkillID));
 		
 			local rank = GetSpellRank(recipeID);
 			self.Title:SetText(rank and rank > 1 and UPGRADED_RECIPE_LEARNED_TITLE or NEW_RECIPE_LEARNED_TITLE);
@@ -948,6 +950,7 @@ function WorldQuestCompleteAlertFrame_SetUp(frame, questID, rewardItemLink)
 		rewardFrame.itemLink = nil;
 		rewardFrame.money = money;
 		rewardFrame.xp = nil;
+		rewardFrame.currencyIndex = nil;
 		rewardFrame:Show();
 	end
 
@@ -960,6 +963,21 @@ function WorldQuestCompleteAlertFrame_SetUp(frame, questID, rewardItemLink)
 		rewardFrame.itemLink = nil;
 		rewardFrame.money = nil;
 		rewardFrame.xp = xp;
+		rewardFrame.currencyIndex = nil;
+		rewardFrame:Show();
+	end
+
+	for currencyIndex = 1, GetNumQuestLogRewardCurrencies(questID) do
+		local name, texture, count = GetQuestLogRewardCurrencyInfo(currencyIndex, questID);
+
+		frame.numUsedRewardFrames = frame.numUsedRewardFrames + 1;
+		local rewardFrame = frame.RewardFrames and frame.RewardFrames[frame.numUsedRewardFrames] or CreateFrame("FRAME", nil, frame, "WorldQuestFrameRewardTemplate");
+
+		SetPortraitToTexture(rewardFrame.texture, texture);
+		rewardFrame.itemLink = nil;
+		rewardFrame.money = nil;
+		rewardFrame.xp = nil;
+		rewardFrame.currencyIndex = currencyIndex;
 		rewardFrame:Show();
 	end
 
@@ -979,6 +997,7 @@ function WorldQuestCompleteAlertFrame_Coalesce(frame, questID, rewardItemLink)
 		rewardFrame.itemLink = rewardItemLink;
 		rewardFrame.money = nil;
 		rewardFrame.xp = nil;
+		rewardFrame.currencyIndex = nil;
 		rewardFrame:Show();
 
 		StandardRewardAlertFrame_AdjustRewardAnchors(frame);

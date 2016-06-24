@@ -1715,7 +1715,7 @@ function CharacterServicesMaster_UpdateServiceButton()
 	UpgradePopupFrame:Hide();
 	CharacterSelectUI.WarningText:Hide();
 
-	if (GetAccountExpansionLevel() < LE_EXPANSION_MISTS_OF_PANDARIA or CharacterSelect.undeleting or CharSelectServicesFlowFrame:IsShown()) then
+	if (CharacterSelect.undeleting or CharSelectServicesFlowFrame:IsShown()) then
 		return;
 	end
 

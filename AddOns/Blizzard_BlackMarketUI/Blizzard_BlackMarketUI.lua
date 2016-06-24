@@ -134,6 +134,10 @@ end
 function BlackMarketScrollFrame_Update()
 	local numItems = C_BlackMarket.GetNumItems();
 	
+	if (not numItems) then
+		numItems = 0;
+	end
+	
 	local scrollFrame = BlackMarketScrollFrame;
 	local offset = HybridScrollFrame_GetOffset(scrollFrame);
 	local buttons = scrollFrame.buttons;

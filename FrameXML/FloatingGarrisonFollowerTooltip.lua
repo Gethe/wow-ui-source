@@ -434,8 +434,8 @@ function GarrisonFollowerTooltipTemplate_SetAbility(Ability, ability, detailed, 
 			Ability.Details:Show();
 			Ability:SetHeight(Ability:GetHeight() + Ability.Details:GetHeight() + spacingBetweenDescriptionAndDetails);
 
-			Ability.CounterIcon:SetTexture(abilityCounterMechanicIcon);
 			Ability.CounterIcon:SetMask("Interface\\CharacterFrame\\TempPortraitAlphaMask");
+			Ability.CounterIcon:SetTexture(abilityCounterMechanicIcon);
 			Ability.CounterIcon:Show();
 			Ability.CounterIconBorder:Show();
 		end
@@ -501,8 +501,8 @@ function GarrisonFollowerAbilityTooltipTemplate_SetAbility(tooltipFrame, garrFol
 				tooltipFrame.Details:Show();
 				tooltipFrame.Details:SetText(abilityCounterMechanicName);
 				tooltipFrame:SetHeight(tooltipFrame:GetHeight() + tooltipFrame.Details:GetHeight() + tooltipFrame.CountersLabel:GetHeight() + tooltipFrame.spacingBetweenDescriptionAndDetails * 2);
-				tooltipFrame.CounterIcon:SetTexture(abilityCounterMechanicIcon);
 				tooltipFrame.CounterIcon:SetMask("Interface\\CharacterFrame\\TempPortraitAlphaMask");
+				tooltipFrame.CounterIcon:SetTexture(abilityCounterMechanicIcon);
 				tooltipFrame.CounterIcon:Show();
 				tooltipFrame.CounterIconBorder:Show();
 				if ( abilityCounterFactor <= GARRISON_HIGH_THREAT_VALUE and followerTypeID == LE_FOLLOWER_TYPE_SHIPYARD_6_2 ) then

@@ -374,6 +374,7 @@ end
 function TargetFrame_CheckClassification (self, forceNormalTexture)
 	local classification = UnitClassification(self.unit);
 	self.nameBackground:Show();
+	self.manabar.pauseUpdates = false;
 	self.manabar:Show();
 	TextStatusBar_UpdateTextString(self.manabar);
 	self.threatIndicator:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Flash");
@@ -383,8 +384,11 @@ function TargetFrame_CheckClassification (self, forceNormalTexture)
 	elseif ( classification == "minus" ) then
 		self.borderTexture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Minus");
 		self.nameBackground:Hide();
+		self.manabar.pauseUpdates = true;
 		self.manabar:Hide();
 		self.manabar.TextString:Hide();
+		self.manabar.LeftText:Hide();
+		self.manabar.RightText:Hide();
 		forceNormalTexture = true;
 	elseif ( classification == "worldboss" or classification == "elite" ) then
 		self.borderTexture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Elite");
@@ -643,7 +647,7 @@ function TargetFrame_UpdateAuras (self)
 end
 
 --
---		Hide debuffs on mobs cast by players other than me and aren’t flagged to show to entire party on nameplates.
+--		Hide debuffs on mobs cast by players other than me and arenï¿½t flagged to show to entire party on nameplates.
 --
 function TargetFrame_ShouldShowDebuffs(unit, caster, nameplateShowAll, casterIsAPlayer)
 	if (GetCVarBool("noBuffDebuffFilterOnTarget")) then

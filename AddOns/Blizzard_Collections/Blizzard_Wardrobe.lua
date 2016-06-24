@@ -1825,7 +1825,7 @@ function WardrobeCollectionFrameModel_GetSourceTooltipInfo(source)
 
 	local sourceText, sourceColor;
 	if ( source.isCollected ) then
-		sourceText = COLLECTED;
+		sourceText = TRANSMOG_COLLECTED;
 		sourceColor = GREEN_FONT_COLOR;
 	else
 		sourceText = _G["TRANSMOG_SOURCE_"..source.sourceType];

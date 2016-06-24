@@ -1529,16 +1529,8 @@ function WorldMapPOI_OnEnter(self)
 			WorldMapTooltip:SetText(name, HIGHLIGHT_FONT_COLOR:GetRGB());
 
 			if timeLeftMinutes then
-				local color = NORMAL_FONT_COLOR;
-				local displayTimeMinutes = timeLeftMinutes - WORLD_QUESTS_TIME_CRITICAL_MINUTES;
-				if ( displayTimeMinutes <= 0 ) then
-					-- Grace period, show the actual time left
-					displayTimeMinutes = timeLeftMinutes;
-					color = RED_FONT_COLOR;
-				end
-
-				local timeString = SecondsToTime(displayTimeMinutes * 60);
-				WorldMapTooltip:AddLine(BONUS_OBJECTIVE_TIME_LEFT:format(timeString), color:GetRGB());
+				local timeString = SecondsToTime(timeLeftMinutes * 60);
+				WorldMapTooltip:AddLine(BONUS_OBJECTIVE_TIME_LEFT:format(timeString), NORMAL_FONT_COLOR:GetRGB());
 			end
 
 			if rewardQuestID then
