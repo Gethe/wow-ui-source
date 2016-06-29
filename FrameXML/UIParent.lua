@@ -1696,20 +1696,10 @@ function UIParent_OnEvent(self, event, ...)
 	-- Events for Wardrobe
 	elseif ( event == "TRANSMOG_COLLECTION_UPDATED" ) then
 		if ( not CollectionsJournal ) then
-			local categoryID, sourceID, visualID, action = ...;
-			if ( action == "add" ) then
-				if ( not self.newTransmogs ) then
-					self.newTransmogs = { };
-				end
-				self.newTransmogs[visualID] = true;
-				self.mostRecentCollectedVisualID = visualID;
-				self.mostRecentCollectedCategoryID = categoryID;
+			local latestAppearanceID, latestAppearanceCategoryID = C_TransmogCollection.GetLatestAppearance();
+			if ( latestAppearanceID and latestAppearanceID ~= self.latestAppearanceID ) then
+				self.latestAppearanceID = latestAppearanceID;
 				SetCVar("petJournalTab", 5);
-			elseif ( action == "remove" and self.newTransmogs ) then
-				self.newTransmogs[visualID] = nil;
-				if ( self.mostRecentCollectedVisualID == visualID ) then
-					self.mostRecentCollectedVisualID = nil;
-				end
 			end
 		end
 

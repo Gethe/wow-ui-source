@@ -352,13 +352,23 @@ function SetLoginScreenModel(model)
 	model:SetSequence(0);
 end
 
-function ResetLighting(model)
+local function ResetLighting(model)
 	--model:SetSequence(0);
 	model:SetCamera(0);
 	model:ClearFog();
 	model:SetGlow(0.3);
 
     model:ResetLights();
+end
+
+local function UpdateLighting(model)
+	-- TODO: Remove this and CHAR_MODEL_FOG_INFO and bake fog into models as desired.
+    local fogData = CHAR_MODEL_FOG_INFO[GetCurrentGlueTag()];
+    if fogData then
+    	model:SetFogNear(0);
+    	model:SetFogFar(fogData.far);
+    	model:SetFogColor(fogData.r, fogData.g, fogData.b);
+    end
 end
 
 local glueScreenTags =
@@ -546,6 +556,7 @@ function SetBackgroundModel(model, path)
 	PlayGlueAmbienceFromTag();
 
 	ResetLighting(model);
+	UpdateLighting(model);
 end
 
 -- =============================================================

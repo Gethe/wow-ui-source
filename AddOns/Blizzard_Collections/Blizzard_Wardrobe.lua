@@ -603,13 +603,6 @@ function WardrobeCollectionFrame_OnLoad(self)
 	self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED");
 	self:RegisterEvent("TRANSMOG_COLLECTION_UPDATED");
 
-	self.newTransmogs = UIParent.newTransmogs or {};
-	self.mostRecentCollectedVisualID = UIParent.mostRecentCollectedVisualID;
-	self.mostRecentCollectedCategoryID = UIParent.mostRecentCollectedCategoryID;
-	UIParent.newTransmogs = nil;
-	UIParent.mostRecentCollectedVisualID = nil;
-	UIParent.mostRecentCollectedCategoryID = nil;
-
 	UIDropDownMenu_Initialize(self.ModelsFrame.RightClickDropDown, nil, "MENU");
 	self.ModelsFrame.RightClickDropDown.initialize = WardrobeCollectionFrameRightClickDropDown_Init;
 
@@ -618,6 +611,8 @@ function WardrobeCollectionFrame_OnLoad(self)
 	self:RegisterEvent("SKILL_LINES_CHANGED");
 	self:RegisterEvent("UPDATE_FACTION");
 	self:RegisterEvent("SPELLS_CHANGED");
+
+	WardrobeCollectionFrame_CheckLatestAppearance();
 end
 
 function WardrobeCollectionFrame_CreateSlotButtons()
@@ -682,22 +677,8 @@ function WardrobeCollectionFrame_OnEvent(self, event, ...)
 		end
 		WardrobeCollectionFrame_Update();
 	elseif ( event == "TRANSMOG_COLLECTION_UPDATED") then
-		local categoryID, sourceID, visualID, action = ...;
-		if ( action == "add" ) then
-			self.newTransmogs[visualID] = true;
-			self.mostRecentCollectedVisualID = visualID;
-			self.mostRecentCollectedCategoryID = categoryID;
-			if ( not CollectionsJournal:IsShown() ) then
-				CollectionsJournal_SetTab(CollectionsJournal, 5);
-			end
-		elseif ( action == "remove" ) then
-			self.newTransmogs[visualID] = nil;
-			if ( self.mostRecentCollectedVisualID == visualID ) then
-				self.mostRecentCollectedVisualID = nil;
-				self.mostRecentCollectedCategoryID = nil;
-			end
-		end
-		if ( self:IsVisible() and (not categoryID or categoryID == self.activeCategory) ) then
+		WardrobeCollectionFrame_CheckLatestAppearance(true);
+		if ( self:IsVisible() ) then
 			WardrobeCollectionFrame_GetVisualsList();
 			WardrobeCollectionFrame_FilterVisuals();
 			WardrobeCollectionFrame_SortVisuals();
@@ -726,6 +707,19 @@ function WardrobeCollectionFrame_OnEvent(self, event, ...)
 	end
 end
 
+function WardrobeCollectionFrame_CheckLatestAppearance(changeTab)
+	local latestAppearanceID, latestAppearanceCategoryID = C_TransmogCollection.GetLatestAppearance();
+	if ( WardrobeCollectionFrame.latestAppearanceID ~= latestAppearanceID ) then
+		WardrobeCollectionFrame.latestAppearanceID = latestAppearanceID;
+		WardrobeCollectionFrame.jumpToLatestAppearanceID = latestAppearanceID;
+		WardrobeCollectionFrame.jumpToLatestCategoryID = latestAppearanceCategoryID;
+
+		if ( changeTab and not CollectionsJournal:IsShown() ) then
+			CollectionsJournal_SetTab(CollectionsJournal, 5);
+		end
+	end
+end
+
 function WardrobeCollectionFrame_OnShow(self)
 	SetPortraitToTexture(CollectionsJournalPortrait, "Interface\\Icons\\inv_chest_cloth_17");
 
@@ -743,10 +737,10 @@ function WardrobeCollectionFrame_OnShow(self)
 	end
 
 	local needsUpdate = false;	-- we don't need to update if we call WardrobeCollectionFrame_SetActiveSlot as that will do an update
-	if ( self.mostRecentCollectedCategoryID and self.mostRecentCollectedCategoryID ~= self.activeCategory ) then
-		local categoryID = self.mostRecentCollectedCategoryID;
-		local slot = WardrobeCollectionFrame_GetSlotFromCategoryID(categoryID);
-		WardrobeCollectionFrame_SetActiveSlot(slot, LE_TRANSMOG_TYPE_APPEARANCE, categoryID);
+	if ( self.jumpToLatestCategoryID and self.jumpToLatestCategoryID ~= self.activeCategory ) then
+		local slot = WardrobeCollectionFrame_GetSlotFromCategoryID(self.jumpToLatestCategoryID);
+		WardrobeCollectionFrame_SetActiveSlot(slot, LE_TRANSMOG_TYPE_APPEARANCE, self.jumpToLatestCategoryID);
+		self.jumpToLatestCategoryID = nil;
 	elseif ( self.activeSlot ) then
 		-- redo the model for the active slot
 		WardrobeCollectionFrame_ChangeModelsSlot(nil, self.activeSlot);
@@ -1055,10 +1049,9 @@ function WardrobeCollectionFrame_ResetPage()
 		if ( WardrobeCollectionFrame.jumpToVisualID ) then
 			selectedVisualID = WardrobeCollectionFrame.jumpToVisualID;
 			WardrobeCollectionFrame.jumpToVisualID = nil;
-		elseif ( WardrobeCollectionFrame.mostRecentCollectedVisualID ) then
-			selectedVisualID = WardrobeCollectionFrame.mostRecentCollectedVisualID;
-			WardrobeCollectionFrame.mostRecentCollectedVisualID = nil;
-			WardrobeCollectionFrame.mostRecentCollectedCategoryID = nil;
+		elseif ( WardrobeCollectionFrame.jumpToLatestAppearanceID ) then
+			selectedVisualID = WardrobeCollectionFrame.jumpToLatestAppearanceID;
+			WardrobeCollectionFrame.jumpToLatestAppearanceID = nil;
 		end
 	end
 	if ( selectedVisualID and selectedVisualID ~= NO_TRANSMOG_VISUAL_ID ) then
@@ -1264,7 +1257,7 @@ function WardrobeCollectionFrame_Update()
 				model.Border:SetAtlas("transmog-wardrobe-border-collected");
 			end
 
-			if ( WardrobeCollectionFrame.newTransmogs[visualInfo.visualID] ) then
+			if ( C_TransmogCollection.IsNewAppearance(visualInfo.visualID) ) then
 				model.NewString:Show();
 				model.NewGlow:Show();
 			else
@@ -1574,8 +1567,8 @@ function WardrobeCollectionFrameModel_OnEnter(self)
 		return;
 	end
 	self:SetScript("OnUpdate", WardrobeCollectionFrameModel_OnUpdate);
-	if ( WardrobeCollectionFrame.newTransmogs[self.visualInfo.visualID] ) then
-		WardrobeCollectionFrame.newTransmogs[self.visualInfo.visualID] = nil;
+	if ( C_TransmogCollection.IsNewAppearance(self.visualInfo.visualID) ) then
+		C_TransmogCollection.ClearNewAppearance(self.visualInfo.visualID);
 		self.NewString:Hide();
 		self.NewGlow:Hide();
 	end

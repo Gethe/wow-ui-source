@@ -112,7 +112,13 @@ function CinematicFrame_OnKeyDown(self, key)
 	if ( keybind == "TOGGLEGAMEMENU" ) then
 		if ( self.isRealCinematic and IsGMClient() ) then
 			StopCinematic();
-		elseif ( self.isRealCinematic or CanExitVehicle() or CanCancelScene() ) then	--If it's not a real cinematic, we can cancel it by leaving the vehicle.
+		elseif ( self.isRealCinematic ) then
+			self.closeDialog:Show();
+		elseif ( IsInCinematicScene() ) then
+			if ( CanCancelScene() ) then
+				self.closeDialog:Show();
+			end
+		elseif ( CanExitVehicle() ) then	--If it's not a real cinematic, we can cancel it by leaving the vehicle.
 			self.closeDialog:Show();
 		end
 	elseif ( keybind == "SCREENSHOT" or keybind == "TOGGLEMUSIC" or keybind == "TOGGLESOUND" ) then

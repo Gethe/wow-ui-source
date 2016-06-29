@@ -2586,8 +2586,13 @@ function AchievementFrame_SelectAchievement(id, forceSelect, isComparison)
 	AchievementFrameCategories_Update();
 	
 	local shown = false;
+	local found = false;
 	while ( not shown ) do
+		found = false;
 		for _, button in next, AchievementFrameCategoriesContainer.buttons do
+			if ( button.categoryID == category ) then
+				found = true;
+			end
 			if ( button.categoryID == category and math.ceil(button:GetBottom()) >= math.ceil(AchievementFrameAchievementsContainer:GetBottom())) then
 				shown = true;
 			end
@@ -2597,7 +2602,11 @@ function AchievementFrame_SelectAchievement(id, forceSelect, isComparison)
 			local _, maxVal = AchievementFrameCategoriesContainerScrollBar:GetMinMaxValues();
 			if ( AchievementFrameCategoriesContainerScrollBar:GetValue() == maxVal ) then
 				--assert(false)
-				return;
+				if ( not found ) then
+					return;
+				else
+					shown = true;
+				end
 			else
 				HybridScrollFrame_OnMouseWheel(AchievementFrameCategoriesContainer, -1);
 			end			

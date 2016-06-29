@@ -2,10 +2,18 @@
 ..\FrameXML\UI.xsd">
 	<Script file="WorldQuestDataProvider.lua"/>
 
-	<Frame name="WorldQuestPinTemplate" hidden="true" flattenRenderLayers="true" enableMouseMotion="true" mixin="WorldQuestPinMixin" virtual="true">
+	<Frame name="WorldQuestPinTemplate" hidden="true" flattenRenderLayers="true" frameStrata="HIGH" enableMouseMotion="true" mixin="WorldQuestPinMixin" virtual="true">
 		<Size x="50" y="50"/>
 
 		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-3">
+				<Texture parentKey="Glow" alphaMode="ADD" file="Interface/WorldMap/UI-QuestPoi-IconGlow">
+					<Size x="72" y="72" />
+					<Anchors>
+						<Anchor point="CENTER" />
+					</Anchors>
+				</Texture>
+			</Layer>
 			<Layer level="BACKGROUND" textureSubLevel="-2">
 				<Texture parentKey="Underlay">
 					<Size x="72" y="72" />
@@ -25,6 +33,13 @@
 				<Texture parentKey="Texture">
 					<Anchors>
 						<Anchor point="CENTER" />
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="SelectedGlow" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
 			</Layer>

@@ -239,6 +239,7 @@ function AuctionCategoryMixin:CreateNamedSubCategory(name)
 	assert(name and #name > 0);
 	subCategory.name = name;
 	subCategory.parent = self;
+	subCategory.sortIndex = #self.subCategories;
 	return subCategory;
 end
 
@@ -292,6 +293,18 @@ function AuctionCategoryMixin:FindSubCategoryByName(name)
 			end
 		end
 	end
+end
+
+function AuctionCategoryMixin:SortSubCategories()
+	if self.subCategories then
+		table.sort(self.subCategories, function(left, right)
+			return left.sortIndex < right.sortIndex;
+		end)
+	end
+end
+
+function AuctionCategoryMixin:SetSortIndex(sortIndex)
+	self.sortIndex = sortIndex
 end
 
 function AuctionCategoryMixin:SetFlag(flag)
@@ -423,7 +436,10 @@ do -- Recipes
 	local bookCategory = recipesCategory:FindSubCategoryByName(GetItemSubClassInfo(LE_ITEM_CLASS_RECIPE, LE_ITEM_RECIPE_BOOK));
 	if bookCategory then
 		bookCategory:SetDetailColumnString(SKILL_ABBR);
+		bookCategory:SetSortIndex(100);
 	end
+
+	recipesCategory:SortSubCategories();
 end
 
 do -- Battle Pets

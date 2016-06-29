@@ -1,5 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
+	<Script file="AlertFrameSystems.lua"/>
 	<Button name="DungeonCompletionAlertFrameRewardTemplate" virtual="true">
 		<Size x="36" y="36"/>
 		<Layers>
@@ -2391,8 +2392,13 @@
 		</Animations>
 		<Scripts>
 			<OnClick function="LegendaryItemAlertFrame_OnClick"/>
+			<OnEnter function="LegendaryItemAlertFrame_OnEnter"/>
+			<OnLeave function="LegendaryItemAlertFrame_OnLeave"/>
 		</Scripts>
 	</Button>
-	
-	<Script file="AlertFrameSystems.lua"/>
+	<Frame name="AlertFrameSystemsRegistrar" hidden="true">
+		<Scripts>
+			<OnLoad function="AlertFrameSystems_Register"/>
+		</Scripts>
+	</Frame>
 </Ui>

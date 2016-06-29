@@ -97,7 +97,12 @@ end
 function ArtifactPowerButtonMixin:PlayUnlockAnimation()
 	if self.isFinal then
 		self.FinalPowerUnlockedAnim:Stop();
-		self.FinalPowerUnlockedAnim:Play();
+		self.FinalPowerShownAnim:Stop();
+		if self.prereqsMet then
+			self.FinalPowerUnlockedAnim:Play();
+		else
+			self.FinalPowerShownAnim:Play();
+		end
 	elseif self.isGoldMedal then
 		self.GoldPowerUnlockedAnim:Play();
 	elseif not self.isStart then
@@ -327,6 +332,18 @@ function ArtifactPowerButtonMixin:IsStart()
 	return self.isStart;
 end
 
+function ArtifactPowerButtonMixin:IsFinal()
+	return self.isFinal;
+end
+
+function ArtifactPowerButtonMixin:IsGoldMedal()
+	return self.isGoldMedal;
+end
+
+function ArtifactPowerButtonMixin:IsCompletelyPurchased()
+	return self.isCompletelyPurchased;
+end
+
 function ArtifactPowerButtonMixin:SetLocked(locked)
 	self.locked = locked;
 	if locked then
@@ -398,10 +415,6 @@ function ArtifactPowerButtonMixin:SetupButton(powerID, anchorRegion)
 	if totalPurchasedRanks > 1 and wasJustUnlocked then
 		self:PlayUnlockAnimation();
 	end
-end
-
-function ArtifactPowerButtonMixin:ShouldBeVisible()
-	return not self.isFinal or self.prereqsMet;
 end
 
 function ArtifactPowerButtonMixin:EvaluateStyle()

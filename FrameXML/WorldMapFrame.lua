@@ -3341,6 +3341,26 @@ function WorldMapPOIButton_OnLeave(self)
 	WorldMapTooltip:Hide();
 end
 
+function WorldMap_HijackTooltip(owner)
+	WorldMapTooltip:SetParent(owner);
+	WorldMapTooltip:SetFrameStrata("TOOLTIP");
+
+	for i, tooltip in ipairs(WorldMapTooltip.ItemTooltip.Tooltip.shoppingTooltips) do
+		tooltip:SetParent(owner);
+		tooltip:SetFrameStrata("TOOLTIP");
+	end
+end
+
+function WorldMap_RestoreTooltip()
+	for i, tooltip in ipairs(WorldMapTooltip.ItemTooltip.Tooltip.shoppingTooltips) do
+		tooltip:SetParent(WorldMapFrame);
+		tooltip:SetFrameStrata("TOOLTIP");
+	end
+
+	WorldMapTooltip:SetParent(WorldMapFrame);
+	WorldMapTooltip:SetFrameStrata("TOOLTIP");
+end
+
 -- *****************************************************************************************************
 -- ***** ENCOUNTER JOURNAL STUFF
 -- *****************************************************************************************************

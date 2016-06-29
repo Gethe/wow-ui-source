@@ -368,35 +368,38 @@ function NameplateBuffContainerMixin:UpdateBuffs(unit, filter)
 	self.unit = unit;
 	self.filter = filter;
 	self:UpdateAnchor();
-	for i = 1, BUFF_MAX_DISPLAY do
-		if (filter == "NONE" and self.buffList[i]) then
-			self.buffList[i]:Hide();
-			return;
+
+	if filter == "NONE" then
+		for i, buff in ipairs(self.buffList) do
+			buff:Hide();
 		end
-		local name, rank, texture, count, debuffType, duration, expirationTime, caster, _, nameplateShowPersonal, spellId, _, _, _, nameplateShowAll = UnitAura(unit, i, filter);
-		if (self:ShouldShowBuff(name, caster, nameplateShowPersonal, nameplateShowAll, duration)) then
-			if (not self.buffList[i]) then
-				self.buffList[i] = CreateFrame("Frame", self:GetParent():GetName() .. "Buff" .. i, self, "NameplateBuffButtonTemplate");
-				self.buffList[i]:SetMouseClickEnabled(false);
-			end
-			local buff = self.buffList[i];
-			buff:SetID(i);
-			buff.name = name;
-			buff.layoutIndex = i;
-			buff.Icon:SetTexture(texture);
-			if (count > 1) then
-				buff.CountFrame.Count:SetText(count);
-				buff.CountFrame.Count:Show();
+	else
+		for i = 1, BUFF_MAX_DISPLAY do
+			local name, rank, texture, count, debuffType, duration, expirationTime, caster, _, nameplateShowPersonal, spellId, _, _, _, nameplateShowAll = UnitAura(unit, i, filter);
+			if (self:ShouldShowBuff(name, caster, nameplateShowPersonal, nameplateShowAll, duration)) then
+				if (not self.buffList[i]) then
+					self.buffList[i] = CreateFrame("Frame", self:GetParent():GetName() .. "Buff" .. i, self, "NameplateBuffButtonTemplate");
+					self.buffList[i]:SetMouseClickEnabled(false);
+				end
+				local buff = self.buffList[i];
+				buff:SetID(i);
+				buff.name = name;
+				buff.layoutIndex = i;
+				buff.Icon:SetTexture(texture);
+				if (count > 1) then
+					buff.CountFrame.Count:SetText(count);
+					buff.CountFrame.Count:Show();
+				else
+					buff.CountFrame.Count:Hide();
+				end
+			
+				CooldownFrame_Set(buff.Cooldown, expirationTime - duration, duration, duration > 0, true);
+			
+				buff:Show();
 			else
-				buff.CountFrame.Count:Hide();
-			end
-			
-			CooldownFrame_Set(buff.Cooldown, expirationTime - duration, duration, duration > 0, true);
-			
-			buff:Show();
-		else
-			if (self.buffList[i]) then
-				self.buffList[i]:Hide();
+				if self.buffList[i] then
+					self.buffList[i]:Hide();
+				end
 			end
 		end
 	end
