@@ -844,7 +844,7 @@ function UnitFrameManaBar_OnUpdate(self)
 				if ( self.FeedbackFrame ) then
 					-- Only show anim if change is more than 10%
 					local oldValue = self.currValue or 0;
-					if ( math.abs(currValue - oldValue) / self.FeedbackFrame.maxValue > 0.1 ) then
+					if ( self.FeedbackFrame.maxValue ~= 0 and math.abs(currValue - oldValue) / self.FeedbackFrame.maxValue > 0.1 ) then
 						self.FeedbackFrame:StartFeedbackAnim(oldValue, currValue);
 					end
 				end

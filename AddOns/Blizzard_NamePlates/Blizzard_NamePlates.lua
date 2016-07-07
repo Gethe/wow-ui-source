@@ -55,10 +55,10 @@ end
 function NamePlateDriverMixin:OnNamePlateAdded(namePlateUnitToken)
 	local namePlateFrameBase = C_NamePlate.GetNamePlateForUnit(namePlateUnitToken);
 	self:ApplyFrameOptions(namePlateFrameBase, namePlateUnitToken);
-	
+
 	namePlateFrameBase:OnAdded(namePlateUnitToken, self);
 	self:SetupClassNameplateBars();
-	
+
 	self:OnUnitAuraUpdate(namePlateUnitToken);
 	self:OnRaidTargetUpdate();
 end
@@ -105,7 +105,7 @@ function NamePlateDriverMixin:OnUnitAuraUpdate(unit)
 		nameplate.UnitFrame.BuffFrame:UpdateBuffs(nameplate.namePlateUnitToken, filter);
 	end
 end
-		
+
 function NamePlateDriverMixin:OnRaidTargetUpdate()
 	for _, frame in pairs(C_NamePlate.GetNamePlates()) do
 		local icon = frame.UnitFrame.RaidTargetFrame.RaidTargetIcon;
@@ -117,7 +117,7 @@ function NamePlateDriverMixin:OnRaidTargetUpdate()
 			icon:Hide();
 		end
 	end
-	
+
 end
 
 function NamePlateDriverMixin:OnUnitFactionChanged(unit)
@@ -132,14 +132,14 @@ function NamePlateDriverMixin:SetupClassNameplateBar(onTarget, bar)
 	if (not bar) then
 		return;
 	end
-	
+
 	bar:Hide();
-	
+
 	local showSelf = GetCVar("nameplateShowSelf");
 	if (showSelf == "0") then
 		return;
 	end
-	
+
 	if (onTarget and NamePlateTargetResourceFrame) then
 		local namePlateTarget = C_NamePlate.GetNamePlateForUnit("target");
 		if (namePlateTarget) then
@@ -251,7 +251,7 @@ function NamePlateDriverMixin:UpdateNamePlateOptions()
 		CompactUnitFrame_UpdateAll(frame.UnitFrame);
 	end
 
-	
+
 	if self.nameplateBar then
 		self.nameplateBar:OnOptionsUpdated();
 	end
@@ -266,7 +266,7 @@ NamePlateBaseMixin = {};
 function NamePlateBaseMixin:OnAdded(namePlateUnitToken, driverFrame)
 	self.namePlateUnitToken = namePlateUnitToken;
 	self.driverFrame = driverFrame;
-	
+
 	CompactUnitFrame_SetUnit(self.UnitFrame, namePlateUnitToken);
 
 	self:ApplyOffsets();
@@ -360,7 +360,7 @@ function NameplateBuffContainerMixin:ShouldShowBuff(name, caster, nameplateShowP
 	if (not name) then
 		return false;
 	end
-	return nameplateShowAll or 
+	return nameplateShowAll or
 		   (nameplateShowPersonal and (caster == "player" or caster == "pet" or caster == "vehicle"));
 end
 
@@ -368,6 +368,10 @@ function NameplateBuffContainerMixin:UpdateBuffs(unit, filter)
 	self.unit = unit;
 	self.filter = filter;
 	self:UpdateAnchor();
+
+	if not unit or string.find(unit, "nameplate") == nil then
+		GMError("NameplateBuffContainerMixin updating buffs for unit["..tostring(unit).."] instead of a nameplate unit");
+	end
 
 	if filter == "NONE" then
 		for i, buff in ipairs(self.buffList) do
@@ -392,9 +396,9 @@ function NameplateBuffContainerMixin:UpdateBuffs(unit, filter)
 				else
 					buff.CountFrame.Count:Hide();
 				end
-			
+
 				CooldownFrame_Set(buff.Cooldown, expirationTime - duration, duration, duration > 0, true);
-			
+
 				buff:Show();
 			else
 				if self.buffList[i] then

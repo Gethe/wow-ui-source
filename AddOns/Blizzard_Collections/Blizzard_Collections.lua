@@ -36,13 +36,7 @@ local function ShouldShowWardrobeTabHelpTip()
 end
 
 function CollectionsJournal_ValidateTab(tabNum)
-	if (not IsKioskModeEnabled()) then
-		return true;
-	end
-
-	if (tabNum ~= 1) then
-		return false;
-	end
+	return true;
 end
 
 function CollectionsJournal_UpdateSelectedTab(self)

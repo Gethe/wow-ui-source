@@ -906,17 +906,7 @@ end
 
 function InterfaceOptionsSocialPanelChatStyle_SetChatStyle(chatStyle)
 	SetCVar("chatStyle", chatStyle, "chatStyle");
-	
-	if ( chatStyle == "classic" ) then
-		DEFAULT_CHAT_FRAME.editBox:SetParent(UIParent);
-		InterfaceOptionsSocialPanelWholeChatWindowClickable:Hide();
-	elseif ( chatStyle == "im" ) then
-		DEFAULT_CHAT_FRAME.editBox:SetParent(DEFAULT_CHAT_FRAME);
-		InterfaceOptionsSocialPanelWholeChatWindowClickable:Show();
-	else
-		error("Unhandled chat style: "..tostring(chatStyle));
-	end
-	
+
 	for _, frameName in pairs(CHAT_FRAMES) do
 		local frame = _G[frameName];
 		ChatEdit_DeactivateChat(frame.editBox);

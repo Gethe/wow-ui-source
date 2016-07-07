@@ -1369,7 +1369,7 @@ function PlayerTalentFrame_UpdateSpecFrame(self, spec)
 		self.learnButton.Flash:Hide();
 		self.learnButton.FlashAnim:Stop();
 	--elseif ( playerTalentSpec or disable or UnitLevel("player") < SHOW_SPEC_LEVEL ) then
-    elseif(disableLearnButton or UnitLevel("player") < SHOW_SPEC_LEVEL or IsKioskModeEnabled()) then
+    elseif(disableLearnButton or UnitLevel("player") < SHOW_SPEC_LEVEL) then
 		self.learnButton:Disable();
 		self.learnButton.Flash:Hide();
 		self.learnButton.FlashAnim:Stop();

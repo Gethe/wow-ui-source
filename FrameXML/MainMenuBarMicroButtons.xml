@@ -178,11 +178,6 @@
 	            self:RegisterEvent("PLAYER_PVP_TALENT_UPDATE");
 				self:RegisterEvent("PLAYER_CHARACTER_UPGRADE_TALENT_COUNT_CHANGED");
 			</OnLoad>
-			<OnShow>
-				if (IsKioskModeEnabled() and select(2, UnitClass("player") ~= "DEMONHUNTER")) then
-					self:Disable();
-				end
-			</OnShow>
 			<OnClick function="TalentMicroButton_OnClick"/>
 			<OnEvent function="TalentMicroButton_OnEvent"/>
 		</Scripts>

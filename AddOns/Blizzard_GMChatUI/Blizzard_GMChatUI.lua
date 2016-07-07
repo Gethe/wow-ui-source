@@ -20,26 +20,25 @@ function GMChatFrame_OnLoad(self)
 		end
 		object:SetAlpha(0.6);
 	end
-	
+
 	self:RegisterEvent("CHAT_MSG_WHISPER");
 	self:RegisterEvent("CHAT_MSG_WHISPER_INFORM");
 	self:RegisterEvent("UPDATE_CHAT_COLOR");
 	self:RegisterEvent("UPDATE_CHAT_WINDOWS");
 	self.flashTimer = 0;
 	self.lastGM = {};
-	
+
 	GMChatOpenLog:Enable();
-	
+
 	self:SetClampRectInsets(-35, 0, 30, 0);
-	
+
 	self:SetFont(DEFAULT_CHAT_FRAME:GetFont());
 	FCF_SetButtonSide(self, "left", true);
 	self.buttonFrame:SetAlpha(1);
 	self.buttonFrame.minimizeButton:Hide();
-	
+
 	self.editBox:SetPoint("TOPRIGHT", self, "BOTTOMRIGHT", 8, -2);
 	self.editBox:SetPoint("TOPLEFT", self, "BOTTOMLEFT", -43, -2);
-	self.editBox:Show();
 	self.editBox.isGM = true;
 	ChatEdit_DeactivateChat(self.editBox);
 end
@@ -48,9 +47,9 @@ function GMChatFrame_OnEvent(self, event, ...)
 	local arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11 = ...;
 	if ( event == "CHAT_MSG_WHISPER" and arg6 == "GM" ) then
 		local info = ChatTypeInfo["WHISPER"];
-		
+
 		local pflag = "|TInterface\\ChatFrame\\UI-ChatIcon-Blizz:12:20:0:0:32:16:4:26:0:16|t ";
-		
+
 		-- Search for icon links and replace them with texture links.
 		local term;
 		for tag in string.gmatch(arg1, "%b{}") do
@@ -59,23 +58,23 @@ function GMChatFrame_OnEvent(self, event, ...)
 				arg1 = string.gsub(arg1, tag, ICON_LIST[ICON_TAG_LIST[term]] .. "0|t");
 			end
 		end
-		
+
 		local body = format(CHAT_WHISPER_GET, pflag.."|HplayerGM:"..arg2..":"..arg11.."|h".."["..arg2.."]".."|h")..arg1;
-		
+
 		ListOfGMs[strlower(arg2)] = true;
 		self:AddMessage(body, info.r, info.g, info.b, info.id);
-		
+
 		if ( self.lastGMForCVar ~= arg2 and GMChatFrame:IsShown() ) then
 			SetCVar("lastTalkedToGM", arg2);
 		end
 		self.lastGMForCVar = arg2;
-		
+
 		if ( not GMChatFrame:IsShown() ) then
 			GMChatStatusFrame:Show();
 			GMChatStatusFrame.pulse:Play();
 			table.insert(self.lastGM,arg2);
 			PlaySound("GM_ChatWarning");
-			
+
 			DEFAULT_CHAT_FRAME:AddMessage(pflag.."|HGMChat|h["..GM_CHAT_STATUS_READY_DESCRIPTION.."]|h", info.r, info.g, info.b, info.id);
 			DEFAULT_CHAT_FRAME:SetHyperlinksEnabled(true);
 			DEFAULT_CHAT_FRAME.overrideHyperlinksEnabled = true;
@@ -86,9 +85,9 @@ function GMChatFrame_OnEvent(self, event, ...)
 		end
 	elseif ( event == "CHAT_MSG_WHISPER_INFORM" and GMChatFrame_IsGM(arg2) ) then
 		local info = ChatTypeInfo["WHISPER_INFORM"];
-		
+
 		local pflag = "|TInterface\\ChatFrame\\UI-ChatIcon-Blizz:12:20:0:0:32:16:4:28:0:16|t ";
-		
+
 		-- Search for icon links and replace them with texture links.
 		local term;
 		for tag in string.gmatch(arg1, "%b{}") do
@@ -97,9 +96,9 @@ function GMChatFrame_OnEvent(self, event, ...)
 				arg1 = string.gsub(arg1, tag, ICON_LIST[ICON_TAG_LIST[term]] .. "0|t");
 			end
 		end
-		
+
 		local body = format(CHAT_WHISPER_INFORM_GET, pflag.."|HplayerGM:"..arg2..":"..arg11.."|h".."["..arg2.."]".."|h")..arg1;
-		
+
 		self:AddMessage(body, info.r, info.g, info.b, info.id);
 	elseif ( event == "UPDATE_CHAT_COLOR" ) then
 		local arg1, arg2, arg3, arg4 = ...
@@ -141,16 +140,22 @@ function GMChatFrame_OnShow(self)
 		GMChatFrameEditBox:SetAttribute("tellTarget", self.lastGMForCVar);
 		GMChatFrameEditBox:SetAttribute("chatType", "WHISPER");
 	end
-	
+
 	MicroButtonPulseStop(HelpMicroButton);	--Stop the buttons from pulsing.
 	SetButtonPulse(GMChatOpenLog, 0, 1);
-	
+
 	self:SetScript("OnUpdate", GMChatFrame_OnUpdate);
+	self.editBox:Show();
 end
 
 function GMChatFrame_OnHide(self)
 	GMChatOpenLog:Enable();
 	SetCVar("lastTalkedToGM", "");
+	self.editBox:Hide();
+
+	if ( ChatEdit_GetLastActiveWindow() == self.editBox ) then
+		ChatEdit_SetLastActiveWindow(nil);
+	end
 end
 
 function GMChatFrame_OnUpdate(self, elapsed)
@@ -158,7 +163,7 @@ function GMChatFrame_OnUpdate(self, elapsed)
 		DEFAULT_CHAT_FRAME:SetHyperlinksEnabled(false);
 	end
 	DEFAULT_CHAT_FRAME.overrideHyperlinksEnabled = false;
-	
+
 	self:SetScript("OnUpdate", nil);
 end
 

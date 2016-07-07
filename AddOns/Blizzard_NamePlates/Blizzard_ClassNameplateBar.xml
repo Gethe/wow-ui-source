@@ -28,12 +28,7 @@
 		</Layers>
 		<Frames>
 			<Frame parentKey="Border" inherits="NamePlateSecondaryBarBorderTemplate" />
-			<Frame parentKey="FeedbackFrame" setAllPoints="true" useParentLevel="true" inherits="BuilderSpenderFrame">
-				<Size x="86" y="2"/>
-				<Anchors>
-					<Anchor point="TOPLEFT" x="0" y="-1"/>
-				</Anchors>
-			</Frame>
+			<Frame parentKey="FeedbackFrame" setAllPoints="true" useParentLevel="true" inherits="BuilderSpenderFrame" />
 			<Frame parentKey="FullPowerFrame" inherits="FullResourcePulseFrame">
 				<Size x="86" y="6"/>
 				<Anchors>

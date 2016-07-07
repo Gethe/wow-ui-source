@@ -509,8 +509,10 @@ function QuestLogQuests_Update(poiTable)
 				button:SetHighlightTexture("Interface\\Buttons\\UI-PlusButton-Hilight");
 				if ( headerTitle ) then
 					button:SetText(headerTitle);
+					button:SetHitRectInsets(0, -button.ButtonText:GetWidth(), 0, 0);
 				else
 					button:SetText("");
+					button:SetHitRectInsets(0, 0, 0, 0);
 				end
 				button:ClearAllPoints();
 				if ( prevButton ) then

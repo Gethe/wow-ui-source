@@ -1,35 +1,36 @@
 -- This table cannot override hard Kiosk Mode locks (i.e. Death Knights being disabled), this is merely to lock down character create based on which creation mode was chosen.
 local kioskModeData = {
-	["demonhunter"] = {
+	["highlevel"] = {
 		["races"] = {
-			["HUMAN"] = false,
-			["DWARF"] = false,
+			["HUMAN"] = true,
+			["DWARF"] = true,
 			["NIGHTELF"] = true,
-			["GNOME"] = false,
-			["DRAENEI"] = false,
-			["WORGEN"] = false,
-			["PANDAREN"] = false,
-			["ORC"] = false,
-			["SCOURGE"] = false,
-			["TAUREN"] = false,
-			["TROLL"] = false,
+			["GNOME"] = true,
+			["DRAENEI"] = true,
+			["WORGEN"] = true,
+			["PANDAREN"] = true,
+			["ORC"] = true,
+			["SCOURGE"] = true,
+			["TAUREN"] = true,
+			["TROLL"] = true,
 			["BLOODELF"] = true,
-			["GOBLIN"] = false,
+			["GOBLIN"] = true,
 		},
 		["classes"] = {
-			["WARRIOR"] = false,
-			["PALADIN"] = false,
-			["HUNTER"] = false,
-			["ROGUE"] = false,
-			["PRIEST"] = false,
-			["SHAMAN"] = false,
-			["MAGE"] = false,
-			["WARLOCK"] = false,
-			["MONK"] = false,
-			["DRUID"] = false,
+			["WARRIOR"] = true,
+			["PALADIN"] = true,
+			["HUNTER"] = true,
+			["ROGUE"] = true,
+			["PRIEST"] = true,
+			["SHAMAN"] = true,
+			["MAGE"] = true,
+			["WARLOCK"] = true,
+			["MONK"] = true,
+			["DRUID"] = true,
 			["DEMONHUNTER"] = true,
-			["DEATHKNIGHT"] = false,
+			["DEATHKNIGHT"] = true,
 		},
+		["template"] = { ["enabled"] = true, ["index"] = 1, ["ignoreClasses"] = { "DEMONHUNTER" } },
 	},
 	["newcharacter"] = {
 		["races"] = {
@@ -102,7 +103,7 @@ end
 function KioskModeSplashChoice_OnClick(self, button, down)
 	PlaySound("igMainMenuOptionCheckBoxOn");
 	if (self:GetID() == 1) then
-		KioskModeSplash_SetMode("demonhunter");
+		KioskModeSplash_SetMode("highlevel");
 	else
 		KioskModeSplash_SetMode("newcharacter");
 	end

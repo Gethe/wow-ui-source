@@ -152,6 +152,15 @@ function GarrisonCapacitiveDisplayFrame_Update(self, success, maxShipments, owne
             self.CreateAllWorkOrdersButton:SetText(CREATE_ALL);
         end
 
+		-- Resize buttons to distribute space around text evenly
+		local button1TextWidth = self.CreateAllWorkOrdersButton.Text:GetWidth();
+		local button2TextWidth = self.StartWorkOrderButton.Text:GetWidth();
+		local buttonDiffOverTwo = (button1TextWidth - button2TextWidth) / 2;
+		local averageButtonWidth = 240 / 2;
+
+		self.CreateAllWorkOrdersButton:SetWidth(averageButtonWidth + buttonDiffOverTwo);
+		self.StartWorkOrderButton:SetWidth(averageButtonWidth - buttonDiffOverTwo);
+
 		if (not quality) then
 			quality = LE_ITEM_QUALITY_COMMON;
 		end

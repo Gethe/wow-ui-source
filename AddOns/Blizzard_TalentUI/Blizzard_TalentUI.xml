@@ -1556,6 +1556,19 @@
                             <OnLeave function="GameTooltip_Hide"/>
                         </Scripts>
                     </Frame>
+					<Button name="$parentCloseButton" inherits="UIPanelCloseButton" parentKey="CloseButton">
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT">
+								<Offset x="4" y="5"/>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								PlaySound("UI_PVP_Honor_Prestige_WindowClose");
+								self:GetParent():Hide();
+							</OnClick>
+						</Scripts>
+					</Button>
 					<Button parentKey="Accept" inherits="UIPanelButtonTemplate" text="PVP_PRESTIGE_RANK_UP_ACCEPT">
 						<Size x="126" y="22"/>
 						<Anchors>
@@ -1563,6 +1576,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
+								PlaySound("UI_PVP_Honor_Prestige_RankUP");
 								HideUIPanel(PlayerTalentFrame);
 								self:GetParent():Hide();
 								Prestige();
@@ -1576,6 +1590,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
+								PlaySound("UI_PVP_Honor_Prestige_WindowClose");
 								self:GetParent():Hide();
 							</OnClick>
 						</Scripts>

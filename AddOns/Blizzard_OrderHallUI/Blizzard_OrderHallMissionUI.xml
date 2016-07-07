@@ -727,18 +727,19 @@
 						</Anchors>
 						<Layers>
 							<Layer level="OVERLAY">
-								<Texture parentKey="BonusGlow" hidden="false" alpha="0" alphaMode="ADD" atlas="BonusChest-BonusTextGlow" useAtlasSize="true">
+								<Texture parentKey="BonusGlow" alpha="0" alphaMode="ADD" atlas="BonusChest-BonusTextGlow" useAtlasSize="true">
 									<Anchors>
 										<Anchor point="CENTER"/>
 									</Anchors>
 								</Texture>
 							</Layer>
 							<Layer level="OVERLAY" textureSubLevel="1">
-								<Texture parentKey="BonusText" hidden="false" alpha="0" alphaMode="BLEND" atlas="temp-bonustext" useAtlasSize="true">
+								<FontString parentKey="BonusText" inherits="Game48FontShadow" text="GARRISON_MISSION_BONUS_REWARD_MOMENT">
+									<Color r="0.12" g="1.0" b="0.0"/>
 									<Anchors>
 										<Anchor point="CENTER"/>
 									</Anchors>
-								</Texture>
+								</FontString>
 							</Layer>
 						</Layers>
 						<Animations>

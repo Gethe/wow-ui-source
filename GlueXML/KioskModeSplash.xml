@@ -33,7 +33,7 @@
 					</Layer>
 					<Layer level="ARTWORK" textureSubLevel="1">
 						<Texture parentKey="Button" atlas="LegionSplash-DemonHunterButton">
-							<Size x="226" y="36"/>
+							<Size x="315" y="44"/>
 							<Anchors>
 								<Anchor point="CENTER" x="4" y="-123"/>
 							</Anchors>
@@ -42,8 +42,8 @@
 					<Layer level="OVERLAY">
 						<Texture parentKey="Highlight" alpha="0.2" hidden="true">
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.Button" x="4" y="-4"/>
-								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Button" x="-4" y="4"/>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Button" x="10" y="-10"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Button" x="-10" y="10"/>
 							</Anchors>
 							<Color r="1" g="1" b="1"/>
 						</Texture>
@@ -75,7 +75,7 @@
 					</Layer>
 					<Layer level="ARTWORK" textureSubLevel="1">
 						<Texture parentKey="Button" atlas="LegionSplash-NewCharacterButton">
-							<Size x="269" y="36"/>
+							<Size x="290" y="44"/>
 							<Anchors>
 								<Anchor point="CENTER" x="-2" y="-48"/>
 							</Anchors>
@@ -84,8 +84,8 @@
 					<Layer level="OVERLAY">
 						<Texture parentKey="Highlight" alpha="0.2" hidden="true">
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.Button" x="4" y="-4"/>
-								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Button" x="-4" y="4"/>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Button" x="10" y="-10"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Button" x="-10" y="10"/>
 							</Anchors>
 							<Color r="1" g="1" b="1"/>
 						</Texture>
