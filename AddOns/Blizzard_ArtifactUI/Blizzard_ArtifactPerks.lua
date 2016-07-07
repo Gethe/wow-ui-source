@@ -87,8 +87,12 @@ function ArtifactPerksMixin:RefreshPowers(newItem)
 	end
 
 	self.startingPowerButton = nil;
+	self.finalPowerButton = nil;
 
 	local powers = C_ArtifactUI.GetPowers();
+
+	-- Determine if all Gold Medal traits are fully purchased to determine when the final power should be shown
+	local areAllGoldMedalsPurchased = true;
 	for i, powerID in ipairs(powers) do
 		local powerButton = self.powerIDToPowerButton[powerID];
 
@@ -105,9 +109,27 @@ function ArtifactPerksMixin:RefreshPowers(newItem)
 
 		if powerButton:IsStart() then
 			self.startingPowerButton = powerButton;
+		elseif powerButton:IsFinal() then
+			self.finalPowerButton = powerButton;
+		elseif powerButton:IsGoldMedal() then
+			if not powerButton:IsCompletelyPurchased() then
+				areAllGoldMedalsPurchased = false;
+			end
 		end
 
-		powerButton:SetShown(powerButton:ShouldBeVisible());
+		powerButton:Show();
+	end
+
+	if self.finalPowerButton then
+		if areAllGoldMedalsPurchased then
+			if self.wasFinalPowerButtonUnlocked == false then
+				self.wasFinalPowerButtonUnlocked = true;
+				self.finalPowerButton:PlayUnlockAnimation();
+			end
+		else
+			self.finalPowerButton:Hide();
+			self.wasFinalPowerButtonUnlocked = false;
+		end
 	end
 
 	self:HideUnusedWidgets(self.PowerButtons, #powers);
@@ -162,6 +184,7 @@ function ArtifactPerksMixin:TryRefresh()
 		local hasBoughtAnyPowers = C_ArtifactUI.GetTotalPurchasedRanks() > 0;
 		if self.newItem then
 			self.hasBoughtAnyPowers = hasBoughtAnyPowers;
+			self.wasFinalPowerButtonUnlocked = nil;
 		elseif self.hasBoughtAnyPowers ~= hasBoughtAnyPowers then
 			self:HideAllLines();
 
@@ -468,7 +491,7 @@ function ArtifactPerksMixin:PlayReveal()
 		QueueReveal(self, self.startingPowerButton, 0);
 
 		for powerID, powerButton in pairs(self.powerIDToPowerButton) do
-			if powerButton:ShouldBeVisible() and powerButton:PlayRevealAnimation(OnRevealFinished) then
+			if powerButton:IsShown() and powerButton:PlayRevealAnimation(OnRevealFinished) then
 				powerButton:SetLocked(true);
 				self.numRevealsPlaying = self.numRevealsPlaying + 1;
 			end

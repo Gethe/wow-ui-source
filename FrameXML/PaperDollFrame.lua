@@ -1057,7 +1057,7 @@ function PaperDollFrame_SetHaste(statFrame, unit)
 	if (haste < 0) then
 		hasteFormatString = RED_FONT_COLOR_CODE.."%s"..FONT_COLOR_CODE_CLOSE;
 	else
-		hasteFormatString = "+%s";
+		hasteFormatString = "%s";
 	end
 
 	PaperDollFrame_SetLabelAndText(statFrame, STAT_HASTE, format(hasteFormatString, format("%d%%", haste + 0.5)), false, haste);

@@ -1,3 +1,21 @@
+function AlertFrameSystems_Register()
+	GuildChallengeAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem(GuildChallengeAlertFrame, GuildChallengeAlertFrame_SetUp);
+	DungeonCompletionAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem(DungeonCompletionAlertFrame, DungeonCompletionAlertFrame_SetUp);
+	ScenarioAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem(ScenarioAlertFrame, ScenarioAlertFrame_SetUp);
+	InvasionAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem(ScenarioLegionInvasionAlertFrame, ScenarioLegionInvasionAlertFrame_SetUp, ScenarioLegionInvasionAlertFrame_Coalesce);
+	DigsiteCompleteAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem(DigsiteCompleteToastFrame, DigsiteCompleteToastFrame_SetUp);
+	StorePurchaseAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem(StorePurchaseAlertFrame, StorePurchaseAlertFrame_SetUp);
+	GarrisonBuildingAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem(GarrisonBuildingAlertFrame, GarrisonBuildingAlertFrame_SetUp);
+	GarrisonMissionAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem(GarrisonMissionAlertFrame, GarrisonMissionAlertFrame_SetUp);
+	GarrisonShipMissionAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem(GarrisonShipMissionAlertFrame, GarrisonMissionAlertFrame_SetUp);
+	GarrisonRandomMissionAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem(GarrisonRandomMissionAlertFrame, GarrisonRandomMissionAlertFrame_SetUp);
+	GarrisonFollowerAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem(GarrisonFollowerAlertFrame, GarrisonFollowerAlertFrame_SetUp);
+	GarrisonShipFollowerAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem(GarrisonShipFollowerAlertFrame, GarrisonShipFollowerAlertFrame_SetUp);
+	GarrisonTalentAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem(GarrisonTalentAlertFrame, GarrisonTalentAlertFrame_SetUp);
+	WorldQuestCompleteAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem(WorldQuestCompleteAlertFrame, WorldQuestCompleteAlertFrame_SetUp, WorldQuestCompleteAlertFrame_Coalesce);
+	LegendaryItemAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem(LegendaryItemAlertFrame, LegendaryItemAlertFrame_SetUp);
+end
+
 -- [[ GuildChallengeAlertFrame ]] --
 function GuildChallengeAlertFrame_SetUp(frame, challengeType, count, max)
 	GuildChallengeAlertFrameType:SetText(_G["GUILD_CHALLENGE_TYPE"..challengeType]);
@@ -16,7 +34,6 @@ function GuildChallengeAlertFrame_OnClick(self, button, down)
 	GuildFrame_TabClicked(GuildFrameTab5);
 end
 
-GuildChallengeAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem(GuildChallengeAlertFrame, GuildChallengeAlertFrame_SetUp);
 
 -- [[ DungeonCompletionAlertFrame ]] --
 function DungeonCompletionAlertFrame_OnLoad(self)
@@ -134,8 +151,6 @@ function DungeonCompletionAlertFrameReward_OnLeave(frame)
 	GameTooltip:Hide();
 end
 
-DungeonCompletionAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem(DungeonCompletionAlertFrame, DungeonCompletionAlertFrame_SetUp);
-
 -- [[ ScenarioAlertFrame ]] --
 SCENARIO_MAX_REWARDS = 1;
 function ScenarioAlertFrame_SetUp(frame)
@@ -194,8 +209,6 @@ function ScenarioAlertFrame_SetUp(frame)
 	frame.dungeonName:SetText(name);
 	frame.dungeonTexture:SetTexture("Interface\\LFGFrame\\LFGIcon-"..textureFilename);
 end
-
-ScenarioAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem(ScenarioAlertFrame, ScenarioAlertFrame_SetUp);
 
 function StandardRewardAlertFrame_AdjustRewardAnchors(frame)
 	if frame.RewardFrames then
@@ -290,8 +303,6 @@ function ScenarioLegionInvasionAlertFrame_Coalesce(frame, questID, rewardItemLin
 
 	return ALERT_FRAME_COALESCE_STOP;
 end
-
-InvasionAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem(ScenarioLegionInvasionAlertFrame, ScenarioLegionInvasionAlertFrame_SetUp, ScenarioLegionInvasionAlertFrame_Coalesce);
 
 -- [[ AchievementAlertFrame ]] --
 function AchievementAlertFrame_SetUp(frame, achievementID, alreadyEarned)
@@ -667,8 +678,6 @@ function DigsiteCompleteToastFrame_SetUp(frame, researchBranchID)
 	PlaySound("UI_DigsiteCompletion_Toast");
 end
 
-DigsiteCompleteAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem(DigsiteCompleteToastFrame, DigsiteCompleteToastFrame_SetUp);
-
 -- [[ StorePurchaseAlertFrame ]] --
 function StorePurchaseAlertFrame_SetUp(frame, icon, name, itemID)
 	frame.Icon:SetTexture(icon);
@@ -691,15 +700,11 @@ function StorePurchaseAlertFrame_OnClick(self, button, down)
 	end
 end
 
-StorePurchaseAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem(StorePurchaseAlertFrame, StorePurchaseAlertFrame_SetUp);
-
 -- [[ GarrisonBuildingAlertFrame ]] --
 function GarrisonBuildingAlertFrame_SetUp(frame, name)
 	frame.Name:SetFormattedText(GARRISON_BUILDING_COMPLETE_TOAST, name);
 	PlaySound("UI_Garrison_Toast_BuildingComplete");
 end
-
-GarrisonBuildingAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem(GarrisonBuildingAlertFrame, GarrisonBuildingAlertFrame_SetUp);
 
 -- [[ GarrisonMissionAlertFrame ]] --
 function GarrisonMissionAlertFrame_SetUp(frame, missionID)
@@ -717,9 +722,6 @@ function GarrisonMissionAlertFrame_SetUp(frame, missionID)
 
 	PlaySound("UI_Garrison_Toast_MissionComplete");
 end
-
-GarrisonMissionAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem(GarrisonMissionAlertFrame, GarrisonMissionAlertFrame_SetUp);
-GarrisonShipMissionAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem(GarrisonShipMissionAlertFrame, GarrisonMissionAlertFrame_SetUp);
 
 -- [[ GarrisonRandomMissionAlertFrame ]] --
 function GarrisonRandomMissionAlertFrame_SetUp(frame, missionID)
@@ -744,8 +746,6 @@ function GarrisonRandomMissionAlertFrame_SetUp(frame, missionID)
 	frame.Rare:SetShown(missionInfo.isRare);
 	PlaySound("UI_Garrison_Toast_MissionComplete");
 end
-
-GarrisonRandomMissionAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem(GarrisonRandomMissionAlertFrame, GarrisonRandomMissionAlertFrame_SetUp);
 
 -- [[ GarrisonFollowerAlertFrame ]] --
 GARRISON_FOLLOWER_QUALITY_TEXTURE_SUFFIXES = {
@@ -805,6 +805,7 @@ function GarrisonFollowerAlertFrame_SetUp(frame, followerID, name, level, qualit
 end
 
 function GarrisonShipFollowerAlertFrame_SetUp(frame, followerID, name, class, texPrefix, level, quality, isUpgraded)
+	frame.followerInfo = C_Garrison.GetFollowerInfo(followerID);
 	local mapAtlas = texPrefix .. "-List";
 	frame.Portrait:SetAtlas(mapAtlas, false);
 	local color = ITEM_QUALITY_COLORS[quality];
@@ -847,9 +848,6 @@ function GarrisonFollowerAlertFrame_OnClick(self, button, down)
 	ShowGarrisonLandingPage(GarrisonFollowerOptions[self.followerInfo.followerTypeID].garrisonType);
 end
 
-GarrisonFollowerAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem(GarrisonFollowerAlertFrame, GarrisonFollowerAlertFrame_SetUp);
-GarrisonShipFollowerAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem(GarrisonShipFollowerAlertFrame, GarrisonShipFollowerAlertFrame_SetUp);
-
 -- [[ GarrisonTalentAlertFrame ]] --
 function GarrisonTalentAlertFrame_SetUp(frame, garrisonType)
     local talentID = C_Garrison.GetCompleteTalent(garrisonType);
@@ -857,8 +855,6 @@ function GarrisonTalentAlertFrame_SetUp(frame, garrisonType)
     frame.Icon:SetTexture(talent.icon);
 	PlaySound("UI_OrderHall_Talent_Ready_Toast");
 end
-
-GarrisonTalentAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem(GarrisonTalentAlertFrame, GarrisonTalentAlertFrame_SetUp);
 
 -- [[ NewRecipeLearnedAlertFrame ]] --
 function NewRecipeLearnedAlertFrame_GetStarTextureFromRank(rank)
@@ -1007,8 +1003,6 @@ function WorldQuestCompleteAlertFrame_Coalesce(frame, questID, rewardItemLink)
 	return ALERT_FRAME_COALESCE_CONTINUE;
 end
 
-WorldQuestCompleteAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem(WorldQuestCompleteAlertFrame, WorldQuestCompleteAlertFrame_SetUp, WorldQuestCompleteAlertFrame_Coalesce);
-
 -- [[LegendaryItemAlertFrame ]] --
 function LegendaryItemAlertFrame_SetUp(frame, itemLink)
 	itemName, itemHyperLink, itemRarity, _, _, _, _, _, _, itemTexture = GetItemInfo(itemLink);
@@ -1032,4 +1026,16 @@ function LegendaryItemAlertFrame_OnClick(self, button, down)
 	end
 end
 
-LegendaryItemAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem(LegendaryItemAlertFrame, LegendaryItemAlertFrame_SetUp);
+function LegendaryItemAlertFrame_OnEnter(self)
+	AlertFrame_StopOutAnimation(self);
+	
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip:SetHyperlink(self.hyperlink);
+	GameTooltip:Show();
+end
+
+function LegendaryItemAlertFrame_OnLeave(self)
+	AlertFrame_ResumeOutAnimation(self);
+
+	GameTooltip:Hide();
+end

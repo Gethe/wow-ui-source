@@ -14,6 +14,14 @@ end
 
 function WorldQuestDataProviderMixin:OnAdded(mapCanvas)
 	MapCanvasDataProviderMixin.OnAdded(self, mapCanvas);
+
+	self:RegisterEvent("SUPER_TRACKED_QUEST_CHANGED");
+end
+
+function WorldQuestDataProviderMixin:OnEvent(event, ...)
+	if event == "SUPER_TRACKED_QUEST_CHANGED" then
+		self:RefreshAllData();
+	end
 end
 
 function WorldQuestDataProviderMixin:RemoveAllData()
@@ -70,19 +78,26 @@ function WorldQuestDataProviderMixin:AddWorldQuest(info)
 	local tagID, tagName, worldQuestType, rarity, isElite, tradeskillLineIndex = GetQuestTagInfo(info.questId);
 	local tradeskillLineID = tradeskillLineIndex and select(7, GetProfessionInfo(tradeskillLineIndex));
 
+	local selected = info.questId == GetSuperTrackedQuestID();
+	pin.Glow:SetShown(selected);
+	pin.SelectedGlow:SetShown(rarity ~= LE_WORLD_QUEST_QUALITY_COMMON and selected);
+
 	if rarity ~= LE_WORLD_QUEST_QUALITY_COMMON then
 		pin.Background:SetTexCoord(0, 1, 0, 1);
 		pin.Highlight:SetTexCoord(0, 1, 0, 1);
 
 		pin.Background:SetSize(45, 45);
 		pin.Highlight:SetSize(45, 45);
+		pin.SelectedGlow:SetSize(45, 45);
 		
 		if rarity == LE_WORLD_QUEST_QUALITY_RARE then
 			pin.Background:SetAtlas("worldquest-questmarker-rare");
 			pin.Highlight:SetAtlas("worldquest-questmarker-rare");
+			pin.SelectedGlow:SetAtlas("worldquest-questmarker-rare");
 		elseif rarity == LE_WORLD_QUEST_QUALITY_EPIC then
 			pin.Background:SetAtlas("worldquest-questmarker-epic");
 			pin.Highlight:SetAtlas("worldquest-questmarker-epic");
+			pin.SelectedGlow:SetAtlas("worldquest-questmarker-epic");
 		end
 	else
 		pin.Background:SetSize(75, 75);
@@ -91,8 +106,13 @@ function WorldQuestDataProviderMixin:AddWorldQuest(info)
 		pin.Background:SetTexture("Interface/WorldMap/UI-QuestPoi-NumberIcons");	
 		pin.Highlight:SetTexture("Interface/WorldMap/UI-QuestPoi-NumberIcons");
 
-		pin.Background:SetTexCoord(0.875, 1, 0.375, 0.5);
 		pin.Highlight:SetTexCoord(0.625, 0.750, 0.875, 1);
+
+		if selected then
+			pin.Background:SetTexCoord(0.500, 0.625, 0.375, 0.5);
+		else
+			pin.Background:SetTexCoord(0.875, 1, 0.375, 0.5);
+		end
 	end
 
 	if isElite then
@@ -146,13 +166,7 @@ function WorldQuestPinMixin:OnLoad()
 end
 
 function WorldQuestPinMixin:OnMouseEnter()
-	WorldMapTooltip:SetParent(self:GetMap());
-	WorldMapTooltip:SetFrameStrata("TOOLTIP");
-
-	for i, tooltip in ipairs(WorldMapTooltip.ItemTooltip.Tooltip.shoppingTooltips) do
-		tooltip:SetParent(self:GetMap());
-		tooltip:SetFrameStrata("TOOLTIP");
-	end
+	WorldMap_HijackTooltip(self:GetMap());
 
 	TaskPOI_OnEnter(self);
 end
@@ -160,11 +174,5 @@ end
 function WorldQuestPinMixin:OnMouseLeave()
 	TaskPOI_OnLeave(self);
 
-	for i, tooltip in ipairs(WorldMapTooltip.ItemTooltip.Tooltip.shoppingTooltips) do
-		tooltip:SetParent(WorldMapFrame);
-		tooltip:SetFrameStrata("TOOLTIP");
-	end
-
-	WorldMapTooltip:SetParent(WorldMapFrame);
-	WorldMapTooltip:SetFrameStrata("TOOLTIP");
+	WorldMap_RestoreTooltip();
 end

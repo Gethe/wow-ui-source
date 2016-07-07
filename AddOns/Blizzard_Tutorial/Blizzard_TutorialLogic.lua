@@ -891,8 +891,15 @@ function Class_ActionBarCallout:OnBegin()
 end
 
 function Class_ActionBarCallout:InitiatePointer()
-	if (self:HighlightPointer(1)) then
-		if (TutorialHelper:GetClass() == "WARRIOR") then
+	local startingAbility = TutorialHelper:FilterByClass(TutorialData.StartingAbility);
+	
+	local isWarrior = TutorialHelper:GetClass() == "WARRIOR";
+	if (isWarrior) then
+		startingAbility = 88163; -- Warriors start off with melee as their "first" ability.
+	end
+
+	if (self:HighlightPointer(startingAbility)) then
+		if (isWarrior) then
 			-- Warriors start with auto-attack to build rage, then call out their pointer
 			Dispatcher:RegisterEvent("PLAYER_REGEN_DISABLED", function()
 					self:HidePointerTutorials();
@@ -929,30 +936,25 @@ function Class_ActionBarCallout:Warrior_AttemptPointer2()
 end
 
 function Class_ActionBarCallout:Warrior_InitiatePointer2()
-	if (self:HighlightPointer(2, "NPE_ABILITYSECOND")) then
+	if (self:HighlightPointer(TutorialHelper:FilterByClass(TutorialData.StartingAbility), "NPE_ABILITYSECOND")) then
 		Dispatcher:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", self);
 	end
 end
 
-function Class_ActionBarCallout:HighlightPointer(slotIndex, textID)
-	local btn = _G["ActionButton" .. slotIndex or 1];
+function Class_ActionBarCallout:HighlightPointer(spellID, textID)
+	local btn = TutorialHelper:GetActionButtonBySpellID(spellID);
 	if (btn) then
+		-- Store off the spellID to check for usage later
+		self.SpellID = spellID;
 
-		local _, spellID = GetActionInfo(btn.action);
-		if (spellID) then
-			
-			-- Store off the spellID to check for usage later
-			self.SpellID = spellID;
+		-- Prompt the user to use the spell
+		local name, _, icon = GetSpellInfo(spellID);
+		local prompt = TutorialHelper:FormatSpellString(TutorialHelper:GetClassString(textID or "NPE_ABILITYINITIAL"));
+		--local prompt = TutorialHelper:FormatSpellString(NPE_ABILITYINITIAL);
+		self:ShowPointerTutorial(string.format(str(prompt), name, icon), "DOWN", btn);
+		ActionButton_ShowOverlayGlow(btn);
 
-			-- Prompt the user to use the spell
-			local name, _, icon = GetSpellInfo(spellID);
-			local prompt = TutorialHelper:FormatSpellString(TutorialHelper:GetClassString(textID or "NPE_ABILITYINITIAL"));
-			--local prompt = TutorialHelper:FormatSpellString(NPE_ABILITYINITIAL);
-			self:ShowPointerTutorial(string.format(str(prompt), name, icon), "DOWN", btn);
-			ActionButton_ShowOverlayGlow(btn);
-
-			return spellID;
-		end
+		return spellID;
 	end
 
 	return false;

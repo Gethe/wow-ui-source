@@ -2488,14 +2488,14 @@ end
 function EJSuggestFrame_OnLoad(self)
 	self.suggestions = {};
 	
-	self:RegisterEvent("AJ_REWARD_DATA_RECIEVED");
+	self:RegisterEvent("AJ_REWARD_DATA_RECEIVED");
 	self:RegisterEvent("AJ_REFRESH_DISPLAY");
 end
 
 function EJSuggestFrame_OnEvent(self, event, ...)
 	if ( event == "AJ_REFRESH_DISPLAY" ) then
 		EJSuggestFrame_RefreshDisplay();
-	elseif ( event == "AJ_REWARD_DATA_RECIEVED" ) then
+	elseif ( event == "AJ_REWARD_DATA_RECEIVED" ) then
 		EJSuggestFrame_RefreshRewards()
 	end
 end

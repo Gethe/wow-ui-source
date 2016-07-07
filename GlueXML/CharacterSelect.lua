@@ -1847,15 +1847,23 @@ function CharacterServicesMaster_UpdateServiceButton()
 	end
 end
 
+local function CharacterUpgradePopup_CheckSetPopupSeen(data)
+	if UpgradePopupFrame and UpgradePopupFrame.data and UpgradePopupFrame:IsVisible() then
+		if (data.expansion == UpgradePopupFrame.data.expansion and C_SharedCharacterServices.GetLastSeenUpgradePopup() < data.expansion) then
+			C_SharedCharacterServices.SetPopupSeen(data.expansion);
+		end
+	end
+end
+
 local function HandleUpgradePopupButtonClick(self)
 	PlaySound("igMainMenuOptionCheckBoxOn"); -- TODO: Is there a better sound to play in case this is a close button?
 	local data = self:GetParent().data;
-	C_SharedCharacterServices.SetPopupSeen(data.expansion);
-
+	CharacterUpgradePopup_CheckSetPopupSeen(data);
 	return data;
 end
 
 function CharacterUpgradePopup_BeginCharacterUpdgradeFlow(data)
+	CharacterUpgradePopup_CheckSetPopupSeen(data);
 	CharacterUpgradeFlow:SetTarget(data);
 	CharSelectServicesFlowFrame:Show();
 	CharacterServicesMaster_SetFlow(CharacterServicesMaster, CharacterUpgradeFlow);

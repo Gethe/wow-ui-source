@@ -276,11 +276,18 @@
 		<Frames>
 			<Button inherits="GarrisonFollowerPageAbilityIconButtonTemplate" parentKey="IconButton">
 				<Layers>
-					<Layer level="ARTWORK">
+					<Layer level="ARTWORK" textureSubLevel="1">
 						<Texture parentKey="LockBackground" setAllPoints="true" hidden="true">
 							<Color a="0.35" r="0.0" g="0.0" b="0.0b"/>
 						</Texture>
-						<Texture parentKey="Lock" atlas="legionmission-lock" useAtlasSize="true" hidden="true"/>
+					</Layer>
+					<Layer level="ARTWORK" textureSubLevel="2">
+						<Texture parentKey="Lock" atlas="legionmission-lock" hidden="true">
+							<Size x="26" y="34"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
 					</Layer>
 				</Layers>
 			</Button>

@@ -298,6 +298,41 @@
 				<Scale childKey="RingBurst" smoothing="OUT" duration="0.5" order="1" fromScaleX="1" fromScaleY="1" toScaleX="1.4" toScaleY="1.4"/>
 				<Alpha childKey="RingBurst" startDelay="0.25" smoothing="NONE" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
 			</AnimationGroup>
+			<AnimationGroup parentKey="FinalPowerShownAnim" setToFinalAlpha="true">
+				<Alpha duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="BigWhirls" startDelay="0.25" duration=".75" order="1" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="BigWhirls" startDelay="0.25" duration="1.75" order="1" fromScaleX="0.5" fromScaleY="0.5" toScaleX="1.5" toScaleY="1.5"/>
+				<Rotation childKey="BigWhirls" startDelay="0.25" smoothing="OUT" duration="1.75" order="1" degrees="180"/>
+				<Alpha childKey="BigWhirls" startDelay="1" duration="1" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="SpinningGlows" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="SpinningGlows" duration="0.75" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.75" toScaleY="0.75"/>
+				<Rotation childKey="SpinningGlows" smoothing="OUT" duration="1.75" order="1" degrees="-180"/>
+				<Alpha childKey="SpinningGlows" startDelay="0.25" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="SpinningGlows2" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="SpinningGlows2" duration="0.75" order="1" fromScaleX="0.9" fromScaleY="0.9" toScaleX="0.6" toScaleY="0.6"/>
+				<Rotation childKey="SpinningGlows2" smoothing="OUT" duration="0.75" order="1" degrees="200"/>
+				<Alpha childKey="SpinningGlows2" startDelay="0.25" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="StarBurst" smoothing="IN" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="StarBurst" smoothing="IN" duration="0.5" order="1" fromScaleX="0.1" fromScaleY="0.1" toScaleX="2.5" toScaleY="2.5"/>
+				<Alpha childKey="StarBurst" startDelay="0.5" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="RingBurst" smoothing="OUT" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="RingBurst" startDelay="0.5" smoothing="NONE" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+				<Scale childKey="RingBurst" startDelay="0.25" duration="0.5" order="1" fromScaleX="1" fromScaleY="1" toScaleX="1.5" toScaleY="1.5"/>
+				<Alpha childKey="PointBurstLeft" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="PointBurstLeft" smoothing="IN_OUT" duration="0.4" order="1" fromScaleX="0.25" fromScaleY="0.75" toScaleX="1.5" toScaleY="1.0">
+					<Origin point="RIGHT">
+						<Offset x="-4" y="0"/>
+					</Origin>
+				</Scale>
+				<Alpha childKey="PointBurstLeft" startDelay="0.3" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="PointBurstRight" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="PointBurstRight" smoothing="IN_OUT" duration="0.4" order="1" fromScaleX="0.25" fromScaleY="0.75" toScaleX="1.5" toScaleY="1.0">
+					<Origin point="LEFT">
+						<Offset x="4" y="0"/>
+					</Origin>
+				</Scale>
+				<Alpha childKey="PointBurstRight" startDelay="0.3" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+			</AnimationGroup>
 			<AnimationGroup parentKey="FinalPowerUnlockedAnim" setToFinalAlpha="true">
 				<Alpha duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
 				<Alpha childKey="RankBorderFinal" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>

@@ -572,7 +572,13 @@
 				</Layers>
 				<Scripts>
 					<OnClick>
-						StaticPopup_Show("CONFIRM_LEARN_SPEC", nil, nil, self:GetParent());
+						local parent = self:GetParent();
+						if ( parent.previewSpecCost and parent.previewSpecCost > 0 ) then
+							StaticPopup_Show("CONFIRM_LEARN_SPEC", nil, nil, self:GetParent());
+						else
+							SetSpecialization(parent.previewSpec, parent.isPet);
+							parent.playLearnAnim = true;
+						end
 					</OnClick>
 				</Scripts>
 				<Animations>
