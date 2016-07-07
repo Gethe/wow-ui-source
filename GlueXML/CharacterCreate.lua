@@ -395,10 +395,12 @@ function CharacterCreate_OnShow()
 		end
 
 		local cid = KioskModeSplash_GetIDForSelection("classes", available[math.random(1, #available)]);
+
+		KioskModeCheckTemplate(cid);
 		SetSelectedClass(cid);
 		SetCharacterClass(cid);
 		SetCharacterRace(GetSelectedRace());
-
+	
 		RandomizeCharCustomization(true);
 		KioskModeSplash_SetAutoEnterWorld(false);
 	end
@@ -844,15 +846,14 @@ end
 
 function CharacterCreate_Finish()
 	PlaySound("gsCharacterCreationCreateChar");
-	if( IsKioskModeEnabled() ) then
-		CreateCharacter(CharacterCreateNameEdit:GetText());
-		KioskModeSplash_SetAutoEnterWorld(true);
-		return;
-	end
 
 	if ( PAID_SERVICE_TYPE ) then
 		GlueDialog_Show("CONFIRM_PAID_SERVICE");
 	else
+		if( IsKioskModeEnabled() ) then
+			KioskModeSplash_SetAutoEnterWorld(true);
+		end
+
 		-- if using templates, pandaren must pick a faction
 		local _, faction = GetFactionForRace(CharacterCreate.selectedRace);
 		if ( ( IsUsingCharacterTemplate() or IsForcingCharacterTemplate() ) and ( faction ~= "Alliance" and faction ~= "Horde" ) ) then
@@ -1020,6 +1021,10 @@ end
 
 function CharacterClass_SelectClass(self, forceAccept)
 	if( self:IsEnabled() ) then
+		if (IsKioskModeEnabled()) then
+			KioskModeCheckTemplate(self:GetID());
+		end
+
 		PlaySound("gsCharacterCreationClass");
 		local _,_,currClass = GetSelectedClass();
 		local id = self:GetID();
@@ -1075,6 +1080,7 @@ function CharacterRace_OnClick(self, id, forceSelect)
 				end
 
 				local fcid = KioskModeSplash_GetIDForSelection("classes", available[math.random(1, #available)]);
+				KioskModeCheckTemplate(fcid);
 				SetSelectedClass(fcid);
 				SetCharacterClass(fcid);
 				SetCharacterRace(GetSelectedRace());
@@ -1183,6 +1189,31 @@ function CharacterCreate_UpdateDemonHunterCustomization()
 	CharCreateCustomizationButton7.text:SetText(DEMONHUNTER_HORN_STYLE);
 	CharCreateCustomizationButton8.text:SetText(DEMONHUNTER_BLINDFOLD_STYLE);
     CharCreateCustomizationButton9.text:SetText(DEMONHUNTER_TATTOO_COLOR);
+end
+
+function KioskModeCheckTemplate(classID)
+	if (IsKioskModeEnabled()) then
+		local data = KioskModeSplash_GetModeData();
+		if (not data) then -- why?
+			return;
+		end
+		local useTemplate = nil;
+		if (data.template and data.template.enabled) then
+			useTemplate = data.template.index;
+			for i, v in ipairs(data.template.ignoreClasses) do
+				local id = CLASS_NAME_BUTTON_ID_MAP[v];
+				if (id == classID) then
+					useTemplate = nil;
+					break;
+				end
+			end
+		end
+		if (useTemplate) then
+			SetCharacterTemplate(useTemplate);
+		else
+			ClearCharacterTemplate();
+		end
+	end
 end
 
 function SetButtonDesaturated(button, desaturated)
@@ -1727,7 +1758,8 @@ local function ShouldHideCharacterTypeFrame(characterType)
 	 or (not C_CharacterServices.IsTrialBoostEnabled())
 	 or (PAID_SERVICE_TYPE ~= nil)
 	 or IsUsingCharacterTemplate()
-	 or IsForcingCharacterTemplate() then
+	 or IsForcingCharacterTemplate()
+	 or IsKioskModeEnabled() then
 		return true;
 	end
 

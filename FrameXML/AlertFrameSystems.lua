@@ -679,11 +679,14 @@ function DigsiteCompleteToastFrame_SetUp(frame, researchBranchID)
 end
 
 -- [[ StorePurchaseAlertFrame ]] --
-function StorePurchaseAlertFrame_SetUp(frame, icon, name, itemID)
+function StorePurchaseAlertFrame_SetUp(frame, type, icon, name, payloadID)
 	frame.Icon:SetTexture(icon);
 	frame.Title:SetFontObject(GameFontNormalLarge);
 	frame.Title:SetText(name);
-	frame.itemID = itemID;
+	
+	frame.type = type;
+	frame.payloadID = payloadID;
+
 	if ( frame.Title:IsTruncated() ) then
 		frame.Title:SetFontObject(GameFontNormal);
 	end
@@ -694,9 +697,18 @@ function StorePurchaseAlertFrame_OnClick(self, button, down)
 	if( AlertFrame_OnClick(self, button, down) ) then
 		return;
 	end
-	local slot = SearchBagsForItem(self.itemID);
-	if (slot >= 0) then
-		OpenBag(slot);
+
+	if (self.type == LE_STORE_DELIVERY_TYPE_ITEM) then
+		local slot = SearchBagsForItem(self.payloadID);
+		if (slot >= 0) then
+			OpenBag(slot);
+		end
+	elseif (self.type == LE_STORE_DELIVERY_TYPE_MOUNT) then
+		ToggleCollectionsJournal(1);
+	elseif (self.type == LE_STORE_DELIVERY_TYPE_BATTLEPET) then
+		ToggleCollectionsJournal(2);
+	elseif (self.type == LE_STORE_DELIVERY_TYPE_COLLECTION) then
+		ToggleCollectionsJournal(5);
 	end
 end
 

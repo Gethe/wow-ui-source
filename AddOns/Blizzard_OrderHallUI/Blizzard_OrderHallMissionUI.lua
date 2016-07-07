@@ -394,6 +394,8 @@ function OrderHallMission:MissionCompleteInitialize(missionList, index)
 	self.MissionComplete.BonusChanceFail.CrossLeft:Hide();
 	self.MissionComplete.BonusChanceFail.CrossRight:Hide();
 
+	self.MissionComplete.BonusText.BonusText:SetAlpha(0);
+	self.MissionComplete.BonusText.BonusGlow:SetAlpha(0);
 	return true;
 end
 

@@ -27,6 +27,8 @@ function GarrisonLandingPageMixin:UpdateTabs()
 	if (self.garrTypeID == LE_GARRISON_TYPE_6_0 and C_Garrison.HasShipyard()) then
 		numTabs = 3;
 		self.FleetTab:Show();
+	else
+		self.FleetTab:Hide();
 	end
 	PanelTemplates_SetNumTabs(self, numTabs);
 	PanelTemplates_UpdateTabs(self);
@@ -41,10 +43,14 @@ function GarrisonLandingPageMixin:UpdateTabs()
 		else
 			PanelTemplates_EnableTab(self, 3);
 		end
+	else
+		if (PanelTemplates_GetSelectedTab(self) == self.FleetTab:GetID()) then
+			GarrisonLandingPageTab_SetTab(self.ReportTab);
+		end
 	end
 end
 
-function GarrisonLandingPageMixin:OnShow()
+function GarrisonLandingPageMixin:UpdateUIToGarrisonType()
 	self:UpdateTabs();
 	if (C_Garrison.IsInvasionAvailable()) then
 		self.InvasionBadge:Show();
@@ -66,6 +72,10 @@ function GarrisonLandingPageMixin:OnShow()
 	self.abilityCountersForMechanicTypes = C_Garrison.GetFollowerAbilityCountersForMechanicTypes(GetPrimaryGarrisonFollowerType(self.garrTypeID));
 	GarrisonThreatCountersFrame:SetParent(self.FollowerTab);
 	GarrisonThreatCountersFrame:SetPoint("TOPRIGHT", -152, 30);
+end
+
+function GarrisonLandingPageMixin:OnShow()
+	self:UpdateUIToGarrisonType();
 	PlaySound("UI_Garrison_GarrisonReport_Open");
 end
 
@@ -611,7 +621,11 @@ function GarrisonLandingPageReportList_Update()
 			button.Title:SetText(item.name);
 			if (item.isComplete) then
 				bgName = bgName.."Complete";
-				button.MissionType:SetText(GarrisonFollowerOptions[item.followerTypeID].strings.LANDING_COMPLETE);
+				if (item.isBuilding) then
+					button.MissionType:SetText(GARRISON_LANDING_BUILDING_COMPLEATE);
+				else
+					button.MissionType:SetText(GarrisonFollowerOptions[item.followerTypeID].strings.LANDING_COMPLETE);
+				end
 				button.MissionType:SetTextColor(YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
 				button.Title:SetWidth(290);
 			else

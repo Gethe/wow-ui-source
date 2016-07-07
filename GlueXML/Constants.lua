@@ -56,7 +56,7 @@ GLUE_AMBIENCE_TRACKS = {
 };
 
 CHAR_MODEL_FOG_INFO = {
-	["SCOURGE"] = { r=0, g=0.22, b=0.22, far=26 };
+	["SCOURGE"] = { r=0, g=0.22, b=0.22, far=18 };
 	--[[
 	["HUMAN"] = { r=0.8, g=0.65, b=0.73, far=222 };
 	["ORC"] = { r=0.5, g=0.5, b=0.5, far=270 };

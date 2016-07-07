@@ -2420,6 +2420,7 @@ function WorldMapButton_OnUpdate(self, elapsed)
 		corpseY = -corpseY * WorldMapDetailFrame:GetHeight();
 		
 		WorldMapCorpse:SetPoint("CENTER", "WorldMapDetailFrame", "TOPLEFT", corpseX, corpseY);
+		WorldMapCorpse:SetFrameStrata("DIALOG");
 		WorldMapCorpse:Show();
 	end
 
@@ -2432,6 +2433,7 @@ function WorldMapButton_OnUpdate(self, elapsed)
 		deathReleaseY = -deathReleaseY * WorldMapDetailFrame:GetHeight();
 		
 		WorldMapDeathRelease:SetPoint("CENTER", "WorldMapDetailFrame", "TOPLEFT", deathReleaseX, deathReleaseY);
+		WorldMapDeathRelease:SetFrameStrata("DIALOG");
 		WorldMapDeathRelease:Show();
 	end
 	
@@ -3564,7 +3566,7 @@ local SIBLING_MENU_PARENT_IS_CONTINENT;
 local BROKEN_ISLES_ID = 8;
 
 function IsMapAllowedInKioskMode(id)
-	return id ~= BROKEN_ISLES_ID;
+	return true;
 end
 
 function WorldMapNavBar_LoadSiblings(parentID, isContinent, doSort, ...)

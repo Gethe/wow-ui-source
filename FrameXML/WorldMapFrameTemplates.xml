@@ -117,7 +117,7 @@
 			</OnLeave>
 		</Scripts>
 	</Frame>
-	<Frame name="WorldMapCorpseTemplate" hidden="true" virtual="true" toplevel="true">
+	<Frame name="WorldMapCorpseTemplate" hidden="true" virtual="true">
 		<Size>
 			<AbsDimension x="16" y="16"/>
 		</Size>

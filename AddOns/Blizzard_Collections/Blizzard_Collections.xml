@@ -129,15 +129,7 @@
 				SetPortraitToTexture(CollectionsJournalPortrait, "Interface\\Icons\\MountJournalPortrait");
 				PanelTemplates_SetNumTabs(self, 5);
 
-				if (IsKioskModeEnabled()) then
-					PanelTemplates_SetTab(self, 1);
-					PanelTemplates_DisableTab(self, 2);
-					PanelTemplates_DisableTab(self, 3);
-					PanelTemplates_DisableTab(self, 4);
-					PanelTemplates_DisableTab(self, 5);
-				else
-					PanelTemplates_SetTab(self, tonumber(GetCVar("petJournalTab")) or 1);
-				end
+				PanelTemplates_SetTab(self, tonumber(GetCVar("petJournalTab")) or 1);
 			</OnLoad>
 			<OnShow function="CollectionsJournal_OnShow"/>
 			<OnHide function="CollectionsJournal_OnHide"/>

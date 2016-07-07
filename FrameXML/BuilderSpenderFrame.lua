@@ -47,9 +47,10 @@ function BuilderSpender_OnUpdateFeedbackGain(self)
 		end
 		local texMinX = currentValue / self.maxValue;
 		local texMaxX = self.newValue / self.maxValue;
-		
+
 		self.GainGlowTexture:ClearAllPoints();
 		self.GainGlowTexture:SetPoint("TOPLEFT", leftPosition, 0);
+		self.GainGlowTexture:SetHeight(self:GetHeight());
 		self.GainGlowTexture:SetWidth(width);
 		self.GainGlowTexture:SetTexCoord(texMinX, texMaxX, 0, 1);
 		self.GainGlowTexture:Show();
@@ -109,10 +110,10 @@ function BuilderSpender:StartFeedbackAnim(oldValue, newValue)
 		return;
 	end
 	
-	if (oldValue > self.maxValue) then
-		oldValue = self.maxValue;
-	end
-	
+	oldValue = Clamp(oldValue, 0, self.maxValue);
+
+	newValue = math.max(newValue, 0);
+
 	if ( newValue > oldValue and showBuilderFeedback ) then -- Gaining power
 		self.updatingGain = true;
 		self:SetScript("OnUpdate", BuilderSpender_OnUpdateFeedback);
@@ -128,9 +129,12 @@ function BuilderSpender:StartFeedbackAnim(oldValue, newValue)
 		local width = (oldValue - newValue) / maxValue * self:GetWidth();
 		local texMinX = newValue / maxValue;
 		local texMaxX = oldValue / maxValue;
+
+		local height = self:GetHeight();
 		
 		glowTexture:ClearAllPoints();
 		glowTexture:SetPoint("TOPLEFT", leftPosition, 0);
+		glowTexture:SetHeight(height);
 		glowTexture:SetWidth(width);
 		glowTexture:SetTexCoord(texMinX, texMaxX, 0, 1);
 		glowTexture:Show();
@@ -138,6 +142,7 @@ function BuilderSpender:StartFeedbackAnim(oldValue, newValue)
 		
 		barTexture:ClearAllPoints();
 		barTexture:SetPoint("TOPLEFT", leftPosition, 0);
+		barTexture:SetHeight(height);
 		barTexture:SetWidth(width);
 		barTexture:SetTexCoord(texMinX, texMaxX, 0, 1);
 		barTexture:Show();

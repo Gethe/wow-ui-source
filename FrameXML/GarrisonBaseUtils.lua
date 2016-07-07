@@ -201,7 +201,11 @@ function ShowGarrisonLandingPage(garrTypeID)
 	end
 
 	GarrisonLandingPage.garrTypeID = garrTypeID;
-	ShowUIPanel(GarrisonLandingPage);
+	if (GarrisonLandingPage:IsShown()) then
+		GarrisonLandingPage:UpdateUIToGarrisonType();
+	else
+		ShowUIPanel(GarrisonLandingPage);
+	end
 
 end
 

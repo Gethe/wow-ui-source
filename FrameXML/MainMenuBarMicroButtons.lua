@@ -114,11 +114,8 @@ function UpdateMicroButtons()
 	if ( PlayerTalentFrame and PlayerTalentFrame:IsShown() ) then
 		TalentMicroButton:SetButtonState("PUSHED", true);
 	else
-		if ( playerLevel < SHOW_SPEC_LEVEL or (IsKioskModeEnabled() and select(2, UnitClass("player")) ~= "DEMONHUNTER") ) then
+		if ( playerLevel < SHOW_SPEC_LEVEL ) then
 			TalentMicroButton:Disable();
-			if (IsKioskModeEnabled()) then
-				SetKioskTooltip(TalentMicroButton);
-			end
 		else
 			TalentMicroButton:Enable();
 			TalentMicroButton:SetButtonState("NORMAL");
@@ -436,10 +433,6 @@ end
 
 --Talent button specific functions
 function TalentMicroButton_OnEvent(self, event, ...)
-	if (IsKioskModeEnabled()) then
-		return;
-	end
-
 	if ( event == "PLAYER_LEVEL_UP" ) then
 		local level = ...;
 		if (level == SHOW_SPEC_LEVEL) then
@@ -515,10 +508,6 @@ do
 	end
 
 	function CollectionsMicroButton_OnEvent(self, event, ...)
-		if (IsKioskModeEnabled()) then
-			return;
-		end
-
 		if CollectionsJournal and CollectionsJournal:IsShown() then
 			return;
 		end

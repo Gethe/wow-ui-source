@@ -2022,6 +2022,7 @@ function GarrisonTruncationFrame_Check(fontString)
 	fontString:GetRect();
 	if ( fontString:IsTruncated() ) then
 		self:SetParent(fontString:GetParent());
+		self:SetFrameLevel(10);	-- needs to be above ModelCluster
 		self:SetPoint("TOPLEFT", fontString);
 		self:SetPoint("BOTTOMRIGHT", fontString);
 		self:Show();

@@ -528,7 +528,8 @@ StaticPopupDialogs["ACTIVATE_FOLLOWER"] = {
 	OnShow = function(self)
 		local quality = C_Garrison.GetFollowerQuality(self.data);
 		local name = ITEM_QUALITY_COLORS[quality].hex..C_Garrison.GetFollowerName(self.data)..FONT_COLOR_CODE_CLOSE;
-		local uses = C_Garrison.GetNumFollowerActivationsRemaining();
+		local followerInfo = C_Garrison.GetFollowerInfo(self.data);
+		local uses = C_Garrison.GetNumFollowerActivationsRemaining(GarrisonFollowerOptions[followerInfo.followerTypeID].garrisonType);
 		self.text:SetFormattedText(GARRISON_ACTIVATE_FOLLOWER_CONFIRMATION, name, uses);
 		MoneyFrame_Update(self.moneyFrame, C_Garrison.GetFollowerActivationCost());
 	end,	
@@ -741,7 +742,8 @@ function GarrisonFollowerOptionDropDown_Initialize(self)
 		local followerStatus = C_Garrison.GetFollowerStatus(self.followerID);
 		if ( followerStatus == GARRISON_FOLLOWER_INACTIVE ) then
 			info.text = GARRISON_ACTIVATE_FOLLOWER;
-			if ( C_Garrison.GetNumFollowerActivationsRemaining() == 0 ) then
+			local followerInfo = C_Garrison.GetFollowerInfo(self.followerID);
+			if ( C_Garrison.GetNumFollowerActivationsRemaining(GarrisonFollowerOptions[followerInfo.followerTypeID].garrisonType) == 0 ) then
 				info.disabled = 1;
 				info.tooltipWhileDisabled = 1;
 				info.tooltipTitle = GARRISON_ACTIVATE_FOLLOWER;

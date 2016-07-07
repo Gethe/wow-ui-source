@@ -379,7 +379,7 @@
 				end
 			</OnLeave>
 		</Scripts>
-		<ButtonText name="$parentText"/>
+		<ButtonText name="$parentText" parentKey="Text"/>
 		<NormalFont style="GameFontNormal"/>
 		<HighlightFont style="GameFontHighlight"/>
 		<DisabledFont style="GameFontDisable"/>
@@ -646,7 +646,7 @@
 	correctly and will be given the correct	border art.
 
 	NOTE: If you override the OnLoad script for a Magic Button, make sure to call
-	"MagicButton_OnLoad" from within your script.
+	"MagicButton_OnLoad" from within your script, or call inherited OnLoad script.
 *******************************************************************************
 -->
 	<Button name="MagicButtonTemplate" inherits="UIPanelButtonTemplate" virtual="true">

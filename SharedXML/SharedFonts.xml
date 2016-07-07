@@ -140,7 +140,7 @@
 			</Font>
 		</Member>
 		<Member alphabet="traditionalchinese">
-			<Font font="Fonts\blei00d.TTF" height="11">
+			<Font font="Fonts\blei00d.TTF" height="15">
 				<Shadow>
 					<Offset>
 						<AbsDimension x="1" y="-1"/>

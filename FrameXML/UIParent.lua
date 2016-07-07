@@ -647,7 +647,7 @@ function ToggleAchievementFrame(stats)
 end
 
 function ToggleTalentFrame(suggestedTab)
-	if (UnitLevel("player") < SHOW_SPEC_LEVEL or (IsKioskModeEnabled() and select(2, UnitClass("player")) ~= "DEMONHUNTER")) then
+	if (UnitLevel("player") < SHOW_SPEC_LEVEL) then
 		return;
 	end
 
@@ -1592,11 +1592,9 @@ function UIParent_OnEvent(self, event, ...)
 
 	-- Events for Transmogrify UI handling
 	elseif ( event == "TRANSMOGRIFY_OPEN" ) then
-		if (not IsKioskModeEnabled()) then
-			CollectionsJournal_LoadUI();
-			if ( WardrobeFrame ) then
-				ShowUIPanel(WardrobeFrame);
-			end
+		CollectionsJournal_LoadUI();
+		if ( WardrobeFrame ) then
+			ShowUIPanel(WardrobeFrame);
 		end
 	elseif ( event == "TRANSMOGRIFY_CLOSE" ) then
 		if ( WardrobeFrame ) then
@@ -2702,7 +2700,7 @@ function FramePositionDelegate:UIParentManageFramePositions()
 
 	-- Setup y anchors
 	local anchorY = 0
-	local buffsAnchorY = min(0, MINIMAP_BOTTOM_EDGE_EXTENT - BuffFrame.bottomEdgeExtent);
+	local buffsAnchorY = min(0, (MINIMAP_BOTTOM_EDGE_EXTENT or 0) - BuffFrame.bottomEdgeExtent);
 	-- Count right action bars
 	local rightActionBars = 0;
 	if ( IsNormalActionBarState() ) then

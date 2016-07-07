@@ -1616,6 +1616,7 @@ function WardrobeCollectionFrameModel_Reload(self, reloadSlot)
 			self:SetUseTransmogSkin(WARDROBE_MODEL_SETUP[reloadSlot].useTransmogSkin);
 			self:SetUnit("player");
 			self:FreezeAnimation(0);
+			self:SetDoBlend(false);
 			for slot, equip in pairs(WARDROBE_MODEL_SETUP[reloadSlot].slots) do
 				if ( equip ) then
 					self:TryOn(WARDROBE_MODEL_SETUP_GEAR[slot]);

@@ -578,7 +578,7 @@ function GarrisonLandingPage_Toggle()
 	if (GarrisonLandingPage and GarrisonLandingPage:IsShown()) then
 		HideUIPanel(GarrisonLandingPage);
 	else
-		ShowGarrisonLandingPage();
+		ShowGarrisonLandingPage(C_Garrison.GetLandingPageGarrisonType());
 	end
 end
 

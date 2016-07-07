@@ -235,7 +235,7 @@ function ClassNameplateManaBar_OnUpdate(self)
 	if ( currValue ~= self.currValue or self.forceUpdate ) then
 		self.forceUpdate = nil;
 		-- Only show anim if change is more than 10%
-		if ( math.abs(currValue - self.currValue) / self.FeedbackFrame.maxValue > 0.1 ) then
+		if ( self.FeedbackFrame.maxValue ~= 0 and math.abs(currValue - self.currValue) / self.FeedbackFrame.maxValue > 0.1 ) then
 			self.FeedbackFrame:StartFeedbackAnim(self.currValue or 0, currValue);
 		end
 		if ( self.FullPowerFrame.active ) then
