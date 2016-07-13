@@ -165,7 +165,7 @@ function PVPTalentFrame_Update(self, talentUnit)
 	if ( not self.inspect ) then
 		if ( UnitLevel("player") < MAX_PLAYER_LEVEL_TABLE[LE_EXPANSION_LEVEL_CURRENT] ) then
 			self.XPBar:Hide();
-			self.NotAvailableYet:SetFormattedText(PVP_TALENTS_BECOME_AVAILABLE_AT_LEVEL, MAX_PLAYER_LEVEL_TABLE[GetExpansionLevel()]);
+			self.NotAvailableYet:SetFormattedText(PVP_TALENTS_BECOME_AVAILABLE_AT_LEVEL, 110);
 			self.NotAvailableYet:Show();
 		else
 			self.NotAvailableYet:Hide();

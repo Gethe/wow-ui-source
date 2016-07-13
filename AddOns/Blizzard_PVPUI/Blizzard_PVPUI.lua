@@ -23,16 +23,16 @@ local REWARDS_AT_MAX_LEVEL = {
 		["Alliance"] = 141899,
 	},
 	[SKIRMISH_REWARD] = {
-		["Horde"] = 141902,
-		["Alliance"] = 141903,
+		["Horde"] = 141903,
+		["Alliance"] = 141902,
 	},
 	[BONUS_BG_REWARD] = {
 		["Horde"] = 141905,
 		["Alliance"] = 141904,
 	},
 	[ARENA_REWARD] = {
-		["Horde"] = 141906,
-		["Alliance"] = 141907,
+		["Horde"] = 141907,
+		["Alliance"] = 141906,
 	},
 }
 

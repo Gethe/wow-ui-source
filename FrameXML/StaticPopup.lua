@@ -3633,6 +3633,18 @@ StaticPopupDialogs["QUEST_IGNORE_TUTORIAL"] = {
 	whileDead = 1,
 }
 
+StaticPopupDialogs["DANGEROUS_SCRIPTS_WARNING"] = {
+	text = DANGEROUS_SCRIPTS_WARNING,
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function()
+		SetAllowDangerousScripts(true);
+	end,
+	exclusive = 1,
+	whileDead = 1,
+	showAlert = 1,
+}
+
 function StaticPopup_FindVisible(which, data)
 	local info = StaticPopupDialogs[which];
 	if ( not info ) then

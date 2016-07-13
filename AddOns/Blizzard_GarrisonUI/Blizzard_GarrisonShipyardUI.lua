@@ -115,6 +115,8 @@ function GarrisonShipyardMission:OnLoadMainFrame()
 	self:RegisterEvent("CURRENCY_DISPLAY_UPDATE");
 	self:RegisterEvent("GARRISON_FOLLOWER_XP_CHANGED");
 	self:RegisterEvent("GARRISON_MISSION_FINISHED");
+
+	self.MissionComplete.Stage.ModelRight:SetFacingLeft(true);
 end
 
 function GarrisonShipyardMission:OnEventMainFrame(event, ...)

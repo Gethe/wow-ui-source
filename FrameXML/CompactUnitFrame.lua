@@ -797,7 +797,9 @@ end
 --WARNING: This function is very similar to the function UnitFrameUtil_UpdateFillBar in UnitFrame.lua.
 --If you are making changes here, it is possible you may want to make changes there as well.
 function CompactUnitFrameUtil_UpdateFillBar(frame, previousTexture, bar, amount, barOffsetXPercent)
-	if ( amount == 0 ) then
+	local totalWidth, totalHeight = frame.healthBar:GetSize();
+
+	if ( totalWidth == 0 or amount == 0 ) then
 		bar:Hide();
 		if ( bar.overlay ) then
 			bar.overlay:Hide();
@@ -807,14 +809,12 @@ function CompactUnitFrameUtil_UpdateFillBar(frame, previousTexture, bar, amount,
 	
 	local barOffsetX = 0;
 	if ( barOffsetXPercent ) then
-		local healthBarSizeX = frame.healthBar:GetWidth();
-		barOffsetX = healthBarSizeX * barOffsetXPercent;
+		barOffsetX = totalWidth * barOffsetXPercent;
 	end
 
 	bar:SetPoint("TOPLEFT", previousTexture, "TOPRIGHT", barOffsetX, 0);
 	bar:SetPoint("BOTTOMLEFT", previousTexture, "BOTTOMRIGHT", barOffsetX, 0);
 
-	local totalWidth, totalHeight = frame.healthBar:GetSize();
 	local _, totalMax = frame.healthBar:GetMinMaxValues();
 
 	local barSize = (amount / totalMax) * totalWidth;

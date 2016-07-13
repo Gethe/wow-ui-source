@@ -2044,6 +2044,10 @@ end
 
 SlashCmdList["SCRIPT"] = function(msg)
 	if ( not ScriptsDisallowedForBeta() ) then
+		if ( not AreDangerousScriptsAllowed() ) then
+			StaticPopup_Show("DANGEROUS_SCRIPTS_WARNING");
+			return;
+		end
 		RunScript(msg);
 	end
 end
@@ -2296,6 +2300,10 @@ end
 
 SlashCmdList["DUMP"] = function(msg)
 	if (not IsKioskModeEnabled() and not ScriptsDisallowedForBeta()) then
+		if ( not AreDangerousScriptsAllowed() ) then
+			StaticPopup_Show("DANGEROUS_SCRIPTS_WARNING");
+			return;
+		end
 		UIParentLoadAddOn("Blizzard_DebugTools");
 		DevTools_DumpCommand(msg);
 	end

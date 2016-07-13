@@ -369,23 +369,23 @@ function NameplateBuffContainerMixin:UpdateBuffs(unit, filter)
 	self.filter = filter;
 	self:UpdateAnchor();
 
-	if not unit or string.find(unit, "nameplate") == nil then
-		GMError("NameplateBuffContainerMixin updating buffs for unit["..tostring(unit).."] instead of a nameplate unit");
-	end
-
 	if filter == "NONE" then
 		for i, buff in ipairs(self.buffList) do
 			buff:Hide();
 		end
 	else
+		-- Some buffs may be filtered out, use this to create the buff frames.
+		local buffIndex = 1;
+
 		for i = 1, BUFF_MAX_DISPLAY do
 			local name, rank, texture, count, debuffType, duration, expirationTime, caster, _, nameplateShowPersonal, spellId, _, _, _, nameplateShowAll = UnitAura(unit, i, filter);
+
 			if (self:ShouldShowBuff(name, caster, nameplateShowPersonal, nameplateShowAll, duration)) then
-				if (not self.buffList[i]) then
-					self.buffList[i] = CreateFrame("Frame", self:GetParent():GetName() .. "Buff" .. i, self, "NameplateBuffButtonTemplate");
-					self.buffList[i]:SetMouseClickEnabled(false);
+				if (not self.buffList[buffIndex]) then
+					self.buffList[buffIndex] = CreateFrame("Frame", self:GetParent():GetName() .. "Buff" .. buffIndex, self, "NameplateBuffButtonTemplate");
+					self.buffList[buffIndex]:SetMouseClickEnabled(false);
 				end
-				local buff = self.buffList[i];
+				local buff = self.buffList[buffIndex];
 				buff:SetID(i);
 				buff.name = name;
 				buff.layoutIndex = i;
@@ -400,6 +400,7 @@ function NameplateBuffContainerMixin:UpdateBuffs(unit, filter)
 				CooldownFrame_Set(buff.Cooldown, expirationTime - duration, duration, duration > 0, true);
 
 				buff:Show();
+				buffIndex = buffIndex + 1;
 			else
 				if self.buffList[i] then
 					self.buffList[i]:Hide();

@@ -754,6 +754,7 @@ function UpdateCharacterList(skipSelect)
 			upgradeIcon.tooltip2 = CHARACTER_SERVICES_PLEASE_WAIT;
 		elseif ( CharacterSelect.undeleting ) then
 			paidServiceButton:Hide();
+			paidServiceButton.serviceType = nil;
 		elseif ( PFC ) then
 			serviceType = PAID_FACTION_CHANGE;
 			paidServiceButton.GoldBorder:Show();

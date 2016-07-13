@@ -271,7 +271,7 @@ function GarrisonRecruitSelectFrame_OnLoad(self)
 end
 
 function GarrisonRecruitSelectFrame_OnEvent(self, event, ...)
-	GarrisonFollowerList_OnEvent(self.FollowerList, event, ...);
+	self.FollowerList:OnEvent(event, ...);
 	if(event == "GARRISON_RECRUIT_FOLLOWER_RESULT")then
 		-- post event for recruiting follower
 		HideUIPanel(GarrisonRecruitSelectFrame);
@@ -309,8 +309,7 @@ function GarrisonRecruitSelectFrame_UpdateRecruits( waiting )
 		if(follower)then
 			frame:Show();
 			frame.Name:SetText(follower.name);
-			frame.PortraitFrame:SetLevel(follower.level);
-			SetPortraitTexture(frame.PortraitFrame.Portrait, follower.displayID);
+			frame.PortraitFrame:SetupPortrait(follower);
 			local displayInfo = follower.displayIDs and follower.displayIDs[1];
 			GarrisonMission_SetFollowerModel(frame.Model, follower.followerID, displayInfo and displayInfo.id, displayInfo and displayInfo.showWeapon);
 			frame.Model:SetHeightFactor(follower.displayHeight or 0.5);
