@@ -31,7 +31,7 @@ function CreditsFrame_Update(self)
 	self.cacheElapsed = 0;
 	self.alphaIn = 0;
 	self.alphaOut = 0;
-	
+
 	for i=1, NUM_CREDITS_ART_TEXTURES_HIGH, 1 do
 		for j=1, NUM_CREDITS_ART_TEXTURES_WIDE, 1 do
 			_G["CreditsArtAlt"..(((i - 1) * NUM_CREDITS_ART_TEXTURES_WIDE) + j)]:Hide();
@@ -73,6 +73,15 @@ local function IsValidTextureIndex(info, index)
 	return info.maxTexIndex == nil or index <= info.maxTexIndex;
 end
 
+local function CreateCreditsTextureTilePath(self, info, textureIndex)
+	local path = CREDITS_ART_INFO[self.creditsType].path;
+	if path then
+		return string.format("Interface\\Glues\\Credits\\%s\\%s%d", path, info.file, textureIndex);
+	else
+		return string.format("Interface\\Glues\\Credits\\%s%d", info.file, textureIndex);
+	end
+end
+
 function CreditsFrame_SetArtTextures(self, textureName, index, alpha)
 	local info = CREDITS_ART_INFO[self.creditsType][index];
 	if ( not info ) then
@@ -98,7 +107,8 @@ function CreditsFrame_SetArtTextures(self, textureName, index, alpha)
 				texture:Hide();
 			else
 				if (IsValidTextureIndex(info, texIndex)) then
-					texture:SetTexture("Interface\\Glues\\Credits\\"..info.file..texIndex);
+					local tilePath = CreateCreditsTextureTilePath(self, info, texIndex);
+					texture:SetTexture(tilePath);
 					texture:SetWidth(width);
 					texture:SetHeight(height);
 					texture:SetAlpha(alpha);
@@ -121,7 +131,8 @@ function CreditsFrame_CacheTextures(self, index)
 		return;
 	end
 
-	CreditsArtCache1:SetTexture("Interface\\Glues\\Credits\\"..info.file.."1");
+	local tilePath = CreateCreditsTextureTilePath(self, info, 1);
+	CreditsArtCache1:SetTexture(tilePath);
 end
 
 function CreditsFrame_UpdateCache(self)
@@ -141,12 +152,13 @@ function CreditsFrame_UpdateCache(self)
 	end
 
 	if (IsValidTextureIndex(info, self.cacheIndex)) then
-		_G["CreditsArtCache"..self.cacheIndex]:SetTexture("Interface\\Glues\\Credits\\"..info.file..self.cacheIndex);
+		local tilePath = CreateCreditsTextureTilePath(self, info, self.cacheIndex);
+		_G["CreditsArtCache"..self.cacheIndex]:SetTexture(tilePath);
 	end
 end
 
 function CreditsFrame_UpdateArt(self, index, elapsed)
-	if (index > (self.currentArt + 1) ) then
+	if ( index > self.artCount ) then
 		return;
 	end
 
@@ -221,7 +233,7 @@ function CreditsFrame_UpdateSpeedButtons()
 	elseif ( CREDITS_SCROLL_RATE == CREDITS_SCROLL_RATE_FASTFORWARD ) then
 		activeButton = CreditsFrameFastForwardButton;
 	end
-	
+
 	CreditsFrame_SetSpeedButtonActive(CreditsFrameRewindButton, activeButton == CreditsFrameRewindButton);
 	CreditsFrame_SetSpeedButtonActive(CreditsFramePauseButton, activeButton ==  CreditsFramePauseButton);
 	CreditsFrame_SetSpeedButtonActive(CreditsFramePlayButton, activeButton == CreditsFramePlayButton);
@@ -235,7 +247,7 @@ function CreditsFrame_OnUpdate(self, elapsed)
 
 	CreditsScrollFrame.scroll = CreditsScrollFrame.scroll + (CREDITS_SCROLL_RATE * elapsed);
 	CreditsScrollFrame.scroll = max(CreditsScrollFrame.scroll, 1);
-	
+
 	if ( CreditsScrollFrame.scroll >= CreditsScrollFrame.scrollMax ) then
 		GlueParent_CloseSecondaryScreen();
 		return;

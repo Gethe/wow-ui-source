@@ -615,7 +615,7 @@ function MinutesToTime(mins, hideDays)
 	end
 	if ( mins > 60  ) then
 		tempTime = floor(mins / 60);
-		time = time .. TIME_UNIT_DELIMITER .. format(DAYS_ABBR, tempTime);
+		time = time .. TIME_UNIT_DELIMITER .. format(HOURS_ABBR, tempTime);
 		mins = mod(mins, 60);
 		count = count + 1;
 	end

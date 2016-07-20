@@ -111,15 +111,15 @@
 						</Scripts>
 					</Button>
 					<Button parentKey="IgnoreButton" inherits="QuestIgnoreButtonTemplate">
+						<Size x="78" y="22"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="QuestFrameGoodbyeButton"/>
-							<Anchor point="BOTTOMRIGHT" relativeTo="QuestFrameGoodbyeButton"/>
+							<Anchor point="BOTTOMRIGHT" relativeTo="QuestFrame" relativePoint="BOTTOMRIGHT" x="-6" y="4"/>
 						</Anchors>
 					</Button>
 					<Button parentKey="UnignoreButton" inherits="QuestUnignoreButtonTemplate">
+						<Size x="78" y="22"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="QuestFrameGoodbyeButton"/>
-							<Anchor point="BOTTOMRIGHT" relativeTo="QuestFrameGoodbyeButton"/>
+							<Anchor point="BOTTOMRIGHT" relativeTo="QuestFrame" relativePoint="BOTTOMRIGHT" x="-6" y="4"/>
 						</Anchors>
 					</Button>
 					<Button name="QuestFrameCompleteButton" inherits="UIPanelButtonTemplate" text="CONTINUE">
@@ -278,15 +278,15 @@
 						</Scripts>
 					</Button>
 					<Button parentKey="IgnoreButton" inherits="QuestIgnoreButtonTemplate">
+						<Size x="78" y="22"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="QuestFrameDeclineButton"/>
-							<Anchor point="BOTTOMRIGHT" relativeTo="QuestFrameDeclineButton"/>
+							<Anchor point="BOTTOMRIGHT" relativeTo="QuestFrame" relativePoint="BOTTOMRIGHT" x="-6" y="4"/>
 						</Anchors>
 					</Button>
 					<Button parentKey="UnignoreButton" inherits="QuestUnignoreButtonTemplate">
+						<Size x="78" y="22"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="QuestFrameDeclineButton"/>
-							<Anchor point="BOTTOMRIGHT" relativeTo="QuestFrameDeclineButton"/>
+							<Anchor point="BOTTOMRIGHT" relativeTo="QuestFrame" relativePoint="BOTTOMRIGHT" x="-6" y="4"/>
 						</Anchors>
 					</Button>
 					<Button name="QuestFrameAcceptButton" inherits="UIPanelButtonTemplate" text="ACCEPT">

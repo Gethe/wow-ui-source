@@ -6,15 +6,9 @@
 		<Animations>
 			<AnimationGroup parentKey="TurnOn" setToFinalAlpha="true">
 				<Alpha childKey="OnTexture" fromAlpha="0" toAlpha="1" duration="0.1"/>
-				<Scripts>
-					<OnFinished>self:GetParent().on = true;</OnFinished>
-				</Scripts>
 			</AnimationGroup>
 			<AnimationGroup parentKey="TurnOff" setToFinalAlpha="true">
 				<Alpha childKey="OnTexture" fromAlpha="1" toAlpha="0" duration="0.1"/>
-				<Scripts>
-					<OnFinished>self:GetParent().on = false;</OnFinished>
-				</Scripts>
 			</AnimationGroup>
 		</Animations>
 	</Frame>

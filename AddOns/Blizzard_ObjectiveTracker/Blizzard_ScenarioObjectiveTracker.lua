@@ -611,9 +611,9 @@ end
 
 function ScenarioTrackerProgressBar_GetProgress(self)
 	if (self.criteriaIndex) then
-		return select(4, C_Scenario.GetCriteriaInfo(self.criteriaIndex));
+		return select(4, C_Scenario.GetCriteriaInfo(self.criteriaIndex)) or 0;
 	else
-		return select(9, C_Scenario.GetStepInfo());
+		return select(9, C_Scenario.GetStepInfo()) or 0;
 	end
 end
 
