@@ -41,7 +41,7 @@
 							</Anchors>
 						</FontString>
 						<Texture name="$parentBG" file="Interface\HelpFrame\CS_HelpTextures_Tile" horizTile="true">
-							<Size x="128" y="3"/>	
+							<Size x="128" y="3"/>
 							<Anchors>
 								<Anchor point="LEFT" relativePoint="BOTTOMLEFT" relativeTo="$parentBG" x="0" y="0"/>
 								<Anchor point="RIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$parentBG" x="0" y="0"/>
@@ -51,7 +51,7 @@
 					</Layer>
 					<Layer level="OVERLAY">
 						<Texture name="$parentNubL" file="Interface\HelpFrame\CS_HelpTextures">
-							<Size x="4" y="10"/>	
+							<Size x="4" y="10"/>
 							<Anchors>
 								<Anchor point="LEFT" relativePoint="BOTTOMLEFT" relativeTo="$parentBG" x="0" y="0"/>
 							</Anchors>
@@ -134,23 +134,21 @@
 	<Button name="GMChatStatusFrame" toplevel="true" parent="UIParent" enableMouse="true" hidden="true" frameStrata="FULLSCREEN">
 		<Animations>
 			<AnimationGroup parentKey="pulse" looping="REPEAT">
-				<Alpha target="$parentGlowLeft" 	change="1" duration="0.9" order="1"/>
-				<Alpha target="$parentGlowRight" 	change="1" duration="0.9" order="1"/>
-				<Alpha target="$parentGlowMid" 		change="1" duration="0.9" order="1"/>
-				
-				<Alpha target="$parentGlowLeft" 	change="-1" duration="0.9" order="2"/>
-				<Alpha target="$parentGlowRight" 	change="-1" duration="0.9" order="2"/>
-				<Alpha target="$parentGlowMid" 		change="-1" duration="0.9" order="2"/>
+				<Alpha target="$parentGlowLeft" 	fromAlpha="0" toAlpha="1" duration="0.9" order="1"/>
+				<Alpha target="$parentGlowRight" 	fromAlpha="0" toAlpha="1" duration="0.9" order="1"/>
+				<Alpha target="$parentGlowMid" 		fromAlpha="0" toAlpha="1" duration="0.9" order="1"/>
+
+				<Alpha target="$parentGlowLeft" 	fromAlpha="1" toAlpha="0" duration="0.9" order="2"/>
+				<Alpha target="$parentGlowRight" 	fromAlpha="1" toAlpha="0" duration="0.9" order="2"/>
+				<Alpha target="$parentGlowMid" 		fromAlpha="1" toAlpha="0" duration="0.9" order="2"/>
 			</AnimationGroup>
 		</Animations>
 		<Size x="290" y="72"/>
-		<Anchors>
-			<Anchor point="TOPRIGHT" x="-170" y="-5"/>
-		</Anchors>
+		<!-- This frame gets positioned in UIParent_UpdateTopFramePositions() -->
 		<Layers>
 			<Layer level="BORDER">
 				<Texture name="$parentBorderLeft" file="Interface\HelpFrame\CS_HelpTextures" parentKey="BorderLeft">
-					<Size x="49" y="72"/>	
+					<Size x="49" y="72"/>
 					<Anchors>
 						<Anchor point="LEFT" x="20" y="0"/>
 					</Anchors>
@@ -193,7 +191,7 @@
 			</Layer>
 			<Layer level="OVERLAY">
 				<Texture name="$parentGlowLeft" file="Interface\HelpFrame\CS_HelpTextures" parentKey="BorderLeft" alpha="0" alphaMode="ADD">
-					<Size x="49" y="72"/>	
+					<Size x="49" y="72"/>
 					<Anchors>
 						<Anchor point="LEFT" x="20" y="0"/>
 					</Anchors>
@@ -218,11 +216,11 @@
 		<Scripts>
 			<OnShow>
 				GetGMTicket();
-				TemporaryEnchantFrame:SetPoint("TOPRIGHT", self:GetParent(), "TOPRIGHT", -205, (-self:GetHeight()));
+				UIParent_UpdateTopFramePositions();
 			</OnShow>
 			<OnHide>
 				GetGMTicket();
-				TemporaryEnchantFrame:SetPoint("TOPRIGHT", "UIParent", "TOPRIGHT", -180, -13);
+				UIParent_UpdateTopFramePositions();
 			</OnHide>
 			<OnClick>
 				GMChatStatusFrame_OnClick();

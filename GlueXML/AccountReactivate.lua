@@ -47,25 +47,25 @@ function GetTimeLeftMinuteString(minutes)
 		local wks = math.floor(minutes / weeks);
 
 		minutes = minutes - (wks * weeks);
-		str = str .. wks .. " " .. WEEKS_ABBR;
+		str = str .. format(WEEKS_ABBR, wks);
 	end
 
 	if (math.floor(minutes / days) > 0) then
 		local dys = math.floor(minutes / days);
 
 		minutes = minutes - (dys * days);
-		str = str .. " " .. dys .. " " .. DAYS_ABBR;
+		str = str .. " " .. format(DAYS_ABBR, dys);
 	end
 
 	if (math.floor(minutes / hours) > 0) then
 		local hrs = math.floor(minutes / hours);
 
 		minutes = minutes - (hrs * hours);
-		str = str .. " " .. hrs .. " " .. HOURS_ABBR;
+		str = str .. " " .. format(HOURS_ABBR, hrs);
 	end
 
 	if (minutes > 0) then
-		str = str .. " " .. minutes .. " " .. MINUTES_ABBR;
+		str = str .. " " .. format(MINUTES_ABBR, minutes);
 	end
 
 	return str;

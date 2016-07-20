@@ -62,6 +62,14 @@ function KeyBindingFrame_OnLoad(self)
 	KeyBindingFrame_SetSelected(nil);
 	KeyBindingFrame_LoadCategories(self);
 	KeyBindingFrame_LoadKeyBindingButtons(self);
+	
+	self:RegisterEvent("ADDON_LOADED");
+end
+
+function KeyBindingFrame_OnEvent(self, event, ...)
+	if (event == "ADDON_LOADED") then
+		KeyBindingFrame_LoadCategories(self);
+	end
 end
 
 local defaultCategories = { BINDING_HEADER_MOVEMENT,
@@ -75,7 +83,6 @@ local defaultCategories = { BINDING_HEADER_MOVEMENT,
 							BINDING_HEADER_RAID_TARGET,
 							BINDING_HEADER_VEHICLE,
 							BINDING_HEADER_DEBUG,
-							BINDING_HEADER_ITUNES_REMOTE,
 							BINDING_HEADER_MOVIE_RECORDING_SECTION };
 
 function KeyBindingFrame_LoadCategories(self)

@@ -145,58 +145,8 @@
 			</CheckButton>
 		</Frames>
 	</Frame>
-	<CheckButton name="StationeryPopupButtonTemplate" virtual="true">
-		<Size x="36" y="36"/>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture file="Interface\Buttons\UI-EmptySlot-Disabled">
-					<Size x="64" y="64"/>
-					<Anchors>
-						<Anchor point="CENTER" x="0" y="-1"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentNameFrame" file="Interface\QuestFrame\UI-QuestItemNameFrame">
-					<Size x="128" y="64"/>
-					<Anchors>
-						<Anchor point="LEFT" relativePoint="RIGHT" x="-10" y="0"/>
-					</Anchors>
-				</Texture>
-				<FontString name="$parentName" inherits="GameFontNormalSmall" justifyH="LEFT">
-					<Size x="90" y="36"/>
-					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentNameFrame" x="15" y="5"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-		<Frames>
-			<Frame name="$parentMoneyFrame" inherits="SmallMoneyFrameTemplate">
-				<Anchors>
-					<Anchor point="BOTTOMLEFT" relativeTo="$parentNameFrame" relativePoint="BOTTOMLEFT" x="12" y="14"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						SmallMoneyFrame_OnLoad(self);
-						MoneyFrame_SetType(self, "STATIC");
-					</OnLoad>
-				</Scripts>
-			</Frame>
-		</Frames>
-		<Scripts>
-			<OnClick>
-				StationeryPopupButton_OnClick(self, button, down);
-			</OnClick>
-		</Scripts>
-		<NormalTexture name="$parentIcon">
-			<Size x="36" y="36"/>
-			<Anchors>
-				<Anchor point="CENTER" x="0" y="-1"/>
-			</Anchors>
-		</NormalTexture>
-		<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
-		<CheckedTexture alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight"/>
-	</CheckButton>
-	<Button name="SendMailAttachment" virtual="true">
+
+	<Button name="SendMailAttachment" parentArray="SendMailAttachments" virtual="true">
 		<Size x="37" y="37"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -209,7 +159,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<FontString name="$parentCount" inherits="NumberFontNormal" justifyH="RIGHT">
+				<FontString parentKey="Count" name="$parentCount" inherits="NumberFontNormal" justifyH="RIGHT">
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT" x="-5" y="2"/>
 					</Anchors>
@@ -241,18 +191,13 @@
 			<OnEnter>
 				SendMailAttachment_OnEnter(self, motion);
 			</OnEnter>
-			<OnUpdate>
-				if ( GameTooltip:IsOwned(self) ) then
-					SendMailAttachment_OnEnter(self);
-				end
-			</OnUpdate>
 			<OnLeave>
 				GameTooltip_Hide();
 			</OnLeave>
 		</Scripts>
 		<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
 	</Button>
-	<Button name="OpenMailAttachment" inherits="ItemButtonTemplate" virtual="true">
+	<Button name="OpenMailAttachment" parentArray="OpenMailAttachments" inherits="ItemButtonTemplate" virtual="true">
 		<Scripts>
 			<OnLoad>
 				self:RegisterEvent("MAIL_INBOX_UPDATE");
@@ -583,6 +528,7 @@
 											<OnEscapePressed function="EditBox_ClearFocus"/>
 										</Scripts>
 										<FontString inherits="MailTextFontNormal"/>
+										<HighlightColor a="1.0" r="0.82" g="0.82" b="0.82"/>
 									</EditBox>
 								</Frames>
 								<Scripts>
@@ -794,36 +740,6 @@
 							</CheckButton>
 						</Frames>
 					</Frame>
-					<!--
-					<Button name="SendMailStationeryButton" text="CHOOSE_STATIONERY">
-						<Size>
-							<AbsDimension x="125" y="22"/>
-						</Size>
-						<Anchors>
-							<Anchor point="LEFT" relativeTo="SendMailNameEditBox" relativePoint="RIGHT">
-								<Offset>
-									<AbsDimension x="-5" y="0"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								if (StationeryPopupFrame:IsShown()) then
-									StationeryPopupFrame:Hide();
-								else
-									StationeryPopupFrame:Show();
-								end
-							</OnClick>
-						</Scripts>
-						<NormalFont style="GameFontNormalSmall"/>
-						<HighlightFont style="GameFontHighlightSmall"/>
-						<DisabledFont style="GameFontDisableSmall"/>
-						<NormalTexture inherits="UIPanelButtonUpTexture"/>
-						<PushedTexture inherits="UIPanelButtonDownTexture"/>
-						<DisabledTexture inherits="UIPanelButtonDisabledTexture"/>
-						<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
-					</Button>
-					-->
 					<Frame name="SendMailMoneyInset" inherits="InsetFrameTemplate" useParentLevel="true">
 						<Anchors>
 							<Anchor point="BOTTOMLEFT" x="4" y="92"/>
@@ -892,8 +808,6 @@
 						else
 							SendMailErrorText:SetFormattedText(MAIL_COD_ERROR, MAX_COD_AMOUNT);
 						end
-						StationeryPopupFrame_Update();
-						StationeryPopupButton_OnClick(self, 1);
 						SendMailNameEditBox:SetFocus();
 					</OnShow>
 					<OnMouseUp>
@@ -930,7 +844,6 @@
 			<OnHide>
 				CloseMail();
 				HideUIPanel(OpenMailFrame);
-				StationeryPopupFrame:Hide();
 				SendMailBodyEditBox:SetText("");
 				SendMailNameEditBox:SetText("");
 				SendMailSubjectEditBox:SetText("");
@@ -938,114 +851,6 @@
 				SetSendMailShowing(false);
 			</OnHide>
 			<OnMouseWheel function="MailFrame_OnMouseWheel"/>
-		</Scripts>
-	</Frame>
-<!-- Stationery Popup -->	
-	<Frame name="StationeryPopupFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true">
-		<Size x="220" y="298"/>
-		<Anchors>
-			<Anchor point="TOPLEFT" relativeTo="MailFrame" relativePoint="TOPRIGHT" x="-30" y="-40"/>
-		</Anchors>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture file="Interface\MailFrame\MailPopup-Top">
-					<Size x="256" y="256"/>
-					<Anchors>
-						<Anchor point="TOPLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture file="Interface\MailFrame\MailPopup-Bottom">
-					<Size x="256" y="64"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="0" y="-256"/>
-					</Anchors>
-				</Texture>
-				<FontString inherits="GameFontHighlightSmall" text="CHOOSE_STATIONERY">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="24" y="-21"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-		<Frames>
-			<ScrollFrame name="StationeryPopupScrollFrame" inherits="FauxScrollFrameTemplate">
-				<Size x="200" y="250"/>
-				<Anchors>
-					<Anchor point="TOPRIGHT" x="-38" y="-13"/>
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar">
-							<Size x="30" y="120"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-3" y="2"/>
-							</Anchors>
-							<TexCoords left="0" right="0.46875" top="0.0234375" bottom="0.9609375"/>
-						</Texture>
-						<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar">
-							<Size x="30" y="123"/>
-							<Anchors>
-								<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-3" y="-2"/>
-							</Anchors>
-							<TexCoords left="0.53125" right="1.0" top="0.03125" bottom="1.0"/>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnVerticalScroll>
-						FauxScrollFrame_OnVerticalScroll(self, offset, STATIONERY_ICON_ROW_HEIGHT, StationeryPopupFrame_Update);
-					</OnVerticalScroll>
-				</Scripts>
-			</ScrollFrame>
-			<CheckButton name="StationeryPopupButton1" inherits="StationeryPopupButtonTemplate" id="1">
-				<Anchors>
-					<Anchor point="TOPLEFT" x="24" y="-37"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="StationeryPopupButton2" inherits="StationeryPopupButtonTemplate" id="2">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="StationeryPopupButton1" relativePoint="BOTTOMLEFT" x="0" y="-9"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="StationeryPopupButton3" inherits="StationeryPopupButtonTemplate" id="3">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="StationeryPopupButton2" relativePoint="BOTTOMLEFT" x="0" y="-9"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="StationeryPopupButton4" inherits="StationeryPopupButtonTemplate" id="4">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="StationeryPopupButton3" relativePoint="BOTTOMLEFT" x="0" y="-9"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="StationeryPopupButton5" inherits="StationeryPopupButtonTemplate" id="5">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="StationeryPopupButton4" relativePoint="BOTTOMLEFT" x="0" y="-9"/>
-				</Anchors>
-			</CheckButton>
-			<Button name="StationeryPopupCancelButton" inherits="UIPanelButtonTemplate" text="CANCEL">
-				<Size x="78" y="22"/>
-				<Anchors>
-					<Anchor point="BOTTOMRIGHT" relativeTo="StationeryPopupFrame" x="-11" y="13"/>
-				</Anchors>
-				<Scripts>
-					<OnClick function="HideParentPanel"/>
-				</Scripts>
-			</Button>
-			<Button name="StationeryPopupOkayButton" inherits="UIPanelButtonTemplate" text="OKAY">
-				<Size x="78" y="22"/>
-				<Anchors>
-					<Anchor point="RIGHT" relativeTo="StationeryPopupCancelButton" relativePoint="LEFT" x="-11" y="0"/>
-				</Anchors>
-				<Scripts>
-					<OnClick function="HideParentPanel"/>
-				</Scripts>
-			</Button>
-		</Frames>
-		<Scripts>
-			<OnShow function="StationeryPopupFrame_Update"/>
-			<OnHide>
-				PlaySound("igCharacterInfoClose");
-			</OnHide>
 		</Scripts>
 	</Frame>
 <!-- Open Mail -->

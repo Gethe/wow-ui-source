@@ -2693,13 +2693,14 @@ end
 
 function CalendarViewRaidFrame_Update()
 	local name, calendarType, raidID, hour, minute, difficulty, difficultyName = CalendarGetRaidInfo(CalendarGetEventIndex());
-	name = GetDungeonNameWithDifficulty(name, difficultyName);
-	CalendarTitleFrame_SetText(CalendarViewRaidTitleFrame, name);
 	if ( calendarType == "RAID_LOCKOUT" ) then
+		name = GetDungeonNameWithDifficulty(name, difficultyName);
+		CalendarTitleFrame_SetText(CalendarViewRaidTitleFrame, name);
 		CalendarViewRaidDescription:SetFormattedText(CALENDAR_RAID_LOCKOUT_DESCRIPTION, name, GameTime_GetFormattedTime(hour, minute, true));
 	else
 		-- calendarType should be "RAID_RESET"
-		CalendarViewRaidDescription:SetFormattedText(CALENDAR_RAID_RESET_DESCRIPTION, name, GameTime_GetFormattedTime(hour, minute, true));
+		CalendarTitleFrame_SetText(CalendarViewRaidTitleFrame, RAID);
+		CalendarViewRaidDescription:SetFormattedText(CALENDAR_RAID_RESET_DESCRIPTION, RAID, GameTime_GetFormattedTime(hour, minute, true));
 	end
 end
 

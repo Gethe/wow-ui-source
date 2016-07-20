@@ -37,6 +37,11 @@
 					<Anchor point="LEFT" relativeTo="$parentTab3" relativePoint="RIGHT" x="-16" y="0"/>
 				</Anchors>
 			</Button>
+			<Button name="$parentTab5" inherits="CollectionsJournalTab" text="WARDROBE" id="5">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentTab4" relativePoint="RIGHT" x="-16" y="0"/>
+				</Anchors>
+			</Button>
 			
 			<Frame parentKey="HeirloomTabHelpBox" inherits="GlowBoxTemplate" enableMouse="true" hidden="true" frameStrata="DIALOG">
 				<Size x="220" y="100"/>
@@ -77,16 +82,54 @@
 					</OnShow>
 				</Scripts>
 			</Frame>
+			<Frame parentKey="WardrobeTabHelpBox" inherits="GlowBoxTemplate" enableMouse="true" hidden="true" frameStrata="DIALOG">
+				<Size x="220" y="100"/>
+				<Anchors>
+					<Anchor point="BOTTOM" relativeTo="$parentTab5" relativePoint="TOP" x="0" y="14"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString parentKey="Text" inherits="GameFontHighlightLeft" justifyV="TOP" text="TRANSMOG_JOURNAL_TAB_TUTORIAL">
+							<Size x="188" y="0"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="16" y="-24"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
+						<Anchors>
+							<Anchor point="TOPRIGHT" x="6" y="6"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								self:GetParent():Hide();
+								SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_JOURNAL_TAB, true);
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Frame parentKey="Arrow" inherits="GlowBoxArrowTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativePoint="BOTTOM" y="4"/>
+						</Anchors>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnShow>
+						self:SetHeight(self.Text:GetHeight()+42);
+					</OnShow>
+				</Scripts>
+			</Frame>
 		</Frames>
 
 		<Scripts>
 			<OnLoad>
 				CollectionsJournalTitleText:SetText(COLLECTIONS);
 				SetPortraitToTexture(CollectionsJournalPortrait, "Interface\\Icons\\MountJournalPortrait");
-				PanelTemplates_SetNumTabs(self, 4);
-				
-				local tabNum = tonumber(GetCVar("petJournalTab")) or 1
-				PanelTemplates_SetTab(self, tabNum);
+				PanelTemplates_SetNumTabs(self, 5);
+
+				PanelTemplates_SetTab(self, tonumber(GetCVar("petJournalTab")) or 1);
 			</OnLoad>
 			<OnShow function="CollectionsJournal_OnShow"/>
 			<OnHide function="CollectionsJournal_OnHide"/>

@@ -1,0 +1,13 @@
+## Interface: 70000
+## Title: Blizzard NamePlates
+## Secure: 1
+## LoadOnDemand: 0
+
+Blizzard_NamePlates.xml
+Blizzard_ClassNameplateBar.xml
+Blizzard_ClassNameplateBar_Paladin.xml
+Blizzard_ClassNameplateBar_DeathKnight.xml
+Blizzard_ClassNameplateBar_RogueDruid.xml
+Blizzard_ClassNameplateBar_Mage.xml
+Blizzard_ClassNameplateBar_Monk.xml
+Blizzard_ClassNameplateBar_Warlock.xml

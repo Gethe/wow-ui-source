@@ -43,7 +43,6 @@ ITEM_SEARCHBAR_LIST = {
 	"GuildItemSearchBox",
 	"VoidItemSearchBox",
 	"BankItemSearchBox",
-	"HeirloomsJournalSearchBox",
 };
 
 function BagSearch_OnHide(self)
@@ -278,7 +277,6 @@ end
 
 function InputScrollFrame_OnLoad(self)
 	local scrollBar = self.ScrollBar;
-	scrollBar:SetFrameLevel(self.FocusButton:GetFrameLevel() + 2);
 	scrollBar:ClearAllPoints();
 	scrollBar:SetPoint("TOPLEFT", self, "TOPRIGHT", -13, -11);
 	scrollBar:SetPoint("BOTTOMLEFT", self, "BOTTOMRIGHT", -13, 9);
@@ -345,16 +343,4 @@ function SetCheckButtonIsRadio(button, isRadio)
 		button:SetDisabledCheckedTexture("Interface\\Buttons\\UI-CheckBox-Check-Disabled");
 		button:GetDisabledCheckedTexture():SetTexCoord(0, 1, 0, 1);
 	end	
-end
-
----------------------------------------------------------------------------------
---- Follower Portrait                                                         ---
----------------------------------------------------------------------------------
-function GarrisonFollowerPortrait_Set(portrait, iconFileID)
-	if (iconFileID == nil or iconFileID == 0) then
-		-- unknown icon file ID; use the default silhouette portrait
-		portrait:SetTexture("Interface\\Garrison\\Portraits\\FollowerPortrait_NoPortrait");
-	else
-		portrait:SetToFileData(iconFileID);
-	end
 end

@@ -679,6 +679,28 @@ function DebugTooltip_OnLoad(self)
 	self.statusBar2Text = getglobal(self:GetName().."StatusBar2Text");
 end
 
+function FrameStackTooltip_OnDisplaySizeChanged(self)
+	local height = GetScreenHeight();
+	if (height > 768) then
+		self:SetScale(768/height);
+	else
+		self:SetScale(1);
+	end
+end
+
+function FrameStackTooltip_OnLoad(self)
+	DebugTooltip_OnLoad(self);
+
+	FrameStackTooltip_OnDisplaySizeChanged(self);
+	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
+end
+
+function FrameStackTooltip_OnEvent(self, event, ...)
+	if ( event == "DISPLAY_SIZE_CHANGED" ) then
+		FrameStackTooltip_OnDisplaySizeChanged(self);
+	end
+end
+
 function FrameStackTooltip_Toggle (showHidden, showRegions)
 	local tooltip = _G["FrameStackTooltip"];
 	if ( tooltip:IsVisible() ) then

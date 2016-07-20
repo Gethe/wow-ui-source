@@ -4,6 +4,30 @@
 -- in this way).
 ----------------------------------------------------------------------------------------
 
+local HIDE_MOST = {
+	MinimapCluster		= "hidden",
+	PlayerFrame			= "hidden",
+	TargetFrame			= "hidden",
+	ObjectiveTrackerFrame = "hidden",
+	RuneFrame			= "hidden",
+	MainMenuBar			= "hidden",
+	DurabilityFrame 	= "hidden",
+	CompactRaidFrameManager = "hidden",
+	PartyMemberFrame1	= "hidden",
+	PartyMemberFrame2	= "hidden",
+	PartyMemberFrame3	= "hidden",
+	PartyMemberFrame4	= "hidden",
+	ConsolidatedBuffs	= "hidden",
+	BuffFrame			= "hidden",
+	MultiBarLeft		= "hidden",
+	MultiBarRight		= "hidden",
+	FocusFrame			= "hidden",
+	TemporaryEnchantFrame = "hidden",
+	WorldStateAlwaysUpFrame = "hidden",
+	ZoneAbilityFrame	= "hidden",
+	OrderHallCommandBar	= "hidden",
+}
+
 --------Data on what locks exist and what frames are ruled by them--------
 FRAMELOCK_STATES = {
 	PETBATTLEOPENING = {
@@ -14,28 +38,7 @@ FRAMELOCK_STATES = {
 		ChatFrame1			= "hidden",
 		--Additional chat frames are added to this list as they are created.
 	},
-	PETBATTLES = {
-		MinimapCluster		= "hidden",
-		PlayerFrame			= "hidden",
-		TargetFrame			= "hidden",
-		ObjectiveTrackerFrame = "hidden",
-		RuneFrame			= "hidden",
-		MainMenuBar			= "hidden",
-		DurabilityFrame 	= "hidden",
-		CompactRaidFrameManager = "hidden",
-		PartyMemberFrame1	= "hidden",
-		PartyMemberFrame2	= "hidden",
-		PartyMemberFrame3	= "hidden",
-		PartyMemberFrame4	= "hidden",
-		ConsolidatedBuffs	= "hidden",
-		BuffFrame			= "hidden",
-		MultiBarLeft		= "hidden",
-		MultiBarRight		= "hidden",
-		FocusFrame			= "hidden",
-		TemporaryEnchantFrame = "hidden",
-		WorldStateAlwaysUpFrame = "hidden",
-		DraenorZoneAbilityFrame = "hidden",
-	},
+	PETBATTLES = HIDE_MOST,
 };
 
 FRAMELOCK_STATE_PRIORITIES = {

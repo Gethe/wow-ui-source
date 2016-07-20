@@ -801,6 +801,12 @@
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.IconBorder" relativePoint="TOPRIGHT" x="-45" y="-70" />
 						</Anchors>
+						<Shadow>
+							<Offset>
+								<AbsDimension x="1" y="-1"/>
+							</Offset>
+							<Color r="0" g="0" b="0"/>
+						</Shadow>
 						<Color r="1" g="1" b="1" />
 					</FontString>
 					<FontString parentKey="Description" inherits="GameFontNormalLarge" justifyH="LEFT" justifyV="TOP">
@@ -891,7 +897,7 @@
 					</Layers>
 					<Animations>
 						<AnimationGroup parentKey="PulseAnim" looping="BOUNCE">
-							<Alpha change="-1" duration="1.5" order="1"/>
+							<Alpha fromAlpha="1" toAlpha="0" duration="1.5" order="1"/>
 						</AnimationGroup>
 					</Animations>
 				</Frame>
@@ -907,7 +913,7 @@
 					</Layers>
 					<Animations>
 						<AnimationGroup parentKey="FadeAnim">
-							<Alpha change="-0.75" duration=".3"/>
+							<Alpha fromAlpha="0.75" toAlpha="0" duration=".3"/>
 							<Scripts>
 								<OnFinished>
 									self:GetParent():Hide();
@@ -1133,7 +1139,7 @@
 					</Layers>
 					<Animations>
 						<AnimationGroup parentKey="PulseAnim" looping="BOUNCE">
-							<Alpha change="-1" duration="1.5" order="1"/>
+							<Alpha fromAlpha="1" toAlpha="0" duration="1.5" order="1"/>
 						</AnimationGroup>
 					</Animations>
 				</Frame>
@@ -1149,7 +1155,7 @@
 					</Layers>
 					<Animations>
 						<AnimationGroup parentKey="FadeAnim">
-							<Alpha change="-0.75" duration=".3"/>
+							<Alpha fromAlpha="0.75" toAlpha="0" duration=".3"/>
 							<Scripts>
 								<OnFinished>
 									self:GetParent():Hide();
@@ -1912,8 +1918,8 @@
 					<Size x="140" y="30" />
 					<Animations>
 						<AnimationGroup parentKey="PulseAnim">
-							<Alpha childKey="Flash" change="1.0" duration="0.5" order="1"/>
-							<Alpha childKey="Flash" change="-1.0" duration="0.5" order="2"/>
+							<Alpha childKey="Flash" fromAlpha="0" toAlpha="1" duration="0.5" order="1"/>
+							<Alpha childKey="Flash" fromAlpha="1" toAlpha="0" duration="0.5" order="2"/>
 						</AnimationGroup>
 					</Animations>
 					<Anchors>
@@ -2438,6 +2444,17 @@
 								</OnLeave>
 							</Scripts>
 						</EditBox>
+						<Frame parentKey="DestinationRealmSelector" inherits="StoreDropDownMenuTemplate" enableMouse="true">
+							<Size x="150" y="22"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.SelectedCharacterFrame" relativePoint="BOTTOMLEFT" x="-16" y="-24"/>
+							</Anchors>
+							<Scripts>
+								<OnLoad>
+									self.Button:SetScript("OnClick", VASCharacterSelectionDestinationRealmSelector_OnClick);
+								</OnLoad>
+							</Scripts>
+						</Frame>
 					</Frames>
 				</Frame>
 			</Frames>

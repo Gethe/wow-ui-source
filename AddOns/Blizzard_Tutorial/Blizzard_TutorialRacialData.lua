@@ -23,29 +23,29 @@ local SpecialCalloutRanges = {
 -- DRUID	= , --
 
 TutorialData.StartingAbility = {
-	WARRIOR	= 78,		-- Heroic Strike
+	WARRIOR	= 1464,		-- Slam
 	PALADIN	= 35395,	-- Crusader Strike
-	HUNTER	= 3044,		-- Arcane Shot
-	ROGUE	= 1752,		-- Sinister Strike
+	HUNTER	= 193455,	-- Cobra Shot
+	ROGUE	= 1329,		-- Mutilate
 	PRIEST	= 585,		-- Smite
-	SHAMAN	= 403,		-- Lightning Bolt
-	MAGE	= 44614,	-- Frostfire BOlt
-	WARLOCK	= 686,		-- Shadow Bolt
-	MONK	= 100780,	-- Jab
-	DRUID	= 5176,		-- Wrath
+	SHAMAN	= 188196,	-- Lightning Bolt
+	MAGE	= 116,		-- Frostbolt
+	WARLOCK	= 689,		-- Drain Life
+	MONK	= 100780,	-- Tier Palm
+	DRUID	= 5221,		-- Shred
 }
 
-TutorialData.TrainingQuestAbility = {
+TutorialData.Level3Ability = {
 	WARRIOR	= 100,		-- Charge
-	PALADIN	= 105361,	-- Seal of Command
-	HUNTER	= 56641,	-- Steady Shot
-	ROGUE	= 2098,		-- Eviscerate
+	PALADIN	= 20271,	-- Judgement
+	HUNTER	= 34026,	-- Kill Command
+	ROGUE	= 32645,	-- Envenom
 	PRIEST	= 589,		-- Shadow Word: Pain
-	SHAMAN	= 73899,	-- Primal Strike
+	SHAMAN	= 8042,		-- Earth Shock
 	MAGE	= 122,		-- Frost Nova
 	WARLOCK	= 172,		-- Corruption
-	MONK	= 100787,	-- Tiger Palm
-	DRUID	= 8921,		-- Moonfire
+	MONK	= 100784,	-- Blackout Kick
+	DRUID	= 22568,	-- Ferocious Bite
 }
 
 

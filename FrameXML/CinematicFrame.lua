@@ -1,4 +1,30 @@
 
+function CinematicFrame_OnDisplaySizeChanged(self)
+	if (self:IsShown()) then
+	  local width = CinematicFrame:GetWidth();
+	  local height = CinematicFrame:GetHeight();
+	  
+	  local desiredHeight = width / 2;
+	  if ( desiredHeight > height ) then
+		  desiredHeight = height;
+	  end
+	  
+	  local blackBarHeight = ( height - desiredHeight ) / 2;
+  
+	  UpperBlackBar:SetHeight( blackBarHeight );
+	  LowerBlackBar:SetHeight( blackBarHeight );
+  
+	  CinematicFrame.Subtitle1:ClearAllPoints();
+	  CinematicFrame.Subtitle1:SetPoint("LEFT", CinematicFrame.LowerBlackBar, "LEFT", 5, 0);
+	  CinematicFrame.Subtitle1:SetPoint("RIGHT", CinematicFrame.LowerBlackBar, "RIGHT", -5, 0);
+	  if (CinematicFrame.Subtitle1:GetBottom() < 0) then
+		  CinematicFrame.Subtitle1:ClearAllPoints();
+		  CinematicFrame.Subtitle1:SetPoint("BOTTOMLEFT", CinematicFrame.LowerBlackBar, "TOPLEFT", 5, 5);
+		  CinematicFrame.Subtitle1:SetPoint("BOTTOMRIGHT", CinematicFrame.LowerBlackBar, "TOPRIGHT", -5, 5);
+	  end
+	end
+end
+
 function CinematicFrame_OnLoad(self)
 	self:RegisterEvent("CINEMATIC_START");
 	self:RegisterEvent("CINEMATIC_STOP");
@@ -8,23 +34,11 @@ function CinematicFrame_OnLoad(self)
 	self:RegisterEvent("CHAT_MSG_MONSTER_SAY");
 	self:RegisterEvent("CHAT_MSG_YELL");
 	self:RegisterEvent("CHAT_MSG_MONSTER_YELL");
+	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
+end
 
-	local width = GetScreenWidth();
-	local height = GetScreenHeight();
-	
-	if ( width / height > 4 / 3) then
-		local desiredHeight = width / 2;
-		if ( desiredHeight > height ) then
-			desiredHeight = height;
-		end
-		
-		local blackBarHeight = ( height - desiredHeight ) / 2;
-
-		UpperBlackBar:SetHeight( blackBarHeight );
-		UpperBlackBar:SetWidth( width );
-		LowerBlackBar:SetHeight( blackBarHeight );
-		LowerBlackBar:SetWidth( width );
-	end
+function CinematicFrame_OnShow(self)
+	CinematicFrame_OnDisplaySizeChanged(self)
 end
 
 function CinematicFrame_OnEvent(self, event, ...)
@@ -38,9 +52,13 @@ function CinematicFrame_OnEvent(self, event, ...)
 		self.closeDialog:Hide();
 		ShowUIPanel(self, 1);
 		RaidNotice_Clear(self.raidBossEmoteFrame);
+		
+		LowHealthFrame:EvaluateVisibleState();
 	elseif ( event == "CINEMATIC_STOP" ) then
 		HideUIPanel(self);
 		RaidNotice_Clear(RaidBossEmoteFrame);	--Clear the normal boss emote frame. If there are any messages left over from the cinematic, we don't want to show them.
+		
+		LowHealthFrame:EvaluateVisibleState();
 	elseif ( event == "CHAT_MSG_SAY" or event == "CHAT_MSG_MONSTER_SAY" or
 		event == "CHAT_MSG_YELL" or event == "CHAT_MSG_MONSTER_YELL" ) then
 		local message, sender, lang, channel, target, flag, zone, localid, name, instanceId, lineId, guidString, bnId, isMobile, isSubtitle, hideSenderInLetterbox = ...;
@@ -58,6 +76,8 @@ function CinematicFrame_OnEvent(self, event, ...)
 			local chatType = string.match(event, "CHAT_MSG_(.*)");
 			CinematicFrame_AddSubtitle(chatType, body);
 		end
+	elseif ( event == "DISPLAY_SIZE_CHANGED") then
+		CinematicFrame_OnDisplaySizeChanged(self);
 	end
 end
 
@@ -79,6 +99,11 @@ function CinematicFrame_AddSubtitle(chatType, body)
 	end
 
 	fontString:SetText(body);
+	if (CinematicFrame.Subtitle1:GetBottom() < 0) then
+		CinematicFrame.Subtitle1:ClearAllPoints();
+		CinematicFrame.Subtitle1:SetPoint("BOTTOMLEFT", CinematicFrame.LowerBlackBar, "TOPLEFT", 5, 5);
+		CinematicFrame.Subtitle1:SetPoint("BOTTOMRIGHT", CinematicFrame.LowerBlackBar, "TOPRIGHT", -5, 5);
+	end
 	fontString:Show();
 end
 
@@ -87,7 +112,13 @@ function CinematicFrame_OnKeyDown(self, key)
 	if ( keybind == "TOGGLEGAMEMENU" ) then
 		if ( self.isRealCinematic and IsGMClient() ) then
 			StopCinematic();
-		elseif ( self.isRealCinematic or CanExitVehicle() or CanCancelScene() ) then	--If it's not a real cinematic, we can cancel it by leaving the vehicle.
+		elseif ( self.isRealCinematic ) then
+			self.closeDialog:Show();
+		elseif ( IsInCinematicScene() ) then
+			if ( CanCancelScene() ) then
+				self.closeDialog:Show();
+			end
+		elseif ( CanExitVehicle() ) then	--If it's not a real cinematic, we can cancel it by leaving the vehicle.
 			self.closeDialog:Show();
 		end
 	elseif ( keybind == "SCREENSHOT" or keybind == "TOGGLEMUSIC" or keybind == "TOGGLESOUND" ) then

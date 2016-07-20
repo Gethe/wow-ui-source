@@ -4,14 +4,14 @@
 	<Frame name="StreamingIcon" toplevel="true" alpha="0" parent="UIParent" hidden="true">
 		<Animations>
 			<AnimationGroup parentKey="FadeIN">
-				<Alpha target="StreamingIcon" order="1" change="1.0" duration="2" />
+				<Alpha target="StreamingIcon" order="1" fromAlpha="0" toAlpha="1" duration="2" />
 				<Scripts>
 					<OnFinished function="StreamingFrame_FadeIN_OnFinished"/>
 					<OnStop function="StreamingFrame_FadeIN_OnFinished"/>
 				</Scripts>
 			</AnimationGroup>
 			<AnimationGroup parentKey="FadeOUT">
-				<Alpha target="StreamingIcon" order="1" change="-1.0" startDelay="3" duration="10" />
+				<Alpha target="StreamingIcon" order="1" fromAlpha="1" toAlpha="0" startDelay="3" duration="10" />
 				<Scripts>
 					<OnFinished function="StreamingFrame_FadeOUT_OnFinished"/>
 					<OnStop function="StreamingFrame_FadeOUT_OnFinished"/>

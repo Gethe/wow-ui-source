@@ -64,10 +64,10 @@ function ArchaeologyFrame_OnLoad(self)
 	
 	self.bgLeft:SetTexture(ArcheologyLayoutInfo[ARCHAEOLOGY_SUMMARY_PAGE].bgFileL);
 	self.bgRight:SetTexture(ArcheologyLayoutInfo[ARCHAEOLOGY_SUMMARY_PAGE].bgFileR);
-	self:RegisterEvent("ARTIFACT_UPDATE");
-	self:RegisterEvent("ARTIFACT_HISTORY_READY");
-	self:RegisterEvent("ARTIFACT_COMPLETE");
-	self:RegisterEvent("ARTIFACT_DIG_SITE_UPDATED");
+	self:RegisterEvent("RESEARCH_ARTIFACT_UPDATE");
+	self:RegisterEvent("RESEARCH_ARTIFACT_HISTORY_READY");
+	self:RegisterEvent("RESEARCH_ARTIFACT_COMPLETE");
+	self:RegisterEvent("RESEARCH_ARTIFACT_DIG_SITE_UPDATED");
 	self:RegisterEvent("CURRENCY_DISPLAY_UPDATE");
 	self:RegisterEvent("SKILL_LINES_CHANGED");
 	self:RegisterEvent("BAG_UPDATE_DELAYED");
@@ -148,13 +148,13 @@ end
 
 
 function ArchaeologyFrame_OnEvent(self, event, ...)
-	if event == "ARTIFACT_COMPLETE" then
+	if event == "RESEARCH_ARTIFACT_COMPLETE" then
 		local name  = ...;
 		if self.artifactPage:IsShown() and self.artifactPage.currentName == name  then
 			self.artifactPage.glow:SetFrameLevel(self:GetFrameLevel()+3);
 			self.artifactPage.glow.completeAnim:Play();
 		end
-	elseif event == "ARTIFACT_HISTORY_READY" then
+	elseif event == "RESEARCH_ARTIFACT_HISTORY_READY" then
 		self.currentFrame:UpdateFrame();
 	elseif event == "BAG_UPDATE_DELAYED" then
 		if self:IsShown() and self.artifactPage:IsShown() then

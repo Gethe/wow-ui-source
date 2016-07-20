@@ -207,14 +207,6 @@ function TutorialHelper:GetBagBinding()
 	return GetBindingKey("OPENALLBAGS") or "";
 end
 
--- ------------------------------------------------------------------------------------------------------------
-function TutorialHelper:GetTrainingQuest()
-	local data = self:GetRacialData();
-	if (data.TrainingQuest) then
-		return self:FilterByClass(data.TrainingQuest);
-	end
-end
-
 
 
 
@@ -873,33 +865,99 @@ local Class_ActionBarCallout = class("ActionBarCallout", Class_TutorialBase);
 function Class_ActionBarCallout:OnBegin()
 	self.SuccessfulCastCount = 0;
 
-	for i = 1, 12 do
-		local btn = _G["ActionButton" .. i];
-		if (btn and btn:IsVisible()) then
-			ActionButton_ShowOverlayGlow(btn);
+	if (TutorialHelper:GetClass() == "DRUID") then
+		if (not GetShapeshiftFormID()) then
+			self:ShowPointerTutorial(TutorialHelper:FormatSpellString(NPE_SHAPESHIFT_DRUID), "DOWN", StanceButton1);
+			
+			-- Wait for the druid to shapeshift
+			Dispatcher:RegisterEvent("UPDATE_SHAPESHIFT_FORM", function()
+					
+					-- There's a race condition where the shapeshift event may fire before the action bar becomes visible, we must wait for that to happen too
+					local id;
+					id = Dispatcher:RegisterEvent("ACTIONBAR_UPDATE_STATE", function()
+							if (ActionButton1.action ~= 1) then -- make sure we're not on the caster-form action bar
+								Dispatcher:UnregisterEvent("ACTIONBAR_UPDATE_STATE", id);
+								self:InitiatePointer();
+							end
+						end);
+					
+				end, true);
 		else
-			break;
+			self:InitiatePointer();
 		end
+	else
+		self:InitiatePointer();
+	end
+end
+
+function Class_ActionBarCallout:InitiatePointer()
+	local startingAbility = TutorialHelper:FilterByClass(TutorialData.StartingAbility);
+	
+	local isWarrior = TutorialHelper:GetClass() == "WARRIOR";
+	if (isWarrior) then
+		startingAbility = 88163; -- Warriors start off with melee as their "first" ability.
 	end
 
-	local _, spellID = GetActionInfo(ActionButton1.action);
-	if (spellID) then
-		local name, _, icon = GetSpellInfo(spellID);
-
-		self.SpellID = spellID;
-		local prompt = TutorialHelper:FormatSpellString(TutorialHelper:GetClassString("NPE_ABILITYINITIAL"));
-
-		self:ShowPointerTutorial(string.format(str(prompt), name, icon), "DOWN", ActionButton1);
-		Dispatcher:RegisterEvent("PLAYER_REGEN_DISABLED", self);
-
-		if (TutorialHelper:GetClass() == "WARRIOR") then
-			-- Warriors start off with auto attack which doesn't fire UNIT_SPELLCAST_SUCCEEDED.
-			-- We only need to prompt them once though.
-			Dispatcher:RegisterEvent("UNIT_SPELLCAST_SENT", function() self:Done() end, true);
+	if (self:HighlightPointer(startingAbility)) then
+		if (isWarrior) then
+			-- Warriors start with auto-attack to build rage, then call out their pointer
+			Dispatcher:RegisterEvent("PLAYER_REGEN_DISABLED", function()
+					self:HidePointerTutorials();
+					C_Timer.After(2, function() self:Warrior_AttemptPointer2(); end);
+				end, true);
 		else
 			Dispatcher:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", self);
 		end
 	end
+end
+
+function Class_ActionBarCallout:Warrior_AttemptPointer2()
+	local requiredRage = 25; -- fallback value, something decentish
+	local costTable = GetSpellPowerCost(TutorialData.StartingAbility.WARRIOR);
+	for _, costInfo in pairs(costTable) do
+		if (costInfo.type == SPELL_POWER_RAGE) then
+			requiredRage = costInfo.cost;
+			break;
+		end
+	end
+
+	-- Callout mortal strike if they have enough rage, otherwise wait
+	if (UnitPower('player') >= requiredRage) then
+		self:Warrior_InitiatePointer2();
+	else
+		local unitPowerID; -- this local must exist before the closure below is constructed
+		unitPowerID = Dispatcher:RegisterEvent("UNIT_POWER", function()
+				if (UnitPower('player') >= requiredRage) then
+					self:Warrior_InitiatePointer2();
+					Dispatcher:UnregisterEvent("UNIT_POWER", unitPowerID);
+				end
+			end);
+	end
+end
+
+function Class_ActionBarCallout:Warrior_InitiatePointer2()
+	if (self:HighlightPointer(TutorialHelper:FilterByClass(TutorialData.StartingAbility), "NPE_ABILITYSECOND")) then
+		Dispatcher:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", self);
+	end
+end
+
+function Class_ActionBarCallout:HighlightPointer(spellID, textID)
+	local btn = TutorialHelper:GetActionButtonBySpellID(spellID);
+	if (btn) then
+		-- Store off the spellID to check for usage later
+		self.SpellID = spellID;
+
+		-- Prompt the user to use the spell
+		local name, _, icon = GetSpellInfo(spellID);
+		local prompt = TutorialHelper:FormatSpellString(TutorialHelper:GetClassString(textID or "NPE_ABILITYINITIAL"));
+		--local prompt = TutorialHelper:FormatSpellString(NPE_ABILITYINITIAL);
+		self:ShowPointerTutorial(string.format(str(prompt), name, icon), "DOWN", btn);
+		ActionButton_ShowOverlayGlow(btn);
+
+		return spellID;
+	end
+
+	return false;
 end
 
 function Class_ActionBarCallout:UNIT_SPELLCAST_SUCCEEDED(unit, spellName, spellRank, spellLineID, spellID)
@@ -910,21 +968,21 @@ function Class_ActionBarCallout:UNIT_SPELLCAST_SUCCEEDED(unit, spellName, spellR
 	end
 
 	if (self.SuccessfulCastCount >= 4) then
-		self:Done();
+		Dispatcher:RegisterEvent("PLAYER_REGEN_ENABLED", function() self:Complete() end, true);
 	end
 end
 
-function Class_ActionBarCallout:Done()
-	Dispatcher:RegisterEvent("PLAYER_REGEN_ENABLED", function() self:Complete() end, true);
-end
-
-function Class_ActionBarCallout:OnShutdown()
+function Class_ActionBarCallout:DisableActionButtonGlow()
 	for i = 1, 12 do
 		local btn = _G["ActionButton" .. i];
 		if (btn) then
 			ActionButton_HideOverlayGlow(btn);
 		end
 	end
+end
+
+function Class_ActionBarCallout:OnShutdown()
+	self:DisableActionButtonGlow();
 end
 
 -- ------------------------------------------------------------------------------------------------------------
@@ -1065,7 +1123,9 @@ end
 function Class_EquipFirstItemWatcher:GetPotentialItemUpgrades()
 	local potentialUpgrades = {};
 
-	for i = 0, 19 do
+	local playerClass = select(2, UnitClass("player"));
+	
+	for i = 0, INVSLOT_LAST_EQUIPPED do
 		local existingItemIlvl = 0;
 		local existingItemWeaponType;
 
@@ -1073,7 +1133,7 @@ function Class_EquipFirstItemWatcher:GetPotentialItemUpgrades()
 		if (existingItemID ~= nil) then
 			existingItemIlvl = select(4, GetItemInfo(existingItemID)) or 0;
 
-			if (i == 16) then
+			if (i == INVSLOT_MAINHAND) then
 				existingItemWeaponType = self:GetWeaponType(existingItemID);
 			end
 		end
@@ -1082,7 +1142,8 @@ function Class_EquipFirstItemWatcher:GetPotentialItemUpgrades()
 		GetInventoryItemsForSlot(i, availableItems);
 
 		for packedLocation, itemID in pairs(availableItems) do
-			local ilvl = select(4, GetItemInfo(itemID));
+			local itemInfo = {GetItemInfo(itemID)};
+			local ilvl = itemInfo[4];
 
 			if (ilvl ~= nil) then
 				if (ilvl > existingItemIlvl) then
@@ -1091,19 +1152,29 @@ function Class_EquipFirstItemWatcher:GetPotentialItemUpgrades()
 					local match = true;
 
 					-- if it's a main-hand, make sure it matches the current type, if there is one
-					if (i == 16) then
+					if (i == INVSLOT_MAINHAND) then
 						local weaponType = self:GetWeaponType(itemID);
 						match = (not existingItemWeaponType) or (existingItemWeaponType == weaponType);
+						
+						-- rouge's should only be recommended daggers
+						if ( playerClass == "ROGUE" and (itemInfo[12] ~= ITEMSUBCLASSTYPES["DAGGER"].classID or itemInfo[13] ~= ITEMSUBCLASSTYPES["DAGGER"].subClassID) ) then
+							match = false;
+						end
 					end
 
-					-- if it's an off-hand, make sure the player doesn't have a 2h
-					if (i == 17) then
-						local mainHandID = GetInventoryItemID("player", 16);
+					-- if it's an off-hand, make sure the player doesn't have a 2h or rnaged weapon
+					if (i == INVSLOT_OFFHAND) then
+						local mainHandID = GetInventoryItemID("player", INVSLOT_MAINHAND);
 						if (mainHandID) then
 							local mainHandType = self:GetWeaponType(mainHandID);
-							if (mainHandType == self.WeaponType.TwoHand) then
+							if ((mainHandType == self.WeaponType.TwoHand) or (mainHandType == self.WeaponType.Ranged)) then
 								match = false;
 							end
+						end
+						
+						-- rouge's should only be recommended daggers
+						if ( playerClass == "ROGUE" and (itemInfo[12] ~= ITEMSUBCLASSTYPES["DAGGER"].classID or itemInfo[13] ~= ITEMSUBCLASSTYPES["DAGGER"].subClassID) ) then
+							match = false;
 						end
 					end
 
@@ -1627,7 +1698,7 @@ end
 local Class_Death_ResurrectPrompt = class("Death_ResurrectPrompt", Class_TutorialBase);
 
 function Class_Death_ResurrectPrompt:OnBegin()
-	self:ShowPointerTutorial(str(NPE_RESURRECT), "LEFT", StaticPopup1);
+	self:ShowPointerTutorial(str(NPE_RESURRECT), "UP", StaticPopup1);
 	Dispatcher:RegisterEvent("PLAYER_UNGHOST", self);
 end
 
@@ -1828,12 +1899,6 @@ function Class_AcceptQuest:OnInitialize()
 end
 
 function Class_AcceptQuest:OnBegin()
-	-- Preventing overlap on smaller screens
-	if (Tutorials.TrainingQuest.IsActive) then
-		self:Interrupt(Tutorials.TrainingQuest);
-		return;
-	end
-
 	self:ShowPointerTutorial(str(NPE_ACCEPTQUEST), "UP", QuestFrameAcceptButton, 0, 10, nil, "LEFT");
 	Dispatcher:RegisterScript(QuestFrame, "OnHide", function() self:Complete(); end, true);
 end
@@ -1996,6 +2061,11 @@ end
 
 
 
+
+
+
+
+
 -- ============================================================================================================
 -- ABILITY USAGE
 -- ============================================================================================================
@@ -2077,11 +2147,6 @@ function Class_AbilityUse_AbilityReminder:OnBegin()
 		return;
 	end
 
-	if (Tutorials.TrainingQuest.IsActive) then
-		self:Interrupt(Tutorials.TrainingQuest);
-		return;
-	end
-
 	self.SpellID = TutorialHelper:FilterByClass(TutorialData.StartingAbility);
 	local btn = TutorialHelper:GetActionButtonBySpellID(self.SpellID);
 	if (btn) then
@@ -2110,6 +2175,48 @@ function Class_AbilityUse_AbilityReminder:UNIT_SPELLCAST_SUCCEEDED(unit, spellNa
 		self:Complete();
 	end
 end
+
+-- ------------------------------------------------------------------------------------------------------------
+-- Level 3 ability
+-- ------------------------------------------------------------------------------------------------------------
+local Class_Level3Ability = class("Level3Ability", Class_TutorialBase);
+
+function Class_Level3Ability:OnBegin()
+	Dispatcher:RegisterEvent("PLAYER_LEVEL_UP", self);
+end
+
+function Class_Level3Ability:PLAYER_LEVEL_UP(newLevel)
+	if (newLevel == 3) then
+		Dispatcher:UnregisterEvent("PLAYER_LEVEL_UP", self);
+		Dispatcher:RegisterEvent("PLAYER_REGEN_DISABLED", self);
+	end
+end
+
+function Class_Level3Ability:PLAYER_REGEN_DISABLED()
+	local spellID = TutorialHelper:FilterByClass(TutorialData.Level3Ability);
+	local button = TutorialHelper:GetActionButtonBySpellID(spellID);
+	if (button) then
+		local prompt = TutorialHelper:FormatSpellString(TutorialHelper:GetClassString("NPE_ABILITYLEVEL3"));
+		self:ShowPointerTutorial(str(prompt), "DOWN", button);
+
+		if (UnitAffectingCombat("player")) then
+			Dispatcher:RegisterEvent("PLAYER_REGEN_ENABLED", function()
+					C_Timer.After(10, function() self:Complete(); end);
+				end, true);
+		else
+			C_Timer.After(10, function() self:Complete(); end);
+		end
+	end
+end
+
+
+
+
+
+
+
+
+
 
 
 
@@ -2318,6 +2425,16 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
+
 -- ============================================================================================================
 -- MISC
 -- ============================================================================================================
@@ -2366,8 +2483,10 @@ function Class_Taxi:OnBegin()
 end
 
 function Class_Taxi:TAXIMAP_OPENED()
-	self:ShowPointerTutorial(str(NPE_TAXICALLOUT), "LEFT", TaxiRouteMap, -10, 0);
-	Dispatcher:RegisterScript(TaxiFrame, "OnHide", function() self:Complete() end);
+	if TaxiFrame_ShouldShowOldStyle() then
+		self:ShowPointerTutorial(str(NPE_TAXICALLOUT), "LEFT", TaxiRouteMap, -10, 0);
+		Dispatcher:RegisterScript(TaxiFrame, "OnHide", function() self:Complete() end);
+	end
 end
 
 -- ------------------------------------------------------------------------------------------------------------
@@ -2432,83 +2551,6 @@ end
 function Class_ChatFrame:OnShutdown()
 	self.EditBox = nil;
 end
-
--- ------------------------------------------------------------------------------------------------------------
--- Training Quest
--- Prompts the player to use their new ability on the target dummies, also explains how to use it and/or why
--- ------------------------------------------------------------------------------------------------------------
-local Class_TrainingQuest = class("TrainingQuest", Class_TutorialBase);
-
-function Class_TrainingQuest:OnInitialize()
-	self:DelayWhileFrameVisible(QuestFrame);
-end
-
-function Class_TrainingQuest:OnBegin(questID)
-	Tutorials.AbilityUse_AbilityReminder:Disable();
-	Tutorials.ActionBarCallout:Interrupt(self);
-
-	self.QuestID = questID;
-	NPE_QuestManager:RegisterForCallbacks(self);
-	Dispatcher:RegisterEvent("QUEST_REMOVED", self);
-
-	-- Find the ability on the action bar.
-	if (UnitLevel("player") >= 3) then
-		self:LeashTrainingDummies();
-	else
-		Dispatcher:RegisterEvent("PLAYER_LEVEL_UP", self);
-	end
-end
-
-function Class_TrainingQuest:PLAYER_LEVEL_UP(newLevel)
-	if (newLevel >= 3) then
-		Dispatcher:UnregisterEvent("PLAYER_LEVEL_UP", self);
-		self:LeashTrainingDummies();
-	end
-end
-
-function Class_TrainingQuest:LeashTrainingDummies()
-	NPE_RangeManager:StartWatching(
-		TutorialHelper:GetRacialData().TrainingDummyID,
-		NPE_RangeManager.Type.Unit,
-		15,
-		function() self:PointAtButton() end,
-		NPE_RangeManager.Mode.Any);
-end
-
-function Class_TrainingQuest:PointAtButton()
-
-	-- check to see if the quest has already been completed (if the player is smart, they can actually complete it out of range before it's pointed at)
-	local trainingQuestData = NPE_QuestManager.Data[TutorialHelper:GetTrainingQuest()];
-	if (trainingQuestData and trainingQuestData:AreObjectivesComplete()) then
-		self:Interrupt(self);
-		return;
-	end
-
-	local spellID = TutorialHelper:FilterByClass(TutorialData.TrainingQuestAbility);
-
-	local button = TutorialHelper:GetActionButtonBySpellID(spellID);
-	if (button) then
-		local prompt = TutorialHelper:FormatSpellString(TutorialHelper:GetClassString("NPE_ABILITYTRAININGDUMMY"));
-		self:ShowPointerTutorial(str(prompt), "DOWN", button);
-	end
-end
-
-function Class_TrainingQuest:QUEST_REMOVED(questID)
-	if (questID == self.QuestID) then
-		self:Interrupt(self);
-	end
-end
-
-function Class_TrainingQuest:Quest_ObjectivesComplete(questData)
-	if (questData.QuestID == self.QuestID) then
-		self:Complete();
-	end
-end
-
-function Class_TrainingQuest:OnShutdown()
-	NPE_QuestManager:UnregisterForCallbacks(self);
-end
-
 
 
 
@@ -2606,38 +2648,9 @@ function Class_BloodElf_8346:UNIT_SPELLCAST_SUCCEEDED(unit, spellName, spellRank
 	 end
 end
 
--- ------------------------------------------------------------------------------------------------------------
--- Pandaren Level 3 ability
--- ------------------------------------------------------------------------------------------------------------
-local Class_PandarenLevel3Ability = class("PandarenLevel3Ability", Class_TutorialBase);
 
-function Class_PandarenLevel3Ability:OnBegin()
-	Dispatcher:RegisterEvent("PLAYER_LEVEL_UP", self);
-end
 
-function Class_PandarenLevel3Ability:PLAYER_LEVEL_UP(newLevel)
-	if (newLevel == 3) then
-		Dispatcher:UnregisterEvent("PLAYER_LEVEL_UP", self);
-		Dispatcher:RegisterEvent("PLAYER_REGEN_DISABLED", self);
-	end
-end
 
-function Class_PandarenLevel3Ability:PLAYER_REGEN_DISABLED()
-	local spellID = TutorialHelper:FilterByClass(TutorialData.TrainingQuestAbility);
-	local button = TutorialHelper:GetActionButtonBySpellID(spellID);
-	if (button) then
-		local prompt = TutorialHelper:FormatSpellString(TutorialHelper:GetClassString("NPE_ABILITYTRAININGDUMMY"));
-		self:ShowPointerTutorial(str(prompt), "DOWN", button);
-
-		if (UnitAffectingCombat("player")) then
-			Dispatcher:RegisterEvent("PLAYER_REGEN_ENABLED", function()
-					C_Timer.After(10, function() self:Complete(); end);
-				end, true);
-		else
-			C_Timer.After(10, function() self:Complete(); end);
-		end
-	end
-end
 
 
 
@@ -2718,9 +2731,9 @@ function Tutorials:Begin()
 			Dispatcher:RegisterFunction("ChatEdit_ActivateChat", function(editBox) Tutorials.ChatFrame:Begin(editBox) end);
 		end);
 
-	-- Pandas don't have a training quest, so we have to prompt their level 3 ability manually :(
-	if ((TutorialHelper:GetRace() == "Pandaren") and (level < 3)) then
-		Tutorials.PandarenLevel3Ability:Begin();
+	-- Level 3 ability
+	if (level < 3) then
+		Tutorials.Level3Ability:Begin();
 	end
 end
 
@@ -2882,12 +2895,6 @@ function Tutorials:Quest_Accepted(questData)
 	end
 
 	-- -----------------------------------------------
-	-- Training Quest
-	if (questID == TutorialHelper:GetTrainingQuest()) then
-		Tutorials.TrainingQuest:Begin(questID);
-	end
-
-	-- -----------------------------------------------
 	-- Custom quests
 	if (tutorialData.Custom_QuestAccept and tutorialData.Custom_QuestAccept[questID]) then
 		local tutorial = Tutorials[TutorialHelper:GetRace() .. "_" .. questID];
@@ -2921,7 +2928,7 @@ function Tutorials:Quest_ObjectivesComplete(questData)
 
 	for i = 1, GetNumQuestLogEntries() do
 		local title, level, suggestedGroup, isHeader, isCollapsed, isComplete, frequency, questID = GetQuestLogTitle(i);
-		if ((not isHeader) and (questID ~= TutorialHelper:GetTrainingQuest()) and (GetQuestTagInfo(questID) ~= QUEST_TAG_ACCOUNT) and (not isComplete)) then
+		if ((not isHeader) and (GetQuestTagInfo(questID) ~= QUEST_TAG_ACCOUNT) and (not isComplete)) then
 			allQuestsReadyForTurnIn = false;
 			break;
 		end
@@ -3022,6 +3029,7 @@ Tutorials.LootFromObject				= Class_LootFromObject:new();
 Tutorials.AbilityUse_Watcher			= Class_AbilityUse_Watcher:new();
 Tutorials.AbilityUse_SpellInterrupted	= Class_AbilityUse_SpellInterrupted:new();
 Tutorials.AbilityUse_AbilityReminder	= Class_AbilityUse_AbilityReminder:new();
+Tutorials.Level3Ability					= Class_Level3Ability:new();
 
 -- Gossip
 Tutorials.GossipWatcher					= Class_GossipWatcher:new();
@@ -3036,12 +3044,10 @@ Tutorials.HighlightItem					= Class_HighlightItem:new();
 Tutorials.Taxi							= Class_Taxi:new();
 Tutorials.UseHearthstone				= Class_UseHearthstone:new();
 Tutorials.ChatFrame						= Class_ChatFrame:new();
-Tutorials.TrainingQuest					= Class_TrainingQuest:new();
 
 -- Custom
 Tutorials.Draenei_9283					= Class_Dranei_9283:new();
 Tutorials.BloodElf_8346					= Class_BloodElf_8346:new();
-Tutorials.PandarenLevel3Ability			= Class_PandarenLevel3Ability:new();
 
 -- Exclusivity
 Class_TutorialBase:MakeExclusive(Tutorials.HighlightItem, Tutorials.EquipItem);

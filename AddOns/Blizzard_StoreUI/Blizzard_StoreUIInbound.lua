@@ -28,6 +28,14 @@ function StoreFrame_SetGamesCategory()
 	StoreFrame:SetAttribute("setgamescategory");
 end
 
+function StoreFrame_SetServicesCategory()
+	StoreFrame:SetAttribute("setservicescategory");
+end
+
+function StoreFrame_SelectLevel100BoostProduct(optionalGuid)
+	StoreFrame:SetAttribute("selectlevel100boostproduct", optionalGuid)
+end
+
 if (InGlue()) then
 	function StoreFrame_GetVASErrorMessage(guid, errorList)
 		local data = {};

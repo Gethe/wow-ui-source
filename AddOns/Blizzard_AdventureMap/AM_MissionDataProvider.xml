@@ -1,0 +1,399 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+	..\FrameXML\UI.xsd">
+	<Script file="AM_MissionDataProvider.lua"/>
+	<Script file="AM_MissionTooltip.lua"/>
+
+	<Frame name="AdventureMap_MissionPinTemplate" hidden="true" enableMouse="true" mixin="AdventureMap_MissionPinMixin" virtual="true">
+		<Size x="42" y="42"/>
+
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-1">
+				<Texture parentKey="Icon">
+					<Anchors>
+						<Anchor point="CENTER" />
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="HIGHLIGHT">
+				<Texture parentKey="IconHighlight" alphaMode="ADD" alpha=".25">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon" />
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="PortraitFrame" atlas="Mission-FollowerPortraitFrame" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" />
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Status" inherits="GameFontNormal" >
+					<Anchors>
+						<Anchor point="TOP" relativePoint="BOTTOM" y="-5"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="StatusBackground" atlas="AdventureMapLabel-MissionTimer" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Status" />
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+
+		<Frames>
+			<CinematicModel parentKey="Model" drawLayer="BORDER">
+				<Size x="80" y="80"/>
+				<Anchors>
+					<Anchor point="CENTER" x="5" />
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self:RegisterEvent("UI_SCALE_CHANGED");
+						self:RegisterEvent("DISPLAY_SIZE_CHANGED");
+
+						local factionGroup = UnitFactionGroup("player");
+						if factionGroup == "Horde" then
+							self:SetDisplayInfo(54913);
+						else
+							self:SetDisplayInfo(54912);
+						end
+
+						self:SetTargetDistance(0);
+						self:SetHeightFactor(.25);
+						self:SetFacing(-.4);
+						self:InitializeCamera(.8);
+					</OnLoad>
+					<OnEvent method="RefreshCamera" />
+				</Scripts>
+			</CinematicModel>
+		</Frames>
+
+		<Animations>
+			<AnimationGroup parentKey="OnNewAnim">
+				<Alpha childKey="Icon" fromAlpha="0" toAlpha="1" duration=".3" order="1"/>
+				<Alpha childKey="PortraitFrame" fromAlpha="0" toAlpha="1" duration=".3" order="1"/>
+				<Alpha childKey="Status" fromAlpha="0" toAlpha="1" duration=".3" order="1"/>
+				<Alpha childKey="StatusBackground" fromAlpha="0" toAlpha="1" duration=".3" order="1"/>
+				<Alpha childKey="Model" fromAlpha="0" toAlpha="1" duration=".3" order="1"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="OnCompleteAnim">
+				<Alpha childKey="Icon" fromAlpha="0" toAlpha="1" duration=".3" order="1"/>
+				<Alpha childKey="PortraitFrame" fromAlpha="0" toAlpha="1" duration=".3" order="1"/>
+				<Alpha childKey="Status" fromAlpha="0" toAlpha="1" duration=".3" order="1"/>
+				<Alpha childKey="StatusBackground" fromAlpha="0" toAlpha="1" duration=".3" order="1"/>
+				<Alpha childKey="Model" fromAlpha="0" toAlpha="1" duration=".3" order="1"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="OnStartAnim">
+				<Alpha childKey="Icon" fromAlpha="0" toAlpha="1" duration=".3" order="1"/>
+				<Alpha childKey="PortraitFrame" fromAlpha="0" toAlpha="1" duration=".3" order="1"/>
+				<Alpha childKey="Status" fromAlpha="0" toAlpha="1" duration=".3" order="1"/>
+				<Alpha childKey="StatusBackground" fromAlpha="0" toAlpha="1" duration=".3" order="1"/>
+				<Alpha childKey="Model" fromAlpha="0" toAlpha="1" duration=".3" order="1"/>
+			</AnimationGroup>
+		</Animations>
+
+		<Scripts>
+			<OnUpdate method="OnUpdate" />
+		</Scripts>
+	</Frame>
+
+	<Frame name="AdventureMap_CombatAllyMissionPinTemplate" enableMouse="true" mixin="AdventureMap_CombatAllyMissionPinMixin" virtual="true">
+		<Size x="58" y="58"/>
+
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-1">
+				<Texture parentKey="Background" atlas="AdventureMap-combatally-clouds" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="0">
+				<Texture parentKey="Icon">
+					<Size x="46" y="46"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+
+			<Layer level="HIGHLIGHT">
+				<Texture parentKey="IconHighlight" alphaMode="ADD" alpha=".25">
+					<Size x="46" y="46"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon" />
+					</Anchors>
+				</Texture>
+			</Layer>
+
+			<Layer level="BORDER" textureSubLevel="1">
+				<Texture parentKey="PortraitFrame" atlas="AdventureMap-combatally-ring">
+					<Size x="58" y="58"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Label" inherits="SystemFont_Small2" text="GARRISON_FOLLOWER_COMBAT_ALLY_MISSION_LABEL">
+					<Color r="0.38" g="0.24" b="0.06" a="1"/>
+					<Anchors>
+						<Anchor point="TOP" relativePoint="BOTTOM" y="-5"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Status" inherits="GameFontHighlight" text="52 min">
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="LabelBackground" atlas="AdventureMap-textlabelglow" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOP" relativePoint="BOTTOM" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="StatusBackground" atlas="AdventureMapLabel-MissionTimer" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT" x="-20" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Ability">
+					<Size x="18" y="18"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="-5" y="2"/>
+					</Anchors>
+				</Texture>
+
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="AdventureMap_MissionRewardTemplate" parentArray="Rewards" inherits="GarrisonMissionRewardEffectsTemplate" hidden="true" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-1">
+				<Texture parentKey="BorderBackground" atlas="Mission-LootBackgroundGlow" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" />
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnMouseUp>
+				self:GetParent():OnClick(button);
+			</OnMouseUp>
+		</Scripts>
+	</Frame>
+
+	<Frame name="AdventureMap_MissionRewardPinTemplate" hidden="true" mixin="AdventureMap_MissionRewardPinMixin" virtual="true">
+		<Size x="152" y="150"/>
+
+		<Frames>
+			<Frame parentKey="Reward1" inherits="AdventureMap_MissionRewardTemplate">
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="Reward2" inherits="AdventureMap_MissionRewardTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.Reward1" relativePoint="BOTTOM" y="-5"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="Reward3" inherits="AdventureMap_MissionRewardTemplate">
+				<Anchors>
+					<Anchor point="BOTTOM" relativeKey="$parent.Reward1" relativePoint="TOP" y="5"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+
+		<Animations>
+			<AnimationGroup parentKey="FadeInAnim" setToFinalAlpha="true">
+				<Alpha childKey="Reward1" duration="0.25" fromAlpha="0" toAlpha="1" order="1"/>
+				<Alpha childKey="Reward2" duration="0.25" fromAlpha="0" toAlpha="1" order="1"/>
+				<Alpha childKey="Reward3" duration="0.25" fromAlpha="0" toAlpha="1" order="1"/>
+				<Scripts>
+					<OnFinished>
+						self:GetParent():OnFadeInFinished();
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+
+			<AnimationGroup parentKey="FadeOutAnim">
+				<Alpha childKey="Reward1" duration="0.25" fromAlpha="1" toAlpha="0" order="1"/>
+				<Alpha childKey="Reward2" duration="0.25" fromAlpha="1" toAlpha="0" order="1"/>
+				<Alpha childKey="Reward3" duration="0.25" fromAlpha="1" toAlpha="0" order="1"/>
+				<Scripts>
+					<OnFinished>
+						self:GetParent():OnFadeOutFinished();
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+
+	<Frame name="AdventureMap_MissionPinTooltip" parent="UIParent" frameStrata="TOOLTIP" clampedToScreen="true" hidden="true" mixin="AdventureMap_MissionTooltipMixin">
+		<Size x="250" y="256"/>
+		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<EdgeSize val="16"/>
+			<TileSize val="16"/>
+			<BackgroundInsets left="4" right="4" top="4" bottom="4"/>
+		</Backdrop>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Name" parentArray="Lines" inherits="GameFontNormalMed2" justifyH="LEFT" wordwrap="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="10" y="-10"/>
+					</Anchors>
+					<KeyValues>
+						<KeyValue key="yspacing" value="10" type="number"/>
+					</KeyValues>
+				</FontString>
+				<FontString parentKey="RareMission" parentArray="Lines" inherits="GameFontNormalMed2" justifyH="LEFT" wordwrap="true" text="GARRISON_MISSION_RARE">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Name" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
+					</Anchors>
+					<KeyValues>
+						<KeyValue key="yspacing" value="3" type="number"/>
+					</KeyValues>
+					<Color r="0.098" g="0.537" b="0.969" a="1"/>
+				</FontString>
+				<FontString parentKey="Description" parentArray="Lines" inherits="GameFontHighlight" justifyH="LEFT" wordwrap="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.RareMission" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
+					</Anchors>
+					<KeyValues>
+						<KeyValue key="yspacing" value="3" type="number"/>
+					</KeyValues>
+				</FontString>
+				<FontString parentKey="NumFollowers" parentArray="Lines" inherits="GameFontHighlight" justifyH="LEFT" wordwrap="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Description" relativePoint="BOTTOMLEFT" x="0" y="-12"/>
+					</Anchors>
+					<KeyValues>
+						<KeyValue key="yspacing" value="12" type="number"/>
+					</KeyValues>
+				</FontString>
+				<FontString parentKey="MissionDuration" parentArray="Lines" inherits="GameFontHighlight" justifyH="LEFT" wordwrap="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.NumFollowers" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
+					</Anchors>
+					<KeyValues>
+						<KeyValue key="yspacing" value="3" type="number"/>
+					</KeyValues>
+				</FontString>
+				<FontString parentKey="MissionExpires" parentArray="Lines" inherits="GameFontNormal" justifyH="LEFT" wordwrap="true" text="GARRISON_MISSION_AVAILABILITY" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.MissionDuration" relativePoint="BOTTOMLEFT" x="0" y="-12"/>
+					</Anchors>
+					<KeyValues>
+						<KeyValue key="yspacing" value="12" type="number"/>
+					</KeyValues>
+				</FontString>
+				<FontString parentKey="TimeRemaining" parentArray="Lines" inherits="GameFontHighlight" justifyH="LEFT" wordwrap="true" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.MissionExpires" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
+					</Anchors>
+					<KeyValues>
+						<KeyValue key="yspacing" value="3" type="number"/>
+					</KeyValues>
+				</FontString>
+				<FontString parentKey="RewardHeader" parentArray="Lines" inherits="GameFontNormal" justifyH="LEFT" wordwrap="true" text="GARRISON_MISSION_REWARD_HEADER">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.MissionDuration" relativePoint="BOTTOMLEFT" x="0" y="-12"/>
+					</Anchors>
+					<KeyValues>
+						<KeyValue key="yspacing" value="12" type="number"/>
+					</KeyValues>
+				</FontString>
+				<FontString parentKey="Reward" parentArray="Lines" inherits="GameFontHighlight" justifyH="LEFT" wordwrap="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.RewardHeader" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
+					</Anchors>
+					<KeyValues>
+						<KeyValue key="yspacing" value="3" type="number"/>
+					</KeyValues>
+				</FontString>
+
+				<FontString parentKey="InProgress" parentArray="Lines" inherits="GameFontHighlight" justifyH="LEFT" wordwrap="true" text="GARRISON_MISSION_IN_PROGRESS_TOOLTIP">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Name" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
+					</Anchors>
+					<KeyValues>
+						<KeyValue key="yspacing" value="3" type="number"/>
+					</KeyValues>
+				</FontString>
+				<FontString parentKey="InProgressTimeLeft" parentArray="Lines" inherits="GameFontHighlight" justifyH="LEFT" wordwrap="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.InProgress" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
+					</Anchors>
+					<KeyValues>
+						<KeyValue key="yspacing" value="3" type="number"/>
+					</KeyValues>
+				</FontString>
+				<FontString parentKey="FollowersHeader" parentArray="Lines" inherits="GameFontNormal" justifyH="LEFT" wordwrap="true" text="GARRISON_FOLLOWERS">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.InProgressTimeLeft" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
+					</Anchors>
+					<KeyValues>
+						<KeyValue key="yspacing" value="12" type="number"/>
+					</KeyValues>
+				</FontString>
+				<FontString parentKey="FollowerName1" parentArray="FollowerNames" inherits="GameFontHighlight" justifyH="LEFT" wordwrap="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.FollowersHeader" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
+					</Anchors>
+					<KeyValues>
+						<KeyValue key="yspacing" value="3" type="number"/>
+					</KeyValues>
+				</FontString>
+				<FontString parentKey="FollowerName2" parentArray="FollowerNames" inherits="GameFontHighlight" justifyH="LEFT" wordwrap="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.FollowerName1" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
+					</Anchors>
+					<KeyValues>
+						<KeyValue key="yspacing" value="3" type="number"/>
+					</KeyValues>
+				</FontString>
+				<FontString parentKey="FollowerName3" parentArray="FollowerNames" inherits="GameFontHighlight" justifyH="LEFT" wordwrap="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.FollowerName2" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
+					</Anchors>
+					<KeyValues>
+						<KeyValue key="yspacing" value="3" type="number"/>
+					</KeyValues>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="ItemTooltip" inherits="EmbeddedItemTooltip">
+				<Size x="100" y="100"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.RewardHeader" relativePoint="BOTTOMLEFT" x="6" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="yspacing" value="13" type="number"/>
+				</KeyValues>
+				<Scripts>
+					<OnSizeChanged inherit="prepend">
+						self:GetParent():UpdateTooltipSize();
+					</OnSizeChanged>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
+				self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
+			</OnLoad>
+			<OnUpdate method="OnUpdate" />
+			<OnHide method="OnHide" />
+		</Scripts>
+	</Frame>
+</Ui>

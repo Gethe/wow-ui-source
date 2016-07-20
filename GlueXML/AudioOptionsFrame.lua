@@ -35,7 +35,7 @@ function AudioOptionsFrame_OnLoad (self)
 	AudioOptionsFrame:SetHeight(540);
 	AudioOptionsFrameCategoryFrame:SetHeight(449);
 	
-	_G[self:GetName().."HeaderText"]:SetText(SOUNDOPTIONS_MENU);
+	_G[self:GetName().."HeaderText"]:SetText(SOUND);
 end
 
 function AudioOptionsFrame_OnHide (self)

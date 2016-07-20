@@ -149,13 +149,10 @@ function InspectPaperDollItemSlotButton_Update(button)
 		SetItemButtonTexture(button, textureName);
 		SetItemButtonCount(button, GetInventoryItemCount(unit, button:GetID()));
 		button.hasItem = 1;
+
 		local quality = GetInventoryItemQuality(unit, button:GetID());
-		if (quality and quality > LE_ITEM_QUALITY_COMMON and BAG_ITEM_QUALITY_COLORS[quality]) then
-			button.IconBorder:Show();
-			button.IconBorder:SetVertexColor(BAG_ITEM_QUALITY_COLORS[quality].r, BAG_ITEM_QUALITY_COLORS[quality].g, BAG_ITEM_QUALITY_COLORS[quality].b);
-		else
-			button.IconBorder:Hide();
-		end
+		SetItemButtonQuality(button, quality, GetInventoryItemID(unit, button:GetID()));
+
 	else
 		local textureName = button.backgroundTextureName;
 		if ( button.checkRelic and UnitHasRelicSlot(unit) ) then
@@ -169,4 +166,13 @@ function InspectPaperDollItemSlotButton_Update(button)
 	if ( GameTooltip:IsOwned(button) ) then
 		GameTooltip:Hide();
 	end
+end
+
+function InspectPaperDollViewButton_OnLoad(self)
+	self:SetWidth(30 + self:GetFontString():GetStringWidth());
+end
+
+function InspectPaperDollViewButton_OnClick(self)
+	PlaySound("igMainMenuOptionCheckBoxOn");
+	DressUpSources(C_TransmogCollection.GetInspectSources());
 end

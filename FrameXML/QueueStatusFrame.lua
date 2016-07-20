@@ -169,7 +169,7 @@ function QueueStatusFrame_Update(self)
 	--Try each LFG type
 	for i=1, NUM_LE_LFG_CATEGORYS do
 		local mode, submode = GetLFGMode(i);
-		if ( mode ) then
+		if ( mode and submode ~= "noteleport" ) then
 			local entry = QueueStatusFrame_GetEntry(self, nextEntry);
 			QueueStatusEntry_SetUpLFG(entry, i);
 			entry:Show();
@@ -358,7 +358,6 @@ function QueueStatusEntry_SetUpLFG(entry, category)
 				activeID = queueID;
 				activeIndex = #allNames;
 			end
-			
 		end
 	end
 
@@ -415,7 +414,7 @@ function QueueStatusEntry_SetUpLFG(entry, category)
 end
 
 function QueueStatusEntry_SetUpLFGListActiveEntry(entry)
-	local _, _, _, name = C_LFGList.GetActiveEntryInfo();
+	local _, _, _, _, name = C_LFGList.GetActiveEntryInfo();
 	local numApplicants, numActiveApplicants = C_LFGList.GetNumApplicants();
 	QueueStatusEntry_SetMinimalDisplay(entry, name, QUEUED_STATUS_LISTED, string.format(LFG_LIST_PENDING_APPLICANTS, numActiveApplicants));
 end
@@ -669,7 +668,7 @@ function QueueStatusDropDown_Update()
 	--All LFG types
 	for i=1, NUM_LE_LFG_CATEGORYS do
 		local mode, submode = GetLFGMode(i);
-		if ( mode ) then
+		if ( mode and submode ~= "noteleport" ) then
 			QueueStatusDropDown_AddLFGButtons(info, i);
 		end
 	end
@@ -901,7 +900,7 @@ function QueueStatusDropDown_AddLFGButtons(info, category)
 				UIDropDownMenu_AddButton(info);
 			end
 		end
-		info.text = INSTANCE_PARTY_LEAVE;
+		info.text = (category == LE_LFG_CATEGORY_WORLDPVP) and LEAVE_BATTLEGROUND or INSTANCE_PARTY_LEAVE;
 		info.func = wrapFunc(ConfirmOrLeaveLFGParty);
 		info.arg1 = nil;
 		info.disabled = false;
@@ -914,7 +913,8 @@ function QueueStatusDropDown_AddLFGButtons(info, category)
 		info.disabled = true;
 		UIDropDownMenu_AddButton(info);
 	end
-	if ( statuses.queued or statuses.suspended ) then
+	local preventLeaveQueue = IsLFGModeActive(category) and IsServerControlledBackfill();
+	if ( ( statuses.queued or statuses.suspended ) and not preventLeaveQueue ) then
 		local manyQueues = (category == LE_LFG_CATEGORY_RF) and (statuses.queued or 0) + (statuses.suspended or 0) > 1;
 		info.text = manyQueues and LEAVE_ALL_QUEUES or LEAVE_QUEUE;
 		info.func = wrapFunc(LeaveLFG);
@@ -957,7 +957,7 @@ end
 
 function QueueStatusDropDown_AddLFGListButtons(info)
 	wipe(info);
-	local _, _, _, name = C_LFGList.GetActiveEntryInfo();
+	local _, _, _, _, name = C_LFGList.GetActiveEntryInfo();
 	info.text = name;
 	info.isTitle = 1;
 	info.notCheckable = 1;

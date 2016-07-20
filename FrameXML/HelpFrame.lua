@@ -379,13 +379,22 @@ function HelpFrame_SetButtonEnabled(button, enabled)
 	end
 end
 
-function HelpFrame_ShowReportPlayerNameDialog(target)
+function HelpFrame_SetReportPlayerByUnitTag(frame, unitTag)
+	SetPendingReportTarget(unitTag);
+	frame.target = "pending";
+end
+
+function HelpFrame_SetReportPlayerByLineID(frame, lineID)
+	frame.target = "pending";
+end
+
+function HelpFrame_SetReportPlayerByBattlefieldScoreIndex(frame, battlefieldScoreIndex)
+	BattlefieldSetPendingReportTarget(battlefieldScoreIndex);
+	frame.target = "pending";
+end
+
+function HelpFrame_ShowReportPlayerNameDialog()
 	local frame = ReportPlayerNameDialog;
-	if ( type(target) == "string" ) then
-		SetPendingReportTarget(target);
-		target = "pending";
-	end
-	frame.target = target;
 	frame.reportType = nil;
 	frame.CommentFrame.EditBox:SetText("");
 	frame.CommentFrame.EditBox.InformationText:Show();
@@ -411,13 +420,8 @@ function HelpFrame_UpdateReportPlayerNameDialog()
 	end
 end
 
-function HelpFrame_ShowReportCheatingDialog(target)
+function HelpFrame_ShowReportCheatingDialog()
 	local frame = ReportCheatingDialog;
-	if ( type(target) == "string" ) then
-		SetPendingReportTarget(target);
-		target = "pending";
-	end
-	frame.target = target;
 	frame.CommentFrame.EditBox:SetText("");
 	frame.CommentFrame.EditBox.InformationText:Show();
 	StaticPopupSpecial_Show(frame);
@@ -435,7 +439,7 @@ function HelpFrameStuckHearthstone_Update(self)
 	local hearthstoneID = PlayerHasHearthstone();
 	local cooldown = self.Cooldown;
 	local start, duration, enable = GetItemCooldown(hearthstoneID or 0);
-	CooldownFrame_SetTimer(cooldown, start, duration, enable);
+	CooldownFrame_Set(cooldown, start, duration, enable);
 	if (not hearthstoneID or duration > 0 and enable == 0) then
 		self.IconTexture:SetVertexColor(0.4, 0.4, 0.4);
 	else
@@ -781,13 +785,11 @@ end
 
 
 function TicketStatusFrame_OnShow(self)
-	BuffFrame:SetPoint("TOPRIGHT", self:GetParent(), "TOPRIGHT", -205, (-self:GetHeight()));
+	UIParent_UpdateTopFramePositions();
 end
 
 function TicketStatusFrame_OnHide(self)
-	if( not GMChatStatusFrame or not GMChatStatusFrame:IsShown() ) then
-		BuffFrame:SetPoint("TOPRIGHT", "UIParent", "TOPRIGHT", -205, -13);
-	end
+	UIParent_UpdateTopFramePositions();
 end
 
 

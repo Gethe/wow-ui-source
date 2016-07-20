@@ -1,18 +1,3 @@
-
-NUM_BROWSE_TO_DISPLAY = 8;
-NUM_AUCTION_ITEMS_PER_PAGE = 50;
-NUM_FILTERS_TO_DISPLAY = 15;
-BROWSE_FILTER_HEIGHT = 20;
-NUM_BIDS_TO_DISPLAY = 9;
-NUM_AUCTIONS_TO_DISPLAY = 9;
-AUCTIONS_BUTTON_HEIGHT = 37;
-CLASS_FILTERS = {};
-OPEN_FILTER_LIST = {};
-AUCTION_TIMER_UPDATE_DELAY = 0.3;
-MAXIMUM_BID_PRICE = 9999999999;
-AUCTION_CANCEL_COST =  5;	--5% of the current bid
-NUM_TOKEN_LOGS_TO_DISPLAY = 14;
-
 -- keep last item sent to auction & it's price
 LAST_ITEM_AUCTIONED = "";
 LAST_ITEM_COUNT = 0;
@@ -22,162 +7,6 @@ LAST_ITEM_BUYOUT = 0;
 local BROWSE_PARAM_INDEX_PAGE = 7;
 local PRICE_TYPE_UNIT = 1;
 local PRICE_TYPE_STACK = 2;
-
-AuctionSort = { };
-
--- owner sorts
-AuctionSort["owner_status"] = {
-	{ column = "quantity",	reverse = true	},
-	{ column = "bid",		reverse = false	},
-	{ column = "name",		reverse = false	},
-	{ column = "level",		reverse = true	},
-	{ column = "quality",	reverse = false	},
-	{ column = "duration",	reverse = false	},
-	{ column = "status",	reverse = false	},
-};
-
-AuctionSort["owner_bid"] = {
-	{ column = "quantity",	reverse = true	},
-	{ column = "name",		reverse = false	},
-	{ column = "level",		reverse = true	},
-	{ column = "quality",	reverse = false	},
-	{ column = "duration",	reverse = false	},
-	{ column = "status",	reverse = false	},
-	{ column = "bid",		reverse = false	},
-};
-
-AuctionSort["owner_quality"] = {
-	{ column = "bid",		reverse = false	},
-	{ column = "quantity",	reverse = true	},
-	{ column = "minbidbuyout",	reverse = false	},
-	{ column = "name",		reverse = false	},
-	{ column = "level",		reverse = true	},
-	{ column = "quality",	reverse = false	},
-};
-
-AuctionSort["owner_duration"] = {
-	{ column = "quantity",	reverse = true	},
-	{ column = "bid",		reverse = false	},
-	{ column = "name",		reverse = false	},
-	{ column = "level",		reverse = true	},
-	{ column = "quality",	reverse = false	},
-	{ column = "status",	reverse = false	},
-	{ column = "duration",	reverse = false	},
-};
-
--- bidder sorts
-AuctionSort["bidder_quality"] = {
-	{ column =  "bid",		reverse = false	},
-	{ column =  "quantity",	reverse = true	},
-	{ column =  "minbidbuyout",	reverse = false	},
-	{ column =  "name",		reverse = false	},
-	{ column =  "level",	reverse = true	},
-	{ column =  "quality",	reverse = false	},
-};
-
-AuctionSort["bidder_level"] = {
-	{ column =  "minbidbuyout",	reverse = true	},
-	{ column =  "status",	reverse = true	},
-	{ column =  "bid",		reverse = true	},
-	{ column =  "duration",	reverse = true	},
-	{ column =  "quantity",	reverse = false	},
-	{ column =  "name",		reverse = true	},
-	{ column =  "quality",	reverse = true	},
-	{ column =  "level",	reverse = false	},
-};
-
-AuctionSort["bidder_buyout"] = {
-	{ column =  "quantity",	reverse = true	},
-	{ column =  "name",		reverse = false	},
-	{ column =  "level",	reverse = true	},
-	{ column =  "quality",	reverse = false	},
-	{ column =  "status",	reverse = false	},
-	{ column =  "bid",		reverse = false	},
-	{ column =  "duration",	reverse = false	},
-	{ column =  "buyout",	reverse = false	},
-};
- 
-AuctionSort["bidder_status"] = {
-	{ column =  "quantity",	reverse = true	},
-	{ column =  "name",		reverse = false	},
-	{ column =  "level",	reverse = true	},
-	{ column =  "quality",	reverse = false	},
-	{ column =  "minbidbuyout",	reverse = false	},
-	{ column =  "bid",		reverse = false	},
-	{ column =  "duration", reverse = false	},
-	{ column =  "status",	reverse = false	},
-};
-
-AuctionSort["bidder_bid"] = {
-	{ column =  "quantity",	reverse = true	},
-	{ column =  "name",		reverse = false	},
-	{ column =  "level",	reverse = true	},
-	{ column =  "quality",	reverse = false	},
-	{ column =  "minbidbuyout",	reverse = false	},
-	{ column =  "status",	reverse = false	},
-	{ column =  "duration",	reverse = false	},
-	{ column =  "bid",		reverse = false	},
-};
-
-AuctionSort["bidder_duration"] = {
-	{ column =  "quantity",	reverse = true	},
-	{ column =  "name",		reverse = false	},
-	{ column =  "level",	reverse = true	},
-	{ column =  "quality",	reverse = false	},
-	{ column =  "minbidbuyout",	reverse = false	},
-	{ column =  "status",	reverse = false	},
-	{ column =  "bid",		reverse = false	},
-	{ column =  "duration",	reverse = false	},
-};
-
--- list sorts
-AuctionSort["list_level"] = {
-	{ column = "duration",	reverse = true	},
-	{ column = "bid",		reverse = true	},
-	{ column = "quantity",	reverse = false	},
-	{ column = "minbidbuyout",	reverse = true	},
-	{ column = "name",		reverse = true	},
-	{ column = "quality",	reverse = true	},
-	{ column = "level",		reverse = false	},
-};
-AuctionSort["list_duration"] = {
-	{ column = "bid",		reverse = false	},
-	{ column = "quantity",	reverse = true	},
-	{ column = "minbidbuyout",	reverse = false	},
-	{ column = "name",		reverse = false	},
-	{ column = "level",		reverse = true	},
-	{ column = "quality",	reverse = false	},
-	{ column = "duration",	reverse = false	},
-};
-AuctionSort["list_seller"] = {
-	{ column = "duration",	reverse = false	},
-	{ column = "bid",		reverse = false },
-	{ column = "quantity",	reverse = true	},
-	{ column = "minbidbuyout",	reverse = false	},
-	{ column = "name",		reverse = false	},
-	{ column = "level",		reverse = true	},
-	{ column = "quality",	reverse = false	},
-	{ column = "seller",	reverse = false	},
-};
-AuctionSort["list_bid"] = {
-	{ column = "duration",	reverse = false	},
-	{ column = "quantity",	reverse = true	},
-	{ column = "name",		reverse = false	},
-	{ column = "level",		reverse = true	},
-	{ column = "quality",	reverse = false	},
-	{ column = "bid",		reverse = false	},
-};
-
-AuctionSort["list_quality"] = {
-	{ column = "duration",	reverse = false	},
-	{ column = "bid",		reverse = false	},
-	{ column = "quantity",	reverse = true	},
-	{ column = "minbidbuyout",	reverse = false	},
-	{ column = "name",		reverse = false	},
-	{ column = "level",		reverse = true	},
-	{ column = "quality",	reverse = false	},
-};
-
 
 UIPanelWindows["AuctionFrame"] = { area = "doublewide", pushable = 0, width = 840 };
 
@@ -291,6 +120,8 @@ function AuctionFrame_OnLoad (self)
 
 	MoneyInputFrame_SetPreviousFocus(BuyoutPrice, StartPriceCopper);
 	MoneyInputFrame_SetNextFocus(BuyoutPrice, AuctionsStackSizeEntry);
+
+	BrowseFilterScrollFrame.ScrollBar.scrollStep = BROWSE_FILTER_HEIGHT;
 	
 	-- Init search dot count
 	AuctionFrameBrowse.dotCount = 0;
@@ -311,6 +142,13 @@ function AuctionFrame_OnLoad (self)
 end
 
 function AuctionFrame_Show()
+	if (IsKioskModeEnabled()) then
+		UIErrorsFrame:AddMessage(ERR_CLIENT_LOCKED_OUT, 1.0, 0.1, 0.1, 1.0);
+		CloseAuctionHouse();
+		HideUIPanel(AuctionFrame);
+		return;
+	end
+
 	if ( AuctionFrame:IsShown() ) then
 		AuctionFrameBrowse_Update();
 		AuctionFrameBid_Update();
@@ -402,9 +240,6 @@ function AuctionFrameBrowse_OnLoad(self)
 
 	-- set default sort
 	AuctionFrame_SetSort("list", "quality", false);
-	
-	-- initialize class filter array
-	AuctionFrameBrowse_InitClasses(GetAuctionItemClasses());
 end
 
 function AuctionFrameBrowse_OnShow()
@@ -469,13 +304,6 @@ function BrowseDropDown_OnClick(self)
 	UIDropDownMenu_SetSelectedValue(BrowseDropDown, self.value);
 end
 
-function AuctionFrameBrowse_InitClasses(...)
-	for i=1, select("#", ...) do
-		CLASS_FILTERS[i] = select(i, ...);
-	end
-	tinsert(CLASS_FILTERS, TOKEN_FILTER_LABEL);
-end
-
 function AuctionFrameBrowse_Reset(self)
 	BrowseName:SetText("");
 	BrowseMinLevel:SetText("");
@@ -492,14 +320,11 @@ function AuctionFrameBrowse_Reset(self)
 
 	-- reset the filters
 	OPEN_FILTER_LIST = {};
-	AuctionFrameBrowse.selectedClass = nil;
-	AuctionFrameBrowse.selectedClassIndex = nil;
-	AuctionFrameBrowse.selectedSubclass = nil;
-	AuctionFrameBrowse.selectedSubclassIndex = nil;
-	AuctionFrameBrowse.selectedInvtype = nil;
-	AuctionFrameBrowse.selectedInvtypeIndex = nil;
+	AuctionFrameBrowse.selectedCategoryIndex = nil;
+	AuctionFrameBrowse.selectedSubCategoryIndex = nil;
+	AuctionFrameBrowse.selectedSubSubCategoryIndex = nil;
 
-	BrowseLevelSort:SetText(_G[GetDetailColumnString(AuctionFrameBrowse.selectedClassIndex, AuctionFrameBrowse.selectedSubclassIndex)]);
+	BrowseLevelSort:SetText(AuctionFrame_GetDetailColumnString(AuctionFrameBrowse.selectedCategoryIndex, AuctionFrameBrowse.selectedSubCategoryIndex));
 	AuctionFrameFilters_Update()
 	BrowseWowTokenResults_Update();
 	self:Disable();
@@ -508,7 +333,7 @@ end
 function BrowseResetButton_OnUpdate(self, elapsed)
 	if ( (BrowseName:GetText() == "") and (BrowseMinLevel:GetText() == "") and (BrowseMaxLevel:GetText() == "") and
 	     (not IsUsableCheckButton:GetChecked()) and (not ExactMatchCheckButton:GetChecked()) and (UIDropDownMenu_GetSelectedValue(BrowseDropDown) == -1) and
-	     (not AuctionFrameBrowse.selectedClass) and (not AuctionFrameBrowse.selectedSubclass) and (not AuctionFrameBrowse.selectedInvtype) )
+	     (not AuctionFrameBrowse.selectedCategoryIndex) and (not AuctionFrameBrowse.selectedSubCategoryIndex) and (not AuctionFrameBrowse.selectedSubSubCategoryIndex) )
 	then
 		self:Disable();
 	else
@@ -553,7 +378,7 @@ end
 
 local prevBrowseParams;
 local function AuctionFrameBrowse_SearchHelper(...)
-	local text, minLevel, maxLevel, invType, class, subclass, page, usable, rarity, exactMatch = ...;
+	local text, minLevel, maxLevel, categoryIndex, subCategoryIndex, subSubCategoryIndex, page, usable, rarity, exactMatch = ...;
 
 	if ( not prevBrowseParams ) then
 		-- if we are doing a search for the first time then create the browse param cache
@@ -571,7 +396,18 @@ local function AuctionFrameBrowse_SearchHelper(...)
 		end
 	end
 
-	QueryAuctionItems(text, minLevel, maxLevel, invType, class, subclass, page, usable, rarity, false, exactMatch);
+	local filterData;
+	if categoryIndex and subCategoryIndex and subSubCategoryIndex then
+		filterData = AuctionCategories[categoryIndex].subCategories[subCategoryIndex].subCategories[subSubCategoryIndex].filters;
+	elseif categoryIndex and subCategoryIndex then
+		filterData = AuctionCategories[categoryIndex].subCategories[subCategoryIndex].filters;
+	elseif categoryIndex then
+		filterData = AuctionCategories[categoryIndex].filters;
+	else
+		-- not filtering by category, leave nil for all
+	end
+
+	QueryAuctionItems(text, minLevel, maxLevel, page, usable, rarity, false, exactMatch, filterData);
 
 	-- store this query's params so we can compare them with the next set of params we get
 	for i = 1, select('#', ...) do
@@ -584,7 +420,7 @@ local function AuctionFrameBrowse_SearchHelper(...)
 end
 
 function AuctionFrameBrowse_Search()
-	if (AuctionFrameBrowse.selectedClass == TOKEN_FILTER_LABEL) then
+	if (AuctionFrame_DoesCategoryHaveFlag("WOW_TOKEN_FLAG", AuctionFrameBrowse.selectedCategoryIndex)) then
 		AuctionWowToken_UpdateMarketPrice();
 		BrowseWowTokenResults_Update();
 	else
@@ -592,7 +428,7 @@ function AuctionFrameBrowse_Search()
 			AuctionFrameBrowse.page = 0;
 		end
 
-		AuctionFrameBrowse_SearchHelper(BrowseName:GetText(), BrowseMinLevel:GetText(), BrowseMaxLevel:GetText(), AuctionFrameBrowse.selectedInvtypeIndex, AuctionFrameBrowse.selectedClassIndex, AuctionFrameBrowse.selectedSubclassIndex, AuctionFrameBrowse.page, IsUsableCheckButton:GetChecked(), UIDropDownMenu_GetSelectedValue(BrowseDropDown), ExactMatchCheckButton:GetChecked());
+		AuctionFrameBrowse_SearchHelper(BrowseName:GetText(), BrowseMinLevel:GetNumber(), BrowseMaxLevel:GetNumber(), AuctionFrameBrowse.selectedCategoryIndex, AuctionFrameBrowse.selectedSubCategoryIndex, AuctionFrameBrowse.selectedSubSubCategoryIndex, AuctionFrameBrowse.page, IsUsableCheckButton:GetChecked(), UIDropDownMenu_GetSelectedValue(BrowseDropDown), ExactMatchCheckButton:GetChecked());
 
 		-- Start "searching" messaging
 		AuctionFrameBrowse.isSearching = 1;
@@ -650,54 +486,60 @@ function BrowseSearchButton_OnUpdate(self, elapsed)
 	end
 end
 
-function AuctionFrameFilters_Update()
-	AuctionFrameFilters_UpdateClasses();
+function AuctionFrameFilters_Update(forceSelectionIntoView)
+	AuctionFrameFilters_UpdateCategories(forceSelectionIntoView);
 	-- Update scrollFrame
-	FauxScrollFrame_Update(BrowseFilterScrollFrame, getn(OPEN_FILTER_LIST), NUM_FILTERS_TO_DISPLAY, BROWSE_FILTER_HEIGHT);
+	FauxScrollFrame_Update(BrowseFilterScrollFrame, #OPEN_FILTER_LIST, NUM_FILTERS_TO_DISPLAY, BROWSE_FILTER_HEIGHT);
 end
 
-function AuctionFrameFilters_UpdateClasses()
+function AuctionFrameFilters_UpdateCategories(forceSelectionIntoView)
 	-- Initialize the list of open filters
 	OPEN_FILTER_LIST = {};
-	for i=1, getn(CLASS_FILTERS) do
-		if ( AuctionFrameBrowse.selectedClass and AuctionFrameBrowse.selectedClass == CLASS_FILTERS[i] ) then
-			tinsert(OPEN_FILTER_LIST, {CLASS_FILTERS[i], "class", i, 1});
-			AuctionFrameFilters_UpdateSubClasses(GetAuctionItemSubClasses(i));
-		else
-			tinsert(OPEN_FILTER_LIST, {CLASS_FILTERS[i], "class", i, nil});
+
+	for categoryIndex, categoryInfo in ipairs(AuctionCategories) do
+		local selected = AuctionFrameBrowse.selectedCategoryIndex and AuctionFrameBrowse.selectedCategoryIndex == categoryIndex;
+		local isToken = categoryInfo:HasFlag("WOW_TOKEN_FLAG");
+
+		tinsert(OPEN_FILTER_LIST, { name = categoryInfo.name, type = "category", categoryIndex = categoryIndex, selected = selected, isToken = isToken, });
+
+		if ( selected ) then
+			AuctionFrameFilters_AddSubCategories(categoryInfo.subCategories);
 		end
 	end
 	
 	-- Display the list of open filters
-	local button, index, info, isLast;
 	local offset = FauxScrollFrame_GetOffset(BrowseFilterScrollFrame);
-	index = offset;
-	for i=1, NUM_FILTERS_TO_DISPLAY do
-		button = _G["AuctionFilterButton"..i];
-		if ( getn(OPEN_FILTER_LIST) > NUM_FILTERS_TO_DISPLAY ) then
-			button:SetWidth(136);
-		else
-			button:SetWidth(156);
+	if ( forceSelectionIntoView and AuctionFrameBrowse.selectedCategoryIndex and ( not AuctionFrameBrowse.selectedSubCategoryIndex and not AuctionFrameBrowse.selectedSubSubCategoryIndex ) ) then
+		if ( AuctionFrameBrowse.selectedCategoryIndex <= offset ) then
+			FauxScrollFrame_OnVerticalScroll(BrowseFilterScrollFrame, math.max(0.0, (AuctionFrameBrowse.selectedCategoryIndex - 1) * BROWSE_FILTER_HEIGHT), BROWSE_FILTER_HEIGHT);
+			offset = FauxScrollFrame_GetOffset(BrowseFilterScrollFrame);
 		end
+	end
+	
+	local dataIndex = offset;
 
-		index = index + 1;
-		if ( index <= getn(OPEN_FILTER_LIST) ) then
-			info = OPEN_FILTER_LIST[index];
-			while ((info[2] == "invtype") and (not info[6])) do
-				index = index + 1
-				if ( index <= getn(OPEN_FILTER_LIST) ) then
-					info = OPEN_FILTER_LIST[index];
-				else
-					info = nil;
-					button:Hide();
-					break;
-				end
-			end
+	local hasScrollBar = #OPEN_FILTER_LIST > NUM_FILTERS_TO_DISPLAY;
+	for i = 1, NUM_FILTERS_TO_DISPLAY do
+		local button = AuctionFrameBrowse.FilterButtons[i];
+		button:SetWidth(hasScrollBar and 136 or 156);
+
+		dataIndex = dataIndex + 1;
+
+		if ( dataIndex <= #OPEN_FILTER_LIST ) then
+			local info = OPEN_FILTER_LIST[dataIndex];
 
 			if ( info ) then
-				FilterButton_SetType(button, info[2], info[1], info[5]);
-				button.index = info[3];
-				if ( info[4] ) then
+				FilterButton_SetUp(button, info);
+				
+				if ( info.type == "category" ) then
+					button.categoryIndex = info.categoryIndex;
+				elseif ( info.type == "subCategory" ) then
+					button.subCategoryIndex = info.subCategoryIndex;
+				elseif ( info.type == "subSubCategory" ) then
+					button.subSubCategoryIndex = info.subSubCategoryIndex;
+				end
+				
+				if ( info.selected ) then
 					button:LockHighlight();
 				else
 					button:UnlockHighlight();
@@ -710,88 +552,84 @@ function AuctionFrameFilters_UpdateClasses()
 	end
 end
 
-function AuctionFrameFilters_UpdateSubClasses(...)
-	local subClass;
-	for i=1, select("#", ...) do
-		subClass = HIGHLIGHT_FONT_COLOR_CODE..select(i, ...)..FONT_COLOR_CODE_CLOSE; 
-		if ( AuctionFrameBrowse.selectedSubclass and AuctionFrameBrowse.selectedSubclass == subClass ) then
-			tinsert(OPEN_FILTER_LIST, {select(i, ...), "subclass", i, 1});
-			AuctionFrameFilters_UpdateInvTypes(GetAuctionInvTypes(AuctionFrameBrowse.selectedClassIndex,i));
-		else
-			tinsert(OPEN_FILTER_LIST, {select(i, ...), "subclass", i, nil});
+function AuctionFrameFilters_AddSubCategories(subCategories)
+	if subCategories then
+		for subCategoryIndex, subCategoryInfo in ipairs(subCategories) do
+			local selected = AuctionFrameBrowse.selectedSubCategoryIndex and AuctionFrameBrowse.selectedSubCategoryIndex == subCategoryIndex;
+
+			tinsert(OPEN_FILTER_LIST, { name = subCategoryInfo.name, type = "subCategory", subCategoryIndex = subCategoryIndex, selected = selected });
+		 
+			if ( selected ) then
+				AuctionFrameFilters_AddSubSubCategories(subCategoryInfo.subCategories);
+			end
 		end
 	end
 end
 
-function AuctionFrameFilters_UpdateInvTypes(...)
-	local invType, isLast, idx;
-	for i=1, select("#", ...), 2 do
--- each type has 2 args: token name(i), display in list(i+1)
-		idx = (i + 1) / 2;
-		invType = HIGHLIGHT_FONT_COLOR_CODE.._G[select(i, ...)]..FONT_COLOR_CODE_CLOSE; 
-		if ( (i + 1) == select("#", ...) ) then
-			isLast = 1;
-		end
+function AuctionFrameFilters_AddSubSubCategories(subSubCategories)
+	if subSubCategories then
+		for subSubCategoryIndex, subSubCategoryInfo in ipairs(subSubCategories) do
+			local selected = AuctionFrameBrowse.selectedSubSubCategoryIndex and AuctionFrameBrowse.selectedSubSubCategoryIndex == subSubCategoryIndex;
+			local isLast = subSubCategoryIndex == #subSubCategories;
 
-		if ( AuctionFrameBrowse.selectedInvtypeIndex and AuctionFrameBrowse.selectedInvtypeIndex == idx ) then
-			tinsert(OPEN_FILTER_LIST, {invType, "invtype", idx, 1, isLast, select(i+1, ...)} );
-		else
-			tinsert(OPEN_FILTER_LIST, {invType, "invtype", idx, nil, isLast, select(i+1, ...)} );
+			tinsert(OPEN_FILTER_LIST, { name = subSubCategoryInfo.name, type = "subSubCategory", subSubCategoryIndex = subSubCategoryIndex, selected = selected, isLast = isLast});
 		end
 	end
 end
 
-function FilterButton_SetType(button, type, text, isLast)
+function FilterButton_SetUp(button, info)
 	local normalText = _G[button:GetName().."NormalText"];
 	local normalTexture = _G[button:GetName().."NormalTexture"];
 	local line = _G[button:GetName().."Lines"];
 	local tex = button:GetNormalTexture();
-	if (text == TOKEN_FILTER_LABEL) then
+
+	if (info.isToken) then
 		tex:SetTexCoord(0, 1, 0, 1);
 		tex:SetAtlas("token-button-category");
 	else
 		tex:SetTexture("Interface\\AuctionFrame\\UI-AuctionFrame-FilterBg");
 		tex:SetTexCoord(0, 0.53125, 0, 0.625);
 	end
-	if ( type == "class" ) then
-		button:SetText(text);
+
+	if ( info.type == "category" ) then
+		button:SetNormalFontObject(GameFontNormalSmallLeft);
+		button:SetText(info.name);
 		normalText:SetPoint("LEFT", button, "LEFT", 4, 0);
 		normalTexture:SetAlpha(1.0);	
 		line:Hide();
-	elseif ( type == "subclass" ) then
-		button:SetText(HIGHLIGHT_FONT_COLOR_CODE..text..FONT_COLOR_CODE_CLOSE);
+	elseif ( info.type == "subCategory" ) then
+		button:SetNormalFontObject(GameFontHighlightSmallLeft);
+		button:SetText(info.name);
 		normalText:SetPoint("LEFT", button, "LEFT", 12, 0);
 		normalTexture:SetAlpha(0.4);
 		line:Hide();
-	elseif ( type == "invtype" ) then
-		button:SetText(HIGHLIGHT_FONT_COLOR_CODE..text..FONT_COLOR_CODE_CLOSE);
+	elseif ( info.type == "subSubCategory" ) then
+		button:SetNormalFontObject(GameFontHighlightSmallLeft);
+		button:SetText(info.name);
 		normalText:SetPoint("LEFT", button, "LEFT", 20, 0);
 		normalTexture:SetAlpha(0.0);	
-		if ( isLast ) then
+		
+		if ( info.isLast ) then
 			line:SetTexCoord(0.4375, 0.875, 0, 0.625);
 		else
 			line:SetTexCoord(0, 0.4375, 0, 0.625);
 		end
 		line:Show();
 	end
-	button.type = type; 
+	button.type = info.type; 
 end
 
 function AuctionFrameFilter_OnClick(self, button)
-	if ( self.type == "class" ) then
-		local wasToken = AuctionFrameBrowse.selectedClass == TOKEN_FILTER_LABEL;
-		if ( AuctionFrameBrowse.selectedClass == self:GetText() ) then
-			AuctionFrameBrowse.selectedClass = nil;
-			AuctionFrameBrowse.selectedClassIndex = nil;
+	if ( self.type == "category" ) then
+		local wasToken = AuctionFrame_DoesCategoryHaveFlag("WOW_TOKEN_FLAG", AuctionFrameBrowse.selectedCategoryIndex);
+		if ( AuctionFrameBrowse.selectedCategoryIndex == self.categoryIndex ) then
+			AuctionFrameBrowse.selectedCategoryIndex = nil;
 		else
-			AuctionFrameBrowse.selectedClass = self:GetText();
-			AuctionFrameBrowse.selectedClassIndex = self.index;
+			AuctionFrameBrowse.selectedCategoryIndex = self.categoryIndex;
 		end
-		AuctionFrameBrowse.selectedSubclass = nil;
-		AuctionFrameBrowse.selectedSubclassIndex = nil;
-		AuctionFrameBrowse.selectedInvtype = nil;
-		AuctionFrameBrowse.selectedInvtypeIndex = nil;
-		if (AuctionFrameBrowse.selectedClass == TOKEN_FILTER_LABEL) then
+		AuctionFrameBrowse.selectedSubCategoryIndex = nil;
+		AuctionFrameBrowse.selectedSubSubCategoryIndex = nil;
+		if (AuctionFrame_DoesCategoryHaveFlag("WOW_TOKEN_FLAG", AuctionFrameBrowse.selectedCategoryIndex)) then
 			AuctionWowToken_UpdateMarketPrice();
 			BrowseWowTokenResults_Update();
 		else
@@ -808,27 +646,28 @@ function AuctionFrameFilter_OnClick(self, button)
 				BrowseNoResultsText:Show();
 			end
 		end
-	elseif ( self.type == "subclass" ) then
-		if ( AuctionFrameBrowse.selectedSubclass == self:GetText() ) then
-			AuctionFrameBrowse.selectedSubclass = nil;
-			AuctionFrameBrowse.selectedSubclassIndex = nil;
+	elseif ( self.type == "subCategory" ) then
+		if ( AuctionFrameBrowse.selectedSubCategoryIndex == self.subCategoryIndex ) then
+			AuctionFrameBrowse.selectedSubCategoryIndex = nil;
+			AuctionFrameBrowse.selectedSubSubCategoryIndex = nil;
 		else
-			AuctionFrameBrowse.selectedSubclass = self:GetText();
-			AuctionFrameBrowse.selectedSubclassIndex = self.index;
+			AuctionFrameBrowse.selectedSubCategoryIndex = self.subCategoryIndex;
+			AuctionFrameBrowse.selectedSubSubCategoryIndex = nil;
 		end
-		AuctionFrameBrowse.selectedInvtype = nil;
-		AuctionFrameBrowse.selectedInvtypeIndex = nil;
-	elseif ( self.type == "invtype" ) then
-		AuctionFrameBrowse.selectedInvtype = self:GetText();
-		AuctionFrameBrowse.selectedInvtypeIndex = self.index;
+	elseif ( self.type == "subSubCategory" ) then
+		if ( AuctionFrameBrowse.selectedSubSubCategoryIndex == self.subSubCategoryIndex ) then
+			AuctionFrameBrowse.selectedSubSubCategoryIndex = nil;
+		else
+			AuctionFrameBrowse.selectedSubSubCategoryIndex = self.subSubCategoryIndex
+		end
 	end
-	BrowseLevelSort:SetText(_G[GetDetailColumnString(AuctionFrameBrowse.selectedClassIndex, AuctionFrameBrowse.selectedSubclassIndex)]);
+	BrowseLevelSort:SetText(AuctionFrame_GetDetailColumnString(AuctionFrameBrowse.selectedCategoryIndex, AuctionFrameBrowse.selectedSubCategoryIndex));
 	BrowseWowTokenResults_Update();
-	AuctionFrameFilters_Update()
+	AuctionFrameFilters_Update(true)
 end
 
 function AuctionFrameBrowse_Update()
-	if (AuctionFrameBrowse.selectedClass ~= TOKEN_FILTER_LABEL) then
+	if (not AuctionFrame_DoesCategoryHaveFlag("WOW_TOKEN_FLAG", AuctionFrameBrowse.selectedCategoryIndex)) then
 		local numBatchAuctions, totalAuctions = GetNumAuctionItems("list");
 		local button, buttonName, buttonHighlight, iconTexture, itemName, color, itemCount, moneyFrame, yourBidText, buyoutFrame, buyoutMoney;
 		local offset = FauxScrollFrame_GetOffset(BrowseScrollFrame);
@@ -894,12 +733,7 @@ function AuctionFrameBrowse_Update()
 				itemName:SetVertexColor(color.r, color.g, color.b);
 				local itemButton = _G[buttonName.."Item"];
 
-				if (quality > LE_ITEM_QUALITY_COMMON and BAG_ITEM_QUALITY_COLORS[quality]) then
-					itemButton.IconBorder:Show();
-					itemButton.IconBorder:SetVertexColor(BAG_ITEM_QUALITY_COLORS[quality].r, BAG_ITEM_QUALITY_COLORS[quality].g, BAG_ITEM_QUALITY_COLORS[quality].b);
-				else
-					itemButton.IconBorder:Hide();
-				end
+				SetItemButtonQuality(itemButton, quality, itemId);
 
 				-- Set level
 				if ( levelColHeader == "REQ_LEVEL_ABBR" and level > UnitLevel("player") ) then
@@ -1109,7 +943,7 @@ function BrowseWowTokenResults_OnEvent(self, event, ...)
 end
 
 function BrowseWowTokenResults_Update()
-	if (AuctionFrameBrowse.selectedClass == TOKEN_FILTER_LABEL) then
+	if (AuctionFrame_DoesCategoryHaveFlag("WOW_TOKEN_FLAG", AuctionFrameBrowse.selectedCategoryIndex)) then
 		if (not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_GAME_TIME_AUCTION_HOUSE) and C_WowTokenPublic.GetCommerceSystemStatus()) then
 			WowTokenGameTimeTutorial:Show();
 			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_GAME_TIME_AUCTION_HOUSE, true);
@@ -1216,7 +1050,7 @@ function AuctionFrameBid_Update()
 	local offset = FauxScrollFrame_GetOffset(BidScrollFrame);
 	local index;
 	local isLastSlotEmpty;
-	local name, texture, count, quality, canUse, level, levelColHeader, minBid, minIncrement, buyoutPrice, bidAmount, highBidder, bidderFullName, owner, ownerFullName;
+	local name, texture, count, quality, canUse, level, levelColHeader, minBid, minIncrement, buyoutPrice, bidAmount, highBidder, bidderFullName, owner, ownerFullName, itemID;
 	local duration;
 	BidBidButton:Disable();
 	BidBuyoutButton:Disable();
@@ -1239,7 +1073,7 @@ function AuctionFrameBid_Update()
 		else
 			button:Show();
 			buttonName = "BidButton"..i;
-			name, texture, count, quality, canUse, level, levelColHeader, minBid, minIncrement, buyoutPrice, bidAmount, highBidder, bidderFullName, owner, ownerFullName =  GetAuctionItemInfo("bidder", index);
+			name, texture, count, quality, canUse, level, levelColHeader, minBid, minIncrement, buyoutPrice, bidAmount, highBidder, bidderFullName, owner, ownerFullName, _, itemID =  GetAuctionItemInfo("bidder", index);
 			duration = GetAuctionItemTimeLeft("bidder", offset + i);
 
 			-- Resize button if there isn't a scrollbar
@@ -1265,12 +1099,7 @@ function AuctionFrameBid_Update()
 
 			local itemButton = _G[buttonName.."Item"];
 
-			if (quality > LE_ITEM_QUALITY_COMMON and BAG_ITEM_QUALITY_COLORS[quality]) then
-				itemButton.IconBorder:Show();
-				itemButton.IconBorder:SetVertexColor(BAG_ITEM_QUALITY_COLORS[quality].r, BAG_ITEM_QUALITY_COLORS[quality].g, BAG_ITEM_QUALITY_COLORS[quality].b);
-			else
-				itemButton.IconBorder:Hide();
-			end
+			SetItemButtonQuality(itemButton, quality, itemID);
 
 			-- Set level
 			if ( levelColHeader == "REQ_LEVEL_ABBR" and level > UnitLevel("player") ) then
@@ -1404,15 +1233,15 @@ function AuctionFrameAuctions_OnEvent(self, event, ...)
 		AuctionsNumStacksEntry:ClearFocus();
 		AuctionsBlockFrame:Show();
 		AuctionProgressBar:SetMinMaxValues(0, arg1);
-		AuctionProgressBar:SetValue(0.01);		-- TEMPORARY
-		AuctionProgressBarText:SetFormattedText(AUCTION_CREATING, 0, arg1);
-		local _, iconTexture =  GetAuctionSellItemInfo();
-		AuctionProgressBarIcon:SetTexture(iconTexture);
+		AuctionProgressBar:SetValue(0.01);		-- "TEMPORARY"
+		AuctionProgressBar.Text:SetFormattedText(AUCTION_CREATING, 0, arg1);
+		local _, iconTexture = GetAuctionSellItemInfo();
+		AuctionProgressBar.Icon:SetTexture(iconTexture);
 		AuctionProgressFrame:Show();
 	elseif ( event == "AUCTION_MULTISELL_UPDATE" ) then
 		local arg1, arg2 = ...;
 		AuctionProgressBar:SetValue(arg1);
-		AuctionProgressBarText:SetFormattedText(AUCTION_CREATING, arg1, arg2);
+		AuctionProgressBar.Text:SetFormattedText(AUCTION_CREATING, arg1, arg2);
 		if ( arg1 == arg2 ) then
 			AuctionsBlockFrame:Hide();
 			AuctionProgressFrame.fadeOut = true;
@@ -1550,13 +1379,8 @@ function AuctionFrameAuctions_Update()
 			buttonBuyoutFrame = _G[buttonName.."BuyoutFrame"];
 
 			local itemButton = _G[buttonName.."Item"];
-			
-			if (quality and quality > LE_ITEM_QUALITY_COMMON and BAG_ITEM_QUALITY_COLORS[quality]) then
-				itemButton.IconBorder:Show();
-				itemButton.IconBorder:SetVertexColor(BAG_ITEM_QUALITY_COLORS[quality].r, BAG_ITEM_QUALITY_COLORS[quality].g, BAG_ITEM_QUALITY_COLORS[quality].b);
-			else
-				itemButton.IconBorder:Hide();
-			end
+
+			SetItemButtonQuality(itemButton, quality, itemID);
 
 			if ( saleStatus == 1 ) then
 				-- Sold item
@@ -1812,6 +1636,7 @@ function AuctionSellItemButton_OnEvent(self, event, ...)
 			AuctionsItemButtonName:SetText(name);
 			local color = ITEM_QUALITY_COLORS[quality];
 			AuctionsItemButtonName:SetVertexColor(color.r, color.g, color.b);
+			SetItemButtonQuality(AuctionsItemButton, quality, itemID)
 			AuctionWowToken_UpdateMarketPrice();
 			MoneyFrame_SetType(AuctionsDepositMoneyFrame, "AUCTION_DEPOSIT_TOKEN");
 			MoneyFrame_Update("AuctionsDepositMoneyFrame", 0, true);
@@ -1826,7 +1651,10 @@ function AuctionSellItemButton_OnEvent(self, event, ...)
 			AuctionsItemButton.pricePerUnit = pricePerUnit;
 			AuctionsItemButtonName:SetText(name);
 			local color = ITEM_QUALITY_COLORS[quality];
-			AuctionsItemButtonName:SetVertexColor(color.r, color.g, color.b);
+			if color then
+				AuctionsItemButtonName:SetVertexColor(color.r, color.g, color.b);
+			end
+			SetItemButtonQuality(AuctionsItemButton, quality, itemID)
 			if ( totalCount > 1 ) then
 				AuctionsItemButtonCount:SetText(totalCount);
 				AuctionsItemButtonCount:Show();

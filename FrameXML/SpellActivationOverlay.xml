@@ -4,14 +4,14 @@
 	<Frame name="SpellActivationOverlayTemplate" virtual="true">
 		<Animations>
 			<AnimationGroup name="$parentAnimIn" parentKey="animIn">
-				<Alpha change="1" duration="0.2"/>
+				<Alpha fromAlpha="0" toAlpha="1" duration="0.2"/>
 				<Scripts>
 					<OnPlay function="SpellActivationOverlayTexture_OnFadeInPlay"/>
 					<OnFinished function="SpellActivationOverlayTexture_OnFadeInFinished"/>
 				</Scripts>
 			</AnimationGroup>
 			<AnimationGroup name="$parentAnimOut" parentKey="animOut">
-				<Alpha change="-1" duration="0.1">
+				<Alpha fromAlpha="1" toAlpha="0" duration="0.1">
 					<Scripts>
 						<OnFinished function="SpellActivationOverlayTexture_OnFadeOutFinished"/>
 					</Scripts>

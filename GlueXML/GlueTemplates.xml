@@ -79,6 +79,97 @@
 		<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
 		<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
 	</CheckButton>
+
+	<Button name="GlueHorizontalResizeDarkButtonTemplate" mixin="HorizontalResizableCheckButtonMixin" motionScriptsWhileDisabled="true" virtual="true">
+		<Size x="108" y="41"/>
+
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="normalLeft" atlas="UI-CharacterCreate-LargeButton">
+					<Size x="20"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="BOTTOMLEFT"/>
+					</Anchors>
+					<TexCoords left="0" right="0.1852" top="0" bottom="1.0"/>
+				</Texture>
+				<Texture parentKey="normalRight" atlas="UI-CharacterCreate-LargeButton">
+					<Size x="20"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+					<TexCoords left="0.81481" right="1" top="0" bottom="1"/>
+				</Texture>
+				<Texture parentKey="normalMiddle" atlas="UI-CharacterCreate-LargeButton">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.normalLeft" relativePoint="TOPRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.normalRight" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+					<TexCoords left="0.1852" right="0.81481" top="0" bottom="1"/>
+				</Texture>
+
+				<Texture parentKey="mouseoverLeft" atlas="UI-CharacterCreate-LargeButton-Blue-Highlight" hidden="true">
+					<Size x="20"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" y="-2"/>
+						<Anchor point="BOTTOMLEFT" y="2"/>
+					</Anchors>
+					<TexCoords left="0" right="0.1852" top="0" bottom="1.0"/>
+				</Texture>
+				<Texture parentKey="mouseoverRight" atlas="UI-CharacterCreate-LargeButton-Blue-Highlight" hidden="true">
+					<Size x="20"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" y="-2"/>
+						<Anchor point="BOTTOMRIGHT" y="2"/>
+					</Anchors>
+					<TexCoords left="0.81481" right="1" top="0" bottom="1"/>
+				</Texture>
+				<Texture parentKey="mouseoverMiddle" atlas="UI-CharacterCreate-LargeButton-Blue-Highlight" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.mouseoverLeft" relativePoint="TOPRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.mouseoverRight" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+					<TexCoords left="0.1852" right="0.81481" top="0" bottom="1"/>
+				</Texture>
+			</Layer>
+
+			<Layer level="OVERLAY">
+				<Texture parentKey="checkedLeft" atlas="UI-CharacterCreate-LargeButton-Yellow-Highlight" hidden="true">
+					<Size x="20"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" y="-2"/>
+						<Anchor point="BOTTOMLEFT" y="2"/>
+					</Anchors>
+					<TexCoords left="0" right="0.1852" top="0" bottom="1.0"/>
+				</Texture>
+				<Texture parentKey="checkedRight" atlas="UI-CharacterCreate-LargeButton-Yellow-Highlight" hidden="true">
+					<Size x="20"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" y="-2"/>
+						<Anchor point="BOTTOMRIGHT" y="2"/>
+					</Anchors>
+					<TexCoords left="0.81481" right="1" top="0" bottom="1"/>
+				</Texture>
+				<Texture parentKey="checkedMiddle" atlas="UI-CharacterCreate-LargeButton-Yellow-Highlight" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.checkedLeft" relativePoint="TOPRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.checkedRight" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+					<TexCoords left="0.1852" right="0.81481" top="0" bottom="1"/>
+				</Texture>
+			</Layer>
+		</Layers>
+
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Button>
+
 	<Slider name="GlueScrollBarTemplate" virtual="true">
 		<Size>
 			<AbsDimension x="16" y="0"/>

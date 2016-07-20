@@ -26,19 +26,21 @@
 			<Layer level="ARTWORK">
 				<Texture parentKey="UpperBlackBar" name="UpperBlackBar">
 					<Size>
-						<AbsDimension x="1024" y="128"/>
+						<AbsDimension x="0" y="128"/>
 					</Size>
 					<Anchors>
 						<Anchor point="TOPLEFT"/>
+						<Anchor point="TOPRIGHT"/>
 					</Anchors>
 					<Color r="0.0" g="0.0" b="0.0"/>
 				</Texture>
 				<Texture parentKey="LowerBlackBar" name="LowerBlackBar">
 					<Size>
-						<AbsDimension x="1024" y="128"/>
+						<AbsDimension x="0" y="128"/>
 					</Size>
 					<Anchors>
 						<Anchor point="BOTTOMLEFT"/>
+						<Anchor point="BOTTOMRIGHT"/>
 					</Anchors>
 					<Color r="0.0" g="0.0" b="0.0"/>
 				</Texture>
@@ -132,7 +134,7 @@
 		</Frames>
 		<Scripts>
 			<OnLoad function="CinematicFrame_OnLoad"/>
-			<OnShow function="SetupFullscreenScale"/>
+			<OnShow function="CinematicFrame_OnShow"/>
 			<OnEvent function="CinematicFrame_OnEvent"/>
 			<OnKeyDown function="CinematicFrame_OnKeyDown"/>
 		</Scripts>

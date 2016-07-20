@@ -5,6 +5,16 @@
 		<Size x="35" y="35"/>
 		<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 	</Button>
+
+	<Button name="CreditsFrameSwitchButtonTemplate" inherits="GlueButtonSmallTemplateBlue" virtual="true">
+		<Size x="260" y="35"/>
+		<Scripts>
+			<OnClick>
+				CreditsFrame_Switch(self, self:GetID());
+			</OnClick>
+		</Scripts>
+	</Button>	
+
 	<Frame name="CreditsFrame" toplevel="true" parent="GlueParent" setAllPoints="true" enableKeyboard="true" hidden="true">
 		<Layers>
 			<Layer level="OVERLAY">
@@ -322,27 +332,15 @@
 					</SimpleHTML>
 				</ScrollChild>
 			</ScrollFrame>
-			<Button name="CreditsFrameSwitchButton1" inherits="GlueButtonSmallTemplateBlue" id="1">
-				<Size x="260" y="35"/>
+			<Button name="CreditsFrameSwitchButton1" inherits="CreditsFrameSwitchButtonTemplate">
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" relativeTo="CreditsFrame" x="25" y="45"/>
 				</Anchors>
-				<Scripts>
-					<OnClick>
-						CreditsFrame_Switch(self, self:GetID());
-					</OnClick>
-				</Scripts>
 			</Button>
-			<Button name="CreditsFrameSwitchButton2" inherits="GlueButtonSmallTemplateBlue" id="2">
-				<Size x="260" y="35"/>
+			<Button name="CreditsFrameSwitchButton2" inherits="CreditsFrameSwitchButtonTemplate">
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" relativeTo="CreditsFrame" x="25" y="10"/>
 				</Anchors>
-				<Scripts>
-					<OnClick>
-						CreditsFrame_Switch(self, self:GetID());
-					</OnClick>
-				</Scripts>
 			</Button>
 			<Button name="$parentRewindButton" inherits="CreditsSpeedButtonTemplate">
 				<Anchors>
@@ -390,6 +388,7 @@
 			</Button>
 		</Frames>
 		<Scripts>
+			<OnLoad function="CreditsFrame_OnLoad"/>
 			<OnShow function="CreditsFrame_OnShow"/>
 			<OnHide function="CreditsFrame_OnHide"/>
 			<OnUpdate function="CreditsFrame_OnUpdate"/>

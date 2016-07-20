@@ -6,9 +6,7 @@
 		IMPORTANT-->
 	<Button name="PlayerFrame" frameStrata="LOW" toplevel="true" movable="true" inherits="SecureUnitButtonTemplate" parent="UIParent">
 		<Size x="232" y="100"/>
-		<Anchors>
-			<Anchor point="TOPLEFT" x="-19" y="-4"/>
-		</Anchors>
+		<!-- This frame gets positioned in UIParent_UpdateTopFramePositions() -->
 		<HitRectInsets>
 			<AbsInset left="6" right="0" top="4" bottom="9"/>
 		</HitRectInsets>
@@ -50,6 +48,7 @@
 							<Layer level="BACKGROUND">
 								<Texture name="PlayerFrameMyHealPredictionBar" inherits="MyHealPredictionBarTemplate"/>
 								<Texture name="PlayerFrameOtherHealPredictionBar" inherits="OtherHealPredictionBarTemplate"/>
+								<Texture name="PlayerFrameManaCostPredictionBar" inherits="MyManaCostPredictionBarTemplate"/>
 								<Texture name="$parentHealAbsorbBar" inherits="HealAbsorbBarTemplate"/>
 								<Texture name="$parentHealAbsorbBarLeftShadow" inherits="HealAbsorbBarLeftShadowTemplate"/>
 								<Texture name="$parentHealAbsorbBarRightShadow" inherits="HealAbsorbBarRightShadowTemplate"/>
@@ -132,10 +131,22 @@
 										<Anchor point="TOPLEFT" x="18" y="-20"/>
 									</Anchors>
 								</Texture>
+								<Texture name="PlayerPrestigePortrait" hidden="true">
+									<Size x="50" y="52"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" x="15" y="-13"/>
+									</Anchors>
+								</Texture>
 							</Layer>
 							<Layer level="ARTWORK" textureSubLevel="1">
 								<Texture name="$parentOverAbsorbGlow" inherits="OverAbsorbGlowTemplate"/>
 								<Texture name="$parentOverHealAbsorbGlow" inherits="OverHealAbsorbGlowTemplate"/>
+								<Texture name="PlayerPrestigeBadge" hidden="true">
+									<Size x="30" y="30"/>
+									<Anchors>
+										<Anchor point="CENTER" relativeTo="PlayerPrestigePortrait" relativePoint="CENTER"/>
+									</Anchors>
+								</Texture>
 							</Layer>
 							<Layer level="OVERLAY">
 								<FontString name="PlayerHitIndicator" hidden="true" inherits="NumberFontNormalHuge">
@@ -259,7 +270,7 @@
 							<OnEnter>
 								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 								GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
-							</OnEnter>						
+							</OnEnter>
 							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>
 					</Frame>
@@ -302,7 +313,13 @@
 					</Button>
 				</Frames>
 			</Frame>
-			<StatusBar name="PlayerFrameHealthBar" inherits="TextStatusBar">
+			<StatusBar parentKey="PlayerFrameHealthBarAnimatedLoss" mixin="AnimatedHealthLossMixin" hidden="true">
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+				</Scripts>
+			</StatusBar>
+			<StatusBar name="PlayerFrameHealthBar" inherits="TextStatusBar" enableMouseMotion="true">
 				<Size x="119" y="12"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="106" y="-41"/>
@@ -311,12 +328,13 @@
 					<OnLoad>
 						TextStatusBar_Initialize(self);
 						self.textLockable = 1;
-						self.cvar = "playerStatusText";
+						self.cvar = "statusText";
 						self.cvarLabel = "STATUS_TEXT_PLAYER";
+
+						self:SetMouseClickEnabled(false);
+
+						self:GetParent().PlayerFrameHealthBarAnimatedLoss:SetUnitHealthBar("player", self);
 					</OnLoad>
-					<OnMouseUp>
-						self:GetParent():Click(button);
-					</OnMouseUp>
 					<OnValueChanged function="UnitFrameHealthBar_OnValueChanged"/>
 					<OnSizeChanged>
 						UnitFrameHealPredictionBars_UpdateSize(self:GetParent());
@@ -324,7 +342,7 @@
 				</Scripts>
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 			</StatusBar>
-			<StatusBar name="PlayerFrameManaBar" inherits="TextStatusBar">
+			<StatusBar name="PlayerFrameManaBar" inherits="TextStatusBar" enableMouseMotion="true">
 				<Size x="119" y="12"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="106" y="-52"/>
@@ -333,15 +351,28 @@
 					<OnLoad>
 						TextStatusBar_Initialize(self);
 						self.textLockable = 1;
-						self.cvar = "playerStatusText";
+						self.cvar = "statusText";
 						self.cvarLabel = "STATUS_TEXT_PLAYER";
+
+						self:SetMouseClickEnabled(false);
 					</OnLoad>
-					<OnMouseUp>
-						self:GetParent():Click(button);
-					</OnMouseUp>
 				</Scripts>
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 				<BarColor r="0" g="0" b="1.0"/>
+				<Frames>
+					<Frame parentKey="FeedbackFrame" setAllPoints="true" useParentLevel="true" inherits="BuilderSpenderFrame">
+						<Size x="119" y="10"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" x="0" y="-1"/>
+						</Anchors>
+					</Frame>
+					<Frame parentKey="FullPowerFrame" inherits="FullResourcePulseFrame">
+						<Size x="119" y="12"/>
+						<Anchors>
+							<Anchor point="TOPRIGHT"/>
+						</Anchors>
+					</Frame>
+				</Frames>
 			</StatusBar>
 			<Frame name="PlayerFrameDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true">
 				<Size x="10" y="10"/>

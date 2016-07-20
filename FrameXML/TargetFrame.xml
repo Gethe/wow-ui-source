@@ -15,7 +15,7 @@
 						<Anchor point="BOTTOMRIGHT" x="1" y="-1"/>
 					</Anchors>
 					<TexCoords left="0.296875" right="0.5703125" top="0" bottom="0.515625"/>
-				</Texture>	
+				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -58,7 +58,7 @@
 						<Anchor point="BOTTOMRIGHT" x="1" y="-1"/>
 					</Anchors>
 					<TexCoords left="0.296875" right="0.5703125" top="0" bottom="0.515625"/>
-				</Texture>	
+				</Texture>
 				<FontString name="$parentCount" inherits="NumberFontNormalSmall" justifyH="RIGHT">
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT" x="5" y="0"/>
@@ -136,7 +136,7 @@
 		<Size x="232" y="100"/>
 		<HitRectInsets>
 			<AbsInset left="0" right="40" top="10" bottom="20"/>
-		</HitRectInsets>	
+		</HitRectInsets>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentFlash" file="Interface\TargetingFrame\UI-TargetingFrame-Flash" hidden="true">
@@ -259,6 +259,12 @@
 								<Anchor point="TOPRIGHT" x="3" y="-20"/>
 							</Anchors>
 						</Texture>
+						<Texture name="$parentPrestigePortrait" hidden="true">
+							<Size x="50" y="52"/>
+							<Anchors>
+								<Anchor point="TOPRIGHT" x="-15" y="-13"/>
+							</Anchors>
+						</Texture>
 						<Texture name="$parentRaidTargetIcon" file="Interface\TargetingFrame\UI-RaidTargetingIcons" hidden="true">
 							<Size x="26" y="26"/>
 							<Anchors>
@@ -281,6 +287,12 @@
 					<Layer level="ARTWORK" textureSubLevel="1">
 						<Texture name="$parentOverAbsorbGlow" inherits="OverAbsorbGlowTemplate"/>
 						<Texture name="$parentOverHealAbsorbGlow" inherits="OverHealAbsorbGlowTemplate"/>
+						<Texture name="$parentPrestigeBadge" hidden="true">
+							<Size x="30" y="30"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeTo="$parentPrestigePortrait" relativePoint="CENTER"/>
+							</Anchors>
+						</Texture>
 					</Layer>
 				</Layers>
 			</Frame>
@@ -299,7 +311,7 @@
 					<OnLoad>
 						TextStatusBar_Initialize(self);
 						self.textLockable = 1;
-						self.cvar = "targetStatusText";
+						self.cvar = "statusText";
 						self.cvarLabel = "STATUS_TEXT_TARGET";
 						self.zeroText = "";
 					</OnLoad>
@@ -322,7 +334,7 @@
 					<OnLoad>
 						TextStatusBar_Initialize(self);
 						self.textLockable = 1;
-						self.cvar = "targetStatusText";
+						self.cvar = "statusText";
 						self.cvarLabel = "STATUS_TEXT_TARGET";
 					</OnLoad>
 				</Scripts>
@@ -398,7 +410,7 @@
 			</OnLoad>
 		</Scripts>
 	</Button>
-	<Button name="TargetofTargetFrameTemplate" toplevel="true" movable="true" inherits="SecureUnitButtonTemplate" virtual="true" hidden="true">
+	<Button name="TargetofTargetFrameTemplate" movable="true" inherits="SecureUnitButtonTemplate" virtual="true" hidden="true">
 		<Size x="93" y="45"/>
 		<Anchors>
 			<Anchor point="BOTTOMRIGHT" x="-35" y="-10"/>
@@ -515,11 +527,9 @@
 			<OnEvent function="Target_Spellbar_OnEvent"/>
 		</Scripts>
 	</StatusBar>
-			
+
 	<Button name="TargetFrame" inherits="TargetFrameTemplate" movable="true">
-		<Anchors>
-			<Anchor point="TOPLEFT" x="250" y="-4"/>
-		</Anchors>
+		<!-- This frame gets positioned in UIParent_UpdateTopFramePositions() -->
 		<Frames>
 			<Frame name="$parentPowerBarAlt" parentKey="powerBarAlt" inherits="UnitPowerBarAltTemplate">
 				<Anchors>
@@ -549,6 +559,7 @@
 				self:RegisterEvent("PLAYER_TARGET_CHANGED");
 				self.threatNumericIndicator:SetScript("OnShow", function() TargetFrame_UpdateAuras(self) end);
 				self.threatNumericIndicator:SetScript("OnHide", function() TargetFrame_UpdateAuras(self) end);
+				UIParent_UpdateTopFramePositions();
 			</OnLoad>
 			<OnDragStart function="TargetFrame_OnDragStart"/>
 			<OnDragStop function="TargetFrame_OnDragStop"/>
@@ -587,9 +598,9 @@
 				self:RegisterForDrag("LeftButton");
 			</OnLoad>
 			<OnDragStart function="FocusFrame_OnDragStart"/>
-			<OnDragStop function="FocusFrame_OnDragStop"/>			
+			<OnDragStop function="FocusFrame_OnDragStop"/>
 		</Scripts>
-	</Button>		
+	</Button>
 	<Button name="Boss1TargetFrame" inherits="BossTargetFrameTemplate" id="1">
 		<Anchors>
 			<Anchor point="TOPRIGHT" x="55" y="-236"/>
@@ -609,10 +620,10 @@
 		<Anchors>
 			<Anchor point="TOPLEFT" relativeTo="Boss3TargetFrame" relativePoint="BOTTOMLEFT" x="0" y="-30"/>
 		</Anchors>
-	</Button>	
+	</Button>
 	<Button name="Boss5TargetFrame" inherits="BossTargetFrameTemplate" id="5">
 		<Anchors>
 			<Anchor point="TOPLEFT" relativeTo="Boss4TargetFrame" relativePoint="BOTTOMLEFT" x="0" y="-30"/>
 		</Anchors>
-	</Button>	
+	</Button>
 </Ui>

@@ -4,6 +4,7 @@ function RaidFinderFrame_OnLoad(self)
 	self:RegisterEvent("LFG_LOCK_INFO_RECEIVED");
 	self:RegisterEvent("AJ_RAID_ACTION");
 	self:RegisterEvent("GROUP_ROSTER_UPDATE");
+	self:RegisterEvent("LFG_UPDATE_RANDOM_INFO");
 end
 
 function RaidFinderFrame_OnEvent(self, event, ...)
@@ -21,6 +22,10 @@ function RaidFinderFrame_OnEvent(self, event, ...)
 	elseif ( event == "GROUP_ROSTER_UPDATE" ) then
 		if ( self:IsVisible() ) then
 			RaidFinderQueueFrame_UpdateRoles();
+		end
+	elseif ( event == "LFG_UPDATE_RANDOM_INFO" ) then
+		if ( self:IsVisible() ) then
+			RaidFinderQueueFrameRewards_UpdateFrame();
 		end
 	end
 end
@@ -292,7 +297,7 @@ end
 
 function RaidFinderFrameRoleCheckButton_OnClick(self)
 	RaidFinderQueueFrame_SetRoles();
-	RaidFinderQueueFrame_UpdateRoles();
+	RaidFinderQueueFrameRewards_UpdateFrame();
 end
 
 function RaidFinderQueueFrame_SetRoles()

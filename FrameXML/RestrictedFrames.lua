@@ -97,6 +97,14 @@ function HANDLE:IsMouseEnabled()
     return GetHandleFrame(self):IsMouseEnabled();
 end
 
+function HANDLE:IsMouseClickEnabled()
+    return GetHandleFrame(self):IsMouseClickEnabled();
+end
+
+function HANDLE:IsMouseMotionEnabled()
+    return GetHandleFrame(self):IsMouseMotionEnabled();
+end
+
 function HANDLE:IsKeyboardEnabled()
     return GetHandleFrame(self):IsKeyboardEnabled();
 end

@@ -112,6 +112,16 @@
             </Layer>
         </Layers>
         <Frames>
+			<Button parentKey="ViewButton" inherits="UIPanelButtonTemplate" text="VIEW_IN_DRESSUP_FRAME">
+				<Size x="0" y="22"/>
+				<Anchors>
+					<Anchor point="TOP" x="0" y="-39"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad function="InspectPaperDollViewButton_OnLoad"/>
+					<OnClick function="InspectPaperDollViewButton_OnClick"/>
+				</Scripts>
+			</Button>
             <PlayerModel name="InspectModelFrame" inherits="ModelWithControlsTemplate">
 				<Size x="231" y="320"/>
                 <Anchors>

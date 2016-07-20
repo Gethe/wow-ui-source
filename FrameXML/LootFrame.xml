@@ -97,7 +97,7 @@
 				<FontString name="LootFramePrev" inherits="GameFontNormal" text="PREV">
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" x="45" y="18"/>
-	
+
 					</Anchors>
 				</FontString>
 				<FontString name="LootFrameNext" inherits="GameFontNormal" text="NEXT">
@@ -172,7 +172,7 @@
 		</Scripts>
 	</Frame>
 	<Frame name="BonusRollFrameTemplate" parent="UIParent" frameLevel="5" toplevel="true" frameStrata="DIALOG" hidden="true" virtual="true">
-		<Size x="286" y="76"/>	
+		<Size x="286" y="76"/>
 		<Animations>
 			<AnimationGroup parentKey="StartRollAnim" setToFinalAlpha="true">
 				<Alpha fromAlpha="1" toAlpha="0" duration="0.25" order="1" childKey="PromptFrame"/>
@@ -192,12 +192,12 @@
 			</AnimationGroup>
 			<AnimationGroup parentKey="FinishRollAnim">
 				<!--Scale scaleX="0.5" scaleY="0.5" duration="0" order="1" childKey="RollingFrame.LootSpinnerFinalText"/-->
-				<Alpha change="-1" duration="0.2" order="1" childKey="RollingFrame.Label"/>
-				<Alpha change="1" duration="0.2" order="2" childKey="RollingFrame.LootSpinnerFinalText"/>
+				<Alpha fromAlpha="1" toAlpha="0" duration="0.2" order="1" childKey="RollingFrame.Label"/>
+				<Alpha fromAlpha="0" toAlpha="1" duration="0.2" order="2" childKey="RollingFrame.LootSpinnerFinalText"/>
 				<!--Scale scaleX="3" scaleY="3" duration="5" order="2" childKey="RollingFrame.LootSpinnerFinalText"/>
 				<Scale scaleX="0.66" scaleY="0.66" duration="5" order="2" startDelay="5" childKey="RollingFrame.LootSpinnerFinalText"/-->
-				<Alpha change="0.8" duration="0.3" order="3" startDelay="0.5" childKey="WhiteFade"/>
-				<Alpha change="-1" duration="0.3" order="4"/>
+				<Alpha fromAlpha="0" toAlpha="0.8" duration="0.3" order="3" startDelay="0.5" childKey="WhiteFade"/>
+				<Alpha fromAlpha="1" toAlpha="0" duration="0.3" order="4"/>
 				<Scripts>
 					<OnFinished>
 						local parent = self:GetParent();
@@ -210,17 +210,17 @@
 			<Layer level="BACKGROUND">
 				<!--BonusRoll-Toast-->
 				<Texture parentKey="Background" file="Interface\LootFrame\LootToast" setAllPoints="true">
-					<TexCoords left="0.28222656" right="0.56152344" top="0.00390625" bottom="0.30078125"/>	
+					<TexCoords left="0.28222656" right="0.56152344" top="0.00390625" bottom="0.30078125"/>
 				</Texture>
 			</Layer>
 			<Layer level="BORDER">
 				<!--BonusRoll-LootSpinnerBG-->
 				<Texture parentKey="LootSpinnerBG" file="Interface\LootFrame\LootToast">
-					<Size x="42" y="42"/>	
+					<Size x="42" y="42"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="TOPLEFT" x="11" y="-12"/>
 					</Anchors>
-					<TexCoords left="0.23828125" right="0.27929688" top="0.74218750" bottom="0.90625000"/>	
+					<TexCoords left="0.23828125" right="0.27929688" top="0.74218750" bottom="0.90625000"/>
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="1">
@@ -230,7 +230,7 @@
 					<Anchors>
 						<Anchor point="CENTER" relativeKey="$parent.LootSpinnerBG" relativePoint="CENTER" x="0" y="0"/>
 					</Anchors>
-					<TexCoords left="0.73242188" right="0.78906250" top="0.57421875" bottom="0.80078125"/>	
+					<TexCoords left="0.73242188" right="0.78906250" top="0.57421875" bottom="0.80078125"/>
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="2">
@@ -437,16 +437,16 @@
 			<Layer level="BACKGROUND">
 				<!--LootFrame-Background-->
 				<Texture parentKey="Background" file="Interface\LootFrame\LootToast" setAllPoints="true">
-					<TexCoords left="0.28222656" right="0.55273438" top="0.30859375" bottom="0.57031250"/>	
+					<TexCoords left="0.28222656" right="0.55273438" top="0.30859375" bottom="0.57031250"/>
 				</Texture>
 			</Layer>
 			<Layer level="BORDER">
 				<Texture parentKey="Border" file="Interface\LootFrame\LootToast">
-					<Size x="286" y="76"/>	
+					<Size x="286" y="76"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
-					<TexCoords left="0.00097656" right="0.28027344" top="0.43750000" bottom="0.73437500"/>	
+					<TexCoords left="0.00097656" right="0.28027344" top="0.43750000" bottom="0.73437500"/>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
@@ -599,15 +599,12 @@
 	</Frame>
 	<Frame name="GroupLootContainer" parent="UIParent" hidden="true">
 		<Size x="256" y="1"/>
-		<Anchors>
-			<Anchor point="BOTTOM" x="0" y="60"/>
-		</Anchors>
 		<Scripts>
 			<OnShow>
-				AlertFrame_FixAnchors();
+				AlertFrame:UpdateAnchors();
 			</OnShow>
 			<OnHide>
-				AlertFrame_FixAnchors();
+				AlertFrame:UpdateAnchors();
 			</OnHide>
 			<OnLoad function="GroupLootContainer_OnLoad"/>
 		</Scripts>
@@ -632,155 +629,6 @@
 			</OnHide>
 		</Scripts>
 	</Button>
-
-	<Button name="MissingLootButtonTemplate" inherits="ItemButtonTemplate" virtual="true">	
-		<Layers>
-			<Layer level="OVERLAY">
-				<Texture name="$parentIconQuestTexture">
-					<Size>
-						<AbsDimension x="37" y="38"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOP">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</Texture>
-				<Texture file="Interface\Common\Icon-NoLoot">
-					<Size x="22" y="22"/>
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" x="-2" y="-2"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="ARTWORK">
-				<Texture name="$parentNameFrame" file="Interface\QuestFrame\UI-QuestItemNameFrame">
-					<Size>
-						<AbsDimension x="130" y="62"/>
-					</Size>
-					<Anchors>
-						<Anchor point="LEFT">
-							<Offset>
-								<AbsDimension x="30" y="0"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</Texture>
-				<FontString name="$parentText" inherits="GameFontNormal" justifyH="LEFT" parentKey="name">
-					<Size>
-						<AbsDimension x="93" y="38"/>
-					</Size>
-					<Anchors>
-						<Anchor point="LEFT" relativePoint="RIGHT">
-							<Offset>
-								<AbsDimension x="8" y="0"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnLoad>
-				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
-				self.hasItem = 1;
-			</OnLoad>
-			<OnEnter function="MissingLootItem_OnEnter"/>
-			<OnLeave>
-				GameTooltip:Hide();
-				ResetCursor();
-			</OnLeave>
-			<OnUpdate>
-				if ( GameTooltip:IsOwned(self) ) then
-					MissingLootItem_OnEnter(self);
-				end
-				CursorOnUpdate(self);
-			</OnUpdate>
-			<OnClick>
-				if ( IsModifiedClick() ) then
-					HandleModifiedItemClick(GetMissingLootItemLink(self:GetID()));
-				end
-			</OnClick>
-		</Scripts>
-	</Button>
-	<Frame name="MissingLootFrame" parent="UIParent" toplevel="true" frameStrata="DIALOG" hidden="true">
-		<Size>
-			<AbsDimension x="338" y="84"/>
-		</Size>
-		<Anchors>
-			<Anchor point="BOTTOM">
-				<Offset>
-					<AbsDimension x="0" y="60"/>
-				</Offset>
-			</Anchor>
-		</Anchors>
-		<Layers>
-			<Layer level="ARTWORK">
-				<FontString name="$parentLabel" inherits="GameFontNormalSmall" text="INELIGIBLE_FOR_LOOT" justifyH="LEFT">
-					<Size x="284" y="0"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="18" y="-18"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-			<Layer level="OVERLAY">
-				<Texture name="$parentCorner" file="Interface\DialogFrame\UI-DialogBox-Corner">
-					<Size>
-						<AbsDimension x="32" y="32"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPRIGHT">
-							<Offset>
-								<AbsDimension x="-6" y="-7"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Frames>
-			<Button name="$parentItem1" inherits="MissingLootButtonTemplate" parentKey="item1" id="1">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentLabel" relativePoint="BOTTOMLEFT" x="0" y="-6"/>
-				</Anchors>
-			</Button>
-			<Button name="$parentPassButton" inherits="UIPanelCloseButton">
-				<Anchors>
-					<Anchor point="TOPRIGHT" relativeTo="$parentCorner" relativePoint="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="5" y="5"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						MissingLootFrame:Hide();
-					</OnClick>
-				</Scripts>
-			</Button>
-		</Frames>
-		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<BackgroundInsets>
-				<AbsInset left="11" right="12" top="12" bottom="11"/>
-			</BackgroundInsets>
-			<TileSize>
-				<AbsValue val="32"/>
-			</TileSize>
-			<EdgeSize>
-				<AbsValue val="32"/>
-			</EdgeSize>
-		</Backdrop>
-		<Scripts>
-			<OnLoad>
-				self.numShownItems = 0;
-			</OnLoad>
-			<OnHide>
-				MissingLootFrame_OnHide(self);
-			</OnHide>
-		</Scripts>
-	</Frame>
 
 	<Button name="MasterLooterPlayerTemplate" virtual="true">
 		<Size x="98" y="23"/>
@@ -874,7 +722,7 @@
 							<Anchors>
 								<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="CENTER" x="0" y="0"/>
 							</Anchors>
-							<TexCoords left="0.62792969" right="0.65722656" top="0.87500000" bottom="0.99218750"/>	
+							<TexCoords left="0.62792969" right="0.65722656" top="0.87500000" bottom="0.99218750"/>
 						</Texture>
 						<FontString parentKey="ItemName" inherits="GameFontNormalSmall" justifyH="LEFT" justifyV="MIDDLE">
 							<Anchors>

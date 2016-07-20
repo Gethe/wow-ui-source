@@ -376,6 +376,9 @@ function GroupLootContainer_OnLoad(self)
 	self.rollFrames = {};
 	self.reservedSize = 100;
 	GroupLootContainer_CalcMaxIndex(self);
+
+	local alertFrameGroupLootContainerSubSystem = AlertFrame:AddSimpleAlertFrameSubSystem(self);
+	AlertFrame:SetSubSustemAnchorPriority(alertFrameGroupLootContainerSubSystem, 30);
 end
 
 function GroupLootContainer_CalcMaxIndex(self)
@@ -751,70 +754,14 @@ function BonusRollFrame_FinishedFading(self)
 	if ( self.rewardType == "item" ) then
 		GroupLootContainer_ReplaceFrame(GroupLootContainer, self, BonusRollLootWonFrame);
 		LootWonAlertFrame_SetUp(BonusRollLootWonFrame, self.rewardLink, self.rewardQuantity, nil, nil, self.rewardSpecID);
-		AlertFrame_AnimateIn(BonusRollLootWonFrame);
+		AlertFrame:AddAlertFrame(BonusRollLootWonFrame);
 	elseif ( self.rewardType == "money" ) then
 		GroupLootContainer_ReplaceFrame(GroupLootContainer, self, BonusRollMoneyWonFrame);
 		MoneyWonAlertFrame_SetUp(BonusRollMoneyWonFrame, self.rewardQuantity);
-		AlertFrame_AnimateIn(BonusRollMoneyWonFrame);
+		AlertFrame:AddAlertFrame(BonusRollMoneyWonFrame);
 	else
 		GroupLootContainer_RemoveFrame(GroupLootContainer, self);
 	end
-end
-
---
--- Missing Loot (when a player is not eligible for loot on an LFR boss kill)
---
-function MissingLootFrame_Show()
-	local missingLootFrame = MissingLootFrame;
-	local numItems = GetNumMissingLootItems();
-	if ( numItems == 0 ) then
-		return;
-	end
-	
-	for index = 1, numItems do
-		local texture, name, count, quality = GetMissingLootItemInfo(index);
-		local itemButton = _G["MissingLootFrameItem"..index];
-		if ( not itemButton ) then
-			-- create it
-			itemButton = CreateFrame("BUTTON", "MissingLootFrameItem" .. index, missingLootFrame, "MissingLootButtonTemplate");
-			if ( mod(index, 2) == 0 ) then
-				itemButton:SetPoint("TOPLEFT", _G["MissingLootFrameItem"..(index - 1)], "TOPRIGHT", 118, 0);				
-			else
-				itemButton:SetPoint("TOPLEFT", _G["MissingLootFrameItem"..(index - 2)], "BOTTOMLEFT", 0, -6);
-			end
-			itemButton:SetID(index);
-		end
-
-		itemButton.icon:SetTexture(texture);
-		itemButton.name:SetText(name);
-		local color = ITEM_QUALITY_COLORS[quality];
-		itemButton.name:SetVertexColor(color.r, color.g, color.b);
-		if ( count > 1 ) then
-			itemButton.count:SetText(count);
-			itemButton.count:Show();
-		else
-			itemButton.count:Hide();
-		end
-	end
-	for index = numItems + 1, missingLootFrame.numShownItems do
-		_G["MissingLootFrameItem"..index]:Hide();
-	end
-	missingLootFrame.numShownItems = numItems;
-	local numRows = ceil(numItems / 2);
-	missingLootFrame:SetHeight(numRows * 43 + 36 + MissingLootFrameLabel:GetHeight());
-	missingLootFrame:Show();
-	AlertFrame_FixAnchors();
-end
-
-function MissingLootFrame_OnHide(self)
-	ClearMissingLootDisplay();
-	AlertFrame_FixAnchors();
-end
-
-function MissingLootItem_OnEnter(self)
-	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip:SetMissingLootItem(self:GetID());
-	CursorUpdate(self);
 end
 
 -------------------------------------------------------------------
@@ -893,7 +840,7 @@ function MasterLooterFrame_UpdatePlayers()
 					playerFrame:SetPoint("TOP", MasterLooterFrame["player"..(buttonIndex - 1)], "BOTTOM", 0, 0);
 				end
 				if ( mod(row, 2) == 0 ) then
-					playerFrame.Bg:SetTexture(0, 0, 0, 0);
+					playerFrame.Bg:SetColorTexture(0, 0, 0, 0);
 				end
 			end
 			-- set up button

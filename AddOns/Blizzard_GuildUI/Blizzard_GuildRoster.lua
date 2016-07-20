@@ -611,16 +611,6 @@ function GuildRosterViewDropdown_Initialize()
 	info.text = GUILD_STATUS;
 	info.value = "guildStatus";
 	UIDropDownMenu_AddButton(info);
-	--[[
-	if ( GetGuildLevelEnabled() ) then
-		info.text = GUILD_XP_WEEKLY;
-		info.value = "weeklyxp";
-		UIDropDownMenu_AddButton(info);
-		info.text = GUILD_XP_TOTAL;
-		info.value = "totalxp";
-		UIDropDownMenu_AddButton(info);
-	end
-	--]]
 	info.text = ACHIEVEMENT_POINTS;
 	info.value = "achievement";
 	UIDropDownMenu_AddButton(info);

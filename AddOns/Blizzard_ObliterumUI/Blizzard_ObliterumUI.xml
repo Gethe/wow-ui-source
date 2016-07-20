@@ -1,0 +1,80 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="Blizzard_ObliterumUI.lua"/>
+
+	<Frame name="ObliterumForgeFrame" inherits="ButtonFrameTemplate" toplevel="true" parent="UIParent" enableMouse="true" mixin="ObliterumForgeMixin" hidden="true">
+		<Size x="343" y="253"/>
+
+		<Layers>
+			<Layer level="BORDER">
+				<Texture parentKey="Background" atlas="obliterumforge-background" useAtlasSize="true">
+					<Size x="322" y="160" />
+					<Anchors>
+						<Anchor point="BOTTOM" y="30" />
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+
+		<Frames>
+			<Button parentKey="ItemSlot" mixin="ObliterumForgeItemSlotMixin">
+				<Size x="44" y="44" />
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.Background" />
+				</Anchors>
+				<Layers>
+					<Layer level="BORDER">
+						<Texture parentKey="Icon" hidden="true">
+							<Size x="42" y="42" />
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Corners" atlas="obliterumforge-slotted-corners" useAtlasSize="true" hidden="true">
+							<Anchors>
+								<Anchor point="CENTER" />
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="GlowCorners" atlas="obliterumforge-slotted-corners-glow" useAtlasSize="true" alphaMode="ADD" hidden="true">
+							<Anchors>
+								<Anchor point="CENTER" />
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad method="OnLoad" />
+					<OnEvent method="OnEvent" />
+					<OnClick method="OnClick" />
+					<OnDragStart method="OnDragStart" />
+					<OnReceiveDrag method="OnReceiveDrag" />
+					<OnEnter method="OnMouseEnter" />
+					<OnLeave method="OnMouseLeave" />
+				</Scripts>
+			</Button>
+
+			<Button parentKey="ObliterateButton" inherits="MagicButtonTemplate" text="OBLITERATE_BUTTON">
+				<Size x="150" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOM" />
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent():ObliterateItem();
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+
+		<Scripts>
+			<OnLoad method="OnLoad" />
+			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow" />
+			<OnHide method="OnHide" />
+		</Scripts>
+	</Frame>
+</Ui>

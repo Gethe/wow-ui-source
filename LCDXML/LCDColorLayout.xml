@@ -1,9 +1,9 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
 <!-- ENGLISH -->
-	<Screen name="WoWTitleScreen" BGColor="75,26,0">
-		<LCDBitmap name="WOWTITLEBG" id="0" type="texture" data="Interface\GLUES\COMMON\Glues-WoW-WODLOGO.BLP" miplevel="1" alpha="1">
+	<Screen name="WoWTitleScreen" BGColor="0,44,8">
+		<LCDBitmap name="WOWTITLEBG" id="0" type="texture" data="Interface\GLUES\COMMON\LegionLogo.BLP" miplevel="0" alpha="1">
 			<Origin x="0" y="40"/>
-			<Size x="320" y="160" />
+			<Size x="320" y="750" />
 		</LCDBitmap>
 		<!--<LCDBitmap name="WOWTITLEBG" id="0" type="texture" data="Interface\PaperDoll\UI-PaperDoll-SlotBackground.blp" miplevel="0">
 			<Origin x="-155" y="-65"/>
@@ -50,21 +50,13 @@
 			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="50" Wrap="false"/>
 			<RelOrigin RelTo="STAMINA_FLD" x="0" y="16" />
 		</LCDText>
-		<LCDText name="SPIRIT" text="SPIRIT_COLON" id="10">
+		<LCDText name="MASTERY" text="STAT_MASTERY" id="12">
 			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="100" Wrap="false"/>
 			<RelOrigin RelTo="INTELLECT" x="0" y="16" />
 		</LCDText>
-		<LCDText name="SPIRIT_FLD" id="11">
-			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="50" Wrap="false"/>
-			<RelOrigin RelTo="INTELLECT_FLD" x="0" y="16" />
-		</LCDText>
-		<LCDText name="MASTERY" text="STAT_MASTERY" id="12">
-			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="100" Wrap="false"/>
-			<RelOrigin RelTo="SPIRIT" x="0" y="16" />
-		</LCDText>
 		<LCDText name="MASTERY_FLD" id="13">
 			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="50" Wrap="false"/>
-			<RelOrigin RelTo="SPIRIT_FLD" x="0" y="16" />
+			<RelOrigin RelTo="INTELLECT_FLD" x="0" y="16" />
 		</LCDText>
 		<LCDSubscreen name="Melee" id="0">
 			<LCDText name="DAMAGE" text="DAMAGE" id="14">
@@ -91,29 +83,13 @@
 				<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="85" Wrap="false"/>
 				<RelOrigin RelTo="POWER_FLD" x="0" y="16" />
 			</LCDText>
-			<LCDText name="HIT" text="STAT_HIT_CHANCE" id="57">
-				<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="110" Wrap="false"/>
-				<RelOrigin RelTo="HASTE" x="0" y="16" />
-			</LCDText>
-			<LCDText name="HIT_FLD" id="11">
-				<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="85" Wrap="false"/>
-				<RelOrigin RelTo="HASTE_FLD" x="0" y="16" />
-			</LCDText>
 			<LCDText name="CRIT" text="MELEE_CRIT_CHANCE" id="58">
 				<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="90" Wrap="false"/>
-				<RelOrigin RelTo="HIT" x="0" y="16" />
+				<RelOrigin RelTo="HASTE" x="0" y="16" />
 			</LCDText>
 			<LCDText name="CRIT_FLD" id="11">
 				<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="85" Wrap="false"/>
-				<RelOrigin RelTo="HIT_FLD" x="0" y="16" />
-			</LCDText>
-			<LCDText name="EXPERTISE" text="COMBAT_RATING_NAME24" id="58">
-				<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="110" Wrap="false"/>
-				<RelOrigin RelTo="CRIT" x="0" y="16" />
-			</LCDText>
-			<LCDText name="EXPERTISE_FLD" id="11">
-				<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="85" Wrap="false"/>
-				<RelOrigin RelTo="CRIT_FLD" x="0" y="16" />
+				<RelOrigin RelTo="HASTE_FLD" x="0" y="16" />
 			</LCDText>
 		</LCDSubscreen>
 		<LCDSubscreen name="Defense" id="1">
@@ -125,7 +101,7 @@
 				<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="60" Wrap="false"/>
 				<RelOrigin RelTo="ARMOR2" x="90" y="0" />
 			</LCDText>
-			<LCDText name="DODGE" text="DODGE" id="45">
+			<LCDText name="DODGE" text="STAT_DODGE" id="45">
 				<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="90" Wrap="false"/>
 				<RelOrigin RelTo="ARMOR2" x="0" y="16" />
 			</LCDText>
@@ -133,7 +109,7 @@
 				<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="60" Wrap="false"/>
 				<RelOrigin RelTo="ARMOR2_FLD" x="0" y="16" />
 			</LCDText>
-			<LCDText name="PARRY" text="PARRY" id="46">
+			<LCDText name="PARRY" text="STAT_PARRY" id="46">
 				<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="90" Wrap="false"/>
 				<RelOrigin RelTo="DODGE" x="0" y="16" />
 			</LCDText>
@@ -141,7 +117,7 @@
 				<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="60" Wrap="false"/>
 				<RelOrigin RelTo="DODGE_FLD" x="0" y="16" />
 			</LCDText>
-			<LCDText name="BLOCK" text="BLOCK" id="47">
+			<LCDText name="BLOCK" text="STAT_BLOCK" id="47">
 				<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="90" Wrap="false"/>
 				<RelOrigin RelTo="PARRY" x="0" y="16" />
 			</LCDText>
@@ -149,22 +125,6 @@
 				<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="60" Wrap="false"/>
 				<RelOrigin RelTo="PARRY_FLD" x="0" y="16" />
 			</LCDText>
-			<LCDText name="RESILIENCE" text="RESILIENCE" id="48">
-				<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="110" Wrap="false"/>
-				<RelOrigin RelTo="BLOCK" x="0" y="16" />
-			</LCDText>
-			<LCDText name="RESILIENCE_FLD" id="11">
-				<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="60" Wrap="false"/>
-				<RelOrigin RelTo="BLOCK_FLD" x="0" y="16" />
-			</LCDText>
-      <LCDText name="PVPPOWER" text="STAT_PVP_POWER" id="49">
-        <Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="110" Wrap="false"/>
-        <RelOrigin RelTo="RESILIENCE" x="0" y="16" />
-      </LCDText>
-      <LCDText name="PVPPOWER_FLD" id="11">
-        <Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="60" Wrap="false"/>
-        <RelOrigin RelTo="RESILIENCE_FLD" x="0" y="16" />
-      </LCDText>
 		</LCDSubscreen>
 		<LCDSubscreen name="Spell" id="2">
 			<LCDText name="SPELL_POWER" text="STAT_SPELLPOWER">
@@ -183,21 +143,13 @@
         <Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="60" Wrap="false"/>
         <RelOrigin RelTo="SPELL_POWER_FLD" x="0" y="16" />
       </LCDText>
-      <LCDText name="SPELL_HIT" text="STAT_HIT_CHANCE">
+      <LCDText name="MANA_REGEN" text="MANA_REGEN" id="54">
         <Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="110" Wrap="false"/>
         <RelOrigin RelTo="SPELL_HASTE" x="0" y="16" />
       </LCDText>
-      <LCDText name="SPELL_HIT_FLD" text="HIT">
+      <LCDText name="MANA_REGEN_FLD" text="HIT_LCD">
         <Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="60" Wrap="false"/>
         <RelOrigin RelTo="SPELL_HASTE_FLD" x="0" y="16" />
-      </LCDText>
-      <LCDText name="MANA_REGEN" text="MANA_REGEN" id="54">
-        <Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="110" Wrap="false"/>
-        <RelOrigin RelTo="SPELL_HIT" x="0" y="16" />
-      </LCDText>
-      <LCDText name="MANA_REGEN_FLD" text="HIT">
-        <Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="60" Wrap="false"/>
-        <RelOrigin RelTo="SPELL_HIT_FLD" x="0" y="16" />
       </LCDText>
 			<LCDText name="SPELL_CRIT" text="MELEE_CRIT_CHANCE">
 				<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="90" Wrap="false"/>
@@ -239,7 +191,7 @@
 			<Origin x="192" y="0"/>
 			<Size x="128" y="128" />
 		</LCDBitmap>
-		<LCDText name="BATTLEFIELD_ALERT" text="BATTLEFIELD_ALERT" id="22">
+		<LCDText name="BATTLEFIELD_ALERT" text="BATTLEFIELD_ALERT_LCD" id="22">
 			<Font Size="LG_MEDIUM" Alignment="LG_CENTER" MaxWidth="320" Wrap="true"/>
 			<Origin x="0" y="140" />
 			<Size x="320" y="230"/>

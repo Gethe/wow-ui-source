@@ -18,7 +18,9 @@ function ToyBox_OnEvent(self, event, itemID, new)
 	if ( event == "TOYS_UPDATED" ) then
 		if (new) then
 			self.mostRecentCollectedToyID = itemID;
-			CollectionsJournal_SetTab(CollectionsJournal, 3);
+			if ( not CollectionsJournal:IsShown() ) then
+				CollectionsJournal_SetTab(CollectionsJournal, 3);
+			end
 		end
 
 		ToyBox_UpdatePages();
@@ -40,7 +42,7 @@ function ToyBox_OnShow(self)
 	end
 
 	SetPortraitToTexture(CollectionsJournalPortrait, "Interface\\Icons\\Trade_Archaeology_ChestofTinyGlassAnimals");
-	C_ToyBox.FilterToys();
+	C_ToyBox.ForceToyRefilter();
 
 	ToyBox_UpdatePages();	
 	ToyBox_UpdateProgressBar(self);
@@ -179,7 +181,7 @@ function ToySpellButton_UpdateButton(self)
 
 	local itemID, toyName, icon = C_ToyBox.GetToyInfo(self.itemID);
 
-	if (itemID == nil) then
+	if (itemID == nil or toyName == nil) then
 		return;
 	end
 
@@ -352,22 +354,22 @@ function ToyBoxFilterDropDown_Initialize(self, level)
 		info.text = COLLECTED
 		info.func = function(_, _, _, value)
 						ToyBox.firstCollectedToyID = 0;
-						C_ToyBox.SetFilterCollected(value);
+						C_ToyBox.SetCollectedShown(value);
 						ToyBox_UpdatePages();
 						ToyBox_UpdateButtons();
 					end 
-		info.checked = C_ToyBox.GetFilterCollected();
+		info.checked = C_ToyBox.GetCollectedShown();
 		info.isNotRadio = true;
 		UIDropDownMenu_AddButton(info, level)
 
 		info.text = NOT_COLLECTED
 		info.func = function(_, _, _, value)
 						ToyBox.firstCollectedToyID = 0;
-						C_ToyBox.SetFilterUncollected(value);
+						C_ToyBox.SetUncollectedShown(value);
 						ToyBox_UpdatePages();
 						ToyBox_UpdateButtons();
 					end 
-		info.checked = C_ToyBox.GetFilterUncollected();
+		info.checked = C_ToyBox.GetUncollectedShown();
 		info.isNotRadio = true;
 		UIDropDownMenu_AddButton(info, level)
 
@@ -389,7 +391,7 @@ function ToyBoxFilterDropDown_Initialize(self, level)
 			info.text = CHECK_ALL
 			info.func = function()
 							ToyBox.firstCollectedToyID = 0;
-							C_ToyBox.ClearAllSourceTypesFiltered();
+							C_ToyBox.SetAllSourceTypeFilters(true);
 							UIDropDownMenu_Refresh(ToyBoxFilterDropDown, 1, 2);
 							ToyBox_UpdatePages();
 							ToyBox_UpdateButtons();
@@ -399,7 +401,7 @@ function ToyBoxFilterDropDown_Initialize(self, level)
 			info.text = UNCHECK_ALL
 			info.func = function()
 							ToyBox.firstCollectedToyID = 0;
-							C_ToyBox.SetAllSourceTypesFiltered();
+							C_ToyBox.SetAllSourceTypeFilters(false);
 							UIDropDownMenu_Refresh(ToyBoxFilterDropDown, 1, 2);
 							ToyBox_UpdatePages();
 							ToyBox_UpdateButtons();
@@ -413,11 +415,11 @@ function ToyBoxFilterDropDown_Initialize(self, level)
 					info.text = _G["BATTLE_PET_SOURCE_"..i];
 					info.func = function(_, _, _, value)
 								ToyBox.firstCollectedToyID = 0;
-								C_ToyBox.SetFilterSourceType(i, not value);
+								C_ToyBox.SetSourceTypeFilter(i, value);
 								ToyBox_UpdatePages();
 								ToyBox_UpdateButtons();
 							end
-					info.checked = function() return not C_ToyBox.IsSourceTypeFiltered(i) end;
+					info.checked = function() return not C_ToyBox.IsSourceTypeFilterChecked(i) end;
 					UIDropDownMenu_AddButton(info, level);
 				end
 			end

@@ -279,7 +279,7 @@ function EquipmentManager_GetItemInfoByLocation (location)
 		return;
 	end
 
-	local id, name, textureName, count, durability, maxDurability, invType, locked, start, duration, enable, setTooltip, gem1, gem2, gem3, quality, _;
+	local id, name, textureName, count, durability, maxDurability, invType, locked, start, duration, enable, setTooltip, quality, _;
 	if ( voidStorage ) then
 		id, textureName, _, _, _, quality = GetVoidItemInfo(tab, voidSlot);
 		setTooltip = function () GameTooltip:SetVoidItem(tab, voidSlot) end;
@@ -294,7 +294,6 @@ function EquipmentManager_GetItemInfoByLocation (location)
 		end
 		
 		setTooltip = function () GameTooltip:SetInventoryItem("player", slot) end;
-		gem1, gem2, gem3 = GetInventoryItemGems(slot);
 	else -- bags
 		id = GetContainerItemID(bag, slot);
 		name, _, _, _, _, _, _, _, invType = GetItemInfo(id);
@@ -304,10 +303,9 @@ function EquipmentManager_GetItemInfoByLocation (location)
 		durability, maxDurability = GetContainerItemDurability(bag, slot);
 		
 		setTooltip = function () GameTooltip:SetBagItem(bag, slot); end;
-		gem1, gem2, gem3 = GetContainerItemGems(bag, slot);
 	end
 	
-	return id, name, textureName, count, durability, maxDurability, invType, locked, start, duration, enable, setTooltip, gem1, gem2, gem3, quality;
+	return id, name, textureName, count, durability, maxDurability, invType, locked, start, duration, enable, setTooltip, quality;
 end
 
 function EquipmentManager_EquipSet (name)

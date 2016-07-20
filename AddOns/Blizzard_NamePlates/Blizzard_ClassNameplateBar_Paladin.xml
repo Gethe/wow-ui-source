@@ -1,0 +1,125 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+  <Script file="Blizzard_ClassNameplateBar_Paladin.lua"/>
+  
+	<Frame name="ClassNameplateBarPaladinRuneFrame" virtual="true">
+		<Animations>
+			<AnimationGroup parentKey="TurnOn" setToFinalAlpha="true">
+				<Alpha childKey="OnTexture" fromAlpha="0" toAlpha="1" duration="0.1"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="TurnOff" setToFinalAlpha="true">
+				<Alpha childKey="OnTexture" fromAlpha="1" toAlpha="0" duration="0.1"/>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+		
+	<Frame name="ClassNameplateBarPaladinFrame" inherits="ClassNameplateBarFrame" mixin="ClassNameplateBar, ClassNameplateBarPaladin">
+		<Size x="85" y="20"/>
+		<Frames>
+			<Frame parentKey="Rune1" parentArray="Runes" inherits="ClassNameplateBarPaladinRuneFrame">
+				<Size x="25" y="19"/>
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="OffTexture" atlas="nameplates-holypower1-off" useAtlasSize="true" alpha="1">
+							<Anchors>
+								<Anchor point="LEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="OnTexture" atlas="nameplates-holypower1-on" useAtlasSize="true" alpha="0">
+							<Anchors>
+								<Anchor point="LEFT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="Rune2" parentArray="Runes" inherits="ClassNameplateBarPaladinRuneFrame">
+				<Size x="26" y="17"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Rune1" relativePoint="RIGHT" x="5"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="OffTexture" atlas="nameplates-holypower2-off" useAtlasSize="true" alpha="1">
+							<Anchors>
+								<Anchor point="LEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="OnTexture" atlas="nameplates-holypower2-on" useAtlasSize="true" alpha="0">
+							<Anchors>
+								<Anchor point="LEFT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="Rune3" parentArray="Runes" inherits="ClassNameplateBarPaladinRuneFrame">
+				<Size x="24" y="17"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Rune2" relativePoint="RIGHT" x="5"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="OffTexture" atlas="nameplates-holypower3-off" useAtlasSize="true" alpha="1">
+							<Anchors>
+								<Anchor point="LEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="OnTexture" atlas="nameplates-holypower3-on" useAtlasSize="true" alpha="0">
+							<Anchors>
+								<Anchor point="LEFT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="Rune4" parentArray="Runes" inherits="ClassNameplateBarPaladinRuneFrame">
+				<Size x="25" y="14"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.Rune2" relativePoint="BOTTOMLEFT" x="-11" y="-9"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="OffTexture" atlas="nameplates-holypower4-off" useAtlasSize="true" alpha="1">
+							<Anchors>
+								<Anchor point="LEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="OnTexture" atlas="nameplates-holypower4-on" useAtlasSize="true" alpha="0">
+							<Anchors>
+								<Anchor point="LEFT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="Rune5" parentArray="Runes" inherits="ClassNameplateBarPaladinRuneFrame">
+				<Size x="25" y="14"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Rune2" relativePoint="BOTTOMRIGHT" x="11" y="-9"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="OffTexture" atlas="nameplates-holypower4-off" useAtlasSize="true" alpha="1">
+							<Anchors>
+								<Anchor point="LEFT"/>
+							</Anchors>
+							<TexCoords left="1" right="0" top="0" bottom="1"/>
+						</Texture>
+						<Texture parentKey="OnTexture" atlas="nameplates-holypower4-on" useAtlasSize="true" alpha="0">
+							<Anchors>
+								<Anchor point="LEFT"/>
+							</Anchors>
+							<TexCoords left="1" right="0" top="0" bottom="1"/>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+	</Frame>
+</Ui>
+
+

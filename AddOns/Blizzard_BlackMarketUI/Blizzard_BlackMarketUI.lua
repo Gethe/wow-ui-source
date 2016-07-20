@@ -94,12 +94,11 @@ function BlackMarketFrame_UpdateHotItem(self)
 			self.HotDeal.Item.IconTexture:SetVertexColor(1.0, 1.0, 1.0);
 		end
 
+		SetItemButtonQuality(self.HotDeal.Item, quality, link);
+
 		if (quality >= LE_ITEM_QUALITY_COMMON and BAG_ITEM_QUALITY_COLORS[quality]) then
-			self.HotDeal.Item.IconBorder:Show();
-			self.HotDeal.Item.IconBorder:SetVertexColor(BAG_ITEM_QUALITY_COLORS[quality].r, BAG_ITEM_QUALITY_COLORS[quality].g, BAG_ITEM_QUALITY_COLORS[quality].b);
 			self.HotDeal.Name:SetTextColor(BAG_ITEM_QUALITY_COLORS[quality].r, BAG_ITEM_QUALITY_COLORS[quality].g, BAG_ITEM_QUALITY_COLORS[quality].b);
 		else
-			self.HotDeal.Item.IconBorder:Hide();
 			self.HotDeal.Name:SetTextColor(1.0, 0.82, 0);
 		end
 
@@ -135,6 +134,10 @@ end
 function BlackMarketScrollFrame_Update()
 	local numItems = C_BlackMarket.GetNumItems();
 	
+	if (not numItems) then
+		numItems = 0;
+	end
+	
 	local scrollFrame = BlackMarketScrollFrame;
 	local offset = HybridScrollFrame_GetOffset(scrollFrame);
 	local buttons = scrollFrame.buttons;
@@ -157,12 +160,11 @@ function BlackMarketScrollFrame_Update()
 					button.Item.IconTexture:SetVertexColor(1.0, 1.0, 1.0);
 				end
 
+				SetItemButtonQuality(button.Item, quality, link);
+
 				if (quality and quality >= LE_ITEM_QUALITY_COMMON and BAG_ITEM_QUALITY_COLORS[quality]) then
-					button.Item.IconBorder:Show();
-					button.Item.IconBorder:SetVertexColor(BAG_ITEM_QUALITY_COLORS[quality].r, BAG_ITEM_QUALITY_COLORS[quality].g, BAG_ITEM_QUALITY_COLORS[quality].b);
 					button.Name:SetTextColor(BAG_ITEM_QUALITY_COLORS[quality].r, BAG_ITEM_QUALITY_COLORS[quality].g, BAG_ITEM_QUALITY_COLORS[quality].b);
 				else
-					button.Item.IconBorder:Hide();
 					button.Name:SetTextColor(1.0, 0.82, 0);
 				end
 

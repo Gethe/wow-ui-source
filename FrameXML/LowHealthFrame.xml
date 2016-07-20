@@ -1,0 +1,20 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="LowHealthFrame.lua"/>
+	<Frame name="LowHealthFrame" frameStrata="FULLSCREEN_DIALOG" toplevel="true" setAllPoints="true" hidden="true" mixin="LowHealthFrameMixin">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture file="Interface\FullScreenTextures\LowHealth" alphaMode="ADD"/>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="pulseAnim" looping="BOUNCE">
+				<Alpha parentKey="AlphaAnim" fromAlpha=".75" toAlpha=".2" duration="0.5236"/>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnLoad method="OnLoad" />
+			<OnEvent method="OnEvent" />
+		</Scripts>
+	</Frame>
+</Ui>

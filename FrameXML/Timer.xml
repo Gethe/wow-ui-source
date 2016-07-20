@@ -6,7 +6,7 @@
 	<Frame name="StartTimerBar" virtual="true" hidden="true">
 		<Animations>
 			<AnimationGroup parentKey="fadeBarIn">
-				<Alpha target="$parentStatusBar" change="1.0" duration="1.9" order="1"/>
+				<Alpha target="$parentStatusBar" fromAlpha="0" toAlpha="1" duration="1.9" order="1"/>
 				<Scripts>
 					<OnPlay>
 						local frame = self:GetParent();
@@ -19,7 +19,7 @@
 				</Scripts>
 			</AnimationGroup>
 			<AnimationGroup parentKey="fadeBarOut">
-				<Alpha target="$parentStatusBar" change="-1.0" duration="0.9" order="1"/>
+				<Alpha target="$parentStatusBar" fromAlpha="1" toAlpha="0" duration="0.9" order="1"/>
 				<Scripts>
 					<OnFinished>
 						local frame = self:GetParent();
@@ -36,24 +36,24 @@
 				<Scale target="$parentDigit2" scaleX="0.25" scaleY="0.25" duration="0.0" order="1"/>
 				<Scale target="$parentGlow1" scaleX="0.25" scaleY="0.25" duration="0.0" order="1"/>
 				<Scale target="$parentGlow2" scaleX="0.25" scaleY="0.25" duration="0.0" order="1"/>
-				<Alpha target="$parentDigit1" change="1" 				duration="0.0" order="1"/>
-				<Alpha target="$parentDigit2" change="1" 				duration="0.0" order="1"/>
-				<Alpha target="$parentGlow1" change="1" 				duration="0.0" order="1"/>
-				<Alpha target="$parentGlow2" change="1" 				duration="0.0" order="1"/>
+				<Alpha target="$parentDigit1" fromAlpha="0" toAlpha="1" 				duration="0.0" order="1"/>
+				<Alpha target="$parentDigit2" fromAlpha="0" toAlpha="1" 				duration="0.0" order="1"/>
+				<Alpha target="$parentGlow1" fromAlpha="0" toAlpha="1" 				duration="0.0" order="1"/>
+				<Alpha target="$parentGlow2" fromAlpha="0" toAlpha="1" 				duration="0.0" order="1"/>
 				
 				
 				<Scale target="$parentDigit1" scaleX="4" scaleY="4" duration="0.3" smoothing="OUT" order="2"/>
 				<Scale target="$parentDigit2" scaleX="4" scaleY="4" duration="0.3" smoothing="OUT" order="2"/>
 				<Scale target="$parentGlow1" scaleX="4" scaleY="4" duration="0.3" smoothing="OUT" order="2"/>
 				<Scale target="$parentGlow2" scaleX="4" scaleY="4" duration="0.3" smoothing="OUT" order="2"/>
-				<Alpha target="$parentGlow1" change="-1.0" 			duration="0.3" smoothing="IN" order="2"/>
-				<Alpha target="$parentGlow2" change="-1.0" 			duration="0.3" smoothing="IN" order="2"/>
+				<Alpha target="$parentGlow1" fromAlpha="1" toAlpha="0" 			duration="0.3" smoothing="IN" order="2"/>
+				<Alpha target="$parentGlow2" fromAlpha="1" toAlpha="0" 			duration="0.3" smoothing="IN" order="2"/>
 				
 				
 				<Scale target="$parentDigit1" startDelay="0.6" scaleX="1.2" scaleY="1.2"	duration="0.1" order="3"/>
 				<Scale target="$parentDigit2" startDelay="0.6" scaleX="1.2" scaleY="1.2" 	duration="0.1" order="3"/>
-				<Alpha target="$parentDigit1" startDelay="0.6" change="-1.0" 			duration="0.1" order="3"/>
-				<Alpha target="$parentDigit2" startDelay="0.6" change="-1.0" 			duration="0.1" order="3"/>
+				<Alpha target="$parentDigit1" startDelay="0.6" fromAlpha="1" toAlpha="0" 			duration="0.1" order="3"/>
+				<Alpha target="$parentDigit2" startDelay="0.6" fromAlpha="1" toAlpha="0" 			duration="0.1" order="3"/>
 				<Scripts>
 					<OnPlay>
 						local frame = self:GetParent();
@@ -70,17 +70,17 @@
 				<Scale target="$parentGoTexture" 		scaleX="0.25" scaleY="0.25" duration="0.0" order="1"/>
 				<Scale target="$parentGoTextureGlow" 	scaleX="0.25" scaleY="0.25" duration="0.0" order="1"/>
 				
-				<Alpha target="$parentGoTexture" 		change="1" 					duration="0.0" order="2"/>
-				<Alpha target="$parentGoTextureGlow" 	change="1" 					duration="0.0" order="2"/>
+				<Alpha target="$parentGoTexture" 		fromAlpha="0" toAlpha="1" 					duration="0.0" order="2"/>
+				<Alpha target="$parentGoTextureGlow" 	fromAlpha="0" toAlpha="1" 					duration="0.0" order="2"/>
 				
 				
 				<Scale target="$parentGoTexture" 		scaleX="4" scaleY="4" 	duration="0.4" smoothing="OUT" order="3"/>
 				<Scale target="$parentGoTextureGlow" 	scaleX="4" scaleY="4" 	duration="0.4" smoothing="OUT" order="3"/>
-				<Alpha target="$parentGoTextureGlow" 	change="-1.0" 			duration="0.4" smoothing="IN" order="3"/>
+				<Alpha target="$parentGoTextureGlow" 	fromAlpha="1" toAlpha="0" 			duration="0.4" smoothing="IN" order="3"/>
 				
 				
 				<Scale target="$parentGoTexture" startDelay="0.6" scaleX="1.4" scaleY="1.4"	duration="0.2" smoothing="OUT" order="4"/>
-				<Alpha target="$parentGoTexture" startDelay="0.6" change="-1.0" 				duration="0.2" smoothing="OUT" order="4"/>
+				<Alpha target="$parentGoTexture" startDelay="0.6" fromAlpha="1" toAlpha="0" 				duration="0.2" smoothing="OUT" order="4"/>
 			</AnimationGroup>
 		</Animations>
 		<Size x="206" y="26"/>

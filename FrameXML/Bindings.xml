@@ -1,5 +1,5 @@
 <Bindings>
-	
+
 	<!-- User interface key bindings header="MOVEMENT" -->
 	<Binding name="MOVEANDSTEER" runOnUp="true" category="BINDING_HEADER_MOVEMENT">
 		if ( keystate == "down" ) then
@@ -206,11 +206,11 @@
 			ActionButtonUp(12);
 		end
 	</Binding>
-	
+
 	<Binding name="EXTRAACTIONBUTTON1" runOnUp="true" category="BINDING_HEADER_ACTIONBAR">
 		ExtraActionButtonKey(1, keystate == "down")
 	</Binding>
-	
+
 	<Binding name="SHAPESHIFTBUTTON1" category="BINDING_HEADER_ACTIONBAR">
 		StanceBar_Select(1)
 	</Binding>
@@ -709,13 +709,25 @@
 			MultiActionButtonUp("MultiBarLeft", 12);
 		end
 	</Binding>
-	
+
 	<!-- Target function key bindings header="TARGETING" -->
-	<Binding name="TARGETNEARESTENEMY" category="BINDING_HEADER_TARGETING">
-		TargetNearestEnemy();
+	<Binding name="TARGETNEARESTENEMY" runOnUp="true" category="BINDING_HEADER_TARGETING">
+		if ( keystate == "down" ) then
+			TargetNearestEnemy();
+			TargetPriorityHighlightStart(true);
+		else
+			TargetPriorityHighlightEnd(true);
+		end
 	</Binding>
 	<Binding name="TARGETPREVIOUSENEMY" category="BINDING_HEADER_TARGETING">
 		TargetNearestEnemy(true);	-- true means reverse!
+	</Binding>
+	<Binding name="TARGETSCANENEMY" runOnUp="true" category="BINDING_HEADER_TARGETING">
+		if ( keystate == "down" ) then
+			TargetPriorityHighlightStart(false);
+		else
+			TargetPriorityHighlightEnd(true);
+		end
 	</Binding>
 	<Binding name="TARGETNEARESTFRIEND" category="BINDING_HEADER_TARGETING">
 		TargetNearestFriend();
@@ -829,36 +841,50 @@
 	<Binding name="FOCUSARENA5" category="BINDING_HEADER_TARGETING">
 		FocusUnit("arena5");
 	</Binding>
-	
+
 	<Binding name="NAMEPLATES" category="BINDING_HEADER_TARGETING">
 		local SHOW_ENEMIES = GetCVarBool("nameplateShowEnemies");
-		local SHOW_FRIENDS = GetCVarBool("nameplateShowFriends");
-		if ( SHOW_ENEMIES and not SHOW_FRIENDS ) then
+		if ( SHOW_ENEMIES ) then
 			SetCVar("nameplateShowEnemies", 0);
+			UIErrorsFrame:AddMessage(NAMEPLATES_MESSAGE_ENEMY_OFF, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
 		else
 			SetCVar("nameplateShowEnemies", 1);
-			SetCVar("nameplateShowFriends", 0);
+			if ( GetCVarBool("nameplateShowAll") ) then
+				UIErrorsFrame:AddMessage(NAMEPLATES_MESSAGE_ENEMY_ON, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
+			else
+				UIErrorsFrame:AddMessage(NAMEPLATES_MESSAGE_ENEMY_ON_AUTO, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
+			end
 		end
 	</Binding>
 	<Binding name="FRIENDNAMEPLATES" category="BINDING_HEADER_TARGETING">
-		local SHOW_ENEMIES = GetCVarBool("nameplateShowEnemies");
 		local SHOW_FRIENDS = GetCVarBool("nameplateShowFriends");
-		if ( SHOW_FRIENDS and not SHOW_ENEMIES ) then
+		if ( SHOW_FRIENDS ) then
 			SetCVar("nameplateShowFriends", 0);
+			UIErrorsFrame:AddMessage(NAMEPLATES_MESSAGE_FRIENDLY_OFF, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
 		else
 			SetCVar("nameplateShowFriends", 1);
-			SetCVar("nameplateShowEnemies", 0);
+			if ( GetCVarBool("nameplateShowAll") ) then
+				UIErrorsFrame:AddMessage(NAMEPLATES_MESSAGE_FRIENDLY_ON, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
+			else
+				UIErrorsFrame:AddMessage(NAMEPLATES_MESSAGE_FRIENDLY_ON_AUTO, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
+			end
 		end
 	</Binding>
 	<Binding name="ALLNAMEPLATES" category="BINDING_HEADER_TARGETING">
 		local SHOW_ENEMIES = GetCVarBool("nameplateShowEnemies");
 		local SHOW_FRIENDS = GetCVarBool("nameplateShowFriends");
-		if ( not SHOW_ENEMIES and not SHOW_FRIENDS ) then
+		if ( not SHOW_ENEMIES or not SHOW_FRIENDS ) then
 			SetCVar("nameplateShowEnemies", 1);
 			SetCVar("nameplateShowFriends", 1);
+			if ( GetCVarBool("nameplateShowAll") ) then
+				UIErrorsFrame:AddMessage(NAMEPLATES_MESSAGE_ALL_ON, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
+			else
+				UIErrorsFrame:AddMessage(NAMEPLATES_MESSAGE_ALL_ON_AUTO, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
+			end
 		else
 			SetCVar("nameplateShowEnemies", 0);
 			SetCVar("nameplateShowFriends", 0);
+			UIErrorsFrame:AddMessage(NAMEPLATES_MESSAGE_ALL_OFF, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
 		end
 	</Binding>
 	<Binding name="INTERACTMOUSEOVER" category="BINDING_HEADER_TARGETING">
@@ -895,7 +921,7 @@
 			VoiceChatTalkers.buttons[#VOICECHAT_TALKERS].button:Click();
 		end
 	</Binding>
-	
+
 	<!-- UI Panels header="INTERFACE" -->
 	<Binding name="TOGGLEGAMEMENU" category="BINDING_HEADER_INTERFACE">
 		ToggleGameMenu();
@@ -918,12 +944,9 @@
 	<Binding name="OPENALLBAGS" category="BINDING_HEADER_INTERFACE">
 		ToggleAllBags();
 	</Binding>
-	
+
 	<Binding name="TOGGLECHARACTER0" header="BLANK8" category="BINDING_HEADER_INTERFACE">
 		ToggleCharacter("PaperDollFrame");
-	</Binding>
-	<Binding name="TOGGLECHARACTER3" category="BINDING_HEADER_INTERFACE">
-		ToggleCharacter("PetPaperDollFrame");
 	</Binding>
 	<Binding name="TOGGLECHARACTER2" category="BINDING_HEADER_INTERFACE">
 		ToggleCharacter("ReputationFrame");
@@ -931,7 +954,7 @@
 	<Binding name="TOGGLECURRENCY" category="BINDING_HEADER_INTERFACE">
 		ToggleCharacter("TokenFrame");
 	</Binding>
-	
+
 	<Binding name="TOGGLESPELLBOOK" header="BLANK7" category="BINDING_HEADER_INTERFACE">
 		ToggleSpellBook(BOOKTYPE_SPELL);
 	</Binding>
@@ -941,23 +964,17 @@
 	<Binding name="TOGGLEPETBOOK" category="BINDING_HEADER_INTERFACE">
 		ToggleSpellBook(BOOKTYPE_PET);
 	</Binding>
-	<Binding name="TOGGLECOREABILITIESBOOK" category="BINDING_HEADER_INTERFACE">
-		ToggleSpellBook(BOOKTYPE_CORE_ABILITIES);
-	</Binding>
 	<Binding name="TOGGLETALENTS" category="BINDING_HEADER_INTERFACE">
 		ToggleTalentFrame();
 	</Binding>
-	<Binding name="TOGGLEINSCRIPTION" category="BINDING_HEADER_INTERFACE">
-		ToggleGlyphFrame();
-	</Binding>
-	
+
 	<Binding name="TOGGLEACHIEVEMENT" header="BLANK10" category="BINDING_HEADER_INTERFACE">
 		ToggleAchievementFrame();
 	</Binding>
 	<Binding name="TOGGLESTATISTICS" category="BINDING_HEADER_INTERFACE">
 		ToggleAchievementFrame(1);
 	</Binding>
-	
+
 	<Binding name="TOGGLEQUESTLOG" header="BLANK11" category="BINDING_HEADER_INTERFACE">
 		ToggleQuestLog();
 	</Binding>
@@ -981,7 +998,7 @@
 	<Binding name="TOGGLEWORLDSTATESCORES" category="BINDING_HEADER_INTERFACE">
 		ToggleWorldStateScoreFrame();
 	</Binding>
-	
+
 	<Binding name="TOGGLEGUILDTAB" header="BLANK12" category="BINDING_HEADER_INTERFACE">
 		ToggleGuildFrame();
 	</Binding>
@@ -1003,7 +1020,7 @@
 	<Binding name="TOGGLECHANNELPULLOUT" category="BINDING_HEADER_INTERFACE">
 		ChannelPullout_ToggleDisplay();
 	</Binding>
-	
+
 	<Binding name="TOGGLEGROUPFINDER" header="BLANK13" category="BINDING_HEADER_INTERFACE">
 		PVEFrame_ToggleFrame();
 	</Binding>
@@ -1013,7 +1030,7 @@
 	<Binding name="TOGGLECHARACTER4" category="BINDING_HEADER_INTERFACE">
 		TogglePVPUI();
 	</Binding>
-	
+
 	<Binding name="TOGGLECOLLECTIONS" header="BLANK14" category="BINDING_HEADER_INTERFACE">
 		ToggleCollectionsJournal();
 	</Binding>
@@ -1029,7 +1046,7 @@
 	<Binding name="TOGGLECOLLECTIONSHEIRLOOM" category="BINDING_HEADER_INTERFACE">
 		ToggleCollectionsJournal(4);
 	</Binding>
-	
+
 	<Binding name="TOGGLEENCOUNTERJOURNAL" header="BLANK15" category="BINDING_HEADER_INTERFACE">
 		ToggleEncounterJournal();
 	</Binding>
@@ -1107,6 +1124,18 @@
 			end
 		end
 	</Binding>
+	<Binding name="TOGGLESELFHIGHLIGHT" category="BINDING_HEADER_MISC">
+		local text;
+		if ( ToggleSelfHighlight() ) then
+			text = SELF_HIGHLIGHT_ON;
+		else
+			text = SELF_HIGHLIGHT_OFF;
+		end
+		UIErrorsFrame:AddMessage(text, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
+	</Binding>
+	<Binding name="TOGGLEWINDOWED" category="BINDING_HEADER_MISC">
+		ToggleWindowed();
+	</Binding>
 
 	<!-- Debug function key bindings -->
 	<Binding name="TOGGLESTATS" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
@@ -1131,9 +1160,12 @@
     TogglePerformancePause();
   </Binding>
   <Binding name="TOGGLEPERFORMANCEVALUES" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
-		TogglePerformanceValues();
+		TogglePerformanceValues(1);
 	</Binding>
-	<Binding name="RESETPERFORMANCEVALUES" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
+  <Binding name="TOGGLEPERFORMANCEVALUES_OLD" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
+    TogglePerformanceValues(0);
+  </Binding>
+  <Binding name="RESETPERFORMANCEVALUES" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
 		ResetPerformanceValues();
 	</Binding>
 	<Binding name="TOGGLEANIMKITDISPLAY" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
@@ -1284,23 +1316,6 @@
 		else
 			CameraOrSelectOrMoveStop(IsModifiedClick("STICKYCAMERA"));
 		end
-	</Binding>
-
-	<!-- iTunes Bindings header="ITUNES_REMOTE" -->
-	<Binding name="ITUNES_PLAYPAUSE" platform="mac" category="BINDING_HEADER_ITUNES_REMOTE">
-		MusicPlayer_PlayPause();
-	</Binding>
-	<Binding name="ITUNES_NEXTTRACK" platform="mac" category="BINDING_HEADER_ITUNES_REMOTE">
-		MusicPlayer_NextTrack();
-	</Binding>
-	<Binding name="ITUNES_BACKTRACK" platform="mac" category="BINDING_HEADER_ITUNES_REMOTE">
-		MusicPlayer_BackTrack();
-	</Binding>
-	<Binding name="ITUNES_VOLUMEUP" platform="mac" category="BINDING_HEADER_ITUNES_REMOTE">
-		MusicPlayer_VolumeUp();
-	</Binding>
-	<Binding name="ITUNES_VOLUMEDOWN" platform="mac" category="BINDING_HEADER_ITUNES_REMOTE">
-		MusicPlayer_VolumeDown();
 	</Binding>
 
 	<!-- Movie Recording Bindings header="MOVIE_RECORDING_SECTION" -->

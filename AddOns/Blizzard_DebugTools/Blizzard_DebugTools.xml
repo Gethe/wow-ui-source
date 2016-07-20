@@ -12,18 +12,14 @@
 				<FontString parentKey="time" inherits="EventTraceTimeFont">
 					<Anchors>
 						<Anchor point="TOPLEFT"/>
-						<Anchor point="TOPRIGHT" relativePoint="TOPLEFT">
-							<Offset x="72" y="0"/>
-						</Anchor>
+						<Anchor point="TOPRIGHT" relativePoint="TOPLEFT" x="72" y="0"/>
 						<Anchor point="BOTTOM"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="event" inherits="GameFontHighlightSmallLeft">
 					<Anchors>
 						<Anchor point="TOPRIGHT"/>
-						<Anchor point="TOPLEFT">
-							<Offset x="80" y="0"/>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="80" y="0"/>
 						<Anchor point="BOTTOM"/>
 					</Anchors>
 				</FontString>
@@ -64,30 +60,20 @@
 	<Frame name="EventTraceFrame" parent="UIParent" movable="true" clampedToScreen="true" hidden="true" frameStrata="MEDIUM" toplevel="true">
 		<Size x="326" y="505"/>
 		<Anchors>
-			<Anchor point="LEFT">
-				<Offset x="64" y="0"/>
-			</Anchor>
+			<Anchor point="LEFT" x="64" y="0"/>
 		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentTitleBG" file="Interface\PaperDollInfoFrame\UI-GearManager-Title-Background">
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset x="9" y="-6"/>
-						</Anchor>
-						<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT">
-							<Offset x="-28" y="-24"/>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="9" y="-6"/>
+						<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="-28" y="-24"/>
 					</Anchors>
 				</Texture>
 				<Texture name="$parentDialogBG" file="Interface\Tooltips\UI-Tooltip-Background">
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset x="8" y="-24"/>
-						</Anchor>
-						<Anchor point="BOTTOMRIGHT">
-							<Offset x="-6" y="8"/>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="8" y="-24"/>
+						<Anchor point="BOTTOMRIGHT" x="-6" y="8"/>
 					</Anchors>
 					<Color r="0" g="0" b="0" a=".75"/>
 				</Texture>
@@ -157,12 +143,8 @@
 			<Layer level="OVERLAY">
 				<FontString name="$parentTitle" inherits="GameFontNormal" text="EVENTS_LABEL">
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset x="12" y="-8"/>
-						</Anchor>
-						<Anchor point="TOPRIGHT">
-							<Offset x="-32" y="-8"/>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="12" y="-8"/>
+						<Anchor point="TOPRIGHT" x="-32" y="-8"/>
 					</Anchors>
 				</FontString>					
 			</Layer>
@@ -173,9 +155,7 @@
 					<AbsDimension x="32" y="32"/>
 				</Size>
 				<Anchors>
-					<Anchor point="TOPRIGHT">
-						<Offset x="2" y="1"/>
-					</Anchor>
+					<Anchor point="TOPRIGHT" x="2" y="1"/>
 				</Anchors>
 			</Button>
 			<Frame name="$parentTitleButton">
@@ -213,12 +193,8 @@
 			<Slider name="$parentScroll">
 				<Size x="16" y="0"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT">
-						<Offset x="-7" y="-28"/>
-					</Anchor>
-					<Anchor point="BOTTOMRIGHT">
-						<Offset x="-7" y="10"/>
-					</Anchor>
+					<Anchor point="TOPRIGHT" x="-7" y="-28"/>
+					<Anchor point="BOTTOMRIGHT" x="-7" y="10"/>
 				</Anchors>			
 				<Layers>
 					<Layer level="BACKGROUND">
@@ -259,10 +235,8 @@
 				<FontString parentKey="indexLabel" font="GameFontNormalCenter">
 					<Size x="70" y="16"/>
 					<Anchors>
-						<Anchor point="BOTTOMLEFT">
-							<Offset x="208" y="16"/>
-						</Anchor>
-					</Anchors>
+					    <Anchor point="BOTTOM" x="0" y="16"/>
+					</Anchors>					
 				</FontString>
 			</Layer>
 		</Layers>
@@ -291,9 +265,7 @@
 			<ScrollFrame name="$parentScrollFrame" inherits="UIPanelScrollFrameTemplate">
 				<Size x="343" y="194"/>
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset x="12" y="-30"/>
-					</Anchor>
+					<Anchor point="TOPLEFT" x="12" y="-30"/>
 				</Anchors>
 				<ScrollChild>
 					<EditBox name="$parentText" multiLine="true" letters="4000" autoFocus="false">
@@ -312,34 +284,49 @@
 					</EditBox>
 				</ScrollChild>
 			</ScrollFrame>
-			<Button parentKey="previous" inherits="UIPanelButtonTemplate" text="PREVIOUS" id="2">
+			<Button parentKey="reload" inherits="UIPanelButtonTemplate" text="RELOADUI">
 				<Size x="96" y="24"/>
 				<Anchors>
-					<Anchor point="BOTTOMLEFT">
-						<Offset x="12" y="12"/>
-					</Anchor>
+				    <Anchor point="BOTTOMLEFT" relativeTo="$parent" x="10" y="12" />
 				</Anchors>
+				<Scripts>
+					<OnClick function="ReloadUI"/>
+				</Scripts>
+			</Button>			
+			<Button parentKey="previous" id="2">
+				<Size x="32" y="32"/>
+				<Anchors>
+				    <Anchor point="RIGHT" relativeKey="$parent.indexLabel" relativePoint="LEFT"/>
+				</Anchors>
+
+				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
+				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+
 				<Scripts>
 					<OnClick function="ScriptErrorsFrameButton_OnClick"/>
 				</Scripts>
 			</Button>			
-			<Button parentKey="next" inherits="UIPanelButtonTemplate" text="NEXT" id="1">
-				<Size x="96" y="24"/>
+			<Button parentKey="next" id="1">
+				<Size x="32" y="32" />
 				<Anchors>
-					<Anchor point="BOTTOMLEFT">
-						<Offset x="112" y="12"/>
-					</Anchor>
+				    <Anchor point="LEFT" relativeKey="$parent.indexLabel" relativePoint="RIGHT"/>
 				</Anchors>
+
+				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
+				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+
 				<Scripts>
 					<OnClick function="ScriptErrorsFrameButton_OnClick"/>
 				</Scripts>
-			</Button>
+			</Button>			
 			<Button parentKey="close" inherits="UIPanelButtonTemplate" text="CLOSE">
 				<Size x="96" y="24"/>
 				<Anchors>
-					<Anchor point="BOTTOMRIGHT">
-						<Offset x="-8" y="12"/>
-					</Anchor>
+					<Anchor point="BOTTOMRIGHT" x="-8" y="12"/>
 				</Anchors>
 				<Scripts>
 					<OnClick function="HideParentPanel"/>
@@ -352,12 +339,13 @@
 		</Scripts>
 	</Frame>
 	
-	<GameTooltip name="FrameStackTooltip" frameStrata="TOOLTIP" hidden="true" parent="WorldFrame" inherits="GameTooltipTemplate">
+	<GameTooltip name="FrameStackTooltip" frameStrata="TOOLTIP" hidden="true" inherits="GameTooltipTemplate">
 		<Scripts>
-			<OnLoad function="DebugTooltip_OnLoad"/>
+			<OnLoad function="FrameStackTooltip_OnLoad"/>
 			<OnShow function="FrameStackTooltip_OnShow"/>
 			<OnEnter function="FrameStackTooltip_OnEnter"/>
 			<OnUpdate function="FrameStackTooltip_OnUpdate"/>
+			<OnEvent function="FrameStackTooltip_OnEvent"/>
 		</Scripts>
 	</GameTooltip>
 	

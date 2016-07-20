@@ -254,8 +254,8 @@ function GarrisonRecruiterFrame_SetAbilityPreference(data)
 		
 		frame.Counter.Title:SetText(data.name);
 		frame.Counter.Description:SetText(data.description);
-		frame.Counter.Icon:SetTexture(data.icon);
 		frame.Counter.Icon:SetMask("Interface\\CharacterFrame\\TempPortraitAlphaMask");
+		frame.Counter.Icon:SetTexture(data.icon);
 		
 		UIDropDownMenu_SetText(frame.ThreatDropDown, data.name);
 	end
@@ -265,13 +265,13 @@ end
 --- GarrisonRecruitSelectFrame ---
 ----------------------------------
 function GarrisonRecruitSelectFrame_OnLoad(self)
-	self.FollowerList:Load(LE_FOLLOWER_TYPE_GARRISON_6_0);
+	self.FollowerList:Initialize(LE_FOLLOWER_TYPE_GARRISON_6_0);
 	self:RegisterEvent("GARRISON_RECRUIT_FOLLOWER_RESULT");
 	self:RegisterEvent("GARRISON_RECRUITMENT_FOLLOWERS_GENERATED");
 end
 
 function GarrisonRecruitSelectFrame_OnEvent(self, event, ...)
-	GarrisonFollowerList_OnEvent(self.FollowerList, event, ...);
+	self.FollowerList:OnEvent(event, ...);
 	if(event == "GARRISON_RECRUIT_FOLLOWER_RESULT")then
 		-- post event for recruiting follower
 		HideUIPanel(GarrisonRecruitSelectFrame);
@@ -309,22 +309,17 @@ function GarrisonRecruitSelectFrame_UpdateRecruits( waiting )
 		if(follower)then
 			frame:Show();
 			frame.Name:SetText(follower.name);
-			frame.PortraitFrame.Level:SetText(follower.level);
-			SetPortraitTexture(frame.PortraitFrame.Portrait, follower.displayID);
-			GarrisonMission_SetFollowerModel(frame.Model, follower.followerID, follower.displayID);
-			if (follower.displayHeight) then
-				frame.Model:SetHeightFactor(follower.displayHeight);
-			end
-			if (follower.displayScale) then
-				frame.Model:InitializeCamera(follower.displayScale);
-			end	
+			frame.PortraitFrame:SetupPortrait(follower);
+			local displayInfo = follower.displayIDs and follower.displayIDs[1];
+			GarrisonMission_SetFollowerModel(frame.Model, follower.followerID, displayInfo and displayInfo.id, displayInfo and displayInfo.showWeapon);
+			frame.Model:SetHeightFactor(follower.displayHeight or 0.5);
+			frame.Model:InitializeCamera((follower.displayScale or 1) * (displayInfo and displayInfo.followerPageScale or 1));
 			frame.Model:Show();
 			frame.Class:SetAtlas(follower.classAtlas);
 			
 			local color = ITEM_QUALITY_COLORS[follower.quality];
 			frame.Name:SetVertexColor(color.r, color.g, color.b);
-			frame.PortraitFrame.LevelBorder:SetVertexColor(color.r, color.g, color.b);
-			frame.PortraitFrame.PortraitRingQuality:SetVertexColor(color.r, color.g, color.b);
+			frame.PortraitFrame:SetQuality(follower.quality);
 
 			local abilities = C_Garrison.GetRecruitAbilities(i);
 			local abilityIndex = 0;
@@ -343,8 +338,8 @@ function GarrisonRecruitSelectFrame_UpdateRecruits( waiting )
 						local traitID, counterName = C_Garrison.GetFollowerAbilityCounterMechanicInfo(ability.id);
 						if( prefName == counterName )then
 							frame.Counter:Show();
-							frame.Counter.Icon:SetTexture(prefIcon);
 							frame.Counter.Icon:SetMask("Interface\\CharacterFrame\\TempPortraitAlphaMask");
+							frame.Counter.Icon:SetTexture(prefIcon);
 						end
 					end
 				end

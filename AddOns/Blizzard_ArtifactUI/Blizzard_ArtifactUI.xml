@@ -1,0 +1,266 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="Blizzard_ArtifactUI.lua"/>
+	
+	<Button name="ArtifactFrameTabButtonTemplate" inherits="CharacterFrameTabButtonTemplate" frameStrata="LOW" virtual="true">
+		<Scripts>
+			<OnClick>
+				PlaySound("igCharacterInfoTab");
+				self:GetParent():SetTab(self:GetID());
+			</OnClick>
+		</Scripts>
+	</Button>
+	
+	<Frame name="ArtifactFrameUnderlay" parent="UIParent" hidden="true" frameStrata="BACKGROUND" mixin="ArtifactFrameUnderlayMixin">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="UIParent" />
+			<Anchor point="BOTTOMRIGHT" relativeTo="UIParent" />
+		</Anchors>
+		<Scripts>
+			<OnUpdate>
+				self:OnUpdate(elapsed);
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+
+	<Frame name="ArtifactFrame" toplevel="true" parent="UIParent" enableMouse="true" hidden="true" mixin="ArtifactUIMixin">
+		<Size x="470" y="615"/>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-6">
+				<Texture parentKey="Background" file="Interface\FrameGeneral\UI-Background-Marble" horizTile="true" vertTile="true" />
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="VisitForgeOverlay" setAllPoints="true" frameLevel="500" enableMouse="true" hidden="false">
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Background">
+							<Color r="0" g="0" b="0" a=".75"/>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Text" justifyH="CENTER" justifyV="MIDDLE" font="GameFontNormalHuge" text="ARTIFACT_VISIT_FORGE_TO_START">
+							<Anchors>
+								<Anchor point="LEFT" x="150"/>
+								<Anchor point="RIGHT" x="-150"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnMouseWheel />
+				</Scripts>
+			</Frame>
+			<Frame parentKey="BorderFrame" setAllPoints="true" frameLevel="1000">
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="ForgeBottomLeftCorner" atlas="ForgeBorder-CornerBottomLeft" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" x="-13" y="-13" />
+							</Anchors>
+						</Texture>
+						<Texture parentKey="ForgeBottomRightCorner" atlas="ForgeBorder-CornerBottomRight" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" x="13" y="-13" />
+							</Anchors>
+						</Texture>
+						<Texture parentKey="ForgeTopRightCorner" atlas="ForgeBorder-CornerTopRight" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPRIGHT" x="13" y="13" />
+							</Anchors>
+						</Texture>
+					</Layer>
+
+
+					<Layer level="BORDER">
+						<Texture parentKey="ForgeTopBorder" atlas="_ForgeBorder-Top" horizTile="true">
+							<Size y="16" />
+							<Anchors>
+								<Anchor point="TOPLEFT" x="0" y="13" />
+								<Anchor point="TOPRIGHT" relativeKey="$parent.ForgeTopRightCorner" relativePoint="TOPLEFT" />
+							</Anchors>
+						</Texture>
+						<Texture parentKey="ForgeBottomBorder" atlas="_ForgeBorder-Top" horizTile="true">
+							<Size y="16" />
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativeKey="$parent.ForgeBottomLeftCorner" relativePoint="BOTTOMRIGHT" />
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ForgeBottomRightCorner" relativePoint="BOTTOMLEFT" />
+							</Anchors>
+							<TexCoords top="1.0" bottom="0.0" />
+						</Texture>
+						<Texture parentKey="ForgeRightBorder" atlas="!ForgeBorder-Right" vertTile="true">
+							<Size x="16" />
+							<Anchors>
+								<Anchor point="TOPRIGHT" relativeKey="$parent.ForgeTopRightCorner" relativePoint="BOTTOMRIGHT" />
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ForgeBottomRightCorner" relativePoint="TOPRIGHT" />
+							</Anchors>
+						</Texture>
+						<Texture parentKey="ForgeLeftBorder" atlas="!ForgeBorder-Right" vertTile="true">
+							<Size x="16" />
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-13" y="0" />
+								<Anchor point="BOTTOMLEFT" relativeKey="$parent.ForgeBottomLeftCorner" relativePoint="TOPLEFT" />
+							</Anchors>
+							<TexCoords left="1.0" right="0.0" />
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			
+			<Frame parentKey="ForgeBadgeFrame" setAllPoints="true" frameStrata="HIGH">
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="ForgeClassBadgeIcon">
+							<Anchors>
+								<Anchor point="CENTER" relativePoint="TOPLEFT" x="20" y="-20" />
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="2">
+						<Texture parentKey="ForgeLevelBackground" file="Interface\Minimap\MiniMap-TrackingBorder">
+							<Size x="64" y="64"/>
+							<Anchors>
+								<Anchor point="CENTER" relativePoint="TOPLEFT" x="62" y="-62"/>
+							</Anchors>
+						</Texture>
+						<FontString parentKey="ForgeLevelLabel" inherits="SystemFont_Shadow_Med2">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.ForgeLevelBackground" relativePoint="CENTER" x="-13" y="14" />
+							</Anchors>
+							<Color r="1.0" g="0.82" b="0"/> 
+						</FontString>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="1">
+						<Texture parentKey="ForgeLevelBackgroundBlack" alpha="0.7">
+							<Size x="22" y="22"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.ForgeLevelBackground" relativePoint="TOPLEFT" x="8" y="-7"/>
+							</Anchors>
+							<Color r="0" g="0" b="0"/>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="ForgeLevelFrame">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ForgeBadgeFrame.ForgeLevelBackground" />
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ForgeBadgeFrame.ForgeLevelBackground" />
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						self:GetParent():OnKnowledgeEnter(self);
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide" />
+				</Scripts>
+			</Frame>
+			<Frame parentKey="KnowledgeLevelHelpBox" inherits="GlowBoxTemplate" enableMouse="true" hidden="true" frameStrata="DIALOG">
+				<Size x="220" y="100"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.ForgeLevelFrame" relativePoint="RIGHT" x="-8" y="14"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString parentKey="Text" inherits="GameFontHighlightLeft" justifyV="TOP" text="ARTIFACT_TUTORIAL_KNOWLEDGE">
+							<Size x="188" y="0"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="16" y="-20"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
+						<Anchors>
+							<Anchor point="TOPRIGHT" x="6" y="6"/>
+						</Anchors>
+						<Scripts>
+							<OnClick inherit="append">
+								SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_ARTIFACT_KNOWLEDGE, true);
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Frame parentKey="Arrow" inherits="GlowBoxArrowTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="-17" y="-9"/>
+						</Anchors>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						self.Text:SetSpacing(4);
+						SetClampedTextureRotation(self.Arrow.Arrow, 90);
+						SetClampedTextureRotation(self.Arrow.Glow, 90);
+						self.Arrow.Glow:ClearAllPoints();
+						self.Arrow.Glow:SetPoint("CENTER", self.Arrow.Arrow, "CENTER", -3, 0);
+					</OnLoad>
+					<OnShow>
+						self:SetHeight(self.Text:GetHeight() + 42);
+					</OnShow>
+				</Scripts>
+			</Frame>
+			<Button parentKey="PerksTabButton" name="$parentTab1" inherits="ArtifactFrameTabButtonTemplate" id="1" text="ARTIFACTS_PERK_TAB">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="11" y="-7" />
+				</Anchors>
+			</Button>
+			<Button parentKey="AppearancesTabButton" name="$parentTab2" inherits="ArtifactFrameTabButtonTemplate" id="2" text="ARTIFACTS_APPEARANCE_TAB">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentTab1" relativePoint="RIGHT" x="-15" y="0" />
+				</Anchors>
+			</Button>
+			<Frame parentKey="AppearanceTabHelpBox" inherits="GlowBoxTemplate" enableMouse="true" hidden="true" frameStrata="DIALOG">
+				<Size x="220" y="100"/>
+				<Anchors>
+					<Anchor point="BOTTOM" relativeKey="$parent.AppearancesTabButton" relativePoint="TOP" x="0" y="14"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString parentKey="Text" inherits="GameFontHighlightLeft" justifyV="TOP" text="ARTIFACT_TUTORIAL_CUSTOMIZE_APPEARANCE">
+							<Size x="188" y="0"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="16" y="-24"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
+						<Anchors>
+							<Anchor point="TOPRIGHT" x="6" y="6"/>
+						</Anchors>
+						<Scripts>
+							<OnClick inherit="append">
+								SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_ARTIFACT_APPEARANCE_TAB, true);
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Frame parentKey="Arrow" inherits="GlowBoxArrowTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativePoint="BOTTOM" y="4"/>
+						</Anchors>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnShow>
+						self:SetHeight(self.Text:GetHeight()+42);
+					</OnShow>
+				</Scripts>
+			</Frame>
+
+			<Frame parentKey="PerksTab" setAllPoints="true" hidden="true" inherits="ArtifactPerksTabTemplate" />
+			<Frame parentKey="AppearancesTab" setAllPoints="true" hidden="true" inherits="ArtifactAppearancesTabTemplate" />
+
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButton" frameLevel="1500">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.BorderFrame.ForgeTopRightCorner" x="-5" y="-6" />
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnEvent method="OnEvent"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+</Ui>

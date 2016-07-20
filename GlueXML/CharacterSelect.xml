@@ -40,16 +40,37 @@
 			</OnLeave>
 		</Scripts>
 	</Button>
+	<Button name="CharSelectLockedTrialButtonTemplate" virtual="true" enableMouse="true" motionScriptsWhileDisabled="true" hidden="true">
+		<Size x="63" y="76"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture atlas="UI-CharacterCreate-PadLock" setAllPoints="true"/>
+			</Layer>
+		</Layers>
+		<HighlightTexture atlas="UI-CharacterCreate-PadLock" alpha="0.1" alphaMode="ADD" setAllPoints="true"/>
+		<Scripts>
+			<OnEnter>
+				GlueTooltip:SetText(CHARACTER_SELECT_INFO_TRIAL_BOOST_LOCKED_TOOLTIP_TITLE, 1, 1, 1, 1, false);
+				GlueTooltip:AddLine(CHARACTER_SELECT_INFO_TRIAL_BOOST_LOCKED_TOOLTIP_TEXT, nil, nil, nil, nil, true);
+				GlueTooltip:Show();
+				GlueTooltip:SetOwner(self, "ANCHOR_LEFT", -16, -5);
+			</OnEnter>
+			<OnLeave>
+				GlueTooltip:Hide();
+			</OnLeave>
+			<OnClick function="CharSelectLockedTrialButton_OnClick"/>
+		</Scripts>
+	</Button>
 	<!-- CharacterButton scripts may occassionally be disabled for Character Services purposes. -->
 	<Button name="CharSelectCharacterButtonTemplate" virtual="true" hidden="true">
-		<Size x="256" y="70"/>
+		<Size x="256" y="66"/>
 		<HitRectInsets>
 			<AbsInset left="-10" right="30" top="0" bottom="15"/>
 		</HitRectInsets>
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture file="Interface\Glues\CharacterSelect\Glue-CharacterSelect-Highlight" alphaMode="ADD" parentKey="selection" hidden="true">
-					<Size x="256" y="74"/>
+					<Size x="256" y="70"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="-20" y="8"/>
 					</Anchors>
@@ -74,7 +95,7 @@
 						<FontString name="$parentLocation" inherits="GlueFontDisableSmall" justifyH="LEFT" parentKey="Location">
 							<Size x="217" y="16"/>
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="$parentInfo" relativePoint="BOTTOMLEFT" x="0" y="-1"/>
+								<Anchor point="TOPLEFT" relativeTo="$parentInfo" relativePoint="BOTTOMLEFT" x="0" y="1"/>
 							</Anchors>
 						</FontString>
 					</Layer>
@@ -171,7 +192,7 @@
 			</OnLeave>
 		</Scripts>
 		<HighlightTexture file="Interface\Glues\CharacterSelect\Glue-CharacterSelect-Hover" alphaMode="ADD">
-			<Size x="256" y="74"/>
+			<Size x="256" y="70"/>
 			<Anchors>
 				<Anchor point="TOPLEFT" x="-20" y="8"/>
 			</Anchors>
@@ -409,7 +430,7 @@
 				</Layers>
 				<Animations>
 					<AnimationGroup parentKey="PulseAnim" looping="BOUNCE">
-						<Alpha change="-1" duration="1.5" order="1"/>
+						<Alpha fromAlpha="1" toAlpha="0" duration="1.5" order="1"/>
 					</AnimationGroup>
 				</Animations>
 			</Frame>
@@ -561,8 +582,8 @@
 								<Animations>
 									<AnimationGroup parentKey="Anim">
 										<Translation offsetX="-50" duration="1" order="1" smoothing="OUT"/>
-										<Alpha change="1" duration="0.1" order="1"/>
-										<Alpha change="-1" duration="0.9" startDelay="0.1" order="1" smoothing="IN"/>
+										<Alpha fromAlpha="0" toAlpha="1" duration="0.1" order="1"/>
+										<Alpha fromAlpha="1" toAlpha="0" duration="0.9" startDelay="0.1" order="1" smoothing="IN"/>
 										<Scripts>
 											<OnLoad>
 												self:Play();
@@ -681,10 +702,15 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
+								-- This should be disabled, but due to timing of events it may not be checked yet
+								if not CharacterSelect_AllowedToEnterWorld() then
+									CharacterSelect_UpdateButtonState();
+									return;
+								end
 								CharacterSelect_EnterWorld();
 							</OnClick>
 							<OnUpdate>
-								CharacterSelect_DeathKnightSwap(self);
+								GlueParent_DeathKnightButtonSwap(self);
 							</OnUpdate>
 						</Scripts>
 					</Button>
@@ -758,7 +784,7 @@
 								CharacterSelect_Exit();
 							</OnClick>
 							<OnUpdate>
-								CharacterSelect_DeathKnightSwap(self);
+								GlueParent_DeathKnightButtonSwap(self);
 							</OnUpdate>
 						</Scripts>
 					</Button>
@@ -781,7 +807,7 @@
 							</OnClick>
 							<OnUpdate>
 								GlueButtonMaster_OnUpdate(self, elapsed);
-								CharacterSelect_DeathKnightSwap(self);
+								GlueParent_DeathKnightButtonSwap(self);
 							</OnUpdate>
 						</Scripts>
 					</Button>
@@ -810,7 +836,7 @@
 							</OnClick>
 							<OnUpdate>
 								GlueButtonMaster_OnUpdate(self, elapsed);
-								CharacterSelect_DeathKnightSwap(self);
+								GlueParent_DeathKnightButtonSwap(self);
 							</OnUpdate>
 						</Scripts>
 					</Button>
@@ -880,7 +906,7 @@
 								CharacterSelect_Delete();
 							</OnClick>
 							<OnUpdate>
-								CharacterSelect_DeathKnightSwap(self);
+								GlueParent_DeathKnightButtonSwap(self);
 							</OnUpdate>
 						</Scripts>
 					</Button>
@@ -970,13 +996,13 @@
 										CharacterSelect_ChangeRealm();
 									</OnClick>
 									<OnUpdate>
-										CharacterSelect_DeathKnightSwap(self);
+										GlueParent_DeathKnightButtonSwap(self);
 									</OnUpdate>
 								</Scripts>
 							</Button>
 							<Button name="CharSelectCharacterButton1" inherits="CharSelectCharacterButtonTemplate" id="1">
 								<Anchors>
-									<Anchor point="TOP" x="0" y="-65"/>
+									<Anchor point="TOP" x="0" y="-59"/>
 									<Anchor point="LEFT" x="24" y="0"/>
 								</Anchors>
 							</Button>
@@ -1040,6 +1066,12 @@
 									<Anchor point="LEFT" x="24" y="0"/>
 								</Anchors>
 							</Button>
+							<Button name="CharSelectCharacterButton12" inherits="CharSelectCharacterButtonTemplate" id="12">
+								<Anchors>
+									<Anchor point="TOP" relativeTo="CharSelectCharacterButton11" relativePoint="BOTTOM" x="0" y="13"/>
+									<Anchor point="LEFT" x="24" y="0"/>
+								</Anchors>
+							</Button>
 							<Button name="CharSelectCreateCharacterButton" inherits="GluePanelButtonTemplate" hidden="true" text="CREATE_NEW_CHARACTER">
 								<Size x="200" y="45"/>
 								<Anchors>
@@ -1056,10 +1088,10 @@
 										self.down = false;
 									</OnMouseUp>
 									<OnUpdate>
-										CharacterSelectPanelButton_DeathKnightSwap(self);
+										GlueParent_DeathKnightButtonSwap(self);
 									</OnUpdate>
 									<OnClick>
-										CharacterSelect_SelectCharacter(self:GetID());
+										CharacterSelect_CreateNewCharacter(LE_CHARACTER_CREATE_TYPE_NORMAL);
 									</OnClick>
 									<!-- We need to override the templates script because it will reset our textures. -->
 									<OnShow/>
@@ -1081,7 +1113,7 @@
 										CharacterSelect_EndCharacterUndelete();
 									</OnClick>
 									<OnUpdate>
-										CharacterSelect_DeathKnightSwap(self);
+										GlueParent_DeathKnightButtonSwap(self);
 									</OnUpdate>
 								</Scripts>
 							</Button>
@@ -1118,7 +1150,7 @@
 										self.down = false;
 									</OnMouseUp>
 									<OnUpdate>
-										CharacterSelectPanelButton_DeathKnightSwap(self);
+										GlueParent_DeathKnightButtonSwap(self);
 									</OnUpdate>
 									<!-- We need to override the templates script because it will reset our textures. -->
 									<OnShow/>
@@ -1192,6 +1224,12 @@
 									<Anchor point="RIGHT" relativeTo="$parent" relativePoint="LEFT" x="9" y="0"/>
 								</Anchors>
 							</Button>
+							<Button name="CharSelectPaidService12" inherits="CharSelectPaidServiceTemplate" id="12">
+								<Anchors>
+									<Anchor point="TOP" relativeTo="CharSelectCharacterButton12" relativePoint="TOP" x="0" y="6"/>
+									<Anchor point="RIGHT" relativeTo="$parent" relativePoint="LEFT" x="9" y="0"/>
+								</Anchors>
+							</Button>
 
 							<Button name="CharacterServicesProcessingIcon1" inherits="CharacterServicesProcessingIconTemplate" id="1" hidden="true">
 								<Anchors>
@@ -1246,6 +1284,11 @@
 							<Button name="CharacterServicesProcessingIcon11" inherits="CharacterServicesProcessingIconTemplate" id="11" hidden="true">
 								<Anchors>
 									<Anchor point="RIGHT" relativeTo="CharSelectCharacterButton11" relativePoint="LEFT" x="-10" y="4"/>
+								</Anchors>
+							</Button>
+							<Button name="CharacterServicesProcessingIcon12" inherits="CharacterServicesProcessingIconTemplate" id="12" hidden="true">
+								<Anchors>
+									<Anchor point="RIGHT" relativeTo="CharSelectCharacterButton12" relativePoint="LEFT" x="-10" y="4"/>
 								</Anchors>
 							</Button>
 						</Frames>
@@ -1309,6 +1352,12 @@
 										<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Bottom" relativePoint="TOPRIGHT" x="0" y="0"/>
 									</Anchors>
 								</Texture>
+								<Texture parentKey="CloseButtonBG">
+									<Size x="24" y="24"/>
+									<Anchors>
+										<Anchor point="TOPRIGHT" x="-12" y="-12"/>
+									</Anchors>
+								</Texture>
 							</Layer>
 							<Layer level="ARTWORK">
 								<FontString parentKey="Title" inherits="GameFontNormalHugeOutline" justifyH="CENTER" justifyV="TOP">
@@ -1327,22 +1376,48 @@
 							</Layer>
 						</Layers>
 						<Frames>
-							<Button parentKey="GetStartedButton" inherits="GlueButtonSmallTemplate" text="CHARACTER_UPGRADE_POPUP_GET_STARTED">
-								<Size x="180" y="36"/>
+							<Button parentKey="CloseButton" inherits="UIPanelCloseButtonNoScripts">
 								<Anchors>
-									<Anchor point="TOP" relativeKey="$parent.Description" relativePoint="BOTTOM" x="-50" y="-20"/>
+									<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-8" y="-8"/>
 								</Anchors>
 								<Scripts>
+									<OnClick function="CharacterUpgradePopup_OnCloseClick"/>
+								</Scripts>
+							</Button>
+							<Button parentKey="GetStartedButton" inherits="UIPanelButtonTemplate" text="CHARACTER_UPGRADE_POPUP_BOOST_EXISTING_CHARACTER">
+								<Size x="250" y="22"/>
+								<Anchors>
+									<Anchor point="TOP" relativeKey="$parent.Description" relativePoint="BOTTOM" x="0" y="-20"/>
+								</Anchors>
+								<Scripts>
+									<OnEnter>
+										GlueTooltip:SetOwner(self, "ANCHOR_RIGHT");
+										GlueTooltip:SetText(CHARACTER_UPGRADE_POPUP_BOOST_EXISTING_CHARACTER_TOOLTIP, nil, nil, nil, nil, true);
+									</OnEnter>
+									<OnLeave>
+										GlueTooltip:Hide();
+									</OnLeave>
 									<OnClick function="CharacterUpgradePopup_OnStartClick"/>
 								</Scripts>
 							</Button>
-							<Button parentKey="LaterButton" inherits="GlueButtonSmallTemplate" text="CHARACTER_UPGRADE_POPUP_LATER">
-								<Size x="100" y="36"/>
+							<Button parentKey="LaterButton" inherits="UIPanelButtonTemplate" text="CHARACTER_UPGRADE_POPUP_TRY_NEW_CLASS" motionScriptsWhileDisabled="true">
+								<Size x="250" y="22"/>
 								<Anchors>
-									<Anchor point="TOP" relativeKey="$parent.Description" relativePoint="BOTTOM" x="80" y="-20"/>
+									<Anchor point="TOP" relativeKey="$parent.GetStartedButton" relativePoint="BOTTOM" x="0" y="-6"/>
 								</Anchors>
 								<Scripts>
-									<OnClick function="CharacterUpgradePopup_OnLaterClick"/>
+									<OnShow>
+										self:SetEnabled(C_CharacterServices.IsTrialBoostEnabled());
+									</OnShow>
+									<OnEnter>
+										local buttonTooltip = C_CharacterServices.IsTrialBoostEnabled() and CHARACTER_UPGRADE_POPUP_TRY_NEW_CLASS_TOOLTIP or CHARACTER_UPGRADE_POPUP_TRY_NEW_CLASS_DISABLED_TOOLTIP;
+										GlueTooltip:SetOwner(self, "ANCHOR_RIGHT");
+										GlueTooltip:SetText(buttonTooltip, nil, nil, nil, nil, true);
+									</OnEnter>
+									<OnLeave>
+										GlueTooltip:Hide();
+									</OnLeave>
+									<OnClick function="CharacterUpgradePopup_OnTryNewClick"/>
 								</Scripts>
 							</Button>
 						</Frames>
@@ -1414,16 +1489,16 @@
 								<Scripts>
 									<OnClick function="CharacterServicesMasterBackButton_OnClick"/>
 									<OnUpdate>
-		 								CharacterSelect_DeathKnightSwap(self);
+		 								GlueParent_DeathKnightButtonSwap(self);
 									</OnUpdate>
 								</Scripts>
 							</Button>
 							<Button parentKey="NextButton" inherits="GlueButtonSmallTemplate" text="NEXT" hidden="true">
 								<Size x="140" y="38"/>
 								<Animations>
-									<AnimationGroup parentKey="PulseAnim">
-										<Alpha childKey="Flash" change="1.0" duration="0.5" order="1"/>
-										<Alpha childKey="Flash" change="-1.0" duration="0.5" order="2"/>
+									<AnimationGroup parentKey="PulseAnim" setToFinalAlpha="true">
+										<Alpha childKey="Flash" fromAlpha="0" toAlpha="1" duration="0.5" order="1"/>
+										<Alpha childKey="Flash" fromAlpha="1" toAlpha="0" duration="0.5" order="2"/>
 									</AnimationGroup>
 								</Animations>
 								<Anchors>
@@ -1443,7 +1518,7 @@
 								<Scripts>
 									<OnClick function="CharacterServicesMasterNextButton_OnClick"/>
 									<OnUpdate>
-		 								CharacterSelect_DeathKnightSwap(self);
+		 								GlueParent_DeathKnightButtonSwap(self);
 									</OnUpdate>
 									<OnSizeChanged>
 										self.Flash:SetSize(self:GetWidth()*1.06, self:GetHeight()*1.15);
@@ -1518,6 +1593,7 @@
 												</Anchors>
 												<Scripts>
 													<OnClick function="CharacterUpgradeSecondChanceWarningFrameConfirmButton_OnClick"/>
+													<OnUpdate function="GlueParent_DeathKnightButtonSwap"/>
 												</Scripts>
 											</Button>
 											<Button parentKey="CancelButton" inherits="GlueButtonSmallTemplate" text="CANCEL">
@@ -1527,6 +1603,7 @@
 												</Anchors>
 												<Scripts>
 													<OnClick function="CharacterUpgradeSecondChanceWarningFrameCancelButton_OnClick"/>
+													<OnUpdate function="GlueParent_DeathKnightButtonSwap"/>
 												</Scripts>
 											</Button>
 										</Frames>
@@ -1569,7 +1646,7 @@
 								GlueParent_SetScreen("charcreate");
 							</OnClick>
 							<OnUpdate>
-								CharacterSelect_DeathKnightSwap(self);
+								GlueParent_DeathKnightButtonSwap(self);
 							</OnUpdate>
 						</Scripts>
 					</Button>
@@ -1760,6 +1837,11 @@
 						</Scripts>
 					</Frame>
 				</Frames>
+				<Animations>
+					<AnimationGroup parentKey="FadeIn" setToFinalAlpha="true">
+						<Alpha fromAlpha="0" toAlpha="1" duration="0.75" order="1"/>
+					</AnimationGroup>
+				</Animations>
 				<Scripts>
 					<OnMouseDown>
 						CharacterSelectFrame_OnMouseDown(button);
@@ -1825,12 +1907,8 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				CharacterSelect_OnLoad(self);
-			</OnLoad>
-			<OnShow>
-				CharacterSelect_OnShow();
-			</OnShow>
+			<OnLoad function="CharacterSelect_OnLoad"/>
+			<OnShow function="CharacterSelect_OnShow"/>
 			<OnHide function="CharacterSelect_OnHide"/>
 			<OnUpdate function="CharacterSelect_OnUpdate"/>
 			<OnKeyDown>
@@ -1893,7 +1971,7 @@
 								CharacterSelect_DeleteCharacter(GetCharIDFromIndex(CharacterSelect.selectedIndex));
 							</OnClick>
 							<OnUpdate>
-								CharacterSelect_DeathKnightSwap(self);
+								GlueParent_DeathKnightButtonSwap(self);
 							</OnUpdate>
 						</Scripts>
 					</Button>
@@ -1907,7 +1985,7 @@
 								PlaySound("gsTitleOptionExit");
 							</OnClick>
 							<OnUpdate>
-								CharacterSelect_DeathKnightSwap(self);
+								GlueParent_DeathKnightButtonSwap(self);
 							</OnUpdate>
 						</Scripts>
 					</Button>
@@ -2018,7 +2096,7 @@
 								end
 							</OnClick>
 							<OnUpdate>
-								CharacterSelect_DeathKnightSwap(self);
+								GlueParent_DeathKnightButtonSwap(self);
 							</OnUpdate>
 						</Scripts>
 					</Button>
@@ -2031,7 +2109,7 @@
 								CharacterRenameDialog:Hide();
 							</OnClick>
 							<OnUpdate>
-								CharacterSelect_DeathKnightSwap(self);
+								GlueParent_DeathKnightButtonSwap(self);
 							</OnUpdate>
 						</Scripts>
 					</Button>

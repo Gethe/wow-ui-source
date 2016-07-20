@@ -3,6 +3,7 @@ TAXI_MAP_WIDTH = 580;
 TAXI_MAP_HEIGHT = 580;
 NUM_TAXI_BUTTONS = 0;
 NUM_TAXI_ROUTES = 0;
+TAXIROUTE_LINEFACTOR = 32/30; -- Multiplying factor for texture coordinates
 
 TaxiButtonTypes = { };
 TaxiButtonTypes["CURRENT"] = {
@@ -29,99 +30,100 @@ local taxiNodePositions = {};
 TAXI_BUTTON_MIN_DIST = 18;
 
 function TaxiFrame_OnLoad(self)
-	self:RegisterEvent("TAXIMAP_OPENED");
 	self:RegisterEvent("TAXIMAP_CLOSED");
 	self.InsetBg:SetHorizTile(false);
 	self.InsetBg:SetVertTile(false);
 end
 
-function TaxiFrame_OnEvent(self, event, ...)
-	if ( event == "TAXIMAP_OPENED" ) then
-		self.TitleText:SetText(FLIGHT_MAP);
+function TaxiFrame_ShouldShowOldStyle()
+	return GetTaxiMapID() ~= 1007; -- Broken Isles
+end
 
-		-- Set the texture coords on the map
-		self.InsetBg:SetTexCoord(0,1,0,1);
-		SetTaxiMap(self.InsetBg);
+function TaxiFrame_OnShow(self)
+	PlaySound("igMainMenuOpen");
 
-		-- Show the taxi node map and buttons
-		local num_nodes = NumTaxiNodes();
-		if ( num_nodes > NUM_TAXI_BUTTONS ) then
-			local button;
-			for i = NUM_TAXI_BUTTONS+1, num_nodes do
-				button = CreateFrame("Button", "TaxiButton"..i, TaxiRouteMap, "TaxiButtonTemplate");
-				button:SetID(i);
-			end
+	self.TitleText:SetText(FLIGHT_MAP);
+
+	-- Set the texture coords on the map
+	self.InsetBg:SetTexCoord(0,1,0,1);
+	SetTaxiMap(self.InsetBg);
+
+	-- Show the taxi node map and buttons
+	local num_nodes = NumTaxiNodes();
+	if ( num_nodes > NUM_TAXI_BUTTONS ) then
+		local button;
+		for i = NUM_TAXI_BUTTONS+1, num_nodes do
+			button = CreateFrame("Button", "TaxiButton"..i, TaxiRouteMap, "TaxiButtonTemplate");
+			button:SetID(i);
 		end
+	end
 		
-		-- Draw nodes
-		local numValidFlightNodes = 0;
-		for index = 1, num_nodes do
-			local type = TaxiNodeGetType(index);
-			local button = _G["TaxiButton"..index];
-			taxiNodePositions[index] = {};
-			if ( type ~= "NONE" ) then
-				numValidFlightNodes = numValidFlightNodes + 1;
-				local x, y = TaxiNodePosition(button:GetID());
-				local currX = x*TAXI_MAP_WIDTH;
-				local currY = y*TAXI_MAP_HEIGHT;
-				taxiNodePositions[index].x = currX;
-				taxiNodePositions[index].y = currY;
-				-- check if we are obscuring a previous placement (eg: Ebon Hold and Light's Hope Chapel)
-				if ( numValidFlightNodes > 1 ) then
-					for checkNode = 1, index - 1 do
-						-- Don't let distant nodes push around non-distant nodes
-						if ( type == "DISTANT" or TaxiNodeGetType(checkNode) ~= "DISTANT" ) then
-							local checkX = taxiNodePositions[checkNode].x;
-							local checkY = taxiNodePositions[checkNode].y;
-							if ( checkX ) then
-								local distX = currX - checkX;
-								local distY = currY - checkY;
-								local distSq = distX*distX + distY*distY;
-								if ( distSq < TAXI_BUTTON_MIN_DIST * TAXI_BUTTON_MIN_DIST ) then
-									local scale = TAXI_BUTTON_MIN_DIST;
-									if ( distSq > 0 ) then
-										scale = TAXI_BUTTON_MIN_DIST / sqrt(distSq);
-									end
-									taxiNodePositions[index].x = checkX + distX*scale;
-									taxiNodePositions[index].y = checkY + distY*scale;
+	-- Draw nodes
+	local numValidFlightNodes = 0;
+	for index = 1, num_nodes do
+		local type = TaxiNodeGetType(index);
+		local button = _G["TaxiButton"..index];
+		taxiNodePositions[index] = {};
+		if ( type ~= "NONE" ) then
+			numValidFlightNodes = numValidFlightNodes + 1;
+			local x, y = TaxiNodePosition(button:GetID());
+			local currX = x*TAXI_MAP_WIDTH;
+			local currY = y*TAXI_MAP_HEIGHT;
+			taxiNodePositions[index].x = currX;
+			taxiNodePositions[index].y = currY;
+			-- check if we are obscuring a previous placement (eg: Ebon Hold and Light's Hope Chapel)
+			if ( numValidFlightNodes > 1 ) then
+				for checkNode = 1, index - 1 do
+					-- Don't let distant nodes push around non-distant nodes
+					if ( type == "DISTANT" or TaxiNodeGetType(checkNode) ~= "DISTANT" ) then
+						local checkX = taxiNodePositions[checkNode].x;
+						local checkY = taxiNodePositions[checkNode].y;
+						if ( checkX ) then
+							local distX = currX - checkX;
+							local distY = currY - checkY;
+							local distSq = distX*distX + distY*distY;
+							if ( distSq < TAXI_BUTTON_MIN_DIST * TAXI_BUTTON_MIN_DIST ) then
+								local scale = TAXI_BUTTON_MIN_DIST;
+								if ( distSq > 0 ) then
+									scale = TAXI_BUTTON_MIN_DIST / sqrt(distSq);
 								end
+								taxiNodePositions[index].x = checkX + distX*scale;
+								taxiNodePositions[index].y = checkY + distY*scale;
 							end
 						end
 					end
 				end
-				-- set the button position
-				button:ClearAllPoints();
-				button:SetPoint("CENTER", self.InsetBg, "BOTTOMLEFT", floor(taxiNodePositions[index].x+.5), floor(taxiNodePositions[index].y+.5));
-				button:SetNormalTexture(TaxiButtonTypes[type].file);
-				local texture = button:GetHighlightTexture();
-				texture:SetAlpha(TaxiButtonTypes[type].highlightBrightness);
-				if ( type == "DISTANT" ) then
-					button:Hide(); -- We'll only show them when a path is going through them (or directly connected to current location)
-				else
-					button:Show();
-				end
-			else
-				button:Hide();
 			end
-		end
-	
-		-- Hide any remaining nodes
-		for index = num_nodes+1, NUM_TAXI_BUTTONS, 1 do
-			local button = _G["TaxiButton"..index];
+			-- set the button position
+			button:ClearAllPoints();
+			button:SetPoint("CENTER", self.InsetBg, "BOTTOMLEFT", floor(taxiNodePositions[index].x+.5), floor(taxiNodePositions[index].y+.5));
+			button:SetNormalTexture(TaxiButtonTypes[type].file);
+			local texture = button:GetHighlightTexture();
+			texture:SetAlpha(TaxiButtonTypes[type].highlightBrightness);
+			if ( type == "DISTANT" ) then
+				button:Hide(); -- We'll only show them when a path is going through them (or directly connected to current location)
+			else
+				button:Show();
+			end
+		else
 			button:Hide();
-		end 
-
-		if ( num_nodes > NUM_TAXI_BUTTONS ) then
-			NUM_TAXI_BUTTONS = num_nodes
 		end
-
-		-- All set...
-		ShowUIPanel(self);
-		if ( not self:IsShown() ) then
-			CloseTaxiMap();
-		end
-		return;
 	end
+	
+	-- Hide any remaining nodes
+	for index = num_nodes+1, NUM_TAXI_BUTTONS, 1 do
+		local button = _G["TaxiButton"..index];
+		button:Hide();
+	end 
+
+	if ( num_nodes > NUM_TAXI_BUTTONS ) then
+		NUM_TAXI_BUTTONS = num_nodes
+	end
+
+	DrawOneHopLines();
+end
+
+function TaxiFrame_OnEvent(self, event, ...)
 	if ( event == "TAXIMAP_CLOSED" ) then
 		HideUIPanel(self);
 		return;
@@ -175,7 +177,7 @@ function TaxiNodeOnButtonEnter(button)
 				local dstSlot = TaxiGetNodeSlot(index, i, false);
 				dX = taxiNodePositions[dstSlot].x;
 				dY = taxiNodePositions[dstSlot].y;
-				DrawRouteLine(line, "TaxiRouteMap", sX, sY, dX, dY, 32);
+				DrawLine(line, "TaxiRouteMap", sX, sY, dX, dY, 32, TAXIROUTE_LINEFACTOR);
 				line:Show();
 
 				local type = TaxiNodeGetType(dstSlot);
@@ -243,7 +245,7 @@ function DrawOneHopLines(self)
 				local dstSlot = TaxiGetNodeSlot(i, 1, false);
 				dX = taxiNodePositions[dstSlot].x;
 				dY = taxiNodePositions[dstSlot].y;
-				DrawRouteLine(line, "TaxiRouteMap", sX, sY, dX, dY, 32);
+				DrawLine(line, "TaxiRouteMap", sX, sY, dX, dY, 32, TAXIROUTE_LINEFACTOR);
 				line:Show();
 			end
 		elseif ( type == "DISTANT" ) then
@@ -259,65 +261,4 @@ function DrawOneHopLines(self)
 		UIErrorsFrame:AddMessage(ERR_TAXINOPATHS, 1.0, 0.1, 0.1, 1.0);
 		HideUIPanel(TaxiFrame);
 	end
-end
-
-
--- The following function is used with permission from Daniel Stephens <iriel@vigilance-committee.org>
-TAXIROUTE_LINEFACTOR = 32/30; -- Multiplying factor for texture coordinates
-TAXIROUTE_LINEFACTOR_2 = TAXIROUTE_LINEFACTOR / 2; -- Half o that
-
--- T        - Texture
--- C        - Canvas Frame (for anchoring)
--- sx,sy    - Coordinate of start of line
--- ex,ey    - Coordinate of end of line
--- w        - Width of line
--- relPoint - Relative point on canvas to interpret coords (Default BOTTOMLEFT)
-function DrawRouteLine(T, C, sx, sy, ex, ey, w, relPoint)
-   if (not relPoint) then relPoint = "BOTTOMLEFT"; end
-
-   -- Determine dimensions and center point of line
-   local dx,dy = ex - sx, ey - sy;
-   local cx,cy = (sx + ex) / 2, (sy + ey) / 2;
-
-   -- Normalize direction if necessary
-   if (dx < 0) then
-      dx,dy = -dx,-dy;
-   end
-
-   -- Calculate actual length of line
-   local l = sqrt((dx * dx) + (dy * dy));
-
-   -- Quick escape if it's zero length
-   if (l == 0) then
-      T:SetTexCoord(0,0,0,0,0,0,0,0);
-      T:SetPoint("BOTTOMLEFT", C, relPoint, cx,cy);
-      T:SetPoint("TOPRIGHT",   C, relPoint, cx,cy);
-      return;
-   end
-
-   -- Sin and Cosine of rotation, and combination (for later)
-   local s,c = -dy / l, dx / l;
-   local sc = s * c;
-
-   -- Calculate bounding box size and texture coordinates
-   local Bwid, Bhgt, BLx, BLy, TLx, TLy, TRx, TRy, BRx, BRy;
-   if (dy >= 0) then
-      Bwid = ((l * c) - (w * s)) * TAXIROUTE_LINEFACTOR_2;
-      Bhgt = ((w * c) - (l * s)) * TAXIROUTE_LINEFACTOR_2;
-      BLx, BLy, BRy = (w / l) * sc, s * s, (l / w) * sc;
-      BRx, TLx, TLy, TRx = 1 - BLy, BLy, 1 - BRy, 1 - BLx; 
-      TRy = BRx;
-   else
-      Bwid = ((l * c) + (w * s)) * TAXIROUTE_LINEFACTOR_2;
-      Bhgt = ((w * c) + (l * s)) * TAXIROUTE_LINEFACTOR_2;
-      BLx, BLy, BRx = s * s, -(l / w) * sc, 1 + (w / l) * sc;
-      BRy, TLx, TLy, TRy = BLx, 1 - BRx, 1 - BLx, 1 - BLy;
-      TRx = TLy;
-   end
-
-   -- Set texture coordinates and anchors
-   T:ClearAllPoints();
-   T:SetTexCoord(TLx, TLy, BLx, BLy, TRx, TRy, BRx, BRy);
-   T:SetPoint("BOTTOMLEFT", C, relPoint, cx - Bwid, cy - Bhgt);
-   T:SetPoint("TOPRIGHT",   C, relPoint, cx + Bwid, cy + Bhgt);
 end

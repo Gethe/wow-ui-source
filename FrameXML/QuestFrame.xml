@@ -36,6 +36,17 @@
 		<TexCoords left="0.00390625" right="0.76562500" top="0.63476563" bottom="0.66992188"/>	
 	</Texture>
 
+	<Button name="QuestIgnoreButtonTemplate" inherits="UIPanelButtonTemplate" text="IGNORE_QUEST" virtual="true">
+		<Scripts>
+			<OnClick function="QuestFrameIgnoreButton_OnClick"/>
+		</Scripts>
+	</Button>
+	<Button name="QuestUnignoreButtonTemplate" inherits="UIPanelButtonTemplate" text="UNIGNORE_QUEST" virtual="true">
+		<Scripts>
+			<OnClick function="QuestFrameUnignoreButton_OnClick"/>
+		</Scripts>
+	</Button>
+
 	<Frame name="QuestFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true" inherits="ButtonFrameTemplate">
 		<Size x="338" y="496"/>
 		<Layers>
@@ -98,6 +109,18 @@
 						<Scripts>
 							<OnClick function="QuestGoodbyeButton_OnClick"/>
 						</Scripts>
+					</Button>
+					<Button parentKey="IgnoreButton" inherits="QuestIgnoreButtonTemplate">
+						<Size x="78" y="22"/>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" relativeTo="QuestFrame" relativePoint="BOTTOMRIGHT" x="-6" y="4"/>
+						</Anchors>
+					</Button>
+					<Button parentKey="UnignoreButton" inherits="QuestUnignoreButtonTemplate">
+						<Size x="78" y="22"/>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" relativeTo="QuestFrame" relativePoint="BOTTOMRIGHT" x="-6" y="4"/>
+						</Anchors>
 					</Button>
 					<Button name="QuestFrameCompleteButton" inherits="UIPanelButtonTemplate" text="CONTINUE">
 						<Size x="120" y="22"/>
@@ -253,6 +276,18 @@
 						<Scripts>
 							<OnClick function="QuestDetailDeclineButton_OnClick"/>
 						</Scripts>
+					</Button>
+					<Button parentKey="IgnoreButton" inherits="QuestIgnoreButtonTemplate">
+						<Size x="78" y="22"/>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" relativeTo="QuestFrame" relativePoint="BOTTOMRIGHT" x="-6" y="4"/>
+						</Anchors>
+					</Button>
+					<Button parentKey="UnignoreButton" inherits="QuestUnignoreButtonTemplate">
+						<Size x="78" y="22"/>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" relativeTo="QuestFrame" relativePoint="BOTTOMRIGHT" x="-6" y="4"/>
+						</Anchors>
 					</Button>
 					<Button name="QuestFrameAcceptButton" inherits="UIPanelButtonTemplate" text="ACCEPT">
 						<Size x="77" y="22"/>

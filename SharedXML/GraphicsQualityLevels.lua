@@ -3,108 +3,23 @@
 -------------------------------------------------------------------------------------------------------
 VideoData["Graphics_Quality"]={
 	name = OVERALL_QUALITY;
-	data = {
-		[1] = {
-			text = VIDEO_QUALITY_LABEL1,
-			tooltip = VIDEO_QUALITY_SUBTEXT1,
-			notify = {
-				Graphics_ViewDistanceDropDown = VIDEO_OPTIONS_LOW,
-				Graphics_ParticleDensityDropDown = VIDEO_OPTIONS_LOW,
-				Graphics_EnvironmentalDetailDropDown = VIDEO_OPTIONS_LOW,
-				Graphics_GroundClutterDropDown = VIDEO_OPTIONS_LOW,
-				Graphics_ShadowsDropDown = VIDEO_OPTIONS_LOW,
-				Graphics_TextureResolutionDropDown = VIDEO_OPTIONS_LOW,
-				Graphics_FilteringDropDown = VIDEO_OPTIONS_TRILINEAR,
-				Graphics_LiquidDetailDropDown = VIDEO_OPTIONS_LOW,
-				Graphics_SunshaftsDropDown = VIDEO_OPTIONS_DISABLED,
-				Graphics_ProjectedTexturesDropDown = VIDEO_OPTIONS_DISABLED,
-				Graphics_SSAODropDown = VIDEO_OPTIONS_DISABLED,
-				Graphics_DepthEffectsDropDown = VIDEO_OPTIONS_DISABLED,
-				Graphics_LightingQualityDropDown = VIDEO_OPTIONS_LOW,
-				Graphics_OutlineModeDropDown = VIDEO_OPTIONS_DISABLED,
+	childOptions = {
+				"Graphics_ViewDistanceSlider",
+				"Graphics_ParticleDensityDropDown",
+				"Graphics_EnvironmentalDetailSlider",
+				"Graphics_GroundClutterSlider",
+				"Graphics_ShadowsDropDown",
+				"Graphics_TextureResolutionDropDown",
+				"Graphics_FilteringDropDown",
+				"Graphics_LiquidDetailDropDown",
+				"Graphics_SunshaftsDropDown",
+				"Graphics_ProjectedTexturesDropDown",
+				"Graphics_SSAODropDown",
+				"Graphics_DepthEffectsDropDown",
+				"Graphics_LightingQualityDropDown",
+				"Graphics_OutlineModeDropDown",
 			},
-		},
-		[2] = {
-			text = VIDEO_QUALITY_LABEL2,
-			tooltip = VIDEO_QUALITY_SUBTEXT2,
-			notify = {
-				Graphics_ViewDistanceDropDown = VIDEO_OPTIONS_FAIR,
-				Graphics_ParticleDensityDropDown = VIDEO_OPTIONS_MEDIUM,
-				Graphics_EnvironmentalDetailDropDown = VIDEO_OPTIONS_FAIR,
-				Graphics_GroundClutterDropDown = VIDEO_OPTIONS_FAIR,
-				Graphics_ShadowsDropDown = VIDEO_OPTIONS_FAIR,
-				Graphics_TextureResolutionDropDown = VIDEO_OPTIONS_FAIR,
-				Graphics_FilteringDropDown = VIDEO_OPTIONS_2XANISOTROPIC,
-				Graphics_LiquidDetailDropDown = VIDEO_OPTIONS_FAIR,
-				Graphics_SunshaftsDropDown = VIDEO_OPTIONS_DISABLED,
-				Graphics_ProjectedTexturesDropDown = VIDEO_OPTIONS_DISABLED,
-				Graphics_SSAODropDown = VIDEO_OPTIONS_DISABLED,
-				Graphics_DepthEffectsDropDown = VIDEO_OPTIONS_LOW,
-				Graphics_LightingQualityDropDown = VIDEO_OPTIONS_MEDIUM,
-				Graphics_OutlineModeDropDown = VIDEO_OPTIONS_ALLOWED,
-			},
-		},
-		[3] = {
-			text = VIDEO_QUALITY_LABEL3,
-			tooltip = VIDEO_QUALITY_SUBTEXT3,
-			notify = {
-				Graphics_ViewDistanceDropDown = VIDEO_OPTIONS_MEDIUM,
-				Graphics_ParticleDensityDropDown = VIDEO_OPTIONS_MEDIUM,
-				Graphics_EnvironmentalDetailDropDown = VIDEO_OPTIONS_MEDIUM,
-				Graphics_GroundClutterDropDown = VIDEO_OPTIONS_MEDIUM,
-				Graphics_ShadowsDropDown = VIDEO_OPTIONS_MEDIUM,
-				Graphics_TextureResolutionDropDown = VIDEO_OPTIONS_MEDIUM,
-				Graphics_FilteringDropDown = VIDEO_OPTIONS_4XANISOTROPIC,
-				Graphics_LiquidDetailDropDown = VIDEO_OPTIONS_MEDIUM,
-				Graphics_SunshaftsDropDown = VIDEO_OPTIONS_LOW,
-				Graphics_ProjectedTexturesDropDown = VIDEO_OPTIONS_ENABLED,
-				Graphics_SSAODropDown = VIDEO_OPTIONS_LOW,
-				Graphics_DepthEffectsDropDown = VIDEO_OPTIONS_MEDIUM,
-				Graphics_LightingQualityDropDown = VIDEO_OPTIONS_HIGH,
-				Graphics_OutlineModeDropDown = VIDEO_OPTIONS_ALLOWED,
-			},
-		},
-		[4] = {
-			text = VIDEO_QUALITY_LABEL4,
-			tooltip = VIDEO_QUALITY_SUBTEXT4,
-			notify = {
-				Graphics_ViewDistanceDropDown = VIDEO_OPTIONS_HIGH,
-				Graphics_ParticleDensityDropDown = VIDEO_OPTIONS_HIGH,
-				Graphics_EnvironmentalDetailDropDown = VIDEO_OPTIONS_HIGH,
-				Graphics_GroundClutterDropDown = VIDEO_OPTIONS_HIGH,
-				Graphics_ShadowsDropDown = VIDEO_OPTIONS_HIGH,
-				Graphics_TextureResolutionDropDown = VIDEO_OPTIONS_HIGH,
-				Graphics_FilteringDropDown = VIDEO_OPTIONS_8XANISOTROPIC,
-				Graphics_LiquidDetailDropDown = VIDEO_OPTIONS_MEDIUM,
-				Graphics_SunshaftsDropDown = VIDEO_OPTIONS_HIGH,
-				Graphics_ProjectedTexturesDropDown = VIDEO_OPTIONS_ENABLED,
-				Graphics_SSAODropDown = VIDEO_OPTIONS_HIGH,
-				Graphics_DepthEffectsDropDown = VIDEO_OPTIONS_HIGH,
-				Graphics_LightingQualityDropDown = VIDEO_OPTIONS_HIGH,
-				Graphics_OutlineModeDropDown = VIDEO_OPTIONS_ALLOWED,
-			},
-		},
-		[5] = {
-			text = VIDEO_QUALITY_LABEL5,
-			tooltip = VIDEO_QUALITY_SUBTEXT5,
-			notify = {
-				Graphics_ViewDistanceDropDown = VIDEO_OPTIONS_ULTRA,
-				Graphics_ParticleDensityDropDown = VIDEO_OPTIONS_HIGH,
-				Graphics_EnvironmentalDetailDropDown = VIDEO_OPTIONS_ULTRA,
-				Graphics_GroundClutterDropDown = VIDEO_OPTIONS_ULTRA,
-				Graphics_ShadowsDropDown = VIDEO_OPTIONS_ULTRA,
-				Graphics_TextureResolutionDropDown = VIDEO_OPTIONS_HIGH,
-				Graphics_FilteringDropDown = VIDEO_OPTIONS_16XANISOTROPIC,
-				Graphics_LiquidDetailDropDown = VIDEO_OPTIONS_ULTRA,
-				Graphics_SunshaftsDropDown = VIDEO_OPTIONS_HIGH,
-				Graphics_ProjectedTexturesDropDown = VIDEO_OPTIONS_ENABLED,
-				Graphics_SSAODropDown = VIDEO_OPTIONS_ULTRA,
-				Graphics_DepthEffectsDropDown = VIDEO_OPTIONS_HIGH,
-				Graphics_LightingQualityDropDown = VIDEO_OPTIONS_HIGH,
-				Graphics_OutlineModeDropDown = VIDEO_OPTIONS_ALLOWED,
-			},
-		},
-	},
+	numQualityLevels = 10,
 	SetDisplayValue = 
 		function(self,value)
 		end,
@@ -132,7 +47,6 @@ VideoData["Graphics_Quality"]={
 	initialize = 
 		function(self)
 			self:SetWidth(550);
-			self:SetBackdrop({bgFile = "Interface\\Buttons\\UI-SliderBar-Background", edgeFile = "Interface\\Buttons\\UI-SliderBar-Border", tile = true, tileSize = 8, edgeSize = 8, pieces=93, insets = { left = 3, right = 3, top = 6, bottom = 6 } } );
 			local parent = self:GetParent():GetName();
 			local name = self:GetName();
 
@@ -163,13 +77,13 @@ VideoData["Graphics_Quality"]={
 	end,
 	updatecustomfield =
 		function(self, value)
-			if(value > #self.data) then
+			if(value > self.numQualityLevels) then
 				_G["Graphics_RightQualityLabel"]:Show();
 			else
 				self.noclick = true;
 				Graphics_Quality:SetValue(value);	-- set the slider only
 				self.noclick = false;
-				if ( self:GetValue() > #self.data ) then
+				if ( self:GetValue() > self.numQualityLevels ) then
 					_G["Graphics_RightQualityLabel"]:Show();
 				else
 					_G["Graphics_RightQualityLabel"]:Hide();
@@ -188,7 +102,7 @@ VideoData["Graphics_Quality"]={
 	commitslider =
 		function(self)
 			local value = self:GetValue();
-			if(value > #self.data) then
+			if(value > self.numQualityLevels) then
 				value = self:sliderGetValue();
 			end
 			local graphicsQualityCVar = "graphicsQuality";
@@ -201,117 +115,32 @@ VideoData["Graphics_Quality"]={
 
 VideoData["RaidGraphics_Quality"] = {};
 setmetatable( VideoData["RaidGraphics_Quality"], {__index = VideoData["Graphics_Quality"]});
-VideoData["RaidGraphics_Quality"].data = {
-	[1] = {
-		text = VIDEO_QUALITY_LABEL1,
-		tooltip = VIDEO_QUALITY_SUBTEXT1,
-		notify = {
-			RaidGraphics_ViewDistanceDropDown = VIDEO_OPTIONS_LOW,
-			RaidGraphics_ParticleDensityDropDown = VIDEO_OPTIONS_LOW,
-			RaidGraphics_EnvironmentalDetailDropDown = VIDEO_OPTIONS_LOW,
-			RaidGraphics_GroundClutterDropDown = VIDEO_OPTIONS_LOW,
-			RaidGraphics_ShadowsDropDown = VIDEO_OPTIONS_LOW,
-			RaidGraphics_TextureResolutionDropDown = VIDEO_OPTIONS_LOW,
-			RaidGraphics_FilteringDropDown = VIDEO_OPTIONS_TRILINEAR,
-			RaidGraphics_LiquidDetailDropDown = VIDEO_OPTIONS_LOW,
-			RaidGraphics_SunshaftsDropDown = VIDEO_OPTIONS_DISABLED,
-			RaidGraphics_ProjectedTexturesDropDown = VIDEO_OPTIONS_DISABLED,
-			RaidGraphics_SSAODropDown = VIDEO_OPTIONS_DISABLED,
-			RaidGraphics_DepthEffectsDropDown = VIDEO_OPTIONS_DISABLED,
-			RaidGraphics_LightingQualityDropDown = VIDEO_OPTIONS_LOW,
-			RaidGraphics_OutlineModeDropDown = VIDEO_OPTIONS_DISABLED,
-		},
-	},
-	[2] = {
-		text = VIDEO_QUALITY_LABEL2,
-		tooltip = VIDEO_QUALITY_SUBTEXT2,
-		notify = {
-			RaidGraphics_ViewDistanceDropDown = VIDEO_OPTIONS_FAIR,
-			RaidGraphics_ParticleDensityDropDown = VIDEO_OPTIONS_MEDIUM,
-			RaidGraphics_EnvironmentalDetailDropDown = VIDEO_OPTIONS_FAIR,
-			RaidGraphics_GroundClutterDropDown = VIDEO_OPTIONS_FAIR,
-			RaidGraphics_ShadowsDropDown = VIDEO_OPTIONS_FAIR,
-			RaidGraphics_TextureResolutionDropDown = VIDEO_OPTIONS_FAIR,
-			RaidGraphics_FilteringDropDown = VIDEO_OPTIONS_2XANISOTROPIC,
-			RaidGraphics_LiquidDetailDropDown = VIDEO_OPTIONS_FAIR,
-			RaidGraphics_SunshaftsDropDown = VIDEO_OPTIONS_DISABLED,
-			RaidGraphics_ProjectedTexturesDropDown = VIDEO_OPTIONS_DISABLED,
-			RaidGraphics_SSAODropDown = VIDEO_OPTIONS_DISABLED,
-			RaidGraphics_DepthEffectsDropDown = VIDEO_OPTIONS_LOW,
-			RaidGraphics_LightingQualityDropDown = VIDEO_OPTIONS_MEDIUM,
-			RaidGraphics_OutlineModeDropDown = VIDEO_OPTIONS_ALLOWED,
-		},
-	},
-	[3] = {
-		text = VIDEO_QUALITY_LABEL3,
-		tooltip = VIDEO_QUALITY_SUBTEXT3,
-		notify = {
-			RaidGraphics_ViewDistanceDropDown = VIDEO_OPTIONS_MEDIUM,
-			RaidGraphics_ParticleDensityDropDown = VIDEO_OPTIONS_MEDIUM,
-			RaidGraphics_EnvironmentalDetailDropDown = VIDEO_OPTIONS_MEDIUM,
-			RaidGraphics_GroundClutterDropDown = VIDEO_OPTIONS_MEDIUM,
-			RaidGraphics_ShadowsDropDown = VIDEO_OPTIONS_MEDIUM,
-			RaidGraphics_TextureResolutionDropDown = VIDEO_OPTIONS_MEDIUM,
-			RaidGraphics_FilteringDropDown = VIDEO_OPTIONS_4XANISOTROPIC,
-			RaidGraphics_LiquidDetailDropDown = VIDEO_OPTIONS_MEDIUM,
-			RaidGraphics_SunshaftsDropDown = VIDEO_OPTIONS_LOW,
-			RaidGraphics_ProjectedTexturesDropDown = VIDEO_OPTIONS_ENABLED,
-			RaidGraphics_SSAODropDown = VIDEO_OPTIONS_LOW,
-			RaidGraphics_DepthEffectsDropDown = VIDEO_OPTIONS_MEDIUM,
-			RaidGraphics_LightingQualityDropDown = VIDEO_OPTIONS_HIGH,
-			RaidGraphics_OutlineModeDropDown = VIDEO_OPTIONS_ALLOWED,
-		},
-	},
-	[4] = {
-		text = VIDEO_QUALITY_LABEL4,
-		tooltip = VIDEO_QUALITY_SUBTEXT4,
-		notify = {
-			RaidGraphics_ViewDistanceDropDown = VIDEO_OPTIONS_HIGH,
-			RaidGraphics_ParticleDensityDropDown = VIDEO_OPTIONS_HIGH,
-			RaidGraphics_EnvironmentalDetailDropDown = VIDEO_OPTIONS_HIGH,
-			RaidGraphics_GroundClutterDropDown = VIDEO_OPTIONS_HIGH,
-			RaidGraphics_ShadowsDropDown = VIDEO_OPTIONS_HIGH,
-			RaidGraphics_TextureResolutionDropDown = VIDEO_OPTIONS_HIGH,
-			RaidGraphics_FilteringDropDown = VIDEO_OPTIONS_8XANISOTROPIC,
-			RaidGraphics_LiquidDetailDropDown = VIDEO_OPTIONS_MEDIUM,
-			RaidGraphics_SunshaftsDropDown = VIDEO_OPTIONS_HIGH,
-			RaidGraphics_ProjectedTexturesDropDown = VIDEO_OPTIONS_ENABLED,
-			RaidGraphics_SSAODropDown = VIDEO_OPTIONS_HIGH,
-			RaidGraphics_DepthEffectsDropDown = VIDEO_OPTIONS_HIGH,
-			RaidGraphics_LightingQualityDropDown = VIDEO_OPTIONS_HIGH,
-			RaidGraphics_OutlineModeDropDown = VIDEO_OPTIONS_ALLOWED,
-		},
-	},
-	[5] = {
-		text = VIDEO_QUALITY_LABEL5,
-		tooltip = VIDEO_QUALITY_SUBTEXT5,
-		notify = {
-			RaidGraphics_ViewDistanceDropDown = VIDEO_OPTIONS_ULTRA,
-			RaidGraphics_ParticleDensityDropDown = VIDEO_OPTIONS_HIGH,
-			RaidGraphics_EnvironmentalDetailDropDown = VIDEO_OPTIONS_ULTRA,
-			RaidGraphics_GroundClutterDropDown = VIDEO_OPTIONS_ULTRA,
-			RaidGraphics_ShadowsDropDown = VIDEO_OPTIONS_ULTRA,
-			RaidGraphics_TextureResolutionDropDown = VIDEO_OPTIONS_HIGH,
-			RaidGraphics_FilteringDropDown = VIDEO_OPTIONS_16XANISOTROPIC,
-			RaidGraphics_LiquidDetailDropDown = VIDEO_OPTIONS_ULTRA,
-			RaidGraphics_SunshaftsDropDown = VIDEO_OPTIONS_HIGH,
-			RaidGraphics_ProjectedTexturesDropDown = VIDEO_OPTIONS_ENABLED,
-			RaidGraphics_SSAODropDown = VIDEO_OPTIONS_ULTRA,
-			RaidGraphics_DepthEffectsDropDown = VIDEO_OPTIONS_HIGH,
-			RaidGraphics_LightingQualityDropDown = VIDEO_OPTIONS_HIGH,
-			RaidGraphics_OutlineModeDropDown = VIDEO_OPTIONS_ALLOWED,
-		},
-	},
-};
+VideoData["RaidGraphics_Quality"].childOptions = {
+				"RaidGraphics_ViewDistanceSlider",
+				"RaidGraphics_ParticleDensityDropDown",
+				"RaidGraphics_EnvironmentalDetailSlider",
+				"RaidGraphics_GroundClutterSlider",
+				"RaidGraphics_ShadowsDropDown",
+				"RaidGraphics_TextureResolutionDropDown",
+				"RaidGraphics_FilteringDropDown",
+				"RaidGraphics_LiquidDetailDropDown",
+				"RaidGraphics_SunshaftsDropDown",
+				"RaidGraphics_ProjectedTexturesDropDown",
+				"RaidGraphics_SSAODropDown",
+				"RaidGraphics_DepthEffectsDropDown",
+				"RaidGraphics_LightingQualityDropDown",
+				"RaidGraphics_OutlineModeDropDown",
+			};
+VideoData["RaidGraphics_Quality"].numQualityLevels = 10;
 VideoData["RaidGraphics_Quality"].updatecustomfield =
 	function(self, value)
-		if(value > #self.data) then
+		if(value > self.numQualityLevels) then
 			_G["RaidGraphics_RightQualityLabel"]:Show();
 		else
 			self.noclick = true;
 			RaidGraphics_Quality:SetValue(value);	-- set the slider only
 			self.noclick = false;
-			if ( self:GetValue() > #self.data ) then
+			if ( self:GetValue() > self.numQualityLevels ) then
 				_G["RaidGraphics_RightQualityLabel"]:Show();
 			else
 				_G["RaidGraphics_RightQualityLabel"]:Hide();
@@ -326,7 +155,7 @@ VideoData["RaidGraphics_Quality"].updatecustomfield =
 VideoData["Display_DisplayModeDropDown"]={
 	name = DISPLAY_MODE;
 	description = OPTION_TOOLTIP_DISPLAY_MODE,
-	dataA = {
+	data = {
 		[1] = {
 			text = VIDEO_OPTIONS_WINDOWED,
 			cvars =	{
@@ -355,29 +184,6 @@ VideoData["Display_DisplayModeDropDown"]={
 			fullscreen = true;
 		},
 	},
-	dataB = {
-		[1] = {
-			text = VIDEO_OPTIONS_WINDOWED,
-			cvars =	{
-				gxWindow = 1,
-				gxMaximize = 0,
-			},
-			windowed = true;
-			fullscreen = false;
-		},
-	},
-	onload =
-		function(self)
-			self.data = self.dataA;
-		end,
-	onrefresh =
-		function(self)
-			if(Display_PrimaryMonitorDropDown:landscape()) then
-				self.data = self.dataA;
-			else
-				self.data = self.dataB;
-			end
-		end,
 	dependtarget = VideoOptionsDropDownMenu_dependtarget_refreshtable;
 	dependent = {
 		"Display_ResolutionDropDown",
@@ -496,8 +302,7 @@ VideoData["Display_ResolutionDropDown"]={
 	},
 	onrefresh =
 	function(self)
-		if(Display_DisplayModeDropDown:windowedmode() and Display_DisplayModeDropDown:fullscreenmode() and
-            not IsMacClient()) then
+		if(Display_DisplayModeDropDown:windowedmode() and Display_DisplayModeDropDown:fullscreenmode()) then
 			VideoOptions_Disable(self);
 		else
 			VideoOptions_Enable(self);
@@ -582,7 +387,7 @@ local function GenerateMSAAData(data, advanced, ...)
 				text = advanced and ADVANCED_ANTIALIASING_MSAA_FORMAT:format(sampleCount, coverageCount) or ANTIALIASING_MSAA_FORMAT:format(sampleCount),
 				cvars =	{
 					ffxAntiAliasingMode = not advanced and 0 or nil,
-					RenderScale = not advanced and 1 or nil,
+					RenderScale = not advanced and tonumber(GetCVarDefault("RenderScale")) or nil,
 					MSAAQuality = msaaQuality,
 				},
 			};
@@ -600,7 +405,7 @@ local function GenerateFFXAntiAliasingData(data, advanced)
 			text = ANTIALIASING_FXAA_LOW,
 			cvars =	{
 				ffxAntiAliasingMode = 1,
-				RenderScale = not advanced and 1 or nil,
+				RenderScale = not advanced and tonumber(GetCVarDefault("RenderScale")) or nil,
 				MSAAQuality = not advanced and 0 or nil,
 			},
 		};
@@ -609,7 +414,7 @@ local function GenerateFFXAntiAliasingData(data, advanced)
 			text = ANTIALIASING_FXAA_HIGH,
 			cvars =	{
 				ffxAntiAliasingMode = 2,
-				RenderScale = not advanced and 1 or nil,
+				RenderScale = not advanced and tonumber(GetCVarDefault("RenderScale")) or nil,
 				MSAAQuality = not advanced and 0 or nil,
 			},
 		};
@@ -620,7 +425,7 @@ local function GenerateFFXAntiAliasingData(data, advanced)
 			text = ANTIALIASING_CMAA,
 			cvars =	{
 				ffxAntiAliasingMode = 3,
-				RenderScale = not advanced and 1 or nil,
+				RenderScale = not advanced and tonumber(GetCVarDefault("RenderScale")) or nil,
 				MSAAQuality = not advanced and 0 or nil,
 			},
 		};
@@ -636,7 +441,7 @@ local function GenerateAntiAliasingDropDownData()
 		text = VIDEO_OPTIONS_NONE,
 		cvars =	{
 			ffxAntiAliasingMode = 0,
-			RenderScale = 1,
+			RenderScale = tonumber(GetCVarDefault("RenderScale")),
 			MSAAQuality = 0,
 		},
 	};
@@ -690,288 +495,56 @@ VideoData["Display_RaidSettingsEnabledCheckBox"]={
 -- Graphics
 -------------------------------------------------------------------------------------------------------
 
-VideoData["Graphics_ViewDistanceDropDown"]={
+VideoData["Graphics_ViewDistanceSlider"]={
 	name = FARCLIP;
 	description = OPTION_TOOLTIP_FARCLIP,
-
-	data = {
-		[1] = {
-			text = VIDEO_OPTIONS_LOW,
-			cvars =	{
-				farClip = GetDefaultVideoQualityOption("farClip", 0),
-				wmoLodDist =  GetDefaultVideoQualityOption("wmoLodDist", 0),
-				terrainLodDist = GetDefaultVideoQualityOption("terrainLodDist", 0),
-				terrainTextureLod = GetDefaultVideoQualityOption("terrainTextureLod", 0),
-			},
-		},
-		[2] = {
-			text = VIDEO_OPTIONS_FAIR,
-			cvars =	{
-				farClip = GetDefaultVideoQualityOption("farClip", 1, 600),
-				wmoLodDist =  GetDefaultVideoQualityOption("wmoLodDist", 1, 300),
-				terrainLodDist = GetDefaultVideoQualityOption("terrainLodDist", 1, 300),
-				terrainTextureLod = GetDefaultVideoQualityOption("terrainTextureLod", 1, 1),
-			},
-		},
-		[3] = {
-			text = VIDEO_OPTIONS_MEDIUM,
-			cvars =	{
-				farClip =  GetDefaultVideoQualityOption("farClip", 2, 800),
-				wmoLodDist = GetDefaultVideoQualityOption("wmoLodDist", 2, 400),
-				terrainLodDist = GetDefaultVideoQualityOption("terrainLodDist", 2, 450),
-				terrainTextureLod = GetDefaultVideoQualityOption("terrainTextureLod", 2, 1),
-			},
-		},
-		[4] = {
-			text = VIDEO_OPTIONS_HIGH,
-			cvars =	{
-				farClip = GetDefaultVideoQualityOption("farClip", 3, 1000),
-				wmoLodDist = GetDefaultVideoQualityOption("wmoLodDist", 3, 500),
-				terrainLodDist = GetDefaultVideoQualityOption("terrainLodDist", 3, 500),
-				terrainTextureLod = GetDefaultVideoQualityOption("terrainTextureLod", 3, 0),
-			},
-		},
-		[5] = {
-			text = VIDEO_OPTIONS_ULTRA,
-			cvars =	{
-				farClip = GetDefaultVideoQualityOption("farClip", 4, 1300),
-				wmoLodDist = GetDefaultVideoQualityOption("wmoLodDist", 4, 650),
-				terrainLodDist = GetDefaultVideoQualityOption("terrainLodDist", 4, 650),
-				terrainTextureLod = GetDefaultVideoQualityOption("terrainTextureLod", 4, 0),
-			},
-		},
-	},
+	graphicsCVar = "graphicsViewDistance",
 	dependent = {
 		"Graphics_Quality",
 	},
 }
 
-VideoData["RaidGraphics_ViewDistanceDropDown"]={
+VideoData["RaidGraphics_ViewDistanceSlider"]={
 	name = FARCLIP;
 	description = OPTION_TOOLTIP_FARCLIP,
-
-	data = {
-		[1] = {
-			text = VIDEO_OPTIONS_LOW,
-			cvars =	{
-				raidfarclip = GetDefaultVideoQualityOption("RAIDfarClip", 0, 200, true),
-				raidWmoLodDist =  GetDefaultVideoQualityOption("RAIDwmoLodDist", 0, 100, true),
-				raidTerrainLodDist = GetDefaultVideoQualityOption("RAIDterrainLodDist", 0, 200, true),
-				raidTerrainTextureLod = GetDefaultVideoQualityOption("RAIDterrainTextureLod", 0, 1, true),
-			},
-		},
-		[2] = {
-			text = VIDEO_OPTIONS_FAIR,
-			cvars =	{
-				raidfarclip = GetDefaultVideoQualityOption("RAIDfarClip", 1, 600, true),
-				raidWmoLodDist =  GetDefaultVideoQualityOption("RAIDwmoLodDist", 1, 300, true),
-				raidTerrainLodDist = GetDefaultVideoQualityOption("RAIDterrainLodDist", 1, 300, true),
-				raidTerrainTextureLod = GetDefaultVideoQualityOption("RAIDterrainTextureLod", 1, 1, true),
-			},
-		},
-		[3] = {
-			text = VIDEO_OPTIONS_MEDIUM,
-			cvars =	{
-				raidfarclip =  GetDefaultVideoQualityOption("RAIDfarClip", 2, 800, true),
-				raidWmoLodDist = GetDefaultVideoQualityOption("RAIDwmoLodDist", 2, 400, true),
-				raidTerrainLodDist = GetDefaultVideoQualityOption("RAIDterrainLodDist", 2, 450, true),
-				raidTerrainTextureLod = GetDefaultVideoQualityOption("RAIDterrainTextureLod", 2, 1, true),
-			},
-		},
-		[4] = {
-			text = VIDEO_OPTIONS_HIGH,
-			cvars =	{
-				raidfarclip = GetDefaultVideoQualityOption("RAIDfarClip", 3, 1000, true),
-				raidWmoLodDist = GetDefaultVideoQualityOption("RAIDwmoLodDist", 3, 500, true),
-				raidTerrainLodDist = GetDefaultVideoQualityOption("RAIDterrainLodDist", 3, 500, true),
-				raidTerrainTextureLod = GetDefaultVideoQualityOption("RAIDterrainTextureLod", 3, 0, true),
-			},
-		},
-		[5] = {
-			text = VIDEO_OPTIONS_ULTRA,
-			cvars =	{
-				raidfarclip = GetDefaultVideoQualityOption("RAIDfarClip", 4, 1300, true),
-				raidWmoLodDist = GetDefaultVideoQualityOption("RAIDwmoLodDist", 4, 650, true),
-				raidTerrainLodDist = GetDefaultVideoQualityOption("RAIDterrainLodDist", 4, 650, true),
-				raidTerrainTextureLod = GetDefaultVideoQualityOption("RAIDterrainTextureLod", 4, 0, true),
-			},
-		},
-	},
+	graphicsCVar = "raidGraphicsViewDistance",
 	dependent = {
 		"RaidGraphics_Quality",
 	},
 }
 -------------------------------------------------------------------------------------------------------
-VideoData["Graphics_GroundClutterDropDown"]={
+VideoData["Graphics_GroundClutterSlider"]={
 	name= GROUND_CLUTTER;
 	description = OPTION_TOOLTIP_GROUND_CLUTTER,
-
-	data = {
-		[1] = {
-			text = VIDEO_OPTIONS_LOW,
-			cvars =	{
-				groundEffectDist =  GetDefaultVideoQualityOption("groundEffectDist", 0, 70),
-				groundEffectDensity = GetDefaultVideoQualityOption("groundEffectDensity", 0, 16),
-			},
-		},
-		[2] = {
-			text = VIDEO_OPTIONS_FAIR,
-			cvars =	{
-				groundEffectDist =  GetDefaultVideoQualityOption("groundEffectDist", 1, 110),
-				groundEffectDensity = GetDefaultVideoQualityOption("groundEffectDensity", 1, 40),
-			},
-		},
-		[3] = {
-			text = VIDEO_OPTIONS_MEDIUM,
-			cvars =	{
-				groundEffectDist =  GetDefaultVideoQualityOption("groundEffectDist", 2, 160),
-				groundEffectDensity = GetDefaultVideoQualityOption("groundEffectDensity", 2, 64),
-			},
-		},
-		[4] = {
-			text = VIDEO_OPTIONS_HIGH,
-			cvars =	{
-				groundEffectDist =  GetDefaultVideoQualityOption("groundEffectDist", 3, 200),
-				groundEffectDensity = GetDefaultVideoQualityOption("groundEffectDensity", 3, 80),
-			},
-		},
-		[5] = {
-			text = VIDEO_OPTIONS_ULTRA,
-			cvars =	{
-				groundEffectDist =  GetDefaultVideoQualityOption("groundEffectDist", 4, 260),
-				groundEffectDensity = GetDefaultVideoQualityOption("groundEffectDensity", 4, 128),
-			},
-		},
-	},
+	graphicsCVar = "graphicsGroundClutter",
 	dependent = {
 		"Graphics_Quality",
 	},
 }
 
-VideoData["RaidGraphics_GroundClutterDropDown"]={
+VideoData["RaidGraphics_GroundClutterSlider"]={
 	name= GROUND_CLUTTER;
 	description = OPTION_TOOLTIP_GROUND_CLUTTER,
-
-	data = {
-		[1] = {
-			text = VIDEO_OPTIONS_LOW,
-			cvars =	{
-				raidgroundEffectDist =  GetDefaultVideoQualityOption("RAIDgroundEffectDist", 0, 70, true),
-				raidgroundEffectDensity = GetDefaultVideoQualityOption("RAIDgroundEffectDensity", 0, 16, true),
-			},
-		},
-		[2] = {
-			text = VIDEO_OPTIONS_FAIR,
-			cvars =	{
-				raidgroundEffectDist =  GetDefaultVideoQualityOption("RAIDgroundEffectDist", 1, 110, true),
-				raidgroundEffectDensity = GetDefaultVideoQualityOption("RAIDgroundEffectDensity", 1, 40, true),
-			},
-		},
-		[3] = {
-			text = VIDEO_OPTIONS_MEDIUM,
-			cvars =	{
-				raidgroundEffectDist =  GetDefaultVideoQualityOption("RAIDgroundEffectDist", 2, 160, true),
-				raidgroundEffectDensity = GetDefaultVideoQualityOption("RAIDgroundEffectDensity", 2, 64, true),
-			},
-		},
-		[4] = {
-			text = VIDEO_OPTIONS_HIGH,
-			cvars =	{
-				raidgroundEffectDist =  GetDefaultVideoQualityOption("RAIDgroundEffectDist", 3, 200, true),
-				raidgroundEffectDensity = GetDefaultVideoQualityOption("RAIDgroundEffectDensity", 3, 80, true),
-			},
-		},
-		[5] = {
-			text = VIDEO_OPTIONS_ULTRA,
-			cvars =	{
-				raidgroundEffectDist =  GetDefaultVideoQualityOption("RAIDgroundEffectDist", 4, 260, true),
-				raidgroundEffectDensity = GetDefaultVideoQualityOption("RAIDgroundEffectDensity", 4, 128, true),
-			},
-		},
-	},
+	graphicsCVar = "raidGraphicsGroundClutter",
 	dependent = {
 		"RaidGraphics_Quality",
 	},
 }
 
 -------------------------------------------------------------------------------------------------------
-VideoData["Graphics_EnvironmentalDetailDropDown"]={
+VideoData["Graphics_EnvironmentalDetailSlider"]={
 	name = ENVIRONMENT_DETAIL;
 	description = OPTION_TOOLTIP_ENVIRONMENT_DETAIL,
-
-	data = {
-		[1] = {
-			text = VIDEO_OPTIONS_LOW,
-			cvars =	{
-				environmentDetail = GetDefaultVideoQualityOption("environmentDetail", 0, 50),
-			},
-		},
-		[2] = {
-			text = VIDEO_OPTIONS_FAIR,
-			cvars =	{
-				environmentDetail = GetDefaultVideoQualityOption("environmentDetail", 1, 75),
-			},
-		},
-		[3] = {
-			text = VIDEO_OPTIONS_MEDIUM,
-			cvars =	{
-				environmentDetail = GetDefaultVideoQualityOption("environmentDetail", 2, 100),
-			},
-		},
-		[4] = {
-			text = VIDEO_OPTIONS_HIGH,
-			cvars =	{
-				environmentDetail = GetDefaultVideoQualityOption("environmentDetail", 3, 125),
-			},
-		},
-		[5] = {
-			text = VIDEO_OPTIONS_ULTRA,
-			cvars =	{
-				environmentDetail = GetDefaultVideoQualityOption("environmentDetail", 4, 150),
-			},
-		},
-	},
+	graphicsCVar = "graphicsEnvironmentDetail",
 	dependent = {
 		"Graphics_Quality",
 	},
 }
 
-VideoData["RaidGraphics_EnvironmentalDetailDropDown"]={
+VideoData["RaidGraphics_EnvironmentalDetailSlider"]={
 	name = ENVIRONMENT_DETAIL;
 	description = OPTION_TOOLTIP_ENVIRONMENT_DETAIL,
-
-	data = {
-		[1] = {
-			text = VIDEO_OPTIONS_LOW,
-			cvars =	{
-				raidEnvironmentDetail = GetDefaultVideoQualityOption("RAIDenvironmentDetail", 0, 50, true),
-			},
-		},
-		[2] = {
-			text = VIDEO_OPTIONS_FAIR,
-			cvars =	{
-				raidEnvironmentDetail = GetDefaultVideoQualityOption("RAIDenvironmentDetail", 1, 75, true),
-			},
-		},
-		[3] = {
-			text = VIDEO_OPTIONS_MEDIUM,
-			cvars =	{
-				raidEnvironmentDetail = GetDefaultVideoQualityOption("RAIDenvironmentDetail", 2, 100, true),
-			},
-		},
-		[4] = {
-			text = VIDEO_OPTIONS_HIGH,
-			cvars =	{
-				raidEnvironmentDetail = GetDefaultVideoQualityOption("RAIDenvironmentDetail", 3, 125, true),
-			},
-		},
-		[5] = {
-			text = VIDEO_OPTIONS_ULTRA,
-			cvars =	{
-				raidEnvironmentDetail = GetDefaultVideoQualityOption("RAIDenvironmentDetail", 4, 150, true),
-			},
-		},
-	},
+	graphicsCVar = "raidGraphicsEnvironmentDetail",
 	dependent = {
 		"RaidGraphics_Quality",
 	},
@@ -981,31 +554,19 @@ VideoData["RaidGraphics_EnvironmentalDetailDropDown"]={
 VideoData["Graphics_ParticleDensityDropDown"]={
 	name = PARTICLE_DENSITY;
 	description = OPTION_TOOLTIP_PARTICLE_DENSITY,
-
+	graphicsCVar =	"graphicsParticleDensity",
 	data = {
 		[1] = {
 			text = VIDEO_OPTIONS_LOW,
-			cvars =	{
-				particleDensity = GetDefaultVideoQualityOption("particleDensity", 0, 10),
-				particleMTDensity = GetDefaultVideoQualityOption("particleMTDensity", 0, 20),
-				weatherDensity = GetDefaultVideoQualityOption("weatherDensity", 0, 0),
-			},
 		},
 		[2] = {
-			text = VIDEO_OPTIONS_MEDIUM,
-			cvars =	{
-				particleDensity = GetDefaultVideoQualityOption("particleDensity", 2, 50),
-				particleMTDensity = GetDefaultVideoQualityOption("particleMTDensity", 2, 70),
-				weatherDensity = GetDefaultVideoQualityOption("weatherDensity", 2, 1),
-			},
+			text = VIDEO_OPTIONS_FAIR,
 		},
 		[3] = {
+			text = VIDEO_OPTIONS_MEDIUM,
+		},
+		[4] = {
 			text = VIDEO_OPTIONS_HIGH,
-			cvars =	{
-				particleDensity = GetDefaultVideoQualityOption("particleDensity", 3, 80),
-				particleMTDensity = GetDefaultVideoQualityOption("particleMTDensity", 3, 100),
-				weatherDensity = GetDefaultVideoQualityOption("weatherDensity", 3, 3),
-			},
 		},
 	},
 	dependent = {
@@ -1016,31 +577,19 @@ VideoData["Graphics_ParticleDensityDropDown"]={
 VideoData["RaidGraphics_ParticleDensityDropDown"]={
 	name = PARTICLE_DENSITY;
 	description = OPTION_TOOLTIP_PARTICLE_DENSITY,
-
+	graphicsCVar =	"raidGraphicsParticleDensity",
 	data = {
 		[1] = {
 			text = VIDEO_OPTIONS_LOW,
-			cvars =	{
-				raidParticleDensity = GetDefaultVideoQualityOption("RAIDparticleDensity", 0, 10, true),
-				raidParticleMTDensity = GetDefaultVideoQualityOption("RAIDparticleMTDensity", 0, 20, true),
-				raidWeatherDensity = GetDefaultVideoQualityOption("RAIDweatherDensity", 0, 0, true),
-			},
 		},
 		[2] = {
-			text = VIDEO_OPTIONS_MEDIUM,
-			cvars =	{
-				raidParticleDensity = GetDefaultVideoQualityOption("RAIDparticleDensity", 2, 50, true),
-				raidParticleMTDensity = GetDefaultVideoQualityOption("RAIDparticleMTDensity", 2, 70, true),
-				raidWeatherDensity = GetDefaultVideoQualityOption("RAIDweatherDensity", 2, 1, true),
-			},
+			text = VIDEO_OPTIONS_FAIR,
 		},
 		[3] = {
+			text = VIDEO_OPTIONS_MEDIUM,
+		},
+		[4] = {
 			text = VIDEO_OPTIONS_HIGH,
-			cvars =	{
-				raidParticleDensity = GetDefaultVideoQualityOption("RAIDparticleDensity", 3, 80, true),
-				raidParticleMTDensity = GetDefaultVideoQualityOption("RAIDparticleMTDensity", 3, 100, true),
-				raidWeatherDensity = GetDefaultVideoQualityOption("RAIDweatherDensity", 3, 3, true),
-			},
 		},
 	},
 	dependent = {
@@ -1052,32 +601,19 @@ VideoData["RaidGraphics_ParticleDensityDropDown"]={
 VideoData["Graphics_SSAODropDown"]={
 	name = SSAO_LABEL;
 	description = OPTION_TOOLTIP_SSAO,
-
+	graphicsCVar =	"graphicsSSAO",
 	data = {
 		{
 			text = VIDEO_OPTIONS_DISABLED,
-			cvars =	{
-				ssao = 0,
-			},
 		},
 		{
 			text = VIDEO_OPTIONS_LOW,
-			cvars =	{
-				ssao = 1,
-			},
 		},
 		{
 			text = VIDEO_OPTIONS_HIGH,
-			cvars =	{
-				ssao = 2,
-			},
 		},
 		{
 			text = VIDEO_OPTIONS_ULTRA,
-			cvars =	{
-				ssao = 3,
-			},
-
 			tooltip = VIDEO_OPTIONS_SSAO_ULTRA,
 		},
 	},
@@ -1091,31 +627,19 @@ VideoData["Graphics_SSAODropDown"]={
 VideoData["RaidGraphics_SSAODropDown"]={
 	name = SSAO_LABEL;
 	description = OPTION_TOOLTIP_SSAO,
-
+	graphicsCVar =	"raidGraphicsSSAO",
 	data = {
 		{
 			text = VIDEO_OPTIONS_DISABLED,
-			cvars =	{
-				RAIDssao = 0,
-			},
 		},
 		{
 			text = VIDEO_OPTIONS_LOW,
-			cvars =	{
-				RAIDssao = 1,
-			},
 		},
 		{
 			text = VIDEO_OPTIONS_HIGH,
-			cvars =	{
-				RAIDssao = 2,
-			},
 		},
 		{
 			text = VIDEO_OPTIONS_ULTRA,
-			cvars =	{
-				RAIDssao = 3,
-			},
 			tooltip = VIDEO_OPTIONS_SSAO_ULTRA,
 		},
 	},
@@ -1129,46 +653,31 @@ VideoData["RaidGraphics_SSAODropDown"]={
 VideoData["Graphics_ShadowsDropDown"]={
 	name = SHADOW_QUALITY;
 	description = OPTION_TOOLTIP_SHADOW_QUALITY,
-
+	graphicsCVar =	"graphicsShadowQuality",
 	data = {
 		[1] = {
 			text = VIDEO_OPTIONS_LOW,
-			cvars =	{
-				shadowMode = GetDefaultVideoQualityOption("shadowMode", 0, 0),
-			},
 			tooltip = VIDEO_OPTIONS_SHADOW_QUALITY_LOW;
 		},
 		[2] = {
 			text = VIDEO_OPTIONS_FAIR,
-			cvars =	{
-				shadowMode = GetDefaultVideoQualityOption("shadowMode", 1, 1),
-				shadowTextureSize = GetDefaultVideoQualityOption("shadowTextureSize", 1, 1024),
-			},
 			tooltip = VIDEO_OPTIONS_SHADOW_QUALITY_FAIR;
 		},
 		[3] = {
 			text = VIDEO_OPTIONS_MEDIUM,
-			cvars =	{
-				shadowMode = GetDefaultVideoQualityOption("shadowMode", 2, 2),
-				shadowTextureSize = GetDefaultVideoQualityOption("shadowTextureSize", 2, 2048),
-			},
 			tooltip = VIDEO_OPTIONS_SHADOW_QUALITY_MEDIUM;
 		},
 		[4] = {
 			text = VIDEO_OPTIONS_HIGH,
-			cvars =	{
-				shadowMode = GetDefaultVideoQualityOption("shadowMode", 3, 3),
-				shadowTextureSize = GetDefaultVideoQualityOption("shadowTextureSize", 3, 2048),
-			},
 			tooltip = VIDEO_OPTIONS_SHADOW_QUALITY_HIGH;
 		},
 		[5] = {
 			text = VIDEO_OPTIONS_ULTRA,
-			cvars =	{
-				shadowMode = GetDefaultVideoQualityOption("shadowMode", 4, 4),
-				shadowTextureSize = GetDefaultVideoQualityOption("shadowTextureSize", 4, 2048),
-			},
 			tooltip = VIDEO_OPTIONS_SHADOW_QUALITY_ULTRA;
+		},
+		[6] = {
+			text = VIDEO_OPTIONS_ULTRA_HIGH,
+			tooltip = VIDEO_OPTIONS_SHADOW_QUALITY_ULTRA_HIGH;
 		},
 	},
 	dependent = {
@@ -1179,47 +688,31 @@ VideoData["Graphics_ShadowsDropDown"]={
 VideoData["RaidGraphics_ShadowsDropDown"]={
 	name = SHADOW_QUALITY;
 	description = OPTION_TOOLTIP_SHADOW_QUALITY,
-
+	graphicsCVar =	"raidGraphicsShadowQuality",
 	data = {
 		[1] = {
 			text = VIDEO_OPTIONS_LOW,
-			cvars =	{
-				raidshadowMode = GetDefaultVideoQualityOption("RAIDshadowMode", 0, 0, true),
-				raidShadowTextureSize = GetDefaultVideoQualityOption("RAIDshadowTextureSize", 1, 1024, true),
-			},
 			tooltip = VIDEO_OPTIONS_SHADOW_QUALITY_LOW;
 		},
 		[2] = {
 			text = VIDEO_OPTIONS_FAIR,
-			cvars =	{
-				raidshadowMode = GetDefaultVideoQualityOption("RAIDshadowMode", 1, 1, true),
-				raidShadowTextureSize = GetDefaultVideoQualityOption("RAIDshadowTextureSize", 1, 1024, true),
-			},
 			tooltip = VIDEO_OPTIONS_SHADOW_QUALITY_FAIR;
 		},
 		[3] = {
 			text = VIDEO_OPTIONS_MEDIUM,
-			cvars =	{
-				raidshadowMode = GetDefaultVideoQualityOption("RAIDshadowMode", 2, 2, true),
-				raidShadowTextureSize = GetDefaultVideoQualityOption("RAIDshadowTextureSize", 2, 2048, true),
-			},
 			tooltip = VIDEO_OPTIONS_SHADOW_QUALITY_MEDIUM;
 		},
 		[4] = {
 			text = VIDEO_OPTIONS_HIGH,
-			cvars =	{
-				raidshadowMode = GetDefaultVideoQualityOption("RAIDshadowMode", 3, 3, true),
-				raidShadowTextureSize = GetDefaultVideoQualityOption("RAIDshadowTextureSize", 3, 2048, true),
-			},
 			tooltip = VIDEO_OPTIONS_SHADOW_QUALITY_HIGH;
 		},
 		[5] = {
 			text = VIDEO_OPTIONS_ULTRA,
-			cvars =	{
-				raidshadowMode = GetDefaultVideoQualityOption("RAIDshadowMode", 4, 4, true),
-				raidShadowTextureSize = GetDefaultVideoQualityOption("RAIDshadowTextureSize", 4, 2048, true),
-			},
 			tooltip = VIDEO_OPTIONS_SHADOW_QUALITY_ULTRA;
+		},
+		[6] = {
+			text = VIDEO_OPTIONS_ULTRA_HIGH,
+			tooltip = VIDEO_OPTIONS_SHADOW_QUALITY_ULTRA_HIGH;
 		},
 	},
 	dependent = {
@@ -1231,42 +724,18 @@ VideoData["RaidGraphics_ShadowsDropDown"]={
 VideoData["Graphics_TextureResolutionDropDown"]={
 	name = TEXTURE_DETAIL;
 	description = OPTION_TOOLTIP_TEXTURE_DETAIL,
-
+	graphicsCVar =	"graphicsTextureResolution",
 	data = {
 		[1] = {
 			text = VIDEO_OPTIONS_LOW,
-			cvars =	{
-				terrainMipLevel = GetDefaultVideoQualityOption("terrainMipLevel", 0, 1),
-				componentTextureLevel = GetDefaultVideoQualityOption("componentTextureLevel", 0, 1),
-				worldBaseMip = GetDefaultVideoQualityOption("worldBaseMip", 0, 2),
-			},
 			tooltip = VIDEO_OPTIONS_TEXTURE_DETAIL_LOW,
 		},
 		[2] = {
 			text = VIDEO_OPTIONS_FAIR,
-			cvars =	{
-				terrainMipLevel = GetDefaultVideoQualityOption("terrainMipLevel", 1, 1),
-				componentTextureLevel = GetDefaultVideoQualityOption("componentTextureLevel", 1, 1),
-				worldBaseMip = GetDefaultVideoQualityOption("worldBaseMip", 1, 1),
-			},
 			tooltip = VIDEO_OPTIONS_TEXTURE_DETAIL_FAIR,
 		},
 		[3] = {
-			text = VIDEO_OPTIONS_MEDIUM,
-			cvars =	{
-				terrainMipLevel = GetDefaultVideoQualityOption("terrainMipLevel", 2, 0),
-				componentTextureLevel = GetDefaultVideoQualityOption("componentTextureLevel", 2, 0),
-				worldBaseMip = GetDefaultVideoQualityOption("worldBaseMip", 2, 1),
-			},
-			tooltip = VIDEO_OPTIONS_TEXTURE_DETAIL_MEDIUM,
-		},
-		[4] = {
 			text = VIDEO_OPTIONS_HIGH,
-			cvars =	{
-				terrainMipLevel = GetDefaultVideoQualityOption("terrainMipLevel", 3, 0),
-				componentTextureLevel = GetDefaultVideoQualityOption("componentTextureLevel", 3, 0),
-				worldBaseMip = GetDefaultVideoQualityOption("worldBaseMip", 3, 0),
-			},
 			tooltip = VIDEO_OPTIONS_TEXTURE_DETAIL_HIGH,
 		},
 	},
@@ -1278,42 +747,18 @@ VideoData["Graphics_TextureResolutionDropDown"]={
 VideoData["RaidGraphics_TextureResolutionDropDown"]={
 	name = TEXTURE_DETAIL;
 	description = OPTION_TOOLTIP_TEXTURE_DETAIL,
-
+	graphicsCVar =	"raidGraphicsTextureResolution",
 	data = {
 		[1] = {
 			text = VIDEO_OPTIONS_LOW,
-			cvars =	{
-				raidTerrainMipLevel = GetDefaultVideoQualityOption("RAIDterrainMipLevel", 0, 1, true),
-				raidComponentTextureLevel = GetDefaultVideoQualityOption("RAIDcomponentTextureLevel", 0, 1, true),
-				raidWorldBaseMip = GetDefaultVideoQualityOption("RAIDworldBaseMip", 0, 2, true),
-			},
 			tooltip = VIDEO_OPTIONS_TEXTURE_DETAIL_LOW,
 		},
 		[2] = {
 			text = VIDEO_OPTIONS_FAIR,
-			cvars =	{
-				raidTerrainMipLevel = GetDefaultVideoQualityOption("RAIDterrainMipLevel", 1, 1, true),
-				raidComponentTextureLevel = GetDefaultVideoQualityOption("RAIDcomponentTextureLevel", 1, 1, true),
-				raidWorldBaseMip = GetDefaultVideoQualityOption("RAIDworldBaseMip", 1, 1, true),
-			},
 			tooltip = VIDEO_OPTIONS_TEXTURE_DETAIL_FAIR,
 		},
 		[3] = {
-			text = VIDEO_OPTIONS_MEDIUM,
-			cvars =	{
-				raidTerrainMipLevel = GetDefaultVideoQualityOption("RAIDterrainMipLevel", 2, 0, true),
-				raidComponentTextureLevel = GetDefaultVideoQualityOption("RAIDcomponentTextureLevel", 2, 0, true),
-				raidWorldBaseMip = GetDefaultVideoQualityOption("RAIDworldBaseMip", 2, 1, true),
-			},
-			tooltip = VIDEO_OPTIONS_TEXTURE_DETAIL_MEDIUM,
-		},
-		[4] = {
 			text = VIDEO_OPTIONS_HIGH,
-			cvars =	{
-				raidTerrainMipLevel = GetDefaultVideoQualityOption("RAIDterrainMipLevel", 3, 0, true),
-				raidComponentTextureLevel = GetDefaultVideoQualityOption("RAIDcomponentTextureLevel", 3, 0, true),
-				raidWorldBaseMip = GetDefaultVideoQualityOption("RAIDworldBaseMip", 3, 0, true),
-			},
 			tooltip = VIDEO_OPTIONS_TEXTURE_DETAIL_HIGH,
 		},
 	},
@@ -1326,19 +771,13 @@ VideoData["RaidGraphics_TextureResolutionDropDown"]={
 VideoData["Graphics_ProjectedTexturesDropDown"]={
 	name = PROJECTED_TEXTURES;
 	description = OPTION_TOOLTIP_PROJECTED_TEXTURES,
-
+	graphicsCVar =	"graphicsProjectedTextures",
 	data = {
 		[1] = {
 			text = VIDEO_OPTIONS_DISABLED,
-			cvars =	{
-				projectedTextures = 0,
-			},
 		},
 		[2] = {
 			text = VIDEO_OPTIONS_ENABLED,
-			cvars =	{
-				projectedTextures = 1,
-			},
 		},
 	},
 	dependent = {
@@ -1349,19 +788,13 @@ VideoData["Graphics_ProjectedTexturesDropDown"]={
 VideoData["RaidGraphics_ProjectedTexturesDropDown"]={
 	name = PROJECTED_TEXTURES;
 	description = OPTION_TOOLTIP_PROJECTED_TEXTURES,
-
+	graphicsCVar =	"raidGraphicsProjectedTextures",
 	data = {
 		[1] = {
 			text = VIDEO_OPTIONS_DISABLED,
-			cvars =	{
-				raidProjectedTextures = 0,
-			},
 		},
 		[2] = {
 			text = VIDEO_OPTIONS_ENABLED,
-			cvars =	{
-				raidProjectedTextures = 1,
-			},
 		},
 	},
 	dependent = {
@@ -1373,43 +806,25 @@ VideoData["RaidGraphics_ProjectedTexturesDropDown"]={
 VideoData["Graphics_FilteringDropDown"]={
 	name = ANISOTROPIC;
 	description = OPTION_TOOLTIP_ANISOTROPIC,
-
+	graphicsCVar =	"graphicsTextureFiltering",
 	data = {
 		[1] = {
 			text = VIDEO_OPTIONS_BILINEAR,
-			cvars =	{
-				textureFilteringMode = 0,
-			},
 		},
 		[2] = {
 			text = VIDEO_OPTIONS_TRILINEAR,
-			cvars =	{
-				textureFilteringMode = 1,
-			},
 		},
 		[3] = {
 			text = VIDEO_OPTIONS_2XANISOTROPIC,
-			cvars =	{
-				textureFilteringMode = 2,
-			},
 		},
 		[4] = {
 			text = VIDEO_OPTIONS_4XANISOTROPIC,
-			cvars =	{
-				textureFilteringMode = 3,
-			},
 		},
 		[5] = {
 			text = VIDEO_OPTIONS_8XANISOTROPIC,
-			cvars =	{
-				textureFilteringMode = 4,
-			},
 		},
 		[6] = {
 			text = VIDEO_OPTIONS_16XANISOTROPIC,
-			cvars =	{
-				textureFilteringMode = 5,
-			},
 		},
 	},
 	dependent = {
@@ -1420,43 +835,25 @@ VideoData["Graphics_FilteringDropDown"]={
 VideoData["RaidGraphics_FilteringDropDown"]={
 	name = ANISOTROPIC;
 	description = OPTION_TOOLTIP_ANISOTROPIC,
-
+	graphicsCVar =	"raidGraphicsTextureFiltering",
 	data = {
 		[1] = {
 			text = VIDEO_OPTIONS_BILINEAR,
-			cvars =	{
-				raidTextureFilteringMode = 0,
-			},
 		},
 		[2] = {
 			text = VIDEO_OPTIONS_TRILINEAR,
-			cvars =	{
-				raidTextureFilteringMode = 1,
-			},
 		},
 		[3] = {
 			text = VIDEO_OPTIONS_2XANISOTROPIC,
-			cvars =	{
-				raidTextureFilteringMode = 2,
-			},
 		},
 		[4] = {
 			text = VIDEO_OPTIONS_4XANISOTROPIC,
-			cvars =	{
-				raidTextureFilteringMode = 3,
-			},
 		},
 		[5] = {
 			text = VIDEO_OPTIONS_8XANISOTROPIC,
-			cvars =	{
-				raidTextureFilteringMode = 4,
-			},
 		},
 		[6] = {
 			text = VIDEO_OPTIONS_16XANISOTROPIC,
-			cvars =	{
-				raidTextureFilteringMode = 5,
-			},
 		},
 	},
 	dependent = {
@@ -1468,39 +865,22 @@ VideoData["RaidGraphics_FilteringDropDown"]={
 VideoData["Graphics_LiquidDetailDropDown"]={
 	name = LIQUID_DETAIL;
 	description = OPTION_TOOLTIP_LIQUID_DETAIL,
-
+	graphicsCVar = "graphicsLiquidDetail",
 	data = {
 		[1] = {
 			text = VIDEO_OPTIONS_LOW,
-			cvars =	{
-				waterDetail = GetDefaultVideoQualityOption("waterDetail", 0, 0),
-			},
 			tooltip = VIDEO_OPTIONS_LIQUID_DETAIL_LOW,
 		},
 		[2] = {
 			text = VIDEO_OPTIONS_FAIR,
-			cvars =	{
-				waterDetail = GetDefaultVideoQualityOption("waterDetail", 1, 1),
-				reflectionMode = GetDefaultVideoQualityOption("reflectionMode", 1, 0),
-			},
 			tooltip = VIDEO_OPTIONS_LIQUID_DETAIL_FAIR,
 		},
 		[3] = {
 			text = VIDEO_OPTIONS_MEDIUM,
-			cvars =	{
-				waterDetail = GetDefaultVideoQualityOption("waterDetail", 2, 2),
-				reflectionMode = GetDefaultVideoQualityOption("reflectionMode", 2, 1),
-				rippleDetail = GetDefaultVideoQualityOption("rippleDetail", 2, 0),
-			},
 			tooltip = VIDEO_OPTIONS_LIQUID_DETAIL_MEDIUM,
 		},
 		[4] = {
 			text = VIDEO_OPTIONS_ULTRA,
-			cvars =	{
-				waterDetail = GetDefaultVideoQualityOption("waterDetail", 4, 3),
-				reflectionMode = GetDefaultVideoQualityOption("reflectionMode", 4, 2),
-				rippleDetail = GetDefaultVideoQualityOption("rippleDetail", 4, 3),
-			},
 			tooltip = VIDEO_OPTIONS_LIQUID_DETAIL_ULTRA,
 		},
 	},
@@ -1512,39 +892,22 @@ VideoData["Graphics_LiquidDetailDropDown"]={
 VideoData["RaidGraphics_LiquidDetailDropDown"]={
 	name = LIQUID_DETAIL;
 	description = OPTION_TOOLTIP_LIQUID_DETAIL,
-
+	graphicsCVar = "raidGraphicsLiquidDetail",
 	data = {
 		[1] = {
 			text = VIDEO_OPTIONS_LOW,
-			cvars =	{
-				raidWaterDetail = GetDefaultVideoQualityOption("RAIDwaterDetail", 0, 0, true),
-			},
 			tooltip = VIDEO_OPTIONS_LIQUID_DETAIL_LOW,
 		},
 		[2] = {
 			text = VIDEO_OPTIONS_FAIR,
-			cvars =	{
-				raidWaterDetail = GetDefaultVideoQualityOption("RAIDwaterDetail", 1, 1, true),
-				raidReflectionMode = GetDefaultVideoQualityOption("RAIDreflectionMode", 1, 0, true),
-			},
 			tooltip = VIDEO_OPTIONS_LIQUID_DETAIL_FAIR,
 		},
 		[3] = {
 			text = VIDEO_OPTIONS_MEDIUM,
-			cvars =	{
-				raidWaterDetail = GetDefaultVideoQualityOption("RAIDwaterDetail", 2, 2, true),
-				raidReflectionMode = GetDefaultVideoQualityOption("RAIDreflectionMode", 2, 1, true),
-				raidRippleDetail = GetDefaultVideoQualityOption("RAIDrippleDetail", 2, 0, true),
-			},
 			tooltip = VIDEO_OPTIONS_LIQUID_DETAIL_MEDIUM,
 		},
 		[4] = {
 			text = VIDEO_OPTIONS_ULTRA,
-			cvars =	{
-				raidWaterDetail = GetDefaultVideoQualityOption("RAIDwaterDetail", 4, 3, true),
-				raidReflectionMode = GetDefaultVideoQualityOption("RAIDreflectionMode", 4, 2, true),
-				raidRippleDetail = GetDefaultVideoQualityOption("RAIDrippleDetail", 4, 3, true),
-			},
 			tooltip = VIDEO_OPTIONS_LIQUID_DETAIL_ULTRA,
 		},
 	},
@@ -1557,27 +920,18 @@ VideoData["RaidGraphics_LiquidDetailDropDown"]={
 VideoData["Graphics_SunshaftsDropDown"]={
 	name = SUNSHAFTS;
 	description = OPTION_TOOLTIP_SUNSHAFTS,
-
+	graphicsCVar =	"graphicsSunshafts",
 	data = {
 		[1] = {
 			text = VIDEO_OPTIONS_DISABLED,
-			cvars =	{
-				sunshafts = 0,
-			},
 			tooltip = VIDEO_OPTIONS_SUNSHAFTS_DISABLED,
 		},
 		[2] = {
 			text = VIDEO_OPTIONS_LOW,
-			cvars =	{
-				sunshafts = GetDefaultVideoQualityOption("sunshafts", 2, 1),
-			},
 			tooltip = VIDEO_OPTIONS_SUNSHAFTS_LOW,
 		},
 		[3] = {
 			text = VIDEO_OPTIONS_HIGH,
-			cvars =	{
-				sunshafts = GetDefaultVideoQualityOption("sunshafts", 3, 2),
-			},
 			tooltip = VIDEO_OPTIONS_SUNSHAFTS_HIGH,
 		},
 	},
@@ -1589,27 +943,18 @@ VideoData["Graphics_SunshaftsDropDown"]={
 VideoData["RaidGraphics_SunshaftsDropDown"]={
 	name = SUNSHAFTS;
 	description = OPTION_TOOLTIP_SUNSHAFTS,
-
+	graphicsCVar =	"raidGraphicsSunshafts",
 	data = {
 		[1] = {
 			text = VIDEO_OPTIONS_DISABLED,
-			cvars =	{
-				raidSunShafts = 0,
-			},
 			tooltip = VIDEO_OPTIONS_SUNSHAFTS_DISABLED,
 		},
 		[2] = {
 			text = VIDEO_OPTIONS_LOW,
-			cvars =	{
-				raidSunShafts = GetDefaultVideoQualityOption("RAIDsunShafts", 2, 1, true),
-			},
 			tooltip = VIDEO_OPTIONS_SUNSHAFTS_LOW,
 		},
 		[3] = {
 			text = VIDEO_OPTIONS_HIGH,
-			cvars =	{
-				raidSunShafts = GetDefaultVideoQualityOption("RAIDsunShafts", 3, 2, true),
-			},
 			tooltip = VIDEO_OPTIONS_SUNSHAFTS_HIGH,
 		},
 	},
@@ -1622,38 +967,22 @@ VideoData["RaidGraphics_SunshaftsDropDown"]={
 VideoData["Graphics_DepthEffectsDropDown"]={
 	name = DEPTH_EFFECTS;
 	description = OPTION_TOOLTIP_DEPTH_EFFECTS,
-
+	graphicsCVar =	"graphicsDepthEffects",
 	data = {
-		{
+		[1] = {
 			text = VIDEO_OPTIONS_DISABLED,
-			cvars =	{
-				refraction = 0,
-				DepthBasedOpacity = 0,
-			},
 			tooltip = VIDEO_OPTIONS_DEPTH_EFFECTS_DISABLED,
 		},
-		{
+		[2] = {
 			text = VIDEO_OPTIONS_LOW,
-			cvars =	{
-				refraction = 0,
-				DepthBasedOpacity = 1,
-			},
 			tooltip = VIDEO_OPTIONS_DEPTH_EFFECTS_LOW,
 		},
-		{
+		[3] = {
 			text = VIDEO_OPTIONS_MEDIUM,
-			cvars =	{
-				refraction = 1,
-				DepthBasedOpacity = 1,
-			},
 			tooltip = VIDEO_OPTIONS_DEPTH_EFFECTS_MEDIUM,
 		},
-		{
+		[4] = {
 			text = VIDEO_OPTIONS_HIGH,
-			cvars =	{
-				refraction = 2,
-				DepthBasedOpacity = 1,
-			},
 			tooltip = VIDEO_OPTIONS_DEPTH_EFFECTS_HIGH,
 		},
 	},
@@ -1665,38 +994,22 @@ VideoData["Graphics_DepthEffectsDropDown"]={
 VideoData["RaidGraphics_DepthEffectsDropDown"]={
 	name = DEPTH_EFFECTS;
 	description = OPTION_TOOLTIP_DEPTH_EFFECTS,
-
+	graphicsCVar =	"raidGraphicsDepthEffects",
 	data = {
-		{
+		[1] = {
 			text = VIDEO_OPTIONS_DISABLED,
-			cvars =	{
-				refraction = 0,
-				DepthBasedOpacity = 0,
-			},
 			tooltip = VIDEO_OPTIONS_DEPTH_EFFECTS_DISABLED,
 		},
-		{
+		[2] = {
 			text = VIDEO_OPTIONS_LOW,
-			cvars =	{
-				refraction = 0,
-				DepthBasedOpacity = 1,
-			},
 			tooltip = VIDEO_OPTIONS_DEPTH_EFFECTS_LOW,
 		},
-		{
+		[3] = {
 			text = VIDEO_OPTIONS_MEDIUM,
-			cvars =	{
-				refraction = 1,
-				DepthBasedOpacity = 1,
-			},
 			tooltip = VIDEO_OPTIONS_DEPTH_EFFECTS_MEDIUM,
 		},
-		{
+		[4] = {
 			text = VIDEO_OPTIONS_HIGH,
-			cvars =	{
-				refraction = 2,
-				DepthBasedOpacity = 1,
-			},
 			tooltip = VIDEO_OPTIONS_DEPTH_EFFECTS_HIGH,
 		},
 	},
@@ -1709,27 +1022,18 @@ VideoData["RaidGraphics_DepthEffectsDropDown"]={
 VideoData["Graphics_LightingQualityDropDown"]={
 	name = LIGHTING_QUALITY;
 	description = OPTION_TOOLTIP_LIGHTING_QUALITY,
-
+	graphicsCVar =	"graphicsLightingQuality",
 	data = {
 		[1] = {
 			text = VIDEO_OPTIONS_LOW,
-			cvars =	{
-				lightMode = GetDefaultVideoQualityOption("lightMode", 0, 0),
-			},
 			tooltip = VIDEO_OPTIONS_LIGHTING_QUALITY_LOW,
 		},
 		[2] = {
 			text = VIDEO_OPTIONS_MEDIUM,
-			cvars =	{
-				lightMode = GetDefaultVideoQualityOption("lightMode", 1, 1),
-			},
 			tooltip = VIDEO_OPTIONS_LIGHTING_QUALITY_MEDIUM,
 		},
 		[3] = {
 			text = VIDEO_OPTIONS_HIGH,
-			cvars =	{
-				lightMode = GetDefaultVideoQualityOption("lightMode", 2, 2),
-			},
 			tooltip = VIDEO_OPTIONS_LIGHTING_QUALITY_HIGH,
 		},
 	},
@@ -1742,27 +1046,18 @@ VideoData["Graphics_LightingQualityDropDown"]={
 VideoData["RaidGraphics_LightingQualityDropDown"]={
 	name = LIGHTING_QUALITY;
 	description = OPTION_TOOLTIP_LIGHTING_QUALITY,
-
+	graphicsCVar =	"raidGraphicsLightingQuality",
 	data = {
 		[1] = {
 			text = VIDEO_OPTIONS_LOW,
-			cvars =	{
-				RAIDlightMode = GetDefaultVideoQualityOption("RAIDlightMode", 0, 0, true),
-			},
 			tooltip = VIDEO_OPTIONS_LIGHTING_QUALITY_LOW,
 		},
 		[2] = {
 			text = VIDEO_OPTIONS_MEDIUM,
-			cvars =	{
-				RAIDlightMode = GetDefaultVideoQualityOption("RAIDlightMode", 1, 1, true),
-			},
 			tooltip = VIDEO_OPTIONS_LIGHTING_QUALITY_MEDIUM,
 		},
 		[3] = {
 			text = VIDEO_OPTIONS_HIGH,
-			cvars =	{
-				RAIDlightMode = GetDefaultVideoQualityOption("RAIDlightMode", 2, 2, true),
-			},
 			tooltip = VIDEO_OPTIONS_LIGHTING_QUALITY_HIGH,
 		},
 	},
@@ -1775,19 +1070,16 @@ VideoData["RaidGraphics_LightingQualityDropDown"]={
 VideoData["Graphics_OutlineModeDropDown"]={
 	name = OUTLINE_MODE;
 	description = OPTION_TOOLTIP_OUTLINE_MODE,
-
+	graphicsCVar = "graphicsOutlineMode",
 	data = {
 		[1] = {
 			text = VIDEO_OPTIONS_DISABLED,
-			cvars =	{
-				OutlineEngineMode = 0,
-			},
 		},
 		[2] = {
-			text = VIDEO_OPTIONS_ALLOWED,
-			cvars =	{
-				OutlineEngineMode = 1,
-			},
+			text = VIDEO_OPTIONS_MEDIUM,
+		},
+		[3] = {
+			text = VIDEO_OPTIONS_HIGH,
 		},
 	},
 	dependent = {
@@ -1799,19 +1091,16 @@ VideoData["Graphics_OutlineModeDropDown"]={
 VideoData["RaidGraphics_OutlineModeDropDown"]={
 	name = OUTLINE_MODE;
 	description = OPTION_TOOLTIP_OUTLINE_MODE,
-
+	graphicsCVar = "raidGraphicsOutlineMode",
 	data = {
 		[1] = {
 			text = VIDEO_OPTIONS_DISABLED,
-			cvars =	{
-				RAIDOutlineEngineMode = 0,
-			},
 		},
 		[2] = {
-			text = VIDEO_OPTIONS_ALLOWED,
-			cvars =	{
-				RAIDOutlineEngineMode = 1,
-			},
+			text = VIDEO_OPTIONS_MEDIUM,
+		},
+		[3] = {
+			text = VIDEO_OPTIONS_HIGH,
 		},
 	},
 	dependent = {
@@ -2120,4 +1409,30 @@ VideoData["Advanced_GraphicsAPIDropDown"]={
 	lookup = Graphics_TableLookupSafe,
 	clientRestart = true,
 	gameRestart = true,
+}
+
+VideoData["Advanced_PhysicsInteractionDropDown"]={
+	name = PHYSICS_INTERACTION;
+	description = OPTION_PHYSICS_OPTIONS;
+
+	data = {
+		{
+			text = NO_ENVIRONMENT_INTERACTION,
+			cvars =	{
+				physicsLevel = 0,
+			},
+		},
+		{
+			text = PLAYER_ONLY_INTERACTION,
+			cvars =	{
+				physicsLevel = 1,
+			},
+		},
+		{
+			text = PLAYER_AND_NPC_INTERACTION,
+			cvars = {
+				physicsLevel = 2,
+			},
+		},
+	},
 }

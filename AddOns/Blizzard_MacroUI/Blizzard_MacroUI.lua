@@ -98,7 +98,13 @@ function MacroFrame_Update()
 					MacroFrameText:SetText(body);
 					MacroFrameSelectedMacroButton:SetID(i);
 					MacroFrameSelectedMacroButtonIcon:SetTexture(texture);
-					MacroPopupFrame.selectedIconTexture = gsub( strupper(texture), "INTERFACE\\ICONS\\", "");
+					if (type(texture) == "number") then
+						MacroPopupFrame.selectedIconTexture = texture;
+					elseif (type(texture) == "string") then
+						MacroPopupFrame.selectedIconTexture = gsub( strupper(texture), "INTERFACE\\ICONS\\", "");
+					else
+						MacroPopupFrame.selectedIconTexture = nil;
+					end
 				else
 					macroButton:SetChecked(false);
 				end
@@ -306,7 +312,7 @@ function RefreshPlayerSpellIconInfo()
 			--to get spell info by slot, you have to pass in a pet argument
 			local spellType, ID = GetSpellBookItemInfo(j, "player"); 
 			if (spellType ~= "FUTURESPELL") then
-				local spellTexture = strupper(GetSpellBookItemTexture(j, "player"));
+				local spellTexture = strupper(GetSpellBookItemTextureFileName(j, "player"));
 				if ( not string.match( spellTexture, "INTERFACE\\BUTTONS\\") ) then
 					MACRO_ICON_FILENAMES[index] = gsub( spellTexture, "INTERFACE\\ICONS\\", "");
 					index = index + 1;
@@ -318,7 +324,7 @@ function RefreshPlayerSpellIconInfo()
 					for k = 1, numSlots do 
 						local spellID, overrideSpellID, isKnown = GetFlyoutSlotInfo(ID, k)
 						if (isKnown) then
-							MACRO_ICON_FILENAMES[index] = gsub( strupper(GetSpellTexture(spellID)), "INTERFACE\\ICONS\\", ""); 
+							MACRO_ICON_FILENAMES[index] = gsub( strupper(GetSpellTextureFileName(spellID)), "INTERFACE\\ICONS\\", ""); 
 							index = index + 1;
 						end
 					end
@@ -336,7 +342,13 @@ function GetSpellorMacroIconInfo(index)
 	if ( not index ) then
 		return;
 	end
-	return MACRO_ICON_FILENAMES[index];
+	local texture = MACRO_ICON_FILENAMES[index];
+	local texnum = tonumber(texture);
+	if (texnum ~= nil) then
+		return texnum;
+	else
+		return texture;
+	end
 end
 
 function MacroPopupFrame_Update(self)
@@ -362,9 +374,9 @@ function MacroPopupFrame_Update(self)
 		index = (macroPopupOffset * NUM_ICONS_PER_ROW) + i;
 		texture = GetSpellorMacroIconInfo(index);
 
-		if ( index <= numMacroIcons and texture ) then			
+		if ( index <= numMacroIcons and texture ) then
 			if(type(texture) == "number") then
-				macroPopupIcon:SetToFileData(texture);
+				macroPopupIcon:SetTexture(texture);
 			else
 				macroPopupIcon:SetTexture("INTERFACE\\ICONS\\"..texture);
 			end		
@@ -375,7 +387,7 @@ function MacroPopupFrame_Update(self)
 		end
 		if ( MacroPopupFrame.selectedIcon and (index == MacroPopupFrame.selectedIcon) ) then
 			macroPopupButton:SetChecked(true);
-		elseif ( MacroPopupFrame.selectedIconTexture ==  texture ) then
+		elseif ( MacroPopupFrame.selectedIconTexture == texture ) then
 			macroPopupButton:SetChecked(true);
 		else
 			macroPopupButton:SetChecked(false);
@@ -411,7 +423,7 @@ function MacroPopupButton_SelectTexture(selectedIcon)
 	MacroPopupFrame.selectedIconTexture = nil;
 	local curMacroInfo = GetSpellorMacroIconInfo(MacroPopupFrame.selectedIcon);
 	if(type(curMacroInfo) == "number") then
-		MacroFrameSelectedMacroButtonIcon:SetToFileData(curMacroInfo);
+		MacroFrameSelectedMacroButtonIcon:SetTexture(curMacroInfo);
 	else
 		MacroFrameSelectedMacroButtonIcon:SetTexture("INTERFACE\\ICONS\\"..curMacroInfo);
 	end	

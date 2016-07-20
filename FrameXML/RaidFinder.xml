@@ -27,7 +27,7 @@
 					</Anchors>
 				</Texture-->
 				<Texture name="$parentRoleBackground">
-					<Size x="320" y="64"/>
+					<Size x="321" y="64"/>
 					<Anchors>
 						<Anchor point="TOPRIGHT" x="-10" y="-28"/>
 					</Anchors>
@@ -41,7 +41,7 @@
 			<Layer level="BORDER">
 				<Texture name="$parentBtnCornerRight" inherits="UI-Frame-BtnCornerRight" hidden="false">
 					<Anchors>
-						<Anchor point="BOTTOMRIGHT" x="0" y="-1"/>
+						<Anchor point="BOTTOMRIGHT" x="1" y="-1"/>
 					</Anchors>
 				</Texture>
 				<Texture name="$parentButtonBottomBorder" inherits="_UI-Frame-BtnBotTile">
@@ -76,7 +76,7 @@
 			</Frame>
 			<Frame name="$parentRoleInset" useParentLevel="true" inherits="InsetFrameTemplate" parentKey="Inset">
 				<Anchors>
-					<Anchor point="TOPLEFT" x="4" y="-26" />
+					<Anchor point="TOPLEFT" x="3" y="-26" />
 					<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT" x="-6" y="-109" />
 				</Anchors>
 			</Frame>
@@ -101,7 +101,7 @@
 							<Anchors>
 								<Anchor point="BOTTOMLEFT">
 									<Offset>
-										<AbsDimension x="6" y="26"/>
+										<AbsDimension x="6" y="28"/>
 									</Offset>
 								</Anchor>
 							</Anchors>

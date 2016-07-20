@@ -1,0 +1,12 @@
+## Interface: 70000
+## Title: Blizzard Order Hall UI
+## Secure: 1
+## Author: Blizzard Entertainment
+## Version: 1.0
+## RequiredDep: Blizzard_GarrisonUI, Blizzard_AdventureMap
+## LoadOnDemand: 1
+
+Blizzard_OrderHallMissionUI.xml
+Blizzard_OrderHallTalents.xml
+Blizzard_OrderHallCommandBar.xml
+Localization.lua

@@ -1,0 +1,93 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+  <Script file="Blizzard_ClassNameplateBar_Monk.lua"/>
+  
+	<Frame name="ClassNameplateBarChiFrame" virtual="true">
+		<Size x="15" y="15"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="OrbOff" atlas="MonkUI-OrbOff" useAtlasSize="false">
+					<Size x="15" y="15"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Orb" atlas="MonkUI-LightOrb" useAtlasSize="false" alpha="0">
+					<Size x="15" y="15"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="Fadein" setToFinalAlpha="true">
+				<Alpha parentKey="AlphaAnim" childKey="Orb" fromAlpha="0" toAlpha="1" duration="0.2"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="Fadeout" setToFinalAlpha="true">
+				<Alpha parentKey="AlphaAnim" childKey="Orb" fromAlpha="1" toAlpha="0" duration="0.2"/>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+		
+	<Frame name="ClassNameplateBarWindwalkerMonkFrame" inherits="ClassNameplateBarFrame" mixin="ClassNameplateBar, ClassNameplateBarWindwalkerMonk">
+		<Size x="75" y="14"/>
+		<Frames>
+			<Frame parentKey="Chi1" parentArray="Chi" inherits="ClassNameplateBarChiFrame">
+				<Anchors>
+					<Anchor point="LEFT" x="0" y="0"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="Chi2" parentArray="Chi" inherits="ClassNameplateBarChiFrame">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Chi1" relativePoint="RIGHT"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="Chi3" parentArray="Chi" inherits="ClassNameplateBarChiFrame">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Chi2" relativePoint="RIGHT"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="Chi4" parentArray="Chi" inherits="ClassNameplateBarChiFrame">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Chi3" relativePoint="RIGHT"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="Chi5" parentArray="Chi" inherits="ClassNameplateBarChiFrame">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Chi4" relativePoint="RIGHT"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="Chi6" parentArray="Chi" inherits="ClassNameplateBarChiFrame">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Chi5" relativePoint="RIGHT"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+	</Frame>
+
+	<StatusBar name="ClassNameplateBrewmasterBarFrame" mixin="ClassNameplateBar, ClassNameplateBarBrewmasterMonk">
+		<KeyValues>
+			<KeyValue key="layoutIndex" value="2"/>
+			<KeyValue key="align" value="center"/>
+			<KeyValue key="scale" value="1"/>
+			<KeyValue key="topPadding" value="-3" type="number"/>
+		</KeyValues>
+		<Size x="86" y="4"/>
+		<Frames>
+			<Frame parentKey="Border" inherits="NamePlateSecondaryBarBorderTemplate" />
+		</Frames>
+		<BarTexture parentKey="Texture" file="Interface\TargetingFrame\UI-TargetingFrame-BarFill"/>
+		<BarColor r="0" g="0" b="1"/>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnUpdate method="OnUpdate"/>
+		</Scripts>
+	</StatusBar>
+
+</Ui>
+
+

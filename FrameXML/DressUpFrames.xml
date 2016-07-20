@@ -209,18 +209,6 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="DressUpFrameDescriptionText" inherits="GameFontNormalSmall" text="DRESSUP_FRAME_INSTRUCTIONS">
-					<Size>
-						<AbsDimension x="260" y="36"/>
-					</Size>
-					<Anchors>
-						<Anchor point="CENTER" relativeTo="DressUpFrameTitleText" relativePoint="BOTTOM">
-							<Offset>
-								<AbsDimension x="10" y="-22"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
 			</Layer>
 			<Layer level="OVERLAY">
 				<Texture parentKey="BGTopLeft" name="DressUpBackgroundTopLeft">
@@ -262,6 +250,16 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame parentKey="OutfitDropDown" name="$parentOutfitDropDown" inherits="WardrobeOutfitDropDownTemplate" mixin="DressUpOutfitMixin">
+				<KeyValues>
+					<KeyValue key="width" value="163" type="number"/>
+					<KeyValue key="minMenuStringWidth" value="127" type="number"/>
+					<KeyValue key="maxMenuStringWidth" value="190" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="54" y="-40"/>
+				</Anchors>
+			</Frame>
 			<Button name="DressUpFrameCloseButton" inherits="UIPanelCloseButton">
 				<Anchors>
 					<Anchor point="CENTER" relativePoint="TOPRIGHT">
@@ -319,6 +317,7 @@
 					<OnLoad>
 						Model_OnLoad(self, MODELFRAME_MAX_PLAYER_ZOOM);
 					</OnLoad>
+					<OnDressModel function="DressUpFrame_OnDressModel"/>
 				</Scripts>
 			</DressUpModel>
 		</Frames>

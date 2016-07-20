@@ -1508,6 +1508,18 @@ function ChatConfigCategory_OnClick(self)
 	end
 end
 
+function UpdateDefaultButtons(combatLogSelected)
+	if ( combatLogSelected ) then
+		ChatConfigFrame.DefaultButton:Hide();
+		ChatConfigFrame.RedockButton:Hide();
+		CombatLogDefaultButton:Show();
+	else
+		ChatConfigFrame.DefaultButton:Show();
+		ChatConfigFrame.RedockButton:Show();
+		CombatLogDefaultButton:Hide();
+	end
+end
+
 function ChatConfigCategory_UpdateEnabled()
 	if ( GetChannelList() ) then
 		ChatConfigCategoryFrameButton3:Enable();
@@ -1587,6 +1599,12 @@ function ChatConfigCombat_OnLoad()
 			PanelTemplates_TabResize(tab, 0);
 		end
 	end
+end
+
+function ChatConfigCombat_OnShow()
+	ChatConfigBackgroundFrame:SetPoint("TOPLEFT", ChatConfigCategoryFrame, "TOPRIGHT", 1, -135);
+	ChatConfig_ShowCombatTabs();
+	UpdateDefaultButtons(true);
 end
 
 function ChatConfig_UpdateFilterList()
@@ -1907,4 +1925,37 @@ function ChatConfigFrame_PlayCheckboxSound (checked)
 	else
 		PlaySound("igMainMenuOptionCheckBoxOff");
 	end
+end
+
+function ChatConfigChatSettings_OnShow()
+	ChatConfig_UpdateCheckboxes(ChatConfigChatSettingsLeft);
+	UpdateDefaultButtons(false);
+end
+
+function ChatConfigChannelSettings_OnShow()
+	-- Have to build it here since the channel list doesn't exist on load
+	CreateChatChannelList(self, GetChannelList());
+	ChatConfig_CreateCheckboxes(ChatConfigChannelSettingsLeft, CHAT_CONFIG_CHANNEL_LIST, "ChatConfigCheckBoxWithSwatchAndClassColorTemplate", CHANNELS);
+	ChatConfig_UpdateCheckboxes(ChatConfigChannelSettingsLeft);
+	UpdateDefaultButtons(false);
+end
+
+function ChatConfigOtherSettings_OnShow()
+	ChatConfig_UpdateCheckboxes(ChatConfigOtherSettingsCombat);
+	ChatConfig_UpdateCheckboxes(ChatConfigOtherSettingsPVP);
+	ChatConfig_UpdateCheckboxes(ChatConfigOtherSettingsSystem);
+	ChatConfig_UpdateCheckboxes(ChatConfigOtherSettingsCreature);
+	UpdateDefaultButtons(false);
+end
+
+function ChatConfigFrameDefaultButton_OnClick()
+	FCF_ResetAllWindows();
+end
+
+function ChatConfigFrameRedockButton_OnClick()
+	FCF_RedockAllWindows();
+end
+
+function ChatConfigFrameRedockButton_OnLoad(self)
+	self:SetWidth(self:GetTextWidth() + 31);
 end

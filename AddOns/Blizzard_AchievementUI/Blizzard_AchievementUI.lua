@@ -1,3 +1,4 @@
+
 UIPanelWindows["AchievementFrame"] = { area = "doublewide", pushable = 0, xoffset = 80, whileDead = 1 };
 
 ACHIEVEMENTUI_CATEGORIES = {};
@@ -68,6 +69,9 @@ local GUILD_CATEGORY_ID = 15076;
 local IN_GUILD_VIEW;
 local TEXTURES_OFFSET = 0;		-- 0.5 when in guild view
 
+local ACHIEVEMENT_FRAME_NUM_SEARCH_PREVIEWS = 5;
+local ACHIEVEMENT_FRAME_SHOW_ALL_RESULTS_INDEX = ACHIEVEMENT_FRAME_NUM_SEARCH_PREVIEWS + 1;
+
 local displayStatCategories = {};
 
 local guildMemberRequestFrame;
@@ -129,6 +133,10 @@ function AchievementFrame_OnLoad (self)
 
 	AchievementFrameSummary.forceOnShow = AchievementFrameSummary_OnShow;
 	AchievementFrameAchievements.forceOnShow = AchievementFrameAchievements_OnShow;
+	
+	self.searchResults.scrollFrame.update = AchievementFrame_UpdateFullSearchResults;
+	self.searchResults.scrollFrame.scrollBar.doNotHide = true;
+	HybridScrollFrame_CreateButtons(self.searchResults.scrollFrame, "AchievementFullSearchResultsButton", 0, 0);
 end
 
 function AchievementFrame_OnShow (self)
@@ -144,6 +152,9 @@ end
 
 function AchievementFrame_OnHide (self)
 	PlaySound("AchievementMenuClose");
+	AchievementFrame_HideSearchPreview();
+	self.searchResults:Hide();
+	self.searchBox:SetText("");
 	UpdateMicroButtons();
 	AchievementFrame_ClearTextures();
 end
@@ -164,6 +175,7 @@ function AchievementFrame_SetTabs()
 end
 
 function AchievementFrame_UpdateTabs(clickedTab)
+	AchievementFrame.searchResults:Hide();
 	PanelTemplates_Tab_OnClick(_G["AchievementFrameTab"..clickedTab], AchievementFrame);
 	local tab;
 	for i = 1, 3 do
@@ -274,6 +286,8 @@ function AchievementFrameBaseTab_OnClick (id)
 	if ( not isSummary ) then
 		achievementFunctions.updateFunc();
 	end
+	
+	SwitchAchievementSearchTab(id);
 end
 
 AchievementFrameTab_OnClick = AchievementFrameBaseTab_OnClick;
@@ -288,7 +302,11 @@ function AchievementFrameComparisonTab_OnClick (id)
 		achievementFunctions = COMPARISON_ACHIEVEMENT_FUNCTIONS;
 		AchievementFrame_ShowSubFrame(AchievementFrameComparison, AchievementFrameComparisonContainer);
 		AchievementFrameWaterMark:SetTexture("Interface\\AchievementFrame\\UI-Achievement-AchievementWatermark");
-	else
+	elseif ( id == 2 ) then
+		-- We don't have support for guild achievement comparison.  Just open up the non-comparison guild achievement tab.
+		AchievementFrameTab_OnClick = AchievementFrameBaseTab_OnClick;
+		AchievementFrameTab_OnClick(2);
+	elseif ( id == 3 ) then
 		achievementFunctions = COMPARISON_STAT_FUNCTIONS;
 		AchievementFrame_ShowSubFrame(AchievementFrameComparison, AchievementFrameComparisonStatsContainer);
 		AchievementFrameWaterMark:SetTexture("Interface\\AchievementFrame\\UI-Achievement-StatWatermark");
@@ -299,6 +317,7 @@ function AchievementFrameComparisonTab_OnClick (id)
 	AchievementFrame_UpdateTabs(id);
 	
 	achievementFunctions.updateFunc();
+	SwitchAchievementSearchTab(id);
 end
 
 ACHIEVEMENTFRAME_SUBFRAMES = {
@@ -647,10 +666,10 @@ function AchievementFrameCategories_SelectButton (button)
 			AchievementFrame_ShowSubFrame(AchievementFrameAchievements);
 			if ( id == FEAT_OF_STRENGTH_ID or id == GUILD_FEAT_OF_STRENGTH_ID ) then
 				AchievementFrameFilterDropDown:Hide();
-				AchievementFrameHeaderRightDDLInset:Hide();
+				AchievementFrameHeaderLeftDDLInset:Hide();
 			else
 				AchievementFrameFilterDropDown:Show();
-				AchievementFrameHeaderRightDDLInset:Show();
+				AchievementFrameHeaderLeftDDLInset:Show();
 			end
 		elseif ( achievementFunctions == COMPARISON_ACHIEVEMENT_FUNCTIONS ) then
 			AchievementFrame_ShowSubFrame(AchievementFrameComparison, AchievementFrameComparisonContainer);
@@ -676,10 +695,10 @@ function AchievementFrameAchievements_OnShow()
 	end
 	if ( achievementFunctions.selectedCategory == FEAT_OF_STRENGTH_ID or achievementFunctions.selectedCategory == GUILD_FEAT_OF_STRENGTH_ID ) then
 		AchievementFrameFilterDropDown:Hide();
-		AchievementFrameHeaderRightDDLInset:Hide();
+		AchievementFrameHeaderLeftDDLInset:Hide();
 	else
 		AchievementFrameFilterDropDown:Show();
-		AchievementFrameHeaderRightDDLInset:Show();	
+		AchievementFrameHeaderLeftDDLInset:Show();	
 	end
 end
 
@@ -762,11 +781,15 @@ function AchievementFrameAchievements_OnLoad (self)
 end
 
 function AchievementFrameAchievements_OnEvent (self, event, ...)
+	if (IsKioskModeEnabled()) then
+		return;
+	end
 	if ( event == "ADDON_LOADED" ) then
 		self:RegisterEvent("ACHIEVEMENT_EARNED");
 		self:RegisterEvent("CRITERIA_UPDATE");
 		self:RegisterEvent("TRACKED_ACHIEVEMENT_LIST_CHANGED");
 		self:RegisterEvent("RECEIVED_ACHIEVEMENT_MEMBER_LIST");
+		self:RegisterEvent("ACHIEVEMENT_SEARCH_UPDATED");
 		
 		updateTrackedAchievements(GetTrackedAchievements());
 	elseif ( event == "ACHIEVEMENT_EARNED" ) then
@@ -809,6 +832,9 @@ function AchievementFrameAchievements_OnEvent (self, event, ...)
 				func(guildMemberRequestFrame);
 			end
 		end
+	elseif ( event == "ACHIEVEMENT_SEARCH_UPDATED" ) then
+		AchievementFrame.searchBox.fullSearchFinished = true;
+		AchievementFrame_UpdateSearch(self);
 	end
 	
 	if ( not AchievementMicroButton:IsShown() ) then
@@ -2500,7 +2526,7 @@ function AchievementFrameSummaryCategory_OnHide (self)
 	self:UnregisterEvent("ACHIEVEMENT_EARNED");
 end
 
-function AchievementFrame_SelectAchievement(id, forceSelect)
+function AchievementFrame_SelectAchievement(id, forceSelect, isComparison)
 	if ( not AchievementFrame:IsShown() and not forceSelect ) then
 		return;
 	end
@@ -2518,36 +2544,21 @@ function AchievementFrame_SelectAchievement(id, forceSelect)
 		tabIndex = 2;
 	end
 	
-	AchievementFrameTab_OnClick = AchievementFrameBaseTab_OnClick;
+	if ( isComparison ) then
+		AchievementFrameTab_OnClick = AchievementFrameComparisonTab_OnClick;
+	else
+		AchievementFrameTab_OnClick = AchievementFrameBaseTab_OnClick;
+	end
+	
 	AchievementFrameTab_OnClick(tabIndex);
 	AchievementFrameSummary:Hide();
-	AchievementFrameAchievements:Show();
+	
+	if ( not isComparison ) then
+		AchievementFrameAchievements:Show();
+	end
 
 	-- Figure out if this is part of a progressive achievement; if it is and it's incomplete, make sure the previous level was completed. If not, find the first incomplete achievement in the chain and display that instead.
-	local _, _, _, completed = GetAchievementInfo(id);
-	if ( not completed and GetPreviousAchievement(id) ) then
-		local prevID = GetPreviousAchievement(id);
-		_, _, _, completed = GetAchievementInfo(prevID);
-		while ( prevID and not completed ) do
-			id = prevID;
-			prevID = GetPreviousAchievement(id);
-			if ( prevID ) then
-				_, _, _, completed = GetAchievementInfo(prevID);
-			end
-		end
-	elseif ( completed ) then 
-		local nextID, completed = GetNextAchievement(id);
-		if ( nextID and completed ) then
-			local newID
-			while ( nextID and completed ) do
-				newID, completed = GetNextAchievement(nextID);
-				if ( completed ) then
-					nextID = newID;
-				end
-			end
-			id = nextID;
-		end
-	end
+	id = AchievementFrame_FindDisplayedAchievement(id);
 	
 	AchievementFrameCategories_ClearSelection();
 	
@@ -2574,9 +2585,14 @@ function AchievementFrame_SelectAchievement(id, forceSelect)
 	AchievementFrameCategoriesContainerScrollBar:SetValue(0);
 	AchievementFrameCategories_Update();
 	
-	local shown, i = false, 1;
+	local shown = false;
+	local found = false;
 	while ( not shown ) do
+		found = false;
 		for _, button in next, AchievementFrameCategoriesContainer.buttons do
+			if ( button.categoryID == category ) then
+				found = true;
+			end
 			if ( button.categoryID == category and math.ceil(button:GetBottom()) >= math.ceil(AchievementFrameAchievementsContainer:GetBottom())) then
 				shown = true;
 			end
@@ -2586,31 +2602,36 @@ function AchievementFrame_SelectAchievement(id, forceSelect)
 			local _, maxVal = AchievementFrameCategoriesContainerScrollBar:GetMinMaxValues();
 			if ( AchievementFrameCategoriesContainerScrollBar:GetValue() == maxVal ) then
 				--assert(false)
-				return;
+				if ( not found ) then
+					return;
+				else
+					shown = true;
+				end
 			else
 				HybridScrollFrame_OnMouseWheel(AchievementFrameCategoriesContainer, -1);
 			end			
 		end
-		
-		-- Remove me if everything's working fine
-		i = i + 1;
-		if ( i > 100 ) then
-			--assert(false);
-			return;
-		end
 	end		
 	
-	AchievementFrameAchievements_ClearSelection();	
-	AchievementFrameAchievementsContainerScrollBar:SetValue(0);
-	AchievementFrameAchievements_Update();
-
+	local container, scrollBar = AchievementFrameAchievementsContainer, AchievementFrameAchievementsContainerScrollBar;
+	if ( isComparison ) then
+		container = AchievementFrameComparisonContainer;
+		scrollBar = AchievementFrameComparisonContainerScrollBar;
+	end
+	
+	achievementFunctions.clearFunc();
+	achievementFunctions.updateFunc();
+	scrollBar:SetValue(0);
+	
 	local shown = false;
 	local previousScrollValue;
 	while ( not shown ) do
-		for _, button in next, AchievementFrameAchievementsContainer.buttons do
-			if ( button.id == id and math.ceil(button:GetTop()) >= math.ceil(AchievementFrameAchievementsContainer:GetBottom())) then
-				-- The "True" here ignores modifiers, so you don't accidentally track or link this achievement. :P
-				AchievementButton_OnClick(button, nil, nil, true);
+		for _, button in next, container.buttons do
+			if ( button.id == id and math.ceil(button:GetTop()) >= math.ceil(container:GetBottom())) then
+				if ( not isComparison ) then
+					-- The "True" here ignores modifiers, so you don't accidentally track or link this achievement. :P
+					AchievementButton_OnClick(button, nil, nil, true);
+				end
 				
 				-- We found the button!
 				shown = button;
@@ -2618,20 +2639,20 @@ function AchievementFrame_SelectAchievement(id, forceSelect)
 			end
 		end			
 		
-		local _, maxVal = AchievementFrameAchievementsContainerScrollBar:GetMinMaxValues();
+		local _, maxVal = scrollBar:GetMinMaxValues();
 		if ( shown ) then
 			-- If we can, move the achievement we're scrolling to to the top of the screen.
-			local newHeight = AchievementFrameAchievementsContainerScrollBar:GetValue() + AchievementFrameAchievementsContainer:GetTop() - shown:GetTop();
+			local newHeight = scrollBar:GetValue() + container:GetTop() - shown:GetTop();
 			newHeight = min(newHeight, maxVal);
-			AchievementFrameAchievementsContainerScrollBar:SetValue(newHeight);
+			scrollBar:SetValue(newHeight);
 		else
-			local scrollValue = AchievementFrameAchievementsContainerScrollBar:GetValue();
+			local scrollValue = scrollBar:GetValue();
 			if ( scrollValue == maxVal or scrollValue == previousScrollValue ) then
 				--assert(false, "Failed to find achievement " .. id .. " while jumping!")
 				return;
 			else
 				previousScrollValue = scrollValue;
-				HybridScrollFrame_OnMouseWheel(AchievementFrameAchievementsContainer, -1);
+				HybridScrollFrame_OnMouseWheel(container, -1);
 			end			
 		end
 	end
@@ -2692,16 +2713,28 @@ function AchievementFrameAchievements_AdjustSelection()
 	end
 end
 
-function AchievementFrame_SelectSummaryStatistic (criteriaId)
-	AchievementFrameTab_OnClick = AchievementFrameBaseTab_OnClick;
+function AchievementFrame_SelectSummaryStatistic (criteriaId, isComparison)
+	local id = GetAchievementInfoFromCriteria(criteriaId);
+	AchievementFrame_SelectStatisticByAchievementID(id, isComparison);
+end
+
+function AchievementFrame_SelectStatisticByAchievementID(achievementID, isComparison)
+	if ( isComparison ) then
+		AchievementFrameTab_OnClick = AchievementFrameComparisonTab_OnClick;
+		AchievementFrameComparisonStats:Show();
+		AchievementFrameComparisonSummary:Hide();
+	else
+		AchievementFrameTab_OnClick = AchievementFrameBaseTab_OnClick;
+		AchievementFrameStats:Show();
+		AchievementFrameSummary:Hide();
+	end
+	
 	AchievementFrameTab_OnClick(3);
-	AchievementFrameStats:Show();
-	AchievementFrameSummary:Hide();
 	
 	AchievementFrameCategories_ClearSelection();
 	
-	local id = GetAchievementInfoFromCriteria(criteriaId);
-	local category = GetAchievementCategory(id);
+	
+	local category = GetAchievementCategory(achievementID);
 	
 	local categoryIndex, parent, hidden = 0;
 	
@@ -2728,7 +2761,7 @@ function AchievementFrame_SelectSummaryStatistic (criteriaId)
 	AchievementFrameCategories_Update();
 	AchievementFrameCategoriesContainerScrollBar:SetValue(0);
 	
-	local shown, i = false, 1;
+	local shown = false;
 	while ( not shown ) do
 		for _, button in next, AchievementFrameCategoriesContainer.buttons do
 			if ( button.categoryID == category and math.ceil(button:GetBottom()) >= math.ceil(AchievementFrameAchievementsContainer:GetBottom())) then
@@ -2744,44 +2777,40 @@ function AchievementFrame_SelectSummaryStatistic (criteriaId)
 				HybridScrollFrame_OnMouseWheel(AchievementFrameCategoriesContainer, -1);
 			end			
 		end
-		
-		-- Remove me if everything's working fine
-		i = i + 1;
-		if ( i > 100 ) then
-			assert(false);
-		end
 	end		
 	
-	AchievementFrameStats_Update();
-	AchievementFrameStatsContainerScrollBar:SetValue(0);
+	local container, scrollBar = AchievementFrameStatsContainer, AchievementFrameStatsContainerScrollBar;
+	if ( isComparison ) then
+		container = AchievementFrameComparisonStatsContainer;
+		scrollBar = AchievementFrameComparisonStatsContainerScrollBar;
+	end
 	
-	local shown, i = false, 1;
+	achievementFunctions.updateFunc();
+	scrollBar:SetValue(0);
+	
+	local shown = false;
 	while ( not shown ) do
-		for _, button in next, AchievementFrameStatsContainer.buttons do
-			if ( button.id == id and math.ceil(button:GetBottom()) >= math.ceil(AchievementFrameStatsContainer:GetBottom())) then
-				AchievementStatButton_OnClick(button);
+		for _, button in next, container.buttons do
+			if ( button.id == achievementID and math.ceil(button:GetBottom()) >= math.ceil(container:GetBottom())) then
+				if ( not isComparison ) then
+					AchievementStatButton_OnClick(button);
+				end
 				
 				-- We found the button! MAKE IT SHOWN ZOMG!
 				shown = button;
 			end
 		end			
 		
-		if ( shown and AchievementFrameStatsContainerScrollBar:IsShown() ) then
+		if ( shown and scrollBar:IsShown() ) then
 			-- If we can, move the achievement we're scrolling to to the top of the screen.
-			AchievementFrameStatsContainerScrollBar:SetValue(AchievementFrameStatsContainerScrollBar:GetValue() + AchievementFrameStatsContainer:GetTop() - shown:GetTop());
+			scrollBar:SetValue(scrollBar:GetValue() + container:GetTop() - shown:GetTop());
 		elseif ( not shown ) then
-			local _, maxVal = AchievementFrameStatsContainerScrollBar:GetMinMaxValues();
-			if ( AchievementFrameStatsContainerScrollBar:GetValue() == maxVal ) then
+			local _, maxVal = scrollBar:GetMinMaxValues();
+			if ( scrollBar:GetValue() == maxVal ) then
 				assert(false)
 			else
-				HybridScrollFrame_OnMouseWheel(AchievementFrameStatsContainer, -1);
+				HybridScrollFrame_OnMouseWheel(container, -1);
 			end			
-		end
-		
-		-- Remove me if everything's working fine.
-		i = i + 1;
-		if ( i > 100 ) then
-			assert(false);
 		end
 	end
 end
@@ -3546,5 +3575,361 @@ function AchievementFrameAchievements_CheckGuildMembersTooltip(requestFrame)
 				end
 			end
 		end
+	end
+end
+
+-- If this achievement is part of a chain, find the first incomplete achievement in the chain.
+function AchievementFrame_FindDisplayedAchievement(baseAchievementID)
+	local id = baseAchievementID;
+	local _, _, _, completed = GetAchievementInfo(id);
+	if ( not completed and GetPreviousAchievement(id) ) then
+		local prevID = GetPreviousAchievement(id);
+		_, _, _, completed = GetAchievementInfo(prevID);
+		while ( prevID and not completed ) do
+			id = prevID;
+			prevID = GetPreviousAchievement(id);
+			if ( prevID ) then
+				_, _, _, completed = GetAchievementInfo(prevID);
+			end
+		end
+	elseif ( completed ) then 
+		local nextID, completed = GetNextAchievement(id);
+		if ( nextID and completed ) then
+			local newID
+			while ( nextID and completed ) do
+				newID, completed = GetNextAchievement(nextID);
+				if ( completed ) then
+					nextID = newID;
+				end
+			end
+			id = nextID;
+		end
+	end
+	
+	return id;
+end
+
+function AchievementFrame_HideSearchPreview()
+	AchievementFrame.searchPreviewContainer:Hide();
+	
+	for index = 1, ACHIEVEMENT_FRAME_NUM_SEARCH_PREVIEWS do
+		AchievementFrame.searchPreview[index]:Hide();
+	end
+	
+	AchievementFrame.showAllSearchResults:Hide();
+	AchievementFrame.searchProgressBar:Hide();
+end
+
+function AchievementFrame_UpdateSearchPreview()
+	if ( not AchievementFrame.searchBox:HasFocus() or strlen(AchievementFrame.searchBox:GetText()) < MIN_CHARACTER_SEARCH) then
+		AchievementFrame_HideSearchPreview();
+		return;
+	end
+	
+	AchievementFrame.searchBox.searchPreviewUpdateDelay = 0;
+	
+	if ( AchievementFrame.searchBox:GetScript("OnUpdate") == nil ) then
+		AchievementFrame.searchBox:SetScript("OnUpdate", AchievementFrameSearchBox_OnUpdate);
+	end
+end
+
+-- There is a delay before the search is updated to avoid a search progress bar if the search
+-- completes within the grace period.
+local ACHIEVEMENT_SEARCH_PREVIEW_UPDATE_DELAY = 0.3;
+function AchievementFrameSearchBox_OnUpdate (self, elapsed)
+	if ( self.fullSearchFinished ) then
+		AchievementFrame_ShowSearchPreviewResults();
+		self.searchPreviewUpdateDelay = 0;
+		self:SetScript("OnUpdate", nil);
+		return;
+	end
+	
+	self.searchPreviewUpdateDelay = self.searchPreviewUpdateDelay + elapsed;
+	
+	if ( self.searchPreviewUpdateDelay > ACHIEVEMENT_SEARCH_PREVIEW_UPDATE_DELAY ) then
+		self.searchPreviewUpdateDelay = 0;
+		self:SetScript("OnUpdate", nil);
+		
+		if ( AchievementFrame.searchProgressBar:GetScript("OnUpdate") == nil ) then
+			AchievementFrame.searchProgressBar:SetScript("OnUpdate", AchievementFrameSearchProgressBar_OnUpdate);
+			
+			for index = 1, ACHIEVEMENT_FRAME_NUM_SEARCH_PREVIEWS do
+				AchievementFrame.searchPreview[index]:Hide();
+			end
+			
+			AchievementFrame.showAllSearchResults:Hide();
+			
+			AchievementFrame.searchPreviewContainer.borderAnchor:SetPoint("BOTTOM", 0, -5);
+			AchievementFrame.searchPreviewContainer.background:Show();
+			AchievementFrame.searchPreviewContainer:Show();
+			
+			AchievementFrame.searchProgressBar:Show();
+			return;
+		end
+	end
+end
+
+-- If the searcher does not finish within the update delay then a search progress bar is displayed that
+-- will fill until the search is finished and then display the search preview results.
+function AchievementFrameSearchProgressBar_OnUpdate(self, elapsed)	
+	local _, maxValue = self:GetMinMaxValues();
+	local actualProgress = GetAchievementSearchProgress() / GetAchievementSearchSize() * maxValue;
+	local displayedProgress = self:GetValue();
+	
+	self:SetValue(actualProgress);
+	
+	if ( self:GetValue() >= maxValue ) then
+		self:SetScript("OnUpdate", nil);
+		self:SetValue(0);
+		AchievementFrame_ShowSearchPreviewResults();
+	end
+end
+
+function AchievementFrame_ShowSearchPreviewResults()
+	AchievementFrame.searchProgressBar:Hide();
+	
+	local numResults = GetNumFilteredAchievements();
+	
+	if ( numResults > 0 ) then
+		AchievementFrame_SetSearchPreviewSelection(1);
+	end
+	
+	local lastButton;
+	for index = 1, ACHIEVEMENT_FRAME_NUM_SEARCH_PREVIEWS do
+		local searchPreview = AchievementFrame.searchPreview[index];
+		if ( index <= numResults ) then
+			local achievementID = GetFilteredAchievementID(index);
+			local _, name, _, _, _, _, _, description, _, icon, _, _, _, _ = GetAchievementInfo(achievementID);
+			searchPreview.name:SetText(name);
+			searchPreview.icon:SetTexture(icon);
+			searchPreview.achievementID = achievementID;
+			searchPreview:Show();
+			lastButton = searchPreview;
+		else
+			searchPreview.achievementID = nil;
+			searchPreview:Hide();
+		end
+	end
+	
+	if ( numResults > 5 ) then
+		AchievementFrame.showAllSearchResults:Show();
+		lastButton = AchievementFrame.showAllSearchResults;
+		AchievementFrame.showAllSearchResults.text:SetText(string.format(ENCOUNTER_JOURNAL_SHOW_SEARCH_RESULTS, numResults));
+	else
+		AchievementFrame.showAllSearchResults:Hide();
+	end
+	
+	if (lastButton) then
+		AchievementFrame.searchPreviewContainer.borderAnchor:SetPoint("BOTTOM", lastButton, "BOTTOM", 0, -5);
+		AchievementFrame.searchPreviewContainer.background:Hide();
+		AchievementFrame.searchPreviewContainer:Show();
+	else
+		AchievementFrame.searchPreviewContainer:Hide();
+	end
+end
+
+function AchievementFrameSearchBox_OnTextChanged(self)
+	SearchBoxTemplate_OnTextChanged(self);
+	
+	if ( strlen(self:GetText()) >= MIN_CHARACTER_SEARCH ) then
+		AchievementFrame.searchBox.fullSearchFinished = SetAchievementSearchString(self:GetText());
+		if ( not AchievementFrame.searchBox.fullSearchFinished ) then
+			AchievementFrame_UpdateSearchPreview();
+		else
+			AchievementFrame_ShowSearchPreviewResults();
+		end
+	else
+		AchievementFrame_HideSearchPreview();
+	end
+end
+
+function AchievementFrameSearchBox_OnShow(self)
+	self:SetFrameLevel(self:GetParent():GetFrameLevel() + 7);
+	AchievementFrame_SetSearchPreviewSelection(1);
+	self.fullSearchFinished = false;
+	self.searchPreviewUpdateDelay = 0;
+end
+
+function AchievementFrameSearchBox_OnEnterPressed(self)
+	-- If the search is not finished yet we have to wait to show the full search results.
+	if ( not self.fullSearchFinished or strlen(self:GetText()) < MIN_CHARACTER_SEARCH ) then
+		return;
+	end
+	
+	if ( self.selectedIndex == ACHIEVEMENT_FRAME_SHOW_ALL_RESULTS_INDEX ) then
+		if ( AchievementFrame.showAllSearchResults:IsShown() ) then
+			AchievementFrame.showAllSearchResults:Click();
+		end
+	else
+		local preview = AchievementFrame.searchPreview[self.selectedIndex];
+		if ( preview:IsShown() ) then
+			preview:Click();
+		end
+	end
+end
+
+function AchievementFrameSearchBox_OnFocusLost(self)
+	SearchBoxTemplate_OnEditFocusLost(self);
+	AchievementFrame_HideSearchPreview();
+end
+
+function AchievementFrameSearchBox_OnFocusGained(self)
+	SearchBoxTemplate_OnEditFocusGained(self);
+	AchievementFrame.searchResults:Hide();
+	AchievementFrame_UpdateSearchPreview();
+end
+
+function AchievementFrameSearchBox_OnKeyDown(self, key)
+	if ( key == "UP" ) then
+		AchievementFrame_SetSearchPreviewSelection(AchievementFrame.searchBox.selectedIndex - 1);
+	elseif ( key == "DOWN" ) then
+		AchievementFrame_SetSearchPreviewSelection(AchievementFrame.searchBox.selectedIndex + 1);
+	end
+end
+
+function AchievementFrame_SetSearchPreviewSelection(selectedIndex)
+	local numShown = 0;
+	for index = 1, ACHIEVEMENT_FRAME_NUM_SEARCH_PREVIEWS do
+		AchievementFrame.searchPreview[index].selectedTexture:Hide();
+		
+		if ( AchievementFrame.searchPreview[index]:IsShown() ) then
+			numShown = numShown + 1;
+		end
+	end
+	
+	if ( AchievementFrame.showAllSearchResults:IsShown() ) then
+		numShown = numShown + 1;
+	end
+	
+	AchievementFrame.showAllSearchResults.selectedTexture:Hide();
+	
+	
+	if ( selectedIndex > numShown ) then
+		-- Wrap under to the beginning.
+		selectedIndex = 1;
+	elseif ( selectedIndex < 1 ) then
+		-- Wrap over to the end;
+		selectedIndex = numShown;
+	end
+	
+	AchievementFrame.searchBox.selectedIndex = selectedIndex;
+	
+	if ( selectedIndex == ACHIEVEMENT_FRAME_SHOW_ALL_RESULTS_INDEX ) then
+		AchievementFrame.showAllSearchResults.selectedTexture:Show();
+	else
+		AchievementFrame.searchPreview[selectedIndex].selectedTexture:Show();
+	end	
+end
+
+function AcheivementFullSearchResultsButton_OnClick(self)
+	if (self.achievementID) then
+		AchievementFrame_SelectSearchItem(self.achievementID);
+		AchievementFrame.searchResults:Hide();
+	end
+end
+
+function AchievementFrame_ShowFullSearch()
+	AchievementFrame_UpdateFullSearchResults();
+	
+	if ( GetNumFilteredAchievements() == 0 ) then
+		AchievementFrame.searchResults:Hide();
+		return;
+	end
+	
+	AchievementFrame_HideSearchPreview();
+	AchievementFrame.searchBox:ClearFocus();
+	AchievementFrame.searchResults:Show();
+end
+
+function AchievementFrame_UpdateFullSearchResults()
+	local numResults = GetNumFilteredAchievements();
+	
+	local scrollFrame = AchievementFrame.searchResults.scrollFrame;
+	local offset = HybridScrollFrame_GetOffset(scrollFrame);
+	local results = scrollFrame.buttons;
+	local result, index;
+	
+	for i = 1,#results do
+		result = results[i];
+		index = offset + i;
+		if ( index <= numResults ) then
+			local achievementID = GetFilteredAchievementID(index);
+			local _, name, _, completed, _, _, _, description, _, icon, _, _, _, _ = GetAchievementInfo(achievementID);
+			
+			result.name:SetText(name);
+			result.icon:SetTexture(icon);
+			result.achievementID = achievementID;
+			
+			if ( completed ) then
+				result.resultType:SetText(ACHIEVEMENTFRAME_FILTER_COMPLETED);
+			else
+				result.resultType:SetText(ACHIEVEMENTFRAME_FILTER_INCOMPLETE);
+			end
+			
+			local categoryID = GetAchievementCategory(achievementID);
+			local categoryName, parentCategoryID = GetCategoryInfo(categoryID);
+			path = categoryName;
+			while ( not (parentCategoryID == -1) ) do
+				categoryName, parentCategoryID = GetCategoryInfo(parentCategoryID);
+				path = categoryName.." > "..path;
+			end
+			
+			result.path:SetText(path);
+			
+			result:Show();
+		else
+			result:Hide();
+		end
+	end
+	
+	local totalHeight = numResults * 49;
+	HybridScrollFrame_Update(scrollFrame, totalHeight, 270);
+	
+	AchievementFrame.searchResults.titleText:SetText(string.format(ENCOUNTER_JOURNAL_SEARCH_RESULTS, AchievementFrame.searchBox:GetText(), numResults));
+end
+
+function AchievementFrame_SelectSearchItem(id)
+	local isStatistic = select(15, GetAchievementInfo(id));
+	if ( isStatistic ) then
+		AchievementFrame_SelectStatisticByAchievementID(id, AchievementFrameComparison:IsShown());
+	else
+		AchievementFrame_SelectAchievement(id, true, AchievementFrameComparison:IsShown());
+	end
+end
+
+function AchievementSearchPreviewButton_OnShow(self)
+	self:SetFrameLevel(self:GetParent():GetFrameLevel() + 10);
+end
+
+function AchievementSearchPreviewButton_OnLoad(self)
+	for index = 1, ACHIEVEMENT_FRAME_NUM_SEARCH_PREVIEWS do
+		if ( AchievementFrame.searchPreview[index] == self ) then
+			self.previewIndex = index;
+		end
+	end
+end
+
+function AchievementSearchPreviewButton_OnEnter(self)
+	AchievementFrame_SetSearchPreviewSelection(self.previewIndex);
+end
+
+function AchievementSearchPreviewButton_OnClick(self)
+	if ( self.achievementID ) then
+		AchievementFrame_SelectSearchItem(self.achievementID);
+		AchievementFrame.searchResults:Hide();
+		AchievementFrame_HideSearchPreview();
+		AchievementFrame.searchBox:ClearFocus();
+	end
+end
+
+function AchievementFrameShowAllSearchResults_OnEnter()
+	AchievementFrame_SetSearchPreviewSelection(ACHIEVEMENT_FRAME_SHOW_ALL_RESULTS_INDEX);
+end
+
+function AchievementFrame_UpdateSearch(self)
+	if ( AchievementFrame.searchResults:IsShown() ) then
+		AchievementFrame_UpdateFullSearchResults();
+	else
+		AchievementFrame_UpdateSearchPreview();
 	end
 end

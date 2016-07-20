@@ -1,0 +1,9 @@
+## Interface: 70000
+## Title: Blizzard Map Canvas
+## Secure: 1
+## Author: Blizzard Entertainment
+## LoadOnDemand: 1
+
+MapCanvas_DataProviderBase.lua
+
+Blizzard_MapCanvas.xml

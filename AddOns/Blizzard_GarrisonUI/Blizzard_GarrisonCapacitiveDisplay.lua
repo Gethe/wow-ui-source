@@ -20,12 +20,13 @@ local shipmentUpdater;
 
 function GarrisonCapacitiveDisplayFrame_TimerUpdate()
 	local self = GarrisonCapacitiveDisplayFrame;
-	GarrisonCapacitiveDisplayFrame_Update(self, true, self.maxShipments, self.plotID);
+	GarrisonCapacitiveDisplayFrame_Update(self, true, self.maxShipments, self.ownedShipments, self.plotID);
 end
 
-function GarrisonCapacitiveDisplayFrame_Update(self, success, maxShipments, plotID)
+function GarrisonCapacitiveDisplayFrame_Update(self, success, maxShipments, ownedShipments, plotID)
 	if (success ~= 0) then
 		self.maxShipments = maxShipments;
+		self.ownedShipments = ownedShipments;
 		self.plotID = plotID;
 
 		local display = self.CapacitiveDisplay;
@@ -42,15 +43,13 @@ function GarrisonCapacitiveDisplayFrame_Update(self, success, maxShipments, plot
 			self.maxShipments = 1;
 		end
 
-		local available = maxShipments - numPending;
+		local available = max(maxShipments - numPending - ownedShipments, 0);
 
 		self.available = available;
 		display.ShipmentIconFrame.itemId = nil;
 		
 		
 	    local reagents = display.Reagents;
-
-	    local hasReagents = true;
 
 	    for i = 1, #reagents do
 	    	reagents[i]:Hide();
@@ -78,7 +77,6 @@ function GarrisonCapacitiveDisplayFrame_Update(self, success, maxShipments, plot
 			if ( quantity < needed ) then
 				reagent.Icon:SetVertexColor(0.5, 0.5, 0.5);
 				reagent.Name:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
-				hasReagents = false;
 				self.available = 0;
 			else
 				reagent.Icon:SetVertexColor(1.0, 1.0, 1.0);
@@ -124,7 +122,6 @@ function GarrisonCapacitiveDisplayFrame_Update(self, success, maxShipments, plot
 					if ( quantity < currencyNeeded ) then
 						reagent.Icon:SetVertexColor(0.5, 0.5, 0.5);
 						reagent.Name:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
-						hasReagents = false;
 						self.available = 0;
 					else
 						reagent.Icon:SetVertexColor(1.0, 1.0, 1.0);
@@ -146,7 +143,23 @@ function GarrisonCapacitiveDisplayFrame_Update(self, success, maxShipments, plot
 			end
 		end
 
-	    local name, texture, quality, itemID, duration = C_Garrison.GetShipmentItemInfo();
+	    local name, texture, quality, itemID, followerID, duration = C_Garrison.GetShipmentItemInfo();
+        if ( followerID ) then
+            self.StartWorkOrderButton:SetText(CAPACITANCE_START_RECRUITMENT);
+            self.CreateAllWorkOrdersButton:SetText(CAPACITANCE_RECRUIT_ALL);
+		else
+            self.StartWorkOrderButton:SetText(CAPACITANCE_START_WORK_ORDER);
+            self.CreateAllWorkOrdersButton:SetText(CREATE_ALL);
+        end
+
+		-- Resize buttons to distribute space around text evenly
+		local button1TextWidth = self.CreateAllWorkOrdersButton.Text:GetWidth();
+		local button2TextWidth = self.StartWorkOrderButton.Text:GetWidth();
+		local buttonDiffOverTwo = (button1TextWidth - button2TextWidth) / 2;
+		local averageButtonWidth = 240 / 2;
+
+		self.CreateAllWorkOrdersButton:SetWidth(averageButtonWidth + buttonDiffOverTwo);
+		self.StartWorkOrderButton:SetWidth(averageButtonWidth - buttonDiffOverTwo);
 
 		if (not quality) then
 			quality = LE_ITEM_QUALITY_COMMON;
@@ -156,12 +169,12 @@ function GarrisonCapacitiveDisplayFrame_Update(self, success, maxShipments, plot
 			duration = 0;
 		end
 
-		local prefix, pendingText, description = C_Garrison.GetShipmentContainerInfo();
+		local pendingText, description = C_Garrison.GetShipmentContainerInfo();
 
 		local _, buildingName = C_Garrison.GetOwnedBuildingInfoAbbrev(self.plotID);
 
 		self.TitleText:SetText(buildingName);
-		self.StartWorkOrderButton:SetEnabled(hasReagents and available > 0);
+		self.StartWorkOrderButton:SetEnabled(self.available > 0);
 		
 		if ( UnitExists("npc") ) then
 			SetPortraitTexture(self.portrait, "npc");
@@ -175,32 +188,65 @@ function GarrisonCapacitiveDisplayFrame_Update(self, success, maxShipments, plot
 
 		display.Description:SetText(description);
 
-		display.ShipmentIconFrame.ShipmentName:SetText(name);
+		local followerInfo;
+		if (followerID) then
+			followerInfo = C_Garrison.GetFollowerInfo(followerID);
+		end
+		if (followerInfo) then
+			display.ShipmentIconFrame.ShipmentName:SetText(followerInfo.name);
+			display.ShipmentIconFrame.Follower:SetupPortrait(followerInfo);
+			display.ShipmentIconFrame.Follower:SetNoLevel();
+			display.ShipmentIconFrame.Follower:Show();
+			display.ShipmentIconFrame.Icon:Hide();
+		else
+			display.ShipmentIconFrame.ShipmentName:SetText(name);
+			display.ShipmentIconFrame.Follower:Hide();
+			display.ShipmentIconFrame.Icon:Show();
+		end
+
+		-- check the original available here. we dont' want to say 0 if you don't have the reagents.
+		-- should we say 0 if you can't make any due to follower limits?
 		if (available > 0) then
 			if (shipmentUpdater) then
 				shipmentUpdater:Cancel();
 				shipmentUpdater = nil;
 			end
-			display.ShipmentIconFrame.ShipmentsAvailable:SetText(CAPACITANCE_SHIPMENT_COUNT:format(available, maxShipments));
+            if (followerID) then
+                display.ShipmentIconFrame.ShipmentsAvailable:SetFormattedText(CAPACITANCE_RECRUIT_COUNT, available);
+            else
+    			display.ShipmentIconFrame.ShipmentsAvailable:SetFormattedText(CAPACITANCE_SHIPMENT_COUNT, available, maxShipments);
+            end
 		else
-			local timeRemaining = select(6,C_Garrison.GetPendingShipmentInfo(1));
-			if (timeRemaining ~= 0) then
-				if (not shipmentUpdater) then
-					shipmentUpdater = C_Timer.NewTicker(1, GarrisonCapacitiveDisplayFrame_TimerUpdate);
+			local timeRemaining = select(7,C_Garrison.GetPendingShipmentInfo(1));
+			if (timeRemaining ~= nil) then
+				if (timeRemaining ~= 0) then
+					if (not shipmentUpdater) then
+						shipmentUpdater = C_Timer.NewTicker(1, GarrisonCapacitiveDisplayFrame_TimerUpdate);
+					end
 				end
-			end
-			if (timeRemaining == 0) then
-				display.ShipmentIconFrame.ShipmentsAvailable:SetText(GREEN_FONT_COLOR_CODE..CAPACITANCE_SHIPMENT_READY..FONT_COLOR_CODE_CLOSE);
+				if (timeRemaining == 0) then
+					display.ShipmentIconFrame.ShipmentsAvailable:SetText(GREEN_FONT_COLOR_CODE..CAPACITANCE_SHIPMENT_READY..FONT_COLOR_CODE_CLOSE);
+				else
+					display.ShipmentIconFrame.ShipmentsAvailable:SetText(RED_FONT_COLOR_CODE..CAPACITANCE_SHIPMENT_COOLDOWN:format(SecondsToTime(timeRemaining, false, true, 1))..FONT_COLOR_CODE_CLOSE);
+				end
 			else
-				display.ShipmentIconFrame.ShipmentsAvailable:SetText(RED_FONT_COLOR_CODE..CAPACITANCE_SHIPMENT_COOLDOWN:format(SecondsToTime(timeRemaining, false, true, 1))..FONT_COLOR_CODE_CLOSE);
+				if (followerID) then
+					display.ShipmentIconFrame.ShipmentsAvailable:SetFormattedText(CAPACITANCE_RECRUIT_COUNT, available);
+				else
+    				display.ShipmentIconFrame.ShipmentsAvailable:SetFormattedText(CAPACITANCE_SHIPMENT_COUNT, available, maxShipments);
+				end
 			end
 		end
 
 		display.Description:ClearAllPoints();
 		if (numPending > 0) then
-			local lastTimeRemaining = select(6, C_Garrison.GetPendingShipmentInfo(numPending));
+			local lastTimeRemaining = select(7, C_Garrison.GetPendingShipmentInfo(numPending));
 			display.Description:SetPoint("TOPLEFT", display.LastComplete, "BOTTOMLEFT", 0, -12);
-			display.LastComplete:SetText(CAPACITANCE_ALL_COMPLETE:format(SecondsToTime(lastTimeRemaining, false, true, 1)));
+            if (followerID) then
+                display.LastComplete:SetFormattedText(CAPACITANCE_ALL_RECRUITMENT_COMPLETE, SecondsToTime(lastTimeRemaining, false, true, 1));
+            else
+    			display.LastComplete:SetFormattedText(CAPACITANCE_ALL_COMPLETE, SecondsToTime(lastTimeRemaining, false, true, 1));
+            end
 			display.LastComplete:Show();
 		else
 			display.LastComplete:Hide();
@@ -220,9 +266,9 @@ function GarrisonCapacitiveDisplayFrame_OnEvent(self, event, ...)
 	if (event == "SHIPMENT_CRAFTER_OPENED") then
 		self.containerID = ...;
 	elseif (event == "SHIPMENT_CRAFTER_INFO") then
-		local success, _, maxShipments, plotID = ...;
+		local success, _, maxShipments, ownedShipments, plotID = ...;
 
-		GarrisonCapacitiveDisplayFrame_Update(self, success, maxShipments, plotID);		
+		GarrisonCapacitiveDisplayFrame_Update(self, success, maxShipments, ownedShipments, plotID);		
 	elseif (event == "SHIPMENT_CRAFTER_CLOSED") then
 		self.containerID = nil;
 
@@ -234,7 +280,7 @@ function GarrisonCapacitiveDisplayFrame_OnEvent(self, event, ...)
 		HideUIPanel(GarrisonCapacitiveDisplayFrame);
 	elseif (event == "SHIPMENT_CRAFTER_REAGENT_UPDATE") then
 		if (self.plotID and self.maxShipments) then
-			GarrisonCapacitiveDisplayFrame_Update(self, true, self.maxShipments, self.plotID);
+			GarrisonCapacitiveDisplayFrame_Update(self, true, self.maxShipments, self.ownedShipments, self.plotID);
 		end
 	elseif (event == "SHIPMENT_UPDATE") then
 		local shipmentStarted = ...;

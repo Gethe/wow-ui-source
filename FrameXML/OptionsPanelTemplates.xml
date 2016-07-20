@@ -98,7 +98,7 @@
 						<Anchor point="BOTTOM" relativePoint="TOP"/>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentLow" inherits="GameFontHighlightSmall" text="LOW">
+				<FontString name="$parentLow" parentKey="Low" inherits="GameFontHighlightSmall" text="LOW">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
 							<Offset>
@@ -107,7 +107,7 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentHigh" inherits="GameFontHighlightSmall" text="HIGH">
+				<FontString name="$parentHigh" parentKey="High" inherits="GameFontHighlightSmall" text="HIGH">
 					<Anchors>
 						<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT">
 							<Offset>

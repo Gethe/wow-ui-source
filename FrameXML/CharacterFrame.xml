@@ -76,209 +76,70 @@
 		<TexCoords left="0.50000000" right="0.81250000" top="0.00000000" bottom="1.00000000"/>	
 	</Texture>
 
-	<Frame name="StatFrameTemplate" virtual="true">
-		<Size x="104" y="13"/>
+	<Frame name="CharacterStatFrameCategoryTemplate" virtual="true">
+		<Size x="197" y="40"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<FontString name="$parentStatText" inherits="GameFontHighlightSmall" justifyH="RIGHT" parentKey="Value">
+				<Texture parentKey="Background" atlas="UI-Character-Info-Title" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="RIGHT"/>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Title" inherits="GameFontHighlight">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="1"/>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentLabel" inherits="GameFontNormalSmall" justifyH="LEFT" parentKey="Label">
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				self.Title:SetText(self.titleText);
+			</OnLoad>
+		</Scripts>
+	</Frame>
+	<Frame name="CharacterStatFrameTemplate" virtual="true">
+		<Size x="187" y="15"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="UI-Character-Info-Line-Bounce" useAtlasSize="true" alpha="0.3">
 					<Anchors>
-						<Anchor point="LEFT"/>
-						<Anchor point="RIGHT" relativeKey="$parent.Value" relativePoint="LEFT" x="-5" y="0"/>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Label" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="LEFT" x="11" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Value" inherits="GameFontHighlightSmall">
+					<Anchors>
+						<Anchor point="RIGHT" x="-8" y="0"/>
 					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>
 		<Scripts>
 			<OnEnter>
-				PaperDollStatTooltip(self);
+				if ( self.onEnterFunc ) then
+					self:onEnterFunc();
+				else
+					PaperDollStatTooltip(self);
+				end
 			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
-      <OnLoad>
-        if (STATFRAME_STATTEXT_FONT_OVERRIDE) then
-          self.Value:SetFontObject(STATFRAME_STATTEXT_FONT_OVERRIDE);
-        end
-      </OnLoad>
-    </Scripts>
+			<OnLeave function="GameTooltip_Hide"/>
+			<OnLoad>
+				if (STATFRAME_STATTEXT_FONT_OVERRIDE) then
+					self.Value:SetFontObject(STATFRAME_STATTEXT_FONT_OVERRIDE);
+				end
+			</OnLoad>
+		</Scripts>
 	</Frame>
-	<Frame name="StatGroupTemplate" virtual="true">
-		<Size x="169" y="0"/>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture name="$parentBgTop" inherits="Char-Stat-Top" parentKey="BgTop">
-					<Anchors>
-						<Anchor point="TOPLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentBgBottom" inherits="Char-Stat-Bottom" parentKey="BgBottom">
-					<Anchors>
-						<Anchor point="BOTTOMLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentBgMiddle" file="Interface\CharacterFrame\Char-Stat-Middle" parentKey="BgMiddle" vertTile="true">
-					<Size x="169" y="8"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentBgTop" relativePoint="BOTTOMLEFT" x="1"/>
-						<Anchor point="BOTTOMLEFT" relativeTo="$parentBgBottom" relativePoint="TOPLEFT"/>
-					</Anchors>
-					<TexCoords left="0.00390625" right="0.66406250" top="0.00000000" bottom="1.00000000"/>
-				</Texture>
-				<Texture name="$parentBgMinimized" inherits="Char-Stat-Minimized" parentKey="BgMinimized" hidden="true">
-					<Size x="169" y="18"/>
-					<Anchors>
-						<Anchor point="TOPLEFT"/>
-					</Anchors>
-				</Texture>
-				<FontString name="$parentNameText" inherits="GameFontHighlight" justifyH="LEFT" parentKey="NameText">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="15" y="-3"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-			<Layer level="ARTWORK">
-				<Texture name="$parentCollapsedIcon" parentKey="CollapsedIcon" inherits="Char-Stat-Plus" hidden="true">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="5" y="-5"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentExpandedIcon" parentKey="ExpandedIcon" inherits="Char-Stat-Minus">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="5" y="-7"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Frames>
-			<Button name="$parentToolbar">
-				<Anchors>
-					<Anchor point="TOPLEFT"/>
-					<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="0" y="-20"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self:RegisterForDrag("LeftButton");
-					</OnLoad>
-					<OnEnter>
-						if (MOVING_STAT_CATEGORY == nil) then
-							self.SortDownArrow:Show();
-							self.SortUpArrow:Show();
-						end
-					</OnEnter>
-					<OnLeave>
-						if ( not self:IsMouseOver() and MOVING_STAT_CATEGORY ~= self:GetParent()) then
-							self.SortDownArrow:Hide();
-							self.SortUpArrow:Hide();
-						end
-					</OnLeave>
-					<OnClick>
-						if self:GetParent().collapsed then
-							PaperDollFrame_ExpandStatCategory(self:GetParent());
-							local categoryInfo = PAPERDOLL_STATCATEGORIES[self:GetParent().Category];
-							if (categoryInfo and CharacterStatsPane.collapsedCVarName) then
-								SetCVarBitfield(CharacterStatsPane.collapsedCVarName, categoryInfo.id, false);
-							end
-						else
-							PaperDollFrame_CollapseStatCategory(self:GetParent());
-							local categoryInfo = PAPERDOLL_STATCATEGORIES[self:GetParent().Category];
-							if (categoryInfo and CharacterStatsPane.collapsedCVarName) then
-								SetCVarBitfield(CharacterStatsPane.collapsedCVarName, categoryInfo.id, true);
-							end
-						end
-					</OnClick>
-					<OnDragStart>
-						PaperDollStatCategory_OnDragStart(self:GetParent());
-						self.SortDownArrow:Show();
-						self.SortUpArrow:Show();
-					</OnDragStart>
-					<OnDragStop>
-						PaperDollStatCategory_OnDragStop(self:GetParent());
-						if (self:IsMouseOver()) then
-							self.SortDownArrow:Show();
-							self.SortUpArrow:Show();
-						else
-							self.SortDownArrow:Hide();
-							self.SortUpArrow:Hide();
-						end
-					</OnDragStop>
-				</Scripts>
-				<Frames>
-					<Button name="$parentSortUpArrow" parentKey="SortUpArrow" hidden="true">
-						<Size x="16" y="8"/>
-						<Anchors>
-							<Anchor point="TOPRIGHT" x="-1" y="-1"/>
-						</Anchors>
-						<Layers>
-							<Layer level="BACKGROUND">
-								<Texture name="$parentArrow" file="Interface\PaperDollInfoFrame\StatSortArrows" parentKey="Arrow" alpha="0.4" setAllPoints="true">	
-									<TexCoords left="0" right="1" top="0" bottom="0.5"/>
-								</Texture>
-							</Layer>
-						</Layers>
-						<Scripts>
-							<OnEnter>
-								self:Show();
-								self.Arrow:SetAlpha(0.6);
-								self:GetParent().SortDownArrow:Show();
-							</OnEnter>
-							<OnLeave>
-								self.Arrow:SetAlpha(0.4);
-								if ( not self:GetParent():IsMouseOver() ) then
-									self:Hide();
-									self:GetParent().SortDownArrow:Hide();
-								end
-							</OnLeave>
-							<OnClick>
-								PaperDoll_MoveCategoryUp(self:GetParent():GetParent());
-							</OnClick>
-						</Scripts>
-					</Button>
-					<Button name="$parentSortDownArrow" parentKey="SortDownArrow" hidden="true">
-						<Size x="16" y="8"/>
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentSortUpArrow" relativePoint="BOTTOMLEFT"/>
-						</Anchors>
-						<Layers>
-							<Layer level="BACKGROUND">
-								<Texture name="$parentArrow" file="Interface\PaperDollInfoFrame\StatSortArrows" parentKey="Arrow" alpha="0.4" setAllPoints="true">
-									<TexCoords left="0" right="1" top="0.5" bottom="1"/>
-								</Texture>
-							</Layer>
-						</Layers>
-						<Scripts>
-							<OnEnter>
-								self:Show();
-								self.Arrow:SetAlpha(0.6);
-								self:GetParent().SortUpArrow:Show();
-							</OnEnter>
-							<OnLeave>
-								self.Arrow:SetAlpha(0.4);
-								if ( not self:GetParent():IsMouseOver() ) then
-									self:Hide();
-									self:GetParent().SortUpArrow:Hide();
-								end
-							</OnLeave>
-							<OnClick>
-								PaperDoll_MoveCategoryDown(self:GetParent():GetParent());
-							</OnClick>
-						</Scripts>
-					</Button>
-				</Frames>
-			</Button>
-			<Frame name="$parentStat1" inherits="StatFrameTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" x="16" y="-19"/>
-					<Anchor point="RIGHT" x="-4"/>
-				</Anchors>
-			</Frame>
-		</Frames>
-	</Frame>
-	
+
     <Frame name="CharacterFrame" toplevel="true" movable="true" parent="UIParent" hidden="true" inherits="ButtonFrameTemplate">
         <Frames>
             <Button name="CharacterFrameTab1" inherits="CharacterFrameTabButtonTemplate" id="1" text="CHARACTER">
@@ -297,25 +158,9 @@
 					<OnLeave function="GameTooltip_Hide"/>
                 </Scripts>
             </Button>
-            <Button name="CharacterFrameTab2" inherits="CharacterFrameTabButtonTemplate" id="2" text="PET">
+			<Button name="CharacterFrameTab2" inherits="CharacterFrameTabButtonTemplate" id="2" text="REPUTATION_ABBR">
                 <Anchors>
                    <Anchor point="LEFT" relativeTo="CharacterFrameTab1" relativePoint="RIGHT">
-                        <Offset>
-                            <AbsDimension x="-15" y="0"/>
-                        </Offset>
-                    </Anchor>
-                </Anchors>
-                <Scripts>
-					<OnEnter>
-						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:SetText(MicroButtonTooltipText(PETS, "TOGGLECHARACTER3"), 1.0,1.0,1.0 );
-					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
-                </Scripts>
-            </Button>
-			<Button name="CharacterFrameTab3" inherits="CharacterFrameTabButtonTemplate" id="3" text="REPUTATION_ABBR">
-                <Anchors>
-                   <Anchor point="LEFT" relativeTo="CharacterFrameTab2" relativePoint="RIGHT">
                         <Offset>
                             <AbsDimension x="-15" y="0"/>
                         </Offset>
@@ -329,9 +174,9 @@
 					<OnLeave function="GameTooltip_Hide"/>
                 </Scripts>
             </Button>
-			<Button name="CharacterFrameTab4" inherits="CharacterFrameTabButtonTemplate" id="4" text="CURRENCY" hidden="true">
+			<Button name="CharacterFrameTab3" inherits="CharacterFrameTabButtonTemplate" id="3" text="CURRENCY" hidden="true">
                 <Anchors>
-                   <Anchor point="LEFT" relativeTo="CharacterFrameTab3" relativePoint="RIGHT">
+                   <Anchor point="LEFT" relativeTo="CharacterFrameTab2" relativePoint="RIGHT">
                         <Offset>
                             <AbsDimension x="-15" y="0"/>
                         </Offset>
@@ -351,77 +196,84 @@
 					<Anchor point="BOTTOMRIGHT"  x="-4" y="4"/>
 				</Anchors>
 			</Frame>
-			<Button name="CharacterFrameExpandButton" hidden="true">
-				<Size x="32" y="32"/>
-				<Anchors>
-					<Anchor point="BOTTOMRIGHT" relativeTo="CharacterFrameInset" x="-2" y="-1"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self:SetFrameLevel(self:GetParent():GetFrameLevel() + 2);
-					</OnLoad>
-					<OnClick>
-						if (CharacterFrame.Expanded) then
-							SetCVar("characterFrameCollapsed", "1");
-							PlaySound("igCharacterInfoClose");
-							CharacterFrame_Collapse();
-						else
-							SetCVar("characterFrameCollapsed", "0");
-							PlaySound("igCharacterInfoOpen");
-							CharacterFrame_Expand();
-						end
-						if (GameTooltip:GetOwner() == self) then
-							self:GetScript("OnEnter")(self);
-						end
-					</OnClick>
-					<OnEnter>
-						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						if (CharacterFrame.Expanded) then
-							GameTooltip:SetText(HIGHLIGHT_FONT_COLOR_CODE..self.collapseTooltip..FONT_COLOR_CODE_CLOSE);
-						else
-							GameTooltip:SetText(HIGHLIGHT_FONT_COLOR_CODE..self.expandTooltip..FONT_COLOR_CODE_CLOSE);
-						end
-					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
-				</Scripts>
-				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
-				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
-				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
-				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
-			</Button>
 			
-			<ScrollFrame name="CharacterStatsPane" hidden="true" inherits="UIPanelScrollFrameTemplate2">
+			<Frame name="CharacterStatsPane" hidden="true">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="CharacterFrameInsetRight" x="4" y="-4"/>
-					<Anchor point="BOTTOMRIGHT" relativeTo="CharacterFrameInsetRight" x="-27" y="2"/>
+					<Anchor point="TOPLEFT" relativeTo="CharacterFrameInsetRight" x="3" y="-3"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="CharacterFrameInsetRight" x="-3" y="2"/>
 				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="ClassBackground">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame parentKey="ItemLevelFrame">
+						<Size x="187" y="29"/>
+						<Anchors>
+							<Anchor point="TOP" x="0" y="-45"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BORDER">
+								<Texture parentKey="Background" atlas="UI-Character-Info-ItemLevel-Bounce" useAtlasSize="true" alpha="0.3">
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="ARTWORK">
+								<FontString parentKey="Value" inherits="Game15Font_o1">
+									<Anchors>
+										<Anchor point="CENTER" relativeKey="$parent.ItemLevelBackground" x="0" y="-1"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnEnter>
+								if ( self.onEnterFunc ) then
+									self:onEnterFunc();
+								else
+									PaperDollStatTooltip(self);
+								end
+							</OnEnter>
+							<OnLeave function="GameTooltip_Hide"/>
+						</Scripts>
+					</Frame>
+					<Frame parentKey="ItemLevelCategory" inherits="CharacterStatFrameCategoryTemplate">
+						<KeyValues>
+							<KeyValue key="titleText" value="STAT_AVERAGE_ITEM_LEVEL" type="global"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOP" x="0" y="-4"/>
+						</Anchors>
+					</Frame>
+					<Frame parentKey="AttributesCategory" inherits="CharacterStatFrameCategoryTemplate">
+						<KeyValues>
+							<KeyValue key="titleText" value="STAT_CATEGORY_ATTRIBUTES" type="global"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOP" x="0" y="-81"/>
+						</Anchors>
+					</Frame>
+					<Frame parentKey="EnhancementsCategory" inherits="CharacterStatFrameCategoryTemplate">
+						<KeyValues>
+							<KeyValue key="titleText" value="STAT_CATEGORY_ENHANCEMENTS" type="global"/>
+						</KeyValues>
+					</Frame>
+				</Frames>
 				<Scripts>
 					<OnLoad>
-						self.ScrollBar.scrollStep = 50;
-						ScrollFrame_OnLoad(self);
-						ScrollFrame_OnScrollRangeChanged(self);
+						self.statsFramePool = CreateFramePool("FRAME", self, "CharacterStatFrameTemplate");
+						local _, class = UnitClass("player");
+						self.ClassBackground:SetAtlas("UI-Character-Info-"..class.."-BG", true);
 					</OnLoad>
 				</Scripts>
-				<ScrollChild>
-					<Frame name="CharacterStatsPaneScrollChild">
-						<Size x="170" y="0"/>
-						<Anchors>
-							<Anchor point="TOPLEFT"/>
-						</Anchors>
-						<Frames>
-							<Frame name="CharacterStatsPaneCategory1" inherits="StatGroupTemplate"/>
-							<Frame name="CharacterStatsPaneCategory2" inherits="StatGroupTemplate"/>
-							<Frame name="CharacterStatsPaneCategory3" inherits="StatGroupTemplate"/>
-							<Frame name="CharacterStatsPaneCategory4" inherits="StatGroupTemplate"/>
-							<Frame name="CharacterStatsPaneCategory5" inherits="StatGroupTemplate"/>
-							<Frame name="CharacterStatsPaneCategory6" inherits="StatGroupTemplate"/>
-							<Frame name="CharacterStatsPaneCategory7" inherits="StatGroupTemplate"/>
-						</Frames>
-					</Frame>
-				</ScrollChild>
-			</ScrollFrame>
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad function="CharacterFrame_OnLoad"/>

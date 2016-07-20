@@ -868,7 +868,7 @@
 				</Anchors>
 			</ScrollFrame>
 			<Frame parentKey="MoneyFrameBorder" inherits="ThinGoldEdgeTemplate">
-				<Size x="145" y="20"/>
+				<Size x="155" y="20"/>
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" x="27" y="4"/>
 				</Anchors>

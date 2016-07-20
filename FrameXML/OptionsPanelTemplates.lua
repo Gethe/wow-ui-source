@@ -147,18 +147,10 @@ function BlizzardOptionsPanel_CheckButton_Refresh (checkButton)
 	end
 
 	if ( value ) then
-		if ( not checkButton.invert ) then
-			if ( value == "1" ) then
-				checkButton:SetChecked(true);
-			else
-				checkButton:SetChecked(false);
-			end
+		if ( checkButton.invert ) then
+			checkButton:SetChecked(value == (checkButton.uncheckedValue or "0"));
 		else
-			if ( value == "0" ) then
-				checkButton:SetChecked(true);
-			else
-				checkButton:SetChecked(false);
-			end
+			checkButton:SetChecked(value == (checkButton.checkedValue or "1"));
 		end
 
 		if ( checkButton.dependentControls ) then

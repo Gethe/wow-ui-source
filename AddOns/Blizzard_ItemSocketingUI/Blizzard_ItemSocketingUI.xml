@@ -537,14 +537,14 @@
 						end
 					</OnClick>
 					<OnMouseDown>
-						if ( not self.disabled ) then
+						if ( self:IsEnabled() ) then
 							self.Left:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down");
 							self.Middle:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down");
 							self.Right:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down");
 						end
 					</OnMouseDown>
 					<OnMouseUp>
-						if ( not self.disabled ) then
+						if ( self:IsEnabled() ) then
 							self.Left:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
 							self.Middle:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
 							self.Right:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");

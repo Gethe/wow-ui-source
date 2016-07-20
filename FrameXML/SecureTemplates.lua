@@ -397,34 +397,6 @@ SECURE_ACTIONS.toy =
 		end
 	end;
 
--- Allow friendly names for glyph slots
-local GLYPH_SLOTS = {
-	minor1 = GLYPH_ID_MINOR_1;
-	minor2 = GLYPH_ID_MINOR_2;
-	minor3 = GLYPH_ID_MINOR_3;
-
-	major1 = GLYPH_ID_MAJOR_1;
-	major2 = GLYPH_ID_MAJOR_2;
-	major3 = GLYPH_ID_MAJOR_3;
-
---	prime1 = GLYPH_ID_PRIME_1;
---	prime2 = GLYPH_ID_PRIME_2;
---	prime3 = GLYPH_ID_PRIME_3;
-};
-
-SECURE_ACTIONS.glyph =
-    function (self, unit, button)
-        local glyph = SecureButton_GetModifiedAttribute(self, "glyph", button);
-        local slot = SecureButton_GetModifiedAttribute(self, "slot", button);
-        local glyphID = tonumber(glyph);
-        slot = (slot and GLYPH_SLOTS[slot]) or tonumber(slot);
-        if ( glyphID and slot ) then
-            CastGlyphByID(glyphID, slot);
-        elseif ( glyph and slot ) then
-            CastGlyphByName(glyph, slot);
-        end
-    end;
-
 SECURE_ACTIONS.item =
     function (self, unit, button)
         local item = SecureButton_GetModifiedAttribute(self, "item", button);

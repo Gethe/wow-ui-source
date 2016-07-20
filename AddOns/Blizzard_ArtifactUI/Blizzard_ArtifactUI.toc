@@ -1,0 +1,8 @@
+## Interface: 70000
+## Title: Blizzard Artifact UI
+## Secure: 1
+## LoadOnDemand: 1
+Blizzard_ArtifactPowerButton.xml
+Blizzard_ArtifactPerks.xml
+Blizzard_ArtifactAppearances.xml
+Blizzard_ArtifactUI.xml

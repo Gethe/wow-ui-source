@@ -121,6 +121,7 @@ function PVP_UpdateStatus()
 				BATTLEFIELD_TIMER_THRESHOLD_INDEX = 1;
 				PREVIOUS_BATTLEFIELD_MOD = 0;
 			end
+			MainMenuBar_UpdateExperienceBars();
 		end
 	end
 end
@@ -161,6 +162,7 @@ function PVPFramePopup_SetupPopUp(event, challengerName, bgName, timeout, tourna
 	SetPortraitToTexture(PVPFramePopup.ringIcon,"Interface\\BattlefieldFrame\\UI-Battlefield-Icon");
 	StaticPopupSpecial_Show(PVPFramePopup);
 	PlaySound("ReadyCheck");
+	FlashClientIcon();
 end
 
 
@@ -285,6 +287,7 @@ end
 
 function PVPRoleCheckPopup_OnShow(self)
 	PlaySound("ReadyCheck");
+	FlashClientIcon();
 	PVPRoleCheckPopup_UpdateSelectedRoles(self);
 	PVPRoleCheckPopup_UpdateRolesChangeable(self);
 end

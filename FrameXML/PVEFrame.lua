@@ -4,7 +4,7 @@
 local panels = {
 	{ name = "GroupFinderFrame", addon = nil },
 	{ name = "PVPUIFrame", addon = "Blizzard_PVPUI" },
-	{ name = "ChallengesFrame", addon = "Blizzard_ChallengesUI" },
+	{ name = "ChallengesFrame", addon = "Blizzard_ChallengesUI", check = function() return UnitLevel("player") >= 110 end, },
 }
 
 function PVEFrame_OnLoad(self)
@@ -13,11 +13,21 @@ function PVEFrame_OnLoad(self)
 
 	self:RegisterEvent("AJ_PVP_ACTION");
 	self:RegisterEvent("AJ_PVP_SKIRMISH_ACTION");
-	self:RegisterEvent("AJ_PVE_LFG_ACTION");
 	self:RegisterEvent("AJ_PVP_LFG_ACTION");
 	self:RegisterEvent("AJ_PVP_RBG_ACTION");
+	self:RegisterEvent("AJ_PVE_LFG_ACTION");
 	
 	self.maxTabWidth = (self:GetWidth() - 19) / #panels;
+end
+
+function PVEFrame_OnShow(self)
+	for index, panel in pairs(panels) do
+		if (panel.check and not panel.check()) then
+			PanelTemplates_HideTab(self, index);
+		else
+			PanelTemplates_ShowTab(self, index);
+		end
+	end
 end
 
 function PVEFrame_OnEvent(self, event, ...)
@@ -44,7 +54,7 @@ function PVEFrame_OnEvent(self, event, ...)
 end
 
 function PVEFrame_ToggleFrame(sidePanelName, selection)
-	if ( UnitLevel("player") < math.min(SHOW_LFD_LEVEL,SHOW_PVP_LEVEL) ) then
+	if ( UnitLevel("player") < math.min(SHOW_LFD_LEVEL,SHOW_PVP_LEVEL) or IsKioskModeEnabled() ) then
 		return;
 	end
 	local self = PVEFrame;
@@ -92,6 +102,10 @@ function PVEFrame_ShowFrame(sidePanelName, selection)
 	if ( not tabIndex ) then
 		return;
 	end
+	if ( panels[tabIndex].check and not panels[tabIndex].check() ) then
+		tabIndex = self.activeTabIndex or 1;
+	end
+
 	-- load addon if needed
 	if ( panels[tabIndex].addon ) then
 		UIParentLoadAddOn(panels[tabIndex].addon);
@@ -136,6 +150,38 @@ end
 function PVEFrame_TabOnClick(self)
 	PlaySound("igCharacterInfoTab");
 	PVEFrame_ShowFrame(panels[self:GetID()].name);
+end
+
+function PVEFrame_HideLeftInset()
+    PVEFrameLeftInset:Hide();
+    PVEFrameBlueBg:Hide();
+    PVEFrameTLCorner:Hide();
+    PVEFrameTRCorner:Hide();
+    PVEFrameBRCorner:Hide();
+    PVEFrameBLCorner:Hide();
+    PVEFrameLLVert:Hide();
+    PVEFrameRLVert:Hide();
+    PVEFrameBottomLine:Hide();
+    PVEFrameTopLine:Hide();
+    PVEFrameTopFiligree:Hide();
+    PVEFrameBottomFiligree:Hide();
+    PVEFrame.shadows:Hide();
+end
+
+function PVEFrame_ShowLeftInset()
+    PVEFrameLeftInset:Show();
+    PVEFrameBlueBg:Show();
+    PVEFrameTLCorner:Show();
+    PVEFrameTRCorner:Show();
+    PVEFrameBRCorner:Show();
+    PVEFrameBLCorner:Show();
+    PVEFrameLLVert:Show();
+    PVEFrameRLVert:Show();
+    PVEFrameBottomLine:Show();
+    PVEFrameTopLine:Show();
+    PVEFrameTopFiligree:Show();
+    PVEFrameBottomFiligree:Show();
+    PVEFrame.shadows:Show();
 end
 
 ---------------------------------------------------------------

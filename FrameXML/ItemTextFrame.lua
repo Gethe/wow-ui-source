@@ -3,13 +3,33 @@ function ItemTextFrame_OnLoad(self)
 	self:RegisterEvent("ITEM_TEXT_TRANSLATION");
 	self:RegisterEvent("ITEM_TEXT_READY");
 	self:RegisterEvent("ITEM_TEXT_CLOSED");
-	ItemTextScrollFrame.scrollBarHideable = 1;
 	ButtonFrameTemplate_HideButtonBar(self);
 end
 
+DEFAULT_ITEM_TEXT_FRAME_WIDTH = 338;
+DEFAULT_ITEM_TEXT_FRAME_HEIGHT = 424;
+
+EXPANDED_ITEM_TEXT_FRAME_WIDTH = 520;
+EXPANDED_ITEM_TEXT_FRAME_HEIGHT = 560;
+
+ITEM_TEXT_FONTS = {
+	["ParchmentLarge"] = {
+		["P"]  = QuestFont,
+		["H1"] = Fancy48Font,
+		["H2"] = Game20Font,
+		["H3"] = Fancy32Font
+	},
+	["default"] = {
+		["P"]  = QuestFont,
+		["H1"] = QuestFont,
+		["H2"] = QuestFont,
+		["H3"] = QuestFont
+	}
+};
+
 function ItemTextFrame_OnEvent(self, event, ...)
 	if ( event == "ITEM_TEXT_BEGIN" ) then
-		ItemTextTitleText:SetText(ItemTextGetItem());
+		self.TitleText:SetText(ItemTextGetItem());
 		ItemTextScrollFrame:Hide();
 		ItemTextCurrentPage:Hide();
 		ItemTextStatusBar:Hide();
@@ -19,8 +39,31 @@ function ItemTextFrame_OnEvent(self, event, ...)
 		if ( not material ) then
 			material = "Parchment";
 		end
-		local textColor = GetMaterialTextColors(material);
-		ItemTextPageText:SetTextColor(textColor[1], textColor[2], textColor[3]);
+		
+		-- Set up fonts
+		local fontTable = ITEM_TEXT_FONTS[material];
+		if(fontTable == nil) then
+			fontTable = ITEM_TEXT_FONTS["default"];
+		end
+		for tag, font in pairs(fontTable) do 
+			ItemTextPageText:SetFontObject(tag, font);
+		end
+
+		-- Set up text colors
+		local textColor, titleColor = GetMaterialTextColors(material);
+		if(material == "ParchmentLarge") then
+			ItemTextPageText:SetTextColor("P", textColor[1], textColor[2], textColor[3]);
+			ItemTextPageText:SetTextColor("H1", titleColor[1], titleColor[2], titleColor[3]);
+			ItemTextPageText:SetTextColor("H2", titleColor[1], titleColor[2], titleColor[3]);
+			ItemTextPageText:SetTextColor("H3", titleColor[1], titleColor[2], titleColor[3]);
+		else 
+			-- Legacy behavior - ignore the title color
+			ItemTextPageText:SetTextColor("P", textColor[1], textColor[2], textColor[3]);
+			ItemTextPageText:SetTextColor("H1", textColor[1], textColor[2], textColor[3]);
+			ItemTextPageText:SetTextColor("H2", textColor[1], textColor[2], textColor[3]);
+			ItemTextPageText:SetTextColor("H3", textColor[1], textColor[2], textColor[3]);
+		end
+		
 		return;
 	elseif ( event == "ITEM_TEXT_TRANSLATION" ) then
 		local arg1 = ...;
@@ -35,28 +78,75 @@ function ItemTextFrame_OnEvent(self, event, ...)
 		end
 		return;
 	elseif ( event == "ITEM_TEXT_READY" ) then
-		local creator = ItemTextGetCreator();
-		if ( creator ) then
-			creator = "\n\n"..ITEM_TEXT_FROM.."\n"..creator.."\n\n\n";
-			ItemTextPageText:SetText(ItemTextGetText()..creator);
-		else
-			ItemTextPageText:SetText(ItemTextGetText().."\n\n");
-		end
-		
-		ItemTextScrollFrameScrollBar:SetValue(0);
-		ItemTextScrollFrame:Show();	
-		local page = ItemTextGetPage();
-		local hasNext = ItemTextHasNextPage();
+	
 		local material = ItemTextGetMaterial(); 
 		if ( not material ) then
 			material = "Parchment";
 		end
+		
+		if (material == "ParchmentLarge") then
+			self:SetWidth(EXPANDED_ITEM_TEXT_FRAME_WIDTH);
+			self:SetHeight(EXPANDED_ITEM_TEXT_FRAME_HEIGHT);
+			ItemTextScrollFrame:SetPoint("TOPRIGHT", self, "TOPRIGHT", -46, -89);
+			ItemTextScrollFrame:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", 40, 6);
+			ItemTextPageText:SetWidth(412);
+			ItemTextPageText:SetHeight(440);
+		else
+			self:SetWidth(DEFAULT_ITEM_TEXT_FRAME_WIDTH);
+			self:SetHeight(DEFAULT_ITEM_TEXT_FRAME_HEIGHT);
+			if (ItemTextIsFullPage()) then
+				ItemTextScrollFrame:SetPoint("TOPRIGHT", self, "TOPRIGHT", -31, -63);
+				ItemTextScrollFrame:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", 6, 6);
+				ItemTextPageText:SetPoint("TOPLEFT", 0, 0);
+				ItemTextPageText:SetWidth(301);
+				ItemTextPageText:SetHeight(355);
+			else
+				ItemTextScrollFrame:SetPoint("TOPRIGHT", self, "TOPRIGHT", -33, -63);
+				ItemTextScrollFrame:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", 25, 6);
+				ItemTextPageText:SetPoint("TOPLEFT", 0, -15);
+				ItemTextPageText:SetWidth(270);
+				ItemTextPageText:SetHeight(304);
+			end
+		end
+	
+		local creator = ItemTextGetCreator();
+		if ( creator ) then
+			creator = "\n\n"..ITEM_TEXT_FROM.."\n"..creator.."\n";
+			ItemTextPageText:SetText(ItemTextGetText()..creator);
+		else
+			ItemTextPageText:SetText(ItemTextGetText());
+		end
+		
+		-- Add some padding at the bottom
+		ItemTextScrollFrame:GetScrollChild():SetHeight(1);
+		ItemTextScrollFrame:UpdateScrollChildRect();
+		if(ItemTextScrollFrame:GetVerticalScrollRange() > 0) then
+			ItemTextScrollFrame:GetScrollChild():SetHeight(ItemTextScrollFrame:GetHeight() + ItemTextScrollFrame:GetVerticalScrollRange() + 30);
+		end
+			
+		ItemTextScrollFrameScrollBar:SetValue(0);
+		ItemTextScrollFrame:Show();	
+		local page = ItemTextGetPage();
+		local hasNext = ItemTextHasNextPage();
+		
 		if ( material == "Parchment" ) then
 			ItemTextMaterialTopLeft:Hide();
 			ItemTextMaterialTopRight:Hide();
 			ItemTextMaterialBotLeft:Hide();
 			ItemTextMaterialBotRight:Hide();
+			ItemTextFramePageBg:Show();
+			ItemTextFramePageBg:SetTexture("Interface\\QuestFrame\\QuestBG");
+			ItemTextFramePageBg:SetWidth(512);
+			ItemTextFramePageBg:SetHeight(543);
+		elseif ( material == "ParchmentLarge" ) then
+			ItemTextMaterialTopLeft:Hide();
+			ItemTextMaterialTopRight:Hide();
+			ItemTextMaterialBotLeft:Hide();
+			ItemTextMaterialBotRight:Hide();
+			ItemTextFramePageBg:Show();
+			ItemTextFramePageBg:SetAtlas("Book-bg", true);
 		else
+			ItemTextFramePageBg:Hide();
 			ItemTextMaterialTopLeft:Show();
 			ItemTextMaterialTopRight:Show();
 			ItemTextMaterialBotLeft:Show();

@@ -15,10 +15,16 @@ ECLIPSE_MARKER_COORDS["moon"] 	= { 1, 0, 0, 1 };
 
 
 function EclipseBar_UpdateShown(self)
+
 	if OverrideActionBar:IsShown() then
 		return;
 	end
 
+	if (true) then
+		self:Hide();
+		return;
+	end
+	
 	-- Disable rune frame if not a DRUID.
 	local _, class = UnitClass("player");
 	local form  = GetShapeshiftFormID();
@@ -26,7 +32,7 @@ function EclipseBar_UpdateShown(self)
 	if  class == "DRUID" and (form == MOONKIN_FORM or not form) then
 		if GetSpecialization() == 1 then
 			self.textDisplay = GetCVar("statusTextDisplay");	
-			if GetCVarBool("playerStatusText") then
+			if GetCVarBool("statusText") then
 				self.PowerText:Show();
 				self.lockShow = true;
 			else

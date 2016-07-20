@@ -11,11 +11,11 @@
 	<Frame name="BNToastFrame" parent="UIParent" hidden="true" frameStrata="LOW">
 		<Animations>
 			<AnimationGroup name="$parentAnimIn" parentKey="animIn">
-				<Alpha change="-1" duration="0" order="1"/>
-				<Alpha change="1" duration="0.2" order="2"/>
+				<Alpha fromAlpha="1" toAlpha="0" duration="0" order="1"/>
+				<Alpha fromAlpha="0" toAlpha="1" duration="0.2" order="2"/>
 			</AnimationGroup>
 			<AnimationGroup name="$parentWaitAndAnimOut" parentKey="waitAndAnimOut">
-				<Alpha startDelay="4.05" change="-1" duration="1.5" parentKey="animOut">
+				<Alpha startDelay="4.05" fromAlpha="1" toAlpha="0" duration="1.5" parentKey="animOut">
 					<Scripts>
 						<OnFinished>
 							BNToastFrame_Close();
@@ -123,8 +123,8 @@
 							</Anchors>
 							<Animations>
 								<AnimationGroup name="$parentAnimIn" parentKey="animIn">
-									<Alpha change="1" duration="0.2" order="1"/>
-									<Alpha change="-1" duration="0.5" order="2"/>
+									<Alpha fromAlpha="0" toAlpha="1" duration="0.2" order="1"/>
+									<Alpha fromAlpha="1" toAlpha="0" duration="0.5" order="2"/>
 									<Scripts>
 										<OnFinished>
 											self:GetParent():Hide();
@@ -325,19 +325,9 @@
 							<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT" x="6" y="-6"/>
 							<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT" x="0" y="6"/>
 						</Anchors>
-						<Frames>
-							<Button name="$parentFocusButton" setAllPoints="true">
-								<Scripts>
-									<OnClick>
-										BNetReportFrameCommentBox:SetFocus();
-									</OnClick>
-								</Scripts>
-							</Button>
-						</Frames>
 						<Scripts>
 							<OnLoad>
 								local scrollBar = _G[self:GetName().."ScrollBar"];
-								scrollBar:SetFrameLevel(_G[self:GetName().."FocusButton"]:GetFrameLevel() + 2);
 								scrollBar:ClearAllPoints();
 								scrollBar:SetPoint("TOPLEFT", self, "TOPRIGHT", -18, -10);
 								scrollBar:SetPoint("BOTTOMLEFT", self, "BOTTOMRIGHT", -18, 8);
@@ -349,6 +339,9 @@
 								self.scrollBarHideable = 1;
 								scrollBar:Hide();
 							</OnLoad>
+							<OnMouseDown>
+								BNetReportFrameCommentBox:SetFocus();
+							</OnMouseDown>
 						</Scripts>
 						<ScrollChild>
 							<EditBox name="BNetReportFrameCommentBox" multiLine="true" letters="127" countInvisibleLetters="true" autoFocus="false">
@@ -441,11 +434,11 @@
 	<Frame name="TimeAlertFrame" parent="UIParent" hidden="true" frameStrata="DIALOG">
 		<Animations>
 			<AnimationGroup name="$parentAnimIn" parentKey="animIn">
-				<Alpha change="-1" duration="0" order="1"/>
-				<Alpha change="1" duration="0.2" order="2"/>
+				<Alpha fromAlpha="1" toAlpha="0" duration="0" order="1"/>
+				<Alpha fromAlpha="0" toAlpha="1" duration="0.2" order="2"/>
 			</AnimationGroup>
 			<AnimationGroup name="$parentWaitAndAnimOut" parentKey="animOut">
-				<Alpha startDelay="4.05" change="-1" duration="1.5" parentKey="animOut">
+				<Alpha startDelay="4.05" fromAlpha="1" toAlpha="0" duration="1.5" parentKey="animOut">
 					<Scripts>
 						<OnFinished>
 							TimeAlert_Close();
@@ -507,8 +500,8 @@
 							</Anchors>
 							<Animations>
 								<AnimationGroup name="$parentAnimIn" parentKey="animIn">
-									<Alpha change="1" duration="0.2" order="1"/>
-									<Alpha change="-1" duration="0.5" order="2"/>
+									<Alpha fromAlpha="0" toAlpha="1" duration="0.2" order="1"/>
+									<Alpha fromAlpha="1" toAlpha="0" duration="0.5" order="2"/>
 									<Scripts>
 										<OnFinished>
 											self:GetParent():Hide();

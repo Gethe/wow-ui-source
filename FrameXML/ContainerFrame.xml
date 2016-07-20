@@ -1,6 +1,51 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="ContainerFrame.lua"/>
+	
+	<Frame name="ArtifactRelicHelpBox" inherits="GlowBoxTemplate" parent="UIParent" enableMouse="true" hidden="true" frameStrata="DIALOG">
+		<Size x="220" y="100"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Text" inherits="GameFontHighlightLeft" justifyV="TOP" text="ARTIFACT_TUTORIAL_SLOT_RELIC">
+					<Size x="188" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="16" y="-24"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="6" y="6"/>
+				</Anchors>
+				<Scripts>
+					<OnClick inherit="append">
+						SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_ARTIFACT_RELIC_MATCH, true);
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Frame parentKey="Arrow" inherits="GlowBoxArrowTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="RIGHT" x="-2" y="16"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				self.Text:SetSpacing(4);
+				SetClampedTextureRotation(self.Arrow.Arrow, 270);
+				SetClampedTextureRotation(self.Arrow.Glow, 270);
+
+				self.Arrow.Glow:ClearAllPoints();
+				self.Arrow.Glow:SetPoint("LEFT", self, "RIGHT");
+			</OnLoad>
+			<OnShow>
+				self:SetHeight(self.Text:GetHeight() + 42);
+			</OnShow>
+		</Scripts>
+	</Frame>
+	
 	<Button name="ContainerFrameItemButtonTemplate" inherits="ItemButtonTemplate" hidden="true" virtual="true">
 		<Anchors>
 			<Anchor point="BOTTOMRIGHT">
@@ -81,11 +126,10 @@
 				ContainerFrameItemButton_OnLoad(self);
 			</OnLoad>
 			<OnEnter>
-				ContainerFrameItemButton_OnEnter(self, motion);
+				ContainerFrameItemButton_OnEnter(self);
 			</OnEnter>
 			<OnLeave>
-				GameTooltip_Hide();
-				ResetCursor();
+				ContainerFrameItemButton_OnLeave(self);
 			</OnLeave>
 			<OnHide>
 				if ( self.hasStackSplit and (self.hasStackSplit == 1) ) then
@@ -256,51 +300,8 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnEnter>
-						self.Highlight:Show();
-						GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-						if ( self:GetID() == 0 ) then
-							GameTooltip:SetText(BACKPACK_TOOLTIP, 1.0, 1.0, 1.0);
-							if (GetBindingKey("TOGGLEBACKPACK")) then
-								GameTooltip:AppendText(" "..NORMAL_FONT_COLOR_CODE.."("..GetBindingKey("TOGGLEBACKPACK")..")"..FONT_COLOR_CODE_CLOSE)
-							end
-						else
-							local parent = self:GetParent();
-							local id = parent:GetID();
-							local link = GetInventoryItemLink("player", ContainerIDToInventoryID(id));
-							local name, _, quality = GetItemInfo(link);
-							local r, g, b = GetItemQualityColor(quality);
-							GameTooltip:SetText(name, r, g, b);
-							if (not IsInventoryItemProfessionBag("player", ContainerIDToInventoryID(id))) then
-								if (parent.localFlag and BAG_FILTER_LABELS[parent.localFlag]) then
-									GameTooltip:AddLine(BAG_FILTER_ASSIGNED_TO:format(BAG_FILTER_LABELS[parent.localFlag]));
-								elseif (not parent.localFlag) then
-									for i = LE_BAG_FILTER_FLAG_EQUIPMENT, NUM_LE_BAG_FILTER_FLAGS do
-										local active = false;
-										if ( self:GetID() > NUM_BAG_SLOTS ) then
-											active = GetBankBagSlotFlag(id - NUM_BAG_SLOTS, i);
-										else
-											active = GetBagSlotFlag(id, i);
-										end
-										if ( active ) then
-											GameTooltip:AddLine(BAG_FILTER_ASSIGNED_TO:format(BAG_FILTER_LABELS[i]));
-											break;
-										end
-									end
-								end
-							end
-							local binding = GetBindingKey("TOGGLEBAG"..(4 - self:GetID() + 1));
-							if ( binding ) then
-								GameTooltip:AppendText(" "..NORMAL_FONT_COLOR_CODE.."("..binding..")"..FONT_COLOR_CODE_CLOSE);
-							end
-						end
-						GameTooltip:AddLine(CLICK_BAG_SETTINGS);
-						GameTooltip:Show();
-					</OnEnter>
-					<OnLeave>
-						self.Highlight:Hide();
-						GameTooltip:Hide();
-					</OnLeave>
+					<OnEnter function="ContainerFramePortraitButton_OnEnter" />
+					<OnLeave function="ContainerFramePortraitButton_OnLeave" />
 					<OnClick>
 						local parent = self:GetParent();
 						PlaySound("igMainMenuOptionCheckBoxOn");

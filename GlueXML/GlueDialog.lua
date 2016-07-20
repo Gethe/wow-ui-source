@@ -74,7 +74,7 @@ GlueDialogTypes["ERROR_CINEMATIC"] = {
 	button2 = nil,
 }
 
-GlueDialogTypes["CONFIRM_RESET_VIDEO_SETTINGS"] = { 
+GlueDialogTypes["CONFIRM_RESET_VIDEO_SETTINGS"] = {
 	text = CONFIRM_RESET_SETTINGS,
 	button1 = ALL_SETTINGS,
 	button2 = CURRENT_SETTINGS,
@@ -276,6 +276,35 @@ GlueDialogTypes["SHADER_MODEL_TO_BE_UNSUPPORTED"] = {
 	OnAccept = function ()
 		CheckSystemRequirements("SHADERMODEL_TOBEUNSUPPORTED");
 	end
+}
+
+GlueDialogTypes["CHARACTER_BOOST_NO_CHARACTERS_WARNING"] = {
+	text = CHARACTER_BOOST_NO_CHARACTERS_WARNING_DIALOG_TEXT,
+	button1 = CHARACTER_BOOST_NO_CHARACTERS_WARNING_DIALOG_ACCEPT_WARNING,
+	button2 = CHARACTER_BOOST_NO_CHARACTERS_WARNING_DIALOG_IGNORE_WARNING,
+	displayVertical = true,
+	escapeHides = true,
+
+	OnAccept = function ()
+		CharSelectServicesFlowFrame:Hide();
+		CharacterSelect_CreateNewCharacter(LE_CHARACTER_CREATE_TYPE_NORMAL);
+	end,
+
+	OnCancel = function ()
+		CharacterUpgradePopup_BeginCharacterUpdgradeFlow(GlueDialog.data);
+	end,
+}
+
+GlueDialogTypes["ADVANCED_CHARACTER_CREATION_WARNING"] = {
+	text = "",
+	button1 = ADVANCED_CHARACTER_CREATION_WARNING_DIALOG_ACCEPT_WARNING,
+	button2 = ADVANCED_CHARACTER_CREATION_WARNING_DIALOG_IGNORE_WARNING,
+	displayVertical = true,
+	ignoreKeys = true,
+
+	OnCancel = function ()
+		CharacterClass_SelectClass(GlueDialog.data, true);
+	end,
 }
 
 --[[
@@ -493,9 +522,9 @@ function GlueDialog_Show(which, text, data)
 	if ( GlueDialog:IsShown() ) then
 		if ( GlueDialog.which ~= which ) then -- We don't actually want to hide, we just want to redisplay?
 			if ( GlueDialogTypes[GlueDialog.which].OnHide ) then
-				GlueDialogTypes[GlueDialog.which].OnHide();	
+				GlueDialogTypes[GlueDialog.which].OnHide();
 			end
-			
+
 			GlueDialog:Hide();
 		end
 	end
@@ -511,7 +540,7 @@ function GlueDialog_Show(which, text, data)
 		GlueDialogHTML:Hide();
 		GlueDialogText:Show();
 	end
-	
+
 	-- Set the text of the dialog
 	if ( text ) then
 		glueText:SetText(text);
@@ -523,13 +552,13 @@ function GlueDialog_Show(which, text, data)
 	GlueDialogTitle:Hide();
 	glueText:ClearAllPoints();
 	glueText:SetPoint("TOP", 0, -16);
-	
+
 	-- Set the buttons of the dialog
 	if ( dialogInfo.button3 ) then
 		GlueDialogButton1:ClearAllPoints();
 		GlueDialogButton2:ClearAllPoints();
 		GlueDialogButton3:ClearAllPoints();
-	
+
 		if ( dialogInfo.displayVertical ) then
 			GlueDialogButton3:SetPoint("BOTTOM", "GlueDialogBackground", "BOTTOM", 0, 16);
 			GlueDialogButton2:SetPoint("BOTTOM", "GlueDialogButton3", "TOP", 0, 0);
@@ -549,7 +578,7 @@ function GlueDialog_Show(which, text, data)
 	elseif ( dialogInfo.button2 ) then
 		GlueDialogButton1:ClearAllPoints();
 		GlueDialogButton2:ClearAllPoints();
-	
+
 		if ( dialogInfo.displayVertical ) then
 			GlueDialogButton2:SetPoint("BOTTOM", "GlueDialogBackground", "BOTTOM", 0, 16);
 			GlueDialogButton1:SetPoint("BOTTOM", "GlueDialogButton2", "TOP", 0, 0);
@@ -610,9 +639,19 @@ function GlueDialog_Show(which, text, data)
 		GlueDialogSpinner:Hide();
 	end
 
+	-- Get the width of the text to aid in determining the width of the dialog
+	local textWidth = 0;
+	if ( dialogInfo.html ) then
+		textWidth = select(3, GlueDialogHTML:GetBoundsRect());
+	else
+		textWidth = GlueDialogText:GetWidth();
+	end
+
 	-- size the width first
 	if( dialogInfo.displayVertical ) then
-		GlueDialogBackground:SetWidth(16 + GlueDialogButton1:GetWidth() + 16);
+		local borderPadding = 32;
+		local backgroundWidth = math.max(GlueDialogButton1:GetWidth(), textWidth);
+		GlueDialogBackground:SetWidth(backgroundWidth + borderPadding);
 	elseif ( dialogInfo.button3 ) then
 		local displayWidth = 45 + GlueDialogButton1:GetWidth() + 8 + GlueDialogButton2:GetWidth() + 8 + GlueDialogButton3:GetWidth() + 45;
 		GlueDialogBackground:SetWidth(displayWidth);
@@ -626,7 +665,7 @@ function GlueDialog_Show(which, text, data)
 	else
 		textHeight = GlueDialogText:GetHeight();
 	end
-	
+
 	-- now size the dialog box height
 	local displayHeight = 16 + textHeight;
 	if( dialogInfo.displayVertical ) then
@@ -653,14 +692,14 @@ function GlueDialog_Show(which, text, data)
 		if ( dialogInfo.hasEditBox ) then
 			displayHeight = displayHeight + 8 + GlueDialogEditBox:GetHeight();
 		end
-		
+
 		if ( dialogInfo.spinner)  then
 			displayHeight = displayHeight + GlueDialogSpinner:GetHeight();
 		end
 	end
 
 	GlueDialogBackground:SetHeight(displayHeight);
-	
+
 	GlueDialog:Show();
 end
 

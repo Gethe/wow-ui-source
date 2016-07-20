@@ -871,13 +871,6 @@ TRAVEL PASS
 											</Layer>
 										</Layers>
 										<Frames>
-											<Button parentKey="FocusButton" setAllPoints="true">
-												<Scripts>
-													<OnClick>
-														self:GetParent().EditBox:SetFocus();
-													</OnClick>
-												</Scripts>
-											</Button>
 											<Button inherits="UIPanelButtonTemplate" parentKey="UpdateButton" text="UPDATE">
 												<Size x="110" y="24"/>
 												<Anchors>
@@ -911,6 +904,9 @@ TRAVEL PASS
 												self:GetParent():SetHeight(self.minHeight);
 												self.EditBox:SetPoint("TOPLEFT", 4, -4);
 											</OnLoad>
+											<OnMouseDown>
+												self.EditBox:SetFocus();
+											</OnMouseDown>
 										</Scripts>
 										<ScrollChild>
 											<EditBox parentKey="EditBox" multiLine="false" letters="127" countInvisibleLetters="true" autoFocus="false">
@@ -2435,19 +2431,9 @@ TRAVEL PASS
 									<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT" x="6" y="-6"/>
 									<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT" x="0" y="6"/>
 								</Anchors>
-								<Frames>
-									<Button name="$parentFocusButton" setAllPoints="true">
-										<Scripts>
-											<OnClick>
-												AddFriendNoteEditBox:SetFocus();
-											</OnClick>
-										</Scripts>
-									</Button>
-								</Frames>
 								<Scripts>
 									<OnLoad>
 										local scrollBar = _G[self:GetName().."ScrollBar"];
-										scrollBar:SetFrameLevel(_G[self:GetName().."FocusButton"]:GetFrameLevel() + 2);
 										scrollBar:ClearAllPoints();
 										scrollBar:SetPoint("TOPLEFT", self, "TOPRIGHT", -18, -10);
 										scrollBar:SetPoint("BOTTOMLEFT", self, "BOTTOMRIGHT", -18, 8);
@@ -2459,6 +2445,9 @@ TRAVEL PASS
 										self.scrollBarHideable = 1;
 										scrollBar:Hide();
 									</OnLoad>
+									<OnMouseDown>
+										AddFriendNoteEditBox:SetFocus();
+									</OnMouseDown>
 								</Scripts>
 								<ScrollChild>
 									<EditBox name="AddFriendNoteEditBox" multiLine="true" letters="127" countInvisibleLetters="true" autoFocus="false">

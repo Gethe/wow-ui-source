@@ -176,7 +176,7 @@ function PetActionBar_UpdateCooldowns()
 	for i=1, NUM_PET_ACTION_SLOTS, 1 do
 		local cooldown = _G["PetActionButton"..i.."Cooldown"];
 		local start, duration, enable = GetPetActionCooldown(i);
-		CooldownFrame_SetTimer(cooldown, start, duration, enable);
+		CooldownFrame_Set(cooldown, start, duration, enable);
 		
 		-- Update tooltip
 		local actionButton = _G["PetActionButton"..i];

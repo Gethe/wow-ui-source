@@ -1,7 +1,54 @@
 HOLY_POWER_FULL = 3;
 PALADINPOWERBAR_SHOW_LEVEL = 9;
 
-function PaladinPowerBar_ToggleHolyRune(self, visible)
+PaladinPowerBar = {};
+
+function PaladinPowerBar:OnLoad()
+	self:SetTooltip(HOLY_POWER, HOLY_POWER_TOOLTIP);
+	self:SetPowerTokens("HOLY_POWER");
+	self.class = "PALADIN";
+	self.spec = SPEC_PALADIN_RETRIBUTION;
+	
+	self.glow:SetAlpha(0);
+	self.rune1:SetAlpha(0);
+	self.rune2:SetAlpha(0);
+	self.rune3:SetAlpha(0);
+	self.rune4:SetAlpha(0);
+	self.rune5:SetAlpha(0);
+	
+	ClassPowerBar.OnLoad(self);
+end
+
+function PaladinPowerBar:OnEvent(event, arg1, arg2)
+	local eventHandled = ClassPowerBar.OnEvent(self, event, arg1, arg2);
+	
+	if( not eventHandled and event ==  "PLAYER_LEVEL_UP" ) then
+		local level = arg1;
+		if level >= PALADINPOWERBAR_SHOW_LEVEL then
+			self:UnregisterEvent("PLAYER_LEVEL_UP");
+			self.showAnim:Play();
+			self:UpdatePower();
+		end
+	end
+end
+
+function PaladinPowerBar:Setup()
+	local showBar = ClassPowerBar.Setup(self);
+	
+	if (showBar) then
+		if UnitLevel("player") < PALADINPOWERBAR_SHOW_LEVEL then
+			self:RegisterEvent("PLAYER_LEVEL_UP");
+			self:SetAlpha(0);
+		end
+			
+		self.maxHolyPower = UnitPowerMax("player", SPELL_POWER_HOLY_POWER);
+		if ( self.maxHolyPower > HOLY_POWER_FULL ) then
+			self.bankBG:SetAlpha(1);
+		end
+	end
+end
+
+function PaladinPowerBar:ToggleHolyRune(self, visible)
 	if visible then
 		self.deactivate:Play();
 	else
@@ -14,22 +61,22 @@ function PaladinPowerBar_OnUpdate(self, elapsed)
 	if ( self.delayedUpdate <= 0 ) then
 		self.delayedUpdate = nil;
 		self:SetScript("OnUpdate", nil);
-		PaladinPowerBar_Update(self);
+		self:UpdatePower();
 	end
 end
 
-function PaladinPowerBar_Update(self)
+function PaladinPowerBar:UpdatePower()
 	if ( self.delayedUpdate ) then
 		return;
 	end
 	
-	local numHolyPower = UnitPower( PaladinPowerBar:GetParent().unit, SPELL_POWER_HOLY_POWER );
-	local maxHolyPower = UnitPowerMax( PaladinPowerBar:GetParent().unit, SPELL_POWER_HOLY_POWER );
+	local numHolyPower = UnitPower( self:GetParent().unit, SPELL_POWER_HOLY_POWER );
+	local maxHolyPower = UnitPowerMax( self:GetParent().unit, SPELL_POWER_HOLY_POWER );
 	
 	-- a little hacky but we want to signify that the bank is being used to replenish holy power
 	if ( self.lastPower and self.lastPower > HOLY_POWER_FULL and numHolyPower == self.lastPower - HOLY_POWER_FULL ) then
 		for i = 1, HOLY_POWER_FULL do
-			PaladinPowerBar_ToggleHolyRune(self["rune"..i], true);
+			self:ToggleHolyRune(self["rune"..i], true);
 		end
 		self.lastPower = nil;
 		self.delayedUpdate = 0.5;
@@ -42,7 +89,7 @@ function PaladinPowerBar_Update(self)
 		local isShown = holyRune:GetAlpha()> 0 or holyRune.activate:IsPlaying();
 		local shouldShow = i <= numHolyPower;
 		if isShown ~= shouldShow then 
-			PaladinPowerBar_ToggleHolyRune(holyRune, isShown);
+			self:ToggleHolyRune(holyRune, isShown);
 		end
 	end
 
@@ -67,53 +114,4 @@ function PaladinPowerBar_Update(self)
 	end
 	
 	self.lastPower = numHolyPower;
-end
-
-
-
-function PaladinPowerBar_OnLoad (self)
-	-- Disable frame if not a paladin
-	local _, class = UnitClass("player");	
-	if ( class ~= "PALADIN" ) then
-		self:Hide();
-		return;
-	elseif UnitLevel("player") < PALADINPOWERBAR_SHOW_LEVEL then
-		self:RegisterEvent("PLAYER_LEVEL_UP");
-		self:SetAlpha(0);
-	end
-	
-	self.maxHolyPower = UnitPowerMax("player", SPELL_POWER_HOLY_POWER);
-	if ( self.maxHolyPower > HOLY_POWER_FULL ) then
-		self.bankBG:SetAlpha(1);
-	end
-
-	self:RegisterEvent("UNIT_POWER");
-	self:RegisterEvent("PLAYER_ENTERING_WORLD");
-	self:RegisterEvent("UNIT_DISPLAYPOWER");
-	
-	self.glow:SetAlpha(0);
-	self.rune1:SetAlpha(0);
-	self.rune2:SetAlpha(0);
-	self.rune3:SetAlpha(0);
-	self.rune4:SetAlpha(0);
-	self.rune5:SetAlpha(0);
-end
-
-
-
-function PaladinPowerBar_OnEvent (self, event, arg1, arg2)
-	if ( (event == "UNIT_POWER") and (arg1 == self:GetParent().unit) ) then
-		if ( arg2 == "HOLY_POWER" ) then
-			PaladinPowerBar_Update(self);
-		end
-	elseif( event ==  "PLAYER_LEVEL_UP" ) then
-		local level = arg1;
-		if level >= PALADINPOWERBAR_SHOW_LEVEL then
-			self:UnregisterEvent("PLAYER_LEVEL_UP");
-			self.showAnim:Play();
-			PaladinPowerBar_Update(self);
-		end
-	else
-		PaladinPowerBar_Update(self);
-	end
 end

@@ -9,7 +9,7 @@ HUNTER_TRACKING = 1;
 TOWNSFOLK = 2;
 
 GARRISON_ALERT_CONTEXT_BUILDING = 1;
-GARRISON_ALERT_CONTEXT_MISSION = { [LE_FOLLOWER_TYPE_GARRISON_6_0] = 2, [LE_FOLLOWER_TYPE_SHIPYARD_6_2] = 4 };
+GARRISON_ALERT_CONTEXT_MISSION = { [LE_FOLLOWER_TYPE_GARRISON_6_0] = 2, [LE_FOLLOWER_TYPE_SHIPYARD_6_2] = 4, [LE_FOLLOWER_TYPE_GARRISON_7_0] = 5 };
 GARRISON_ALERT_CONTEXT_INVASION = 3;
 
 LFG_EYE_TEXTURES = { };
@@ -509,6 +509,9 @@ function GarrisonLandingPageMinimapButton_OnLoad(self)
 	self:RegisterEvent("GARRISON_INVASION_AVAILABLE");
 	self:RegisterEvent("GARRISON_INVASION_UNAVAILABLE");
 	self:RegisterEvent("SHIPMENT_UPDATE");
+	self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
+	self:RegisterEvent("ZONE_CHANGED");
+	self:RegisterEvent("ZONE_CHANGED_INDOORS");
 end
 
 function GarrisonLandingPageMinimapButton_OnEvent(self, event, ...)
@@ -521,10 +524,13 @@ function GarrisonLandingPageMinimapButton_OnEvent(self, event, ...)
 	elseif ( event == "GARRISON_BUILDING_ACTIVATED" or event == "GARRISON_ARCHITECT_OPENED") then
 		GarrisonMinimap_HidePulse(self, GARRISON_ALERT_CONTEXT_BUILDING);
 	elseif ( event == "GARRISON_MISSION_FINISHED" ) then
-		local missionID = ...;
-		GarrisonMinimapMission_ShowPulse(self, missionID);
+		local followerType = ...;
+		GarrisonMinimapMission_ShowPulse(self, followerType);
 	elseif ( event == "GARRISON_MISSION_NPC_OPENED" ) then
-		GarrisonMinimap_HidePulse(self, GARRISON_ALERT_CONTEXT_MISSION[LE_FOLLOWER_TYPE_GARRISON_6_0]);
+		local followerType = ...;
+		if followerType == LE_FOLLOWER_TYPE_GARRISON_6_0 then
+			GarrisonMinimap_HidePulse(self, GARRISON_ALERT_CONTEXT_MISSION[LE_FOLLOWER_TYPE_GARRISON_6_0]);
+		end
 	elseif ( event == "GARRISON_SHIPYARD_NPC_OPENED" ) then
 		GarrisonMinimap_HidePulse(self, GARRISON_ALERT_CONTEXT_MISSION[LE_FOLLOWER_TYPE_SHIPYARD_6_2]);
 	elseif (event == "GARRISON_INVASION_AVAILABLE") then
@@ -532,21 +538,35 @@ function GarrisonLandingPageMinimapButton_OnEvent(self, event, ...)
 	elseif (event == "GARRISON_INVASION_UNAVAILABLE") then
 		GarrisonMinimap_HidePulse(self, GARRISON_ALERT_CONTEXT_INVASION);
 	elseif (event == "SHIPMENT_UPDATE") then
-		local shipmentStarted = ...;
+		local shipmentStarted, isTroop = ...;
 		if (shipmentStarted) then
-			GarrisonMinimapShipmentCreated_ShowPulse(self);
+			GarrisonMinimapShipmentCreated_ShowPulse(self, isTroop);
 		end
 	end
 end
 
 function GarrisonLandingPageMinimapButton_OnShow(self)
-	self.faction = UnitFactionGroup("player");
-	if ( self.faction == "Horde" ) then
-		self:GetNormalTexture():SetAtlas("GarrLanding-MinimapIcon-Horde-Up", true)
-		self:GetPushedTexture():SetAtlas("GarrLanding-MinimapIcon-Horde-Down", true)
+	GarrisonLandingPageMinimapButton_UpdateIcon(self);
+end
+
+function GarrisonLandingPageMinimapButton_UpdateIcon(self)
+	if (C_Garrison.GetLandingPageGarrisonType() == LE_GARRISON_TYPE_6_0) then
+		self.faction = UnitFactionGroup("player");
+		if ( self.faction == "Horde" ) then
+			self:GetNormalTexture():SetAtlas("GarrLanding-MinimapIcon-Horde-Up", true)
+			self:GetPushedTexture():SetAtlas("GarrLanding-MinimapIcon-Horde-Down", true)
+		else
+			self:GetNormalTexture():SetAtlas("GarrLanding-MinimapIcon-Alliance-Up", true)
+			self:GetPushedTexture():SetAtlas("GarrLanding-MinimapIcon-Alliance-Down", true)
+		end
+		self.title = GARRISON_LANDING_PAGE_TITLE;
+		self.description = MINIMAP_GARRISON_LANDING_PAGE_TOOLTIP;
 	else
-		self:GetNormalTexture():SetAtlas("GarrLanding-MinimapIcon-Alliance-Up", true)
-		self:GetPushedTexture():SetAtlas("GarrLanding-MinimapIcon-Alliance-Down", true)
+		local _, className = UnitClass("player");
+		self:GetNormalTexture():SetAtlas("legionmission-landingbutton-"..className.."-up", true);
+		self:GetPushedTexture():SetAtlas("legionmission-landingbutton-"..className.."-down", true);
+		self.title = ORDER_HALL_LANDING_PAGE_TITLE;
+		self.description = MINIMAP_ORDER_HALL_LANDING_PAGE_TOOLTIP;
 	end
 end
 
@@ -555,13 +575,10 @@ function GarrisonLandingPageMinimapButton_OnClick()
 end
 
 function GarrisonLandingPage_Toggle()
-	if (not GarrisonLandingPage) then
-		Garrison_LoadUI();
-	end
-	if (not GarrisonLandingPage:IsShown()) then
-		ShowUIPanel(GarrisonLandingPage);
-	else
+	if (GarrisonLandingPage and GarrisonLandingPage:IsShown()) then
 		HideUIPanel(GarrisonLandingPage);
+	else
+		ShowGarrisonLandingPage(C_Garrison.GetLandingPageGarrisonType());
 	end
 end
 
@@ -604,8 +621,7 @@ function GarrisonMinimapBuilding_ShowPulse(self)
 	self.MinimapLoopPulseAnim:Play();
 end
 
-function GarrisonMinimapMission_ShowPulse(self, missionID)
-	local followerType = C_Garrison.GetFollowerTypeByMissionID(missionID);
+function GarrisonMinimapMission_ShowPulse(self, followerType)
 	GarrisonMinimap_SetPulseLock(self, GARRISON_ALERT_CONTEXT_MISSION[followerType], true);
 	self.MinimapLoopPulseAnim:Play();
 end
@@ -628,8 +644,15 @@ function GarrisonMinimapInvasion_ShowPulse(self)
 	self.MinimapLoopPulseAnim:Play();
 end
 
-function GarrisonMinimapShipmentCreated_ShowPulse(self)
-	self.AlertText:SetText(GARRISON_LANDING_SHIPMENT_STARTED_ALERT);
+function GarrisonMinimapShipmentCreated_ShowPulse(self, isTroop)
+    local text;
+    if (isTroop) then
+        text = GARRISON_LANDING_RECRUITMENT_STARTED_ALERT;
+    else
+        text = GARRISON_LANDING_SHIPMENT_STARTED_ALERT;
+    end
+    
+	self.AlertText:SetText(text);
 	GarrisonMinimap_Justify(self.AlertText);
 	self.MinimapAlertAnim:Play();
 end

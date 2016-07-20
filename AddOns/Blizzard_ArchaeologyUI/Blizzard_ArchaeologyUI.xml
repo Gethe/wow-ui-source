@@ -72,8 +72,8 @@
 	<Button name="ArchaeologyRaceTemplate" virtual="true" alpha="0.83">
 		<Animations>
 			<AnimationGroup parentKey="readyAnim" looping="REPEAT">
-				<Alpha target="$parentGlow" change="1.0" duration="0.9" order="1"/>
-				<Alpha target="$parentGlow" change="-1.0" duration="0.9" order="2"/>
+				<Alpha target="$parentGlow" fromAlpha="0" toAlpha="1" duration="0.9" order="1"/>
+				<Alpha target="$parentGlow" fromAlpha="1" toAlpha="0" duration="0.9" order="2"/>
 			</AnimationGroup>
 		</Animations>
 		
@@ -81,6 +81,7 @@
 		<Layers>
 			<Layer>
 				<FontString inherits="SystemFont_Med1" justifyH="CENTER" text="RACES" parentKey="raceName">
+					<Size x="118"/>
 					<Anchors>
 						<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="6"/>
 					</Anchors>
@@ -909,8 +910,8 @@
 					<Frame name="$parentFinishedGlow" parentKey="glow">
 						<Animations>
 							<AnimationGroup parentKey="completeAnim">
-								<Alpha change="1.0" duration="0.1" order="1" />
-								<Alpha startDelay="0.1" change="-1.0" duration="0.5" order="2" />
+								<Alpha fromAlpha="0" toAlpha="1" duration="0.1" order="1" />
+								<Alpha startDelay="0.1" fromAlpha="1" toAlpha="0" duration="0.5" order="2" />
 							</AnimationGroup>
 						</Animations>
 						<Size x="512" y="512"/>

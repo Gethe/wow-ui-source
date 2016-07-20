@@ -1,0 +1,7 @@
+## Author: Blizzard Entertainment
+## Title: Blizzard Tutorial Templates
+## Interface: 70000
+## Secure: 1
+## LoadOnDemand: 1
+
+Blizzard_TutorialPointerFrame.xml

@@ -6,10 +6,6 @@ MovieRecordingOptionsFrameCheckButtons["MOVIE_RECORDING_ENABLE_ICON"] = { index 
 MovieRecordingOptionsFrameCheckButtons["MOVIE_RECORDING_ENABLE_RECOVER"] = { index = 5, cvar = "MovieRecordingRecover", tooltipText = MOVIE_RECORDING_ENABLE_RECOVER_TOOLTIP};
 MovieRecordingOptionsFrameCheckButtons["MOVIE_RECORDING_ENABLE_COMPRESSION"] = { index = 6, cvar = "MovieRecordingAutoCompress", tooltipText = MOVIE_RECORDING_ENABLE_COMPRESSION_TOOLTIP};
 
-iTunesRemoteOptionsFrameCheckButtons = { };
-iTunesRemoteOptionsFrameCheckButtons["ITUNES_SHOW_FEEDBACK"] = { index = 7, cvar = "iTunesRemoteFeedback", tooltipText = ITUNES_SHOW_FEEDBACK_TOOLTIP};
-iTunesRemoteOptionsFrameCheckButtons["ITUNES_SHOW_ALL_TRACK_CHANGES"] = { index = 8, cvar = "iTunesTrackDisplay", tooltipText = ITUNES_SHOW_ALL_TRACK_CHANGES_TOOLTIP};
-
 MacKeyboardOptionsFrameCheckButtons = { };
 MacKeyboardOptionsFrameCheckButtons["MAC_DISABLE_OS_SHORTCUTS"] = { index = 9, cvar = "MacDisableOsShortcuts", tooltipText = MAC_DISABLE_OS_SHORTCUTS_TOOLTIP};
 MacKeyboardOptionsFrameCheckButtons["MAC_USE_COMMAND_AS_CONTROL"] = { index = 10, cvar = "MacUseCommandAsControl", tooltipText = MAC_USE_COMMAND_AS_CONTROL_TOOLTIP};
@@ -41,22 +37,6 @@ local function MovieRecordingOptions_Refresh (self)
 	MovieRecordingOptionsFrame_Update();
 end
 
-local function iTunesRemoteOptions_Okay (self)
-	iTunesRemoteOptionsFrame_Save()
-end
-
-local function iTunesRemoteOptions_Cancel (self)
-
-end
-
-local function iTunesRemoteOptions_Default (self)
-	iTunesRemoteOptionsFrame_SetDefaults();
-end
-
-local function iTunesRemoteOptions_Refresh (self)
-	iTunesRemoteOptionsFrame_Update();
-end
-
 local function MacKeyboardOptions_Okay (self)
 	MacKeyboardOptionsFrame_Save()
 end
@@ -79,15 +59,6 @@ function MovieRecordingOptionsFrame_OnLoad(self)
 		self.name = BINDING_HEADER_MOVIE_RECORDING_SECTION;
 		self.hasApply = true;
 		BlizzardOptionsPanel_OnLoad(self, MovieRecordingOptions_Okay, MovieRecordingOptions_Cancel, MovieRecordingOptions_Default, MovieRecordingOptions_Refresh);
-		OptionsFrame_AddCategory(VideoOptionsFrame, self);
-	end
-end
-
-function iTunesRemoteOptionsFrame_OnLoad(self)
-	if(IsMacClient()) then
-		self.name = BINDING_HEADER_ITUNES_REMOTE;
-		self.hasApply = true;
-		BlizzardOptionsPanel_OnLoad(self, iTunesRemoteOptions_Okay, iTunesRemoteOptions_Cancel, iTunesRemoteOptions_Default, iTunesRemoteOptions_Refresh);
 		OptionsFrame_AddCategory(VideoOptionsFrame, self);
 	end
 end
@@ -180,21 +151,6 @@ function MovieRecordingOptionsFrame_Update()
 	end
 end
 
-function iTunesRemoteOptionsFrame_Update()
-	for index, value in pairs(iTunesRemoteOptionsFrameCheckButtons) do
-		local button = _G["iTunesRemoteOptionsFrameCheckButton"..value.index];
-		local string = _G["iTunesRemoteOptionsFrameCheckButton"..value.index.."Text"];
-		local checked = GetCVar(value.cvar);
-		button:SetChecked(checked and checked ~= "0");
-		button.setFunc = function(checked)
-			VideoOptionsFrameApply:Enable();		-- we have a change, enable the Apply button
-		end;
-
-		string:SetText(_G[index]);
-		button.tooltipText = value.tooltipText;
-	end
-end
-
 function MacKeyboardOptionsFrame_Update()
 	for index, value in pairs(MacKeyboardOptionsFrameCheckButtons) do
 		local button = _G["MacKeyboardOptionsFrameCheckButton"..value.index];
@@ -245,19 +201,6 @@ function MovieRecordingOptionsFrame_Save()
 	SetCVar("MovieRecordingCompression", UIDropDownMenu_GetSelectedValue(MovieRecordingOptionsFrameCodecDropDown));
 
 	SetCVar("MovieRecordingQuality", MovieRecordingOptionsFrameQualitySlider:GetValue());
-end
-
-function iTunesRemoteOptionsFrame_Save()
-	for index, value in pairs(iTunesRemoteOptionsFrameCheckButtons) do
-		local button = _G["iTunesRemoteOptionsFrameCheckButton"..value.index];
-		if ( button:GetChecked() ) then
-			value.value = "1";
-		else
-			value.value = "0";
-		end
-
-		SetCVar(value.cvar, value.value, index);
-	end
 end
 
 function MacKeyboardOptionsFrame_Save()
@@ -483,16 +426,6 @@ function MovieRecordingOptionsFrame_SetDefaults()
 		--MovieRecordingOptionsFrame_UpdateTime();
 	end
 	MovieRecordingOptionsFrame_Save();
-end
-
-function iTunesRemoteOptionsFrame_SetDefaults()
-	local checkButton, slider;
-	for index, value in pairs(iTunesRemoteOptionsFrameCheckButtons) do
-		checkButton = _G["iTunesRemoteOptionsFrameCheckButton"..value.index];
-		local checked = GetCVarDefault(value.cvar);
-		checkButton:SetChecked(checked and checked ~= "0");
-	end    
-	iTunesRemoteOptionsFrame_Save();
 end
 
 function MacKeyboardOptionsFrame_SetDefaults()

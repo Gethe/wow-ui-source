@@ -542,7 +542,7 @@ function CounterBar_SetStyle(self, useFactional, animNumbers, maxValue)
 	
 	
 	texturePath, r, g, b = UnitAlternatePowerTextureInfo(self.unit, 0, self.timerIndex);
-	self.BG:SetTexture(texturePath, true, false);
+	self.BG:SetTexture(texturePath, true, true);
 	self.BG:SetVertexColor(r, g, b);
 	self.BGL:SetTexture(texturePath);
 	self.BGL:SetVertexColor(r, g, b);

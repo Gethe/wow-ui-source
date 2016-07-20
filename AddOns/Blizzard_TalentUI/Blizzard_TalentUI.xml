@@ -1,13 +1,13 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_TalentUI.lua"/>
-	
+
 	<Button name="PlayerSpecSpellTemplate" virtual="true">
 		<Size x="70" y="70"/>
 		<Layers>
 			<Layer level="OVERLAY">
 				<Texture name="$parentRing" parentKey="ring" file="Interface\TalentFrame\spec-filagree" setAllPoints="true">
-					<TexCoords left="0.00390625" right="0.27734375" top="0.48437500" bottom="0.75781250"/>	
+					<TexCoords left="0.00390625" right="0.27734375" top="0.48437500" bottom="0.75781250"/>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
@@ -51,16 +51,7 @@
 					PickupSpell(self.spellID);
 				end
 			</OnReceiveDrag>
-			<OnEnter>
-				if ( self.spellID ) then
-					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-					GameTooltip:SetSpellByID(self.spellID, false, false, true);
-					if ( self.extraTooltip ) then
-						GameTooltip:AddLine(self.extraTooltip);
-					end
-					GameTooltip:Show();
-				end
-			</OnEnter>
+			<OnEnter function="PlayerSpecSpellTemplate_OnEnter"/>
 			<OnLeave>
 				GameTooltip_Hide();
 			</OnLeave>
@@ -93,13 +84,13 @@
 					<Color r="1.0" g="1.0" b="1.0" a="1.0"/>
 				</FontString>
 			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="-1">
+				<Texture parentKey="Cover" hidden="true" setAllPoints="true" alpha=".4">
+					<Color r="0" g="0" b="0"/>
+				</Texture>
+			</Layer>
 			<Layer level="OVERLAY">
 				<Texture name="$parentSelection" atlas="Talent-Selection" useAtlasSize="true" alphaMode="ADD" parentKey="knownSelection" hidden="true">
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-				</Texture>
-				<Texture atlas="Talent-Highlight" useAtlasSize="true" alphaMode="ADD" parentKey="learnSelection" hidden="true">
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
@@ -118,28 +109,48 @@
 				self:RegisterEvent("PLAYER_TALENT_UPDATE");
 				self:RegisterForDrag("LeftButton");
 			</OnLoad>
-			<OnClick>
-				PlaySound("igMainMenuOptionCheckBoxOn");
-				PlayerTalentFrameTalent_OnClick(self, button);
-			</OnClick>
-			<OnEvent>
-				PlayerTalentFrameTalent_OnEvent(self);
-			</OnEvent>
-			<OnEnter>
-				PlayerTalentFrameTalent_OnEnter(self);
-			</OnEnter>
-			<OnLeave>
-				GameTooltip_Hide();
-			</OnLeave>
-			<OnDragStart>
-				PlayerTalentFrameTalent_OnDrag(self);
-			</OnDragStart>
-			<OnReceiveDrag>
-				PlayerTalentFrameTalent_OnDrag(self);
-			</OnReceiveDrag>
+			<OnClick function="PlayerTalentButton_OnClick"/>
+			<OnEvent function="PlayerTalentFrameTalent_OnEvent" />
+			<OnEnter function="PlayerTalentFrameTalent_OnEnter" />
+			<OnLeave function="PlayerTalentFrameTalent_OnLeave"/>
+			<OnDragStart function="PlayerTalentFrameTalent_OnDrag" />
+			<OnReceiveDrag function="PlayerTalentFrameTalent_OnDrag" />
 		</Scripts>
 	</Button>
-	
+
+	<Frame name="TalentRowGlowFrameTemplate" setAllPoints="true" virtual="true" hidden="true">
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="TopGlowLine" atlas="_talent-green-glow" horizTile="true" alpha="0">
+					<Size x="629" y = "14"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0" right="1" top="1" bottom="0"/>
+				</Texture>
+				<Texture parentKey="BottomGlowLine" atlas="_talent-green-glow" horizTile="true" alpha="0">
+					<Size x="629" y = "14"/>
+					<Anchors>
+						<Anchor point="BOTTOM" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="Anim" looping="REPEAT">
+				<Alpha childKey="TopGlowLine" order="1" fromAlpha="0.2" toAlpha="0.9" duration="1"/>
+				<Alpha childKey="BottomGlowLine" order="1" fromAlpha="0.2" toAlpha="0.9" duration="1"/>
+				<Alpha childKey="TopGlowLine" order="2" fromAlpha="0.9" toAlpha="0.2" duration="1"/>
+				<Alpha childKey="BottomGlowLine" order="2" fromAlpha="0.9" toAlpha="0.2" duration="1"/>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnShow>
+				self.Anim:Play();
+			</OnShow>
+		</Scripts>
+	</Frame>
+
 	<Frame name="PlayerTalentRowTemplate" virtual="true">
 		<Size x="629" y="42"/>
 		<Layers>
@@ -189,14 +200,14 @@
 						<Anchor point="CENTER" relativeTo="$parentLeftCap" relativePoint="RIGHT" x="-6" y="0"/>
 					</Anchors>
 				</FontString>
-				<Texture parentKey="TopLine" file="Interface\Common\talent-blue-glow" horizTile="true" hidden="true">					
+				<Texture parentKey="TopLine" file="Interface\Common\talent-blue-glow" horizTile="true" hidden="true">
 					<Size x="629" y = "14"/>
 					<Anchors>
 						<Anchor point="TOP" x="0" y="14"/>
 					</Anchors>
 					<Color r="1" g="1" b="1" a="0.5"/>
 				</Texture>
-				<Texture parentKey="BottomLine" file="Interface\Common\talent-blue-glow" horizTile="true" hidden="true">					
+				<Texture parentKey="BottomLine" file="Interface\Common\talent-blue-glow" horizTile="true" hidden="true">
 					<Size x="629" y = "14"/>
 					<Anchors>
 						<Anchor point="BOTTOM" x="0" y="-14"/>
@@ -207,30 +218,35 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button name="$parentTalent1" inherits="PlayerTalentButtonTemplate" parentKey="talent1">
+			<Button name="$parentTalent1" inherits="PlayerTalentButtonTemplate" parentKey="talent1" parentArray="talents">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentSeparator1" relativePoint="CENTER" x="0" y="0"/>
 				</Anchors>
 			</Button>
-			<Button name="$parentTalent2" inherits="PlayerTalentButtonTemplate" parentKey="talent2">
+			<Button name="$parentTalent2" inherits="PlayerTalentButtonTemplate" parentKey="talent2" parentArray="talents">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentSeparator2" relativePoint="CENTER" x="0" y="0"/>
 				</Anchors>
 			</Button>
-			<Button name="$parentTalent3" inherits="PlayerTalentButtonTemplate" parentKey="talent3">
+			<Button name="$parentTalent3" inherits="PlayerTalentButtonTemplate" parentKey="talent3" parentArray="talents">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentSeparator3" relativePoint="CENTER" x="0" y="0"/>
 				</Anchors>
 			</Button>
+			<Frame parentKey="GlowFrame" inherits="TalentRowGlowFrameTemplate"/>
 		</Frames>
+		<Scripts>
+			<OnEnter function="PlayerTalentFrameRow_OnEnter"/>
+			<OnLeave function="PlayerTalentFrameRow_OnLeave"/>
+		</Scripts>
 	</Frame>
-	
+
 	<Button name="PlayerSpecButtonTemplate" virtual="true">
 		<Size x="204" y="60"/>
 		<Animations>
 			<AnimationGroup parentKey="animLearn">
-				<Alpha target="$parentGlow" change="1" duration="0.5" order="1"/>
-				<Alpha target="$parentGlow" change="-1" duration="0.5" order="2"/>
+				<Alpha target="$parentGlow" fromAlpha="0" toAlpha="1" duration="0.5" order="1"/>
+				<Alpha target="$parentGlow" fromAlpha="1" toAlpha="0" duration="0.5" order="2"/>
 			</AnimationGroup>
 		</Animations>
 		<Layers>
@@ -294,7 +310,7 @@
 			<Layer level="ARTWORK" textureSubLevel="1">
 				<Texture name="$parentGlow" file="Interface\Common\bluemenu-main" alpha="0">
 					<Size x="224" y="88"/>
-					<TexCoords left="0.00390625" right="0.87890625" top="0.83203125" bottom="0.91015625"/>	
+					<TexCoords left="0.00390625" right="0.87890625" top="0.83203125" bottom="0.91015625"/>
 				</Texture>
 			</Layer>
 		</Layers>
@@ -311,7 +327,7 @@
 			<OnClick function="SpecButton_OnClick"/>
 		</Scripts>
 	</Button>
-	
+
 	<CheckButton name="PlayerSpecTabTemplate" virtual="true" hidden="true">
 		<Size x="32" y="32"/>
 		<Layers>
@@ -363,26 +379,6 @@
 		</Scripts>
 	</Button>
 
-	<Button name="PlayerGlyphTabTemplate" inherits="CharacterFrameTabButtonTemplate" virtual="true">
-		<Scripts>
-			<OnLoad>
-				PlayerGlyphTab_OnLoad(self);
-			</OnLoad>
-			<OnEvent>
-				PlayerGlyphTab_OnEvent(self, event, ...);
-			</OnEvent>
-			<OnClick>
-				PlayerGlyphTab_OnClick(self, button, down);
-			</OnClick>
-			<OnEnter>
-				PlayerTalentFrameTab_OnEnter(self, motion);
-			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
-		</Scripts>
-	</Button>
-	
 	<Frame name="PlayerTalentFrame" enableMouse="true" toplevel="true" parent="UIParent" hidden="true" frameStrata="MEDIUM" inherits="ButtonFrameTemplate">
 		<Size x="646" y="468"/>
 		<Anchors>
@@ -424,7 +420,7 @@
 					<OnHide function="PlayerTalentFrameActivateButton_OnHide"/>
 					<OnEvent function="PlayerTalentFrameActivateButton_OnEvent"/>
 				</Scripts>
-			</Button>			
+			</Button>
 			<Button name="PlayerTalentFrameTab1" inherits="PlayerTalentTabTemplate" id="1" text="SPECIALIZATION">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
@@ -443,13 +439,9 @@
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="PlayerTalentFrameTab3" inherits="PlayerGlyphTabTemplate" text="GLYPHS" id="3">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="PlayerTalentFrameTab2" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="-15" y="0"/>
-						</Offset>
-					</Anchor>
+			<Button name="PlayerTalentFrameTab3" inherits="PlayerTalentTabTemplate" text="PVP_TALENTS" id="3">
+ 				<Anchors>
+					<Anchor point="LEFT" relativeTo="PlayerTalentFrameTab2" relativePoint="RIGHT" x="-15" y="0"/>
 				</Anchors>
 			</Button>
 			<Button name="PlayerTalentFrameTab4" inherits="PlayerTalentTabTemplate" text="PET_SPECIALIZATION" hidden="true" id="4">
@@ -497,7 +489,7 @@
 			<OnEvent function="PlayerTalentFrame_OnEvent"/>
 		</Scripts>
 	</Frame>
-	
+
 	<Frame name="SpecializationFrameTemplate" virtual="true">
 		<Anchors>
 			<Anchor point="TOPLEFT" relativeTo="PlayerTalentFrameInsetBg" x="0" y="0"/>
@@ -541,14 +533,14 @@
 					<Anchors>
 						<Anchor point="TOPLEFT" x="14" y="-6" />
 					</Anchors>
-					<TexCoords left="0.00390625" right="0.72656250" top="0.12988281" bottom="0.18359375"/>	
+					<TexCoords left="0.00390625" right="0.72656250" top="0.12988281" bottom="0.18359375"/>
 				</Texture>
 				<Texture file="Interface\Common\bluemenu-main">		<!-- bottom filigree -->
 					<Size x="185" y="55"/>
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" x="14" y="4" />
-					</Anchors>	
-					<TexCoords left="0.26171875" right="0.98437500" top="0.06542969" bottom="0.11914063"/>	
+					</Anchors>
+					<TexCoords left="0.26171875" right="0.98437500" top="0.06542969" bottom="0.11914063"/>
 				</Texture>
 			</Layer>
 		</Layers>
@@ -563,7 +555,7 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button name="$parentLearnButton" inherits="MagicButtonTemplate" text="LEARN" parentKey="learnButton">
+			<Button name="$parentLearnButton" inherits="MagicButtonTemplate" text="TALENT_SPEC_ACTIVATE" parentKey="learnButton">
 				<Size x="98" y="22"/>
 				<Anchors>
 					<Anchor point="BOTTOM" x="0" y="-22"/>
@@ -580,12 +572,18 @@
 				</Layers>
 				<Scripts>
 					<OnClick>
-						StaticPopup_Show("CONFIRM_LEARN_SPEC", nil, nil, self:GetParent());
+						local parent = self:GetParent();
+						if ( parent.previewSpecCost and parent.previewSpecCost > 0 ) then
+							StaticPopup_Show("CONFIRM_LEARN_SPEC", nil, nil, self:GetParent());
+						else
+							SetSpecialization(parent.previewSpec, parent.isPet);
+							parent.playLearnAnim = true;
+						end
 					</OnClick>
 				</Scripts>
 				<Animations>
 					<AnimationGroup parentKey="FlashAnim" looping="BOUNCE">
-						<Alpha childKey="Flash" change="-0.75" duration="1.0" smoothing="IN_OUT" order="1"/>
+						<Alpha childKey="Flash" fromAlpha="0.75" toAlpha="0" duration="1.0" smoothing="IN_OUT" order="1"/>
 					</AnimationGroup>
 				</Animations>
 			</Button>
@@ -747,32 +745,32 @@
 							</Layer>
 							<Layer level="BORDER" textureSubLevel="2">
 								<Texture name="top-scrollworkLeft" parentKey="scrollwork_topleft" file="Interface\TalentFrame\spec-filagree" alpha="0.6">
-									<Size x="153" y="84"/>	
+									<Size x="153" y="84"/>
 									<Anchors>
 										<Anchor point="TOPLEFT" x="0" y="0"/>
 									</Anchors>
-									<TexCoords left="0.60156250" right="0.00390625" top="0.00390625" bottom="0.33203125"/>	
+									<TexCoords left="0.60156250" right="0.00390625" top="0.00390625" bottom="0.33203125"/>
 								</Texture>
 								<Texture name="top-scrollworkRight" parentKey="scrollwork_topright" file="Interface\TalentFrame\spec-filagree" alpha="0.6">
-									<Size x="153" y="84"/>	
+									<Size x="153" y="84"/>
 									<Anchors>
 										<Anchor point="TOPRIGHT" x="0" y="0"/>
 									</Anchors>
-									<TexCoords left="0.00390625" right="0.60156250" top="0.00390625" bottom="0.33203125"/>	
+									<TexCoords left="0.00390625" right="0.60156250" top="0.00390625" bottom="0.33203125"/>
 								</Texture>
 								<Texture name="bottom-scrollworkLeft" parentKey="scrollwork_bottomleft" file="Interface\TalentFrame\spec-filagree" alpha="0.5" >
-									<Size x="95" y="55"/>	
+									<Size x="95" y="55"/>
 									<Anchors>
 										<Anchor point="BOTTOMLEFT" x="5" y="0"/>
 									</Anchors>
-									<TexCoords left="0.60937500" right="0.98046875" top="0.00390625" bottom="0.21875000"/>	
+									<TexCoords left="0.60937500" right="0.98046875" top="0.00390625" bottom="0.21875000"/>
 								</Texture>
 								<Texture name="bottom-scrollworkRight" parentKey="scrollwork_bottomright" file="Interface\TalentFrame\spec-filagree" alpha="0.5" >
-									<Size x="95" y="55"/>	
+									<Size x="95" y="55"/>
 									<Anchors>
 										<Anchor point="BOTTOMRIGHT" x="-5" y="0"/>
 									</Anchors>
-									<TexCoords left="0.98046875" right="0.60937500" top="0.00390625" bottom="0.21875000"/>	
+									<TexCoords left="0.98046875" right="0.60937500" top="0.00390625" bottom="0.21875000"/>
 								</Texture>
 							</Layer>
 							<Layer level="ARTWORK">
@@ -826,21 +824,21 @@
 									<Color r="0.878" g="0.714" b="0.314"/>
 								</FontString>
 								<Texture name="seperator-scrollworkLeft" parentKey="scrollwork_left" file="Interface\TalentFrame\spec-filagree" alpha="0.5" >
-									<Size x="104" y="35"/>	
+									<Size x="104" y="35"/>
 									<Anchors>
 										<Anchor point="LEFT" x="60" y="40"/>
 									</Anchors>
-									<TexCoords left="0.00390625" right="0.41015625" top="0.33984375" bottom="0.47656250"/>	
+									<TexCoords left="0.00390625" right="0.41015625" top="0.33984375" bottom="0.47656250"/>
 								</Texture>
 								<Texture name="seperator-scrollworkRight" parentKey="scrollwork_right" file="Interface\TalentFrame\spec-filagree" alpha="0.5" >
-									<Size x="104" y="35"/>	
+									<Size x="104" y="35"/>
 									<Anchors>
 										<Anchor point="RIGHT" x="-60" y="40"/>
 									</Anchors>
-									<TexCoords left="0.41015625" right="0.00390625" top="0.33984375" bottom="0.47656250"/>	
+									<TexCoords left="0.41015625" right="0.00390625" top="0.33984375" bottom="0.47656250"/>
 								</Texture>
 -->
-								<Texture parentKey="Seperator" alpha="0.6">					
+								<Texture parentKey="Seperator" alpha="0.6">
 									<Size x="360" y="2"/>
 									<Color r="0.35" g="0.2" b="0.0"/>
 									<Anchors>
@@ -867,13 +865,13 @@
 			<OnLoad function="PlayerTalentFrameSpec_OnLoad"/>
 		</Scripts>
 	</Frame>
-	
+
 	<Frame name="PlayerTalentFramePetSpecialization" inherits="SpecializationFrameTemplate" useParentLevel="true" parent="PlayerTalentFrame">
 		<Scripts>
 			<OnLoad function="PlayerTalentFrame_PetSpec_OnLoad"/>
 		</Scripts>
 	</Frame>
-	
+
 	<Frame name="PlayerTalentFrameTalents" useParentLevel="true" setAllPoints="true" parent="PlayerTalentFrame">
 		<Anchors>
 			<Anchor point="TOPLEFT" relativeTo="PlayerTalentFrameInsetBg" x="0" y="0"/>
@@ -943,109 +941,38 @@
 			<Frame name="$parentTalentRow1" inherits="PlayerTalentRowTemplate" parentKey="tier1" id="1">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="4" y="-17"/>
-				</Anchors>				
+				</Anchors>
 			</Frame>
 			<Frame name="$parentTalentRow2" inherits="PlayerTalentRowTemplate" parentKey="tier2" id="2">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentTalentRow1" relativePoint="BOTTOMLEFT" x="0" y="-9"/>
-				</Anchors>				
+				</Anchors>
 			</Frame>
 			<Frame name="$parentTalentRow3" inherits="PlayerTalentRowTemplate" parentKey="tier3" id="3">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentTalentRow2" relativePoint="BOTTOMLEFT" x="0" y="-9"/>
-				</Anchors>				
+				</Anchors>
 			</Frame>
 			<Frame name="$parentTalentRow4" inherits="PlayerTalentRowTemplate" parentKey="tier4" id="4">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentTalentRow3" relativePoint="BOTTOMLEFT" x="0" y="-9"/>
-				</Anchors>				
+				</Anchors>
 			</Frame>
 			<Frame name="$parentTalentRow5" inherits="PlayerTalentRowTemplate" parentKey="tier5" id="5">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentTalentRow4" relativePoint="BOTTOMLEFT" x="0" y="-9"/>
-				</Anchors>				
+				</Anchors>
 			</Frame>
 			<Frame name="$parentTalentRow6" inherits="PlayerTalentRowTemplate" parentKey="tier6" id="6">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentTalentRow5" relativePoint="BOTTOMLEFT" x="0" y="-9"/>
-				</Anchors>				
+				</Anchors>
 			</Frame>
 			<Frame name="$parentTalentRow7" inherits="PlayerTalentRowTemplate" parentKey="tier7" id="7">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentTalentRow6" relativePoint="BOTTOMLEFT" x="0" y="-9"/>
 				</Anchors>
 			</Frame>
-			<Button name="$parentLearnButton" inherits="MagicButtonTemplate" text="LEARN" parentKey="learnButton">
-				<Size x="98" y="22"/>
-				<Anchors>
-					<Anchor point="BOTTOM" x="0" y="-22"/>
-				</Anchors>
-				<Layers>
-					<Layer level="OVERLAY">
-						<Texture name="$parentFlash" file="Interface\Buttons\UI-Panel-Button-Glow" alphaMode="ADD" parentKey="Flash" hidden="true">
-							<Size x="150" y="60"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" x="-7" y="7"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOn");
-						local talentGroup = PlayerTalentFrame and PlayerTalentFrame.talentGroup or 1;
-						if ( talentGroup == GetActiveSpecGroup() ) then
-							if ( PlayerTalentFrame_GetTalentSelections() and LearnTalents(PlayerTalentFrame_GetTalentSelections()) ) then
-								PlayerTalentFrame_ClearTalentSelections();
-							end
-						end
-					</OnClick>
-				</Scripts>
-				<Animations>
-					<AnimationGroup parentKey="FlashAnim" looping="BOUNCE">
-						<Alpha childKey="Flash" change="-0.75" duration="1.0" smoothing="IN_OUT" order="1"/>
-					</AnimationGroup>
-				</Animations>
-			</Button>
-			<Button name="$parentClearInfoFrame" parentKey="clearInfo">
-				<Size x="20" y="20"/> 
-				<Anchors>
-					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="8" y="-2"/>
-				</Anchors>
-				<Layers>
-					<Layer level="OVERLAY">
-						<Texture name="$parentIcon" parentKey="icon">
-							<Size x="20" y="20"/>
-							<Anchors>
-								<Anchor point="CENTER"/>
-							</Anchors>
-						</Texture>
-						<FontString name="$parentCount" inherits="NumberFontNormal" parentKey="count">
-							<Anchors>
-								<Anchor point="BOTTOMRIGHT" relativeTo="$parentIcon" x="-1" y="1"/>
-							</Anchors>
-						</FontString>
-						<FontString name="$parentName" inherits="GameFontNormal" parentKey="name">
-							<Anchors>
-								<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentIcon" x="6"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnEnter>
-						if self.spellID then
-							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-							GameTooltip:SetSpellByID(self.spellID);
-							GameTooltip:Show();
-						end
-					</OnEnter>
-					<OnLeave>
-						GameTooltip_Hide();
-						self.showingTooltip = false;
-					</OnLeave>
-				</Scripts>
-			</Button>
 		</Frames>
 		<Scripts>
 			<OnLoad function="PlayerTalentFrameTalents_OnLoad"/>
@@ -1053,7 +980,7 @@
 			<OnHide function="PlayerTalentFrameTalents_OnHide"/>
 		</Scripts>
 	</Frame>
-	
+
 	<Frame name="PlayerTalentFrameLockInfo" parent="PlayerTalentFrame" hidden="true" enableMouse="true">
 		<Anchors>
 			<Anchor point="TOPLEFT" relativeTo="PlayerTalentFrameBg" x="0" y="0"/>
@@ -1066,15 +993,15 @@
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" x="0" y="0"/>
 					</Anchors>
-					<TexCoords left="0.01562500" right="0.51562500" top="0.00390625" bottom="0.12890625"/>	
+					<TexCoords left="0.01562500" right="0.51562500" top="0.00390625" bottom="0.12890625"/>
 					<Color r="1" g="1" b="1" a="0.75"/>
 				</Texture>
 				<Texture name="$parentBottomRightInner" file="Interface\GuildBankFrame\Corners" >
-					<Size x="32" y="32"/>	
+					<Size x="32" y="32"/>
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
 					</Anchors>
-					<TexCoords left="0.01562500" right="0.51562500" top="0.13671875" bottom="0.26171875"/>	
+					<TexCoords left="0.01562500" right="0.51562500" top="0.13671875" bottom="0.26171875"/>
 					<Color r="1" g="1" b="1" a="0.75"/>
 				</Texture>
 				<Texture name="$parentTopRightInner" file="Interface\GuildBankFrame\Corners"  >
@@ -1082,15 +1009,15 @@
 					<Anchors>
 						<Anchor point="TOPRIGHT" x="0" y="0"/>
 					</Anchors>
-					<TexCoords left="0.01562500" right="0.51562500" top="0.26953125" bottom="0.39453125"/>	
+					<TexCoords left="0.01562500" right="0.51562500" top="0.26953125" bottom="0.39453125"/>
 					<Color r="1" g="1" b="1" a="0.75"/>
 				</Texture>
 				<Texture name="$parentTopLeftInner" file="Interface\GuildBankFrame\Corners">
-					<Size x="32" y="32"/>	
+					<Size x="32" y="32"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="0" y="0"/>
 					</Anchors>
-					<TexCoords left="0.01562500" right="0.51562500" top="0.40234375" bottom="0.52734375"/>	
+					<TexCoords left="0.01562500" right="0.51562500" top="0.40234375" bottom="0.52734375"/>
 					<Color r="1" g="1" b="1" a="0.75"/>
 				</Texture>
 				<Texture name="$parentLeftInner" file="Interface\GuildBankFrame\VertTile" vertTile="true">
@@ -1165,12 +1092,533 @@
 			<OnLoad>
 				self:SetFrameLevel(self:GetFrameLevel()+3);
 				self:EnableMouseWheel(true);
-				
+
 				local class = select(2, UnitClass("player"));
 				self.Portrait:SetTexture("Interface\\TargetingFrame\\UI-Classes-Circles");
 				self.Portrait:SetTexCoord(unpack(CLASS_ICON_TCOORDS[strupper(class)]));
 			</OnLoad>
 			<OnMouseWheel function="nop"/>
+		</Scripts>
+	</Frame>
+
+	<Button name="PVPTalentButtonTemplate" virtual="true" motionScriptsWhileDisabled="true">
+		<Size x="210" y="42"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="LeftCap" atlas="Talent-Separator">
+					<Size x="34" y="50"/>
+					<Anchors>
+						<Anchor point="LEFT" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0.5" right="1" top="0" bottom="1"/>
+				</Texture>
+				<Texture parentKey="RightCap" atlas="Talent-Separator">
+					<Size x="34" y="50"/>
+					<Anchors>
+						<Anchor point="RIGHT" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0" right="0.5" top="0" bottom="1"/>
+				</Texture>
+				<Texture parentKey="Icon">
+					<Size x="36" y="36"/>
+					<Anchors>
+						<Anchor point="LEFT" x="35" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture parentKey="Slot" inherits="Talent-SingleBorder">
+					<Size x="37" y="36"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon" x="-1" y="0"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Name" inherits="GameFontHighlightSmall" justifyH="LEFT" text="Pyrofireburn">
+					<Size x="90" y="35"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="10" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="-1">
+				<Texture parentKey="Cover" hidden="true" setAllPoints="true" alpha=".4">
+					<Color r="0" g="0" b="0"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="$parentSelection" atlas="Talent-Selection" useAtlasSize="true" alphaMode="ADD" parentKey="knownSelection" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture atlas="Talent-Highlight" useAtlasSize="true" alphaMode="ADD" parentKey="learnSelection" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<HighlightTexture atlas="Talent-Highlight" useAtlasSize="true" alphaMode="ADD" parentKey="highlight">
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</HighlightTexture>
+		<Scripts>
+			<OnLoad>
+				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				self:RegisterForDrag("LeftButton");
+			</OnLoad>
+			<OnClick function="PlayerPVPTalentButton_OnClick"/>
+			<OnDragStart function="PlayerTalentFramePVPTalentsTalent_OnDrag"/>
+			<OnEnter function="PlayerTalentFramePVPTalentsTalent_OnEnter"/>
+			<OnLeave function="PlayerTalentFramePVPTalentsTalent_OnLeave"/>
+		</Scripts>
+	</Button>
+
+	<Frame name="PVPTalentRowTemplate" virtual="true">
+		<Size x="629" y="42"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Bg" atlas="Talent-Background" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="0" y="-1"/>
+						<Anchor point="BOTTOMRIGHT" x="0" y="-1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="TopLine" file="Interface\Common\talent-blue-glow" horizTile="true" hidden="true">
+					<Size x="629" y = "14"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="14"/>
+					</Anchors>
+					<Color r="1" g="1" b="1" a="0.5"/>
+				</Texture>
+				<Texture parentKey="BottomLine" file="Interface\Common\talent-blue-glow" horizTile="true" hidden="true">
+					<Size x="629" y = "14"/>
+					<Anchors>
+						<Anchor point="BOTTOM" x="0" y="-14"/>
+					</Anchors>
+					<TexCoords left="0" right="1" top="1" bottom="0"/>
+					<Color r="1" g="1" b="1" a="0.5"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="Talent1" inherits="PVPTalentButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" x="0" y="0"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="columnIndex" value="1" type="number"/>
+				</KeyValues>
+			</Button>
+			<Button parentKey="Talent2" inherits="PVPTalentButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Talent1" relativePoint="RIGHT" x="0" y="0"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="columnIndex" value="2" type="number"/>
+				</KeyValues>
+			</Button>
+			<Button parentKey="Talent3" inherits="PVPTalentButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Talent2" relativePoint="RIGHT" x="0" y="0"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="columnIndex" value="3" type="number"/>
+				</KeyValues>
+			</Button>
+			<Frame parentKey="GlowFrame" inherits="TalentRowGlowFrameTemplate"/>
+		</Frames>
+		<Scripts>
+			<OnEnter function="PlayerTalentFrameRow_OnEnter"/>
+			<OnLeave function="PlayerTalentFrameRow_OnLeave"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="PlayerTalentFramePVPTalents" useParentLevel="true" setAllPoints="true" parent="PlayerTalentFrame">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="PlayerTalentFrameInsetBg" x="0" y="0"/>
+			<Anchor point="BOTTOMRIGHT" relativeTo="PlayerTalentFrameInsetBg" x="0" y="0"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="PortraitBackground">
+					<Size x="60" y="60"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="PlayerTalentFrame" relativePoint="TOPLEFT" x="-6" y="7" />
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="SmallWreath" atlas="honorsystem-prestige-smallwreath" useAtlasSize="false" hidden="true">
+					<Size x="73" y="43"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="PlayerTalentFrame" relativePoint="TOPLEFT" x="-12" y="-19" />
+					</Anchors>
+				</Texture>
+                <FontString parentKey="NotAvailableYet" inherits="GameFontRedLarge" justifyH="CENTER" hidden="true">
+                    <Size x="471" y="0"/>
+                    <Anchors>
+					    <Anchor point="TOP" relativeTo="PlayerTalentFrame" x="0" y="-57"/>
+				    </Anchors>
+                </FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="XPBar" inherits="PVPHonorSystemLargeXPBar">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="PlayerTalentFrame" relativePoint="TOPLEFT" x="50" y="-47"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="canPrestigeHere" value="true" type="boolean"/>
+				</KeyValues>
+				<Frames>
+					<Frame name="PlayerTalentFramePVPTalentsXPBarDropDown" parentKey="DropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true">
+						<Size x="10" y="10"/>
+						<Anchors>
+							<Anchor point="TOP" x="0" y="-10"/>
+						</Anchors>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnMouseUp function="PlayerTalentFramePVPTalentsXPBar_OnClick"/>
+					<OnEnter>
+						PVPHonorXPBar_OnEnter(self.Bar);
+					</OnEnter>
+					<OnLeave>
+						PVPHonorXPBar_OnLeave(self.Bar);
+					</OnLeave>
+				</Scripts>
+			</Frame>
+			<Frame parentKey="Talents" useParentLevel="true" setAllPoints="true">
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentBg" atlas="honorsystem-talents-bg" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="PVPTalentFrameInsetBg" x="0" y="0"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="PVPTalentFrameInsetBg" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER">
+						<Texture name="$parentTLCorner" atlas="Talent-TopLeftCurlies" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="3" y="-2"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentTRCorner" atlas="Talent-TopRightCurlies" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPRIGHT" x="-3" y="-2"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentBLCorner" atlas="Talent-BottomLeftCurlies" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" x="3" y="2"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentBRCorner" atlas="Talent-BottomRightCurlies" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" x="-3" y="2"/>
+							</Anchors>
+						</Texture>
+						<Texture atlas="_Talent-Top-Tile" horizTile="true">
+							<Size x="0" y="11"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentTLCorner" relativePoint="TOPRIGHT" x="0" y="1"/>
+								<Anchor point="TOPRIGHT" relativeTo="$parentTRCorner" relativePoint="TOPLEFT" x="0" y="1"/>
+							</Anchors>
+						</Texture>
+						<Texture atlas="_Talent-Bottom-Tile" horizTile="true">
+							<Size x="0" y="4"/>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativeTo="$parentBLCorner" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="$parentBRCorner" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString inherits="GameFontNormal" parentKey="unspentText">
+							<Anchors>
+								<Anchor point="TOPRIGHT" x="-16" y="22"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame parentKey="Tier1" inherits="PVPTalentRowTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="4" y="-17"/>
+						</Anchors>
+						<KeyValues>
+							<KeyValue key="rowIndex" value="1" type="number"/>
+						</KeyValues>
+					</Frame>
+					<Frame parentKey="Tier2" inherits="PVPTalentRowTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.Tier1" relativePoint="BOTTOMLEFT" x="0" y="-9"/>
+						</Anchors>
+						<KeyValues>
+							<KeyValue key="rowIndex" value="2" type="number"/>
+						</KeyValues>
+					</Frame>
+					<Frame parentKey="Tier3" inherits="PVPTalentRowTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.Tier2" relativePoint="BOTTOMLEFT" x="0" y="-9"/>
+						</Anchors>
+						<KeyValues>
+							<KeyValue key="rowIndex" value="3" type="number"/>
+						</KeyValues>
+					</Frame>
+					<Frame parentKey="Tier4" inherits="PVPTalentRowTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.Tier3" relativePoint="BOTTOMLEFT" x="0" y="-9"/>
+						</Anchors>
+						<KeyValues>
+							<KeyValue key="rowIndex" value="4" type="number"/>
+						</KeyValues>
+					</Frame>
+					<Frame parentKey="Tier5" inherits="PVPTalentRowTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.Tier4" relativePoint="BOTTOMLEFT" x="0" y="-9"/>
+						</Anchors>
+						<KeyValues>
+							<KeyValue key="rowIndex" value="5" type="number"/>
+						</KeyValues>
+					</Frame>
+					<Frame parentKey="Tier6" inherits="PVPTalentRowTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.Tier5" relativePoint="BOTTOMLEFT" x="0" y="-9"/>
+						</Anchors>
+						<KeyValues>
+							<KeyValue key="rowIndex" value="6" type="number"/>
+						</KeyValues>
+					</Frame>
+				</Frames>
+			</Frame>
+            <Frame parentKey="TutorialBox" inherits="GlowBoxTemplate" enableMouse="true" hidden="true" frameStrata="DIALOG">
+				<Size x="220" y="100"/>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString parentKey="Text" inherits="GameFontHighlightLeft" justifyV="TOP">
+							<Size x="188" y="0"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="16" y="-24"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
+						<Anchors>
+							<Anchor point="TOPRIGHT" x="6" y="6"/>
+						</Anchors>
+						<Scripts>
+							<OnClick inherit="append">
+								if self:GetParent().activeTutorial then
+									SetCVarBitfield("closedInfoFrames", self:GetParent().activeTutorial, true);
+								end
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Frame parentKey="Arrow" inherits="GlowBoxArrowTemplate" />
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						self.Text:SetSpacing(4);
+					</OnLoad>
+					<OnShow>
+						self:SetHeight(self.Text:GetHeight() + 42);
+					</OnShow>
+					<OnHide>
+						self.activeTutorial = nil;
+					</OnHide>
+				</Scripts>
+			</Frame>
+			<Frame name="PVPTalentPrestigeLevelDialog" parentKey="PrestigeLevelDialog" inherits="PortraitFrameTemplate" frameStrata="DIALOG" hidden="true">
+				<Size x="325" y="500"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER" x="0" y="100"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Label" inherits="GameFontNormal" text="PVP_PRESTIGE_RANK_UP_HONOR_TRADE">
+							<Size x="300" y="0"/>
+							<Anchors>
+								<Anchor point="TOP" x="0" y="-40"/>
+							</Anchors>
+						</FontString>
+						<Texture parentKey="Laurel" atlas="honorsystem-prestige-laurel" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOP" relativeKey="$parent.Label" relativePoint="BOTTOM" x="0" y="10"/>
+							</Anchors>
+						</Texture>
+						<FontString ParentKey="NextRank" inherits="GameFontNormalLarge" text="5">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.Laurel" relativePoint="BOTTOM" x="0" y="46"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="NextRankLabel" inherits="QuestFont_Super_Huge" text="Legionnaire">
+							<Size x="300" y="0"/>
+							<Anchors>
+								<Anchor point="TOP" relativeKey="$parent.Laurel" relativePoint="BOTTOM" x="0" y="20"/>
+							</Anchors>
+                            <Color r="1" g="1" b="1"/>
+						</FontString>
+                        <Texture parentKey="TopDivider" atlas="honorsystem-prestige-rewardline" useAtlasSize="true">
+                            <Anchors>
+                                <Anchor point="TOP" relativeKey="$parent.NextRankLabel" relativePoint="BOTOM" x="0" y="-40"/>
+                            </Anchors>
+                        </Texture>
+                        <FontString parentKey="NextMaxLevelReward" inherits="GameFontNormal">
+                            <Size x="240" y="0"/>
+                            <Anchors>
+                                <Anchor point="TOP" relativeKey="$parent.TopDivider" relativePoint="BOTTOM" x="0" y="-6"/>
+                            </Anchors>
+                        </FontString>
+                        <Texture parentKey="BottomDivider" atlas="honorsystem-prestige-rewardline" useAtlasSize="true">
+                            <Anchors>
+                                <Anchor point="TOP" relativeKey="$parent.TopDivider" relativePoint="BOTTOM" x="0" y="-78"/>
+                            </Anchors>
+                        </Texture>
+						<FontString parentKey="Warning" inherits="GameFontRed" text="PVP_PRESTIGE_RANK_UP_WARNING">
+							<Size x="300" y="0"/>
+							<Anchors>
+								<Anchor point="BOTTOM" x="0" y="60"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="LaurelBackground" atlas="honorsystem-prestige-laurel-bg-horde" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.Laurel"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="PrestigeIcon" atlas="honorsystem-icon-prestige-5">
+							<Size x="105" y="105"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.Laurel" y="3"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+                    <Frame parentKey="MaxLevelReward" inherits="PVPHonorRewardCodeTemplate">
+                        <Size x="48" y="48"/>
+                        <Anchors>
+                            <Anchor point="TOP" relativeKey="$parent.NextMaxLevelReward" relativePoint="BOTTOM" x="0" y="-8"/>
+                        </Anchors>
+                        <KeyValues>
+                            <KeyValue key="formatString" value="HONOR_REWARD_TITLE" type="global"/>
+                        </KeyValues>
+                        <Layers>
+                            <Layer level="ARTWORK">
+                                <Texture parentKey="Icon">
+                                    <Size x="47" y="47"/>
+                                    <Anchors>
+                                        <Anchor point="CENTER"/>
+                                    </Anchors>
+                                </Texture>
+                            </Layer>
+                            <Layer level="ARTWORK" textureSubLevel="1">
+                                <FontString parentKey="Quantity" inherits="NumberFontNormal">
+                                    <Anchors>
+                                        <Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
+                                    </Anchors>
+                                </FontString>
+                                <FontString parentKey="Text" inherits="GameFontHighlight" hidden="true">
+                                    <Anchors>
+                                        <Anchor point="CENTER" x="0" y="4"/>
+                                    </Anchors>
+                                </FontString>
+                            </Layer>
+                            <Layer level="OVERLAY">
+                                <Texture parentKey="Frame" file="Interface\Buttons\UI-Quickslot2">
+                                    <Anchors>
+                                        <Anchor point="TOPLEFT" x="-15" y="15"/>
+                                        <Anchor point="BOTTOMRIGHT" x="15" y="-15"/>
+                                    </Anchors>
+                                </Texture>
+                            </Layer>
+                        </Layers>
+                        <Scripts>
+                            <OnEnter>
+                                if (self.rewardInfo) then
+                                    GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+                                    if (self.rewardInfo:SetTooltip()) then
+                                        GameTooltip:Show();
+                                    end
+                                end
+                            </OnEnter>
+                            <OnLeave function="GameTooltip_Hide"/>
+                        </Scripts>
+                    </Frame>
+					<Button name="$parentCloseButton" inherits="UIPanelCloseButton" parentKey="CloseButton">
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT">
+								<Offset x="4" y="5"/>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								PlaySound("UI_PVP_Honor_Prestige_WindowClose");
+								self:GetParent():Hide();
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button parentKey="Accept" inherits="UIPanelButtonTemplate" text="PVP_PRESTIGE_RANK_UP_ACCEPT">
+						<Size x="126" y="22"/>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM" x="-4" y="20"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								PlaySound("UI_PVP_Honor_Prestige_RankUP");
+								HideUIPanel(PlayerTalentFrame);
+								self:GetParent():Hide();
+								Prestige();
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button parentKey="Cancel" inherits="UIPanelButtonTemplate" text="CANCEL">
+						<Size x="126" y="22"/>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOM" x="4" y="20"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								PlaySound("UI_PVP_Honor_Prestige_WindowClose");
+								self:GetParent():Hide();
+							</OnClick>
+						</Scripts>
+					</Button>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						self.Bg:SetTexture("Interface\\FrameGeneral\\UI-Background-Marble", true, true);
+						ButtonFrameTemplate_HidePortrait(self);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame parentKey="PortraitMouseOverFrame">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="PlayerTalentFramePortraitFrame" relativePoint="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="PlayerTalentFramePortraitFrame" relativePoint="BOTTOMRIGHT"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter function="PlayerTalentFramePVPTalentsPortraitMouseOverFrame_OnEnter"/>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad function="PlayerTalentFramePVPTalents_OnLoad"/>
+			<OnShow function="PlayerTalentFramePVPTalents_OnShow"/>
+			<OnHide function="PlayerTalentFramePVPTalents_OnHide"/>
+			<OnEvent function="PlayerTalentFramePVPTalents_OnEvent"/>
 		</Scripts>
 	</Frame>
 </Ui>

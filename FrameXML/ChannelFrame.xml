@@ -87,10 +87,11 @@
 			<Frame setAllPoints="true">
 				<Layers>
 					<Layer level="BORDER">
-						<FontString name="$parentName" justifyH="LEFT"  inherits="GameFontHighlightSmall" text="Player Name">
-							<Size x="145" y="15"/>
+						<FontString name="$parentName" justifyH="LEFT" inherits="GameFontHighlightSmall">
+							<Size y="15"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" x="13" y="-1"/>
+								<Anchor point="TOPRIGHT" x="0" y="-1"/>
 							</Anchors>
 						</FontString>
 					</Layer>

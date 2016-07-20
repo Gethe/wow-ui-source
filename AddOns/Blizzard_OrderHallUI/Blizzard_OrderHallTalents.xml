@@ -1,0 +1,198 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="Blizzard_OrderHallTalents.lua"/>
+
+	<Button name="GarrisonTalentButtonTemplate" virtual="true" mixin="GarrisonTalentButtonMixin">
+		<Size x="39" y="39"/>
+		<Layers>
+			<Layer level="ARTWORK" textureSubLevel="0">
+				<Texture parentKey="Icon" >
+					<Size x="39" y="39"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture parentKey="AlphaIconOverlay" textureSubLevel="1">
+					<Color a="1" r="0.0" g="0.0" b="0.0"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="2">
+				<Texture parentKey="CooldownTimerBackground" atlas="orderhalltalents-timer-bg" textureSubLevel="2">
+					<Size x="37" y="37"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+                <Texture parentKey="DoneCheckmark" hidden="false" alpha="0" alphaMode="BLEND" atlas="orderhalltalents-done-checkmark" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="DoneCheckmark3" hidden="false" alpha="0" alphaMode="BLEND" atlas="orderhalltalents-done-checkmark" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Border" atlas="orderhalltalents-spellborder-yellow">
+					<Size x="50" y="50"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="5"/>
+					</Anchors>
+				</Texture>
+                <Texture parentKey="DoneCheckmark2" hidden="false" alpha="0" alphaMode="ADD" atlas="orderhalltalents-done-checkmark" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Highlight" file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD" hidden="true"/>
+			</Layer>
+            <Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="DoneGlow" hidden="false" alpha="0" alphaMode="ADD" atlas="orderhalltalents-done-glow" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.DoneCheckmark" x="0" y="-3"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Cooldown parentKey="Cooldown" reverse="true" hideCountdownNumbers="true">
+				<Size x="37" y="37"/>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+				<SwipeTexture file="Interface\Garrison\orderhalltalents-timer-fill"/>
+			</Cooldown>
+		</Frames>
+        <Animations>
+			<AnimationGroup parentKey="TalentDoneAnim" setToFinalAlpha="true">
+				<Alpha childKey="DoneCheckmark" duration="0.3" order="1" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="DoneCheckmark" duration="0.3" order="1" fromScaleX="3" fromScaleY="3" toScaleX="1" toScaleY="1"/>
+				<Alpha childKey="DoneCheckmark2" duration="0.6" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="DoneCheckmark2" startDelay="0.8" duration="0.3" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="DoneCheckmark" startDelay="4" duration="0.2" order="1" fromAlpha="1" toAlpha="0"/>
+				<Scale childKey="DoneCheckmark" startDelay="4" duration="0.2" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.5" toScaleY="0.5"/>
+				<Rotation childKey="DoneGlow" smoothing="NONE" duration="4.6" order="1" degrees="-70"/>
+				<Alpha childKey="DoneGlow" duration="0.3" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="DoneGlow" startDelay="0.3" duration="4.3" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="DoneCheckmark3" duration="0.3" order="1" fromAlpha="0.4" toAlpha="0"/>
+				<Scale childKey="DoneCheckmark3" duration="0.4" order="1" fromScaleX="6" fromScaleY="6" toScaleX="0" toScaleY="0"/>
+                <Scripts>
+                    <OnFinished>
+                        C_Garrison.ClearCompleteTalent(self:GetParent():GetParent().garrisonType);
+                    </OnFinished>
+                </Scripts>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</Button>
+
+	<Texture name="GarrisonTalentChoiceTemplate" virtual="true" atlas="orderhalltalents-choice-background" useAtlasSize="true"/>
+	<Texture name="GarrisonTalentArrowTemplate" virtual="true" atlas="orderhalltalents-choice-arrow-large" useAtlasSize="true" alphaMode="ADD">
+		<Animations>
+			<AnimationGroup parentKey="Pulse" looping="BOUNCE">
+				<Alpha fromAlpha="1" toAlpha="0" duration="1" setToFinalAlpha="1"/>
+			</AnimationGroup>
+		</Animations>
+	</Texture>
+
+
+	<FontString parentArray="FrameTick" name="OrderHallTalentFrameTick" inherits="GameFontNormal" virtual="true">
+		<Color r="0.27" g="0.27" b="0.27"/>
+	</FontString>
+	<Frame name="OrderHallTalentFrame" inherits="PortraitFrameTemplate" toplevel="true" enableMouse="true" parent="UIParent" hidden="true" mixin="OrderHallTalentFrameMixin">
+		<Size x="336" y="450"/>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+		<KeyValues>
+			<KeyValue key="garrisonType" value="LE_GARRISON_TYPE_7_0" type="global"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="ClassBackground">
+					<Size x="322" y="382"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="OrderHallTalentFrameBg" x="4" y="-40"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="CurrencyIcon" atlas="legionmission-icon-currency" useAtlasSize="false">
+					<Size x="27" y="26"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="-12" y="-29"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Currency" inherits="SystemFont_Shadow_Med2" justifyH="RIGHT">
+					<Size x="100" y="20"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.CurrencyIcon" relativePoint="LEFT" x="-4" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Tick1" inherits="OrderHallTalentFrameTick" text="I">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="24" y="-99"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Tick2" inherits="OrderHallTalentFrameTick" text="II">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Tick1" relativePoint="CENTER" y="-58"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Tick3" inherits="OrderHallTalentFrameTick" text="III">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Tick2" relativePoint="CENTER" y="-58"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Tick4" inherits="OrderHallTalentFrameTick" text="IV">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Tick3" relativePoint="CENTER" y="-58"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Tick5" inherits="OrderHallTalentFrameTick" text="V">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Tick4" relativePoint="CENTER" y="-58"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Tick6" inherits="OrderHallTalentFrameTick" text="VI">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Tick5" relativePoint="CENTER" y="-58"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="CurrencyHitTest">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Currency"/>
+					<Anchor point="RIGHT" relativeKey="$parent.CurrencyIcon"/>
+					<Anchor point="TOP" relativeKey="$parent.CurrencyIcon"/>
+					<Anchor point="BOTTOM" relativeKey="$parent.CurrencyIcon"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetCurrencyTokenByID(self:GetParent().currency);
+						GameTooltip:Show();
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Frame>
+			<Frame name="ClassHallTalentInset" inherits="InsetFrameTemplate" parentKey="LeftInset" useParentLevel="true">
+				<Size x="328" y="388"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="3" y="-58"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="TradeFrame" relativePoint="TOPLEFT" x="338" y="-352"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+	</Frame>
+</Ui>

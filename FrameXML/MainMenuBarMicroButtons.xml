@@ -33,7 +33,7 @@
 			</OnLeave>
 		</Scripts>
 	</Button>
-	<Frame name="MicroButtonAlertTemplate" inherits="GlowBoxTemplate" parent="UIParent" enableMouse="true" hidden="true" frameStrata="DIALOG" frameLevel="2" topLevel="true" virtual="true">
+	<Frame name="MicroButtonAlertTemplate" inherits="GlowBoxTemplate" parent="UIParent" enableMouse="true" hidden="true" frameStrata="DIALOG" frameLevel="2" toplevel="true" virtual="true">
 		<Size x="220" y="100"/>
 		<!--KeyValues>
 			Optional
@@ -73,12 +73,8 @@
 		</Frames>
 		<Scripts>
 			<OnLoad function="MicroButtonAlert_OnLoad"/>
-			<OnShow>
-				self:SetHeight(self.Text:GetHeight()+42);
-				if ( self.tutorialIndex and GetCVarBitfield("closedInfoFrames", self.tutorialIndex) ) then
-					self:Hide();
-				end
-			</OnShow>
+			<OnShow function="MicroButtonAlert_OnShow"/>
+			<OnHide function="MicroButtonAlert_OnHide"/>
 		</Scripts>
 	</Frame>
 	<Button name="CharacterMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">
@@ -158,7 +154,7 @@
 			</OnEnter>
 		</Scripts>
 	</Button>
-	<Button name="TalentMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">
+	<Button name="TalentMicroButton" inherits="MainMenuBarMicroButton" mixin="TalentMicroButtonMixin" parent="UIParent">
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="SpellbookMicroButton" relativePoint="BOTTOMRIGHT">
 				<Offset>
@@ -177,9 +173,12 @@
 				self:RegisterEvent("UPDATE_BINDINGS");
 				self:RegisterEvent("PLAYER_TALENT_UPDATE");
 				self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED");
+                self:RegisterEvent("HONOR_LEVEL_UPDATE");
+	            self:RegisterEvent("HONOR_PRESTIGE_UPDATE");
+	            self:RegisterEvent("PLAYER_PVP_TALENT_UPDATE");
 				self:RegisterEvent("PLAYER_CHARACTER_UPGRADE_TALENT_COUNT_CHANGED");
 			</OnLoad>
-			<OnClick function="ToggleTalentFrame"/>
+			<OnClick function="TalentMicroButton_OnClick"/>
 			<OnEvent function="TalentMicroButton_OnEvent"/>
 		</Scripts>
 	</Button>
@@ -200,12 +199,17 @@
 				self.tooltipText = MicroButtonTooltipText(ACHIEVEMENT_BUTTON, "TOGGLEACHIEVEMENT");
 				self.newbieText = NEWBIE_TOOLTIP_ACHIEVEMENT;
 				self.minLevel = 10;	--Just used for display. But we know that it will become available by level 10 due to the level 10 achievement.
-				if (IsBlizzCon()) then
+				if (IsKioskModeEnabled()) then
 					self:Disable();
 				end
 			</OnLoad>
+			<OnShow>
+				if (IsKioskModeEnabled()) then
+					self:Disable();
+				end
+			</OnShow>
 			<OnEvent function="AchievementMicroButton_OnEvent"/>
-			<OnClick> 
+			<OnClick>
 				ToggleAchievementFrame();
 			</OnClick>
 		</Scripts>
@@ -283,10 +287,15 @@
 					self:Disable();
 					self.disabledTooltip = ERR_RESTRICTED_ACCOUNT_TRIAL;
 				end
-				if (IsBlizzCon()) then
+				if (IsKioskModeEnabled()) then
 					self:Disable();
 				end
 			</OnLoad>
+			<OnShow>
+				if (IsKioskModeEnabled()) then
+					self:Disable();
+				end
+			</OnShow>
 			<OnEvent function="GuildMicroButton_OnEvent"/>
 			<OnClick>
 				ToggleGuildFrame();
@@ -308,12 +317,17 @@
 				self.tooltipText = MicroButtonTooltipText(DUNGEONS_BUTTON, "TOGGLEGROUPFINDER");
 				self.newbieText = NEWBIE_TOOLTIP_LFGPARENT;
 				self.minLevel = math.min(SHOW_LFD_LEVEL, SHOW_PVP_LEVEL);
-				if (IsBlizzCon()) then
+				if (IsKioskModeEnabled()) then
 					self:Disable();
 				end
 			</OnLoad>
+			<OnShow>
+				if (IsKioskModeEnabled()) then
+					self:Disable();
+				end
+			</OnShow>
 			<OnEvent>
-				if (IsBlizzCon()) then
+				if (IsKioskModeEnabled()) then
 					return;
 				end
 				self.tooltipText = MicroButtonTooltipText(DUNGEONS_BUTTON, "TOGGLEGROUPFINDER");
@@ -325,7 +339,7 @@
 			</OnClick>
 		</Scripts>
 	</Button>
-	<Button name="CollectionsMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">
+	<Button name="CollectionsMicroButton" inherits="MainMenuBarMicroButton" mixin="CollectionMicroButtonMixin" parent="UIParent">
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="LFDMicroButton" relativePoint="BOTTOMRIGHT">
 				<Offset>
@@ -343,6 +357,9 @@
 				self:RegisterEvent("HEIRLOOMS_UPDATED");
 				self:RegisterEvent("PET_JOURNAL_NEW_BATTLE_SLOT");
 				self:RegisterEvent("TOYS_UPDATED");
+				self:RegisterEvent("COMPANION_LEARNED");
+				self:RegisterEvent("PET_JOURNAL_LIST_UPDATE");
+				self:RegisterEvent("PLAYER_ENTERING_WORLD");
 			</OnLoad>
 			<OnClick>
 				ToggleCollectionsJournal();
@@ -350,7 +367,7 @@
 			<OnEvent function="CollectionsMicroButton_OnEvent" />
 		</Scripts>
 	</Button>
-	<Button name="EJMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">
+	<Button name="EJMicroButton" inherits="MainMenuBarMicroButton" mixin="EJMicroButtonMixin" parent="UIParent">
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="CollectionsMicroButton" relativePoint="BOTTOMRIGHT">
 				<Offset>
@@ -365,14 +382,19 @@
 					<Anchor point="RIGHT" x="8" y="2"/>
 				</Anchors>
 				<Layers>
-					<Layer level="OVERLAY" setAllPoints="true">
-						<Texture  atlas="adventureguide-microbutton-alert"/>
+					<Layer level="OVERLAY">
+						<Texture atlas="adventureguide-microbutton-alert"/>
 					</Layer>
 				</Layers>
 			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad function="EJMicroButton_OnLoad"/>
+			<OnShow>
+				if (IsKioskModeEnabled()) then
+					self:Disable();
+				end
+			</OnShow>
 			<OnEvent function="EJMicroButton_OnEvent"/>
 			<OnClick function="ToggleEncounterJournal"/>
 		</Scripts>
@@ -390,13 +412,18 @@
 				LoadMicroButtonTextures(self, "BStore");
 				self.tooltipText = BLIZZARD_STORE;
 				self:RegisterEvent("STORE_STATUS_CHANGED");
-				if (IsBlizzCon()) then
+				if (IsKioskModeEnabled()) then
 					self:Disable();
 				end
 			</OnLoad>
+			<OnShow>
+				if (IsKioskModeEnabled()) then
+					self:Disable();
+				end
+			</OnShow>
 			<OnEvent>
 				UpdateMicroButtons();
-				if (IsBlizzCon()) then
+				if (IsKioskModeEnabled()) then
 					self:Disable();
 				end
 			</OnEvent>
@@ -473,7 +500,7 @@
 					local bandwidthIn, bandwidthOut, latencyHome, latencyWorld = GetNetStats();
 					local latency = latencyHome > latencyWorld and latencyHome or latencyWorld;
 					if (latency > PERFORMANCEBAR_MEDIUM_LATENCY) then
-						MainMenuBarPerformanceBar:SetVertexColor(1, 0, 0);									
+						MainMenuBarPerformanceBar:SetVertexColor(1, 0, 0);
 					elseif (latency > PERFORMANCEBAR_LOW_LATENCY) then
 						MainMenuBarPerformanceBar:SetVertexColor(1, 1, 0);
 					else
@@ -497,7 +524,7 @@
 							AudioOptionsFrameCancel:Click();
 						elseif ( InterfaceOptionsFrame:IsShown() ) then
 							InterfaceOptionsFrameCancel:Click();
-						end		
+						end
 						CloseMenus();
 						CloseAllWindows()
 						PlaySound("igMainMenuOpen");
@@ -523,7 +550,7 @@
 								AudioOptionsFrameCancel:Click();
 							elseif ( InterfaceOptionsFrame:IsShown() ) then
 								InterfaceOptionsFrameCancel:Click();
-							end						
+							end
 							CloseMenus();
 							CloseAllWindows()
 							PlaySound("igMainMenuOpen");
@@ -568,26 +595,31 @@
 				LoadMicroButtonTextures(self, "Help");
 				self.tooltipText = HELP_BUTTON;
 				self.newbieText = NEWBIE_TOOLTIP_HELP;
-				if (IsBlizzCon()) then
+				if (IsKioskModeEnabled()) then
 					self:Disable();
 				end
 			</OnLoad>
 			<OnClick function="ToggleHelpFrame"/>
 		</Scripts>
 	</Button>
-	
+
 	<Frame name="TalentMicroButtonAlert" inherits="MicroButtonAlertTemplate">
+		<KeyValues>
+			<KeyValue key="MicroButton" value="TalentMicroButton" type="global"/>
+		</KeyValues>
 		<Anchors>
 			<Anchor point="BOTTOM" relativeTo="TalentMicroButton" relativePoint="TOP" x="0" y="-8"/>
 		</Anchors>
 		<Scripts>
 			<OnLoad>
 				MicroButtonAlert_OnLoad(self);
-				self.Text:SetText(TALENT_MICRO_BUTTON_SPEC_TUTORIAL);
 			</OnLoad>
 		</Scripts>
 	</Frame>
 	<Frame name="CollectionsMicroButtonAlert" inherits="MicroButtonAlertTemplate">
+		<KeyValues>
+			<KeyValue key="MicroButton" value="CollectionsMicroButton" type="global"/>
+		</KeyValues>
 		<Anchors>
 			<Anchor point="BOTTOM" relativeTo="CollectionsMicroButton" relativePoint="TOP" x="0" y="-8"/>
 		</Anchors>
@@ -609,14 +641,19 @@
 		</Scripts>
 	</Frame>
 	<Frame name="EJMicroButtonAlert" inherits="MicroButtonAlertTemplate">
+		<KeyValues>
+			<KeyValue key="MicroButton" value="EJMicroButton" type="global"/>
+		</KeyValues>
 		<Anchors>
 			<Anchor point="BOTTOM" relativeTo="EJMicroButton" relativePoint="TOP" x="0" y="-8"/>
 		</Anchors>
 		<Scripts>
 			<OnLoad>
 				MicroButtonAlert_OnLoad(self);
-				self.Text:SetText(AJ_MICRO_BUTTON_ALERT_TEXT);
 			</OnLoad>
+			<OnHide>
+				SetCVar("advJournalLastOpened", GetServerTime() );
+			</OnHide>
 		</Scripts>
 	</Frame>
 </Ui>

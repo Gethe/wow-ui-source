@@ -7,14 +7,14 @@
 	<Frame name="IconIntroAnimTemplate" virtual="true" alpha="0.5">
 		<Animations>
 			<AnimationGroup parentKey="flyin">
-				<Alpha change="-1" startDelay="1.0" duration="0.5" order="1"/>
+				<Alpha fromAlpha="1" toAlpha="0" startDelay="1.0" duration="0.5" order="1"/>
 				<Path curve="SMOOTH" duration="1.5" order="1">
 					<ControlPoints>
 						<ControlPoint offsetX="-117" offsetY="190"/>
 						<ControlPoint offsetX="-300" offsetY="260"/>
 					</ControlPoints>
 				</Path>
-				<Alpha parentKey="wait" change="0" duration="0.1" order="2"/>
+				<Alpha parentKey="wait"  fromAlpha="0" toAlpha="0" duration="0.1" order="2"/>
 				<Scripts>
 					<OnPlay>
 						local iconFrame = self:GetParent();
@@ -45,7 +45,7 @@
 						if iconFrame.isBase then
 							iconFrame.glow:Play();
 							SetBarSlotFromIntro(iconFrame.slot);
-							iconFrame:GetParent().isFree = true;
+							iconFrame.isFree = true;
 							
 							local button;
 							if (iconFrame.multibar) then
@@ -63,8 +63,8 @@
 				</Scripts>
 			</AnimationGroup>
 			<AnimationGroup parentKey="glow">
-				<Alpha 	target="$parentGlow" change="1"	duration="0.3" order="1"/>
-				<Alpha 	change="-1" duration="0.3" order="2"/>
+				<Alpha 	target="$parentGlow" fromAlpha="0" toAlpha="1"	duration="0.3" order="1"/>
+				<Alpha 	fromAlpha="1" toAlpha="0" duration="0.3" order="2"/>
 				<Scripts>
 					<OnPlay>
 						local trail = self:GetParent().trail;

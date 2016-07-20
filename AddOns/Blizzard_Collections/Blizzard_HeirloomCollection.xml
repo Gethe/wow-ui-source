@@ -84,8 +84,8 @@
 				<Alpha childKey="glow2" smoothing="OUT" duration="1" order="1" fromAlpha="1" toAlpha="0"/>
 				
 				<Rotation childKey="bling" degrees="-90" duration="0.5" order="1"/>
-				<Alpha childKey="bling" change="0.50" duration="0.1667" order="1"/>
-				<Alpha childKey="bling" change="-0.50" startDelay="0.5" duration="0.3333" order="1"/>
+				<Alpha childKey="bling" duration="0.1667" order="1" fromAlpha="0" toAlpha="0.5"/>
+				<Alpha childKey="bling" startDelay="0.5" duration="0.3333" order="1" fromAlpha="0.5" toAlpha="0"/>
 			</AnimationGroup>
 		</Animations>
 		
@@ -116,11 +116,14 @@
 		<Frames>
 			<StatusBar parentKey="progressBar" inherits="CollectionsProgressBarTemplate" />
 
-			<EditBox name="$parentSearchBox" parentKey="SearchBox" inherits="BagSearchBoxTemplate" letters="40">
+			<EditBox name="$parentSearchBox" parentKey="SearchBox" inherits="SearchBoxTemplate" letters="40">
 				<Size x="115" y="20"/>
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="-107" y="-35"/>
 				</Anchors>
+				<Scripts>
+					<OnTextChanged function="HeirloomsJournalSearchBox_OnTextChanged"/>
+				</Scripts>
 			</EditBox>
 
 			<Button name="$parentFilterButton" inherits="UIMenuButtonStretchTemplate" text="FILTER">

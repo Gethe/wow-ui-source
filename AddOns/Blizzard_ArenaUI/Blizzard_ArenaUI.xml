@@ -10,19 +10,19 @@
 				</Texture>		
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture name="$parentBorderShield" file="Interface\CastingBar\UI-CastingBar-Arena-Shield" hidden="true">
+				<Texture parentKey="BorderShield" file="Interface\CastingBar\UI-CastingBar-Arena-Shield" hidden="true">
 					<Size x="42" y="42"/>
 					<Anchors>
 						<Anchor point="LEFT" x="-25" y="0"/>
 					</Anchors>
 				</Texture>
-				<FontString name="$parentText" inherits="GameFontHighlightSmall">
+				<FontString parentKey="Text" inherits="GameFontHighlightSmall">
 					<Size x="80" y="16"/>
 					<Anchors>
 						<Anchor point="TOP" x="0" y="2"/>
 					</Anchors>
 				</FontString>
-				<Texture name="$parentIcon" hidden="true">
+				<Texture parentKey="Icon">
 					<Size x="16" y="16"/>
 					<Anchors>
 						<Anchor point="RIGHT" relativeTo="$parent" relativePoint="LEFT" x="-5" y="0"/>
@@ -30,13 +30,13 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture name="$parentSpark" file="Interface\CastingBar\UI-CastingBar-Spark" alphaMode="ADD">
+				<Texture parentKey="Spark" file="Interface\CastingBar\UI-CastingBar-Spark" alphaMode="ADD">
 					<Size x="32" y="32"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentFlash" alphaMode="ADD"> 
+				<Texture parentKey="Flash" alphaMode="ADD"> 
 				<!-- this needs to be here so the generic unit frame code will work right --> 
 					<Size x="256" y="64"/>
 					<Anchors>
@@ -46,19 +46,10 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad>
-				CastingBarFrame_OnLoad(self, "arena"..self:GetParent():GetID(), false, true);
-				_G[self:GetName().."Icon"]:Show();
-			</OnLoad>
-			<OnEvent>
-				CastingBarFrame_OnEvent(self, event, ...);
-			</OnEvent>
-			<OnUpdate>
-				CastingBarFrame_OnUpdate(self, elapsed);
-			</OnUpdate>
-			<OnShow>
-				CastingBarFrame_OnShow(self);
-			</OnShow>
+			<OnLoad function="CastingBarFrame_OnLoad" />
+			<OnEvent function="CastingBarFrame_OnEvent" />
+			<OnUpdate function="CastingBarFrame_OnUpdate" />
+			<OnShow function="CastingBarFrame_OnShow" />
 		</Scripts>
 		<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 		<BarColor r="1.0" g="0.7" b="0.0"/>
@@ -260,7 +251,7 @@
 					<OnLoad>
 						TextStatusBar_Initialize(self);
 						self.textLockable = 1;
-						self.cvar = "partyStatusText";
+						self.cvar = "statusText";
 						self.cvarLabel = "STATUS_TEXT_PARTY";
 					</OnLoad>
 					<OnMouseUp>
@@ -281,7 +272,7 @@
 					<OnLoad>
 						TextStatusBar_Initialize(self);
 						self.textLockable = 1;
-						self.cvar = "partyStatusText";
+						self.cvar = "statusText";
 						self.cvarLabel = "STATUS_TEXT_PARTY";
 					</OnLoad>
 					<OnMouseUp>

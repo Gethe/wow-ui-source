@@ -27,3 +27,7 @@ end
 function Outbound.ClearItemTooltip()
 	securecall("GameTooltip_Hide");
 end
+
+function Outbound.ConfirmClassTrialApplyToken()
+	securecall("ClassTrial_ConfirmApplyToken")
+end

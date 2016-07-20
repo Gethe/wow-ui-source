@@ -10,7 +10,7 @@
 	</Screen>
 	<Screen name="PlayerInfoScreen">
 		<!-- DO NOT MODIFY ID!!! -->
-		<LCDText name="STRENGTH" text="STR" id="2">
+		<LCDText name="STRENGTH" text="STR_LCD" id="2">
 			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="20" Wrap="false"/>
 			<Origin x="0" y="0" />
 		</LCDText>
@@ -18,7 +18,7 @@
 			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="25" Wrap="false"/>
 			<Origin x="15" y="0" />
 		</LCDText>
-		<LCDText name="AGILITY" text="AGI" id="4">
+		<LCDText name="AGILITY" text="AGI_LCD" id="4">
 			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="20" Wrap="false"/>
 			<Origin x="0" y="8" />
 		</LCDText>
@@ -26,7 +26,7 @@
 			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="25" Wrap="false"/>
 			<Origin x="15" y="8" />
 		</LCDText>
-		<LCDText name="STAMINA" text="STA" id="6">
+		<LCDText name="STAMINA" text="STA_LCD" id="6">
 			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="20" Wrap="false"/>
 			<Origin x="0" y="16" />
 		</LCDText>
@@ -34,7 +34,7 @@
 			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="25" Wrap="false"/>
 			<Origin x="15" y="16" />
 		</LCDText>
-		<LCDText name="INTELLECT" text="INT" id="8">
+		<LCDText name="INTELLECT" text="INT_LCD" id="8">
 			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="20" Wrap="false"/>
 			<Origin x="0" y="24" />
 		</LCDText>
@@ -42,20 +42,12 @@
 			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="25" Wrap="false"/>
 			<Origin x="15" y="24" />
 		</LCDText>
-		<LCDText name="SPIRIT" text="SPI" id="10">
-			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="20" Wrap="false"/>
-			<Origin x="0" y="32" />
-		</LCDText>
-		<LCDText name="SPIRIT_FLD" id="11">
-			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="25" Wrap="false"/>
-			<Origin x="15" y="32" />
-		</LCDText>
     <LCDSubscreen name="Melee" id="0">
       <!--<LCDText name="WEAPON_SKILL" text="WEAPON_SKILL" id="43">
         <Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="53" Wrap="false"/>
         <Origin x="40" y="0" />
       </LCDText>-->
-      <LCDText name="DAMAGE" text="DMG" id="14">
+      <LCDText name="DAMAGE" text="DMG_LCD" id="14">
 			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="23" Wrap="false"/>
 			<Origin x="43" y="0" />
 		</LCDText>
@@ -79,21 +71,13 @@
 			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="40" Wrap="false"/>
 			<RelOrigin RelTo="HASTE_FLD" x="0" y="8" />
 		</LCDText>
-		<LCDText name="HIT" text="HIT" id="57">
-		  <Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="28" Wrap="false"/>
-			<RelOrigin RelTo="POWER" x="0" y="8" />
-		</LCDText>
-		<LCDText name="HIT_FLD" id="11">
-			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="40" Wrap="false"/>
-			<RelOrigin RelTo="POWER_FLD" x="0" y="8" />
-		</LCDText>
 		<LCDText name="CRIT" text="CRIT_ABBR" id="58">
 			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="28" Wrap="false"/>
-			<RelOrigin RelTo="HIT" x="0" y="8" />
+			<RelOrigin RelTo="POWER" x="0" y="8" />
 		</LCDText>
 		<LCDText name="CRIT_FLD" id="11">
 			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="40" Wrap="false"/>
-			<RelOrigin RelTo="HIT_FLD" x="0" y="8" />
+			<RelOrigin RelTo="POWER_FLD" x="0" y="8" />
 		</LCDText>
     </LCDSubscreen>
     <LCDSubscreen name="Defense" id="1">
@@ -105,7 +89,7 @@
 			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="40" Wrap="false"/>
 			<RelOrigin RelTo="ARMOR2" x="28" y="0" />
 		</LCDText>
-		<LCDText name="DODGE" text="DODGE" id="45">
+		<LCDText name="DODGE" text="DODGE_LCD" id="45">
 			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="28" Wrap="false"/>
 			<RelOrigin RelTo="ARMOR2" x="0" y="8" />
 		</LCDText>
@@ -113,7 +97,7 @@
 			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="40" Wrap="false"/>
 			<RelOrigin RelTo="ARMOR2_FLD" x="0" y="8" />
 		</LCDText>
-		<LCDText name="PARRY" text="PARRY" id="46">
+		<LCDText name="PARRY" text="PARRY_LCD" id="46">
 			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="28" Wrap="false"/>
 			<RelOrigin RelTo="DODGE" x="0" y="8" />
 		</LCDText>
@@ -121,21 +105,13 @@
 			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="40" Wrap="false"/>
 			<RelOrigin RelTo="DODGE_FLD" x="0" y="8" />
 		</LCDText>
-		<LCDText name="BLOCK" text="BLOCK" id="47">
+		<LCDText name="BLOCK" text="BLOCK_LCD" id="47">
 			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="28" Wrap="false"/>
 			<RelOrigin RelTo="PARRY" x="0" y="8" />
 		</LCDText>
 		<LCDText name="BLOCK_FLD" id="11">
 			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="40" Wrap="false"/>
 			<RelOrigin RelTo="PARRY_FLD" x="0" y="8" />
-		</LCDText>
-		<LCDText name="RESILIENCE" text="RESILIENCE_ABBR" id="48">
-			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="28" Wrap="false"/>
-			<RelOrigin RelTo="BLOCK" x="0" y="8" />
-		</LCDText>
-		<LCDText name="RESILIENCE_FLD" id="11">
-			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="40" Wrap="false"/>
-			<RelOrigin RelTo="BLOCK_FLD" x="0" y="8" />
 		</LCDText>
     </LCDSubscreen>
     <LCDSubscreen name="Spell" id="2">
@@ -155,11 +131,11 @@
       <Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="35" Wrap="false"/>
       <RelOrigin RelTo="SPELL_POWER_FLD" x="0" y="8" />
     </LCDText>
-		<LCDText name="SPELL_HIT" text="HIT" id="51">
+		<LCDText name="SPELL_HIT" text="HIT_LCD" id="51">
 			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="28" Wrap="false"/>
 			<RelOrigin RelTo="SPELL_HASTE" x="0" y="8" />
 		</LCDText>
-		<LCDText name="SPELL_HIT_FLD" text="HIT">
+		<LCDText name="SPELL_HIT_FLD" text="HIT_LCD">
 			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="35" Wrap="false"/>
 			<RelOrigin RelTo="SPELL_HASTE_FLD" x="0" y="8" />
 		</LCDText>
@@ -171,7 +147,7 @@
 			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="35" Wrap="false"/>
 			<RelOrigin RelTo="SPELL_HIT_FLD" x="0" y="8" />
 		</LCDText>
-		
+
 		<LCDText name="MANA_REGEN" text="MANA_REGEN_ABBR" id="54">
 			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="27" Wrap="false"/>
 			<RelOrigin RelTo="SPELL_CRIT" x="0" y="8" />
@@ -203,7 +179,7 @@
 			<Origin x="0" y="0"/>
 			<Size x="30" y="43"/>
 		</LCDBitmap>
-		<LCDText name="BATTLEFIELD_ALERT" text="BATTLEFIELD_ALERT" id="22">
+		<LCDText name="BATTLEFIELD_ALERT" text="BATTLEFIELD_ALERT_LCD" id="22">
 			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="160" Wrap="true"/>
 			<Origin x="20" y="0" />
 			<Size x="140" y="43"/>

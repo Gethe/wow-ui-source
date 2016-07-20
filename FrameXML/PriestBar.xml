@@ -110,7 +110,7 @@
 		</HitRectInsets>
 		<Animations>
 			<AnimationGroup parentKey="ShowAnim">
-				<Alpha change="1" duration="0.5" order="1"/>
+				<Alpha fromAlpha="0" toAlpha="1" duration="0.5" order="1"/>
 				<Scripts>
 					<OnFinished>
 						self:GetParent():SetAlpha(1.0);

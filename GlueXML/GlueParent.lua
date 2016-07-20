@@ -4,6 +4,7 @@ GLUE_SCREENS = {
 	["realmlist"] = 	{ frame = "RealmListUI", 		playMusic = true,	playAmbience = false },
 	["charselect"] = 	{ frame = "CharacterSelect",	playMusic = true,	playAmbience = false, onAttemptShow = function() InitializeCharacterScreenData() end },
 	["charcreate"] =	{ frame = "CharacterCreate",	playMusic = true,	playAmbience = false, onAttemptShow = function() InitializeCharacterScreenData() end },
+	["kioskmodesplash"]={ frame = "KioskModeSplash",	playMusic = true,	playAmbience = false },
 };
 
 GLUE_SECONDARY_SCREENS = {
@@ -18,14 +19,14 @@ SEX_MALE = 2;
 SEX_FEMALE = 3;
 
 function GlueParent_OnLoad(self)
-	local width = GetScreenWidth();
+   	local width = GetScreenWidth();
 	local height = GetScreenHeight();
 
 	if ( width / height > 16 / 9) then
 		local maxWidth = height * 16 / 9;
 		local barWidth = ( width - maxWidth ) / 2;
 		self:ClearAllPoints();
-		self:SetPoint("TOPLEFT", barWidth, 0); 
+		self:SetPoint("TOPLEFT", barWidth, 0);
 		self:SetPoint("BOTTOMRIGHT", -barWidth, 0);
 	end
 
@@ -44,7 +45,7 @@ function GlueParent_OnEvent(self, event, ...)
 		GlueParent_UpdateDialogs();
 		GlueParent_CheckCinematic();
 		if ( AccountLogin:IsVisible() ) then
-			CheckSystemRequirements();
+			SetExpansionLogo(AccountLogin.UI.GameLogo, GetClientDisplayExpansionLevel());
 		end
 	elseif ( event == "LOGIN_STATE_CHANGED" ) then
 		GlueParent_EnsureValidScreen();
@@ -74,7 +75,7 @@ end
 
 function GlueParent_IsScreenValid(screen)
 	local auroraState, connectedToWoW, wowConnectionState, hasRealmList = C_Login.GetState();
-	if ( screen == "charselect" or screen == "charcreate" ) then
+	if ( screen == "charselect" or screen == "charcreate" or screen == "kioskmodesplash" ) then
 		return auroraState == LE_AURORA_STATE_NONE and (connectedToWoW or wowConnectionState == LE_WOW_CONNECTION_STATE_CONNECTING) and not hasRealmList;
 	elseif ( screen == "realmlist" ) then
 		return hasRealmList;
@@ -180,7 +181,7 @@ function GlueParent_UpdateDialogs()
 		GlueDialog_Show("CANCEL", GAME_SERVER_LOGIN);
 	elseif ( wowConnectionState == LE_WOW_CONNECTION_STATE_IN_QUEUE ) then
 		local waitPosition, waitMinutes, hasFCM = C_Login.GetWaitQueueInfo();
-		
+
 		if ( hasFCM ) then
 			GlueDialog_Show("QUEUED_WITH_FCM", _G["QUEUE_FCM"]);
 		elseif ( waitMinutes == 0 ) then
@@ -234,6 +235,10 @@ local function GlueParent_ChangeScreen(screenInfo, screenTable)
 
 	--Actually show this screen
 	_G[screenInfo.frame]:Show();
+end
+
+function GlueParent_GetCurrentScreen()
+	return GlueParent.currentScreen;
 end
 
 function GlueParent_SetScreen(screen)
@@ -332,79 +337,10 @@ function GlueParent_CheckCinematic()
 end
 
 -- =============================================================
--- Fade functions
--- =============================================================
-
-FADEFRAMES = {};
-
-function GlueFrameFade(frame, timeToFade, mode, finishedFunction)
-	if ( frame ) then
-		frame.fadeTimer = 0;
-		frame.timeToFade = timeToFade;
-		frame.mode = mode;
-		-- finishedFunction is an optional function that is called when the animation is complete
-		if ( finishedFunction ) then
-			frame.finishedFunction = finishedFunction;
-		end
-		tinsert(FADEFRAMES, frame);
-	end
-end
-
--- Fade in function
-function GlueFrameFadeIn(frame, timeToFade, finishedFunction)
-	GlueFrameFade(frame, timeToFade, "IN", finishedFunction);
-end
-
--- Fade out function
-function GlueFrameFadeOut(frame, timeToFade, finishedFunction)
-	GlueFrameFade(frame, timeToFade, "OUT", finishedFunction);
-end
-
--- Function that actually performs the alpha change
-function GlueFrameFadeUpdate(self, elapsed)
-	local index = 1;
-	while FADEFRAMES[index] do
-		local frame = FADEFRAMES[index];
-		frame.fadeTimer = frame.fadeTimer + elapsed;
-		if ( frame.fadeTimer < frame.timeToFade ) then
-			if ( frame.mode == "IN" ) then
-				frame:SetAlpha(frame.fadeTimer / frame.timeToFade);
-			elseif ( frame.mode == "OUT" ) then
-				frame:SetAlpha((frame.timeToFade - frame.fadeTimer) / frame.timeToFade);
-			end
-		else
-			if ( frame.mode == "IN" ) then
-				frame:SetAlpha(1.0);
-			elseif ( frame.mode == "OUT" ) then
-				frame:SetAlpha(0);
-			end
-			GlueFrameFadeRemoveFrame(frame);
-			if ( frame.finishedFunction ) then
-				frame.finishedFunction();
-				frame.finishedFunction = nil;
-			end
-		end
-		index = index + 1;
-	end
-end
-
-function GlueFrameFadeRemoveFrame(frame)
-	local index = 1;
-	while FADEFRAMES[index] do
-		if ( frame == FADEFRAMES[index] ) then
-			tremove(FADEFRAMES, index);
-		end
-		index = index + 1;
-	end
-end
-
--- =============================================================
 -- Model functions
 -- =============================================================
 
 function SetLoginScreenModel(model)
-	model:SetCamera(0);
-	model:SetSequence(0);
 
 	local expansionLevel = GetClientDisplayExpansionLevel();
 	local lowResBG = EXPANSION_LOW_RES_BG[expansionLevel];
@@ -412,61 +348,215 @@ function SetLoginScreenModel(model)
 	local background = GetLoginScreenBackground(highResBG, lowResBG);
 
 	model:SetModel(background, true);
+	model:SetCamera(0);
+	model:SetSequence(0);
 end
 
--- Function to get the background tag from a full path ( '..\UI_tagName.m2' )
-function GetBackgroundModelTag(path)
-	local pathUpper = strupper(path);
-	local matchStart;
-	local matchEnd;
-	local tag;
-	matchStart, matchEnd, tag = string.find(pathUpper, 'UI_(%a+).M2');
-	if ( not tag ) then
-		tag = "CHARACTERSELECT"; -- default
-	end
-	return tag;
-end
-
-function SetLighting(model, race)
+local function ResetLighting(model)
 	--model:SetSequence(0);
 	model:SetCamera(0);
-	local fogInfo = CHAR_MODEL_FOG_INFO[race];
-	if ( fogInfo ) then
-		model:SetFogColor(fogInfo.r, fogInfo.g, fogInfo.b);
-		model:SetFogNear(0);
-		model:SetFogFar(fogInfo.far);
-	else
-		model:ClearFog();
-    end
-
-    local glowInfo = CHAR_MODEL_GLOW_INFO[race];
-    if ( glowInfo ) then
-        model:SetGlow(glowInfo);
-    else
-		model:SetGlow(0.3);
-    end
+	model:ClearFog();
+	model:SetGlow(0.3);
 
     model:ResetLights();
 end
 
+local function UpdateLighting(model)
+	-- TODO: Remove this and CHAR_MODEL_FOG_INFO and bake fog into models as desired.
+    local fogData = CHAR_MODEL_FOG_INFO[GetCurrentGlueTag()];
+    if fogData then
+    	model:SetFogNear(0);
+    	model:SetFogFar(fogData.far);
+    	model:SetFogColor(fogData.r, fogData.g, fogData.b);
+    end
+end
+
+local glueScreenTags =
+{
+	["charselect"] =
+	{
+		["PANDAREN"] = "PANDARENCHARACTERSELECT",
+	},
+
+	["charcreate"] =
+	{
+		-- Classes
+		["DEATHKNIGHT"] = true,
+		["DEMONHUNTER"] = true,
+
+		-- Races
+		["PANDAREN"] = true,
+
+		-- Factions
+		["HORDE"] = true,
+		["ALLIANCE"] = true,
+		["NEUTRAL"] = true,
+	},
+
+	["default"] =
+	{
+		-- Classes
+		["DEATHKNIGHT"] = true,
+		["DEMONHUNTER"] = true,
+
+		-- Races
+		["HUMAN"] = true,
+		["ORC"] = true,
+		["TROLL"] = true,
+		["DWARF"] = true,
+		["GNOME"] = true,
+		["TAUREN"] = true,
+		["SCOURGE"] = true,
+		["NIGHTELF"] = true,
+		["DRAENEI"] = true,
+		["BLOODELF"] = true,
+		["GOBLIN"] = true,
+		["WORGEN"] = true,
+	},
+};
+
+local function GetGlueTagFromKey(subTable, key)
+	if ( subTable and key ) then
+		local value = subTable[key];
+		local valueType = type(value);
+		if ( valueType == "boolean" ) then
+			return key;
+		elseif ( valueType == "string" ) then
+			return value;
+		end
+	end
+end
+
+local function UpdateGlueTagWithOrdering(subTable, ...)
+	for i = 1, select("#", ...) do
+		local tag = GetGlueTagFromKey(subTable, select(i, ...));
+		if ( tag ) then
+			GlueParent.currentTag = tag;
+			return true;
+		end
+	end
+
+	return false;
+end
+
+local function UpdateGlueTag()
+	local currentScreen = GlueParent_GetCurrentScreen();
+
+	local _, race, class, faction, currentTag;
+
+	-- Determine which API to use to get character information
+	if ( currentScreen == "charselect") then
+		class = select(4, GetCharacterInfo(GetCharacterSelection()));
+		race = select(2, GetCharacterRace(GetCharacterSelection()));
+		faction = ""; -- Don't need faction for character selection, its currently irrelevant
+
+	elseif ( currentScreen == "charcreate" ) then
+		_, class = GetSelectedClass();
+		_, race = GetNameForRace();
+		_, faction = GetFactionForRace(GetSelectedRace());
+	end
+
+	-- Once valid information is available, determine the current tag
+	if ( race and class and faction ) then
+		race, class, faction = strupper(race), strupper(class), strupper(faction);
+
+		-- Try lookup from current screen (current screen may have fixed bg's)
+		if ( UpdateGlueTagWithOrdering(glueScreenTags[currentScreen], class, race, faction) ) then
+			return;
+		end
+
+		-- Try lookup from defaults
+		if ( UpdateGlueTagWithOrdering(glueScreenTags["default"], class, race, faction) ) then
+			return;
+		end
+	end
+
+	-- Fallback default value for the current glue tag
+	GlueParent.currentTag = "CHARACTERSELECT";
+end
+
+function GetCurrentGlueTag()
+	return GlueParent.currentTag;
+end
+
+local function PlayGlueAmbienceFromTag()
+	PlayGlueAmbience(GLUE_AMBIENCE_TRACKS[GetCurrentGlueTag()], 4.0);
+end
+
+function GlueParent_DeathKnightButtonSwapMultiTexture(self)
+	local textureBase;
+	local highlightBase = "Interface\\Glues\\Common\\Glue-Panel-Button-Highlight";
+
+	if ( not self:IsEnabled() ) then
+		textureBase = "Interface\\Glues\\Common\\Glue-Panel-Button-Disabled";
+	elseif ( self.down ) then
+		textureBase = "Interface\\Glues\\Common\\Glue-Panel-Button-Down";
+	else
+		textureBase = "Interface\\Glues\\Common\\Glue-Panel-Button-Up";
+	end
+
+	local currentGlueTag = GetCurrentGlueTag();
+
+	if ( self.currentGlueTag ~= currentGlueTag or self.textureBase ~= textureBase ) then
+		self.currentGlueTag = currentGlueTag;
+		self.textureBase = textureBase;
+
+		if ( currentGlueTag == "DEATHKNIGHT" ) then
+			local suffix = self:IsEnabled() and "-Blue" or "";
+			local texture = textureBase..suffix;
+			local highlight = highlightBase..suffix;
+			self.Left:SetTexture(texture);
+			self.Middle:SetTexture(texture);
+			self.Right:SetTexture(texture);
+			self:SetHighlightTexture(highlight);
+		else
+			self.Left:SetTexture(textureBase);
+			self.Middle:SetTexture(textureBase);
+			self.Right:SetTexture(textureBase);
+			self:SetHighlightTexture(highlightBase);
+		end
+	end
+end
+
+function GlueParent_DeathKnightButtonSwapSingleTexture(self)
+	local currentTag = GetCurrentGlueTag();
+	if ( self.currentGlueTag ~= currentTag ) then
+		self.currentGlueTag = currentTag;
+
+		if (currentTag == "DEATHKNIGHT") then
+			-- Not currently needed, but could support other swaps here.
+			self:SetNormalTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Up-Blue");
+			self:SetPushedTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Down-Blue");
+			self:SetHighlightTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Highlight-Blue");
+		else
+			self:SetNormalTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Up");
+			self:SetPushedTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Down");
+			self:SetHighlightTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Highlight");
+		end
+	end
+end
+
+function GlueParent_DeathKnightButtonSwap(self)
+	if ( self.Left ) then
+		GlueParent_DeathKnightButtonSwapMultiTexture(self);
+	else
+		GlueParent_DeathKnightButtonSwapSingleTexture(self);
+	end
+end
+
 -- Function to set the background model for character select and create screens
 function SetBackgroundModel(model, path)
-	local nameupper = GetBackgroundModelTag(path);
 	if ( model == CharacterCreate ) then
 		SetCharCustomizeBackground(path);
 	else
 		SetCharSelectBackground(path);
 	end
-	if ( GLUE_AMBIENCE_TRACKS[nameupper] ) then
-		PlayGlueAmbience(GLUE_AMBIENCE_TRACKS[nameupper], 4.0);
-	end
-	if ( ( model == CharacterSelectModel ) and ( string.find(model:GetModel(), 'lowres') == nil ) ) then
-		SetLighting(model, nameupper)
-	else
-		SetLighting(model, "DEFAULT")
-	end
 
-	return nameupper;
+	UpdateGlueTag();
+	PlayGlueAmbienceFromTag();
+
+	ResetLighting(model);
+	UpdateLighting(model);
 end
 
 -- =============================================================
@@ -498,8 +588,12 @@ end
 function SetExpansionLogo(texture, expansionLevel)
 	if ( EXPANSION_LOGOS[expansionLevel].texture ) then
 		texture:SetTexture(EXPANSION_LOGOS[expansionLevel].texture);
-	else
+		texture:Show();
+	elseif ( EXPANSION_LOGOS[expansionLevel].atlas ) then
 		texture:SetAtlas(EXPANSION_LOGOS[expansionLevel].atlas);
+		texture:Show();
+	else
+		texture:Hide();
 	end
 end
 
@@ -515,19 +609,19 @@ function MinutesToTime(mins, hideDays)
 	-- only show days if hideDays is false
 	if ( mins > 1440 and not hideDays ) then
 		tempTime = floor(mins / 1440);
-		time = tempTime..TIME_UNIT_DELIMITER..DAYS_ABBR..TIME_UNIT_DELIMITER;
+		time = TIME_UNIT_DELIMITER .. format(DAYS_ABBR, tempTime);
 		mins = mod(mins, 1440);
 		count = count + 1;
 	end
 	if ( mins > 60  ) then
 		tempTime = floor(mins / 60);
-		time = time..tempTime..TIME_UNIT_DELIMITER..HOURS_ABBR..TIME_UNIT_DELIMITER;
+		time = time .. TIME_UNIT_DELIMITER .. format(HOURS_ABBR, tempTime);
 		mins = mod(mins, 60);
 		count = count + 1;
 	end
 	if ( count < 2 ) then
 		tempTime = mins;
-		time = time..tempTime..TIME_UNIT_DELIMITER..MINUTES_ABBR..TIME_UNIT_DELIMITER;
+		time = time .. TIME_UNIT_DELIMITER .. format(MINUTES_ABBR, tempTime);
 		count = count + 1;
 	end
 	return time;
@@ -541,7 +635,7 @@ function CheckSystemRequirements( previousCheck )
 		end
 		previousCheck = nil;
 	end
-	
+
 	if ( not previousCheck or previousCheck == "SSE" ) then
 		if ( not IsShaderModelSupported() ) then
 			GlueDialog_Show("FIXEDFUNCTION_UNSUPPORTED");
@@ -549,7 +643,7 @@ function CheckSystemRequirements( previousCheck )
 		end
 		previousCheck = nil;
 	end
-	
+
 	if ( not previousCheck or previousCheck == "SHADERMODEL" ) then
 		if ( VideoDeviceState() == 1 ) then
 			GlueDialog_Show("DEVICE_BLACKLISTED");
@@ -557,7 +651,7 @@ function CheckSystemRequirements( previousCheck )
 		end
 		previousCheck = nil;
 	end
-	
+
 	if ( not previousCheck or previousCheck == "DEVICE" ) then
 		if ( VideoDriverState() == 2 ) then
 			GlueDialog_Show("DRIVER_OUTOFDATE");
@@ -565,7 +659,7 @@ function CheckSystemRequirements( previousCheck )
 		end
 		previousCheck = nil;
 	end
-	
+
 	if ( not previousCheck or previousCheck == "DRIVER_OOD" ) then
 		if ( VideoDriverState() == 1 ) then
 			GlueDialog_Show("DRIVER_BLACKLISTED");

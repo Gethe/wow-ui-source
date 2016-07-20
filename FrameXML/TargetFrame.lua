@@ -33,6 +33,8 @@ function TargetFrame_OnLoad(self, unit, menuFunc)
 	self.borderTexture = _G[thisName.."TextureFrameTexture"];
 	self.highLevelTexture = _G[thisName.."TextureFrameHighLevelTexture"];	
 	self.pvpIcon = _G[thisName.."TextureFramePVPIcon"];
+	self.prestigePortrait = _G[thisName.."TextureFramePrestigePortrait"];
+	self.prestigeBadge = _G[thisName.."TextureFramePrestigeBadge"];
 	self.leaderIcon = _G[thisName.."TextureFrameLeaderIcon"];
 	self.raidTargetIcon = _G[thisName.."TextureFrameRaidTargetIcon"];
 	self.questIcon = _G[thisName.."TextureFrameQuestIcon"];
@@ -74,7 +76,6 @@ function TargetFrame_OnLoad(self, unit, menuFunc)
 	TargetFrame_Update(self);
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("UNIT_HEALTH");
-	self:RegisterEvent("CVAR_UPDATE");
 	if ( self.showLevel ) then
 		self:RegisterEvent("UNIT_LEVEL");
 	end
@@ -236,14 +237,6 @@ function TargetFrame_OnEvent (self, event, ...)
 			self:Hide();
 		end
 		CloseDropDownMenus();
-	elseif ( event == "CVAR_UPDATE" ) then
-		if ( arg1 == "SHOW_ALL_ENEMY_DEBUFFS_TEXT" ) then
-			-- have to set uvar manually or it will be the previous value
-			SHOW_ALL_ENEMY_DEBUFFS = GetCVar("showAllEnemyDebuffs");
-			if ( self:IsShown() ) then
-				TargetFrame_UpdateAuras(self);
-			end
-		end		
 	end
 end
 
@@ -317,7 +310,7 @@ function BossTargetFrame_UpdateLevelTextAnchor (self, targetLevel)
 end
 
 function TargetFrame_CheckFaction (self)
-	if ( not UnitPlayerControlled(self.unit) and UnitIsTapped(self.unit) and not UnitIsTappedByPlayer(self.unit) and not UnitIsTappedByAllThreatList(self.unit) ) then
+	if ( not UnitPlayerControlled(self.unit) and UnitIsTapDenied(self.unit) ) then
 		self.nameBackground:SetVertexColor(0.5, 0.5, 0.5);
 		if ( self.portrait ) then
 			self.portrait:SetVertexColor(0.5, 0.5, 0.5);
@@ -332,12 +325,36 @@ function TargetFrame_CheckFaction (self)
 	if ( self.showPVP ) then
 		local factionGroup = UnitFactionGroup(self.unit);
 		if ( UnitIsPVPFreeForAll(self.unit) ) then
-			self.pvpIcon:SetTexture("Interface\\TargetingFrame\\UI-PVP-FFA");
-			self.pvpIcon:Show();
+			local prestige = UnitPrestige(self.unit);
+			if (prestige > 0) then
+				self.prestigePortrait:SetAtlas("honorsystem-portrait-neutral", false);
+				self.prestigeBadge:SetTexture(GetPrestigeInfo(prestige));
+				self.prestigePortrait:Show();
+				self.prestigeBadge:Show();
+				self.pvpIcon:Hide();
+			else
+				self.prestigePortrait:Hide();
+				self.prestigeBadge:Hide();
+				self.pvpIcon:SetTexture("Interface\\TargetingFrame\\UI-PVP-FFA");
+				self.pvpIcon:Show();
+			end
 		elseif ( factionGroup and factionGroup ~= "Neutral" and UnitIsPVP(self.unit) ) then
-			self.pvpIcon:SetTexture("Interface\\TargetingFrame\\UI-PVP-"..factionGroup);
-			self.pvpIcon:Show();
+			local prestige = UnitPrestige(self.unit);
+			if (prestige > 0) then
+				self.prestigePortrait:SetAtlas("honorsystem-portrait-"..factionGroup, false);
+				self.prestigeBadge:SetTexture(GetPrestigeInfo(prestige));
+				self.prestigePortrait:Show();
+				self.prestigeBadge:Show();
+				self.pvpIcon:Hide();
+			else
+				self.prestigePortrait:Hide();
+				self.prestigeBadge:Hide();
+				self.pvpIcon:SetTexture("Interface\\TargetingFrame\\UI-PVP-"..factionGroup);
+				self.pvpIcon:Show();
+			end
 		else
+			self.prestigePortrait:Hide();
+			self.prestigeBadge:Hide();
 			self.pvpIcon:Hide();
 		end
 	end
@@ -357,6 +374,7 @@ end
 function TargetFrame_CheckClassification (self, forceNormalTexture)
 	local classification = UnitClassification(self.unit);
 	self.nameBackground:Show();
+	self.manabar.pauseUpdates = false;
 	self.manabar:Show();
 	TextStatusBar_UpdateTextString(self.manabar);
 	self.threatIndicator:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Flash");
@@ -366,8 +384,11 @@ function TargetFrame_CheckClassification (self, forceNormalTexture)
 	elseif ( classification == "minus" ) then
 		self.borderTexture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Minus");
 		self.nameBackground:Hide();
+		self.manabar.pauseUpdates = true;
 		self.manabar:Hide();
 		self.manabar.TextString:Hide();
+		self.manabar.LeftText:Hide();
+		self.manabar.RightText:Hide();
 		forceNormalTexture = true;
 	elseif ( classification == "worldboss" or classification == "elite" ) then
 		self.borderTexture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Elite");
@@ -458,73 +479,73 @@ local largeDebuffList = {};
 function TargetFrame_UpdateAuras (self)
 	local frame, frameName;
 	local frameIcon, frameCount, frameCooldown;
-	local name, rank, icon, count, debuffType, duration, expirationTime, caster, canStealOrPurge, spellId, _;
-	local frameStealable;
 	local numBuffs = 0;
 	local playerIsTarget = UnitIsUnit(PlayerFrame.unit, self.unit);
 	local selfName = self:GetName();
 	local canAssist = UnitCanAssist("player", self.unit);
 	
-	local filter;
-	if ( SHOW_CASTABLE_BUFFS == "1" and canAssist ) then
-		filter = "RAID";
-	end
-	
 	for i = 1, MAX_TARGET_BUFFS do
-		name, rank, icon, count, debuffType, duration, expirationTime, caster, canStealOrPurge, _ , spellId = UnitBuff(self.unit, i, filter);
-		
-		frameName = selfName.."Buff"..(i);
-		frame = _G[frameName];
-		if ( not frame ) then
-			if ( not icon ) then
-				break;
-			else
-				frame = CreateFrame("Button", frameName, self, "TargetBuffFrameTemplate");
-				frame.unit = self.unit;
-			end
-		end
-		if ( icon and ( not self.maxBuffs or i <= self.maxBuffs ) ) then
-			frame:SetID(i);
+        local buffName, rank, icon, count, debuffType, duration, expirationTime, caster, canStealOrPurge, _ , spellId, _, _, casterIsPlayer, nameplateShowAll = UnitBuff(self.unit, i, nil);
+        if (buffName) then 
+            frameName = selfName.."Buff"..(i);
+            frame = _G[frameName];
+            if ( not frame ) then
+                if ( not icon ) then
+                    break;
+                else
+                    frame = CreateFrame("Button", frameName, self, "TargetBuffFrameTemplate");
+                    frame.unit = self.unit;
+                end
+            end
+            if ( icon and ( not self.maxBuffs or i <= self.maxBuffs ) ) then
+                frame:SetID(i);
 
-			-- set the icon
-			frameIcon = _G[frameName.."Icon"];
-			frameIcon:SetTexture(icon);
+                -- set the icon
+                frameIcon = _G[frameName.."Icon"];
+                frameIcon:SetTexture(icon);
 
-			-- set the count
-			frameCount = _G[frameName.."Count"];
-			if ( count > 1 and self.showAuraCount ) then
-				frameCount:SetText(count);
-				frameCount:Show();
-			else
-				frameCount:Hide();
-			end
-			
-			-- Handle cooldowns
-			frameCooldown = _G[frameName.."Cooldown"];
-			if ( duration > 0 ) then
-				frameCooldown:Show();
-				CooldownFrame_SetTimer(frameCooldown, expirationTime - duration, duration, 1);
-			else
-				frameCooldown:Hide();
-			end
+                -- set the count
+                frameCount = _G[frameName.."Count"];
+                if ( count > 1 and self.showAuraCount ) then
+                    frameCount:SetText(count);
+                    frameCount:Show();
+                else
+                    frameCount:Hide();
+                end
+                    
+                -- Handle cooldowns
+                frameCooldown = _G[frameName.."Cooldown"];
+                CooldownFrame_Set(frameCooldown, expirationTime - duration, duration, duration > 0, true);
 
-			-- Show stealable frame if the target is not the current player and the buff is stealable.
-			frameStealable = _G[frameName.."Stealable"];
-			if ( not playerIsTarget and canStealOrPurge ) then
-				frameStealable:Show();
-			else
-				frameStealable:Hide();
-			end
+                -- Show stealable frame if the target is not the current player and the buff is stealable.
+                local frameStealable = _G[frameName.."Stealable"];
+                if ( not playerIsTarget and canStealOrPurge ) then
+                    frameStealable:Show();
+                else
+                    frameStealable:Hide();
+                end
 
-			-- set the buff to be big if the buff is cast by the player or his pet
-			largeBuffList[i] = PLAYER_UNITS[caster];
+                -- set the buff to be big if the buff is cast by the player or his pet
+                largeBuffList[i] = PLAYER_UNITS[caster];
 
-			numBuffs = numBuffs + 1;
+                numBuffs = numBuffs + 1;
 
-			frame:ClearAllPoints();
-			frame:Show();
-		else
+                frame:ClearAllPoints();
+                frame:Show();
+            else
+                frame:Hide();
+            end
+        else
+            break;
+        end
+	end
+
+	for i = numBuffs + 1, MAX_TARGET_BUFFS do
+		local frame = _G[selfName.."Buff"..i];
+		if ( frame ) then
 			frame:Hide();
+		else
+			break;
 		end
 	end
 
@@ -532,20 +553,14 @@ function TargetFrame_UpdateAuras (self)
 	local frameBorder;
 	local numDebuffs = 0;
 	
-	if ( SHOW_DISPELLABLE_DEBUFFS == "1" and canAssist ) then
-		filter = "RAID";
-	else
-		filter = nil;
-	end
-	
 	local frameNum = 1;
 	local index = 1;
 	
-	while ( frameNum <= (self.maxDebuffs or MAX_TARGET_DEBUFFS) ) do
-		local debuffName = UnitDebuff(self.unit, index, filter);
+	local maxDebuffs = self.maxDebuffs or MAX_TARGET_DEBUFFS;
+	while ( frameNum <= maxDebuffs and index <= maxDebuffs ) do
+	    local debuffName, rank, icon, count, debuffType, duration, expirationTime, caster, _, _, _, _, _, casterIsPlayer, nameplateShowAll = UnitDebuff(self.unit, index, "INCLUDE_NAME_PLATE_ONLY");
 		if ( debuffName ) then
-			if ( TargetFrame_ShouldShowDebuff(self.unit, index, filter) ) then
-				name, rank, icon, count, debuffType, duration, expirationTime, caster = UnitDebuff(self.unit, index, filter);
+			if ( TargetFrame_ShouldShowDebuffs(self.unit, caster, nameplateShowAll, casterIsPlayer) ) then
 				frameName = selfName.."Debuff"..frameNum;
 				frame = _G[frameName];
 				if ( icon ) then
@@ -570,12 +585,7 @@ function TargetFrame_UpdateAuras (self)
 
 					-- Handle cooldowns
 					frameCooldown = _G[frameName.."Cooldown"];
-					if ( duration > 0 ) then
-						frameCooldown:Show();
-						CooldownFrame_SetTimer(frameCooldown, expirationTime - duration, duration, 1);
-					else
-						frameCooldown:Hide();
-					end
+					CooldownFrame_Set(frameCooldown, expirationTime - duration, duration, duration > 0, true);
 
 					-- set debuff type color
 					if ( debuffType ) then
@@ -597,10 +607,10 @@ function TargetFrame_UpdateAuras (self)
 					frameNum = frameNum + 1;
 				end
 			end
-			index = index + 1;
 		else
 			break;
 		end
+		index = index + 1;
 	end
 	
 	for i = frameNum, MAX_TARGET_DEBUFFS do
@@ -636,24 +646,35 @@ function TargetFrame_UpdateAuras (self)
 	end
 end
 
-function TargetFrame_ShouldShowDebuff(unit, index, filter)
-	--This is an enemy
-	if ( SHOW_ALL_ENEMY_DEBUFFS == "1" or not UnitCanAttack("player", unit) ) then
+--
+--		Hide debuffs on mobs cast by players other than me and aren�t flagged to show to entire party on nameplates.
+--
+function TargetFrame_ShouldShowDebuffs(unit, caster, nameplateShowAll, casterIsAPlayer)
+	if (GetCVarBool("noBuffDebuffFilterOnTarget")) then
 		return true;
-	else		
-		local name, rank, icon, count, debuffType, duration, expirationTime, unitCaster, canStealOrPurge, shouldConsolidate, spellId, canApplyAura, isBossDebuff, isCastByPlayer = UnitDebuff(unit, index, filter);
-
-		if SpellIsAlwaysShown(spellId) then
-			return true;
-		end
-
-		local hasCustom, alwaysShowMine, showForMySpec = SpellGetVisibilityInfo(spellId, "ENEMY_TARGET");
-		if ( hasCustom ) then
-			return showForMySpec or (alwaysShowMine and (unitCaster == "player" or unitCaster == "pet" or unitCaster == "vehicle") );
-		else
-			return not isCastByPlayer or unitCaster == "player" or unitCaster == "pet" or unitCaster == "vehicle";
-		end
 	end
+
+	if (nameplateShowAll) then
+		return true;
+	end
+
+	if (caster and UnitIsUnit("player", caster)) then
+		return true;
+	end
+
+	if (UnitIsUnit("player", unit)) then
+		return true;
+	end
+
+	local targetIsFriendly = not UnitCanAttack("player", unit);
+	local targetIsAPlayer =  UnitIsPlayer(unit);
+	local targetIsAPlayerPet = UnitIsOtherPlayersPet(unit);
+
+	if (not targetIsAPlayer and not targetIsAPlayerPet and not targetIsFriendly and casterIsAPlayer) then
+        return false;
+    end
+
+    return true;
 end
 
 function TargetFrame_UpdateAuraPositions(self, auraName, numAuras, numOppositeAuras, largeAuraList, updateFunc, maxRowWidth, offsetX, mirrorAurasVertically)
@@ -1022,18 +1043,14 @@ function TargetFrame_CreateSpellbar(self, event, boss)
 	spellbar:SetFrameLevel(_G[self:GetName().."TextureFrame"]:GetFrameLevel() - 1);
 	self.spellbar = spellbar;
 	self.auraRows = 0;
-	spellbar.unit = self.unit;
 	spellbar:RegisterEvent("CVAR_UPDATE");
 	spellbar:RegisterEvent("VARIABLES_LOADED");
 		
-	CastingBarFrame_OnLoad(spellbar, spellbar.unit, false, true);
+	CastingBarFrame_SetUnit(spellbar, self.unit, false, true);
 	if ( event ) then
 		spellbar.updateEvent = event;
 		spellbar:RegisterEvent(event);
 	end
-	
-	local barIcon =_G[name.."Icon"];
-	barIcon:Show();
 	
 	-- check to see if the castbar should be shown
 	if ( GetCVar("showTargetCastbar") == "0") then
@@ -1128,10 +1145,10 @@ end
 
 function TargetFrame_ResetUserPlacedPosition()
 	TargetFrame:ClearAllPoints();
-	TargetFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 250, -4);
 	TargetFrame:SetUserPlaced(false);
 	TargetFrame:SetClampedToScreen(false);
 	TargetFrame_SetLocked(true);
+	UIParent_UpdateTopFramePositions();
 end
 
 function TargetFrame_UpdateBuffsOnTop()
@@ -1243,6 +1260,8 @@ function FocusFrame_SetSmallSize(smallSize, onChange)
 		FocusFrame.showLeader = nil;
 		FocusFrame.showPVP = nil;
 		FocusFrame.pvpIcon:Hide();
+		FocusFrame.prestigePortrait:Hide();
+		FocusFrame.prestigeBadge:Hide();
 		FocusFrame.leaderIcon:Hide();
 		FocusFrame.showAuraCount = nil;
 --		TargetFrame_CheckClassification(FocusFrame, true);

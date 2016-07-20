@@ -1,9 +1,9 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="QuestMapFrame.lua"/>
-	
+
 	<Button name="QuestLogHeaderTemplate" virtual="true">
-		<Size x="255" y="16"/>		
+		<Size x="16" y="16"/>
 		<Scripts>
 			<OnLoad>
 				--QuestLogTitleButton_OnLoad(self);
@@ -24,8 +24,8 @@
 		<ButtonText nonspacewrap="true" parentKey="ButtonText">
 			<Size x="0" y="10"/>
 			<Anchors>
-				<Anchor point="LEFT" x="5" y="0"/>
-			</Anchors> 
+				<Anchor point="LEFT" relativePoint="RIGHT" x="5" y="0"/>
+			</Anchors>
 		</ButtonText>
 		<NormalFont style="GameFontNormalMed3"/>
 		<HighlightFont style="GameFontHighlightMedium"/>
@@ -57,7 +57,7 @@
 					<Anchors>
 						<Anchor point="TOP" relativeKey="$parent.Text" x="0" y="3"/>
 						<Anchor point="RIGHT" x="0" y="0"/>
-					</Anchors>					
+					</Anchors>
 				</Texture>
 			</Layer>
 		</Layers>
@@ -79,7 +79,7 @@
 			<Size x="0" y="10"/>
 			<Anchors>
 				<Anchor point="LEFT" x="20" y="0"/>
-			</Anchors> 
+			</Anchors>
 		</ButtonText>
 		<NormalFont style="GameFontNormalLeft"/>
 		<HighlightFont style="GameFontHighlightLeft"/>
@@ -94,7 +94,7 @@
 					<Anchors>
 						<Anchor point="TOPLEFT" x="0" y="0"/>
 					</Anchors>
-				</FontString>				
+				</FontString>
 				<FontString parentKey="Text" inherits="ObjectiveFont">
 					<Size x="205" y="0"/>
 					<Anchors>
@@ -102,7 +102,7 @@
 					</Anchors>
 				</FontString>
 			</Layer>
-		</Layers>	
+		</Layers>
 	</Frame>
 	<Button name="QuestDetailsButtonTemplate" virtual="true">
 		<Size x="32" y="32"/>
@@ -120,7 +120,7 @@
 		</Scripts>
 	</Button>
 
-	<Frame name="QuestLogPopupDetailFrame" toplevel="true" enableMouse="true" parent="UIParent" hidden="true" inherits="ButtonFrameTemplate">
+	<Frame name="QuestLogPopupDetailFrame" toplevel="true" enableMouse="true" parent="UIParent" hidden="true" inherits="ButtonFrameTemplate, QuestFramePanelTemplate">
 		<Size x="338" y="496"/>
 		<Layers>
 			<Layer level="OVERLAY" textureSubLevel="-1">
@@ -128,14 +128,6 @@
 					<Size x="64" y="64"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="-6" y="7"/>
-					</Anchors>
-				</Texture>		
-			</Layer>
-			<Layer level="BACKGROUND">
-				<Texture name="$parentPageBg" file="Interface\QuestFrame\QuestBG">
-					<Size x="512" y="620"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="6" y="-62"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -268,7 +260,7 @@
 					</OnEnter>
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
-			</Button>			
+			</Button>
 		</Frames>
 		<Scripts>
 			<OnLoad function="QuestLogPopupDetailFrame_OnLoad"/>
@@ -277,7 +269,7 @@
 	</Frame>
 
 	<Frame name="QuestMapFrame" parent="WorldMapFrame" enableMouse="true" hidden="true">
-		<Size x="287" y="464"/>	
+		<Size x="287" y="464"/>
 		<Anchors>
 			<Anchor point="TOPLEFT" relativeTo="WorldMapScrollFrame" relativePoint="TOPRIGHT" x="1" y="0"/>
 		</Anchors>
@@ -313,7 +305,7 @@
 						<Size x="258" y="454"/>
 						<Anchors>
 							<Anchor point="TOPLEFT"/>
-						</Anchors>					
+						</Anchors>
 						<Frames>
 							<Button parentArray="Headers" inherits="QuestLogHeaderTemplate">
 								<Anchors>
@@ -329,7 +321,7 @@
 								<Size x="262" y="59"/>
 								<Anchors>
 									<Anchor point="TOPLEFT" x="1" y="1"/>
-								</Anchors>							
+								</Anchors>
 								<Layers>
 									<Layer level="BACKGROUND">
 										<Texture parentKey="Background" atlas="StoryHeader-BG" useAtlasSize="true">
@@ -359,14 +351,14 @@
 										<Texture parentKey="Shadow" atlas="StoryHeader-Shadow" useAtlasSize="true">
 											<Anchors>
 												<Anchor point="TOP" x="-2" y="0"/>
-											</Anchors>											
+											</Anchors>
 										</Texture>
-										<FontString inherits="GameFontHighlightSmall" parentKey="Points" text="25">
+										<FontString inherits="GameFontHighlightSmall" parentKey="Points" justifyH="CENTER" justifyV="MIDDLE">
 											<Size x="42" y="16"/>
 											<Anchors>
-												<Anchor point="TOP" relativeKey="$parent.AchIcon" x="0" y="-15"/>
+												<Anchor point="CENTER" relativeKey="$parent.AchIcon" x="0" y="0"/>
 											</Anchors>
-										</FontString>										
+										</FontString>
 									</Layer>
 									<Layer level="HIGHLIGHT">
 										<Texture parentKey="HighlightTexture" file="Interface\QuestFrame\UI-QuestLogTitleHighlight" alphaMode="ADD">
@@ -380,7 +372,7 @@
 								<Scripts>
 									<OnEnter function="QuestMapLog_ShowStoryTooltip"/>
 									<OnLeave function="QuestMapLog_HideStoryTooltip"/>
-								</Scripts>								
+								</Scripts>
 							</Frame>
 						</Frames>
 					</Frame>
@@ -428,16 +420,7 @@
 								</Offset>
 							</Anchor>
 						</Anchors>
-					</Slider>				
-					<Button parentKey="ViewAll" inherits="UIPanelButtonTemplate" id="1">
-						<Size x="246" y="22"/>
-						<Anchors>
-							<Anchor point="TOPRIGHT" relativeTo="QuestMapFrame" x="-24" y="35"/>
-						</Anchors>
-						<Scripts>
-							<OnClick function="QuestMapFrameViewAllButton_OnClick"/>
-						</Scripts>
-					</Button>
+					</Slider>
 					<Frame parentKey="StoryTooltip" frameStrata="TOOLTIP" clampedToScreen="true" hidden="true">
 						<Size x="10" y="10"/>
 						<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
@@ -462,7 +445,7 @@
 									<Anchors>
 										<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" x="0" y="-11"/>
 									</Anchors>
-								</FontString>								
+								</FontString>
 								<FontString parentKey="ProgressCount" inherits="GameFontHighlightSmall">
 									<Anchors>
 										<Anchor point="TOPLEFT" relativeKey="$parent.ProgressLabel" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
@@ -481,14 +464,14 @@
 								</Texture>
 							</Layer>
 						</Layers>
-					</Frame>					
+					</Frame>
 				</Frames>
 				<Scripts>
-					<OnLoad>					
+					<OnLoad>
 						ScrollFrame_OnLoad(self);
 						self.Contents.StoryHeader.HighlightTexture:SetVertexColor(0.243, 0.570, 1);
 						self.StoryTooltip:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
-						self.StoryTooltip:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);						
+						self.StoryTooltip:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
 					</OnLoad>
 				</Scripts>
 			</ScrollFrame>
@@ -509,7 +492,16 @@
 						<Texture atlas="QuestDetails-TopOverlay" useAtlasSize="true">	<!-- buttons background -->
 							<Anchors>
 								<Anchor point="TOPLEFT" x="0" y="45"/>
-							</Anchors>							
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER" textureSubLevel="-1">	
+						<Texture parentKey="SealMaterialBG" hidden="true">
+							<Size x="285" y="407"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="0" y="6"/>
+							</Anchors>
+							<TexCoords left="0.0468" right="1" top="0" bottom="1"/>
 						</Texture>
 					</Layer>
 					<Layer level="ARTWORK">
@@ -518,7 +510,7 @@
 							<Anchors>
 								<Anchor point="BOTTOMLEFT" x="0" y="18"/>
 							</Anchors>
-						</Texture>						
+						</Texture>
 					</Layer>
 				</Layers>
 				<Frames>
@@ -538,7 +530,7 @@
 						<Size x="287" y="275"/>
 						<Anchors>
 							<Anchor point="BOTTOMLEFT" x="0" y="20"/>
-						</Anchors>					
+						</Anchors>
 						<Layers>
 							<Layer level="BORDER">
 								<Texture parentKey="Background" atlas="QuestDetails-RewardsOverlay" setAllPoints="true"/>
@@ -559,7 +551,7 @@
 								</FontString>
 							</Layer>
 						</Layers>
-					</Frame>					
+					</Frame>
 					<ScrollFrame parentKey="ScrollFrame" name="QuestMapDetailsScrollFrame" inherits="UIPanelScrollFrameCodeTemplate">
 						<Size x="258" y="0"/>
 						<Anchors>
@@ -601,8 +593,8 @@
 							</OnLoad>
 							<OnClick>
 								QuestMapFrame_ReturnFromQuestDetails();
-							</OnClick>								
-						</Scripts>						
+							</OnClick>
+						</Scripts>
 					</Button>
 					<Frame parentKey="CompleteQuestFrame">
 						<Size x="287" y="24"/>
@@ -620,7 +612,7 @@
 										<Anchor point="TOP" x="0" y="0"/>
 									</Anchors>
 								</Texture>
-							</Layer>					
+							</Layer>
 						</Layers>
 						<Frames>
 							<Button parentKey="CompleteButton" inherits="UIPanelButtonTemplate" text="COMPLETE_QUEST">
@@ -633,14 +625,14 @@
 										<Texture file="Interface\FrameGeneral\UI-Frame">
 											<Size x="13" y="25"/>
 											<Anchors>
-												<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-5" y="1"/>						
+												<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-5" y="1"/>
 											</Anchors>
 											<TexCoords left="0.00781250" right="0.10937500" top="0.75781250" bottom="0.95312500"/>
 										</Texture>
 										<Texture file="Interface\FrameGeneral\UI-Frame">
 											<Size x="13" y="25"/>
 											<Anchors>
-												<Anchor point="TOPRIGHT" relativePoint="TOPLEFT" x="5" y="1"/>						
+												<Anchor point="TOPRIGHT" relativePoint="TOPLEFT" x="5" y="1"/>
 											</Anchors>
 											<TexCoords left="0.00781250" right="0.10937500" top="0.75781250" bottom="0.95312500"/>
 										</Texture>

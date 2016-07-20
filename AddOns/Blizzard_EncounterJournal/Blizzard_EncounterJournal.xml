@@ -351,6 +351,99 @@
 		<TexCoords left="0.359375" right="0.99609375" top="0.8525390625" bottom="0.880859375"/>
 	</Texture>
 
+	<Button name="EJButtonTemplate" virtual="true">
+		<Size x="75" y="26"/>
+		<HitRectInsets>
+			<AbsInset left="-13" right="-13" top="0" bottom="0"/>
+		</HitRectInsets>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture inherits="UI-EJ-FilterButtonUp" parentKey="UpLeft">
+					<Size x="13" y="26"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativePoint="LEFT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture inherits="UI-EJ-FilterButtonUp" parentKey="UpRight">
+					<Size x="13" y="26"/>
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture inherits="UI-EJ-FilterButtonDown" parentKey="DownLeft" hidden="true">
+					<Size x="13" y="26"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativePoint="LEFT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture inherits="UI-EJ-FilterButtonDown" parentKey="DownRight" hidden="true">
+					<Size x="13" y="26"/>
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="HIGHLIGHT">
+				<Texture inherits="UI-EJ-FilterButtonHighlight" parentKey="HighLeft">
+					<Size x="13" y="26"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativePoint="LEFT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture inherits="UI-EJ-FilterButtonHighlight" parentKey="HighRight">
+					<Size x="13" y="26"/>
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<NormalTexture inherits="_FilterButtonUp-Mid"/>
+		<PushedTexture inherits="_FilterButtonDown-Mid"/>
+		<HighlightTexture inherits="_FilterButtonHighlight-Mid"/>
+		<NormalFont style="GameFontNormalSmall"/>
+		<ButtonText>
+			<Size x="0" y="12"/>
+			<Anchors>
+				<Anchor point="LEFT" x="-3" y="0"/>
+				<Anchor point="RIGHT" x="3" y="0"/>
+			</Anchors>
+			<Color r="0.973" g="0.902" b="0.581"/>
+		</ButtonText>
+		<Scripts>
+			<OnLoad>
+				local l, t, _, b, r = self.UpLeft:GetTexCoord();
+				self.UpLeft:SetTexCoord(l, l + (r-l)/2, t, b);
+				l, t, _, b, r = self.UpRight:GetTexCoord();
+				self.UpRight:SetTexCoord(l + (r-l)/2, r, t, b);
+
+				l, t, _, b, r = self.DownLeft:GetTexCoord();
+				self.DownLeft:SetTexCoord(l, l + (r-l)/2, t, b);
+				l, t, _, b, r = self.DownRight:GetTexCoord();
+				self.DownRight:SetTexCoord(l + (r-l)/2, r, t, b);
+
+				l, t, _, b, r = self.HighLeft:GetTexCoord();
+				self.HighLeft:SetTexCoord(l, l + (r-l)/2, t, b);
+				l, t, _, b, r = self.HighRight:GetTexCoord();
+				self.HighRight:SetTexCoord(l + (r-l)/2, r, t, b);
+			</OnLoad>
+			<OnMouseDown>
+				self.UpLeft:Hide();
+				self.UpRight:Hide();
+
+				self.DownLeft:Show();
+				self.DownRight:Show();
+			</OnMouseDown>
+			<OnMouseUp>
+				self.UpLeft:Show();
+				self.UpRight:Show();
+
+				self.DownLeft:Hide();
+				self.DownRight:Hide();
+			</OnMouseUp>
+		</Scripts>
+	</Button>
+
 	<Button name="EncounterInstanceButtonTemplate" hidden="true" parentArray="InstanceButtons" virtual="true">
 		<Size x="174" y="96"/>
 		<Layers>
@@ -414,9 +507,17 @@
 		</Scripts>
 	</Button>
 	
-	<Button name="EncounterSearchSMTemplate" virtual="true">
+	<Button name="EncounterSearchSMTemplate" parentArray="searchPreview" virtual="true">
 		<Size x="275" y="27"/>
 		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="3">
+				<Texture parentKey="selectedTexture" atlas="search-highlight" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="2">
 				<Texture name="$parentIconFrame" inherits="UI-EJ-SearchIconFrameLg">
 					<Size x="21" y="21"/>
@@ -446,8 +547,6 @@
 		</NormalTexture>
 		<PushedTexture inherits="_SearchBarSm">
 		</PushedTexture>
-		<HighlightTexture inherits="UI-EJ-SearchBarHighlightSm">
-		</HighlightTexture>
 		<Scripts>
 			<OnEnter>
 				if self.link then
@@ -455,6 +554,7 @@
 					GameTooltip:SetHyperlink(self.link);
 					self.showingTooltip = true;
 				end
+				EncounterJournal_SetSearchPreviewSelection(self:GetID());
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();
@@ -637,6 +737,10 @@
 					end
 					return;
 				end
+				local _, _, _, rootSectionID = EJ_GetEncounterInfo(self.encounterID);
+				if ( rootSectionID == 0 ) then
+					EncounterJournal_SetTab(EncounterJournal.encounter.info.lootTab:GetID());
+				end
 				EncounterJournal_DisplayEncounter(self.encounterID);
 				PlaySound("igAbiliityPageTurn");
 			</OnClick>
@@ -757,10 +861,10 @@
 	<Frame name="EncounterInfoTemplate" virtual="true">
 		<Animations>
 			<AnimationGroup parentKey="flashAnim">
-				<Alpha target="$parentHeaderButtonGlow" change="1.0" duration="0.6" order="1"/>
-				<Alpha target="$parentHeaderButtonGlow" change="-1.0"  duration="0.6" order="2"/>
-				<Alpha target="$parentHeaderButtonGlow" change="1.0" duration="0.6" order="3"/>
-				<Alpha target="$parentHeaderButtonGlow" change="-1.0"  duration="0.9" order="4"/>
+				<Alpha target="$parentHeaderButtonGlow" fromAlpha="0" toAlpha="1" duration="0.6" order="1"/>
+				<Alpha target="$parentHeaderButtonGlow" fromAlpha="1" toAlpha="0"  duration="0.6" order="2"/>
+				<Alpha target="$parentHeaderButtonGlow" fromAlpha="0" toAlpha="1" duration="0.6" order="3"/>
+				<Alpha target="$parentHeaderButtonGlow" fromAlpha="1" toAlpha="0"  duration="0.9" order="4"/>
 			</AnimationGroup>
 		</Animations>
 		<Size x="5" y="24"/>
@@ -1350,7 +1454,7 @@
 				</Layers>
 			</Frame>
 		</Frames>
-		<NormalFont style="GameFontNormalLarge"/>
+		<NormalFont style="GameFontNormalMed1"/>
 		<ButtonText>
 			<Anchors>
 				<Anchor point="CENTER" x="0" y="-3"/>
@@ -1360,7 +1464,7 @@
 			<OnLoad>
 				self.storedHeight = self:GetHeight();
 				self:SetHeight(self.storedHeight-4);
-				self:SetWidth(max(self:GetTextWidth()+20, 120));
+				self:SetWidth(max(self:GetTextWidth()+20, 70));
 			</OnLoad>
 			<OnEnable>
 				self.leftSelect:Hide();
@@ -1391,45 +1495,58 @@
 					<Anchor point="TOPRIGHT" x="-10" y="-32"/>
 				</Anchors>
 				<Frames>
-					<Button name="$parentSearchButton1" inherits="EncounterSearchSMTemplate" parentKey="sbutton1">
+					<Frame parentKey="searchPreviewContainer" hidden="true">
+						<Size x="0" y="24"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="0" y="0"/>
-							<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" x="-5" y="0"/>
+							<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT"/>
+							<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT"/>
 						</Anchors>
 						<Layers>
-							<Layer level="OVERLAY">
-								<Texture name="$parentBotLeftCorner" inherits="UI-Frame-BotCornerLeft" parentKey="boarderAnchor">
+							<Layer level="ARTWORK">
+								<Texture parentKey="botLeftCorner" inherits="UI-Frame-BotCornerLeft">
 									<Anchors>
 										<Anchor point="LEFT" x="-7" y="0"/>
 										<Anchor point="BOTTOM" x="0" y="-5"/>
 									</Anchors>
 								</Texture>
-								<Texture name="$parentBotRightCorner" inherits="UI-Frame-BotCornerRight">
+								<Texture parentKey="botRightCorner" inherits="UI-Frame-BotCornerRight">
 									<Anchors>
-										<Anchor point="BOTTOM" relativeTo="$parentBotLeftCorner" x="0" y="0"/>
+										<Anchor point="BOTTOM" x="0" y="-5"/>
 										<Anchor point="RIGHT" x="4" y="0"/>
 									</Anchors>
 								</Texture>
-								<Texture name="$parentBottomBorder" inherits="_UI-Frame-Bot">
+								<Texture parentKey="bottomBorder" inherits="_UI-Frame-Bot">
 									<Anchors>
-										<Anchor point="BOTTOMLEFT" relativeTo="$parentBotLeftCorner" relativePoint="BOTTOMRIGHT" y="0"/>
-										<Anchor point="BOTTOMRIGHT" relativeTo="$parentBotRightCorner" relativePoint="BOTTOMLEFT" y="0"/>
+										<Anchor point="BOTTOMLEFT" relativeKey="$parent.botLeftCorner" relativePoint="BOTTOMRIGHT" y="0"/>
+										<Anchor point="BOTTOMRIGHT" relativeKey="$parent.botRightCorner" relativePoint="BOTTOMLEFT" y="0"/>
 									</Anchors>
 								</Texture>
-								<Texture name="$parentLeftBorder" inherits="!UI-Frame-LeftTile" parentKey="leftBorderBar">
+								<Texture parentKey="leftBorder" inherits="!UI-Frame-LeftTile">
 									<Anchors>
 										<Anchor point="TOP" x="0" y="1" />
-										<Anchor point="BOTTOMLEFT" relativeTo="$parentBotLeftCorner" relativePoint="TOPLEFT"/>
+										<Anchor point="BOTTOMLEFT" relativeKey="$parent.botLeftCorner" relativePoint="TOPLEFT"/>
 									</Anchors>
 								</Texture>
-								<Texture name="$parentRightBorder" inherits="!UI-Frame-RightTile">
+								<Texture parentKey="rightBorder" inherits="!UI-Frame-RightTile">
 									<Anchors>
 										<Anchor point="TOP" x="0" y="1" />
-										<Anchor point="BOTTOMRIGHT" relativeTo="$parentBotRightCorner" relativePoint="TOPRIGHT" x="1" y="0"/>
+										<Anchor point="BOTTOMRIGHT" relativeKey="$parent.botRightCorner" relativePoint="TOPRIGHT" x="1" y="0"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="topBorder" inherits="_UI-Frame-Bot">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="-2" y="3"/>
+										<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="2" y="-3"/>
 									</Anchors>
 								</Texture>
 							</Layer>
 						</Layers>
+					</Frame>
+					<Button name="$parentSearchButton1" inherits="EncounterSearchSMTemplate" parentKey="sbutton1">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.searchPreviewContainer" relativePoint="TOPLEFT" x="0" y="0"/>
+							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.searchPreviewContainer" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+						</Anchors>
 					</Button>
 					<Button name="$parentSearchButton2" inherits="EncounterSearchSMTemplate" parentKey="sbutton2">
 						<Anchors>
@@ -1463,6 +1580,14 @@
 							<Anchor point="TOP" relativeTo="$parentSearchButton5" relativePoint="BOTTOM" x="0" y="0"/>
 						</Anchors>
 						<Layers>
+							<Layer level="OVERLAY" textureSubLevel="2">
+								<Texture parentKey="selectedTexture" atlas="search-highlight" hidden="true">
+									<Anchors>
+										<Anchor point="TOPLEFT"/>
+										<Anchor point="BOTTOMRIGHT"/>
+									</Anchors>
+								</Texture>
+							</Layer>
 							<Layer level="OVERLAY">
 								<FontString name="$parentText" inherits="GameFontNormal" justifyH="LEFT" parentKey="text" text="ENCOUNTER">
 									<Size x="0" y="0"/>
@@ -1476,8 +1601,6 @@
 						</NormalTexture>
 						<PushedTexture inherits="_SearchBarSm">
 						</PushedTexture>
-						<HighlightTexture inherits="UI-EJ-SearchBarHighlightSm">
-						</HighlightTexture>
 						<Scripts>
 							<OnShow>
 								self:SetFrameLevel(self:GetParent():GetFrameLevel() + 10);
@@ -1486,13 +1609,131 @@
 								EncounterJournal_ShowFullSearch()
 								PlaySound("igMainMenuOptionCheckBoxOn");
 							</OnClick>
+							<OnEnter function="EncounterJournalSearchBoxShowAllResults_OnEnter"/>
 						</Scripts>
 					</Button>
+					<Frame name="$parentSearchProgress" parentKey="searchProgress" hidden="true">
+						<Size x="0" y="24"/>
+						<Anchors>
+							<Anchor point="LEFT" relativePoint="LEFT"/>
+							<Anchor point="RIGHT" relativePoint="RIGHT"/>
+							<Anchor point="TOP" relativePoint="BOTTOM"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture parentKey="background" atlas="_search-rowbg">
+									<Anchors>
+										<Anchor point="TOPLEFT"/>
+										<Anchor point="BOTTOMRIGHT"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Frame name="$parentLoading" parentKey="loading">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativePoint="TOPLEFT"/>
+									<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT"/>
+								</Anchors>
+								<Layers>
+									<Layer level="OVERLAY">
+										<FontString name="$parentText" inherits="GameFontHighlight" justifyH="CENTER" parentKey="text" text="SEARCH_LOADING_TEXT" hidden="false">
+											<Size x="0" y="0"/>
+											<Anchors>
+												<Anchor point="CENTER" x="16" y="0"/>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+								<Frames>
+									<Frame parentKey="spinner" inherits="LoadingSpinnerTemplate" hidden="false">
+										<Size x="40" y="40"/>
+										<Anchors>
+											<Anchor point="RIGHT" relativeKey="$parent.text" relativePoint="LEFT"/>
+										</Anchors>
+										<Scripts>
+											<OnLoad>
+												self.Anim:Play();
+											</OnLoad>
+										</Scripts>
+									</Frame>
+								</Frames>
+							</Frame>
+							<StatusBar name="$parentBar" parentKey="bar">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="4" y="-4"/>
+									<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-4" y="6"/>
+								</Anchors>
+								<Layers>
+									<Layer level="BACKGROUND">
+										<Texture parentKey="barBackground">
+											<Anchors>
+												<Anchor point="TOPLEFT"/>
+												<Anchor point="BOTTOMRIGHT"/>
+											</Anchors>
+											<Color r="0" g="0" b="0" a=".4"/>
+										</Texture>
+									</Layer>
+									<Layer level="OVERLAY">
+										<FontString parentKey="text" inherits="GameFontHighlightSmall" text="SEARCH_PROGRESS_BAR_TEXT" justifyV="TOP">
+											<Size x="0" y="0"/>
+											<Anchors>
+												<Anchor point="CENTER" x="0" y="0"/>
+											</Anchors>
+										</FontString>
+									</Layer>
+									<Layer level="ARTWORK">
+										<Texture parentKey="barBorderLeft" file="Interface\AchievementFrame\UI-Achievement-ProgressBar-Border">
+											<Size x="16" y="0"/>
+											<Anchors>
+												<Anchor point="TOPLEFT" x="-6" y="5"/>
+												<Anchor point="BOTTOMLEFT" x="-6" y="-5"/>
+											</Anchors>
+											<TexCoords left="0" right="0.0625" top="0" bottom="0.75"/>
+										</Texture>
+										<Texture parentKey="barBorderRight" file="Interface\AchievementFrame\UI-Achievement-ProgressBar-Border">
+											<Size x="16" y="0"/>
+											<Anchors>
+												<Anchor point="TOPRIGHT" x="6" y="5"/>
+												<Anchor point="BOTTOMRIGHT" x="6" y="-5"/>
+											</Anchors>
+											<TexCoords left="0.812" right="0.8745" top="0" bottom="0.75"/>
+										</Texture>
+										<Texture parentKey="barBorderCenter" file="Interface\AchievementFrame\UI-Achievement-ProgressBar-Border">
+											<Size x="16"/>
+											<Anchors>
+												<Anchor point="TOPLEFT" relativeKey="$parent.barBorderLeft" relativePoint="TOPRIGHT"/>
+												<Anchor point="BOTTOMRIGHT" relativeKey="$parent.barBorderRight" relativePoint="BOTTOMLEFT"/>
+											</Anchors>
+											<TexCoords left="0.0625" right="0.812" top="0" bottom="0.75"/>
+										</Texture>
+									</Layer>
+								</Layers>
+								<Scripts>
+									<OnLoad function="EncounterJournalSearchBoxSearchProgressBar_OnLoad"/>
+									<OnShow function="EncounterJournalSearchBoxSearchProgressBar_OnShow"/>
+									<OnHide function="EncounterJournalSearchBoxSearchProgressBar_OnHide"/>
+								</Scripts>
+								<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+							</StatusBar>
+						</Frames>
+						<Scripts>
+							<OnShow>
+								--always on top
+								self:SetFrameLevel(self:GetParent():GetFrameLevel()+10);
+							</OnShow>
+						</Scripts>
+					</Frame>
 				</Frames>
 				<Scripts>
-					<OnEnterPressed function="EncounterJournal_ShowFullSearch"/>
-					<OnTextChanged function="EncounterJournal_OnSearchTextChanged"/>
-					<OnEditFocusLost function="EncounterJournal_OnSearchFocusLost"/>
+					<OnLoad function="EncounterJournalSearchBox_OnLoad"/>
+					<OnShow function="EncounterJournalSearchBox_OnShow"/>
+					<OnHide function="EncounterJournalSearchBox_OnHide"/>
+					<OnTextChanged function="EncounterJournalSearchBox_OnTextChanged"/>
+					<OnEnterPressed function="EncounterJournalSearchBox_OnEnterPressed"/>
+					<OnKeyDown function="EncounterJournalSearchBox_OnKeyDown"/>
+					<OnEditFocusLost function="EncounterJournalSearchBox_OnFocusLost"/>
+					<OnEditFocusGained function="EncounterJournalSearchBox_OnFocusGained"/>
 				</Scripts>
 			</EditBox>
 			<Frame name="$parentSearchResults" parentKey="searchResults" hidden="true">
@@ -1518,7 +1759,7 @@
 								<Anchor point="RIGHT" x="-60"/>
 							</Anchors>
 						</FontString>
-						<Texture name="$parentTopLeftCorner" inherits="UI-Frame-TopCornerLeft" parentKey="boarderAnchor">
+						<Texture name="$parentTopLeftCorner" inherits="UI-Frame-TopCornerLeft">
 							<Anchors>
 								<Anchor point="TOPLEFT" x="-7" y="4"/>
 							</Anchors>
@@ -1556,7 +1797,7 @@
 						</Texture>
 					</Layer>
 					<Layer level="BORDER" textureSubLevel="1">
-						<Texture name="$parentTopLeftCorner2" inherits="UI-Frame-TopCornerLeft" parentKey="boarderAnchor">
+						<Texture name="$parentTopLeftCorner2" inherits="UI-Frame-TopCornerLeft">
 							<Anchors>
 								<Anchor point="TOPLEFT" x="-7" y="-20"/>
 							</Anchors>
@@ -1709,6 +1950,17 @@
  						</KeyValues>
 						<Anchors>
 							<Anchor point="BOTTOMLEFT" relativeTo="$parentDungeonTab" relativePoint="BOTTOMRIGHT" x="35" y="0"/>
+						</Anchors>
+						<Scripts>
+							<OnClick function="EJ_ContentTab_OnClick"/>
+						</Scripts>
+					</Button>
+					<Button name="$parentLootJournalTab" inherits="EncounterTierTabTemplate" text="LOOT" parentKey="LootJournalTab">
+						<KeyValues>
+ 							<KeyValue key="id" value="4" type="number"/>
+ 						</KeyValues>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" relativeTo="$parentRaidTab" relativePoint="BOTTOMRIGHT" x="35" y="0"/>
 						</Anchors>
 						<Scripts>
 							<OnClick function="EJ_ContentTab_OnClick"/>
@@ -2111,108 +2363,16 @@
 									</Frame>
 								</ScrollChild>
 							</ScrollFrame>
-							<Button name="$parentDifficulty" parentKey="difficulty" text="Normal (10)" >
+							<Button name="$parentDifficulty" parentKey="difficulty" inherits="EJButtonTemplate" frameLevel="10">
 								<Size x="75" y="26"/>
 								<Anchors>
 									<Anchor point="TOPRIGHT" x="-19" y="-13"/>
 								</Anchors>
-								<HitRectInsets>
-									<AbsInset left="-13" right="-13" top="0" bottom="0"/>
-								</HitRectInsets>
-								<Layers>
-									<Layer level="BACKGROUND" textureSubLevel="2">
-										<Texture name="$parentUpLeft" inherits="UI-EJ-FilterButtonUp" parentKey="upLeft">
-											<Size x="13" y="26"/>
-											<Anchors>
-												<Anchor point="RIGHT" relativePoint="LEFT" x="0" y="0"/>
-											</Anchors>
-										</Texture>
-										<Texture name="$parentUpRIGHT" inherits="UI-EJ-FilterButtonUp" parentKey="upRight">
-											<Size x="13" y="26"/>
-											<Anchors>
-												<Anchor point="LEFT" relativePoint="RIGHT" x="0" y="0"/>
-											</Anchors>
-										</Texture>
-									
-										<Texture name="$parentDownLeft" inherits="UI-EJ-FilterButtonDown" parentKey="downLeft" hidden="true">
-											<Size x="13" y="26"/>
-											<Anchors>
-												<Anchor point="RIGHT" relativePoint="LEFT" x="0" y="0"/>
-											</Anchors>
-										</Texture>
-										<Texture name="$parentDownRIGHT" inherits="UI-EJ-FilterButtonDown" parentKey="downRight" hidden="true">
-											<Size x="13" y="26"/>
-											<Anchors>
-												<Anchor point="LEFT" relativePoint="RIGHT" x="0" y="0"/>
-											</Anchors>
-										</Texture>
-									</Layer>
-									<Layer level="HIGHLIGHT">
-										<Texture name="$parentUpLeft" inherits="UI-EJ-FilterButtonHighlight" parentKey="highLeft">
-											<Size x="13" y="26"/>
-											<Anchors>
-												<Anchor point="RIGHT" relativePoint="LEFT" x="0" y="0"/>
-											</Anchors>
-										</Texture>
-										<Texture name="$parentUpRIGHT" inherits="UI-EJ-FilterButtonHighlight" parentKey="highRight">
-											<Size x="13" y="26"/>
-											<Anchors>
-												<Anchor point="LEFT" relativePoint="RIGHT" x="0" y="0"/>
-											</Anchors>
-										</Texture>
-									</Layer>
-								</Layers>
-								<NormalTexture inherits="_FilterButtonUp-Mid">
-								</NormalTexture>
-								<PushedTexture inherits="_FilterButtonDown-Mid">
-								</PushedTexture>
-								<HighlightTexture inherits="_FilterButtonHighlight-Mid">
-								</HighlightTexture>
-								<NormalFont style="GameFontNormalSmall"/>
-								<ButtonText>
-									<Size x="80" y="12"/>
-									<Anchors>
-										<Anchor point="CENTER" x="0" y="0"/>
-									</Anchors>
-									<Color r="0.973" g="0.902" b="0.581"/>
-								</ButtonText>
 								<Scripts>
 									<OnClick>
 										ToggleDropDownMenu(1, nil, self:GetParent().difficultyDD, self, 5, 0);
 										PlaySound("igMainMenuOptionCheckBoxOn");
 									</OnClick>
-									<OnLoad>
-										local l, t, _, b, r = self.upLeft:GetTexCoord();
-										self.upLeft:SetTexCoord(l, l + (r-l)/2, t, b);
-										l, t, _, b, r = self.upRight:GetTexCoord();
-										self.upRight:SetTexCoord(l + (r-l)/2, r, t, b);
-										
-										
-										l, t, _, b, r = self.downLeft:GetTexCoord();
-										self.downLeft:SetTexCoord(l, l + (r-l)/2, t, b);
-										l, t, _, b, r = self.downRight:GetTexCoord();
-										self.downRight:SetTexCoord(l + (r-l)/2, r, t, b);
-										
-										
-										l, t, _, b, r = self.highLeft:GetTexCoord();
-										self.highLeft:SetTexCoord(l, l + (r-l)/2, t, b);
-										l, t, _, b, r = self.highRight:GetTexCoord();
-										self.highRight:SetTexCoord(l + (r-l)/2, r, t, b);
-									</OnLoad>
-									<OnMouseDown>
-										self.upLeft:Hide();
-										self.upRight:Hide();
-									
-										self.downLeft:Show();
-										self.downRight:Show();
-									</OnMouseDown>
-									<OnMouseUp>
-										self.upLeft:Show();
-										self.upRight:Show();
-									
-										self.downLeft:Hide();
-										self.downRight:Hide();
-									</OnMouseUp>
 								</Scripts>
 							</Button>
 							<Frame name="$parentDifficultyDD" parentKey="difficultyDD" inherits="UIDropDownMenuTemplate" clampedToScreen="true" hidden="true">
@@ -2449,106 +2609,15 @@
 											</Button>
 										</Frames>
 									</Frame>
-									<Button name="$parentFilterToggle" parentKey="filter" text="GEAR_FILTER">
-										<Size x="75" y="26"/>
-										<HitRectInsets>
-											<AbsInset left="-13" right="-13" top="0" bottom="0"/>
-										</HitRectInsets>
-										<Layers>
-											<Layer level="BACKGROUND">
-												<Texture name="$parentUpLeft" inherits="UI-EJ-FilterButtonUp" parentKey="upLeft">
-													<Size x="13" y="26"/>
-													<Anchors>
-														<Anchor point="RIGHT" relativePoint="LEFT" x="0" y="0"/>
-													</Anchors>
-												</Texture>
-												<Texture name="$parentUpRIGHT" inherits="UI-EJ-FilterButtonUp" parentKey="upRight">
-													<Size x="13" y="26"/>
-													<Anchors>
-														<Anchor point="LEFT" relativePoint="RIGHT" x="0" y="0"/>
-													</Anchors>
-												</Texture>
-											
-												<Texture name="$parentDownLeft" inherits="UI-EJ-FilterButtonDown" parentKey="downLeft" hidden="true">
-													<Size x="13" y="26"/>
-													<Anchors>
-														<Anchor point="RIGHT" relativePoint="LEFT" x="0" y="0"/>
-													</Anchors>
-												</Texture>
-												<Texture name="$parentDownRIGHT" inherits="UI-EJ-FilterButtonDown" parentKey="downRight" hidden="true">
-													<Size x="13" y="26"/>
-													<Anchors>
-														<Anchor point="LEFT" relativePoint="RIGHT" x="0" y="0"/>
-													</Anchors>
-												</Texture>
-											</Layer>
-											<Layer level="HIGHLIGHT">
-												<Texture name="$parentUpLeft" inherits="UI-EJ-FilterButtonHighlight" parentKey="highLeft">
-													<Size x="13" y="26"/>
-													<Anchors>
-														<Anchor point="RIGHT" relativePoint="LEFT" x="0" y="0"/>
-													</Anchors>
-												</Texture>
-												<Texture name="$parentUpRIGHT" inherits="UI-EJ-FilterButtonHighlight" parentKey="highRight">
-													<Size x="13" y="26"/>
-													<Anchors>
-														<Anchor point="LEFT" relativePoint="RIGHT" x="0" y="0"/>
-													</Anchors>
-												</Texture>
-											</Layer>
-										</Layers>
-										<NormalTexture inherits="_FilterButtonUp-Mid">
-										</NormalTexture>
-										<PushedTexture inherits="_FilterButtonDown-Mid">
-										</PushedTexture>
-										<HighlightTexture inherits="_FilterButtonHighlight-Mid">
-										</HighlightTexture>
-										<NormalFont style="GameFontNormalSmall"/>
-										<ButtonText>
-											<Anchors>
-												<Anchor point="CENTER" x="0" y="0"/>
-											</Anchors>
-											<Color r="0.973" g="0.902" b="0.581"/>
-										</ButtonText>
+									<Button name="$parentFilterToggle" parentKey="filter" text="GEAR_FILTER" inherits="EJButtonTemplate">
 										<Scripts>
 											<OnClick>
 												ToggleDropDownMenu(1, nil, self:GetParent().lootFilter, self, 5, 0);
 												PlaySound("igMainMenuOption");
 											</OnClick>
-											<OnLoad>
+											<OnLoad inherit="prepend">
 												self:SetPoint("TOPLEFT", self:GetParent():GetParent(), "TOPRIGHT", -340, -13);
-												
-												local l, t, _, b, r = self.upLeft:GetTexCoord();
-												self.upLeft:SetTexCoord(l, l + (r-l)/2, t, b);
-												l, t, _, b, r = self.upRight:GetTexCoord();
-												self.upRight:SetTexCoord(l + (r-l)/2, r, t, b);
-												
-												
-												l, t, _, b, r = self.downLeft:GetTexCoord();
-												self.downLeft:SetTexCoord(l, l + (r-l)/2, t, b);
-												l, t, _, b, r = self.downRight:GetTexCoord();
-												self.downRight:SetTexCoord(l + (r-l)/2, r, t, b);
-												
-												
-												l, t, _, b, r = self.highLeft:GetTexCoord();
-												self.highLeft:SetTexCoord(l, l + (r-l)/2, t, b);
-												l, t, _, b, r = self.highRight:GetTexCoord();
-												self.highRight:SetTexCoord(l + (r-l)/2, r, t, b);
 											</OnLoad>
-											<OnMouseDown>
-												self.upLeft:Hide();
-												self.upRight:Hide();
-											
-												self.downLeft:Show();
-												self.downRight:Show();
-											</OnMouseDown>
-											<OnMouseUp>
-												self.upLeft:Show();
-												self.upRight:Show();
-											
-												self.downLeft:Hide();
-												self.downRight:Hide();
-											</OnMouseUp>
 										</Scripts>
 									</Button>
 									<Frame name="$parentLootFilter" inherits="UIDropDownMenuTemplate" parentKey="lootFilter" hidden="true"/>
@@ -2879,7 +2948,7 @@
 		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
 			<EdgeSize val="16"/>
 			<TileSize val="16"/>
-			<BackgroundInsets left="5" right="5" top="5" bottom="5"/>
+			<BackgroundInsets left="4" right="4" top="4" bottom="4"/>
 		</Backdrop>
 		<Anchors>
 			<Anchor point="CENTER"/>

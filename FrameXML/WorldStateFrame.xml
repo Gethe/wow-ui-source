@@ -136,33 +136,17 @@
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentFactionLeft" file="Interface\WorldStateFrame\WorldStateFinalScore-Highlight" parentKey="factionLeft">
-					<Size>
-						<AbsDimension x="256" y="16"/>
-					</Size>
+					<Size x="176" y="16"/>
 					<Anchors>
-						<Anchor point="LEFT">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="LEFT" x="20" y="0"/>
 					</Anchors>
 					<TexCoords left="0" right="1" top="0" bottom="1"/>
 				</Texture>
 				<Texture name="$parentFactionRight" file="Interface\WorldStateFrame\WorldStateFinalScore-Highlight" parentKey="factionRight">
-					<Size>
-						<AbsDimension x="20" y="16"/>
-					</Size>
+					<Size x="20" y="16"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentFactionLeft" relativePoint="RIGHT">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
-						<Anchor point="RIGHT">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="LEFT" relativeTo="$parentFactionLeft" relativePoint="RIGHT"/>
+						<Anchor point="RIGHT" x="0" y="0"/>
 					</Anchors>
 					<TexCoords left="1" right="0" top="0" bottom="1"/>
 				</Texture>
@@ -383,16 +367,32 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame name="$parentClassButton" enableMouse="true" parentKey="class">
-				<Size>
-					<AbsDimension x="16" y="16"/>
-				</Size>
+			<Frame name="$parentPrestigeButton" enableMouse="true" parentKey="prestige">
+				<Size x="20" y="20"/>
 				<Anchors>
-					<Anchor point="LEFT">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="LEFT" x="0" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentIcon"  parentKey="icon"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						if ( self.tooltip ) then
+							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+							GameTooltip:SetText(self.tooltip);
+						end
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Frame>
+			<Frame name="$parentClassButton" enableMouse="true" parentKey="class">
+				<Size x="16" y="16"/>
+				<Anchors>
+					<Anchor point="LEFT" x="20" y="0"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
@@ -412,15 +412,9 @@
 				</Scripts>
 			</Frame>
 			<Button name="$parentName"  parentKey="name">
-				<Size>
-					<AbsDimension x="215" y="16"/>
-				</Size>
+				<Size x="215" y="16"/>
 				<Anchors>
-					<Anchor point="LEFT">
-						<Offset>
-							<AbsDimension x="20" y="1"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="LEFT" x="40" y="1"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
@@ -651,7 +645,7 @@
 	<!-- Score Frame -->
 	<Frame name="WorldStateScoreFrame" inherits="ButtonFrameTemplate" toplevel="true" parent="UIParent" movable="true" hidden="true">
 		<Size>
-			<AbsDimension x="510" y="428"/>
+			<AbsDimension x="510" y="488"/>
 		</Size>
 		<Anchors>
 			<Anchor point="CENTER"/>
@@ -665,6 +659,13 @@
 				</FontString>
 			</Layer>
 			<Layer level="ARTWORK">
+				<Texture name="WorldStateScoreFrameSeparator">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="4" y="-93"/>
+						<Anchor point="TOPRIGHT" x="-4" y="-94"/>
+					</Anchors>
+					<Color r="1" g="1" b="1" a="0.1"/>
+				</Texture>
 				<FontString name="WorldStateScoreFrameTimerLabel" inherits="GameFontHighlightSmall" text="TIME_TO_PORT">
 					<Anchors>
 						<Anchor point="BOTTOM" x="0" y="26"/>
@@ -702,12 +703,38 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame parentKey="XPBar" inherits="PVPHonorSystemLargeXPBar">
+				<Anchors>
+					<Anchor point="TOP" relativePoint="TOP" x="0" y="-36"/>
+				</Anchors>
+			</Frame>
+			<Button name="WorldStateScoreFramePrestige" inherits="WorldStateScoreColumnTemplate">
+				<Size x="16" y="16"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeTo="$parentInset" relativePoint="TOPLEFT" x="3" y="8"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="icon" file="Interface\PVPFrame\Icons\prestige-icon-3">
+							<Size x="21" y="21"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="0" y="2"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self.sortType = "prestige";
+					</OnLoad>
+				</Scripts>
+			</Button>
 			<Button name="WorldStateScoreFrameClass" inherits="WorldStateScoreColumnTemplate">
 				<Size>
 					<AbsDimension x="16" y="16"/>
 				</Size>
 				<Anchors>
-					<Anchor point="BOTTOMLEFT" relativeTo="$parentInset" relativePoint="TOPLEFT" x="3" y="8"/>
+					<Anchor point="LEFT" relativeTo="WorldStateScoreFramePrestige" relativePoint="RIGHT" x="4" y="0"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
@@ -983,9 +1010,7 @@
 				</Scripts>
 			</Button>
 			
-			<!-- Unit drop down for the Notify AFK -->
-			<Frame name="ScorePlayerDropDown" inherits="UIDropDownMenuTemplate" clampedToScreen="true" id="1" hidden="true" />
-			
+			<Frame name="WorldStateButtonDropDown" inherits="UIDropDownMenuTemplate" clampedToScreen="true" id="1" hidden="true" />
 			<Frame name="WorldStateScoreButton1" inherits="WorldStateScoreTemplate" id="1">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentInset" relativePoint="TOPLEFT" x="4" y="-4"/>
@@ -1188,6 +1213,7 @@
 				WorldStateScoreFrameTab_OnClick(WorldStateScoreFrameTab1);
 			</OnShow>
 			<OnUpdate function="RequestBattlefieldScoreData"/>
+			<OnHide function="WorldStateScoreFrame_OnHide"/>
 		</Scripts>
 	</Frame>
 </Ui>

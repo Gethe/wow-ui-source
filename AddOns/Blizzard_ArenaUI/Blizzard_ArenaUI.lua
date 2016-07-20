@@ -90,6 +90,8 @@ function ArenaEnemyFrame_OnLoad(self)
 	self.classPortrait = _G[self:GetName().."ClassPortrait"];
 	self.specPortrait = _G[self:GetName().."SpecPortrait"];
 	self.specBorder = _G[self:GetName().."SpecBorder"];
+	self.castBar = _G[self:GetName().."CastingBar"];
+
 	ArenaEnemyFrame_UpdatePlayer(self, true);
 	self:RegisterEvent("UNIT_PET");
 	self:RegisterEvent("ARENA_OPPONENT_UPDATE");
@@ -147,6 +149,8 @@ function ArenaEnemyFrame_UpdatePlayer(self, useCVars)--At some points, we need t
 		self:SetPoint("RIGHT", self:GetParent(), "RIGHT", -2, 0);
 	end
 
+	CastingBarFrame_SetUnit(self.castBar, self.unit, false, true);
+	
 	ArenaEnemyFrames_UpdateVisible();
 end
 

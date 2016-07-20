@@ -1,4 +1,4 @@
-GLUETOOLTIP_NUM_LINES = 4;
+GLUETOOLTIP_NUM_LINES = 5;
 GLUETOOLTIP_HPADDING = 20;
 
 function GlueTooltip_OnLoad(self)
@@ -13,6 +13,18 @@ function GlueTooltip_OnLoad(self)
 	self.defaultColor = NORMAL_FONT_COLOR;
 end
 
+-- mimic what tooltip does ingame
+local tooltipAnchorPointMapping = {
+	["ANCHOR_LEFT"] =			{ myPoint = "BOTTOMRIGHT",	ownerPoint = "TOPLEFT" },
+	["ANCHOR_RIGHT"] = 			{ myPoint = "BOTTOMLEFT", 	ownerPoint = "TOPRIGHT" },
+	["ANCHOR_BOTTOMLEFT"] = 	{ myPoint = "TOPRIGHT", 	ownerPoint = "BOTTOMLEFT" },
+	["ANCHOR_BOTTOM"] = 		{ myPoint = "TOP", 			ownerPoint = "BOTTOM" },
+	["ANCHOR_BOTTOMRIGHT"] =	{ myPoint = "TOPLEFT", 		ownerPoint = "BOTTOMRIGHT" },
+	["ANCHOR_TOPLEFT"] = 		{ myPoint = "BOTTOMLEFT", 	ownerPoint = "TOPLEFT" },
+	["ANCHOR_TOP"] = 			{ myPoint = "BOTTOM", 		ownerPoint = "TOP" },
+	["ANCHOR_TOPRIGHT"] = 		{ myPoint = "BOTTOMRIGHT", 	ownerPoint = "TOPRIGHT" },
+};
+
 function GlueTooltip_SetOwner(self, owner, anchor, xOffset, yOffset )
 	if ( not self or not owner) then
 		return;
@@ -21,37 +33,10 @@ function GlueTooltip_SetOwner(self, owner, anchor, xOffset, yOffset )
 	anchor = anchor or "ANCHOR_LEFT";
 	xOffset = xOffset or 0;
 	yOffset = yOffset or 0;
-	
-	GlueTooltip:ClearAllPoints();
-	-- mimic what tooltip does ingame
-	local myPoint, ownerPoint;
-	if ( anchor == "ANCHOR_LEFT" ) then
-		myPoint = "BOTTOMRIGHT";
-		ownerPoint = "TOPLEFT";
-	elseif ( anchor == "ANCHOR_RIGHT" ) then
-		myPoint = "BOTTOMLEFT";
-		ownerPoint = "TOPRIGHT";
-	elseif ( anchor == "ANCHOR_BOTTOMLEFT" ) then
-		myPoint = "TOPRIGHT";
-		ownerPoint = "BOTTOMLEFT";
-	elseif ( anchor == "ANCHOR_BOTTOM" ) then
-		myPoint = "ANCHOR_TOP";
-		ownerPoint = "ANCHOR_BOTTOM";
-	elseif ( anchor == "ANCHOR_BOTTOMRIGHT" ) then
-		myPoint = "TOPLEFT";
-		ownerPoint = "BOTTOMRIGHT";
-	elseif ( anchor == "ANCHOR_TOPLEFT" ) then
-		myPoint = "BOTTOMLEFT";
-		ownerPoint = "TOPLEFT";
-	elseif ( anchor == "ANCHOR_TOP" ) then
-		myPoint = "BOTTOM";
-		ownerPoint = "TOP";
-	elseif ( anchor == "ANCHOR_TOPRIGHT" ) then
-		myPoint = "BOTTOMRIGHT";
-		ownerPoint = "TOPRIGHT";
-	end
 
-	self:SetPoint(myPoint, owner, ownerPoint, xOffset, yOffset);
+	self:ClearAllPoints();
+	local points = tooltipAnchorPointMapping[anchor];
+	self:SetPoint(points.myPoint, owner, points.ownerPoint, xOffset, yOffset);
 	self:Show();
 end
 
@@ -102,17 +87,17 @@ function GlueTooltip_AddLine(self, text, r, g, b, a, wrap)
 			break;
 		end
 	end
-	
+
 	if (not freeLine) then return; end
-	
+
 	freeLine:SetTextColor(r, g, b, a);
-	freeLine:SetText(text); 
+	freeLine:SetText(text);
 	freeLine:Show();
 	freeLine:SetWidth(0);
 
 	local wrapWidth = 230;
 	if (wrap and freeLine:GetWidth() > wrapWidth) then
-	
+
 		-- Trim the right edge so that there isn't extra space after wrapping
 		freeLine:SetWidth(wrapWidth);
 		wrapWidth = freeLine:GetWrappedWidth();
@@ -121,7 +106,7 @@ function GlueTooltip_AddLine(self, text, r, g, b, a, wrap)
 	else
 		self:SetWidth(max(self:GetWidth(), freeLine:GetWidth()+GLUETOOLTIP_HPADDING));
 	end
-	
+
 	-- Compute height and update width of text lines
 	local height = 18;
 	for i = 1, GLUETOOLTIP_NUM_LINES do
@@ -131,7 +116,7 @@ function GlueTooltip_AddLine(self, text, r, g, b, a, wrap)
 		if (not rightLine:IsShown()) then
 			line:SetWidth(self:GetWidth()-GLUETOOLTIP_HPADDING);
 		end
-		
+
 		-- Update the height of the frame
 		if ( line:IsShown() ) then
 			height = height + line:GetHeight() + 2;
