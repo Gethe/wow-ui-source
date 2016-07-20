@@ -384,11 +384,11 @@ function NameplateBuffContainerMixin:UpdateBuffs(unit, filter)
 				if (not self.buffList[buffIndex]) then
 					self.buffList[buffIndex] = CreateFrame("Frame", self:GetParent():GetName() .. "Buff" .. buffIndex, self, "NameplateBuffButtonTemplate");
 					self.buffList[buffIndex]:SetMouseClickEnabled(false);
+					self.buffList[buffIndex].layoutIndex = buffIndex;
 				end
 				local buff = self.buffList[buffIndex];
 				buff:SetID(i);
 				buff.name = name;
-				buff.layoutIndex = i;
 				buff.Icon:SetTexture(texture);
 				if (count > 1) then
 					buff.CountFrame.Count:SetText(count);

@@ -80,6 +80,7 @@ function CharacterSelect_OnShow(self)
 	SetInCharacterSelect(true);
 	CHARACTER_LIST_OFFSET = 0;
 	CharacterSelect_ResetVeteranStatus();
+	CharacterTemplateConfirmDialog:Hide();
 
 	if ( #translationTable == 0 ) then
 		for i = 1, GetNumCharacters() do

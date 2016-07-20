@@ -56,6 +56,12 @@ function ComboFrame_UpdateMax(self)
 end
 	
 function ComboFrame_Update(self)
+
+	if (not self.maxComboPoints) then
+		-- This can happen if we are showing combo points on the player frame (which doesn't use ComboFrame) and we exit a vehicle.
+		return;
+	end
+
 	local comboPoints = GetComboPoints(PlayerFrame.unit, "target");
 	local comboPoint, comboPointHighlight, comboPointShine;
 	
