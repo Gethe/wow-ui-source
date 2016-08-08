@@ -10,13 +10,26 @@ function GameMenuFrame_UpdateVisibleButtons(self)
 	local height = 292;
 	GameMenuButtonUIOptions:SetPoint("TOP", GameMenuButtonOptions, "BOTTOM", 0, -1);
 
+	local buttonToReanchor = GameMenuButtonWhatsNew;
+	local reanchorYOffset = -1;
+
+	if (not SplashFrameCanBeShown()) then
+		GameMenuButtonWhatsNew:Hide();
+		height = height - 20;
+		buttonToReanchor = GameMenuButtonOptions;
+		reanchorYOffset = -16;
+	else
+		GameMenuButtonWhatsNew:Show();
+		GameMenuButtonOptions:SetPoint("TOP", GameMenuButtonWhatsNew, "BOTTOM", 0, -16);
+	end
+
 	if ( C_StorePublic.IsEnabled() ) then
 		height = height + 20;
 		GameMenuButtonStore:Show();
-		GameMenuButtonWhatsNew:SetPoint("TOP", GameMenuButtonStore, "BOTTOM", 0, -1);
+		buttonToReanchor:SetPoint("TOP", GameMenuButtonStore, "BOTTOM", 0, reanchorYOffset);
 	else
 		GameMenuButtonStore:Hide();
-		GameMenuButtonWhatsNew:SetPoint("TOP", GameMenuButtonHelp, "BOTTOM", 0, -1);
+		buttonToReanchor:SetPoint("TOP", GameMenuButtonHelp, "BOTTOM", 0, reanchorYOffset);
 	end
 
 	if ( not GameMenuButtonRatings:IsShown() and GetNumAddOns() == 0 ) then

@@ -55,6 +55,7 @@ function MountJournal_UpdateMountList()
 	local buttons = scrollFrame.buttons;
 
 	local numMounts = C_MountJournal.GetNumMounts();
+	MountJournal.numOwned = 0;
 	local showMounts = true;
 	local playerLevel = UnitLevel("player");
 	if  ( numMounts < 1 ) then
@@ -62,6 +63,13 @@ function MountJournal_UpdateMountList()
 		MountJournal.MountDisplay.NoMounts:Show();
 		showMounts = false;
 	else
+		local mountIDs = C_MountJournal.GetMountIDs();
+		for i, mountID in ipairs(mountIDs) do
+			local _, _, _, _, _, _, _, _, _, hideOnChar, isCollected = C_MountJournal.GetMountInfoByID(mountID);
+			if (isCollected and hideOnChar ~= true) then
+				MountJournal.numOwned = MountJournal.numOwned + 1;
+			end
+		end
 		MountJournal.MountDisplay.NoMounts:Hide();
 	end
 

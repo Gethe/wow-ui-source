@@ -12,6 +12,8 @@ CHARACTER_LIST_OFFSET = 0;
 
 CHARACTER_SELECT_BACK_FROM_CREATE = false;
 
+CHARACTER_SELECT_KICKED_FROM_CONVERT = false;
+
 MOVING_TEXT_OFFSET = 12;
 DEFAULT_TEXT_OFFSET = 0;
 CHARACTER_BUTTON_HEIGHT = 57;
@@ -58,6 +60,8 @@ function CharacterSelect_OnLoad(self)
 	self:RegisterEvent("CHARACTER_LIST_RETRIEVAL_RESULT");
 	self:RegisterEvent("DELETED_CHARACTER_LIST_RETRIEVING");
 	self:RegisterEvent("DELETED_CHARACTER_LIST_RETRIEVAL_RESULT");
+    self:RegisterEvent("SHOULD_CONVERT");
+    self:RegisterEvent("CONVERT_RESULT");
 
 	SetCharSelectModelFrame("CharacterSelectModel");
 
@@ -79,6 +83,7 @@ function CharacterSelect_OnShow(self)
 	InitializeCharacterScreenData();
 	SetInCharacterSelect(true);
 	CHARACTER_LIST_OFFSET = 0;
+	CHARACTER_SELECT_KICKED_FROM_CONVERT = false;
 	CharacterSelect_ResetVeteranStatus();
 	CharacterTemplateConfirmDialog:Hide();
 
@@ -123,9 +128,10 @@ function CharacterSelect_OnShow(self)
 
 	-- Gameroom billing stuff (For Korea and China only)
 	if ( SHOW_GAMEROOM_BILLING_FRAME ) then
+		RequestConsumptionConversionInfo();
 		local paymentPlan, hasFallBackBillingMethod, isGameRoom = GetBillingPlan();
-		if ( paymentPlan == 0 ) then
-			-- No payment plan
+		if ( paymentPlan == 0 or ( ( paymentPlan == 1 or paymentPlan == 3 ) and ONLY_SHOW_GAMEROOM_BILLING_FRAME_ON_PERSONAL_TIME ) ) then
+			-- No payment plan or should only show when using consumption time
 			GameRoomBillingFrame:Hide();
 		else
 			local billingTimeLeft = GetBillingTimeRemaining();
@@ -249,6 +255,11 @@ function CharacterSelect_OnHide(self)
 	CharacterDeleteDialog:Hide();
 	CharacterRenameDialog:Hide();
 	AccountReactivate_CloseDialogs();
+	GameRoomBillingFrame_HideConversionButton();
+	ConvertConfirmationFrame:Hide();
+	CharacterSelectConvertInterstitial:Hide();
+	ConversionInProgressDialog:Hide();
+	
 	if ( DeclensionFrame ) then
 		DeclensionFrame:Hide();
 	end
@@ -388,7 +399,11 @@ function CharacterSelect_OnEvent(self, event, ...)
 			self.undeleteNoCharacters = true;
 			return;
 		elseif (not CHARACTER_SELECT_BACK_FROM_CREATE and numChars == 0) then
-			GlueParent_SetScreen("charcreate");
+			if (IsKioskModeEnabled()) then
+				GlueParent_SetScreen("kioskmodesplash");
+			else
+				GlueParent_SetScreen("charcreate");
+			end
 			return;
 		end
 
@@ -519,8 +534,19 @@ function CharacterSelect_OnEvent(self, event, ...)
 	elseif ( event == "DELETED_CHARACTER_LIST_RETRIEVAL_RESULT" ) then
 		local success = ...;
 		CharacterSelect_SetRetrievingCharacters(false, success);
+	elseif ( event == "SHOULD_CONVERT" ) then
+       	GameRoomBillingFrame_ShowConversionButton();
+    elseif ( event == "CONVERT_RESULT" ) then
+		local result = ...;
+
+		if (result ~= LE_CONVERT_RESULT_SUCCESS) then
+			ConversionInProgressDialog:Hide();
+			GlueDialog_Show("CONVERT_RESULT_ERROR");
+		else
+			CHARACTER_SELECT_KICKED_FROM_CONVERT = true;
 		end
-	end
+    end
+end
 
 function CharacterSelect_SetPendingTrialBoost(hasPendingTrialBoost, factionID, specID)
 	CharacterSelect.hasPendingTrialBoost = hasPendingTrialBoost;
@@ -1342,64 +1368,65 @@ function GetIndexFromCharID(charID)
 end
 
 ACCOUNT_UPGRADE_FEATURES = {
-	VETERAN = { [1] = { icon = "Interface\\Icons\\achievement_bg_returnxflags_def_wsg", text = VETERAN_FEATURE_1 },
-		  [2] = { icon = "Interface\\Icons\\achievement_reputation_01", text = VETERAN_FEATURE_2 },
-		  [3] = { icon = "Interface\\Icons\\spell_holy_surgeoflight", text = VETERAN_FEATURE_3 },
-		  logo = "Interface\\Glues\\Common\\Glues-WoW-WODLOGO",
-		  banner = "accountupgradebanner-wod",
-		  buttonText = REACTIVATE_ACCOUNT_NOW,
-		  displayCheck =  function() return true end,
-		  upgradeOnClick = function() SubscriptionRequestDialog_Open() end,
-		  },
-	[LE_EXPANSION_BURNING_CRUSADE] =
-		{ [1] = { icon = "Interface\\Icons\\achievement_level_85", text = UPGRADE_FEATURE_7 },
-		  [2] = { icon = "Interface\\Icons\\achievement_firelands raid_ragnaros", text = UPGRADE_FEATURE_8 },
-		  [3] = { icon = "Interface\\Icons\\Ability_Mount_CelestialHorse", text = UPGRADE_FEATURE_9 },
-		  logo = "Interface\\Glues\\Common\\Glues-WoW-CCLogo",
-		  banner = "accountupgradebanner-cataclysm",
-		  buttonText =  UPGRADE_ACCOUNT_SHORT,
-		  displayCheck =  function() return GameLimitedMode_IsActive() or CanUpgradeExpansion() end,
-		  upgradeOnClick = UpgradeAccount,
-		  },
-	[LE_EXPANSION_WRATH_OF_THE_LICH_KING] =
-		{ [1] = { icon = "Interface\\Icons\\achievement_level_85", text = UPGRADE_FEATURE_7 },
-		  [2] = { icon = "Interface\\Icons\\achievement_firelands raid_ragnaros", text = UPGRADE_FEATURE_8 },
-		  [3] = { icon = "Interface\\Icons\\Ability_Mount_CelestialHorse", text = UPGRADE_FEATURE_9 },
-		  logo = "Interface\\Glues\\Common\\Glues-WoW-CCLogo",
-		  banner = "accountupgradebanner-cataclysm",
-		  buttonText =  UPGRADE_ACCOUNT_SHORT,
-		  displayCheck =  function() return GameLimitedMode_IsActive() or CanUpgradeExpansion() end,
-		  upgradeOnClick = UpgradeAccount,
-		  },
-	[LE_EXPANSION_CATACLYSM] =
-		{ [1] = { icon = "Interface\\Icons\\achievement_level_90", text = UPGRADE_FEATURE_10 },
-		  [2] = { icon = "Interface\\Glues\\AccountUpgrade\\upgrade-panda", text = UPGRADE_FEATURE_11 },
-		  [3] = { icon = "Interface\\Icons\\achievement_zone_jadeforest", text = UPGRADE_FEATURE_12 },
-		  logo = "Interface\\Glues\\Common\\Glues-WoW-MPLogo",
-		  banner = "accountupgradebanner-mop",
-		  buttonText =  UPGRADE_ACCOUNT_SHORT,
-		  displayCheck =  function() return GameLimitedMode_IsActive() or CanUpgradeExpansion() end,
-		  upgradeOnClick = UpgradeAccount,
-		  },
-	[LE_EXPANSION_MISTS_OF_PANDARIA] =
-		{ [1] = { icon = "Interface\\Icons\\Achievement_Quests_Completed_06", text = UPGRADE_FEATURE_2 },
-		  [2] = { icon = "Interface\\Icons\\Achievement_Level_100", text = UPGRADE_FEATURE_14 },
-		  [3] = { icon = "Interface\\Icons\\UI_Promotion_Garrisons", text = UPGRADE_FEATURE_15 },
-		  logo = "Interface\\Glues\\Common\\Glues-WoW-WODLOGO",
-		  banner = "accountupgradebanner-wod",
-		  buttonText =  UPGRADE_ACCOUNT_SHORT,
-		  displayCheck =  function() return GameLimitedMode_IsActive() or CanUpgradeExpansion() end,
-		  upgradeOnClick = UpgradeAccount,
-		  },
-	[LE_EXPANSION_WARLORDS_OF_DRAENOR] =
-		{ [1] = { icon = "Interface\\Icons\\ClassIcon_DemonHunter", text = UPGRADE_FEATURE_16 },
-		  [2] = { icon = "Interface\\Icons\\Icon_TreasureMap", text = UPGRADE_FEATURE_17 },
-		  [3] = { icon = "Interface\\Icons\\UI_Promotion_CharacterBoost", text = UPGRADE_FEATURE_18 },
-		  atlasLogo = "Glues-WoW-LegionLogo",
-		  banner = "accountupgradebanner-legion",
-		  buttonText = UPGRADE_ACCOUNT_SHORT,
-		  displayCheck =  function() return GameLimitedMode_IsActive() or CanUpgradeExpansion() end,
-		  upgradeOnClick = function()
+	VETERAN = { 
+		[1] = { icon = "Interface\\Icons\\achievement_bg_returnxflags_def_wsg", text = VETERAN_FEATURE_1 },
+		[2] = { icon = "Interface\\Icons\\achievement_reputation_01", text = VETERAN_FEATURE_2 },
+		[3] = { icon = "Interface\\Icons\\spell_holy_surgeoflight", text = VETERAN_FEATURE_3 },
+		logo = "Interface\\Glues\\Common\\Glues-WoW-WODLOGO",
+		banner = "accountupgradebanner-wod",
+		buttonText = REACTIVATE_ACCOUNT_NOW,
+		displayCheck =  function() return true end,
+		upgradeOnClick = function() SubscriptionRequestDialog_Open() end,
+	},
+	[LE_EXPANSION_BURNING_CRUSADE] = {
+		[1] = { icon = "Interface\\Icons\\achievement_level_85", text = UPGRADE_FEATURE_7 },
+		[2] = { icon = "Interface\\Icons\\achievement_firelands raid_ragnaros", text = UPGRADE_FEATURE_8 },
+		[3] = { icon = "Interface\\Icons\\Ability_Mount_CelestialHorse", text = UPGRADE_FEATURE_9 },
+		logo = "Interface\\Glues\\Common\\Glues-WoW-CCLogo",
+		banner = "accountupgradebanner-cataclysm",
+		buttonText =  UPGRADE_ACCOUNT_SHORT,
+		displayCheck =  function() return GameLimitedMode_IsActive() or CanUpgradeExpansion() end,
+		upgradeOnClick = UpgradeAccount,
+	},
+	[LE_EXPANSION_WRATH_OF_THE_LICH_KING] = { 
+		[1] = { icon = "Interface\\Icons\\achievement_level_85", text = UPGRADE_FEATURE_7 },
+		[2] = { icon = "Interface\\Icons\\achievement_firelands raid_ragnaros", text = UPGRADE_FEATURE_8 },
+		[3] = { icon = "Interface\\Icons\\Ability_Mount_CelestialHorse", text = UPGRADE_FEATURE_9 },
+		logo = "Interface\\Glues\\Common\\Glues-WoW-CCLogo",
+		banner = "accountupgradebanner-cataclysm",
+		buttonText =  UPGRADE_ACCOUNT_SHORT,
+		displayCheck =  function() return GameLimitedMode_IsActive() or CanUpgradeExpansion() end,
+		upgradeOnClick = UpgradeAccount,
+	},
+	[LE_EXPANSION_CATACLYSM] = {
+		[1] = { icon = "Interface\\Icons\\achievement_level_90", text = UPGRADE_FEATURE_10 },
+		[2] = { icon = "Interface\\Glues\\AccountUpgrade\\upgrade-panda", text = UPGRADE_FEATURE_11 },
+		[3] = { icon = "Interface\\Icons\\achievement_zone_jadeforest", text = UPGRADE_FEATURE_12 },
+		logo = "Interface\\Glues\\Common\\Glues-WoW-MPLogo",
+		banner = "accountupgradebanner-mop",
+		buttonText =  UPGRADE_ACCOUNT_SHORT,
+		displayCheck =  function() return GameLimitedMode_IsActive() or CanUpgradeExpansion() end,
+		upgradeOnClick = UpgradeAccount,
+	},
+	[LE_EXPANSION_MISTS_OF_PANDARIA] = {
+		[1] = { icon = "Interface\\Icons\\Achievement_Quests_Completed_06", text = UPGRADE_FEATURE_2 },
+		[2] = { icon = "Interface\\Icons\\Achievement_Level_100", text = UPGRADE_FEATURE_14 },
+		[3] = { icon = "Interface\\Icons\\UI_Promotion_Garrisons", text = UPGRADE_FEATURE_15 },
+		logo = "Interface\\Glues\\Common\\Glues-WoW-WODLOGO",
+		banner = "accountupgradebanner-wod",
+		buttonText =  UPGRADE_ACCOUNT_SHORT,
+		displayCheck =  function() return GameLimitedMode_IsActive() or CanUpgradeExpansion() end,
+		upgradeOnClick = UpgradeAccount,
+	},
+	[LE_EXPANSION_WARLORDS_OF_DRAENOR] = {
+		[1] = { icon = "Interface\\Icons\\ClassIcon_DemonHunter", text = UPGRADE_FEATURE_16 },
+		[2] = { icon = "Interface\\Icons\\Icon_TreasureMap", text = UPGRADE_FEATURE_17 },
+		[3] = { icon = "Interface\\Icons\\UI_Promotion_CharacterBoost", text = UPGRADE_FEATURE_18 },
+		atlasLogo = "Glues-WoW-LegionLogo",
+		banner = "accountupgradebanner-legion",
+		buttonText = UPGRADE_ACCOUNT_SHORT,
+		displayCheck =  function() return GameLimitedMode_IsActive() or CanUpgradeExpansion() end,
+		upgradeOnClick = function()
 			if ( CharacterSelect_IsStoreAvailable() and C_PurchaseAPI.HasProductType(LE_BATTLEPAY_PRODUCT_ITEM_7_0_BOX_LEVEL) ) then
 				StoreFrame_SetGamesCategory();
 				StoreFrame_SetShown(true);
@@ -1407,12 +1434,17 @@ ACCOUNT_UPGRADE_FEATURES = {
 				-- if the store is down or parentally locked, send the player to the web
 				UpgradeAccount();
 			end
-		  end,
-		  },
+		end,
+	},
 }
 
+local currentLocale = GetLocale();
+if currentLocale == "koKR" or currentLocale == "zhTW" then
+	ACCOUNT_UPGRADE_FEATURES[LE_EXPANSION_WARLORDS_OF_DRAENOR][3] = { icon = "Interface\\Icons\\Achievement_Quests_Completed_06", text = UPGRADE_FEATURE_2 }
+end
+
 -- Account upgrade panel
-function AccountUpgradePanel_GetExpansionTag(isExpanded)
+function AccountUpgradePanel_GetExpansionTag()
 	local tag, logoTag;
 	if ( IsTrialAccount() ) then
 		-- Trial users have the starter edition logo with an upgrade banner that brings you to the lowest expansion level available.
@@ -2577,4 +2609,61 @@ function CharacterSelect_CheckApplyBoostToUnlockTrialCharacter(guid)
 
 		StoreFrame_SelectLevel100BoostProduct(guid);
 	end
+end
+
+-- CONVERSION
+
+GlueDialogTypes["CONVERT_RESULT_ERROR"] = {
+    text = CONVERT_ERROR_OTHER,
+	button1 = OKAY,
+	showAlert = 1,
+}
+
+function GameRoomBillingFrameConvertMe_OnClick(self)
+    local frame = CharacterSelectConvertInterstitial;
+    
+    local minutes, days, endTime = GetConsumptionConversionInfo();
+    
+    frame.Before:SetText(FormatLargeNumber(minutes));
+    frame.After:SetText(days);
+	frame.Description:SetText("<html><body><p align=\"center\">"..CONVERT_DESCRIPTION.."</p></body></html>");
+    frame.ConvertNowDescription:SetText(CONVERT_NOW_DESCRIPTION:format(days));
+    frame:Show();
+end
+
+function GameRoomBillingFrame_ShowConversionButton()
+	if (not GameRoomBillingFrame:IsShown()) then
+		local minutes = GetConsumptionConversionInfo();
+		GameRoomBillingFrameText:SetFormattedText(CONVERT_LEFTOVER_MINUTES, minutes);
+		GameRoomBillingFrame:SetHeight(GameRoomBillingFrameText:GetHeight() + 26);
+		GameRoomBillingFrame:Show();
+	end
+	GameRoomBillingFrame.ConvertMe:Show();
+    GameRoomBillingFrame:SetHeight(GameRoomBillingFrame:GetHeight() + 26);
+	CharacterSelectServerAlertFrame:SetPoint("BOTTOMRIGHT", CharacterSelectUI, "TOPLEFT", 260, -564);
+end
+
+function GameRoomBillingFrame_HideConversionButton()
+	if (GameRoomBillingFrame.ConvertMe:IsShown()) then
+		GameRoomBillingFrame.ConvertMe:Hide();
+		GameRoomBillingFrame:SetHeight(GameRoomBillingFrame:GetHeight() - 26);
+		CharacterSelectServerAlertFrame:SetPoint("BOTTOMRIGHT", CharacterSelectUI, "TOPLEFT", 260, -570);
+	end
+end
+
+function ConvertInterstitialConvertNow_OnClick(self)
+    self:GetParent():Hide();
+    local frame = ConvertConfirmationFrame;
+    
+    local minutes, days, newTime = GetConsumptionConversionInfo();
+    local newDate = date("*t", newTime);
+    
+    frame.Text:SetText(CONVERT_CONFIRMATION_DESCRIPTION:format(minutes, days, SHORTDATE:format(newDate.day, newDate.month, newDate.year)));
+    frame:Show();
+end
+
+function ConvertConfirmationConfirmButton_OnClick(self)
+    self:GetParent():Hide();
+    ConvertConsumptionTime();
+    ConversionInProgressDialog:Show();
 end

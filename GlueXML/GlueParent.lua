@@ -117,63 +117,66 @@ function GlueParent_UpdateDialogs()
 			GlueDialog_Show("CANCEL", LOGIN_STATE_CONNECTING);
 		end
 	elseif ( auroraState == LE_AURORA_STATE_NONE and C_Login.GetLastError() ) then
-		local errorCategory, errorID, localizedString, debugString, errorCodeString = C_Login.GetLastError();
+		if ( not CHARACTER_SELECT_KICKED_FROM_CONVERT ) then
+			local errorCategory, errorID, localizedString, debugString, errorCodeString = C_Login.GetLastError();
 
-		local isHTML = false;
-		local hasURL = false;
-		local useGenericURL = false;
+			local isHTML = false;
+			local hasURL = false;
+			local useGenericURL = false;
 
-		--If we didn't get a string from C, look one up in GlueStrings as HTML
-		if ( not localizedString ) then
-			local tag = string.format("%s_ERROR_%d_HTML", errorCategory, errorID);
-			localizedString = _G[tag];
-			if ( localizedString ) then
-				isHTML = true;
+			--If we didn't get a string from C, look one up in GlueStrings as HTML
+			if ( not localizedString ) then
+				local tag = string.format("%s_ERROR_%d_HTML", errorCategory, errorID);
+				localizedString = _G[tag];
+				if ( localizedString ) then
+					isHTML = true;
+				end
+			end
+
+			--If we didn't get a string from C, look one up in GlueStrings
+			if ( not localizedString ) then
+				local tag = string.format("%s_ERROR_%d", errorCategory, errorID);
+				localizedString = _G[tag];
+			end
+
+			--If we still don't have one, just display a generic error with the ID
+			if ( not localizedString ) then
+				localizedString = _G[errorCategory.."_ERROR_OTHER"];
+				useGenericURL = true;
+			end
+
+			--If we got a debug message, stick it on the end of the errorCodeString
+			if ( debugString ) then
+				errorCodeString = errorCodeString.." [[DBG "..debugString.."]]";
+			end
+
+			--See if we want a custom URL
+			local urlTag = string.format("%s_ERROR_%d_URL", errorCategory, errorID);
+			if ( _G[urlTag] ) then
+				hasURL = true;
+			end
+
+			--Append the errorCodeString
+			if ( isHTML ) then
+				--Pretty hacky...
+				local endOfHTML = "</p></body></html>";
+				localizedString = string.gsub(localizedString, endOfHTML, string.format(" (%s)%s", errorCodeString, endOfHTML));
+			else
+				localizedString = string.format("%s (%s)", localizedString, errorCodeString);
+			end
+
+			if ( isHTML ) then
+				GlueDialog_Show("OKAY_HTML", localizedString);
+			elseif ( hasURL ) then
+				GlueDialog_Show("OKAY_WITH_URL", localizedString, urlTag);
+			elseif ( useGenericURL ) then
+				GlueDialog_Show("OKAY_WITH_GENERIC_URL", localizedString);
+			else
+				GlueDialog_Show("OKAY", localizedString);
 			end
 		end
 
-		--If we didn't get a string from C, look one up in GlueStrings
-		if ( not localizedString ) then
-			local tag = string.format("%s_ERROR_%d", errorCategory, errorID);
-			localizedString = _G[tag];
-		end
-
-		--If we still don't have one, just display a generic error with the ID
-		if ( not localizedString ) then
-			localizedString = _G[errorCategory.."_ERROR_OTHER"];
-			useGenericURL = true;
-		end
-
-		--If we got a debug message, stick it on the end of the errorCodeString
-		if ( debugString ) then
-			errorCodeString = errorCodeString.." [[DBG "..debugString.."]]";
-		end
-
-		--See if we want a custom URL
-		local urlTag = string.format("%s_ERROR_%d_URL", errorCategory, errorID);
-		if ( _G[urlTag] ) then
-			hasURL = true;
-		end
-
-		--Append the errorCodeString
-		if ( isHTML ) then
-			--Pretty hacky...
-			local endOfHTML = "</p></body></html>";
-			localizedString = string.gsub(localizedString, endOfHTML, string.format(" (%s)%s", errorCodeString, endOfHTML));
-		else
-			localizedString = string.format("%s (%s)", localizedString, errorCodeString);
-		end
-
-		if ( isHTML ) then
-			GlueDialog_Show("OKAY_HTML", localizedString);
-		elseif ( hasURL ) then
-			GlueDialog_Show("OKAY_WITH_URL", localizedString, urlTag);
-		elseif ( useGenericURL ) then
-			GlueDialog_Show("OKAY_WITH_GENERIC_URL", localizedString);
-		else
-			GlueDialog_Show("OKAY", localizedString);
-		end
-
+		CHARACTER_SELECT_KICKED_FROM_CONVERT = false;
 		C_Login.ClearLastError();
 	elseif (  waitingForRealmList ) then
 		GlueDialog_Show("REALM_LIST_IN_PROGRESS");
