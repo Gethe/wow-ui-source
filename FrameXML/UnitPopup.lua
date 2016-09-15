@@ -880,7 +880,7 @@ function UnitPopup_HideButtons ()
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "GUILD_PROMOTE" ) then
-			if ( not IsGuildLeader() or not isPlayer or dropdownMenu.name == UnitName("player") ) then
+			if ( not IsGuildLeader() or dropdownMenu.name == UnitName("player") ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "GUILD_LEAVE" ) then

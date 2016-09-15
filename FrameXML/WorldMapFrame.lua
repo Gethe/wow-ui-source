@@ -1528,7 +1528,7 @@ function WorldMapPOI_OnEnter(self)
 			WorldMapTooltip:SetOwner(self, "ANCHOR_RIGHT");
 			WorldMapTooltip:SetText(name, HIGHLIGHT_FONT_COLOR:GetRGB());
 
-			if timeLeftMinutes then
+			if timeLeftMinutes and timeLeftMinutes > 0 then
 				local timeString = SecondsToTime(timeLeftMinutes * 60);
 				WorldMapTooltip:AddLine(BONUS_OBJECTIVE_TIME_LEFT:format(timeString), NORMAL_FONT_COLOR:GetRGB());
 			end

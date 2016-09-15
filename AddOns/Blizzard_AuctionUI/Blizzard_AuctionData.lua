@@ -373,14 +373,26 @@ do -- Armor
 	local plateCategory = armorCategory:CreateSubCategoryAndFilter(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_PLATE);
 	plateCategory:AddBulkInventoryTypeCategories(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_PLATE, ArmorInventoryTypes);
 
+	local plateChestCategory = plateCategory:FindSubCategoryByName(GetItemInventorySlotInfo(LE_INVENTORY_TYPE_CHEST_TYPE));
+	plateChestCategory:AddFilter(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_PLATE, LE_INVENTORY_TYPE_ROBE_TYPE);
+
 	local mailCategory = armorCategory:CreateSubCategoryAndFilter(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_MAIL);
 	mailCategory:AddBulkInventoryTypeCategories(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_MAIL, ArmorInventoryTypes);
 	
+	local mailChestCategory = mailCategory:FindSubCategoryByName(GetItemInventorySlotInfo(LE_INVENTORY_TYPE_CHEST_TYPE));
+	mailChestCategory:AddFilter(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_MAIL, LE_INVENTORY_TYPE_ROBE_TYPE);
+
 	local leatherCategory = armorCategory:CreateSubCategoryAndFilter(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_LEATHER);
 	leatherCategory:AddBulkInventoryTypeCategories(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_LEATHER, ArmorInventoryTypes);
 
+	local leatherChestCategory = leatherCategory:FindSubCategoryByName(GetItemInventorySlotInfo(LE_INVENTORY_TYPE_CHEST_TYPE));
+	leatherChestCategory:AddFilter(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_LEATHER, LE_INVENTORY_TYPE_ROBE_TYPE);
+
 	local clothCategory = armorCategory:CreateSubCategoryAndFilter(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_CLOTH);
 	clothCategory:AddBulkInventoryTypeCategories(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_CLOTH, ArmorInventoryTypes);
+
+	local clothChestCategory = clothCategory:FindSubCategoryByName(GetItemInventorySlotInfo(LE_INVENTORY_TYPE_CHEST_TYPE));
+	clothChestCategory:AddFilter(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_CLOTH, LE_INVENTORY_TYPE_ROBE_TYPE);
 
 	local miscCategory = armorCategory:CreateSubCategory(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_GENERIC);
 	miscCategory:CreateSubCategoryAndFilter(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_GENERIC, LE_INVENTORY_TYPE_NECK_TYPE);
