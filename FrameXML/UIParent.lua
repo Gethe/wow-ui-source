@@ -113,6 +113,14 @@ UIChildWindows = {
 	"GearManagerDialog",
 };
 
+function UpdateUIParentRelativeToDebugMenu()
+	if (DebugMenu.IsVisible()) then
+		UIParent:SetPoint("TOPLEFT", 0, -DebugMenu.GetMenuHeight());
+	else
+		UIParent:SetPoint("TOPLEFT", 0, 0);
+	end
+end
+
 UISpecialFrames = {
 	"ItemRefTooltip",
 	"ColorPickerFrame",
@@ -196,6 +204,7 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("AREA_SPIRIT_HEALER_IN_RANGE");
 	self:RegisterEvent("AREA_SPIRIT_HEALER_OUT_OF_RANGE");
 	self:RegisterEvent("BIND_ENCHANT");
+	self:RegisterEvent("ACTION_WILL_BIND_ITEM");
 	self:RegisterEvent("REPLACE_ENCHANT");
 	self:RegisterEvent("TRADE_REPLACE_ENCHANT");
 	self:RegisterEvent("END_BOUND_TRADEABLE");
@@ -234,6 +243,7 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("SPELL_CONFIRMATION_TIMEOUT");
 	self:RegisterEvent("SAVED_VARIABLES_TOO_LARGE");
 	self:RegisterEvent("AUTH_CHALLENGE_UI_INVALID");
+	self:RegisterEvent("EXPERIMENTAL_CVAR_CONFIRMATION_NEEDED");
 
 	self:RegisterEvent("LOADING_SCREEN_ENABLED");
 	self:RegisterEvent("LOADING_SCREEN_DISABLED");
@@ -332,6 +342,9 @@ function UIParent_OnLoad(self)
 	-- Lua warnings
 	self:RegisterEvent("LUA_WARNING");
 
+	-- debug menu
+	self:RegisterEvent("DEBUG_MENU_TOGGLED");
+
 	-- Garrison
 	self:RegisterEvent("GARRISON_ARCHITECT_OPENED");
 	self:RegisterEvent("GARRISON_ARCHITECT_CLOSED");
@@ -364,6 +377,9 @@ function UIParent_OnLoad(self)
 
 	-- Used to determine when to load BoostTutorial
 	self:RegisterEvent("SCENARIO_UPDATE");
+
+	-- Invite confirmations
+	self:RegisterEvent("GROUP_INVITE_CONFIRMATION");
 end
 
 function UIParent_OnShow(self)
@@ -950,6 +966,7 @@ function UIParent_OnEvent(self, event, ...)
 			if ( arg1 ) then
 				StaticPopup_Hide("BIND_ENCHANT");
 				StaticPopup_Hide("REPLACE_ENCHANT");
+				StaticPopup_Hide("ACTION_WILL_BIND_ITEM");
 			end
 			StaticPopup_Hide("TRADE_REPLACE_ENCHANT");
 			StaticPopup_Hide("END_BOUND_TRADEABLE");
@@ -1168,6 +1185,8 @@ function UIParent_OnEvent(self, event, ...)
 		-- display loot specialization setting
 		PrintLootSpecialization();
 
+		UpdateUIParentRelativeToDebugMenu();
+
 		--Bonus roll/spell confirmation.
 		local spellConfirmations = GetSpellConfirmationPromptsInfo();
 
@@ -1259,6 +1278,8 @@ function UIParent_OnEvent(self, event, ...)
 		StaticPopup_Show("AREA_SPIRIT_HEAL");
 	elseif ( event == "AREA_SPIRIT_HEALER_OUT_OF_RANGE" ) then
 		StaticPopup_Hide("AREA_SPIRIT_HEAL");
+	elseif (event == "ACTION_WILL_BIND_ITEM") then
+		StaticPopup_Show("ACTION_WILL_BIND_ITEM");
 	elseif ( event == "BIND_ENCHANT" ) then
 		StaticPopup_Show("BIND_ENCHANT");
 	elseif ( event == "REPLACE_ENCHANT" ) then
@@ -1576,7 +1597,9 @@ function UIParent_OnEvent(self, event, ...)
         StaticPopup_Show("SPEC_INVOLUNTARILY_CHANGED")
 	elseif( event == "AUTH_CHALLENGE_UI_INVALID" ) then
 		StaticPopup_Show("ERR_AUTH_CHALLENGE_UI_INVALID");
-
+	elseif( event == "EXPERIMENTAL_CVAR_CONFIRMATION_NEEDED" ) then
+		StaticPopup_Show("EXPERIMENTAL_CVAR_WARNING");
+	
 	-- Events for Archaeology
 	elseif ( event == "ARCHAEOLOGY_TOGGLE" ) then
 		ArchaeologyFrame_LoadUI();
@@ -1827,6 +1850,10 @@ function UIParent_OnEvent(self, event, ...)
 		end
 	elseif (event == "SCENARIO_UPDATE") then
 		BoostTutorial_AttemptLoad();
+	elseif (event == "DEBUG_MENU_TOGGLED") then
+		UpdateUIParentRelativeToDebugMenu();
+	elseif ( event == "GROUP_INVITE_CONFIRMATION" ) then
+		UpdateInviteConfirmationDialogs();
 	end
 end
 
@@ -3569,8 +3596,14 @@ function BuildMultilineTooltip(globalStringName, tooltip, r, g, b)
 end
 
 function GetScaledCursorPosition()
-	local uiScale = UIParent:GetScale();
+	local uiScale = UIParent:GetEffectiveScale();
 	local x, y = GetCursorPosition();
+	return x / uiScale, y / uiScale;
+end
+
+function GetScaledCursorDelta()
+	local uiScale = UIParent:GetEffectiveScale();
+	local x, y = GetCursorDelta();
 	return x / uiScale, y / uiScale;
 end
 
@@ -3853,6 +3886,51 @@ function InviteToGroup(name)
 	else
 		InviteUnit(name);
 	end
+end
+
+function UpdateInviteConfirmationDialogs()
+	if ( StaticPopup_FindVisible("GROUP_INVITE_CONFIRMATION") ) then
+		return;
+	end
+
+	local firstInvite = GetNextPendingInviteConfirmation();
+	if ( not firstInvite ) then
+		return;
+	end
+
+	local confirmationType, name = GetInviteConfirmationInfo(firstInvite);
+	local text = "";
+	if ( confirmationType == LE_INVITE_CONFIRMATION_REQUEST ) then
+		local suggesterGuid, suggesterName, relationship = GetInviteReferralInfo(firstInvite);
+		if ( suggesterGuid ) then
+			if ( relationship == LE_INVITE_CONFIRMATION_RELATION_FRIEND ) then
+				text = text..string.format(INVITE_CONFIRMATION_REQUEST_FRIEND, suggesterName, name);
+			elseif ( relationship == LE_INVITE_CONFIRMATION_RELATION_GUILD ) then
+				text = text..string.format(INVITE_CONFIRMATION_REQUEST_GUILD, suggesterName, name);
+			else
+				text = text..string.format(INVITE_CONFIRMATION_REQUEST, name);
+			end
+		else
+			text = text..string.format(INVITE_CONFIRMATION_REQUEST, name);
+		end
+	elseif ( confirmationType == LE_INVITE_CONFIRMATION_SUGGEST ) then
+		local suggesterGuid, suggesterName, relationship = GetInviteReferralInfo(firstInvite);
+		text = text..string.format(INVITE_CONFIRMATION_SUGGEST, suggesterName, name);
+	end
+
+	local invalidQueues = GetInviteConfirmationInvalidQueues(firstInvite);
+	if ( invalidQueues and #invalidQueues > 0 ) then
+		if ( text ~= "" ) then
+			text = text.."\n\n"
+		end
+		text = text..string.format(INVITE_CONFIRMATION_QUEUE_WARNING, name);
+		for i=1, #invalidQueues do
+			local queueName = SocialQueueUtil_GetQueueName(invalidQueues[i]);
+			text = text.."\n"..NORMAL_FONT_COLOR_CODE..queueName..FONT_COLOR_CODE_CLOSE;
+		end
+	end
+
+	StaticPopup_Show("GROUP_INVITE_CONFIRMATION", text, nil, firstInvite);
 end
 
 function UnitHasMana(unit)
@@ -4440,11 +4518,11 @@ end
 NUMBER_ABBREVIATION_DATA = {
 	-- Order these from largest to smallest
 	-- (significandDivisor and fractionDivisor should multiply to be equal to breakpoint)
-	{ breakpoint = 100000000,	abbreviation = SECOND_NUMBER_CAP_NO_SPACE,	significandDivisor = 1000000,	fractionDivisor = 1 },
-	{ breakpoint = 10000000,	abbreviation = SECOND_NUMBER_CAP_NO_SPACE,	significandDivisor = 100000,	fractionDivisor = 10 },
-	{ breakpoint = 1000000,		abbreviation = SECOND_NUMBER_CAP_NO_SPACE,	significandDivisor = 10000,		fractionDivisor = 100 },
-	{ breakpoint = 10000,		abbreviation = FIRST_NUMBER_CAP_NO_SPACE,	significandDivisor = 100,		fractionDivisor = 10 },
-	{ breakpoint = 1000,		abbreviation = FIRST_NUMBER_CAP_NO_SPACE,	significandDivisor = 10,		fractionDivisor = 100 },
+	{ breakpoint = 100000000,	abbreviation = SECOND_NUMBER_CAP_NO_SPACE,	significandDivisor = 10000000,	fractionDivisor = 1 },
+	{ breakpoint = 10000000,	abbreviation = SECOND_NUMBER_CAP_NO_SPACE,	significandDivisor = 1000000,	fractionDivisor = 1 },
+	{ breakpoint = 1000000,		abbreviation = SECOND_NUMBER_CAP_NO_SPACE,	significandDivisor = 100000,		fractionDivisor = 10 },
+	{ breakpoint = 10000,		abbreviation = FIRST_NUMBER_CAP_NO_SPACE,	significandDivisor = 1000,		fractionDivisor = 1 },
+	{ breakpoint = 1000,		abbreviation = FIRST_NUMBER_CAP_NO_SPACE,	significandDivisor = 100,		fractionDivisor = 10 },
 }
 
 function AbbreviateNumbers(value)
@@ -4534,6 +4612,27 @@ function PrintLootSpecialization()
 	if ( lootSpecChoice ) then
 		local info = ChatTypeInfo["SYSTEM"];
 		DEFAULT_CHAT_FRAME:AddMessage(lootSpecChoice, info.r, info.g, info.b, info.id);
+	end
+end
+
+function BuildIconArray(parent, baseName, template, rowSize, numRows)
+	local previousButton = CreateFrame("CheckButton", baseName.."1", parent, template);
+	local cornerButton = previousButton;
+	previousButton:SetPoint("TOPLEFT", 24, -85);
+	
+	local numIcons = rowSize * numRows;
+	for i = 2, numIcons do
+		local newButton = CreateFrame("CheckButton", baseName..i, parent, template);
+		newButton:SetID(i);
+		if ( i % rowSize == 1 ) then
+			newButton:SetPoint("TOPLEFT", cornerButton, "BOTTOMLEFT", 0, -8);
+			cornerButton = newButton;
+		else
+			newButton:SetPoint("LEFT", previousButton, "RIGHT", 10, 0);
+		end
+		
+		previousButton = newButton;
+		newButton:Hide();
 	end
 end
 

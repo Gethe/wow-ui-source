@@ -21,7 +21,7 @@
 	</Texture>
 
 	<Button name="QuestChoiceItemTemplate" virtual="true">
-		<Size x="147" y="41"/>
+		<Size x="167" y="41"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentIconTexture" parentKey="Icon">
@@ -31,7 +31,7 @@
 					</Anchors>
 				</Texture>
 				<FontString parentKey="Name" inherits="GameFontBlack" justifyH="LEFT">
-					<Size x="110" y="36"/>
+					<Size x="124" y="36"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentIconTexture" relativePoint="RIGHT" x="5"/>
 					</Anchors>
@@ -233,18 +233,13 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<SimpleHTML parentKey="OptionText">
+			<SimpleHTML parentKey="OptionText" inherits="InlineHyperlinkFrameTemplate"> 
 				<Size x="200"/>
 				<Anchors>
 					<Anchor point="TOP" relativeKey="$parent.Artwork" relativePoint="BOTTOM" y="-8"/>
 					<Anchor point="BOTTOM" relativeKey="$parent.Rewards" relativePoint="TOP" y="35"/>
 				</Anchors>
 				<Scripts>
-					<OnHyperlinkClick>
-						SetItemRef(link, text, button, self);
-					</OnHyperlinkClick>
-					<OnHyperlinkEnter function="QuestChoiceFrame_OnHyperlinkEnter"/>
-					<OnHyperlinkLeave function="GameTooltip_Hide"/>
 					<OnSizeChanged>QuestChoiceFrame_SetPendingUpdate(self:GetParent():GetParent());</OnSizeChanged>
 				</Scripts>
 				<FontString inherits="GameFontBlack" justifyH="LEFT" justifyV="TOP"/>

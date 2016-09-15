@@ -644,17 +644,17 @@ function ScenarioTrackerProgressBar_PlayFlareAnim(progressBar, delta)
 				flare.FlareAnim:Play();
 			end
 		end
-	end
 
-	local barFlare = progressBar["FullBarFlare1"];
-	if( barFlare.FlareAnim:IsPlaying() ) then
-		barFlare = progressBar["FullBarFlare2"];
+		local barFlare = progressBar["FullBarFlare1"];
 		if( barFlare.FlareAnim:IsPlaying() ) then
-			return;
+			barFlare = progressBar["FullBarFlare2"];
+			if( barFlare.FlareAnim:IsPlaying() ) then
+				return;
+			end
 		end
-	end
 
-	barFlare.FlareAnim:Play();
+		barFlare.FlareAnim:Play();
+	end
 end
 
 function ScenarioTrackerProgressBar_OnEvent(self, event)

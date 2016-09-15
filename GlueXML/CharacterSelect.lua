@@ -1100,6 +1100,11 @@ function CharacterSelect_AllowedToEnterWorld()
 		return false;
 	end
 
+	local isTrialBoost, isTrialBoostLocked = select(21, GetCharacterInfo(GetCharacterSelection()));
+	if (isTrialBoost and (isTrialBoostLocked or not C_CharacterServices.IsTrialBoostEnabled())) then
+		return false;
+	end
+
 	return true;
 end
 

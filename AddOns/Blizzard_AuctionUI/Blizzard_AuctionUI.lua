@@ -37,6 +37,9 @@ StaticPopupDialogs["BUYOUT_AUCTION"] = {
 	OnShow = function(self)
 		MoneyFrame_Update(self.moneyFrame, AuctionFrame.buyoutPrice);
 	end,
+	OnCancel = function(self)
+		BrowseBuyoutButton:Enable();
+	end,
 	hasMoneyFrame = 1,
 	showAlert = 1,
 	timeout = 0,
@@ -52,6 +55,9 @@ StaticPopupDialogs["BID_AUCTION"] = {
 	end,
 	OnShow = function(self)
 		MoneyFrame_Update(self.moneyFrame, MoneyInputFrame_GetCopper(BrowseBidPrice));
+	end,
+	OnCancel = function(self)
+		BrowseBidButton:Enable();
 	end,
 	hasMoneyFrame = 1,
 	showAlert = 1,
@@ -692,8 +698,17 @@ function AuctionFrameBrowse_Update()
 		for i=1, NUM_BROWSE_TO_DISPLAY do
 			index = offset + i + (NUM_AUCTION_ITEMS_PER_PAGE * AuctionFrameBrowse.page);
 			button = _G["BrowseButton"..i];
+			local shouldHide = index > (numBatchAuctions + (NUM_AUCTION_ITEMS_PER_PAGE * AuctionFrameBrowse.page));
+			if ( not shouldHide ) then
+				name, texture, count, quality, canUse, level, levelColHeader, minBid, minIncrement, buyoutPrice, bidAmount, highBidder, bidderFullName, owner, ownerFullName, saleStatus, itemId, hasAllInfo =  GetAuctionItemInfo("list", offset + i);
+				
+				if ( not hasAllInfo ) then --Bug  145328
+					shouldHide = true;
+				end
+			end
+			
 			-- Show or hide auction buttons
-			if ( index > (numBatchAuctions + (NUM_AUCTION_ITEMS_PER_PAGE * AuctionFrameBrowse.page)) ) then
+			if ( shouldHide ) then
 				button:Hide();
 				-- If the last button is empty then set isLastSlotEmpty var
 				if ( i == NUM_BROWSE_TO_DISPLAY ) then
@@ -703,12 +718,6 @@ function AuctionFrameBrowse_Update()
 				button:Show();
 
 				buttonName = "BrowseButton"..i;
-				name, texture, count, quality, canUse, level, levelColHeader, minBid, minIncrement, buyoutPrice, bidAmount, highBidder, bidderFullName, owner, ownerFullName, saleStatus, itemId, hasAllInfo =  GetAuctionItemInfo("list", offset + i);
-				if ( not hasAllInfo ) then	--Bug  145328
-					button:Hide();
-					-- If the last button is empty then set isLastSlotEmpty var
-					isLastSlotEmpty = (i == NUM_BROWSE_TO_DISPLAY);
-				end
 				duration = GetAuctionItemTimeLeft("list", offset + i);
 
 				-- Resize button if there isn't a scrollbar

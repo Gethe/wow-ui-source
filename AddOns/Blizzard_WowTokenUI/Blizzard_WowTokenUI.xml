@@ -56,7 +56,7 @@
 						self.Right:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
 					end
 				</OnMouseUp>
-				<OnShow function="StoreButton_OnShow" />
+				<OnShow function="WoWTokenButton_OnShow" />
 				<OnDisable>
 					self.Left:SetTexture("Interface\\Buttons\\UI-Panel-Button-Disabled");
 					self.Middle:SetTexture("Interface\\Buttons\\UI-Panel-Button-Disabled");

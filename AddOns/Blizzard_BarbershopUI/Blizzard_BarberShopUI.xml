@@ -32,7 +32,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button name="$parentPrev" virtual="true">
+			<Button parentKey="Prev" virtual="true">
 				<Size>
 					<AbsDimension x="32" y="32"/>
 				</Size>
@@ -57,7 +57,7 @@
 				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
 				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 			</Button>
-			<Button name="$parentNext" virtual="true">
+			<Button parentKey="Next" virtual="true">
 				<Size>
 					<AbsDimension x="32" y="32"/>
 				</Size>

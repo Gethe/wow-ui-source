@@ -35,7 +35,7 @@
 			</OnReceiveDrag>
 			<OnEnter>
 				if (self.NewActionTexture) then
-					MarkNewActionHighlight(self.action, false);
+					ClearNewActionHighlight(self.action);
 					ActionButton_UpdateAction(self, true);
 				end
 				ActionButton_SetTooltip(self);

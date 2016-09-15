@@ -178,7 +178,7 @@
 			<OnMouseWheel function="HybridScrollFrame_OnMouseWheel"/>
 		</Scripts>
 		<ScrollChild>
-			<Frame name="$parentScrollChild">
+			<Frame name="$parentScrollChild" parentKey="ScrollChild">
 				<Scripts>
 					<OnLoad function="HybridScrollFrameScrollChild_OnLoad"/>
 				</Scripts>

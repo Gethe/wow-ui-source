@@ -1635,6 +1635,17 @@ SlashCmdList["INVITE"] = function(msg)
 	InviteToGroup(msg);
 end
 
+SlashCmdList["REQUEST_INVITE"] = function(msg)
+	if(msg == "") then
+		msg = GetUnitName("target", true)
+	end
+	if( msg and (strlen(msg) > MAX_CHARACTER_NAME_BYTES) ) then
+		ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
+		return;
+	end
+	RequestInviteFromUnit(msg);
+end
+
 SlashCmdList["UNINVITE"] = function(msg)
 	if(msg == "") then
 		msg = GetUnitName("target", true);
@@ -2444,6 +2455,12 @@ ChatFrame_ImportEmoteTokensToHash();
 
 -- ChatFrame functions
 function ChatFrame_OnLoad(self)
+	self:SetTimeVisible(120.0);
+	self:SetMaxLines(128);
+	self:SetFontObject(ChatFontNormal);
+	self:SetIndentedWordWrap(true);
+	self:SetJustifyH("LEFT");
+
 	self.flashTimer = 0;
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("UPDATE_CHAT_COLOR");
@@ -2647,6 +2664,16 @@ function ChatFrame_OnEvent(self, event, ...)
 	end
 end
 
+function ChatFrame_UpdateColorByID(self, chatTypeID, r, g, b)
+	local function TransformColorByID(text, messageR, messageG, messageB, messageChatTypeID, messageAccessID, lineID)
+		if messageChatTypeID == chatTypeID then
+			return true, r, g, b;
+		end
+		return false;
+	end
+	self:AdjustMessageColors(TransformColorByID);
+end
+
 function ChatFrame_ConfigEventHandler(self, event, ...)
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
 		self.defaultLanguage = GetDefaultLanguage();
@@ -2686,7 +2713,7 @@ function ChatFrame_ConfigEventHandler(self, event, ...)
 			info.r = arg2;
 			info.g = arg3;
 			info.b = arg4;
-			self:UpdateColorByID(info.id, info.r, info.g, info.b);
+			ChatFrame_UpdateColorByID(self, info.id, info.r, info.g, info.b);
 
 			if ( strupper(arg1) == "WHISPER" ) then
 				info = ChatTypeInfo["REPLY"];
@@ -2694,7 +2721,7 @@ function ChatFrame_ConfigEventHandler(self, event, ...)
 					info.r = arg2;
 					info.g = arg3;
 					info.b = arg4;
-					self:UpdateColorByID(info.id, info.r, info.g, info.b);
+					ChatFrame_UpdateColorByID(self, info.id, info.r, info.g, info.b);
 				end
 			end
 		end
@@ -2995,7 +3022,10 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 			if (C_Social.IsSocialEnabled()) then
 				local achieveID = GetAchievementInfoFromHyperlink(arg1);
 				if (achieveID) then
-					message = message .. " " .. Social_GetShareAchievementLink(achieveID, true);
+					local isGuildAchievement = select(12, GetAchievementInfo(achieveID));
+					if (isGuildAchievement) then
+						message = message .. " " .. Social_GetShareAchievementLink(achieveID, true);
+					end
 				end
 			end
 			self:AddMessage(message, info.r, info.g, info.b, info.id);
@@ -3038,7 +3068,7 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 			end
 			local accessID = ChatHistory_GetAccessID(Chat_GetChatCategory(type), arg8);
 			local typeID = ChatHistory_GetAccessID(infoType, arg8, arg12);
-			self:AddMessage(format(globalstring, arg8, arg4), info.r, info.g, info.b, info.id, false, accessID, typeID);
+			self:AddMessage(format(globalstring, arg8, arg4), info.r, info.g, info.b, info.id, accessID, typeID);
 		elseif ( type == "BN_INLINE_TOAST_ALERT" ) then
 			local globalstring = _G["BN_INLINE_TOAST_"..arg1];
 			local message;
@@ -3201,7 +3231,7 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 
 			local accessID = ChatHistory_GetAccessID(chatGroup, chatTarget);
 			local typeID = ChatHistory_GetAccessID(infoType, chatTarget, arg12 or arg13);
-			self:AddMessage(body, info.r, info.g, info.b, info.id, false, accessID, typeID);
+			self:AddMessage(body, info.r, info.g, info.b, info.id, accessID, typeID);
 		end
 
 		if ( type == "WHISPER" or type == "BN_WHISPER" ) then
@@ -3301,6 +3331,7 @@ function ChatFrame_OnUpdate(self, elapsedSec)
 end
 
 function ChatFrame_OnHyperlinkShow(self, link, text, button)
+print(link, text)
 	SetItemRef(link, text, button, self);
 end
 
@@ -4521,7 +4552,7 @@ function TextEmoteSort(token1, token2)
 	local i = 1;
 	local string1, string2;
 	local token = _G["EMOTE"..i.."_TOKEN"];
-	while ( token ) do
+	while ( i <= MAXEMOTEINDEX ) do
 		if ( token == token1 ) then
 			string1 = _G["EMOTE"..i.."_CMD1"];
 			if ( string2 ) then
@@ -4547,7 +4578,7 @@ function OnMenuLoad(self,list,func)
 	for index, value in pairs(list) do
 		local i = 1;
 		local token = _G["EMOTE"..i.."_TOKEN"];
-		while ( token ) do
+		while ( i < MAXEMOTEINDEX ) do
 			if ( token == value ) then
 				break;
 			end
@@ -4581,6 +4612,12 @@ function VoiceMacroMenu_Click(self)
 end
 
 function VoiceMacroMenu_OnLoad(self)
+	if ( UnitFactionGroup("player") == "Alliance" ) then
+		TextEmoteSpeechList[#TextEmoteSpeechList + 1] = "FORTHEALLIANCE";
+	elseif ( UnitFactionGroup("player") == "Horde" ) then
+		TextEmoteSpeechList[#TextEmoteSpeechList + 1] = "FORTHEHORDE";
+	end
+	
 	OnMenuLoad(self, TextEmoteSpeechList, VoiceMacroMenu_Click);
 end
 
@@ -4728,15 +4765,14 @@ function ChatChannelDropDown_PopOutChat(self, chatType, chatTarget)
 
 	--Copy over messages
 	local accessID = ChatHistory_GetAccessID(chatType, chatTarget);
-	for i = 1, sourceChatFrame:GetNumMessages(accessID) do
-		local text, accessID, lineID, extraData = sourceChatFrame:GetMessageInfo(i, accessID);
-		local cType, cTarget = ChatHistory_GetChatType(extraData);
-
-		local info = ChatTypeInfo[cType];
-		frame:AddMessage(text, info.r, info.g, info.b, lineID, false, accessID, extraData);
+	for i = 1, sourceChatFrame:GetNumMessages() do
+		local text, r, g, b, chatTypeID, messageAccessID, lineID = sourceChatFrame:GetMessageInfo(i);
+		if messageAccessID == accessID then
+			frame:AddMessage(text, r, g, b, chatTypeID, messageAccessID, lineID);
+		end
 	end
 	--Remove the messages from the old frame.
-	sourceChatFrame:RemoveMessagesByAccessID(accessID);
+	sourceChatFrame:RemoveMessagesByPredicate(function(text, r, g, b, chatTypeID, messageAccessID, lineID) return messageAccessID == accessID; end);
 end
 
 function Chat_GetChannelShortcutName(index)

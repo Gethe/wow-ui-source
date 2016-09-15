@@ -76,20 +76,6 @@ function QuestChoiceFrame_Show()
 	end
 end
 
-function QuestChoiceFrame_OnHyperlinkEnter(self, link, text, hyperlinkButton)
-	if ( link and string.find(link, "spell") ) then
-		local _, _, spellID = string.find(link, "(%d+)");
-		if ( spellID ) then
-			GameTooltip:SetOwner(hyperlinkButton, "ANCHOR_RIGHT");
-			if ( GameTooltip:SetSpellByID(spellID) ) then
-				--hyperlinkButton.UpdateTooltip = QuestChoiceFrame_OnHyperlinkEnter;
-			else
-				hyperlinkButton.UpdateTooltip = nil;
-			end
-		end
-	end
-end
-
 function QuestChoiceFrameOptionButton_OnClick(self)
 	PlaySound("igMainMenuOptionCheckBoxOn");
 	local parent = self:GetParent();

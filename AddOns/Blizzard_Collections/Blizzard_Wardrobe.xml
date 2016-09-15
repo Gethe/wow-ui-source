@@ -334,7 +334,7 @@
 	</Frame>
 	<Frame name="WardrobeCollectionFrame" parent="CollectionsJournal" setAllPoints="true" hidden="true">
 		<Frames>
-			<EditBox name="$parentSearchBox" parentKey="searchBox" inherits="BagSearchBoxTemplate" letters="40" motionScriptsWhileDisabled="true">
+			<EditBox name="$parentSearchBox" parentKey="searchBox" inherits="SearchBoxTemplate" letters="40" motionScriptsWhileDisabled="true">
 				<Size x="115" y="20"/>
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="-107" y="-35"/>
@@ -985,7 +985,7 @@
 		</HighlightTexture>
 	</Button>
 
-	<Button name="WardrobeTransmogEnchantButtonTemplate" virtual="true">
+	<Button name="WardrobeTransmogEnchantButtonTemplate" motionScriptsWhileDisabled="true" virtual="true">
 		<KeyValues>
 			<KeyValue key="transmogType" value="LE_TRANSMOG_TYPE_ILLUSION" type="global"/>
 		</KeyValues>
@@ -1005,8 +1005,8 @@
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="NoItemTexture" file="Interface\Transmogrify\Textures.png" alpha="0" hidden="true">
-					<Size x="34" y="34"/>
+				<Texture parentKey="NoItemTexture" file="Interface\Transmogrify\Textures.png" alpha="0.75" hidden="true">
+					<Size x="18" y="18"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
@@ -1123,7 +1123,7 @@
 		</HighlightTexture>
 	</Button>
 
-	<Frame name="WardrobeFrame" inherits="PortraitFrameTemplate" toplevel="true" frameStrata="HIGH" enableMouse="true" parent="UIParent" hidden="true">
+	<Frame name="WardrobeFrame" inherits="PortraitFrameTemplate" toplevel="true" frameStrata="MEDIUM" enableMouse="true" parent="UIParent" hidden="true">
 		<Size x="965" y="606"/>
 		<Anchors>
 			<Anchor point="CENTER" x="0" y="0"/>
@@ -1242,6 +1242,9 @@
 							<OnLoad>
 								Model_OnLoad(self, MODELFRAME_MAX_PLAYER_ZOOM, 0, 0);
 							</OnLoad>
+							<OnHide>
+								self:SetSheathed(false);
+							</OnHide>
 						</Scripts>
 						<Frames>
 							<Button parentKey="ClearAllPendingButton" inherits="UIMenuButtonStretchTemplate" hidden="true">

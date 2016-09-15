@@ -1,52 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
-	<Frame name="WorldMapUnitTemplate" hidden="true" frameLevel="400" virtual="true">
-		<Size>
-			<AbsDimension x="16" y="16"/>
-		</Size>
-		<Anchors>
-			<Anchor point="CENTER"/>
-		</Anchors>
-		<Layers>
-			<Layer level="ARTWORK">
-				<Texture name="$parentIcon" file="Interface\Minimap\PartyRaidBlips" setAllPoints="true" parentKey="icon"/>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnEnter>
-				WorldMapUnit_OnEnter(self, motion);
-			</OnEnter>
-			<OnLeave>
-				WorldMapUnit_OnLeave(self, motion);
-			</OnLeave>
-			<OnEvent>
-				WorldMapUnit_OnEvent(self, event, ...);
-			</OnEvent>
-			<OnMouseUp>
-				WorldMapUnit_OnMouseUp(self, button, "WorldMapRaid", "WorldMapParty");
-			</OnMouseUp>
-			<OnShow>
-				WorldMapUnit_OnShow(self);
-			</OnShow>
-			<OnHide>
-				WorldMapUnit_OnHide(self);
-			</OnHide>
-		</Scripts>
-	</Frame>
-	<Frame name="WorldMapPartyUnitTemplate" inherits="WorldMapUnitTemplate" virtual="true">
-		<Scripts>
-			<OnLoad>
-				self.unit = "party"..self:GetID();
-			</OnLoad>
-		</Scripts>
-	</Frame>
-	<Frame name="WorldMapRaidUnitTemplate" inherits="WorldMapUnitTemplate" virtual="true">
-		<Scripts>
-			<OnLoad>
-				self.unit = "raid"..self:GetID();
-			</OnLoad>
-		</Scripts>
-	</Frame>
 	<Frame name="WorldMapFlagTemplate" hidden="true" virtual="true">
 		<Size>
 			<AbsDimension x="24" y="24"/>
@@ -100,15 +53,32 @@
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture parentKey="Texture" atlas="QuestNormal"/>
+				<Texture parentKey="Above" atlas="MiniMap-PositionArrowUp" hidden="true">
+					<Size x="32" y="32"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="4"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Below" atlas="MiniMap-PositionArrowDown" hidden="true">
+					<Size x="32" y="32"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="-4"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 		</Layers>
 		<Scripts>
 			<OnEnter>
-				local questLineName, questName = C_Questline.GetQuestlineInfoByIndex(self.index);
+				local questLineName, questName, _, _, _, floorLocation = C_Questline.GetQuestlineInfoByIndex(self.index);
 				if ( questName ) then
 					WorldMapTooltip:SetOwner(self, "ANCHOR_LEFT");
 					WorldMapTooltip:SetText(questName);
 					WorldMapTooltip:AddLine(AVAILABLE_QUEST, 1, 1, 1, true);
+					if (floorLocation == LE_QUESTLINE_FLOOR_LOCATION_BELOW) then
+						WorldMapTooltip:AddLine(QUESTLINE_LOCATED_BELOW, 0.5, 0.5, 0.5, true);
+					elseif (floorLocation == LE_QUESTLINE_FLOOR_LOCATION_ABOVE) then
+						WorldMapTooltip:AddLine(QUESTLINE_LOCATED_ABOVE, 0.5, 0.5, 0.5, true);
+					end
 					WorldMapTooltip:Show();
 				end
 			</OnEnter>
@@ -439,11 +409,11 @@
 					<OnClick>
 						self:GetParent():OnClick();
 					</OnClick>
-					
+
 					<OnEnter>
 						self:GetParent():OnEnter();
 					</OnEnter>
-					
+
 					<OnLeave>
 						self:GetParent():OnLeave();
 					</OnLeave>

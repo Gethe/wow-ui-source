@@ -63,6 +63,10 @@ function MapCanvasDataProviderMixin:GetMap()
 	return self.owningMap;
 end
 
+function MapCanvasDataProviderMixin:OnMapChanged()
+	--  Optionally override in your mixin, called when map ID changes
+end
+
 function MapCanvasDataProviderMixin:RegisterEvent(event)
 	-- Since data providers aren't frames this provides a similar method of event registration, but always calls self:OnEvent(event, ...)
 	if not self.registeredEvents then

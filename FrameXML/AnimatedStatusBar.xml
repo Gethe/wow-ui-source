@@ -76,7 +76,7 @@
 				</Scale>
 				<Alpha childKey="SparkBurstMove" duration="0.5" order="2" fromAlpha="1" toAlpha="0"/>
 				
-				<Scale childKey="BarGain" duration="0.4" order="1" fromScaleX="0" fromScaleY="1" toScaleX="1" toScaleY="1">
+				<Scale childKey="BarGain" duration="0.4" order="1" fromScaleX="0.001" fromScaleY="1" toScaleX="1" toScaleY="1">
 					<Origin point="LEFT">
 						<Offset x="0" y="0"/>
 					</Origin>
@@ -99,7 +99,7 @@
 						<KeyValue key="adjustAnchors" value="true" type="bool"/>
 					</KeyValues>
 				</Translation>
-				<Scale childKey="BarTrailGlow" order="1" fromScaleX="0.0" fromScaleY="1">
+				<Scale childKey="BarTrailGlow" order="1" fromScaleX="0.001" fromScaleY="1">
 					<Origin point="RIGHT">
 						<Offset x="0" y="0"/>
 					</Origin>
@@ -111,7 +111,7 @@
 				</Scale>
 				<Alpha childKey="BarTrailGlow" duration="0.5" order="2" fromAlpha="1" toAlpha="0" />
 				
-				<Scale childKey="BarGlow" order="1" fromScaleX="0.0" fromScaleY="1">
+				<Scale childKey="BarGlow" order="1" fromScaleX="0.001" fromScaleY="1">
 					<Origin point="LEFT">
 						<Offset x="0" y="0"/>
 					</Origin>

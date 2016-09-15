@@ -183,13 +183,29 @@ function NPE_TutorialPointerFrame:_GetFrame(parentFrame)
 
 	if (#self.FramePool > 0) then
 		frame = table.remove(self.FramePool);
-		frame:SetParent(parentFrame);
 	else
 		self.FrameCount = self.FrameCount + 1;
-		frame = CreateFrame("frame", "NPE_PointerFrame_" .. self.FrameCount, parentFrame, "TutorialPointerFrame");
+		frame = CreateFrame("frame", "NPE_PointerFrame_" .. self.FrameCount, UIParent, "TutorialPointerFrame");
 	end
 
-	frame:SetFrameStrata("FULLSCREEN_DIALOG")
+	if (not parentFrame.hasHookedScriptsForNPE) then
+		parentFrame:HookScript("OnShow", function (self)
+			if (self.currentNPEPointer) then
+				self.currentNPEPointer:Show();
+			end
+		end);
+
+		parentFrame:HookScript("OnHide", function (self)
+			if (self.currentNPEPointer) then
+				self.currentNPEPointer:Hide();
+			end
+		end);
+
+		parentFrame.hasHookedScriptsForNPE = true;
+	end
+
+	parentFrame.currentNPEPointer = frame;
+	frame.currentTarget = parentFrame;
 
 	return frame;
 end
@@ -199,6 +215,9 @@ function NPE_TutorialPointerFrame:_RetireFrame(frame)
 
 	-- TODO: fade the frame out?
 	frame:Hide();
+
+	frame.currentTarget.currentNPEPointer = nil;
+	frame.currentTarget = nil;
 
 	-- Stop all animations
 	frame.AnimDelayTimer:Cancel();

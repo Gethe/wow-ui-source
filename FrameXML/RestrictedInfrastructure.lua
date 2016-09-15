@@ -8,8 +8,8 @@
 --     A function for examining and securely creating restricted environments,
 --       to support executing snippets.
 --
--- Daniel Stephens (iriel@vigilance-committee.org)
--- Nevin Flanagan (alestane@comcast.net)
+-- Daniel Stephens
+-- Nevin Flanagan
 ---------------------------------------------------------------------------
 
 local type = type;

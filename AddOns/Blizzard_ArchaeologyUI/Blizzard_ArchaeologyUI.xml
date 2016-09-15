@@ -172,7 +172,7 @@
 				GameTooltip:AddLine(" ");
 				
 				local adate = date("*t", self.firstComletionTime);
-				GameTooltip:AddLine(ARCHAEOLOGY_TIMESTAMP.." |cffffffff"..string.format(SHORTDATE, adate.day, adate.month, adate.year).." "..
+				GameTooltip:AddLine(ARCHAEOLOGY_TIMESTAMP.." |cffffffff"..FormatShortDate(adate.day, adate.month, adate.year).." "..
 												GameTime_GetFormattedTime(adate.hour, adate.min, true).."|r");
 				GameTooltip:AddLine(string.format(ARCHAEOLOGY_COMPLETION, self.completionCount));
 				GameTooltip:Show();

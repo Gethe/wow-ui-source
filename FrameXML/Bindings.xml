@@ -66,9 +66,21 @@
 	</Binding>
 	<Binding name="TOGGLESHEATH" category="BINDING_HEADER_MOVEMENT">
 		ToggleSheath();
+		if ( DressUpModel:IsShown() ) then
+			DressUpModel:SetSheathed(not DressUpModel:GetSheathed());
+		end
+		if ( WardrobeTransmogFrame and WardrobeTransmogFrame.Model:IsShown() ) then
+			WardrobeTransmogFrame.Model:SetSheathed(not WardrobeTransmogFrame.Model:GetSheathed());
+		end
 	</Binding>
 	<Binding name="TOGGLEAUTORUN" category="BINDING_HEADER_MOVEMENT">
 		ToggleAutoRun();
+	</Binding>
+	<Binding name="STARTAUTORUN" category="BINDING_HEADER_MOVEMENT">
+		StartAutoRun();
+	</Binding>
+	<Binding name="STOPAUTORUN" category="BINDING_HEADER_MOVEMENT">
+		StopAutoRun();
 	</Binding>
 	<Binding name="PITCHUP" runOnUp="true" category="BINDING_HEADER_MOVEMENT">
 		if ( keystate == "down" ) then
@@ -1045,6 +1057,9 @@
 	</Binding>
 	<Binding name="TOGGLECOLLECTIONSHEIRLOOM" category="BINDING_HEADER_INTERFACE">
 		ToggleCollectionsJournal(4);
+	</Binding>
+	<Binding name="TOGGLECOLLECTIONSWARDROBE" category="BINDING_HEADER_INTERFACE">
+		ToggleCollectionsJournal(5);
 	</Binding>
 
 	<Binding name="TOGGLEENCOUNTERJOURNAL" header="BLANK15" category="BINDING_HEADER_INTERFACE">

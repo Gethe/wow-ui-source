@@ -18,7 +18,7 @@ PAID_SERVICE_CHARACTER_ID = nil;
 PAID_SERVICE_TYPE = nil;
 
 PREVIEW_FRAME_HEIGHT = 130;
-PREVIEW_FRAME_X_OFFSET = 19;
+PREVIEW_FRAME_X_OFFSET = 16;
 PREVIEW_FRAME_Y_OFFSET = -7;
 
 local FACTION_GROUP_HORDE = 0;
@@ -338,11 +338,11 @@ function CharacterCreate_OnShow()
 		PandarenFactionButtons_Hide();
 	end
 
-	CharacterCreateEnumerateRaces(GetAvailableRaces());
+	CharacterCreateEnumerateRaces();
 
 	SetCharacterRace(GetSelectedRace());
 
-	CharacterCreateEnumerateClasses(GetAvailableClasses());
+	CharacterCreateEnumerateClasses();
 
 	local _,_,index = GetSelectedClass();
 	SetCharacterClass(index);
@@ -381,7 +381,7 @@ function CharacterCreate_OnShow()
 		SetSelectedRace(rid);
 		SetCharacterRace(rid);
 
-		CharacterCreateEnumerateClasses(GetAvailableClasses());
+		CharacterCreateEnumerateClasses();
 
 		local currentRace = GetSelectedRace();
 		local available = {};
@@ -400,7 +400,7 @@ function CharacterCreate_OnShow()
 		SetSelectedClass(cid);
 		SetCharacterClass(cid);
 		SetCharacterRace(GetSelectedRace());
-	
+
 		RandomizeCharCustomization(true);
 		KioskModeSplash_SetAutoEnterWorld(false);
 	end
@@ -433,8 +433,8 @@ function CharacterCreate_OnEvent(self, event, ...)
 	elseif ( event == "UPDATE_EXPANSION_LEVEL" ) then
 		-- Expansion level changed while online, so enable buttons as needed
 		if ( CharacterCreateFrame:IsShown() ) then
-			CharacterCreateEnumerateRaces(GetAvailableRaces());
-			CharacterCreateEnumerateClasses(GetAvailableClasses());
+			CharacterCreateEnumerateRaces();
+			CharacterCreateEnumerateClasses();
 		end
 	elseif ( event == "CHARACTER_CREATION_RESULT" ) then
 		local success, errorCode = ...;
@@ -532,7 +532,9 @@ function CharacterCreateFrame_UpdateRecruitInfo()
 	end
 end
 
-function CharacterCreateEnumerateRaces(races)
+function CharacterCreateEnumerateRaces()
+	local races = GetAvailableRaces();
+
 	CharacterCreate.numRaces = #races;
 	if ( CharacterCreate.numRaces > MAX_RACES ) then
 		message("Too many races!  Update MAX_RACES");
@@ -591,7 +593,9 @@ function CharacterCreateEnumerateRaces(races)
 	end
 end
 
-function CharacterCreateEnumerateClasses(classes)
+function CharacterCreateEnumerateClasses()
+	local classes = GetAvailableClasses();
+
 	CharacterCreate.numClasses = #classes;
 	if ( CharacterCreate.numClasses > MAX_CLASSES_PER_RACE ) then
 		message("Too many classes!  Update MAX_CLASSES_PER_RACE");
@@ -715,7 +719,7 @@ function SetCharacterRace(id)
 	-- Set backdrop colors based on faction
 	local backdropColor = FACTION_BACKDROP_COLOR_TABLE[faction];
 	CharCreateRaceFrame.factionBg:SetGradient("VERTICAL", 0, 0, 0, backdropColor[7], backdropColor[8], backdropColor[9]);
-	CharCreateClassFrame.factionBg:SetGradient("VERTICAL", 0, 0, 0, backdropColor[7], backdropColor[8], backdropColor[9]);
+	CharCreateClassFrame.Panel.factionBg:SetGradient("VERTICAL", 0, 0, 0, backdropColor[7], backdropColor[8], backdropColor[9]);
 	CharCreateCustomizationFrame.factionBg:SetGradient("VERTICAL", 0, 0, 0, backdropColor[7], backdropColor[8], backdropColor[9]);
 	CharCreatePreviewFrame.factionBg:SetGradient("VERTICAL", 0, 0, 0, backdropColor[7], backdropColor[8], backdropColor[9]);
 	CharCreateCustomizationFrame.BannerTop:SetVertexColor(backdropColor[10], backdropColor[11], backdropColor[12]);
@@ -1066,7 +1070,7 @@ function CharacterRace_OnClick(self, id, forceSelect)
 			SetCharacterRace(id);
 			SetCharacterGender(GetSelectedSex());
 			SetCharacterCreateFacing(-15);
-			CharacterCreateEnumerateClasses(GetAvailableClasses());
+			CharacterCreateEnumerateClasses();
 			if (IsKioskModeEnabled()) then
 				local data = KioskModeSplash_GetModeData();
 				local available = {};
@@ -1105,7 +1109,15 @@ function CharacterRace_OnClick(self, id, forceSelect)
 	end
 end
 
+local currentGender;
+
 function SetCharacterGender(sex)
+	if sex == currentGender then
+		return;
+	end
+
+	currentGender = sex;
+
 	local gender;
 	SetSelectedSex(sex);
 	if ( sex == SEX_MALE ) then
@@ -1117,8 +1129,8 @@ function SetCharacterGender(sex)
 	end
 
 	-- Update race images to reflect gender
-	CharacterCreateEnumerateRaces(GetAvailableRaces());
-	CharacterCreateEnumerateClasses(GetAvailableClasses());
+	CharacterCreateEnumerateRaces();
+	CharacterCreateEnumerateClasses();
  	SetCharacterRace(GetSelectedRace());
 
 	local _,_,classID = GetSelectedClass();

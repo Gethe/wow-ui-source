@@ -5,8 +5,8 @@
 -- WoW lua API), and functions which provide the same degree of game state
 -- as macro conditionals.
 --
--- Nevin Flanagan (alestane@comcast.net)
--- Daniel Stephens (iriel@vigilance-committee.org)
+-- Nevin Flanagan
+-- Daniel Stephens
 ---------------------------------------------------------------------------
 
 local tostring = tostring;

@@ -394,8 +394,9 @@ function EquipmentFlyout_DisplayButton(button, paperDollItemSlot)
 		SetItemButtonQuality(button, quality);
 
 		CooldownFrame_Set(button.cooldown, start, duration, enable);
-
-		button.UpdateTooltip = function () GameTooltip:SetOwner(EquipmentFlyoutFrame.buttonFrame, "ANCHOR_RIGHT", 6, -EquipmentFlyoutFrame.buttonFrame:GetHeight() - 6); setTooltip(); end;
+		
+		button.UpdateTooltip = function() EquipmentFlyoutButton_UpdateTooltip(button, GameTooltip); end
+		button.setTooltip = setTooltip;
 		if ( button:IsMouseOver() ) then
 			button.UpdateTooltip();
 		end
@@ -564,4 +565,22 @@ function EquipmentFlyoutPopoutButton_SetReversed(self, isReversed)
 			self:GetHighlightTexture():SetTexCoord(0.15625, 1, 0.84375, 1, 0.15625, 0.5, 0.84375, 0.5);
 		end
 	end
+end
+
+function EquipmentFlyoutButton_UpdateTooltipAnchors(self, tooltip)
+	local x = self:GetRight();
+	local anchorFromLeft = x < GetScreenWidth() / 2;
+
+	if ( anchorFromLeft ) then
+		tooltip:SetAnchorType("ANCHOR_RIGHT");
+	else
+		tooltip:SetAnchorType("ANCHOR_LEFT");
+	end
+end
+
+function EquipmentFlyoutButton_UpdateTooltip(self, tooltip)
+	tooltip:SetOwner(self, "ANCHOR_NONE");
+	EquipmentFlyoutButton_UpdateTooltipAnchors(self, tooltip);
+	self.setTooltip();
+	GameTooltip_ShowCompareItem(tooltip);
 end

@@ -71,6 +71,14 @@ end
 function WorldQuestDataProviderMixin:AddWorldQuest(info)
 	local pin = self:GetMap():AcquirePin("WorldQuestPinTemplate");
 	pin.questID = info.questId;
+
+	if IsWorldQuestWatched(info.questId) then
+		pin:SetAlphaLimits(nil, 0.0, 1.0);
+		pin:SetAlpha(1);
+	else
+		pin:SetAlphaLimits(2.0, 0.0, 1.0);
+	end
+
 	pin.worldQuest = true;
 	pin.numObjectives = info.numObjectives;
 	pin:SetFrameLevel(1000 + self:GetMap():GetNumActivePinsByTemplate("WorldQuestPinTemplate"));
@@ -160,7 +168,7 @@ WorldQuestPinMixin = CreateFromMixins(MapCanvasPinMixin);
 
 function WorldQuestPinMixin:OnLoad()
 	self:SetAlphaLimits(2.0, 0.0, 1.0);
-	self:SetScalingLimits(1, 1.0, 0.50);
+	self:SetScalingLimits(1, 1.5, 0.50);
 
 	self.UpdateTooltip = self.OnMouseEnter;
 end

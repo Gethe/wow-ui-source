@@ -1,5 +1,9 @@
 GARRISON_FOLLOWER_TOOLTIP_FULL_XP_WIDTH = 180;
 
+UNDERBIASED_REASON_NOT_UNDERBIASED = 0;
+UNDERBIASED_REASON_ITEMLEVEL = 1;
+UNDERBIASED_REASON_LEVEL = 2;
+UNDERBIASED_REASON_BOTH = 3;
 -------------------------------------------
 local GARRISON_FOLLOWER_FLOATING_TOOLTIP = {};
 
@@ -284,7 +288,9 @@ function GarrisonFollowerTooltipTemplate_SetGarrisonFollower(tooltipFrame, data,
 	if ( data.underBiased ) then
 		if ( data.quality >= LE_ITEM_QUALITY_EPIC ) then
 			tooltipFrame.UnderBiased:SetText(GARRISON_FOLLOWER_BELOW_LEVEL_MAX_XP_TOOLTIP);
-		else
+		elseif(data.underBiasedReason == UNDERBIASED_REASON_ITEMLEVEL) then
+			tooltipFrame.UnderBiased:SetText(GARRISON_FOLLOWER_BELOW_ITEM_LEVEL_TOOLTIP);
+		elseif(data.underBiasedReason == UNDERBIASED_REASON_LEVEL) then
 			tooltipFrame.UnderBiased:SetText(GARRISON_FOLLOWER_BELOW_LEVEL_TOOLTIP);
 		end
 

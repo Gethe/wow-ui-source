@@ -18,8 +18,28 @@ VIEWABLE_ACTION_BAR_PAGES = {1, 1, 1, 1, 1, 1};
 
 ACTION_HIGHLIGHT_MARKS = { };
 
-function MarkNewActionHighlight(action, mark)
-	ACTION_HIGHLIGHT_MARKS[action] = mark;
+function MarkNewActionHighlight(action)
+	ACTION_HIGHLIGHT_MARKS[action] = true;
+end
+
+function ClearNewActionHighlight(action)
+	ACTION_HIGHLIGHT_MARKS[action] = nil;
+
+	-- If we're unhighlighting this one because it was used/moused over/etc...
+	-- then go find all other current actions that match this one that are also
+	-- marked for highlight and unmark them.  The next time they update the highlight
+	-- will update; may need to actually force update the action button in some cases
+	-- and that means that ACTION_HIGHLIGHT_MARKS needs to store more information
+	local unmarkedType, unmarkedID = GetActionInfo(action);
+
+	for actionKey, markValue in pairs(ACTION_HIGHLIGHT_MARKS) do
+		if markValue then
+			local actionType, actionID = GetActionInfo(actionKey);
+			if actionType == unmarkedType and actionID == unmarkedID then
+				ACTION_HIGHLIGHT_MARKS[actionKey] = nil;
+			end
+		end
+	end
 end
 
 function GetNewActionHighlightMark(action)
@@ -47,7 +67,7 @@ local function CheckUseActionButton(button, checkingFromDown)
 			SecureActionButton_OnClick(button, "LeftButton");
 
 			if GetNewActionHighlightMark(button.action) then
-				MarkNewActionHighlight(button.action, false);
+				ClearNewActionHighlight(button.action);
 				ActionButton_UpdateHighlightMark(button, button.action);
 			end
 		end
@@ -467,14 +487,16 @@ end
 function ActionButton_UpdateCooldown(self)
 	local locStart, locDuration;
 	local start, duration, enable, charges, maxCharges, chargeStart, chargeDuration;
+	local modRate = 1.0;
+	local chargeModRate = 1.0;
 	if ( self.spellID ) then
 		locStart, locDuration = GetSpellLossOfControlCooldown(self.spellID);
-		start, duration, enable = GetSpellCooldown(self.spellID);
-		charges, maxCharges, chargeStart, chargeDuration = GetSpellCharges(self.spellID);
+		start, duration, enable, modRate = GetSpellCooldown(self.spellID);
+		charges, maxCharges, chargeStart, chargeDuration, chargeModRate = GetSpellCharges(self.spellID);
 	else
 		locStart, locDuration = GetActionLossOfControlCooldown(self.action);
-		start, duration, enable = GetActionCooldown(self.action);
-		charges, maxCharges, chargeStart, chargeDuration = GetActionCharges(self.action);
+		start, duration, enable, modRate = GetActionCooldown(self.action);
+		charges, maxCharges, chargeStart, chargeDuration, chargeModRate = GetActionCharges(self.action);
 	end
 
 	if ( (locStart + locDuration) > (start + duration) ) then
@@ -485,7 +507,7 @@ function ActionButton_UpdateCooldown(self)
 			self.cooldown.currentCooldownType = COOLDOWN_TYPE_LOSS_OF_CONTROL;
 		end
 
-		CooldownFrame_Set(self.cooldown, locStart, locDuration, true, true);
+		CooldownFrame_Set(self.cooldown, locStart, locDuration, true, true, modRate);
 		ClearChargeCooldown(self);
 	else
 		if ( self.cooldown.currentCooldownType ~= COOLDOWN_TYPE_NORMAL ) then
@@ -500,12 +522,12 @@ function ActionButton_UpdateCooldown(self)
 		end
 
 		if ( charges and maxCharges and maxCharges > 1 and charges < maxCharges ) then
-			StartChargeCooldown(self, chargeStart, chargeDuration);
+			StartChargeCooldown(self, chargeStart, chargeDuration, chargeModRate);
 		else
 			ClearChargeCooldown(self);
 		end
 
-		CooldownFrame_Set(self.cooldown, start, duration, enable);
+		CooldownFrame_Set(self.cooldown, start, duration, enable, false, modRate);
 	end
 end
 
@@ -529,7 +551,7 @@ local function CreateChargeCooldownFrame(parent)
 	return cooldown;
 end
 
-function StartChargeCooldown(parent, chargeStart, chargeDuration)
+function StartChargeCooldown(parent, chargeStart, chargeDuration, chargeModRate)
 	if chargeStart == 0 then
 		ClearChargeCooldown(parent);
 		return;
@@ -537,7 +559,7 @@ function StartChargeCooldown(parent, chargeStart, chargeDuration)
 
 	parent.chargeCooldown = parent.chargeCooldown or CreateChargeCooldownFrame(parent);
 
-	CooldownFrame_Set(parent.chargeCooldown, chargeStart, chargeDuration, true, true);
+	CooldownFrame_Set(parent.chargeCooldown, chargeStart, chargeDuration, true, true, chargeModRate);
 end
 
 function ClearChargeCooldown(parent)

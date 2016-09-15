@@ -51,7 +51,7 @@ function FlightMap_ZoneSummaryDataProvider:GatherWorldQuests()
 end
 
 function FlightMap_ZoneSummaryDataProvider:CheckMouse()
-	if self:GetMap():IsZoomedOut() and self:GetMap():GetMapID() and self:GetMap():IsCanvasMouseFocus() then
+	if self:GetMap():IsZoomedOut() and self:GetMap():GetMapID() and self:GetMap():IsCanvasMouseFocus() and (not GameTooltip:GetOwner() or GameTooltip:GetOwner() == self:GetMap()) then
 		local mapAreaID = self:GetMap():GetMapID();
 		local mouseX, mouseY = self:GetMap():GetNormalizedCursorPosition();
 		local zoneMapID = C_MapCanvas.FindZoneAtPosition(mapAreaID, mouseX, mouseY);

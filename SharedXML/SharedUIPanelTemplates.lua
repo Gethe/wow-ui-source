@@ -13,17 +13,17 @@ PANEL_INSET_ATTIC_OFFSET = -60;
 function MagicButton_OnLoad(self)
 	local leftHandled = false;
 	local rightHandled = false;
-	
+
 	-- Find out where this button is anchored and adjust positions/separators as necessary
 	for i=1, self:GetNumPoints() do
 		local point, relativeTo, relativePoint, offsetX, offsetY = self:GetPoint(i);
-		
+
 		if (relativeTo:GetObjectType() == "Button" and (point == "TOPLEFT" or point == "LEFT")) then
-			
+
 			if (offsetX == 0 and offsetY == 0) then
 				self:SetPoint(point, relativeTo, relativePoint, 1, 0);
-			end	
-			
+			end
+
 			if (relativeTo.RightSeparator) then
 				-- Modify separator to make it a Middle
 				self.LeftSeparator = relativeTo.RightSeparator;
@@ -32,21 +32,21 @@ function MagicButton_OnLoad(self)
 				self.LeftSeparator = self:CreateTexture(self:GetName() and self:GetName().."_LeftSeparator" or nil, "BORDER");
 				relativeTo.RightSeparator = self.LeftSeparator;
 			end
-			
+
 			self.LeftSeparator:SetTexture("Interface\\FrameGeneral\\UI-Frame");
 			self.LeftSeparator:SetTexCoord(0.00781250, 0.10937500, 0.75781250, 0.95312500);
 			self.LeftSeparator:SetWidth(13);
 			self.LeftSeparator:SetHeight(25);
 			self.LeftSeparator:SetPoint("TOPRIGHT", self, "TOPLEFT", 5, 1);
-			
-			leftHandled = true;	
-			
+
+			leftHandled = true;
+
 		elseif (relativeTo:GetObjectType() == "Button" and (point == "TOPRIGHT" or point == "RIGHT")) then
-		
+
 			if (offsetX == 0 and offsetY == 0) then
 				self:SetPoint(point, relativeTo, relativePoint, -1, 0);
-			end	
-			
+			end
+
 			if (relativeTo.LeftSeparator) then
 				-- Modify separator to make it a Middle
 				self.RightSeparator = relativeTo.LeftSeparator;
@@ -55,19 +55,19 @@ function MagicButton_OnLoad(self)
 				self.RightSeparator = self:CreateTexture(self:GetName() and self:GetName().."_RightSeparator" or nil, "BORDER");
 				relativeTo.LeftSeparator = self.RightSeparator;
 			end
-			
+
 			self.RightSeparator:SetTexture("Interface\\FrameGeneral\\UI-Frame");
 			self.RightSeparator:SetTexCoord(0.00781250, 0.10937500, 0.75781250, 0.95312500);
 			self.RightSeparator:SetWidth(13);
 			self.RightSeparator:SetHeight(25);
 			self.RightSeparator:SetPoint("TOPLEFT", self, "TOPRIGHT", -5, 1);
-			
+
 			rightHandled = true;
-			
+
 		elseif (point == "BOTTOMLEFT") then
 			if (offsetX == 0 and offsetY == 0) then
 				self:SetPoint(point, relativeTo, relativePoint, 4, 4);
-			end	
+			end
 			leftHandled = true;
 		elseif (point == "BOTTOMRIGHT") then
 			if (offsetX == 0 and offsetY == 0) then
@@ -78,9 +78,9 @@ function MagicButton_OnLoad(self)
 			if (offsetY == 0) then
 				self:SetPoint(point, relativeTo, relativePoint, 0, 4);
 			end
-		end	
-	end	
-	
+		end
+	end
+
 	-- If this button didn't have a left anchor, add the left border texture
 	if (not leftHandled) then
 		if (not self.LeftSeparator) then
@@ -93,7 +93,7 @@ function MagicButton_OnLoad(self)
 			self.LeftSeparator:SetPoint("TOPRIGHT", self, "TOPLEFT", 6, 1);
 		end
 	end
-	
+
 	-- If this button didn't have a right anchor, add the right border texture
 	if (not rightHandled) then
 		if (not self.RightSeparator) then
@@ -110,7 +110,7 @@ end
 
 -- ButtonFrameTemplate code
 function ButtonFrameTemplate_HideButtonBar(self)
-	if self.bottomInset then 
+	if self.bottomInset then
 		self.bottomInset:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", PANEL_INSET_RIGHT_OFFSET, PANEL_INSET_BOTTOM_OFFSET);
 	else
 		_G[self:GetName() .. "Inset"]:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", PANEL_INSET_RIGHT_OFFSET, PANEL_INSET_BOTTOM_OFFSET);
@@ -121,7 +121,7 @@ function ButtonFrameTemplate_HideButtonBar(self)
 end
 
 function ButtonFrameTemplate_ShowButtonBar(self)
-	if self.topInset then 
+	if self.topInset then
 		self.topInset:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", PANEL_INSET_RIGHT_OFFSET, PANEL_INSET_BOTTOM_BUTTON_OFFSET);
 	else
 		_G[self:GetName() .. "Inset"]:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", PANEL_INSET_RIGHT_OFFSET, PANEL_INSET_BOTTOM_BUTTON_OFFSET);
@@ -132,7 +132,7 @@ function ButtonFrameTemplate_ShowButtonBar(self)
 end
 
 function ButtonFrameTemplate_HideAttic(self)
-	if self.topInset then 
+	if self.topInset then
 		self.topInset:SetPoint("TOPLEFT", self, "TOPLEFT", PANEL_INSET_LEFT_OFFSET, PANEL_INSET_TOP_OFFSET);
 	else
 		self.Inset:SetPoint("TOPLEFT", self, "TOPLEFT", PANEL_INSET_LEFT_OFFSET, PANEL_INSET_TOP_OFFSET);
@@ -141,7 +141,7 @@ function ButtonFrameTemplate_HideAttic(self)
 end
 
 function ButtonFrameTemplate_ShowAttic(self)
-	if self.topInset then 
+	if self.topInset then
 		self.topInset:SetPoint("TOPLEFT", self, "TOPLEFT", PANEL_INSET_LEFT_OFFSET, PANEL_INSET_ATTIC_OFFSET);
 	else
 		self.Inset:SetPoint("TOPLEFT", self, "TOPLEFT", PANEL_INSET_LEFT_OFFSET, PANEL_INSET_ATTIC_OFFSET);
@@ -175,7 +175,7 @@ function PortraitFrameCloseButton_OnClick(self)
 		self:GetParent():Hide();
 	else
 		HideParentPanel(self);
-	end	
+	end
 end
 
 
@@ -213,11 +213,11 @@ function FauxScrollFrame_Update(frame, numItems, numToDisplay, buttonHeight, but
 		if (maxRange < 0) then
 			maxRange = 0;
 		end
-		scrollBar:SetMinMaxValues(0, maxRange); 
+		scrollBar:SetMinMaxValues(0, maxRange);
 		scrollBar:SetValueStep(buttonHeight);
 		scrollBar:SetStepsPerPage(numToDisplay-1);
 		scrollChildFrame:SetHeight(scrollChildHeight);
-		
+
 		-- Arrow button handling
 		if ( scrollBar:GetValue() == 0 ) then
 			scrollUpButton:Disable();
@@ -229,7 +229,7 @@ function FauxScrollFrame_Update(frame, numItems, numToDisplay, buttonHeight, but
 		else
 			scrollDownButton:Enable();
 		end
-		
+
 		-- Shrink because scrollbar is shown
 		if ( highlightFrame ) then
 			highlightFrame:SetWidth(smallHighlightWidth);
@@ -276,13 +276,13 @@ function ScrollFrame_OnLoad(self)
 	scrollbar:SetMinMaxValues(0, 0);
 	scrollbar:SetValue(0);
 	self.offset = 0;
-	
+
 	local scrollDownButton = scrollbar.ScrollDownButton or _G[scrollbar:GetName().."ScrollDownButton"];
 	local scrollUpButton = scrollbar.ScrollUpButton or _G[scrollbar:GetName().."ScrollUpButton"];
 
 	scrollDownButton:Disable();
 	scrollUpButton:Disable();
-	
+
 	if ( self.scrollBarHideable ) then
 		scrollbar:Hide();
 		scrollDownButton:Hide();
@@ -314,10 +314,11 @@ function ScrollFrame_OnScrollRangeChanged(self, xrange, yrange)
 	if ( not yrange ) then
 		yrange = self:GetVerticalScrollRange();
 	end
-	local value = scrollbar:GetValue();
-	if ( value > yrange ) then
-		value = yrange;
-	end
+
+	-- Accounting for very small ranges
+	yrange = floor(yrange);
+
+	local value = min(scrollbar:GetValue(), yrange);
 	scrollbar:SetMinMaxValues(0, yrange);
 	scrollbar:SetValue(value);
 
@@ -325,7 +326,7 @@ function ScrollFrame_OnScrollRangeChanged(self, xrange, yrange)
 	local scrollUpButton = scrollbar.ScrollUpButton or _G[scrollbar:GetName().."ScrollUpButton"];
 	local thumbTexture = scrollbar.ThumbTexture or _G[scrollbar:GetName().."ThumbTexture"];
 
-	if ( floor(yrange) == 0 ) then
+	if ( yrange == 0 ) then
 		if ( self.scrollBarHideable ) then
 			scrollbar:Hide();
 			scrollDownButton:Hide();
@@ -354,7 +355,7 @@ function ScrollFrame_OnScrollRangeChanged(self, xrange, yrange)
 			scrollDownButton:Disable();
 		end
 	end
-	
+
 	-- Hide/show scrollframe borders
 	local top = self.Top or name and _G[name.."Top"];
 	local bottom = self.Bottom or name and _G[name.."Bottom"];
@@ -397,7 +398,7 @@ function ScrollBar_AdjustAnchors(scrollBar, topAdj, bottomAdj, xAdj)
 	scrollBar:SetPoint("BOTTOMLEFT", parent, "BOTTOMRIGHT", x + xAdj, bottomY + bottomAdj);
 end
 
-function HideParentPanel(self)	
+function HideParentPanel(self)
 	HideUIPanel(self:GetParent());
 end
 
@@ -487,16 +488,16 @@ function PanelTemplates_GetTabWidth(tab)
 	local sideWidths = 2 * _G[tabName.."Left"]:GetWidth();
 	return tab:GetTextWidth() + sideWidths;
 end
-	
+
 function PanelTemplates_TabResize(tab, padding, absoluteSize, minWidth, maxWidth, absoluteTextSize)
 	local tabName = tab:GetName();
-	
+
 	local buttonMiddle = tab.Middle or _G[tabName.."Middle"];
 	local buttonMiddleDisabled = tab.MiddleDisabled or _G[tabName.."MiddleDisabled"];
 	local sideWidths = tab.Left and 2 * tab.Left:GetWidth() or 2 * _G[tabName.."Left"]:GetWidth();
 	local tabText = tab.Text or _G[tab:GetName().."Text"];
 	local highlightTexture = tab.HighlightTexture or _G[tabName.."HighlightTexture"];
-	
+
 	local width, tabWidth;
 	local textWidth;
 	if ( absoluteTextSize ) then
@@ -538,16 +539,16 @@ function PanelTemplates_TabResize(tab, padding, absoluteSize, minWidth, maxWidth
 		end
 		tabWidth = width + sideWidths;
 	end
-	
+
 	if ( buttonMiddle ) then
 		buttonMiddle:SetWidth(width);
 	end
 	if ( buttonMiddleDisabled ) then
 		buttonMiddleDisabled:SetWidth(width);
 	end
-	
+
 	tab:SetWidth(tabWidth);
-	
+
 	if ( highlightTexture ) then
 		highlightTexture:SetWidth(tabWidth);
 	end
@@ -582,7 +583,7 @@ end
 
 function PanelTemplates_DeselectTab(tab)
 	local name = tab:GetName();
-	
+
 	local left = tab.Left or _G[name.."Left"];
 	local middle = tab.Middle or _G[name.."Middle"];
 	local right = tab.Right or _G[name.."Right"];
@@ -593,7 +594,7 @@ function PanelTemplates_DeselectTab(tab)
 	tab:Enable();
 	local text = tab.Text or _G[name.."Text"];
 	text:SetPoint("CENTER", tab, "CENTER", (tab.deselectedTextX or 0), (tab.deselectedTextY or 2));
-	
+
 	local leftDisabled = tab.LeftDisabled or _G[name.."LeftDisabled"];
 	local middleDisabled = tab.MiddleDisabled or _G[name.."MiddleDisabled"];
 	local rightDisabled = tab.RightDisabled or _G[name.."RightDisabled"];
@@ -604,7 +605,7 @@ end
 
 function PanelTemplates_SelectTab(tab)
 	local name = tab:GetName();
-	
+
 	local left = tab.Left or _G[name.."Left"];
 	local middle = tab.Middle or _G[name.."Middle"];
 	local right = tab.Right or _G[name.."Right"];
@@ -616,14 +617,14 @@ function PanelTemplates_SelectTab(tab)
 	tab:SetDisabledFontObject(GameFontHighlightSmall);
 	local text = tab.Text or _G[name.."Text"];
 	text:SetPoint("CENTER", tab, "CENTER", (tab.selectedTextX or 0), (tab.selectedTextY or -3));
-	
+
 	local leftDisabled = tab.LeftDisabled or _G[name.."LeftDisabled"];
 	local middleDisabled = tab.MiddleDisabled or _G[name.."MiddleDisabled"];
 	local rightDisabled = tab.RightDisabled or _G[name.."RightDisabled"];
 	leftDisabled:Show();
 	middleDisabled:Show();
 	rightDisabled:Show();
-	
+
 	if ( GameTooltip and GameTooltip:IsOwned(tab) ) then
 		GameTooltip:Hide();
 	end
@@ -665,12 +666,12 @@ function ScrollingEdit_OnUpdate(self, elapsed, scrollFrame)
 		scroll = scrollFrame:GetVerticalScroll();
 		size = height + range;
 		cursorOffset = -self.cursorOffset;
-		
+
 		if ( math.floor(height) <= 0 or math.floor(range) <= 0 ) then
 			--Frame has no area, nothing to calculate.
 			return;
 		end
-		
+
 		while ( cursorOffset < scroll ) do
 			scroll = (scroll - (height / 2));
 			if ( scroll < 0 ) then
@@ -686,7 +687,7 @@ function ScrollingEdit_OnUpdate(self, elapsed, scrollFrame)
 			end
 			scrollFrame:SetVerticalScroll(scroll);
 		end
-		
+
 		self.handleCursorChange = false;
 	end
 end
@@ -791,7 +792,7 @@ function NumericInputSpinnerMixin:OnUpdate(elapsed)
 		end
 
 		local totalElapsed = GetTime() - self.startTime;
-		
+
 		local nextUpdateDelta = Lerp(MAX_TIME_BETWEEN_CHANGES_SEC, MIN_TIME_BETWEEN_CHANGES_SEC, Saturate(totalElapsed / TIME_TO_REACH_MAX_SEC));
 		self.nextUpdate = self.nextUpdate + nextUpdateDelta;
 	end

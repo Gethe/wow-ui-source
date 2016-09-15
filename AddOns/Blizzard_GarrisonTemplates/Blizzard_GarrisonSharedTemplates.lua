@@ -527,29 +527,40 @@ function GarrisonFollowerList:UpdateData()
 					button.Follower.DownArrow:SetAlpha(0);
 				end
 				-- adjust text position if we have additional text to show below name
-				if (follower.isMaxLevel or follower.status or follower.isTroop) then
-					button.Follower.Name:SetPoint("LEFT", button.Follower.PortraitFrame, "LEFT", 66, 8);
-				else
-					button.Follower.Name:SetPoint("LEFT", button.Follower.PortraitFrame, "LEFT", 66, 0);
+				local nameOffsetY = 0;
+				if (follower.status) then
+					nameOffsetY = nameOffsetY + 8;
 				end
 				-- show iLevel for max level followers	
 				if (ShouldShowILevelInFollowerList(follower)) then
+					nameOffsetY = nameOffsetY + 9;
+					if (COLLAPSE_ORDER_HALL_FOLLOWER_ITEM_LEVEL_DISPLAY) then
+						button.Follower.ILevel:SetPoint("TOPLEFT", button.Follower.Name, "BOTTOMLEFT", 0, -1);
+						button.Follower.Status:SetPoint("TOPLEFT", button.Follower.ILevel, "BOTTOMLEFT", -1, 1);
+					else
+						button.Follower.ILevel:SetPoint("TOPLEFT", button.Follower.Name, "BOTTOMLEFT", 0, -4);
+						button.Follower.Status:SetPoint("TOPLEFT", button.Follower.ILevel, "BOTTOMLEFT", -1, -2);
+					end
 					button.Follower.ILevel:SetText(ITEM_LEVEL_ABBR.." "..follower.iLevel);
 					button.Follower.ILevel:Show();
-					if (button.Follower.DurabilityFrame:IsShown()) then
-						button.Follower.Status:SetPoint("TOPLEFT", button.Follower.DurabilityFrame, "TOPRIGHT", 4, 0);
-					else
-						button.Follower.Status:SetPoint("TOPLEFT", button.Follower.ILevel, "TOPRIGHT", 4, 0);
-					end
 				else
 					button.Follower.ILevel:SetText(nil);
 					button.Follower.ILevel:Hide();
-					if (button.Follower.DurabilityFrame:IsShown()) then
-						button.Follower.Status:SetPoint("TOPLEFT", button.Follower.DurabilityFrame, "TOPRIGHT", 0, 0);
+					button.Follower.Status:SetPoint("TOPLEFT", button.Follower.Name, "BOTTOMLEFT", 0, -2);
+				end
+				
+				if (button.Follower.DurabilityFrame:IsShown()) then
+					nameOffsetY = nameOffsetY + 9;
+					
+					if (follower.status) then
+						button.Follower.DurabilityFrame:SetPoint("TOPLEFT", button.Follower.Status, "BOTTOMLEFT", 0, -4);
+					elseif (ShouldShowILevelInFollowerList(follower)) then
+						button.Follower.DurabilityFrame:SetPoint("TOPLEFT", button.Follower.ILevel, "BOTTOMLEFT", 0, -6);
 					else
-						button.Follower.Status:SetPoint("TOPLEFT", button.Follower.ILevel, "TOPRIGHT", 0, 0);
+						button.Follower.DurabilityFrame:SetPoint("TOPLEFT", button.Follower.Name, "BOTTOMLEFT", 0, -6);
 					end
 				end
+				button.Follower.Name:SetPoint("LEFT", button.Follower.PortraitFrame, "LEFT", 66, nameOffsetY);
 				button.Follower.Status:SetPoint("RIGHT", -countersAreaWidth, 0);
 
 				if (follower.xp == 0 or follower.levelXP == 0) then 
@@ -1953,7 +1964,13 @@ function GarrisonEquipment_AddEquipment(self)
 		
 		popupData.followerID = followerID;
 		popupData.abilityID = self.abilityID;
-		local text = format(GarrisonFollowerOptions[followerList.followerType].strings.CONFIRM_EQUIPMENT, equipmentName);
+		local abilityInfo = C_Garrison.GetFollowerAbilityInfo(self.abilityID);
+		local text;
+		if (abilityInfo.isEmptySlot) then
+			text = format(GarrisonFollowerOptions[followerList.followerType].strings.CONFIRM_EQUIPMENT, equipmentName);
+		else
+			text = format(GarrisonFollowerOptions[followerList.followerType].strings.CONFIRM_EQUIPMENT_REPLACEMENT, equipmentName);
+		end
 		StaticPopup_Show("CONFIRM_FOLLOWER_EQUIPMENT", text, nil, popupData);
 	end
 end

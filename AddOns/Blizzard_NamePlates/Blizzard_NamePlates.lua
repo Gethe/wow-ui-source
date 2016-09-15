@@ -110,7 +110,7 @@ function NamePlateDriverMixin:OnRaidTargetUpdate()
 	for _, frame in pairs(C_NamePlate.GetNamePlates()) do
 		local icon = frame.UnitFrame.RaidTargetFrame.RaidTargetIcon;
 		local index = GetRaidTargetIndex(frame.namePlateUnitToken);
-		if ( index ) then
+		if ( index and not UnitIsUnit("player", frame.namePlateUnitToken) ) then
 			SetRaidTargetIconTexture(icon, index);
 			icon:Show();
 		else
@@ -232,6 +232,8 @@ function NamePlateDriverMixin:UpdateNamePlateOptions()
 
 
 	DefaultCompactNamePlateFrameSetUpOptions.useLargeNameFont = clampedZeroBasedScale > .25;
+	local screenWidth, screenHeight = GetPhysicalScreenSize();
+	DefaultCompactNamePlateFrameSetUpOptions.useFixedSizeFont = screenHeight <= 1200;
 
 	DefaultCompactNamePlateFrameSetUpOptions.castBarHeight = math.min(Lerp(12, 16, zeroBasedScale), DefaultCompactNamePlateFrameSetUpOptions.healthBarHeight * 2);
 	DefaultCompactNamePlateFrameSetUpOptions.castBarFontHeight = Lerp(8, 12, clampedZeroBasedScale);
@@ -243,7 +245,8 @@ function NamePlateDriverMixin:UpdateNamePlateOptions()
 	DefaultCompactNamePlateFrameSetUpOptions.castIconHeight = Lerp(10, 15, clampedZeroBasedScale);
 
 	local horizontalScale = tonumber(GetCVar("NamePlateHorizontalScale"));
-	C_NamePlate.SetNamePlateOtherSize(self.baseNamePlateWidth * horizontalScale, self.baseNamePlateHeight * Lerp(1.0, 1.25, zeroBasedScale));
+	C_NamePlate.SetNamePlateFriendlySize(self.baseNamePlateWidth * horizontalScale, self.baseNamePlateHeight * Lerp(1.0, 1.25, zeroBasedScale));
+	C_NamePlate.SetNamePlateEnemySize(self.baseNamePlateWidth * horizontalScale, self.baseNamePlateHeight * Lerp(1.0, 1.25, zeroBasedScale));
 	C_NamePlate.SetNamePlateSelfSize(self.baseNamePlateWidth * horizontalScale * Lerp(1.1, 1.0, clampedZeroBasedScale), self.baseNamePlateHeight);
 
 	for i, frame in ipairs(C_NamePlate.GetNamePlates()) do
@@ -401,10 +404,12 @@ function NameplateBuffContainerMixin:UpdateBuffs(unit, filter)
 
 				buff:Show();
 				buffIndex = buffIndex + 1;
-			else
-				if self.buffList[i] then
-					self.buffList[i]:Hide();
-				end
+			end
+		end
+		
+		for i = buffIndex, BUFF_MAX_DISPLAY do
+			if (self.buffList[i]) then
+				self.buffList[i]:Hide();
 			end
 		end
 	end

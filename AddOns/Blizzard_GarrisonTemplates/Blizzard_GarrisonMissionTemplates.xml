@@ -455,8 +455,8 @@
 			<Layer level="ARTWORK" textureSubLevel="3">
 				<Texture atlas="GarrMission_MissionParchment" vertTile="true" horizTile="true" useAtlasSize="true" alpha="0.5">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="LocBack"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="LocBack"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.LocBack"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.LocBack"/>
 					</Anchors>
 				</Texture>
 			</Layer>

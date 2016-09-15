@@ -6,7 +6,14 @@
 
 ## add snippets independent of modules here
 ..\SharedXML\Util.lua
+..\SharedXML\CircularBuffer.lua
+..\SharedXML\FontableFrameMixin.lua
 MixinUtil.lua
+
+## intrinsics
+..\SharedXML\ScrollingMessageFrame.xml
+
+
 AnimatedStatusBar.xml
 FlowContainer.lua
 FrameLocks.lua
@@ -17,14 +24,14 @@ Localization.xml
 Fonts.xml
 FontStyles.xml
 
-## This needs to be loaded after Fonts.xml
-..\SharedXML\IME.xml
 
 ## add new modules below here
 
 BasicControls.xml
 WorldFrame.xml
 UIParent.xml
+## IME.xml needs to be loaded after UIParent.xml
+..\SharedXML\IME.xml
 MoneyFrame.lua
 MoneyFrame.xml
 MoneyInputFrame.lua
@@ -116,12 +123,15 @@ ItemTextFrame.xml
 TaxiFrame.xml
 BankFrame.xml
 ScrollOfResurrection.xml
+SocialQueue.xml
 FriendsFrame.xml
+QuickJoin.xml
 RaidFrame.xml
 ChannelFrame.xml
 PetActionBarFrame.xml
 MultiCastActionBarFrame.xml
 MainMenuBarBagButtons.xml
+UnitPositionFrameTemplates.xml
 WorldMapFrame.xml
 QuestMapFrame.xml
 RaidWarning.xml

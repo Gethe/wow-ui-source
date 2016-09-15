@@ -472,6 +472,18 @@ function MiniMapInstanceDifficulty_Update()
 	end
 end
 
+function MiniMapInstanceDifficulty_OnEnter(self)
+	local _, instanceType, difficulty, _, maxPlayers, playerDifficulty, isDynamicInstance, _, instanceGroupSize, lfgID = GetInstanceInfo();
+	local isLFR = select(8, GetDifficultyInfo(difficulty))
+	if (isLFR and lfgID) then
+		GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT", 8, 8);
+		local name = GetLFGDungeonInfo(lfgID);
+		GameTooltip:SetText(RAID_FINDER, 1, 1, 1);
+		GameTooltip:AddLine(name);
+		GameTooltip:Show();
+	end
+end
+
 function GuildInstanceDifficulty_OnEnter(self)
 	local guildName = GetGuildInfo("player");
 	local _, instanceType, _, _, maxPlayers = GetInstanceInfo();

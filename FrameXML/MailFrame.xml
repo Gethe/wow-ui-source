@@ -991,16 +991,11 @@
 							<Anchor point="TOPLEFT" x="0" y="0"/>
 						</Anchors>
 						<Frames>
-							<SimpleHTML name="OpenMailBodyText">
+							<SimpleHTML name="OpenMailBodyText" inherits="InlineHyperlinkFrameTemplate">
 								<Size x="276" y="1"/>
 								<Anchors>
 									<Anchor point="TOPLEFT" x="10" y="-10"/>
 								</Anchors>
-								<Scripts>
-									<OnHyperlinkClick>
-										SetItemRef(link, text, button, self);
-									</OnHyperlinkClick>
-								</Scripts>
 								<FontString inherits="MailTextFontNormal" nonspacewrap="true"/>
 							</SimpleHTML>
 							<Frame name="OpenMailInvoiceFrame" setAllPoints="true">

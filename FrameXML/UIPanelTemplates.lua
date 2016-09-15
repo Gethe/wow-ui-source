@@ -344,3 +344,31 @@ function SetCheckButtonIsRadio(button, isRadio)
 		button:GetDisabledCheckedTexture():SetTexCoord(0, 1, 0, 1);
 	end	
 end
+
+--Inline hyperlinks
+function InlineHyperlinkFrame_OnEnter(self, link, text, fontString, left, bottom, width, height)
+	self.tooltipFrame:SetOwner(self, "ANCHOR_PRESERVE");
+	self.tooltipFrame:ClearAllPoints();
+	self.tooltipFrame:SetPoint("BOTTOMLEFT", fontString, "TOPLEFT", left + width, bottom);
+	self.tooltipFrame:SetHyperlink(link);
+end
+
+function InlineHyperlinkFrame_OnLeave(self)
+	self.tooltipFrame:Hide();
+end
+
+function InlineHyperlinkFrame_OnClick(self, link, text, button)
+	if ( self.hasIconHyperlinks ) then
+		local fixedLink;
+		local _, _, linkType, linkID = string.find(link, "([%a]+):([%d]+)");
+		if ( linkType == "currency" ) then
+			fixedLink = GetCurrencyLink(linkID);
+		end
+
+		if ( fixedLink ) then
+			HandleModifiedItemClick(fixedLink);
+			return;
+		end
+	end
+	SetItemRef(link, text, button);
+end

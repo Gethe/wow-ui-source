@@ -12,7 +12,6 @@
 				</Offset>
 			</Anchor>
 		</Anchors>
-		<TitleRegion setAllPoints="true"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture setAllPoints="true">

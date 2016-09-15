@@ -121,7 +121,8 @@ function ObjectiveTracker_GetModuleInfoTable()
 end
 
 function DEFAULT_OBJECTIVE_TRACKER_MODULE:BeginLayout(isStaticReanchor)
-	self.firstBlock = nil;
+	self.topBlock = nil;	-- this is the header or the first block for header-less modules
+	self.firstBlock = nil;	-- this is the first non-header block
 	self.lastBlock = nil;
 	self.oldContentsHeight = self.contentsHeight;
 	self.contentsHeight = 0;
@@ -233,10 +234,6 @@ function DEFAULT_OBJECTIVE_TRACKER_MODULE:FreeLine(block, line)
 	elseif ( self.OnFreeLine ) then
 		self:OnFreeLine(line);
 	end
-	if line.ticker then
-		line.ticker:Cancel();
-		line.ticker = nil;
-	end
 
 	line:Hide();
 end
@@ -289,7 +286,7 @@ OBJECTIVE_DASH_STYLE_SHOW = 1;
 OBJECTIVE_DASH_STYLE_HIDE = 2;
 OBJECTIVE_DASH_STYLE_HIDE_AND_COLLAPSE = 3;
 
-function DEFAULT_OBJECTIVE_TRACKER_MODULE:AddObjective(block, objectiveKey, textOrTextFunc, lineType, useFullHeight, dashStyle, colorStyle)
+function DEFAULT_OBJECTIVE_TRACKER_MODULE:AddObjective(block, objectiveKey, text, lineType, useFullHeight, dashStyle, colorStyle, adjustForNoText)
 	local line = self:GetLine(block, objectiveKey, lineType);
 	-- width
 	if ( block.lineWidth ~= line.width ) then
@@ -318,34 +315,26 @@ function DEFAULT_OBJECTIVE_TRACKER_MODULE:AddObjective(block, objectiveKey, text
 		end
 	end
 
-	if line.ticker then
-		line.ticker:Cancel();
-		line.ticker = nil;
-	end
-
 	-- set the text
-	local text;
-	if type(textOrTextFunc) == "function" then
-		text = textOrTextFunc();
-
-		line.ticker = C_Timer.NewTicker(10, function()
-			local height = self:SetStringText(line.Text, textOrTextFunc(), useFullHeight, colorStyle, block.isHighlighted);
-			line:SetHeight(height);
-		end);
-	else
-		text = textOrTextFunc;
-	end
-
 	local height = self:SetStringText(line.Text, text, useFullHeight, colorStyle, block.isHighlighted);
 	line:SetHeight(height);
 
-	block.height = block.height + height + block.module.lineSpacing;
+	local yOffset;
+
+	if ( adjustForNoText and text == "" ) then
+		-- don't change the height
+		-- move the line up so the next object ends up in the same position as if there had been no line
+		yOffset = height;
+	else
+		block.height = block.height + height + block.module.lineSpacing;
+		yOffset = -block.module.lineSpacing;
+	end
 	-- anchor the line
 	local anchor = block.currentLine or block.HeaderText;
 	if ( anchor ) then
-		line:SetPoint("TOPLEFT", anchor, "BOTTOMLEFT", 0, -block.module.lineSpacing);
+		line:SetPoint("TOPLEFT", anchor, "BOTTOMLEFT", 0, yOffset);
 	else
-		line:SetPoint("TOPLEFT", 0, -block.module.lineSpacing);
+		line:SetPoint("TOPLEFT", 0, yOffset);
 	end
 	block.currentLine = line;
 	return line;
@@ -631,10 +620,17 @@ end
 function ObjectiveTracker_Initialize(self)
 	self.MODULES = {	SCENARIO_CONTENT_TRACKER_MODULE,
 						AUTO_QUEST_POPUP_TRACKER_MODULE,
-						QUEST_TRACKER_MODULE,
 						BONUS_OBJECTIVE_TRACKER_MODULE,
 						WORLD_QUEST_TRACKER_MODULE,
+						QUEST_TRACKER_MODULE,
 						ACHIEVEMENT_TRACKER_MODULE,
+	};
+	self.MODULES_UI_ORDER = {	SCENARIO_CONTENT_TRACKER_MODULE,
+								AUTO_QUEST_POPUP_TRACKER_MODULE,
+								QUEST_TRACKER_MODULE,
+								BONUS_OBJECTIVE_TRACKER_MODULE,
+								WORLD_QUEST_TRACKER_MODULE,
+								ACHIEVEMENT_TRACKER_MODULE,	
 	};
 	
 	self:RegisterEvent("QUEST_LOG_UPDATE");
@@ -859,6 +855,9 @@ local function InternalAddBlock(block)
 		return false;
 	end
 
+	if ( not module.topBlock ) then
+		module.topBlock = block;
+	end
 	if ( not module.firstBlock and not block.isHeader ) then
 		module.firstBlock = block;
 	end
@@ -1074,7 +1073,8 @@ function ObjectiveTracker_Update(reason, id)
 			end
 		end
 	end
-	
+	ObjectiveTracker_ReorderModules();
+
 	-- hide unused headers
 	for i = 1, #tracker.MODULES do
 		ObjectiveTracker_CheckAndHideHeader(tracker.MODULES[i].Header);
@@ -1108,6 +1108,33 @@ function ObjectiveTracker_WatchMoney(watchMoney, reason)
 	else
 		if ( band(ObjectiveTrackerFrame.watchMoneyReasons, reason) > 0 ) then
 			ObjectiveTrackerFrame.watchMoneyReasons = ObjectiveTrackerFrame.watchMoneyReasons - reason;
+		end
+	end
+end
+
+function ObjectiveTracker_ReorderModules()
+	local modules = ObjectiveTrackerFrame.MODULES;
+	local modulesUIOrder = ObjectiveTrackerFrame.MODULES_UI_ORDER;
+	local detachIndex = nil;
+	local anchorBlock = nil;
+	for i = 1, #modules do
+		if ( not detachIndex ) then
+			if ( modules[i] ~= modulesUIOrder[i] ) then
+				detachIndex = i;
+			else
+				anchorBlock = modules[i].lastBlock or anchorBlock;
+			end
+		end
+		if ( detachIndex ) then
+			if ( modules[i].topBlock ) then
+				modules[i].topBlock:ClearAllPoints();
+			end
+		end
+	end
+	for i = detachIndex, #modulesUIOrder do
+		if ( modulesUIOrder[i].topBlock ) then
+			AnchorBlock(modulesUIOrder[i].topBlock, anchorBlock);
+			anchorBlock = modulesUIOrder[i].lastBlock;
 		end
 	end
 end

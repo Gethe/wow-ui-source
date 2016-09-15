@@ -34,6 +34,8 @@ function ContainerFrame_OnEvent(self, event, ...)
 		if ( self:GetID() == arg1 ) then
 			self:Hide();
 		end
+	elseif ( event == "UNIT_INVENTORY_CHANGED" or event == "PLAYER_SPECIALIZATION_CHANGED" ) then
+		ContainerFrame_UpdateItemUpgradeIcons(self);
 	elseif ( event == "BAG_UPDATE" ) then
 		if ( self:GetID() == arg1 ) then
  			ContainerFrame_Update(self);
@@ -121,6 +123,8 @@ end
 
 function ContainerFrame_OnHide(self)
 	self:UnregisterEvent("BAG_UPDATE");
+	self:UnregisterEvent("UNIT_INVENTORY_CHANGED");
+	self:UnregisterEvent("PLAYER_SPECIALIZATION_CHANGED");
 	self:UnregisterEvent("ITEM_LOCK_CHANGED");
 	self:UnregisterEvent("BAG_UPDATE_COOLDOWN");
 	self:UnregisterEvent("DISPLAY_SIZE_CHANGED");
@@ -182,6 +186,8 @@ end
 
 function ContainerFrame_OnShow(self)
 	self:RegisterEvent("BAG_UPDATE");
+	self:RegisterEvent("UNIT_INVENTORY_CHANGED");
+	self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED");
 	self:RegisterEvent("ITEM_LOCK_CHANGED");
 	self:RegisterEvent("BAG_UPDATE_COOLDOWN");
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
@@ -443,6 +449,15 @@ function ContainerFrame_ConsiderItemButtonForRelicTutorial(itemButton, itemID)
 	end
 end
 
+function ContainerFrame_UpdateItemUpgradeIcons(frame)
+	local id = frame:GetID();
+	local name = frame:GetName();
+	local itemButton;
+	for i=1, frame.size, 1 do
+		itemButton = _G[name.."Item"..i];
+		ContainerFrameItemButton_UpdateItemUpgradeIcon(itemButton);
+	end
+end
 
 function ContainerFrame_Update(frame)
 	local id = frame:GetID();
@@ -550,7 +565,8 @@ function ContainerFrame_Update(frame)
 		end
 
 		itemButton.JunkIcon:SetShown(quality == LE_ITEM_QUALITY_POOR and not noValue and MerchantFrame:IsShown());
-				
+		ContainerFrameItemButton_UpdateItemUpgradeIcon(itemButton);
+
 		if ( texture ) then
 			ContainerFrame_UpdateCooldown(id, itemButton);
 			itemButton.hasItem = 1;
@@ -910,6 +926,28 @@ function ContainerFrameItemButton_OnLoad(self)
 		SplitContainerItem(button:GetParent():GetID(), button:GetID(), split);
 	end
 	self.UpdateTooltip = ContainerFrameItemButton_OnEnter;
+	self.timeSinceUpgradeCheck = 0;
+end
+
+function ContainerFrameItemButton_UpdateItemUpgradeIcon(self)
+	self.timeSinceUpgradeCheck = 0;
+	
+	local itemIsUpgrade = IsContainerItemAnUpgrade(self:GetParent():GetID(), self:GetID());
+	if ( itemIsUpgrade == nil ) then -- nil means not all the data was available to determine if this is an upgrade.
+		self.UpgradeIcon:SetShown(false);
+		self:SetScript("OnUpdate", ContainerFrameItemButton_OnUpdate);
+	else
+		self.UpgradeIcon:SetShown(itemIsUpgrade);
+		self:SetScript("OnUpdate", nil);
+	end
+end
+
+local ITEM_UPGRADE_CHECK_TIME = 0.5;
+function ContainerFrameItemButton_OnUpdate(self, elapsed)
+	self.timeSinceUpgradeCheck = self.timeSinceUpgradeCheck + elapsed;
+	if ( self.timeSinceUpgradeCheck >= ITEM_UPGRADE_CHECK_TIME ) then
+		ContainerFrameItemButton_UpdateItemUpgradeIcon(self);
+	end
 end
 
 function ContainerFrameItemButton_OnDrag (self)

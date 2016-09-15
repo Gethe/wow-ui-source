@@ -26,7 +26,7 @@
 			<Alpha startDelay="1.3" fromAlpha="1" toAlpha="0" duration="0.2" order="1"/>
 			<Scripts>
 				<OnFinished>
-					DigsiteCompleteAlertSystem:AddAlert(self:GetParent().researchFieldID);
+					DigsiteCompleteAlertSystem:AddAlert(GetArchaeologyRaceInfoByID(self:GetParent().researchFieldID));
 					self:GetParent():Hide();
 				</OnFinished>
 			</Scripts>

@@ -3,8 +3,8 @@
 -- Lua code to support the various handlers and templates which can execute
 -- code in a secure, but restricted, environment.
 --
--- Daniel Stephens (iriel@vigilance-committee.org)
--- Nevin Flanagan (alestane@comcast.net)
+-- Daniel Stephens
+-- Nevin Flanagan
 ---------------------------------------------------------------------------
 
 -- Local references to things so that they can't be subverted

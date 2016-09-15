@@ -141,8 +141,8 @@ function MainMenuBar_UpdateExperienceBars(newLevel)
 	if ( not newLevel ) then
 		newLevel = UnitLevel("player");
 	end
-
-	local showArtifact = HasArtifactEquipped();
+	local artifactItemID, _, _, _, artifactTotalXP, artifactPointsSpent, _, _, _, _, _, _, artifactMaxed = C_ArtifactUI.GetEquippedArtifactInfo();
+	local showArtifact = artifactItemID and not artifactMaxed and GetCVarBool("showArtifactXPBar");
 	local showXP = newLevel < MAX_PLAYER_LEVEL and not IsXPUserDisabled();
 	local showHonor = newLevel >= MAX_PLAYER_LEVEL and (IsWatchingHonorAsXP() or InActiveBattlefield());
 	local showRep = name;
@@ -165,18 +165,17 @@ function MainMenuBar_UpdateExperienceBars(newLevel)
 		visibilityChanged = true;
 	end
 	if ( showArtifact ) then
+		SetWatchedFactionIndex(0);
 		local statusBar = ArtifactWatchBar.StatusBar;
-		local itemID, altItemID, name, icon, totalXP, pointsSpent, quality, artifactAppearanceID, appearanceModID, itemAppearanceID, altItemAppearanceID, altOnTop = C_ArtifactUI.GetEquippedArtifactInfo();
+		local numPointsAvailableToSpend, xp, xpForNextPoint = MainMenuBar_GetNumArtifactTraitsPurchasableFromXP(artifactPointsSpent, artifactTotalXP);
 
-		local numPointsAvailableToSpend, xp, xpForNextPoint = MainMenuBar_GetNumArtifactTraitsPurchasableFromXP(pointsSpent, totalXP);
-
-		statusBar:SetAnimatedValues(xp, 0, xpForNextPoint, numPointsAvailableToSpend + pointsSpent);
+		statusBar:SetAnimatedValues(xp, 0, xpForNextPoint, numPointsAvailableToSpend + artifactPointsSpent);
 		if visibilityChanged or statusBar.itemID ~= itemID or C_ArtifactUI.IsAtForge() then
 			statusBar:Reset();
 		end
 		statusBar.itemID = itemID;
 		ArtifactWatchBar.xp = xp;
-		ArtifactWatchBar.totalXP = totalXP;
+		ArtifactWatchBar.totalXP = artifactTotalXP;
 		ArtifactWatchBar.xpForNextPoint = xpForNextPoint;
 		ArtifactWatchBar.numPointsAvailableToSpend = numPointsAvailableToSpend;
 		ArtifactWatchBar:Show();

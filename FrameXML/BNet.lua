@@ -307,7 +307,11 @@ function BNToastFrame_OnClick(self)
 		if ( not FriendsFrame:IsShown() ) then
 			ToggleFriendsFrame(1);
 		end
-		FriendsTabHeaderTab3:Click();
+		local collapsed = GetCVarBool("friendInvitesCollapsed");
+		if ( collapsed ) then
+			FriendsListFrame_ToggleInvites();
+		end
+		FriendsTabHeaderTab1:Click();
 	elseif ( toastType == BN_TOAST_TYPE_ONLINE or toastType == BN_TOAST_TYPE_BROADCAST ) then
 		local bnetIDAccount, accountName = BNGetFriendInfoByID(toastData);
 		if ( accountName ) then	--This player may have been removed from our friends list, so we may not have a name.

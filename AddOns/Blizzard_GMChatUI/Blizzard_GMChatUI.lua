@@ -5,6 +5,12 @@ function GMChatFrame_IsGM(playerName)
 end
 
 function GMChatFrame_OnLoad(self)
+	self:SetTimeVisible(120.0);
+	self:SetMaxLines(128);
+	self:SetFontObject(ChatFontNormal);
+	self:SetIndentedWordWrap(true);
+	self:SetJustifyH("LEFT");
+
 	local name = self:GetName();
 	for index, value in pairs(CHAT_FRAME_TEXTURES) do
 		local object = _G[name..value];
@@ -107,7 +113,7 @@ function GMChatFrame_OnEvent(self, event, ...)
 			info.r = arg2;
 			info.g = arg3;
 			info.b = arg4;
-			self:UpdateColorByID(info.id, info.r, info.g, info.b);
+			ChatFrame_UpdateColorByID(self, info.id, info.r, info.g, info.b);
 
 			if ( strupper(arg1) == "WHISPER" ) then
 				info = ChatTypeInfo["REPLY"];
@@ -115,7 +121,7 @@ function GMChatFrame_OnEvent(self, event, ...)
 					info.r = arg2;
 					info.g = arg3;
 					info.b = arg4;
-					self:UpdateColorByID(info.id, info.r, info.g, info.b);
+					ChatFrame_UpdateColorByID(self, info.id, info.r, info.g, info.b);
 				end
 			end
 		end

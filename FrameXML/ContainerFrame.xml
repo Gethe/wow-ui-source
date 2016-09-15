@@ -84,6 +84,11 @@
 						<Anchor point="TOPLEFT" x="1" y="0"/>
 					</Anchors>
 				</Texture>
+				<Texture parentKey="UpgradeIcon" atlas="bags-greenarrow" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="1">
 				<Texture parentKey="flash" hidden="false" alpha="0" alphaMode="ADD" atlas="bags-glow-flash" useAtlasSize="true">

@@ -211,6 +211,9 @@ end
 function SplashFrame_OnLoad(self)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("VARIABLES_LOADED");
+
+	-- Splash frame should disable alerts until it completes its checks to determine shown state.
+	AlertFrame:SetAlertsEnabled(false, "splashFrame");
 end
 
 local function ShouldShowStartButton( questID, tag )
@@ -236,6 +239,26 @@ local function ShouldEnableStartButton( questID )
 	return false;
 end
 
+local function CheckSplashScreenShow()
+	if SplashFrameCanBeShown() then
+		local tag = GetSplashFrameTag();
+		if tag then
+			-- check if they've seen this screen already
+			local lastScreenID = tonumber(GetCVar(SPLASH_SCREENS[tag].cVar)) or 0;
+			if lastScreenID < SPLASH_SCREENS[tag].id then
+				SplashFrame_Open(tag);
+				SplashFrame.firstTimeViewed = true;
+				SetCVar(SPLASH_SCREENS[tag].cVar, SPLASH_SCREENS[tag].id); -- update cVar value
+			end
+		end
+	end
+
+	-- Once initial check performed and there was nothing to show, alerts can be re-enabled.
+	if not SplashFrame:IsShown() then
+		AlertFrame:SetAlertsEnabled(true, "splashFrame");
+	end
+end
+
 function SplashFrame_OnEvent(self, event)
 	if ( IsKioskModeEnabled() ) then
 		return;
@@ -256,24 +279,7 @@ function SplashFrame_OnEvent(self, event)
 
 	if( event == "PLAYER_ENTERING_WORLD" or event == "VARIABLES_LOADED" ) then
 		if( self.playerEntered and self.varsLoaded ) then
-			if ( not SplashFrameCanBeShown() ) then
-				return;
-			end
-
-			local tag = GetSplashFrameTag();
-			if ( not tag ) then
-				return;
-			end
-
-			-- check if they've seen this screen already
-			local lastScreenID = tonumber(GetCVar(SPLASH_SCREENS[tag].cVar)) or 0;
-			if( lastScreenID >= SPLASH_SCREENS[tag].id ) then
-				return;
-			end
-
-			SplashFrame_Open(tag);
-			SplashFrame.firstTimeViewed = true;
-			SetCVar(SPLASH_SCREENS[tag].cVar, SPLASH_SCREENS[tag].id); -- update cVar value;
+			CheckSplashScreenShow();
 		end
 	end
 end
@@ -434,6 +440,7 @@ end
 
 function SplashFrame_OnShow(self)
 	C_TalkingHead.SetConversationsDeferred(true);
+	AlertFrame:SetAlertsEnabled(false, "splashFrame");
 end
 
 function SplashFrame_OnHide(self)
@@ -443,6 +450,7 @@ function SplashFrame_OnHide(self)
 
 	SplashFrame.firstTimeViewed = false;
 	C_TalkingHead.SetConversationsDeferred(false);
+	AlertFrame:SetAlertsEnabled(true, "splashFrame");
 
 	ObjectiveTracker_Update();
 end

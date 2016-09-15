@@ -5,5 +5,7 @@
 ## Version: 1.0
 ## LoadOnDemand: 1
 
+ActiveQuestDataProvider.xml
+GroupMembersDataProvider.xml
 WorldQuestDataProvider.xml
 ZoneLabelDataProvider.xml

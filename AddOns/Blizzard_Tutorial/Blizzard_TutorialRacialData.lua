@@ -26,26 +26,26 @@ TutorialData.StartingAbility = {
 	WARRIOR	= 1464,		-- Slam
 	PALADIN	= 35395,	-- Crusader Strike
 	HUNTER	= 193455,	-- Cobra Shot
-	ROGUE	= 1329,		-- Mutilate
+	ROGUE	= 1752,		-- Stab
 	PRIEST	= 585,		-- Smite
 	SHAMAN	= 188196,	-- Lightning Bolt
 	MAGE	= 116,		-- Frostbolt
-	WARLOCK	= 689,		-- Drain Life
+	WARLOCK	= 686,		-- Shadow Bolt
 	MONK	= 100780,	-- Tier Palm
-	DRUID	= 5221,		-- Shred
+	DRUID	= 190984,	-- Solar Wrath
 }
 
 TutorialData.Level3Ability = {
 	WARRIOR	= 100,		-- Charge
 	PALADIN	= 20271,	-- Judgement
-	HUNTER	= 34026,	-- Kill Command
-	ROGUE	= 32645,	-- Envenom
+	HUNTER	= 883,		-- Call Pet
+	ROGUE	= 196819,	-- Eviscerate
 	PRIEST	= 589,		-- Shadow Word: Pain
-	SHAMAN	= 8042,		-- Earth Shock
-	MAGE	= 122,		-- Frost Nova
+	SHAMAN	= 188389,	-- Flame Shock
+	MAGE	= 108853,	-- Fire Blast
 	WARLOCK	= 172,		-- Corruption
 	MONK	= 100784,	-- Blackout Kick
-	DRUID	= 22568,	-- Ferocious Bite
+	DRUID	= 8921,		-- Moonfire
 }
 
 

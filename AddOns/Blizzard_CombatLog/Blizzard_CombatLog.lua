@@ -679,7 +679,7 @@ function Blizzard_CombatLog_RefilterUpdate()
 		local text, r, g, b, a = CombatLog_OnEvent(Blizzard_CombatLog_CurrentSettings, CombatLogGetCurrentEntry());
 		-- NOTE: be sure to pass in nil for the color id or the color id may override the r, g, b values for this message
 		if ( text ) then
-			COMBATLOG:AddMessage( text, r, g, b, nil, true );
+			COMBATLOG:BackFillMessage(text, r, g, b);
 		end
 
 		-- count can be 

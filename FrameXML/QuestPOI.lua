@@ -1,8 +1,8 @@
 local QUEST_POI_ICONS_PER_ROW = 8;
 local QUEST_POI_ICON_SIZE = 0.125;
 -- POI text colors (offsets into texture)
-local QUEST_POI_COLOR_BLACK = 0;
-local QUEST_POI_COLOR_YELLOW = 0.5;
+QUEST_POI_COLOR_BLACK = 0;
+QUEST_POI_COLOR_YELLOW = 0.5;
 
 function QuestPOI_Initialize(parent, onCreateFunc)
 	parent.poiTable = {
@@ -22,7 +22,15 @@ function QuestPOI_ResetUsage(parent)
 	QuestPOI_ClearSelection(parent);
 end
 
-function QuestPOI_GetButton(parent, questID, style, index, storyQuest)
+function QuestPOI_CalculateNumericTexCoords(index, color)
+	color = color or QUEST_POI_COLOR_YELLOW;
+	local iconIndex = index - 1;
+	local yOffset = color + floor(iconIndex / QUEST_POI_ICONS_PER_ROW) * QUEST_POI_ICON_SIZE;
+	local xOffset = mod(iconIndex, QUEST_POI_ICONS_PER_ROW) * QUEST_POI_ICON_SIZE;
+	return xOffset, xOffset + QUEST_POI_ICON_SIZE, yOffset, yOffset + QUEST_POI_ICON_SIZE;
+end
+
+function QuestPOI_GetButton(parent, questID, style, index)
 	local poiButton;
 	if ( style == "numeric" ) then
 		-- numbered POI
@@ -30,25 +38,11 @@ function QuestPOI_GetButton(parent, questID, style, index, storyQuest)
 		if ( not poiButton ) then
 			poiButton = CreateFrame("Button", nil, parent, "QuestPOINumericTemplate");			
 			parent.poiTable["numeric"][index] = poiButton;
-			local iconIndex = index - 1;
-			local yOffset = 0.5 + floor(iconIndex / QUEST_POI_ICONS_PER_ROW) * QUEST_POI_ICON_SIZE;
-			local xOffset = mod(iconIndex, QUEST_POI_ICONS_PER_ROW) * QUEST_POI_ICON_SIZE;
-			poiButton.Number:SetTexCoord(xOffset, xOffset + QUEST_POI_ICON_SIZE, yOffset, yOffset + QUEST_POI_ICON_SIZE);
+			poiButton.Number:SetTexCoord(QuestPOI_CalculateNumericTexCoords(index));
 			poiButton.index = index;
 			if ( parent.poiOnCreateFunc ) then
 				parent.poiOnCreateFunc(poiButton);
 			end
-		end
-		if ( storyQuest and not poiButton.storyQuest ) then		
-			poiButton.NormalTexture:SetTexCoord(0.875, 1, 0.375, 0.5);
-			poiButton.PushedTexture:SetTexCoord(0.750, 0.875, 0.375, 0.5);
-			poiButton.HighlightTexture:SetTexCoord(0.625, 0.750, 0.875, 1);
-			poiButton.Glow:SetSize(64, 64);
-		elseif ( not storyQuest and poiButton.storyQuest ) then
-			poiButton.NormalTexture:SetTexCoord(0.875, 1, 0.875, 1);
-			poiButton.PushedTexture:SetTexCoord(0.625, 0.750, 0.875, 1);
-			poiButton.HighlightTexture:SetTexCoord(0.625, 0.750, 0.375, 0.5);
-			poiButton.Glow:SetSize(50, 50);
 		end
 	else		
 		-- completed POI
@@ -65,7 +59,7 @@ function QuestPOI_GetButton(parent, questID, style, index, storyQuest)
 				parent.poiOnCreateFunc(poiButton);
 			end
 		end
-		if ( poiButton.style ~= style or poiButton.storyQuest ~= storyQuest ) then
+		if ( poiButton.style ~= style ) then
 			-- default style is "normal"
 			if ( style == "normal" ) then
 				poiButton.FullHighlightTexture:Show();
@@ -73,17 +67,8 @@ function QuestPOI_GetButton(parent, questID, style, index, storyQuest)
 				poiButton.Icon:SetSize(24, 24);
 				poiButton.NormalTexture:SetAlpha(1);
 				poiButton.PushedTexture:SetAlpha(1);
-				if ( storyQuest ) then
-					poiButton.NormalTexture:SetTexCoord(0.875, 1, 0.375, 0.5);
-					poiButton.PushedTexture:SetTexCoord(0.750, 0.875, 0.375, 0.5);
-					poiButton.FullHighlightTexture:SetTexCoord(0.625, 0.750, 0.875, 1);
-					poiButton.Glow:SetSize(64, 64);				
-				else
-					poiButton.NormalTexture:SetTexCoord(0.875, 1, 0.875, 1);
-					poiButton.PushedTexture:SetTexCoord(0.750, 0.875, 0.875, 1);
-					poiButton.FullHighlightTexture:SetTexCoord(0.625, 0.750, 0.375, 0.5);
-					poiButton.Glow:SetSize(50, 50);	
-				end
+				poiButton.NormalTexture:SetTexCoord(0.875, 1, 0.375, 0.5);
+				poiButton.PushedTexture:SetTexCoord(0.750, 0.875, 0.375, 0.5);
 			elseif ( style == "map" ) then
 				poiButton.FullHighlightTexture:Hide();
 				poiButton.IconHighlightTexture:Show();
@@ -96,24 +81,14 @@ function QuestPOI_GetButton(parent, questID, style, index, storyQuest)
 				poiButton.Icon:SetSize(24, 24);
 				poiButton.NormalTexture:SetAlpha(1);
 				poiButton.PushedTexture:SetAlpha(1);
-				if ( storyQuest ) then
-					poiButton.NormalTexture:SetTexCoord(0.250, 0.375, 0.875, 1);
-					poiButton.PushedTexture:SetTexCoord(0.125, 0.250, 0.875, 1);
-					poiButton.FullHighlightTexture:SetTexCoord(0.625, 0.750, 0.875, 1);
-					poiButton.Glow:SetSize(64, 64);				
-				else
-					poiButton.NormalTexture:SetTexCoord(0.500, 0.625, 0.875, 1.0);
-					poiButton.PushedTexture:SetTexCoord(0.375, 0.500, 0.875, 1.0);
-					poiButton.FullHighlightTexture:SetTexCoord(0.625, 0.750, 0.375, 0.5);
-					poiButton.Glow:SetSize(50, 50);
-				end
+				poiButton.NormalTexture:SetTexCoord(0.500, 0.625, 0.875, 1.0);
+				poiButton.PushedTexture:SetTexCoord(0.375, 0.500, 0.875, 1.0);
 			end
 		end
 	end
 
 	poiButton.questID = questID;
 	poiButton.style = style;
-	poiButton.storyQuest = storyQuest;
 	poiButton.used = true;
 	poiButton:Show();
 
@@ -151,24 +126,12 @@ function QuestPOI_SelectButton(poiButton)
 		end
 	end
 
+	poiButton.NormalTexture:SetTexCoord(0.500, 0.625, 0.375, 0.5);
+	poiButton.PushedTexture:SetTexCoord(0.375, 0.500, 0.375, 0.5);
 	local style = poiButton.style;
 	if ( style == "numeric" ) then
-		if ( poiButton.storyQuest ) then
-			poiButton.NormalTexture:SetTexCoord(0.250, 0.375, 0.375, 0.5);
-			poiButton.PushedTexture:SetTexCoord(0.125, 0.250, 0.375, 0.5);	
-		else
-			poiButton.NormalTexture:SetTexCoord(0.500, 0.625, 0.375, 0.5);
-			poiButton.PushedTexture:SetTexCoord(0.375, 0.500, 0.375, 0.5);
-		end
 		QuestPOI_SetTextColor(poiButton, QUEST_POI_COLOR_BLACK);
 	else
-		if ( poiButton.storyQuest ) then
-			poiButton.NormalTexture:SetTexCoord(0.250, 0.375, 0.375, 0.5);
-			poiButton.PushedTexture:SetTexCoord(0.125, 0.250, 0.375, 0.5);		
-		else
-			poiButton.NormalTexture:SetTexCoord(0.500, 0.625, 0.375, 0.5);
-			poiButton.PushedTexture:SetTexCoord(0.375, 0.500, 0.375, 0.5);
-		end
 		if ( style == "map" ) then
 			poiButton.FullHighlightTexture:Show();
 			poiButton.IconHighlightTexture:Hide();
@@ -187,30 +150,15 @@ function QuestPOI_ClearSelection(parent)
 	if ( poiButton ) then
 		local style = poiButton.style;
 		if ( style == "numeric" ) then
-			if ( poiButton.storyQuest ) then
-				poiButton.NormalTexture:SetTexCoord(0.875, 1, 0.375, 0.5);
-				poiButton.PushedTexture:SetTexCoord(0.750, 0.875, 0.375, 0.5);	
-			else
-				poiButton.NormalTexture:SetTexCoord(0.875, 1, 0.875, 1);
-				poiButton.PushedTexture:SetTexCoord(0.750, 0.875, 0.875, 1);
-			end
+			poiButton.NormalTexture:SetTexCoord(0.875, 1, 0.875, 1);
+			poiButton.PushedTexture:SetTexCoord(0.750, 0.875, 0.875, 1);
 			QuestPOI_SetTextColor(poiButton, QUEST_POI_COLOR_YELLOW);
 		elseif ( style == "normal" ) then
-			if ( poiButton.storyQuest ) then
-				poiButton.NormalTexture:SetTexCoord(0.875, 1, 0.375, 0.5);
-				poiButton.PushedTexture:SetTexCoord(0.750, 0.875, 0.375, 0.5);			
-			else
-				poiButton.NormalTexture:SetTexCoord(0.875, 1, 0.875, 1);
-				poiButton.PushedTexture:SetTexCoord(0.750, 0.875, 0.875, 1);
-			end
+			poiButton.NormalTexture:SetTexCoord(0.875, 1, 0.875, 1);
+			poiButton.PushedTexture:SetTexCoord(0.750, 0.875, 0.875, 1);
 		elseif ( style == "remote" ) then
-			if ( poiButton.storyQuest ) then
-				poiButton.NormalTexture:SetTexCoord(0.250, 0.375, 0.875, 1);
-				poiButton.PushedTexture:SetTexCoord(0.125, 0.250, 0.875, 1);			
-			else		
-				poiButton.NormalTexture:SetTexCoord(0.500, 0.625, 0.875, 1.0);
-				poiButton.PushedTexture:SetTexCoord(0.375, 0.500, 0.875, 1.0);
-			end
+			poiButton.NormalTexture:SetTexCoord(0.500, 0.625, 0.875, 1.0);
+			poiButton.PushedTexture:SetTexCoord(0.375, 0.500, 0.875, 1.0);
 		elseif ( style == "map" ) then
 			poiButton.FullHighlightTexture:Hide();
 			poiButton.IconHighlightTexture:Show();
@@ -224,11 +172,8 @@ function QuestPOI_ClearSelection(parent)
 	end
 end
 
-function QuestPOI_SetTextColor(poiButton, yOffset)
-	local index = poiButton.index - 1
-	yOffset = yOffset + floor(index / QUEST_POI_ICONS_PER_ROW) * QUEST_POI_ICON_SIZE;
-	local xOffset = mod(index, QUEST_POI_ICONS_PER_ROW) * QUEST_POI_ICON_SIZE;
-	poiButton.Number:SetTexCoord(xOffset, xOffset + QUEST_POI_ICON_SIZE, yOffset, yOffset + QUEST_POI_ICON_SIZE);	
+function QuestPOI_SetTextColor(poiButton, color)
+	poiButton.Number:SetTexCoord(QuestPOI_CalculateNumericTexCoords(poiButton.index, color));
 end
 
 function QuestPOI_HideUnusedButtons(parent)

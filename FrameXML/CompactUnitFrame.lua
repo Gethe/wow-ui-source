@@ -302,17 +302,26 @@ function CompactUnitFrame_UpdateAll(frame)
 end
 
 function CompactUnitFrame_UpdateInVehicle(frame)
-	if ( UnitHasVehicleUI(frame.unit) ) then
-		if ( not frame.inVehicle ) then
-			frame.inVehicle = true;
-			local prefix, id, suffix = string.match(frame.unit, "([^%d]+)([%d]*)(.*)")
-			frame.displayedUnit = prefix.."pet"..id..suffix;
+	local hasValidVehicleUI = UnitHasVehicleUI(frame.unit);
+	local unitVehicleToken;
+	if ( hasValidVehicleUI ) then
+		local prefix, id, suffix = string.match(frame.unit, "([^%d]+)([%d]*)(.*)")
+		unitVehicleToken = prefix.."pet"..id..suffix;
+		if ( not UnitExists(unitVehicleToken) ) then
+			hasValidVehicleUI = false;
+		end
+	end
+	
+	if ( hasValidVehicleUI ) then
+		if ( not frame.hasValidVehicleDisplay ) then
+			frame.hasValidVehicleDisplay = true;
+			frame.displayedUnit = unitVehicleToken;
 			frame:SetAttribute("unit", frame.displayedUnit);
 			CompactUnitFrame_UpdateUnitEvents(frame);
 		end
 	else
-		if ( frame.inVehicle ) then
-			frame.inVehicle = false;
+		if ( frame.hasValidVehicleDisplay ) then
+			frame.hasValidVehicleDisplay = false;
 			frame.displayedUnit = frame.unit;
 			frame:SetAttribute("unit", frame.displayedUnit);
 			CompactUnitFrame_UpdateUnitEvents(frame);
@@ -360,16 +369,20 @@ function CompactUnitFrame_UpdateHealthColor(frame)
 			--Try to color it by class.
 			local localizedClass, englishClass = UnitClass(frame.unit);
 			local classColor = RAID_CLASS_COLORS[englishClass];
-			if ( UnitIsPlayer(frame.unit) and classColor and frame.optionTable.useClassColors ) then
+			if ( (frame.optionTable.allowClassColorsForNPCs or UnitIsPlayer(frame.unit)) and classColor and frame.optionTable.useClassColors ) then
 				-- Use class colors for players if class color option is turned on
 				r, g, b = classColor.r, classColor.g, classColor.b;
 			elseif ( CompactUnitFrame_IsTapDenied(frame) ) then
 				-- Use grey if not a player and can't get tap on unit
-				r, g, b = 0.1, 0.1, 0.1;
+				r, g, b = 0.9, 0.9, 0.9;
 			elseif ( frame.optionTable.colorHealthBySelection ) then
 				-- Use color based on the type of unit (neutral, etc.)
 				if ( frame.optionTable.considerSelectionInCombatAsHostile and CompactUnitFrame_IsOnThreatListWithPlayer(frame.displayedUnit) ) then
 					r, g, b = 1.0, 0.0, 0.0;
+				elseif ( UnitIsPlayer(frame.displayedUnit) and UnitIsFriend("player", frame.displayedUnit) ) then
+					-- We don't want to use the selection color for friendly player nameplates because
+					-- it doesn't show player health clearly enough.
+					r, g, b = 0.667, 0.667, 1.0;
 				else
 					r, g, b = UnitSelectionColor(frame.unit, frame.optionTable.colorHealthWithExtendedColors);
 				end
@@ -1317,6 +1330,10 @@ DefaultCompactUnitFrameOptions = {
 	displayIncomingResurrect = true,
 	displayInOtherGroup = true,
 	displayInOtherPhase = true,
+
+	--If class colors are enabled also show the class colors for npcs in your raid frames or
+	--raid-frame-style party frames.
+	allowClassColorsForNPCs = true,
 }
 
 local NATIVE_UNIT_FRAME_HEIGHT = 36;
@@ -1755,10 +1772,20 @@ function DefaultCompactNamePlateFrameSetupInternal(frame, setupOptions, frameOpt
 	local fontName, fontSize, fontFlags = frame.castBar.Text:GetFont();
 	frame.castBar.Text:SetFont(fontName, setupOptions.castBarFontHeight, fontFlags);
 
-	if setupOptions.useLargeNameFont then
-		frame.name:SetFontObject(SystemFont_LargeNamePlate);
+	if setupOptions.useFixedSizeFont then
+		frame.name:SetIgnoreParentScale(false);
+		if setupOptions.useLargeNameFont then
+			frame.name:SetFontObject(SystemFont_LargeNamePlateFixed);
+		else
+			frame.name:SetFontObject(SystemFont_NamePlateFixed);
+		end
 	else
-		frame.name:SetFontObject(SystemFont_NamePlate);
+		frame.name:SetIgnoreParentScale(true);
+		if setupOptions.useLargeNameFont then
+			frame.name:SetFontObject(SystemFont_LargeNamePlate);
+		else
+			frame.name:SetFontObject(SystemFont_NamePlate);
+		end
 	end
 
 	frame.castBar.BorderShield:SetSize(setupOptions.castBarShieldWidth, setupOptions.castBarShieldHeight);

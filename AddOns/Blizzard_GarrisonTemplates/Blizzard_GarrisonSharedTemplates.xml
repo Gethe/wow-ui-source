@@ -298,6 +298,7 @@
 					<Color r="0.212" g="0" b="0.337" a="1"/>
 				</Texture>
 				<FontString parentKey="Status" inherits="GameFontHighlightSmall" justifyH="LEFT">
+					<Size x="0" y="14"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.ILevel" relativePoint="TOPRIGHT" x="4" y="0"/>
 					</Anchors>

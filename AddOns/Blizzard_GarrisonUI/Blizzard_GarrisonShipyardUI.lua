@@ -2188,6 +2188,7 @@ function GarrisonShipMissionPageFollowerFrame_OnEnter(self)
 		C_Garrison.GetFollowerTraitAtIndex(self.info.followerID, 4),
 		true,
 		C_Garrison.GetFollowerBiasForMission(self:GetParent().missionInfo.missionID, self.info.followerID) < 0.0,
+		C_Garrison.GetFollowerUnderBiasReason(missionPage.missionInfo.missionID, self.info.followerID),
 		GarrisonShipyardFollowerTooltip,
 		231
 		);

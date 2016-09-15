@@ -118,7 +118,8 @@
 				self:RegisterEvent("INVENTORY_SEARCH_UPDATE");
 				_G[self:GetName().."NormalTexture"]:SetWidth(50);
 				_G[self:GetName().."NormalTexture"]:SetHeight(50);
-				_G[self:GetName().."Count"]:SetPoint("BOTTOMRIGHT", -2, 2);
+				_G[self:GetName().."Count"]:ClearAllPoints();
+				_G[self:GetName().."Count"]:SetPoint("CENTER", 1, -7);
 			</OnLoad>
 			<OnClick>
 				if ( IsModifiedClick() ) then

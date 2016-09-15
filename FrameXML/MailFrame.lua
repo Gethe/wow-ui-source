@@ -825,9 +825,8 @@ function SendMailMailButton_OnClick(self)
 	if ( SendMailSendMoneyButton:GetChecked() ) then
 		-- Send Money
 		if ( copper > 0 ) then
-			-- Open confirmation dialog
-			StaticPopup_Show("SEND_MONEY", SendMailNameEditBox:GetText());
-			return;
+			-- Confirmation is now done through the secure transfer system
+			SetSendMailMoney(copper)
 		end
 	else
 		-- Send C.O.D.
@@ -840,6 +839,10 @@ end
 
 function SendMailFrame_SendMail()
 	SendMail(SendMailNameEditBox:GetText(), SendMailSubjectEditBox:GetText(), SendMailBodyEditBox:GetText());
+end
+
+function SendMailFrame_EnableSendMailButton()
+	SendMailMailButton:Enable();
 end
 
 function SendMailFrame_Update()

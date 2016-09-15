@@ -63,11 +63,11 @@
 				<Size x="119" y="12"/>
 				<Anchors>
 					<Anchor point="TOPRIGHT"/>
-				</Anchors>`
+				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
 						<Texture parentKey="YellowGlow" alpha="0" alphaMode="BLEND" atlas="FullAlert-YellowCurveGlow">
-							<Size x="20" y="24"/>`
+							<Size x="20" y="24"/>
 							<Anchors>
 								<Anchor point="RIGHT" x="-1" y="-1"/>
 							</Anchors>

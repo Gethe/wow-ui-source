@@ -402,7 +402,6 @@
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" x="100" y="100"/>
 		</Anchors>
-		<TitleRegion setAllPoints="true"/>
 		<ResizeBounds>
 			<minResize>
 				<AbsDimension x="296" y="120"/>

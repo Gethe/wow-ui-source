@@ -737,6 +737,8 @@
 						self:RegisterEvent("GUILD_PARTY_STATE_UPDATED");
 					</OnLoad>
 					<OnEvent function="MiniMapInstanceDifficulty_OnEvent" />
+					<OnEnter function="MiniMapInstanceDifficulty_OnEnter"/>
+					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Frame>
 			<Frame name="GuildInstanceDifficulty" hidden="true" enableMouse="true">

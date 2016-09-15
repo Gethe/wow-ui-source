@@ -333,9 +333,9 @@ function GarrisonFollowerMission:AssignFollowerToMission(frame, info)
 
 	local soundToPlay;
 	if (info.isTroop) then
-		soundToPlay = GarrisonFollowerOptions[info.followerTypeID].missionPageAssignFollowerSound;
-	else
 		soundToPlay = GarrisonFollowerOptions[info.followerTypeID].missionPageAssignTroopSound;
+	else
+		soundToPlay = GarrisonFollowerOptions[info.followerTypeID].missionPageAssignFollowerSound;
 	end
 	if (soundToPlay) then
 		PlaySound(soundToPlay);
@@ -1422,7 +1422,8 @@ function GarrisonMissionPageFollowerFrame_OnEnter(self)
 		C_Garrison.GetFollowerTraitAtIndex(self.info.followerID, 3),
 		C_Garrison.GetFollowerTraitAtIndex(self.info.followerID, 4),
 		true,
-		C_Garrison.GetFollowerBiasForMission(missionPage.missionInfo.missionID, self.info.followerID) < 0.0
+		C_Garrison.GetFollowerBiasForMission(missionPage.missionInfo.missionID, self.info.followerID) < 0.0,
+		C_Garrison.GetFollowerUnderBiasReason(missionPage.missionInfo.missionID, self.info.followerID)
 		);
 end
 

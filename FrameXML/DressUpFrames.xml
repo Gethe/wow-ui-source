@@ -318,6 +318,9 @@
 						Model_OnLoad(self, MODELFRAME_MAX_PLAYER_ZOOM);
 					</OnLoad>
 					<OnDressModel function="DressUpFrame_OnDressModel"/>
+					<OnHide>
+						self:SetSheathed(false);
+					</OnHide>
 				</Scripts>
 			</DressUpModel>
 		</Frames>

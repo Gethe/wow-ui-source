@@ -1349,19 +1349,21 @@
 	<ScrollFrame name="ListScrollFrameTemplate" inherits="FauxScrollFrameTemplate" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar">
-					<Size x="30" y="120"/>
+				<Texture name="$parentTop" atlas="macropopup-scrollbar-top" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-3" y="2"/>
+						<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-2" y="5"/>
 					</Anchors>
-					<TexCoords left="0" right="0.46875" top="0.0234375" bottom="0.9609375"/>
 				</Texture>
-				<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar">
-					<Size x="30" y="123"/>
+				<Texture name="$parentBottom" atlas="macropopup-scrollbar-bottom" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-3" y="-2"/>
+						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-2" y="-2"/>
 					</Anchors>
-					<TexCoords left="0.53125" right="1.0" top="0.03125" bottom="1.0"/>
+				</Texture>
+				<Texture name="$parentMiddle" atlas="!macropopup-scrollbar-middle" vertTile="true" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parentTop" relativePoint="BOTTOM"/>
+						<Anchor point="BOTTOM" relativeTo="$parentBottom" relativePoint="TOP"/>
+					</Anchors>
 				</Texture>
 			</Layer>
 		</Layers>

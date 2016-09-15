@@ -410,7 +410,7 @@
 				</Scripts>
 			</Frame>
 			<!-- Reagent Bank Slots  -->
-			<Frame name="ReagentBankFrame" SetAllPoints="true" useParentLevel="true" hidden="true">
+			<Frame name="ReagentBankFrame" setAllPoints="true" useParentLevel="true" hidden="true">
 				<Layers>
 					<Layer level="ARTWORK">
 						<Texture parentKey="BG1" atlas="bank-slots" useAtlasSize="true" >
@@ -619,7 +619,6 @@
 							</Button>
 						</Frames>
 						<Scripts>
-							<OnShow function="ReagentBankFrame_UpdateTabBuyingInfo"/>
 							<OnLoad function="RaiseFrameLevel"/>
 						</Scripts>
 					</Frame>

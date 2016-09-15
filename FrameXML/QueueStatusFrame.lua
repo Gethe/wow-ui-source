@@ -401,7 +401,12 @@ function QueueStatusEntry_SetUpLFG(entry, category)
 			tank, healer, dps = nil, nil, nil;
 			totalTanks, totalHealers, totalDPS, tankNeeds, healerNeeds, dpsNeeds = nil, nil, nil, nil, nil, nil;
 		end
-		QueueStatusEntry_SetFullDisplay(entry, LFG_CATEGORY_NAMES[category], queuedTime, myWait, tank, healer, dps, totalTanks, totalHealers, totalDPS, tankNeeds, healerNeeds, dpsNeeds, subTitle, extraText);
+		
+		if ( category == LE_LFG_CATEGORY_WORLDPVP ) then
+			QueueStatusEntry_SetMinimalDisplay(entry, LFG_CATEGORY_NAMES[category], QUEUED_STATUS_IN_PROGRESS, subTitle, extraText);
+		else
+			QueueStatusEntry_SetFullDisplay(entry, LFG_CATEGORY_NAMES[category], queuedTime, myWait, tank, healer, dps, totalTanks, totalHealers, totalDPS, tankNeeds, healerNeeds, dpsNeeds, subTitle, extraText);
+		end
 	elseif ( mode == "proposal" ) then
 		QueueStatusEntry_SetMinimalDisplay(entry, LFG_CATEGORY_NAMES[category], QUEUED_STATUS_PROPOSAL, subTitle, extraText);
 	elseif ( mode == "listed" ) then

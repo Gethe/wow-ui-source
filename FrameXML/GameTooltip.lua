@@ -285,6 +285,14 @@ function GameTooltip_ShowCompareItem(self, anchorFrame)
 	local rightPos = anchorFrame:GetRight();
 
 	local side;
+	local anchorType = self:GetAnchorType();
+	local totalWidth = 0;
+	if ( primaryItemShown  ) then
+		totalWidth = totalWidth + shoppingTooltip1:GetWidth();
+	end
+	if ( secondaryItemShown  ) then
+		totalWidth = totalWidth + shoppingTooltip2:GetWidth();
+	end
 	if ( self.overrideComparisonAnchorSide ) then
 		side = self.overrideComparisonAnchorSide;
 	else
@@ -298,8 +306,12 @@ function GameTooltip_ShowCompareItem(self, anchorFrame)
 		end
 
 		rightDist = GetScreenWidth() - rightPos;
-
-		if (leftPos and (rightDist < leftPos)) then
+		
+		if ( anchorType and totalWidth < leftPos and (anchorType == "ANCHOR_LEFT" or anchorType == "ANCHOR_TOPLEFT" or anchorType == "ANCHOR_BOTTOMLEFT") ) then
+			side = "left";
+		elseif ( anchorType and totalWidth < rightDist and (anchorType == "ANCHOR_RIGHT" or anchorType == "ANCHOR_TOPRIGHT" or anchorType == "ANCHOR_BOTTOMRIGHT") ) then
+			side = "right";
+		elseif ( rightDist < leftPos ) then
 			side = "left";
 		else
 			side = "right";
@@ -307,19 +319,11 @@ function GameTooltip_ShowCompareItem(self, anchorFrame)
 	end
 
 	-- see if we should slide the tooltip
-	if ( self:GetAnchorType() and self:GetAnchorType() ~= "ANCHOR_PRESERVE" ) then
-		local totalWidth = 0;
-		if ( primaryItemShown  ) then
-			totalWidth = totalWidth + shoppingTooltip1:GetWidth();
-		end
-		if ( secondaryItemShown  ) then
-			totalWidth = totalWidth + shoppingTooltip2:GetWidth();
-		end
-
+	if ( anchorType and anchorType ~= "ANCHOR_PRESERVE" ) then
 		if ( (side == "left") and (totalWidth > leftPos) ) then
-			self:SetAnchorType(self:GetAnchorType(), (totalWidth - leftPos), 0);
+			self:SetAnchorType(anchorType, (totalWidth - leftPos), 0);
 		elseif ( (side == "right") and (rightPos + totalWidth) >  GetScreenWidth() ) then
-			self:SetAnchorType(self:GetAnchorType(), -((rightPos + totalWidth) - GetScreenWidth()), 0);
+			self:SetAnchorType(anchorType, -((rightPos + totalWidth) - GetScreenWidth()), 0);
 		end
 	end
 	

@@ -35,17 +35,17 @@ function ItemTextFrame_OnEvent(self, event, ...)
 		ItemTextStatusBar:Hide();
 		ItemTextPrevPageButton:Hide();
 		ItemTextNextPageButton:Hide();
-		local material = ItemTextGetMaterial(); 
+		local material = ItemTextGetMaterial();
 		if ( not material ) then
 			material = "Parchment";
 		end
-		
+
 		-- Set up fonts
 		local fontTable = ITEM_TEXT_FONTS[material];
 		if(fontTable == nil) then
 			fontTable = ITEM_TEXT_FONTS["default"];
 		end
-		for tag, font in pairs(fontTable) do 
+		for tag, font in pairs(fontTable) do
 			ItemTextPageText:SetFontObject(tag, font);
 		end
 
@@ -56,14 +56,14 @@ function ItemTextFrame_OnEvent(self, event, ...)
 			ItemTextPageText:SetTextColor("H1", titleColor[1], titleColor[2], titleColor[3]);
 			ItemTextPageText:SetTextColor("H2", titleColor[1], titleColor[2], titleColor[3]);
 			ItemTextPageText:SetTextColor("H3", titleColor[1], titleColor[2], titleColor[3]);
-		else 
+		else
 			-- Legacy behavior - ignore the title color
 			ItemTextPageText:SetTextColor("P", textColor[1], textColor[2], textColor[3]);
 			ItemTextPageText:SetTextColor("H1", textColor[1], textColor[2], textColor[3]);
 			ItemTextPageText:SetTextColor("H2", textColor[1], textColor[2], textColor[3]);
 			ItemTextPageText:SetTextColor("H3", textColor[1], textColor[2], textColor[3]);
 		end
-		
+
 		return;
 	elseif ( event == "ITEM_TEXT_TRANSLATION" ) then
 		local arg1 = ...;
@@ -78,17 +78,18 @@ function ItemTextFrame_OnEvent(self, event, ...)
 		end
 		return;
 	elseif ( event == "ITEM_TEXT_READY" ) then
-	
-		local material = ItemTextGetMaterial(); 
+
+		local material = ItemTextGetMaterial();
 		if ( not material ) then
 			material = "Parchment";
 		end
-		
+
 		if (material == "ParchmentLarge") then
 			self:SetWidth(EXPANDED_ITEM_TEXT_FRAME_WIDTH);
 			self:SetHeight(EXPANDED_ITEM_TEXT_FRAME_HEIGHT);
-			ItemTextScrollFrame:SetPoint("TOPRIGHT", self, "TOPRIGHT", -46, -89);
-			ItemTextScrollFrame:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", 40, 6);
+			ItemTextScrollFrame:SetPoint("TOPRIGHT", self, "TOPRIGHT", -27, -89);
+			ItemTextScrollFrame:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", 6, 6);
+			ItemTextPageText:SetPoint("TOPLEFT", 34, -15);
 			ItemTextPageText:SetWidth(412);
 			ItemTextPageText:SetHeight(440);
 		else
@@ -101,14 +102,14 @@ function ItemTextFrame_OnEvent(self, event, ...)
 				ItemTextPageText:SetWidth(301);
 				ItemTextPageText:SetHeight(355);
 			else
-				ItemTextScrollFrame:SetPoint("TOPRIGHT", self, "TOPRIGHT", -33, -63);
-				ItemTextScrollFrame:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", 25, 6);
-				ItemTextPageText:SetPoint("TOPLEFT", 0, -15);
+				ItemTextScrollFrame:SetPoint("TOPRIGHT", self, "TOPRIGHT", -31, -63);
+				ItemTextScrollFrame:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", 6, 6);
+				ItemTextPageText:SetPoint("TOPLEFT", 18, -15);
 				ItemTextPageText:SetWidth(270);
 				ItemTextPageText:SetHeight(304);
 			end
 		end
-	
+
 		local creator = ItemTextGetCreator();
 		if ( creator ) then
 			creator = "\n\n"..ITEM_TEXT_FROM.."\n"..creator.."\n";
@@ -116,19 +117,19 @@ function ItemTextFrame_OnEvent(self, event, ...)
 		else
 			ItemTextPageText:SetText(ItemTextGetText());
 		end
-		
-		-- Add some padding at the bottom
+
+		-- Add some padding at the bottom if the bar can scroll appreciably
 		ItemTextScrollFrame:GetScrollChild():SetHeight(1);
 		ItemTextScrollFrame:UpdateScrollChildRect();
-		if(ItemTextScrollFrame:GetVerticalScrollRange() > 0) then
+		if(floor(ItemTextScrollFrame:GetVerticalScrollRange()) > 0) then
 			ItemTextScrollFrame:GetScrollChild():SetHeight(ItemTextScrollFrame:GetHeight() + ItemTextScrollFrame:GetVerticalScrollRange() + 30);
 		end
-			
+
 		ItemTextScrollFrameScrollBar:SetValue(0);
-		ItemTextScrollFrame:Show();	
+		ItemTextScrollFrame:Show();
 		local page = ItemTextGetPage();
 		local hasNext = ItemTextHasNextPage();
-		
+
 		if ( material == "Parchment" ) then
 			ItemTextMaterialTopLeft:Hide();
 			ItemTextMaterialTopRight:Hide();
@@ -169,7 +170,7 @@ function ItemTextFrame_OnEvent(self, event, ...)
 			else
 				ItemTextNextPageButton:Hide();
 			end
-		end	
+		end
 		ItemTextStatusBar:Hide();
 		ShowUIPanel(self);
 		if ( not self:IsShown() ) then

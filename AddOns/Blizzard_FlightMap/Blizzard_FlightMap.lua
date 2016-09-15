@@ -29,6 +29,8 @@ function FlightMapMixin:AddStandardDataProviders()
 	self:AddDataProvider(CreateFromMixins(FlightMap_FlightPathDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(FlightMap_ZoneSummaryDataProvider));
 	self:AddDataProvider(CreateFromMixins(ZoneLabelDataProviderMixin));
+	self:AddDataProvider(CreateFromMixins(ActiveQuestDataProviderMixin));
+	self:AddDataProvider(CreateFromMixins(GroupMembersDataProviderMixin));
 
 	local worldQuestDataProvider = CreateFromMixins(WorldQuestDataProviderMixin);
 	worldQuestDataProvider:SetMatchWorldMapFilters(true);

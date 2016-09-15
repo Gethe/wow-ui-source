@@ -26,14 +26,18 @@ function UIErrorsMixin:OnUpdate()
 	local now = GetTime();
 	local needsMoreUpdates = false;
 	for fontString, timeStart in pairs(self.flashingFontStrings) do
-		if fontString:IsShown() and now - timeStart <= FLASH_DURATION_SEC then
-			local percent = (now - timeStart) / FLASH_DURATION_SEC;
-			local easedPercent = (percent > .5 and (1.0 - percent) / .5 or percent / .5) * .4;
+		if fontString:GetText() == fontString.origMsg then
+			if fontString:IsShown() and now - timeStart <= FLASH_DURATION_SEC then
+				local percent = (now - timeStart) / FLASH_DURATION_SEC;
+				local easedPercent = (percent > .5 and (1.0 - percent) / .5 or percent / .5) * .4;
 
-			fontString:SetTextColor(fontString.origR + easedPercent, fontString.origG + easedPercent, fontString.origB + easedPercent);
-			needsMoreUpdates = true;
+				fontString:SetTextColor(fontString.origR + easedPercent, fontString.origG + easedPercent, fontString.origB + easedPercent);
+				needsMoreUpdates = true;
+			else
+				fontString:SetTextColor(fontString.origR, fontString.origG, fontString.origB);
+				self.flashingFontStrings[fontString] = nil;
+			end
 		else
-			fontString:SetTextColor(fontString.origR, fontString.origG, fontString.origB);
 			self.flashingFontStrings[fontString] = nil;
 		end
 	end
@@ -98,6 +102,7 @@ function UIErrorsMixin:FlashFontString(fontString)
 			self.flashingFontStrings[fontString] = GetTime();
 		else
 			fontString.origR, fontString.origG, fontString.origB = fontString:GetTextColor();
+			fontString.origMsg = fontString:GetText();
 			self.flashingFontStrings[fontString] = GetTime();
 		end
 		self:SetScript("OnUpdate", self.OnUpdate);

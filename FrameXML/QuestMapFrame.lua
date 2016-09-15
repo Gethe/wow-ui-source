@@ -662,11 +662,11 @@ function QuestLogQuests_Update(poiTable)
 				if ( hasLocalPOI and showPOIs ) then			
 					local poiButton;
 					if ( isComplete ) then
-						poiButton = QuestPOI_GetButton(QuestScrollFrame.Contents, questID, "normal", nil, isStory);
+						poiButton = QuestPOI_GetButton(QuestScrollFrame.Contents, questID, "normal", nil);
 					else
 						for i = 1, #poiTable do
 							if ( poiTable[i] == questID ) then
-								poiButton = QuestPOI_GetButton(QuestScrollFrame.Contents, questID, "numeric", i, isStory);
+								poiButton = QuestPOI_GetButton(QuestScrollFrame.Contents, questID, "numeric", i);
 								break;
 							end
 						end

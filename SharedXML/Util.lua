@@ -13,6 +13,15 @@ RAID_CLASS_COLORS = {
 	["DEMONHUNTER"] = { r = 0.64, g = 0.19, b = 0.79, colorStr = "ffa330c9" },
 };
 
+function GetUnitClassColor(classFilename)
+	local color = RAID_CLASS_COLORS[classFilename];
+	if color then
+		return color.r, color.g, color.b, color.colorStr;
+	end
+
+	return 1, 1, 1, "ffffffff";
+end
+
 CLASS_ICON_TCOORDS = {
 	["WARRIOR"]		= {0, 0.25, 0, 0.25},
 	["MAGE"]		= {0.25, 0.49609375, 0, 0.25},
@@ -130,6 +139,14 @@ function tContains(table, item)
 		index = index + 1;
 	end
 	return nil;
+end
+
+function tInvert(tbl)
+	local inverted = {};
+	for k, v in pairs(tbl) do
+		inverted[v] = k;
+	end
+	return inverted;
 end
 
 function CopyTable(settings)
@@ -354,6 +371,10 @@ end
 
 function ObjectPoolMixin:GetNumActive()
 	return self.numActiveObjects;
+end
+
+function ObjectPoolMixin:EnumerateInactive()
+	return ipairs(self.inactiveObjects);
 end
 
 function CreateObjectPool(creationFunc, resetterFunc)
@@ -763,4 +784,12 @@ function SecondsToTimeAbbrev(seconds)
 		return MINUTE_ONELETTER_ABBR, tempTime;
 	end
 	return SECOND_ONELETTER_ABBR, seconds;
+end
+
+function FormatShortDate(day, month, year)
+	if (LOCALE_enGB) then
+		return string.format(SHORTDATE_EU, day, month, year);
+	else
+		return string.format(SHORTDATE, day, month, year);
+	end
 end

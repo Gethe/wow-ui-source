@@ -1138,6 +1138,7 @@ function PaperDollFrame_SetMastery(statFrame, unit)
 		return;
 	end
 	if (UnitLevel("player") < SHOW_MASTERY_LEVEL) then
+		statFrame.numericValue = 0;
 		statFrame:Hide();
 		return;
 	end
@@ -1897,9 +1898,9 @@ function GearSetButton_OnEnter (self)
 	end
 end
 
-NUM_GEARSET_ICONS_SHOWN = 15;
-NUM_GEARSET_ICONS_PER_ROW = 5;
-NUM_GEARSET_ICON_ROWS = 3;
+NUM_GEARSET_ICONS_PER_ROW = 10;
+NUM_GEARSET_ICON_ROWS = 9;
+NUM_GEARSET_ICONS_SHOWN = NUM_GEARSET_ICONS_PER_ROW * NUM_GEARSET_ICON_ROWS;
 GEARSET_ICON_ROW_HEIGHT = 36;
 local EM_ICON_FILENAMES = {};
 
@@ -1936,13 +1937,45 @@ function GearManagerDialogPopup_OnLoad (self)
 			self.selectedIcon = Value;
 		end
 	end
+	
+	GearManagerDialogPopupScrollFrame.ScrollBar.scrollStep = 8 * GEARSET_ICON_ROW_HEIGHT;
+end
+
+local GEAR_MANAGER_POPUP_FRAME_MINIMUM_PADDING = 40;
+function GearManagerDialogPopup_AdjustAnchors (self)
+	local rightSpace = GetScreenWidth() - PaperDollFrame:GetRight();
+	self.parentLeft = PaperDollFrame:GetLeft();
+	local leftSpace = self.parentLeft;
+	
+	self:ClearAllPoints();
+	if ( leftSpace >= rightSpace ) then
+		if ( leftSpace < self:GetWidth() + GEAR_MANAGER_POPUP_FRAME_MINIMUM_PADDING ) then
+			self:SetPoint("RIGHT", PaperDollFrame, "LEFT", self:GetWidth() + GEAR_MANAGER_POPUP_FRAME_MINIMUM_PADDING - leftSpace, 0);
+		else
+			self:SetPoint("RIGHT", PaperDollFrame, "LEFT", -5, 0);
+		end
+	else
+		if ( rightSpace < self:GetWidth() + GEAR_MANAGER_POPUP_FRAME_MINIMUM_PADDING ) then
+			self:SetPoint("LEFT", PaperDollFrame, "RIGHT", rightSpace - (self:GetWidth() + GEAR_MANAGER_POPUP_FRAME_MINIMUM_PADDING), 0);
+		else
+			self:SetPoint("LEFT", PaperDollFrame, "RIGHT", 0, 0);
+		end
+	end
 end
 
 function GearManagerDialogPopup_OnShow (self)
+	GearManagerDialogPopup_AdjustAnchors(self);
 	PlaySound("igCharacterInfoOpen");
 	self.name = nil;
 	self.isEdit = false;
 	RecalculateGearManagerDialogPopup();
+	RefreshEquipmentSetIconInfo();
+end
+
+function GearManagerDialogPopup_OnUpdate (self)
+	if ( PaperDollFrame:GetLeft() ~= self.parentLeft ) then
+		GearManagerDialogPopup_AdjustAnchors(self);
+	end
 end
 
 function GearManagerDialogPopup_OnHide (self)
@@ -2056,8 +2089,6 @@ function GetEquipmentSetIconInfo(index)
 end
 
 function GearManagerDialogPopup_Update ()
-	RefreshEquipmentSetIconInfo();
-
 	local popup = GearManagerDialogPopup;
 	local buttons = popup.buttons;
 	local offset = FauxScrollFrame_GetOffset(GearManagerDialogPopupScrollFrame) or 0;
@@ -2092,7 +2123,7 @@ function GearManagerDialogPopup_Update ()
 	end
 
 	-- Scrollbar stuff
-	FauxScrollFrame_Update(GearManagerDialogPopupScrollFrame, ceil(#EM_ICON_FILENAMES / NUM_GEARSET_ICONS_PER_ROW) , NUM_GEARSET_ICON_ROWS, GEARSET_ICON_ROW_HEIGHT );
+	FauxScrollFrame_Update(GearManagerDialogPopupScrollFrame, ceil(#EM_ICON_FILENAMES / NUM_GEARSET_ICONS_PER_ROW) + 1, NUM_GEARSET_ICON_ROWS, GEARSET_ICON_ROW_HEIGHT );
 end
 
 function GearManagerDialogPopupOkay_Update ()

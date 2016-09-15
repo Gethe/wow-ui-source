@@ -12,16 +12,6 @@ function LFGDebug(text, ...)
 	end
 end
 
-TYPEID_DUNGEON = 1;
-TYPEID_RANDOM_DUNGEON = 6;
-
-LFG_SUBTYPEID_DUNGEON = 1;
-LFG_SUBTYPEID_HEROIC = 2;
-LFG_SUBTYPEID_RAID = 3;
-LFG_SUBTYPEID_SCENARIO = 4;
-LFG_SUBTYPEID_FLEXRAID = 5;
-LFG_SUBTYPEID_WORLDPVP = 6;
-
 LFG_ID_TO_ROLES = { "DAMAGER", "TANK", "HEALER" };
 LFG_RETURN_VALUES = {
 	name = 1,
@@ -1559,11 +1549,13 @@ function LFGRewardsFrameEncounterList_OnEnter(self)
 
 	if ( numCompleted > 0 ) then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		GameTooltip:AddLine(ERR_LOOT_GONE);
+		GameTooltip:AddLine(string.format(ERR_LOOT_GONE, numCompleted, numEncounters), HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 		for i=1, numEncounters do
 			local bossName, texture, isKilled = GetLFGDungeonEncounterInfo(dungeonID, i);
 			if ( isKilled ) then
 				GameTooltip:AddLine(bossName, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
+			else
+				GameTooltip:AddLine(bossName, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 			end
 		end
 		GameTooltip:Show();

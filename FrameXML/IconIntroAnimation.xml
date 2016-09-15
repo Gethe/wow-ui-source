@@ -3,7 +3,7 @@
 	<Script file="IconIntroAnimation.lua"/>
 
 
-	
+
 	<Frame name="IconIntroAnimTemplate" virtual="true" alpha="0.5">
 		<Animations>
 			<AnimationGroup parentKey="flyin">
@@ -19,7 +19,7 @@
 					<OnPlay>
 						local iconFrame = self:GetParent();
 						iconFrame.bg:SetTexture(iconFrame.icon:GetTexture());
-						
+
 						local trail = iconFrame.trail;
 						if trail then
 							trail:Show();
@@ -46,17 +46,17 @@
 							iconFrame.glow:Play();
 							SetBarSlotFromIntro(iconFrame.slot);
 							iconFrame.isFree = true;
-							
+
 							local button;
 							if (iconFrame.multibar) then
 								button = _G["MultiBarBottomLeftButton"..iconFrame.pos];
 							else
 								button = _G["ActionButton"..iconFrame.pos];
 							end
-							
-							MarkNewActionHighlight(button.action, true);
+
+							MarkNewActionHighlight(button.action);
 							ActionButton_UpdateAction(button, true);
-						else 
+						else
 							iconFrame:SetFrameLevel(1);
 						end
 					</OnFinished>
@@ -97,8 +97,8 @@
 			</Layer>
 		</Layers>
 	</Frame>
-	
-	
+
+
 	<Frame name="IconIntroTemplate" virtual="true" frameStrata="HIGH">
 		<Size>
 			<AbsDimension x="40" y="40"/>
@@ -144,7 +144,7 @@
 				self.trail1.flyin.wait:SetDuration(0.16);
 				self.trail2.flyin.wait:SetDuration(0.21);
 				self.trail3.flyin.wait:SetDuration(0.255);
-				
+
 				self.icon.trail = self.trail1;
 				self.trail1.trail = self.trail2;
 				self.trail2.trail = self.trail3;

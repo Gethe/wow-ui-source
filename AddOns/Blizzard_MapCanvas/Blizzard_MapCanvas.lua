@@ -5,6 +5,7 @@ function MapCanvasMixin:OnLoad()
 	self.dataProviders = {};
 	self.dataProviderEventsCount = {};
 	self.pinPools = {};
+	self.pinTemplateTypes = {};
 	self.activeAreaTriggers = {};
 	self.lockReasons = {};
 
@@ -19,6 +20,10 @@ function MapCanvasMixin:SetMapID(mapID)
 		self.mapID = mapID; 
 		self.expandedMapInsetsByMapID = {};
 		self.ScrollContainer:SetMapID(mapID);
+
+		for dataProvider in pairs(self.dataProviders) do
+			dataProvider:OnMapChanged();
+		end
 	end
 end
 
@@ -99,7 +104,8 @@ do
 
 	function MapCanvasMixin:AcquirePin(pinTemplate, ...)
 		if not self.pinPools[pinTemplate] then
-			self.pinPools[pinTemplate] = CreateFramePool("FRAME", self:GetCanvas(), pinTemplate, OnPinReleased);
+			local pinTemplateType = self.pinTemplateTypes[pinTemplate] or "FRAME";
+			self.pinPools[pinTemplate] = CreateFramePool(pinTemplateType, self:GetCanvas(), pinTemplate, OnPinReleased);
 		end
 
 		local pin, newPin = self.pinPools[pinTemplate]:Acquire();
@@ -126,6 +132,10 @@ do
 
 		return pin;
 	end
+end
+
+function MapCanvasMixin:SetPinTemplateType(pinTemplate, pinTemplateType)
+	self.pinTemplateTypes[pinTemplate] = pinTemplateType;
 end
 
 function MapCanvasMixin:RemoveAllPinsByTemplate(pinTemplate)

@@ -186,7 +186,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<EditBox parentKey="EditBox" historyLines="1" inherits="AutoCompleteEditBoxTemplate" letters="31">
+			<EditBox parentKey="EditBox" historyLines="1" letters="31">
 				<Size x="260" y="32"/>
 				<Anchors>
 					<Anchor point="TOP" x="0" y="-40"/>

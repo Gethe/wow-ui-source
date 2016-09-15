@@ -142,7 +142,7 @@ function CachedLoginFrameContainer_Update(self)
 			if ( not frame ) then
 				frame = CreateFrame("FRAME", nil, self, "CachedLoginFrameTemplate");
 				if ( i == 1 ) then
-					frame:SetPoint("TOPRIGHT", self, "TOPRIGHT", -5, -5);
+					frame:SetPoint("TOPRIGHT", self, "TOPRIGHT", -5, -25);
 				else
 					frame:SetPoint("TOP", frames[i-1], "BOTTOM", 0, 5);
 				end

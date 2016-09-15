@@ -51,19 +51,10 @@ function GetMaxLevelReward(bracketType)
 		id = REWARDS_AT_MAX_LEVEL[SKIRMISH_REWARD][factionGroup];
 	else
 		local RATED_BG_ID = 4;
-		local numCompleted, total = GetWeeklyPVPRewardInfo(bracketType);
-		if (numCompleted and numCompleted < total) then
-			if (bracketType == RATED_BG_ID) then
-				id = REWARDS_AT_MAX_LEVEL[BONUS_BG_REWARD][factionGroup];
-			else
-				id = REWARDS_AT_MAX_LEVEL[ARENA_REWARD][factionGroup];
-			end
+		if (bracketType == RATED_BG_ID) then
+			id = REWARDS_AT_MAX_LEVEL[BONUS_BG_REWARD][factionGroup];
 		else
-			if (bracketType == RATED_BG_ID) then
-				id = REWARDS_AT_MAX_LEVEL[RANDOM_BG_REWARD][factionGroup];
-			else
-				id = REWARDS_AT_MAX_LEVEL[SKIRMISH_REWARD][factionGroup];
-			end
+			id = REWARDS_AT_MAX_LEVEL[ARENA_REWARD][factionGroup];
 		end
 	end
 
@@ -896,8 +887,10 @@ function ConquestFrame_OnLoad(self)
 	RequestPVPOptionsEnabled();
 	
 	self:RegisterEvent("GROUP_ROSTER_UPDATE");
+	self:RegisterEvent("QUEST_LOG_UPDATE");
 	self:RegisterEvent("PVP_RATED_STATS_UPDATE");
 	self:RegisterEvent("PVP_REWARDS_UPDATE");
+	self:RegisterEvent("PVP_TYPES_ENABLED");
 	self:RegisterEvent("LFG_LIST_ACTIVE_ENTRY_UPDATE");
 	self:RegisterEvent("LFG_LIST_SEARCH_RESULT_UPDATED");
 end
@@ -905,8 +898,17 @@ end
 function ConquestFrame_OnEvent(self, event, ...)
 	if ( event == "LFG_LIST_ACTIVE_ENTRY_UPDATE" or event == "LFG_LIST_SEARCH_RESULT_UPDATED" ) then
 		ConquestFrame_UpdateJoinButton(self);
-	else
+	elseif (event == "PVP_TYPES_ENABLED") then
+		local _, ratedBgs, ratedArenas = ...;
+		self.bgsEnabled = ratedBgs;
+		self.arenasEnabled = ratedArenas;
+		self.disabled = not ratedBgs and not ratedArenas;
 		ConquestFrame_Update(self);
+	elseif (self:IsVisible()) then
+		ConquestFrame_Update(self);
+		if (event == "QUEST_LOG_UPDATE" and self.activeWeeklyBonus) then
+			PVPRewardWeeklyBonus_OnEnter(self.activeWeeklyBonus);
+		end
 	end
 end
 
@@ -920,21 +922,32 @@ end
 function ConquestFrame_Update(self)
     PVPQueueFrame_CheckXPBarLockState(self);
 	if ( GetCurrentArenaSeason() == NO_ARENA_SEASON ) then
+		ConquestFrame.Disabled:Hide();
 		ConquestFrame.NoSeason:Show();
+	elseif ( self.disabled ) then
+		ConquestFrame.NoSeason:Hide();
+		ConquestFrame.Disabled:Show();
 	else
 		ConquestFrame.NoSeason:Hide();
+		ConquestFrame.Disabled:Hide();
 		
+		local firstAvailableButton = self.arenasEnabled and ConquestFrame.Arena2v2 or ConquestFrame.RatedBG;
+
 		for i = 1, RATED_BG_ID do
 			local button = CONQUEST_BUTTONS[i];
 			local bracketIndex = CONQUEST_BRACKET_INDEXES[i];
-			local rating, seasonBest, weeklyBest, seasonPlayed, seasonWon, weeklyPlayed, weeklyWon = GetPersonalRatedInfo(bracketIndex);
+			local rating, seasonBest, weeklyBest, seasonPlayed, seasonWon, weeklyPlayed, weeklyWon, lastWeeksBest = GetPersonalRatedInfo(bracketIndex);
 			button.Wins:SetText(seasonWon);
 			button.CurrentRating:SetText(rating);
 			local honor, rewards;
 
+			local enabled;
+
 			if (i == RATED_BG_ID) then
+				enabled = self.bgsEnabled;
 				honor, rewards = GetRatedBGRewards();
 			else
+				enabled = self.arenasEnabled;
 				honor, rewards = GetArenaRewards();
 			end
 
@@ -942,16 +955,17 @@ function ConquestFrame_Update(self)
 				rewards = GetMaxLevelReward(CONQUEST_BRACKET_INDEXES[i]);
 			end
 
-			if (rewards and #rewards > 0) then
+			if (rewards and #rewards > 0 and enabled) then
 				local id, name, texture, quantity = unpack(rewards[1]);
 				SetPortraitToTexture(button.Reward.Icon, texture);
 				button.Reward.honor = honor;
 				button.Reward.itemID = id;
 				button.Reward:Show();
 
-				local numCompleted, total = GetWeeklyPVPRewardInfo(bracketIndex);
-				if (numCompleted and numCompleted < total) then
+				local questID, completed, itemLevel = GetWeeklyPVPRewardInfo(bracketIndex);
+				if (not completed and lastWeeksBest ~= 0) then
 					button.Reward.WeeklyBonus.bracketIndex = bracketIndex;
+					button.Reward.WeeklyBonus.index = i;
 					button.Reward.WeeklyBonus:Show();
 				else
 					button.Reward.WeeklyBonus:Hide();
@@ -959,11 +973,25 @@ function ConquestFrame_Update(self)
 			else
 				button.Reward:Hide();
 			end
+			button:SetEnabled(enabled);
+			
+			if (not enabled) then
+				button.TeamSizeText:SetFontObject(GameFontDisableLarge);
+				button.Wins:SetFontObject(GameFontDisable);
+				button.CurrentRating:SetFontObject(GameFontDisable);
+			else
+				button.TeamSizeText:SetFontObject(GameFontHighlightLarge);
+				button.Wins:SetFontObject(GameFontNormal);
+				button.CurrentRating:SetFontObject(GameFontNormal);
+			end
+
+			if (not enabled and ConquestFrame.selectedButton == button) then
+				ConquestFrame_SelectButton(firstAvailableButton);
+			end
 		end
 		
 		if ( not ConquestFrame.selectedButton ) then
-			-- if nothing's selected select Arena 2v2 cuz why the heck not
-			ConquestFrame_SelectButton(ConquestFrame.Arena2v2);
+			ConquestFrame_SelectButton(firstAvailableButton);
 		else
 			ConquestFrame_UpdateJoinButton();
 		end
@@ -1086,7 +1114,7 @@ local CONQUEST_TOOLTIP_PADDING = 30 --counts both sides
 function ConquestFrameButton_OnEnter(self)
 	local tooltip = ConquestTooltip;
 	
-	local rating, seasonBest, weeklyBest, seasonPlayed, seasonWon, weeklyPlayed, weeklyWon = GetPersonalRatedInfo(self.id);
+	local rating, seasonBest, weeklyBest, seasonPlayed, seasonWon, weeklyPlayed, weeklyWon, lastWeeksBest = GetPersonalRatedInfo(self.id);
 	
 	tooltip.Title:SetText(self.toolTipTitle);
 	
@@ -1120,16 +1148,25 @@ function PVPRewardTemplate_OnEnter(self)
 end
 
 function PVPRewardWeeklyBonus_OnEnter(self)
-	local numCompleted, total = GetWeeklyPVPRewardInfo(self.bracketIndex);
+	ConquestFrame.activeWeeklyBonus = self;
+	local questID, completed, itemLevel, numWinsReq = GetWeeklyPVPRewardInfo(self.bracketIndex);
+	if (questID and not completed and itemLevel) then
+		local rating, seasonBest, weeklyBest, seasonPlayed, seasonWon, weeklyPlayed, weeklyWon, lastWeeksBest = GetPersonalRatedInfo(self.bracketIndex);
 
-	if (numCompleted) then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		GameTooltip:SetText(PVP_WEEKLY_BONUS);
-		GameTooltip:AddLine(string.format(PVP_WEEKLY_BONUS_DESCRIPTION, total), 1, 1, 1, true);
-		GameTooltip:AddLine(" ");
-		GameTooltip:AddLine(string.format(PVP_WEEKLY_BONUS_COMPLETED, numCompleted, total));
+		GameTooltip:SetText(PVP_WEEKLY_BONUS:format(CONQUEST_SIZE_STRINGS[self.index]));
+		GameTooltip:AddLine(string.format(PVP_WEEKLY_BONUS_DESCRIPTION, itemLevel, lastWeeksBest), 1, 1, 1, true);
+		if (numWinsReq > 0) then
+			GameTooltip:AddLine(" ");
+			GameTooltip:AddLine(string.format(PVP_WEEKLY_BONUS_GAMES_WON, weeklyWon, numWinsReq));
+		end
 		GameTooltip:Show();
 	end
+end
+
+function PVPRewardWeeklyBonus_OnLeave(self)
+	GameTooltip:Hide();
+	ConquestFrame.activeWeeklyBonus = nil;
 end
 
 ---------------------------------------------------------------

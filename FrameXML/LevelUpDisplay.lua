@@ -1268,7 +1268,7 @@ end
 -- ************************************************************************************************************************************************************
 
 local BB_EXPAND_TIME = 0.25;		-- time to expand per item
-local BB_EXPAND_HEIGHT = 47;		-- pixels to expand per item
+local BB_EXPAND_HEIGHT = 50;		-- pixels to expand per item
 local BB_MAX_LOOT = 7;
 
 local BB_STATE_BANNER_IN = 1;		-- banner is animating in
@@ -1335,7 +1335,7 @@ function BossBanner_AnimLootInsert(self, entry)
 end
 
 function BossBanner_ConfigureLootFrame(lootFrame, data)
-	local itemName, itemLink, itemRarity, _, _, _, _, _, _, itemTexture = GetItemInfo(data.itemLink);
+	local itemName, itemLink, itemRarity, _, _, _, _, _, _, itemTexture, _, _, _, _, _, setID = GetItemInfo(data.itemLink);
 	lootFrame.ItemName:SetText(itemName);
 	local rarityColor = ITEM_QUALITY_COLORS[itemRarity];
 	lootFrame.ItemName:SetTextColor(rarityColor.r, rarityColor.g, rarityColor.b);
@@ -1350,6 +1350,23 @@ function BossBanner_ConfigureLootFrame(lootFrame, data)
 	else
 		lootFrame.Count:Hide();
 	end
+
+	if (setID) then
+		local setName = GetItemSetInfo(setID);
+		lootFrame.ItemName:ClearAllPoints();
+		lootFrame.ItemName:SetPoint("TOPLEFT", 56, -2);
+		lootFrame.SetName:SetText(BOSS_BANNER_LOOT_SET:format(setName));
+		lootFrame.SetName:Show();
+		lootFrame.PlayerName:ClearAllPoints();
+		lootFrame.PlayerName:SetPoint("TOPLEFT", lootFrame.SetName, "BOTTOMLEFT", 0, 0);
+	else
+		lootFrame.ItemName:ClearAllPoints();
+		lootFrame.ItemName:SetPoint("TOPLEFT", 56, -7);
+		lootFrame.SetName:Hide();
+		lootFrame.PlayerName:ClearAllPoints();
+		lootFrame.PlayerName:SetPoint("TOPLEFT", lootFrame.ItemName, "BOTTOMLEFT", 0, 0);
+	end
+
 	lootFrame.PlayerName:SetText(data.playerName);
 	local classColor = RAID_CLASS_COLORS[data.className];
 	lootFrame.PlayerName:SetTextColor(classColor.r, classColor.g, classColor.b);

@@ -396,8 +396,8 @@ function BonusObjectiveTracker_OnAnimateNextReward(module, oldPosIndex)
 		-- make sure we're still showing this
 		if ( block ) then
 			nextAnimBlock = block;
-			-- if this block that completed was ahead of this, bring it up
-			if ( data.posIndex > oldPosIndex ) then
+			-- If we have position data and if the block that completed was ahead of this, bring it up
+			if ( data.posIndex and oldPosIndex and data.posIndex > oldPosIndex ) then
 				data.posIndex = data.posIndex - 1;
 			end
 		end
@@ -481,9 +481,9 @@ function BonusObjectiveTracker_ShowRewardsTooltip(block)
 			end
 				
 			_G["GameTooltipTextLeft"..headerLine]:SetFontObject(GameTooltipHeaderText);
-			GameTooltip:AddLine(REWARDS, 1, 0.824, 0);				
+			GameTooltip:AddLine(REWARDS, NORMAL_FONT_COLOR:GetRGB());				
 		else
-			GameTooltip:SetText(REWARDS, 1, 0.824, 0);
+			GameTooltip:SetText(REWARDS, NORMAL_FONT_COLOR:GetRGB());
 		end
 		
 		GameTooltip:AddLine(isWorldQuest and WORLD_QUEST_TOOLTIP_DESCRIPTION or BONUS_OBJECTIVE_TOOLTIP_DESCRIPTION, 1, 1, 1, 1);
@@ -717,17 +717,25 @@ local function UpdateScenarioBonusObjectives(module)
 end
 
 local function TryAddingTimeLeftLine(module, block, questID)
-	if ( C_TaskQuest.GetQuestTimeLeftMinutes(questID) ) then
-		local function GetTimeLeftString()
-			local timeLeftMinutes = C_TaskQuest.GetQuestTimeLeftMinutes(questID);
-			if ( timeLeftMinutes > 0 and timeLeftMinutes < WORLD_QUESTS_TIME_CRITICAL_MINUTES ) then
+	local timeLeftMinutes = C_TaskQuest.GetQuestTimeLeftMinutes(questID);
+	if ( timeLeftMinutes and module.tickerSeconds ) then
+		local text = "";
+		if ( timeLeftMinutes > 0 ) then
+			if ( timeLeftMinutes < WORLD_QUESTS_TIME_CRITICAL_MINUTES ) then
 				local timeString = SecondsToTime(timeLeftMinutes * 60);
-				return BONUS_OBJECTIVE_TIME_LEFT:format(timeString)
+				text = BONUS_OBJECTIVE_TIME_LEFT:format(timeString);
+				-- want to update the time every 10 seconds
+				module.tickerSeconds = 10;
+			else
+				-- want to update 10 seconds before the difference becomes 0 minutes
+				-- once at 0 minutes we want a 10 second update to catch the transition below WORLD_QUESTS_TIME_CRITICAL_MINUTES
+				local timeToAlert = min((timeLeftMinutes - WORLD_QUESTS_TIME_CRITICAL_MINUTES) * 60 - 10, 10);
+				if ( module.tickerSeconds == 0 or timeToAlert < module.tickerSeconds ) then
+					module.tickerSeconds = timeToAlert;
+				end
 			end
-			return " ";
 		end
-
-		module:AddObjective(block, "TimeLeft", GetTimeLeftString, nil, nil, OBJECTIVE_DASH_STYLE_HIDE, OBJECTIVE_TRACKER_COLOR["TimeLeft"]);
+		module:AddObjective(block, "TimeLeft", text, nil, nil, OBJECTIVE_DASH_STYLE_HIDE, OBJECTIVE_TRACKER_COLOR["TimeLeft"], true);
 		block.currentLine.Icon:Hide();
 	end
 end
@@ -867,6 +875,12 @@ local function AddBonusObjectiveQuest(module, questID, posIndex, isTrackedWorldQ
 end
 
 local function UpdateTrackedWorldQuests(module)
+	if ( module.ticker ) then
+		module.ticker:Cancel();
+		module.ticker = nil;
+	end
+	module.tickerSeconds = 0;
+
 	for i = 1, GetNumWorldQuestWatches() do
 		local watchedWorldQuestID = GetWorldQuestWatchInfo(i);
 		if ( watchedWorldQuestID ) then
@@ -874,6 +888,12 @@ local function UpdateTrackedWorldQuests(module)
 				break; -- No more room
 			end
 		end
+	end
+
+	if ( module.tickerSeconds > 0 ) then
+		module.ticker = C_Timer.NewTicker(module.tickerSeconds, function()
+			ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_MODULE_WORLD_QUEST);
+		end);
 	end
 end
 
@@ -1180,11 +1200,11 @@ function ObjectiveTrackerBonusBannerFrame_PlayBanner(self, questID)
 	local trackerFrame = ObjectiveTrackerFrame;
 	local xOffset = trackerFrame:GetLeft() - self:GetRight();
 	local height = 0;
-	for i = 1, #trackerFrame.MODULES do
-		height = height + (trackerFrame.MODULES[i].oldContentsHeight or trackerFrame.MODULES[i].contentsHeight or 0);
-		if ( trackerFrame.MODULES[i] == QUEST_TRACKER_MODULE ) then
+	for i = 1, #trackerFrame.MODULES_UI_ORDER do
+		if ( trackerFrame.MODULES_UI_ORDER[i] == BONUS_OBJECTIVE_TRACKER_MODULE ) then
 			break;
 		end
+		height = height + (trackerFrame.MODULES_UI_ORDER[i].oldContentsHeight or trackerFrame.MODULES_UI_ORDER[i].contentsHeight or 0);
 	end
 	local yOffset = trackerFrame:GetTop() - height - self:GetTop() + 64;
 	self.Anim.BG1Translation:SetOffset(xOffset, yOffset);

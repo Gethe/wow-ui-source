@@ -1,8 +1,8 @@
 
-function CooldownFrame_Set(self, start, duration, enable, forceShowDrawEdge)
+function CooldownFrame_Set(self, start, duration, enable, forceShowDrawEdge, modRate)
 	if enable and enable ~= 0 and start > 0 and duration > 0 then
 		self:SetDrawEdge(forceShowDrawEdge);
-		self:SetCooldown(start, duration);
+		self:SetCooldown(start, duration, modRate);
 	else
 		CooldownFrame_Clear(self);
 	end

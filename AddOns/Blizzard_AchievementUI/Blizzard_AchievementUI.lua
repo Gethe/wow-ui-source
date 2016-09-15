@@ -1317,7 +1317,7 @@ function AchievementButton_DisplayAchievement (button, category, achievement, se
 		button.icon.texture:SetTexture(icon);
 		if ( completed or wasEarnedByMe ) then
 			button.completed = true;
-			button.dateCompleted:SetText(string.format(SHORTDATE, day, month, year));
+			button.dateCompleted:SetText(FormatShortDate(day, month, year));
 			button.dateCompleted:Show();
 			if ( button.saturatedStyle ~= saturatedStyle ) then
 				button:Saturate();
@@ -1685,7 +1685,7 @@ function AchievementObjectives_DisplayProgressiveAchievement (objectivesFrame, i
 		miniAchievement.name = achievementName;
 		miniAchievement.desc = description;
 		if ( month ) then
-			miniAchievement.date = string.format(SHORTDATE, day, month, year);
+			miniAchievement.date = FormatShortDate(day, month, year);
 		end
 		i = index;
 	end
@@ -1832,7 +1832,7 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id, renderOffSc
 			local id, achievementName, points, achievementCompleted, month, day, year, description, flags, iconpath = GetAchievementInfo(assetID);
 			
 			if ( month ) then
-				metaCriteria.date = string.format(SHORTDATE, day, month, year);
+				metaCriteria.date = FormatShortDate(day, month, year)
 			else
 				metaCriteria.date = nil;
 			end
@@ -2352,7 +2352,7 @@ function AchievementFrameSummary_UpdateAchievements(...)
 			button.id = id;
 
 			if ( completed ) then
-				button.dateCompleted:SetText(string.format(SHORTDATE, day, month, year));
+				button.dateCompleted:SetText(FormatShortDate(day, month, year));
 			else
 				button.dateCompleted:SetText("");
 			end
@@ -2391,7 +2391,7 @@ function AchievementFrameSummary_UpdateAchievements(...)
 					button.icon.texture:SetTexture(icon);
 					button.id = id;
 					if ( month ) then
-						button.dateCompleted:SetText(string.format(SHORTDATE, day, month, year));
+						button.dateCompleted:SetText(FormatShortDate(day, month, year));
 					else
 						button.dateCompleted:SetText("");
 					end
@@ -2620,8 +2620,8 @@ function AchievementFrame_SelectAchievement(id, forceSelect, isComparison)
 	end
 	
 	achievementFunctions.clearFunc();
-	achievementFunctions.updateFunc();
 	scrollBar:SetValue(0);
+	achievementFunctions.updateFunc();
 	
 	local shown = false;
 	local previousScrollValue;
@@ -3017,7 +3017,7 @@ function AchievementFrameComparison_DisplayAchievement (button, category, index)
 		
 		if ( completed ) then
 			player.completed = true;
-			player.dateCompleted:SetText(string.format(SHORTDATE, day, month, year));
+			player.dateCompleted:SetText(FormatShortDate(day, month, year));
 			player.dateCompleted:Show();
 			if ( player.saturatedStyle ~= saturatedStyle ) then
 				player:Saturate();
@@ -3030,7 +3030,7 @@ function AchievementFrameComparison_DisplayAchievement (button, category, index)
 		
 		if ( friendCompleted ) then
 			friend.completed = true;
-			friend.status:SetText(string.format(SHORTDATE, friendDay, friendMonth, friendYear));
+			friend.status:SetText(FormatShortDate(friendDay, friendMonth, friendYear));
 			if ( friend.saturatedStyle ~= saturatedStyle ) then
 				friend:Saturate();
 			end

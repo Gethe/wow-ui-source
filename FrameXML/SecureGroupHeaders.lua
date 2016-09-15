@@ -623,7 +623,7 @@ function SecureGroupPetHeader_Update(self)
 	configureChildren(self, sortingTable);
 end
 
--- SecureAuraHeader contributed by alestane@comcast.net
+-- SecureAuraHeader contributed by Nevin Flanagan
 
 --[[
 filter = [STRING] -- a pipe-separated list of aura filter options ("RAID" will be ignored)
@@ -792,7 +792,7 @@ local function configureAuras(self, auraTable, consolidateTable, weaponPosition)
 		local hasMainHandEnchant, hasOffHandEnchant, hasRangedEnchant, _;
 		hasMainHandEnchant, _, _, hasOffHandEnchant, _, _, hasRangedEnchant, _, _ = GetWeaponEnchantInfo();
 
-		for weapon=3,1,-1 do
+		for weapon=2,1,-1 do
 			local weaponAttr = "tempEnchant"..weapon
 			local tempEnchant = self:GetAttribute(weaponAttr)
 			if ( (select(weapon, hasMainHandEnchant, hasOffHandEnchant, hasRangedEnchant)) ) then

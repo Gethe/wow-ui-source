@@ -1,4 +1,4 @@
--- The following function is used with permission from Daniel Stephens <iriel@vigilance-committee.org>
+-- The following function is used with permission from Daniel Stephens
 -- texture			- Texture
 -- canvasFrame      - Canvas Frame (for anchoring)
 -- startX,startY    - Coordinate of start of line

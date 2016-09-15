@@ -265,14 +265,12 @@ function WorldMapBountyBoardMixin:CalculateBountySubObjectives(bountyData)
 end
 
 function WorldMapBountyBoardMixin:SetSelectedBountyIndex(selectedBountyIndex)
-	if self.selectedBountyIndex ~= selectedBountyIndex then
-		self.selectedBountyIndex = selectedBountyIndex;
-		PlaySound("UI_WorldQuest_Map_Select");
-		self:RefreshBountyTabs();
-		self:RefreshSelectedBounty();
-		if self.selectedBountyChangedCallback then
-			self.selectedBountyChangedCallback(self);
-		end
+	self.selectedBountyIndex = selectedBountyIndex;
+	PlaySound("UI_WorldQuest_Map_Select");
+	self:RefreshBountyTabs();
+	self:RefreshSelectedBounty();
+	if self.selectedBountyChangedCallback then
+		self.selectedBountyChangedCallback(self);
 	end
 end
 
@@ -386,6 +384,32 @@ end
 function WorldMapBountyBoardMixin:OnTabClick(tab)
 	if not tab.isEmpty then
 		self:SetSelectedBountyIndex(tab.bountyIndex);
+		self:FindBestMapForSelectedBounty();
+	end
+end
+
+function WorldMapBountyBoardMixin:FindBestMapForSelectedBounty()
+	local _, continentID = GetCurrentMapContinent();
+	local continentMaps =  { GetMapSubzones(continentID) };
+
+	-- move current map to 1st position
+	for i = 1, #continentMaps, 2 do
+		if continentMaps[i] == self.mapAreaID then
+			continentMaps[1], continentMaps[i] = continentMaps[i], continentMaps[1];
+			break;
+		end
+	end
+
+	for i = 1, #continentMaps, 2 do
+		local taskInfo = C_TaskQuest.GetQuestsForPlayerByMapID(continentMaps[i], continentID);
+		for _, info  in ipairs(taskInfo) do
+			if QuestMapFrame_IsQuestWorldQuest(info.questId) then
+				if self:IsWorldQuestCriteriaForSelectedBounty(info.questId) then
+					SetMapByID(continentMaps[i]);
+					return;
+				end
+			end
+		end
 	end
 end
 
@@ -449,4 +473,8 @@ function WorldMapBountyBoardMixin:TryShowingCompletionTutorial()
 			self.TutorialBox:Show();
 		end
 	end
+end
+
+function WorldMapBountyBoardMixin:AreBountiesAvailable()
+	return self:IsShown() and (self.lockedType == WORLD_MAP_BOUNTY_BOARD_LOCK_TYPE_NONE or self.lockedType == WORLD_MAP_BOUNTY_BOARD_LOCK_TYPE_NO_BOUNTIES);
 end
