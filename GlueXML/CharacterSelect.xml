@@ -1807,7 +1807,7 @@
 						</Size>
 						<Anchors>
 							<Anchor point="TOP" relativeTo="CharacterSelectLogo" relativePoint="BOTTOM" x="0" y="-5"/>
-							<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="TOPLEFT" x="260" y="-610"/>
+							<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="TOPLEFT" x="260" y="-570"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
@@ -1836,6 +1836,277 @@
 							</OnHide>
 						</Scripts>
 					</Frame>
+                    <Frame name="CharacterSelectConvertInterstitial" inherits="GlueModalFrameTemplate" frameStrata="DIALOG" hidden="true">
+                        <Size x="800" y="533"/>
+                        <Anchors>
+                            <Anchor point="CENTER"/>
+                        </Anchors>
+                        <Layers>
+                            <Layer level="BACKGROUND">
+                                <Texture parentKey="BG" atlas="glueannouncementpopup-background" setAllPoints="true"/>
+                            </Layer>
+                            <Layer level="ARTWORK">
+                                <FontString parentKey="Title" inherits="GameFontNormalHuge" text="CONVERT_TITLE">
+                                    <Anchors>
+                                        <Anchor point="TOP" x="0" y="-55"/>
+                                    </Anchors>
+                                    <Shadow>
+                                        <Offset>
+                                            <AbsDimension x="0" y="0"/>
+                                        </Offset>
+                                        <Color r="0" g="0" b="0"/>
+                                    </Shadow>
+                                    <Color r="0" g="0" b="0"/>
+                                </FontString>
+                            </Layer>
+                            <Layer level="ARTWORK" textureSubLevel="1">
+                                <Texture parentKey="Inset" atlas="glueannouncementpopup-inset" useAtlasSize="true">
+                                    <Anchors>
+                                        <Anchor point="RIGHT" x="-78" y="-50"/>
+                                    </Anchors>
+                                </Texture>
+                                <FontString parentKey="ConvertNowDescription" inherits="GameFontNormalLarge" justifyH="CENTER">
+                                    <Size x="400" y="0"/>
+                                    <Anchors>
+                                        <Anchor point="TOP" relativeKey="$parent.Inset" relativePoint="BOTTOM" x="0" y="-20"/>
+                                    </Anchors>
+                                    <Shadow>
+                                        <Offset>
+                                            <AbsDimension x="0" y="0"/>
+                                        </Offset>
+                                        <Color r="0" g="0" b="0"/>
+                                    </Shadow>
+                                    <Color r="0" g="0" b="0"/>
+                                </FontString>
+                            </Layer>
+                            <Layer level="ARTWORK" textureSubLevel="2">
+                                <FontString parentKey="Before" inherits="GameFontNormalHuge3Outline">
+                                    <Anchors>
+                                        <Anchor point="TOPLEFT" relativeKey="$parent.Inset" x="50" y="-24"/>
+                                    </Anchors>
+                                </FontString>
+                                <Texture parentKey="Arrow" atlas="glueannouncementpopup-arrow" useAtlasSize="true">
+                                    <Anchors>
+                                        <Anchor point="CENTER" relativeKey="$parent.Inset" x="0" y="0"/>
+                                    </Anchors>
+                                </Texture>
+                                <FontString parentKey="BeforeLabel" inherits="GameFontBlackSmall" text="MINUTES_CAP">
+                                    <Anchors>
+                                        <Anchor point="TOP" relativeKey="$parent.Before" relativePoint="BOTTOM" x="0" y="-4"/>
+                                    </Anchors>
+                                </FontString>
+                                <FontString parentKey="After" inherits="GameFontNormalHuge3Outline">
+                                    <Anchors>
+                                        <Anchor point="TOPLEFT" relativeKey="$parentKey.Inset" relativePoint="TOP" x="80" y="-24"/>
+                                    </Anchors>
+                                </FontString>
+                                <FontString parentKey="AfterLabel" inherits="GameFontBlackSmall" text="DAYS_UNLIMITED_PLAY">
+                                    <Anchors>
+                                        <Anchor point="TOP" relativeKey="$parent.After" relativePoint="BOTTOM" x="0" y="-4"/>
+                                    </Anchors>
+                                </FontString>
+                            </Layer>
+                        </Layers>
+                        <Frames>
+							<SimpleHTML parentKey="Description">
+								<Size x="400" y="100"/>
+								<Anchors>
+									<Anchor point="TOP" x="140" y="-120"/>
+								</Anchors>
+								<Scripts>
+									<OnHyperlinkClick>
+										local linkType, index = (":"):split(link);
+										if ( linkType == "urlIndex" ) then
+											LoadURLIndex(tonumber(index));
+										end
+									</OnHyperlinkClick>
+								</Scripts>
+								<FontString inherits="GameFontNormalLarge">
+                                    <Shadow>
+                                        <Offset>
+                                            <AbsDimension x="0" y="0"/>
+                                        </Offset>
+                                        <Color r="0" g="0" b="0"/>
+                                    </Shadow>
+                                    <Color r="0" g="0" b="0"/>
+                                </FontString>
+							</SimpleHTML>
+                            <Button parentKey="ConvertNowButton" inherits="UIPanelGoldButtonTemplate" text="CONVERT_NOW">
+                                <Size x="252" y="32"/>
+                                <Anchors>
+                                    <Anchor point="TOPLEFT" relativeKey="$parent.Inset" relativePoint="BOTTOMLEFT" x="-16" y="-80"/>
+                                </Anchors>
+                                <Scripts>
+                                    <OnClick function="ConvertInterstitialConvertNow_OnClick"/>
+                                </Scripts>
+                            </Button>
+                            <Button parentKey="LaterButton" inherits="UIPanelButtonTemplate" text="LATER">
+                                <Size x="130" y="26"/>
+                                <Anchors>
+                                    <Anchor point="LEFT" relativeKey="$parent.ConvertNowButton" relativePoint="RIGHT" x="2" y="1"/>
+                                </Anchors>
+                                <Scripts>
+                                    <OnClick>
+                                        self:GetParent():Hide()
+                                    </OnClick>
+                                </Scripts>
+                            </Button>
+                            <Frame parentKey="InfoFrame" enableMouse="true">
+                                <Size x="21" y="21"/>
+                                <Anchors>
+                                    <Anchor point="TOPRIGHT" relativeKey="$parent.Inset" x="-8" y="-8"/>
+                                </Anchors>
+                                <Layers>
+                                    <Layer level="ARTWORK">
+                                        <Texture parentKey="Icon" atlas="glueannouncementpopup-icon-info" setAllPoints="true"/>
+                                    </Layer>
+                                    <Layer level="HIGHLIGHT">
+                                        <Texture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight" setAllPoints="true"/>
+                                    </Layer>
+                                </Layers>
+                                <Scripts>
+                                    <OnEnter>
+                                        GlueTooltip:SetOwner(self, "ANCHOR_RIGHT");
+                                        GlueTooltip:SetText(CONVERT_TOOLTIP, nil, nil, nil, 1.0, true);
+                                        GlueTooltip:Show();
+                                    </OnEnter>
+                                    <OnLeave>
+                                        GlueTooltip:Hide();
+                                    </OnLeave>
+                                </Scripts>
+                            </Frame>
+                        </Frames>
+                    </Frame>
+                     <Frame name="ConvertConfirmationFrame"  inherits="GlueModalFrameTemplate" frameStrata="DIALOG" hidden="true">
+                        <Size x="412" y="212"/>
+                        <Anchors>
+                            <Anchor point="CENTER" x="0" y="140"/>
+                        </Anchors>
+                        <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+                            <BackgroundInsets>
+                                <AbsInset left="11" right="12" top="12" bottom="11"/>
+                            </BackgroundInsets>
+                            <TileSize>
+                                <AbsValue val="32"/>
+                            </TileSize>
+                            <EdgeSize>
+                                <AbsValue val="32"/>
+                            </EdgeSize>
+                        </Backdrop>
+                        <Layers>
+                            <Layer level="ARTWORK">
+                                <FontString parentKey="Confirmation" inherits="GameFontNormalMed2" text="CONVERT_CONFIRMATION">
+                                    <Size x="360" y="0"/>
+                                    <Anchors>
+                                        <Anchor point="TOP" x="0" y="-24"/>
+                                    </Anchors>
+                                </FontString>
+                                <FontString parentKey="Text" inherits="GameFontNormalMed2" justifyH="CENTER">
+                                    <Size x="360" y="0"/>
+                                    <Anchors>
+                                        <Anchor point="TOP" relativeKey="$parent.Confirmation" relativePoint="BOTTOM" x="0" y="-24"/>
+                                    </Anchors>
+                                    <Color r="1" g="1" b="1"/>
+                                </FontString>
+                            </Layer>
+                        </Layers>
+                        <Frames>
+                            <Button parentKey="ConfirmButton" inherits="GlueButtonSmallTemplate" text="ACCEPT">
+                                <Size x="130" y="38"/>
+                                <Anchors>
+                                    <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM" x="-4" y="12"/>
+                                </Anchors>
+                                <Scripts>
+                                    <OnClick function="ConvertConfirmationConfirmButton_OnClick"/>
+                                </Scripts>
+                            </Button>
+                            <Button parentKey="CancelButton" inherits="GlueButtonSmallTemplate" text="CANCEL">
+                                <Size x="130" y="38"/>
+                                <Anchors>
+                                    <Anchor point="LEFT" relativeKey="$parent.ConfirmButton" relativePoint="RIGHT" x="8" y="0"/>
+                                </Anchors>
+                                <Scripts>
+                                    <OnClick>
+                                        self:GetParent():Hide();
+                                    </OnClick>
+                                </Scripts>
+                            </Button>
+                        </Frames>
+                        <Scripts>
+                            <OnLoad>
+                                self.Text:SetSpacing(4);
+                            </OnLoad>
+                        </Scripts>
+                    </Frame>
+                    <Frame name="ConversionInProgressDialog"  inherits="GlueModalFrameTemplate" topLevel="true" enableMouse="true" frameStrata="DIALOG" hidden="true">
+                        <Size x="350" y="64"/>
+                        <Anchors>
+                            <Anchor point="CENTER" x="0" y="140"/>
+                        </Anchors>
+                        <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+                            <BackgroundInsets>
+                                <AbsInset left="11" right="12" top="12" bottom="10"/>
+                            </BackgroundInsets>
+                            <TileSize>
+                                <AbsValue val="32"/>
+                            </TileSize>
+                            <EdgeSize>
+                                <AbsValue val="32"/>
+                            </EdgeSize>
+                        </Backdrop>
+                        <Frames>
+                            <Frame parentKey="Spinner" inherits="LoadingSpinnerTemplate">
+                                <Anchors>
+                                    <Anchor point="TOP" x="0" y="-10" />
+                                </Anchors>
+                                <Scripts>
+                                    <OnShow>
+                                        self.Anim:Play();
+                                    </OnShow>
+                                    <OnHide>
+                                        self.Anim:Stop();
+                                    </OnHide>
+                                </Scripts>
+                            </Frame>
+                        </Frames>
+                        <Layers>
+                            <Layer level="BACKGROUND">
+                                <Texture>
+                                    <Anchors>
+                                        <Anchor point="TOPLEFT" x="4" y="-4"/>
+                                        <Anchor point="BOTTOMRIGHT" x="-4" y="4"/>
+                                    </Anchors>
+                                    <Color r="0" b="0" g="0" a=".4"/>
+                                </Texture>
+                            </Layer>
+                            <Layer level="ARTWORK">
+                                <FontString parentKey="Title" inherits="GlueFontNormalLarge" text="BLIZZARD_STORE_TRANSACTION_IN_PROGRESS">
+                                    <Size x="300" y="0"/>
+                                    <Anchors>
+                                        <Anchor point="TOP" relativeKey="$parent.Spinner" relativePoint="BOTTOM" x="0" y="-8" />
+                                    </Anchors>
+                                </FontString>
+                                <Texture parentKey="Line" file="Interface\Store\Store-Main">
+                                    <Size x="298" y="2"/>
+                                    <Anchors>
+                                        <Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="0" y="-8"/>
+                                    </Anchors>
+                                    <TexCoords left="0.50878906" right="0.79980469" top="0.63085938" bottom="0.63281250"/>	
+                                </Texture>
+                                <FontString parentKey="Notice" inherits="GameFontGreen" text="ACCOUNT_REACTIVATE_LOGOUT_NOTICE">
+                                    <Size x="300" y="0"/>
+                                    <Anchors>
+                                        <Anchor point="TOP" relativeKey="$parent.Line" relativePoint="BOTTOM" x="0" y="-8"/>
+                                    </Anchors>
+                                </FontString>
+                            </Layer>
+                        </Layers>
+                        <Scripts>
+                            <OnLoad>
+                                self:SetHeight( self.Spinner:GetHeight() + self.Title:GetHeight() + self.Line:GetHeight() + self.Notice:GetHeight() + 60 );
+                            </OnLoad>
+                        </Scripts>
+                    </Frame>
 				</Frames>
 				<Animations>
 					<AnimationGroup parentKey="FadeIn" setToFinalAlpha="true">
@@ -1893,6 +2164,17 @@
 						</FontString>
 					</Layer>
 				</Layers>
+                <Frames>
+                    <Button parentKey="ConvertMe" inherits="GluePanelButtonTemplate" hidden="true" text="GAME_TIME_CONVERSION">
+                        <Size x="200" y="36"/>
+                        <Anchors>
+                            <Anchor point="BOTTOM" x="0" y="8"/>
+                        </Anchors>
+                        <Scripts>
+                            <OnClick function="GameRoomBillingFrameConvertMe_OnClick"/>
+                        </Scripts>
+                    </Button>
+                </Frames>
 				<Backdrop bgFile="Interface\Glues\Common\Glue-Tooltip-Background" edgeFile="Interface\Glues\Common\Glue-Tooltip-Border" tile="true">
 					<BackgroundInsets>
 						<AbsInset left="10" right="5" top="4" bottom="9"/>

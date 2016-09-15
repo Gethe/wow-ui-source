@@ -192,10 +192,11 @@
 			<OnLeave function="QueueStatusMinimapButton_OnLeave"/>
 			<OnClick function="QueueStatusMinimapButton_OnClick"/>
 			<OnShow function="QueueStatusMinimapButton_OnShow"/>
+			<OnHide function="QueueStatusMinimapButton_OnHide"/>
 		</Scripts>						
 		<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
 	</Button>	
-	<Frame name="QueueStatusFrame" frameStrata="TOOLTIP" hidden="true" clampedToScreen="true" parent="QueueStatusMinimapButton" inherits="TooltipBorderedFrameTemplate">
+	<Frame name="QueueStatusFrame" frameStrata="TOOLTIP" hidden="true" clampedToScreen="true" parent="UIParent" inherits="TooltipBorderedFrameTemplate">
 		<Size x="275" y="150"/>
 		<Anchors>
 			<Anchor point="TOPRIGHT" relativeTo="QueueStatusMinimapButton" relativePoint="TOPLEFT" x="0" y="0"/>

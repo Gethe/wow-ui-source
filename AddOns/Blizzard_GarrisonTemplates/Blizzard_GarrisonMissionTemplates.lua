@@ -1093,6 +1093,7 @@ function GarrisonMissionComplete:OnLoad()
 	self:SetAnimationControl();
 
 	self.missionRewardEffectsPool = CreateFramePool("FRAME", self.BonusRewards, "GarrisonMissionRewardEffectsTemplate", OnGarrisonMissionRewardReleased);
+	self.BonusRewards.Rewards = {};
 end
 
 function GarrisonMissionComplete:OnEvent(event, ...)

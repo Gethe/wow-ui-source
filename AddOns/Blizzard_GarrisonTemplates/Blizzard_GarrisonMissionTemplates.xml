@@ -97,7 +97,7 @@
 		<DisabledFont style="GameFontHighlightSmall"/>
 	</Button>
 
-	<Frame name="GarrisonMissionRewardEffectsTemplate" virtual="true">
+	<Frame name="GarrisonMissionRewardEffectsTemplate" parentArray="Rewards" virtual="true">
 		<Size x="152" y="41"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -266,12 +266,12 @@
 					<Anchor point="LEFT" relativePoint="RIGHT" relativeKey="$parent.MissionXP" x="4"/>
 				</Anchors>
 			</Frame>
-			<Frame parentKey="Reward1" parentArray="Rewards" inherits="GarrisonMissionRewardEffectsTemplate">
+			<Frame parentKey="Reward1" inherits="GarrisonMissionRewardEffectsTemplate">
 				<Anchors>
 					<Anchor point="LEFT"/>
 				</Anchors>
 			</Frame>
-			<Frame parentKey="Reward2" parentArray="Rewards" inherits="GarrisonMissionRewardEffectsTemplate">
+			<Frame parentKey="Reward2" inherits="GarrisonMissionRewardEffectsTemplate">
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.Reward1" relativePoint="RIGHT" x="6" y="0"/>
 				</Anchors>
@@ -1155,11 +1155,6 @@
 					</OnLoad>
 				</Scripts>
 			</CinematicModel>
-			<Frame parentArray="Rewards" hidden="true" inherits="GarrisonMissionRewardEffectsTemplate">
-				<Anchors>
-					<Anchor point="RIGHT" x="-18"/>
-				</Anchors>
-			</Frame>
 			<Frame parentKey="Saturated" useParentLevel="true" setAllPoints="true" hidden="true">
 				<Animations>
 					<AnimationGroup parentKey="FadeIn" setToFinalAlpha="true">

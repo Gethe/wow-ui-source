@@ -51,6 +51,10 @@ function QueueStatusMinimapButton_OnShow(self)
 	self.Eye:SetFrameLevel(self:GetFrameLevel() - 1);
 end
 
+function QueueStatusMinimapButton_OnHide(self)
+	QueueStatusFrame:Hide();
+end
+
 --Will play the sound numPingSounds times (or forever if nil)
 function QueueStatusMinimapButton_SetGlowLock(self, lock, enabled, numPingSounds)
 	self.glowLocks[lock] = enabled and (numPingSounds or -1);
