@@ -238,6 +238,8 @@ function ToggleWorldMap()
 			end
 		elseif ( isWindowed ) then
 			WorldMap_ToggleSizeUp();
+			WorldMapScrollFrame_ReanchorQuestPOIs();
+			WorldMapBlobFrame_DelayedUpdateBlobs();
 		else
 			ToggleFrame(WorldMapFrame);
 		end
@@ -331,6 +333,8 @@ function WorldMapFrame_OnLoad(self)
 	WorldMapUnitPositionFrame:SetPlayerPingTexture(1, "Interface\\minimap\\UI-Minimap-Ping-Center", 32, 32);
 	WorldMapUnitPositionFrame:SetPlayerPingTexture(2, "Interface\\minimap\\UI-Minimap-Ping-Expand", 32, 32);
 	WorldMapUnitPositionFrame:SetPlayerPingTexture(3, "Interface\\minimap\\UI-Minimap-Ping-Rotate", 70, 70);
+	
+	WorldMapUnitPositionFrame:SetMouseOverUnitExcluded("player", true);
 end
 
 function WorldMapFrame_SetBonusObjectivesDirty()
@@ -1777,7 +1781,7 @@ function WorldMap_AddQuestTimeToTooltip(questID)
 end
 
 function WorldMap_AddQuestRewardsToTooltip(questID)
-	if ( GetQuestLogRewardXP(questID) > 0 or GetNumQuestLogRewardCurrencies(questID) > 0 or GetNumQuestLogRewards(questID) > 0 or GetQuestLogRewardMoney(questID) > 0 or GetQuestLogRewardArtifactXP(questID) > 0 ) then
+	if ( GetQuestLogRewardXP(questID) > 0 or GetNumQuestLogRewardCurrencies(questID) > 0 or GetNumQuestLogRewards(questID) > 0 or GetQuestLogRewardMoney(questID) > 0 or GetQuestLogRewardArtifactXP(questID) > 0 or GetQuestLogRewardHonor(questID) ) then
 		WorldMapTooltip:AddLine(" ");
 		WorldMapTooltip:AddLine(QUEST_REWARDS, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
 		local hasAnySingleLineRewards = false;
@@ -1806,7 +1810,13 @@ function WorldMap_AddQuestRewardsToTooltip(questID)
 			WorldMapTooltip:AddLine(text, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 			hasAnySingleLineRewards = true;
 		end
-
+		-- honor
+		local honorAmount = GetQuestLogRewardHonor(questID);
+		if ( honorAmount > 0 ) then
+			WorldMapTooltip:AddLine(BONUS_OBJECTIVE_REWARD_WITH_COUNT_FORMAT:format("Interface\\ICONS\\Achievement_LegionPVPTier4", honorAmount, HONOR), HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+			hasAnySingleLineRewards = true;
+		end
+		
 		-- items
 		local numQuestRewards = GetNumQuestLogRewards(questID);
 		if numQuestRewards > 0 then
@@ -2655,6 +2665,7 @@ function WorldMap_ToggleSizeUp()
 	WORLDMAP_SETTINGS.size = WORLDMAP_FULLMAP_SIZE;
 	-- adjust main frame
 	WorldMapFrame:SetParent(nil);
+	WorldMapFrame:SetFrameStrata("FULLSCREEN");
 	WorldMapTooltip:SetFrameStrata("TOOLTIP");
 	WorldMapCompareTooltip1:SetFrameStrata("TOOLTIP");
 	WorldMapCompareTooltip2:SetFrameStrata("TOOLTIP");

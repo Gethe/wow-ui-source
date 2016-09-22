@@ -251,6 +251,7 @@ function ArtifactUIMixin:OnInventoryItemMouseEnter(bag, slot)
 		local itemID = select(10, GetContainerItemInfo(bag, slot));
 		if itemID and IsArtifactRelicItem(itemID) and not CursorHasItem() then
 			self.PerksTab:ShowHighlightForRelicItemID(itemID);
+			self.PerksTab.TitleContainer:RefreshRelicHighlights(itemID);
 		end
 	end
 end
@@ -259,6 +260,7 @@ function ArtifactUIMixin:OnInventoryItemMouseLeave(bag, slot)
 	local itemID = select(10, GetContainerItemInfo(bag, slot));
 	if itemID and IsArtifactRelicItem(itemID) and not CursorHasItem() then
 		self.PerksTab:HideHighlightForRelicItemID(itemID);
+		self.PerksTab.TitleContainer:RefreshRelicHighlights();
 	end
 end
 

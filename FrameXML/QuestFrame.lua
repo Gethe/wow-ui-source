@@ -273,7 +273,7 @@ function QuestFrameProgressItems_Update()
 		end
 
 		-- Show the "Required Items" text if needed.
-		if (actualNumRequiredItems ~= 0) then
+		if (actualNumRequiredItems + numRequiredCurrencies > 0) then
 			QuestProgressRequiredItemsText:Show();
 		else
 			QuestProgressRequiredItemsText:Hide();

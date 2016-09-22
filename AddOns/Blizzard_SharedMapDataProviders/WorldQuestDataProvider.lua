@@ -13,6 +13,7 @@ function WorldQuestDataProviderMixin:IsMatchingWorldMapFilters()
 end
 
 function WorldQuestDataProviderMixin:OnAdded(mapCanvas)
+	self.activePins = {};
 	MapCanvasDataProviderMixin.OnAdded(self, mapCanvas);
 
 	self:RegisterEvent("SUPER_TRACKED_QUEST_CHANGED");
@@ -25,12 +26,13 @@ function WorldQuestDataProviderMixin:OnEvent(event, ...)
 end
 
 function WorldQuestDataProviderMixin:RemoveAllData()
+	wipe(self.activePins);
 	self:GetMap():RemoveAllPinsByTemplate("WorldQuestPinTemplate");
 end
 
 function WorldQuestDataProviderMixin:OnShow()
 	assert(self.ticker == nil);
-	self.ticker = C_Timer.NewTicker(1, function() self:RefreshAllData() end);
+	self.ticker = C_Timer.NewTicker(10, function() self:RefreshAllData() end);
 end
 
 function WorldQuestDataProviderMixin:OnHide()
@@ -45,7 +47,10 @@ function WorldQuestDataProviderMixin:DoesWorldQuestInfoPassFilters(info)
 end
 
 function WorldQuestDataProviderMixin:RefreshAllData(fromOnShow)
-	self:RemoveAllData();
+	local pinsToRemove = {};
+	for questId in pairs(self.activePins) do
+		pinsToRemove[questId] = true;
+	end
 
 	local mapAreaID = self:GetMap():GetMapID();
 	for zoneIndex = 1, C_MapCanvas.GetNumZones(mapAreaID) do
@@ -58,13 +63,21 @@ function WorldQuestDataProviderMixin:RefreshAllData(fromOnShow)
 					if HaveQuestData(info.questId) then
 						if QuestMapFrame_IsQuestWorldQuest(info.questId) then
 							if self:DoesWorldQuestInfoPassFilters(info) then
-								self:AddWorldQuest(info);
+								pinsToRemove[info.questId] = nil;
+								if not self.activePins[info.questId] then
+									self.activePins[info.questId] = self:AddWorldQuest(info);
+								end
 							end
 						end
 					end
 				end
 			end
 		end
+	end
+	
+	for questId in pairs(pinsToRemove) do
+		self:GetMap():RemovePin(self.activePins[questId]);
+		self.activePins[questId] = nil;
 	end
 end
 
@@ -161,6 +174,8 @@ function WorldQuestDataProviderMixin:AddWorldQuest(info)
 	pin:Show();
 
 	C_TaskQuest.RequestPreloadRewardData(info.questId);
+	
+	return pin;
 end
 
 --[[ World Quest Pin ]]--
@@ -171,6 +186,11 @@ function WorldQuestPinMixin:OnLoad()
 	self:SetScalingLimits(1, 1.5, 0.50);
 
 	self.UpdateTooltip = self.OnMouseEnter;
+
+	-- Flight points can nudge world quests.
+	self:SetNudgeTargetFactor(0.015);
+	self:SetNudgeZoomedOutFactor(1.0);
+	self:SetNudgeZoomedInFactor(0.25);
 end
 
 function WorldQuestPinMixin:OnMouseEnter()

@@ -78,14 +78,17 @@
 					</Anchors>
 				</Texture>
 			</Layer>
+			<Layer level="HIGHLIGHT">
+				<Texture parentKey="InnerHighlightTexture" atlas="bags-roundhighlight" useAtlasSize="true" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 		</Layers>
 
 		<NormalTexture parentKey="NormalTexture" />
-		<HighlightTexture parentKey="HighlightTexture" atlas="bags-roundhighlight" useAtlasSize="true" alphaMode="ADD">
-			<Anchors>
-				<Anchor point="CENTER"/>
-			</Anchors>
-		</HighlightTexture>
+		<HighlightTexture parentKey="HighlightTexture" alphaMode="ADD" />
 
 		<Scripts>
 			<OnEnter>

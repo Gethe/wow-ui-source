@@ -49,21 +49,43 @@ end
 function ActiveQuestDataProviderMixin:AddActiveQuest(questID, x, y)
 	local pin = self:GetMap():AcquirePin("ActiveQuestPinTemplate");
 	pin.questID = questID;
-
+	
+	local isSuperTracked = questID == GetSuperTrackedQuestID();
+	if ( isSuperTracked ) then
+		pin:SetFrameLevel(100);
+	else
+		pin:SetFrameLevel(50);
+	end
+	
+	pin.Number:ClearAllPoints();
+	pin.Number:SetPoint("CENTER");
+	
 	if IsQuestComplete(questID) then
-		pin.style = "completed";	-- for tooltip
-		pin.Texture:SetSize(95, 95);
-		pin.Highlight:SetSize(95, 95);
-		pin.Number:SetSize(85, 85);
-
-		pin.Texture:SetTexture("Interface/WorldMap/UI-WorldMap-QuestIcon");	
-		pin.Highlight:SetTexture("Interface/WorldMap/UI-WorldMap-QuestIcon");
-
-		pin.Texture:SetTexCoord(0, 0.5, 0, 0.5);
-		pin.Highlight:SetTexCoord(0.5, 1, 0, 0.5);
-
-		pin.Number:Hide();
-	elseif ( questID == GetSuperTrackedQuestID() ) then
+		-- If the quest is super tracked we want to show the selected circle behind it.
+		if ( isSuperTracked ) then
+			pin.Texture:SetSize(89, 90);
+			pin.Highlight:SetSize(89, 90);
+			pin.Number:SetSize(74, 74);
+			pin.Number:ClearAllPoints();
+			pin.Number:SetPoint("CENTER", -1, -1);
+			pin.Texture:SetTexture("Interface/WorldMap/UI-QuestPoi-NumberIcons");
+			pin.Texture:SetTexCoord(0.500, 0.625, 0.375, 0.5);
+			pin.Highlight:SetTexture("Interface/WorldMap/UI-QuestPoi-NumberIcons");
+			pin.Highlight:SetTexCoord(0.625, 0.750, 0.875, 1);
+			pin.Number:SetTexture("Interface/WorldMap/UI-WorldMap-QuestIcon");
+			pin.Number:SetTexCoord(0, 0.5, 0, 0.5);
+			pin.Number:Show();
+		else
+			pin.Texture:SetSize(95, 95);
+			pin.Highlight:SetSize(95, 95);
+			pin.Number:SetSize(85, 85);
+			pin.Texture:SetTexture("Interface/WorldMap/UI-WorldMap-QuestIcon");	
+			pin.Highlight:SetTexture("Interface/WorldMap/UI-WorldMap-QuestIcon");
+			pin.Texture:SetTexCoord(0, 0.5, 0, 0.5);
+			pin.Highlight:SetTexCoord(0.5, 1, 0, 0.5);
+			pin.Number:Hide();
+		end
+	elseif ( isSuperTracked ) then
 		pin.style = "numeric";	-- for tooltip
 		pin.Texture:SetSize(75, 75);
 		pin.Highlight:SetSize(75, 75);
@@ -97,6 +119,11 @@ function ActiveQuestPinMixin:OnLoad()
 	self:SetScalingLimits(1, 1.5, 0.50);
 
 	self.UpdateTooltip = self.OnMouseEnter;
+
+	-- Flight points can nudge quest pins.
+	self:SetNudgeTargetFactor(0.015);
+	self:SetNudgeZoomedOutFactor(1.0);
+	self:SetNudgeZoomedInFactor(0.25);
 end
 
 function ActiveQuestPinMixin:OnMouseEnter()

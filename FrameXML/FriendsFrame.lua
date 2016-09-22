@@ -490,7 +490,7 @@ function FriendsList_Update(forceUpdate)
 	local numWoWTotal, numWoWOnline = GetNumFriends();
 	local numWoWOffline = numWoWTotal - numWoWOnline;
 	
-	FriendsMicroButtonCount:SetText(numBNetOnline + numWoWOnline);
+	QuickJoinToastButton:UpdateDisplayedFriendCount();
 	if ( not FriendsListFrame:IsShown() and not forceUpdate) then
 		return;
 	end
@@ -582,6 +582,31 @@ function FriendsList_Update(forceUpdate)
 	end
 	FriendsFrame.selectedFriend = selectedFriend;
 	FriendsFrame_UpdateFriends();
+
+	-- RID warning, upon getting the first RID invite
+	local showRIDWarning = false;
+	local numInvites = BNGetNumFriendInvites();
+	if ( numInvites > 0 and not GetCVarBool("pendingInviteInfoShown") ) then
+		local _, _, _, _, _, _, isRIDEnabled = BNGetInfo();
+		if ( isRIDEnabled ) then
+			for i = 1, numInvites do
+				local inviteID, accountName, isBattleTag = BNGetFriendInviteInfo(i);
+				if ( not isBattleTag ) then
+					-- found one
+					showRIDWarning = true;
+					break;
+				end
+			end
+		end
+	end
+	if ( showRIDWarning ) then
+		FriendsListFrame.RIDWarning:Show();
+		FriendsFrameFriendsScrollFrame.scrollBar:Disable();
+		FriendsFrameFriendsScrollFrame.scrollUp:Disable();
+		FriendsFrameFriendsScrollFrame.scrollDown:Disable();
+	else
+		FriendsListFrame.RIDWarning:Hide();
+	end
 end
 
 function IgnoreList_Update()
@@ -1090,25 +1115,6 @@ function WhoFrameEditBox_OnEnterPressed(self)
 	self:ClearFocus();
 end
 
-function ToggleFriendsPanel()
-	if (IsKioskModeEnabled()) then
-		return;
-	end
-
-	local friendsTabShown =
-		FriendsFrame:IsShown() and
-		PanelTemplates_GetSelectedTab(FriendsFrame) == 1 and
-		FriendsTabHeader.selectedTab == 1;
-
-	if ( friendsTabShown ) then
-		HideUIPanel(FriendsFrame);
-	else
-		PanelTemplates_SetTab(FriendsFrame, 1);
-		PanelTemplates_SetTab(FriendsTabHeader, 1);
-		ShowUIPanel(FriendsFrame);
-	end
-end
-
 function ShowWhoPanel()
 	PanelTemplates_SetTab(FriendsFrame, 2);
 	if ( FriendsFrame:IsShown() ) then
@@ -1118,24 +1124,37 @@ function ShowWhoPanel()
 	end
 end
 
-function ToggleIgnorePanel()
+
+function ToggleFriendsSubPanel(panelIndex)
 	if (IsKioskModeEnabled()) then
 		return;
 	end
 
-	local ignoreTabShown =
+	local panelShown =
 		FriendsFrame:IsShown() and
 		PanelTemplates_GetSelectedTab(FriendsFrame) == 1 and
-		FriendsTabHeader.selectedTab == 2;
+		FriendsTabHeader.selectedTab == panelIndex;
 
-	if ( ignoreTabShown ) then
+	if ( panelShown ) then
 		HideUIPanel(FriendsFrame);
 	else
 		PanelTemplates_SetTab(FriendsFrame, 1);
-		PanelTemplates_SetTab(FriendsTabHeader, 2);
+		PanelTemplates_SetTab(FriendsTabHeader, panelIndex);
 		FriendsFrame_Update();
 		ShowUIPanel(FriendsFrame);
 	end
+end
+
+function ToggleFriendsPanel()
+	ToggleFriendsSubPanel(1);
+end
+
+function ToggleIgnorePanel()
+	ToggleFriendsSubPanel(3);
+end
+
+function ToggleQuickJoinPanel()
+	ToggleFriendsSubPanel(2);
 end
 
 function WhoFrame_GetDefaultWhoCommand()
@@ -1211,7 +1230,7 @@ function FriendsFrame_CheckBattlenetStatus()
 		if ( FriendsFrame:IsShown() ) then
 			IgnoreList_Update();
 		end
-		-- has its own check if it is being shown, after it updates the count on the FriendsMicroButton
+		-- has its own check if it is being shown, after it updates the count on the QuickJoinToastButton
 		FriendsList_Update();
 	end
 end

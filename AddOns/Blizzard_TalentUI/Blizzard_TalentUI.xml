@@ -1466,11 +1466,12 @@
                                 <Anchor point="TOP" relativeKey="$parent.TopDivider" relativePoint="BOTTOM" x="0" y="-78"/>
                             </Anchors>
                         </Texture>
-						<FontString parentKey="Warning" inherits="GameFontRed" text="PVP_PRESTIGE_RANK_UP_WARNING">
+						<FontString parentKey="Warning" inherits="GameFontNormal" text="PVP_PRESTIGE_RANK_UP_WARNING">
 							<Size x="300" y="0"/>
 							<Anchors>
 								<Anchor point="BOTTOM" x="0" y="60"/>
 							</Anchors>
+							<Color r="1.0" g="1.0" b="0.0"/>
 						</FontString>
 					</Layer>
 					<Layer level="BACKGROUND">

@@ -4,7 +4,7 @@
 	<Script file="WorldMapActionButton.lua"/>
 	<Script file="WorldMapFrame.lua"/>
 	<Include file="WorldMapFrameTemplates.xml"/>
-	<Frame name="WorldMapFrame" setAllPoints="true" hidden="true" enableKeyboard="true" enableMouse="true" clampedToScreen="true" toplevel="true" >
+	<Frame name="WorldMapFrame" frameStrata="FULLSCREEN" setAllPoints="true" hidden="true" enableKeyboard="true" enableMouse="true" clampedToScreen="true" toplevel="true" >
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="-8">
 				<Texture name="BlackoutWorld">

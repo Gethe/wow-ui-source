@@ -14,29 +14,34 @@ local NO_ARENA_SEASON = 0;
 
 local RANDOM_BG_REWARD = "randombg";
 local SKIRMISH_REWARD = "skirmish";
-local BONUS_BG_REWARD = "bonusbg";
-local ARENA_REWARD = "arena";
+local RATED_BG_REWARD = "ratedbg";
+local ARENA_2V2_REWARD = "arena2v2";
+local ARENA_3V3_REWARD = "arena3v3";
 
 local REWARDS_AT_MAX_LEVEL = {
 	[RANDOM_BG_REWARD] = {
-		["Horde"] = 141901,
-		["Alliance"] = 141899,
+		["FirstWin"] = 143680, 
+		["NthWin"] = 138880,
 	},
 	[SKIRMISH_REWARD] = {
-		["Horde"] = 141903,
-		["Alliance"] = 141902,
+		["FirstWin"] = 143713,
+		["NthWin"] = 138864,
 	},
-	[BONUS_BG_REWARD] = {
-		["Horde"] = 141905,
-		["Alliance"] = 141904,
+	[RATED_BG_REWARD] = {
+		["FirstWin"] = 143716,
+		["NthWin"] = 138881,
 	},
-	[ARENA_REWARD] = {
-		["Horde"] = 141907,
-		["Alliance"] = 141906,
+	[ARENA_2V2_REWARD] = {
+		["FirstWin"] = 143714,
+		["NthWin"] = 138865,
 	},
+	[ARENA_3V3_REWARD] = {
+		["FirstWin"] = 143715,
+		["NthWin"] = 143677,
+	}
 }
 
-function GetMaxLevelReward(bracketType)
+function GetMaxLevelReward(bracketType, isFirstWin)
 	local factionGroup = UnitFactionGroup("player");
 	if (UnitLevel("player") < MAX_PLAYER_LEVEL_TABLE[LE_EXPANSION_LEVEL_CURRENT]) then
 		return nil;
@@ -45,17 +50,21 @@ function GetMaxLevelReward(bracketType)
 	
 	local id;
 
+	local key = isFirstWin and "FirstWin" or "NthWin";
+
+	local ARENA_2V2_ID = 1;
+	local ARENA_3V3_ID = 2;
+	local RATED_BG_ID = 4;
 	if (bracketType == RANDOM_BATTLEGROUNDS) then
-		id = REWARDS_AT_MAX_LEVEL[RANDOM_BG_REWARD][factionGroup];
+		id = REWARDS_AT_MAX_LEVEL[RANDOM_BG_REWARD][key];
 	elseif (bracketType == SKIRMISH) then
-		id = REWARDS_AT_MAX_LEVEL[SKIRMISH_REWARD][factionGroup];
-	else
-		local RATED_BG_ID = 4;
-		if (bracketType == RATED_BG_ID) then
-			id = REWARDS_AT_MAX_LEVEL[BONUS_BG_REWARD][factionGroup];
-		else
-			id = REWARDS_AT_MAX_LEVEL[ARENA_REWARD][factionGroup];
-		end
+		id = REWARDS_AT_MAX_LEVEL[SKIRMISH_REWARD][key];
+	elseif (bracketType == ARENA_2V2_ID) then
+		id = REWARDS_AT_MAX_LEVEL[ARENA_2V2_REWARD][key];
+	elseif (bracketType == ARENA_3V3_ID) then
+		id = REWARDS_AT_MAX_LEVEL[ARENA_3V3_REWARD][key];
+	elseif (bracketType == RATED_BG_ID) then
+		id = REWARDS_AT_MAX_LEVEL[RATED_BG_REWARD][key];
 	end
 
 	if (not id) then
@@ -362,11 +371,8 @@ function HonorFrame_OnLoad(self)
 	HybridScrollFrame_CreateButtons(self.SpecificFrame, "PVPSpecificBattlegroundButtonTemplate", -2, -1);
 
 	-- min level for bonus frame
-	local _, minLevel;
+	local _;
 	_, _, _, _, _, _, _, MIN_BONUS_HONOR_LEVEL = GetRandomBGInfo();
-	_, _, _, _, _, _, _, _, _, minLevel = GetHolidayBGInfo();
-	minLevel = minLevel and minLevel or MIN_BONUS_HONOR_LEVEL;
-	MIN_BONUS_HONOR_LEVEL = min(MIN_BONUS_HONOR_LEVEL, minLevel);
 
 	UIDropDownMenu_SetWidth(HonorFrameTypeDropDown, 160);
 	UIDropDownMenu_Initialize(HonorFrameTypeDropDown, HonorFrameTypeDropDown_Initialize);
@@ -762,7 +768,7 @@ function HonorFrameBonusFrame_Update()
 	local honor, rewards = GetRandomBGRewards();
 
 	if (not rewards) then
-		rewards = GetMaxLevelReward(RANDOM_BATTLEGROUNDS);
+		rewards = GetMaxLevelReward(RANDOM_BATTLEGROUNDS, hasWon);
 	end
 
 	if (rewards and #rewards > 0) then
@@ -781,10 +787,10 @@ function HonorFrameBonusFrame_Update()
 	button.canQueue = true;
 	button.arenaID = 4;
 	
-	local honor, rewards = GetArenaSkirmishRewards();
+	local honor, rewards, hasWon = GetArenaSkirmishRewards();
 
 	if (not rewards) then
-		rewards = GetMaxLevelReward(SKIRMISH);
+		rewards = GetMaxLevelReward(SKIRMISH, hasWon);
 	end
 
 	if (rewards and #rewards > 0) then
@@ -936,7 +942,7 @@ function ConquestFrame_Update(self)
 		for i = 1, RATED_BG_ID do
 			local button = CONQUEST_BUTTONS[i];
 			local bracketIndex = CONQUEST_BRACKET_INDEXES[i];
-			local rating, seasonBest, weeklyBest, seasonPlayed, seasonWon, weeklyPlayed, weeklyWon, lastWeeksBest = GetPersonalRatedInfo(bracketIndex);
+			local rating, seasonBest, weeklyBest, seasonPlayed, seasonWon, weeklyPlayed, weeklyWon, lastWeeksBest, hasWon = GetPersonalRatedInfo(bracketIndex);
 			button.Wins:SetText(seasonWon);
 			button.CurrentRating:SetText(rating);
 			local honor, rewards;
@@ -948,11 +954,11 @@ function ConquestFrame_Update(self)
 				honor, rewards = GetRatedBGRewards();
 			else
 				enabled = self.arenasEnabled;
-				honor, rewards = GetArenaRewards();
+				honor, rewards = GetArenaRewards(CONQUEST_SIZES[i]);
 			end
 
 			if (not rewards) then
-				rewards = GetMaxLevelReward(CONQUEST_BRACKET_INDEXES[i]);
+				rewards = GetMaxLevelReward(CONQUEST_BRACKET_INDEXES[i], hasWon);
 			end
 
 			if (rewards and #rewards > 0 and enabled) then
@@ -963,7 +969,7 @@ function ConquestFrame_Update(self)
 				button.Reward:Show();
 
 				local questID, completed, itemLevel = GetWeeklyPVPRewardInfo(bracketIndex);
-				if (not completed and lastWeeksBest ~= 0) then
+				if (not completed) then
 					button.Reward.WeeklyBonus.bracketIndex = bracketIndex;
 					button.Reward.WeeklyBonus.index = i;
 					button.Reward.WeeklyBonus:Show();

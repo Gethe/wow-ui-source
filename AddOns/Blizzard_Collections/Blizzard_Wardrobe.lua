@@ -1,8 +1,8 @@
 -- C_TransmogCollection.GetItemInfo(itemID, [itemModID]/itemLink/itemName) = appearanceID, sourceID
 -- C_TransmogCollection.GetAllAppearanceSources(appearanceID) = { sourceID } This is cross-class, but no guarantee a source is actually attainable
 -- C_TransmogCollection.GetSourceInfo(sourceID) = { data }
--- 15th (going for a record here) return of GetItemInfo is expansionID
-
+-- 15th return of GetItemInfo is expansionID
+-- new events: TRANSMOG_COLLECTION_SOURCE_ADDED and TRANSMOG_COLLECTION_SOURCE_REMOVED, parameter is sourceID, can be cross-class (wand unlocked from ensemble while on warrior)
 
 local REMOVE_TRANSMOG_ID = 0;
 
@@ -100,7 +100,7 @@ function WardrobeTransmogFrame_OnShow(self)
 	self:RegisterEvent("PLAYER_EQUIPMENT_CHANGED");
 	local hasAlternateForm, inAlternateForm = HasAlternateForm();
 	if ( hasAlternateForm ) then
-		self:RegisterEvent("UNIT_MODEL_CHANGED");
+		self:RegisterUnitEvent("UNIT_MODEL_CHANGED", "player");
 		self.inAlternateForm = inAlternateForm;
 	end
 	WardrobeTransmogFrame.Model:SetUnit("player");
@@ -698,8 +698,9 @@ function WardrobeCollectionFrame_OnEvent(self, event, ...)
 		WardrobeCollectionFrame_RestartSearchTracking();
 	elseif ( event == "UNIT_MODEL_CHANGED" ) then
 		local hasAlternateForm, inAlternateForm = HasAlternateForm();
-		if ( self.inAlternateForm ~= inAlternateForm and self.ModelsFrame.Models[1]:CanSetUnit("player") ) then
+		if ( (self.inAlternateForm ~= inAlternateForm or self.updateOnModelChanged) and self.ModelsFrame.Models[1]:CanSetUnit("player") ) then
 			self.inAlternateForm = inAlternateForm;
+			self.updateOnModelChanged = nil;
 			WardrobeCollectionFrame_ChangeModelsSlot(nil, WardrobeCollectionFrame.activeSlot);
 			WardrobeCollectionFrame_Update();
 		end
@@ -736,9 +737,9 @@ function WardrobeCollectionFrame_OnShow(self)
 	self:RegisterEvent("TRANSMOG_COLLECTION_CAMERA_UPDATE");
 	self:RegisterEvent("APPEARANCE_SEARCH_UPDATED");
 	self:RegisterEvent("SEARCH_DB_LOADED");
+	self:RegisterUnitEvent("UNIT_MODEL_CHANGED", "player");
 	local hasAlternateForm, inAlternateForm = HasAlternateForm();
 	if ( hasAlternateForm ) then
-		self:RegisterUnitEvent("UNIT_MODEL_CHANGED", "player");
 		self.inAlternateForm = inAlternateForm;
 	end
 
@@ -869,6 +870,8 @@ function WardrobeCollectionFrame_OnKeyDown(self, key)
 end
 
 function WardrobeCollectionFrame_ChangeModelsSlot(oldSlot, newSlot)
+	WardrobeCollectionFrame.updateOnModelChanged = nil;
+
 	local undressSlot, reloadModel;
 	local newSlotIsArmor = WardrobeCollectionFrame_GetArmorCategoryIDFromSlot(newSlot);
 	if ( newSlotIsArmor ) then
@@ -883,6 +886,15 @@ function WardrobeCollectionFrame_ChangeModelsSlot(oldSlot, newSlot)
 			reloadModel = true;
 		end
 	end
+
+	if ( reloadModel and not WardrobeCollectionFrame.ModelsFrame.Models[1]:CanSetUnit("player") ) then
+		WardrobeCollectionFrame.updateOnModelChanged = true;
+		for i = 1, #WardrobeCollectionFrame.ModelsFrame.Models do
+			WardrobeCollectionFrame.ModelsFrame.Models[i]:ClearModel();
+		end
+		return;
+	end
+
 	for i = 1, #WardrobeCollectionFrame.ModelsFrame.Models do
 		local model = WardrobeCollectionFrame.ModelsFrame.Models[i];
 		if ( undressSlot ) then

@@ -1,3 +1,4 @@
+QUICK_JOIN_ALREADY_IN_PARTY = "You are already in a group. You must leave your group to join this queue."
 ----------------------------
 ---------Constants----------
 ----------------------------
@@ -26,11 +27,14 @@ function QuickJoinMixin:SetEventsRegistered(registered)
 	local func = registered and self.RegisterEvent or self.UnregisterEvent;
 
 	func(self, "SOCIAL_QUEUE_UPDATE");
+	func(self, "GROUP_JOINED");
+	func(self, "GROUP_LEFT");
 end
 
 function QuickJoinMixin:OnShow()
 	self:SetEventsRegistered(true);
 	self.entries:UpdateAll();
+	self:SelectGroup(nil);
 	self:UpdateScrollFrame();
 end
 
@@ -42,7 +46,26 @@ function QuickJoinMixin:OnEvent(event, ...)
 	if ( event == "SOCIAL_QUEUE_UPDATE" ) then
 		local requester = ...;
 		self.entries:UpdateEntry(requester);
+
+		if ( requester == self:GetSelectedGroup() ) then
+			local entry = self.entries:GetEntry(requester);
+			if ( entry and not entry:CanJoin() ) then
+				self:SelectGroup(nil);
+			end
+		end
 		self:UpdateScrollFrame();
+	elseif ( event == "GROUP_JOINED" ) then
+		local index, guid = ...;
+		self.entries:UpdateEntry(guid);
+
+		self:UpdateScrollFrame();
+		self:UpdateJoinButtonState();
+	elseif ( event == "GROUP_LEFT" ) then
+		local guid = ...;
+		self.entries:UpdateEntry(guid);
+
+		self:UpdateScrollFrame();
+		self:UpdateJoinButtonState();
 	end
 end
 
@@ -60,9 +83,12 @@ function QuickJoinMixin:UpdateScrollFrame()
 	for i=1, #buttons do
 		local entryIndex = i + offset;
 		if ( entryIndex <= #entries ) then
-			entries[entryIndex]:ApplyToFrame(buttons[i]);
-			buttons[i]:Show();
+			buttons[i]:SetEntry(entries[entryIndex]);
 			buttons[i].Background:SetAlpha(entryIndex % 2 == 0 and 0.1 or 0.05);
+			local selected = buttons[i]:GetEntry():GetGUID() == self.selectedGUID;
+			buttons[i].Selected:SetShown(selected);
+			buttons[i].Highlight:SetAlpha(selected and 0 or 0.5);
+			buttons[i]:Show();
 		else
 			buttons[i]:Hide();
 		end
@@ -86,6 +112,74 @@ function QuickJoinMixin:GetTopButton(offset)
 	return 0, 0;
 end
 
+function QuickJoinMixin:SelectGroup(guid)
+	self.selectedGUID = guid;
+	self:UpdateScrollFrame();
+	self:UpdateJoinButtonState();
+end
+
+function QuickJoinMixin:GetSelectedGroup()
+	return self.selectedGUID;
+end
+
+function QuickJoinMixin:JoinQueue()
+	local selectedEntry = self.entries:GetEntry(self.selectedGUID);
+	if ( selectedEntry ) then
+		selectedEntry:AttemptJoin();
+	end
+end
+
+function QuickJoinMixin:UpdateJoinButtonState()
+	if ( IsInGroup(LE_PARTY_CATEGORY_HOME) ) then
+		self.JoinQueueButton:Disable();
+		self.JoinQueueButton.tooltip = QUICK_JOIN_ALREADY_IN_PARTY;
+	elseif ( self:GetSelectedGroup() == nil ) then
+		self.JoinQueueButton:Disable();
+		self.JoinQueueButton.tooltip = nil;
+	else
+		self.JoinQueueButton:Enable();
+		self.JoinQueueButton.tooltip = nil;
+	end
+end
+
+----------------------------
+------QuickJoinButton------
+----------------------------
+QuickJoinButtonMixin = {}
+
+function QuickJoinButtonMixin:GetMainPanel()
+	return QuickJoinFrame;
+end
+
+function QuickJoinButtonMixin:SetEntry(entry)
+	entry:ApplyToFrame(self);
+	self.entry = entry;
+end
+
+function QuickJoinButtonMixin:GetEntry()
+	return self.entry;
+end
+
+function QuickJoinButtonMixin:OnEnter()
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	self:GetEntry():ApplyToTooltip(GameTooltip);
+	GameTooltip:Show();
+	if ( self:GetEntry():CanJoin() ) then
+		self.Highlight:Show();
+	end
+end
+
+function QuickJoinButtonMixin:OnLeave()
+	GameTooltip:Hide();
+	self.Highlight:Hide();
+end
+
+function QuickJoinButtonMixin:OnClick()
+	if ( self:GetEntry():CanJoin() ) then
+		self:GetMainPanel():SelectGroup(self:GetEntry():GetGUID());
+	end
+end
+
 ----------------------------
 ------QuickJoinEntries------
 ----------------------------
@@ -97,6 +191,10 @@ end
 
 function QuickJoinEntriesMixin:GetEntries()
 	return self.entries;
+end
+
+function QuickJoinEntriesMixin:GetEntry(guid)
+	return self.entriesByGUID[guid];
 end
 
 function QuickJoinEntriesMixin:UpdateAll()
@@ -118,7 +216,7 @@ function QuickJoinEntriesMixin:UpdateEntry(requester)
 	local entry = self.entriesByGUID[requester];
 	if ( entry ) then
 		entry:Update();
-	else
+	elseif ( C_SocialQueue.GetGroupInfo(requester) ) then
 		--Just add the new one to the end
 		local entry = CreateFromMixins(QuickJoinEntryMixin);
 		entry:Init(requester);
@@ -135,6 +233,10 @@ QuickJoinEntryMixin = {}
 function QuickJoinEntryMixin:Init(partyGUID)
 	self.guid = partyGUID;
 	self:UpdateAll();
+end
+
+function QuickJoinEntryMixin:GetGUID()
+	return self.guid;
 end
 
 function QuickJoinEntryMixin:UpdateAll()
@@ -159,6 +261,11 @@ function QuickJoinEntryMixin:Update()
 
 	self.zombieMemberIndices = self:BackfillAndUpdateFields(newMembers, self.displayedMembers, guidIDGetter);
 	self.zombieQueueIndices = self:BackfillAndUpdateFields(newQueues, self.displayedQueues, queueIDGetter);
+	self.canJoin = C_SocialQueue.GetGroupInfo(self.guid);
+end
+
+function QuickJoinEntryMixin:CanJoin()
+	return self.canJoin;
 end
 
 function QuickJoinEntryMixin:BackfillAndUpdateFields(newList, oldList, idGetter)
@@ -191,11 +298,34 @@ function QuickJoinEntryMixin:BackfillAndUpdateFields(newList, oldList, idGetter)
 	return tInvert(slotsToFillIn);
 end
 
+function QuickJoinEntryMixin:GetActiveLFGListInfo()
+	for i=1, #self.displayedQueues do
+		if ( not self.zombieQueueIndices[i] ) then
+			if ( self.displayedQueues[i].type == "lfglist" ) then
+				return self.displayedQueues[i];
+			end
+		end
+	end
+end
+
+function QuickJoinEntryMixin:AttemptJoin()
+	local lfgListInfo = self:GetActiveLFGListInfo();
+	if ( lfgListInfo ) then
+		LFGListApplicationDialog_Show(LFGListApplicationDialog, lfgListInfo.lfgListID);
+	else
+		QuickJoinRoleSelectionFrame:ShowForGroup(self:GetGUID());
+	end
+end
+
+function QuickJoinEntryMixin:ApplyToTooltip(tooltip)
+	SocialQueueUtil_SetTooltip(tooltip, SOCIAL_QUEUE_TOOLTIP_HEADER, self.displayedQueues);
+end
+
 function QuickJoinEntryMixin:ApplyToFrame(frame)
 	--Names
 	for i=1, #self.displayedMembers do
 		local name, color = SocialQueueUtil_GetNameAndColor(self.displayedMembers[i]);
-		if ( self.zombieMemberIndices[i] ) then
+		if ( self.zombieMemberIndices[i] or not self:CanJoin() ) then
 			name = DISABLED_FONT_COLOR_CODE..name..FONT_COLOR_CODE_CLOSE;
 		else
 			--Use the color code for our relationship
@@ -229,7 +359,7 @@ function QuickJoinEntryMixin:ApplyToFrame(frame)
 		end
 
 		local queueName = SocialQueueUtil_GetQueueName(queue);
-		if ( self.zombieQueueIndices[i] ) then
+		if ( self.zombieQueueIndices[i] or not self:CanJoin() ) then
 			queueName = DISABLED_FONT_COLOR_CODE..queueName..FONT_COLOR_CODE_CLOSE;
 		end
 		queueObj:SetText(queueName);
@@ -248,4 +378,39 @@ function QuickJoinEntryMixin:GetFrameHeight()
 	return		4	--Buffer height
 			+	math.max(	(16 + QUICK_JOIN_NAME_SEPARATION) * #self.displayedMembers, --Member height
 							(16 + QUICK_JOIN_NAME_SEPARATION) * #self.displayedQueues); --Queues height
+end
+
+----------------------------
+---QuickJoinRoleSelection---
+----------------------------
+QuickJoinRoleSelectionMixin = {};
+
+function QuickJoinRoleSelectionMixin:ShowForGroup(guid)
+	self.guid = guid;
+	local canJoin, numQueues, needTank, needHealer, needDamage = C_SocialQueue.GetGroupInfo(guid);
+	self:SetDisabledRoles(
+		not needTank and QUICK_JOIN_ROLE_NOT_NEEDED,
+		not needHealer and QUICK_JOIN_ROLE_NOT_NEEDED,
+		not needDamage and QUICK_JOIN_ROLE_NOT_NEEDED
+	);
+	StaticPopupSpecial_Show(self);
+end
+
+function QuickJoinRoleSelectionMixin:OnAccept()
+	if ( not C_SocialQueue.RequestToJoin(self.guid, self:GetSelectedRoles()) ) then
+		UIErrorsFrame:AddMessage(QUICK_JOIN_FAILED, 1.0, 0.1, 0.1, 1.0);
+	end
+	StaticPopupSpecial_Hide(self);
+end
+
+function QuickJoinRoleSelectionMixin:OnCancel()
+	StaticPopupSpecial_Hide(self);
+end
+
+----------------------------
+--Things that don't need their own mixins
+----------------------------
+function QuickJoin_JoinQueueButtonOnClick(self)
+	local quickJoin = self:GetParent();
+	quickJoin:JoinQueue();
 end

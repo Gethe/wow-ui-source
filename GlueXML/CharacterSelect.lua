@@ -1932,7 +1932,11 @@ function CharacterUpgradePopup_OnCloseClick(self)
 end
 
 function CharacterServicesTokenBoost_OnClick(self)
-	if HasSufficientExperienceForAdvancedCreation() then
+	if IsVeteranTrialAccount() then
+		GlueDialog_Show("CHARACTER_BOOST_FEATURE_RESTRICTED", CHARACTER_BOOST_YOU_MUST_REACTIVATE);
+	elseif IsTrialAccount() then
+		GlueDialog_Show("CHARACTER_BOOST_FEATURE_RESTRICTED", CHARACTER_BOOST_YOU_MUST_UPGRADE);
+	elseif HasSufficientExperienceForAdvancedCreation() then
 		CharacterUpgradePopup_BeginCharacterUpdgradeFlow(self.data);
 	else
 		GlueDialog_Show("CHARACTER_BOOST_NO_CHARACTERS_WARNING", nil, self.data);

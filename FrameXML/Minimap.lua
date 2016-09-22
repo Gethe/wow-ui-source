@@ -532,12 +532,17 @@ function GarrisonLandingPageMinimapButton_OnEvent(self, event, ...)
 	elseif (event == "GARRISON_SHOW_LANDING_PAGE") then
 		self:Show();
 	elseif ( event == "GARRISON_BUILDING_ACTIVATABLE" ) then
-		GarrisonMinimapBuilding_ShowPulse(self);
+		local buildingName, garrisonType = ...;
+		if ( garrisonType == C_Garrison.GetLandingPageGarrisonType() ) then
+			GarrisonMinimapBuilding_ShowPulse(self);
+		end
 	elseif ( event == "GARRISON_BUILDING_ACTIVATED" or event == "GARRISON_ARCHITECT_OPENED") then
 		GarrisonMinimap_HidePulse(self, GARRISON_ALERT_CONTEXT_BUILDING);
 	elseif ( event == "GARRISON_MISSION_FINISHED" ) then
 		local followerType = ...;
-		GarrisonMinimapMission_ShowPulse(self, followerType);
+		if ( DoesFollowerMatchCurrentGarrisonType(followerType) ) then
+			GarrisonMinimapMission_ShowPulse(self, followerType);
+		end
 	elseif ( event == "GARRISON_MISSION_NPC_OPENED" ) then
 		local followerType = ...;
 		if followerType == LE_FOLLOWER_TYPE_GARRISON_6_0 then
@@ -546,7 +551,9 @@ function GarrisonLandingPageMinimapButton_OnEvent(self, event, ...)
 	elseif ( event == "GARRISON_SHIPYARD_NPC_OPENED" ) then
 		GarrisonMinimap_HidePulse(self, GARRISON_ALERT_CONTEXT_MISSION[LE_FOLLOWER_TYPE_SHIPYARD_6_2]);
 	elseif (event == "GARRISON_INVASION_AVAILABLE") then
-		GarrisonMinimapInvasion_ShowPulse(self);
+		if ( C_Garrison.GetLandingPageGarrisonType() == LE_GARRISON_TYPE_6_0 ) then
+			GarrisonMinimapInvasion_ShowPulse(self);
+		end
 	elseif (event == "GARRISON_INVASION_UNAVAILABLE") then
 		GarrisonMinimap_HidePulse(self, GARRISON_ALERT_CONTEXT_INVASION);
 	elseif (event == "SHIPMENT_UPDATE") then

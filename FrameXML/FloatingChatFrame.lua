@@ -1071,7 +1071,7 @@ function FCF_OnUpdate(elapsed)
 				end
 			--Things that will cause the frame to fade in if the mouse is stationary.
 			elseif ( chatFrame:IsMouseOver(topOffset, -2, -2, 2) or	--This should be slightly larger than the hit rect insets to give us some wiggle room.
-				(chatFrame.isDocked and FriendsMicroButton:IsMouseOver()) or
+				(chatFrame.isDocked and QuickJoinToastButton:IsMouseOver()) or
 				(chatFrame.buttonFrame:IsMouseOver())) then
 				overSomething = true;
 				chatFrame.mouseOutTime = 0;

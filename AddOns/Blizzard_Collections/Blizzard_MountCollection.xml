@@ -259,7 +259,10 @@
 				</Layers>
 				<Frames>
 					<Frame parentKey="ShadowOverlay" inherits="ShadowOverlayTemplate" useParentLevel="true" setAllPoints="true"/>
-					<Button parentKey="InfoButton" motionScriptsWhileDisabled="true">
+					<Button parentKey="InfoButton" motionScriptsWhileDisabled="true" inherits="InlineHyperlinkFrameTemplate">
+						<KeyValues>
+							<KeyValue key="hasIconHyperlinks" value="true" type="boolean"/>
+						</KeyValues>
 						<Size x="208" y="46"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="6" y="-6"/>

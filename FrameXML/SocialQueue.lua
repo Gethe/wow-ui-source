@@ -1,17 +1,3 @@
------------------------------
-----Stubs--------------------
-SOCIAL_QUEUE_QUEUED_FOR = "queued for"
-SOCIAL_QUEUE_FORMAT_DUNGEON = "Dungeon: %s"
-SOCIAL_QUEUE_FORMAT_HEROIC_DUNGEON = "Dungeon: Heroic %s"
-SOCIAL_QUEUE_FORMAT_RAID = "Raid: %s"
-SOCIAL_QUEUE_FORMAT_WORLDPVP = "World PvP: %s";
-SOCIAL_QUEUE_FORMAT_BATTLEGROUND = "Battleground: %s";
-SOCIAL_QUEUE_FORMAT_ARENA = "Arena (%1$dv%1$d)";
-SOCIAL_QUEUE_FORMAT_ARENA_SKIRMISH = "Arena Skirmish";
-SOCIAL_QUEUE_CLICK_TO_JOIN = "<Click to Join>";
-SOCIAL_QUEUE_QUEUED_LABEL = "%s|cffcccccc queued for \"%s\".|r";
-SOCIAL_QUEUE_JOINED_LABEL = "%s|cffcccccc joined a %s group \"%s\".|r";
------------------------------
 SocialQueueListMixin = {};
 function SocialQueueListMixin:OnLoad()
 	--[[self:RegisterEvent("SOCIAL_QUEUE_UPDATE");
@@ -235,11 +221,11 @@ function SocialQueueUtil_GetQueueName(queue)
 			return mapName;
 		end
 	elseif ( queue.type == "lfglist" ) then
-		local activityID = queue.activityID;
-		if ( queue.lfgListID and not activityID ) then
-			activityID = select(2, C_LFGList.GetSearchResultInfo(queue.lfgListID));
+		if ( queue.lfgListID ) then
+			return ( select(3, C_LFGList.GetSearchResultInfo(queue.lfgListID)) )
 		end
 
+		local activityID = queue.activityID;
 		if ( activityID ) then
 			local activityName, shortName, categoryID, groupID, minItemLevel, filters, minLevel, maxPlayers, displayType, _, useHonorLevel = C_LFGList.GetActivityInfo(activityID);
 			return activityName;

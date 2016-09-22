@@ -8,7 +8,7 @@
 	<FontString name="QuickJoinButtonQueueTemplate" virtual="true" inherits="GameFontNormalSmall" text="Random Warlords of Draenor Heroic Dungeon or Something" justifyH="LEFT">
 		<Size x="193" y="16"/>
 	</FontString>
-	<Button name="QuickJoinButtonTemplate" virtual="true">
+	<Button name="QuickJoinButtonTemplate" mixin="QuickJoinButtonMixin" virtual="true">
 		<Size x="300" y="30"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -37,7 +37,16 @@
 					</Anchors>
 				</FontString>
 			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Highlight" atlas="socialqueuing-row-highlight" setAllPoints="true" hidden="true" alpha="0.5" alphaMode="ADD"/>
+				<Texture parentKey="Selected" atlas="socialqueuing-row-select" setAllPoints="true" hidden="true" alpha="0.5" alphaMode="ADD"/>
+			</Layer>
 		</Layers>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnClick method="OnClick"/>
+		</Scripts>
 	</Button>
 	<Frame name="QuickJoinFrame" parent="FriendsFrame" hidden="true" setAllPoints="true" mixin="QuickJoinMixin">
 		<Frames>
@@ -81,6 +90,23 @@
 					</Slider>
 				</Frames>
 			</ScrollFrame>
+			<Button parentKey="JoinQueueButton" inherits="MagicButtonTemplate" text="JOIN_QUEUE" motionScriptsWhileDisabled="true">
+				<Size x="135" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-3" y="4"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="QuickJoin_JoinQueueButtonOnClick"/>
+					<OnEnter>
+						if ( self.tooltip ) then
+							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+							GameTooltip:SetText(self.tooltip, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1, true);
+							GameTooltip:Show();
+						end
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Button>
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
@@ -89,4 +115,5 @@
 			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>
+	<Frame name="QuickJoinRoleSelectionFrame" mixin="QuickJoinRoleSelectionMixin" inherits="RoleSelectionTemplate"/>
 </Ui>

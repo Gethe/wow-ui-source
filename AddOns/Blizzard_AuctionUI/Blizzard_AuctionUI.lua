@@ -258,7 +258,7 @@ function AuctionFrameBrowse_UpdateArrows()
 	SortButton_UpdateArrow(BrowseLevelSort, "list", "level");
 	SortButton_UpdateArrow(BrowseDurationSort, "list", "duration");
 	SortButton_UpdateArrow(BrowseHighBidderSort, "list", "seller");
-	SortButton_UpdateArrow(BrowseCurrentBidSort, "list", "bid");
+	SortButton_UpdateArrow(BrowseCurrentBidSort, "list", "unitprice");
 end
 
 function AuctionFrameBrowse_OnEvent(self, event, ...)
@@ -820,6 +820,7 @@ function AuctionFrameBrowse_Update()
 				button.bidAmount = displayedPrice;
 				button.buyoutPrice = buyoutPrice;
 				button.itemCount = count;
+				button.itemIndex = index;
 
 				-- Set highlight
 				if ( GetSelectedAuctionItem("list") and (offset + i) == GetSelectedAuctionItem("list") ) then
@@ -1785,6 +1786,64 @@ function AuctionFrame_GetTimeLeftTooltipText(id, isToken)
 	return text;
 end
 
+local function SetupUnitPriceTooltip(tooltip, auctionItem, insertNewline)
+	if ( auctionItem and auctionItem.itemCount > 1 ) then
+		local hasBid = auctionItem.bidAmount > 0;
+		local hasBuyout = auctionItem.buyoutPrice > 0;
+		
+		if ( hasBid ) then
+			if ( insertNewline ) then
+				tooltip:AddLine("|n");
+			end
+
+			SetTooltipMoney(tooltip, ceil(auctionItem.bidAmount / auctionItem.itemCount), "STATIC", AUCTION_TOOLTIP_BID_PREFIX);
+		end
+
+		if ( hasBuyout ) then
+			SetTooltipMoney(tooltip, ceil(auctionItem.buyoutPrice / auctionItem.itemCount), "STATIC", AUCTION_TOOLTIP_BUYOUT_PREFIX);
+		end
+
+		-- This is necessary to update the extents of the tooltip
+		tooltip:Show();
+	end
+end
+
+local function GetAuctionButton(buttonType, id)
+	if ( buttonType == "owner" ) then
+		return _G["AuctionsButton"..id];
+	elseif ( buttonType == "bidder" ) then
+		return _G["BidButton"..id];
+	elseif ( buttonType == "list" ) then
+		return _G["BrowseButton"..id];
+	end
+end
+
+function AuctionBrowseFrame_CheckUnlockHighlight(self, selectedType, offset)
+	local selected = GetSelectedAuctionItem(selectedType);
+	if ( not selected or (selected ~= self:GetParent():GetID() + offset) ) then
+		self:GetParent():UnlockHighlight();
+	end
+end
+
+function AuctionPriceTooltipFrame_OnLoad(self)
+	self:SetMouseClickEnabled(false);
+	self:SetMouseMotionEnabled(true);	
+end
+
+function AuctionPriceTooltipFrame_OnEnter(self)
+	self:GetParent():LockHighlight();
+
+	-- Unit price is only supported on the list tab, no need to pass in buttonType argument
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	local button = GetAuctionButton("list", self:GetParent():GetID());
+	SetupUnitPriceTooltip(GameTooltip, button, false);
+end
+
+function AuctionPriceTooltipFrame_OnLeave(self)
+	AuctionBrowseFrame_CheckUnlockHighlight(self, "list", FauxScrollFrame_GetOffset(BrowseScrollFrame));
+	GameTooltip_Hide();
+end
+
 function AuctionFrameItem_OnEnter(self, type, index)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 
@@ -1801,25 +1860,9 @@ function AuctionFrameItem_OnEnter(self, type, index)
 	end
 
 	-- add price per unit info
-	local button;
-	if ( type == "owner" ) then
-		button = _G["AuctionsButton"..self:GetParent():GetID()];
-	elseif ( type == "bidder" ) then
-		button = _G["BidButton"..self:GetParent():GetID()];
-	elseif ( type == "list" ) then
-		button = _G["BrowseButton"..self:GetParent():GetID()];
-	end
-	if ( button and button.itemCount > 1 ) then
-		if ( button.bidAmount > 0 ) then
-			GameTooltip:AddLine("|n");
-			SetTooltipMoney(GameTooltip, ceil(button.bidAmount / button.itemCount), "STATIC", AUCTION_TOOLTIP_BID_PREFIX);
-		end
-		if ( button.buyoutPrice > 0 ) then
-			SetTooltipMoney(GameTooltip, ceil(button.buyoutPrice / button.itemCount), "STATIC", AUCTION_TOOLTIP_BUYOUT_PREFIX);
-		end
-		GameTooltip:Show();
-	end
+	local button = GetAuctionButton(type, self:GetParent():GetID());
 
+	SetupUnitPriceTooltip(GameTooltip, button, true);
 	GameTooltip_ShowCompareItem();
 
 	if ( IsModifiedClick("DRESSUP") ) then
@@ -1933,18 +1976,13 @@ end
 -- SortButton functions
 function SortButton_UpdateArrow(button, type, sort)
 	local primaryColumn, reversed = GetAuctionSort(type, 1);
+	button.Arrow:SetShown(sort == primaryColumn);
 	if (sort == primaryColumn) then
-		-- primary column, show the sort arrow
 		if (reversed) then
-			_G[button:GetName().."Arrow"]:Show();
-			_G[button:GetName().."Arrow"]:SetTexCoord(0, 0.5625, 1.0, 0);
+			button.Arrow:SetTexCoord(0, 0.5625, 0, 1);
 		else
-			_G[button:GetName().."Arrow"]:Show();
-			_G[button:GetName().."Arrow"]:SetTexCoord(0, 0.5625, 0, 1.0);
+			button.Arrow:SetTexCoord(0, 0.5625, 1, 0);
 		end
-	else
-		-- hide sort arrows for non-primary column
-		_G[button:GetName().."Arrow"]:Hide();
 	end
 end
 

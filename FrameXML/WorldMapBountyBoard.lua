@@ -389,8 +389,8 @@ function WorldMapBountyBoardMixin:OnTabClick(tab)
 end
 
 function WorldMapBountyBoardMixin:FindBestMapForSelectedBounty()
-	local _, continentID = GetCurrentMapContinent();
-	local continentMaps =  { GetMapSubzones(continentID) };
+	local continentIndex, continentID = GetCurrentMapContinent();
+	local continentMaps =  { GetMapZones(continentIndex) };
 
 	-- move current map to 1st position
 	for i = 1, #continentMaps, 2 do
@@ -400,16 +400,30 @@ function WorldMapBountyBoardMixin:FindBestMapForSelectedBounty()
 		end
 	end
 
+	local candidateMapID;
+	local candidateNumBounties = 0;
+	local currentMapID = GetCurrentMapAreaID();
 	for i = 1, #continentMaps, 2 do
+		local numBounties = 0;
 		local taskInfo = C_TaskQuest.GetQuestsForPlayerByMapID(continentMaps[i], continentID);
 		for _, info  in ipairs(taskInfo) do
 			if QuestMapFrame_IsQuestWorldQuest(info.questId) then
 				if self:IsWorldQuestCriteriaForSelectedBounty(info.questId) then
-					SetMapByID(continentMaps[i]);
-					return;
+					if ( currentMapID == continentMaps[i] ) then
+						-- no need to switch
+						return;
+					end
+					numBounties = numBounties + 1;
 				end
 			end
 		end
+		if ( numBounties > candidateNumBounties ) then
+			candidateMapID = continentMaps[i];
+			candidateNumBounties = numBounties;
+		end
+	end
+	if ( candidateMapID ) then
+		SetMapByID(candidateMapID);
 	end
 end
 

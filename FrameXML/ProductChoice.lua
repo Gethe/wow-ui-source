@@ -54,7 +54,7 @@ function ProductChoiceFrame_ShowAlerts(self, forceShowMain, forceShowSecond)
 		--If we created them, we haven't displayed them yet and so should show them.
 		if ( not self.mainAlertFrame ) then
 			forceShowMain = true;
-			self.mainAlertFrame = CreateFrame("FRAME", nil, FriendsMicroButton, "RecruitInfoDialogTemplate");
+			self.mainAlertFrame = CreateFrame("FRAME", nil, QuickJoinToastButton, "RecruitInfoDialogTemplate");
 		end
 		if ( not self.secondAlertFrame ) then
 			forceShowSecond = true;
@@ -63,7 +63,7 @@ function ProductChoiceFrame_ShowAlerts(self, forceShowMain, forceShowSecond)
 
 		--Show the alerts we want to show
 		if ( forceShowMain ) then
-			self.mainAlertFrame:SetPoint("LEFT", FriendsMicroButton, "RIGHT", 15, 0);
+			self.mainAlertFrame:SetPoint("LEFT", QuickJoinToastButton, "RIGHT", 15, 0);
 			RecruitAFriend_ShowInfoDialog(self.mainAlertFrame, RAF_PRODUCT_CHOICE_EARNED, true);
 		end
 		if ( forceShowSecond ) then

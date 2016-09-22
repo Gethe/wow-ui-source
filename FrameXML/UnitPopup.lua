@@ -854,7 +854,7 @@ function UnitPopup_HideButtons ()
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "REPORT_PLAYER" ) then
-			if ( (not dropdownMenu.unit) and (not dropdownMenu.battlefieldScoreIndex) and
+			if ( (not isPlayer) and (not dropdownMenu.battlefieldScoreIndex) and
 				(not dropdownMenu.lineID or not CanComplainChat(dropdownMenu.lineID)) ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
@@ -1565,7 +1565,7 @@ function UnitPopup_OnClick (self)
 	local server = dropdownFrame.server;
 	local fullname = name;
 
-	if ( server and (not unit or UnitRealmRelationship(unit) ~= LE_REALM_RELATION_SAME) ) then
+	if ( server and ((not unit and GetNormalizedRealmName() ~= server) or (unit and UnitRealmRelationship(unit) ~= LE_REALM_RELATION_SAME)) ) then
 		fullname = name.."-"..server;
 	end
 

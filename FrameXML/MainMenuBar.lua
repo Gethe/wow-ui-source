@@ -714,6 +714,8 @@ function HonorWatchBar_OnLoad(self)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("HONOR_XP_UPDATE");
 	self:RegisterEvent("CVAR_UPDATE");
+	self:RegisterEvent("ZONE_CHANGED");
+	self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
     self.OverlayFrame.Text:SetPoint("CENTER", 0, -1);
 	self.StatusBar:SetOnAnimatedValueChangedCallback(MainMenuBar_HonorUpdateOverlayFrameText);
 	self.StatusBar.OnFinishedCallback = function(...)

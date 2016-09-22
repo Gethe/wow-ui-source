@@ -352,32 +352,37 @@ function AlertFrameMixin:OnEvent(event, ...)
 	elseif ( event == "STORE_PRODUCT_DELIVERED" ) then
 		StorePurchaseAlertSystem:AddAlert(...);
 	elseif ( event == "GARRISON_BUILDING_ACTIVATABLE" ) then
-		GarrisonBuildingAlertSystem:AddAlert(...);
-		GarrisonLandingPageMinimapButton.MinimapLoopPulseAnim:Play();
+		local buildingName, garrisonType = ...;
+		if ( garrisonType == C_Garrison.GetLandingPageGarrisonType() ) then
+			GarrisonBuildingAlertSystem:AddAlert(buildingName, garrisonType);
+			GarrisonLandingPageMinimapButton.MinimapLoopPulseAnim:Play();
+		end
     elseif ( event == "GARRISON_TALENT_COMPLETE") then
     	local garrisonType = ...;
     	local talentID = C_Garrison.GetCompleteTalent(garrisonType);
     	local talent = C_Garrison.GetTalent(talentID);
         GarrisonTalentAlertSystem:AddAlert(garrisonType, talent);
 	elseif ( event == "GARRISON_MISSION_FINISHED" ) then
-		local validInstance = false;
-		local _, instanceType = GetInstanceInfo();
-		if ( instanceType == "none" or C_Garrison.IsOnGarrisonMap() ) then
-			validInstance = true;
-		end
-		-- toast only if not in an instance (except for garrison), and mission frame is not shown, and not in combat
-		if ( validInstance and not UnitAffectingCombat("player") ) then
-			local followerTypeID, missionID = ...;
-			local missionFrame = _G[GarrisonFollowerOptions[followerTypeID].missionFrame];
-			if (not missionFrame or not missionFrame:IsShown()) then
-				GarrisonLandingPageMinimapButton.MinimapLoopPulseAnim:Play();
+		local followerTypeID, missionID = ...;
+		if ( DoesFollowerMatchCurrentGarrisonType(followerTypeID) ) then
+			local validInstance = false;
+			local _, instanceType = GetInstanceInfo();
+			if ( instanceType == "none" or C_Garrison.IsOnGarrisonMap() ) then
+				validInstance = true;
+			end
+			-- toast only if not in an instance (except for garrison), and mission frame is not shown, and not in combat
+			if ( validInstance and not UnitAffectingCombat("player") ) then
+				local missionFrame = _G[GarrisonFollowerOptions[followerTypeID].missionFrame];
+				if (not missionFrame or not missionFrame:IsShown()) then
+					GarrisonLandingPageMinimapButton.MinimapLoopPulseAnim:Play();
 
-				local missionInfo = C_Garrison.GetBasicMissionInfo(missionID);
+					local missionInfo = C_Garrison.GetBasicMissionInfo(missionID);
 
-				if ( followerTypeID == LE_FOLLOWER_TYPE_SHIPYARD_6_2 ) then
-					GarrisonShipMissionAlertSystem:AddAlert(missionInfo);
-				else
-					GarrisonMissionAlertSystem:AddAlert(missionInfo);
+					if ( followerTypeID == LE_FOLLOWER_TYPE_SHIPYARD_6_2 ) then
+						GarrisonShipMissionAlertSystem:AddAlert(missionInfo);
+					else
+						GarrisonMissionAlertSystem:AddAlert(missionInfo);
+					end
 				end
 			end
 		end

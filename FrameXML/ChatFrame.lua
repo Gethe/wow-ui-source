@@ -2414,6 +2414,18 @@ function ChatFrame_ImportListToHash(list, hash)
 end
 
 function ChatFrame_ImportEmoteTokensToHash()
+	-- Hook up per-faction emotes before we build the emote list hash.
+	local factionGroup = UnitFactionGroup("player");
+	EMOTE454_TOKEN = nil; -- "FORTHEALLIANCE"
+	EMOTE455_TOKEN = nil; -- "FORTHEHORDE"
+	if ( factionGroup == "Alliance" ) then
+		EMOTE454_TOKEN = "FORTHEALLIANCE";
+		TextEmoteSpeechList[#TextEmoteSpeechList + 1] = "FORTHEALLIANCE";
+	elseif ( factionGroup == "Horde" ) then
+		EMOTE455_TOKEN = "FORTHEHORDE";
+		TextEmoteSpeechList[#TextEmoteSpeechList + 1] = "FORTHEHORDE";
+	end
+	
 	local i = 1;
 	local j = 1;
 	local cmdString = _G["EMOTE"..i.."_CMD"..j];
@@ -3331,7 +3343,6 @@ function ChatFrame_OnUpdate(self, elapsedSec)
 end
 
 function ChatFrame_OnHyperlinkShow(self, link, text, button)
-print(link, text)
 	SetItemRef(link, text, button, self);
 end
 
@@ -4612,12 +4623,6 @@ function VoiceMacroMenu_Click(self)
 end
 
 function VoiceMacroMenu_OnLoad(self)
-	if ( UnitFactionGroup("player") == "Alliance" ) then
-		TextEmoteSpeechList[#TextEmoteSpeechList + 1] = "FORTHEALLIANCE";
-	elseif ( UnitFactionGroup("player") == "Horde" ) then
-		TextEmoteSpeechList[#TextEmoteSpeechList + 1] = "FORTHEHORDE";
-	end
-	
 	OnMenuLoad(self, TextEmoteSpeechList, VoiceMacroMenu_Click);
 end
 

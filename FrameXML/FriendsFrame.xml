@@ -1271,11 +1271,10 @@ TRAVEL PASS
 										<Anchor point="TOPLEFT" relativeTo="$parentBattlenetIcon" x="-20" y="-10" />
 									</Anchors>
 								</Texture>
-								<FontString name="$parentTitle" inherits="GameFontNormal" text="BATTLENET_FRIEND">
+								<FontString name="$parentTitle" inherits="GameFontNormal" text="BATTLENET_FRIEND_REQUEST_RECEIVED">
+									<Size x="200" y="0"/>
 									<Anchors>
 										<Anchor point="TOP" relativeTo="$parentPlayerIcon" relativePoint="BOTTOM" x="0" y="2"/>
-										<Anchor point="LEFT"/>
-										<Anchor point="RIGHT"/>
 									</Anchors>
 								</FontString>
 								<FontString inherits="GameFontHighlight" justifyH="LEFT" text="RID_FRIEND_REQUEST_INFO">
@@ -1295,11 +1294,14 @@ TRAVEL PASS
 								<Scripts>
 									<OnClick>
 										SetCVar("pendingInviteInfoShown", 1);
-										PendingListInfoFrame:Hide();
+										FriendsList_Update();
 									</OnClick>
 								</Scripts>
 							</Button>
 						</Frames>
+						<Scripts>
+							<OnMouseWheel function="nop"/>
+						</Scripts>
 					</Frame>
 					<ScrollFrame name="FriendsFrameFriendsScrollFrame" inherits="HybridScrollFrameTemplate">
 						<Size x="302" y="307"/>

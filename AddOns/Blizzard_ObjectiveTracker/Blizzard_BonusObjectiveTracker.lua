@@ -167,13 +167,23 @@ function BonusObjectiveTracker_UntrackWorldQuest(questID)
 end
 
 function BonusObjectiveTracker_OnBlockClick(self, button)
-	if self.module.ShowWorldQuests and IsWorldQuestWatched(self.TrackedQuest.questID) then
+	if self.module.ShowWorldQuests then
 		if button == "LeftButton" then
 			if IsShiftKeyDown() then
-				BonusObjectiveTracker_UntrackWorldQuest(self.TrackedQuest.questID);
+				if IsWorldQuestWatched(self.TrackedQuest.questID) then
+					BonusObjectiveTracker_UntrackWorldQuest(self.TrackedQuest.questID);
+				end
+			else
+				local _, mapID = C_TaskQuest.GetQuestZoneID(self.TrackedQuest.questID);
+				if mapID then
+					ShowQuestLog();
+					SetMapByID(mapID);
+				end
 			end
 		elseif button == "RightButton" then
-			ObjectiveTracker_ToggleDropDown(self, BonusObjectiveTracker_OnOpenDropDown);
+			if IsWorldQuestWatched(self.TrackedQuest.questID) then
+				ObjectiveTracker_ToggleDropDown(self, BonusObjectiveTracker_OnOpenDropDown);
+			end
 		end
 	end
 end
@@ -503,6 +513,11 @@ function BonusObjectiveTracker_ShowRewardsTooltip(block)
 			local name, texture, numItems = GetQuestLogRewardCurrencyInfo(i, questID);
 			local text = string.format(BONUS_OBJECTIVE_REWARD_WITH_COUNT_FORMAT, texture, numItems, name);
 			GameTooltip:AddLine(text, 1, 1, 1);			
+		end
+		-- honor
+		local honorAmount = GetQuestLogRewardHonor(questID);
+		if ( honorAmount > 0 ) then
+			GameTooltip:AddLine(BONUS_OBJECTIVE_REWARD_WITH_COUNT_FORMAT:format("Interface\\ICONS\\Achievement_LegionPVPTier4", honorAmount, HONOR), 1, 1, 1);
 		end
 		-- items
 		local numQuestRewards = GetNumQuestLogRewards(questID);
@@ -1182,12 +1197,6 @@ function ObjectiveTrackerBonusBannerFrame_PlayBanner(self, questID)
 	local questTitle = GetQuestLogTitle(GetQuestLogIndexByID(questID));
 	if ( not questTitle ) then
 		return;
-	end
-	local colon = string.find(questTitle, ":");
-	if ( colon ) then
-		questTitle = string.sub(questTitle, colon + 1);
-		-- remove leading spaces
-		questTitle = gsub(questTitle, "^%s*", "");
 	end
 	self.Title:SetText(questTitle);
 	self.TitleFlash:SetText(questTitle);

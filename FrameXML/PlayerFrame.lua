@@ -39,7 +39,7 @@ function PlayerFrame_OnLoad(self)
 	self:RegisterEvent("UNIT_ENTERING_VEHICLE");
 	self:RegisterEvent("UNIT_EXITING_VEHICLE");
 	self:RegisterEvent("UNIT_EXITED_VEHICLE");
-	self:RegisterEvent("PLAYER_FLAGS_CHANGED");
+	self:RegisterEvent("PVP_TIMER_UPDATE");
 	self:RegisterEvent("PLAYER_ROLES_ASSIGNED");
 	self:RegisterEvent("VARIABLES_LOADED");
 	self:RegisterEvent("HONOR_PRESTIGE_UPDATE");
@@ -304,7 +304,7 @@ function PlayerFrame_OnEvent(self, event, ...)
 			self.inSeat = true;
 			PlayerFrame_UpdateArt(self);
 		end
-	elseif ( event == "PLAYER_FLAGS_CHANGED" ) then
+	elseif ( event == "PVP_TIMER_UPDATE" ) then
 		if ( IsPVPTimerRunning() ) then
 			PlayerPVPTimerText:Show();
 			PlayerPVPTimerText.timeLeft = GetPVPTimer();

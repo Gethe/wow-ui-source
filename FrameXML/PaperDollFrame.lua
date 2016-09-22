@@ -1904,30 +1904,15 @@ NUM_GEARSET_ICONS_SHOWN = NUM_GEARSET_ICONS_PER_ROW * NUM_GEARSET_ICON_ROWS;
 GEARSET_ICON_ROW_HEIGHT = 36;
 local EM_ICON_FILENAMES = {};
 
+function OnGearManagerDialogPopupButtonCreated(self, newButton)
+	tinsert(self.buttons, newButton);
+end
+
 function GearManagerDialogPopup_OnLoad (self)
 	self.buttons = {};
-
-	local rows = 0;
-
-	local button = CreateFrame("CheckButton", "GearManagerDialogPopupButton1", GearManagerDialogPopup, "GearSetPopupButtonTemplate");
-	button:SetPoint("TOPLEFT", 24, -85);
-	button:SetID(1);
-	tinsert(self.buttons, button);
-
-	local lastPos;
-	for i = 2, NUM_GEARSET_ICONS_SHOWN do
-		button = CreateFrame("CheckButton", "GearManagerDialogPopupButton" .. i, GearManagerDialogPopup, "GearSetPopupButtonTemplate");
-		button:SetID(i);
-
-		lastPos = (i - 1) / NUM_GEARSET_ICONS_PER_ROW;
-		if ( lastPos == math.floor(lastPos) ) then
-			button:SetPoint("TOPLEFT", self.buttons[i-NUM_GEARSET_ICONS_PER_ROW], "BOTTOMLEFT", 0, -8);
-		else
-			button:SetPoint("TOPLEFT", self.buttons[i-1], "TOPRIGHT", 10, 0);
-		end
-		tinsert(self.buttons, button);
-	end
-
+	
+	BuildIconArray(GearManagerDialogPopup, "GearManagerDialogPopupButton", "GearSetPopupButtonTemplate", NUM_GEARSET_ICONS_PER_ROW, NUM_GEARSET_ICON_ROWS, OnGearManagerDialogPopupButtonCreated);
+	
 	self.SetSelection = function(self, fTexture, Value)
 		if(fTexture) then
 			self.selectedTexture = Value;

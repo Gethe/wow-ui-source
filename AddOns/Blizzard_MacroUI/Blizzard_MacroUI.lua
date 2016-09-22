@@ -339,6 +339,9 @@ function RefreshPlayerSpellIconInfo()
 		return;
 	end
 	
+	-- We need to avoid adding duplicate spellIDs from the spellbook tabs for your other specs.
+	local activeIcons = {};
+	
 	MACRO_ICON_FILENAMES = {};
 	MACRO_ICON_FILENAMES[1] = "INV_MISC_QUESTIONMARK";
 	local index = 2;
@@ -354,8 +357,12 @@ function RefreshPlayerSpellIconInfo()
 			if (spellType ~= "FUTURESPELL") then
 				local spellTexture = strupper(GetSpellBookItemTextureFileName(j, "player"));
 				if ( not string.match( spellTexture, "INTERFACE\\BUTTONS\\") ) then
-					MACRO_ICON_FILENAMES[index] = gsub( spellTexture, "INTERFACE\\ICONS\\", "");
-					index = index + 1;
+					local iconPath = gsub( spellTexture, "INTERFACE\\ICONS\\", "");
+					if ( not activeIcons[iconPath] ) then
+						MACRO_ICON_FILENAMES[index] = iconPath;
+						activeIcons[iconPath] = true;
+						index = index + 1;
+					end
 				end
 			end
 			if (spellType == "FLYOUT") then
@@ -364,8 +371,12 @@ function RefreshPlayerSpellIconInfo()
 					for k = 1, numSlots do 
 						local spellID, overrideSpellID, isKnown = GetFlyoutSlotInfo(ID, k)
 						if (isKnown) then
-							MACRO_ICON_FILENAMES[index] = gsub( strupper(GetSpellTextureFileName(spellID)), "INTERFACE\\ICONS\\", ""); 
-							index = index + 1;
+							local iconPath = gsub( strupper(GetSpellTextureFileName(spellID)), "INTERFACE\\ICONS\\", "");
+							if ( not activeIcons[iconPath] ) then
+								MACRO_ICON_FILENAMES[index] = iconPath;
+								activeIcons[iconPath] = true;
+								index = index + 1;
+							end
 						end
 					end
 				end

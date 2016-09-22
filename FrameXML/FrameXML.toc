@@ -8,6 +8,7 @@
 ..\SharedXML\Util.lua
 ..\SharedXML\CircularBuffer.lua
 ..\SharedXML\FontableFrameMixin.lua
+..\SharedXML\Vector2D.lua
 MixinUtil.lua
 
 ## intrinsics
@@ -123,7 +124,9 @@ ItemTextFrame.xml
 TaxiFrame.xml
 BankFrame.xml
 ScrollOfResurrection.xml
+RoleSelectionTemplate.xml
 SocialQueue.xml
+QuickJoinToast.xml
 FriendsFrame.xml
 QuickJoin.xml
 RaidFrame.xml

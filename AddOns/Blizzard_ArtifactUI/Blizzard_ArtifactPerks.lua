@@ -387,8 +387,8 @@ function ArtifactPerksMixin:ShowHighlightForRelicItemID(itemID)
 	local couldFitInAnySlot = false;
 	for relicSlotIndex = 1, C_ArtifactUI.GetNumRelicSlots() do
 		if C_ArtifactUI.CanApplyRelicItemIDToSlot(itemID, relicSlotIndex) then
-			self.TitleContainer:SetRelicSlotHighlighted(relicSlotIndex, true);
 			couldFitInAnySlot = true;
+			break;
 		end
 	end
 
@@ -400,17 +400,12 @@ end
 
 function ArtifactPerksMixin:HideHighlightForRelicItemID(itemID)
 	RelicMouseOverHighlightHelper(self, false, nil, nil, C_ArtifactUI.GetPowersAffectedByRelicItemID(itemID));
-	self.TitleContainer:RefreshCursorRelicHighlights();
 end
 
 function ArtifactPerksMixin:RefreshCursorHighlights()
 	local type, itemID = GetCursorInfo();
 	if type == "item" and IsArtifactRelicItem(itemID) then
-		self.cursorItemID = itemID;
-		self:ShowHighlightForRelicItemID(self.cursorItemID);
-	elseif self.cursorItemID then
-		self:HideHighlightForRelicItemID(self.cursorItemID);
-		self.cursorItemID = nil;
+		self:HideHighlightForRelicItemID(itemID);
 	end
 end
 
@@ -572,8 +567,13 @@ function ArtifactTitleTemplateMixin:OnCursorUpdate()
 end
 
 function ArtifactTitleTemplateMixin:RefreshCursorRelicHighlights()
+	local type, itemID = GetCursorInfo();
+	self:RefreshRelicHighlights(itemID);
+end
+
+function ArtifactTitleTemplateMixin:RefreshRelicHighlights(itemID)
 	for relicSlotIndex in ipairs(self.RelicSlots) do
-		self:SetRelicSlotHighlighted(relicSlotIndex, C_ArtifactUI.CanApplyCursorRelicToSlot(relicSlotIndex));
+		self:SetRelicSlotHighlighted(relicSlotIndex, itemID and C_ArtifactUI.CanApplyRelicItemIDToSlot(itemID, relicSlotIndex));
 	end
 end
 
@@ -583,10 +583,11 @@ function ArtifactTitleTemplateMixin:SetRelicSlotHighlighted(relicSlotIndex, high
 		if highlighted then
 			relicSlot:LockHighlight();
 			relicSlot.CanSlotAnim:Play();
+			relicSlot.HighlightTexture:Show();
 		else
 			relicSlot:UnlockHighlight();
 			relicSlot.CanSlotAnim:Stop();
-			relicSlot.HighlightTexture:SetAlpha(1);
+			relicSlot.HighlightTexture:Hide();
 		end
 	end
 end
@@ -688,6 +689,7 @@ function ArtifactTitleTemplateMixin:EvaluateRelics()
 
 		local relicAtlasName = ("Relic-%s-Slot"):format(relicType);
 		relicSlot:GetNormalTexture():SetAtlas(relicAtlasName, true);
+		relicSlot:GetHighlightTexture():SetAtlas(relicAtlasName, true);
 		relicSlot.GlowBorder1:SetAtlas(relicAtlasName, true);
 		relicSlot.GlowBorder2:SetAtlas(relicAtlasName, true);
 		relicSlot.GlowBorder3:SetAtlas(relicAtlasName, true);

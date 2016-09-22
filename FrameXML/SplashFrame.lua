@@ -5,27 +5,25 @@ PREPATCH_QUESTS = { Alliance = {id=36498 , text=SPLASH_BOOST_RIGHT_DESC_ALLIANCE
 
 POSTPATCH_QUEST = 34398;
 
-LEGION_PREPATCH_QUEST = { Alliance = 40519, Horde = 43926 };
-
-LEGION_POSTPATCH_QUESTS = { Alliance = { 40519, 40717, 44182, 44663 }, Horde = { 43926, 40718, 44182, 44663 }};
+CURRENT_SPLASH_SCREEN_VERSION = 8;
 
 SPLASH_SCREENS = {
-	["BASE"] =	{	id = 5, -- 7.0.3 patch drop
+	["LEGION_NEW_7_1"] = {	id = CURRENT_SPLASH_SCREEN_VERSION, -- 7.1
 					questID = nil,
-					leftTex = "splash-703-topleft",
-					rightTex = "splash-703-right",
-					bottomTex = "splash-703-botleft",
+					leftTex = "splash-710-topleft",
+					rightTex = "splash-710-right",
+					bottomTex = "splash-710-botleft",
 					header = SPLASH_BASE_HEADER,
-					label = SPLASH_LEGION_BASE_LABEL,
-					feature1Title = SPLASH_LEGION_BASE_FEATURE1_TITLE,
-					feature1Desc = SPLASH_LEGION_BASE_FEATURE1_DESC,
-					feature2Title = SPLASH_LEGION_BASE_FEATURE2_TITLE,
-					feature2Desc = SPLASH_LEGION_BASE_FEATURE2_DESC,
-					rightTitle = SPLASH_LEGION_BASE_RIGHT_TITLE,
-					rightDesc = SPLASH_LEGION_BASE_RIGHT_DESC,
+					label = SPLASH_LEGION_NEW_7_1_LABEL,
+					feature1Title = SPLASH_LEGION_NEW_7_1_FEATURE1_TITLE,
+					feature1Desc = SPLASH_LEGION_NEW_7_1_FEATURE1_DESC,
+					feature2Title = SPLASH_LEGION_NEW_7_1_FEATURE2_TITLE,
+					feature2Desc = SPLASH_LEGION_NEW_7_1_FEATURE2_DESC,
+					rightTitle = SPLASH_LEGION_NEW_7_1_RIGHT_TITLE,
+					rightDesc = SPLASH_LEGION_NEW_7_1_RIGHT_DESC,
 					cVar="splashScreenNormal",
 					hideStartButton = true,
-					minLevel = 90,
+					minLevel = 110,
 					features = {
 						[1] = { EnterFunc = function() end,
 								LeaveFunc = function() end,
@@ -35,57 +33,6 @@ SPLASH_SCREENS = {
 								},
 					},
 				},
-	["LEGION_PREPATCH"] = { id = 6, -- 7.0.3 prepatch features available
-							questID = nil,
-							leftTex = "splash-704-topleft",
-							rightTex = "splash-704-right",
-							bottomTex = "splash-704-botleft",
-							header = SPLASH_BASE_HEADER,
-							label = SPLASH_LEGION_PREPATCH_LABEL,
-							feature1Title = SPLASH_LEGION_PREPATCH_FEATURE1_TITLE,
-							feature1Desc = SPLASH_LEGION_PREPATCH_FEATURE1_DESC,
-							feature2Title = SPLASH_LEGION_PREPATCH_FEATURE2_TITLE,
-							feature2Desc = SPLASH_LEGION_PREPATCH_FEATURE2_DESC,
-							rightTitle = SPLASH_LEGION_PREPATCH_RIGHT_TITLE,
-							rightDesc = SPLASH_LEGION_PREPATCH_RIGHT_DESC,
-							cVar="splashScreenNormal",
-							hideStartButton = false,
-							minLevel = 98,
-							features = {
-									[1] = { EnterFunc = function() end,
-								            LeaveFunc = function() end,
-								            },
-						            [2] = { EnterFunc = function() end,
-								            LeaveFunc = function() end,
-								            },
-				},
-			},
-	["LEGION_BOX"] = {	id = 7, -- 7.0.3 prepatch features available
-						expansion = LE_EXPANSION_LEGION,
-						questID = nil,
-						leftTex = "splash-705-topleft",
-						rightTex = "splash-705-right",
-						bottomTex = "splash-705-botleft",
-						header = SPLASH_BASE_HEADER,
-						label = SPLASH_LEGION_BOX_LABEL,
-						feature1Title = SPLASH_LEGION_BOX_FEATURE1_TITLE,
-						feature1Desc = SPLASH_LEGION_BOX_FEATURE1_DESC,
-						feature2Title = SPLASH_LEGION_BOX_FEATURE2_TITLE,
-						feature2Desc = SPLASH_LEGION_BOX_FEATURE2_DESC,
-						rightTitle = SPLASH_LEGION_BOX_RIGHT_TITLE,
-						rightDesc = SPLASH_LEGION_BOX_RIGHT_DESC,
-						cVar="splashScreenNormal",
-						hideStartButton = false,
-						minLevel = 98,
-						features = {
-								[1] = { EnterFunc = function() end,
-								        LeaveFunc = function() end,
-								        },
-						        [2] = { EnterFunc = function() end,
-								        LeaveFunc = function() end,
-								        },
-						},
-	},
 	["BOOST"] =	{	id = 1,
 					questID = nil, -- questID is set in SplashFrame_OnLoad
 					leftTex = "splash-boost-topleft",
@@ -168,45 +115,13 @@ local function GetSplashFrameTag()
 	if ( IsCharacterNewlyBoosted() ) then
 		-- Check tags in decreasing order of boost type (newest to oldest)
 		return GetBoostedCharacterTag(GetExpansionLevel(), UnitLevel("player"), "BOOST2", "BOOST");
-	else
-		if ( GetExpansionLevel() >= SPLASH_SCREENS["LEGION_BOX"].expansion) then
-			return "LEGION_BOX";
-		elseif ( AreInvasionsAvailable() and select(2, UnitClass("player")) ~= "DEMONHUNTER" ) then
-			return "LEGION_PREPATCH";
-		else
-			return "BASE";
-		end
+	elseif (UnitLevel("player") >= SPLASH_SCREENS["LEGION_NEW_7_1"].minLevel) then
+		return "LEGION_NEW_7_1";
 	end
+	return;
 end
 
-local function GetLegionQuestID(tag)
-	local faction = UnitFactionGroup("player");
 
-	if (tag == "LEGION_PREPATCH") then
-		return LEGION_PREPATCH_QUEST[faction];
-	elseif (tag == "LEGION_BOX") then
-		local startIndex = 1;
-		if (select(2, UnitClass("player")) == "DEMONHUNTER") then
-			startIndex = 2;
-		end
-
-
-		local tbl = LEGION_POSTPATCH_QUESTS[faction];
-
-		local questID = nil;
-
-		if (tbl) then
-			for i = startIndex, #tbl do
-				if (not IsQuestFlaggedCompleted(tbl[i])) then
-					questID = tbl[i];
-					break;
-				end
-			end
-		end
-
-		return questID;
-	end
-end
 
 function SplashFrame_OnLoad(self)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
@@ -371,11 +286,6 @@ function SplashFrame_Open( tag )
 			SPLASH_SCREENS["BOOST"].questID = questData.id;
 			SPLASH_SCREENS["BOOST"].rightDesc = questData.text;
 		end
-	end
-
-	if (tag == "LEGION_PREPATCH" or tag == "LEGION_BOX") then
-		local displayQuest = UnitLevel("player") >= SPLASH_SCREENS[tag].minLevel;
-		SPLASH_SCREENS[tag].questID = displayQuest and GetLegionQuestID(tag);
 	end
 
 	SplashFrame_Display( tag, ShouldShowStartButton(SPLASH_SCREENS[tag].questID, tag) );

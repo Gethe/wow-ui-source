@@ -330,17 +330,17 @@ function GameTooltip_ShowCompareItem(self, anchorFrame)
 	if ( secondaryItemShown ) then
 		shoppingTooltip2:SetOwner(self, "ANCHOR_NONE");
 		shoppingTooltip2:ClearAllPoints();
-		if ( side and side == "left" ) then
-			shoppingTooltip2:SetPoint("TOPRIGHT", anchorFrame, "TOPLEFT", 0, -10);
-		else
-			shoppingTooltip2:SetPoint("TOPLEFT", anchorFrame, "TOPRIGHT", 0, -10);
-		end
-		
 		shoppingTooltip1:SetOwner(self, "ANCHOR_NONE");
 		shoppingTooltip1:ClearAllPoints();
 		
 		if ( side and side == "left" ) then
-			shoppingTooltip1:SetPoint("TOPRIGHT", shoppingTooltip2, "TOPLEFT");
+			shoppingTooltip1:SetPoint("TOPRIGHT", anchorFrame, "TOPLEFT", 0, -10);
+		else
+			shoppingTooltip2:SetPoint("TOPLEFT", anchorFrame, "TOPRIGHT", 0, -10);
+		end
+		
+		if ( side and side == "left" ) then
+			shoppingTooltip2:SetPoint("TOPRIGHT", shoppingTooltip1, "TOPLEFT");
 		else
 			shoppingTooltip1:SetPoint("TOPLEFT", shoppingTooltip2, "TOPRIGHT");
 		end

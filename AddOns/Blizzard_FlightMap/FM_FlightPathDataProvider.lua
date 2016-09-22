@@ -162,6 +162,9 @@ FlightMap_FlightPointPinMixin = CreateFromMixins(MapCanvasPinMixin);
 
 function FlightMap_FlightPointPinMixin:OnLoad()
 	self:SetScalingLimits(1.25, 3.5, 1.5);
+
+	-- Flight points nudge other pins away.
+	self:SetNudgeSourceFactor(1);
 end
 
 function FlightMap_FlightPointPinMixin:OnAcquired()

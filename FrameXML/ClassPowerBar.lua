@@ -69,6 +69,7 @@ function ClassPowerBar:Setup()
 	
 	if ( class == self.class ) then
 		if ( not self.spec or spec == self.spec ) then
+			PlayerFrame.classPowerBar = self;
 			self:RegisterUnitEvent("UNIT_POWER_FREQUENT", "player");	
 			self:RegisterEvent("PLAYER_ENTERING_WORLD");
 			self:RegisterEvent("UNIT_DISPLAYPOWER");
@@ -83,7 +84,6 @@ function ClassPowerBar:Setup()
 	end
 	
 	self:SetShown(showBar);
-	PlayerFrame.classPowerBar = self;
 	return showBar;
 end
 
