@@ -39,7 +39,7 @@
 		<Scripts>
 			<OnLoad>
 				GameTooltip_OnLoad(self);
-				self:SetPadding(16);
+				self:SetPadding(16, 0);
 				self:RegisterForDrag("LeftButton");
 				self.shoppingTooltips = { ItemRefShoppingTooltip1, ItemRefShoppingTooltip2 };
 				self.UpdateTooltip = function(self)

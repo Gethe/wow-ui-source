@@ -433,18 +433,11 @@ function ContainerFrame_ConsiderItemButtonForRelicTutorial(itemButton, itemID)
 			return;
 		end
 
-		local numRelicSlots = C_ArtifactUI.GetEquippedArtifactNumRelicSlots(true);
-		if numRelicSlots then
-			for relicSlotIndex = 1, numRelicSlots do
-				if C_ArtifactUI.CanApplyRelicItemIDToEquippedArtifactSlot(itemID, relicSlotIndex) then
-					ArtifactRelicHelpBox.owner = itemButton:GetParent();
-					ArtifactRelicHelpBox:ClearAllPoints();
-					ArtifactRelicHelpBox:SetPoint("RIGHT", itemButton, "LEFT", -27, 0);
-					ArtifactRelicHelpBox:Show();
-
-					return;
-				end
-			end
+		if C_ArtifactUI.CanApplyArtifactRelic(itemID, true) then
+			ArtifactRelicHelpBox.owner = itemButton:GetParent();
+			ArtifactRelicHelpBox:ClearAllPoints();
+			ArtifactRelicHelpBox:SetPoint("RIGHT", itemButton, "LEFT", -27, 0);
+			ArtifactRelicHelpBox:Show();
 		end
 	end
 end
@@ -1062,6 +1055,15 @@ function ContainerFrameItemButton_OnClick(self, button)
 			if ( ContainerFrame_GetExtendedPriceString(self)) then
 				-- a confirmation dialog has been shown
 				return;
+			end
+		else
+			local itemID = select(10, GetContainerItemInfo(self:GetParent():GetID(), self:GetID()));
+			if ( itemID and IsArtifactRelicItem(itemID) ) then
+				if ( C_ArtifactUI.CanApplyArtifactRelic(itemID, false) ) then
+					SocketContainerItem(self:GetParent():GetID(), self:GetID());
+				elseif ( C_ArtifactUI.GetEquippedArtifactInfo() ) then
+					UIErrorsFrame:AddMessage(ERR_ARTIFACT_RELIC_DOES_NOT_MATCH_ARTIFACT, RED_FONT_COLOR:GetRGBA());
+				end
 			end
 		end
 		UseContainerItem(self:GetParent():GetID(), self:GetID(), nil, BankFrame:IsShown() and (BankFrame.selectedTab == 2));

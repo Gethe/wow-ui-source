@@ -663,7 +663,6 @@
 								<Scripts>
 									<OnLoad function="GarrisonLandingPageMinimapButton_OnLoad"/>
 									<OnEvent function="GarrisonLandingPageMinimapButton_OnEvent"/>
-									<OnShow function="GarrisonLandingPageMinimapButton_OnShow"/>
 									<OnClick function="GarrisonLandingPageMinimapButton_OnClick"/>
 									<OnEnter>
 										GameTooltip:SetOwner(self, "ANCHOR_LEFT");

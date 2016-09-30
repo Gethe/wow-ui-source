@@ -31,6 +31,7 @@ FontStyles.xml
 BasicControls.xml
 WorldFrame.xml
 UIParent.xml
+QuestUtils.lua
 ## IME.xml needs to be loaded after UIParent.xml
 ..\SharedXML\IME.xml
 MoneyFrame.lua

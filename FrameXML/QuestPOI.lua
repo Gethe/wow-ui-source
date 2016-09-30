@@ -90,6 +90,7 @@ function QuestPOI_GetButton(parent, questID, style, index)
 	poiButton.questID = questID;
 	poiButton.style = style;
 	poiButton.used = true;
+	poiButton.poiParent = parent;
 	poiButton:Show();
 
 	return poiButton;
@@ -117,7 +118,7 @@ function QuestPOI_SelectButtonByQuestID(parent, questID)
 end
 
 function QuestPOI_SelectButton(poiButton)
-	local parent = poiButton:GetParent();
+	local parent = poiButton.poiParent;
 	if ( parent.poiSelectedButton ) then
 		if ( parent.selectedPOI == poiButton ) then
 			return;

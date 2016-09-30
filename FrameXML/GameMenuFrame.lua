@@ -62,6 +62,9 @@ function GameMenuFrame_UpdateStoreButtonState(self)
 	elseif ( C_StorePublic.IsDisabledByParentalControls() ) then
 		self.disabledTooltip = BLIZZARD_STORE_ERROR_PARENTAL_CONTROLS;
 		self:Disable();		
+	elseif ( IsKioskModeEnabled() ) then
+		self.disabledTooltip = nil;
+		self:Disable();
 	else
 		self.disabledTooltip = nil;
 		self:Enable();

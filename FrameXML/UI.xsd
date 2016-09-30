@@ -446,6 +446,7 @@
 		<xs:attribute name="parentArray" type="xs:string"/>
 		<xs:attribute name="inherits" type="xs:string"/>
 		<xs:attribute name="mixin" type="xs:string"/>
+		<xs:attribute name="secureMixin" type="xs:string"/>
 		<xs:attribute name="virtual" type="xs:boolean" default="false"/>
 		<xs:attribute name="setAllPoints" type="xs:boolean" default="false"/>
 		<xs:attribute name="hidden" type="xs:boolean" default="false"/>

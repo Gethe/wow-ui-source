@@ -61,7 +61,7 @@ function WorldQuestDataProviderMixin:RefreshAllData(fromOnShow)
 			if taskInfo then
 				for i, info in ipairs(taskInfo) do
 					if HaveQuestData(info.questId) then
-						if QuestMapFrame_IsQuestWorldQuest(info.questId) then
+						if QuestUtils_IsQuestWorldQuest(info.questId) then
 							if self:DoesWorldQuestInfoPassFilters(info) then
 								pinsToRemove[info.questId] = nil;
 								if not self.activePins[info.questId] then
@@ -74,7 +74,7 @@ function WorldQuestDataProviderMixin:RefreshAllData(fromOnShow)
 			end
 		end
 	end
-	
+
 	for questId in pairs(pinsToRemove) do
 		self:GetMap():RemovePin(self.activePins[questId]);
 		self.activePins[questId] = nil;
@@ -110,7 +110,7 @@ function WorldQuestDataProviderMixin:AddWorldQuest(info)
 		pin.Background:SetSize(45, 45);
 		pin.Highlight:SetSize(45, 45);
 		pin.SelectedGlow:SetSize(45, 45);
-		
+
 		if rarity == LE_WORLD_QUEST_QUALITY_RARE then
 			pin.Background:SetAtlas("worldquest-questmarker-rare");
 			pin.Highlight:SetAtlas("worldquest-questmarker-rare");
@@ -124,7 +124,7 @@ function WorldQuestDataProviderMixin:AddWorldQuest(info)
 		pin.Background:SetSize(75, 75);
 		pin.Highlight:SetSize(75, 75);
 
-		pin.Background:SetTexture("Interface/WorldMap/UI-QuestPoi-NumberIcons");	
+		pin.Background:SetTexture("Interface/WorldMap/UI-QuestPoi-NumberIcons");
 		pin.Highlight:SetTexture("Interface/WorldMap/UI-QuestPoi-NumberIcons");
 
 		pin.Highlight:SetTexCoord(0.625, 0.750, 0.875, 1);
@@ -174,7 +174,7 @@ function WorldQuestDataProviderMixin:AddWorldQuest(info)
 	pin:Show();
 
 	C_TaskQuest.RequestPreloadRewardData(info.questId);
-	
+
 	return pin;
 end
 

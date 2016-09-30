@@ -37,7 +37,7 @@ function ActiveQuestDataProviderMixin:RefreshAllData(fromOnShow)
 			if activeQuestInfo then
 				local superTrackedQuestID = GetSuperTrackedQuestID();
 				for i, info in ipairs(activeQuestInfo) do
-					if (IsQuestComplete(info.questID) or info.questID == superTrackedQuestID) and not QuestMapFrame_IsQuestWorldQuest(info.questID) then
+					if (IsQuestComplete(info.questID) or info.questID == superTrackedQuestID) and not QuestUtils_IsQuestWorldQuest(info.questID) then
 						self:AddActiveQuest(info.questID, info.x, info.y);
 					end
 				end
@@ -49,17 +49,17 @@ end
 function ActiveQuestDataProviderMixin:AddActiveQuest(questID, x, y)
 	local pin = self:GetMap():AcquirePin("ActiveQuestPinTemplate");
 	pin.questID = questID;
-	
+
 	local isSuperTracked = questID == GetSuperTrackedQuestID();
 	if ( isSuperTracked ) then
 		pin:SetFrameLevel(100);
 	else
 		pin:SetFrameLevel(50);
 	end
-	
+
 	pin.Number:ClearAllPoints();
 	pin.Number:SetPoint("CENTER");
-	
+
 	if IsQuestComplete(questID) then
 		-- If the quest is super tracked we want to show the selected circle behind it.
 		if ( isSuperTracked ) then
@@ -79,7 +79,7 @@ function ActiveQuestDataProviderMixin:AddActiveQuest(questID, x, y)
 			pin.Texture:SetSize(95, 95);
 			pin.Highlight:SetSize(95, 95);
 			pin.Number:SetSize(85, 85);
-			pin.Texture:SetTexture("Interface/WorldMap/UI-WorldMap-QuestIcon");	
+			pin.Texture:SetTexture("Interface/WorldMap/UI-WorldMap-QuestIcon");
 			pin.Highlight:SetTexture("Interface/WorldMap/UI-WorldMap-QuestIcon");
 			pin.Texture:SetTexCoord(0, 0.5, 0, 0.5);
 			pin.Highlight:SetTexCoord(0.5, 1, 0, 0.5);

@@ -363,7 +363,7 @@ function CharacterCreate_OnShow()
 	CharacterCreateFrame_UpdateRecruitInfo();
 	CharacterCreate_SelectCharacterType(GetCharacterCreateType());
 
-	if( IsKioskModeEnabled() ) then
+	if( IsKioskGlueEnabled() ) then
 		local data = KioskModeSplash_GetModeData();
 		if (not data) then
 			-- This shouldn't happen, why don't have we have mode data?
@@ -396,7 +396,7 @@ function CharacterCreate_OnShow()
 
 		local cid = KioskModeSplash_GetIDForSelection("classes", available[math.random(1, #available)]);
 
-		KioskModeCheckTemplate(cid);
+		KioskModeCheckTrial(cid);
 		SetSelectedClass(cid);
 		SetCharacterClass(cid);
 		SetCharacterRace(GetSelectedRace());
@@ -562,7 +562,7 @@ function CharacterCreateEnumerateRaces()
 		button.PushedTexture:SetTexCoord(coords[1], coords[2], coords[3], coords[4]);
 		button.nameFrame.text:SetText(name);
 
-		local data = IsKioskModeEnabled() and KioskModeSplash_GetModeData();
+		local data = IsKioskGlueEnabled() and KioskModeSplash_GetModeData();
 		local disableTexture = button.DisableTexture;
 		if ( races[i].enabled and (not data or data.races[raceIndex]) ) then
 			button:Enable();
@@ -574,7 +574,7 @@ function CharacterCreateEnumerateRaces()
 			button:Disable();
 			SetButtonDesaturated(button, true);
 			button.name = name;
-			if (IsKioskModeEnabled()) then
+			if (IsKioskGlueEnabled()) then
 				button.tooltip = RACE_DISABLED_KIOSK_MODE;
 			else
 				local disabledReason = _G[raceIndex.."_DISABLED"];
@@ -584,7 +584,7 @@ function CharacterCreateEnumerateRaces()
 					button.tooltip = nil;
 				end
 			end
-			disableTexture:SetShown(IsKioskModeEnabled());
+			disableTexture:SetShown(IsKioskGlueEnabled());
 		end
 		index = index + 1;
 	end
@@ -616,10 +616,10 @@ function CharacterCreateEnumerateClasses()
 		button.nameFrame.text:SetText(classData.className);
 		button.tooltip = CHARCREATE_CLASS_TOOLTIP[classIndex];
 		button.classFilename = classData.fileName;
-		local data = IsKioskModeEnabled() and KioskModeSplash_GetModeData();
+		local data = IsKioskGlueEnabled() and KioskModeSplash_GetModeData();
 		local disableTexture = button.DisableTexture;
 		if ( classData.enabled == true ) then
-			if (IsKioskModeEnabled() and (not IsClassAllowedInKioskMode(classID) or not data.classes[classIndex])) then
+			if (IsKioskGlueEnabled() and (not IsClassAllowedInKioskMode(classID) or not data.classes[classIndex])) then
 				button:Disable();
 				SetButtonDesaturated(button, true);
 				button.tooltip.footer = CLASS_DISABLED_KIOSK_MODE;
@@ -889,7 +889,7 @@ function CharacterCreate_Back()
 		-- back to normal camera
 		SetFaceCustomizeCamera(false);
 	else
-		if( IsKioskModeEnabled() ) then
+		if( IsKioskGlueEnabled() ) then
 			PlaySound("gsCharacterCreationCancel");
 			GlueParent_SetScreen("kioskmodesplash");
 		else
@@ -1025,8 +1025,8 @@ end
 
 function CharacterClass_SelectClass(self, forceAccept)
 	if( self:IsEnabled() ) then
-		if (IsKioskModeEnabled()) then
-			KioskModeCheckTemplate(self:GetID());
+		if (IsKioskGlueEnabled()) then
+			KioskModeCheckTrial(self:GetID());
 		end
 
 		PlaySound("gsCharacterCreationClass");
@@ -1071,7 +1071,7 @@ function CharacterRace_OnClick(self, id, forceSelect)
 			SetCharacterGender(GetSelectedSex());
 			SetCharacterCreateFacing(-15);
 			CharacterCreateEnumerateClasses();
-			if (IsKioskModeEnabled()) then
+			if (IsKioskGlueEnabled()) then
 				local data = KioskModeSplash_GetModeData();
 				local available = {};
 				for k, v in pairs(data.classes) do
@@ -1084,7 +1084,7 @@ function CharacterRace_OnClick(self, id, forceSelect)
 				end
 
 				local fcid = KioskModeSplash_GetIDForSelection("classes", available[math.random(1, #available)]);
-				KioskModeCheckTemplate(fcid);
+				KioskModeCheckTrial(fcid);
 				SetSelectedClass(fcid);
 				SetCharacterClass(fcid);
 				SetCharacterRace(GetSelectedRace());
@@ -1203,27 +1203,27 @@ function CharacterCreate_UpdateDemonHunterCustomization()
     CharCreateCustomizationButton9.text:SetText(DEMONHUNTER_TATTOO_COLOR);
 end
 
-function KioskModeCheckTemplate(classID)
-	if (IsKioskModeEnabled()) then
+function KioskModeCheckTrial(classID)
+	if (IsKioskGlueEnabled()) then
 		local data = KioskModeSplash_GetModeData();
 		if (not data) then -- why?
 			return;
 		end
-		local useTemplate = nil;
-		if (data.template and data.template.enabled) then
-			useTemplate = data.template.index;
-			for i, v in ipairs(data.template.ignoreClasses) do
+		local useTrial = nil;
+		if (data.trial and data.trial.enabled) then
+			useTrial = true;
+			for i, v in ipairs(data.trial.ignoreClasses) do
 				local id = CLASS_NAME_BUTTON_ID_MAP[v];
 				if (id == classID) then
-					useTemplate = nil;
+					useTrial = nil;
 					break;
 				end
 			end
 		end
-		if (useTemplate) then
-			SetCharacterTemplate(useTemplate);
+		if (useTrial) then
+			CharacterUpgrade_BeginNewCharacterCreation(LE_CHARACTER_CREATE_TYPE_TRIAL_BOOST);
 		else
-			ClearCharacterTemplate();
+			CharacterUpgrade_ResetBoostData();
 		end
 	end
 end
@@ -1662,7 +1662,7 @@ function CharCreateClassButton_OnEnter(self)
 	CharacterCreateTooltip:AddLine(self.tooltip.description, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1, true);
 	CharacterCreateTooltip:AddLine(self.tooltip.footer, nil, nil, nil, nil, true);
 
-	if CharacterUpgrade_IsCreatedCharacterTrialBoost() and not CharacterCreate_IsTrialBoostAllowedForClass(self.classFilename) then
+	if not IsKioskGlueEnabled() and CharacterUpgrade_IsCreatedCharacterTrialBoost() and not CharacterCreate_IsTrialBoostAllowedForClass(self.classFilename) then
 		CharacterCreateTooltip:AddLine(CHARACTER_TYPE_FRAME_TRIAL_BOOST_CHARACTER_TOOLTIP_INVALID, 1, 0, 0, 1, true);
 	end
 end

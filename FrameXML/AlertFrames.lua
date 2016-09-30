@@ -405,13 +405,13 @@ function AlertFrameMixin:OnEvent(event, ...)
 		LegendaryItemAlertSystem:AddAlert(itemLink);
 	elseif ( event == "QUEST_TURNED_IN" ) then
 		local questID = ...;
-		if QuestMapFrame_IsQuestWorldQuest(questID) then
+		if QuestUtils_IsQuestWorldQuest(questID) then
 			WorldQuestCompleteAlertSystem:AddAlert(AlertFrame:BuildQuestData(questID));
 		end
 	elseif ( event == "QUEST_LOOT_RECEIVED" ) then
 		local questID, rewardItemLink = ...;
 		local _, _, _, _, texture = GetItemInfoInstant(rewardItemLink);
-		if QuestMapFrame_IsQuestWorldQuest(questID) then
+		if QuestUtils_IsQuestWorldQuest(questID) then
 			WorldQuestCompleteAlertSystem:AddCoalesceData(questID, rewardItemLink, texture);
 		else
 			-- May be invasion reward

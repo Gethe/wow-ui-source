@@ -144,7 +144,7 @@ function MainMenuBar_UpdateExperienceBars(newLevel)
 	local artifactItemID, _, _, _, artifactTotalXP, artifactPointsSpent, _, _, _, _, _, _, artifactMaxed = C_ArtifactUI.GetEquippedArtifactInfo();
 	local showArtifact = artifactItemID and not artifactMaxed and GetCVarBool("showArtifactXPBar");
 	local showXP = newLevel < MAX_PLAYER_LEVEL and not IsXPUserDisabled();
-	local showHonor = newLevel >= MAX_PLAYER_LEVEL and (IsWatchingHonorAsXP() or InActiveBattlefield());
+	local showHonor = newLevel >= MAX_PLAYER_LEVEL and (IsWatchingHonorAsXP() or InActiveBattlefield() or IsInActiveWorldPVP());
 	local showRep = name;
 	local numBarsShowing = 0;
 	--******************* EXPERIENCE **************************************

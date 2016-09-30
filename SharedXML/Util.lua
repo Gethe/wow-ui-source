@@ -22,6 +22,10 @@ function GetUnitClassColor(classFilename)
 	return 1, 1, 1, "ffffffff";
 end
 
+function WrapTextInColorCode(text, colorHexString)
+	return ("|c%s%s|r"):format(colorHexString, text);
+end
+
 CLASS_ICON_TCOORDS = {
 	["WARRIOR"]		= {0, 0.25, 0, 0.25},
 	["MAGE"]		= {0.25, 0.49609375, 0, 0.25},
@@ -697,7 +701,7 @@ function ColorMixin:GenerateHexColor()
 end
 
 function ColorMixin:WrapTextInColorCode(text)
-	return ("|c%s%s|r"):format(self:GenerateHexColor(), text);
+	return WrapTextInColorCode(text, self:GenerateHexColor());
 end
 
 -- Time --
@@ -791,5 +795,49 @@ function FormatShortDate(day, month, year)
 		return string.format(SHORTDATE_EU, day, month, year);
 	else
 		return string.format(SHORTDATE, day, month, year);
+	end
+end
+
+function CreateTextureMarkup(file, fileWidth, fileHeight, width, height, left, right, top, bottom)
+	return string.format(
+		  "|T%s:%d:%d:0:0:%d:%d:%d:%d:%d:%d|t"
+		, file
+		, height
+		, width
+		, fileWidth
+		, fileHeight
+		, left * fileWidth
+		, right * fileWidth
+		, top * fileHeight
+		, bottom * fileHeight
+	);
+end
+
+CallbackRegistryBaseMixin = {};
+
+function CallbackRegistryBaseMixin:OnLoad()
+	self.callbackRegistry = {};
+end
+
+function CallbackRegistryBaseMixin:RegisterCallback(event, callback)
+	if not self.callbackRegistry[event] then
+		self.callbackRegistry[event] = {};
+	end
+	
+	self.callbackRegistry[event][callback] = true;
+end
+
+function CallbackRegistryBaseMixin:UnregisterCallback(event, callback)
+	if self.callbackRegistry[event] then
+		self.callbackRegistry[event][callback] = nil;
+	end
+end
+
+function CallbackRegistryBaseMixin:TriggerEvent(event, ...)
+	local registry = self.callbackRegistry[event];
+	if registry then
+		for callback in pairs(registry) do
+			callback(event, ...);
+		end
 	end
 end

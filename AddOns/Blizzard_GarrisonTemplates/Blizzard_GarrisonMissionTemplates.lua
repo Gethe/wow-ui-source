@@ -316,7 +316,7 @@ function GarrisonMission:UpdateMissionData(missionPage)
 		end
 	else
 		-- no need to animate if chance is not increasing
-		if ( rewardsFrame.currentChance and successChance < rewardsFrame.currentChance ) then
+		if ( rewardsFrame.currentChance and successChance < rewardsFrame.currentChance and missionPage:IsShown()) then
 			PlaySound("UI_Garrison_CommandTable_ReducedSuccessChance");
 		end
 		GarrisonMissionPageRewardsFrame_SetSuccessChance(rewardsFrame, successChance, missionEffects);

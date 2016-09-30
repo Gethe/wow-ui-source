@@ -9,3 +9,4 @@ ActiveQuestDataProvider.xml
 GroupMembersDataProvider.xml
 WorldQuestDataProvider.xml
 ZoneLabelDataProvider.xml
+ClickToZoomDataProvider.xml

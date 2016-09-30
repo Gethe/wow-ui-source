@@ -835,6 +835,9 @@
 					</Layer>
 				</Layers>
 				<Scripts>
+					<OnLoad>
+						self.UpdateTooltip = function(owner) BossBanner_OnLootItemEnter(owner); end;
+					</OnLoad>
 					<OnEnter function="BossBanner_OnLootItemEnter"/>
 					<OnLeave function="BossBanner_OnLootItemLeave"/>
 				</Scripts>

@@ -1,3 +1,5 @@
+ENCOUNTER_JOURNAL_LINK_BUTTON_TUTORIAL = "Click to view the loot list for this boss."
+
 LOOTFRAME_NUMBUTTONS = 4;
 NUM_GROUP_LOOT_FRAMES = 4;
 MASTER_LOOT_THREHOLD = 4;
@@ -571,10 +573,11 @@ function GroupLootFrame_OnUpdate(self, elapsed)
 	self:SetValue(left);
 end
 
-function BonusRollFrame_StartBonusRoll(spellID, text, duration, currencyID)
+function BonusRollFrame_StartBonusRoll(spellID, text, duration, currencyID, difficultyID)
 	local frame = BonusRollFrame;
 
-	if ( not currencyID ) then
+	-- No valid currency data--use the fall back.
+	if ( currencyID == 0 ) then
 		currencyID = BONUS_ROLL_REQUIRED_CURRENCY;
 	end
 
@@ -591,6 +594,11 @@ function BonusRollFrame_StartBonusRoll(spellID, text, duration, currencyID)
 	frame.endTime = time() + duration;
 	frame.remaining = duration;
 	frame.currencyID = currencyID;
+	frame.difficultyID = difficultyID;
+	
+	local instanceID, encounterID = GetJournalInfoForSpellConfirmation(spellID);
+	frame.instanceID = instanceID;
+	frame.encounterID = encounterID;
 
 	local numRequired = 1;
 	frame.PromptFrame.InfoFrame.Cost:SetFormattedText(BONUS_ROLL_COST, numRequired, icon);
@@ -723,6 +731,59 @@ function BonusRollFrame_OnUpdate(self, elapsed)
 			BonusRollFrame_AdvanceLootSpinnerAnim(self);
 		end
 	end
+end
+
+function GetBonusRollEncounterJournalLinkDifficulty()
+	if ( not BonusRollFrame.difficultyID ) then
+		local _, _, instanceDifficulty = GetInstanceInfo();
+		if ( instanceDifficulty == 0 ) then
+			-- We have no difficulty so we don't know what to open.
+			return nil;
+		else
+			return instanceDifficulty;
+		end
+	end
+	
+	return BonusRollFrame.difficultyID;
+end
+
+function EncounterJournalLinkButton_OnShow(self)
+	if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_BONUS_ROLL_ENCOUNTER_JOURNAL_LINK) then
+		self:GetParent().EncounterJournalLinkButtonHelp:Show();
+	end
+end
+
+function EncounterJournalLinkButton_OnEnter(self)
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip:SetText(BONUS_ROLL_TOOLTIP_TITLE, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+	GameTooltip:AddLine(BONUS_ROLL_TOOLTIP_TEXT, nil, nil, nil, true);
+	
+	if ( BonusRollFrame.instanceID and BonusRollFrame.encounterID and GetBonusRollEncounterJournalLinkDifficulty() ) then
+		GameTooltip:AddLine(BONUS_ROLL_TOOLTIP_ENCOUNTER_JOURNAL_LINK, GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b, true);
+	end
+	
+	GameTooltip:Show();
+end
+
+function OpenBonusRollEncounterJournalLink()
+	local difficultyID = GetBonusRollEncounterJournalLinkDifficulty();
+	if ( not difficultyID or not BonusRollFrame.instanceID or not BonusRollFrame.encounterID) then
+		return;
+	end
+	
+	SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_BONUS_ROLL_ENCOUNTER_JOURNAL_LINK, true);
+	BonusRollFrame.PromptFrame.EncounterJournalLinkButtonHelp:Hide();
+	
+	EncounterJournal_LoadUI();
+	
+	local specialization = GetLootSpecialization();
+	if ( specialization == 0 ) then
+		specialization = GetSpecializationInfo(GetSpecialization());
+	end
+	EncounterJournal_SetClassAndSpecFilter(EncounterJournal, select(3, UnitClass("player")), specialization);
+	-- EncounterJournal_OpenJournal takes an itemID but only checks if it exists, not what it is.
+	local forceClickLootTab = 0;
+	EncounterJournal_OpenJournal(difficultyID, BonusRollFrame.instanceID, BonusRollFrame.encounterID, nil, nil, forceClickLootTab);
 end
 
 function BonusRollFrame_AdvanceLootSpinnerAnim(self)

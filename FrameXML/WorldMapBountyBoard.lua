@@ -142,12 +142,12 @@ function WorldMapBountyBoardMixin:RefreshBountyTabs()
 		local tab = self.bountyTabPool:Acquire();
 		local selected = self.selectedBountyIndex == bountyIndex;
 		tab:SetNormalAtlas(selected and "worldquest-tracker-ring-selected" or "worldquest-tracker-ring");
-		if selected then 
+		if selected then
 			tab:SetHighlightTexture(nil);
 		else
 			tab:SetHighlightAtlas("worldquest-tracker-ring");
 			tab:GetHighlightTexture():SetAlpha(0.4);
-		end		
+		end
 		if IsQuestComplete(bounty.questID) then
 			tab.CheckMark:Show();
 			if not self.firstCompletedTab then
@@ -156,7 +156,7 @@ function WorldMapBountyBoardMixin:RefreshBountyTabs()
 		else
 			tab.CheckMark:Hide();
 		end
-		
+
 		tab.Icon:SetTexture(bounty.icon);
 		tab.Icon:Show();
 		tab.EmptyIcon:Hide();
@@ -318,7 +318,7 @@ function WorldMapBountyBoardMixin:SetTooltipOwner()
 		WorldMapTooltip:SetOwner(self, "ANCHOR_LEFT", -100, -50);
 	else
 		WorldMapTooltip:SetOwner(self, "ANCHOR_RIGHT", 0, -50);
-	end	
+	end
 end
 
 function WorldMapBountyBoardMixin:ShowLockedByQuestTooltip()
@@ -407,7 +407,7 @@ function WorldMapBountyBoardMixin:FindBestMapForSelectedBounty()
 		local numBounties = 0;
 		local taskInfo = C_TaskQuest.GetQuestsForPlayerByMapID(continentMaps[i], continentID);
 		for _, info  in ipairs(taskInfo) do
-			if QuestMapFrame_IsQuestWorldQuest(info.questId) then
+			if QuestUtils_IsQuestWorldQuest(info.questId) then
 				if self:IsWorldQuestCriteriaForSelectedBounty(info.questId) then
 					if ( currentMapID == continentMaps[i] ) then
 						-- no need to switch

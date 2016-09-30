@@ -616,6 +616,10 @@ end
 -- Utils
 -- =============================================================
 
+function IsKioskGlueEnabled()
+	return IsKioskModeEnabled() and not IsCompetitiveModeEnabled();
+end
+
 function SetExpansionLogo(texture, expansionLevel)
 	if ( EXPANSION_LOGOS[expansionLevel].texture ) then
 		texture:SetTexture(EXPANSION_LOGOS[expansionLevel].texture);

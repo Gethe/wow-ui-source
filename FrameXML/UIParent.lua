@@ -114,7 +114,7 @@ UIChildWindows = {
 };
 
 function UpdateUIParentRelativeToDebugMenu()
-	if (DebugMenu.IsVisible()) then
+	if (DebugMenu and DebugMenu.IsVisible()) then
 		UIParent:SetPoint("TOPLEFT", 0, -DebugMenu.GetMenuHeight());
 	else
 		UIParent:SetPoint("TOPLEFT", 0, 0);
@@ -1347,13 +1347,13 @@ function UIParent_OnEvent(self, event, ...)
 			dialog.data2 = arg2;
 		end
 	elseif ( event == "SPELL_CONFIRMATION_PROMPT" ) then
-		local spellID, confirmType, text, duration, currencyID = ...;
+		local spellID, confirmType, text, duration, currencyID, difficultyID = ...;
 		if ( confirmType == LE_SPELL_CONFIRMATION_PROMPT_TYPE_STATIC_TEXT ) then
 			StaticPopup_Show("SPELL_CONFIRMATION_PROMPT", text, duration, spellID);
 		elseif ( confirmType == LE_SPELL_CONFIRMATION_PROMPT_TYPE_SIMPLE_WARNING ) then
 			StaticPopup_Show("SPELL_CONFIRMATION_WARNING", text, nil, spellID);
 		elseif ( confirmType == LE_SPELL_CONFIRMATION_PROMPT_TYPE_BONUS_ROLL ) then
-			BonusRollFrame_StartBonusRoll(spellID, text, duration, currencyID);
+			BonusRollFrame_StartBonusRoll(spellID, text, duration, currencyID, difficultyID);
 		end
 	elseif ( event == "SPELL_CONFIRMATION_TIMEOUT" ) then
 		local spellID, confirmType = ...;

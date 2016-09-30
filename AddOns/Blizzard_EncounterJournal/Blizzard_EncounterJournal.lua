@@ -22,6 +22,8 @@ local EJ_MAX_SECTION_MOVE = 320;
 local EJ_NUM_SEARCH_PREVIEWS = 5;
 local EJ_SHOW_ALL_SEARCH_RESULTS_INDEX = EJ_NUM_SEARCH_PREVIEWS + 1;
 
+local NO_INV_TYPE_FILTER = 0;
+
 AJ_MAX_NUM_SUGGESTIONS = 3;
 
 -- Priority list for *not my spec*
@@ -96,6 +98,24 @@ ExpansionEnumToEJTierDataTableId = {
 	[LE_EXPANSION_LEGION] = 7,
 }
 
+local EncounterJournalSlotFilters = {
+	{ invType = LE_ITEM_FILTER_TYPE_HEAD, invTypeName = INVTYPE_HEAD },
+	{ invType = LE_ITEM_FILTER_TYPE_NECK, invTypeName = INVTYPE_NECK },
+	{ invType = LE_ITEM_FILTER_TYPE_SHOULDER, invTypeName = INVTYPE_SHOULDER },
+	{ invType = LE_ITEM_FILTER_TYPE_CLOAK, invTypeName = INVTYPE_CLOAK },
+	{ invType = LE_ITEM_FILTER_TYPE_CHEST, invTypeName = INVTYPE_CHEST },
+	{ invType = LE_ITEM_FILTER_TYPE_WRIST, invTypeName = INVTYPE_WRIST },
+	{ invType = LE_ITEM_FILTER_TYPE_HAND, invTypeName = INVTYPE_HAND },
+	{ invType = LE_ITEM_FILTER_TYPE_WAIST, invTypeName = INVTYPE_WAIST },
+	{ invType = LE_ITEM_FILTER_TYPE_LEGS, invTypeName = INVTYPE_LEGS },
+	{ invType = LE_ITEM_FILTER_TYPE_FEET, invTypeName = INVTYPE_FEET },
+	{ invType = LE_ITEM_FILTER_TYPE_MAIN_HAND, invTypeName = INVTYPE_WEAPONMAINHAND },
+	{ invType = LE_ITEM_FILTER_TYPE_OFF_HAND, invTypeName = INVTYPE_WEAPONOFFHAND },
+	{ invType = LE_ITEM_FILTER_TYPE_FINGER, invTypeName = INVTYPE_FINGER },
+	{ invType = LE_ITEM_FILTER_TYPE_TRINKET, invTypeName = INVTYPE_TRINKET },
+	{ invType = LE_ITEM_FILTER_TYPE_ARTIFACT_RELIC, invTypeName = EJ_LOOT_SLOT_FILTER_ARTIFACT_RELIC },
+}
+
 local BOSS_LOOT_BUTTON_HEIGHT = 45;
 local INSTANCE_LOOT_BUTTON_HEIGHT = 64;
 
@@ -147,6 +167,7 @@ function EncounterJournal_OnLoad(self)
 	}
 	NavBar_Initialize(self.navBar, "NavButtonTemplate", homeData, self.navBar.home, self.navBar.overflow);
 	UIDropDownMenu_Initialize(self.encounter.info.lootScroll.lootFilter, EncounterJournal_InitLootFilter, "MENU");
+	UIDropDownMenu_Initialize(self.encounter.info.lootScroll.lootSlotFilter, EncounterJournal_InitLootSlotFilter, "MENU");
 
 	-- initialize tabs
 	local instanceSelect = EncounterJournal.instanceSelect;
@@ -2343,10 +2364,37 @@ function EncounterJournal_TierDropDown_Select(_, tier)
 end
 
 
-function EncounterJournal_SetFilter(self, classID, specID)
-	EJ_SetLootFilter(classID, specID);
+function EncounterJournal_OnFilterChanged(self)
 	CloseDropDownMenus(1);
 	EncounterJournal_LootUpdate();
+end
+
+
+function EncounterJournal_SetClassAndSpecFilter(self, classID, specID)
+	EJ_SetLootFilter(classID, specID);
+	EncounterJournal_OnFilterChanged(self);
+end
+
+
+function EncounterJournal_RefreshSlotFilterText(self)
+	local text = ALL_INVENTORY_SLOTS;
+	local slotFilter = EJ_GetSlotFilter();
+	if slotFilter ~= NO_INV_TYPE_FILTER then
+		for _, slot in ipairs(EncounterJournalSlotFilters) do
+			if ( slot.invType == slotFilter ) then
+				text = slot.invTypeName;
+				break;
+			end
+		end
+	end
+
+	EncounterJournal.encounter.info.lootScroll.slotFilter:SetText(text);
+end
+
+function EncounterJournal_SetSlotFilter(self, slot)
+	EJ_SetSlotFilter(slot);
+	EncounterJournal_RefreshSlotFilterText(self);
+	EncounterJournal_OnFilterChanged(self);
 end
 
 
@@ -2383,7 +2431,7 @@ function EncounterJournal_InitLootFilter(self, level)
 		info.checked = (filterClassID == 0);
 		info.arg1 = 0;
 		info.arg2 = 0;
-		info.func = EncounterJournal_SetFilter;
+		info.func = EncounterJournal_SetClassAndSpecFilter;
 		UIDropDownMenu_AddButton(info, level);
 
 		local numClasses = GetNumClasses();
@@ -2393,7 +2441,7 @@ function EncounterJournal_InitLootFilter(self, level)
 			info.checked = (filterClassID == classID);
 			info.arg1 = classID;
 			info.arg2 = 0;
-			info.func = EncounterJournal_SetFilter;
+			info.func = EncounterJournal_SetClassAndSpecFilter;
 			UIDropDownMenu_AddButton(info, level);
 		end
 	end
@@ -2428,7 +2476,7 @@ function EncounterJournal_InitLootFilter(self, level)
 			info.checked = (filterSpecID == specID);
 			info.arg1 = classID;
 			info.arg2 = specID;
-			info.func = EncounterJournal_SetFilter;
+			info.func = EncounterJournal_SetClassAndSpecFilter;
 			UIDropDownMenu_AddButton(info, level);
 		end
 
@@ -2437,12 +2485,28 @@ function EncounterJournal_InitLootFilter(self, level)
 		info.checked = (classID == filterClassID) and (filterSpecID == 0);
 		info.arg1 = classID;
 		info.arg2 = 0;
-		info.func = EncounterJournal_SetFilter;
+		info.func = EncounterJournal_SetClassAndSpecFilter;
 		UIDropDownMenu_AddButton(info, level);
 	end
 end
 
+function EncounterJournal_InitLootSlotFilter(self, level)
+	local slotFilter = EJ_GetSlotFilter();
 
+	local info = UIDropDownMenu_CreateInfo();
+	info.text = ALL_INVENTORY_SLOTS;
+	info.checked = slotFilter == NO_INV_TYPE_FILTER;
+	info.arg1 = NO_INV_TYPE_FILTER;
+	info.func = EncounterJournal_SetSlotFilter;
+	UIDropDownMenu_AddButton(info);
+	
+	for _, slot in ipairs(EncounterJournalSlotFilters) do
+		info.text = slot.invTypeName;
+		info.checked = slotFilter == slot.invType;
+		info.arg1 = slot.invType;
+		UIDropDownMenu_AddButton(info);
+	end
+end
 
 
 ----------------------------------------
@@ -2465,8 +2529,7 @@ end
 
 function EJNAV_ListInstance(self, index)
 	--local navBar = self:GetParent();
-	local showRaid = not EncounterJournal.instanceSelect.raidsTab:IsEnabled();
-	local _, name = EJ_GetInstanceByIndex(index, showRaid);
+	local _, name = EJ_GetInstanceByIndex(index, EJ_InstanceIsRaid());
 	return name, EJNAV_SelectInstance;
 end
 
@@ -2511,6 +2574,7 @@ function EJSuggestFrame_OnShow(self)
 
 	C_AdventureJournal.UpdateSuggestions();
 	EJSuggestFrame_RefreshDisplay();
+	EncounterJournal_RefreshSlotFilterText();
 end
 
 function EJSuggestFrame_NextSuggestion()

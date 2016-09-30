@@ -4,9 +4,9 @@ function ZoneLabelDataProviderMixin:OnAdded(mapCanvas)
 	MapCanvasDataProviderMixin.OnAdded(self, mapCanvas);
 
 	if self.ZoneLabel then
-		self.ZoneLabel:SetParent(mapCanvas);
+		self.ZoneLabel:SetParent(self:GetMap());
 	else
-		self.ZoneLabel = CreateFrame("FRAME", nil, mapCanvas, "ZoneLabelDataProvider_ZoneLabelTemplate");
+		self.ZoneLabel = CreateFrame("FRAME", nil, self:GetMap(), "ZoneLabelDataProvider_ZoneLabelTemplate");
 		self.ZoneLabel.dataProvider = self;
 	end
 
@@ -65,12 +65,6 @@ function ZoneLabelDataProviderMixin:MarkActiveAreasDirty()
 	end
 end
 
-local function GetDistSq(x1, y1, x2, y2)
-	local deltaX = x1 - x2;
-	local deltaY = y1 - y2;
-	return deltaX * deltaX + deltaY * deltaY;
-end
-
 function ZoneLabelDataProviderMixin:EvaluateBestAreaTrigger()
 	self.labelDirty = false;
 
@@ -79,7 +73,7 @@ function ZoneLabelDataProviderMixin:EvaluateBestAreaTrigger()
 	local newBestAreaTrigger;
 	local bestDistSq = math.huge;
 	for areaTrigger in pairs(self.activeAreas) do
-		local distSq = GetDistSq(mapViewRectCenterX, mapViewRectCenterY, areaTrigger:GetCenter());
+		local distSq = Vector2D_GetLengthSquared(mapViewRectCenterX, mapViewRectCenterY, areaTrigger:GetCenter());
 		if distSq < bestDistSq then
 			newBestAreaTrigger = areaTrigger;
 			bestDistSq = distSq;
@@ -90,13 +84,15 @@ function ZoneLabelDataProviderMixin:EvaluateBestAreaTrigger()
 		self.bestAreaTrigger = newBestAreaTrigger;
 		self.ZoneLabel.Text:SetText(newBestAreaTrigger.name);
 		self.ZoneLabel.FadeInAnim:Play();
+		self:GetMap():TriggerEvent("ZoneLabelFadeInStart", self.bestAreaTrigger.isContinent);
 
 		self.ZoneLabel:ClearAllPoints();
 		self.ZoneLabel:SetPoint(self:CalculateAnchorsForAreaTrigger(newBestAreaTrigger));
 
 	elseif self.bestAreaTrigger and self.bestAreaTrigger ~= newBestAreaTrigger then
-		self.bestAreaTrigger = nil;
 		self.ZoneLabel.FadeOutAnim:Play();
+		self:GetMap():TriggerEvent("ZoneLabelFadeOutStart", self.bestAreaTrigger.isContinent);
+		self.bestAreaTrigger = nil;
 	end
 end
 

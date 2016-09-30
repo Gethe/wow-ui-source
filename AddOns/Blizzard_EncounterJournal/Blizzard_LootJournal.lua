@@ -391,8 +391,8 @@ function LootJournalLegendariesMixin:UpdateSlotButtonText()
 	if invTypeFilter ~= NO_INV_TYPE_FILTER then
 		local invTypes = C_LootJournal.GetLegendaryInventoryTypes();
 		for i = 1, #invTypes do
-			if ( invTypes[i].invTypeIndex == invTypeFilter ) then
-				text = _G[invTypes[i].invType];
+			if ( invTypes[i].invType == invTypeFilter ) then
+				text = _G[invTypes[i].invTypeName];
 				break;
 			end
 		end

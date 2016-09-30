@@ -12,7 +12,7 @@
 		</Size>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString name="$parentText" inherits="GameFontHighlight">
+				<FontString parentKey="Text" name="$parentText" inherits="GameFontHighlight">
 					<Anchors>
 						<Anchor point="LEFT" relativePoint="RIGHT">
 							<Offset>
@@ -164,7 +164,7 @@
 -->	
 	<Frame name="GuildNewsFiltersFrame" toplevel="true" frameStrata="DIALOG" hidden="true" parent="GuildFrame" enableMouse="true" inherits="TranslucentFrameTemplate">
 		<Size>
-			<AbsDimension x="264" y="200"/>
+			<AbsDimension x="264" y="230"/>
 		</Size>
 		<Anchors>
 			<Anchor point="TOPLEFT" relativeTo="GuildFrame" relativePoint="TOPRIGHT" x="0" y="-20"/>
@@ -188,34 +188,39 @@
 					</Anchor>
 				</Anchors>
 			</Button>
-			<CheckButton name="GuildNewsFilterButton1" inherits="GuildNewsCheckButtonTemplate" id="1">
+			<CheckButton parentKey="GuildAchievement" parentArray="GuildNewsFilterButtons" inherits="GuildNewsCheckButtonTemplate" id="1">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="24" y="-40"/>
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="GuildNewsFilterButton2" inherits="GuildNewsCheckButtonTemplate" id="2">
+			<CheckButton parentKey="Achievement" parentArray="GuildNewsFilterButtons" inherits="GuildNewsCheckButtonTemplate" id="2">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="GuildNewsFilterButton1" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.GuildAchievement" relativePoint="BOTTOMLEFT" x="0" y="0"/>
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="GuildNewsFilterButton3" inherits="GuildNewsCheckButtonTemplate" id="3">
+			<CheckButton parentKey="DungeonEncounter" parentArray="GuildNewsFilterButtons" inherits="GuildNewsCheckButtonTemplate" id="3">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="GuildNewsFilterButton2" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Achievement" relativePoint="BOTTOMLEFT" x="0" y="0"/>
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="GuildNewsFilterButton4" inherits="GuildNewsCheckButtonTemplate" id="4">
+			<CheckButton parentKey="EpicItemLooted" parentArray="GuildNewsFilterButtons" inherits="GuildNewsCheckButtonTemplate" id="4">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="GuildNewsFilterButton3" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.DungeonEncounter" relativePoint="BOTTOMLEFT" x="0" y="0"/>
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="GuildNewsFilterButton5" inherits="GuildNewsCheckButtonTemplate" id="5">
+			<CheckButton parentKey="EpicItemPurchased" parentArray="GuildNewsFilterButtons" inherits="GuildNewsCheckButtonTemplate" id="5">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="GuildNewsFilterButton4" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.EpicItemLooted" relativePoint="BOTTOMLEFT" x="0" y="0"/>
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="GuildNewsFilterButton6" inherits="GuildNewsCheckButtonTemplate" id="6">
+			<CheckButton parentKey="EpicItemCrafted" parentArray="GuildNewsFilterButtons" inherits="GuildNewsCheckButtonTemplate" id="6">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="GuildNewsFilterButton5" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.EpicItemPurchased" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton parentKey="LegendaryItemLooted" parentArray="GuildNewsFilterButtons" inherits="GuildNewsCheckButtonTemplate" id="9">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.EpicItemCrafted" relativePoint="BOTTOMLEFT" x="0" y="0"/>
 				</Anchors>
 			</CheckButton>
 		</Frames>

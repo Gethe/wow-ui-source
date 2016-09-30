@@ -255,7 +255,7 @@ function DEFAULT_OBJECTIVE_TRACKER_MODULE:GetLine(block, objectiveKey, lineType)
 		self:FreeLine(block, line);
 		line = nil;
 	end
-	
+
 	if ( line ) then
 		line.used = true;
 		return line;
@@ -404,7 +404,7 @@ function DEFAULT_OBJECTIVE_TRACKER_MODULE:OnBlockHeaderLeave(block)
 				line.Dash:SetTextColor(OBJECTIVE_TRACKER_COLOR["Normal"].r, OBJECTIVE_TRACKER_COLOR["Normal"].g, OBJECTIVE_TRACKER_COLOR["Normal"].b);
 			end
 		end
-	end	
+	end
 end
 
 -- ***** TIMER BAR
@@ -429,7 +429,7 @@ function DEFAULT_OBJECTIVE_TRACKER_MODULE:AddTimerBar(block, line, duration, sta
 		end
 		self.usedTimerBars[block][line] = timerBar;
 		timerBar:Show();
-	end	
+	end
 	-- anchor the status bar
 	local anchor = block.currentLine or block.HeaderText;
 	if ( anchor ) then
@@ -487,7 +487,7 @@ function DEFAULT_OBJECTIVE_TRACKER_MODULE:AddProgressBar(block, line, questID)
 		-- initialize to the right values
 		progressBar.questID = questID;
 		ObjectiveTrackerProgressBar_SetValue(progressBar, GetQuestProgressBarPercent(questID));
-	end	
+	end
 	-- anchor the status bar
 	local anchor = block.currentLine or block.HeaderText;
 	if ( anchor ) then
@@ -498,7 +498,7 @@ function DEFAULT_OBJECTIVE_TRACKER_MODULE:AddProgressBar(block, line, questID)
 
 	progressBar.block = block;
 	progressBar.questID = questID;
-	
+
 
 	line.ProgressBar = progressBar;
 	block.height = block.height + progressBar.height + block.module.lineSpacing;
@@ -565,7 +565,7 @@ end
 function ObjectiveTrackerTimerBar_GetTextColor(duration, elapsed)
 	local START_PERCENTAGE_YELLOW = .66
 	local START_PERCENTAGE_RED = .33
-	
+
 	local percentageLeft = 1 - ( elapsed / duration )
 	if ( percentageLeft > START_PERCENTAGE_YELLOW ) then
 		return 1, 1, 1;
@@ -597,7 +597,7 @@ end
 function ObjectiveTracker_OnLoad(self)
 	-- create a line so we can get some measurements
 	local line = CreateFrame("Frame", nil, self, DEFAULT_OBJECTIVE_TRACKER_MODULE.lineTemplate);
-	line.Text:SetText("Double line|ntest");	
+	line.Text:SetText("Double line|ntest");
 	-- reuse it
 	tinsert(DEFAULT_OBJECTIVE_TRACKER_MODULE.freeLines, line);
 	-- get measurements
@@ -630,14 +630,14 @@ function ObjectiveTracker_Initialize(self)
 								QUEST_TRACKER_MODULE,
 								BONUS_OBJECTIVE_TRACKER_MODULE,
 								WORLD_QUEST_TRACKER_MODULE,
-								ACHIEVEMENT_TRACKER_MODULE,	
+								ACHIEVEMENT_TRACKER_MODULE,
 	};
-	
+
 	self:RegisterEvent("QUEST_LOG_UPDATE");
 	self:RegisterEvent("TRACKED_ACHIEVEMENT_LIST_CHANGED");
 	self:RegisterEvent("QUEST_WATCH_LIST_CHANGED");
 	self:RegisterEvent("QUEST_AUTOCOMPLETE");
-	self:RegisterEvent("QUEST_ACCEPTED");	
+	self:RegisterEvent("QUEST_ACCEPTED");
 	self:RegisterEvent("SUPER_TRACKED_QUEST_CHANGED");
 	self:RegisterEvent("SCENARIO_UPDATE");
 	self:RegisterEvent("SCENARIO_CRITERIA_UPDATE");
@@ -663,7 +663,7 @@ function ObjectiveTracker_OnEvent(self, event, ...)
 		local questLogIndex, questID = ...;
 		if ( not IsQuestBounty(questID) ) then
 			if ( IsQuestTask(questID) ) then
-				if ( QuestMapFrame_IsQuestWorldQuest(questID) ) then
+				if ( QuestUtils_IsQuestWorldQuest(questID) ) then
 					ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_WORLD_QUEST_ADDED, questID);
 				else
 					ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_TASK_ADDED, questID);
@@ -737,7 +737,7 @@ function ObjectiveTracker_OnEvent(self, event, ...)
 			BonusObjectiveTracker_OnTaskCompleted(...);
 		end
 	elseif ( event == "PLAYER_MONEY" and self.watchMoneyReasons > 0 ) then
-		ObjectiveTracker_Update(self.watchMoneyReasons);	
+		ObjectiveTracker_Update(self.watchMoneyReasons);
 	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
 		if ( not self.initialized ) then
 			ObjectiveTracker_Initialize(self);
@@ -784,7 +784,7 @@ function ObjectiveTracker_Collapse()
 	ObjectiveTrackerFrame.BlocksFrame:Hide();
 	ObjectiveTrackerFrame.HeaderMenu.MinimizeButton:GetNormalTexture():SetTexCoord(0, 0.5, 0, 0.5);
 	ObjectiveTrackerFrame.HeaderMenu.MinimizeButton:GetPushedTexture():SetTexCoord(0.5, 1, 0, 0.5);
-	ObjectiveTrackerFrame.HeaderMenu.Title:Show();	
+	ObjectiveTrackerFrame.HeaderMenu.Title:Show();
 end
 
 function ObjectiveTracker_Expand()
@@ -811,9 +811,9 @@ end
 
 local function AnchorBlock(block, anchorBlock, checkFit)
 	local module = block.module;
-	local blocksFrame = module.BlocksFrame;	
+	local blocksFrame = module.BlocksFrame;
 	local offsetY = module.blockOffsetY;
-	block:ClearAllPoints();	
+	block:ClearAllPoints();
 	if ( anchorBlock ) then
 		if ( anchorBlock.isHeader ) then
 			offsetY = module.fromHeaderOffsetY;
@@ -826,7 +826,7 @@ local function AnchorBlock(block, anchorBlock, checkFit)
 			offsetY = offsetY + anchorBlock.module.fromModuleOffsetY;
 			block:SetPoint("LEFT", OBJECTIVE_TRACKER_HEADER_OFFSET_X, 0);
 		else
-			block:SetPoint("LEFT", module.blockOffsetX, 0);		
+			block:SetPoint("LEFT", module.blockOffsetX, 0);
 		end
 		block:SetPoint("TOP", anchorBlock, "BOTTOM", 0, offsetY);
 	else
@@ -953,7 +953,7 @@ function ObjectiveTracker_OnSlideBlockUpdate(block, elapsed)
 	if ( block.slideTime <= 0 ) then
 		return;
 	end
-	
+
 	local height = floor(slideData.startHeight + (slideData.endHeight - slideData.startHeight) * (min(block.slideTime, slideData.duration) / slideData.duration));
 	if ( height ~= block.slideHeight ) then
 		block.slideHeight = height;
@@ -999,7 +999,7 @@ function DEFAULT_OBJECTIVE_TRACKER_MODULE:StaticReanchor()
 		if ( block.module == self ) then
 			local nextBlock = block.nextBlock;
 			if ( ObjectiveTracker_AddBlock(block) ) then
-				block.used = true;			
+				block.used = true;
 				block:Show();
 				block = nextBlock;
 			else
@@ -1067,7 +1067,7 @@ function ObjectiveTracker_Update(reason, id)
 			-- but if we got more room and this module has unshown content, do a full update
 			-- also do a full update if the header is animating since the module does not technically have any blocks at that point
 			if ( (module.hasSkippedBlocks and gotMoreRoomThisPass) or (module.Header and module.Header.animating) ) then
-				module:Update();			
+				module:Update();
 			else
 				module:StaticReanchor();
 			end

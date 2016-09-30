@@ -35,7 +35,7 @@ function FlightMap_ZoneSummaryDataProvider:GatherWorldQuests()
 			if taskInfo then
 				for i, info in ipairs(taskInfo) do
 					if HaveQuestData(info.questId) then
-						if QuestMapFrame_IsQuestWorldQuest(info.questId) and WorldMap_DoesWorldQuestInfoPassFilters(info) then
+						if QuestUtils_IsQuestWorldQuest(info.questId) and WorldMap_DoesWorldQuestInfoPassFilters(info) then
 							if not self.worldQuestsByZone[zoneMapID] then
 								self.worldQuestsByZone[zoneMapID] = {};
 							end

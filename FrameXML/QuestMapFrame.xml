@@ -299,6 +299,13 @@
 							</Anchors>
 						</Texture>
 					</Layer>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Count" inherits="GameFontNormal">
+							<Anchors>
+								<Anchor point="TOP" x="0" y="24"/>
+							</Anchors>
+						</FontString>
+					</Layer>
 				</Layers>
 				<ScrollChild>
 					<Frame parentKey="Contents">

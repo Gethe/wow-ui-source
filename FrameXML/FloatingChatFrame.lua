@@ -1323,6 +1323,10 @@ function FCF_SetButtonSide(chatFrame, buttonSide, forceUpdate)
 	if ( chatFrame == DEFAULT_CHAT_FRAME ) then
 		ChatFrameMenu_UpdateAnchorPoint();
 	end
+
+	if ( QuickJoinToastButton ) then
+		QuickJoinToastButton:SetToastDirection(buttonSide == "right");
+	end
 end
 
 function FCF_StartAlertFlash(chatFrame)

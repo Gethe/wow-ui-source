@@ -237,9 +237,9 @@ function ToggleWorldMap()
 				ToggleFrame(WorldMapFrame);
 			end
 		elseif ( isWindowed ) then
+			ToggleFrame(WorldMapFrame);
 			WorldMap_ToggleSizeUp();
-			WorldMapScrollFrame_ReanchorQuestPOIs();
-			WorldMapBlobFrame_DelayedUpdateBlobs();
+			ToggleFrame(WorldMapFrame);
 		else
 			ToggleFrame(WorldMapFrame);
 		end
@@ -333,7 +333,7 @@ function WorldMapFrame_OnLoad(self)
 	WorldMapUnitPositionFrame:SetPlayerPingTexture(1, "Interface\\minimap\\UI-Minimap-Ping-Center", 32, 32);
 	WorldMapUnitPositionFrame:SetPlayerPingTexture(2, "Interface\\minimap\\UI-Minimap-Ping-Expand", 32, 32);
 	WorldMapUnitPositionFrame:SetPlayerPingTexture(3, "Interface\\minimap\\UI-Minimap-Ping-Rotate", 70, 70);
-	
+
 	WorldMapUnitPositionFrame:SetMouseOverUnitExcluded("player", true);
 end
 
@@ -766,11 +766,11 @@ function WorldMap_GetWorldQuestRewardType(questID)
 	if ( GetQuestLogRewardMoney(questID) > 0 ) then
 		worldQuestRewardType = bit.bor(worldQuestRewardType, WORLD_QUEST_REWARD_TYPE_FLAG_GOLD);
 	end
-	
+
 	if ( GetQuestLogRewardArtifactXP(questID) > 0 ) then
 		worldQuestRewardType = bit.bor(worldQuestRewardType, WORLD_QUEST_REWARD_TYPE_FLAG_ARTIFACT_POWER);
 	end
-	
+
 	local ORDER_RESOURCES_CURRENCY_ID = 1220;
 	local numQuestCurrencies = GetNumQuestLogRewardCurrencies(questID);
 	for i = 1, numQuestCurrencies do
@@ -779,7 +779,7 @@ function WorldMap_GetWorldQuestRewardType(questID)
 			break;
 		end
 	end
-	
+
 	local numQuestRewards = GetNumQuestLogRewards(questID);
 	for i = 1, numQuestRewards do
 		local itemName, itemTexture, quantity, quality, isUsable, itemID = GetQuestLogRewardInfo(i, questID);
@@ -788,17 +788,17 @@ function WorldMap_GetWorldQuestRewardType(questID)
 			if ( classID == LE_ITEM_CLASS_WEAPON or classID == LE_ITEM_CLASS_ARMOR or (classID == LE_ITEM_CLASS_GEM and subclassID == LE_ITEM_GEM_ARTIFACTRELIC) ) then
 				worldQuestRewardType = bit.bor(worldQuestRewardType, WORLD_QUEST_REWARD_TYPE_FLAG_EQUIPMENT);
 			end
-			
+
 			if ( IsArtifactPowerItem(itemID) ) then
 				worldQuestRewardType = bit.bor(worldQuestRewardType, WORLD_QUEST_REWARD_TYPE_FLAG_ARTIFACT_POWER);
 			end
-			
+
 			if ( classID == LE_ITEM_CLASS_TRADEGOODS ) then
 				worldQuestRewardType = bit.bor(worldQuestRewardType, WORLD_QUEST_REWARD_TYPE_FLAG_MATERIALS);
 			end
 		end
 	end
-	
+
 	return true, worldQuestRewardType;
 end
 
@@ -826,11 +826,11 @@ function WorldMap_DoesWorldQuestInfoPassFilters(info, ignoreTypeFilters, ignoreT
 			end
 		else
 			local dataLoaded, worldQuestRewardType = WorldMap_GetWorldQuestRewardType(info.questId);
-			
+
 			if ( not dataLoaded ) then
 				return false;
 			end
-			
+
 			local typeMatchesFilters = false;
 			if ( GetCVarBool("worldQuestFilterGold") and bit.band(worldQuestRewardType, WORLD_QUEST_REWARD_TYPE_FLAG_GOLD) ~= 0 ) then
 				typeMatchesFilters = true;
@@ -843,7 +843,7 @@ function WorldMap_DoesWorldQuestInfoPassFilters(info, ignoreTypeFilters, ignoreT
 			elseif ( GetCVarBool("worldQuestFilterEquipment") and bit.band(worldQuestRewardType, WORLD_QUEST_REWARD_TYPE_FLAG_EQUIPMENT) ~= 0 ) then
 				typeMatchesFilters = true;
 			end
-			
+
 			-- We always want to show quests that do not fit any of the enumerated reward types.
 			if ( worldQuestRewardType ~= 0 and not typeMatchesFilters ) then
 				return false;
@@ -926,7 +926,7 @@ function WorldMap_UpdateQuestBonusObjectives()
 		for i, info  in ipairs(taskInfo) do
 			if ( HaveQuestData(info.questId) ) then
 				local taskPOI;
-				local isWorldQuest = QuestMapFrame_IsQuestWorldQuest(info.questId);
+				local isWorldQuest = QuestUtils_IsQuestWorldQuest(info.questId);
 				if ( isWorldQuest ) then
 					taskPOI = WorldMap_TryCreatingWorldQuestPOI(info, taskIconIndex);
 				else
@@ -1816,7 +1816,7 @@ function WorldMap_AddQuestRewardsToTooltip(questID)
 			WorldMapTooltip:AddLine(BONUS_OBJECTIVE_REWARD_WITH_COUNT_FORMAT:format("Interface\\ICONS\\Achievement_LegionPVPTier4", honorAmount, HONOR), HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 			hasAnySingleLineRewards = true;
 		end
-		
+
 		-- items
 		local numQuestRewards = GetNumQuestLogRewards(questID);
 		if numQuestRewards > 0 then
@@ -1853,6 +1853,7 @@ function TaskPOI_OnEnter(self)
 		local tagID, tagName, worldQuestType, rarity, isElite, tradeskillLineIndex = GetQuestTagInfo(self.questID);
 		local color = WORLD_QUEST_QUALITY_COLORS[rarity];
 		WorldMapTooltip:SetText(title, color.r, color.g, color.b);
+		QuestUtils_AddQuestTypeToTooltip(WorldMapTooltip, self.questID, NORMAL_FONT_COLOR);
 
 		if ( factionID ) then
 			local factionName = GetFactionInfoByID(factionID);
@@ -1892,6 +1893,7 @@ function TaskPOI_OnEnter(self)
 	end
 
 	WorldMapTooltip:Show();
+	WorldMapTooltip.recalculatePadding = true;
 end
 
 function TaskPOI_OnLeave(self)
@@ -1927,18 +1929,21 @@ function TaskPOI_OnClick(self, button)
 	end
 end
 
-function WorldMapTooltip_OnSizeChanged(tooltip)
+function WorldMapTooltip_CalculatePadding()
+	local tooltip = WorldMapTooltip;
 	if tooltip.ItemTooltip:IsShown() then
-		WorldMapTooltip.BackdropFrame:SetPoint("BOTTOM", WorldMapTooltip.ItemTooltip, 0, -13);
-
-		if WorldMapTooltip:GetWidth() > WorldMapTooltip.ItemTooltip:GetWidth() + 6 then
-			WorldMapTooltip.BackdropFrame:SetPoint("RIGHT", WorldMapTooltip);
+		local oldPaddingWidth, oldPaddingHeight = tooltip:GetPadding();
+		local tooltipWidth = tooltip:GetWidth() - oldPaddingWidth;
+		local itemTooltipWidth = tooltip.ItemTooltip:GetWidth();
+		if tooltipWidth > itemTooltipWidth + 6 then
+			paddingWidth = 0;
 		else
-			WorldMapTooltip.BackdropFrame:SetPoint("RIGHT", WorldMapTooltip.ItemTooltip);
+			paddingWidth = itemTooltipWidth - tooltipWidth + 9;
 		end
-	else
-		WorldMapTooltip.BackdropFrame:SetPoint("BOTTOM", WorldMapTooltip);
-		WorldMapTooltip.BackdropFrame:SetPoint("RIGHT", WorldMapTooltip);
+		paddingHeight = tooltip.ItemTooltip:GetHeight() + 5;
+		if(math.abs(paddingWidth - oldPaddingWidth) > 0.5 or math.abs(paddingHeight - oldPaddingHeight) > 0.5) then
+			tooltip:SetPadding(paddingWidth, paddingHeight);
+		end
 	end
 end
 
@@ -2820,9 +2825,11 @@ function WorldMapScenarioPOI_SetTooltip(self)
 end
 
 function WorldMapQuestPOI_SetTooltip(poiButton, questLogIndex, numObjectives)
-	local title = GetQuestLogTitle(questLogIndex);
+	local title, _, _, _, _, _, _, questID = GetQuestLogTitle(questLogIndex);
 	WorldMapTooltip:SetOwner(poiButton or WorldMapPOIFrame, "ANCHOR_CURSOR_RIGHT", 5, 2);
 	WorldMapTooltip:SetText(title);
+	QuestUtils_AddQuestTypeToTooltip(WorldMapTooltip, questID, NORMAL_FONT_COLOR);
+
 	if ( poiButton and poiButton.style ~= "numeric" ) then
 		local completionText = GetQuestLogCompletionText(questLogIndex) or QUEST_WATCH_QUEST_READY;
 		WorldMapTooltip:AddLine("- "..completionText, 1, 1, 1, true);
@@ -3382,7 +3389,7 @@ function WorldMapTrackingOptionsDropDown_Initialize()
 	info.isNotRadio = true;
 	info.keepShownOnClick = true;
 	info.func = WorldMapTrackingOptionsDropDown_OnClick;
-	
+
 	info.text = SHOW_QUEST_OBJECTIVES_ON_MAP_TEXT;
 	info.value = "quests";
 	info.checked = GetCVarBool("questPOI");
@@ -3407,7 +3414,7 @@ function WorldMapTrackingOptionsDropDown_Initialize()
 	if not WorldMapFrame.UIElementsFrame.BountyBoard or not WorldMapFrame.UIElementsFrame.BountyBoard:AreBountiesAvailable() then
 		return;
 	end
-	
+
 	if prof1 or prof2 then
 		info.text = SHOW_PRIMARY_PROFESSION_ON_MAP_TEXT;
 		info.value = "primaryProfessionsFilter";
@@ -3421,7 +3428,7 @@ function WorldMapTrackingOptionsDropDown_Initialize()
 		info.checked = GetCVarBool("secondaryProfessionsFilter");
 		UIDropDownMenu_AddButton(info);
 	end
-	
+
 	UIDropDownMenu_AddSeparator(info);
 	-- Clear out the info from the separator wholesale.
 	info = UIDropDownMenu_CreateInfo();
@@ -3431,19 +3438,19 @@ function WorldMapTrackingOptionsDropDown_Initialize()
 	info.text = WORLD_QUEST_REWARD_FILTERS_TITLE;
 	UIDropDownMenu_AddButton(info);
 	info.text = nil;
-	
+
 	info.isTitle = nil;
 	info.disabled = nil;
 	info.notCheckable = nil;
 	info.isNotRadio = true;
 	info.keepShownOnClick = true;
 	info.func = WorldMapTrackingOptionsDropDown_OnClick;
-	
+
 	info.text = WORLD_QUEST_REWARD_FILTERS_ORDER_RESOURCES;
 	info.value = "worldQuestFilterOrderResources";
 	info.checked = GetCVarBool("worldQuestFilterOrderResources");
 	UIDropDownMenu_AddButton(info);
-	
+
 	info.text = WORLD_QUEST_REWARD_FILTERS_ARTIFACT_POWER;
 	info.value = "worldQuestFilterArtifactPower";
 	info.checked = GetCVarBool("worldQuestFilterArtifactPower");
@@ -3458,7 +3465,7 @@ function WorldMapTrackingOptionsDropDown_Initialize()
 	info.value = "worldQuestFilterGold";
 	info.checked = GetCVarBool("worldQuestFilterGold");
 	UIDropDownMenu_AddButton(info);
-	
+
 	info.text = WORLD_QUEST_REWARD_FILTERS_EQUIPMENT;
 	info.value = "worldQuestFilterEquipment";
 	info.checked = GetCVarBool("worldQuestFilterEquipment");

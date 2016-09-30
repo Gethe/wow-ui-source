@@ -41,7 +41,7 @@ local REWARDS_AT_MAX_LEVEL = {
 	}
 }
 
-function GetMaxLevelReward(bracketType, isFirstWin)
+function GetMaxLevelReward(bracketType, hasFirstWin)
 	local factionGroup = UnitFactionGroup("player");
 	if (UnitLevel("player") < MAX_PLAYER_LEVEL_TABLE[LE_EXPANSION_LEVEL_CURRENT]) then
 		return nil;
@@ -50,7 +50,7 @@ function GetMaxLevelReward(bracketType, isFirstWin)
 	
 	local id;
 
-	local key = isFirstWin and "FirstWin" or "NthWin";
+	local key = hasFirstWin and "NthWin" or "FirstWin";
 
 	local ARENA_2V2_ID = 1;
 	local ARENA_3V3_ID = 2;
@@ -968,7 +968,7 @@ function ConquestFrame_Update(self)
 				button.Reward.itemID = id;
 				button.Reward:Show();
 
-				local questID, completed, itemLevel = GetWeeklyPVPRewardInfo(bracketIndex);
+				local completed, itemLevel = GetWeeklyPVPRewardInfo(bracketIndex);
 				if (not completed) then
 					button.Reward.WeeklyBonus.bracketIndex = bracketIndex;
 					button.Reward.WeeklyBonus.index = i;
@@ -1155,8 +1155,8 @@ end
 
 function PVPRewardWeeklyBonus_OnEnter(self)
 	ConquestFrame.activeWeeklyBonus = self;
-	local questID, completed, itemLevel, numWinsReq = GetWeeklyPVPRewardInfo(self.bracketIndex);
-	if (questID and not completed and itemLevel) then
+	local completed, itemLevel, numWinsReq = GetWeeklyPVPRewardInfo(self.bracketIndex);
+	if (not completed and itemLevel) then
 		local rating, seasonBest, weeklyBest, seasonPlayed, seasonWon, weeklyPlayed, weeklyWon, lastWeeksBest = GetPersonalRatedInfo(self.bracketIndex);
 
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");

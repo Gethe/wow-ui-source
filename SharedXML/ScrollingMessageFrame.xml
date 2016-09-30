@@ -2,7 +2,7 @@
 ..\FrameXML\UI.xsd">
 	<Script file="ScrollingMessageFrame.lua"/>
 
-	<Frame name="ScrollingMessageFrame" mixin="ScrollingMessageFrameMixin" intrinsic="true">
+	<Frame name="ScrollingMessageFrame" secureMixin="ScrollingMessageFrameMixin" intrinsic="true">
 		<Frames>
 			<Frame parentKey="FontStringContainer" clipChildren="true" propagateHyperlinksToParent="true" setAllPoints="true" />
 		</Frames>

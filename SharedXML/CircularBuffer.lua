@@ -68,7 +68,7 @@ function CircularBufferMixin:RemoveIf(predicateFunction, transformFunction)
 	transformFunction = transformFunction or PassThrough;
 	local elements = {};
 	for i, entry in self:EnumerateIndexedEntries() do
-		if not predicateFunction(transformFunction(entry)) then
+		if not securecall(predicateFunction, securecall(transformFunction, entry)) then
 			elements[#elements + 1] = entry;
 		end
 	end

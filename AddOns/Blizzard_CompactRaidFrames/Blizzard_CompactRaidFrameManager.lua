@@ -30,7 +30,7 @@ function CompactRaidFrameManager_OnLoad(self)
 	self:RegisterEvent("RAID_TARGET_UPDATE");
 	self:RegisterEvent("PLAYER_TARGET_CHANGED");
 	
-	self.containerResizeFrame:SetMinResize(self.container:GetWidth(), MINIMUM_RAID_CONTAINER_HEIGHT + RESIZE_VERTICAL_OUTSETS * 2);
+	self.containerResizeFrame:SetMinResize(self.container:GetWidth(), MINIMUM_RAID_CONTAINER_HEIGHT + RESIZE_VERTICAL_OUTSETS * 2 + 1);
 	self.dynamicContainerPosition = true;
 	
 	CompactRaidFrameContainer_SetFlowFilterFunction(self.container, CRFFlowFilterFunc)

@@ -22,10 +22,9 @@ end
 
 local ACTIVE_TEMPLATE;
 
-function QuestInfo_Display(template, parentFrame, acceptButton, material, mapView)	
+function QuestInfo_Display(template, parentFrame, acceptButton, material, mapView)
 	ACTIVE_TEMPLATE = template;
-	local elementsTable = template.elements;
-	
+
 	if ( template.canHaveSealMaterial ) then
 		local questFrame = parentFrame:GetParent():GetParent();
 		local questID;
@@ -49,17 +48,17 @@ function QuestInfo_Display(template, parentFrame, acceptButton, material, mapVie
 	QuestInfoFrame.questLog = template.questLog;
 	QuestInfoFrame.chooseItems = template.chooseItems;
 	QuestInfoFrame.acceptButton = acceptButton;
-	
+
 	if ( QuestInfoFrame.mapView ~= mapView ) then
-		QuestInfoFrame.mapView = mapView;	
+		QuestInfoFrame.mapView = mapView;
 		if ( mapView ) then
 			QuestInfoFrame.rewardsFrame = MapQuestInfoRewardsFrame;
 			QuestInfoRewardsFrame:Hide();
 		else
 			QuestInfoFrame.rewardsFrame = QuestInfoRewardsFrame;
-			MapQuestInfoRewardsFrame:Hide();	
+			MapQuestInfoRewardsFrame:Hide();
 		end
-	end	
+	end
 	if ( QuestInfoFrame.material ~= material ) then
 		QuestInfoFrame.material = material;
 		local textColor, titleTextColor = GetMaterialTextColors(material);
@@ -81,7 +80,8 @@ function QuestInfo_Display(template, parentFrame, acceptButton, material, mapVie
 
 		QuestInfoRewardsFrame.spellHeaderPool.textR, QuestInfoRewardsFrame.spellHeaderPool.textG, QuestInfoRewardsFrame.spellHeaderPool.textB = textColor[1], textColor[2], textColor[3];
 	end
-	
+
+	local elementsTable = template.elements;
 	local lastFrame;
 	for i = 1, #elementsTable, 3 do
 		local shownFrame, bottomShownFrame = elementsTable[i]();
@@ -90,7 +90,7 @@ function QuestInfo_Display(template, parentFrame, acceptButton, material, mapVie
 			if ( lastFrame ) then
 				shownFrame:SetPoint("TOPLEFT", lastFrame, "BOTTOMLEFT", elementsTable[i+1], elementsTable[i+2]);
 			else
-				shownFrame:SetPoint("TOPLEFT", parentFrame, "TOPLEFT", elementsTable[i+1], elementsTable[i+2]);			
+				shownFrame:SetPoint("TOPLEFT", parentFrame, "TOPLEFT", elementsTable[i+1], elementsTable[i+2]);
 			end
 			lastFrame = bottomShownFrame or shownFrame;
 		end
@@ -115,13 +115,26 @@ function QuestInfo_ShowTitle()
 	return QuestInfoTitleHeader;
 end
 
+function QuestInfo_ShowType()
+	local questID = select(8, GetQuestLogTitle(GetQuestLogSelection()));
+	local questTypeMarkup = QuestUtils_GetQuestTypeTextureMarkupString(questID);
+	local showType = questTypeMarkup ~= nil;
+
+	QuestInfoQuestType:SetShown(showType);
+
+	if ( showType ) then
+		QuestInfoQuestType:SetText(questTypeMarkup);
+		return QuestInfoQuestType;
+	end
+end
+
 function QuestInfo_ShowDescriptionText()
 	local questDescription;
 	if ( QuestInfoFrame.questLog ) then
 		questDescription = GetQuestLogQuestText();
 	else
 		questDescription = GetQuestText();
-	end	
+	end
 	QuestInfoDescriptionText:SetText(questDescription);
 	QuestInfoDescriptionText:SetWidth(ACTIVE_TEMPLATE.contentWidth);
 	return QuestInfoDescriptionText;
@@ -179,15 +192,15 @@ function QuestInfo_ShowSpecialObjectives()
 	else
 		spellID, spellName, spellTexture, finished = GetCriteriaSpell();
 	end
-	
+
 	local lastFrame = nil;
 	local totalHeight = 0;
-	
+
 	if (spellID) then
 		QuestInfoSpellObjectiveFrame.Icon:SetTexture(spellTexture);
 		QuestInfoSpellObjectiveFrame.Name:SetText(spellName);
 		QuestInfoSpellObjectiveFrame.spellID = spellID;
-		
+
 		QuestInfoSpellObjectiveFrame:ClearAllPoints();
 		if (lastFrame) then
 			QuestInfoSpellObjectiveLearnLabel:SetPoint("TOPLEFT", lastFrame, "BOTTOMLEFT", 0, -4);
@@ -195,9 +208,9 @@ function QuestInfo_ShowSpecialObjectives()
 		else
 			QuestInfoSpellObjectiveLearnLabel:SetPoint("TOPLEFT", 0, 0);
 		end
-		
+
 		QuestInfoSpellObjectiveFrame:SetPoint("TOPLEFT", QuestInfoSpellObjectiveLearnLabel, "BOTTOMLEFT", 0, -4);
-		
+
 		if (finished and QuestInfoFrame.questLog) then -- don't show as completed for the initial offer, as it won't update properly
 			QuestInfoSpellObjectiveLearnLabel:SetText(LEARN_SPELL_OBJECTIVE.." ("..COMPLETE..")");
 			QuestInfoSpellObjectiveLearnLabel:SetTextColor(0.2, 0.2, 0.2);
@@ -205,7 +218,7 @@ function QuestInfo_ShowSpecialObjectives()
 			QuestInfoSpellObjectiveLearnLabel:SetText(LEARN_SPELL_OBJECTIVE);
 			QuestInfoSpellObjectiveLearnLabel:SetTextColor(0, 0, 0);
 		end
-		
+
 		QuestInfoSpellObjectiveLearnLabel:Show();
 		QuestInfoSpellObjectiveFrame:Show();
 		totalHeight = totalHeight + QuestInfoSpellObjectiveFrame:GetHeight() + QuestInfoSpellObjectiveLearnLabel:GetHeight();
@@ -214,7 +227,7 @@ function QuestInfo_ShowSpecialObjectives()
 		QuestInfoSpellObjectiveFrame:Hide();
 		QuestInfoSpellObjectiveLearnLabel:Hide();
 	end
-	
+
 	if (lastFrame) then
 		QuestInfoSpecialObjectivesFrame:SetHeight(totalHeight);
 		QuestInfoSpecialObjectivesFrame:Show();
@@ -381,7 +394,7 @@ function QuestInfo_ShowRewards()
 	local totalHeight = 0;
 	local numSpellRewards;
 	local rewardsFrame = QuestInfoFrame.rewardsFrame;
-	
+
 	local spellGetter;
 	if ( QuestInfoFrame.questLog ) then
 		numQuestRewards = GetNumQuestLogRewards();
@@ -414,7 +427,7 @@ function QuestInfo_ShowRewards()
 		local texture, name, isTradeskillSpell, isSpellLearned, hideSpellLearnText, isBoostSpell, garrFollowerID, spellID = spellGetter(rewardSpellIndex);
 		local knownSpell = IsSpellKnownOrOverridesKnown(spellID);
 
-		-- only allow the spell reward if user can learn it		
+		-- only allow the spell reward if user can learn it
 		if ( texture and not knownSpell and (not isBoostSpell or IsCharacterNewlyBoosted()) and (not garrFollowerID or not C_Garrison.IsFollowerCollected(garrFollowerID)) ) then
 			numQuestSpellRewards = numQuestSpellRewards + 1;
 		end
@@ -425,18 +438,18 @@ function QuestInfo_ShowRewards()
 		rewardsFrame:Hide();
 		return nil;
 	end
-		
+
 	-- Hide unused rewards
 	local rewardButtons = rewardsFrame.RewardButtons;
 	for i = totalRewards + 1, #rewardButtons do
 		rewardButtons[i]:ClearAllPoints();
 		rewardButtons[i]:Hide();
 	end
-	
+
 	local questItem, name, texture, quality, isUsable, numItems;
 	local rewardsCount = 0;
 	local lastFrame = rewardsFrame.Header;
-	
+
 	local totalHeight = rewardsFrame.Header:GetHeight();
 	local buttonHeight = rewardsFrame.RewardButtons[1]:GetHeight();
 
@@ -459,10 +472,10 @@ function QuestInfo_ShowRewards()
 	if ( numQuestChoices > 0 ) then
 		rewardsFrame.ItemChooseText:Show();
 		rewardsFrame.ItemChooseText:SetPoint("TOPLEFT", lastFrame, "BOTTOMLEFT", 0, -5);
-		
+
 		local index;
 		local baseIndex = rewardsCount;
-		for i = 1, numQuestChoices do	
+		for i = 1, numQuestChoices do
 			index = i + baseIndex;
 			questItem = QuestInfo_GetRewardButton(rewardsFrame, index);
 			questItem.type = "choice";
@@ -517,7 +530,7 @@ function QuestInfo_ShowRewards()
 	rewardsFrame.spellRewardPool:ReleaseAll();
 	rewardsFrame.followerRewardPool:ReleaseAll();
 	rewardsFrame.spellHeaderPool:ReleaseAll();
-	
+
 	-- Setup spell rewards
 	if ( numQuestSpellRewards > 0 ) then
 		local spellBuckets = {};
@@ -531,9 +544,9 @@ function QuestInfo_ShowRewards()
 				elseif ( isBoostSpell ) then
 					AddSpellToBucket(spellBuckets, QUEST_SPELL_REWARD_TYPE_ABILITY, rewardSpellIndex);
 				elseif ( garrFollowerID ) then
-					AddSpellToBucket(spellBuckets, QUEST_SPELL_REWARD_TYPE_FOLLOWER, rewardSpellIndex);			
+					AddSpellToBucket(spellBuckets, QUEST_SPELL_REWARD_TYPE_FOLLOWER, rewardSpellIndex);
 				elseif ( not isSpellLearned ) then
-					AddSpellToBucket(spellBuckets, QUEST_SPELL_REWARD_TYPE_AURA, rewardSpellIndex);		
+					AddSpellToBucket(spellBuckets, QUEST_SPELL_REWARD_TYPE_AURA, rewardSpellIndex);
 				else
 					AddSpellToBucket(spellBuckets, QUEST_SPELL_REWARD_TYPE_SPELL, rewardSpellIndex);
 				end
@@ -626,7 +639,7 @@ function QuestInfo_ShowRewards()
 				rewardsFrame.XPFrame:SetPoint("TOPLEFT", lastFrame, "BOTTOMLEFT", 0, -REWARDS_SECTION_OFFSET);
 				rewardsFrame.XPFrame.Name:SetText(BreakUpLargeNumbers(xp));
 				rewardsFrame.XPFrame:Show();
-				lastFrame = rewardsFrame.XPFrame;				
+				lastFrame = rewardsFrame.XPFrame;
 				totalHeight = totalHeight + buttonHeight + REWARDS_SECTION_OFFSET;
 			else
 				rewardsFrame.XPFrame:Hide();
@@ -636,7 +649,7 @@ function QuestInfo_ShowRewards()
 					rewardsFrame.MoneyFrame:SetPoint("TOPLEFT", rewardsFrame.XPFrame, "TOPRIGHT", 2, 0);
 				else
 					rewardsFrame.MoneyFrame:SetPoint("TOPLEFT", lastFrame, "BOTTOMLEFT", 0, -REWARDS_SECTION_OFFSET);
-					lastFrame = rewardsFrame.MoneyFrame;					
+					lastFrame = rewardsFrame.MoneyFrame;
 					totalHeight = totalHeight + buttonHeight + REWARDS_SECTION_OFFSET;
 				end
 				rewardsFrame.MoneyFrame.Name:SetText(GetMoneyString(money));
@@ -699,7 +712,7 @@ function QuestInfo_ShowRewards()
 				SetItemButtonTextureVertexColor(questItem, 0.9, 0, 0);
 				SetItemButtonNameFrameVertexColor(questItem, 0.9, 0, 0);
 			end
-			
+
 			if ( buttonIndex > 1 ) then
 				if ( mod(buttonIndex,2) == 1 ) then
 					questItem:SetPoint("TOPLEFT", rewardButtons[index - 2], "BOTTOMLEFT", 0, -2);
@@ -711,11 +724,11 @@ function QuestInfo_ShowRewards()
 			else
 				questItem:SetPoint("TOPLEFT", lastFrame, "BOTTOMLEFT", 0, -REWARDS_SECTION_OFFSET);
 				lastFrame = questItem;
-				totalHeight = totalHeight + buttonHeight + REWARDS_SECTION_OFFSET;				
+				totalHeight = totalHeight + buttonHeight + REWARDS_SECTION_OFFSET;
 			end
 			rewardsCount = rewardsCount + 1;
 		end
-		
+
 		-- currency
 		baseIndex = rewardsCount;
 		local foundCurrencies = 0;
@@ -739,7 +752,7 @@ function QuestInfo_ShowRewards()
 				SetItemButtonTexture(questItem, texture);
 				SetItemButtonTextureVertexColor(questItem, 1.0, 1.0, 1.0);
 				SetItemButtonNameFrameVertexColor(questItem, 1.0, 1.0, 1.0);
-				
+
 				if ( buttonIndex > 1 ) then
 					if ( mod(buttonIndex,2) == 1 ) then
 						questItem:SetPoint("TOPLEFT", rewardButtons[index - 2], "BOTTOMLEFT", 0, -2);
@@ -761,7 +774,7 @@ function QuestInfo_ShowRewards()
 				end
 			end
 		end
-        
+
         rewardsFrame.HonorFrame:ClearAllPoints();
         if ( honor > 0 ) then
             local icon;
@@ -782,10 +795,10 @@ function QuestInfo_ShowRewards()
         else
             rewardsFrame.HonorFrame:Hide();
         end
-	else	
+	else
 		rewardsFrame.ItemReceiveText:Hide();
 		rewardsFrame.MoneyFrame:Hide();
-		rewardsFrame.XPFrame:Hide();		
+		rewardsFrame.XPFrame:Hide();
 		rewardsFrame.SkillPointFrame:Hide();
         rewardsFrame.HonorFrame:Hide();
 	end
@@ -817,7 +830,7 @@ QUEST_TEMPLATE_DETAIL = { questLog = nil, chooseItems = nil, contentWidth = 285,
 		QuestInfo_ShowTitle, 10, -10,
 		QuestInfo_ShowDescriptionText, 0, -5,
 		QuestInfo_ShowSeal, 0, 0,
-		QuestInfo_ShowObjectivesHeader, 0, -15,	
+		QuestInfo_ShowObjectivesHeader, 0, -15,
 		QuestInfo_ShowObjectivesText, 0, -5,
 		QuestInfo_ShowSpecialObjectives, 0, -10,
 		QuestInfo_ShowGroupSize, 0, -10,
@@ -830,6 +843,7 @@ QUEST_TEMPLATE_LOG = { questLog = true, chooseItems = nil, contentWidth = 285,
 	canHaveSealMaterial = true, sealXOffset = 160, sealYOffset = -6,
 	elements = {
 		QuestInfo_ShowTitle, 5, -5,
+		QuestInfo_ShowType, 0, -5,
 		QuestInfo_ShowObjectivesText, 0, -5,
 		QuestInfo_ShowTimer, 0, -10,
 		QuestInfo_ShowObjectives, 0, -10,
@@ -858,6 +872,7 @@ QUEST_TEMPLATE_MAP_DETAILS = { questLog = true, chooseItems = nil, contentWidth 
 	canHaveSealMaterial = true, sealXOffset = 156, sealYOffset = -6,
 	elements = {
 		QuestInfo_ShowTitle, 5, -5,
+		QuestInfo_ShowType, 0, -5,
 		QuestInfo_ShowObjectivesText, 0, -5,
 		QuestInfo_ShowTimer, 0, -10,
 		QuestInfo_ShowObjectives, 0, -10,

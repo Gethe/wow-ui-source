@@ -1,16 +1,19 @@
-QUICK_JOIN_TOAST_QUEUE_MULTIPLIER = 1000;
-QUICK_JOIN_TOAST_PLAYER_MULTIPLIER = 1;
-QUICK_JOIN_TOAST_PLAYER_FRIEND_VALUE = 4;
-QUICK_JOIN_TOAST_PLAYER_GUILD_VALUE = 1;
-QUICK_JOIN_TOAST_DURATION = 7;
-QUICK_JOIN_TOAST_DELAY_DURATION = 10;
+QUICK_JOIN_CONFIG = nil;
 --
 QuickJoinToastMixin = {}
 
 function QuickJoinToastMixin:OnLoad()
+	QUICK_JOIN_CONFIG = C_SocialQueue.GetConfig();
+
 	self:RegisterEvent("SOCIAL_QUEUE_UPDATE");
+	self:RegisterEvent("SOCIAL_QUEUE_CONFIG_UPDATED");
 	self.groups = {};
 	self.groupsAwaitingDisplay = {};
+	self.queuedUpdates = {}; --Updates queued until we get config
+	if ( QUICK_JOIN_CONFIG ) then
+		self.throttle = CreateFromMixins(QuickJoinToastThrottleMixin);
+		self.throttle:Init();
+	end
 
 	self:SetPoint("BOTTOM", DEFAULT_CHAT_FRAME.buttonFrame, "TOP", 0, 36);
 	self.FriendCount:SetShadowOffset(1, 1);
@@ -30,45 +33,86 @@ end
 function QuickJoinToastMixin:OnEvent(event, ...)
 	if ( event == "SOCIAL_QUEUE_UPDATE" ) then
 		local guid, numAddedItems = ...;
-
-		local canJoin, numQueues = C_SocialQueue.GetGroupInfo(guid);
-
-		if ( not numQueues or numQueues == 0 ) then
-			self.groups[guid] = nil;
-			self.groupsAwaitingDisplay[guid] = nil;
-			return;
-		end
-
-		local group = self.groups[guid];
-		if ( group ) then
-			group:Update();
+		if ( QUICK_JOIN_CONFIG ) then
+			self:ProcessUpdate(guid);
 		else
-			group = CreateFromMixins(QuickJoinToastGroupMixin);
-			group:Init(guid);
-			self.groups[guid] = group;
+			self:QueueUpdate(guid);
 		end
+	elseif ( event == "SOCIAL_QUEUE_CONFIG_UPDATED" ) then
+		QUICK_JOIN_CONFIG = C_SocialQueue.GetConfig();
+		self.throttle = CreateFromMixins(QuickJoinToastThrottleMixin);
+		self.throttle:Init();
 
-		if ( group:GetPriority() > 0 ) then
-			if ( not self.groupsAwaitingDisplay[guid] ) then
-				self.groupsAwaitingDisplay[guid] = true;
-				group:SetDelayed(true);
-				C_Timer.After(QUICK_JOIN_TOAST_DELAY_DURATION, function()
-					group:SetDelayed(false);
-					if ( not self.displayedToast ) then
-						self:CheckDisplayToast();
-					end
-				end);
-			end
-		else
-			self.groupsAwaitingDisplay[guid] = nil;
-		end
-
-		if ( not self.displayedToast ) then
-			self:CheckDisplayToast();
-		end
-
-		self.QueueCount:SetText(#C_SocialQueue.GetAllGroups(false));
+		self:ProcessQueuedUpdates();
 	end
+end
+
+function QuickJoinToastMixin:QueueUpdate(guid)
+	self.queuedUpdates[#self.queuedUpdates + 1] = guid;
+end
+
+function QuickJoinToastMixin:ProcessQueuedUpdates()
+	for i=1, #self.queuedUpdates do
+		self:ProcessUpdate(self.queuedUpdates[i]);
+	end
+	self.queuedUpdates = {};
+end
+
+function QuickJoinToastMixin:ProcessUpdate(guid)
+	local canJoin, numQueues = C_SocialQueue.GetGroupInfo(guid);
+
+	if ( not numQueues or numQueues == 0 ) then
+		self.groups[guid] = nil;
+		self.groupsAwaitingDisplay[guid] = nil;
+		return;
+	end
+
+	local group = self.groups[guid];
+	if ( group ) then
+		group:Update();
+	else
+		group = CreateFromMixins(QuickJoinToastGroupMixin);
+		group:Init(guid);
+		self.groups[guid] = group;
+	end
+
+	if ( group:GetPriority() > 0 ) then
+		if ( not self.groupsAwaitingDisplay[guid] ) then
+			self.groupsAwaitingDisplay[guid] = true;
+			group:DelayUntil(GetTime() + QUICK_JOIN_CONFIG.DELAY_DURATION);
+		end
+	else
+		self.groupsAwaitingDisplay[guid] = nil;
+	end
+
+	if ( not self.displayedToast ) then
+		self:CheckDisplayToast();
+	end
+
+	self.QueueCount:SetText(#C_SocialQueue.GetAllGroups(false));
+end
+
+function QuickJoinToastMixin:SetToastDirection(isOnRight)
+	self.isOnRight = isOnRight;
+	self:ModifyToastDirection(self.Toast, isOnRight);
+	self:ModifyToastDirection(self.Toast2, isOnRight);
+end
+
+function QuickJoinToastMixin:ModifyToastDirection(toast, isOnRight)
+	local thisDir = isOnRight and "RIGHT" or "LEFT";
+	local otherDir = isOnRight and "LEFT" or "RIGHT";
+	local invertNum = isOnRight and -1 or 1;
+
+	toast:ClearAllPoints();
+	if ( isOnRight ) then
+		toast.Background:SetTexCoord(1, 0, 0, 1);
+	else
+		toast.Background:SetTexCoord(0, 1, 0, 1);
+	end
+
+	toast:SetPoint(thisDir, self, otherDir, -16 * invertNum, -1);
+	--toast.Text:SetJustifyH(thisDir);
+	toast.Text:SetPoint(thisDir, toast, thisDir, 18 * invertNum, 2);
 end
 
 function QuickJoinToastMixin:UpdateDisplayedFriendCount()
@@ -77,22 +121,56 @@ function QuickJoinToastMixin:UpdateDisplayedFriendCount()
 	self.FriendCount:SetText(numBNetOnline + numWoWOnline);
 end
 
+function QuickJoinToastMixin:SetTimerFor(nextTime)
+	if ( not nextTime ) then
+		--Handle cancellation
+		self.nextToastUpdateTime = nil;
+		if ( self.updateTimer ) then
+			self.updateTimer:Cancel();
+			self.updateTimer = nil;
+		end
+	elseif ( not self.nextToastUpdateTime or nextTime <= self.nextToastUpdateTime ) then
+		--This is a sooner time than we we were already waiting for, so set a timer for it.
+		if ( self.updateTimer ) then
+			self.updateTimer:Cancel();
+		end
+		self.nextToastUpdateTime = nextTime;
+		local timeDiff = math.max(nextTime - GetTime(), 0.001);
+		self.updateTimer = C_Timer.NewTimer(timeDiff, function()
+			if ( not self.displayedToast ) then
+				self:CheckDisplayToast();
+			end
+		end);
+	end
+end
+
 function QuickJoinToastMixin:CheckDisplayToast(hideIfNeeded)
 	local group = self:GetHighestPriorityGroup();
-	if ( group and self:ShouldDisplayGroup(group) ) then
-		self:ShowToast(group);
-	elseif ( self.displayedToast and hideIfNeeded ) then
+	if ( group ) then
+		local shouldDisplay = self:ShouldDisplayGroup(group);
+		if ( shouldDisplay ) then
+			self:ShowToast(group);
+			self:SetTimerFor(nil);
+			return;
+		end
+	end
+
+	if ( self.displayedToast and hideIfNeeded ) then
 		self:HideToast();
 	end
+
+	self:SetTimerFor(self:GetNextToastTime());
 end
 
 function QuickJoinToastMixin:GetHighestPriorityGroup()
 	local highestGroup = nil;
 	local highestPriority = 0;
+	local now = GetTime();
 	for guid, _ in pairs(self.groupsAwaitingDisplay) do
 		local group = self.groups[guid];
 		if ( group ) then
-			if ( not group:IsDelayed() ) then
+			local delayUntil = group:GetDelayUntil();
+			if ( not delayUntil or delayUntil <= now ) then
 				local priority = group:GetPriority();
 				if ( priority > highestPriority ) then
 					highestGroup = group;
@@ -107,12 +185,31 @@ function QuickJoinToastMixin:GetHighestPriorityGroup()
 	return highestGroup;
 end
 
+function QuickJoinToastMixin:GetNextToastTime()
+	local nextDisplayTime;
+	local now = GetTime();
+	for guid, _ in pairs(self.groupsAwaitingDisplay) do
+		local group = self.groups[guid];
+		if ( group ) then
+			local t = math.max(self.throttle:GetTimeOfThreshold(group:GetPriority()), group:GetDelayUntil() or 0);
+			if ( not nextDisplayTime or t < nextDisplayTime ) then
+				nextDisplayTime = t;
+			end
+		else
+			GMError("Have a group guid, but not group?");
+		end
+	end
+	return nextDisplayTime;
+end
+
 function QuickJoinToastMixin:ShouldDisplayGroup(group)
-	--TODO - Throttling
-	return true;
+	local priority = group:GetPriority();
+	return priority >= self.throttle:GetThresholdAtTime(GetTime()) and priority >= QUICK_JOIN_CONFIG.THROTTLE_MIN_THRESHOLD;
 end
 
 function QuickJoinToastMixin:ShowToast(group)
+	self.throttle:OnToastShown();
+
 	self.ToastActiveAnim:Stop();
 
 	self.oldToast = self.displayedToast;
@@ -125,7 +222,12 @@ function QuickJoinToastMixin:ShowToast(group)
 		self.FriendToToastAnim:Play();
 	end
 
-	self:SetHitRectInsets(0, -self.Toast:GetWidth(), 0, 0);
+	if ( self.isOnRight ) then
+		self:SetHitRectInsets(-self.Toast:GetWidth(), 0, 0, 0);
+	else
+		self:SetHitRectInsets(0, -self.Toast:GetWidth(), 0, 0);
+	end
+	PlaySoundKitID(79739); --UI_71_Social_Queueing_Toast
 end
 
 function QuickJoinToastMixin:HideToast()
@@ -156,7 +258,7 @@ function QuickJoinToastMixin:OnEnter()
 	if ( self.displayedToast ) then
 		local queues = C_SocialQueue.GetGroupQueues(self.displayedToast.guid);
 		if ( queues ) then
-			GameTooltip:SetOwner(self.Toast, "ANCHOR_RIGHT");
+			GameTooltip:SetOwner(self.Toast, self.isOnRight and "ANCHOR_LEFT" or "ANCHOR_RIGHT");
 			SocialQueueUtil_SetTooltip(GameTooltip, SOCIAL_QUEUE_TOOLTIP_HEADER, queues);
 			GameTooltip:Show();
 		end
@@ -197,7 +299,7 @@ end
 -----Anim callbacks------------
 -------------------------------
 function QuickJoinToastMixin:ToastPulse()
-	if ( GetTime() - self.displayedTime > QUICK_JOIN_TOAST_DURATION ) then
+	if ( GetTime() - self.displayedTime > QUICK_JOIN_CONFIG.TOAST_DURATION ) then
 		self:CheckDisplayToast(true);
 	else
 		self.ToastActiveAnim:Play();
@@ -232,12 +334,12 @@ function QuickJoinToastGroupMixin:Init(guid)
 	self:Update();
 end
 
-function QuickJoinToastGroupMixin:SetDelayed(delayed)
-	self.delayed = delayed;
+function QuickJoinToastGroupMixin:DelayUntil(delayUntil)
+	self.delayUntil = delayUntil;
 end
 
-function QuickJoinToastGroupMixin:IsDelayed()
-	return self.delayed;
+function QuickJoinToastGroupMixin:GetDelayUntil()
+	return self.delayUntil;
 end
 
 function QuickJoinToastGroupMixin:MarkAllAsDisplayed()
@@ -287,7 +389,7 @@ function QuickJoinToast_GetPriority(group, queues, players)
 	end
 
 	if ( maxQueuePriority > 0 ) then
-		return maxQueuePriority * QUICK_JOIN_TOAST_QUEUE_MULTIPLIER + QuickJoinToast_GetPriorityFromPlayers(players)  * QUICK_JOIN_TOAST_PLAYER_MULTIPLIER;
+		return maxQueuePriority * QUICK_JOIN_CONFIG.QUEUE_MULTIPLIER + QuickJoinToast_GetPriorityFromPlayers(players)  * QUICK_JOIN_CONFIG.PLAYER_MULTIPLIER;
 	else
 		return 0;
 	end
@@ -299,15 +401,29 @@ function QuickJoinToast_GetPriorityFromQueue(queue)
 		return 0;
 	end
 
+	local itemLevel = GetAverageItemLevel();
 	if ( queue.type == "lfglist" ) then
 		local id, activityID, name, comment, voiceChat, iLvl, honorLevel, age, numBNetFriends, numCharFriends, numGuildMates, isDelisted = C_LFGList.GetSearchResultInfo(queue.lfgListID);
-		local fullName, shortName, categoryID, groupID, iLevel, filters, minLevel, maxPlayers, displayType = C_LFGList.GetActivityInfo(activityID);
+		local fullName, shortName, categoryID, groupID, iLevel, filters, minLevel, maxPlayers, displayType, orderIndex, useHonorLevel, showQuickJoin = C_LFGList.GetActivityInfo(activityID);
 		--Filter by activity flags
-		return 99;
+		if ( not showQuickJoin ) then
+			return 0;
+		end
+		if ( iLevel == 0 ) then
+			return 50;
+		end
+		if ( itemLevel >= iLevel ) then
+			--We are above the item level suggestion. The further above we are, the less important this is.
+			return math.max(1, 100 - (itemLevel - iLevel));
+		else
+			--We are below the item level suggestion, but above the requirement set by the group. The further below the
+			--suggestion we are, the less important this is.
+			return math.max(1, 50 - (iLevel - itemLevel));
+		end
 	elseif ( queue.type == "lfg" ) then
-		return 99;
+		return 80;
 	elseif ( queue.type == "pvp" ) then
-		return 99;
+		return 50;
 	end
 end
 
@@ -317,13 +433,13 @@ function QuickJoinToast_GetPriorityFromPlayers(players)
 	for i=1, #players do
 		local player = players[i];
 		if ( BNGetGameAccountInfoByGUID(player) or IsCharacterFriend(player) ) then
-			priority = priority + QUICK_JOIN_TOAST_PLAYER_FRIEND_VALUE;
+			priority = priority + QUICK_JOIN_CONFIG.PLAYER_FRIEND_VALUE;
 		end
 		if ( IsGuildMember(player) ) then
-			priority = priority + QUICK_JOIN_TOAST_PLAYER_GUILD_VALUE;
+			priority = priority + QUICK_JOIN_CONFIG.PLAYER_GUILD_VALUE;
 		end
 	end
-	return priority;
+	return priority / 2;
 end
 
 function QuickJoinToastGroupMixin:Update()
@@ -352,4 +468,31 @@ end
 
 function QuickJoinToastGroupMixin:GetPriority()
 	return self.priority;
+end
+
+---------------------------
+--QuickJoinToastThrottle---
+---------------------------
+QuickJoinToastThrottleMixin = {};
+
+function QuickJoinToastThrottleMixin:Init()
+	self.lastThreshold = QUICK_JOIN_CONFIG.THROTTLE_INITIAL_THRESHOLD;
+	self.lastUpdateTime = GetTime();
+end
+
+function QuickJoinToastThrottleMixin:OnToastShown()
+	self.lastThreshold = self:GetThresholdAtTime(GetTime()) + QUICK_JOIN_CONFIG.THROTTLE_PRIORITY_SPIKE;
+	self.lastUpdateTime = GetTime();
+end
+
+function QuickJoinToastThrottleMixin:GetThresholdAtTime(t)
+	local timePassed = t - self.lastUpdateTime;
+	local amountDecayed = timePassed * QUICK_JOIN_CONFIG.THROTTLE_PRIORITY_SPIKE / QUICK_JOIN_CONFIG.THROTTLE_DECAY_TIME;
+	return math.max(0, self.lastThreshold - amountDecayed);
+end
+
+function QuickJoinToastThrottleMixin:GetTimeOfThreshold(threshold)
+	local decayNeeded = self.lastThreshold - threshold;
+	local timeNeeded = decayNeeded * QUICK_JOIN_CONFIG.THROTTLE_DECAY_TIME / QUICK_JOIN_CONFIG.THROTTLE_PRIORITY_SPIKE;
+	return self.lastUpdateTime + timeNeeded;
 end

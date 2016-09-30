@@ -2614,7 +2614,22 @@
 											</OnLoad>
 										</Scripts>
 									</Button>
+									<Button name="$parentSlotFilterToggle" parentKey="slotFilter" text="ALL_INVENTORY_SLOTS" inherits="EJButtonTemplate">
+										<Anchors>
+											<Anchor point="LEFT" relativeKey="$parent.filter" relativePoint="RIGHT" x="10" y="0"/>
+										</Anchors>
+										<Scripts>
+											<OnClick>
+												ToggleDropDownMenu(1, nil, self:GetParent().lootSlotFilter, self, 5, 0);
+												PlaySound("igMainMenuOption");
+											</OnClick>
+											<OnLoad inherit="prepend">
+												self:SetPoint("TOPLEFT", self:GetParent():GetParent(), "TOPRIGHT", -230, -13);
+											</OnLoad>
+										</Scripts>
+									</Button>
 									<Frame name="$parentLootFilter" inherits="UIDropDownMenuTemplate" parentKey="lootFilter" hidden="true"/>
+									<Frame name="$parentLootSlotFilter" inherits="UIDropDownMenuTemplate" parentKey="lootSlotFilter" hidden="true"/>
 
 									<Slider name="$parentScrollBar" inherits="MinimalHybridScrollBarTemplate" parentKey="scrollBar">
 										<Anchors>
