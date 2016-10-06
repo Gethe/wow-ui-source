@@ -169,15 +169,17 @@ end
 function BonusObjectiveTracker_OnBlockClick(self, button)
 	if self.module.ShowWorldQuests then
 		if button == "LeftButton" then
-			if IsShiftKeyDown() then
-				if IsWorldQuestWatched(self.TrackedQuest.questID) then
-					BonusObjectiveTracker_UntrackWorldQuest(self.TrackedQuest.questID);
-				end
-			else
-				local _, mapID = C_TaskQuest.GetQuestZoneID(self.TrackedQuest.questID);
-				if mapID then
-					ShowQuestLog();
-					SetMapByID(mapID);
+			if ( not ChatEdit_TryInsertQuestLinkForQuestID(self.TrackedQuest.questID) ) then
+				if IsShiftKeyDown() then
+					if IsWorldQuestWatched(self.TrackedQuest.questID) then
+						BonusObjectiveTracker_UntrackWorldQuest(self.TrackedQuest.questID);
+					end
+				else
+					local _, mapID = C_TaskQuest.GetQuestZoneID(self.TrackedQuest.questID);
+					if mapID then
+						ShowQuestLog();
+						SetMapByID(mapID);
+					end
 				end
 			end
 		elseif button == "RightButton" then

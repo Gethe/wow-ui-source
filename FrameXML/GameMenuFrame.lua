@@ -13,7 +13,7 @@ function GameMenuFrame_UpdateVisibleButtons(self)
 	local buttonToReanchor = GameMenuButtonWhatsNew;
 	local reanchorYOffset = -1;
 
-	if (not SplashFrameCanBeShown()) then
+	if (not SplashFrameCanBeShown() or IsCharacterNewlyBoosted()) then
 		GameMenuButtonWhatsNew:Hide();
 		height = height - 20;
 		buttonToReanchor = GameMenuButtonOptions;
@@ -44,12 +44,6 @@ function GameMenuFrame_UpdateVisibleButtons(self)
 			height = height + 20;
 			GameMenuButtonLogout:SetPoint("TOP", GameMenuButtonRatings, "BOTTOM", 0, -16);
 		end
-	end
-	
-	if ( IsCharacterNewlyBoosted() ) then
-		GameMenuButtonWhatsNew:SetText(GAMEMENU_BOOST_BUTTON);
-	else
-		GameMenuButtonWhatsNew:SetText(GAMEMENU_NEW_BUTTON);
 	end
 
 	self:SetHeight(height);

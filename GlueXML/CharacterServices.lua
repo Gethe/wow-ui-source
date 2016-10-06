@@ -942,10 +942,8 @@ function CharacterUpgradeClassTrial_OnClick(self)
 	CharacterUpgrade_BeginNewCharacterCreation(LE_CHARACTER_CREATE_TYPE_TRIAL_BOOST);
 end
 
--- Override recommended spec for druids to Feral until we stop using recommended specs as allowed specs.
-local recommendedSpecOverride = {
-	["DRUID"] = 103,
-};
+-- There are currently no script overrides to recommended specs, add them here if necessary.
+local recommendedSpecOverride = {};
 
 function GetRecommendedSpecButton(ownerFrame, overrideSpecID)
 	-- There may be multiple recommended specs for now, so determine the best one based on class.

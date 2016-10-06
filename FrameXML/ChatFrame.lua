@@ -2425,7 +2425,7 @@ function ChatFrame_ImportEmoteTokensToHash()
 		EMOTE455_TOKEN = "FORTHEHORDE";
 		TextEmoteSpeechList[#TextEmoteSpeechList + 1] = "FORTHEHORDE";
 	end
-	
+
 	local i = 1;
 	local j = 1;
 	local cmdString = _G["EMOTE"..i.."_CMD"..j];
@@ -3867,6 +3867,16 @@ function ChatEdit_InsertLink(text)
 		end
 	end
 	return false;
+end
+
+function ChatEdit_TryInsertQuestLinkForQuestID(questID)
+	if ( IsModifiedClick("CHATLINK") and ChatEdit_GetActiveWindow() ) then
+		local questLink = GetQuestLink(questID);
+		if ( questLink ) then
+			ChatEdit_InsertLink(questLink);
+			return true;
+		end
+	end
 end
 
 function ChatEdit_GetLastTellTarget()

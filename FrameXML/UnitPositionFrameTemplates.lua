@@ -39,7 +39,6 @@ UnitPositionFrameMixin = {}
 function UnitPositionFrameMixin:OnLoad()
 	self:ResetCurrentMouseOverUnits();
 	self.excludedMouseOverUnits = {};
-	self.playerArrowSize = 0;
 end
 
 function UnitPositionFrameMixin:OnHide()
@@ -57,6 +56,14 @@ end
 
 function UnitPositionFrameMixin:GetPlayerArrowSize()
 	return self.playerArrowSize;
+end
+
+function UnitPositionFrameMixin:SetGroupMemberSize(size)
+	self.groupMemberSize = size;
+end
+
+function UnitPositionFrameMixin:GetGroupMemberSize()
+	return self.groupMemberSize;
 end
 
 function UnitPositionFrameMixin:GetCurrentMouseOverUnits()

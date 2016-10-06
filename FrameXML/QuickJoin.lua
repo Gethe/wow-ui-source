@@ -216,12 +216,15 @@ function QuickJoinEntriesMixin:UpdateEntry(requester)
 	local entry = self.entriesByGUID[requester];
 	if ( entry ) then
 		entry:Update();
-	elseif ( C_SocialQueue.GetGroupInfo(requester) ) then
-		--Just add the new one to the end
-		local entry = CreateFromMixins(QuickJoinEntryMixin);
-		entry:Init(requester);
-		self.entries[#self.entries+1] = entry;
-		self.entriesByGUID[requester] = entry;
+	else
+		local canJoin, numQueues = C_SocialQueue.GetGroupInfo(requester);
+		if ( canJoin and numQueues and numQueues > 0 ) then
+			--Just add the new one to the end
+			local entry = CreateFromMixins(QuickJoinEntryMixin);
+			entry:Init(requester);
+			self.entries[#self.entries+1] = entry;
+			self.entriesByGUID[requester] = entry;
+		end
 	end
 end
 

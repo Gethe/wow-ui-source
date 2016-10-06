@@ -186,30 +186,6 @@ TRAVEL PASS
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button name="$parentSocialQueueButton" hidden="true" motionScriptsWhileDisabled="true" parentKey="socialQueueButton">
-				<Size x="24" y="32"/>
-				<Anchors>
-					<Anchor point="TOPRIGHT">
-						<Offset x="-21" y="-2"/>
-					</Anchor>
-				</Anchors>
-				<NormalTexture name="$parentNormalTexture" atlas="socialqueuing-friendlist-joinbutton-up"/>
-				<PushedTexture name="$parentPushedTexture" atlas="socialqueuing-friendlist-joinbutton-down"/>
-				<DisabledTexture name="$parentDisabledTexture" atlas="socialqueuing-friendlist-joinbutton-disabled"/>
-				<HighlightTexture name="$parentHighlightTexture" file="Interface\FriendsFrame\TravelPass-Invite" alphaMode="ADD">
-					<Size x="24" y="32"/>
-					<TexCoords left="0.42187500" right="0.79687500" top="0.00781250" bottom="0.25781250"/>
-				</HighlightTexture>
-				<Scripts>
-					<OnEnter function="FriendsSocialQueueButton_OnEnter"/>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
-					<OnClick>
-						--Request to join their group
-					</OnClick>
-				</Scripts>
-			</Button>
 			<Button name="$parentSummonButton" inherits="ActionButtonTemplate" hidden="true" parentKey="summonButton">
 				<Size x="24" y="32"/>
 				<Anchors>

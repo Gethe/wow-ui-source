@@ -836,7 +836,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame name="BorderBox" frameLevel="60" hidden="false">
+			<Frame parentKey="BorderBox" frameLevel="60" hidden="false">
 				<Anchors>
 					<Anchor point="TOPLEFT"/>
 					<Anchor point="BOTTOMRIGHT"/>
@@ -887,14 +887,14 @@
 								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.bottomRight" relativePoint="TOPRIGHT" x="0" y="0"/>
 							</Anchors>
 						</Texture>
-						<FontString inherits="GameFontHighlightSmall" text="GEARSETS_POPUP_TEXT" name="$parentNameText">
+						<FontString inherits="GameFontHighlightSmall" text="GEARSETS_POPUP_TEXT" parentKey="NameText">
 							<Anchors>
 								<Anchor point="TOPLEFT">
 									<Offset x="24" y="-21"/>
 								</Anchor>
 							</Anchors>
 						</FontString>
-						<FontString inherits="GameFontHighlightSmall" text="MACRO_POPUP_CHOOSE_ICON" name="$parentChooseIconText">
+						<FontString inherits="GameFontHighlightSmall" text="MACRO_POPUP_CHOOSE_ICON" parentKey="ChooseIconText">
 							<Anchors>
 								<Anchor point="TOPLEFT">
 									<Offset x="24" y="-69"/>

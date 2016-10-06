@@ -115,5 +115,5 @@
 			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>
-	<Frame name="QuickJoinRoleSelectionFrame" mixin="QuickJoinRoleSelectionMixin" inherits="RoleSelectionTemplate"/>
+	<Frame name="QuickJoinRoleSelectionFrame" parent="UIParent" mixin="QuickJoinRoleSelectionMixin" inherits="RoleSelectionTemplate"/>
 </Ui>

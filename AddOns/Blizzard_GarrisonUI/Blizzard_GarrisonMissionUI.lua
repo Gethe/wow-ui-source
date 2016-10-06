@@ -1346,9 +1346,6 @@ function GarrisonFollowerMissionPageMixin:CalculateDurabilityLoss(missionEffects
 	if (missionEffects.hasKillTroopsEffect) then
 		finalDurability = 0;
 	end
-	if (finalDurability == 0 and missionEffects.hasRessurectTroopsEffect) then
-		finalDurability = 1;
-	end
 
 	return followerInfo.durability - finalDurability;
 end

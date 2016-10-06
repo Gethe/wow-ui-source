@@ -193,6 +193,21 @@ function TutorialHelper:GetFrameButtonEdgeOffset(frame, button)
 end
 
 -- ------------------------------------------------------------------------------------------------------------
+function TutorialHelper:FindItemInContainer(itemID)
+	for containerIndex = 0, 4 do
+		local slots = GetContainerNumSlots(containerIndex);
+		if (slots > 0) then
+			for slotIndex = 1, slots do
+				local id = select(10, GetContainerItemInfo(containerIndex, slotIndex));
+				if (id == itemID) then
+					return containerIndex, slotIndex;
+				end
+			end
+		end
+	end
+end
+
+-- ------------------------------------------------------------------------------------------------------------
 function TutorialHelper:GetMapBinding()
 	return GetBindingKey("TOGGLEWORLDMAP") or "";
 end
@@ -1244,18 +1259,36 @@ function Class_EquipItem:OnBegin(data)
 
 	self.ItemData = data;
 
-	local itemFrame = TutorialHelper:GetItemContainerFrame(data.Container, data.ContainerSlot);
+	self:UpdatePointer();
+
+	Dispatcher:RegisterEvent("PLAYER_EQUIPMENT_CHANGED", self)
+	Dispatcher:RegisterEvent("BAG_UPDATE_DELAYED", self)
+	Dispatcher:RegisterEvent("MERCHANT_SHOW", function() self:Interrupt(self) end, true);
+end
+
+function Class_EquipItem:UpdatePointer()
+	local itemFrame = TutorialHelper:GetItemContainerFrame(self.ItemData.Container, self.ItemData.ContainerSlot);
 	if (itemFrame) then
 		self:ShowPointerTutorial(str(NPE_EQUIPITEM), "DOWN", itemFrame, 0, 0);
 	end
-
-	Dispatcher:RegisterEvent("PLAYER_EQUIPMENT_CHANGED", self)
-	Dispatcher:RegisterEvent("MERCHANT_SHOW", function() self:Interrupt(self) end, true);
 end
 
 function Class_EquipItem:PLAYER_EQUIPMENT_CHANGED()
 	if (GetInventoryItemID("player", self.ItemData.CharacterSlot) == self.ItemData.ItemID) then
 		self:Complete()
+	end
+end
+
+function Class_EquipItem:BAG_UPDATE_DELAYED()
+	if (self.IsActive) then
+		local container, slot = TutorialHelper:FindItemInContainer(self.ItemData.ItemID);
+		if (container and slot) then
+			self.ItemData.Container, self.ItemData.ContainerSlot = container, slot;
+			self:UpdatePointer();
+		else
+			self:Interrupt();
+			Tutorials.ShowBags:Interrupt();
+		end
 	end
 end
 
@@ -1266,7 +1299,6 @@ end
 
 function Class_EquipItem:OnShutdown()
 	self.ItemData = nil;
-	Dispatcher:UnregisterEvent("PLAYER_EQUIPMENT_CHANGED", self)
 end
 
 

@@ -993,7 +993,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame name="BorderBox" frameLevel="50" hidden="false">
+			<Frame parentKey="BorderBox" frameLevel="50" hidden="false">
 				<Anchors>
 					<Anchor point="TOPLEFT"/>
 					<Anchor point="BOTTOMRIGHT"/>

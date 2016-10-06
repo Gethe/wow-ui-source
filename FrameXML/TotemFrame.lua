@@ -124,8 +124,11 @@ function TotemFrame_OnEvent(self, event, ...)
 end
 
 function TotemButton_OnClick(self, mouseButton)
-	if ( mouseButton == "RightButton" and self.slot > 0 ) then
-		DestroyTotem(self.slot);
+	local cannotDismiss = GetTotemCannotDismiss(self.slot)
+	if ( not cannotDismiss ) then
+		if ( mouseButton == "RightButton" and self.slot > 0 ) then
+			DestroyTotem(self.slot);
+		end
 	end
 end
 

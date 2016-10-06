@@ -17,7 +17,7 @@ function QuestPOI_ResetUsage(parent)
 	for _, poiType in pairs(parent.poiTable) do
 		for _, poiButton in pairs(poiType) do
 			poiButton.used = nil;
-		end			
+		end
 	end
 	QuestPOI_ClearSelection(parent);
 end
@@ -36,7 +36,7 @@ function QuestPOI_GetButton(parent, questID, style, index)
 		-- numbered POI
 		poiButton = parent.poiTable["numeric"][index];
 		if ( not poiButton ) then
-			poiButton = CreateFrame("Button", nil, parent, "QuestPOINumericTemplate");			
+			poiButton = CreateFrame("Button", nil, parent, "QuestPOINumericTemplate");
 			parent.poiTable["numeric"][index] = poiButton;
 			poiButton.Number:SetTexCoord(QuestPOI_CalculateNumericTexCoords(index));
 			poiButton.index = index;
@@ -44,7 +44,7 @@ function QuestPOI_GetButton(parent, questID, style, index)
 				parent.poiOnCreateFunc(poiButton);
 			end
 		end
-	else		
+	else
 		-- completed POI
 		for _, button in pairs(parent.poiTable["completed"]) do
 			if ( not button.used ) then
@@ -53,7 +53,7 @@ function QuestPOI_GetButton(parent, questID, style, index)
 			end
 		end
 		if ( not poiButton ) then
-			poiButton = CreateFrame("Button", nil, parent, "QuestPOICompletedTemplate");			
+			poiButton = CreateFrame("Button", nil, parent, "QuestPOICompletedTemplate");
 			tinsert(parent.poiTable["completed"], poiButton);
 			if ( parent.poiOnCreateFunc ) then
 				parent.poiOnCreateFunc(poiButton);
@@ -141,7 +141,7 @@ function QuestPOI_SelectButton(poiButton)
 			poiButton.PushedTexture:SetAlpha(1);
 		end
 	end
-	poiButton.Glow:Show();	
+	poiButton.Glow:Show();
 	poiButton.selected = true;
 	parent.poiSelectedButton = poiButton;
 end
@@ -165,7 +165,7 @@ function QuestPOI_ClearSelection(parent)
 			poiButton.IconHighlightTexture:Show();
 			poiButton.Icon:SetSize(32, 32);
 			poiButton.NormalTexture:SetAlpha(0);
-			poiButton.PushedTexture:SetAlpha(0);		
+			poiButton.PushedTexture:SetAlpha(0);
 		end
 		poiButton.Glow:Hide();
 		poiButton.selected = nil;
@@ -213,8 +213,13 @@ function QuestPOIButton_OnMouseUp(self)
 end
 
 function QuestPOIButton_OnClick(self)
+	local questID = self.questID;
+
+	if ( ChatEdit_TryInsertQuestLinkForQuestID(questID) ) then
+		return;
+	end
+
 	PlaySound("igMainMenuOptionCheckBoxOn");
-	local questID = self.questID;	
 	local questLogIndex = GetQuestLogIndexByID(questID);
 	if ( IsQuestWatched(questLogIndex) ) then
 		if ( IsShiftKeyDown() ) then
@@ -224,6 +229,7 @@ function QuestPOIButton_OnClick(self)
 	else
 		AddQuestWatch(questLogIndex, true);
 	end
+
 	SetSuperTrackedQuestID(questID);
 	WorldMapFrame_OnUserChangedSuperTrackedQuest(questID);
 end

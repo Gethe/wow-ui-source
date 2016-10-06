@@ -1068,18 +1068,29 @@ function UIParent_OnEvent(self, event, ...)
 			dialog.data = arg1;
 		end
 	elseif ( event == "PARTY_INVITE_REQUEST" ) then
+		local name, tank, healer, damage, isXRealm, allowMultipleRoles, inviterGuid = ...;
+
+		-- Color the name by our relationship
+		local modifiedName, color, selfRelationship = SocialQueueUtil_GetNameAndColor(inviterGuid);
+		if ( selfRelationship ) then
+			name = color..name..FONT_COLOR_CODE_CLOSE;
+		end
+
 		-- if there's a role, it's an LFG invite
-		if ( arg2 or arg3 or arg4 ) then
+		if ( tank or healer or damage ) then
 			StaticPopupSpecial_Show(LFGInvitePopup);
-			LFGInvitePopup_Update(arg1, arg2, arg3, arg4, arg6);
-		elseif ( arg5 ) then	--It's a X-realm invite
-			StaticPopup_Show("PARTY_INVITE_XREALM", arg1);
+			LFGInvitePopup_Update(name, tank, healer, damage, allowMultipleRoles);
 		else
-			StaticPopup_Show("PARTY_INVITE", arg1);
+			local text = isXRealm and INVITATION_XREALM or INVITATION;
+			text = string.format(text, name);
+
+			if ( WillAcceptInviteRemoveQueues() ) then
+				text = text.."\n\n"..ACCEPTING_INVITE_WILL_REMOVE_QUEUE;
+			end
+			StaticPopup_Show("PARTY_INVITE", text);
 		end
 	elseif ( event == "PARTY_INVITE_CANCEL" ) then
 		StaticPopup_Hide("PARTY_INVITE");
-		StaticPopup_Hide("PARTY_INVITE_XREALM");
 		StaticPopupSpecial_Hide(LFGInvitePopup);
 	elseif ( event == "GUILD_INVITE_REQUEST" ) then
 		StaticPopup_Show("GUILD_INVITE", arg1, arg2);
@@ -3888,6 +3899,14 @@ function InviteToGroup(name)
 	end
 end
 
+function GetSocialColoredName(displayName, guid)
+	local _, color, relationship = SocialQueueUtil_GetNameAndColor(guid);
+	if ( relationship ) then
+		return color..displayName..FONT_COLOR_CODE_CLOSE;
+	end
+	return displayName;
+end
+
 function UpdateInviteConfirmationDialogs()
 	if ( StaticPopup_FindVisible("GROUP_INVITE_CONFIRMATION") ) then
 		return;
@@ -3898,11 +3917,17 @@ function UpdateInviteConfirmationDialogs()
 		return;
 	end
 
-	local confirmationType, name = GetInviteConfirmationInfo(firstInvite);
+	local confirmationType, name, guid = GetInviteConfirmationInfo(firstInvite);
 	local text = "";
 	if ( confirmationType == LE_INVITE_CONFIRMATION_REQUEST ) then
 		local suggesterGuid, suggesterName, relationship = GetInviteReferralInfo(firstInvite);
-		if ( suggesterGuid ) then
+
+		--If we ourselves have a relationship with this player, we'll just act as if they asked through us.
+		local _, color, selfRelationship = SocialQueueUtil_GetNameAndColor(guid);
+		if ( selfRelationship ) then
+			text = text..string.format(INVITE_CONFIRMATION_REQUEST, color..name..FONT_COLOR_CODE_CLOSE);
+		elseif ( suggesterGuid ) then
+			suggesterName = GetSocialColoredName(suggesterName, suggesterGuid);
 			if ( relationship == LE_INVITE_CONFIRMATION_RELATION_FRIEND ) then
 				text = text..string.format(INVITE_CONFIRMATION_REQUEST_FRIEND, suggesterName, name);
 			elseif ( relationship == LE_INVITE_CONFIRMATION_RELATION_GUILD ) then
@@ -3915,6 +3940,8 @@ function UpdateInviteConfirmationDialogs()
 		end
 	elseif ( confirmationType == LE_INVITE_CONFIRMATION_SUGGEST ) then
 		local suggesterGuid, suggesterName, relationship = GetInviteReferralInfo(firstInvite);
+		suggesterName = GetSocialColoredName(suggesterName, suggesterGuid);
+		name = GetSocialColoredName(name, guid);
 		text = text..string.format(INVITE_CONFIRMATION_SUGGEST, suggesterName, name);
 	end
 
@@ -4668,6 +4695,63 @@ end
 
 function RGBTableToColorCode(rgbTable)
 	return RGBToColorCode(rgbTable.r, rgbTable.g, rgbTable.b);
+end
+
+function WillAcceptInviteRemoveQueues()
+	--Dungeon/Raid Finder
+	for i=1, NUM_LE_LFG_CATEGORYS do
+		local mode = GetLFGMode(i);
+		if ( mode and mode ~= "lfgparty" ) then
+			return true;
+		end
+	end
+
+	--Don't need to look at LFGList listings because we can't accept invites while in one
+	
+	--LFGList applications
+	local apps = C_LFGList.GetApplications();
+	for i=1, #apps do
+		local _, appStatus = C_LFGList.GetApplicationInfo(apps[i]);
+		if ( appStatus == "applied" or appStatus == "invited" ) then
+			return true;
+		end
+	end
+
+	--PvP
+	for i=1, GetMaxBattlefieldID() do
+		local status, mapName, teamSize, registeredMatch, suspend = GetBattlefieldStatus(i);
+		if ( status == "queued" or status == "confirmed" ) then
+			return true;
+		end
+	end
+
+	return false;
+end
+
+--Only really works on friends and guild-mates
+function GetDisplayedInviteType(guid)
+	if ( IsInGroup() ) then
+		if ( UnitIsGroupLeader("player") or UnitIsGroupAssistant("player") ) then
+			return "INVITE";
+		else
+			return "SUGGEST_INVITE";
+		end
+	else
+		if ( not guid ) then
+			return "INVITE";
+		end
+
+		local party, isSoloQueueParty = C_SocialQueue.GetGroupForPlayer(guid);
+		if ( party and not isSoloQueueParty ) then --In a real party, not a secret hidden party for solo queuing
+			return "REQUEST_INVITE";
+		elseif ( WillAcceptInviteRemoveQueues() ) then
+			return "INVITE";
+		elseif ( party ) then --They are queued solo for something
+			return "REQUEST_INVITE";
+		else
+			return "INVITE";
+		end
+	end
 end
 
 function nop()

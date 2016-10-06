@@ -32,6 +32,11 @@ local QUEST_POI_FRAME_HEIGHT;
 local PLAYER_ARROW_SIZE_WINDOW = 40;
 local PLAYER_ARROW_SIZE_FULL_WITH_QUESTS = 38;
 local PLAYER_ARROW_SIZE_FULL_NO_QUESTS = 28;
+local GROUP_MEMBER_SIZE_WINDOW = 16;
+local GROUP_MEMBER_SIZE_FULL = 10;
+
+local BATTLEFIELD_ICON_SIZE_FULL = 36;
+local BATTLEFIELD_ICON_SIZE_WINDOW = 30;
 
 AREA_NAME_FONT_COLOR = CreateColor(1.0, 0.9294, 0.7607);
 AREA_DESCRIPTION_FONT_COLOR = HIGHLIGHT_FONT_COLOR;
@@ -1911,18 +1916,21 @@ function TaskPOI_OnClick(self, button)
 				UIErrorsFrame:AddMessage(WORLD_QUEST_CANT_COMPLETE_BY_SPELL, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
 			end
 		else
-			PlaySound("igMainMenuOptionCheckBoxOn");
-			if IsShiftKeyDown() then
-				if IsWorldQuestHardWatched(self.questID) or (IsWorldQuestWatched(self.questID) and GetSuperTrackedQuestID() == self.questID) then
-					BonusObjectiveTracker_UntrackWorldQuest(self.questID);
+			if ( not ChatEdit_TryInsertQuestLinkForQuestID(self.questID) ) then
+				PlaySound("igMainMenuOptionCheckBoxOn");
+
+				if IsShiftKeyDown() then
+					if IsWorldQuestHardWatched(self.questID) or (IsWorldQuestWatched(self.questID) and GetSuperTrackedQuestID() == self.questID) then
+						BonusObjectiveTracker_UntrackWorldQuest(self.questID);
+					else
+						BonusObjectiveTracker_TrackWorldQuest(self.questID, true);
+					end
 				else
-					BonusObjectiveTracker_TrackWorldQuest(self.questID, true);
-				end
-			else
-				if IsWorldQuestHardWatched(self.questID) then
-					SetSuperTrackedQuestID(self.questID);
-				else
-					BonusObjectiveTracker_TrackWorldQuest(self.questID);
+					if IsWorldQuestHardWatched(self.questID) then
+						SetSuperTrackedQuestID(self.questID);
+					else
+						BonusObjectiveTracker_TrackWorldQuest(self.questID);
+					end
 				end
 			end
 		end
@@ -2276,13 +2284,15 @@ local function UpdatePlayerPositions()
 		unitBase = "party";
 	end
 
+	local groupMemberSize = WorldMapUnitPositionFrame:GetGroupMemberSize();
+
 	for i = 1, memberCount do
 		local unit = unitBase..i;
 		if UnitExists(unit) and not UnitIsUnit(unit, "player") then
 			local atlas = UnitInSubgroup(unit) and "WhiteCircle-RaidBlips" or "WhiteDotCircle-RaidBlips";
 			local class = select(2, UnitClass(unit));
-			r, g, b = CheckColorOverrideForPVPInactive("player", timeNow, GetUnitClassColor(class));
-			WorldMapUnitPositionFrame:AddUnitAtlas(unit, atlas, 16, 16, r, g, b, 1);
+			local r, g, b = CheckColorOverrideForPVPInactive(unit, timeNow, GetClassColor(class));
+			WorldMapUnitPositionFrame:AddUnitAtlas(unit, atlas, groupMemberSize, groupMemberSize, r, g, b, 1);
 		end
 	end
 
@@ -2417,7 +2427,7 @@ function WorldMapButton_OnUpdate(self, elapsed)
 		else
 			flagX = flagX * WorldMapDetailFrame:GetWidth();
 			flagY = -flagY * WorldMapDetailFrame:GetHeight();
-			flagFrame:SetPoint("CENTER", "WorldMapDetailFrame", "TOPLEFT", flagX, flagY);
+			flagFrame:SetPoint("CENTER", "WorldMapDetailFrame", "TOPLEFT", flagX / flagFrame:GetScale(), flagY / flagFrame:GetScale());
 			local flagTexture = _G[flagFrameName.."Texture"];
 			flagTexture:SetTexture("Interface\\WorldStateFrame\\"..flagToken);
 			flagFrame:Show();
@@ -2503,6 +2513,25 @@ function WorldMapButton_OnUpdate(self, elapsed)
 	WorldMapFrame_EvaluateAreaLabels();
 
 	WorldMapUnitPositionFrame:UpdateTooltips(WorldMapTooltip);
+end
+
+function WorldMap_UpdateBattlefieldFlagSizes(size)
+	for i=1, NUM_WORLDMAP_FLAGS do
+		local flagFrame = _G["WorldMapFlag"..i];
+		if flagFrame then
+			flagFrame:SetSize(size, size);
+		end
+	end
+end
+
+function WorldMap_UpdateBattlefieldFlagScales()
+	local newScale = 1 / WorldMapDetailFrame:GetScale();
+	for i=1, NUM_WORLDMAP_FLAGS do
+		local flagFrame = _G["WorldMapFlag"..i];
+		if flagFrame then
+			flagFrame:SetScale(newScale);
+		end
+	end
 end
 
 function WorldMap_GetVehicleTexture(vehicleType, isPossessed)
@@ -2714,6 +2743,9 @@ function WorldMap_ToggleSizeUp()
 		WorldMapUnitPositionFrame:SetPlayerArrowSize(PLAYER_ARROW_SIZE_FULL_NO_QUESTS);
 	end
 
+	WorldMapUnitPositionFrame:SetGroupMemberSize(GROUP_MEMBER_SIZE_FULL);
+	WorldMap_UpdateBattlefieldFlagSizes(BATTLEFIELD_ICON_SIZE_FULL);
+	WorldMap_UpdateBattlefieldFlagScales();
 	MapBarFrame_UpdateLayout(MapBarFrame);
 end
 
@@ -2767,6 +2799,9 @@ function WorldMap_ToggleSizeDown()
 	WorldMapScrollFrame:SetPoint("TOPLEFT", 3, -68);
 	WorldMapScrollFrame:SetSize(696, 464);
 	WorldMapUnitPositionFrame:SetPlayerArrowSize(PLAYER_ARROW_SIZE_WINDOW);
+	WorldMapUnitPositionFrame:SetGroupMemberSize(GROUP_MEMBER_SIZE_WINDOW);
+	WorldMap_UpdateBattlefieldFlagSizes(BATTLEFIELD_ICON_SIZE_WINDOW);
+	WorldMap_UpdateBattlefieldFlagScales();
 	MapBarFrame_UpdateLayout(MapBarFrame);
 end
 
@@ -3079,6 +3114,7 @@ function WorldMapScrollFrame_OnMouseWheel(self, delta)
 	WorldMapScrollFrame_ReanchorQuestPOIs();
 	WorldMapFrame_ResetPOIHitTranslations();
 	WorldMapBlobFrame_DelayedUpdateBlobs();
+	WorldMap_UpdateBattlefieldFlagScales();
 end
 
 function WorldMapScrollFrame_ResetZoom()

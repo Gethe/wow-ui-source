@@ -341,8 +341,10 @@ function BattlefieldMinimap_OnUpdate(self, elapsed)
 		for i = 1, memberCount do
 			local unit = unitBase..i;
 			if UnitExists(unit) and not UnitIsUnit(unit, "player") then
-				local r, g, b = CheckColorOverrideForPVPInactive(unit, timeNow, 1, 1, 1);
-				BattlefieldMinimapUnitPositionFrame:AddUnitAtlas(unit, "Interface\\WorldMap\\WorldMapPartyIcon", 12, 12, r, g, b, 1);
+				local atlas = UnitInSubgroup(unit) and "WhiteCircle-RaidBlips" or "WhiteDotCircle-RaidBlips";
+				local class = select(2, UnitClass(unit));
+				local r, g, b = CheckColorOverrideForPVPInactive(unit, timeNow, GetClassColor(class));
+				BattlefieldMinimapUnitPositionFrame:AddUnitAtlas(unit, atlas, 8, 8, r, g, b, 1);
 			end
 		end
 

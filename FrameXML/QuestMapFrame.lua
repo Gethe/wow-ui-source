@@ -905,13 +905,13 @@ function QuestMapLogTitleButton_OnLeave(self)
 end
 
 function QuestMapLogTitleButton_OnClick(self, button)
+	if ( ChatEdit_TryInsertQuestLinkForQuestID(self.questID) ) then
+		return;
+	end
+
 	PlaySound("igMainMenuOptionCheckBoxOn");
-	if ( IsModifiedClick("CHATLINK") and ChatEdit_GetActiveWindow() ) then
-		local questLink = GetQuestLink(GetQuestLogIndexByID(self.questID));
-		if ( questLink ) then
-			ChatEdit_InsertLink(questLink);
-		end
-	elseif ( IsShiftKeyDown() ) then
+
+	if ( IsShiftKeyDown() ) then
 		QuestMapQuestOptions_TrackQuest(self.questID);
 	else
 		if ( button == "RightButton" ) then

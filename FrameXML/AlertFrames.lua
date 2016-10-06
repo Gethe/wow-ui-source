@@ -74,6 +74,10 @@ function AlertFrameQueueMixin:AddAlert(...)
 	return false;
 end
 
+function AlertFrameQueueMixin:AddLocalizationHook(func)
+	self.localizationHook = func;
+end
+
 function AlertFrameQueueMixin:ApplyCoalesceData(...)
 	if self.coalesceFunction then
 		for alertFrame in self.alertFramePool:EnumerateActive() do
@@ -117,6 +121,10 @@ function AlertFrameQueueMixin:ShowAlert(...)
 	if isNew then
 		alertFrame.queue = self;
 		alertFrame:SetScript("OnHide", OnPooledAlertFrameQueueHide);
+
+		if self.localizationHook then
+			self.localizationHook(alertFrame);
+		end
 	end
 
 	if self.setUpFunction then
@@ -126,7 +134,7 @@ function AlertFrameQueueMixin:ShowAlert(...)
 			return false;
 		end
 	end
-
+	
 	AlertFrame:AddAlertFrame(alertFrame);
 	self:CheckQueuedCoalesceData();
 
@@ -418,12 +426,6 @@ function AlertFrameMixin:OnEvent(event, ...)
 			InvasionAlertSystem:AddCoalesceData(questID, rewardItemLink, texture);
 		end
 	end
-end
-
-function F(rated)
-	local link = "|cffa335ee|Hitem:143304::::::::110:265:512::2:1812:1678:110:::|h[Fearless Gladiator's Felweave Cloth]|h|r";
-
-	LootAlertSystem:AddAlert(link, 1, nil, nil, GetSpecializationInfo(GetSpecialization()), false, not rated, nil, false, nil, nil, rated);
 end
 
 function AlertFrameMixin:AddJustAnchorFrameSubSystem(anchorFrame)

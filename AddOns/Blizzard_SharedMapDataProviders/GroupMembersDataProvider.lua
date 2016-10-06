@@ -53,7 +53,7 @@ function GroupMembersDataProviderMixin:RefreshAllData(fromOnShow)
 		if UnitExists(unit) and not UnitIsUnit(unit, "player") then
 			local atlas = UnitInSubgroup(unit) and "WhiteCircle-RaidBlips" or "WhiteDotCircle-RaidBlips";
 			local class = select(2, UnitClass(unit));
-			local r, g, b = GetUnitClassColor(class);
+			local r, g, b = GetClassColor(class);
 			self.pin:AddUnitAtlas(unit, atlas, size, size, r, g, b, 1);
 		end
 	end

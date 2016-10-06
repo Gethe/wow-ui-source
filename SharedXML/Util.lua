@@ -13,7 +13,7 @@ RAID_CLASS_COLORS = {
 	["DEMONHUNTER"] = { r = 0.64, g = 0.19, b = 0.79, colorStr = "ffa330c9" },
 };
 
-function GetUnitClassColor(classFilename)
+function GetClassColor(classFilename)
 	local color = RAID_CLASS_COLORS[classFilename];
 	if color then
 		return color.r, color.g, color.b, color.colorStr;
@@ -823,7 +823,7 @@ function CallbackRegistryBaseMixin:RegisterCallback(event, callback)
 	if not self.callbackRegistry[event] then
 		self.callbackRegistry[event] = {};
 	end
-	
+
 	self.callbackRegistry[event][callback] = true;
 end
 

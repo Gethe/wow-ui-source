@@ -126,7 +126,7 @@ local function ShouldEnableStartButton( questID )
 end
 
 local function CheckSplashScreenShow()
-	if SplashFrameCanBeShown() then
+	if SplashFrameCanBeShown() and not IsCharacterNewlyBoosted() then
 		local tag = GetSplashFrameTag();
 		if tag then
 			-- check if they've seen this screen already

@@ -1516,7 +1516,7 @@ StaticPopupDialogs["TRADE"] = {
 	hideOnEscape = 1
 };
 StaticPopupDialogs["PARTY_INVITE"] = {
-	text = INVITATION,
+	text = "%s",
 	button1 = ACCEPT,
 	button2 = DECLINE,
 	sound = "igPlayerInvite",
@@ -1554,31 +1554,6 @@ StaticPopupDialogs["GROUP_INVITE_CONFIRMATION"] = {
 		UpdateInviteConfirmationDialogs();
 	end,
 	whileDead = 1,
-};
-StaticPopupDialogs["PARTY_INVITE_XREALM"] = {
-	text = INVITATION_XREALM,
-	button1 = ACCEPT,
-	button2 = DECLINE,
-	sound = "igPlayerInvite",
-	OnShow = function(self)
-		self.inviteAccepted = nil;
-	end,
-	OnAccept = function(self)
-		AcceptGroup();
-		self.inviteAccepted = 1;
-	end,
-	OnCancel = function(self)
-		DeclineGroup();
-	end,
-	OnHide = function(self)
-		if ( not self.inviteAccepted ) then
-			DeclineGroup();
-			self:Hide();
-		end
-	end,
-	timeout = STATICPOPUP_TIMEOUT,
-	whileDead = 1,
-	hideOnEscape = 1
 };
 StaticPopupDialogs["CHAT_CHANNEL_INVITE"] = {
 	text = CHAT_INVITE_NOTICE_POPUP,
