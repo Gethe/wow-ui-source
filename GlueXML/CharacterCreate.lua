@@ -593,7 +593,7 @@ function CharacterCreateEnumerateRaces()
 	end
 end
 
-local function UpdateClassButtonEnabledState(button, classID, classData)
+local function UpdateClassButtonEnabledState(button, classID, classData, classIndex)
 	local kioskModeData = IsKioskGlueEnabled() and KioskModeSplash_GetModeData();
 	local disableTexture = button.DisableTexture;
 
@@ -647,7 +647,7 @@ local function SetupClassButton(button, classID, classData)
 	button.tooltip = CHARCREATE_CLASS_TOOLTIP[classIndex];
 	button.classFilename = classData.fileName;
 
-	UpdateClassButtonEnabledState(button, classID, classData);
+	UpdateClassButtonEnabledState(button, classID, classData, classIndex);
 end
 
 function CharacterCreateEnumerateClasses()
@@ -1064,7 +1064,7 @@ function CharacterClass_SelectClass(self, forceAccept)
 end
 
 function CharacterClass_OnClick(self)
-	CharacterClass_SelectClass(self, false);
+	CharacterClass_SelectClass(self, IsKioskModeEnabled());
 end
 
 function CharacterRace_OnClick(self, id, forceSelect)

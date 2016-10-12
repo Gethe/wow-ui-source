@@ -1020,6 +1020,9 @@
 	<Binding name="TOGGLEFRIENDSTAB" category="BINDING_HEADER_INTERFACE">
 		ToggleFriendsFrame(1);
 	</Binding>
+	<Binding name="TOGGLEQUICKJOINTAB" category="BINDING_HEADER_INTERFACE">
+		ToggleQuickJoinPanel();
+	</Binding>
 	<Binding name="TOGGLEWHOTAB" category="BINDING_HEADER_INTERFACE">
 		ToggleFriendsFrame(2);
 	</Binding>

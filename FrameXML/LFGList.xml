@@ -213,7 +213,7 @@
 			<Button parentKey="RoleIcon1">
 				<Size x="18" y="18"/>
 				<Anchors>
-					<Anchor point="LEFT" x="116" y="0"/>
+					<Anchor point="LEFT" x="104" y="0"/>
 				</Anchors>
 				<NormalTexture/>
 				<HighlightTexture alphaMode="ADD"/>
@@ -227,7 +227,21 @@
 			<Button parentKey="RoleIcon2">
 				<Size x="18" y="18"/>
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.RoleIcon1" relativePoint="RIGHT" x="3" y="0"/>
+					<Anchor point="LEFT" relativeKey="$parent.RoleIcon1" relativePoint="RIGHT" x="1" y="0"/>
+				</Anchors>
+				<NormalTexture/>
+				<HighlightTexture alphaMode="ADD"/>
+				<Scripts>
+					<OnClick>
+						PlaySound("igMainMenuOptionCheckBoxOn");
+						C_LFGList.SetApplicantMemberRole(self:GetParent():GetParent().applicantID, self:GetParent().memberIdx, self.role);
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button parentKey="RoleIcon3">
+				<Size x="18" y="18"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.RoleIcon2" relativePoint="RIGHT" x="1" y="0"/>
 				</Anchors>
 				<NormalTexture/>
 				<HighlightTexture alphaMode="ADD"/>
@@ -1274,13 +1288,13 @@
 						</Anchors>
 					</Frame>
 					<Button parentKey="NameColumnHeader" inherits="LFGListColumnHeaderTemplate" text="NAME">
-						<Size x="110" y="24"/>
+						<Size x="100" y="24"/>
 						<Anchors>
 							<Anchor point="BOTTOMLEFT" relativeKey="$parent.Inset" relativePoint="TOPLEFT" x="0" y="0"/>
 						</Anchors>
 					</Button>
 					<Button parentKey="RoleColumnHeader" inherits="LFGListColumnHeaderTemplate" text="ROLE">
-						<Size x="52" y="24"/>
+						<Size x="62" y="24"/>
 						<Anchors>
 							<Anchor point="LEFT" relativeKey="$parent.NameColumnHeader" relativePoint="RIGHT" x="0" y="0"/>
 						</Anchors>

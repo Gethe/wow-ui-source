@@ -7,6 +7,8 @@ function QuickJoinToastMixin:OnLoad()
 
 	self:RegisterEvent("SOCIAL_QUEUE_UPDATE");
 	self:RegisterEvent("SOCIAL_QUEUE_CONFIG_UPDATED");
+	self:RegisterEvent("GROUP_JOINED");
+	self:RegisterEvent("GROUP_LEFT");
 	self.groups = {};
 	self.groupsAwaitingDisplay = {};
 	self.queuedUpdates = {}; --Updates queued until we get config
@@ -15,7 +17,7 @@ function QuickJoinToastMixin:OnLoad()
 		self.throttle:Init();
 	end
 
-	self:SetPoint("BOTTOM", DEFAULT_CHAT_FRAME.buttonFrame, "TOP", 0, 36);
+	self:SetPoint("BOTTOM", DEFAULT_CHAT_FRAME.buttonFrame, "TOP", 0, 27);
 	self.FriendCount:SetShadowOffset(1, 1);
 
 	self:UpdateDisplayedFriendCount();
@@ -33,17 +35,28 @@ end
 function QuickJoinToastMixin:OnEvent(event, ...)
 	if ( event == "SOCIAL_QUEUE_UPDATE" ) then
 		local guid, numAddedItems = ...;
-		if ( QUICK_JOIN_CONFIG ) then
-			self:ProcessUpdate(guid);
-		else
-			self:QueueUpdate(guid);
-		end
+		self:ProcessOrQueueUpdate(guid);
 	elseif ( event == "SOCIAL_QUEUE_CONFIG_UPDATED" ) then
 		QUICK_JOIN_CONFIG = C_SocialQueue.GetConfig();
 		self.throttle = CreateFromMixins(QuickJoinToastThrottleMixin);
 		self.throttle:Init();
 
 		self:ProcessQueuedUpdates();
+	elseif ( event == "GROUP_JOINED" ) then
+		local index, guid = ...;
+		self:ProcessOrQueueUpdate(guid);
+	elseif ( event == "GROUP_LEFT" ) then
+		local guid = ...;
+		self:ProcessOrQueueUpdate(guid);
+		self:CheckShowToast();
+	end
+end
+
+function QuickJoinToastMixin:ProcessOrQueueUpdate(guid)
+	if ( QUICK_JOIN_CONFIG ) then
+		self:ProcessUpdate(guid);
+	else
+		self:QueueUpdate(guid);
 	end
 end
 
@@ -85,9 +98,7 @@ function QuickJoinToastMixin:ProcessUpdate(guid)
 		self.groupsAwaitingDisplay[guid] = nil;
 	end
 
-	if ( not self.displayedToast ) then
-		self:CheckDisplayToast();
-	end
+	self:CheckShowToast();
 
 	self.QueueCount:SetText(#C_SocialQueue.GetAllGroups(false));
 end
@@ -110,9 +121,9 @@ function QuickJoinToastMixin:ModifyToastDirection(toast, isOnRight)
 		toast.Background:SetTexCoord(0, 1, 0, 1);
 	end
 
-	toast:SetPoint(thisDir, self, otherDir, -16 * invertNum, -1);
+	toast:SetPoint(thisDir, self, otherDir, -13 * invertNum, -1);
 	--toast.Text:SetJustifyH(thisDir);
-	toast.Text:SetPoint(thisDir, toast, thisDir, 18 * invertNum, 2);
+	toast.Text:SetPoint(thisDir, toast, thisDir, 15 * invertNum, 2);
 end
 
 function QuickJoinToastMixin:UpdateDisplayedFriendCount()
@@ -137,10 +148,15 @@ function QuickJoinToastMixin:SetTimerFor(nextTime)
 		self.nextToastUpdateTime = nextTime;
 		local timeDiff = math.max(nextTime - GetTime(), 0.001);
 		self.updateTimer = C_Timer.NewTimer(timeDiff, function()
-			if ( not self.displayedToast ) then
-				self:CheckDisplayToast();
-			end
+			self.nextToastUpdateTime = nil;
+			self:CheckShowToast();
 		end);
+	end
+end
+
+function QuickJoinToastMixin:CheckShowToast()
+	if ( not self.displayedToast ) then
+		self:CheckDisplayToast();
 	end
 end
 
@@ -185,7 +201,15 @@ function QuickJoinToastMixin:GetHighestPriorityGroup()
 	return highestGroup;
 end
 
+function QuickJoinToastMixin:ShouldSuppressAllToasts()
+	return IsInGroup();
+end
+
 function QuickJoinToastMixin:GetNextToastTime()
+	if ( self:ShouldSuppressAllToasts() ) then
+		return nil;
+	end
+
 	local nextDisplayTime;
 	local now = GetTime();
 	for guid, _ in pairs(self.groupsAwaitingDisplay) do
@@ -203,6 +227,10 @@ function QuickJoinToastMixin:GetNextToastTime()
 end
 
 function QuickJoinToastMixin:ShouldDisplayGroup(group)
+	if ( self:ShouldSuppressAllToasts() ) then
+		return false;
+	end
+
 	local priority = group:GetPriority();
 	return priority >= self.throttle:GetThresholdAtTime(GetTime()) and priority >= QUICK_JOIN_CONFIG.THROTTLE_MIN_THRESHOLD;
 end
@@ -214,8 +242,14 @@ function QuickJoinToastMixin:ShowToast(group)
 
 	self.oldToast = self.displayedToast;
 	self.displayedToast = group;
+
+	local queues = C_SocialQueue.GetGroupQueues(self.displayedToast.guid);
+	self.isLFGList = queues and queues[1] and queues[1].type == "lfglist";
+
 	if ( self.oldToast ) then
-		self.Toast2.Text:SetText(self:GetCurrentText());
+		local text = self:GetCurrentText();
+		self.Toast2.Text:SetText(text);
+		self.pendingText = text;
 		self.ToastToToastAnim:Play();
 	else
 		self.Toast.Text:SetText(self:GetCurrentText());
@@ -227,6 +261,7 @@ function QuickJoinToastMixin:ShowToast(group)
 	else
 		self:SetHitRectInsets(0, -self.Toast:GetWidth(), 0, 0);
 	end
+	self:UpdateQueueIcon();
 	PlaySoundKitID(79739); --UI_71_Social_Queueing_Toast
 end
 
@@ -246,12 +281,36 @@ end
 
 function QuickJoinToastMixin:OnMouseDown()
 	self.FriendsButton:SetAtlas("quickjoin-button-friendslist-down");
-	self.QueueButton:SetAtlas("quickjoin-button-quickjoin-down");
+	self:UpdateQueueIcon();
 end
 
 function QuickJoinToastMixin:OnMouseUp()
 	self.FriendsButton:SetAtlas("quickjoin-button-friendslist-up");
-	self.QueueButton:SetAtlas("quickjoin-button-quickjoin-up");
+	self:UpdateQueueIcon();
+end
+
+function QuickJoinToastMixin:UpdateQueueIcon()
+	if ( not self.displayedToast ) then
+		return;
+	end
+	
+	if ( self:GetButtonState() == "PUSHED" ) then
+		if ( self.isLFGList ) then
+			self.QueueButton:SetAtlas("quickjoin-button-group-down");
+			self.FlashingLayer:SetAtlas("quickjoin-button-group-down");
+		else
+			self.QueueButton:SetAtlas("quickjoin-button-quickjoin-down");
+			self.FlashingLayer:SetAtlas("quickjoin-button-quickjoin-down");
+		end
+	else
+		if ( self.isLFGList ) then
+			self.QueueButton:SetAtlas("quickjoin-button-group-up");
+			self.FlashingLayer:SetAtlas("quickjoin-button-group-up");
+		else
+			self.QueueButton:SetAtlas("quickjoin-button-quickjoin-up");
+			self.FlashingLayer:SetAtlas("quickjoin-button-quickjoin-up");
+		end
+	end
 end
 
 function QuickJoinToastMixin:OnEnter()
@@ -260,6 +319,8 @@ function QuickJoinToastMixin:OnEnter()
 		if ( queues ) then
 			GameTooltip:SetOwner(self.Toast, self.isOnRight and "ANCHOR_LEFT" or "ANCHOR_RIGHT");
 			SocialQueueUtil_SetTooltip(GameTooltip, SOCIAL_QUEUE_TOOLTIP_HEADER, queues);
+			GameTooltip:AddLine(" ");
+			GameTooltip:AddLine(SOCIAL_QUEUE_CLICK_TO_JOIN, GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
 			GameTooltip:Show();
 		end
 	else
@@ -274,7 +335,7 @@ end
 function QuickJoinToastMixin:GetCurrentText()
 	local group = self.displayedToast;
 
-	local members = C_SocialQueue.GetGroupMembers(group.guid);
+	local members = SocialQueueUtil_SortGroupMembers(C_SocialQueue.GetGroupMembers(group.guid));
 	local playerName, color = SocialQueueUtil_GetNameAndColor(members[1]);
 
 	if ( #members > 1 ) then
@@ -315,7 +376,7 @@ end
 function QuickJoinToastMixin:ToastToToastFinished()
 	self.displayedTime = GetTime();
 	self.ToastActiveAnim:Play();
-	self.Toast.Text:SetText(self:GetCurrentText());
+	self.Toast.Text:SetText(self.pendingText);
 	self.displayedToast:MarkAllAsDisplayed();
 end
 

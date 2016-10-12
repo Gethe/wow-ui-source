@@ -4,18 +4,19 @@
 	<Frame name="QuickJoinToastTemplate" virtual="true">
 		<Size x="301" y="32"/>
 		<Anchors>
-			<Anchor point="LEFT" relativeKey="$parent" relativePoint="RIGHT" x="-16" y="-1"/>
+			<Anchor point="LEFT" relativeKey="$parent" relativePoint="RIGHT" x="-13" y="-1"/>
 		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="Background" alpha="0" alphaMode="BLEND" atlas="quickjoin-toast-background" setAllPoints="true"/>
 			</Layer>
 			<Layer level="ARTWORK">
-				<FontString parentKey="Text" alpha="0" alphaMode="BLEND" inherits="GameFontNormalSmall" justifyH="LEFT">
+				<FontString parentKey="Text" alpha="0" alphaMode="BLEND" inherits="GameFontNormalSmall2" justifyH="LEFT">
 					<Size x="272" y="11"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent" relativePoint="LEFT" x="18" y="2"/>
 					</Anchors>
+					<Color r="0.8" g="0.8" b="0.8"/>
 				</FontString>
 			</Layer>
 			<Layer level="OVERLAY">

@@ -488,7 +488,7 @@ function QuestLogQuests_Update(poiTable)
 	local headerTitle, headerOnMap, headerShown, headerLogIndex, mapHeaderButtonIndex;
 	local noHeaders = true;
 	for questLogIndex = 1, numEntries do
-		local title, level, suggestedGroup, isHeader, isCollapsed, isComplete, frequency, questID, startEvent, displayQuestID, isOnMap, hasLocalPOI, isTask, isBounty, isStory = GetQuestLogTitle(questLogIndex);
+		local title, level, suggestedGroup, isHeader, isCollapsed, isComplete, frequency, questID, startEvent, displayQuestID, isOnMap, hasLocalPOI, isTask, isBounty, isStory, isHidden = GetQuestLogTitle(questLogIndex);
 		local difficultyColor = GetQuestDifficultyColor(level);
 		if ( isHeader ) then
 			headerTitle = title;
@@ -497,7 +497,7 @@ function QuestLogQuests_Update(poiTable)
 			headerLogIndex = questLogIndex;
 			headerCollapsed = isCollapsed;
 			difficultyColor = QuestDifficultyColors["header"];
-		elseif ( not isTask and (not isBounty or IsQuestComplete(questID))) then
+		elseif ( not isTask and not isHidden and (not isBounty or IsQuestComplete(questID))) then
 			-- we have at least one valid entry, show the header for it
 			if ( not headerShown ) then
 				headerShown = true;
@@ -803,7 +803,7 @@ function QuestMapLogTitleButton_OnEnter(self)
 		local overrideQuestTag = tagID;
 		if ( QUEST_TAG_TCOORDS[tagID] ) then
 			if ( tagID == QUEST_TAG_ACCOUNT and factionGroup ) then
-				overrideQuestTag "ALLIANCE";
+				overrideQuestTag = "ALLIANCE";
 				if ( factionGroup == LE_QUEST_FACTION_HORDE ) then
 					overrideQuestTag = "HORDE";
 				end

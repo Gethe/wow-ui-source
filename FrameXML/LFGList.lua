@@ -1284,6 +1284,42 @@ function LFGListApplicationViewer_UpdateApplicant(button, id)
 	button.Spinner:SetShown(pendingStatus);
 end
 
+function LFGListApplicationViewer_UpdateRoleIcons(member, grayedOut, tank, healer, damage, noTouchy, assignedRole)
+	--Update the roles.
+	if ( grayedOut ) then
+		member.RoleIcon1:Hide();
+		member.RoleIcon2:Hide();
+		member.RoleIcon3:Hide();
+	else
+		local role1 = tank and "TANK" or (healer and "HEALER" or (damage and "DAMAGER"));
+		local role2 = (tank and healer and "HEALER") or ((tank or healer) and damage and "DAMAGER");
+		local role3 = (tank and healer and damage and "DAMAGER");
+		member.RoleIcon1:GetNormalTexture():SetAtlas(LFG_LIST_GROUP_DATA_ATLASES[role1]);
+		member.RoleIcon1:GetHighlightTexture():SetAtlas(LFG_LIST_GROUP_DATA_ATLASES[role1]);
+		if ( role2 ) then
+			member.RoleIcon2:GetNormalTexture():SetAtlas(LFG_LIST_GROUP_DATA_ATLASES[role2]);
+			member.RoleIcon2:GetHighlightTexture():SetAtlas(LFG_LIST_GROUP_DATA_ATLASES[role2]);
+		end
+		if ( role3 ) then
+			member.RoleIcon3:GetNormalTexture():SetAtlas(LFG_LIST_GROUP_DATA_ATLASES[role3]);
+			member.RoleIcon3:GetHighlightTexture():SetAtlas(LFG_LIST_GROUP_DATA_ATLASES[role3]);
+		end
+		
+		member.RoleIcon1:SetEnabled(not noTouchy and role1 ~= assignedRole);
+		member.RoleIcon1:SetAlpha(role1 == assignedRole and 1 or 0.3);
+		member.RoleIcon1:Show();
+		member.RoleIcon2:SetEnabled(not noTouchy and role2 ~= assignedRole);
+		member.RoleIcon2:SetAlpha(role2 == assignedRole and 1 or 0.3);
+		member.RoleIcon2:SetShown(role2);
+		member.RoleIcon3:SetEnabled(not noTouchy and role3 ~= assignedRole);
+		member.RoleIcon3:SetAlpha(role3 == assignedRole and 1 or 0.3);
+		member.RoleIcon3:SetShown(role3);
+		member.RoleIcon1.role = role1;
+		member.RoleIcon2.role = role2;
+		member.RoleIcon3.role = role3;
+	end
+end
+
 function LFGListApplicationViewer_UpdateApplicantMember(member, appID, memberIdx, status, pendingStatus)
 	local grayedOut = not pendingStatus and (status == "failed" or status == "cancelled" or status == "declined" or status == "invitedeclined" or status == "timedout");
 	local noTouchy = (status == "invited" or status == "inviteaccepted" or status == "invitedeclined");
@@ -1322,28 +1358,7 @@ function LFGListApplicationViewer_UpdateApplicantMember(member, appID, memberIdx
 		member.Name:SetWidth(nameLength);
 	end
 
-	--Update the roles.
-	if ( grayedOut ) then
-		member.RoleIcon1:Hide();
-		member.RoleIcon2:Hide();
-	else
-		local role1 = tank and "TANK" or (healer and "HEALER" or (damage and "DAMAGER"));
-		local role2 = (tank and healer and "HEALER") or ((tank or healer) and damage and "DAMAGER");
-		member.RoleIcon1:GetNormalTexture():SetAtlas(LFG_LIST_GROUP_DATA_ATLASES[role1]);
-		member.RoleIcon1:GetHighlightTexture():SetAtlas(LFG_LIST_GROUP_DATA_ATLASES[role1]);
-		if ( role2 ) then
-			member.RoleIcon2:GetNormalTexture():SetAtlas(LFG_LIST_GROUP_DATA_ATLASES[role2]);
-			member.RoleIcon2:GetHighlightTexture():SetAtlas(LFG_LIST_GROUP_DATA_ATLASES[role2]);
-		end
-		member.RoleIcon1:SetEnabled(not noTouchy and role1 ~= assignedRole);
-		member.RoleIcon1:SetAlpha(role1 == assignedRole and 1 or 0.3);
-		member.RoleIcon1:Show();
-		member.RoleIcon2:SetEnabled(not noTouchy and role2 ~= assignedRole);
-		member.RoleIcon2:SetAlpha(role2 == assignedRole and 1 or 0.3);
-		member.RoleIcon2:SetShown(role2);
-		member.RoleIcon1.role = role1;
-		member.RoleIcon2.role = role2;
-	end
+	LFGListApplicationViewer_UpdateRoleIcons(member, grayedOut, tank, healer, damage, noTouchy, assignedRole);
 
 	member.ItemLevel:SetShown(not grayedOut);
 	member.ItemLevel:SetText(math.floor(itemLevel));

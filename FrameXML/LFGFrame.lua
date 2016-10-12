@@ -5,6 +5,8 @@
 --LFG is used for for generic functions/values that may be used for LFD, LFR, and any other LF_ system we may implement in the future.
 ------
 
+LFG_INVITE_POPUP_DEFAULT_HEIGHT = 180;
+
 --DEBUG FIXME:
 function LFGDebug(text, ...)
 	if ( GetCVarBool("lfgDebug") ) then
@@ -1685,6 +1687,11 @@ function LFGInvitePopup_Update(inviter, roleTankAvailable, roleHealerAvailable, 
 	tankButton.checkButton:SetChecked(availableRolesField == 2);
 	healerButton.checkButton:SetChecked(availableRolesField == 4);
 	damagerButton.checkButton:SetChecked(availableRolesField == 8);
+
+	if ( WillAcceptInviteRemoveQueues() ) then
+		self.QueueWarningText:Show();
+		self:SetHeight(LFG_INVITE_POPUP_DEFAULT_HEIGHT + self.QueueWarningText:GetHeight() + 8);
+	end
 
 	LFGInvitePopup_UpdateAcceptButton();
 end

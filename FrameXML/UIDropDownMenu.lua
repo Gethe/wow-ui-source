@@ -234,6 +234,7 @@ end
 
 function UIDropDownMenu_AddSeparator(info, level)
 	info.text = nil;
+	info.hasArrow = false;
 	info.dist = 0;
 	info.isTitle = true;
 	info.isUninteractable = true;

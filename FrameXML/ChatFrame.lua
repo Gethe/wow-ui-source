@@ -3869,14 +3869,15 @@ function ChatEdit_InsertLink(text)
 	return false;
 end
 
-function ChatEdit_TryInsertQuestLinkForQuestID(questID)
-	if ( IsModifiedClick("CHATLINK") and ChatEdit_GetActiveWindow() ) then
-		local questLink = GetQuestLink(questID);
-		if ( questLink ) then
-			ChatEdit_InsertLink(questLink);
-			return true;
-		end
+function ChatEdit_TryInsertChatLink(link)
+	if ( IsModifiedClick("CHATLINK") and ChatEdit_GetActiveWindow() and link ) then
+		ChatEdit_InsertLink(link);
+		return true;
 	end
+end
+
+function ChatEdit_TryInsertQuestLinkForQuestID(questID)
+	return ChatEdit_TryInsertChatLink(GetQuestLink(questID));
 end
 
 function ChatEdit_GetLastTellTarget()

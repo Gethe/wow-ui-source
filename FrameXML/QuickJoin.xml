@@ -9,37 +9,49 @@
 		<Size x="193" y="16"/>
 	</FontString>
 	<Button name="QuickJoinButtonTemplate" mixin="QuickJoinButtonMixin" virtual="true">
-		<Size x="300" y="30"/>
+		<Size x="297" y="25"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="Background">
+				<Texture parentKey="Background" file="Interface\GuildFrame\GuildFrame">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="0" y="-2"/>
-						<Anchor point="BOTTOMRIGHT" x="0" y="2"/>
+						<Anchor point="TOPLEFT" x="0" y="-1"/>
+						<Anchor point="BOTTOMRIGHT" x="0" y="1"/>
 					</Anchors>
-					<Color r="1" g="1" b="1"/>
+					<TexCoords left="0.36230469" right="0.38183594" top="0.95898438" bottom="0.99804688"/>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
 				<FontString parentArray="Members" inherits="QuickJoinButtonMemberTemplate">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="2" y="-3"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="3" y="-5"/>
 					</Anchors>
 				</FontString>
-				<Texture parentKey="Icon" atlas="socialqueuing-icon-eye" useAtlasSize="true">
+				<Texture parentKey="Icon" atlas="socialqueuing-icon-eye" useAtlasSize="false">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="90" y="-2"/>
+						<!--This gets changed in code-->
+						<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="87" y="-4"/>
 					</Anchors>
+					<Size x="16" y="17"/>
 				</Texture>
 				<FontString parentArray="Queues" inherits="QuickJoinButtonQueueTemplate">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="107" y="-3"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="106" y="-5"/>
 					</Anchors>
 				</FontString>
 			</Layer>
-			<Layer level="OVERLAY">
-				<Texture parentKey="Highlight" atlas="socialqueuing-row-highlight" setAllPoints="true" hidden="true" alpha="0.5" alphaMode="ADD"/>
-				<Texture parentKey="Selected" atlas="socialqueuing-row-select" setAllPoints="true" hidden="true" alpha="0.5" alphaMode="ADD"/>
+			<Layer level="BORDER">
+				<Texture parentKey="Highlight" atlas="socialqueuing-row-highlight" hidden="true" alpha="0.5" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="-1"/>
+						<Anchor point="BOTTOMRIGHT" x="0" y="1"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Selected" atlas="socialqueuing-row-select" hidden="true" alpha="0.5" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="-1"/>
+						<Anchor point="BOTTOMRIGHT" x="0" y="1"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 		</Layers>
 		<Scripts>

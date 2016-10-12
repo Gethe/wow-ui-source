@@ -599,7 +599,7 @@ TRAVEL PASS
 					<OnLoad function="TravelPassDropDown_OnLoad"/>
 				</Scripts>
 			</Frame>
-			<Frame name="FriendsTabHeader" setAllPoints="true">
+			<Frame name="FriendsTabHeader" parentKey="FriendsTabHeader" setAllPoints="true">
 				<Frames>
 					<Frame name="FriendsFrameBattlenetFrame">
 						<Size x="190" y="29"/>
@@ -1074,6 +1074,50 @@ TRAVEL PASS
 							<OnClick function="FriendsTabHeader_ClickTab"/>
 						</Scripts>
 					</Button>
+					<Frame parentKey="FriendsFrameQuickJoinHelpTip" inherits="GlowBoxTemplate" enableMouse="true" hidden="true" frameStrata="DIALOG">
+						<Size x="220" y="100"/>
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="FriendsTabHeaderTab2" relativePoint="RIGHT" x="9" y="-6"/>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<FontString parentKey="Text" inherits="GameFontHighlightLeft" justifyV="TOP" text="SOCIAL_QUICK_JOIN_TAB_HELP_TIP">
+									<Size x="188" y="0"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" x="16" y="-20"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
+								<Anchors>
+									<Anchor point="TOPRIGHT" x="6" y="6"/>
+								</Anchors>
+								<Scripts>
+									<OnClick inherit="append">
+										FriendsFrame_CloseQuickJoinHelpTip();
+									</OnClick>
+								</Scripts>
+							</Button>
+							<Frame parentKey="Arrow" inherits="GlowBoxArrowTemplate">
+								<Anchors>
+									<Anchor point="RIGHT" relativePoint="LEFT" x="36" y="16"/>
+								</Anchors>
+							</Frame>
+						</Frames>
+						<Scripts>
+							<OnLoad>
+								SetClampedTextureRotation(self.Arrow.Arrow, 90);
+								SetClampedTextureRotation(self.Arrow.Glow, 90);
+								self.Arrow.Glow:ClearAllPoints();
+								self.Arrow.Glow:SetPoint("RIGHT", self, "LEFT", 3, 0);
+							</OnLoad>
+							<OnShow>
+								self:SetHeight(self.Text:GetHeight() + 42);
+							</OnShow>
+						</Scripts>
+					</Frame>
 					<Button name="$parentRecruitAFriendButton" motionScriptsWhileDisabled="true" parentKey="RaFButton" hidden="true">
 						<Size x="26" y="26"/>
 						<Anchors>
@@ -1168,6 +1212,8 @@ TRAVEL PASS
 									self:Hide();
 								end
 							</OnEvent>
+							<OnShow function="FriendsTabHeader_ResizeTabs"/>
+							<OnHide function="FriendsTabHeader_ResizeTabs"/>
 						</Scripts>
 						<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
 						<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square" parentKey="highlight"/>
@@ -1175,8 +1221,9 @@ TRAVEL PASS
 				</Frames>
 				<Scripts>
 					<OnLoad>
-						PanelTemplates_SetNumTabs(self, 2);
+						PanelTemplates_SetNumTabs(self, 3);
 						PanelTemplates_SetTab(self, 1);
+						FriendsTabHeader_ResizeTabs();
 					</OnLoad>
 					<OnShow function="PendingList_UpdateTab"/>
 				</Scripts>

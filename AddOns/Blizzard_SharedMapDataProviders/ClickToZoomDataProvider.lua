@@ -33,7 +33,7 @@ function ClickToZoomDataProviderMixin:OnAdded(mapCanvas)
 		self.MapLabel = CreateFrame("FRAME", nil, self:GetMap(), "ClickToZoomDataProvider_LabelTemplate");
 	end
 
-	self.MapLabel:SetPoint("BOTTOMRIGHT", -75, 75);
+	self.MapLabel:SetPoint("BOTTOMRIGHT", -75, 65);
 	self.MapLabel:SetFrameStrata("HIGH");
 	self.MapLabel:SetAlpha(1);
 end

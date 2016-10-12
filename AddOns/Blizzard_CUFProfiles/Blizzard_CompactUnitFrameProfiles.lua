@@ -2,7 +2,7 @@ function CompactUnitFrameProfiles_OnLoad(self)
 	self:RegisterEvent("VARIABLES_LOADED");
 	self:RegisterEvent("COMPACT_UNIT_FRAME_PROFILES_LOADED");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
-	self:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED");
+	self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED");
 	self:RegisterEvent("GROUP_JOINED");
 	
 	--Get this working with the InterfaceOptions panel.
@@ -29,7 +29,7 @@ function CompactUnitFrameProfiles_OnEvent(self, event, ...)
 		CompactUnitFrameProfiles_ValidateProfilesLoaded(self);
 	elseif ( event == "PLAYER_ENTERING_WORLD" ) then	--Check for zoning
 		CompactUnitFrameProfiles_CheckAutoActivation();
-	elseif ( event == "ACTIVE_TALENT_GROUP_CHANGED" ) then	--Check for changing specs
+	elseif ( event == "PLAYER_SPECIALIZATION_CHANGED" ) then	--Check for changing specs
 		CompactUnitFrameProfiles_CheckAutoActivation();
 	elseif ( event == "GROUP_JOINED" ) then
 		local partyCategory = ...;
@@ -346,7 +346,7 @@ function CompactUnitFrameProfiles_CheckAutoActivation()
 		end
 	end
 		
-	local spec = GetActiveSpecGroup();
+	local spec = GetSpecialization(false, false, 1);
 	local lastActivationType, lastNumPlayers, lastSpec, lastEnemyType = CompactUnitFrameProfiles_GetLastActivationType();
 	
 	if ( activationType == "world" ) then	--We don't adjust due to just the number of players in the raid.
@@ -388,6 +388,32 @@ function CompactUnitFrameProfiles_ProfileMatchesAutoActivation(profile, numPlaye
 		GetRaidProfileOption(profile, "autoActivate"..enemyType);
 end
 
+function CompactUnitFrameAutoActivateSpec_OnLoad(self)
+	CompactUnitFrameProfilesCheckButton_InitializeWidget(self, "autoActivateSpec"..self:GetID());
+end
+
+function CompactUnitFrameProfilesGeneralOptionsFrame_OnShow(self)
+	local height = 293;
+	local numSpecializations = GetNumSpecializations();
+	for i, option in ipairs(self.AutoActivateSpecs) do
+		if ( option:GetID() <= numSpecializations ) then
+			local specID, specName = GetSpecializationInfo(option:GetID());
+			option.label:SetText(specName);
+			option:Show();
+			height = height + 26;
+			if ( option:GetID() == numSpecializations ) then
+				self.AutoActivatePvP:ClearAllPoints();
+				self.AutoActivatePvP:SetPoint("TOPLEFT", option, "BOTTOMLEFT", 0, -15);
+			end
+		else
+			option:Hide();
+		end
+	end
+	
+	self.autoActivateBG:SetHeight(height);
+end
+
+
 function CompactUnitFrameProfile_UpdateAutoActivationDisabledLabel()
 	local profile = GetActiveRaidProfile();
 	local hasGroupSize = false;
@@ -399,7 +425,8 @@ function CompactUnitFrameProfile_UpdateAutoActivationDisabledLabel()
 	end
 	
 	local hasTalentSpec = false;
-	if ( GetRaidProfileOption(profile, "autoActivateSpec1") or GetRaidProfileOption(profile, "autoActivateSpec2") ) then
+	if ( GetRaidProfileOption(profile, "autoActivateSpec1") or GetRaidProfileOption(profile, "autoActivateSpec2") or
+			GetRaidProfileOption(profile, "autoActivateSpec3") or GetRaidProfileOption(profile, "autoActivateSpec4") ) then
 		hasTalentSpec = true;
 	end
 	

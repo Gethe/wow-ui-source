@@ -609,6 +609,7 @@ function PaperDollFrame_SetStat(statFrame, unit, statIndex)
 
 		local primaryStat, spec;
 		spec = GetSpecialization();
+		local role = GetSpecializationRole(spec);
 		if (spec) then
 			primaryStat = select(7, GetSpecializationInfo(spec, nil, nil, nil, UnitSex("player")));
 		end
@@ -620,6 +621,12 @@ function PaperDollFrame_SetStat(statFrame, unit, statIndex)
 			end
 			if (not primaryStat or primaryStat == LE_UNIT_STAT_STRENGTH) then
 				statFrame.tooltip2 = format(statFrame.tooltip2, BreakUpLargeNumbers(attackPower));
+				if ( role == "TANK" ) then
+					local increasedParryChance = GetParryChanceFromAttribute();
+					if ( increasedParryChance > 0 ) then
+						statFrame.tooltip2 = statFrame.tooltip2.."|n|n"..format(CR_PARRY_BASE_STAT_TOOLTIP, increasedParryChance);
+					end
+				end	
 			else
 				statFrame.tooltip2 = STAT_NO_BENEFIT_TOOLTIP;
 			end
@@ -632,6 +639,12 @@ function PaperDollFrame_SetStat(statFrame, unit, statIndex)
 			end
 			if (not primaryStat or primaryStat == LE_UNIT_STAT_AGILITY) then
 				statFrame.tooltip2 = format(tooltip, BreakUpLargeNumbers(attackPower));
+				if ( role == "TANK" ) then
+					local increasedDodgeChance = GetDodgeChanceFromAttribute();
+					if ( increasedDodgeChance > 0 ) then
+						statFrame.tooltip2 = statFrame.tooltip2.."|n|n"..format(CR_DODGE_BASE_STAT_TOOLTIP, increasedDodgeChance);
+					end
+				end
 			else
 				statFrame.tooltip2 = STAT_NO_BENEFIT_TOOLTIP;
 			end

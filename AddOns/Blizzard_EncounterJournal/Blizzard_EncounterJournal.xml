@@ -495,14 +495,10 @@
 				self.showingTooltip = false;
 			</OnLeave>
 			<OnClick>
-				if IsModifiedClick("CHATLINK") and ChatEdit_GetActiveWindow() then
-					if self.link then
-						ChatEdit_InsertLink(self.link);
-					end
-					return;
+				if not ChatEdit_TryInsertChatLink(self.link) then
+					EncounterJournal_DisplayInstance(self.instanceID);
+					PlaySound("igSpellBookOpen");
 				end
-				EncounterJournal_DisplayInstance(self.instanceID);
-				PlaySound("igSpellBookOpen");
 			</OnClick>
 		</Scripts>
 	</Button>

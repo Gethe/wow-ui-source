@@ -720,6 +720,12 @@ function UnitPopup_HideButtons ()
 	local canCoop = dropdownMenu.unit and UnitCanCooperate("player", dropdownMenu.unit);
 	local isPlayer = dropdownMenu.unit and UnitIsPlayer(dropdownMenu.unit);
 	local partyLFGSlot = GetPartyLFGID();
+	local guid;
+	if ( dropdownMenu.unit ) then
+		guid = UnitGUID(dropdownMenu.unit);
+	elseif ( type(dropdownMenu.userData) == "table" and dropdownMenu.userData.guid ) then
+		guid = dropdownMenu.userData.guid;
+	end
 	local partyLFGCategory = nil;
 	if ( partyLFGSlot ) then
 		partyLFGCategory = GetLFGCategoryForID(partyLFGSlot);
@@ -774,13 +780,11 @@ function UnitPopup_HideButtons ()
 				end
 			end
 
-			local displayedInvite;
+			local displayedInvite = GetDisplayedInviteType(guid);
 			if ( not inParty and dropdownMenu.unit and UnitInAnyGroup(dropdownMenu.unit, LE_PARTY_CATEGORY_HOME) ) then
+				--Handle the case where we don't have SocialQueue data about this unit (e.g. because it's a random person)
+				--in the world. In this case, we want to display REQUEST_INVITE if they're in a group.
 				displayedInvite = "REQUEST_INVITE";
-			elseif ( inParty and not isLeader and not isAssistant ) then
-				displayedInvite = "SUGGEST_INVITE";
-			else
-				displayedInvite = "INVITE";
 			end
 			if ( value ~= displayedInvite ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;

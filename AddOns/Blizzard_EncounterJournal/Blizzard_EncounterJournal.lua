@@ -279,7 +279,6 @@ function EncounterJournal_OnShow(self)
 	instanceSelect.dungeonsTab.selectedGlow:SetVertexColor(tierData.r, tierData.g, tierData.b);
 end
 
-
 function EncounterJournal_OnHide(self)
 	UpdateMicroButtons();
 	PlaySound("igCharacterInfoClose");
@@ -289,7 +288,6 @@ function EncounterJournal_OnHide(self)
 	EJ_EndSearch();
 	self.shouldDisplayDifficulty = nil;
 end
-
 
 function EncounterJournal_OnEvent(self, event, ...)
 	if  event == "EJ_LOOT_DATA_RECIEVED" then
@@ -382,7 +380,7 @@ function EncounterJournal_ListInstances()
 
 	local scrollFrame = instanceSelect.scroll.child;
 	local index = 1;
-	local instanceID, name, description, _, buttonImage, _, _, link = EJ_GetInstanceByIndex(index, showRaid);
+	local instanceID, name, description, _, buttonImage, _, _, _, link = EJ_GetInstanceByIndex(index, showRaid);
 
 	--No instances in this tab
 	if not instanceID and not infiniteLoopPolice then
@@ -423,7 +421,7 @@ function EncounterJournal_ListInstances()
 		instanceButton:Show();
 
 		index = index + 1;
-		instanceID, name, description, _, buttonImage, _, _, link = EJ_GetInstanceByIndex(index, showRaid);
+		instanceID, name, description, _, buttonImage, _, _, _, link = EJ_GetInstanceByIndex(index, showRaid);
 	end
 
 	EJ_HideInstances(index);
@@ -483,15 +481,11 @@ local function EncounterJournal_SearchForOverview(instanceID)
 end
 
 local function UpdateDifficultyVisibility()
-	if EncounterJournal.shouldDisplayDifficulty == nil then
-		local _, _, _, _, _, _, dungeonAreaMapID = EJ_GetInstanceInfo();
-		EncounterJournal.shouldDisplayDifficulty = (dungeonAreaMapID ~= 0);
-	end
+	local shouldDisplayDifficulty = select(9, EJ_GetInstanceInfo());
 
+	-- As long as the current tab isn't the model tab, which always suppresses the difficulty, then update the shown state.
 	local info = EncounterJournal.encounter.info;
-	if (info.tab ~= 4) then -- Type 4 is the model tab, it's the only one that could suppress the difficulty.
-		info.difficulty:SetShown(EncounterJournal.shouldDisplayDifficulty);
-	end
+	info.difficulty:SetShown(shouldDisplayDifficulty and (info.tab ~= 4));
 end
 
 function EncounterJournal_DisplayInstance(instanceID, noButton)
@@ -530,7 +524,6 @@ function EncounterJournal_DisplayInstance(instanceID, noButton)
 
 	self.info.model.dungeonBG:SetTexture(bgImage);
 
-	EncounterJournal.shouldDisplayDifficulty = (dungeonAreaMapID ~= 0);
 	UpdateDifficultyVisibility();
 
 	local bossIndex = 1;
@@ -613,7 +606,6 @@ function EncounterJournal_DisplayInstance(instanceID, noButton)
 		NavBar_AddButton(EncounterJournal.navBar, buttonData);
 	end
 end
-
 
 function EncounterJournal_DisplayEncounter(encounterID, noButton)
 	local self = EncounterJournal.encounter;
@@ -1348,7 +1340,6 @@ function EncounterJournal_ToggleHeaders(self, doNotShift)
 	end
 end
 
-
 function EncounterJournal_ShiftHeaders(index)
 	local usedHeaders = EncounterJournal.encounter.usedHeaders;
 	if not usedHeaders[index] then
@@ -1368,7 +1359,6 @@ function EncounterJournal_ShiftHeaders(index)
 	end
 end
 
-
 function EncounterJournal_ResetHeaders()
 	for key,_ in pairs(EJ_section_openTable) do
 		EJ_section_openTable[key] = nil;
@@ -1377,7 +1367,6 @@ function EncounterJournal_ResetHeaders()
 	PlaySound("igMainMenuOptionCheckBoxOn");
 	EncounterJournal_Refresh();
 end
-
 
 function EncounterJournal_FocusSection(sectionID)
 	if (not EncounterJournal_CheckForOverview(sectionID)) then
@@ -1395,7 +1384,6 @@ function EncounterJournal_FocusSection(sectionID)
 	end
 end
 
-
 function EncounterJournal_FocusSectionCallback(self)
 	if self.cbCount > 0 then
 		local _, _, _, _, anchorY = self:GetPoint();
@@ -1406,7 +1394,6 @@ function EncounterJournal_FocusSectionCallback(self)
 	end
 	self.cbCount = self.cbCount + 1;
 end
-
 
 function EncounterJournal_MoveSectionUpdate(self)
 
@@ -1419,7 +1406,6 @@ function EncounterJournal_MoveSectionUpdate(self)
 	end
 	self.frameCount = self.frameCount + 1;
 end
-
 
 function EncounterJournal_ClearChildHeaders(self, doNotShift)
 	local usedHeaders = EncounterJournal.encounter.usedHeaders;
@@ -1450,7 +1436,6 @@ function EncounterJournal_ClearChildHeaders(self, doNotShift)
 	end
 	return numCleared
 end
-
 
 function EncounterJournal_ClearDetails()
 	EncounterJournal.encounter.instance:Hide();
@@ -1614,7 +1599,6 @@ function EncounterJournal_LootCalcScroll(offset)
 	return index, offset - (index*buttonHeight);
 end
 
-
 function EncounterJournal_Loot_OnUpdate(self)
 	if GameTooltip:IsOwned(self) then
 		if IsModifiedClick("DRESSUP") then
@@ -1624,7 +1608,6 @@ function EncounterJournal_Loot_OnUpdate(self)
 		end
 	end
 end
-
 
 function EncounterJournal_Loot_OnClick(self)
 	if (EncounterJournal.encounterID ~= self.encounterID) then
@@ -1671,7 +1654,6 @@ function EncounterJournal_SetFlagIcon(texture, index)
 	texture:SetTexCoord(l,r,t,b);
 end
 
-
 function EncounterJournal_Refresh(self)
 	EncounterJournal_LootUpdate();
 
@@ -1681,7 +1663,6 @@ function EncounterJournal_Refresh(self)
 		EncounterJournal_DisplayInstance(EncounterJournal.instanceID, true);
 	end
 end
-
 
 function EncounterJournal_GetSearchDisplay(index)
 	local name, icon, path, typeText, displayInfo, itemID, _;
@@ -1725,7 +1706,6 @@ function EncounterJournal_GetSearchDisplay(index)
 	return name, icon, path, typeText, displayInfo, itemID, stype, itemLink;
 end
 
-
 function EncounterJournal_SelectSearch(index)
 	local _;
 	local id, stype, difficultyID, instanceID, encounterID = EJ_GetSearchResult(index);
@@ -1743,7 +1723,6 @@ function EncounterJournal_SelectSearch(index)
 	EncounterJournal_OpenJournal(difficultyID, instanceID, encounterID, sectionID, creatureID, itemID);
 	EncounterJournal.searchResults:Hide();
 end
-
 
 function EncounterJournal_SearchUpdate()
 	local scrollFrame = EncounterJournal.searchResults.scrollFrame;
@@ -1793,7 +1772,6 @@ function EncounterJournal_SearchUpdate()
 	HybridScrollFrame_Update(scrollFrame, totalHeight, 370);
 end
 
-
 function EncounterJournal_ShowFullSearch()
 	local numResults = EJ_GetNumSearchResults();
 	if numResults == 0 then
@@ -1809,7 +1787,6 @@ function EncounterJournal_ShowFullSearch()
 	EncounterJournal.searchBox:ClearFocus();
 end
 
-
 function EncounterJournal_RestartSearchTracking()
 	if EJ_IsSearchFinished() then
 		EncounterJournal_ShowSearch();
@@ -1823,7 +1800,6 @@ function EncounterJournal_RestartSearchTracking()
 	end
 end
 
-
 function EncounterJournal_ShowSearch()
 	if EncounterJournal.searchResults:IsShown() then
 		EncounterJournal_ShowFullSearch();
@@ -1831,7 +1807,6 @@ function EncounterJournal_ShowSearch()
 		EncounterJournal_UpdateSearchPreview();
 	end
 end
-
 
 -- There is a delay before the search is updated to avoid a search progress bar if the search
 -- completes within the grace period.
@@ -1854,7 +1829,6 @@ function EncounterJournalSearchBox_OnUpdate(self, elapsed)
 	end
 end
 
-
 function EncounterJournalSearchBoxSearchProgressBar_OnLoad(self)
 	self:SetStatusBarColor(0, .6, 0, 1);
 	self:SetMinMaxValues(0, 1000);
@@ -1862,18 +1836,15 @@ function EncounterJournalSearchBoxSearchProgressBar_OnLoad(self)
 	self:GetStatusBarTexture():SetDrawLayer("BORDER");
 end
 
-
 function EncounterJournalSearchBoxSearchProgressBar_OnShow(self)
 	self:SetScript("OnUpdate", EncounterJournalSearchBoxSearchProgressBar_OnUpdate);
 end
-
 
 function EncounterJournalSearchBoxSearchProgressBar_OnHide(self)
 	self:SetScript("OnUpdate", nil);
 	self:SetValue(0);
 	self.previousResults = nil;
 end
-
 
 -- If the searcher does not finish within the update delay then a search progress bar is displayed that
 -- will fill until the search is finished and then display the search preview results.
@@ -1905,7 +1876,6 @@ function EncounterJournalSearchBoxSearchProgressBar_OnUpdate(self, elapsed)
 		EncounterJournal_ShowSearch();
 	end
 end
-
 
 function EncounterJournal_UpdateSearchPreview()
 	if strlen(EncounterJournal.searchBox:GetText()) < MIN_CHARACTER_SEARCH then
@@ -1964,7 +1934,6 @@ function EncounterJournal_UpdateSearchPreview()
 	EncounterJournal.searchBox.searchPreviewContainer:Show();
 end
 
-
 function EncounterJournal_FixSearchPreviewBottomBorder()
 	local lastShownButton = nil;
 	if EncounterJournal.searchBox.showAllResults:IsShown() then
@@ -1988,11 +1957,9 @@ function EncounterJournal_FixSearchPreviewBottomBorder()
 	end
 end
 
-
 function EncounterJouranl_IsSearchPreviewShown()
 	return EncounterJournal.searchBox.searchPreviewContainer:IsShown();
 end
-
 
 function EncounterJournal_HideSearchPreview()
 	EncounterJournal.searchBox.showAllResults:Hide();
@@ -2009,29 +1976,24 @@ function EncounterJournal_HideSearchPreview()
 	EncounterJournal.searchBox.searchPreviewContainer:Hide();
 end
 
-
 function EncounterJournal_ClearSearch()
 	EncounterJournal.searchResults:Hide();
 	EncounterJournal_HideSearchPreview();
 end
-
 
 function EncounterJournalSearchBox_OnLoad(self)
 	SearchBoxTemplate_OnLoad(self);
 	self.selectedIndex = 1;
 end
 
-
 function EncounterJournalSearchBox_OnShow(self)
 	self:SetFrameLevel(self:GetParent():GetFrameLevel() + 10);
 end
-
 
 function EncounterJournalSearchBox_OnHide(self)
 	self.searchPreviewUpdateDelay = nil;
 	self:SetScript("OnUpdate", nil);
 end
-
 
 function EncounterJournalSearchBox_OnTextChanged(self)
 	SearchBoxTemplate_OnTextChanged(self);
@@ -2048,7 +2010,6 @@ function EncounterJournalSearchBox_OnTextChanged(self)
 	EJ_SetSearch(text);
 	EncounterJournal_RestartSearchTracking();
 end
-
 
 function EncounterJournalSearchBox_OnEnterPressed(self)
 	if self.selectedIndex > EJ_SHOW_ALL_SEARCH_RESULTS_INDEX or self.selectedIndex < 0 then
@@ -2067,7 +2028,6 @@ function EncounterJournalSearchBox_OnEnterPressed(self)
 	EncounterJournal_HideSearchPreview();
 end
 
-
 function EncounterJournalSearchBox_OnKeyDown(self, key)
 	if key == "UP" then
 		EncounterJournal_SetSearchPreviewSelection(EncounterJournal.searchBox.selectedIndex - 1);
@@ -2076,12 +2036,10 @@ function EncounterJournalSearchBox_OnKeyDown(self, key)
 	end
 end
 
-
 function EncounterJournalSearchBox_OnFocusLost(self)
 	SearchBoxTemplate_OnEditFocusLost(self);
 	EncounterJournal_HideSearchPreview();
 end
-
 
 function EncounterJournalSearchBox_OnFocusGained(self)
 	SearchBoxTemplate_OnEditFocusGained(self);
@@ -2090,11 +2048,9 @@ function EncounterJournalSearchBox_OnFocusGained(self)
 	EncounterJournal_UpdateSearchPreview();
 end
 
-
 function EncounterJournalSearchBoxShowAllResults_OnEnter(self)
 	EncounterJournal_SetSearchPreviewSelection(EJ_SHOW_ALL_SEARCH_RESULTS_INDEX);
 end
-
 
 function EncounterJournal_SetSearchPreviewSelection(selectedIndex)
 	local searchBox = EncounterJournal.searchBox;
@@ -2131,7 +2087,6 @@ function EncounterJournal_SetSearchPreviewSelection(selectedIndex)
 	end
 end
 
-
 function EncounterJournal_OpenJournalLink(tag, jtype, id, difficultyID)
 	jtype = tonumber(jtype);
 	id = tonumber(id);
@@ -2139,7 +2094,6 @@ function EncounterJournal_OpenJournalLink(tag, jtype, id, difficultyID)
 	local instanceID, encounterID, sectionID, tierIndex = EJ_HandleLinkPath(jtype, id);
 	EncounterJournal_OpenJournal(difficultyID, instanceID, encounterID, sectionID, nil, nil, tierIndex);
 end
-
 
 function EncounterJournal_OpenJournal(difficultyID, instanceID, encounterID, sectionID, creatureID, itemID, tierIndex)
 	EJ_HideNonInstancePanels();
@@ -2180,11 +2134,9 @@ function EncounterJournal_OpenJournal(difficultyID, instanceID, encounterID, sec
 	end
 end
 
-
 function EncounterJournal_SelectDifficulty(self, value)
 	EJ_SetDifficulty(value);
 end
-
 
 function EncounterJournal_DifficultyInit(self, level)
 	local currDifficulty = EJ_GetDifficulty();
@@ -2204,8 +2156,6 @@ function EncounterJournal_DifficultyInit(self, level)
 		end
 	end
 end
-
-
 
 function EJ_HideInstances(index)
 	if ( not index ) then
@@ -2332,7 +2282,6 @@ function EJTierDropDown_OnLoad(self)
 	UIDropDownMenu_Initialize(self, EJTierDropDown_Initialize, "MENU");
 end
 
-
 function EJTierDropDown_Initialize(self, level)
 	local info = UIDropDownMenu_CreateInfo();
 	local numTiers = EJ_GetNumTiers();
@@ -2345,7 +2294,6 @@ function EJTierDropDown_Initialize(self, level)
 		UIDropDownMenu_AddButton(info, level)
 	end
 end
-
 
 function EncounterJournal_TierDropDown_Select(_, tier)
 	EJ_SelectTier(tier);
@@ -2363,18 +2311,15 @@ function EncounterJournal_TierDropDown_Select(_, tier)
 	EncounterJournal_ListInstances();
 end
 
-
 function EncounterJournal_OnFilterChanged(self)
 	CloseDropDownMenus(1);
 	EncounterJournal_LootUpdate();
 end
 
-
 function EncounterJournal_SetClassAndSpecFilter(self, classID, specID)
 	EJ_SetLootFilter(classID, specID);
 	EncounterJournal_OnFilterChanged(self);
 end
-
 
 function EncounterJournal_RefreshSlotFilterText(self)
 	local text = ALL_INVENTORY_SLOTS;
@@ -2396,7 +2341,6 @@ function EncounterJournal_SetSlotFilter(self, slot)
 	EncounterJournal_RefreshSlotFilterText(self);
 	EncounterJournal_OnFilterChanged(self);
 end
-
 
 function EncounterJournal_UpdateFilterString()
 	local name, _;
@@ -2499,7 +2443,7 @@ function EncounterJournal_InitLootSlotFilter(self, level)
 	info.arg1 = NO_INV_TYPE_FILTER;
 	info.func = EncounterJournal_SetSlotFilter;
 	UIDropDownMenu_AddButton(info);
-	
+
 	for _, slot in ipairs(EncounterJournalSlotFilters) do
 		info.text = slot.invTypeName;
 		info.checked = slotFilter == slot.invType;
@@ -2507,7 +2451,6 @@ function EncounterJournal_InitLootSlotFilter(self, level)
 		UIDropDownMenu_AddButton(info);
 	end
 end
-
 
 ----------------------------------------
 --------------Nav Bar Func--------------
@@ -2526,24 +2469,20 @@ function EJNAV_SelectInstance(self, index, navBar)
 	EncounterJournal_DisplayInstance(instanceID);
 end
 
-
 function EJNAV_ListInstance(self, index)
 	--local navBar = self:GetParent();
 	local _, name = EJ_GetInstanceByIndex(index, EJ_InstanceIsRaid());
 	return name, EJNAV_SelectInstance;
 end
 
-
 function EJNAV_RefreshEncounter()
 	EncounterJournal_DisplayInstance(EncounterJournal.encounterID);
 end
-
 
 function EJNAV_SelectEncounter(self, index, navBar)
 	local _, _, bossID = EJ_GetEncounterInfoByIndex(index);
 	EncounterJournal_DisplayEncounter(bossID);
 end
-
 
 function EJNAV_ListEncounter(self, index)
 	--local navBar = self:GetParent();

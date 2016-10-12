@@ -5,7 +5,11 @@ function SocialQueueUtil_GetQueueName(queue)
 	if ( queue.type == "lfg" ) then
 		local lfgID = queue.lfgID;
 		local name, typeID, subtypeID, minLevel, maxLevel, recLevel, minRecLevel, maxRecLevel, expansionLevel, groupID, textureFilename, difficulty, maxPlayers, description, isHoliday, _, _, isTimeWalker = GetLFGDungeonInfo(lfgID);
-		if ( subtypeID == LFG_SUBTYPEID_DUNGEON ) then
+		if ( typeID == TYPEID_RANDOM_DUNGEON ) then
+			return name;
+		elseif ( isTimeWalker or isHoliday ) then
+			return name;
+		elseif ( subtypeID == LFG_SUBTYPEID_DUNGEON ) then
 			return string.format(SOCIAL_QUEUE_FORMAT_DUNGEON, name);
 		elseif ( subtypeID == LFG_SUBTYPEID_HEROIC ) then
 			return string.format(SOCIAL_QUEUE_FORMAT_HEROIC_DUNGEON, name);
@@ -15,6 +19,9 @@ function SocialQueueUtil_GetQueueName(queue)
 			return string.format(SOCIAL_QUEUE_FORMAT_RAID, name);
 		elseif ( subtypeID == LFG_SUBTYPEID_WORLDPVP ) then
 			return string.format(SOCIAL_QUEUE_FORMAT_WORLDPVP, name);
+		else
+			--Scenarios I guess?
+			return name;
 		end
 	elseif ( queue.type == "pvp" ) then
 		local battlefieldType = queue.battlefieldType;
@@ -60,11 +67,8 @@ function SocialQueueUtil_SetTooltip(tooltip, playerDisplayName, data)
 		for i=1, #data do
 			local queue = data[i];
 			local queueName = SocialQueueUtil_GetQueueName(queue);
-			tooltip:AddLine(queueName, nil, nil, nil, true);
-		end
-
-		tooltip:AddLine(" ");
-		tooltip:AddLine(SOCIAL_QUEUE_CLICK_TO_JOIN, GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
+			tooltip:AddLine("- "..queueName, nil, nil, nil, true);
+		end	
 	end
 end
 
@@ -90,4 +94,13 @@ function SocialQueueUtil_GetNameAndColor(guid)
 
 	local name = select(6, GetPlayerInfoByGUID(guid));
 	return name or UNKNOWNOBJECT, FRIENDS_WOW_NAME_COLOR_CODE;
+end
+
+function SocialQueueUtil_SortGroupMembers(members)
+	table.sort(members, function(lhs, rhs)
+		local lhsName = SocialQueueUtil_GetNameAndColor(lhs);
+		local rhsName = SocialQueueUtil_GetNameAndColor(rhs);
+		return strcmputf8i(lhsName, rhsName) <= 0;
+	end);
+	return members;
 end

@@ -42,7 +42,7 @@ FRIENDS_TOOLTIP_MARGIN_WIDTH = 12;
 ADDFRIENDFRAME_WOWHEIGHT = 218;
 ADDFRIENDFRAME_BNETHEIGHT = 296;
 
-FRIEND_TABS_MAX_WIDTH = 0;		-- some locales may need to abbreviate tab headers to fit
+FRIEND_TABS_MAX_WIDTH = 280;
 
 local INVITE_RESTRICTION_NO_GAME_ACCOUNTS = 0;
 local INVITE_RESTRICTION_CLIENT = 1;
@@ -292,6 +292,7 @@ function FriendsFrame_OnShow()
 	FriendsList_Update(true);
 	FriendsFrame_Update();
 	UpdateMicroButtons();
+	FriendsFrame_CheckQuickJoinHelpTip();
 	PlaySound("igCharacterInfoTab");
 end
 
@@ -308,6 +309,7 @@ function FriendsFrame_Update()
 			FriendsFrame_ShowSubFrame("FriendsListFrame");
 		elseif ( FriendsTabHeader.selectedTab == 2 ) then
 			--Quick Join
+			FriendsFrameTitleText:SetText(QUICK_JOIN);
 			FriendsFrame_ShowSubFrame("QuickJoinFrame");
 		else
 			--Ignore
@@ -368,9 +370,7 @@ end
 
 function FriendsTabHeader_ClickTab(tab)
 	PanelTemplates_Tab_OnClick(tab, FriendsTabHeader);
-	if ( FRIEND_TABS_MAX_WIDTH > 0 ) then
-		FriendsTabHeader_ResizeTabs();
-	end
+	FriendsTabHeader_ResizeTabs();
 	FriendsFrame_Update();
 	PlaySound("igMainMenuOptionCheckBoxOn");
 end
@@ -381,7 +381,24 @@ function FriendsTabHeader_ResizeTabs()
 		return;
 	end
 
+	local currentWidth = 0;
+	local truncatedText = false;
+	for i = 1, FriendsTabHeader.numTabs do
+		local tab = _G["FriendsTabHeaderTab"..i];
+		currentWidth = currentWidth + tab:GetWidth();
+		if tab.Text:IsTruncated() then
+			truncatedText = true;
+		end
+	end
+	if ( not truncatedText and currentWidth <= FRIEND_TABS_MAX_WIDTH ) then
+		return;
+	end
+
 	local availableWidth = FRIEND_TABS_MAX_WIDTH;
+	if ( FriendsTabHeaderSoRButton:IsShown() ) then
+		availableWidth = availableWidth - 30;
+	end
+
 	local widthPerTab;
 
 	local currentTab = _G["FriendsTabHeaderTab"..selectedIndex];
@@ -1095,6 +1112,25 @@ function ToggleFriendsFrame(tab)
 			ShowUIPanel(FriendsFrame);
 		end
 	end
+end
+
+function FriendsFrame_CheckQuickJoinHelpTip()
+	-- We want at least two groups to show the tutorial.  This avoids more cases where all groups delist.
+	local hasEnoughGroups = #C_SocialQueue.GetAllGroups(false) > 1;
+	local hasClosedTutorial = GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_FRIENDS_LIST_QUICK_JOIN);
+	if ( not hasClosedTutorial and hasEnoughGroups ) then
+		FriendsFrame.FriendsTabHeader.FriendsFrameQuickJoinHelpTip:Show();
+	else
+		FriendsFrame.FriendsTabHeader.FriendsFrameQuickJoinHelpTip:Hide();
+	end
+end
+
+function FriendsFrame_CloseQuickJoinHelpTip()
+	-- Don't mark it as closed until you've actually seen it.
+	if ( FriendsFrame.FriendsTabHeader.FriendsFrameQuickJoinHelpTip:IsShown() or #C_SocialQueue.GetAllGroups(false) > 1 ) then
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_FRIENDS_LIST_QUICK_JOIN, true);
+	end
+	FriendsFrame.FriendsTabHeader.FriendsFrameQuickJoinHelpTip:Hide();
 end
 
 function OpenFriendsFrame(tab)
@@ -2257,17 +2293,35 @@ function TravelPassButton_OnEnter(self)
 		local guid = FriendsFrame_GetPlayerGUIDFromIndex(self:GetParent().id);
 		local inviteType = GetDisplayedInviteType(guid);
 		if ( inviteType == "INVITE" ) then
-			GameTooltip:SetText(TRAVEL_PASS_INVITE, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, 1);
+			GameTooltip:SetText(TRAVEL_PASS_INVITE, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 		elseif ( inviteType == "SUGGEST_INVITE" ) then
-			GameTooltip:SetText(SUGGEST_INVITE, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, 1);
+			GameTooltip:SetText(SUGGEST_INVITE, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 		else --inviteType == "REQUEST_INVITE"
-			GameTooltip:SetText(REQUEST_INVITE, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, 1);
+			GameTooltip:SetText(REQUEST_INVITE, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+			--For REQUEST_INVITE, we'll display other members in the group if there are any.
+			local group = C_SocialQueue.GetGroupForPlayer(guid);
+			local members = C_SocialQueue.GetGroupMembers(group);
+			local numDisplayed = 0;
+			for i=1, #members do
+				if ( members[i] ~= guid ) then
+					if ( numDisplayed == 0 ) then
+						GameTooltip:AddLine(SOCIAL_QUEUE_ALSO_IN_GROUP);
+					elseif ( numDisplayed >= 7 ) then
+						GameTooltip:AddLine(SOCIAL_QUEUE_AND_MORE, GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b, 1);
+						break;
+					end
+					local name, color = SocialQueueUtil_GetNameAndColor(members[i]);
+					GameTooltip:AddLine(color..name..FONT_COLOR_CODE_CLOSE);
+
+					numDisplayed = numDisplayed + 1;
+				end
+			end
 		end
 	else
 		GameTooltip:SetText(TRAVEL_PASS_INVITE, GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b, 1);
 		GameTooltip:AddLine(FriendsFrame_GetInviteRestrictionText(restriction), RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
-		GameTooltip:Show();
 	end
+	GameTooltip:Show();
 end
 
 function TravelPassDropDown_OnLoad(self)

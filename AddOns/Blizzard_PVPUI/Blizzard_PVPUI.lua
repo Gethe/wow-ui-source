@@ -94,6 +94,8 @@ function PVPUIFrame_OnLoad(self)
 		HonorFrame.BonusFrame.WorldBattlesTexture:SetAtlas("pvpqueue-bg-alliance", true)
 	end
 
+	RequestPVPRewards();
+
 	RequestRandomBattlegroundInstanceInfo();
 
 	self:RegisterEvent("BATTLEFIELDS_CLOSED");
@@ -117,6 +119,7 @@ function PVPUIFrame_OnShow(self)
 	end
 	UpdateMicroButtons();
 	PlaySound("igCharacterInfoOpen");
+	RequestPVPRewards();
 
 	PVPUIFrame_UpdateSelectedRoles();
 	PVPUIFrame_UpdateRolesChangeable();
@@ -889,7 +892,6 @@ function ConquestFrame_OnLoad(self)
 	CONQUEST_BUTTONS = {ConquestFrame.Arena2v2, ConquestFrame.Arena3v3, ConquestFrame.RatedBG};
 
 	RequestRatedInfo();
-	RequestPVPRewards();
 	RequestPVPOptionsEnabled();
 	
 	self:RegisterEvent("GROUP_ROSTER_UPDATE");
@@ -920,7 +922,6 @@ end
 
 function ConquestFrame_OnShow(self)
 	RequestRatedInfo();
-	RequestPVPRewards();
 	RequestPVPOptionsEnabled();
 	ConquestFrame_Update(self);
 end
@@ -945,6 +946,8 @@ function ConquestFrame_Update(self)
 			local rating, seasonBest, weeklyBest, seasonPlayed, seasonWon, weeklyPlayed, weeklyWon, lastWeeksBest, hasWon = GetPersonalRatedInfo(bracketIndex);
 			button.Wins:SetText(seasonWon);
 			button.CurrentRating:SetText(rating);
+			button.bracketIndex = bracketIndex;
+
 			local honor, rewards;
 
 			local enabled;
@@ -1120,7 +1123,7 @@ local CONQUEST_TOOLTIP_PADDING = 30 --counts both sides
 function ConquestFrameButton_OnEnter(self)
 	local tooltip = ConquestTooltip;
 	
-	local rating, seasonBest, weeklyBest, seasonPlayed, seasonWon, weeklyPlayed, weeklyWon, lastWeeksBest = GetPersonalRatedInfo(self.id);
+	local rating, seasonBest, weeklyBest, seasonPlayed, seasonWon, weeklyPlayed, weeklyWon, lastWeeksBest = GetPersonalRatedInfo(self.bracketIndex);
 	
 	tooltip.Title:SetText(self.toolTipTitle);
 	

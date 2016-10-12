@@ -858,6 +858,12 @@
 						<Anchor point="TOP" x="0" y="-15"/>
 					</Anchors>
 				</FontString>
+				<FontString parentKey="QueueWarningText" inherits="GameFontHighlight" justifyH="CENTER" text="ACCEPTING_INVITE_WILL_REMOVE_QUEUE" hidden="true">
+					<Size x="240" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-138"/>
+					</Anchors>
+				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -928,6 +934,8 @@
 			<OnUpdate function="LFGInvitePopup_OnUpdate"/>
 			<OnHide>
 				PlaySound("igMainMenuClose");
+				self:SetHeight(LFG_INVITE_POPUP_DEFAULT_HEIGHT);
+				self.QueueWarningText:Hide();
 			</OnHide>
 		</Scripts>
 	</Frame>

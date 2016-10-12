@@ -2,7 +2,7 @@ QUICK_JOIN_ALREADY_IN_PARTY = "You are already in a group. You must leave your g
 ----------------------------
 ---------Constants----------
 ----------------------------
-QUICK_JOIN_NAME_SEPARATION = 2;
+QUICK_JOIN_NAME_SEPARATION = -1;
 
 ----------------------------
 -------QuickJoinFrame-------
@@ -36,6 +36,8 @@ function QuickJoinMixin:OnShow()
 	self.entries:UpdateAll();
 	self:SelectGroup(nil);
 	self:UpdateScrollFrame();
+
+	FriendsFrame_CloseQuickJoinHelpTip();
 end
 
 function QuickJoinMixin:OnHide()
@@ -84,7 +86,6 @@ function QuickJoinMixin:UpdateScrollFrame()
 		local entryIndex = i + offset;
 		if ( entryIndex <= #entries ) then
 			buttons[i]:SetEntry(entries[entryIndex]);
-			buttons[i].Background:SetAlpha(entryIndex % 2 == 0 and 0.1 or 0.05);
 			local selected = buttons[i]:GetEntry():GetGUID() == self.selectedGUID;
 			buttons[i].Selected:SetShown(selected);
 			buttons[i].Highlight:SetAlpha(selected and 0 or 0.5);
@@ -130,6 +131,9 @@ function QuickJoinMixin:JoinQueue()
 end
 
 function QuickJoinMixin:UpdateJoinButtonState()
+	-- Request To Join as our default button text if nothing is selected.
+	self.JoinQueueButton:SetText(JOIN_QUEUE);
+	
 	if ( IsInGroup(LE_PARTY_CATEGORY_HOME) ) then
 		self.JoinQueueButton:Disable();
 		self.JoinQueueButton.tooltip = QUICK_JOIN_ALREADY_IN_PARTY;
@@ -139,6 +143,11 @@ function QuickJoinMixin:UpdateJoinButtonState()
 	else
 		self.JoinQueueButton:Enable();
 		self.JoinQueueButton.tooltip = nil;
+		
+		local queues = C_SocialQueue.GetGroupQueues(self:GetSelectedGroup());
+		if ( queues and queues[1] and queues[1].type == "lfglist" ) then
+			self.JoinQueueButton:SetText(SIGN_UP);
+		end
 	end
 end
 
@@ -247,7 +256,7 @@ function QuickJoinEntryMixin:UpdateAll()
 	self.displayedQueues = {};
 	self:Update();
 
-	--Sort?
+	SocialQueueUtil_SortGroupMembers(self.displayedMembers);
 end
 
 local function guidIDGetter(guid)
@@ -264,7 +273,17 @@ function QuickJoinEntryMixin:Update()
 
 	self.zombieMemberIndices = self:BackfillAndUpdateFields(newMembers, self.displayedMembers, guidIDGetter);
 	self.zombieQueueIndices = self:BackfillAndUpdateFields(newQueues, self.displayedQueues, queueIDGetter);
-	self.canJoin = C_SocialQueue.GetGroupInfo(self.guid);
+	local canJoin, numQueues = C_SocialQueue.GetGroupInfo(self.guid);
+	self.canJoin = canJoin and numQueues and numQueues > 0;
+
+	--Cache off names of groups in case we lose the information to get them later
+	for i=1, #self.displayedQueues do
+		local queue = self.displayedQueues[i];
+		local queueName = SocialQueueUtil_GetQueueName(queue);
+		if ( queueName ) then
+			queue.cachedQueueName = queueName;
+		end
+	end
 end
 
 function QuickJoinEntryMixin:CanJoin()
@@ -321,25 +340,42 @@ function QuickJoinEntryMixin:AttemptJoin()
 end
 
 function QuickJoinEntryMixin:ApplyToTooltip(tooltip)
-	SocialQueueUtil_SetTooltip(tooltip, SOCIAL_QUEUE_TOOLTIP_HEADER, self.displayedQueues);
+	local members = self.displayedMembers;
+	if ( not members ) then
+		GMError("Applying quick join entry to tooltip with no members.");
+		return;
+	end
+	
+	local playerName, color = SocialQueueUtil_GetNameAndColor(members[1]);
+	if ( #members > 1 ) then
+		playerName = string.format(QUICK_JOIN_TOAST_EXTRA_PLAYERS, playerName, #members - 1);
+	end
+	playerName = color..playerName..FONT_COLOR_CODE_CLOSE;
+	
+	SocialQueueUtil_SetTooltip(tooltip, playerName, self.displayedQueues);
 end
 
+local MAX_NUM_DISPLAYED_QUEUES = 6;
 function QuickJoinEntryMixin:ApplyToFrame(frame)
 	--Names
 	for i=1, #self.displayedMembers do
 		local name, color = SocialQueueUtil_GetNameAndColor(self.displayedMembers[i]);
-		if ( self.zombieMemberIndices[i] or not self:CanJoin() ) then
-			name = DISABLED_FONT_COLOR_CODE..name..FONT_COLOR_CODE_CLOSE;
-		else
-			--Use the color code for our relationship
-			name = color..name..FONT_COLOR_CODE_CLOSE;
-		end
-
 		local nameObj = frame.Members[i];
 		if ( not nameObj ) then
 			nameObj = frame:CreateFontString(nil, "ARTWORK", "QuickJoinButtonMemberTemplate");
 			nameObj:SetPoint("TOPLEFT", frame.Members[i-1], "BOTTOMLEFT", 0, -QUICK_JOIN_NAME_SEPARATION);
 			frame.Members[i] = nameObj;
+		end
+		
+		if ( i < #self.displayedMembers ) then
+			name = name..",";
+		end
+		
+		if ( self.zombieMemberIndices[i] or not self:CanJoin() ) then
+			name = DISABLED_FONT_COLOR_CODE..name..FONT_COLOR_CODE_CLOSE;
+		else
+			--Use the color code for our relationship
+			name = color..name..FONT_COLOR_CODE_CLOSE;
 		end
 
 		nameObj:SetText(name);
@@ -351,6 +387,7 @@ function QuickJoinEntryMixin:ApplyToFrame(frame)
 	end
 
 	--Queues
+	local groupIsJoinable = self:CanJoin();
 	for i=1, #self.displayedQueues do
 		local queue = self.displayedQueues[i];
 
@@ -360,13 +397,46 @@ function QuickJoinEntryMixin:ApplyToFrame(frame)
 			queueObj:SetPoint("TOPLEFT", frame.Queues[i-1], "BOTTOMLEFT", 0, -QUICK_JOIN_NAME_SEPARATION);
 			frame.Queues[i] = queueObj;
 		end
+		
+		if ( i == MAX_NUM_DISPLAYED_QUEUES and i ~= #self.displayedQueues ) then
+			local color = "|cffcccccc";
+			if ( not groupIsJoinable ) then
+				color = DISABLED_FONT_COLOR_CODE;
+			end
+			local truncatedLine = string.format(color.."+%d"..FONT_COLOR_CODE_CLOSE, 1 + #self.displayedQueues - MAX_NUM_DISPLAYED_QUEUES);
+			queueObj:SetText(truncatedLine);
+			queueObj:Show();
+			truncationLine = queueObj;
+			break;
+		end
 
-		local queueName = SocialQueueUtil_GetQueueName(queue);
-		if ( self.zombieQueueIndices[i] or not self:CanJoin() ) then
-			queueName = DISABLED_FONT_COLOR_CODE..queueName..FONT_COLOR_CODE_CLOSE;
+		local queueName = queue.cachedQueueName;
+
+		if ( not queueName ) then
+			GMError("No queue name found");
+		else
+			if ( self.displayedQueues[i].type == "lfglist" ) then
+				queueName = string.format(LFG_LIST_IN_QUOTES, queueName);
+			end
+			
+			if ( i < #self.displayedQueues ) then
+				queueName = queueName..PLAYER_LIST_DELIMITER;
+			end
+			
+			if ( self.zombieQueueIndices[i] or not self:CanJoin() ) then
+				queueName = DISABLED_FONT_COLOR_CODE..queueName..FONT_COLOR_CODE_CLOSE;
+			end
 		end
 		queueObj:SetText(queueName);
 		queueObj:Show();
+	end
+	
+	if ( groupIsJoinable ) then
+		frame.Icon:SetDesaturation(0);
+		frame.Icon:SetAlpha(1);
+	else
+		frame.Icon:SetDesaturation(1);
+		frame.Icon:SetAlpha(0.5);
 	end
 
 	for i=#self.displayedQueues + 1, #frame.Queues do
@@ -375,12 +445,24 @@ function QuickJoinEntryMixin:ApplyToFrame(frame)
 
 	--Height
 	frame:SetHeight(self:GetFrameHeight());
+	
+	if ( self.displayedQueues[1].type == "lfglist" ) then
+		frame.Icon:SetAtlas("socialqueuing-icon-group");
+		frame.Icon:SetAlpha(1);
+		frame.Icon:SetSize(18, 16);
+		frame.Icon:SetPoint("TOPLEFT", frame, "TOPLEFT", 86, -5);
+	else
+		frame.Icon:SetAtlas("socialqueuing-icon-eye");
+		frame.Icon:SetAlpha(0.8);
+		frame.Icon:SetSize(16, 17);
+		frame.Icon:SetPoint("TOPLEFT", frame, "TOPLEFT", 87, -4);
+	end
 end
 
 function QuickJoinEntryMixin:GetFrameHeight()
-	return		4	--Buffer height
+	return		12	--Buffer height
 			+	math.max(	(16 + QUICK_JOIN_NAME_SEPARATION) * #self.displayedMembers, --Member height
-							(16 + QUICK_JOIN_NAME_SEPARATION) * #self.displayedQueues); --Queues height
+							(16 + QUICK_JOIN_NAME_SEPARATION) * min(MAX_NUM_DISPLAYED_QUEUES, #self.displayedQueues)); --Queues height
 end
 
 ----------------------------
