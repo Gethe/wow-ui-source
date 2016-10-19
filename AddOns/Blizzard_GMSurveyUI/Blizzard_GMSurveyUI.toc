@@ -1,4 +1,4 @@
-## Interface: 70000
+## Interface: 70100
 ## Title: Blizzard GM Survey UI
 ## Secure: 1
 ## LoadOnDemand: 1

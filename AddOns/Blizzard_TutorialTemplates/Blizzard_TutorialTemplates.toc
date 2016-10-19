@@ -1,6 +1,6 @@
 ## Author: Blizzard Entertainment
 ## Title: Blizzard Tutorial Templates
-## Interface: 70000
+## Interface: 70100
 ## Secure: 1
 ## LoadOnDemand: 1
 

@@ -3917,7 +3917,7 @@ function UpdateInviteConfirmationDialogs()
 		return;
 	end
 
-	local confirmationType, name, guid = GetInviteConfirmationInfo(firstInvite);
+	local confirmationType, name, guid, rolesInvalid, willConvertToRaid = GetInviteConfirmationInfo(firstInvite);
 	local text = "";
 	if ( confirmationType == LE_INVITE_CONFIRMATION_REQUEST ) then
 		local suggesterGuid, suggesterName, relationship = GetInviteReferralInfo(firstInvite);
@@ -3950,11 +3950,19 @@ function UpdateInviteConfirmationDialogs()
 		if ( text ~= "" ) then
 			text = text.."\n\n"
 		end
+
+		if ( rolesInvalid ) then
+			text = text..string.format(INSTANCE_UNAVAILABLE_OTHER_NO_VALID_ROLES, name).."\n";
+		end
 		text = text..string.format(INVITE_CONFIRMATION_QUEUE_WARNING, name);
 		for i=1, #invalidQueues do
 			local queueName = SocialQueueUtil_GetQueueName(invalidQueues[i]);
 			text = text.."\n"..NORMAL_FONT_COLOR_CODE..queueName..FONT_COLOR_CODE_CLOSE;
 		end
+	end
+
+	if ( willConvertToRaid ) then
+		text = text.."\n\n"..RED_FONT_COLOR_CODE..LFG_LIST_CONVERT_TO_RAID_WARNING..FONT_COLOR_CODE_CLOSE;
 	end
 
 	StaticPopup_Show("GROUP_INVITE_CONFIRMATION", text, nil, firstInvite);

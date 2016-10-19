@@ -1575,15 +1575,11 @@ function FCF_Tab_OnClick(self, button)
 	SELECTED_CHAT_FRAME = chatFrame;
 	if ( chatFrame.isDocked and FCFDock_GetSelectedWindow(GENERAL_CHAT_DOCK) ~= chatFrame ) then
 		FCF_SelectDockFrame(chatFrame);
-		FCF_FadeInChatFrame(chatFrame);
-		return;
-	else
-		if ( GetCVar("chatStyle") ~= "classic" ) then
-			ChatEdit_SetLastActiveWindow(chatFrame.editBox);
-		end
-		FCF_FadeInChatFrame(chatFrame);
 	end
-
+	if ( GetCVar("chatStyle") ~= "classic" ) then
+		ChatEdit_SetLastActiveWindow(chatFrame.editBox);
+	end
+	FCF_FadeInChatFrame(chatFrame);
 end
 
 function FCF_SetTabPosition(chatFrame, x)

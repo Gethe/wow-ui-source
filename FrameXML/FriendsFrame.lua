@@ -251,6 +251,8 @@ function FriendsFrame_OnLoad(self)
 	self:RegisterEvent("BATTLETAG_INVITE_SHOW");
 	self:RegisterEvent("PARTY_REFER_A_FRIEND_UPDATED");
 	self:RegisterEvent("SOCIAL_QUEUE_UPDATE");
+	self:RegisterEvent("GROUP_JOINED");
+	self:RegisterEvent("GROUP_LEFT");
 	self.playersInBotRank = 0;
 	self.playerStatusFrame = 1;
 	self.selectedFriend = 1;
@@ -284,7 +286,7 @@ function FriendsFrame_OnLoad(self)
 		button:SetPoint("TOP", _G["WhoFrameButton"..(i-1)], "BOTTOM");
 	end
 
-	
+	FriendsFrame_UpdateQuickJoinTab(0);
 end
 
 function FriendsFrame_OnShow()
@@ -293,6 +295,7 @@ function FriendsFrame_OnShow()
 	FriendsFrame_Update();
 	UpdateMicroButtons();
 	FriendsFrame_CheckQuickJoinHelpTip();
+	FriendsFrame_UpdateQuickJoinTab(#C_SocialQueue.GetAllGroups());
 	PlaySound("igCharacterInfoTab");
 end
 
@@ -350,6 +353,12 @@ function FriendsFrame_Update()
 			FriendsFrame_ShowSubFrame("RaidFrame");
 		end
 	end
+end
+
+function FriendsFrame_UpdateQuickJoinTab(numGroups)
+	FriendsTabHeaderTab2:SetText(QUICK_JOIN.." "..string.format(NUMBER_IN_PARENTHESES, numGroups));
+	PanelTemplates_TabResize(FriendsTabHeaderTab2, 0);
+	FriendsTabHeader_ResizeTabs();
 end
 
 function FriendsFrame_OnHide()
@@ -938,9 +947,10 @@ function FriendsFrame_OnEvent(self, event, ...)
 		end
 	elseif ( event == "BATTLETAG_INVITE_SHOW" ) then
 		BattleTagInviteFrame_Show(...);
-	elseif ( event == "SOCIAL_QUEUE_UPDATE" ) then
+	elseif ( event == "SOCIAL_QUEUE_UPDATE" or event == "GROUP_LEFT" or event == "GROUP_JOINED" ) then
 		if ( self:IsVisible() ) then
 			FriendsFrame_Update(); --TODO - Only update the buttons that need updating
+			FriendsFrame_UpdateQuickJoinTab(#C_SocialQueue.GetAllGroups());
 		end
 	end
 end
@@ -1404,7 +1414,7 @@ function FriendsFrame_UpdateFriendButton(button)
 			end
 		end
 		button.summonButton:ClearAllPoints();
-		button.summonButton:SetPoint("CENTER", button.gameIcon, "CENTER", 1, -2);
+		button.summonButton:SetPoint("CENTER", button.gameIcon, "CENTER", 1, 0);
 		FriendsFrame_SummonButton_Update(button.summonButton);
 	elseif ( button.buttonType == FRIENDS_BUTTON_TYPE_DIVIDER ) then
 		local scrollFrame = FriendsFrameFriendsScrollFrame;
@@ -1415,7 +1425,7 @@ function FriendsFrame_UpdateFriendButton(button)
 		nameText = nil;
 	elseif ( button.buttonType == FRIENDS_BUTTON_TYPE_INVITE_HEADER ) then
 		local header = FriendsFrameFriendsScrollFrame.PendingInvitesHeaderButton;
-		header:SetPoint("TOP", button, 0, 0);
+		header:SetPoint("TOPLEFT", button, 1, 0);
 		header:Show();
 		header:SetFormattedText(FRIEND_REQUESTS, BNGetNumFriendInvites());
 		local collapsed = GetCVarBool("friendInvitesCollapsed");

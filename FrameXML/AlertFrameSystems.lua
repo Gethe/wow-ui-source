@@ -819,7 +819,7 @@ function GarrisonShipFollowerAlertFrame_SetUp(frame, followerID, name, class, te
 		frame.Title:SetText(GARRISON_SHIPYARD_FOLLOWER_ADDED_TOAST);
 	end
 	frame.Class:SetText(class);
-	GarrisonCommonFollowerAlertFrame_SetUp(GarrisonShipFollowerAlertFrame, followerID, name, 0, isUpgraded);
+	GarrisonCommonFollowerAlertFrame_SetUp(frame, followerID, name, 0, isUpgraded);
 end
 
 function GarrisonFollowerAlertFrame_OnEnter(self)

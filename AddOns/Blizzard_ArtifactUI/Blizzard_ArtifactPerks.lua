@@ -21,7 +21,7 @@ end
 
 function ArtifactPerksMixin:RefreshModel()
 	local itemID, altItemID, _, _, _, _, _, artifactAppearanceID, appearanceModID, itemAppearanceID, altItemAppearanceID, altOnTop = C_ArtifactUI.GetArtifactInfo();
-	local _, _, _, _, _, _, uiCameraID, altHandUICameraID, _, _, _, modelAlpha, modelDesaturation, suppressGlobalAnim = C_ArtifactUI.GetAppearanceInfoByID(artifactAppearanceID);
+	local _, _, _, _, _, _, uiCameraID, altHandUICameraID, _, _, _, modelAlpha, modelDesaturation = C_ArtifactUI.GetAppearanceInfoByID(artifactAppearanceID);
 
 	self.Model.uiCameraID = uiCameraID;
 	self.Model.desaturation = modelDesaturation;
@@ -36,9 +36,6 @@ function ArtifactPerksMixin:RefreshModel()
 	self.Model:SetModelDrawLayer(altOnTop and "BORDER" or "ARTWORK");
 	self.AltModel:SetModelDrawLayer(altOnTop and "ARTWORK" or "BORDER");
 
-	self.Model:SetSuppressGlobalAnimationTrack(suppressGlobalAnim);
-	self.AltModel:SetSuppressGlobalAnimationTrack(suppressGlobalAnim);
-	
 	if altItemID and altHandUICameraID then
 		self.AltModel.uiCameraID = altHandUICameraID;
 		self.AltModel.desaturation = modelDesaturation;
@@ -661,6 +658,11 @@ function ArtifactTitleTemplateMixin:OnRelicSlotClicked(relicSlot)
 				local _, itemID = GetCursorInfo();
 				if itemID and IsArtifactRelicItem(itemID) then
 					UIErrorsFrame:AddMessage(RELIC_SLOT_INVALID, 1.0, 0.1, 0.1, 1.0);
+				else
+					if IsModifiedClick() then
+						local _, _, _, itemLink = C_ArtifactUI.GetRelicInfo(i);
+						HandleModifiedItemClick(itemLink);
+					end
 				end
 			end
 			break;

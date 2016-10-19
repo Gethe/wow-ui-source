@@ -593,12 +593,12 @@ function CharacterCreateEnumerateRaces()
 	end
 end
 
-local function UpdateClassButtonEnabledState(button, classID, classData, classIndex)
+local function UpdateClassButtonEnabledState(button, classID, classData)
 	local kioskModeData = IsKioskGlueEnabled() and KioskModeSplash_GetModeData();
 	local disableTexture = button.DisableTexture;
 
 	if ( classData.enabled == true ) then
-		if (IsKioskGlueEnabled() and (not IsClassAllowedInKioskMode(classID) or not kioskModeData.classes[classIndex])) then
+		if (IsKioskGlueEnabled() and (not IsClassAllowedInKioskMode(classID) or not kioskModeData.classes[classData.fileName])) then
 			button:Disable();
 			SetButtonDesaturated(button, true);
 			button.tooltip.footer = CLASS_DISABLED_KIOSK_MODE;
@@ -619,7 +619,7 @@ local function UpdateClassButtonEnabledState(button, classID, classData, classIn
 	else
 		button:Disable();
 		SetButtonDesaturated(button, true);
-		local reason = "";
+		local reason;
 		if ( classData.disableReason ) then
 			if ( classData.disableReason == LE_DEMON_HUNTER_CREATION_DISABLED_REASON_HAVE_DH ) then
 				reason = DEMON_HUNTER_RESTRICTED_HAS_DEMON_HUNTER;
@@ -628,26 +628,29 @@ local function UpdateClassButtonEnabledState(button, classID, classData, classIn
 			elseif ( classData.disableReason == LE_DEMON_HUNTER_INVALID_CLASS_FOR_BOOST) then
 				reason = CANNOT_CREATE_CURRENT_CLASS_WITH_BOOST;
 			end
-		else
-			reason = _G[classIndex.."_DISABLED"];
+		elseif ( classData.fileName ) then
+			reason = _G[classData.fileName.."_DISABLED"];
 		end
-		button.tooltip.footer = "|cffff0000".. reason .."|r";
+
+		if ( reason ) then
+			button.tooltip.footer = "|cffff0000".. reason .."|r";
+		end
+
 		disableTexture:Show();
 	end
 end
 
 local function SetupClassButton(button, classID, classData)
-	local classIndex = classData.fileName;
-	local coords = CLASS_ICON_TCOORDS[classIndex];
+	local left, right, top, bottom = unpack(CLASS_ICON_TCOORDS[classData.fileName]);
 
-	button.NormalTexture:SetTexCoord(coords[1], coords[2], coords[3], coords[4]);
-	button.PushedTexture:SetTexCoord(coords[1], coords[2], coords[3], coords[4]);
+	button.NormalTexture:SetTexCoord(left, right, top, bottom);
+	button.PushedTexture:SetTexCoord(left, right, top, bottom);
 
 	button.nameFrame.text:SetText(classData.className);
-	button.tooltip = CHARCREATE_CLASS_TOOLTIP[classIndex];
+	button.tooltip = CHARCREATE_CLASS_TOOLTIP[classData.fileName];
 	button.classFilename = classData.fileName;
 
-	UpdateClassButtonEnabledState(button, classID, classData, classIndex);
+	UpdateClassButtonEnabledState(button, classID, classData);
 end
 
 function CharacterCreateEnumerateClasses()

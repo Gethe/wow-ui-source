@@ -33,6 +33,9 @@ LFG_RETURN_VALUES = {
 	isHoliday = 15,
 	bonusRepAmount = 16,
 	minPlayers = 17,
+	isTimewalker = 18,
+	mapName = 19,
+	minGear = 20,
 }
 
 LFG_INSTANCE_INVALID_RAID_LOCKED = 6;
@@ -85,6 +88,7 @@ function LFGEventFrame_OnLoad(self)
 	
 	self:RegisterEvent("LFG_PROPOSAL_UPDATE");
 	self:RegisterEvent("LFG_PROPOSAL_SHOW");
+	self:RegisterEvent("LFG_PROPOSAL_DONE");
 	self:RegisterEvent("LFG_PROPOSAL_FAILED");
 	self:RegisterEvent("LFG_PROPOSAL_SUCCEEDED");
 	
@@ -126,6 +130,7 @@ function LFGEventFrame_OnEvent(self, event, ...)
 		LFG_UpdateQueuedList();
 		LFG_UpdateAllRoleCheckboxes();
 		LFG_DisplayGroupLeaderWarning(self);
+		LFGDungeonReadyPopup_Update();
 	elseif ( event == "LFG_LOCK_INFO_RECEIVED" ) then
 		LFGLockList = GetLFDChoiceLockedState();
 		LFG_UpdateFramesIfShown();
@@ -205,6 +210,9 @@ function LFGEventFrame_OnEvent(self, event, ...)
 		StaticPopupSpecial_Show(LFGDungeonReadyPopup);
 		PlaySound("ReadyCheck");
 		FlashClientIcon();
+	elseif ( event == "LFG_PROPOSAL_DONE" ) then
+		LFGDebug("Proposal Hidden: Proposal done.");
+		StaticPopupSpecial_Hide(LFGDungeonReadyPopup);
 	elseif ( event == "LFG_PROPOSAL_FAILED" ) then
 		LFGDungeonReadyPopup_OnFail();
 	elseif ( event == "LFG_PROPOSAL_SUCCEEDED" ) then
@@ -678,9 +686,13 @@ local RAID_BACKDROP_TABLE = {
 	insets = { left = 11, right = 12, top = 12, bottom = 11 }};
 
 function LFGDungeonReadyPopup_Update()	
-	local proposalExists, id, typeID, subtypeID, name, texture, role, hasResponded, totalEncounters, completedEncounters, numMembers, isLeader = GetLFGProposal();
+	local proposalExists, id, typeID, subtypeID, name, texture, role, hasResponded, totalEncounters, completedEncounters, numMembers, isLeader, _, _, isSilent = GetLFGProposal();
 	if ( not proposalExists ) then
 		LFGDebug("Proposal Hidden: No proposal exists.");
+		StaticPopupSpecial_Hide(LFGDungeonReadyPopup);
+		return;
+	elseif ( isSilent ) then
+		LFGDebug("Proposal Hidden: Proposal is silent.");
 		StaticPopupSpecial_Hide(LFGDungeonReadyPopup);
 		return;
 	end

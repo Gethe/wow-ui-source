@@ -596,7 +596,7 @@ function PaperDollFrame_SetStat(statFrame, unit, statIndex)
 
 		-- If there are any negative buffs then show the main number in red even if there are
 		-- positive buffs. Otherwise show in green.
-		if ( negBuff < 0 ) then
+		if ( negBuff < 0 and not GetPVPGearStatRules() ) then
 			effectiveStatDisplay = RED_FONT_COLOR_CODE..effectiveStatDisplay..FONT_COLOR_CODE_CLOSE;
 		end
 	end
@@ -1067,7 +1067,7 @@ function PaperDollFrame_SetHaste(statFrame, unit)
 	local rating = CR_HASTE_MELEE;
 
 	local hasteFormatString;
-	if (haste < 0) then
+	if (haste < 0 and not GetPVPGearStatRules()) then
 		hasteFormatString = RED_FONT_COLOR_CODE.."%s"..FONT_COLOR_CODE_CLOSE;
 	else
 		hasteFormatString = "%s";
@@ -1671,7 +1671,7 @@ function PaperDollFormatStat(name, base, posBuff, negBuff)
 
 		-- if there is a negative buff then show the main number in red, even if there are
 		-- positive buffs. Otherwise show the number in green
-		if ( negBuff < 0 ) then
+		if ( negBuff < 0 and not GetPVPGearStatRules() ) then
 			effectiveText = RED_FONT_COLOR_CODE..effectiveText..FONT_COLOR_CODE_CLOSE;
 		end
 	end

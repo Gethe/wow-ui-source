@@ -67,7 +67,7 @@ TRAVEL PASS
 		</Layers>
 		<Frames>
 			<Button parentKey="DeclineButton" inherits="UIMenuButtonStretchTemplate" motionScriptsWhileDisabled="true">
-				<Size x="26" y="24"/>
+				<Size x="24" y="22"/>
 				<Anchors>
 					<Anchor point="RIGHT" x="-7" y="1"/>
 				</Anchors>
@@ -91,15 +91,16 @@ TRAVEL PASS
 				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 			</Button>
 			<Button parentKey="AcceptButton" inherits="UIMenuButtonStretchTemplate" text="ACCEPT">
-				<Size x="0" y="24"/>
+				<Size x="0" y="22"/>
 				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.DeclineButton" relativePoint="LEFT" x="-3" y="0"/>
+					<Anchor point="RIGHT" relativeKey="$parent.DeclineButton" relativePoint="LEFT" x="-2" y="0"/>
 				</Anchors>
 				<NormalFont style="GameFontHighlightSmall"/>
 				<HighlightFont style="GameFontHighlightSmall"/>
 				<Scripts>
 					<OnLoad>
-						self:SetWidth(self.Text:GetStringWidth() + 28);
+						self:SetWidth(self.Text:GetStringWidth() + 40);
+						self.Text:SetPoint("CENTER", 0, 0);
 					</OnLoad>
 					<OnClick>
 						FriendsList_ClosePendingInviteDialogs();
@@ -117,8 +118,8 @@ TRAVEL PASS
 				<FontString inherits="GameFontNormal" parentKey="text" />
 				<Texture name="$parentBackground" parentKey="background">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="0" y="0"/>
-						<Anchor point="BOTTOMRIGHT" x="0" y="2"/>
+						<Anchor point="TOPLEFT" x="0" y="-1"/>
+						<Anchor point="BOTTOMRIGHT" x="0" y="1"/>
 					</Anchors>
 					<Color r="0" g="0.694" b="0.941" a="0.050"/>
 				</Texture>
@@ -127,26 +128,26 @@ TRAVEL PASS
 				<Texture name="$parentStatus" file="Interface\FriendsFrame\StatusIcon-Online" parentKey="status">
 					<Size x="16" y="16"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="4" y="-2"/>
+						<Anchor point="TOPLEFT" x="4" y="-3"/>
 					</Anchors>
 				</Texture>
 				<Texture name="$parentGameIcon" file="Interface\FriendsFrame\Battlenet-WoWicon" parentKey="gameIcon">
 					<Size x="28" y="28"/>
 					<Anchors>
-						<Anchor point="TOPRIGHT" x="-21" y="-2"/>
+						<Anchor point="TOPRIGHT" x="-21" y="-3"/>
 					</Anchors>
 				</Texture>
 				<FontString name="$parentName" inherits="FriendsFont_Normal" justifyH="LEFT" parentKey="name">
 					<Size x="226" y="12"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="20" y="-3"/>
+						<Anchor point="TOPLEFT" x="20" y="-4"/>
 					</Anchors>
 					<Color r="0.510" g="0.773" b="1" />
 				</FontString>						
 				<FontString name="$parentInfo" inherits="FriendsFont_Small" justifyH="LEFT" parentKey="info">
 					<Size x="260" y="10"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentName" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
+						<Anchor point="TOPLEFT" relativeTo="$parentName" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
 					</Anchors>
 					<Color r="0.486" g="0.518" b="0.541" />
 				</FontString>
@@ -191,6 +192,10 @@ TRAVEL PASS
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="1" y="-1"/>
 				</Anchors>
+				<HighlightTexture name="$parentHighlightTexture" file="Interface\FriendsFrame\TravelPass-Invite" alphaMode="ADD">
+					<Size x="24" y="32"/>
+					<TexCoords left="0.42187500" right="0.79687500" top="0.00781250" bottom="0.25781250"/>
+				</HighlightTexture>
 				<Scripts>
 					<OnLoad>
 						local normalTexture = _G[self:GetName().."NormalTexture"];
@@ -246,7 +251,12 @@ TRAVEL PASS
 				FriendsFrameFriendButton_OnClick(self, button);
 			</OnClick>
 		</Scripts>
-		<HighlightTexture file="Interface\QuestFrame\UI-QuestLogTitleHighlight" alphaMode="ADD" parentKey="highlight" />
+		<HighlightTexture file="Interface\QuestFrame\UI-QuestLogTitleHighlight" alphaMode="ADD" parentKey="highlight">
+			<Anchors>
+				<Anchor point="TOPLEFT" x="0" y="-1"/>
+				<Anchor point="BOTTOMRIGHT" x="0" y="1"/>
+			</Anchors>
+		</HighlightTexture>
 	</Button>
 	<!--
 	<Button name="FriendsFrameButtonTemplate" virtual="true">
@@ -1359,9 +1369,9 @@ TRAVEL PASS
 						</Layers>
 						<Frames>
 							<Button parentKey="PendingInvitesHeaderButton" inherits="UIMenuButtonStretchTemplate" hidden="true">
-								<Size x="297" y="30"/>
-								<NormalFont style="GameFontHighlight"/>
-								<HighlightFont style="GameFontHighlight"/>
+								<Size x="295" y="30"/>
+								<NormalFont style="GameFontHighlightSmall2"/>
+								<HighlightFont style="GameFontHighlightSmall2"/>
 								<Layers>
 									<Layer level="BACKGROUND" textureSubLevel="-1">
 										<Texture parentKey="BG" file="Interface\FrameGeneral\UI-Background-Rock" horizTile="true" vertTile="true">
@@ -1379,7 +1389,7 @@ TRAVEL PASS
 										</Texture>
 										<Texture parentKey="DownArrow" atlas="friendslist-categorybutton-arrow-down" useAtlasSize="true" hidden="true">
 											<Anchors>
-												<Anchor point="LEFT" x="8" y="-3"/>
+												<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="8" y="-12"/>
 											</Anchors>
 										</Texture>
 									</Layer>

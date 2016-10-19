@@ -1,4 +1,3 @@
-QUICK_JOIN_ALREADY_IN_PARTY = "You are already in a group. You must leave your group to join this queue."
 ----------------------------
 ---------Constants----------
 ----------------------------
@@ -80,7 +79,7 @@ function QuickJoinMixin:UpdateScrollFrame()
 	local entries = self.entries:GetEntries();
 	for i=1, #entries do
 		totalHeight = totalHeight + entries[i]:GetFrameHeight();
-	end
+		end
 
 	for i=1, #buttons do
 		local entryIndex = i + offset;
@@ -117,6 +116,41 @@ function QuickJoinMixin:SelectGroup(guid)
 	self.selectedGUID = guid;
 	self:UpdateScrollFrame();
 	self:UpdateJoinButtonState();
+end
+
+function QuickJoinMixin:ScrollToGroup(guid)
+	local totalHeight = 0;
+	local entries = self.entries:GetEntries();
+	local scrollFrameHeight = self.ScrollFrame:GetHeight();
+	for i=1, #entries do
+		local entry = entries[i];
+		local frameHeight = entry:GetFrameHeight();
+		if ( entry:GetGUID() == guid ) then
+			local offset = 0;
+			-- we don't need to do anything if the entry is fully displayed with the scroll all the way up
+			if ( totalHeight + frameHeight > scrollFrameHeight ) then
+				if ( frameHeight > scrollFrameHeight ) then
+					-- this entry is larger than the entire scrollframe, put it at the top
+					offset = totalHeight;
+				else
+					-- otherwise place it in the center
+					local diff = scrollFrameHeight - frameHeight;
+					offset = totalHeight - diff / 2;
+				end
+				-- because of valuestep our positioning might change
+				-- we'll do the adjustment ourselves to make sure the entry ends up above the center rather than below
+				local valueStep = self.ScrollFrame.scrollBar:GetValueStep();
+				offset = offset + valueStep - mod(offset, valueStep);
+				-- but if we ended up moving the entry so high up that its top is not visible, move it back down
+				if ( offset > totalHeight ) then
+					offset = offset - valueStep;
+				end
+			end
+			self.ScrollFrame.scrollBar:SetValue(offset);
+			break;
+		end
+		totalHeight = totalHeight + frameHeight;
+	end
 end
 
 function QuickJoinMixin:GetSelectedGroup()
@@ -185,6 +219,7 @@ end
 
 function QuickJoinButtonMixin:OnClick()
 	if ( self:GetEntry():CanJoin() ) then
+		PlaySound("igMainMenuOptionCheckBoxOn");
 		self:GetMainPanel():SelectGroup(self:GetEntry():GetGUID());
 	end
 end
@@ -211,11 +246,11 @@ function QuickJoinEntriesMixin:UpdateAll()
 	self.entries = {};
 	self.entriesByGUID = {};
 	for i=1, #groups do
-		local entry = CreateFromMixins(QuickJoinEntryMixin);
-		entry:Init(groups[i]);
+			local entry = CreateFromMixins(QuickJoinEntryMixin);
+			entry:Init(groups[i]);
 		self.entries[i] = entry;
-		self.entriesByGUID[groups[i]] = entry;
-	end
+			self.entriesByGUID[groups[i]] = entry;
+		end
 
 	--Sort?
 	--table.sort(self.entries, SOMETHING);
@@ -273,6 +308,14 @@ function QuickJoinEntryMixin:Update()
 
 	self.zombieMemberIndices = self:BackfillAndUpdateFields(newMembers, self.displayedMembers, guidIDGetter);
 	self.zombieQueueIndices = self:BackfillAndUpdateFields(newQueues, self.displayedQueues, queueIDGetter);
+	for i, queue in ipairs(self.displayedQueues) do
+		if ( self.zombieQueueIndices[i] ) then
+			queue.isZombie = true;
+		else
+			queue.isZombie = false;
+		end
+	end
+
 	local canJoin, numQueues = C_SocialQueue.GetGroupInfo(self.guid);
 	self.canJoin = canJoin and numQueues and numQueues > 0;
 
@@ -352,7 +395,7 @@ function QuickJoinEntryMixin:ApplyToTooltip(tooltip)
 	end
 	playerName = color..playerName..FONT_COLOR_CODE_CLOSE;
 	
-	SocialQueueUtil_SetTooltip(tooltip, playerName, self.displayedQueues);
+	SocialQueueUtil_SetTooltip(tooltip, playerName, self.displayedQueues, self:CanJoin());
 end
 
 local MAX_NUM_DISPLAYED_QUEUES = 6;
@@ -433,10 +476,10 @@ function QuickJoinEntryMixin:ApplyToFrame(frame)
 	
 	if ( groupIsJoinable ) then
 		frame.Icon:SetDesaturation(0);
-		frame.Icon:SetAlpha(1);
+		frame.Icon:SetAlpha(0.9);
 	else
 		frame.Icon:SetDesaturation(1);
-		frame.Icon:SetAlpha(0.5);
+		frame.Icon:SetAlpha(0.3);
 	end
 
 	for i=#self.displayedQueues + 1, #frame.Queues do
@@ -448,19 +491,17 @@ function QuickJoinEntryMixin:ApplyToFrame(frame)
 	
 	if ( self.displayedQueues[1].type == "lfglist" ) then
 		frame.Icon:SetAtlas("socialqueuing-icon-group");
-		frame.Icon:SetAlpha(1);
-		frame.Icon:SetSize(18, 16);
-		frame.Icon:SetPoint("TOPLEFT", frame, "TOPLEFT", 86, -5);
+		frame.Icon:SetSize(17, 16);
+		frame.Icon:SetPoint("TOPLEFT", frame, "TOPLEFT", 87, -6);
 	else
 		frame.Icon:SetAtlas("socialqueuing-icon-eye");
-		frame.Icon:SetAlpha(0.8);
 		frame.Icon:SetSize(16, 17);
-		frame.Icon:SetPoint("TOPLEFT", frame, "TOPLEFT", 87, -4);
+		frame.Icon:SetPoint("TOPLEFT", frame, "TOPLEFT", 87, -5);
 	end
 end
 
 function QuickJoinEntryMixin:GetFrameHeight()
-	return		12	--Buffer height
+	return		13	--Buffer height
 			+	math.max(	(16 + QUICK_JOIN_NAME_SEPARATION) * #self.displayedMembers, --Member height
 							(16 + QUICK_JOIN_NAME_SEPARATION) * min(MAX_NUM_DISPLAYED_QUEUES, #self.displayedQueues)); --Queues height
 end

@@ -2361,8 +2361,6 @@
 										ToggleDropDownMenu(1, nil, self:GetParent().difficultyDD, self, 5, 0);
 										PlaySound("igMainMenuOptionCheckBoxOn");
 									</OnClick>
-									<OnShow function="EncounterJournal_OnDungeonDifficultyShownStateChanged"/>
-									<OnHide function="EncounterJournal_OnDungeonDifficultyShownStateChanged"/>
 								</Scripts>
 							</Button>
 							<Frame name="$parentDifficultyDD" parentKey="difficultyDD" inherits="UIDropDownMenuTemplate" clampedToScreen="true" hidden="true">

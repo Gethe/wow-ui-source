@@ -480,12 +480,25 @@ local function EncounterJournal_SearchForOverview(instanceID)
 	return false;
 end
 
+local function UpdateDifficultyAnchoring(difficultyFrame)
+	local infoFrame = difficultyFrame:GetParent();
+	infoFrame.reset:ClearAllPoints();
+
+	if difficultyFrame:IsShown() then
+		infoFrame.reset:SetPoint("RIGHT", difficultyFrame, "LEFT", -10, 0);
+	else
+		infoFrame.reset:SetPoint("TOPRIGHT", infoFrame, "TOPRIGHT", -19, -13);
+	end
+end
+
 local function UpdateDifficultyVisibility()
 	local shouldDisplayDifficulty = select(9, EJ_GetInstanceInfo());
 
 	-- As long as the current tab isn't the model tab, which always suppresses the difficulty, then update the shown state.
 	local info = EncounterJournal.encounter.info;
 	info.difficulty:SetShown(shouldDisplayDifficulty and (info.tab ~= 4));
+
+	UpdateDifficultyAnchoring(info.difficulty);
 end
 
 function EncounterJournal_DisplayInstance(instanceID, noButton)
@@ -3002,15 +3015,4 @@ end
 function EncounterJournalTooltip_OnLoad(self)
 	self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
 	self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
-end
-
-function EncounterJournal_OnDungeonDifficultyShownStateChanged(self)
-	local infoFrame = self:GetParent();
-	infoFrame.reset:ClearAllPoints();
-
-	if self:IsShown() then
-		infoFrame.reset:SetPoint("RIGHT", self, "LEFT", -10, 0);
-	else
-		infoFrame.reset:SetPoint("TOPRIGHT", infoFrame, "TOPRIGHT", -19, -13);
-	end
 end

@@ -17,7 +17,7 @@ function QuickJoinToastMixin:OnLoad()
 		self.throttle:Init();
 	end
 
-	self:SetPoint("BOTTOM", DEFAULT_CHAT_FRAME.buttonFrame, "TOP", 0, 27);
+	self:SetPoint("BOTTOMLEFT", DEFAULT_CHAT_FRAME.buttonFrame, "TOPLEFT", -1, 27);
 	self.FriendCount:SetShadowOffset(1, 1);
 
 	self:UpdateDisplayedFriendCount();
@@ -42,6 +42,7 @@ function QuickJoinToastMixin:OnEvent(event, ...)
 		self.throttle:Init();
 
 		self:ProcessQueuedUpdates();
+		self:CheckShowToast();
 	elseif ( event == "GROUP_JOINED" ) then
 		local index, guid = ...;
 		self:ProcessOrQueueUpdate(guid);
@@ -161,11 +162,11 @@ function QuickJoinToastMixin:CheckShowToast()
 end
 
 function QuickJoinToastMixin:CheckDisplayToast(hideIfNeeded)
-	local group = self:GetHighestPriorityGroup();
+	local group, priority = self:GetHighestPriorityGroup();
 	if ( group ) then
 		local shouldDisplay = self:ShouldDisplayGroup(group);
 		if ( shouldDisplay ) then
-			self:ShowToast(group);
+			self:ShowToast(group, priority);
 			self:SetTimerFor(nil);
 			return;
 		end
@@ -198,11 +199,11 @@ function QuickJoinToastMixin:GetHighestPriorityGroup()
 		end
 	end
 
-	return highestGroup;
+	return highestGroup, highestPriority;
 end
 
 function QuickJoinToastMixin:ShouldSuppressAllToasts()
-	return IsInGroup();
+	return IsInGroup() or QUICK_JOIN_CONFIG.TOASTS_DISABLED;
 end
 
 function QuickJoinToastMixin:GetNextToastTime()
@@ -235,7 +236,7 @@ function QuickJoinToastMixin:ShouldDisplayGroup(group)
 	return priority >= self.throttle:GetThresholdAtTime(GetTime()) and priority >= QUICK_JOIN_CONFIG.THROTTLE_MIN_THRESHOLD;
 end
 
-function QuickJoinToastMixin:ShowToast(group)
+function QuickJoinToastMixin:ShowToast(group, priority)
 	self.throttle:OnToastShown();
 
 	self.ToastActiveAnim:Stop();
@@ -263,6 +264,7 @@ function QuickJoinToastMixin:ShowToast(group)
 	end
 	self:UpdateQueueIcon();
 	PlaySoundKitID(79739); --UI_71_Social_Queueing_Toast
+	C_SocialQueue.SignalToastDisplayed(group.guid, priority);
 end
 
 function QuickJoinToastMixin:HideToast()
@@ -274,6 +276,8 @@ end
 function QuickJoinToastMixin:OnClick(button)
 	if ( self.displayedToast ) then
 		ToggleQuickJoinPanel();
+		QuickJoinFrame:SelectGroup(self.displayedToast.guid);
+		QuickJoinFrame:ScrollToGroup(self.displayedToast.guid);
 	else
 		ToggleFriendsFrame(1);
 	end
@@ -318,7 +322,7 @@ function QuickJoinToastMixin:OnEnter()
 		local queues = C_SocialQueue.GetGroupQueues(self.displayedToast.guid);
 		if ( queues ) then
 			GameTooltip:SetOwner(self.Toast, self.isOnRight and "ANCHOR_LEFT" or "ANCHOR_RIGHT");
-			SocialQueueUtil_SetTooltip(GameTooltip, SOCIAL_QUEUE_TOOLTIP_HEADER, queues);
+			SocialQueueUtil_SetTooltip(GameTooltip, SOCIAL_QUEUE_TOOLTIP_HEADER, queues, true);
 			GameTooltip:AddLine(" ");
 			GameTooltip:AddLine(SOCIAL_QUEUE_CLICK_TO_JOIN, GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
 			GameTooltip:Show();
@@ -377,6 +381,7 @@ function QuickJoinToastMixin:ToastToToastFinished()
 	self.displayedTime = GetTime();
 	self.ToastActiveAnim:Play();
 	self.Toast.Text:SetText(self.pendingText);
+	self.Toast2.Text:SetText(nil); -- This is a workaround for a bug in the animation system.
 	self.displayedToast:MarkAllAsDisplayed();
 end
 
@@ -471,24 +476,74 @@ function QuickJoinToast_GetPriorityFromQueue(queue)
 			return 0;
 		end
 		if ( iLevel == 0 ) then
-			return 50;
+			return QUICK_JOIN_CONFIG.THROTTLE_LFGLIST_PRIORITY_DEFAULT;
 		end
 		if ( itemLevel >= iLevel ) then
 			--We are above the item level suggestion. The further above we are, the less important this is.
-			return math.max(1, 100 - (itemLevel - iLevel));
+			local ilvldiff = (itemLevel - iLevel) * QUICK_JOIN_CONFIG.THROTTLE_LFGLIST_ILVL_SCALING_ABOVE;
+			return math.max(1, QUICK_JOIN_CONFIG.THROTTLE_LFGLIST_PRIORITY_ABOVE - ilvldiff);
 		else
 			--We are below the item level suggestion, but above the requirement set by the group. The further below the
 			--suggestion we are, the less important this is.
-			return math.max(1, 50 - (iLevel - itemLevel));
+			local ilvldiff = (iLevel - itemLevel) * QUICK_JOIN_CONFIG.THROTTLE_LFGLIST_ILVL_SCALING_BELOW;
+			return math.max(1, QUICK_JOIN_CONFIG.THROTTLE_LFGLIST_PRIORITY_BELOW - ilvldiff);
 		end
 	elseif ( queue.type == "lfg" ) then
-		return 80;
+		local lfgID = queue.lfgID;
+		local name, typeID, subtypeID, minLevel, maxLevel, recLevel, minRecLevel, maxRecLevel, expansionLevel, groupID, textureFilename, difficulty, maxPlayers, description, isHoliday, repAmount, minPlayers, isTimealker, minGear = GetLFGDungeonInfo(lfgID);
+		if ( not name ) then
+			--We hotfix deleted an LFG entry?
+			return 0;
+		end
+
+		if ( isHoliday ) then
+			--We won't recommend holiday dungeons ever
+			return 0;
+		end
+
+		if ( typeid == TYPEID_RANDOM_DUNGEON ) then
+			if ( GetRandomDungeonBestChoice() ~= lfgID ) then
+				return 1;
+			end
+
+			if ( itemLevel > QUICK_JOIN_CONFIG.THROTTLE_DF_MAX_ITEM_LEVEL ) then
+				--The point at which all random dungeons become pretty much irrelevant
+				return 1;
+			end
+
+			return QUICK_JOIN_CONFIG.THROTTLE_DF_BEST_PRIORITY;
+		elseif ( subtypeID == LFG_SUBTYPEID_RAID ) then
+			--Go by ilvl
+			if ( itemLevel < minGear ) then
+				--Should never happen since we can't join it...
+				return 0;
+			end
+
+			--The further above the item level requirement we are, the less important this is.
+			local ilvldiff = (itemLevel - minGear) * QUICK_JOIN_CONFIG.THROTTLE_RF_ILVL_SCALING_ABOVE;
+			return math.max(1, QUICK_JOIN_CONFIG.THROTTLE_RF_PRIORITY_ABOVE - ilvldiff);
+		elseif ( subtypeID == LFG_SUBTYPEID_WORLDPVP ) then
+			--If the player is below honor level 10, assume they aren't interested in PvP
+			if ( UnitHonorLevel("player") < QUICK_JOIN_CONFIG.THROTTLE_PVP_HONOR_THRESHOLD and UnitPrestige("player") <= 0 ) then
+				return QUICK_JOIN_CONFIG.THROTTLE_PVP_PRIORITY_LOW;
+			else
+				return QUICK_JOIN_CONFIG.THROTTLE_PVP_PRIORITY_NORMAL;
+			end
+		else
+			--Scenario, specific dungeons, etc.
+			return 1;
+		end
 	elseif ( queue.type == "pvp" ) then
-		return 50;
+		--If the player is below honor level 10, assume they aren't interested in PvP
+		if ( UnitHonorLevel("player") < QUICK_JOIN_CONFIG.THROTTLE_PVP_HONOR_THRESHOLD and UnitPrestige("player") <= 0 ) then
+			return QUICK_JOIN_CONFIG.THROTTLE_PVP_PRIORITY_LOW;
+		else
+			return QUICK_JOIN_CONFIG.THROTTLE_PVP_PRIORITY_NORMAL;
+		end
 	end
 end
 
---Should return a value in the range [0, 100)
+--Should return a value in the range [0, 200)
 function QuickJoinToast_GetPriorityFromPlayers(players)
 	local priority = 0;
 	for i=1, #players do
@@ -500,7 +555,7 @@ function QuickJoinToast_GetPriorityFromPlayers(players)
 			priority = priority + QUICK_JOIN_CONFIG.PLAYER_GUILD_VALUE;
 		end
 	end
-	return priority / 2;
+	return priority;
 end
 
 function QuickJoinToastGroupMixin:Update()

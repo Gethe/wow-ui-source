@@ -49,17 +49,17 @@ function SocialQueueUtil_GetQueueName(queue)
 	return UNKNOWNOBJECT;
 end
 
-function SocialQueueUtil_SetTooltip(tooltip, playerDisplayName, data)
+function SocialQueueUtil_SetTooltip(tooltip, playerDisplayName, data, canJoin)
 	assert(data[1]);
 
 
 	--For now, you can't queue for both LFGList and LFG+PvP.
 	if ( data[1].type == "lfglist" ) then
-		if ( C_LFGList.GetSearchResultInfo(data[1].lfgListID) ) then
+		if ( canJoin and C_LFGList.GetSearchResultInfo(data[1].lfgListID) ) then
 			LFGListUtil_SetSearchEntryTooltip(tooltip, data[1].lfgListID);
 		else
-			--We're fading out.
 			tooltip:SetText(playerDisplayName, 1, 1, 1, true);
+			tooltip:AddLine(LFG_LIST_ENTRY_DELISTED, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
 		end
 	else
 		tooltip:SetText(playerDisplayName, 1, 1, 1, true);
@@ -67,8 +67,16 @@ function SocialQueueUtil_SetTooltip(tooltip, playerDisplayName, data)
 		for i=1, #data do
 			local queue = data[i];
 			local queueName = SocialQueueUtil_GetQueueName(queue);
-			tooltip:AddLine("- "..queueName, nil, nil, nil, true);
-		end	
+			if ( queue.isZombie ) then
+				tooltip:AddLine("- "..queueName, GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b, true);
+			else
+				tooltip:AddLine("- "..queueName, nil, nil, nil, true);
+			end
+		end
+
+		if ( not canJoin ) then
+			tooltip:AddLine(LFG_LIST_ENTRY_DELISTED, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
+		end
 	end
 end
 
