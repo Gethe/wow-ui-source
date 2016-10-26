@@ -6,8 +6,8 @@
 -- isolated execution environment and is constructed to maintain local
 -- control over the important elements of the execution environment.
 --
--- Daniel Stephens (iriel@vigilance-committee.org)
--- Nevin Flanagan (alestane@comcast.net)
+-- Daniel Stephens
+-- Nevin Flanagan
 ---------------------------------------------------------------------------
 
 -- Localizes for functions that are frequently called or need to be

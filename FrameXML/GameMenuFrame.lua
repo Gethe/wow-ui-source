@@ -13,7 +13,7 @@ function GameMenuFrame_UpdateVisibleButtons(self)
 	local buttonToReanchor = GameMenuButtonWhatsNew;
 	local reanchorYOffset = -1;
 
-	if (not SplashFrameCanBeShown()) then
+	if (not SplashFrameCanBeShown() or IsCharacterNewlyBoosted()) then
 		GameMenuButtonWhatsNew:Hide();
 		height = height - 20;
 		buttonToReanchor = GameMenuButtonOptions;
@@ -45,12 +45,6 @@ function GameMenuFrame_UpdateVisibleButtons(self)
 			GameMenuButtonLogout:SetPoint("TOP", GameMenuButtonRatings, "BOTTOM", 0, -16);
 		end
 	end
-	
-	if ( IsCharacterNewlyBoosted() ) then
-		GameMenuButtonWhatsNew:SetText(GAMEMENU_BOOST_BUTTON);
-	else
-		GameMenuButtonWhatsNew:SetText(GAMEMENU_NEW_BUTTON);
-	end
 
 	self:SetHeight(height);
 end
@@ -62,6 +56,9 @@ function GameMenuFrame_UpdateStoreButtonState(self)
 	elseif ( C_StorePublic.IsDisabledByParentalControls() ) then
 		self.disabledTooltip = BLIZZARD_STORE_ERROR_PARENTAL_CONTROLS;
 		self:Disable();		
+	elseif ( IsKioskModeEnabled() ) then
+		self.disabledTooltip = nil;
+		self:Disable();
 	else
 		self.disabledTooltip = nil;
 		self:Enable();

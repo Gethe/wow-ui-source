@@ -805,7 +805,7 @@
 							</OnClick>
 						</Scripts>
 					</Button>
-					<Button name="BrowseCurrentBidSort" inherits="AuctionSortButtonTemplate" text="CURRENT_BID">
+					<Button name="BrowseCurrentBidSort" inherits="AuctionSortButtonTemplate" text="AUCTION_BROWSE_UNIT_PRICE_SORT">
 						<Size>
 							<AbsDimension x="207" y="19"/>
 						</Size>
@@ -818,7 +818,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								AuctionFrame_OnClickSortColumn("list", "bid");
+								AuctionFrame_OnClickSortColumn("list", "unitprice");
 							</OnClick>
 						</Scripts>
 					</Button>

@@ -731,9 +731,13 @@
 									PlaySound("igMainMenuOptionCheckBoxOn");
 									SetWatchedFactionIndex(GetSelectedFaction());
 									SetWatchingHonorAsXP(false);
+									if (C_ArtifactUI.GetEquippedArtifactInfo()) then
+										SetCVar("showArtifactXPBar", false);
+									end
 								else
 									PlaySound("igMainMenuOptionCheckBoxOff");
 									SetWatchedFactionIndex(0);
+									SetCVar("showArtifactXPBar", true);
 								end
 								MainMenuBar_UpdateExperienceBars();
 							</OnClick>

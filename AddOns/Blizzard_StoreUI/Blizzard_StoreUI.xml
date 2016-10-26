@@ -597,7 +597,7 @@
 					<Texture parentKey="Icon" hidden="true">
 						<Size x="63" y="63" />
 						<Anchors>
-							<Anchor point="CENTER" relativePoint="TOP" x="0" y="-66" />
+							<Anchor point="CENTER" relativePoint="TOP" x="0" y="-69" />
 						</Anchors>
 					</Texture>
 				</Layer>
@@ -779,7 +779,7 @@
 					<Texture parentKey="Icon" hidden="true">
 						<Size x="68" y="68" />
 						<Anchors>
-							<Anchor point="TOPLEFT" x="86" y="-96" />
+							<Anchor point="TOPLEFT" x="88" y="-99" />
 						</Anchors>
 					</Texture>
 				</Layer>
@@ -2100,9 +2100,9 @@
 				</Layer>
 				<Layer level="ARTWORK" textureSubLevel="1">
 					<Texture parentKey="Icon">
-						<Size x="63" y="63" />
+						<Size x="64" y="64" />
 						<Anchors>
-							<Anchor point="TOP" x="-120" y="-66" />
+							<Anchor point="TOP" x="-120" y="-68" />
 						</Anchors>
 					</Texture>
 				</Layer>

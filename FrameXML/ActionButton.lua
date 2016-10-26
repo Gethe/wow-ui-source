@@ -18,8 +18,32 @@ VIEWABLE_ACTION_BAR_PAGES = {1, 1, 1, 1, 1, 1};
 
 ACTION_HIGHLIGHT_MARKS = { };
 
-function MarkNewActionHighlight(action, mark)
-	ACTION_HIGHLIGHT_MARKS[action] = mark;
+function MarkNewActionHighlight(action)
+	ACTION_HIGHLIGHT_MARKS[action] = true;
+end
+
+function ClearNewActionHighlight(action, preventIdenticalActionsFromClearing)
+	ACTION_HIGHLIGHT_MARKS[action] = nil;
+
+	if preventIdenticalActionsFromClearing then
+		return;
+	end
+
+	-- If we're unhighlighting this one because it was used/moused over/etc...
+	-- then go find all other current actions that match this one that are also
+	-- marked for highlight and unmark them.  The next time they update the highlight
+	-- will update; may need to actually force update the action button in some cases
+	-- and that means that ACTION_HIGHLIGHT_MARKS needs to store more information
+	local unmarkedType, unmarkedID = GetActionInfo(action);
+
+	for actionKey, markValue in pairs(ACTION_HIGHLIGHT_MARKS) do
+		if markValue then
+			local actionType, actionID = GetActionInfo(actionKey);
+			if actionType == unmarkedType and actionID == unmarkedID then
+				ACTION_HIGHLIGHT_MARKS[actionKey] = nil;
+			end
+		end
+	end
 end
 
 function GetNewActionHighlightMark(action)
@@ -47,8 +71,8 @@ local function CheckUseActionButton(button, checkingFromDown)
 			SecureActionButton_OnClick(button, "LeftButton");
 
 			if GetNewActionHighlightMark(button.action) then
-				MarkNewActionHighlight(button.action, false);
-				ActionButton_UpdateHighlightMark(button, button.action);
+				ClearNewActionHighlight(button.action);
+				ActionButton_UpdateHighlightMark(button);
 			end
 		end
 		ActionButton_UpdateState(button);
@@ -205,7 +229,7 @@ function ActionBarActionEventsFrame_UnregisterFrame(frame)
 	ActionBarActionEventsFrame.frames[frame] = nil;
 end
 
-function ActionButton_OnLoad (self)
+function ActionButton_OnLoad(self)
 	self.flashing = 0;
 	self.flashtime = 0;
 	self:SetAttribute("showgrid", 0);
@@ -221,7 +245,7 @@ function ActionButton_OnLoad (self)
 	ActionButton_UpdateHotkeys(self, self.buttonType);
 end
 
-function ActionButton_UpdateHotkeys (self, actionButtonType)
+function ActionButton_UpdateHotkeys(self, actionButtonType)
 	local id;
     if ( not actionButtonType ) then
         actionButtonType = "ACTIONBUTTON";
@@ -248,7 +272,7 @@ function ActionButton_UpdateHotkeys (self, actionButtonType)
     end
 end
 
-function ActionButton_CalculateAction (self, button)
+function ActionButton_CalculateAction(self, button)
 	if ( not button ) then
 		button = SecureButton_GetEffectiveButton(self);
 	end
@@ -268,17 +292,16 @@ function ActionButton_CalculateAction (self, button)
 	end
 end
 
-function ActionButton_UpdateAction (self, force)
+function ActionButton_UpdateAction(self, force)
 	local action = ActionButton_CalculateAction(self);
 	if ( action ~= self.action or force ) then
 		self.action = action;
 		SetActionUIButton(self, action, self.cooldown);
 		ActionButton_Update(self);
-		ActionButton_UpdateHighlightMark(self, action);
 	end
 end
 
-function ActionButton_Update (self)
+function ActionButton_Update(self)
 	local action = self.action;
 	local icon = self.icon;
 	local buttonCooldown = self.cooldown;
@@ -310,9 +333,10 @@ function ActionButton_Update (self)
 		ActionButton_UpdateUsable(self);
 		ActionButton_UpdateCooldown(self);
 		ActionButton_UpdateFlash(self);
+		ActionButton_UpdateHighlightMark(self);
 	else
 		if ( self.eventsRegistered ) then
-			ActionBarActionEventsFrame_UnregisterFrame(self)
+			ActionBarActionEventsFrame_UnregisterFrame(self);
 			self.eventsRegistered = nil;
 		end
 
@@ -378,13 +402,13 @@ function ActionButton_Update (self)
 	self.feedback_action = action;
 end
 
-function ActionButton_UpdateHighlightMark(self, action)
+function ActionButton_UpdateHighlightMark(self)
 	if ( self.NewActionTexture ) then
-		self.NewActionTexture:SetShown(GetNewActionHighlightMark(action));
+		self.NewActionTexture:SetShown(GetNewActionHighlightMark(self.action));
 	end
 end
 
-function ActionButton_ShowGrid (button)
+function ActionButton_ShowGrid(button)
 	assert(button);
 
 	if ( issecure() ) then
@@ -400,7 +424,7 @@ function ActionButton_ShowGrid (button)
 	end
 end
 
-function ActionButton_HideGrid (button)
+function ActionButton_HideGrid(button)
 	assert(button);
 
 	local showgrid = button:GetAttribute("showgrid");
@@ -416,7 +440,7 @@ function ActionButton_HideGrid (button)
 	end
 end
 
-function ActionButton_UpdateState (button)
+function ActionButton_UpdateState(button)
 	assert(button);
 
 	local action = button.action;
@@ -424,7 +448,7 @@ function ActionButton_UpdateState (button)
 	button:SetChecked(isChecked);
 end
 
-function ActionButton_UpdateUsable (self)
+function ActionButton_UpdateUsable(self)
 	local icon = self.icon;
 	local normalTexture = self.NormalTexture;
 	if ( not normalTexture ) then
@@ -444,7 +468,7 @@ function ActionButton_UpdateUsable (self)
 	end
 end
 
-function ActionButton_UpdateCount (self)
+function ActionButton_UpdateCount(self)
 	local text = self.Count;
 	local action = self.action;
 	if ( IsConsumableAction(action) or IsStackableAction(action) or (not IsItemAction(action) and GetActionCount(action) > 0) ) then
@@ -467,14 +491,16 @@ end
 function ActionButton_UpdateCooldown(self)
 	local locStart, locDuration;
 	local start, duration, enable, charges, maxCharges, chargeStart, chargeDuration;
+	local modRate = 1.0;
+	local chargeModRate = 1.0;
 	if ( self.spellID ) then
 		locStart, locDuration = GetSpellLossOfControlCooldown(self.spellID);
-		start, duration, enable = GetSpellCooldown(self.spellID);
-		charges, maxCharges, chargeStart, chargeDuration = GetSpellCharges(self.spellID);
+		start, duration, enable, modRate = GetSpellCooldown(self.spellID);
+		charges, maxCharges, chargeStart, chargeDuration, chargeModRate = GetSpellCharges(self.spellID);
 	else
 		locStart, locDuration = GetActionLossOfControlCooldown(self.action);
-		start, duration, enable = GetActionCooldown(self.action);
-		charges, maxCharges, chargeStart, chargeDuration = GetActionCharges(self.action);
+		start, duration, enable, modRate = GetActionCooldown(self.action);
+		charges, maxCharges, chargeStart, chargeDuration, chargeModRate = GetActionCharges(self.action);
 	end
 
 	if ( (locStart + locDuration) > (start + duration) ) then
@@ -485,7 +511,7 @@ function ActionButton_UpdateCooldown(self)
 			self.cooldown.currentCooldownType = COOLDOWN_TYPE_LOSS_OF_CONTROL;
 		end
 
-		CooldownFrame_Set(self.cooldown, locStart, locDuration, true, true);
+		CooldownFrame_Set(self.cooldown, locStart, locDuration, true, true, modRate);
 		ClearChargeCooldown(self);
 	else
 		if ( self.cooldown.currentCooldownType ~= COOLDOWN_TYPE_NORMAL ) then
@@ -500,12 +526,12 @@ function ActionButton_UpdateCooldown(self)
 		end
 
 		if ( charges and maxCharges and maxCharges > 1 and charges < maxCharges ) then
-			StartChargeCooldown(self, chargeStart, chargeDuration);
+			StartChargeCooldown(self, chargeStart, chargeDuration, chargeModRate);
 		else
 			ClearChargeCooldown(self);
 		end
 
-		CooldownFrame_Set(self.cooldown, start, duration, enable);
+		CooldownFrame_Set(self.cooldown, start, duration, enable, false, modRate);
 	end
 end
 
@@ -529,7 +555,7 @@ local function CreateChargeCooldownFrame(parent)
 	return cooldown;
 end
 
-function StartChargeCooldown(parent, chargeStart, chargeDuration)
+function StartChargeCooldown(parent, chargeStart, chargeDuration, chargeModRate)
 	if chargeStart == 0 then
 		ClearChargeCooldown(parent);
 		return;
@@ -537,7 +563,7 @@ function StartChargeCooldown(parent, chargeStart, chargeDuration)
 
 	parent.chargeCooldown = parent.chargeCooldown or CreateChargeCooldownFrame(parent);
 
-	CooldownFrame_Set(parent.chargeCooldown, chargeStart, chargeDuration, true, true);
+	CooldownFrame_Set(parent.chargeCooldown, chargeStart, chargeDuration, true, true, chargeModRate);
 end
 
 function ClearChargeCooldown(parent)
@@ -627,7 +653,7 @@ function ActionButton_OverlayGlowOnUpdate(self, elapsed)
 	end
 end
 
-function ActionButton_OnEvent (self, event, ...)
+function ActionButton_OnEvent(self, event, ...)
 	local arg1 = ...;
 	if ((event == "UNIT_INVENTORY_CHANGED" and arg1 == "player") or event == "LEARNED_SPELL_IN_TAB") then
 		if ( GameTooltip:GetOwner() == self ) then
@@ -635,12 +661,11 @@ function ActionButton_OnEvent (self, event, ...)
 		end
 	elseif ( event == "ACTIONBAR_SLOT_CHANGED" ) then
 		if ( arg1 == 0 or arg1 == tonumber(self.action) ) then
+			ClearNewActionHighlight(self.action, true);
 			ActionButton_Update(self);
 		end
-		return;
 	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
 		ActionButton_Update(self);
-		return;
 	elseif ( event == "UPDATE_SHAPESHIFT_FORM" ) then
 		-- need to listen for UPDATE_SHAPESHIFT_FORM because attack icons change when the shapeshift form changes
 		-- This is NOT intended to update everything about shapeshifting; most stuff should be handled by ActionBar-specific events such as UPDATE_BONUS_ACTIONBAR, UPDATE_USABLE, etc.
@@ -648,16 +673,12 @@ function ActionButton_OnEvent (self, event, ...)
 		if (texture) then
 			self.icon:SetTexture(texture);
 		end
-		return;
 	elseif ( event == "ACTIONBAR_SHOWGRID" ) then
 		ActionButton_ShowGrid(self);
-		return;
 	elseif ( event == "ACTIONBAR_HIDEGRID" ) then
 		ActionButton_HideGrid(self);
-		return;
 	elseif ( event == "UPDATE_BINDINGS" ) then
 		ActionButton_UpdateHotkeys(self, self.buttonType);
-		return;
 	elseif ( event == "PLAYER_TARGET_CHANGED" ) then	-- All event handlers below this line are only set when the button has an action
 		self.rangeTimer = -1;
 	elseif ( (event == "ACTIONBAR_UPDATE_STATE") or
@@ -732,7 +753,7 @@ function ActionButton_OnEvent (self, event, ...)
 	end
 end
 
-function ActionButton_SetTooltip (self)
+function ActionButton_SetTooltip(self)
 	if ( GetCVar("UberTooltips") == "1" ) then
 		GameTooltip_SetDefaultAnchor(GameTooltip, self);
 	else
@@ -750,7 +771,7 @@ function ActionButton_SetTooltip (self)
 	end
 end
 
-function ActionButton_OnUpdate (self, elapsed)
+function ActionButton_OnUpdate(self, elapsed)
 	if ( ActionButton_IsFlashing(self) ) then
 		local flashtime = self.flashtime;
 		flashtime = flashtime - elapsed;
@@ -805,11 +826,11 @@ function ActionButton_OnUpdate (self, elapsed)
 	end
 end
 
-function ActionButton_GetPagedID (self)
+function ActionButton_GetPagedID(self)
     return self.action;
 end
 
-function ActionButton_UpdateFlash (self)
+function ActionButton_UpdateFlash(self)
 	local action = self.action;
 	if ( (IsAttackAction(action) and IsCurrentAction(action)) or IsAutoRepeatAction(action) ) then
 		ActionButton_StartFlash(self);
@@ -818,19 +839,19 @@ function ActionButton_UpdateFlash (self)
 	end
 end
 
-function ActionButton_StartFlash (self)
+function ActionButton_StartFlash(self)
 	self.flashing = 1;
 	self.flashtime = 0;
 	ActionButton_UpdateState(self);
 end
 
-function ActionButton_StopFlash (self)
+function ActionButton_StopFlash(self)
 	self.flashing = 0;
 	self.Flash:Hide();
 	ActionButton_UpdateState (self);
 end
 
-function ActionButton_IsFlashing (self)
+function ActionButton_IsFlashing(self)
 	if ( self.flashing == 1 ) then
 		return 1;
 	end

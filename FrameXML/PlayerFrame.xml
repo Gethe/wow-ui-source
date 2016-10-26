@@ -181,11 +181,11 @@
 									<TexCoords left="0" right="0.5" top="0" bottom="0.421875"/>
 								</Texture>
 								<Texture name="PlayerAttackIcon" file="Interface\CharacterFrame\UI-StateIcon" hidden="false">
-									<Size x="32" y="32"/>
+									<Size x="32" y="31"/>
 									<Anchors>
 										<Anchor point="TOPLEFT" relativeTo="PlayerRestIcon" x="1" y="1"/>
 									</Anchors>
-									<TexCoords left="0.5" right="1.0" top="0" bottom="0.5"/>
+									<TexCoords left="0.5" right="1.0" top="0" bottom="0.484375"/>
 								</Texture>
 								<Texture name="$parentRoleIcon" file="Interface\LFGFrame\UI-LFG-ICON-PORTRAITROLES" hidden="true">
 									<Size x="19" y="19"/>

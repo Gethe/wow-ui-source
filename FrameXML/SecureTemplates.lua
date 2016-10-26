@@ -201,9 +201,7 @@ local InitializeSecureMenu = function(self)
 
 	-- Mimic the default UI and prefer the relevant units menu when possible
 	local menu;
-	if( unitType == "raid" ) then
-		menu = "RAID";
-	elseif( unitType == "party" ) then
+	if( unitType == "party" ) then
 		menu = "PARTY";
 	elseif( unitType == "boss" ) then
 		menu = "BOSS";

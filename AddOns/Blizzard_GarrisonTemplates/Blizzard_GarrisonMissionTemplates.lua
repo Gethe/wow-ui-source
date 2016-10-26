@@ -278,7 +278,12 @@ end
 function GarrisonMission:UpdateMissionData(missionPage)
 	local lastUpdate = missionPage.lastUpdate;
 	local totalTimeString, totalTimeSeconds, isMissionTimeImproved, successChance, partyBuffs, missionEffects, xpBonus, currencyMultipliers, goldMultiplier = C_Garrison.GetPartyMissionInfo(missionPage.missionInfo.missionID);
-
+	
+	--Hacky fix for Bug 473557.  We don't want the color code to be directly in front of the number of days so that our 
+	--language rules parser can properly recognize plural/singular forms.  Previously "1 |4day:days;" becomes "|c...Time: |r|cffff19191 |4day:days;|r"
+	--and the parser reads 19191 days (plural) instead of 1 day (singular).  Now "1 |4day:days;" becomes "|c...Time:|r|cffff1919 1 |4day:days;|r"
+	totalTimeString = " "..totalTimeString;
+	
 	-- TIME
 	if ( missionEffects.hasMissionTimeNegativeEffect ) then
 		totalTimeString = RED_FONT_COLOR:WrapTextInColorCode(totalTimeString);
@@ -311,7 +316,7 @@ function GarrisonMission:UpdateMissionData(missionPage)
 		end
 	else
 		-- no need to animate if chance is not increasing
-		if ( rewardsFrame.currentChance and successChance < rewardsFrame.currentChance ) then
+		if ( rewardsFrame.currentChance and successChance < rewardsFrame.currentChance and missionPage:IsShown()) then
 			PlaySound("UI_Garrison_CommandTable_ReducedSuccessChance");
 		end
 		GarrisonMissionPageRewardsFrame_SetSuccessChance(rewardsFrame, successChance, missionEffects);
@@ -904,6 +909,7 @@ function GarrisonMission:MissionCompleteInitialize(missionList, index)
 		self:SetEnemyPortrait(encounter, encounters[i], encounter.Elite, #enemies[i].mechanics);
 	end
 
+	missionCompleteFrame:KillFollowerXPAnims();
 	missionCompleteFrame.pendingXPAwards = { };
 	missionCompleteFrame.animInfo = {};
 	stage.followers = {};
@@ -1729,13 +1735,13 @@ function GarrisonMissionComplete:AnimFollowerXP(followerID, xpAward, oldXP, oldL
 				end
 			else
 				-- save for later
-				local t = {};
-				t.followerID = followerID;
-				t.xpAward = xpAward;
-				t.oldXP = oldXP;
-				t.oldLevel = oldLevel;
-				t.oldQuality = oldQuality;
-				tinsert(self.pendingXPAwards, t);
+	local t = {};
+	t.followerID = followerID;
+	t.xpAward = xpAward;
+	t.oldXP = oldXP;
+	t.oldLevel = oldLevel;
+	t.oldQuality = oldQuality;
+	tinsert(self.pendingXPAwards, t);
 			end
 			break;
 		end
@@ -1924,6 +1930,15 @@ function GarrisonMissionComplete:AnimXPBarOnFinish(xpBar)
 	end
 end
 
+function GarrisonMissionComplete:KillFollowerXPAnims()
+	for _, followerFrame in pairs(self.Stage.FollowersFrame.Followers) do
+		followerFrame.XPGain.FadeIn:Stop();
+		followerFrame.XP:SetScript("OnUpdate", nil);
+		followerFrame.LevelUpFrame.Anim:Stop();
+		followerFrame.activeAnims = 0;
+	end
+end
+
 function GarrisonMissionComplete:OnFollowerXPFinished(followerFrame)
 	followerFrame.activeAnims = followerFrame.activeAnims - 1;
 	if ( followerFrame.activeAnims == 0 ) then
@@ -2089,7 +2104,12 @@ function GarrisonMissionPage_UpdateRewardQuantities(rewardsFrame, currencyMultip
 end
 
 function GarrisonMissionPageRewardsFrame_SetSuccessChance(self, chance, missionEffects)
-	local successChanceColor = missionEffects and missionEffects.hasSuccessChanceNegativeEffect and RED_FONT_COLOR or GREEN_FONT_COLOR;
+	local successChanceColor = GREEN_FONT_COLOR;
+	if (missionEffects) then
+		if ((chance < 0 and missionEffects.hasUncounterableSuccessChanceNegativeEffect) or missionEffects.hasSuccessChanceNegativeEffect) then
+			successChanceColor = RED_FONT_COLOR;
+		end
+	end
 
 	self.Chance:SetFormattedText(successChanceColor:WrapTextInColorCode(PERCENTAGE_STRING), chance);
 	self.ChanceLabel:SetText(successChanceColor:WrapTextInColorCode(GARRISON_MISSION_CHANCE));

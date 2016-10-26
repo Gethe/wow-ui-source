@@ -40,7 +40,8 @@ end
 function ReadyCheckFrame_OnLoad(self)
 	self:RegisterEvent("READY_CHECK");
 	self:RegisterEvent("READY_CHECK_FINISHED");
-	
+	self:RegisterEvent("GROUP_LEFT");
+
 	ReadyCheckFrameYesButton:SetText(GetText("READY", UnitSex("player")));
 	ReadyCheckFrameNoButton:SetText(GetText("NOT_READY", UnitSex("player")));
 end
@@ -54,6 +55,8 @@ function ReadyCheckFrame_OnEvent(self, event, ...)
 			local info = ChatTypeInfo["SYSTEM"];
 			DEFAULT_CHAT_FRAME:AddMessage(READY_CHECK_YOU_WERE_AFK, info.r, info.g, info.b, info.id);
 		end
+		self:Hide();
+	elseif ( event == "GROUP_LEFT" ) then
 		self:Hide();
 	end
 end
@@ -95,7 +98,7 @@ function ReadyCheck_Finish(readyCheckFrame, finishTime, fadeTime, onFinishFunc, 
 		_G[readyCheckFrame:GetName().."Texture"]:SetTexture(READY_CHECK_AFK_TEXTURE);
 		readyCheckFrame.state = "afk";
 	end
-	
+
 	if ( finishTime > 0 ) then
 		readyCheckFrame:SetScript("OnUpdate", ReadyCheck_OnUpdate);
 		readyCheckFrame.finishedTimer = finishTime;

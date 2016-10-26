@@ -5,22 +5,14 @@
 --LFG is used for for generic functions/values that may be used for LFD, LFR, and any other LF_ system we may implement in the future.
 ------
 
+LFG_INVITE_POPUP_DEFAULT_HEIGHT = 180;
+
 --DEBUG FIXME:
 function LFGDebug(text, ...)
 	if ( GetCVarBool("lfgDebug") ) then
 		ConsolePrint("LFGLua: "..format(text, ...));
 	end
 end
-
-TYPEID_DUNGEON = 1;
-TYPEID_RANDOM_DUNGEON = 6;
-
-LFG_SUBTYPEID_DUNGEON = 1;
-LFG_SUBTYPEID_HEROIC = 2;
-LFG_SUBTYPEID_RAID = 3;
-LFG_SUBTYPEID_SCENARIO = 4;
-LFG_SUBTYPEID_FLEXRAID = 5;
-LFG_SUBTYPEID_WORLDPVP = 6;
 
 LFG_ID_TO_ROLES = { "DAMAGER", "TANK", "HEALER" };
 LFG_RETURN_VALUES = {
@@ -41,6 +33,9 @@ LFG_RETURN_VALUES = {
 	isHoliday = 15,
 	bonusRepAmount = 16,
 	minPlayers = 17,
+	isTimewalker = 18,
+	mapName = 19,
+	minGear = 20,
 }
 
 LFG_INSTANCE_INVALID_RAID_LOCKED = 6;
@@ -93,6 +88,7 @@ function LFGEventFrame_OnLoad(self)
 	
 	self:RegisterEvent("LFG_PROPOSAL_UPDATE");
 	self:RegisterEvent("LFG_PROPOSAL_SHOW");
+	self:RegisterEvent("LFG_PROPOSAL_DONE");
 	self:RegisterEvent("LFG_PROPOSAL_FAILED");
 	self:RegisterEvent("LFG_PROPOSAL_SUCCEEDED");
 	
@@ -134,6 +130,7 @@ function LFGEventFrame_OnEvent(self, event, ...)
 		LFG_UpdateQueuedList();
 		LFG_UpdateAllRoleCheckboxes();
 		LFG_DisplayGroupLeaderWarning(self);
+		LFGDungeonReadyPopup_Update();
 	elseif ( event == "LFG_LOCK_INFO_RECEIVED" ) then
 		LFGLockList = GetLFDChoiceLockedState();
 		LFG_UpdateFramesIfShown();
@@ -213,6 +210,9 @@ function LFGEventFrame_OnEvent(self, event, ...)
 		StaticPopupSpecial_Show(LFGDungeonReadyPopup);
 		PlaySound("ReadyCheck");
 		FlashClientIcon();
+	elseif ( event == "LFG_PROPOSAL_DONE" ) then
+		LFGDebug("Proposal Hidden: Proposal done.");
+		StaticPopupSpecial_Hide(LFGDungeonReadyPopup);
 	elseif ( event == "LFG_PROPOSAL_FAILED" ) then
 		LFGDungeonReadyPopup_OnFail();
 	elseif ( event == "LFG_PROPOSAL_SUCCEEDED" ) then
@@ -686,9 +686,13 @@ local RAID_BACKDROP_TABLE = {
 	insets = { left = 11, right = 12, top = 12, bottom = 11 }};
 
 function LFGDungeonReadyPopup_Update()	
-	local proposalExists, id, typeID, subtypeID, name, texture, role, hasResponded, totalEncounters, completedEncounters, numMembers, isLeader = GetLFGProposal();
+	local proposalExists, id, typeID, subtypeID, name, texture, role, hasResponded, totalEncounters, completedEncounters, numMembers, isLeader, _, _, isSilent = GetLFGProposal();
 	if ( not proposalExists ) then
 		LFGDebug("Proposal Hidden: No proposal exists.");
+		StaticPopupSpecial_Hide(LFGDungeonReadyPopup);
+		return;
+	elseif ( isSilent ) then
+		LFGDebug("Proposal Hidden: Proposal is silent.");
 		StaticPopupSpecial_Hide(LFGDungeonReadyPopup);
 		return;
 	end
@@ -1559,11 +1563,13 @@ function LFGRewardsFrameEncounterList_OnEnter(self)
 
 	if ( numCompleted > 0 ) then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		GameTooltip:AddLine(ERR_LOOT_GONE);
+		GameTooltip:AddLine(string.format(ERR_LOOT_GONE, numCompleted, numEncounters), HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 		for i=1, numEncounters do
 			local bossName, texture, isKilled = GetLFGDungeonEncounterInfo(dungeonID, i);
 			if ( isKilled ) then
 				GameTooltip:AddLine(bossName, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
+			else
+				GameTooltip:AddLine(bossName, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 			end
 		end
 		GameTooltip:Show();
@@ -1693,6 +1699,11 @@ function LFGInvitePopup_Update(inviter, roleTankAvailable, roleHealerAvailable, 
 	tankButton.checkButton:SetChecked(availableRolesField == 2);
 	healerButton.checkButton:SetChecked(availableRolesField == 4);
 	damagerButton.checkButton:SetChecked(availableRolesField == 8);
+
+	if ( WillAcceptInviteRemoveQueues() ) then
+		self.QueueWarningText:Show();
+		self:SetHeight(LFG_INVITE_POPUP_DEFAULT_HEIGHT + self.QueueWarningText:GetHeight() + 8);
+	end
 
 	LFGInvitePopup_UpdateAcceptButton();
 end

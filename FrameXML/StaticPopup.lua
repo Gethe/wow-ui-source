@@ -946,26 +946,6 @@ StaticPopupDialogs["DELETE_MONEY"] = {
 	hideOnEscape = 1
 };
 
-StaticPopupDialogs["SEND_MONEY"] = {
-	text = SEND_MONEY_CONFIRMATION,
-	button1 = ACCEPT,
-	button2 = CANCEL,
-	OnAccept = function(self)
-		if ( SetSendMailMoney(MoneyInputFrame_GetCopper(SendMailMoney)) ) then
-			SendMailFrame_SendMail();
-		end
-	end,
-	OnCancel = function(self)
-		SendMailMailButton:Enable();
-	end,
-	OnShow = function(self)
-		MoneyFrame_Update(self.moneyFrame, MoneyInputFrame_GetCopper(SendMailMoney));
-	end,
-	hasMoneyFrame = 1,
-	timeout = 0,
-	hideOnEscape = 1
-};
-
 StaticPopupDialogs["CONFIRM_REPORT_SPAM_CHAT"] = {
 	text = REPORT_SPAM_CONFIRMATION,
 	button1 = ACCEPT,
@@ -1360,12 +1340,23 @@ StaticPopupDialogs["DEATH"] = {
 		end
 
 		local b1_enabled = self.button1:IsEnabled();
-		local encounterInProgress = IsEncounterInProgress();
-		self.button1:SetEnabled(not encounterInProgress and not HasNoReleaseAura());
+		local encounterSupressRelease = IsEncounterSuppressingRelease();
+		if ( encounterSupressRelease ) then
+			self.button1:SetEnabled(false);
+			self.button1:SetText(DEATH_RELEASE);
+		else
+			local hasNoReleaseAura, noReleaseDuration = HasNoReleaseAura();
+			self.button1:SetEnabled(not hasNoReleaseAura);
+			if ( hasNoReleaseAura ) then
+				self.button1:SetText(math.floor(noReleaseDuration));
+			else
+				self.button1:SetText(DEATH_RELEASE);
+			end
+		end
 
 		if ( b1_enabled ~= self.button1:IsEnabled() ) then
 			if ( b1_enabled ) then
-				if ( encounterInProgress ) then
+				if ( encounterSupressRelease ) then
 					self.text:SetText(CAN_NOT_RELEASE_IN_COMBAT);
 				else
 					self.text:SetText(CAN_NOT_RELEASE_RIGHT_NOW);
@@ -1525,7 +1516,7 @@ StaticPopupDialogs["TRADE"] = {
 	hideOnEscape = 1
 };
 StaticPopupDialogs["PARTY_INVITE"] = {
-	text = INVITATION,
+	text = "%s",
 	button1 = ACCEPT,
 	button2 = DECLINE,
 	sound = "igPlayerInvite",
@@ -1547,32 +1538,22 @@ StaticPopupDialogs["PARTY_INVITE"] = {
 	end,
 	timeout = STATICPOPUP_TIMEOUT,
 	whileDead = 1,
-	hideOnEscape = 1
 };
-StaticPopupDialogs["PARTY_INVITE_XREALM"] = {
-	text = INVITATION_XREALM,
+StaticPopupDialogs["GROUP_INVITE_CONFIRMATION"] = {
+	text = "%s", --Filled out dynamically
 	button1 = ACCEPT,
 	button2 = DECLINE,
 	sound = "igPlayerInvite",
-	OnShow = function(self)
-		self.inviteAccepted = nil;
-	end,
 	OnAccept = function(self)
-		AcceptGroup();
-		self.inviteAccepted = 1;
+		RespondToInviteConfirmation(self.data, true);
 	end,
 	OnCancel = function(self)
-		DeclineGroup();
+		RespondToInviteConfirmation(self.data, false);
 	end,
 	OnHide = function(self)
-		if ( not self.inviteAccepted ) then
-			DeclineGroup();
-			self:Hide();
-		end
+		UpdateInviteConfirmationDialogs();
 	end,
-	timeout = STATICPOPUP_TIMEOUT,
 	whileDead = 1,
-	hideOnEscape = 1
 };
 StaticPopupDialogs["CHAT_CHANNEL_INVITE"] = {
 	text = CHAT_INVITE_NOTICE_POPUP,
@@ -2627,6 +2608,18 @@ StaticPopupDialogs["BIND_ENCHANT"] = {
 	showAlert = 1,
 	hideOnEscape = 1
 };
+StaticPopupDialogs["ACTION_WILL_BIND_ITEM"] = {
+	text = ACTION_WILL_BIND_ITEM,
+	button1 = OKAY,
+	button2 = CANCEL,
+	OnAccept = function(self)
+		ActionBindsItem();
+	end,
+	timeout = 0,
+	exclusive = 1,
+	showAlert = 1,
+	hideOnEscape = 1
+};
 StaticPopupDialogs["REPLACE_ENCHANT"] = {
 	text = REPLACE_ENCHANT,
 	button1 = YES,
@@ -3620,7 +3613,6 @@ StaticPopupDialogs["CONFIRM_UNLOCK_TRIAL_CHARACTER"] = {
 	OnCancel = function()
 		ClassTrialThanksForPlayingDialog:ShowThanks();
 	end,
-	hideOnEscape = 0,
 	timeout = 0,
 	whileDead = 1,
 }
@@ -3639,6 +3631,18 @@ StaticPopupDialogs["DANGEROUS_SCRIPTS_WARNING"] = {
 	button2 = NO,
 	OnAccept = function()
 		SetAllowDangerousScripts(true);
+	end,
+	exclusive = 1,
+	whileDead = 1,
+	showAlert = 1,
+}
+
+StaticPopupDialogs["EXPERIMENTAL_CVAR_WARNING"] = {
+	text = EXPERIMENTAL_FEATURE_TURNED_ON_WARNING,
+	button1 = ACCEPT,
+	button2 = DISABLE,
+	OnCancel = function()
+		ResetTestCvars();
 	end,
 	exclusive = 1,
 	whileDead = 1,

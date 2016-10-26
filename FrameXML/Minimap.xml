@@ -663,7 +663,6 @@
 								<Scripts>
 									<OnLoad function="GarrisonLandingPageMinimapButton_OnLoad"/>
 									<OnEvent function="GarrisonLandingPageMinimapButton_OnEvent"/>
-									<OnShow function="GarrisonLandingPageMinimapButton_OnShow"/>
 									<OnClick function="GarrisonLandingPageMinimapButton_OnClick"/>
 									<OnEnter>
 										GameTooltip:SetOwner(self, "ANCHOR_LEFT");
@@ -737,6 +736,8 @@
 						self:RegisterEvent("GUILD_PARTY_STATE_UPDATED");
 					</OnLoad>
 					<OnEvent function="MiniMapInstanceDifficulty_OnEvent" />
+					<OnEnter function="MiniMapInstanceDifficulty_OnEnter"/>
+					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Frame>
 			<Frame name="GuildInstanceDifficulty" hidden="true" enableMouse="true">

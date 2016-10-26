@@ -266,8 +266,8 @@ function InterfaceOptionsFrameDefaults_OnClick (self, button)
 	StaticPopup_Show("CONFIRM_RESET_INTERFACE_SETTINGS");
 end
 
-function InterfaceOptionsSocialPanelResetChat_OnClick ()
-	FCF_ResetAllWindows();
+function InterfaceOptionsSocialPanelRedockChat_OnClick ()
+	FCF_RedockAllWindows();
 end
 
 function InterfaceOptionsFrame_SetAllToDefaults ()

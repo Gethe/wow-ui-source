@@ -535,6 +535,9 @@ UI.xsd">
 			<OnMouseUp>
 				self:StopMovingOrSizing();
 			</OnMouseUp>
+			<OnShow function="FloatingGarrisonMissionTooltip_OnShow"/>
+			<OnHide function="FloatingGarrisonMissionTooltip_OnHide"/>
+			<OnEvent function="FloatingGarrisonMissionTooltip_OnEvent"/>
 		</Scripts>
 	</Frame>
 

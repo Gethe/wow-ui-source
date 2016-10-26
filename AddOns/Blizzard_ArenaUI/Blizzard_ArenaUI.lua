@@ -195,7 +195,7 @@ function ArenaEnemyFrame_OnEvent(self, event, arg1, arg2)
 					self.healthbar:SetScript("OnUpdate", UnitFrameHealthBar_OnUpdate);
 					self.healthbar:UnregisterEvent("UNIT_HEALTH");
 				end
-				if ( self.manabar.frequentUpdates and GetCVarBool("predictedPower") ) then
+				if ( self.manabar.frequentUpdates ) then
 					self.manabar:SetScript("OnUpdate", UnitFrameManaBar_OnUpdate);
 					UnitFrameManaBar_UnregisterDefaultEvents(self.manabar);
 				end
@@ -289,7 +289,7 @@ function ArenaEnemyPetFrame_OnEvent(self, event, ...)
 				self.healthbar:SetScript("OnUpdate", UnitFrameHealthBar_OnUpdate);
 				self.healthbar:UnregisterEvent("UNIT_HEALTH");
 			end
-			if ( self.manabar.frequentUpdates and GetCVarBool("predictedPower") ) then
+			if ( self.manabar.frequentUpdates ) then
 				self.manabar:SetScript("OnUpdate", UnitFrameManaBar_OnUpdate);
 				UnitFrameManaBar_UnregisterDefaultEvents(self.manabar);
 			end

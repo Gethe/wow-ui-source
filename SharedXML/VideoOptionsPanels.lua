@@ -184,6 +184,7 @@ function Graphics_Refresh(self)
 	VideoOptionsPanel_Refresh( Display_);
 	VideoOptionsPanel_Refresh( Graphics_);
 	VideoOptionsPanel_Refresh( RaidGraphics_);
+	VideoOptionsPanel_Refresh( Advanced_);
 end
 
 function VideoOptionsPanel_Refresh (self)
@@ -492,7 +493,7 @@ function Graphics_TableGetValue(self)
 				return i;
 			end
 		end
-		return self.numQualityLevels + 1;
+		return nil;
 	end
 	
 	local readCvars = {};

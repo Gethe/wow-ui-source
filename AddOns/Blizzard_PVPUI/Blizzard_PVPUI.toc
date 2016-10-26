@@ -1,4 +1,4 @@
-## Interface: 70000
+## Interface: 70100
 ## Title: Blizzard PVP UI
 ## Notes:  MegaQueue
 ## Secure: 1

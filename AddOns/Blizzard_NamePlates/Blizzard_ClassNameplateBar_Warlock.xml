@@ -40,7 +40,10 @@
 	</Frame>
 		
 	<Frame name="ClassNameplateBarWarlockFrame" inherits="ClassNameplateBarFrame" mixin="ClassNameplateBar, ClassNameplateBarWarlock">
-		<Size x="101" y="18"/>
+		<KeyValues>
+			<KeyValue key="scale" value=".6"/>
+		</KeyValues>
+		<Size x="101" y="24"/>
 		<Frames>
 			<Frame parentKey="Shard1" parentArray="Shards" inherits="ClassNameplateBarShardFrame">
 				<Anchors>

@@ -122,7 +122,7 @@ AuctionSort["bidder_duration"] = {
 -- list sorts
 AuctionSort["list_level"] = {
 	{ column = "duration",	reverse = true	},
-	{ column = "bid",		reverse = true	},
+	{ column = "unitprice",		reverse = false },
 	{ column = "quantity",	reverse = false	},
 	{ column = "minbidbuyout",	reverse = true	},
 	{ column = "name",		reverse = true	},
@@ -130,7 +130,7 @@ AuctionSort["list_level"] = {
 	{ column = "level",		reverse = false	},
 };
 AuctionSort["list_duration"] = {
-	{ column = "bid",		reverse = false	},
+	{ column = "unitprice",		reverse = false },
 	{ column = "quantity",	reverse = true	},
 	{ column = "minbidbuyout",	reverse = false	},
 	{ column = "name",		reverse = false	},
@@ -140,7 +140,7 @@ AuctionSort["list_duration"] = {
 };
 AuctionSort["list_seller"] = {
 	{ column = "duration",	reverse = false	},
-	{ column = "bid",		reverse = false },
+	{ column = "unitprice",		reverse = false },
 	{ column = "quantity",	reverse = true	},
 	{ column = "minbidbuyout",	reverse = false	},
 	{ column = "name",		reverse = false	},
@@ -148,18 +148,18 @@ AuctionSort["list_seller"] = {
 	{ column = "quality",	reverse = false	},
 	{ column = "seller",	reverse = false	},
 };
-AuctionSort["list_bid"] = {
+AuctionSort["list_unitprice"] = {
 	{ column = "duration",	reverse = false	},
 	{ column = "quantity",	reverse = true	},
 	{ column = "name",		reverse = false	},
 	{ column = "level",		reverse = true	},
 	{ column = "quality",	reverse = false	},
-	{ column = "bid",		reverse = false	},
+	{ column = "unitprice",	reverse = false	},
 };
 
 AuctionSort["list_quality"] = {
 	{ column = "duration",	reverse = false	},
-	{ column = "bid",		reverse = false	},
+	{ column = "unitprice",		reverse = false },
 	{ column = "quantity",	reverse = true	},
 	{ column = "minbidbuyout",	reverse = false	},
 	{ column = "name",		reverse = false	},

@@ -2011,7 +2011,7 @@
                             </Layer>
                         </Layers>
                         <Frames>
-                            <Button parentKey="ConfirmButton" inherits="GlueButtonSmallTemplate" text="ACCEPT">
+                            <Button parentKey="ConfirmButton" inherits="GlueButtonSmallTemplate" text="ACCEPT_GLUE">
                                 <Size x="130" y="38"/>
                                 <Anchors>
                                     <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM" x="-4" y="12"/>

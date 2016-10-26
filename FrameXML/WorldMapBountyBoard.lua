@@ -142,12 +142,12 @@ function WorldMapBountyBoardMixin:RefreshBountyTabs()
 		local tab = self.bountyTabPool:Acquire();
 		local selected = self.selectedBountyIndex == bountyIndex;
 		tab:SetNormalAtlas(selected and "worldquest-tracker-ring-selected" or "worldquest-tracker-ring");
-		if selected then 
+		if selected then
 			tab:SetHighlightTexture(nil);
 		else
 			tab:SetHighlightAtlas("worldquest-tracker-ring");
 			tab:GetHighlightTexture():SetAlpha(0.4);
-		end		
+		end
 		if IsQuestComplete(bounty.questID) then
 			tab.CheckMark:Show();
 			if not self.firstCompletedTab then
@@ -156,7 +156,7 @@ function WorldMapBountyBoardMixin:RefreshBountyTabs()
 		else
 			tab.CheckMark:Hide();
 		end
-		
+
 		tab.Icon:SetTexture(bounty.icon);
 		tab.Icon:Show();
 		tab.EmptyIcon:Hide();
@@ -265,14 +265,12 @@ function WorldMapBountyBoardMixin:CalculateBountySubObjectives(bountyData)
 end
 
 function WorldMapBountyBoardMixin:SetSelectedBountyIndex(selectedBountyIndex)
-	if self.selectedBountyIndex ~= selectedBountyIndex then
-		self.selectedBountyIndex = selectedBountyIndex;
-		PlaySound("UI_WorldQuest_Map_Select");
-		self:RefreshBountyTabs();
-		self:RefreshSelectedBounty();
-		if self.selectedBountyChangedCallback then
-			self.selectedBountyChangedCallback(self);
-		end
+	self.selectedBountyIndex = selectedBountyIndex;
+	PlaySound("UI_WorldQuest_Map_Select");
+	self:RefreshBountyTabs();
+	self:RefreshSelectedBounty();
+	if self.selectedBountyChangedCallback then
+		self.selectedBountyChangedCallback(self);
 	end
 end
 
@@ -320,7 +318,7 @@ function WorldMapBountyBoardMixin:SetTooltipOwner()
 		WorldMapTooltip:SetOwner(self, "ANCHOR_LEFT", -100, -50);
 	else
 		WorldMapTooltip:SetOwner(self, "ANCHOR_RIGHT", 0, -50);
-	end	
+	end
 end
 
 function WorldMapBountyBoardMixin:ShowLockedByQuestTooltip()
@@ -386,6 +384,46 @@ end
 function WorldMapBountyBoardMixin:OnTabClick(tab)
 	if not tab.isEmpty then
 		self:SetSelectedBountyIndex(tab.bountyIndex);
+		self:FindBestMapForSelectedBounty();
+	end
+end
+
+function WorldMapBountyBoardMixin:FindBestMapForSelectedBounty()
+	local continentIndex, continentID = GetCurrentMapContinent();
+	local continentMaps =  { GetMapZones(continentIndex) };
+
+	-- move current map to 1st position
+	for i = 1, #continentMaps, 2 do
+		if continentMaps[i] == self.mapAreaID then
+			continentMaps[1], continentMaps[i] = continentMaps[i], continentMaps[1];
+			break;
+		end
+	end
+
+	local candidateMapID;
+	local candidateNumBounties = 0;
+	local currentMapID = GetCurrentMapAreaID();
+	for i = 1, #continentMaps, 2 do
+		local numBounties = 0;
+		local taskInfo = C_TaskQuest.GetQuestsForPlayerByMapID(continentMaps[i], continentID);
+		for _, info  in ipairs(taskInfo) do
+			if QuestUtils_IsQuestWorldQuest(info.questId) then
+				if self:IsWorldQuestCriteriaForSelectedBounty(info.questId) then
+					if ( currentMapID == continentMaps[i] ) then
+						-- no need to switch
+						return;
+					end
+					numBounties = numBounties + 1;
+				end
+			end
+		end
+		if ( numBounties > candidateNumBounties ) then
+			candidateMapID = continentMaps[i];
+			candidateNumBounties = numBounties;
+		end
+	end
+	if ( candidateMapID ) then
+		SetMapByID(candidateMapID);
 	end
 end
 
@@ -449,4 +487,8 @@ function WorldMapBountyBoardMixin:TryShowingCompletionTutorial()
 			self.TutorialBox:Show();
 		end
 	end
+end
+
+function WorldMapBountyBoardMixin:AreBountiesAvailable()
+	return self:IsShown() and (self.lockedType == WORLD_MAP_BOUNTY_BOARD_LOCK_TYPE_NONE or self.lockedType == WORLD_MAP_BOUNTY_BOARD_LOCK_TYPE_NO_BOUNTIES);
 end

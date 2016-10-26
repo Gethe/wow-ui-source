@@ -112,7 +112,7 @@ local DISPLAY_DATA = {
 	[22] = { --TUTORIAL_FRIENDS
 		tileHeight = 10, 
 		anchorData = {align = "RIGHT", xOff = -25, yOff = -150},
-		callOut	= {parent = "FriendsMicroButton", align = "TOPLEFT", xOff = -4, yOff = 6, width = 38, height = 45},
+		callOut	= {parent = "QuickJoinToastButton", align = "TOPLEFT", xOff = -4, yOff = 6, width = 38, height = 45},
 		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -29, bottomRight_yOff = 35},
 		notNPE = true,
 	},

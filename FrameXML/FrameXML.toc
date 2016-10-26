@@ -1,12 +1,20 @@
 # Do not delete the following line!
-## Interface: 70000
+## Interface: 70100
 
 ## add C namespace augmentations here
 ..\SharedXML\C_TimerAugment.lua
 
 ## add snippets independent of modules here
 ..\SharedXML\Util.lua
+..\SharedXML\CircularBuffer.lua
+..\SharedXML\FontableFrameMixin.lua
+..\SharedXML\Vector2D.lua
 MixinUtil.lua
+
+## intrinsics
+..\SharedXML\ScrollingMessageFrame.xml
+
+
 AnimatedStatusBar.xml
 FlowContainer.lua
 FrameLocks.lua
@@ -17,14 +25,15 @@ Localization.xml
 Fonts.xml
 FontStyles.xml
 
-## This needs to be loaded after Fonts.xml
-..\SharedXML\IME.xml
 
 ## add new modules below here
 
 BasicControls.xml
 WorldFrame.xml
 UIParent.xml
+QuestUtils.lua
+## IME.xml needs to be loaded after UIParent.xml
+..\SharedXML\IME.xml
 MoneyFrame.lua
 MoneyFrame.xml
 MoneyInputFrame.lua
@@ -116,12 +125,17 @@ ItemTextFrame.xml
 TaxiFrame.xml
 BankFrame.xml
 ScrollOfResurrection.xml
+RoleSelectionTemplate.xml
+SocialQueue.xml
+QuickJoinToast.xml
 FriendsFrame.xml
+QuickJoin.xml
 RaidFrame.xml
 ChannelFrame.xml
 PetActionBarFrame.xml
 MultiCastActionBarFrame.xml
 MainMenuBarBagButtons.xml
+UnitPositionFrameTemplates.xml
 WorldMapFrame.xml
 QuestMapFrame.xml
 RaidWarning.xml

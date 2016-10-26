@@ -1,8 +1,8 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
   <Script file="ShardBar.lua"/>
-  
-	<Frame name="ShardTemplate" virtual="true" hidden="false">
+
+	<Frame name="ShardTemplate" parentArray="Shards" hidden="false" virtual="true">
 		<Animations>
 			<AnimationGroup parentKey="animIn" setToFinalAlpha="true">
 				<Alpha target="$parentFill" fromAlpha="0" toAlpha="1" duration="0.2" order="1"/>
@@ -27,39 +27,39 @@
 		<Layers>
 			<Layer level="OVERLAY">
 				<Texture name="$parentGlow" file="Interface\PlayerFrame\UI-WarlockShard" parentKey="shardGlow" alphaMode="ADD" alpha="0">
-					<Size x="26" y="23"/>	
+					<Size x="26" y="23"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="-2" y="1"/>
 					</Anchors>
-					<TexCoords left="0.01562500" right="0.42187500" top="0.14843750" bottom="0.32812500"/>	
+					<TexCoords left="0.01562500" right="0.42187500" top="0.14843750" bottom="0.32812500"/>
 				</Texture>
 				<Texture name="$parentSmokeA" file="Interface\PlayerFrame\UI-WarlockShard" alpha="0" parentKey="shardSmokeA">
-					<Size x="32" y="32"/>	
+					<Size x="32" y="32"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="-8" y="5"/>
 					</Anchors>
-					<TexCoords left="0.01562500" right="0.51562500" top="0.34375000" bottom="0.59375000"/>	
-				</Texture>			
+					<TexCoords left="0.01562500" right="0.51562500" top="0.34375000" bottom="0.59375000"/>
+				</Texture>
 				<Texture name="$parentSmokeB" file="Interface\PlayerFrame\UI-WarlockShard" alpha="0" parentKey="shardSmokeB">
-					<Size x="32" y="32"/>	
+					<Size x="32" y="32"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentSmokeA"/>
 					</Anchors>
-					<TexCoords right="0.01562500" left="0.51562500" bottom="0.34375000" top="0.59375000"/>	
+					<TexCoords right="0.01562500" left="0.51562500" bottom="0.34375000" top="0.59375000"/>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
 				<Texture name="$parentFill" file="Interface\PlayerFrame\UI-WarlockShard" alpha="0" parentKey="shardFill">
-					<Size x="17" y="16"/>	
+					<Size x="17" y="16"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="3" y="-2"/>
 					</Anchors>
-					<TexCoords left="0.01562500" right="0.28125000" top="0.00781250" bottom="0.13281250"/>	
+					<TexCoords left="0.01562500" right="0.28125000" top="0.00781250" bottom="0.13281250"/>
 				</Texture>
 			</Layer>
 			<Layer level="BORDER">
 				<Texture file="Interface\PlayerFrame\UI-WarlockShard">
-					<Size x="52" y="29"/>	
+					<Size x="52" y="29"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="-5" y="3"/>
 					</Anchors>
@@ -77,27 +77,27 @@
 			<Anchor point="TOP" relativeTo="PlayerFrame" relativePoint="BOTTOM" x="50" y="34"/>
 		</Anchors>
 		<Frames>
-			<Frame name="$parentShard1" parentArray="Shards" inherits="ShardTemplate" parentKey="shard1">
+			<Frame name="$parentShard1" inherits="ShardTemplate" parentKey="shard1">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="-10" y="0"/>
 				</Anchors>
-			</Frame>	
-			<Frame name="$parentShard2" parentArray="Shards" inherits="ShardTemplate" parentKey="shard2">
+			</Frame>
+			<Frame name="$parentShard2" inherits="ShardTemplate" parentKey="shard2">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentShard1" relativePoint="TOPLEFT" x="25"/>
 				</Anchors>
 			</Frame>
-			<Frame name="$parentShard3" parentArray="Shards" inherits="ShardTemplate" parentKey="shard3">
+			<Frame name="$parentShard3" inherits="ShardTemplate" parentKey="shard3">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentShard2" relativePoint="TOPLEFT" x="25"/>
 				</Anchors>
 			</Frame>
-			<Frame name="$parentShard4" parentArray="Shards" inherits="ShardTemplate" parentKey="shard4">
+			<Frame name="$parentShard4" inherits="ShardTemplate" parentKey="shard4">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentShard3" relativePoint="TOPLEFT" x="25"/>
 				</Anchors>
 			</Frame>
-			<Frame name="$parentShard5" parentArray="Shards" inherits="ShardTemplate" parentKey="shard5">
+			<Frame name="$parentShard5" inherits="ShardTemplate" parentKey="shard5">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentShard4" relativePoint="TOPLEFT" x="25"/>
 				</Anchors>

@@ -193,6 +193,21 @@ function TutorialHelper:GetFrameButtonEdgeOffset(frame, button)
 end
 
 -- ------------------------------------------------------------------------------------------------------------
+function TutorialHelper:FindItemInContainer(itemID)
+	for containerIndex = 0, 4 do
+		local slots = GetContainerNumSlots(containerIndex);
+		if (slots > 0) then
+			for slotIndex = 1, slots do
+				local id = select(10, GetContainerItemInfo(containerIndex, slotIndex));
+				if (id == itemID) then
+					return containerIndex, slotIndex;
+				end
+			end
+		end
+	end
+end
+
+-- ------------------------------------------------------------------------------------------------------------
 function TutorialHelper:GetMapBinding()
 	return GetBindingKey("TOGGLEWORLDMAP") or "";
 end
@@ -865,32 +880,6 @@ local Class_ActionBarCallout = class("ActionBarCallout", Class_TutorialBase);
 function Class_ActionBarCallout:OnBegin()
 	self.SuccessfulCastCount = 0;
 
-	if (TutorialHelper:GetClass() == "DRUID") then
-		if (not GetShapeshiftFormID()) then
-			self:ShowPointerTutorial(TutorialHelper:FormatSpellString(NPE_SHAPESHIFT_DRUID), "DOWN", StanceButton1);
-			
-			-- Wait for the druid to shapeshift
-			Dispatcher:RegisterEvent("UPDATE_SHAPESHIFT_FORM", function()
-					
-					-- There's a race condition where the shapeshift event may fire before the action bar becomes visible, we must wait for that to happen too
-					local id;
-					id = Dispatcher:RegisterEvent("ACTIONBAR_UPDATE_STATE", function()
-							if (ActionButton1.action ~= 1) then -- make sure we're not on the caster-form action bar
-								Dispatcher:UnregisterEvent("ACTIONBAR_UPDATE_STATE", id);
-								self:InitiatePointer();
-							end
-						end);
-					
-				end, true);
-		else
-			self:InitiatePointer();
-		end
-	else
-		self:InitiatePointer();
-	end
-end
-
-function Class_ActionBarCallout:InitiatePointer()
 	local startingAbility = TutorialHelper:FilterByClass(TutorialData.StartingAbility);
 	
 	local isWarrior = TutorialHelper:GetClass() == "WARRIOR";
@@ -1270,18 +1259,36 @@ function Class_EquipItem:OnBegin(data)
 
 	self.ItemData = data;
 
-	local itemFrame = TutorialHelper:GetItemContainerFrame(data.Container, data.ContainerSlot);
+	self:UpdatePointer();
+
+	Dispatcher:RegisterEvent("PLAYER_EQUIPMENT_CHANGED", self)
+	Dispatcher:RegisterEvent("BAG_UPDATE_DELAYED", self)
+	Dispatcher:RegisterEvent("MERCHANT_SHOW", function() self:Interrupt(self) end, true);
+end
+
+function Class_EquipItem:UpdatePointer()
+	local itemFrame = TutorialHelper:GetItemContainerFrame(self.ItemData.Container, self.ItemData.ContainerSlot);
 	if (itemFrame) then
 		self:ShowPointerTutorial(str(NPE_EQUIPITEM), "DOWN", itemFrame, 0, 0);
 	end
-
-	Dispatcher:RegisterEvent("PLAYER_EQUIPMENT_CHANGED", self)
-	Dispatcher:RegisterEvent("MERCHANT_SHOW", function() self:Interrupt(self) end, true);
 end
 
 function Class_EquipItem:PLAYER_EQUIPMENT_CHANGED()
 	if (GetInventoryItemID("player", self.ItemData.CharacterSlot) == self.ItemData.ItemID) then
 		self:Complete()
+	end
+end
+
+function Class_EquipItem:BAG_UPDATE_DELAYED()
+	if (self.IsActive) then
+		local container, slot = TutorialHelper:FindItemInContainer(self.ItemData.ItemID);
+		if (container and slot) then
+			self.ItemData.Container, self.ItemData.ContainerSlot = container, slot;
+			self:UpdatePointer();
+		else
+			self:Interrupt();
+			Tutorials.ShowBags:Interrupt();
+		end
 	end
 end
 
@@ -1292,7 +1299,6 @@ end
 
 function Class_EquipItem:OnShutdown()
 	self.ItemData = nil;
-	Dispatcher:UnregisterEvent("PLAYER_EQUIPMENT_CHANGED", self)
 end
 
 

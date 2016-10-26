@@ -4,335 +4,335 @@
 
 	<!-- Tiled textures size=64,512-->
 	<Texture name="_FilterButtonUp-Mid" file="Interface\EncounterJournal\UI-EncounterJournalTextures_Tile" virtual="true" horizTile="true" >
-		<Size x="64" y="26"/>	
-		<TexCoords left="0.00000000" right="1.00000000" top="0.00195313" bottom="0.05273438"/>	
+		<Size x="64" y="26"/>
+		<TexCoords left="0.00000000" right="1.00000000" top="0.00195313" bottom="0.05273438"/>
 	</Texture>
 	<Texture name="_FilterButtonDown-Mid" file="Interface\EncounterJournal\UI-EncounterJournalTextures_Tile" virtual="true" horizTile="true" >
-		<Size x="64" y="26"/>	
-		<TexCoords left="0.00000000" right="1.00000000" top="0.05664063" bottom="0.10742188"/>	
+		<Size x="64" y="26"/>
+		<TexCoords left="0.00000000" right="1.00000000" top="0.05664063" bottom="0.10742188"/>
 	</Texture>
 	<Texture name="_FilterButtonHighlight-Mid" file="Interface\EncounterJournal\UI-EncounterJournalTextures_Tile" virtual="true" horizTile="true" >
-		<Size x="64" y="26"/>	
-		<TexCoords left="0.00000000" right="1.00000000" top="0.11132813" bottom="0.16210938"/>	
+		<Size x="64" y="26"/>
+		<TexCoords left="0.00000000" right="1.00000000" top="0.11132813" bottom="0.16210938"/>
 	</Texture>
 	<Texture name="_SearchBarSm" file="Interface\EncounterJournal\UI-EncounterJournalTextures_Tile" virtual="true" horizTile="true" >
-		<Size x="64" y="27"/>	
-		<TexCoords left="0.00000000" right="1.00000000" top="0.16601563" bottom="0.21875000"/>	
+		<Size x="64" y="27"/>
+		<TexCoords left="0.00000000" right="1.00000000" top="0.16601563" bottom="0.21875000"/>
 	</Texture>
 	<Texture name="_PaperHeader-SelectUp-Mid" file="Interface\EncounterJournal\UI-EncounterJournalTextures_Tile" virtual="true" horizTile="true" >
-		<Size x="64" y="29"/>	
-		<TexCoords left="0.00000000" right="1.00000000" top="0.22265625" bottom="0.27929688"/>	
+		<Size x="64" y="29"/>
+		<TexCoords left="0.00000000" right="1.00000000" top="0.22265625" bottom="0.27929688"/>
 	</Texture>
 	<Texture name="_PaperHeader-UnSelectDown-Mid" file="Interface\EncounterJournal\UI-EncounterJournalTextures_Tile" virtual="true" horizTile="true" >
-		<Size x="64" y="29"/>	
-		<TexCoords left="0.00000000" right="1.00000000" top="0.28320313" bottom="0.33984375"/>	
+		<Size x="64" y="29"/>
+		<TexCoords left="0.00000000" right="1.00000000" top="0.28320313" bottom="0.33984375"/>
 	</Texture>
 	<Texture name="_PaperHeader-UnSelectUp-Mid" file="Interface\EncounterJournal\UI-EncounterJournalTextures_Tile" virtual="true" horizTile="true" >
-		<Size x="64" y="29"/>	
-		<TexCoords left="0.00000000" right="1.00000000" top="0.34375000" bottom="0.40039063"/>	
+		<Size x="64" y="29"/>
+		<TexCoords left="0.00000000" right="1.00000000" top="0.34375000" bottom="0.40039063"/>
 	</Texture>
 	<Texture name="_PaperHeader-SelectDown-Mid" file="Interface\EncounterJournal\UI-EncounterJournalTextures_Tile" virtual="true" horizTile="true" >
-		<Size x="64" y="29"/>	
-		<TexCoords left="0.00000000" right="1.00000000" top="0.40429688" bottom="0.46093750"/>	
+		<Size x="64" y="29"/>
+		<TexCoords left="0.00000000" right="1.00000000" top="0.40429688" bottom="0.46093750"/>
 	</Texture>
 	<Texture name="_PaperHeader-Highlight-Mid" file="Interface\EncounterJournal\UI-EncounterJournalTextures_Tile" virtual="true" horizTile="true" >
-		<Size x="64" y="29"/>	
-		<TexCoords left="0.00000000" right="1.00000000" top="0.46484375" bottom="0.52148438"/>	
+		<Size x="64" y="29"/>
+		<TexCoords left="0.00000000" right="1.00000000" top="0.46484375" bottom="0.52148438"/>
 	</Texture>
 	<Texture name="_DungeonGridTab-MidHighlight" file="Interface\EncounterJournal\UI-EncounterJournalTextures_Tile" virtual="true" horizTile="true" >
-		<Size x="64" y="36"/>	
-		<TexCoords left="0.00000000" right="1.00000000" top="0.52539063" bottom="0.59570313"/>	
+		<Size x="64" y="36"/>
+		<TexCoords left="0.00000000" right="1.00000000" top="0.52539063" bottom="0.59570313"/>
 	</Texture>
 	<Texture name="_DungeonGridTab-MidSelect" file="Interface\EncounterJournal\UI-EncounterJournalTextures_Tile" virtual="true" horizTile="true" >
-		<Size x="64" y="36"/>	
-		<TexCoords left="0.00000000" right="1.00000000" top="0.59960938" bottom="0.66992188"/>	
+		<Size x="64" y="36"/>
+		<TexCoords left="0.00000000" right="1.00000000" top="0.59960938" bottom="0.66992188"/>
 	</Texture>
 	<Texture name="_DungeonGridTab-Mid" file="Interface\EncounterJournal\UI-EncounterJournalTextures_Tile" virtual="true" horizTile="true" >
-		<Size x="64" y="36"/>	
-		<TexCoords left="0.00000000" right="1.00000000" top="0.67382813" bottom="0.74414063"/>	
+		<Size x="64" y="36"/>
+		<TexCoords left="0.00000000" right="1.00000000" top="0.67382813" bottom="0.74414063"/>
 	</Texture>
 	<Texture name="_SearchBarLg" file="Interface\EncounterJournal\UI-EncounterJournalTextures_Tile" virtual="true" horizTile="true" >
-		<Size x="64" y="49"/>	
-		<TexCoords left="0.00000000" right="1.00000000" top="0.74804688" bottom="0.84375000"/>	
+		<Size x="64" y="49"/>
+		<TexCoords left="0.00000000" right="1.00000000" top="0.74804688" bottom="0.84375000"/>
 	</Texture>
 
-	
+
 	<!--size=512,1024-->
 	<Texture name="UI-EJ-AbilityIconBorder" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-		<Size x="20" y="20"/>	
-		<TexCoords left="0.00195313" right="0.04101563" top="0.00097656" bottom="0.02050781"/>	
+		<Size x="20" y="20"/>
+		<TexCoords left="0.00195313" right="0.04101563" top="0.00097656" bottom="0.02050781"/>
 	</Texture>
 	<Texture name="UI-EJ-AbilityTextBottomBorder" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-		<Size x="243" y="9"/>	
-		<TexCoords left="0.04492188" right="0.51953125" top="0.00097656" bottom="0.00976563"/>	
+		<Size x="243" y="9"/>
+		<TexCoords left="0.04492188" right="0.51953125" top="0.00097656" bottom="0.00976563"/>
 	</Texture>
 	<Texture name="UI-EJ-DungeonGridTab-SelectedGlow" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-		<Size x="64" y="15"/>	
-		<TexCoords left="0.52343750" right="0.64843750" top="0.00097656" bottom="0.01562500"/>	
+		<Size x="64" y="15"/>
+		<TexCoords left="0.52343750" right="0.64843750" top="0.00097656" bottom="0.01562500"/>
 	</Texture>
 	<Texture name="UI-EJ-DungeonGridTab-Shadow" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-		<Size x="128" y="15"/>	
-		<TexCoords left="0.65234375" right="0.90234375" top="0.00097656" bottom="0.01562500"/>	
+		<Size x="128" y="15"/>
+		<TexCoords left="0.65234375" right="0.90234375" top="0.00097656" bottom="0.01562500"/>
 	</Texture>
 	<Texture name="UI-EJ-ReturnToDefault" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-		<Size x="21" y="20"/>	
-		<TexCoords left="0.90625000" right="0.94726563" top="0.00097656" bottom="0.02050781"/>	
+		<Size x="21" y="20"/>
+		<TexCoords left="0.90625000" right="0.94726563" top="0.00097656" bottom="0.02050781"/>
 	</Texture>
 	<Texture name="UI-EJ-AbilityTextBG" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-		<Size x="256" y="80"/>	
-		<TexCoords left="0.00195313" right="0.50195313" top="0.02246094" bottom="0.10058594"/>	
+		<Size x="256" y="80"/>
+		<TexCoords left="0.00195313" right="0.50195313" top="0.02246094" bottom="0.10058594"/>
 	</Texture>
 	<Texture name="UI-EJ-BossModelButton" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-		<Size x="64" y="61"/>	
-		<TexCoords left="0.50585938" right="0.63085938" top="0.02246094" bottom="0.08203125"/>	
+		<Size x="64" y="61"/>
+		<TexCoords left="0.50585938" right="0.63085938" top="0.02246094" bottom="0.08203125"/>
 	</Texture>
 	<Texture name="UI-EJ-CreatureHeaderFrameSm-bg" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-		<Size x="45" y="44"/>	
-		<TexCoords left="0.63476563" right="0.72265625" top="0.02246094" bottom="0.06542969"/>	
+		<Size x="45" y="44"/>
+		<TexCoords left="0.63476563" right="0.72265625" top="0.02246094" bottom="0.06542969"/>
 	</Texture>
 	<Texture name="UI-EJ-FilterButtonDown" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-		<Size x="26" y="26"/>	
-		<TexCoords left="0.63476563" right="0.68554688" top="0.06738281" bottom="0.09277344"/>	
+		<Size x="26" y="26"/>
+		<TexCoords left="0.63476563" right="0.68554688" top="0.06738281" bottom="0.09277344"/>
 	</Texture>
 	<Texture name="UI-EJ-CreatureHeaderFrameSm" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-		<Size x="45" y="44"/>	
-		<TexCoords left="0.72656250" right="0.81445313" top="0.02246094" bottom="0.06542969"/>	
+		<Size x="45" y="44"/>
+		<TexCoords left="0.72656250" right="0.81445313" top="0.02246094" bottom="0.06542969"/>
 	</Texture>
 	<Texture name="UI-EJ-FilterButtonHighlight" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-		<Size x="26" y="26"/>	
-		<TexCoords left="0.72656250" right="0.77734375" top="0.06738281" bottom="0.09277344"/>	
+		<Size x="26" y="26"/>
+		<TexCoords left="0.72656250" right="0.77734375" top="0.06738281" bottom="0.09277344"/>
 	</Texture>
 	<Texture name="UI-EJ-DungeonGridTab-Left" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-		<Size x="12" y="36"/>	
-		<TexCoords left="0.81835938" right="0.84179688" top="0.02246094" bottom="0.05761719"/>	
+		<Size x="12" y="36"/>
+		<TexCoords left="0.81835938" right="0.84179688" top="0.02246094" bottom="0.05761719"/>
 	</Texture>
 	<Texture name="UI-EJ-DungeonGridTab-LeftHighlight" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-		<Size x="12" y="36"/>	
-		<TexCoords left="0.81835938" right="0.84179688" top="0.05957031" bottom="0.09472656"/>	
+		<Size x="12" y="36"/>
+		<TexCoords left="0.81835938" right="0.84179688" top="0.05957031" bottom="0.09472656"/>
 	</Texture>
 	<Texture name="UI-EJ-DungeonGridTab-LeftSelect" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-		<Size x="12" y="36"/>	
-		<TexCoords left="0.84570313" right="0.86914063" top="0.02246094" bottom="0.05761719"/>	
+		<Size x="12" y="36"/>
+		<TexCoords left="0.84570313" right="0.86914063" top="0.02246094" bottom="0.05761719"/>
 	</Texture>
 	<Texture name="UI-EJ-DungeonGridTab-Right" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-		<Size x="12" y="36"/>	
-		<TexCoords left="0.84570313" right="0.86914063" top="0.05957031" bottom="0.09472656"/>	
+		<Size x="12" y="36"/>
+		<TexCoords left="0.84570313" right="0.86914063" top="0.05957031" bottom="0.09472656"/>
 	</Texture>
 	<Texture name="UI-EJ-DungeonGridTab-RightHighlight" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-		<Size x="12" y="36"/>	
-		<TexCoords left="0.87304688" right="0.89648438" top="0.02246094" bottom="0.05761719"/>	
+		<Size x="12" y="36"/>
+		<TexCoords left="0.87304688" right="0.89648438" top="0.02246094" bottom="0.05761719"/>
 	</Texture>
 	<Texture name="UI-EJ-DungeonGridTab-RightSelect" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-		<Size x="12" y="36"/>	
-		<TexCoords left="0.87304688" right="0.89648438" top="0.05957031" bottom="0.09472656"/>	
+		<Size x="12" y="36"/>
+		<TexCoords left="0.87304688" right="0.89648438" top="0.05957031" bottom="0.09472656"/>
 	</Texture>
 	<Texture name="UI-EJ-FilterButtonSelect" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-		<Size x="26" y="26"/>	
-		<TexCoords left="0.90039063" right="0.95117188" top="0.02246094" bottom="0.04785156"/>	
+		<Size x="26" y="26"/>
+		<TexCoords left="0.90039063" right="0.95117188" top="0.02246094" bottom="0.04785156"/>
 	</Texture>
 	<Texture name="UI-EJ-SearchIconFrameSm" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-		<Size x="22" y="22"/>	
-		<TexCoords left="0.95507813" right="0.99804688" top="0.02246094" bottom="0.04394531"/>	
+		<Size x="22" y="22"/>
+		<TexCoords left="0.95507813" right="0.99804688" top="0.02246094" bottom="0.04394531"/>
 	</Texture>
 	<Texture name="UI-EJ-FilterButtonUp" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-		<Size x="26" y="26"/>	
-		<TexCoords left="0.90039063" right="0.95117188" top="0.04980469" bottom="0.07519531"/>	
+		<Size x="26" y="26"/>
+		<TexCoords left="0.90039063" right="0.95117188" top="0.04980469" bottom="0.07519531"/>
 	</Texture>
 	<Texture name="UI-EJ-BossButton-Down" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-		<Size x="325" y="55"/>	
-		<TexCoords left="0.00195313" right="0.63671875" top="0.10253906" bottom="0.15625000"/>	
+		<Size x="325" y="55"/>
+		<TexCoords left="0.00195313" right="0.63671875" top="0.10253906" bottom="0.15625000"/>
 	</Texture>
 	<Texture name="UI-EJ-MapButtonSm-Down" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-		<Size x="50" y="50"/>	
-		<TexCoords left="0.64062500" right="0.73828125" top="0.10253906" bottom="0.15136719"/>	
+		<Size x="50" y="50"/>
+		<TexCoords left="0.64062500" right="0.73828125" top="0.10253906" bottom="0.15136719"/>
 	</Texture>
 	<Texture name="UI-EJ-MapButtonSm-Highlight" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-		<Size x="50" y="50"/>	
-		<TexCoords left="0.74218750" right="0.83984375" top="0.10253906" bottom="0.15136719"/>	
+		<Size x="50" y="50"/>
+		<TexCoords left="0.74218750" right="0.83984375" top="0.10253906" bottom="0.15136719"/>
 	</Texture>
 	<Texture name="UI-EJ-MapButtonSm-Selection" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-		<Size x="50" y="50"/>	
-		<TexCoords left="0.84375000" right="0.94140625" top="0.10253906" bottom="0.15136719"/>	
+		<Size x="50" y="50"/>
+		<TexCoords left="0.84375000" right="0.94140625" top="0.10253906" bottom="0.15136719"/>
 	</Texture>
 	<Texture name="UI-EJ-BossButton-Highlight" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-		<Size x="325" y="55"/>	
-		<TexCoords left="0.00195313" right="0.63671875" top="0.15820313" bottom="0.21191406"/>	
+		<Size x="325" y="55"/>
+		<TexCoords left="0.00195313" right="0.63671875" top="0.15820313" bottom="0.21191406"/>
 	</Texture>
 	<Texture name="UI-EJ-MapButtonSm-Up" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-		<Size x="50" y="50"/>	
-		<TexCoords left="0.64062500" right="0.73828125" top="0.15820313" bottom="0.20703125"/>	
+		<Size x="50" y="50"/>
+		<TexCoords left="0.64062500" right="0.73828125" top="0.15820313" bottom="0.20703125"/>
 	</Texture>
 	<Texture name="UI-EJ-PaperHeader-Highlight-Left" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-		<Size x="64" y="29"/>	
-		<TexCoords left="0.74218750" right="0.86718750" top="0.15820313" bottom="0.18652344"/>	
+		<Size x="64" y="29"/>
+		<TexCoords left="0.74218750" right="0.86718750" top="0.15820313" bottom="0.18652344"/>
 	</Texture>
 	<Texture name="UI-EJ-PaperHeader-Highlight-Right" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-		<Size x="64" y="29"/>	
-		<TexCoords left="0.87109375" right="0.99609375" top="0.15820313" bottom="0.18652344"/>	
+		<Size x="64" y="29"/>
+		<TexCoords left="0.87109375" right="0.99609375" top="0.15820313" bottom="0.18652344"/>
 	</Texture>
 	<Texture name="UI-EJ-BossButton-Up" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-		<Size x="325" y="55"/>	
-		<TexCoords left="0.00195313" right="0.63671875" top="0.21386719" bottom="0.26757813"/>	
+		<Size x="325" y="55"/>
+		<TexCoords left="0.00195313" right="0.63671875" top="0.21386719" bottom="0.26757813"/>
 	</Texture>
 	<Texture name="UI-EJ-PaperHeader-SelectDown-Left" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-		<Size x="64" y="29"/>	
-		<TexCoords left="0.64062500" right="0.76562500" top="0.21386719" bottom="0.24218750"/>	
+		<Size x="64" y="29"/>
+		<TexCoords left="0.64062500" right="0.76562500" top="0.21386719" bottom="0.24218750"/>
 	</Texture>
 	<Texture name="UI-EJ-PaperHeader-SelectDown-Right" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-		<Size x="64" y="29"/>	
-		<TexCoords left="0.76953125" right="0.89453125" top="0.21386719" bottom="0.24218750"/>	
+		<Size x="64" y="29"/>
+		<TexCoords left="0.76953125" right="0.89453125" top="0.21386719" bottom="0.24218750"/>
 	</Texture>
 	<Texture name="UI-EJ-SearchIconFrameLg" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-		<Size x="38" y="38"/>	
-		<TexCoords left="0.89843750" right="0.97265625" top="0.21386719" bottom="0.25097656"/>	
+		<Size x="38" y="38"/>
+		<TexCoords left="0.89843750" right="0.97265625" top="0.21386719" bottom="0.25097656"/>
 	</Texture>
 	<Texture name="UI-EJ-BossNameShadow" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-		<Size x="395" y="63"/>	
-		<TexCoords left="0.00195313" right="0.77343750" top="0.26953125" bottom="0.33105469"/>	
+		<Size x="395" y="63"/>
+		<TexCoords left="0.00195313" right="0.77343750" top="0.26953125" bottom="0.33105469"/>
 	</Texture>
 	<Texture name="UI-EJ-MapButtonLg-Down" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-		<Size x="62" y="61"/>	
-		<TexCoords left="0.77734375" right="0.89843750" top="0.26953125" bottom="0.32910156"/>	
+		<Size x="62" y="61"/>
+		<TexCoords left="0.77734375" right="0.89843750" top="0.26953125" bottom="0.32910156"/>
 	</Texture>
 	<Texture name="UI-EJ-Tab-BossIcon-Selected" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-		<Size x="48" y="43"/>	
-		<TexCoords left="0.90234375" right="0.99609375" top="0.26953125" bottom="0.31152344"/>	
+		<Size x="48" y="43"/>
+		<TexCoords left="0.90234375" right="0.99609375" top="0.26953125" bottom="0.31152344"/>
 	</Texture>
 	<Texture name="UI-EJ-DungeonButton-Down" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-		<Size x="174" y="96"/>	
-		<TexCoords left="0.00195313" right="0.34179688" top="0.33300781" bottom="0.42675781"/>	
+		<Size x="174" y="96"/>
+		<TexCoords left="0.00195313" right="0.34179688" top="0.33300781" bottom="0.42675781"/>
 	</Texture>
 	<Texture name="UI-EJ-DungeonButton-Highlight" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-		<Size x="174" y="96"/>	
-		<TexCoords left="0.34570313" right="0.68554688" top="0.33300781" bottom="0.42675781"/>	
+		<Size x="174" y="96"/>
+		<TexCoords left="0.34570313" right="0.68554688" top="0.33300781" bottom="0.42675781"/>
 	</Texture>
 	<Texture name="UI-EJ-MapButtonLg-Highlight" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-		<Size x="62" y="61"/>	
-		<TexCoords left="0.68945313" right="0.81054688" top="0.33300781" bottom="0.39257813"/>	
+		<Size x="62" y="61"/>
+		<TexCoords left="0.68945313" right="0.81054688" top="0.33300781" bottom="0.39257813"/>
 	</Texture>
 	<Texture name="UI-EJ-MapButtonLg-Select" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-		<Size x="62" y="61"/>	
-		<TexCoords left="0.81445313" right="0.93554688" top="0.33300781" bottom="0.39257813"/>	
+		<Size x="62" y="61"/>
+		<TexCoords left="0.81445313" right="0.93554688" top="0.33300781" bottom="0.39257813"/>
 	</Texture>
 	<Texture name="UI-EJ-PaperHeader-SelectUp-Left" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-		<Size x="64" y="29"/>	
-		<TexCoords left="0.81445313" right="0.93945313" top="0.39453125" bottom="0.42285156"/>	
+		<Size x="64" y="29"/>
+		<TexCoords left="0.81445313" right="0.93945313" top="0.39453125" bottom="0.42285156"/>
 	</Texture>
 	<Texture name="UI-EJ-DungeonButton-Up" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-		<Size x="174" y="96"/>	
-		<TexCoords left="0.00195313" right="0.34179688" top="0.42871094" bottom="0.52246094"/>	
+		<Size x="174" y="96"/>
+		<TexCoords left="0.00195313" right="0.34179688" top="0.42871094" bottom="0.52246094"/>
 	</Texture>
 	<Texture name="UI-EJ-DungeonNameBg" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-		<Size x="256" y="64"/>	
-		<TexCoords left="0.34570313" right="0.84570313" top="0.42871094" bottom="0.49121094"/>	
+		<Size x="256" y="64"/>
+		<TexCoords left="0.34570313" right="0.84570313" top="0.42871094" bottom="0.49121094"/>
 	</Texture>
 	<Texture name="UI-EJ-PaperHeader-SelectUp-Right" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-		<Size x="64" y="29"/>	
-		<TexCoords left="0.34570313" right="0.47070313" top="0.49316406" bottom="0.52148438"/>	
+		<Size x="64" y="29"/>
+		<TexCoords left="0.34570313" right="0.47070313" top="0.49316406" bottom="0.52148438"/>
 	</Texture>
 	<Texture name="UI-EJ-PaperHeader-UnSelectDown-Left" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-		<Size x="64" y="29"/>	
-		<TexCoords left="0.47460938" right="0.59960938" top="0.49316406" bottom="0.52148438"/>	
+		<Size x="64" y="29"/>
+		<TexCoords left="0.47460938" right="0.59960938" top="0.49316406" bottom="0.52148438"/>
 	</Texture>
 	<Texture name="UI-EJ-PaperHeader-UnSelectDown-Right" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-		<Size x="64" y="29"/>	
-		<TexCoords left="0.60351563" right="0.72851563" top="0.49316406" bottom="0.52148438"/>	
+		<Size x="64" y="29"/>
+		<TexCoords left="0.60351563" right="0.72851563" top="0.49316406" bottom="0.52148438"/>
 	</Texture>
 	<Texture name="UI-EJ-MapButtonLg-Up" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-		<Size x="62" y="61"/>	
-		<TexCoords left="0.84960938" right="0.97070313" top="0.42871094" bottom="0.48828125"/>	
+		<Size x="62" y="61"/>
+		<TexCoords left="0.84960938" right="0.97070313" top="0.42871094" bottom="0.48828125"/>
 	</Texture>
 	<Texture name="UI-EJ-PaperHeader-UnSelectUp-Left" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-		<Size x="64" y="29"/>	
-		<TexCoords left="0.84960938" right="0.97460938" top="0.49023438" bottom="0.51855469"/>	
+		<Size x="64" y="29"/>
+		<TexCoords left="0.84960938" right="0.97460938" top="0.49023438" bottom="0.51855469"/>
 	</Texture>
 	<Texture name="UI-EJ-DungeonLootFrame" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-		<Size x="369" y="64"/>	
-		<TexCoords left="0.00195313" right="0.72265625" top="0.52441406" bottom="0.58691406"/>	
+		<Size x="369" y="64"/>
+		<TexCoords left="0.00195313" right="0.72265625" top="0.52441406" bottom="0.58691406"/>
 	</Texture>
 	<Texture name="UI-EJ-PaperHeader-UnSelectUp-Right" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-		<Size x="64" y="29"/>	
-		<TexCoords left="0.72656250" right="0.85156250" top="0.52441406" bottom="0.55273438"/>	
+		<Size x="64" y="29"/>
+		<TexCoords left="0.72656250" right="0.85156250" top="0.52441406" bottom="0.55273438"/>
 	</Texture>
 	<Texture name="UI-EJ-Tab-BossIcon-UnSelected" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-		<Size x="48" y="43"/>	
-		<TexCoords left="0.85546875" right="0.94921875" top="0.52441406" bottom="0.56640625"/>	
+		<Size x="48" y="43"/>
+		<TexCoords left="0.85546875" right="0.94921875" top="0.52441406" bottom="0.56640625"/>
 	</Texture>
 	<Texture name="UI-EJ-FilterBar" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-		<Size x="320" y="28"/>	
-		<TexCoords left="0.00195313" right="0.62695313" top="0.58886719" bottom="0.61621094"/>	
+		<Size x="320" y="28"/>
+		<TexCoords left="0.00195313" right="0.62695313" top="0.58886719" bottom="0.61621094"/>
 	</Texture>
 	<Texture name="UI-EJ-SearchBarHighlightSm" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-		<Size x="128" y="27"/>	
-		<TexCoords left="0.63085938" right="0.88085938" top="0.58886719" bottom="0.61523438"/>	
+		<Size x="128" y="27"/>
+		<TexCoords left="0.63085938" right="0.88085938" top="0.58886719" bottom="0.61523438"/>
 	</Texture>
 	<Texture name="UI-EJ-LootFrame" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-		<Size x="321" y="45"/>	
-		<TexCoords left="0.00195313" right="0.62890625" top="0.61816406" bottom="0.66210938"/>	
+		<Size x="321" y="45"/>
+		<TexCoords left="0.00195313" right="0.62890625" top="0.61816406" bottom="0.66210938"/>
 	</Texture>
 	<Texture name="UI-EJ-Tab-LootIcon-Selected" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-		<Size x="48" y="43"/>	
-		<TexCoords left="0.63281250" right="0.72656250" top="0.61816406" bottom="0.66015625"/>	
+		<Size x="48" y="43"/>
+		<TexCoords left="0.63281250" right="0.72656250" top="0.61816406" bottom="0.66015625"/>
 	</Texture>
 	<Texture name="UI-EJ-Tab-LootIcon-UnSelected" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-		<Size x="48" y="43"/>	
-		<TexCoords left="0.73046875" right="0.82421875" top="0.61816406" bottom="0.66015625"/>	
+		<Size x="48" y="43"/>
+		<TexCoords left="0.73046875" right="0.82421875" top="0.61816406" bottom="0.66015625"/>
 	</Texture>
 	<Texture name="UI-EJ-LoreTextCover-Bottom" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-		<Size x="386" y="29"/>	
-		<TexCoords left="0.00195313" right="0.75585938" top="0.66406250" bottom="0.69238281"/>	
+		<Size x="386" y="29"/>
+		<TexCoords left="0.00195313" right="0.75585938" top="0.66406250" bottom="0.69238281"/>
 	</Texture>
 	<Texture name="UI-EJ-LoreTextCover-Top" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-		<Size x="386" y="32"/>	
-		<TexCoords left="0.00195313" right="0.75585938" top="0.69433594" bottom="0.72558594"/>	
+		<Size x="386" y="32"/>
+		<TexCoords left="0.00195313" right="0.75585938" top="0.69433594" bottom="0.72558594"/>
 	</Texture>
 	<Texture name="UI-EJ-MainTextCover-Bottom" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-		<Size x="386" y="43"/>	
-		<TexCoords left="0.00195313" right="0.75585938" top="0.72753906" bottom="0.76953125"/>	
+		<Size x="386" y="43"/>
+		<TexCoords left="0.00195313" right="0.75585938" top="0.72753906" bottom="0.76953125"/>
 	</Texture>
 	<Texture name="UI-EJ-MainTextCover-Top" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-		<Size x="386" y="13"/>	
-		<TexCoords left="0.00195313" right="0.75585938" top="0.77148438" bottom="0.78417969"/>	
+		<Size x="386" y="13"/>
+		<TexCoords left="0.00195313" right="0.75585938" top="0.77148438" bottom="0.78417969"/>
 	</Texture>
 	<Texture name="UI-EJ-MoreTextBelowHighlight" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-		<Size x="259" y="17"/>	
-		<TexCoords left="0.00195313" right="0.50781250" top="0.78613281" bottom="0.80273438"/>	
+		<Size x="259" y="17"/>
+		<TexCoords left="0.00195313" right="0.50781250" top="0.78613281" bottom="0.80273438"/>
 	</Texture>
 	<Texture name="UI-EJ-SearchBarHighlightLg" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-		<Size x="256" y="47"/>	
-		<TexCoords left="0.00195313" right="0.50195313" top="0.80468750" bottom="0.85058594"/>	
+		<Size x="256" y="47"/>
+		<TexCoords left="0.00195313" right="0.50195313" top="0.80468750" bottom="0.85058594"/>
 	</Texture>
 	<Texture name="UI-EJ-ShowMapBG" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-		<Size x="171" y="50"/>	
-		<TexCoords left="0.00195313" right="0.33593750" top="0.85253906" bottom="0.90136719"/>	
+		<Size x="171" y="50"/>
+		<TexCoords left="0.00195313" right="0.33593750" top="0.85253906" bottom="0.90136719"/>
 	</Texture>
 	<Texture name="UI-EJ-Tab-Highlight" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-		<Size x="63" y="57"/>	
-		<TexCoords left="0.00195313" right="0.12500000" top="0.90332031" bottom="0.95898438"/>	
+		<Size x="63" y="57"/>
+		<TexCoords left="0.00195313" right="0.12500000" top="0.90332031" bottom="0.95898438"/>
 	</Texture>
 	<Texture name="UI-EJ-Tab-Selected" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-		<Size x="63" y="57"/>	
-		<TexCoords left="0.12890625" right="0.25195313" top="0.90332031" bottom="0.95898438"/>	
+		<Size x="63" y="57"/>
+		<TexCoords left="0.12890625" right="0.25195313" top="0.90332031" bottom="0.95898438"/>
 	</Texture>
 	<Texture name="UI-EJ-Tab-UnSelected" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-		<Size x="63" y="57"/>	
-		<TexCoords left="0.25585938" right="0.37890625" top="0.90332031" bottom="0.95898438"/>	
+		<Size x="63" y="57"/>
+		<TexCoords left="0.25585938" right="0.37890625" top="0.90332031" bottom="0.95898438"/>
 	</Texture>
 	<Texture name="UI-EJ-Tab-ModelIcon-Selected" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-		<Size x="48" y="43"/>	
-		<TexCoords left="0.8046875" right="0.900390625" top="0.662109375" bottom="0.705078125"/>	
+		<Size x="48" y="43"/>
+		<TexCoords left="0.8046875" right="0.900390625" top="0.662109375" bottom="0.705078125"/>
 	</Texture>
 	<Texture name="UI-EJ-Tab-ModelIcon-UnSelected" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-		<Size x="48" y="43"/>	
-		<TexCoords left="0.90234375" right="1" top="0.662109375" bottom="0.705078125"/>	
+		<Size x="48" y="43"/>
+		<TexCoords left="0.90234375" right="1" top="0.662109375" bottom="0.705078125"/>
 	</Texture>
 	<Texture name="UI-EJ-LeftPageHeader" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-		<Size x="386" y="39"/>	
-		<TexCoords left="0.00000000" right="0.755859375" top="0.9599609375" bottom="1"/>	
+		<Size x="386" y="39"/>
+		<TexCoords left="0.00000000" right="0.755859375" top="0.9599609375" bottom="1"/>
 	</Texture>
 	<Texture name="UI-EJ-RightPageHeader" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-		<Size x="386" y="39"/>	
-		<TexCoords left="0.755859375" right="0.00000000" top="0.9599609375" bottom="1"/>	
+		<Size x="386" y="39"/>
+		<TexCoords left="0.755859375" right="0.00000000" top="0.9599609375" bottom="1"/>
 	</Texture>
 	<Texture name="UI-EJ-Tab-AbilitiesIcon-Selected" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true">
 		<Size x="48" y="43"/>
@@ -453,7 +453,7 @@
 						<Anchor point="TOPLEFT" x="0" y="0"/>
 						<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
 					</Anchors>
-					<TexCoords left="0" right="0.68359375" top="0" bottom="0.7421875"/>	
+					<TexCoords left="0" right="0.68359375" top="0" bottom="0.7421875"/>
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
@@ -495,18 +495,14 @@
 				self.showingTooltip = false;
 			</OnLeave>
 			<OnClick>
-				if IsModifiedClick("CHATLINK") and ChatEdit_GetActiveWindow() then
-					if self.link then
-						ChatEdit_InsertLink(self.link);
-					end
-					return;
+				if not ChatEdit_TryInsertChatLink(self.link) then
+					EncounterJournal_DisplayInstance(self.instanceID);
+					PlaySound("igSpellBookOpen");
 				end
-				EncounterJournal_DisplayInstance(self.instanceID);
-				PlaySound("igSpellBookOpen");
 			</OnClick>
 		</Scripts>
 	</Button>
-	
+
 	<Button name="EncounterSearchSMTemplate" parentArray="searchPreview" virtual="true">
 		<Size x="275" y="27"/>
 		<Layers>
@@ -550,8 +546,9 @@
 		<Scripts>
 			<OnEnter>
 				if self.link then
-					GameTooltip:SetOwner(self, "ANCHOR_LEFT");
+					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 					GameTooltip:SetHyperlink(self.link);
+					GameTooltip_ShowCompareItem();
 					self.showingTooltip = true;
 				end
 				EncounterJournal_SetSearchPreviewSelection(self:GetID());
@@ -569,7 +566,7 @@
 			</OnClick>
 		</Scripts>
 	</Button>
-	
+
 	<Button name="EncounterSearchLGTemplate" virtual="true">
 		<Size x="575" y="49"/>
 		<Layers>
@@ -621,20 +618,21 @@
 				if self.link then
 					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 					GameTooltip:SetHyperlink(self.link);
+					GameTooltip_ShowCompareItem();
 					self.showingTooltip = true;
 				end
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();
 				self.showingTooltip = false;
-			</OnLeave>		
+			</OnLeave>
 			<OnClick>
 				EncounterJournal_SelectSearch(self:GetID());
 				PlaySound("igSpellBookOpen");
 			</OnClick>
 		</Scripts>
 	</Button>
-	
+
 	<Button name="EncounterCreatureButtonTemplate" motionScriptsWhileDisabled="true" virtual="true" hidden="true">
 		<Size x="64" y="61"/>
 		<Layers>
@@ -668,7 +666,7 @@
 				PlaySound("igMainMenuOption");
 			</OnClick>
 			<OnEnter>
-			
+
 				if self.name then
 					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 					GameTooltip:SetText(self.name,1,1,1);
@@ -683,7 +681,7 @@
 			</OnLeave>
 		</Scripts>
 	</Button>
-	
+
 	<Button name="EncounterBossButtonTemplate" virtual="true" hidden="true">
 		<Size x="325" y="55"/>
 		<Frames>
@@ -746,9 +744,9 @@
 			</OnClick>
 		</Scripts>
 	</Button>
-	
+
 	<Button name="EncounterTabTemplate" virtual="true">
-		<Size x="63" y="57"/>	
+		<Size x="63" y="57"/>
 		<NormalTexture inherits="UI-EJ-Tab-UnSelected"/>
 		<PushedTexture inherits="UI-EJ-Tab-Selected"/>
 		<DisabledTexture inherits="UI-EJ-Tab-UnSelected"/>
@@ -762,7 +760,7 @@
 			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 	</Button>
-	
+
 	<Button name="EncounterDifficultyTemplate" virtual="true">
 		<Size x="26" y="26"/>
 		<Layers>
@@ -788,7 +786,7 @@
 			<Color r="0.973" g="0.902" b="0.581"/>
 		</ButtonText>
 	</Button>
-	
+
 	<Frame name="EncounterSectionIconTemplate" virtual="true">
 		<Size x="32" y="32"/>
 		<Layers>
@@ -815,7 +813,7 @@
 			</OnLeave>
 		</Scripts>
 	</Frame>
-	
+
 	<Frame name="EncounterOverviewBulletTemplate" parentArray="Bullets" virtual="true">
 		<Size x="115" y="15"/>
 		<Layers>
@@ -828,7 +826,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<SimpleHTML parentKey="Text">
+			<SimpleHTML parentKey="Text" inherits="InlineHyperlinkFrameTemplate">
 				<Size x="95" y="10"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.Bullet" relativePoint="TOPRIGHT" x="4" y="0"/>
@@ -836,24 +834,16 @@
 				<FontString inherits="GameFontBlack" justifyH="LEFT" justifyV="TOP">
 					<Color r="0.25" g="0.1484375" b=".02" a="1"/>
 				</FontString>
-				<Scripts>
-					<OnHyperlinkEnter function="EncounterJournal_OnHyperlinkEnter"/>
-					<OnHyperlinkLeave function="GameTooltip_Hide"/>
-				</Scripts>
 			</SimpleHTML>
 		</Frames>
 	</Frame>
 
 	<Frame name="EncounterDescriptionTemplate" virtual="true">
 		<Frames>
-			<SimpleHTML parentKey="Text" setAllPoints="true">
+			<SimpleHTML parentKey="Text" setAllPoints="true" inherits="InlineHyperlinkFrameTemplate">
 				<FontString inherits="GameFontBlack" justifyH="LEFT" justifyV="TOP">
 					<Color r="0.25" g="0.1484375" b=".02" a="1"/>
 				</FontString>
-				<Scripts>
-					<OnHyperlinkEnter function="EncounterJournal_OnHyperlinkEnter"/>
-					<OnHyperlinkLeave function="GameTooltip_Hide"/>
-				</Scripts>
 			</SimpleHTML>
 		</Frames>
 	</Frame>
@@ -1050,14 +1040,14 @@
 									<Anchors>
 										<Anchor point="CENTER" relativeTo="$parentIcon" x="0" y="0"/>
 									</Anchors>
-								</Texture>	
+								</Texture>
 							</Layer>
 							<Layer level="HIGHLIGHT">
 								<Texture name="$parentFrameHighlight" inherits="UI-EJ-CreatureHeaderFrameSm" alphaMode="ADD">
 									<Anchors>
 										<Anchor point="CENTER" relativeTo="$parentIcon" x="0" y="0"/>
 									</Anchors>
-								</Texture>	
+								</Texture>
 							</Layer>
 						</Layers>
 						<Scripts>
@@ -1075,11 +1065,11 @@
 				<Scripts>
 					<OnLoad>
 						self.textures = {
-							expanded = { 
+							expanded = {
 								up = {self.eLeftUp, self.eMidUp, self.eRightUp},
 								down = {self.eLeftDown, self.eMidDown, self.eRightDown}
 							},
-							collapsed = { 
+							collapsed = {
 								up = {self.cLeftUp, self.cMidUp, self.cRightUp},
 								down = {self.cLeftDown, self.cMidDown, self.cRightDown}
 							},
@@ -1096,7 +1086,7 @@
 							end
 							return;
 						end
-					
+
 						EncounterJournal_ToggleHeaders(self:GetParent())
 						self:GetScript("OnShow")(self);
 						PlaySound("igMainMenuOptionCheckBoxOn");
@@ -1105,7 +1095,7 @@
 						self.tex.up[1]:Hide();
 						self.tex.up[2]:Hide();
 						self.tex.up[3]:Hide();
-						
+
 						self.tex.down[1]:Show();
 						self.tex.down[2]:Show();
 						self.tex.down[3]:Show();
@@ -1114,7 +1104,7 @@
 						self.tex.up[1]:Show();
 						self.tex.up[2]:Show();
 						self.tex.up[3]:Show();
-						
+
 						self.tex.down[1]:Hide();
 						self.tex.down[2]:Hide();
 						self.tex.down[3]:Hide();
@@ -1174,7 +1164,7 @@
 			</OnHide>
 		</Scripts>
 	</Frame>
-	
+
 	<Frame name="AdventureJournal_SecondaryTemplate" virtual="true">
 		<Size x="344" y="161"/>
 		<Layers>
@@ -1211,7 +1201,7 @@
 							<Anchor point="TOPLEFT" x="0" y="0"/>
 						</Anchors>
 						<Layers>
-							<Layer level="ARTWORK">								
+							<Layer level="ARTWORK">
 								<FontString parentKey="text" font="QuestFont_Huge" justifyH="left" justifyV="top" wordwrap="false">
 									<Size x="260" y="0"/>
 									<Color r="0" g="0" b="0"/>
@@ -1225,7 +1215,7 @@
 							<Anchor point="TOPLEFT" relativeKey="$parent.title" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
 						</Anchors>
 						<Layers>
-							<Layer level="ARTWORK">								
+							<Layer level="ARTWORK">
 								<FontString parentKey="text" font="SystemFont_Med1" justifyH="left" justifyV="top" wordwrap="true" maxLines="4">
 									<Size x="240" y="0"/>
 									<Color r="0.2824" g="0.0157" b="0.0157"/>
@@ -1284,7 +1274,7 @@
 			</OnLoad>
 		</Scripts>
 	</Frame>
-	
+
 	<Button name="EncounterItemTemplate" virtual="true">
 		<Size x="321" y="45"/>
 		<Layers>
@@ -1363,7 +1353,7 @@
 	</Button>
 
 	<Button name="EncounterTierTabTemplate" virtual="true" parentArray="Tabs">
-		<Size x="120" y="36"/>	
+		<Size x="120" y="36"/>
 		<HitRectInsets>
 			<AbsInset left="-12" right="-12" top="0" bottom="0"/>
 		</HitRectInsets>
@@ -1388,7 +1378,7 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="OVERLAY">	
+			<Layer level="OVERLAY">
 				<Texture name="$parentMidSelect" inherits="_DungeonGridTab-MidSelect" parentKey="midSelect" horizTile="true" hidden="true">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="0" y="0"/>
@@ -1414,7 +1404,7 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="HIGHLIGHT">	
+			<Layer level="HIGHLIGHT">
 				<Texture name="$parentMidHighlight" inherits="_DungeonGridTab-MidHighlight" parentKey="midHighlight" horizTile="true">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="0" y="0"/>
@@ -1480,8 +1470,6 @@
 			</OnDisable>
 		</Scripts>
 	</Button>
-	
-
 
 	<Frame name="EncounterJournal" inherits="PortraitFrameTemplate" toplevel="true" enableMouse="true" parent="UIParent" hidden="true">
 		<Size x="800" y="496"/>
@@ -1892,7 +1880,7 @@
 								<Anchor point="TOPRIGHT"  x="3" y="0"/>
 								<Anchor point="BOTTOMRIGHT" relativeTo="$parentInsetBotRightCorner" relativePoint="TOPRIGHT"/>
 							</Anchors>
-						</Texture>	
+						</Texture>
 					</Layer>
 				</Layers>
 				<Scripts>
@@ -2096,7 +2084,7 @@
 										if dungeonAreaMapID and dungeonAreaMapID > 0 then
 											WorldMapFrame.fromJournal = true;
 											ShowUIPanel(WorldMapFrame);
-											SetMapByID(dungeonAreaMapID);											
+											SetMapByID(dungeonAreaMapID);
 										end
 									</OnClick>
 									<OnMouseDown>
@@ -2547,14 +2535,14 @@
 								</Anchors>
 								<Frames>
 									<Frame name="$parentClassFilterClearFrame" parentKey="classClearFilter" hidden="true" enableMouse="true">
-										<Size x="355" y="28"/>	
+										<Size x="355" y="28"/>
 										<Anchors>
 											<Anchor point="BOTTOM" relativePoint="TOP" x="-10" y="-5"/>
 										</Anchors>
 										<Layers>
 											<Layer level="BACKGROUND">
 												<Texture inherits="UI-EJ-FilterBar">
-													<Size x="380" y="28"/>	
+													<Size x="380" y="28"/>
 													<Anchors>
 														<Anchor point="CENTER" x="-5" y="0"/>
 													</Anchors>
@@ -2599,7 +2587,7 @@
 													<OnMouseUp>
 														self.texture:SetPoint("TOPLEFT", 0, 0);
 													</OnMouseUp>
-													<OnClick> 
+													<OnClick>
 														PlaySound("igMainMenuOptionCheckBoxOn");
 														EJ_ResetLootFilter();
 														EncounterJournal_LootUpdate();
@@ -2620,8 +2608,23 @@
 											</OnLoad>
 										</Scripts>
 									</Button>
+									<Button name="$parentSlotFilterToggle" parentKey="slotFilter" text="ALL_INVENTORY_SLOTS" inherits="EJButtonTemplate">
+										<Anchors>
+											<Anchor point="LEFT" relativeKey="$parent.filter" relativePoint="RIGHT" x="10" y="0"/>
+										</Anchors>
+										<Scripts>
+											<OnClick>
+												ToggleDropDownMenu(1, nil, self:GetParent().lootSlotFilter, self, 5, 0);
+												PlaySound("igMainMenuOption");
+											</OnClick>
+											<OnLoad inherit="prepend">
+												self:SetPoint("TOPLEFT", self:GetParent():GetParent(), "TOPRIGHT", -230, -13);
+											</OnLoad>
+										</Scripts>
+									</Button>
 									<Frame name="$parentLootFilter" inherits="UIDropDownMenuTemplate" parentKey="lootFilter" hidden="true"/>
-		
+									<Frame name="$parentLootSlotFilter" inherits="UIDropDownMenuTemplate" parentKey="lootSlotFilter" hidden="true"/>
+
 									<Slider name="$parentScrollBar" inherits="MinimalHybridScrollBarTemplate" parentKey="scrollBar">
 										<Anchors>
 											<Anchor point="TOPRIGHT" x="0" y="-18"/>
@@ -2714,9 +2717,6 @@
 										EncounterJournal.encounter.info.rightShadow:Hide();
 										EncounterJournal.encounter.info.difficulty:Hide();
 									</OnShow>
-									<OnHide>
-										EncounterJournal.encounter.info.difficulty:Show();
-									</OnHide>
 									<OnLoad>
 										Model_OnLoad(self);
 										self:SetCamDistanceScale(1.0);
@@ -2733,7 +2733,7 @@
 					</Frame>
 				</Frames>
 			</Frame>
-			
+
 			<Frame name="$parentSuggestFrame" setAllPoints="true" parentKey="suggestFrame" enableMouse="true" hidden="true" useParentLevel="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentInset" x="5" y="-51" />
@@ -2782,7 +2782,7 @@
 											<Anchor point="TOPLEFT" x="0" y="0"/>
 										</Anchors>
 										<Layers>
-											<Layer level="ARTWORK">								
+											<Layer level="ARTWORK">
 												<FontString parentKey="text" font="DestinyFontHuge" justifyH="center" justifyV="top" maxLines="2">
 													<Size x="264" y="0"/>
 													<Color r="0" g="0" b="0"/>
@@ -2796,7 +2796,7 @@
 											<Anchor point="TOPLEFT" relativeKey="$parent.title" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
 										</Anchors>
 										<Layers>
-											<Layer level="ARTWORK">								
+											<Layer level="ARTWORK">
 												<FontString parentKey="text" font="GameTooltipHeader" justifyH="center" justifyV="top">
 													<Size x="264" y="0"/>
 													<Color r="0.2824" g="0.0157" b="0.0157"/>
@@ -2942,7 +2942,7 @@
 			<OnEvent function="EncounterJournal_OnEvent"/>
 		</Scripts>
 	</Frame>
-	
+
 	<Frame name="EncounterJournalTooltip" parent="UIParent" frameStrata="TOOLTIP" clampedToScreen="true" hidden="true">
 		<Size x="128" y="256"/>
 		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
@@ -3060,6 +3060,6 @@
 		</Frames>
 		<Scripts>
 			<OnLoad function="EncounterJournalTooltip_OnLoad"/>
-		</Scripts>					
+		</Scripts>
 	</Frame>
 </Ui>

@@ -552,14 +552,14 @@ function SpellButton_UpdateCooldown(self)
 	local cooldown = self.cooldown;
 	local slot, slotType = SpellBook_GetSpellBookSlot(self);
 	if (slot) then
-		local start, duration, enable = GetSpellCooldown(slot, SpellBookFrame.bookType);
+		local start, duration, enable, modRate = GetSpellCooldown(slot, SpellBookFrame.bookType);
 		if (cooldown and start and duration) then
 			if (enable) then
 				cooldown:Hide();
 			else
 				cooldown:Show();
 			end
-			CooldownFrame_Set(cooldown, start, duration, enable);
+			CooldownFrame_Set(cooldown, start, duration, enable, false, modRate);
 		else
 			cooldown:Hide();
 		end

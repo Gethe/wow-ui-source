@@ -76,7 +76,7 @@ function ArtifactAppearancesMixin:SetupAppearanceSet(setIndex, prevAppearanceSet
 	if setID and numAppearanceSlots > 0 then
 		local appearanceSet;
 		for appearanceIndex = 1, numAppearanceSlots do
-			local appearanceID, appearanceName, displayIndex, appearanceUnlocked, unlockConditionText, uiCameraID, altHandUICameraID, swatchR, swatchG, swatchB, modelAlpha, modelDesaturation, suppressGlobalAnim = C_ArtifactUI.GetAppearanceInfo(setIndex, appearanceIndex);
+			local appearanceID, appearanceName, displayIndex, appearanceUnlocked, unlockConditionText, uiCameraID, altHandUICameraID, swatchR, swatchG, swatchB, modelAlpha, modelDesaturation = C_ArtifactUI.GetAppearanceInfo(setIndex, appearanceIndex);
 
 			if appearanceID then
 				if not appearanceSet then

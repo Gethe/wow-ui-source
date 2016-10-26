@@ -653,6 +653,11 @@ function InterfaceOptionsDisplayPanelSelfHighlightDropDown_Initialize()
 	info.checked = info.value == selectedValue;
 	UIDropDownMenu_AddButton(info);
 
+	info.text = SELF_HIGHLIGHT_MODE_OUTLINE;
+	info.value = "2";
+	info.checked = info.value == selectedValue;
+	UIDropDownMenu_AddButton(info);
+
 	info.text = SELF_HIGHLIGHT_MODE_CIRCLE_AND_OUTLINE;
 	info.value = "1";
 	info.checked = info.value == selectedValue;
@@ -719,10 +724,11 @@ function InterfaceOptionsDisplayPanelChatBubblesDropDown_OnClick(self)
 	InterfaceOptionsDisplayPanelChatBubblesDropDown:SetValue(self.value);
 end
 
-function InterfaceOptionsDisplayPanelChatBubbles_Initialize()
-	local selectedValue = UIDropDownMenu_GetSelectedValue(InterfaceOptionsDisplayPanelChatBubblesDropDown);
+function InterfaceOptionsDisplayPanelChatBubbles_Initialize(self)
+	local selectedValue = UIDropDownMenu_GetSelectedValue(self);
 	local info = UIDropDownMenu_CreateInfo();
-
+	self.tooltip = OPTION_TOOLTIP_CHAT_BUBBLES;
+	
 	info.text = ALL;
 	info.func = InterfaceOptionsDisplayPanelChatBubblesDropDown_OnClick;
 	info.value = 1;
@@ -1717,7 +1723,6 @@ end
 CameraPanelOptions = {
 	cameraWaterCollision = { text = "WATER_COLLISION" },
 	cameraYawSmoothSpeed = { text = "AUTO_FOLLOW_SPEED", minValue = 90, maxValue = 270, valueStep = 10 },
-	cameraDistanceMaxFactor = { text = "MAX_FOLLOW_DIST", minValue = 1, maxValue = 1.9, valueStep = 0.1 },
 }
 
 function InterfaceOptionsCameraPanel_OnLoad (self)

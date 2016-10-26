@@ -298,6 +298,7 @@
 					<Color r="0.212" g="0" b="0.337" a="1"/>
 				</Texture>
 				<FontString parentKey="Status" inherits="GameFontHighlightSmall" justifyH="LEFT">
+					<Size x="0" y="14"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.ILevel" relativePoint="TOPRIGHT" x="4" y="0"/>
 					</Anchors>
@@ -528,14 +529,14 @@
 			<Layer level="ARTWORK">
 				<FontString parentKey="Text" inherits="GameFontNormal" text="GARRISON_FOLLOWER_CLICK_UPGRADE_PROMPT">
 					<Anchors>
-						<Anchor point="TOP"/>
+						<Anchor point="BOTTOM"/>
 					</Anchors>
 					<Color r="0.1" g="1" b="0.1"/>
 				</FontString>
 				<FontString parentKey="TextInvalid" inherits="GameFontNormal" textwrap="true" text="GARRISON_FOLLOWER_UPGRADE_REQUIRES_MAX_LEVEL">
-					<Size x="200" y="40"/>
+					<Size x="200" y="0"/>
 					<Anchors>
-						<Anchor point="TOP"/>
+						<Anchor point="BOTTOM"/>
 					</Anchors>
 					<Color r="1" g="0.1" b="0.1"/>
 				</FontString>

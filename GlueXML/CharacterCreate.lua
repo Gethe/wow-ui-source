@@ -18,7 +18,7 @@ PAID_SERVICE_CHARACTER_ID = nil;
 PAID_SERVICE_TYPE = nil;
 
 PREVIEW_FRAME_HEIGHT = 130;
-PREVIEW_FRAME_X_OFFSET = 19;
+PREVIEW_FRAME_X_OFFSET = 16;
 PREVIEW_FRAME_Y_OFFSET = -7;
 
 local FACTION_GROUP_HORDE = 0;
@@ -229,7 +229,7 @@ local function HandleClassTrialCreateResult(result)
 	local resultMessage = classTrialResultToString[result];
 	if resultMessage then
 		GlueDialog_Show("OKAY", resultMessage);
-		CharacterCreate_SelectCharacterType(LE_CHARACTER_CREATE_TYPE_NORMAL)
+		CharacterCreate_SelectCharacterType(LE_CHARACTER_CREATE_TYPE_NORMAL);
 	end
 end
 
@@ -338,11 +338,11 @@ function CharacterCreate_OnShow()
 		PandarenFactionButtons_Hide();
 	end
 
-	CharacterCreateEnumerateRaces(GetAvailableRaces());
+	CharacterCreateEnumerateRaces();
 
 	SetCharacterRace(GetSelectedRace());
 
-	CharacterCreateEnumerateClasses(GetAvailableClasses());
+	CharacterCreateEnumerateClasses();
 
 	local _,_,index = GetSelectedClass();
 	SetCharacterClass(index);
@@ -363,15 +363,15 @@ function CharacterCreate_OnShow()
 	CharacterCreateFrame_UpdateRecruitInfo();
 	CharacterCreate_SelectCharacterType(GetCharacterCreateType());
 
-	if( IsKioskModeEnabled() ) then
-		local data = KioskModeSplash_GetModeData();
-		if (not data) then
+	if( IsKioskGlueEnabled() ) then
+		local kioskModeData = KioskModeSplash_GetModeData();
+		if (not kioskModeData) then
 			-- This shouldn't happen, why don't have we have mode data?
 			GlueParent_SetScreen("kioskmodesplash");
 			return;
 		end
 		local available = {};
-		for k, v in pairs(data.races) do
+		for k, v in pairs(kioskModeData.races) do
 			if (v) then
 				tinsert(available, k);
 			end
@@ -381,11 +381,11 @@ function CharacterCreate_OnShow()
 		SetSelectedRace(rid);
 		SetCharacterRace(rid);
 
-		CharacterCreateEnumerateClasses(GetAvailableClasses());
+		CharacterCreateEnumerateClasses();
 
 		local currentRace = GetSelectedRace();
 		local available = {};
-		for k, v in pairs(data.classes) do
+		for k, v in pairs(kioskModeData.classes) do
 			if (v) then
 				local id = KioskModeSplash_GetIDForSelection("classes", k);
 				if (IsClassAllowedInKioskMode(id) and IsRaceClassValid(currentRace, id)) then
@@ -396,11 +396,11 @@ function CharacterCreate_OnShow()
 
 		local cid = KioskModeSplash_GetIDForSelection("classes", available[math.random(1, #available)]);
 
-		KioskModeCheckTemplate(cid);
+		KioskModeCheckTrial(cid);
 		SetSelectedClass(cid);
 		SetCharacterClass(cid);
 		SetCharacterRace(GetSelectedRace());
-	
+
 		RandomizeCharCustomization(true);
 		KioskModeSplash_SetAutoEnterWorld(false);
 	end
@@ -433,8 +433,8 @@ function CharacterCreate_OnEvent(self, event, ...)
 	elseif ( event == "UPDATE_EXPANSION_LEVEL" ) then
 		-- Expansion level changed while online, so enable buttons as needed
 		if ( CharacterCreateFrame:IsShown() ) then
-			CharacterCreateEnumerateRaces(GetAvailableRaces());
-			CharacterCreateEnumerateClasses(GetAvailableClasses());
+			CharacterCreateEnumerateRaces();
+			CharacterCreateEnumerateClasses();
 		end
 	elseif ( event == "CHARACTER_CREATION_RESULT" ) then
 		local success, errorCode = ...;
@@ -532,7 +532,9 @@ function CharacterCreateFrame_UpdateRecruitInfo()
 	end
 end
 
-function CharacterCreateEnumerateRaces(races)
+function CharacterCreateEnumerateRaces()
+	local races = GetAvailableRaces();
+
 	CharacterCreate.numRaces = #races;
 	if ( CharacterCreate.numRaces > MAX_RACES ) then
 		message("Too many races!  Update MAX_RACES");
@@ -560,9 +562,9 @@ function CharacterCreateEnumerateRaces(races)
 		button.PushedTexture:SetTexCoord(coords[1], coords[2], coords[3], coords[4]);
 		button.nameFrame.text:SetText(name);
 
-		local data = IsKioskModeEnabled() and KioskModeSplash_GetModeData();
+		local kioskModeData = IsKioskGlueEnabled() and KioskModeSplash_GetModeData();
 		local disableTexture = button.DisableTexture;
-		if ( races[i].enabled and (not data or data.races[raceIndex]) ) then
+		if ( races[i].enabled and (not kioskModeData or kioskModeData.races[raceIndex]) ) then
 			button:Enable();
 			SetButtonDesaturated(button);
 			button.name = name;
@@ -572,7 +574,7 @@ function CharacterCreateEnumerateRaces(races)
 			button:Disable();
 			SetButtonDesaturated(button, true);
 			button.name = name;
-			if (IsKioskModeEnabled()) then
+			if (IsKioskGlueEnabled()) then
 				button.tooltip = RACE_DISABLED_KIOSK_MODE;
 			else
 				local disabledReason = _G[raceIndex.."_DISABLED"];
@@ -582,7 +584,7 @@ function CharacterCreateEnumerateRaces(races)
 					button.tooltip = nil;
 				end
 			end
-			disableTexture:SetShown(IsKioskModeEnabled());
+			disableTexture:SetShown(IsKioskGlueEnabled());
 		end
 		index = index + 1;
 	end
@@ -591,78 +593,88 @@ function CharacterCreateEnumerateRaces(races)
 	end
 end
 
-function CharacterCreateEnumerateClasses(classes)
+local function UpdateClassButtonEnabledState(button, classID, classData)
+	local kioskModeData = IsKioskGlueEnabled() and KioskModeSplash_GetModeData();
+	local disableTexture = button.DisableTexture;
+
+	if ( classData.enabled == true ) then
+		if (IsKioskGlueEnabled() and (not IsClassAllowedInKioskMode(classID) or not kioskModeData.classes[classData.fileName])) then
+			button:Disable();
+			SetButtonDesaturated(button, true);
+			button.tooltip.footer = CLASS_DISABLED_KIOSK_MODE;
+			disableTexture:Show();
+		elseif (IsRaceClassValid(CharacterCreate.selectedRace, classID)) then
+			button:Enable();
+			SetButtonDesaturated(button, false);
+			button.tooltip.footer = CLASS_INFO_MORE_INFO_HINT;
+			disableTexture:Hide();
+		else
+			button:Disable();
+			SetButtonDesaturated(button, true);
+			local validRaces = GetValidRacesForClass(button:GetID());
+			validRaces = table.concat(validRaces, ", ");
+			button.tooltip.footer = WrapTextInColorCode(CLASS_DISABLED, "ffff0000") .. "|n|n" .. WrapTextInColorCode(validRaces, "ffff0000");
+			disableTexture:Show();
+		end
+	else
+		button:Disable();
+		SetButtonDesaturated(button, true);
+		local reason;
+		if ( classData.disableReason ) then
+			if ( classData.disableReason == LE_DEMON_HUNTER_CREATION_DISABLED_REASON_HAVE_DH ) then
+				reason = DEMON_HUNTER_RESTRICTED_HAS_DEMON_HUNTER;
+			elseif ( classData.disableReason == LE_DEMON_HUNTER_CREATION_DISABLED_REASON_NEED_LEVEL_70 ) then
+				reason = DEMON_HUNTER_RESTRICTED_NEED_LEVEL_70;
+			elseif ( classData.disableReason == LE_DEMON_HUNTER_INVALID_CLASS_FOR_BOOST) then
+				reason = CANNOT_CREATE_CURRENT_CLASS_WITH_BOOST;
+			end
+		elseif ( classData.fileName ) then
+			reason = _G[classData.fileName.."_DISABLED"];
+		end
+
+		if ( reason ) then
+			button.tooltip.footer = "|cffff0000".. reason .."|r";
+		end
+
+		disableTexture:Show();
+	end
+end
+
+local function SetupClassButton(button, classID, classData)
+	local left, right, top, bottom = unpack(CLASS_ICON_TCOORDS[classData.fileName]);
+
+	button.NormalTexture:SetTexCoord(left, right, top, bottom);
+	button.PushedTexture:SetTexCoord(left, right, top, bottom);
+
+	button.nameFrame.text:SetText(classData.className);
+	button.tooltip = CHARCREATE_CLASS_TOOLTIP[classData.fileName];
+	button.classFilename = classData.fileName;
+
+	UpdateClassButtonEnabledState(button, classID, classData);
+end
+
+function CharacterCreateEnumerateClasses()
+	local classes = GetAvailableClasses();
+
 	CharacterCreate.numClasses = #classes;
+
 	if ( CharacterCreate.numClasses > MAX_CLASSES_PER_RACE ) then
 		message("Too many classes!  Update MAX_CLASSES_PER_RACE");
 		return;
 	end
-	local coords;
+
 	local index = 1;
-	local button;
 	for classID, classData in pairs(classes) do
-		local classIndex = classData.fileName;
-		coords = CLASS_ICON_TCOORDS[classIndex];
-		button = _G["CharCreateClassButton"..index];
-		button.NormalTexture:SetTexCoord(coords[1], coords[2], coords[3], coords[4]);
-		button.PushedTexture:SetTexCoord(coords[1], coords[2], coords[3], coords[4]);
+		local button = _G["CharCreateClassButton"..index];
+
         if (index <= MAX_DISPLAYED_CLASSES_PER_RACE) then
     		button:Show();
         end
-		button.nameFrame.text:SetText(classData.className);
-		button.tooltip = CHARCREATE_CLASS_TOOLTIP[classIndex];
-		button.classFilename = classData.fileName;
-		local data = IsKioskModeEnabled() and KioskModeSplash_GetModeData();
-		local disableTexture = button.DisableTexture;
-		if ( classData.enabled == true ) then
-			if (IsKioskModeEnabled() and (not IsClassAllowedInKioskMode(classID) or not data.classes[classIndex])) then
-				button:Disable();
-				SetButtonDesaturated(button, true);
-				button.tooltip.footer = CLASS_DISABLED_KIOSK_MODE;
-				disableTexture:Show();
-			elseif (IsRaceClassValid(CharacterCreate.selectedRace, classID)) then
-				button:Enable();
-				SetButtonDesaturated(button);
-				button.tooltip.footer = CLASS_INFO_MORE_INFO_HINT;
-				disableTexture:Hide();
-			else
-				button:Disable();
-				SetButtonDesaturated(button, true);
-				button.tooltip.footer = "|cffff0000"..CLASS_DISABLED.."|r";
-				local validRaces = GetValidRacesForClass(button:GetID());
-				if ( validRaces ) then
-					local races = nil;
-					for i = 1, #validRaces do
-						if ( races ) then
-							races = races..", "..validRaces[i];
-						else
-							races = validRaces[i];
-						end
-					end
-					button.tooltip.footer = button.tooltip.footer.."|n|n|cffff0000"..races.."|r";
-				end
-				disableTexture:Show();
-			end
-		else
-			button:Disable();
-			SetButtonDesaturated(button, true);
-			local reason = "";
-			if ( classData.disableReason ) then
-				if ( classData.disableReason == LE_DEMON_HUNTER_CREATION_DISABLED_REASON_HAVE_DH ) then
-					reason = DEMON_HUNTER_RESTRICTED_HAS_DEMON_HUNTER;
-				elseif ( classData.disableReason == LE_DEMON_HUNTER_CREATION_DISABLED_REASON_NEED_LEVEL_70 ) then
-					reason = DEMON_HUNTER_RESTRICTED_NEED_LEVEL_70;
-				elseif ( classData.disableReason == LE_DEMON_HUNTER_INVALID_CLASS_FOR_BOOST) then
-					reason = CANNOT_CREATE_CURRENT_CLASS_WITH_BOOST;
-				end
-			else
-				reason = _G[classIndex.."_DISABLED"];
-			end
-			button.tooltip.footer = "|cffff0000".. reason .."|r";
-			disableTexture:Show();
-		end
+
+		SetupClassButton(button, classID, classData);
 		index = index + 1;
 	end
+
 	for i=CharacterCreate.numClasses + 1, MAX_CLASSES_PER_RACE, 1 do
 		_G["CharCreateClassButton"..i]:Hide();
 	end
@@ -715,7 +727,7 @@ function SetCharacterRace(id)
 	-- Set backdrop colors based on faction
 	local backdropColor = FACTION_BACKDROP_COLOR_TABLE[faction];
 	CharCreateRaceFrame.factionBg:SetGradient("VERTICAL", 0, 0, 0, backdropColor[7], backdropColor[8], backdropColor[9]);
-	CharCreateClassFrame.factionBg:SetGradient("VERTICAL", 0, 0, 0, backdropColor[7], backdropColor[8], backdropColor[9]);
+	CharCreateClassFrame.Panel.factionBg:SetGradient("VERTICAL", 0, 0, 0, backdropColor[7], backdropColor[8], backdropColor[9]);
 	CharCreateCustomizationFrame.factionBg:SetGradient("VERTICAL", 0, 0, 0, backdropColor[7], backdropColor[8], backdropColor[9]);
 	CharCreatePreviewFrame.factionBg:SetGradient("VERTICAL", 0, 0, 0, backdropColor[7], backdropColor[8], backdropColor[9]);
 	CharCreateCustomizationFrame.BannerTop:SetVertexColor(backdropColor[10], backdropColor[11], backdropColor[12]);
@@ -885,7 +897,7 @@ function CharacterCreate_Back()
 		-- back to normal camera
 		SetFaceCustomizeCamera(false);
 	else
-		if( IsKioskModeEnabled() ) then
+		if( IsKioskGlueEnabled() ) then
 			PlaySound("gsCharacterCreationCancel");
 			GlueParent_SetScreen("kioskmodesplash");
 		else
@@ -1021,8 +1033,8 @@ end
 
 function CharacterClass_SelectClass(self, forceAccept)
 	if( self:IsEnabled() ) then
-		if (IsKioskModeEnabled()) then
-			KioskModeCheckTemplate(self:GetID());
+		if (IsKioskGlueEnabled()) then
+			KioskModeCheckTrial(self:GetID());
 		end
 
 		PlaySound("gsCharacterCreationClass");
@@ -1055,7 +1067,7 @@ function CharacterClass_SelectClass(self, forceAccept)
 end
 
 function CharacterClass_OnClick(self)
-	CharacterClass_SelectClass(self, false);
+	CharacterClass_SelectClass(self, IsKioskModeEnabled());
 end
 
 function CharacterRace_OnClick(self, id, forceSelect)
@@ -1066,11 +1078,11 @@ function CharacterRace_OnClick(self, id, forceSelect)
 			SetCharacterRace(id);
 			SetCharacterGender(GetSelectedSex());
 			SetCharacterCreateFacing(-15);
-			CharacterCreateEnumerateClasses(GetAvailableClasses());
-			if (IsKioskModeEnabled()) then
-				local data = KioskModeSplash_GetModeData();
+			CharacterCreateEnumerateClasses();
+			if (IsKioskGlueEnabled()) then
+				local kioskModeData = KioskModeSplash_GetModeData();
 				local available = {};
-				for k, v in pairs(data.classes) do
+				for k, v in pairs(kioskModeData.classes) do
 					if (v) then
 						local cid = KioskModeSplash_GetIDForSelection("classes", k);
 						if (IsClassAllowedInKioskMode(cid) and IsRaceClassValid(id, cid)) then
@@ -1080,7 +1092,7 @@ function CharacterRace_OnClick(self, id, forceSelect)
 				end
 
 				local fcid = KioskModeSplash_GetIDForSelection("classes", available[math.random(1, #available)]);
-				KioskModeCheckTemplate(fcid);
+				KioskModeCheckTrial(fcid);
 				SetSelectedClass(fcid);
 				SetCharacterClass(fcid);
 				SetCharacterRace(GetSelectedRace());
@@ -1105,7 +1117,15 @@ function CharacterRace_OnClick(self, id, forceSelect)
 	end
 end
 
+local currentGender;
+
 function SetCharacterGender(sex)
+	if sex == currentGender then
+		return;
+	end
+
+	currentGender = sex;
+
 	local gender;
 	SetSelectedSex(sex);
 	if ( sex == SEX_MALE ) then
@@ -1117,8 +1137,8 @@ function SetCharacterGender(sex)
 	end
 
 	-- Update race images to reflect gender
-	CharacterCreateEnumerateRaces(GetAvailableRaces());
-	CharacterCreateEnumerateClasses(GetAvailableClasses());
+	CharacterCreateEnumerateRaces();
+	CharacterCreateEnumerateClasses();
  	SetCharacterRace(GetSelectedRace());
 
 	local _,_,classID = GetSelectedClass();
@@ -1191,27 +1211,27 @@ function CharacterCreate_UpdateDemonHunterCustomization()
     CharCreateCustomizationButton9.text:SetText(DEMONHUNTER_TATTOO_COLOR);
 end
 
-function KioskModeCheckTemplate(classID)
-	if (IsKioskModeEnabled()) then
-		local data = KioskModeSplash_GetModeData();
-		if (not data) then -- why?
+function KioskModeCheckTrial(classID)
+	if (IsKioskGlueEnabled()) then
+		local kioskModeData = KioskModeSplash_GetModeData();
+		if (not kioskModeData) then -- why?
 			return;
 		end
-		local useTemplate = nil;
-		if (data.template and data.template.enabled) then
-			useTemplate = data.template.index;
-			for i, v in ipairs(data.template.ignoreClasses) do
+		local useTrial = nil;
+		if (kioskModeData.trial and kioskModeData.trial.enabled) then
+			useTrial = true;
+			for i, v in ipairs(kioskModeData.trial.ignoreClasses) do
 				local id = CLASS_NAME_BUTTON_ID_MAP[v];
 				if (id == classID) then
-					useTemplate = nil;
+					useTrial = nil;
 					break;
 				end
 			end
 		end
-		if (useTemplate) then
-			SetCharacterTemplate(useTemplate);
+		if (useTrial) then
+			CharacterUpgrade_BeginNewCharacterCreation(LE_CHARACTER_CREATE_TYPE_TRIAL_BOOST);
 		else
-			ClearCharacterTemplate();
+			CharacterUpgrade_ResetBoostData();
 		end
 	end
 end
@@ -1650,7 +1670,7 @@ function CharCreateClassButton_OnEnter(self)
 	CharacterCreateTooltip:AddLine(self.tooltip.description, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1, true);
 	CharacterCreateTooltip:AddLine(self.tooltip.footer, nil, nil, nil, nil, true);
 
-	if CharacterUpgrade_IsCreatedCharacterTrialBoost() and not CharacterCreate_IsTrialBoostAllowedForClass(self.classFilename) then
+	if not IsKioskGlueEnabled() and CharacterUpgrade_IsCreatedCharacterTrialBoost() and not CharacterCreate_IsTrialBoostAllowedForClass(self.classFilename) then
 		CharacterCreateTooltip:AddLine(CHARACTER_TYPE_FRAME_TRIAL_BOOST_CHARACTER_TOOLTIP_INVALID, 1, 0, 0, 1, true);
 	end
 end
@@ -1767,8 +1787,14 @@ local function ShouldHideCharacterTypeFrame(characterType)
 end
 
 function CharacterCreate_SelectCharacterType(characterType)
+	if (CharCreateCharacterTypeFrame.currentCharacterType == characterType) then
+		return;
+	end
+
 	characterType = characterType or LE_CHARACTER_CREATE_TYPE_NORMAL;
+
 	SetCharacterCreateType(characterType);
+	CharCreateCharacterTypeFrame.currentCharacterType = characterType;
 
 	-- If this character is actually being created because a boost token is being used, then there's no reason to display
 	-- character type selection, because of the current flow, this boost will actually be consumed.
@@ -1782,6 +1808,7 @@ function CharacterCreate_SelectCharacterType(characterType)
 	SelectCharacterTypeButton(characterType);
 	CharacterUpgrade_SetupFlowForNewCharacter(characterType);
 	CharacterCreate_UpdateClassTrialCustomizationFrames();
+	CharacterCreateEnumerateClasses();
 
 	if (characterType == LE_CHARACTER_CREATE_TYPE_TRIAL_BOOST) then
 		C_SharedCharacterServices.QueryClassTrialBoostResult();

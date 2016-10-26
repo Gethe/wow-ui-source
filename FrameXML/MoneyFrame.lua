@@ -420,18 +420,20 @@ function MoneyFrame_Update(frameName, money, forceShow)
 			silverButton:SetWidth(COIN_BUTTON_WIDTH);
 		end
 		
-		width = width + silverButton:GetWidth();
+		local silverWidth = silverButton:GetWidth();
 		goldButton:SetPoint("RIGHT", frameName.."SilverButton", "LEFT", spacing, 0);
 		if ( goldButton:IsShown() ) then
-			width = width - spacing;
+			silverWidth = silverWidth - spacing;
 		end
 		if ( info.showSmallerCoins ) then
 			showLowerDenominations = 1;
 		end
 		-- hide silver if not enough room
-		if ( maxDisplayWidth and width > maxDisplayWidth ) then
+		if ( maxDisplayWidth and (width + silverWidth) > maxDisplayWidth ) then
 			hideSilver = true;
 			frame.showTooltip = true;
+		else
+			width = width + silverWidth;
 		end
 	end
 	if ( hideSilver ) then
@@ -449,15 +451,17 @@ function MoneyFrame_Update(frameName, money, forceShow)
 			copperButton:SetWidth(COIN_BUTTON_WIDTH);
 		end
 		
-		width = width + copperButton:GetWidth();
+		local copperWidth = copperButton:GetWidth();
 		silverButton:SetPoint("RIGHT", frameName.."CopperButton", "LEFT", spacing, 0);
 		if ( silverButton:IsShown() or goldButton:IsShown() ) then
-			width = width - spacing;
+			copperWidth = copperWidth - spacing;
 		end
 		-- hide copper if not enough room
-		if ( maxDisplayWidth and width > maxDisplayWidth ) then
+		if ( maxDisplayWidth and (width + copperWidth) > maxDisplayWidth ) then
 			hideCopper = true;
 			frame.showTooltip = true;
+		else
+			width = width + copperWidth;
 		end
 	end
 	if ( hideCopper ) then

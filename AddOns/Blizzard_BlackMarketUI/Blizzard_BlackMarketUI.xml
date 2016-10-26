@@ -895,7 +895,7 @@
 				</Scripts>
 			</Button>
 			<Frame name="BlackMarketBidPrice" inherits="MoneyInputFrameTemplate">
-				<Size x="100" y="20"/>
+				<Size x="110" y="20"/>
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BidButton" relativePoint="BOTTOMLEFT" x="0" y="0"/>
 				</Anchors>

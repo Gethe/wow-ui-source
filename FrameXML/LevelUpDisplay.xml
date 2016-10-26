@@ -378,9 +378,9 @@
 						</Scripts>
 					</AnimationGroup>
 					<AnimationGroup parentKey="LegionInvasionNewStage" setToFinalAlpha="true">
-						<Scale childKey="BG1" duration="0.33" order="1" fromScaleX="0" fromScaleY="1" toScaleX="1" toScaleY="1"/>
+						<Scale childKey="BG1" duration="0.33" order="1" fromScaleX="0.001" fromScaleY="1" toScaleX="1" toScaleY="1"/>
 						<Alpha childKey="BG1" duration="0" order="1" fromAlpha="0" toAlpha="1"/>
-						<Scale childKey="BG2" duration="0.33" order="1" fromScaleX="0" fromScaleY="1" toScaleX="1" toScaleY="1"/>
+						<Scale childKey="BG2" duration="0.33" order="1" fromScaleX="0.001" fromScaleY="1" toScaleX="1" toScaleY="1"/>
 						<Alpha childKey="BG2" duration="0.33" order="1" fromAlpha="0" toAlpha="1"/>
 						<Alpha childKey="BG2" startDelay="0.33" smoothing="IN" duration="0.33" order="1" fromAlpha="1" toAlpha="0"/>
 						
@@ -761,7 +761,7 @@
 	</Button>
 
 	<Frame name="BossBannerLootFrameTemplate" parentArray="LootFrames" virtual="true">
-		<Size x="269" y="41"/>
+		<Size x="269" y="44"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="Background" alphaMode="BLEND" atlas="LootBanner-ItemBg" useAtlasSize="true">
@@ -789,6 +789,13 @@
 					<Anchors>
 						<Anchor point="TOPLEFT" x="56" y="-7"/>
 					</Anchors>
+				</FontString>
+				<FontString parentKey="SetName" inherits="GameFontHighlight" maxLines="1" justifyH="LEFT" hidden="true">
+					<Size x="204" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.ItemName" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+					</Anchors>
+					<Color r="0" g="1.0" b="0"/>
 				</FontString>
 				<FontString parentKey="PlayerName" inherits="GameFontNormal" maxLines="1" justifyH="LEFT">
 					<Size x="204" y="0"/>
@@ -828,6 +835,9 @@
 					</Layer>
 				</Layers>
 				<Scripts>
+					<OnLoad>
+						self.UpdateTooltip = function(owner) BossBanner_OnLootItemEnter(owner); end;
+					</OnLoad>
 					<OnEnter function="BossBanner_OnLootItemEnter"/>
 					<OnLeave function="BossBanner_OnLootItemLeave"/>
 				</Scripts>
@@ -847,11 +857,13 @@
 				<Scale childKey="IconHitBox.GlowWhite" smoothing="IN_OUT" duration="0.25" order="1" fromScaleX="1" fromScaleY="1" toScaleX="1.25" toScaleY="1.25"/>
 				<Alpha childKey="ItemName" startDelay="0.4" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
 				<Alpha childKey="PlayerName" startDelay="0.4" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="SetName" startDelay="0.4" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
 				<Scripts>
 					<OnPlay>
 						local lootFrame = self:GetParent();
 						lootFrame.ItemName:SetAlpha(0);
 						lootFrame.PlayerName:SetAlpha(0);
+						lootFrame.SetName:SetAlpha(0);
 						lootFrame.Icon:SetAlpha(0);
 						lootFrame.IconHitBox.IconBorder:SetAlpha(0);
 						lootFrame.Icon:SetPoint("LEFT", 124, 0);

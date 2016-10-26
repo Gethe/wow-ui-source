@@ -77,13 +77,13 @@ VideoData["Graphics_Quality"]={
 	end,
 	updatecustomfield =
 		function(self, value)
-			if(value > self.numQualityLevels) then
+			if(not value) then
 				_G["Graphics_RightQualityLabel"]:Show();
 			else
 				self.noclick = true;
 				Graphics_Quality:SetValue(value);	-- set the slider only
 				self.noclick = false;
-				if ( self:GetValue() > self.numQualityLevels ) then
+				if ( not self:GetValue() ) then
 					_G["Graphics_RightQualityLabel"]:Show();
 				else
 					_G["Graphics_RightQualityLabel"]:Hide();
@@ -102,7 +102,7 @@ VideoData["Graphics_Quality"]={
 	commitslider =
 		function(self)
 			local value = self:GetValue();
-			if(value > self.numQualityLevels) then
+			if(not value) then
 				value = self:sliderGetValue();
 			end
 			local graphicsQualityCVar = "graphicsQuality";
@@ -134,7 +134,7 @@ VideoData["RaidGraphics_Quality"].childOptions = {
 VideoData["RaidGraphics_Quality"].numQualityLevels = 10;
 VideoData["RaidGraphics_Quality"].updatecustomfield =
 	function(self, value)
-		if(value > self.numQualityLevels) then
+		if(not value) then
 			_G["RaidGraphics_RightQualityLabel"]:Show();
 		else
 			self.noclick = true;
@@ -497,7 +497,7 @@ VideoData["Display_RaidSettingsEnabledCheckBox"]={
 
 VideoData["Graphics_ViewDistanceSlider"]={
 	name = FARCLIP;
-	description = OPTION_TOOLTIP_FARCLIP,
+	tooltip = OPTION_TOOLTIP_FARCLIP,
 	graphicsCVar = "graphicsViewDistance",
 	dependent = {
 		"Graphics_Quality",
@@ -506,7 +506,7 @@ VideoData["Graphics_ViewDistanceSlider"]={
 
 VideoData["RaidGraphics_ViewDistanceSlider"]={
 	name = FARCLIP;
-	description = OPTION_TOOLTIP_FARCLIP,
+	tooltip = OPTION_TOOLTIP_FARCLIP,
 	graphicsCVar = "raidGraphicsViewDistance",
 	dependent = {
 		"RaidGraphics_Quality",
@@ -515,7 +515,7 @@ VideoData["RaidGraphics_ViewDistanceSlider"]={
 -------------------------------------------------------------------------------------------------------
 VideoData["Graphics_GroundClutterSlider"]={
 	name= GROUND_CLUTTER;
-	description = OPTION_TOOLTIP_GROUND_CLUTTER,
+	tooltip = OPTION_TOOLTIP_GROUND_CLUTTER,
 	graphicsCVar = "graphicsGroundClutter",
 	dependent = {
 		"Graphics_Quality",
@@ -524,7 +524,7 @@ VideoData["Graphics_GroundClutterSlider"]={
 
 VideoData["RaidGraphics_GroundClutterSlider"]={
 	name= GROUND_CLUTTER;
-	description = OPTION_TOOLTIP_GROUND_CLUTTER,
+	tooltip = OPTION_TOOLTIP_GROUND_CLUTTER,
 	graphicsCVar = "raidGraphicsGroundClutter",
 	dependent = {
 		"RaidGraphics_Quality",
@@ -534,7 +534,7 @@ VideoData["RaidGraphics_GroundClutterSlider"]={
 -------------------------------------------------------------------------------------------------------
 VideoData["Graphics_EnvironmentalDetailSlider"]={
 	name = ENVIRONMENT_DETAIL;
-	description = OPTION_TOOLTIP_ENVIRONMENT_DETAIL,
+	tooltip = OPTION_TOOLTIP_ENVIRONMENT_DETAIL,
 	graphicsCVar = "graphicsEnvironmentDetail",
 	dependent = {
 		"Graphics_Quality",
@@ -543,7 +543,7 @@ VideoData["Graphics_EnvironmentalDetailSlider"]={
 
 VideoData["RaidGraphics_EnvironmentalDetailSlider"]={
 	name = ENVIRONMENT_DETAIL;
-	description = OPTION_TOOLTIP_ENVIRONMENT_DETAIL,
+	tooltip = OPTION_TOOLTIP_ENVIRONMENT_DETAIL,
 	graphicsCVar = "raidGraphicsEnvironmentDetail",
 	dependent = {
 		"RaidGraphics_Quality",

@@ -22,6 +22,11 @@
 		</KeyValues>
 		<Size x="86" y="4"/>
 		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="background">
+					<Color r=".2" g=".2" b=".2" a=".85"/>
+				</Texture>
+			</Layer>
 			<Layer level="ARTWORK">
 				<Texture parentKey="ManaCostPredictionBar" inherits="MyManaCostPredictionBarTemplate"/>
 			</Layer>

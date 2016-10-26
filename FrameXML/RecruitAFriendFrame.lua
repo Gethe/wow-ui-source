@@ -27,8 +27,8 @@ function RecruitAFriend_OnEvent(self, event, ...)
 			if ( not GetCVarBool("displayedRAFFriendInfo") ) then
 				SetCVar("displayedRAFFriendInfo", "1");
 				if ( not FriendAddedNotice ) then
-					FriendAddedNotice = CreateFrame("FRAME", nil, FriendsMicroButton, "RecruitInfoDialogTemplate");
-					FriendAddedNotice:SetPoint("LEFT", FriendsMicroButton, "RIGHT", 15, 0);
+					FriendAddedNotice = CreateFrame("FRAME", nil, QuickJoinToastButton, "RecruitInfoDialogTemplate");
+					FriendAddedNotice:SetPoint("LEFT", QuickJoinToastButton, "RIGHT", 15, 0);
 				end
 				if ( not FriendAddedExplanation ) then
 					FriendAddedExplanation = CreateFrame("FRAME", nil, FriendsFrameFriendsScrollFrame, "RecruitInfoDialogTemplate");

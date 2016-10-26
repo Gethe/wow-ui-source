@@ -209,7 +209,7 @@ function CharacterSelect_OnShow(self)
 
 	AccountUpgradePanel_Update(CharSelectAccountUpgradeButton.isExpanded);
 
-	if( IsKioskModeEnabled() ) then
+	if( IsKioskGlueEnabled() ) then
 		CharacterSelectUI:Hide();
 	end
 
@@ -399,7 +399,7 @@ function CharacterSelect_OnEvent(self, event, ...)
 			self.undeleteNoCharacters = true;
 			return;
 		elseif (not CHARACTER_SELECT_BACK_FROM_CREATE and numChars == 0) then
-			if (IsKioskModeEnabled()) then
+			if (IsKioskGlueEnabled()) then
 				GlueParent_SetScreen("kioskmodesplash");
 			else
 				GlueParent_SetScreen("charcreate");
@@ -410,6 +410,7 @@ function CharacterSelect_OnEvent(self, event, ...)
 		CHARACTER_SELECT_BACK_FROM_CREATE = false;
 
 		if (self.hasPendingTrialBoost) then
+			KioskMode_SetWaitingOnTrial(true);
 			local guid = select(14, GetCharacterInfo(numChars)); -- Brittle, assumes the newly created character will be last on the list.
 			C_CharacterServices.TrialBoostCharacter(guid, self.trialBoostFactionID, self.trialBoostSpecID);
 			CharacterSelect_SetPendingTrialBoost(false);
@@ -419,18 +420,12 @@ function CharacterSelect_OnEvent(self, event, ...)
 			GlueDialog_Show("UNDELETE_NO_CHARACTERS");
 			self.undeleteNoCharacters = false;
 		end
-
+		
 		UpdateCharacterList();
 		UpdateAddonButton(true);
 		CharSelectCharacterName:SetText(GetCharacterInfo(GetCharIDFromIndex(self.selectedIndex)));
-		if (IsKioskModeEnabled()) then
-			if (KioskModeSplash_GetAutoEnterWorld()) then
-				EnterWorld();
-			else
-				KioskDeleteAllCharacters();
-				GlueParent_SetScreen("kioskmodesplash");
-			end
-		end
+		KioskMode_CheckEnterWorld();
+		KioskMode_CheckCompetitiveMode();
 		CharacterServicesMaster_OnCharacterListUpdate();
 	elseif ( event == "UPDATE_SELECTED_CHARACTER" ) then
 		local charID = ...;
@@ -1100,6 +1095,11 @@ function CharacterSelect_AllowedToEnterWorld()
 		return false;
 	end
 
+	local isTrialBoost, isTrialBoostLocked = select(21, GetCharacterInfo(GetCharacterSelection()));
+	if (isTrialBoost and (isTrialBoostLocked or not C_CharacterServices.IsTrialBoostEnabled())) then
+		return false;
+	end
+
 	return true;
 end
 
@@ -1696,6 +1696,7 @@ function CharacterSelect_UpdateButtonState()
 	local undeleting = CharacterSelect.undeleting;
 	local undeleteEnabled, undeleteOnCooldown = GetCharacterUndeleteStatus();
 	local redemptionInProgress = AccountReactivationInProgressDialog:IsShown() or GoldReactivateConfirmationDialog:IsShown() or TokenReactivateConfirmationDialog:IsShown();
+	local inCompetitiveMode = IsCompetitiveModeEnabled();
 
 	local boostInProgress = select(18,GetCharacterInfo(GetCharacterSelection()));
 	CharSelectEnterWorldButton:SetEnabled(CharacterSelect_AllowedToEnterWorld());
@@ -1718,7 +1719,7 @@ function CharacterSelect_UpdateButtonState()
 		end
 	end
 
-	CharSelectAccountUpgradeButton:SetEnabled(not redemptionInProgress and not undeleting);
+	CharSelectAccountUpgradeButton:SetEnabled(not redemptionInProgress and not undeleting and not inCompetitiveMode);
 end
 
 function CharacterSelect_DeleteCharacter(charID)
@@ -1730,6 +1731,46 @@ function CharacterSelect_DeleteCharacter(charID)
 	CharacterDeleteDialog:Hide();
 	PlaySound("gsTitleOptionOK");
 	GlueDialog_Show("CHAR_DELETE_IN_PROGRESS");
+end
+
+local KIOSK_MODE_WAITING_ON_TRIAL = false;
+function KioskMode_SetWaitingOnTrial(waiting)
+	KIOSK_MODE_WAITING_ON_TRIAL = waiting;
+end
+
+function KioskMode_CheckEnterWorld()
+	if (not IsKioskModeEnabled()) then
+		return;
+	end
+
+	if (not KIOSK_MODE_WAITING_ON_TRIAL) then
+		if (KioskModeSplash_GetAutoEnterWorld()) then
+			EnterWorld();
+		else
+			KioskDeleteAllCharacters();
+			if (IsKioskGlueEnabled()) then
+				GlueParent_SetScreen("kioskmodesplash");
+			end
+		end
+	end
+end
+
+function KioskMode_CheckCompetitiveMode()
+	if (IsCompetitiveModeEnabled()) then
+		CharSelectAccountUpgradeButton:SetText(KIOSK_MODE_COMPETITIVE_MODE);
+		CharSelectAccountUpgradeButton:Show();
+		CharSelectAccountUpgradeButton:Disable();
+		CharSelectAccountUpgradeButtonExpandCollapseButton:Hide();
+		local featureTable = ACCOUNT_UPGRADE_FEATURES[LE_EXPANSION_LEVEL_PREVIOUS];
+		CharSelectAccountUpgradeMiniPanel:Show();
+
+		if(featureTable.logo) then
+			CharSelectAccountUpgradeMiniPanel.logo:SetTexture(featureTable.logo);
+		else
+			CharSelectAccountUpgradeMiniPanel.logo:SetAtlas(featureTable.atlasLogo, false);
+		end
+		CharSelectAccountUpgradeMiniPanel.banner:SetAtlas(featureTable.banner, true);
+	end
 end
 
 -- CHARACTER BOOST (SERVICES)
@@ -1927,7 +1968,11 @@ function CharacterUpgradePopup_OnCloseClick(self)
 end
 
 function CharacterServicesTokenBoost_OnClick(self)
-	if HasSufficientExperienceForAdvancedCreation() then
+	if IsVeteranTrialAccount() then
+		GlueDialog_Show("CHARACTER_BOOST_FEATURE_RESTRICTED", CHARACTER_BOOST_YOU_MUST_REACTIVATE);
+	elseif IsTrialAccount() then
+		GlueDialog_Show("CHARACTER_BOOST_FEATURE_RESTRICTED", CHARACTER_BOOST_YOU_MUST_UPGRADE);
+	elseif HasSufficientExperienceForAdvancedCreation() then
 		CharacterUpgradePopup_BeginCharacterUpdgradeFlow(self.data);
 	else
 		GlueDialog_Show("CHARACTER_BOOST_NO_CHARACTERS_WARNING", nil, self.data);
@@ -1960,6 +2005,8 @@ function CharacterServicesMaster_OnCharacterListUpdate()
 	if (CharacterServicesMaster.waitingForLevelUp) then
 		C_CharacterServices.ApplyLevelUp();
 		CharacterServicesMaster.waitingForLevelUp = false;
+		KioskMode_SetWaitingOnTrial(false);
+		KioskMode_CheckEnterWorld();
 	elseif (CharacterUpgrade_IsCreatedCharacterUpgrade() or startAutomatically) then
 		if (CharacterUpgrade_IsCreatedCharacterUpgrade()) then
 			CharacterUpgradeFlow.data = CHARACTER_UPGRADE_CREATE_CHARACTER_DATA;

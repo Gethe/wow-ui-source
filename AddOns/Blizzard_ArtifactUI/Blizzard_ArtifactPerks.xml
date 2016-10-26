@@ -31,7 +31,7 @@
 				<Alpha parentKey="Start2" childKey="FillScroll2" duration=".001" order="1" fromAlpha="0" toAlpha="0"/>
 				
 				<Alpha childKey="Fill" duration="0.1" order="2" fromAlpha="0" toAlpha="1"/>
-				<LineScale parentKey="LineScale" childKey="Fill" smoothing="IN" duration="0.75" order="2" fromScaleX="0" fromScaleY="1" toScaleX="1" toScaleY="1"/>
+				<LineScale parentKey="LineScale" childKey="Fill" smoothing="IN" duration="0.75" order="2" fromScaleX="0.001" fromScaleY="1" toScaleX="1" toScaleY="1"/>
 				<Alpha childKey="Fill" duration="1" order="3" fromAlpha="1" toAlpha="0"/>
 				<Alpha childKey="Background" smoothing="OUT" duration="0.75" order="3" fromAlpha="0" toAlpha="1"/>
 			</AnimationGroup>
@@ -78,14 +78,17 @@
 					</Anchors>
 				</Texture>
 			</Layer>
+			<Layer level="HIGHLIGHT">
+				<Texture parentKey="InnerHighlightTexture" atlas="bags-roundhighlight" useAtlasSize="true" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 		</Layers>
 
 		<NormalTexture parentKey="NormalTexture" />
-		<HighlightTexture parentKey="HighlightTexture" atlas="bags-roundhighlight" useAtlasSize="true" alphaMode="ADD">
-			<Anchors>
-				<Anchor point="CENTER"/>
-			</Anchors>
-		</HighlightTexture>
+		<HighlightTexture parentKey="HighlightTexture" alphaMode="ADD" />
 
 		<Scripts>
 			<OnEnter>

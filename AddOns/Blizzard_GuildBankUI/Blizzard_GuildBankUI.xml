@@ -197,7 +197,7 @@
 						</FontString>
 					</Layer>
 					<Layer level="ARTWORK">
-						<Texture name="$parentSearchOverlay" parentKey="searchOverlay" setAllPoints="true" hidden="true" textureSubLevel="4">
+						<Texture name="$parentSearchOverlay" parentKey="searchOverlay" setAllPoints="true" hidden="true">
 							<Color r="0" g="0" b="0" a="0.8"/>
 						</Texture>
 					</Layer>
@@ -387,7 +387,7 @@
 						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBottomRightOuter" x="-9" y="32"/>
 					</Anchors>
 					<TexCoords left="0.01562500" right="0.51562500" top="0.13671875" bottom="0.26171875"/>	
-				</Texture>`
+				</Texture>
 				<Texture name="$parentTopRightInner" file="Interface\GuildBankFrame\Corners"  >
 					<Size x="32" y="32"/>
 					<Anchors>
@@ -825,17 +825,20 @@
 					<Anchor point="TOPLEFT" x="0" y="0"/>
 				</Anchors>
 				<Frames>
-					<ScrollingMessageFrame name="GuildBankMessageFrame" insertMode="TOP" maxLines="128" fade="false">
+					<ScrollingMessageFrame name="GuildBankMessageFrame" inherits="InlineHyperlinkFrameTemplate">
 						<Size x="688" y="304"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="GuildBankFrameLog" relativePoint="TOPLEFT" x="28" y="-64"/>
 						</Anchors>
 						<Scripts>
-							<OnHyperlinkClick>
-								SetItemRef(link, text, button);
-							</OnHyperlinkClick>
+							<OnLoad>
+								self:SetInsertMode(SCROLLING_MESSAGE_FRAME_INSERT_MODE_TOP);
+								self:SetMaxLines(128);
+								self:SetFading(false);
+								self:SetFontObject(ChatFontNormal);
+								self:SetJustifyH("LEFT");
+							</OnLoad>
 						</Scripts>
-						<FontString inherits="ChatFontNormal" justifyH="LEFT"/>
 					</ScrollingMessageFrame>
 					<ScrollFrame name="GuildBankTransactionsScrollFrame" inherits="FauxScrollFrameTemplate" hidden="true">
 						<Size x="688" y="304"/>
@@ -970,106 +973,162 @@
 			<OnLoad function="GuildBankFrame_OnLoad"/>
 			<OnEvent function="GuildBankFrame_OnEvent"/>
 			<OnShow function="GuildBankFrame_OnShow"/>
-			<OnHide>
-				GuildBankPopupFrame:Hide();
-				StaticPopup_Hide("GUILDBANK_WITHDRAW");
-				StaticPopup_Hide("GUILDBANK_DEPOSIT");
-				StaticPopup_Hide("CONFIRM_BUY_GUILDBANK_TAB");
-				CloseGuildBankFrame();
-				PlaySound("GuildVaultClose");
-			</OnHide>
+			<OnHide function="GuildBankFrame_OnHide"/>
 		</Scripts>
 	</Frame>
 	<Frame name="GuildBankPopupFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true">
-		<Size x="253" y="320"/>
+		<Size x="525" y="495"/>
 		<Anchors>
-			<Anchor point="TOPLEFT" relativeTo="GuildBankFrame" relativePoint="TOPRIGHT" x="-4" y="-30"/>
+			<Anchor point="TOPLEFT" relativeTo="GuildBankFrame" relativePoint="TOPRIGHT" x="38" y="-30"/>
 		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentTopLeft" file="Interface\MacroFrame\MacroPopup-TopLeft">
-					<Size x="189" y="256"/>
+				<Texture parentKey="BG">
 					<Anchors>
-						<Anchor point="TOPLEFT"/>
+						<Anchor point="TOPLEFT" x="7" y="-7"/>
+						<Anchor point="BOTTOMRIGHT" x="-7" y="7"/>
 					</Anchors>
+					<Color r="0" g="0" b="0" a=".80"/>
 				</Texture>
-				<Texture file="Interface\MacroFrame\MacroPopup-TopRight">
-					<Size x="64" y="256"/>
-					<Anchors>
-						<Anchor point="TOPRIGHT"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentBottomLeft" file="Interface\MacroFrame\MacroPopup-BotLeft">
-					<Size x="189" y="64"/>
-					<Anchors>
-						<Anchor point="BOTTOMLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture file="Interface\MacroFrame\MacroPopup-BotRight">
-					<Size x="64" y="64"/>
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT"/>
-					</Anchors>
-				</Texture>
-				<FontString inherits="GameFontHighlightSmall" text="GUILDBANK_POPUP_TEXT">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="24" y="-21"/>
-					</Anchors>
-				</FontString>
-				<FontString inherits="GameFontHighlightSmall" text="MACRO_POPUP_CHOOSE_ICON">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="24" y="-69"/>
-					</Anchors>
-				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
-			<EditBox name="GuildBankPopupEditBox" autoFocus="false" letters="15" historyLines="0">
-				<Size x="180" y="20"/>
+			<Frame parentKey="BorderBox" frameLevel="50" hidden="false">
 				<Anchors>
-					<Anchor point="TOPLEFT" x="29" y="-35"/>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT"/>
 				</Anchors>
 				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture name="GuildBankPopupNameLeft" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
-							<Size x="12" y="29"/>
+					<Layer level="BORDER">
+						<Texture parentKey="topLeft" atlas="macropopup-topleft" useAtlasSize="true">
 							<Anchors>
-								<Anchor point="TOPLEFT" x="-11" y="0"/>
+								<Anchor point="TOPLEFT"/>
 							</Anchors>
-							<TexCoords left="0" right="0.09375" top="0" bottom="1.0"/>
 						</Texture>
-						<Texture name="GuildBankPopupNameRight" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
-							<Size x="12" y="29"/>
+						<Texture parentKey="topRight" atlas="macropopup-topright" useAtlasSize="true">
 							<Anchors>
-								<Anchor point="TOPRIGHT" x="11" y="0"/>
+								<Anchor point="TOPRIGHT" x="0" y="0"/>
 							</Anchors>
-							<TexCoords left="0.90625" right="1.0" top="0" bottom="1.0"/>
 						</Texture>
-						<Texture name="GuildBankPopupNameMiddle" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
-							<Size x="175" y="29"/>
+						<Texture atlas="_macropopup-top" horizTile="true" useAtlasSize="true">
 							<Anchors>
-								<Anchor point="LEFT" relativeTo="GuildBankPopupNameLeft" relativePoint="RIGHT"/>
-								<Anchor point="RIGHT" relativeTo="GuildBankPopupNameRight" relativePoint="LEFT"/>
+								<Anchor point="TOPLEFT" relativeKey="$parent.topLeft" relativePoint="TOPRIGHT" x="0" y="0"/>
+								<Anchor point="TOPRIGHT" relativeKey="$parent.topRight" relativePoint="TOPLEFT" x="0" y="0"/>
 							</Anchors>
-							<TexCoords left="0.09375" right="0.90625" top="0" bottom="1.0"/>
 						</Texture>
+						<Texture parentKey="bottomLeft" atlas="macropopup-bottomleft" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="bottomRight" atlas="macropopup-bottomright" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture atlas="_macropopup-bottom" horizTile="true" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativeKey="$parent.bottomLeft" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.bottomRight" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture atlas="!macropopup-left" vertTile="true" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.topLeft" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+								<Anchor point="BOTTOMLEFT" relativeKey="$parent.bottomLeft" relativePoint="TOPLEFT" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture atlas="!macropopup-right" vertTile="true" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPRIGHT" relativeKey="$parent.topRight" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.bottomRight" relativePoint="TOPRIGHT" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+						<FontString inherits="GameFontHighlightSmall" text="MACRO_POPUP_TEXT">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="24" y="-21"/>
+							</Anchors>
+						</FontString>
+						<FontString inherits="GameFontHighlightSmall" text="MACRO_POPUP_CHOOSE_ICON">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="24" y="-69"/>
+							</Anchors>
+						</FontString>
 					</Layer>
 				</Layers>
-				<Scripts>
-					<OnEscapePressed function="GuildBankPopupFrame_CancelEdit"/>
-					<OnEnterPressed>
-						if ( GuildBankPopupOkayButton:IsEnabled() ) then
-							GuildBankPopupOkayButton_OnClick(self);
-						end
-						GuildBankPopupEditBox:ClearFocus();
-					</OnEnterPressed>
-				</Scripts>
-				<FontString inherits="ChatFontNormal"/>
-			</EditBox>
+				<Frames>
+					<EditBox name="GuildBankPopupEditBox" autoFocus="false" letters="15" historyLines="0">
+						<Size x="180" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" x="29" y="-35"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture name="GuildBankPopupNameLeft" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+									<Size x="12" y="29"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" x="-11" y="0"/>
+									</Anchors>
+									<TexCoords left="0" right="0.09375" top="0" bottom="1.0"/>
+								</Texture>
+								<Texture name="GuildBankPopupNameRight" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+									<Size x="12" y="29"/>
+									<Anchors>
+										<Anchor point="TOPRIGHT" x="11" y="0"/>
+									</Anchors>
+									<TexCoords left="0.90625" right="1.0" top="0" bottom="1.0"/>
+								</Texture>
+								<Texture name="GuildBankPopupNameMiddle" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+									<Size x="175" y="29"/>
+									<Anchors>
+										<Anchor point="LEFT" relativeTo="GuildBankPopupNameLeft" relativePoint="RIGHT"/>
+										<Anchor point="RIGHT" relativeTo="GuildBankPopupNameRight" relativePoint="LEFT"/>
+									</Anchors>
+									<TexCoords left="0.09375" right="0.90625" top="0" bottom="1.0"/>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnEscapePressed function="GuildBankPopupFrame_CancelEdit"/>
+							<OnEnterPressed>
+								if ( GuildBankPopupOkayButton:IsEnabled() ) then
+									GuildBankPopupOkayButton_OnClick(self);
+								end
+								GuildBankPopupEditBox:ClearFocus();
+							</OnEnterPressed>
+						</Scripts>
+						<FontString inherits="ChatFontNormal"/>
+					</EditBox>
+					<Button name="GuildBankPopupCancelButton" inherits="UIPanelButtonTemplate" text="CANCEL">
+						<Size x="78" y="22"/>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" relativeTo="GuildBankPopupFrame" x="-11" y="13"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								GuildBankPopupFrame_CancelEdit(self)
+								PlaySound("gsTitleOptionOK");
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="GuildBankPopupOkayButton" inherits="UIPanelButtonTemplate" text="OKAY">
+						<Size x="78" y="22"/>
+						<Anchors>
+							<Anchor point="RIGHT" relativeTo="GuildBankPopupCancelButton" relativePoint="LEFT" x="-2" y="0"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								GuildBankPopupOkayButton_OnClick(self);
+								PlaySound("gsTitleOptionOK");
+							</OnClick>
+						</Scripts>
+					</Button>
+				</Frames>
+			</Frame>
 			<ScrollFrame name="GuildBankPopupScrollFrame" inherits="ListScrollFrameTemplate">
-				<Size x="296" y="195"/>
+				<Size x="485" y="389"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativeTo="GuildBankPopupFrame" relativePoint="TOPRIGHT" x="-59" y="-66"/>
+					<Anchor point="TOPRIGHT" relativeTo="GuildBankPopupFrame" relativePoint="TOPRIGHT" x="-36" y="-70"/>
 				</Anchors>
 				<Scripts>
 					<OnVerticalScroll>
@@ -1077,112 +1136,9 @@
 					</OnVerticalScroll>
 				</Scripts>
 			</ScrollFrame>
-			<CheckButton name="GuildBankPopupButton1" inherits="GuildBankPopupButtonTemplate" id="1">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="GuildBankPopupFrame" relativePoint="TOPLEFT" x="16" y="-86"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="GuildBankPopupButton2" inherits="GuildBankPopupButtonTemplate" id="2">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="GuildBankPopupButton1" relativePoint="RIGHT" x="10" y="0"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="GuildBankPopupButton3" inherits="GuildBankPopupButtonTemplate" id="3">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="GuildBankPopupButton2" relativePoint="RIGHT" x="10" y="0"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="GuildBankPopupButton4" inherits="GuildBankPopupButtonTemplate" id="4">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="GuildBankPopupButton3" relativePoint="RIGHT" x="10" y="0"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="GuildBankPopupButton5" inherits="GuildBankPopupButtonTemplate" id="5">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="GuildBankPopupButton1" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="GuildBankPopupButton6" inherits="GuildBankPopupButtonTemplate" id="6">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="GuildBankPopupButton5" relativePoint="RIGHT" x="10" y="0"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="GuildBankPopupButton7" inherits="GuildBankPopupButtonTemplate" id="7">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="GuildBankPopupButton6" relativePoint="RIGHT" x="10" y="0"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="GuildBankPopupButton8" inherits="GuildBankPopupButtonTemplate" id="8">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="GuildBankPopupButton7" relativePoint="RIGHT" x="10" y="0"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="GuildBankPopupButton9" inherits="GuildBankPopupButtonTemplate" id="9">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="GuildBankPopupButton5" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="GuildBankPopupButton10" inherits="GuildBankPopupButtonTemplate" id="10">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="GuildBankPopupButton9" relativePoint="RIGHT" x="10" y="0"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="GuildBankPopupButton11" inherits="GuildBankPopupButtonTemplate" id="11">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="GuildBankPopupButton10" relativePoint="RIGHT" x="10" y="0"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="GuildBankPopupButton12" inherits="GuildBankPopupButtonTemplate" id="12">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="GuildBankPopupButton11" relativePoint="RIGHT" x="10" y="0"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="GuildBankPopupButton13" inherits="GuildBankPopupButtonTemplate" id="13">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="GuildBankPopupButton9" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="GuildBankPopupButton14" inherits="GuildBankPopupButtonTemplate" id="14">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="GuildBankPopupButton13" relativePoint="RIGHT" x="10" y="0"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="GuildBankPopupButton15" inherits="GuildBankPopupButtonTemplate" id="15">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="GuildBankPopupButton14" relativePoint="RIGHT" x="10" y="0"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="GuildBankPopupButton16" inherits="GuildBankPopupButtonTemplate" id="16">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="GuildBankPopupButton15" relativePoint="RIGHT" x="10" y="0"/>
-				</Anchors>
-			</CheckButton>
-			<Button name="GuildBankPopupCancelButton" inherits="UIPanelButtonTemplate" text="CANCEL">
-				<Size x="78" y="22"/>
-				<Anchors>
-					<Anchor point="BOTTOMRIGHT" relativeTo="GuildBankPopupFrame" relativePoint="BOTTOMRIGHT" x="-34" y="34"/>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						GuildBankPopupFrame_CancelEdit(self)
-						PlaySound("gsTitleOptionOK");
-					</OnClick>
-				</Scripts>
-			</Button>
-			<Button name="GuildBankPopupOkayButton" inherits="UIPanelButtonTemplate" text="OKAY">
-				<Size x="78" y="22"/>
-				<Anchors>
-					<Anchor point="RIGHT" relativeTo="GuildBankPopupCancelButton" relativePoint="LEFT" x="-2" y="0"/>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						GuildBankPopupOkayButton_OnClick(self);
-						PlaySound("gsTitleOptionOK");
-					</OnClick>
-				</Scripts>
-			</Button>
 		</Frames>
 		<Scripts>
+			<OnLoad function="GuildBankPopupFrame_OnLoad"/>
 			<OnShow function="GuildBankPopupFrame_OnShow"/>
 			<OnHide function="GuildBankPopupFrame_OnHide"/>
 		</Scripts>

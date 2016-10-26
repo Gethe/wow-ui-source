@@ -35,12 +35,19 @@ TRAVEL PASS
 		</Layers>
 	</Frame>
 	
-	<Button name="FriendsFrameButtonTemplate" hidden="true" virtual="true">
+	<Frame name="FriendsFrameFriendDividerTemplate" virtual="true" enableMouse="true">
+		<Size x="298" y="16"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture file="Interface\FriendsFrame\UI-FriendsFrame-OnlineDivider" setAllPoints="true"/>
+			</Layer>
+		</Layers>
+	</Frame>
+	<Frame name="FriendsFrameFriendInviteTemplate" virtual="true">
 		<Size x="298" y="34"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<FontString inherits="GameFontNormal" parentKey="text" />
-				<Texture name="$parentBackground" parentKey="background">
+				<Texture parentKey="Background">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="0" y="0"/>
 						<Anchor point="BOTTOMRIGHT" x="0" y="2"/>
@@ -49,29 +56,98 @@ TRAVEL PASS
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
+				<FontString parentKey="Name" inherits="FriendsFont_Normal" justifyH="LEFT">
+					<Size x="180" y="0"/>
+					<Anchors>
+						<Anchor point="LEFT" x="8" y="2"/>
+					</Anchors>
+					<Color r="0.510" g="0.773" b="1" />
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="DeclineButton" inherits="UIMenuButtonStretchTemplate" motionScriptsWhileDisabled="true">
+				<Size x="24" y="22"/>
+				<Anchors>
+					<Anchor point="RIGHT" x="-7" y="1"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Icon" atlas="groupfinder-icon-redx" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnClick>
+						PlaySound("igMainMenuOptionCheckBoxOn");
+						FriendsListPendingInviteDropDown.inviteID = self:GetParent().inviteID;
+						FriendsListPendingInviteDropDown.inviteIndex = self:GetParent().inviteIndex;
+						ToggleDropDownMenu(1, nil, FriendsListPendingInviteDropDown, self, -6, -3);
+					</OnClick>
+				</Scripts>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+			</Button>
+			<Button parentKey="AcceptButton" inherits="UIMenuButtonStretchTemplate" text="ACCEPT">
+				<Size x="0" y="22"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.DeclineButton" relativePoint="LEFT" x="-2" y="0"/>
+				</Anchors>
+				<NormalFont style="GameFontHighlightSmall"/>
+				<HighlightFont style="GameFontHighlightSmall"/>
+				<Scripts>
+					<OnLoad>
+						self:SetWidth(self.Text:GetStringWidth() + 40);
+						self.Text:SetPoint("CENTER", 0, 0);
+					</OnLoad>
+					<OnClick>
+						FriendsList_ClosePendingInviteDialogs();
+						BNAcceptFriendInvite(self:GetParent().inviteID);
+						PlaySound("igMainMenuOptionCheckBoxOn");
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+	</Frame>
+	<Button name="FriendsFrameButtonTemplate" hidden="true" virtual="true">
+		<Size x="298" y="34"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString inherits="GameFontNormal" parentKey="text" />
+				<Texture name="$parentBackground" parentKey="background">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="-1"/>
+						<Anchor point="BOTTOMRIGHT" x="0" y="1"/>
+					</Anchors>
+					<Color r="0" g="0.694" b="0.941" a="0.050"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
 				<Texture name="$parentStatus" file="Interface\FriendsFrame\StatusIcon-Online" parentKey="status">
 					<Size x="16" y="16"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="4" y="-2"/>
+						<Anchor point="TOPLEFT" x="4" y="-3"/>
 					</Anchors>
 				</Texture>
 				<Texture name="$parentGameIcon" file="Interface\FriendsFrame\Battlenet-WoWicon" parentKey="gameIcon">
 					<Size x="28" y="28"/>
 					<Anchors>
-						<Anchor point="TOPRIGHT" x="-2" y="-2"/>
+						<Anchor point="TOPRIGHT" x="-21" y="-3"/>
 					</Anchors>
 				</Texture>
 				<FontString name="$parentName" inherits="FriendsFont_Normal" justifyH="LEFT" parentKey="name">
 					<Size x="226" y="12"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="20" y="-3"/>
+						<Anchor point="TOPLEFT" x="20" y="-4"/>
 					</Anchors>
 					<Color r="0.510" g="0.773" b="1" />
 				</FontString>						
 				<FontString name="$parentInfo" inherits="FriendsFont_Small" justifyH="LEFT" parentKey="info">
 					<Size x="260" y="10"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentName" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
+						<Anchor point="TOPLEFT" relativeTo="$parentName" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
 					</Anchors>
 					<Color r="0.486" g="0.518" b="0.541" />
 				</FontString>
@@ -112,18 +188,29 @@ TRAVEL PASS
 				</Scripts>
 			</Button>
 			<Button name="$parentSummonButton" inherits="ActionButtonTemplate" hidden="true" parentKey="summonButton">
-				<Size x="26" y="26"/>
+				<Size x="24" y="32"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="-4" y="-4"/>
+					<Anchor point="TOPRIGHT" x="1" y="-1"/>
 				</Anchors>
+				<HighlightTexture name="$parentHighlightTexture" file="Interface\FriendsFrame\TravelPass-Invite" alphaMode="ADD">
+					<Size x="24" y="32"/>
+					<TexCoords left="0.42187500" right="0.79687500" top="0.00781250" bottom="0.25781250"/>
+				</HighlightTexture>
 				<Scripts>
 					<OnLoad>
-						_G[self:GetName().."Icon"]:SetTexture("Interface\\Icons\\Spell_Shadow_Teleport");
 						local normalTexture = _G[self:GetName().."NormalTexture"];
 						normalTexture:ClearAllPoints();
 						normalTexture:SetPoint("CENTER");
-						normalTexture:SetWidth(49);
-						normalTexture:SetHeight(49);
+						normalTexture:SetSize(self:GetSize());
+						normalTexture:SetAtlas("socialqueuing-friendlist-summonbutton-up");
+
+						local pushedTexture = self:GetPushedTexture();
+						pushedTexture:ClearAllPoints();
+						pushedTexture:SetPoint("CENTER");
+						pushedTexture:SetSize(self:GetSize());
+						pushedTexture:SetAtlas("socialqueuing-friendlist-summonbutton-down");
+
+						self.cooldown:SetSize(self:GetSize());
 						self.cooldown:SetHideCountdownNumbers(true);
 						self.cooldown:SetSwipeColor(0, 0, 0);
 					</OnLoad>
@@ -164,7 +251,12 @@ TRAVEL PASS
 				FriendsFrameFriendButton_OnClick(self, button);
 			</OnClick>
 		</Scripts>
-		<HighlightTexture file="Interface\QuestFrame\UI-QuestLogTitleHighlight" alphaMode="ADD" parentKey="highlight" />
+		<HighlightTexture file="Interface\QuestFrame\UI-QuestLogTitleHighlight" alphaMode="ADD" parentKey="highlight">
+			<Anchors>
+				<Anchor point="TOPLEFT" x="0" y="-1"/>
+				<Anchor point="BOTTOMRIGHT" x="0" y="1"/>
+			</Anchors>
+		</HighlightTexture>
 	</Button>
 	<!--
 	<Button name="FriendsFrameButtonTemplate" virtual="true">
@@ -348,182 +440,6 @@ TRAVEL PASS
 		</Scripts>
 		<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD"/>
 	</Button>
-	<Button name="FriendsFramePendingButtonTemplate" virtual="true">
-		<Size x="298" y="82"/>
-		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-			<EdgeSize>
-				<AbsValue val="16"/>
-			</EdgeSize>
-			<TileSize>
-				<AbsValue val="16"/>
-			</TileSize>
-			<BackgroundInsets>
-				<AbsInset left="4" right="4" top="4" bottom="4"/>
-			</BackgroundInsets>
-		</Backdrop>
-		<Layers>
-			<Layer level="BORDER">
-				<Texture name="$parentBackground" file="Interface\FriendsFrame\PendingFriendNameBG">
-					<Size x="290" y="60"/>
-					<Anchors>
-						<Anchor point="TOP" x="0" y="5"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="ARTWORK">
-				<FontString inherits="FriendsFont_Small" parentKey="RIDTag" text="REAL_ID" hidden="true">
-					<Anchors>
-						<Anchor point="TOPRIGHT" x="-60" y="-8"/>
-					</Anchors>
-				</FontString>
-				<FontString name="$parentName" inherits="FriendsFont_Normal" justifyH="LEFT" parentKey="name" justifyV="TOP">
-					<Size x="0" y="10"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="12" y="-7"/>
-						<Anchor point="RIGHT" relativeKey="$parent.RIDTag" relativePoint="LEFT" x="-12" y="0"/>
-					</Anchors>
-					<Color r="0.510" g="0.773" b="1" />
-				</FontString>
-				<FontString name="$parentSent" inherits="FriendsFont_Small" justifyH="LEFT" parentKey="sent">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="20" y="-30"/>
-					</Anchors>
-					<Color r="0.263" g="0.506" b="0.659" />
-				</FontString>
-				<FontString name="$parentMessage" inherits="FriendsFont_Small" justifyH="LEFT" parentKey="message">
-					<Size x="260" y="0"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentSent" relativePoint="BOTTOMLEFT" x="0" y="-6"/>
-					</Anchors>
-					<Color r="0.486" g="0.518" b="0.541" />
-				</FontString>
-			</Layer>
-		</Layers>
-		<Frames>
-			<Frame name="$parentHighlight" parentKey="highlight" hidden="true">
-				<Size x="290" y="60"/>
-				<Anchors>
-					<Anchor point="TOP" x="0" y="5"/>
-				</Anchors>
-				<Layers>
-					<Layer level="BORDER">
-						<Texture file="Interface\FriendsFrame\PendingFriendNameBG-New" setAllPoints="true"/>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnUpdate>
-						-- smooth alpha from 0.2 to 0.6
-						local pulseInterval = mod(GetTime() * 1.5, math.pi);
-						self:SetAlpha(math.sin(pulseInterval) / 2.5 + 0.2)
-					</OnUpdate>
-				</Scripts>
-			</Frame>
-			<Button name="$parentAcceptButton" inherits="UIPanelButtonTemplate" text="ACCEPT">
-				<Size x="98" y="22"/>
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentMessage" relativePoint="BOTTOMLEFT" x="10" y="-10"/>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						PendingListFrame_CloseDropDownAndDialogs();
-						BNAcceptFriendInvite(self:GetParent().inviteID);
-						PlaySound("igMainMenuOptionCheckBoxOn");
-					</OnClick>
-				</Scripts>
-			</Button>
-			<Button name="$parentDeclineButton" inherits="UIPanelButtonTemplate" text="DECLINE">
-				<Size x="98" y="22"/>
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentAcceptButton" relativePoint="RIGHT" x="44" y="0"/>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						PendingListFrame_CloseDropDownAndDialogs();
-						BNDeclineFriendInvite(self:GetParent().inviteID);
-						PlaySound("igMainMenuOptionCheckBoxOn");
-					</OnClick>
-				</Scripts>
-			</Button>
-			<Button name="$parentReportButton">
-				<Size x="17" y="14"/>
-				<Anchors>
-					<Anchor point="TOPRIGHT" x="-30" y="-6"/>
-				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture file="Interface\FriendsFrame\ReportSpamIcon" alpha="0.5" parentKey="texture">
-							<Size x="28" y="28"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" x="0" y="1"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnEnter>
-						self.texture:SetAlpha(1.0);
-						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:AddLine(BNET_REPORT_PLAYER, 1, 1, 1);
-						GameTooltip:AddLine(BNET_REPORT_PLAYER_TOOLTIP, nil, nil, nil, true);
-						GameTooltip:Show();
-					</OnEnter>
-					<OnLeave>
-						self.texture:SetAlpha(0.5);
-						GameTooltip:Hide();
-					</OnLeave>
-					<OnMouseDown>
-						self.texture:SetPoint("TOPLEFT", 1, 0);
-					</OnMouseDown>
-					<OnMouseUp>
-						self.texture:SetPoint("TOPLEFT", 0, 1);
-					</OnMouseUp>
-					<OnClick function="PendingListFrame_ReportPlayer"/>
-				</Scripts>
-			</Button>
-			<Button name="$parentBlockButton">
-				<Size x="16" y="14"/>
-				<Anchors>
-					<Anchor point="TOPRIGHT" x="-10" y="-6"/>
-				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture file="Interface\FriendsFrame\BlockCommunicationsIcon" alpha="0.5" parentKey="texture">
-							<Size x="28" y="28"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" x="-1" y="1"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnEnter>
-						self.texture:SetAlpha(1.0);
-						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:AddLine(BLOCK_INVITES, 1, 1, 1);
-						GameTooltip:AddLine(BLOCK_INVITES_TOOLTIP, nil, nil, nil, true);
-						GameTooltip:Show();
-					</OnEnter>
-					<OnLeave>
-						self.texture:SetAlpha(0.5);
-						GameTooltip:Hide();
-					</OnLeave>
-					<OnMouseDown>
-						self.texture:SetPoint("TOPLEFT", 0, 0);
-					</OnMouseDown>
-					<OnMouseUp>
-						self.texture:SetPoint("TOPLEFT", -1, 1);
-					</OnMouseUp>
-					<OnClick function="PendingListFrame_BlockCommunication"/>
-				</Scripts>
-			</Button>
-		</Frames>
-		<Scripts>
-			<OnLoad>
-				self:SetBackdropBorderColor(0, 0.694, 0.941, 0.26);
-				self:SetBackdropColor(0, 0.090, 0.122, 0.6 );
-			</OnLoad>
-		</Scripts>
-	</Button>
 	<Button name="FriendsFriendsButtonTemplate" virtual="true">
 		<Size x="248" y="16"/>
 		<Layers>
@@ -693,7 +609,7 @@ TRAVEL PASS
 					<OnLoad function="TravelPassDropDown_OnLoad"/>
 				</Scripts>
 			</Frame>
-			<Frame name="FriendsTabHeader" setAllPoints="true">
+			<Frame name="FriendsTabHeader" parentKey="FriendsTabHeader" setAllPoints="true">
 				<Frames>
 					<Frame name="FriendsFrameBattlenetFrame">
 						<Size x="190" y="29"/>
@@ -1152,7 +1068,7 @@ TRAVEL PASS
 							<OnClick function="FriendsTabHeader_ClickTab"/>
 						</Scripts>
 					</Button>
-					<Button name="FriendsTabHeaderTab2" inherits="TabButtonTemplate" text="IGNORE" id="2">
+					<Button name="FriendsTabHeaderTab2" inherits="TabButtonTemplate" text="QUICK_JOIN" id="2">
 						<Anchors>
 							<Anchor point="LEFT" relativeTo="FriendsTabHeaderTab1" relativePoint="RIGHT" x="0" y="0"/>
 						</Anchors>
@@ -1160,32 +1076,56 @@ TRAVEL PASS
 							<OnClick function="FriendsTabHeader_ClickTab"/>
 						</Scripts>
 					</Button>
-					<Button name="FriendsTabHeaderTab3" inherits="TabButtonTemplate" text="PENDING_INVITE" id="3">
+					<Button name="FriendsTabHeaderTab3" inherits="TabButtonTemplate" text="IGNORE" id="3">
 						<Anchors>
 							<Anchor point="LEFT" relativeTo="FriendsTabHeaderTab2" relativePoint="RIGHT" x="0" y="0"/>
 						</Anchors>
 						<Scripts>
 							<OnClick function="FriendsTabHeader_ClickTab"/>
-							<OnEnter>
-								FriendsTabHeaderInviteAlert:Hide();
-							</OnEnter>
-							<OnLeave function="PendingList_UpdateTab"/>
 						</Scripts>
 					</Button>
-					<Frame name="FriendsTabHeaderInviteAlert" hidden="true">
+					<Frame parentKey="FriendsFrameQuickJoinHelpTip" inherits="GlowBoxTemplate" enableMouse="true" hidden="true" frameStrata="DIALOG">
+						<Size x="220" y="100"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="FriendsTabHeaderTab3" relativePoint="TOPLEFT" x="0" y="-10"/>
-							<Anchor point="BOTTOMRIGHT" relativeTo="FriendsTabHeaderTab3" relativePoint="BOTTOMRIGHT" x="0" y="-5"/>
+							<Anchor point="LEFT" relativeTo="FriendsTabHeaderTab2" relativePoint="RIGHT" x="9" y="-6"/>
 						</Anchors>
 						<Layers>
-							<Layer level="ARTWORK">
-								<Texture file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight-yellow" setAllPoints="true" alphaMode="ADD"/>
+							<Layer level="OVERLAY">
+								<FontString parentKey="Text" inherits="GameFontHighlightLeft" justifyV="TOP" text="SOCIAL_QUICK_JOIN_TAB_HELP_TIP">
+									<Size x="188" y="0"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" x="16" y="-20"/>
+									</Anchors>
+								</FontString>
 							</Layer>
 						</Layers>
+						<Frames>
+							<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
+								<Anchors>
+									<Anchor point="TOPRIGHT" x="6" y="6"/>
+								</Anchors>
+								<Scripts>
+									<OnClick inherit="append">
+										FriendsFrame_CloseQuickJoinHelpTip();
+									</OnClick>
+								</Scripts>
+							</Button>
+							<Frame parentKey="Arrow" inherits="GlowBoxArrowTemplate">
+								<Anchors>
+									<Anchor point="RIGHT" relativePoint="LEFT" x="36" y="16"/>
+								</Anchors>
+							</Frame>
+						</Frames>
 						<Scripts>
-							<OnUpdate>
-								self:SetAlpha(abs(mod(GetTime(), 2) - 1));
-							</OnUpdate>
+							<OnLoad>
+								SetClampedTextureRotation(self.Arrow.Arrow, 90);
+								SetClampedTextureRotation(self.Arrow.Glow, 90);
+								self.Arrow.Glow:ClearAllPoints();
+								self.Arrow.Glow:SetPoint("RIGHT", self, "LEFT", 3, 0);
+							</OnLoad>
+							<OnShow>
+								self:SetHeight(self.Text:GetHeight() + 42);
+							</OnShow>
 						</Scripts>
 					</Frame>
 					<Button name="$parentRecruitAFriendButton" motionScriptsWhileDisabled="true" parentKey="RaFButton" hidden="true">
@@ -1282,6 +1222,8 @@ TRAVEL PASS
 									self:Hide();
 								end
 							</OnEvent>
+							<OnShow function="FriendsTabHeader_ResizeTabs"/>
+							<OnHide function="FriendsTabHeader_ResizeTabs"/>
 						</Scripts>
 						<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
 						<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square" parentKey="highlight"/>
@@ -1291,6 +1233,7 @@ TRAVEL PASS
 					<OnLoad>
 						PanelTemplates_SetNumTabs(self, 3);
 						PanelTemplates_SetTab(self, 1);
+						FriendsTabHeader_ResizeTabs();
 					</OnLoad>
 					<OnShow function="PendingList_UpdateTab"/>
 				</Scripts>
@@ -1323,15 +1266,82 @@ TRAVEL PASS
 							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>
 					</Button>
+					<Frame name="FriendsListPendingInviteDropDown" parentKey="FilterDropDown" inherits="UIDropDownMenuTemplate">
+						<Scripts>
+							<OnLoad>
+								UIDropDownMenu_Initialize(self, FriendsList_InitializePendingInviteDropDown, "MENU");
+							</OnLoad>
+						</Scripts>
+					</Frame>
+					<Frame parentKey="RIDWarning" enableMouse="true" hidden="true" frameStrata="DIALOG">
+						<Size x="298" y="309"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" x="7" y="-87"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture setAllPoints="true">
+									<Color r="0" g="0" b="0" a="0.85"/>
+								</Texture>
+							</Layer>
+							<Layer level="BORDER">
+								<Texture name="$parentLeft" file="Interface\FriendsFrame\PlusManz-BattleNetBG" hidden="true">
+									<Anchors>
+										<Anchor point="TOPLEFT" x="-8" y="12" />
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="ARTWORK">
+								<Texture name="$parentBattlenetIcon" file="Interface\FriendsFrame\PlusManz-BattleNet" alpha="0.3">
+									<Anchors>
+										<Anchor point="CENTER" x="10" y="100" />
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="OVERLAY">
+								<Texture name="$parentPlayerIcon" file="Interface\FriendsFrame\PlusManz-PlusManz">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeTo="$parentBattlenetIcon" x="-20" y="-10" />
+									</Anchors>
+								</Texture>
+								<FontString name="$parentTitle" inherits="GameFontNormal" text="BATTLENET_FRIEND_REQUEST_RECEIVED">
+									<Size x="200" y="0"/>
+									<Anchors>
+										<Anchor point="TOP" relativeTo="$parentPlayerIcon" relativePoint="BOTTOM" x="0" y="2"/>
+									</Anchors>
+								</FontString>
+								<FontString inherits="GameFontHighlight" justifyH="LEFT" text="RID_FRIEND_REQUEST_INFO">
+									<Size x="200" y="0"/>
+									<Anchors>
+										<Anchor point="TOP" relativeTo="$parentTitle" relativePoint="BOTTOM" x="0" y="-4"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Button name="$parentContinueButton" inherits="UIPanelButtonTemplate" text="CONTINUE">
+								<Size x="131" y="22"/>
+								<Anchors>
+									<Anchor point="BOTTOM" x="0" y="30"/>
+								</Anchors>
+								<Scripts>
+									<OnClick>
+										SetCVar("pendingInviteInfoShown", 1);
+										FriendsList_Update();
+									</OnClick>
+								</Scripts>
+							</Button>
+						</Frames>
+						<Scripts>
+							<OnMouseWheel function="nop"/>
+						</Scripts>
+					</Frame>
 					<ScrollFrame name="FriendsFrameFriendsScrollFrame" inherits="HybridScrollFrameTemplate">
 						<Size x="302" y="307"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="FriendsFrame" x="8" y="-87"/>
 						</Anchors>
 						<Layers>
-							<Layer level="ARTWORK">
-								<Texture name="FriendsFrameOfflineHeader" file="Interface\FriendsFrame\UI-FriendsFrame-OnlineDivider" hidden="true"/>
-							</Layer>
 							<Layer level="BACKGROUND">
 								<Texture name="$parentTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
 									<Size x="29" y="102"/>
@@ -1358,6 +1368,62 @@ TRAVEL PASS
 							</Layer>
 						</Layers>
 						<Frames>
+							<Button parentKey="PendingInvitesHeaderButton" inherits="UIMenuButtonStretchTemplate" hidden="true">
+								<Size x="295" y="30"/>
+								<NormalFont style="GameFontHighlightSmall2"/>
+								<HighlightFont style="GameFontHighlightSmall2"/>
+								<Layers>
+									<Layer level="BACKGROUND" textureSubLevel="-1">
+										<Texture parentKey="BG" file="Interface\FrameGeneral\UI-Background-Rock" horizTile="true" vertTile="true">
+											<Anchors>
+												<Anchor point="TOPLEFT" x="2" y="-2"/>
+												<Anchor point="BOTTOMRIGHT" x="-2" y="2"/>
+											</Anchors>
+										</Texture>
+									</Layer>
+									<Layer level="ARTWORK">
+										<Texture parentKey="RightArrow" atlas="friendslist-categorybutton-arrow-right" useAtlasSize="true" hidden="true">
+											<Anchors>
+												<Anchor point="LEFT" x="11" y="-2"/>
+											</Anchors>
+										</Texture>
+										<Texture parentKey="DownArrow" atlas="friendslist-categorybutton-arrow-down" useAtlasSize="true" hidden="true">
+											<Anchors>
+												<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="8" y="-12"/>
+											</Anchors>
+										</Texture>
+									</Layer>
+									<Layer level="OVERLAY">
+										<Texture parentKey="Flash" file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight-yellow" setAllPoints="true" alpha="0" alphaMode="ADD">
+											<Animations>
+												<AnimationGroup parentKey="Anim" looping="REPEAT">
+													<Alpha fromAlpha="0" toAlpha="0.4" duration="1" order="1"/>
+													<Alpha fromAlpha="0.4" toAlpha="0" duration="1" order="2"/>
+												</AnimationGroup>
+											</Animations>
+										</Texture>
+									</Layer>
+								</Layers>
+								<ButtonText>
+									<Anchors>
+										<Anchor point="LEFT" x="25" y="0"/>
+									</Anchors>
+								</ButtonText>
+								<Scripts>
+									<OnMouseDown>
+										self.DownArrow:SetPoint("LEFT", 10, -5);
+										self.RightArrow:SetPoint("LEFT", 13, -4);
+									</OnMouseDown>
+									<OnMouseUp>
+										self.DownArrow:SetPoint("LEFT", 8, -3);
+										self.RightArrow:SetPoint("LEFT", 11, -2);
+									</OnMouseUp>
+									<OnClick>
+										PlaySound("igMainMenuOptionCheckBoxOn");
+										FriendsListFrame_ToggleInvites();
+									</OnClick>
+								</Scripts>
+							</Button>
 							<Slider name="$parentScrollBar" inherits="MinimalHybridScrollBarTemplate">
 								<Anchors>
 									<Anchor point="TOPRIGHT" relativeTo="FriendsFrame" relativePoint="TOPRIGHT" x="-14" y="-101"/>
@@ -1369,6 +1435,7 @@ TRAVEL PASS
 				</Frames>
 				<Scripts>
 					<OnShow function="FriendsListFrame_OnShow"/>
+					<OnHide function="FriendsListFrame_OnHide"/>
 				</Scripts>
 			</Frame>
 			<Frame name="IgnoreListFrame" hidden="true" setAllPoints="true">
@@ -1498,187 +1565,6 @@ TRAVEL PASS
 						FriendsFrameBlockedInviteHeaderTitle:SetText(BLOCKED_INVITES);
 						FriendsFrameMutedHeaderTitle:SetText(MUTED);
 					</OnLoad>
-				</Scripts>
-			</Frame>
-			<Frame name="PendingListFrame" hidden="true" setAllPoints="true">
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture name="$parentTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-							<Size x="29" y="102"/>
-							<Anchors>
-								<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-5" y="-82"/>
-							</Anchors>
-							<TexCoords left="0" right="0.445" top="0" bottom="0.4"/>
-						</Texture>
-						<Texture name="$parentBottom" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-							<Size x="29" y="106"/>
-							<Anchors>
-								<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-5" y="25"/>
-							</Anchors>
-							<TexCoords left="0.515625" right="0.960625" top="0" bottom="0.4140625"/>
-						</Texture>
-						<Texture name="$parentMiddle" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-							<Size x="29" y="1"/>
-							<Anchors>
-								<Anchor point="TOP" relativeTo="$parentTop" relativePoint="BOTTOM"/>
-								<Anchor point="BOTTOM" relativeTo="$parentBottom" relativePoint="TOP"/>
-							</Anchors>
-							<TexCoords left="0" right="0.445" top=".75" bottom="1.0"/>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Frames>
-					<Frame name="$parentDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true">
-						<Size x="10" y="10"/>
-						<Anchors>
-							<Anchor point="TOP" x="10" y="-60"/>
-						</Anchors>
-						<Scripts>
-							<OnLoad function="PendingListFrameDropDown_OnLoad"/>
-						</Scripts>
-					</Frame>
-					<Frame name="PendingListInfoFrame" enableMouse="true" hidden="true">
-						<Size x="298" y="309"/>
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="FriendsFrame" x="7" y="-87"/>
-						</Anchors>
-						<Layers>
-							<Layer level="BACKGROUND">
-								<Texture setAllPoints="true">
-									<Color r="0" g="0" b="0" a="0.85"/>
-								</Texture>
-							</Layer>
-							<Layer level="BORDER">
-								<Texture name="$parentLeft" file="Interface\FriendsFrame\PlusManz-BattleNetBG" hidden="true">
-									<Anchors>
-										<Anchor point="TOPLEFT" x="-8" y="12" />
-									</Anchors>
-								</Texture>
-							</Layer>
-							<Layer level="ARTWORK">
-								<Texture name="$parentBattlenetIcon" file="Interface\FriendsFrame\PlusManz-BattleNet" alpha="0.3">
-									<Anchors>
-										<Anchor point="CENTER" x="10" y="100" />
-									</Anchors>
-								</Texture>
-							</Layer>
-							<Layer level="OVERLAY">
-								<Texture name="$parentPlayerIcon" file="Interface\FriendsFrame\PlusManz-PlusManz">
-									<Anchors>
-										<Anchor point="TOPLEFT" relativeTo="$parentBattlenetIcon" x="-20" y="-10" />
-									</Anchors>
-								</Texture>
-								<FontString name="$parentTitle" inherits="GameFontNormal" text="BATTLENET_FRIEND">
-									<Anchors>
-										<Anchor point="TOP" relativeTo="$parentPlayerIcon" relativePoint="BOTTOM" x="0" y="2"/>
-										<Anchor point="LEFT"/>
-										<Anchor point="RIGHT"/>
-									</Anchors>
-								</FontString>
-								<FontString inherits="GameFontHighlight" justifyH="LEFT" text="RID_FRIEND_REQUEST_INFO">
-									<Size x="200" y="0"/>
-									<Anchors>
-										<Anchor point="TOP" relativeTo="$parentTitle" relativePoint="BOTTOM" x="0" y="-4"/>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
-						<Frames>
-							<Button name="$parentContinueButton" inherits="UIPanelButtonTemplate" text="CONTINUE">
-								<Size x="131" y="22"/>
-								<Anchors>
-									<Anchor point="BOTTOM" x="0" y="30"/>
-								</Anchors>
-								<Scripts>
-									<OnClick>
-										SetCVar("pendingInviteInfoShown", 1);
-										PendingListInfoFrame:Hide();
-									</OnClick>
-								</Scripts>
-							</Button>
-						</Frames>
-					</Frame>
-					<ScrollFrame name="FriendsFramePendingScrollFrame">
-						<Size x="298" y="308"/>
-						<Anchors>
-							<Anchor point="TOPRIGHT" relativeTo="FriendsFrame" x="-33" y="-85"/>
-						</Anchors>
-						<Frames>
-							<Slider name="$parentScrollBar" inherits="UIPanelScrollBarTemplate" parentKey="scrollBar" hidden="true">
-								<Anchors>
-									<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
-										<Offset x="6" y="-16"/>
-									</Anchor>
-									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="6" y="15"/>
-								</Anchors>
-								<Scripts>
-									<OnLoad>
-										local button = _G[self:GetName().."ScrollUpButton"];
-										button:SetScript("OnClick", function() FriendsFramePendingScrollFrame_AdjustScroll(-2); PlaySound("UChatScrollButton"); end);
-										local button = _G[self:GetName().."ScrollDownButton"];
-										button:SetScript("OnClick", function() FriendsFramePendingScrollFrame_AdjustScroll(2); PlaySound("UChatScrollButton"); end);
-									</OnLoad>
-									<OnValueChanged>
-										local value = self:GetValue();
-										local min, max = self:GetMinMaxValues();
-										if ( value == 0 ) then
-											_G[self:GetName().."ScrollUpButton"]:Disable();
-										else
-											_G[self:GetName().."ScrollUpButton"]:Enable();
-										end
-										if ( value == max ) then
-											_G[self:GetName().."ScrollDownButton"]:Disable();
-										else
-											_G[self:GetName().."ScrollDownButton"]:Enable();
-										end
-										PendingList_Scroll(value);
-									</OnValueChanged>
-								</Scripts>
-							</Slider>
-						</Frames>
-						<Scripts>
-							<OnLoad>
-								self.scrollBar:SetValueStep(1);
-								self.scrollHeight = self:GetHeight();
-								FriendsFramePendingButton1.message:SetText(PENDING_INVITE);
-								MAX_INVITE_MESSAGE_HEIGHT = MAX_INVITE_MESSAGE_LINES * FriendsFramePendingButton1.message:GetHeight();
-							</OnLoad>
-							<OnMouseWheel>
-								FriendsFramePendingScrollFrame_AdjustScroll(delta * -2);
-							</OnMouseWheel>
-						</Scripts>
-						<ScrollChild>
-							<Frame name="$parentScrollChild" parentKey="scrollChild">
-								<Size x="10" y="10"/>
-								<Frames>
-									<Button name="FriendsFramePendingButton1" inherits="FriendsFramePendingButtonTemplate">
-										<Anchors>
-											<Anchor point="TOPLEFT" x="0" y="0"/>
-										</Anchors>
-									</Button>
-									<Button name="FriendsFramePendingButton2" inherits="FriendsFramePendingButtonTemplate">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="FriendsFramePendingButton1" relativePoint="BOTTOMLEFT" x="0" y="0"/>
-										</Anchors>
-									</Button>
-									<Button name="FriendsFramePendingButton3" inherits="FriendsFramePendingButtonTemplate">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="FriendsFramePendingButton2" relativePoint="BOTTOMLEFT" x="0" y="0"/>
-										</Anchors>
-									</Button>
-									<Button name="FriendsFramePendingButton4" inherits="FriendsFramePendingButtonTemplate">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="FriendsFramePendingButton3" relativePoint="BOTTOMLEFT" x="0" y="0"/>
-										</Anchors>
-									</Button>
-								</Frames>
-							</Frame>
-						</ScrollChild>
-					</ScrollFrame>
-				</Frames>
-				<Scripts>
-					<OnShow function="PendingListFrame_OnShow"/>
-					<OnHide function="PendingListFrame_OnHide"/>
 				</Scripts>
 			</Frame>
 			<Frame name="WhoFrame" setAllPoints="true" hidden="true">

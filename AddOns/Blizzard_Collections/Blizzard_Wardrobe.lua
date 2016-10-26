@@ -1,3 +1,8 @@
+-- C_TransmogCollection.GetItemInfo(itemID, [itemModID]/itemLink/itemName) = appearanceID, sourceID
+-- C_TransmogCollection.GetAllAppearanceSources(appearanceID) = { sourceID } This is cross-class, but no guarantee a source is actually attainable
+-- C_TransmogCollection.GetSourceInfo(sourceID) = { data }
+-- 15th return of GetItemInfo is expansionID
+-- new events: TRANSMOG_COLLECTION_SOURCE_ADDED and TRANSMOG_COLLECTION_SOURCE_REMOVED, parameter is sourceID, can be cross-class (wand unlocked from ensemble while on warrior)
 
 local REMOVE_TRANSMOG_ID = 0;
 
@@ -95,7 +100,7 @@ function WardrobeTransmogFrame_OnShow(self)
 	self:RegisterEvent("PLAYER_EQUIPMENT_CHANGED");
 	local hasAlternateForm, inAlternateForm = HasAlternateForm();
 	if ( hasAlternateForm ) then
-		self:RegisterEvent("UNIT_MODEL_CHANGED");
+		self:RegisterUnitEvent("UNIT_MODEL_CHANGED", "player");
 		self.inAlternateForm = inAlternateForm;
 	end
 	WardrobeTransmogFrame.Model:SetUnit("player");
@@ -151,16 +156,6 @@ function WardrobeTransmogFrame_UpdateSlotButton(slotButton)
 	local isTransmogrified, hasPending, isPendingCollected, canTransmogrify, cannotTransmogrifyReason, hasUndo, isHideVisual, texture = C_Transmog.GetSlotInfo(slotID, slotButton.transmogType);
 	local hasChange = (hasPending and canTransmogrify) or hasUndo;
 
-	-- hide enchant button?
-	if ( slotButton.transmogType == LE_TRANSMOG_TYPE_ILLUSION ) then
-		if ( hasPending or hasUndo or canTransmogrify ) then
-			slotButton:Show();
-		else
-			slotButton:Hide();
-			return;
-		end
-	end
-
 	if ( slotButton.transmogType == LE_TRANSMOG_TYPE_APPEARANCE ) then
 		if ( canTransmogrify or hasChange ) then
 			slotButton.Icon:SetTexture(texture);
@@ -175,7 +170,13 @@ function WardrobeTransmogFrame_UpdateSlotButton(slotButton)
 			slotButton.NoItemTexture:Show();
 		end
 	else
-		slotButton.Icon:SetTexture(texture or ENCHANT_EMPTY_SLOT_FILEDATAID);
+		if ( hasPending or hasUndo or canTransmogrify ) then
+			slotButton.Icon:SetTexture(texture or ENCHANT_EMPTY_SLOT_FILEDATAID);
+			slotButton.NoItemTexture:Hide();
+		else
+			slotButton.Icon:SetColorTexture(0, 0, 0);
+			slotButton.NoItemTexture:Show();
+		end
 	end
 	slotButton:SetEnabled(canTransmogrify or hasUndo);
 
@@ -432,20 +433,29 @@ function WardrobeTransmogButton_OnEnter(self)
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 0, 0);
 		GameTooltip:SetText(WEAPON_ENCHANTMENT);
 		local baseSourceID, baseVisualID, appliedSourceID, appliedVisualID, pendingSourceID, pendingVisualID, hasPendingUndo = C_Transmog.GetSlotVisualInfo(slotID, LE_TRANSMOG_TYPE_ILLUSION);
-		if ( baseSourceID > 0 ) then
-			local _, name = C_TransmogCollection.GetIllusionSourceInfo(baseSourceID);
-			GameTooltip:AddLine(name, GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
-		end
-		if ( hasUndo ) then
-			GameTooltip:AddLine(TRANSMOGRIFY_TOOLTIP_REVERT, TRANSMOGRIFY_FONT_COLOR.r, TRANSMOGRIFY_FONT_COLOR.g, TRANSMOGRIFY_FONT_COLOR.b);
-		elseif ( pendingSourceID > 0 ) then
-			GameTooltip:AddLine(WILL_BE_TRANSMOGRIFIED_HEADER, TRANSMOGRIFY_FONT_COLOR.r, TRANSMOGRIFY_FONT_COLOR.g, TRANSMOGRIFY_FONT_COLOR.b);
-			local _, name = C_TransmogCollection.GetIllusionSourceInfo(pendingSourceID);
-			GameTooltip:AddLine(name, TRANSMOGRIFY_FONT_COLOR.r, TRANSMOGRIFY_FONT_COLOR.g, TRANSMOGRIFY_FONT_COLOR.b);
-		elseif ( appliedSourceID > 0 ) then
-			GameTooltip:AddLine(TRANSMOGRIFIED_HEADER, TRANSMOGRIFY_FONT_COLOR.r, TRANSMOGRIFY_FONT_COLOR.g, TRANSMOGRIFY_FONT_COLOR.b);
-			local _, name = C_TransmogCollection.GetIllusionSourceInfo(appliedSourceID);
-			GameTooltip:AddLine(name, TRANSMOGRIFY_FONT_COLOR.r, TRANSMOGRIFY_FONT_COLOR.g, TRANSMOGRIFY_FONT_COLOR.b);
+		if ( hasPending or hasUndo or canTransmogrify ) then
+			if ( baseSourceID > 0 ) then
+				local _, name = C_TransmogCollection.GetIllusionSourceInfo(baseSourceID);
+				GameTooltip:AddLine(name, GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
+			end
+			if ( hasUndo ) then
+				GameTooltip:AddLine(TRANSMOGRIFY_TOOLTIP_REVERT, TRANSMOGRIFY_FONT_COLOR.r, TRANSMOGRIFY_FONT_COLOR.g, TRANSMOGRIFY_FONT_COLOR.b);
+			elseif ( pendingSourceID > 0 ) then
+				GameTooltip:AddLine(WILL_BE_TRANSMOGRIFIED_HEADER, TRANSMOGRIFY_FONT_COLOR.r, TRANSMOGRIFY_FONT_COLOR.g, TRANSMOGRIFY_FONT_COLOR.b);
+				local _, name = C_TransmogCollection.GetIllusionSourceInfo(pendingSourceID);
+				GameTooltip:AddLine(name, TRANSMOGRIFY_FONT_COLOR.r, TRANSMOGRIFY_FONT_COLOR.g, TRANSMOGRIFY_FONT_COLOR.b);
+			elseif ( appliedSourceID > 0 ) then
+				GameTooltip:AddLine(TRANSMOGRIFIED_HEADER, TRANSMOGRIFY_FONT_COLOR.r, TRANSMOGRIFY_FONT_COLOR.g, TRANSMOGRIFY_FONT_COLOR.b);
+				local _, name = C_TransmogCollection.GetIllusionSourceInfo(appliedSourceID);
+				GameTooltip:AddLine(name, TRANSMOGRIFY_FONT_COLOR.r, TRANSMOGRIFY_FONT_COLOR.g, TRANSMOGRIFY_FONT_COLOR.b);
+			end
+		else
+			local itemBaseSourceID = C_Transmog.GetSlotVisualInfo(slotID, LE_TRANSMOG_TYPE_APPEARANCE);
+			if ( itemBaseSourceID == NO_TRANSMOG_SOURCE_ID ) then
+				GameTooltip:AddLine(TRANSMOGRIFY_INVALID_NO_ITEM, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
+			else
+				GameTooltip:AddLine(TRANSMOGRIFY_ILLUSION_INVALID_ITEM, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
+			end
 		end
 		GameTooltip:Show();
 	else
@@ -536,12 +546,6 @@ local WARDROBE_PAGE_SIZE = WARDROBE_NUM_ROWS * WARDROBE_NUM_COLS;
 local MAIN_HAND_INV_TYPE = 21;
 local OFF_HAND_INV_TYPE = 22;
 local RANGED_INV_TYPE = 15;
-
-local HIDE_VISUAL_STRINGS = {
-	["HEADSLOT"] = TRANSMOG_HIDE_HELM,
-	["SHOULDERSLOT"] = TRANSMOG_HIDE_SHOULDERS,
-	["BACKSLOT"] = TRANSMOG_HIDE_CLOAK,
-}
 
 local WARDROBE_MODEL_SETUP = {
 	["HEADSLOT"] 		= { useTransmogSkin = false, slots = { CHESTSLOT = true,  HANDSSLOT = false, LEGSSLOT = false, FEETSLOT = false, HEADSLOT = false } },
@@ -671,6 +675,7 @@ function WardrobeCollectionFrame_OnEvent(self, event, ...)
 		if ( self.tooltipAppearanceID ) then
 			WardrobeCollectionFrameModel_SetTooltip();
 		end
+		WardrobeCollectionFrameModel_ValidateChosenVisualSources();
 	elseif ( event == "TRANSMOG_COLLECTION_CAMERA_UPDATE" ) then
 		for i = 1, #self.ModelsFrame.Models do
 			self.ModelsFrame.Models[i].cameraID = nil;
@@ -693,14 +698,16 @@ function WardrobeCollectionFrame_OnEvent(self, event, ...)
 		WardrobeCollectionFrame_RestartSearchTracking();
 	elseif ( event == "UNIT_MODEL_CHANGED" ) then
 		local hasAlternateForm, inAlternateForm = HasAlternateForm();
-		if ( self.inAlternateForm ~= inAlternateForm and self.ModelsFrame.Models[1]:CanSetUnit("player") ) then
+		if ( (self.inAlternateForm ~= inAlternateForm or self.updateOnModelChanged) and self.ModelsFrame.Models[1]:CanSetUnit("player") ) then
 			self.inAlternateForm = inAlternateForm;
+			self.updateOnModelChanged = nil;
 			WardrobeCollectionFrame_ChangeModelsSlot(nil, WardrobeCollectionFrame.activeSlot);
 			WardrobeCollectionFrame_Update();
 		end
 	elseif ( event == "PLAYER_LEVEL_UP" or event == "SKILL_LINES_CHANGED" or event == "UPDATE_FACTION" or event == "SPELLS_CHANGED" ) then
 		if ( self:IsVisible() ) then
 			C_TransmogCollection.UpdateUsableAppearances();
+			WardrobeCollectionFrameModel_ValidateChosenVisualSources();
 		else
 			self.needsUpdateUsable = true;
 		end
@@ -730,9 +737,9 @@ function WardrobeCollectionFrame_OnShow(self)
 	self:RegisterEvent("TRANSMOG_COLLECTION_CAMERA_UPDATE");
 	self:RegisterEvent("APPEARANCE_SEARCH_UPDATED");
 	self:RegisterEvent("SEARCH_DB_LOADED");
+	self:RegisterUnitEvent("UNIT_MODEL_CHANGED", "player");
 	local hasAlternateForm, inAlternateForm = HasAlternateForm();
 	if ( hasAlternateForm ) then
-		self:RegisterUnitEvent("UNIT_MODEL_CHANGED", "player");
 		self.inAlternateForm = inAlternateForm;
 	end
 
@@ -760,6 +767,7 @@ function WardrobeCollectionFrame_OnShow(self)
 	if ( self.needsUpdateUsable ) then
 		self.needsUpdateUsable = nil;
 		C_TransmogCollection.UpdateUsableAppearances();
+		WardrobeCollectionFrameModel_ValidateChosenVisualSources();
 	end
 
 	-- tab tutorial
@@ -862,6 +870,8 @@ function WardrobeCollectionFrame_OnKeyDown(self, key)
 end
 
 function WardrobeCollectionFrame_ChangeModelsSlot(oldSlot, newSlot)
+	WardrobeCollectionFrame.updateOnModelChanged = nil;
+
 	local undressSlot, reloadModel;
 	local newSlotIsArmor = WardrobeCollectionFrame_GetArmorCategoryIDFromSlot(newSlot);
 	if ( newSlotIsArmor ) then
@@ -876,6 +886,15 @@ function WardrobeCollectionFrame_ChangeModelsSlot(oldSlot, newSlot)
 			reloadModel = true;
 		end
 	end
+
+	if ( reloadModel and not WardrobeCollectionFrame.ModelsFrame.Models[1]:CanSetUnit("player") ) then
+		WardrobeCollectionFrame.updateOnModelChanged = true;
+		for i = 1, #WardrobeCollectionFrame.ModelsFrame.Models do
+			WardrobeCollectionFrame.ModelsFrame.Models[i]:ClearModel();
+		end
+		return;
+	end
+
 	for i = 1, #WardrobeCollectionFrame.ModelsFrame.Models do
 		local model = WardrobeCollectionFrame.ModelsFrame.Models[i];
 		if ( undressSlot ) then
@@ -1409,11 +1428,17 @@ function WardrobeCollectionFrame_GetVisualsList()
 	end
 end
 
-function  WardrobeCollectionFrame_GetAnAppearanceSourceFromVisual(visualID)
+function WardrobeCollectionFrame_GetAnAppearanceSourceFromVisual(visualID, mustBeUsable)
 	local sourceID = WardrobeCollectionFrameModel_GetChosenVisualSource(visualID);
-	if ( not sourceID ) then
+	if ( sourceID == NO_TRANSMOG_SOURCE_ID ) then
 		local sources = WardrobeCollectionFrame_GetSortedAppearanceSources(visualID);
-		sourceID = sources[1].sourceID;
+		for i = 1, #sources do
+			-- first 1 if it doesn't have to be usable
+			if ( not mustBeUsable or not sources[i].useError ) then
+				sourceID = sources[i].sourceID;
+				break;
+			end
+		end
 	end
 	return sourceID;
 end
@@ -1425,7 +1450,7 @@ function WardrobeCollectionFrame_SelectVisual(visualID)
 
 	local sourceID;
 	if ( WardrobeCollectionFrame.transmogType == LE_TRANSMOG_TYPE_APPEARANCE ) then
-		sourceID = WardrobeCollectionFrame_GetAnAppearanceSourceFromVisual(visualID);
+		sourceID = WardrobeCollectionFrame_GetAnAppearanceSourceFromVisual(visualID, true);
 	else
 		local visualsList = WardrobeCollectionFrame.filteredVisualsList;
 		for i = 1, #visualsList do
@@ -1581,15 +1606,10 @@ function WardrobeCollectionFrameModel_OnEnter(self)
 		end
 		GameTooltip:Show();
 	else
-		if ( self.visualInfo.isHideVisual ) then
-			GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-			GameTooltip:SetText(HIDE_VISUAL_STRINGS[WardrobeCollectionFrame.activeSlot]);
-		else
-			WardrobeCollectionFrame.tooltipAppearanceID = self.visualInfo.visualID;
-			WardrobeCollectionFrame.tooltipIndexOffset = nil;
-			GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-			WardrobeCollectionFrameModel_SetTooltip();
-		end
+		WardrobeCollectionFrame.tooltipAppearanceID = self.visualInfo.visualID;
+		WardrobeCollectionFrame.tooltipIndexOffset = nil;
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		WardrobeCollectionFrameModel_SetTooltip();
 	end
 end
 
@@ -1614,8 +1634,7 @@ function WardrobeCollectionFrameModel_Reload(self, reloadSlot)
 	if ( self:IsShown() ) then
 		if ( WARDROBE_MODEL_SETUP[reloadSlot] ) then
 			self:SetUseTransmogSkin(WARDROBE_MODEL_SETUP[reloadSlot].useTransmogSkin);
-			self:SetUnit("player");
-			self:FreezeAnimation(0);
+			self:SetUnit("player", false);
 			self:SetDoBlend(false);
 			for slot, equip in pairs(WARDROBE_MODEL_SETUP[reloadSlot].slots) do
 				if ( equip ) then
@@ -1650,55 +1669,65 @@ end
 function WardrobeCollectionFrameModel_SetTooltip()
 	local sources = WardrobeCollectionFrame_GetSortedAppearanceSources(WardrobeCollectionFrame.tooltipAppearanceID);
 
-	if ( not WardrobeCollectionFrame.tooltipIndexOffset ) then
-		WardrobeCollectionFrame.tooltipIndexOffset = 0;
-		local lowestUseLevel = GetMaxPlayerLevel();
-		for i = 1, #sources do
-			if ( not sources[i].isCollected ) then
-				break;
-			end
-			if ( not sources[i].useError ) then
-				WardrobeCollectionFrame.tooltipIndexOffset = i - 1;
-				break;
-			end
-			if ( sources[i].minLevel and sources[i].minLevel < lowestUseLevel ) then
-				lowestUseLevel = sources[i].minLevel;
-				WardrobeCollectionFrame.tooltipIndexOffset = i - 1;
-			end
+	for i = 1, #sources do
+		if ( sources[i].isHideVisual ) then
+			GameTooltip:SetText(sources[i].name);
+			return;
 		end
 	end
-	if ( WardrobeCollectionFrame.tooltipIndexOffset < 0 ) then
-		WardrobeCollectionFrame.tooltipIndexOffset = #sources + WardrobeCollectionFrame.tooltipIndexOffset;
-	end
-	local offset = WardrobeCollectionFrame.tooltipIndexOffset;
-	-- header item
+
+	local chosenSourceID = WardrobeCollectionFrameModel_GetChosenVisualSource(WardrobeCollectionFrame.tooltipAppearanceID);
 	local headerIndex;
-	local headerSourceID = WardrobeCollectionFrameModel_GetChosenVisualSource(WardrobeCollectionFrame.tooltipAppearanceID);
-	if ( headerSourceID ) then
-		-- find the index
-		for i = 1, #sources do
-			if ( sources[i].sourceID == headerSourceID ) then
-				headerIndex = mod(i + offset - 1, #sources) + 1;
+	local appearanceCollected = false;
+	local appearanceUsable = false;
+	-- default header is, in order of preference:
+	-- 1. chosen
+	-- 2. collected and usable
+	-- 3. collected and unusable
+	-- 4. uncollected
+	for i = 1, #sources do
+		if ( not sources[i].isCollected ) then
+			if ( not headerIndex ) then
+				headerIndex = 1;
+			end
+			break;
+		else
+			appearanceCollected = true;
+			if ( sources[i].sourceID == chosenSourceID ) then
+				-- match for #1
+				headerIndex = i;
+				appearanceUsable = true;
 				break;
+			elseif ( not sources[i].useError ) then
+				if ( not headerIndex or sources[headerIndex].useError ) then
+					-- candidate for #2
+					headerIndex = i;
+					appearanceUsable = true;
+					if ( chosenSourceID == NO_TRANSMOG_SOURCE_ID ) then
+						-- done
+						break;
+					end
+				end
+			else
+				if ( not headerIndex ) then
+					-- candidate for #3
+					headerIndex = i;
+				end
 			end
 		end
-	else
-		headerIndex = mod(offset, #sources) + 1;
-		headerSourceID = sources[headerIndex].sourceID;
 	end
+	if ( not WardrobeCollectionFrame.tooltipIndexOffset ) then
+		WardrobeCollectionFrame.tooltipIndexOffset = headerIndex - 1;
+	else
+		if ( WardrobeCollectionFrame.tooltipIndexOffset >= #sources ) then
+			WardrobeCollectionFrame.tooltipIndexOffset = 0;
+		end
+		headerIndex = headerIndex + WardrobeCollectionFrame.tooltipIndexOffset;
+	end
+	headerSourceID = sources[headerIndex].sourceID;
 
 	local name, nameColor, sourceText, sourceColor = WardrobeCollectionFrameModel_GetSourceTooltipInfo(sources[headerIndex]);
 	GameTooltip:SetText(name, nameColor.r, nameColor.g, nameColor.b);
-
-	-- at the transmogrify vendor or the appearance is collected and usable we're done after the main item name
-	if ( WardrobeFrame_IsAtTransmogrifier() or (sources[headerIndex].isCollected and not sources[headerIndex].useError) ) then
-		-- but extra tooltip text if not at transmogrifier
-		if ( not WardrobeFrame_IsAtTransmogrifier() ) then
-			GameTooltip:AddLine(WARDROBE_TOOLTIP_TRANSMOGRIFIER, GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b, 1, 1);
-		end
-		GameTooltip:Show();
-		return;
-	end
 
 	if ( sources[headerIndex].sourceType == TRANSMOG_SOURCE_BOSS_DROP and not sources[headerIndex].isCollected ) then
 		local drops = C_TransmogCollection.GetAppearanceSourceDrops(headerSourceID);
@@ -1774,10 +1803,12 @@ function WardrobeCollectionFrameModel_SetTooltip()
 			end
 		end
 	end
-	GameTooltip:AddLine(sourceText, sourceColor.r, sourceColor.g, sourceColor.b, 1, 1);
+	if ( not sources[headerIndex].isCollected ) then
+		GameTooltip:AddLine(sourceText, sourceColor.r, sourceColor.g, sourceColor.b, 1, 1);
+	end
 
 	local useError;
-	if ( #sources > 1 ) then
+	if ( #sources > 1 and not appearanceCollected ) then
 		GameTooltip:AddLine(" ");
 		GameTooltip:AddLine(WARDROBE_OTHER_ITEMS, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 		for i = 1, #sources do
@@ -1798,9 +1829,12 @@ function WardrobeCollectionFrameModel_SetTooltip()
 		WardrobeCollectionFrame.tooltipCycle = nil;
 	end
 
-	if ( useError ) then
-		GameTooltip:AddLine(" ");
-		GameTooltip:AddLine(useError, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
+	if ( appearanceCollected  ) then
+		if ( useError ) then
+			GameTooltip:AddLine(useError, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
+		elseif ( not WardrobeFrame_IsAtTransmogrifier() ) then
+			GameTooltip:AddLine(WARDROBE_TOOLTIP_TRANSMOGRIFIER, GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b, 1, 1);
+		end
 	end
 
 	GameTooltip:Show();
@@ -1832,11 +1866,33 @@ end
 local chosenVisualSources = { };
 
 function WardrobeCollectionFrameModel_GetChosenVisualSource(visualID)
-	return chosenVisualSources[visualID];
+	return chosenVisualSources[visualID] or NO_TRANSMOG_SOURCE_ID;
 end
 
 function WardrobeCollectionFrameModel_SetChosenVisualSource(visualID, sourceID)
 	chosenVisualSources[visualID] = sourceID;
+end
+
+function WardrobeCollectionFrameModel_ValidateChosenVisualSources()
+	for visualID, sourceID in pairs(chosenVisualSources) do
+		if ( sourceID ~= NO_TRANSMOG_SOURCE_ID ) then
+			local keep = false;
+			local sources = C_TransmogCollection.GetAppearanceSources(visualID);
+			if ( sources ) then
+				for i = 1, #sources do
+					if ( sources[i].sourceID == sourceID ) then
+						if ( sources[i].isCollected and not sources[i].useError ) then
+							keep = true;
+						end
+						break;
+					end
+				end
+			end
+			if ( not keep ) then
+				chosenVisualSources[visualID] = NO_TRANSMOG_SOURCE_ID;
+			end
+		end
+	end
 end
 
 function WardrobeCollectionFrameRightClickDropDown_Init(self)
@@ -1870,9 +1926,10 @@ function WardrobeCollectionFrameRightClickDropDown_Init(self)
 
 	local headerInserted = false;
 	local sources = WardrobeCollectionFrame_GetSortedAppearanceSources(appearanceID);
+	local chosenSourceID = WardrobeCollectionFrameModel_GetChosenVisualSource(appearanceID);
 	info.func = WardrobeCollectionFrameModelDropDown_SetSource;
 	for i = 1, #sources do
-		if ( sources[i].isCollected ) then
+		if ( sources[i].isCollected and not sources[i].useError ) then
 			if ( not headerInserted ) then
 				headerInserted = true;
 				-- space
@@ -1899,16 +1956,11 @@ function WardrobeCollectionFrameRightClickDropDown_Init(self)
 			info.disabled = nil;
 			info.arg1 = appearanceID;
 			info.arg2 = sources[i].sourceID;
-			local checked;
-			local chosenSourceID = WardrobeCollectionFrameModel_GetChosenVisualSource(appearanceID);
-			if ( chosenSourceID ) then
-				if ( chosenSourceID == sources[i].sourceID ) then
-					checked = true;
-				end
-			else
-				checked = (i == 1);
+			-- choose the 1st valid source if one isn't explicitly chosen
+			if ( chosenSourceID == NO_TRANSMOG_SOURCE_ID ) then
+				chosenSourceID = sources[i].sourceID;
 			end
-			info.checked = checked;
+			info.checked = (chosenSourceID == sources[i].sourceID);
 			UIDropDownMenu_AddButton(info);
 		end
 	end

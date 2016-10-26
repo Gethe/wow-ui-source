@@ -237,7 +237,7 @@
 				</Layers>
 				<Scripts>
 					<OnEnter function="PVPRewardWeeklyBonus_OnEnter"/>
-					<OnLeave function="GameTooltip_Hide"/>
+					<OnLeave function="PVPRewardWeeklyBonus_OnLeave"/>
 				</Scripts>
 			</Frame>
 		</Frames>
@@ -1091,7 +1091,7 @@
 							</Button>
 							<Frame parentKey="NoSeason" inherits="GlowBoxTemplate" hidden="true" frameLevel="100" enableMouse="true">
 								<Anchors>
-									<Anchor point="TOPLEFT" x="2" y="-2"/>
+									<Anchor point="TOPLEFT" relativeKey="$parent.Inset" x="3" y="-3" />
 									<Anchor point="BOTTOMRIGHT" x="-2" y="4"/>
 								</Anchors>
 								<Layers>
@@ -1106,6 +1106,22 @@
 											<Size x="280" y="180"/>
 											<Anchors>
 												<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="0" y="-33"/>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+							</Frame>
+							<Frame parentKey="Disabled" inherits="GlowBoxTemplate" hidden="true" frameLevel="100" enableMouse="true">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeKey="$parent.Inset" x="3" y="-3" />
+									<Anchor point="BOTTOMRIGHT" x="-2" y="4"/>
+								</Anchors>
+								<Layers>
+									<Layer level="OVERLAY">
+										<FontString parentKey="Info"  inherits="GameFontHighlight" text="ARENA_RATED_QUEUES_DISABLED"  justifyH="CENTER" justifyV="TOP">
+											<Size x="280" y="180"/>
+											<Anchors>
+												<Anchor point="TOP" x="0" y="-125"/>
 											</Anchors>
 										</FontString>
 									</Layer>

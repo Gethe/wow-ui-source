@@ -2049,12 +2049,12 @@ function GarrisonShipFollowerListButton_OnClick(self, button)
 		followerList:UpdateData();
 		followerList:ShowFollower(self.id);
 	elseif (button == "RightButton" and not followerList.isLandingPage) then
-		if ( GarrisonShipyardFollowerOptionDropDown.followerID ~= self.id ) then
-			CloseDropDownMenus();
+			if ( GarrisonShipyardFollowerOptionDropDown.followerID ~= self.id ) then
+				CloseDropDownMenus();
+			end
+			GarrisonShipyardFollowerOptionDropDown.followerID = self.id;
+			ToggleDropDownMenu(1, nil, GarrisonShipyardFollowerOptionDropDown, "cursor", 0, 0);
 		end
-		GarrisonShipyardFollowerOptionDropDown.followerID = self.id;
-		ToggleDropDownMenu(1, nil, GarrisonShipyardFollowerOptionDropDown, "cursor", 0, 0);
-	end
 end
 
 function GarrisonShipTrait_OnClick(self, button)
@@ -2164,7 +2164,8 @@ function GarrisonShipMissionPageFollowerFrame_OnEnter(self)
 	if not self.info then 
 		return;
 	end
-
+	
+	local missionPage = self:GetParent();
 	local xp = C_Garrison.GetFollowerXP(self.info.followerID);
 	local levelXp = C_Garrison.GetFollowerLevelXP(self.info.followerID);
 		
@@ -2188,6 +2189,7 @@ function GarrisonShipMissionPageFollowerFrame_OnEnter(self)
 		C_Garrison.GetFollowerTraitAtIndex(self.info.followerID, 4),
 		true,
 		C_Garrison.GetFollowerBiasForMission(self:GetParent().missionInfo.missionID, self.info.followerID) < 0.0,
+		C_Garrison.GetFollowerUnderBiasReason(missionPage.missionInfo.missionID, self.info.followerID),
 		GarrisonShipyardFollowerTooltip,
 		231
 		);

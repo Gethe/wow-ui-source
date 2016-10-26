@@ -171,7 +171,7 @@ end
 function PVPHonorXPBar_OnLoad(self)
 	local tex = self.Bar:GetStatusBarTexture();
 	self.Bar.Spark:ClearAllPoints();
-	self.Bar.Spark:SetPoint("CENTER", tex, "RIGHT", 2, 0);
+	self.Bar.Spark:SetPoint("CENTER", tex, "RIGHT", 0, 0);
 	self:RegisterEvent("HONOR_XP_UPDATE");
 	self:RegisterEvent("HONOR_LEVEL_UPDATE");
 	self:RegisterEvent("HONOR_PRESTIGE_UPDATE");
@@ -195,6 +195,7 @@ function PVPHonorXPBar_Update(self)
 		self.Bar:SetAnimatedValues(1, 0, 1, level);
 	else
 		self.Bar:SetAnimatedValues(current, 0, max, level);
+		self.Bar.Spark:SetShown(current > 0);
 	end
     
     local exhaustionStateID = GetHonorRestState();
@@ -407,14 +408,18 @@ end
 function PVPHonorXPBar_SetPrestige(self)
 	local newPrestigeLevel = UnitPrestige("player") + 1;
 
+	local icon, name = GetPrestigeInfo(newPrestigeLevel);
+
 	self.PortraitBg:SetAtlas("honorsystem-prestige-laurel-bg-"..UnitFactionGroup("player"), false);
-	self.Icon:SetTexture(GetPrestigeInfo(newPrestigeLevel) or 0);
+	self.Icon:SetTexture(icon or 0);
 
 	local canPrestigeHere = self:GetParent().canPrestigeHere;
 	self.Accept:SetShown(canPrestigeHere);
 
 	if (not canPrestigeHere) then
 		self.tooltip = PVP_HONOR_XP_BAR_CANNOT_PRESTIGE_HERE;
+	else
+		self.tooltip = name;
 	end
     
 	self:Show();

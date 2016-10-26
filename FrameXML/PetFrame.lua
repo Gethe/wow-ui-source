@@ -24,7 +24,8 @@ function PetFrame_OnLoad (self)
 	--self.flashTimer = 0;
 	CombatFeedback_Initialize(self, PetHitIndicator, 30);
 	PetFrame_Update(self);
-	self:RegisterEvent("UNIT_PET");
+	self:RegisterUnitEvent("UNIT_PET", "player");
+	self:RegisterUnitEvent("UNIT_EXITED_VEHICLE", "player");
 	self:RegisterEvent("PET_ATTACK_START");
 	self:RegisterEvent("PET_ATTACK_STOP");
 	self:RegisterEvent("PET_UI_UPDATE");
@@ -79,9 +80,8 @@ end
 
 function PetFrame_OnEvent (self, event, ...)
 	UnitFrame_OnEvent(self, event, ...);
-
 	local arg1, arg2, arg3, arg4, arg5 = ...;
-	if ( (event == "UNIT_PET" and arg1 == "player" ) or event == "PET_UI_UPDATE" ) then
+	if ( event == "UNIT_PET" or event == "UNIT_EXITED_VEHICLE" or event == "PET_UI_UPDATE" ) then
 		local unit
 		if ( UnitInVehicle("player") ) then
 			if ( UnitHasVehiclePlayerFrameUI("player") ) then

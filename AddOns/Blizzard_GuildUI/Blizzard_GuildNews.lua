@@ -7,7 +7,8 @@ local NEWS_ITEM_CRAFTED = 4;
 local NEWS_ITEM_PURCHASED = 5;
 local NEWS_GUILD_LEVEL = 6;
 local NEWS_GUILD_CREATE = 7;
-local NEWS_GUILD_EVENT = 8;
+local NEWS_LEGENDARY_LOOTED = 8;
+local NEWS_GUILD_EVENT = 9;
 
 local GUILD_EVENT_TEXTURES = {
 	--[CALENDAR_EVENTTYPE_RAID]		= "Interface\\LFGFrame\\LFGIcon-",
@@ -234,7 +235,7 @@ function GuildNewsButton_OnEnter(self)
 	GameTooltip:Hide();
 	local newsType = self.newsType;
 	self.UpdateTooltip = nil;
-	if ( newsType == NEWS_ITEM_LOOTED or newsType == NEWS_ITEM_CRAFTED or newsType == NEWS_ITEM_PURCHASED ) then
+	if ( newsType == NEWS_ITEM_LOOTED or newsType == NEWS_ITEM_CRAFTED or newsType == NEWS_ITEM_PURCHASED or newsType == NEWS_LEGENDARY_LOOTED ) then
 		GuildNewsButton_AnchorTooltip(self);
 		local _, _, _, _, text2, _, _, _ = GetGuildNewsInfo(self.index);
 		GameTooltip:SetHyperlink(text2);
@@ -388,8 +389,8 @@ end
 
 function GuildNewsFiltersFrame_OnLoad(self)
 	GuildFrame_RegisterPopup(self);
-	for i = 1, 6 do
-		_G["GuildNewsFilterButton"..i.."Text"]:SetText(_G["GUILD_NEWS_FILTER"..i]);
+	for _, filterButton in ipairs(self.GuildNewsFilterButtons) do
+		filterButton.Text:SetText(_G["GUILD_NEWS_FILTER"..filterButton:GetID()]);
 	end
 end
 
@@ -398,7 +399,7 @@ function GuildNewsFiltersFrame_OnShow(self)
 	local filters = { GetGuildNewsFilters() };
 	for i = 1, #filters do
 		-- skip 8th flag - guild creation
-		local checkbox = _G["GuildNewsFilterButton"..i];
+		local checkbox = self.GuildNewsFilterButtons[i];
 		if ( checkbox ) then
 			if ( filters[i] ) then
 				checkbox:SetChecked(true);

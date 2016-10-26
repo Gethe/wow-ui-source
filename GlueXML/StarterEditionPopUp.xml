@@ -75,7 +75,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button name="$parentUpgradeButton" text="UPGRADE">
+			<Button name="$parentUpgradeButton" text="UPGRADE_ACCOUNT_SHORT">
 				<Size x="228" y="91"/>
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" relativeTo="$parentBG" x="40" y="40"/>

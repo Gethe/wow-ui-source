@@ -39,10 +39,11 @@ function BattlefieldMinimap_OnLoad (self)
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
 	self:RegisterEvent("PLAYER_LOGOUT");
 	self:RegisterEvent("WORLD_MAP_UPDATE");
-	self:RegisterEvent("GROUP_ROSTER_UPDATE");
 	self:RegisterEvent("NEW_WMO_CHUNK");
 
 	BattlefieldMinimap.updateTimer = 0;
+
+	BattlefieldMinimapUnitPositionFrame:SetMouseOverUnitExcluded("player", true);
 end
 
 function BattlefieldMinimap_OnShow(self)
@@ -51,7 +52,6 @@ function BattlefieldMinimap_OnShow(self)
 	BattlefieldMinimap_Update();
 	BattlefieldMinimap_UpdateOpacity(BattlefieldMinimapOptions.opacity);
 	BattlefieldMinimapTab:Show();
-	WorldMapFrame_UpdateUnits("BattlefieldMinimapRaid", "BattlefieldMinimapParty");
 end
 
 function BattlefieldMinimap_OnHide(self)
@@ -102,10 +102,6 @@ function BattlefieldMinimap_OnEvent(self, event, ...)
 		if ( BattlefieldMinimap:IsVisible() ) then
 			BattlefieldMinimap_Update();
 		end
-	elseif ( event == "GROUP_ROSTER_UPDATE" ) then
-		if ( self:IsShown() ) then
-			WorldMapFrame_UpdateUnits("BattlefieldMinimapRaid", "BattlefieldMinimapParty");
-		end
 	end
 end
 
@@ -136,7 +132,7 @@ function BattlefieldMinimap_Update()
 	else
 		path = "Interface\\WorldMap\\MicroDungeon\\"..mapFileName.."\\"..microDungeonMapName.."\\"..microDungeonMapName;
 	end
-	
+
 	if ( dungeonLevel > 0 ) then
 		path = path..dungeonLevel.."_";
 	end
@@ -287,20 +283,12 @@ function BattlefieldMinimap_OnUpdate(self, elapsed)
 		BattlefieldMinimap.updateTimer = BattlefieldMinimap.updateTimer - elapsed;
 		return;
 	end
-	
+
+	BattlefieldMinimapUnitPositionFrame:ClearUnits();
+
 	--Position player
-	local playerX, playerY = GetPlayerMapPosition("player");
-	if ( playerX == 0 and playerY == 0 ) then
-		BattlefieldMinimapPlayer:Hide();
-	else
-		playerX = playerX * BattlefieldMinimap:GetWidth();
-		playerY = -playerY * BattlefieldMinimap:GetHeight();
-		BattlefieldMinimapPlayer:SetPoint("CENTER", "BattlefieldMinimap", "TOPLEFT", playerX, playerY);
-		UpdateWorldMapArrow(BattlefieldMinimapPlayer.icon);
-		UpdateWorldMapArrow(BattlefieldMinimapPlayer.iconHighlight);
-		BattlefieldMinimapPlayer:Show();
-	end
-	
+	BattlefieldMinimapUnitPositionFrame:AddUnit("player", "Interface\\Minimap\\MinimapArrow", 24, 24, 1, 1, 1, 1, 7, true);
+
 	-- If resizing the frame then scale everything accordingly
 	if ( BattlefieldMinimap.resizing ) then
 		local sizeUnit = BattlefieldMinimap:GetWidth()/4;
@@ -334,52 +322,29 @@ function BattlefieldMinimap_OnUpdate(self, elapsed)
 	end
 
 	if ( not BattlefieldMinimapOptions.showPlayers ) then
-		for i=1, MAX_PARTY_MEMBERS do
-			_G["BattlefieldMinimapParty"..i]:Hide();
-		end
-		for i=1, MAX_RAID_MEMBERS do
-			_G["BattlefieldMinimapRaid"..i]:Hide();
-		end
 		wipe(BG_VEHICLES);
 	else
 		--Position groupmates
-		local playerCount = 0;
-		if ( IsInRaid() ) then
-			for i=1, MAX_PARTY_MEMBERS do
-				local partyMemberFrame = _G["BattlefieldMinimapParty"..i];
-				partyMemberFrame:Hide();
-			end
-			for i=1, MAX_RAID_MEMBERS do
-				local unit = "raid"..i;
-				local partyX, partyY = GetPlayerMapPosition(unit);
-				local partyMemberFrame = _G["BattlefieldMinimapRaid"..(playerCount + 1)];
-				if ( (partyX ~= 0 or partyY ~= 0) and not UnitIsUnit("raid"..i, "player") ) then
-					partyX = partyX * BattlefieldMinimap:GetWidth();
-					partyY = -partyY * BattlefieldMinimap:GetHeight();
-					partyMemberFrame:SetPoint("CENTER", "BattlefieldMinimap", "TOPLEFT", partyX, partyY);
-					partyMemberFrame.name = nil;
-					partyMemberFrame.unit = unit;
-					partyMemberFrame:Show();
-					playerCount = playerCount + 1;
-				else
-					partyMemberFrame:Hide();
-				end
-			end
-		else
-			for i=1, MAX_RAID_MEMBERS do
-				_G["BattlefieldMinimapRaid"..i]:Hide();
-			end
-			for i=1, MAX_PARTY_MEMBERS do
-				local partyX, partyY = GetPlayerMapPosition("party"..i);
-				local partyMemberFrame = _G["BattlefieldMinimapParty"..i];
-				if ( partyX == 0 and partyY == 0 ) then
-					partyMemberFrame:Hide();
-				else
-					partyX = partyX * BattlefieldMinimap:GetWidth();
-					partyY = -partyY * BattlefieldMinimap:GetHeight();
-					partyMemberFrame:SetPoint("CENTER", "BattlefieldMinimap", "TOPLEFT", partyX, partyY);
-					partyMemberFrame:Show();
-				end
+		local timeNow = GetTime();
+		local isInRaid = IsInRaid();
+		local memberCount = 0;
+		local unitBase;
+
+		if isInRaid then
+			memberCount = MAX_RAID_MEMBERS;
+			unitBase = "raid";
+		elseif IsInGroup() then
+			memberCount = MAX_PARTY_MEMBERS;
+			unitBase = "party";
+		end
+
+		for i = 1, memberCount do
+			local unit = unitBase..i;
+			if UnitExists(unit) and not UnitIsUnit(unit, "player") then
+				local atlas = UnitInSubgroup(unit) and "WhiteCircle-RaidBlips" or "WhiteDotCircle-RaidBlips";
+				local class = select(2, UnitClass(unit));
+				local r, g, b = CheckColorOverrideForPVPInactive(unit, timeNow, GetClassColor(class));
+				BattlefieldMinimapUnitPositionFrame:AddUnitAtlas(unit, atlas, 8, 8, r, g, b, 1);
 			end
 		end
 
@@ -409,7 +374,7 @@ function BattlefieldMinimap_OnUpdate(self, elapsed)
 		-- position vehicles
 		local numVehicles = GetNumBattlefieldVehicles();
 		local totalVehicles = #BG_VEHICLES;
-		local playerBlipFrameLevel = BattlefieldMinimapRaid1:GetFrameLevel();
+		local playerBlipFrameLevel = BattlefieldMinimapUnitPositionFrame:GetFrameLevel();
 		local index = 0;
 		for i=1, numVehicles do
 			if (i > totalVehicles) then
@@ -442,15 +407,17 @@ function BattlefieldMinimap_OnUpdate(self, elapsed)
 			for i=index+1, totalVehicles do
 				BG_VEHICLES[i]:Hide();
 			end
-		end	
+		end
 	end
+
+	BattlefieldMinimapUnitPositionFrame:FinalizeUnits();
 
 	-- Fadein tab if mouse is over
 	if ( BattlefieldMinimap:IsMouseOver(45, -10, -5, 5) ) then
 		-- If mouse is hovering don't show the tab until the elapsed time reaches the tab show delay
 		if ( BattlefieldMinimap.hover ) then
 			if ( BattlefieldMinimap.hoverTime > BATTLEFIELD_TAB_SHOW_DELAY ) then
-				-- If the battlefieldtab's alpha is less than the current default, then fade it in 
+				-- If the battlefieldtab's alpha is less than the current default, then fade it in
 				if ( not BattlefieldMinimap.hasBeenFaded and (BattlefieldMinimap.oldAlpha and BattlefieldMinimap.oldAlpha < DEFAULT_BATTLEFIELD_TAB_ALPHA) ) then
 					UIFrameFadeIn(BattlefieldMinimapTab, BATTLEFIELD_TAB_FADE_TIME, BattlefieldMinimap.oldAlpha, DEFAULT_BATTLEFIELD_TAB_ALPHA);
 					-- Set the fact that the chatFrame has been faded so we don't try to fade it again
@@ -477,6 +444,8 @@ function BattlefieldMinimap_OnUpdate(self, elapsed)
 		end
 		BattlefieldMinimap.hoverTime = 0;
 	end
+
+	BattlefieldMinimapUnitPositionFrame:UpdateTooltips(GameTooltip);
 end
 
 
@@ -563,57 +532,4 @@ function BattlefieldMinimap_UpdateOpacity(opacity)
 	end
 	BattlefieldMinimapCloseButton:SetAlpha(alpha);
 	BattlefieldMinimapCorner:SetAlpha(alpha);
-end
-
-
-function BattlefieldMinimapUnit_OnEnter(self, motion)
-	-- Adjust the tooltip based on which side the unit button is on
-	local x, y = self:GetCenter();
-	local parentX, parentY = self:GetParent():GetCenter();
-	if ( x > parentX ) then
-		GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-	else
-		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	end
-	
-	-- See which POI's are in the same region and include their names in the tooltip
-	local unitButton;
-	local newLineString = "";
-	local tooltipText = "";
-	
-	-- Check party
-	for i=1, MAX_PARTY_MEMBERS do
-		unitButton = _G["BattlefieldMinimapParty"..i];
-		if ( unitButton:IsVisible() and unitButton:IsMouseOver() ) then
-			if ( PlayerIsPVPInactive(unitButton.unit) ) then
-				tooltipText = tooltipText..newLineString..format(PLAYER_IS_PVP_AFK, UnitName(unitButton.unit));
-			else
-				tooltipText = tooltipText..newLineString..UnitName(unitButton.unit);
-			end
-			newLineString = "\n";
-		end
-	end
-	--Check Raid
-	for i=1, MAX_RAID_MEMBERS do
-		unitButton = _G["BattlefieldMinimapRaid"..i];
-		if ( unitButton:IsVisible() and unitButton:IsMouseOver() ) then
-			-- Handle players not in your raid or party, but on your team
-			if ( unitButton.name ) then
-				if ( PlayerIsPVPInactive(unitButton.name) ) then
-					tooltipText = tooltipText..newLineString..format(PLAYER_IS_PVP_AFK, unitButton.name);
-				else
-					tooltipText = tooltipText..newLineString..unitButton.name;		
-				end
-			else
-				if ( PlayerIsPVPInactive(unitButton.unit) ) then
-					tooltipText = tooltipText..newLineString..format(PLAYER_IS_PVP_AFK, UnitName(unitButton.unit));
-				else
-					tooltipText = tooltipText..newLineString..UnitName(unitButton.unit);
-				end
-			end
-			newLineString = "\n";
-		end
-	end
-	GameTooltip:SetText(tooltipText);
-	GameTooltip:Show();
 end

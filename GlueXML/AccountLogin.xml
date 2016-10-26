@@ -549,7 +549,7 @@
 											</ScrollFrame>
 										</Frames>
 									</Frame>
-									<Button parentKey="AcceptButton" inherits="GlueButtonTemplateBlue" text="ACCEPT">
+									<Button parentKey="AcceptButton" inherits="GlueButtonTemplateBlue" text="ACCEPT_GLUE">
 										<Size>
 											<AbsDimension x="125" y="37"/>
 										</Size>

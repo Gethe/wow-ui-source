@@ -643,31 +643,42 @@ function CharacterUpgradeCharacterSelectBlock:Initialize(results)
 	self:ClearResultInfo();
 	self.lastSelectedIndex = CharacterSelect.selectedIndex;
 
-	local num = math.min(GetNumCharacters(), MAX_CHARACTERS_DISPLAYED);
+	local numCharacters = GetNumCharacters();
+	local numDisplayedCharacters = math.min(numCharacters, MAX_CHARACTERS_DISPLAYED);
 
 	-- Ensure this is hidden if the user has no characters
-	self.frame.ControlsFrame.GlowBox:SetShown(num > 0);
-	self.frame.StepActiveLabel:SetShown(num > 0);
+	self.frame.ControlsFrame.GlowBox:SetShown(numDisplayedCharacters > 0);
+	self.frame.StepActiveLabel:SetShown(numDisplayedCharacters > 0);
 
 	if (CharacterUpgrade_IsCreatedCharacterUpgrade()) then
-		CharacterSelect_UpdateButtonState()
-		CHARACTER_LIST_OFFSET = max(num - MAX_CHARACTERS_DISPLAYED, 0);
-		if (self.createNum < GetNumCharacters()) then
-			CharacterSelect.selectedIndex = num;
+		CharacterSelect_UpdateButtonState();
+		CHARACTER_LIST_OFFSET = max(numCharacters - MAX_CHARACTERS_DISPLAYED, 0);
+
+		if (self.createNum < numCharacters) then
+			CharacterSelect.selectedIndex = numCharacters;
+
+			CharacterSelectCharacterFrame.scrollBar.blockUpdates = true;
+			CharacterSelectCharacterFrame.scrollBar:SetValue(CHARACTER_LIST_OFFSET);
+			CharacterSelectCharacterFrame.scrollBar.blockUpdates = nil;
+
 			UpdateCharacterSelection(CharacterSelect);
+
 			self.index = CharacterSelect.selectedIndex;
-			self.charid = GetCharIDFromIndex(CharacterSelect.selectedIndex + CHARACTER_LIST_OFFSET);
+			self.charid = GetCharIDFromIndex(CharacterSelect.selectedIndex);
 			self.playerguid = select(14, GetCharacterInfo(self.charid));
-			local button = _G["CharSelectCharacterButton"..num];
+
+			local button = _G["CharSelectCharacterButton"..numDisplayedCharacters];
 			replaceScripts(button);
+
 			CharacterServicesMaster_Update();
+
 			return;
 		end
 	end
 
 	CharacterSelect_SaveCharacterOrder();
 	-- Set up the GlowBox around the show characters
-	self.frame.ControlsFrame.GlowBox:SetHeight(58 * num);
+	self.frame.ControlsFrame.GlowBox:SetHeight(58 * numDisplayedCharacters);
 	if (CharacterSelectCharacterFrame.scrollBar:IsShown()) then
 		self.frame.ControlsFrame.GlowBox:SetPoint("TOP", CharacterSelectCharacterFrame, -8, -60);
 		self.frame.ControlsFrame.GlowBox:SetWidth(238);
@@ -697,7 +708,7 @@ function CharacterUpgradeCharacterSelectBlock:Initialize(results)
 	self.hasVeteran = false;
 	replaceAllScripts();
 
-	for i = 1, num do
+	for i = 1, numDisplayedCharacters do
 		local button = _G["CharSelectCharacterButton"..i];
 		_G["CharSelectPaidService"..i]:Hide();
 		local class, _, level, _, _, _, _, _, _, _, playerguid, _, _, _, boostInProgress, _, _, isTrialBoost = select(4, GetCharacterInfo(GetCharIDFromIndex(i+CHARACTER_LIST_OFFSET)));
@@ -757,13 +768,13 @@ function CharacterUpgradeCharacterSelectBlock:Initialize(results)
 	self.frame.ControlsFrame.OrLabel2:Hide();
 	self.frame.ControlsFrame.CreateCharacterClassTrialButton:Hide();
 
-	if (num < MAX_CHARACTERS_DISPLAYED_BASE) then
+	if (numDisplayedCharacters < MAX_CHARACTERS_DISPLAYED_BASE) then
 		self.frame.ControlsFrame.CreateCharacterButton:Show();
 		self.frame.ControlsFrame.CreateCharacterButton:ClearAllPoints();
 
 		local onlyShowCreateButtonsBottomFrame;
 
-		if (num > 0) then
+		if (numDisplayedCharacters > 0) then
 			self.frame.ControlsFrame.OrLabel:Show();
 			self.frame.ControlsFrame.CreateCharacterButton:SetPoint("TOPLEFT", self.frame.ControlsFrame.OrLabel, "BOTTOMLEFT", 0, -5);
 		else
@@ -887,12 +898,12 @@ end
 function CharacterUpgradeCharacterSelectBlock:OnAdvance()
 	disableScroll(CharacterSelectCharacterFrame.scrollBar);
 
-	local index = self.index;
+	local selectedButtonIndex = math.min(self.index, MAX_CHARACTERS_DISPLAYED);
+	local numDisplayedCharacters = math.min(GetNumCharacters(), MAX_CHARACTERS_DISPLAYED);
 
-	local num = math.min(GetNumCharacters(), MAX_CHARACTERS_DISPLAYED);
-	for i = 1, num do
-		if (i ~= index) then
-			local button = _G["CharSelectCharacterButton"..i];
+	for buttonIndex = 1, numDisplayedCharacters do
+		if (buttonIndex ~= selectedButtonIndex) then
+			local button = _G["CharSelectCharacterButton"..buttonIndex];
 			SetCharacterButtonEnabled(button, false);
 		end
 	end
@@ -931,10 +942,8 @@ function CharacterUpgradeClassTrial_OnClick(self)
 	CharacterUpgrade_BeginNewCharacterCreation(LE_CHARACTER_CREATE_TYPE_TRIAL_BOOST);
 end
 
--- Override recommended spec for druids to Feral until we stop using recommended specs as allowed specs.
-local recommendedSpecOverride = {
-	["DRUID"] = 103,
-};
+-- There are currently no script overrides to recommended specs, add them here if necessary.
+local recommendedSpecOverride = {};
 
 function GetRecommendedSpecButton(ownerFrame, overrideSpecID)
 	-- There may be multiple recommended specs for now, so determine the best one based on class.

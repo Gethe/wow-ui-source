@@ -29,7 +29,7 @@
 					</Anchors>
 				</FontString>
 			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="2">
+			<Layer level="OVERLAY" textureSubLevel="4">
 				<Texture name="$parentSearchOverlay" parentKey="searchOverlay" setAllPoints="true" hidden="true">
 					<Color r="0" g="0" b="0" a="0.8"/>
 				</Texture>

@@ -56,9 +56,7 @@
 						self:RegisterEvent("STORE_STATUS_CHANGED");
 						GameMenuFrame_UpdateStoreButtonState(self);
 					</OnLoad>
-					<OnShow>
-						self:SetEnabled(not IsKioskModeEnabled());
-					</OnShow>
+					<OnShow function="GameMenuFrame_UpdateStoreButtonState"/>
 					<OnEvent function="GameMenuFrame_UpdateStoreButtonState"/>
 					<OnEnter>
 						if ( self.disabledTooltip ) then

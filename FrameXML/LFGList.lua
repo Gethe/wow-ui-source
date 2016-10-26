@@ -1284,6 +1284,42 @@ function LFGListApplicationViewer_UpdateApplicant(button, id)
 	button.Spinner:SetShown(pendingStatus);
 end
 
+function LFGListApplicationViewer_UpdateRoleIcons(member, grayedOut, tank, healer, damage, noTouchy, assignedRole)
+	--Update the roles.
+	if ( grayedOut ) then
+		member.RoleIcon1:Hide();
+		member.RoleIcon2:Hide();
+		member.RoleIcon3:Hide();
+	else
+		local role1 = tank and "TANK" or (healer and "HEALER" or (damage and "DAMAGER"));
+		local role2 = (tank and healer and "HEALER") or ((tank or healer) and damage and "DAMAGER");
+		local role3 = (tank and healer and damage and "DAMAGER");
+		member.RoleIcon1:GetNormalTexture():SetAtlas(LFG_LIST_GROUP_DATA_ATLASES[role1]);
+		member.RoleIcon1:GetHighlightTexture():SetAtlas(LFG_LIST_GROUP_DATA_ATLASES[role1]);
+		if ( role2 ) then
+			member.RoleIcon2:GetNormalTexture():SetAtlas(LFG_LIST_GROUP_DATA_ATLASES[role2]);
+			member.RoleIcon2:GetHighlightTexture():SetAtlas(LFG_LIST_GROUP_DATA_ATLASES[role2]);
+		end
+		if ( role3 ) then
+			member.RoleIcon3:GetNormalTexture():SetAtlas(LFG_LIST_GROUP_DATA_ATLASES[role3]);
+			member.RoleIcon3:GetHighlightTexture():SetAtlas(LFG_LIST_GROUP_DATA_ATLASES[role3]);
+		end
+		
+		member.RoleIcon1:SetEnabled(not noTouchy and role1 ~= assignedRole);
+		member.RoleIcon1:SetAlpha(role1 == assignedRole and 1 or 0.3);
+		member.RoleIcon1:Show();
+		member.RoleIcon2:SetEnabled(not noTouchy and role2 ~= assignedRole);
+		member.RoleIcon2:SetAlpha(role2 == assignedRole and 1 or 0.3);
+		member.RoleIcon2:SetShown(role2);
+		member.RoleIcon3:SetEnabled(not noTouchy and role3 ~= assignedRole);
+		member.RoleIcon3:SetAlpha(role3 == assignedRole and 1 or 0.3);
+		member.RoleIcon3:SetShown(role3);
+		member.RoleIcon1.role = role1;
+		member.RoleIcon2.role = role2;
+		member.RoleIcon3.role = role3;
+	end
+end
+
 function LFGListApplicationViewer_UpdateApplicantMember(member, appID, memberIdx, status, pendingStatus)
 	local grayedOut = not pendingStatus and (status == "failed" or status == "cancelled" or status == "declined" or status == "invitedeclined" or status == "timedout");
 	local noTouchy = (status == "invited" or status == "inviteaccepted" or status == "invitedeclined");
@@ -1322,28 +1358,7 @@ function LFGListApplicationViewer_UpdateApplicantMember(member, appID, memberIdx
 		member.Name:SetWidth(nameLength);
 	end
 
-	--Update the roles.
-	if ( grayedOut ) then
-		member.RoleIcon1:Hide();
-		member.RoleIcon2:Hide();
-	else
-		local role1 = tank and "TANK" or (healer and "HEALER" or (damage and "DAMAGER"));
-		local role2 = (tank and healer and "HEALER") or ((tank or healer) and damage and "DAMAGER");
-		member.RoleIcon1:GetNormalTexture():SetAtlas(LFG_LIST_GROUP_DATA_ATLASES[role1]);
-		member.RoleIcon1:GetHighlightTexture():SetAtlas(LFG_LIST_GROUP_DATA_ATLASES[role1]);
-		if ( role2 ) then
-			member.RoleIcon2:GetNormalTexture():SetAtlas(LFG_LIST_GROUP_DATA_ATLASES[role2]);
-			member.RoleIcon2:GetHighlightTexture():SetAtlas(LFG_LIST_GROUP_DATA_ATLASES[role2]);
-		end
-		member.RoleIcon1:SetEnabled(not noTouchy and role1 ~= assignedRole);
-		member.RoleIcon1:SetAlpha(role1 == assignedRole and 1 or 0.3);
-		member.RoleIcon1:Show();
-		member.RoleIcon2:SetEnabled(not noTouchy and role2 ~= assignedRole);
-		member.RoleIcon2:SetAlpha(role2 == assignedRole and 1 or 0.3);
-		member.RoleIcon2:SetShown(role2);
-		member.RoleIcon1.role = role1;
-		member.RoleIcon2.role = role2;
-	end
+	LFGListApplicationViewer_UpdateRoleIcons(member, grayedOut, tank, healer, damage, noTouchy, assignedRole);
 
 	member.ItemLevel:SetShown(not grayedOut);
 	member.ItemLevel:SetText(math.floor(itemLevel));
@@ -1494,8 +1509,6 @@ function LFGListSearchPanel_OnEvent(self, event, ...)
 				LFGListSearchPanel_UpdateResults(self);
 			end
 		end
-		LFGListSearchPanel_UpdateButtonStatus(self);
-	elseif ( event == "LFG_LIST_SEARCH_RESULT_UPDATED" ) then
 		LFGListSearchPanel_UpdateButtonStatus(self);
 	elseif ( event == "PARTY_LEADER_CHANGED" ) then
 		LFGListSearchPanel_UpdateButtonStatus(self);
@@ -2027,73 +2040,9 @@ function LFGListSearchEntry_OnClick(self, button)
 end
 
 function LFGListSearchEntry_OnEnter(self)
-	local resultID = self.resultID;
-	local id, activityID, name, comment, voiceChat, iLvl, honorLevel, age, numBNetFriends, numCharFriends, numGuildMates, isDelisted, leaderName, numMembers = C_LFGList.GetSearchResultInfo(resultID);
-	local activityName, shortName, categoryID, groupID, minItemLevel, filters, minLevel, maxPlayers, displayType, _, useHonorLevel = C_LFGList.GetActivityInfo(activityID);
-	local memberCounts = C_LFGList.GetSearchResultMemberCounts(resultID);
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 25, 0);
-	GameTooltip:SetText(name, 1, 1, 1, true);
-	GameTooltip:AddLine(activityName);
-	if ( comment ~= "" ) then
-		GameTooltip:AddLine(string.format(LFG_LIST_COMMENT_FORMAT, comment), LFG_LIST_COMMENT_FONT_COLOR.r, LFG_LIST_COMMENT_FONT_COLOR.g, LFG_LIST_COMMENT_FONT_COLOR.b, true);
-	end
-	GameTooltip:AddLine(" ");
-	if ( iLvl > 0 ) then
-		GameTooltip:AddLine(string.format(LFG_LIST_TOOLTIP_ILVL, iLvl));
-	end
-	if ( useHonorLevel and honorLevel > 0 ) then
-		GameTooltip:AddLine(string.format(LFG_LIST_TOOLTIP_HONOR_LEVEL, honorLevel));
-	end
-	if ( voiceChat ~= "" ) then
-		GameTooltip:AddLine(string.format(LFG_LIST_TOOLTIP_VOICE_CHAT, voiceChat), nil, nil, nil, true);
-	end
-	if ( iLvl > 0 or (useHonorLevel and honorLevel > 0) or voiceChat ~= "" ) then
-		GameTooltip:AddLine(" ");
-	end
-
-	if ( leaderName ) then
-		GameTooltip:AddLine(string.format(LFG_LIST_TOOLTIP_LEADER, leaderName));
-	end
-	if ( age > 0 ) then
-		GameTooltip:AddLine(string.format(LFG_LIST_TOOLTIP_AGE, SecondsToTime(age, false, false, 1, false)));
-	end
-
-	if ( leaderName or age > 0 ) then
-		GameTooltip:AddLine(" ");
-	end
-
-	if ( displayType == LE_LFG_LIST_DISPLAY_TYPE_CLASS_ENUMERATE ) then
-		GameTooltip:AddLine(string.format(LFG_LIST_TOOLTIP_MEMBERS_SIMPLE, numMembers));
-		for i=1, numMembers do
-			local role, class, classLocalized = C_LFGList.GetSearchResultMemberInfo(resultID, i);
-			local classColor = RAID_CLASS_COLORS[class] or NORMAL_FONT_COLOR;
-			GameTooltip:AddLine(string.format(LFG_LIST_TOOLTIP_CLASS_ROLE, classLocalized, _G[role]), classColor.r, classColor.g, classColor.b);
-		end
-	else
-		GameTooltip:AddLine(string.format(LFG_LIST_TOOLTIP_MEMBERS, numMembers, memberCounts.TANK, memberCounts.HEALER, memberCounts.DAMAGER));
-	end
-
-	if ( numBNetFriends + numCharFriends + numGuildMates > 0 ) then
-		GameTooltip:AddLine(" ");
-		GameTooltip:AddLine(LFG_LIST_TOOLTIP_FRIENDS_IN_GROUP);
-		GameTooltip:AddLine(LFGListSearchEntryUtil_GetFriendList(resultID), 1, 1, 1, true);
-	end
-
-	local completedEncounters = C_LFGList.GetSearchResultEncounterInfo(resultID);
-	if ( completedEncounters and #completedEncounters > 0 ) then
-		GameTooltip:AddLine(" ");
-		GameTooltip:AddLine(LFG_LIST_BOSSES_DEFEATED);
-		for i=1, #completedEncounters do
-			GameTooltip:AddLine(completedEncounters[i], RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
-		end
-	end
-
-	if ( isDelisted ) then
-		GameTooltip:AddLine(" ");
-		GameTooltip:AddLine(LFG_LIST_ENTRY_DELISTED, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
-	end
-
-	GameTooltip:Show();
+	local resultID = self.resultID;
+	LFGListUtil_SetSearchEntryTooltip(GameTooltip, resultID);
 end
 
 function LFGListSearchEntryUtil_GetFriendList(resultID)
@@ -2158,7 +2107,7 @@ end
 function LFGListApplicationDialog_UpdateRoles(self)
 	local availTank, availHealer, availDPS = C_LFGList.GetAvailableRoles();
 
-	local avail1, avail2;
+	local avail1, avail2, avail3;
 	if ( availTank ) then
 		avail1 = self.TankButton;
 	end
@@ -2170,7 +2119,9 @@ function LFGListApplicationDialog_UpdateRoles(self)
 		end
 	end
 	if ( availDPS ) then
-		if ( avail1 ) then
+		if ( avail2 ) then
+			avail3 = self.DamagerButton;
+		elseif ( avail1 ) then
 			avail2 = self.DamagerButton;
 		else
 			avail1 = self.DamagerButton;
@@ -2181,7 +2132,14 @@ function LFGListApplicationDialog_UpdateRoles(self)
 	self.HealerButton:SetShown(availHealer);
 	self.DamagerButton:SetShown(availDPS);
 
-	if ( avail2 ) then
+	if ( avail3 ) then
+		avail1:ClearAllPoints();
+		avail1:SetPoint("TOPRIGHT", self, "TOP", -53, -35);
+		avail2:ClearAllPoints();
+		avail2:SetPoint("TOP", self, "TOP", 0, -35);
+		avail3:ClearAllPoints();
+		avail3:SetPoint("TOPLEFT", self, "TOP", 53, -35);
+	elseif ( avail2 ) then
 		avail1:ClearAllPoints();
 		avail1:SetPoint("TOPRIGHT", self, "TOP", -5, -35);
 		avail2:ClearAllPoints();
@@ -2959,4 +2917,72 @@ function LFGListUtil_SetAutoAccept(autoAccept)
 	end
 
 	C_LFGList.UpdateListing(activityID, name, iLevel, honorLevel, voiceChat, comment, autoAccept);
+end
+
+function LFGListUtil_SetSearchEntryTooltip(tooltip, resultID)
+	local id, activityID, name, comment, voiceChat, iLvl, honorLevel, age, numBNetFriends, numCharFriends, numGuildMates, isDelisted, leaderName, numMembers = C_LFGList.GetSearchResultInfo(resultID);
+	local activityName, shortName, categoryID, groupID, minItemLevel, filters, minLevel, maxPlayers, displayType, _, useHonorLevel = C_LFGList.GetActivityInfo(activityID);
+	local memberCounts = C_LFGList.GetSearchResultMemberCounts(resultID);
+	tooltip:SetText(name, 1, 1, 1, true);
+	tooltip:AddLine(activityName);
+	if ( comment ~= "" ) then
+		tooltip:AddLine(string.format(LFG_LIST_COMMENT_FORMAT, comment), LFG_LIST_COMMENT_FONT_COLOR.r, LFG_LIST_COMMENT_FONT_COLOR.g, LFG_LIST_COMMENT_FONT_COLOR.b, true);
+	end
+	tooltip:AddLine(" ");
+	if ( iLvl > 0 ) then
+		tooltip:AddLine(string.format(LFG_LIST_TOOLTIP_ILVL, iLvl));
+	end
+	if ( useHonorLevel and honorLevel > 0 ) then
+		tooltip:AddLine(string.format(LFG_LIST_TOOLTIP_HONOR_LEVEL, honorLevel));
+	end
+	if ( voiceChat ~= "" ) then
+		tooltip:AddLine(string.format(LFG_LIST_TOOLTIP_VOICE_CHAT, voiceChat), nil, nil, nil, true);
+	end
+	if ( iLvl > 0 or (useHonorLevel and honorLevel > 0) or voiceChat ~= "" ) then
+		tooltip:AddLine(" ");
+	end
+
+	if ( leaderName ) then
+		tooltip:AddLine(string.format(LFG_LIST_TOOLTIP_LEADER, leaderName));
+	end
+	if ( age > 0 ) then
+		tooltip:AddLine(string.format(LFG_LIST_TOOLTIP_AGE, SecondsToTime(age, false, false, 1, false)));
+	end
+
+	if ( leaderName or age > 0 ) then
+		tooltip:AddLine(" ");
+	end
+
+	if ( displayType == LE_LFG_LIST_DISPLAY_TYPE_CLASS_ENUMERATE ) then
+		tooltip:AddLine(string.format(LFG_LIST_TOOLTIP_MEMBERS_SIMPLE, numMembers));
+		for i=1, numMembers do
+			local role, class, classLocalized = C_LFGList.GetSearchResultMemberInfo(resultID, i);
+			local classColor = RAID_CLASS_COLORS[class] or NORMAL_FONT_COLOR;
+			tooltip:AddLine(string.format(LFG_LIST_TOOLTIP_CLASS_ROLE, classLocalized, _G[role]), classColor.r, classColor.g, classColor.b);
+		end
+	else
+		tooltip:AddLine(string.format(LFG_LIST_TOOLTIP_MEMBERS, numMembers, memberCounts.TANK, memberCounts.HEALER, memberCounts.DAMAGER));
+	end
+
+	if ( numBNetFriends + numCharFriends + numGuildMates > 0 ) then
+		tooltip:AddLine(" ");
+		tooltip:AddLine(LFG_LIST_TOOLTIP_FRIENDS_IN_GROUP);
+		tooltip:AddLine(LFGListSearchEntryUtil_GetFriendList(resultID), 1, 1, 1, true);
+	end
+
+	local completedEncounters = C_LFGList.GetSearchResultEncounterInfo(resultID);
+	if ( completedEncounters and #completedEncounters > 0 ) then
+		tooltip:AddLine(" ");
+		tooltip:AddLine(LFG_LIST_BOSSES_DEFEATED);
+		for i=1, #completedEncounters do
+			tooltip:AddLine(completedEncounters[i], RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
+		end
+	end
+
+	if ( isDelisted ) then
+		tooltip:AddLine(" ");
+		tooltip:AddLine(LFG_LIST_ENTRY_DELISTED, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
+	end
+
+	tooltip:Show();
 end

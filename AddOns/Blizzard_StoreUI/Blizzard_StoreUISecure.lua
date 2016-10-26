@@ -1562,6 +1562,7 @@ function StoreFrame_OnLoad(self)
 	self:RegisterEvent("TOKEN_MARKET_PRICE_UPDATED");
 	self:RegisterEvent("TOKEN_STATUS_CHANGED");
 	self:RegisterEvent("STORE_BOOST_AUTO_CONSUMED");
+	self:RegisterEvent("STORE_REFRESH");
 
 	-- We have to call this from CharacterSelect on the glue screen because the addon engine will load
 	-- the store addon more than once if we try to make it ondemand, forcing us to load it before we
@@ -1708,6 +1709,8 @@ function StoreFrame_OnEvent(self, event, ...)
 		else
 			StoreFrame_ShowUnrevokeConsumptionDialog();
 		end
+	elseif ( event == "STORE_REFRESH" ) then
+		C_PurchaseAPI.GetProductList();
 	end
 end
 
@@ -2818,9 +2821,9 @@ function StoreProductCard_ShowIcon(self, icon, itemID, overrideTexture)
 
 	if (not overrideTexture) then
 		if (self == StoreFrame.SplashSingle) then
-			self.Icon:SetPoint("TOPLEFT", 86, -96);
+			self.Icon:SetPoint("TOPLEFT", 88, -99);
 		end
-		self.Icon:SetSize(63, 63);
+		self.Icon:SetSize(64, 64);
 		SetPortraitToTexture(self.Icon, icon);
 		self.IconBorder:Show();
 	else
@@ -2828,19 +2831,19 @@ function StoreProductCard_ShowIcon(self, icon, itemID, overrideTexture)
 		if (self == StoreFrame.SplashSingle) then
 			local adjustX, adjustY;
 			local width, height = self.Icon:GetSize();
-			if (width > 63) then
-				adjustX = -(width - 63);
+			if (width > 64) then
+				adjustX = -(width - 64);
 			else
-				adjustX = 63 - width;
+				adjustX = 64 - width;
 			end
 
-			if (height > 63) then
-				adjustY = height - 63;
+			if (height > 64) then
+				adjustY = height - 64;
 			else
-				adjustY = -(63 - height);
+				adjustY = -(64 - height);
 			end
 
-			self.Icon:SetPoint("TOPLEFT", 86 + math.floor(adjustX / 2), -96 + math.floor(adjustY / 2));
+			self.Icon:SetPoint("TOPLEFT", 88 + math.floor(adjustX / 2), -99 + math.floor(adjustY / 2));
 		end
 		self.IconBorder:Hide();
 	end

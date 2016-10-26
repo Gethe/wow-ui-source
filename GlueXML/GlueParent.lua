@@ -20,17 +20,38 @@ SEX_NONE = 1;
 SEX_MALE = 2;
 SEX_FEMALE = 3;
 
-function GlueParent_OnLoad(self)
-   	local width = GetScreenWidth();
+local function OnDisplaySizeChanged(self)
+	local width = GetScreenWidth();
 	local height = GetScreenHeight();
 
-	if ( width / height > 16 / 9) then
-		local maxWidth = height * 16 / 9;
+	local MIN_ASPECT = 5 / 4;
+	local MAX_ASPECT = 16 / 9;
+	local currentAspect = width / height;
+
+	self:ClearAllPoints();
+	
+	if ( currentAspect > MAX_ASPECT ) then
+		local maxWidth = height * MAX_ASPECT;
 		local barWidth = ( width - maxWidth ) / 2;
-		self:ClearAllPoints();
-		self:SetPoint("TOPLEFT", barWidth, 0);
+		self:SetScale(1);
+		self:SetPoint("TOPLEFT", barWidth, 0); 
 		self:SetPoint("BOTTOMRIGHT", -barWidth, 0);
+	elseif ( currentAspect < MIN_ASPECT ) then
+		local maxHeight = width / MIN_ASPECT;
+		local scale = currentAspect / MIN_ASPECT;
+		local barHeight = ( height - maxHeight ) / (2 * scale);
+		self:SetScale(maxHeight/height);
+		self:SetPoint("TOPLEFT", 0, -barHeight);
+		self:SetPoint("BOTTOMRIGHT", 0, barHeight);
+	else
+		self:SetScale(1);
+		self:SetAllPoints();
 	end
+end
+
+function GlueParent_OnLoad(self)
+	-- alias GlueParent to UIParent
+	UIParent = self;
 
 	self:RegisterEvent("FRAMES_LOADED");
 	self:RegisterEvent("ACCOUNT_MESSAGES_BODY_LOADED");
@@ -38,6 +59,9 @@ function GlueParent_OnLoad(self)
 	self:RegisterEvent("LOGIN_FAILED");
 	self:RegisterEvent("OPEN_STATUS_DIALOG");
 	self:RegisterEvent("REALM_LIST_UPDATED");
+	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
+
+	OnDisplaySizeChanged(self);
 end
 
 function GlueParent_OnEvent(self, event, ...)
@@ -57,6 +81,8 @@ function GlueParent_OnEvent(self, event, ...)
 		GlueDialog_Show(dialog, text);
 	elseif ( event == "REALM_LIST_UPDATED" ) then
 		RealmList_Update();
+	elseif ( event == "DISPLAY_SIZE_CHANGED" ) then
+		OnDisplaySizeChanged(self);
 	end
 end
 
@@ -590,6 +616,10 @@ end
 -- Utils
 -- =============================================================
 
+function IsKioskGlueEnabled()
+	return IsKioskModeEnabled() and not IsCompetitiveModeEnabled();
+end
+
 function SetExpansionLogo(texture, expansionLevel)
 	if ( EXPANSION_LOGOS[expansionLevel].texture ) then
 		texture:SetTexture(EXPANSION_LOGOS[expansionLevel].texture);
@@ -681,6 +711,19 @@ function CheckSystemRequirements( previousCheck )
 		previousCheck = nil;
 	end
 end
+
+function GetScaledCursorPosition()
+	local uiScale = GlueParent:GetEffectiveScale();
+	local x, y = GetCursorPosition();
+	return x / uiScale, y / uiScale;
+end
+
+function GetScaledCursorDelta()
+	local uiScale = GlueParent:GetEffectiveScale();
+	local x, y = GetCursorDelta();
+	return x / uiScale, y / uiScale;
+end
+
 -- =============================================================
 -- Backwards Compatibility
 -- =============================================================

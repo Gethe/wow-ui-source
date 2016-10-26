@@ -230,7 +230,7 @@ function ChallengesFrameWeeklyBestMixin:SetUp(hasWeeklyRun, bestData)
         for i = 1, #bestData.affixes + 2 do
             local frame = self.Child.Affixes[i];
             if (not frame) then
-                frame = CreateFrame("Frame", nil, self, "ChallengesKeystoneFrameAffixTemplate");
+                frame = CreateFrame("Frame", nil, self.Child, "ChallengesKeystoneFrameAffixTemplate");
                 frame:SetPoint("LEFT", self.Child.Affixes[i-1], "RIGHT", 10, 0);
             end
             if (i == 1) then
@@ -491,7 +491,7 @@ function ChallengesKeystoneFrameAffixMixin:SetUp(affixInfo)
 
 		local _, _, filedataid = C_ChallengeMode.GetAffixInfo(affixID);
 
-		SetPortraitToTexture(self.Portrait, filedataid);
+        SetPortraitToTexture(self.Portrait, filedataid);
 
 		self.Percent:Hide();
 

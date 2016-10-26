@@ -35,9 +35,15 @@ function ClassPowerBar:UsesPowerToken(tokenType)
 	return self.powerTokens and self.powerTokens[tokenType];
 end
 
-function ClassPowerBar:OnEvent(event, arg1, arg2)
-	if ( event == "UNIT_POWER_FREQUENT" and arg1 == self:GetParent().unit ) then
-		if (self:UsesPowerToken(arg2)) then
+function ClassPowerBar:OnEvent(event, ...)
+	if ( event == "UNIT_POWER_FREQUENT" ) then
+		local unitToken, powerToken = ...;
+		if ( unitToken ~= self:GetParent().unit ) then
+			return false; -- Preserve previous behavior by not handling this event here.
+		end
+
+		-- Preserve previous behavior by always handling this event, even if this doesn't call UpdatePower
+		if ( self:UsesPowerToken(powerToken) ) then
 			self:UpdatePower();
 		end
 	elseif ( event == "PLAYER_ENTERING_WORLD" or event == "UNIT_DISPLAYPOWER" ) then
@@ -48,6 +54,7 @@ function ClassPowerBar:OnEvent(event, arg1, arg2)
 	else
 		return false;
 	end
+
 	return true;
 end
 
@@ -66,10 +73,11 @@ function ClassPowerBar:Setup()
 	local _, class = UnitClass("player");
 	local spec = GetSpecialization();
 	local showBar = false;
-	
+
 	if ( class == self.class ) then
 		if ( not self.spec or spec == self.spec ) then
-			self:RegisterUnitEvent("UNIT_POWER_FREQUENT", "player");	
+			PlayerFrame.classPowerBar = self;
+			self:RegisterUnitEvent("UNIT_POWER_FREQUENT", "player");
 			self:RegisterEvent("PLAYER_ENTERING_WORLD");
 			self:RegisterEvent("UNIT_DISPLAYPOWER");
 			showBar = true;
@@ -78,12 +86,11 @@ function ClassPowerBar:Setup()
 			self:UnregisterEvent("PLAYER_ENTERING_WORLD");
 			self:UnregisterEvent("UNIT_DISPLAYPOWER");
 		end
-		
+
 		self:RegisterEvent("PLAYER_TALENT_UPDATE");
 	end
-	
+
 	self:SetShown(showBar);
-	PlayerFrame.classPowerBar = self;
 	return showBar;
 end
 

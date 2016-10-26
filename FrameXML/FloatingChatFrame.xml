@@ -402,7 +402,6 @@
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" x="100" y="100"/>
 		</Anchors>
-		<TitleRegion setAllPoints="true"/>
 		<ResizeBounds>
 			<minResize>
 				<AbsDimension x="296" y="120"/>
@@ -761,42 +760,6 @@
 		<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-Chat-Up"/>
 		<PushedTexture file="Interface\ChatFrame\UI-ChatIcon-Chat-Down"/>
 		<DisabledTexture file="Interface\ChatFrame\UI-ChatIcon-Chat-Disabled"/>
-		<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
-	</Button>
-	<Button name="FriendsMicroButton" frameStrata="LOW" parent="UIParent">
-		<Size x="32" y="32"/>
-		<Anchors>
-			<Anchor point="BOTTOM" relativeTo="ChatFrameMenuButton" relativePoint="TOP"/>
-		</Anchors>
-		<Layers>
-			<Layer level="ARTWORK">
-				<FontString name="$parentCount" inherits="GameFontHighlightSmall" text="0">
-					<Anchors>
-						<Anchor point="BOTTOM" relativeTo="$parent" relativePoint="BOTTOM" x="0" y="4"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnLoad>
-				self:SetPoint("BOTTOM", DEFAULT_CHAT_FRAME.buttonFrame, "TOP", 0, 4);
-				local _, numBNetOnline = BNGetNumFriends();
-				local _, numWoWOnline = GetNumFriends();
-				FriendsMicroButtonCount:SetText(numBNetOnline + numWoWOnline);
-				FriendsMicroButtonCount:SetShadowOffset(1, 1);
-			</OnLoad>
-			<OnClick>
-				ToggleFriendsFrame(1);
-			</OnClick>
-			<OnEnter>
-				GameTooltip_AddNewbieTip(self, MicroButtonTooltipText(SOCIAL_BUTTON, "TOGGLESOCIAL"), 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_SOCIAL);
-			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
-		</Scripts>
-		<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-BattleBro-Up"/>
-		<PushedTexture file="Interface\ChatFrame\UI-ChatIcon-BattleBro-Down"/>
 		<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 	</Button>
 	<Frame name="ChatMenu" inherits="UIMenuTemplate" hidden="true" clampedToScreen="true" parent="UIParent">

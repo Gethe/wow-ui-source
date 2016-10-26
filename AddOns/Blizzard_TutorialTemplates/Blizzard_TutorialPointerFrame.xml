@@ -28,7 +28,7 @@
 			</AnimationGroup>
 		</Animations>
 	</Frame>
-  
+
 	<!-- DOWN -->
 	<Frame name="Tutorial_PointerDown" alpha="0" virtual="true">
 		<Size x="64" y="64" />
@@ -112,9 +112,9 @@
 			</AnimationGroup>
 		</Animations>
 	</Frame>
-  
+
 	<!-- Main Frame-->
-	<Frame name="TutorialPointerFrame" virtual="true" frameStrata="FULLSCREEN_DIALOG">
+	<Frame name="TutorialPointerFrame" virtual="true" parent="UIParent" frameStrata="FULLSCREEN_DIALOG">
 		<Size x="75" y="75" />
 		<Frames>
 			<Frame parentKey="Arrow_UP1" hidden="true" inherits="Tutorial_PointerUp" frameLevel="100"/>

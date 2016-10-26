@@ -13,6 +13,20 @@ function NamePlateDriverMixin:OnLoad()
 	self:RegisterEvent("UNIT_FACTION");
 
 	self:SetBaseNamePlateSize(110, 45);
+
+	self.namePlateSetupFunctions =
+	{
+		["player"] = DefaultCompactNamePlatePlayerFrameSetup,
+		["friendly"] = DefaultCompactNamePlateFriendlyFrameSetup,
+		["enemy"] = DefaultCompactNamePlateEnemyFrameSetup,
+	};
+
+	self.namePlateSetInsetFunctions =
+	{
+		["player"] = C_NamePlate.SetNamePlateSelfPreferredClickInsets,
+		["friendly"] =  C_NamePlate.SetNamePlateFriendlyPreferredClickInsets,
+		["enemy"] = C_NamePlate.SetNamePlateEnemyPreferredClickInsets,
+	};
 end
 
 function NamePlateDriverMixin:OnEvent(event, ...)
@@ -63,16 +77,40 @@ function NamePlateDriverMixin:OnNamePlateAdded(namePlateUnitToken)
 	self:OnRaidTargetUpdate();
 end
 
-function NamePlateDriverMixin:ApplyFrameOptions(namePlateFrameBase, namePlateUnitToken)
-	if UnitIsUnit("player", namePlateUnitToken) then
-		CompactUnitFrame_SetUpFrame(namePlateFrameBase.UnitFrame, DefaultCompactNamePlatePlayerFrameSetup);
-	elseif UnitIsFriend("player", namePlateUnitToken) then
-		CompactUnitFrame_SetUpFrame(namePlateFrameBase.UnitFrame, DefaultCompactNamePlateFriendlyFrameSetup);
+function NamePlateDriverMixin:GetNamePlateTypeFromUnit(unit)
+	if UnitIsUnit("player", unit) then
+		return "player";
+	elseif UnitIsFriend("player", unit) then
+		return "friendly";
 	else
-		CompactUnitFrame_SetUpFrame(namePlateFrameBase.UnitFrame, DefaultCompactNamePlateEnemyFrameSetup);
+		return "enemy";
+	end
+end
+
+function NamePlateDriverMixin:ApplyFrameOptions(namePlateFrameBase, namePlateUnitToken)
+	local namePlateType = self:GetNamePlateTypeFromUnit(namePlateUnitToken);
+	local setupFn = self.namePlateSetupFunctions[namePlateType];
+
+	if setupFn then
+		CompactUnitFrame_SetUpFrame(namePlateFrameBase.UnitFrame, setupFn);
 	end
 
 	namePlateFrameBase:OnOptionsUpdated();
+
+	self:UpdateInsetsForType(namePlateType, namePlateFrameBase);
+end
+
+function NamePlateDriverMixin:UpdateInsetsForType(namePlateType, namePlateFrameBase)
+	-- Only update the options for each nameplate type once, these can change at run time
+	-- depending on any options that change where pieces of the nameplate are positioned (scale is the main one)
+	if not self.preferredInsets[namePlateType] then
+		local setInsetFn = self.namePlateSetInsetFunctions[namePlateType];
+		if setInsetFn then
+			-- NOTE: Insets should push in from the edge, but avoid using abs in case they actually push outside, it will be handled properly.
+			self.preferredInsets[namePlateType] = true;
+			setInsetFn(namePlateFrameBase:GetPreferredInsets());
+		end
+	end
 end
 
 function NamePlateDriverMixin:OnNamePlateRemoved(namePlateUnitToken)
@@ -110,7 +148,7 @@ function NamePlateDriverMixin:OnRaidTargetUpdate()
 	for _, frame in pairs(C_NamePlate.GetNamePlates()) do
 		local icon = frame.UnitFrame.RaidTargetFrame.RaidTargetIcon;
 		local index = GetRaidTargetIndex(frame.namePlateUnitToken);
-		if ( index ) then
+		if ( index and not UnitIsUnit("player", frame.namePlateUnitToken) ) then
 			SetRaidTargetIconTexture(icon, index);
 			icon:Show();
 		else
@@ -230,8 +268,9 @@ function NamePlateDriverMixin:UpdateNamePlateOptions()
 	DefaultCompactNamePlateFrameSetUpOptions.healthBarHeight = 4 * namePlateVerticalScale;
 	DefaultCompactNamePlatePlayerFrameSetUpOptions.healthBarHeight = 4 * namePlateVerticalScale * Lerp(1.2, 1.0, clampedZeroBasedScale);
 
-
 	DefaultCompactNamePlateFrameSetUpOptions.useLargeNameFont = clampedZeroBasedScale > .25;
+	local screenWidth, screenHeight = GetPhysicalScreenSize();
+	DefaultCompactNamePlateFrameSetUpOptions.useFixedSizeFont = screenHeight <= 1200;
 
 	DefaultCompactNamePlateFrameSetUpOptions.castBarHeight = math.min(Lerp(12, 16, zeroBasedScale), DefaultCompactNamePlateFrameSetUpOptions.healthBarHeight * 2);
 	DefaultCompactNamePlateFrameSetUpOptions.castBarFontHeight = Lerp(8, 12, clampedZeroBasedScale);
@@ -243,14 +282,18 @@ function NamePlateDriverMixin:UpdateNamePlateOptions()
 	DefaultCompactNamePlateFrameSetUpOptions.castIconHeight = Lerp(10, 15, clampedZeroBasedScale);
 
 	local horizontalScale = tonumber(GetCVar("NamePlateHorizontalScale"));
-	C_NamePlate.SetNamePlateOtherSize(self.baseNamePlateWidth * horizontalScale, self.baseNamePlateHeight * Lerp(1.0, 1.25, zeroBasedScale));
+	C_NamePlate.SetNamePlateFriendlySize(self.baseNamePlateWidth * horizontalScale, self.baseNamePlateHeight * Lerp(1.0, 1.25, zeroBasedScale));
+	C_NamePlate.SetNamePlateEnemySize(self.baseNamePlateWidth * horizontalScale, self.baseNamePlateHeight * Lerp(1.0, 1.25, zeroBasedScale));
 	C_NamePlate.SetNamePlateSelfSize(self.baseNamePlateWidth * horizontalScale * Lerp(1.1, 1.0, clampedZeroBasedScale), self.baseNamePlateHeight);
+
+	-- Clear the inset table, just update it from scratch since this will iterate all nameplates
+	-- As each nameplate updates, it will handle updating preferred insets during its setup
+	self.preferredInsets = {};
 
 	for i, frame in ipairs(C_NamePlate.GetNamePlates()) do
 		self:ApplyFrameOptions(frame, frame.namePlateUnitToken);
 		CompactUnitFrame_UpdateAll(frame.UnitFrame);
 	end
-
 
 	if self.nameplateBar then
 		self.nameplateBar:OnOptionsUpdated();
@@ -298,6 +341,39 @@ function NamePlateBaseMixin:ApplyOffsets()
 	else
 		self.UnitFrame.BuffFrame:SetTargetYOffset(0);
 	end
+end
+
+NAMEPLATE_MINIMUM_INSET_HEIGHT_THRESHOLD = 10;
+NAMEPLATE_ADDITIONAL_INSET_HEIGHT_PADDING = 2;
+
+function NamePlateBaseMixin:GetAdditionalInsetPadding(insetWidth, insetHeight)
+	local heightPadding = 0;
+	local widthPadding = 0; -- No change to width is necessary yet.
+
+	if (insetHeight < NAMEPLATE_MINIMUM_INSET_HEIGHT_THRESHOLD) then
+		heightPadding = NAMEPLATE_ADDITIONAL_INSET_HEIGHT_PADDING;
+	end
+
+	return widthPadding, heightPadding;
+end
+
+function NamePlateBaseMixin:GetPreferredInsets()
+	local frame = self.UnitFrame;
+	local health = frame.healthBar;
+
+	local left = health:GetLeft() - frame:GetLeft();
+	local right = frame:GetRight() - health:GetRight();
+	local top = frame:GetTop() - health:GetTop();
+	local bottom = health:GetBottom() - frame:GetBottom();
+
+	-- Width probably won't be an issue, but if height is under a certain threshold, give the user a little more area to click on.
+	local widthPadding, heightPadding = self:GetAdditionalInsetPadding(right - left, top - bottom);
+	left = left - widthPadding;
+	right = right - widthPadding;
+	top = top - heightPadding;
+	bottom = bottom - heightPadding;
+
+	return left, right, top, bottom;
 end
 
 --------------------------------------------------------------------------------
@@ -401,10 +477,12 @@ function NameplateBuffContainerMixin:UpdateBuffs(unit, filter)
 
 				buff:Show();
 				buffIndex = buffIndex + 1;
-			else
-				if self.buffList[i] then
-					self.buffList[i]:Hide();
-				end
+			end
+		end
+
+		for i = buffIndex, BUFF_MAX_DISPLAY do
+			if (self.buffList[i]) then
+				self.buffList[i]:Hide();
 			end
 		end
 	end

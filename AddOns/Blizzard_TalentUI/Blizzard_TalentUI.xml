@@ -64,9 +64,6 @@
 			<Layer level="BACKGROUND">
 				<Texture name="$parentIconTexture" parentKey="icon">
 					<Size x="36" y="36"/>
-					<Anchors>
-						<Anchor point="LEFT" x="35" y="0"/>
-					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="1">
@@ -77,10 +74,6 @@
 					</Anchors>
 				</Texture>
 				<FontString name="$parentName" inherits="GameFontNormalSmall" justifyH="LEFT" parentKey="name">
-					<Size x="90" y="35"/>
-					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentIconTexture" relativePoint="RIGHT" x="10" y="0"/>
-					</Anchors>
 					<Color r="1.0" g="1.0" b="1.0" a="1.0"/>
 				</FontString>
 			</Layer>
@@ -103,12 +96,7 @@
 			</Anchors>
 		</HighlightTexture>
 		<Scripts>
-			<OnLoad>
-				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
-				self:RegisterEvent("PREVIEW_TALENT_POINTS_CHANGED");
-				self:RegisterEvent("PLAYER_TALENT_UPDATE");
-				self:RegisterForDrag("LeftButton");
-			</OnLoad>
+			<OnLoad function="PlayerTalentButton_OnLoad"/>
 			<OnClick function="PlayerTalentButton_OnClick"/>
 			<OnEvent function="PlayerTalentFrameTalent_OnEvent" />
 			<OnEnter function="PlayerTalentFrameTalent_OnEnter" />
@@ -1134,7 +1122,6 @@
 					</Anchors>
 				</Texture>
 				<FontString parentKey="Name" inherits="GameFontHighlightSmall" justifyH="LEFT" text="Pyrofireburn">
-					<Size x="90" y="35"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="10" y="0"/>
 					</Anchors>
@@ -1164,10 +1151,7 @@
 			</Anchors>
 		</HighlightTexture>
 		<Scripts>
-			<OnLoad>
-				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
-				self:RegisterForDrag("LeftButton");
-			</OnLoad>
+			<OnLoad function="PlayerPVPTalentButton_OnLoad"/>
 			<OnClick function="PlayerPVPTalentButton_OnClick"/>
 			<OnDragStart function="PlayerTalentFramePVPTalentsTalent_OnDrag"/>
 			<OnEnter function="PlayerTalentFramePVPTalentsTalent_OnEnter"/>
@@ -1436,7 +1420,7 @@
 					</OnHide>
 				</Scripts>
 			</Frame>
-			<Frame name="PVPTalentPrestigeLevelDialog" parentKey="PrestigeLevelDialog" inherits="PortraitFrameTemplate" frameStrata="DIALOG" hidden="true">
+			<Frame name="PVPTalentPrestigeLevelDialog" parentKey="PrestigeLevelDialog" inherits="PortraitFrameTemplateNoCloseButton" enableMouse="true" frameStrata="DIALOG" hidden="true">
 				<Size x="325" y="500"/>
 				<Anchors>
 					<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER" x="0" y="100"/>
@@ -1482,11 +1466,12 @@
                                 <Anchor point="TOP" relativeKey="$parent.TopDivider" relativePoint="BOTTOM" x="0" y="-78"/>
                             </Anchors>
                         </Texture>
-						<FontString parentKey="Warning" inherits="GameFontRed" text="PVP_PRESTIGE_RANK_UP_WARNING">
+						<FontString parentKey="Warning" inherits="GameFontNormal" text="PVP_PRESTIGE_RANK_UP_WARNING">
 							<Size x="300" y="0"/>
 							<Anchors>
 								<Anchor point="BOTTOM" x="0" y="60"/>
 							</Anchors>
+							<Color r="1.0" g="1.0" b="0.0"/>
 						</FontString>
 					</Layer>
 					<Layer level="BACKGROUND">

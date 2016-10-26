@@ -101,6 +101,7 @@ function TradeSkillUIMixin:OnDataSourceChanged()
 	self:ClearSlotFilter();	
 
 	CloseDropDownMenus();
+	self.SearchBox:SetText("");
 end
 
 function TradeSkillUIMixin:RefreshRetrievingDataFrame()

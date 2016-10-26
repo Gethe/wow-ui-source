@@ -225,11 +225,14 @@ function SetItemRef(link, text, button, chatFrame)
 		return;
 	elseif ( strsub(link, 1, 11) == "garrmission" ) then
 		local _, garrMissionID = strsplit(":", link);
-		if ( IsModifiedClick() ) then
-			local fixedLink = GetFixedLink(text);
-			HandleModifiedItemClick(fixedLink);
-		else
-			FloatingGarrisonMission_Toggle(tonumber(garrMissionID));
+		local garrMissionID, garrMissionDBID = link:match("garrmission:(%d+):([0-9a-fA-F]+)")
+		if (garrMissionID and garrMissionDBID and strlen(garrMissionDBID) == 16) then
+			if ( IsModifiedClick() ) then
+				local fixedLink = GetFixedLink(text);
+				HandleModifiedItemClick(fixedLink);
+			else
+				FloatingGarrisonMission_Toggle(tonumber(garrMissionID), "0x"..(garrMissionDBID:upper()));
+			end
 		end
 		return;
 	elseif ( strsub(link, 1, 5) == "death" ) then

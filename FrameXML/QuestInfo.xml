@@ -188,18 +188,14 @@
 	 </Button>
 
 	<Frame name="QuestInfoObjectivesFrame" hidden="true">
-		<Size>
-			<AbsDimension x="285" y="10"/>
-		</Size>
+		<Size x="285" y="10"/>
 		<Anchors>
 			<Anchor point="CENTER" />
 		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<FontString name="QuestInfoObjective1" inherits="QuestFontNormalSmall" justifyH="LEFT" hidden="true" parentArray="Objectives">
-					<Size>
-						<AbsDimension x="285" y="0"/>
-					</Size>
+					<Size x="285" y="0"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" />
 					</Anchors>
@@ -224,18 +220,14 @@
 	</Frame>
 
 	<Frame name="QuestInfoTimerFrame" hidden="true">
-		<Size>
-			<AbsDimension x="1" y="1"/>
-		</Size>
+		<Size x="1" y="1"/>
 		<Anchors>
 			<Anchor point="CENTER" />
 		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<FontString name="QuestInfoTimerText" inherits="QuestFontNormalSmall" justifyH="LEFT" hidden="false">
-					<Size>
-						<AbsDimension x="285" y="0"/>
-					</Size>
+					<Size x="285" y="0"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" />
 					</Anchors>
@@ -249,9 +241,7 @@
 	</Frame>
 
 	<Frame name="QuestInfoRequiredMoneyFrame">
-		<Size>
-			<AbsDimension x="285" y="28"/>
-		</Size>
+		<Size x="285" y="28"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<FontString name="QuestInfoRequiredMoneyText" inherits="QuestFontNormalSmall" text="REQUIRED_MONEY">
@@ -264,11 +254,7 @@
 		<Frames>
 			<Frame name="QuestInfoRequiredMoneyDisplay" inherits="MoneyFrameTemplate">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="QuestInfoRequiredMoneyText" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="10" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="LEFT" relativeTo="QuestInfoRequiredMoneyText" relativePoint="RIGHT" x="10" y="0"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
@@ -283,9 +269,7 @@
 	<FontString name="QuestInfoSpellHeaderTemplate" inherits="QuestFont" justifyH="LEFT" virtual="true" />
 
 	<Frame name="QuestInfoRewardsFrame" hidden="true">
-		<Size>
-			<AbsDimension x="285" y="10" />
-		</Size>
+		<Size x="285" y="10" />
 		<Anchors>
 			<Anchor point="CENTER" />
 		</Anchors>
@@ -309,11 +293,7 @@
 			<Button parentArray="RewardButtons" name="$parentQuestInfoItem1" inherits="LargeItemButtonTemplate, QuestInfoRewardItemCodeTemplate" hidden="true"/>
 			<Frame parentKey="MoneyFrame" name="QuestInfoMoneyFrame" inherits="MoneyFrameTemplate">
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.ItemReceiveText" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="15" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="LEFT" relativeKey="$parent.ItemReceiveText" relativePoint="RIGHT" x="15" y="0"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
@@ -441,18 +421,14 @@
 				</Layers>
 			</Frame>
 			<Frame parentKey="ItemHighlight" name="QuestInfoItemHighlight" hidden="true">
-				<Size>
-					<AbsDimension x="256" y="64"/>
-				</Size>
+				<Size x="256" y="64"/>
 				<Anchors>
 					<Anchor point="TOPLEFT"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
 						<Texture file="Interface\QuestFrame\UI-QuestItemHighlight" alphaMode="ADD">
-							<Size>
-								<AbsDimension x="256" y="64"/>
-							</Size>
+							<Size x="256" y="64"/>
 							<Anchors>
 								<Anchor point="TOPLEFT"/>
 							</Anchors>
@@ -473,13 +449,11 @@
 			</OnLoad>
 		</Scripts>
 	</Frame>
-	 
+
 	<FontString name="MapQuestInfoSpellHeaderTemplate" inherits="QuestMapRewardsFont" justifyH="LEFT" virtual="true"/>
-	 
+
 	<Frame name="MapQuestInfoRewardsFrame" hidden="true">
-		<Size>
-			<AbsDimension x="285" y="10" />
-		</Size>
+		<Size x="285" y="10" />
 		<Anchors>
 			<Anchor point="CENTER" />
 		</Anchors>
@@ -586,56 +560,41 @@
 		</Scripts>
 	</Frame>
 	<Frame name="QuestInfoFrame" hidden="true">
-		<Size>
-			<AbsDimension x="300" y="100"/>
-		</Size>
+		<Size x="300" y="100"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<FontString name="QuestInfoTitleHeader" inherits="QuestTitleFont" justifyH="LEFT" text="Quest title">
-					<Size>
-						<AbsDimension x="285" y="0"/>
-					</Size>
+				<FontString name="QuestInfoTitleHeader" inherits="QuestTitleFont" justifyH="LEFT">
+					<Size x="285" y="0"/>
+				</FontString>
+				<FontString name="QuestInfoQuestType" inherits="QuestFont" justifyH="LEFT">
+					<Size x="285" y="0"/>
 				</FontString>
 				<FontString name="QuestInfoObjectivesText" inherits="QuestFont" justifyH="LEFT">
-					<Size>
-						<AbsDimension x="285" y="0"/>
-					</Size>
+					<Size x="285" y="0"/>
 				</FontString>
 				<FontString name="QuestInfoRewardText" inherits="QuestFont" justifyH="LEFT">
-					<Size>
-						<AbsDimension x="285" y="0"/>
-					</Size>
+					<Size x="285" y="0"/>
 				</FontString>
 				<FontString name="QuestInfoRequiredMoneyText" inherits="QuestFontNormalSmall" text="REQUIRED_MONEY" />
 				<FontString name="QuestInfoGroupSize" inherits="QuestFont" />
 				<FontString name="QuestInfoAnchor" inherits="QuestFont" />
 				<FontString name="QuestInfoDescriptionHeader" inherits="QuestTitleFont" justifyH="LEFT" text="QUEST_DESCRIPTION">
-					<Size>
-						<AbsDimension x="285" y="0"/>
-					</Size>
+					<Size x="285" y="0"/>
 				</FontString>
 				<FontString name="QuestInfoObjectivesHeader" inherits="QuestTitleFont" text="QUEST_OBJECTIVES"  justifyH="LEFT">
-					<Size>
-						<AbsDimension x="285" y="0"/>
-					</Size>
+					<Size x="285" y="0"/>
 				</FontString>
 				<FontString name="QuestInfoDescriptionText" inherits="QuestFont" justifyH="LEFT">
-					<Size>
-						<AbsDimension x="285" y="0"/>
-					</Size>
+					<Size x="285" y="0"/>
 				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
 			<Frame name="QuestInfoSpacerFrame">
-				<Size>
-					<AbsDimension x="5" y="5"/>
-				</Size>
+				<Size x="5" y="5"/>
 			</Frame>
 			<Frame name="QuestInfoSealFrame">
-				<Size>
-					<AbsDimension x="257" y="78"/>
-				</Size>
+				<Size x="257" y="78"/>
 				<Layers>
 					<Layer level="ARTWORK">
 						<FontString parentKey="Text" inherits="QuestFont_Huge" justifyH="LEFT">

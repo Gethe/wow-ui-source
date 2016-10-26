@@ -64,7 +64,7 @@
 			</AnimationGroup>
 		</Animations>
 		<Layers>
-			<Layer level="OVERLAY" textureSubLevel="1">
+			<Layer level="OVERLAY" textureSubLevel="2">
 				<Texture name="$parentIconQuestTexture">
 					<Size>
 						<AbsDimension x="37" y="38"/>
@@ -78,14 +78,19 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="OVERLAY">
+			<Layer level="OVERLAY" textureSubLevel="1">
 				<Texture parentKey="JunkIcon" atlas="bags-junkcoin" useAtlasSize="true" hidden="true">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="1" y="0"/>
 					</Anchors>
 				</Texture>
+				<Texture parentKey="UpgradeIcon" atlas="bags-greenarrow" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
 			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="1">
+			<Layer level="OVERLAY" textureSubLevel="2">
 				<Texture parentKey="flash" hidden="false" alpha="0" alphaMode="ADD" atlas="bags-glow-flash" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="CENTER"/>

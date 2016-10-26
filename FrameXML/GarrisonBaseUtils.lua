@@ -40,6 +40,7 @@ GarrisonFollowerOptions[LE_FOLLOWER_TYPE_GARRISON_6_0] = {
 		LANDING_COMPLETE = GARRISON_LANDING_BUILDING_COMPLEATE,
 		RETURN_TO_START = GARRISON_MISSION_TOOLTIP_RETURN_TO_START,
 		CONFIRM_EQUIPMENT = GARRISON_FOLLOWER_CONFIRM_EQUIPMENT,
+		CONFIRM_EQUIPMENT_REPLACEMENT = nil,
 		TRAITS_LABEL = GARRISON_TRAITS,
 		FOLLOWER_ADDED_TOAST = GARRISON_FOLLOWER_ADDED_TOAST,
 		FOLLOWER_ADDED_UPGRADED_TOAST = GARRISON_FOLLOWER_ADDED_UPGRADED_TOAST,
@@ -89,6 +90,7 @@ GarrisonFollowerOptions[LE_FOLLOWER_TYPE_SHIPYARD_6_2] = {
 		LANDING_COMPLETE = GARRISON_LANDING_BUILDING_COMPLEATE,
 		RETURN_TO_START = GARRISON_SHIPYARD_MISSION_TOOLTIP_RETURN_TO_START,
 		CONFIRM_EQUIPMENT = GARRISON_SHIPYARD_CONFIRM_EQUIPMENT,
+		CONFIRM_EQUIPMENT_REPLACEMENT = GARRISON_FOLLOWER_CONFIRM_EQUIPMENT_REPLACEMENT,
 		TRAITS_LABEL = nil;
 		FOLLOWER_ADDED_TOAST = GARRISON_SHIPYARD_FOLLOWER_ADDED_TOAST,
 		FOLLOWER_ADDED_UPGRADED_TOAST = GARRISON_SHIPYARD_FOLLOWER_ADDED_UPGRADED_TOAST,
@@ -138,6 +140,7 @@ GarrisonFollowerOptions[LE_FOLLOWER_TYPE_GARRISON_7_0] = {
 		LANDING_COMPLETE = ORDER_HALL_LANDING_COMPLETE,
 		RETURN_TO_START = ORDER_HALL_MISSION_TOOLTIP_RETURN_TO_START,
 		CONFIRM_EQUIPMENT = GARRISON_FOLLOWER_CONFIRM_EQUIPMENT,
+		CONFIRM_EQUIPMENT_REPLACEMENT = GARRISON_FOLLOWER_CONFIRM_EQUIPMENT_REPLACEMENT,
 		TRAITS_LABEL = ORDER_HALL_EQUIPMENT_SLOTS,
 		FOLLOWER_ADDED_TOAST = ORDER_HALL_FOLLOWER_ADDED_TOAST,
 		FOLLOWER_ADDED_UPGRADED_TOAST = ORDER_HALL_FOLLOWER_ADDED_UPGRADED_TOAST,
@@ -160,12 +163,12 @@ function GetPrimaryGarrisonFollowerType(garrTypeID)
 	return nil;
 end
 
-function ShouldShowFollowerAbilityBorder(followerTypeID, abilityInfo) 
+function ShouldShowFollowerAbilityBorder(followerTypeID, abilityInfo)
 	return GarrisonFollowerOptions[followerTypeID].showSpikyBordersOnSpecializationAbilities and abilityInfo.isSpecialization;
 end
 
 
-function ShouldShowILevelInFollowerList(followerInfo) 
+function ShouldShowILevelInFollowerList(followerInfo)
 	return GarrisonFollowerOptions[followerInfo.followerTypeID].showILevelInFollowerList and followerInfo.isMaxLevel and not followerInfo.isTroop;
 end
 
@@ -207,6 +210,16 @@ function ShowGarrisonLandingPage(garrTypeID)
 		ShowUIPanel(GarrisonLandingPage);
 	end
 
+end
+
+function DoesFollowerMatchCurrentGarrisonType(followerType)
+	if followerType == LE_FOLLOWER_TYPE_GARRISON_7_0 then
+		return C_Garrison.GetLandingPageGarrisonType() == LE_GARRISON_TYPE_7_0;
+	elseif followerType == LE_FOLLOWER_TYPE_GARRISON_6_0 or followerType == LE_FOLLOWER_TYPE_SHIPYARD_6_2 then
+		return C_Garrison.GetLandingPageGarrisonType() == LE_GARRISON_TYPE_6_0;
+	end
+
+	return false;
 end
 
 ---------------------------------------------------------------------------------

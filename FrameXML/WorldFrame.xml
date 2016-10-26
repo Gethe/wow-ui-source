@@ -19,7 +19,7 @@
 		 and then log out or reload the UI
 	-->
 	<Script file="WorldFrame.lua"/>
-	<WorldFrame name="WorldFrame" movable="true" resizable="true" setAllPoints="true">
+	<WorldFrame name="WorldFrame" movable="true" resizable="true" clipChildren="true" setAllPoints="true">
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString name="FramerateLabel" hidden="true" inherits="SystemFont_Shadow_Med1" text="FRAMERATE_LABEL">

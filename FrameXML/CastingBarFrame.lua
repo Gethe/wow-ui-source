@@ -50,7 +50,7 @@ function CastingBarFrame_SetUseStartColorForFlash(self, flashColorSameAsStart)
 	self.flashColorSameAsStart = flashColorSameAsStart;
 end
 
--- Fades additional widgets along with the cast bar, in case these widgets are not parented or use forceAlpha
+-- Fades additional widgets along with the cast bar, in case these widgets are not parented or use ignoreParentAlpha
 function CastingBarFrame_AddWidgetForFade(self, widget)
 	if not self.additionalFadeWidgets then
 		self.additionalFadeWidgets = {};

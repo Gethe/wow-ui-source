@@ -501,9 +501,9 @@ COMBAT_CONFIG_MESSAGETYPES_LEFT = {
 			},
 			[4] = {
 				text = OTHER,
-				type = {"SPELL_PERIODIC_ENERGIZE", "SPELL_PERIODIC_DRAIN","SPELL_PERIODIC_LEECH"};
-				checked = function () return HasMessageType("SPELL_PERIODIC_ENERGIZE", "SPELL_PERIODIC_DRAIN", "SPELL_PERIODIC_LEECH"); end;
-				func = function (self, checked) ToggleMessageType(checked, "SPELL_PERIODIC_ENERGIZE", "SPELL_PERIODIC_DRAIN", "SPELL_PERIODIC_LEECH"); end;
+				type = {"SPELL_PERIODIC_DRAIN","SPELL_PERIODIC_LEECH"};
+				checked = function () return HasMessageType("SPELL_PERIODIC_DRAIN", "SPELL_PERIODIC_LEECH"); end;
+				func = function (self, checked) ToggleMessageType(checked, "SPELL_PERIODIC_DRAIN", "SPELL_PERIODIC_LEECH"); end;
 				tooltip = SPELL_PERIODIC_OTHER_COMBATLOG_TOOLTIP,
 			},
 		}
@@ -542,7 +542,7 @@ COMBAT_CONFIG_MESSAGETYPES_RIGHT = {
 				text = POWER_GAINS,
 				type = "SPELL_ENERGIZE",
 				checked = function () return HasMessageType("SPELL_ENERGIZE"); end;
-				func = function (self, checked) ToggleMessageType(checked, "SPELL_ENERGIZE"); end;
+				func = function (self, checked) ToggleMessageType(checked, "SPELL_ENERGIZE", "SPELL_PERIODIC_ENERGIZE"); end;
 				tooltip = POWER_GAINS_COMBATLOG_TOOLTIP,
 			},
 			[5] = {

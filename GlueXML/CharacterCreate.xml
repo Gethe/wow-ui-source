@@ -672,13 +672,19 @@
 			</Layer>
 		</Layers>
 		<Scripts>
+			<OnLoad>
+				SetClampedTextureRotation(self.arrow, self.arrowRotation);
+			</OnLoad>
 			<OnMouseDown>
 				if ( self:IsEnabled() ) then
 					self.arrow:SetPoint("CENTER", 1, 2);
+					CharCreate_ChangeFeatureVariation(self.variationDirection);
+					CharacterCreateWhileMouseDown_OnMouseDown(self.variationDirection);
 				end
 			</OnMouseDown>
 			<OnMouseUp>
 				self.arrow:SetPoint("CENTER", 0, 3);
+				CharacterCreateWhileMouseDown_OnMouseUp();
 			</OnMouseUp>
 		</Scripts>
 	</Button>
@@ -729,7 +735,7 @@
 	<Frame name="CharCreateResizablePanelTemplate" virtual="true">
 		<Size x="243" y="744"/>
 		<Layers>
-			<Layer level="BACKGROUND">
+			<Layer level="BACKGROUND" textureSubLevel="-3">
 				<Texture parentKey="factionBg">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="8" y="-10"/>
@@ -742,7 +748,7 @@
 					</Gradient>
 				</Texture>
 			</Layer>
-			<Layer level="ARTWORK">
+			<Layer level="BACKGROUND">
 				<Texture parentKey="topLeftCorner" atlas="UI-CharacterCreate-Metal-Finery-Corner">
 					<Size x="56" y="49"/>
 					<Anchors>
@@ -771,7 +777,7 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="ARTWORK" textureSubLevel="-1">
+			<Layer level="BACKGROUND" textureSubLevel="-1">
 				<Texture parentKey="topEdge" atlas="UI-CharacterCreate-MetalFrame-Horizontal" horizTile="true">
 					<Size y="11"/>
 					<Anchors>
@@ -811,7 +817,7 @@
 			<KeyValue key="minHeight" value="250" type="number"/>
 		</KeyValues>
 		<Layers>
-			<Layer level="BORDER">
+			<Layer level="BACKGROUND" textureSubLevel="-2">
 				<Texture name="$parentHeaderTex" parentKey="headerTex">
 					<Size x="0" y="32"/>
 					<Anchors>
@@ -1658,26 +1664,27 @@
 							</Button>
 						</Frames>
 					</Frame>
-					<Frame name="CharCreateClassFrame" inherits="CharCreateResizablePanelTemplate">
-						<Size x="243" y="744"/>
+					<Frame name="CharCreateClassFrame" clipChildren="true">
+						<Size x="142" y="768"/>
 						<Anchors>
-							<Anchor point="TOPRIGHT" x="117" y="-3"/>
-							<Anchor point="BOTTOMRIGHT" x="117" y="3"/>
+							<Anchor point="TOPRIGHT" relativeTo="CharacterCreateFrame" x="1" y="-3"/>
+							<Anchor point="BOTTOMRIGHT" relativeTo="CharacterCreateFrame" x="1" y="3"/>
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
 								<FontString name="CharCreateClassLabel" inherits="FactionName_Shadow_Huge" text="CLASS">
 									<Anchors>
-										<Anchor point="TOP" x="-50" y="-21"/>
+										<Anchor point="TOP" x="10" y="-21"/>
 									</Anchors>
 									<Color r="1.0" g="0.82" b="0.0"/>
 								</FontString>
 							</Layer>
 						</Layers>
 						<Frames>
-							<Frame name="CharCreateClassInfoFrame" inherits="CharacterCreateInfoTemplate">
+							<Frame parentKey="Panel" useParentLevel="true" inherits="CharCreateResizablePanelTemplate">
 								<Anchors>
-									<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMLEFT" x="-1" y="51"/>
+									<Anchor point="TOPLEFT"/>
+									<Anchor point="BOTTOMLEFT"/>
 								</Anchors>
 							</Frame>
 							<CheckButton name="CharCreateClassButton1" inherits="CharCreateClassButtonTemplate" id="1">
@@ -1741,6 +1748,21 @@
 								</Anchors>
 							</CheckButton>
 						</Frames>
+						<Scripts>
+							<OnHide>
+								CharCreateClassInfoFrame:Hide();
+							</OnHide>
+							<OnShow>
+								if CharCreateMoreInfoButton.infoShown then
+									CharCreateClassInfoFrame:Show();
+								end
+							</OnShow>
+						</Scripts>
+					</Frame>
+					<Frame name="CharCreateClassInfoFrame" inherits="CharacterCreateInfoTemplate">
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" relativeTo="CharCreateClassFrame" relativePoint="BOTTOMLEFT" x="-1" y="51"/>
+						</Anchors>
 					</Frame>
 					<Button name="CharCreateMoreInfoButton" inherits="CharCreateNavButtonTemplate" text="CHAR_CREATE_MORE_INFO">
 						<Size x="180" y="62"/>
@@ -2060,18 +2082,20 @@
 							</CheckButton>
 						</Frames>
 					</Frame>
-					<Frame name="CharCreatePreviewFrame" hidden="true">
-						<Size x="243" y="682"/>
+					<Frame name="CharCreatePreviewFrame" hidden="true" clipChildren="true">
+						<Size x="194" y="0" />
 						<Anchors>
-							<Anchor point="RIGHT" x="77" y="0"/>
+							<Anchor point="TOPRIGHT" x="1" y="0"/>
+							<Anchor point="BOTTOMRIGHT" x="1" y="0"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
 								<Texture parentKey="factionBg">
-									<Anchors>
-										<Anchor point="TOPLEFT" x="8" y="-10"/>
-										<Anchor point="BOTTOMRIGHT" x="-8" y="10"/>
-									</Anchors>
+								<Size x="154" y="0"/>
+								<Anchors>
+									<Anchor point="TOPLEFT" x="40" y="-53" />
+									<Anchor point="BOTTOMLEFT" x="40" y="53" />
+								</Anchors>
 									<Color r="1" g="1" b="1" a="0.75"/>
 									<Gradient orientation="VERTICAL">
 										<MaxColor r="0.2" g="0" b="0"/>
@@ -2081,45 +2105,11 @@
 							</Layer>
 						</Layers>
 						<Frames>
-							<Button name="CharCreateStyleUpButton" inherits="CharCreateChangeStyleButtonTemplate">
-								<Anchors>
-									<Anchor point="BOTTOM" relativePoint="TOP" x="-28" y="-17"/>
-								</Anchors>
-								<Scripts>
-									<OnLoad>
-										SetClampedTextureRotation(self.arrow, 90);
-									</OnLoad>
-									<OnMouseDown>
-										CharCreate_ChangeFeatureVariation(-1);
-										CharacterCreateWhileMouseDown_OnMouseDown(-1);
-									</OnMouseDown>
-									<OnMouseUp>
-										CharacterCreateWhileMouseDown_OnMouseUp()
-									</OnMouseUp>
-								</Scripts>
-							</Button>
-							<Button name="CharCreateStyleDownButton" inherits="CharCreateChangeStyleButtonTemplate">
-								<Anchors>
-									<Anchor point="TOP" relativePoint="BOTTOM" x="-28" y="10"/>
-								</Anchors>
-								<Scripts>
-									<OnLoad>
-										SetClampedTextureRotation(self.arrow, 270);
-									</OnLoad>
-									<OnMouseDown>
-										CharCreate_ChangeFeatureVariation(1);
-										CharacterCreateWhileMouseDown_OnMouseDown(1);
-									</OnMouseDown>
-									<OnMouseUp>
-										CharacterCreateWhileMouseDown_OnMouseUp()
-									</OnMouseUp>
-								</Scripts>
-							</Button>
 							<ScrollFrame parentKey="scrollFrame">
-								<Size x="180" y="0"/>
+								<Size x="154" y="0"/>
 								<Anchors>
-									<Anchor point="TOPLEFT" x="8" y="-14"/>
-									<Anchor point="BOTTOMLEFT" x="8" y="12"/>
+									<Anchor point="TOPLEFT" x="40.0" y="-56.0" />
+									<Anchor point="BOTTOMLEFT" x="40.0" y="56.0" />
 								</Anchors>
 								<Layers>
 									<Layer level="BACKGROUND">
@@ -2137,7 +2127,11 @@
 									</Frame>
 								</ScrollChild>
 							</ScrollFrame>
-							<Frame setAllPoints="true" parentKey="border" frameStrata="HIGH" inherits="CharCreateResizablePanelTemplate">
+							<Frame parentKey="border" frameStrata="HIGH" inherits="CharCreateResizablePanelTemplate">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeKey="$parent.scrollFrame" x="-13" y="16" />
+									<Anchor point="BOTTOMLEFT" relativeKey="$parent.scrollFrame" x="-13" y="-16" />
+								</Anchors>
 								<Scripts>
 									<OnLoad>
 										self.factionBg:Hide();
@@ -2160,13 +2154,31 @@
 										<Texture file="Interface\Glues\CharacterCreate\UI-CharacterCreatePatchwerk" alphaMode="ADD">
 											<Size x="146" y="136"/>
 											<Anchors>
-												<Anchor point="TOPLEFT" x="20" y="-273"/>
+												<Anchor point="LEFT" x="20" y="0"/>
 											</Anchors>
 											<TexCoords left="0.41601563" right="0.63085938" top="0.43359375" bottom="0.53515625"/>
 										</Texture>
 									</Layer>
 								</Layers>
 							</Frame>
+							<Button name="CharCreateStyleUpButton" inherits="CharCreateChangeStyleButtonTemplate" id="667">
+								<KeyValues>
+									<KeyValue key="arrowRotation" value="90" type="number"/>
+									<KeyValue key="variationDirection" value="-1" type="number"/>
+								</KeyValues>
+								<Anchors>
+									<Anchor point="BOTTOM" relativeKey="$parent.scrollFrame" relativePoint="TOP" x="0" y="0"/>
+								</Anchors>
+							</Button>
+							<Button name="CharCreateStyleDownButton" inherits="CharCreateChangeStyleButtonTemplate" id="668">
+								<KeyValues>
+									<KeyValue key="arrowRotation" value="270" type="number"/>
+									<KeyValue key="variationDirection" value="1" type="number"/>
+								</KeyValues>
+								<Anchors>
+									<Anchor point="TOP" relativeKey="$parent.scrollFrame" relativePoint="BOTTOM" x="0" y="-5"/>
+								</Anchors>
+							</Button>
 						</Frames>
 						<Scripts>
 							<OnUpdate function="CharCreatePreviewFrame_OnUpdate"/>

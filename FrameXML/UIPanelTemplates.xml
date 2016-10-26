@@ -2628,4 +2628,15 @@
 			</EditBox>
 		</ScrollChild>
 	</ScrollFrame>
+
+	<Frame name="InlineHyperlinkFrameTemplate" hyperlinksEnabled="true" virtual="true">
+		<KeyValues>
+			<KeyValue key="tooltipFrame" value="GameTooltip" type="global"/>
+		</KeyValues>
+		<Scripts>
+			<OnHyperlinkEnter function="InlineHyperlinkFrame_OnEnter"/>
+			<OnHyperlinkLeave function="InlineHyperlinkFrame_OnLeave"/>
+			<OnHyperlinkClick function="InlineHyperlinkFrame_OnClick"/>
+		</Scripts>
+	</Frame>
 </Ui>

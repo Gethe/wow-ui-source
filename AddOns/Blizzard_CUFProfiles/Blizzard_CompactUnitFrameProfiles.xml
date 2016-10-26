@@ -488,7 +488,8 @@
 				<Layers>
 					<Layer level="BACKGROUND">
 						<Texture name="$parentAutoActivateBG" parentKey="autoActivateBG">
-							<Size x="190" y="345"/>	<!--Also change the with of AutoActivateDisabledLabel -->
+							<!--The size is changed programatically -->
+							<Size x="190" y="0"/>	<!--Also change the with of AutoActivateDisabledLabel -->
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT" x="415" y="-50"/>
 							</Anchors>
@@ -757,30 +758,45 @@
 						</Scripts>
 					</CheckButton>
 					
-					<CheckButton name="$parentAutoActivateSpec1" inherits="CompactUnitFrameProfilesCheckButtonTemplate">
+					<CheckButton name="$parentAutoActivateSpec1" inherits="CompactUnitFrameProfilesCheckButtonTemplate" parentArray="AutoActivateSpecs" id="1">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentAutoActivate40Players" relativePoint="BOTTOMLEFT" x="0" y="-15"/>
 						</Anchors>
 						<Scripts>
-							<OnLoad>
-								CompactUnitFrameProfilesCheckButton_InitializeWidget(self, "autoActivateSpec1");
-							</OnLoad>
+							<OnLoad function="CompactUnitFrameAutoActivateSpec_OnLoad"/>
+							<OnShow function="CompactUnitFrameAutoActivateSpec_OnShow"/>
 						</Scripts>
 					</CheckButton>
-					<CheckButton name="$parentAutoActivateSpec2" inherits="CompactUnitFrameProfilesCheckButtonTemplate">
+					<CheckButton name="$parentAutoActivateSpec2" inherits="CompactUnitFrameProfilesCheckButtonTemplate" parentArray="AutoActivateSpecs" id="2">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentAutoActivateSpec1" relativePoint="BOTTOMLEFT" x="0" y="0"/>
 						</Anchors>
 						<Scripts>
-							<OnLoad>
-								CompactUnitFrameProfilesCheckButton_InitializeWidget(self, "autoActivateSpec2");
-							</OnLoad>
+							<OnLoad function="CompactUnitFrameAutoActivateSpec_OnLoad"/>
+							<OnShow function="CompactUnitFrameAutoActivateSpec_OnShow"/>
 						</Scripts>
 					</CheckButton>
-					
-					<CheckButton name="$parentAutoActivatePvP" inherits="CompactUnitFrameProfilesCheckButtonTemplate">
+					<CheckButton name="$parentAutoActivateSpec3" inherits="CompactUnitFrameProfilesCheckButtonTemplate" parentArray="AutoActivateSpecs" id="3">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentAutoActivateSpec2" relativePoint="BOTTOMLEFT" x="0" y="-15"/>
+							<Anchor point="TOPLEFT" relativeTo="$parentAutoActivateSpec2" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad function="CompactUnitFrameAutoActivateSpec_OnLoad"/>
+							<OnShow function="CompactUnitFrameAutoActivateSpec_OnShow"/>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parentAutoActivateSpec4" inherits="CompactUnitFrameProfilesCheckButtonTemplate" parentArray="AutoActivateSpecs" id="4">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentAutoActivateSpec3" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad function="CompactUnitFrameAutoActivateSpec_OnLoad"/>
+							<OnShow function="CompactUnitFrameAutoActivateSpec_OnShow"/>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parentAutoActivatePvP" inherits="CompactUnitFrameProfilesCheckButtonTemplate" parentKey="AutoActivatePvP">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentAutoActivateSpec4" relativePoint="BOTTOMLEFT" x="0" y="-15"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
@@ -788,7 +804,7 @@
 							</OnLoad>
 						</Scripts>
 					</CheckButton>
-					<CheckButton name="$parentAutoActivatePvE" inherits="CompactUnitFrameProfilesCheckButtonTemplate">
+					<CheckButton name="$parentAutoActivatePvE" parentKey="AutoActivatePvE" inherits="CompactUnitFrameProfilesCheckButtonTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentAutoActivatePvP" relativePoint="BOTTOMLEFT" x="0" y="0"/>
 						</Anchors>
@@ -812,6 +828,9 @@
 						</Scripts>
 					</Button>
 				</Frames>
+				<Scripts>
+					<OnShow function="CompactUnitFrameProfilesGeneralOptionsFrame_OnShow"/>
+				</Scripts>
 			</Frame>
 		</Frames>
 		<Scripts>

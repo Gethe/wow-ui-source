@@ -321,99 +321,162 @@
 		</Scripts>
 	</Frame>
 	<Frame name="MacroPopupFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true">
-		<Size x="297" y="298"/>
+		<Size x="525" y="495"/>
 		<Anchors>
 			<Anchor point="TOPLEFT" relativeTo="MacroFrame" relativePoint="TOPRIGHT" x="0" y="0"/>
 		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture file="Interface\MacroFrame\MacroPopup-TopLeft">
-					<Size x="256" y="256"/>
+				<Texture parentKey="BG">
 					<Anchors>
-						<Anchor point="TOPLEFT"/>
+						<Anchor point="TOPLEFT" x="7" y="-7"/>
+						<Anchor point="BOTTOMRIGHT" x="-7" y="7"/>
 					</Anchors>
+					<Color r="0" g="0" b="0" a=".80"/>
 				</Texture>
-				<Texture file="Interface\MacroFrame\MacroPopup-TopRight">
-					<Size x="64" y="256"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="256" y="0"/>
-					</Anchors>
-				</Texture>
-				<Texture file="Interface\MacroFrame\MacroPopup-BotLeft">
-					<Size x="256" y="64"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="0" y="-256"/>
-					</Anchors>
-				</Texture>
-				<Texture file="Interface\MacroFrame\MacroPopup-BotRight">
-					<Size x="64" y="64"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="256" y="-256"/>
-					</Anchors>
-				</Texture>
-				<FontString inherits="GameFontHighlightSmall" text="MACRO_POPUP_TEXT">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="24" y="-21"/>
-					</Anchors>
-				</FontString>
-				<FontString inherits="GameFontHighlightSmall" text="MACRO_POPUP_CHOOSE_ICON">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="24" y="-69"/>
-					</Anchors>
-				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
-			<EditBox name="MacroPopupEditBox" letters="16" historyLines="0">
-				<Size x="182" y="20"/>
+			<Frame parentKey="BorderBox" frameLevel="50" hidden="false">
 				<Anchors>
-					<Anchor point="TOPLEFT" x="29" y="-35"/>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT"/>
 				</Anchors>
 				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture name="MacroPopupNameLeft" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
-							<Size x="12" y="29"/>
+					<Layer level="BORDER">
+						<Texture parentKey="topLeft" atlas="macropopup-topleft" useAtlasSize="true">
 							<Anchors>
-								<Anchor point="TOPLEFT" x="-11" y="0"/>
+								<Anchor point="TOPLEFT"/>
 							</Anchors>
-							<TexCoords left="0" right="0.09375" top="0" bottom="1.0"/>
 						</Texture>
-						<Texture name="MacroPopupNameMiddle" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
-							<Size x="175" y="29"/>
+						<Texture parentKey="topRight" atlas="macropopup-topright" useAtlasSize="true">
 							<Anchors>
-								<Anchor point="LEFT" relativeTo="MacroPopupNameLeft" relativePoint="RIGHT"/>
+								<Anchor point="TOPRIGHT" x="0" y="0"/>
 							</Anchors>
-							<TexCoords left="0.09375" right="0.90625" top="0" bottom="1.0"/>
 						</Texture>
-						<Texture name="MacroPopupNameRight" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
-							<Size x="12" y="29"/>
+						<Texture atlas="_macropopup-top" horizTile="true" useAtlasSize="true">
 							<Anchors>
-								<Anchor point="LEFT" relativeTo="MacroPopupNameMiddle" relativePoint="RIGHT"/>
+								<Anchor point="TOPLEFT" relativeKey="$parent.topLeft" relativePoint="TOPRIGHT" x="0" y="0"/>
+								<Anchor point="TOPRIGHT" relativeKey="$parent.topRight" relativePoint="TOPLEFT" x="0" y="0"/>
 							</Anchors>
-							<TexCoords left="0.90625" right="1.0" top="0" bottom="1.0"/>
 						</Texture>
+						<Texture parentKey="bottomLeft" atlas="macropopup-bottomleft" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="bottomRight" atlas="macropopup-bottomright" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture atlas="_macropopup-bottom" horizTile="true" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativeKey="$parent.bottomLeft" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.bottomRight" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture atlas="!macropopup-left" vertTile="true" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.topLeft" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+								<Anchor point="BOTTOMLEFT" relativeKey="$parent.bottomLeft" relativePoint="TOPLEFT" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture atlas="!macropopup-right" vertTile="true" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPRIGHT" relativeKey="$parent.topRight" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.bottomRight" relativePoint="TOPRIGHT" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+						<FontString inherits="GameFontHighlightSmall" text="MACRO_POPUP_TEXT">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="24" y="-21"/>
+							</Anchors>
+						</FontString>
+						<FontString inherits="GameFontHighlightSmall" text="MACRO_POPUP_CHOOSE_ICON">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="24" y="-69"/>
+							</Anchors>
+						</FontString>
 					</Layer>
 				</Layers>
-				<Scripts>
-					<OnTextChanged>
-						local text = self:GetText();
-						text = string.gsub(text, "\"", "");
-						MacroPopupOkayButton_Update();
-						MacroFrameSelectedMacroName:SetText(text);
-					</OnTextChanged>
-					<OnEscapePressed function="MacroPopupFrame_CancelEdit"/>
-					<OnEnterPressed>
-						if ( MacroPopupOkayButton:IsEnabled() ) then
-							MacroPopupOkayButton_OnClick(MacroPopupOkayButton);
-						end
-					</OnEnterPressed>
-				</Scripts>
-				<FontString inherits="ChatFontNormal"/>
-			</EditBox>
+				<Frames>
+					<EditBox name="MacroPopupEditBox" letters="16" historyLines="0">
+						<Size x="182" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" x="29" y="-35"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture name="MacroPopupNameLeft" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+									<Size x="12" y="29"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" x="-11" y="0"/>
+									</Anchors>
+									<TexCoords left="0" right="0.09375" top="0" bottom="1.0"/>
+								</Texture>
+								<Texture name="MacroPopupNameMiddle" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+									<Size x="175" y="29"/>
+									<Anchors>
+										<Anchor point="LEFT" relativeTo="MacroPopupNameLeft" relativePoint="RIGHT"/>
+									</Anchors>
+									<TexCoords left="0.09375" right="0.90625" top="0" bottom="1.0"/>
+								</Texture>
+								<Texture name="MacroPopupNameRight" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+									<Size x="12" y="29"/>
+									<Anchors>
+										<Anchor point="LEFT" relativeTo="MacroPopupNameMiddle" relativePoint="RIGHT"/>
+									</Anchors>
+									<TexCoords left="0.90625" right="1.0" top="0" bottom="1.0"/>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnTextChanged>
+								local text = self:GetText();
+								text = string.gsub(text, "\"", "");
+								MacroPopupOkayButton_Update();
+								MacroFrameSelectedMacroName:SetText(text);
+							</OnTextChanged>
+							<OnEscapePressed function="MacroPopupFrame_CancelEdit"/>
+							<OnEnterPressed>
+								if ( MacroPopupOkayButton:IsEnabled() ) then
+									MacroPopupOkayButton_OnClick(MacroPopupOkayButton);
+								end
+							</OnEnterPressed>
+						</Scripts>
+						<FontString inherits="ChatFontNormal"/>
+					</EditBox>
+					<Button name="MacroPopupCancelButton" inherits="UIPanelButtonTemplate" text="CANCEL">
+						<Size x="78" y="22"/>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" relativeTo="MacroPopupFrame" x="-11" y="13"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								MacroPopupFrame_CancelEdit();
+								PlaySound("gsTitleOptionOK");
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="MacroPopupOkayButton" inherits="UIPanelButtonTemplate" text="OKAY">
+						<Size x="78" y="22"/>
+						<Anchors>
+							<Anchor point="RIGHT" relativeTo="MacroPopupCancelButton" relativePoint="LEFT" x="-2" y="0"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								MacroPopupOkayButton_OnClick();
+								PlaySound("gsTitleOptionOK");
+							</OnClick>
+						</Scripts>
+					</Button>
+				</Frames>
+			</Frame>
 			<ScrollFrame name="MacroPopupScrollFrame" inherits="ListScrollFrameTemplate">
-				<Size x="296" y="195"/>
+				<Size x="485" y="389"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativeTo="MacroPopupFrame" relativePoint="TOPRIGHT" x="-39" y="-67"/>
+					<Anchor point="TOPRIGHT" relativeTo="MacroPopupFrame" relativePoint="TOPRIGHT" x="-36" y="-70"/>
 				</Anchors>
 				<Scripts>
 					<OnVerticalScroll>
@@ -421,134 +484,11 @@
 					</OnVerticalScroll>
 				</Scripts>
 			</ScrollFrame>
-			<CheckButton name="MacroPopupButton1" inherits="MacroPopupButtonTemplate" id="1">
-				<Anchors>
-					<Anchor point="TOPLEFT" x="24" y="-85"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="MacroPopupButton2" inherits="MacroPopupButtonTemplate" id="2">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="MacroPopupButton1" relativePoint="RIGHT" x="10" y="0"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="MacroPopupButton3" inherits="MacroPopupButtonTemplate" id="3">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="MacroPopupButton2" relativePoint="RIGHT" x="10" y="0"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="MacroPopupButton4" inherits="MacroPopupButtonTemplate" id="4">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="MacroPopupButton3" relativePoint="RIGHT" x="10" y="0"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="MacroPopupButton5" inherits="MacroPopupButtonTemplate" id="5">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="MacroPopupButton4" relativePoint="RIGHT" x="10" y="0"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="MacroPopupButton6" inherits="MacroPopupButtonTemplate" id="6">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="MacroPopupButton1" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="MacroPopupButton7" inherits="MacroPopupButtonTemplate" id="7">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="MacroPopupButton6" relativePoint="RIGHT" x="10" y="0"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="MacroPopupButton8" inherits="MacroPopupButtonTemplate" id="8">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="MacroPopupButton7" relativePoint="RIGHT" x="10" y="0"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="MacroPopupButton9" inherits="MacroPopupButtonTemplate" id="9">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="MacroPopupButton8" relativePoint="RIGHT" x="10" y="0"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="MacroPopupButton10" inherits="MacroPopupButtonTemplate" id="10">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="MacroPopupButton9" relativePoint="RIGHT" x="10" y="0"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="MacroPopupButton11" inherits="MacroPopupButtonTemplate" id="11">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="MacroPopupButton6" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="MacroPopupButton12" inherits="MacroPopupButtonTemplate" id="12">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="MacroPopupButton11" relativePoint="RIGHT" x="10" y="0"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="MacroPopupButton13" inherits="MacroPopupButtonTemplate" id="13">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="MacroPopupButton12" relativePoint="RIGHT" x="10" y="0"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="MacroPopupButton14" inherits="MacroPopupButtonTemplate" id="14">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="MacroPopupButton13" relativePoint="RIGHT" x="10" y="0"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="MacroPopupButton15" inherits="MacroPopupButtonTemplate" id="15">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="MacroPopupButton14" relativePoint="RIGHT" x="10" y="0"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="MacroPopupButton16" inherits="MacroPopupButtonTemplate" id="16">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="MacroPopupButton11" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="MacroPopupButton17" inherits="MacroPopupButtonTemplate" id="17">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="MacroPopupButton16" relativePoint="RIGHT" x="10" y="0"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="MacroPopupButton18" inherits="MacroPopupButtonTemplate" id="18">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="MacroPopupButton17" relativePoint="RIGHT" x="10" y="0"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="MacroPopupButton19" inherits="MacroPopupButtonTemplate" id="19">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="MacroPopupButton18" relativePoint="RIGHT" x="10" y="0"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="MacroPopupButton20" inherits="MacroPopupButtonTemplate" id="20">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="MacroPopupButton19" relativePoint="RIGHT" x="10" y="0"/>
-
-				</Anchors>
-			</CheckButton>
-			<Button name="MacroPopupCancelButton" inherits="UIPanelButtonTemplate" text="CANCEL">
-				<Size x="78" y="22"/>
-				<Anchors>
-					<Anchor point="BOTTOMRIGHT" relativeTo="MacroPopupFrame" x="-11" y="13"/>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						MacroPopupFrame_CancelEdit();
-						PlaySound("gsTitleOptionOK");
-					</OnClick>
-				</Scripts>
-			</Button>
-			<Button name="MacroPopupOkayButton" inherits="UIPanelButtonTemplate" text="OKAY">
-				<Size x="78" y="22"/>
-				<Anchors>
-					<Anchor point="RIGHT" relativeTo="MacroPopupCancelButton" relativePoint="LEFT" x="-2" y="0"/>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						MacroPopupOkayButton_OnClick();
-						PlaySound("gsTitleOptionOK");
-					</OnClick>
-				</Scripts>
-			</Button>
 		</Frames>
 		<Scripts>
+			<OnLoad function="MacroPopupFrame_OnLoad"/>
 			<OnShow function="MacroPopupFrame_OnShow"/>
+			<OnUpdate function="MacroPopupFrame_OnUpdate"/>
 			<OnHide function="MacroPopupFrame_OnHide"/>
 		</Scripts>
 	</Frame>

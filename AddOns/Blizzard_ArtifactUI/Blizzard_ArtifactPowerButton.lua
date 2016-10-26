@@ -14,6 +14,20 @@ ARTIFACT_POWER_STYLE_UNPURCHASED_LOCKED = 6;
 ARTIFACT_POWER_STYLE_PURCHASED_READ_ONLY = 7;
 ARTIFACT_POWER_STYLE_UNPURCHASED_READ_ONLY = 8;
 
+local ARTIFACT_TRAIT_SOUND_HANDLE;
+
+local function PlayArtifactTraitSound(sound)
+	if ARTIFACT_TRAIT_SOUND_HANDLE ~= nil then
+		StopSound(ARTIFACT_TRAIT_SOUND_HANDLE);
+		ARTIFACT_TRAIT_SOUND_HANDLE = nil;
+	end
+	
+	local soundPlayed, handle = PlaySound(sound, "SFX", false);
+	if soundPlayed then
+		ARTIFACT_TRAIT_SOUND_HANDLE = handle;
+	end
+end
+
 function ArtifactPowerButtonMixin:OnLoad()
 	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 	self:RegisterForDrag("LeftButton");
@@ -26,6 +40,11 @@ end
 
 function ArtifactPowerButtonMixin:OnEnter()
 	if self.style ~= ARTIFACT_POWER_STYLE_RUNE and not self.locked then
+		local _, cursorItemID = GetCursorInfo();
+		if cursorItemID and IsArtifactRelicItem(cursorItemID) then
+			-- no tooltip
+			return;
+		end
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 		GameTooltip:SetArtifactPowerByID(self:GetPowerID());
 
@@ -36,6 +55,10 @@ end
 local SEQUENCE = { "LeftButton", "RightButton", "RightButton", "RightButton", "RightButton", "RightButton", "LeftButton", "RightButton", "RightButton", };
 function ArtifactPowerButtonMixin:OnClick(button)
 	if self.style ~= ARTIFACT_POWER_STYLE_RUNE and not self.locked then
+		if ( IsModifiedClick("CHATLINK") ) then
+			ChatEdit_InsertLink(C_ArtifactUI.GetPowerHyperlink(self:GetPowerID()));
+			return;
+		end
 		if not C_ArtifactUI.IsAtForge() then
 			UIErrorsFrame:AddMessage(ARTIFACT_TRAITS_NO_FORGE_ERROR, RED_FONT_COLOR:GetRGBA());
 			return;
@@ -72,7 +95,7 @@ function ArtifactPowerButtonMixin:PlayPurchaseAnimation()
 		self.PointBurstLeft:SetVertexColor(1, 0.81960784313725, 0.3921568627451);
 		self.PointBurstRight:SetVertexColor(1, 0.81960784313725, 0.3921568627451);
 		self.GoldPointSpentAnim:Play();
-		PlaySound("UI_70_Artifact_Forge_Trait_GoldTrait");
+		PlayArtifactTraitSound("UI_70_Artifact_Forge_Trait_GoldTrait");
 	elseif not self.isStart then
 		if self.currentRank + 1 == self.maxRank then
 			self.RingGlow:SetVertexColor(1, 0.81960784313725, 0.3921568627451);
@@ -80,7 +103,7 @@ function ArtifactPowerButtonMixin:PlayPurchaseAnimation()
 			self.PointBurstRight:SetVertexColor(1, 0.81960784313725, 0.3921568627451);
 			self.FinalPointSpentAnim:Play();
 			if C_ArtifactUI.GetTotalPurchasedRanks() > 0 then
-				PlaySound("UI_70_Artifact_Forge_Trait_FinalRank");
+				PlayArtifactTraitSound("UI_70_Artifact_Forge_Trait_FinalRank");
 			end
 		else
 			self.RingGlow:SetVertexColor(0.30980392156863, 1, 0.2156862745098);
@@ -88,7 +111,7 @@ function ArtifactPowerButtonMixin:PlayPurchaseAnimation()
 			self.PointBurstRight:SetVertexColor(0.30980392156863, 1, 0.2156862745098);
 			self.PointSpentAnim:Play();
 			if C_ArtifactUI.GetTotalPurchasedRanks() > 0 then
-				PlaySound("UI_70_Artifact_Forge_Trait_RankUp");
+				PlayArtifactTraitSound("UI_70_Artifact_Forge_Trait_RankUp");
 			end
 		end
 	end

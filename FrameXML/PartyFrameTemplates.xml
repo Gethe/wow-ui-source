@@ -418,7 +418,7 @@
 					</OnLoad>
 				</Scripts>
 			</Frame>
-			<Frame name="$parentNotPresentIcon" parentKey="notPresentIcon" forceAlpha="true" hidden="true">
+			<Frame name="$parentNotPresentIcon" parentKey="notPresentIcon" ignoreParentAlpha="true" hidden="true">
 				<Size x="25" y="25"/>
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT" x="-7" y="5"/>

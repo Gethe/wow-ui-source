@@ -1,4 +1,4 @@
-## Interface: 70000
+## Interface: 70100
 ## Title: Blizzard UI Debug Tools
 ## Notes: Tools for developing addons
 ## Secure: 1

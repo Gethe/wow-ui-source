@@ -695,6 +695,11 @@
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 					<OnShow function="InterfaceOptionsDisplayPanelChatBubblesDropDown_OnShow"/>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+						GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Frame>
 		</Frames>
@@ -1120,23 +1125,29 @@
 					<OnEvent function="InterfaceOptionsSocialPanelWhisperMode_OnEvent"/>
 				</Scripts>
 			</Frame>
-            <Button name="$parentRedockChat" parentKey="RedockChat" inherits="UIPanelButtonTemplate" text="RESET_CHAT_POSITION">
-                <Size x="134" y="22"/>
-                <Anchors>
-                    <Anchor point="TOPLEFT" relativeTo="$parentWhisperMode" relativePoint="BOTTOMLEFT" x="16" y="-5"/>
-                </Anchors>
-                <Scripts>
-                    <OnLoad>
-                        self.tooltip = OPTION_TOOLTIP_RESET_CHAT_POSITION;
-                    </OnLoad>
-                    <OnEnter>
+			<Button name="$parentRedockChat" parentKey="RedockChat" inherits="UIPanelButtonTemplate">
+				<Size x="134" y="22"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentWhisperMode" relativePoint="BOTTOMLEFT" x="16" y="-5"/>
+				</Anchors>
+				<ButtonText name="$parentText" parentKey="text" justifyH="LEFT" justifyV="MIDDLE" text="RESET_CHAT_POSITION">
+					<Anchors>
+						<Anchor point="LEFT" x="20" y="0"/>
+					</Anchors>
+				</ButtonText>
+				<Scripts>
+					<OnLoad>
+						self.tooltip = OPTION_TOOLTIP_RESET_CHAT_POSITION;
+						self:SetWidth(self.text:GetWidth() + 40);
+					</OnLoad>
+					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
 						GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
 					</OnEnter>
 					<OnLeave function="GameTooltip_Hide"/>
-                    <OnClick function="InterfaceOptionsSocialPanelRedockChat_OnClick"/>
-                </Scripts>
-            </Button>
+					<OnClick function="InterfaceOptionsSocialPanelRedockChat_OnClick"/>
+				</Scripts>
+			</Button>
 		</Frames>
 		<Scripts>
 			<OnLoad function="InterfaceOptionsSocialPanel_OnLoad"/>
@@ -1612,21 +1623,9 @@
 							<OnLoad function="InterfaceOptionsLargerNamePlate_OnLoad" />
 						</Scripts>
 					</CheckButton>
-					<CheckButton name="$parentShowAll" inherits="InterfaceOptionsCheckButtonTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentMakeLarger" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
-						</Anchors>
-						<Scripts>
-							<OnLoad>
-								self.type = CONTROLTYPE_CHECKBOX;
-								self.cvar = "nameplateShowAll";
-								BlizzardOptionsPanel_RegisterControl(self, self:GetParent():GetParent());
-							</OnLoad>
-						</Scripts>
-					</CheckButton>
 					<CheckButton name="$parentAggroFlash" inherits="InterfaceOptionsCheckButtonTemplate">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentShowAll" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
+							<Anchor point="TOPLEFT" relativeTo="$parentMakeLarger" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
@@ -1636,56 +1635,28 @@
 							</OnLoad>
 						</Scripts>
 					</CheckButton>
-					<Frame name="$parentFriends">
-						<Size x="100" y="26"/>
+					<CheckButton name="$parentShowAll" inherits="InterfaceOptionsCheckButtonTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentPersonalResource" relativePoint="TOPRIGHT" x="260" y="2"/>
-						</Anchors>
-						<Layers>
-							<Layer level="ARTWORK">
-								<FontString name="$parentText" inherits="GameFontHighlightLeft" parentKey="Text" justifyH="LEFT"/>
-							</Layer>
-						</Layers>
-						<Scripts>
-                            <OnShow>
-                                local text = GetBindingKey("FRIENDNAMEPLATES");
-	                            if (text and test ~= "") then
-                                    self.Text:SetText(UNIT_NAMEPLATES_SHOW_FRIENDS.." ("..text..")");
-                                else
-                                    self.Text:SetText(UNIT_NAMEPLATES_SHOW_FRIENDS);
-                                end
-                            </OnShow>
-							<OnEnter function="InterfaceOptionsNameplateFriends_OnEnter"/>
-							<OnLeave function="InterfaceOptionsNameplateFriends_OnLeave"/>
-						</Scripts>
-					</Frame>
-					<CheckButton name="$parentFriendlyMinions" inherits="InterfaceOptionsSmallCheckButtonTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentFriends" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="10" y="4"/>
-								</Offset>
-							</Anchor>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
 								self.type = CONTROLTYPE_CHECKBOX;
-								self.cvar = "nameplateShowFriendlyMinions";
+								self.cvar = "nameplateShowAll";
 								BlizzardOptionsPanel_RegisterControl(self, self:GetParent():GetParent());
 							</OnLoad>
 						</Scripts>
 					</CheckButton>
-					<Frame name="$parentEnemies">
-						<Size x="100" y="26"/>
+					<CheckButton name="$parentEnemies" inherits="InterfaceOptionsCheckButtonTemplate">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentMakeLarger" relativePoint="TOPRIGHT" x="260" y="2"/>
+							<Anchor point="TOPLEFT" relativeTo="$parentShowAll" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
 						</Anchors>
-						<Layers>
-							<Layer level="ARTWORK">
-								<FontString name="$parentText" inherits="GameFontHighlightLeft" parentKey="Text" justifyH="LEFT"/>
-							</Layer>
-						</Layers>
 						<Scripts>
+							<OnLoad>
+								self.type = CONTROLTYPE_CHECKBOX;
+								self.cvar = "nameplateShowEnemies";
+								BlizzardOptionsPanel_RegisterControl(self, self:GetParent():GetParent());
+							</OnLoad>
                             <OnShow>
                                 local text = GetBindingKey("NAMEPLATES");
 	                            if (text and test ~= "") then
@@ -1697,14 +1668,10 @@
 							<OnEnter function="InterfaceOptionsNameplateEnemies_OnEnter"/>
 							<OnLeave function="InterfaceOptionsNameplateEnemies_OnLeave"/>
 						</Scripts>
-					</Frame>
+					</CheckButton>
 					<CheckButton name="$parentEnemyMinions" inherits="InterfaceOptionsSmallCheckButtonTemplate">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentEnemies" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="10" y="4"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPLEFT" relativeTo="$parentEnemies" relativePoint="BOTTOMLEFT" x="10" y="4"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
@@ -1716,16 +1683,46 @@
 					</CheckButton>
 					<CheckButton name="$parentEnemyMinus" inherits="InterfaceOptionsSmallCheckButtonTemplate">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentEnemyMinions" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="0" y="4"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPLEFT" relativeTo="$parentEnemyMinions" relativePoint="BOTTOMLEFT" x="0" y="4"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
 								self.type = CONTROLTYPE_CHECKBOX;
 								self.cvar = "nameplateShowEnemyMinus";
+								BlizzardOptionsPanel_RegisterControl(self, self:GetParent():GetParent());
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parentFriends" inherits="InterfaceOptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentEnemyMinus" relativePoint="BOTTOMLEFT" x="-10" y="-10"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self.type = CONTROLTYPE_CHECKBOX;
+								self.cvar = "nameplateShowFriends";
+								BlizzardOptionsPanel_RegisterControl(self, self:GetParent():GetParent());
+							</OnLoad>
+							<OnShow>
+								local text = GetBindingKey("FRIENDNAMEPLATES");
+								if (text and test ~= "") then
+									self.Text:SetText(UNIT_NAMEPLATES_SHOW_FRIENDS.." ("..text..")");
+								else
+									self.Text:SetText(UNIT_NAMEPLATES_SHOW_FRIENDS);
+								end
+							</OnShow>
+							<OnEnter function="InterfaceOptionsNameplateFriends_OnEnter"/>
+							<OnLeave function="InterfaceOptionsNameplateFriends_OnLeave"/>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parentFriendlyMinions" inherits="InterfaceOptionsSmallCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentFriends" relativePoint="BOTTOMLEFT" x="10" y="4"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self.type = CONTROLTYPE_CHECKBOX;
+								self.cvar = "nameplateShowFriendlyMinions";
 								BlizzardOptionsPanel_RegisterControl(self, self:GetParent():GetParent());
 							</OnLoad>
 						</Scripts>
@@ -1825,39 +1822,11 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
-			<Slider name="$parentMaxDistanceSlider" inherits="OptionsSliderTemplate">
+			<Slider name="$parentFollowSpeedSlider" inherits="OptionsSliderTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentWaterCollision" relativePoint="BOTTOMLEFT">
 						<Offset>
 							<AbsDimension x="16" y="-24"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self.type = CONTROLTYPE_SLIDER;
-						self.cvar = "cameraDistanceMaxFactor";
-						_G[self:GetName().."Low"]:SetText(NEAR);
-						_G[self:GetName().."High"]:SetText(FAR);
-						self.SetDisplayValue = self.SetValue;
-						self.SetValue = function (self, value)
-							self:SetDisplayValue(value);
-							self.value = value;
-							SetCVar(self.cvar, value);
-						end
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-					</OnLoad>
-					<OnValueChanged>
-						self.value = value;
-						SetCVar(self.cvar, value);
-					</OnValueChanged>
-				</Scripts>
-			</Slider>
-			<Slider name="$parentFollowSpeedSlider" inherits="OptionsSliderTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentMaxDistanceSlider" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="0" y="-32"/>
 						</Offset>
 					</Anchor>
 				</Anchors>

@@ -596,7 +596,7 @@ function PaperDollFrame_SetStat(statFrame, unit, statIndex)
 
 		-- If there are any negative buffs then show the main number in red even if there are
 		-- positive buffs. Otherwise show in green.
-		if ( negBuff < 0 ) then
+		if ( negBuff < 0 and not GetPVPGearStatRules() ) then
 			effectiveStatDisplay = RED_FONT_COLOR_CODE..effectiveStatDisplay..FONT_COLOR_CODE_CLOSE;
 		end
 	end
@@ -609,6 +609,7 @@ function PaperDollFrame_SetStat(statFrame, unit, statIndex)
 
 		local primaryStat, spec;
 		spec = GetSpecialization();
+		local role = GetSpecializationRole(spec);
 		if (spec) then
 			primaryStat = select(7, GetSpecializationInfo(spec, nil, nil, nil, UnitSex("player")));
 		end
@@ -620,6 +621,12 @@ function PaperDollFrame_SetStat(statFrame, unit, statIndex)
 			end
 			if (not primaryStat or primaryStat == LE_UNIT_STAT_STRENGTH) then
 				statFrame.tooltip2 = format(statFrame.tooltip2, BreakUpLargeNumbers(attackPower));
+				if ( role == "TANK" ) then
+					local increasedParryChance = GetParryChanceFromAttribute();
+					if ( increasedParryChance > 0 ) then
+						statFrame.tooltip2 = statFrame.tooltip2.."|n|n"..format(CR_PARRY_BASE_STAT_TOOLTIP, increasedParryChance);
+					end
+				end	
 			else
 				statFrame.tooltip2 = STAT_NO_BENEFIT_TOOLTIP;
 			end
@@ -632,6 +639,12 @@ function PaperDollFrame_SetStat(statFrame, unit, statIndex)
 			end
 			if (not primaryStat or primaryStat == LE_UNIT_STAT_AGILITY) then
 				statFrame.tooltip2 = format(tooltip, BreakUpLargeNumbers(attackPower));
+				if ( role == "TANK" ) then
+					local increasedDodgeChance = GetDodgeChanceFromAttribute();
+					if ( increasedDodgeChance > 0 ) then
+						statFrame.tooltip2 = statFrame.tooltip2.."|n|n"..format(CR_DODGE_BASE_STAT_TOOLTIP, increasedDodgeChance);
+					end
+				end
 			else
 				statFrame.tooltip2 = STAT_NO_BENEFIT_TOOLTIP;
 			end
@@ -1054,7 +1067,7 @@ function PaperDollFrame_SetHaste(statFrame, unit)
 	local rating = CR_HASTE_MELEE;
 
 	local hasteFormatString;
-	if (haste < 0) then
+	if (haste < 0 and not GetPVPGearStatRules()) then
 		hasteFormatString = RED_FONT_COLOR_CODE.."%s"..FONT_COLOR_CODE_CLOSE;
 	else
 		hasteFormatString = "%s";
@@ -1138,6 +1151,7 @@ function PaperDollFrame_SetMastery(statFrame, unit)
 		return;
 	end
 	if (UnitLevel("player") < SHOW_MASTERY_LEVEL) then
+		statFrame.numericValue = 0;
 		statFrame:Hide();
 		return;
 	end
@@ -1657,7 +1671,7 @@ function PaperDollFormatStat(name, base, posBuff, negBuff)
 
 		-- if there is a negative buff then show the main number in red, even if there are
 		-- positive buffs. Otherwise show the number in green
-		if ( negBuff < 0 ) then
+		if ( negBuff < 0 and not GetPVPGearStatRules() ) then
 			effectiveText = RED_FONT_COLOR_CODE..effectiveText..FONT_COLOR_CODE_CLOSE;
 		end
 	end
@@ -1897,36 +1911,21 @@ function GearSetButton_OnEnter (self)
 	end
 end
 
-NUM_GEARSET_ICONS_SHOWN = 15;
-NUM_GEARSET_ICONS_PER_ROW = 5;
-NUM_GEARSET_ICON_ROWS = 3;
+NUM_GEARSET_ICONS_PER_ROW = 10;
+NUM_GEARSET_ICON_ROWS = 9;
+NUM_GEARSET_ICONS_SHOWN = NUM_GEARSET_ICONS_PER_ROW * NUM_GEARSET_ICON_ROWS;
 GEARSET_ICON_ROW_HEIGHT = 36;
 local EM_ICON_FILENAMES = {};
 
+function OnGearManagerDialogPopupButtonCreated(self, newButton)
+	tinsert(self.buttons, newButton);
+end
+
 function GearManagerDialogPopup_OnLoad (self)
 	self.buttons = {};
-
-	local rows = 0;
-
-	local button = CreateFrame("CheckButton", "GearManagerDialogPopupButton1", GearManagerDialogPopup, "GearSetPopupButtonTemplate");
-	button:SetPoint("TOPLEFT", 24, -85);
-	button:SetID(1);
-	tinsert(self.buttons, button);
-
-	local lastPos;
-	for i = 2, NUM_GEARSET_ICONS_SHOWN do
-		button = CreateFrame("CheckButton", "GearManagerDialogPopupButton" .. i, GearManagerDialogPopup, "GearSetPopupButtonTemplate");
-		button:SetID(i);
-
-		lastPos = (i - 1) / NUM_GEARSET_ICONS_PER_ROW;
-		if ( lastPos == math.floor(lastPos) ) then
-			button:SetPoint("TOPLEFT", self.buttons[i-NUM_GEARSET_ICONS_PER_ROW], "BOTTOMLEFT", 0, -8);
-		else
-			button:SetPoint("TOPLEFT", self.buttons[i-1], "TOPRIGHT", 10, 0);
-		end
-		tinsert(self.buttons, button);
-	end
-
+	
+	BuildIconArray(GearManagerDialogPopup, "GearManagerDialogPopupButton", "GearSetPopupButtonTemplate", NUM_GEARSET_ICONS_PER_ROW, NUM_GEARSET_ICON_ROWS, OnGearManagerDialogPopupButtonCreated);
+	
 	self.SetSelection = function(self, fTexture, Value)
 		if(fTexture) then
 			self.selectedTexture = Value;
@@ -1936,13 +1935,45 @@ function GearManagerDialogPopup_OnLoad (self)
 			self.selectedIcon = Value;
 		end
 	end
+	
+	GearManagerDialogPopupScrollFrame.ScrollBar.scrollStep = 8 * GEARSET_ICON_ROW_HEIGHT;
+end
+
+local GEAR_MANAGER_POPUP_FRAME_MINIMUM_PADDING = 40;
+function GearManagerDialogPopup_AdjustAnchors (self)
+	local rightSpace = GetScreenWidth() - PaperDollFrame:GetRight();
+	self.parentLeft = PaperDollFrame:GetLeft();
+	local leftSpace = self.parentLeft;
+	
+	self:ClearAllPoints();
+	if ( leftSpace >= rightSpace ) then
+		if ( leftSpace < self:GetWidth() + GEAR_MANAGER_POPUP_FRAME_MINIMUM_PADDING ) then
+			self:SetPoint("RIGHT", PaperDollFrame, "LEFT", self:GetWidth() + GEAR_MANAGER_POPUP_FRAME_MINIMUM_PADDING - leftSpace, 0);
+		else
+			self:SetPoint("RIGHT", PaperDollFrame, "LEFT", -5, 0);
+		end
+	else
+		if ( rightSpace < self:GetWidth() + GEAR_MANAGER_POPUP_FRAME_MINIMUM_PADDING ) then
+			self:SetPoint("LEFT", PaperDollFrame, "RIGHT", rightSpace - (self:GetWidth() + GEAR_MANAGER_POPUP_FRAME_MINIMUM_PADDING), 0);
+		else
+			self:SetPoint("LEFT", PaperDollFrame, "RIGHT", 0, 0);
+		end
+	end
 end
 
 function GearManagerDialogPopup_OnShow (self)
+	GearManagerDialogPopup_AdjustAnchors(self);
 	PlaySound("igCharacterInfoOpen");
 	self.name = nil;
 	self.isEdit = false;
 	RecalculateGearManagerDialogPopup();
+	RefreshEquipmentSetIconInfo();
+end
+
+function GearManagerDialogPopup_OnUpdate (self)
+	if ( PaperDollFrame:GetLeft() ~= self.parentLeft ) then
+		GearManagerDialogPopup_AdjustAnchors(self);
+	end
 end
 
 function GearManagerDialogPopup_OnHide (self)
@@ -2056,8 +2087,6 @@ function GetEquipmentSetIconInfo(index)
 end
 
 function GearManagerDialogPopup_Update ()
-	RefreshEquipmentSetIconInfo();
-
 	local popup = GearManagerDialogPopup;
 	local buttons = popup.buttons;
 	local offset = FauxScrollFrame_GetOffset(GearManagerDialogPopupScrollFrame) or 0;
@@ -2092,7 +2121,7 @@ function GearManagerDialogPopup_Update ()
 	end
 
 	-- Scrollbar stuff
-	FauxScrollFrame_Update(GearManagerDialogPopupScrollFrame, ceil(#EM_ICON_FILENAMES / NUM_GEARSET_ICONS_PER_ROW) , NUM_GEARSET_ICON_ROWS, GEARSET_ICON_ROW_HEIGHT );
+	FauxScrollFrame_Update(GearManagerDialogPopupScrollFrame, ceil(#EM_ICON_FILENAMES / NUM_GEARSET_ICONS_PER_ROW) + 1, NUM_GEARSET_ICON_ROWS, GEARSET_ICON_ROW_HEIGHT );
 end
 
 function GearManagerDialogPopupOkay_Update ()

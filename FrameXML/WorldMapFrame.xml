@@ -4,32 +4,7 @@
 	<Script file="WorldMapActionButton.lua"/>
 	<Script file="WorldMapFrame.lua"/>
 	<Include file="WorldMapFrameTemplates.xml"/>
-	<Frame name="WorldMapPlayerTemplate" virtual="true">
-		<Size x="28" y="28"/>
-		<Anchors>
-			<Anchor point="CENTER"/>
-		</Anchors>
-		<Layers>
-			<Layer level="ARTWORK">
-				<Texture name="$parentIcon" file="Interface\WorldMap\WorldMapArrow" setAllPoints="true" parentKey="icon"/>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnLoad>
-				self.unit = "player";
-			</OnLoad>
-			<OnEnter>
-				WorldMapUnit_OnEnter(self, motion);
-			</OnEnter>
-			<OnLeave>
-				WorldMapUnit_OnLeave(self, motion);
-			</OnLeave>
-			<OnMouseUp>
-				WorldMapUnit_OnMouseUp(self, button, "WorldMapRaid", "WorldMapParty");
-			</OnMouseUp>
-		</Scripts>
-	</Frame>
-	<Frame name="WorldMapFrame" setAllPoints="true" hidden="true" enableKeyboard="true" enableMouse="true" clampedToScreen="true" toplevel="true" >
+	<Frame name="WorldMapFrame" frameStrata="FULLSCREEN" setAllPoints="true" hidden="true" enableKeyboard="true" enableMouse="true" clampedToScreen="true" toplevel="true" >
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="-8">
 				<Texture name="BlackoutWorld">
@@ -38,45 +13,6 @@
 						<Anchor point="TOPRIGHT"/>
 					</Anchors>
 					<Color r="0.0" g="0.0" b="0.0"/>
-				</Texture>
-			</Layer>
-			<Layer level="OVERLAY">
-				<Texture name="$parentTexture13" hidden="true">
-					<Size x="16" y="16"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentTexture9" x="4" y="-13"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentTexture14" hidden="true">
-					<Size x="16" y="16"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentTexture11" x="188" y="-220"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentTexture15" hidden="true">
-					<Size x="32" y="32"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentTexture12" x="220" y="-201"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentTexture16" hidden="true">
-					<Size x="16" y="16"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentTexture3" x="187" y="-59"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentTexture17" hidden="true">
-					<Size x="32" y="32"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentTexture4" x="220" y="-62"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentTexture18" hidden="true">
-					<Size x="690" y="4"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentTexture9" x="12" y="-223"/>
-					</Anchors>
-					<Color r="0" g="0" b="0"/>
 				</Texture>
 			</Layer>
 		</Layers>
@@ -306,24 +242,6 @@
 											<OnUpdate function="WorldMapBlobFrame_OnUpdate"/>
 										</Scripts>
 									</QuestPOIFrame>
-									<ArchaeologyDigSiteFrame name="WorldMapArchaeologyDigSites" setAllPoints="true">
-										<Layers>
-											<Layer level="ARTWORK">
-												<Texture name="$parentTexture" setAllPoints="true"/>
-											</Layer>
-										</Layers>
-										<Scripts>
-											<OnLoad>
-												self:SetFillAlpha(128);
-												self:SetFillTexture("Interface\\WorldMap\\UI-ArchaeologyBlob-Inside");
-												self:SetBorderTexture("Interface\\WorldMap\\UI-ArchaeologyBlob-Outside");
-												self:EnableSmoothing(true);
-												--self:SetNumSplinePoints(30);
-												self:SetBorderScalar(0.5);
-											</OnLoad>
-											<OnUpdate function="ArchaeologyDigSiteFrame_OnUpdate"/>
-										</Scripts>
-									</ArchaeologyDigSiteFrame>
 									<ScenarioPOIFrame name="ScenarioPOIFrame" setAllPoints="true">
 										<Layers>
 											<Layer level="ARTWORK">
@@ -503,99 +421,6 @@
 									<Frame name="WorldMapBossButtonFrame" setAllPoints="true"/>
 								</Frames>
 							</Frame>
-							<Frame name="WorldMapPlayersFrame" frameLevel="200">
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="WorldMapDetailFrame" x="0" y="0"/>
-									<Anchor point="BOTTOMRIGHT" relativeTo="WorldMapDetailFrame" x="0" y="0"/>
-								</Anchors>
-								<Frames>
-									<Frame name="WorldMapPlayerLower" inherits="WorldMapPlayerTemplate" frameStrata="HIGH" hidden="true" frameLevel="150"/>
-									<Frame name="WorldMapPlayerUpper" inherits="WorldMapPlayerTemplate" frameStrata="FULLSCREEN" alpha="0.7" hidden="true" frameLevel="500"/>
-									<Frame name="WorldMapPing" frameStrata="FULLSCREEN" hidden="true">
-										<Size x="64" y="64"/>
-										<Anchors>
-											<Anchor point="CENTER" relativeTo="WorldMapFrame"/>
-										</Anchors>
-										<Layers>
-											<Layer level="OVERLAY">
-												<Texture parentKey="centerRing" file="Interface\minimap\UI-Minimap-Ping-Center">
-													<Size x="32" y="32"/>
-													<Anchors>
-														<Anchor point="CENTER"/>
-													</Anchors>
-												</Texture>
-												<Texture parentKey="rotatingRing" file="Interface\minimap\UI-Minimap-Ping-Rotate">
-													<Size x="48" y="48"/>
-													<Anchors>
-														<Anchor point="CENTER"/>
-													</Anchors>
-												</Texture>
-												<Texture parentKey="expandingRing" file="Interface\minimap\UI-Minimap-Ping-Expand">
-													<Size x="32" y="32"/>
-													<Anchors>
-														<Anchor point="CENTER"/>
-													</Anchors>
-												</Texture>
-											</Layer>
-										</Layers>
-										<Animations>
-											<AnimationGroup parentKey="Ping" looping="REPEAT">
-												<Rotation childKey="rotatingRing" degrees="-180" duration="0.75" order="1"/>
-												<Scale childKey="expandingRing" scaleX="1.75" scaleY="1.75" duration="0.75" order="1"/>
-												<Scripts>
-													<OnPlay function="WorldMapPing_OnPlay"/>
-													<OnLoop function="WorldMapPing_OnLoop"/>
-													<OnStop function="WorldMapPing_OnStop"/>
-												</Scripts>
-											</AnimationGroup>
-										</Animations>
-									</Frame>
-									<Frame name="WorldMapParty1" inherits="WorldMapPartyUnitTemplate" id="1"/>
-									<Frame name="WorldMapParty2" inherits="WorldMapPartyUnitTemplate" id="2"/>
-									<Frame name="WorldMapParty3" inherits="WorldMapPartyUnitTemplate" id="3"/>
-									<Frame name="WorldMapParty4" inherits="WorldMapPartyUnitTemplate" id="4"/>
-									<Frame name="WorldMapRaid1" inherits="WorldMapRaidUnitTemplate" id="1"/>
-									<Frame name="WorldMapRaid2" inherits="WorldMapRaidUnitTemplate" id="2"/>
-									<Frame name="WorldMapRaid3" inherits="WorldMapRaidUnitTemplate" id="3"/>
-									<Frame name="WorldMapRaid4" inherits="WorldMapRaidUnitTemplate" id="4"/>
-									<Frame name="WorldMapRaid5" inherits="WorldMapRaidUnitTemplate" id="5"/>
-									<Frame name="WorldMapRaid6" inherits="WorldMapRaidUnitTemplate" id="6"/>
-									<Frame name="WorldMapRaid7" inherits="WorldMapRaidUnitTemplate" id="7"/>
-									<Frame name="WorldMapRaid8" inherits="WorldMapRaidUnitTemplate" id="8"/>
-									<Frame name="WorldMapRaid9" inherits="WorldMapRaidUnitTemplate" id="9"/>
-									<Frame name="WorldMapRaid10" inherits="WorldMapRaidUnitTemplate" id="10"/>
-									<Frame name="WorldMapRaid11" inherits="WorldMapRaidUnitTemplate" id="11"/>
-									<Frame name="WorldMapRaid12" inherits="WorldMapRaidUnitTemplate" id="12"/>
-									<Frame name="WorldMapRaid13" inherits="WorldMapRaidUnitTemplate" id="13"/>
-									<Frame name="WorldMapRaid14" inherits="WorldMapRaidUnitTemplate" id="14"/>
-									<Frame name="WorldMapRaid15" inherits="WorldMapRaidUnitTemplate" id="15"/>
-									<Frame name="WorldMapRaid16" inherits="WorldMapRaidUnitTemplate" id="16"/>
-									<Frame name="WorldMapRaid17" inherits="WorldMapRaidUnitTemplate" id="17"/>
-									<Frame name="WorldMapRaid18" inherits="WorldMapRaidUnitTemplate" id="18"/>
-									<Frame name="WorldMapRaid19" inherits="WorldMapRaidUnitTemplate" id="19"/>
-									<Frame name="WorldMapRaid20" inherits="WorldMapRaidUnitTemplate" id="20"/>
-									<Frame name="WorldMapRaid21" inherits="WorldMapRaidUnitTemplate" id="21"/>
-									<Frame name="WorldMapRaid22" inherits="WorldMapRaidUnitTemplate" id="22"/>
-									<Frame name="WorldMapRaid23" inherits="WorldMapRaidUnitTemplate" id="23"/>
-									<Frame name="WorldMapRaid24" inherits="WorldMapRaidUnitTemplate" id="24"/>
-									<Frame name="WorldMapRaid25" inherits="WorldMapRaidUnitTemplate" id="25"/>
-									<Frame name="WorldMapRaid26" inherits="WorldMapRaidUnitTemplate" id="26"/>
-									<Frame name="WorldMapRaid27" inherits="WorldMapRaidUnitTemplate" id="27"/>
-									<Frame name="WorldMapRaid28" inherits="WorldMapRaidUnitTemplate" id="28"/>
-									<Frame name="WorldMapRaid29" inherits="WorldMapRaidUnitTemplate" id="29"/>
-									<Frame name="WorldMapRaid30" inherits="WorldMapRaidUnitTemplate" id="30"/>
-									<Frame name="WorldMapRaid31" inherits="WorldMapRaidUnitTemplate" id="31"/>
-									<Frame name="WorldMapRaid32" inherits="WorldMapRaidUnitTemplate" id="32"/>
-									<Frame name="WorldMapRaid33" inherits="WorldMapRaidUnitTemplate" id="33"/>
-									<Frame name="WorldMapRaid34" inherits="WorldMapRaidUnitTemplate" id="34"/>
-									<Frame name="WorldMapRaid35" inherits="WorldMapRaidUnitTemplate" id="35"/>
-									<Frame name="WorldMapRaid36" inherits="WorldMapRaidUnitTemplate" id="36"/>
-									<Frame name="WorldMapRaid37" inherits="WorldMapRaidUnitTemplate" id="37"/>
-									<Frame name="WorldMapRaid38" inherits="WorldMapRaidUnitTemplate" id="38"/>
-									<Frame name="WorldMapRaid39" inherits="WorldMapRaidUnitTemplate" id="39"/>
-									<Frame name="WorldMapRaid40" inherits="WorldMapRaidUnitTemplate" id="40"/>
-								</Frames>
-							</Frame>
 							<Frame name="WorldMapPOIFrame" frameLevel="300">
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeTo="WorldMapDetailFrame" x="0" y="0"/>
@@ -617,6 +442,12 @@
 									</CinematicModel>
 								</Frames>
 							</Frame>
+							<UnitPositionFrame name="WorldMapUnitPositionFrame" frameLevel="1500" inherits="UnitPositionFrameTemplate">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="WorldMapDetailFrame" x="0" y="0"/>
+									<Anchor point="BOTTOMRIGHT" relativeTo="WorldMapDetailFrame" x="0" y="0"/>
+								</Anchors>
+							</UnitPositionFrame>
 						</Frames>
 					</Frame>
 				</ScrollChild>
@@ -885,7 +716,7 @@
 			<Frame parentKey="ItemTooltip" inherits="EmbeddedItemTooltip" hidden="true">
 				<Size x="100" y="100"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="10" y="8"/>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" x="10" y="13"/>
 				</Anchors>
 				<KeyValues>
 					<KeyValue key="yspacing" value="13" type="number"/>
@@ -896,22 +727,18 @@
 					</OnLoad>
 				</Scripts>
 			</Frame>
-			<Frame parentKey="BackdropFrame" useParentLevel="true">
-				<Anchors>
-					<Anchor point="TOPLEFT"/>
-				</Anchors>
-			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				local backdrop = self:GetBackdrop();
-				self:SetBackdrop(nil);
-				self.BackdropFrame:SetBackdrop(backdrop);
-				self.BackdropFrame:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
-				self.BackdropFrame:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
+				self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
+				self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
 				self.shoppingTooltips = { WorldMapCompareTooltip1, WorldMapCompareTooltip2 };
 			</OnLoad>
 			<OnUpdate>
+				if ( self.recalculatePadding ) then
+					self.recalculatePadding = nil;
+					WorldMapTooltip_CalculatePadding();
+				end
 				self.updateTooltip = (self.updateTooltip or TOOLTIP_UPDATE_TIME) - elapsed;
 				if ( self.updateTooltip > 0 ) then
 					return;
@@ -925,9 +752,10 @@
 			</OnUpdate>
 			<OnHide inherit="prepend">
 				WorldMapTooltip.ItemTooltip:Hide();
+				self:SetPadding(0, 0);
 			</OnHide>
 			<OnSizeChanged inherit="prepend">
-				WorldMapTooltip_OnSizeChanged(self);
+				self.recalculatePadding = true;
 			</OnSizeChanged>
 		</Scripts>
 	</GameTooltip>

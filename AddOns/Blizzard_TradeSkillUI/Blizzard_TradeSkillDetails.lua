@@ -234,15 +234,40 @@ function TradeSkillDetailsMixin:RefreshDisplay()
 			reagentButton:Hide();
 		end
 
-		local sourceText = not recipeInfo.learned and C_TradeSkillUI.GetRecipeSourceText(self.selectedRecipeID);
+		self.Contents.NextRankText:Hide();
+		local sourceText, sourceTextIsForNextRank;
+		if not recipeInfo.learned then
+			sourceText = C_TradeSkillUI.GetRecipeSourceText(self.selectedRecipeID);
+		elseif recipeInfo.nextRecipeID then
+			sourceText = C_TradeSkillUI.GetRecipeSourceText(recipeInfo.nextRecipeID);
+			if sourceText then
+				sourceTextIsForNextRank = true;
+				-- replace the color at the beginning of the sourceText
+				sourceText = string.gsub(sourceText, "^|c%x%x%x%x%x%x", "|cC79C6E");
+				-- replace color after a newline
+				sourceText = string.gsub(sourceText, "|n|c%x%x%x%x%x%x", "|n|cC79C6E");
+			end
+		end
 
 		if sourceText then
 			self:AddContentWidget(self.Contents.SourceText);
 			self.Contents.SourceText:SetText(sourceText);
-			if numReagents > 0 then
-				self.Contents.SourceText:SetPoint("TOP", self.Contents.Reagents[numReagents], "BOTTOM", 0, -5)
+
+			if ( sourceTextIsForNextRank ) then
+				self:AddContentWidget(self.Contents.NextRankText);
+				self.Contents.NextRankText:Show();
+				if numReagents > 0 then
+					self.Contents.NextRankText:SetPoint("TOP", self.Contents.Reagents[numReagents], "BOTTOM", 0, -15)
+				else
+					self.Contents.NextRankText:SetPoint("TOP", self.Contents.ReagentLabel, "TOP");
+				end
+				self.Contents.SourceText:SetPoint("TOP", self.Contents.NextRankText, "BOTTOM", 0, 0);
 			else
-				self.Contents.SourceText:SetPoint("TOP", self.Contents.ReagentLabel, "TOP");
+				if numReagents > 0 then
+					self.Contents.SourceText:SetPoint("TOP", self.Contents.Reagents[numReagents], "BOTTOM", 0, -15);
+				else
+					self.Contents.SourceText:SetPoint("TOP", self.Contents.ReagentLabel, "TOP");
+				end
 			end
 			self.Contents.SourceText:Show();
 		else
@@ -358,7 +383,11 @@ function TradeSkillDetailsMixin:OnReagentMouseEnter(reagentButton)
 end
 
 function TradeSkillDetailsMixin:OnReagentClicked(reagentButton)
-	HandleModifiedItemClick(C_TradeSkillUI.GetRecipeReagentItemLink(self.selectedRecipeID, reagentButton.reagentIndex));
+	if not GetCurrentKeyBoardFocus() then
+		TradeSkillFrame.SearchBox:SetText(reagentButton.Name:GetText());
+	else
+		HandleModifiedItemClick(C_TradeSkillUI.GetRecipeReagentItemLink(self.selectedRecipeID, reagentButton.reagentIndex));
+	end
 end
 
 function TradeSkillDetailsMixin:OnStarsMouseEnter(starsFrame)
@@ -370,6 +399,7 @@ TradeSkillGuildListingMixin = {};
 
 function TradeSkillGuildListingMixin:OnLoad()
 	HybridScrollFrame_CreateButtons(self.Container.ScrollFrame, "TradeSkillGuildCrafterButtonTemplate", 0, 0);
+	self.Container.ScrollFrame.update = function() self:Refresh() end;
 
 	self:RegisterEvent("GUILD_RECIPE_KNOWN_BY_MEMBERS");
 end

@@ -67,6 +67,7 @@ retain("IsGMClient");
 retain("IsOnGlueScreen");
 retain("math");
 retain("table");
+retain("string");
 retain("pairs");
 retain("ipairs");
 retain("select");
@@ -95,6 +96,7 @@ retain("UnitAffectingCombat");
 retain("GetCVar");
 retain("GMError");
 retain("GetMouseFocus");
+retain("LOCALE_enGB");
 
 --For auth challenge
 take("C_AuthChallenge");
@@ -104,6 +106,9 @@ retain("GetBindingFromClick");
 --For character services
 take("C_SharedCharacterServices");
 retain("C_ClassTrial");
+
+--For secure transfer
+take("C_SecureTransfer");
 
 --GlobalStrings
 retain("BLIZZARD_STORE");
@@ -321,6 +326,7 @@ retain("COPPER_AMOUNT_SYMBOL");
 retain("COPPER_AMOUNT_TEXTURE");
 retain("COPPER_AMOUNT_TEXTURE_STRING");
 retain("SHORTDATE");
+retain("SHORTDATE_EU");
 retain("AUCTION_TIME_LEFT1_DETAIL");
 retain("AUCTION_TIME_LEFT2_DETAIL");
 retain("AUCTION_TIME_LEFT3_DETAIL");
@@ -352,6 +358,10 @@ take("BLIZZARD_CHALLENGE_DENIED_DESCRIPTION");
 take("BLIZZARD_CHALLENGE_ERROR_TITLE");
 take("BLIZZARD_CHALLENGE_ERROR_DESCRIPTION");
 take("BLIZZARD_CHALLENGE_SCREEN_EXPLANATION");
+
+take("SEND_ITEMS_TO_STRANGER_WARNING");
+take("SEND_MONEY_TO_STRANGER_WARNING");
+take("TRADE_ACCEPT_CONFIRMATION");
 
 --Lua enums
 take("LE_STORE_ERROR_INVALID_PAYMENT_METHOD");

@@ -30,7 +30,7 @@ local kioskModeData = {
 			["DEMONHUNTER"] = true,
 			["DEATHKNIGHT"] = true,
 		},
-		["template"] = { ["enabled"] = true, ["index"] = 1, ["ignoreClasses"] = { "DEMONHUNTER" } },
+		["trial"] = { ["enabled"] = true, ["ignoreClasses"] = { "DEMONHUNTER" } },
 	},
 	["newcharacter"] = {
 		["races"] = {

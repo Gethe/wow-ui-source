@@ -71,6 +71,7 @@
 					<OnLoad>
 						SmallMoneyFrame_OnLoad(self);
 						MoneyFrame_SetType(self, "STATIC");
+						MoneyFrame_SetMaxDisplayWidth(self, 100);
 					</OnLoad>
 				</Scripts>
 			</Frame>

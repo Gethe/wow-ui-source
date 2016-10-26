@@ -1,50 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\FrameXML\UI.xsd">
 <Script file="Blizzard_BattlefieldMinimap.lua"/>
-<Frame name="BattlefieldMinimapUnitTemplate" inherits="WorldMapUnitTemplate" enableMouse="true" virtual="true" hidden="true">
-	<Size x="12" y="12"/>
-	<Scripts>
-		<OnEnter>
-			BattlefieldMinimapUnit_OnEnter(self, motion);
-		</OnEnter>
-		<OnLeave>
-			GameTooltip:Hide();
-		</OnLeave>
-		<OnMouseUp>
-			WorldMapUnit_OnMouseUp(self, button, "BattlefieldMinimapRaid", "BattlefieldMinimapParty");
-		</OnMouseUp>
-	</Scripts>
-</Frame>
-<Frame name="BattlefieldMinimapPlayerUnitTemplate" inherits="BattlefieldMinimapUnitTemplate" virtual="true">
-	<Size x="24" y="24"/>
-		<Layers>
-			<Layer level="HIGHLIGHT">
-				<Texture name="$parentIconHighlight" file="Interface\Minimap\MinimapArrow" setAllPoints="true" parentKey="iconHighlight"/>
-			</Layer>
-		</Layers>
-	<Scripts>
-		<OnLoad>
-			self.unit = "player";
-			self.icon:SetTexture("Interface\\Minimap\\MinimapArrow");
-		</OnLoad>
-	</Scripts>
-</Frame>
-<Frame name="BattlefieldMinimapPartyUnitTemplate" inherits="BattlefieldMinimapUnitTemplate" virtual="true">
-	<Scripts>
-		<OnLoad>
-			self.unit = "party"..self:GetID();
-			self.icon:SetTexture("Interface\\WorldMap\\WorldMapPartyIcon");
-		</OnLoad>
-	</Scripts>
-</Frame>
-<Frame name="BattlefieldMinimapRaidUnitTemplate" inherits="BattlefieldMinimapUnitTemplate" virtual="true">
-	<Scripts>
-		<OnLoad>
-			self.unit = "raid"..self:GetID();
-			self.icon:SetTexture("Interface\\WorldMap\\WorldMapPartyIcon");
-		</OnLoad>
-	</Scripts>
-</Frame>
 <Button name="BattlefieldMinimapTab" hidden="true" frameStrata="LOW" parent="UIParent" movable="true">
 	<Size x="64" y="32"/>
 	<Layers>
@@ -242,51 +198,13 @@
 			</Scripts>
 		</Button>
 
-		<Frame name="BattlefieldMinimapPlayer" inherits="BattlefieldMinimapPlayerUnitTemplate"/>
-		<Frame name="BattlefieldMinimapParty1" inherits="BattlefieldMinimapPartyUnitTemplate" id="1"/>
-		<Frame name="BattlefieldMinimapParty2" inherits="BattlefieldMinimapPartyUnitTemplate" id="2"/>
-		<Frame name="BattlefieldMinimapParty3" inherits="BattlefieldMinimapPartyUnitTemplate" id="3"/>
-		<Frame name="BattlefieldMinimapParty4" inherits="BattlefieldMinimapPartyUnitTemplate" id="4"/>
-		<Frame name="BattlefieldMinimapRaid1" inherits="BattlefieldMinimapRaidUnitTemplate" id="1"/>
-		<Frame name="BattlefieldMinimapRaid2" inherits="BattlefieldMinimapRaidUnitTemplate" id="2"/>
-		<Frame name="BattlefieldMinimapRaid3" inherits="BattlefieldMinimapRaidUnitTemplate" id="3"/>
-		<Frame name="BattlefieldMinimapRaid4" inherits="BattlefieldMinimapRaidUnitTemplate" id="4"/>
-		<Frame name="BattlefieldMinimapRaid5" inherits="BattlefieldMinimapRaidUnitTemplate" id="5"/>
-		<Frame name="BattlefieldMinimapRaid6" inherits="BattlefieldMinimapRaidUnitTemplate" id="6"/>
-		<Frame name="BattlefieldMinimapRaid7" inherits="BattlefieldMinimapRaidUnitTemplate" id="7"/>
-		<Frame name="BattlefieldMinimapRaid8" inherits="BattlefieldMinimapRaidUnitTemplate" id="8"/>
-		<Frame name="BattlefieldMinimapRaid9" inherits="BattlefieldMinimapRaidUnitTemplate" id="9"/>
-		<Frame name="BattlefieldMinimapRaid10" inherits="BattlefieldMinimapRaidUnitTemplate" id="10"/>
-		<Frame name="BattlefieldMinimapRaid11" inherits="BattlefieldMinimapRaidUnitTemplate" id="11"/>
-		<Frame name="BattlefieldMinimapRaid12" inherits="BattlefieldMinimapRaidUnitTemplate" id="12"/>
-		<Frame name="BattlefieldMinimapRaid13" inherits="BattlefieldMinimapRaidUnitTemplate" id="13"/>
-		<Frame name="BattlefieldMinimapRaid14" inherits="BattlefieldMinimapRaidUnitTemplate" id="14"/>
-		<Frame name="BattlefieldMinimapRaid15" inherits="BattlefieldMinimapRaidUnitTemplate" id="15"/>
-		<Frame name="BattlefieldMinimapRaid16" inherits="BattlefieldMinimapRaidUnitTemplate" id="16"/>
-		<Frame name="BattlefieldMinimapRaid17" inherits="BattlefieldMinimapRaidUnitTemplate" id="17"/>
-		<Frame name="BattlefieldMinimapRaid18" inherits="BattlefieldMinimapRaidUnitTemplate" id="18"/>
-		<Frame name="BattlefieldMinimapRaid19" inherits="BattlefieldMinimapRaidUnitTemplate" id="19"/>
-		<Frame name="BattlefieldMinimapRaid20" inherits="BattlefieldMinimapRaidUnitTemplate" id="20"/>
-		<Frame name="BattlefieldMinimapRaid21" inherits="BattlefieldMinimapRaidUnitTemplate" id="21"/>
-		<Frame name="BattlefieldMinimapRaid22" inherits="BattlefieldMinimapRaidUnitTemplate" id="22"/>
-		<Frame name="BattlefieldMinimapRaid23" inherits="BattlefieldMinimapRaidUnitTemplate" id="23"/>
-		<Frame name="BattlefieldMinimapRaid24" inherits="BattlefieldMinimapRaidUnitTemplate" id="24"/>
-		<Frame name="BattlefieldMinimapRaid25" inherits="BattlefieldMinimapRaidUnitTemplate" id="25"/>
-		<Frame name="BattlefieldMinimapRaid26" inherits="BattlefieldMinimapRaidUnitTemplate" id="26"/>
-		<Frame name="BattlefieldMinimapRaid27" inherits="BattlefieldMinimapRaidUnitTemplate" id="27"/>
-		<Frame name="BattlefieldMinimapRaid28" inherits="BattlefieldMinimapRaidUnitTemplate" id="28"/>
-		<Frame name="BattlefieldMinimapRaid29" inherits="BattlefieldMinimapRaidUnitTemplate" id="29"/>
-		<Frame name="BattlefieldMinimapRaid30" inherits="BattlefieldMinimapRaidUnitTemplate" id="30"/>
-		<Frame name="BattlefieldMinimapRaid31" inherits="BattlefieldMinimapRaidUnitTemplate" id="31"/>
-		<Frame name="BattlefieldMinimapRaid32" inherits="BattlefieldMinimapRaidUnitTemplate" id="32"/>
-		<Frame name="BattlefieldMinimapRaid33" inherits="BattlefieldMinimapRaidUnitTemplate" id="33"/>
-		<Frame name="BattlefieldMinimapRaid34" inherits="BattlefieldMinimapRaidUnitTemplate" id="34"/>
-		<Frame name="BattlefieldMinimapRaid35" inherits="BattlefieldMinimapRaidUnitTemplate" id="35"/>
-		<Frame name="BattlefieldMinimapRaid36" inherits="BattlefieldMinimapRaidUnitTemplate" id="36"/>
-		<Frame name="BattlefieldMinimapRaid37" inherits="BattlefieldMinimapRaidUnitTemplate" id="37"/>
-		<Frame name="BattlefieldMinimapRaid38" inherits="BattlefieldMinimapRaidUnitTemplate" id="38"/>
-		<Frame name="BattlefieldMinimapRaid39" inherits="BattlefieldMinimapRaidUnitTemplate" id="39"/>
-		<Frame name="BattlefieldMinimapRaid40" inherits="BattlefieldMinimapRaidUnitTemplate" id="40"/>
+		<UnitPositionFrame name="BattlefieldMinimapUnitPositionFrame" inherits="UnitPositionFrameTemplate">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="BattlefieldMinimap" x="0" y="0"/>
+				<Anchor point="BOTTOMRIGHT" relativeTo="BattlefieldMinimap" x="0" y="0"/>
+			</Anchors>
+		</UnitPositionFrame>
+
 		<Frame name="BattlefieldMinimapCorpse" inherits="WorldMapCorpseTemplate"/>
 		<Frame name="BattlefieldMinimapFlag1" inherits="WorldMapFlagTemplate" id="1">
 			<Size x="18" y="18"/>

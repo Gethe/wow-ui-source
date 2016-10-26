@@ -18,13 +18,14 @@ GlueDropDownMenu.xml
 ..\SharedXML\LayoutFrame.xml
 ..\SharedXML\HybridScrollFrame.lua
 ..\SharedXML\HybridScrollFrame.xml
-..\SharedXML\ModelFrames.xml
-..\SharedXML\ModelPreviewFrame.xml
-## IME.xml needs to be loaded after GlueFonts.xml
-..\SharedXML\IME.xml
+
 
 ##New stuff!!!
 GlueParent.xml
+## These SharedXML files need to be loaded after GlueParent.xml
+..\SharedXML\IME.xml
+..\SharedXML\ModelFrames.xml
+..\SharedXML\ModelPreviewFrame.xml
 GlueDialog.xml
 GlueTooltip.xml
 ..\SharedXML\AddonList.xml

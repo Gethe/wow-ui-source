@@ -17,6 +17,9 @@
 				if TRADESKILL_REAGENT_FONT then
 					self.Count:SetFontObject(TRADESKILL_REAGENT_FONT);
 				end
+				if TRADESKILL_FRAME_EXTEND_REAGENT_NAME_FIELD then
+					self.Name:SetWidth(100);
+				end
 			</OnLoad>
 		</Scripts>
 	</Button>
@@ -173,7 +176,7 @@
 							<BackgroundInsets left="1" right="1" top="1" bottom="1" />
 						</Backdrop>
 						<Frames>
-							<ScrollFrame parentKey="ScrollFrame" inherits="HybridScrollFrameTemplate">
+							<ScrollFrame name="$parentScrollFrame" parentKey="ScrollFrame" inherits="HybridScrollFrameTemplate">
 								<Size x="136" y="160" />
 								<Anchors>
 									<Anchor point="TOPLEFT" x="0" y="-4" />
@@ -219,7 +222,10 @@
 			</Frame>
 		</Frames>
 		<ScrollChild>
-			<Frame parentKey="Contents" hidden="true">
+			<Frame parentKey="Contents" hidden="true" inherits="InlineHyperlinkFrameTemplate">
+				<KeyValues>
+					<KeyValue key="hasIconHyperlinks" value="true" type="boolean"/>
+				</KeyValues>
 				<Size x="300" y="150"/>
 				<Anchors>
 					<Anchor point="TOPLEFT"/>
@@ -266,6 +272,13 @@
 							</Anchors>
 						</FontString>
 
+						<FontString parentKey="NextRankText" inherits="GameFontNormalSmall" justifyH="LEFT" text="TRADESKILL_NEXT_RANK_HEADER">
+							<Size x="290" y="0"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.ReagentLabel"/>
+							</Anchors>
+						</FontString>
+						
 						<FontString parentKey="SourceText" inherits="GameFontHighlight" justifyH="LEFT">
 							<Size x="290" y="0"/>
 							<Anchors>

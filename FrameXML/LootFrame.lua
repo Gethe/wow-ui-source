@@ -1,3 +1,5 @@
+ENCOUNTER_JOURNAL_LINK_BUTTON_TUTORIAL = "Click to view the loot list for this boss."
+
 LOOTFRAME_NUMBUTTONS = 4;
 NUM_GROUP_LOOT_FRAMES = 4;
 MASTER_LOOT_THREHOLD = 4;
@@ -32,7 +34,7 @@ function LootFrame_OnEvent(self, event, ...)
 			self.AutoLootDelay = 0;
 			self.AutoLootTable = nil;
 		end
-		
+
 		self.page = 1;
 		LootFrame_Show(self);
 		if ( not self:IsShown()) then
@@ -43,7 +45,7 @@ function LootFrame_OnEvent(self, event, ...)
 	elseif ( event == "LOOT_SLOT_CLEARED" ) then
 		local arg1 = ...;
 		if ( not self:IsShown() or self.AutoLootTable) then
-			return; 
+			return;
 		end
 
 		local numLootToShow = LOOTFRAME_NUMBUTTONS;
@@ -73,7 +75,7 @@ function LootFrame_OnEvent(self, event, ...)
 		return;
 	elseif ( event == "LOOT_SLOT_CHANGED" ) then
 		local arg1 = ...;
-		
+
 		if ( not self:IsShown() ) then
 			return;
 		end
@@ -115,9 +117,9 @@ function LootFrame_OnUpdate(self, elapsed)
 			if( entry and not entry.roll and not entry.locked) then
 				self.AutoLootTable[self.AutoLootCurrentIdx].hide = true;
 			end
-			self.AutoLootCurrentIdx = self.AutoLootCurrentIdx +1; 
+			self.AutoLootCurrentIdx = self.AutoLootCurrentIdx +1;
 			self.timeSinceUpdate = 0;
-			if( self.AutoLootCurrentIdx > #self.AutoLootTable ) then 
+			if( self.AutoLootCurrentIdx > #self.AutoLootTable ) then
 				self:SetScript("OnUpdate", nil);
 				self.timeSinceUpdate = nil;
 				self.AutoLootTable = nil;
@@ -162,10 +164,10 @@ function LootFrame_UpdateButton(index)
 	if ( numLootItems > LOOTFRAME_NUMBUTTONS ) then
 		numLootToShow = numLootToShow - 1; -- make space for the page buttons
 	end
-	
+
 	local button = _G["LootButton"..index];
 	local slot = (numLootToShow * (LootFrame.page - 1)) + index;
-	if ( slot <= numLootItems ) then	
+	if ( slot <= numLootItems ) then
 		if ( (LootSlotHasItem(slot)  or (self.AutoLootTable and self.AutoLootTable[slot]) )and index <= numLootToShow) then
 			local texture, item, quantity, quality, locked, isQuestItem, questId, isActive;
 			if(self.AutoLootTable)then
@@ -200,18 +202,18 @@ function LootFrame_UpdateButton(index)
 					SetItemButtonTextureVertexColor(button, 1.0, 1.0, 1.0);
 					SetItemButtonNormalTextureVertexColor(button, 1.0, 1.0, 1.0);
 				end
-				
+
 				local questTexture = _G["LootButton"..index.."IconQuestTexture"];
 				if ( questId and not isActive ) then
 					questTexture:SetTexture(TEXTURE_ITEM_QUEST_BANG);
 					questTexture:Show();
 				elseif ( questId or isQuestItem ) then
 					questTexture:SetTexture(TEXTURE_ITEM_QUEST_BORDER);
-					questTexture:Show();		
+					questTexture:Show();
 				else
 					questTexture:Hide();
 				end
-				
+
 				text:SetVertexColor(color.r, color.g, color.b);
 				local countString = _G["LootButton"..index.."Count"];
 				if ( quantity > 1 ) then
@@ -289,7 +291,7 @@ function LootFrame_Show(self)
 	if(self.AutoLootTable) then
 		self.numLootItems = #self.AutoLootTable;
 	end
-	
+
 	if ( GetCVar("lootUnderMouse") == "1" ) then
 		self:Show();
 		-- position loot window under mouse cursor
@@ -299,7 +301,7 @@ function LootFrame_Show(self)
 
 		local posX = x - 175;
 		local posY = y + 25;
-		
+
 		if (self.numLootItems > 0) then
 			posX = x - 40;
 			posY = y + 55;
@@ -317,7 +319,7 @@ function LootFrame_Show(self)
 	else
 		ShowUIPanel(self);
 	end
-	
+
 	LootFrame_Update();
 	LootFramePortraitOverlay:SetTexture("Interface\\TargetingFrame\\TargetDead");
 end
@@ -336,12 +338,12 @@ function LootFrame_OnHide(self)
 	-- Close any loot distribution confirmation windows
 	StaticPopup_Hide("CONFIRM_LOOT_DISTRIBUTION");
 	MasterLooterFrame:Hide();
-	
+
 	if( self.AutoLootTable )then
 		self:SetScript("OnUpdate", nil);
 		self.timeSinceUpdate = nil;
 		self.AutoLootTable = nil;
-	end		
+	end
 end
 
 function LootButton_OnClick(self, button)
@@ -377,7 +379,7 @@ function GroupLootContainer_OnLoad(self)
 	self.reservedSize = 100;
 	GroupLootContainer_CalcMaxIndex(self);
 
-	local alertFrameGroupLootContainerSubSystem = AlertFrame:AddSimpleAlertFrameSubSystem(self);
+	local alertFrameGroupLootContainerSubSystem = AlertFrame:AddJustAnchorFrameSubSystem(self);
 	AlertFrame:SetSubSustemAnchorPriority(alertFrameGroupLootContainerSubSystem, 30);
 end
 
@@ -471,12 +473,12 @@ function GroupLootDropDown_Initialize()
 	info.fontObject = GameFontNormalLeft;
 	info.notCheckable = 1;
 	UIDropDownMenu_AddButton(info);
-	
+
 	info = UIDropDownMenu_CreateInfo();
-	info.notCheckable = 1;	
+	info.notCheckable = 1;
 	info.text = ASSIGN_LOOT;
 	info.func = MasterLooterFrame_Show;
-	UIDropDownMenu_AddButton(info);	
+	UIDropDownMenu_AddButton(info);
 	info.text = REQUEST_ROLL;
 	info.func = function() DoMasterLootRoll(LootFrame.selectedSlot); end;
 	UIDropDownMenu_AddButton(info);
@@ -514,7 +516,7 @@ function GroupLootFrame_OnShow(self)
 		GroupLootContainer_RemoveFrame(GroupLootContainer, self);
 		return;
 	end
-	
+
 	self.IconFrame.Icon:SetTexture(texture);
 	self.IconFrame.Border:SetAtlas(LOOT_BORDER_BY_QUALITY[quality] or LOOT_BORDER_BY_QUALITY[LE_ITEM_QUALITY_UNCOMMON]);
 	self.Name:SetText(name);
@@ -527,7 +529,7 @@ function GroupLootFrame_OnShow(self)
 	else
 		self.IconFrame.Count:Hide();
 	end
-	
+
 	if ( canNeed ) then
 		GroupLootFrame_EnableLootButton(self.NeedButton);
 		self.NeedButton.reason = nil;
@@ -571,10 +573,11 @@ function GroupLootFrame_OnUpdate(self, elapsed)
 	self:SetValue(left);
 end
 
-function BonusRollFrame_StartBonusRoll(spellID, text, duration, currencyID)
+function BonusRollFrame_StartBonusRoll(spellID, text, duration, currencyID, difficultyID)
 	local frame = BonusRollFrame;
 
-	if ( not currencyID ) then
+	-- No valid currency data--use the fall back.
+	if ( currencyID == 0 ) then
 		currencyID = BONUS_ROLL_REQUIRED_CURRENCY;
 	end
 
@@ -591,6 +594,11 @@ function BonusRollFrame_StartBonusRoll(spellID, text, duration, currencyID)
 	frame.endTime = time() + duration;
 	frame.remaining = duration;
 	frame.currencyID = currencyID;
+	frame.difficultyID = difficultyID;
+	
+	local instanceID, encounterID = GetJournalInfoForSpellConfirmation(spellID);
+	frame.instanceID = instanceID;
+	frame.encounterID = encounterID;
 
 	local numRequired = 1;
 	frame.PromptFrame.InfoFrame.Cost:SetFormattedText(BONUS_ROLL_COST, numRequired, icon);
@@ -601,7 +609,7 @@ function BonusRollFrame_StartBonusRoll(spellID, text, duration, currencyID)
 	frame.PromptFrame:Show();
 	frame.PromptFrame:SetAlpha(1);
 	frame.RollingFrame:Hide();
-	
+
 	local specID = GetLootSpecialization();
 	if ( specID and specID > 0 ) then
 		local id, name, description, texture, background, role, class = GetSpecializationInfoByID(specID);
@@ -725,6 +733,59 @@ function BonusRollFrame_OnUpdate(self, elapsed)
 	end
 end
 
+function GetBonusRollEncounterJournalLinkDifficulty()
+	if ( not BonusRollFrame.difficultyID ) then
+		local _, _, instanceDifficulty = GetInstanceInfo();
+		if ( instanceDifficulty == 0 ) then
+			-- We have no difficulty so we don't know what to open.
+			return nil;
+		else
+			return instanceDifficulty;
+		end
+	end
+	
+	return BonusRollFrame.difficultyID;
+end
+
+function EncounterJournalLinkButton_OnShow(self)
+	if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_BONUS_ROLL_ENCOUNTER_JOURNAL_LINK) then
+		self:GetParent().EncounterJournalLinkButtonHelp:Show();
+	end
+end
+
+function EncounterJournalLinkButton_OnEnter(self)
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip:SetText(BONUS_ROLL_TOOLTIP_TITLE, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+	GameTooltip:AddLine(BONUS_ROLL_TOOLTIP_TEXT, nil, nil, nil, true);
+	
+	if ( BonusRollFrame.instanceID and BonusRollFrame.encounterID and GetBonusRollEncounterJournalLinkDifficulty() ) then
+		GameTooltip:AddLine(BONUS_ROLL_TOOLTIP_ENCOUNTER_JOURNAL_LINK, GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b, true);
+	end
+	
+	GameTooltip:Show();
+end
+
+function OpenBonusRollEncounterJournalLink()
+	local difficultyID = GetBonusRollEncounterJournalLinkDifficulty();
+	if ( not difficultyID or not BonusRollFrame.instanceID or not BonusRollFrame.encounterID) then
+		return;
+	end
+	
+	SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_BONUS_ROLL_ENCOUNTER_JOURNAL_LINK, true);
+	BonusRollFrame.PromptFrame.EncounterJournalLinkButtonHelp:Hide();
+	
+	EncounterJournal_LoadUI();
+	
+	local specialization = GetLootSpecialization();
+	if ( specialization == 0 ) then
+		specialization = GetSpecializationInfo(GetSpecialization());
+	end
+	EncounterJournal_SetClassAndSpecFilter(EncounterJournal, select(3, UnitClass("player")), specialization);
+	-- EncounterJournal_OpenJournal takes an itemID but only checks if it exists, not what it is.
+	local forceClickLootTab = 0;
+	EncounterJournal_OpenJournal(difficultyID, BonusRollFrame.instanceID, BonusRollFrame.encounterID, nil, nil, forceClickLootTab);
+end
+
 function BonusRollFrame_AdvanceLootSpinnerAnim(self)
 	self.animTime = 0;
 	self.animFrame = (self.animFrame + 1) % 8;
@@ -758,6 +819,7 @@ function BonusRollFrame_FinishedFading(self)
 	elseif ( self.rewardType == "money" ) then
 		GroupLootContainer_ReplaceFrame(GroupLootContainer, self, BonusRollMoneyWonFrame);
 		MoneyWonAlertFrame_SetUp(BonusRollMoneyWonFrame, self.rewardQuantity);
+		LootMoneyNotify(self.rewardQuantity, true);
 		AlertFrame:AddAlertFrame(BonusRollMoneyWonFrame);
 	else
 		GroupLootContainer_RemoveFrame(GroupLootContainer, self);
@@ -792,11 +854,11 @@ function MasterLooterFrame_Show()
 	local colorInfo = ITEM_QUALITY_COLORS[LootFrame.selectedQuality];
 	itemFrame.IconBorder:SetVertexColor(colorInfo.r, colorInfo.g, colorInfo.b);
 	itemFrame.ItemName:SetVertexColor(colorInfo.r, colorInfo.g, colorInfo.b);
-	
+
 	MasterLooterFrame:Show();
 	MasterLooterFrame_UpdatePlayers();
 	MasterLooterFrame:SetPoint("TOPLEFT", DropDownList1, 0, 0);
-	
+
 	CloseDropDownMenus();
 end
 

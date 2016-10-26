@@ -17,6 +17,7 @@ Import("C_Timer");
 Import("C_PurchaseAPI");
 
 Import("math");
+Import("string");
 Import("pairs");
 Import("select");
 Import("unpack");
@@ -27,6 +28,7 @@ Import("time");
 Import("type");
 Import("PlaySound");
 Import("GetCVar");
+Import("LOCALE_enGB");
 Import("TOKEN_REDEEM_LABEL"); 
 Import("TOKEN_REDEEM_GAME_TIME_TITLE"); 
 Import("TOKEN_REDEEM_GAME_TIME_DESCRIPTION"); 
@@ -65,6 +67,7 @@ Import("COPPER_AMOUNT_SYMBOL");
 Import("COPPER_AMOUNT_TEXTURE");
 Import("COPPER_AMOUNT_TEXTURE_STRING");
 Import("SHORTDATE");
+Import("SHORTDATE_EU");
 Import("AUCTION_TIME_LEFT1_DETAIL");
 Import("AUCTION_TIME_LEFT2_DETAIL");
 Import("AUCTION_TIME_LEFT3_DETAIL");
@@ -87,6 +90,14 @@ Import("LE_TOKEN_RESULT_ERROR_OTHER");
 Import("LE_TOKEN_RESULT_ERROR_DISABLED");
 
 RedeemIndex = nil;
+
+function SecureFormatShortDate(day, month, year)
+	if (LOCALE_enGB) then
+		return string.format(SHORTDATE_EU, day, month, year);
+	else
+		return string.format(SHORTDATE, day, month, year);
+	end
+end
 
 function WowTokenRedemptionFrame_OnLoad(self)
 	RedeemIndex = select(3, C_WowTokenPublic.GetCommerceSystemStatus());
@@ -151,7 +162,7 @@ function GetRedemptionString()
 
 		local str = isSub and TOKEN_REDEEM_GAME_TIME_RENEWAL_FORMAT or TOKEN_REDEEM_GAME_TIME_EXPIRATION_FORMAT;
 
-		return str:format(SHORTDATE:format(oldDate.day, oldDate.month, oldDate.year), SHORTDATE:format(newDate.day, newDate.month, newDate.year))
+		return str:format(SecureFormatShortDate(oldDate.day, oldDate.month, oldDate.year), SecureFormatShortDate(newDate.day, newDate.month, newDate.year))
 	elseif (RedeemIndex == LE_CONSUMABLE_TOKEN_REDEEM_FOR_SUB_AMOUNT_2700_MINUTES) then
 		return TOKEN_REDEEM_GAME_TIME_EXPIRATION_FORMAT_MINUTES:format(GetTimeLeftMinuteString(remaining), GetTimeLeftMinuteString(remaining + 2700));
 	end
@@ -794,5 +805,19 @@ function WowTokenDialogButton_OnClick(self)
 	if (currentTicker) then
 		SecureCancelTicker(currentTicker);
 		currentTicker = nil;
+	end
+end
+
+function WoWTokenButton_OnShow(self)
+	if ( self:IsEnabled() ) then
+		-- we need to reset our textures just in case we were hidden before a mouse up fired
+		self.Left:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
+		self.Middle:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
+		self.Right:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
+	end
+	local textWidth = self.Text:GetWidth();
+	local width = self:GetWidth();
+	if ( (width - 40) < textWidth ) then
+		self:SetWidth(textWidth + 40);
 	end
 end

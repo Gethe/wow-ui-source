@@ -307,6 +307,12 @@ GlueDialogTypes["ADVANCED_CHARACTER_CREATION_WARNING"] = {
 	end,
 }
 
+GlueDialogTypes["CHARACTER_BOOST_FEATURE_RESTRICTED"] = {
+	text = "",
+	button1 = OKAY,
+	escapeHides = true,
+};
+
 --[[
 
 GlueDialogTypes["DISCONNECTED"] = {

@@ -772,8 +772,8 @@ function WorldStateScoreFrame_Update()
 				_G["WorldStateScoreButton"..i.."ClassButton"].tooltip = class;
 			end
 			scoreButton.killingBlows:SetText(killingBlows);
-			scoreButton.damage:SetText(damageDone);
-			scoreButton.healing:SetText(healingDone);
+			scoreButton.damage:SetText(AbbreviateLargeNumbers(damageDone));
+			scoreButton.healing:SetText(AbbreviateLargeNumbers(healingDone));
 			teamDataFailed = 0;
 			teamName, teamRating, newTeamRating, teamMMR = GetBattlefieldTeamInfo(faction);
 
