@@ -490,7 +490,7 @@ function QuickJoinToast_GetPriorityFromQueue(queue)
 		end
 	elseif ( queue.type == "lfg" ) then
 		local lfgID = queue.lfgID;
-		local name, typeID, subtypeID, minLevel, maxLevel, recLevel, minRecLevel, maxRecLevel, expansionLevel, groupID, textureFilename, difficulty, maxPlayers, description, isHoliday, repAmount, minPlayers, isTimealker, minGear = GetLFGDungeonInfo(lfgID);
+		local name, typeID, subtypeID, minLevel, maxLevel, recLevel, minRecLevel, maxRecLevel, expansionLevel, groupID, textureFilename, difficulty, maxPlayers, description, isHoliday, repAmount, minPlayers, isTimewalker, mapName, minGear = GetLFGDungeonInfo(lfgID);
 		if ( not name ) then
 			--We hotfix deleted an LFG entry?
 			return 0;

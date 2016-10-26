@@ -1056,7 +1056,9 @@ function ContainerFrameItemButton_OnClick(self, button)
 				-- a confirmation dialog has been shown
 				return;
 			end
-		else
+		elseif ( not BankFrame:IsShown() and (not GuildBankFrame or not GuildBankFrame:IsShown()) and not MailFrame:IsShown() and (not VoidStorageFrame or not VoidStorageFrame:IsShown()) and
+					(not AuctionFrame or not AuctionFrame:IsShown()) and not TradeFrame:IsShown() and (not ItemUpgradeFrame or not ItemUpgradeFrame:IsShown()) and
+					(not ObliterumForgeFrame or not ObliterumForgeFrame:IsShown()) and (not ChallengesKeystoneFrame or not ChallengesKeystoneFrame:IsShown()) ) then
 			local itemID = select(10, GetContainerItemInfo(self:GetParent():GetID(), self:GetID()));
 			if ( itemID and IsArtifactRelicItem(itemID) ) then
 				if ( C_ArtifactUI.CanApplyArtifactRelic(itemID, false) ) then

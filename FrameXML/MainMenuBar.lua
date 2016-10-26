@@ -142,7 +142,7 @@ function MainMenuBar_UpdateExperienceBars(newLevel)
 		newLevel = UnitLevel("player");
 	end
 	local artifactItemID, _, _, _, artifactTotalXP, artifactPointsSpent, _, _, _, _, _, _, artifactMaxed = C_ArtifactUI.GetEquippedArtifactInfo();
-	local showArtifact = artifactItemID and not artifactMaxed and GetCVarBool("showArtifactXPBar");
+	local showArtifact = artifactItemID and not artifactMaxed and (UnitLevel("player") >= MAX_PLAYER_LEVEL or GetCVarBool("showArtifactXPBar"));
 	local showXP = newLevel < MAX_PLAYER_LEVEL and not IsXPUserDisabled();
 	local showHonor = newLevel >= MAX_PLAYER_LEVEL and (IsWatchingHonorAsXP() or InActiveBattlefield() or IsInActiveWorldPVP());
 	local showRep = name;
@@ -165,7 +165,9 @@ function MainMenuBar_UpdateExperienceBars(newLevel)
 		visibilityChanged = true;
 	end
 	if ( showArtifact ) then
-		SetWatchedFactionIndex(0);
+		if (UnitLevel("player") < MAX_PLAYER_LEVEL) then
+			SetWatchedFactionIndex(0);
+		end
 		local statusBar = ArtifactWatchBar.StatusBar;
 		local numPointsAvailableToSpend, xp, xpForNextPoint = MainMenuBar_GetNumArtifactTraitsPurchasableFromXP(artifactPointsSpent, artifactTotalXP);
 
