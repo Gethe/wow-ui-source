@@ -1158,7 +1158,7 @@ end
 
 function PVPRewardWeeklyBonus_OnEnter(self)
 	ConquestFrame.activeWeeklyBonus = self;
-	local completed, itemLevel, numWinsReq = GetWeeklyPVPRewardInfo(self.bracketIndex);
+	local completed, itemLevel, numWins, numWinsReq = GetWeeklyPVPRewardInfo(self.bracketIndex);
 	if (not completed and itemLevel) then
 		local rating, seasonBest, weeklyBest, seasonPlayed, seasonWon, weeklyPlayed, weeklyWon, lastWeeksBest = GetPersonalRatedInfo(self.bracketIndex);
 
@@ -1167,7 +1167,7 @@ function PVPRewardWeeklyBonus_OnEnter(self)
 		GameTooltip:AddLine(string.format(PVP_WEEKLY_BONUS_DESCRIPTION, itemLevel, lastWeeksBest), 1, 1, 1, true);
 		if (numWinsReq > 0) then
 			GameTooltip:AddLine(" ");
-			GameTooltip:AddLine(string.format(PVP_WEEKLY_BONUS_GAMES_WON, weeklyWon, numWinsReq));
+			GameTooltip:AddLine(string.format(PVP_WEEKLY_BONUS_GAMES_WON, numWins, numWinsReq));
 		end
 		GameTooltip:Show();
 	end
