@@ -453,14 +453,6 @@ function QuestLogQuests_Update(poiTable)
 
 	local poiFrameLevel = QuestLogQuests_GetHeaderButton(1):GetFrameLevel() + 2;
 
-	local _, numQuests = GetNumQuestLogEntries();
-	if (numQuests > 0) then
-		QuestScrollFrame.Count:SetText(QUEST_LOG_COUNT:format(numQuests, MAX_QUESTLOG_QUESTS));
-		QuestScrollFrame.Count:Show();
-	else
-		QuestScrollFrame.Count:Hide();
-	end
-
 	local storyID, storyMapID = GetZoneStoryID();
 	if ( storyID ) then
 		QuestScrollFrame.Contents.StoryHeader:Show();

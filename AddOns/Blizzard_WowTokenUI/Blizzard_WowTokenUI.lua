@@ -55,7 +55,28 @@ Import("TOKEN_REDEEM_GAME_TIME_DESCRIPTION_MINUTES");
 Import("TOKEN_TRANSACTION_IN_PROGRESS");
 Import("TOKEN_YOU_WILL_BE_LOGGED_OUT");
 Import("TOKEN_REDEMPTION_UNAVAILABLE");
+Import("TOKEN_COMPLETE_BALANCE_DESCRIPTION")
+Import("TOKEN_CONFIRM_BALANCE_DESCRIPTION")
+Import("TOKEN_REDEEM_BALANCE_BUTTON_LABEL")
+Import("TOKEN_REDEEM_BALANCE_DESCRIPTION")
+Import("TOKEN_REDEEM_BALANCE_ERROR_CAP_FORMAT")
+Import("TOKEN_REDEEM_BALANCE_FORMAT")
+Import("TOKEN_REDEEM_BALANCE_TITLE")
 Import("BLIZZARD_STORE_TRANSACTION_IN_PROGRESS");
+Import("BLIZZARD_STORE_CURRENCY_FORMAT_USD");
+Import("BLIZZARD_STORE_CURRENCY_FORMAT_KRW_LONG");
+Import("BLIZZARD_STORE_CURRENCY_FORMAT_CPT_LONG");
+Import("BLIZZARD_STORE_CURRENCY_FORMAT_TPT");
+Import("BLIZZARD_STORE_CURRENCY_FORMAT_GBP");
+Import("BLIZZARD_STORE_CURRENCY_FORMAT_EURO");
+Import("BLIZZARD_STORE_CURRENCY_FORMAT_RUB");
+Import("BLIZZARD_STORE_CURRENCY_FORMAT_MXN");
+Import("BLIZZARD_STORE_CURRENCY_FORMAT_BRL");
+Import("BLIZZARD_STORE_CURRENCY_FORMAT_ARS");
+Import("BLIZZARD_STORE_CURRENCY_FORMAT_CLP");
+Import("BLIZZARD_STORE_CURRENCY_FORMAT_AUD");
+Import("BLIZZARD_STORE_CURRENCY_RAW_ASTERISK");
+Import("BLIZZARD_STORE_CURRENCY_BETA");
 
 Import("GOLD_AMOUNT_SYMBOL");
 Import("GOLD_AMOUNT_TEXTURE");
@@ -83,13 +104,161 @@ Import("DAYS_ABBR");
 Import("HOURS_ABBR");
 Import("MINUTES_ABBR");
 
-Import("LE_CONSUMABLE_TOKEN_REDEEM_FOR_SUB_AMOUNT_30_DAYS");
-Import("LE_CONSUMABLE_TOKEN_REDEEM_FOR_SUB_AMOUNT_2700_MINUTES");
 Import("LE_TOKEN_RESULT_SUCCESS");
 Import("LE_TOKEN_RESULT_ERROR_OTHER");
 Import("LE_TOKEN_RESULT_ERROR_DISABLED");
+Import("LE_TOKEN_RESULT_ERROR_BALANCE_NEAR_CAP")
+Import("LE_TOKEN_REDEEM_TYPE_GAME_TIME");
+Import("LE_TOKEN_REDEEM_TYPE_BALANCE");
 
-RedeemIndex = nil;
+BalanceEnabled = nil;
+BalanceAmount = 0;
+
+local CURRENCY_UNKNOWN = 0;
+local CURRENCY_USD = 1;
+local CURRENCY_GBP = 2;
+local CURRENCY_KRW = 3;
+local CURRENCY_EUR = 4;
+local CURRENCY_RUB = 5;
+local CURRENCY_ARS = 8;
+local CURRENCY_CLP = 9;
+local CURRENCY_MXN = 10;
+local CURRENCY_BRL = 11;
+local CURRENCY_AUD = 12;
+local CURRENCY_CPT = 14;
+local CURRENCY_TPT = 15;
+local CURRENCY_BETA = 16;
+
+local currencyMult = 100;
+
+local function formatLargeNumber(amount)
+	amount = tostring(amount);
+	local newDisplay = "";
+	local strlen = amount:len();
+	--Add each thing behind a comma
+	for i=4, strlen, 3 do
+		newDisplay = LARGE_NUMBER_SEPERATOR..amount:sub(-(i - 1), -(i - 3))..newDisplay;
+	end
+	--Add everything before the first comma
+	newDisplay = amount:sub(1, (strlen % 3 == 0) and 3 or (strlen % 3))..newDisplay;
+	return newDisplay;
+end
+
+local function largeAmount(num)
+	return formatLargeNumber(math.floor(num / currencyMult));
+end
+
+local function formatCurrency(dollars, cents, alwaysShowCents)
+	if ( alwaysShowCents or cents ~= 0 ) then
+		return ("%s%s%02d"):format(formatLargeNumber(dollars), DECIMAL_SEPERATOR, cents);
+	else
+		return formatLargeNumber(dollars);
+	end
+end
+
+local function currencyFormatUSD(dollars, cents)
+	return BLIZZARD_STORE_CURRENCY_FORMAT_USD:format(formatCurrency(dollars, cents, false));
+end
+
+local function currencyFormatGBP(dollars, cents)
+	return BLIZZARD_STORE_CURRENCY_FORMAT_GBP:format(formatCurrency(dollars, cents, false));
+end
+
+local function currencyFormatKRWLong(dollars, cents)
+	return BLIZZARD_STORE_CURRENCY_FORMAT_KRW_LONG:format(formatCurrency(dollars, cents, false));
+end
+
+local function currencyFormatEuro(dollars, cents)
+	return BLIZZARD_STORE_CURRENCY_FORMAT_EURO:format(formatCurrency(dollars, cents, false));
+end
+
+local function currencyFormatRUB(dollars, cents)
+	return BLIZZARD_STORE_CURRENCY_FORMAT_RUB:format(formatCurrency(dollars, cents, false));
+end
+
+local function currencyFormatARS(dollars, cents)
+	return BLIZZARD_STORE_CURRENCY_FORMAT_ARS:format(formatCurrency(dollars, cents, false));
+end
+
+local function currencyFormatCLP(dollars, cents)
+	return BLIZZARD_STORE_CURRENCY_FORMAT_CLP:format(formatCurrency(dollars, cents, false));
+end
+
+local function currencyFormatMXN(dollars, cents)
+	return BLIZZARD_STORE_CURRENCY_FORMAT_MXN:format(formatCurrency(dollars, cents, false));
+end
+
+local function currencyFormatBRL(dollars, cents)
+	return BLIZZARD_STORE_CURRENCY_FORMAT_BRL:format(formatCurrency(dollars, cents, false));
+end
+
+local function currencyFormatAUD(dollars, cents)
+	return BLIZZARD_STORE_CURRENCY_FORMAT_AUD:format(formatCurrency(dollars, cents, false));
+end
+
+local function currencyFormatCPTLong(dollars, cents)
+	return BLIZZARD_STORE_CURRENCY_FORMAT_CPT_LONG:format(formatCurrency(dollars, cents, false));
+end
+
+local function currencyFormatTPT(dollars, cents)
+	return BLIZZARD_STORE_CURRENCY_FORMAT_TPT:format(formatCurrency(dollars, cents, false));
+end
+
+local function currencyFormatRawStar(dollars, cents)
+	return BLIZZARD_STORE_CURRENCY_RAW_ASTERISK:format(formatCurrency(dollars, cents, false));
+end
+
+local function currencyFormatBeta(dollars, cents)
+	return BLIZZARD_STORE_CURRENCY_BETA:format(formatCurrency(dollars, cents, true));
+end
+
+local currencySpecific = {
+	[CURRENCY_USD] = { 
+		["currencyFormat"] = currencyFormatUSD,
+	},     
+	[CURRENCY_GBP] = { 
+		["currencyFormat"] = currencyFormatGBP,
+	},
+	[CURRENCY_KRW] = { 
+		["currencyFormat"] = currencyFormatKRWLong,
+	},
+	[CURRENCY_EUR] = { 
+		["currencyFormat"] = currencyFormatEuro,
+	},
+	[CURRENCY_RUB] = { 
+		["currencyFormat"] = currencyFormatRUB,
+	},
+	[CURRENCY_ARS] = { 
+		["currencyFormat"] = currencyFormatARS,
+	},
+	[CURRENCY_CLP] = { 
+		["currencyFormat"] = currencyFormatCLP,
+	},
+	[CURRENCY_MXN] = { 
+		["currencyFormat"] = currencyFormatMXN,
+	},
+	[CURRENCY_BRL] = { 
+		["currencyFormat"] = currencyFormatBRL,
+	},
+	[CURRENCY_AUD] = { 
+		["currencyFormat"] = currencyFormatAUD,
+	},
+	[CURRENCY_CPT] = { 
+		["currencyFormat"] = currencyFormatCPTLong,
+	},
+	[CURRENCY_TPT] = { 
+		["currencyFormat"] = currencyFormatTPT,
+	},
+	[CURRENCY_BETA] ={ 
+		["currencyFormat"] = currencyFormatBeta,
+	},
+};
+
+local function currencyInfo()
+	local currency = C_PurchaseAPI.GetCurrencyID();
+	local info = currencySpecific[currency];
+	return info;
+end
 
 function SecureFormatShortDate(day, month, year)
 	if (LOCALE_enGB) then
@@ -100,7 +269,7 @@ function SecureFormatShortDate(day, month, year)
 end
 
 function WowTokenRedemptionFrame_OnLoad(self)
-	RedeemIndex = select(3, C_WowTokenPublic.GetCommerceSystemStatus());
+	WowTokenRedemptionFrame_Update(self);
 	C_WowTokenSecure.CancelRedeem();
 	self:SetPoint("CENTER", UIParent, "CENTER", 0, 60);
 
@@ -112,7 +281,48 @@ function WowTokenRedemptionFrame_OnLoad(self)
 
 	self:RegisterEvent("TOKEN_REDEEM_FRAME_SHOW");
 	self:RegisterEvent("TOKEN_REDEEM_GAME_TIME_UPDATED");
+	self:RegisterEvent("TOKEN_REDEEM_BALANCE_UPDATED");
 	self:RegisterEvent("TOKEN_STATUS_CHANGED");
+end
+
+
+function GetBalanceString()
+	local info = currencyInfo();
+	return info.currencyFormat(C_WowTokenSecure.GetBalanceRedeemAmount(), 0);
+end
+
+function WowTokenRedemptionFrame_Update(self)
+	BalanceEnabled = select(3, C_WowTokenPublic.GetCommerceSystemStatus());
+	if (BalanceEnabled) then
+		C_WowTokenSecure.SetBalanceAmountString(GetBalanceString());
+		WowTokenRedemptionFrame_EnableBalance(self);
+	else
+		self:SetWidth(325);
+		self.RightInset:Hide();
+		self.RightDisplay:Hide();
+	end
+end
+
+function WowTokenRedemptionFrame_EnableBalance(self)
+	self:SetWidth(650);
+	self.RightInset:Show();
+	self.RightDisplay:Show();
+	self.RightDisplay.Title:SetFontObject("GameFontNormalHuge");
+	self.RightDisplay.Image:SetDesaturated(false);
+	self.RightDisplay.Image:SetAlpha(1);
+	self.RightDisplay.Description:SetFontObject("GameFontHighlight");
+	self.RightDisplay.RedeemButton:Enable();
+end
+
+function WowTokenRedemptionFrame_DisableBalance(self)
+	self:SetWidth(650);
+	self.RightInset:Show();
+	self.RightDisplay:Show();
+	self.RightDisplay.Title:SetFontObject("GameFontDisableHuge");
+	self.RightDisplay.Image:SetDesaturated(true);
+	self.RightDisplay.Image:SetAlpha(.2);
+	self.RightDisplay.Description:SetFontObject("GameFontDisable");
+	self.RightDisplay.RedeemButton:Disable();
 end
 
 function GetTimeLeftMinuteString(minutes)
@@ -149,52 +359,86 @@ function GetTimeLeftMinuteString(minutes)
 	return str;
 end
 
-function GetRedemptionString()
-	local isSub, remaining = C_WowTokenSecure.GetRedemptionInfo();
+function GetGameTimeRedemptionString()
+	local isSub, remaining = C_WowTokenSecure.GetGameTimeRedemptionInfo();
 
-	if (RedeemIndex == LE_CONSUMABLE_TOKEN_REDEEM_FOR_SUB_AMOUNT_30_DAYS) then
-		local now = time();
-		local oldTime = now + (remaining * 60); -- remaining is in minutes
-		local newTime = oldTime + (30 * 24 * 60 * 60); -- 30 days * 24 hours * 60 minutes * 60 seconds
+	local now = time();
+	local oldTime = now + (remaining * 60); -- remaining is in minutes
+	local newTime = oldTime + (30 * 24 * 60 * 60); -- 30 days * 24 hours * 60 minutes * 60 seconds
 
-		local oldDate = date("*t", oldTime);
-		local newDate = date("*t", newTime);
+	local oldDate = date("*t", oldTime);
+	local newDate = date("*t", newTime);
 
-		local str = isSub and TOKEN_REDEEM_GAME_TIME_RENEWAL_FORMAT or TOKEN_REDEEM_GAME_TIME_EXPIRATION_FORMAT;
+	local str = isSub and TOKEN_REDEEM_GAME_TIME_RENEWAL_FORMAT or TOKEN_REDEEM_GAME_TIME_EXPIRATION_FORMAT;
 
-		return str:format(SecureFormatShortDate(oldDate.day, oldDate.month, oldDate.year), SecureFormatShortDate(newDate.day, newDate.month, newDate.year))
-	elseif (RedeemIndex == LE_CONSUMABLE_TOKEN_REDEEM_FOR_SUB_AMOUNT_2700_MINUTES) then
-		return TOKEN_REDEEM_GAME_TIME_EXPIRATION_FORMAT_MINUTES:format(GetTimeLeftMinuteString(remaining), GetTimeLeftMinuteString(remaining + 2700));
-	end
+	return str:format(SecureFormatShortDate(oldDate.day, oldDate.month, oldDate.year), SecureFormatShortDate(newDate.day, newDate.month, newDate.year))
+end
+
+function GetBalanceRedemptionString()
+	local currentBalance, addedBalance, canRedeem = C_WowTokenSecure.GetBalanceRedemptionInfo();
+
+	local info = currencyInfo();
+	local balanceStr = info.currencyFormat(currentBalance, 0);
+	local addedStr = info.currencyFormat(currentBalance + addedBalance, 0);
+
+	return TOKEN_REDEEM_BALANCE_FORMAT:format(balanceStr, addedStr);
 end
 
 function WowTokenRedemptionFrame_OnEvent(self, event, ...)
 	if (event == "TOKEN_REDEEM_FRAME_SHOW") then
-		self.Display.RedeemButton:Disable();
+		self.LeftDisplay.RedeemButton:Disable();
+		self.RightDisplay.RedeemButton:Disable();
 		if (not C_WowTokenPublic.GetCommerceSystemStatus()) then
-			self.Display.Format:SetText(TOKEN_REDEMPTION_UNAVAILABLE);
-			self.Display.Spinner:Hide();
+			self.LeftDisplay.Format:SetText(TOKEN_REDEMPTION_UNAVAILABLE);
+			self.LeftDisplay.Spinner:Hide();
+			if (BalanceEnabled) then
+				self.RightDisplay.Format:SetText(TOKEN_REDEMPTION_UNAVAILABLE);
+				self.RightDisplay.Spinner:Hide();
+			end
 		else
 			C_WowTokenPublic.UpdateTokenCount();
 			C_WowTokenSecure.GetRemainingGameTime();
-			self.Display.Format:Hide();
-			self.Display.Spinner:Show();
+			self.LeftDisplay.Format:Hide();
+			self.LeftDisplay.Spinner:Show();
+			if (BalanceEnabled) then
+				WowTokenRedemptionFrame_EnableBalance(self);
+				C_WowTokenSecure.CanRedeemForBalance();
+				self.RightDisplay.Format:Hide();
+				self.RightDisplay.Spinner:Show();
+				local info = currencyInfo();
+				self.RightDisplay.RedeemButton:SetText(TOKEN_REDEEM_BALANCE_BUTTON_LABEL:format(info.currencyFormat(C_WowTokenSecure.GetBalanceRedeemAmount(), 0)));
+			end
 		end
 		self:Show();
 	elseif (event == "TOKEN_REDEEM_GAME_TIME_UPDATED") then
-		if (RedeemIndex == LE_CONSUMABLE_TOKEN_REDEEM_FOR_SUB_AMOUNT_30_DAYS) then
-			self.Display.Description:SetText(TOKEN_REDEEM_GAME_TIME_DESCRIPTION);
-			self.Display.RedeemButton:SetText(TOKEN_REDEEM_GAME_TIME_BUTTON_LABEL);
-		elseif (RedeemIndex == LE_CONSUMABLE_TOKEN_REDEEM_FOR_SUB_AMOUNT_2700_MINUTES) then
-			self.Display.Description:SetText(TOKEN_REDEEM_GAME_TIME_DESCRIPTION_MINUTES);
-			self.Display.RedeemButton:SetText(TOKEN_REDEEM_GAME_TIME_BUTTON_LABEL_MINUTES);
+		self.LeftDisplay.Format:SetText(GetGameTimeRedemptionString());
+		self.LeftDisplay.Spinner:Hide();
+		self.LeftDisplay.Format:Show();
+		self.LeftDisplay.RedeemButton:Enable();
+	elseif (event == "TOKEN_REDEEM_BALANCE_UPDATED") then
+		local currentBalance, _, canRedeem, cannotRedeemReason = C_WowTokenSecure.GetBalanceRedemptionInfo();
+		if (canRedeem) then
+			WowTokenRedemptionFrame_EnableBalance(self);
+			self.RightDisplay.Format:SetText(GetBalanceRedemptionString());
+			self.RightDisplay.Spinner:Hide();
+			self.RightDisplay.Format:Show();
+			self.RightDisplay.RedeemButton:Enable();
+		else
+			WowTokenRedemptionFrame_DisableBalance(self);
+			-- Right now, near cap is the only reason the server will send us cannot accept here.
+			-- Have a good (but not perfect) default in case reasons are added before we patch the UI with a better message.
+			if (cannotRedeemReason == LE_TOKEN_RESULT_ERROR_BALANCE_NEAR_CAP) then
+				local info = currencyInfo();
+				local amountStr = info.currencyFormat(currentBalance, 0);
+				self.RightDisplay.Format:SetText(TOKEN_REDEEM_BALANCE_ERROR_CAP_FORMAT:format(amountStr));
+			else
+				self.RightDisplay.Format:SetText(TOKEN_REDEMPTION_UNAVAILABLE);
+			end
+			self.RightDisplay.Spinner:Hide();
+			self.RightDisplay.Format:Show();
 		end
-		self.Display.Format:SetText(GetRedemptionString());
-		self.Display.Spinner:Hide();
-		self.Display.Format:Show();
-		self.Display.RedeemButton:Enable();
 	elseif (event == "TOKEN_STATUS_CHANGED") then
-		RedeemIndex = select(3, C_WowTokenPublic.GetCommerceSystemStatus());
+		WowTokenRedemptionFrame_Update(self);
 	end
 end
 
@@ -210,13 +454,21 @@ function WowTokenRedemptionFrame_OnAttributeChanged(self, name, value)
 			end
 			self:SetAttribute("escaperesult", handled);
 		end
+	elseif ( name == "getbalancestring" ) then
+		self:SetAttribute("balancestring", GetBalanceString());
 	end
 end
 
 function WowTokenRedemptionRedeemButton_OnClick(self)
 	WowTokenRedemptionFrame:Hide();
-	C_WowTokenSecure.RedeemToken();
-	WowTokenDialog_SetDialog(WowTokenDialog, "WOW_TOKEN_REDEEM_CONFIRMATION");
+	local type = LE_TOKEN_REDEEM_TYPE_GAME_TIME;
+	local dialogKey = "WOW_TOKEN_REDEEM_CONFIRMATION_SUB";
+	if (self:GetID() == 2) then
+		type = LE_TOKEN_REDEEM_TYPE_BALANCE;
+		dialogKey = "WOW_TOKEN_REDEEM_CONFIRMATION_BALANCE";
+	end
+	C_WowTokenSecure.RedeemToken(type);
+	WowTokenDialog_SetDialog(WowTokenDialog, dialogKey);
 	PlaySound("igMainMenuOpen");
 end
 
@@ -344,11 +596,11 @@ end
 local currentDialog, currentDialogName, currentTicker, remainingDialogTime;
 local dialogs;
 dialogs = {
-	["WOW_TOKEN_REDEEM_CONFIRMATION"] = {
+	["WOW_TOKEN_REDEEM_CONFIRMATION_SUB"] = {
 		completionIcon = false,
 		cautionIcon = true,
 		title = TOKEN_CONFIRMATION_TITLE,
-		description = { [LE_CONSUMABLE_TOKEN_REDEEM_FOR_SUB_AMOUNT_30_DAYS] = TOKEN_CONFIRM_GAME_TIME_DESCRIPTION, [LE_CONSUMABLE_TOKEN_REDEEM_FOR_SUB_AMOUNT_2700_MINUTES] = TOKEN_CONFIRM_GAME_TIME_DESCRIPTION_MINUTES },
+		description = TOKEN_CONFIRM_GAME_TIME_DESCRIPTION,
 		confirmationDesc = nil, -- Now set in reaction to an event
 		additionalConfirmationDescription = function()
 			if (C_WowTokenSecure.WillKickFromWorld()) then
@@ -362,7 +614,7 @@ dialogs = {
 		button1OnClick = function(self) 
 			self:Hide(); 
 			if (C_WowTokenSecure.GetTokenCount() > 0) then 
-				C_WowTokenSecure.RedeemTokenConfirm(); 
+				C_WowTokenSecure.RedeemTokenConfirm(LE_TOKEN_REDEEM_TYPE_GAME_TIME); 
 				WowTokenDialog_SetDialog(WowTokenDialog, "WOW_TOKEN_REDEEM_IN_PROGRESS"); 
 			else
 				Outbound.RedeemFailed(LE_TOKEN_RESULT_ERROR_OTHER);
@@ -372,25 +624,67 @@ dialogs = {
 		button2 = CANCEL,
 		button2OnClick = function(self) self:Hide(); C_WowTokenSecure.CancelRedeem(); PlaySound("igMainMenuClose"); end,
 		onHide = function(self)
-			dialogs["WOW_TOKEN_REDEEM_CONFIRMATION"].spinner = true;
-			dialogs["WOW_TOKEN_REDEEM_CONFIRMATION"].confirmationDesc = nil;
+			dialogs["WOW_TOKEN_REDEEM_CONFIRMATION_SUB"].spinner = true;
+			dialogs["WOW_TOKEN_REDEEM_CONFIRMATION_SUB"].confirmationDesc = nil;
 		end,
 		spinner = true,
 		point = { "CENTER", UIParent, "CENTER", 0, 240 },
 	};
-	["WOW_TOKEN_REDEEM_COMPLETION"] = {
+	["WOW_TOKEN_REDEEM_COMPLETION_SUB"] = {
 		completionIcon = true,
 		cautionIcon = false,
 		title = TOKEN_COMPLETE_TITLE,
-		description = { [LE_CONSUMABLE_TOKEN_REDEEM_FOR_SUB_AMOUNT_30_DAYS] = TOKEN_COMPLETE_GAME_TIME_DESCRIPTION, [LE_CONSUMABLE_TOKEN_REDEEM_FOR_SUB_AMOUNT_2700_MINUTES] = TOKEN_COMPLETE_GAME_TIME_DESCRIPTION_MINUTES },
+		description = TOKEN_COMPLETE_GAME_TIME_DESCRIPTION,
 		button1 = OKAY,
 		button1OnClick = function(self) self:Hide(); PlaySound("igMainMenuClose"); end,
 		point = { "CENTER", UIParent, "CENTER", 0, 240 },
 	};
-	["WOW_TOKEN_REDEEM_COMPLETION_KICK"] = {
+	["WOW_TOKEN_REDEEM_COMPLETION_KICK_SUB"] = {
 		title = BLIZZARD_STORE_TRANSACTION_IN_PROGRESS,
-		description = { [LE_CONSUMABLE_TOKEN_REDEEM_FOR_SUB_AMOUNT_30_DAYS] = TOKEN_COMPLETE_GAME_TIME_DESCRIPTION, [LE_CONSUMABLE_TOKEN_REDEEM_FOR_SUB_AMOUNT_2700_MINUTES] = TOKEN_COMPLETE_GAME_TIME_DESCRIPTION_MINUTES },
+		description = TOKEN_COMPLETE_GAME_TIME_DESCRIPTION,
 		confirmationDesc = TOKEN_YOU_WILL_BE_LOGGED_OUT,
+		button1 = OKAY,
+		button1OnClick = function(self) self:Hide(); PlaySound("igMainMenuClose"); end,
+		point = { "CENTER", UIParent, "CENTER", 0, 240 },
+	};
+	["WOW_TOKEN_REDEEM_CONFIRMATION_BALANCE"] = {
+		completionIcon = false,
+		cautionIcon = true,
+		title = TOKEN_CONFIRMATION_TITLE,
+		description = TOKEN_REDEEM_BALANCE_DESCRIPTION,
+		formatDesc = true,
+		descFormatArgs = function() local info = currencyInfo(); return { info.currencyFormat(C_WowTokenSecure.GetBalanceRedeemAmount(), 0) }; end,
+		confirmationDesc = nil, -- Now set in reaction to an event
+		confDescIsFunction = true,
+		button1 = ACCEPT,
+		button1OnClick = function(self) 
+			self:Hide(); 
+			if (C_WowTokenSecure.GetTokenCount() > 0) then 
+				C_WowTokenSecure.RedeemTokenConfirm(LE_TOKEN_REDEEM_TYPE_BALANCE); 
+				WowTokenDialog_SetDialog(WowTokenDialog, "WOW_TOKEN_REDEEM_IN_PROGRESS"); 
+			else
+				Outbound.RedeemFailed(LE_TOKEN_RESULT_ERROR_OTHER);
+			end
+			PlaySound("igMainMenuClose"); 
+		end,
+		button2 = CANCEL,
+		button2OnClick = function(self) self:Hide(); C_WowTokenSecure.CancelRedeem(); PlaySound("igMainMenuClose"); end,
+		onHide = function(self)
+			dialogs["WOW_TOKEN_REDEEM_CONFIRMATION_BALANCE"].spinner = true;
+			dialogs["WOW_TOKEN_REDEEM_CONFIRMATION_BALANCE"].confirmationDesc = nil;
+		end,
+		spinner = true,
+		point = { "CENTER", UIParent, "CENTER", 0, 240 },
+	};
+	["WOW_TOKEN_REDEEM_COMPLETION_BALANCE"] = {
+		completionIcon = true,
+		cautionIcon = false,
+		title = TOKEN_COMPLETE_TITLE,
+		description = TOKEN_COMPLETE_BALANCE_DESCRIPTION,
+		formatDesc = true,
+		descFormatArgs = function()
+			return { GetBalanceString() };
+		end,
 		button1 = OKAY,
 		button1OnClick = function(self) self:Hide(); PlaySound("igMainMenuClose"); end,
 		point = { "CENTER", UIParent, "CENTER", 0, 240 },
@@ -533,8 +827,6 @@ function WowTokenDialog_SetDialog(self, dialogName)
 		local description;
 		if (dialog.formatDesc) then
 			description = dialog.description:format(unpack(descArgs));
-		elseif (type(dialog.description) == "table") then
-			description = dialog.description[RedeemIndex];
 		else
 			description = dialog.description;
 		end
@@ -759,21 +1051,40 @@ function WowTokenDialog_OnEvent(self, event, ...)
 		WowTokenDialog_SetDialog(self, "WOW_TOKEN_BUYOUT_AUCTION");
 		Outbound.AuctionWowTokenUpdate();
 	elseif (event == "TOKEN_REDEEM_CONFIRM_REQUIRED") then
-		if (currentDialogName ~= "WOW_TOKEN_REDEEM_CONFIRMATION") then
+		local choice = ...;
+		local dialogKey, confirmationDescFunc;
+		if (choice == LE_TOKEN_REDEEM_TYPE_GAME_TIME) then
+			dialogKey = "WOW_TOKEN_REDEEM_CONFIRMATION_SUB";
+			confirmationDescFunc = GetGameTimeRedemptionString;
+		elseif (choice == LE_TOKEN_REDEEM_TYPE_BALANCE) then
+			dialogKey = "WOW_TOKEN_REDEEM_CONFIRMATION_BALANCE";
+			confirmationDescFunc = GetBalanceRedemptionString;
+		end
+		
+		if (not dialogKey or currentDialogName ~= dialogKey) then
 			return;
 		end
 		self:Hide();
-		dialogs["WOW_TOKEN_REDEEM_CONFIRMATION"].spinner = false;
-		dialogs["WOW_TOKEN_REDEEM_CONFIRMATION"].confirmationDesc = GetRedemptionString;
-		WowTokenDialog_SetDialog(self, "WOW_TOKEN_REDEEM_CONFIRMATION");
+		dialogs[dialogKey].spinner = false;
+		dialogs[dialogKey].confirmationDesc = confirmationDescFunc;
+		WowTokenDialog_SetDialog(self, dialogKey);
 	elseif (event == "TOKEN_REDEEM_RESULT") then
-		local result = ...;
+		local result, choice = ...;
 		if (result == LE_TOKEN_RESULT_SUCCESS) then
-			if (C_WowTokenSecure.WillKickFromWorld()) then
-				WowTokenDialog_SetDialog(self, "WOW_TOKEN_REDEEM_COMPLETION_KICK");
-			else
-				WowTokenDialog_SetDialog(self, "WOW_TOKEN_REDEEM_COMPLETION");
+			local dialogKey;
+			if (choice == LE_TOKEN_REDEEM_TYPE_GAME_TIME) then
+				if (C_WowTokenSecure.WillKickFromWorld()) then
+					dialogKey = "WOW_TOKEN_REDEEM_COMPLETION_KICK_SUB";
+				else
+					dialogKey = "WOW_TOKEN_REDEEM_COMPLETION_SUB";
+				end
+			elseif (choice == LE_TOKEN_REDEEM_TYPE_BALANCE) then
+				dialogKey = "WOW_TOKEN_REDEEM_COMPLETION_BALANCE";
 			end
+			if (not dialogKey) then
+				return;
+			end
+			WowTokenDialog_SetDialog(self, dialogKey);
 		else
 			Outbound.RedeemFailed(result);
 			C_WowTokenSecure.CancelRedeem();

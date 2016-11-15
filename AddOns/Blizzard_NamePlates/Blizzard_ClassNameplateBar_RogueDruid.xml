@@ -77,6 +77,18 @@
 					<Anchor point="LEFT" relativeKey="$parent.Combo7" relativePoint="RIGHT" x="4" y="0"/>
 				</Anchors>
 			</Frame>
+			<Frame parentKey="Combo9" parentArray="ComboPoints" inherits="ClassNameplateBarComboPointFrame">
+				<Size x="10" y="10"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Combo8" relativePoint="RIGHT" x="4" y="0"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="Combo10" parentArray="ComboPoints" inherits="ClassNameplateBarComboPointFrame">
+				<Size x="10" y="10"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Combo9" relativePoint="RIGHT" x="4" y="0"/>
+				</Anchors>
+			</Frame>
 		</Frames>
 	</Frame>
 </Ui>

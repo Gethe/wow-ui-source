@@ -1141,8 +1141,7 @@ function EncounterJournal_ToggleHeaders(self, doNotShift)
 					infoHeader.parentID = parentID;
 					infoHeader.myID = nextSectionID;
 					-- Spell names can show up in white, which clashes with the parchment, strip out white color codes.
-					description = description:gsub("\|cffffffff(.+)\|r", "%1");
-					description = description:gsub("\|cffffffff(.+)$", "%1");
+					description = description:gsub("\|cffffffff(.-)\|r", "%1");
 					infoHeader.description:SetText(description);
 					infoHeader.button.title:SetText(title);
 					if topLevelSection then
@@ -2082,11 +2081,12 @@ function EncounterJournal_SetSearchPreviewSelection(selectedIndex)
 
 	searchBox.showAllResults.selectedTexture:Hide();
 
-
-	if selectedIndex > numShown then
+	if numShown == 0 then
+		selectedIndex = 1;
+	elseif selectedIndex > numShown then
 		-- Wrap under to the beginning.
 		selectedIndex = 1;
-	elseif ( selectedIndex < 1 ) then
+	elseif selectedIndex < 1 then
 		-- Wrap over to the end;
 		selectedIndex = numShown;
 	end

@@ -15,6 +15,8 @@ function ClassNameplateBarRogueDruid:OnLoad()
 	self.maxUsablePoints = 5;
 	self.Combo7.Point:SetSize(self.bonusPointSize, self.bonusPointSize);
 	self.Combo8.Point:SetSize(self.bonusPointSize, self.bonusPointSize);
+	self.Combo9.Point:SetSize(self.bonusPointSize, self.bonusPointSize);
+	self.Combo10.Point:SetSize(self.bonusPointSize, self.bonusPointSize);
 	ClassNameplateBar.OnLoad(self);
 end
 
@@ -78,11 +80,11 @@ function ClassNameplateBarRogueDruid:UpdateMaxPower()
 		self.Combo6:SetPoint("LEFT", self.ComboPoints[5], "RIGHT", 4, 0);
 		self:SetHeight(self.comboPointSize);
 		self.Combo6.Background:Show();
-	elseif (maxComboPoints == 8) then
+	elseif (maxComboPoints >= 8) then
 		self.Combo6:SetSize(self.bonusPointSize, self.bonusPointSize);
 		self.Combo6.Point:SetSize(self.bonusPointSize, self.bonusPointSize);
 		self.Combo6:ClearAllPoints();
-		self.Combo6:SetPoint("BOTTOM", -14, -2);
+		self.Combo6:SetPoint("BOTTOM", -14 - (7 * (maxComboPoints - 8)), -2);
 		self:SetHeight(22);
 	end
 	self:SetWidth(self.Combo1:GetWidth() * self.maxUsablePoints + 4 * (self.maxUsablePoints - 1));

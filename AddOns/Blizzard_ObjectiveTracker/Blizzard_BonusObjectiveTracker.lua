@@ -194,15 +194,16 @@ function BonusObjectiveTracker_OnOpenDropDown(self)
 	local block = self.activeFrame;
 	local questID = block.TrackedQuest.questID;
 
+	-- Add "find group"
+	ObjectiveTracker_Util_AddDropdownEntryForQuestGroupSearch(questID);
+
+	-- Add "stop tracking"
 	local info = UIDropDownMenu_CreateInfo();
 	info.notCheckable = true;
-
 	info.text = OBJECTIVES_STOP_TRACKING;
 	info.func = function()
 		BonusObjectiveTracker_UntrackWorldQuest(questID);
-	end;
-
-	info.checked = false;
+	end
 	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
 end
 

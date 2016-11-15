@@ -814,7 +814,7 @@
 					</Anchors>
 					<TexCoords left="0.73242188" right="0.78906250" top="0.57421875" bottom="0.80078125"/>
 				</Texture>
-				<FontString parentKey="Label" inherits="GameFontNormal" justifyH="LEFT" text="YOU_WON_LABEL">
+				<FontString parentKey="Label" inherits="GameFontNormal" justifyH="LEFT" text="YOU_RECEIVED_LABEL">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.IconBorder" relativePoint="TOPRIGHT" x="7" y="-1"/>
 					</Anchors>

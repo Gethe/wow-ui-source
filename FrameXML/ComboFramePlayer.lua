@@ -93,12 +93,32 @@ local function UpdateComboPointLayout(maxUsablePoints, comboPoint, previousCombo
 	end
 end
 
+local function DetermineComboBonusVisibility(comboBonusIndex, max)
+	if (max < 8) then
+		return false;
+	end
+
+	if (comboBonusIndex <= 3) then
+		return true;
+	end
+
+	if (comboBonusIndex == 4 and max >= 9) then
+		return true;
+	end
+
+	if (comboBonusIndex == 5 and max >= 10) then
+		return true;
+	end
+
+	return false;
+end
+
 function ComboPointPowerBar:UpdateMaxPower()
 	local maxComboPoints = UnitPowerMax("player", SPELL_POWER_COMBO_POINTS);
 	
 	self.ComboPoints[6]:SetShown(maxComboPoints == 6);
-	for i = 1, #self.ComboBonus do
-		self.ComboBonus[i]:SetShown(maxComboPoints == 8);
+	for i = 1, #self.ComboBonus do	
+		self.ComboBonus[i]:SetShown(DetermineComboBonusVisibility(i, maxComboPoints));
 	end
 	
 	if (maxComboPoints == 5 or maxComboPoints == 8) then
@@ -169,11 +189,11 @@ function ComboPointPowerBar:UpdatePower()
 		end
 		end
 		
-		if (maxComboPoints == 8) then
+		if (maxComboPoints >= 8) then
 			for i = 6, comboPoints do
 				self:AnimIn(self.ComboBonus[i-5]);
 			end
-			for i = max(comboPoints + 1, 6), 8 do
+			for i = max(comboPoints + 1, 6), maxComboPoints do
 				self:AnimOut(self.ComboBonus[i-5]);
 			end
 		end

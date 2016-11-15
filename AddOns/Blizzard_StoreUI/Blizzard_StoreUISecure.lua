@@ -37,6 +37,7 @@ Import("C_ClassTrial");
 Import("C_AuthChallenge");
 Import("C_Timer");
 Import("C_WowTokenPublic");
+Import("C_WowTokenSecure");
 Import("CreateForbiddenFrame");
 Import("IsGMClient");
 Import("HideGMOnly");
@@ -193,7 +194,6 @@ Import("BLIZZARD_STORE_PURCHASE_SENT");
 Import("BLIZZARD_STORE_YOU_ALREADY_OWN_THIS");
 Import("BLIZZARD_STORE_TOKEN_CURRENT_MARKET_PRICE");
 Import("BLIZZARD_STORE_TOKEN_DESC_30_DAYS");
-Import("BLIZZARD_STORE_TOKEN_DESC_2700_MINUTES");
 Import("BLIZZARD_STORE_LOG_OUT_TO_PURCHASE_THIS_PRODUCT");
 Import("BLIZZARD_STORE_PRODUCT_IS_READY");
 Import("BLIZZARD_STORE_VAS_SERVICE_READY_DESCRIPTION");
@@ -295,8 +295,6 @@ Import("LE_VAS_ERROR_BATTLEPAY_DELIVERY_PENDING");
 Import("LE_VAS_ERROR_HAS_WOW_TOKEN");
 Import("LE_VAS_ERROR_CHAR_LOCKED");
 Import("LE_VAS_ERROR_LAST_SAVE_TOO_RECENT");
-Import("LE_CONSUMABLE_TOKEN_REDEEM_FOR_SUB_AMOUNT_30_DAYS");
-Import("LE_CONSUMABLE_TOKEN_REDEEM_FOR_SUB_AMOUNT_2700_MINUTES");
 
 --Data
 local CURRENCY_UNKNOWN = 0;
@@ -1238,12 +1236,9 @@ function StoreFrame_UpdateCard(card,entryID,discountReset)
 	if (card.Description) then
 		local description = entryInfo.description;
 		if (entryInfo.isWowToken) then
-			local redeemIndex = select(3, C_WowTokenPublic.GetCommerceSystemStatus());
-			if (redeemIndex == LE_CONSUMABLE_TOKEN_REDEEM_FOR_SUB_AMOUNT_30_DAYS) then
-				description = BLIZZARD_STORE_TOKEN_DESC_30_DAYS;
-			elseif (redeemIndex == LE_CONSUMABLE_TOKEN_REDEEM_FOR_SUB_AMOUNT_2700_MINUTES) then
-				description = BLIZZARD_STORE_TOKEN_DESC_2700_MINUTES;
-			end
+			local balanceEnabled = select(3, C_WowTokenPublic.GetCommerceSystemStatus());
+			local balanceAmount = C_WowTokenSecure.GetBalanceRedeemAmount();
+			description = BLIZZARD_STORE_TOKEN_DESC_30_DAYS;
 		end
 		card.Description:SetText(description);
 	end

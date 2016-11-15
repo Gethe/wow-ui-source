@@ -64,7 +64,10 @@ function WorldQuestDataProviderMixin:RefreshAllData(fromOnShow)
 						if QuestUtils_IsQuestWorldQuest(info.questId) then
 							if self:DoesWorldQuestInfoPassFilters(info) then
 								pinsToRemove[info.questId] = nil;
-								if not self.activePins[info.questId] then
+								local pin = self.activePins[info.questId];
+								if pin then
+									pin:RefreshVisuals();
+								else
 									self.activePins[info.questId] = self:AddWorldQuest(info);
 								end
 							end
@@ -85,23 +88,12 @@ function WorldQuestDataProviderMixin:AddWorldQuest(info)
 	local pin = self:GetMap():AcquirePin("WorldQuestPinTemplate");
 	pin.questID = info.questId;
 
-	if IsWorldQuestWatched(info.questId) then
-		pin:SetAlphaLimits(nil, 0.0, 1.0);
-		pin:SetAlpha(1);
-	else
-		pin:SetAlphaLimits(2.0, 0.0, 1.0);
-	end
-
 	pin.worldQuest = true;
 	pin.numObjectives = info.numObjectives;
 	pin:SetFrameLevel(1000 + self:GetMap():GetNumActivePinsByTemplate("WorldQuestPinTemplate"));
 
 	local tagID, tagName, worldQuestType, rarity, isElite, tradeskillLineIndex = GetQuestTagInfo(info.questId);
 	local tradeskillLineID = tradeskillLineIndex and select(7, GetProfessionInfo(tradeskillLineIndex));
-
-	local selected = info.questId == GetSuperTrackedQuestID();
-	pin.Glow:SetShown(selected);
-	pin.SelectedGlow:SetShown(rarity ~= LE_WORLD_QUEST_QUALITY_COMMON and selected);
 
 	if rarity ~= LE_WORLD_QUEST_QUALITY_COMMON then
 		pin.Background:SetTexCoord(0, 1, 0, 1);
@@ -124,17 +116,15 @@ function WorldQuestDataProviderMixin:AddWorldQuest(info)
 		pin.Background:SetSize(75, 75);
 		pin.Highlight:SetSize(75, 75);
 
+		-- We are setting the texture without updating the tex coords.  Refresh visuals will handle
+		-- updating the tex coords based on whether this pin is selected or not.
 		pin.Background:SetTexture("Interface/WorldMap/UI-QuestPoi-NumberIcons");
 		pin.Highlight:SetTexture("Interface/WorldMap/UI-QuestPoi-NumberIcons");
 
 		pin.Highlight:SetTexCoord(0.625, 0.750, 0.875, 1);
-
-		if selected then
-			pin.Background:SetTexCoord(0.500, 0.625, 0.375, 0.5);
-		else
-			pin.Background:SetTexCoord(0.875, 1, 0.375, 0.5);
-		end
 	end
+	
+	pin:RefreshVisuals();
 
 	if isElite then
 		pin.Underlay:SetAtlas("worldquest-questmarker-dragon");
@@ -191,6 +181,30 @@ function WorldQuestPinMixin:OnLoad()
 	self:SetNudgeTargetFactor(0.015);
 	self:SetNudgeZoomedOutFactor(1.0);
 	self:SetNudgeZoomedInFactor(0.25);
+end
+
+function WorldQuestPinMixin:RefreshVisuals()
+	local tagID, tagName, worldQuestType, rarity, isElite, tradeskillLineIndex = GetQuestTagInfo(self.questID);
+	local selected = self.questID == GetSuperTrackedQuestID();
+	self.Glow:SetShown(selected);
+	self.SelectedGlow:SetShown(rarity ~= LE_WORLD_QUEST_QUALITY_COMMON and selected);
+	
+	if rarity == LE_WORLD_QUEST_QUALITY_COMMON then
+		if selected then
+			self.Background:SetTexCoord(0.500, 0.625, 0.375, 0.5);
+		else
+			self.Background:SetTexCoord(0.875, 1, 0.375, 0.5);
+		end
+	end
+	
+	if IsWorldQuestWatched(self.questID) then
+		self:SetAlphaLimits(nil, 0.0, 1.0);
+		self:SetAlpha(1);
+	else
+		self:SetAlphaLimits(2.0, 0.0, 1.0);
+	end
+	
+	self:Show();
 end
 
 function WorldQuestPinMixin:OnMouseEnter()
