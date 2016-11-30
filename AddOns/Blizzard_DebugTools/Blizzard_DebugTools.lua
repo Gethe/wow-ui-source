@@ -37,7 +37,7 @@ function EventTraceFrame_OnLoad (self)
 	self.lastIndex = 0;
 	self.visibleButtons = 0;
 	_EventTraceFrame = self;
-	self:SetScript("OnSizeChanged", EventTraceFrame_OnSizeChanged); 
+	self:SetScript("OnSizeChanged", EventTraceFrame_OnSizeChanged);
 	EventTraceFrame_OnSizeChanged(self, self:GetWidth(), self:GetHeight());
 	self:EnableMouse(true);
 	self:EnableMouseWheel(true);
@@ -50,7 +50,7 @@ function EventTraceFrame_OnEvent (self, event, ...)
 		if ( _framesSinceLast ~= 0 and event ~= "On Update") then
 			EventTraceFrame_OnEvent(self, "On Update");
 		end
-		
+
 		local nextIndex = self.lastIndex + 1;
 		if ( nextIndex > EVENT_TRACE_MAX_ENTRIES ) then
 			local staleIndex = nextIndex - EVENT_TRACE_MAX_ENTRIES;
@@ -68,7 +68,7 @@ function EventTraceFrame_OnEvent (self, event, ...)
 				self.args[k][staleIndex] = nil;
 			end
 		end
-		
+
 		if ( event == "Begin Capture" or event == "End Capture" ) then
 			self.times[nextIndex] = "System";
 			if ( self.eventsToCapture ) then
@@ -105,17 +105,17 @@ function EventTraceFrame_OnEvent (self, event, ...)
 				end
 				self.args[i][nextIndex] = select(i, ...);
 			end
-			
+
 			if ( self.eventsToCapture ) then
 				self.eventsToCapture = self.eventsToCapture - 1;
 			end
 		end
-		
-		-- NOTE: Remember that this work will be captured in the elapsed time for this event, so 
+
+		-- NOTE: Remember that this work will be captured in the elapsed time for this event, so
 		-- don't do anything slow here or it will throw off the profiled data
-		
+
 		self.rawtimes[nextIndex] = GetTime();
-		self.lastIndex = nextIndex;		
+		self.lastIndex = nextIndex;
 		if ( self.eventsToCapture and self.eventsToCapture <= 0 ) then
 			self.eventsToCapture = nil;
 			EventTraceFrame_StopEventCapture();
@@ -137,7 +137,7 @@ end
 function EventTraceFrame_OnSizeChanged (self, width, height)
 	local numButtonsToDisplay = math.floor((height - 36)/EVENT_TRACE_EVENT_HEIGHT);
 	local numButtonsCreated = #self.buttons;
-	
+
 	if ( numButtonsCreated < numButtonsToDisplay ) then
 		for i = numButtonsCreated + 1, numButtonsToDisplay do
 			local button = CreateFrame("BUTTON", "EventTraceFrameButton" .. i, self, "EventTraceEventTemplate");
@@ -166,14 +166,14 @@ end
 
 function EventTraceFrame_Update ()
 	local offset = 0;
-	
+
 	local scrollBar = _G["EventTraceFrameScroll"];
 	local scrollBarValue = scrollBar:GetValue();
 	local minValue, maxValue = scrollBar:GetMinMaxValues();
-	
+
 	local firstID = max(1, _EventTraceFrame.lastIndex - EVENT_TRACE_MAX_ENTRIES + 1);
 	local lastID = _EventTraceFrame.lastIndex or 1;
-	
+
 	if ( firstID >= lastID ) then
 		scrollBar:SetMinMaxValues(firstID-1, lastID);
 	else
@@ -183,7 +183,7 @@ function EventTraceFrame_Update ()
 		scrollBar:SetValue(firstID);
 		scrollBarValue = firstID;
 	end
-	
+
 	if ( scrollBarValue < 1 ) then
 		scrollBarValue = 1;
 	elseif ( not _EventTraceFrame.selectedEvent ) then
@@ -191,7 +191,7 @@ function EventTraceFrame_Update ()
 			scrollBar:SetValue(_EventTraceFrame.lastIndex);
 		end
 	end
-	
+
 	for i = 1, _EventTraceFrame.visibleButtons do
 		local button = _EventTraceFrame.buttons[i];
 		if ( button ) then
@@ -262,15 +262,15 @@ function EventTraceFrame_Update ()
 			end
 		end
 	end
-	
-	EventTraceFrame_UpdateKeyboardStatus();	
+
+	EventTraceFrame_UpdateKeyboardStatus();
 end
 
 function EventTraceFrame_StartEventCapture ()
 	if ( _EventTraceFrame.started ) then -- Nothing to do?
 		return;
 	end
-	
+
 	_EventTraceFrame.started = true;
 	_framesSinceLast = 0;
 	_timeSinceLast = 0;
@@ -282,10 +282,10 @@ function EventTraceFrame_StopEventCapture ()
 	if ( not _EventTraceFrame.started ) then -- Nothing to do!
 		return;
 	end
-	
+
 	_EventTraceFrame.started = false;
 	_framesSinceLast = 0;
-	_timeSinceLast = 0;	
+	_timeSinceLast = 0;
 	_EventTraceFrame:UnregisterAllEvents();
 	EventTraceFrame_OnEvent(_EventTraceFrame, "End Capture");
 end
@@ -317,7 +317,7 @@ function EventTraceFrame_OnMouseWheel (self, delta)
 	local scrollBar = _G["EventTraceFrameScroll"];
 	local minVal, maxVal = scrollBar:GetMinMaxValues();
 	local currentValue = scrollBar:GetValue();
-	
+
 	local newValue = currentValue - ( delta * 3 );
 	newValue = max(newValue, minVal);
 	newValue = min(newValue, maxVal);
@@ -357,7 +357,7 @@ function EventTraceFrame_RemoveEvent(i)
 		tremove(EventTraceFrame.numhandlers, i);
 		tremove(EventTraceFrame.slowesthandlers, i);
 		tremove(EventTraceFrame.slowesthandlertimes, i);
-		
+
 		for k, v in next, EventTraceFrame.args do
 			-- can't use tremove because some of these are nil
 			for j = i, EventTraceFrame.lastIndex do
@@ -392,7 +392,7 @@ function EventTraceFrameEvent_DisplayTooltip (eventButton)
 	if ( not index ) then
 		return;
 	end
-	
+
 	local tooltip = _G["EventTraceTooltip"];
 	tooltip:SetOwner(eventButton, "ANCHOR_NONE");
 	tooltip:SetPoint("TOPLEFT", eventButton, "TOPRIGHT", 24, 2);
@@ -401,7 +401,7 @@ function EventTraceFrameEvent_DisplayTooltip (eventButton)
 		tooltip:AddLine(timeString, 1, 1, 1);
 		tooltip:AddDoubleLine(TIME_LABEL, _EventTraceFrame.rawtimes[index], 1, .82, 0, 1, 1, 1);
 		tooltip:AddDoubleLine(DETAILS_LABEL, _EventTraceFrame.events[index], 1, .82, 0, 1, 1, 1);
-	else	
+	else
 		tooltip:AddLine(_EventTraceFrame.events[index], 1, 1, 1);
 		local eventTime = _EventTraceFrame.eventtimes[index];
 		if (eventTime) then
@@ -484,7 +484,7 @@ function EventTraceFrameEventHideButton_OnClick (button)
 			lastWasElapsed = false;
 		end
 	end
-	
+
 	EventTraceFrame_Update();
 end
 
@@ -523,9 +523,9 @@ end
 
 function ScriptErrorsFrame_OnError (message, warnType, keepHidden)
 	local stack = debugstack(DEBUGLOCALS_LEVEL);
-	
+
 	local messageStack = message..stack; -- Fix me later
-	
+
 	if ( _ScriptErrorsFrame ) then
 		local index = _ScriptErrorsFrame.seen[messageStack];
 		if ( index ) then
@@ -543,7 +543,7 @@ function ScriptErrorsFrame_OnError (message, warnType, keepHidden)
 			_ScriptErrorsFrame.locals[index] = debuglocals(DEBUGLOCALS_LEVEL);
 			_ScriptErrorsFrame.warnType[index] = (warnType or false); --Use false instead of nil
 		end
-		
+
 		if ( not _ScriptErrorsFrame:IsShown() and not keepHidden ) then
 			_ScriptErrorsFrame.index = index;
 			_ScriptErrorsFrame:Show();
@@ -560,13 +560,13 @@ function ScriptErrorsFrame_Update ()
 		index = #_ScriptErrorsFrame.order;
 		_ScriptErrorsFrame.index = index;
 	end
-	
+
 	if ( index == 0 ) then
 		editBox:SetText("");
 		ScriptErrorsFrame_UpdateButtons();
 		return;
 	end
-	
+
 	local warnType = _ScriptErrorsFrame.warnType[index];
 
 	local text;
@@ -584,10 +584,10 @@ function ScriptErrorsFrame_Update ()
 		);
 	else
 		text = string.format(
-			ERROR_FORMAT, 
-			_ScriptErrorsFrame.messages[index], 
-			_ScriptErrorsFrame.times[index], 
-			_ScriptErrorsFrame.count[index], 
+			ERROR_FORMAT,
+			_ScriptErrorsFrame.messages[index],
+			_ScriptErrorsFrame.times[index],
+			_ScriptErrorsFrame.count[index],
 			_ScriptErrorsFrame.order[index],
 			_ScriptErrorsFrame.locals[index] or "<none>"
 		);
@@ -629,7 +629,7 @@ function ScriptErrorsFrame_UpdateButtons ()
 			_ScriptErrorsFrame.previous:Enable();
 		end
 	end
-	
+
 	_ScriptErrorsFrame.indexLabel:SetText(string.format(INDEX_ORDER_FORMAT, index, numErrors));
 end
 
@@ -646,28 +646,28 @@ end
 
 function ScriptErrorsFrameButton_OnClick (self)
 	local id = self:GetID();
-	
-	
+
+
 	if ( id == 1 ) then
 		_ScriptErrorsFrame.index = _ScriptErrorsFrame.index + 1;
 	else
 		_ScriptErrorsFrame.index = _ScriptErrorsFrame.index - 1;
 	end
-		
+
 	ScriptErrorsFrame_Update();
 end
 
 --[[  function ScriptErrorsFrameDelete_OnClick (self);
 	local index = _ScriptErrorsFrame.index;
 	ScriptErrorsFrame_DeleteError(index);
-	
+
 	local numErrors = #_ScriptErrorsFrame.order;
 	if ( numErrors == 0 ) then
 		_ScriptErrorsFrame.index = 0;
 	elseif ( index > numErrors ) then
 		_ScriptErrorsFrame.index = numErrors;
 	end
-	
+
 	ScriptErrorsFrame_Update();
 end ]]
 
@@ -701,6 +701,18 @@ function FrameStackTooltip_OnEvent(self, event, ...)
 	end
 end
 
+local shouldSetFSObj = false;
+function FrameStackTooltip_OnTooltipSetFrameStack(self, highlightFrame)
+	if shouldSetFSObj then
+		fsobj = highlightFrame;
+		shouldSetFSObj = false;
+	end
+
+	if fsobj then
+		self:AddLine(string.format("\n\nfsobj = %s", fsobj:GetDebugName()));
+	end
+end
+
 function FrameStackTooltip_Toggle (showHidden, showRegions)
 	local tooltip = _G["FrameStackTooltip"];
 	if ( tooltip:IsVisible() ) then
@@ -721,14 +733,12 @@ local _timeSinceLast = 0
 local _altKeyDown = false
 function FrameStackTooltip_OnUpdate (self, elapsed)
 	local highlightIndexChanged = 0;
-	if ( _altKeyDown ~= IsAltKeyDown() ) then
-		_altKeyDown = not _altKeyDown;
-		if ( _altKeyDown ) then
-			if ( IsRightAltKeyDown() ) then
-				highlightIndexChanged = -1;
-			else
-				highlightIndexChanged = 1;
-			end
+	local isAltKeyDown = IsAltKeyDown();
+	if ( _altKeyDown ~= isAltKeyDown ) then
+		_altKeyDown = isAltKeyDown;
+		if ( isAltKeyDown ) then
+			highlightIndexChanged = IsRightAltKeyDown() and -1 or 1;
+			shouldSetFSObj = true;
 		end
 	end
 

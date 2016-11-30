@@ -1054,7 +1054,7 @@ function CharacterServices_UpdateSpecializationButtons(classID, gender, parentFr
 		availableSpecsToChoose = numSpecs;
 	else
 		for i = 1, 4 do
-			local specID, _, _, _, _, _, isRecommended, isAllowed = GetSpecializationInfoForClassID(classID, i, gender);
+			local specID, _, _, _, _, isRecommended, isAllowed = GetSpecializationInfoForClassID(classID, i, gender);
 
 			if isRecommended or isAllowed then
 				availableSpecsToChoose = availableSpecsToChoose + 1;
@@ -1075,7 +1075,7 @@ function CharacterServices_UpdateSpecializationButtons(classID, gender, parentFr
 		button.isRecommended = nil;
 
 		if i <= numSpecs then
-			local specID, name, description, icon, _, role, isRecommended, isAllowed = GetSpecializationInfoForClassID(classID, i, gender);
+			local specID, name, description, icon, role, isRecommended, isAllowed = GetSpecializationInfoForClassID(classID, i, gender);
 			local allowed = allowAllSpecs or isAllowed or isRecommended;
 			local showRecommendedLabel = isRecommended or (hasActualChoice and not canChooseFromAllSpecs and isAllowed);
 
@@ -1178,7 +1178,7 @@ end
 
 function CharacterUpgradeSpecSelectBlock:ShowPopupIf()
 	-- If it ever becomes possible to select non-recommended specs, then re-enable this.
-	--local role = select(6, GetSpecializationInfoForSpecID(self.selected));
+	--local role = select(5, GetSpecializationInfoForSpecID(self.selected));
 	--return role == "HEALER";
 	return false;
 end

@@ -15,6 +15,12 @@ function CreateBonusObjectiveTrackerModule()
 	module.freeProgressBars = { };
 	module.fromHeaderOffsetY = -8;
 	module.blockPadding = 3;	-- need some extra room so scrollframe doesn't cut tails off gjpqy
+	module.paddingBetweenButtons = 2;
+
+	module.buttonOffsets = {
+		groupFinder = { 11, 4 },
+		useItem = { 7, 1 },
+	};
 
 	return module;
 end
@@ -45,11 +51,10 @@ function BonusObjectiveTrackerModuleMixin:OnFreeBlock(block)
 			end
 		end
 	end
-	local itemButton = block.itemButton;
-	if ( itemButton ) then
-		QuestObjectiveItem_ReleaseButton(itemButton);
-		block.itemButton = nil;
-	end
+
+	QuestObjectiveReleaseBlockButton_Item(block);
+	QuestObjectiveReleaseBlockButton_FindGroup(block);
+
 	if (block.id < 0) then
 		local blockKey = -block.id;
 		if (BonusObjectiveTracker_GetSupersedingStep(blockKey)) then
@@ -774,29 +779,9 @@ local function AddBonusObjectiveQuest(module, questID, posIndex, isTrackedWorldQ
 			module.headerText = TRACKER_HEADER_OBJECTIVE;
 		end
 
-		-- check if there's an item
-		local questLogIndex = GetQuestLogIndexByID(questID);
-		local link, item, charges, showItemWhenComplete = GetQuestLogSpecialItemInfo(questLogIndex);
-		local itemButton = block.itemButton;
-		if ( item and ( not isQuestComplete or showItemWhenComplete ) ) then
-			-- if the block doesn't already have an item, get one
-			if ( not itemButton ) then
-				itemButton = QuestObjectiveItem_AcquireButton(block);
-				block.itemButton = itemButton;
-				itemButton:SetPoint("TOPRIGHT", block, -2, 1);
-				itemButton:Show();
-			end
-
-			QuestObjectiveItem_Initialize(itemButton, questLogIndex);
-
-			block.lineWidth = OBJECTIVE_TRACKER_LINE_WIDTH - OBJECTIVE_TRACKER_ITEM_WIDTH - OBJECTIVE_TRACKER_DASH_WIDTH - BONUS_OBJECTIVE_LINE_DASH_OFFSET;
-		else
-			if ( itemButton ) then
-				QuestObjectiveItem_ReleaseButton(itemButton);
-				block.itemButton = nil;
-			end
-			block.lineWidth = OBJECTIVE_TRACKER_LINE_WIDTH - OBJECTIVE_TRACKER_DASH_WIDTH - BONUS_OBJECTIVE_LINE_DASH_OFFSET;
-		end
+		QuestObjective_SetupHeader(block, OBJECTIVE_TRACKER_LINE_WIDTH - OBJECTIVE_TRACKER_DASH_WIDTH - BONUS_OBJECTIVE_LINE_DASH_OFFSET);
+		QuestObjectiveSetupBlockButton_FindGroup(block, questID);
+		QuestObjectiveSetupBlockButton_Item(block, GetQuestLogIndexByID(questID));
 
 		-- block header? add it as objectiveIndex 0
 		if ( taskName ) then

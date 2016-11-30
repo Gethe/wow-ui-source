@@ -48,9 +48,9 @@
 							<Color r="1.0" g="1.0" b="1.0" a="1.0"/>
 						</Texture>
 					</Layer>
-					<Layer level="ARTWORK">
+					<Layer level="OVERLAY">
 						<Texture parentKey="Spark" atlas="honorsystem-bar-spark" alphaMode="ADD" hidden="true">
-							<Size x="16" y="36"/>
+							<Size x="11" y="44"/>
 							<Anchors>
 								<Anchor point="CENTER"/>
 							</Anchors>
@@ -263,9 +263,9 @@
 							<Color r="1.0" g="1.0" b="1.0" a="1.0"/>
 						</Texture>
 					</Layer>
-					<Layer level="ARTWORK">
+					<Layer level="OVERLAY">
 						<Texture parentKey="Spark" atlas="honorsystem-bar-spark" alphaMode="ADD" hidden="true">
-							<Size x="16" y="30"/>
+							<Size x="11" y="44"/>
 							<Anchors>
 								<Anchor point="CENTER"/>
 							</Anchors>
@@ -453,6 +453,9 @@
 				</Scripts>
 			</Frame>
 		</Frames>
+		<KeyValues>
+			<KeyValue type="boolean" key="isSmall" value="true"/>
+		</KeyValues>
 		<Scripts>
 			<OnLoad function="PVPHonorXPBar_OnLoad"/>
 	 		<OnShow function="PVPHonorXPBar_Update"/>

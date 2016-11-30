@@ -380,7 +380,7 @@ function UpdatePrepFrames()
 			prepFrame.specPortrait = _G["ArenaPrepFrame"..i.."SpecPortrait"];
 			local specID, gender = GetArenaOpponentSpec(i);
 			if (specID > 0) then 
-				local _, _, _, specIcon, _, _, class = GetSpecializationInfoByID(specID, gender);
+				local _, _, _, specIcon, _, class = GetSpecializationInfoByID(specID, gender);
 				if( class ) then
 					prepFrame.classPortrait:SetTexture("Interface\\TargetingFrame\\UI-Classes-Circles");
 					prepFrame.classPortrait:SetTexCoord(unpack(CLASS_ICON_TCOORDS[strupper(class)]));

@@ -190,15 +190,24 @@
 									<Anchor point="TOP" y="-191"/>
 								</Anchors>
 							</FontString>
-							<FontString parentKey="Format" inherits="GameFontNormal">
-								<Size x="280" y="0"/>
-								<Anchors>
-									<Anchor point="TOP" x="0" y="-247"/>
-								</Anchors>
-							</FontString>
 						</Layer>
 					</Layers>
 					<Frames>
+						<SimpleHTML parentKey="Format">
+							<Size x="280" y="140"/>
+							<Anchors>
+								<Anchor point="TOP" x="0" y="-247"/>
+							</Anchors>
+							<Scripts>
+								<OnHyperlinkClick>
+									local linkType, index = string.split(":", link);
+									if ( linkType == "urlIndex" ) then
+										LoadURLIndex(tonumber(index));
+									end
+								</OnHyperlinkClick>
+							</Scripts>
+							<FontString inherits="GameFontNormal" />
+						</SimpleHTML>
 						<Frame parentKey="Spinner" inherits="LoadingSpinnerTemplate" hidden="true">
 							<Anchors>
 								<Anchor point="TOP" x="0" y="-235"/>

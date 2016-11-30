@@ -1610,7 +1610,7 @@ function UIParent_OnEvent(self, event, ...)
 		StaticPopup_Show("ERR_AUTH_CHALLENGE_UI_INVALID");
 	elseif( event == "EXPERIMENTAL_CVAR_CONFIRMATION_NEEDED" ) then
 		StaticPopup_Show("EXPERIMENTAL_CVAR_WARNING");
-	
+
 	-- Events for Archaeology
 	elseif ( event == "ARCHAEOLOGY_TOGGLE" ) then
 		ArchaeologyFrame_LoadUI();
@@ -3878,7 +3878,7 @@ end
 
 function CanGroupInvite()
 	if ( IsInGroup() ) then
-		if ( UnitIsGroupLeader("player") or UnitIsGroupAssistant("player") ) then
+		if ( not HasLFGRestrictions() and (UnitIsGroupLeader("player") or UnitIsGroupAssistant("player")) ) then
 			return true;
 		else
 			return false;
@@ -3889,7 +3889,7 @@ function CanGroupInvite()
 end
 
 function InviteToGroup(name)
-	if ( not IsInRaid() and GetNumGroupMembers() > MAX_PARTY_MEMBERS) then
+	if ( not IsInRaid() and GetNumGroupMembers() > MAX_PARTY_MEMBERS and CanGroupInvite() ) then
 		local dialog = StaticPopup_Show("CONVERT_TO_RAID");
 		if ( dialog ) then
 			dialog.data = name;
@@ -3920,28 +3920,46 @@ function UpdateInviteConfirmationDialogs()
 	local confirmationType, name, guid, rolesInvalid, willConvertToRaid = GetInviteConfirmationInfo(firstInvite);
 	local text = "";
 	if ( confirmationType == LE_INVITE_CONFIRMATION_REQUEST ) then
-		local suggesterGuid, suggesterName, relationship = GetInviteReferralInfo(firstInvite);
+		local suggesterGuid, suggesterName, relationship, isQuickJoin = GetInviteReferralInfo(firstInvite);
 
 		--If we ourselves have a relationship with this player, we'll just act as if they asked through us.
 		local _, color, selfRelationship = SocialQueueUtil_GetNameAndColor(guid);
 		if ( selfRelationship ) then
-			text = text..string.format(INVITE_CONFIRMATION_REQUEST, color..name..FONT_COLOR_CODE_CLOSE);
+			if ( isQuickJoin ) then
+				text = text..string.format(INVITE_CONFIRMATION_REQUEST_QUICKJOIN, color..name..FONT_COLOR_CODE_CLOSE);
+			else
+				text = text..string.format(INVITE_CONFIRMATION_REQUEST, color..name..FONT_COLOR_CODE_CLOSE);
+			end
 		elseif ( suggesterGuid ) then
 			suggesterName = GetSocialColoredName(suggesterName, suggesterGuid);
 			if ( relationship == LE_INVITE_CONFIRMATION_RELATION_FRIEND ) then
-				text = text..string.format(INVITE_CONFIRMATION_REQUEST_FRIEND, suggesterName, name);
+				if ( isQuickJoin ) then
+					text = text..string.format(INVITE_CONFIRMATION_REQUEST_FRIEND_QUICKJOIN, suggesterName, name);
+				else
+					text = text..string.format(INVITE_CONFIRMATION_REQUEST_FRIEND, suggesterName, name);
+				end
 			elseif ( relationship == LE_INVITE_CONFIRMATION_RELATION_GUILD ) then
-				text = text..string.format(INVITE_CONFIRMATION_REQUEST_GUILD, suggesterName, name);
+				if ( isQuickJoin ) then
+					text = text..string.format(INVITE_CONFIRMATION_REQUEST_GUILD_QUICKJOIN, suggesterName, name);
+				else
+					text = text..string.format(INVITE_CONFIRMATION_REQUEST_GUILD, suggesterName, name);
+				end
 			else
 				text = text..string.format(INVITE_CONFIRMATION_REQUEST, name);
 			end
 		else
-			text = text..string.format(INVITE_CONFIRMATION_REQUEST, name);
+			if ( isQuickJoin ) then
+				text = text..string.format(INVITE_CONFIRMATION_REQUEST_QUICKJOIN, name);
+			else
+				text = text..string.format(INVITE_CONFIRMATION_REQUEST, name);
+			end
 		end
 	elseif ( confirmationType == LE_INVITE_CONFIRMATION_SUGGEST ) then
-		local suggesterGuid, suggesterName, relationship = GetInviteReferralInfo(firstInvite);
+		local suggesterGuid, suggesterName, relationship, isQuickJoin = GetInviteReferralInfo(firstInvite);
 		suggesterName = GetSocialColoredName(suggesterName, suggesterGuid);
 		name = GetSocialColoredName(name, guid);
+
+		-- Only using a single string here, if somebody is suggesting a person to join the group, QuickJoin text doesn't apply.
 		text = text..string.format(INVITE_CONFIRMATION_SUGGEST, suggesterName, name);
 	end
 
@@ -4658,7 +4676,7 @@ function BuildIconArray(parent, baseName, template, rowSize, numRows, onButtonCr
 	if ( onButtonCreated ) then
 		onButtonCreated(parent, previousButton);
 	end
-	
+
 	local numIcons = rowSize * numRows;
 	for i = 2, numIcons do
 		local newButton = CreateFrame("CheckButton", baseName..i, parent, template);
@@ -4669,7 +4687,7 @@ function BuildIconArray(parent, baseName, template, rowSize, numRows, onButtonCr
 		else
 			newButton:SetPoint("LEFT", previousButton, "RIGHT", 10, 0);
 		end
-		
+
 		previousButton = newButton;
 		newButton:Hide();
 		if ( onButtonCreated ) then
@@ -4715,7 +4733,7 @@ function WillAcceptInviteRemoveQueues()
 	end
 
 	--Don't need to look at LFGList listings because we can't accept invites while in one
-	
+
 	--LFGList applications
 	local apps = C_LFGList.GetApplications();
 	for i=1, #apps do

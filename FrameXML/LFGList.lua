@@ -666,10 +666,10 @@ function LFGListEntryCreation_Select(self, filters, categoryID, groupID, activit
 
 	if ( useHonorLevel ) then
 		self.HonorLevel:Show();
-		self.VoiceChat:SetPoint("TOPLEFT", self.HonorLevel, "BOTTOMLEFT", 0, -5);
+		self.VoiceChat:SetPoint("TOPLEFT", self.HonorLevel, "BOTTOMLEFT", 0, -3);
 	else
 		self.HonorLevel:Hide();
-		self.VoiceChat:SetPoint("TOPLEFT", self.ItemLevel, "BOTTOMLEFT", 0, -5);
+		self.VoiceChat:SetPoint("TOPLEFT", self.ItemLevel, "BOTTOMLEFT", 0, -3);
 	end
 
 	LFGListRequirement_Validate(self.ItemLevel, self.ItemLevel.EditBox:GetText());
@@ -2795,6 +2795,12 @@ function LFGListUtil_IsEntryEmpowered()
 	return UnitIsGroupLeader("player", LE_PARTY_CATEGORY_HOME) or UnitIsGroupAssistant("player", LE_PARTY_CATEGORY_HOME);
 end
 
+function LFGListUtil_CanSearchForGroup()
+	local hasActiveEntry = C_LFGList.GetActiveEntryInfo();
+	local canSearch = not hasActiveEntry or (LFGListUtil_IsAppEmpowered() or LFGListUtil_IsEntryEmpowered());
+	return canSearch;
+end
+
 function LFGListUtil_AppendStatistic(label, value, title, lastTitle)
 	if ( title ~= lastTitle ) then
 		GameTooltip:AddLine(" ");
@@ -3182,8 +3188,10 @@ function LFGListUtil_GetQuestCategoryData(questID)
 end
 
 function LFGListUtil_FindQuestGroup(questID)
-	if C_LFGList.GetActiveEntryInfo() then -- when in a group, need to check empowered state
-		StaticPopup_Show("PREMADE_GROUP_SEARCH_DELIST_WARNING", nil, nil, questID);
+	if C_LFGList.GetActiveEntryInfo() then
+		if LFGListUtil_IsEntryEmpowered() then
+			StaticPopup_Show("PREMADE_GROUP_SEARCH_DELIST_WARNING", nil, nil, questID);
+		end
 	else
 		LFGListFrame_BeginFindQuestGroup(LFGListFrame, questID);
 	end

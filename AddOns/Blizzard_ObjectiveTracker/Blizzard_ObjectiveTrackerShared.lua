@@ -44,8 +44,8 @@ end
 function QuestObjectiveItem_OnUpdate(self, elapsed)
 	-- Handle range indicator
 	local rangeTimer = self.rangeTimer;
-	if ( rangeTimer ) then	
-		rangeTimer = rangeTimer - elapsed;		
+	if ( rangeTimer ) then
+		rangeTimer = rangeTimer - elapsed;
 		if ( rangeTimer <= 0 ) then
 			local link, item, charges, showItemWhenComplete = GetQuestLogSpecialItemInfo(self:GetID());
 			if ( not charges or charges ~= self.charges ) then
@@ -65,7 +65,7 @@ function QuestObjectiveItem_OnUpdate(self, elapsed)
 			end
 			rangeTimer = TOOLTIP_UPDATE_TIME;
 		end
-		
+
 		self.rangeTimer = rangeTimer;
 	end
 end
@@ -84,7 +84,7 @@ function QuestObjectiveItem_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip:SetQuestLogSpecialItem(self:GetID());
 end
-		
+
 function QuestObjectiveItem_OnClick(self, button)
 	if ( IsModifiedClick("CHATLINK") and ChatEdit_GetActiveWindow() ) then
 		local link, item, charges, showItemWhenComplete = GetQuestLogSpecialItemInfo(self:GetID());
@@ -106,4 +106,175 @@ function QuestObjectiveItem_UpdateCooldown(itemButton)
 			SetItemButtonTextureVertexColor(itemButton, 1, 1, 1);
 		end
 	end
+end
+
+local g_questFindGroupButtonPool = CreateFramePool("BUTTON", nil, "QuestObjectiveFindGroupButtonTemplate", OnRelease);
+function QuestObjectiveFindGroup_AcquireButton(parent, questID)
+	local button = g_questFindGroupButtonPool:Acquire();
+	button:SetParent(parent);
+	button.questID = questID;
+
+	return button;
+end
+
+function QuestObjectiveFindGroup_ReleaseButton(self)
+	self.questID = nil;
+	g_questFindGroupButtonPool:Release(self);
+end
+
+function QuestObjectiveFindGroupButton_UpdateEnabledState(self)
+	self:SetEnabled(LFGListUtil_CanSearchForGroup());
+end
+
+function QuestObjectiveFindGroupButton_Initialize(self)
+	QuestObjectiveFindGroupButton_UpdateEnabledState(self);
+end
+
+function QuestObjectiveFindGroup_SetEventsRegistered(self, registered)
+	local func = registered and self.RegisterEvent or self.UnregisterEvent;
+	func(self, "GROUP_JOINED");
+	func(self, "GROUP_LEFT");
+	func(self, "LFG_LIST_ACTIVE_ENTRY_UPDATE");
+end
+
+function QuestObjectiveFindGroup_OnEvent(self, event, ...)
+	QuestObjectiveFindGroupButton_UpdateEnabledState(self);
+end
+
+function QuestObjectiveFindGroup_OnShow(self)
+	QuestObjectiveFindGroup_SetEventsRegistered(self, true);
+end
+
+function QuestObjectiveFindGroup_OnHide(self)
+	QuestObjectiveFindGroup_SetEventsRegistered(self, false);
+end
+
+function QuestObjectiveFindGroup_OnMouseDown(self)
+	if self:IsEnabled() then
+		self.Icon:SetPoint("CENTER", self, "CENTER", -2, -1);
+	end
+end
+
+function QuestObjectiveFindGroup_OnMouseUp(self)
+	if self:IsEnabled() then
+		self.Icon:SetPoint("CENTER", self, "CENTER", -1, 0);
+	end
+end
+
+function QuestObjectiveFindGroup_OnEnter(self)
+	GameTooltip:SetOwner(self);
+	GameTooltip:AddLine(TOOLTIP_TRACKER_FIND_GROUP_BUTTON, HIGHLIGHT_FONT_COLOR:GetRGB());
+
+	if not self:IsEnabled() and C_LFGList.GetActiveEntryInfo() then
+		local r, g, b = RED_FONT_COLOR:GetRGB();
+		GameTooltip:AddLine(CANNOT_DO_THIS_WHILE_LFGLIST_LISTED, r, g, b, true);
+	end
+
+	GameTooltip:Show();
+end
+
+function QuestObjectiveFindGroup_OnLeave(self)
+	GameTooltip:Hide();
+end
+
+function QuestObjectiveFindGroup_OnEnable(self)
+	self.Icon:SetDesaturated(false);
+end
+
+function QuestObjectiveFindGroup_OnDisable(self)
+	self.Icon:SetDesaturated(true);
+end
+
+function QuestObjectiveFindGroup_OnClick(self)
+	LFGListUtil_FindQuestGroup(self.questID);
+end
+
+local defaultInitialAnchorOffsets = { 0, 0 };
+
+function QuestObjectiveSetupBlockButton_AddRightButton(block, button, initialAnchorOffsets)
+	if block.rightButton == button then
+		-- TODO: Fix for real, some event causes the findGroup button to get added twice (could happen for any button)
+		-- so it doesn't need to be reanchored another time
+		return;
+	end
+
+	button:ClearAllPoints();
+
+	local paddingBetweenButtons = block.module.paddingBetweenButtons or 0;
+
+	if block.rightButton then
+		button:SetPoint("RIGHT", block.rightButton, "LEFT", -paddingBetweenButtons, 0);
+	else
+		initialAnchorOffsets = initialAnchorOffsets or defaultInitialAnchorOffsets;
+		button:SetPoint("TOPRIGHT", block, initialAnchorOffsets[1], initialAnchorOffsets[2]);
+	end
+
+	button:Show();
+
+	block.rightButton = button;
+	block.lineWidth = block.lineWidth - button:GetWidth() - paddingBetweenButtons;
+end
+
+function QuestObjectiveSetupBlockButton_FindGroup(block, questID)
+	-- Cache this off to avoid spurious calls to QuestUtils_CanUseAutoGroupFinder, for a given quest the result will not change until
+	-- completed, and when completed this world quest should no longer be on the tracker.
+	if block.hasGroupFinderButton == nil then
+		block.hasGroupFinderButton = QuestUtils_CanUseAutoGroupFinder(questID);
+	end
+
+	if block.hasGroupFinderButton then
+		local groupFinderButton = block.groupFinderButton;
+		if not groupFinderButton then
+			groupFinderButton = QuestObjectiveFindGroup_AcquireButton(block, questID);
+			block.groupFinderButton = groupFinderButton;
+		end
+
+		QuestObjectiveFindGroupButton_Initialize(groupFinderButton);
+		QuestObjectiveSetupBlockButton_AddRightButton(block, groupFinderButton, block.module.buttonOffsets.groupFinder);
+	else
+		QuestObjectiveReleaseBlockButton_FindGroup(block);
+	end
+
+	return block.hasGroupFinderButton;
+end
+
+function QuestObjectiveReleaseBlockButton_FindGroup(block)
+	block.hasGroupFinderButton = nil;
+
+	if block.groupFinderButton then
+		QuestObjectiveFindGroup_ReleaseButton(block.groupFinderButton);
+		block.groupFinderButton = nil;
+	end
+end
+
+function QuestObjectiveSetupBlockButton_Item(block, questLogIndex, isQuestComplete)
+	local _, item, _, showItemWhenComplete = GetQuestLogSpecialItemInfo(questLogIndex);
+	local shouldShowItem = item and (not isQuestComplete or showItemWhenComplete);
+
+	if shouldShowItem then
+		local itemButton = block.itemButton;
+		if not itemButton then
+			itemButton = QuestObjectiveItem_AcquireButton(block);
+			block.itemButton = itemButton;
+		end
+
+		QuestObjectiveItem_Initialize(itemButton, questLogIndex);
+		QuestObjectiveSetupBlockButton_AddRightButton(block, itemButton, block.module.buttonOffsets.useItem);
+	else
+		QuestObjectiveReleaseBlockButton_Item(block);
+	end
+
+	return shouldShowItem;
+end
+
+function QuestObjectiveReleaseBlockButton_Item(block)
+	if block.itemButton then
+		QuestObjectiveItem_ReleaseButton(block.itemButton);
+		block.itemButton = nil;
+	end
+end
+
+function QuestObjective_SetupHeader(block, initialLineWidth)
+	block.rightButton = nil;
+	block.lineWidth = initialLineWidth or OBJECTIVE_TRACKER_TEXT_WIDTH;
 end

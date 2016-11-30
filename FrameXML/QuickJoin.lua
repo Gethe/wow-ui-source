@@ -2,6 +2,7 @@
 ---------Constants----------
 ----------------------------
 QUICK_JOIN_NAME_SEPARATION = -1;
+ROLE_SELECTION_PROMPT_DEFAULT_HEIGHT = 160;
 
 ----------------------------
 -------QuickJoinFrame-------
@@ -28,6 +29,7 @@ function QuickJoinMixin:SetEventsRegistered(registered)
 	func(self, "SOCIAL_QUEUE_UPDATE");
 	func(self, "GROUP_JOINED");
 	func(self, "GROUP_LEFT");
+	func(self, "LFG_LIST_SEARCH_RESULT_UPDATED");
 end
 
 function QuickJoinMixin:OnShow()
@@ -46,15 +48,13 @@ end
 function QuickJoinMixin:OnEvent(event, ...)
 	if ( event == "SOCIAL_QUEUE_UPDATE" ) then
 		local requester = ...;
-		self.entries:UpdateEntry(requester);
-
-		if ( requester == self:GetSelectedGroup() ) then
-			local entry = self.entries:GetEntry(requester);
-			if ( entry and not entry:CanJoin() ) then
-				self:SelectGroup(nil);
-			end
+		self:UpdateEntry(requester);
+	elseif ( event == "LFG_LIST_SEARCH_RESULT_UPDATED" ) then
+		local lfgListID = ...;
+		local guid = self.entries:GetEntryGUIDByLFGListID(lfgListID);
+		if ( guid ) then
+			self:UpdateEntry(guid);
 		end
-		self:UpdateScrollFrame();
 	elseif ( event == "GROUP_JOINED" ) then
 		local index, guid = ...;
 		self.entries:UpdateEntry(guid);
@@ -68,6 +68,19 @@ function QuickJoinMixin:OnEvent(event, ...)
 		self:UpdateScrollFrame();
 		self:UpdateJoinButtonState();
 	end
+end
+
+function QuickJoinMixin:UpdateEntry(guid)
+	self.entries:UpdateEntry(guid);
+
+	if ( guid == self:GetSelectedGroup() ) then
+		local entry = self.entries:GetEntry(guid);
+		if ( entry and not entry:CanJoin() ) then
+			self:SelectGroup(nil);
+		end
+	end
+
+	self:UpdateScrollFrame();
 end
 
 function QuickJoinMixin:UpdateScrollFrame()
@@ -167,7 +180,7 @@ end
 function QuickJoinMixin:UpdateJoinButtonState()
 	-- Request To Join as our default button text if nothing is selected.
 	self.JoinQueueButton:SetText(JOIN_QUEUE);
-	
+
 	if ( IsInGroup(LE_PARTY_CATEGORY_HOME) ) then
 		self.JoinQueueButton:Disable();
 		self.JoinQueueButton.tooltip = QUICK_JOIN_ALREADY_IN_PARTY;
@@ -177,7 +190,7 @@ function QuickJoinMixin:UpdateJoinButtonState()
 	else
 		self.JoinQueueButton:Enable();
 		self.JoinQueueButton.tooltip = nil;
-		
+
 		local queues = C_SocialQueue.GetGroupQueues(self:GetSelectedGroup());
 		if ( queues and queues[1] and queues[1].type == "lfglist" ) then
 			self.JoinQueueButton:SetText(SIGN_UP);
@@ -241,6 +254,15 @@ function QuickJoinEntriesMixin:GetEntry(guid)
 	return self.entriesByGUID[guid];
 end
 
+function QuickJoinEntriesMixin:GetEntryGUIDByLFGListID(lfgListID)
+	for guid, entry in pairs(self.entriesByGUID) do
+		local info = entry:GetActiveLFGListInfo();
+		if ( info and info.clientID == lfgListID ) then
+			return guid;
+		end
+	end
+end
+
 function QuickJoinEntriesMixin:UpdateAll()
 	local groups = C_SocialQueue.GetAllGroups();
 	self.entries = {};
@@ -264,7 +286,7 @@ function QuickJoinEntriesMixin:UpdateEntry(requester)
 		local canJoin, numQueues = C_SocialQueue.GetGroupInfo(requester);
 		if ( canJoin and numQueues and numQueues > 0 ) then
 			--Just add the new one to the end
-			local entry = CreateFromMixins(QuickJoinEntryMixin);
+			entry = CreateFromMixins(QuickJoinEntryMixin);
 			entry:Init(requester);
 			self.entries[#self.entries+1] = entry;
 			self.entriesByGUID[requester] = entry;
@@ -364,10 +386,10 @@ function QuickJoinEntryMixin:BackfillAndUpdateFields(newList, oldList, idGetter)
 end
 
 function QuickJoinEntryMixin:GetActiveLFGListInfo()
-	for i=1, #self.displayedQueues do
+	for i, queueInfo in ipairs(self.displayedQueues) do
 		if ( not self.zombieQueueIndices[i] ) then
-			if ( self.displayedQueues[i].type == "lfglist" ) then
-				return self.displayedQueues[i];
+			if ( queueInfo.type == "lfglist" ) then
+				return queueInfo;
 			end
 		end
 	end
@@ -388,13 +410,13 @@ function QuickJoinEntryMixin:ApplyToTooltip(tooltip)
 		GMError("Applying quick join entry to tooltip with no members.");
 		return;
 	end
-	
+
 	local playerName, color = SocialQueueUtil_GetNameAndColor(members[1]);
 	if ( #members > 1 ) then
 		playerName = string.format(QUICK_JOIN_TOAST_EXTRA_PLAYERS, playerName, #members - 1);
 	end
 	playerName = color..playerName..FONT_COLOR_CODE_CLOSE;
-	
+
 	SocialQueueUtil_SetTooltip(tooltip, playerName, self.displayedQueues, self:CanJoin());
 end
 
@@ -409,11 +431,11 @@ function QuickJoinEntryMixin:ApplyToFrame(frame)
 			nameObj:SetPoint("TOPLEFT", frame.Members[i-1], "BOTTOMLEFT", 0, -QUICK_JOIN_NAME_SEPARATION);
 			frame.Members[i] = nameObj;
 		end
-		
+
 		if ( i < #self.displayedMembers ) then
 			name = name..",";
 		end
-		
+
 		if ( self.zombieMemberIndices[i] or not self:CanJoin() ) then
 			name = DISABLED_FONT_COLOR_CODE..name..FONT_COLOR_CODE_CLOSE;
 		else
@@ -440,7 +462,7 @@ function QuickJoinEntryMixin:ApplyToFrame(frame)
 			queueObj:SetPoint("TOPLEFT", frame.Queues[i-1], "BOTTOMLEFT", 0, -QUICK_JOIN_NAME_SEPARATION);
 			frame.Queues[i] = queueObj;
 		end
-		
+
 		if ( i == MAX_NUM_DISPLAYED_QUEUES and i ~= #self.displayedQueues ) then
 			local color = "|cffcccccc";
 			if ( not groupIsJoinable ) then
@@ -461,11 +483,11 @@ function QuickJoinEntryMixin:ApplyToFrame(frame)
 			if ( self.displayedQueues[i].type == "lfglist" ) then
 				queueName = string.format(LFG_LIST_IN_QUOTES, queueName);
 			end
-			
+
 			if ( i < #self.displayedQueues ) then
 				queueName = queueName..PLAYER_LIST_DELIMITER;
 			end
-			
+
 			if ( self.zombieQueueIndices[i] or not self:CanJoin() ) then
 				queueName = DISABLED_FONT_COLOR_CODE..queueName..FONT_COLOR_CODE_CLOSE;
 			end
@@ -473,7 +495,7 @@ function QuickJoinEntryMixin:ApplyToFrame(frame)
 		queueObj:SetText(queueName);
 		queueObj:Show();
 	end
-	
+
 	if ( groupIsJoinable ) then
 		frame.Icon:SetDesaturation(0);
 		frame.Icon:SetAlpha(0.9);
@@ -488,7 +510,7 @@ function QuickJoinEntryMixin:ApplyToFrame(frame)
 
 	--Height
 	frame:SetHeight(self:GetFrameHeight());
-	
+
 	if ( self.displayedQueues[1].type == "lfglist" ) then
 		frame.Icon:SetAtlas("socialqueuing-icon-group");
 		frame.Icon:SetSize(17, 16);
@@ -519,6 +541,14 @@ function QuickJoinRoleSelectionMixin:ShowForGroup(guid)
 		not needHealer and QUICK_JOIN_ROLE_NOT_NEEDED,
 		not needDamage and QUICK_JOIN_ROLE_NOT_NEEDED
 	);
+	
+	if ( WillAcceptInviteRemoveQueues() ) then
+		self.QueueWarningText:Show();
+		self:SetHeight(ROLE_SELECTION_PROMPT_DEFAULT_HEIGHT + self.QueueWarningText:GetHeight() + 8);
+	else
+		self.QueueWarningText:Hide();
+		self:SetHeight(ROLE_SELECTION_PROMPT_DEFAULT_HEIGHT);
+	end
 	StaticPopupSpecial_Show(self);
 end
 

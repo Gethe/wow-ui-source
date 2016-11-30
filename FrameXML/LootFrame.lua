@@ -610,7 +610,7 @@ function BonusRollFrame_StartBonusRoll(spellID, text, duration, currencyID, diff
 
 	local specID = GetLootSpecialization();
 	if ( specID and specID > 0 ) then
-		local id, name, description, texture, background, role, class = GetSpecializationInfoByID(specID);
+		local id, name, description, texture, role, class = GetSpecializationInfoByID(specID);
 		frame.SpecIcon:SetTexture(texture);
 		frame.SpecIcon:Show();
 		frame.SpecRing:Show();
@@ -673,7 +673,7 @@ function BonusRollFrame_OnEvent(self, event, ...)
 	elseif ( event == "PLAYER_LOOT_SPEC_UPDATED" ) then
 		local specID = GetLootSpecialization();
 		if ( specID and specID > 0 ) then
-			local id, name, description, texture, background, role, class = GetSpecializationInfoByID(specID);
+			local id, name, description, texture, role, class = GetSpecializationInfoByID(specID);
 			self.SpecIcon:SetTexture(texture);
 			self.SpecIcon:Show();
 			self.SpecRing:Show();

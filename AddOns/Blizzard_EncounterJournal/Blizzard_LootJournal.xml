@@ -38,10 +38,12 @@
 				</Texture>
 			</Layer>
 			<Layer level="BORDER">
-				<Texture parentKey="Background" atlas="loottab-item-background" useAtlasSize="true">
+				<Texture parentKey="Background" file="Interface\EncounterJournal\loottab-item-background">
+					<Size x="382" y="92"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="-15" y="15"/>
 					</Anchors>
+					<TexCoords left="0" right="0.74609375" top="0" bottom="0.71875"/>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">

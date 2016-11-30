@@ -28,6 +28,7 @@ Import("time");
 Import("type");
 Import("PlaySound");
 Import("GetCVar");
+Import("LoadURLIndex");
 Import("LOCALE_enGB");
 Import("TOKEN_REDEEM_LABEL"); 
 Import("TOKEN_REDEEM_GAME_TIME_TITLE"); 
@@ -59,6 +60,7 @@ Import("TOKEN_COMPLETE_BALANCE_DESCRIPTION")
 Import("TOKEN_CONFIRM_BALANCE_DESCRIPTION")
 Import("TOKEN_REDEEM_BALANCE_BUTTON_LABEL")
 Import("TOKEN_REDEEM_BALANCE_DESCRIPTION")
+Import("TOKEN_REDEEM_BALANCE_CONFIRMATION_DESCRIPTION")
 Import("TOKEN_REDEEM_BALANCE_ERROR_CAP_FORMAT")
 Import("TOKEN_REDEEM_BALANCE_FORMAT")
 Import("TOKEN_REDEEM_BALANCE_TITLE")
@@ -150,66 +152,66 @@ end
 
 local function formatCurrency(dollars, cents, alwaysShowCents)
 	if ( alwaysShowCents or cents ~= 0 ) then
-		return ("%s%s%02d"):format(formatLargeNumber(dollars), DECIMAL_SEPERATOR, cents);
+		return string.format("%s%s%02d", formatLargeNumber(dollars), DECIMAL_SEPERATOR, cents);
 	else
 		return formatLargeNumber(dollars);
 	end
 end
 
 local function currencyFormatUSD(dollars, cents)
-	return BLIZZARD_STORE_CURRENCY_FORMAT_USD:format(formatCurrency(dollars, cents, false));
+	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_USD, formatCurrency(dollars, cents, false));
 end
 
 local function currencyFormatGBP(dollars, cents)
-	return BLIZZARD_STORE_CURRENCY_FORMAT_GBP:format(formatCurrency(dollars, cents, false));
+	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_GBP, formatCurrency(dollars, cents, false));
 end
 
 local function currencyFormatKRWLong(dollars, cents)
-	return BLIZZARD_STORE_CURRENCY_FORMAT_KRW_LONG:format(formatCurrency(dollars, cents, false));
+	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_KRW_LONG, formatCurrency(dollars, cents, false));
 end
 
 local function currencyFormatEuro(dollars, cents)
-	return BLIZZARD_STORE_CURRENCY_FORMAT_EURO:format(formatCurrency(dollars, cents, false));
+	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_EURO, formatCurrency(dollars, cents, false));
 end
 
 local function currencyFormatRUB(dollars, cents)
-	return BLIZZARD_STORE_CURRENCY_FORMAT_RUB:format(formatCurrency(dollars, cents, false));
+	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_RUB, formatCurrency(dollars, cents, false));
 end
 
 local function currencyFormatARS(dollars, cents)
-	return BLIZZARD_STORE_CURRENCY_FORMAT_ARS:format(formatCurrency(dollars, cents, false));
+	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_ARS, formatCurrency(dollars, cents, false));
 end
 
 local function currencyFormatCLP(dollars, cents)
-	return BLIZZARD_STORE_CURRENCY_FORMAT_CLP:format(formatCurrency(dollars, cents, false));
+	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_CLP, formatCurrency(dollars, cents, false));
 end
 
 local function currencyFormatMXN(dollars, cents)
-	return BLIZZARD_STORE_CURRENCY_FORMAT_MXN:format(formatCurrency(dollars, cents, false));
+	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_MXN, formatCurrency(dollars, cents, false));
 end
 
 local function currencyFormatBRL(dollars, cents)
-	return BLIZZARD_STORE_CURRENCY_FORMAT_BRL:format(formatCurrency(dollars, cents, false));
+	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_BRL, formatCurrency(dollars, cents, false));
 end
 
 local function currencyFormatAUD(dollars, cents)
-	return BLIZZARD_STORE_CURRENCY_FORMAT_AUD:format(formatCurrency(dollars, cents, false));
+	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_AUD, formatCurrency(dollars, cents, false));
 end
 
 local function currencyFormatCPTLong(dollars, cents)
-	return BLIZZARD_STORE_CURRENCY_FORMAT_CPT_LONG:format(formatCurrency(dollars, cents, false));
+	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_CPT_LONG, formatCurrency(dollars, cents, false));
 end
 
 local function currencyFormatTPT(dollars, cents)
-	return BLIZZARD_STORE_CURRENCY_FORMAT_TPT:format(formatCurrency(dollars, cents, false));
+	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_TPT, formatCurrency(dollars, cents, false));
 end
 
 local function currencyFormatRawStar(dollars, cents)
-	return BLIZZARD_STORE_CURRENCY_RAW_ASTERISK:format(formatCurrency(dollars, cents, false));
+	return string.format(BLIZZARD_STORE_CURRENCY_RAW_ASTERISK, formatCurrency(dollars, cents, false));
 end
 
 local function currencyFormatBeta(dollars, cents)
-	return BLIZZARD_STORE_CURRENCY_BETA:format(formatCurrency(dollars, cents, true));
+	return string.format(BLIZZARD_STORE_CURRENCY_BETA, formatCurrency(dollars, cents, true));
 end
 
 local currencySpecific = {
@@ -311,6 +313,7 @@ function WowTokenRedemptionFrame_EnableBalance(self)
 	self.RightDisplay.Image:SetDesaturated(false);
 	self.RightDisplay.Image:SetAlpha(1);
 	self.RightDisplay.Description:SetFontObject("GameFontHighlight");
+	self.RightDisplay.Description:SetText(string.format(TOKEN_REDEEM_BALANCE_DESCRIPTION, GetBalanceString()));
 	self.RightDisplay.RedeemButton:Enable();
 end
 
@@ -335,25 +338,25 @@ function GetTimeLeftMinuteString(minutes)
 		local wks = math.floor(minutes / weeks);
 
 		minutes = minutes - (wks * weeks);
-		str = str .. WEEKS_ABBR:format(wks);
+		str = str .. string.format(WEEKS_ABBR, wks);
 	end
 
 	if (math.floor(minutes / days) > 0) then
 		local dys = math.floor(minutes / days);
 
 		minutes = minutes - (dys * days);
-		str = str .. " " .. DAYS_ABBR:format(dys);
+		str = str .. " " .. string.format(DAYS_ABBR, dys);
 	end
 
 	if (math.floor(minutes / hours) > 0) then
 		local hrs = math.floor(minutes / hours);
 
 		minutes = minutes - (hrs * hours);
-		str = str .. " " .. HOURS_ABBR:format(hrs);
+		str = str .. " " .. string.format(HOURS_ABBR, hrs);
 	end
 
 	if (minutes > 0) then
-		str = str .. " " .. MINUTES_ABBR:format(minutes);
+		str = str .. " " .. string.format(MINUTES_ABBR, minutes);
 	end
 
 	return str;
@@ -371,7 +374,7 @@ function GetGameTimeRedemptionString()
 
 	local str = isSub and TOKEN_REDEEM_GAME_TIME_RENEWAL_FORMAT or TOKEN_REDEEM_GAME_TIME_EXPIRATION_FORMAT;
 
-	return str:format(SecureFormatShortDate(oldDate.day, oldDate.month, oldDate.year), SecureFormatShortDate(newDate.day, newDate.month, newDate.year))
+	return string.format(str, SecureFormatShortDate(oldDate.day, oldDate.month, oldDate.year), SecureFormatShortDate(newDate.day, newDate.month, newDate.year))
 end
 
 function GetBalanceRedemptionString()
@@ -381,7 +384,7 @@ function GetBalanceRedemptionString()
 	local balanceStr = info.currencyFormat(currentBalance, 0);
 	local addedStr = info.currencyFormat(currentBalance + addedBalance, 0);
 
-	return TOKEN_REDEEM_BALANCE_FORMAT:format(balanceStr, addedStr);
+	return string.format(TOKEN_REDEEM_BALANCE_FORMAT, balanceStr, addedStr);
 end
 
 function WowTokenRedemptionFrame_OnEvent(self, event, ...)
@@ -406,7 +409,7 @@ function WowTokenRedemptionFrame_OnEvent(self, event, ...)
 				self.RightDisplay.Format:Hide();
 				self.RightDisplay.Spinner:Show();
 				local info = currencyInfo();
-				self.RightDisplay.RedeemButton:SetText(TOKEN_REDEEM_BALANCE_BUTTON_LABEL:format(info.currencyFormat(C_WowTokenSecure.GetBalanceRedeemAmount(), 0)));
+				self.RightDisplay.RedeemButton:SetText(string.format(TOKEN_REDEEM_BALANCE_BUTTON_LABEL, info.currencyFormat(C_WowTokenSecure.GetBalanceRedeemAmount(), 0)));
 			end
 		end
 		self:Show();
@@ -430,9 +433,9 @@ function WowTokenRedemptionFrame_OnEvent(self, event, ...)
 			if (cannotRedeemReason == LE_TOKEN_RESULT_ERROR_BALANCE_NEAR_CAP) then
 				local info = currencyInfo();
 				local amountStr = info.currencyFormat(currentBalance, 0);
-				self.RightDisplay.Format:SetText(TOKEN_REDEEM_BALANCE_ERROR_CAP_FORMAT:format(amountStr));
+				self.RightDisplay.Format:SetText("<html><body><p align=\"center\">"..string.format(TOKEN_REDEEM_BALANCE_ERROR_CAP_FORMAT, amountStr).."</p></body></html>");
 			else
-				self.RightDisplay.Format:SetText(TOKEN_REDEMPTION_UNAVAILABLE);
+				self.RightDisplay.Format:SetText("<html><body><p align=\"center\">"..TOKEN_REDEMPTION_UNAVAILABLE.."</p></body></html>");
 			end
 			self.RightDisplay.Spinner:Hide();
 			self.RightDisplay.Format:Show();
@@ -516,12 +519,12 @@ function GetSecureMoneyString(money, separateThousands)
 		copperString = copper..COPPER_AMOUNT_SYMBOL;
 	else
 		if (separateThousands) then
-			goldString = GOLD_AMOUNT_TEXTURE_STRING:format(formatLargeNumber(gold), 0, 0);
+			goldString = string.format(GOLD_AMOUNT_TEXTURE_STRING, formatLargeNumber(gold), 0, 0);
 		else
-			goldString = GOLD_AMOUNT_TEXTURE:format(gold, 0, 0);
+			goldString = string.format(GOLD_AMOUNT_TEXTURE, gold, 0, 0);
 		end
-		silverString = SILVER_AMOUNT_TEXTURE:format(silver, 0, 0);
-		copperString = COPPER_AMOUNT_TEXTURE:format(copper, 0, 0);
+		silverString = string.format(SILVER_AMOUNT_TEXTURE, silver, 0, 0);
+		copperString = string.format(COPPER_AMOUNT_TEXTURE, copper, 0, 0);
 	end
 	
 	local moneyString = "";
@@ -651,7 +654,7 @@ dialogs = {
 		completionIcon = false,
 		cautionIcon = true,
 		title = TOKEN_CONFIRMATION_TITLE,
-		description = TOKEN_REDEEM_BALANCE_DESCRIPTION,
+		description = TOKEN_REDEEM_BALANCE_CONFIRMATION_DESCRIPTION,
 		formatDesc = true,
 		descFormatArgs = function() local info = currencyInfo(); return { info.currencyFormat(C_WowTokenSecure.GetBalanceRedeemAmount(), 0) }; end,
 		confirmationDesc = nil, -- Now set in reaction to an event
@@ -694,7 +697,7 @@ dialogs = {
 		cautionIcon = true,
 		title = TOKEN_CREATE_AUCTION_TITLE,
 		confirmationDesc = TOKEN_CONFIRM_CREATE_AUCTION,
-		confirmationDescLine2 = function() return TOKEN_CONFIRM_CREATE_AUCTION_LINE_2:format(GetTimeLeftString()) end,
+		confirmationDescLine2 = function() return string.format(TOKEN_CONFIRM_CREATE_AUCTION_LINE_2, GetTimeLeftString()) end,
 		price = function() return GetSecureMoneyString(C_WowTokenPublic.GetGuaranteedPrice()); end,
 		button1 = CREATE_AUCTION,
 		button1OnClick = function(self) C_WowTokenSecure.ConfirmSellToken(true); self:Hide(); PlaySound("LOOTWINDOWCOINSOUND"); end,
@@ -826,7 +829,7 @@ function WowTokenDialog_SetDialog(self, dialogName)
 		self.Description:SetWidth(0);
 		local description;
 		if (dialog.formatDesc) then
-			description = dialog.description:format(unpack(descArgs));
+			description = string.format(dialog.description, unpack(descArgs));
 		else
 			description = dialog.description;
 		end
@@ -851,7 +854,7 @@ function WowTokenDialog_SetDialog(self, dialogName)
 		if (dialog.confDescIsFunction) then
 			confirmationDesc = dialog.confirmationDesc();
 		elseif (dialog.formatConfirmationDesc) then
-			confirmationDesc = dialog.confirmationDesc:format(unpack(confDescArgs));
+			confirmationDesc = string.format(dialog.confirmationDesc, unpack(confDescArgs));
 		else
 			confirmationDesc = dialog.confirmationDesc;
 		end
@@ -964,7 +967,7 @@ function WowTokenDialog_SetDialog(self, dialogName)
 					currentTicker = nil;
 					self:Hide();
 				elseif (remainingDialogTime <= (dialog.showCautionText and dialog.showCautionText or 20)) then
-					self.CautionText:SetText(TOKEN_PRICE_LOCK_EXPIRE:format(remainingDialogTime));
+					self.CautionText:SetText(string.format(TOKEN_PRICE_LOCK_EXPIRE, remainingDialogTime));
 					self.CautionText:Show();
 					local newHeight = height + self.CautionText:GetHeight() + 20;
 					if (dialog.button2) then

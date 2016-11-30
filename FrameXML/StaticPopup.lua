@@ -3658,6 +3658,7 @@ StaticPopupDialogs["PREMADE_GROUP_SEARCH_DELIST_WARNING"] = {
 	end,
 	whileDead = 1,
 	showAlert = 1,
+	hideOnEscape = 1,
 }
 
 function StaticPopup_FindVisible(which, data)

@@ -156,6 +156,7 @@ function LootJournalListMixin:SetClassAndSpecFilters(newClassFilter, newSpecFilt
 	local classFilter, specFilter = C_LootJournal.GetClassAndSpecFilters();
 	if not self.classAndSpecFiltersSet or classFilter ~= newClassFilter or specFilter ~= newSpecFilter then
 		C_LootJournal.SetClassAndSpecFilters(newClassFilter, newSpecFilter);
+		self.ScrollBar:SetValue(0);
 		self:Refresh();
 	end
 

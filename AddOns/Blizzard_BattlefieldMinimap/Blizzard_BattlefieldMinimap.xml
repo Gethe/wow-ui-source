@@ -225,6 +225,7 @@
 		<OnHide function="BattlefieldMinimap_OnHide"/>
 		<OnEvent function="BattlefieldMinimap_OnEvent"/>
 		<OnUpdate function="BattlefieldMinimap_OnUpdate"/>
+		<OnMouseUp function="BattlefieldMinimap_OnMouseUp"/>
 	</Scripts>
 </Frame>
 </Ui>

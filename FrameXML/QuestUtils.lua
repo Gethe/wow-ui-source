@@ -107,17 +107,18 @@ function QuestUtils_GetQuestName(questID)
 	return questName or "";
 end
 
-function QuestUtils_CanUseAutoGroupFinder(questID)
-	-- Auto-Finder is enabled for incomplete "group" non-dungeon quests that have a valid activity.
+function QuestUtils_CanUseAutoGroupFinder(questID, isDropdownRequest)
+	-- Auto-Finder dropdown is enabled for incomplete "group" non-dungeon quests that have a valid activity.
+	-- Auto-Finder button is enabled for all non-dungeon quests that have a valid activity.
 	if not IsQuestComplete(questID) then
 		local tagID, tagName, worldQuestType, rarity, isElite, tradeskillLineIndex = GetQuestTagInfo(questID);
 	 	if not IsQuestDungeonQuest_Internal(tagID, worldQuestType) and C_LFGList.GetActivityIDForQuestID(questID) then
 			if IsQuestWorldQuest_Internal(worldQuestType) then
-				return isElite;
+				return isDropdownRequest or isElite;
 			else
 				local questIndex = GetQuestLogIndexByID(questID);
 				if questIndex and questIndex > 0 then
-					return GetQuestLogGroupNum(questIndex) > 1;
+					return isDropdownRequest or (GetQuestLogGroupNum(questIndex) > 1);
 				end
 			end
 		end
