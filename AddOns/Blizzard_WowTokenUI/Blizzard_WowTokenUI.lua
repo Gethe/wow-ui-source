@@ -404,7 +404,6 @@ function WowTokenRedemptionFrame_OnEvent(self, event, ...)
 			self.LeftDisplay.Format:Hide();
 			self.LeftDisplay.Spinner:Show();
 			if (BalanceEnabled) then
-				WowTokenRedemptionFrame_EnableBalance(self);
 				C_WowTokenSecure.CanRedeemForBalance();
 				self.RightDisplay.Format:Hide();
 				self.RightDisplay.Spinner:Show();
@@ -412,6 +411,7 @@ function WowTokenRedemptionFrame_OnEvent(self, event, ...)
 				self.RightDisplay.RedeemButton:SetText(string.format(TOKEN_REDEEM_BALANCE_BUTTON_LABEL, info.currencyFormat(C_WowTokenSecure.GetBalanceRedeemAmount(), 0)));
 			end
 		end
+		PlaySound("igMainMenuOpen");
 		self:Show();
 	elseif (event == "TOKEN_REDEEM_GAME_TIME_UPDATED") then
 		self.LeftDisplay.Format:SetText(GetGameTimeRedemptionString());
@@ -451,6 +451,7 @@ function WowTokenRedemptionFrame_OnAttributeChanged(self, name, value)
 		if ( value == "EscapePressed" ) then
 			local handled = false;
 			if ( self:IsShown() ) then
+				PlaySound("igMainMenuClose");
 				C_WowTokenSecure.CancelRedeem();
 				self:Hide();
 				handled = true;
@@ -626,6 +627,7 @@ dialogs = {
 		end,
 		button2 = CANCEL,
 		button2OnClick = function(self) self:Hide(); C_WowTokenSecure.CancelRedeem(); PlaySound("igMainMenuClose"); end,
+		validate = function() return C_WowTokenSecure.IsRedemptionStillValid(); end,
 		onHide = function(self)
 			dialogs["WOW_TOKEN_REDEEM_CONFIRMATION_SUB"].spinner = true;
 			dialogs["WOW_TOKEN_REDEEM_CONFIRMATION_SUB"].confirmationDesc = nil;
@@ -660,6 +662,7 @@ dialogs = {
 		confirmationDesc = nil, -- Now set in reaction to an event
 		confDescIsFunction = true,
 		button1 = ACCEPT,
+		validate = function() return C_WowTokenSecure.IsRedemptionStillValid(); end,
 		button1OnClick = function(self) 
 			self:Hide(); 
 			if (C_WowTokenSecure.GetTokenCount() > 0) then 

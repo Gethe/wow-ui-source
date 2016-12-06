@@ -273,7 +273,7 @@ end
 function ReactivateAccountDialog_OnReactivate(self)
 	PlaySound("gsTitleOptionOK");
 	if (self:GetParent().redeem) then
-		C_WowTokenSecure.RedeemToken(LE_TOKEN_REEDEM_TYPE_GAME_TIME);
+		C_WowTokenSecure.RedeemToken(LE_TOKEN_REDEEM_TYPE_GAME_TIME);
 	else
 		C_WowTokenPublic.BuyToken();
 	end
