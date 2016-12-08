@@ -387,6 +387,14 @@ function GetBalanceRedemptionString()
 	return string.format(TOKEN_REDEEM_BALANCE_FORMAT, balanceStr, addedStr);
 end
 
+function WowTokenRedemptionFrame_OnShow(self)
+	PlaySound("igMainMenuOpen");
+end
+
+function WowTokenRedemptionFrame_OnHide(self)
+	PlaySound("igMainMenuClose");
+end
+
 function WowTokenRedemptionFrame_OnEvent(self, event, ...)
 	if (event == "TOKEN_REDEEM_FRAME_SHOW") then
 		self.LeftDisplay.RedeemButton:Disable();
@@ -411,7 +419,6 @@ function WowTokenRedemptionFrame_OnEvent(self, event, ...)
 				self.RightDisplay.RedeemButton:SetText(string.format(TOKEN_REDEEM_BALANCE_BUTTON_LABEL, info.currencyFormat(C_WowTokenSecure.GetBalanceRedeemAmount(), 0)));
 			end
 		end
-		PlaySound("igMainMenuOpen");
 		self:Show();
 	elseif (event == "TOKEN_REDEEM_GAME_TIME_UPDATED") then
 		self.LeftDisplay.Format:SetText(GetGameTimeRedemptionString());
@@ -451,7 +458,6 @@ function WowTokenRedemptionFrame_OnAttributeChanged(self, name, value)
 		if ( value == "EscapePressed" ) then
 			local handled = false;
 			if ( self:IsShown() ) then
-				PlaySound("igMainMenuClose");
 				C_WowTokenSecure.CancelRedeem();
 				self:Hide();
 				handled = true;
@@ -923,8 +929,10 @@ function WowTokenDialog_SetDialog(self, dialogName)
 			self.Spinner:SetPoint("BOTTOM", 0, 32);
 			height = height + 16;
 		end
+		self.Button1:Disable();
 	else
 		self.Spinner:Hide();
+		self.Button1:Enable();
 	end
 
 	if (dialog.noButtons) then
@@ -1094,6 +1102,7 @@ function WowTokenDialog_OnEvent(self, event, ...)
 		else
 			Outbound.RedeemFailed(result);
 			C_WowTokenSecure.CancelRedeem();
+			self:Hide();
 		end
 	elseif (event == "AUCTION_HOUSE_CLOSED") then
 		WowTokenDialog_HideDialog("WOW_TOKEN_CREATE_AUCTION");

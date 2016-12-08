@@ -188,9 +188,7 @@ function BonusObjectiveTracker_OnBlockClick(self, button)
 				end
 			end
 		elseif button == "RightButton" then
-			if IsWorldQuestWatched(self.TrackedQuest.questID) then
-				ObjectiveTracker_ToggleDropDown(self, BonusObjectiveTracker_OnOpenDropDown);
-			end
+			ObjectiveTracker_ToggleDropDown(self, BonusObjectiveTracker_OnOpenDropDown);
 		end
 	end
 end
@@ -198,18 +196,34 @@ end
 function BonusObjectiveTracker_OnOpenDropDown(self)
 	local block = self.activeFrame;
 	local questID = block.TrackedQuest.questID;
+	local addFindGroup = ObjectiveTracker_Util_ShouldAddDropdownEntryForQuestGroupSearch(questID);
+	local addStopTracking = IsWorldQuestWatched(questID);
+
+	-- Ensure at least one option will appear before showing the dropdown.
+	if not (addFindGroup or addStopTracking) then
+		return;
+	end
+
+	-- Add title
+	local info = UIDropDownMenu_CreateInfo();
+	info.text = C_TaskQuest.GetQuestInfoByQuestID(questID);
+	info.isTitle = 1;
+	info.notCheckable = 1;
+	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
 
 	-- Add "find group"
 	ObjectiveTracker_Util_AddDropdownEntryForQuestGroupSearch(questID);
 
 	-- Add "stop tracking"
-	local info = UIDropDownMenu_CreateInfo();
-	info.notCheckable = true;
-	info.text = OBJECTIVES_STOP_TRACKING;
-	info.func = function()
-		BonusObjectiveTracker_UntrackWorldQuest(questID);
+	if IsWorldQuestWatched(questID) then
+		info = UIDropDownMenu_CreateInfo();
+		info.notCheckable = true;
+		info.text = OBJECTIVES_STOP_TRACKING;
+		info.func = function()
+			BonusObjectiveTracker_UntrackWorldQuest(questID);
+		end
+		UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
 	end
-	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
 end
 
 function BonusObjectiveTracker_OnEvent(self, event, ...)

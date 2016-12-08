@@ -2602,7 +2602,7 @@ function WorldMap_HandleUnitClick(mouseOverUnits, mouseButton)
 		if ( instanceType == "pvp" or  IsInActiveWorldPVP() ) then
 			local timeNowSeconds = GetTime();
 			for unit in pairs(mouseOverUnits) do
-				if ( GetIsPVPInactive(unit, timeNowSeconds) ) then
+				if ( not GetIsPVPInactive(unit, timeNowSeconds) ) then
 					BAD_BOY_COUNT = BAD_BOY_COUNT + 1;
 					BAD_BOY_UNITS[BAD_BOY_COUNT] = unit;
 				end

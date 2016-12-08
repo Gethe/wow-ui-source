@@ -49,11 +49,11 @@
 	</Button>
 
 	<Button name="QuestObjectiveFindGroupButtonTemplate" motionScriptsWhileDisabled="true" virtual="true">
-		<Size x="32" y="32"/>
+		<Size x="30" y="30"/>
 		<Layers>
 			<Layer level="ARTWORK" textureSubLevel="5">
 				<Texture parentKey="Icon" atlas="socialqueuing-icon-eye">
-					<Size x="16" y="16"/>
+					<Size x="13" y="13"/>
 					<Anchors>
 						<Anchor point="CENTER" x="-1" y="0"/>
 					</Anchors>

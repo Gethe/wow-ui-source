@@ -235,6 +235,8 @@
 			</Frames>
 			<Scripts>
 				<OnLoad function="WowTokenRedemptionFrame_OnLoad"/>
+				<OnShow function="WowTokenRedemptionFrame_OnShow"/>
+				<OnHide function="WowTokenRedemptionFrame_OnHide"/>
 				<OnEvent function="WowTokenRedemptionFrame_OnEvent"/>
 				<OnAttributeChanged function="WowTokenRedemptionFrame_OnAttributeChanged"/>
 			</Scripts>
