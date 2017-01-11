@@ -47,4 +47,34 @@
 		<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
 		<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
 	</Button>
+
+	<Button name="QuestObjectiveFindGroupButtonTemplate" motionScriptsWhileDisabled="true" virtual="true">
+		<Size x="30" y="30"/>
+		<Layers>
+			<Layer level="ARTWORK" textureSubLevel="5">
+				<Texture parentKey="Icon" atlas="socialqueuing-icon-eye">
+					<Size x="13" y="13"/>
+					<Anchors>
+						<Anchor point="CENTER" x="-1" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<NormalTexture file="Interface\Buttons\UI-SquareButton-Up"/>
+		<PushedTexture file="Interface\Buttons\UI-SquareButton-Down"/>
+		<DisabledTexture file="Interface\Buttons\UI-SquareButton-Disabled"/>
+		<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD" alpha=".5"/>
+		<Scripts>
+			<OnEvent function="QuestObjectiveFindGroup_OnEvent"/>
+			<OnShow function="QuestObjectiveFindGroup_OnShow"/>
+			<OnHide function="QuestObjectiveFindGroup_OnHide"/>
+			<OnMouseDown function="QuestObjectiveFindGroup_OnMouseDown"/>
+			<OnMouseUp function="QuestObjectiveFindGroup_OnMouseUp"/>
+			<OnEnter function="QuestObjectiveFindGroup_OnEnter"/>
+			<OnLeave function="QuestObjectiveFindGroup_OnLeave"/>
+			<OnEnable function="QuestObjectiveFindGroup_OnEnable"/>
+			<OnDisable function="QuestObjectiveFindGroup_OnDisable"/>
+			<OnClick function="QuestObjectiveFindGroup_OnClick"/>
+		</Scripts>
+	</Button>
 </Ui>

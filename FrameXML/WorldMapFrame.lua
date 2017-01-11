@@ -2596,13 +2596,13 @@ end
 
 function WorldMap_HandleUnitClick(mouseOverUnits, mouseButton)
 	BAD_BOY_COUNT = 0;
-	local timeNowSeconds = GetTime();
 
-	if ( GetCVar("enablePVPNotifyAFK") ~= "0" and mouseButton == "RightButton" ) then
+	if ( GetCVarBool("enablePVPNotifyAFK") and mouseButton == "RightButton" ) then
 		local _, instanceType = IsInInstance();
 		if ( instanceType == "pvp" or  IsInActiveWorldPVP() ) then
+			local timeNowSeconds = GetTime();
 			for unit in pairs(mouseOverUnits) do
-				if ( GetIsPVPInactive(unit, timeNowSeconds) ) then
+				if ( not GetIsPVPInactive(unit, timeNowSeconds) ) then
 					BAD_BOY_COUNT = BAD_BOY_COUNT + 1;
 					BAD_BOY_UNITS[BAD_BOY_COUNT] = unit;
 				end

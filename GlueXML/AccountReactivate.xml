@@ -260,7 +260,7 @@
 					<OnClick>
 						PlaySound("gsTitleOptionOK");
 						self:GetParent():Hide();
-						C_WowTokenSecure.RedeemTokenConfirm();
+						C_WowTokenSecure.RedeemTokenConfirm(LE_TOKEN_REDEEM_TYPE_GAME_TIME);
 						AccountReactivationInProgressDialog:Show();
 						CharacterSelect_UpdateButtonState();
 					</OnClick> 

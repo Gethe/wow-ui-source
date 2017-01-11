@@ -1503,6 +1503,11 @@
 		<FontString inherits="ChatFontNormal"/>
 	</EditBox>
 	<EditBox name="InputBoxInstructionsTemplate" inherits="InputBoxTemplate" virtual="true">
+		<!--KeyValues>
+			Optional
+			<KeyValue key="disabledColor" value="GRAY_FONT_COLOR" type="global"/>
+			<KeyValue key="enabledColor" value="HIGHLIGHT_FONT_COLOR" type="global"/>
+		</KeyValues-->
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="Instructions" justifyH="LEFT" justifyV="MIDDLE" inherits="GameFontDisableSmall" setAllPoints="true">
@@ -1512,6 +1517,8 @@
 		</Layers>
 		<Scripts>
 			<OnTextChanged function="InputBoxInstructions_OnTextChanged"/>
+			<OnDisable function="InputBoxInstructions_OnDisable"/>
+			<OnEnable function="InputBoxInstructions_OnEnable"/>
 		</Scripts>
 		<FontString inherits="GameFontHighlightSmall"/>
 	</EditBox>

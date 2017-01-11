@@ -13,8 +13,12 @@ local QUEST_ICONS_FILE = "Interface\\QuestFrame\\QuestTypeIcons";
 local QUEST_ICONS_FILE_WIDTH = 128;
 local QUEST_ICONS_FILE_HEIGHT = 64;
 
+local function IsQuestWorldQuest_Internal(worldQuestType)
+	return worldQuestType ~= nil;
+end
+
 local function IsQuestDungeonQuest_Internal(tagID, worldQuestType)
-	if worldQuestType ~= nil then
+	if IsQuestWorldQuest_Internal(worldQuestType) then
 		return WORLD_QUEST_TYPE_DUNGEON_TYPES[worldQuestType];
 	end
 
@@ -48,7 +52,7 @@ end
 -- Quest Utils API
 
 function QuestUtils_GetQuestTagTextureCoords(tagID, worldQuestType)
-	if worldQuestType ~= nil then
+	if IsQuestWorldQuest_Internal(worldQuestType) then
 		return WORLD_QUEST_TYPE_TCOORDS[worldQuestType];
 	end
 
@@ -57,7 +61,7 @@ end
 
 function QuestUtils_IsQuestWorldQuest(questID)
 	local _, _, worldQuestType = GetQuestTagInfo(questID);
-	return worldQuestType ~= nil;
+	return IsQuestWorldQuest_Internal(worldQuestType);
 end
 
 function QuestUtils_IsQuestDungeonQuest(questID)
@@ -88,4 +92,37 @@ function QuestUtils_AddQuestTagLineToTooltip(tooltip, tagName, tagID, worldQuest
 	-- NOTE: This doesn't filter anything, we already arrived at all the data at the callsite and evaluated whether
 	-- or not this should have been added.
 	AddQuestTagTooltipLine(tooltip, tagID, worldQuestType, tagName, iconWidth, iconHeight, color);
+end
+
+function QuestUtils_GetQuestName(questID)
+	-- TODO: Make unified API for this?
+	local questName = select(4, GetTaskInfo(questID));
+	if not questName then
+		local questIndex = GetQuestLogIndexByID(questID);
+		if questIndex and questIndex > 0 then
+			questName = GetQuestLogTitle(questIndex);
+		end
+	end
+
+	return questName or "";
+end
+
+function QuestUtils_CanUseAutoGroupFinder(questID, isDropdownRequest)
+	-- Auto-Finder dropdown is enabled for incomplete "group" non-dungeon quests that have a valid activity.
+	-- Auto-Finder button is enabled for all non-dungeon quests that have a valid activity.
+	if not IsQuestComplete(questID) then
+		local tagID, tagName, worldQuestType, rarity, isElite, tradeskillLineIndex = GetQuestTagInfo(questID);
+	 	if not IsQuestDungeonQuest_Internal(tagID, worldQuestType) and C_LFGList.GetActivityIDForQuestID(questID) then
+			if IsQuestWorldQuest_Internal(worldQuestType) then
+				return isDropdownRequest or isElite;
+			else
+				local questIndex = GetQuestLogIndexByID(questID);
+				if questIndex and questIndex > 0 then
+					return isDropdownRequest or (GetQuestLogGroupNum(questIndex) > 1);
+				end
+			end
+		end
+	end
+
+	return false;
 end

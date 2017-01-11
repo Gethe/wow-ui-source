@@ -614,11 +614,12 @@
 										self.TitleText:SetText(TUTORIAL_TOKEN_ABOUT_TOKENS);
 									</OnLoad>
 									<OnShow>
-										local redeemIndex = select(3, C_WowTokenPublic.GetCommerceSystemStatus());
-										if (redeemIndex == LE_CONSUMABLE_TOKEN_REDEEM_FOR_SUB_AMOUNT_30_DAYS) then
+										local balanceEnabled = select(3, C_WowTokenPublic.GetCommerceSystemStatus());
+										self.LeftDisplay.Tutorial3:SetIndentedWordWrap(true);
+										if (balanceEnabled) then
+											self.LeftDisplay.Tutorial3:SetText(TUTORIAL_TOKEN_GAME_TIME_STEP_2_BALANCE:format(WowTokenRedemptionFrame_GetBalanceString()));
+										else
 											self.LeftDisplay.Tutorial3:SetText(TUTORIAL_TOKEN_GAME_TIME_STEP_2);
-										elseif (redeemIndex == LE_CONSUMABLE_TOKEN_REDEEM_FOR_SUB_AMOUNT_2700_MINUTES) then
-											self.LeftDisplay.Tutorial3:SetText(TUTORIAL_TOKEN_GAME_TIME_STEP_2_MINUTES);
 										end
 									</OnShow>
 								</Scripts>

@@ -27,8 +27,8 @@ end
 function StartTimer_OnShow(self)
 	self.time = self.endTime - GetTime();
 	if self.time <= 0 then
+		FreeTimerTrackerTimer(self);
 		self:Hide();
-		self.isFree = true;
 	elseif self.startNumbers:IsPlaying() then
 		self.startNumbers:Stop();
 		self.startNumbers:Play();
@@ -43,6 +43,19 @@ function GetPlayerFactionGroup()
 	end
 	
 	return factionGroup
+end
+
+function FreeTimerTrackerTimer(timer)
+	timer.time = nil;
+	timer.type = nil;
+	timer.isFree = true;
+	timer.barShowing = false;
+	timer:SetScript("OnUpdate", nil);
+	timer.fadeBarOut:Stop();
+	timer.fadeBarIn:Stop();
+	timer.startNumbers:Stop();
+	timer.GoTextureAnim:Stop();
+	timer.bar:SetAlpha(0);
 end
 
 function TimerTracker_OnEvent(self, event, ...)
@@ -109,15 +122,7 @@ function TimerTracker_OnEvent(self, event, ...)
 		StartTimer_SetGoTexture(timer);
 	elseif event == "PLAYER_ENTERING_WORLD" then
 		for a,timer in pairs(self.timerList) do
-			timer.time = nil;
-			timer.type = nil;
-			timer.isFree = true;
-			timer:SetScript("OnUpdate", nil);
-			timer.fadeBarOut:Stop();
-			timer.fadeBarIn:Stop();
-			timer.startNumbers:Stop();
-			timer.GoTextureAnim:Stop();
-			timer.bar:SetAlpha(0);
+			FreeTimerTrackerTimer(timer);
 		end
 	end
 end
@@ -161,9 +166,7 @@ function StartTimer_BarOnlyOnUpdate(self, elapsed)
 	self.bar.timeText:SetText(string.format(TIMER_MINUTES_DISPLAY, minutes, seconds));
 	
 	if self.time < 0 then
-		self:SetScript("OnUpdate", nil);
-		self.barShowing = false;
-		self.isFree = true;
+		FreeTimerTrackerTimer(self);
 		self:Hide();
 	end
 	
@@ -249,8 +252,7 @@ function StartTimer_NumberAnimOnFinished(self)
 		end	
 		self.startNumbers:Play();
 	else
-		self.anchorCenter = false;
-		self.isFree = true;
+		FreeTimerTrackerTimer(self);
 		PlaySoundKitID(25478);
 		self.GoTextureAnim:Play();
 	end

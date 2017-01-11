@@ -3,15 +3,21 @@ QUEST_TRACKER_MODULE = ObjectiveTracker_GetModuleInfoTable();
 QUEST_TRACKER_MODULE.updateReasonModule = OBJECTIVE_TRACKER_UPDATE_MODULE_QUEST;
 QUEST_TRACKER_MODULE.updateReasonEvents = OBJECTIVE_TRACKER_UPDATE_QUEST + OBJECTIVE_TRACKER_UPDATE_QUEST_ADDED;
 QUEST_TRACKER_MODULE.usedBlocks = { };
+
+QUEST_TRACKER_MODULE.buttonOffsets = {
+	groupFinder = { 7, 4 },
+	useItem = { 3, 1 },
+};
+
+QUEST_TRACKER_MODULE.paddingBetweenButtons = 2;
+
 -- because this header is shared, on finishing its anim it has to update all the modules that use it
 QUEST_TRACKER_MODULE:SetHeader(ObjectiveTrackerFrame.BlocksFrame.QuestHeader, TRACKER_HEADER_QUESTS, OBJECTIVE_TRACKER_UPDATE_QUEST_ADDED);
 
 function QUEST_TRACKER_MODULE:OnFreeBlock(block)
-	local itemButton = block.itemButton;
-	if ( itemButton ) then
-		QuestObjectiveItem_ReleaseButton(itemButton);
-		block.itemButton = nil;
-	end
+	QuestObjectiveReleaseBlockButton_Item(block);
+	QuestObjectiveReleaseBlockButton_FindGroup(block);
+
 	block.timerLine	= nil;
 	block.questCompleted = nil;
 end
@@ -28,32 +34,19 @@ function QUEST_TRACKER_MODULE:OnFreeTypedLine(line)
 	end
 end
 
-function QUEST_TRACKER_MODULE:SetBlockHeader(block, text, questLogIndex, isQuestComplete)
-	-- check if there's an item
-	local link, item, charges, showItemWhenComplete = GetQuestLogSpecialItemInfo(questLogIndex);
-	local itemButton = block.itemButton;
-	if ( item and ( not isQuestComplete or showItemWhenComplete ) ) then
-		-- if the block doesn't already have an item, get one
-		if ( not itemButton ) then
-			itemButton = QuestObjectiveItem_AcquireButton(block);
-			block.itemButton = itemButton;
-			itemButton:SetPoint("TOPRIGHT", block, -2, 1);
-			itemButton:Show();
-		end
+function QUEST_TRACKER_MODULE:SetBlockHeader(block, text, questLogIndex, isQuestComplete, questID)
+	QuestObjective_SetupHeader(block);
 
-		QuestObjectiveItem_Initialize(itemButton, questLogIndex);
+	local hasGroupFinder = QuestObjectiveSetupBlockButton_FindGroup(block, questID);
+	local hasItem = QuestObjectiveSetupBlockButton_Item(block, questLogIndex, isQuestComplete);
 
-		block.lineWidth = OBJECTIVE_TRACKER_TEXT_WIDTH - OBJECTIVE_TRACKER_ITEM_WIDTH;
-		block.HeaderText:SetWidth(block.lineWidth);
-	else
-		if ( itemButton ) then
-			QuestObjectiveItem_ReleaseButton(itemButton);
-			block.itemButton = nil;
-		end
+	-- Special case for previous behavior...if there are no buttons then use default line width from module
+	if not (hasItem or hasGroupFinder) then
 		block.lineWidth = nil;
-		block.HeaderText:SetWidth(OBJECTIVE_TRACKER_TEXT_WIDTH);
 	end
+
 	-- set the text
+	block.HeaderText:SetWidth(block.lineWidth or OBJECTIVE_TRACKER_TEXT_WIDTH);
 	local height = QUEST_TRACKER_MODULE:SetStringText(block.HeaderText, text, nil, OBJECTIVE_TRACKER_COLOR["Header"]);
 	block.height = height;
 end
@@ -128,6 +121,8 @@ function QuestObjectiveTracker_OnOpenDropDown(self)
 	info.isTitle = 1;
 	info.notCheckable = 1;
 	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
+
+	ObjectiveTracker_Util_AddDropdownEntryForQuestGroupSearch(block.id);
 
 	info = UIDropDownMenu_CreateInfo();
 	info.notCheckable = 1;
@@ -350,7 +345,7 @@ function QUEST_TRACKER_MODULE:Update()
 			local isSequenced = IsQuestSequenced(questID);
 			local existingBlock = QUEST_TRACKER_MODULE:GetExistingBlock(questID);
 			local block = QUEST_TRACKER_MODULE:GetBlock(questID);
-			QUEST_TRACKER_MODULE:SetBlockHeader(block, title, questLogIndex, isComplete);
+			QUEST_TRACKER_MODULE:SetBlockHeader(block, title, questLogIndex, isComplete, questID);
 
 			-- completion state
 			local questFailed = false;

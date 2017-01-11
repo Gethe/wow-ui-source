@@ -74,6 +74,12 @@ function KioskModeSplash_OnShow(self)
 	self.mode = nil;
 end
 
+function KioskModeSplash_OnKeyDown(self,key)
+	if (CheckKioskModeRealmKey()) then
+		C_RealmList.RequestChangeRealmList();
+	end
+end
+
 function KioskModeSplash_SetMode(mode)
 	KioskModeSplash.mode = mode;
 end

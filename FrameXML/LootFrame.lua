@@ -1,5 +1,3 @@
-ENCOUNTER_JOURNAL_LINK_BUTTON_TUTORIAL = "Click to view the loot list for this boss."
-
 LOOTFRAME_NUMBUTTONS = 4;
 NUM_GROUP_LOOT_FRAMES = 4;
 MASTER_LOOT_THREHOLD = 4;
@@ -612,7 +610,7 @@ function BonusRollFrame_StartBonusRoll(spellID, text, duration, currencyID, diff
 
 	local specID = GetLootSpecialization();
 	if ( specID and specID > 0 ) then
-		local id, name, description, texture, background, role, class = GetSpecializationInfoByID(specID);
+		local id, name, description, texture, role, class = GetSpecializationInfoByID(specID);
 		frame.SpecIcon:SetTexture(texture);
 		frame.SpecIcon:Show();
 		frame.SpecRing:Show();
@@ -675,7 +673,7 @@ function BonusRollFrame_OnEvent(self, event, ...)
 	elseif ( event == "PLAYER_LOOT_SPEC_UPDATED" ) then
 		local specID = GetLootSpecialization();
 		if ( specID and specID > 0 ) then
-			local id, name, description, texture, background, role, class = GetSpecializationInfoByID(specID);
+			local id, name, description, texture, role, class = GetSpecializationInfoByID(specID);
 			self.SpecIcon:SetTexture(texture);
 			self.SpecIcon:Show();
 			self.SpecRing:Show();
@@ -696,12 +694,14 @@ local finalAnimFrame = {
 	item = 2,
 	currency = 6,
 	money = 6,
+	artifact_power = 6,
 }
 
 local finalTextureTexCoords = {
 	item = {0.59570313, 0.62597656, 0.875, 0.9921875},
 	currency = {0.56347656, 0.59375, 0.875, 0.9921875},
 	money = {0.56347656, 0.59375, 0.875, 0.9921875},
+	artifact_power = {0.56347656, 0.59375, 0.875, 0.9921875},
 }
 
 function BonusRollFrame_OnUpdate(self, elapsed)
@@ -812,9 +812,10 @@ function BonusRollFrame_OnHide(self)
 end
 
 function BonusRollFrame_FinishedFading(self)
-	if ( self.rewardType == "item" ) then
+	if ( self.rewardType == "item" or self.rewardType == "artifact_power" ) then
+		local wonRoll = self.rewardType == "item";
 		GroupLootContainer_ReplaceFrame(GroupLootContainer, self, BonusRollLootWonFrame);
-		LootWonAlertFrame_SetUp(BonusRollLootWonFrame, self.rewardLink, self.rewardQuantity, nil, nil, self.rewardSpecID);
+		LootWonAlertFrame_SetUp(BonusRollLootWonFrame, self.rewardLink, self.rewardQuantity, nil, nil, self.rewardSpecID, nil, nil, nil, nil, nil, wonRoll);
 		AlertFrame:AddAlertFrame(BonusRollLootWonFrame);
 	elseif ( self.rewardType == "money" ) then
 		GroupLootContainer_ReplaceFrame(GroupLootContainer, self, BonusRollMoneyWonFrame);

@@ -37,6 +37,7 @@ Import("C_ClassTrial");
 Import("C_AuthChallenge");
 Import("C_Timer");
 Import("C_WowTokenPublic");
+Import("C_WowTokenSecure");
 Import("CreateForbiddenFrame");
 Import("IsGMClient");
 Import("HideGMOnly");
@@ -50,6 +51,7 @@ Import("tonumber");
 Import("unpack");
 Import("wipe");
 Import("type");
+Import("string");
 Import("LoadURLIndex");
 Import("GetContainerNumFreeSlots");
 Import("GetCursorPosition");
@@ -193,7 +195,6 @@ Import("BLIZZARD_STORE_PURCHASE_SENT");
 Import("BLIZZARD_STORE_YOU_ALREADY_OWN_THIS");
 Import("BLIZZARD_STORE_TOKEN_CURRENT_MARKET_PRICE");
 Import("BLIZZARD_STORE_TOKEN_DESC_30_DAYS");
-Import("BLIZZARD_STORE_TOKEN_DESC_2700_MINUTES");
 Import("BLIZZARD_STORE_LOG_OUT_TO_PURCHASE_THIS_PRODUCT");
 Import("BLIZZARD_STORE_PRODUCT_IS_READY");
 Import("BLIZZARD_STORE_VAS_SERVICE_READY_DESCRIPTION");
@@ -295,8 +296,6 @@ Import("LE_VAS_ERROR_BATTLEPAY_DELIVERY_PENDING");
 Import("LE_VAS_ERROR_HAS_WOW_TOKEN");
 Import("LE_VAS_ERROR_CHAR_LOCKED");
 Import("LE_VAS_ERROR_LAST_SAVE_TOO_RECENT");
-Import("LE_CONSUMABLE_TOKEN_REDEEM_FOR_SUB_AMOUNT_30_DAYS");
-Import("LE_CONSUMABLE_TOKEN_REDEEM_FOR_SUB_AMOUNT_2700_MINUTES");
 
 --Data
 local CURRENCY_UNKNOWN = 0;
@@ -358,66 +357,66 @@ end
 
 local function formatCurrency(dollars, cents, alwaysShowCents)
 	if ( alwaysShowCents or cents ~= 0 ) then
-		return ("%s%s%02d"):format(formatLargeNumber(dollars), DECIMAL_SEPERATOR, cents);
+		return string.format("%s%s%02d", formatLargeNumber(dollars), DECIMAL_SEPERATOR, cents);
 	else
 		return formatLargeNumber(dollars);
 	end
 end
 
 local function currencyFormatUSD(dollars, cents)
-	return BLIZZARD_STORE_CURRENCY_FORMAT_USD:format(formatCurrency(dollars, cents, false));
+	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_USD, formatCurrency(dollars, cents, false));
 end
 
 local function currencyFormatGBP(dollars, cents)
-	return BLIZZARD_STORE_CURRENCY_FORMAT_GBP:format(formatCurrency(dollars, cents, false));
+	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_GBP, formatCurrency(dollars, cents, false));
 end
 
 local function currencyFormatKRWLong(dollars, cents)
-	return BLIZZARD_STORE_CURRENCY_FORMAT_KRW_LONG:format(formatCurrency(dollars, cents, false));
+	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_KRW_LONG, formatCurrency(dollars, cents, false));
 end
 
 local function currencyFormatEuro(dollars, cents)
-	return BLIZZARD_STORE_CURRENCY_FORMAT_EURO:format(formatCurrency(dollars, cents, false));
+	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_EURO, formatCurrency(dollars, cents, false));
 end
 
 local function currencyFormatRUB(dollars, cents)
-	return BLIZZARD_STORE_CURRENCY_FORMAT_RUB:format(formatCurrency(dollars, cents, false));
+	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_RUB, formatCurrency(dollars, cents, false));
 end
 
 local function currencyFormatARS(dollars, cents)
-	return BLIZZARD_STORE_CURRENCY_FORMAT_ARS:format(formatCurrency(dollars, cents, false));
+	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_ARS, formatCurrency(dollars, cents, false));
 end
 
 local function currencyFormatCLP(dollars, cents)
-	return BLIZZARD_STORE_CURRENCY_FORMAT_CLP:format(formatCurrency(dollars, cents, false));
+	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_CLP, formatCurrency(dollars, cents, false));
 end
 
 local function currencyFormatMXN(dollars, cents)
-	return BLIZZARD_STORE_CURRENCY_FORMAT_MXN:format(formatCurrency(dollars, cents, false));
+	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_MXN, formatCurrency(dollars, cents, false));
 end
 
 local function currencyFormatBRL(dollars, cents)
-	return BLIZZARD_STORE_CURRENCY_FORMAT_BRL:format(formatCurrency(dollars, cents, false));
+	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_BRL, formatCurrency(dollars, cents, false));
 end
 
 local function currencyFormatAUD(dollars, cents)
-	return BLIZZARD_STORE_CURRENCY_FORMAT_AUD:format(formatCurrency(dollars, cents, false));
+	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_AUD, formatCurrency(dollars, cents, false));
 end
 
 local function currencyFormatCPTLong(dollars, cents)
-	return BLIZZARD_STORE_CURRENCY_FORMAT_CPT_LONG:format(formatCurrency(dollars, cents, false));
+	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_CPT_LONG, formatCurrency(dollars, cents, false));
 end
 
 local function currencyFormatTPT(dollars, cents)
-	return BLIZZARD_STORE_CURRENCY_FORMAT_TPT:format(formatCurrency(dollars, cents, false));
+	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_TPT, formatCurrency(dollars, cents, false));
 end
 
 local function currencyFormatRawStar(dollars, cents)
-	return BLIZZARD_STORE_CURRENCY_RAW_ASTERISK:format(formatCurrency(dollars, cents, false));
+	return string.format(BLIZZARD_STORE_CURRENCY_RAW_ASTERISK, formatCurrency(dollars, cents, false));
 end
 
 local function currencyFormatBeta(dollars, cents)
-	return BLIZZARD_STORE_CURRENCY_BETA:format(formatCurrency(dollars, cents, true));
+	return string.format(BLIZZARD_STORE_CURRENCY_BETA, formatCurrency(dollars, cents, true));
 end
 
 -- This is copied from WowTokenUI.lua
@@ -439,12 +438,12 @@ function GetSecureMoneyString(money, separateThousands, forceColorBlind)
 		copperString = copper..COPPER_AMOUNT_SYMBOL;
 	else
 		if (separateThousands) then
-			goldString = GOLD_AMOUNT_TEXTURE_STRING:format(formatLargeNumber(gold), 0, 0);
+			goldString = string.format(GOLD_AMOUNT_TEXTURE_STRING, formatLargeNumber(gold), 0, 0);
 		else
-			goldString = GOLD_AMOUNT_TEXTURE:format(gold, 0, 0);
+			goldString = string.format(GOLD_AMOUNT_TEXTURE, gold, 0, 0);
 		end
-		silverString = SILVER_AMOUNT_TEXTURE:format(silver, 0, 0);
-		copperString = COPPER_AMOUNT_TEXTURE:format(copper, 0, 0);
+		silverString = string.format(SILVER_AMOUNT_TEXTURE, silver, 0, 0);
+		copperString = string.format(COPPER_AMOUNT_TEXTURE, copper, 0, 0);
 	end
 
 	local moneyString = "";
@@ -976,7 +975,7 @@ local vasErrorData = {
 			elseif (character.level >= 10) then
 				str = GetSecureMoneyString(300 * COPPER_PER_SILVER * SILVER_PER_GOLD, true, true);
 			end
-			return BLIZZARD_STORE_VAS_ERROR_TOO_MUCH_MONEY_FOR_LEVEL:format(str);
+			return string.format(BLIZZARD_STORE_VAS_ERROR_TOO_MUCH_MONEY_FOR_LEVEL, str);
 		end
 	},
 	[LE_VAS_ERROR_HAS_AUCTIONS] = {
@@ -1135,7 +1134,7 @@ function StoreFrame_UpdateCard(card,entryID,discountReset)
 	elseif ( card.HotTexture and hot ) then
 		card.HotTexture:Show();
 	elseif ( card.DiscountMiddle and discountAmount ) then
-		card.DiscountText:SetText(BLIZZARD_STORE_DISCOUNT_TEXT_FORMAT:format(discountAmount));
+		card.DiscountText:SetText(string.format(BLIZZARD_STORE_DISCOUNT_TEXT_FORMAT, discountAmount));
 
 		local stringWidth = card.DiscountText:GetStringWidth();
 		card.DiscountLeft:SetPoint("RIGHT", card.DiscountRight, "LEFT", -stringWidth, 0);
@@ -1168,7 +1167,7 @@ function StoreFrame_UpdateCard(card,entryID,discountReset)
 			card.SplashBannerText:SetText(BLIZZARD_STORE_SPLASH_BANNER_NEW);
 		elseif ( entryInfo.bannerType == BATTLEPAY_SPLASH_BANNER_TEXT_DISCOUNT ) then
 			if ( discount ) then
-				card.SplashBannerText:SetText(BLIZZARD_STORE_SPLASH_BANNER_DISCOUNT_FORMAT:format(discountAmount));
+				card.SplashBannerText:SetText(string.format(BLIZZARD_STORE_SPLASH_BANNER_DISCOUNT_FORMAT, discountAmount));
 			else
 				card.SplashBannerText:SetText(BLIZZARD_STORE_SPLASH_BANNER_FEATURED);
 			end
@@ -1209,9 +1208,9 @@ function StoreFrame_UpdateCard(card,entryID,discountReset)
 		if (entryInfo.isWowToken) then
 			local price = C_WowTokenPublic.GetCurrentMarketPrice();
 			if (price) then
-				card.CurrentMarketPrice:SetText(TOKEN_CURRENT_AUCTION_VALUE:format(GetSecureMoneyString(price, true)));
+				card.CurrentMarketPrice:SetText(string.format(TOKEN_CURRENT_AUCTION_VALUE, GetSecureMoneyString(price, true)));
 			else
-				card.CurrentMarketPrice:SetText(TOKEN_CURRENT_AUCTION_VALUE:format(TOKEN_MARKET_PRICE_NOT_AVAILABLE));
+				card.CurrentMarketPrice:SetText(string.format(TOKEN_CURRENT_AUCTION_VALUE, TOKEN_MARKET_PRICE_NOT_AVAILABLE));
 			end
 			card.CurrentPrice:ClearAllPoints();
 			card.CurrentPrice:SetPoint("TOPLEFT", card.CurrentMarketPrice, "BOTTOMLEFT", 0, -28);
@@ -1238,12 +1237,9 @@ function StoreFrame_UpdateCard(card,entryID,discountReset)
 	if (card.Description) then
 		local description = entryInfo.description;
 		if (entryInfo.isWowToken) then
-			local redeemIndex = select(3, C_WowTokenPublic.GetCommerceSystemStatus());
-			if (redeemIndex == LE_CONSUMABLE_TOKEN_REDEEM_FOR_SUB_AMOUNT_30_DAYS) then
-				description = BLIZZARD_STORE_TOKEN_DESC_30_DAYS;
-			elseif (redeemIndex == LE_CONSUMABLE_TOKEN_REDEEM_FOR_SUB_AMOUNT_2700_MINUTES) then
-				description = BLIZZARD_STORE_TOKEN_DESC_2700_MINUTES;
-			end
+			local balanceEnabled = select(3, C_WowTokenPublic.GetCommerceSystemStatus());
+			local balanceAmount = C_WowTokenSecure.GetBalanceRedeemAmount();
+			description = BLIZZARD_STORE_TOKEN_DESC_30_DAYS;
 		end
 		card.Description:SetText(description);
 	end
@@ -1420,7 +1416,7 @@ function StoreFrame_SetNormalCategory()
 	if ( #products > NUM_STORE_PRODUCT_CARDS ) then
 		-- 10, 10/8 = 1, 2 remain
 		local numPages = math.ceil(#products / NUM_STORE_PRODUCT_CARDS);
-		self.PageText:SetText(BLIZZARD_STORE_PAGE_NUMBER:format(pageNum,numPages));
+		self.PageText:SetText(string.format(BLIZZARD_STORE_PAGE_NUMBER, pageNum,numPages));
 		self.PageText:Show();
 		self.NextPageButton:Show();
 		self.PrevPageButton:Show();
@@ -2017,7 +2013,7 @@ end
 function StoreFrame_ShowUnrevokeConsumptionDialog()
 	local productName, characterName, realmName = C_PurchaseAPI.GetUnrevokedBoostInfo();
 
-	StoreDialog.Description:SetText(BLIZZARD_STORE_BOOST_UNREVOKED_CONSUMPTION:format(productName, characterName, realmName));
+	StoreDialog.Description:SetText(string.format(BLIZZARD_STORE_BOOST_UNREVOKED_CONSUMPTION, productName, characterName, realmName));
 	StoreDialog:Show();
 end
 
@@ -2217,7 +2213,7 @@ function StoreConfirmationFrame_SetNotice(self, icon, name, dollars, cents, wall
 		local character = characters[SelectedCharacter];
 		local confirmationNotice;
 		if (VASServiceType == LE_VAS_SERVICE_NAME_CHANGE) then
-			notice = VAS_NAME_CHANGE_CONFIRMATION:format(character.name, NewCharacterName);
+			notice = string.format(VAS_NAME_CHANGE_CONFIRMATION, character.name, NewCharacterName);
 			confirmationNotice = info.vasNameChangeConfirmationNotice;
 		elseif (VASServiceType == LE_VAS_SERVICE_FACTION_CHANGE) then
 			local newFaction;
@@ -2226,16 +2222,16 @@ function StoreConfirmationFrame_SetNotice(self, icon, name, dollars, cents, wall
 			elseif (character.faction == 1) then
 				newFaction = FACTION_HORDE;
 			end
-			notice = VAS_FACTION_CHANGE_CONFIRMATION:format(character.name, SelectedRealm, newFaction);
+			notice = string.format(VAS_FACTION_CHANGE_CONFIRMATION, character.name, SelectedRealm, newFaction);
 			confirmationNotice = info.servicesConfirmationNotice;
 		elseif (VASServiceType == LE_VAS_SERVICE_RACE_CHANGE) then
-			notice = VAS_RACE_CHANGE_CONFIRMATION:format(character.name, SelectedRealm);
+			notice = string.format(VAS_RACE_CHANGE_CONFIRMATION, character.name, SelectedRealm);
 			confirmationNotice = info.servicesConfirmationNotice;
 		elseif (VASServiceType == LE_VAS_SERVICE_APPEARANCE_CHANGE) then
-			notice = VAS_APPEARANCE_CHANGE_CONFIRMATION:format(character.name, SelectedRealm);
+			notice = string.format(VAS_APPEARANCE_CHANGE_CONFIRMATION, character.name, SelectedRealm);
 			confirmationNotice = info.servicesConfirmationNotice;
 		elseif (VASServiceType == LE_VAS_SERVICE_CHARACTER_TRANSFER) then
-			notice = VAS_CHARACTER_TRANSFER_CONFIRMATION:format(character.name, SelectedRealm, DestinationRealmMapping[SelectedDestinationRealm]);
+			notice = string.format(VAS_CHARACTER_TRANSFER_CONFIRMATION, character.name, SelectedRealm, DestinationRealmMapping[SelectedDestinationRealm]);
 			confirmationNotice = info.servicesConfirmationNotice;
 		end
 		notice = notice .. "|n|n" .. confirmationNotice;
@@ -2247,7 +2243,7 @@ function StoreConfirmationFrame_SetNotice(self, icon, name, dollars, cents, wall
 		walletName = BLIZZARD_STORE_BATTLE_NET_BALANCE;
 	end
 	if (walletName) then
-		notice = notice .. "\n\n" .. BLIZZARD_STORE_WALLET_INFO:format(walletName);
+		notice = notice .. "\n\n" .. string.format(BLIZZARD_STORE_WALLET_INFO, walletName);
 	end
 	if (upgrade) then
 		self.UpgradeArrow:Show();
@@ -2550,11 +2546,11 @@ function StoreVASValidationFrame_OnVasProductComplete(self)
 	local productInfo = C_PurchaseAPI.GetProductInfo(productID);
 	if (IsOnGlueScreen()) then
 		self:GetParent():Hide();
-		_G.StoreFrame_ShowGlueDialog((_G.BLIZZARD_STORE_VAS_PRODUCT_READY):format(productInfo.name), guid, realmName);
+		_G.StoreFrame_ShowGlueDialog(string.format(_G.BLIZZARD_STORE_VAS_PRODUCT_READY, productInfo.name), guid, realmName);
 	else
 		self:GetParent():Hide();
 
-		local titleOverride = BLIZZARD_STORE_PRODUCT_IS_READY:format(productInfo.name);
+		local titleOverride = string.format(BLIZZARD_STORE_PRODUCT_IS_READY, productInfo.name);
 		local descriptionOverride = (productInfo.vasServiceType == LE_VAS_SERVICE_NAME_CHANGE) and BLIZZARD_STORE_NAME_CHANGE_READY_DESCRIPTION or BLIZZARD_STORE_VAS_SERVICE_READY_DESCRIPTION;
 		ServicesLogoutPopup_SetShowReason(ServicesLogoutPopup, "forVasService", titleOverride, descriptionOverride);
 	end
@@ -3077,9 +3073,9 @@ function StoreTooltip_Show(name, description, isToken)
 	if (isToken) then
 		local price = C_WowTokenPublic.GetCurrentMarketPrice();
 		if (price) then
-			description = description .. BLIZZARD_STORE_TOKEN_CURRENT_MARKET_PRICE:format(GetSecureMoneyString(price));
+			description = description .. string.format(BLIZZARD_STORE_TOKEN_CURRENT_MARKET_PRICE, GetSecureMoneyString(price));
 		else
-			description = description .. BLIZZARD_STORE_TOKEN_CURRENT_MARKET_PRICE:format(TOKEN_MARKET_PRICE_NOT_AVAILABLE);
+			description = description .. string.format(BLIZZARD_STORE_TOKEN_CURRENT_MARKET_PRICE, TOKEN_MARKET_PRICE_NOT_AVAILABLE);
 		end
 	end
 	StoreTooltip.Description:SetText(description);
@@ -3293,13 +3289,13 @@ function VASCharacterSelectionCharacterSelector_Callback(value)
 	if (level == 0) then
 		level = 1;
 	end
-	frame.CharacterSelector.Text:SetText(VAS_CHARACTER_SELECTION_DESCRIPTION:format(RAID_CLASS_COLORS[character.classFileName].colorStr, character.name, level, character.className));
+	frame.CharacterSelector.Text:SetText(string.format(VAS_CHARACTER_SELECTION_DESCRIPTION, RAID_CLASS_COLORS[character.classFileName].colorStr, character.name, level, character.className));
 	frame.SelectedCharacterFrame:Show();
 	frame.ClassIcon:SetTexCoord(unpack(CLASS_ICON_TCOORDS[character.classFileName]));
 	frame.ClassIcon:Show();
 	frame.SelectedCharacterName:SetText(character.name);
 	frame.SelectedCharacterName:Show();
-	frame.SelectedCharacterDescription:SetText(VAS_SELECTED_CHARACTER_DESCRIPTION:format(level, character.raceName, character.className));
+	frame.SelectedCharacterDescription:SetText(string.format(VAS_SELECTED_CHARACTER_DESCRIPTION, level, character.raceName, character.className));
 	frame.SelectedCharacterDescription:Show();
 	frame.ValidationDescription:SetFontObject("GameFontBlack");
 	frame.ValidationDescription:SetTextColor(0, 0, 0);
@@ -3432,7 +3428,7 @@ function VASCharacterSelectionCharacterSelector_OnClick(self)
 		if (level == 0) then
 			level = 1;
 		end
-		local str = VAS_CHARACTER_SELECTION_DESCRIPTION:format(RAID_CLASS_COLORS[character.classFileName].colorStr, character.name, level, character.className);
+		local str = string.format(VAS_CHARACTER_SELECTION_DESCRIPTION, RAID_CLASS_COLORS[character.classFileName].colorStr, character.name, level, character.className);
 		infoTable[#infoTable+1] = {text=str, value=i, checked=(SelectedCharacter == i)};
 	end
 

@@ -1138,3 +1138,19 @@ function ObjectiveTracker_ReorderModules()
 		end
 	end
 end
+
+function ObjectiveTracker_Util_ShouldAddDropdownEntryForQuestGroupSearch(questID)
+	return QuestUtils_CanUseAutoGroupFinder(questID, true) and LFGListUtil_CanSearchForGroup();
+end
+
+function ObjectiveTracker_Util_AddDropdownEntryForQuestGroupSearch(questID)
+	if ObjectiveTracker_Util_ShouldAddDropdownEntryForQuestGroupSearch(questID) then
+		local info = UIDropDownMenu_CreateInfo();
+		info.notCheckable = true;
+		info.text = OBJECTIVES_FIND_GROUP;
+		info.func = function()
+			LFGListUtil_FindQuestGroup(questID);
+		end
+		UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
+	end
+end

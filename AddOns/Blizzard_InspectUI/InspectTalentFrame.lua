@@ -32,7 +32,7 @@ function InspectTalentFrameSpec_OnShow(self)
 	if(spec ~= nil and spec > 0 and sex ~= nil) then
 		local role1 = GetSpecializationRoleByID(spec);
 		if(role1 ~= nil) then
-			local id, name, description, icon, background = GetSpecializationInfoByID(spec, sex);
+			local id, name, description, icon = GetSpecializationInfoByID(spec, sex);
 			self.specIcon:Show();
 			SetPortraitToTexture(self.specIcon, icon);
 			self.specName:SetText(name);

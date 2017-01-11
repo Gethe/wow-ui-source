@@ -154,6 +154,16 @@
 					<Anchor point="LEFT" relativeKey="$parent.ComboBonus2" relativePoint="RIGHT" x="12" y="0"/>
 				</Anchors>
 			</Frame>
+			<Frame parentKey="ComboBonus4" parentArray="ComboBonus" inherits="ComboPointBonusPlayerTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.ComboBonus3" relativePoint="RIGHT" x="12" y="0"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="ComboBonus5" parentArray="ComboBonus" inherits="ComboPointBonusPlayerTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.ComboBonus4" relativePoint="RIGHT" x="12" y="0"/>
+				</Anchors>
+			</Frame>
 		</Frames>
 	</Frame>	
 </Ui>

@@ -447,6 +447,19 @@ function InputBoxInstructions_OnTextChanged(self)
 	self.Instructions:SetShown(self:GetText() == "")
 end
 
+function InputBoxInstructions_UpdateColorForEnabledState(self, color)
+	if color then
+		self:SetTextColor(color:GetRGBA());
+	end
+end
+
+function InputBoxInstructions_OnDisable(self)
+	InputBoxInstructions_UpdateColorForEnabledState(self, self.disabledColor);
+end
+
+function InputBoxInstructions_OnEnable(self)
+	InputBoxInstructions_UpdateColorForEnabledState(self, self.enabledColor);
+end
 
 -- functions to manage tab interfaces where only one tab of a group may be selected
 function PanelTemplates_Tab_OnClick(self, frame)

@@ -611,7 +611,7 @@ function PaperDollFrame_SetStat(statFrame, unit, statIndex)
 		spec = GetSpecialization();
 		local role = GetSpecializationRole(spec);
 		if (spec) then
-			primaryStat = select(7, GetSpecializationInfo(spec, nil, nil, nil, UnitSex("player")));
+			primaryStat = select(6, GetSpecializationInfo(spec, nil, nil, nil, UnitSex("player")));
 		end
 		-- Strength
 		if ( statIndex == LE_UNIT_STAT_STRENGTH ) then
@@ -1754,7 +1754,7 @@ function PaperDollFrame_UpdateStats()
 			local stat = PAPERDOLL_STATCATEGORIES[catIndex].stats[statIndex];
 			local showStat = true;
 			if ( showStat and stat.primary ) then
-				local primaryStat = select(7, GetSpecializationInfo(spec, nil, nil, nil, UnitSex("player")));
+				local primaryStat = select(6, GetSpecializationInfo(spec, nil, nil, nil, UnitSex("player")));
 				if ( stat.primary ~= primaryStat ) then
 					showStat = false;
 				end

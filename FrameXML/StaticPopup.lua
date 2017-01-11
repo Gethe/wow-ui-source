@@ -3649,6 +3649,18 @@ StaticPopupDialogs["EXPERIMENTAL_CVAR_WARNING"] = {
 	showAlert = 1,
 }
 
+StaticPopupDialogs["PREMADE_GROUP_SEARCH_DELIST_WARNING"] = {
+	text = PREMADE_GROUP_SEARCH_DELIST_WARNING_TEXT,
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function(self)
+		LFGListFrame_BeginFindQuestGroup(LFGListFrame, self.data);
+	end,
+	whileDead = 1,
+	showAlert = 1,
+	hideOnEscape = 1,
+}
+
 function StaticPopup_FindVisible(which, data)
 	local info = StaticPopupDialogs[which];
 	if ( not info ) then
@@ -4441,7 +4453,7 @@ function StaticPopupItemFrame_OnEvent(self, event, ...)
 			local data = self:GetParent().data;
 			StaticPopupItemFrame_RetrieveInfo(self, data);
 			StaticPopupItemFrame_DisplayInfo(self, data.link, data.name, data.color, data.texture, data.count);
-		end	
+		end
 	end
 end
 

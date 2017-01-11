@@ -46,7 +46,7 @@
 			<Layer level="BORDER">
 				<FontString parentKey="FriendCount" inherits="GameFontHighlightSmall" text="0">
 					<Anchors>
-						<Anchor point="BOTTOM" relativeKey="$parent" relativePoint="BOTTOM" x="-1" y="4"/>
+						<Anchor point="BOTTOM" relativeKey="$parent" relativePoint="BOTTOM" x="0" y="4"/>
 					</Anchors>
 				</FontString>
 			</Layer>

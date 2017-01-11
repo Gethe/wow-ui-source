@@ -52,7 +52,7 @@
 			<OnLeave function="EventTraceFrameEvent_OnLeave"/>
 			<OnClick function="EventTraceFrameEvent_OnClick"/>
 		</Scripts>
-		<HighlightTexture setAllPoints="true" alphaMode="ADD">  
+		<HighlightTexture setAllPoints="true" alphaMode="ADD">
 			<Color r=".8" g=".8" b="1" a="1"/>
 		</HighlightTexture>
 	</Button>
@@ -85,7 +85,7 @@
 						<Anchor point="TOPLEFT"/>
 					</Anchors>
 					<TexCoords left="0.501953125" right="0.625" top="0" bottom="1"/>
-				</Texture>			
+				</Texture>
 				<Texture name="$parentTopRight" file="Interface\PaperDollInfoFrame\UI-GearManager-Border">
 					<Size x="64" y="64"/>
 					<Anchors>
@@ -107,7 +107,7 @@
 						<Anchor point="BOTTOMLEFT"/>
 					</Anchors>
 					<TexCoords left="0.751953125" right="0.875" top="0" bottom="1"/>
-				</Texture>			
+				</Texture>
 				<Texture name="$parentBottomRight" file="Interface\PaperDollInfoFrame\UI-GearManager-Border">
 					<Size x="64" y="64"/>
 					<Anchors>
@@ -146,7 +146,7 @@
 						<Anchor point="TOPLEFT" x="12" y="-8"/>
 						<Anchor point="TOPRIGHT" x="-32" y="-8"/>
 					</Anchors>
-				</FontString>					
+				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -195,7 +195,7 @@
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="-7" y="-28"/>
 					<Anchor point="BOTTOMRIGHT" x="-7" y="10"/>
-				</Anchors>			
+				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
 						<Texture name="$parentBG" setAllPoints="true">
@@ -215,7 +215,7 @@
 					<TexCoords left="0.25" right="0.75" top="0.25" bottom="0.75"/>
 				</ThumbTexture>
 			</Slider>
-		</Frames>		
+		</Frames>
 		<Scripts>
 			<OnLoad function="EventTraceFrame_OnLoad"/>
 			<OnShow function="EventTraceFrame_OnShow"/>
@@ -236,7 +236,7 @@
 					<Size x="70" y="16"/>
 					<Anchors>
 					    <Anchor point="BOTTOM" x="0" y="16"/>
-					</Anchors>					
+					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>
@@ -261,7 +261,7 @@
 						frame:StopMovingOrSizing();
 					</OnDragStop>
 				</Scripts>
-			</Frame>		
+			</Frame>
 			<ScrollFrame name="$parentScrollFrame" inherits="UIPanelScrollFrameTemplate">
 				<Size x="343" y="194"/>
 				<Anchors>
@@ -292,7 +292,7 @@
 				<Scripts>
 					<OnClick function="ReloadUI"/>
 				</Scripts>
-			</Button>			
+			</Button>
 			<Button parentKey="previous" id="2">
 				<Size x="32" y="32"/>
 				<Anchors>
@@ -307,7 +307,7 @@
 				<Scripts>
 					<OnClick function="ScriptErrorsFrameButton_OnClick"/>
 				</Scripts>
-			</Button>			
+			</Button>
 			<Button parentKey="next" id="1">
 				<Size x="32" y="32" />
 				<Anchors>
@@ -322,7 +322,7 @@
 				<Scripts>
 					<OnClick function="ScriptErrorsFrameButton_OnClick"/>
 				</Scripts>
-			</Button>			
+			</Button>
 			<Button parentKey="close" inherits="UIPanelButtonTemplate" text="CLOSE">
 				<Size x="96" y="24"/>
 				<Anchors>
@@ -334,11 +334,11 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad function="ScriptErrorsFrame_OnLoad"/>	
+			<OnLoad function="ScriptErrorsFrame_OnLoad"/>
 			<OnShow function="ScriptErrorsFrame_OnShow"/>
 		</Scripts>
 	</Frame>
-	
+
 	<GameTooltip name="FrameStackTooltip" frameStrata="TOOLTIP" hidden="true" inherits="GameTooltipTemplate">
 		<Scripts>
 			<OnLoad function="FrameStackTooltip_OnLoad"/>
@@ -346,9 +346,10 @@
 			<OnEnter function="FrameStackTooltip_OnEnter"/>
 			<OnUpdate function="FrameStackTooltip_OnUpdate"/>
 			<OnEvent function="FrameStackTooltip_OnEvent"/>
+			<OnTooltipSetFramestack function="FrameStackTooltip_OnTooltipSetFrameStack"/>
 		</Scripts>
 	</GameTooltip>
-	
+
 	<GameTooltip name="EventTraceTooltip" frameStrata="TOOLTIP" hidden="true" parent="EventTraceFrame" inherits="GameTooltipTemplate">
 		<Scripts>
 			<OnLoad function="DebugTooltip_OnLoad"/>
@@ -358,7 +359,7 @@
 	<Frame name="FrameStackHighlight" frameStrata="TOOLTIP">
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture name="$parentTexture"> 
+				<Texture name="$parentTexture">
 					<Color r="0.0" g="0.8" b="0.0" a=".4"/>
 				</Texture>
 			</Layer>

@@ -799,7 +799,7 @@ function AchievementFrameAchievements_OnEvent (self, event, ...)
 		-- This has to happen before AchievementFrameAchievements_ForceUpdate() in order to achieve the behavior we want, since it clears the selection for progressive achievements.
 		local selection = AchievementFrameAchievements.selection;
 		AchievementFrameAchievements_ForceUpdate();
-		if ( AchievementFrameAchievementsContainer:IsShown() and selection == achievementID ) then
+		if ( AchievementFrameAchievementsContainer:IsVisible() and selection == achievementID ) then
 			AchievementFrame_SelectAchievement(selection, true);
 		end
 		AchievementFrameHeaderPoints:SetText(GetTotalAchievementPoints(IN_GUILD_VIEW));

@@ -86,19 +86,13 @@ GlueDialogTypes["TOKEN_NONE_FOR_SALE"] = {
 function ReactivateAccountDialog_OnEvent(self, event, ...)
 	if (event == "TOKEN_BUY_CONFIRM_REQUIRED") then
 		local dialog = GoldReactivateConfirmationDialog;
-		local redeemIndex = select(3, C_WowTokenPublic.GetCommerceSystemStatus());
 		
-		if (redeemIndex == LE_CONSUMABLE_TOKEN_REDEEM_FOR_SUB_AMOUNT_30_DAYS) then
-			local now = time();
-			local newTime = now + (30 * 24 * 60 * 60); -- 30 days * 24 hours * 60 minutes * 60 seconds
+		local now = time();
+		local newTime = now + (30 * 24 * 60 * 60); -- 30 days * 24 hours * 60 minutes * 60 seconds
 
-			local newDate = date("*t", newTime);
-			dialog.Description:SetText(ACCOUNT_REACTIVATE_DESC);
-			dialog.Expires:SetText(ACCOUNT_REACTIVATE_EXPIRATION:format(newDate.month, newDate.day, newDate.year));
-		else
-			dialog.Description:SetText(ACCOUNT_REACTIVATE_DESC_MINUTES);
-			dialog.Expires:SetText(ACCOUNT_REACTIVATE_EXPIRATION_MINUTES:format(GetTimeLeftMinuteString(2700)));
-		end
+		local newDate = date("*t", newTime);
+		dialog.Description:SetText(ACCOUNT_REACTIVATE_DESC);
+		dialog.Expires:SetText(ACCOUNT_REACTIVATE_EXPIRATION:format(newDate.month, newDate.day, newDate.year));
 		dialog.Price:SetText(ACCOUNT_REACTIVATE_GOLD_PRICE:format(GetMoneyString(C_WowTokenPublic.GetGuaranteedPrice(), true)));
 		dialog.Remaining:SetText(ACCOUNT_REACTIVATE_GOLD_REMAINING:format(GetMoneyString(C_WowTokenGlue.GetAccountRemainingGoldAmount(), true)));
 		dialog.remainingDialogTime = C_WowTokenSecure.GetPriceLockDuration();
@@ -208,27 +202,17 @@ function ReactivateAccountDialog_Open()
 		return;
 	end
 	AccountReactivate_CloseDialogs();
-	local redeemIndex = select(3, C_WowTokenPublic.GetCommerceSystemStatus());
 	if (C_WowTokenGlue.GetTokenCount() > 0) then
 		self.redeem = true;
 		self.Title:SetText(ACCOUNT_REACTIVATE_TOKEN_TITLE);
-		if (redeemIndex == LE_CONSUMABLE_TOKEN_REDEEM_FOR_SUB_AMOUNT_30_DAYS) then
-			self.Description:SetText(ACCOUNT_REACTIVATE_TOKEN_DESC);
-		elseif (redeemIndex == LE_CONSUMABLE_TOKEN_REDEEM_FOR_SUB_AMOUNT_2700_MINUTES) then
-			self.Description:SetText(ACCOUNT_REACTIVATE_TOKEN_DESC_MINUTES);
-		end
+		self.Description:SetText(ACCOUNT_REACTIVATE_TOKEN_DESC);
 		self.Accept:SetText(ACCOUNT_REACTIVATE_TOKEN_ACCEPT);
 		self:Show();
 	elseif (C_WowTokenGlue.CanVeteranBuy() or CAN_BUY_RESULT_FOUND == LE_TOKEN_RESULT_ERROR_NONE_FOR_SALE) then
 		self.redeem = false;
 		self.Title:SetText(ACCOUNT_REACTIVATE_GOLD_TITLE);
-		if (redeemIndex == LE_CONSUMABLE_TOKEN_REDEEM_FOR_SUB_AMOUNT_30_DAYS) then
-			self.Description:SetText(ACCOUNT_REACTIVATE_GOLD_DESC);
-			self.Accept:SetText(ACCOUNT_REACTIVATE_ACCEPT:format(GetMoneyString(C_WowTokenPublic.GetCurrentMarketPrice(), true)));
-		elseif (redeemIndex == LE_CONSUMABLE_TOKEN_REDEEM_FOR_SUB_AMOUNT_2700_MINUTES) then
-			self.Description:SetText(ACCOUNT_REACTIVATE_GOLD_DESC_MINUTES);
-			self.Accept:SetText(ACCOUNT_REACTIVATE_ACCEPT_MINUTES:format(GetMoneyString(C_WowTokenPublic.GetCurrentMarketPrice(), true)));
-		end
+		self.Description:SetText(ACCOUNT_REACTIVATE_GOLD_DESC);
+		self.Accept:SetText(ACCOUNT_REACTIVATE_ACCEPT:format(GetMoneyString(C_WowTokenPublic.GetCurrentMarketPrice(), true)));
 		ReactivateAccount_CreatePriceUpdateTicker();
 		self.Accept:SetEnabled(C_WowTokenPublic.GetCurrentMarketPrice() > 0 and CAN_BUY_RESULT_FOUND == LE_TOKEN_RESULT_SUCCESS);
 		if (CAN_BUY_RESULT_FOUND == LE_TOKEN_RESULT_ERROR_NONE_FOR_SALE) then
@@ -249,7 +233,7 @@ function SubscriptionRequestDialog_Open()
 	end
 	AccountReactivate_CloseDialogs(true);
 	local self = SubscriptionRequestDialog;
-	local enabled, _, redeemIndex = C_WowTokenPublic.GetCommerceSystemStatus();
+	local enabled = C_WowTokenPublic.GetCommerceSystemStatus();
 
 	if (C_WowTokenGlue.GetTokenCount() > 0 and enabled) then
 		self.redeem = true;
@@ -260,22 +244,14 @@ function SubscriptionRequestDialog_Open()
 		self:SetHeight(self.Text:GetHeight() + 16 + self.ButtonDivider:GetHeight() + self.Accept:GetHeight() + 40 + self.Reactivate:GetHeight());
 	elseif (C_WowTokenGlue.CanVeteranBuy() and C_WowTokenPublic.GetCurrentMarketPrice() and enabled) then	
 		self.redeem = false;
-		if (redeemIndex == LE_CONSUMABLE_TOKEN_REDEEM_FOR_SUB_AMOUNT_30_DAYS) then
-			self.Reactivate:SetText(ACCOUNT_REACTIVATE_ACCEPT:format(GetMoneyString(C_WowTokenPublic.GetCurrentMarketPrice(), true)));
-		elseif (redeemIndex == LE_CONSUMABLE_TOKEN_REDEEM_FOR_SUB_AMOUNT_2700_MINUTES) then
-			self.Reactivate:SetText(ACCOUNT_REACTIVATE_ACCEPT_MINUTES:format(GetMoneyString(C_WowTokenPublic.GetCurrentMarketPrice(), true)));
-		end
+		self.Reactivate:SetText(ACCOUNT_REACTIVATE_ACCEPT:format(GetMoneyString(C_WowTokenPublic.GetCurrentMarketPrice(), true)));
 		self.ButtonDivider:Show();
 		self.Reactivate:Show();
 		self.Reactivate:SetEnabled(C_WowTokenPublic.GetCurrentMarketPrice() > 0);
 		self:SetHeight(self.Text:GetHeight() + 16 + self.ButtonDivider:GetHeight() + self.Accept:GetHeight() + 40 + self.Reactivate:GetHeight());
 	elseif (CAN_BUY_RESULT_FOUND == LE_TOKEN_RESULT_SUCCESS_NO and enabled) then
 		self.Reactivate.tooltip = ERR_NOT_ENOUGH_GOLD;
-		if (redeemIndex == LE_CONSUMABLE_TOKEN_REDEEM_FOR_SUB_AMOUNT_30_DAYS) then
-			self.Reactivate:SetText(ACCOUNT_REACTIVATE_ACCEPT:format(GetMoneyString(C_WowTokenPublic.GetCurrentMarketPrice(), true)));
-		elseif (redeemIndex == LE_CONSUMABLE_TOKEN_REDEEM_FOR_SUB_AMOUNT_2700_MINUTES) then
-			self.Reactivate:SetText(ACCOUNT_REACTIVATE_ACCEPT_MINUTES:format(GetMoneyString(C_WowTokenPublic.GetCurrentMarketPrice(), true)));
-		end
+		self.Reactivate:SetText(ACCOUNT_REACTIVATE_ACCEPT:format(GetMoneyString(C_WowTokenPublic.GetCurrentMarketPrice(), true)));
 		self.ButtonDivider:Show();
 		self.Reactivate:Show();
 		self.Reactivate:Disable();
@@ -297,7 +273,7 @@ end
 function ReactivateAccountDialog_OnReactivate(self)
 	PlaySound("gsTitleOptionOK");
 	if (self:GetParent().redeem) then
-		C_WowTokenSecure.RedeemToken();
+		C_WowTokenSecure.RedeemToken(LE_TOKEN_REDEEM_TYPE_GAME_TIME);
 	else
 		C_WowTokenPublic.BuyToken();
 	end

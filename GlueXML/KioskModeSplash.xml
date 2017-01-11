@@ -105,6 +105,7 @@
 		<Scripts>
 			<OnLoad function="KioskModeSplash_OnLoad"/>
 			<OnShow function="KioskModeSplash_OnShow"/>
+			<OnKeyDown function="KioskModeSplash_OnKeyDown"/>
 		</Scripts>
 	</Frame>
 </Ui>

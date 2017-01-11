@@ -448,6 +448,11 @@ function BattlefieldMinimap_OnUpdate(self, elapsed)
 	BattlefieldMinimapUnitPositionFrame:UpdateTooltips(GameTooltip);
 end
 
+function BattlefieldMinimap_OnMouseUp(self, button, upInside)
+	if upInside then
+		WorldMap_HandleUnitClick(BattlefieldMinimapUnitPositionFrame:GetCurrentMouseOverUnits(), button);
+	end
+end
 
 function BattlefieldMinimapTab_OnClick(self, button)
 	PlaySound("UChatScrollButton");

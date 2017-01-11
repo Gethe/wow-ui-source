@@ -171,7 +171,11 @@ end
 function PVPHonorXPBar_OnLoad(self)
 	local tex = self.Bar:GetStatusBarTexture();
 	self.Bar.Spark:ClearAllPoints();
-	self.Bar.Spark:SetPoint("CENTER", tex, "RIGHT", 0, 0);
+	if (self.isSmall) then
+		self.Bar.Spark:SetPoint("CENTER", tex, "RIGHT", 0, 2);
+	else
+		self.Bar.Spark:SetPoint("CENTER", tex, "RIGHT", 0, 0);
+	end
 	self:RegisterEvent("HONOR_XP_UPDATE");
 	self:RegisterEvent("HONOR_LEVEL_UPDATE");
 	self:RegisterEvent("HONOR_PRESTIGE_UPDATE");

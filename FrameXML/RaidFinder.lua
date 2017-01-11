@@ -237,7 +237,7 @@ function RaidFinderQueueFrameSelectionDropDown_Initialize(self)
 			info.checked = (RaidFinderQueueFrame.raid == info.value);
 			info.tooltipWhileDisabled = nil;
 			info.tooltipOnButton = 1;
-			info.tooltipTitle = RAID_ENCOUNTERS;
+			info.tooltipTitle = RAID_BOSSES;
 			local encounters;
 			local numEncounters = GetLFGDungeonNumEncounters(sortedDungeons[i].id);
 			for j = 1, numEncounters do
