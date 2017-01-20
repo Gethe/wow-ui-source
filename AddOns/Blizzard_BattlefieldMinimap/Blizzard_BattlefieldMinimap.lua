@@ -156,7 +156,7 @@ function BattlefieldMinimap_Update()
 		local battlefieldPOIName = "BattlefieldMinimapPOI"..i;
 		local battlefieldPOI = _G[battlefieldPOIName];
 		if ( i <= numPOIs ) then
-			local landmarkType, name, description, textureIndex, x, y, maplinkID, showInBattleMap = GetMapLandmarkInfo(i);
+			local landmarkType, name, description, textureIndex, x, y, maplinkID, showInBattleMap = C_WorldMap.GetMapLandmarkInfo(i);
 			if ( WorldMap_ShouldShowLandmark(landmarkType) and showInBattleMap ) then
 				local x1, x2, y1, y2 = GetPOITextureCoords(textureIndex);
 				_G[battlefieldPOIName.."Texture"]:SetTexCoord(x1, x2, y1, y2);
@@ -304,7 +304,7 @@ function BattlefieldMinimap_OnUpdate(self, elapsed)
 			local battlefieldPOIName = "BattlefieldMinimapPOI"..i;
 			local battlefieldPOI = _G[battlefieldPOIName];
 			if ( i <= numPOIs ) then
-				local landmarkType, name, description, textureIndex, x, y, maplinkID, showInBattleMap = GetMapLandmarkInfo(i);
+				local landmarkType, name, description, textureIndex, x, y, maplinkID, showInBattleMap = C_WorldMap.GetMapLandmarkInfo(i);
 				if ( WorldMap_ShouldShowLandmark(landmarkType) and showInBattleMap ) then
 					local x1, x2, y1, y2 = GetPOITextureCoords(textureIndex);
 					_G[battlefieldPOIName.."Texture"]:SetTexCoord(x1, x2, y1, y2);

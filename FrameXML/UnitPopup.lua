@@ -1042,25 +1042,6 @@ function UnitPopup_HideButtons ()
 			if ( UnitLevel("player") < MAX_PLAYER_LEVEL_TABLE[LE_EXPANSION_WRATH_OF_THE_LICH_KING] and GetRaidDifficultyID() == UnitPopupButtons[value].defaultDifficultyID ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
-		elseif ( value == "MUTE" ) then
-			if ( not IsVoiceChatEnabled() or not isPlayer or (dropdownMenu.unit and not UnitIsConnected(dropdownMenu.unit)) ) then
-				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
-			else
-				-- Hide if already muted.
-				local playerName, playerServer = UnitName("player");
-				if ( (dropdownMenu.name == playerName and dropdownMenu.server == playerServer) or IsMuted(dropdownMenu.name) ) then
-					UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
-				end
-			end
-		elseif ( value == "UNMUTE" ) then
-			if ( not IsVoiceChatEnabled() or not isPlayer ) then
-				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
-			else
-				-- Hide if not muted or not online.
-				if ( dropdownMenu.name == UnitName("player") or not IsMuted(dropdownMenu.name) ) then
-					UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
-				end
-			end
 		elseif ( value == "RAID_LEADER" ) then
 			if ( not isLeader or not isPlayer or UnitIsGroupLeader(dropdownMenu.unit)or not dropdownMenu.name ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
@@ -1178,124 +1159,6 @@ function UnitPopup_HideButtons ()
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			else
 				if ( not IsDisplayChannelOwner() or dropdownMenu.owner or dropdownMenu.name == UnitName("player") ) then
-					UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
-				end
-			end
-		elseif ( value == "CHAT_SILENCE" ) then
-			if ( not IsVoiceChatEnabled() or not dropdownMenu.name or dropdownMenu.name == UNKNOWNOBJECT or not GetVoiceStatus(dropdownMenu.name) ) then
-				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
-			else
-				if ( IsDisplayChannelModerator() and dropdownMenu.name ~= UnitName("player") ) then
-					if ( IsSilenced(dropdownMenu.name) ) then
-						UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
-					end
-				else
-					UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
-				end
-			end
-		elseif ( value == "CHAT_UNSILENCE" ) then
-			if ( not IsVoiceChatEnabled() or not dropdownMenu.name or dropdownMenu.name == UNKNOWNOBJECT or not GetVoiceStatus(dropdownMenu.name) ) then
-				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
-			else
-				if ( IsDisplayChannelModerator() ) then
-					if ( not IsSilenced(dropdownMenu.name) ) then
-						UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
-					end
-				else
-					UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
-				end
-			end
-		elseif ( value == "PARTY_SILENCE" ) then
-			if ( not IsVoiceChatEnabled() or not dropdownMenu.name or dropdownMenu.name == UNKNOWNOBJECT or not GetVoiceStatus(dropdownMenu.name) ) then
-				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
-			else
-				if ( ( inParty and isLeader and not inRaid ) and dropdownMenu.name ~= UnitName("player") ) then
-					if ( UnitIsSilenced(dropdownMenu.name, "party") ) then
-						UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
-					end
-					dropdownMenu.channelName = "party";
-				else
-					UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
-				end
-			end
-		elseif ( value == "PARTY_UNSILENCE" ) then
-			if ( not IsVoiceChatEnabled() or not dropdownMenu.name or dropdownMenu.name == UNKNOWNOBJECT or not GetVoiceStatus(dropdownMenu.name) ) then
-				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
-			else
-				if ( ( inParty and isLeader and not inRaid ) ) then
-					if ( not UnitIsSilenced(dropdownMenu.name, "party") ) then
-						UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
-					end
-					dropdownMenu.channelName = "party";
-				else
-					UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
-				end
-			end
-		elseif ( value == "RAID_SILENCE" ) then
-			if ( not IsVoiceChatEnabled() or not dropdownMenu.name or dropdownMenu.name == UNKNOWNOBJECT or not GetVoiceStatus(dropdownMenu.name) ) then
-				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
-			else
-				if (  not inBattleground ) then
-					if ( ( inParty and isAssistant and inRaid ) and dropdownMenu.name ~= UnitName("player") ) then
-						if ( UnitIsSilenced(dropdownMenu.name, "raid") ) then
-							UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
-						end
-						dropdownMenu.channelName = "raid";
-					else
-						UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
-					end
-				else
-					UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
-				end
-			end
-		elseif ( value == "RAID_UNSILENCE" ) then
-			if ( not IsVoiceChatEnabled() or not dropdownMenu.name or dropdownMenu.name == UNKNOWNOBJECT or not GetVoiceStatus(dropdownMenu.name) ) then
-				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
-			else
-				if ( not inBattleground ) then
-					if ( ( inParty and isAssistant and inRaid ) ) then
-						if ( not UnitIsSilenced(dropdownMenu.name, "raid") ) then
-							UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
-						end
-						dropdownMenu.channelName = "raid";
-					else
-						UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
-					end
-				else
-					UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
-				end
-			end
-		elseif ( value == "BATTLEGROUND_SILENCE" ) then
-			if ( not IsVoiceChatEnabled() or not dropdownMenu.name or dropdownMenu.name == UNKNOWNOBJECT or not GetVoiceStatus(dropdownMenu.name) ) then
-				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
-			else
-				if (  inBattleground ) then
-					if ( ( inParty and isAssistant and inRaid ) and dropdownMenu.name ~= UnitName("player") ) then
-						if ( UnitIsSilenced(dropdownMenu.name, "battleground") ) then
-							UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
-						end
-						dropdownMenu.channelName = "battleground";
-					else
-						UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
-					end
-				else
-					UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
-				end
-			end
-		elseif ( value == "BATTLEGROUND_UNSILENCE" ) then
-			if ( not IsVoiceChatEnabled() or not dropdownMenu.name or dropdownMenu.name == UNKNOWNOBJECT or not GetVoiceStatus(dropdownMenu.name) ) then
-				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
-			else
-				if (  inBattleground ) then
-					if ( ( inParty and isAssistant and inRaid ) ) then
-						if ( not UnitIsSilenced(dropdownMenu.name, "battleground") ) then
-							UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
-						end
-						dropdownMenu.channelName = "battleground";
-					else
-						UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
-					end
-				else
 					UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 				end
 			end
@@ -1777,10 +1640,6 @@ function UnitPopup_OnClick (self)
 		StaticPopup_Show("CONFIRM_RESET_CHALLENGE_MODE");
 	elseif ( button == "FOLLOW" ) then
 		FollowUnit(fullname, true);
-	elseif ( button == "MUTE" ) then
-		AddMute(fullname);
-	elseif ( button == "UNMUTE" ) then
-		DelMute(fullname);
 	elseif ( button == "RAID_LEADER" ) then
 		PromoteToLeader(fullname, true)
 	elseif ( button == "RAID_PROMOTE" ) then

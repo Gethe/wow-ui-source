@@ -29,12 +29,12 @@ local function OnDisplaySizeChanged(self)
 	local currentAspect = width / height;
 
 	self:ClearAllPoints();
-	
+
 	if ( currentAspect > MAX_ASPECT ) then
 		local maxWidth = height * MAX_ASPECT;
 		local barWidth = ( width - maxWidth ) / 2;
 		self:SetScale(1);
-		self:SetPoint("TOPLEFT", barWidth, 0); 
+		self:SetPoint("TOPLEFT", barWidth, 0);
 		self:SetPoint("BOTTOMRIGHT", -barWidth, 0);
 	elseif ( currentAspect < MIN_ASPECT ) then
 		local maxHeight = width / MIN_ASPECT;
@@ -722,6 +722,12 @@ function GetScaledCursorDelta()
 	local uiScale = GlueParent:GetEffectiveScale();
 	local x, y = GetCursorDelta();
 	return x / uiScale, y / uiScale;
+end
+
+function GMError(...)
+	if ( IsGMClient() ) then
+		error(...);
+	end
 end
 
 -- =============================================================

@@ -201,6 +201,21 @@
 					</Anchors>
 				</FontString>
 			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="-2">
+				<Texture parentKey="SpecRing" atlas="equipmentmanager-spec-border" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="18" y="-18"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="-3">
+				<Texture parentKey="SpecIcon">
+					<Size x="18" y="18"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.SpecRing" relativePoint="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="-1">
 				<Texture name="$parentHighlightBar" parentKey="HighlightBar" file="Interface\FriendsFrame\UI-FriendsFrame-HighlightBar-Blue" alpha="0.4" alphaMode="ADD" hidden="true">
 					<TexCoords left="0.2" right="0.8" top="0" bottom="1"/>
@@ -243,9 +258,9 @@
 						self.texture:SetPoint("TOPLEFT", 0, 0);
 					</OnMouseUp>
 					<OnClick>
-						local dialog = StaticPopup_Show("CONFIRM_DELETE_EQUIPMENT_SET", self:GetParent().name);
+						local dialog = StaticPopup_Show("CONFIRM_DELETE_EQUIPMENT_SET", self:GetParent().text:GetText());
 						if ( dialog ) then
-							dialog.data = self:GetParent().name;
+							dialog.data = self:GetParent().setID;
 						else
 							UIErrorsFrame:AddMessage(ERR_CLIENT_LOCKED_OUT, 1.0, 0.1, 0.1, 1.0);
 						end
@@ -253,9 +268,7 @@
 				</Scripts>
 			</Button>
 			<Button name="$parentEditButton" parentKey="EditButton" hidden="true">
-				<Size>
-					<AbsDimension x="16" y="16"/>
-				</Size>
+				<Size x="16" y="16"/>
 				<Anchors>
 					<Anchor point="RIGHT" relativeTo="$parentDeleteButton" relativePoint="LEFT" x="-1"/>
 				</Anchors>
@@ -265,10 +278,11 @@
 					</Layer>
 				</Layers>
 				<Scripts>
+					<OnLoad function="GearSetEditButton_OnLoad"/>
 					<OnEnter>
 						self.texture:SetAlpha(1.0);
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:SetText(EQUIPMENT_SET_EDIT);
+						GameTooltip:SetText(EQUIPMENT_SET_SETTINGS);
 					</OnEnter>
 					<OnLeave>
 						self.texture:SetAlpha(0.5);
@@ -280,13 +294,7 @@
 					<OnMouseUp>
 						self.texture:SetPoint("TOPLEFT", 0, 0);
 					</OnMouseUp>
-					<OnClick>
-						GearSetButton_OnClick(self:GetParent());
-						GearManagerDialogPopup:Show();
-						GearManagerDialogPopup.isEdit = true;
-						GearManagerDialogPopup.origName = self:GetParent().name;
-						RecalculateGearManagerDialogPopup(self:GetParent().name, self:GetParent().icon:GetTexture());
-					</OnClick>
+					<OnClick function="GearSetEditButton_OnClick"/>
 				</Scripts>
 			</Button>
 		</Frames>
@@ -299,10 +307,9 @@
 				GearSetButton_OnClick(self, button, down);
 			</OnClick>
 			<OnDoubleClick>
-				local name = self.name;
-				if ( name and name ~= "" ) then
+				if ( self.setID ) then
 					PlaySound("igCharacterInfoTab");			-- inappropriately named, but a good sound.
-					EquipmentManager_EquipSet(name);
+					EquipmentManager_EquipSet(self.setID);
 				end
 			</OnDoubleClick>
 			<OnEnter>
@@ -312,21 +319,15 @@
 				GameTooltip:Hide();
 			</OnLeave>
 			<OnDragStart>
-				if ( self.name and self.name ~= "" ) then
-					PickupEquipmentSetByName(self.name);
+				if ( self.setID ) then
+					C_EquipmentSet.PickupEquipmentSet(self.setID);
 				end
 			</OnDragStart>
 		</Scripts>
 		<NormalTexture name="$parentIcon" parentKey="icon">
-			<Size>
-				<AbsDimension x="36" y="36"/>
-			</Size>
+			<Size x="36" y="36"/>
 			<Anchors>
-				<Anchor point="LEFT">
-					<Offset>
-						<AbsDimension x="4" y="0"/>
-					</Offset>
-				</Anchor>
+				<Anchor point="LEFT" x="4" y="0"/>
 			</Anchors>
 		</NormalTexture>
 	</Button>
@@ -358,7 +359,7 @@
 		<CheckedTexture alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight"/>
 	</CheckButton>	
 		
-	<Button name="PaperDollSidebarTabTemplate" virtual="true">
+	<Button name="PaperDollSidebarTabTemplate" motionScriptsWhileDisabled="true" virtual="true">
 		<Size x="33" y="35"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -401,14 +402,28 @@
 			<OnLoad>
 				self.Icon:SetTexture(PAPERDOLL_SIDEBARS[self:GetID()].icon);
 				local tcoords = PAPERDOLL_SIDEBARS[self:GetID()].texCoords;
+				self.disabledTooltip = PAPERDOLL_SIDEBARS[self:GetID()].disabledTooltip;
 				self.Icon:SetTexCoord(tcoords[1], tcoords[2], tcoords[3], tcoords[4]);
 			</OnLoad>
 			<OnClick>
 				PaperDollFrame_SetSidebar(self, self:GetID());
 			</OnClick>
+			<OnEnable>
+				self:SetAlpha(1);
+				self.Icon:SetDesaturation(0);
+			</OnEnable>
+			<OnDisable>
+				self:SetAlpha(0.5);
+				self.Icon:SetDesaturation(1);
+			</OnDisable>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 				GameTooltip:SetText(PAPERDOLL_SIDEBARS[self:GetID()].name, 1, 1, 1);
+				if ( not self:IsEnabled() and self.disabledTooltip ) then
+					GameTooltip:AddLine(self.disabledTooltip, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
+				end
+				
+				GameTooltip:Show();
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();
@@ -438,6 +453,7 @@
             </Layer>
         </Layers>
         <Frames>
+			<Frame parentKey="EditButtonDropdown" name="GearSetEditButtonDropDown" inherits="UIDropDownMenuTemplate"/>
 			<Frame name="PaperDollSidebarTabs" parent="CharacterFrameInsetRight" hidden="true">
 				<Size x="168" y="35"/>
 				<Anchors>

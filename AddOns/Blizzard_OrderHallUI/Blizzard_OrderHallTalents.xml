@@ -105,7 +105,7 @@
 		<Color r="0.27" g="0.27" b="0.27"/>
 	</FontString>
 	<Frame name="OrderHallTalentFrame" inherits="PortraitFrameTemplate" toplevel="true" enableMouse="true" parent="UIParent" hidden="true" mixin="OrderHallTalentFrameMixin">
-		<Size x="336" y="450"/>
+		<Size x="336" y="566"/>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnShow method="OnShow"/>
@@ -118,7 +118,7 @@
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="ClassBackground">
-					<Size x="322" y="382"/>
+					<Size x="322" y="498"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="OrderHallTalentFrameBg" x="4" y="-40"/>
 					</Anchors>
@@ -167,6 +167,16 @@
 						<Anchor point="CENTER" relativeKey="$parent.Tick5" relativePoint="CENTER" y="-58"/>
 					</Anchors>
 				</FontString>
+				<FontString parentKey="Tick7" inherits="OrderHallTalentFrameTick" text="VII">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Tick6" relativePoint="CENTER" y="-58"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Tick8" inherits="OrderHallTalentFrameTick" text="VIII">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Tick7" relativePoint="CENTER" y="-58"/>
+					</Anchors>
+				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -187,7 +197,7 @@
 				</Scripts>
 			</Frame>
 			<Frame name="ClassHallTalentInset" inherits="InsetFrameTemplate" parentKey="LeftInset" useParentLevel="true">
-				<Size x="328" y="388"/>
+				<Size x="328" y="504"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="3" y="-58"/>
 					<Anchor point="BOTTOMRIGHT" relativeTo="TradeFrame" relativePoint="TOPLEFT" x="338" y="-352"/>

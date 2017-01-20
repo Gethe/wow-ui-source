@@ -164,7 +164,7 @@ function InboxFrame_Update()
 	for i=1, INBOXITEMS_TO_DISPLAY do
 		if ( index <= numItems ) then
 			-- Setup mail item
-			packageIcon, stationeryIcon, sender, subject, money, CODAmount, daysLeft, itemCount, wasRead, x, y, z, isGM, firstItemQuantity = GetInboxHeaderInfo(index);
+			packageIcon, stationeryIcon, sender, subject, money, CODAmount, daysLeft, itemCount, wasRead, x, y, z, isGM, firstItemQuantity, firstItemID = GetInboxHeaderInfo(index);
 			
 			-- Set icon
 			if ( packageIcon ) and ( not isGM ) then
@@ -184,6 +184,12 @@ function InboxFrame_Update()
 			button.hasItem = itemCount;
 			button.itemCount = itemCount;
 			SetItemButtonCount(button, firstItemQuantity);
+			if ( firstItemQuantity ) then
+				SetItemButtonQuality(button, select(3, GetItemInfo(firstItemID)), firstItemID);
+			else
+				button.IconBorder:Hide();
+			end
+			
 			buttonIcon = _G["MailItem"..i.."ButtonIcon"];
 			buttonIcon:SetTexture(icon);
 			subjectText = _G["MailItem"..i.."Subject"];
@@ -197,6 +203,7 @@ function InboxFrame_Update()
 				subjectText:SetTextColor(0.75, 0.75, 0.75);
 				_G["MailItem"..i.."ButtonSlot"]:SetVertexColor(0.5, 0.5, 0.5);
 				SetDesaturation(buttonIcon, true);
+				button.IconBorder:SetVertexColor(0.5, 0.5, 0.5);
 			else
 				senderText:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 				subjectText:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
@@ -1074,4 +1081,128 @@ function SendMailAttachment_OnEnter(self)
 		GameTooltip:SetText(ATTACHMENT_TEXT, 1.0, 1.0, 1.0);
 	end
 	self.UpdateTooltip = SendMailAttachment_OnEnter;
+end
+
+-----------------------------------------------------------------------------------------------
+---------------------------------------- Open All Mail ----------------------------------------
+-----------------------------------------------------------------------------------------------
+
+local OPEN_ALL_MAIL_MIN_DELAY = 0.15;
+
+OpenAllMailMixin = {};
+
+function OpenAllMailMixin:Reset()
+	self.mailIndex = 1;
+	self.attachmentIndex = ATTACHMENTS_MAX;
+	self.timeUntilNextRetrieval = nil;
+end
+
+function OpenAllMailMixin:StartOpening()
+	self:Reset();
+	self:Disable();
+	self:SetText(OPEN_ALL_MAIL_BUTTON_OPENING);
+	self:RegisterEvent("MAIL_INBOX_UPDATE");
+	self.numToOpen = GetInboxNumItems();
+	self:AdvanceAndProcessNextItem();
+end
+
+function OpenAllMailMixin:StopOpening()
+	self:Reset();
+	self:Enable();
+	self:SetText(OPEN_ALL_MAIL_BUTTON);
+	self:UnregisterEvent("MAIL_INBOX_UPDATE");
+end
+
+function OpenAllMailMixin:AdvanceToNextItem()
+	local foundAttachment = false;
+	while ( not foundAttachment ) do
+		if ( C_Mail.HasInboxMoney(self.mailIndex) or HasInboxItem(self.mailIndex, self.attachmentIndex) ) then
+			foundAttachment = true;
+		else
+			self.attachmentIndex = self.attachmentIndex - 1;
+			if ( self.attachmentIndex == 0 ) then
+				break;
+			end
+		end		
+	end
+	
+	if ( not foundAttachment ) then
+		self.mailIndex = self.mailIndex + 1;
+		self.attachmentIndex = ATTACHMENTS_MAX;
+		if ( self.mailIndex > GetInboxNumItems() ) then
+			return false;
+		end
+		
+		return self:AdvanceToNextItem();
+	end
+	
+	return true;
+end
+
+function OpenAllMailMixin:AdvanceAndProcessNextItem()
+	if ( CalculateTotalNumberOfFreeBagSlots() == 0 ) then
+		self:StopOpening();
+		return;
+	end
+	
+	if ( self:AdvanceToNextItem() ) then
+		self:ProcessNextItem();
+	else
+		self:StopOpening();
+	end
+end
+
+function OpenAllMailMixin:ProcessNextItem()
+	local _, _, _, _, money, CODAmount, daysLeft, itemCount, _, _, _, _, isGM = GetInboxHeaderInfo(self.mailIndex);
+	if ( isGM or (CODAmount and CODAmount > 0) ) then
+		self:AdvanceAndProcessNextItem();
+		return;
+	end
+	
+	if ( money > 0 ) then
+		TakeInboxMoney(self.mailIndex);
+		self.timeUntilNextRetrieval = OPEN_ALL_MAIL_MIN_DELAY;
+	elseif ( itemCount and itemCount > 0 ) then
+		TakeInboxItem(self.mailIndex, self.attachmentIndex);
+		self.timeUntilNextRetrieval = OPEN_ALL_MAIL_MIN_DELAY;
+	else
+		self:AdvanceAndProcessNextItem();
+	end
+end
+
+function OpenAllMailMixin:OnLoad()
+	self:Reset();
+end
+
+function OpenAllMailMixin:OnEvent(event, ...)
+	if ( event == "MAIL_INBOX_UPDATE" ) then
+		if ( self.numToOpen ~= GetInboxNumItems() ) then
+			self.mailIndex = 1;
+			self.attachmentIndex = ATTACHMENTS_MAX;
+		end
+	end
+end
+
+function OpenAllMailMixin:OnUpdate(dt)
+	if ( self.timeUntilNextRetrieval ) then
+		self.timeUntilNextRetrieval = self.timeUntilNextRetrieval - dt;
+		
+		if ( self.timeUntilNextRetrieval <= 0 ) then
+			if ( not C_Mail.IsCommandPending() ) then
+				self.timeUntilNextRetrieval = nil;
+				self:AdvanceAndProcessNextItem();
+			else
+				-- Delay until the current mail command is done processing.
+				self.timeUntilNextRetrieval = OPEN_ALL_MAIL_MIN_DELAY;
+			end
+		end
+	end
+end
+
+function OpenAllMailMixin:OnClick()
+	self:StartOpening();
+end
+
+function OpenAllMailMixin:OnHide()
+	self:StopOpening();
 end

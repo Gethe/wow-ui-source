@@ -390,7 +390,11 @@
 							<OnEnter>
 								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 								GameTooltip:SetBuybackItem(GetNumBuybackItems());
-								ShowMerchantSellCursor(self:GetID());
+								if (CanAffordMerchantItem(self:GetID()) == false) then
+									SetCursor("BUY_ERROR_CURSOR");
+								else
+									SetCursor("BUY_CURSOR");
+								end
 							</OnEnter>
 							<OnLeave function="GameTooltip_HideResetCursor"/>
 						</Scripts>
@@ -550,7 +554,11 @@
 					if ( IsModifiedClick("DRESSUP") ) then
 						ShowInspectCursor();
 					else
-						ShowMerchantSellCursor(MerchantFrame.itemHover);
+						if (CanAffordMerchantItem(MerchantFrame.itemHover) == false) then
+							SetCursor("BUY_ERROR_CURSOR");
+						else
+							SetCursor("BUY_CURSOR");
+						end
 					end
 				end
 				if ( MerchantRepairItemButton:IsShown() ) then

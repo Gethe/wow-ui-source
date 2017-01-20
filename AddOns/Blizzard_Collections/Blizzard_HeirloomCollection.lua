@@ -49,11 +49,7 @@ function HeirloomsJournal_OnShow(self)
 end
 
 function HeirloomsJournal_OnMouseWheel(self, delta)
-	if delta > 0 then
-		self:PreviousPage();
-	else
-		self:NextPage();
-	end
+	self.PagingFrame:OnMouseWheel(delta);
 end
 
 function HeirloomsJournal_UpdateButton(self)
@@ -116,8 +112,6 @@ do
 end
 
 function HeirloomsMixin:OnLoad()
-	self.currentPage = 1;
-
 	self.newHeirlooms = UIParent.newHeirlooms or {};
 	self.upgradedHeirlooms = {};
 
@@ -204,9 +198,7 @@ function HeirloomsMixin:RebuildLayoutData()
 
 	local equipBuckets = self:SortHeirloomsIntoEquipmentBuckets();
 	self:SortEquipBucketsIntoPages(equipBuckets);
-
-	-- Searching or filtering might put us on an invalid page
-	self.currentPage = math.max(math.min(self:GetMaxPages(), self.currentPage), 1);
+	self.PagingFrame:SetMaxPages(math.max(#self.heirloomLayoutData, 1));
 end
 
 local function GetHeirloomCategoryFromInvType(invType)
@@ -396,7 +388,7 @@ end
 function HeirloomsMixin:LayoutCurrentPage()
 	self.UpgradeLevelHelpBox:Hide();
 
-	local pageLayoutData = self.heirloomLayoutData[self.currentPage];
+	local pageLayoutData = self.heirloomLayoutData[self.PagingFrame:GetCurrentPage()];
 
 	local numEntriesInUse = 0;
 	local numHeadersInUse = 0;
@@ -457,16 +449,12 @@ function HeirloomsMixin:LayoutCurrentPage()
 
 	ActivatePooledFrames(self.heirloomEntryFrames, numEntriesInUse);
 	ActivatePooledFrames(self.heirloomHeaderFrames, numHeadersInUse);
-
-	self.navigationFrame.prevPageButton:SetEnabled(self.currentPage ~= 1);
-	self.navigationFrame.nextPageButton:SetEnabled(self.currentPage ~= self:GetMaxPages());
-	self.navigationFrame.pageText:SetFormattedText(COLLECTION_PAGE_NUMBER, self.currentPage, self:GetMaxPages());
 end
 
 
 function HeirloomsMixin:FindClosestUpgradeablePage()
 	for i = 1, #self.heirloomLayoutData do
-		local pageToCheck = ((self.currentPage - 1) + (i - 1)) % #self.heirloomLayoutData + 1;
+		local pageToCheck = ((self.PagingFrame:GetCurrentPage() - 1) + (i - 1)) % #self.heirloomLayoutData + 1;
 
 		local pageLayoutData = self.heirloomLayoutData[pageToCheck];
 		if pageLayoutData then
@@ -494,7 +482,7 @@ function HeirloomsMixin:RefreshView()
 		-- Try to find an upgradeable heirloom and switch to that page
 		local closestUpgradeablePage = self:FindClosestUpgradeablePage();
 		if closestUpgradeablePage then
-			self.currentPage = closestUpgradeablePage;
+			self.PagingFrame:SetCurrentPage(closestUpgradeablePage);
 		else
 			--Unable to locate an upgradeable item
 			local classFilter, specFilter = C_Heirloom.GetClassAndSpecFilters();
@@ -511,7 +499,7 @@ function HeirloomsMixin:RefreshView()
 				closestUpgradeablePage = self:FindClosestUpgradeablePage();
 				if closestUpgradeablePage then
 					-- Found one without filtering, apply this new filter
-					self.currentPage = closestUpgradeablePage;
+					self.PagingFrame:SetCurrentPage(closestUpgradeablePage);
 					self:UpdateClassFilterDropDownText();
 				else
 					-- Still nothing, reset the filter and just stick to the current page
@@ -628,25 +616,9 @@ function HeirloomsMixin:UpdateProgressBar()
 	self.progressBar.text:SetFormattedText(HEIRLOOMS_PROGRESS_FORMAT, currentProgress, maxProgress);
 end
 
-function HeirloomsMixin:PreviousPage()
-	self:SetPage(self.currentPage - 1);
-end
-
-function HeirloomsMixin:NextPage()
-	self:SetPage(self.currentPage + 1);
-end
-
-function HeirloomsMixin:GetMaxPages()
-	return math.max(#self.heirloomLayoutData, 1);
-end
-
-function HeirloomsMixin:SetPage(page)
-	page = math.min(self:GetMaxPages(), math.max(page, 1));
-
-	if self.currentPage ~= page then
-		self.currentPage = page;
-		PlaySound("igAbiliityPageTurn");
-
+function HeirloomsMixin:OnPageChanged(userAction)
+	PlaySound("igAbiliityPageTurn");
+	if userAction then
 		self:RefreshViewIfVisible();
 	end
 end
@@ -755,7 +727,7 @@ function HeirloomsMixin:SetClassAndSpecFilters(newClassFilter, newSpecFilter)
 	if not self.filtersSet or classFilter ~= newClassFilter or specFilter ~= newSpecFilter then
 		C_Heirloom.SetClassAndSpecFilters(newClassFilter, newSpecFilter);
 
-		self.currentPage = 1;
+		self.PagingFrame:SetCurrentPage(1);
 		self:UpdateClassFilterDropDownText();
 		self:FullRefreshIfVisible();
 	end

@@ -14,12 +14,15 @@ function ArenaEnemyFrames_OnLoad(self)
 	local castFrame;
 	for i = 1, MAX_ARENA_ENEMIES do
 		castFrame = _G["ArenaEnemyFrame"..i.."CastingBar"];
+		castFrame:SetPoint("RIGHT", _G["ArenaEnemyFrame"..i], "LEFT", -32, -3);
 		castFrame.showCastbar = showCastbars;
 		CastingBarFrame_UpdateIsShown(castFrame);
 	end
 	
 	UpdateArenaEnemyBackground(GetCVarBool("showPartyBackground"));
 	ArenaEnemyBackground_SetOpacity(tonumber(GetCVar("partyBackgroundOpacity")));
+	ArenaEnemyFrames_UpdateVisible();
+	ArenaEnemyFrames_ResetCrowdControlCooldownData();
 end
 
 function ArenaEnemyFrames_OnEvent(self, event, ...)
@@ -50,6 +53,17 @@ function ArenaEnemyFrames_OnEvent(self, event, ...)
 		ArenaEnemyBackground_SetOpacity(tonumber(GetCVar("partyBackgroundOpacity")));
 	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
 		ArenaEnemyFrames_UpdateVisible();
+		ArenaEnemyFrames_ResetCrowdControlCooldownData();
+	end
+end
+
+function ArenaEnemyFrames_ResetCrowdControlCooldownData()
+	for i=1, MAX_ARENA_ENEMIES do
+		local frame = _G["ArenaEnemyFrame"..i];
+		frame.CC.spellID = nil;
+		frame.CC.Icon:SetTexture(nil);
+		frame.CC.Cooldown:Clear();
+		ArenaEnemyFrame_UpdateCrowdControl(frame);
 	end
 end
 
@@ -83,6 +97,20 @@ function ArenaEnemyFrames_UpdateVisible()
 end
 
 function ArenaEnemyFrame_OnLoad(self)
+	local id = self:GetID();
+	self.debuffCountdown = 0; 
+	self.numDebuffs = 0;
+	self.noTextPrefix = 1;
+	local prefix = "ArenaEnemyFrame"..id;
+	UnitFrame_Initialize(self, "arena"..id,  _G[prefix.."Name"], nil,
+			_G[prefix.."HealthBar"], _G[prefix.."HealthBarText"], 
+			_G[prefix.."ManaBar"], _G[prefix.."ManaBarText"], nil, nil, nil,
+			_G[prefix.."MyHealPredictionBar"], _G[prefix.."OtherHealPredictionBar"],
+			_G[prefix.."TotalAbsorbBar"], _G[prefix.."TotalAbsorbBarOverlay"], _G[prefix.."OverAbsorbGlow"],
+			_G[prefix.."OverHealAbsorbGlow"], _G[prefix.."HealAbsorbBar"], _G[prefix.."HealAbsorbBarLeftShadow"],
+			_G[prefix.."HealAbsorbBarRightShadow"]);
+	SetTextStatusBarTextZeroText(_G[prefix.."HealthBar"], DEAD);
+
 	self.statusCounter = 0;
 	self.statusSign = -1;
 	self.unitHPPercent = 1;
@@ -96,6 +124,8 @@ function ArenaEnemyFrame_OnLoad(self)
 	self:RegisterEvent("UNIT_PET");
 	self:RegisterEvent("ARENA_OPPONENT_UPDATE");
 	self:RegisterEvent("UNIT_NAME_UPDATE");
+	self:RegisterEvent("ARENA_COOLDOWNS_UPDATE");
+	self:RegisterEvent("ARENA_CROWD_CONTROL_SPELL_UPDATE");
 	
 	UIDropDownMenu_Initialize(self.DropDown, ArenaEnemyDropDown_Initialize, "MENU");
 	
@@ -184,10 +214,11 @@ function ArenaEnemyFrame_SetMysteryPlayer(self)
 	self:Show();
 end
 
-function ArenaEnemyFrame_OnEvent(self, event, arg1, arg2)
-	if ( arg1 == self.unit ) then
+function ArenaEnemyFrame_OnEvent(self, event, unit, ...)
+	if ( unit == self.unit ) then
 		if ( event == "ARENA_OPPONENT_UPDATE" ) then
-			if ( arg2 == "seen" or arg2 == "destroyed") then
+			local unitEvent = ...;
+			if ( unitEvent == "seen" or unitEvent == "destroyed") then
 				ArenaEnemyFrame_Unlock(self);
 				ArenaEnemyFrame_UpdatePlayer(self);
 				
@@ -202,14 +233,14 @@ function ArenaEnemyFrame_OnEvent(self, event, arg1, arg2)
 				ArenaEnemyFrame_UpdatePet(self);
 				UpdateArenaEnemyBackground();
 				UIParent_ManageFramePositions();
-			elseif ( arg2 == "unseen" ) then
+			elseif ( unitEvent == "unseen" ) then
 				ArenaEnemyFrame_Lock(self);
 				
 				self.healthbar:RegisterEvent("UNIT_HEALTH");
 				self.healthbar:SetScript("OnUpdate", nil);
 				UnitFrameManaBar_RegisterDefaultEvents(self.manabar);
 				self.manabar:SetScript("OnUpdate", nil);
-			elseif ( arg2 == "cleared" ) then
+			elseif ( unitEvent == "cleared" ) then
 				ArenaEnemyFrame_Unlock(self);
 				self:Hide();
 				ArenaEnemyFrames_UpdateVisible();
@@ -224,8 +255,39 @@ function ArenaEnemyFrame_OnEvent(self, event, arg1, arg2)
 			ArenaEnemyFrame_UpdatePlayer(self);
 		elseif ( event == "UNIT_MAXHEALTH" or event == "UNIT_HEAL_PREDICTION" or event == "UNIT_ABSORB_AMOUNT_CHANGED" or event == "UNIT_HEAL_ABSORB_AMOUNT_CHANGED" ) then
 			UnitFrameHealPredictionBars_Update(self);
+		elseif ( event == "ARENA_COOLDOWNS_UPDATE" ) then
+			ArenaEnemyFrame_UpdateCrowdControl(self);
+		elseif ( event == "ARENA_CROWD_CONTROL_SPELL_UPDATE" ) then
+			local spellID = ...;
+			if (spellID ~= self.CC.spellID) then
+				local _, _, spellTexture = GetSpellInfo(spellID);
+				self.CC.spellID = spellID;
+				self.CC.Icon:SetTexture(spellTexture);
+			end
 		end
 	end
+end
+
+function ArenaEnemyFrame_UpdateCrowdControl(self)
+	local spellID, startTime, duration = C_PvP.GetArenaCrowdControlInfo(self.unit);
+	if (spellID) then
+		if (spellID ~= self.CC.spellID) then
+			local _, _, spellTexture = GetSpellInfo(spellID);
+			self.CC.spellID = spellID;
+			self.CC.Icon:SetTexture(spellTexture);
+		end
+		if (startTime ~= 0 and duration ~= 0) then
+			self.CC.Cooldown:SetCooldown(startTime/1000.0, duration/1000.0);
+		else
+			self.CC.Cooldown:Clear();
+		end
+	end
+end
+
+function ArenaEnemyFrame_OnShow(self)
+	self:SetFrameLevel(2);
+
+	C_PvP.RequestCrowdControlSpell(self.unit);
 end
 
 function ArenaEnemyFrame_UpdatePet(self, id, useCVars)	--At some points, we need to use CVars instead of UVars even though UVars are faster.

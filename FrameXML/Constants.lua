@@ -45,6 +45,8 @@ ORANGE_FONT_COLOR			= CreateColor(1.0, 0.5, 0.25);
 PASSIVE_SPELL_FONT_COLOR	= CreateColor(0.77, 0.64, 0.0);
 BATTLENET_FONT_COLOR 		= CreateColor(0.510, 0.773, 1.0);
 TRANSMOGRIFY_FONT_COLOR		= CreateColor(1, 0.5, 1);
+DISABLED_FONT_COLOR			= CreateColor(0.498, 0.498, 0.498);
+LIGHTBLUE_FONT_COLOR		= CreateColor(0.53, 0.67, 1.0);
 
 CHAT_FONT_HEIGHTS = {
 	[1] = 12,
@@ -817,6 +819,7 @@ QUEST_TAG_TCOORDS = {
 
 WORLD_QUEST_TYPE_TCOORDS = {
 	[LE_QUEST_TAG_TYPE_DUNGEON] = { 0.421875, 0.5625, 0, 0.28125 },
+	[LE_QUEST_TAG_TYPE_RAID] = { 0.703125, 0.84375, 0, 0.28125 },
 };
 
 -- MATCH CONDITIONS
@@ -896,3 +899,47 @@ LFG_SUBTYPEID_RAID = 3;
 LFG_SUBTYPEID_SCENARIO = 4;
 LFG_SUBTYPEID_FLEXRAID = 5;
 LFG_SUBTYPEID_WORLDPVP = 6;
+
+-- CONTRIBUTIONS
+CONTRIBUTION_APPEARANCE_DATA = {
+	[LE_CONTRIBUTION_STATE_BUILDING] = {
+		stateName = CONTRIBUTION_UNDER_CONSTRUCTION,
+		stateColor = NORMAL_FONT_COLOR,
+		statusBarAtlas = "_Legionfall_BarFill_UnderConstruction",
+		borderAtlas = "Legionfall_YellowFrame",
+		bannerAtlas = "Legionfall_Banner",
+	},
+
+	[LE_CONTRIBUTION_STATE_ACTIVE] = {
+		stateName = CONTRIBUTION_ACTIVE,
+		stateColor = GREEN_FONT_COLOR,
+		statusBarAtlas = "_Legionfall_BarFill_Active",
+		borderAtlas = "Legionfall_GreenFrame",
+		bannerAtlas = "Legionfall_Banner",
+	},
+
+	[LE_CONTRIBUTION_STATE_UNDER_ATTACK] = {
+		stateName = CONTRIBUTION_UNDER_ATTACK,
+		stateColor = RED_FONT_COLOR,
+		statusBarAtlas = "_Legionfall_BarFill_UnderAttack",
+		borderAtlas = "Legionfall_RedFrame",
+		bannerAtlas = "Legionfall_Banner",
+	},
+
+	[LE_CONTRIBUTION_STATE_DESTROYED] = {
+		stateName = CONTRIBUTION_DESTROYED,
+		stateColor = DISABLED_FONT_COLOR,
+		statusBarAtlas = "_Legionfall_BarFill_Active",
+		borderAtlas = "Legionfall_GrayFrame",
+		bannerAtlas = "Legionfall_GrayBanner",
+	},
+}
+
+-- TEXTURES
+QUESTION_MARK_ICON = "INTERFACE\\ICONS\\INV_MISC_QUESTIONMARK.BLP";
+
+
+UPPER_LEFT_VERTEX = 1;
+LOWER_LEFT_VERTEX = 2;
+UPPER_RIGHT_VERTEX = 3;
+LOWER_RIGHT_VERTEX = 4;

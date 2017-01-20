@@ -110,13 +110,30 @@
 			<Frame parentKey="ForgeBadgeFrame" setAllPoints="true" frameStrata="HIGH">
 				<Layers>
 					<Layer level="OVERLAY">
-						<Texture parentKey="ForgeClassBadgeIcon">
+						<Texture parentKey="ItemIcon">
 							<Anchors>
 								<Anchor point="CENTER" relativePoint="TOPLEFT" x="20" y="-20" />
 							</Anchors>
 						</Texture>
+
+						<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.ItemIcon"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ItemIcon"/>
+							</Anchors>
+							<MaskedTextures>
+								<MaskedTexture childKey="ItemIcon"/>
+							</MaskedTextures>
+						</MaskTexture>
 					</Layer>
-					<Layer level="OVERLAY" textureSubLevel="2">
+					<Layer level="OVERLAY" textureSubLevel="1">
+						<Texture parentKey="ItemIconBorder" atlas="Artifacts-ItemIconBorder" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.ItemIcon"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="3">
 						<Texture parentKey="ForgeLevelBackground" file="Interface\Minimap\MiniMap-TrackingBorder">
 							<Size x="64" y="64"/>
 							<Anchors>
@@ -130,7 +147,7 @@
 							<Color r="1.0" g="0.82" b="0"/> 
 						</FontString>
 					</Layer>
-					<Layer level="OVERLAY" textureSubLevel="1">
+					<Layer level="OVERLAY" textureSubLevel="2">
 						<Texture parentKey="ForgeLevelBackgroundBlack" alpha="0.7">
 							<Size x="22" y="22"/>
 							<Anchors>

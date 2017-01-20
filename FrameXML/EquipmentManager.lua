@@ -51,8 +51,8 @@ end
 
 function EquipmentManager_OnEvent (self, event, ...)
 	if ( event == "WEAR_EQUIPMENT_SET" ) then
-		local setName = ...;
-		EquipmentManager_EquipSet(setName);
+		local setID = ...;
+		EquipmentManager_EquipSet(setID);
 	elseif ( event == "ITEM_UNLOCKED" ) then
 		local arg1, arg2 = ...; -- inventory slot or bag and slot
 		
@@ -279,7 +279,7 @@ function EquipmentManager_GetItemInfoByLocation (location)
 		return;
 	end
 
-	local id, name, textureName, count, durability, maxDurability, invType, locked, start, duration, enable, setTooltip, quality, _;
+	local id, name, textureName, count, durability, maxDurability, invType, locked, start, duration, enable, setTooltip, quality, isUpgrade, _;
 	if ( voidStorage ) then
 		id, textureName, _, _, _, quality = GetVoidItemInfo(tab, voidSlot);
 		setTooltip = function () GameTooltip:SetVoidItem(tab, voidSlot) end;
@@ -293,6 +293,8 @@ function EquipmentManager_GetItemInfoByLocation (location)
 			quality = GetInventoryItemQuality("player", slot);
 		end
 		
+		isUpgrade = IsInventoryItemAnUpgrade("player", slot);
+		
 		setTooltip = function () GameTooltip:SetInventoryItem("player", slot) end;
 	else -- bags
 		id = GetContainerItemID(bag, slot);
@@ -301,20 +303,21 @@ function EquipmentManager_GetItemInfoByLocation (location)
 		start, duration, enable = GetContainerItemCooldown(bag, slot);
 		
 		durability, maxDurability = GetContainerItemDurability(bag, slot);
+		isUpgrade = IsContainerItemAnUpgrade(bag, slot);
 		
 		setTooltip = function () GameTooltip:SetBagItem(bag, slot); end;
 	end
 	
-	return id, name, textureName, count, durability, maxDurability, invType, locked, start, duration, enable, setTooltip, quality;
+	return id, name, textureName, count, durability, maxDurability, invType, locked, start, duration, enable, setTooltip, quality, isUpgrade;
 end
 
-function EquipmentManager_EquipSet (name)
-	if ( EquipmentSetContainsLockedItems(name) or UnitCastingInfo("player") ) then
+function EquipmentManager_EquipSet (setID)
+	if ( C_EquipmentSet.EquipmentSetContainsLockedItems(setID) or UnitCastingInfo("player") ) then
 		UIErrorsFrame:AddMessage(ERR_CLIENT_LOCKED_OUT, 1.0, 0.1, 0.1, 1.0);
 		return;
 	end
 	
-	UseEquipmentSet(name);
+	C_EquipmentSet.UseEquipmentSet(setID);
 end
 
 function EquipmentManager_RunAction (action)

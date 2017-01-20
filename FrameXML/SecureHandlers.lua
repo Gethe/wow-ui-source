@@ -157,7 +157,7 @@ local function PickupAny(kind, target, detail, ...)
 	elseif kind == 'companion' then
 		PickupCompanion(target, detail)
 	elseif kind == 'equipmentset' then
-		PickupEquipmentSet(target);
+		C_EquipmentSet.PickupEquipmentSet(target);
 	end
 end
 

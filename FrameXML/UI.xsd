@@ -154,8 +154,8 @@
 
 	<xs:element name="AbsDimension">
 		<xs:complexType>
-			<xs:attribute name="x" type="xs:int" use="required"/>
-			<xs:attribute name="y" type="xs:int" use="required"/>
+			<xs:attribute name="x" type="xs:float" use="required"/>
+			<xs:attribute name="y" type="xs:float" use="required"/>
 		</xs:complexType>
 	</xs:element>
 
@@ -296,7 +296,7 @@
 				<xs:element name="PostClick" type="ScriptType"/>
 				<xs:element name="OnDoubleClick" type="ScriptType"/>
 				<xs:element name="OnValueChanged" type="ScriptType"/>
-				<xs:element name="OnMinMaxChanged" type="ScriptType"/>				
+				<xs:element name="OnMinMaxChanged" type="ScriptType"/>
 				<xs:element name="OnUpdateModel" type="ScriptType"/>
 				<xs:element name="OnModelLoaded" type="ScriptType"/>
 				<xs:element name="OnAnimFinished" type="ScriptType"/>
@@ -395,7 +395,7 @@
 		</xs:sequence>
 		<xs:attribute name="alphabet" type="FONTALPHABET" use="required"/>
 	</xs:complexType>
-	
+
 	<xs:complexType name="FontFamilyType">
 		<xs:sequence>
 			<xs:choice maxOccurs="unbounded">
@@ -407,7 +407,7 @@
 	</xs:complexType>
 
 	<xs:element name="FontFamily" type="FontFamilyType"/>
-	
+
 	<xs:complexType name="LayoutFrameType">
 		<xs:sequence minOccurs="0">
 			<xs:choice maxOccurs="unbounded">
@@ -511,6 +511,28 @@
 	</xs:complexType>
 	<xs:element name="Texture" type="TextureType" substitutionGroup="LayoutFrame"/>
 
+	<xs:complexType name="MaskTextureType">
+		<xs:complexContent>
+			<xs:extension base="TextureType">
+				<xs:sequence minOccurs="0" maxOccurs="1">
+					<xs:element name="MaskedTextures">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="MaskedTexture" maxOccurs="unbounded">
+									<xs:complexType>
+										<xs:attribute name="childKey" type="xs:string"/>
+										<xs:attribute name="target" type="xs:string"/>
+									</xs:complexType>
+								</xs:element>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="MaskTexture" type="MaskTextureType" substitutionGroup="LayoutFrame"/>
+
 	<xs:complexType name="FontStringType">
 		<xs:complexContent>
 			<xs:extension base="LayoutFrameType">
@@ -608,6 +630,7 @@
 											<xs:sequence>
 												<xs:choice maxOccurs="unbounded">
 													<xs:element ref="Texture"/>
+													<xs:element ref="MaskTexture"/>
 													<xs:element ref="FontString"/>
 													<xs:element ref="Line"/>
 												</xs:choice>
@@ -768,7 +791,7 @@
 				<xs:attribute name="historyLines" type="xs:int" default="0"/>
 				<xs:attribute name="autoFocus" type="xs:boolean" default="true"/>
 				<xs:attribute name="ignoreArrows" type="xs:boolean" default="false"/>
-				<xs:attribute name="countInvisibleLetters" type="xs:boolean" default="false"/>								
+				<xs:attribute name="countInvisibleLetters" type="xs:boolean" default="false"/>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
@@ -895,6 +918,45 @@
 	</xs:complexType>
 	<xs:element name="MovieFrame" type="MovieFrameType" substitutionGroup="ui:Frame"/>
 
+	<xs:complexType name="ActorScriptsType">
+		<xs:sequence>
+			<xs:choice maxOccurs="unbounded">
+				<xs:element name="OnLoad" type="ScriptType"/>
+				<xs:element name="OnUpdate" type="ScriptType"/>
+				<xs:element name="OnModelLoading" type="ScriptType"/>
+				<xs:element name="OnModelLoaded" type="ScriptType"/>
+				<xs:element name="OnAnimFinished" type="ScriptType"/>
+			</xs:choice>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ModeSceneActorType">
+		<xs:sequence>
+			<xs:element name="Scripts" type="ActorScriptsType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="Animations">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element ref="AnimationGroup" maxOccurs="unbounded"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+
+		<xs:attribute name="name" type="xs:string"/>
+		<xs:attribute name="inherits" type="xs:string"/>
+		<xs:attribute name="virtual" type="xs:boolean" default="false"/>
+		<xs:attribute name="parentKey" type="xs:string"/>
+		<xs:attribute name="parentArray" type="xs:string"/>
+		<xs:attribute name="mixin" type="xs:string"/>
+
+		<xs:attribute name="file" type="xs:string"/>
+		<xs:attribute name="fileID" type="xs:int"/>
+
+		<xs:attribute name="alpha" type="xs:float" default="1.0" />
+		<xs:attribute name="scale" type="xs:float" default="1.0" />
+		<xs:attribute name="desaturation" type="xs:float" default="0.0" />
+	</xs:complexType>
+	<xs:element name="Actor" type="ModeSceneActorType"/>
+
 	<xs:element name="Ui">
 		<xs:complexType>
 			<xs:sequence>
@@ -922,6 +984,7 @@
 					<xs:element ref="LayoutFrame" minOccurs="0" maxOccurs="unbounded"/>
 					<xs:element ref="Animation" minOccurs="0" maxOccurs="unbounded"/>
 					<xs:element ref="AnimationGroup" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element ref="Actor" minOccurs="0" maxOccurs="unbounded"/>
 				</xs:choice>
 			</xs:sequence>
 		</xs:complexType>
@@ -974,17 +1037,17 @@
 	</xs:complexType>
 	<xs:element name="ArchaeologyDigSiteFrame" type="ArchaeologyDigSiteFrameType" substitutionGroup="ui:Frame"/>
 
-  <xs:complexType name="ScenarioPOIFrameType">
-    <xs:complexContent>
-      <xs:extension base="FrameType">
-        <xs:attribute name="filltexture" type="xs:string"/>
-        <xs:attribute name="bordertexture" type="xs:string"/>
-      </xs:extension>
-    </xs:complexContent>
-  </xs:complexType>
-  <xs:element name="ScenarioPOIFrame" type="ScenarioPOIFrameType" substitutionGroup="ui:Frame"/>
+	<xs:complexType name="ScenarioPOIFrameType">
+		<xs:complexContent>
+			<xs:extension base="FrameType">
+				<xs:attribute name="filltexture" type="xs:string"/>
+				<xs:attribute name="bordertexture" type="xs:string"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="ScenarioPOIFrame" type="ScenarioPOIFrameType" substitutionGroup="ui:Frame"/>
 
-  <xs:complexType name="MinimapType">
+	<xs:complexType name="MinimapType">
 		<xs:complexContent>
 			<xs:extension base="FrameType">
 				<xs:attribute name="questBlobInsideTexture" type="xs:string"/>
@@ -1023,7 +1086,7 @@
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:element name="TabardModel" type="TabardModelType" substitutionGroup="ui:Frame"/>
-	
+
 	<xs:complexType name="CinematicModelType">
 		<xs:complexContent>
 			<xs:extension base="ModelType">
@@ -1032,7 +1095,7 @@
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:element name="CinematicModel" type="CinematicModelType" substitutionGroup="ui:Frame"/>
-	
+
 	<xs:complexType name="UiCameraType">
 		<xs:complexContent>
 			<xs:extension base="ModelType"/>
@@ -1061,6 +1124,31 @@
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:element name="Browser" type="BrowserType" substitutionGroup="ui:Frame"/>
+
+	<xs:complexType name="ModelSceneType">
+		<xs:complexContent>
+			<xs:extension base="FrameType">
+				<xs:sequence minOccurs="0">
+					<xs:choice maxOccurs="unbounded">
+						<xs:element name="FogColor" type="ColorType"/>
+
+						<xs:element name="Actors">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element ref="Actor" maxOccurs="unbounded"/>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+					</xs:choice>
+				</xs:sequence>
+
+				<xs:attribute name="fogNear" type="xs:float" default="0.0" />
+				<xs:attribute name="fogFar" type="xs:float" default="1.0" />
+				<xs:attribute name="drawLayer" type="ui:DRAWLAYER" default="ARTWORK"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="ModelScene" type="ModelSceneType" substitutionGroup="ui:Frame"/>
 
 	<xs:simpleType name="ANIMLOOPTYPE">
 		<xs:restriction base="xs:NMTOKEN">

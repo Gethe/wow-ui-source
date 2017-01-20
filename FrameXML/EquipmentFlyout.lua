@@ -370,6 +370,7 @@ end
 function EquipmentFlyout_DisplayButton(button, paperDollItemSlot)
 	local location = button.location;
 	if ( not location ) then
+		button.UpgradeIcon:Hide();
 		return;
 	end
 	if ( location >= EQUIPMENTFLYOUT_FIRST_SPECIAL_LOCATION ) then
@@ -377,8 +378,8 @@ function EquipmentFlyout_DisplayButton(button, paperDollItemSlot)
 		return;
 	end
 
-	local id, name, textureName, count, durability, maxDurability, invType, locked, start, duration, enable, setTooltip, quality = EquipmentManager_GetItemInfoByLocation(location);
-
+	local id, name, textureName, count, durability, maxDurability, invType, locked, start, duration, enable, setTooltip, quality, isUpgrade = EquipmentManager_GetItemInfoByLocation(location);
+	button.UpgradeIcon:SetShown(isUpgrade);
 	local broken = ( maxDurability and durability == 0 );
 	if ( textureName ) then
 		SetItemButtonTexture(button, textureName);
@@ -416,6 +417,7 @@ end
 
 function EquipmentFlyout_DisplaySpecialButton(button, paperDollItemSlot)
 	local location = button.location;
+	button.UpgradeIcon:Hide();
 	if ( location == EQUIPMENTFLYOUT_IGNORESLOT_LOCATION ) then
 		SetItemButtonTexture(button, "Interface\\PaperDollInfoFrame\\UI-GearManager-LeaveItem-Opaque");
 		SetItemButtonCount(button, nil);

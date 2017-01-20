@@ -296,15 +296,15 @@ function WorldMapBountyBoardMixin:ShowBountyTooltip(bountyIndex)
 	local title, level, suggestedGroup, isHeader, isCollapsed, isComplete, frequency, questID, startEvent, displayQuestID, isOnMap, hasLocalPOI, isTask, isStory = GetQuestLogTitle(questIndex);
 	if title then
 		WorldMapTooltip:SetText(title, HIGHLIGHT_FONT_COLOR:GetRGB());
-
-		WorldMap_AddQuestTimeToTooltip(bountyData.questID);
+		local allowDisplayPastCritical = select(7, GetQuestTagInfo(bountyData.questID));
+		WorldMap_AddQuestTimeToTooltip(bountyData.questID, allowDisplayPastCritical);
 
 		local _, questDescription = GetQuestLogQuestText(questIndex);
 		WorldMapTooltip:AddLine(questDescription, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
 
 		AddObjectives(bountyData.questID, bountyData.numObjectives);
 
-		WorldMap_AddQuestRewardsToTooltip(bountyData.questID);
+		GameTooltip_AddQuestRewardsToTooltip(WorldMapTooltip, bountyData.questID);
 		WorldMapTooltip:Show();
 	else
 		WorldMapTooltip:SetText(RETRIEVING_DATA, RED_FONT_COLOR:GetRGB());

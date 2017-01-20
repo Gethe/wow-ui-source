@@ -316,15 +316,9 @@ function FriendsFrame_Update()
 			FriendsFrame_ShowSubFrame("QuickJoinFrame");
 		else
 			--Ignore
-			if ( IsVoiceChatEnabled() ) then
-				FriendsFrameMutePlayerButton:Show();
-				FriendsFrameIgnorePlayerButton:SetWidth(110);
-				FriendsFrameUnsquelchButton:SetWidth(111);
-			else
-				FriendsFrameMutePlayerButton:Hide();
-				FriendsFrameIgnorePlayerButton:SetWidth(131);
-				FriendsFrameUnsquelchButton:SetWidth(134);
-			end
+			FriendsFrameMutePlayerButton:Hide();
+			FriendsFrameIgnorePlayerButton:SetWidth(131);
+			FriendsFrameUnsquelchButton:SetWidth(134);
 			FriendsFrameTitleText:SetText(IGNORE_LIST);
 			FriendsFrame_ShowSubFrame("IgnoreListFrame");
 			IgnoreList_Update();
@@ -639,10 +633,7 @@ function IgnoreList_Update()
 	local button;
 	local numIgnores = GetNumIgnores();
 	local numBlocks = BNGetNumBlocked();
-	local numMutes = 0;
-	if ( IsVoiceChatEnabled() ) then
-		numMutes = GetNumMutes();
-	end
+
 	-- Headers stuff
 	local ignoredHeader, blockedHeader, mutedHeader;
 	if ( numIgnores > 0 ) then
@@ -655,15 +646,12 @@ function IgnoreList_Update()
 	else
 		blockedHeader = 0;
 	end
-	if ( numMutes > 0 ) then
-		mutedHeader = 1;
-	else
-		mutedHeader = 0;
-	end
+	mutedHeader = 0;
+
 	
 	local lastIgnoredIndex = numIgnores + ignoredHeader;
 	local lastBlockedIndex = lastIgnoredIndex + numBlocks + blockedHeader;
-	local lastMutedIndex = lastBlockedIndex + numMutes + mutedHeader;
+	local lastMutedIndex = lastBlockedIndex + mutedHeader;
 	local numEntries = lastMutedIndex;
 
 	FriendsFrameIgnoredHeader:Hide();
@@ -689,10 +677,6 @@ function IgnoreList_Update()
 		elseif ( numBlocks > 0 ) then
 			FriendsFrame_SelectSquelched(SQUELCH_TYPE_BLOCK_INVITE, 1);
 			selectedSquelchType = SQUELCH_TYPE_BLOCK_INVITE;
-			selectedSquelchIndex = 1;
-		elseif ( numMutes > 0 ) then
-			FriendsFrame_SelectSquelched(SQUELCH_TYPE_MUTE, 1);
-			selectedSquelchType = SQUELCH_TYPE_MUTE;
 			selectedSquelchIndex = 1;
 		end
 	end
@@ -1052,7 +1036,6 @@ function FriendsFrameUnsquelchButton_OnClick(self)
 		BNSetBlocked(blockID, false);
 	elseif ( selectedSquelchType == SQUELCH_TYPE_MUTE ) then
 		local name = GetMuteName(GetSelectedMute());
-		DelMute(name);
 	end
 	PlaySound("igMainMenuOptionCheckBoxOn");
 end
@@ -1070,10 +1053,6 @@ end
 
 function FriendsFrame_UnIgnore(button, name)
 	DelIgnore(name);
-end
-
-function FriendsFrame_UnMute(button, name)
-	DelMute(name);
 end
 
 function FriendsFrame_UnBlock(button, blockID)

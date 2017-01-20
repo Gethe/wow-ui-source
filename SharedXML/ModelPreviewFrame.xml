@@ -29,50 +29,29 @@
 				</Layers>
 				<Frames>
 					<Frame parentKey="ShadowOverlay" inherits="ShadowOverlayTemplate" useParentLevel="true" setAllPoints="true"/>
-					<PlayerModel parentKey="Model" useParentLevel="true" inherits="ModelWithZoomTemplate">
+					<ModelScene parentKey="ModelScene" useParentLevel="true" inherits="ModelSceneMixinTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="0" y="0"/>
-							<Anchor point="BOTTOMRIGHT" relativeKey="$parent" x="0" y="50"/>
+							<Anchor point="BOTTOMRIGHT" relativeKey="$parent"/>
 						</Anchors>
 						<Frames>
-							<Button parentKey="RotateLeftButton">
-								<Size x="35" y="35"/>
+							<Button parentKey="RotateLeftButton" inherits="RotateOrbitCameraLeftButtonTemplate">
 								<Anchors>
-									<Anchor point="TOPRIGHT" relativeKey="$parent" relativePoint="BOTTOM" x="-5" y="0"/>
+									<Anchor point="TOPRIGHT" relativeKey="$parent" relativePoint="BOTTOM" x="-5" y="50"/>
 								</Anchors>
-								<Scripts>
-									<OnLoad>
-										self:RegisterForClicks("LeftButtonDown", "LeftButtonUp");
-									</OnLoad>
-									<OnClick>
-										Model_RotateLeft(self:GetParent());
-									</OnClick>
-								</Scripts>
-								<NormalTexture file="Interface\Buttons\UI-RotationLeft-Button-Up"/>
-								<PushedTexture file="Interface\Buttons\UI-RotationLeft-Button-Down"/>
-								<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
 							</Button>
-							<Button parentKey="RotateRightButton">
-								<Size>
-									<AbsDimension x="35" y="35"/>
-								</Size>
+							<Button parentKey="RotateRightButton" inherits="RotateOrbitCameraRightButtonTemplate">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="BOTTOM" x="5" y="0"/>
+									<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="BOTTOM" x="5" y="50"/>
 								</Anchors>
-								<Scripts>
-									<OnLoad>
-										self:RegisterForClicks("LeftButtonDown", "LeftButtonUp");
-									</OnLoad>
-									<OnClick>
-										Model_RotateRight(self:GetParent());
-									</OnClick>
-								</Scripts>
-								<NormalTexture file="Interface\Buttons\UI-RotationRight-Button-Up"/>
-								<PushedTexture file="Interface\Buttons\UI-RotationRight-Button-Down"/>
-								<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
 							</Button>
 						</Frames>
-					</PlayerModel>
+						<Scripts>
+							<OnLoad inherit="append">
+								self:SetViewInsets(0, 0, -60, 60);
+							</OnLoad>
+						</Scripts>
+					</ModelScene>
 				</Frames>
 			</Frame>
 			<Button name="$parentCloseButton" inherits="MagicButtonTemplate" parentKey="CloseButton" text="CLOSE">
@@ -95,6 +74,7 @@
 			<OnHide>
 				PlaySound("igCharacterInfoClose");
 			</OnHide>
+			<OnEvent function="ModelPreviewFrame_OnEvent"/>
 		</Scripts>
 	</Frame>
 </Ui>

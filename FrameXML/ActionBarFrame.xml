@@ -13,7 +13,9 @@
 				ActionButton_OnEvent(self, event, ...);
 			</OnEvent>
 			<OnClick>
-				if (not self.zoneAbilityDisabled) then
+				if button == "RightButton" and C_ActionBar.IsAutoCastPetAction(self.action) then
+					C_ActionBar.ToggleAutoCastPetAction(self.action);
+				elseif (not self.zoneAbilityDisabled) then
   					SecureActionButton_OnClick(self, button);
   	 			end
   	 		</OnClick>

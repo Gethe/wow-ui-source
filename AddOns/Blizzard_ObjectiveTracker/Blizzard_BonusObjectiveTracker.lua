@@ -793,9 +793,11 @@ local function AddBonusObjectiveQuest(module, questID, posIndex, isTrackedWorldQ
 			module.headerText = TRACKER_HEADER_OBJECTIVE;
 		end
 
+		local questLogIndex = GetQuestLogIndexByID(questID);
+
 		QuestObjective_SetupHeader(block, OBJECTIVE_TRACKER_LINE_WIDTH - OBJECTIVE_TRACKER_DASH_WIDTH - BONUS_OBJECTIVE_LINE_DASH_OFFSET);
 		QuestObjectiveSetupBlockButton_FindGroup(block, questID);
-		QuestObjectiveSetupBlockButton_Item(block, GetQuestLogIndexByID(questID));
+		QuestObjectiveSetupBlockButton_Item(block, questLogIndex);
 
 		-- block header? add it as objectiveIndex 0
 		if ( taskName ) then
@@ -804,11 +806,11 @@ local function AddBonusObjectiveQuest(module, questID, posIndex, isTrackedWorldQ
 		end
 
 		if ( QuestUtils_IsQuestWorldQuest(questID) ) then
-			local tagID, tagName, worldQuestType, rarity, isElite, tradeskillLineIndex = GetQuestTagInfo(questID);
+			local tagID, tagName, worldQuestType, rarity, isElite, tradeskillLineIndex, allowDisplayPastCritical = GetQuestTagInfo(questID);
 			assert(worldQuestType);
-
+			
 			local inProgress = questLogIndex ~= 0;
-			WorldMap_SetupWorldQuestButton(block.TrackedQuest, worldQuestType, rarity, isElite, tradeskillLineIndex, inProgress, isSuperTracked);
+			WorldMap_SetupWorldQuestButton(block.TrackedQuest, worldQuestType, rarity, isElite, tradeskillLineIndex, inProgress, isSuperTracked, nil, nil, questID);
 
 			block.TrackedQuest:SetScale(.9);
 			block.TrackedQuest:SetPoint("TOPRIGHT", block.currentLine, "TOPLEFT", 18, 0);

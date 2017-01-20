@@ -20,7 +20,7 @@ function ArtifactLevelUpToastMixin:OnEvent(event, ...)
 end
 
 function ArtifactLevelUpToastMixin:EvaluateTrigger()
-	local itemID, altItemID, name, icon, xp, pointsSpent, quality, artifactAppearanceID, appearanceModID, itemAppearanceID, altItemAppearanceID, altOnTop, artifactMaxed = C_ArtifactUI.GetEquippedArtifactInfo();
+	local itemID, altItemID, name, icon, xp, pointsSpent, quality, artifactAppearanceID, appearanceModID, itemAppearanceID, altItemAppearanceID, altOnTop, artifactMaxed, tier = C_ArtifactUI.GetEquippedArtifactInfo();
 	local showArtifact = itemID and not artifactIsMaxed;
 	if self.showArtifact ~= showArtifact or C_ArtifactUI.IsAtForge() then
 		self.showArtifact = showArtifact;
@@ -36,8 +36,8 @@ function ArtifactLevelUpToastMixin:EvaluateTrigger()
 		local artifactPurchasableTraits = MainMenuBar_GetNumArtifactTraitsPurchasableFromXP(pointsSpent, xp);
 		if self.currentItemID == itemID then
 			if self.currentArtifactPurchasableTraits < artifactPurchasableTraits then
-				local _, titleName = C_ArtifactUI.GetEquippedArtifactArtInfo();
-				TopBannerManager_Show(self, { name = titleName, icon = icon, });
+				local artifactArtInfo = C_ArtifactUI.GetEquippedArtifactArtInfo();
+				TopBannerManager_Show(self, { name = artifactArtInfo.titleName, icon = icon, });
 			end
 			self.currentArtifactPurchasableTraits = artifactPurchasableTraits;
 		else

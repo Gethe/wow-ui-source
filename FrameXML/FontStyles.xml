@@ -103,6 +103,9 @@
 	<Font name="NumberFontNormalRightYellow" inherits="NumberFontNormalRight" virtual="true" >
 		<Color r="1.0" g="0.82" b="0"/>
 	</Font>
+	<Font name="NumberFontNormalRightGray" inherits="NumberFontNormalRight" virtual="true" >
+		<Color r="0.6" g="0.6" b="0.6"/>
+	</Font>
 	<Font name="NumberFontNormalYellow" inherits="NumberFontNormal" virtual="true" >
 		<Color r="1.0" g="0.82" b="0"/>
 	</Font>
@@ -124,6 +127,9 @@
 	</Font>
 	<Font name="NumberFontNormalLargeRightYellow" inherits="NumberFontNormalLargeRight" virtual="true" >
 		<Color r="1.0" g="0.82" b="0.0"/>
+	</Font>
+	<Font name="NumberFontNormalLargeRightGray" inherits="NumberFontNormalLargeRight" virtual="true" >
+		<Color r="0.6" g="0.6" b="0.6"/>
 	</Font>
 	<Font name="NumberFontNormalLargeYellow" inherits="NumberFontNormalLarge" virtual="true">
 		<Color r="1.0" g="0.82" b="0.0"/>

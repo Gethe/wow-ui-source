@@ -2,23 +2,33 @@
 ..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_ArtifactPowerButton.lua"/>
 								
-	<Button name="ArtifactPowerButtonTemplate" parentArray="PowerButtons" mixin="ArtifactPowerButtonMixin" virtual="true">
+	<Button name="ArtifactPowerButtonTemplate" mixin="ArtifactPowerButtonMixin" virtual="true">
 		<Size x="37" y="37" />
 		<Layers>
 			<Layer level="OVERLAY" textureSubLevel="2">
-				<Texture parentKey="Icon" mask="Interface\CharacterFrame\TempPortraitAlphaMask">
+				<Texture parentKey="Icon">
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="1">
-				<Texture parentKey="IconDesaturated" mask="Interface\CharacterFrame\TempPortraitAlphaMask" desaturated="true">
+				<Texture parentKey="IconDesaturated" desaturated="true">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" />
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" />
 					</Anchors>
 				</Texture>
+
+				<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Icon"/>
+						<MaskedTexture childKey="IconDesaturated"/>
+					</MaskedTextures>
+				</MaskTexture>
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="4">
 				<Texture parentKey="IconBorder">

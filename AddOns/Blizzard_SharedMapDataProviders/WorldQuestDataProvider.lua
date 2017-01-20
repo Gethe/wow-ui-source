@@ -92,7 +92,7 @@ function WorldQuestDataProviderMixin:AddWorldQuest(info)
 	pin.numObjectives = info.numObjectives;
 	pin:SetFrameLevel(1000 + self:GetMap():GetNumActivePinsByTemplate("WorldQuestPinTemplate"));
 
-	local tagID, tagName, worldQuestType, rarity, isElite, tradeskillLineIndex = GetQuestTagInfo(info.questId);
+	local tagID, tagName, worldQuestType, rarity, isElite, tradeskillLineIndex, allowDisplayPastCritical = GetQuestTagInfo(info.questId);
 	local tradeskillLineID = tradeskillLineIndex and select(7, GetProfessionInfo(tradeskillLineIndex));
 
 	if rarity ~= LE_WORLD_QUEST_QUALITY_COMMON then
@@ -148,6 +148,14 @@ function WorldQuestDataProviderMixin:AddWorldQuest(info)
 		local _, width, height = GetAtlasInfo("worldquest-icon-dungeon");
 		pin.Texture:SetAtlas("worldquest-icon-dungeon");
 		pin.Texture:SetSize(width * 2, height * 2);
+	elseif worldQuestType == LE_QUEST_TAG_TYPE_RAID then
+		local _, width, height = GetAtlasInfo("worldquest-icon-raid");
+		pin.Texture:SetAtlas("worldquest-icon-raid");
+		pin.Texture:SetSize(width * 2, height * 2);
+	elseif worldQuestType == LE_QUEST_TAG_TYPE_INVASION then
+		local _, width, height = GetAtlasInfo("worldquest-icon-burninglegion");
+		pin.Texture:SetAtlas("worldquest-icon-burninglegion");
+		pin.Texture:SetSize(width * 2, height * 2);
 	else
 		pin.Texture:SetAtlas("worldquest-questmarker-questbang");
 		pin.Texture:SetSize(12, 30);
@@ -184,7 +192,7 @@ function WorldQuestPinMixin:OnLoad()
 end
 
 function WorldQuestPinMixin:RefreshVisuals()
-	local tagID, tagName, worldQuestType, rarity, isElite, tradeskillLineIndex = GetQuestTagInfo(self.questID);
+	local tagID, tagName, worldQuestType, rarity, isElite, tradeskillLineIndex, allowDisplayPastCritical = GetQuestTagInfo(self.questID);
 	local selected = self.questID == GetSuperTrackedQuestID();
 	self.Glow:SetShown(selected);
 	self.SelectedGlow:SetShown(rarity ~= LE_WORLD_QUEST_QUALITY_COMMON and selected);

@@ -90,13 +90,29 @@ function ArtifactPowerButtonMixin:PlayPurchaseAnimation()
 	self.PowerUnlockedAnim:Stop();
 	self.GoldPowerUnlockedAnim:Stop();
 	self.PointSpentAnim:Stop();
+	self.FinalPointSpentAnim:Stop();
 
-	if self.isGoldMedal then
+	if self.isFinal and self.tier ~= 1 then
+		-- Placeholder
+		self.RingGlow:SetVertexColor(1, 0.81960784313725, 0.3921568627451);
+		self.PointBurstLeft:SetVertexColor(1, 0.81960784313725, 0.3921568627451);
+		self.PointBurstRight:SetVertexColor(1, 0.81960784313725, 0.3921568627451);
+		self.FinalPointSpentAnim:Play();
+		PlayArtifactTraitSound("UI_70_Artifact_Forge_Trait_GoldTrait");
+	elseif self.isGoldMedal then
 		self.PointBurstLeft:SetVertexColor(1, 0.81960784313725, 0.3921568627451);
 		self.PointBurstRight:SetVertexColor(1, 0.81960784313725, 0.3921568627451);
 		self.GoldPointSpentAnim:Play();
 		PlayArtifactTraitSound("UI_70_Artifact_Forge_Trait_GoldTrait");
-	elseif not self.isStart then
+	elseif self.isStart then
+		if self.tier ~= 1 then
+			self.RingGlow:SetVertexColor(1, 0.81960784313725, 0.3921568627451);
+			self.PointBurstLeft:SetVertexColor(1, 0.81960784313725, 0.3921568627451);
+			self.PointBurstRight:SetVertexColor(1, 0.81960784313725, 0.3921568627451);
+			self.FinalPointSpentAnim:Play();
+			PlayArtifactTraitSound("UI_70_Artifact_Forge_Trait_GoldTrait");
+		end
+	else
 		if self.currentRank + 1 == self.maxRank then
 			self.RingGlow:SetVertexColor(1, 0.81960784313725, 0.3921568627451);
 			self.PointBurstLeft:SetVertexColor(1, 0.81960784313725, 0.3921568627451);
@@ -128,7 +144,7 @@ function ArtifactPowerButtonMixin:PlayUnlockAnimation()
 		end
 	elseif self.isGoldMedal then
 		self.GoldPowerUnlockedAnim:Play();
-	elseif not self.isStart then
+	elseif not self.isStart or self.tier ~= 1 then
 		self.RingGlow:SetVertexColor(1, 0.81960784313725, 0.3921568627451);
 		self.PowerUnlockedAnim:Play();
 	end
@@ -180,16 +196,26 @@ function ArtifactPowerButtonMixin:PlayRevealAnimation(onFinishedAnimation)
 end
 
 function ArtifactPowerButtonMixin:UpdatePowerType()
-	if self.isStart then
+	self:SetSize(37, 37);
+	if self.isStart and self.tier == 1 then
 		self.Icon:SetSize(52, 52);
+		self.CircleMask:SetSize(52, 52);
 		self.IconBorder:SetAtlas("Artifacts-PerkRing-MainProc", true);
 		self.IconBorderDesaturated:SetAtlas("Artifacts-PerkRing-MainProc", true);
+	elseif self.isFinal and self.tier ~= 1 then
+		self:SetSize(94, 94);
+		self.Icon:SetSize(94, 94);
+		self.CircleMask:SetSize(94, 94);
+		self.IconBorder:SetAtlas("Artifacts-PerkRing-Final", true);
+		self.IconBorderDesaturated:SetAtlas("Artifacts-PerkRing-Final", true);
 	elseif self.isGoldMedal then
 		self.Icon:SetSize(50, 50);
+		self.CircleMask:SetSize(50, 50);
 		self.IconBorder:SetAtlas("Artifacts-PerkRing-GoldMedal", true);
 		self.IconBorderDesaturated:SetAtlas("Artifacts-PerkRing-GoldMedal", true);
 	else
 		self.Icon:SetSize(45, 45);
+		self.CircleMask:SetSize(45, 45);
 		self.IconBorder:SetAtlas("Artifacts-PerkRing-Small", true);
 		self.IconBorderDesaturated:SetAtlas("Artifacts-PerkRing-Small", true);
 	end
@@ -351,6 +377,14 @@ function ArtifactPowerButtonMixin:GetPowerID()
 	return self.powerID;
 end
 
+function ArtifactPowerButtonMixin:GetLinearIndex()
+	return self.linearIndex;
+end
+
+function ArtifactPowerButtonMixin:GetTier()
+	return self.tier;
+end
+
 function ArtifactPowerButtonMixin:IsStart()
 	return self.isStart;
 end
@@ -363,8 +397,28 @@ function ArtifactPowerButtonMixin:IsGoldMedal()
 	return self.isGoldMedal;
 end
 
+function ArtifactPowerButtonMixin:SetLinksEnabled(enabled)
+	self.linksEnabled = enabled;
+end
+
+function ArtifactPowerButtonMixin:AreLinksEnabled()
+	return self.linksEnabled;
+end
+
+function ArtifactPowerButtonMixin:HasBonusMaxRanksFromTier()
+	return self.numMaxRankBonusFromTier > 0;
+end
+
 function ArtifactPowerButtonMixin:IsCompletelyPurchased()
 	return self.isCompletelyPurchased;
+end
+
+function ArtifactPowerButtonMixin:ArePrereqsMet()
+	return self.prereqsMet;
+end
+
+function ArtifactPowerButtonMixin:IsActiveForLinks()
+	return self:IsCompletelyPurchased() or self:HasBonusMaxRanksFromTier();
 end
 
 function ArtifactPowerButtonMixin:SetLocked(locked)
@@ -380,6 +434,18 @@ function ArtifactPowerButtonMixin:SetLocked(locked)
 	end
 end
 
+function ArtifactPowerButtonMixin:UpdateIcon()
+	if self.isFinal and self.tier == 2 then
+		local finalAtlas = ("%s-FinalIcon"):format(self.textureKit);
+		self.Icon:SetAtlas(finalAtlas, true);
+		self.IconDesaturated:SetAtlas(finalAtlas, true);
+	else
+		local name, _, texture = GetSpellInfo(self.spellID);
+		self.Icon:SetTexture(texture);
+		self.IconDesaturated:SetTexture(texture);
+	end
+end
+
 function ArtifactPowerButtonMixin:CalculateDistanceTo(otherPowerButton)
 	local cx, cy = self:GetCenter();
 	local ocx, ocy = otherPowerButton:GetCenter();
@@ -387,49 +453,57 @@ function ArtifactPowerButtonMixin:CalculateDistanceTo(otherPowerButton)
 	return math.sqrt(dx * dx + dy * dy);
 end
 
-function ArtifactPowerButtonMixin:SetupButton(powerID, anchorRegion)
-	local spellID, cost, currentRank, maxRank, bonusRanks, x, y, prereqsMet, isStart, isGoldMedal, isFinal = C_ArtifactUI.GetPowerInfo(powerID);
-	self:ClearAllPoints();
-	self:SetPoint("CENTER", anchorRegion, "TOPLEFT", x * anchorRegion:GetWidth(), -y * anchorRegion:GetHeight());
+function ArtifactPowerButtonMixin:SetupButton(powerID, anchorRegion, textureKit)
+	local powerInfo = C_ArtifactUI.GetPowerInfo(powerID);
 
-	local name, _, texture = GetSpellInfo(spellID);
-	self.Icon:SetTexture(texture);
-	self.IconDesaturated:SetTexture(texture);
+	self:ClearAllPoints();
+	local xOffset, yOffset = 0, 0;
+	if powerInfo.offset then
+		powerInfo.offset:ScaleBy(90);
+		xOffset, yOffset = powerInfo.offset:GetXY();
+	end
+	self:SetPoint("CENTER", anchorRegion, "TOPLEFT", powerInfo.position.x * anchorRegion:GetWidth() + xOffset, -powerInfo.position.y * anchorRegion:GetHeight() - yOffset);
 
 	local totalPurchasedRanks = C_ArtifactUI.GetTotalPurchasedRanks();
-	local wasJustUnlocked = prereqsMet and self.prereqsMet == false;
-	local wasRespecced = self.currentRank and currentRank < self.currentRank;
-	local wasBonusRankJustIncreased = self.bonusRanks and bonusRanks > self.bonusRanks;
+	local wasJustUnlocked = powerInfo.prereqsMet and self.prereqsMet == false;
+	local wasRespecced = self.currentRank and powerInfo.currentRank < self.currentRank;
+	local wasBonusRankJustIncreased = self.bonusRanks and powerInfo.bonusRanks > self.bonusRanks;
 
 	if wasRespecced then
 		self:StopAllAnimations();
 	end
 
 	self.powerID = powerID;
-	self.spellID = spellID;
-	self.currentRank = currentRank;
-	self.bonusRanks = bonusRanks;
-	self.maxRank = maxRank;
-	self.isStart = isStart;
-	self.isGoldMedal = isGoldMedal;
-	self.isFinal = isFinal;
+	self.spellID = powerInfo.spellID;
+	self.currentRank = powerInfo.currentRank;
+	self.bonusRanks = powerInfo.bonusRanks;
+	self.maxRank = powerInfo.maxRank;
+	self.isStart = powerInfo.isStart;
+	self.isGoldMedal = powerInfo.isGoldMedal;
+	self.isFinal = powerInfo.isFinal;
+	self.tier = powerInfo.tier;
+	self.textureKit = textureKit;
+	self.linearIndex = powerInfo.linearIndex;
+	self.numMaxRankBonusFromTier = powerInfo.numMaxRankBonusFromTier;
 
 	local isAtForge = C_ArtifactUI.IsAtForge();
 	local isViewedArtifactEquipped = C_ArtifactUI.IsViewedArtifactEquipped();
 
-	self.isCompletelyPurchased = currentRank == maxRank or self.isStart;
-	self.hasSpentAny = currentRank > bonusRanks;
-	self.couldSpendPoints = C_ArtifactUI.GetPointsRemaining() >= cost and isAtForge and isViewedArtifactEquipped;
-	self.isMaxRank = currentRank == maxRank;
-	self.prereqsMet = prereqsMet;
+	self.isCompletelyPurchased = powerInfo.currentRank == powerInfo.maxRank or self.isStart;
+	self.hasSpentAny = powerInfo.currentRank > powerInfo.bonusRanks;
+	self.couldSpendPoints = C_ArtifactUI.GetPointsRemaining() >= powerInfo.cost and isAtForge and isViewedArtifactEquipped;
+	self.isMaxRank = powerInfo.currentRank == powerInfo.maxRank;
+	self.prereqsMet = powerInfo.prereqsMet;
 	self.wasBonusRankJustIncreased = wasBonusRankJustIncreased;
-	self.cost = cost;
+	self.cost = powerInfo.cost;
 
 	self:UpdatePowerType();
 
 	self:EvaluateStyle();
 
-	if totalPurchasedRanks == 0 and prereqsMet and not self.isStart and isAtForge then
+	self:UpdateIcon();
+
+	if totalPurchasedRanks == 0 and powerInfo.prereqsMet and not self.isStart and isAtForge then
 		self.FirstPointWaitingAnimation:Play();
 	else
 		self.FirstPointWaitingAnimation:Stop();
@@ -476,6 +550,9 @@ function ArtifactPowerButtonMixin:ClearOldData()
 	self.isGoldMedal = nil;
 	self.isFinal = nil;
 	self.cost = nil;
+	self.tier = nil;
+	self.textureKit = nil;
+	self.numMaxRankBonusFromTier = nil;
 
 	self.isCompletelyPurchased = nil;
 	self.hasSpentAny = nil;
@@ -483,6 +560,7 @@ function ArtifactPowerButtonMixin:ClearOldData()
 	self.isMaxRank = nil;
 	self.prereqsMet = nil;
 	self.wasBonusRankJustIncreased = nil;
+	self.linksEnabled = nil;
 
 	self.relicType = nil;
 	self.relicLink = nil;

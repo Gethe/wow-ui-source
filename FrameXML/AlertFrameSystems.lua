@@ -662,6 +662,14 @@ end
 
 MoneyWonAlertSystem = AlertFrame:AddQueuedAlertFrameSubSystem("MoneyWonAlertFrameTemplate", MoneyWonAlertFrame_SetUp, 6, math.huge);
 
+-- [[ HonorAwardedAlertFrameTemplate ]] --
+function HonorAwardedAlertFrame_SetUp(self, amount)
+	self.Amount:SetText(string.format(MERCHANT_HONOR_POINTS, amount));
+	PlaySoundKitID(31578);	--UI_EpicLoot_Toast
+end
+
+HonorAwardedAlertSystem = AlertFrame:AddQueuedAlertFrameSubSystem("HonorAwardedAlertFrameTemplate", HonorAwardedAlertFrame_SetUp, 6, math.huge);
+
 -- [[ DigsiteCompleteToastFrame ]] --
 function DigsiteCompleteToastFrame_SetUp(frame, raceName, raceTexture)
 	frame.DigsiteType:SetText(raceName);
@@ -925,7 +933,7 @@ NewRecipeLearnedAlertSystem = AlertFrame:AddQueuedAlertFrameSubSystem("NewRecipe
 
 -- [[WorldQuestCompleteAlertFrame ]] --
 function WorldQuestCompleteAlertFrame_GetIconForQuestID(questID)
-	local tagID, tagName, worldQuestType, rarity, isElite, tradeskillLineIndex = GetQuestTagInfo(questID);
+	local tagID, tagName, worldQuestType, rarity, isElite, tradeskillLineIndex, allowDisplayPastCritical = GetQuestTagInfo(questID);
 
 	if ( worldQuestType == LE_QUEST_TAG_TYPE_PVP ) then
 		return "Interface\\Icons\\achievement_arena_2v2_1";
@@ -934,7 +942,7 @@ function WorldQuestCompleteAlertFrame_GetIconForQuestID(questID)
 	elseif ( worldQuestType == LE_QUEST_TAG_TYPE_PROFESSION ) then
 		local tradeskillLineID = select(7, GetProfessionInfo(tradeskillLineIndex));
 		return C_TradeSkillUI.GetTradeSkillTexture(tradeskillLineID);
-	elseif ( worldQuestType == LE_QUEST_TAG_TYPE_DUNGEON ) then
+	elseif ( worldQuestType == LE_QUEST_TAG_TYPE_DUNGEON or worldQuestType == LE_QUEST_TAG_TYPE_RAID ) then
 		return "Interface\\Icons\\INV_Misc_Bone_Skull_02";
 	end
 

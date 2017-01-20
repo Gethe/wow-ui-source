@@ -45,7 +45,7 @@ local TAB_PERKS = 1;
 local TAB_APPEARANCE = 2;
 local TAB_CHALLENGES = 3;
 
-local PERK_PANEL_WIDTH = 720;
+local PERK_PANEL_WIDTH = 896;
 local STANDARD_PANEL_WIDTH = 460;
 
 ArtifactUIMixin = {}
@@ -59,7 +59,6 @@ function ArtifactUIMixin:OnLoad()
 	PanelTemplates_SetNumTabs(self, 2);
 
 	self:RegisterEvent("ARTIFACT_UPDATE");
-	self:RegisterEvent("ARTIFACT_XP_UPDATE");
 	self:RegisterEvent("ARTIFACT_CLOSE");
 	self:RegisterEvent("ARTIFACT_MAX_RANKS_UPDATE");
 end
@@ -67,10 +66,20 @@ end
 function ArtifactUIMixin:OnShow()
 	PlaySound("igCharacterInfoOpen");
 
+	if self.queueTier2UpgradeAnim then
+		self.queueTier2UpgradeAnim = nil;
+		-- Play anim
+	end
+
 	self:EvaulateForgeState();
 	self:SetupPerArtifactData();
 	self:RefreshKnowledgeRanks();
 	self.PerksTab:Refresh(true);
+	
+	self:RegisterEvent("ARTIFACT_XP_UPDATE");
+	self:RegisterEvent("ARTIFACT_RELIC_INFO_RECEIVED");
+	self:RegisterEvent("UI_SCALE_CHANGED");
+	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
 end
 
 function ArtifactUIMixin:OnHide()
@@ -79,6 +88,11 @@ function ArtifactUIMixin:OnHide()
 	C_ArtifactUI.Clear();
 
 	StaticPopup_Hide("CONFIRM_ARTIFACT_RESPEC");
+
+	self:UnregisterEvent("ARTIFACT_XP_UPDATE");
+	self:UnregisterEvent("ARTIFACT_RELIC_INFO_RECEIVED");
+	self:UnregisterEvent("UI_SCALE_CHANGED");
+	self:UnregisterEvent("DISPLAY_SIZE_CHANGED");
 end
 
 function ArtifactUIMixin:OnEvent(event, ...)
@@ -99,11 +113,25 @@ function ArtifactUIMixin:OnEvent(event, ...)
 			ShowUIPanel(self);
 		end
 	elseif event == "ARTIFACT_XP_UPDATE" then
-		if self:IsShown() then
-			self.PerksTab:Refresh();
-		end
+		self.PerksTab:Refresh();
 	elseif event == "ARTIFACT_CLOSE" then
 		HideUIPanel(self);
+	elseif event == "ARTIFACT_RELIC_INFO_RECEIVED" then
+		self.PerksTab:Refresh(false);
+	elseif event == "UI_SCALE_CHANGED" or event == "DISPLAY_SIZE_CHANGED" then
+		self.PerksTab:Refresh(true);
+	end
+end
+
+function ArtifactUIMixin:OnTierChanged(newTier, bagOrInventorySlot, slot)
+	if newTier == 2 then
+		self.queueTier2UpgradeAnim = true;
+		HideUIPanel(self);
+		if slot then
+			SocketContainerItem(bagOrInventorySlot, slot);
+		else
+			SocketInventoryItem(bagOrInventorySlot);
+		end
 	end
 end
 
@@ -174,10 +202,9 @@ function ArtifactUIMixin:SetTab(id)
 end
 
 function ArtifactUIMixin:SetupPerArtifactData()
-	local textureKit, titleName, titleR, titleG, titleB, barConnectedR, barConnectedG, barConnectedB, barDisconnectedR, barDisconnectedG, barDisconnectedB = C_ArtifactUI.GetArtifactArtInfo();
-	if textureKit then
-		local classBadgeTexture = ("%s-ClassBadge"):format(textureKit);
-		self.ForgeBadgeFrame.ForgeClassBadgeIcon:SetAtlas(classBadgeTexture, true);
+	local itemID, altItemID, name, icon, xp, pointsSpent, quality, artifactAppearanceID, appearanceModID, itemAppearanceID, altItemAppearanceID, altOnTop, artifactMaxed, tier = C_ArtifactUI.GetArtifactInfo()
+	if icon then
+		self.ForgeBadgeFrame.ItemIcon:SetTexture(icon);
 	end
 end
 
@@ -222,8 +249,8 @@ end
 
 function ArtifactUIMixin:OnKnowledgeEnter(knowledgeFrame)
 	GameTooltip:SetOwner(knowledgeFrame, "ANCHOR_BOTTOMRIGHT", -25, 27);
-	local textureKit, titleName, titleR, titleG, titleB, barConnectedR, barConnectedG, barConnectedB, barDisconnectedR, barDisconnectedG, barDisconnectedB = C_ArtifactUI.GetArtifactArtInfo();
-	GameTooltip:SetText(titleName, titleR, titleG, titleB);
+	local artifactArtInfo = C_ArtifactUI.GetArtifactArtInfo();
+	GameTooltip:SetText(artifactArtInfo.titleName, artifactArtInfo.titleColor:GetRGB());
 
 	GameTooltip:AddLine(ARTIFACTS_NUM_PURCHASED_RANKS:format(C_ArtifactUI.GetTotalPurchasedRanks()), HIGHLIGHT_FONT_COLOR:GetRGB());
 

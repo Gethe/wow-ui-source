@@ -163,7 +163,7 @@ end
 
 local BACKPACK_FREESLOTS_FORMAT = "(%s)";
 
-function MainMenuBarBackpackButton_UpdateFreeSlots()
+function CalculateTotalNumberOfFreeBagSlots()
 	local totalFree, freeSlots, bagFamily = 0;
 	for i = BACKPACK_CONTAINER, NUM_BAG_SLOTS do
 		freeSlots, bagFamily = GetContainerNumFreeSlots(i);
@@ -172,6 +172,11 @@ function MainMenuBarBackpackButton_UpdateFreeSlots()
 		end
 	end
 	
+	return totalFree;
+end
+
+function MainMenuBarBackpackButton_UpdateFreeSlots()
+	local totalFree = CalculateTotalNumberOfFreeBagSlots();
 	if ( totalFree == 3) then
 		TriggerTutorial(59);
 	end

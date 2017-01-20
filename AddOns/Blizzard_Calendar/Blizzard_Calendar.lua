@@ -3427,7 +3427,7 @@ function CalendarCreateEventFrame_OnLoad(self)
 	UIDropDownMenu_Initialize(CalendarCreateEventAMPMDropDown, CalendarCreateEventAMPMDropDown_Initialize);
 	UIDropDownMenu_SetWidth(CalendarCreateEventAMPMDropDown, 40, 40);
 	UIDropDownMenu_Initialize(CalendarCreateEventDifficultyOptionDropDown, CalendarCreateEventDifficultyOptionDropDown_Initialize);
-	UIDropDownMenu_SetWidth(CalendarCreateEventDifficultyOptionDropDown, 100, 40);
+	UIDropDownMenu_SetWidth(CalendarCreateEventDifficultyOptionDropDown, 100);
 end
 
 function CalendarCreateEventFrame_OnEvent(self, event, ...)

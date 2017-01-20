@@ -399,7 +399,7 @@
 			<OnClick function="ToggleEncounterJournal"/>
 		</Scripts>
 	</Button>
-	<Button name="StoreMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent" hidden="true">
+	<Button name="StoreMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="EJMicroButton" relativePoint="BOTTOMRIGHT">
 				<Offset>
@@ -432,11 +432,7 @@
 	</Button>
 	<Button name="MainMenuMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">
 		<Anchors>
-			<Anchor point="BOTTOMLEFT" relativeTo="EJMicroButton" relativePoint="BOTTOMRIGHT">
-				<Offset>
-					<AbsDimension x="-2" y="0"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="BOTTOMLEFT" relativeTo="StoreMicroButton" relativePoint="BOTTOMRIGHT" x="-3"/>
 		</Anchors>
 		<Layers>
 			<Layer level="OVERLAY">
@@ -580,26 +576,6 @@
 				self.hover = nil;
 				GameTooltip:Hide();
 			</OnLeave>
-		</Scripts>
-	</Button>
-	<Button name="HelpMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent" hidden="false">
-		<Anchors>
-			<Anchor point="BOTTOMLEFT" relativeTo="MainMenuMicroButton" relativePoint="BOTTOMRIGHT">
-				<Offset>
-					<AbsDimension x="-2" y="0"/>
-				</Offset>
-			</Anchor>
-		</Anchors>
-		<Scripts>
-			<OnLoad>
-				LoadMicroButtonTextures(self, "Help");
-				self.tooltipText = HELP_BUTTON;
-				self.newbieText = NEWBIE_TOOLTIP_HELP;
-				if (IsKioskModeEnabled()) then
-					self:Disable();
-				end
-			</OnLoad>
-			<OnClick function="ToggleHelpFrame"/>
 		</Scripts>
 	</Button>
 

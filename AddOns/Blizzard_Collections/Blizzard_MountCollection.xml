@@ -315,73 +315,39 @@
 							</Layer>
 						</Layers>
 					</Button>
-					<PlayerModel parentKey="WrappedModelFrame" useParentLevel="true" frameStrata="DIALOG" inherits="CollectionsWrappedModelFrame">
+					<ModelScene parentKey="ModelScene" useParentLevel="true" inherits="ModelSceneMixinTemplate" mixin="CollectionsWrappedModelSceneMixin">
+						<KeyValues>
+							<KeyValue key="normalIntensity" value="0.75" type="number"/>
+							<KeyValue key="highlightIntensity" value="1.2" type="number"/>
+						</KeyValues>
+						
 						<Anchors>
-							<Anchor point="TOPLEFT" x="0" y="-160"/>
+							<Anchor point="TOPLEFT" x="0" y="0"/>
 							<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
 						</Anchors>
-						<Scripts>
-							<OnMouseUp>
-								MountJournalMountButton_UseMount(MountJournal.selectedMountID);
-							</OnMouseUp>
-						</Scripts>
-					</PlayerModel>
-					<PlayerModel parentKey="ModelFrame" useParentLevel="true" inherits="ModelWithZoomTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT" x="0" y="-160"/>
-							<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
-						</Anchors>
+
 						<Frames>
-							<Button parentKey="RotateLeftButton">
-								<Size x="35" y="35"/>
-								<Anchors>
-									<Anchor point="TOPRIGHT" relativeKey="$parent" relativePoint="BOTTOM" x="-5" y="50"/>
-								</Anchors>
-								<Scripts>
-									<OnLoad>
-										self:RegisterForClicks("LeftButtonDown", "LeftButtonUp");
-									</OnLoad>
-									<OnClick>
-										Model_RotateLeft(self:GetParent());
-									</OnClick>
-								</Scripts>
-								<NormalTexture file="Interface\Buttons\UI-RotationLeft-Button-Up"/>
-								<PushedTexture file="Interface\Buttons\UI-RotationLeft-Button-Down"/>
-								<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
-							</Button>
-							<Button parentKey="RotateRightButton">
-								<Size>
-									<AbsDimension x="35" y="35"/>
-								</Size>
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="BOTTOM" x="5" y="50"/>
-								</Anchors>
-								<Scripts>
-									<OnLoad>
-										self:RegisterForClicks("LeftButtonDown", "LeftButtonUp");
-									</OnLoad>
-									<OnClick>
-										Model_RotateRight(self:GetParent());
-									</OnClick>
-								</Scripts>
-								<NormalTexture file="Interface\Buttons\UI-RotationRight-Button-Up"/>
-								<PushedTexture file="Interface\Buttons\UI-RotationRight-Button-Down"/>
-								<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
-							</Button>
+							<Button parentKey="RotateLeftButton" inherits="RotateOrbitCameraLeftButtonTemplate" />
+							<Button parentKey="RotateRightButton" inherits="RotateOrbitCameraRightButtonTemplate" />
 						</Frames>
-					</PlayerModel>
-				</Frames>
-				<Animations>
-					<AnimationGroup parentKey="UnwrapAnim" setToFinalAlpha="true">
-						<Alpha childKey="WrappedModelFrame" startDelay="1.2" fromAlpha="1" toAlpha="0" duration=".3" order="1"/>
-						<Alpha childKey="ModelFrame" startDelay="1.2" fromAlpha="0" toAlpha="1" duration=".3" order="1"/>
 						<Scripts>
-							<OnFinished>
-								self:GetParent().WrappedModelFrame:Hide();
-							</OnFinished>
+							<OnMouseUp inherit="append">
+								if MountJournal.selectedMountID and C_MountJournal.NeedsFanfare(MountJournal.selectedMountID) then
+									MountJournalMountButton_UseMount(MountJournal.selectedMountID);
+								end
+							</OnMouseUp>
+							<OnEnter method="OnMouseEnter" />
+							<OnLeave method="OnMouseLeave" />
+							<OnShow method="OnShow" />
 						</Scripts>
-					</AnimationGroup>
-				</Animations>
+				        <Animations>
+					        <AnimationGroup parentKey="UnwrapAnim" setToFinalAlpha="true">
+						        <Alpha parentKey="WrappedAnim" startDelay="1.2" fromAlpha="1" toAlpha="0" duration=".3" order="1"/>
+						        <Alpha parentKey="UnwrappedAnim" startDelay="1.2" fromAlpha="0" toAlpha="1" duration=".3" order="1"/>
+					        </AnimationGroup>
+				        </Animations>
+					</ModelScene>
+				</Frames>
 			</Frame>
 			<!--Name needed for HybridScrollFrameTemplate-->
 			<ScrollFrame name="$parentListScrollFrame" parentKey="ListScrollFrame" inherits="HybridScrollFrameTemplate">

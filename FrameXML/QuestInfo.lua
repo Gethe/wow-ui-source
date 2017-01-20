@@ -482,9 +482,11 @@ function QuestInfo_ShowRewards()
 			questItem.objectType = "item";
 			numItems = 1;
 			if ( QuestInfoFrame.questLog ) then
-				name, texture, numItems, quality, isUsable = GetQuestLogChoiceInfo(i);
+				name, texture, numItems, quality, isUsable, itemID = GetQuestLogChoiceInfo(i);
+				SetItemButtonQuality(questItem, quality, itemID);
 			else
 				name, texture, numItems, quality, isUsable = GetQuestItemInfo(questItem.type, i);
+				SetItemButtonQuality(questItem, quality, GetQuestItemLink(questItem.type, i));
 			end
 			questItem:SetID(i)
 			questItem:Show();
@@ -695,9 +697,11 @@ function QuestInfo_ShowRewards()
 			questItem.type = "reward";
 			questItem.objectType = "item";
 			if ( QuestInfoFrame.questLog ) then
-				name, texture, numItems, quality, isUsable = GetQuestLogRewardInfo(i);
+				name, texture, numItems, quality, isUsable, itemID = GetQuestLogRewardInfo(i);
+				SetItemButtonQuality(questItem, quality, itemID);
 			else
 				name, texture, numItems, quality, isUsable = GetQuestItemInfo(questItem.type, i);
+				SetItemButtonQuality(questItem, quality, GetQuestItemLink(questItem.type, i));
 			end
 			questItem:SetID(i)
 			questItem:Show();

@@ -7,6 +7,7 @@ QUEST_TAG_DUNGEON_TYPES = {
 
 WORLD_QUEST_TYPE_DUNGEON_TYPES = {
 	[LE_QUEST_TAG_TYPE_DUNGEON] = true,
+	[LE_QUEST_TAG_TYPE_RAID] = true,
 }
 
 local QUEST_ICONS_FILE = "Interface\\QuestFrame\\QuestTypeIcons";
@@ -111,7 +112,7 @@ function QuestUtils_CanUseAutoGroupFinder(questID, isDropdownRequest)
 	-- Auto-Finder dropdown is enabled for incomplete "group" non-dungeon quests that have a valid activity.
 	-- Auto-Finder button is enabled for all non-dungeon quests that have a valid activity.
 	if not IsQuestComplete(questID) then
-		local tagID, tagName, worldQuestType, rarity, isElite, tradeskillLineIndex = GetQuestTagInfo(questID);
+		local tagID, tagName, worldQuestType, rarity, isElite, tradeskillLineIndex, allowDisplayPastCritical = GetQuestTagInfo(questID);
 	 	if not IsQuestDungeonQuest_Internal(tagID, worldQuestType) and C_LFGList.GetActivityIDForQuestID(questID) then
 			if IsQuestWorldQuest_Internal(worldQuestType) then
 				return isDropdownRequest or isElite;

@@ -45,6 +45,9 @@
 	<Font name="GameFontDisableSmall" inherits="GameFontNormalSmall" virtual="true">
 		<Color r="0.5" g="0.5" b="0.5"/>
 	</Font>
+	<Font name="GameFontDisableSmall2" inherits="SystemFont_Small2" virtual="true">
+		<Color r="0.5" g="0.5" b="0.5"/>
+	</Font>
 	<Font name="GameFontNormalHugeOutline2" inherits="SystemFont_Shadow_Outline_Huge2" virtual="true">
 		<Color r="1.0" g="0.82" b="0"/>
 	</Font>

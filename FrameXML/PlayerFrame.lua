@@ -222,7 +222,6 @@ function PlayerFrame_OnEvent(self, event, ...)
 		PlayerFrame_UpdateStatus();
 		PlayerFrame_UpdateRolesAssigned();
 		PlayerSpeakerFrame:Show();
-		PlayerFrame_UpdateVoiceStatus(UnitIsTalking(UnitName("player")));
 		
 		if ( IsPVPTimerRunning() ) then
 			PlayerPVPTimerText:Show();

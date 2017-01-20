@@ -4,8 +4,6 @@
 	<Script>
 		DEBUGLOCALS_LEVEL = 4;
 		function _ERRORMESSAGE(message)
-			debuginfo();
-
 			local stack = debugstack(DEBUGLOCALS_LEVEL);
 
 			LogAuroraClient("ae", "Lua Error",

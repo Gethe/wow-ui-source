@@ -2267,7 +2267,7 @@
 			<OnEvent function="CharacterCreate_OnEvent"/>
 			<OnChar function="CharacterCreate_OnChar"/>
 			<OnKeyDown function="CharacterCreate_OnKeyDown"/>
-			<OnUpdateModel function="CharacterCreate_UpdateModel"/>
+			<OnUpdate function="CharacterCreate_UpdateModel"/>
 		</Scripts>
 	</ModelFFX>
 

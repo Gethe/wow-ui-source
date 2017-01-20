@@ -66,6 +66,7 @@ end
 GroupMembersPinMixin = CreateFromMixins(MapCanvasPinMixin);
 
 function GroupMembersPinMixin:OnLoad()
+	UnitPositionFrameMixin.OnLoad(self);
 	self:SetAlphaLimits(1.0, 1.0, 1.0);
 	self:SetScalingLimits(0, 1, 1);
 end

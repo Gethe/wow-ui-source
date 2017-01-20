@@ -233,7 +233,7 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<SimpleHTML parentKey="OptionText" inherits="InlineHyperlinkFrameTemplate"> 
+			<SimpleHTML parentKey="OptionText" inherits="InlineHyperlinkFrameTemplate">
 				<Size x="200"/>
 				<Anchors>
 					<Anchor point="TOP" relativeKey="$parent.Artwork" relativePoint="BOTTOM" y="-8"/>
@@ -263,28 +263,28 @@
 		</KeyValues>
 		<Layers>
 			<Layer level="BORDER">
-				<Texture parentKey="BottomLeftCorner" file="Interface\QuestionFrame\Question-Main" virtual="true" >
+				<Texture parentKey="BottomLeftCorner" file="Interface\QuestionFrame\Question-Main">
 					<Size x="209" y="158"/>
 					<Anchors>
 						<Anchor point="BOTTOMLEFT"/>
 					</Anchors>
 					<TexCoords left="0.00195313" right="0.41015625" top="0.30468750" bottom="0.61328125"/>
 				</Texture>
-				<Texture parentKey="BottomRightCorner" file="Interface\QuestionFrame\Question-Main" virtual="true" >
+				<Texture parentKey="BottomRightCorner" file="Interface\QuestionFrame\Question-Main">
 					<Size x="209" y="158"/>
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT"/>
 					</Anchors>
 					<TexCoords left="0.41406250" right="0.82226563" top="0.30468750" bottom="0.61328125"/>
 				</Texture>
-				<Texture parentKey="TopLeftCorner" file="Interface\QuestionFrame\Question-Main" virtual="true" >
+				<Texture parentKey="TopLeftCorner" file="Interface\QuestionFrame\Question-Main">
 					<Size x="209" y="158"/>
 					<Anchors>
 						<Anchor point="TOPLEFT"/>
 					</Anchors>
 					<TexCoords left="0.00195313" right="0.41015625" top="0.61718750" bottom="0.92578125"/>
 				</Texture>
-				<Texture parentKey="TopRightCorner" file="Interface\QuestionFrame\Question-Main" virtual="true" >
+				<Texture parentKey="TopRightCorner" file="Interface\QuestionFrame\Question-Main">
 					<Size x="208" y="158"/>
 					<Anchors>
 						<Anchor point="TOPRIGHT" x="-1"/>

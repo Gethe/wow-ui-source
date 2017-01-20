@@ -853,7 +853,6 @@ end
 
 function CharacterCreate_UpdateModel(self)
 	UpdateCustomizationScene();
-	self:AdvanceTime();
 end
 
 function CharacterCreate_Finish()

@@ -38,11 +38,7 @@ function AudioOptionsFrame_OnLoad (self)
 end
 
 function AudioOptionsFrame_OnEvent (self, event, ...)
-	if ( IsVoiceChatAllowedByServer() ) then
-		_G[self:GetName().."HeaderText"]:SetText(SOUNDOPTIONS_MENU);
-	else
-		_G[self:GetName().."HeaderText"]:SetText(SOUND);
-	end
+	_G[self:GetName().."HeaderText"]:SetText(SOUND);
 end
 
 function AudioOptionsFrame_OnHide (self)

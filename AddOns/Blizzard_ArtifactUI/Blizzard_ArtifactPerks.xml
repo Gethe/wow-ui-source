@@ -2,17 +2,17 @@
 ..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_ArtifactPerks.lua"/>
 
-	<Frame name="ArtifactDependencyLineTemplate" parentArray="DependencyLines" virtual="true">
+	<Frame name="ArtifactDependencyLineTemplate" frameLevel="2" parentArray="DependencyLines" mixin="ArtifactLineMixin" virtual="true">
 		<Layers>
 			<Layer level="OVERLAY" textureSubLevel="-3">
-				<Line parentKey="Background" file="Interface/Artifacts/_Artifacts-DependencyBar-BG" thickness="12" horizTile="true" alpha="0" />
+				<Line parentKey="Background" file="Interface/Artifacts/_Artifacts-DependencyBar-BG" thickness="12" hWrapMode="REPEAT" alpha="0" />
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="-2">
-				<Line parentKey="Fill" file="Interface/Artifacts/_Artifacts-DependencyBar-Fill" thickness="12" horizTile="true" alpha="0" />
+				<Line parentKey="Fill" file="Interface/Artifacts/_Artifacts-DependencyBar-Fill" thickness="12" hWrapMode="REPEAT" alpha="0" />
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="-1">
-				<Line parentKey="FillScroll1" file="Interface/Artifacts/_Artifacts-DependencyBar-FillScroll1" thickness="12" horizTile="true" alphaMode="ADD" alpha="0" />
-				<Line parentKey="FillScroll2" file="Interface/Artifacts/_Artifacts-DependencyBar-FillScroll2" thickness="12" horizTile="true" alphaMode="ADD" alpha="0" />
+				<Line parentKey="FillScroll1" file="Interface/Artifacts/_Artifacts-DependencyBar-FillScroll1" thickness="12" hWrapMode="REPEAT" alphaMode="ADD" alpha="0" />
+				<Line parentKey="FillScroll2" file="Interface/Artifacts/_Artifacts-DependencyBar-FillScroll2" thickness="12" hWrapMode="REPEAT" alphaMode="ADD" alpha="0" />
 			</Layer>
 		</Layers>
 		<Animations>
@@ -34,6 +34,33 @@
 				<LineScale parentKey="LineScale" childKey="Fill" smoothing="IN" duration="0.75" order="2" fromScaleX="0.001" fromScaleY="1" toScaleX="1" toScaleY="1"/>
 				<Alpha childKey="Fill" duration="1" order="3" fromAlpha="1" toAlpha="0"/>
 				<Alpha childKey="Background" smoothing="OUT" duration="0.75" order="3" fromAlpha="0" toAlpha="1"/>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+
+	<Frame name="ArtifactCurvedDependencyLineTemplate" frameLevel="2" parentArray="CurvedDependencyLines" mixin="ArtifactLineMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="IsCurved" type="boolean" value="true"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="-3">
+				<Texture parentKey="Background" file="Interface/Artifacts/_Artifacts-DependencyBar-BG" hWrapMode="REPEAT" alpha="0" />
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="-2">
+				<Texture parentKey="Fill" file="Interface/Artifacts/_Artifacts-DependencyBar-Fill" hWrapMode="REPEAT" alpha="0" />
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="-1">
+				<Texture parentKey="FillScroll1" file="Interface/Artifacts/_Artifacts-DependencyBar-FillScroll1" hWrapMode="REPEAT" alphaMode="ADD" alpha="0" />
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="ScrollAnim" setToFinalAlpha="true" looping="REPEAT">
+				<TextureCoordTranslation childKey="FillScroll1" duration="8" order="1" offsetU="1" offsetV="0" />
+			</AnimationGroup>
+			<AnimationGroup parentKey="FadeAnim" setToFinalAlpha="true">
+				<Alpha parentKey="Background" childKey="Background" duration=".25" order="0"/>
+				<Alpha parentKey="Fill" childKey="Fill" duration=".25" order="0"/>
+				<Alpha parentKey="FillScroll1" childKey="FillScroll1" duration=".25" order="0"/>
 			</AnimationGroup>
 		</Animations>
 	</Frame>
@@ -123,7 +150,7 @@
 	</Button>
 	
 	<PlayerModel name="ArtifactsModelTemplate" useParentLevel="true" virtual="true">
-		<Size x="719" y="615" />
+		<Size x="895" y="615" />
 		<Anchors>
 			<Anchor point="BOTTOMLEFT"/>
 		</Anchors>
@@ -152,6 +179,9 @@
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="-6">
 				<Texture parentKey="HeaderBackground" atlas="Artifacts-HeaderBG" />
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="-5">
+				<Texture parentKey="Tier2Crest" />
 			</Layer>
 		</Layers>
 		<Frames>
@@ -221,8 +251,15 @@
 					</Layer>
 				</Layers>
 			</PlayerModel>
+			<ModelScene parentKey="Tier2ModelScene" inherits="ModelSceneMixinTemplate">
+				<Size x="350" y="350"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.Tier2Crest" relativePoint="CENTER" x="0" y="0"/>
+				</Anchors>
+			</ModelScene>
 		</Frames>
 		<Scripts>
+			<OnLoad method="OnLoad" />
 			<OnShow method="OnShow" />
 			<OnHide method="OnHide" />
 			<OnEvent method="OnEvent" />

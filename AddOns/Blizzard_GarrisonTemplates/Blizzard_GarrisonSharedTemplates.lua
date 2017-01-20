@@ -497,7 +497,9 @@ function GarrisonFollowerList:UpdateData()
 				button.Follower.Name:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 				button.Follower.Class:SetDesaturated(false);
 				button.Follower.Class:SetAlpha(0.2);
-				button.Follower.PortraitFrame.PortraitRingQuality:Show();
+				if button.Follower.PortraitFrame.quality ~= LE_GARR_FOLLOWER_QUALITY_TITLE then
+					button.Follower.PortraitFrame.PortraitRingQuality:Show();
+				end
 				button.Follower.PortraitFrame.Portrait:SetDesaturated(false);
 				if ( follower.status == GARRISON_FOLLOWER_INACTIVE ) then
 					button.Follower.PortraitFrame.PortraitRingCover:Show();
@@ -1320,8 +1322,7 @@ function GarrisonFollowerPageModelUpgrade_Update(self)
 
 	local showUpgradeClick = false;
 
-	-- TODO: Add ItemCanTargetGarrisonFollower for full support?
-	if ( SpellCanTargetGarrisonFollower(followerID) ) then
+	if ( SpellCanTargetGarrisonFollower(0) ) then
 		-- This is only for an active spell cast, for something that directly targets a follower
 		successCount, resultMessage = UpdateUsageAttemptResults(successCount, resultMessage, GarrisonFollower_GetUpgradeAttemptResult(followerID));
 
@@ -1403,6 +1404,20 @@ local function GarrisonFollower_GetUsageErrorCommon(followerInfo)
 	return result == nil, result;
 end
 
+local failureCodeToReason = {
+	[LE_FOLLOWER_ABILITY_CAST_RESULT_INVALID_TARGET] = FOLLOWER_ABILITY_CAST_ERROR_INVALID_TARGET,
+	[LE_FOLLOWER_ABILITY_CAST_RESULT_REROLL_NOT_ALLOWED] = FOLLOWER_ABILITY_CAST_ERROR_REROLL_NOT_ALLOWED,
+	[LE_FOLLOWER_ABILITY_CAST_RESULT_SINGLE_MISSION_DURATION] = FOLLOWER_ABILITY_CAST_ERROR_SINGLE_MISSION_DURATION,
+	[LE_FOLLOWER_ABILITY_CAST_RESULT_MUST_TARGET_FOLLOWER] = FOLLOWER_ABILITY_CAST_ERROR_MUST_TARGET_FOLLOWER,
+	[LE_FOLLOWER_ABILITY_CAST_RESULT_MUST_TARGET_TRAIT] = FOLLOWER_ABILITY_CAST_ERROR_MUST_TARGET_TRAIT,
+	[LE_FOLLOWER_ABILITY_CAST_RESULT_INVALID_FOLLOWER_TYPE] = FOLLOWER_ABILITY_CAST_ERROR_INVALID_FOLLOWER_TYPE,
+	[LE_FOLLOWER_ABILITY_CAST_RESULT_MUST_BE_UNIQUE] = FOLLOWER_ABILITY_CAST_ERROR_MUST_BE_UNIQUE,
+	[LE_FOLLOWER_ABILITY_CAST_RESULT_CANNOT_TARGET_LIMITED_USE_FOLLOWER] = FOLLOWER_ABILITY_CAST_ERROR_CANNOT_TARGET_LIMITED_USE_FOLLOWER,
+	[LE_FOLLOWER_ABILITY_CAST_RESULT_MUST_TARGET_LIMITED_USE_FOLLOWER] = FOLLOWER_ABILITY_CAST_ERROR_MUST_TARGET_LIMITED_USE_FOLLOWER,
+	[LE_FOLLOWER_ABILITY_CAST_RESULT_ALREADY_AT_MAX_DURABILITY] = FOLLOWER_ABILITY_CAST_ERROR_ALREADY_AT_MAX_DURABILITY,
+
+	[LE_FOLLOWER_ABILITY_CAST_RESULT_FAILURE] = "", -- This is a legitimate failure, but has no display error
+};
 
 function GarrisonFollower_GetAbilityUsageResult(followerID, followerInfo, abilityID, predicate)
 	followerInfo = followerInfo or (followerID and C_Garrison.GetFollowerInfo(followerID));
@@ -1416,9 +1431,8 @@ function GarrisonFollower_GetAbilityUsageResult(followerID, followerInfo, abilit
 
 	-- If there was a success then check other ability-specific requirements here
 	if success then
-		if not predicate(followerID, abilityID) then
-			result = GARRISON_FOLLOWER_UPGRADE_ERROR_CANNOT_APPLY_UPGRADE;
-		end
+		local _, failureCode = predicate(followerID, abilityID);
+		result = failureCodeToReason[failureCode];
 	end
 
 	return result == nil, result;
@@ -1437,13 +1451,12 @@ function GarrisonFollower_GetUpgradeAttemptResult(followerID, followerInfo)
 
 	-- If there was a success then check other upgrade-specific requirements here
 	if success then
-		if C_Garrison.TargetSpellHasFollowerTemporaryAbility() then
-			if ( C_Garrison.CanSpellTargetFollowerIDWithAddAbility(followerID) ) then
-				upgradeType = "CONFIRM_FOLLOWER_TEMPORARY_ABILITY";
-			else
-				-- TODO: Figure out how to determine specific failure type on client (e.g. duplicate ability)
-				result = GARRISON_FOLLOWER_UPGRADE_ERROR_CANNOT_APPLY_TEMPORARY_ABILITY;
-			end
+		success, result = SpellCanTargetGarrisonFollower(followerID);
+		result = failureCodeToReason[result];
+
+		-- If the cast is predicted to work, determine the upgrade type
+		if C_Garrison.TargetSpellHasFollowerTemporaryAbility() and C_Garrison.CanSpellTargetFollowerIDWithAddAbility(followerID) then
+			upgradeType = "CONFIRM_FOLLOWER_TEMPORARY_ABILITY";
 		end
 	end
 
@@ -1452,7 +1465,7 @@ end
 
 function GarrisonFollower_DisplayUpgradeConfirmation(followerInfo, upgradeType)
 	local text;
-	local followerName = ITEM_QUALITY_COLORS[followerInfo.quality].hex..followerInfo.name..FONT_COLOR_CODE_CLOSE;
+	local followerName = FOLLOWER_QUALITY_COLORS[followerInfo.quality].hex..followerInfo.name..FONT_COLOR_CODE_CLOSE;
 
 	if ( upgradeType == "CONFIRM_FOLLOWER_TEMPORARY_ABILITY" ) then
 		text = followerName;
@@ -1513,16 +1526,26 @@ end
 
 function GarrisonFollowerTabMixin:UpdateValidSpellHighlightOnEquipmentFrame(equipmentFrame, followerID, followerInfo, predicate)
 	local abilityID = equipmentFrame.abilityID;
-	local success;
+	local success, reason;
 
 	if ( abilityID and predicate ) then
-		success = GarrisonFollower_GetAbilityUsageResult(followerID, followerInfo, abilityID, predicate);
+		success, reason = GarrisonFollower_GetAbilityUsageResult(followerID, followerInfo, abilityID, predicate);
 	end
 
+	equipmentFrame.failureReason = nil;
+
 	if ( success and not equipmentFrame.Lock:IsShown()) then
+		equipmentFrame.ValidSpellHighlight:SetAtlas("GarrMission-AbilityHighlight");
 		equipmentFrame.ValidSpellHighlight:Show();
 	else
-		equipmentFrame.ValidSpellHighlight:Hide();
+		-- If whatever is on the cursor could actually apply to this follower but there's an error with it now then show an error state
+		if ( predicate and predicate(0, 0) ) then
+			equipmentFrame.ValidSpellHighlight:SetAtlas("GarrMission-AbilityHighlight-Error");
+			equipmentFrame.ValidSpellHighlight:Show();
+			equipmentFrame.failureReason = reason;
+		else
+			equipmentFrame.ValidSpellHighlight:Hide();
+		end
 	end
 end
 
@@ -1543,8 +1566,9 @@ end
 
 function GarrisonFollowerTabMixin:SetupXPBar(followerInfo)
 	if ( followerInfo.isCollected ) then
-		-- Follower cannot be upgraded anymore
-		if (GarrisonFollowerOptions[followerInfo.followerTypeID].followerPaneHideXP or followerInfo.isTroop or followerInfo.isMaxLevel and followerInfo.quality >= GARRISON_FOLLOWER_MAX_UPGRADE_QUALITY) then
+		local unupgradable = followerInfo.isMaxLevel and followerInfo.quality >= GARRISON_FOLLOWER_MAX_UPGRADE_QUALITY[followerInfo.followerTypeID];
+		if (GarrisonFollowerOptions[followerInfo.followerTypeID].followerPaneHideXP or followerInfo.isTroop or unupgradable) then
+			-- Follower cannot be upgraded anymore
 			self.XPLabel:Hide();
 			self.XPBar:Hide();
 			self.XPText:Hide();
@@ -1668,6 +1692,7 @@ end
 local function EquipmentFrame_OnReleased(pool, equipmentFrame)
 	FramePool_HideAndClearAnchors(pool, equipmentFrame);
 	equipmentFrame:SetScale(1);
+	equipmentFrame.failureReason = nil;
 end
 
 
@@ -1958,10 +1983,11 @@ function GarrisonFollowerTabMixin:ShowEquipment(followerInfo)
 		if (lastEquipmentFrame) then
 			equipmentFrame:SetPoint("TOPLEFT", lastEquipmentFrame, "TOPRIGHT");
 		else
+			local totalWidth = equipmentFrame:GetWidth() * numEquipmentWithUnlockables;
 			if (self.isLandingPage) then
-				equipmentFrame:SetPoint("TOPLEFT", self.AbilitiesFrame.EquipmentSlotsLabel, "BOTTOMLEFT", 118, 0);
+				equipmentFrame:SetPoint("TOPLEFT", self.AbilitiesFrame.EquipmentSlotsLabel, "BOTTOM", -totalWidth/2, 0);
 			else
-				equipmentFrame:SetPoint("TOPLEFT", self.AbilitiesFrame.EquipmentSlotsLabel, "BOTTOMLEFT", 60, -20);
+				equipmentFrame:SetPoint("TOPLEFT", self.AbilitiesFrame.EquipmentSlotsLabel, "BOTTOM", -totalWidth/2, -20);
 			end
 		end
 		equipmentFrame:Show();
@@ -1999,7 +2025,7 @@ function GarrisonFollowerTabMixin:ShowFollower(followerID, followerList)
 	end
 	GarrisonMissionPortrait_SetFollowerPortrait(self.PortraitFrame, followerInfo);
 	self.Name:SetText(followerInfo.name);
-	local color = ITEM_QUALITY_COLORS[followerInfo.quality];
+	local color = FOLLOWER_QUALITY_COLORS[followerInfo.quality];
 	self.Name:SetVertexColor(color.r, color.g, color.b);
 
 	if (followerInfo.isTroop) then
@@ -2370,9 +2396,10 @@ end
 
 GarrisonFollowerEquipmentMixin = { }
 function GarrisonFollowerEquipmentMixin:OnEnter()
-	if (self.tooltipText) then
+	local overrideTooltipText = self.failureReason or self.tooltipText;
+	if overrideTooltipText then
 		GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT");
-		GameTooltip:SetText(self.tooltipText, RED_FONT_COLOR_CODE.r, RED_FONT_COLOR_CODE.g, RED_FONT_COLOR_CODE.b, RED_FONT_COLOR_CODE.a, true);
+		GameTooltip:SetText(overrideTooltipText, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, RED_FONT_COLOR.a, true);
 	elseif (self.abilityID) then
 		ShowGarrisonFollowerAbilityTooltip(self, self.abilityID, self.followerTypeID);
 	end

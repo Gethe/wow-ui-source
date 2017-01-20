@@ -1,7 +1,6 @@
 local TOYS_PER_PAGE = 18;
 
 function ToyBox_OnLoad(self)
-	self.currentPage = 1;
 	self.firstCollectedToyID = 0; -- used to track which toy gets the favorite helpbox
 	self.mostRecentCollectedToyID = UIParent.mostRecentCollectedToyID or nil;
 	self.newToys = UIParent.newToys or {};
@@ -12,6 +11,11 @@ function ToyBox_OnLoad(self)
 	UIDropDownMenu_Initialize(self.toyOptionsMenu, ToyBoxOptionsMenu_Init, "MENU");
 
 	self:RegisterEvent("TOYS_UPDATED");
+
+	self.OnPageChanged = function(userAction)
+		PlaySound("igAbiliityPageTurn");
+		ToyBox_UpdateButtons();
+	end
 end
 
 function ToyBox_OnEvent(self, event, itemID, new)
@@ -62,11 +66,7 @@ end
 function ToyBox_OnMouseWheel(self, value)
 	SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TOYBOX_MOUSEWHEEL_PAGING, true);
 	self.mousewheelPagingHelpBox:Hide();
-	if(value > 0) then
-		ToyBoxPrevPageButton_OnClick()		
-	else
-		ToyBoxNextPageButton_OnClick()
-	end
+	ToyBox.PagingFrame:OnMouseWheel(value);
 end
 
 function ToyBoxOptionsMenu_Init(self, level)
@@ -159,7 +159,7 @@ function ToySpellButton_OnDrag(self)
 end
 
 function ToySpellButton_UpdateButton(self)
-	local itemIndex = (ToyBox_GetCurrentPage() - 1) * TOYS_PER_PAGE + self:GetID();
+	local itemIndex = (ToyBox.PagingFrame:GetCurrentPage() - 1) * TOYS_PER_PAGE + self:GetID();
 	self.itemID = C_ToyBox.GetToyFromIndex(itemIndex);
 
 	local toyString = self.name;
@@ -239,12 +239,6 @@ function ToySpellButton_UpdateButton(self)
 	CollectionsSpellButton_UpdateCooldown(self);
 end
 
-function ToyBox_GetCurrentPage()
-	if (ToyBox.currentPage == nil) then ToyBox.currentPage = 1 end;
-
-	return ToyBox.currentPage;
-end
-
 function ToyBox_UpdateButtons()
 	ToyBox.favoriteHelpBox:Hide();
 	for i = 1, TOYS_PER_PAGE do
@@ -255,42 +249,14 @@ end
 
 function ToyBox_UpdatePages()
 	local maxPages = 1 + math.floor( math.max((C_ToyBox.GetNumFilteredToys() - 1), 0) / TOYS_PER_PAGE);
-	if ( maxPages == nil or maxPages == 0 ) then
-		return;
-	end
+	ToyBox.PagingFrame:SetMaxPages(maxPages)
 	if ToyBox.mostRecentCollectedToyID then
 		local toyPage = ToyBox_FindPageForToyID(ToyBox.mostRecentCollectedToyID);
 		if toyPage then
-			ToyBox.currentPage = toyPage;
+			ToyBox.PagingFrame:SetCurrentPage(toyPage);
 		end
 		ToyBox.mostRecentCollectedToyID = nil;
 	end
-
-	if ( ToyBox.currentPage > maxPages ) then
-		ToyBox.currentPage = maxPages;
-		if ( ToyBox.currentPage == 1 ) then
-			ToyBox.navigationFrame.prevPageButton:Disable();
-		else
-			ToyBox.navigationFrame.prevPageButton:Enable();
-		end
-		if ( ToyBox.currentPage == maxPages ) then
-			ToyBox.navigationFrame.nextPageButton:Disable();
-		else
-			ToyBox.navigationFrame.nextPageButton:Enable();
-		end
-	end
-	if ( ToyBox.currentPage == 1 ) then
-		ToyBox.navigationFrame.prevPageButton:Disable();
-	else
-		ToyBox.navigationFrame.prevPageButton:Enable();
-	end
-	if ( ToyBox.currentPage == maxPages ) then
-		ToyBox.navigationFrame.nextPageButton:Disable();
-	else
-		ToyBox.navigationFrame.nextPageButton:Enable();
-	end
-
-	ToyBox.navigationFrame.pageText:SetFormattedText(COLLECTION_PAGE_NUMBER, ToyBox.currentPage, maxPages);
 end
 
 function ToyBox_UpdateProgressBar(self)
@@ -301,32 +267,6 @@ function ToyBox_UpdateProgressBar(self)
 	self.progressBar:SetValue(currentProgress);
 
 	self.progressBar.text:SetFormattedText(TOY_PROGRESS_FORMAT, currentProgress, maxProgress);
-end
-
-function ToyBoxPrevPageButton_OnClick()
-	if (ToyBox.currentPage > 1) then
-		PlaySound("igAbiliityPageTurn");
-		ToyBox.currentPage = math.max(1, ToyBox.currentPage - 1);
-		ToyBox_UpdatePages();
-		ToyBox_UpdateButtons();
-	end
-end
-
-function ToyBoxNextPageButton_OnClick()
-	local maxPages = 1 + math.floor( math.max((C_ToyBox.GetNumFilteredToys() - 1), 0) / TOYS_PER_PAGE);
-	if (ToyBox.currentPage < maxPages) then
-		-- show the mousewheel tip after the player's advanced a few pages
-		if(ToyBox.currentPage > 2) then
-			if(not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TOYBOX_MOUSEWHEEL_PAGING) and GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TOYBOX_FAVORITE)) then
-				ToyBox.mousewheelPagingHelpBox:Show();
-			end
-		end
-
-		PlaySound("igAbiliityPageTurn");
-		ToyBox.currentPage = ToyBox.currentPage + 1;
-		ToyBox_UpdatePages();
-		ToyBox_UpdateButtons();
-	end
 end
 
 function ToyBox_OnSearchTextChanged(self)

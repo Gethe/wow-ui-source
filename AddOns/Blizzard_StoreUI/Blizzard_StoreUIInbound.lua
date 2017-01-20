@@ -33,7 +33,11 @@ function StoreFrame_SetServicesCategory()
 end
 
 function StoreFrame_SelectLevel100BoostProduct(optionalGuid)
-	StoreFrame:SetAttribute("selectlevel100boostproduct", optionalGuid)
+	StoreFrame:SetAttribute("selectlevel100boostproduct", optionalGuid);
+end
+
+function StoreFrame_SelectUnrevokeBoostProduct(optionalGuid)
+	StoreFrame:SetAttribute("selectunrevokeboostproduct", optionalGuid);
 end
 
 if (InGlue()) then

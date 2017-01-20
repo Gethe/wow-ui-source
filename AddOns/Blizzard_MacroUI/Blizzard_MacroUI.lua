@@ -342,11 +342,6 @@ function RefreshPlayerSpellIconInfo()
 	-- We need to avoid adding duplicate spellIDs from the spellbook tabs for your other specs.
 	local activeIcons = {};
 	
-	MACRO_ICON_FILENAMES = {};
-	MACRO_ICON_FILENAMES[1] = "INV_MISC_QUESTIONMARK";
-	local index = 2;
-	local numFlyouts = 0;
-
 	for i = 1, GetNumSpellTabs() do
 		local tab, tabTex, offset, numSpells, _ = GetSpellTabInfo(i);
 		offset = offset + 1;
@@ -355,14 +350,9 @@ function RefreshPlayerSpellIconInfo()
 			--to get spell info by slot, you have to pass in a pet argument
 			local spellType, ID = GetSpellBookItemInfo(j, "player"); 
 			if (spellType ~= "FUTURESPELL") then
-				local spellTexture = strupper(GetSpellBookItemTextureFileName(j, "player"));
-				if ( not string.match( spellTexture, "INTERFACE\\BUTTONS\\") ) then
-					local iconPath = gsub( spellTexture, "INTERFACE\\ICONS\\", "");
-					if ( not activeIcons[iconPath] ) then
-						MACRO_ICON_FILENAMES[index] = iconPath;
-						activeIcons[iconPath] = true;
-						index = index + 1;
-					end
+				local fileID = GetSpellBookItemTexture(j, "player");
+				if (fileID) then
+					activeIcons[fileID] = true;
 				end
 			end
 			if (spellType == "FLYOUT") then
@@ -371,11 +361,9 @@ function RefreshPlayerSpellIconInfo()
 					for k = 1, numSlots do 
 						local spellID, overrideSpellID, isKnown = GetFlyoutSlotInfo(ID, k)
 						if (isKnown) then
-							local iconPath = gsub( strupper(GetSpellTextureFileName(spellID)), "INTERFACE\\ICONS\\", "");
-							if ( not activeIcons[iconPath] ) then
-								MACRO_ICON_FILENAMES[index] = iconPath;
-								activeIcons[iconPath] = true;
-								index = index + 1;
+							local fileID = GetSpellTexture(spellID);
+							if (fileID) then
+								activeIcons[fileID] = true;
 							end
 						end
 					end
@@ -383,6 +371,12 @@ function RefreshPlayerSpellIconInfo()
 			end
 		end
 	end
+
+	MACRO_ICON_FILENAMES = { "INV_MISC_QUESTIONMARK" };
+	for fileDataID in pairs(activeIcons) do
+		MACRO_ICON_FILENAMES[#MACRO_ICON_FILENAMES + 1] = fileDataID;
+	end
+
 	GetLooseMacroIcons( MACRO_ICON_FILENAMES );
 	GetLooseMacroItemIcons( MACRO_ICON_FILENAMES );
 	GetMacroIcons( MACRO_ICON_FILENAMES );

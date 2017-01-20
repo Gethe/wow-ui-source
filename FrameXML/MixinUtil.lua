@@ -39,21 +39,21 @@ function DrawLine(texture, canvasFrame, startX, startY, endX, endY, lineWidth, l
 		boundingWidth = ((lineLength * cos) - (lineWidth * sin)) * lineFactor;
 		boundingHeight = ((lineWidth * cos) - (lineLength * sin)) * lineFactor;
 
-		bottomLeftX = (lineWidth / lineLength) * sinCos; 
+		bottomLeftX = (lineWidth / lineLength) * sinCos;
 		bottomLeftY = sin * sin;
 		bottomRightY = (lineLength / lineWidth) * sinCos;
 		bottomRightX = 1 - bottomLeftY;
 
 		topLeftX = bottomLeftY;
 		topLeftY = 1 - bottomRightY;
-		topRightX = 1 - bottomLeftX; 
+		topRightX = 1 - bottomLeftX;
 		topRightY = bottomRightX;
 	else
 		boundingWidth = ((lineLength * cos) + (lineWidth * sin)) * lineFactor;
 		boundingHeight = ((lineWidth * cos) + (lineLength * sin)) * lineFactor;
 
-		bottomLeftX = sin * sin; 
-		bottomLeftY = -(lineLength / lineWidth) * sinCos; 
+		bottomLeftX = sin * sin;
+		bottomLeftY = -(lineLength / lineWidth) * sinCos;
 		bottomRightX = 1 + (lineWidth / lineLength) * sinCos;
 		bottomRightY = bottomLeftX;
 
@@ -111,13 +111,6 @@ function AnimatedNumericFontStringMixin:SetAnimatedValue(value)
 		self.currentAnimatedValue = self.targetAnimatedValue;
 	end
 	self.initialAnimatedValueDelta = math.abs(self.targetAnimatedValue - self.currentAnimatedValue);
-end
-
-local function Round(value)
-	if value < 0.0 then
-		return math.ceil(value - .5);
-	end
-	return math.floor(value + .5);
 end
 
 -- Stops animating the value and just snaps to it
@@ -190,4 +183,42 @@ function ShrinkUntilTruncateFontStringMixin:SetFormattedText(format, ...)
 
 	getmetatable(self).__index.SetFormattedText(self, format, ...);
 	self:ApplyFontObjects();
+end
+
+SparseGridMixin = {};
+
+function SparseGridMixin:OnLoad(width, height)
+	self.width = width;
+	self.height = height;
+	self.cells = {};
+end
+
+function SparseGridMixin:SetCell(x, y, data)
+	if not self:IsInRange(x, y) then
+		error("index of out of range");
+	end
+
+	local linearIndex = self:CalculateLinearIndex(x, y);
+	self.cells[linearIndex] = data;
+end
+
+function SparseGridMixin:GetCell(x, y)
+	if not self:IsInRange(x, y) then
+		error("index of out of range");
+	end
+
+	local linearIndex = self:CalculateLinearIndex(x, y);
+	return self.cells[linearIndex];
+end
+
+function SparseGridMixin:IsInRange(x, y)
+	return x > 0 and x <= self.width and y > 0 and y <= self.height;
+end
+
+function SparseGridMixin:Clear()
+	wipe(self.cells);
+end
+
+function SparseGridMixin:CalculateLinearIndex(x, y)
+	return x + self.width * (y - 1);
 end

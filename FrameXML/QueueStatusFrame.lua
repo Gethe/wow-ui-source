@@ -855,10 +855,20 @@ function QueueStatusDropDown_AddBattlefieldButtons(info, idx)
 		end
 
 		if ( inArena ) then
+			info.text = SURRENDER_ARENA;
+			info.func = wrapFunc(ConfirmSurrenderArena);
+			info.arg1 = nil;
+			info.arg2 = nil;
+			if (not CanSurrenderArena()) then
+				info.disabled = true;
+			end
+			UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL);
+			info.disabled = false;
 			info.text = LEAVE_ARENA;
 		else
 			info.text = LEAVE_BATTLEGROUND;
 		end
+		
 		info.func = wrapFunc(ConfirmOrLeaveBattlefield);
 		info.arg1 = nil;
 		info.arg2 = nil;

@@ -10,7 +10,6 @@ MICRO_BUTTONS = {
 	"EJMicroButton",
 	"CollectionsMicroButton",
 	"MainMenuMicroButton",
-	"HelpMicroButton",
 	"StoreMicroButton",
 	}
 
@@ -43,7 +42,6 @@ end
 function MicroButton_OnEnter(self)
 	if ( self:IsEnabled() or self.minLevel or self.disabledTooltip or self.factionGroup) then
 		GameTooltip_AddNewbieTip(self, self.tooltipText, 1.0, 1.0, 1.0, self.newbieText);
-		GameTooltip:AddLine(" ");
 		if ( not self:IsEnabled() ) then
 			if ( self.factionGroup == "Neutral" ) then
 				GameTooltip:AddLine(FEATURE_NOT_AVAILBLE_PANDAREN, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
@@ -178,12 +176,6 @@ function UpdateMicroButtons()
 		end
 	end
 
-	if ( HelpFrame and HelpFrame:IsShown() ) then
-		HelpMicroButton:SetButtonState("PUSHED", true);
-	else
-		HelpMicroButton:SetButtonState("NORMAL");
-	end
-
 	if ( AchievementFrame and AchievementFrame:IsShown() ) then
 		AchievementMicroButton:SetButtonState("PUSHED", true);
 	else
@@ -213,17 +205,7 @@ function UpdateMicroButtons()
 	else
 		StoreMicroButton:SetButtonState("NORMAL");
 	end
-
-	if ( C_StorePublic.IsEnabled() ) then
-		MainMenuMicroButton:SetPoint("BOTTOMLEFT", StoreMicroButton, "BOTTOMRIGHT", -3, 0);
-		HelpMicroButton:Hide();
-		StoreMicroButton:Show();
-	else
-		MainMenuMicroButton:SetPoint("BOTTOMLEFT", EJMicroButton, "BOTTOMRIGHT", -3, 0);
-		HelpMicroButton:Show();
-		StoreMicroButton:Hide();
-	end
-
+	
 	if ( GameLimitedMode_IsActive() ) then
 		StoreMicroButton.disabledTooltip = ERR_FEATURE_RESTRICTED_TRIAL;
 		StoreMicroButton:Disable();
@@ -232,6 +214,9 @@ function UpdateMicroButtons()
 		StoreMicroButton:Disable();
 	elseif ( IsKioskModeEnabled() ) then
 		StoreMicroButton.disabledTooltip = ERR_SYSTEM_DISABLED;
+		StoreMicroButton:Disable();
+	elseif ( not C_StorePublic.IsEnabled() ) then
+		StoreMicroButton.disabledTooltip = BLIZZARD_STORE_ERROR_UNAVAILABLE;
 		StoreMicroButton:Disable();
 	else
 		StoreMicroButton.disabledTooltip = nil;

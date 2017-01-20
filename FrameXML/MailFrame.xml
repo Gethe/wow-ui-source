@@ -71,7 +71,7 @@
 					<AbsDimension x="0" y="0"/> 
 				</PushedTextOffset>
 			</Button>
-			<CheckButton name="$parentButton" hidden="true">
+			<CheckButton parentKey="Button" name="$parentButton" hidden="true">
 				<Size x="37" y="37"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="4" y="-3"/>
@@ -86,9 +86,20 @@
 						</Texture>
 					</Layer>
 					<Layer level="ARTWORK">
-						<Texture name="$parentIcon" setAllPoints="true"/>
+						<Texture parentKey="Icon" name="$parentIcon">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parent"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="$parent" x="-1" y="1"/>
+							</Anchors>
+						</Texture>
 					</Layer>
 					<Layer level="OVERLAY">
+						<Texture parentKey="IconBorder" name="$parentIconBorder" file="Interface\Common\WhiteIconFrame">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Icon"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
+							</Anchors>
+						</Texture>
 						<FontString name="$parentCOD" inherits="GameFontHighlightSmall" text="CASH_ON_DELIVERY">
 							<Anchors>
 								<Anchor point="TOP" x="0" y="-2"/>
@@ -405,6 +416,19 @@
 						<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
 						<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
 						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+					</Button>
+					<Button name="OpenAllMail" text="OPEN_ALL_MAIL_BUTTON" inherits="UIPanelButtonTemplate" mixin="OpenAllMailMixin">
+						<Size x="120" y="24"/>
+						<Anchors>
+							<Anchor point="CENTER" relativePoint="BOTTOM" x="-21" y="114"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad method="OnLoad"/>
+							<OnEvent method="OnEvent"/>
+							<OnClick method="OnClick"/>
+							<OnUpdate method="OnUpdate"/>
+							<OnHide method="OnHide"/>
+						</Scripts>
 					</Button>
 				</Frames>
 			</Frame>

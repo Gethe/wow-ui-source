@@ -1852,13 +1852,14 @@ local function CombatLog_String_SchoolString(school)
 end
 _G.CombatLog_String_SchoolString = CombatLog_String_SchoolString
 
-local function CombatLog_String_DamageResultString( resisted, blocked, absorbed, critical, glancing, crushing, overhealing, textMode, spellId, overkill )
+local function CombatLog_String_DamageResultString( resisted, blocked, absorbed, critical, glancing, crushing, overhealing, textMode, spellId, overkill, overenergize )
 	local resultStr;
 	-- Result String formatting
 	local useOverhealing = overhealing and overhealing > 0;
 	local useOverkill = overkill and overkill > 0;
+	local useOverEnergize = overenergize and overenergize > 0;
 	local useAbsorbed = absorbed and absorbed > 0;
-	if ( resisted or blocked or critical or glancing or crushing or useOverhealing or useOverkill or useAbsorbed ) then
+	if ( resisted or blocked or critical or glancing or crushing or useOverhealing or useOverkill or useAbsorbed or overenergize ) then
 		resultStr = nil;
 		
 		if ( resisted ) then
@@ -1908,6 +1909,13 @@ local function CombatLog_String_DamageResultString( resisted, blocked, absorbed,
 				resultStr = resultStr.." "..format(TEXT_MODE_A_STRING_RESULT_OVERKILLING, overkill);
 			else
 				resultStr = format(TEXT_MODE_A_STRING_RESULT_OVERKILLING, overkill);
+			end
+		end
+		if ( useOverEnergize ) then
+			if ( resultStr ) then
+				resultStr = resultStr.." "..format(TEXT_MODE_A_STRING_RESULT_OVERENERGIZE, overenergize);
+			else
+				resultStr = format(TEXT_MODE_A_STRING_RESULT_OVERENERGIZE, overenergize);
 			end
 		end
 		if ( critical ) then
@@ -2087,6 +2095,8 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 	local missType, isOffHand, amountMissed;
 	-- Aura arguments
 	local auraType; -- BUFF or DEBUFF
+	-- Energize Arguments
+	local overEnergize;
 
 	-- Enchant arguments
 	local itemId, itemName;
@@ -2126,7 +2136,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 		amount, overkill, school, resisted, blocked, absorbed, critical, glancing, crushing, isOffHand = ...;
 
 		-- Parse the result string
-		resultStr = CombatLog_String_DamageResultString( resisted, blocked, absorbed, critical, glancing, crushing, overhealing, textMode, spellId, overkill );
+		resultStr = CombatLog_String_DamageResultString( resisted, blocked, absorbed, critical, glancing, crushing, overhealing, textMode, spellId, overkill, overEnergize );
 
 		if ( not resultStr ) then
 			resultEnabled = false;
@@ -2167,7 +2177,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 			amount, overkill, school, resisted, blocked, absorbed, critical, glancing, crushing, isOffHand = select(4, ...);
 
 			-- Parse the result string
-			resultStr = CombatLog_String_DamageResultString( resisted, blocked, absorbed, critical, glancing, crushing, overhealing, textMode, spellId, overkill );
+			resultStr = CombatLog_String_DamageResultString( resisted, blocked, absorbed, critical, glancing, crushing, overhealing, textMode, spellId, overkill, overEnergize );
 
 			if ( not resultStr ) then
 				resultEnabled = false
@@ -2204,7 +2214,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 			amount, overhealing, absorbed, critical = select(4, ...);
 			
 			-- Parse the result string
-			resultStr = CombatLog_String_DamageResultString( resisted, blocked, absorbed, critical, glancing, crushing, overhealing, textMode, spellId, overkill );
+			resultStr = CombatLog_String_DamageResultString( resisted, blocked, absorbed, critical, glancing, crushing, overhealing, textMode, spellId, overkill, overEnergize );
 
 			if ( not resultStr ) then
 				resultEnabled = false
@@ -2223,10 +2233,10 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 			valueType = 2;
 
 			-- Did the heal crit?
-			amount, powerType, alternatePowerType = select(4, ...);
-			
+			amount, overEnergize, powerType, alternatePowerType = select(4, ...);
+
 			-- Parse the result string
-			resultStr = CombatLog_String_DamageResultString( resisted, blocked, absorbed, critical, glancing, crushing, overhealing, textMode, spellId, overkill );
+			resultStr = CombatLog_String_DamageResultString( resisted, blocked, absorbed, critical, glancing, crushing, overhealing, textMode, spellId, overkill, overEnergize );
 
 			if ( not resultStr ) then
 				resultEnabled = false
@@ -2243,7 +2253,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 				
 				-- Result String
 				if ( missType == "ABSORB" ) then
-					resultStr = CombatLog_String_DamageResultString( resisted, blocked, amountMissed, critical, glancing, crushing, overhealing, textMode, spellId, overkill );
+					resultStr = CombatLog_String_DamageResultString( resisted, blocked, amountMissed, critical, glancing, crushing, overhealing, textMode, spellId, overkill, overEnergize );
 				else
 					resultStr = _G["ACTION_SPELL_PERIODIC_MISSED_"..missType];
 				end
@@ -2261,7 +2271,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 				amount, overkill, school, resisted, blocked, absorbed, critical, glancing, crushing, isOffHand = select(4, ...);
 
 				-- Parse the result string
-				resultStr = CombatLog_String_DamageResultString( resisted, blocked, absorbed, critical, glancing, crushing, overhealing, textMode, spellId, overkill );
+				resultStr = CombatLog_String_DamageResultString( resisted, blocked, absorbed, critical, glancing, crushing, overhealing, textMode, spellId, overkill, overEnergize );
 
 				-- Disable appropriate sections
 				if ( not resultStr ) then
@@ -2276,7 +2286,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 				amount, overhealing, absorbed, critical = select(4, ...);
 				
 				-- Parse the result string
-				resultStr = CombatLog_String_DamageResultString( resisted, blocked, absorbed, critical, glancing, crushing, overhealing, textMode, spellId, overkill );
+				resultStr = CombatLog_String_DamageResultString( resisted, blocked, absorbed, critical, glancing, crushing, overhealing, textMode, spellId, overkill, overEnergize );
 
 				if ( not resultStr ) then
 					resultEnabled = false
@@ -2328,11 +2338,12 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 				valueType = 2;
 
 				-- Did the heal crit?
-				amount, powerType, alternatePowerType = select(4, ...);
-				
+				amount, overEnergize, powerType, alternatePowerType = select(4, ...);
+
 				-- Parse the result string
 				--resultStr = _G[textModeString .. "RESULT"];
 				--resultStr = gsub(resultStr,"$resultString", _G["ACTION_"..event.."_RESULT"]); 
+				resultStr = CombatLog_String_DamageResultString( resisted, blocked, absorbed, critical, glancing, crushing, overhealing, textMode, spellId, overkill, overEnergize );
 
 				if ( not resultStr ) then
 					resultEnabled = false
@@ -2582,7 +2593,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 			amount, overkill, school, resisted, blocked, absorbed, critical, glancing, crushing, isOffHand = select(4, ...);
 
 			-- Parse the result string
-			resultStr = CombatLog_String_DamageResultString( resisted, blocked, absorbed, critical, glancing, crushing, overhealing, textMode, spellId, overkill);
+			resultStr = CombatLog_String_DamageResultString( resisted, blocked, absorbed, critical, glancing, crushing, overhealing, textMode, spellId, overkill, overEnergize);
 
 			if ( not resultStr ) then
 				resultEnabled = false
@@ -2622,7 +2633,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 		spellId, spellName, spellSchool, amount, overkill, school, resisted, blocked, absorbed, critical, glancing, crushing = ...;
 
 		-- Parse the result string
-		resultStr = CombatLog_String_DamageResultString( resisted, blocked, absorbed, critical, glancing, crushing, overhealing, textMode, spellId, overkill );
+		resultStr = CombatLog_String_DamageResultString( resisted, blocked, absorbed, critical, glancing, crushing, overhealing, textMode, spellId, overkill, overEnergize );
 
 		-- Disable appropriate sections
 		if ( not resultStr ) then
@@ -2708,7 +2719,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 		nameIsNotSpell = true;
 
 		-- Parse the result string
-		resultStr = CombatLog_String_DamageResultString( resisted, blocked, absorbed, critical, glancing, crushing, overhealing, textMode, spellId, overkill );
+		resultStr = CombatLog_String_DamageResultString( resisted, blocked, absorbed, critical, glancing, crushing, overhealing, textMode, spellId, overkill, overEnergize );
 
 		-- Environmental Event
 		if ( settings.fullText and environmentalType ) then
@@ -2727,7 +2738,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 		spellId, spellName, spellSchool, amount, overkill, school, resisted, blocked, absorbed, critical, glancing, crushing = ...;
 
 		-- Parse the result string
-		resultStr = CombatLog_String_DamageResultString( resisted, blocked, absorbed, critical, glancing, crushing, overhealing, textMode, spellId, overkill );
+		resultStr = CombatLog_String_DamageResultString( resisted, blocked, absorbed, critical, glancing, crushing, overhealing, textMode, spellId, overkill, overEnergize );
 
 		if ( not resultStr ) then
 			resultEnabled = false

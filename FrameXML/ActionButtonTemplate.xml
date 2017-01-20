@@ -70,9 +70,33 @@
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
+				<Texture parentKey="SpellHighlightTexture" atlas="bags-newitem" useAtlasSize="false" alphaMode="ADD" hidden="true">
+					<Size x="44" y="44"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="AutoCastable" file="Interface\Buttons\UI-AutoCastableOverlay" hidden="true">
+					<Size x="58" y="58"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="SpellHighlightAnim" looping="REPEAT">
+				<Alpha childKey="SpellHighlightTexture" smoothing="OUT" duration=".75" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="SpellHighlightTexture" smoothing="IN" duration=".75" order="2" fromAlpha="1" toAlpha="0"/>
+			</AnimationGroup>
+		</Animations>
 		<Frames>
+			<Frame name="$parentShine" parentKey="AutoCastShine" inherits="AutoCastShineTemplate">
+				<Anchors>
+					<Anchor point="CENTER" x="0" y="0"/>
+				</Anchors>
+				<Size x="28" y="28"/>
+			</Frame>
 			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate" parentKey="cooldown">
 				<Size x="36" y="36"/>
 				<Anchors>

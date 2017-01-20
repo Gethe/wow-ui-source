@@ -507,7 +507,7 @@ StaticPopupDialogs["DEACTIVATE_FOLLOWER"] = {
 	end,
 	OnShow = function(self)
 		local quality = C_Garrison.GetFollowerQuality(self.data);
-		local name = ITEM_QUALITY_COLORS[quality].hex..C_Garrison.GetFollowerName(self.data)..FONT_COLOR_CODE_CLOSE;
+		local name = FOLLOWER_QUALITY_COLORS[quality].hex..C_Garrison.GetFollowerName(self.data)..FONT_COLOR_CODE_CLOSE;
 		local cost = GetMoneyString(C_Garrison.GetFollowerActivationCost());
 		local uses = C_Garrison.GetNumFollowerDailyActivations();
 		self.text:SetFormattedText(GARRISON_DEACTIVATE_FOLLOWER_CONFIRMATION, name, cost, uses);
@@ -527,7 +527,7 @@ StaticPopupDialogs["ACTIVATE_FOLLOWER"] = {
 	end,
 	OnShow = function(self)
 		local quality = C_Garrison.GetFollowerQuality(self.data);
-		local name = ITEM_QUALITY_COLORS[quality].hex..C_Garrison.GetFollowerName(self.data)..FONT_COLOR_CODE_CLOSE;
+		local name = FOLLOWER_QUALITY_COLORS[quality].hex..C_Garrison.GetFollowerName(self.data)..FONT_COLOR_CODE_CLOSE;
 		local followerInfo = C_Garrison.GetFollowerInfo(self.data);
 		local uses = C_Garrison.GetNumFollowerActivationsRemaining(GarrisonFollowerOptions[followerInfo.followerTypeID].garrisonType);
 		self.text:SetFormattedText(GARRISON_ACTIVATE_FOLLOWER_CONFIRMATION, name, uses);

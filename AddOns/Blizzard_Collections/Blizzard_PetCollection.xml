@@ -526,20 +526,14 @@
 				</Scripts>
 			</StatusBar>
 
-			<PlayerModel name="$parentModelFrame" useParentLevel="true" parentKey="model">
+			<ModelScene parentKey="modelScene" useParentLevel="true" inherits="ModelSceneMixinTemplate">
 				<Size x="130" y="96"/>
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="0" y="0"/>
 				</Anchors>
-				<Scripts>
-					<OnLoad>
-						Model_OnLoad(self);
-						self:SetRotation(-MODELFRAME_DEFAULT_ROTATION);
-					</OnLoad>
-					<OnEvent function="Model_OnEvent"/>
-				</Scripts>
+
 				<Frames>
-					<Button name="$parentCardButton" setAllPoints="true">
+					<Button parentKey="cardButton" setAllPoints="true">
 						<Scripts>
 							<OnClick>
 								PetJournal_ShowPetCardByID(self:GetParent():GetParent().petID);
@@ -547,7 +541,7 @@
 						</Scripts>
 					</Button>
 				</Frames>
-			</PlayerModel>
+			</ModelScene>
 
 			<Button name="$parentSetButton" parentKey="setButton" setAllPoints="true" hidden="true">
 				<Animations>
@@ -710,7 +704,6 @@
 			<OnLoad>
 				self.abilities = {};
 				self.abilityLevels = {};
-				self.model:EnableMouse(false);
 				self:RegisterForClicks("LeftButtonDown", "LeftButtonUp");
 			</OnLoad>
 			<OnClick>
@@ -1603,30 +1596,35 @@
 							</OnLeave>
 						</Scripts>
 					</StatusBar>
-					<PlayerModel name="$parentModelFrame" parentKey="model" inherits="ModelTemplate">
+					<ModelScene parentKey="modelScene" useParentLevel="true" inherits="ModelSceneMixinTemplate" mixin="CollectionsWrappedModelSceneMixin">
+						<KeyValues>
+							<KeyValue key="normalIntensity" value="0.75" type="number"/>
+							<KeyValue key="highlightIntensity" value="1.2" type="number"/>
+						</KeyValues>
+
 						<Size x="173" y="135"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" x="45" y="-21"/>
 						</Anchors>
-					</PlayerModel>
-					<PlayerModel name="$parentWrappedModelFrame" parentKey="wrappedModel" inherits="CollectionsWrappedModelFrame" frameStrata="DIALOG">
-						<Size x="173" y="135"/>
-						<Anchors>
-							<Anchor point="TOPLEFT" x="45" y="-21"/>
-						</Anchors>
+
 						<Scripts>
-							<OnMouseUp>
-								PetJournal_UnwrapPet(PetJournalPetCard.petID);
+							<OnMouseUp inherit="append">
+								if PetJournalPetCard.petID then
+									PetJournal_UnwrapPet(PetJournalPetCard.petID);
+								end
 							</OnMouseUp>
+							<OnEnter method="OnMouseEnter" />
+							<OnLeave method="OnMouseLeave" />
+							<OnShow method="OnShow" />
 						</Scripts>
-					</PlayerModel>
+						<Animations>
+							<AnimationGroup parentKey="UnwrapAnim" setToFinalAlpha="true">
+								<Alpha parentKey="WrappedAnim" startDelay="1.2" fromAlpha="1" toAlpha="0" duration=".3" order="1"/>
+								<Alpha parentKey="UnwrappedAnim" startDelay="1.2" fromAlpha="0" toAlpha="1" duration=".3" order="1"/>
+							</AnimationGroup>
+						</Animations>
+					</ModelScene>
 				</Frames>
-				<Animations>
-					<AnimationGroup parentKey="UnwrapAnim" setToFinalAlpha="true">
-						<Alpha childKey="wrappedModel" startDelay="1.2" fromAlpha="1" toAlpha="0" duration=".3" order="1"/>
-						<Alpha childKey="model" startDelay="1.2" fromAlpha="0" toAlpha="1" duration=".3" order="1"/>
-					</AnimationGroup>
-				</Animations>
 			</Frame> <!-- PetCard -->
 
 

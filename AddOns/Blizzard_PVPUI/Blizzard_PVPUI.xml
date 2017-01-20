@@ -164,12 +164,17 @@
 						<KeyValue key="layoutIndex" value="2" type="number"/>
 					</KeyValues>
 				</FontString>
+				<FontString parentKey="XP" inherits="GameFontHighlight">
+					<KeyValues>
+						<KeyValue key="layoutIndex" value="3" type="number"/>
+					</KeyValues>
+				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
 			<Frame parentKey="ItemTooltip" inherits="EmbeddedItemTooltip">
 				<KeyValues>
-					<KeyValue key="layoutIndex" value="3" type="number"/>
+					<KeyValue key="layoutIndex" value="4" type="number"/>
 					<KeyValue key="topPadding" value="15" type="number"/>
 					<KeyValue key="bottomPadding" value="6" type="number"/>
 				</KeyValues>
@@ -275,6 +280,8 @@
 			<OnMouseUp>
 				self.Contents:SetPoint("TOPLEFT", 0, 0);
 			</OnMouseUp>
+			<OnEnter function="PVPBonusButtonTemplate_OnEnter"/>
+			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 	</Button>
 	<Button name="PVPBonusBattlegroundButtonTemplate" virtual="true" inherits="PVPBonusButtonTemplate">
@@ -825,7 +832,7 @@
 									</Frame>
 									<Button parentKey="RandomBGButton" inherits="PVPBonusBattlegroundButtonTemplate">
 										<Anchors>
-											<Anchor point="TOP" x="0" y="-126"/>
+											<Anchor point="TOP" x="0" y="-107"/>
 										</Anchors>
 										<Frames>
 											<Frame parentKey="Contents" inherits="PVPBonusBattlegroundContentsTemplate">
@@ -853,16 +860,37 @@
 												</Layers>
 											</Frame>
 										</Frames>
+										<KeyValues>
+											<KeyValue key="tooltipTableKey" value="RandomBG" type="string"/>
+										</KeyValues>
 									</Button>
 									<Button parentKey="Arena1Button" inherits="PVPBonusWorldPVPButtonTemplate">
 										<Anchors>
-											<Anchor point="TOP" relativeKey="$parent.RandomBGButton" relativePoint="BOTTOM" x="0" y="-9"/>
+											<Anchor point="TOP" relativeKey="$parent.RandomBGButton" relativePoint="BOTTOM" x="0" y="-1"/>
 										</Anchors>
+										<KeyValues>
+											<KeyValue key="canQueue" value="true" type="boolean"/>
+											<KeyValue key="arenaID" value="4" type="number"/>
+											<KeyValue key="tooltipTableKey" value="Skirmish" type="string"/>
+										</KeyValues>
 									</Button>
 									<Button parentKey="AshranButton" inherits="PVPBonusWorldPVPButtonTemplate">
 										<Anchors>
-											<Anchor point="TOP" relativeKey="$parent.Arena1Button" relativePoint="BOTTOM" x="0" y="-9"/>
+											<Anchor point="TOP" relativeKey="$parent.Arena1Button" relativePoint="BOTTOM" x="0" y="-1"/>
 										</Anchors>
+										<KeyValues>
+											<KeyValue key="queueID" value="ASHRAN_QUEUE_ID" type="global"/>
+											<KeyValue key="tooltipTableKey" value="Ashran" type="string"/>
+										</KeyValues>
+									</Button>
+									<Button parentKey="BrawlButton" inherits="PVPBonusWorldPVPButtonTemplate">
+										<Anchors>
+											<Anchor point="TOP" relativeKey="$parent.AshranButton" relativePoint="BOTTOM" x="0" y="-1"/>
+										</Anchors>
+										<KeyValues>
+											<KeyValue key="isBrawl" value="true" type="boolean"/>
+											<KeyValue key="tooltipTableKey" value="Brawl" type="string"/>
+										</KeyValues>
 									</Button>
 									<Frame parentKey="ShadowOverlay" inherits="ShadowOverlaySmallTemplate" useParentLevel="true">
 										<Anchors>
@@ -873,6 +901,8 @@
 								</Frames>
 								<Scripts>
 									<OnShow function="HonorFrameBonusFrame_OnShow"/>
+									<OnHide function="HonorFrameBonusFrame_OnHide"/>
+									<OnEvent function="HonorFrameBonusFrame_OnEvent"/>
 								</Scripts>
 							</Frame>
 							<Button name="$parentQueueButton" parentKey="QueueButton" inherits="MagicButtonTemplate" text="BATTLEFIELD_JOIN" motionScriptsWhileDisabled="true">

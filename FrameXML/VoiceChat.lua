@@ -206,29 +206,13 @@ end
 
 
 function MiniMapVoiceChat_Update()
-	local count = GetNumVoiceSessions();
-	if ( IsVoiceChatEnabled() ) then
-		if ( GetNumVoiceSessions() ) then
-			MiniMapVoiceChatFrame:Show();
-			if ( count ~= MiniMapVoiceChatFrame.count ) then
-				VoiceChatShineFadeIn();
-			end
-			MiniMapVoiceChatFrame.count = count;
-		end
-	else
-		MiniMapVoiceChatFrame:Hide();
-	end
+	MiniMapVoiceChatFrame:Hide();
 end
 
 --- Global Voice Chat Switch
 function VoiceChat_Toggle()
-	if ( IsVoiceChatEnabled() ) then
-		ChannelFrameAutoJoin:Show();
-		VoiceChatTalkers:Show();
-	else
-		ChannelFrameAutoJoin:Hide();
-		VoiceChatTalkers:Hide();
-	end
+	ChannelFrameAutoJoin:Hide();
+	VoiceChatTalkers:Hide();
 end
 
 --[ Minimap DropDown Functions ]--
@@ -239,29 +223,13 @@ end
 
 function MiniMapVoiceChatDropDown_Initialize()
 	local name, active, checked;
-	local count = GetNumVoiceSessions();
 	local info;
-	for id=1, count do
-		name, active = GetVoiceSessionInfo(id);
 
-		info = UIDropDownMenu_CreateInfo();
-		info.text = name;
-		info.checked = active;
-		info.func = function (self, id) SetActiveVoiceChannelBySessionID(id) end;
-		info.arg1 = id;
-		UIDropDownMenu_AddButton(info);
-	end
-
-	if ( not GetVoiceCurrentSessionID() ) then
-		checked = 1;
-	else
-		checked = nil;
-	end
+	checked = nil;
 
 	info = UIDropDownMenu_CreateInfo();
 	info.text = NONE;
 	info.checked = checked;
-	info.func = function (self, id) SetActiveVoiceChannelBySessionID(id) end;
 	info.arg1 = 0;
 	UIDropDownMenu_AddButton(info);
 

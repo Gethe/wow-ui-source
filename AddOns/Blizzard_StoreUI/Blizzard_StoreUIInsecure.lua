@@ -1,9 +1,9 @@
 -- DO NOT PUT ANY SENSITIVE CODE IN THIS FILE
 -- This file does not have access to the secure (forbidden) code.  It is only called via Outbound and no function in this file should ever return values.
 
-function StoreShowPreview(name, modelID)
+function StoreShowPreview(name, modelID, modelSceneID)
 	local frame = ModelPreviewFrame;
-	ModelPreviewFrame_ShowModel(modelID, false);
+	ModelPreviewFrame_ShowModel(modelID, modelSceneID, false);
 	frame.Display.Name:SetText(name);
 end
 
