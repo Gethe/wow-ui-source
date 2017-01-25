@@ -1080,7 +1080,7 @@ function ContainerFrameItemButton_OnModifiedClick(self, button)
 	if ( IsModifiedClick("SOCKETITEM") ) then
 		SocketContainerItem(self:GetParent():GetID(), self:GetID());
 	end
-	if ( IsModifiedClick("SPLITSTACK") ) then
+	if ( not CursorHasItem() and IsModifiedClick("SPLITSTACK") ) then
 		local texture, itemCount, locked = GetContainerItemInfo(self:GetParent():GetID(), self:GetID());
 		if ( not locked and itemCount and itemCount > 1) then
 			self.SplitStack = function(button, split)

@@ -1,12 +1,14 @@
 local MailInfoLua =
 {
 	Name = "MailInfo",
+	Type = "System",
 	Namespace = "C_Mail",
 
 	Functions =
 	{
 		{
 			Name = "HasInboxMoney",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -20,6 +22,7 @@ local MailInfoLua =
 		},
 		{
 			Name = "IsCommandPending",
+			Type = "Function",
 
 			Returns =
 			{

@@ -1591,7 +1591,7 @@
         </Layers>
 		<Scripts>
 			<OnLoad>
-				PanelTemplates_TabResize(self, 0);
+				PanelTemplates_TabResize(self, 0, nil, self.minWidth);
 				self.HighlightTexture:SetWidth(self:GetTextWidth() + 31);
 			</OnLoad>
 		</Scripts>

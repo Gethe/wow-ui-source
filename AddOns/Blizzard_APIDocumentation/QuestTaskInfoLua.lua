@@ -1,12 +1,14 @@
 local QuestTaskInfoLua =
 {
 	Name = "QuestTaskInfo",
+	Type = "System",
 	Namespace = "C_TaskQuest",
 
 	Functions =
 	{
 		{
 			Name = "GetDistanceSqToQuest",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -20,6 +22,7 @@ local QuestTaskInfoLua =
 		},
 		{
 			Name = "GetQuestInfoByQuestID",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -35,6 +38,7 @@ local QuestTaskInfoLua =
 		},
 		{
 			Name = "GetQuestLocation",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -50,6 +54,7 @@ local QuestTaskInfoLua =
 		},
 		{
 			Name = "GetQuestProgressBarInfo",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -63,6 +68,7 @@ local QuestTaskInfoLua =
 		},
 		{
 			Name = "GetQuestTimeLeftMinutes",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -76,6 +82,7 @@ local QuestTaskInfoLua =
 		},
 		{
 			Name = "GetQuestZoneID",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -90,6 +97,7 @@ local QuestTaskInfoLua =
 		},
 		{
 			Name = "GetQuestsForPlayerByMapID",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -104,6 +112,7 @@ local QuestTaskInfoLua =
 		},
 		{
 			Name = "IsActive",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -117,6 +126,7 @@ local QuestTaskInfoLua =
 		},
 		{
 			Name = "RequestPreloadRewardData",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -129,6 +139,7 @@ local QuestTaskInfoLua =
 	{
 		{
 			Name = "TaskPOIData",
+			Type = "Structure",
 			Fields =
 			{
 				{ Name = "questId", Type = "number", Nilable = false },

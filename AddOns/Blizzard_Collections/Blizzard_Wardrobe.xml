@@ -221,17 +221,32 @@
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Name" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
 					</Anchors>
+					<Color r="0.329" g="0.329" b="0.329"/>
 				</FontString>
-				<FontString parentKey="Count" inherits="GameFontNormalSmall">
+				<Texture parentKey="ProgressBar">
+					<Size x="204" y="2"/>
 					<Anchors>
-						<Anchor point="RIGHT" x="-12"/>
-						<Anchor point="BOTTOM" relativeKey="$parent.Name"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="BOTTOMLEFT" x="2" y="4"/>
 					</Anchors>
-					<Color r="0.1" g="1" b="0.1"/>
-				</FontString>
+					<Color r="0.0118" g="0.247" b="0.00392" a="1"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="-1">
+				<Texture parentKey="IconCover">
+					<Size x="38" y="38"/>
+					<Anchors>
+						<Anchor point="LEFT" x="-42" y="0"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" a="0.7"/>
+				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
 				<Texture parentKey="SelectedTexture" atlas="PetList-ButtonSelect" hidden="true"/>
+				<Texture parentKey="Favorite" atlas="PetJournal-FavoritesIcon" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" x="-8" y="8"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 			<Layer level="HIGHLIGHT">
 				<Texture parentKey="HighlightTexture" atlas="PetList-ButtonHighlight" setAllPoints="true"/>
@@ -239,8 +254,14 @@
 		</Layers>
 		<Scripts>
 			<OnMouseUp>
-				PlaySound("igMainMenuOptionCheckBoxOn");
-				self:GetParent():GetParent():GetParent():SelectSetFromButton(self.setID);
+				if ( button == "LeftButton" ) then
+					PlaySound("igMainMenuOptionCheckBoxOn");
+					self:GetParent():GetParent():GetParent():SelectSetFromButton(self.setID);
+				elseif ( button == "RightButton" ) then
+					local dropDown = self:GetParent():GetParent().FavoriteDropDown;
+					dropDown.baseSetID = self.setID;
+					ToggleDropDownMenu(1, nil, dropDown, self, 0, 0);
+				end
 			</OnMouseUp>
 		</Scripts>
 	</Frame>
@@ -249,10 +270,19 @@
 		<Size x="32" y="32"/>
 		<Layers>
 			<Layer level="BORDER">
-				<Texture parentKey="Icon" setAllPoints="true"/>
+				<Texture parentKey="Icon">
+					<Size x="28" y="28"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture parentKey="IconBorder" file="Interface\Common\WhiteIconFrame" setAllPoints="true"/>
+				<Texture parentKey="IconBorder" atlas="loottab-set-itemborder-green" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.Icon" relativePoint="CENTER" x="20" y="1"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 		</Layers>
 		<Scripts>
@@ -438,7 +468,10 @@
 	</Frame>
 	<Frame name="WardrobeCollectionFrame" parent="CollectionsJournal" setAllPoints="true" hidden="true">
 		<Frames>
-			<Button name="$parentTab1" parentKey="ItemsTab" inherits="TabButtonTemplate" text="WARDROBE_ITEMS" id="1" frameLevel="4">
+			<Button name="$parentTab1" parentKey="ItemsTab" inherits="TabButtonTemplate" text="WARDROBE_ITEMS" id="1" frameLevel="4" parentArray="Tabs">
+				<KeyValues>
+					<KeyValue key="minWidth" value="57" type="number"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="58" y="-28"/>
 				</Anchors>
@@ -446,7 +479,10 @@
 					<OnClick function="WardrobeCollectionFrame_ClickTab"/>
 				</Scripts>
 			</Button>
-			<Button name="$parentTab2" parentKey="SetsTab" inherits="TabButtonTemplate" text="WARDROBE_SETS" id="2" frameLevel="4">
+			<Button name="$parentTab2" parentKey="SetsTab" inherits="TabButtonTemplate" text="WARDROBE_SETS" id="2" frameLevel="4" parentArray="Tabs">
+				<KeyValues>
+					<KeyValue key="minWidth" value="57" type="number"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentTab1" relativePoint="RIGHT" x="0" y="0"/>
 				</Anchors>
@@ -672,7 +708,7 @@
 			<Button parentKey="FilterButton" inherits="UIMenuButtonStretchTemplate" text="FILTER">
 				<Size x="93" y="22"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="-12" y="-34"/>
+					<Anchor point="LEFT" relativeKey="$parent.searchBox" relativePoint="RIGHT" x="2" y="-1"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
@@ -910,11 +946,13 @@
 									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="4" y="11"/>
 								</Anchors>
 							</Slider>
+							<Frame name="WardrobeSetsFavoriteDropDown" parentKey="FavoriteDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true"/>
 						</Frames>
 						<Scripts>
 							<OnLoad method="OnLoad"/>
 							<OnShow method="OnShow"/>
 							<OnHide method="OnHide"/>
+							<OnEvent method="OnEvent"/>
 						</Scripts>
 					</ScrollFrame>
 					<Frame parentKey="DetailsFrame">

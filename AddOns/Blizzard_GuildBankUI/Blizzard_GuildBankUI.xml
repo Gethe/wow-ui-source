@@ -26,38 +26,9 @@
 			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate"/>
 		</Frames>
 		<Scripts>
-			<OnClick>
-				if ( HandleModifiedItemClick(GetGuildBankItemLink(GetCurrentGuildBankTab(), self:GetID())) ) then
-					return;
-				end
-				if ( IsModifiedClick("SPLITSTACK") ) then
-					local texture, count, locked = GetGuildBankItemInfo(GetCurrentGuildBankTab(), self:GetID());
-					if ( not locked and count > 1) then
-						OpenStackSplitFrame(count, self, "BOTTOMLEFT", "TOPLEFT");
-					end
-					return;
-				end
-				local type, money = GetCursorInfo();
-				if ( type == "money" ) then
-					DepositGuildBankMoney(money);
-					ClearCursor();
-				elseif ( type == "guildbankmoney" ) then
-					DropCursorMoney();
-					ClearCursor();
-				else
-					if ( button == "RightButton" ) then
-						AutoStoreGuildBankItem(GetCurrentGuildBankTab(), self:GetID());
-					else
-						PickupGuildBankItem(GetCurrentGuildBankTab(), self:GetID());
-					end
-				end
-			</OnClick>
-			<OnLoad>
-				GuildBankItemButton_OnLoad(self);
-			</OnLoad>
-			<OnEnter>
-				GuildBankItemButton_OnEnter(self, motion);
-			</OnEnter>
+			<OnClick function="GuildBankItemButton_OnClick"/>
+			<OnLoad function="GuildBankItemButton_OnLoad"/>
+			<OnEnter function="GuildBankItemButton_OnEnter"/>
 			<OnLeave>
 				self.updateTooltip = nil;
 				GameTooltip_Hide();
@@ -74,9 +45,6 @@
 			<OnReceiveDrag>
 				PickupGuildBankItem(GetCurrentGuildBankTab(), self:GetID());
 			</OnReceiveDrag>
-			<OnUpdate>
-				--GuildBankItemButton_OnUpdate(self, elapsed);
-			</OnUpdate>
 			<OnEvent>
 				if ( GameTooltip:IsOwned(self) ) then
 					GuildBankItemButton_OnEnter(self);

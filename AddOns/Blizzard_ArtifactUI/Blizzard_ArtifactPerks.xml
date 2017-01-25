@@ -38,7 +38,7 @@
 		</Animations>
 	</Frame>
 
-	<Frame name="ArtifactCurvedDependencyLineTemplate" frameLevel="2" parentArray="CurvedDependencyLines" mixin="ArtifactLineMixin" virtual="true">
+	<Frame name="ArtifactCurvedDependencyLineTemplate" frameLevel="1200" parentArray="CurvedDependencyLines" mixin="ArtifactLineMixin" virtual="true">
 		<KeyValues>
 			<KeyValue key="IsCurved" type="boolean" value="true"/>
 		</KeyValues>
@@ -61,6 +61,15 @@
 				<Alpha parentKey="Background" childKey="Background" duration=".25" order="0"/>
 				<Alpha parentKey="Fill" childKey="Fill" duration=".25" order="0"/>
 				<Alpha parentKey="FillScroll1" childKey="FillScroll1" duration=".25" order="0"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="Tier2FadeInAnim" setToFinalAlpha="true">
+				<Alpha parentKey="Background" childKey="Background" fromAlpha="0" toAlpha="1" duration=".5" order="0"/>
+				<Alpha parentKey="Fill" childKey="Fill" fromAlpha="0" toAlpha="1" duration=".5" order="0"/>
+				<Scripts>
+					<OnFinished>
+						self:GetParent():SetState(self:GetParent().lineState);
+					</OnFinished>	
+				</Scripts>
 			</AnimationGroup>
 		</Animations>
 	</Frame>
@@ -149,6 +158,26 @@
 		</Animations>
 	</Button>
 	
+	<Frame name="ArtifactFloatingRankStringTemplate" parentArray="FloatingNumbers" virtual="true">
+		<Size x="37" y="37" />
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Rank" inherits="Game32Font">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<Color r="1.0" g="0.82" b="0"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="MoveAndFade" setToFinalAlpha="true">
+				<Translation parentKey="Move" childKey="Rank" duration="0.8" order="1" offsetX="250" offsetY="100"/>
+				<Alpha childKey="Rank" duration="0.6" order="1" fromAlpha="1" toAlpha="0"/>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+
 	<PlayerModel name="ArtifactsModelTemplate" useParentLevel="true" virtual="true">
 		<Size x="895" y="615" />
 		<Anchors>
@@ -179,9 +208,6 @@
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="-6">
 				<Texture parentKey="HeaderBackground" atlas="Artifacts-HeaderBG" />
-			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="-5">
-				<Texture parentKey="Tier2Crest" />
 			</Layer>
 		</Layers>
 		<Frames>
@@ -238,8 +264,8 @@
 					<OnUpdate method="OnUpdate" />
 				</Scripts>
 			</Frame>
-			<PlayerModel parentKey="AltModel" inherits="ArtifactsModelTemplate"/>
-			<PlayerModel parentKey="Model" inherits="ArtifactsModelTemplate">
+			<PlayerModel parentKey="AltModel" inherits="ArtifactsModelTemplate" frameLevel="500"/>
+			<PlayerModel parentKey="Model" inherits="ArtifactsModelTemplate" frameLevel="500">
 				<Layers>
 					<Layer level="OVERLAY" textureSubLevel="-7">
 						<Texture parentKey="BackgroundFront" alpha=".5">
@@ -251,10 +277,267 @@
 					</Layer>
 				</Layers>
 			</PlayerModel>
+			<Frame parentKey="CrestFrame" frameLevel="1000">
+				<Size x="100" y="100"/>
+				<Layers>
+					<!-- Animation Textures Start -->
+					<Layer level="OVERLAY" textureSubLevel="-8">
+						<Texture parentKey="CrestRune1" hidden="false" alpha="0" alphaMode="BLEND" atlas="Artifacts-DeathKnightFrost-BG-Rune" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="CrestRune2" hidden="false" alpha="0" alphaMode="ADD" atlas="Artifacts-DeathKnightFrost-BG-Rune" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.CrestRune1"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="CrestRune3" hidden="false" alpha="0" alphaMode="ADD" atlas="Artifacts-DeathKnightFrost-BG-Rune" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.CrestRune1"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="CrestRune4" hidden="false" alpha="0" alphaMode="ADD" atlas="Artifacts-DeathKnightFrost-BG-Rune" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.CrestRune1"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="CrestRune5" hidden="false" alpha="0" alphaMode="ADD" atlas="Artifacts-DeathKnightFrost-BG-Rune" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.CrestRune1"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="CrestRune6" hidden="false" alpha="0" alphaMode="ADD" atlas="Artifacts-DeathKnightFrost-BG-Rune" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.CrestRune1"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="CrestRune7" hidden="false" alpha="0" alphaMode="ADD" atlas="Artifacts-DeathKnightFrost-BG-Rune" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.CrestRune1"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="CrestRune8" hidden="false" alpha="0" alphaMode="ADD" atlas="Artifacts-DeathKnightFrost-BG-Rune" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.CrestRune1"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="CrestRune9" hidden="false" alpha="0" alphaMode="ADD" atlas="Artifacts-DeathKnightFrost-BG-Rune" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.CrestRune1"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="CrestRune10" hidden="false" alpha="0" alphaMode="ADD" atlas="Artifacts-DeathKnightFrost-BG-Rune" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.CrestRune1"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="CrestRune11" hidden="false" alpha="0" alphaMode="ADD" atlas="Artifacts-DeathKnightFrost-BG-Rune" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.CrestRune1"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture parentKey="CrestRuneGold" hidden="false" alpha="0" alphaMode="ADD" atlas="Artifacts-CrestRune-Gold" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="CrestShine" hidden="false" alpha="0" alphaMode="ADD" atlas="Artifacts-PerkRing-Final-Shine">
+							<Size x="241" y="241"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="4">
+						<Texture parentKey="Whirls" alpha="0" atlas="ArtifactsFX-Whirls" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="BigWhirls" alpha="0" alphaMode="ADD" atlas="ArtifactsFX-Whirls" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+							<Color r="1" g="0.83921568627451" b="0.45098039215686"/>
+						</Texture>
+						<Texture parentKey="SpinningGlows" alpha="0" alphaMode="ADD" atlas="ArtifactsFX-SpinningGlowys" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="SpinningGlows2" alpha="0" alphaMode="ADD" atlas="ArtifactsFX-SpinningGlowys" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="RingGlow" alpha="0" alphaMode="ADD" atlas="ArtifactsFX-YellowRing" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" />
+							</Anchors>
+						</Texture>
+						<Texture parentKey="RingBurst" alpha="0" alphaMode="ADD" atlas="ArtifactsFX-YellowRing" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="BigGlow" alpha="0" alphaMode="ADD" atlas="Artifacts-PerkRing-MainProc-Glow" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="DragonShake" alpha="0" alphaMode="ADD" atlas="Artifacts-PerkRing-GoldMedal" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="RelicRingBurstGlow" alpha="0" alphaMode="ADD">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.Icon" />
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="6">
+						<Texture parentKey="StarBurst" alpha="0" alphaMode="ADD" atlas="ArtifactsFX-StarBurst" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="WhiteStarBurst" alpha="0" alphaMode="ADD" atlas="AftLevelup-WhiteStarBurst" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="PointBurstLeft" alpha="0" alphaMode="ADD" atlas="ArtifactsFX-PointSideBurstLeft" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="RIGHT" relativeKey="$parent.RankBorder" relativePoint="LEFT" x="14" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="PointBurstRight" alpha="0" alphaMode="ADD" atlas="ArtifactsFX-PointSideBurstRight" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.RankBorder" relativePoint="RIGHT" x="-14" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="RelicTraitBurst" alpha="0" alphaMode="ADD">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.Icon" />
+							</Anchors>
+						</Texture>
+						<Texture parentKey="TraitGlow" alpha="0" alphaMode="ADD" atlas="Artifacts-PerkRing-WhiteGlow" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="YellowRing" alpha="0" atlas="ArtifactsFX-YellowRing" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="YellowRingStationary" alpha="0" atlas="ArtifactsFX-YellowRing" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="CrestSparks" hidden="false" alpha="0" alphaMode="ADD" atlas="Artifacts-Anim-Sparks" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="CrestSparks2" hidden="false" alpha="0" alphaMode="ADD" atlas="Artifacts-Anim-Sparks" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<!-- Animation Textures -->
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="RuneAnim" setToFinalAlpha="true">
+						<Alpha childKey="CrestSparks" duration="0.01" order="1" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="CrestSparks" startDelay="0.01" smoothing="OUT" duration="0.32" order="1" fromAlpha="1" toAlpha="0"/>
+						<Scale childKey="CrestSparks" smoothing="NONE" duration="0.33" order="1" fromScaleX="1.4" fromScaleY="1.4" toScaleX="0.3" toScaleY="0.3"/>
+						<Alpha childKey="CrestSparks2" duration="0.01" order="1" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="CrestSparks2" startDelay="0.01" smoothing="OUT" duration="0.32" order="1" fromAlpha="1" toAlpha="0"/>
+						<Scale childKey="CrestSparks2" smoothing="NONE" duration="1" order="1" fromScaleX="0.8" fromScaleY="0.8" toScaleX="0.2" toScaleY="0.2"/>
+						<Alpha childKey="CrestRune1" duration="0.33" order="1" fromAlpha="0" toAlpha="1"/>
+						<Scale childKey="CrestRune1" smoothing="IN" duration="0.33" order="1" fromScaleX="1.4" fromScaleY="1.4" toScaleX="1" toScaleY="1"/>
+						<Alpha childKey="CrestRune2" duration="0.01" order="1" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="CrestRune2" startDelay="0.01" smoothing="IN" duration="0.32" order="1" fromAlpha="1" toAlpha="0"/>
+						<Scale childKey="CrestRune2" smoothing="IN" duration="0.33" order="1" fromScaleX="1.4" fromScaleY="1.4" toScaleX="1" toScaleY="1"/>
+						<Alpha childKey="CrestRune3" duration="0.01" order="1" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="CrestRune3" startDelay="0.01" smoothing="IN" duration="0.32" order="1" fromAlpha="1" toAlpha="0"/>
+						<Scale childKey="CrestRune3" smoothing="IN" duration="0.33" order="1" fromScaleX="2" fromScaleY="2" toScaleX="1" toScaleY="1"/>
+						<Alpha childKey="CrestRune2" startDelay="0.33" duration="0.2" order="1" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="CrestRune2" startDelay="0.53" smoothing="IN_OUT" duration="1" order="1" fromAlpha="1" toAlpha="0"/>
+						<Alpha childKey="CrestRune4" startDelay="0.33" duration="0.2" order="1" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="CrestRune4" startDelay="0.53" smoothing="IN_OUT" duration="1" order="1" fromAlpha="1" toAlpha="0"/>
+						<Alpha childKey="CrestRune5" startDelay="0.33" duration="0.2" order="1" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="CrestRune5" startDelay="0.53" smoothing="IN_OUT" duration="1" order="1" fromAlpha="1" toAlpha="0"/>
+						<Alpha childKey="CrestRune6" startDelay="0.33" duration="0.2" order="1" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="CrestRune6" startDelay="0.53" smoothing="IN_OUT" duration="1" order="1" fromAlpha="1" toAlpha="0"/>
+						<Alpha childKey="CrestRune7" startDelay="0.33" duration="0.2" order="1" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="CrestRune7" startDelay="0.53" smoothing="IN_OUT" duration="1" order="1" fromAlpha="1" toAlpha="0"/>
+						<Alpha childKey="CrestRune8" startDelay="0.33" duration="0.2" order="1" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="CrestRune8" startDelay="0.53" smoothing="IN_OUT" duration="1" order="1" fromAlpha="1" toAlpha="0"/>
+						<Alpha childKey="CrestRune9" startDelay="0.33" duration="0.2" order="1" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="CrestRune9" startDelay="0.53" smoothing="IN_OUT" duration="1" order="1" fromAlpha="1" toAlpha="0"/>
+						<Alpha childKey="CrestRune10" startDelay="0.33" duration="0.2" order="1" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="CrestRune10" startDelay="0.53" smoothing="IN_OUT" duration="1" order="1" fromAlpha="1" toAlpha="0"/>
+						<Alpha childKey="CrestRune11" startDelay="0.33" duration="0.2" order="1" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="CrestRune11" startDelay="0.53" smoothing="IN_OUT" duration="1" order="1" fromAlpha="1" toAlpha="0"/>
+						<Scripts>
+							<OnFinished>
+								self:GetParent():GetParent().Tier2ModelScene:Show();
+							</OnFinished>
+						</Scripts>
+					</AnimationGroup>
+					<AnimationGroup parentKey="IntroCrestAnim">
+						<Alpha childKey="CrestRuneGold" duration="0.1" order="1" fromAlpha="0" toAlpha="0.2"/>
+						<Alpha childKey="CrestRuneGold" startDelay="1.0" duration="2" order="1" fromAlpha="0.2" toAlpha="0"/>
+						<Alpha childKey="CrestShine" duration="0.1" order="1" fromAlpha="0" toAlpha="0.2"/>
+						<Alpha childKey="CrestShine" startDelay="0.1" duration="1" order="1" fromAlpha="0.2" toAlpha="0"/>
+						<Rotation childKey="CrestShine" smoothing="NONE" duration="1" order="1" degrees="-360"/>
+						<Alpha childKey="CrestRune1" duration="0.01" order="1" fromAlpha="1" toAlpha="0"/>
+						<Alpha childKey="BigWhirls" startDelay="0.25" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+						<Scale childKey="BigWhirls" startDelay="0.25" duration="0.75" order="1" fromScaleX="1.0" fromScaleY="1.0" toScaleX="3.5" toScaleY="3.5"/>
+						<Rotation childKey="BigWhirls" startDelay="0.25" smoothing="OUT" duration="0.75" order="1" degrees="-90"/>
+						<Alpha childKey="BigWhirls" startDelay="0.5" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+						<Alpha childKey="SpinningGlows" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+						<Scale childKey="SpinningGlows" duration="0.75" order="1" fromScaleX="2.2" fromScaleY="2.2" toScaleX="1.7" toScaleY="1.7"/>
+						<Rotation childKey="SpinningGlows" smoothing="OUT" duration="0.75" order="1" degrees="-180"/>
+						<Alpha childKey="SpinningGlows" startDelay="0.25" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+						<Alpha childKey="SpinningGlows2" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+						<Scale childKey="SpinningGlows2" duration="0.75" order="1" fromScaleX="2" fromScaleY="2" toScaleX="1.4" toScaleY="1.4"/>
+						<Rotation childKey="SpinningGlows2" smoothing="OUT" duration="0.75" order="1" degrees="-200"/>
+						<Alpha childKey="SpinningGlows2" startDelay="0.25" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+						<Alpha childKey="StarBurst" smoothing="IN" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+						<Scale childKey="StarBurst" startDelay="0.25" duration="0.5" order="1" fromScaleX="2" fromScaleY="2" toScaleX="4" toScaleY="4"/>
+						<Alpha childKey="StarBurst" startDelay="0.5" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+						<Alpha childKey="PointBurstLeft" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+						<Scale childKey="PointBurstLeft" smoothing="IN_OUT" duration="0.4" order="1" fromScaleX="0.5" fromScaleY="1.5" toScaleX="3" toScaleY="2">
+							<Origin point="RIGHT">
+								<Offset x="-4" y="0"/>
+							</Origin>
+						</Scale>
+						<Alpha childKey="PointBurstLeft" startDelay="0.3" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+						<Alpha childKey="PointBurstRight" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+						<Scale childKey="PointBurstRight" smoothing="IN_OUT" duration="0.4" order="1" fromScaleX="0.5" fromScaleY="1.5" toScaleX="3" toScaleY="2.0">
+							<Origin point="LEFT">
+								<Offset x="4" y="0"/>
+							</Origin>
+						</Scale>
+						<Alpha childKey="PointBurstRight" startDelay="0.3" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
 			<ModelScene parentKey="Tier2ModelScene" inherits="ModelSceneMixinTemplate">
 				<Size x="350" y="350"/>
 				<Anchors>
-					<Anchor point="CENTER" relativeKey="$parent.Tier2Crest" relativePoint="CENTER" x="0" y="0"/>
+					<Anchor point="CENTER" relativeKey="$parent.CrestFrame" relativePoint="CENTER" x="0" y="0"/>
 				</Anchors>
 			</ModelScene>
 		</Frames>

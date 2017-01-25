@@ -1601,6 +1601,9 @@
 						</Frames>
 					</Frame>
 					<Frame name="CharCreateCharacterTypeFrame" inherits="CharCreateResizablePanelTemplate">
+						<KeyValues>
+							<KeyValue key="allowShowing" value="true" type="boolean"/>
+						</KeyValues>
 						<Size x="340" y="105" />
 						<Anchors>
 							<Anchor point="TOP" x="0" y="-3"/>

@@ -1,12 +1,14 @@
 local EquipmentManagerLua =
 {
 	Name = "EquipementSet",
+	Type = "System",
 	Namespace = "C_EquipmentSet",
 
 	Functions =
 	{
 		{
 			Name = "AssignSpecToEquipmentSet",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -16,6 +18,7 @@ local EquipmentManagerLua =
 		},
 		{
 			Name = "CanUseEquipmentSets",
+			Type = "Function",
 
 			Returns =
 			{
@@ -24,9 +27,11 @@ local EquipmentManagerLua =
 		},
 		{
 			Name = "ClearIgnoredSlotsForSave",
+			Type = "Function",
 		},
 		{
 			Name = "CreateEquipmentSet",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -36,6 +41,7 @@ local EquipmentManagerLua =
 		},
 		{
 			Name = "DeleteEquipmentSet",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -44,6 +50,7 @@ local EquipmentManagerLua =
 		},
 		{
 			Name = "EquipmentSetContainsLockedItems",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -57,6 +64,7 @@ local EquipmentManagerLua =
 		},
 		{
 			Name = "GetEquipmentSetAssignedSpec",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -70,6 +78,7 @@ local EquipmentManagerLua =
 		},
 		{
 			Name = "GetEquipmentSetID",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -83,6 +92,7 @@ local EquipmentManagerLua =
 		},
 		{
 			Name = "GetEquipmentSetIDs",
+			Type = "Function",
 
 			Returns =
 			{
@@ -91,6 +101,7 @@ local EquipmentManagerLua =
 		},
 		{
 			Name = "GetEquipmentSetInfo",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -112,6 +123,7 @@ local EquipmentManagerLua =
 		},
 		{
 			Name = "GetIgnoredSlots",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -125,6 +137,7 @@ local EquipmentManagerLua =
 		},
 		{
 			Name = "GetItemIDs",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -138,6 +151,7 @@ local EquipmentManagerLua =
 		},
 		{
 			Name = "GetItemLocations",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -151,6 +165,7 @@ local EquipmentManagerLua =
 		},
 		{
 			Name = "GetNumEquipmentSets",
+			Type = "Function",
 
 			Returns =
 			{
@@ -159,6 +174,7 @@ local EquipmentManagerLua =
 		},
 		{
 			Name = "IgnoreSlotForSave",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -167,6 +183,7 @@ local EquipmentManagerLua =
 		},
 		{
 			Name = "IsSlotIgnoredForSave",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -180,6 +197,7 @@ local EquipmentManagerLua =
 		},
 		{
 			Name = "ModifyEquipmentSet",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -190,6 +208,7 @@ local EquipmentManagerLua =
 		},
 		{
 			Name = "PickupEquipmentSet",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -198,6 +217,7 @@ local EquipmentManagerLua =
 		},
 		{
 			Name = "SaveEquipmentSet",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -207,6 +227,7 @@ local EquipmentManagerLua =
 		},
 		{
 			Name = "UnassignEquipmentSetSpec",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -215,6 +236,7 @@ local EquipmentManagerLua =
 		},
 		{
 			Name = "UnignoreSlotForSave",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -223,6 +245,7 @@ local EquipmentManagerLua =
 		},
 		{
 			Name = "UseEquipmentSet",
+			Type = "Function",
 
 			Arguments =
 			{

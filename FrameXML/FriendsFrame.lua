@@ -379,40 +379,11 @@ function FriendsTabHeader_ClickTab(tab)
 end
 
 function FriendsTabHeader_ResizeTabs()
-	local selectedIndex = PanelTemplates_GetSelectedTab(FriendsTabHeader);
-	if ( not selectedIndex ) then
-		return;
-	end
-
-	local currentWidth = 0;
-	local truncatedText = false;
-	for i = 1, FriendsTabHeader.numTabs do
-		local tab = _G["FriendsTabHeaderTab"..i];
-		currentWidth = currentWidth + tab:GetWidth();
-		if tab.Text:IsTruncated() then
-			truncatedText = true;
-		end
-	end
-	if ( not truncatedText and currentWidth <= FRIEND_TABS_MAX_WIDTH ) then
-		return;
-	end
-
 	local availableWidth = FRIEND_TABS_MAX_WIDTH;
 	if ( FriendsTabHeaderSoRButton:IsShown() ) then
 		availableWidth = availableWidth - 30;
 	end
-
-	local widthPerTab;
-
-	local currentTab = _G["FriendsTabHeaderTab"..selectedIndex];
-	PanelTemplates_TabResize(currentTab, 0);
-	availableWidth = availableWidth - currentTab:GetWidth();
-	widthPerTab = availableWidth / (FriendsTabHeader.numTabs - 1);
-	for i = 1, FriendsTabHeader.numTabs do
-		if ( i ~= selectedIndex ) then
-			PanelTemplates_TabResize(_G["FriendsTabHeaderTab"..i], 0, widthPerTab)
-		end
-	end
+	PanelTemplates_ResizeTabsToFit(FriendsTabHeader, availableWidth);
 end
 
 function FriendsListFrame_OnShow(self)

@@ -1,12 +1,14 @@
 local ActionBarFrameLua =
 {
 	Name = "ActionBar",
+	Type = "System",
 	Namespace = "C_ActionBar",
 
 	Functions =
 	{
 		{
 			Name = "FindFlyoutActionButtons",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -20,6 +22,7 @@ local ActionBarFrameLua =
 		},
 		{
 			Name = "FindPetActionButtons",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -33,6 +36,7 @@ local ActionBarFrameLua =
 		},
 		{
 			Name = "FindSpellActionButtons",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -46,6 +50,7 @@ local ActionBarFrameLua =
 		},
 		{
 			Name = "GetPetActionPetBarIndices",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -59,6 +64,7 @@ local ActionBarFrameLua =
 		},
 		{
 			Name = "HasFlyoutActionButtons",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -72,6 +78,7 @@ local ActionBarFrameLua =
 		},
 		{
 			Name = "HasPetActionButtons",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -85,6 +92,7 @@ local ActionBarFrameLua =
 		},
 		{
 			Name = "HasPetActionPetBarIndices",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -98,6 +106,7 @@ local ActionBarFrameLua =
 		},
 		{
 			Name = "HasSpellActionButtons",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -111,6 +120,7 @@ local ActionBarFrameLua =
 		},
 		{
 			Name = "IsAutoCastPetAction",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -124,6 +134,7 @@ local ActionBarFrameLua =
 		},
 		{
 			Name = "IsEnabledAutoCastPetAction",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -137,6 +148,7 @@ local ActionBarFrameLua =
 		},
 		{
 			Name = "ToggleAutoCastPetAction",
+			Type = "Function",
 
 			Arguments =
 			{

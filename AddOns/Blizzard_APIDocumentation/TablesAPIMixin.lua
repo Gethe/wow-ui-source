@@ -12,6 +12,10 @@ function TablesAPIMixin:GetType()
 	return "table";
 end
 
+function TablesAPIMixin:GetPrettyType()
+	return self.Type:lower();
+end
+
 function TablesAPIMixin:GetLinkHexColor()
 	return "55ffdd";
 end
@@ -39,7 +43,15 @@ function TablesAPIMixin:GetDetailedOutputLines()
 	self:AddDocumentationTags(lines);
 
 	if self.Fields then
-		table.insert(lines, APIDocumentation:GetIndentString() .. "Fields");
+		if self.Type == "Enumeration" then
+			table.insert(lines, APIDocumentation:GetIndentString() .. "Num Values: " .. self.NumValues);
+			table.insert(lines, APIDocumentation:GetIndentString() .. "Min Value: " .. self.MinValue);
+			table.insert(lines, APIDocumentation:GetIndentString() .. "Max Value: " .. self.MaxValue);
+			table.insert(lines, APIDocumentation:GetIndentString() .. "Values");
+		else
+			table.insert(lines, APIDocumentation:GetIndentString() .. "Fields");
+		end
+
 		for i, fieldInfo in ipairs(self.Fields) do
 			table.insert(lines, APIDocumentation:GetIndentString(2) .. fieldInfo:GetSingleOutputLine());
 		end

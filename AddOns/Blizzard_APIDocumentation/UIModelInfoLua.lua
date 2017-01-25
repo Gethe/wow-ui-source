@@ -1,12 +1,14 @@
 local UIModelInfoLua =
 {
 	Name = "ModelInfo",
+	Type = "System",
 	Namespace = "C_ModelInfo",
 
 	Functions =
 	{
 		{
 			Name = "GetModelSceneActorDisplayInfoByID",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -23,6 +25,7 @@ local UIModelInfoLua =
 		},
 		{
 			Name = "GetModelSceneActorInfoByID",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -36,6 +39,7 @@ local UIModelInfoLua =
 		},
 		{
 			Name = "GetModelSceneCameraInfoByID",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -49,6 +53,7 @@ local UIModelInfoLua =
 		},
 		{
 			Name = "GetModelSceneInfoByID",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -57,7 +62,7 @@ local UIModelInfoLua =
 
 			Returns =
 			{
-				{ Name = "modelSceneType", Type = "number", Nilable = false },
+				{ Name = "modelSceneType", Type = "ModelSceneType", Nilable = false },
 				{ Name = "modelCameraIDs", Type = "table", InnerType = "number", Nilable = false },
 				{ Name = "modelActorsIDs", Type = "table", InnerType = "number", Nilable = false },
 			},
@@ -67,7 +72,24 @@ local UIModelInfoLua =
 	Tables =
 	{
 		{
+			Name = "ModelSceneType",
+			Type = "Enumeration",
+			NumValues = 6,
+			MinValue = 0,
+			MaxValue = 5,
+			Fields =
+			{
+				{ Name = "MountJournal", Type = "ModelSceneType", EnumValue = 0 },
+				{ Name = "PetJournalCard", Type = "ModelSceneType", EnumValue = 1 },
+				{ Name = "ShopCard", Type = "ModelSceneType", EnumValue = 2 },
+				{ Name = "EncounterJournal", Type = "ModelSceneType", EnumValue = 3 },
+				{ Name = "PetJournalLoadout", Type = "ModelSceneType", EnumValue = 4 },
+				{ Name = "ArtifactTier2", Type = "ModelSceneType", EnumValue = 5 },
+			},
+		},
+		{
 			Name = "UIModelSceneActorInfo",
+			Type = "Structure",
 			Fields =
 			{
 				{ Name = "modelActorID", Type = "number", Nilable = false },
@@ -85,6 +107,7 @@ local UIModelInfoLua =
 		},
 		{
 			Name = "UIModelSceneCameraInfo",
+			Type = "Structure",
 			Fields =
 			{
 				{ Name = "modelSceneCameraID", Type = "number", Nilable = false },

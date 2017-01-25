@@ -1,12 +1,14 @@
 local ContributionCollectorLua =
 {
 	Name = "ContributionCollector",
+	Type = "System",
 	Namespace = "C_ContributionCollector",
 
 	Functions =
 	{
 		{
 			Name = "CanContribute",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -20,9 +22,11 @@ local ContributionCollectorLua =
 		},
 		{
 			Name = "Close",
+			Type = "Function",
 		},
 		{
 			Name = "Contribute",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -31,6 +35,7 @@ local ContributionCollectorLua =
 		},
 		{
 			Name = "GetActive",
+			Type = "Function",
 
 			Returns =
 			{
@@ -39,6 +44,7 @@ local ContributionCollectorLua =
 		},
 		{
 			Name = "GetAtlases",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -52,6 +58,7 @@ local ContributionCollectorLua =
 		},
 		{
 			Name = "GetBuffs",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -65,6 +72,7 @@ local ContributionCollectorLua =
 		},
 		{
 			Name = "GetDescription",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -78,6 +86,7 @@ local ContributionCollectorLua =
 		},
 		{
 			Name = "GetManagedContributionsForCreatureID",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -91,6 +100,7 @@ local ContributionCollectorLua =
 		},
 		{
 			Name = "GetName",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -104,6 +114,7 @@ local ContributionCollectorLua =
 		},
 		{
 			Name = "GetOrderIndex",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -117,6 +128,7 @@ local ContributionCollectorLua =
 		},
 		{
 			Name = "GetRequiredContributionAmount",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -131,6 +143,7 @@ local ContributionCollectorLua =
 		},
 		{
 			Name = "GetRewardQuestID",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -144,6 +157,7 @@ local ContributionCollectorLua =
 		},
 		{
 			Name = "GetState",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -158,6 +172,7 @@ local ContributionCollectorLua =
 		},
 		{
 			Name = "HasPendingContribution",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -171,6 +186,7 @@ local ContributionCollectorLua =
 		},
 		{
 			Name = "IsAwaitingRewardQuestData",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -184,6 +200,7 @@ local ContributionCollectorLua =
 		},
 		{
 			Name = "IsBuffActive",
+			Type = "Function",
 
 			Arguments =
 			{

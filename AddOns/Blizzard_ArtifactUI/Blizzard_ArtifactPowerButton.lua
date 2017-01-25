@@ -70,7 +70,7 @@ function ArtifactPowerButtonMixin:OnClick(button)
 			if button == SEQUENCE[sequenceIndex] then
 				self.sequenceIndex = sequenceIndex + 1;
 				if self.sequenceIndex > #SEQUENCE then
-					self:GetParent():PlayReveal();
+					self:GetParent():PlayReveal(1);
 					self.sequenceIndex = nil;
 				end
 			else
@@ -170,6 +170,8 @@ function ArtifactPowerButtonMixin:PlayRevealAnimation(onFinishedAnimation)
 			self.queuedRevealDelay = nil;
 			return false;
 		end
+		
+		self:SetLocked(true);
 		
 		self.RevealAnim.Start:SetEndDelay(self.queuedRevealDelay);
 
@@ -421,15 +423,41 @@ function ArtifactPowerButtonMixin:IsActiveForLinks()
 	return self:IsCompletelyPurchased() or self:HasBonusMaxRanksFromTier();
 end
 
+function ArtifactPowerButtonMixin:CouldSpendPoints()
+	return self.hasEnoughPower and self.prereqsMet and not self.isMaxRank;
+end
+
+function ArtifactPowerButtonMixin:GetCurrentRank()
+	return self.currentRank;
+end
+
+function ArtifactPowerButtonMixin:IsMaxRank()
+	return self.isMaxRank;
+end
+
+function ArtifactPowerButtonMixin:HasRanksFromCurrentTier()
+	if self.tier == C_ArtifactUI.GetArtifactTier() then
+		return self.currentRank > 0;
+	else
+		return self.currentRank > self.maxRank - self.numMaxRankBonusFromTier;
+	end
+end
+
 function ArtifactPowerButtonMixin:SetLocked(locked)
 	self.locked = locked;
 	if locked then
 		if GameTooltip:SetOwner(self) then
 			GameTooltip_Hide();
 		end
+		
+		self.FirstPointWaitingAnimation:Stop();
 	else
 		if GetMouseFocus() == self then
 			self:OnEnter();
+		end
+
+		if self:ShouldGlow(C_ArtifactUI.GetTotalPurchasedRanks(), C_ArtifactUI.IsAtForge()) then
+			self.FirstPointWaitingAnimation:Play();
 		end
 	end
 end
@@ -459,7 +487,7 @@ function ArtifactPowerButtonMixin:SetupButton(powerID, anchorRegion, textureKit)
 	self:ClearAllPoints();
 	local xOffset, yOffset = 0, 0;
 	if powerInfo.offset then
-		powerInfo.offset:ScaleBy(90);
+		powerInfo.offset:ScaleBy(85);
 		xOffset, yOffset = powerInfo.offset:GetXY();
 	end
 	self:SetPoint("CENTER", anchorRegion, "TOPLEFT", powerInfo.position.x * anchorRegion:GetWidth() + xOffset, -powerInfo.position.y * anchorRegion:GetHeight() - yOffset);
@@ -489,9 +517,9 @@ function ArtifactPowerButtonMixin:SetupButton(powerID, anchorRegion, textureKit)
 	local isAtForge = C_ArtifactUI.IsAtForge();
 	local isViewedArtifactEquipped = C_ArtifactUI.IsViewedArtifactEquipped();
 
-	self.isCompletelyPurchased = powerInfo.currentRank == powerInfo.maxRank or self.isStart;
+	self.isCompletelyPurchased = powerInfo.currentRank == powerInfo.maxRank or (self.tier == 1 and self.isStart);
 	self.hasSpentAny = powerInfo.currentRank > powerInfo.bonusRanks;
-	self.couldSpendPoints = C_ArtifactUI.GetPointsRemaining() >= powerInfo.cost and isAtForge and isViewedArtifactEquipped;
+	self.hasEnoughPower = C_ArtifactUI.GetPointsRemaining() >= powerInfo.cost and isAtForge and isViewedArtifactEquipped;
 	self.isMaxRank = powerInfo.currentRank == powerInfo.maxRank;
 	self.prereqsMet = powerInfo.prereqsMet;
 	self.wasBonusRankJustIncreased = wasBonusRankJustIncreased;
@@ -503,7 +531,7 @@ function ArtifactPowerButtonMixin:SetupButton(powerID, anchorRegion, textureKit)
 
 	self:UpdateIcon();
 
-	if totalPurchasedRanks == 0 and powerInfo.prereqsMet and not self.isStart and isAtForge then
+	if self:ShouldGlow(totalPurchasedRanks, isAtForge) then
 		self.FirstPointWaitingAnimation:Play();
 	else
 		self.FirstPointWaitingAnimation:Stop();
@@ -512,6 +540,19 @@ function ArtifactPowerButtonMixin:SetupButton(powerID, anchorRegion, textureKit)
 	if totalPurchasedRanks > 1 and wasJustUnlocked then
 		self:PlayUnlockAnimation();
 	end
+	
+end
+
+function ArtifactPowerButtonMixin:ShouldGlow(totalPurchasedRanks, isAtForge)
+	if not isAtForge or not self.prereqsMet then
+		return false;
+	end
+	
+	if self.tier == 1 then
+		return totalPurchasedRanks == 0 and not self.isStart;
+	end
+	
+	return false;
 end
 
 function ArtifactPowerButtonMixin:EvaluateStyle()
@@ -556,7 +597,7 @@ function ArtifactPowerButtonMixin:ClearOldData()
 
 	self.isCompletelyPurchased = nil;
 	self.hasSpentAny = nil;
-	self.couldSpendPoints = nil;
+	self.hasEnoughPower = nil;
 	self.isMaxRank = nil;
 	self.prereqsMet = nil;
 	self.wasBonusRankJustIncreased = nil;
@@ -585,4 +626,5 @@ function ArtifactPowerButtonMixin:StopAllAnimations()
 	self.RevealAnim:Stop();
 	self.FinalPowerUnlockedAnim:Stop();
 	self.FirstPointWaitingAnimation:Stop();
+	self.Tier2FinalPowerSparks:Stop();
 end

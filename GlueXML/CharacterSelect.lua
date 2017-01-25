@@ -568,10 +568,11 @@ function CharacterSelect_OnEvent(self, event, ...)
 			CHARACTER_SELECT_KICKED_FROM_CONVERT = true;
 		end
 	elseif ( event == "CHARACTER_UPGRADE_UNREVOKE_RESULT" ) then
-		-- TODO: Add specific error messaging.
+		-- TODO: Add specific error messaging, but for now just show dialog that will open the help url
 		local errorCode = ...
 		if errorCode ~= 0 then
-			GlueDialog_Show("OKAY", ERROR_MANUAL_UNREVOKE_FAILURE);
+			local urlIndex = GetCurrentRegionName() == "CN" and 36 or 35;
+			GlueDialog_Show("OKAY_WITH_URL_INDEX", ERROR_MANUAL_UNREVOKE_FAILURE, urlIndex);
 		end
     end
 end
@@ -1027,8 +1028,9 @@ function CharacterSelect_TabResize(self)
 	self:SetWidth(width + (2 * leftWidth));
 end
 
-function CharacterSelect_CreateNewCharacter(characterType)
+function CharacterSelect_CreateNewCharacter(characterType, allowCharacterTypeFrameToShow)
 	SetCharacterCreateType(characterType);
+	CharacterCreate_SetAllowCharacterTypeFrame(allowCharacterTypeFrameToShow);
 	CharacterSelect_SelectCharacter(CharacterSelect.createIndex);
 end
 
@@ -2000,26 +2002,26 @@ function CharacterUpgradePopup_OnCharacterBoostDelivered(productID, guid, reason
 		if reason == "forClassTrialUnlock" then
 			CharacterUpgradePopup_BeginUnlockTrialCharacter(flowData, guid);
 		else
-			CharacterUpgradePopup_BeginCharacterUpdgradeFlow(flowData);
+			CharacterUpgradePopup_BeginCharacterUpgradeFlow(flowData);
 		end
 	end
 end
 
-function CharacterUpgradePopup_BeginCharacterUpdgradeFlow(data)
+function CharacterUpgradePopup_BeginCharacterUpgradeFlow(data, trialCharacterGuid)
 	CharacterUpgradePopup_CheckSetPopupSeen(data);
 	CharacterUpgradeFlow:SetTarget(data);
 	CharSelectServicesFlowFrame:Show();
+	CharacterUpgradeFlow:SetTrialBoostGuid(trialCharacterGuid);
 	CharacterServicesMaster_SetFlow(CharacterServicesMaster, CharacterUpgradeFlow);
 end
 
 function CharacterUpgradePopup_BeginUnlockTrialCharacter(flowData, guid)
-	CharacterUpgradeFlow:SetAutoSelectGuid(guid);
-	CharacterUpgradePopup_BeginCharacterUpdgradeFlow(flowData);
+	CharacterUpgradePopup_BeginCharacterUpgradeFlow(flowData, guid);
 end
 
 function CharacterUpgradePopup_OnStartClick(self)
 	local data = HandleUpgradePopupButtonClick(self);
-	CharacterUpgradePopup_BeginCharacterUpdgradeFlow(data);
+	CharacterUpgradePopup_BeginCharacterUpgradeFlow(data);
 end
 
 function CharacterUpgradePopup_OnTryNewClick(self)
@@ -2046,7 +2048,7 @@ function CharacterServicesTokenBoost_OnClick(self)
 	elseif IsTrialAccount() then
 		GlueDialog_Show("CHARACTER_BOOST_FEATURE_RESTRICTED", CHARACTER_BOOST_YOU_MUST_UPGRADE);
 	elseif HasSufficientExperienceForAdvancedCreation() then
-		CharacterUpgradePopup_BeginCharacterUpdgradeFlow(self.data);
+		CharacterUpgradePopup_BeginCharacterUpgradeFlow(self.data);
 	else
 		GlueDialog_Show("CHARACTER_BOOST_NO_CHARACTERS_WARNING", nil, self.data);
 	end
@@ -2095,7 +2097,7 @@ function CharacterServicesMaster_OnCharacterListUpdate()
 
 		if CharacterUpgradeFlow.data then
 			CharSelectServicesFlowFrame:Show();
-		CharacterServicesMaster_SetFlow(CharacterServicesMaster, CharacterUpgradeFlow);
+			CharacterServicesMaster_SetFlow(CharacterServicesMaster, CharacterUpgradeFlow);
 		end
 
 		CharacterUpgrade_ResetBoostData();
@@ -2109,6 +2111,12 @@ function CharacterServicesMaster_OnCharacterListUpdate()
 	end
 end
 
+function CharacterServicesMaster_UpdateFinishLabel(self)
+	local finishButton = self:GetParent().FinishButton;
+	local displayText = self.flow:GetFinishLabel();
+	finishButton:SetText(displayText);
+end
+
 function CharacterServicesMaster_SetFlow(self, flow)
 	self.flow = flow;
 	if (not self.flows[flow]) then
@@ -2118,7 +2126,9 @@ function CharacterServicesMaster_SetFlow(self, flow)
 	flow:Initialize(self);
 	SetPortraitToTexture(self:GetParent().Icon, flow.data.icon);
 	self:GetParent().TitleText:SetText(flow.data.flowTitle);
-	self:GetParent().FinishButton:SetText(flow.FinishLabel);
+
+	CharacterServicesMaster_UpdateFinishLabel(self);
+
 	for i = 1, #flow.Steps do
 		local block = flow.Steps[i];
 		if (not block.HiddenStep) then
@@ -2176,6 +2186,8 @@ function CharacterServicesMaster_Update()
 	local self = CharacterServicesMaster;
 	local parent = self:GetParent();
 	local block = self.currentBlock;
+
+	CharacterServicesMaster_UpdateFinishLabel(self);
 
 	if (block and block:IsFinished()) then
 		if (not block.HiddenStep and (block.AutoAdvance or self.blockComplete)) then

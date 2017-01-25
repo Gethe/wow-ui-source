@@ -1517,11 +1517,11 @@
 			</Frames>
 		</Frame>
 		<Button name="StoreAutoCompleteButtonTemplate" parentArray="Buttons" virtual="true">
-			<Size x="120" y="14"/>
-			<ButtonText parentKey="Text"/>
-			<NormalFont style="GameFontHighlightSmall2"/>
-			<HighlightFont style="GameFontHighlightSmall2"/>
-			<DisabledFont style="GameFontDisableSmall2"/>
+			<Size x="140" y="14"/>
+			<ButtonText parentKey="Text" justifyH="LEFT"/>
+			<NormalFont style="GameFontWhiteTiny2"/>
+			<HighlightFont style="GameFontWhiteTiny2"/>
+			<DisabledFont style="GameFontDisableTiny2"/>
 			<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
 		</Button>
 		<Frame name="StoreStateDriverFrame">
@@ -2493,10 +2493,21 @@
 								<OnShow>
 									self:SetFrameLevel(self:GetParent():GetFrameLevel()+7);
 								</OnShow>
+								<OnKeyDown inherit="append">
+									if (key == "DOWN") then
+										StoreAutoCompleteIncrementSelection();
+									elseif (key == "UP") then
+										StoreAutoCompleteDecrementSelection();
+									elseif (key == "ENTER") then
+										StoreAutoCompleteSelectionEnterPressed();
+									elseif (key == "ESCAPE") then
+										self:GetParent().TransferRealmAutoCompleteBox:Hide();
+									end
+								</OnKeyDown>
 							</Scripts>
 						</EditBox>
 						<Frame parentKey="TransferRealmAutoCompleteBox" hidden="true">
-							<Size x="130" y="5"/>
+							<Size x="154" y="5"/>
 							<Anchors>
 								<Anchor point="TOP" relativeKey="$parent.TransferRealmEditbox" relativePoint="BOTTOM" x="-4" y="14"/>
 							</Anchors>
@@ -2525,7 +2536,7 @@
 							<Frames>
 								<Button name="AutoCompleteButton1" inherits="StoreAutoCompleteButtonTemplate">
 									<Anchors>
-										<Anchor point="TOP" x="0" y="-12"/>
+										<Anchor point="TOP" x="6" y="-12"/>
 									</Anchors>
 									<Scripts>
 										<OnClick function="VASCharacterSelectionTransferRealmEditBoxAutoCompleteButton_OnClick"/>
@@ -2536,6 +2547,7 @@
 								<OnShow>
 									self:SetFrameLevel(self:GetParent():GetFrameLevel()+4);
 								</OnShow>
+								<OnHide function="TransferRealmAutoCompleteBox_OnHide"/>
 							</Scripts>
 						</Frame>
 						<CheckButton parentKey="TransferAccountCheckbox" inherits="StoreCheckButtonTemplate">

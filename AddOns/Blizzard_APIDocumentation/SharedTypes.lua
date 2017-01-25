@@ -4,6 +4,7 @@ local SharedTypes =
 	{
 		{
 			Name = "colorRGB",
+			Type = "Structure",
 			Mixin = "ColorMixin",
 			Fields =
 			{
@@ -14,6 +15,7 @@ local SharedTypes =
 		},
 		{
 			Name = "colorRGBA",
+			Type = "Structure",
 			Mixin = "ColorMixin",
 			Fields =
 			{
@@ -25,6 +27,7 @@ local SharedTypes =
 		},
 		{
 			Name = "vector2",
+			Type = "Structure",
 			Mixin = "Vector2DMixin",
 			Fields =
 			{
@@ -34,6 +37,7 @@ local SharedTypes =
 		},
 		{
 			Name = "vector3",
+			Type = "Structure",
 			Mixin = "Vector3DMixin",
 			Fields =
 			{

@@ -651,6 +651,35 @@ function GuildBankItemButton_OnLoad(self)
 	self.UpdateTooltip = GuildBankItemButton_OnEnter;
 end
 
+function GuildBankItemButton_OnClick(self, button)
+	if ( HandleModifiedItemClick(GetGuildBankItemLink(GetCurrentGuildBankTab(), self:GetID())) ) then
+		return;
+	end
+	if ( IsModifiedClick("SPLITSTACK") ) then
+		if ( not CursorHasItem() ) then
+			local texture, count, locked = GetGuildBankItemInfo(GetCurrentGuildBankTab(), self:GetID());
+			if ( not locked and count and count > 1) then
+				OpenStackSplitFrame(count, self, "BOTTOMLEFT", "TOPLEFT");
+			end
+		end
+		return;
+	end
+	local type, money = GetCursorInfo();
+	if ( type == "money" ) then
+		DepositGuildBankMoney(money);
+		ClearCursor();
+	elseif ( type == "guildbankmoney" ) then
+		DropCursorMoney();
+		ClearCursor();
+	else
+		if ( button == "RightButton" ) then
+			AutoStoreGuildBankItem(GetCurrentGuildBankTab(), self:GetID());
+		else
+			PickupGuildBankItem(GetCurrentGuildBankTab(), self:GetID());
+		end
+	end
+end
+
 function GuildBankItemButton_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	local speciesID, level, breedQuality, maxHealth, power, speed, name = GameTooltip:SetGuildBankItem(GetCurrentGuildBankTab(), self:GetID());

@@ -1,12 +1,14 @@
 local ReputationInfoLua =
 {
 	Name = "ReputationInfo",
+	Type = "System",
 	Namespace = "C_Reputation",
 
 	Functions =
 	{
 		{
 			Name = "GetFactionParagonInfo",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -23,6 +25,7 @@ local ReputationInfoLua =
 		},
 		{
 			Name = "IsFactionParagon",
+			Type = "Function",
 
 			Arguments =
 			{

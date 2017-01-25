@@ -1,6 +1,11 @@
 GARRISON_FOLLOWER_BUSY_COLOR = { 0, 0.06, 0.22, 0.44 };
 GARRISON_FOLLOWER_INACTIVE_COLOR = { 0.22, 0.06, 0, 0.44 };
 
+-- We default to item qualities if there is no description entry here.
+GARRISON_FOLLOWER_QUALITY_DESC = {
+	[6] = GARRISON_FOLLOWER_QUALITY6_DESC,
+}
+
 ---------------------------------------------------------------------------------
 --- Static Popup Dialogs                                                             ---
 ---------------------------------------------------------------------------------
@@ -1924,6 +1929,10 @@ function GarrisonFollowerTabMixin:ShowAbilities(followerInfo)
 	self.AbilitiesFrame:Layout();
 end
 
+function GetGarrisonFollowerQualityDescription(quality)
+	return GARRISON_FOLLOWER_QUALITY_DESC[quality] or _G["ITEM_QUALITY"..quality.."_DESC"];
+end
+
 function GarrisonFollowerTabMixin:ShowEquipment(followerInfo)
 	self.equipmentPool:ReleaseAll();
 
@@ -1973,7 +1982,8 @@ function GarrisonFollowerTabMixin:ShowEquipment(followerInfo)
 
 		local tooltipText;
 		if (equipment.requiredQualityLevel ~= nil) then
-			tooltipText = RED_FONT_COLOR:WrapTextInColorCode(string.format(GARRISON_EQUIPMENT_SLOT_UNLOCK_TOOLTIP, followerInfo.name, _G["ITEM_QUALITY"..equipment.requiredQualityLevel.."_DESC"]));
+			local qualityDesc = GetGarrisonFollowerQualityDescription(equipment.requiredQualityLevel);
+			tooltipText = RED_FONT_COLOR:WrapTextInColorCode(string.format(GARRISON_EQUIPMENT_SLOT_UNLOCK_TOOLTIP, followerInfo.name, qualityDesc));
 			equipmentFrame.Lock:Show();
 		else
 			equipmentFrame.Lock:Hide();

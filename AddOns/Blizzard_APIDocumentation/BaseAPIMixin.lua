@@ -4,6 +4,10 @@ function BaseAPIMixin:GetType()
 	return assert(false);
 end
 
+function BaseAPIMixin:GetPrettyType()
+	return self:GetType();
+end
+
 function BaseAPIMixin:GetLinkHexColor()
 	return "ffffff";
 end
@@ -43,7 +47,7 @@ function BaseAPIMixin:GenerateAPILink()
 end
 
 function BaseAPIMixin:GetSingleOutputLine()
-	return ("%s %s"):format(self:GetType(), self:GenerateAPILink());
+	return ("%s %s"):format(self:GetPrettyType(), self:GenerateAPILink());
 end
 
 function BaseAPIMixin:GetDetailedOutputLines()

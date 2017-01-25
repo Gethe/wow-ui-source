@@ -12,6 +12,7 @@
 --  :HideBlock():  Hides the current block.
 --  :Restart(controller):  Hide all blocks and restart the flow at step 1.
 --  :OnHide():  Check each block for a :OnHide method and call it if it exists.
+--  :GetFinishLabel(): The label for the final step of a flow is updated every time the flow is updated (going to next step, etc) this allows a dynamic string to be used.
 --
 -- Flows should have the following members:
 --  .data - reference to an entry in CharacterUpgrade_Items with display info
@@ -381,6 +382,10 @@ function CharacterServicesFlowPrototype:OnHide()
 	end
 end
 
+function CharacterServicesFlowPrototype:GetFinishLabel()
+	return "";
+end
+
 function CharacterUpgradeFlow:SetTarget(data)
 	self.data = data;
 end
@@ -391,6 +396,25 @@ end
 
 function CharacterUpgradeFlow:GetAutoSelectGuid()
 	return self.autoSelectGuid;
+end
+
+function CharacterUpgradeFlow:SetTrialBoostGuid(guid)
+	self:SetAutoSelectGuid(guid);
+	self.isTrialBoost = guid ~= nil;
+
+	if self.isTrialBoost then
+		CharacterUpgradeSpecSelectBlock.SkipOnRewind = true;
+		CharacterUpgradeSpecSelectBlock.HiddenStep = true;
+		CharacterUpgradeFactionSelectBlock.SkipOnRewind = true;
+	else
+		CharacterUpgradeSpecSelectBlock.SkipOnRewind = nil;
+		CharacterUpgradeSpecSelectBlock.HiddenStep = nil;
+		CharacterUpgradeFactionSelectBlock.SkipOnRewind = nil;
+	end
+end
+
+function CharacterUpgradeFlow:IsTrialBoost()
+	return self.isTrialBoost;
 end
 
 function CharacterUpgradeFlow:Initialize(controller)
@@ -462,11 +486,22 @@ end
 
 function CharacterUpgradeFlow:Finish(controller)
 	if (not CharacterUpgradeSecondChanceWarningFrame.warningAccepted) then
-		if ( C_PurchaseAPI.GetCurrencyID() == CURRENCY_KRW ) then
-			CharacterUpgradeSecondChanceWarningBackground.Text:SetText(CHARACTER_UPGRADE_KRW_FINISH_BUTTON_POPUP_TEXT);
+		CharacterUpgradeSecondChanceWarningBackground.ConfirmButton:SetText(self:GetFinishLabel());
+
+		if ( self:IsTrialBoost() ) then
+			if ( C_PurchaseAPI.GetCurrencyID() == CURRENCY_KRW ) then
+				CharacterUpgradeSecondChanceWarningBackground.Text:SetText(CHARACTER_UPGRADE_KRW_FINISH_TRIAL_BOOST_BUTTON_POPUP_TEXT);
+			else
+				CharacterUpgradeSecondChanceWarningBackground.Text:SetText(CHARACTER_UPGRADE_FINISH_TRIAL_BOOST_BUTTON_POPUP_TEXT);
+			end
 		else
-			CharacterUpgradeSecondChanceWarningBackground.Text:SetText(CHARACTER_UPGRADE_FINISH_BUTTON_POPUP_TEXT);
+			if ( C_PurchaseAPI.GetCurrencyID() == CURRENCY_KRW ) then
+				CharacterUpgradeSecondChanceWarningBackground.Text:SetText(CHARACTER_UPGRADE_KRW_FINISH_BUTTON_POPUP_TEXT);
+			else
+				CharacterUpgradeSecondChanceWarningBackground.Text:SetText(CHARACTER_UPGRADE_FINISH_BUTTON_POPUP_TEXT);
+			end
 		end
+
 		CharacterUpgradeSecondChanceWarningFrame:Show();
 		return false;
 	end
@@ -484,11 +519,20 @@ function CharacterUpgradeFlow:Finish(controller)
 		return false;
 	end
 
-	self:SetAutoSelectGuid(nil);
+	self:SetTrialBoostGuid(nil);
 
 	CharacterServicesMaster.pendingGuid = results.playerguid;
 	C_SharedCharacterServices.AssignUpgradeDistribution(results.playerguid, results.faction, results.spec, results.classId, self.data.free, self.data.productId);
 	return true;
+end
+
+function CharacterUpgradeFlow:GetFinishLabel()
+	-- "Level Up!" is replaced with "Unlock!" when unlocking a trial boost character.
+	if self:IsTrialBoost() then
+		return CHARACTER_UPGRADE_UNLOCK_TRIAL_CHARACTER_FINISH_LABEL;
+	end
+
+	return self.FinishLabel;
 end
 
 local function replaceScripts(button)
@@ -578,7 +622,7 @@ function CharacterUpgrade_IsCreatedCharacterTrialBoost()
 end
 
 function CharacterUpgrade_ResetBoostData()
-	SetCharacterCreateType(LE_CHARACTER_CREATE_TYPE_NONE);
+	SetCharacterCreateType(LE_CHARACTER_CREATE_TYPE_NORMAL);
 	CHARACTER_UPGRADE_CREATE_CHARACTER_DATA = nil;
 end
 
@@ -852,9 +896,8 @@ function CharacterUpgradeCharacterSelectBlock:Initialize(results)
 
 				-- The user entered a normal boost flow and selected a trial boost character, at this point
 				-- put the flow into the auto-select state.
-				if (isTrialBoost) then
-					CharacterUpgradeFlow:SetAutoSelectGuid(playerguid);
-				end
+				local trialBoostFlowGuid = isTrialBoost and playerguid or nil;
+				CharacterUpgradeFlow:SetTrialBoostGuid(trialBoostFlowGuid);
 
 				CharacterSelectButton_OnClick(button);
 				button.selection:Show();
@@ -1023,7 +1066,7 @@ end
 
 function CharacterUpgrade_BeginNewCharacterCreation(characterType)
 	CharacterUpgrade_SetupFlowForNewCharacter(characterType);
-	CharacterSelect_CreateNewCharacter(characterType);
+	CharacterSelect_CreateNewCharacter(characterType, false);
 end
 
 function CharacterUpgradeCreateCharacter_OnClick(self)

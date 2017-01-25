@@ -1,12 +1,14 @@
 local ArtifactUILua =
 {
 	Name = "ArtifactUI",
+	Type = "System",
 	Namespace = "C_ArtifactUI",
 
 	Functions =
 	{
 		{
 			Name = "AddPower",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -20,6 +22,7 @@ local ArtifactUILua =
 		},
 		{
 			Name = "ApplyCursorRelicToSlot",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -28,6 +31,7 @@ local ArtifactUILua =
 		},
 		{
 			Name = "CanApplyArtifactRelic",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -42,6 +46,7 @@ local ArtifactUILua =
 		},
 		{
 			Name = "CanApplyCursorRelicToSlot",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -55,6 +60,7 @@ local ArtifactUILua =
 		},
 		{
 			Name = "CanApplyRelicItemIDToEquippedArtifactSlot",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -69,6 +75,7 @@ local ArtifactUILua =
 		},
 		{
 			Name = "CanApplyRelicItemIDToSlot",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -83,6 +90,7 @@ local ArtifactUILua =
 		},
 		{
 			Name = "CheckRespecNPC",
+			Type = "Function",
 
 			Returns =
 			{
@@ -91,15 +99,19 @@ local ArtifactUILua =
 		},
 		{
 			Name = "Clear",
+			Type = "Function",
 		},
 		{
 			Name = "ClearForgeCamera",
+			Type = "Function",
 		},
 		{
 			Name = "ConfirmRespec",
+			Type = "Function",
 		},
 		{
 			Name = "DoesEquippedArtifactHaveAnyRelicsSlotted",
+			Type = "Function",
 
 			Returns =
 			{
@@ -108,6 +120,7 @@ local ArtifactUILua =
 		},
 		{
 			Name = "GetAppearanceInfo",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -133,6 +146,7 @@ local ArtifactUILua =
 		},
 		{
 			Name = "GetAppearanceInfoByID",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -158,6 +172,7 @@ local ArtifactUILua =
 		},
 		{
 			Name = "GetAppearanceSetInfo",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -174,6 +189,7 @@ local ArtifactUILua =
 		},
 		{
 			Name = "GetArtifactArtInfo",
+			Type = "Function",
 
 			Returns =
 			{
@@ -182,6 +198,7 @@ local ArtifactUILua =
 		},
 		{
 			Name = "GetArtifactInfo",
+			Type = "Function",
 
 			Returns =
 			{
@@ -203,6 +220,7 @@ local ArtifactUILua =
 		},
 		{
 			Name = "GetArtifactKnowledgeLevel",
+			Type = "Function",
 
 			Returns =
 			{
@@ -211,6 +229,7 @@ local ArtifactUILua =
 		},
 		{
 			Name = "GetArtifactKnowledgeMultiplier",
+			Type = "Function",
 
 			Returns =
 			{
@@ -219,6 +238,7 @@ local ArtifactUILua =
 		},
 		{
 			Name = "GetArtifactTier",
+			Type = "Function",
 
 			Returns =
 			{
@@ -227,6 +247,7 @@ local ArtifactUILua =
 		},
 		{
 			Name = "GetArtifactXPRewardTargetInfo",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -241,6 +262,7 @@ local ArtifactUILua =
 		},
 		{
 			Name = "GetCostForPointAtRank",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -254,6 +276,7 @@ local ArtifactUILua =
 		},
 		{
 			Name = "GetEquippedArtifactArtInfo",
+			Type = "Function",
 
 			Returns =
 			{
@@ -262,6 +285,7 @@ local ArtifactUILua =
 		},
 		{
 			Name = "GetEquippedArtifactInfo",
+			Type = "Function",
 
 			Returns =
 			{
@@ -283,6 +307,7 @@ local ArtifactUILua =
 		},
 		{
 			Name = "GetEquippedArtifactNumRelicSlots",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -296,6 +321,7 @@ local ArtifactUILua =
 		},
 		{
 			Name = "GetEquippedArtifactRelicInfo",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -312,6 +338,7 @@ local ArtifactUILua =
 		},
 		{
 			Name = "GetEquippedRelicLockedReason",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -325,6 +352,7 @@ local ArtifactUILua =
 		},
 		{
 			Name = "GetForgeRotation",
+			Type = "Function",
 
 			Returns =
 			{
@@ -335,6 +363,7 @@ local ArtifactUILua =
 		},
 		{
 			Name = "GetItemLevelIncreaseProvidedByRelic",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -348,6 +377,7 @@ local ArtifactUILua =
 		},
 		{
 			Name = "GetMetaPowerInfo",
+			Type = "Function",
 
 			Returns =
 			{
@@ -358,6 +388,7 @@ local ArtifactUILua =
 		},
 		{
 			Name = "GetNumAppearanceSets",
+			Type = "Function",
 
 			Returns =
 			{
@@ -366,6 +397,7 @@ local ArtifactUILua =
 		},
 		{
 			Name = "GetNumObtainedArtifacts",
+			Type = "Function",
 
 			Returns =
 			{
@@ -374,6 +406,7 @@ local ArtifactUILua =
 		},
 		{
 			Name = "GetNumRelicSlots",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -387,6 +420,7 @@ local ArtifactUILua =
 		},
 		{
 			Name = "GetPointsRemaining",
+			Type = "Function",
 
 			Returns =
 			{
@@ -395,6 +429,7 @@ local ArtifactUILua =
 		},
 		{
 			Name = "GetPowerHyperlink",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -408,6 +443,7 @@ local ArtifactUILua =
 		},
 		{
 			Name = "GetPowerInfo",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -421,6 +457,7 @@ local ArtifactUILua =
 		},
 		{
 			Name = "GetPowerLinks",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -434,6 +471,7 @@ local ArtifactUILua =
 		},
 		{
 			Name = "GetPowers",
+			Type = "Function",
 
 			Returns =
 			{
@@ -442,6 +480,7 @@ local ArtifactUILua =
 		},
 		{
 			Name = "GetPowersAffectedByRelic",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -455,6 +494,7 @@ local ArtifactUILua =
 		},
 		{
 			Name = "GetPowersAffectedByRelicItemID",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -468,6 +508,7 @@ local ArtifactUILua =
 		},
 		{
 			Name = "GetPreviewAppearance",
+			Type = "Function",
 
 			Returns =
 			{
@@ -476,6 +517,7 @@ local ArtifactUILua =
 		},
 		{
 			Name = "GetRelicInfo",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -492,6 +534,7 @@ local ArtifactUILua =
 		},
 		{
 			Name = "GetRelicInfoByItemID",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -508,6 +551,7 @@ local ArtifactUILua =
 		},
 		{
 			Name = "GetRelicLockedReason",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -521,6 +565,7 @@ local ArtifactUILua =
 		},
 		{
 			Name = "GetRelicSlotType",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -534,6 +579,7 @@ local ArtifactUILua =
 		},
 		{
 			Name = "GetRespecArtifactArtInfo",
+			Type = "Function",
 
 			Returns =
 			{
@@ -542,6 +588,7 @@ local ArtifactUILua =
 		},
 		{
 			Name = "GetRespecArtifactInfo",
+			Type = "Function",
 
 			Returns =
 			{
@@ -563,6 +610,7 @@ local ArtifactUILua =
 		},
 		{
 			Name = "GetRespecCost",
+			Type = "Function",
 
 			Returns =
 			{
@@ -570,7 +618,24 @@ local ArtifactUILua =
 			},
 		},
 		{
+			Name = "GetTotalPowerCost",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "startingTrait", Type = "number", Nilable = false },
+				{ Name = "numTraits", Type = "number", Nilable = false },
+				{ Name = "artifactTier", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "totalArtifactPowerCost", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetTotalPurchasedRanks",
+			Type = "Function",
 
 			Returns =
 			{
@@ -579,6 +644,7 @@ local ArtifactUILua =
 		},
 		{
 			Name = "IsAtForge",
+			Type = "Function",
 
 			Returns =
 			{
@@ -587,6 +653,7 @@ local ArtifactUILua =
 		},
 		{
 			Name = "IsPowerKnown",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -600,6 +667,7 @@ local ArtifactUILua =
 		},
 		{
 			Name = "IsViewedArtifactEquipped",
+			Type = "Function",
 
 			Returns =
 			{
@@ -608,6 +676,7 @@ local ArtifactUILua =
 		},
 		{
 			Name = "SetAppearance",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -616,9 +685,11 @@ local ArtifactUILua =
 		},
 		{
 			Name = "SetForgeCamera",
+			Type = "Function",
 		},
 		{
 			Name = "SetForgeRotation",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -629,6 +700,7 @@ local ArtifactUILua =
 		},
 		{
 			Name = "SetPreviewAppearance",
+			Type = "Function",
 			Documentation = { "Call without an argument to clear the preview." },
 
 			Arguments =
@@ -638,6 +710,7 @@ local ArtifactUILua =
 		},
 		{
 			Name = "ShouldSuppressForgeRotation",
+			Type = "Function",
 
 			Returns =
 			{
@@ -650,6 +723,7 @@ local ArtifactUILua =
 	{
 		{
 			Name = "ArtifactArtInfo",
+			Type = "Structure",
 			Fields =
 			{
 				{ Name = "textureKit", Type = "string", Nilable = false },
@@ -663,6 +737,7 @@ local ArtifactUILua =
 		},
 		{
 			Name = "ArtifactPowerInfo",
+			Type = "Structure",
 			Fields =
 			{
 				{ Name = "spellID", Type = "number", Nilable = false },

@@ -1,12 +1,14 @@
 local PvpInfoLua =
 {
 	Name = "PvpInfo",
+	Type = "System",
 	Namespace = "C_PvP",
 
 	Functions =
 	{
 		{
 			Name = "GetArenaCrowdControlInfo",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -22,6 +24,7 @@ local PvpInfoLua =
 		},
 		{
 			Name = "GetArenaRewards",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -37,6 +40,7 @@ local PvpInfoLua =
 		},
 		{
 			Name = "GetArenaSkirmishRewards",
+			Type = "Function",
 
 			Returns =
 			{
@@ -47,6 +51,7 @@ local PvpInfoLua =
 		},
 		{
 			Name = "GetBrawlInfo",
+			Type = "Function",
 
 			Returns =
 			{
@@ -55,6 +60,7 @@ local PvpInfoLua =
 		},
 		{
 			Name = "GetGlobalPvpScalingInfoForSpecID",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -68,6 +74,7 @@ local PvpInfoLua =
 		},
 		{
 			Name = "GetRandomBGRewards",
+			Type = "Function",
 
 			Returns =
 			{
@@ -78,6 +85,7 @@ local PvpInfoLua =
 		},
 		{
 			Name = "GetRatedBGRewards",
+			Type = "Function",
 
 			Returns =
 			{
@@ -88,6 +96,7 @@ local PvpInfoLua =
 		},
 		{
 			Name = "HasArenaSkirmishWinToday",
+			Type = "Function",
 
 			Returns =
 			{
@@ -96,12 +105,15 @@ local PvpInfoLua =
 		},
 		{
 			Name = "JoinBrawl",
+			Type = "Function",
 		},
 		{
 			Name = "RequestBrawlInfo",
+			Type = "Function",
 		},
 		{
 			Name = "RequestCrowdControlSpell",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -114,6 +126,7 @@ local PvpInfoLua =
 	{
 		{
 			Name = "BattlefieldReward",
+			Type = "Structure",
 			Fields =
 			{
 				{ Name = "id", Type = "number", Nilable = false },
@@ -124,6 +137,7 @@ local PvpInfoLua =
 		},
 		{
 			Name = "PvpBrawlInfo",
+			Type = "Structure",
 			Fields =
 			{
 				{ Name = "name", Type = "string", Nilable = false },
@@ -136,6 +150,7 @@ local PvpInfoLua =
 		},
 		{
 			Name = "PvpScalingData",
+			Type = "Structure",
 			Fields =
 			{
 				{ Name = "scalingDataID", Type = "number", Nilable = false },

@@ -125,7 +125,7 @@ end
 -- Call this every frame
 function AnimatedNumericFontStringMixin:UpdateAnimatedValue(elapsed)
 	if self.targetAnimatedValue then
-		local change = self.initialAnimatedValueDelta * self:GetAnimatedDurationTimeSec() * elapsed;
+		local change = self.initialAnimatedValueDelta * (elapsed / self:GetAnimatedDurationTimeSec());
 		if math.abs(self.targetAnimatedValue - self.currentAnimatedValue) <= change then
 			self:SnapToTarget();
 		else

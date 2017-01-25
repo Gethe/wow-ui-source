@@ -15,6 +15,7 @@ Blizzard_APIDocumentation.lua
 SharedTypes.lua
 ActionBarFrameLua.lua
 ArtifactUILua.lua
+ChallengeModeInfoLua.lua
 ContributionCollectorLua.lua
 EquipmentManagerLua.lua
 MailInfoLua.lua

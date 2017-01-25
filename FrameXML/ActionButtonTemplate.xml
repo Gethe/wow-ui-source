@@ -86,8 +86,8 @@
 		</Layers>
 		<Animations>
 			<AnimationGroup parentKey="SpellHighlightAnim" looping="REPEAT">
-				<Alpha childKey="SpellHighlightTexture" smoothing="OUT" duration=".75" order="1" fromAlpha="0" toAlpha="1"/>
-				<Alpha childKey="SpellHighlightTexture" smoothing="IN" duration=".75" order="2" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="SpellHighlightTexture" smoothing="OUT" duration=".35" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="SpellHighlightTexture" smoothing="IN" duration=".35" order="2" fromAlpha="1" toAlpha="0"/>
 			</AnimationGroup>
 		</Animations>
 		<Frames>

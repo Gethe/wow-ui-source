@@ -1,12 +1,14 @@
 local PartyInfoLua =
 {
 	Name = "PartyInfo",
+	Type = "System",
 	Namespace = "C_PartyInfo",
 
 	Functions =
 	{
 		{
 			Name = "GetInviteConfirmationInvalidQueues",
+			Type = "Function",
 
 			Arguments =
 			{

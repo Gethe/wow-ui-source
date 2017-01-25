@@ -135,6 +135,10 @@ function ArtifactUIMixin:OnTierChanged(newTier, bagOrInventorySlot, slot)
 	end
 end
 
+function ArtifactUIMixin:OnTraitsRefunded(numRefunded, refundedTier)
+	self.PerksTab:OnTraitsRefunded(numRefunded, refundedTier);
+end
+
 function ArtifactUIMixin:OnAppearanceChanging()
 	self.PerksTab:OnAppearanceChanging();
 end

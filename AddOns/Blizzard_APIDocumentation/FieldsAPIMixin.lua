@@ -37,6 +37,10 @@ function FieldsAPIMixin:GetLuaType()
 		return ("%s of %s"):format(self.Type, complexType and complexType:GenerateAPILink() or self.InnerType)
 	end
 
+	if self.EnumValue then
+		return self.EnumValue;
+	end
+
 	local complexType = APIDocumentation:FindAPIByName("table", self.Type);
 	return complexType and complexType:GenerateAPILink() or self.Type;
 end

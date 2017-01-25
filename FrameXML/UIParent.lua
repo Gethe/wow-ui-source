@@ -390,6 +390,9 @@ function UIParent_OnLoad(self)
 
 	-- Invite confirmations
 	self:RegisterEvent("GROUP_INVITE_CONFIRMATION");
+	
+	-- Event(s) for the ArtifactUI
+	self:RegisterEvent("ARTIFACT_ENDGAME_REFUND");
 end
 
 function UIParent_OnShow(self)
@@ -1524,6 +1527,11 @@ function UIParent_OnEvent(self, event, ...)
 			StaticPopup_Show("CONFIRM_ARTIFACT_RESPEC", BreakUpLargeNumbers(C_ArtifactUI.GetRespecCost()));
 		end
 
+	elseif ( event == "ARTIFACT_ENDGAME_REFUND" ) then
+		local numRefunded, refundedTier, bagOrInventorySlot = ...;
+		ArtifactFrame_LoadUI();
+		ArtifactFrame:OnTraitsRefunded(numRefunded, refundedTier);
+		
 	elseif ( event == "ADVENTURE_MAP_OPEN" ) then
 		OrderHall_LoadUI();
 		ShowUIPanel(OrderHallMissionFrame);
@@ -4820,4 +4828,20 @@ function GetDisplayedInviteType(guid)
 end
 
 function nop()
+end
+
+function ShakeFrameRandom(frame, magnitude, duration, frequency)
+	local point, relativeFrame, relativePoint, x, y = frame:GetPoint();
+	local shakeTime = 0;
+	local lastTime = GetTime();
+	frame.shakeTicker = C_Timer.NewTicker(frequency, function()
+		frame:SetPoint(point, relativeFrame, relativePoint, x + math.random(-magnitude, magnitude), y + math.random(-magnitude, magnitude));
+		local newTime = GetTime();
+		shakeTime = shakeTime + (newTime - lastTime);
+		lastTime = newTime;
+		if shakeTime > duration then
+			frame:SetPoint(point, relativeFrame, relativePoint, x, y);
+			frame.shakeTicker:Cancel();
+		end
+	end);
 end

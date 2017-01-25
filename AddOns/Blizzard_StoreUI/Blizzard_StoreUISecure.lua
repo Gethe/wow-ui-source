@@ -248,6 +248,7 @@ Import("BLIZZARD_STORE_VAS_TRANSFER_FACTION_BUNDLE");
 Import("BLIZZARD_STORE_VAS_EMAIL_ADDRESS");
 Import("BLIZZARD_STORE_VAS_DESTINATION_BNET_ACCOUNT");
 Import("BLIZZARD_STORE_VAS_REALMS_AND_MORE");
+Import("BLIZZARD_STORE_VAS_REALMS_PREVIOUS");
 Import("TOKEN_CURRENT_AUCTION_VALUE");
 Import("TOKEN_MARKET_PRICE_NOT_AVAILABLE");
 Import("OKAY");
@@ -3408,79 +3409,72 @@ function VASRealmList_BuildAutoCompleteList()
 		DestinationRealmMapping[name] = realms[i].addr;
 	end
 
-	table.wipe(RealmAutoCompleteIndexByKey);
-
-	local lastSeenKey;
-	for i = 1, #infoTable do
-		local value = infoTable[i];
-		local key = string.lower(string.sub(value, 1, 1));
-		if (lastSeenKey ~= key) then
-			RealmAutoCompleteIndexByKey[key] = { s = i, e = nil };
-			if (lastSeenKey) then
-				RealmAutoCompleteIndexByKey[lastSeenKey].e = i - 1;
-			end
-		end
-		lastSeenKey = key;
-	end
-	RealmAutoCompleteIndexByKey[lastSeenKey].e = #infoTable;
 	RealmAutoCompleteList = infoTable;
 end
 
-function tInvertLower(tbl)
-	local inverted = {};
-	for k, v in pairs(tbl) do
-		inverted[string.lower(v)] = k;
-	end
-	return inverted;
-end
-
 function VASRealmList_GetAutoCompleteEntries(text, cursorPosition)
-	if (tInvertLower(RealmAutoCompleteList)[string.lower(text)]) then
+	if (text == "") then
 		return {};
 	end
-	local key = string.lower(string.sub(text, 1, 1));
 	local entries = {};
-	if (RealmAutoCompleteIndexByKey[key]) then
-		local s = RealmAutoCompleteIndexByKey[key].s;
-		local e = RealmAutoCompleteIndexByKey[key].e;
-		local check = string.lower(string.sub(text, 1, cursorPosition));
-		for i = s, e do
-			if (string.lower(string.sub(RealmAutoCompleteList[i], 1, cursorPosition)) == check) then
-				table.insert(entries, RealmAutoCompleteList[i]);
-			end
+	local str = string.lower(string.sub(text, 1, cursorPosition));
+	for i, v in ipairs(RealmAutoCompleteList) do
+		if (string.find(string.lower(v), str)) then
+			table.insert(entries, v);
 		end
 	end
 	return entries;
 end
 
+local VAS_AUTO_COMPLETE_MAX_ENTRIES = 10;
+local VAS_AUTO_COMPLETE_OFFSET = 0;
+local VAS_AUTO_COMPLETE_SELECTION = nil;
+local VAS_AUTO_COMPLETE_ENTRIES = nil;
+
 function VASCharacterSelectionTransferRealmEditBoxAutoCompleteButton_OnClick(self)
+	VAS_AUTO_COMPLETE_SELECTION = nil;
+	VAS_AUTO_COMPLETE_OFFSET = 0;
 	local frame = StoreVASValidationFrame.CharacterSelectionFrame;
 
 	frame.TransferRealmEditbox:SetText(self.info);
 	frame.TransferRealmAutoCompleteBox:Hide();
 end
 
--- MT_TODO: Change this to lazy evaluation based on substrings anywhere in the string, and find a smaller font for the buttons so the dropdown doesnt look so strange.
-local VAS_AUTO_COMPLETE_MAX_ENTRIES = 10;
 function VASCharacterSelectionTransferRealmEditBox_UpdateAutoComplete(self, text, cursorPosition)
 	if (not RealmAutoCompleteList) then
 		VASRealmList_BuildAutoCompleteList();
 	end
-	local entries = VASRealmList_GetAutoCompleteEntries(text, cursorPosition);
+	VAS_AUTO_COMPLETE_ENTRIES = VASRealmList_GetAutoCompleteEntries(text, cursorPosition);
+
+	if (text == VAS_AUTO_COMPLETE_ENTRIES[1]) then
+		return;
+	end
 
 	local maxWidth = 0;
 	local shownButtons = 0;
+	local buttonOffset = 0;
 	local box = self:GetParent().TransferRealmAutoCompleteBox;
-	local hasMore = #entries > VAS_AUTO_COMPLETE_MAX_ENTRIES;
-	for i = 1, math.min(VAS_AUTO_COMPLETE_MAX_ENTRIES, #entries) do
+	if (VAS_AUTO_COMPLETE_OFFSET > 0) then
+		local button = box.Buttons[1];
+		button.Text:SetText(BLIZZARD_STORE_VAS_REALMS_PREVIOUS);
+		button:SetNormalFontObject("GameFontDisableTiny2");
+		button:SetHighlightFontObject("GameFontDisableTiny2");
+		button:SetScript("OnClick", StoreAutoCompleteGoBack_OnClick);
+		buttonOffset = 1;
+		shownButtons = 1;
+	end
+
+	local hasMore = (#VAS_AUTO_COMPLETE_ENTRIES - VAS_AUTO_COMPLETE_OFFSET) > VAS_AUTO_COMPLETE_MAX_ENTRIES;
+	for i = 1 + buttonOffset, math.min(VAS_AUTO_COMPLETE_MAX_ENTRIES, (#VAS_AUTO_COMPLETE_ENTRIES - VAS_AUTO_COMPLETE_OFFSET)) + buttonOffset do
 		local button = box.Buttons[i];
 		if (not button) then
 			button = CreateForbiddenFrame("Button", nil, box, "StoreAutoCompleteButtonTemplate");
 			button:SetPoint("TOP", box.Buttons[i-1], "BOTTOM");
-			button:SetScript("OnClick", VASCharacterSelectionTransferRealmEditBoxAutoCompleteButton_OnClick);
 		end
-		button.info = entries[i];
-		local rpPvpInfo = RealmRpPvpMap[entries[i]];
+		local entryIndex = i + VAS_AUTO_COMPLETE_OFFSET - buttonOffset;
+		button:SetScript("OnClick", VASCharacterSelectionTransferRealmEditBoxAutoCompleteButton_OnClick);
+		button.info = VAS_AUTO_COMPLETE_ENTRIES[entryIndex];
+		local rpPvpInfo = RealmRpPvpMap[VAS_AUTO_COMPLETE_ENTRIES[entryIndex]];
 		local tag = _G.VAS_PVE_PARENTHESES;
 		if (rpPvpInfo.pvp and rpPvpInfo.rp) then
 			tag = _G.VAS_RPPVP_PARENTHESES;
@@ -3489,40 +3483,103 @@ function VASCharacterSelectionTransferRealmEditBox_UpdateAutoComplete(self, text
 		elseif (rpPvpInfo.rp) then
 			tag = _G.VAS_RP_PARENTHESES;
 		end
-		button.Text:SetText(entries[i] .. " " .. tag);
-		local textWidth = button.Text:GetWidth();
-		button:SetWidth(textWidth);
-		maxWidth = math.max(maxWidth, textWidth);
+		button:SetNormalFontObject("GameFontWhiteTiny2");
+		button:SetHighlightFontObject("GameFontWhiteTiny2");
+		button.Text:SetText(VAS_AUTO_COMPLETE_ENTRIES[entryIndex] .. " " .. tag);
 		button:Show();
+		if (i - buttonOffset == VAS_AUTO_COMPLETE_SELECTION) then
+			button:LockHighlight();
+		else
+			button:UnlockHighlight();
+		end
 		shownButtons = shownButtons + 1;
 	end
 
 	if (hasMore) then
-		local index = VAS_AUTO_COMPLETE_MAX_ENTRIES+1;
+		local index = VAS_AUTO_COMPLETE_MAX_ENTRIES+1+buttonOffset;
 		local button = box.Buttons[index];
 		if (not button) then
 			button = CreateForbiddenFrame("Button", nil, box, "StoreAutoCompleteButtonTemplate");
 			button:SetPoint("TOP", box.Buttons[index-1], "BOTTOM");
 		end
-		button.Text:SetText(string.format(BLIZZARD_STORE_VAS_REALMS_AND_MORE, #entries - VAS_AUTO_COMPLETE_MAX_ENTRIES));
-		local textWidth = button.Text:GetWidth();
-		button:SetWidth(textWidth);
-		maxWidth = math.max(maxWidth, textWidth);
+		button:SetScript("OnClick", StoreAutoCompleteHasMore_OnClick);
+		button:SetNormalFontObject("GameFontDisableTiny2");
+		button:SetHighlightFontObject("GameFontDisableTiny2");
+		button.Text:SetText(string.format(BLIZZARD_STORE_VAS_REALMS_AND_MORE, (#VAS_AUTO_COMPLETE_ENTRIES - VAS_AUTO_COMPLETE_OFFSET - VAS_AUTO_COMPLETE_MAX_ENTRIES)));
 		button:Show();
-		button.Text:SetFontObject("GameFontDisableSmall2");
 		shownButtons = shownButtons + 1;
-	else
-		for i = #entries + 1, #box.Buttons do
-			box.Buttons[i]:Hide();
-		end
 	end
 
-	if (#entries > 0) then
-		box:SetWidth(36 + maxWidth);
+	for i = shownButtons + 1, #box.Buttons do
+		box.Buttons[i]:Hide();
+	end
+
+	if (#VAS_AUTO_COMPLETE_ENTRIES > 0) then
 		box:SetHeight(22 + (shownButtons * box.Buttons[1]:GetHeight()));
 		box:Show();
 	else
 		box:Hide();
+	end
+end
+
+function StoreAutoCompleteGoBack_OnClick(self)
+	VAS_AUTO_COMPLETE_OFFSET = math.max(VAS_AUTO_COMPLETE_OFFSET - VAS_AUTO_COMPLETE_MAX_ENTRIES, 0);
+	VAS_AUTO_COMPLETE_SELECTION = nil;
+
+	local frame = StoreVASValidationFrame.CharacterSelectionFrame.TransferRealmEditbox;
+	
+	VASCharacterSelectionTransferRealmEditBox_UpdateAutoComplete(frame, frame:GetText(), frame:GetCursorPosition());
+end
+
+function StoreAutoCompleteHasMore_OnClick(self)
+	VAS_AUTO_COMPLETE_OFFSET = math.min(VAS_AUTO_COMPLETE_OFFSET + VAS_AUTO_COMPLETE_MAX_ENTRIES, #VAS_AUTO_COMPLETE_ENTRIES - 1);
+	VAS_AUTO_COMPLETE_SELECTION = nil;
+
+	local frame = StoreVASValidationFrame.CharacterSelectionFrame.TransferRealmEditbox;
+	
+	VASCharacterSelectionTransferRealmEditBox_UpdateAutoComplete(frame, frame:GetText(), frame:GetCursorPosition());
+end
+
+function StoreAutoCompleteIncrementSelection()
+	if (VAS_AUTO_COMPLETE_OFFSET > 0 and VAS_AUTO_COMPLETE_SELECTION == #VAS_AUTO_COMPLETE_ENTRIES - VAS_AUTO_COMPLETE_OFFSET) then
+		return;
+	elseif (VAS_AUTO_COMPLETE_SELECTION == VAS_AUTO_COMPLETE_MAX_ENTRIES) then
+		if (VAS_AUTO_COMPLETE_OFFSET + VAS_AUTO_COMPLETE_MAX_ENTRIES < #VAS_AUTO_COMPLETE_ENTRIES) then
+			VAS_AUTO_COMPLETE_OFFSET = VAS_AUTO_COMPLETE_OFFSET + 1;
+		end
+	elseif (VAS_AUTO_COMPLETE_SELECTION and (VAS_AUTO_COMPLETE_SELECTION + VAS_AUTO_COMPLETE_OFFSET) < #VAS_AUTO_COMPLETE_ENTRIES) then
+		VAS_AUTO_COMPLETE_SELECTION = VAS_AUTO_COMPLETE_SELECTION + 1;
+	elseif (not VAS_AUTO_COMPLETE_SELECTION and #VAS_AUTO_COMPLETE_ENTRIES > 0) then
+		VAS_AUTO_COMPLETE_SELECTION = 1;
+	end
+
+	local frame = StoreVASValidationFrame.CharacterSelectionFrame.TransferRealmEditbox;
+	
+	VASCharacterSelectionTransferRealmEditBox_UpdateAutoComplete(frame, frame:GetText(), frame:GetCursorPosition());
+end
+
+function StoreAutoCompleteDecrementSelection()
+	if (VAS_AUTO_COMPLETE_SELECTION and #VAS_AUTO_COMPLETE_ENTRIES > 0) then
+		if (VAS_AUTO_COMPLETE_SELECTION == 1 and VAS_AUTO_COMPLETE_OFFSET > 0) then
+			VAS_AUTO_COMPLETE_OFFSET = VAS_AUTO_COMPLETE_OFFSET - 1;
+		elseif (VAS_AUTO_COMPLETE_SELECTION > 1) then
+			VAS_AUTO_COMPLETE_SELECTION = VAS_AUTO_COMPLETE_SELECTION - 1;
+		end
+		local frame = StoreVASValidationFrame.CharacterSelectionFrame.TransferRealmEditbox;
+	
+		VASCharacterSelectionTransferRealmEditBox_UpdateAutoComplete(frame, frame:GetText(), frame:GetCursorPosition());
+	end
+end
+
+function StoreAutoCompleteSelectionEnterPressed()
+	if (VAS_AUTO_COMPLETE_SELECTION) then
+		local info = VAS_AUTO_COMPLETE_ENTRIES[VAS_AUTO_COMPLETE_SELECTION + VAS_AUTO_COMPLETE_OFFSET];
+		VAS_AUTO_COMPLETE_SELECTION = nil;
+		VAS_AUTO_COMPLETE_OFFSET = 0;
+		local frame = StoreVASValidationFrame.CharacterSelectionFrame;
+
+		frame.TransferRealmEditbox:SetText(info);
+		frame.TransferRealmAutoCompleteBox:Hide();
 	end
 end
 
@@ -3535,14 +3592,25 @@ function TransferRealmCheckbox_OnClick(self)
 end
 
 function VASCharacterSelectionTransferRealmEditBox_OnCursorChanged(self)
+	VAS_AUTO_COMPLETE_OFFSET = 0;
+	VAS_AUTO_COMPLETE_SELECTION = nil;
+
 	VASCharacterSelectionTransferRealmEditBox_UpdateAutoComplete(self, self:GetText(), self:GetCursorPosition());
 end
 
 function VASCharacterSelectionTransferRealmEditBox_OnTextChanged(self)
+	VAS_AUTO_COMPLETE_OFFSET = 0;
+	VAS_AUTO_COMPLETE_SELECTION = nil;
+
 	self.EmptyText:SetShown(not self:GetText() or self:GetText() == "");
 	VASCharacterSelectionTransferRealmEditBox_UpdateAutoComplete(self, self:GetText(), self:GetCursorPosition());
 
 	VASCharacterSelectionTransferGatherAndValidateData();
+end
+
+function TransferRealmAutoCompleteBox_OnHide(self)
+	VAS_AUTO_COMPLETE_OFFSET = 0;
+	VAS_AUTO_COMPLETE_SELECTION = nil;
 end
 
 function TransferAccountCheckbox_OnClick(self)
@@ -3707,7 +3775,8 @@ function VASCharacterSelectionTransferCheckEditBoxes()
 	end
 	local checkAccount = frame.TransferAccountCheckbox:GetChecked() and SelectedDestinationWowAccount == BLIZZARD_STORE_VAS_DIFFERENT_BNET;
 	if (checkAccount) then
-		valid = frame.TransferBattlenetAccountEditbox:GetText() and frame.TransferBattlenetAccountEditbox:GetText() ~= "";
+		local text = frame.TransferBattlenetAccountEditbox:GetText();
+		valid = text and text ~= "" and string.find(text, ".+@.+\...+");
 	end
 	if (not frame.TransferRealmCheckbox:GetChecked() and not checkAccount) then
 		valid = true;
@@ -3734,7 +3803,6 @@ function VASCharacterSelectionTransferGatherAndValidateData()
 	end
 	if (frame.TransferAccountCheckbox:GetChecked()) then
 		noCheck = false;
-		-- MT_TODO:  If this is b.net, validate the @ sign
 		if (SelectedDestinationWowAccount == nil) then
 			return;
 		end

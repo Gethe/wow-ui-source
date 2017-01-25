@@ -1,12 +1,14 @@
 local WorldMapLua =
 {
 	Name = "WorldMap",
+	Type = "System",
 	Namespace = "C_WorldMap",
 
 	Functions =
 	{
 		{
 			Name = "GetAreaPOITimeLeft",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -20,6 +22,7 @@ local WorldMapLua =
 		},
 		{
 			Name = "GetMapLandmarkInfo",
+			Type = "Function",
 
 			Arguments =
 			{

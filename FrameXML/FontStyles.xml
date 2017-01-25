@@ -41,15 +41,9 @@
 	<Font name="GameFontHighlightLarge2" inherits="GameFontNormalLarge2" virtual="true">
 		<Color r="1.0" g="1.0" b="1.0"/>
 	</Font>
-	<Font name="GameFontDisableTiny" inherits="SystemFont_Tiny" virtual="true">
-		<Color r="0.5" g="0.5" b="0.5"/>
-	</Font>
 	<Font name="GameFontDisableLeft" inherits="GameFontDisable" justifyH="LEFT" virtual="true"/>
 	<Font name="GameFontGreen" inherits="GameFontNormal" virtual="true">
 		<Color r="0.1" g="1.0" b="0.1"/>
-	</Font>
-	<Font name="GameFontBlackTiny" inherits="SystemFont_Tiny" virtual="true">
-		<Color r="0" g="0" b="0"/>
 	</Font>
 	<Font name="GameFontWhiteSmall" inherits="GameFontBlackSmall" virtual="true">
 		<Color r="1.0" g="1.0" b="1.0"/>

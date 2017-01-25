@@ -77,7 +77,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<FontString parentKey="DungeonName" inherits="QuestFont_Enormous">
+				<FontString parentKey="DungeonName" inherits="QuestFont_Enormous" hidden="true">
 					<Size x="350" y="0"/>
 					<Anchors>
 						<Anchor point="BOTTOM" relativeKey="$parent.Divider" relativePoint="TOP" x="0" y="4"/>

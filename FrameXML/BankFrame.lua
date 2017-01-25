@@ -354,9 +354,9 @@ function BankFrameItemButtonGeneric_OnModifiedClick (self, button)
 	if ( HandleModifiedItemClick(GetContainerItemLink(container, self:GetID())) ) then
 		return;
 	end
-	if ( IsModifiedClick("SPLITSTACK") ) then
+	if ( not CursorHasItem() and IsModifiedClick("SPLITSTACK") ) then
 		local texture, itemCount, locked = GetContainerItemInfo(container, self:GetID());
-		if ( not locked and itemCount > 1) then
+		if ( not locked and itemCount and itemCount > 1) then
 			OpenStackSplitFrame(self.count, self, "BOTTOMLEFT", "TOPLEFT");
 		end
 		return;

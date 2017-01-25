@@ -13,6 +13,7 @@ FACTION_BAR_COLORS = {
 };
 MAX_PLAYER_LEVEL = 0;
 REPUTATIONFRAME_ROWSPACING = 23;
+MAX_REPUTATION_REACTION = 8;
 
 SHOWED_LFG_PULSE = false;
 
@@ -159,9 +160,11 @@ function ReputationFrame_Update(showLFGPulse)
 				paragonFrame.Check:SetShown(hasRewardPending);
 				paragonFrame:Show();
 			end
-
+			local isCapped;
+			if (standingID == MAX_REPUTATION_REACTION) then
+				isCapped = true;
+			end
 			-- check if this is a friendship faction 
-			local isCappedFriendship;
 			local friendID, friendRep, friendMaxRep, friendName, friendText, friendTexture, friendTextLevel, friendThreshold, nextFriendThreshold = GetFriendshipReputation(factionID);
 			if (friendID ~= nil) then
 				factionStandingtext = friendTextLevel;
@@ -170,7 +173,7 @@ function ReputationFrame_Update(showLFGPulse)
 				else
 					-- max rank, make it look like a full bar
 					barMin, barMax, barValue = 0, 1, 1;
-					isCappedFriendship = true;
+					isCapped = true;
 				end
 				colorIndex = 5;								-- always color friendships green
 				factionRow.friendshipID = friendID;			-- for doing friendship tooltip
@@ -187,10 +190,10 @@ function ReputationFrame_Update(showLFGPulse)
 			barMin = 0;
 			
 			factionRow.standingText = factionStandingtext;
-			if ( isCappedFriendship ) then
-				factionRow.tooltip = nil;
+			if ( isCapped ) then
+				factionRow.rolloverText = nil;
 			else
-				factionRow.tooltip = HIGHLIGHT_FONT_COLOR_CODE.." "..format(REPUTATION_PROGRESS_FORMAT, barValue, barMax)..FONT_COLOR_CODE_CLOSE;
+				factionRow.rolloverText = HIGHLIGHT_FONT_COLOR_CODE.." "..format(REPUTATION_PROGRESS_FORMAT, barValue, barMax)..FONT_COLOR_CODE_CLOSE;
 			end
 			factionBar:SetMinMaxValues(0, barMax);
 			factionBar:SetValue(barValue);

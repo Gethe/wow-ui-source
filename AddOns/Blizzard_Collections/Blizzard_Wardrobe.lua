@@ -551,6 +551,7 @@ local OFF_HAND_INV_TYPE = 22;
 local RANGED_INV_TYPE = 15;
 local TAB_ITEMS = 1;
 local TAB_SETS = 2;
+local TABS_MAX_WIDTH = 185;
 
 local WARDROBE_MODEL_SETUP = {
 	["HEADSLOT"] 		= { useTransmogSkin = false, slots = { CHESTSLOT = true,  HANDSSLOT = false, LEGSSLOT = false, FEETSLOT = false, HEADSLOT = false } },
@@ -607,6 +608,7 @@ end
 
 function WardrobeCollectionFrame_ClickTab(tab)
 	WardrobeCollectionFrame_SetTab(tab:GetID());
+	PanelTemplates_ResizeTabsToFit(WardrobeCollectionFrame, TABS_MAX_WIDTH);
 	PlaySound("igMainMenuOptionCheckBoxOn");
 end
 
@@ -623,12 +625,20 @@ function WardrobeCollectionFrame_SetTab(tabID)
 		WardrobeCollectionFrame.ItemsCollectionFrame:Show();
 		WardrobeCollectionFrame.SetsCollectionFrame:Hide();
 		WardrobeCollectionFrame.SetsTransmogFrame:Hide();
+		WardrobeCollectionFrame.searchBox:ClearAllPoints();
+		WardrobeCollectionFrame.searchBox:SetPoint("TOPRIGHT", -107, -35);
+		WardrobeCollectionFrame.searchBox:SetWidth(115);
 	elseif ( tabID == TAB_SETS ) then
 		WardrobeCollectionFrame.ItemsCollectionFrame:Hide();
+		WardrobeCollectionFrame.searchBox:ClearAllPoints();
 		if ( atTransmogrifier )  then
 			WardrobeCollectionFrame.activeFrame = WardrobeCollectionFrame.SetsTransmogFrame;
+			WardrobeCollectionFrame.searchBox:SetPoint("TOPRIGHT", -107, -35);
+			WardrobeCollectionFrame.searchBox:SetWidth(115);
 		else
 			WardrobeCollectionFrame.activeFrame = WardrobeCollectionFrame.SetsCollectionFrame;
+			WardrobeCollectionFrame.searchBox:SetPoint("TOPLEFT", 19, -69);
+			WardrobeCollectionFrame.searchBox:SetWidth(145);
 		end
 		WardrobeCollectionFrame.SetsCollectionFrame:SetShown(not atTransmogrifier);
 		WardrobeCollectionFrame.SetsTransmogFrame:SetShown(atTransmogrifier);
@@ -638,6 +648,7 @@ end
 function WardrobeCollectionFrame_OnLoad(self)
 	PanelTemplates_SetNumTabs(self, 2);
 	PanelTemplates_SetTab(self, 1);
+	PanelTemplates_ResizeTabsToFit(self, TABS_MAX_WIDTH);
 	self.selectedCollectionTab = TAB_ITEMS;
 	self.selectedTransmogTab = TAB_ITEMS;
 
@@ -2473,27 +2484,18 @@ end
 
 local BASE_SET_BUTTON_HEIGHT = 46;
 local VARIANT_SET_BUTTON_HEIGHT = 20;
+local SET_PROGRESS_BAR_MAX_WIDTH = 204;
+local IN_PROGRESS_FONT_COLOR = CreateColor(0.251, 0.753, 0.251);
+local IN_PROGRESS_FONT_COLOR_CODE = "|cff40c040";
 
 WardrobeSetsDataProviderMixin = {};
 
 function WardrobeSetsDataProviderMixin:SortSets(sets)
 	local comparison = function(set1, set2)
-		local baseSetData1 = self:GetBaseSetData(set1.setID);
-		local baseSetData2 = self:GetBaseSetData(set2.setID);
-		if ( baseSetData1 and baseSetData2 ) then
-			if ( baseSetData1.topCollected > 0 and baseSetData2.topCollected > 0 ) then
-				local completedSet1 = (set1.topCollected == set1.topTotal);
-				local completedSet2 = (set2.topCollected == set2.topTotal);
-				if ( baseSetData1.completed ~= baseSetData2.completed ) then
-					return baseSetData1.completed;
-				end
-			else
-				-- at least one count is at 0
-				-- if both are 0, fall through for other sorting
-				if ( baseSetData1.topCollected ~= baseSetData2.topCollected ) then
-					return baseSetData1.topCollected > 0;
-				end
-			end
+		local groupFavorite1 = set1.favoriteSetID and true;
+		local groupFavorite2 = set2.favoriteSetID and true;
+		if ( groupFavorite1 ~= groupFavorite2 ) then
+			return groupFavorite1;
 		end
 		if ( set1.uiOrder ~= set2.uiOrder ) then
 			return set1.uiOrder > set2.uiOrder;
@@ -2507,10 +2509,7 @@ end
 function WardrobeSetsDataProviderMixin:GetBaseSets()
 	if ( not self.baseSets ) then
 		self.baseSets = C_TransmogSets.GetBaseSets();
-		-- need top counts to sort sets
-		for i = 1, #self.baseSets do
-			self:GetSetSourceTopCounts(self.baseSets[i].setID);
-		end
+		self:DetermineFavorites();
 		self:SortSets(self.baseSets);
 	end
 	return self.baseSets;
@@ -2679,6 +2678,10 @@ function WardrobeSetsDataProviderMixin:ClearBaseSets()
 	self.baseSets = nil;
 end
 
+function WardrobeSetsDataProviderMixin:ClearVariantSets()
+	self.variantSets = nil;
+end
+
 function WardrobeSetsDataProviderMixin:ClearUsableSets()
 	self.usableSets = nil;
 end
@@ -2695,6 +2698,33 @@ function WardrobeSetsDataProviderMixin:GetIconForSet(setID)
 		end
 	end
 	return sourceData.icon;
+end
+
+function WardrobeSetsDataProviderMixin:DetermineFavorites()
+	-- if a variant is favorited, so is the base set
+	-- keep track of which set is favorited
+	local baseSets = self:GetBaseSets();
+	for i = 1, #baseSets do
+		local baseSet = baseSets[i];
+		baseSet.favoriteSetID = nil;
+		if ( baseSet.favorite ) then
+			baseSet.favoriteSetID = baseSet.setID;
+		else
+			local variantSets = self:GetVariantSets(baseSet.setID);
+			for j = 1, #variantSets do
+				if ( variantSets[j].favorite ) then
+					baseSet.favoriteSetID = variantSets[j].setID;
+					break;
+				end
+			end
+		end
+	end
+end
+
+function WardrobeSetsDataProviderMixin:RefreshFavorites()
+	self.baseSets = nil;
+	self.variantSets = nil;
+	self:DetermineFavorites();
 end
 
 local SetsDataProvider = CreateFromMixins(WardrobeSetsDataProviderMixin);
@@ -2719,7 +2749,7 @@ function WardrobeSetsCollectionMixin:OnShow()
 	local baseSets = SetsDataProvider:GetBaseSets();
 	if ( not self.init and baseSets and baseSets[1] ) then
 		self.init = true;
-		self:SelectSet(baseSets[1].setID);
+		self:SelectSet(self:GetDefaultSetIDForBaseSet(baseSets[1].setID));
 	else
 		self:Refresh();
 	end
@@ -2774,9 +2804,13 @@ function WardrobeSetsCollectionMixin:DisplaySet(setID)
 		if ( sortedSources[i].collected ) then
 			itemFrame.Icon:SetDesaturated(false);
 			itemFrame.Icon:SetAlpha(1);
+			itemFrame.IconBorder:SetDesaturation(0);
+			itemFrame.IconBorder:SetAlpha(1);
 		else
 			itemFrame.Icon:SetDesaturated(true);
 			itemFrame.Icon:SetAlpha(0.3);
+			itemFrame.IconBorder:SetDesaturation(1);
+			itemFrame.IconBorder:SetAlpha(0.3);
 		end
 		self:SetItemFrameQuality(itemFrame);
 		itemFrame:SetPoint("TOP", self.DetailsFrame, "TOP", xOffset + (i - 1) * BUTTON_SPACE, -97);
@@ -2796,15 +2830,17 @@ function WardrobeSetsCollectionMixin:DisplaySet(setID)
 end
 
 function WardrobeSetsCollectionMixin:SetItemFrameQuality(itemFrame)
+	local _, quality;
 	if ( itemFrame.collected ) then
-		local _, _, quality = GetItemInfo(itemFrame.itemID);
-		if ( quality ) then
-			itemFrame.IconBorder:SetVertexColor(ITEM_QUALITY_COLORS[quality].r, ITEM_QUALITY_COLORS[quality].g, ITEM_QUALITY_COLORS[quality].b);
-			itemFrame.IconBorder:Show();
-			return;
-		end
+		_, _, quality = GetItemInfo(itemFrame.itemID);
 	end
-	itemFrame.IconBorder:Hide();
+	if ( quality == LE_ITEM_QUALITY_UNCOMMON ) then
+		itemFrame.IconBorder:SetAtlas("loottab-set-itemborder-green", true);
+	elseif ( quality == LE_ITEM_QUALITY_RARE ) then
+		itemFrame.IconBorder:SetAtlas("loottab-set-itemborder-blue", true);
+	elseif ( quality == LE_ITEM_QUALITY_EPIC ) then
+		itemFrame.IconBorder:SetAtlas("loottab-set-itemborder-purple", true);
+	end
 end
 
 function WardrobeSetsCollectionMixin:OnSearchUpdate()
@@ -2839,7 +2875,7 @@ function WardrobeSetsCollectionMixin:OpenVariantSetsDropDown()
 			variantSet.description = "Set ID "..variantSet.setID;
 		end
 		local numSourcesCollected, numSourcesTotal = SetsDataProvider:GetSetSourceCounts(variantSet.setID);
-		local colorCode = GREEN_FONT_COLOR_CODE;
+		local colorCode = IN_PROGRESS_FONT_COLOR_CODE;
 		if ( numSourcesCollected == numSourcesTotal ) then
 			colorCode = NORMAL_FONT_COLOR_CODE;
 		elseif ( numSourcesCollected == 0 ) then
@@ -2852,9 +2888,19 @@ function WardrobeSetsCollectionMixin:OpenVariantSetsDropDown()
 	end
 end
 
+function WardrobeSetsCollectionMixin:GetDefaultSetIDForBaseSet(baseSetID)
+	if ( self.selectedVariantSets[baseSetID] ) then
+		return self.selectedVariantSets[baseSetID];
+	end
+	local baseSet = SetsDataProvider:GetBaseSetByID(baseSetID);
+	if ( baseSet.favoriteSetID ) then
+		return baseSet.favoriteSetID;
+	end
+	return baseSetID;
+end
+
 function WardrobeSetsCollectionMixin:SelectSetFromButton(setID)
-	setID = self.selectedVariantSets[setID] or setID;
-	self:SelectSet(setID);
+	self:SelectSet(self:GetDefaultSetIDForBaseSet(setID));
 end
 
 function WardrobeSetsCollectionMixin:SelectSet(setID)
@@ -2884,12 +2930,72 @@ end
 
 WardrobeSetsCollectionScrollFrameMixin = { };
 
+local function WardrobeSetsCollectionScrollFrame_FavoriteDropDownInit(self)
+	if ( not self.baseSetID ) then
+		return;
+	end
+
+	local baseSet = SetsDataProvider:GetBaseSetByID(self.baseSetID);
+	local variantSets = SetsDataProvider:GetVariantSets(self.baseSetID);
+	local useDescription = (#variantSets > 0);
+
+	local info = UIDropDownMenu_CreateInfo();
+	info.notCheckable = true;
+	info.disabled = nil;
+
+	if ( baseSet.favoriteSetID ) then
+		if ( useDescription ) then
+			local setInfo = C_TransmogSets.GetSetInfo(baseSet.favoriteSetID);
+			info.text = format(TRANSMOG_SETS_UNFAVORITE_WITH_DESCRIPTION, setInfo.description);
+		else
+			info.text = BATTLE_PET_UNFAVORITE;
+		end
+		info.func = function()
+			C_TransmogSets.SetIsFavorite(baseSet.favoriteSetID, false);
+		end
+	else
+		local targetSetID = WardrobeCollectionFrame.SetsCollectionFrame:GetDefaultSetIDForBaseSet(self.baseSetID);
+		if ( useDescription ) then
+			local setInfo = C_TransmogSets.GetSetInfo(targetSetID);
+			info.text = format(TRANSMOG_SETS_FAVORITE_WITH_DESCRIPTION, setInfo.description);
+		else
+			info.text = BATTLE_PET_FAVORITE;
+		end
+		info.func = function()
+			C_TransmogSets.SetIsFavorite(targetSetID, true);
+		end
+	end
+
+	UIDropDownMenu_AddButton(info, level);
+	info.disabled = nil;
+
+	info.text = CANCEL;
+	info.func = nil;
+	UIDropDownMenu_AddButton(info, level);
+end
+
 function WardrobeSetsCollectionScrollFrameMixin:OnLoad()
 	self.scrollBar.trackBG:Show();
 	self.scrollBar.trackBG:SetVertexColor(0, 0, 0, 0.75);
 	self.scrollBar.doNotHide = true;
 	self.update = self.Update;
 	HybridScrollFrame_CreateButtons(self, "WardrobeSetsScrollFrameButtonTemplate", 44, 0);
+	UIDropDownMenu_Initialize(self.FavoriteDropDown, WardrobeSetsCollectionScrollFrame_FavoriteDropDownInit, "MENU");
+end
+
+function WardrobeSetsCollectionScrollFrameMixin:OnShow()
+	self:RegisterEvent("TRANSMOG_SETS_UPDATE_FAVORITE");
+end
+
+function WardrobeSetsCollectionScrollFrameMixin:OnHide()
+	self:UnregisterEvent("TRANSMOG_SETS_UPDATE_FAVORITE");
+end
+
+function WardrobeSetsCollectionScrollFrameMixin:OnEvent(event, ...)
+	if ( event == "TRANSMOG_SETS_UPDATE_FAVORITE" ) then
+		SetsDataProvider:RefreshFavorites();
+		self:Update();
+	end
 end
 
 function WardrobeSetsCollectionScrollFrameMixin:Update()
@@ -2908,7 +3014,7 @@ function WardrobeSetsCollectionScrollFrameMixin:Update()
 			button:Show();
 			button.Name:SetText(baseSet.name);
 			local numSourcesCollected, numSourcesTotal = SetsDataProvider:GetSetSourceTopCounts(baseSet.setID);
-			local color = HIGHLIGHT_FONT_COLOR;
+			local color = IN_PROGRESS_FONT_COLOR;
 			if ( numSourcesCollected == numSourcesTotal ) then
 				color = NORMAL_FONT_COLOR;
 			elseif ( numSourcesCollected == 0 ) then
@@ -2917,16 +3023,18 @@ function WardrobeSetsCollectionScrollFrameMixin:Update()
 			button.Name:SetTextColor(color.r, color.g, color.b);
 			button.Label:SetText(baseSet.label);
 			button.Icon:SetTexture(SetsDataProvider:GetIconForSet(baseSet.setID));
-			button.Icon:SetDesaturated(numSourcesCollected < numSourcesTotal);
+			button.Icon:SetDesaturation((numSourcesCollected == 0) and 1 or 0);
 			button.SelectedTexture:SetShown(baseSet.setID == selectedBaseSetID);
+			button.Favorite:SetShown(baseSet.favoriteSetID);
 			button.setID = baseSet.setID;
 
-			if ( numSourcesCollected == numSourcesTotal ) then
-				button.Count:Hide();
+			if ( numSourcesCollected == 0 or numSourcesCollected == numSourcesTotal ) then
+				button.ProgressBar:Hide();
 			else
-				button.Count:SetFormattedText(GENERIC_FRACTION_STRING, numSourcesCollected, numSourcesTotal);
-				button.Count:Show();
+				button.ProgressBar:Show();
+				button.ProgressBar:SetWidth(SET_PROGRESS_BAR_MAX_WIDTH * numSourcesCollected / numSourcesTotal);
 			end
+			button.IconCover:SetShown(numSourcesCollected ~= numSourcesTotal);
 		else
 			button:Hide();
 		end

@@ -1,12 +1,14 @@
 local SocialQueueLua =
 {
 	Name = "SocialQueue",
+	Type = "System",
 	Namespace = "C_SocialQueue",
 
 	Functions =
 	{
 		{
 			Name = "GetAllGroups",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -21,6 +23,7 @@ local SocialQueueLua =
 		},
 		{
 			Name = "GetConfig",
+			Type = "Function",
 
 			Returns =
 			{
@@ -29,6 +32,7 @@ local SocialQueueLua =
 		},
 		{
 			Name = "GetGroupForPlayer",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -43,6 +47,7 @@ local SocialQueueLua =
 		},
 		{
 			Name = "GetGroupInfo",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -62,6 +67,7 @@ local SocialQueueLua =
 		},
 		{
 			Name = "GetGroupMembers",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -75,6 +81,7 @@ local SocialQueueLua =
 		},
 		{
 			Name = "GetGroupQueues",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -88,6 +95,7 @@ local SocialQueueLua =
 		},
 		{
 			Name = "RequestToJoin",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -104,6 +112,7 @@ local SocialQueueLua =
 		},
 		{
 			Name = "SignalToastDisplayed",
+			Type = "Function",
 
 			Arguments =
 			{
@@ -117,6 +126,7 @@ local SocialQueueLua =
 	{
 		{
 			Name = "SocialQueueConfig",
+			Type = "Structure",
 			Fields =
 			{
 				{ Name = "TOASTS_DISABLED", Type = "bool", Nilable = false },
@@ -146,6 +156,7 @@ local SocialQueueLua =
 		},
 		{
 			Name = "SocialQueueGroupQueueInfo",
+			Type = "Structure",
 			Fields =
 			{
 				{ Name = "clientID", Type = "number", Nilable = false },

@@ -33,7 +33,7 @@ end
 
 function SystemsAPIMixin:GetSingleOutputLine()
 	if self.Namespace then
-		return ("%s %s (%s)"):format(self:GetType(), self:GenerateAPILink(), self.Namespace);
+		return ("%s %s (%s)"):format(self:GetPrettyType(), self:GenerateAPILink(), self.Namespace);
 	end
 	return BaseAPIMixin.GetSingleOutputLine(self);
 end

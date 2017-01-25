@@ -409,6 +409,8 @@ end
 function CharacterCreate_OnHide()
 	PAID_SERVICE_CHARACTER_ID = nil;
 	PAID_SERVICE_TYPE = nil;
+	CharCreateCharacterTypeFrame.currentCharacterType = nil;
+
 	if ( CharacterCreateFrame.state == "CUSTOMIZATION" ) then
 		CharacterCreate_Back();
 	end
@@ -1774,6 +1776,7 @@ end
 
 local function ShouldHideCharacterTypeFrame(characterType)
 	if (characterType == LE_CHARACTER_CREATE_TYPE_BOOST)
+	 or (not CharCreateCharacterTypeFrame.allowShowing)
 	 or (not C_CharacterServices.IsTrialBoostEnabled())
 	 or (PAID_SERVICE_TYPE ~= nil)
 	 or IsUsingCharacterTemplate()
@@ -1783,6 +1786,10 @@ local function ShouldHideCharacterTypeFrame(characterType)
 	end
 
 	return false;
+end
+
+function CharacterCreate_SetAllowCharacterTypeFrame(allow)
+	CharCreateCharacterTypeFrame.allowShowing = allow;
 end
 
 function CharacterCreate_SelectCharacterType(characterType)

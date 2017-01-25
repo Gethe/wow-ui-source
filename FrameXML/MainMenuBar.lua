@@ -239,7 +239,7 @@ function MainMenuBar_UpdateExperienceBars(newLevel)
 			ReputationWatchBar.StatusBar:Reset();
 		end
 
-		local isCappedFriendship;
+		local isCapped;
 		-- do something different for friendships
 		local level;
 		if ( ReputationWatchBar.friendshipID ) then
@@ -250,11 +250,17 @@ function MainMenuBar_UpdateExperienceBars(newLevel)
 			else
 				-- max rank, make it look like a full bar
 				min, max, value = 0, 1, 1;
-				isCappedFriendship = true;
+				isCapped = true;
 			end
 			colorIndex = 5;		-- always color friendships green
+		elseif (C_Reputation.IsFactionParagon(factionID)) then
+			local currentValue, threshold = C_Reputation.GetFactionParagonInfo(factionID);
+			min, max, value = 0, threshold, currentValue;
 		else
 			level = reaction;
+			if (reaction == MAX_REPUTATION_REACTION) then
+				isCapped = true;
+			end
 		end
 
 		-- See if it was already shown or not
@@ -268,7 +274,7 @@ function MainMenuBar_UpdateExperienceBars(newLevel)
 		min = 0;
 		local statusBar = ReputationWatchBar.StatusBar;
 		statusBar:SetAnimatedValues(value, min, max, level);
-		if ( isCappedFriendship ) then
+		if ( isCapped ) then
 			ReputationWatchBar.OverlayFrame.Text:SetText(name);
 		else
 			ReputationWatchBar.OverlayFrame.Text:SetText(name.." "..value.." / "..max);

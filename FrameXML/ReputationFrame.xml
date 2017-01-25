@@ -303,8 +303,8 @@
 				ReputationBar_OnClick(self, button, down);
 			</OnClick>
 			<OnEnter>
-				if (self.tooltip) then
-					_G[self:GetName().."ReputationBarFactionStanding"]:SetText(self.tooltip);
+				if (self.rolloverText) then
+					_G[self:GetName().."ReputationBarFactionStanding"]:SetText(self.rolloverText);
 				end
 				_G[self:GetName().."ReputationBarHighlight1"]:Show();
 				_G[self:GetName().."ReputationBarHighlight2"]:Show();

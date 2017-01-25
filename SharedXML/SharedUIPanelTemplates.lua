@@ -567,6 +567,37 @@ function PanelTemplates_TabResize(tab, padding, absoluteSize, minWidth, maxWidth
 	end
 end
 
+function PanelTemplates_ResizeTabsToFit(frame, maxWidthForAllTabs)
+	local selectedIndex = PanelTemplates_GetSelectedTab(frame);
+	if ( not selectedIndex ) then
+		return;
+	end
+
+	local currentWidth = 0;
+	local truncatedText = false;
+	for i = 1, frame.numTabs do
+		local tab = GetTabByIndex(frame, i);
+		currentWidth = currentWidth + tab:GetWidth();
+		if tab.Text:IsTruncated() then
+			truncatedText = true;
+		end
+	end
+	if ( not truncatedText and currentWidth <= maxWidthForAllTabs ) then
+		return;
+	end
+
+	local currentTab = GetTabByIndex(frame, selectedIndex);
+	PanelTemplates_TabResize(currentTab);
+	local availableWidth = maxWidthForAllTabs - currentTab:GetWidth();
+	local widthPerTab = availableWidth / (frame.numTabs - 1);
+	for i = 1, frame.numTabs do
+		if ( i ~= selectedIndex ) then
+			local tab = GetTabByIndex(frame, i);
+			PanelTemplates_TabResize(tab, _, widthPerTab);
+		end
+	end
+end
+
 function PanelTemplates_SetNumTabs(frame, numTabs)
 	frame.numTabs = numTabs;
 end

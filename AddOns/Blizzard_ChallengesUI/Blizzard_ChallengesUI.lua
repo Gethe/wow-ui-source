@@ -29,8 +29,7 @@ function ChallengesFrame_OnLoad(self)
     self:RegisterEvent("CHALLENGE_MODE_LEADERS_UPDATE");
     
     self.leadersAvailable = false;
-	self.maps = { };
-	C_ChallengeMode.GetMapTable(self.maps);
+	self.maps = C_ChallengeMode.GetMapTable();
 end
 
 function ChallengesFrame_OnEvent(self, event)
@@ -173,21 +172,21 @@ function ChallengesGuildBestMixin:SetUp(leaderInfo)
         str = CHALLENGE_MODE_GUILD_BEST_LINE_YOU;
     end
     
-    local classColorStr = RAID_CLASS_COLORS[leaderInfo.class].colorStr;
+    local classColorStr = RAID_CLASS_COLORS[leaderInfo.classFileName].colorStr;
     
     self.CharacterName:SetText(str:format(classColorStr, leaderInfo.name));
-    self.Level:SetText(leaderInfo.level);
+    self.Level:SetText(leaderInfo.keystoneLevel);
 end
 
 function ChallengesGuildBestMixin:OnEnter()
     local leaderInfo = self.leaderInfo;
     
     GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-    local name = C_ChallengeMode.GetMapInfo(leaderInfo.mapid);
+    local name = C_ChallengeMode.GetMapInfo(leaderInfo.mapChallengeModeID);
     GameTooltip:SetText(name, 1, 1, 1);
-    GameTooltip:AddLine(CHALLENGE_MODE_POWER_LEVEL:format(leaderInfo.level));
+    GameTooltip:AddLine(CHALLENGE_MODE_POWER_LEVEL:format(leaderInfo.keystoneLevel));
     for i = 1, #leaderInfo.members do
-        local classColorStr = RAID_CLASS_COLORS[leaderInfo.members[i].class].colorStr;
+        local classColorStr = RAID_CLASS_COLORS[leaderInfo.members[i].classFileName].colorStr;
         GameTooltip:AddLine(CHALLENGE_MODE_GUILD_BEST_LINE:format(classColorStr,leaderInfo.members[i].name));
     end
     GameTooltip:Show();
@@ -293,7 +292,9 @@ function ChallengesKeystoneFrameMixin:Reset()
 	self.RunesSmallAnim:Stop();
 	self.RunesSmallRotateAnim:Stop();
 	self.StartButton:Disable();
-	
+	self.TimeLimit:Hide();
+    self.DungeonName:Hide();
+
 	for i = 1, #self.Affixes do
 		self.Affixes[i]:Hide();
 	end
@@ -312,13 +313,7 @@ function ChallengesKeystoneFrameMixin:OnMouseUp()
 	end
 end
 
-function ChallengesKeystoneFrameMixin:ShowKeystoneFrame()
-	local _, _, _, _, _, _, _, mapID = GetInstanceInfo();
-	local name, _, timeLimit = C_ChallengeMode.GetMapInfo(mapID);
-
-	self.DungeonName:SetText(name);
-	self.TimeLimit:SetText(SecondsToTime(timeLimit, false, true));
-
+function ChallengesKeystoneFrameMixin:ShowKeystoneFrame()	
 	self:Show();
 end
 
@@ -356,9 +351,15 @@ function ChallengesKeystoneFrameMixin:OnKeystoneSlotted()
 	self.RunesSmallRotateAnim:Play();
 	self.InstructionBackground:Hide();
 	self.Instructions:Hide();
-	self.TimeLimit:Show();
-	local mapID, affixes, powerLevel, charged = C_ChallengeMode.GetSlottedKeystoneInfo();
 	
+	local mapID, affixes, powerLevel, charged = C_ChallengeMode.GetSlottedKeystoneInfo();
+	local name, _, timeLimit = C_ChallengeMode.GetMapInfo(mapID);
+
+    self.DungeonName:SetText(name);
+    self.DungeonName:Show();
+    self.TimeLimit:SetText(SecondsToTime(timeLimit, false, true));
+    self.TimeLimit:Show();
+
 	self.PowerLevel:SetText(CHALLENGE_MODE_POWER_LEVEL:format(powerLevel));
 	self.PowerLevel:Show();
 	
