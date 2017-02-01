@@ -7,6 +7,48 @@ local UIModelInfoLua =
 	Functions =
 	{
 		{
+			Name = "AddActiveModelScene",
+			Type = "Function",
+			Documentation = { "This function does nothing in public clients" },
+
+			Arguments =
+			{
+				{ Name = "modelSceneFrame", Type = "ScriptObject", Nilable = false },
+				{ Name = "modelSceneID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "AddActiveModelSceneActor",
+			Type = "Function",
+			Documentation = { "This function does nothing in public clients" },
+
+			Arguments =
+			{
+				{ Name = "modelSceneFrameActor", Type = "ScriptObject", Nilable = false },
+				{ Name = "modelSceneActorID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "ClearActiveModelScene",
+			Type = "Function",
+			Documentation = { "This function does nothing in public clients" },
+
+			Arguments =
+			{
+				{ Name = "modelSceneFrame", Type = "ScriptObject", Nilable = false },
+			},
+		},
+		{
+			Name = "ClearActiveModelSceneActor",
+			Type = "Function",
+			Documentation = { "This function does nothing in public clients" },
+
+			Arguments =
+			{
+				{ Name = "modelSceneFrameActor", Type = "ScriptObject", Nilable = false },
+			},
+		},
+		{
 			Name = "GetModelSceneActorDisplayInfoByID",
 			Type = "Function",
 
@@ -19,6 +61,7 @@ local UIModelInfoLua =
 			{
 				{ Name = "animation", Type = "number", Nilable = false },
 				{ Name = "animationVariation", Type = "number", Nilable = false },
+				{ Name = "animSpeed", Type = "number", Nilable = false },
 				{ Name = "alpha", Type = "number", Nilable = false },
 				{ Name = "scale", Type = "number", Nilable = false },
 			},

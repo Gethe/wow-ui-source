@@ -142,7 +142,7 @@ local PvpInfoLua =
 			{
 				{ Name = "name", Type = "string", Nilable = false },
 				{ Name = "shortDescription", Type = "string", Nilable = false },
-				{ Name = "longDescrition", Type = "string", Nilable = false },
+				{ Name = "longDescription", Type = "string", Nilable = false },
 				{ Name = "active", Type = "bool", Nilable = false },
 				{ Name = "timeLeftUntilNextChange", Type = "number", Nilable = false },
 				{ Name = "mapNames", Type = "table", InnerType = "string", Nilable = false },

@@ -168,6 +168,7 @@ local function OnShipmentReleased(pool, shipmentFrame)
 	shipmentFrame.Border:Show();
 	shipmentFrame.BG:Hide();
 	shipmentFrame.Count:SetText(nil);
+	shipmentFrame.Swipe:Hide();
 end
 
 function GarrisonLandingPageReport_OnLoad(self)

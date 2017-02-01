@@ -174,6 +174,54 @@
 					<OnLeave function="GameTooltip_Hide"/>
                 </Scripts>
             </Button>
+			<Frame parentKey="ReputationTabHelpBox" inherits="GlowBoxTemplate" hidden="true" frameStrata="DIALOG" >
+				<Size x="230" y="65"/>
+				<Anchors>
+					<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="CharacterFrameTab2" x="0" y="-14"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="BigText" inherits="GameFontHighlight" text="REPUTATION_EXALTED_PLUS_HELP" justifyH="LEFT">
+							<Size x="186" y="0"/>
+							<Anchors>
+								<Anchor point="TOP" x="-10" y="-12"/>
+							</Anchors>
+						</FontString>
+						<Texture parentKey="ArrowUp" inherits="HelpPlateArrowUP">
+							<Size x="53" y="21"/>
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-3"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER">
+						<Texture parentKey="ArrowGlowUp" inherits="HelpPlateArrow-GlowUP" alphaMode="ADD" alpha="0.5">
+							<Size x="53" y="21"/>
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-3"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
+						<Anchors>
+							<Anchor point="TOPRIGHT" x="6" y="6"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								self:GetParent():Hide();
+								SetCVarBitfield("closedInfoFrames",	LE_FRAME_TUTORIAL_REPUTATION_EXALTED_PLUS, true);
+							</OnClick>
+						</Scripts>
+					</Button>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						self:SetHeight(self.BigText:GetHeight() + HELPTIP_HEIGHT_PADDING);
+					</OnLoad>
+				</Scripts>
+			</Frame>
 			<Button name="CharacterFrameTab3" inherits="CharacterFrameTabButtonTemplate" id="3" text="CURRENCY" hidden="true">
                 <Anchors>
                    <Anchor point="LEFT" relativeTo="CharacterFrameTab2" relativePoint="RIGHT">

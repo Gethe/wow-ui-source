@@ -166,3 +166,17 @@ do
 	end
 end
 
+-- Unit* functions
+
+do
+	-- Use UnitPower instead
+	function UnitMana(unit)
+		return UnitPower(unit, POWER_TYPE_MANA);
+	end
+
+	-- Use UnitPowerMax instead
+	function UnitManaMax(unit)
+		return UnitPowerMax(unit, POWER_TYPE_MANA);
+	end
+end
+

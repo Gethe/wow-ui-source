@@ -6,6 +6,7 @@ function WarlockPowerBar:OnLoad()
 	self:SetPowerTokens("SOUL_SHARDS");
 	self.class = "WARLOCK";
 	self.spec = nil;
+	self.Shards = {};
 
 	ClassPowerBar.OnLoad(self);
 end
@@ -39,7 +40,27 @@ function WarlockPowerBar:OnEvent(event, ...)
 	return true;
 end
 
-function WarlockPowerBar:SetShard(shard, active)
+function WarlockPowerBar:CreateShards()
+	local maxShards = UnitPowerMax(self:GetUnit(), SPELL_POWER_SOUL_SHARDS);
+
+	while #self.Shards < maxShards do
+		local shard = CreateFrame("FRAME", nil, self, "ShardTemplate");
+		shard.shardIndex = #self.Shards - 1;
+
+		if self.previousShard then
+			shard:SetPoint("TOPLEFT", self.previousShard, "TOPLEFT", 25, 0);
+		else
+			shard:SetPoint("TOPLEFT", self, "TOPLEFT", -10, 0);
+		end
+
+		self.previousShard = shard;
+	end
+end
+
+function WarlockPowerBar:SetShard(shard, powerAmount)
+	local fillAmount = Saturate(powerAmount - shard.shardIndex);
+	local active = fillAmount >= 1;
+
 	if active then
 		if shard.animOut:IsPlaying() then
 			shard.animOut:Stop();
@@ -49,6 +70,8 @@ function WarlockPowerBar:SetShard(shard, active)
 			shard.animIn:Play();
 			shard.active = true;
 		end
+
+		shard.PartialFill:SetValue(0);
 	else
 		if shard.animIn:IsPlaying() then
 			shard.animIn:Stop();
@@ -58,16 +81,27 @@ function WarlockPowerBar:SetShard(shard, active)
 			shard.animOut:Play();
 			shard.active = false;
 		end
+
+		shard.PartialFill:SetValue(fillAmount);
 	end
 end
 
 function WarlockPowerBar:UpdatePower()
-	local numShards = UnitPower( WarlockPowerFrame:GetParent().unit, SPELL_POWER_SOUL_SHARDS );
-	local maxShards = UnitPowerMax( WarlockPowerFrame:GetParent().unit, SPELL_POWER_SOUL_SHARDS );
-	-- update individual shard display
-	for i = 1, maxShards do
-		local shard = self.Shards[i];
-		local shouldShow = i <= numShards;
-		self:SetShard(shard, shouldShow);
+	WarlockPowerBar_UpdatePower(self);
+end
+
+function WarlockPowerBar_UpdatePower(self)
+	self:CreateShards();
+
+	local shardPower = WarlockPowerBar_UnitPower(self:GetUnit());
+
+	for i, shard in ipairs(self.Shards) do
+		self:SetShard(shard, shardPower);
 	end
+end
+
+function WarlockPowerBar_UnitPower(unit)
+	local shardPower = UnitPower(unit, SPELL_POWER_SOUL_SHARDS, true);
+	local shardModifier = UnitPowerDisplayMod(SPELL_POWER_SOUL_SHARDS);
+	return (shardModifier ~= 0) and (shardPower / shardModifier) or 0;
 end

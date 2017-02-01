@@ -891,7 +891,65 @@
 											<KeyValue key="isBrawl" value="true" type="boolean"/>
 											<KeyValue key="tooltipTableKey" value="Brawl" type="string"/>
 										</KeyValues>
+										<Scripts>
+											<OnClick inherit="prepend">
+												if (self:GetParent().BrawlHelpBox:IsShown()) then
+													self:GetParent().BrawlHelpBox:Hide();
+													SetCVarBitfield("closedInfoFrames",	LE_FRAME_TUTORIAL_BRAWL, true);
+												end
+											</OnClick>
+										</Scripts>
 									</Button>
+									<Frame parentKey="BrawlHelpBox" inherits="GlowBoxTemplate" hidden="false" frameStrata="DIALOG" >
+										<Size x="230" y="65"/>
+										<Anchors>
+											<Anchor point="LEFT" relativePoint="RIGHT" relativeKey="$parent.BrawlButton" x="15" y="0"/>
+										</Anchors>
+										<Layers>
+											<Layer level="ARTWORK">
+												<FontString parentKey="BigText" inherits="GameFontHighlight" text="BRAWL_TUTORIAL" justifyH="LEFT">
+													<Size x="186" y="0"/>
+													<Anchors>
+														<Anchor point="TOP" x="-10" y="-12"/>
+													</Anchors>
+												</FontString>
+												<Texture parentKey="ArrowLeft" inherits="HelpPlateArrowDOWN">
+													<Size x="53" y="21"/>
+													<Anchors>
+														<Anchor point="RIGHT" relativePoint="LEFT" x="1" y="0"/>
+													</Anchors>
+												</Texture>
+											</Layer>
+											<Layer level="BORDER">
+												<Texture parentKey="ArrowGlowLeft" inherits="HelpPlateArrow-GlowDOWN" alphaMode="ADD" alpha="0.5">
+													<Size x="53" y="21"/>
+													<Anchors>
+														<Anchor point="RIGHT" relativePoint="LEFT" x="-1" y="0"/>
+													</Anchors>
+												</Texture>
+											</Layer>
+										</Layers>
+										<Frames>
+											<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
+												<Anchors>
+													<Anchor point="TOPRIGHT" x="6" y="6"/>
+												</Anchors>
+												<Scripts>
+													<OnClick>
+														self:GetParent():Hide();
+														SetCVarBitfield("closedInfoFrames",	LE_FRAME_TUTORIAL_BRAWL, true);
+													</OnClick>
+												</Scripts>
+											</Button>
+										</Frames>
+										<Scripts>
+											<OnLoad>
+												self:SetHeight(self.BigText:GetHeight() + HELPTIP_HEIGHT_PADDING);
+												SetClampedTextureRotation(self.ArrowLeft, 90);
+												SetClampedTextureRotation(self.ArrowGlowLeft, 90);
+											</OnLoad>
+										</Scripts>
+									</Frame>
 									<Frame parentKey="ShadowOverlay" inherits="ShadowOverlaySmallTemplate" useParentLevel="true">
 										<Anchors>
 											<Anchor point="TOPLEFT" relativeKey="$parent.WorldBattlesTexture" relativePoint="TOPLEFT" x="0" y="0"/>

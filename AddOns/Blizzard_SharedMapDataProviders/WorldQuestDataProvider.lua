@@ -226,3 +226,7 @@ function WorldQuestPinMixin:OnMouseLeave()
 
 	WorldMap_RestoreTooltip();
 end
+
+function WorldQuestPinMixin:OnClick(button)
+	TaskPOI_OnClick(self, button);
+end

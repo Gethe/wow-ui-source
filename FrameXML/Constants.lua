@@ -902,31 +902,37 @@ LFG_SUBTYPEID_WORLDPVP = 6;
 
 -- CONTRIBUTIONS
 CONTRIBUTION_APPEARANCE_DATA = {
-	[LE_CONTRIBUTION_STATE_BUILDING] = {
+	[Enum.ContributionState.Building] = {
 		stateName = CONTRIBUTION_UNDER_CONSTRUCTION,
 		stateColor = NORMAL_FONT_COLOR,
+		tooltipLine = CONTRIBUTION_POI_TOOLTIP_PERCENTAGE_BUILT,
+		tooltipUseTimeRemaining = false,
 		statusBarAtlas = "_Legionfall_BarFill_UnderConstruction",
 		borderAtlas = "Legionfall_YellowFrame",
 		bannerAtlas = "Legionfall_Banner",
 	},
 
-	[LE_CONTRIBUTION_STATE_ACTIVE] = {
+	[Enum.ContributionState.Active] = {
 		stateName = CONTRIBUTION_ACTIVE,
 		stateColor = GREEN_FONT_COLOR,
+		tooltipLine = CONTRIBUTION_POI_TOOLTIP_REMAINING_ACTIVE_TIME,
+		tooltipUseTimeRemaining = true,
 		statusBarAtlas = "_Legionfall_BarFill_Active",
 		borderAtlas = "Legionfall_GreenFrame",
 		bannerAtlas = "Legionfall_Banner",
 	},
 
-	[LE_CONTRIBUTION_STATE_UNDER_ATTACK] = {
+	[Enum.ContributionState.UnderAttack] = {
 		stateName = CONTRIBUTION_UNDER_ATTACK,
 		stateColor = RED_FONT_COLOR,
+		tooltipLine = CONTRIBUTION_POI_TOOLTIP_PERCENTAGE_UNDER_ATTACK,
+		tooltipUseTimeRemaining = false,
 		statusBarAtlas = "_Legionfall_BarFill_UnderAttack",
 		borderAtlas = "Legionfall_RedFrame",
 		bannerAtlas = "Legionfall_Banner",
 	},
 
-	[LE_CONTRIBUTION_STATE_DESTROYED] = {
+	[Enum.ContributionState.Destroyed] = {
 		stateName = CONTRIBUTION_DESTROYED,
 		stateColor = DISABLED_FONT_COLOR,
 		statusBarAtlas = "_Legionfall_BarFill_Active",
@@ -943,3 +949,6 @@ UPPER_LEFT_VERTEX = 1;
 LOWER_LEFT_VERTEX = 2;
 UPPER_RIGHT_VERTEX = 3;
 LOWER_RIGHT_VERTEX = 4;
+
+-- TUTORIALS
+HELPTIP_HEIGHT_PADDING = 29;

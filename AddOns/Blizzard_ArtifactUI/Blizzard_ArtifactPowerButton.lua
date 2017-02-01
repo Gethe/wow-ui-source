@@ -31,11 +31,14 @@ end
 function ArtifactPowerButtonMixin:OnLoad()
 	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 	self:RegisterForDrag("LeftButton");
+	
+	self.LightRune:SetAtlas(self:GenerateRune(), true);
+end
 
+function ArtifactPowerButtonMixin:GenerateRune()
 	local NUM_RUNE_TYPES = 11;
 	local runeIndex = math.random(1, NUM_RUNE_TYPES);
-
-	self.LightRune:SetAtlas(("Rune-%02d-light"):format(runeIndex), true);
+	return ("Rune-%02d-light"):format(runeIndex)
 end
 
 function ArtifactPowerButtonMixin:OnEnter()

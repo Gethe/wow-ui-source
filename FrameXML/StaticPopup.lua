@@ -3684,14 +3684,6 @@ StaticPopupDialogs["CONFIRM_UNLOCK_TRIAL_CHARACTER"] = {
 	whileDead = 1,
 }
 
-StaticPopupDialogs["QUEST_IGNORE_TUTORIAL"] = {
-	text = IGNORE_QUEST_TUTORIAL,
-	button1 = OKAY,
-	hideOnEscape = 1,
-	timeout = 0,
-	whileDead = 1,
-}
-
 StaticPopupDialogs["DANGEROUS_SCRIPTS_WARNING"] = {
 	text = DANGEROUS_SCRIPTS_WARNING,
 	button1 = YES,

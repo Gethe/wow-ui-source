@@ -1355,6 +1355,22 @@ function CharacterSpellBonusDamage_OnEnter (self)
 	GameTooltip:Show();
 end
 
+local function ShouldShowExaltedPlusHelpTip()
+	if (GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_REPUTATION_EXALTED_PLUS)) then
+		return false;
+	end
+
+	local numFactions = GetNumFactions();
+	for i=1, numFactions do
+		local name, description, standingID, barMin, barMax, barValue, atWarWith, canToggleAtWar, isHeader, isCollapsed, hasRep, isWatched, isChild, factionID, hasBonusRepGain, canBeLFGBonus = GetFactionInfo(i);
+		if (factionID and C_Reputation.IsFactionParagon(factionID) ) then
+			return true;
+		end
+	end
+	return false;
+end
+
+
 function PaperDollFrame_OnShow (self)
 	CharacterStatsPane.initialOffsetY = 0;
 	CharacterFrameTitleText:SetText(UnitPVPName("player"));
@@ -1366,6 +1382,8 @@ function PaperDollFrame_OnShow (self)
 	PaperDollBgDesaturate(true);
 	PaperDollSidebarTabs:Show();
 	PaperDollFrame_UpdateInventoryFixupComplete(self);
+	
+	self:GetParent().ReputationTabHelpBox:SetShown(ShouldShowExaltedPlusHelpTip());
 end
 
 function PaperDollFrame_OnHide (self)

@@ -101,6 +101,36 @@
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
+				<Texture parentKey="CrestGlowies" hidden="false" alpha="0" alphaMode="ADD" atlas="Artifacts-Anim-Glowies" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="CrestGlowies2" hidden="false" alpha="0" alphaMode="ADD" atlas="Artifacts-Anim-Glowies" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="CrestGlowies3" hidden="false" alpha="0" alphaMode="ADD" atlas="Artifacts-Anim-Glowies" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="CrestGlowies4" hidden="false" alpha="0" alphaMode="ADD" atlas="Artifacts-Anim-Glowies" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="CrestGlowies5" hidden="false" alpha="0" alphaMode="ADD" atlas="Artifacts-Anim-Glowies" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="CrestGlowies6" hidden="false" alpha="0" alphaMode="ADD" atlas="Artifacts-Anim-Glowies" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="4">
 				<Texture parentKey="Whirls" alpha="0" atlas="ArtifactsFX-Whirls" useAtlasSize="true">
@@ -484,10 +514,25 @@
 			<AnimationGroup parentKey="Tier2FinalPowerSparks" setToFinalAlpha="true">
 				<Alpha childKey="CrestSparks" duration="0.01" order="1" fromAlpha="0" toAlpha="1"/>
 				<Alpha childKey="CrestSparks" startDelay="0.01" smoothing="OUT" duration="0.32" order="1" fromAlpha="1" toAlpha="0"/>
-				<Scale childKey="CrestSparks" smoothing="NONE" duration="0.33" order="1" fromScaleX="1.4" fromScaleY="1.4" toScaleX="0.3" toScaleY="0.3"/>
+				<Scale childKey="CrestSparks" smoothing="NONE" duration="0.33" order="1" fromScaleX="1.2" fromScaleY="1.2" toScaleX="0.1" toScaleY="0.1"/>
 				<Alpha childKey="CrestSparks2" duration="0.01" order="1" fromAlpha="0" toAlpha="1"/>
 				<Alpha childKey="CrestSparks2" startDelay="0.01" smoothing="OUT" duration="0.32" order="1" fromAlpha="1" toAlpha="0"/>
-				<Scale childKey="CrestSparks2" smoothing="NONE" duration="1" order="1" fromScaleX="0.8" fromScaleY="0.8" toScaleX="0.2" toScaleY="0.2"/>
+				<Scale childKey="CrestSparks2" smoothing="NONE" duration="1" order="1" fromScaleX="0.6" fromScaleY="0.6" toScaleX="0" toScaleY="0"/>
+				<Alpha childKey="CrestGlowies" duration="0.01" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="CrestGlowies" startDelay="0.01" smoothing="OUT" duration="0.32" order="1" fromAlpha="1" toAlpha="0"/>
+				<Scale childKey="CrestGlowies" smoothing="NONE" duration="0.33" order="1" fromScaleX="3.4" fromScaleY="3.4" toScaleX="0" toScaleY="0"/>
+				<Alpha childKey="CrestGlowies2" duration="0.01" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="CrestGlowies2" startDelay="0.01" smoothing="OUT" duration="0.32" order="1" fromAlpha="1" toAlpha="0"/>
+				<Scale childKey="CrestGlowies2" smoothing="NONE" duration="0.33" order="1" fromScaleX="3.4" fromScaleY="3.4" toScaleX="0" toScaleY="0"/>
+				<Alpha childKey="CrestGlowies3" duration="0.01" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="CrestGlowies3" startDelay="0.01" smoothing="OUT" duration="0.32" order="1" fromAlpha="1" toAlpha="0"/>
+				<Scale childKey="CrestGlowies3" smoothing="NONE" duration="0.33" order="1" fromScaleX="3.4" fromScaleY="3.4" toScaleX="0" toScaleY="0"/>
+				<Alpha childKey="CrestGlowies4" startDelay="0.53" smoothing="OUT" duration=".9" order="1" fromAlpha="1" toAlpha="0"/>
+				<Scale childKey="CrestGlowies4" startDelay="0.53" smoothing="NONE" duration="2" order="1" fromScaleX=".5" fromScaleY=".5" toScaleX=".9" toScaleY=".9"/>
+				<Alpha childKey="CrestGlowies5" startDelay="0.53" smoothing="OUT" duration=".9" order="1" fromAlpha="1" toAlpha="0"/>
+				<Scale childKey="CrestGlowies5" startDelay="0.53" smoothing="NONE" duration="2" order="1" fromScaleX=".5" fromScaleY=".5" toScaleX=".9" toScaleY=".9"/>
+				<Alpha childKey="CrestGlowies6" startDelay="0.53" smoothing="OUT" duration=".9" order="1" fromAlpha="1" toAlpha="0"/>
+				<Scale childKey="CrestGlowies6" startDelay="0.53" smoothing="NONE" duration="2" order="1" fromScaleX=".5" fromScaleY=".5" toScaleX=".9" toScaleY=".9"/>		
 				<Alpha childKey="Tier2AnimatedBorder1" duration="0.01" order="1" fromAlpha="0" toAlpha="1"/>
 				<Alpha childKey="Tier2AnimatedBorder2" startDelay="0.01" smoothing="IN" duration="0.32" order="1" fromAlpha="1" toAlpha="0"/>
 				<Scale childKey="Tier2AnimatedBorder1" smoothing="IN" duration="0.33" order="1" fromScaleX="1.4" fromScaleY="1.4" toScaleX="1" toScaleY="1"/>

@@ -205,6 +205,7 @@
 									</Layer>
 									<Layer level="BACKGROUND" textureSubLevel="1">
 										<Texture name="WorldMapInvasionOverlay" atlas="legioninvasion-map-cover" />
+										<Texture name="WorldMapAreaPOIBannerOverlay" atlas="legioninvasion-map-cover" hidden="true"/>
 									</Layer>
 									<Layer level="OVERLAY">
 										<Texture name="WorldMapHighlight" alphaMode="ADD" hidden="true">

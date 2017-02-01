@@ -38,6 +38,8 @@ function ModelSceneMixin:ClearScene()
 
 	self:ReleaseAllActors();
 	self:ReleaseAllCameras();
+
+	C_ModelInfo.ClearActiveModelScene(self);
 end
 
 -- Adjusts this scene to mirror a model scene from static data without transition
@@ -60,6 +62,8 @@ function ModelSceneMixin:SetFromModelSceneID(modelSceneID, forceEvenIfSame)
 			self:CreateCameraFromScene(cameraID);
 		end
 	end
+
+	C_ModelInfo.AddActiveModelScene(self, self.modelSceneID);
 end
 
 -- Adjusts this scene to mirror a model scene from static data but with transition effects
@@ -109,6 +113,8 @@ function ModelSceneMixin:TransitionToModelSceneID(modelSceneID, cameraModificati
 			self:SetActiveCamera(self.cameras[1]);
 		end
 	end
+
+	C_ModelInfo.AddActiveModelScene(self, self.modelSceneID);
 end
 
 -- There may be inactive (pooled) actors maintained by this scene, these function only returns the active actors

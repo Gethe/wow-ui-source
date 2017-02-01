@@ -112,7 +112,7 @@
 				</Frames>
 				<Scripts>
 					<OnLoad>
-						self:SetHeight(self.BigText:GetHeight() + 29);
+						self:SetHeight(self.BigText:GetHeight() + HELPTIP_HEIGHT_PADDING);
 					</OnLoad>
 				</Scripts>
 			</Frame>

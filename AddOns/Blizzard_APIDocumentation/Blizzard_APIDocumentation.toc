@@ -26,5 +26,6 @@ ReputationInfoLua.lua
 SocialQueueLua.lua
 Transmogrify.lua
 UIModelInfoLua.lua
+UnitLua.lua
 WorldMapLua.lua
 # End documentation files here

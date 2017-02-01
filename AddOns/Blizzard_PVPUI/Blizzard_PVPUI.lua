@@ -28,16 +28,16 @@ local REWARDS_AT_MAX_LEVEL = {
 		["NthWin"] = 138864,
 	},
 	[RATED_BG_REWARD] = {
-		["FirstWin"] = 143716,
-		["NthWin"] = 138881,
+		["FirstWin"] = 147203,
+		["NthWin"] = 147200,
 	},
 	[ARENA_2V2_REWARD] = {
-		["FirstWin"] = 143714,
-		["NthWin"] = 138865,
+		["FirstWin"] = 147201,
+		["NthWin"] = 147199,
 	},
 	[ARENA_3V3_REWARD] = {
-		["FirstWin"] = 143715,
-		["NthWin"] = 143677,
+		["FirstWin"] = 147202,
+		["NthWin"] = 147198,
 	}
 }
 
@@ -806,6 +806,22 @@ local function GetRewardValues(reward)
 	return reward.id, reward.name, reward.texture, reward.quantity;
 end
 
+local function ShouldShowBrawlHelpBox(brawlActive, isMaxLevel)
+	if (not brawlActive) then
+		return false;
+	end
+
+	if (not isMaxLevel) then
+		return false;
+	end
+
+	if (GetCVarBitfield("closedInfoFrames",	LE_FRAME_TUTORIAL_BRAWL)) then
+		return false;
+	end
+
+	return true;
+end
+
 function HonorFrameBonusFrame_Update()
 	local englishFaction = UnitFactionGroup("player");
 	local selectButton = nil;
@@ -912,6 +928,7 @@ function HonorFrameBonusFrame_Update()
 			button.Reward:Hide();
 			button:Disable();
 		end
+		HonorFrame.BonusFrame.BrawlHelpBox:SetShown(ShouldShowBrawlHelpBox(brawlInfo.active, (UnitLevel("player") >= MAX_PLAYER_LEVEL)));
 	end
 
 	-- select a button if one isn't selected
@@ -1359,7 +1376,7 @@ function WarGamesFrame_Update()
 		local button = buttons[i];
 		local index = offset + i;
 		if index <= numWarGames  then
-			local name, pvpType, collapsed, id, minPlayers, maxPlayers, isRandom, iconTexture = GetWarGameTypeInfo(index);
+			local name, pvpType, collapsed, id, minPlayers, maxPlayers, isRandom, iconTexture, shortDescription, longDescription = GetWarGameTypeInfo(index);
 			if ( name == "header" ) then
 				button:SetHeight(WARGAME_HEADER_HEIGHT);
 				button.Header:Show();
@@ -1401,6 +1418,10 @@ function WarGamesFrame_Update()
 					warGame.SizeText:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 				end
 			end
+			button.Entry.name = name;
+			button.Entry.shortDescription = shortDescription;
+			button.Entry.longDescription = longDescription;
+
 			button:Show();
 			button.index = index;
 		else
@@ -1434,8 +1455,25 @@ function WarGameButtonHeader_OnClick(self)
 end
 
 function WarGameButton_OnEnter(self)
-	self.NameText:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-	self.SizeText:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+	self.NameText:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
+	self.SizeText:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
+
+	if (self.name) then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip:SetText(self.name, HIGHLIGHT_FONT_COLOR:GetRGB());
+		local hasShortDescription = self.shortDescription and self.shortDescription ~= "";
+		local hasLongDescription = self.longDescription and self.longDescription ~= "";
+		if (hasShortDescription) then
+			GameTooltip:AddLine(self.shortDescription);
+		end
+		if (hasLongDescription) then
+			if (hasShortDescription) then
+				GameTooltip:AddLine(" ");
+			end
+			GameTooltip:AddLine(self.longDescription);
+		end
+		GameTooltip:Show();
+	end
 end
 
 function WarGameButton_OnLeave(self)
@@ -1443,6 +1481,8 @@ function WarGameButton_OnLeave(self)
 		self.NameText:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 		self.SizeText:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 	end
+
+	GameTooltip:Hide();
 end
 
 function WarGameButton_OnClick(self)

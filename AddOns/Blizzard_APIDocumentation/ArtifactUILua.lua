@@ -493,12 +493,12 @@ local ArtifactUILua =
 			},
 		},
 		{
-			Name = "GetPowersAffectedByRelicItemID",
+			Name = "GetPowersAffectedByRelicItemLink",
 			Type = "Function",
 
 			Arguments =
 			{
-				{ Name = "relicItemID", Type = "number", Nilable = false },
+				{ Name = "relicItemInfo", Type = "string", Nilable = false },
 			},
 
 			Returns =

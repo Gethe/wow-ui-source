@@ -412,6 +412,7 @@ function WorldMapFrame_OnHide(self)
 	end
 	CancelEmote();
 	self.mapID = nil;
+	self.dungeonLevel = nil;
 
 	self.AnimAlphaOut:Stop();
 	self.AnimAlphaIn:Stop();
@@ -431,6 +432,8 @@ function WorldMapFrame_OnEvent(self, event, ...)
 			HideUIPanel(WorldMapFrame);
 		end
 	elseif ( event == "WORLD_MAP_UPDATE" or event == "REQUEST_CEMETERY_LIST_RESPONSE" or event == "QUESTLINE_UPDATE" or event == "MINIMAP_UPDATE_TRACKING" ) then
+		local mapID = GetCurrentMapAreaID();
+		local dungeonLevel = GetCurrentMapDungeonLevel();
 		if ( not self.blockWorldMapUpdate and self:IsShown() ) then
 			-- if we are exiting a micro dungeon we should update the world map
 			if (event == "REQUEST_CEMETERY_LIST_RESPONSE") then
@@ -439,13 +442,15 @@ function WorldMapFrame_OnEvent(self, event, ...)
 					SetMapToCurrentZone();
 				end
 			end
-			WorldMapFrame_UpdateMap();
+			WorldMapFrame_UpdateMap(mapID == self.mapID and dungeonLevel == self.dungeonLevel);
 		end
 		if ( event == "WORLD_MAP_UPDATE" ) then
-			local mapID = GetCurrentMapAreaID();
-			if ( mapID ~= self.mapID and self:IsShown()) then
-				self.mapID = mapID;
-				WorldMapUnitPositionFrame:StartPlayerPing(2, .25);
+			if ( self:IsShown() ) then
+			    if ( mapID ~= self.mapID) then
+				    self.mapID = mapID;
+				    WorldMapUnitPositionFrame:StartPlayerPing(2, .25);
+			    end
+				self.dungeonLevel = dungeonLevel;
 			end
 			if ( QuestMapFrame.DetailsFrame.questMapID and QuestMapFrame.DetailsFrame.questMapID ~= GetCurrentMapAreaID() ) then
 				QuestMapFrame_CloseQuestDetails();
@@ -1138,6 +1143,7 @@ function WorldMap_UpdateLandmarks()
 	local currentGraveyard = GetCemeteryPreference();
     local mapID = GetCurrentMapAreaID();
 	WorldMapFrame_ClearAreaLabel(WORLDMAP_AREA_LABEL_TYPE.AREA_POI_BANNER);
+	WorldMapAreaPOIBannerOverlay:Hide();
 
 	for i=1, NUM_WORLDMAP_POIS do
 		local worldMapPOIName = "WorldMapFramePOI"..i;
@@ -1221,6 +1227,7 @@ function WorldMap_UpdateLandmarks()
 				areaPOIBannerLabelTextureInfo.isObjectIcon = isObjectIcon;
 
 				WorldMapFrame_SetAreaLabel(WORLDMAP_AREA_LABEL_TYPE.AREA_POI_BANNER, name, descriptionLabel, INVASION_FONT_COLOR, INVASION_DESCRIPTION_FONT_COLOR, WorldMapFrame_OnAreaPOIBannerVisibilityChanged);
+				WorldMapAreaPOIBannerOverlay:Show();
 			end
 		else
 			worldMapPOI:Hide();
@@ -1672,7 +1679,7 @@ function WorldMapPOI_AddContributionsToTooltip(tooltip, ...)
 	for i = 1, select("#", ...) do
 		local contributionID = select(i, ...);
 		local contributionName = C_ContributionCollector.GetName(contributionID);
-		local state, stateAmount = C_ContributionCollector.GetState(contributionID);
+		local state, stateAmount, timeOfNextStateChange = C_ContributionCollector.GetState(contributionID);
 		local appearanceData = CONTRIBUTION_APPEARANCE_DATA[state];
 
 		if i ~= 1 then
@@ -1681,7 +1688,18 @@ function WorldMapPOI_AddContributionsToTooltip(tooltip, ...)
 
 		tooltip:AddLine(contributionName, HIGHLIGHT_FONT_COLOR:GetRGB());
 		tooltip:AddLine(appearanceData.stateName, appearanceData.stateColor:GetRGB());
-		tooltip:AddLine(FormatPercentage(stateAmount), appearanceData.stateColor:GetRGB());
+
+		local tooltipLine = appearanceData.tooltipLine;
+		if tooltipLine then
+			if timeOfNextStateChange and appearanceData.tooltipUseTimeRemaining then
+				local time = math.max(timeOfNextStateChange - GetServerTime(), 60); -- Never display times below one minute
+				tooltipLine = tooltipLine:format(SecondsToTime(time, true, true));
+			else
+				tooltipLine = tooltipLine:format(FormatPercentage(stateAmount));
+			end
+
+			tooltip:AddLine(tooltipLine, appearanceData.stateColor:GetRGB());
+		end
 	end
 end
 
@@ -1742,13 +1760,13 @@ function WorldMapPOI_OnEnter(self)
 		else
 			if (self.description and #self.description > 0) then
 				local timeLeftMinutes = C_WorldMap.GetAreaPOITimeLeft(self.poiID);
+				WorldMapTooltip:SetOwner(self, "ANCHOR_RIGHT");
+				WorldMapTooltip:SetText(HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(self.description));
 				if (timeLeftMinutes) then
-					WorldMapTooltip:SetOwner(self, "ANCHOR_RIGHT");
-					WorldMapTooltip:SetText(HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(self.description));
 					local timeString = SecondsToTime(timeLeftMinutes * 60);
 					WorldMapTooltip:AddLine(BONUS_OBJECTIVE_TIME_LEFT:format(timeString), NORMAL_FONT_COLOR:GetRGB());
-					WorldMapTooltip:Show();
 				end
+				WorldMapTooltip:Show();
 			end
 		end
 	end
@@ -2872,10 +2890,12 @@ function WorldMap_ToggleSizeDown()
 	MapBarFrame_UpdateLayout(MapBarFrame);
 end
 
-function WorldMapFrame_UpdateMap()
+function WorldMapFrame_UpdateMap(skipDropDownUpdate)
 	WorldMapFrame_Update();
-	WorldMapLevelDropDown_Update();
-	WorldMapNavBar_Update();
+	if (not skipDropDownUpdate) then
+		WorldMapLevelDropDown_Update();
+		WorldMapNavBar_Update();
+	end
 end
 
 function ScenarioPOIFrame_OnUpdate(self)

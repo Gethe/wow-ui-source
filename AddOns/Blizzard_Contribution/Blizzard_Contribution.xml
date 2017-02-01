@@ -26,12 +26,14 @@
 	<Frame name="ContributionStateTemplate" virtual="true">
 		<Size x="256" y="150" />
 		<Layers>
-			<Layer level="BACKGROUND">
+			<Layer level="BACKGROUND" textureSubLevel="2">
 				<Texture parentKey="Border" atlas="Legionfall_GrayFrame" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="TOP"/>
 					</Anchors>
 				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="1">
 				<Texture parentKey="Icon">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Border" x="11.0" y="-11.0" />
@@ -93,8 +95,12 @@
 		</Scripts>
 	</Frame>
 
-	<StatusBar name="ContributionStatusTemplate" drawLayer="BACKGROUND" minValue="0" maxValue="1" virtual="true">
-		<Size x="240" y="18"/>
+	<StatusBar name="ContributionStatusTemplate" mixin="ContributionStatusMixin" drawLayer="BACKGROUND" minValue="0" maxValue="1" virtual="true">
+		<KeyValues>
+			<KeyValue key="updateDelay" value="1" type="number"/>
+			<KeyValue key="nextUpdate" value="0" type="number"/>
+		</KeyValues>
+		<Size x="224" y="15" />
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="BG" atlas="Legionfall_BarBackground">
@@ -119,6 +125,9 @@
 				<FontString parentKey="Text" inherits="GameFontHighlightCenter" setAllPoints="true" justifyV="MIDDLE" maxLines="1"/>
 			</Layer>
 		</Layers>
+		<Scripts>
+			<OnUpdate method="OnUpdate"/>
+		</Scripts>
 	</StatusBar>
 
 	<Frame name="ContributionTemplate" mixin="ContributionMixin" virtual="true">
@@ -131,18 +140,18 @@
 			</Frame>
 			<Frame parentKey="State" inherits="ContributionStateTemplate">
 				<Anchors>
-					<Anchor point="TOP" relativeKey="$parent.Header" relativePoint="BOTTOM"/>
+					<Anchor point="TOP" relativeKey="$parent.Header" relativePoint="BOTTOM" x="0" y="6"/>
 				</Anchors>
 			</Frame>
 			<StatusBar parentKey="Status" inherits="ContributionStatusTemplate">
 				<Anchors>
-					<Anchor point="BOTTOM" x="0" y="50"/>
+					<Anchor point="BOTTOM" x="3.0" y="29.0" />
 				</Anchors>
 			</StatusBar>
 			<Button parentKey="ContributeButton" inherits="UIPanelButtonTemplate" mixin="CurrencyTemplateMixin, ContributeButtonMixin">
-				<Size x="185" y="24"/>
+				<Size x="169" y="24" />
 				<Anchors>
-					<Anchor point="TOP" relativeKey="$parent.Status" relativePoint="BOTTOM" x="0" y="-10"/>
+					<Anchor point="TOP" relativeKey="$parent.Status" relativePoint="BOTTOM" x="0.0" y="-24.0" />
 				</Anchors>
 				<Scripts>
 					<OnClick method="OnClick"/>
@@ -154,10 +163,10 @@
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="Description" font="QuestFont" justifyH="LEFT" justifyV="TOP">
-					<Size x="0" y="80" />
+					<Size x="0" y="103" />
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.State" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
-						<Anchor point="TOPRIGHT" relativeKey="$parent.State" relativePoint="BOTTOMRIGHT" x="0" y="-4"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.State" relativePoint="BOTTOMLEFT" x="26" y="-3" />
+						<Anchor point="TOPRIGHT" relativeKey="$parent.State" relativePoint="BOTTOMRIGHT" x="-26" y="-3" />
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -176,11 +185,11 @@
 		<KeyValues>
 			<KeyValue key="fixedWidth" value="869" type="number"/>
 			<KeyValue key="fixedHeight" value="579" type="number"/>
-			<KeyValue key="topPadding" value="70" type="number"/>
+			<KeyValue key="topPadding" value="62" type="number"/>
 			<KeyValue key="bottomPadding" value="45" type="number"/>
 			<KeyValue key="leftPadding" value="45" type="number"/>
 			<KeyValue key="rightPadding" value="75" type="number"/>
-			<KeyValue key="spacing" value="12" type="number"/>
+			<KeyValue key="spacing" value="8" type="number"/>
 		</KeyValues>
 
 		<Layers>
@@ -190,8 +199,17 @@
 		</Layers>
 		<Frames>
 			<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
+				<Layers>
+					<Layer level="BORDER">
+						<Texture parentKey="CloseButtonBackground" atlas="Legionfall_ExitFrame" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="-10" y="-20"/>
+					<Anchor point="TOPRIGHT" x="-15" y="-18" />
 				</Anchors>
 			</Button>
 		</Frames>

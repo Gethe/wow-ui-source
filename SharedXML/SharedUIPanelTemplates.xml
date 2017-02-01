@@ -1592,7 +1592,6 @@
 		<Scripts>
 			<OnLoad>
 				PanelTemplates_TabResize(self, 0, nil, self.minWidth);
-				self.HighlightTexture:SetWidth(self:GetTextWidth() + 31);
 			</OnLoad>
 		</Scripts>
 		<ButtonText name="$parentText" parentKey="Text">

@@ -36,12 +36,12 @@ function ModelSceneActorMixin:ApplyFromModelSceneActorInfo(actorInfo)
 
 	self.requestedScale = nil;
 
-	local animation, animationVariation, alpha, scale;
+	local animation, animationVariation, animSpeed, alpha, scale;
 	if actorInfo.modelActorDisplayID then
-		animation, animationVariation, alpha, scale = C_ModelInfo.GetModelSceneActorDisplayInfoByID(actorInfo.modelActorDisplayID);
+		animation, animationVariation, animSpeed, alpha, scale = C_ModelInfo.GetModelSceneActorDisplayInfoByID(actorInfo.modelActorDisplayID);
 	end
 
-	self:SetAnimation(animation or 0, animationVariation);
+	self:SetAnimation(animation or 0, animationVariation, animSpeed);
 	self:SetAlpha(alpha or 1.0);
 	self:SetRequestedScale(scale or 1.0);
 
@@ -49,6 +49,12 @@ function ModelSceneActorMixin:ApplyFromModelSceneActorInfo(actorInfo)
 
 	self:MarkScaleDirty();
 	self:UpdateScale();
+
+	C_ModelInfo.AddActiveModelSceneActor(self, actorInfo.modelActorID);
+end
+
+function ModelSceneActorMixin:OnModelCleared()
+	C_ModelInfo.ClearActiveModelSceneActor(self);
 end
 
 function ModelSceneActorMixin:SetNormalizedScaleAggressiveness(normalizedScaleAggressiveness)

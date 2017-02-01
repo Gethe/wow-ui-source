@@ -166,8 +166,9 @@ local ContributionCollectorLua =
 
 			Returns =
 			{
-				{ Name = "contributionState", Type = "number", Nilable = false },
+				{ Name = "contributionState", Type = "ContributionState", Nilable = false },
 				{ Name = "contributionPercentageComplete", Type = "number", Nilable = false },
+				{ Name = "timeOfNextStateChange", Type = "number", Nilable = true },
 			},
 		},
 		{
@@ -216,6 +217,21 @@ local ContributionCollectorLua =
 
 	Tables =
 	{
+		{
+			Name = "ContributionState",
+			Type = "Enumeration",
+			NumValues = 5,
+			MinValue = 0,
+			MaxValue = 4,
+			Fields =
+			{
+				{ Name = "None", Type = "ContributionState", EnumValue = 0 },
+				{ Name = "Building", Type = "ContributionState", EnumValue = 1 },
+				{ Name = "Active", Type = "ContributionState", EnumValue = 2 },
+				{ Name = "UnderAttack", Type = "ContributionState", EnumValue = 3 },
+				{ Name = "Destroyed", Type = "ContributionState", EnumValue = 4 },
+			},
+		},
 	},
 };
 

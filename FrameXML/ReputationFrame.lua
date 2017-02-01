@@ -33,6 +33,11 @@ function ReputationFrame_OnShow(self)
 	self:RegisterEvent("QUEST_LOG_UPDATE");
 	self:RegisterEvent("UPDATE_FACTION");
 	self:RegisterEvent("LFG_BONUS_FACTION_ID_UPDATED");
+
+	if (self:GetParent().ReputationTabHelpBox:IsShown()) then
+		self:GetParent().ReputationTabHelpBox:Hide();
+		SetCVarBitfield("closedInfoFrames",	LE_FRAME_TUTORIAL_REPUTATION_EXALTED_PLUS, true);
+	end
 end
 
 function ReputationFrame_OnHide(self)

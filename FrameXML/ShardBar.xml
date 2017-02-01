@@ -2,54 +2,54 @@
 ..\FrameXML\UI.xsd">
   <Script file="ShardBar.lua"/>
 
-	<Frame name="ShardTemplate" parentArray="Shards" hidden="false" virtual="true">
+	<Frame name="ShardTemplate" parentArray="Shards" virtual="true">
 		<Animations>
 			<AnimationGroup parentKey="animIn" setToFinalAlpha="true">
-				<Alpha target="$parentFill" fromAlpha="0" toAlpha="1" duration="0.2" order="1"/>
-				<Alpha target="$parentGlow" fromAlpha="0" toAlpha="1" duration="0.2" order="1"/>
-				<Alpha target="$parentGlow" fromAlpha="1" toAlpha="0" duration="0.1" order="2"/>
+				<Alpha childKey="ShardFill" fromAlpha="0" toAlpha="1" duration="0.2" order="1"/>
+				<Alpha childKey="ShardGlow" fromAlpha="0" toAlpha="1" duration="0.2" order="1"/>
+				<Alpha childKey="ShardGlow" fromAlpha="1" toAlpha="0" duration="0.1" order="2"/>
 			</AnimationGroup>
 			<AnimationGroup parentKey="animOut" setToFinalAlpha="true">
-				<Alpha		target="$parentFill" fromAlpha="1" toAlpha="0" duration="0.2" order="1"/>
-				<Alpha		target="$parentSmokeA" fromAlpha="0" toAlpha="1" duration="0.1" order="1"/>
-				<Alpha		target="$parentSmokeB" fromAlpha="0" toAlpha="1" duration="0.1" order="1"/>
-				<Rotation 	target="$parentSmokeA" radians="1.1" duration="0.3" order="1"/>
-				<Rotation	target="$parentSmokeB" radians="-0.9" duration="0.4" order="1"/>
-				<Scale 		target="$parentSmokeA" fromScaleX="1" toScaleX="1.2" fromScaleY="1" toScaleY="1.2" duration="0.3" order="1"/>
-				<Scale		target="$parentSmokeB" fromScaleX="1" toScaleX="2.5" fromScaleY="1" toScaleY="2.5" duration="0.4" order="1"/>
-				<Alpha		target="$parentSmokeA" fromAlpha="1" toAlpha="0" duration="0.25" order="2"/>
-				<Alpha		target="$parentSmokeB" fromAlpha="1" toAlpha="0" duration="0.25" order="2"/>
-				<Scale		target="$parentSmokeA" fromScaleX="1" toScaleX="0.4" fromScaleY="1" toScaleY="0.4" duration="0.25" order="2"/>
-				<Scale		target="$parentSmokeB" fromScaleX="1" toScaleX="0.4" fromScaleY="1" toScaleY="0.4" duration="0.25" order="2"/>
+				<Alpha		childKey="ShardFill" fromAlpha="1" toAlpha="0" duration="0.2" order="1"/>
+				<Alpha		childKey="ShardSmokeA" fromAlpha="0" toAlpha="1" duration="0.1" order="1"/>
+				<Alpha		childKey="ShardSmokeB" fromAlpha="0" toAlpha="1" duration="0.1" order="1"/>
+				<Rotation 	childKey="ShardSmokeA" radians="1.1" duration="0.3" order="1"/>
+				<Rotation	childKey="ShardSmokeB" radians="-0.9" duration="0.4" order="1"/>
+				<Scale 		childKey="ShardSmokeA" fromScaleX="1" toScaleX="1.2" fromScaleY="1" toScaleY="1.2" duration="0.3" order="1"/>
+				<Scale		childKey="ShardSmokeB" fromScaleX="1" toScaleX="2.5" fromScaleY="1" toScaleY="2.5" duration="0.4" order="1"/>
+				<Alpha		childKey="ShardSmokeA" fromAlpha="1" toAlpha="0" duration="0.25" order="2"/>
+				<Alpha		childKey="ShardSmokeB" fromAlpha="1" toAlpha="0" duration="0.25" order="2"/>
+				<Scale		childKey="ShardSmokeA" fromScaleX="1" toScaleX="0.4" fromScaleY="1" toScaleY="0.4" duration="0.25" order="2"/>
+				<Scale		childKey="ShardSmokeB" fromScaleX="1" toScaleX="0.4" fromScaleY="1" toScaleY="0.4" duration="0.25" order="2"/>
 			</AnimationGroup>
 		</Animations>
 		<Size x="52" y="29"/>
 		<Layers>
 			<Layer level="OVERLAY">
-				<Texture name="$parentGlow" file="Interface\PlayerFrame\UI-WarlockShard" parentKey="shardGlow" alphaMode="ADD" alpha="0">
+				<Texture file="Interface\PlayerFrame\UI-WarlockShard" parentKey="ShardGlow" alphaMode="ADD" alpha="0">
 					<Size x="26" y="23"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="-2" y="1"/>
 					</Anchors>
 					<TexCoords left="0.01562500" right="0.42187500" top="0.14843750" bottom="0.32812500"/>
 				</Texture>
-				<Texture name="$parentSmokeA" file="Interface\PlayerFrame\UI-WarlockShard" alpha="0" parentKey="shardSmokeA">
+				<Texture file="Interface\PlayerFrame\UI-WarlockShard" alpha="0" parentKey="ShardSmokeA">
 					<Size x="32" y="32"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="-8" y="5"/>
 					</Anchors>
 					<TexCoords left="0.01562500" right="0.51562500" top="0.34375000" bottom="0.59375000"/>
 				</Texture>
-				<Texture name="$parentSmokeB" file="Interface\PlayerFrame\UI-WarlockShard" alpha="0" parentKey="shardSmokeB">
+				<Texture file="Interface\PlayerFrame\UI-WarlockShard" alpha="0" parentKey="ShardSmokeB">
 					<Size x="32" y="32"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentSmokeA"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.ShardSmokeA"/>
 					</Anchors>
 					<TexCoords right="0.01562500" left="0.51562500" bottom="0.34375000" top="0.59375000"/>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture name="$parentFill" file="Interface\PlayerFrame\UI-WarlockShard" alpha="0" parentKey="shardFill">
+				<Texture file="Interface\PlayerFrame\UI-WarlockShard" alpha="0" parentKey="ShardFill">
 					<Size x="17" y="16"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="3" y="-2"/>
@@ -67,41 +67,21 @@
 				</Texture>
 			</Layer>
 		</Layers>
+		<Frames>
+			<StatusBar parentKey="PartialFill" setAllPoints="true" orientation="VERTICAL" minValue="0" maxValue="1" alpha="0.7">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ShardFill" relativePoint="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ShardFill" relativePoint="BOTTOMRIGHT"/>
+				</Anchors>
+				<BarTexture atlas="nameplate-WarlockShard-On"/>
+			</StatusBar>
+		</Frames>
 	</Frame>
 
 	<Frame name="WarlockPowerFrame" inherits="ClassPowerBarFrame" mixin="ClassPowerBar, WarlockPowerBar">
-		<Size>
-		  <AbsDimension x="110" y="25"/>
-		</Size>
+		<Size x="110" y="25"/>
 		<Anchors>
 			<Anchor point="TOP" relativeTo="PlayerFrame" relativePoint="BOTTOM" x="50" y="34"/>
 		</Anchors>
-		<Frames>
-			<Frame name="$parentShard1" inherits="ShardTemplate" parentKey="shard1">
-				<Anchors>
-					<Anchor point="TOPLEFT" x="-10" y="0"/>
-				</Anchors>
-			</Frame>
-			<Frame name="$parentShard2" inherits="ShardTemplate" parentKey="shard2">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentShard1" relativePoint="TOPLEFT" x="25"/>
-				</Anchors>
-			</Frame>
-			<Frame name="$parentShard3" inherits="ShardTemplate" parentKey="shard3">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentShard2" relativePoint="TOPLEFT" x="25"/>
-				</Anchors>
-			</Frame>
-			<Frame name="$parentShard4" inherits="ShardTemplate" parentKey="shard4">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentShard3" relativePoint="TOPLEFT" x="25"/>
-				</Anchors>
-			</Frame>
-			<Frame name="$parentShard5" inherits="ShardTemplate" parentKey="shard5">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentShard4" relativePoint="TOPLEFT" x="25"/>
-				</Anchors>
-			</Frame>
-		</Frames>
 	</Frame>
 </Ui>

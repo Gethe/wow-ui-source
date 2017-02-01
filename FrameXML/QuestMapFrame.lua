@@ -1046,6 +1046,9 @@ function GetZoneStoryID()
 		-- Val'sharah
 		["1018-Alliance"] = {10698, 1018},
 		["1018-Horde"] = {10698, 1018},
+		-- Broken Shore
+		["1021-Alliance"] = {11546, 1021},
+		["1021-Horde"] = {11546, 1021},
 	};
 	if (achievementTable[key] ~= nil) then
 		return achievementTable[key][1], achievementTable[key][2];

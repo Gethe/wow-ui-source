@@ -29,6 +29,39 @@ function ContributionRewardMixin:OnLeave()
 	GameTooltip:Hide();
 end
 
+ContributionStatusMixin = {}
+
+function ContributionStatusMixin:SetContributionID(contributionID)
+	self.contributionID = contributionID;
+end
+
+function ContributionStatusMixin:Update()
+	local state, stateAmount, timeOfNextStateChange = C_ContributionCollector.GetState(self.contributionID);
+	local appearance = CONTRIBUTION_APPEARANCE_DATA[state];
+
+	self:SetStatusBarAtlas(appearance.statusBarAtlas);
+	self:SetValue(stateAmount);
+	self.Spark:SetShown(stateAmount > 0 and stateAmount < 1);
+
+	local text;
+	if state == Enum.ContributionState.Active and timeOfNextStateChange then
+		local time = math.max(timeOfNextStateChange - GetServerTime(), 60); -- Never display times below 1 minute
+		text = CONTRIBUTION_POI_TOOLTIP_REMAINING_ACTIVE_TIME:format(SecondsToTime(time, true, true));
+	elseif state == Enum.ContributionState.UnderAttack then
+		text = CONTIBUTION_HEALTH_TEXT_WITH_PERCENTAGE:format(FormatPercentage(stateAmount));
+	end
+
+	self.Text:SetText(text);
+end
+
+function ContributionStatusMixin:OnUpdate()
+	local timeNow = GetTime();
+	if timeNow >= self.nextUpdate then
+		self.nextUpdate = timeNow + self.updateDelay;
+		self:Update();
+	end
+end
+
 ContributionMixin = {};
 
 function ContributionMixin:OnLoad()
@@ -110,19 +143,8 @@ function ContributionMixin:AddReward(index, rewardID)
 end
 
 function ContributionMixin:UpdateStatus()
-	local state, stateAmount = C_ContributionCollector.GetState(self.contributionID);
-	local appearance = CONTRIBUTION_APPEARANCE_DATA[state];
-
-	self.Status:SetStatusBarAtlas(appearance.statusBarAtlas);
-	self.Status:SetValue(stateAmount);
-	self.Status.Spark:SetShown(stateAmount > 0 and stateAmount < 1);
-
-	-- Only show percentages when the contribution is active or under attack
-	if state == LE_CONTRIBUTION_STATE_ACTIVE or state == LE_CONTRIBUTION_STATE_UNDER_ATTACK then
-		self.Status.Text:SetText(CONTIBUTION_HEALTH_TEXT_WITH_PERCENTAGE:format(FormatPercentage(stateAmount)));
-	else
-		self.Status.Text:SetText();
-	end
+	self.Status:SetContributionID(self.contributionID);
+	self.Status:Update();
 end
 
 function ContributionMixin:UpdateContributeButton()

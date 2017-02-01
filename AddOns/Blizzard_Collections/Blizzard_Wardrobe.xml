@@ -490,6 +490,53 @@
 					<OnClick function="WardrobeCollectionFrame_ClickTab"/>
 				</Scripts>
 			</Button>
+			<Frame parentKey="SetsTabHelpBox" inherits="GlowBoxTemplate" hidden="true" frameLevel="6">
+				<Size x="230" y="65"/>
+				<Anchors>
+					<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$parentTab2" x="0" y="-20"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="BigText" inherits="GameFontHighlight" justifyH="LEFT">
+							<Size x="186" y="0"/>
+							<Anchors>
+								<Anchor point="TOP" x="-10" y="-12"/>
+							</Anchors>
+						</FontString>
+						<Texture parentKey="ArrowUp" inherits="HelpPlateArrowUP">
+							<Size x="53" y="21"/>
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-3"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER">
+						<Texture parentKey="ArrowGlowUp" inherits="HelpPlateArrow-GlowUP" alphaMode="ADD" alpha="0.5">
+							<Size x="53" y="21"/>
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-3"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
+						<Anchors>
+							<Anchor point="TOPRIGHT" x="6" y="6"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								self:GetParent():Hide();
+								if (WardrobeFrame_IsAtTransmogrifier()) then
+									SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_SETS_VENDOR_TAB, true);
+								else
+									SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_SETS_TAB, true);
+								end
+							</OnClick>
+						</Scripts>
+					</Button>
+				</Frames>
+			</Frame>
 			<EditBox name="$parentSearchBox" parentKey="searchBox" inherits="SearchBoxTemplate" letters="40" motionScriptsWhileDisabled="true">
 				<Size x="115" y="20"/>
 				<Anchors>
@@ -916,10 +963,14 @@
 					<OnMouseWheel method="OnMouseWheel"/>
 				</Scripts>
 			</Frame>
-			<Frame parentKey="SetsCollectionFrame" inherits="CollectionsBackgroundTemplate" mixin="WardrobeSetsCollectionMixin" hidden="true">
+			<Frame parentKey="SetsCollectionFrame" mixin="WardrobeSetsCollectionMixin" hidden="true">
 				<KeyValues>
 					<KeyValue key="searchType" value="LE_TRANSMOG_SEARCH_TYPE_BASE_SETS" type="global"/>
 				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" y="-60" x="4"/>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-6" y="5"/>
+				</Anchors>
 				<Frames>
 					<Frame parentKey="LeftInset" useParentLevel="true" inherits="InsetFrameTemplate">
 						<Size x="260" y="496"/>
@@ -928,10 +979,10 @@
 							<Anchor point="BOTTOMLEFT"/>
 						</Anchors>
 					</Frame>
-					<Frame parentKey="RightInset" useParentLevel="true" inherits="InsetFrameTemplate" hidden="true">
+					<Frame parentKey="RightInset" useParentLevel="true" inherits="CollectionsBackgroundTemplate">
 						<Anchors>
-							<Anchor point="TOPRIGHT"/>
-							<Anchor point="BOTTOMLEFT" relativeKey="$parent.LeftInset" relativePoint="BOTTOMRIGHT" x="22" y="0"/>
+							<Anchor point="TOPLEFT" relativeKey="$parent.LeftInset" relativePoint="TOPRIGHT" x="22" y="0"/>
+							<Anchor point="BOTTOMRIGHT"/>
 						</Anchors>
 					</Frame>
 					<ScrollFrame name="$parentScrollFrame" parentKey="ScrollFrame" inherits="HybridScrollFrameTemplate" mixin="WardrobeSetsCollectionScrollFrameMixin">
@@ -943,7 +994,7 @@
 							<Slider name="$parentScrollBar" inherits="HybridScrollBarTrimTemplate" parentKey="scrollBar">
 								<Anchors>
 									<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="4" y="20"/>
-									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="4" y="11"/>
+									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="4" y="8"/>
 								</Anchors>
 							</Slider>
 							<Frame name="WardrobeSetsFavoriteDropDown" parentKey="FavoriteDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true"/>
@@ -964,7 +1015,7 @@
 							<Layer level="BACKGROUND">
 								<Texture parentKey="IconRowBackground" atlas="transmog-set-iconrow-background" useAtlasSize="true">
 									<Anchors>
-										<Anchor point="TOP" x="0" y="-81"/>
+										<Anchor point="TOP" x="0" y="-78"/>
 									</Anchors>
 								</Texture>
 							</Layer>
@@ -975,11 +1026,15 @@
 										<Anchor point="TOP" x="0" y="-37"/>
 									</Anchors>
 									<Color r="1" g="0.82" b="0"/>
+									<Shadow>
+										<Offset x="1" y="-1" />
+										<Color r="0" g="0" b="0"/>
+									</Shadow>
 								</FontString>
 								<FontString parentKey="Label" inherits="GameFontHighlight" maxLines="1">
 									<Size x="380" y="0"/>
 									<Anchors>
-										<Anchor point="TOP" x="0" y="-66"/>
+										<Anchor point="TOP" x="0" y="-63"/>
 									</Anchors>
 								</FontString>
 							</Layer>
@@ -1005,7 +1060,7 @@
 							<Button name="WardrobeSetsCollectionVariantSetsButton" parentKey="VariantSetsButton" inherits="UIMenuButtonStretchTemplate" frameLevel="6">
 								<Size x="108" y="22"/>
 								<Anchors>
-									<Anchor point="TOPRIGHT" x="-6" y="-3"/>
+									<Anchor point="TOPRIGHT" x="-6" y="-6"/>
 								</Anchors>
 								<Layers>
 									<Layer level="ARTWORK">

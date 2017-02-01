@@ -102,6 +102,9 @@ end
 function ClassNameplateBar:OnOptionsUpdated()
 end
 
+function ClassNameplateBar:GetUnit()
+	return "player";
+end
 
 --------------------------------------------------------------------------------
 --
@@ -238,6 +241,10 @@ function ClassNameplateManaBar:OnOptionsUpdated()
 	local width, height = C_NamePlate.GetNamePlateSelfSize();
 	self:SetWidth(width - 24);
 	self:SetHeight(DefaultCompactNamePlatePlayerFrameSetUpOptions.healthBarHeight);
+end
+
+function ClassNameplateManaBar:GetUnit()
+	return "player";
 end
 
 function ClassNameplateManaBar_OnUpdate(self)

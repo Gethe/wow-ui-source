@@ -5,6 +5,7 @@
 	<ScopedModifier scriptsUseGivenEnv="true">
 		<Actor name="ModelSceneActorTemplate" mixin="ModelSceneActorMixin" virtual="true">
 			<Scripts>
+				<OnModelCleared method="OnModelCleared" />
 				<OnModelLoaded method="OnModelLoaded" />
 				<OnUpdate method="OnUpdate" />
 			</Scripts>

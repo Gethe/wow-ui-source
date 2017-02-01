@@ -26,13 +26,13 @@ local ARTIFACT_TIER_2_CURVED_LINE_FADE_DELAY = 0.5;
 
 -- The Tier 2 crest animates in with frame shake.
 local ARTIFACT_TIER_2_CREST_DELAY = 1.2;
-local ARTIFACT_TIER_2_SHAKE_DELAY = 0.3;
+local ARTIFACT_TIER_2_SHAKE_DELAY = 0.35;
 local ARTIFACT_TIER_2_SHAKE_AMOUNT = 4;
-local ARTIFACT_TIER_2_SHAKE_DURATION = 0.22;
+local ARTIFACT_TIER_2_SHAKE_DURATION = 0.25;
 local ARTIFACT_TIER_2_SHAKE_FREQUENCY = 0.001;
 
 local TIER_2_FINAL_POWER_REVEAL_REVEAL_DELAY = 0.5;
-local TIER_2_FINAL_POWER_REVEAL_SHAKE_DELAY = 0.5;
+local TIER_2_FINAL_POWER_REVEAL_SHAKE_DELAY = 0.35;
 local TIER_2_FINAL_POWER_REVEAL_SHAKE_AMOUNT = 4;
 local TIER_2_FINAL_POWER_REVEAL_SHAKE_DURATION = 0.22;
 local TIER_2_FINAL_POWER_REVEAL_SHAKE_FREQUENCY = 0.001;
@@ -48,10 +48,12 @@ end
 function ArtifactPerksMixin:OnShow()	
 	self.modelTransformElapsed = 0;
 	self:RegisterEvent("CURSOR_UPDATE");
+	self:RegisterEvent("UI_MODEL_SCENE_INFO_UPDATED");
 end
 
 function ArtifactPerksMixin:OnHide()	
 	self:UnregisterEvent("CURSOR_UPDATE");
+	self:UnregisterEvent("UI_MODEL_SCENE_INFO_UPDATED");
 	self:CancelAllTimedAnimations();
 	self:SkipTier2Animation();
 end
@@ -59,6 +61,8 @@ end
 function ArtifactPerksMixin:OnEvent(event, ...)
 	if event == "CURSOR_UPDATE" then
 		self:OnCursorUpdate();
+	elseif event == "UI_MODEL_SCENE_INFO_UPDATED" then
+		self:RefreshPowerTiers();
 	end
 end
 
@@ -135,6 +139,9 @@ function ArtifactPerksMixin:RefreshBackground()
 		self.CrestFrame.CrestRune9:SetAtlas(crestAtlas, true);
 		self.CrestFrame.CrestRune10:SetAtlas(crestAtlas, true);
 		self.CrestFrame.CrestRune11:SetAtlas(crestAtlas, true);
+		self.CrestFrame.CrestRune12:SetAtlas(crestAtlas, true);
+		self.CrestFrame.CrestRune13:SetAtlas(crestAtlas, true);
+		self.CrestFrame.CrestRune14:SetAtlas(crestAtlas, true);
 	else
 		self.textureKit = nil;
 	end
@@ -551,13 +558,7 @@ do
 		if not self.RevealAnim then
 			return;
 		end
-		self.FadeAnim:Stop();
-		self.ScrollAnim:Stop();
-
-		self.Background:SetAlpha(0.0);
-		self.Fill:SetAlpha(0.0);
-		self.FillScroll1:SetAlpha(0.0);
-		self.FillScroll2:SetAlpha(0.0);
+		lineContainer:SetAlpha(0.0);
 
 		self.RevealAnim.Start1:SetEndDelay(delay);
 		self.RevealAnim.Start2:SetEndDelay(delay);
@@ -601,20 +602,26 @@ function ArtifactLineMixin:SetVertexOffset(vertexIndex, x, y)
 	end
 end
 
-function ArtifactLineMixin:OnReleased()
-	self.animType = nil;
-	self.ScrollAnim:Stop();
-	self.FadeAnim:Stop();
-	if self.RevealAnim then
-		self.RevealAnim:Stop();
+function ArtifactLineMixin:SetAlpha(alpha, continueAnimating)
+	if not continueAnimating then
+		self.ScrollAnim:Stop();
+		self.FadeAnim:Stop();
+		if self.RevealAnim then
+			self.RevealAnim:Stop();
+		end
 	end
 
-	self.Background:SetAlpha(0.0);
-	self.Fill:SetAlpha(0.0);
-	self.FillScroll1:SetAlpha(0.0);
+	self.Background:SetAlpha(alpha);
+	self.Fill:SetAlpha(alpha);
+	self.FillScroll1:SetAlpha(alpha);
 	if self.FillScroll2 then
-		self.FillScroll2:SetAlpha(0.0);
+		self.FillScroll2:SetAlpha(alpha);
 	end
+end
+
+function ArtifactLineMixin:OnReleased()
+	self.animType = nil;
+	self:SetAlpha(0.0);
 end
 
 local function OnUnusedLineHidden(lineContainer)
@@ -842,7 +849,7 @@ function ArtifactPerksMixin:OnRelicSlotMouseLeave(relicSlotIndex)
 	self:RefreshCursorHighlights();
 end
 
-function ArtifactPerksMixin:ShowHighlightForRelicItemID(itemID)
+function ArtifactPerksMixin:ShowHighlightForRelicItemID(itemID, itemLink)
 	local couldFitInAnySlot = false;
 	for relicSlotIndex = 1, C_ArtifactUI.GetNumRelicSlots() do
 		if C_ArtifactUI.CanApplyRelicItemIDToSlot(itemID, relicSlotIndex) then
@@ -853,18 +860,18 @@ function ArtifactPerksMixin:ShowHighlightForRelicItemID(itemID)
 
 	if couldFitInAnySlot then
 		local relicName, relicIcon, relicType, relicLink = C_ArtifactUI.GetRelicInfoByItemID(itemID);
-		RelicMouseOverHighlightHelper(self, true, relicType, relicLink, C_ArtifactUI.GetPowersAffectedByRelicItemID(itemID));
+		RelicMouseOverHighlightHelper(self, true, relicType, relicLink, C_ArtifactUI.GetPowersAffectedByRelicItemLink(itemLink));
 	end
 end
 
-function ArtifactPerksMixin:HideHighlightForRelicItemID(itemID)
-	RelicMouseOverHighlightHelper(self, false, nil, nil, C_ArtifactUI.GetPowersAffectedByRelicItemID(itemID));
+function ArtifactPerksMixin:HideHighlightForRelicItemID(itemID, itemLink)
+	RelicMouseOverHighlightHelper(self, false, nil, nil, C_ArtifactUI.GetPowersAffectedByRelicItemLink(itemLink));
 end
 
 function ArtifactPerksMixin:RefreshCursorHighlights()
-	local type, itemID = GetCursorInfo();
+	local type, itemID, itemLink = GetCursorInfo();
 	if type == "item" and IsArtifactRelicItem(itemID) then
-		self:HideHighlightForRelicItemID(itemID);
+		self:HideHighlightForRelicItemID(itemID, itemLink);
 	end
 end
 
@@ -1020,9 +1027,9 @@ function ArtifactPerksMixin:AnimateTraitRefund(numTraitsRefunded)
 		
 		local targetX = ArtifactFrame.PerksTab:GetWidth() / 2;
 		local targetY = ArtifactFrame.PerksTab.TitleContainer:GetHeight();
-		local _, _, _, sourceX, sourceY = button:GetPoint();
+		local point, parent, relativePoint, sourceX, sourceY = button:GetPoint();
 		sourceY = -sourceY;
-		sourceY = sourceY + button:GetHeight();
+		sourceY = sourceY;
 		sourceX = sourceX + (button:GetWidth() / 2);
 		
 		local currentRank = numTraitsRefunded + 1;
@@ -1034,9 +1041,12 @@ function ArtifactPerksMixin:AnimateTraitRefund(numTraitsRefunded)
 			end
 			
 			local animatedNumber = button.FloatingNumbers[numberIndex];
-			animatedNumber:SetPoint("CENTER", button.Rank, "CENTER");
-			animatedNumber.Rank:SetText(currentRank);
+			animatedNumber:SetPoint(point, parent, relativePoint, sourceX, -sourceY);
+			animatedNumber.Rune:SetAtlas(button:GenerateRune(), true);
 			animatedNumber.MoveAndFade.Move:SetOffset(targetX - sourceX, sourceY - targetY);
+			animatedNumber.MoveAndFade.Rotation:SetDegrees(math.random(-180, 180));
+			animatedNumber.MoveAndFade.RuneMove:SetOffset(targetX - sourceX, sourceY - targetY);
+			animatedNumber.MoveAndFade.RuneRotation:SetDegrees(math.random(-180, 180));
 			animatedNumber.MoveAndFade:Play();
 			animatedNumber:Show();
 			currentRank = currentRank - 1;
@@ -1066,6 +1076,7 @@ function ArtifactPerksMixin:AnimateInTierTwoPowers()
 	for i = 1, self.numUsedCurvedLines do
 		local lineContainer = self.CurvedDependencyLines[i];
 		lineContainer.Fill:SetVertexColor(lineContainer.disconnectedColor:GetRGB());
+		lineContainer:SetAlpha(0.0);
 	end
 	
 	-- This is hidden until the end of the constellation animation.
@@ -1095,13 +1106,7 @@ function ArtifactPerksMixin:AnimateInCurvedLine(curvedLineIndex)
 	local baseIndex = (curvedLineIndex - 1) * NUM_CURVED_LINE_SEGEMENTS;
 	for i = 1, NUM_CURVED_LINE_SEGEMENTS do
 		local lineContainer = self.CurvedDependencyLines[baseIndex + i];
-		lineContainer.FadeAnim:Stop();
-		lineContainer.Background:SetAlpha(0.0);
-		lineContainer.Fill:SetAlpha(0.0);
-		lineContainer.FillScroll1:SetAlpha(0.0);
-		if lineContainer.FillScroll2 then
-			lineContainer.FillScroll2:SetAlpha(0.0);
-		end
+		lineContainer:SetAlpha(0.0);
 
 		local delay = ARTIFACT_TIER_2_CURVED_LINE_TICK_SPEED * math.abs(NUM_CURVED_LINE_SEGEMENTS / 2 - i);
 		lineContainer.Tier2FadeInAnim.Background:SetStartDelay(delay);
@@ -1206,11 +1211,11 @@ function ArtifactTitleTemplateMixin:OnCursorUpdate()
 end
 
 function ArtifactTitleTemplateMixin:RefreshCursorRelicHighlights()
-	local type, itemID = GetCursorInfo();
-	self:RefreshRelicHighlights(itemID);
+	local type, itemID, itemLink = GetCursorInfo();
+	self:RefreshRelicHighlights(itemID, itemLink);
 end
 
-function ArtifactTitleTemplateMixin:RefreshRelicHighlights(itemID)
+function ArtifactTitleTemplateMixin:RefreshRelicHighlights(itemID, itemLink)
 	for relicSlotIndex in ipairs(self.RelicSlots) do
 		self:SetRelicSlotHighlighted(relicSlotIndex, itemID and C_ArtifactUI.CanApplyRelicItemIDToSlot(itemID, relicSlotIndex));
 	end
