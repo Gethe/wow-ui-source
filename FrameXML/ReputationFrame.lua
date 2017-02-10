@@ -193,13 +193,14 @@ function ReputationFrame_Update(showLFGPulse)
 			barMax = barMax - barMin;
 			barValue = barValue - barMin;
 			barMin = 0;
-			
+
 			factionRow.standingText = factionStandingtext;
 			if ( isCapped ) then
 				factionRow.rolloverText = nil;
 			else
 				factionRow.rolloverText = HIGHLIGHT_FONT_COLOR_CODE.." "..format(REPUTATION_PROGRESS_FORMAT, barValue, barMax)..FONT_COLOR_CODE_CLOSE;
 			end
+			factionBar:SetFillStyle("STANDARD_NO_RANGE_FILL");
 			factionBar:SetMinMaxValues(0, barMax);
 			factionBar:SetValue(barValue);
 			local color = FACTION_BAR_COLORS[colorIndex];
@@ -355,14 +356,17 @@ function ShowFriendshipReputationTooltip(friendshipID, parent, anchor)
 	end
 end
 
-function ReputationParagonFrame_OnEnter(self)
-	local _, _, standingID = GetFactionInfoByID(self.factionID);
+function ReputationParagonFrame_SetupParagonTooltip(frame, factionID)
+	ReputationParagonTooltip.owner = frame;
+	ReputationParagonTooltip.factionID = factionID;
+
+	local factionName, _, standingID = GetFactionInfoByID(factionID);
 	local gender = UnitSex("player");
 	local factionStandingtext = GetText("FACTION_STANDING_LABEL"..standingID, gender);
-	ReputationParagonTooltip:SetOwner(self, "ANCHOR_RIGHT");
+
 	ReputationParagonTooltip:SetText(factionStandingtext);
-	local currentValue, threshold, rewardQuestID, hasRewardPending = C_Reputation.GetFactionParagonInfo(self.factionID);
-	local description = PARAGON_REPUTATION_TOOLTIP_TEXT;
+	local currentValue, threshold, rewardQuestID, hasRewardPending = C_Reputation.GetFactionParagonInfo(factionID);
+	local description = PARAGON_REPUTATION_TOOLTIP_TEXT:format(factionName);
 	if ( hasRewardPending ) then
 		local questIndex = GetQuestLogIndexByID(rewardQuestID);
 		local _, text = GetQuestLogQuestText(questIndex);
@@ -371,17 +375,39 @@ function ReputationParagonFrame_OnEnter(self)
 		end
 	end
 	ReputationParagonTooltip:AddLine(description, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, 1);
-	GameTooltip_InsertFrame(ReputationParagonTooltip, ReputationParagonTooltipStatusBar);
-	ReputationParagonTooltipStatusBar.Bar:SetMinMaxValues(0, threshold);
-	local value = mod(currentValue, threshold);
-	-- show overflow if reward is pending
-	if ( hasRewardPending ) then
-		value = value + threshold;
+	if ( not hasRewardPending ) then
+		GameTooltip_InsertFrame(ReputationParagonTooltip, ReputationParagonTooltipStatusBar);
+		ReputationParagonTooltipStatusBar.Bar:SetMinMaxValues(0, threshold);
+		local value = mod(currentValue, threshold);
+		-- show overflow if reward is pending
+		if ( hasRewardPending ) then
+			value = value + threshold;
+		end
+		ReputationParagonTooltipStatusBar.Bar:SetValue(value);
+		ReputationParagonTooltipStatusBar.Bar.Label:SetFormattedText(REPUTATION_PROGRESS_FORMAT, value, threshold);
 	end
-	ReputationParagonTooltipStatusBar.Bar:SetValue(value);
-	ReputationParagonTooltipStatusBar.Bar.Label:SetFormattedText(REPUTATION_PROGRESS_FORMAT, value, threshold);
 	GameTooltip_AddQuestRewardsToTooltip(ReputationParagonTooltip, rewardQuestID);
 	ReputationParagonTooltip:Show();
+end
+
+function ReputationParagonWatchBar_OnEnter(self)
+	if C_Reputation.IsFactionParagon(self.factionID) then
+		ReputationParagonTooltip:SetParent(self);
+		ReputationParagonTooltip:SetFrameStrata("TOOLTIP");
+		GameTooltip_SetDefaultAnchor(ReputationParagonTooltip, UIParent);
+		ReputationParagonFrame_SetupParagonTooltip(self, self.factionID);
+	end
+end
+
+function ReputationParagonWatchBar_OnLeave(self)
+	ReputationParagonTooltip:Hide();
+end
+
+function ReputationParagonFrame_OnEnter(self)
+	ReputationParagonTooltip:SetParent(self);
+	ReputationParagonTooltip:SetFrameStrata("TOOLTIP");
+	ReputationParagonTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	ReputationParagonFrame_SetupParagonTooltip(self, self.factionID);
 end
 
 function ReputationParagonFrame_OnLeave(self)

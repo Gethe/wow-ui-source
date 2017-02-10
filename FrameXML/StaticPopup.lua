@@ -1453,9 +1453,29 @@ StaticPopupDialogs["RESURRECT_NO_SICKNESS"] = {
 StaticPopupDialogs["RESURRECT_NO_TIMER"] = {
 	text = RESURRECT_REQUEST_NO_SICKNESS,
 	button1 = ACCEPT,
+	button1Pulse = true,
 	button2 = DECLINE,
 	OnShow = function(self)
 		self.timeleft = GetCorpseRecoveryDelay() + 60;
+		self.declineTimeLeft = 5
+		self.button2:SetText(self.declineTimeLeft)
+		self.button2:Disable();
+		self.ticker = C_Timer.NewTicker(1, function()
+			self.declineTimeLeft = self.declineTimeLeft - 1;
+			if (self.declineTimeLeft == 0) then
+				self.button2:SetText(DECLINE)
+				self.button2:Enable();
+				self.ticker:Cancel();
+				return;
+			else
+				self.button2:SetText(self.declineTimeLeft);
+			end
+		end)
+		
+	end,
+	OnHide = function(self)
+		self.ticker:Cancel();
+		self.ticker = nil;
 	end,
 	OnAccept = function(self)
 		AcceptResurrect();
@@ -3179,6 +3199,7 @@ StaticPopupDialogs["VOTE_BOOT_PLAYER"] = {
 	text = VOTE_BOOT_PLAYER,
 	button1 = YES,
 	button2 = NO,
+	StartDelay = function() return 3 end,
 	OnAccept = function(self)
 		SetLFGBootVote(true);
 	end,
@@ -3929,6 +3950,8 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 		info.timeout = text_arg2;
 	else
 		text:SetFormattedText(info.text, text_arg1, text_arg2);
+		text.text_arg1 = text_arg1;
+		text.text_arg2 = text_arg2;
 	end
 
 	-- Show or hide the close button
@@ -4040,6 +4063,7 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 			tempButtonLocs[i]:SetText(info["button"..i]);
 			tempButtonLocs[i]:Hide();
 			tempButtonLocs[i]:ClearAllPoints();
+			tempButtonLocs[i].PulseAnim:Stop();
 			--Now we possibly remove it.
 			if ( not (info["button"..i] and ( not info["DisplayButton"..i] or info["DisplayButton"..i](dialog))) ) then
 				tremove(tempButtonLocs, i);
@@ -4068,6 +4092,9 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 				tempButtonLocs[i]:SetWidth(width + 20);
 			else
 				tempButtonLocs[i]:SetWidth(120);
+			end
+			if (info["button"..i.."Pulse"]) then
+				tempButtonLocs[i].PulseAnim:Play();
 			end
 			tempButtonLocs[i]:Enable();
 			tempButtonLocs[i]:Show();

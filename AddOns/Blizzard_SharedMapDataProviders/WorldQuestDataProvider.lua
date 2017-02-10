@@ -42,8 +42,7 @@ end
 
 function WorldQuestDataProviderMixin:DoesWorldQuestInfoPassFilters(info)
 	local ignoreTypeRequirements = not self:IsMatchingWorldMapFilters();
-	local ignoreTimeRequirements = false;
-	return WorldMap_DoesWorldQuestInfoPassFilters(info, ignoreTypeRequirements, ignoreTimeRequirements);
+	return WorldMap_DoesWorldQuestInfoPassFilters(info, ignoreTypeRequirements);
 end
 
 function WorldQuestDataProviderMixin:RefreshAllData(fromOnShow)

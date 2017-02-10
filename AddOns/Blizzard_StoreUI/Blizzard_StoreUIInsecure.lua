@@ -50,7 +50,7 @@ if (InGlue()) then
 
 	function StoreFrame_OnCharacterListUpdate()
 		if (C_StoreGlue.GetVASProductReady()) then
-			local _, guid, realmName = C_PurchaseAPI.GetVASCompletionInfo();
+			local _, guid, realmName = C_StoreSecure.GetVASCompletionInfo();
 			VASCharacterGUID = guid;
 
 		    if (GetServerName() ~= realmName) then

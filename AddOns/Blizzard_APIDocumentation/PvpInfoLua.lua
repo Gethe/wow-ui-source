@@ -95,12 +95,35 @@ local PvpInfoLua =
 			},
 		},
 		{
+			Name = "GetSkirmishInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "pvpBracket", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "battlemasterListInfo", Type = "BattlemasterListInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "HasArenaSkirmishWinToday",
 			Type = "Function",
 
 			Returns =
 			{
 				{ Name = "hasArenaSkirmishWinToday", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsInBrawl",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isInBrawl", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -133,6 +156,20 @@ local PvpInfoLua =
 				{ Name = "name", Type = "string", Nilable = false },
 				{ Name = "texture", Type = "number", Nilable = false },
 				{ Name = "quantity", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "BattlemasterListInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "instanceType", Type = "number", Nilable = false },
+				{ Name = "minPlayers", Type = "number", Nilable = false },
+				{ Name = "maxPlayers", Type = "number", Nilable = false },
+				{ Name = "icon", Type = "number", Nilable = false },
+				{ Name = "longDescription", Type = "string", Nilable = false },
+				{ Name = "shortDescription", Type = "string", Nilable = false },
 			},
 		},
 		{

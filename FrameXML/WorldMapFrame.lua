@@ -33,7 +33,9 @@ local PLAYER_ARROW_SIZE_WINDOW = 40;
 local PLAYER_ARROW_SIZE_FULL_WITH_QUESTS = 38;
 local PLAYER_ARROW_SIZE_FULL_NO_QUESTS = 28;
 local GROUP_MEMBER_SIZE_WINDOW = 16;
+local RAID_MEMBER_SIZE_WINDOW = GROUP_MEMBER_SIZE_WINDOW * 0.75;
 local GROUP_MEMBER_SIZE_FULL = 10;
+local RAID_MEMBER_SIZE_FULL = GROUP_MEMBER_SIZE_FULL * 0.75;
 
 local BATTLEFIELD_ICON_SIZE_FULL = 36;
 local BATTLEFIELD_ICON_SIZE_WINDOW = 30;
@@ -340,6 +342,7 @@ function WorldMapFrame_OnLoad(self)
 	WorldMapUnitPositionFrame:SetPlayerPingTexture(3, "Interface\\minimap\\UI-Minimap-Ping-Rotate", 70, 70);
 
 	WorldMapUnitPositionFrame:SetMouseOverUnitExcluded("player", true);
+	WorldMapUnitPositionFrame:SetPinTexture("player", "Interface\\WorldMap\\WorldMapArrow");
 
 	local WORLD_QUEST_NUM_CELLS_HIGH = 75;
 	local WORLD_QUEST_NUM_CELLS_WIDE = math.ceil(WORLD_QUEST_NUM_CELLS_HIGH * 1002/668);
@@ -833,7 +836,7 @@ function WorldMap_GetWorldQuestRewardType(questID)
 	return true, worldQuestRewardType;
 end
 
-function WorldMap_DoesWorldQuestInfoPassFilters(info, ignoreTypeFilters, ignoreTimeRequirement)
+function WorldMap_DoesWorldQuestInfoPassFilters(info, ignoreTypeFilters)
 	local tagID, tagName, worldQuestType, rarity, isElite, tradeskillLineIndex, allowDisplayPastCritical = GetQuestTagInfo(info.questId);
 
 	if ( not ignoreTypeFilters ) then
@@ -879,13 +882,6 @@ function WorldMap_DoesWorldQuestInfoPassFilters(info, ignoreTypeFilters, ignoreT
 			if ( worldQuestRewardType ~= 0 and not typeMatchesFilters ) then
 				return false;
 			end
-		end
-	end
-
-	if ( not ignoreTimeRequirement ) then
-		local timeLeftMinutes = C_TaskQuest.GetQuestTimeLeftMinutes(info.questId);
-		if ( timeLeftMinutes and timeLeftMinutes <= WORLD_QUESTS_TIME_CRITICAL_MINUTES and not info.inProgress and not allowDisplayPastCritical ) then
-			return false;
 		end
 	end
 
@@ -1916,20 +1912,17 @@ function WorldMap_AddQuestTimeToTooltip(questID, allowDisplayPastCritical)
 	local timeLeftMinutes = C_TaskQuest.GetQuestTimeLeftMinutes(questID);
 	if ( timeLeftMinutes ) then
 		local color = NORMAL_FONT_COLOR;
-		local timeString;
 		if ( timeLeftMinutes <= WORLD_QUESTS_TIME_CRITICAL_MINUTES ) then
-			-- Grace period, show the actual time left
 			color = RED_FONT_COLOR;
+		end
+
+		local timeString;
+		if timeLeftMinutes <= 60 then
 			timeString = SecondsToTime(timeLeftMinutes * 60);
+		elseif timeLeftMinutes < 24 * 60  then
+			timeString = D_HOURS:format(math.floor(timeLeftMinutes) / 60);
 		else
-			local timeLeftMinutesToDisplay = timeLeftMinutes - (allowDisplayPastCritical and 0 or WORLD_QUESTS_TIME_CRITICAL_MINUTES);
-			if timeLeftMinutes <= 60 + WORLD_QUESTS_TIME_CRITICAL_MINUTES then
-				timeString = SecondsToTime((timeLeftMinutesToDisplay) * 60);
-			elseif timeLeftMinutes < 24 * 60 + WORLD_QUESTS_TIME_CRITICAL_MINUTES then
-				timeString = D_HOURS:format(math.floor(timeLeftMinutesToDisplay) / 60);
-			else
-				timeString = D_DAYS:format(math.floor(timeLeftMinutesToDisplay) / 1440);
-			end
+			timeString = D_DAYS:format(math.floor(timeLeftMinutes) / 1440);
 		end
 
 		WorldMapTooltip:AddLine(BONUS_OBJECTIVE_TIME_LEFT:format(timeString), color.r, color.g, color.b);
@@ -2348,42 +2341,6 @@ function WorldMapFakeButton_OnClick(button, mouseButton)
 	end
 end
 
-local function UpdatePlayerPositions()
-	local timeNow = GetTime();
-
-	WorldMapUnitPositionFrame:ClearUnits();
-
-	local r, g, b = CheckColorOverrideForPVPInactive("player", timeNow, 1, 1, 1);
-	local playerArrowSize = WorldMapUnitPositionFrame:GetPlayerArrowSize();
-	WorldMapUnitPositionFrame:AddUnit("player", "Interface\\WorldMap\\WorldMapArrow", playerArrowSize, playerArrowSize, r, g, b, 1, 7, true);
-
-	local isInRaid = IsInRaid();
-	local memberCount = 0;
-	local unitBase;
-
-	if isInRaid then
-		memberCount = MAX_RAID_MEMBERS;
-		unitBase = "raid";
-	elseif IsInGroup() then
-		memberCount = MAX_PARTY_MEMBERS;
-		unitBase = "party";
-	end
-
-	local groupMemberSize = WorldMapUnitPositionFrame:GetGroupMemberSize();
-
-	for i = 1, memberCount do
-		local unit = unitBase..i;
-		if UnitExists(unit) and not UnitIsUnit(unit, "player") then
-			local atlas = UnitInSubgroup(unit) and "WhiteCircle-RaidBlips" or "WhiteDotCircle-RaidBlips";
-			local class = select(2, UnitClass(unit));
-			local r, g, b = CheckColorOverrideForPVPInactive(unit, timeNow, GetClassColor(class));
-			WorldMapUnitPositionFrame:AddUnitAtlas(unit, atlas, groupMemberSize, groupMemberSize, r, g, b, 1);
-		end
-	end
-
-	WorldMapUnitPositionFrame:FinalizeUnits();
-end
-
 function WorldMapButton_OnUpdate(self, elapsed)
 	local x, y = GetCursorPosition();
 	if ( WorldMapScrollFrame.panning ) then
@@ -2499,7 +2456,7 @@ function WorldMapButton_OnUpdate(self, elapsed)
 		WorldMapHighlight:Hide();
 	end
 
-	UpdatePlayerPositions();
+	WorldMapUnitPositionFrame:UpdatePlayerPins();
 
 	-- Position flags
 	local numFlags = GetNumBattlefieldFlagPositions();
@@ -2823,12 +2780,13 @@ function WorldMap_ToggleSizeUp()
 	-- tiny adjustments
 
 	if (GetCVarBool("questPOI")) then
-		WorldMapUnitPositionFrame:SetPlayerArrowSize(PLAYER_ARROW_SIZE_FULL_WITH_QUESTS);
+		WorldMapUnitPositionFrame:SetPinSize("player", PLAYER_ARROW_SIZE_FULL_WITH_QUESTS);
 	else
-		WorldMapUnitPositionFrame:SetPlayerArrowSize(PLAYER_ARROW_SIZE_FULL_NO_QUESTS);
+		WorldMapUnitPositionFrame:SetPinSize("player", PLAYER_ARROW_SIZE_FULL_NO_QUESTS);
 	end
 
-	WorldMapUnitPositionFrame:SetGroupMemberSize(GROUP_MEMBER_SIZE_FULL);
+	WorldMapUnitPositionFrame:SetPinSize("party", GROUP_MEMBER_SIZE_FULL);
+	WorldMapUnitPositionFrame:SetPinSize("raid", RAID_MEMBER_SIZE_FULL);
 	WorldMap_UpdateBattlefieldFlagSizes(BATTLEFIELD_ICON_SIZE_FULL);
 	WorldMap_UpdateBattlefieldFlagScales();
 	MapBarFrame_UpdateLayout(MapBarFrame);
@@ -2883,8 +2841,9 @@ function WorldMap_ToggleSizeDown()
 	WorldMapScrollFrame:ClearAllPoints();
 	WorldMapScrollFrame:SetPoint("TOPLEFT", 3, -68);
 	WorldMapScrollFrame:SetSize(696, 464);
-	WorldMapUnitPositionFrame:SetPlayerArrowSize(PLAYER_ARROW_SIZE_WINDOW);
-	WorldMapUnitPositionFrame:SetGroupMemberSize(GROUP_MEMBER_SIZE_WINDOW);
+	WorldMapUnitPositionFrame:SetPinSize("player", PLAYER_ARROW_SIZE_WINDOW);
+	WorldMapUnitPositionFrame:SetPinSize("party", GROUP_MEMBER_SIZE_WINDOW);
+	WorldMapUnitPositionFrame:SetPinSize("raid", RAID_MEMBER_SIZE_WINDOW);
 	WorldMap_UpdateBattlefieldFlagSizes(BATTLEFIELD_ICON_SIZE_WINDOW);
 	WorldMap_UpdateBattlefieldFlagScales();
 	MapBarFrame_UpdateLayout(MapBarFrame);

@@ -14,7 +14,7 @@ setfenv(1, tbl);
 Import("C_WowTokenSecure");
 Import("C_WowTokenPublic");
 Import("C_Timer");
-Import("C_PurchaseAPI");
+Import("C_StoreSecure");
 
 Import("math");
 Import("string");
@@ -257,7 +257,7 @@ local currencySpecific = {
 };
 
 local function currencyInfo()
-	local currency = C_PurchaseAPI.GetCurrencyID();
+	local currency = C_StoreSecure.GetCurrencyID();
 	local info = currencySpecific[currency];
 	return info;
 end

@@ -217,7 +217,7 @@ function MountJournal_UpdateMountDisplay(forceSceneChange)
 
 			MountJournal.MountDisplay.lastDisplayed = spellID;
 
-			MountJournal.MountDisplay.ModelScene:TransitionToModelSceneID(modelSceneID, CAMERA_MODIFICATION_TYPE_MAINTAIN, forceSceneChange);
+			MountJournal.MountDisplay.ModelScene:TransitionToModelSceneID(modelSceneID, CAMERA_TRANSITION_TYPE_IMMEDIATE, CAMERA_MODIFICATION_TYPE_MAINTAIN, forceSceneChange);
 
 			MountJournal.MountDisplay.ModelScene:PrepareForFanfare(needsFanFare);
 

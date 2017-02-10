@@ -409,15 +409,15 @@ function WardrobeTransmogButton_OnClick(self, button)
 		if ( hasPending or hasUndo ) then
 			PlaySound("UI_Transmog_RevertingGearSlot");
 			C_Transmog.ClearPending(slotID, self.transmogType);
-			WardrobeTransmogButton_Select(self);
+			WardrobeTransmogButton_Select(self, true);
 		elseif ( isTransmogrified ) then
 			PlaySound("UI_Transmog_RevertingGearSlot");
 			C_Transmog.SetPending(slotID, self.transmogType, 0);
-			WardrobeTransmogButton_Select(self);
+			WardrobeTransmogButton_Select(self, true);
 		end
 	else
 		PlaySound("UI_Transmog_GearSlotClick");
-		WardrobeTransmogButton_Select(self);
+		WardrobeTransmogButton_Select(self, true);
 	end
 	if ( self.UndoButton ) then
 		self.UndoButton:Hide();
@@ -498,20 +498,22 @@ function WardrobeTransmogButton_OnLeave(self)
 	GameTooltip:Hide();
 end
 
-function WardrobeTransmogButton_Select(button)
+function WardrobeTransmogButton_Select(button, fromOnClick)
 	if ( WardrobeTransmogFrame.selectedSlotButton ) then
 		WardrobeTransmogFrame.selectedSlotButton.SelectedTexture:Hide();
 	end
 	WardrobeTransmogFrame.selectedSlotButton = button;
 	if ( button ) then
 		button.SelectedTexture:Show();
-		if (WardrobeCollectionFrame.activeFrame ~= WardrobeCollectionFrame.ItemsCollectionFrame) then
+		if (fromOnClick and WardrobeCollectionFrame.activeFrame ~= WardrobeCollectionFrame.ItemsCollectionFrame) then
 			WardrobeCollectionFrame_ClickTab(WardrobeCollectionFrame.ItemsTab);
 		end
-		local _, _, selectedSourceID = WardrobeCollectionFrame_GetInfoForEquippedSlot(button.slot, button.transmogType);
-		local forceGo = (button.transmogType == LE_TRANSMOG_TYPE_ILLUSION);
-		WardrobeCollectionFrame.ItemsCollectionFrame:GoToSourceID(selectedSourceID, button.slot, button.transmogType, forceGo);
-		WardrobeCollectionFrame.ItemsCollectionFrame:SetTransmogrifierAppearancesShown(true);
+		if ( WardrobeCollectionFrame.activeFrame == WardrobeCollectionFrame.ItemsCollectionFrame ) then
+			local _, _, selectedSourceID = WardrobeCollectionFrame_GetInfoForEquippedSlot(button.slot, button.transmogType);
+			local forceGo = (button.transmogType == LE_TRANSMOG_TYPE_ILLUSION);
+			WardrobeCollectionFrame.ItemsCollectionFrame:GoToSourceID(selectedSourceID, button.slot, button.transmogType, forceGo);
+			WardrobeCollectionFrame.ItemsCollectionFrame:SetTransmogrifierAppearancesShown(true);
+		end
 	else
 		WardrobeCollectionFrame.ItemsCollectionFrame:SetTransmogrifierAppearancesShown(false);
 	end
@@ -715,11 +717,6 @@ function WardrobeItemsCollectionMixin:OnEvent(event, ...)
 			self:RefreshVisualsList();
 			self:UpdateItems();
 		end
-	elseif ( event == "TRANSMOG_COLLECTION_CAMERA_UPDATE" ) then
-		for i = 1, #self.Models do
-			self.Models[i].cameraID = nil;
-		end
-		self:UpdateItems();
 	end
 end
 
@@ -748,6 +745,14 @@ function WardrobeCollectionFrame_OnEvent(self, event, ...)
 		end
 	elseif ( event == "SEARCH_DB_LOADED" ) then
 		WardrobeCollectionFrame_RestartSearchTracking();
+	elseif ( event == "UI_SCALE_CHANGED" or event == "DISPLAY_SIZE_CHANGED" or event == "TRANSMOG_COLLECTION_CAMERA_UPDATE" ) then
+		WardrobeCollectionFrame_RefreshCameras();
+	end
+end
+
+function WardrobeCollectionFrame_RefreshCameras()
+	for i, frame in ipairs(WardrobeCollectionFrame.ContentFrames) do
+		frame:RefreshCameras();
 	end
 end
 
@@ -829,7 +834,6 @@ function WardrobeItemsCollectionMixin:OnShow()
 	self:RegisterEvent("TRANSMOGRIFY_UPDATE");
 	self:RegisterEvent("PLAYER_EQUIPMENT_CHANGED");
 	self:RegisterEvent("TRANSMOGRIFY_SUCCESS");
-	self:RegisterEvent("TRANSMOG_COLLECTION_CAMERA_UPDATE");
 
 	local needsUpdate = false;	-- we don't need to update if we call WardrobeCollectionFrame_SetActiveSlot as that will do an update
 	if ( self.jumpToLatestCategoryID and self.jumpToLatestCategoryID ~= self.activeCategory ) then
@@ -859,7 +863,6 @@ function WardrobeItemsCollectionMixin:OnHide()
 	self:UnregisterEvent("TRANSMOGRIFY_UPDATE");
 	self:UnregisterEvent("PLAYER_EQUIPMENT_CHANGED");
 	self:UnregisterEvent("TRANSMOGRIFY_SUCCESS");
-	self:UnregisterEvent("TRANSMOG_COLLECTION_CAMERA_UPDATE");
 
 	WardrobeCollectionFrame_ClearSearch(LE_TRANSMOG_SEARCH_TYPE_ITEMS);
 
@@ -882,6 +885,10 @@ function WardrobeCollectionFrame_OnShow(self)
 	self:RegisterEvent("SKILL_LINES_CHANGED");
 	self:RegisterEvent("UPDATE_FACTION");
 	self:RegisterEvent("SPELLS_CHANGED");
+	self:RegisterEvent("UI_SCALE_CHANGED");
+	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
+	self:RegisterEvent("TRANSMOG_COLLECTION_CAMERA_UPDATE");
+
 	local hasAlternateForm, inAlternateForm = HasAlternateForm();
 	if ( hasAlternateForm ) then
 		self.inAlternateForm = inAlternateForm;
@@ -905,6 +912,9 @@ function WardrobeCollectionFrame_OnHide(self)
 	self:UnregisterEvent("SKILL_LINES_CHANGED");
 	self:UnregisterEvent("UPDATE_FACTION");
 	self:UnregisterEvent("SPELLS_CHANGED");
+	self:UnregisterEvent("UI_SCALE_CHANGED");
+	self:UnregisterEvent("DISPLAY_SIZE_CHANGED");
+	self:UnregisterEvent("TRANSMOG_COLLECTION_CAMERA_UPDATE");
 	C_TransmogCollection.EndSearch();
 end
 	
@@ -1035,6 +1045,17 @@ function WardrobeItemsCollectionMixin:ChangeModelsSlot(oldSlot, newSlot)
 		model.visualInfo = nil;
 	end
 	self.illusionWeaponVisualID = nil;
+end
+
+function WardrobeItemsCollectionMixin:RefreshCameras()
+	if ( self:IsShown() ) then
+		for i, model in ipairs(self.Models) do
+			model:RefreshCamera();
+			if ( model.cameraID ) then
+				Model_ApplyUICamera(model, model.cameraID);
+			end
+		end
+	end
 end
 
 function WardrobeItemsCollectionMixin:OnUnitModelChangedEvent()
@@ -1642,8 +1663,6 @@ end
 WardrobeItemsModelMixin = { };
 
 function WardrobeItemsModelMixin:OnLoad()
-	self:RegisterEvent("UI_SCALE_CHANGED");
-	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
 	self:SetAutoDress(false);
 
 	local lightValues = { enabled=true, omni=false, dirX=-1, dirY=1, dirZ=-1, ambIntensity=1.05, ambR=1, ambG=1, ambB=1, dirIntensity=0, dirR=1, dirG=1, dirB=1 };
@@ -1651,13 +1670,6 @@ function WardrobeItemsModelMixin:OnLoad()
 			lightValues.dirX, lightValues.dirY, lightValues.dirZ,
 			lightValues.ambIntensity, lightValues.ambR, lightValues.ambG, lightValues.ambB,
 			lightValues.dirIntensity, lightValues.dirR, lightValues.dirG, lightValues.dirB);
-end
-
-function WardrobeItemsModelMixin:OnEvent()
-	self:RefreshCamera();
-	if ( self.cameraID ) then
-		Model_ApplyUICamera(self, self.cameraID);
-	end
 end
 
 function WardrobeItemsModelMixin:OnModelLoaded()
@@ -2800,6 +2812,7 @@ function WardrobeSetsCollectionMixin:OnShow()
 		self:Refresh();
 	end
 	WardrobeCollectionFrame_UpdateProgressBar(SetsDataProvider:GetSetsCounts());
+	self:RefreshCameras();
 
 	if (self:GetParent().SetsTabHelpBox:IsShown()) then
 		self:GetParent().SetsTabHelpBox:Hide()
@@ -2915,6 +2928,16 @@ function WardrobeSetsCollectionMixin:OnUnitModelChangedEvent()
 	end
 end
 
+function WardrobeSetsCollectionMixin:RefreshCameras()
+	if ( self:IsShown() ) then
+		local detailsCameraID, transmogCameraID = C_TransmogSets.GetCameraIDs();
+		local model = self.DetailsFrame.Model;
+		model.cameraID = detailsCameraID;
+		self.DetailsFrame.Model:RefreshCamera();
+		Model_ApplyUICamera(self.DetailsFrame.Model, detailsCameraID);
+	end
+end
+
 function WardrobeSetsCollectionMixin:OpenVariantSetsDropDown()
 	local selectedSetID = self:GetSelectedSetID();
 	if ( not selectedSetID ) then
@@ -2925,10 +2948,6 @@ function WardrobeSetsCollectionMixin:OpenVariantSetsDropDown()
 	local variantSets = SetsDataProvider:GetVariantSets(baseSetID);
 	for i = 1, #variantSets do
 		local variantSet = variantSets[i];
-		-- TODO: Remove this when all sets get descriptions entered
-		if ( not variantSet.description ) then
-			variantSet.description = "Set ID "..variantSet.setID;
-		end
 		local numSourcesCollected, numSourcesTotal = SetsDataProvider:GetSetSourceCounts(variantSet.setID);
 		local colorCode = IN_PROGRESS_FONT_COLOR_CODE;
 		if ( numSourcesCollected == numSourcesTotal ) then
@@ -3164,6 +3183,7 @@ function WardrobeSetsTransmogMixin:OnShow()
 	self:RegisterEvent("TRANSMOGRIFY_UPDATE");
 	self:RegisterEvent("TRANSMOG_COLLECTION_ITEM_UPDATE");
 	self:RegisterEvent("TRANSMOG_COLLECTION_UPDATED");
+	self:RefreshCameras();
 	self:UpdateSets();
 	WardrobeCollectionFrame_UpdateProgressBar(SetsDataProvider:GetSetsCounts());
 end
@@ -3278,6 +3298,17 @@ function WardrobeSetsTransmogMixin:OnUnitModelChangedEvent()
 		return true;
 	else
 		return false;
+	end
+end
+
+function WardrobeSetsTransmogMixin:RefreshCameras()
+	if ( self:IsShown() ) then
+		local detailsCameraID, transmogCameraID = C_TransmogSets.GetCameraIDs();
+		for i, model in ipairs(self.Models) do
+			model.cameraID = transmogCameraID;
+			model:RefreshCamera();
+			Model_ApplyUICamera(model, transmogCameraID);
+		end
 	end
 end
 

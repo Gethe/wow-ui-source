@@ -628,7 +628,7 @@ function PetJournal_UpdatePetLoadOut(forceSceneChange)
 
 				local cardModelSceneID, loadoutModelSceneID = C_PetJournal.GetPetModelSceneInfoBySpeciesID(speciesID);
 
-				loadoutPlate.modelScene:TransitionToModelSceneID(loadoutModelSceneID, CAMERA_MODIFICATION_TYPE_DISCARD, forceSceneChange);
+				loadoutPlate.modelScene:TransitionToModelSceneID(loadoutModelSceneID, CAMERA_TRANSITION_TYPE_IMMEDIATE, CAMERA_MODIFICATION_TYPE_DISCARD, forceSceneChange);
 
 				local battlePetActor = loadoutPlate.modelScene:GetActorByTag("pet");
 				if ( battlePetActor ) then
@@ -1182,7 +1182,7 @@ function PetJournal_UpdatePetCard(self, forceSceneChange)
 
 		local cardModelSceneID, loadoutModelSceneID = C_PetJournal.GetPetModelSceneInfoBySpeciesID(speciesID);
 
-		self.modelScene:TransitionToModelSceneID(cardModelSceneID, CAMERA_MODIFICATION_TYPE_MAINTAIN, forceSceneChange);
+		self.modelScene:TransitionToModelSceneID(cardModelSceneID, CAMERA_TRANSITION_TYPE_IMMEDIATE, CAMERA_MODIFICATION_TYPE_MAINTAIN, forceSceneChange);
 
 		local battlePetActor = self.modelScene:GetActorByTag("unwrapped");
 		if ( battlePetActor ) then

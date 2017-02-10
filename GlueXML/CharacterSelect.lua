@@ -250,8 +250,8 @@ function CharacterSelect_OnShow(self)
 
 	CharacterServicesMaster_UpdateServiceButton();
 
-	C_PurchaseAPI.GetPurchaseList();
-	C_PurchaseAPI.GetProductList();
+	C_StoreSecure.GetPurchaseList();
+	C_StoreSecure.GetProductList();
 	C_StoreGlue.UpdateVASPurchaseStates();
 
 	if (not STORE_IS_LOADED) then
@@ -262,7 +262,7 @@ function CharacterSelect_OnShow(self)
 	CharacterSelect_CheckVeteranStatus();
 
 	if (C_StoreGlue.GetDisconnectOnLogout()) then
-		C_PurchaseAPI.SetDisconnectOnLogout(false);
+		C_StoreSecure.SetDisconnectOnLogout(false);
 		GlueDialog_Hide();
 		C_Login.DisconnectFromServer();
 	end
@@ -738,11 +738,11 @@ function UpdateCharacterList(skipSelect)
 				nameText:SetText(name);
 			end
 
-			if (vasServiceState == LE_VAS_PURCHASE_STATE_APPLYING_LICENSE and vasServiceErrors) then
-				local productInfo = C_PurchaseAPI.GetProductInfo(productID);
+			if (vasServiceState == LE_VAS_PURCHASE_STATE_APPLYING_LICENSE and #vasServiceErrors > 0) then
+				local productInfo = C_StoreSecure.GetProductInfo(productID);
 				infoText:SetText("|cffff2020"..VAS_ERROR_ERROR_HAS_OCCURRED.."|r");
-				if (productInfo and productInfo.name) then
-					locationText:SetText("|cffff2020"..productInfo.name.."|r");
+				if (productInfo and productInfo.sharedData.name) then
+					locationText:SetText("|cffff2020"..productInfo.sharedData.name.."|r");
 				else
 					locationText:SetText("");
 				end
@@ -801,7 +801,7 @@ function UpdateCharacterList(skipSelect)
 			upgradeIcon:Show();
 			upgradeIcon.tooltip = CHARACTER_UPGRADE_PROCESSING;
 			upgradeIcon.tooltip2 = CHARACTER_STATE_ORDER_PROCESSING;
-		elseif (vasServiceState == LE_VAS_PURCHASE_STATE_APPLYING_LICENSE and vasServiceErrors) then
+		elseif (vasServiceState == LE_VAS_PURCHASE_STATE_APPLYING_LICENSE and #vasServiceErrors > 0) then
 			upgradeIcon:Show();
 			local tooltip, desc;
 			if (STORE_IS_LOADED) then
@@ -1483,7 +1483,7 @@ ACCOUNT_UPGRADE_FEATURES = {
 		buttonText = UPGRADE_ACCOUNT_SHORT,
 		displayCheck =  function() return GameLimitedMode_IsActive() or CanUpgradeExpansion() end,
 		upgradeOnClick = function()
-			if ( CharacterSelect_IsStoreAvailable() and C_PurchaseAPI.HasProductType(LE_BATTLEPAY_PRODUCT_ITEM_7_0_BOX_LEVEL) ) then
+			if ( CharacterSelect_IsStoreAvailable() and C_StoreSecure.HasProductType(LE_BATTLEPAY_PRODUCT_ITEM_7_0_BOX_LEVEL) ) then
 				StoreFrame_SetGamesCategory();
 				StoreFrame_SetShown(true);
 			else
@@ -1867,7 +1867,7 @@ function CharacterServicesMaster_UpdateServiceButton()
 	end
 
 	-- support refund notice for Korea
-	if ( hasPurchasedBoost and C_PurchaseAPI.GetCurrencyID() == CURRENCY_KRW ) then
+	if ( hasPurchasedBoost and C_StoreSecure.GetCurrencyID() == CURRENCY_KRW ) then
 		CharacterSelectUI.WarningText:Show();
 	end
 

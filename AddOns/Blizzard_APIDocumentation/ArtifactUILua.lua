@@ -376,6 +376,15 @@ local ArtifactUILua =
 			},
 		},
 		{
+			Name = "GetMaxArtifactKnowledgeLevel",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "maxArtifactKnowledge", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetMetaPowerInfo",
 			Type = "Function",
 

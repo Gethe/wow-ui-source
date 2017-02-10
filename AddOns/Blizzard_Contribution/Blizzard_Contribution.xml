@@ -124,9 +124,30 @@
 				</Texture>
 				<FontString parentKey="Text" inherits="GameFontHighlightCenter" setAllPoints="true" justifyV="MIDDLE" maxLines="1"/>
 			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="GlowBorder" alpha="0" alphaMode="ADD" atlas="Legionfall_BarFrame-Glow" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Border"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Border"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="SuccessAnim" setToFinalAlpha="true" looping="BOUNCE">
+				<Alpha childKey="Spark" smoothing="NONE" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="Spark" smoothing="NONE" duration="0.5" order="2" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="GlowBorder" smoothing="NONE" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="GlowBorder" smoothing="NONE" duration="0.5" order="2" fromAlpha="1" toAlpha="0"/>
+				<Scripts>
+					<OnLoop function="ContributionStatusMixin_SuccessAnimOnLoop"/>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
 		<Scripts>
 			<OnUpdate method="OnUpdate"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
 		</Scripts>
 	</StatusBar>
 
@@ -148,7 +169,7 @@
 					<Anchor point="BOTTOM" x="3.0" y="29.0" />
 				</Anchors>
 			</StatusBar>
-			<Button parentKey="ContributeButton" inherits="UIPanelButtonTemplate" mixin="CurrencyTemplateMixin, ContributeButtonMixin">
+			<Button parentKey="ContributeButton" inherits="UIPanelButtonTemplate" mixin="CurrencyTemplateMixin, ContributeButtonMixin" motionScriptsWhileDisabled="true">
 				<Size x="169" y="24" />
 				<Anchors>
 					<Anchor point="TOP" relativeKey="$parent.Status" relativePoint="BOTTOM" x="0.0" y="-24.0" />
@@ -173,6 +194,7 @@
 		</Layers>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
+			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>
 

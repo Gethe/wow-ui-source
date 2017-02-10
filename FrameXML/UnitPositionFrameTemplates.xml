@@ -4,6 +4,7 @@
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
 		</Scripts>
 	</UnitPositionFrame>
 </Ui>

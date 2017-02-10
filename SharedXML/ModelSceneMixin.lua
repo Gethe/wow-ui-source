@@ -68,7 +68,7 @@ end
 
 -- Adjusts this scene to mirror a model scene from static data but with transition effects
 -- Only actors/cameras with script tags will be transitioned
-function ModelSceneMixin:TransitionToModelSceneID(modelSceneID, cameraModificationType, forceEvenIfSame)
+function ModelSceneMixin:TransitionToModelSceneID(modelSceneID, cameraTransitionType, cameraModificationType, forceEvenIfSame)
 	local modelSceneType, cameraIDs, actorIDs = C_ModelInfo.GetModelSceneInfoByID(modelSceneID);
 	if not modelSceneType or #cameraIDs == 0 or #actorIDs == 0 then
 		return;
@@ -103,7 +103,7 @@ function ModelSceneMixin:TransitionToModelSceneID(modelSceneID, cameraModificati
 
 		local needsNewCamera = true;
 		for cameraIndex, cameraID in ipairs(cameraIDs) do
-			local camera = self:CreateOrTransitionCameraFromScene(oldTagToCamera, cameraModificationType, cameraID);
+			local camera = self:CreateOrTransitionCameraFromScene(oldTagToCamera, cameraTransitionType, cameraModificationType, cameraID);
 			if camera == self.activeCamera then
 				needsNewCamera = false;
 			end
@@ -286,7 +286,7 @@ function ModelSceneMixin:CreateCameraFromScene(modelSceneCameraID)
 	end
 end
 
-function ModelSceneMixin:CreateOrTransitionCameraFromScene(oldTagToCamera, cameraModificationType, modelSceneCameraID)
+function ModelSceneMixin:CreateOrTransitionCameraFromScene(oldTagToCamera, cameraTransitionType, cameraModificationType, modelSceneCameraID)
 	local modelSceneCameraInfo = C_ModelInfo.GetModelSceneCameraInfoByID(modelSceneCameraID);
 	if modelSceneCameraInfo then
 		local existingCamera = oldTagToCamera[modelSceneCameraInfo.scriptTag];
@@ -294,7 +294,7 @@ function ModelSceneMixin:CreateOrTransitionCameraFromScene(oldTagToCamera, camer
 			self.tagToCamera[modelSceneCameraInfo.scriptTag] = existingCamera;
 
 			self:AddCamera(existingCamera);
-			existingCamera:ApplyFromModelSceneCameraInfo(modelSceneCameraInfo, CAMERA_TRANSITION_TYPE_INTERPOLATION, cameraModificationType);
+			existingCamera:ApplyFromModelSceneCameraInfo(modelSceneCameraInfo, cameraTransitionType, cameraModificationType);
 			return existingCamera;
 		end
 

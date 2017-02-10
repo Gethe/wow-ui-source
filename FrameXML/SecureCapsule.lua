@@ -57,10 +57,10 @@ end
 
 --For store
 if ( IsGMClient() ) then
-	retain("C_PurchaseAPI");
+	retain("C_StoreSecure");
 	retain("HideGMOnly");
 else
-	take("C_PurchaseAPI");
+	take("C_StoreSecure");
 end
 take("CreateForbiddenFrame");
 retain("IsGMClient");

@@ -2,9 +2,24 @@
 ..\FrameXML\UI.xsd">
 	<Script file="StaticPopup.lua"/>
 	<Button name="StaticPopupButtonTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="128" y="21"/>
-		</Size>
+		<Size x="128" y="21"/>
+		<Animations>
+			<AnimationGroup parentKey="PulseAnim" looping="BOUNCE">
+				<Alpha childKey="Flash" fromAlpha="0" toAlpha="1" duration="0.5" order="1"/>
+				<Alpha childKey="Flash" fromAlpha="1" toAlpha="0" duration="0.5" order="2"/>
+			</AnimationGroup>
+		</Animations>
+		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="Flash" file="Interface\Buttons\UI-Panel-Button-Glow" alphaMode="ADD" alpha="0">
+					<Size x="140" y="40"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<TexCoords left="0.0" right="0.75" top="0.0" bottom="0.609375"/>
+				</Texture>
+			</Layer>
+		</Layers>
 		<Scripts>
 			<OnClick>
 				StaticPopup_OnClick(self:GetParent(), self:GetID());

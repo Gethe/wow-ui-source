@@ -94,6 +94,21 @@
 			</Anchors>
 			<TexCoords left="0.00195313" right="0.63867188" top="0.70703125" bottom="0.76757813"/>
 		</HighlightTexture>
+		<Scripts>
+			<OnEnter>
+				if (self.name) then
+					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+					GameTooltip:SetText(self.name, HIGHLIGHT_FONT_COLOR:GetRGB());
+					if (self.longDescription) then
+						GameTooltip:AddLine(self.longDescription);
+					end
+					GameTooltip:Show();
+				end
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
 	</Button>
 
 	<Button name="PVPWarGameButtonTemplate" virtual="true">
@@ -106,8 +121,8 @@
 			</Button>
 			<Button parentKey="Entry" hidden="true" inherits="PVPInstanceListEntryButtonTemplate">
 				<Scripts>
-					<OnEnter function="WarGameButton_OnEnter"/>
-					<OnLeave function="WarGameButton_OnLeave"/>
+					<OnEnter function="WarGameButton_OnEnter" inherit="prepend"/>
+					<OnLeave function="WarGameButton_OnLeave" inherit="prepend"/>
 					<OnClick function="WarGameButton_OnClick"/>
 				</Scripts>
 			</Button>

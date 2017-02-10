@@ -558,7 +558,7 @@ do
 		if not self.RevealAnim then
 			return;
 		end
-		lineContainer:SetAlpha(0.0);
+		self:SetAlpha(0.0);
 
 		self.RevealAnim.Start1:SetEndDelay(delay);
 		self.RevealAnim.Start2:SetEndDelay(delay);

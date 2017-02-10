@@ -256,6 +256,7 @@ function PVPQueueFrame_OnLoad(self)
 	self:RegisterEvent("PVP_REWARDS_UPDATE");
 	self:RegisterEvent("BATTLEFIELDS_SHOW");
 	self:RegisterEvent("VARIABLES_LOADED");
+	self:RegisterEvent("ARENA_SEASON_WORLD_STATE");
 end
 
 function PVPQueueFrame_OnEvent(self, event, ...)
@@ -280,6 +281,10 @@ function PVPQueueFrame_OnEvent(self, event, ...)
 		end
 	elseif ( event == "VARIABLES_LOADED" ) then
 		HonorFrameBonusFrame_UpdateExcludedBattlegrounds();
+	elseif event == "ARENA_SEASON_WORLD_STATE" then
+		if self:IsVisible() then
+			PVPQueueFrame_UpdateTitle();
+		end
 	end
 end
 
@@ -310,8 +315,20 @@ function PVPQueueFrame_OnShow(self)
 	else
 		SetPortraitToTexture(PVEFrame.portrait, "Interface\\Icons\\INV_BannerPVP_02");
 	end
-	PVEFrame.TitleText:SetText(PLAYER_V_PLAYER);
+
+	PVPQueueFrame_UpdateTitle();
+	
 	PVEFrame.TopTileStreaks:Show()
+end
+
+function PVPQueueFrame_UpdateTitle()
+	local currentSeason = GetCurrentArenaSeason();
+	if currentSeason == NO_ARENA_SEASON then
+		PVEFrame.TitleText:SetText(PLAYER_V_PLAYER);
+	else
+		local LEGION_START_SEASON = 19; -- if you're changing this you probably want to update the global string PLAYER_V_PLAYER_SEASON also
+		PVEFrame.TitleText:SetFormattedText(PLAYER_V_PLAYER_SEASON, currentSeason - LEGION_START_SEASON + 1);
+	end
 end
 
 --WARNING - You probably want to call PVEFrame_ShowFrame("PVPUIFrame", "frameName") instead
@@ -490,7 +507,8 @@ end
 
 function HonorFrame_UpdateQueueButtons()
 	local HonorFrame = HonorFrame;
-	local canQueue, denied;
+	local canQueue;
+	local arenaID;
 	if ( HonorFrame.type == "specific" ) then
 		if ( HonorFrame.SpecificFrame.selectionID ) then
 			canQueue = true;
@@ -498,8 +516,27 @@ function HonorFrame_UpdateQueueButtons()
 	elseif ( HonorFrame.type == "bonus" ) then
 		if ( HonorFrame.BonusFrame.selectedButton ) then
 			canQueue = HonorFrame.BonusFrame.selectedButton.canQueue;
+			arenaID = HonorFrame.BonusFrame.selectedButton.arenaID;
 		end
-	end    
+	end
+
+	local disabledReason;
+
+	if arenaID then
+		local battlemasterListInfo = C_PvP.GetSkirmishInfo(arenaID);
+		if battlemasterListInfo then
+			local groupSize = GetNumGroupMembers();
+			local minPlayers = battlemasterListInfo.minPlayers;
+			local maxPlayers = battlemasterListInfo.maxPlayers;
+			if groupSize > maxPlayers then
+				canQueue = false;
+				disabledReason = PVP_ARENA_NEED_LESS:format(groupSize - maxPlayers);
+			elseif groupSize < minPlayers then
+				canQueue = false;
+				disabledReason = PVP_ARENA_NEED_MORE:format(minPlayers - groupSize);
+			end
+		end
+	end
 
 	if ( canQueue ) then
 		HonorFrame.QueueButton:Enable();
@@ -507,8 +544,7 @@ function HonorFrame_UpdateQueueButtons()
 			HonorFrame.QueueButton:SetText(BATTLEFIELD_GROUP_JOIN);
 			if (not UnitIsGroupLeader("player", LE_PARTY_CATEGORY_HOME)) then
 				HonorFrame.QueueButton:Disable();
-                HonorFrame.QueueButton.tooltip = ERR_NOT_LEADER;
-                denied = true;
+                disabledReason = ERR_NOT_LEADER; -- let this trump any other disabled reason
 			end
 		else
 			HonorFrame.QueueButton:SetText(BATTLEFIELD_JOIN);
@@ -516,24 +552,22 @@ function HonorFrame_UpdateQueueButtons()
 	else
 		HonorFrame.QueueButton:Disable();
 		if (HonorFrame.type == "bonus" and HonorFrame.BonusFrame.selectedButton.queueID) then
-			HonorFrame.QueueButton.tooltip = LFGConstructDeclinedMessage(HonorFrame.BonusFrame.selectedButton.queueID);
-            denied = true;
+			if not disabledReason then
+				disabledReason = LFGConstructDeclinedMessage(HonorFrame.BonusFrame.selectedButton.queueID);
+			end
 		end
 	end
 
 	--Disable the button if the person is active in LFGList
-	local lfgListDisabled;
-	if ( select(2,C_LFGList.GetNumApplications()) > 0 ) then
-		lfgListDisabled = CANNOT_DO_THIS_WITH_LFGLIST_APP;
-	elseif ( C_LFGList.GetActiveEntryInfo() ) then
-		lfgListDisabled = CANNOT_DO_THIS_WHILE_LFGLIST_LISTED;
+	if not disabledReason then
+		if ( select(2,C_LFGList.GetNumApplications()) > 0 ) then
+			disabledReason = CANNOT_DO_THIS_WITH_LFGLIST_APP;
+		elseif ( C_LFGList.GetActiveEntryInfo() ) then
+			disabledReason = CANNOT_DO_THIS_WHILE_LFGLIST_LISTED;
+		end
 	end
 
-	if ( lfgListDisabled ) then
-		HonorFrame.QueueButton.tooltip = lfgListDisabled;
-	elseif (not denied) then
-		HonorFrame.QueueButton.tooltip = nil;
-	end
+	HonorFrame.QueueButton.tooltip = disabledReason;
 end
 
 function HonorFrame_Queue()
@@ -567,13 +601,16 @@ function HonorFrameSpecificList_Update()
 	local buttonCount = -offset;
 
 	for i = 1, numBattlegrounds do
-		local localizedName, canEnter, isHoliday, isRandom, battleGroundID, mapDescription, BGMapID, maxPlayers, gameType, iconTexture = GetBattlegroundInfo(i);
+		local localizedName, canEnter, isHoliday, isRandom, battleGroundID, mapDescription, BGMapID, maxPlayers, gameType, iconTexture, shortDescription, longDescription = GetBattlegroundInfo(i);
 		if ( localizedName and canEnter and not isRandom ) then
 			buttonCount = buttonCount + 1;
 			if ( buttonCount > 0 and buttonCount <= numButtons ) then
 				local button = buttons[buttonCount];
 				button:Show();
 				button.NameText:SetText(localizedName);
+				button.name = localizedName;
+				button.shortDescription = shortDescription;
+				button.longDescription = longDescription;
 				button.SizeText:SetFormattedText(PVP_TEAMTYPE, maxPlayers, maxPlayers);
 				button.InfoText:SetText(gameType);
 				button.Icon:SetTexture(iconTexture or DEFAULT_BG_TEXTURE);
@@ -1457,23 +1494,6 @@ end
 function WarGameButton_OnEnter(self)
 	self.NameText:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
 	self.SizeText:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
-
-	if (self.name) then
-		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		GameTooltip:SetText(self.name, HIGHLIGHT_FONT_COLOR:GetRGB());
-		local hasShortDescription = self.shortDescription and self.shortDescription ~= "";
-		local hasLongDescription = self.longDescription and self.longDescription ~= "";
-		if (hasShortDescription) then
-			GameTooltip:AddLine(self.shortDescription);
-		end
-		if (hasLongDescription) then
-			if (hasShortDescription) then
-				GameTooltip:AddLine(" ");
-			end
-			GameTooltip:AddLine(self.longDescription);
-		end
-		GameTooltip:Show();
-	end
 end
 
 function WarGameButton_OnLeave(self)
@@ -1481,8 +1501,6 @@ function WarGameButton_OnLeave(self)
 		self.NameText:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 		self.SizeText:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 	end
-
-	GameTooltip:Hide();
 end
 
 function WarGameButton_OnClick(self)

@@ -873,11 +873,13 @@
 			<OnHide function="UIParent_ManageFramePositions"/>
 			<OnEnter>
 				self.OverlayFrame.Text:Show();
+				ReputationParagonWatchBar_OnEnter(self);
 			</OnEnter>
 			<OnLeave>
 				if(not ReputationWatchBar.textLocked) then
-					self.OverlayFrame.Text:Hide();
+				self.OverlayFrame.Text:Hide();
 				end
+				ReputationParagonWatchBar_OnLeave(self);
 			</OnLeave>
 		</Scripts>
 	</Frame>
@@ -915,8 +917,8 @@
 					return;
 				end
 				self.updateTooltip = TOOLTIP_UPDATE_TIME;
-
-				ReputationParagonFrame_OnEnter(self:GetOwner());
+				
+				ReputationParagonFrame_SetupParagonTooltip(self.owner, self.factionID);
 			</OnUpdate>
 			<OnHide inherit="prepend">
 				self.ItemTooltip:Hide();

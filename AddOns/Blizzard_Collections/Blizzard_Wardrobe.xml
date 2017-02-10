@@ -74,7 +74,6 @@
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
-			<OnEvent method="OnEvent"/>
 			<OnModelLoaded method="OnModelLoaded"/>
 			<OnMouseDown method="OnMouseDown"/>
 			<OnEnter method="OnEnter"/>
@@ -786,7 +785,7 @@
 				</Scripts>
 			</Frame>
 
-			<Frame parentKey="ItemsCollectionFrame" mixin="WardrobeItemsCollectionMixin" inherits="CollectionsBackgroundTemplate">
+			<Frame parentKey="ItemsCollectionFrame" parentArray="ContentFrames" mixin="WardrobeItemsCollectionMixin" inherits="CollectionsBackgroundTemplate">
 				<KeyValues>
 					<KeyValue key="searchType" value="LE_TRANSMOG_SEARCH_TYPE_ITEMS" type="global"/>
 				</KeyValues>
@@ -963,7 +962,7 @@
 					<OnMouseWheel method="OnMouseWheel"/>
 				</Scripts>
 			</Frame>
-			<Frame parentKey="SetsCollectionFrame" mixin="WardrobeSetsCollectionMixin" hidden="true">
+			<Frame parentKey="SetsCollectionFrame" parentArray="ContentFrames" mixin="WardrobeSetsCollectionMixin" hidden="true">
 				<KeyValues>
 					<KeyValue key="searchType" value="LE_TRANSMOG_SEARCH_TYPE_BASE_SETS" type="global"/>
 				</KeyValues>
@@ -1043,18 +1042,9 @@
 							<DressUpModel parentKey="Model" setAllPoints="true" inherits="ModelTemplate">
 								<Scripts>
 									<OnLoad inherit="prepend">
-										self:SetPortraitZoom(-0.3);
 										self:SetAutoDress(false);
 										self:SetUnit("player");
-										self:FreezeAnimation(0, 0, 0);
-										local x, y, z = self:TransformCameraSpaceToModelSpace(0, 0, -0.65);
-										self:SetPosition(x, y, z);
-										Model_SetDefaultRotation(self, 0);
 									</OnLoad>
-									<OnEvent inherit="prepend">
-										local x, y, z = self:TransformCameraSpaceToModelSpace(0, 0, -0.65);
-										self:SetPosition(x, y, z);
-									</OnEvent>
 								</Scripts>
 							</DressUpModel>
 							<Button name="WardrobeSetsCollectionVariantSetsButton" parentKey="VariantSetsButton" inherits="UIMenuButtonStretchTemplate" frameLevel="6">
@@ -1100,7 +1090,7 @@
 					<OnMouseWheel method="OnMouseWheel"/>
 				</Scripts>
 			</Frame>
-			<Frame parentKey="SetsTransmogFrame" inherits="CollectionsBackgroundTemplate" mixin="WardrobeSetsTransmogMixin" hidden="true">
+			<Frame parentKey="SetsTransmogFrame" parentArray="ContentFrames" inherits="CollectionsBackgroundTemplate" mixin="WardrobeSetsTransmogMixin" hidden="true">
 				<KeyValues>
 					<KeyValue key="searchType" value="LE_TRANSMOG_SEARCH_TYPE_USABLE_SETS" type="global"/>
 				</KeyValues>

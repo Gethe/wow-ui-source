@@ -24,6 +24,7 @@ PvpInfoLua.lua
 QuestTaskInfoLua.lua
 ReputationInfoLua.lua
 SocialQueueLua.lua
+StorePublicUI.lua
 Transmogrify.lua
 UIModelInfoLua.lua
 UnitLua.lua

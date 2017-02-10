@@ -1,6 +1,6 @@
 local UnitLua =
 {
-	Name = "UnitScript",
+	Name = "Unit",
 	Type = "System",
 
 	Functions =

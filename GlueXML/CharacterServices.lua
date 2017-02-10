@@ -489,13 +489,13 @@ function CharacterUpgradeFlow:Finish(controller)
 		CharacterUpgradeSecondChanceWarningBackground.ConfirmButton:SetText(self:GetFinishLabel());
 
 		if ( self:IsTrialBoost() ) then
-			if ( C_PurchaseAPI.GetCurrencyID() == CURRENCY_KRW ) then
+			if ( C_StoreSecure.GetCurrencyID() == CURRENCY_KRW ) then
 				CharacterUpgradeSecondChanceWarningBackground.Text:SetText(CHARACTER_UPGRADE_KRW_FINISH_TRIAL_BOOST_BUTTON_POPUP_TEXT);
 			else
 				CharacterUpgradeSecondChanceWarningBackground.Text:SetText(CHARACTER_UPGRADE_FINISH_TRIAL_BOOST_BUTTON_POPUP_TEXT);
 			end
 		else
-			if ( C_PurchaseAPI.GetCurrencyID() == CURRENCY_KRW ) then
+			if ( C_StoreSecure.GetCurrencyID() == CURRENCY_KRW ) then
 				CharacterUpgradeSecondChanceWarningBackground.Text:SetText(CHARACTER_UPGRADE_KRW_FINISH_BUTTON_POPUP_TEXT);
 			else
 				CharacterUpgradeSecondChanceWarningBackground.Text:SetText(CHARACTER_UPGRADE_FINISH_BUTTON_POPUP_TEXT);

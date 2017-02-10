@@ -435,7 +435,8 @@ function QueueStatusEntry_SetUpLFGListApplication(entry, resultID)
 end
 
 function QueueStatusEntry_SetUpBattlefield(entry, idx)
-	local status, mapName, teamSize, registeredMatch, suspend = GetBattlefieldStatus(idx);
+	local status, mapName, teamSize, registeredMatch, suspend, _, _, _, _, shortDescription, longDescription = GetBattlefieldStatus(idx);
+	local name = mapName;
 	if ( status == "queued" ) then
 		if ( suspend ) then
 			QueueStatusEntry_SetMinimalDisplay(entry, mapName, QUEUED_STATUS_SUSPENDED);
@@ -447,7 +448,24 @@ function QueueStatusEntry_SetUpBattlefield(entry, idx)
 	elseif ( status == "confirm" ) then
 		QueueStatusEntry_SetMinimalDisplay(entry, mapName, QUEUED_STATUS_PROPOSAL);
 	elseif ( status == "active" ) then
-		QueueStatusEntry_SetMinimalDisplay(entry, mapName, QUEUED_STATUS_IN_PROGRESS);
+		if (C_PvP.IsInBrawl()) then
+			local brawlInfo = C_PvP.GetBrawlInfo();
+			if (brawlInfo.active) then
+				name = brawlInfo.name;
+				shortDescription = brawlInfo.shortDescription;
+				longDescription = brawlInfo.longDescription;
+			else
+				name = nil;
+			end
+		end
+
+		if (name) then
+			local hasLongDescription = longDescription and longDescription ~= "";
+			local text = hasLongDescription and longDescription or nil;
+			QueueStatusEntry_SetMinimalDisplay(entry, name, QUEUED_STATUS_IN_PROGRESS, text);
+		else
+			QueueStatusEntry_SetMinimalDisplay(entry, mapName, QUEUED_STATUS_IN_PROGRESS);
+		end
 	elseif ( status == "locked" ) then
 		QueueStatusEntry_SetMinimalDisplay(entry, mapName, QUEUED_STATUS_LOCKED, QUEUED_STATUS_LOCKED_EXPLANATION);
 	else
@@ -504,12 +522,14 @@ end
 function QueueStatusEntry_SetMinimalDisplay(entry, title, description, subTitle, extraText)
 	local height = 10;
 
-	entry.Title:SetWidth(168);
 	entry.Title:SetText(title);
-	height = height + entry.Title:GetHeight();
 
 	entry.Status:SetText(description);
 	entry.Status:Show();
+	entry.SubTitle:ClearAllPoints();
+	entry.SubTitle:SetPoint("TOPLEFT", entry.Status, "BOTTOMLEFT", 0, -5);
+
+	height = height + entry.Status:GetHeight() + entry.Title:GetHeight();
 
 	if ( subTitle ) then
 		entry.SubTitle:SetText(subTitle);
@@ -547,11 +567,12 @@ end
 function QueueStatusEntry_SetFullDisplay(entry, title, queuedTime, myWait, isTank, isHealer, isDPS, totalTanks, totalHealers, totalDPS, tankNeeds, healerNeeds, dpsNeeds, subTitle, extraText)
 	local height = 14;
 	
-	entry.Title:SetWidth(0);
 	entry.Title:SetText(title);
 	height = height + entry.Title:GetHeight();
 
 	entry.Status:Hide();
+	entry.SubTitle:ClearAllPoints();
+	entry.SubTitle:SetPoint("TOPLEFT", entry.Title, "BOTTOMLEFT", 0, -5);
 
 	if ( subTitle ) then
 		entry.SubTitle:SetText(subTitle);

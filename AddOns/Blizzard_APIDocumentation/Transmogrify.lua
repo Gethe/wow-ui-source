@@ -21,6 +21,16 @@ local Transmogrify =
 			},
 		},
 		{
+			Name = "GetCameraIDs",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "detailsCameraID", Type = "number", Nilable = true },
+				{ Name = "vendorCameraID", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "GetIsFavorite",
 			Type = "Function",
 

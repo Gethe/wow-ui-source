@@ -44,14 +44,19 @@ function ContributionStatusMixin:Update()
 	self.Spark:SetShown(stateAmount > 0 and stateAmount < 1);
 
 	local text;
+	self.onlyShowTextOnMouseEnter = false;
 	if state == Enum.ContributionState.Active and timeOfNextStateChange then
 		local time = math.max(timeOfNextStateChange - GetServerTime(), 60); -- Never display times below 1 minute
 		text = CONTRIBUTION_POI_TOOLTIP_REMAINING_ACTIVE_TIME:format(SecondsToTime(time, true, true));
-	elseif state == Enum.ContributionState.UnderAttack then
+	elseif state == Enum.ContributionState.UnderAttack or state == Enum.ContributionState.Destroyed then
 		text = CONTIBUTION_HEALTH_TEXT_WITH_PERCENTAGE:format(FormatPercentage(stateAmount));
+	elseif state == Enum.ContributionState.Building then
+		text = FormatPercentage(stateAmount);
+		self.onlyShowTextOnMouseEnter = true;
 	end
 
 	self.Text:SetText(text);
+	self:UpdateTextVisibility();
 end
 
 function ContributionStatusMixin:OnUpdate()
@@ -62,12 +67,79 @@ function ContributionStatusMixin:OnUpdate()
 	end
 end
 
+function ContributionStatusMixin:OnEnter()
+	self.isMouseOver = true;
+	self:UpdateTextVisibility();
+end
+
+function ContributionStatusMixin:OnLeave()
+	self.isMouseOver = false;
+	self:UpdateTextVisibility();
+end
+
+function ContributionStatusMixin:UpdateTextVisibility()
+	local shouldShowText = not self.onlyShowTextOnMouseEnter or self.isMouseOver;
+	self.Text:SetShown(shouldShowText);
+end
+
+ContributeButtonMixin = {};
+
+function ContributeButtonMixin:OnClick(button)
+	self:Disable();
+	self:GetParent():Contribute();
+end
+
+function ContributeButtonMixin:OnEnter()
+	local shouldShowTooltip = self:IsEnabled() or self.isDisabledBecauseOfContributionState;
+
+	if shouldShowTooltip then
+		ContributionTooltip:SetOwner(self, "ANCHOR_RIGHT");
+
+		if self:IsEnabled() then
+			ContributionTooltip:SetText(CONTRIBUTION_REWARD_TOOLTIP_TITLE);
+			GameTooltip_AddQuestRewardsToTooltipWithHeader(ContributionTooltip, self.questID, 0, CONTRIBUTION_REWARD_TOOLTIP_TEXT, HIGHLIGHT_FONT_COLOR);
+		elseif self.isDisabledBecauseOfContributionState then
+			ContributionTooltip:SetText(CONTRIBUTION_BUTTON_ONLY_WHEN_UNDER_CONSTRUCTION_TOOLTIP, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
+		end
+
+		ContributionTooltip:Show();
+	end
+end
+
+function ContributeButtonMixin:OnLeave()
+	ContributionTooltip:Hide();
+end
+
+function ContributeButtonMixin:SetContributionID(contributionID)
+	self.contributionID = contributionID;
+end
+
+function ContributeButtonMixin:Update()
+	local canContribute = C_ContributionCollector.CanContribute(self.contributionID);
+	self:SetEnabled(canContribute);
+
+	local state = C_ContributionCollector.GetState(self.contributionID);
+	self.isDisabledBecauseOfContributionState = not canContribute and state ~= Enum.ContributionState.Building;
+	self.questID = C_ContributionCollector.GetRewardQuestID(self.contributionID);
+
+	if canContribute then
+		local currencyID, currencyAmount = C_ContributionCollector.GetRequiredContributionAmount(self.contributionID);
+		self:SetCurrencyFromID(currencyID, currencyAmount, CONTIBUTION_REQUIRED_CURRENCY);
+	else
+		self:SetText(CONTRIBUTION_DISABLED);
+	end
+end
+
 ContributionMixin = {};
 
 function ContributionMixin:OnLoad()
 	self.Status:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar"); -- Set to some default texture just to instantiate the bar, fixing this soon since it will use a static texture
 	self.Status.Spark:ClearAllPoints();
 	self.Status.Spark:SetPoint("CENTER", self.Status:GetStatusBarTexture(), "RIGHT", 0, 0);
+end
+
+function ContributionMixin:OnHide()
+	self:StopAnimations();
 end
 
 function ContributionMixin:OnReset(pool)
@@ -111,6 +183,7 @@ end
 
 function ContributionMixin:Contribute()
 	C_ContributionCollector.Contribute(self.contributionID);
+	self:QueueSuccessAnimation(true);
 end
 
 function ContributionMixin:UpdateRewards()
@@ -148,35 +221,38 @@ function ContributionMixin:UpdateStatus()
 end
 
 function ContributionMixin:UpdateContributeButton()
-	local canContribute = C_ContributionCollector.CanContribute(self.contributionID);
-	self.ContributeButton:SetEnabled(canContribute);
+	self.ContributeButton:SetContributionID(self.contributionID);
+	self.ContributeButton:Update();
+	self:UpdatePendingAnimations();
+end
 
-	self.ContributeButton.questID = C_ContributionCollector.GetRewardQuestID(self.contributionID);
+function ContributionMixin:QueueSuccessAnimation(shouldQueue)
+	self.hasPendingSuccessAnimation = shouldQueue;
+	self.successAnimationLoopCount = 0;
+	self.Status.SuccessAnim:Stop();
+end
 
-	if canContribute then
-		local currencyID, currencyAmount = C_ContributionCollector.GetRequiredContributionAmount(self.contributionID);
-		self.ContributeButton:SetCurrencyFromID(currencyID, currencyAmount, CONTIBUTION_REQUIRED_CURRENCY);
-	else
-		self.ContributeButton:SetText(CONTRIBUTION_DISABLED);
+function ContributionMixin:UpdatePendingAnimations()
+	if self.hasPendingSuccessAnimation then
+		self.Status.SuccessAnim:Play();
+		self.hasPendingSuccessAnimation = false;
 	end
 end
 
-ContributeButtonMixin = {};
-
-function ContributeButtonMixin:OnClick(button)
-	self:Disable();
-	self:GetParent():Contribute();
+function ContributionMixin:StopAnimations()
+	self:QueueSuccessAnimation(false);
 end
 
-function ContributeButtonMixin:OnEnter()
-	ContributionTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	ContributionTooltip:SetText(CONTRIBUTION_REWARD_TOOLTIP_TITLE);
-	GameTooltip_AddQuestRewardsToTooltipWithHeader(ContributionTooltip, self.questID, 0, CONTRIBUTION_REWARD_TOOLTIP_TEXT, HIGHLIGHT_FONT_COLOR);
-	ContributionTooltip:Show();
+function ContributionMixin:OnSuccessAnimLoop(animGroup, loopState)
+	self.successAnimationLoopCount = self.successAnimationLoopCount and (self.successAnimationLoopCount + 1) or 1;
+
+	if (self.successAnimationLoopCount >= 2) then
+		self:StopAnimations();
+	end
 end
 
-function ContributeButtonMixin:OnLeave()
-	ContributionTooltip:Hide();
+function ContributionStatusMixin_SuccessAnimOnLoop(animGroup, loopState)
+	animGroup:GetParent():GetParent():OnSuccessAnimLoop(animGroup, loopState);
 end
 
 ContributionCollectionMixin = {};
