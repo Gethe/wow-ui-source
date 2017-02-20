@@ -650,10 +650,18 @@ function SecondsToTimeAbbrev(seconds)
 end
 
 function FormatShortDate(day, month, year)
-	if (LOCALE_enGB) then
-		return SHORTDATE_EU:format(day, month, year);
+	if (year) then
+		if (LOCALE_enGB) then
+			return SHORTDATE_EU:format(day, month, year);
+		else
+			return SHORTDATE:format(day, month, year);
+		end
 	else
-		return SHORTDATE:format(day, month, year);
+		if (LOCALE_enGB) then
+			return SHORTDATENOYEAR_EU:format(day, month);
+		else
+			return SHORTDATENOYEAR:format(day, month);
+		end
 	end
 end
 

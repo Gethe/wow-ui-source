@@ -161,6 +161,7 @@ function ReputationFrame_Update(showLFGPulse)
 				paragonFrame.factionID = factionID;
 				paragonFrame:SetPoint("RIGHT", factionRow, 11, 0);
 				local currentValue, threshold, rewardQuestID, hasRewardPending = C_Reputation.GetFactionParagonInfo(factionID);
+				C_Reputation.RequestFactionParagonPreloadRewardData(factionID);
 				paragonFrame.Glow:SetShown(hasRewardPending);
 				paragonFrame.Check:SetShown(hasRewardPending);
 				paragonFrame:Show();
@@ -369,7 +370,7 @@ function ReputationParagonFrame_SetupParagonTooltip(frame, factionID)
 	local description = PARAGON_REPUTATION_TOOLTIP_TEXT:format(factionName);
 	if ( hasRewardPending ) then
 		local questIndex = GetQuestLogIndexByID(rewardQuestID);
-		local _, text = GetQuestLogQuestText(questIndex);
+		local text = GetQuestLogCompletionText(questIndex);
 		if ( text and text ~= "" ) then
 			description = text;
 		end

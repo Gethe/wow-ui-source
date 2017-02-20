@@ -427,6 +427,8 @@ function WorldMapFrame_OnHide(self)
 
 	self.UIElementsFrame.ActionButton:SetMapAreaID(nil);
 	self.UIElementsFrame.ActionButton:SetHasWorldQuests(false);
+
+	WorldMapPOIFrame.POIPing:Stop();
 end
 
 function WorldMapFrame_OnEvent(self, event, ...)
@@ -931,6 +933,15 @@ function WorldMap_TryCreatingBonusObjectivePOI(info, taskIconIndex)
 	return taskPOI;
 end
 
+function WorldMap_GetActiveTaskPOIForQuestID(questID)
+	for i = 1, NUM_WORLDMAP_TASK_POIS do
+		local taskPOI = _G["WorldMapFrameTaskPOI"..i];
+		if taskPOI and taskPOI.questID == questID and taskPOI:IsShown() then
+			return taskPOI;
+		end
+	end
+end
+
 function WorldMap_UpdateQuestBonusObjectives()
 	if ( QuestMapFrame.DetailsFrame.questID ) then
 		-- Hide all task POIs while the player looks at quest details.
@@ -984,6 +995,8 @@ function WorldMap_UpdateQuestBonusObjectives()
 					else
 						WorldMapPOIFrame_AnchorPOI(taskPOI, info.x, info.y, WORLD_MAP_POI_FRAME_LEVEL_OFFSETS.BONUS_OBJECTIVE);
 					end
+
+					WorldMapPing_UpdatePing(taskPOI, info.questId);
 				end
 			end
 		end
@@ -1689,7 +1702,7 @@ function WorldMapPOI_AddContributionsToTooltip(tooltip, ...)
 		if tooltipLine then
 			if timeOfNextStateChange and appearanceData.tooltipUseTimeRemaining then
 				local time = math.max(timeOfNextStateChange - GetServerTime(), 60); -- Never display times below one minute
-				tooltipLine = tooltipLine:format(SecondsToTime(time, true, true));
+				tooltipLine = tooltipLine:format(SecondsToTime(time, true, true, 1));
 			else
 				tooltipLine = tooltipLine:format(FormatPercentage(stateAmount));
 			end
@@ -2022,6 +2035,10 @@ function TaskPOI_OnClick(self, button)
 	end
 end
 
+function TaskPOI_OnHide(self)
+	WorldMapPing_StopPing(self);
+end
+
 function ScenarioPOI_OnEnter(self)
 	if(ScenarioPOITooltips[self.name] ~= nil) then
 		WorldMapTooltip:SetOwner(self, "ANCHOR_RIGHT");
@@ -2141,6 +2158,7 @@ function WorldMap_GetOrCreateTaskPOI(index)
 	button:SetScript("OnEnter", TaskPOI_OnEnter);
 	button:SetScript("OnLeave", TaskPOI_OnLeave);
 	button:SetScript("OnClick", TaskPOI_OnClick);
+	button:SetScript("OnHide", TaskPOI_OnHide);
 
 	button.UpdateTooltip = TaskPOI_OnEnter;
 
@@ -3788,5 +3806,95 @@ function WorldMapFrame_ToggleTutorial()
 		SetCVarBitfield( "closedInfoFrames", LE_FRAME_TUTORIAL_WORLD_MAP_FRAME, true );
 	else
 		HelpPlate_Hide(true);
+	end
+end
+
+WorldMapPingMixin = {};
+
+function WorldMapPingMixin:PlayOnFrame(frame, contextData)
+	if self.targetFrame ~= frame then
+		if frame and frame:IsVisible() then
+			self:ClearAllPoints();
+			self:SetPoint("CENTER", frame);
+
+			self:Stop();
+			self:SetTargetFrame(frame);
+			self:SetContextData(contextData);
+			self:Play();
+		else
+			self:Stop();
+		end
+	end
+end
+
+function WorldMapPingMixin:SetTargetFrame(frame)
+	-- Stop this ping from playing on any previous target
+	if self.targetFrame then
+		self.targetFrame.worldMapPing = nil;
+	end
+
+	-- This ping is now targeting a new frame (or nothing)
+	self.targetFrame = frame;
+
+	-- Clear out context data, it's meaningless with a new frame
+	self:SetContextData(nil);
+
+	-- If that frame is a valid target, then let it know that a ping is attached
+	if frame then
+		frame.worldMapPing = self;
+
+		-- Layer this behind the frame that's targeted (could make this dynamic)
+		-- Might need to reparent, this currently works because it's only operating
+		-- on TaskPOI pins.
+		self:SetFrameLevel(frame:GetFrameLevel() - 1);
+	end
+end
+
+function WorldMapPingMixin:SetContextData(contextData)
+	self.contextData = contextData;
+end
+
+function WorldMapPingMixin:GetContextData()
+	return self.contextData;
+end
+
+function WorldMapPingMixin:Play()
+	self.DriverAnimation:Play();
+end
+
+function WorldMapPingMixin:Stop()
+	self.DriverAnimation:Stop();
+end
+
+WorldMapPingAnimationMixin = {};
+
+function WorldMapPingAnimationMixin:OnPlay()
+	local ping = self:GetParent();
+	ping.ScaleAnimation:Play();
+end
+
+function WorldMapPingAnimationMixin:OnStop()
+	local ping = self:GetParent();
+	ping:SetTargetFrame(nil);
+	ping.ScaleAnimation:Stop();
+end
+
+function WorldMapPing_StartPingQuest(questID)
+	if WorldMapFrame:IsVisible() then
+		local ping = WorldMapPOIFrame.POIPing;
+		local target = WorldMap_GetActiveTaskPOIForQuestID(questID);
+		ping:PlayOnFrame(target, questID);
+	end
+end
+
+function WorldMapPing_StopPing(frame)
+	if frame.worldMapPing then
+		frame.worldMapPing:Stop();
+	end
+end
+
+function WorldMapPing_UpdatePing(frame, contextData)
+	if frame.worldMapPing and frame.worldMapPing:GetContextData() ~= contextData then
+		frame.worldMapPing:Stop();
 	end
 end

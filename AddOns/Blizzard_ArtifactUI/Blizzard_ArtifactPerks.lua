@@ -5,7 +5,7 @@ local CURVED_LINE_RADIUS_SCALAR = 0.98;
 local CURVED_LINE_THICKNESS = 5;
 
 -- Indexed by artifact tier.
-local ARTIFACT_REVEAL_DELAY_SECS_PER_DISTANCE = { [1] = .005, [2] = .0025 };
+local ARTIFACT_REVEAL_DELAY_SECS_PER_DISTANCE = { [1] = .005, [2] = .00305 };
 local ARTIFACT_REVEAL_LINE_DURATION_SECS_PER_DISTANCE = .0019;
 
 -------------------- Animation Constants Start --------------------
@@ -21,19 +21,24 @@ local ARTIFACT_TIER_2_RUNE_FLASH_DELAY = 1.0;
 local ARTIFACT_TIER_2_CONSTELLATION_DELAY = 1.05;
 local ARTIFACT_TIER_2_FIRST_CURVED_LINE_DELAY = 0;
 local ARTIFACT_TIER_2_SECOND_CURVED_LINE_DELAY = 0.4;
-local ARTIFACT_TIER_2_CURVED_LINE_TICK_SPEED = 0.02;
-local ARTIFACT_TIER_2_CURVED_LINE_FADE_DELAY = 0.5;
+local ARTIFACT_TIER_2_THIRD_CURVED_LINE_DELAY = 0.7;
+local ARTIFACT_TIER_2_CURVED_LINE_TICK_SPEED = 0.035;
 
 -- The Tier 2 crest animates in with frame shake.
-local ARTIFACT_TIER_2_CREST_DELAY = 1.2;
+local ARTIFACT_TIER_2_CREST_DELAY = 1.55;
 local ARTIFACT_TIER_2_SHAKE_DELAY = 0.35;
-local ARTIFACT_TIER_2_SHAKE_AMOUNT = 4;
+local ARTIFACT_TIER_2_SHAKE = { { x = -3, y = -1 }, { x = 2, y = 2 }, { x = -2, y = -3 }, { x = -1, y = -1 }, { x = 4, y = 2 }, { x = 3, y = 4 }, { x = -3, y = 4 }, { x = 4, y = -4 }, { x = -4, y = 2 }, { x = -2, y = 1 }, { x = -3, y = -1 }, { x = 2, y = 2 }, { x = -2, y = -3 }, { x = -1, y = -1 }, { x = 4, y = 2 }, { x = 3, y = 4 }, { x = -3, y = 4 }, { x = 4, y = -4 }, { x = -4, y = 2 }, { x = -2, y = 1 }, };
 local ARTIFACT_TIER_2_SHAKE_DURATION = 0.25;
 local ARTIFACT_TIER_2_SHAKE_FREQUENCY = 0.001;
 
+ARTIFACT_TIER_2_SOUND_REFUND_LOOP_START_DELAY = 0.3;
+ARTIFACT_TIER_2_SOUND_REFUND_END_DELAY = 0.9;
+ARTIFACT_TIER_2_SOUND_REFUND_LOOP_STOP_DELAY = 0.0;
+ARTIFACT_TIER_2_SOUND_REFUND_LOOP_FADE_OUT_TIME = 500;
+
 local TIER_2_FINAL_POWER_REVEAL_REVEAL_DELAY = 0.5;
 local TIER_2_FINAL_POWER_REVEAL_SHAKE_DELAY = 0.35;
-local TIER_2_FINAL_POWER_REVEAL_SHAKE_AMOUNT = 4;
+local TIER_2_FINAL_POWER_REVEAL_SHAKE = ARTIFACT_TIER_2_SHAKE;
 local TIER_2_FINAL_POWER_REVEAL_SHAKE_DURATION = 0.22;
 local TIER_2_FINAL_POWER_REVEAL_SHAKE_FREQUENCY = 0.001;
 
@@ -42,7 +47,7 @@ local TIER_2_GLOW_TIME = 3.2;
 
 function ArtifactPerksMixin:OnLoad()	
 	self.powerButtonPool = CreateFramePool("BUTTON", self, "ArtifactPowerButtonTemplate");
-	self.animationTimers = {};
+	self.callbackTimers = {};
 end
 
 function ArtifactPerksMixin:OnShow()	
@@ -228,12 +233,12 @@ function ArtifactPerksMixin:RefreshFinalPowerForTier(tier, isUnlocked)
 				elseif tier == 2 then
 					self:CancelAllTimedAnimations();
 					finalTierButton:Hide();
-					self:StartAnimationWithDelay(TIER_2_FINAL_POWER_REVEAL_REVEAL_DELAY, function ()
+					self:StartWithDelay(TIER_2_FINAL_POWER_REVEAL_REVEAL_DELAY, function ()
 						finalTierButton:Show();
 						finalTierButton:PlayUnlockAnimation();
 						finalTierButton.Tier2FinalPowerSparks:Play();
-						self:StartAnimationWithDelay(TIER_2_FINAL_POWER_REVEAL_SHAKE_DELAY, function ()
-							ShakeFrameRandom(self:GetParent(), TIER_2_FINAL_POWER_REVEAL_SHAKE_AMOUNT, TIER_2_FINAL_POWER_REVEAL_SHAKE_DURATION, TIER_2_FINAL_POWER_REVEAL_SHAKE_FREQUENCY);
+						self:StartWithDelay(TIER_2_FINAL_POWER_REVEAL_SHAKE_DELAY, function ()
+							ShakeFrame(self:GetParent(), TIER_2_FINAL_POWER_REVEAL_SHAKE, TIER_2_FINAL_POWER_REVEAL_SHAKE_DURATION, TIER_2_FINAL_POWER_REVEAL_SHAKE_FREQUENCY);
 						end);
 					end);
 				end
@@ -348,6 +353,7 @@ function ArtifactPerksMixin:TryRefresh()
 		if not self.numArtifactTraitsRefunded and C_ArtifactUI.GetArtifactTier() == 2 then
 			self:ShowTier2();
 			self.CrestFrame.CrestRune1:SetAlpha(1.0);
+			self.CrestFrame.RunePulse:Play();
 		end
 		
 		if self.queuePlayingReveal then
@@ -356,13 +362,13 @@ function ArtifactPerksMixin:TryRefresh()
 			self:AnimateTraitRefund(self.numArtifactTraitsRefunded);
 			self.numArtifactTraitsRefunded = nil;
 		elseif self.wasFinalPowerButtonUnlockedByTier[2] then
-			self:AnimateInCurvedLine(3);
+			self:AnimateInCurvedLine(4);
 		else
 			if C_ArtifactUI:IsAtForge() and self:ShouldShowTierGlow() then 
 				-- We may need to change self.tierGlowSeen to take into account the tier you've seen
 				-- rather than just the artifact ID since you could tier up twice without reloading the UI (in theory?).
 				self:ShowTierGlow();
-				self:StartAnimationWithDelay(TIER_2_GLOW_TIME, function() self:HideTierGlow(); end);
+				self:StartWithDelay(TIER_2_GLOW_TIME, function() self:HideTierGlow(); end);
 			end
 		end
 	end
@@ -652,7 +658,9 @@ function ArtifactPerksMixin:GenerateCurvedLine(startButton, endButton, state, ar
 	-- Catmullrom splines are not quadratic so they cannot perfectly fit a circle, add enough points so that the sampling will produce something close enough to a circle
 	-- Keeping this as a spline for now in case we need to connect something non-circular
 	local NUM_SLICES = 10;
-	for angle = 0, totalAngle, totalAngle / NUM_SLICES do
+	local anglePerSlice = totalAngle / (NUM_SLICES - 1);
+	for slice = 1, NUM_SLICES do
+		local angle = (slice - 1) * anglePerSlice;
 		local x = math.cos(angle + angleOffset) * lengthToEdge;
 		local y = math.sin(angle + angleOffset) * lengthToEdge;
 		spline:AddPoint(x, y);
@@ -986,6 +994,14 @@ function ArtifactPerksMixin:TraitRefundSetup(numTraitsRefunded)
 	self.TitleContainer.PointsRemainingLabel:SnapToTarget();
 	self:HideTier2();
 	if self:GetFinalPowerButtonByTier(1) then self:GetFinalPowerButtonByTier(1).Rank:SetText(1 + numTraitsRefunded); end
+	
+	local startingSound = "UI_72_Artifact_Forge_Final_Trait_Refund_Start";
+	local loopingSound = "UI_72_Artifact_Forge_Final_Trait_Refund_Loop";
+	local endingSound = nil;
+	local loopStartDelay = ARTIFACT_TIER_2_SOUND_REFUND_LOOP_START_DELAY;
+	local loopEndDelay = ARTIFACT_TIER_2_SOUND_REFUND_LOOP_STOP_DELAY;
+	local loopFadeTime = ARTIFACT_TIER_2_SOUND_REFUND_LOOP_FADE_OUT_TIME;
+	self.traitRefundSoundEmitter = CreateLoopingSoundEffectEmitter(startingSound, loopingSound, endingSound, loopStartDelay, loopEndDelay, loopFadeTime);
 end
 
 function ArtifactPerksMixin:OnTraitsRefunded(numArtifactTraitsRefunded, refundedTier)
@@ -993,26 +1009,31 @@ function ArtifactPerksMixin:OnTraitsRefunded(numArtifactTraitsRefunded, refunded
 	self.perksDirty = true;
 end
 
-function ArtifactPerksMixin:StartAnimationWithDelay(delay, callback, iterations)
+function ArtifactPerksMixin:StartWithDelay(delay, callback, iterations)
 	if not iterations then iterations = 1; end
-	self.animationTimers[#self.animationTimers + 1] = C_Timer.NewTicker(delay, callback, iterations);
+	self.callbackTimers[#self.callbackTimers + 1] = C_Timer.NewTicker(delay, callback, iterations);
 end
 
 function ArtifactPerksMixin:CancelAllTimedAnimations()
-	for i, timer in ipairs(self.animationTimers) do
+	for i, timer in ipairs(self.callbackTimers) do
 		timer:Cancel();
 	end
 	
-	self.animationTimers = {};
+	self.callbackTimers = {};
+	
+	if self.traitRefundSoundEmitter then
+		self.traitRefundSoundEmitter:CancelLoopingSound();
+	end
 end
 
 function ArtifactPerksMixin:AnimateTraitRefund(numTraitsRefunded)
 	self:CancelAllTimedAnimations();
+	self.CrestFrame.RunePulse:Stop();
 
 	local button = self:GetFinalPowerButtonByTier(1);
 	if not button or numTraitsRefunded == 0 then
 		self:HideTier2();
-		self:StartAnimationWithDelay(ARTIFACT_TIER_2_REVEAL_START_DELAY, function ()
+		self:StartWithDelay(ARTIFACT_TIER_2_REVEAL_START_DELAY, function ()
 			self:AnimateInTierTwoReveal();
 		end);
 		
@@ -1020,7 +1041,9 @@ function ArtifactPerksMixin:AnimateTraitRefund(numTraitsRefunded)
 	end
 	
 	self:TraitRefundSetup(numTraitsRefunded);
-	self:StartAnimationWithDelay(ARTIFACT_TIER_2_REVEAL_START_DELAY, function ()
+	self:StartWithDelay(ARTIFACT_TIER_2_REVEAL_START_DELAY, function ()
+		self.traitRefundSoundEmitter:StartLoopingSound();
+		
 		-- This is the time it takes to animate the floating numbers.
 		self.TitleContainer.PointsRemainingLabel:SetAnimatedDurationTimeSec(0.6 + ARTIFACT_TIER_2_REFUND_NUMBER_TICK_SPEED * numTraitsRefunded);
 		self.TitleContainer.PointsRemainingLabel:SetAnimatedValue(C_ArtifactUI.GetPointsRemaining());
@@ -1033,7 +1056,7 @@ function ArtifactPerksMixin:AnimateTraitRefund(numTraitsRefunded)
 		sourceX = sourceX + (button:GetWidth() / 2);
 		
 		local currentRank = numTraitsRefunded + 1;
-		self:StartAnimationWithDelay(ARTIFACT_TIER_2_REFUND_NUMBER_TICK_SPEED, function ()
+		self:StartWithDelay(ARTIFACT_TIER_2_REFUND_NUMBER_TICK_SPEED, function ()
 			if ( currentRank <= 1 ) then return; end
 			local numberIndex = 2 + (numTraitsRefunded - currentRank);
 			if not button.FloatingNumbers or not button.FloatingNumbers[numberIndex] then
@@ -1052,7 +1075,11 @@ function ArtifactPerksMixin:AnimateTraitRefund(numTraitsRefunded)
 			currentRank = currentRank - 1;
 			button.Rank:SetText(currentRank);
 			if ( currentRank <= 1 ) then
-				self:StartAnimationWithDelay(ARTIFACT_TIER_2_RUNE_FLASH_DELAY, function ()
+				self:StartWithDelay(ARTIFACT_TIER_2_SOUND_REFUND_END_DELAY, function ()
+					self.traitRefundSoundEmitter:FinishLoopingSound();
+				end);
+	
+				self:StartWithDelay(ARTIFACT_TIER_2_RUNE_FLASH_DELAY, function ()
 					self:AnimateInTierTwoReveal();
 				end);
 			end
@@ -1062,8 +1089,10 @@ end
 
 function ArtifactPerksMixin:AnimateInTierTwoReveal()
 	self.TitleContainer.PointsRemainingLabel:SnapToTarget();
+	PlaySound("UI_72_Artifact_Forge_Activate_Final_Tier");
+	
 	self.CrestFrame.IntroCrestAnim:Play();
-	self:StartAnimationWithDelay(ARTIFACT_TIER_2_CONSTELLATION_DELAY, function ()
+	self:StartWithDelay(ARTIFACT_TIER_2_CONSTELLATION_DELAY, function ()
 		self:AnimateInTierTwoPowers();
 	end);
 end
@@ -1075,7 +1104,7 @@ function ArtifactPerksMixin:AnimateInTierTwoPowers()
 	
 	for i = 1, self.numUsedCurvedLines do
 		local lineContainer = self.CurvedDependencyLines[i];
-		lineContainer.Fill:SetVertexColor(lineContainer.disconnectedColor:GetRGB());
+		lineContainer.Fill:SetVertexColor(lineContainer.connectedColor:GetRGB());
 		lineContainer:SetAlpha(0.0);
 	end
 	
@@ -1084,20 +1113,24 @@ function ArtifactPerksMixin:AnimateInTierTwoPowers()
 	
 	self:PlayReveal(2);
 	
-	self:StartAnimationWithDelay(ARTIFACT_TIER_2_FIRST_CURVED_LINE_DELAY, function ()
+	self:StartWithDelay(ARTIFACT_TIER_2_FIRST_CURVED_LINE_DELAY, function ()
+		self:AnimateInCurvedLine(3);
+	end);
+	
+	self:StartWithDelay(ARTIFACT_TIER_2_SECOND_CURVED_LINE_DELAY, function ()
 		self:AnimateInCurvedLine(1);
 	end);
 	
-	self:StartAnimationWithDelay(ARTIFACT_TIER_2_SECOND_CURVED_LINE_DELAY, function ()
+	self:StartWithDelay(ARTIFACT_TIER_2_THIRD_CURVED_LINE_DELAY, function ()
 		self:AnimateInCurvedLine(2);
 	end);
 	
-	self:StartAnimationWithDelay(ARTIFACT_TIER_2_CREST_DELAY, function ()
+	self:StartWithDelay(ARTIFACT_TIER_2_CREST_DELAY, function ()
 		self:AnimateInCrest();
 	end);
 end
 
-local MAX_CURVED_LINE_FADE_DELAY = ARTIFACT_TIER_2_CURVED_LINE_TICK_SPEED * (NUM_CURVED_LINE_SEGEMENTS / 2);
+local MAX_CURVED_LINE_FADE_DELAY = ARTIFACT_TIER_2_CURVED_LINE_TICK_SPEED * (NUM_CURVED_LINE_SEGEMENTS / 2 - 0.5);
 function ArtifactPerksMixin:AnimateInCurvedLine(curvedLineIndex)
 	if curvedLineIndex * NUM_CURVED_LINE_SEGEMENTS > self.numUsedCurvedLines then
 		return;
@@ -1108,7 +1141,7 @@ function ArtifactPerksMixin:AnimateInCurvedLine(curvedLineIndex)
 		local lineContainer = self.CurvedDependencyLines[baseIndex + i];
 		lineContainer:SetAlpha(0.0);
 
-		local delay = ARTIFACT_TIER_2_CURVED_LINE_TICK_SPEED * math.abs(NUM_CURVED_LINE_SEGEMENTS / 2 - i);
+		local delay = ARTIFACT_TIER_2_CURVED_LINE_TICK_SPEED * math.abs(NUM_CURVED_LINE_SEGEMENTS / 2 - (i - 0.5));
 		lineContainer.Tier2FadeInAnim.Background:SetStartDelay(delay);
 		lineContainer.Tier2FadeInAnim.Background:SetEndDelay(MAX_CURVED_LINE_FADE_DELAY - delay);
 		lineContainer.Tier2FadeInAnim.Fill:SetStartDelay(delay);
@@ -1129,14 +1162,16 @@ function ArtifactPerksMixin:PlayReveal(tier)
 			end
 		end
 
-		PlaySound("UI_70_Artifact_Forge_Trait_FirstTrait");
+		if tier == 1 then
+			PlaySound("UI_70_Artifact_Forge_Trait_FirstTrait");
+		end
 	end
 end
 
 function ArtifactPerksMixin:AnimateInCrest()
 	self.CrestFrame.RuneAnim:Play();
-	self:StartAnimationWithDelay(ARTIFACT_TIER_2_SHAKE_DELAY, function ()
-		ShakeFrameRandom(self:GetParent(), ARTIFACT_TIER_2_SHAKE_AMOUNT, ARTIFACT_TIER_2_SHAKE_DURATION, ARTIFACT_TIER_2_SHAKE_FREQUENCY);
+	self:StartWithDelay(ARTIFACT_TIER_2_SHAKE_DELAY, function ()
+		ShakeFrame(self:GetParent(), ARTIFACT_TIER_2_SHAKE, ARTIFACT_TIER_2_SHAKE_DURATION, ARTIFACT_TIER_2_SHAKE_FREQUENCY);
 	end);
 end
 

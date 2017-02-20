@@ -791,14 +791,18 @@ function UnitPopup_HideButtons ()
 			end
 		elseif ( value == "BN_INVITE" or value == "BN_SUGGEST_INVITE" or value == "BN_REQUEST_INVITE" ) then
 			local bnetIDAccount, accountName, battleTag, isBattleTag, characterName, bnetIDGameAccount = BNGetFriendInfoByID(dropdownMenu.bnetIDAccount);
-			local guid = select(20, BNGetGameAccountInfo(bnetIDGameAccount));
-			local inviteType = GetDisplayedInviteType(guid);
-			if ( "BN_"..inviteType ~= value ) then
+			if not bnetIDGameAccount then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
-			elseif ( not dropdownMenu.bnetIDAccount or not BNFeaturesEnabledAndConnected() ) then
-				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
-			elseif ( UnitInParty(characterName) or UnitInRaid(characterName) ) then
-				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
+			else
+				local guid = select(20, BNGetGameAccountInfo(bnetIDGameAccount));
+				local inviteType = GetDisplayedInviteType(guid);
+				if ( "BN_"..inviteType ~= value ) then
+					UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
+				elseif ( not dropdownMenu.bnetIDAccount or not BNFeaturesEnabledAndConnected() ) then
+					UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
+				elseif ( UnitInParty(characterName) or UnitInRaid(characterName) ) then
+					UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
+				end
 			end
 		elseif ( value == "FOLLOW" ) then
 			if ( not canCoop or not isPlayer ) then

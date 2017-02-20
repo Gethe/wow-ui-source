@@ -255,13 +255,6 @@ CombatPanelOptions = {
     enableFloatingCombatText = { text = "SHOW_COMBAT_TEXT_TEXT" },
 }
 
-function InterfaceOptionsCombatPanelReducedLagTolerance_UpdateText()
-	local checkBox = InterfaceOptionsCombatPanelReducedLagTolerance;
-	local checkBoxText = InterfaceOptionsCombatPanelReducedLagToleranceText;
-
-	checkBoxText:SetFormattedText(_G[CombatPanelOptions[checkBox.cvar].text], GetMaxSpellStartRecoveryOffset());
-end
-
 -- [[ Self Cast key dropdown ]] --
 function InterfaceOptionsCombatPanelSelfCastKeyDropDown_OnEvent (self, event, ...)
 	if ( event == "PLAYER_ENTERING_WORLD" ) then

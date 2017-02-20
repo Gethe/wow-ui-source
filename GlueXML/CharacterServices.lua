@@ -198,9 +198,9 @@ CharacterUpgradeFlow = {
 };
 
 CharacterUpgrade_Items = {
-	[LE_BATTLEPAY_PRODUCT_ITEM_LEVEL_90_CHARACTER_UPGRADE] = {
+	[Enum.BattlepayBoostProduct.Level90Boost] = {
 		free = {
-			productId = LE_BATTLEPAY_PRODUCT_ITEM_LEVEL_90_CHARACTER_UPGRADE,
+			productId = Enum.BattlepayBoostProduct.Level90Boost,
 			Size = { x = 72, y = 68 },
 			icon = "Interface\\Icons\\achievement_level_90",
 			iconBorder = "services-ring-wod",
@@ -227,7 +227,7 @@ CharacterUpgrade_Items = {
 			professionLevel = 600,
 		},
 		paid = {
-			productId = LE_BATTLEPAY_PRODUCT_ITEM_LEVEL_90_CHARACTER_UPGRADE,
+			productId = Enum.BattlepayBoostProduct.Level90Boost,
 			icon = "Interface\\Icons\\achievement_level_90",
 			iconBorder = "services-ring",
 
@@ -239,9 +239,9 @@ CharacterUpgrade_Items = {
 			professionLevel = 600,
 		},
 	},
-	[LE_BATTLEPAY_PRODUCT_ITEM_LEVEL_100_CHARACTER_UPGRADE] = {
+	[Enum.BattlepayBoostProduct.Level100Boost] = {
 		free = {
-			productId = LE_BATTLEPAY_PRODUCT_ITEM_LEVEL_100_CHARACTER_UPGRADE,
+			productId = Enum.BattlepayBoostProduct.Level100Boost,
 			icon = "Interface\\Icons\\achievement_level_100",
 			iconBorder = "services-ring",
 
@@ -267,7 +267,7 @@ CharacterUpgrade_Items = {
 			professionLevel = 700,
 		},
 		paid = {
-			productId = LE_BATTLEPAY_PRODUCT_ITEM_LEVEL_100_CHARACTER_UPGRADE,
+			productId = Enum.BattlepayBoostProduct.Level100Boost,
 			icon = "Interface\\Icons\\achievement_level_100",
 			iconBorder = "services-ring",
 			maxLevel = UPGRADE_100_MAX_LEVEL,
@@ -281,10 +281,10 @@ CharacterUpgrade_Items = {
 }
 
 CharacterUpgrade_DisplayOrder = {
-	{ productId = LE_BATTLEPAY_PRODUCT_ITEM_LEVEL_90_CHARACTER_UPGRADE,		free = false},
-	{ productId = LE_BATTLEPAY_PRODUCT_ITEM_LEVEL_90_CHARACTER_UPGRADE,		free = true	},
-	{ productId = LE_BATTLEPAY_PRODUCT_ITEM_LEVEL_100_CHARACTER_UPGRADE,	free = true	},
-	{ productId = LE_BATTLEPAY_PRODUCT_ITEM_LEVEL_100_CHARACTER_UPGRADE ,	free = false},
+	{ productId = Enum.BattlepayBoostProduct.Level90Boost,		free = false},
+	{ productId = Enum.BattlepayBoostProduct.Level90Boost,		free = true	},
+	{ productId = Enum.BattlepayBoostProduct.Level100Boost,		free = true	},
+	{ productId = Enum.BattlepayBoostProduct.Level100Boost ,	free = false},
 }
 
 function CharacterServicesFlowPrototype:BuildResults(steps)
@@ -627,7 +627,7 @@ function CharacterUpgrade_ResetBoostData()
 end
 
 local function IsUsingValidProductForTrialBoost()
-	return CharacterUpgradeFlow.data.productId == LE_BATTLEPAY_PRODUCT_ITEM_LEVEL_100_CHARACTER_UPGRADE;
+	return CharacterUpgradeFlow.data.productId == Enum.BattlepayBoostProduct.Level100Boost;
 end
 
 local function IsUsingValidProductForCreateNewCharacterBoost()
@@ -1275,7 +1275,7 @@ function CharacterUpgradeSpecSelectBlock:Initialize(results, wasFromRewind)
 
 	-- When boosting to level 100, prevent the selection of non-recommended specs, but still auto-select from
 	-- the limited number of specs that the user can choose from
-	local allowAllSpecs = CharacterUpgradeFlow.data.productId ~= LE_BATTLEPAY_PRODUCT_ITEM_LEVEL_100_CHARACTER_UPGRADE;
+	local allowAllSpecs = CharacterUpgradeFlow.data.productId ~= Enum.BattlepayBoostProduct.Level100Boost;
 
 	CharacterServices_UpdateSpecializationButtons(classID, gender, self.frame.ControlsFrame, CharacterUpgradeSpecSelectBlock, allowAllSpecs);
 

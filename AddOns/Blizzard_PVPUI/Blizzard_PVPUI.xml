@@ -1518,4 +1518,107 @@
 			</Layer>
 		</Layers>
 	</Frame>
+	<Frame name="PvPObjectiveBannerFrame" parent="UIParent" hidden="true">
+		<Size x="128" y="128"/>
+		<Anchors>
+			<Anchor point="TOP" x="0" y="-180"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Icon" hidden="false" alpha="0" alphaMode="BLEND" atlas="bonusobjectives-title-icon" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="4"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture parentKey="Icon2" hidden="false" alpha="0" alphaMode="ADD" atlas="bonusobjectives-title-icon" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="2">
+				<Texture parentKey="Icon3" hidden="false" alpha="0" alphaMode="ADD" atlas="bonusobjectives-title-icon" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="BG1" hidden="false" alpha="0" alphaMode="BLEND" atlas="bonusobjectives-title-bg" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER" textureSubLevel="1">
+				<Texture parentKey="BG2" hidden="false" alpha="0" alphaMode="ADD" atlas="bonusobjectives-title-bg" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Title" inherits="QuestFont_Super_Huge" alpha="0">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.BG1" x="0" y="16"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="TitleFlash" inherits="QuestFont_Super_Huge" alpha="0">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.BG1" x="0" y="16"/>
+					</Anchors>
+					<Color r="1" g="1" b="1"/>
+				</FontString>
+				<FontString parentKey="BonusLabel" inherits="GameFontHighlightLarge" alpha="0">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="0" y="-7"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="Anim" setToFinalAlpha="true">
+				<Scale childKey="BG1" duration="0.33" order="1" fromScaleX="0.001" fromScaleY="1" toScaleX="1" toScaleY="1"/>
+				<Alpha childKey="BG1" duration="0" order="1" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="BG2" duration="0.33" order="1" fromScaleX="0.001" fromScaleY="1" toScaleX="1" toScaleY="1"/>
+				<Alpha childKey="BG2" duration="0.33" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="BG2" startDelay="0.33" smoothing="IN" duration="0.33" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="Title" duration="0.33" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="BonusLabel" duration="0.33" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="TitleFlash" duration="0.33" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="TitleFlash" startDelay="0.33" smoothing="IN" duration="0.33" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="Icon" duration="0.33" order="1" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="Icon" smoothing="IN" duration="0.33" order="1" fromScaleX="1.4" fromScaleY="1.4" toScaleX="1" toScaleY="1"/>
+				<Alpha childKey="Icon2" duration="0.33" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="Icon2" startDelay="0.33" smoothing="IN" duration="0.33" order="1" fromAlpha="1" toAlpha="0"/>
+				<Scale childKey="Icon2" smoothing="IN" duration="0.33" order="1" fromScaleX="1.4" fromScaleY="1.4" toScaleX="1" toScaleY="1"/>
+				<Alpha childKey="Icon3" duration="0.33" order="1" fromAlpha="0" toAlpha="0.35"/>
+				<Alpha childKey="Icon3" startDelay="0.33" smoothing="IN" duration="0.33" order="1" fromAlpha="0.35" toAlpha="0"/>
+				<Scale childKey="Icon3" smoothing="IN" duration="0.33" order="1" fromScaleX="1.8" fromScaleY="1.8" toScaleX="1" toScaleY="1"/>
+				<Alpha childKey="BG1" startDelay="2.5" smoothing="IN" duration="0.46" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="Title" startDelay="2.5" smoothing="IN" duration="0.46" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="BonusLabel" startDelay="2.5" smoothing="IN" duration="0.46" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="Icon" startDelay="2.5" smoothing="IN" duration="0.46" order="1" fromAlpha="1" toAlpha="0"/>
+				<Scale childKey="BG1" startDelay="2.5" smoothing="IN" duration="0.46" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.55" toScaleY="0.55"/>
+				<Scale childKey="Title" startDelay="2.5" smoothing="IN" duration="0.46" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.55" toScaleY="0.55"/>
+				<Scale childKey="BonusLabel" startDelay="2.5" smoothing="IN" duration="0.46" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.55" toScaleY="0.55"/>
+				<Scale childKey="Icon" startDelay="2.5" smoothing="IN" duration="0.46" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.55" toScaleY="0.55"/>
+				<Translation parentKey="BG1Translation" childKey="BG1" startDelay="2.5" smoothing="IN" duration="0.46" order="1" offsetX="269.1" offsetY="-84.7"/>
+				<Translation parentKey="TitleTranslation" childKey="Title" startDelay="2.5" smoothing="IN" duration="0.46" order="1" offsetX="269.1" offsetY="-84.7"/>
+				<Translation parentKey="BonusLabelTranslation" childKey="BonusLabel" startDelay="2.5" smoothing="IN" duration="0.46" order="1" offsetX="269.1" offsetY="-84.7"/>
+				<Translation parentKey="IconTranslation" childKey="Icon" startDelay="2.5" smoothing="IN" duration="0.46" order="1" offsetX="269.1" offsetY="-84.7"/>
+				<Scripts>
+					<OnFinished function="PvPObjectiveBannerFrame_OnAnimFinished"/>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnLoad>
+				self.PlayBanner = PvPObjectiveBannerFrame_PlayBanner;
+				self.StopBanner = PvPObjectiveBannerFrame_StopBanner;
+			</OnLoad>
+		</Scripts>
+	</Frame>
 </Ui>

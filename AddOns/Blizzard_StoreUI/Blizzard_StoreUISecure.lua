@@ -12,6 +12,7 @@ Import("IsOnGlueScreen");
 
 if ( tbl.IsOnGlueScreen() ) then
 	tbl._G = _G;	--Allow us to explicitly access the global environment at the glue screens
+	Import("C_StoreGlue");
 end
 
 setfenv(1, tbl);
@@ -67,6 +68,7 @@ Import("UnitAffectingCombat");
 Import("GetCVar");
 Import("GMError");
 Import("GetMouseFocus");
+Import("Enum");
 
 --GlobalStrings
 Import("BLIZZARD_STORE");
@@ -210,7 +212,8 @@ Import("BLIZZARD_STORE_DISCLAIMER_APPEARANCE_CHANGE_CN");
 Import("BLIZZARD_STORE_DISCLAIMER_NAME_CHANGE_CN");
 Import("BLIZZARD_STORE_DISCLAIMER_CHARACTER_TRANSFER_CN");
 Import("BLIZZARD_STORE_BOOST_UNREVOKED_CONSUMPTION");
-Import("LE_BATTLEPAY_PRODUCT_ITEM_LEVEL_100_CHARACTER_UPGRADE");
+Import("BLIZZARD_STORE_DISCLAIMER_BOOST_TOKEN_100");
+Import("BLIZZARD_STORE_DISCLAIMER_BOOST_TOKEN_100_CN");
 Import("TOOLTIP_DEFAULT_COLOR");
 Import("TOOLTIP_DEFAULT_BACKGROUND_COLOR");
 Import("CHARACTER_UPGRADE_LOG_OUT_NOW");
@@ -239,6 +242,18 @@ Import("VAS_CHARACTER_TRANSFER_CONFIRMATION");
 Import("VAS_RACE_CHANGE_VALIDATION_DESCRIPTION");
 Import("VAS_FACTION_CHANGE_VALIDATION_DESCRIPTION");
 Import("VAS_APPEARANCE_CHANGE_VALIDATION_DESCRIPTION");
+Import("VAS_QUEUE_SEVERAL_MINUTES");
+Import("VAS_QUEUE_ONE_THREE_HOURS");
+Import("VAS_QUEUE_THREE_SIX_HOURS");
+Import("VAS_QUEUE_SIX_TWELVE_HOURS");
+Import("VAS_QUEUE_TWELVE_HOURS");
+Import("VAS_QUEUE_ONE_DAY");
+Import("VAS_QUEUE_TWO_DAY");
+Import("VAS_QUEUE_THREE_DAY");
+Import("VAS_QUEUE_FOUR_DAY");
+Import("VAS_QUEUE_FIVE_DAY");
+Import("VAS_QUEUE_SIX_DAY");
+Import("VAS_QUEUE_SEVEN_DAY");
 Import("BLIZZARD_STORE_VAS_SELECT_ACCOUNT");
 Import("BLIZZARD_STORE_VAS_DIFFERENT_BNET");
 Import("BLIZZARD_STORE_VAS_TRANSFER_REALM");
@@ -272,41 +287,6 @@ Import("LIST_DELIMITER");
 
 
 --Lua enums
-Import("LE_STORE_ERROR_INVALID_PAYMENT_METHOD");
-Import("LE_STORE_ERROR_PAYMENT_FAILED");
-Import("LE_STORE_ERROR_WRONG_CURRENCY");
-Import("LE_STORE_ERROR_BATTLEPAY_DISABLED");
-Import("LE_STORE_ERROR_INSUFFICIENT_BALANCE");
-Import("LE_STORE_ERROR_OTHER");
-Import("LE_STORE_ERROR_ALREADY_OWNED");
-Import("LE_STORE_ERROR_PARENTAL_CONTROLS_NO_PURCHASE");
-Import("LE_STORE_ERROR_PURCHASE_DENIED");
-Import("LE_STORE_ERROR_CONSUMABLE_TOKEN_OWNED");
-Import("LE_STORE_ERROR_TOO_MANY_TOKENS");
-Import("LE_STORE_ERROR_ITEM_UNAVAILABLE");
-Import("LE_VAS_SERVICE_NAME_CHANGE");
-Import("LE_VAS_SERVICE_APPEARANCE_CHANGE");
-Import("LE_VAS_SERVICE_FACTION_CHANGE");
-Import("LE_VAS_SERVICE_RACE_CHANGE");
-Import("LE_VAS_SERVICE_CHARACTER_TRANSFER");
-Import("LE_VAS_ERROR_REALM_NOT_ELIGIBLE");
-Import("LE_VAS_ERROR_CANNOT_MOVE_GUILDMASTER");
-Import("LE_VAS_ERROR_DUPLICATE_CHARACTER_NAME");
-Import("LE_VAS_ERROR_HAS_MAIL");
-Import("LE_VAS_ERROR_UNDER_MIN_LEVEL_REQ");
-Import("LE_VAS_ERROR_TOO_MUCH_MONEY_FOR_LEVEL");
-Import("LE_VAS_ERROR_HAS_AUCTIONS");
-Import("LE_VAS_ERROR_NAME_NOT_AVAILABLE");
-Import("LE_VAS_ERROR_LAST_RENAME_TOO_RECENT");
-Import("LE_VAS_ERROR_CUSTOMIZE_ALREADY_REQUESTED");
-Import("LE_VAS_ERROR_LAST_CUSTOMIZE_TOO_RECENT");
-Import("LE_VAS_ERROR_FACTION_CHANGE_TOO_SOON");
-Import("LE_VAS_ERROR_RACE_CLASS_COMBO_INELIGIBLE");
-Import("LE_VAS_ERROR_INELIGIBLE_MAP_ID");
-Import("LE_VAS_ERROR_BATTLEPAY_DELIVERY_PENDING");
-Import("LE_VAS_ERROR_HAS_WOW_TOKEN");
-Import("LE_VAS_ERROR_CHAR_LOCKED");
-Import("LE_VAS_ERROR_LAST_SAVE_TOO_RECENT");
 Import("LE_MODEL_BLEND_OPERATION_NONE");
 
 --Data
@@ -499,20 +479,21 @@ local currencySpecific = {
 		paymentMethodText = BLIZZARD_STORE_PAYMENT_METHOD,
 		paymentMethodSubtext = BLIZZARD_STORE_PAYMENT_METHOD_EXTRA,
 		browseHasStar = true,
+		boostDisclaimerText = BLIZZARD_STORE_DISCLAIMER_BOOST_TOKEN_100,
 		vasDisclaimerData = {
-			[LE_VAS_SERVICE_FACTION_CHANGE] = {
+			[Enum.VasServiceType.FactionChange] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_FACTION_CHANGE,
 			},
-			[LE_VAS_SERVICE_RACE_CHANGE] = {
+			[Enum.VasServiceType.RaceChange] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_RACE_CHANGE,
 			},
-			[LE_VAS_SERVICE_APPEARANCE_CHANGE] = {
+			[Enum.VasServiceType.AppearanceChange] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_APPEARANCE_CHANGE,
 			},
-			[LE_VAS_SERVICE_NAME_CHANGE] = {
+			[Enum.VasServiceType.NameChange] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_NAME_CHANGE,
 			},
-			[LE_VAS_SERVICE_CHARACTER_TRANSFER] = {
+			[Enum.VasServiceType.CharacterTransfer] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_CHARACTER_TRANSFER,
 			},
 		},
@@ -532,20 +513,21 @@ local currencySpecific = {
 		browseHasStar = true,
 		browseBuyButtonText = BLIZZARD_STORE_BUY_EUR,
 		confirmationButtonText = BLIZZARD_STORE_FINAL_BUY_EUR,
+		boostDisclaimerText = BLIZZARD_STORE_DISCLAIMER_BOOST_TOKEN_100,
 		vasDisclaimerData = {
-			[LE_VAS_SERVICE_FACTION_CHANGE] = {
+			[Enum.VasServiceType.FactionChange] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_FACTION_CHANGE,
 			},
-			[LE_VAS_SERVICE_RACE_CHANGE] = {
+			[Enum.VasServiceType.RaceChange] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_RACE_CHANGE,
 			},
-			[LE_VAS_SERVICE_APPEARANCE_CHANGE] = {
+			[Enum.VasServiceType.AppearanceChange] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_APPEARANCE_CHANGE,
 			},
-			[LE_VAS_SERVICE_NAME_CHANGE] = {
+			[Enum.VasServiceType.NameChange] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_NAME_CHANGE,
 			},
-			[LE_VAS_SERVICE_CHARACTER_TRANSFER] = {
+			[Enum.VasServiceType.CharacterTransfer] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_CHARACTER_TRANSFER,
 			},
 		},
@@ -565,20 +547,21 @@ local currencySpecific = {
 		requireLicenseAccept = true,
 		hideConfirmationBrowseNotice = true,
 		browseHasStar = false,
+		boostDisclaimerText = BLIZZARD_STORE_DISCLAIMER_BOOST_TOKEN_100,
 		vasDisclaimerData = {
-			[LE_VAS_SERVICE_FACTION_CHANGE] = {
+			[Enum.VasServiceType.FactionChange] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_FACTION_CHANGE,
 			},
-			[LE_VAS_SERVICE_RACE_CHANGE] = {
+			[Enum.VasServiceType.RaceChange] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_RACE_CHANGE,
 			},
-			[LE_VAS_SERVICE_APPEARANCE_CHANGE] = {
+			[Enum.VasServiceType.AppearanceChange] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_APPEARANCE_CHANGE,
 			},
-			[LE_VAS_SERVICE_NAME_CHANGE] = {
+			[Enum.VasServiceType.NameChange] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_NAME_CHANGE,
 			},
-			[LE_VAS_SERVICE_CHARACTER_TRANSFER] = {
+			[Enum.VasServiceType.CharacterTransfer] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_CHARACTER_TRANSFER,
 			},
 		},
@@ -598,20 +581,21 @@ local currencySpecific = {
 		browseHasStar = true,
 		browseBuyButtonText = BLIZZARD_STORE_BUY_EUR,
 		confirmationButtonText = BLIZZARD_STORE_FINAL_BUY_EUR,
+		boostDisclaimerText = BLIZZARD_STORE_DISCLAIMER_BOOST_TOKEN_100,
 		vasDisclaimerData = {
-			[LE_VAS_SERVICE_FACTION_CHANGE] = {
+			[Enum.VasServiceType.FactionChange] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_FACTION_CHANGE,
 			},
-			[LE_VAS_SERVICE_RACE_CHANGE] = {
+			[Enum.VasServiceType.RaceChange] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_RACE_CHANGE,
 			},
-			[LE_VAS_SERVICE_APPEARANCE_CHANGE] = {
+			[Enum.VasServiceType.AppearanceChange] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_APPEARANCE_CHANGE,
 			},
-			[LE_VAS_SERVICE_NAME_CHANGE] = {
+			[Enum.VasServiceType.NameChange] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_NAME_CHANGE,
 			},
-			[LE_VAS_SERVICE_CHARACTER_TRANSFER] = {
+			[Enum.VasServiceType.CharacterTransfer] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_CHARACTER_TRANSFER,
 			},
 		},
@@ -631,20 +615,21 @@ local currencySpecific = {
 		browseHasStar = true,
 		browseBuyButtonText = BLIZZARD_STORE_BUY_EUR,
 		confirmationButtonText = BLIZZARD_STORE_FINAL_BUY_EUR,
+		boostDisclaimerText = BLIZZARD_STORE_DISCLAIMER_BOOST_TOKEN_100,
 		vasDisclaimerData = {
-			[LE_VAS_SERVICE_FACTION_CHANGE] = {
+			[Enum.VasServiceType.FactionChange] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_FACTION_CHANGE,
 			},
-			[LE_VAS_SERVICE_RACE_CHANGE] = {
+			[Enum.VasServiceType.RaceChange] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_RACE_CHANGE,
 			},
-			[LE_VAS_SERVICE_APPEARANCE_CHANGE] = {
+			[Enum.VasServiceType.AppearanceChange] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_APPEARANCE_CHANGE,
 			},
-			[LE_VAS_SERVICE_NAME_CHANGE] = {
+			[Enum.VasServiceType.NameChange] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_NAME_CHANGE,
 			},
-			[LE_VAS_SERVICE_CHARACTER_TRANSFER] = {
+			[Enum.VasServiceType.CharacterTransfer] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_CHARACTER_TRANSFER,
 			},
 		},
@@ -661,20 +646,21 @@ local currencySpecific = {
 		paymentMethodText = BLIZZARD_STORE_PAYMENT_METHOD,
 		paymentMethodSubtext = BLIZZARD_STORE_PAYMENT_METHOD_EXTRA,
 		browseHasStar = true,
+		boostDisclaimerText = BLIZZARD_STORE_DISCLAIMER_BOOST_TOKEN_100,
 		vasDisclaimerData = {
-			[LE_VAS_SERVICE_FACTION_CHANGE] = {
+			[Enum.VasServiceType.FactionChange] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_FACTION_CHANGE,
 			},
-			[LE_VAS_SERVICE_RACE_CHANGE] = {
+			[Enum.VasServiceType.RaceChange] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_RACE_CHANGE,
 			},
-			[LE_VAS_SERVICE_APPEARANCE_CHANGE] = {
+			[Enum.VasServiceType.AppearanceChange] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_APPEARANCE_CHANGE,
 			},
-			[LE_VAS_SERVICE_NAME_CHANGE] = {
+			[Enum.VasServiceType.NameChange] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_NAME_CHANGE,
 			},
-			[LE_VAS_SERVICE_CHARACTER_TRANSFER] = {
+			[Enum.VasServiceType.CharacterTransfer] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_CHARACTER_TRANSFER,
 			},
 		},
@@ -691,20 +677,21 @@ local currencySpecific = {
 		paymentMethodText = BLIZZARD_STORE_PAYMENT_METHOD,
 		paymentMethodSubtext = BLIZZARD_STORE_PAYMENT_METHOD_EXTRA,
 		browseHasStar = true,
+		boostDisclaimerText = BLIZZARD_STORE_DISCLAIMER_BOOST_TOKEN_100,
 		vasDisclaimerData = {
-			[LE_VAS_SERVICE_FACTION_CHANGE] = {
+			[Enum.VasServiceType.FactionChange] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_FACTION_CHANGE,
 			},
-			[LE_VAS_SERVICE_RACE_CHANGE] = {
+			[Enum.VasServiceType.RaceChange] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_RACE_CHANGE,
 			},
-			[LE_VAS_SERVICE_APPEARANCE_CHANGE] = {
+			[Enum.VasServiceType.AppearanceChange] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_APPEARANCE_CHANGE,
 			},
-			[LE_VAS_SERVICE_NAME_CHANGE] = {
+			[Enum.VasServiceType.NameChange] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_NAME_CHANGE,
 			},
-			[LE_VAS_SERVICE_CHARACTER_TRANSFER] = {
+			[Enum.VasServiceType.CharacterTransfer] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_CHARACTER_TRANSFER,
 			},
 		},
@@ -721,20 +708,21 @@ local currencySpecific = {
 		paymentMethodText = BLIZZARD_STORE_PAYMENT_METHOD,
 		paymentMethodSubtext = BLIZZARD_STORE_PAYMENT_METHOD_EXTRA,
 		browseHasStar = true,
+		boostDisclaimerText = BLIZZARD_STORE_DISCLAIMER_BOOST_TOKEN_100,
 		vasDisclaimerData = {
-			[LE_VAS_SERVICE_FACTION_CHANGE] = {
+			[Enum.VasServiceType.FactionChange] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_FACTION_CHANGE,
 			},
-			[LE_VAS_SERVICE_RACE_CHANGE] = {
+			[Enum.VasServiceType.RaceChange] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_RACE_CHANGE,
 			},
-			[LE_VAS_SERVICE_APPEARANCE_CHANGE] = {
+			[Enum.VasServiceType.AppearanceChange] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_APPEARANCE_CHANGE,
 			},
-			[LE_VAS_SERVICE_NAME_CHANGE] = {
+			[Enum.VasServiceType.NameChange] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_NAME_CHANGE,
 			},
-			[LE_VAS_SERVICE_CHARACTER_TRANSFER] = {
+			[Enum.VasServiceType.CharacterTransfer] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_CHARACTER_TRANSFER,
 			},
 		},
@@ -751,20 +739,21 @@ local currencySpecific = {
 		paymentMethodText = BLIZZARD_STORE_PAYMENT_METHOD,
 		paymentMethodSubtext = BLIZZARD_STORE_PAYMENT_METHOD_EXTRA,
 		browseHasStar = true,
+		boostDisclaimerText = BLIZZARD_STORE_DISCLAIMER_BOOST_TOKEN_100,
 		vasDisclaimerData = {
-			[LE_VAS_SERVICE_FACTION_CHANGE] = {
+			[Enum.VasServiceType.FactionChange] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_FACTION_CHANGE,
 			},
-			[LE_VAS_SERVICE_RACE_CHANGE] = {
+			[Enum.VasServiceType.RaceChange] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_RACE_CHANGE,
 			},
-			[LE_VAS_SERVICE_APPEARANCE_CHANGE] = {
+			[Enum.VasServiceType.AppearanceChange] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_APPEARANCE_CHANGE,
 			},
-			[LE_VAS_SERVICE_NAME_CHANGE] = {
+			[Enum.VasServiceType.NameChange] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_NAME_CHANGE,
 			},
-			[LE_VAS_SERVICE_CHARACTER_TRANSFER] = {
+			[Enum.VasServiceType.CharacterTransfer] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_CHARACTER_TRANSFER,
 			},
 		},
@@ -781,20 +770,21 @@ local currencySpecific = {
 		paymentMethodText = BLIZZARD_STORE_PAYMENT_METHOD,
 		paymentMethodSubtext = BLIZZARD_STORE_PAYMENT_METHOD_EXTRA,
 		browseHasStar = true,
+		boostDisclaimerText = BLIZZARD_STORE_DISCLAIMER_BOOST_TOKEN_100,
 		vasDisclaimerData = {
-			[LE_VAS_SERVICE_FACTION_CHANGE] = {
+			[Enum.VasServiceType.FactionChange] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_FACTION_CHANGE,
 			},
-			[LE_VAS_SERVICE_RACE_CHANGE] = {
+			[Enum.VasServiceType.RaceChange] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_RACE_CHANGE,
 			},
-			[LE_VAS_SERVICE_APPEARANCE_CHANGE] = {
+			[Enum.VasServiceType.AppearanceChange] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_APPEARANCE_CHANGE,
 			},
-			[LE_VAS_SERVICE_NAME_CHANGE] = {
+			[Enum.VasServiceType.NameChange] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_NAME_CHANGE,
 			},
-			[LE_VAS_SERVICE_CHARACTER_TRANSFER] = {
+			[Enum.VasServiceType.CharacterTransfer] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_CHARACTER_TRANSFER,
 			},
 		},
@@ -812,20 +802,21 @@ local currencySpecific = {
 		paymentMethodSubtext = "",
 		hideConfirmationBrowseNotice = true,
 		browseHasStar = false,
+		boostDisclaimerText = BLIZZARD_STORE_DISCLAIMER_BOOST_TOKEN_100_CN,
 		vasDisclaimerData = {
-			[LE_VAS_SERVICE_FACTION_CHANGE] = {
+			[Enum.VasServiceType.FactionChange] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_FACTION_CHANGE_CN,
 			},
-			[LE_VAS_SERVICE_RACE_CHANGE] = {
+			[Enum.VasServiceType.RaceChange] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_RACE_CHANGE_CN,
 			},
-			[LE_VAS_SERVICE_APPEARANCE_CHANGE] = {
+			[Enum.VasServiceType.AppearanceChange] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_APPEARANCE_CHANGE_CN,
 			},
-			[LE_VAS_SERVICE_NAME_CHANGE] = {
+			[Enum.VasServiceType.NameChange] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_NAME_CHANGE_CN,
 			},
-			[LE_VAS_SERVICE_CHARACTER_TRANSFER] = {
+			[Enum.VasServiceType.CharacterTransfer] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_CHARACTER_TRANSFER_CN,
 			},
 		},
@@ -842,20 +833,21 @@ local currencySpecific = {
 		paymentMethodText = "",
 		paymentMethodSubtext = "",
 		browseHasStar = false,
+		boostDisclaimerText = BLIZZARD_STORE_DISCLAIMER_BOOST_TOKEN_100,
 		vasDisclaimerData = {
-			[LE_VAS_SERVICE_FACTION_CHANGE] = {
+			[Enum.VasServiceType.FactionChange] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_FACTION_CHANGE,
 			},
-			[LE_VAS_SERVICE_RACE_CHANGE] = {
+			[Enum.VasServiceType.RaceChange] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_RACE_CHANGE,
 			},
-			[LE_VAS_SERVICE_APPEARANCE_CHANGE] = {
+			[Enum.VasServiceType.AppearanceChange] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_APPEARANCE_CHANGE,
 			},
-			[LE_VAS_SERVICE_NAME_CHANGE] = {
+			[Enum.VasServiceType.NameChange] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_NAME_CHANGE,
 			},
-			[LE_VAS_SERVICE_CHARACTER_TRANSFER] = {
+			[Enum.VasServiceType.CharacterTransfer] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_CHARACTER_TRANSFER,
 			},
 		},
@@ -871,20 +863,21 @@ local currencySpecific = {
 		paymentMethodText = BLIZZARD_STORE_CONFIRMATION_TEST,
 		paymentMethodSubtext = "",
 		browseHasStar = true,
+		boostDisclaimerText = BLIZZARD_STORE_DISCLAIMER_BOOST_TOKEN_100,
 		vasDisclaimerData = {
-			[LE_VAS_SERVICE_FACTION_CHANGE] = {
+			[Enum.VasServiceType.FactionChange] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_FACTION_CHANGE,
 			},
-			[LE_VAS_SERVICE_RACE_CHANGE] = {
+			[Enum.VasServiceType.RaceChange] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_RACE_CHANGE,
 			},
-			[LE_VAS_SERVICE_APPEARANCE_CHANGE] = {
+			[Enum.VasServiceType.AppearanceChange] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_APPEARANCE_CHANGE,
 			},
-			[LE_VAS_SERVICE_NAME_CHANGE] = {
+			[Enum.VasServiceType.NameChange] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_NAME_CHANGE,
 			},
-			[LE_VAS_SERVICE_CHARACTER_TRANSFER] = {
+			[Enum.VasServiceType.CharacterTransfer] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_CHARACTER_TRANSFER,
 			},
 		},
@@ -899,55 +892,55 @@ end
 
 --Error message data
 local errorData = {
-	[LE_STORE_ERROR_INVALID_PAYMENT_METHOD] = {
+	[Enum.StoreError.InvalidPaymentMethod] = {
 		title = BLIZZARD_STORE_ERROR_TITLE_PAYMENT,
 		msg = BLIZZARD_STORE_ERROR_MESSAGE_PAYMENT,
 		link = 11,
 	},
-	[LE_STORE_ERROR_PAYMENT_FAILED] = {
+	[Enum.StoreError.PaymentFailed] = {
 		title = BLIZZARD_STORE_ERROR_TITLE_PAYMENT,
 		msg = BLIZZARD_STORE_ERROR_MESSAGE_PAYMENT,
 		link = 11,
 	},
-	[LE_STORE_ERROR_WRONG_CURRENCY] = {
+	[Enum.StoreError.WrongCurrency] = {
 		title = BLIZZARD_STORE_ERROR_TITLE_PAYMENT,
 		msg = BLIZZARD_STORE_ERROR_MESSAGE_PAYMENT,
 		link = 11,
 	},
-	[LE_STORE_ERROR_BATTLEPAY_DISABLED] = {
+	[Enum.StoreError.BattlepayDisabled] = {
 		title = BLIZZARD_STORE_ERROR_TITLE_BATTLEPAY_DISABLED,
 		msg = BLIZZARD_STORE_ERROR_MESSAGE_BATTLEPAY_DISABLED,
 	},
-	[LE_STORE_ERROR_INSUFFICIENT_BALANCE] = {
+	[Enum.StoreError.InsufficientBalance] = {
 		title = BLIZZARD_STORE_ERROR_TITLE_INSUFFICIENT_BALANCE,
 		msg = BLIZZARD_STORE_ERROR_MESSAGE_INSUFFICIENT_BALANCE,
 		link = 11,
 	},
-	[LE_STORE_ERROR_OTHER] = {
+	[Enum.StoreError.Other] = {
 		title = BLIZZARD_STORE_ERROR_TITLE_OTHER,
 		msg = BLIZZARD_STORE_ERROR_MESSAGE_OTHER,
 	},
-	[LE_STORE_ERROR_ALREADY_OWNED] = {
+	[Enum.StoreError.AlreadyOwned] = {
 		title = BLIZZARD_STORE_ERROR_TITLE_ALREADY_OWNED,
 		msg = BLIZZARD_STORE_ERROR_MESSAGE_ALREADY_OWNED,
 	},
-	[LE_STORE_ERROR_PARENTAL_CONTROLS_NO_PURCHASE] = {
+	[Enum.StoreError.ParentalControlsNoPurchase] = {
 		title = BLIZZARD_STORE_ERROR_TITLE_PARENTAL_CONTROLS,
 		msg = BLIZZARD_STORE_ERROR_MESSAGE_PARENTAL_CONTROLS,
 	},
-	[LE_STORE_ERROR_PURCHASE_DENIED] = {
+	[Enum.StoreError.PurchaseDenied] = {
 		title = BLIZZARD_STORE_ERROR_TITLE_PURCHASE_DENIED,
 		msg = BLIZZARD_STORE_ERROR_MESSAGE_PURCHASE_DENIED,
 	},
-	[LE_STORE_ERROR_CONSUMABLE_TOKEN_OWNED] = {
+	[Enum.StoreError.ConsumableTokenOwned] = {
 		title = BLIZZARD_STORE_ERROR_TITLE_CONSUMABLE_TOKEN_OWNED,
 		msg = BLIZZARD_STORE_ERROR_MESSAGE_CONSUMABLE_TOKEN_OWNED,
 	},
-	[LE_STORE_ERROR_TOO_MANY_TOKENS] = {
+	[Enum.StoreError.TooManyTokens] = {
 		title = BLIZZARD_STORE_ERROR_TITLE_CONSUMABLE_TOKEN_OWNED,
 		msg = BLIZZARD_STORE_ERROR_YOU_OWN_TOO_MANY_OF_THIS,
 	},
-	[LE_STORE_ERROR_ITEM_UNAVAILABLE] = {
+	[Enum.StoreError.ItemUnavailable] = {
 		title = BLIZZARD_STORE_ERROR_TITLE_CONSUMABLE_TOKEN_OWNED,
 		msg = BLIZZARD_STORE_ERROR_ITEM_UNAVAILABLE,
 	},
@@ -955,22 +948,22 @@ local errorData = {
 
 --VAS Error message data
 local vasErrorData = {
-	[LE_VAS_ERROR_REALM_NOT_ELIGIBLE] = {
+	[Enum.VasError.RealmNotEligible] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_REALM_NOT_ELIGIBLE,
 	},
-	[LE_VAS_ERROR_CANNOT_MOVE_GUILDMASTER] = {
+	[Enum.VasError.CannotMoveGuildMaster] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_CANNOT_MOVE_GUILDMASTER,
 	},
-	[LE_VAS_ERROR_DUPLICATE_CHARACTER_NAME] = {
+	[Enum.VasError.DuplicateCharacterName] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_DUPLICATE_CHARACTER_NAME,
 	},
-	[LE_VAS_ERROR_HAS_MAIL] = {
+	[Enum.VasError.HasMail] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_HAS_MAIL,
 	},
-	[LE_VAS_ERROR_UNDER_MIN_LEVEL_REQ] = {
+	[Enum.VasError.UnderMinLevelReq] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_UNDER_MIN_LEVEL_REQ,
 	},
-	[LE_VAS_ERROR_TOO_MUCH_MONEY_FOR_LEVEL] = {
+	[Enum.VasError.TooMuchMoneyForLevel] = {
 		msg = function(character)
 			local str = "";
 			if (character.level >= 100) then
@@ -989,38 +982,41 @@ local vasErrorData = {
 			return string.format(BLIZZARD_STORE_VAS_ERROR_TOO_MUCH_MONEY_FOR_LEVEL, str);
 		end
 	},
-	[LE_VAS_ERROR_HAS_AUCTIONS] = {
+	[Enum.VasError.HasAuctions] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_HAS_AUCTIONS,
 	},
-	[LE_VAS_ERROR_NAME_NOT_AVAILABLE] = {
+	[Enum.VasError.NameNotAvailable] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_NAME_NOT_AVAILABLE,
 	},
-	[LE_VAS_ERROR_LAST_RENAME_TOO_RECENT] = {
+	[Enum.VasError.LastRenameTooRecent] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_LAST_RENAME_TOO_RECENT,
 	},
-	[LE_VAS_ERROR_CUSTOMIZE_ALREADY_REQUESTED] = {
+	[Enum.VasError.CustomizeAlreadyRequested] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_CUSTOMIZE_ALREADY_REQUESTED,
 	},
-	[LE_VAS_ERROR_FACTION_CHANGE_TOO_SOON] = {
+	[Enum.VasError.LastCustomizeTooRecent] = {
+		msg = BLIZZARD_STORE_VAS_ERROR_LAST_CUSTOMIZE_TOO_SOON,
+	},
+	[Enum.VasError.FactionChangeTooSoon] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_FACTION_CHANGE_TOO_SOON,
 	},
-	[LE_VAS_ERROR_RACE_CLASS_COMBO_INELIGIBLE] = { --We should still handle this one even though we shortcut it in case something slips through
+	[Enum.VasError.RaceClassComboIneligible] = { --We should still handle this one even though we shortcut it in case something slips through
 		msg = BLIZZARD_STORE_VAS_ERROR_RACE_CLASS_COMBO_INELIGIBLE,
 	},
-	[LE_VAS_ERROR_INELIGIBLE_MAP_ID] = {
+	[Enum.VasError.IneligibleMapID] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_INELIGIBLE_MAP_ID,
 	},
-	[LE_VAS_ERROR_BATTLEPAY_DELIVERY_PENDING] = {
+	[Enum.VasError.BattlepayDeliveryPending] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_BATTLEPAY_DELIVERY_PENDING,
 	},
-	[LE_VAS_ERROR_HAS_WOW_TOKEN] = {
+	[Enum.VasError.HasWoWToken] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_HAS_WOW_TOKEN,
 	},
-	[LE_VAS_ERROR_CHAR_LOCKED] = {
+	[Enum.VasError.CharLocked] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_CHARACTER_LOCKED,
 		notUserFixable = true,
 	},
-	[LE_VAS_ERROR_LAST_SAVE_TOO_RECENT] = {
+	[Enum.VasError.LastSaveTooRecent] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_LAST_SAVE_TOO_RECENT,
 		notUserFixable = true,
 	},
@@ -1155,7 +1151,7 @@ function StoreFrame_UpdateCard(card,entryID,discountReset,forceModelUpdate)
 		card.DiscountText:Show();
 	end
 
-	if (entryInfo.sharedData.isBoost) then
+	if (entryInfo.sharedData.productDecorator == Enum.BattlepayProductDecorator.Boost) then
 		card.UpgradeArrow:Show();
 		card.boostProduct = entryInfo.sharedData.boostProduct;
 	else
@@ -1317,7 +1313,7 @@ function StoreFrame_UpdateCard(card,entryID,discountReset,forceModelUpdate)
 	end
 
 	if (card.DisabledOverlay) then
-		card.DisabledOverlay:SetShown(entryInfo.sharedData.isVasService and not IsOnGlueScreen());
+		card.DisabledOverlay:SetShown(entryInfo.sharedData.productDecorator == Enum.BattlepayProductDecorator.VasService and not IsOnGlueScreen());
 	end
 
 	card:Show();
@@ -1768,7 +1764,7 @@ function StoreFrame_OnCharacterBoostDelivered(self)
 
 		local showReason = "forBoost";
 
-		if C_ClassTrial.IsClassTrialCharacter() and (BoostProduct == LE_BATTLEPAY_PRODUCT_ITEM_LEVEL_100_CHARACTER_UPGRADE) and BoostDeliveredUsageReason == "forClassTrialUnlock" then
+		if C_ClassTrial.IsClassTrialCharacter() and (ProductType == Enum.BattlepayProduct.Level100Boost) and BoostDeliveredUsageReason == "forClassTrialUnlock" then
 			showReason = "forClassTrialUnlock";
 		end
 
@@ -1889,9 +1885,9 @@ function StoreFrame_OnAttributeChanged(self, name, value)
 	elseif ( name == "setservicescategory" ) then
 		SetStoreCategoryFromAttribute(WOW_SERVICES_CATEGORY_ID);
 	elseif ( name == "selectlevel100boostproduct") then
-		SelectBoostProductForPurchase(WOW_SERVICES_CATEGORY_ID, LE_BATTLEPAY_PRODUCT_ITEM_LEVEL_100_CHARACTER_UPGRADE, "forClassTrialUnlock", value);
+		SelectBoostProductForPurchase(WOW_SERVICES_CATEGORY_ID, Enum.BattlepayProduct.Level100Boost, "forClassTrialUnlock", value);
 	elseif ( name == "selectunrevokeboostproduct" ) then
-		SelectBoostProductForPurchase(WOW_SERVICES_CATEGORY_ID, LE_BATTLEPAY_PRODUCT_ITEM_LEVEL_100_CHARACTER_UPGRADE, "forUnrevokeBoost", value);
+		SelectBoostProductForPurchase(WOW_SERVICES_CATEGORY_ID, Enum.BattlepayProduct.Level90Boost, "forUnrevokeBoost", value);
 	elseif ( name == "getvaserrormessage" ) then
 		if (IsOnGlueScreen()) then
 			self:SetAttribute("vaserrormessageresult", nil);
@@ -1935,7 +1931,7 @@ end
 function StoreFrame_OnError(self, errorID, needsAck, internalErr)
 	local info = errorData[errorID];
 	if ( not info ) then
-		info = errorData[LE_STORE_ERROR_OTHER];
+		info = errorData[Enum.StoreError.Other];
 	end
 	if ( IsGMClient() and not HideGMOnly() ) then
 		StoreFrame_ShowError(self, info.title.." ("..internalErr..")", info.msg, info.link, needsAck);
@@ -2117,15 +2113,15 @@ end
 function StoreFrame_BeginPurchase(entryID)
 	local entryInfo = C_StoreSecure.GetEntryInfo(entryID);
 	if ( entryInfo.alreadyOwned ) then
-		StoreFrame_OnError(StoreFrame, LE_STORE_ERROR_ALREADY_OWNED, false, "FakeOwned");
+		StoreFrame_OnError(StoreFrame, Enum.StoreError.AlreadyOwned, false, "FakeOwned");
 	elseif ( C_StoreSecure.PurchaseProduct(entryInfo.productID) ) then
 		WaitingOnConfirmation = true;
 		WaitingOnConfirmationTime = GetTime();
 		StoreFrame_UpdateActivePanel(StoreFrame);
 	else
 		local productInfo = C_StoreSecure.GetProductInfo(entryInfo.productID);
-		if (productInfo and productInfo.sharedData.isExpansion) then
-			StoreFrame_OnError(StoreFrame, LE_STORE_ERROR_ALREADY_OWNED, false, "Expansion");
+		if (productInfo and productInfo.sharedData.productDecorator == Enum.BattlepayProductDecorator.Expansion) then
+			StoreFrame_OnError(StoreFrame, Enum.StoreError.AlreadyOwned, false, "Expansion");
 		end
 	end
 end
@@ -2245,7 +2241,7 @@ function BuildCharacterTransferConfirmationString(character)
 	return confStr;
 end
 
-function StoreConfirmationFrame_SetNotice(self, icon, name, dollars, cents, walletName, upgrade, vasService, expansion)
+function StoreConfirmationFrame_SetNotice(self, icon, name, dollars, cents, walletName, productDecorator)
 	local currency = C_StoreSecure.GetCurrencyID();
 
 	SetPortraitToTexture(self.Icon, icon);
@@ -2256,18 +2252,22 @@ function StoreConfirmationFrame_SetNotice(self, icon, name, dollars, cents, wall
 	local format = info.formatLong;
 	local notice;
 
-	if (upgrade) then
+	if (productDecorator == Enum.BattlepayProductDecorator.Boost) then
 		notice = info.servicesConfirmationNotice;
-	elseif (expansion) then
+
+		if info.boostDisclaimerText then
+			notice = info.boostDisclaimerText .. "|n|n" .. notice;
+		end
+	elseif (productDecorator == Enum.BattlepayProductDecorator.Expansion) then
 		notice = info.expansionConfirmationNotice;
-	elseif (vasService) then
+	elseif (productDecorator == Enum.BattlepayProductDecorator.VasService) then
 		local characters = C_StoreSecure.GetCharactersForRealm(SelectedRealm);
 		local character = characters[SelectedCharacter];
 		local confirmationNotice;
-		if (VASServiceType == LE_VAS_SERVICE_NAME_CHANGE) then
+		if (VASServiceType == Enum.VasServiceType.NameChange) then
 			notice = string.format(VAS_NAME_CHANGE_CONFIRMATION, character.name, NewCharacterName);
 			confirmationNotice = info.vasNameChangeConfirmationNotice;
-		elseif (VASServiceType == LE_VAS_SERVICE_FACTION_CHANGE) then
+		elseif (VASServiceType == Enum.VasServiceType.FactionChange) then
 			local newFaction;
 			if (character.faction == 0) then
 				newFaction = FACTION_ALLIANCE;
@@ -2276,13 +2276,13 @@ function StoreConfirmationFrame_SetNotice(self, icon, name, dollars, cents, wall
 			end
 			notice = string.format(VAS_FACTION_CHANGE_CONFIRMATION, character.name, SelectedRealm, newFaction);
 			confirmationNotice = info.servicesConfirmationNotice;
-		elseif (VASServiceType == LE_VAS_SERVICE_RACE_CHANGE) then
+		elseif (VASServiceType == Enum.VasServiceType.RaceChange) then
 			notice = string.format(VAS_RACE_CHANGE_CONFIRMATION, character.name, SelectedRealm);
 			confirmationNotice = info.servicesConfirmationNotice;
-		elseif (VASServiceType == LE_VAS_SERVICE_APPEARANCE_CHANGE) then
+		elseif (VASServiceType == Enum.VasServiceType.AppearanceChange) then
 			notice = string.format(VAS_APPEARANCE_CHANGE_CONFIRMATION, character.name, SelectedRealm);
 			confirmationNotice = info.servicesConfirmationNotice;
-		elseif (VASServiceType == LE_VAS_SERVICE_CHARACTER_TRANSFER ) then
+		elseif (VASServiceType == Enum.VasServiceType.CharacterTransfer ) then
 			notice = string.format(VAS_CHARACTER_TRANSFER_CONFIRMATION, character.name, SelectedRealm, BuildCharacterTransferConfirmationString(character));
 			confirmationNotice = info.servicesConfirmationNotice;
 		end
@@ -2359,12 +2359,10 @@ function StoreConfirmationFrame_Update(self)
 		name = baseProductInfo.sharedData.name;
 		finalIcon = baseProductInfo.sharedData.texture;
 	end
-	StoreConfirmationFrame_SetNotice(self, finalIcon, name, currentDollars, currentCents, walletName, productInfo.sharedData.isBoost, productInfo.sharedData.isVasService, productInfo.sharedData.isExpansion);
-	IsUpgrade = productInfo.sharedData.isBoost;
-	IsLegion = productInfo.sharedData.isExpansion;
-	if (productInfo.sharedData.isBoost) then
-		BoostProduct = productInfo.sharedData.boostProduct;
-	end
+	StoreConfirmationFrame_SetNotice(self, finalIcon, name, currentDollars, currentCents, walletName, productInfo.sharedData.productDecorator);
+	IsUpgrade = productInfo.sharedData.productDecorator == Enum.BattlepayProductDecorator.Boost;
+	IsLegion = productInfo.sharedData.productDecorator == Enum.BattlepayProductDecorator.Expansion;
+	BoostProduct = productInfo.sharedData.boostProduct;
 	local info = currencyInfo();
 	self.NoticeFrame.BrowseNotice:SetText(info.browseNotice);
 	self.NoticeFrame.BrowseNotice:SetShown(not info.hideConfirmationBrowseNotice);
@@ -2430,7 +2428,7 @@ function StoreConfirmationFinalBuy_OnClick(self)
 		StoreStateDriverFrame.NoticeTextTimer:Play();
 		PlaySound("UI_igStore_ConfirmPurchase_Button");
 	else
-		StoreFrame_OnError(StoreFrame, LE_STORE_ERROR_OTHER, false, "Fake");
+		StoreFrame_OnError(StoreFrame, Enum.StoreError.Other, false, "Fake");
 		PlaySound("UI_igStore_Cancel_Button");
 	end
 	StoreFrame_UpdateActivePanel(StoreFrame);
@@ -2458,6 +2456,7 @@ function StoreVASValidationFrame_OnLoad(self)
 	self:RegisterEvent("STORE_VAS_PURCHASE_ERROR");
 	self:RegisterEvent("STORE_VAS_PURCHASE_COMPLETE");
 	self:RegisterEvent("VAS_TRANSFER_VALIDATION_UPDATE");
+	self:RegisterEvent("VAS_QUEUE_STATUS_UPDATE");
 end
 
 function StoreVASValidationFrame_SetVASStart(self)
@@ -2478,7 +2477,12 @@ function StoreVASValidationFrame_SetVASStart(self)
 	local vasDisclaimerData = currencyInfo.vasDisclaimerData;
 
 	if (vasDisclaimerData and vasDisclaimerData[productInfo.sharedData.vasServiceType]) then
-		self.Disclaimer:SetText("<html><body><p align=\"center\">"..vasDisclaimerData[productInfo.sharedData.vasServiceType].disclaimer.."</p></body></html>");
+		local disclaimer = vasDisclaimerData[productInfo.sharedData.vasServiceType].disclaimer;
+		if (productInfo.sharedData.vasServiceType == Enum.VasServiceType.CharacterTransfer or productInfo.sharedData.vasServiceType == Enum.VasServiceType.FactionChange ) then
+				disclaimer = string.format(disclaimer, VAS_QUEUE_SEVERAL_MINUTES);
+		end
+		self.Disclaimer:SetTextColor(0, 0, 0);
+		self.Disclaimer:SetText("<html><body><p align=\"center\">"..disclaimer.."</p></body></html>");
 		self.Disclaimer:Show();
 	end
 
@@ -2492,11 +2496,8 @@ function StoreVASValidationFrame_SetVASStart(self)
 	self.CharacterSelectionFrame.ContinueButton:Disable();
 	self.CharacterSelectionFrame.ContinueButton:Show();
 	self.CharacterSelectionFrame.Spinner:Hide();
-	if (IsOnGlueScreen()) then
-		SelectedRealm = _G.GetServerName();
-	else
-		SelectedRealm = GetRealmName();
-	end
+	SelectedRealm = _G.GetServerName();
+
 	SelectedDestinationRealm = nil;
 	SelectedDestinationWowAccount = nil;
 	SelectedDestinationBnetAccount = nil;
@@ -2524,8 +2525,12 @@ function StoreVASValidationFrame_SetVASStart(self)
 	self.CharacterSelectionFrame.ChangeIconFrame:Hide();
 	self.CharacterSelectionFrame:Show();
 
+	if ( VASServiceType == Enum.VasServiceType.CharacterTransfer or VASServiceType == Enum.VasServiceType.FactionChange ) then
+			C_StoreGlue.RequestCurrentVASTransferQueues();
+	end
+
 	self:ClearAllPoints();
-	if ( VASServiceType == LE_VAS_SERVICE_CHARACTER_TRANSFER ) then
+	if ( VASServiceType == Enum.VasServiceType.CharacterTransfer ) then
 		self:SetHeight(700);
 		self:SetPoint("CENTER", 0, -20);
 	else
@@ -2547,6 +2552,24 @@ function StoreVASValidationFrame_AppendError(desc, errorID, character, firstAppe
 
 	local sep = desc ~= "" and (firstAppend and "|n|n" or "|n") or "";
 	return desc .. sep .. str;
+end
+
+local VasQueueStatusToString
+if (IsOnGlueScreen()) then
+	VasQueueStatusToString = {
+		[Enum.VasQueueStatus.UnderAnHour] = "SEVERAL_MINUTES",
+		[Enum.VasQueueStatus.OneToThreeHours] = "ONE_THREE_HOURS",
+		[Enum.VasQueueStatus.ThreeToSixHours] = "THREE_SIX_HOURS",
+		[Enum.VasQueueStatus.SixToTwelveHours] = "SIX_TWELVE_HOURS",
+		[Enum.VasQueueStatus.OverTwelveHours] = "TWELVE_HOURS",
+		[Enum.VasQueueStatus.Over1Days] = "ONE_DAY",
+		[Enum.VasQueueStatus.Over2Days] = "TWO_DAY",
+		[Enum.VasQueueStatus.Over3Days] = "THREE_DAY",
+		[Enum.VasQueueStatus.Over4Days] = "FOUR_DAY",
+		[Enum.VasQueueStatus.Over5Days] = "FIVE_DAY",
+		[Enum.VasQueueStatus.Over6Days] = "SIX_DAY",
+		[Enum.VasQueueStatus.Over7Days] = "SEVEN_DAY",
+	}
 end
 
 function StoreVASValidationFrame_OnEvent(self, event, ...)
@@ -2590,10 +2613,10 @@ function StoreVASValidationFrame_OnEvent(self, event, ...)
 				end
 			end
 			frame.ChangeIconFrame:Hide();
-			if (VASServiceType == LE_VAS_SERVICE_NAME_CHANGE) then
+			if (VASServiceType == Enum.VasServiceType.NameChange) then
 				frame.ValidationDescription:ClearAllPoints();
 				frame.ValidationDescription:SetPoint("TOPLEFT", frame.NewCharacterName, "BOTTOMLEFT", -5, -6);
-			elseif (VASServiceType == LE_VAS_SERVICE_CHARACTER_TRANSFER) then
+			elseif (VASServiceType == Enum.VasServiceType.CharacterTransfer) then
 				local bottomWidget;
 				local xOffset = 8;
 				if (frame.TransferBnetWoWAccountDropDown:IsShown()) then
@@ -2631,7 +2654,7 @@ function StoreVASValidationFrame_OnEvent(self, event, ...)
 		frame.Spinner:Hide();
 		frame.ContinueButton:Show();
 		frame.ContinueButton:Disable();
-		
+
 		if (not error) then
 			IsVasBnetTransferValidated = true;
 			frame.TransferBnetWoWAccountDropDown:Show();
@@ -2645,6 +2668,22 @@ function StoreVASValidationFrame_OnEvent(self, event, ...)
 			frame.ValidationDescription:SetText(BLIZZARD_STORE_VAS_ERROR_INVALID_BNET_ACCOUNT);
 			frame.ValidationDescription:Show();
 		end
+	elseif ( event == "VAS_QUEUE_STATUS_UPDATE" ) then
+			local transfer, factionTransfer = C_StoreGlue.GetVasTransferQueues();
+			local queueTime = Enum.VasQueueStatus.UnderAnHour;
+			if (VASServiceType == Enum.VasServiceType.CharacterTransfer) then
+					queueTime = transfer;
+			elseif (VASServiceType == Enum.VasServiceType.FactionChange) then
+				  queueTime = factionTransfer;
+			end
+			if (queueTime > Enum.VasQueueStatus.UnderAnHour) then
+					self.Disclaimer:SetTextColor(_G.RED_FONT_COLOR:GetRGB());
+			else
+					self.Disclaimer:SetTextColor(0, 0, 0);
+			end
+			local currencyInfo = currencyInfo();
+			local vasDisclaimerData = currencyInfo.vasDisclaimerData;
+			self.Disclaimer:SetText(string.format(vasDisclaimerData[VASServiceType].disclaimer, _G["VAS_QUEUE_"..VasQueueStatusToString[queueTime]]));
 	end
 end
 
@@ -2658,7 +2697,7 @@ function StoreVASValidationFrame_OnVasProductComplete(self)
 		self:GetParent():Hide();
 
 		local titleOverride = string.format(BLIZZARD_STORE_PRODUCT_IS_READY, productInfo.sharedData.name);
-		local descriptionOverride = (productInfo.sharedData.vasServiceType == LE_VAS_SERVICE_NAME_CHANGE) and BLIZZARD_STORE_NAME_CHANGE_READY_DESCRIPTION or BLIZZARD_STORE_VAS_SERVICE_READY_DESCRIPTION;
+		local descriptionOverride = (productInfo.sharedData.vasServiceType == Enum.VasServiceType.NameChange) and BLIZZARD_STORE_NAME_CHANGE_READY_DESCRIPTION or BLIZZARD_STORE_VAS_SERVICE_READY_DESCRIPTION;
 		ServicesLogoutPopup_SetShowReason(ServicesLogoutPopup, "forVasService", titleOverride, descriptionOverride);
 	end
 	VASReady = false;
@@ -2683,7 +2722,7 @@ function StoreProductCard_UpdateState(card)
 	if (card.HighlightTexture) then
 		local entryID = card:GetID();
 		local entryInfo = C_StoreSecure.GetEntryInfo(entryID);
-		local enableHighlight = card:GetID() ~= selectedEntryID and not isRotating and (not entryInfo.sharedData.isVasService or IsOnGlueScreen());
+		local enableHighlight = card:GetID() ~= selectedEntryID and not isRotating and (entryInfo.sharedData.productDecorator ~= Enum.BattlepayProductDecorator.VasService or IsOnGlueScreen());
 		card.HighlightTexture:SetAlpha(enableHighlight and 1 or 0);
 		if (not card.Description and GetMouseFocus() == card) then
 			if (isRotating) then
@@ -2703,7 +2742,7 @@ function StoreProductCard_UpdateState(card)
 				local description = entryInfo.sharedData.description;
 				StoreTooltip:ClearAllPoints();
 				StoreTooltip:SetPoint(point, card, rpoint, xoffset, 0);
-				if (entryInfo.sharedData.isVasService and not IsOnGlueScreen()) then
+				if (entryInfo.sharedData.productDecorator == Enum.BattlepayProductDecorator.VasService and not IsOnGlueScreen()) then
 					name = "";
 					description = BLIZZARD_STORE_LOG_OUT_TO_PURCHASE_THIS_PRODUCT;
 				end
@@ -2734,7 +2773,7 @@ end
 
 function StoreProductCard_OnEnter(self)
 	local entryInfo = C_StoreSecure.GetEntryInfo(self:GetID());
-	if (not entryInfo.sharedData.isVasService or IsOnGlueScreen()) then
+	if (entryInfo.sharedData.productDecorator ~= Enum.BattlepayProductDecorator.VasService or IsOnGlueScreen()) then
 		if (self.HighlightTexture) then
 			self.HighlightTexture:SetShown(selectedEntryID ~= self:GetID());
 		end
@@ -2767,13 +2806,13 @@ function StoreProductCard_CheckShowStorePreviewOnClick(self)
 			StoreFrame_ShowPreview(entryInfo.name, entryInfo.displayID, entryInfo.modelSceneID);
 		end
 	end
-	
+
 	return showPreview;
 end
 
 function StoreProductCard_OnClick(self,button,down)
 	local entryInfo = C_StoreSecure.GetEntryInfo(self:GetID());
-	if (entryInfo.sharedData.isVasService and not IsOnGlueScreen()) then
+	if (entryInfo.sharedData.productDecorator == Enum.BattlepayProductDecorator.VasService and not IsOnGlueScreen()) then
 		return;
 	end
 
@@ -3348,7 +3387,7 @@ function VASCharacterSelectionCharacterSelector_Callback(value)
 	frame.ValidationDescription:Hide();
 
 	local bottomWidget = frame.SelectedCharacterFrame;
-	if (VASServiceType == LE_VAS_SERVICE_NAME_CHANGE) then
+	if (VASServiceType == Enum.VasServiceType.NameChange) then
 		frame.NewCharacterName:SetText("");
 		frame.NewCharacterName:Show();
 		frame.NewCharacterName:SetFocus();
@@ -3356,7 +3395,7 @@ function VASCharacterSelectionCharacterSelector_Callback(value)
 		frame.ContinueButton:Disable();
 		frame.ValidationDescription:ClearAllPoints();
 		frame.ValidationDescription:SetPoint("TOPLEFT", bottomWidget, "BOTTOMLEFT", -5, -6);
-	elseif (VASServiceType == LE_VAS_SERVICE_CHARACTER_TRANSFER) then
+	elseif (VASServiceType == Enum.VasServiceType.CharacterTransfer) then
 		frame.TransferRealmCheckbox:Show();
 		frame.TransferAccountCheckbox:Show();
 		frame.TransferFactionCheckbox:Show();
@@ -3375,7 +3414,7 @@ function VASCharacterSelectionCharacterSelector_Callback(value)
 		frame.TransferFactionCheckbox.Label:SetText(string.format(BLIZZARD_STORE_VAS_TRANSFER_FACTION_BUNDLE, newFaction, "1.00 XTS"));
 		frame.ContinueButton:Disable();
 	else
-		if (VASServiceType == LE_VAS_SERVICE_RACE_CHANGE) then
+		if (VASServiceType == Enum.VasServiceType.RaceChange) then
 			local races = C_StoreSecure.GetEligibleRacesForRaceChange(character.guid);
 
 			if (not races or #races == 0) then
@@ -3384,7 +3423,7 @@ function VASCharacterSelectionCharacterSelector_Callback(value)
 				frame.ValidationDescription:SetPoint("TOPLEFT", frame.SelectedCharacterFrame, "BOTTOMLEFT", 8, -8);
 				frame.ValidationDescription:SetFontObject("GameFontBlackSmall2");
 				frame.ValidationDescription:SetTextColor(1.0, 0.1, 0.1);
-				frame.ValidationDescription:SetText(StoreVASValidationFrame_AppendError(BLIZZARD_STORE_VAS_ERROR_LABEL, LE_VAS_ERROR_RACE_CLASS_COMBO_INELIGIBLE, character, true));
+				frame.ValidationDescription:SetText(StoreVASValidationFrame_AppendError(BLIZZARD_STORE_VAS_ERROR_LABEL, Enum.VasError.RaceClassComboIneligible, character, true));
 				frame.ValidationDescription:Show();
 				frame.ContinueButton:Disable();
 				return;
@@ -3405,7 +3444,7 @@ function VASCharacterSelectionCharacterSelector_Callback(value)
 
 			frame.ValidationDescription:SetText(VAS_RACE_CHANGE_VALIDATION_DESCRIPTION);
 			frame.ValidationDescription:Show();
-		elseif (VASServiceType == LE_VAS_SERVICE_FACTION_CHANGE) then
+		elseif (VASServiceType == Enum.VasServiceType.FactionChange) then
 			local str, newfaction;
 
 			local from, to;
@@ -3421,7 +3460,7 @@ function VASCharacterSelectionCharacterSelector_Callback(value)
 				frame.ValidationDescription:SetPoint("TOPLEFT", frame.SelectedCharacterFrame, "BOTTOMLEFT", 8, -8);
 				frame.ValidationDescription:SetFontObject("GameFontBlackSmall2");
 				frame.ValidationDescription:SetTextColor(1.0, 0.1, 0.1);
-				frame.ValidationDescription:SetText(StoreVASValidationFrame_AppendError(BLIZZARD_STORE_VAS_ERROR_LABEL, LE_VAS_ERROR_RACE_CLASS_COMBO_INELIGIBLE, character, true));
+				frame.ValidationDescription:SetText(StoreVASValidationFrame_AppendError(BLIZZARD_STORE_VAS_ERROR_LABEL, Enum.VasError.RaceClassComboIneligible, character, true));
 				frame.ValidationDescription:Show();
 				frame.ContinueButton:Disable();
 				return;
@@ -3431,7 +3470,7 @@ function VASCharacterSelectionCharacterSelector_Callback(value)
 
 			frame.ValidationDescription:SetText(VAS_FACTION_CHANGE_VALIDATION_DESCRIPTION);
 			frame.ValidationDescription:Show();
-		elseif (VASServiceType == LE_VAS_SERVICE_APPEARANCE_CHANGE) then
+		elseif (VASServiceType == Enum.VasServiceType.AppearanceChange) then
 			frame.ValidationDescription:SetText(VAS_APPEARANCE_CHANGE_VALIDATION_DESCRIPTION);
 			frame.ValidationDescription:Show();
 		end
@@ -3572,7 +3611,7 @@ function StoreAutoCompleteGoBack_OnClick(self)
 	VAS_AUTO_COMPLETE_SELECTION = nil;
 
 	local frame = StoreVASValidationFrame.CharacterSelectionFrame.TransferRealmEditbox;
-	
+
 	VASCharacterSelectionTransferRealmEditBox_UpdateAutoComplete(frame, frame:GetText(), frame:GetCursorPosition());
 end
 
@@ -3581,7 +3620,7 @@ function StoreAutoCompleteHasMore_OnClick(self)
 	VAS_AUTO_COMPLETE_SELECTION = nil;
 
 	local frame = StoreVASValidationFrame.CharacterSelectionFrame.TransferRealmEditbox;
-	
+
 	VASCharacterSelectionTransferRealmEditBox_UpdateAutoComplete(frame, frame:GetText(), frame:GetCursorPosition());
 end
 
@@ -3599,7 +3638,7 @@ function StoreAutoCompleteIncrementSelection()
 	end
 
 	local frame = StoreVASValidationFrame.CharacterSelectionFrame.TransferRealmEditbox;
-	
+
 	VASCharacterSelectionTransferRealmEditBox_UpdateAutoComplete(frame, frame:GetText(), frame:GetCursorPosition());
 end
 
@@ -3611,7 +3650,7 @@ function StoreAutoCompleteDecrementSelection()
 			VAS_AUTO_COMPLETE_SELECTION = VAS_AUTO_COMPLETE_SELECTION - 1;
 		end
 		local frame = StoreVASValidationFrame.CharacterSelectionFrame.TransferRealmEditbox;
-	
+
 		VASCharacterSelectionTransferRealmEditBox_UpdateAutoComplete(frame, frame:GetText(), frame:GetCursorPosition());
 	end
 end
@@ -3749,14 +3788,14 @@ function VASCharacterSelectionContinueButton_OnClick(self)
 
 	local entryInfo = C_StoreSecure.GetEntryInfo(selectedEntryID);
 
-	if (not entryInfo.sharedData.isVasService) then
+	if (entryInfo.sharedData.productDecorator ~= Enum.BattlepayProductDecorator.VasService) then
 		-- How did we get to this frame if this wasnt a vas service?
 		return;
 	end
 
 	-- Glue screen only
 
-	if ( VASServiceType == LE_VAS_SERVICE_NAME_CHANGE ) then
+	if ( VASServiceType == Enum.VasServiceType.NameChange ) then
 		NewCharacterName = self:GetParent().NewCharacterName:GetText();
 
 		local valid, reason = _G.IsCharacterNameValid(NewCharacterName);
@@ -3769,7 +3808,7 @@ function VASCharacterSelectionContinueButton_OnClick(self)
 			return;
 		end
 	end
-	if ( VASServiceType == LE_VAS_SERVICE_CHARACTER_TRANSFER ) then
+	if ( VASServiceType == Enum.VasServiceType.CharacterTransfer ) then
 		if (SelectedDestinationWowAccount == BLIZZARD_STORE_VAS_DIFFERENT_BNET) then
 			isBnet = true;
 		else
@@ -3783,9 +3822,9 @@ function VASCharacterSelectionContinueButton_OnClick(self)
 		self:GetParent().Spinner:Show();
 		return;
 	end
-	
+
 	local wowAccountGUID, bnetAccountGUID;
-	if (VASServiceType == LE_VAS_SERVICE_CHARACTER_TRANSFER) then
+	if (VASServiceType == Enum.VasServiceType.CharacterTransfer) then
 		if (isBnet and SelectedDestinationBnetWowAccount) then
 			bnetAccountGUID = C_StoreSecure.GetBnetTransferInfo();
 			wowAccountGUID = C_StoreSecure.GetWoWAccountGUIDFromName(SelectedDestinationBnetWowAccount, false);

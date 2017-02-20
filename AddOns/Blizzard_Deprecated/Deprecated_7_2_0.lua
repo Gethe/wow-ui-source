@@ -1,10 +1,11 @@
 -- These are functions that were deprecated in 7.2.0, and will be removed in the next expansion.
 -- Please upgrade to the updated APIs as soon as possible.
 
--- From PvP
 if (IsTestBuild()) then
 	return;
 end
+
+-- PvP
 
 do
 	local function RewardMapToRewardsArray(rewardsMap)
@@ -180,3 +181,32 @@ do
 	end
 end
 
+-- Calendar
+
+do
+	-- Use C_Calendar.GetDayEvent instead
+	function CalendarGetDayEvent(monthOffset, monthDay, index)
+		local event = C_Calendar.GetDayEvent(monthOffset, monthDay, index);
+		if (event) then
+			local hour, minute;
+			if (event.sequenceType == "END") then
+				hour = event.endTime.hour;
+				minute = event.endTime.minute;
+			else
+				hour = event.startTime.hour;
+				minute = event.startTime.minute;
+			end
+			return event.title, hour, minute, event.calendarType, event.sequenceType, event.eventType, event.texture, event.modStatus, event.inviteStatus, event.invitedBy, event.difficulty, event.inviteType, event.sequenceIndex, event.numSequenceDays, event.difficultyName;
+		else
+			return nil, 0, 0, "", "", 0, "", "", 0, "", 0, 0, 0, 0, "";
+		end
+	end
+
+	-- Use C_Calendar.GetHolidayInfo instead
+	function CalendarGetHolidayInfo(monthOffset, monthDay, index)
+		local holidayInfo = C_Calendar.GetHolidayInfo(monthOffset, monthDay, index);
+		if (holidayInfo) then
+			return holidayInfo.name, holidayInfo.description, holidayInfo.texture;
+		end
+	end
+end

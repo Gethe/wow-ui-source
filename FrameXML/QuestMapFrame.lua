@@ -253,7 +253,6 @@ function QuestMapFrame_ShowQuestDetails(questID)
 
 	-- save current view
 	QuestMapFrame.DetailsFrame.continent = GetCurrentMapContinent();
-	QuestMapFrame.DetailsFrame.mapID = GetCurrentMapAreaID();
 	QuestMapFrame.DetailsFrame.questMapID = nil;	-- doing it now because GetQuestWorldMapAreaID will do a SetMap to current zone
 	QuestMapFrame.DetailsFrame.dungeonFloor = GetCurrentMapDungeonLevel();
 
@@ -262,7 +261,9 @@ function QuestMapFrame_ShowQuestDetails(questID)
 		SetMapByID(mapID);
 		if ( floorNumber ~= 0 ) then
 			SetDungeonMapLevel(floorNumber);
+			QuestMapFrame.DetailsFrame.dungeonFloor = floorNumber;
 		end
+		QuestMapFrame.DetailsFrame.mapID = mapID;
 	end
 
 	QuestMapFrame_UpdateQuestDetailsButtons();
@@ -335,8 +336,6 @@ end
 function QuestMapFrame_OpenToQuestDetails(questID)
 	ShowQuestLog();
 	QuestMapFrame_ShowQuestDetails(questID);
-	-- back button should just close details
-	QuestMapFrame.DetailsFrame.mapID = nil;
 end
 
 function QuestMapFrame_GetDetailQuestID()

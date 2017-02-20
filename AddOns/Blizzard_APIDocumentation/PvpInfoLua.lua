@@ -182,6 +182,7 @@ local PvpInfoLua =
 				{ Name = "longDescription", Type = "string", Nilable = false },
 				{ Name = "active", Type = "bool", Nilable = false },
 				{ Name = "timeLeftUntilNextChange", Type = "number", Nilable = false },
+				{ Name = "lfgDungeonID", Type = "number", Nilable = false },
 				{ Name = "mapNames", Type = "table", InnerType = "string", Nilable = false },
 			},
 		},

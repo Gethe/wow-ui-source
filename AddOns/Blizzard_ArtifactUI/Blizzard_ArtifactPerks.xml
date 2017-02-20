@@ -514,6 +514,9 @@
 					<!-- Animation Textures -->
 				</Layers>
 				<Animations>
+					<AnimationGroup parentKey="RunePulse" looping="BOUNCE">
+						<Alpha childKey="CrestRune2" duration="5" order="1" fromAlpha="0" toAlpha="1"/>
+					</AnimationGroup>
 					<AnimationGroup parentKey="RuneAnim" setToFinalAlpha="true">
 						<Alpha childKey="CrestSparks" duration="0.01" order="1" fromAlpha="0" toAlpha="1"/>
 						<Alpha childKey="CrestSparks" startDelay="0.01" smoothing="OUT" duration="0.32" order="1" fromAlpha="1" toAlpha="0"/>
@@ -571,6 +574,7 @@
 						<Scripts>
 							<OnFinished>
 								self:GetParent():GetParent().Tier2ModelScene:Show();
+								self:GetParent().RunePulse:Play();
 							</OnFinished>
 						</Scripts>
 					</AnimationGroup>

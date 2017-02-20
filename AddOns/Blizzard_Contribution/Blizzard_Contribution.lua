@@ -47,9 +47,11 @@ function ContributionStatusMixin:Update()
 	self.onlyShowTextOnMouseEnter = false;
 	if state == Enum.ContributionState.Active and timeOfNextStateChange then
 		local time = math.max(timeOfNextStateChange - GetServerTime(), 60); -- Never display times below 1 minute
-		text = CONTRIBUTION_POI_TOOLTIP_REMAINING_ACTIVE_TIME:format(SecondsToTime(time, true, true));
-	elseif state == Enum.ContributionState.UnderAttack or state == Enum.ContributionState.Destroyed then
+		text = CONTRIBUTION_POI_TOOLTIP_REMAINING_ACTIVE_TIME:format(SecondsToTime(time, true, true, 1));
+	elseif state == Enum.ContributionState.UnderAttack then
 		text = CONTIBUTION_HEALTH_TEXT_WITH_PERCENTAGE:format(FormatPercentage(stateAmount));
+	elseif state == Enum.ContributionState.Destroyed then
+		text = DISABLED_FONT_COLOR:WrapTextInColorCode(CONTIBUTION_HEALTH_TEXT_WITH_PERCENTAGE:format(FormatPercentage(stateAmount)));
 	elseif state == Enum.ContributionState.Building then
 		text = FormatPercentage(stateAmount);
 		self.onlyShowTextOnMouseEnter = true;
@@ -99,7 +101,7 @@ function ContributeButtonMixin:OnEnter()
 			ContributionTooltip:SetText(CONTRIBUTION_REWARD_TOOLTIP_TITLE);
 			GameTooltip_AddQuestRewardsToTooltipWithHeader(ContributionTooltip, self.questID, 0, CONTRIBUTION_REWARD_TOOLTIP_TEXT, HIGHLIGHT_FONT_COLOR);
 		elseif self.isDisabledBecauseOfContributionState then
-			ContributionTooltip:SetText(CONTRIBUTION_BUTTON_ONLY_WHEN_UNDER_CONSTRUCTION_TOOLTIP, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
+			ContributionTooltip:SetText(CONTRIBUTION_BUTTON_ONLY_WHEN_UNDER_CONSTRUCTION_TOOLTIP, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, 1, true);
 		end
 
 		ContributionTooltip:Show();
@@ -115,11 +117,12 @@ function ContributeButtonMixin:SetContributionID(contributionID)
 end
 
 function ContributeButtonMixin:Update()
-	local canContribute = C_ContributionCollector.CanContribute(self.contributionID);
+	local result = C_ContributionCollector.GetContributionResult(self.contributionID);
+	local canContribute = (result == Enum.ContributionResult.Success);
 	self:SetEnabled(canContribute);
 
 	local state = C_ContributionCollector.GetState(self.contributionID);
-	self.isDisabledBecauseOfContributionState = not canContribute and state ~= Enum.ContributionState.Building;
+	self.isDisabledBecauseOfContributionState = (result == Enum.ContributionResult.IncorrectState);
 	self.questID = C_ContributionCollector.GetRewardQuestID(self.contributionID);
 
 	if canContribute then
@@ -246,7 +249,7 @@ end
 function ContributionMixin:OnSuccessAnimLoop(animGroup, loopState)
 	self.successAnimationLoopCount = self.successAnimationLoopCount and (self.successAnimationLoopCount + 1) or 1;
 
-	if (self.successAnimationLoopCount >= 2) then
+	if (self.successAnimationLoopCount >= 1) then
 		self:StopAnimations();
 	end
 end
@@ -283,8 +286,8 @@ function ContributionCollectionMixin:OnEvent(event, ...)
 		local contributionID = ...;
 		self:UpdateSingle(contributionID);
 	elseif event == "CONTRIBUTION_COLLECTOR_PENDING" then
-		local contributionID, isPending = ...;
-		self:UpdatePendingContribution(contributionID, isPending);
+		local contributionID, isPending, result = ...;
+		self:UpdatePendingContribution(contributionID, isPending, result);
 	end
 end
 
@@ -313,9 +316,30 @@ function ContributionCollectionMixin:EnumerateContributions(...)
 	end
 end
 
-function ContributionCollectionMixin:UpdatePendingContribution(contributionID, isPending)
+local contributionResultErrorMessages =
+{
+	[Enum.ContributionResult.IncorrectState] = CONTRIBUTION_RESULT_ERROR_INCORRECT_STATE,
+	[Enum.ContributionResult.InvalidID] = CONTRIBUTION_RESULT_ERROR_INVALID_ID,
+	[Enum.ContributionResult.QuestDataMissing] = CONTRIBUTION_RESULT_ERROR_UNABLE_TO_COMPLETE_QUEST,
+	[Enum.ContributionResult.FailedConditionCheck] = CONTRIBUTION_RESULT_ERROR_UNABLE_TO_COMPLETE_QUEST,
+	[Enum.ContributionResult.UnableToCompleteTurnIn] = CONTRIBUTION_RESULT_ERROR_UNABLE_TO_COMPLETE_QUEST,
+};
+
+function ContributionCollectionMixin:HandleContributionResult(result)
+	local errorMessage = contributionResultErrorMessages[result];
+	if errorMessage then
+		UIErrorsFrame:AddMessage(errorMessage, RED_FONT_COLOR:GetRGBA());
+	end
+end
+
+function ContributionCollectionMixin:UpdatePendingContribution(contributionID, isPending, result)
 	local contribution = self:FindContribution(contributionID);
 	if contribution then
+		if result ~= Enum.ContributionResult.Success then
+			self:HandleContributionResult(result);
+			contribution:StopAnimations();
+		end
+
 		contribution:UpdateContributeButton();
 	end
 end

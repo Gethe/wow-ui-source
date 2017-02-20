@@ -1,4 +1,6 @@
 ##DebugHook.lua
+..\SharedXML\C_TimerAugment.lua
+..\SharedXML\Util.lua
 Constants.lua
 GlueFonts.xml
 GlueFontStyles.xml
@@ -9,12 +11,8 @@ GlueTemplates.xml
 GlueButtons.xml
 GlueBasicControls.xml
 GlueDropDownMenuTemplates.xml
-GlueDropDownMenu.xml 
+GlueDropDownMenu.xml
 
-## add C namespace augmentations here
-..\SharedXML\C_TimerAugment.lua
-
-..\SharedXML\Util.lua
 ..\SharedXML\Pools.lua
 ..\SharedXML\LayoutFrame.xml
 ..\SharedXML\HybridScrollFrame.lua

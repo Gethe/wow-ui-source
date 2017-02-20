@@ -37,6 +37,15 @@ local ReputationInfoLua =
 				{ Name = "hasParagon", Type = "bool", Nilable = false },
 			},
 		},
+		{
+			Name = "RequestFactionParagonPreloadRewardData",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "factionID", Type = "number", Nilable = false },
+			},
+		},
 	},
 
 	Tables =

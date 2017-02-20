@@ -6,6 +6,12 @@ function APIDocumentationMixin:OnLoad()
 	self.functions = {};
 	self.systems = {};
 	self.fields = {};
+
+	self.Commands = {
+		Default = 1,
+		CopyAPI = 2,
+		OpenDump = 3,
+	};
 end
 
 function APIDocumentationMixin:HandleSlashCommand(command)
@@ -30,18 +36,45 @@ function APIDocumentationMixin:HandleSlashCommand(command)
 	end
 end
 
-function APIDocumentationMixin:HandleAPILink(link, copyAPI)
+function APIDocumentationMixin:HandleAPILink(link, command)
 	local _, type, name, parentName = (":"):split(link);
 	local apiInfo = self:FindAPIByName(type, name, parentName);
 	if apiInfo then
-		if copyAPI and CopyToClipboard then -- CopyToClipboard could be implemented as an edit box the user could copy from
-			local clipboardString = apiInfo:GetClipboardString();
-			CopyToClipboard(clipboardString);
-			self:WriteLineF("Copied to clipboard: %s", clipboardString);
+		if command == self.Commands.CopyAPI and CopyToClipboard then -- CopyToClipboard could be implemented as an edit box the user could copy from
+			self:HandleCopyAPI(apiInfo);
+		elseif command == self.Commands.OpenDump then
+			self:HandleOpenDump(apiInfo);
 		else
-			self:WriteLine(" ");
-			self:WriteAllLines(apiInfo:GetDetailedOutputLines());
+			self:HandleDefaultCommand(apiInfo);
 		end
+	end
+end
+
+function APIDocumentationMixin:HandleDefaultCommand(apiInfo)
+	self:WriteLine(" ");
+	self:WriteAllLines(apiInfo:GetDetailedOutputLines());
+end
+
+function APIDocumentationMixin:HandleCopyAPI(apiInfo)
+	local clipboardString = apiInfo:GetClipboardString();
+	CopyToClipboard(clipboardString);
+	self:WriteLineF("Copied to clipboard: %s", clipboardString);
+end
+
+function APIDocumentationMixin:HandleOpenDump(apiInfo)
+	if apiInfo.Type == "Function" then
+		local dumpString;
+		local systemNamespace = apiInfo.System and apiInfo.System:GetNamespaceName() or nil;
+		if systemNamespace and systemNamespace ~= "" then
+			dumpString = ("/dump %s.%s()"):format(systemNamespace, apiInfo.Name);
+		else
+			dumpString = ("/dump %s()"):format(apiInfo.Name);
+		end
+
+		local desiredCursorPosition = #dumpString - 1;
+		ChatFrame_OpenChat(dumpString, nil, desiredCursorPosition);
+	else
+		self:WriteLine("Can only /dump functions");
 	end
 end
 
@@ -196,7 +229,7 @@ end
 --[[static]] function APIDocumentationMixin:AddAllMatches(apiContainer, matchesContainer, apiToSearchFor)
 	for i, apiInfo in ipairs(apiContainer) do
 		if apiInfo:MatchesSearchString(apiToSearchFor) then
-			table.insert(matchesContainer, apiInfo); 
+			table.insert(matchesContainer, apiInfo);
 		end
 	end
 end

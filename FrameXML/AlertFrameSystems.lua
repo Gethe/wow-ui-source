@@ -697,16 +697,16 @@ function StorePurchaseAlertFrame_OnClick(self, button, down)
 		return;
 	end
 
-	if (self.type == LE_STORE_DELIVERY_TYPE_ITEM) then
+	if (self.type == Enum.StoreDeliveryType.Item) then
 		local slot = SearchBagsForItem(self.payloadID);
 		if (slot >= 0) then
 			OpenBag(slot);
 		end
-	elseif (self.type == LE_STORE_DELIVERY_TYPE_MOUNT) then
+	elseif (self.type == Enum.StoreDeliveryType.Mount) then
 		ToggleCollectionsJournal(1);
-	elseif (self.type == LE_STORE_DELIVERY_TYPE_BATTLEPET) then
+	elseif (self.type == Enum.StoreDeliveryType.Battlepet) then
 		ToggleCollectionsJournal(2);
-	elseif (self.type == LE_STORE_DELIVERY_TYPE_COLLECTION) then
+	elseif (self.type == Enum.StoreDeliveryType.Collection) then
 		ToggleCollectionsJournal(5);
 	end
 end

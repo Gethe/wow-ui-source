@@ -118,6 +118,7 @@
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
 			<OnMouseDown method="OnMouseDown"/>
+			<OnModelLoaded method="OnModelLoaded"/>
 		</Scripts>
 	</DressUpModel>
 
@@ -265,7 +266,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="WardrobeSetsDetailsItemFrameTemplate" mixin="WardrobeSetsDetailsItemMixin" frameStrata="DIALOG" virtual="true">
+	<Frame name="WardrobeSetsDetailsItemFrameTemplate" mixin="WardrobeSetsDetailsItemMixin" virtual="true">
 		<Size x="32" y="32"/>
 		<Layers>
 			<Layer level="BORDER">
@@ -707,7 +708,7 @@
 			<StatusBar parentKey="progressBar">
 				<Size x="196" y="13"/>
 				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.searchBox" relativePoint="LEFT" x="-32" y="0"/>
+					<Anchor point="TOPLEFT" x="253" y="-38"/>
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
@@ -1005,7 +1006,21 @@
 							<OnEvent method="OnEvent"/>
 						</Scripts>
 					</ScrollFrame>
-					<Frame parentKey="DetailsFrame">
+					<DressUpModel parentKey="Model" mixin="WardrobeSetsDetailsModelMixin">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.RightInset" x="3" y="-3"/>
+							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.RightInset" x="-4" y="3"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad method="OnLoad"/>
+							<OnUpdate method="OnUpdate"/>
+							<OnMouseDown method="OnMouseDown"/>
+							<OnMouseUp method="OnMouseUp"/>
+							<OnMouseWheel method="OnMouseWheel"/>
+							<OnModelLoaded method="OnModelLoaded"/>
+						</Scripts>
+					</DressUpModel>
+					<Frame parentKey="DetailsFrame" frameLevel="5">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.RightInset" x="0" y="-3"/>
 							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.RightInset" x="-3" y="2"/>
@@ -1039,14 +1054,6 @@
 							</Layer>
 						</Layers>
 						<Frames>
-							<DressUpModel parentKey="Model" setAllPoints="true" inherits="ModelTemplate">
-								<Scripts>
-									<OnLoad inherit="prepend">
-										self:SetAutoDress(false);
-										self:SetUnit("player");
-									</OnLoad>
-								</Scripts>
-							</DressUpModel>
 							<Button name="WardrobeSetsCollectionVariantSetsButton" parentKey="VariantSetsButton" inherits="UIMenuButtonStretchTemplate" frameLevel="6">
 								<Size x="108" y="22"/>
 								<Anchors>

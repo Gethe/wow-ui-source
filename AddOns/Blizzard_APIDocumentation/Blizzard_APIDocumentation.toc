@@ -15,6 +15,7 @@ Blizzard_APIDocumentation.lua
 SharedTypes.lua
 ActionBarFrameLua.lua
 ArtifactUILua.lua
+CalendarLua.lua
 ChallengeModeInfoLua.lua
 ContributionCollectorLua.lua
 EquipmentManagerLua.lua
@@ -25,7 +26,8 @@ QuestTaskInfoLua.lua
 ReputationInfoLua.lua
 SocialQueueLua.lua
 StorePublicUI.lua
-Transmogrify.lua
+TransmogItems.lua
+TransmogSets.lua
 UIModelInfoLua.lua
 UnitLua.lua
 WorldMapLua.lua

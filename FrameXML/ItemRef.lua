@@ -284,7 +284,15 @@ function SetItemRef(link, text, button, chatFrame)
 		return;
 	elseif ( strsub(link, 1, 3) == "api" ) then
 		APIDocumentation_LoadUI();
-		APIDocumentation:HandleAPILink(link, button == "RightButton");
+
+		local command = APIDocumentation.Commands.Default;
+		if button == "RightButton" then
+			command = APIDocumentation.Commands.CopyAPI;
+		elseif IsModifiedClick("CHATLINK") then
+			command = APIDocumentation.Commands.OpenDump;
+		end
+
+		APIDocumentation:HandleAPILink(link, command);
 		return;
 	end
 

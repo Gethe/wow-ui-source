@@ -106,7 +106,11 @@ function ArtifactPowerButtonMixin:PlayPurchaseAnimation()
 		self.PointBurstLeft:SetVertexColor(1, 0.81960784313725, 0.3921568627451);
 		self.PointBurstRight:SetVertexColor(1, 0.81960784313725, 0.3921568627451);
 		self.GoldPointSpentAnim:Play();
-		PlayArtifactTraitSound("UI_70_Artifact_Forge_Trait_GoldTrait");
+		if self.tier == 2 then
+			PlayArtifactTraitSound("UI_72_Artifact_Forge_Final_Trait_Unlocked");
+		else
+			PlayArtifactTraitSound("UI_70_Artifact_Forge_Trait_GoldTrait");
+		end
 	elseif self.isStart then
 		if self.tier ~= 1 then
 			self.RingGlow:SetVertexColor(1, 0.81960784313725, 0.3921568627451);

@@ -2417,13 +2417,9 @@ end
 function ChatFrame_ImportEmoteTokensToHash()
 	-- Hook up per-faction emotes before we build the emote list hash.
 	local factionGroup = UnitFactionGroup("player");
-	EMOTE454_TOKEN = nil; -- "FORTHEALLIANCE"
-	EMOTE455_TOKEN = nil; -- "FORTHEHORDE"
 	if ( factionGroup == "Alliance" ) then
-		EMOTE454_TOKEN = "FORTHEALLIANCE";
 		TextEmoteSpeechList[#TextEmoteSpeechList + 1] = "FORTHEALLIANCE";
 	elseif ( factionGroup == "Horde" ) then
-		EMOTE455_TOKEN = "FORTHEHORDE";
 		TextEmoteSpeechList[#TextEmoteSpeechList + 1] = "FORTHEHORDE";
 	end
 
@@ -3365,11 +3361,12 @@ function ChatFrame_OnMouseWheel(value)
 	end
 end
 
-function ChatFrame_OpenChat(text, chatFrame)
+function ChatFrame_OpenChat(text, chatFrame, desiredCursorPosition)
 	local editBox = ChatEdit_ChooseBoxForSend(chatFrame);
 
 	ChatEdit_ActivateChat(editBox);
 	editBox.setText = 1;
+	editBox.desiredCursorPosition = desiredCursorPosition;
 	editBox.text = text;
 
 	if ( editBox:GetAttribute("chatType") == editBox:GetAttribute("stickyType") ) then
@@ -3664,6 +3661,11 @@ function ChatEdit_OnUpdate(self, elapsedSec)
 		self:SetText(self.text);
 		self.setText = 0;
 		ChatEdit_ParseText(self, 0, true);
+
+		if self.desiredCursorPosition then
+			self:SetCursorPosition(self.desiredCursorPosition);
+			self.desiredCursorPosition = nil;
+		end
 	end
 end
 
@@ -4639,7 +4641,17 @@ function LanguageMenu_OnLoad(self)
 end
 
 function VoiceMacroMenu_Click(self)
-	DoEmote(TextEmoteSpeechList[self:GetID()]);
+	local emote = TextEmoteSpeechList[self:GetID()];
+	if (emote == EMOTE454_TOKEN or emote == EMOTE455_TOKEN) then
+		local faction = UnitFactionGroup("player", true);
+		if (faction == "Alliance") then
+			emote = EMOTE454_TOKEN;
+		elseif (faction == "Horde") then
+			emote = EMOTE455_TOKEN;
+		end
+	end
+	
+	DoEmote(emote);
 	ChatMenu:Hide();
 end
 

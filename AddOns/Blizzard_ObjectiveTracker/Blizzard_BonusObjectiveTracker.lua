@@ -184,6 +184,7 @@ function BonusObjectiveTracker_OnBlockClick(self, button)
 					if mapID then
 						ShowQuestLog();
 						SetMapByID(mapID);
+						WorldMapPing_StartPingQuest(self.TrackedQuest.questID);
 					end
 				end
 			end
@@ -808,7 +809,7 @@ local function AddBonusObjectiveQuest(module, questID, posIndex, isTrackedWorldQ
 		if ( QuestUtils_IsQuestWorldQuest(questID) ) then
 			local tagID, tagName, worldQuestType, rarity, isElite, tradeskillLineIndex, allowDisplayPastCritical = GetQuestTagInfo(questID);
 			assert(worldQuestType);
-			
+
 			local inProgress = questLogIndex ~= 0;
 			WorldMap_SetupWorldQuestButton(block.TrackedQuest, worldQuestType, rarity, isElite, tradeskillLineIndex, inProgress, isSuperTracked, nil, nil, questID);
 
@@ -1227,8 +1228,7 @@ function ObjectiveTrackerBonusBannerFrame_PlayBanner(self, questID)
 	self.Anim.BonusLabelTranslation:SetOffset(xOffset, yOffset);
 	self.Anim.IconTranslation:SetOffset(xOffset, yOffset);
 	-- hide zone text as it's very likely to be up
-	ZoneTextString:SetText("");
-	SubZoneTextString:SetText("");
+	ZoneText_Clear();
 	-- show and play
 	self:Show();
 	self.Anim:Stop();

@@ -393,6 +393,10 @@ function UIParent_OnLoad(self)
 	
 	-- Event(s) for the ArtifactUI
 	self:RegisterEvent("ARTIFACT_ENDGAME_REFUND");
+
+	-- Event(s) for PVP
+	self:RegisterEvent("UPDATE_BATTLEFIELD_STATUS");
+	self:RegisterEvent("PVP_BRAWL_INFO_UPDATED");
 end
 
 function UIParent_OnShow(self)
@@ -919,6 +923,36 @@ function InspectUnit(unit)
 	end
 end
 
+local function PlayBattlefieldBanner(self)
+	-- battlefields
+	if ( not self.battlefieldBannerShown ) then
+		local bannerName, bannerDescription;
+	
+		for i=1, GetMaxBattlefieldID() do
+			local status, mapName, _, _, _, _, _, _, _, shortDescription, _ = GetBattlefieldStatus(i);
+			if ( status and status == "active" ) then
+				bannerName = mapName;
+				bannerDescription = shortDescription;
+				break;
+			end
+		end
+
+		-- lfg brawls
+		if ( not bannerName ) then
+			if (C_PvP.IsInBrawl()) then
+				local brawlInfo = C_PvP.GetBrawlInfo();
+				bannerName = brawlInfo.name;
+				bannerDescription = brawlInfo.shortDescription;
+			end
+		end
+
+		if ( bannerName ) then
+			UIParentLoadAddOn("Blizzard_PVPUI");
+			C_Timer.After(1, function() TopBannerManager_Show(PvPObjectiveBannerFrame, { name=bannerName, description=bannerDescription }); end);
+			self.battlefieldBannerShown = true;
+		end
+	end
+end
 
 -- UIParent_OnEvent --
 function UIParent_OnEvent(self, event, ...)
@@ -1238,9 +1272,14 @@ function UIParent_OnEvent(self, event, ...)
 		end
 		OrderHall_CheckCommandBar();
 
+		self.battlefieldBannerShown = nil;
+		C_PvP.RequestBrawlInfo();
+
 		NPETutorial_AttemptToBegin(event);
 		ClassTrial_AttemptLoad();
 		BoostTutorial_AttemptLoad();
+	elseif ( event == "UPDATE_BATTLEFIELD_STATUS" or event == "PVP_BRAWL_INFO_UPDATED" ) then
+		PlayBattlefieldBanner(self);
 	elseif ( event == "GROUP_ROSTER_UPDATE" ) then
 		-- Hide/Show party member frames
 		RaidOptionsFrame_UpdatePartyFrames();
@@ -4831,15 +4870,29 @@ function nop()
 end
 
 function ShakeFrameRandom(frame, magnitude, duration, frequency)
+	if frequency <= 0 then
+		return;
+	end
+	
+	local shake = {};
+	for i = 1, math.ceil(duration / frequency) do
+		local xVariation, yVariation = math.random(-magnitude, magnitude), math.random(-magnitude, magnitude);
+		shake[i] = { x = xVariation, y = yVariation };
+	end
+	
+	ShakeFrame(frame, shake, duration, frequency);
+end
+
+function ShakeFrame(frame, shake, maximumDuration, frequency)
 	local point, relativeFrame, relativePoint, x, y = frame:GetPoint();
-	local shakeTime = 0;
-	local lastTime = GetTime();
+	local shakeIndex = 1;
+	local endTime = GetTime() + maximumDuration;
 	frame.shakeTicker = C_Timer.NewTicker(frequency, function()
-		frame:SetPoint(point, relativeFrame, relativePoint, x + math.random(-magnitude, magnitude), y + math.random(-magnitude, magnitude));
-		local newTime = GetTime();
-		shakeTime = shakeTime + (newTime - lastTime);
+		local xVariation, yVariation = shake[shakeIndex].x, shake[shakeIndex].y;
+		frame:SetPoint(point, relativeFrame, relativePoint, x + xVariation, y + yVariation);
+		shakeIndex = shakeIndex + 1;
 		lastTime = newTime;
-		if shakeTime > duration then
+		if shakeIndex > #shake or GetTime() >= endTime then
 			frame:SetPoint(point, relativeFrame, relativePoint, x, y);
 			frame.shakeTicker:Cancel();
 		end

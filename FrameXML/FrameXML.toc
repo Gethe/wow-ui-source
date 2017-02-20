@@ -7,6 +7,7 @@
 ## add snippets independent of modules here
 ..\SharedXML\Util.lua
 ..\SharedXML\Pools.lua
+..\SharedXML\LoopingSoundEffect.lua
 ..\SharedXML\CircularBuffer.lua
 ..\SharedXML\FontableFrameMixin.lua
 ..\SharedXML\Vector2D.lua

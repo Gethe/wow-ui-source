@@ -1,4 +1,4 @@
-local Transmogrify =
+local TransmogSets =
 {
 	Name = "Transmogrify",
 	Type = "System",
@@ -46,6 +46,21 @@ local Transmogrify =
 			},
 		},
 		{
+			Name = "GetSourcesForInventoryType",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "transmogSetID", Type = "number", Nilable = false },
+				{ Name = "inventoryType", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "sources", Type = "table", InnerType = "AppearanceSourceInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "SetBaseSetsFilter",
 			Type = "Function",
 
@@ -72,4 +87,4 @@ local Transmogrify =
 	},
 };
 
-APIDocumentation:AddDocumentationTable(Transmogrify);
+APIDocumentation:AddDocumentationTable(TransmogSets);
