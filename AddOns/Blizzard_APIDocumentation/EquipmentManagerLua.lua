@@ -77,6 +77,20 @@ local EquipmentManagerLua =
 			},
 		},
 		{
+			Name = "GetEquipmentSetForSpec",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "specIndex", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "equipmentSetID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetEquipmentSetID",
 			Type = "Function",
 

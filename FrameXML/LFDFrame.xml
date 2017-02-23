@@ -159,11 +159,9 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnShow>
-				PlaySound("ReadyCheck");
-				FlashClientIcon();
-				LFDRoleCheckPopup_Update();
-			</OnShow>
+			<OnShow function="LFDRoleCheckPopup_OnShow"/>
+			<OnHide function="LFDRoleCheckPopup_OnHide"/>
+			<OnEvent function="LFDRoleCheckPopup_OnEvent"/>
 		</Scripts>
 	</Frame>
 	<Frame name="LFDReadyCheckPopup" parent="UIParent" frameStrata="DIALOG" hidden="true">

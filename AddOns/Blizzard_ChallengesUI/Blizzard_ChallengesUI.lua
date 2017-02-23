@@ -1,13 +1,9 @@
 local NUM_REWARDS_PER_MEDAL = 2;
+local MAX_PER_ROW = 9;
 
-local function CreateFrames(self, array, num, spacing, template)
-    local index = #self[array] + 1;
-    
+local function CreateFrames(self, array, num, template)
     while (#self[array] < num) do
 		local frame = CreateFrame("Frame", nil, self, template);
-		local prev = self[array][index - 1];
-		frame:SetPoint("LEFT", prev, "RIGHT", spacing, 0);
-		index = index + 1;
 	end
     
     for i = num + 1, #self[array] do
@@ -15,12 +11,41 @@ local function CreateFrames(self, array, num, spacing, template)
 	end
 end
     
-local function CenterFrames(frame, num, anchorPoint, anchor, relativePoint, width, spacing, distance)
-    local fullWidth = (width*num) + (spacing * (num - 1));
+local function ReanchorFrames(frames, num, anchorPoint, anchor, relativePoint, width, spacing, distance)
+    local numButtons = math.min(MAX_PER_ROW, num);
+    local fullWidth = (width * numButtons) + (spacing * (numButtons - 1));
     local halfWidth = fullWidth / 2;
+    local fullDistance = distance + (math.floor(num / MAX_PER_ROW) * frames[1]:GetHeight()) + (math.ceil(num / MAX_PER_ROW) * distance);
     
-    frame:ClearAllPoints();
-    frame:SetPoint(anchorPoint, anchor, relativePoint, -halfWidth, distance);
+    -- first row
+    for i = 2, math.min(MAX_PER_ROW, #frames) do
+        frames[i]:SetPoint("LEFT", frames[i-1], "RIGHT", spacing, 0);
+    end
+
+    -- n-rows after
+    if (#frames > MAX_PER_ROW) then
+        local currentExtraRow = 0;
+        local finished = false;
+        repeat
+            local setFirst = false;
+            for i = (MAX_PER_ROW + (MAX_PER_ROW * currentExtraRow)) + 1, (MAX_PER_ROW + (MAX_PER_ROW * currentExtraRow)) + MAX_PER_ROW do
+                if (not frames[i]) then
+                    finished = true;
+                    break;
+                end
+                if (not setFirst) then
+                    frames[i]:SetPoint("TOPLEFT", frames[i - (MAX_PER_ROW + (MAX_PER_ROW * currentExtraRow))], "BOTTOMLEFT", 0, -distance);
+                    setFirst = true;
+                else
+                    frames[i]:SetPoint("LEFT", frames[i-1], "RIGHT", spacing, 0);
+                end
+            end
+            currentExtraRow = currentExtraRow + 1;
+        until finished;
+    end
+
+    frames[1]:ClearAllPoints();
+    frames[1]:SetPoint(anchorPoint, anchor, relativePoint, -halfWidth, fullDistance);
 end
 
 function ChallengesFrame_OnLoad(self)
@@ -81,8 +106,8 @@ function ChallengesFrame_Update(self)
     
     local num = #sortedMaps;
 
-    CreateFrames(self, "DungeonIcons", num, spacing, "ChallengesDungeonIconFrameTemplate");
-    CenterFrames(self.DungeonIcons[1], num, "BOTTOMLEFT", self, "BOTTOM", frameWidth, spacing, distance);
+    CreateFrames(self, "DungeonIcons", num, "ChallengesDungeonIconFrameTemplate");
+    ReanchorFrames(self.DungeonIcons, num, "BOTTOMLEFT", self, "BOTTOM", frameWidth, spacing, distance);
     
     for i = 1, #sortedMaps do
         local frame = self.DungeonIcons[i];

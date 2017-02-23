@@ -8,6 +8,8 @@ function WorldMapBountyBoardMixin:OnLoad()
 	self.BountyName:SetFontObjectsToTry(Game13Font_o1, Game12Font_o1, Game11Font_o1);
 
 	self.minimumTabsToDisplay = 3;
+	self.maps = {};
+	self.highestMapInfo = {};
 end
 
 function WorldMapBountyBoardMixin:OnEvent(event, ...)
@@ -383,46 +385,74 @@ end
 
 function WorldMapBountyBoardMixin:OnTabClick(tab)
 	if not tab.isEmpty then
+		if (self:GetSelectedBountyIndex() ~= tab.bountyIndex) then
+			self.currentCandidateIndex = nil;
+		end
 		self:SetSelectedBountyIndex(tab.bountyIndex);
 		self:FindBestMapForSelectedBounty();
 	end
 end
 
-function WorldMapBountyBoardMixin:FindBestMapForSelectedBounty()
+function WorldMapBountyBoardMixin:CacheWorldQuestDataForSelectedBounty()
 	local continentIndex, continentID = GetCurrentMapContinent();
 	local continentMaps =  { GetMapZones(continentIndex) };
 
-	-- move current map to 1st position
+	local maxQuests = 0;
 	for i = 1, #continentMaps, 2 do
-		if continentMaps[i] == self.mapAreaID then
-			continentMaps[1], continentMaps[i] = continentMaps[i], continentMaps[1];
-			break;
-		end
-	end
-
-	local candidateMapID;
-	local candidateNumBounties = 0;
-	local currentMapID = GetCurrentMapAreaID();
-	for i = 1, #continentMaps, 2 do
-		local numBounties = 0;
+		local numQuests = 0;
 		local taskInfo = C_TaskQuest.GetQuestsForPlayerByMapID(continentMaps[i], continentID);
 		for _, info  in ipairs(taskInfo) do
 			if QuestUtils_IsQuestWorldQuest(info.questId) then
 				if self:IsWorldQuestCriteriaForSelectedBounty(info.questId) then
-					if ( currentMapID == continentMaps[i] ) then
-						-- no need to switch
-						return;
-					end
-					numBounties = numBounties + 1;
+					numQuests = numQuests + 1;
 				end
 			end
 		end
-		if ( numBounties > candidateNumBounties ) then
-			candidateMapID = continentMaps[i];
-			candidateNumBounties = numBounties;
+		-- The maps don't have a defined order, so we keep some semblance of order by reusing indexes.
+		local index = FindInTableIf(self.maps, function(v) return v.mapID == continentMaps[i] end);
+		if index then
+			self.maps[index].numQuests = numQuests;
+		else
+			tinsert(self.maps, { mapID = continentMaps[i], numQuests = numQuests });
+		end
+		if (numQuests > maxQuests) then
+			self.highestMapInfo.mapID = index and self.maps[index].mapID or continentMaps[i];
+			self.highestMapInfo.numQuests = numQuests;
+			maxQuests = numQuests;
 		end
 	end
-	if ( candidateMapID ) then
+	self.maps = tFilter(self.maps, function(v) return v.numQuests > 0 end, true);
+end
+
+function WorldMapBountyBoardMixin:FindBestMapForSelectedBounty()
+	local currentMapID = GetCurrentMapAreaID();
+
+	self:CacheWorldQuestDataForSelectedBounty();
+
+	local candidateMapID;
+
+	local maxQuests = 0;
+	if (not self.currentCandidateIndex) then
+		local myMap = FindInTableIf(self.maps, function(v) return v.mapID == currentMapID end);
+		if (myMap) then
+			self.currentCandidateIndex = myMap;
+			return;
+		end
+
+		self.currentCandidateIndex = FindInTableIf(self.maps, function(v) return v.mapID == self.highestMapInfo.mapID end);
+		candidateMapID = self.maps[self.currentCandidateIndex].mapID;
+	elseif (#self.maps > 1) then
+		self.currentCandidateIndex = self.currentCandidateIndex + 1;
+		if (self.currentCandidateIndex > #self.maps) then
+			self.currentCandidateIndex = 1;
+		end
+		candidateMapID = self.maps[self.currentCandidateIndex].mapID;
+	else
+		self.currentCandidateIndex = 1;
+		candidateMapID = self.maps[1].mapID;
+	end
+
+	if ( candidateMapID and candidateMapID ~= currentMapID ) then
 		SetMapByID(candidateMapID);
 	end
 end

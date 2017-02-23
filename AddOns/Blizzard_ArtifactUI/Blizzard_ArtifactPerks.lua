@@ -26,8 +26,8 @@ local ARTIFACT_TIER_2_CURVED_LINE_TICK_SPEED = 0.035;
 
 -- The Tier 2 crest animates in with frame shake.
 local ARTIFACT_TIER_2_CREST_DELAY = 1.55;
-local ARTIFACT_TIER_2_SHAKE_DELAY = 0.35;
-local ARTIFACT_TIER_2_SHAKE = { { x = -3, y = -1 }, { x = 2, y = 2 }, { x = -2, y = -3 }, { x = -1, y = -1 }, { x = 4, y = 2 }, { x = 3, y = 4 }, { x = -3, y = 4 }, { x = 4, y = -4 }, { x = -4, y = 2 }, { x = -2, y = 1 }, { x = -3, y = -1 }, { x = 2, y = 2 }, { x = -2, y = -3 }, { x = -1, y = -1 }, { x = 4, y = 2 }, { x = 3, y = 4 }, { x = -3, y = 4 }, { x = 4, y = -4 }, { x = -4, y = 2 }, { x = -2, y = 1 }, };
+local ARTIFACT_TIER_2_SHAKE_DELAY = 0.345;
+local ARTIFACT_TIER_2_SHAKE = { { x = 0, y = -30}, { x = 0, y = 30}, { x = 0, y = -30}, { x = 0, y = 30}, { x = -3, y = -1}, { x = 2, y = 2}, { x = -2, y = -3}, { x = -1, y = -1}, { x = 4, y = 2}, { x = 3, y = 4}, { x = -3, y = 4}, { x = 4, y = -4}, { x = -4, y = 2}, { x = -2, y = 1}, { x = -3, y = -1}, { x = 2, y = 2}, { x = -2, y = -3}, { x = -1, y = -1}, { x = 4, y = 2}, { x = 3, y = 4}, { x = -3, y = 4}, { x = 4, y = -4}, { x = -4, y = 2}, { x = -2, y = 1}, { x = -3, y = -1}, { x = 2, y = 2}, { x = -2, y = -3}, { x = -1, y = -1}, { x = 4, y = 2}, { x = 3, y = 4}, { x = -3, y = 4}, { x = 4, y = -4}, { x = -4, y = 2}, { x = -2, y = 1}, { x = -3, y = -1}, { x = 2, y = 2}, { x = -2, y = -3}, { x = -1, y = -1}, { x = 4, y = 2}, { x = 3, y = 4}, { x = -3, y = 4}, { x = 4, y = -4}, { x = -4, y = 2}, { x = -2, y = 1}, { x = -3, y = -1}, { x = 2, y = 2}, { x = -2, y = -3}, { x = -1, y = -1}, { x = 4, y = 2}, { x = 3, y = 4}, { x = -3, y = 4}, { x = 4, y = -4}, { x = -4, y = 2}, { x = -2, y = 1}, { x = -3, y = -1}, { x = 2, y = 2}, { x = -2, y = -3}, { x = -1, y = -1}, { x = 4, y = 2}, { x = 3, y = 4}, { x = -3, y = 4}, { x = 4, y = -4}, { x = -4, y = 2}, { x = -2, y = 1}, };
 local ARTIFACT_TIER_2_SHAKE_DURATION = 0.25;
 local ARTIFACT_TIER_2_SHAKE_FREQUENCY = 0.001;
 
@@ -37,12 +37,27 @@ ARTIFACT_TIER_2_SOUND_REFUND_LOOP_STOP_DELAY = 0.0;
 ARTIFACT_TIER_2_SOUND_REFUND_LOOP_FADE_OUT_TIME = 500;
 
 local TIER_2_FINAL_POWER_REVEAL_REVEAL_DELAY = 0.5;
-local TIER_2_FINAL_POWER_REVEAL_SHAKE_DELAY = 0.35;
+local TIER_2_FINAL_POWER_REVEAL_SHAKE_DELAY = 0.345;
 local TIER_2_FINAL_POWER_REVEAL_SHAKE = ARTIFACT_TIER_2_SHAKE;
 local TIER_2_FINAL_POWER_REVEAL_SHAKE_DURATION = 0.22;
 local TIER_2_FINAL_POWER_REVEAL_SHAKE_FREQUENCY = 0.001;
 
 local TIER_2_GLOW_TIME = 3.2;
+
+local TIER_2_FORGING_MODEL_SCENE_ID = 55;
+local TIER_2_FORGING_EFFECT_MODEL_ID = 382335;--"SPELLS\\EASTERN_PLAGUELANDS_BEAM_EFFECT.M2";
+
+local TIER_2_FORGE_EFFECT_FADE_IN_DELAY = 0;
+local TIER_2_BACKGROUND_FRONT_INTENSITY_IN_DELAY = 0;
+local TIER_2_BACKGROUND_FRONT_INTENSITY_IN_EFFECT = 0;
+local TIER_2_FORGE_EFFECT_FADE_OUT_DELAY = 0.5;
+local TIER_2_BACKGROUND_FRONT_INTENSITY_OUT_DELAY = 0.5;
+
+local TIER_2_SLAM_EFFECT_MODEL_SCENE_ID = 57;
+local TIER_2_SLAM_EFFECT_MODEL_ID = 1369310; --"SPELLS\\CFX_WARRIOR_THUNDERCLAP_CASTWORLD.M2"
+local TIER_2_SLAM_EFFECT_DELAY = 0.275;
+local TIER_2_SLAM_EFFECT_HIDE_DELAY = 0.5;
+
 -------------------- Animation Constants End --------------------
 
 function ArtifactPerksMixin:OnLoad()	
@@ -87,7 +102,13 @@ function ArtifactPerksMixin:RefreshModel()
 		self.Model:SetItem(itemID, appearanceModID);
 	end
 
-	self.Model.BackgroundFront:SetAlpha(1.0 - (modelAlpha or 1.0));
+	local backgroundFrontTargetAlpha = 1.0 - (modelAlpha or 1.0);
+	self.Model.backgroundFrontTargetAlpha = backgroundFrontTargetAlpha;
+	self.Model.ForgingEffectAnimIn.Fade:SetFromAlpha(backgroundFrontTargetAlpha);
+	self.Model.ForgingEffectAnimIn.Fade:SetToAlpha(backgroundFrontTargetAlpha * TIER_2_BACKGROUND_FRONT_INTENSITY_IN_EFFECT);
+	self.Model.ForgingEffectAnimOut.Fade:SetFromAlpha(backgroundFrontTargetAlpha * TIER_2_BACKGROUND_FRONT_INTENSITY_IN_EFFECT);
+	self.Model.ForgingEffectAnimOut.Fade:SetToAlpha(backgroundFrontTargetAlpha);
+	self.Model.BackgroundFront:SetAlpha(backgroundFrontTargetAlpha);
 
 	self.Model:SetModelDrawLayer(altOnTop and "BORDER" or "ARTWORK");
 	self.AltModel:SetModelDrawLayer(altOnTop and "ARTWORK" or "BORDER");
@@ -131,6 +152,9 @@ function ArtifactPerksMixin:RefreshBackground()
 		local bgAtlas = ("%s-BG"):format(artifactArtInfo.textureKit);
 		self.BackgroundBack:SetAtlas(bgAtlas);
 		self.Model.BackgroundFront:SetAtlas(bgAtlas);
+		self.Tier2ForgingScene.BackgroundMiddle:SetAtlas(bgAtlas);
+		self.Tier2ForgingScene.BackgroundMiddle:Show();
+
 
 		local crestAtlas = ("%s-BG-Rune"):format(artifactArtInfo.textureKit);
 		self.CrestFrame.CrestRune1:SetAtlas(crestAtlas, true);
@@ -271,13 +295,30 @@ function ArtifactPerksMixin:RefreshPowerTiers()
 				effect:SetModelByCreatureDisplayID(11686);
 				effect:ApplySpellVisualKit(artifactArtInfo.spellVisualKitID);
 			end
+			
+			self.Tier2ForgingScene:Show();
+			self.Tier2ForgingScene:SetFromModelSceneID(TIER_2_FORGING_MODEL_SCENE_ID, true);
+			local forgingEffect = self.Tier2ForgingScene:GetActorByTag("effect");
+			if ( forgingEffect ) then
+				forgingEffect:SetModelByFileID(TIER_2_FORGING_EFFECT_MODEL_ID);
+				forgingEffect:SetAlpha(0.0);
+				self.Tier2ForgingScene.ForgingEffect = forgingEffect;
+			end
+			
+			self.Tier2SlamEffectModelScene:SetFromModelSceneID(TIER_2_SLAM_EFFECT_MODEL_SCENE_ID, true);
+			local slamEffect = self.Tier2SlamEffectModelScene:GetActorByTag("effect");
+			if ( slamEffect ) then
+				slamEffect:SetModelByFileID(TIER_2_SLAM_EFFECT_MODEL_ID);
+			end
 		else
 			self.CrestFrame:Hide();
 			self.Tier2ModelScene:Hide();
+			self.Tier2SlamEffectModelScene:Hide();
 		end
 	else
 		self.CrestFrame:Hide();
 		self.Tier2ModelScene:Hide();
+		self.Tier2SlamEffectModelScene:Hide();
 	end
 end
 
@@ -354,6 +395,7 @@ function ArtifactPerksMixin:TryRefresh()
 			self:ShowTier2();
 			self.CrestFrame.CrestRune1:SetAlpha(1.0);
 			self.CrestFrame.RunePulse:Play();
+			self.Model.BackgroundFront:SetAlpha(self.Model.backgroundFrontTargetAlpha);
 		end
 		
 		if self.queuePlayingReveal then
@@ -949,6 +991,7 @@ function ArtifactPerksMixin:HideTier2()
 	end
 
 	self.Tier2ModelScene:Hide();
+	self.Tier2SlamEffectModelScene:Hide();
 end
 
 function ArtifactPerksMixin:ShowTier2()
@@ -1030,6 +1073,18 @@ function ArtifactPerksMixin:AnimateTraitRefund(numTraitsRefunded)
 	self:CancelAllTimedAnimations();
 	self.CrestFrame.RunePulse:Stop();
 
+	local forgingEffect = self.Tier2ForgingScene:GetActorByTag("effect");
+	if ( forgingEffect ) then
+		forgingEffect:SetAlpha(0.0);
+		self:StartWithDelay(TIER_2_FORGE_EFFECT_FADE_IN_DELAY, function ()
+			self.Tier2ForgingScene.ForgingEffectAnimIn:Play();
+		end);
+	end
+
+	self:StartWithDelay(TIER_2_BACKGROUND_FRONT_INTENSITY_IN_DELAY, function ()
+		self.Model.ForgingEffectAnimIn:Play();
+	end);
+
 	local button = self:GetFinalPowerButtonByTier(1);
 	if not button or numTraitsRefunded == 0 then
 		self:HideTier2();
@@ -1039,7 +1094,7 @@ function ArtifactPerksMixin:AnimateTraitRefund(numTraitsRefunded)
 		
 		return;
 	end
-	
+
 	self:TraitRefundSetup(numTraitsRefunded);
 	self:StartWithDelay(ARTIFACT_TIER_2_REVEAL_START_DELAY, function ()
 		self.traitRefundSoundEmitter:StartLoopingSound();
@@ -1169,9 +1224,29 @@ function ArtifactPerksMixin:PlayReveal(tier)
 end
 
 function ArtifactPerksMixin:AnimateInCrest()
+	local forgingEffect = self.Tier2ForgingScene:GetActorByTag("effect");
+	if ( forgingEffect ) then
+		self.ForgingEffect = forgingEffect;
+		self:StartWithDelay(TIER_2_FORGE_EFFECT_FADE_OUT_DELAY, function ()
+			self.Tier2ForgingScene.ForgingEffectAnimOut:Play();
+		end);
+	end
+	
+	self:StartWithDelay(TIER_2_BACKGROUND_FRONT_INTENSITY_OUT_DELAY, function ()
+		self.Model.ForgingEffectAnimOut:Play();
+	end);
+
 	self.CrestFrame.RuneAnim:Play();
 	self:StartWithDelay(ARTIFACT_TIER_2_SHAKE_DELAY, function ()
 		ShakeFrame(self:GetParent(), ARTIFACT_TIER_2_SHAKE, ARTIFACT_TIER_2_SHAKE_DURATION, ARTIFACT_TIER_2_SHAKE_FREQUENCY);
+	end);
+	
+	self:StartWithDelay(TIER_2_SLAM_EFFECT_DELAY, function ()
+		self.Tier2SlamEffectModelScene:Show();
+		self.CrestFrame.CracksAnim:Play();
+		self:StartWithDelay(TIER_2_SLAM_EFFECT_HIDE_DELAY, function ()
+			self.Tier2SlamEffectModelScene:Hide();
+		end);
 	end);
 end
 

@@ -587,13 +587,13 @@ function PanelTemplates_ResizeTabsToFit(frame, maxWidthForAllTabs)
 	end
 
 	local currentTab = GetTabByIndex(frame, selectedIndex);
-	PanelTemplates_TabResize(currentTab);
+	PanelTemplates_TabResize(currentTab, 0);
 	local availableWidth = maxWidthForAllTabs - currentTab:GetWidth();
 	local widthPerTab = availableWidth / (frame.numTabs - 1);
 	for i = 1, frame.numTabs do
 		if ( i ~= selectedIndex ) then
 			local tab = GetTabByIndex(frame, i);
-			PanelTemplates_TabResize(tab, _, widthPerTab);
+			PanelTemplates_TabResize(tab, 0, widthPerTab);
 		end
 	end
 end

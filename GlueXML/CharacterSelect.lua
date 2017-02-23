@@ -846,7 +846,7 @@ function UpdateCharacterList(skipSelect)
 			upgradeIcon:Show();
             upgradeIcon.tooltip = CHARACTER_UPGRADE_PROCESSING;
             upgradeIcon.tooltip2 = VAS_SERVICE_PROCESSING:format(productInfo.sharedData.name);
-            if (VAS_QUEUE_TIMES[guid]) then
+            if (VAS_QUEUE_TIMES[guid] and VAS_QUEUE_TIMES[guid] > 0) then
                 upgradeIcon.tooltip2 = upgradeIcon.tooltip2 .. "|n" .. VAS_PROCESSING_ESTIMATED_TIME:format(SecondsToTime(VAS_QUEUE_TIMES[guid]*60, true, false, 2, true))
             end
 		elseif ( vasServiceState == Enum.VasPurchaseProgress.ProcessingFactionChange ) then
@@ -2830,7 +2830,7 @@ function GameRoomBillingFrameConvertMe_OnClick(self)
 
     frame.Before:SetText(FormatLargeNumber(minutes));
     frame.After:SetText(days);
-    frame.Description:SetText("<html><body><p align=\"center\">"..CONVERT_DESCRIPTION.."</p></body></html>");
+    frame.Description:SetText(HTML_START_CENTERTED..CONVERT_DESCRIPTION..HTML_END);
     frame.ConvertNowDescription:SetText(CONVERT_NOW_DESCRIPTION:format(days));
     frame:Show();
 end

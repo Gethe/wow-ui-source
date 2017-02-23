@@ -1,6 +1,6 @@
 ## Author: Blizzard Entertainment
 ## Title: Blizzard Tutorial
-## Interface: 70100
+## Interface: 70200
 ## Secure: 1
 ## RequiredDep: Blizzard_TutorialTemplates
 ## LoadOnDemand: 1

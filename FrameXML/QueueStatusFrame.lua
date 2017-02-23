@@ -454,7 +454,7 @@ function QueueStatusEntry_SetUpLFG(entry, category)
 		local title = LFG_CATEGORY_NAMES[category];
 		if (C_PvP.IsInBrawl()) then
 			local brawlInfo = C_PvP.GetBrawlInfo();
-			if (brawlInfo.active and brawlInfo.longDescription) then
+			if (brawlInfo and brawlInfo.active and brawlInfo.longDescription) then
 				title = brawlInfo.name;
 				if (subtitle) then
 					subtitle = QUEUED_STATUS_BRAWL_RULES_SUBTITLE:format(brawlInfo.longDescription, subtitle);
@@ -482,8 +482,7 @@ function QueueStatusEntry_SetUpLFGListApplication(entry, resultID)
 end
 
 function QueueStatusEntry_SetUpBattlefield(entry, idx)
-	local status, mapName, teamSize, registeredMatch, suspend, _, _, _, _, shortDescription, longDescription = GetBattlefieldStatus(idx);
-	local name = mapName;
+	local status, mapName, teamSize, registeredMatch, suspend, _, _, _, _, _, longDescription = GetBattlefieldStatus(idx);
 	if ( status == "queued" ) then
 		if ( suspend ) then
 			QueueStatusEntry_SetMinimalDisplay(entry, mapName, QUEUED_STATUS_SUSPENDED);
@@ -495,21 +494,10 @@ function QueueStatusEntry_SetUpBattlefield(entry, idx)
 	elseif ( status == "confirm" ) then
 		QueueStatusEntry_SetMinimalDisplay(entry, mapName, QUEUED_STATUS_PROPOSAL);
 	elseif ( status == "active" ) then
-		if (C_PvP.IsInBrawl()) then
-			local brawlInfo = C_PvP.GetBrawlInfo();
-			if (brawlInfo.active) then
-				name = brawlInfo.name;
-				shortDescription = brawlInfo.shortDescription;
-				longDescription = brawlInfo.longDescription;
-			else
-				name = nil;
-			end
-		end
-
-		if (name) then
+		if (mapName) then
 			local hasLongDescription = longDescription and longDescription ~= "";
 			local text = hasLongDescription and longDescription or nil;
-			QueueStatusEntry_SetMinimalDisplay(entry, name, QUEUED_STATUS_IN_PROGRESS, text);
+			QueueStatusEntry_SetMinimalDisplay(entry, mapName, QUEUED_STATUS_IN_PROGRESS, text);
 		else
 			QueueStatusEntry_SetMinimalDisplay(entry, mapName, QUEUED_STATUS_IN_PROGRESS);
 		end

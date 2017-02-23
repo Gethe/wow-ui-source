@@ -17,7 +17,7 @@
 						<Anchor point="LEFT" relativeTo="$parentSlotTexture" relativePoint="RIGHT" x="-9" y="-18"/>
 					</Anchors>
 				</Texture>
-				<FontString name="$parentName" inherits="GameFontNormalSmall" text="Item Name" justifyH="LEFT">
+				<FontString parentKey="Name" name="$parentName" inherits="GameFontNormalSmall" text="Item Name" justifyH="LEFT">
 					<Size x="100" y="30"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentSlotTexture" relativePoint="RIGHT" x="-5" y="7"/>
@@ -26,7 +26,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button name="$parentItemButton" inherits="ItemButtonTemplate">
+			<Button parentKey="ItemButton" name="$parentItemButton" inherits="ItemButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parent"/>
 				</Anchors>
@@ -361,7 +361,7 @@
 								<Anchor point="LEFT" relativeTo="$parentSlotTexture" relativePoint="RIGHT" x="-9" y="-10"/>
 							</Anchors>
 						</Texture>
-						<FontString name="$parentName" inherits="GameFontNormalSmall" text="Item Name" justifyH="LEFT">
+						<FontString parentKey="Name" name="$parentName" inherits="GameFontNormalSmall" text="Item Name" justifyH="LEFT">
 							<Size x="90" y="30"/>
 							<Anchors>
 								<Anchor point="LEFT" relativeTo="$parentSlotTexture" relativePoint="RIGHT" x="-5" y="10"/>
@@ -370,7 +370,7 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Button name="$parentItemButton" inherits="ItemButtonTemplate">
+					<Button parentKey="ItemButton" name="$parentItemButton" inherits="ItemButtonTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parent"/>
 						</Anchors>
@@ -543,32 +543,7 @@
 			<OnLoad function="MerchantFrame_OnLoad"/>
 			<OnShow function="MerchantFrame_OnShow"/>
 			<OnEvent function="MerchantFrame_OnEvent"/>
-			<OnUpdate>
-				if ( self.update == true ) then
-					self.update = false;
-					if ( self:IsVisible() ) then
-						MerchantFrame_Update();
-					end
-				end
-				if ( MerchantFrame.itemHover ) then
-					if ( IsModifiedClick("DRESSUP") ) then
-						ShowInspectCursor();
-					else
-						if (CanAffordMerchantItem(MerchantFrame.itemHover) == false) then
-							SetCursor("BUY_ERROR_CURSOR");
-						else
-							SetCursor("BUY_CURSOR");
-						end
-					end
-				end
-				if ( MerchantRepairItemButton:IsShown() ) then
-					if ( InRepairMode() ) then
-						MerchantRepairItemButton:LockHighlight();
-					else
-						MerchantRepairItemButton:UnlockHighlight();
-					end
-				end
-			</OnUpdate>
+			<OnUpdate function="MerchantFrame_OnUpdate"/>
 			<OnMouseUp>
 				if ( MerchantFrame.refundItem ) then
 					if ( ContainerFrame_GetExtendedPriceString(MerchantFrame.refundItem, MerchantFrame.refundItemEquipped)) then

@@ -14,22 +14,92 @@ function ContributionRewardMixin:Setup(rewardID, isEnabled)
 	self:Show();
 end
 
-function ContributionRewardMixin:OnEnter()
-	GameTooltip:SetOwner(self);
-	GameTooltip:SetSpellByID(self.rewardID);
+local function GetExtents(...)
+	local minX, minY, maxX, maxY;
 
-	if not self.isEnabled then
-		GameTooltip:AddLine(CONTRIBUTION_TOOLTIP_UNLOCKED_WHEN_ACTIVE, RED_FONT_COLOR:GetRGB());
+	for i = 1, select("#", ...) do
+		local frame = select(i, ...);
+		if frame:IsShown() then
+			local frameMinX, frameMinY, frameWidth, frameHeight = frame:GetRect();
+			local frameMaxX, frameMaxY = frameMinX + frameWidth, frameMinY + frameHeight;
+
+			minX = not minX and frameMinX or math.min(minX, frameMinX);
+			minY = not minY and frameMinY or math.min(minY, frameMinY);
+			maxX = not maxX and frameMaxX or math.max(maxX, frameMaxX);
+			maxY = not maxY and frameMaxY or math.max(maxY, frameMaxY);
+		end
 	end
 
-	GameTooltip:Show();
+	return minX, minY, maxX, maxY;
+end
+
+local function ResizeToFitContents(containerFrame, extraWidth, extraHeight, ...)
+	local minX, minY, maxX, maxY = GetExtents(...);
+	containerFrame:SetSize(maxX - minX + extraWidth, maxY - minY + extraHeight);
+end
+
+function ContributionRewardMixin:OnEnter()
+	ContributionBuffTooltip:ClearAllPoints();
+	ContributionBuffTooltip:SetPoint("BOTTOMLEFT", self.Icon, "TOPRIGHT", 0, 0);
+
+	local name, _, icon = GetSpellInfo(self.rewardID);
+
+	ContributionBuffTooltip.Icon:SetTexture(icon);
+	ContributionBuffTooltip.Name:SetText(name);
+	ContributionBuffTooltip.Description:SetText(GetSpellDescription(self.rewardID));
+
+	ContributionBuffTooltip.Footer:SetShown(not self.isEnabled);
+	if not self.isEnabled then
+		ContributionBuffTooltip.Footer:SetText(CONTRIBUTION_TOOLTIP_UNLOCKED_WHEN_ACTIVE);
+		ContributionBuffTooltip.Footer:SetVertexColor(RED_FONT_COLOR:GetRGB());
+	end
+
+	-- Must add padding because of the way that the tooltip border frame is built.  Leaving those textures out of this calculation.
+	ResizeToFitContents(ContributionBuffTooltip, 20, 20, ContributionBuffTooltip.Icon, ContributionBuffTooltip.Name, ContributionBuffTooltip.Description, ContributionBuffTooltip.Footer);
+
+	ContributionBuffTooltip:Show();
 end
 
 function ContributionRewardMixin:OnLeave()
-	GameTooltip:Hide();
+	ContributionBuffTooltip:Hide();
 end
 
 ContributionStatusMixin = {}
+
+function ContributionStatusMixin:OnLoad()
+	self.Bar:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar"); -- Set to some default texture just to instantiate the bar
+	self.Spark:ClearAllPoints();
+	self.Spark:SetPoint("CENTER", self.Bar:GetStatusBarTexture(), "RIGHT", 0, 0);
+	self.Spark:SetParent(self.Bar);
+
+	self.Bar:ClearAllPoints();
+	self.Bar:SetAllPoints(self);
+	self.Bar:SetStatusBarColor(1, 1, 1, 1);
+	self.Bar.BarBG:SetAtlas("Legionfall_BarBackground");
+	self.Bar.IconBG:Hide();
+
+	self.Bar.BarGlow:ClearAllPoints();
+	self.Bar.BarGlow:SetPoint("TOPLEFT", self.Bar, "TOPLEFT", -6.0, 4.0);
+	self.Bar.BarGlow:SetPoint("BOTTOMRIGHT", self.Bar, "BOTTOMRIGHT", 6.0, -4.0);
+
+	self.Bar.Label:SetPoint("CENTER", self.Bar, "CENTER", 0, 0);
+	self.Bar.Label:SetFontObject(GameFontHighlight);
+
+	local SetupBarFrame = function(barFrame)
+		barFrame:ClearAllPoints();
+		barFrame:SetPoint("TOPLEFT", self.Bar, "TOPLEFT", -7.0, 7.0);
+		barFrame:SetPoint("BOTTOMRIGHT", self.Bar, "BOTTOMRIGHT", 7.0, -7.0);
+
+		barFrame:SetAtlas("Legionfall_BarFrame");
+	end
+
+	SetupBarFrame(self.Bar.BarFrame);
+	SetupBarFrame(self.Bar.BarFrame2);
+	SetupBarFrame(self.Bar.BarFrame3);
+
+	self.FullBarFlare1:SetHeight(42);
+	self.FullBarFlare2:SetHeight(42);
+end
 
 function ContributionStatusMixin:SetContributionID(contributionID)
 	self.contributionID = contributionID;
@@ -39,9 +109,11 @@ function ContributionStatusMixin:Update()
 	local state, stateAmount, timeOfNextStateChange = C_ContributionCollector.GetState(self.contributionID);
 	local appearance = CONTRIBUTION_APPEARANCE_DATA[state];
 
-	self:SetStatusBarAtlas(appearance.statusBarAtlas);
-	self:SetValue(stateAmount);
-	self.Spark:SetShown(stateAmount > 0 and stateAmount < 1);
+	BonusObjectiveTrackerProgressBar_SetValue(self, stateAmount * 100);
+	self.AnimValue = stateAmount * 100;
+
+	self.Bar:SetStatusBarAtlas(appearance.statusBarAtlas);
+	self.Spark:SetShown(state == Enum.ContributionState.Building and stateAmount > 0 and stateAmount < 1);
 
 	local text;
 	self.onlyShowTextOnMouseEnter = false;
@@ -57,8 +129,12 @@ function ContributionStatusMixin:Update()
 		self.onlyShowTextOnMouseEnter = true;
 	end
 
-	self.Text:SetText(text);
+	self.Bar.Label:SetText(text);
 	self:UpdateTextVisibility();
+end
+
+function ContributionStatusMixin:PlayFlashAnimation()
+	BonusObjectiveTrackerProgressBar_PlayAnimation(self, self.AnimValue, 1, 15);
 end
 
 function ContributionStatusMixin:OnUpdate()
@@ -81,30 +157,70 @@ end
 
 function ContributionStatusMixin:UpdateTextVisibility()
 	local shouldShowText = not self.onlyShowTextOnMouseEnter or self.isMouseOver;
-	self.Text:SetShown(shouldShowText);
+	self.Bar.Label:SetShown(shouldShowText);
 end
 
 ContributeButtonMixin = {};
 
 function ContributeButtonMixin:OnClick(button)
+	PlaySound("UI_72_Buildings_Contribute_Power_Menu_Click");
 	self:Disable();
 	self:GetParent():Contribute();
 end
 
 function ContributeButtonMixin:OnEnter()
-	local shouldShowTooltip = self:IsEnabled() or self.isDisabledBecauseOfContributionState;
+	local isEnabled = self:IsEnabled();
+	local shouldShowTooltip = isEnabled or (self.contributionResult == Enum.ContributionResult.IncorrectState) or (self.contributionResult == Enum.ContributionResult.FailedConditionCheck);
 
 	if shouldShowTooltip then
 		ContributionTooltip:SetOwner(self, "ANCHOR_RIGHT");
 
-		if self:IsEnabled() then
-			ContributionTooltip:SetText(CONTRIBUTION_REWARD_TOOLTIP_TITLE);
-			GameTooltip_AddQuestRewardsToTooltipWithHeader(ContributionTooltip, self.questID, 0, CONTRIBUTION_REWARD_TOOLTIP_TEXT, HIGHLIGHT_FONT_COLOR);
-		elseif self.isDisabledBecauseOfContributionState then
+		if isEnabled or (self.contributionResult == Enum.ContributionResult.FailedConditionCheck) then
+			ContributionTooltip:SetText(CONTRIBUTION_REWARD_TOOLTIP_TITLE, HIGHLIGHT_FONT_COLOR:GetRGBA());
+			GameTooltip_AddQuestRewardsToTooltipWithHeader(ContributionTooltip, self.questID, 0, CONTRIBUTION_REWARD_TOOLTIP_TEXT, NORMAL_FONT_COLOR, false);
+
+			local currencyID, requiredCurrency = C_ContributionCollector.GetRequiredContributionAmount(self.contributionID);
+			requiredCurrency = BreakUpLargeNumbers(requiredCurrency);
+			local currencyName, ownedCurrency = GetCurrencyInfo(currencyID);
+			local ownedCurrency = BreakUpLargeNumbers(ownedCurrency);
+			local currencyLine = CONTRIBUTION_TOOLTIP_PLAYER_CURRENCY_AMOUNT:format(ownedCurrency, requiredCurrency, currencyName);
+			local currencyLineColor = (ownedCurrency >= requiredCurrency) and NORMAL_FONT_COLOR or RED_FONT_COLOR;
+
+			ContributionTooltip.Currency:Show();
+			ContributionTooltip.Currency:SetVertexColor(currencyLineColor:GetRGBA());
+			ContributionTooltip.Currency:SetText(currencyLine);
+		elseif self.contributionResult == Enum.ContributionResult.IncorrectState then
 			ContributionTooltip:SetText(CONTRIBUTION_BUTTON_ONLY_WHEN_UNDER_CONSTRUCTION_TOOLTIP, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, 1, true);
+			ContributionTooltip.Currency:Hide();
 		end
 
 		ContributionTooltip:Show();
+	end
+end
+
+function ContributionTooltip_CalculatePadding(tooltip)
+	local itemWidth, itemHeight, currencyWidth, currencyHeight = 0, 0, 0, 0;
+
+	if tooltip.ItemTooltip:IsShown() then
+		itemWidth, itemHeight = tooltip.ItemTooltip:GetSize();
+		itemWidth = itemWidth + 9; -- extra padding for this line
+	end
+
+	if tooltip.Currency:IsShown() then
+		currencyWidth, currencyHeight = tooltip.Currency:GetSize();
+		currencyWidth = currencyWidth + 20; -- extra width padding for this line
+	end
+
+	local extraWidth = math.max(itemWidth, currencyWidth);
+	local extraHeight = itemHeight + currencyHeight;
+
+	local oldPaddingWidth, oldPaddingHeight = tooltip:GetPadding();
+	local actualTooltipWidth = tooltip:GetWidth() - oldPaddingWidth;
+	local paddingWidth = (actualTooltipWidth <= extraWidth) and extraWidth - actualTooltipWidth or 0;
+	local paddingHeight = (extraHeight > 0) and extraHeight + 12 or 0;
+
+	if(math.abs(paddingWidth - oldPaddingWidth) > 0.5 or math.abs(paddingHeight - oldPaddingHeight) > 0.5) then
+		tooltip:SetPadding(paddingWidth, paddingHeight);
 	end
 end
 
@@ -122,24 +238,19 @@ function ContributeButtonMixin:Update()
 	self:SetEnabled(canContribute);
 
 	local state = C_ContributionCollector.GetState(self.contributionID);
-	self.isDisabledBecauseOfContributionState = (result == Enum.ContributionResult.IncorrectState);
+	self.contributionResult = result;
 	self.questID = C_ContributionCollector.GetRewardQuestID(self.contributionID);
 
-	if canContribute then
+	if canContribute or (result == Enum.ContributionResult.FailedConditionCheck) then
 		local currencyID, currencyAmount = C_ContributionCollector.GetRequiredContributionAmount(self.contributionID);
-		self:SetCurrencyFromID(currencyID, currencyAmount, CONTIBUTION_REQUIRED_CURRENCY);
+		local currencyColorCode = canContribute and HIGHLIGHT_FONT_COLOR_CODE or RED_FONT_COLOR_CODE;
+		self:SetCurrencyFromID(currencyID, currencyAmount, CONTIBUTION_REQUIRED_CURRENCY, currencyColorCode);
 	else
 		self:SetText(CONTRIBUTION_DISABLED);
 	end
 end
 
 ContributionMixin = {};
-
-function ContributionMixin:OnLoad()
-	self.Status:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar"); -- Set to some default texture just to instantiate the bar, fixing this soon since it will use a static texture
-	self.Status.Spark:ClearAllPoints();
-	self.Status.Spark:SetPoint("CENTER", self.Status:GetStatusBarTexture(), "RIGHT", 0, 0);
-end
 
 function ContributionMixin:OnHide()
 	self:StopAnimations();
@@ -186,10 +297,14 @@ end
 
 function ContributionMixin:Contribute()
 	C_ContributionCollector.Contribute(self.contributionID);
-	self:QueueSuccessAnimation(true);
+	self:QueueAnimation(true);
 end
 
 function ContributionMixin:UpdateRewards()
+	for rewardID, reward in pairs(self.rewards) do
+		self:GetParent():ReleaseReward(reward);
+	end
+
 	self:EnumerateRewards(C_ContributionCollector.GetBuffs(self.contributionID));
 end
 
@@ -214,8 +329,11 @@ function ContributionMixin:AddReward(index, rewardID)
 
 	reward:SetPoint("TOPLEFT", self.Description, "BOTTOMLEFT", 0, (index - 1) * -45);
 
-	local isRewardActive = C_ContributionCollector.IsBuffActive(self.contributionID);
+	local state, stateAmount = C_ContributionCollector.GetState(self.contributionID);
+	local isRewardActive = state == Enum.ContributionState.Active;
+	local isRewardVisible = state ~= Enum.ContributionState.Destroyed;
 	reward:Setup(rewardID, isRewardActive);
+	reward:SetShown(isRewardVisible);
 end
 
 function ContributionMixin:UpdateStatus()
@@ -229,33 +347,20 @@ function ContributionMixin:UpdateContributeButton()
 	self:UpdatePendingAnimations();
 end
 
-function ContributionMixin:QueueSuccessAnimation(shouldQueue)
-	self.hasPendingSuccessAnimation = shouldQueue;
-	self.successAnimationLoopCount = 0;
-	self.Status.SuccessAnim:Stop();
+function ContributionMixin:QueueAnimation(shouldQueue)
+	self.hasPendingAnimation = shouldQueue;
+	self.animationLoopCount = 0;
 end
 
 function ContributionMixin:UpdatePendingAnimations()
-	if self.hasPendingSuccessAnimation then
-		self.Status.SuccessAnim:Play();
-		self.hasPendingSuccessAnimation = false;
+	if self.hasPendingAnimation then
+		self.Status:PlayFlashAnimation();
+		self.hasPendingAnimation = false;
 	end
 end
 
 function ContributionMixin:StopAnimations()
-	self:QueueSuccessAnimation(false);
-end
-
-function ContributionMixin:OnSuccessAnimLoop(animGroup, loopState)
-	self.successAnimationLoopCount = self.successAnimationLoopCount and (self.successAnimationLoopCount + 1) or 1;
-
-	if (self.successAnimationLoopCount >= 1) then
-		self:StopAnimations();
-	end
-end
-
-function ContributionStatusMixin_SuccessAnimOnLoop(animGroup, loopState)
-	animGroup:GetParent():GetParent():OnSuccessAnimLoop(animGroup, loopState);
+	self:QueueAnimation(false);
 end
 
 ContributionCollectionMixin = {};

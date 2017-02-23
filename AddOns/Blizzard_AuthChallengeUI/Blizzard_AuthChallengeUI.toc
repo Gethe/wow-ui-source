@@ -1,4 +1,4 @@
-## Interface: 70100
+## Interface: 70200
 ## Title: Blizzard Auth Challenge UI
 ## Secure: 1
 ## LoadOnDemand: 0

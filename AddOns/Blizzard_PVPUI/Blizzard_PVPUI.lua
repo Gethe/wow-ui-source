@@ -17,6 +17,8 @@ local SKIRMISH_REWARD = "skirmish";
 local RATED_BG_REWARD = "ratedbg";
 local ARENA_2V2_REWARD = "arena2v2";
 local ARENA_3V3_REWARD = "arena3v3";
+local BG_BRAWL_REWARD = "bgbrawl";
+local ARENA_BRAWL_REWARD = "arenabrawl";
 
 local REWARDS_AT_MAX_LEVEL = {
 	[RANDOM_BG_REWARD] = {
@@ -38,6 +40,14 @@ local REWARDS_AT_MAX_LEVEL = {
 	[ARENA_3V3_REWARD] = {
 		["FirstWin"] = 147202,
 		["NthWin"] = 147198,
+	},
+	[BG_BRAWL_REWARD] = {
+		["FirstWin"] = 143680,
+		["NthWin"] = 138880,
+	},
+	[ARENA_BRAWL_REWARD] = {
+		["FirstWin"] = 143713,
+		["NthWin"] = 138864,
 	}
 }
 
@@ -55,7 +65,9 @@ function GetMaxLevelReward(bracketType, hasFirstWin)
 	local ARENA_2V2_ID = 1;
 	local ARENA_3V3_ID = 2;
 	local RATED_BG_ID = 4;
-	if (bracketType == RANDOM_BATTLEGROUNDS) then
+	if (REWARDS_AT_MAX_LEVEL[bracketType]) then
+		id = REWARDS_AT_MAX_LEVEL[bracketType][key];
+	elseif (bracketType == RANDOM_BATTLEGROUNDS) then
 		id = REWARDS_AT_MAX_LEVEL[RANDOM_BG_REWARD][key];
 	elseif (bracketType == SKIRMISH) then
 		id = REWARDS_AT_MAX_LEVEL[SKIRMISH_REWARD][key];
@@ -551,7 +563,7 @@ function HonorFrame_UpdateQueueButtons()
 		end
 	else
 		HonorFrame.QueueButton:Disable();
-		if (HonorFrame.type == "bonus" and HonorFrame.BonusFrame.selectedButton.queueID) then
+		if (HonorFrame.type == "bonus" and HonorFrame.BonusFrame.selectedButton and HonorFrame.BonusFrame.selectedButton.queueID) then
 			if not disabledReason then
 				disabledReason = LFGConstructDeclinedMessage(HonorFrame.BonusFrame.selectedButton.queueID);
 			end
@@ -825,7 +837,6 @@ function HonorFrameBonusFrame_OnShow(self)
 
 	RequestLFDPlayerLockInfo();
 	RequestLFDPartyLockInfo();
-	C_PvP.RequestBrawlInfo();
 	self:RegisterEvent("PVP_BRAWL_INFO_UPDATED");
 end
 
@@ -932,16 +943,20 @@ function HonorFrameBonusFrame_Update()
 		-- brawls
 		local button = HonorFrame.BonusFrame.BrawlButton;
 		local brawlInfo = C_PvP.GetBrawlInfo();
-		button.canQueue = brawlInfo.active;
+		button.canQueue = brawlInfo and brawlInfo.active;
 
-		if (brawlInfo.active) then
+		if (brawlInfo and brawlInfo.active) then
 			button:Enable();
 			button.Contents.Title:SetText(brawlInfo.name);
 			button.Contents.Title:SetFontObject("GameFontHighlightMedium")
-			local honor, experience, rewards = C_PvP.GetRandomBGRewards();
+			local honor, experience, rewards, hasWon = C_PvP.GetBrawlRewards(brawlInfo.brawlType);
 
 			if (not rewards) then
-				rewards = GetMaxLevelReward(RANDOM_BATTLEGROUNDS, hasWon);
+				if (brawlInfo.brawlType == Enum.BrawlType.Arena) then
+					rewards = GetMaxLevelReward(ARENA_BRAWL_REWARD, hasWon);
+				elseif (brawlInfo.brawlType == Enum.BrawlType.Battleground) then
+					rewards = GetMaxLevelReward(BG_BRAWL_REWARD, hasWon);
+				end
 			end
 
 			if (rewards and #rewards > 0) then
@@ -955,7 +970,7 @@ function HonorFrameBonusFrame_Update()
 				button.Reward:Hide();
 			end
 		else
-			local timeUntilNext = brawlInfo.timeLeftUntilNextChange;
+			local timeUntilNext = brawlInfo and brawlInfo.timeLeftUntilNextChange or 0;
 			if (timeUntilNext == 0) then
 				button.Contents.Title:SetText(BRAWL_CLOSED);
 			else
@@ -965,7 +980,7 @@ function HonorFrameBonusFrame_Update()
 			button.Reward:Hide();
 			button:Disable();
 		end
-		HonorFrame.BonusFrame.BrawlHelpBox:SetShown(ShouldShowBrawlHelpBox(brawlInfo.active, (UnitLevel("player") >= MAX_PLAYER_LEVEL)));
+		HonorFrame.BonusFrame.BrawlHelpBox:SetShown(ShouldShowBrawlHelpBox(brawlInfo and brawlInfo.active, (UnitLevel("player") >= MAX_PLAYER_LEVEL)));
 	end
 
 	-- select a button if one isn't selected

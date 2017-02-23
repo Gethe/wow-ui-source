@@ -1457,24 +1457,29 @@ StaticPopupDialogs["RESURRECT_NO_TIMER"] = {
 	button2 = DECLINE,
 	OnShow = function(self)
 		self.timeleft = GetCorpseRecoveryDelay() + 60;
-		self.declineTimeLeft = 5
-		self.button2:SetText(self.declineTimeLeft)
-		self.button2:Disable();
-		self.ticker = C_Timer.NewTicker(1, function()
-			self.declineTimeLeft = self.declineTimeLeft - 1;
-			if (self.declineTimeLeft == 0) then
-				self.button2:SetText(DECLINE)
-				self.button2:Enable();
-				self.ticker:Cancel();
-				return;
-			else
-				self.button2:SetText(self.declineTimeLeft);
-			end
-		end)
-		
+		if (not HasSoulstone()) then
+			self.hideOnEscape = nil;
+			self.declineTimeLeft = 5;
+			self.button2:SetText(self.declineTimeLeft);
+			self.button2:Disable();
+			self.ticker = C_Timer.NewTicker(1, function()
+				self.declineTimeLeft = self.declineTimeLeft - 1;
+				if (self.declineTimeLeft == 0) then
+					self.button2:SetText(DECLINE)
+					self.button2:Enable();
+					self.ticker:Cancel();
+					self.hideOnEscape = 1;
+					return;
+				else
+					self.button2:SetText(self.declineTimeLeft);
+				end
+			end);
+		end
 	end,
 	OnHide = function(self)
-		self.ticker:Cancel();
+		if (self.ticker) then
+			self.ticker:Cancel();
+		end
 		self.ticker = nil;
 	end,
 	OnAccept = function(self)
@@ -4591,6 +4596,8 @@ function StaticPopupItemFrame_DisplayInfo(self, link, name, color, texture, coun
 	local nameText = _G[self:GetName().."Text"];
 	nameText:SetTextColor(unpack(color or {1, 1, 1, 1}));
 	nameText:SetText(name);
+	local quality = select(3, GetItemInfo(link));
+	SetItemButtonQuality(self, quality, link);
 	if ( count and count > 1 ) then
 		_G[self:GetName().."Count"]:SetText(count);
 		_G[self:GetName().."Count"]:Show();

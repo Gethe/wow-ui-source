@@ -189,6 +189,7 @@ function LootFrame_UpdateButton(index)
 			local text = _G["LootButton"..index.."Text"];
 			if ( texture ) then
 				local color = ITEM_QUALITY_COLORS[quality];
+				SetItemButtonQuality(button, quality, GetLootSlotLink(slot));
 				_G["LootButton"..index.."IconTexture"]:SetTexture(texture);
 				text:SetText(item);
 				if( locked ) then

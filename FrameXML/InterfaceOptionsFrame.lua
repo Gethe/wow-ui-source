@@ -317,7 +317,6 @@ UVARINFO = {
 	["SHOW_PARTY_PETS"] = { default = "0", cvar = "showPartyPets", event = "SHOW_PARTY_PETS_TEXT" },
 	["SHOW_PARTY_BACKGROUND"] = { default = "0", cvar = "showPartyBackground", event = "SHOW_PARTY_BACKGROUND_TEXT" },
 	["SHOW_TARGET_OF_TARGET"] = { default = "0", cvar = "showTargetOfTarget", event = "SHOW_TARGET_OF_TARGET_TEXT" },
-	["SHOW_TARGET_OF_TARGET_STATE"] = { default = "5", cvar = "targetOfTargetMode", event = "SHOW_TARGET_OF_TARGET_STATE" },
 	["AUTO_QUEST_WATCH"] = { default = "1", cvar = "autoQuestWatch", event = "AUTO_QUEST_WATCH_TEXT" },
 	["LOOT_UNDER_MOUSE"] = { default = "0", cvar = "lootUnderMouse", event = "LOOT_UNDER_MOUSE_TEXT" },
 	["AUTO_LOOT_DEFAULT"] = { default = "0", cvar = "autoLootDefault", event = "AUTO_LOOT_DEFAULT_TEXT" },
@@ -580,7 +579,14 @@ end
 --	-- [[ Add the panel to the Interface Options ]] --
 --	InterfaceOptions_AddCategory(panel);
 -------------------------------------------------------------------------------------------------
-
+local function AddAddOnCategory(categories, index, frame)
+	if index then
+		tinsert(categories, index, frame);
+	else
+		tinsert(categories, frame);
+	end
+	InterfaceCategoryList_Update();
+end
 
 function InterfaceOptions_AddCategory (frame, addOn, position)
 	if ( issecure() and ( not addOn ) ) then
@@ -629,7 +635,7 @@ function InterfaceOptions_AddCategory (frame, addOn, position)
 						frame.hidden = true;
 						categories[i].hasChildren = true;
 						categories[i].collapsed = true;
-						tinsert(categories, i + 1, frame);
+						AddAddOnCategory(categories, i + 1, frame);
 						return;						
 					end
 
@@ -641,7 +647,7 @@ function InterfaceOptions_AddCategory (frame, addOn, position)
 						j = j + 1;
 					end
 
-					tinsert(categories, j, frame);
+					AddAddOnCategory(categories, j, frame);
 					return;
 				end
 			end
@@ -649,15 +655,11 @@ function InterfaceOptions_AddCategory (frame, addOn, position)
 
 		for i = 1, #categories do
 			if ( ( not categories[i].parent ) and ( name < strlower(categories[i].name) ) ) then
-				tinsert(categories, i, frame);
+				AddAddOnCategory(categories, i, frame);
 				return;
 			end
 		end
 
-		if ( position ) then
-			tinsert(categories, position, frame);
-		else
-			tinsert(categories, frame);
-		end
+		AddAddOnCategory(categories, position, frame);
 	end
 end

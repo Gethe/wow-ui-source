@@ -2334,11 +2334,11 @@ SlashCmdList["SPECTATOR_WARGAME"] = function(msg)
 		return;
 	end
 
-	local bnetIDGameAccount1 = BNet_GetBNetIDGameAccount(target1) or BNet_GetBNetIDAccount(target1);
+	local bnetIDGameAccount1 = BNet_GetBNetIDAccountFromCharacterName(target1) or BNet_GetBNetIDAccount(target1);
 	if not bnetIDGameAccount1 then
 		ConsolePrint("Failed to find StartSpectatorWarGame target1:", target1);
 	end
-	local bnetIDGameAccount2 = BNet_GetBNetIDGameAccount(target2) or BNet_GetBNetIDAccount(target2);
+	local bnetIDGameAccount2 = BNet_GetBNetIDAccountFromCharacterName(target2) or BNet_GetBNetIDAccount(target2);
 	if not bnetIDGameAccount2 then
 		ConsolePrint("Failed to find StartSpectatorWarGame target2:", target2);
 	end

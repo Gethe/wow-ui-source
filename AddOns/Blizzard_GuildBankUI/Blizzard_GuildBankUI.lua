@@ -8,8 +8,6 @@ NUM_GUILDBANK_COLUMNS = 7;
 MAX_TRANSACTIONS_SHOWN = 21;
 GUILDBANK_TRANSACTION_HEIGHT = 13;
 
-local GB_ICON_FILENAMES = nil;
-
 UIPanelWindows["GuildBankFrame"] = { area = "doublewide", pushable = 0, width = 793 };
 
 --REMOVE ME!

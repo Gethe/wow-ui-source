@@ -578,6 +578,37 @@ local WARDROBE_MODEL_SETUP_GEAR = {
 	["HEADSLOT"] = 78416,
 }
 
+local SET_MODEL_PAN_AND_ZOOM_LIMITS = {
+	["Draenei2"] = { maxZoom = 2.2105259895325, panMaxLeft = -0.56983226537705, panMaxRight = 0.82581323385239, panMaxTop = -0.17342753708363, panMaxBottom = -2.6428601741791 },
+	["Draenei3"] = { maxZoom = 3.0592098236084, panMaxLeft = -0.33429977297783, panMaxRight = 0.29183092713356, panMaxTop = -0.079871296882629, panMaxBottom = -2.4141833782196 },
+	["Worgen2"] = { maxZoom = 1.9605259895325, panMaxLeft = -0.64045578241348, panMaxRight = 0.59410041570663, panMaxTop = -0.11050206422806, panMaxBottom = -2.2492413520813 },
+	["Worgen3"] = { maxZoom = 2.9013152122498, panMaxLeft = -0.2526838183403, panMaxRight = 0.38198262453079, panMaxTop = -0.10407017171383, panMaxBottom = -2.4137926101685 },
+	["Worgen3Alt"] = { maxZoom = 3.3618412017822, panMaxLeft = -0.19753229618072, panMaxRight = 0.26802557706833, panMaxTop = -0.073476828634739, panMaxBottom = -1.9255120754242 },
+	["Worgen2Alt"] = { maxZoom = 2.9605259895325, panMaxLeft = -0.33268970251083, panMaxRight = 0.36896070837975, panMaxTop = -0.14780110120773, panMaxBottom = -2.1662468910217 },
+	["Scourge2"] = { maxZoom = 3.1710526943207, panMaxLeft = -0.3243542611599, panMaxRight = 0.5625838637352, panMaxTop = -0.054175414144993, panMaxBottom = -1.7261047363281 },
+	["Scourge3"] = { maxZoom = 2.7105259895325, panMaxLeft = -0.35650563240051, panMaxRight = 0.41562974452972, panMaxTop = -0.07072202116251, panMaxBottom = -1.877711892128 },
+	["Orc2"] = { maxZoom = 2.5526309013367, panMaxLeft = -0.64236557483673, panMaxRight = 0.77098786830902, panMaxTop = -0.075792260468006, panMaxBottom = -2.0818419456482 },
+	["Orc3"] = { maxZoom = 3.2960524559021, panMaxLeft = -0.22763830423355, panMaxRight = 0.32022559642792, panMaxTop = -0.038521766662598, panMaxBottom = -2.0473554134369 },
+	["Gnome3"] = { maxZoom = 2.9605259895325, panMaxLeft = -0.29900181293488, panMaxRight = 0.35779395699501, panMaxTop = -0.076380833983421, panMaxBottom = -0.99909907579422 },
+	["nome2"] = { maxZoom = 2.8552639484406, panMaxLeft = -0.2777853012085, panMaxRight = 0.29651582241058, panMaxTop = -0.095201380550861, panMaxBottom = -1.0263166427612 },
+	["Dwarf2"] = { maxZoom = 2.9605259895325, panMaxLeft = -0.50352156162262, panMaxRight = 0.4159924685955, panMaxTop = -0.07211934030056, panMaxBottom = -1.4946432113648 },
+	["Dwarf3"] = { maxZoom = 2.8947370052338, panMaxLeft = -0.37057432532311, panMaxRight = 0.43383255600929, panMaxTop = -0.084960877895355, panMaxBottom = -1.7173190116882 },
+	["BloodElf3"] = { maxZoom = 3.1644730567932, panMaxLeft = -0.2654082775116, panMaxRight = 0.28886350989342, panMaxTop = -0.049619361758232, panMaxBottom = -1.9943760633469 },
+	["BloodElf2"] = { maxZoom = 3.1710524559021, panMaxLeft = -0.25901651382446, panMaxRight = 0.45525884628296, panMaxTop = -0.085230752825737, panMaxBottom = -2.0548067092895 },
+	["Troll2"] = { maxZoom = 2.2697355747223, panMaxLeft = -0.58214980363846, panMaxRight = 0.5104039311409, panMaxTop = -0.05494449660182, panMaxBottom = -2.3443803787231 },
+	["Troll3"] = { maxZoom = 3.1249995231628, panMaxLeft = -0.35141581296921, panMaxRight = 0.50875341892242, panMaxTop = -0.063820324838161, panMaxBottom = -2.4224486351013 },
+	["Tauren2"] = { maxZoom = 2.1118416786194, panMaxLeft = -0.82946360111237, panMaxRight = 0.83975899219513, panMaxTop = -0.061676319688559, panMaxBottom = -2.035267829895 },
+	["Tauren3"] = { maxZoom = 2.9605259895325, panMaxLeft = -0.37433895468712, panMaxRight = 0.40420442819595, panMaxTop = -0.1868137717247, panMaxBottom = -2.2116675376892 },
+	["NightElf3"] = { maxZoom = 2.9539475440979, panMaxLeft = -0.27334463596344, panMaxRight = 0.27148312330246, panMaxTop = -0.094710879027844, panMaxBottom = -2.3087983131409 },
+	["NightElf2"] = { maxZoom = 2.9144732952118, panMaxLeft = -0.45042458176613, panMaxRight = 0.47114592790604, panMaxTop = -0.10513981431723, panMaxBottom = -2.4612309932709 },
+	["Human3"] = { maxZoom = 3.3618412017822, panMaxLeft = -0.19753229618072, panMaxRight = 0.26802557706833, panMaxTop = -0.073476828634739, panMaxBottom = -1.9255120754242 },
+	["Human2"] = { maxZoom = 2.9605259895325, panMaxLeft = -0.33268970251083, panMaxRight = 0.36896070837975, panMaxTop = -0.14780110120773, panMaxBottom = -2.1662468910217 },
+	["Pandaren3"] = { maxZoom = 2.5921046733856, panMaxLeft = -0.45187762379646, panMaxRight = 0.54132586717606, panMaxTop = -0.11439494043589, panMaxBottom = -2.2257535457611 },
+	["Pandaren2"] = { maxZoom = 2.9342107772827, panMaxLeft = -0.36421552300453, panMaxRight = 0.50203305482864, panMaxTop = -0.11241528391838, panMaxBottom = -2.3707413673401 },
+	["Goblin2"] = { maxZoom = 2.4605259895325, panMaxLeft = -0.31328883767128, panMaxRight = 0.39014467597008, panMaxTop = -0.089733943343162, panMaxBottom = -1.3402827978134 },
+	["Goblin3"] = { maxZoom = 2.9605259895325, panMaxLeft = -0.26144406199455, panMaxRight = 0.30945864319801, panMaxTop = -0.07625275105238, panMaxBottom = -1.2928194999695 },
+};
+
 function WardrobeCollectionFrame_SetContainer(parent)
 	local collectionFrame = WardrobeCollectionFrame;
 	collectionFrame:SetParent(parent);
@@ -631,6 +662,7 @@ function WardrobeCollectionFrame_SetTab(tabID)
 		WardrobeCollectionFrame.searchBox:ClearAllPoints();
 		WardrobeCollectionFrame.searchBox:SetPoint("TOPRIGHT", -107, -35);
 		WardrobeCollectionFrame.searchBox:SetWidth(115);
+		WardrobeCollectionFrame.FilterButton:Show();
 	elseif ( tabID == TAB_SETS ) then
 		WardrobeCollectionFrame.ItemsCollectionFrame:Hide();
 		WardrobeCollectionFrame.searchBox:ClearAllPoints();
@@ -638,10 +670,12 @@ function WardrobeCollectionFrame_SetTab(tabID)
 			WardrobeCollectionFrame.activeFrame = WardrobeCollectionFrame.SetsTransmogFrame;
 			WardrobeCollectionFrame.searchBox:SetPoint("TOPRIGHT", -107, -35);
 			WardrobeCollectionFrame.searchBox:SetWidth(115);
+			WardrobeCollectionFrame.FilterButton:Hide();
 		else
 			WardrobeCollectionFrame.activeFrame = WardrobeCollectionFrame.SetsCollectionFrame;
 			WardrobeCollectionFrame.searchBox:SetPoint("TOPLEFT", 19, -69);
 			WardrobeCollectionFrame.searchBox:SetWidth(145);
+			WardrobeCollectionFrame.FilterButton:Show();
 		end
 		WardrobeCollectionFrame.SetsCollectionFrame:SetShown(not atTransmogrifier);
 		WardrobeCollectionFrame.SetsTransmogFrame:SetShown(atTransmogrifier);
@@ -722,8 +756,8 @@ end
 
 function WardrobeCollectionFrame_OnEvent(self, event, ...)
 	if ( event == "TRANSMOG_COLLECTION_ITEM_UPDATE" ) then
-		if ( self.tooltipSources ) then
-			WardrobeCollectionFrame_RefreshAppearanceTooltip();
+		if ( self.tooltipContentFrame ) then
+			self.tooltipContentFrame:RefreshAppearanceTooltip();
 		end
 		if ( self.ItemsCollectionFrame:IsShown() ) then
 			self.ItemsCollectionFrame:ValidateChosenVisualSources();
@@ -737,7 +771,7 @@ function WardrobeCollectionFrame_OnEvent(self, event, ...)
 			end
 		end
 	elseif ( event == "PLAYER_LEVEL_UP" or event == "SKILL_LINES_CHANGED" or event == "UPDATE_FACTION" or event == "SPELLS_CHANGED" ) then
-		C_TransmogCollection.UpdateUsableAppearances();
+		WardrobeCollectionFrame_UpdateUsableAppearances();
 	elseif ( event == "TRANSMOG_SEARCH_UPDATED" ) then
 		local searchType, arg1 = ...;
 		if ( searchType == self.activeFrame.searchType ) then
@@ -747,6 +781,13 @@ function WardrobeCollectionFrame_OnEvent(self, event, ...)
 		WardrobeCollectionFrame_RestartSearchTracking();
 	elseif ( event == "UI_SCALE_CHANGED" or event == "DISPLAY_SIZE_CHANGED" or event == "TRANSMOG_COLLECTION_CAMERA_UPDATE" ) then
 		WardrobeCollectionFrame_RefreshCameras();
+	end
+end
+
+function WardrobeCollectionFrame_UpdateUsableAppearances()
+	if ( not WardrobeCollectionFrame.updateUsableAppearances ) then
+		WardrobeCollectionFrame.updateUsableAppearances = true;
+		C_Timer.After(0, function() WardrobeCollectionFrame.updateUsableAppearances = nil; C_TransmogCollection.UpdateUsableAppearances(); end);
 	end
 end
 
@@ -894,7 +935,7 @@ function WardrobeCollectionFrame_OnShow(self)
 		self.inAlternateForm = inAlternateForm;
 	end
 
-	C_TransmogCollection.UpdateUsableAppearances();
+	WardrobeCollectionFrame_UpdateUsableAppearances();
 
 	if ( WardrobeFrame_IsAtTransmogrifier() ) then
 		WardrobeCollectionFrame_SetTab(self.selectedTransmogTab);
@@ -978,7 +1019,7 @@ function WardrobeCollectionFrame_OnKeyDown(self, key)
 		else
 			self.tooltipSourceIndex = self.tooltipSourceIndex + 1;
 		end
-		WardrobeCollectionFrame_RefreshAppearanceTooltip();
+		self.tooltipContentFrame:RefreshAppearanceTooltip();
 	elseif ( key == WARDROBE_PREV_VISUAL_KEY or key == WARDROBE_NEXT_VISUAL_KEY or key == WARDROBE_UP_VISUAL_KEY or key == WARDROBE_DOWN_VISUAL_KEY ) then
 		if ( WardrobeFrame_IsAtTransmogrifier() and self.ItemsCollectionFrame:IsShown() ) then
 			self:SetPropagateKeyboardInput(false);
@@ -1526,7 +1567,7 @@ function WardrobeCollectionFrame_UpdateProgressBar(value, max)
 	WardrobeCollectionFrame.progressBar.text:SetFormattedText(HEIRLOOMS_PROGRESS_FORMAT, value, max);
 end
 
-function WardrobeCollectionFrame_SortSources(sources, primaryVisualID)
+function WardrobeCollectionFrame_SortSources(sources, primaryVisualID, primarySourceID)
 	local comparison = function(source1, source2)
 		-- if a primary visual is given, sources for that are grouped by themselves above all others
 		if ( primaryVisualID and source1.visualID ~= source2.visualID ) then
@@ -1535,6 +1576,14 @@ function WardrobeCollectionFrame_SortSources(sources, primaryVisualID)
 
 		if ( source1.isCollected ~= source2.isCollected ) then
 			return source1.isCollected;
+		end
+
+		if ( primarySourceID ) then
+			local source1IsPrimary = (source1.sourceID == primarySourceID);
+			local source2IsPrimary = (source2.sourceID == primarySourceID);
+			if ( source1IsPrimary ~= source2IsPrimary ) then
+				return source1IsPrimary;
+			end
 		end
 
 		if ( source1.quality and source2.quality ) then
@@ -1640,11 +1689,31 @@ function WardrobeItemsCollectionMixin:GoToSourceID(sourceID, slot, transmogType,
 	if ( visualID or forceGo ) then
 		self.jumpToVisualID = visualID;
 		if ( self.activeCategory ~= categoryID or self.activeSlot ~= slot ) then
-			self:SetActiveSlot(slot, transmogType, category);
+			self:SetActiveSlot(slot, transmogType, categoryID);
 		else
 			self:ResetPage();
 		end
 	end
+end
+
+function WardrobeItemsCollectionMixin:SetAppearanceTooltip(frame)
+	GameTooltip:SetOwner(frame, "ANCHOR_RIGHT");
+	self.tooltipVisualID = frame.visualInfo.visualID;
+	self:RefreshAppearanceTooltip();
+end
+
+function WardrobeItemsCollectionMixin:RefreshAppearanceTooltip()
+	if ( not self.tooltipVisualID ) then
+		return;
+	end
+	local sources = WardrobeCollectionFrame_GetSortedAppearanceSources(self.tooltipVisualID);
+	local chosenSourceID = self:GetChosenVisualSource(self.tooltipVisualID);
+	WardrobeCollectionFrame_SetAppearanceTooltip(self, sources, chosenSourceID);
+end
+
+function WardrobeItemsCollectionMixin:ClearAppearanceTooltip()
+	self.tooltipVisualID = nil;
+	WardrobeCollectionFrame_HideAppearanceTooltip();
 end
 
 function WardrobeCollectionFrame_GetSlotFromCategoryID(categoryID)
@@ -1756,16 +1825,14 @@ function WardrobeItemsModelMixin:OnEnter()
 		end
 		GameTooltip:Show();
 	else
-		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		local chosenSourceID = self:GetParent():GetChosenVisualSource(self.visualInfo.visualID);
-		WardrobeCollectionFrame_SetAppearanceTooltipByAppearance(self.visualInfo.visualID, chosenSourceID);
+		self:GetParent():SetAppearanceTooltip(self);
 	end
 end
 
 function WardrobeItemsModelMixin:OnLeave()
 	self:SetScript("OnUpdate", nil);
 	ResetCursor();
-	WardrobeCollectionFrame_HideAppearanceTooltip();
+	self:GetParent():ClearAppearanceTooltip();
 end
 
 function WardrobeItemsModelMixin:OnUpdate()
@@ -1856,23 +1923,18 @@ local function GetDropDifficulties(drop)
 	return text;
 end
 
-function WardrobeCollectionFrame_RefreshAppearanceTooltip()
-	WardrobeCollectionFrame_SetAppearanceTooltip(WardrobeCollectionFrame.tooltipSources, WardrobeCollectionFrame.tooltipSourceID);
-end
-
 function WardrobeCollectionFrame_HideAppearanceTooltip()
-	WardrobeCollectionFrame.tooltipSources = nil;
-	WardrobeCollectionFrame.tooltipSourceID = nil;
+	WardrobeCollectionFrame.tooltipContentFrame = nil;
 	WardrobeCollectionFrame.tooltipCycle = nil;
 	WardrobeCollectionFrame.tooltipSourceIndex = nil;
 	GameTooltip:Hide();
 end
 
-function WardrobeCollectionFrame_GetDefaultSourceIndex(sources, sourceID)
+function WardrobeCollectionFrame_GetDefaultSourceIndex(sources, primarySourceID)
 	local sourceIndex;
 	local candidateUncollected = false;
 	-- default sourceIndex is, in order of preference:
-	-- 1. sourceID parameter, if collected and usable
+	-- 1. primarySourceID, if collected and usable
 	-- 2. collected and usable
 	-- 3. collected and unusable
 	-- 4. uncollected sourceID
@@ -1882,7 +1944,7 @@ function WardrobeCollectionFrame_GetDefaultSourceIndex(sources, sourceID)
 			if ( not sourceIndex ) then
 				sourceIndex = i;
 				candidateUncollected = true;
-			elseif ( sourceID == sources[i].sourceID and candidateUncollected ) then
+			elseif ( primarySourceID == sources[i].sourceID and candidateUncollected ) then
 				sourceIndex = i;
 			end
 		else
@@ -1892,14 +1954,14 @@ function WardrobeCollectionFrame_GetDefaultSourceIndex(sources, sourceID)
 			end
 			appearanceCollected = true;
 			if ( not sources[i].useError ) then
-				if ( sourceID == sources[i].sourceID ) then
+				if ( primarySourceID == sources[i].sourceID ) then
 					-- found #1
 					sourceIndex = i;
 					break;
 				elseif ( not sourceIndex ) then
 					-- candidate for #2
 					sourceIndex = i;
-					if ( sourceID == NO_TRANSMOG_SOURCE_ID ) then
+					if ( primarySourceID == NO_TRANSMOG_SOURCE_ID ) then
 						-- done
 						break;
 					end
@@ -1915,14 +1977,8 @@ function WardrobeCollectionFrame_GetDefaultSourceIndex(sources, sourceID)
 	return sourceIndex or 1;
 end
 
-function WardrobeCollectionFrame_SetAppearanceTooltipByAppearance(appearanceID, sourceID)
-	local sources = WardrobeCollectionFrame_GetSortedAppearanceSources(appearanceID);
-	WardrobeCollectionFrame_SetAppearanceTooltip(sources, sourceID);
-end
-
-function WardrobeCollectionFrame_SetAppearanceTooltip(sources, sourceID)
-	WardrobeCollectionFrame.tooltipSources = sources;
-	WardrobeCollectionFrame.tooltipSourceID = sourceID;
+function WardrobeCollectionFrame_SetAppearanceTooltip(contentFrame, sources, primarySourceID)
+	WardrobeCollectionFrame.tooltipContentFrame = contentFrame;
 
 	for i = 1, #sources do
 		if ( sources[i].isHideVisual ) then
@@ -1936,7 +1992,7 @@ function WardrobeCollectionFrame_SetAppearanceTooltip(sources, sourceID)
 
 	local headerIndex;
 	if ( not WardrobeCollectionFrame.tooltipSourceIndex ) then
-		headerIndex = WardrobeCollectionFrame_GetDefaultSourceIndex(sources, sourceID);
+		headerIndex = WardrobeCollectionFrame_GetDefaultSourceIndex(sources, primarySourceID);
 	else
 		headerIndex = WardrobeUtils_GetValidIndexForNumSources(WardrobeCollectionFrame.tooltipSourceIndex, #sources);
 	end
@@ -2225,7 +2281,7 @@ function WardrobeCollectionFrameWeaponDropDown_Init(self)
 	if ( checkCategory ) then
 		-- if the equipped item cannot be transmogrified, relax restrictions
 		local isTransmogrified, hasPending, isPendingCollected, canTransmogrify, cannotTransmogrifyReason, hasUndo = C_Transmog.GetSlotInfo(GetInventorySlotInfo(slot), LE_TRANSMOG_TYPE_APPEARANCE);
-		if ( not canTransmogrify ) then
+		if ( not canTransmogrify and not hasUndo ) then
 			checkCategory = false;
 		end
 	end
@@ -2855,7 +2911,7 @@ function WardrobeSetsCollectionMixin:OnShow()
 	else
 		self:Refresh();
 	end
-	WardrobeCollectionFrame_UpdateProgressBar(SetsDataProvider:GetSetsCounts());
+	WardrobeCollectionFrame_UpdateProgressBar(C_TransmogSets.GetBaseSetsCounts());
 	self:RefreshCameras();
 
 	if (self:GetParent().SetsTabHelpBox:IsShown()) then
@@ -2887,7 +2943,7 @@ function WardrobeSetsCollectionMixin:OnEvent(event, ...)
 	elseif ( event == "TRANSMOG_COLLECTION_UPDATED" ) then
 		SetsDataProvider:ClearSets();
 		self:Refresh();
-		WardrobeCollectionFrame_UpdateProgressBar(SetsDataProvider:GetSetsCounts());
+		WardrobeCollectionFrame_UpdateProgressBar(C_TransmogSets.GetBaseSetsCounts());
 	end
 end
 
@@ -2977,6 +3033,7 @@ function WardrobeSetsCollectionMixin:OnUnitModelChangedEvent()
 		self.Model:RefreshUnit();
 		-- clearing cameraID so it resets zoom/pan
 		self.Model.cameraID = nil;
+		self.Model:UpdatePanAndZoomModelType();
 		self:RefreshCameras();
 		self:Refresh();
 		return true;
@@ -3064,6 +3121,30 @@ end
 
 function WardrobeSetsCollectionMixin:GetSelectedSetID()
 	return self.selectedSetID;
+end
+
+function WardrobeSetsCollectionMixin:SetAppearanceTooltip(frame)
+	GameTooltip:SetOwner(frame, "ANCHOR_RIGHT");
+	self.tooltipTransmogSlot = C_Transmog.GetSlotForInventoryType(frame.invType);
+	self.tooltipPrimarySourceID = frame.sourceID;
+	self:RefreshAppearanceTooltip();
+end
+
+function WardrobeSetsCollectionMixin:RefreshAppearanceTooltip()
+	if ( not self.tooltipTransmogSlot ) then
+		return;
+	end
+
+	local sources = C_TransmogSets.GetSourcesForSlot(self:GetSelectedSetID(), self.tooltipTransmogSlot);
+	local sourceInfo = C_TransmogCollection.GetSourceInfo(self.tooltipPrimarySourceID);
+	WardrobeCollectionFrame_SortSources(sources, sourceInfo.appearanceID, self.tooltipPrimarySourceID);
+	WardrobeCollectionFrame_SetAppearanceTooltip(self, sources, self.tooltipPrimarySourceID);
+end
+
+function WardrobeSetsCollectionMixin:ClearAppearanceTooltip()
+	self.tooltipTransmogSlot = nil;
+	self.tooltipPrimarySourceID = nil;
+	WardrobeCollectionFrame_HideAppearanceTooltip();
 end
 
 do
@@ -3163,7 +3244,7 @@ function WardrobeSetsCollectionScrollFrameMixin:Update()
 			button.Name:SetText(baseSet.name);
 			local numSourcesCollected, numSourcesTotal = SetsDataProvider:GetSetSourceTopCounts(baseSet.setID);
 			local color = IN_PROGRESS_FONT_COLOR;
-			if ( numSourcesCollected == numSourcesTotal ) then
+			if ( C_TransmogSets.IsBaseSetCollected(baseSet.setID) ) then
 				color = NORMAL_FONT_COLOR;
 			elseif ( numSourcesCollected == 0 ) then
 				color = GRAY_FONT_COLOR;
@@ -3197,7 +3278,26 @@ WardrobeSetsDetailsModelMixin = { };
 
 function WardrobeSetsDetailsModelMixin:OnLoad()
 	self:SetAutoDress(false);
-	self:SetUnit("player");	
+	self:SetUnit("player");
+	self:UpdatePanAndZoomModelType();
+end
+
+function WardrobeSetsDetailsModelMixin:UpdatePanAndZoomModelType()
+	local hasAlternateForm, inAlternateForm = HasAlternateForm();
+	if ( not self.panAndZoomModelType or self.inAlternateForm ~= inAlternateForm ) then
+		local _, race = UnitRace("player");
+		local sex = UnitSex("player");
+		if ( inAlternateForm ) then
+			self.panAndZoomModelType = race..sex.."Alt";
+		else
+			self.panAndZoomModelType = race..sex;
+		end
+		self.inAlternateForm = inAlternateForm;
+	end
+end
+
+function WardrobeSetsDetailsModelMixin:GetPanAndZoomLimits()
+	return SET_MODEL_PAN_AND_ZOOM_LIMITS[self.panAndZoomModelType];
 end
 
 function WardrobeSetsDetailsModelMixin:OnUpdate(elapsed)
@@ -3219,6 +3319,9 @@ function WardrobeSetsDetailsModelMixin:OnUpdate(elapsed)
 		local panSpeedModifier = 100 * sqrt(1 + modelX - self.defaultPosX);
 		local modelY = self.panStartModelY + (cursorX - self.panStartCursorX) / panSpeedModifier;
 		local modelZ = self.panStartModelZ + (cursorY - self.panStartCursorY) / panSpeedModifier;
+		local limits = self:GetPanAndZoomLimits();
+		modelY = Clamp(modelY, limits.panMaxLeft, limits.panMaxRight);
+		modelZ = Clamp(modelZ, limits.panMaxBottom, limits.panMaxTop);
 		self:SetPosition(modelX, modelY, modelZ);
 	end
 end
@@ -3247,7 +3350,8 @@ end
 function WardrobeSetsDetailsModelMixin:OnMouseWheel(delta)
 	local posX, posY, posZ = self:GetPosition();
 	posX = posX + delta * 0.5;
-	posX = Clamp(posX, self.defaultPosX, self.defaultPosX + 2.5);
+	local limits = self:GetPanAndZoomLimits();
+	posX = Clamp(posX, self.defaultPosX, limits.maxZoom);
 	self:SetPosition(posX, posY, posZ);
 end
 
@@ -3260,11 +3364,7 @@ end
 WardrobeSetsDetailsItemMixin = { };
 
 function WardrobeSetsDetailsItemMixin:OnEnter()
-	local sources = C_TransmogSets.GetSourcesForInventoryType(self:GetParent():GetParent():GetSelectedSetID(), self.invType);
-	local sourceInfo = C_TransmogCollection.GetSourceInfo(self.sourceID);
-	WardrobeCollectionFrame_SortSources(sources, sourceInfo.appearanceID);
-	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	WardrobeCollectionFrame_SetAppearanceTooltip(sources, self.sourceID);
+	self:GetParent():GetParent():SetAppearanceTooltip(self)
 
 	self:SetScript("OnUpdate", 
 		function()
@@ -3286,7 +3386,9 @@ end
 function WardrobeSetsDetailsItemMixin:OnMouseDown()
 	if ( IsModifiedClick("CHATLINK") ) then
 		local sourceInfo = C_TransmogCollection.GetSourceInfo(self.sourceID);
-		local sources = WardrobeCollectionFrame_GetSortedAppearanceSources(sourceInfo.appearanceID);
+		local slot = C_Transmog.GetSlotForInventoryType(sourceInfo.invType);
+		local sources = C_TransmogSets.GetSourcesForSlot(self:GetParent():GetParent():GetSelectedSetID(), slot);
+		WardrobeCollectionFrame_SortSources(sources, sourceInfo.appearanceID, self.sourceID);
 		if ( WardrobeCollectionFrame.tooltipSourceIndex ) then
 			local index = WardrobeUtils_GetValidIndexForNumSources(WardrobeCollectionFrame.tooltipSourceIndex, #sources);
 			local link = select(6, C_TransmogCollection.GetAppearanceSourceInfo(sources[index].sourceID));
@@ -3313,7 +3415,7 @@ function WardrobeSetsTransmogMixin:OnShow()
 	self:RegisterEvent("TRANSMOG_COLLECTION_UPDATED");
 	self:RefreshCameras();
 	self:UpdateSets();
-	WardrobeCollectionFrame_UpdateProgressBar(SetsDataProvider:GetSetsCounts());
+	WardrobeCollectionFrame_UpdateProgressBar(C_TransmogSets.GetBaseSetsCounts());
 end
 
 function WardrobeSetsTransmogMixin:OnHide()
@@ -3330,7 +3432,7 @@ function WardrobeSetsTransmogMixin:OnEvent(event, ...)
 	elseif ( event == "TRANSMOG_COLLECTION_UPDATED" ) then
 		SetsDataProvider:ClearSets();
 		self:UpdateSets();
-		WardrobeCollectionFrame_UpdateProgressBar(SetsDataProvider:GetSetsCounts());
+		WardrobeCollectionFrame_UpdateProgressBar(C_TransmogSets.GetBaseSetsCounts());
 	elseif ( event == "TRANSMOG_COLLECTION_ITEM_UPDATE" ) then
 		if ( self.loadingSetID ) then
 			local setID = self.loadingSetID;
@@ -3395,19 +3497,17 @@ function WardrobeSetsTransmogMixin:LoadSet(setID)
 	local sources = C_TransmogSets.GetSetSources(setID);
 	for sourceID in pairs(sources) do
 		local sourceInfo = C_TransmogCollection.GetSourceInfo(sourceID);
-		local appearanceSources = WardrobeCollectionFrame_GetSortedAppearanceSources(sourceInfo.appearanceID);
-		-- if the source in the set is not collected/usable, go with the 1st one
-		local transmogSourceID = appearanceSources[1].sourceID;
-		for i = 1, #appearanceSources do
-			if ( not appearanceSources[i].name ) then
+		local slot = C_Transmog.GetSlotForInventoryType(sourceInfo.invType);
+		local slotSources = C_TransmogSets.GetSourcesForSlot(setID, slot);
+		WardrobeCollectionFrame_SortSources(slotSources, sourceInfo.appearanceID);
+		local index = WardrobeCollectionFrame_GetDefaultSourceIndex(slotSources, sourceID);
+		transmogSources[slot] = slotSources[index].sourceID;
+
+		for i, slotSourceInfo in ipairs(slotSources) do
+			if ( not slotSourceInfo.name ) then
 				waitingOnData = true;
 			end
-			if ( appearanceSources[i].sourceID == sourceID and appearanceSources[i].collected and not appearanceSources[i].useError ) then
-				transmogSourceID = sourceID;
-				break;
-			end
 		end
-		transmogSources[sourceInfo.invType - 1] = transmogSourceID;
 	end
 	if ( waitingOnData ) then
 		self.loadingSetID = setID;

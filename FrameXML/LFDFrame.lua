@@ -690,6 +690,23 @@ function LFDPopupRoleCheckButton_OnEnter(self)
 	LFGFrameRoleCheckButton_OnEnter(self);
 end
 
+function LFDRoleCheckPopup_OnShow(self)
+	PlaySound("ReadyCheck");
+	FlashClientIcon();
+	LFDRoleCheckPopup_Update();
+	self:RegisterEvent("PVP_BRAWL_INFO_UPDATED");
+end
+
+function LFDRoleCheckPopup_OnHide(self)
+	self:UnregisterEvent("PVP_BRAWL_INFO_UPDATED");
+end
+
+function LFDRoleCheckPopup_OnEvent(self, event)
+	if (event == "PVP_BRAWL_INFO_UPDATED") then
+		LFDRoleCheckPopup_Update();
+	end
+end
+
 function LFDRoleCheckPopup_Update()
 	LFGDungeonList_Setup();
 	
@@ -713,7 +730,7 @@ function LFDRoleCheckPopup_Update()
 	else
 		displayName = MULTIPLE_DUNGEONS;
 	end
-	displayName = NORMAL_FONT_COLOR_CODE..displayName.."|r";
+	displayName = displayName and NORMAL_FONT_COLOR:WrapTextInColorCode(displayName) or "";
 	
 	if ( isLFGList ) then
 		LFDRoleCheckPopupDescriptionText:SetFormattedText(LFG_LIST_APPLYING_TO, displayName);
@@ -785,3 +802,4 @@ function LFDRoleCheckPopup_UpdateAcceptButton()
 		button.tooltipText = INSTANCE_ROLE_WARNING_TITLE;
 	end
 end
+

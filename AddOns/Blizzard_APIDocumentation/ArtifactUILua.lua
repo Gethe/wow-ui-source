@@ -214,7 +214,6 @@ local ArtifactUILua =
 				{ Name = "itemAppearanceID", Type = "number", Nilable = true },
 				{ Name = "altItemAppearanceID", Type = "number", Nilable = true },
 				{ Name = "altOnTop", Type = "bool", Nilable = false },
-				{ Name = "artifactMaxed", Type = "bool", Nilable = false },
 				{ Name = "tier", Type = "number", Nilable = false },
 			},
 		},
@@ -267,6 +266,7 @@ local ArtifactUILua =
 			Arguments =
 			{
 				{ Name = "rank", Type = "number", Nilable = false },
+				{ Name = "tier", Type = "number", Nilable = false },
 			},
 
 			Returns =
@@ -301,7 +301,6 @@ local ArtifactUILua =
 				{ Name = "itemAppearanceID", Type = "number", Nilable = true },
 				{ Name = "altItemAppearanceID", Type = "number", Nilable = true },
 				{ Name = "altOnTop", Type = "bool", Nilable = false },
-				{ Name = "artifactMaxed", Type = "bool", Nilable = false },
 				{ Name = "tier", Type = "number", Nilable = false },
 			},
 		},
@@ -613,7 +612,6 @@ local ArtifactUILua =
 				{ Name = "itemAppearanceID", Type = "number", Nilable = true },
 				{ Name = "altItemAppearanceID", Type = "number", Nilable = true },
 				{ Name = "altOnTop", Type = "bool", Nilable = false },
-				{ Name = "artifactMaxed", Type = "bool", Nilable = false },
 				{ Name = "tier", Type = "number", Nilable = false },
 			},
 		},

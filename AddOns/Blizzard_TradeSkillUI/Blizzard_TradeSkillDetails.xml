@@ -298,8 +298,14 @@
 						</Anchors>
 						<Layers>
 							<Layer level="OVERLAY">
-								<Texture parentKey="Background" atlas="tradeskills-iconborder">
+								<Texture parentKey="IconBorder">
 									<Size x="47" y="47"/>
+									<Anchors>
+										<Anchor point="CENTER" x="0"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="ResultBorder" atlas="tradeskills-iconborder">
+									<Size x="51" y="51"/>
 									<Anchors>
 										<Anchor point="CENTER" x="0"/>
 									</Anchors>

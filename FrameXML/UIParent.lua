@@ -281,10 +281,6 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("ENABLE_TAXI_BENCHMARK");
 	self:RegisterEvent("DISABLE_TAXI_BENCHMARK");
 
-	-- Push to talk
-	self:RegisterEvent("VOICE_PUSH_TO_TALK_START");
-	self:RegisterEvent("VOICE_PUSH_TO_TALK_STOP");
-
 	-- Events for BarberShop Handling
 	self:RegisterEvent("BARBER_SHOP_OPEN");
 	self:RegisterEvent("BARBER_SHOP_CLOSE");
@@ -928,22 +924,21 @@ local function PlayBattlefieldBanner(self)
 	if ( not self.battlefieldBannerShown ) then
 		local bannerName, bannerDescription;
 	
-		for i=1, GetMaxBattlefieldID() do
-			local status, mapName, _, _, _, _, _, _, _, shortDescription, _ = GetBattlefieldStatus(i);
-			if ( status and status == "active" ) then
-				bannerName = mapName;
-				bannerDescription = shortDescription;
-				break;
-			end
-		end
-
-		-- lfg brawls
-		if ( not bannerName ) then
-			if (C_PvP.IsInBrawl()) then
-				local brawlInfo = C_PvP.GetBrawlInfo();
+		if (C_PvP.IsInBrawl()) then
+			local brawlInfo = C_PvP.GetBrawlInfo();
+			if (brawlInfo) then
 				bannerName = brawlInfo.name;
 				bannerDescription = brawlInfo.shortDescription;
 			end
+		else
+		    for i=1, GetMaxBattlefieldID() do
+			    local status, mapName, _, _, _, _, _, _, _, shortDescription, _ = GetBattlefieldStatus(i);
+			    if ( status and status == "active" ) then
+				    bannerName = mapName;
+				    bannerDescription = shortDescription;
+				    break;
+			    end
+		    end
 		end
 
 		if ( bannerName ) then
@@ -1273,7 +1268,6 @@ function UIParent_OnEvent(self, event, ...)
 		OrderHall_CheckCommandBar();
 
 		self.battlefieldBannerShown = nil;
-		C_PvP.RequestBrawlInfo();
 
 		NPETutorial_AttemptToBegin(event);
 		ClassTrial_AttemptLoad();
@@ -1638,24 +1632,6 @@ function UIParent_OnEvent(self, event, ...)
 		end
 		local info = ChatTypeInfo["SYSTEM"];
 		DEFAULT_CHAT_FRAME:AddMessage(BENCHMARK_TAXI_MODE_OFF, info.r, info.g, info.b, info.id);
-
-	-- Push to talk
-	elseif ( event == "VOICE_PUSH_TO_TALK_START" and GetVoiceCurrentSessionID() ) then
-		if ( GetCVarBool("PushToTalkSound") ) then
-			PlaySound("VoiceChatOn");
-		end
-		-- Animate the player frame speaker even if not broadcasting
-		if  ( GetCVar("VoiceChatMode") == "0" ) then
-			UIFrameFadeIn(PlayerSpeakerFrame, 0.2, PlayerSpeakerFrame:GetAlpha(), 1);
-		end
-	elseif ( event == "VOICE_PUSH_TO_TALK_STOP" ) then
-		if ( GetCVarBool("PushToTalkSound") and GetVoiceCurrentSessionID() ) then
-			PlaySound("VoiceChatOff");
-		end
-		-- Stop Animation
-		if  ( GetCVar("VoiceChatMode") == "0" and PlayerSpeakerFrame:GetAlpha() > 0 ) then
-			UIFrameFadeOut(PlayerSpeakerFrame, 0.2, PlayerSpeakerFrame:GetAlpha(), 0);
-		end
 	elseif ( event == "LEVEL_GRANT_PROPOSED" ) then
 		StaticPopup_Show("LEVEL_GRANT_PROPOSED", arg1);
 	elseif ( event == "CHAT_MSG_WHISPER" and arg6 == "GM" ) then	--GMChatUI

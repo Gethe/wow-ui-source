@@ -375,11 +375,12 @@ end
 
 CurrencyTemplateMixin = {};
 
-function CurrencyTemplateMixin:SetCurrencyFromID(currencyID, amount, formatString)
+function CurrencyTemplateMixin:SetCurrencyFromID(currencyID, amount, formatString, colorCode)
 	local _, _, currencyTexture = GetCurrencyInfo(currencyID);
 	local markup = CreateTextureMarkup(currencyTexture, 64, 64, 16, 16, 0, 1, 0, 1);
+	colorCode = colorCode or HIGHLIGHT_FONT_COLOR_CODE;
 
-	local currencyString = ("|cffffffff%s %s|r"):format(BreakUpLargeNumbers(amount), markup);
+	local currencyString = ("%s%s %s|r"):format(colorCode, BreakUpLargeNumbers(amount), markup);
 
 	if formatString then
 		self:SetText(formatString:format(currencyString));

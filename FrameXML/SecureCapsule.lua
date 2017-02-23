@@ -141,6 +141,9 @@ take("C_SecureTransfer");
 --GlobalStrings
 retain("BLIZZARD_STORE");
 retain("ACCEPT");
+retain("HTML_START");
+retain("HTML_START_CENTERED");
+retain("HTML_END");
 take("BLIZZARD_STORE_ON_SALE");
 take("BLIZZARD_STORE_BUY");
 take("BLIZZARD_STORE_BUY_EUR");

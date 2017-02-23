@@ -211,13 +211,13 @@
 					</Anchors>
 				</Texture>
 				<FontString parentKey="Name" inherits="GameFontNormal" justifyH="LEFT" maxLines="2">
-					<Size x="147" y="0"/>
+					<Size x="190" y="0"/>
 					<Anchors>
 						<Anchor point="LEFT" x="6" y="6"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="Label" inherits="GameFontDisableSmallLeft" justifyH="LEFT" maxLines="1">
-					<Size x="147" y="0"/>
+					<Size x="190" y="0"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Name" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
 					</Anchors>
@@ -708,7 +708,7 @@
 			<StatusBar parentKey="progressBar">
 				<Size x="196" y="13"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" x="253" y="-38"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ItemsTab" relativePoint="TOPLEFT" x="195" y="-10"/>
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">

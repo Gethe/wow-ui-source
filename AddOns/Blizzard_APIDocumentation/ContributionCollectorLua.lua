@@ -199,20 +199,6 @@ local ContributionCollectorLua =
 				{ Name = "awaitingData", Type = "bool", Nilable = false },
 			},
 		},
-		{
-			Name = "IsBuffActive",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "contributionID", Type = "number", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "isActive", Type = "bool", Nilable = false },
-			},
-		},
 	},
 
 	Tables =

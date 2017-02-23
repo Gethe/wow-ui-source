@@ -158,6 +158,8 @@ function BonusObjectiveTracker_TrackWorldQuest(questID, hardWatch)
 	if not hardWatch or GetSuperTrackedQuestID() == 0 then
 		SetSuperTrackedQuestID(questID);
 	end
+	WorldMapFrame_UpdateMap();
+	ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_QUEST);
 end
 
 function BonusObjectiveTracker_UntrackWorldQuest(questID)
@@ -169,6 +171,8 @@ function BonusObjectiveTracker_UntrackWorldQuest(questID)
 			QuestSuperTracking_ChooseClosestQuest();
 		end
 	end
+	WorldMapFrame_UpdateMap();
+	ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_QUEST);
 end
 
 function BonusObjectiveTracker_OnBlockClick(self, button)
@@ -811,7 +815,7 @@ local function AddBonusObjectiveQuest(module, questID, posIndex, isTrackedWorldQ
 			assert(worldQuestType);
 
 			local inProgress = questLogIndex ~= 0;
-			WorldMap_SetupWorldQuestButton(block.TrackedQuest, worldQuestType, rarity, isElite, tradeskillLineIndex, inProgress, isSuperTracked, nil, nil, questID);
+			WorldMap_SetupWorldQuestButton(block.TrackedQuest, worldQuestType, rarity, isElite, tradeskillLineIndex, inProgress, isSuperTracked, nil, nil, isTrackedWorldQuest);
 
 			block.TrackedQuest:SetScale(.9);
 			block.TrackedQuest:SetPoint("TOPRIGHT", block.currentLine, "TOPLEFT", 18, 0);
@@ -896,6 +900,30 @@ local function AddBonusObjectiveQuest(module, questID, posIndex, isTrackedWorldQ
 	return true;
 end
 
+local function SortWorldQuestsHelper(questID1, questID2)
+	local inArea1, onMap1 = GetTaskInfo(questID1);
+	local inArea2, onMap2 = GetTaskInfo(questID2);
+
+	if (inArea1 ~= inArea2) then
+		return inArea1;
+	elseif (onMap1 ~= onMap2) then
+		return onMap1;
+	else
+		return questID1 < questID2;
+	end
+end
+
+function BonusObjectiveTracker_SortWorldQuests()
+	local sortedQuests = {};
+	for i = 1, GetNumWorldQuestWatches() do
+		tinsert(sortedQuests, GetWorldQuestWatchInfo(i));
+	end
+
+	table.sort(sortedQuests, SortWorldQuestsHelper);
+
+	return sortedQuests;
+end
+
 local function UpdateTrackedWorldQuests(module)
 	if ( module.ticker ) then
 		module.ticker:Cancel();
@@ -903,12 +931,10 @@ local function UpdateTrackedWorldQuests(module)
 	end
 	module.tickerSeconds = 0;
 
-	for i = 1, GetNumWorldQuestWatches() do
-		local watchedWorldQuestID = GetWorldQuestWatchInfo(i);
-		if ( watchedWorldQuestID ) then
-			if not AddBonusObjectiveQuest(module, watchedWorldQuestID, i, true) then
-				break; -- No more room
-			end
+	local sortedQuests = BonusObjectiveTracker_SortWorldQuests();
+	for i, questID in ipairs(sortedQuests) do
+		if not AddBonusObjectiveQuest(module, questID, i, true) then
+			break; -- No more room
 		end
 	end
 
@@ -1143,24 +1169,26 @@ function BonusObjectiveTrackerProgressBar_SetValue(self, percent)
 end
 
 function BonusObjectiveTrackerProgressBar_OnEvent(self)
-	local percent = 100;
-	if( not self.finished ) then
-		percent = GetQuestProgressBarPercent(self.questID);
-	end
-	BonusObjectiveTrackerProgressBar_PlayFlareAnim(self, percent - self.AnimValue);
+	BonusObjectiveTrackerProgressBar_PlayAnimation(self);
+end
+
+function BonusObjectiveTrackerProgressBar_PlayAnimation(self, overridePercent, overrideDelta, sparkHorizontalOffset)
+	local percent = overridePercent or self.finished and 100 or GetQuestProgressBarPercent(self.questID);
+	local delta = overrideDelta or percent - self.AnimValue;
+	BonusObjectiveTrackerProgressBar_PlayFlareAnim(self, delta, sparkHorizontalOffset);
 	BonusObjectiveTrackerProgressBar_SetValue(self, percent);
 end
 
-function BonusObjectiveTrackerProgressBar_PlayFlareAnim(progressBar, delta)
+function BonusObjectiveTrackerProgressBar_PlayFlareAnim(progressBar, delta, sparkHorizontalOffset)
 	if( progressBar.AnimValue >= 100 or delta == 0 ) then
 		return;
 	end
 
-	local width = progressBar.Bar:GetWidth();
-	local offset = width * (progressBar.AnimValue / 100) - 12;
+	animOffset = animOffset or 12;
+	local offset = progressBar.Bar:GetWidth() * (progressBar.AnimValue / 100) - animOffset;
 
-	local prefix = "";
-	if( delta < 10 ) then
+	local prefix = overridePrefix or "";
+	if( delta < 10 and not overridePrefix ) then
 		prefix = "Small";
 	end
 

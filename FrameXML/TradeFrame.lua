@@ -11,6 +11,7 @@ function TradeFrame_OnLoad(self)
 	self:RegisterEvent("TRADE_ACCEPT_UPDATE");
 	self:RegisterEvent("TRADE_POTENTIAL_BIND_ENCHANT");
 	self:RegisterEvent("TRADE_POTENTIAL_REMOVE_TRANSMOG");
+	self:RegisterEvent("GET_ITEM_INFO_RECEIVED");
 	TradeFrameInset:SetPoint("TOPLEFT", 4, -440);
 	TradeRecipientItemsInsetBg:SetAlpha(0.1);
 	TradeRecipientMoneyInsetBg:SetAlpha(0);
@@ -34,6 +35,8 @@ function TradeFrame_OnEvent(self, event, ...)
 		end
 
 		TradeFrameTradeButton_Enable();
+		TradeFrame_Update();
+	elseif ( event == "GET_ITEM_INFO_RECEIVED" ) then
 		TradeFrame_Update();
 	elseif ( event == "TRADE_CLOSED" ) then
 		HideUIPanel(self);
@@ -74,7 +77,7 @@ function TradeFrame_Update()
 end
 
 function TradeFrame_UpdatePlayerItem(id)
-	local name, texture, numItems, _, enchantment, canLoseTransmog = GetTradePlayerItemInfo(id);
+	local name, texture, numItems, quality, enchantment, canLoseTransmog = GetTradePlayerItemInfo(id);
 	local buttonText = _G["TradePlayerItem"..id.."Name"];
 	
 	-- See if its the enchant slot
@@ -90,10 +93,16 @@ function TradeFrame_UpdatePlayerItem(id)
 		end
 	else
 		buttonText:SetText(name);
+		if ( quality ) then
+			buttonText:SetTextColor(GetItemQualityColor(quality));
+		else
+			buttonText:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+		end
 	end
 	local tradeItemButton = _G["TradePlayerItem"..id.."ItemButton"];
 	SetItemButtonTexture(tradeItemButton, texture);
 	SetItemButtonCount(tradeItemButton, numItems);
+	SetItemButtonQuality(tradeItemButton, quality, GetTradePlayerItemLink(id));
 	if ( texture ) then
 		tradeItemButton.hasItem = 1;
 	else
@@ -122,6 +131,7 @@ function TradeFrame_UpdateTargetItem(id)
 		
 	else
 		buttonText:SetText(name);
+		buttonText:SetTextColor(ITEM_QUALITY_COLORS[quality].r, ITEM_QUALITY_COLORS[quality].g, ITEM_QUALITY_COLORS[quality].b);
 	end
 	local tradeItemButton = _G["TradeRecipientItem"..id.."ItemButton"];
 	local tradeItem = _G["TradeRecipientItem"..id];
@@ -136,6 +146,8 @@ function TradeFrame_UpdateTargetItem(id)
 		SetItemButtonNameFrameVertexColor(tradeItem, 0.9, 0, 0);
 		SetItemButtonSlotVertexColor(tradeItem, 1.0, 0, 0);
 	end
+	
+	SetItemButtonQuality(tradeItemButton, quality, GetTradeTargetItemLink(id));
 end
 
 function TradeFrame_SetAcceptState(playerState, targetState)

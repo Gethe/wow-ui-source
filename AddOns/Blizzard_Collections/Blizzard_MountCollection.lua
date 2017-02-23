@@ -188,11 +188,22 @@ function MountJournalMountButton_UpdateTooltip(self)
 	GameTooltip:SetMountBySpellID(self.spellID);
 end
 
+function MountJournalMountButton_ChooseFallbackMountToDisplay(mountID)
+	local allCreatureDisplays = C_MountJournal.GetMountAllCreatureDisplayInfoByID(mountID);
+	if allCreatureDisplays and #allCreatureDisplays > 0 then
+		return allCreatureDisplays[math.random(1, #allCreatureDisplays)].creatureDisplayID;
+	end
+	return 0;
+end
+
 function MountJournal_UpdateMountDisplay(forceSceneChange)
 	if ( MountJournal.selectedMountID ) then
 		local creatureName, spellID, icon, active, isUsable, sourceType = C_MountJournal.GetMountInfoByID(MountJournal.selectedMountID);
 		if ( MountJournal.MountDisplay.lastDisplayed ~= spellID or forceSceneChange ) then
 			local creatureDisplayID, descriptionText, sourceText, isSelfMount, _, modelSceneID = C_MountJournal.GetMountInfoExtraByID(MountJournal.selectedMountID);
+			if not creatureDisplayID then
+				creatureDisplayID = MountJournalMountButton_ChooseFallbackMountToDisplay(MountJournal.selectedMountID);
+			end
 			local needsFanFare = C_MountJournal.NeedsFanfare(MountJournal.selectedMountID);
 
 			MountJournal.MountDisplay.InfoButton.Name:SetText(creatureName);

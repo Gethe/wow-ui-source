@@ -71,17 +71,17 @@ function GameTooltip_SetDefaultAnchor(tooltip, parent)
 end
 
 function GameTooltip_AddQuestRewardsToTooltip(tooltip, questID)
-	GameTooltip_AddQuestRewardsToTooltipWithHeader(tooltip, questID, 1, QUEST_REWARDS, NORMAL_FONT_COLOR)
+	GameTooltip_AddQuestRewardsToTooltipWithHeader(tooltip, questID, 1, QUEST_REWARDS, NORMAL_FONT_COLOR, true);
 end
 
-function GameTooltip_AddQuestRewardsToTooltipWithHeader(tooltip, questID, prefixBlankLineCount, headerText, headerColor)
+function GameTooltip_AddQuestRewardsToTooltipWithHeader(tooltip, questID, prefixBlankLineCount, headerText, headerColor, wrapHeaderText)
 	if ( GetQuestLogRewardXP(questID) > 0 or GetNumQuestLogRewardCurrencies(questID) > 0 or GetNumQuestLogRewards(questID) > 0 or GetQuestLogRewardMoney(questID) > 0 or GetQuestLogRewardArtifactXP(questID) > 0 or GetQuestLogRewardHonor(questID) ) then
 		while prefixBlankLineCount ~= nil and prefixBlankLineCount > 0 do
 			tooltip:AddLine(" ");
 			prefixBlankLineCount = prefixBlankLineCount - 1;
 		end
 
-		tooltip:AddLine(headerText, headerColor.r, headerColor.g, headerColor.b, true);
+		tooltip:AddLine(headerText, headerColor.r, headerColor.g, headerColor.b, wrapHeaderText);
 		local hasAnySingleLineRewards = false;
 		-- xp
 		local xp = GetQuestLogRewardXP(questID);

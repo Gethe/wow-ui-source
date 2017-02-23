@@ -253,3 +253,7 @@ BATTLENET_FONT_COLOR 		= CreateColor(0.510, 0.773, 1.0);
 TRANSMOGRIFY_FONT_COLOR		= CreateColor(1, 0.5, 1);
 DISABLED_FONT_COLOR			= CreateColor(0.498, 0.498, 0.498);
 LIGHTBLUE_FONT_COLOR		= CreateColor(0.53, 0.67, 1.0);
+
+HTML_START = "<html><body><p>";
+HTML_START_CENTERED = "<html><body><p align=\"center\">";
+HTML_END = "</p></body></html>";

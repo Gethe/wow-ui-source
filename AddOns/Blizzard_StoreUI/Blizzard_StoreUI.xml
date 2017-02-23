@@ -489,6 +489,11 @@
 					<Anchors>
 						<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="8" y="-8"/>
 					</Anchors>
+					<Scripts>
+						<OnShow>
+							self:SetFrameLevel(self:GetParent():GetFrameLevel()+6);
+						</OnShow>
+					</Scripts>
 				</Button>
 			</Frames>
 			<Scripts>
@@ -2322,7 +2327,7 @@
 							end
 						</OnHyperlinkClick>
 					</Scripts>
-					<FontString inherits="GameFontBlackSmall" />
+					<FontString inherits="GameFontBlackSmall2" />
 				</SimpleHTML>
 				<Frame parentKey="CharacterSelectionFrame" useParentLevel="true">
 					<Anchors>
@@ -2333,7 +2338,7 @@
 						<Layer level="ARTWORK" textureSubLevel="1">
 							<Texture parentKey="SelectedCharacterFrame" atlas="vas-receipt-selectedcharbg" useatlassize="true">
 								<Anchors>
-									<Anchor point="TOP" x="0" y="-150" />
+									<Anchor point="TOP" x="0" y="-170" />
 								</Anchors>
 							</Texture>
 							<FontString parentKey="SelectedCharacterName" inherits="GameFontNormalHugeOutline2">
@@ -2341,7 +2346,7 @@
 									<Anchor point="TOPLEFT" relativeKey="$parent.SelectedCharacterFrame" relativePoint="TOPLEFT" x="72" y="-16"/>
 								</Anchors>
 							</FontString>
-							<FontString parentKey="SelectedCharacterDescription" inherits="GameFontHighlightSmall">
+							<FontString parentKey="SelectedCharacterDescription" inherits="GameFontHighlightSmall2">
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeKey="$parent.SelectedCharacterName" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
 								</Anchors>

@@ -206,7 +206,7 @@ function ArtifactUIMixin:SetTab(id)
 end
 
 function ArtifactUIMixin:SetupPerArtifactData()
-	local itemID, altItemID, name, icon, xp, pointsSpent, quality, artifactAppearanceID, appearanceModID, itemAppearanceID, altItemAppearanceID, altOnTop, artifactMaxed, tier = C_ArtifactUI.GetArtifactInfo()
+	local _, _, _, icon = C_ArtifactUI.GetArtifactInfo();
 	if icon then
 		self.ForgeBadgeFrame.ItemIcon:SetTexture(icon);
 	end
@@ -254,7 +254,8 @@ end
 function ArtifactUIMixin:OnKnowledgeEnter(knowledgeFrame)
 	GameTooltip:SetOwner(knowledgeFrame, "ANCHOR_BOTTOMRIGHT", -25, 27);
 	local artifactArtInfo = C_ArtifactUI.GetArtifactArtInfo();
-	GameTooltip:SetText(artifactArtInfo.titleName, artifactArtInfo.titleColor:GetRGB());
+	local color = ITEM_QUALITY_COLORS[LE_ITEM_QUALITY_ARTIFACT];
+	GameTooltip:SetText(artifactArtInfo.titleName, color.r, color.g, color.b);
 
 	GameTooltip:AddLine(ARTIFACTS_NUM_PURCHASED_RANKS:format(C_ArtifactUI.GetTotalPurchasedRanks()), HIGHLIGHT_FONT_COLOR:GetRGB());
 

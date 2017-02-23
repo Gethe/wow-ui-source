@@ -153,6 +153,29 @@ function tInvert(tbl)
 	return inverted;
 end
 
+function tFilter(tbl, pred, isIndexTable)
+	local out = {};
+
+	if (isIndexTable) then
+		assert(tbl[1] ~= nil);
+		local currentIndex = 1;
+		for i, v in ipairs(tbl) do
+			if (pred(v)) then
+				out[currentIndex] = v;
+				currentIndex = currentIndex + 1;
+			end
+		end
+	else
+		for k, v in pairs(tbl) do
+			if (pred(v)) then
+				out[k] = v;
+			end
+		end
+	end
+
+	return out;
+end
+
 function CopyTable(settings)
 	local copy = {};
 	for k, v in pairs(settings) do
@@ -163,6 +186,16 @@ function CopyTable(settings)
 		end
 	end
 	return copy;
+end
+
+function FindInTableIf(tbl, pred)
+	for k, v in pairs(tbl) do
+		if (pred(v)) then
+			return k, v;
+		end
+	end
+
+	return nil;
 end
 
 function GetItemInfoFromHyperlink(link)

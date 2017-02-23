@@ -1,4 +1,4 @@
-## Interface: 70100
+## Interface: 70200
 ## Title: Blizzard API Documentation
 ## Secure: 1
 ## Author: Blizzard Entertainment
@@ -19,13 +19,17 @@ CalendarLua.lua
 ChallengeModeInfoLua.lua
 ContributionCollectorLua.lua
 EquipmentManagerLua.lua
+LootJournalLua.lua
 MailInfoLua.lua
+MerchantFrameLua.lua
+MountJournalLua.lua
 PartyInfoLua.lua
 PvpInfoLua.lua
 QuestTaskInfoLua.lua
 ReputationInfoLua.lua
 SocialQueueLua.lua
 StorePublicUI.lua
+Transmog.lua
 TransmogItems.lua
 TransmogSets.lua
 UIModelInfoLua.lua

@@ -1,4 +1,4 @@
-## Interface: 70100
+## Interface: 70200
 ## Title: Blizzard MovePad
 ## Author: slouken and karl
 ## Notes: A clickable movement pad

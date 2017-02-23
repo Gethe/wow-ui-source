@@ -370,6 +370,7 @@
 		<Scripts>
 			<OnLoad function="PVPReadyDialog_OnLoad"/>
 			<OnEvent function="PVPReadyDialog_OnEvent"/>
+			<OnHide function="PVPReadyDialog_OnHide"/>
 		</Scripts>
 	</Frame>
 </Ui>

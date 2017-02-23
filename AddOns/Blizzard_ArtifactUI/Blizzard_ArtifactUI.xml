@@ -158,7 +158,7 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<Frame parentKey="ForgeLevelFrame">
+			<Frame parentKey="ForgeLevelFrame" frameStrata="HIGH">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.ForgeBadgeFrame.ForgeLevelBackground" />
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ForgeBadgeFrame.ForgeLevelBackground" />

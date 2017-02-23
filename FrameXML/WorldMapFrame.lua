@@ -451,10 +451,10 @@ function WorldMapFrame_OnEvent(self, event, ...)
 		end
 		if ( event == "WORLD_MAP_UPDATE" ) then
 			if ( self:IsShown() ) then
-			    if ( mapID ~= self.mapID) then
-				    self.mapID = mapID;
-				    WorldMapUnitPositionFrame:StartPlayerPing(2, .25);
-			    end
+				if ( mapID ~= self.mapID) then
+					self.mapID = mapID;
+					WorldMapUnitPositionFrame:StartPlayerPing(2, .25);
+				end
 				self.dungeonLevel = dungeonLevel;
 			end
 			if ( QuestMapFrame.DetailsFrame.questMapID and QuestMapFrame.DetailsFrame.questMapID ~= GetCurrentMapAreaID() ) then
@@ -684,7 +684,11 @@ WORLD_QUEST_ICONS_BY_PROFESSION = {
 	[393] = "worldquest-icon-skinning",
 };
 
-function WorldMap_SetupWorldQuestButton(button, worldQuestType, rarity, isElite, tradeskillLineIndex, inProgress, selected, isCriteria, isSpellTarget)
+function WorldMap_IsWorldQuestEffectivelyTracked(questID)
+	return IsWorldQuestHardWatched(questID) or (IsWorldQuestWatched(questID) and GetSuperTrackedQuestID() == questID);
+end
+
+function WorldMap_SetupWorldQuestButton(button, worldQuestType, rarity, isElite, tradeskillLineIndex, inProgress, selected, isCriteria, isSpellTarget, isEffectivelyTracked)
 	button.Glow:SetShown(selected);
 
 	if rarity == LE_WORLD_QUEST_QUALITY_COMMON then
@@ -767,19 +771,12 @@ function WorldMap_SetupWorldQuestButton(button, worldQuestType, rarity, isElite,
 		end
 	end
 
-	if ( button.CriteriaMatchGlow ) then
-		if ( isCriteria ) then
-			if ( isElite ) then
-				button.CriteriaMatchGlow:SetAtlas("worldquest-questmarker-dragon-glow", true);
-				button.CriteriaMatchGlow:SetPoint("CENTER", 0, -1);
-			else
-				button.CriteriaMatchGlow:SetAtlas("worldquest-questmarker-glow", true);
-				button.CriteriaMatchGlow:SetPoint("CENTER", 0, 0);
-			end
-			button.CriteriaMatchGlow:Show();
-		else
-			button.CriteriaMatchGlow:Hide();
-		end
+	if ( button.CriteriaMatchRing ) then
+		button.CriteriaMatchRing:SetShown(isCriteria);
+	end
+
+	if ( button.TrackedCheck ) then
+		button.TrackedCheck:SetShown(isEffectivelyTracked);
 	end
 
 	if ( button.SpellTargetGlow ) then
@@ -902,11 +899,12 @@ function WorldMap_TryCreatingWorldQuestPOI(info, taskIconIndex)
 
 	local isCriteria = WorldMapFrame.UIElementsFrame.BountyBoard:IsWorldQuestCriteriaForSelectedBounty(info.questId);
 	local isSpellTarget = SpellCanTargetQuest() and IsQuestIDValidSpellTarget(info.questId);
+	local isEffectivelyTracked = WorldMap_IsWorldQuestEffectivelyTracked(info.questId);
 
 	taskPOI.worldQuest = true;
 	taskPOI.Texture:SetDrawLayer("OVERLAY");
 
-	WorldMap_SetupWorldQuestButton(taskPOI, worldQuestType, rarity, isElite, tradeskillLineIndex, info.inProgress, selected, isCriteria, isSpellTarget, info.questId);
+	WorldMap_SetupWorldQuestButton(taskPOI, worldQuestType, rarity, isElite, tradeskillLineIndex, info.inProgress, selected, isCriteria, isSpellTarget, isEffectivelyTracked);
 
 	C_TaskQuest.RequestPreloadRewardData(info.questId);
 
@@ -924,7 +922,8 @@ function WorldMap_TryCreatingBonusObjectivePOI(info, taskIconIndex)
 	taskPOI.Texture:SetSize(24, 24);
 	taskPOI.Texture:SetDrawLayer("BACKGROUND");
 	taskPOI.TimeLowFrame:Hide();
-	taskPOI.CriteriaMatchGlow:Hide();
+	taskPOI.CriteriaMatchRing:Hide();
+	taskPOI.TrackedCheck:Hide();
 	taskPOI.SpellTargetGlow:Hide();
 	taskPOI.Glow:Hide();
 	taskPOI.SelectedGlow:Hide();
@@ -1150,7 +1149,7 @@ function WorldMap_UpdateLandmarks()
 	end
 	local numGraveyards = 0;
 	local currentGraveyard = GetCemeteryPreference();
-    local mapID = GetCurrentMapAreaID();
+	local mapID = GetCurrentMapAreaID();
 	WorldMapFrame_ClearAreaLabel(WORLDMAP_AREA_LABEL_TYPE.AREA_POI_BANNER);
 	WorldMapAreaPOIBannerOverlay:Hide();
 
@@ -2162,7 +2161,7 @@ function WorldMap_GetOrCreateTaskPOI(index)
 
 	button.UpdateTooltip = TaskPOI_OnEnter;
 
-	button.Texture = button:CreateTexture(button:GetName().."Texture", "BACKGROUND");
+	button.Texture = button:CreateTexture(button:GetName().."Texture", "OVERLAY");
 
 	button.Glow = button:CreateTexture(button:GetName().."Glow", "BACKGROUND", -2);
 	button.Glow:SetSize(50, 50);
@@ -2173,9 +2172,9 @@ function WorldMap_GetOrCreateTaskPOI(index)
 	button.SelectedGlow = button:CreateTexture(button:GetName().."SelectedGlow", "OVERLAY", 2);
 	button.SelectedGlow:SetBlendMode("ADD");
 
-	button.CriteriaMatchGlow = button:CreateTexture(button:GetName().."CriteriaMatchGlow", "BACKGROUND", -1);
-	button.CriteriaMatchGlow:SetAlpha(.6);
-	button.CriteriaMatchGlow:SetBlendMode("ADD");
+	button.CriteriaMatchRing = button:CreateTexture(button:GetName().."CriteriaMatchRing", "BACKGROUND", 2);
+	button.CriteriaMatchRing:SetAtlas("worldquest-emissary-ring", true)
+	button.CriteriaMatchRing:SetPoint("CENTER", 0, 0)
 
 	button.SpellTargetGlow = button:CreateTexture(button:GetName().."SpellTargetGlow", "OVERLAY", 1);
 	button.SpellTargetGlow:SetAtlas("worldquest-questmarker-abilityhighlight", true);
@@ -2194,6 +2193,10 @@ function WorldMap_GetOrCreateTaskPOI(index)
 	button.TimeLowFrame.Texture = button.TimeLowFrame:CreateTexture(nil, "OVERLAY");
 	button.TimeLowFrame.Texture:SetAllPoints(button.TimeLowFrame);
 	button.TimeLowFrame.Texture:SetAtlas("worldquest-icon-clock");
+
+	button.TrackedCheck = button:CreateTexture(button:GetName().."TrackedCheck", "OVERLAY", 1);
+	button.TrackedCheck:SetAtlas("worldquest-emissary-tracker-checkmark", true);
+	button.TrackedCheck:SetPoint("BOTTOM", button, "BOTTOMRIGHT", 0, -2);
 
 	WorldMap_ResetPOI(button, true, false);
 
@@ -2794,7 +2797,7 @@ function WorldMap_ToggleSizeUp()
 	WorldMapFrameSizeUpButton:Hide();
 	ToggleMapFramerate();
 	-- floor dropdown
-    --WorldMapLevelDropDown:SetPoint("TOPLEFT", WorldMapDetailFrame, -18, 2);
+	--WorldMapLevelDropDown:SetPoint("TOPLEFT", WorldMapDetailFrame, -18, 2);
 	-- tiny adjustments
 
 	if (GetCVarBool("questPOI")) then
@@ -2836,7 +2839,7 @@ function WorldMap_ToggleSizeDown()
 	WorldMapTitleButton:Show();
 	WorldMapFrameSizeUpButton:Show();
 	-- floor dropdown
-    --WorldMapLevelDropDown:SetPoint("TOPLEFT", WorldMapDetailFrame, "TOPLEFT", -18, 2);
+	--WorldMapLevelDropDown:SetPoint("TOPLEFT", WorldMapDetailFrame, "TOPLEFT", -18, 2);
 
 	-- tiny adjustments
 	-- pet battle level size adjustment
@@ -3846,7 +3849,7 @@ function WorldMapPingMixin:SetTargetFrame(frame)
 		-- Layer this behind the frame that's targeted (could make this dynamic)
 		-- Might need to reparent, this currently works because it's only operating
 		-- on TaskPOI pins.
-		self:SetFrameLevel(frame:GetFrameLevel() - 1);
+		self:SetFrameLevel(frame:GetFrameLevel() + 1);
 	end
 end
 

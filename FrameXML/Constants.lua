@@ -85,6 +85,10 @@ FRIENDS_BROADCAST_TIME_COLOR_CODE = "|cff4381a8"
 FRIENDS_WOW_NAME_COLOR_CODE = "|cfffde05c";
 FRIENDS_OTHER_NAME_COLOR_CODE = "|cff7b8489";
 
+HTML_START = "<html><body><p>";
+HTML_START_CENTERED = "<html><body><p align=\"center\">";
+HTML_END = "</p></body></html>";
+
 --
 -- Class
 --
