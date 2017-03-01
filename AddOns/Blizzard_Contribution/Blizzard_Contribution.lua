@@ -64,6 +64,16 @@ function ContributionRewardMixin:OnLeave()
 	ContributionBuffTooltip:Hide();
 end
 
+ContributionRewardMouseOverMixin = {}
+
+function ContributionRewardMouseOverMixin:OnEnter()
+	self:GetParent():OnEnter();
+end
+
+function ContributionRewardMouseOverMixin:OnLeave()
+	self:GetParent():OnLeave();
+end
+
 ContributionStatusMixin = {}
 
 function ContributionStatusMixin:OnLoad()
@@ -134,6 +144,7 @@ function ContributionStatusMixin:Update()
 end
 
 function ContributionStatusMixin:PlayFlashAnimation()
+	PlaySound("UI_72_Buildings_Contribute_Resources", nil, false);
 	BonusObjectiveTrackerProgressBar_PlayAnimation(self, self.AnimValue, 1, 15);
 end
 
@@ -257,18 +268,17 @@ function ContributionMixin:OnHide()
 end
 
 function ContributionMixin:OnReset(pool)
+	self:ReleaseRewards();
 	FramePool_HideAndClearAnchors(pool, self);
 
 	self.layoutIndex = nil;
 	self.contributionID = nil;
-	self.rewards = nil;
 	self.stateToAtlas = nil;
 end
 
 function ContributionMixin:Setup(layoutIndex, contributionID)
 	self.layoutIndex = layoutIndex;
 	self.contributionID = contributionID;
-	self.rewards = {};
 	self.stateToAtlas = C_ContributionCollector.GetAtlases(self.contributionID);
 
 	self:Update();
@@ -297,24 +307,23 @@ end
 
 function ContributionMixin:Contribute()
 	C_ContributionCollector.Contribute(self.contributionID);
-	self:QueueAnimation(true);
 end
 
-function ContributionMixin:UpdateRewards()
-	for rewardID, reward in pairs(self.rewards) do
-		self:GetParent():ReleaseReward(reward);
-	end
+function ContributionMixin:ReleaseRewards()
+	if (self.rewards) then
+		for rewardID, reward in pairs(self.rewards) do
+			self:GetParent():ReleaseReward(reward);
+		end
 
-	self:EnumerateRewards(C_ContributionCollector.GetBuffs(self.contributionID));
-end
-
-function ContributionMixin:EnumerateRewards(...)
-	for i = 1, select("#", ...) do
-		self:AddReward(i, select(i, ...));
+		self.rewards = nil;
 	end
 end
 
 function ContributionMixin:FindOrAcquireReward(rewardID)
+	if not self.rewards then
+		self.rewards = {};
+	end
+
 	local reward = self.rewards[rewardID];
 	if not reward then
 		reward = self:GetParent():AcquireReward();
@@ -322,6 +331,17 @@ function ContributionMixin:FindOrAcquireReward(rewardID)
 	end
 
 	return reward;
+end
+
+function ContributionMixin:UpdateRewards()
+	self:ReleaseRewards();
+	self:EnumerateRewards(C_ContributionCollector.GetBuffs(self.contributionID));
+end
+
+function ContributionMixin:EnumerateRewards(...)
+	for i = 1, select("#", ...) do
+		self:AddReward(i, select(i, ...));
+	end
 end
 
 function ContributionMixin:AddReward(index, rewardID)
@@ -371,6 +391,8 @@ function ContributionCollectionMixin:OnLoad()
 end
 
 function ContributionCollectionMixin:OnShow()
+	PlaySound("UI_72_Building_Contribution_Table_Open");
+
 	self:RegisterEvent("CONTRIBUTION_COLLECTOR_UPDATE");
 	self:RegisterEvent("CONTRIBUTION_COLLECTOR_PENDING");
 	self:RegisterEvent("CONTRIBUTION_COLLECTOR_UPDATE_SINGLE");
@@ -378,6 +400,8 @@ function ContributionCollectionMixin:OnShow()
 end
 
 function ContributionCollectionMixin:OnHide()
+	PlaySound("UI_72_Buildings_Contribution_Table_Close");
+
 	self:UnregisterEvent("CONTRIBUTION_COLLECTOR_UPDATE");
 	self:UnregisterEvent("CONTRIBUTION_COLLECTOR_PENDING");
 	self:UnregisterEvent("CONTRIBUTION_COLLECTOR_UPDATE_SINGLE");
@@ -440,9 +464,13 @@ end
 function ContributionCollectionMixin:UpdatePendingContribution(contributionID, isPending, result)
 	local contribution = self:FindContribution(contributionID);
 	if contribution then
-		if result ~= Enum.ContributionResult.Success then
+		local successfulContribution = result == Enum.ContributionResult.Success and not isPending;
+		local unsuccessfulContribution = result ~= Enum.ContributionResult.Success and not isPending;
+		if unsuccessfulContribution then
 			self:HandleContributionResult(result);
 			contribution:StopAnimations();
+		elseif successfulContribution then
+			contribution:QueueAnimation(true);
 		end
 
 		contribution:UpdateContributeButton();

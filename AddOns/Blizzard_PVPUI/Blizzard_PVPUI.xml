@@ -260,6 +260,36 @@
 					<OnLeave function="PVPRewardWeeklyBonus_OnLeave"/>
 				</Scripts>
 			</Frame>
+			<Frame parentKey="EnlistmentBonus" hidden="true">
+				<Size x="29" y="29"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="4" y="5"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Icon">
+							<Size x="21" y="21"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="1"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture atlas="honorsystem-icon-enlistmentbonus" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						SetPortraitToTexture(self.Icon, GetSpellTexture(241260));
+					</OnLoad>
+					<OnEnter function="PVPRewardEnlistmentBonus_OnEnter"/>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnEnter function="PVPRewardTemplate_OnEnter"/>

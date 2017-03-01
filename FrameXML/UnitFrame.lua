@@ -155,6 +155,10 @@ function UnitFrame_SetUnit (self, unit, healthbar, manabar)
 			UnitFrameManaBar_RegisterDefaultEvents(manabar);
 		end
 		healthbar:RegisterUnitEvent("UNIT_MAXHEALTH", unit);
+		
+		if ( self.PlayerFrameHealthBarAnimatedLoss ) then
+			self.PlayerFrameHealthBarAnimatedLoss:SetUnitHealthBar(unit, healthbar);
+		end
 	end
 
 	self.unit = unit;
@@ -682,7 +686,7 @@ function AnimatedHealthLossMixin:UpdateHealth(currentHealth, previousHealth)
 		-- and pause briefly when new damage occurs.
 		self.animationStartValue = self:GetHealthLossAnimationData(previousHealth, self.animationStartValue);
 		self.animationStartTime = GetTime() + self.animationPauseDelay;
-	elseif not hasLoss and hasStarted and currentHealth >= self.animationStartValue then
+	elseif not hasLoss and hasBegun and currentHealth >= self.animationStartValue then
 		self:CancelAnimation();
 	end
 end

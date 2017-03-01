@@ -58,7 +58,7 @@
 	</Frame>
 
 	<Frame name="ContributionRewardTemplate" parentArray="Rewards" mixin="ContributionRewardMixin" enableMouseMotion="true" virtual="true">
-		<Size x="230" y="45"/>
+		<Size x="220" y="45"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="Border" file="Interface\Common\WhiteIconFrame">
@@ -85,19 +85,27 @@
 						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
 					</Anchors>
 				</Texture>
-				<FontString parentKey="RewardName" font="QuestFontHighlight" justifyV="MIDDLE" maxLines="1">
+				<FontString parentKey="RewardName" font="QuestFont" justifyH="LEFT" justifyV="MIDDLE">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Border" relativePoint="TOPRIGHT" x="10"/>
-						<Anchor point="BOTTOMLEFT" relativeKey="$parent.Border" relativePoint="BOTTOMRIGHT" x="10"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Border" relativePoint="TOPRIGHT" x="5"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT" x="0"/>
 					</Anchors>
 					<Color r="0" g="0" b="0"/>
 				</FontString>
 			</Layer>
 		</Layers>
-		<Scripts>
-			<OnEnter method="OnEnter"/>
-			<OnLeave method="OnLeave"/>
-		</Scripts>
+		<Frames>
+			<Frame parentKey="MouseOver" mixin="ContributionRewardMouseOverMixin" enableMouseMotion="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Border"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Border"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+				</Scripts>
+			</Frame>
+		</Frames>
 	</Frame>
 
 	<Frame name="ContributionStatusTemplate" mixin="ContributionStatusMixin" inherits="BonusTrackerProgressBarTemplate" drawLayer="BACKGROUND" hidden="false" virtual="true">

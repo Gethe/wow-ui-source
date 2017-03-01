@@ -967,6 +967,9 @@ local vasErrorData = {
 	[Enum.VasError.UnderMinLevelReq] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_UNDER_MIN_LEVEL_REQ,
 	},
+	[Enum.VasError.CharacterTransferTooSoon] = {
+		msg = BLIZZARD_STORE_VAS_ERROR_FACTION_CHANGE_TOO_SOON,
+	},
 	[Enum.VasError.TooMuchMoneyForLevel] = {
 		msg = function(character)
 			local str = "";
@@ -3498,6 +3501,7 @@ function VASCharacterSelectionCharacterSelector_Callback(value)
 		frame.TransferRealmCheckbox:SetChecked(false);
 		frame.TransferRealmEditbox:SetText("");
 		frame.TransferRealmEditbox:Hide();
+		frame.TransferBattlenetAccountEditbox:Hide();
 		frame.TransferBattlenetAccountEditbox:SetText("");
 		frame.TransferAccountCheckbox:SetChecked(false);
 		frame.TransferAccountDropDown.Text:SetText(BLIZZARD_STORE_VAS_SELECT_ACCOUNT);
@@ -3836,6 +3840,7 @@ function TransferAccountCheckbox_OnClick(self)
 	self:GetParent().TransferFactionCheckbox:SetShown(not self:GetChecked());
 	if (self:GetChecked()) then
 		self:GetParent().TransferFactionCheckbox:SetChecked(false);
+		CharacterTransferFactionChangeBundle = false;
 	end
 	VASCharacterSelectionTransferGatherAndValidateData();
 end
@@ -4015,7 +4020,11 @@ function VASCharacterSelectionTransferBnetWoWAccountDropDown_OnClick(self)
 	local _, gameAccounts = C_StoreSecure.GetBnetTransferInfo();
 	local infoTable = {};
 	for i, gameAccount in ipairs(gameAccounts) do
-		infoTable[#infoTable+1] = {text=gameAccount, value=gameAccount, checked=(SelectedDestinationBnetWowAccount == gameAccount)};
+		local gameAccountText = gameAccount;
+		if (string.find(gameAccountText, '#')) then
+			gameAccountText = string.gsub(gameAccount,'%d+\#(%d)','WoW%1');
+		end
+		infoTable[#infoTable+1] = {text=gameAccountText, value=gameAccount, checked=(SelectedDestinationBnetWowAccount == gameAccount)};
 	end
 
 	StoreDropDown_SetDropdown(self:GetParent(), infoTable, VASCharacterSelectionTransferBnetWoWAccountDropDown_Callback);

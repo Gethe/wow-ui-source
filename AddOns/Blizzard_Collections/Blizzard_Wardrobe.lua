@@ -546,9 +546,6 @@ end
 -- **** COLLECTION ********************************************************************************************************************************************
 -- ************************************************************************************************************************************************************
 
-local WARDROBE_NUM_ROWS = 3;
-local WARDROBE_NUM_COLS = 6;
-local WARDROBE_PAGE_SIZE = WARDROBE_NUM_ROWS * WARDROBE_NUM_COLS;
 local MAIN_HAND_INV_TYPE = 21;
 local OFF_HAND_INV_TYPE = 22;
 local RANGED_INV_TYPE = 15;
@@ -590,7 +587,7 @@ local SET_MODEL_PAN_AND_ZOOM_LIMITS = {
 	["Orc2"] = { maxZoom = 2.5526309013367, panMaxLeft = -0.64236557483673, panMaxRight = 0.77098786830902, panMaxTop = -0.075792260468006, panMaxBottom = -2.0818419456482 },
 	["Orc3"] = { maxZoom = 3.2960524559021, panMaxLeft = -0.22763830423355, panMaxRight = 0.32022559642792, panMaxTop = -0.038521766662598, panMaxBottom = -2.0473554134369 },
 	["Gnome3"] = { maxZoom = 2.9605259895325, panMaxLeft = -0.29900181293488, panMaxRight = 0.35779395699501, panMaxTop = -0.076380833983421, panMaxBottom = -0.99909907579422 },
-	["nome2"] = { maxZoom = 2.8552639484406, panMaxLeft = -0.2777853012085, panMaxRight = 0.29651582241058, panMaxTop = -0.095201380550861, panMaxBottom = -1.0263166427612 },
+	["Gnome2"] = { maxZoom = 2.8552639484406, panMaxLeft = -0.2777853012085, panMaxRight = 0.29651582241058, panMaxTop = -0.095201380550861, panMaxBottom = -1.0263166427612 },
 	["Dwarf2"] = { maxZoom = 2.9605259895325, panMaxLeft = -0.50352156162262, panMaxRight = 0.4159924685955, panMaxTop = -0.07211934030056, panMaxBottom = -1.4946432113648 },
 	["Dwarf3"] = { maxZoom = 2.8947370052338, panMaxLeft = -0.37057432532311, panMaxRight = 0.43383255600929, panMaxTop = -0.084960877895355, panMaxBottom = -1.7173190116882 },
 	["BloodElf3"] = { maxZoom = 3.1644730567932, panMaxLeft = -0.2654082775116, panMaxRight = 0.28886350989342, panMaxTop = -0.049619361758232, panMaxBottom = -1.9943760633469 },
@@ -817,6 +814,10 @@ function WardrobeItemsCollectionMixin:OnLoad()
 
 	self.chosenVisualSources = { };
 
+	self.NUM_ROWS = 3;
+	self.NUM_COLS = 6;
+	self.PAGE_SIZE = self.NUM_ROWS * self.NUM_COLS;
+
 	UIDropDownMenu_Initialize(self.RightClickDropDown, nil, "MENU");
 	self.RightClickDropDown.initialize = WardrobeCollectionFrameRightClickDropDown_Init;
 
@@ -973,42 +974,12 @@ function WardrobeItemsCollectionMixin:HandleKey(key)
 			break;
 		end
 	end
-	if ( not visualIndex ) then
-		return;
+	if ( visualIndex ) then
+		visualIndex = WardrobeUtils_GetAdjustedDisplayIndexFromKeyPress(self, visualIndex, #visualsList, key);
+		self:SelectVisual(visualsList[visualIndex].visualID);
+		self.jumpToVisualID = visualsList[visualIndex].visualID;
+		self:ResetPage();
 	end
-	if ( key == WARDROBE_PREV_VISUAL_KEY ) then
-		visualIndex = visualIndex - 1;
-		if ( visualIndex < 1 ) then
-			visualIndex = #visualsList;
-		end
-	elseif ( key == WARDROBE_NEXT_VISUAL_KEY ) then
-		visualIndex = visualIndex + 1;
-		if ( visualIndex > #visualsList ) then
-			visualIndex = 1;
-		end
-	elseif ( key == WARDROBE_DOWN_VISUAL_KEY or key == WARDROBE_UP_VISUAL_KEY ) then
-		local function GetPage(index)
-			return floor((index-1) / WARDROBE_PAGE_SIZE) + 1;
-		end
-
-		local direction = 1;
-		if ( key == WARDROBE_UP_VISUAL_KEY ) then
-			direction = -1;
-		end
-
-		local newIndex = visualIndex;
-		newIndex = newIndex + WARDROBE_NUM_COLS * direction;
-		if ( GetPage(newIndex) ~= self.PagingFrame:GetCurrentPage() or newIndex > #visualsList ) then
-			newIndex = visualIndex + WARDROBE_PAGE_SIZE * -direction;	-- reset by a full page in opposite direction
-			while ( GetPage(newIndex) ~= self.PagingFrame:GetCurrentPage() or newIndex > #visualsList ) do
-				newIndex = newIndex + WARDROBE_NUM_COLS * direction;
-			end
-		end
-		visualIndex = newIndex;
-	end
-	self:SelectVisual(visualsList[visualIndex].visualID);
-	self.jumpToVisualID = visualsList[visualIndex].visualID;
-	self:ResetPage();
 end
 
 function WardrobeCollectionFrame_OnKeyDown(self, key)
@@ -1021,9 +992,9 @@ function WardrobeCollectionFrame_OnKeyDown(self, key)
 		end
 		self.tooltipContentFrame:RefreshAppearanceTooltip();
 	elseif ( key == WARDROBE_PREV_VISUAL_KEY or key == WARDROBE_NEXT_VISUAL_KEY or key == WARDROBE_UP_VISUAL_KEY or key == WARDROBE_DOWN_VISUAL_KEY ) then
-		if ( WardrobeFrame_IsAtTransmogrifier() and self.ItemsCollectionFrame:IsShown() ) then
+		if ( self.activeFrame.HandleKey ) then
 			self:SetPropagateKeyboardInput(false);
-			self.ItemsCollectionFrame:HandleKey(key);
+			self.activeFrame:HandleKey(key);
 		else
 			self:SetPropagateKeyboardInput(true);
 		end
@@ -1127,6 +1098,40 @@ function WardrobeUtils_GetValidIndexForNumSources(index, numSources)
 		index = numSources + index;
 	end
 	return mod(index, numSources) + 1;
+end
+
+local function GetPage(entryIndex, pageSize)
+	return floor((entryIndex-1) / pageSize) + 1;
+end
+
+function WardrobeUtils_GetAdjustedDisplayIndexFromKeyPress(contentFrame, index, numEntries, key)
+	if ( key == WARDROBE_PREV_VISUAL_KEY ) then
+		index = index - 1;
+		if ( index < 1 ) then
+			index = numEntries;
+		end
+	elseif ( key == WARDROBE_NEXT_VISUAL_KEY ) then
+		index = index + 1;
+		if ( index > numEntries ) then
+			index = 1;
+		end
+	elseif ( key == WARDROBE_DOWN_VISUAL_KEY or key == WARDROBE_UP_VISUAL_KEY ) then
+		local direction = 1;
+		if ( key == WARDROBE_UP_VISUAL_KEY ) then
+			direction = -1;
+		end
+
+		local newIndex = index;
+		newIndex = newIndex + contentFrame.NUM_COLS * direction;
+		if ( GetPage(newIndex, contentFrame.PAGE_SIZE) ~= contentFrame.PagingFrame:GetCurrentPage() or newIndex > numEntries ) then
+			newIndex = index + contentFrame.PAGE_SIZE * -direction;	-- reset by a full page in opposite direction
+			while ( GetPage(newIndex, contentFrame.PAGE_SIZE) ~= contentFrame.PagingFrame:GetCurrentPage() or newIndex > numEntries ) do
+				newIndex = newIndex + contentFrame.NUM_COLS * direction;
+			end
+		end
+		index = newIndex;
+	end
+	return index;
 end
 
 function WardrobeItemsCollectionMixin:GetActiveSlot()
@@ -1275,7 +1280,7 @@ function WardrobeItemsCollectionMixin:ResetPage()
 		local visualsList = self:GetFilteredVisualsList();
 		for i = 1, #visualsList do
 			if ( visualsList[i].visualID == selectedVisualID ) then
-				page = floor((i-1) / WARDROBE_PAGE_SIZE) + 1;
+				page = GetPage(i, self.PAGE_SIZE);
 				break;
 			end
 		end
@@ -1414,8 +1419,8 @@ function WardrobeItemsCollectionMixin:UpdateItems()
 	end
 
 	local pendingTransmogModelFrame = nil;
-	local indexOffset = (self.PagingFrame:GetCurrentPage() - 1) * WARDROBE_PAGE_SIZE;
-	for i = 1, WARDROBE_PAGE_SIZE do
+	local indexOffset = (self.PagingFrame:GetCurrentPage() - 1) * self.PAGE_SIZE;
+	for i = 1, self.PAGE_SIZE do
 		local model = self.Models[i];
 		local index = i + indexOffset;
 		local visualInfo = self.filteredVisualsList[index];
@@ -1488,7 +1493,7 @@ function WardrobeItemsCollectionMixin:UpdateItems()
 			
 			-- find potential tutorial anchor in the 1st row
 			if ( checkTutorialFrame ) then
-				if ( i < WARDROBE_NUM_COLS and not WardrobeCollectionFrame.tutorialVisualID and visualInfo.isCollected and not visualInfo.isHideVisual ) then
+				if ( i < self.NUM_COLS and not WardrobeCollectionFrame.tutorialVisualID and visualInfo.isCollected and not visualInfo.isHideVisual ) then
 					tutorialAnchorFrame = model;
 				elseif ( WardrobeCollectionFrame.tutorialVisualID and WardrobeCollectionFrame.tutorialVisualID == visualInfo.visualID ) then
 					tutorialAnchorFrame = model;
@@ -1613,7 +1618,7 @@ function WardrobeItemsCollectionMixin:RefreshVisualsList()
 	end
 	self:FilterVisuals();
 	self:SortVisuals();
-	self.PagingFrame:SetMaxPages(ceil(#self.filteredVisualsList / WARDROBE_PAGE_SIZE));
+	self.PagingFrame:SetMaxPages(ceil(#self.filteredVisualsList / self.PAGE_SIZE));
 end
 
 function WardrobeItemsCollectionMixin:GetFilteredVisualsList()
@@ -1889,7 +1894,7 @@ end
 
 function WardrobeSetsTransmogModelMixin:OnMouseDown(button)
 	if ( button == "LeftButton" ) then
-		self:GetParent():LoadSet(self.setID);
+		self:GetParent():SelectSet(self.setID);
 	end
 end
 
@@ -1905,6 +1910,10 @@ end
 
 function WardrobeSetsTransmogModelMixin:OnLeave()
 	GameTooltip:Hide();
+end
+
+function WardrobeSetsTransmogModelMixin:OnHide()
+	self.setID = nil;
 end
 
 function WardrobeSetsTransmogModelMixin:OnModelLoaded()
@@ -3407,19 +3416,23 @@ function WardrobeSetsTransmogMixin:OnLoad()
 	self.NUM_ROWS = 2;
 	self.NUM_COLS = 4;
 	self.PAGE_SIZE = self.NUM_ROWS * self.NUM_COLS;
+	self.APPLIED_SOURCE_INDEX = 1;
+	self.SELECTED_SOURCE_INDEX = 3;
 end
 
 function WardrobeSetsTransmogMixin:OnShow()
 	self:RegisterEvent("TRANSMOGRIFY_UPDATE");
+	self:RegisterEvent("TRANSMOGRIFY_SUCCESS");
 	self:RegisterEvent("TRANSMOG_COLLECTION_ITEM_UPDATE");
 	self:RegisterEvent("TRANSMOG_COLLECTION_UPDATED");
 	self:RefreshCameras();
-	self:UpdateSets();
+	self:Refresh();
 	WardrobeCollectionFrame_UpdateProgressBar(C_TransmogSets.GetBaseSetsCounts());
 end
 
 function WardrobeSetsTransmogMixin:OnHide()
 	self:UnregisterEvent("TRANSMOGRIFY_UPDATE");
+	self:UnregisterEvent("TRANSMOGRIFY_SUCCESS");
 	self:UnregisterEvent("TRANSMOG_COLLECTION_ITEM_UPDATE");
 	self:UnregisterEvent("TRANSMOG_COLLECTION_UPDATED");
 	self.loadingSetID = nil;
@@ -3427,11 +3440,17 @@ function WardrobeSetsTransmogMixin:OnHide()
 end
 
 function WardrobeSetsTransmogMixin:OnEvent(event, ...)
-	if ( event == "TRANSMOGRIFY_UPDATE" ) then
-		self:UpdateSets();
+	if ( event == "TRANSMOGRIFY_UPDATE" and not self.ignoreTransmogrifyUpdateEvent ) then
+		self:Refresh();
+	elseif ( event == "TRANSMOGRIFY_SUCCESS" )  then
+		-- this event fires once per slot so in the case of a set there would be up to 9 of them
+		if ( not self.transmogrifySuccessUpdate ) then
+			self.transmogrifySuccessUpdate = true;
+			C_Timer.After(0, function() self.transmogrifySuccessUpdate = nil; self:Refresh(); end);
+		end
 	elseif ( event == "TRANSMOG_COLLECTION_UPDATED" ) then
 		SetsDataProvider:ClearSets();
-		self:UpdateSets();
+		self:Refresh();
 		WardrobeCollectionFrame_UpdateProgressBar(C_TransmogSets.GetBaseSetsCounts());
 	elseif ( event == "TRANSMOG_COLLECTION_ITEM_UPDATE" ) then
 		if ( self.loadingSetID ) then
@@ -3446,39 +3465,45 @@ function WardrobeSetsTransmogMixin:OnMouseWheel(value)
 	self.PagingFrame:OnMouseWheel(value);
 end
 
+function WardrobeSetsTransmogMixin:Refresh()
+	self.appliedSetID = self:GetFirstMatchingSetID(self.APPLIED_SOURCE_INDEX);
+	self.selectedSetID = self:GetFirstMatchingSetID(self.SELECTED_SOURCE_INDEX);
+	self:ResetPage();
+end
+
 function WardrobeSetsTransmogMixin:UpdateSets()
 	local usableSets = SetsDataProvider:GetUsableSets();
 	self.PagingFrame:SetMaxPages(ceil(#usableSets / self.PAGE_SIZE));
-
-	local selectedVisuals = { };
-	for i = 1, #TRANSMOG_SLOTS do
-		if ( TRANSMOG_SLOTS[i].transmogType == LE_TRANSMOG_TYPE_APPEARANCE ) then
-			local _, _, _, selectedVisualID = WardrobeCollectionFrame_GetInfoForEquippedSlot(TRANSMOG_SLOTS[i].slot, LE_TRANSMOG_TYPE_APPEARANCE);
-			selectedVisuals[selectedVisualID] = true;
-		end
-	end
 
 	local indexOffset = (self.PagingFrame:GetCurrentPage() - 1) * self.PAGE_SIZE;
 	for i = 1, self.PAGE_SIZE do
 		local model = self.Models[i];
 		local index = i + indexOffset;
-		if ( usableSets[index] ) then
+		local set = usableSets[index];
+		if ( set ) then
 			model:Show();
-			model:Undress();
-			local setMatches = true;
-			local sourceData = SetsDataProvider:GetSetSourceData(usableSets[index].setID);
-			for sourceID  in pairs(sourceData.sources) do
-				model:TryOn(sourceID);
-				local sourceInfo = C_TransmogCollection.GetSourceInfo(sourceID);
-				if ( not selectedVisuals[sourceInfo.appearanceID] ) then
-					setMatches = false;
+			if ( model.setID ~= set.setID ) then
+				model:Undress();
+				local sourceData = SetsDataProvider:GetSetSourceData(set.setID);
+				for sourceID  in pairs(sourceData.sources) do
+					model:TryOn(sourceID);
 				end
 			end
-			model.TransmogStateTexture:SetShown(setMatches);
-			model.setID = usableSets[index].setID;
+			local transmogStateAtlas;
+			if ( set.setID == self.appliedSetID and set.setID == self.selectedSetID ) then
+				transmogStateAtlas = "transmog-set-border-current-transmogged";
+			elseif ( set.setID == self.selectedSetID ) then
+				transmogStateAtlas = "transmog-set-border-selected";
+			end
+			if ( transmogStateAtlas ) then
+				model.TransmogStateTexture:SetAtlas(transmogStateAtlas, true);
+				model.TransmogStateTexture:Show();
+			else
+				model.TransmogStateTexture:Hide();
+			end
+			model.setID = set.setID;
 		else
 			model:Hide();
-			model.setID = nil;
 		end
 	end
 end
@@ -3513,8 +3538,48 @@ function WardrobeSetsTransmogMixin:LoadSet(setID)
 		self.loadingSetID = setID;
 	else
 		self.loadingSetID = nil;
+		-- if we don't ignore the event, clearing will momentarily set the page to the one with the set the user currently has transmogged
+		-- if that's a different page from the current one then the models will flicker as we swap the gear to different sets and back
+		self.ignoreTransmogrifyUpdateEvent = true;
+		C_Transmog.ClearPending();
+		self.ignoreTransmogrifyUpdateEvent = false;
 		C_Transmog.LoadSources(transmogSources);
 	end
+end
+
+function WardrobeSetsTransmogMixin:GetFirstMatchingSetID(sourceIndex)
+	local transmogSourceIDs = { };
+	for _, button in ipairs(WardrobeTransmogFrame.Model.SlotButtons) do
+		if ( button:IsEnabled() ) then
+			local slotID = GetInventorySlotInfo(button.slot);
+			local sourceID = select(sourceIndex, WardrobeCollectionFrame_GetInfoForEquippedSlot(button.slot, LE_TRANSMOG_TYPE_APPEARANCE));
+			transmogSourceIDs[slotID] = sourceID;
+		end
+	end
+
+	local usableSets = SetsDataProvider:GetUsableSets();
+	for _, set in ipairs(usableSets) do
+		local setMatched = true;
+		for slotID, transmogSourceID in pairs(transmogSourceIDs) do
+			local sourceIDs = C_TransmogSets.GetSourceIDsForSlot(set.setID, slotID);
+			-- if there are no sources for a slot, that slot is considered matched
+			local slotMatched = (#sourceIDs == 0);
+			for _, sourceID in ipairs(sourceIDs) do
+				if ( transmogSourceID == sourceID ) then
+					slotMatched = true;
+					break;
+				end
+			end
+			if ( not slotMatched ) then
+				setMatched = false;
+				break;
+			end
+		end
+		if ( setMatched ) then
+			return set.setID;
+		end
+	end
+	return nil;
 end
 
 function WardrobeSetsTransmogMixin:OnUnitModelChangedEvent()
@@ -3543,5 +3608,45 @@ end
 
 function WardrobeSetsTransmogMixin:OnSearchUpdate()
 	SetsDataProvider:ClearUsableSets();
+	self:UpdateSets();
+end
+
+function WardrobeSetsTransmogMixin:SelectSet(setID)
+	self.selectedSetID = setID;
+	self:LoadSet(setID);
+end
+
+function WardrobeSetsTransmogMixin:HandleKey(key)
+	if ( not self.selectedSetID ) then
+		return;
+	end
+
+	local setIndex;
+	local usableSets = SetsDataProvider:GetUsableSets();
+	for i = 1, #usableSets do
+		if ( usableSets[i].setID == self.selectedSetID ) then
+			setIndex = i;
+			break;
+		end
+	end
+	
+	if ( setIndex ) then
+		setIndex = WardrobeUtils_GetAdjustedDisplayIndexFromKeyPress(self, setIndex, #usableSets, key);
+		self:SelectSet(usableSets[setIndex].setID);
+	end
+end
+
+function WardrobeSetsTransmogMixin:ResetPage()
+	local page = 1;
+	if ( self.selectedSetID ) then
+		local usableSets = SetsDataProvider:GetUsableSets();
+		for i, set in ipairs(usableSets) do
+			if ( set.setID == self.selectedSetID ) then
+				page = GetPage(i, self.PAGE_SIZE);
+				break;
+			end
+		end
+	end
+	self.PagingFrame:SetCurrentPage(page);
 	self:UpdateSets();
 end

@@ -105,7 +105,7 @@ function AdventureMapQuestChoiceDialogMixin:RefreshRewards()
 		self:AddReward(name, texture, nil, count, "GameFontHighlightSmall");
 	end
 
-	for itemIndex = 1, GetNumQuestLogRewards(questID) do
+	for itemIndex = 1, GetNumQuestLogRewards(self.questID) do
 		local name, texture, count, quality, isUsable = GetQuestLogRewardInfo(itemIndex, self.questID);
 		self:AddReward(name, texture, nil, count, "GameFontHighlightSmall");
 	end	

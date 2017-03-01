@@ -90,7 +90,7 @@ function GetMaxLevelReward(bracketType, hasFirstWin)
 	end
 	return { { id=id, name=name, texture=texture, quantity=1 } };
 end
-
+ 
 ---------------------------------------------------------------
 -- PVP FRAME
 ---------------------------------------------------------------
@@ -430,6 +430,7 @@ function HonorFrame_OnLoad(self)
 	self:RegisterEvent("LFG_LIST_ACTIVE_ENTRY_UPDATE");
 	self:RegisterEvent("LFG_LIST_SEARCH_RESULT_UPDATED");
     self:RegisterEvent("PLAYER_LEVEL_UP");
+	self:RegisterEvent("PVP_WORLDSTATE_UPDATE");
 	
 	if( UIParent.variablesLoaded ) then
 		HonorFrame_UpdateBlackList();
@@ -454,7 +455,7 @@ function HonorFrame_OnEvent(self, event, ...)
 		HonorFrameBonusFrame_Update();
 	elseif ( event == "GROUP_ROSTER_UPDATE" ) then
 		HonorFrame_UpdateQueueButtons();
-	elseif ( event == "PVP_REWARDS_UPDATE" ) then
+	elseif ( event == "PVP_REWARDS_UPDATE" or event == "PVP_WORLDSTATE_UPDATE" ) then
 		if ( self:IsShown() ) then
 			RequestRandomBattlegroundInstanceInfo();
 		end
@@ -873,6 +874,8 @@ end
 function HonorFrameBonusFrame_Update()
 	local englishFaction = UnitFactionGroup("player");
 	local selectButton = nil;
+	local ashranEnlistmentActive, battlegroundEnlistmentActive = C_PvP.GetActiveEnlistmentBonuses();
+
 	-- random bg
 	do
 		local button = HonorFrame.BonusFrame.RandomBGButton;
@@ -903,6 +906,7 @@ function HonorFrameBonusFrame_Update()
 			button.Reward.experience = experience;
 			button.Reward.itemID = id;
 			button.Reward:Show();
+			button.Reward.EnlistmentBonus:SetShown(battlegroundEnlistmentActive);
 		else
 			button.Reward:Hide();
 		end
@@ -937,6 +941,14 @@ function HonorFrameBonusFrame_Update()
 		local button = HonorFrame.BonusFrame.AshranButton;
 		button.Contents.Title:SetText(GetMapNameByID(ASHRAN_MAP_ID));
 		button.canQueue = IsLFGDungeonJoinable(ASHRAN_QUEUE_ID);
+		if (ashranEnlistmentActive) then
+			button.Reward:Show();
+			button.Reward.Border:Hide();
+			button.Reward.Icon:Hide();
+			button.Reward.EnlistmentBonus:Show();
+		else
+			button.Reward:Hide();
+		end
 	end
 
 	do
@@ -1321,6 +1333,9 @@ end
 ---------------------------------------------------------------
 
 function PVPRewardTemplate_OnEnter(self)
+	if (not self.Icon:IsShown()) then
+		return;
+	end
 	PVPRewardTooltip:ClearAllPoints();
 	PVPRewardTooltip:SetPoint("BOTTOMLEFT", self, "TOPRIGHT");
 	if (self.experience > 0) then
@@ -1356,6 +1371,13 @@ end
 function PVPRewardWeeklyBonus_OnLeave(self)
 	GameTooltip:Hide();
 	ConquestFrame.activeWeeklyBonus = nil;
+end
+
+function PVPRewardEnlistmentBonus_OnEnter(self)
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip:SetText(PVP_ENLISTMENT_BONUS_TITLE);
+	GameTooltip:AddLine(PVP_ENLISTMENT_BONUS_DESCRIPTION, 1, 1, 1, true);
+	GameTooltip:Show();
 end
 
 ---------------------------------------------------------------

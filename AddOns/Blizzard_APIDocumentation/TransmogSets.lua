@@ -7,6 +7,20 @@ local TransmogSets =
 	Functions =
 	{
 		{
+			Name = "GetAllSourceIDs",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "transmogSetID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "sources", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetBaseSetsCounts",
 			Type = "Function",
 
@@ -53,6 +67,21 @@ local TransmogSets =
 			{
 				{ Name = "isFavorite", Type = "bool", Nilable = false },
 				{ Name = "isGroupFavorite", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "GetSourceIDsForSlot",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "transmogSetID", Type = "number", Nilable = false },
+				{ Name = "slot", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "sources", Type = "table", InnerType = "number", Nilable = false },
 			},
 		},
 		{

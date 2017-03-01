@@ -117,6 +117,7 @@
 			<OnEvent method="OnEvent"/>
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
+			<OnHide method="OnHide"/>
 			<OnMouseDown method="OnMouseDown"/>
 			<OnModelLoaded method="OnModelLoaded"/>
 		</Scripts>

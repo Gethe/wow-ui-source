@@ -30,6 +30,7 @@ local LootJournalLua =
 				{ Name = "quality", Type = "number", Nilable = false },
 				{ Name = "inventoryTypeName", Type = "string", Nilable = false },
 				{ Name = "icon", Type = "number", Nilable = false },
+				{ Name = "isCraftable", Type = "bool", Nilable = false },
 			},
 		},
 	},

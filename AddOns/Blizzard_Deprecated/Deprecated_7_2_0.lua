@@ -91,7 +91,7 @@ do
 	
 	-- Use C_EquipmentSet.ClearIgnoredSlotsForSave() instead
 	function EquipmentManagerClearIgnoredSlotsForSave()
-		C_EquipmentSet.ClearIgnoredSlotsForSave(slot);
+		C_EquipmentSet.ClearIgnoredSlotsForSave();
 	end
 	
 	-- Use C_EquipmentSet.UnignoreSlotForSave(slot) instead

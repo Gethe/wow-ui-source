@@ -64,7 +64,7 @@ function CameraBaseMixin:SetPosition(x, y, z)
 end
 
 function CameraBaseMixin:GetPosition()
-	return self:GetOwningScene():GetCameraPosition(x, y, z);
+	return self:GetOwningScene():GetCameraPosition();
 end
 
 function CameraBaseMixin:GetForwardVector()

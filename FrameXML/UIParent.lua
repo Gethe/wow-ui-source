@@ -1249,7 +1249,7 @@ function UIParent_OnEvent(self, event, ...)
 
 		for i, spellConfirmation in ipairs(spellConfirmations) do
 			if spellConfirmation.spellID then
-				if confirmType == LE_SPELL_CONFIRMATION_PROMPT_TYPE_STATIC_TEXT then
+				if spellConfirmation.confirmType == LE_SPELL_CONFIRMATION_PROMPT_TYPE_STATIC_TEXT then
 					StaticPopup_Show("SPELL_CONFIRMATION_PROMPT", spellConfirmation.text, spellConfirmation.duration, spellConfirmation.spellID);
 				elseif spellConfirmation.confirmType == LE_SPELL_CONFIRMATION_PROMPT_TYPE_SIMPLE_WARNING then
 					StaticPopup_Show("SPELL_CONFIRMATION_WARNING", spellConfirmation.text, nil, spellConfirmation.spellID);
@@ -4867,7 +4867,6 @@ function ShakeFrame(frame, shake, maximumDuration, frequency)
 		local xVariation, yVariation = shake[shakeIndex].x, shake[shakeIndex].y;
 		frame:SetPoint(point, relativeFrame, relativePoint, x + xVariation, y + yVariation);
 		shakeIndex = shakeIndex + 1;
-		lastTime = newTime;
 		if shakeIndex > #shake or GetTime() >= endTime then
 			frame:SetPoint(point, relativeFrame, relativePoint, x, y);
 			frame.shakeTicker:Cancel();

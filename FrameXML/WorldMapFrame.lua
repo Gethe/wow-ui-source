@@ -764,11 +764,7 @@ function WorldMap_SetupWorldQuestButton(button, worldQuestType, rarity, isElite,
 	end
 
 	if ( button.TimeLowFrame ) then
-		if ( timeLeftMinutes and timeLeftMinutes <= WORLD_QUESTS_TIME_LOW_MINUTES ) then
-			button.TimeLowFrame:Show();
-		else
-			button.TimeLowFrame:Hide();
-		end
+		button.TimeLowFrame:Hide();
 	end
 
 	if ( button.CriteriaMatchRing ) then
@@ -2163,20 +2159,20 @@ function WorldMap_GetOrCreateTaskPOI(index)
 
 	button.Texture = button:CreateTexture(button:GetName().."Texture", "OVERLAY");
 
-	button.Glow = button:CreateTexture(button:GetName().."Glow", "BACKGROUND", -2);
+	button.Glow = button:CreateTexture(button:GetName().."Glow", "BACKGROUND", nil, -2);
 	button.Glow:SetSize(50, 50);
 	button.Glow:SetPoint("CENTER");
 	button.Glow:SetTexture("Interface/WorldMap/UI-QuestPoi-IconGlow.tga");
 	button.Glow:SetBlendMode("ADD");
 
-	button.SelectedGlow = button:CreateTexture(button:GetName().."SelectedGlow", "OVERLAY", 2);
+	button.SelectedGlow = button:CreateTexture(button:GetName().."SelectedGlow", "OVERLAY", nil, 2);
 	button.SelectedGlow:SetBlendMode("ADD");
 
-	button.CriteriaMatchRing = button:CreateTexture(button:GetName().."CriteriaMatchRing", "BACKGROUND", 2);
+	button.CriteriaMatchRing = button:CreateTexture(button:GetName().."CriteriaMatchRing", "BACKGROUND", nil, 2);
 	button.CriteriaMatchRing:SetAtlas("worldquest-emissary-ring", true)
 	button.CriteriaMatchRing:SetPoint("CENTER", 0, 0)
 
-	button.SpellTargetGlow = button:CreateTexture(button:GetName().."SpellTargetGlow", "OVERLAY", 1);
+	button.SpellTargetGlow = button:CreateTexture(button:GetName().."SpellTargetGlow", "OVERLAY", nil, 1);
 	button.SpellTargetGlow:SetAtlas("worldquest-questmarker-abilityhighlight", true);
 	button.SpellTargetGlow:SetAlpha(.6);
 	button.SpellTargetGlow:SetBlendMode("ADD");
@@ -2194,7 +2190,7 @@ function WorldMap_GetOrCreateTaskPOI(index)
 	button.TimeLowFrame.Texture:SetAllPoints(button.TimeLowFrame);
 	button.TimeLowFrame.Texture:SetAtlas("worldquest-icon-clock");
 
-	button.TrackedCheck = button:CreateTexture(button:GetName().."TrackedCheck", "OVERLAY", 1);
+	button.TrackedCheck = button:CreateTexture(button:GetName().."TrackedCheck", "OVERLAY", nil, 1);
 	button.TrackedCheck:SetAtlas("worldquest-emissary-tracker-checkmark", true);
 	button.TrackedCheck:SetPoint("BOTTOM", button, "BOTTOMRIGHT", 0, -2);
 

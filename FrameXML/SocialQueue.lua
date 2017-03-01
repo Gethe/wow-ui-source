@@ -83,7 +83,7 @@ function SocialQueueUtil_SetTooltip(tooltip, playerDisplayName, queues, canJoin,
 
 		if ( canEffectivelyJoin ) then
 			isAutoAccept = firstQueue.isAutoAccept; -- Auto accept is set on the premade group entry
-			LFGListUtil_SetSearchEntryTooltip(tooltip, firstQueue.queueData.lfgListID);
+			LFGListUtil_SetSearchEntryTooltip(tooltip, firstQueue.queueData.lfgListID, LFG_LIST_UTIL_SUPPRESS_AUTO_ACCEPT_LINE);
 		else
 			tooltip:SetText(playerDisplayName, 1, 1, 1, true);
 			tooltip:AddLine(LFG_LIST_ENTRY_DELISTED, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);

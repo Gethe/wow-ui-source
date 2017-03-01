@@ -1216,7 +1216,7 @@ TRAVEL PASS
 								GameTooltip:Hide();
 							</OnLeave>
 							<OnEvent>
-								if ( specialTestOverrideSoR or CanSendSoRByText() ) then
+								if ( CanSendSoRByText() ) then
 									self:Show();
 								else
 									self:Hide();

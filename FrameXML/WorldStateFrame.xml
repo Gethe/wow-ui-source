@@ -1133,6 +1133,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
+						PlaySound("igMainMenuOption");
 						ConfirmOrLeaveBattlefield();
 					</OnClick>
 				</Scripts>

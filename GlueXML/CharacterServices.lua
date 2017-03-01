@@ -637,8 +637,8 @@ local function IsUsingValidProductForCreateNewCharacterBoost()
 	return not IsUsingValidProductForTrialBoost();
 end
 
-local function CanBoostCharacter(class, level, boostInProgress, isTrialBoost)
-	if (boostInProgress or class == "DEMONHUNTER") then
+local function CanBoostCharacter(class, level, boostInProgress, isTrialBoost, vasServiceInProgress)
+	if (boostInProgress or vasServiceInProgress or class == "DEMONHUNTER") then
 		return false;
 	end
 
@@ -882,8 +882,8 @@ function CharacterUpgradeCharacterSelectBlock:Initialize(results)
 	for i = 1, numDisplayedCharacters do
 		local button = _G["CharSelectCharacterButton"..i];
 		_G["CharSelectPaidService"..i]:Hide();
-		local class, _, level, _, _, _, _, _, _, _, playerguid, _, _, _, boostInProgress, _, _, isTrialBoost = select(4, GetCharacterInfo(GetCharIDFromIndex(i+CHARACTER_LIST_OFFSET)));
-		local canBoostCharacter = CanBoostCharacter(class, level, boostInProgress, isTrialBoost);
+		local class, _, level, _, _, _, _, _, _, _, playerguid, _, _, _, boostInProgress, _, _, isTrialBoost, _, vasServiceInProgress = select(4, GetCharacterInfo(GetCharIDFromIndex(i+CHARACTER_LIST_OFFSET)));
+		local canBoostCharacter = CanBoostCharacter(class, level, boostInProgress, isTrialBoost, vasServiceInProgress);
 
 		SetCharacterButtonEnabled(button, canBoostCharacter);
 
@@ -915,8 +915,8 @@ function CharacterUpgradeCharacterSelectBlock:Initialize(results)
 	end
 
 	for i = 1, GetNumCharacters() do
-		local class, _, level, _, _, _, _, _, _, _, _, _, _, _, boostInProgress, _, _, isTrialBoost = select(4, GetCharacterInfo(GetCharIDFromIndex(i)));
-		if CanBoostCharacter(class, level, boostInProgress, isTrialBoost) then
+		local class, _, level, _, _, _, _, _, _, _, _, _, _, _, boostInProgress, _, _, isTrialBoost, _, vasServiceInProgress = select(4, GetCharacterInfo(GetCharIDFromIndex(i)));
+		if CanBoostCharacter(class, level, boostInProgress, isTrialBoost, vasServiceInProgress) then
 			if IsCharacterEligibleForVeteranBonus(level, isTrialBoost) then
 				self.hasVeteran = true;
 			end

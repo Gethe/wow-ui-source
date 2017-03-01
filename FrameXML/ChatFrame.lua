@@ -2295,7 +2295,7 @@ SlashCmdList["FRAMESTACK"] = function(msg)
 		showRegionsArg = "1";
 	end
 	local showHidden = showHiddenArg == "true" or showHiddenArg == "1";
-	local showRegions = showRegions == "true" or showRegionsArg == "1";
+	local showRegions = showRegionsArg == "true" or showRegionsArg == "1";
 
 	FrameStackTooltip_Toggle(showHidden, showRegions);
 end
@@ -3188,6 +3188,10 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 
 			local playerLink;
 			local playerLinkDisplayText = coloredName;
+			local relevantDefaultLanguage = self.defaultLanguage;
+			if ( (type == "SAY") or (type == "YELL") ) then
+				relevantDefaultLanguage = self.alternativeDefaultLanguage;
+			end
 			local usingDifferentLanguage = (arg3 ~= "") and (arg3 ~= relevantDefaultLanguage);
 			local usingEmote = (type == "EMOTE") or (type == "TEXT_EMOTE");
 
@@ -3206,10 +3210,6 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 				message = ChatFrame_GetMobileEmbeddedTexture(info.r, info.g, info.b)..message;
 			end
 
-			local relevantDefaultLanguage = self.defaultLanguage;
-			if ( (type == "SAY") or (type == "YELL") ) then
-				relevantDefaultLanguage = self.alternativeDefaultLanguage;
-			end
 			if ( usingDifferentLanguage ) then
 				local languageHeader = "["..arg3.."] ";
 				if ( showLink and (arg2 ~= "") ) then

@@ -424,7 +424,12 @@ function SpellButton_OnEvent(self, event, ...)
 		local onActionBar = false;
 		
 		if ( slotType == "SPELL" ) then
-			onActionBar = C_ActionBar.HasSpellActionButtons(actionID);
+			if (FindFlyoutSlotBySpellID(actionID) > 0) then
+				-- We're part of a flyout
+				SpellBook_UpdateSpells();
+			else
+				onActionBar = C_ActionBar.HasSpellActionButtons(actionID);
+			end
 		elseif ( slotType == "FLYOUT" ) then
 			onActionBar = C_ActionBar.HasFlyoutActionButtons(actionID);
 		elseif ( slotType == "PETACTION" ) then
@@ -847,6 +852,9 @@ function SpellButton_UpdateButton(self)
 		slotFrame:Hide();
 		self.AbilityHighlightAnim:Stop();
 		self.AbilityHighlight:Hide();
+		if self.SpellHighlightTexture then
+			self.SpellHighlightTexture:Hide();
+		end
 		self.GlyphIcon:Hide();
 		self.IconTextureBg:Show();
 		iconTexture:SetAlpha(0.5);

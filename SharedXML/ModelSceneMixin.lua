@@ -262,7 +262,7 @@ end
 
 function ModelSceneMixin:CreateOrTransitionActorFromScene(oldTagToActor, actorID)
 	local actorInfo = C_ModelInfo.GetModelSceneActorInfoByID(actorID);
-	local existingActor = oldTagToActor[tag];
+	local existingActor = oldTagToActor[actorInfo.scriptTag];
 	if existingActor then
 		self:InitializeActor(existingActor, actorInfo);
 		return existingActor;

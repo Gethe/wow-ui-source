@@ -123,8 +123,6 @@ function LFDFrame_DisplayDungeonByID(dungeonID)
 	else
 		LFDQueueFrame_SetType("specific");
 	end
-	
-	return typeID;
 end
 
 --Role-related functions

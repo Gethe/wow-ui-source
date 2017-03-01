@@ -21,7 +21,7 @@ end
 
 function ArtifactLevelUpToastMixin:EvaluateTrigger()
 	local itemID, altItemID, name, icon, xp, pointsSpent, quality, artifactAppearanceID, appearanceModID, itemAppearanceID, altItemAppearanceID, altOnTop, artifactTier = C_ArtifactUI.GetEquippedArtifactInfo();
-	local showArtifact = itemID and not artifactIsMaxed;
+	local showArtifact = itemID ~= nil;
 	if self.showArtifact ~= showArtifact or C_ArtifactUI.IsAtForge() then
 		self.showArtifact = showArtifact;
 

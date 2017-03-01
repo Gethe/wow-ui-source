@@ -2175,7 +2175,7 @@ function GarrisonMissionPageMixin:SetCounters(followers, enemies, missionID)
 	local bonusEffects = C_Garrison.GetMissionBonusAbilityEffects(missionID);
 	for i = 1, #bonusEffects do
 		local mechanicTypeID = bonusEffects[i].mechanicTypeID;
-		if(mechanic ~= 0) then
+		if(mechanicTypeID ~= 0) then
 			self:CheckCounter(enemies, mechanicTypeID);
 		end
 	end

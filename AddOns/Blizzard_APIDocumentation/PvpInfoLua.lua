@@ -7,6 +7,16 @@ local PvpInfoLua =
 	Functions =
 	{
 		{
+			Name = "GetActiveEnlistmentBonuses",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "ashranActive", Type = "bool", Nilable = false },
+				{ Name = "battlegroundActive", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "GetArenaCrowdControlInfo",
 			Type = "Function",
 

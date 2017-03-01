@@ -301,7 +301,11 @@ function LootJournalLegendariesMixin:ConfigureItemButton(button, itemInfo)
 	button.itemInfo = itemInfo;
 	button.ItemName:SetText(itemInfo.name);
 	button.ItemName:SetTextColor(GetItemQualityColor(itemInfo.quality));
-	button.ItemType:SetText(_G[itemInfo.inventoryTypeName]);
+	local text = _G[itemInfo.inventoryTypeName];
+	if ( itemInfo.isCraftable ) then
+		text = format(LOOT_JOURNAL_LEGENDARIES_CRAFTED_ITEM, text);
+	end
+	button.ItemType:SetText(text);
 	button.Icon:SetTexture(itemInfo.icon);
 	self:CheckItemButtonTooltip(button);
 end

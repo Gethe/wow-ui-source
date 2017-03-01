@@ -543,9 +543,6 @@ function OrderHallMissionComplete:ShowRewards()
 			);
 		else
 			GarrisonMissionPage_SetReward(rewardFrame, currentMission.overmaxRewards[1]);
-			if (not self.skipAnimations) then
-				Reward.Anim:Play();
-			end
 		end
 		prevRewardFrame = rewardFrame;
 	end

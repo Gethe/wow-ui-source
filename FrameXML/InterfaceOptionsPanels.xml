@@ -1675,7 +1675,7 @@
 							</OnLoad>
                             <OnShow>
                                 local text = GetBindingKey("NAMEPLATES");
-	                            if (text and test ~= "") then
+	                            if (text and text ~= "") then
                                     self.Text:SetText(UNIT_NAMEPLATES_SHOW_ENEMIES.." ("..text..")");
                                 else
                                     self.Text:SetText(UNIT_NAMEPLATES_SHOW_ENEMIES);
@@ -1721,7 +1721,7 @@
 							</OnLoad>
 							<OnShow>
 								local text = GetBindingKey("FRIENDNAMEPLATES");
-								if (text and test ~= "") then
+								if (text and text ~= "") then
 									self.Text:SetText(UNIT_NAMEPLATES_SHOW_FRIENDS.." ("..text..")");
 								else
 									self.Text:SetText(UNIT_NAMEPLATES_SHOW_FRIENDS);

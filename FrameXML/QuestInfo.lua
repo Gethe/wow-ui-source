@@ -3,6 +3,7 @@ local REWARDS_SECTION_OFFSET = 5;		-- vertical distance between sections
 local SEAL_QUESTS = {
 	[40519] = { bgAtlas = "QuestBG-Alliance", text = "|cff042c54"..QUEST_KING_VARIAN_WRYNN.."|r", sealAtlas = "Quest-Alliance-WaxSeal"},
 	[43926] = { bgAtlas = "QuestBG-Horde", text = "|cff480404"..QUEST_WARCHIEF_VOLJIN.."|r", sealAtlas = "Quest-Horde-WaxSeal"},
+	[46730] = { bgAtlas = "QuestBG-Legionfall", text = "|cff2f0a48"..QUEST_KHADGAR.."|r", sealAtlas = "Quest-Legionfall-WaxSeal"},
 };
 
 function QuestInfoTimerFrame_OnUpdate(self, elapsed)

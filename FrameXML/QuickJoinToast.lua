@@ -519,7 +519,7 @@ function QuickJoinToast_GetPriorityFromQueue(queue)
 			return 0;
 		end
 
-		if ( typeid == TYPEID_RANDOM_DUNGEON ) then
+		if ( typeID == TYPEID_RANDOM_DUNGEON ) then
 			if ( GetRandomDungeonBestChoice() ~= lfgID ) then
 				return 1;
 			end

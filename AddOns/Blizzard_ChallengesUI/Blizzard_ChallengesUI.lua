@@ -11,19 +11,26 @@ local function CreateFrames(self, array, num, template)
 	end
 end
     
-local function ReanchorFrames(frames, num, anchorPoint, anchor, relativePoint, width, spacing, distance)
+local function ReanchorFrames(frames, anchorPoint, anchor, relativePoint, width, spacing, distance)
+    local num = #frames;
     local numButtons = math.min(MAX_PER_ROW, num);
     local fullWidth = (width * numButtons) + (spacing * (numButtons - 1));
     local halfWidth = fullWidth / 2;
-    local fullDistance = distance + (math.floor(num / MAX_PER_ROW) * frames[1]:GetHeight()) + (math.ceil(num / MAX_PER_ROW) * distance);
     
+    local numRows = math.floor((num + MAX_PER_ROW - 1) / MAX_PER_ROW) - 1;
+    local fullDistance = numRows * frames[1]:GetHeight() + (numRows + 1) * distance;
+    
+    -- First frame
+    frames[1]:ClearAllPoints();
+    frames[1]:SetPoint(anchorPoint, anchor, relativePoint, -halfWidth, fullDistance);
+
     -- first row
     for i = 2, math.min(MAX_PER_ROW, #frames) do
         frames[i]:SetPoint("LEFT", frames[i-1], "RIGHT", spacing, 0);
     end
 
     -- n-rows after
-    if (#frames > MAX_PER_ROW) then
+    if (num > MAX_PER_ROW) then
         local currentExtraRow = 0;
         local finished = false;
         repeat
@@ -43,9 +50,6 @@ local function ReanchorFrames(frames, num, anchorPoint, anchor, relativePoint, w
             currentExtraRow = currentExtraRow + 1;
         until finished;
     end
-
-    frames[1]:ClearAllPoints();
-    frames[1]:SetPoint(anchorPoint, anchor, relativePoint, -halfWidth, fullDistance);
 end
 
 function ChallengesFrame_OnLoad(self)
@@ -107,7 +111,7 @@ function ChallengesFrame_Update(self)
     local num = #sortedMaps;
 
     CreateFrames(self, "DungeonIcons", num, "ChallengesDungeonIconFrameTemplate");
-    ReanchorFrames(self.DungeonIcons, num, "BOTTOMLEFT", self, "BOTTOM", frameWidth, spacing, distance);
+    ReanchorFrames(self.DungeonIcons, "BOTTOMLEFT", self, "BOTTOM", frameWidth, spacing, distance);
     
     for i = 1, #sortedMaps do
         local frame = self.DungeonIcons[i];
@@ -635,7 +639,7 @@ function ChallengeModeCompleteBannerMixin:CreateAndPositionPartyMembers(num)
 	local frameWidth, spacing, distance = 61, 22, -100;
     
     CreateFrames(self, "PartyMembers", num, spacing, "ChallengeModeBannerPartyMemberTemplate");
-    CenterFrames(self.PartyMembers[1], num, "TOPLEFT", self.Title, "TOP", frameWidth, spacing, distance);
+    ReanchorFrames(self.PartyMembers, "TOPLEFT", self.Title, "TOP", frameWidth, spacing, distance);
 end
 
 function ChallengeModeCompleteBannerMixin:PerformAnimOut()

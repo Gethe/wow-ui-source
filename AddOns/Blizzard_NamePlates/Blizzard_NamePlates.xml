@@ -286,7 +286,7 @@
 		</Layers>
 	</Frame>
 
-	<Button name="NamePlateUnitFrameTemplate" parentKey="UnitFrame" setAllPoints="true" useParentLevel="true" virtual="true">
+	<Button name="BaseNamePlateUnitFrameTemplate" parentKey="UnitFrame" setAllPoints="true" useParentLevel="true" virtual="true">
 		<KeyValues>
 			<KeyValue key="disableMouse" value="true" type="boolean"/>
 		</KeyValues>
@@ -453,4 +453,7 @@
 			<OnLoad function="CompactUnitFrame_OnLoad"/>
 		</Scripts>
 	</Button>
+
+	<Button name="NamePlateUnitFrameTemplate" inherits="BaseNamePlateUnitFrameTemplate" virtual="true" />
+	<Button name="ForbiddenNamePlateUnitFrameTemplate" inherits="BaseNamePlateUnitFrameTemplate" virtual="true" />
 </Ui>
