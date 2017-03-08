@@ -69,6 +69,9 @@ Import("GetCVar");
 Import("GMError");
 Import("GetMouseFocus");
 Import("Enum");
+Import("SecureMixin");
+Import("CreateFromSecureMixins");
+Import("ShrinkUntilTruncateFontStringMixin");
 
 --GlobalStrings
 Import("BLIZZARD_STORE");
@@ -179,8 +182,15 @@ Import("BLIZZARD_STORE_VAS_ERROR_RACE_CLASS_COMBO_INELIGIBLE");
 Import("BLIZZARD_STORE_VAS_ERROR_INELIGIBLE_MAP_ID");
 Import("BLIZZARD_STORE_VAS_ERROR_BATTLEPAY_DELIVERY_PENDING");
 Import("BLIZZARD_STORE_VAS_ERROR_HAS_WOW_TOKEN");
+Import("BLIZZARD_STORE_VAS_ERROR_HAS_HEIRLOOM");
 Import("BLIZZARD_STORE_VAS_ERROR_CHARACTER_LOCKED");
 Import("BLIZZARD_STORE_VAS_ERROR_LAST_SAVE_TOO_RECENT");
+Import("BLIZZARD_STORE_VAS_ERROR_INVALID_DESTINATION_ACCOUNT");
+Import("BLIZZARD_STORE_VAS_ERROR_INVALID_SOURCE_ACCOUNT");
+Import("BLIZZARD_STORE_VAS_ERROR_DISALLOWED_SOURCE_ACCOUNT");
+Import("BLIZZARD_STORE_VAS_ERROR_DISALLOWED_DESTINATION_ACCOUNT");
+Import("BLIZZARD_STORE_VAS_ERROR_LOWER_BOX_LEVEL");
+Import("BLIZZARD_STORE_VAS_ERROR_MAX_CHARACTERS_ON_SERVER");
 Import("BLIZZARD_STORE_VAS_ERROR_OTHER");
 Import("BLIZZARD_STORE_VAS_ERROR_LABEL");
 Import("BLIZZARD_STORE_LEGION_PURCHASE_READY");
@@ -323,6 +333,9 @@ local WOW_TOKEN_CATEGORY_ID = 30;
 local WOW_GAMES_CATEGORY_ID = 33;
 local WOW_SERVICES_CATEGORY_ID = 22;
 local PI = math.pi;
+
+local CHARACTER_TRANSFER_FACTION_BUNDLE_PRODUCT_ID = 239;
+local CHARACTER_TRANSFER_PRODUCT_ID = 189;
 
 local currencyMult = 100;
 
@@ -902,9 +915,8 @@ local errorData = {
 		link = 11,
 	},
 	[Enum.StoreError.PaymentFailed] = {
-		title = BLIZZARD_STORE_ERROR_TITLE_PAYMENT,
-		msg = BLIZZARD_STORE_ERROR_MESSAGE_PAYMENT,
-		link = 11,
+		title = BLIZZARD_STORE_ERROR_TITLE_OTHER,
+		msg = BLIZZARD_STORE_ERROR_MESSAGE_OTHER,
 	},
 	[Enum.StoreError.WrongCurrency] = {
 		title = BLIZZARD_STORE_ERROR_TITLE_PAYMENT,
@@ -952,11 +964,29 @@ local errorData = {
 
 --VAS Error message data
 local vasErrorData = {
+	[Enum.VasError.InvalidDestinationAccount] = {
+		msg = BLIZZARD_STORE_VAS_ERROR_INVALID_DESTINATION_ACCOUNT,
+	},
+	[Enum.VasError.InvalidSourceAccount] = {
+		msg = BLIZZARD_STORE_VAS_ERROR_INVALID_SOURCE_ACCOUNT,
+	},
+	[Enum.VasError.DisallowedSourceAccount] = {
+		msg = BLIZZARD_STORE_VAS_ERROR_DISALLOWED_SOURCE_ACCOUNT,
+	},
+	[Enum.VasError.DisallowedDestinationAccount] = {
+		msg = BLIZZARD_STORE_VAS_ERROR_DISALLOWED_DESTINATION_ACCOUNT,
+	},
+	[Enum.VasError.LowerBoxLevel] = {
+		msg = BLIZZARD_STORE_VAS_ERROR_LOWER_BOX_LEVEL,
+	},
 	[Enum.VasError.RealmNotEligible] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_REALM_NOT_ELIGIBLE,
 	},
 	[Enum.VasError.CannotMoveGuildMaster] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_CANNOT_MOVE_GUILDMASTER,
+	},
+	[Enum.VasError.MaxCharactersOnServer] = {
+		msg = BLIZZARD_STORE_VAS_ERROR_MAX_CHARACTERS_ON_SERVER,
 	},
 	[Enum.VasError.DuplicateCharacterName] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_DUPLICATE_CHARACTER_NAME,
@@ -1018,6 +1048,9 @@ local vasErrorData = {
 	},
 	[Enum.VasError.HasWoWToken] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_HAS_WOW_TOKEN,
+	},
+	[Enum.VasError.HasHeirloom] = {
+		msg = BLIZZARD_STORE_VAS_ERROR_HAS_HEIRLOOM,
 	},
 	[Enum.VasError.CharLocked] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_CHARACTER_LOCKED,
@@ -1637,7 +1670,7 @@ function StoreFrame_OnLoad(self)
 	StoreFrame.SplashPrimary.Description:SetSpacing(5);
 	StoreFrame.Notice.Description:SetSpacing(5);
 	StoreFrame_UpdateActivePanel(self);
-
+	
 	--Check whether we already have an error waiting for us.
 	local errorID, internalErr = C_StoreSecure.GetFailureInfo();
 	if ( errorID ) then
@@ -2223,10 +2256,10 @@ function BuildCharacterTransferConfirmationString(character)
 	local sep = "";
 
 	if (SelectedDestinationWowAccount and SelectedDestinationWowAccount ~= BLIZZARD_STORE_VAS_DIFFERENT_BNET) then
-		confStr = SelectedDestinationWowAccount;
+		confStr = StripWoWAccountLicenseInfo(SelectedDestinationWowAccount);
 		sep = ", ";
 	elseif (SelectedDestinationBnetAccount) then
-		confStr = SelectedDestinationBnetAccount;
+		confStr = SelectedDestinationBnetAccount .. " (" .. StripWoWAccountLicenseInfo(SelectedDestinationBnetWowAccount) .. ")";
 		sep = ", ";
 	end
 
@@ -2322,6 +2355,7 @@ function StoreConfirmationFrame_OnEvent(self, event, ...)
 		WaitingOnConfirmation = false;
 		StoreFrame_UpdateActivePanel(StoreFrame);
 		StoreVASValidationFrame:Hide();
+		VASCharacterSelectionCancelTimeout();
 		if ( StoreFrame:IsShown() ) then
 			StoreConfirmationFrame_Update(self);
 			self:Raise();
@@ -2361,8 +2395,8 @@ function StoreConfirmationFrame_Update(self)
 		finalIcon = "Interface\\Icons\\INV_Misc_Note_02";
 	end
 	-- Character Transfer is a special snowflake here
-	if (productID == 239) then
-		local baseProductInfo = C_StoreSecure.GetProductInfo(189);
+	if (productID == CHARACTER_TRANSFER_FACTION_BUNDLE_PRODUCT_ID) then
+		local baseProductInfo = C_StoreSecure.GetProductInfo(CHARACTER_TRANSFER_PRODUCT_ID);
 		name = baseProductInfo.sharedData.name;
 		finalIcon = baseProductInfo.sharedData.texture;
 	end
@@ -2453,6 +2487,20 @@ function StoreVASValidationFrame_OnLoad(self)
 	self.CharacterSelectionFrame.CharacterSelector.Label:SetText(VAS_CHARACTER_LABEL);
 	self.CharacterSelectionFrame.NewCharacterName.Label:SetText(VAS_NEW_CHARACTER_NAME_LABEL);
 
+	SecureMixin(self.CharacterSelectionFrame.SelectedCharacterDescription, ShrinkUntilTruncateFontStringMixin);
+	self.CharacterSelectionFrame.SelectedCharacterDescription:SetFontObjectsToTry("GameFontHighlightSmall2", "GameFontWhiteTiny", "GameFontWhiteTiny2");
+
+	local labelsToShrink = {
+		"TransferRealmCheckbox",
+		"TransferAccountCheckbox",
+		"TransferFactionCheckbox",
+	};
+
+	for i, checkbox in ipairs(labelsToShrink) do
+		SecureMixin(self.CharacterSelectionFrame[checkbox].Label, ShrinkUntilTruncateFontStringMixin);
+		self.CharacterSelectionFrame[checkbox].Label:SetFontObjectsToTry("GameFontBlack", "GameFontBlackSmall", "GameFontBlackSmall2", "GameFontBlackTiny", "GameFontBlackTiny2");
+	end
+
 	if (IsOnGlueScreen()) then
 		self.CharacterSelectionFrame.NewCharacterName:SetFontObject("GlueEditBoxFont");
 		self.CharacterSelectionFrame.TransferRealmEditbox:SetFontObject("GlueEditBoxFont");
@@ -2509,6 +2557,7 @@ function StoreVASValidationFrame_SetVASStart(self)
 	SelectedDestinationWowAccount = nil;
 	SelectedDestinationBnetAccount = nil;
 	SelectedDestinationBnetWowAccount = nil;
+	CharacterTransferFactionChangeBundle = nil;
 	IsVasBnetTransferValidated = false;
 	RealmAutoCompleteList = nil;
 	self.CharacterSelectionFrame.RealmSelector.Text:SetText(SelectedRealm);
@@ -2608,56 +2657,15 @@ function StoreVASValidationFrame_OnEvent(self, event, ...)
 			self:Raise();
 		end
 	elseif ( event == "STORE_VAS_PURCHASE_ERROR" ) then
+		VASCharacterSelectionCancelTimeout();
 		WaitingOnConfirmation = false;
 		StoreFrame_UpdateActivePanel(StoreFrame);
 		if ( StoreFrame:IsShown() and StoreVASValidationFrame:IsShown() ) then
-			local errors = C_StoreSecure.GetVASErrors();
-			local characters = C_StoreSecure.GetCharactersForRealm(SelectedRealm);
-			local character = characters[SelectedCharacter];
-			local frame = self.CharacterSelectionFrame;
-			local hasOther = false;
-			local hasNonUserFixable = false;
-			for i = 1, #errors do
-				if (not vasErrorData[errors[i]]) then
-					hasOther = true;
-				elseif (vasErrorData[errors[i]].notUserFixable) then
-					hasNonUserFixable = true;
-				end
-			end
-
-			local desc = BLIZZARD_STORE_VAS_ERROR_LABEL;
-			if (hasOther) then
-				desc = BLIZZARD_STORE_VAS_ERROR_OTHER;
-			elseif (hasNonUserFixable) then
-				for i = 1, #errors do
-					if (vasErrorData[errors[i]].notUserFixable) then
-						desc = StoreVASValidationFrame_AppendError(desc, errors[i], character, i == 1);
-					end
-				end
-			else
-				for i = 1, #errors do
-					desc = StoreVASValidationFrame_AppendError(desc, errors[i], character, i == 1);
-				end
-			end
-			frame.ChangeIconFrame:Hide();
-			if (VASServiceType == Enum.VasServiceType.NameChange) then
-				frame.ValidationDescription:ClearAllPoints();
-				frame.ValidationDescription:SetPoint("TOPLEFT", frame.NewCharacterName, "BOTTOMLEFT", -5, -6);
-			elseif (VASServiceType == Enum.VasServiceType.CharacterTransfer) then
-				StoreVASValidationFrame_UpdateCharacterTransferValidationPosition();
-			else
-				frame.ValidationDescription:ClearAllPoints();
-				frame.ValidationDescription:SetPoint("TOPLEFT", frame.SelectedCharacterFrame, "BOTTOMLEFT", 8, -24);
-			end
-			frame.ValidationDescription:SetFontObject("GameFontBlackSmall2");
-			frame.ValidationDescription:SetTextColor(1.0, 0.1, 0.1);
-			frame.ValidationDescription:SetText(desc);
-			frame.ValidationDescription:Show();
-			frame.ContinueButton:Show();
-			frame.ContinueButton:Disable();
+			StoreVASValidationFrame_SetErrors(C_StoreSecure.GetVASErrors());
 		end
 	elseif ( event == "STORE_VAS_PURCHASE_COMPLETE" ) then
 		if (StoreFrame:IsShown()) then
+			WaitingOnConfirmation = false;
 			VASReady = true;
 			JustFinishedOrdering = true;
 			StoreFrame_UpdateActivePanel(StoreFrame);
@@ -2685,22 +2693,71 @@ function StoreVASValidationFrame_OnEvent(self, event, ...)
 			frame.ValidationDescription:Show();
 		end
 	elseif ( event == "VAS_QUEUE_STATUS_UPDATE" ) then
-			local transfer, factionTransfer = C_StoreGlue.GetVasTransferQueues();
-			local queueTime = Enum.VasQueueStatus.UnderAnHour;
-			if (VASServiceType == Enum.VasServiceType.CharacterTransfer) then
-					queueTime = transfer;
-			elseif (VASServiceType == Enum.VasServiceType.FactionChange) then
-				  queueTime = factionTransfer;
-			end
-			if (queueTime > Enum.VasQueueStatus.UnderAnHour) then
-					self.Disclaimer:SetTextColor(_G.RED_FONT_COLOR:GetRGB());
-			else
-					self.Disclaimer:SetTextColor(0, 0, 0);
-			end
-			local currencyInfo = currencyInfo();
-			local vasDisclaimerData = currencyInfo.vasDisclaimerData;
-			self.Disclaimer:SetText(HTML_START_CENTERED..string.format(vasDisclaimerData[VASServiceType].disclaimer, _G["VAS_QUEUE_"..VasQueueStatusToString[queueTime]])..HTML_END);
+		local transfer, factionTransfer = C_StoreGlue.GetVasTransferQueues();
+		local queueTime = Enum.VasQueueStatus.UnderAnHour;
+		if (VASServiceType == Enum.VasServiceType.CharacterTransfer) then
+			queueTime = transfer;
+		elseif (VASServiceType == Enum.VasServiceType.FactionChange) then
+			queueTime = factionTransfer;
+		end
+		if (queueTime > Enum.VasQueueStatus.UnderAnHour) then
+				self.Disclaimer:SetTextColor(_G.RED_FONT_COLOR:GetRGB());
+		else
+				self.Disclaimer:SetTextColor(0, 0, 0);
+		end
+		local currencyInfo = currencyInfo();
+		local vasDisclaimerData = currencyInfo.vasDisclaimerData;
+		self.Disclaimer:SetText(HTML_START_CENTERED..string.format(vasDisclaimerData[VASServiceType].disclaimer, _G["VAS_QUEUE_"..VasQueueStatusToString[queueTime]])..HTML_END);
 	end
+end
+
+function StoreVASValidationFrame_SetErrors(errors)
+	local characters = C_StoreSecure.GetCharactersForRealm(SelectedRealm);
+	local character = characters[SelectedCharacter];
+	local frame = StoreVASValidationFrame.CharacterSelectionFrame;
+	local hasOther = false;
+	local hasNonUserFixable = false;
+	for i = 1, #errors do
+		if (not vasErrorData[errors[i]]) then
+			hasOther = true;
+		elseif (vasErrorData[errors[i]].notUserFixable) then
+			hasNonUserFixable = true;
+		end
+	end
+
+	local desc = BLIZZARD_STORE_VAS_ERROR_LABEL;
+	if (hasOther) then
+		desc = BLIZZARD_STORE_VAS_ERROR_OTHER;
+	elseif (hasNonUserFixable) then
+		for i = 1, #errors do
+			if (vasErrorData[errors[i]].notUserFixable) then
+				desc = StoreVASValidationFrame_AppendError(desc, errors[i], character, i == 1);
+			end
+		end
+	else
+		for i = 1, #errors do
+			desc = StoreVASValidationFrame_AppendError(desc, errors[i], character, i == 1);
+		end
+	end
+	frame.ChangeIconFrame:Hide();
+	if (VASServiceType == Enum.VasServiceType.NameChange) then
+		frame.ValidationDescription:ClearAllPoints();
+		frame.ValidationDescription:SetPoint("TOPLEFT", frame.NewCharacterName, "BOTTOMLEFT", -5, -6);
+	elseif (VASServiceType == Enum.VasServiceType.CharacterTransfer) then
+		StoreVASValidationFrame_UpdateCharacterTransferValidationPosition();
+	else
+		frame.ValidationDescription:ClearAllPoints();
+		frame.ValidationDescription:SetPoint("TOPLEFT", frame.SelectedCharacterFrame, "BOTTOMLEFT", 8, -24);
+	end
+	frame.Spinner:Hide();
+	frame.RealmSelector.Button:Enable();
+	frame.CharacterSelector.Button:Enable();
+	frame.ValidationDescription:SetFontObject("GameFontBlackSmall2");
+	frame.ValidationDescription:SetTextColor(1.0, 0.1, 0.1);
+	frame.ValidationDescription:SetText(desc);
+	frame.ValidationDescription:Show();
+	frame.ContinueButton:Show();
+	frame.ContinueButton:Disable();
 end
 
 function StoreVASValidationFrame_OnVasProductComplete(self)
@@ -2729,6 +2786,36 @@ end
 
 function StoreVASValidationFrame_OnHide(self)
 	StoreFrame_UpdateCoverState();
+end
+
+function StoreVASValidationState_Lock()
+	local frame = StoreVASValidationFrame.CharacterSelectionFrame;
+	frame.RealmSelector.Button:Disable();
+	frame.CharacterSelector.Button:Disable();
+	frame.TransferRealmCheckbox:Disable();
+	frame.TransferRealmEditbox:Disable();
+	frame.TransferAccountCheckbox:Disable();
+	frame.TransferAccountDropDown.Button:Disable();
+	frame.TransferFactionCheckbox:Disable();
+	frame.TransferBattlenetAccountEditbox:Disable();
+	frame.TransferBnetWoWAccountDropDown.Button:Disable();
+	frame.NewCharacterName:Disable();
+	frame.ContinueButton:Disable();
+end
+
+function StoreVASValidationState_Unlock()
+	local frame = StoreVASValidationFrame.CharacterSelectionFrame;
+	frame.RealmSelector.Button:Enable();
+	frame.CharacterSelector.Button:Enable();
+	frame.TransferRealmCheckbox:Enable();
+	frame.TransferRealmEditbox:Enable();
+	frame.TransferAccountCheckbox:Enable();
+	frame.TransferAccountDropDown.Button:Enable();
+	frame.TransferFactionCheckbox:Enable();
+	frame.TransferBattlenetAccountEditbox:Enable();
+	frame.TransferBnetWoWAccountDropDown.Button:Enable();
+	frame.NewCharacterName:Enable();
+	frame.ContinueButton:Enable();
 end
 
 -------------------------------
@@ -3486,6 +3573,8 @@ function VASCharacterSelectionCharacterSelector_Callback(value)
 	frame.ValidationDescription:SetTextColor(0, 0, 0);
 	frame.ValidationDescription:Hide();
 
+	StoreVASValidationState_Unlock();
+
 	local bottomWidget = frame.SelectedCharacterFrame;
 	if (VASServiceType == Enum.VasServiceType.NameChange) then
 		frame.NewCharacterName:SetText("");
@@ -3497,16 +3586,28 @@ function VASCharacterSelectionCharacterSelector_Callback(value)
 		frame.ValidationDescription:SetPoint("TOPLEFT", bottomWidget, "BOTTOMLEFT", -5, -6);
 	elseif (VASServiceType == Enum.VasServiceType.CharacterTransfer) then
 		frame.TransferRealmCheckbox:Show();
-		frame.TransferAccountCheckbox:Show();
+		frame.TransferRealmCheckbox.Label:ApplyFontObjects();
+		if (C_StoreSecure.GetCurrencyID() ~= CURRENCY_KRW) then
+			frame.TransferAccountCheckbox:Show();
+			frame.TransferAccountCheckbox.Label:ApplyFontObjects();
+			frame.TransferFactionCheckbox:ClearAllPoints();
+			frame.TransferFactionCheckbox:SetPoint("TOPLEFT", frame.TransferAccountCheckbox, "BOTTOMLEFT", 0, -4);
+		else
+			frame.TransferFactionCheckbox:ClearAllPoints();
+			frame.TransferFactionCheckbox:SetPoint("TOPLEFT", frame.TransferRealmCheckbox, "BOTTOMLEFT", 0, -4);
+		end
 		frame.TransferRealmCheckbox:SetChecked(false);
 		frame.TransferRealmEditbox:SetText("");
 		frame.TransferRealmEditbox:Hide();
 		frame.TransferBattlenetAccountEditbox:Hide();
 		frame.TransferBattlenetAccountEditbox:SetText("");
+		frame.TransferBnetWoWAccountDropDown:Hide();
 		frame.TransferAccountCheckbox:SetChecked(false);
 		frame.TransferAccountDropDown.Text:SetText(BLIZZARD_STORE_VAS_SELECT_ACCOUNT);
 		frame.TransferAccountDropDown:Hide();
 		frame.TransferFactionCheckbox:SetChecked(false);
+		SelectedDestinationWowAccount = nil;
+		SelectedDestinationBnetWowAccount = nil;
 		local newFaction;
 		if (character.faction == 0) then
 			newFaction = FACTION_ALLIANCE;
@@ -3515,9 +3616,21 @@ function VASCharacterSelectionCharacterSelector_Callback(value)
 		end
 		-- We don't filter the character list, this prevents a lua error if a neutral pandarian is selected.
 		if (newFaction) then
-			frame.TransferFactionCheckbox.Label:SetText(string.format(BLIZZARD_STORE_VAS_TRANSFER_FACTION_BUNDLE, newFaction, "1.00 XTS"));
+			local bundleProductInfo = C_StoreSecure.GetProductInfo(CHARACTER_TRANSFER_FACTION_BUNDLE_PRODUCT_ID);
+			local baseProductInfo = C_StoreSecure.GetProductInfo(CHARACTER_TRANSFER_PRODUCT_ID);
+			local bundlePrice = bundleProductInfo.sharedData.currentDollars + (bundleProductInfo.sharedData.currentCents / 100);
+			local basePrice = baseProductInfo.sharedData.currentDollars + (baseProductInfo.sharedData.currentCents / 100);
+			local diffPrice = bundlePrice - basePrice;
+			local diffDollars = math.floor(diffPrice);
+			local diffCents = (diffPrice - diffDollars) * 100;
+			local info = currencyInfo();
+			local format = info.formatLong;
+			frame.TransferFactionCheckbox.Label:SetText(string.format(BLIZZARD_STORE_VAS_TRANSFER_FACTION_BUNDLE, newFaction, format(diffDollars, diffCents)));
 		end
 		frame.TransferFactionCheckbox:SetShown(newFaction ~= nil);
+		if (frame.TransferFactionCheckbox:IsShown()) then
+			frame.TransferFactionCheckbox.Label:ApplyFontObjects();
+		end
 		
 		frame.ContinueButton:Disable();
 	else
@@ -3796,7 +3909,9 @@ end
 function TransferRealmCheckbox_OnClick(self)
 	PlayCheckboxSound(self);
 	if (not self:GetChecked()) then
+		SelectedDestinationRealm = nil;
 		self:GetParent().TransferRealmEditbox:SetText("");
+		self:GetParent().TransferRealmAutoCompleteBox:Hide();
 	end
 	self:GetParent().TransferRealmEditbox:SetShown(self:GetChecked());
 	VASCharacterSelectionTransferGatherAndValidateData();
@@ -3900,6 +4015,25 @@ function VASCharacterSelectionCharacterSelector_OnClick(self)
 	StoreDropDown_SetDropdown(self:GetParent(), infoTable, VASCharacterSelectionCharacterSelector_Callback);
 end
 
+local TIMEOUT_SECS = 60; -- How long to wait for a response from the account server
+local timeoutTicker;
+
+function VASCharacterSelectionStartTimeout()
+	VASCharacterSelectionCancelTimeout();
+	timeoutTicker = NewSecureTicker(TIMEOUT_SECS, VASCharacterSelectionTimeout, 1);
+end
+
+function VASCharacterSelectionCancelTimeout()
+	if (timeoutTicker) then
+		SecureCancelTicker(timeoutTicker);
+		timeoutTicker = nil;
+	end
+end	
+
+function VASCharacterSelectionTimeout()
+	StoreVASValidationFrame_SetErrors({ "Other" });
+end
+
 function VASCharacterSelectionContinueButton_OnClick(self)
 	PlaySound("igMainMenuOptionCheckBoxOn");
 
@@ -3907,6 +4041,9 @@ function VASCharacterSelectionContinueButton_OnClick(self)
 		-- This should not happen, as this button should be disabled unless you have both selected.
 		return;
 	end
+
+	StoreVASValidationState_Lock();
+	VASCharacterSelectionStartTimeout();
 
 	local characters = C_StoreSecure.GetCharactersForRealm(SelectedRealm);
 
@@ -3999,7 +4136,9 @@ function VASCharacterSelectionTransferAccountDropDown_Callback(value)
 	local frame = StoreVASValidationFrame.CharacterSelectionFrame;
 	SelectedDestinationWowAccount = value;
 	frame.TransferAccountDropDown.Text:SetText(value);
+	frame.TransferBattlenetAccountEditbox:SetText("");
 	frame.TransferBattlenetAccountEditbox:SetShown(value == BLIZZARD_STORE_VAS_DIFFERENT_BNET);
+	frame.TransferBnetWoWAccountDropDown:Hide();
 	VASCharacterSelectionTransferGatherAndValidateData();
 end
 
@@ -4007,6 +4146,13 @@ function TransferFactionCheckbox_OnClick(self)
 	PlayCheckboxSound(self);
 	CharacterTransferFactionChangeBundle = self:GetChecked();
 	VASCharacterSelectionTransferGatherAndValidateData();
+end
+
+function StripWoWAccountLicenseInfo(gameAccount)
+	if (string.find(gameAccount, '#')) then
+		return string.gsub(gameAccount,'%d+\#(%d)','WoW%1');
+	end
+	return gameAccount;
 end
 
 function VASCharacterSelectionTransferBnetWoWAccountDropDown_OnClick(self)
@@ -4020,11 +4166,7 @@ function VASCharacterSelectionTransferBnetWoWAccountDropDown_OnClick(self)
 	local _, gameAccounts = C_StoreSecure.GetBnetTransferInfo();
 	local infoTable = {};
 	for i, gameAccount in ipairs(gameAccounts) do
-		local gameAccountText = gameAccount;
-		if (string.find(gameAccountText, '#')) then
-			gameAccountText = string.gsub(gameAccount,'%d+\#(%d)','WoW%1');
-		end
-		infoTable[#infoTable+1] = {text=gameAccountText, value=gameAccount, checked=(SelectedDestinationBnetWowAccount == gameAccount)};
+		infoTable[#infoTable+1] = {text=StripWoWAccountLicenseInfo(gameAccount), value=gameAccount, checked=(SelectedDestinationBnetWowAccount == gameAccount)};
 	end
 
 	StoreDropDown_SetDropdown(self:GetParent(), infoTable, VASCharacterSelectionTransferBnetWoWAccountDropDown_Callback);
@@ -4033,7 +4175,7 @@ end
 function VASCharacterSelectionTransferBnetWoWAccountDropDown_Callback(value)
 	local frame = StoreVASValidationFrame.CharacterSelectionFrame;
 	SelectedDestinationBnetWowAccount = value;
-	frame.TransferBnetWoWAccountDropDown.Text:SetText(value);
+	frame.TransferBnetWoWAccountDropDown.Text:SetText(StripWoWAccountLicenseInfo(value));
 	VASCharacterSelectionTransferGatherAndValidateData();
 end
 

@@ -2346,7 +2346,8 @@
 									<Anchor point="TOPLEFT" relativeKey="$parent.SelectedCharacterFrame" relativePoint="TOPLEFT" x="72" y="-16"/>
 								</Anchors>
 							</FontString>
-							<FontString parentKey="SelectedCharacterDescription" inherits="GameFontHighlightSmall2">
+							<FontString parentKey="SelectedCharacterDescription" inherits="GameFontHighlightSmall2" justifyH="LEFT">
+								<Size x="220" y="14"/>
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeKey="$parent.SelectedCharacterName" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
 								</Anchors>
@@ -2467,7 +2468,8 @@
 									</Texture>
 								</Layer>
 								<Layer level="ARTWORK">
-									<FontString key="Label" inherits="GameFontBlack" text="BLIZZARD_STORE_VAS_TRANSFER_REALM">
+									<FontString parentKey="Label" inherits="GameFontBlack" text="BLIZZARD_STORE_VAS_TRANSFER_REALM" justifyH="LEFT">
+										<Size x="124" y="14"/>
 										<Anchors>
 											<Anchor point="LEFT" relativePoint="RIGHT" x="4" y="0"/>
 										</Anchors>
@@ -2570,7 +2572,8 @@
 									</Texture>
 								</Layer>
 								<Layer level="ARTWORK">
-									<FontString key="Label" inherits="GameFontBlack" text="BLIZZARD_STORE_VAS_TRANSFER_ACCOUNT">
+									<FontString parentKey="Label" inherits="GameFontBlack" text="BLIZZARD_STORE_VAS_TRANSFER_ACCOUNT" justifyH="LEFT">
+										<Size x="124" y="14"/>
 										<Anchors>
 											<Anchor point="LEFT" relativePoint="RIGHT" x="4" y="0"/>
 										</Anchors>
@@ -2607,7 +2610,8 @@
 									</Texture>
 								</Layer>
 								<Layer level="ARTWORK">
-									<FontString parentKey="Label" inherits="GameFontBlack">
+									<FontString parentKey="Label" inherits="GameFontBlack" justifyH="LEFT">
+										<Size x="280" y="14"/>
 										<Anchors>
 											<Anchor point="LEFT" relativePoint="RIGHT" x="4" y="0"/>
 										</Anchors>

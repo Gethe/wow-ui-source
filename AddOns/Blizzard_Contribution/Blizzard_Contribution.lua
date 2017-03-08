@@ -77,38 +77,9 @@ end
 ContributionStatusMixin = {}
 
 function ContributionStatusMixin:OnLoad()
-	self.Bar:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar"); -- Set to some default texture just to instantiate the bar
+	self:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar"); -- Set to some default texture just to instantiate the bar
 	self.Spark:ClearAllPoints();
-	self.Spark:SetPoint("CENTER", self.Bar:GetStatusBarTexture(), "RIGHT", 0, 0);
-	self.Spark:SetParent(self.Bar);
-
-	self.Bar:ClearAllPoints();
-	self.Bar:SetAllPoints(self);
-	self.Bar:SetStatusBarColor(1, 1, 1, 1);
-	self.Bar.BarBG:SetAtlas("Legionfall_BarBackground");
-	self.Bar.IconBG:Hide();
-
-	self.Bar.BarGlow:ClearAllPoints();
-	self.Bar.BarGlow:SetPoint("TOPLEFT", self.Bar, "TOPLEFT", -6.0, 4.0);
-	self.Bar.BarGlow:SetPoint("BOTTOMRIGHT", self.Bar, "BOTTOMRIGHT", 6.0, -4.0);
-
-	self.Bar.Label:SetPoint("CENTER", self.Bar, "CENTER", 0, 0);
-	self.Bar.Label:SetFontObject(GameFontHighlight);
-
-	local SetupBarFrame = function(barFrame)
-		barFrame:ClearAllPoints();
-		barFrame:SetPoint("TOPLEFT", self.Bar, "TOPLEFT", -7.0, 7.0);
-		barFrame:SetPoint("BOTTOMRIGHT", self.Bar, "BOTTOMRIGHT", 7.0, -7.0);
-
-		barFrame:SetAtlas("Legionfall_BarFrame");
-	end
-
-	SetupBarFrame(self.Bar.BarFrame);
-	SetupBarFrame(self.Bar.BarFrame2);
-	SetupBarFrame(self.Bar.BarFrame3);
-
-	self.FullBarFlare1:SetHeight(42);
-	self.FullBarFlare2:SetHeight(42);
+	self.Spark:SetPoint("CENTER", self:GetStatusBarTexture(), "RIGHT", 0, 0);
 end
 
 function ContributionStatusMixin:SetContributionID(contributionID)
@@ -119,33 +90,36 @@ function ContributionStatusMixin:Update()
 	local state, stateAmount, timeOfNextStateChange = C_ContributionCollector.GetState(self.contributionID);
 	local appearance = CONTRIBUTION_APPEARANCE_DATA[state];
 
-	BonusObjectiveTrackerProgressBar_SetValue(self, stateAmount * 100);
-	self.AnimValue = stateAmount * 100;
+	self:SetValue(stateAmount);
 
-	self.Bar:SetStatusBarAtlas(appearance.statusBarAtlas);
+	self:SetStatusBarAtlas(appearance.statusBarAtlas);
 	self.Spark:SetShown(state == Enum.ContributionState.Building and stateAmount > 0 and stateAmount < 1);
 
 	local text;
-	self.onlyShowTextOnMouseEnter = false;
+	self.onlyShowTextOnMouseEnter = true;
 	if state == Enum.ContributionState.Active and timeOfNextStateChange then
+		text = FormatPercentage(stateAmount);
+	elseif state == Enum.ContributionState.UnderAttack and timeOfNextStateChange then
 		local time = math.max(timeOfNextStateChange - GetServerTime(), 60); -- Never display times below 1 minute
-		text = CONTRIBUTION_POI_TOOLTIP_REMAINING_ACTIVE_TIME:format(SecondsToTime(time, true, true, 1));
-	elseif state == Enum.ContributionState.UnderAttack then
-		text = CONTIBUTION_HEALTH_TEXT_WITH_PERCENTAGE:format(FormatPercentage(stateAmount));
+		text = CONTRIBUTION_POI_TOOLTIP_REMAINING_TIME:format(SecondsToTime(time, true, true, 1));
 	elseif state == Enum.ContributionState.Destroyed then
-		text = DISABLED_FONT_COLOR:WrapTextInColorCode(CONTIBUTION_HEALTH_TEXT_WITH_PERCENTAGE:format(FormatPercentage(stateAmount)));
+		text = DISABLED_FONT_COLOR:WrapTextInColorCode(FormatPercentage(stateAmount));
 	elseif state == Enum.ContributionState.Building then
 		text = FormatPercentage(stateAmount);
-		self.onlyShowTextOnMouseEnter = true;
 	end
 
-	self.Bar.Label:SetText(text);
+	self.Text:SetText(text);
 	self:UpdateTextVisibility();
 end
 
 function ContributionStatusMixin:PlayFlashAnimation()
 	PlaySound("UI_72_Buildings_Contribute_Resources", nil, false);
-	BonusObjectiveTrackerProgressBar_PlayAnimation(self, self.AnimValue, 1, 15);
+
+	-- Only play the animation if it isn't playing or is almost finished.
+	local progress = self.FlashAnim:GetProgress();
+	if progress == 0 or progress > .65 then
+		self.FlashAnim:Restart();
+	end
 end
 
 function ContributionStatusMixin:OnUpdate()
@@ -168,10 +142,27 @@ end
 
 function ContributionStatusMixin:UpdateTextVisibility()
 	local shouldShowText = not self.onlyShowTextOnMouseEnter or self.isMouseOver;
-	self.Bar.Label:SetShown(shouldShowText);
+	self.Text:SetShown(shouldShowText);
 end
 
 ContributeButtonMixin = {};
+
+function ContributeButtonMixin:OnShow()
+	self:RegisterEvent("CURRENCY_DISPLAY_UPDATE");
+end
+
+function ContributeButtonMixin:OnHide()
+	self:UnregisterEvent("CURRENCY_DISPLAY_UPDATE");
+end
+
+function ContributeButtonMixin:OnEvent(event, ...)
+	if event == "CURRENCY_DISPLAY_UPDATE" then
+		local currencyID = ...;
+		if currencyID == self.requiredCurrencyID then
+			self:Update();
+		end
+	end
+end
 
 function ContributeButtonMixin:OnClick(button)
 	PlaySound("UI_72_Buildings_Contribute_Power_Menu_Click");
@@ -191,11 +182,9 @@ function ContributeButtonMixin:OnEnter()
 			GameTooltip_AddQuestRewardsToTooltipWithHeader(ContributionTooltip, self.questID, 0, CONTRIBUTION_REWARD_TOOLTIP_TEXT, NORMAL_FONT_COLOR, false);
 
 			local currencyID, requiredCurrency = C_ContributionCollector.GetRequiredContributionAmount(self.contributionID);
-			requiredCurrency = BreakUpLargeNumbers(requiredCurrency);
 			local currencyName, ownedCurrency = GetCurrencyInfo(currencyID);
-			local ownedCurrency = BreakUpLargeNumbers(ownedCurrency);
-			local currencyLine = CONTRIBUTION_TOOLTIP_PLAYER_CURRENCY_AMOUNT:format(ownedCurrency, requiredCurrency, currencyName);
 			local currencyLineColor = (ownedCurrency >= requiredCurrency) and NORMAL_FONT_COLOR or RED_FONT_COLOR;
+			local currencyLine = CONTRIBUTION_TOOLTIP_PLAYER_CURRENCY_AMOUNT:format(BreakUpLargeNumbers(ownedCurrency), BreakUpLargeNumbers(requiredCurrency), currencyName);
 
 			ContributionTooltip.Currency:Show();
 			ContributionTooltip.Currency:SetVertexColor(currencyLineColor:GetRGBA());
@@ -241,6 +230,7 @@ end
 
 function ContributeButtonMixin:SetContributionID(contributionID)
 	self.contributionID = contributionID;
+	self.requiredCurrencyID = C_ContributionCollector.GetRequiredContributionAmount(contributionID);
 end
 
 function ContributeButtonMixin:Update()
@@ -281,8 +271,14 @@ function ContributionMixin:Setup(layoutIndex, contributionID)
 	self.contributionID = contributionID;
 	self.stateToAtlas = C_ContributionCollector.GetAtlases(self.contributionID);
 
+	self:SetupContributeButton();
+
 	self:Update();
 	self:Show();
+end
+
+function ContributionMixin:SetupContributeButton()
+	self.ContributeButton:SetContributionID(self.contributionID);
 end
 
 function ContributionMixin:Update()
@@ -350,7 +346,7 @@ function ContributionMixin:AddReward(index, rewardID)
 	reward:SetPoint("TOPLEFT", self.Description, "BOTTOMLEFT", 0, (index - 1) * -45);
 
 	local state, stateAmount = C_ContributionCollector.GetState(self.contributionID);
-	local isRewardActive = state == Enum.ContributionState.Active;
+	local isRewardActive = state == Enum.ContributionState.Active or state == Enum.ContributionState.UnderAttack;
 	local isRewardVisible = state ~= Enum.ContributionState.Destroyed;
 	reward:Setup(rewardID, isRewardActive);
 	reward:SetShown(isRewardVisible);
@@ -362,14 +358,12 @@ function ContributionMixin:UpdateStatus()
 end
 
 function ContributionMixin:UpdateContributeButton()
-	self.ContributeButton:SetContributionID(self.contributionID);
 	self.ContributeButton:Update();
 	self:UpdatePendingAnimations();
 end
 
 function ContributionMixin:QueueAnimation(shouldQueue)
 	self.hasPendingAnimation = shouldQueue;
-	self.animationLoopCount = 0;
 end
 
 function ContributionMixin:UpdatePendingAnimations()

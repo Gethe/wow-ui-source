@@ -1051,6 +1051,7 @@ end
 
 function WorldStateScoreFrame_OnClose(self)
 	PlaySound("igCharacterInfoClose");
+	HideParentPanel(self);
 end
 
 function WorldStateScoreFrame_OnHide(self)

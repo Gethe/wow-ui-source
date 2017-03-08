@@ -227,7 +227,7 @@ function PlayerTalentFrame_Toggle(suggestedTalentTab)
 			PlayerTalentTab_OnClick(_G["PlayerTalentFrameTab"..SPECIALIZATION_TAB]);
 		elseif ( GetNumUnspentTalents() > 0 ) then
 			PlayerTalentTab_OnClick(_G["PlayerTalentFrameTab"..TALENTS_TAB]);
-        elseif ( GetNumUnspectPvpTalents() > 0 ) then
+        elseif ( GetNumUnspentPvpTalents() > 0 ) then
             PlayerTalentTab_OnClick(_G["PlayerTalentFrameTab"..PVP_TALENTS_TAB]);
 		elseif ( selectedTab ) then
 			PlayerTalentTab_OnClick(_G["PlayerTalentFrameTab"..selectedTab]);

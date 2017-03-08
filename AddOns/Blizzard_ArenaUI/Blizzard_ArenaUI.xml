@@ -317,7 +317,7 @@
 			<Frame parentKey="CC">
 				<Size x="18" y="18"/>
 				<Anchors>
-					<Anchor point="RIGHT" relativePoint="LEFT" x="-4" y="-3"/>
+					<Anchor point="RIGHT" relativePoint="LEFT" x="-12" y="-3"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
@@ -393,14 +393,14 @@
 				<Scripts>
 					<OnLoad>
 						self:RegisterEvent("SCRIPT_ARENA_PREP_OPPONENT_SPECIALIZATIONS");
-						UpdateArenaPrepBackground();
+						ArenaPrepFrames_UpdateBackground();
 					</OnLoad>
 					<OnShow>
 						self:SetFrameLevel(1);
 					</OnShow>
 					<OnEvent>
 						if ( event == "SCRIPT_ARENA_PREP_OPPONENT_SPECIALIZATIONS" ) then
-							UpdateArenaPrepBackground();
+							ArenaPrepFrames_UpdateBackground();
 							OpacityFrameSlider:SetValue(tonumber(GetCVar("partyBackgroundOpacity")));
 							ArenaPrepBackground_SetOpacity();
 						end

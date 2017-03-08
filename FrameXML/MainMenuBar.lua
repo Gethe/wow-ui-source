@@ -49,7 +49,7 @@ end
 
 function MainMenuBar_ArtifactTick_OnEnter(self)
 	GameTooltip_SetDefaultAnchor(GameTooltip, UIParent);
-	GameTooltip:SetText(ARTIFACT_POWER_TOOLTIP_TITLE:format(BreakUpLargeNumbers(ArtifactWatchBar.totalXP), BreakUpLargeNumbers(ArtifactWatchBar.xp), BreakUpLargeNumbers(ArtifactWatchBar.xpForNextPoint)), HIGHLIGHT_FONT_COLOR:GetRGB());
+	GameTooltip:SetText(ARTIFACT_POWER_TOOLTIP_TITLE:format(BreakUpLargeNumbers(ArtifactWatchBar.totalXP, true), BreakUpLargeNumbers(ArtifactWatchBar.xp, true), BreakUpLargeNumbers(ArtifactWatchBar.xpForNextPoint, true)), HIGHLIGHT_FONT_COLOR:GetRGB());
 	GameTooltip:AddLine(ARTIFACT_POWER_TOOLTIP_BODY:format(ArtifactWatchBar.numPointsAvailableToSpend), nil, nil, nil, true);
 
 	GameTooltip:Show();

@@ -634,6 +634,8 @@ function WardrobeCollectionFrame_SetContainer(parent)
 		collectionFrame.ItemsTab:SetPoint("TOPLEFT", 8, -28);
 		WardrobeCollectionFrame_SetTab(collectionFrame.selectedTransmogTab);
 	end
+	-- changing the parent of a frame resets frame stratas and levels of all children
+	collectionFrame.ItemsCollectionFrame.HelpBox:SetFrameStrata("DIALOG");
 	collectionFrame:Show();
 end
 
@@ -958,10 +960,18 @@ function WardrobeCollectionFrame_OnHide(self)
 	self:UnregisterEvent("DISPLAY_SIZE_CHANGED");
 	self:UnregisterEvent("TRANSMOG_COLLECTION_CAMERA_UPDATE");
 	C_TransmogCollection.EndSearch();
+	self.jumpToVisualID = nil;
 end
 	
 function WardrobeItemsCollectionMixin:OnMouseWheel(delta)
 	self.PagingFrame:OnMouseWheel(delta);
+end
+
+function WardrobeItemsCollectionMixin:CanHandleKey(key)
+	if ( key == WARDROBE_PREV_VISUAL_KEY or key == WARDROBE_NEXT_VISUAL_KEY or key == WARDROBE_UP_VISUAL_KEY or key == WARDROBE_DOWN_VISUAL_KEY ) then
+		return true;
+	end
+	return false;
 end
 
 function WardrobeItemsCollectionMixin:HandleKey(key)
@@ -992,7 +1002,7 @@ function WardrobeCollectionFrame_OnKeyDown(self, key)
 		end
 		self.tooltipContentFrame:RefreshAppearanceTooltip();
 	elseif ( key == WARDROBE_PREV_VISUAL_KEY or key == WARDROBE_NEXT_VISUAL_KEY or key == WARDROBE_UP_VISUAL_KEY or key == WARDROBE_DOWN_VISUAL_KEY ) then
-		if ( self.activeFrame.HandleKey ) then
+		if ( self.activeFrame:CanHandleKey(key) ) then
 			self:SetPropagateKeyboardInput(false);
 			self.activeFrame:HandleKey(key);
 		else
@@ -1055,7 +1065,7 @@ function WardrobeItemsCollectionMixin:ChangeModelsSlot(oldSlot, newSlot)
 			model:Reload(newSlot);
 		end
 		model.visualInfo = nil;
-	end
+		end
 	self.illusionWeaponVisualID = nil;
 end
 
@@ -1255,8 +1265,6 @@ function WardrobeItemsCollectionMixin:SetActiveCategory(category)
 
 	if ( WardrobeFrame_IsAtTransmogrifier() ) then
 		self.jumpToVisualID = select(4, self:GetActiveSlotInfo());
-	else
-		self.jumpToVisualID = nil;
 	end
 	self:ResetPage();
 	WardrobeCollectionFrame_SwitchSearchCategory();
@@ -1505,25 +1513,25 @@ function WardrobeItemsCollectionMixin:UpdateItems()
 		end
 	end
 	if ( pendingTransmogModelFrame ) then
-		WardrobeModelPendingTransmogFrame:SetParent(pendingTransmogModelFrame);
-		WardrobeModelPendingTransmogFrame:SetPoint("CENTER");
-		WardrobeModelPendingTransmogFrame:Show();
-		if ( WardrobeModelPendingTransmogFrame.visualID ~= pendingVisualID ) then
-			WardrobeModelPendingTransmogFrame.TransmogSelectedAnim:Stop();
-			WardrobeModelPendingTransmogFrame.TransmogSelectedAnim:Play();
-			WardrobeModelPendingTransmogFrame.TransmogSelectedAnim2:Stop();
-			WardrobeModelPendingTransmogFrame.TransmogSelectedAnim2:Play();
-			WardrobeModelPendingTransmogFrame.TransmogSelectedAnim3:Stop();
-			WardrobeModelPendingTransmogFrame.TransmogSelectedAnim3:Play();
-			WardrobeModelPendingTransmogFrame.TransmogSelectedAnim4:Stop();
-			WardrobeModelPendingTransmogFrame.TransmogSelectedAnim4:Play();
-			WardrobeModelPendingTransmogFrame.TransmogSelectedAnim5:Stop();
-			WardrobeModelPendingTransmogFrame.TransmogSelectedAnim5:Play();
+		self.PendingTransmogFrame:SetParent(pendingTransmogModelFrame);
+		self.PendingTransmogFrame:SetPoint("CENTER");
+		self.PendingTransmogFrame:Show();
+		if ( self.PendingTransmogFrame.visualID ~= pendingVisualID ) then
+			self.PendingTransmogFrame.TransmogSelectedAnim:Stop();
+			self.PendingTransmogFrame.TransmogSelectedAnim:Play();
+			self.PendingTransmogFrame.TransmogSelectedAnim2:Stop();
+			self.PendingTransmogFrame.TransmogSelectedAnim2:Play();
+			self.PendingTransmogFrame.TransmogSelectedAnim3:Stop();
+			self.PendingTransmogFrame.TransmogSelectedAnim3:Play();
+			self.PendingTransmogFrame.TransmogSelectedAnim4:Stop();
+			self.PendingTransmogFrame.TransmogSelectedAnim4:Play();
+			self.PendingTransmogFrame.TransmogSelectedAnim5:Stop();
+			self.PendingTransmogFrame.TransmogSelectedAnim5:Play();
 		end
-		WardrobeModelPendingTransmogFrame.UndoIcon:SetShown(showUndoIcon);
-		WardrobeModelPendingTransmogFrame.visualID = pendingVisualID;
+		self.PendingTransmogFrame.UndoIcon:SetShown(showUndoIcon);
+		self.PendingTransmogFrame.visualID = pendingVisualID;
 	else
-		WardrobeModelPendingTransmogFrame:Hide();
+		self.PendingTransmogFrame:Hide();
 	end
 	-- progress bar
 	self:UpdateProgressBar();
@@ -1870,7 +1878,7 @@ end
 
 function WardrobeItemsModelMixin:OnShow()
 	if ( self.needsReload ) then
-		self:Reload(self, self:GetParent():GetActiveSlot());
+		self:Reload(self:GetParent():GetActiveSlot());
 	end
 end
 
@@ -1884,6 +1892,7 @@ function WardrobeSetsTransmogModelMixin:OnLoad()
 	self:FreezeAnimation(0, 0, 0);
 	local x, y, z = self:TransformCameraSpaceToModelSpace(0, 0, -0.25);
 	self:SetPosition(x, y, z);
+	self:SetLight(true, false, -1, 1, -1, 1, 1, 1, 1, 0, 1, 1, 1);
 end
 
 function WardrobeSetsTransmogModelMixin:OnEvent()
@@ -1895,6 +1904,7 @@ end
 function WardrobeSetsTransmogModelMixin:OnMouseDown(button)
 	if ( button == "LeftButton" ) then
 		self:GetParent():SelectSet(self.setID);
+		PlaySound("UI_Transmog_ItemClick");
 	end
 end
 
@@ -2695,6 +2705,24 @@ function WardrobeSetsDataProviderMixin:GetUsableSets()
 	if ( not self.usableSets ) then
 		self.usableSets = C_TransmogSets.GetUsableSets();
 		self:SortSets(self.usableSets);
+		-- group sets by baseSetID, except for favorited sets since those are to remain bucketed to the front
+		for i, set in ipairs(self.usableSets) do
+			if ( not set.favorite ) then
+				local baseSetID = set.baseSetID or set.setID;
+				local numRelatedSets = 0;
+				for j = i + 1, #self.usableSets do
+					if ( self.usableSets[j].baseSetID == baseSetID or self.usableSets[j].setID == baseSetID ) then
+						numRelatedSets = numRelatedSets + 1;
+						-- no need to do anything if already contiguous
+						if ( j ~= i + numRelatedSets ) then
+							local relatedSet = self.usableSets[j];
+							tremove(self.usableSets, j);
+							tinsert(self.usableSets, i + numRelatedSets, relatedSet);
+						end
+					end
+				end
+			end
+		end
 	end
 	return self.usableSets;
 end
@@ -2973,6 +3001,14 @@ function WardrobeSetsCollectionMixin:DisplaySet(setID)
 	end
 
 	self.DetailsFrame.Name:SetText(setInfo.name);
+	if ( self.DetailsFrame.Name:IsTruncated() ) then
+		self.DetailsFrame.Name:Hide();
+		self.DetailsFrame.LongName:SetText(setInfo.name);
+		self.DetailsFrame.LongName:Show();
+	else
+		self.DetailsFrame.Name:Show();
+		self.DetailsFrame.LongName:Hide();
+	end
 	self.DetailsFrame.Label:SetText(setInfo.label);
 
 	self.DetailsFrame.itemFramesPool:ReleaseAll();
@@ -3156,6 +3192,49 @@ function WardrobeSetsCollectionMixin:ClearAppearanceTooltip()
 	WardrobeCollectionFrame_HideAppearanceTooltip();
 end
 
+function WardrobeSetsCollectionMixin:CanHandleKey(key)
+	if ( key == WARDROBE_UP_VISUAL_KEY or key == WARDROBE_DOWN_VISUAL_KEY ) then
+		return true;
+	end
+	return false;
+end
+
+function WardrobeSetsCollectionMixin:HandleKey(key)
+	local selectedSetID = self:GetSelectedSetID();
+	local _, index = SetsDataProvider:GetBaseSetByID(selectedSetID);
+	if ( not index ) then
+		return;
+	end
+	if ( key == WARDROBE_DOWN_VISUAL_KEY ) then
+		index = index + 1;
+	elseif ( key == WARDROBE_UP_VISUAL_KEY ) then
+		index = index - 1;
+	end
+	local sets = SetsDataProvider:GetBaseSets();
+	index = Clamp(index, 1, #sets);
+	self:SelectSet(sets[index].setID);
+	self:ScrollToSet(sets[index].setID);
+end
+
+function WardrobeSetsCollectionMixin:ScrollToSet(setID)
+	local totalHeight = 0;
+	local scrollFrameHeight = self.ScrollFrame:GetHeight();
+	local buttonHeight = self.ScrollFrame.buttonHeight;
+	for i, set in ipairs(SetsDataProvider:GetBaseSets()) do
+		if ( set.setID == setID ) then
+			local offset = self.ScrollFrame.scrollBar:GetValue();
+			if ( totalHeight + buttonHeight > offset + scrollFrameHeight ) then
+				offset = totalHeight + buttonHeight - scrollFrameHeight;
+			elseif ( totalHeight < offset ) then
+				offset = totalHeight;
+			end
+			self.ScrollFrame.scrollBar:SetValue(offset, true);
+			break;
+		end
+		totalHeight = totalHeight + buttonHeight;
+	end
+end
+
 do
 	local function OpenVariantSetsDropDown(self)
 		self:GetParent():GetParent():OpenVariantSetsDropDown();
@@ -3289,6 +3368,7 @@ function WardrobeSetsDetailsModelMixin:OnLoad()
 	self:SetAutoDress(false);
 	self:SetUnit("player");
 	self:UpdatePanAndZoomModelType();
+	self:SetLight(true, false, 0, 0.8, -1, 1, 1, 1, 1, 0.3, 1, 1, 1);
 end
 
 function WardrobeSetsDetailsModelMixin:UpdatePanAndZoomModelType()
@@ -3475,6 +3555,7 @@ function WardrobeSetsTransmogMixin:UpdateSets()
 	local usableSets = SetsDataProvider:GetUsableSets();
 	self.PagingFrame:SetMaxPages(ceil(#usableSets / self.PAGE_SIZE));
 
+	local pendingTransmogModelFrame = nil;
 	local indexOffset = (self.PagingFrame:GetCurrentPage() - 1) * self.PAGE_SIZE;
 	for i = 1, self.PAGE_SIZE do
 		local model = self.Models[i];
@@ -3494,6 +3575,7 @@ function WardrobeSetsTransmogMixin:UpdateSets()
 				transmogStateAtlas = "transmog-set-border-current-transmogged";
 			elseif ( set.setID == self.selectedSetID ) then
 				transmogStateAtlas = "transmog-set-border-selected";
+				pendingTransmogModelFrame = model;
 			end
 			if ( transmogStateAtlas ) then
 				model.TransmogStateTexture:SetAtlas(transmogStateAtlas, true);
@@ -3505,6 +3587,27 @@ function WardrobeSetsTransmogMixin:UpdateSets()
 		else
 			model:Hide();
 		end
+	end
+
+	if ( pendingTransmogModelFrame ) then
+		self.PendingTransmogFrame:SetParent(pendingTransmogModelFrame);
+		self.PendingTransmogFrame:SetPoint("CENTER");
+		self.PendingTransmogFrame:Show();
+		if ( self.PendingTransmogFrame.setID ~= pendingTransmogModelFrame.setID ) then
+			self.PendingTransmogFrame.TransmogSelectedAnim:Stop();
+			self.PendingTransmogFrame.TransmogSelectedAnim:Play();
+			self.PendingTransmogFrame.TransmogSelectedAnim2:Stop();
+			self.PendingTransmogFrame.TransmogSelectedAnim2:Play();
+			self.PendingTransmogFrame.TransmogSelectedAnim3:Stop();
+			self.PendingTransmogFrame.TransmogSelectedAnim3:Play();
+			self.PendingTransmogFrame.TransmogSelectedAnim4:Stop();
+			self.PendingTransmogFrame.TransmogSelectedAnim4:Play();
+			self.PendingTransmogFrame.TransmogSelectedAnim5:Stop();
+			self.PendingTransmogFrame.TransmogSelectedAnim5:Play();
+		end
+		self.PendingTransmogFrame.setID = pendingTransmogModelFrame.setID;
+	else
+		self.PendingTransmogFrame:Hide();
 	end
 end
 
@@ -3614,6 +3717,13 @@ end
 function WardrobeSetsTransmogMixin:SelectSet(setID)
 	self.selectedSetID = setID;
 	self:LoadSet(setID);
+end
+
+function WardrobeSetsTransmogMixin:CanHandleKey(key)
+	if ( key == WARDROBE_PREV_VISUAL_KEY or key == WARDROBE_NEXT_VISUAL_KEY or key == WARDROBE_UP_VISUAL_KEY or key == WARDROBE_DOWN_VISUAL_KEY ) then
+		return true;
+	end
+	return false;
 end
 
 function WardrobeSetsTransmogMixin:HandleKey(key)

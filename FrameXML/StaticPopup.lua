@@ -1457,24 +1457,25 @@ StaticPopupDialogs["RESURRECT_NO_TIMER"] = {
 	button2 = DECLINE,
 	OnShow = function(self)
 		self.timeleft = GetCorpseRecoveryDelay() + 60;
-		if (not HasSoulstone()) then
-			self.hideOnEscape = nil;
-			self.declineTimeLeft = 5;
-			self.button2:SetText(self.declineTimeLeft);
-			self.button2:Disable();
-			self.ticker = C_Timer.NewTicker(1, function()
-				self.declineTimeLeft = self.declineTimeLeft - 1;
-				if (self.declineTimeLeft == 0) then
-					self.button2:SetText(DECLINE)
-					self.button2:Enable();
-					self.ticker:Cancel();
-					self.hideOnEscape = 1;
-					return;
-				else
-					self.button2:SetText(self.declineTimeLeft);
-				end
-			end);
+		self.hideOnEscape = nil;
+		self.declineTimeLeft = 5;
+		if (HasSoulstone()) then
+			self.declineTimeLeft = 1;
 		end
+		self.button2:SetText(self.declineTimeLeft);
+		self.button2:Disable();
+		self.ticker = C_Timer.NewTicker(1, function()
+			self.declineTimeLeft = self.declineTimeLeft - 1;
+			if (self.declineTimeLeft == 0) then
+				self.button2:SetText(DECLINE)
+				self.button2:Enable();
+				self.ticker:Cancel();
+				self.hideOnEscape = 1;
+				return;
+			else
+				self.button2:SetText(self.declineTimeLeft);
+			end
+		end);
 	end,
 	OnHide = function(self)
 		if (self.ticker) then

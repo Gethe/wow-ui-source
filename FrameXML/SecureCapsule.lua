@@ -294,8 +294,15 @@ take("BLIZZARD_STORE_VAS_ERROR_RACE_CLASS_COMBO_INELIGIBLE");
 take("BLIZZARD_STORE_VAS_ERROR_INELIGIBLE_MAP_ID");
 take("BLIZZARD_STORE_VAS_ERROR_BATTLEPAY_DELIVERY_PENDING");
 take("BLIZZARD_STORE_VAS_ERROR_HAS_WOW_TOKEN");
+take("BLIZZARD_STORE_VAS_ERROR_HAS_HEIRLOOM");
 take("BLIZZARD_STORE_VAS_ERROR_CHARACTER_LOCKED");
 take("BLIZZARD_STORE_VAS_ERROR_LAST_SAVE_TOO_RECENT");
+take("BLIZZARD_STORE_VAS_ERROR_INVALID_DESTINATION_ACCOUNT");
+take("BLIZZARD_STORE_VAS_ERROR_INVALID_SOURCE_ACCOUNT");
+take("BLIZZARD_STORE_VAS_ERROR_DISALLOWED_SOURCE_ACCOUNT");
+take("BLIZZARD_STORE_VAS_ERROR_DISALLOWED_DESTINATION_ACCOUNT");
+take("BLIZZARD_STORE_VAS_ERROR_LOWER_BOX_LEVEL");
+take("BLIZZARD_STORE_VAS_ERROR_MAX_CHARACTERS_ON_SERVER");
 take("BLIZZARD_STORE_VAS_ERROR_OTHER");
 take("BLIZZARD_STORE_VAS_ERROR_LABEL");
 take("BLIZZARD_STORE_DISCLAIMER_FACTION_CHANGE");
@@ -313,10 +320,6 @@ take("BLIZZARD_STORE_DISCLAIMER_BOOST_TOKEN_100");
 take("BLIZZARD_STORE_DISCLAIMER_BOOST_TOKEN_100_CN");
 
 -- For Battle.net Token
-if ( IsGMClient() ) then
-	C_WowTokenFakeSecure = C_WowTokenSecure;
-	retain("C_WowTokenFake")
-end
 take("C_WowTokenSecure");
 retain("C_WowTokenPublic");
 take("TOKEN_REDEEM_LABEL");
@@ -420,3 +423,34 @@ takeenum("BattlepayProductDecorator");
 takeenum("VasServiceType");
 takeenum("VasPurchaseState");
 takeenum("BattlepaySpecialProducts");
+
+-- Secure Mixins
+-- where ... are the mixins to mixin
+function SecureMixin(object, ...)
+	if ( not issecure() ) then
+		return;
+	end
+
+	for i = 1, select("#", ...) do
+		local mixin = select(i, ...);
+		for k, v in pairs(mixin) do
+			object[k] = v;
+		end
+	end
+
+	return object;
+end
+
+-- where ... are the mixins to mixin
+function CreateFromSecureMixins(...)
+	if ( not issecure() ) then
+		return;
+	end
+
+	return SecureMixin({}, ...)
+end
+
+take("SecureMixin");
+take("CreateFromSecureMixins");
+
+retain("ShrinkUntilTruncateFontStringMixin");

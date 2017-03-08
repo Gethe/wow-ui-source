@@ -730,6 +730,9 @@ function GMError(...)
 	end
 end
 
+SecureMixin = Mixin;
+CreateFromSecureMixins = CreateFromMixins;
+
 -- =============================================================
 -- Backwards Compatibility
 -- =============================================================

@@ -241,7 +241,7 @@
 								</Texture>
 							</Layer>
 							<Layer level="ARTWORK">
-								<FontString parentKey="Stage" inherits="QuestTitleFont" wordwrap="true" justifyH="LEFT">
+								<FontString parentKey="Stage" inherits="QuestTitleFont" wordwrap="true" justifyH="LEFT" mixin="ShrinkUntilTruncateFontStringMixin">
 									<Size x="172" y="18"/>
 									<Anchors>
 										<Anchor point="TOPLEFT" x="15" y="-10"/>
@@ -305,6 +305,9 @@
 							</Button>
 						</Frames>
 						<Scripts>
+							<OnLoad>
+								self.Stage:SetFontObjectsToTry(QuestTitleFont, Fancy16Font, SystemFont_Med1);
+							</OnLoad>
 							<OnEnter function="ScenarioObjectiveStageBlock_OnEnter"/>
 							<OnLeave>
 								GameTooltip:Hide();

@@ -148,6 +148,11 @@ function GMChatFrame_OnShow(self)
 		GMChatFrameEditBox:SetAttribute("chatType", "WHISPER");
 	end
 
+	if ( GetCVarBool("chatMouseScroll") ) then
+		GMChatFrame:SetScript("OnMouseWheel", FloatingChatFrame_OnMouseScroll);
+		GMChatFrame:EnableMouseWheel(true);
+	end
+
 	self:SetScript("OnUpdate", GMChatFrame_OnUpdate);
 	self.editBox:Show();
 end

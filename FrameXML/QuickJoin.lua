@@ -593,7 +593,7 @@ function QuickJoinEntryMixin:ApplyToFrame(frame)
 	--Height
 	frame:SetHeight(self:GetFrameHeight());
 
-	if ( self.displayedQueues[1].queueData.queueType == "lfglist" ) then
+	if ( #self.displayedQueues > 0 and self.displayedQueues[1].queueData.queueType == "lfglist" ) then
 		frame.Icon:SetAtlas("socialqueuing-icon-group");
 		frame.Icon:SetSize(17, 16);
 		frame.Icon:SetPoint("TOPLEFT", frame, "TOPLEFT", 87, -6);

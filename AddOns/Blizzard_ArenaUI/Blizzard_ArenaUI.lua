@@ -5,11 +5,7 @@ function ArenaEnemyFrames_OnLoad(self)
 	self:RegisterEvent("VARIABLES_LOADED");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	
-	if ( GetCVarBool("showArenaEnemyFrames") ) then
-		ArenaEnemyFrames_Enable(self);
-	else
-		ArenaEnemyFrames_Disable(self);
-	end
+	ArenaEnemyFrames_CheckEffectiveEnableState(self);
 	local showCastbars = GetCVarBool("showArenaEnemyCastbar");
 	local castFrame;
 	for i = 1, MAX_ARENA_ENEMIES do
@@ -28,17 +24,9 @@ end
 function ArenaEnemyFrames_OnEvent(self, event, ...)
 	local arg1, arg2 = ...;
 	if ( (event == "CVAR_UPDATE") and (arg1 == "SHOW_ARENA_ENEMY_FRAMES_TEXT") ) then
-		if ( arg2 == "1" ) then
-			ArenaEnemyFrames_Enable(self);
-		else
-			ArenaEnemyFrames_Disable(self);
-		end
+		ArenaEnemyFrames_CheckEffectiveEnableState(self, arg2 == "1");
 	elseif ( event == "VARIABLES_LOADED" ) then
-		if ( GetCVarBool("showArenaEnemyFrames") ) then
-			ArenaEnemyFrames_Enable(self);
-		else
-			ArenaEnemyFrames_Disable(self);
-		end
+		ArenaEnemyFrames_CheckEffectiveEnableState(self);
 		local showCastbars = GetCVarBool("showArenaEnemyCastbar");
 		local castFrame;
 		for i = 1, MAX_ARENA_ENEMIES do
@@ -52,6 +40,7 @@ function ArenaEnemyFrames_OnEvent(self, event, ...)
 		UpdateArenaEnemyBackground(GetCVarBool("showPartyBackground"));
 		ArenaEnemyBackground_SetOpacity(tonumber(GetCVar("partyBackgroundOpacity")));
 	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
+		ArenaEnemyFrames_CheckEffectiveEnableState(self);
 		ArenaEnemyFrames_UpdateVisible();
 		ArenaEnemyFrames_ResetCrowdControlCooldownData();
 	end
@@ -75,6 +64,18 @@ end
 function ArenaEnemyFrames_OnHide(self)	
 	DurabilityFrame_SetAlerts();
 	UIParent_ManageFramePositions();
+end
+
+function ArenaEnemyFrames_CheckEffectiveEnableState(self, cvarUpdate)
+	if (C_PvP.IsInBrawl()) then
+		ArenaEnemyFrames_Disable(self);
+	else
+		if ( GetCVarBool("showArenaEnemyFrames") or cvarUpdate ) then
+			ArenaEnemyFrames_Enable(self);
+		else
+			ArenaEnemyFrames_Disable(self);
+		end
+	end
 end
 
 function ArenaEnemyFrames_Enable(self)
@@ -290,6 +291,10 @@ function ArenaEnemyFrame_OnShow(self)
 	C_PvP.RequestCrowdControlSpell(self.unit);
 end
 
+function ArenaEnemyFrames_GetBestAnchorUnitFrameForOppponent(opponentNumber)
+	return _G["ArenaEnemyFrame" .. math.min(opponentNumber, MAX_ARENA_ENEMIES)];
+end
+
 function ArenaEnemyFrame_UpdatePet(self, id, useCVars)	--At some points, we need to use CVars instead of UVars even though UVars are faster.
 	if ( not id ) then
 		id = self:GetID();
@@ -419,7 +424,7 @@ end
 
 function ArenaPrepFrames_OnEvent(self, event, ...) --also called in OnLoad
 	if (event == "ARENA_PREP_OPPONENT_SPECIALIZATIONS") then
-		UpdatePrepFrames();
+		ArenaPrepFrames_UpdateFrames();
 		self:Show()
 	end
 end
@@ -434,7 +439,11 @@ function ArenaPrepFrames_OnHide(self)
 	UIParent_ManageFramePositions();
 end
 
-function UpdatePrepFrames()
+function ArenaPrepFrames_GetBestAnchorUnitFrameForOppponent(opponentNumber)
+	return _G["ArenaPrepFrame" .. math.min(opponentNumber, MAX_ARENA_ENEMIES)];
+end
+
+function ArenaPrepFrames_UpdateFrames()
 	local numOpps = GetNumArenaOpponentSpecs();
 	for i=1, MAX_ARENA_ENEMIES do
 		local prepFrame = _G["ArenaPrepFrame"..i];
@@ -459,7 +468,7 @@ function UpdatePrepFrames()
 	
 end
 
-function UpdateArenaPrepBackground(force)
+function ArenaPrepFrames_UpdateBackground(force)
 	if ( (SHOW_PARTY_BACKGROUND == "1") or force ) then
 		ArenaPrepBackground:Show();
 		local numOpps = GetNumArenaOpponents();

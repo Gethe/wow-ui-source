@@ -832,7 +832,7 @@ function WorldMap_GetWorldQuestRewardType(questID)
 end
 
 function WorldMap_DoesWorldQuestInfoPassFilters(info, ignoreTypeFilters)
-	local tagID, tagName, worldQuestType, rarity, isElite, tradeskillLineIndex, allowDisplayPastCritical = GetQuestTagInfo(info.questId);
+	local tagID, tagName, worldQuestType, rarity, isElite, tradeskillLineIndex, displayTimeLeft = GetQuestTagInfo(info.questId);
 
 	if ( not ignoreTypeFilters ) then
 		if ( worldQuestType == LE_QUEST_TAG_TYPE_PROFESSION ) then
@@ -888,7 +888,7 @@ function WorldMap_TryCreatingWorldQuestPOI(info, taskIconIndex)
 		return nil;
 	end
 
-	local tagID, tagName, worldQuestType, rarity, isElite, tradeskillLineIndex, allowDisplayPastCritical = GetQuestTagInfo(info.questId);
+	local tagID, tagName, worldQuestType, rarity, isElite, tradeskillLineIndex, displayTimeLeft = GetQuestTagInfo(info.questId);
 
 	local taskPOI = WorldMap_GetOrCreateTaskPOI(taskIconIndex);
 	local selected = info.questId == GetSuperTrackedQuestID();
@@ -938,12 +938,18 @@ function WorldMap_GetActiveTaskPOIForQuestID(questID)
 end
 
 function WorldMap_UpdateQuestBonusObjectives()
+	local showOnlyInvasionWorldQuests = false;
 	if ( QuestMapFrame.DetailsFrame.questID ) then
 		-- Hide all task POIs while the player looks at quest details.
-		for i = 1, NUM_WORLDMAP_TASK_POIS do
-			_G["WorldMapFrameTaskPOI"..i]:Hide();
+		-- but for invasion quests we're gonna show all the invasion world quests
+		if ( IsQuestInvasion(QuestMapFrame.DetailsFrame.questID) ) then
+			showOnlyInvasionWorldQuests = true;
+		else
+			for i = 1, NUM_WORLDMAP_TASK_POIS do
+				_G["WorldMapFrameTaskPOI"..i]:Hide();
+			end
+			return;
 		end
-		return;
 	end
 
 	local mapAreaID = GetCurrentMapAreaID();
@@ -969,8 +975,17 @@ function WorldMap_UpdateQuestBonusObjectives()
 				local taskPOI;
 				local isWorldQuest = QuestUtils_IsQuestWorldQuest(info.questId);
 				if ( isWorldQuest ) then
-					taskPOI = WorldMap_TryCreatingWorldQuestPOI(info, taskIconIndex);
-				else
+					local showThisWorldQuest = true;
+					if ( showOnlyInvasionWorldQuests ) then
+						local _, _, worldQuestType = GetQuestTagInfo(info.questId);
+						if ( worldQuestType ~= LE_QUEST_TAG_TYPE_INVASION ) then
+							showThisWorldQuest = false;
+						end
+					end
+					if ( showThisWorldQuest ) then
+						taskPOI = WorldMap_TryCreatingWorldQuestPOI(info, taskIconIndex);
+					end
+				elseif ( not showOnlyInvasionWorldQuests ) then
 					taskPOI = WorldMap_TryCreatingBonusObjectivePOI(info, taskIconIndex);
 				end
 
@@ -1194,10 +1209,10 @@ function WorldMap_UpdateLandmarks()
 						else
 							graveyard.texture:SetTexture("Interface\\WorldMap\\GravePicker-Unselected");
 						end
-						worldMapPOI:Hide();		-- lame way to force tooltip redraw
 					else
 						worldMapPOI.graveyard = nil;
 					end
+					worldMapPOI:Hide();		-- lame way to force tooltip redraw
 					worldMapPOI:Show();
 				end
 			end
@@ -1691,7 +1706,6 @@ function WorldMapPOI_AddContributionsToTooltip(tooltip, ...)
 		end
 
 		tooltip:AddLine(contributionName, HIGHLIGHT_FONT_COLOR:GetRGB());
-		tooltip:AddLine(appearanceData.stateName, appearanceData.stateColor:GetRGB());
 
 		local tooltipLine = appearanceData.tooltipLine;
 		if tooltipLine then
@@ -1764,13 +1778,13 @@ function WorldMapPOI_OnEnter(self)
 		else
 			if (self.description and #self.description > 0) then
 				local timeLeftMinutes = C_WorldMap.GetAreaPOITimeLeft(self.poiID);
-				WorldMapTooltip:SetOwner(self, "ANCHOR_RIGHT");
-				WorldMapTooltip:SetText(HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(self.description));
 				if (timeLeftMinutes) then
+					WorldMapTooltip:SetOwner(self, "ANCHOR_RIGHT");
+					WorldMapTooltip:SetText(HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(self.description));
 					local timeString = SecondsToTime(timeLeftMinutes * 60);
 					WorldMapTooltip:AddLine(BONUS_OBJECTIVE_TIME_LEFT:format(timeString), NORMAL_FONT_COLOR:GetRGB());
+					WorldMapTooltip:Show();
 				end
-				WorldMapTooltip:Show();
 			end
 		end
 	end
@@ -1916,7 +1930,7 @@ function WorldMap_OnWorldQuestCompletedBySpell(questID)
 	end
 end
 
-function WorldMap_AddQuestTimeToTooltip(questID, allowDisplayPastCritical)
+function WorldMap_AddQuestTimeToTooltip(questID)
 	local timeLeftMinutes = C_TaskQuest.GetQuestTimeLeftMinutes(questID);
 	if ( timeLeftMinutes ) then
 		local color = NORMAL_FONT_COLOR;
@@ -1948,7 +1962,7 @@ function TaskPOI_OnEnter(self)
 
 	local title, factionID, capped = C_TaskQuest.GetQuestInfoByQuestID(self.questID);
 	if ( self.worldQuest ) then
-		local tagID, tagName, worldQuestType, rarity, isElite, tradeskillLineIndex, allowDisplayPastCritical = GetQuestTagInfo(self.questID);
+		local tagID, tagName, worldQuestType, rarity, isElite, tradeskillLineIndex, displayTimeLeft = GetQuestTagInfo(self.questID);
 		local color = WORLD_QUEST_QUALITY_COLORS[rarity];
 		WorldMapTooltip:SetText(title, color.r, color.g, color.b);
 		QuestUtils_AddQuestTypeToTooltip(WorldMapTooltip, self.questID, NORMAL_FONT_COLOR);
@@ -1964,7 +1978,9 @@ function TaskPOI_OnEnter(self)
 			end
 		end
 
-		WorldMap_AddQuestTimeToTooltip(self.questID, allowDisplayPastCritical);
+		if displayTimeLeft then
+			WorldMap_AddQuestTimeToTooltip(self.questID);
+		end
 	else
 		WorldMapTooltip:SetText(title);
 	end

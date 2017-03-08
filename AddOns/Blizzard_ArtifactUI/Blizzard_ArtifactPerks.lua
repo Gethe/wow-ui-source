@@ -383,6 +383,7 @@ function ArtifactPerksMixin:TryRefresh()
 			end
 		end
 
+		local finalTier2WasUnlocked = self.wasFinalPowerButtonUnlockedByTier[2];
 		self:RefreshPowers(self.newItem);
 		
 		self.TitleContainer:SetPointsRemaining(C_ArtifactUI.GetPointsRemaining());
@@ -403,7 +404,7 @@ function ArtifactPerksMixin:TryRefresh()
 		elseif self.numArtifactTraitsRefunded then
 			self:AnimateTraitRefund(self.numArtifactTraitsRefunded);
 			self.numArtifactTraitsRefunded = nil;
-		elseif self.wasFinalPowerButtonUnlockedByTier[2] then
+		elseif not finalTier2WasUnlocked and self.wasFinalPowerButtonUnlockedByTier[2] then
 			self:AnimateInCurvedLine(4);
 		else
 			if C_ArtifactUI:IsAtForge() and self:ShouldShowTierGlow() then 

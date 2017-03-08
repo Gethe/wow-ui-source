@@ -853,6 +853,11 @@ function SCENARIO_CONTENT_TRACKER_MODULE:Update()
 					stageBlock.Stage:SetPoint("TOPLEFT", 15, -18);
 				end
 			end
+			if (not stageBlock.appliedAlready) then
+				-- Ugly hack to get around :IsTruncated failing if used during load
+				C_Timer.After(1, function() stageBlock.Stage:ApplyFontObjects(); end);
+				stageBlock.appliedAlready = true;
+			end
 			ScenarioStage_CustomizeBlock(stageBlock, scenarioType);
 		end
 	end

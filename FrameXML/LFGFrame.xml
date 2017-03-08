@@ -695,6 +695,9 @@
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
 					</Anchors>
+					<Shadow>
+						<Offset x="1" y="-1"/>
+					</Shadow>
 				</FontString>
 				<FontString name="$parentRewardsLabel" inherits="QuestTitleFontBlackShadow" justifyH="LEFT" parentKey="rewardsLabel" text="LFD_REWARDS">
 					<Anchors>
@@ -706,6 +709,9 @@
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentRewardsLabel" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
 					</Anchors>
+					<Shadow>
+						<Offset x="1" y="-1"/>
+					</Shadow>
 				</FontString>
 				<FontString name="$parentXPLabel" inherits="QuestFont" justifyH="LEFT" parentKey="xpLabel" text="EXPERIENCE_COLON">
 					<Anchors>

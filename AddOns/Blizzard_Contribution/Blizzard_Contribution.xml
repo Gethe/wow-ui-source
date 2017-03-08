@@ -108,26 +108,83 @@
 		</Frames>
 	</Frame>
 
-	<Frame name="ContributionStatusTemplate" mixin="ContributionStatusMixin" inherits="BonusTrackerProgressBarTemplate" drawLayer="BACKGROUND" hidden="false" virtual="true">
+	<StatusBar name="ContributionStatusTemplate" mixin="ContributionStatusMixin" drawLayer="BACKGROUND" minValue="0" maxValue="1" virtual="true">
 		<KeyValues>
 			<KeyValue key="updateDelay" value="1" type="number"/>
 			<KeyValue key="nextUpdate" value="0" type="number"/>
 		</KeyValues>
-		<Size x="224" y="17" />
+		<Size x="224" y="15" />
 		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="BG" atlas="Legionfall_BarBackground">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-2.0" y="2.0" />
+						<Anchor point="BOTTOMRIGHT" x="2.0" y="-2.0" />
+					</Anchors>
+				</Texture>
+			</Layer>
 			<Layer level="ARTWORK">
-				<Texture parentKey="Spark" atlas="Legionfall_BarSpark" alphaMode="ADD" alpha=".5">
+				<Texture parentKey="Spark" atlas="Legionfall_BarSpark" alphaMode="ADD">
 					<Size x="8" y="32"/>
 				</Texture>
 			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Border" atlas="Legionfall_BarFrame">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-8.0" y="8.0" />
+						<Anchor point="BOTTOMRIGHT" x="8.0" y="-8.0" />
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Text" inherits="TextStatusBarTextLarge" setAllPoints="true" justifyV="MIDDLE" maxLines="1"/>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="BorderGlow" alpha="0" alphaMode="ADD" atlas="Legionfall_BarFrame-Glow" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Border"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Border"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<Texture parentKey="BarGlow" alpha="0" alphaMode="BLEND" atlas="OBJFX-BarGlow">
+					<Size x="230" y="37" />
+					<Anchors>
+						<Anchor point="TOP" x="0.0" y="11.0" />
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="3">
+				<Texture parentKey="SparkGlow" alpha="0" alphaMode="ADD" atlas="OBJFX_LineGlow">
+					<Size x="100" y="30"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Spark" x="-4.0" y="0" />
+					</Anchors>
+				</Texture>
+			</Layer>
 		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="FlashAnim" setToFinalAlpha="true">
+				<Alpha childKey="BarGlow" 								duration="0.5" order="1" fromAlpha="0" toAlpha=".75"/>
+				<Alpha childKey="BarGlow" 			startDelay="0.5" 	duration="0.5" order="1" fromAlpha=".75" toAlpha="0"/>
+				<Alpha childKey="BorderGlow"  							duration="0.5" order="1" fromAlpha="0" toAlpha=".5" smoothing="NONE"/>
+				<Alpha childKey="BorderGlow"		startDelay="0.5" 	duration="0.5" order="1" fromAlpha=".5" toAlpha="0" smoothing="NONE"/>
+				<Alpha childKey="SparkGlow"								duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="SparkGlow" 		startDelay="0.5" 	duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+				<Translation childKey="SparkGlow" 						duration="0.5" order="1" offsetX="2" offsetY="0"/>
+				<Scale childKey="SparkGlow" 							duration="0.25" order="1" fromScaleX="0.15" fromScaleY="1" toScaleX="0.2" toScaleY="1">
+					<Origin point="LEFT">
+						<Offset x="20" y="0"/>
+					</Origin>
+				</Scale>
+			</AnimationGroup>
+		</Animations>
 		<Scripts>
-			<OnLoad inherit="prepend" method="OnLoad"/>
+			<OnLoad method="OnLoad"/>
 			<OnUpdate method="OnUpdate"/>
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
 		</Scripts>
-	</Frame>
+	</StatusBar>
 
 	<Frame name="ContributionTemplate" mixin="ContributionMixin" virtual="true">
 		<Size x="256" y="455"/>
@@ -142,20 +199,23 @@
 					<Anchor point="TOP" relativeKey="$parent.Header" relativePoint="BOTTOM" x="0" y="6"/>
 				</Anchors>
 			</Frame>
-			<Frame parentKey="Status" inherits="ContributionStatusTemplate">
+			<StatusBar parentKey="Status" inherits="ContributionStatusTemplate">
 				<Anchors>
 					<Anchor point="BOTTOM" x="3.0" y="29.0" />
 				</Anchors>
-			</Frame>
+			</StatusBar>
 			<Button parentKey="ContributeButton" inherits="UIPanelButtonTemplate" mixin="CurrencyTemplateMixin, ContributeButtonMixin" motionScriptsWhileDisabled="true">
 				<Size x="169" y="24" />
 				<Anchors>
 					<Anchor point="TOP" relativeKey="$parent.Status" relativePoint="BOTTOM" x="0.0" y="-24.0" />
 				</Anchors>
 				<Scripts>
+					<OnShow method="OnShow"/>
+					<OnHide method="OnHide"/>
 					<OnClick method="OnClick"/>
 					<OnEnter method="OnEnter"/>
 					<OnLeave method="OnLeave"/>
+					<OnEvent method="OnEvent"/>
 				</Scripts>
 			</Button>
 		</Frames>

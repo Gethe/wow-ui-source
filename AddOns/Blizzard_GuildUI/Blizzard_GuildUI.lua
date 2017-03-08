@@ -380,6 +380,10 @@ function GuildFactionBar_OnEnter(self)
 	barMax = barMax - barMin;
 	barValue = barValue - barMin;
 	
+	if (barMax == 0) then
+		barMax = 1;
+	end
+
 	GuildFactionBarLabel:Show();
 	local name, description = GetGuildFactionInfo();
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
@@ -391,6 +395,10 @@ function GuildFactionBar_OnEnter(self)
 end
 
 function GuildBar_SetProgress(bar, currentValue, maxValue)
+	if (maxValue == 0) then
+		maxValue == 1;
+	end
+	
 	local MAX_BAR = bar:GetWidth() - 4;
 	local progress = min(MAX_BAR * currentValue / maxValue, MAX_BAR);
 	bar.progress:SetWidth(progress + 1);

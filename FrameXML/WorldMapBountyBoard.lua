@@ -298,8 +298,7 @@ function WorldMapBountyBoardMixin:ShowBountyTooltip(bountyIndex)
 	local title, level, suggestedGroup, isHeader, isCollapsed, isComplete, frequency, questID, startEvent, displayQuestID, isOnMap, hasLocalPOI, isTask, isStory = GetQuestLogTitle(questIndex);
 	if title then
 		WorldMapTooltip:SetText(title, HIGHLIGHT_FONT_COLOR:GetRGB());
-		local allowDisplayPastCritical = select(7, GetQuestTagInfo(bountyData.questID));
-		WorldMap_AddQuestTimeToTooltip(bountyData.questID, allowDisplayPastCritical);
+		WorldMap_AddQuestTimeToTooltip(bountyData.questID);
 
 		local _, questDescription = GetQuestLogQuestText(questIndex);
 		WorldMapTooltip:AddLine(questDescription, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
@@ -426,20 +425,34 @@ end
 
 function WorldMapBountyBoardMixin:FindBestMapForSelectedBounty()
 	local currentMapID = GetCurrentMapAreaID();
-
 	self:CacheWorldQuestDataForSelectedBounty();
 
 	local candidateMapID;
 
 	local maxQuests = 0;
 	if (not self.currentCandidateIndex) then
-		local myMap = FindInTableIf(self.maps, function(v) return v.mapID == currentMapID end);
-		if (myMap) then
-			self.currentCandidateIndex = myMap;
-			return;
+		local hierarchy = GetMapHierarchy();
+		for i, parentInfo in ipairs(hierarchy) do
+			if (not parentInfo.isContinent) then
+				ZoomOut();
+				local myParentMap = FindInTableIf(self.maps, function(v) return v.mapID == parentInfo.id end);
+				if (myParentMap) then
+					self.currentCandidateIndex = myParentMap;
+					break;
+				end
+			end
 		end
 
-		self.currentCandidateIndex = FindInTableIf(self.maps, function(v) return v.mapID == self.highestMapInfo.mapID end);
+		if (not self.currentCandidateIndex) then
+			local myMap = FindInTableIf(self.maps, function(v) return v.mapID == currentMapID end);
+			if (myMap) then
+				self.currentCandidateIndex = myMap;
+			end
+		end
+
+		if (not self.currentCandidateIndex) then
+			self.currentCandidateIndex = FindInTableIf(self.maps, function(v) return v.mapID == self.highestMapInfo.mapID end);
+		end
 		candidateMapID = self.maps[self.currentCandidateIndex].mapID;
 	elseif (#self.maps > 1) then
 		self.currentCandidateIndex = self.currentCandidateIndex + 1;
