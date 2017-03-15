@@ -426,7 +426,7 @@ function SpellButton_OnEvent(self, event, ...)
 		if ( slotType == "SPELL" ) then
 			if (FindFlyoutSlotBySpellID(actionID) > 0) then
 				-- We're part of a flyout
-				SpellBook_UpdateSpells();
+				SpellBookFrame_UpdateSpells();
 			else
 				onActionBar = C_ActionBar.HasSpellActionButtons(actionID);
 			end

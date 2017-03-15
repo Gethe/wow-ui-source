@@ -41,6 +41,7 @@ function SCENARIO_TRACKER_MODULE:OnFreeLine(line)
 		line.Glow.Anim:Stop();
 		line.Sheen.Anim:Stop();
 		line.CheckFlash.Anim:Stop();
+		line.CheckFlash:SetAlpha(0);
 		line.completed = nil;
 	end
 end

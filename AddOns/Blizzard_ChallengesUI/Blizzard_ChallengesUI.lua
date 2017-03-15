@@ -638,7 +638,7 @@ end
 function ChallengeModeCompleteBannerMixin:CreateAndPositionPartyMembers(num)
 	local frameWidth, spacing, distance = 61, 22, -100;
     
-    CreateFrames(self, "PartyMembers", num, spacing, "ChallengeModeBannerPartyMemberTemplate");
+    CreateFrames(self, "PartyMembers", num, "ChallengeModeBannerPartyMemberTemplate");
     ReanchorFrames(self.PartyMembers, "TOPLEFT", self.Title, "TOP", frameWidth, spacing, distance);
 end
 

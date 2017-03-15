@@ -374,7 +374,8 @@
 			<Frame parentKey="Contents" inherits="PVPBonusBattlegroundContentsTemplate">
 				<Layers>
 					<Layer level="ARTWORK">
-						<FontString parentKey="Title" inherits="GameFontHighlightMedium">
+						<FontString parentKey="Title" inherits="GameFontHighlightMedium" justifyH="left" wordwrap="false">
+							<Size x="230" y="0"/>
 							<Anchors>
 								<Anchor point="LEFT" x="14" y="0"/>
 							</Anchors>

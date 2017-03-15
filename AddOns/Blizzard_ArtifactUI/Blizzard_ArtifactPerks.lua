@@ -278,7 +278,7 @@ function ArtifactPerksMixin:RefreshPowerTiers()
 	self:RefreshFinalPowerForTier(1, self:AreAllGoldMedalsPurchasedByTier(1));
 	self:RefreshFinalPowerForTier(2, self:AreAllPowersPurchasedByTier(2));
 
-	if C_ArtifactUI.GetArtifactTier() >= 2 then
+	if C_ArtifactUI.GetArtifactTier() >= 2 or C_ArtifactUI.IsMaxedByRulesOrEffect() then
 		local finalTier2Button = self:GetFinalPowerButtonByTier(2);
 		if finalTier2Button then
 			self.CrestFrame:ClearAllPoints();
@@ -370,7 +370,7 @@ function ArtifactPerksMixin:TryRefresh()
 		end
 
 		self.queuePlayingReveal = false;
-		local hasBoughtAnyPowers = C_ArtifactUI.GetTotalPurchasedRanks() > 0;
+		local hasBoughtAnyPowers = ArtifactUI_HasPurchasedAnything();
 		if self.newItem then
 			self.hasBoughtAnyPowers = hasBoughtAnyPowers;
 			self.wasFinalPowerButtonUnlockedByTier = {};
@@ -392,11 +392,22 @@ function ArtifactPerksMixin:TryRefresh()
 		self.newItem = nil;
 		self.isAppearanceChanging = nil;
 		
-		if not self.numArtifactTraitsRefunded and C_ArtifactUI.GetArtifactTier() == 2 then
+		if not self.numArtifactTraitsRefunded and (C_ArtifactUI.GetArtifactTier() == 2 or C_ArtifactUI.IsMaxedByRulesOrEffect())then
 			self:ShowTier2();
 			self.CrestFrame.CrestRune1:SetAlpha(1.0);
 			self.CrestFrame.RunePulse:Play();
 			self.Model.BackgroundFront:SetAlpha(self.Model.backgroundFrontTargetAlpha);
+			if C_ArtifactUI.IsMaxedByRulesOrEffect() then
+				local finalTier1Button = self:GetFinalPowerButtonByTier(1);
+				if finalTier1Button then
+					finalTier1Button:Show();
+				end
+				
+				local finalTier2Button = self:GetFinalPowerButtonByTier(2);
+				if finalTier2Button then
+					finalTier2Button:Show();
+				end
+			end
 		end
 		
 		if self.queuePlayingReveal then
@@ -418,6 +429,10 @@ function ArtifactPerksMixin:TryRefresh()
 end
 
 function ArtifactPerksMixin:HasPurchasedAnythingInCurrentTier()
+	if C_ArtifactUI.IsMaxedByRulesOrEffect() then
+		return true;
+	end
+	
 	local tier = C_ArtifactUI.GetArtifactTier();
 	if tier == 1 then
 		return C_ArtifactUI.GetTotalPurchasedRanks() > 0;

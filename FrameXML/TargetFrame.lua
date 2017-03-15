@@ -658,7 +658,7 @@ function TargetFrame_ShouldShowDebuffs(unit, caster, nameplateShowAll, casterIsA
 		return true;
 	end
 
-	if (caster and UnitIsUnit("player", caster)) then
+	if (caster and (UnitIsUnit("player", caster) or UnitIsUnit("pet", caster))) then
 		return true;
 	end
 

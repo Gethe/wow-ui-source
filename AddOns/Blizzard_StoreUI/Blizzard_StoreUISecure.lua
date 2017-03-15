@@ -183,6 +183,7 @@ Import("BLIZZARD_STORE_VAS_ERROR_INELIGIBLE_MAP_ID");
 Import("BLIZZARD_STORE_VAS_ERROR_BATTLEPAY_DELIVERY_PENDING");
 Import("BLIZZARD_STORE_VAS_ERROR_HAS_WOW_TOKEN");
 Import("BLIZZARD_STORE_VAS_ERROR_HAS_HEIRLOOM");
+Import("BLIZZARD_STORE_VAS_ERROR_HAS_CAGED_BATTLE_PET");
 Import("BLIZZARD_STORE_VAS_ERROR_CHARACTER_LOCKED");
 Import("BLIZZARD_STORE_VAS_ERROR_LAST_SAVE_TOO_RECENT");
 Import("BLIZZARD_STORE_VAS_ERROR_INVALID_DESTINATION_ACCOUNT");
@@ -1059,6 +1060,9 @@ local vasErrorData = {
 	[Enum.VasError.LastSaveTooRecent] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_LAST_SAVE_TOO_RECENT,
 		notUserFixable = true,
+	},
+	[Enum.VasError.HasCagedBattlePet] = {
+		msg = BLIZZARD_STORE_VAS_ERROR_HAS_CAGED_BATTLE_PET,
 	},
 };
 
@@ -1965,6 +1969,9 @@ function StoreFrame_OnAttributeChanged(self, name, value)
 
 			self:SetAttribute("vaserrormessageresult", { other = hasOther or hasNonUserFixable, desc = desc });
 		end
+	elseif ( name == "isvastransferproduct" ) then
+		local productID = value;
+		self:SetAttribute('isvastransferproductresult', productID == CHARACTER_TRANSFER_PRODUCT_ID or productID == CHARACTER_TRANSFER_FACTION_BUNDLE_PRODUCT_ID);
 	end
 end
 
@@ -2648,6 +2655,23 @@ if (IsOnGlueScreen()) then
 	}
 end
 
+function StoreVASValidationFrame_SyncFontHeights(...)
+	local smallestObject, smallestObjectFontHeight;
+	for i = 1, select('#', ...) do
+		local obj = select(i, ...);
+		local myFH = select(2, obj:GetFont());
+		if (not smallestObject or myFH < smallestObjectFontHeight) then
+			smallestObject = obj;
+			smallestObjectFontHeight = myFH;
+		end
+	end
+
+	for i = 1, select('#', ...) do
+		local obj = select(i, ...);
+		obj:SetFontObject(smallestObject:GetFontObject());
+	end
+end
+
 function StoreVASValidationFrame_OnEvent(self, event, ...)
 	if ( event == "STORE_CHARACTER_LIST_RECEIVED" ) then
 		WaitingOnConfirmation = false;
@@ -2658,6 +2682,7 @@ function StoreVASValidationFrame_OnEvent(self, event, ...)
 		end
 	elseif ( event == "STORE_VAS_PURCHASE_ERROR" ) then
 		VASCharacterSelectionCancelTimeout();
+		StoreVASValidationState_Unlock();
 		WaitingOnConfirmation = false;
 		StoreFrame_UpdateActivePanel(StoreFrame);
 		if ( StoreFrame:IsShown() and StoreVASValidationFrame:IsShown() ) then
@@ -2678,7 +2703,8 @@ function StoreVASValidationFrame_OnEvent(self, event, ...)
 		frame.Spinner:Hide();
 		frame.ContinueButton:Show();
 		frame.ContinueButton:Disable();
-
+		StoreVASValidationState_Unlock();
+		
 		if (not error) then
 			IsVasBnetTransferValidated = true;
 			frame.TransferBnetWoWAccountDropDown:Show();
@@ -3632,6 +3658,7 @@ function VASCharacterSelectionCharacterSelector_Callback(value)
 			frame.TransferFactionCheckbox.Label:ApplyFontObjects();
 		end
 		
+		StoreVASValidationFrame_SyncFontHeights(frame.TransferRealmCheckbox.Label, frame.TransferAccountCheckbox.Label, frame.TransferFactionCheckbox.Label);
 		frame.ContinueButton:Disable();
 	else
 		if (VASServiceType == Enum.VasServiceType.RaceChange) then

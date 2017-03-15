@@ -34,6 +34,20 @@ local TransmogItems =
 				{ Name = "icon", Type = "number", Nilable = false },
 			},
 		},
+		{
+			Name = "GetSourceInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "sourceID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "sourceInfo", Type = "AppearanceSourceInfo", Nilable = false },
+			},
+		},
 	},
 
 	Tables =

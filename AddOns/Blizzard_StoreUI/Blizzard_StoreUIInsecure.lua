@@ -50,15 +50,17 @@ if (InGlue()) then
 
 	function StoreFrame_OnCharacterListUpdate()
 		if (C_StoreGlue.GetVASProductReady()) then
-			local _, guid, realmName = C_StoreSecure.GetVASCompletionInfo();
-			VASCharacterGUID = guid;
+			local productID, guid, realmName, shouldHandle = C_StoreSecure.GetVASCompletionInfo();
+			if (shouldHandle) then
+				VASCharacterGUID = guid;
 
-		    if (GetServerName() ~= realmName) then
-			    C_StoreGlue.ChangeRealmByCharacterGUID(guid);
-		    else
-			    UpdateCharacterList(true);
-		    end
-			C_StoreGlue.ClearVASProductReady();
+				C_StoreGlue.ClearVASProductReady();
+		    	if (GetServerName() ~= realmName or StoreFrame_IsVASTransferProduct(productID)) then
+			    	C_StoreGlue.ChangeRealmByCharacterGUID(guid);
+		    	else
+			    	UpdateCharacterList(true);
+		    	end
+			end
 			return;
 		end
 

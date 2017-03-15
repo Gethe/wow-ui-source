@@ -622,6 +622,7 @@ function WardrobeCollectionFrame_SetContainer(parent)
 		collectionFrame.FilterButton:SetText(FILTER);
 		collectionFrame.ItemsTab:SetPoint("TOPLEFT", 58, -28);
 		WardrobeCollectionFrame_SetTab(collectionFrame.selectedCollectionTab);
+		PanelTemplates_EnableTab(collectionFrame, TAB_SETS);
 	elseif ( parent == WardrobeFrame ) then
 		collectionFrame:SetPoint("TOPRIGHT", 0, 0);
 		collectionFrame:SetSize(662, 606);
@@ -632,7 +633,14 @@ function WardrobeCollectionFrame_SetContainer(parent)
 		collectionFrame.ItemsCollectionFrame.WeaponDropDown:SetPoint("TOPRIGHT", -32, -25);
 		collectionFrame.FilterButton:SetText(SOURCES);
 		collectionFrame.ItemsTab:SetPoint("TOPLEFT", 8, -28);
-		WardrobeCollectionFrame_SetTab(collectionFrame.selectedTransmogTab);
+		local numCollectedSets = C_TransmogSets.GetBaseSetsCounts();
+		if ( numCollectedSets == 0 ) then
+			WardrobeCollectionFrame_SetTab(TAB_ITEMS);
+			PanelTemplates_DisableTab(collectionFrame, TAB_SETS);
+		else
+			WardrobeCollectionFrame_SetTab(collectionFrame.selectedTransmogTab);
+			PanelTemplates_EnableTab(collectionFrame, TAB_SETS);
+		end
 	end
 	-- changing the parent of a frame resets frame stratas and levels of all children
 	collectionFrame.ItemsCollectionFrame.HelpBox:SetFrameStrata("DIALOG");
@@ -683,7 +691,7 @@ end
 
 function WardrobeCollectionFrame_OnLoad(self)
 	PanelTemplates_SetNumTabs(self, 2);
-	PanelTemplates_SetTab(self, 1);
+	PanelTemplates_SetTab(self, TAB_ITEMS);
 	PanelTemplates_ResizeTabsToFit(self, TABS_MAX_WIDTH);
 	self.selectedCollectionTab = TAB_ITEMS;
 	self.selectedTransmogTab = TAB_ITEMS;
@@ -934,9 +942,7 @@ function WardrobeCollectionFrame_OnShow(self)
 	self:RegisterEvent("TRANSMOG_COLLECTION_CAMERA_UPDATE");
 
 	local hasAlternateForm, inAlternateForm = HasAlternateForm();
-	if ( hasAlternateForm ) then
-		self.inAlternateForm = inAlternateForm;
-	end
+	self.inAlternateForm = inAlternateForm;
 
 	WardrobeCollectionFrame_UpdateUsableAppearances();
 
@@ -1209,6 +1215,7 @@ function WardrobeItemsCollectionMixin:SetActiveSlot(slot, transmogType, category
 	end
 	-- set only if category is different or slot is different
 	if ( category ~= self.activeCategory or slot ~= previousSlot ) then
+		CloseDropDownMenus();
 		self:SetActiveCategory(category);
 	end
 end
@@ -2159,7 +2166,9 @@ function WardrobeCollectionFrameModel_GetSourceTooltipInfo(source)
 		sourceText = TRANSMOG_COLLECTED;
 		sourceColor = GREEN_FONT_COLOR;
 	else
-		sourceText = _G["TRANSMOG_SOURCE_"..source.sourceType];
+		if ( source.sourceType ) then
+			sourceText = _G["TRANSMOG_SOURCE_"..source.sourceType];
+		end
 		sourceColor = HIGHLIGHT_FONT_COLOR;
 	end
 
@@ -3053,22 +3062,24 @@ function WardrobeSetsCollectionMixin:DisplaySet(setID)
 end
 
 function WardrobeSetsCollectionMixin:SetItemFrameQuality(itemFrame)
-	local _, quality;
 	if ( itemFrame.collected ) then
-		_, _, quality = GetItemInfo(itemFrame.itemID);
+		local quality = C_TransmogCollection.GetSourceInfo(itemFrame.sourceID).quality;
+		if ( quality == LE_ITEM_QUALITY_UNCOMMON ) then
+			itemFrame.IconBorder:SetAtlas("loottab-set-itemborder-green", true);
+		elseif ( quality == LE_ITEM_QUALITY_RARE ) then
+			itemFrame.IconBorder:SetAtlas("loottab-set-itemborder-blue", true);
+		elseif ( quality == LE_ITEM_QUALITY_EPIC ) then
+			itemFrame.IconBorder:SetAtlas("loottab-set-itemborder-purple", true);
+		end
 	end
-	if ( quality == LE_ITEM_QUALITY_UNCOMMON ) then
-		itemFrame.IconBorder:SetAtlas("loottab-set-itemborder-green", true);
-	elseif ( quality == LE_ITEM_QUALITY_RARE ) then
-		itemFrame.IconBorder:SetAtlas("loottab-set-itemborder-blue", true);
-	elseif ( quality == LE_ITEM_QUALITY_EPIC ) then
-		itemFrame.IconBorder:SetAtlas("loottab-set-itemborder-purple", true);
-	end
+	
 end
 
 function WardrobeSetsCollectionMixin:OnSearchUpdate()
 	if ( self.init ) then
 		SetsDataProvider:ClearBaseSets();
+		SetsDataProvider:ClearVariantSets();
+		SetsDataProvider:ClearUsableSets();
 		self:Refresh();
 	end
 end
@@ -3181,8 +3192,12 @@ function WardrobeSetsCollectionMixin:RefreshAppearanceTooltip()
 	end
 
 	local sources = C_TransmogSets.GetSourcesForSlot(self:GetSelectedSetID(), self.tooltipTransmogSlot);
-	local sourceInfo = C_TransmogCollection.GetSourceInfo(self.tooltipPrimarySourceID);
-	WardrobeCollectionFrame_SortSources(sources, sourceInfo.appearanceID, self.tooltipPrimarySourceID);
+	if ( #sources == 0 ) then
+		-- can happen if a slot only has HiddenUntilCollected sources
+		local sourceInfo = C_TransmogCollection.GetSourceInfo(self.tooltipPrimarySourceID);
+		tinsert(sources, sourceInfo);
+	end
+	WardrobeCollectionFrame_SortSources(sources, sources[1].visualID, self.tooltipPrimarySourceID);
 	WardrobeCollectionFrame_SetAppearanceTooltip(self, sources, self.tooltipPrimarySourceID);
 end
 
@@ -3200,7 +3215,10 @@ function WardrobeSetsCollectionMixin:CanHandleKey(key)
 end
 
 function WardrobeSetsCollectionMixin:HandleKey(key)
-	local selectedSetID = self:GetSelectedSetID();
+	if ( not self:GetSelectedSetID() ) then
+		return false;
+	end
+	local selectedSetID = C_TransmogSets.GetBaseSetID(self:GetSelectedSetID());
 	local _, index = SetsDataProvider:GetBaseSetByID(selectedSetID);
 	if ( not index ) then
 		return;
@@ -3212,7 +3230,7 @@ function WardrobeSetsCollectionMixin:HandleKey(key)
 	end
 	local sets = SetsDataProvider:GetBaseSets();
 	index = Clamp(index, 1, #sets);
-	self:SelectSet(sets[index].setID);
+	self:SelectSet(self:GetDefaultSetIDForBaseSet(sets[index].setID));
 	self:ScrollToSet(sets[index].setID);
 end
 
@@ -3477,7 +3495,11 @@ function WardrobeSetsDetailsItemMixin:OnMouseDown()
 		local sourceInfo = C_TransmogCollection.GetSourceInfo(self.sourceID);
 		local slot = C_Transmog.GetSlotForInventoryType(sourceInfo.invType);
 		local sources = C_TransmogSets.GetSourcesForSlot(self:GetParent():GetParent():GetSelectedSetID(), slot);
-		WardrobeCollectionFrame_SortSources(sources, sourceInfo.appearanceID, self.sourceID);
+		if ( #sources == 0 ) then
+			-- can happen if a slot only has HiddenUntilCollected sources
+			tinsert(sources, sourceInfo);
+		end
+		WardrobeCollectionFrame_SortSources(sources, sourceInfo.visualID, self.sourceID);
 		if ( WardrobeCollectionFrame.tooltipSourceIndex ) then
 			local index = WardrobeUtils_GetValidIndexForNumSources(WardrobeCollectionFrame.tooltipSourceIndex, #sources);
 			local link = select(6, C_TransmogCollection.GetAppearanceSourceInfo(sources[index].sourceID));
@@ -3627,7 +3649,7 @@ function WardrobeSetsTransmogMixin:LoadSet(setID)
 		local sourceInfo = C_TransmogCollection.GetSourceInfo(sourceID);
 		local slot = C_Transmog.GetSlotForInventoryType(sourceInfo.invType);
 		local slotSources = C_TransmogSets.GetSourcesForSlot(setID, slot);
-		WardrobeCollectionFrame_SortSources(slotSources, sourceInfo.appearanceID);
+		WardrobeCollectionFrame_SortSources(slotSources, sourceInfo.visualID);
 		local index = WardrobeCollectionFrame_GetDefaultSourceIndex(slotSources, sourceID);
 		transmogSources[slot] = slotSources[index].sourceID;
 
@@ -3687,8 +3709,9 @@ end
 
 function WardrobeSetsTransmogMixin:OnUnitModelChangedEvent()
 	if ( self.Models[1]:CanSetUnit("player") ) then
-		for i = 1, #self.Models do
-			self.Models[i]:RefreshUnit();
+		for i, model in ipairs(self.Models) do
+			model:RefreshUnit();
+			model.setID = nil;
 		end
 		self:RefreshCameras();
 		self:UpdateSets();

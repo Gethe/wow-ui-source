@@ -2723,7 +2723,7 @@ end
 function AchievementFrame_SelectStatisticByAchievementID(achievementID, isComparison)
 	if ( isComparison ) then
 		AchievementFrameTab_OnClick = AchievementFrameComparisonTab_OnClick;
-		AchievementFrameComparisonStats:Show();
+		AchievementFrameComparisonStatsContainer:Show();
 		AchievementFrameComparisonSummary:Hide();
 	else
 		AchievementFrameTab_OnClick = AchievementFrameBaseTab_OnClick;

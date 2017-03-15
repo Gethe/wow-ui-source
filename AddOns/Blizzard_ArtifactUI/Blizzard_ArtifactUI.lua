@@ -38,7 +38,11 @@ StaticPopupDialogs["NOT_ENOUGH_POWER_ARTIFACT_RESPEC"] = {
 }
 
 function ArtifactUI_CanViewArtifact()
-	return C_ArtifactUI.IsAtForge() or C_ArtifactUI.GetTotalPurchasedRanks() > 0 or C_ArtifactUI.GetNumObtainedArtifacts() > 1;
+	return C_ArtifactUI.IsAtForge() or ArtifactUI_HasPurchasedAnything() or C_ArtifactUI.GetNumObtainedArtifacts() > 1;
+end
+
+function ArtifactUI_HasPurchasedAnything()
+	return C_ArtifactUI.GetTotalPurchasedRanks() > 0 or C_ArtifactUI.IsMaxedByRulesOrEffect();
 end
 
 local TAB_PERKS = 1;

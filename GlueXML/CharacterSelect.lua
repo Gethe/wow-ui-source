@@ -577,11 +577,11 @@ function CharacterSelect_OnEvent(self, event, ...)
             GlueDialog_Show("OKAY_WITH_URL_INDEX", ERROR_MANUAL_UNREVOKE_FAILURE, urlIndex);
         end
     elseif ( event == "VAS_CHARACTER_QUEUE_STATUS_UPDATE" ) then
-            local guid, minutes = ...;
-            VAS_QUEUE_TIMES[guid] = minutes;
-            if (not IsCharacterListUpdatePending()) then
-                UpdateCharacterList();
-            end
+        local guid, minutes = ...;
+        VAS_QUEUE_TIMES[guid] = minutes;
+        if (not IsCharacterListUpdatePending()) then
+            UpdateCharacterList();
+        end
   end
 end
 
@@ -759,7 +759,7 @@ function UpdateCharacterList(skipSelect)
                 else
                     locationText:SetText("");
                 end
-			elseif (vasServiceState == Enum.VasPurchaseProgress.WaitingOnQueue) then
+			elseif (vasServiceState == Enum.VasPurchaseProgress.WaitingOnQueue and not VAS_QUEUE_TIMES[guid]) then
 				C_StoreGlue.RequestCharacterQueueTime(guid);
             elseif (vasServiceState == Enum.VasPurchaseProgress.ProcessingFactionChange) then
                 infoText:SetText(CHARACTER_UPGRADE_PROCESSING);
@@ -2791,7 +2791,7 @@ function CharacterSelect_CheckApplyBoostToUnlockTrialCharacter(guid)
 end
 
 function CharacterSelect_CheckApplyBoostToUnrevokeBoost(guid)
-    local productID = Enum.BattlepayBoostProduct.Level100Bost;
+    local productID = Enum.BattlepayBoostProduct.Level100Boost;
     local hasBoost, useFreeBoost = CharacterSelect_CheckBoostProduct(productID);
 
     if hasBoost then

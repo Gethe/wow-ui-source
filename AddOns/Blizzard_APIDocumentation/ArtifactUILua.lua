@@ -659,6 +659,15 @@ local ArtifactUILua =
 			},
 		},
 		{
+			Name = "IsMaxedByRulesOrEffect",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isEffectivelyMaxed", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsPowerKnown",
 			Type = "Function",
 

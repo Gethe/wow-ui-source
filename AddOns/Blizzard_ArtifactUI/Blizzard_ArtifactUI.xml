@@ -51,7 +51,7 @@
 					<OnMouseWheel />
 				</Scripts>
 			</Frame>
-			<Frame parentKey="BorderFrame" setAllPoints="true" frameLevel="1000">
+			<Frame parentKey="BorderFrame" setAllPoints="true" frameLevel="2200">
 				<Layers>
 					<Layer level="OVERLAY">
 						<Texture parentKey="ForgeBottomLeftCorner" atlas="ForgeBorder-CornerBottomLeft" useAtlasSize="true">
@@ -267,7 +267,7 @@
 			<Frame parentKey="PerksTab" setAllPoints="true" hidden="true" inherits="ArtifactPerksTabTemplate" />
 			<Frame parentKey="AppearancesTab" setAllPoints="true" hidden="true" inherits="ArtifactAppearancesTabTemplate" />
 
-			<Button parentKey="CloseButton" inherits="UIPanelCloseButton" frameLevel="1500">
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButton" frameLevel="2500">
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativeKey="$parent.BorderFrame.ForgeTopRightCorner" x="-5" y="-6" />
 				</Anchors>

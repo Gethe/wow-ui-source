@@ -125,7 +125,7 @@ function ArtifactPowerButtonMixin:PlayPurchaseAnimation()
 			self.PointBurstLeft:SetVertexColor(1, 0.81960784313725, 0.3921568627451);
 			self.PointBurstRight:SetVertexColor(1, 0.81960784313725, 0.3921568627451);
 			self.FinalPointSpentAnim:Play();
-			if C_ArtifactUI.GetTotalPurchasedRanks() > 0 then
+			if ArtifactUI_HasPurchasedAnything() then
 				PlayArtifactTraitSound("UI_70_Artifact_Forge_Trait_FinalRank");
 			end
 		else
@@ -133,7 +133,7 @@ function ArtifactPowerButtonMixin:PlayPurchaseAnimation()
 			self.PointBurstLeft:SetVertexColor(0.30980392156863, 1, 0.2156862745098);
 			self.PointBurstRight:SetVertexColor(0.30980392156863, 1, 0.2156862745098);
 			self.PointSpentAnim:Play();
-			if C_ArtifactUI.GetTotalPurchasedRanks() > 0 then
+			if ArtifactUI_HasPurchasedAnything() then
 				PlayArtifactTraitSound("UI_70_Artifact_Forge_Trait_RankUp");
 			end
 		end
@@ -524,7 +524,7 @@ function ArtifactPowerButtonMixin:SetupButton(powerID, anchorRegion, textureKit)
 	local isAtForge = C_ArtifactUI.IsAtForge();
 	local isViewedArtifactEquipped = C_ArtifactUI.IsViewedArtifactEquipped();
 
-	self.isCompletelyPurchased = powerInfo.currentRank == powerInfo.maxRank or (self.tier == 1 and self.isStart);
+	self.isCompletelyPurchased = (powerInfo.currentRank - powerInfo.bonusRanks == powerInfo.maxRank) or (self.tier == 1 and self.isStart);
 	self.hasSpentAny = powerInfo.currentRank > powerInfo.bonusRanks;
 	self.hasEnoughPower = C_ArtifactUI.GetPointsRemaining() >= powerInfo.cost and isAtForge and isViewedArtifactEquipped;
 	self.isMaxRank = powerInfo.currentRank == powerInfo.maxRank;
@@ -563,7 +563,7 @@ function ArtifactPowerButtonMixin:ShouldGlow(totalPurchasedRanks, isAtForge)
 end
 
 function ArtifactPowerButtonMixin:EvaluateStyle()
-	if C_ArtifactUI.GetTotalPurchasedRanks() == 0 and not self.prereqsMet then
+	if not ArtifactUI_HasPurchasedAnything() and not self.prereqsMet then
 		self:SetStyle(ARTIFACT_POWER_STYLE_RUNE);	
 	elseif C_ArtifactUI.IsAtForge() and C_ArtifactUI.IsViewedArtifactEquipped() then
 		if self.isMaxRank then
@@ -578,7 +578,7 @@ function ArtifactPowerButtonMixin:EvaluateStyle()
 			self:SetStyle(ARTIFACT_POWER_STYLE_UNPURCHASED_LOCKED);
 		end
 	else
-		if C_ArtifactUI.GetTotalPurchasedRanks() == 0 and C_ArtifactUI.GetNumObtainedArtifacts() <= 1 then
+		if not ArtifactUI_HasPurchasedAnything() and C_ArtifactUI.GetNumObtainedArtifacts() <= 1 then
 			self:SetStyle(ARTIFACT_POWER_STYLE_RUNE);
 		elseif C_ArtifactUI.IsPowerKnown(self.powerID) then
 			self:SetStyle(ARTIFACT_POWER_STYLE_PURCHASED_READ_ONLY);

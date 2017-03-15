@@ -30,6 +30,7 @@ function QUEST_TRACKER_MODULE:OnFreeTypedLine(line)
 		line.Glow.Anim:Stop();
 		line.Sheen.Anim:Stop();
 		line.CheckFlash.Anim:Stop();
+		line.CheckFlash:SetAlpha(0);
 		line.FadeOutAnim:Stop();
 	end
 end

@@ -70,6 +70,7 @@ end
 function BonusObjectiveTrackerModuleMixin:OnFreeLine(line)
 	if ( line.finished ) then
 		line.CheckFlash.Anim:Stop();
+		line.CheckFlash:SetAlpha(0);
 		line.finished = nil;
 	end
 end

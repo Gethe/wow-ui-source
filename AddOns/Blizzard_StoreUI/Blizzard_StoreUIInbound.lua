@@ -49,4 +49,9 @@ if (InGlue()) then
 		StoreFrame:SetAttribute("getvaserrormessage", data);
 		return StoreFrame:GetAttribute("vaserrormessageresult");
 	end
+
+	function StoreFrame_IsVASTransferProduct(productID)
+		StoreFrame:SetAttribute("isvastransferproduct", productID);
+		return StoreFrame:GetAttribute("isvastransferproductresult");
+	end
 end
