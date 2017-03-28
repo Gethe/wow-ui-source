@@ -4597,8 +4597,12 @@ function StaticPopupItemFrame_DisplayInfo(self, link, name, color, texture, coun
 	local nameText = _G[self:GetName().."Text"];
 	nameText:SetTextColor(unpack(color or {1, 1, 1, 1}));
 	nameText:SetText(name);
-	local quality = select(3, GetItemInfo(link));
-	SetItemButtonQuality(self, quality, link);
+	
+	if link then
+		local quality = select(3, GetItemInfo(link));
+		SetItemButtonQuality(self, quality, link);
+	end
+	
 	if ( count and count > 1 ) then
 		_G[self:GetName().."Count"]:SetText(count);
 		_G[self:GetName().."Count"]:Show();

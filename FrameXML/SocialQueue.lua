@@ -37,8 +37,14 @@ function SocialQueueUtil_GetQueueName(queue, nameFormatter)
 		end
 	elseif ( queue.queueType == "pvp" ) then
 		local battlefieldType = queue.battlefieldType;
+		local isBrawl = queue.isBrawl;
 		local name = queue.mapName;
-		if ( battlefieldType == "BATTLEGROUND" ) then
+		if (isBrawl) then
+			local brawlInfo = C_PvP.GetBrawlInfo();
+			if (brawlInfo and brawlInfo.active) then
+				name = brawlInfo.name;
+			end
+		elseif ( battlefieldType == "BATTLEGROUND" ) then
 			name = SOCIAL_QUEUE_FORMAT_BATTLEGROUND:format(name);
 		elseif ( battlefieldType == "ARENA" ) then
 			name = SOCIAL_QUEUE_FORMAT_ARENA:format(queue.teamSize);

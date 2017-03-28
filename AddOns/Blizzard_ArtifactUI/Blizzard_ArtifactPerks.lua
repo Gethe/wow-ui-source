@@ -197,9 +197,8 @@ function ArtifactPerksMixin:GetFinalPowerButtonByTier(tier)
 end
 
 function ArtifactPerksMixin:RefreshPowers(newItem)
-	self.powerButtonPool:ReleaseAll();
-
 	if newItem or not self.powerIDToPowerButton then
+		self.powerButtonPool:ReleaseAll();
 		self.powerIDToPowerButton = {};
 	end
 
@@ -846,7 +845,7 @@ function ArtifactPerksMixin:RefreshDependencies(powers)
 		end
 
 		-- Artificially link the starting and last power if they're both purchased to complete the circle
-		if lastTier2Power and lastTier2Power:IsCompletelyPurchased() then
+		if lastTier2Power and lastTier2Power:IsCompletelyPurchased() and lastTier2Power:HasSpentAny() then
 			local startingTier2Power = self:GetStartingPowerButtonByTier(2);
 			if startingTier2Power and startingTier2Power:IsCompletelyPurchased() and not startingTier2Power.links[lastTier2Power:GetPowerID()] then
 				local lineContainer = self:GenerateCurvedLine(lastTier2Power, startingTier2Power, ArtifactLineMixin.LINE_STATE_CONNECTED, artifactArtInfo);

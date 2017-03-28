@@ -29,6 +29,8 @@ local JustOrderedLegion = false;
 local BoostProduct = nil;
 local VASReady = false;
 local UnrevokeWaitingForProducts = false;
+local WaitingOnVASToComplete = 0;
+local WaitingOnVASToCompleteToken = nil;
 
 --Imports
 Import("C_StoreSecure");
@@ -1674,7 +1676,7 @@ function StoreFrame_OnLoad(self)
 	StoreFrame.SplashPrimary.Description:SetSpacing(5);
 	StoreFrame.Notice.Description:SetSpacing(5);
 	StoreFrame_UpdateActivePanel(self);
-	
+
 	--Check whether we already have an error waiting for us.
 	local errorID, internalErr = C_StoreSecure.GetFailureInfo();
 	if ( errorID ) then
@@ -1781,9 +1783,26 @@ function StoreFrame_OnShow(self)
 
 	BoostDeliveredUsageReason = nil;
 	BoostDeliveredUsageGUID = nil;
+	WaitingOnVASToComplete = 0;
+	WaitingOnVASToCompleteToken = nil;
 
 	StoreFrame_UpdateCoverState();
 	PlaySound("UI_igStore_WindowOpen_Button");
+end
+
+function StoreFrame_OnHide(self)
+	if (VASReady) then
+		StoreVASValidationFrame_OnVasProductComplete(StoreVASValidationFrame);
+	end
+	self:SetAttribute("isshown", false);
+	-- TODO: Fix so will only hide if Store showed the preview frame
+	Outbound.HidePreviewFrame();
+	if ( not IsOnGlueScreen() ) then
+		Outbound.UpdateMicroButtons();
+	end
+
+	StoreVASValidationFrame:Hide();
+	PlaySound("UI_igStore_WindowClose_Button");
 end
 
 function StoreFrame_OnMouseWheel(self, value)
@@ -1808,7 +1827,7 @@ function StoreFrame_OnCharacterBoostDelivered(self)
 
 		local showReason = "forBoost";
 
-		if C_ClassTrial.IsClassTrialCharacter() and (ProductType == Enum.BattlepayProduct.Level100Boost) and BoostDeliveredUsageReason == "forClassTrialUnlock" then
+		if C_ClassTrial.IsClassTrialCharacter() and (ProductType == Enum.BattlepayBoostProduct.Level100Boost) and BoostDeliveredUsageReason == "forClassTrialUnlock" then
 			showReason = "forClassTrialUnlock";
 		end
 
@@ -1929,9 +1948,9 @@ function StoreFrame_OnAttributeChanged(self, name, value)
 	elseif ( name == "setservicescategory" ) then
 		SetStoreCategoryFromAttribute(WOW_SERVICES_CATEGORY_ID);
 	elseif ( name == "selectlevel100boostproduct") then
-		SelectBoostProductForPurchase(WOW_SERVICES_CATEGORY_ID, Enum.BattlepayProduct.Level100Boost, "forClassTrialUnlock", value);
+		SelectBoostProductForPurchase(WOW_SERVICES_CATEGORY_ID, Enum.BattlepayBoostProduct.Level100Boost, "forClassTrialUnlock", value);
 	elseif ( name == "selectunrevokeboostproduct" ) then
-		SelectBoostProductForPurchase(WOW_SERVICES_CATEGORY_ID, Enum.BattlepayProduct.Level90Boost, "forUnrevokeBoost", value);
+		SelectBoostProductForPurchase(WOW_SERVICES_CATEGORY_ID, Enum.BattlepayBoostProduct.Level90Boost, "forUnrevokeBoost", value);
 	elseif ( name == "getvaserrormessage" ) then
 		if (IsOnGlueScreen()) then
 			self:SetAttribute("vaserrormessageresult", nil);
@@ -2051,6 +2070,8 @@ function StoreFrame_HideAlert(self)
 end
 
 function StoreFrame_ShowPurchaseSent(self)
+	WaitingOnVASToComplete = 0;
+	WaitingOnVASToCompleteToken = nil;
 	self.PurchaseSentFrame.Title:SetText(BLIZZARD_STORE_PURCHASE_SENT);
 	self.PurchaseSentFrame.OkayButton:SetText(OKAY);
 
@@ -2162,6 +2183,12 @@ function StoreFrame_BeginPurchase(entryID)
 	if ( entryInfo.alreadyOwned ) then
 		StoreFrame_OnError(StoreFrame, Enum.StoreError.AlreadyOwned, false, "FakeOwned");
 	elseif ( C_StoreSecure.PurchaseProduct(entryInfo.productID) ) then
+		if (entryInfo.sharedData.productDecorator == Enum.BattlepayProductDecorator.VasService) then
+			WaitingOnVASToComplete = WaitingOnVASToComplete + 1;
+		else
+			WaitingOnVASToComplete = 0;
+			WaitingOnVASToCompleteToken = nil;
+		end
 		WaitingOnConfirmation = true;
 		WaitingOnConfirmationTime = GetTime();
 		StoreFrame_UpdateActivePanel(StoreFrame);
@@ -2692,7 +2719,7 @@ function StoreVASValidationFrame_OnEvent(self, event, ...)
 		if (StoreFrame:IsShown()) then
 			WaitingOnConfirmation = false;
 			VASReady = true;
-			JustFinishedOrdering = true;
+			JustFinishedOrdering = WaitingOnVASToComplete == WaitingOnVASToCompleteToken;
 			StoreFrame_UpdateActivePanel(StoreFrame);
 		elseif (IsOnGlueScreen() and _G.CharacterSelect:IsVisible()) then
 			StoreVASValidationFrame_OnVasProductComplete(StoreVASValidationFrame);
@@ -2704,7 +2731,7 @@ function StoreVASValidationFrame_OnEvent(self, event, ...)
 		frame.ContinueButton:Show();
 		frame.ContinueButton:Disable();
 		StoreVASValidationState_Unlock();
-		
+
 		if (not error) then
 			IsVasBnetTransferValidated = true;
 			frame.TransferBnetWoWAccountDropDown:Show();
@@ -2782,12 +2809,13 @@ function StoreVASValidationFrame_SetErrors(errors)
 	frame.ValidationDescription:SetTextColor(1.0, 0.1, 0.1);
 	frame.ValidationDescription:SetText(desc);
 	frame.ValidationDescription:Show();
+	StoreVASValidationState_Unlock();
 	frame.ContinueButton:Show();
 	frame.ContinueButton:Disable();
 end
 
 function StoreVASValidationFrame_OnVasProductComplete(self)
-	local productID, guid, realmName = C_StoreSecure.GetVASCompletionInfo();
+local productID, guid, realmName = C_StoreSecure.GetVASCompletionInfo();
 	if (not productID) then
 		return;
 	end
@@ -3376,7 +3404,7 @@ function StoreDropDown_SetDropdown(frame, infoTable, callback)
 	if (not StoreDropdownLists[frame.List]) then
 		StoreDropdownLists[frame.List] = true;
 	end
-	
+
 	InfoFrame = frame;
 	InfoCallback = callback;
 	InfoTable = infoTable;
@@ -3657,7 +3685,7 @@ function VASCharacterSelectionCharacterSelector_Callback(value)
 		if (frame.TransferFactionCheckbox:IsShown()) then
 			frame.TransferFactionCheckbox.Label:ApplyFontObjects();
 		end
-		
+
 		StoreVASValidationFrame_SyncFontHeights(frame.TransferRealmCheckbox.Label, frame.TransferAccountCheckbox.Label, frame.TransferFactionCheckbox.Label);
 		frame.ContinueButton:Disable();
 	else
@@ -4055,7 +4083,7 @@ function VASCharacterSelectionCancelTimeout()
 		SecureCancelTicker(timeoutTicker);
 		timeoutTicker = nil;
 	end
-end	
+end
 
 function VASCharacterSelectionTimeout()
 	StoreVASValidationFrame_SetErrors({ "Other" });
@@ -4128,6 +4156,7 @@ function VASCharacterSelectionContinueButton_OnClick(self)
 	if ( C_StoreSecure.PurchaseVASProduct(entryInfo.productID, characters[SelectedCharacter].guid, NewCharacterName, DestinationRealmMapping[SelectedDestinationRealm], CharacterTransferFactionChangeBundle, wowAccountGUID, bnetAccountGUID) ) then
 		WaitingOnConfirmation = true;
 		WaitingOnConfirmationTime = GetTime();
+		WaitingOnVASToCompleteToken = WaitingOnVASToComplete;
 		StoreFrame_UpdateActivePanel(StoreFrame);
 	end
 end

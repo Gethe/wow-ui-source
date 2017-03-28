@@ -874,7 +874,7 @@ end
 function HonorFrameBonusFrame_Update()
 	local englishFaction = UnitFactionGroup("player");
 	local selectButton = nil;
-	local ashranEnlistmentActive, battlegroundEnlistmentActive = C_PvP.GetActiveEnlistmentBonuses();
+	local battlegroundEnlistmentActive = C_PvP.IsBattlegroundEnlistmentBonusActive();
 
 	-- random bg
 	do
@@ -941,14 +941,6 @@ function HonorFrameBonusFrame_Update()
 		local button = HonorFrame.BonusFrame.AshranButton;
 		button.Contents.Title:SetText(GetMapNameByID(ASHRAN_MAP_ID));
 		button.canQueue = IsLFGDungeonJoinable(ASHRAN_QUEUE_ID);
-		if (ashranEnlistmentActive) then
-			button.Reward:Show();
-			button.Reward.Border:Hide();
-			button.Reward.Icon:Hide();
-			button.Reward.EnlistmentBonus:Show();
-		else
-			button.Reward:Hide();
-		end
 	end
 
 	do
@@ -1375,8 +1367,10 @@ end
 
 function PVPRewardEnlistmentBonus_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip:SetText(PVP_ENLISTMENT_BONUS_TITLE);
-	GameTooltip:AddLine(PVP_ENLISTMENT_BONUS_DESCRIPTION, 1, 1, 1, true);
+	local spellName = GetSpellInfo(BATTLEGROUND_ENLISTMENT_BONUS);
+	local spellDesc = GetSpellDescription(BATTLEGROUND_ENLISTMENT_BONUS);
+	GameTooltip:SetText(spellName);
+	GameTooltip:AddLine(spellDesc, 1, 1, 1, true);
 	GameTooltip:Show();
 end
 

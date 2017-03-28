@@ -246,6 +246,7 @@ DIM_RED_FONT_COLOR			= CreateColor(0.8, 0.1, 0.1);
 GREEN_FONT_COLOR			= CreateColor(0.1, 1.0, 0.1);
 GRAY_FONT_COLOR				= CreateColor(0.5, 0.5, 0.5);
 YELLOW_FONT_COLOR			= CreateColor(1.0, 1.0, 0.0);
+BLUE_FONT_COLOR				= CreateColor(0, 0.749, 0.953);
 LIGHTYELLOW_FONT_COLOR		= CreateColor(1.0, 1.0, 0.6);
 ORANGE_FONT_COLOR			= CreateColor(1.0, 0.5, 0.25);
 PASSIVE_SPELL_FONT_COLOR	= CreateColor(0.77, 0.64, 0.0);

@@ -34,6 +34,7 @@ function QuickJoinMixin:SetEventsRegistered(registered)
 	func(self, "GROUP_JOINED");
 	func(self, "GROUP_LEFT");
 	func(self, "LFG_LIST_SEARCH_RESULT_UPDATED");
+	func(self, "PVP_BRAWL_INFO_UPDATED");
 end
 
 function QuickJoinMixin:OnShow()
@@ -71,6 +72,14 @@ function QuickJoinMixin:OnEvent(event, ...)
 
 		self:UpdateScrollFrame();
 		self:UpdateJoinButtonState();
+	elseif ( event == "PVP_BRAWL_INFO_UPDATED") then
+		self:RefreshEntries();
+	end
+end
+
+function QuickJoinMixin:RefreshEntries()
+	for guid, entry in pairs(self.entries.entriesByGUID) do
+		self:UpdateEntry(guid);
 	end
 end
 

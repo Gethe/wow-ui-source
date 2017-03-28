@@ -2037,17 +2037,7 @@
 				<OnLoad function="StoreFrame_OnLoad" />
 				<OnEvent function="StoreFrame_OnEvent" />
 				<OnShow function="StoreFrame_OnShow" />
-				<OnHide>
-					self:SetAttribute("isshown", false);
-					-- TODO: Fix so will only hide if Store showed the preview frame
-					Outbound.HidePreviewFrame();
-					if ( not IsOnGlueScreen() ) then
-						Outbound.UpdateMicroButtons();
-					end
-
-					StoreVASValidationFrame:Hide();
-					PlaySound("UI_igStore_WindowClose_Button");
-				</OnHide>
+				<OnHide function="StoreFrame_OnHide" />
 				<OnAttributeChanged function="StoreFrame_OnAttributeChanged" />
 				<OnMouseWheel function="StoreFrame_OnMouseWheel" />
 			</Scripts>

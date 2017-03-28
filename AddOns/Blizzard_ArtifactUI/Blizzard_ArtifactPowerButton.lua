@@ -422,6 +422,10 @@ function ArtifactPowerButtonMixin:IsCompletelyPurchased()
 	return self.isCompletelyPurchased;
 end
 
+function ArtifactPowerButtonMixin:HasSpentAny()
+	return self.hasSpentAny;
+end
+
 function ArtifactPowerButtonMixin:ArePrereqsMet()
 	return self.prereqsMet;
 end
@@ -524,7 +528,7 @@ function ArtifactPowerButtonMixin:SetupButton(powerID, anchorRegion, textureKit)
 	local isAtForge = C_ArtifactUI.IsAtForge();
 	local isViewedArtifactEquipped = C_ArtifactUI.IsViewedArtifactEquipped();
 
-	self.isCompletelyPurchased = (powerInfo.currentRank - powerInfo.bonusRanks == powerInfo.maxRank) or (self.tier == 1 and self.isStart);
+	self.isCompletelyPurchased = powerInfo.currentRank == powerInfo.maxRank or (self.tier == 1 and self.isStart);
 	self.hasSpentAny = powerInfo.currentRank > powerInfo.bonusRanks;
 	self.hasEnoughPower = C_ArtifactUI.GetPointsRemaining() >= powerInfo.cost and isAtForge and isViewedArtifactEquipped;
 	self.isMaxRank = powerInfo.currentRank == powerInfo.maxRank;

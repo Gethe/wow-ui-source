@@ -1220,14 +1220,14 @@ function WorldMap_UpdateLandmarks()
 			if (displayAsBanner) then
 				local timeLeftMinutes = C_WorldMap.GetAreaPOITimeLeft(poiID);
 				local descriptionLabel = nil;
-				if (timeLeftMinutes and mapID ~= GetPlayerMapAreaID("player")) then -- only show the timer if you're not in that zone
+				if (timeLeftMinutes) then
 					local hoursLeft = math.floor(timeLeftMinutes / 60);
 					local minutesLeft = timeLeftMinutes % 60;
 					descriptionLabel = INVASION_TIME_FORMAT:format(hoursLeft, minutesLeft)
 				end
 
+				local x1, x2, y1, y2;
 				if (not atlasIcon) then
-					local x1, x2, y1, y2
 					if (isObjectIcon) then
 						x1, x2, y1, y2 = GetObjectIconTextureCoords(textureIndex);
 					else

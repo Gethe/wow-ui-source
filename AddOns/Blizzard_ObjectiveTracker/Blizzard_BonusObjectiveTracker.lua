@@ -1019,6 +1019,11 @@ function BonusObjectiveTracker_SetBlockState(block, state, force)
 	if ( state == "LEAVING" ) then
 		-- only apply this state if block is PRESENT - let ENTERING anim finish
 		if ( block.state == "PRESENT" ) then
+			for _, line in pairs(block.lines) do
+				line.Glow.Anim:Stop();
+				line.Sheen.Anim:Stop();
+			end
+			
 			-- animate out
 			block.AnimOut:Play();
 			block.state = "LEAVING";

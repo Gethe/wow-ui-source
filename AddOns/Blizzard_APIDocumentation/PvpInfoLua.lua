@@ -7,16 +7,6 @@ local PvpInfoLua =
 	Functions =
 	{
 		{
-			Name = "GetActiveEnlistmentBonuses",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "ashranActive", Type = "bool", Nilable = false },
-				{ Name = "battlegroundActive", Type = "bool", Nilable = false },
-			},
-		},
-		{
 			Name = "GetArenaCrowdControlInfo",
 			Type = "Function",
 
@@ -143,6 +133,15 @@ local PvpInfoLua =
 			Returns =
 			{
 				{ Name = "hasArenaSkirmishWinToday", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsBattlegroundEnlistmentBonusActive",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "battlegroundActive", Type = "bool", Nilable = false },
 			},
 		},
 		{

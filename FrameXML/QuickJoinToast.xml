@@ -76,6 +76,8 @@
 			<OnEnter method="OnEnter"/>
 			<OnEvent method="OnEvent"/>
 			<OnLeave method="OnLeave"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
 		</Scripts>
 		<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 		<Animations>

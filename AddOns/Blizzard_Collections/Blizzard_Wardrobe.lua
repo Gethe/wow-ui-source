@@ -1912,7 +1912,7 @@ function WardrobeSetsTransmogModelMixin:OnMouseDown(button)
 	if ( button == "LeftButton" ) then
 		self:GetParent():SelectSet(self.setID);
 		PlaySound("UI_Transmog_ItemClick");
-	end
+		end
 end
 
 function WardrobeSetsTransmogModelMixin:OnEnter()
@@ -1992,13 +1992,13 @@ function WardrobeCollectionFrame_GetDefaultSourceIndex(sources, primarySourceID)
 						break;
 					end
 				end
-			else
+		else
 				if ( not sourceIndex ) then
 					-- candidate for #3
 					sourceIndex = i;
-				end
 			end
 		end
+	end
 	end
 	return sourceIndex or 1;
 end
@@ -2677,6 +2677,9 @@ function WardrobeSetsDataProviderMixin:SortSets(sets, reverseUIOrder)
 		local groupFavorite2 = set2.favoriteSetID and true;
 		if ( groupFavorite1 ~= groupFavorite2 ) then
 			return groupFavorite1;
+		end
+		if ( set1.favorite ~= set2.favorite ) then
+			return set1.favorite;
 		end
 		if ( set1.uiOrder ~= set2.uiOrder ) then
 			if ( reverseUIOrder ) then
@@ -3605,6 +3608,7 @@ function WardrobeSetsTransmogMixin:UpdateSets()
 			else
 				model.TransmogStateTexture:Hide();
 			end
+			model.Favorite.Icon:SetShown(set.favorite);
 			model.setID = set.setID;
 		else
 			model:Hide();
