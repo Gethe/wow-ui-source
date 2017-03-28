@@ -20,7 +20,7 @@
 				ResetCursor();
 			</OnLeave>
 			<OnClick>
-				HandleModifiedItemClick(self.itemLink);
+				HandleModifiedItemClick(self.itemInfo and self.itemInfo.link or self.itemLink);
 			</OnClick>
 		</Scripts>
 	</Button>

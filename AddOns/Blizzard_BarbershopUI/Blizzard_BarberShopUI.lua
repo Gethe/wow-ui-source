@@ -14,6 +14,7 @@ function BarberShop_OnLoad(self)
 	BarberShop_UpdateFacialHairCustomization(self);
 	self:RegisterEvent("BARBER_SHOP_APPEARANCE_APPLIED");
 	self:RegisterEvent("BARBER_SHOP_SUCCESS");
+	self:RegisterEvent("BARBER_SHOP_COST_UPDATE")
 	
 	if ( IsBarberShopStyleValid(STYLE_SKIN) ) then
 		if ( IsBarberShopStyleValid(STYLE_HAIR_COLOR) ) then

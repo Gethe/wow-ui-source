@@ -12,14 +12,14 @@ setfenv(1, tbl);
 ----------------
 
 Import("C_SharedCharacterServices");
-Import("LE_BATTLEPAY_PRODUCT_ITEM_LEVEL_100_CHARACTER_UPGRADE");
 Import("pairs");
+Import("Enum");
 
 local function HasRequiredUpgradeProduct()
 	local upgrades = C_SharedCharacterServices.GetUpgradeDistributions();
 	local hasBoost = false;
 	local useFreeBoost = false;
-	local requiredProduct = LE_BATTLEPAY_PRODUCT_ITEM_LEVEL_100_CHARACTER_UPGRADE;
+	local requiredProduct = Enum.BattlepayBoostProduct.Level100Boost;
 
 	for id, data in pairs(upgrades) do
 		if id == requiredProduct then

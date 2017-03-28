@@ -25,21 +25,22 @@
 		<Size x="275" y="150"/> <!--Height changed dynamically-->
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString parentKey="Title" inherits="GameFontNormalLarge" justifyH="LEFT" justifyV="TOP">
-					<Size x="0" y="0"/>
+				<FontString parentKey="Title" inherits="GameFontHighlightLarge" justifyH="LEFT" justifyV="TOP">
+					<Size x="260" y="0"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="10" y="-10"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="SubTitle" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP">
-					<Size x="275" y="0"/>
+				<FontString parentKey="Status" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP">
+					<Size x="260" y="0"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="Status" inherits="GameFontHighlight" justifyH="RIGHT" justifyV="TOP">
+				<FontString parentKey="SubTitle" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP">
+					<Size x="260" y="0"/>
 					<Anchors>
-						<Anchor point="TOPRIGHT" x="-10" y="-11"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
 					</Anchors>
 				</FontString>
 				<Texture parentKey="RoleIcon1" file="Interface\LFGFrame\UI-LFG-ICON-ROLES">

@@ -86,18 +86,29 @@ PAPERDOLL_SIDEBARS = {
 		frame="CharacterStatsPane";
 		icon = nil;  -- Uses the character portrait
 		texCoords = {0.109375, 0.890625, 0.09375, 0.90625};
+		disabledTooltip = nil;
+		IsActive = function () return true; end
 	},
 	{
 		name=PAPERDOLL_SIDEBAR_TITLES;
 		frame="PaperDollTitlesPane";
 		icon = "Interface\\PaperDollInfoFrame\\PaperDollSidebarTabs";
 		texCoords = {0.01562500, 0.53125000, 0.32421875, 0.46093750};
+		disabledTooltip = NO_TITLES_TOOLTIP;
+		IsActive = function () 
+			-- You always have the "No Title" title so you need to have more than one to have an option.
+			return #GetKnownTitles() > 1;
+		end
 	},
 	{
 		name=PAPERDOLL_EQUIPMENTMANAGER;
 		frame="PaperDollEquipmentManagerPane";
 		icon = "Interface\\PaperDollInfoFrame\\PaperDollSidebarTabs";
 		texCoords = {0.01562500, 0.53125000, 0.46875000, 0.60546875};
+		disabledTooltip = format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, SHOW_LFD_LEVEL);
+		IsActive = function ()
+			return C_EquipmentSet.GetNumEquipmentSets() > 0 or UnitLevel("player") >= SHOW_LFD_LEVEL;
+		end
 	},
 };
 
@@ -1344,6 +1355,22 @@ function CharacterSpellBonusDamage_OnEnter (self)
 	GameTooltip:Show();
 end
 
+local function ShouldShowExaltedPlusHelpTip()
+	if (GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_REPUTATION_EXALTED_PLUS)) then
+		return false;
+	end
+
+	local numFactions = GetNumFactions();
+	for i=1, numFactions do
+		local name, description, standingID, barMin, barMax, barValue, atWarWith, canToggleAtWar, isHeader, isCollapsed, hasRep, isWatched, isChild, factionID, hasBonusRepGain, canBeLFGBonus = GetFactionInfo(i);
+		if (factionID and C_Reputation.IsFactionParagon(factionID) ) then
+			return true;
+		end
+	end
+	return false;
+end
+
+
 function PaperDollFrame_OnShow (self)
 	CharacterStatsPane.initialOffsetY = 0;
 	CharacterFrameTitleText:SetText(UnitPVPName("player"));
@@ -1355,6 +1382,8 @@ function PaperDollFrame_OnShow (self)
 	PaperDollBgDesaturate(true);
 	PaperDollSidebarTabs:Show();
 	PaperDollFrame_UpdateInventoryFixupComplete(self);
+	
+	self:GetParent().ReputationTabHelpBox:SetShown(ShouldShowExaltedPlusHelpTip());
 end
 
 function PaperDollFrame_OnHide (self)
@@ -1365,7 +1394,7 @@ function PaperDollFrame_OnHide (self)
 end
 
 function PaperDollFrame_ClearIgnoredSlots ()
-	EquipmentManagerClearIgnoredSlotsForSave();
+	C_EquipmentSet.ClearIgnoredSlotsForSave();
 	for k, button in next, itemSlotButtons do
 		if ( button.ignored ) then
 			button.ignored = nil;
@@ -1374,14 +1403,14 @@ function PaperDollFrame_ClearIgnoredSlots ()
 	end
 end
 
-function PaperDollFrame_IgnoreSlotsForSet (setName)
-	local set = GetEquipmentSetIgnoreSlots(setName);
+function PaperDollFrame_IgnoreSlotsForSet (setID)
+	local set = C_EquipmentSet.GetIgnoredSlots(setID);
 	for slot, ignored in pairs(set) do
 		if ( ignored ) then
-			EquipmentManagerIgnoreSlotForSave(slot);
+			C_EquipmentSet.IgnoreSlotForSave(slot);
 			itemSlotButtons[slot].ignored = true;
 		else
-			EquipmentManagerUnignoreSlotForSave(slot);
+			C_EquipmentSet.UnignoreSlotForSave(slot);
 			itemSlotButtons[slot].ignored = false;
 		end
 		PaperDollItemSlotButton_Update(itemSlotButtons[slot]);
@@ -1389,7 +1418,7 @@ function PaperDollFrame_IgnoreSlotsForSet (setName)
 end
 
 function PaperDollFrame_IgnoreSlot(slot)
-	EquipmentManagerIgnoreSlotForSave(slot);
+	C_EquipmentSet.IgnoreSlotForSave(slot);
 	itemSlotButtons[slot].ignored = true;
 	PaperDollItemSlotButton_Update(itemSlotButtons[slot]);
 end
@@ -1831,7 +1860,7 @@ function PaperDollFrameItemFlyoutButton_OnClick (self)
 	if ( self.location == EQUIPMENTFLYOUT_IGNORESLOT_LOCATION ) then
 		PlaySound("igMainMenuOptionCheckBoxOn");
 		local slot = EquipmentFlyoutFrame.button;
-		EquipmentManagerIgnoreSlotForSave(slot:GetID());
+		C_EquipmentSet.IgnoreSlotForSave(slot:GetID());
 		slot.ignored = true;
 		PaperDollItemSlotButton_Update(slot);
 		EquipmentFlyout_Show(slot);
@@ -1839,7 +1868,7 @@ function PaperDollFrameItemFlyoutButton_OnClick (self)
 	elseif ( self.location == EQUIPMENTFLYOUT_UNIGNORESLOT_LOCATION ) then
 		PlaySound("igMainMenuOptionCheckBoxOn");
 		local slot = EquipmentFlyoutFrame.button;
-		EquipmentManagerUnignoreSlotForSave(slot:GetID());
+		C_EquipmentSet.UnignoreSlotForSave(slot:GetID());
 		slot.ignored = nil;
 		PaperDollItemSlotButton_Update(slot);
 		EquipmentFlyout_Show(slot);
@@ -1866,7 +1895,7 @@ function PaperDollFrameItemFlyout_GetItems(paperDollItemSlot, itemTable)
 end
 
 function PaperDollFrameItemFlyout_PostGetItems(itemSlotButton, itemDisplayTable, numItems)
-	if (PaperDollEquipmentManagerPane:IsShown() and (PaperDollEquipmentManagerPane.selectedSetName or GearManagerDialogPopup:IsShown())) then
+	if (PaperDollEquipmentManagerPane:IsShown() and (PaperDollEquipmentManagerPane.selectedSetID or GearManagerDialogPopup:IsShown())) then
 		if ( not itemSlotButton.ignored ) then
 			tinsert(itemDisplayTable, 1, EQUIPMENTFLYOUT_IGNORESLOT_LOCATION);
 		else
@@ -1881,19 +1910,114 @@ function PaperDollFrameItemFlyout_PostGetItems(itemSlotButton, itemDisplayTable,
 	return numItems;
 end
 
+function GearSetEditButton_OnLoad(self)
+	self.Dropdown = GearSetEditButtonDropDown;
+	UIDropDownMenu_Initialize(self.Dropdown, nil, "MENU");
+	UIDropDownMenu_SetInitializeFunction(self.Dropdown, GearSetEditButtonDropDown_Initialize);
+end
+
+function GearSetEditButton_OnClick(self, button)
+	GearSetButton_OnClick(self:GetParent(), button);
+	
+	if ( self.Dropdown.gearSetButton ~= self:GetParent() ) then
+		HideDropDownMenu(1);
+		self.Dropdown.gearSetButton = self:GetParent();
+	end
+	
+	ToggleDropDownMenu(1, nil, self.Dropdown, self, 0, 0);
+end
+
+function GearSetEditButtonDropDown_Initialize(dropdownFrame, level, menuList)
+	local gearSetButton = dropdownFrame.gearSetButton;
+	local info = UIDropDownMenu_CreateInfo();
+	info.text = EQUIPMENT_SET_EDIT;
+	info.notCheckable = true;
+	info.func = function() GearSetButton_OpenPopup(gearSetButton); end;
+	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
+
+	info = UIDropDownMenu_CreateInfo();
+	info.text = EQUIPMENT_SET_ASSIGN_TO_SPEC;
+	info.isTitle = true;
+	info.notCheckable = true;
+	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
+
+	local equipmentSetID = gearSetButton.setID;
+	for i = 1, GetNumSpecializations() do
+		info = UIDropDownMenu_CreateInfo();
+		info.checked = function()
+			return C_EquipmentSet.GetEquipmentSetAssignedSpec(equipmentSetID) == i;
+		end;
+		
+		info.func = function()
+			local currentSpecIndex = C_EquipmentSet.GetEquipmentSetAssignedSpec(equipmentSetID);
+			if ( currentSpecIndex ~= i ) then
+				C_EquipmentSet.AssignSpecToEquipmentSet(equipmentSetID, i);
+			else
+				C_EquipmentSet.UnassignEquipmentSetSpec(equipmentSetID);
+			end
+			
+			GearSetButton_UpdateSpecInfo(gearSetButton);
+			PaperDollEquipmentManagerPane_Update(true);
+		end;
+		
+		local specID = GetSpecializationInfo(i);
+		info.text = select(2, GetSpecializationInfoByID(specID));
+		UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
+	end
+end
+
+function GearSetButton_OpenPopup(self)
+	GearManagerDialogPopup:Show();
+	GearManagerDialogPopup.isEdit = true;
+	GearManagerDialogPopup.setID = self.setID;
+	GearManagerDialogPopup.origName = self.text:GetText();
+	RecalculateGearManagerDialogPopup(self.text:GetText(), self.icon:GetTexture());
+end
+
+function GearSetButton_SetSpecInfo(self, specID)
+	if ( specID and specID > 0 ) then
+		self.specID = specID;
+		local id, name, description, texture, role, class = GetSpecializationInfoByID(specID);
+		SetPortraitToTexture(self.SpecIcon, texture);
+		self.SpecIcon:Show();
+		self.SpecRing:Show();
+	else
+		self.specID = nil;
+		self.SpecIcon:Hide();
+		self.SpecRing:Hide();
+	end
+	
+end
+
+function GearSetButton_UpdateSpecInfo(self)
+	if ( not self.setID ) then
+		GearSetButton_SetSpecInfo(self, nil);
+		return;
+	end
+	
+	local specIndex = C_EquipmentSet.GetEquipmentSetAssignedSpec(self.setID);
+	if ( not specIndex ) then
+		GearSetButton_SetSpecInfo(self, nil);
+		return;
+	end
+	
+	local specID = GetSpecializationInfo(specIndex);
+	GearSetButton_SetSpecInfo(self, specID);
+end
+
 function GearSetButton_OnClick (self, button, down)
-	if ( self.name and self.name ~= "" ) then
+	if ( self.setID ) then
 		PlaySound("igMainMenuOptionCheckBoxOn");		-- inappropriately named, but a good sound.
-		PaperDollEquipmentManagerPane.selectedSetName = self.name;
+		PaperDollEquipmentManagerPane.selectedSetID = self.setID;
 		-- mark the ignored slots
 		PaperDollFrame_ClearIgnoredSlots();
-		PaperDollFrame_IgnoreSlotsForSet(self.name);
+		PaperDollFrame_IgnoreSlotsForSet(self.setID);
 		PaperDollEquipmentManagerPane_Update();
 		GearManagerDialogPopup:Hide();
 	else
 		-- This is the "New Set" button
 		GearManagerDialogPopup:Show();
-		PaperDollEquipmentManagerPane.selectedSetName = nil;
+		PaperDollEquipmentManagerPane.selectedSetID = nil;
 		PaperDollFrame_ClearIgnoredSlots();
 		PaperDollEquipmentManagerPane_Update();
 		-- Ignore shirt and tabard by default
@@ -1905,9 +2029,9 @@ function GearSetButton_OnClick (self, button, down)
 end
 
 function GearSetButton_OnEnter (self)
-	if ( self.name and self.name ~= "" ) then
+	if ( self.setID ) then
 		GameTooltip_SetDefaultAnchor(GameTooltip, self);
-		GameTooltip:SetEquipmentSet(self.name);
+		GameTooltip:SetEquipmentSet(self.setID);
 	end
 end
 
@@ -1964,7 +2088,7 @@ end
 function GearManagerDialogPopup_OnShow (self)
 	GearManagerDialogPopup_AdjustAnchors(self);
 	PlaySound("igCharacterInfoOpen");
-	self.name = nil;
+	self.setID = nil;
 	self.isEdit = false;
 	RecalculateGearManagerDialogPopup();
 	RefreshEquipmentSetIconInfo();
@@ -1977,10 +2101,10 @@ function GearManagerDialogPopup_OnUpdate (self)
 end
 
 function GearManagerDialogPopup_OnHide (self)
-	GearManagerDialogPopup.name = nil;
+	GearManagerDialogPopup.setID = nil;
 	GearManagerDialogPopup:SetSelection(true, nil);
 	GearManagerDialogPopupEditBox:SetText("");
-	if (not PaperDollEquipmentManagerPane.selectedSetName) then
+	if (not PaperDollEquipmentManagerPane.selectedSetID) then
 		PaperDollFrame_ClearIgnoredSlots();
 	end
 	EM_ICON_FILENAMES = nil;
@@ -2139,7 +2263,7 @@ function GearManagerDialogPopupOkay_OnClick (self, button, pushed)
 	local popup = GearManagerDialogPopup;
 	local iconTexture = GetEquipmentSetIconInfo(popup.selectedIcon);
 
-	if ( GetEquipmentSetInfoByName(popup.name) ) then
+	if ( C_EquipmentSet.GetEquipmentSetID(popup.name) ) then
 		if (popup.isEdit and popup.name ~= popup.origName)  then
 			-- Not allowed to overwrite an existing set by doing a rename
 			UIErrorsFrame:AddMessage(EQUIPMENT_SETS_CANT_RENAME, 1.0, 0.1, 0.1, 1.0);
@@ -2147,25 +2271,23 @@ function GearManagerDialogPopupOkay_OnClick (self, button, pushed)
 		elseif (not popup.isEdit) then
 			local dialog = StaticPopup_Show("CONFIRM_OVERWRITE_EQUIPMENT_SET", popup.name);
 			if ( dialog ) then
-				dialog.data = popup.name;
-				dialog.selectedIcon = GetEquipmentSetIconInfo(popup.selectedIcon);
+				dialog.data = C_EquipmentSet.GetEquipmentSetID(popup.name);
+				dialog.selectedIcon = iconTexture;
 			else
 				UIErrorsFrame:AddMessage(ERR_CLIENT_LOCKED_OUT, 1.0, 0.1, 0.1, 1.0);
 			end
 			return;
 		end
-	elseif ( GetNumEquipmentSets() >= MAX_EQUIPMENT_SETS_PER_PLAYER and not popup.isEdit) then
+	elseif ( C_EquipmentSet.GetNumEquipmentSets() >= MAX_EQUIPMENT_SETS_PER_PLAYER and not popup.isEdit) then
 		UIErrorsFrame:AddMessage(EQUIPMENT_SETS_TOO_MANY, 1.0, 0.1, 0.1, 1.0);
 		return;
 	end
 
 	if (popup.isEdit) then
-		--Modifying a set
-		PaperDollEquipmentManagerPane.selectedSetName = popup.name;
-		ModifyEquipmentSet(popup.origName, popup.name, iconTexture);
+		PaperDollEquipmentManagerPane.selectedSetID = popup.setID;
+		C_EquipmentSet.ModifyEquipmentSet(popup.setID, popup.name, iconTexture);
 	else
-		-- Saving a new set
-		SaveEquipmentSet(popup.name, iconTexture);
+		C_EquipmentSet.CreateEquipmentSet(popup.name, iconTexture);
 	end
 	popup:Hide();
 end
@@ -2198,7 +2320,7 @@ function PaperDollEquipmentManagerPane_OnUpdate(self)
 	for i = 1, #self.buttons do
 		local button = self.buttons[i];
 		if (button:IsMouseOver()) then
-			if (button.name) then
+			if (button.setID) then
 				button.DeleteButton:Show();
 				button.EditButton:Show();
 			else
@@ -2219,18 +2341,18 @@ function PaperDollEquipmentManagerPane_OnUpdate(self)
 end
 
 function PaperDollEquipmentManagerPane_OnShow(self)
-	PaperDollEquipmentManagerPane_Update();
+	PaperDollEquipmentManagerPane_Update(true);
 	EquipmentFlyoutPopoutButton_ShowAll();
 end
 
 function PaperDollEquipmentManagerPane_OnEvent(self, event, ...)
 
 	if ( event == "EQUIPMENT_SWAP_FINISHED" ) then
-		local completed, setName = ...;
+		local completed, setID = ...;
 		if ( completed ) then
 			PlaySoundKitID(1212); -- plays the equip sound for plate mail
 			if (self:IsShown()) then
-				self.selectedSetName = setName;
+				self.selectedSetID = setID;
 				PaperDollEquipmentManagerPane_Update();
 			end
 		end
@@ -2239,7 +2361,7 @@ function PaperDollEquipmentManagerPane_OnEvent(self, event, ...)
 
 	if (self:IsShown()) then
 		if ( event == "EQUIPMENT_SETS_CHANGED" ) then
-			PaperDollEquipmentManagerPane_Update();
+			PaperDollEquipmentManagerPane_Update(true);
 		elseif ( event == "PLAYER_EQUIPMENT_CHANGED" or event == "BAG_UPDATE" ) then
 			-- This queues the update to only happen once at the end of the frame
 			self.queuedUpdate = true;
@@ -2255,9 +2377,32 @@ function PaperDollEquipmentManagerPane_OnHide(self)
 	StaticPopup_Hide("CONFIRM_OVERWRITE_EQUIPMENT_SET");
 end
 
-function PaperDollEquipmentManagerPane_Update()
+function SortEquipmentSetIDs(equipmentSetIDs)
+	local sortedIDs = {};
+	
+	-- Add all the spec-assigned sets first because they should appear first.
+	for i, equipmentSetID in ipairs(equipmentSetIDs) do
+		if C_EquipmentSet.GetEquipmentSetAssignedSpec(equipmentSetID) then
+			sortedIDs[#sortedIDs + 1] = equipmentSetID;
+		end
+	end
+	
+	for i, equipmentSetID in ipairs(equipmentSetIDs) do
+		if not C_EquipmentSet.GetEquipmentSetAssignedSpec(equipmentSetID) then
+			sortedIDs[#sortedIDs + 1] = equipmentSetID;
+		end
+	end
+		
+	return sortedIDs;
+end
 
-	local _, setID, isEquipped = GetEquipmentSetInfoByName(PaperDollEquipmentManagerPane.selectedSetName or "");
+function PaperDollEquipmentManagerPane_Update(equipmentSetsDirty)
+
+	local _, setID, isEquipped;
+	if (PaperDollEquipmentManagerPane.selectedSetID) then
+		_, _, setID, isEquipped = C_EquipmentSet.GetEquipmentSetInfo(PaperDollEquipmentManagerPane.selectedSetID);
+	end
+	
 	if (setID) then
 		if (isEquipped) then
 			PaperDollEquipmentManagerPaneSaveSet:Disable();
@@ -2271,13 +2416,17 @@ function PaperDollEquipmentManagerPane_Update()
 		PaperDollEquipmentManagerPaneEquipSet:Disable();
 
 		-- Clear selected equipment set if it doesn't exist
-		if (PaperDollEquipmentManagerPane.selectedSetName) then
-			PaperDollEquipmentManagerPane.selectedSetName = nil;
+		if (PaperDollEquipmentManagerPane.selectedSetID) then
+			PaperDollEquipmentManagerPane.selectedSetID = nil;
 			PaperDollFrame_ClearIgnoredSlots();
 		end
 	end
 
-	local numSets = GetNumEquipmentSets();
+	if ( equipmentSetsDirty ) then
+		PaperDollEquipmentManagerPane.equipmentSetIDs = SortEquipmentSetIDs(C_EquipmentSet.GetEquipmentSetIDs());
+	end
+
+	local numSets = #PaperDollEquipmentManagerPane.equipmentSetIDs;
 	local numRows = numSets;
 	if (numSets < MAX_EQUIPMENT_SETS_PER_PLAYER) then
 		numRows = numRows + 1;  -- "Add New Set" button
@@ -2287,7 +2436,7 @@ function PaperDollEquipmentManagerPane_Update()
 
 	local scrollOffset = HybridScrollFrame_GetOffset(PaperDollEquipmentManagerPane);
 	local buttons = PaperDollEquipmentManagerPane.buttons;
-	local selectedName = PaperDollEquipmentManagerPane.selectedSetName;
+	local selectedSetID = PaperDollEquipmentManagerPane.selectedSetID;
 	local name, texture, button, numLost;
 	for i = 1, #buttons do
 		if (i+scrollOffset <= numRows) then
@@ -2297,8 +2446,8 @@ function PaperDollEquipmentManagerPane_Update()
 
 			if (i+scrollOffset <= numSets) then
 				-- Normal equipment set button
-				name, texture, setID, isEquipped, _, _, _, numLost = GetEquipmentSetInfo(i+scrollOffset);
-				button.name = name;
+				name, texture, setID, isEquipped, _, _, _, numLost = C_EquipmentSet.GetEquipmentSetInfo(PaperDollEquipmentManagerPane.equipmentSetIDs[i+scrollOffset]);
+				button.setID = setID;
 				button.text:SetText(name);
 				if (numLost > 0) then
 					button.text:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
@@ -2311,7 +2460,7 @@ function PaperDollEquipmentManagerPane_Update()
 					button.icon:SetTexture("Interface\\Icons\\INV_Misc_QuestionMark");
 				end
 
-				if (selectedName and button.name == selectedName) then
+				if (selectedSetID and button.setID == selectedSetID) then
 					button.SelectedBar:Show();
 				else
 					button.SelectedBar:Hide();
@@ -2326,7 +2475,7 @@ function PaperDollEquipmentManagerPane_Update()
 				button.icon:SetPoint("LEFT", 4, 0);
 			else
 				-- This is the Add New button
-				button.name = nil;
+				button.setID = nil;
 				button.text:SetText(PAPERDOLL_NEWEQUIPMENTSET);
 				button.text:SetTextColor(GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
 				button.icon:SetTexture("Interface\\PaperDollInfoFrame\\Character-Plus");
@@ -2359,6 +2508,8 @@ function PaperDollEquipmentManagerPane_Update()
 			else
 				buttons[i].Stripe:Hide();
 			end
+			
+			GearSetButton_UpdateSpecInfo(buttons[i]);
 		else
 			buttons[i]:Hide();
 		end
@@ -2366,11 +2517,12 @@ function PaperDollEquipmentManagerPane_Update()
 end
 
 function PaperDollEquipmentManagerPaneSaveSet_OnClick (self)
-	local selectedSetName = PaperDollEquipmentManagerPane.selectedSetName
-	if (selectedSetName and selectedSetName ~= "") then
+	local selectedSetID = PaperDollEquipmentManagerPane.selectedSetID
+	if (selectedSetID) then
+		local selectedSetName = C_EquipmentSet.GetEquipmentSetInfo(selectedSetID);
 		local dialog = StaticPopup_Show("CONFIRM_SAVE_EQUIPMENT_SET", selectedSetName);
 		if ( dialog ) then
-			dialog.data = selectedSetName;
+			dialog.data = selectedSetID;
 		else
 			UIErrorsFrame:AddMessage(ERR_CLIENT_LOCKED_OUT, 1.0, 0.1, 0.1, 1.0);
 		end
@@ -2378,10 +2530,10 @@ function PaperDollEquipmentManagerPaneSaveSet_OnClick (self)
 end
 
 function PaperDollEquipmentManagerPaneEquipSet_OnClick (self)
-	local selectedSetName = PaperDollEquipmentManagerPane.selectedSetName;
-	if ( selectedSetName and selectedSetName ~= "") then
+	local selectedSetID = PaperDollEquipmentManagerPane.selectedSetID;
+	if ( selectedSetID) then
 		PlaySound("igCharacterInfoTab");			-- inappropriately named, but a good sound.
-		EquipmentManager_EquipSet(selectedSetName);
+		EquipmentManager_EquipSet(selectedSetID);
 	end
 end
 
@@ -2442,16 +2594,12 @@ end
 
 local function PlayerTitleSort(a, b) return a.name < b.name; end
 
-function PaperDollTitlesPane_Update()
+function GetKnownTitles()
 	local playerTitles = { };
-	local currentTitle = GetCurrentTitle();
 	local titleCount = 1;
-	local buttons = PaperDollTitlesPane.buttons;
-	local fontstringText = buttons[1].text;
-	local fontstringWidth;
 	local playerTitle = false;
 	local tempName = 0;
-	PaperDollTitlesPane.selected = -1;
+	local selectedTitle = -1;
 	playerTitles[1] = { };
 	-- reserving space for None so it doesn't get sorted out of the top position
 	playerTitles[1].name = "       ";
@@ -2464,19 +2612,28 @@ function PaperDollTitlesPane_Update()
 				playerTitles[titleCount] = playerTitles[titleCount] or { };
 				playerTitles[titleCount].name = strtrim(tempName);
 				playerTitles[titleCount].id = i;
-				if ( i == currentTitle ) then
-					PaperDollTitlesPane.selected = i;
-				end
-				fontstringText:SetText(playerTitles[titleCount].name);
 			end
 		end
+	end
+
+	return playerTitles, selectedTitle;
+end
+
+function PaperDollTitlesPane_Update()
+	local currentTitle = GetCurrentTitle();
+	local buttons = PaperDollTitlesPane.buttons;
+	local playerTitles = GetKnownTitles();
+	if ( currentTitle > 0 and currentTitle <= GetNumTitles() and IsTitleKnown(currentTitle) ) then
+		PaperDollTitlesPane.selected = currentTitle;
+	else
+		PaperDollTitlesPane.selected = -1;
 	end
 
 	table.sort(playerTitles, PlayerTitleSort);
 	playerTitles[1].name = PLAYER_TITLE_NONE;
 	PaperDollTitlesPane.titles = playerTitles;
 
-	HybridScrollFrame_Update(PaperDollTitlesPane, titleCount * PLAYER_TITLE_HEIGHT + 20 , PaperDollTitlesPane:GetHeight());
+	HybridScrollFrame_Update(PaperDollTitlesPane, #playerTitles * PLAYER_TITLE_HEIGHT + 20 , PaperDollTitlesPane:GetHeight());
 	PaperDollTitlesPane_UpdateScrollFrame();
 end
 
@@ -2545,6 +2702,11 @@ function PaperDollFrame_UpdateSidebarTabs()
 				tab.Hider:Show();
 				tab.Highlight:Show();
 				tab.TabBg:SetTexCoord(0.01562500, 0.79687500, 0.61328125, 0.78125000);
+				if ( PAPERDOLL_SIDEBARS[i].IsActive() ) then
+					tab:Enable();
+				else
+					tab:Disable();
+				end
 			end
 		end
 	end

@@ -12,6 +12,7 @@
 --  :HideBlock():  Hides the current block.
 --  :Restart(controller):  Hide all blocks and restart the flow at step 1.
 --  :OnHide():  Check each block for a :OnHide method and call it if it exists.
+--  :GetFinishLabel(): The label for the final step of a flow is updated every time the flow is updated (going to next step, etc) this allows a dynamic string to be used.
 --
 -- Flows should have the following members:
 --  .data - reference to an entry in CharacterUpgrade_Items with display info
@@ -168,6 +169,12 @@ GlueDialogTypes["PRODUCT_ASSIGN_TO_TARGET_FAILED"] = {
 	escapeHides = true,
 };
 
+GlueDialogTypes["BOOST_FACTION_CHANGE_IN_PROGRESS"] = {
+	text = CHARACTER_BOOST_ERROR_PENDING_FACTION_CHANGE,
+	button1 = OKAY,
+	escapeHides = true,
+};
+
 local CharacterUpgradeCharacterSelectBlock = { Back = false, Next = false, Finish = false, AutoAdvance = true, ResultsLabel = SELECT_CHARACTER_RESULTS_LABEL, ActiveLabel = SELECT_CHARACTER_ACTIVE_LABEL, };
 local CharacterUpgradeSpecSelectBlock = { Back = true, Next = true, Finish = false, ActiveLabel = SELECT_SPEC_ACTIVE_LABEL, ResultsLabel = SELECT_SPEC_RESULTS_LABEL, Popup = "BOOST_NOT_RECOMMEND_SPEC_WARNING" };
 local CharacterUpgradeFactionSelectBlock = { Back = true, Next = true, Finish = false, ActiveLabel = SELECT_FACTION_ACTIVE_LABEL, ResultsLabel = SELECT_FACTION_RESULTS_LABEL };
@@ -191,9 +198,9 @@ CharacterUpgradeFlow = {
 };
 
 CharacterUpgrade_Items = {
-	[LE_BATTLEPAY_PRODUCT_ITEM_LEVEL_90_CHARACTER_UPGRADE] = {
+	[Enum.BattlepayBoostProduct.Level90Boost] = {
 		free = {
-			productId = LE_BATTLEPAY_PRODUCT_ITEM_LEVEL_90_CHARACTER_UPGRADE,
+			productId = Enum.BattlepayBoostProduct.Level90Boost,
 			Size = { x = 72, y = 68 },
 			icon = "Interface\\Icons\\achievement_level_90",
 			iconBorder = "services-ring-wod",
@@ -220,7 +227,7 @@ CharacterUpgrade_Items = {
 			professionLevel = 600,
 		},
 		paid = {
-			productId = LE_BATTLEPAY_PRODUCT_ITEM_LEVEL_90_CHARACTER_UPGRADE,
+			productId = Enum.BattlepayBoostProduct.Level90Boost,
 			icon = "Interface\\Icons\\achievement_level_90",
 			iconBorder = "services-ring",
 
@@ -232,9 +239,9 @@ CharacterUpgrade_Items = {
 			professionLevel = 600,
 		},
 	},
-	[LE_BATTLEPAY_PRODUCT_ITEM_LEVEL_100_CHARACTER_UPGRADE] = {
+	[Enum.BattlepayBoostProduct.Level100Boost] = {
 		free = {
-			productId = LE_BATTLEPAY_PRODUCT_ITEM_LEVEL_100_CHARACTER_UPGRADE,
+			productId = Enum.BattlepayBoostProduct.Level100Boost,
 			icon = "Interface\\Icons\\achievement_level_100",
 			iconBorder = "services-ring",
 
@@ -260,7 +267,7 @@ CharacterUpgrade_Items = {
 			professionLevel = 700,
 		},
 		paid = {
-			productId = LE_BATTLEPAY_PRODUCT_ITEM_LEVEL_100_CHARACTER_UPGRADE,
+			productId = Enum.BattlepayBoostProduct.Level100Boost,
 			icon = "Interface\\Icons\\achievement_level_100",
 			iconBorder = "services-ring",
 			maxLevel = UPGRADE_100_MAX_LEVEL,
@@ -274,10 +281,10 @@ CharacterUpgrade_Items = {
 }
 
 CharacterUpgrade_DisplayOrder = {
-	{ productId = LE_BATTLEPAY_PRODUCT_ITEM_LEVEL_90_CHARACTER_UPGRADE,		free = false},
-	{ productId = LE_BATTLEPAY_PRODUCT_ITEM_LEVEL_90_CHARACTER_UPGRADE,		free = true	},
-	{ productId = LE_BATTLEPAY_PRODUCT_ITEM_LEVEL_100_CHARACTER_UPGRADE,	free = true	},
-	{ productId = LE_BATTLEPAY_PRODUCT_ITEM_LEVEL_100_CHARACTER_UPGRADE ,	free = false},
+	{ productId = Enum.BattlepayBoostProduct.Level90Boost,		free = false},
+	{ productId = Enum.BattlepayBoostProduct.Level90Boost,		free = true	},
+	{ productId = Enum.BattlepayBoostProduct.Level100Boost,		free = true	},
+	{ productId = Enum.BattlepayBoostProduct.Level100Boost ,	free = false},
 }
 
 function CharacterServicesFlowPrototype:BuildResults(steps)
@@ -375,6 +382,10 @@ function CharacterServicesFlowPrototype:OnHide()
 	end
 end
 
+function CharacterServicesFlowPrototype:GetFinishLabel()
+	return "";
+end
+
 function CharacterUpgradeFlow:SetTarget(data)
 	self.data = data;
 end
@@ -385,6 +396,25 @@ end
 
 function CharacterUpgradeFlow:GetAutoSelectGuid()
 	return self.autoSelectGuid;
+end
+
+function CharacterUpgradeFlow:SetTrialBoostGuid(guid)
+	self:SetAutoSelectGuid(guid);
+	self.isTrialBoost = guid ~= nil;
+
+	if self.isTrialBoost then
+		CharacterUpgradeSpecSelectBlock.SkipOnRewind = true;
+		CharacterUpgradeSpecSelectBlock.HiddenStep = true;
+		CharacterUpgradeFactionSelectBlock.SkipOnRewind = true;
+	else
+		CharacterUpgradeSpecSelectBlock.SkipOnRewind = nil;
+		CharacterUpgradeSpecSelectBlock.HiddenStep = nil;
+		CharacterUpgradeFactionSelectBlock.SkipOnRewind = nil;
+	end
+end
+
+function CharacterUpgradeFlow:IsTrialBoost()
+	return self.isTrialBoost;
 end
 
 function CharacterUpgradeFlow:Initialize(controller)
@@ -456,11 +486,22 @@ end
 
 function CharacterUpgradeFlow:Finish(controller)
 	if (not CharacterUpgradeSecondChanceWarningFrame.warningAccepted) then
-		if ( C_PurchaseAPI.GetCurrencyID() == CURRENCY_KRW ) then
-			CharacterUpgradeSecondChanceWarningBackground.Text:SetText(CHARACTER_UPGRADE_KRW_FINISH_BUTTON_POPUP_TEXT);
+		CharacterUpgradeSecondChanceWarningBackground.ConfirmButton:SetText(self:GetFinishLabel());
+
+		if ( self:IsTrialBoost() ) then
+			if ( C_StoreSecure.GetCurrencyID() == CURRENCY_KRW ) then
+				CharacterUpgradeSecondChanceWarningBackground.Text:SetText(CHARACTER_UPGRADE_KRW_FINISH_TRIAL_BOOST_BUTTON_POPUP_TEXT);
+			else
+				CharacterUpgradeSecondChanceWarningBackground.Text:SetText(CHARACTER_UPGRADE_FINISH_TRIAL_BOOST_BUTTON_POPUP_TEXT);
+			end
 		else
-			CharacterUpgradeSecondChanceWarningBackground.Text:SetText(CHARACTER_UPGRADE_FINISH_BUTTON_POPUP_TEXT);
+			if ( C_StoreSecure.GetCurrencyID() == CURRENCY_KRW ) then
+				CharacterUpgradeSecondChanceWarningBackground.Text:SetText(CHARACTER_UPGRADE_KRW_FINISH_BUTTON_POPUP_TEXT);
+			else
+				CharacterUpgradeSecondChanceWarningBackground.Text:SetText(CHARACTER_UPGRADE_FINISH_BUTTON_POPUP_TEXT);
+			end
 		end
+
 		CharacterUpgradeSecondChanceWarningFrame:Show();
 		return false;
 	end
@@ -478,10 +519,20 @@ function CharacterUpgradeFlow:Finish(controller)
 		return false;
 	end
 
-	self:SetAutoSelectGuid(nil);
+	self:SetTrialBoostGuid(nil);
 
+	CharacterServicesMaster.pendingGuid = results.playerguid;
 	C_SharedCharacterServices.AssignUpgradeDistribution(results.playerguid, results.faction, results.spec, results.classId, self.data.free, self.data.productId);
 	return true;
+end
+
+function CharacterUpgradeFlow:GetFinishLabel()
+	-- "Level Up!" is replaced with "Unlock!" when unlocking a trial boost character.
+	if self:IsTrialBoost() then
+		return CHARACTER_UPGRADE_UNLOCK_TRIAL_CHARACTER_FINISH_LABEL;
+	end
+
+	return self.FinishLabel;
 end
 
 local function replaceScripts(button)
@@ -571,16 +622,23 @@ function CharacterUpgrade_IsCreatedCharacterTrialBoost()
 end
 
 function CharacterUpgrade_ResetBoostData()
-	SetCharacterCreateType(LE_CHARACTER_CREATE_TYPE_NONE);
+	SetCharacterCreateType(LE_CHARACTER_CREATE_TYPE_NORMAL);
 	CHARACTER_UPGRADE_CREATE_CHARACTER_DATA = nil;
 end
 
 local function IsUsingValidProductForTrialBoost()
-	return CharacterUpgradeFlow.data.productId == LE_BATTLEPAY_PRODUCT_ITEM_LEVEL_100_CHARACTER_UPGRADE;
+	return CharacterUpgradeFlow.data.productId == Enum.BattlepayBoostProduct.Level100Boost;
 end
 
-local function CanBoostCharacter(class, level, boostInProgress, isTrialBoost)
-	if (boostInProgress or class == "DEMONHUNTER") then
+local function IsUsingValidProductForCreateNewCharacterBoost()
+	-- To prevent player confusion, when trial boost create is shown, do not show the normal boost create character button
+	-- As different products are added this may need to be updated to reflect specific cases, but for now it's
+	-- sufficient to make trial/normal create mutually exclusive.
+	return not IsUsingValidProductForTrialBoost();
+end
+
+local function CanBoostCharacter(class, level, boostInProgress, isTrialBoost, vasServiceInProgress)
+	if (boostInProgress or vasServiceInProgress or class == "DEMONHUNTER") then
 		return false;
 	end
 
@@ -615,6 +673,123 @@ local function SetCharacterButtonEnabled(button, enabled)
 	button:SetEnabled(enabled);
 end
 
+function CharacterUpgradeCharacterSelectBlock:SetCharacterSelectErrorFrameShown(showError)
+	local errorFrame = CharacterUpgradeMaxCharactersFrame;
+	if showError then
+		self.frame:Hide(); -- Hide the flow manager
+
+		if not errorFrame.initialized then
+			errorFrame:SetPoint("TOP", CharacterServicesMaster, "TOP", -30, 0);
+			errorFrame:SetFrameLevel(CharacterServicesMaster:GetFrameLevel() + 2);
+			errorFrame:SetParent(CharacterServicesMaster);
+			errorFrame.initialized = true;
+		end
+	end
+
+	errorFrame:SetShown(showError);
+end
+
+function CharacterUpgradeCharacterSelectBlock:GetStepOptionFrames()
+	local optionFrames = self.frame.CharacterSelectBlockOptionFrames;
+	local conjunctionFrames = self.frame.CharacterSelectBlockConjunctionFrames;
+
+	if not optionFrames then
+		self.OPTION_INDEX_STEP_LABEL = 1;
+		self.OPTION_INDEX_CREATE_NEW_CHARACTER = 2;
+		self.OPTION_INDEX_CREATE_TRIAL_CHARACTER = 3;
+		self.OPTION_INDEX_CREATE_TRIAL_CHARACTER_HINT = 4;
+
+		-- Put all options (select char, create new, create trial) into this container
+		-- The anchor data is used when the given frame is the first one being anchored to the block
+		-- When anchoring subsequent frames they just use offsets from the "or labels" and always
+		-- anchor topleft -> bottomleft of the previous frame
+		optionFrames = {
+			[self.OPTION_INDEX_STEP_LABEL] = {
+				frame = self.frame.StepActiveLabel,
+				point = "LEFT", relativeFrame = self.frame.StepNumber, relativePoint ="RIGHT", offsetX = 9, offsetY = 3,
+				offsetXConjunction = 0, offsetYConjunction = -8,
+			},
+
+			[self.OPTION_INDEX_CREATE_NEW_CHARACTER] = {
+				frame = self.frame.ControlsFrame.CreateCharacterButton,
+				needsConjunction = true,
+				point = "LEFT", relativeFrame = self.frame.StepNumber, relativePoint ="RIGHT", offsetX = 9, offsetY = 3,
+				offsetXConjunction = 10, offsetYConjunction = -5,
+			},
+
+			[self.OPTION_INDEX_CREATE_TRIAL_CHARACTER] = {
+				frame = self.frame.ControlsFrame.CreateCharacterClassTrialButton,
+				needsConjunction = true,
+				point = "TOPLEFT", relativeFrame = self.frame.StepNumber, relativePoint ="TOPRIGHT", offsetX = 10, offsetY = 0,
+				offsetXConjunction = 10, offsetYConjunction = -5,
+			},
+
+			[self.OPTION_INDEX_CREATE_TRIAL_CHARACTER_HINT] = {
+				frame = self.frame.ControlsFrame.ClassTrialButtonHintText,
+				offsetXConjunction = 13, offsetYConjunction = -5,
+			},
+		};
+
+		conjunctionFrames = {
+			{ frame = self.frame.ControlsFrame.OrLabel, },
+			{ frame = self.frame.ControlsFrame.OrLabel2, },
+		};
+
+		self.frame.CharacterSelectBlockOptionFrames = optionFrames;
+		self.frame.CharacterSelectBlockConjunctionFrames = conjunctionFrames;
+	end
+
+	return optionFrames, conjunctionFrames;
+end
+
+function CharacterUpgradeCharacterSelectBlock:SetOptionUsed(optionIndex, used)
+	local optionFrames = self:GetStepOptionFrames();
+	optionFrames[optionIndex].used = used;
+end
+
+function CharacterUpgradeCharacterSelectBlock:ResetStepOptionFrames()
+	local optionFrames, conjunctionFrames = self:GetStepOptionFrames();
+
+	for i, optionData in ipairs(optionFrames) do
+		optionData.frame:Hide();
+		optionData.frame:ClearAllPoints();
+	end
+
+	for i, conjunctionData in ipairs(conjunctionFrames) do
+		conjunctionData.frame:Hide();
+		conjunctionData.frame:ClearAllPoints();
+	end
+end
+
+function CharacterUpgradeCharacterSelectBlock:LayoutOptionFrames()
+	local optionFrames, conjunctionFrames = self:GetStepOptionFrames();
+	local previousFrameData;
+	local optionCount = 0;
+
+	for i, optionFrameData in ipairs(optionFrames) do
+		if optionFrameData.used then
+			if optionCount > 0 and optionFrameData.needsConjunction then
+				local conjunctionFrameData = conjunctionFrames[optionCount];
+				local conjunctionFrame = conjunctionFrameData.frame;
+				conjunctionFrame:Show();
+				conjunctionFrame:SetPoint("TOPLEFT", previousFrameData.frame, "BOTTOMLEFT", -previousFrameData.offsetXConjunction, previousFrameData.offsetYConjunction);
+				previousFrameData = conjunctionFrameData;
+			end
+
+			optionFrameData.frame:Show();
+
+			if optionCount == 0 then
+				optionFrameData.frame:SetPoint(optionFrameData.point, optionFrameData.relativeFrame, optionFrameData.relativePoint, optionFrameData.offsetX, optionFrameData.offsetY);
+			else
+				optionFrameData.frame:SetPoint("TOPLEFT", previousFrameData.frame, "BOTTOMLEFT", optionFrameData.offsetXConjunction, optionFrameData.offsetYConjunction);
+			end
+
+			previousFrameData = optionFrameData;
+			optionCount = optionCount + 1;
+		end
+	end
+end
+
 function CharacterUpgradeCharacterSelectBlock:SaveResultInfo(characterSelectButton, playerguid)
 	self.index = characterSelectButton:GetID();
 	self.charid = GetCharIDFromIndex(self.index + CHARACTER_LIST_OFFSET);
@@ -645,10 +820,6 @@ function CharacterUpgradeCharacterSelectBlock:Initialize(results)
 
 	local numCharacters = GetNumCharacters();
 	local numDisplayedCharacters = math.min(numCharacters, MAX_CHARACTERS_DISPLAYED);
-
-	-- Ensure this is hidden if the user has no characters
-	self.frame.ControlsFrame.GlowBox:SetShown(numDisplayedCharacters > 0);
-	self.frame.StepActiveLabel:SetShown(numDisplayedCharacters > 0);
 
 	if (CharacterUpgrade_IsCreatedCharacterUpgrade()) then
 		CharacterSelect_UpdateButtonState();
@@ -711,8 +882,8 @@ function CharacterUpgradeCharacterSelectBlock:Initialize(results)
 	for i = 1, numDisplayedCharacters do
 		local button = _G["CharSelectCharacterButton"..i];
 		_G["CharSelectPaidService"..i]:Hide();
-		local class, _, level, _, _, _, _, _, _, _, playerguid, _, _, _, boostInProgress, _, _, isTrialBoost = select(4, GetCharacterInfo(GetCharIDFromIndex(i+CHARACTER_LIST_OFFSET)));
-		local canBoostCharacter = CanBoostCharacter(class, level, boostInProgress, isTrialBoost);
+		local class, _, level, _, _, _, _, _, _, _, playerguid, _, _, _, boostInProgress, _, _, isTrialBoost, _, _, vasServiceInProgress = select(4, GetCharacterInfo(GetCharIDFromIndex(i+CHARACTER_LIST_OFFSET)));
+		local canBoostCharacter = CanBoostCharacter(class, level, boostInProgress, isTrialBoost, vasServiceInProgress);
 
 		SetCharacterButtonEnabled(button, canBoostCharacter);
 
@@ -725,9 +896,8 @@ function CharacterUpgradeCharacterSelectBlock:Initialize(results)
 
 				-- The user entered a normal boost flow and selected a trial boost character, at this point
 				-- put the flow into the auto-select state.
-				if (isTrialBoost) then
-					CharacterUpgradeFlow:SetAutoSelectGuid(playerguid);
-				end
+				local trialBoostFlowGuid = isTrialBoost and playerguid or nil;
+				CharacterUpgradeFlow:SetTrialBoostGuid(trialBoostFlowGuid);
 
 				CharacterSelectButton_OnClick(button);
 				button.selection:Show();
@@ -745,8 +915,8 @@ function CharacterUpgradeCharacterSelectBlock:Initialize(results)
 	end
 
 	for i = 1, GetNumCharacters() do
-		local class, _, level, _, _, _, _, _, _, _, _, _, _, _, boostInProgress, _, _, isTrialBoost = select(4, GetCharacterInfo(GetCharIDFromIndex(i)));
-		if CanBoostCharacter(class, level, boostInProgress, isTrialBoost) then
+		local class, _, level, _, _, _, _, _, _, _, _, _, _, _, boostInProgress, _, _, isTrialBoost, _, _, vasServiceInProgress = select(4, GetCharacterInfo(GetCharIDFromIndex(i)));
+		if CanBoostCharacter(class, level, boostInProgress, isTrialBoost, vasServiceInProgress) then
 			if IsCharacterEligibleForVeteranBonus(level, isTrialBoost) then
 				self.hasVeteran = true;
 			end
@@ -758,61 +928,27 @@ function CharacterUpgradeCharacterSelectBlock:Initialize(results)
 	self.frame.ControlsFrame.BonusLabel:SetPoint("BOTTOM", CharSelectServicesFlowFrame, "BOTTOM", 10, 60);
 	self.frame.ControlsFrame.BonusLabel:SetShown(self.hasVeteran);
 
-	local errorFrame = CharacterUpgradeMaxCharactersFrame;
-	errorFrame:Hide();
+	-- Setup the step option frames
+	self:ResetStepOptionFrames();
 
-	self.frame.ControlsFrame.OrLabel:Hide();
-	self.frame.ControlsFrame.CreateCharacterButton:Hide();
+	local hasEligibleBoostCharacter = (numEligible > 0);
+	local canCreateCharacter = numDisplayedCharacters < MAX_CHARACTERS_DISPLAYED_BASE;
+	local canShowCreateNewCharacterButton = canCreateCharacter and IsUsingValidProductForCreateNewCharacterBoost();
+	local canCreateTrialBoostCharacter = canCreateCharacter and (C_CharacterServices.IsTrialBoostEnabled() and IsUsingValidProductForTrialBoost());
 
-	-- These only show if the user can still make characters and boost feature is enabled.
-	self.frame.ControlsFrame.OrLabel2:Hide();
-	self.frame.ControlsFrame.CreateCharacterClassTrialButton:Hide();
+	self:SetOptionUsed(self.OPTION_INDEX_STEP_LABEL, hasEligibleBoostCharacter);
+	self:SetOptionUsed(self.OPTION_INDEX_CREATE_NEW_CHARACTER, canShowCreateNewCharacterButton);
+	self:SetOptionUsed(self.OPTION_INDEX_CREATE_TRIAL_CHARACTER, canCreateTrialBoostCharacter);
+	self:SetOptionUsed(self.OPTION_INDEX_CREATE_TRIAL_CHARACTER_HINT, canCreateTrialBoostCharacter and not (hasEligibleBoostCharacter or canShowCreateNewCharacterButton));
 
-	if (numDisplayedCharacters < MAX_CHARACTERS_DISPLAYED_BASE) then
-		self.frame.ControlsFrame.CreateCharacterButton:Show();
-		self.frame.ControlsFrame.CreateCharacterButton:ClearAllPoints();
+	self:LayoutOptionFrames();
 
-		local onlyShowCreateButtonsBottomFrame;
+	-- Glowbox hides without eligible characters
+	self.frame.ControlsFrame.GlowBox:SetShown(hasEligibleBoostCharacter);
 
-		if (numDisplayedCharacters > 0) then
-			self.frame.ControlsFrame.OrLabel:Show();
-			self.frame.ControlsFrame.CreateCharacterButton:SetPoint("TOPLEFT", self.frame.ControlsFrame.OrLabel, "BOTTOMLEFT", 0, -5);
-		else
-			onlyShowCreateButtonsBottomFrame = self.frame.ControlsFrame.CreateCharacterButton;
-		end
-
-		if C_CharacterServices.IsTrialBoostEnabled() and IsUsingValidProductForTrialBoost() then
-			self.frame.ControlsFrame.OrLabel2:Show();
-			self.frame.ControlsFrame.CreateCharacterClassTrialButton:Show();
-
-			if onlyShowCreateButtonsBottomFrame then
-				onlyShowCreateButtonsBottomFrame = self.frame.ControlsFrame.CreateCharacterClassTrialButton;
-			end
-		end
-
-		if onlyShowCreateButtonsBottomFrame then
-			-- HACK: Even though this flow's frame has been anchored before Initialize was called, even omitting the call to ClearAllPoints,
-			-- the createCharacterButton cannot resolve its anchors correctly.  Force anchor it to a static frame so that we can determine
-			-- the height needed to center these two buttons on the step number.
-			self.frame.ControlsFrame.CreateCharacterButton:SetPoint("TOPLEFT", CharacterServicesMaster, "TOPLEFT", 0, 0);
-
-			local buttonsHeight = self.frame.ControlsFrame.CreateCharacterButton:GetTop() - onlyShowCreateButtonsBottomFrame:GetBottom();
-			local stepLabelHeight = self.frame.StepNumber:GetHeight();
-			local offset = (stepLabelHeight - buttonsHeight) / 2;
-
-			self.frame.ControlsFrame.CreateCharacterButton:ClearAllPoints();
-			self.frame.ControlsFrame.CreateCharacterButton:SetPoint("TOPLEFT", self.frame.StepNumber, "TOPRIGHT", 20, -offset);
-		end
-	elseif (numEligible == 0) then
-		self.frame:Hide();
-		if (not errorFrame.initialized) then
-			errorFrame:SetPoint("TOP", CharacterServicesMaster, "TOP", -30, 0);
-			errorFrame:SetFrameLevel(CharacterServicesMaster:GetFrameLevel()+2);
-			errorFrame:SetParent(CharacterServicesMaster);
-			errorFrame.initialized = true;
-		end
-		errorFrame:Show();
-	end
+	local canCreateBoostableCharacter = canCreateCharacter and (canShowCreateNewCharacterButton or canCreateTrialBoostCharacter);
+	local showBoostError = not (canCreateBoostableCharacter or hasEligibleBoostCharacter);
+	self:SetCharacterSelectErrorFrameShown(showBoostError);
 end
 
 function CharacterUpgradeCharacterSelectBlock:IsFinished()
@@ -878,8 +1014,8 @@ function CharacterUpgradeCharacterSelectBlock:OnHide()
 		resetScripts(button);
 		SetCharacterButtonEnabled(button, true);
 
-		if (button.trialBoostPadlock) then
-			button.trialBoostPadlock:Show();
+		if (button.padlock) then
+			button.padlock:Show();
 		end
 	end
 
@@ -930,7 +1066,7 @@ end
 
 function CharacterUpgrade_BeginNewCharacterCreation(characterType)
 	CharacterUpgrade_SetupFlowForNewCharacter(characterType);
-	CharacterSelect_CreateNewCharacter(characterType);
+	CharacterSelect_CreateNewCharacter(characterType, false);
 end
 
 function CharacterUpgradeCreateCharacter_OnClick(self)
@@ -1139,7 +1275,7 @@ function CharacterUpgradeSpecSelectBlock:Initialize(results, wasFromRewind)
 
 	-- When boosting to level 100, prevent the selection of non-recommended specs, but still auto-select from
 	-- the limited number of specs that the user can choose from
-	local allowAllSpecs = CharacterUpgradeFlow.data.productId ~= LE_BATTLEPAY_PRODUCT_ITEM_LEVEL_100_CHARACTER_UPGRADE;
+	local allowAllSpecs = CharacterUpgradeFlow.data.productId ~= Enum.BattlepayBoostProduct.Level100Boost;
 
 	CharacterServices_UpdateSpecializationButtons(classID, gender, self.frame.ControlsFrame, CharacterUpgradeSpecSelectBlock, allowAllSpecs);
 

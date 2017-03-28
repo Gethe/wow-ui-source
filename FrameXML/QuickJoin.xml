@@ -8,7 +8,7 @@
 	<FontString name="QuickJoinButtonQueueTemplate" virtual="true" inherits="GameFontNormalSmall" text="Random Warlords of Draenor Heroic Dungeon or Something" justifyH="LEFT">
 		<Size x="186" y="16"/>
 	</FontString>
-	<Button name="QuickJoinButtonTemplate" mixin="QuickJoinButtonMixin" virtual="true">
+	<Button name="QuickJoinButtonTemplate" hyperlinksEnabled="true" mixin="QuickJoinButtonMixin" virtual="true">
 		<Size x="297" y="25"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -55,13 +55,20 @@
 			</Layer>
 		</Layers>
 		<Scripts>
+			<OnLoad method="OnLoad"/>
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
 			<OnClick method="OnClick"/>
+			<OnHyperlinkClick method="OnHyperlinkClick"/>
+
+			<!-- Forward to regular enter/leave handlers -->
+			<OnHyperlinkEnter method="OnEnter"/>
+			<OnHyperlinkLeave method="OnLeave"/>
 		</Scripts>
 	</Button>
 	<Frame name="QuickJoinFrame" parent="FriendsFrame" hidden="true" setAllPoints="true" mixin="QuickJoinMixin">
 		<Frames>
+			<Frame name="QuickJoinFrameDropDown" inherits="UIDropDownMenuTemplate"/>
 			<ScrollFrame name="QuickJoinScrollFrame" parentKey="ScrollFrame" inherits="HybridScrollFrameTemplate">
 				<Size x="302" y="307"/>
 				<Anchors>

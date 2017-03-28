@@ -221,8 +221,6 @@ function PlayerFrame_OnEvent(self, event, ...)
 		PlayerFrame_Update();
 		PlayerFrame_UpdateStatus();
 		PlayerFrame_UpdateRolesAssigned();
-		PlayerSpeakerFrame:Show();
-		PlayerFrame_UpdateVoiceStatus(UnitIsTalking(UnitName("player")));
 		
 		if ( IsPVPTimerRunning() ) then
 			PlayerPVPTimerText:Show();
@@ -469,13 +467,7 @@ function PlayerFrame_ToPlayerArt(self)
 end
 
 function PlayerFrame_UpdateVoiceStatus (status)
-	if ( status ) then
-		UIFrameFadeIn(PlayerSpeakerFrame, 0.2, PlayerSpeakerFrame:GetAlpha(), 1);
-		VoiceChat_Animate(PlayerSpeakerFrame, 1);
-	else
-		UIFrameFadeOut(PlayerSpeakerFrame, 0.2, PlayerSpeakerFrame:GetAlpha(), 0);
-		VoiceChat_Animate(PlayerSpeakerFrame, nil);
-	end
+	PlayerSpeakerFrame:Hide();
 end
 
 function PlayerFrame_UpdateReadyCheck ()

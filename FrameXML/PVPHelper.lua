@@ -354,24 +354,35 @@ end
 ---------------------------------------------------------------------------
 function PVPReadyDialog_OnLoad(self)
 	self:RegisterEvent("UPDATE_BATTLEFIELD_STATUS");
+	self:RegisterEvent("PVP_BRAWL_INFO_UPDATED");
 end
 
 function PVPReadyDialog_OnEvent(self, event, ...)
 	if ( event == "UPDATE_BATTLEFIELD_STATUS" ) then
 		local i = ...;
-		local status, mapName, teamSize, registeredMatch, suspendedQueue, queueType, gameType, role = GetBattlefieldStatus(i);
-		if ( status == "confirm" ) then
-			if ( not PVPReadyDialog_Showing(i) ) then
-				PVPReadyDialog_Display(self, i, mapName, registeredMatch, queueType, gameType, role);
-			end
-		else
-			if ( PVPReadyDialog_Showing(i) ) then
-				StaticPopupSpecial_Hide(self);
-			end
+		PVPReadyDialog_Update(self, i);
+		self.battlefieldIndex = i;
+	elseif ( event == "PVP_BRAWL_INFO_UPDATED" ) then
+		if (self.battlefieldIndex) then 
+			PVPReadyDialog_Update(self, self.battlefieldIndex);
 		end
 	end
 end
 
+function PVPReadyDialog_Update(self, index) 
+	local status, mapName, teamSize, registeredMatch, suspendedQueue, queueType, gameType, role = GetBattlefieldStatus(index);
+	if ( status == "confirm" ) then
+		PVPReadyDialog_Display(self, index, mapName, registeredMatch, queueType, gameType, role);
+	else
+		if ( PVPReadyDialog_Showing(index) ) then
+			StaticPopupSpecial_Hide(self);
+		end
+	end
+end
+
+function PVPReadyDialog_OnHide(self)
+	self.battlefieldIndex = nil;
+end
 
 function PVPReadyDialog_Showing(index)
 	return PVPReadyDialog:IsShown() and PVPReadyDialog.activeIndex == index;

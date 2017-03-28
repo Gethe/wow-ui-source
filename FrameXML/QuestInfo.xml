@@ -75,7 +75,35 @@
 			</OnUpdate>
 		</Scripts>
 	</Button>
-
+	
+	<Button name="SmallQuestRewardItemButtonTemplate" inherits="SmallItemButtonTemplate, QuestInfoRewardItemCodeTemplate" virtual="true">
+		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="IconBorder" file="Interface\Common\WhiteIconFrame" hidden="true">
+					<Size x="37" y="37"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Button>
+	
+	<Button name="LargeQuestRewardItemButtonTemplate" inherits="LargeItemButtonTemplate, QuestInfoRewardItemCodeTemplate" virtual="true">
+		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="IconBorder" file="Interface\Common\WhiteIconFrame" hidden="true">
+					<Size x="37" y="37"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Button>
+	
 	<Button name="QuestInfoRewardFollowerCodeTemplate" virtual="true">
 		<Scripts>
 			<OnEnter>
@@ -290,7 +318,7 @@
 		</Layers>
 		<Frames>
 			<Button parentKey="HonorFrame" inherits="LargeItemButtonTemplate" hidden="true"/>
-			<Button parentArray="RewardButtons" name="$parentQuestInfoItem1" inherits="LargeItemButtonTemplate, QuestInfoRewardItemCodeTemplate" hidden="true"/>
+			<Button parentArray="RewardButtons" name="$parentQuestInfoItem1" inherits="LargeQuestRewardItemButtonTemplate" hidden="true"/>
 			<Frame parentKey="MoneyFrame" name="QuestInfoMoneyFrame" inherits="MoneyFrameTemplate">
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.ItemReceiveText" relativePoint="RIGHT" x="15" y="0"/>
@@ -442,7 +470,7 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				self.buttonTemplate = "LargeItemButtonTemplate, QuestInfoRewardItemCodeTemplate";
+				self.buttonTemplate = "LargeQuestRewardItemButtonTemplate";
 				self.spellRewardPool = CreateFramePool("BUTTON", self, "QuestSpellTemplate, QuestInfoRewardSpellCodeTemplate");
 				self.followerRewardPool = CreateFramePool("BUTTON", self, "LargeQuestInfoRewardFollowerTemplate");
 				self.spellHeaderPool = CreateFontStringPool(self, "BACKGROUND", 0, "QuestInfoSpellHeaderTemplate");
@@ -478,7 +506,7 @@
 					<Anchor point="TOPLEFT"/>
 				</Anchors>
 			</Frame>
-			<Button parentArray="RewardButtons" name="$parentQuestInfoItem1" inherits="SmallItemButtonTemplate, QuestInfoRewardItemCodeTemplate" hidden="true"/>
+			<Button parentArray="RewardButtons" name="$parentQuestInfoItem1" inherits="SmallQuestRewardItemButtonTemplate" hidden="true"/>
 			<Button parentKey="XPFrame" inherits="SmallItemButtonTemplate" hidden="true"/>
             <Button parentKey="HonorFrame" inherits="SmallItemButtonTemplate" hidden="true"/>
 			<Button parentKey="ArtifactXPFrame" inherits="SmallItemButtonTemplate" hidden="true">
@@ -545,7 +573,7 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				self.buttonTemplate = "SmallItemButtonTemplate, QuestInfoRewardItemCodeTemplate";
+				self.buttonTemplate = "SmallQuestRewardItemButtonTemplate";
 				self.spellRewardPool = CreateFramePool("BUTTON", self, "SmallItemButtonTemplate, QuestInfoRewardSpellCodeTemplate");
 				self.followerRewardPool = CreateFramePool("BUTTON", self, "SmallQuestInfoRewardFollowerTemplate");
 				self.spellHeaderPool = CreateFontStringPool(self, "BACKGROUND", 0, "MapQuestInfoSpellHeaderTemplate");

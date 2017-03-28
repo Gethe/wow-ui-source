@@ -27,18 +27,12 @@ end
 local SLIDE_DATA = { startHeight = 0, endHeight = 68, duration = 0.4, onFinishFunc = AutoQuestPopupTracker_OnFinishSlide };
 
 function AUTO_QUEST_POPUP_TRACKER_MODULE:Update()
+	AUTO_QUEST_POPUP_TRACKER_MODULE:BeginLayout();
+	
 	if( SplashFrame:IsShown() ) then
-		for i = 1, GetNumAutoQuestPopUps() do
-			local questID = GetAutoQuestPopUp(i);
-			local block = AUTO_QUEST_POPUP_TRACKER_MODULE:GetExistingBlock(questID);
-			if ( block ) then
-				block:Hide();
-			end
-		end
+		AUTO_QUEST_POPUP_TRACKER_MODULE:EndLayout();
 		return;
 	end
-
-	AUTO_QUEST_POPUP_TRACKER_MODULE:BeginLayout();
 
 	for i = 1, GetNumAutoQuestPopUps() do
 		local questID, popUpType = GetAutoQuestPopUp(i);

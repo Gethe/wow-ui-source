@@ -11,8 +11,6 @@
 		_ERROR_LIMIT = 1000;
 		
 		function _ERRORMESSAGE(message)
-			debuginfo() -- Debugging information for internal use.
-			
 			LoadAddOn("Blizzard_DebugTools");
 			local loaded = IsAddOnLoaded("Blizzard_DebugTools");
 			

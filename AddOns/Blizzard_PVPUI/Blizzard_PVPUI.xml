@@ -94,6 +94,21 @@
 			</Anchors>
 			<TexCoords left="0.00195313" right="0.63867188" top="0.70703125" bottom="0.76757813"/>
 		</HighlightTexture>
+		<Scripts>
+			<OnEnter>
+				if (self.name) then
+					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+					GameTooltip:SetText(self.name, HIGHLIGHT_FONT_COLOR:GetRGB());
+					if (self.longDescription) then
+						GameTooltip:AddLine(self.longDescription);
+					end
+					GameTooltip:Show();
+				end
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
 	</Button>
 
 	<Button name="PVPWarGameButtonTemplate" virtual="true">
@@ -106,8 +121,8 @@
 			</Button>
 			<Button parentKey="Entry" hidden="true" inherits="PVPInstanceListEntryButtonTemplate">
 				<Scripts>
-					<OnEnter function="WarGameButton_OnEnter"/>
-					<OnLeave function="WarGameButton_OnLeave"/>
+					<OnEnter function="WarGameButton_OnEnter" inherit="prepend"/>
+					<OnLeave function="WarGameButton_OnLeave" inherit="prepend"/>
 					<OnClick function="WarGameButton_OnClick"/>
 				</Scripts>
 			</Button>
@@ -164,12 +179,17 @@
 						<KeyValue key="layoutIndex" value="2" type="number"/>
 					</KeyValues>
 				</FontString>
+				<FontString parentKey="XP" inherits="GameFontHighlight">
+					<KeyValues>
+						<KeyValue key="layoutIndex" value="3" type="number"/>
+					</KeyValues>
+				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
 			<Frame parentKey="ItemTooltip" inherits="EmbeddedItemTooltip">
 				<KeyValues>
-					<KeyValue key="layoutIndex" value="3" type="number"/>
+					<KeyValue key="layoutIndex" value="4" type="number"/>
 					<KeyValue key="topPadding" value="15" type="number"/>
 					<KeyValue key="bottomPadding" value="6" type="number"/>
 				</KeyValues>
@@ -240,6 +260,36 @@
 					<OnLeave function="PVPRewardWeeklyBonus_OnLeave"/>
 				</Scripts>
 			</Frame>
+			<Frame parentKey="EnlistmentBonus" hidden="true">
+				<Size x="29" y="29"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="4" y="5"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Icon">
+							<Size x="21" y="21"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="1"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture atlas="honorsystem-icon-enlistmentbonus" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						SetPortraitToTexture(self.Icon, GetSpellTexture(241260));
+					</OnLoad>
+					<OnEnter function="PVPRewardEnlistmentBonus_OnEnter"/>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnEnter function="PVPRewardTemplate_OnEnter"/>
@@ -275,6 +325,8 @@
 			<OnMouseUp>
 				self.Contents:SetPoint("TOPLEFT", 0, 0);
 			</OnMouseUp>
+			<OnEnter function="PVPBonusButtonTemplate_OnEnter"/>
+			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 	</Button>
 	<Button name="PVPBonusBattlegroundButtonTemplate" virtual="true" inherits="PVPBonusButtonTemplate">
@@ -322,7 +374,8 @@
 			<Frame parentKey="Contents" inherits="PVPBonusBattlegroundContentsTemplate">
 				<Layers>
 					<Layer level="ARTWORK">
-						<FontString parentKey="Title" inherits="GameFontHighlightMedium">
+						<FontString parentKey="Title" inherits="GameFontHighlightMedium" justifyH="left" wordwrap="false">
+							<Size x="230" y="0"/>
 							<Anchors>
 								<Anchor point="LEFT" x="14" y="0"/>
 							</Anchors>
@@ -825,7 +878,7 @@
 									</Frame>
 									<Button parentKey="RandomBGButton" inherits="PVPBonusBattlegroundButtonTemplate">
 										<Anchors>
-											<Anchor point="TOP" x="0" y="-126"/>
+											<Anchor point="TOP" x="0" y="-107"/>
 										</Anchors>
 										<Frames>
 											<Frame parentKey="Contents" inherits="PVPBonusBattlegroundContentsTemplate">
@@ -853,17 +906,96 @@
 												</Layers>
 											</Frame>
 										</Frames>
+										<KeyValues>
+											<KeyValue key="tooltipTableKey" value="RandomBG" type="string"/>
+										</KeyValues>
 									</Button>
 									<Button parentKey="Arena1Button" inherits="PVPBonusWorldPVPButtonTemplate">
 										<Anchors>
-											<Anchor point="TOP" relativeKey="$parent.RandomBGButton" relativePoint="BOTTOM" x="0" y="-9"/>
+											<Anchor point="TOP" relativeKey="$parent.RandomBGButton" relativePoint="BOTTOM" x="0" y="-1"/>
 										</Anchors>
+										<KeyValues>
+											<KeyValue key="canQueue" value="true" type="boolean"/>
+											<KeyValue key="arenaID" value="4" type="number"/>
+											<KeyValue key="tooltipTableKey" value="Skirmish" type="string"/>
+										</KeyValues>
 									</Button>
 									<Button parentKey="AshranButton" inherits="PVPBonusWorldPVPButtonTemplate">
 										<Anchors>
-											<Anchor point="TOP" relativeKey="$parent.Arena1Button" relativePoint="BOTTOM" x="0" y="-9"/>
+											<Anchor point="TOP" relativeKey="$parent.Arena1Button" relativePoint="BOTTOM" x="0" y="-1"/>
 										</Anchors>
+										<KeyValues>
+											<KeyValue key="queueID" value="ASHRAN_QUEUE_ID" type="global"/>
+											<KeyValue key="tooltipTableKey" value="Ashran" type="string"/>
+										</KeyValues>
 									</Button>
+									<Button parentKey="BrawlButton" inherits="PVPBonusWorldPVPButtonTemplate">
+										<Anchors>
+											<Anchor point="TOP" relativeKey="$parent.AshranButton" relativePoint="BOTTOM" x="0" y="-1"/>
+										</Anchors>
+										<KeyValues>
+											<KeyValue key="isBrawl" value="true" type="boolean"/>
+											<KeyValue key="tooltipTableKey" value="Brawl" type="string"/>
+										</KeyValues>
+										<Scripts>
+											<OnClick inherit="prepend">
+												if (self:GetParent().BrawlHelpBox:IsShown()) then
+													self:GetParent().BrawlHelpBox:Hide();
+													SetCVarBitfield("closedInfoFrames",	LE_FRAME_TUTORIAL_BRAWL, true);
+												end
+											</OnClick>
+										</Scripts>
+									</Button>
+									<Frame parentKey="BrawlHelpBox" inherits="GlowBoxTemplate" hidden="false" frameStrata="DIALOG" >
+										<Size x="230" y="65"/>
+										<Anchors>
+											<Anchor point="LEFT" relativePoint="RIGHT" relativeKey="$parent.BrawlButton" x="15" y="0"/>
+										</Anchors>
+										<Layers>
+											<Layer level="ARTWORK">
+												<FontString parentKey="BigText" inherits="GameFontHighlight" text="BRAWL_TUTORIAL" justifyH="LEFT">
+													<Size x="186" y="0"/>
+													<Anchors>
+														<Anchor point="TOP" x="-10" y="-12"/>
+													</Anchors>
+												</FontString>
+												<Texture parentKey="ArrowLeft" inherits="HelpPlateArrowDOWN">
+													<Size x="53" y="21"/>
+													<Anchors>
+														<Anchor point="RIGHT" relativePoint="LEFT" x="1" y="0"/>
+													</Anchors>
+												</Texture>
+											</Layer>
+											<Layer level="BORDER">
+												<Texture parentKey="ArrowGlowLeft" inherits="HelpPlateArrow-GlowDOWN" alphaMode="ADD" alpha="0.5">
+													<Size x="53" y="21"/>
+													<Anchors>
+														<Anchor point="RIGHT" relativePoint="LEFT" x="-1" y="0"/>
+													</Anchors>
+												</Texture>
+											</Layer>
+										</Layers>
+										<Frames>
+											<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
+												<Anchors>
+													<Anchor point="TOPRIGHT" x="6" y="6"/>
+												</Anchors>
+												<Scripts>
+													<OnClick>
+														self:GetParent():Hide();
+														SetCVarBitfield("closedInfoFrames",	LE_FRAME_TUTORIAL_BRAWL, true);
+													</OnClick>
+												</Scripts>
+											</Button>
+										</Frames>
+										<Scripts>
+											<OnLoad>
+												self:SetHeight(self.BigText:GetHeight() + HELPTIP_HEIGHT_PADDING);
+												SetClampedTextureRotation(self.ArrowLeft, 90);
+												SetClampedTextureRotation(self.ArrowGlowLeft, 90);
+											</OnLoad>
+										</Scripts>
+									</Frame>
 									<Frame parentKey="ShadowOverlay" inherits="ShadowOverlaySmallTemplate" useParentLevel="true">
 										<Anchors>
 											<Anchor point="TOPLEFT" relativeKey="$parent.WorldBattlesTexture" relativePoint="TOPLEFT" x="0" y="0"/>
@@ -873,6 +1005,8 @@
 								</Frames>
 								<Scripts>
 									<OnShow function="HonorFrameBonusFrame_OnShow"/>
+									<OnHide function="HonorFrameBonusFrame_OnHide"/>
+									<OnEvent function="HonorFrameBonusFrame_OnEvent"/>
 								</Scripts>
 							</Frame>
 							<Button name="$parentQueueButton" parentKey="QueueButton" inherits="MagicButtonTemplate" text="BATTLEFIELD_JOIN" motionScriptsWhileDisabled="true">
@@ -1414,5 +1548,108 @@
 				</FontString>
 			</Layer>
 		</Layers>
+	</Frame>
+	<Frame name="PvPObjectiveBannerFrame" parent="UIParent" hidden="true">
+		<Size x="128" y="128"/>
+		<Anchors>
+			<Anchor point="TOP" x="0" y="-180"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Icon" hidden="false" alpha="0" alphaMode="BLEND" atlas="bonusobjectives-title-icon" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="4"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture parentKey="Icon2" hidden="false" alpha="0" alphaMode="ADD" atlas="bonusobjectives-title-icon" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="2">
+				<Texture parentKey="Icon3" hidden="false" alpha="0" alphaMode="ADD" atlas="bonusobjectives-title-icon" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="BG1" hidden="false" alpha="0" alphaMode="BLEND" atlas="bonusobjectives-title-bg" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER" textureSubLevel="1">
+				<Texture parentKey="BG2" hidden="false" alpha="0" alphaMode="ADD" atlas="bonusobjectives-title-bg" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Title" inherits="QuestFont_Super_Huge" alpha="0">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.BG1" x="0" y="16"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="TitleFlash" inherits="QuestFont_Super_Huge" alpha="0">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.BG1" x="0" y="16"/>
+					</Anchors>
+					<Color r="1" g="1" b="1"/>
+				</FontString>
+				<FontString parentKey="BonusLabel" inherits="GameFontHighlightLarge" alpha="0">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="0" y="-7"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="Anim" setToFinalAlpha="true">
+				<Scale childKey="BG1" duration="0.33" order="1" fromScaleX="0.001" fromScaleY="1" toScaleX="1" toScaleY="1"/>
+				<Alpha childKey="BG1" duration="0" order="1" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="BG2" duration="0.33" order="1" fromScaleX="0.001" fromScaleY="1" toScaleX="1" toScaleY="1"/>
+				<Alpha childKey="BG2" duration="0.33" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="BG2" startDelay="0.33" smoothing="IN" duration="0.33" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="Title" duration="0.33" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="BonusLabel" duration="0.33" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="TitleFlash" duration="0.33" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="TitleFlash" startDelay="0.33" smoothing="IN" duration="0.33" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="Icon" duration="0.33" order="1" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="Icon" smoothing="IN" duration="0.33" order="1" fromScaleX="1.4" fromScaleY="1.4" toScaleX="1" toScaleY="1"/>
+				<Alpha childKey="Icon2" duration="0.33" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="Icon2" startDelay="0.33" smoothing="IN" duration="0.33" order="1" fromAlpha="1" toAlpha="0"/>
+				<Scale childKey="Icon2" smoothing="IN" duration="0.33" order="1" fromScaleX="1.4" fromScaleY="1.4" toScaleX="1" toScaleY="1"/>
+				<Alpha childKey="Icon3" duration="0.33" order="1" fromAlpha="0" toAlpha="0.35"/>
+				<Alpha childKey="Icon3" startDelay="0.33" smoothing="IN" duration="0.33" order="1" fromAlpha="0.35" toAlpha="0"/>
+				<Scale childKey="Icon3" smoothing="IN" duration="0.33" order="1" fromScaleX="1.8" fromScaleY="1.8" toScaleX="1" toScaleY="1"/>
+				<Alpha childKey="BG1" startDelay="2.5" smoothing="IN" duration="0.46" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="Title" startDelay="2.5" smoothing="IN" duration="0.46" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="BonusLabel" startDelay="2.5" smoothing="IN" duration="0.46" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="Icon" startDelay="2.5" smoothing="IN" duration="0.46" order="1" fromAlpha="1" toAlpha="0"/>
+				<Scale childKey="BG1" startDelay="2.5" smoothing="IN" duration="0.46" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.55" toScaleY="0.55"/>
+				<Scale childKey="Title" startDelay="2.5" smoothing="IN" duration="0.46" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.55" toScaleY="0.55"/>
+				<Scale childKey="BonusLabel" startDelay="2.5" smoothing="IN" duration="0.46" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.55" toScaleY="0.55"/>
+				<Scale childKey="Icon" startDelay="2.5" smoothing="IN" duration="0.46" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.55" toScaleY="0.55"/>
+				<Translation parentKey="BG1Translation" childKey="BG1" startDelay="2.5" smoothing="IN" duration="0.46" order="1" offsetX="269.1" offsetY="-84.7"/>
+				<Translation parentKey="TitleTranslation" childKey="Title" startDelay="2.5" smoothing="IN" duration="0.46" order="1" offsetX="269.1" offsetY="-84.7"/>
+				<Translation parentKey="BonusLabelTranslation" childKey="BonusLabel" startDelay="2.5" smoothing="IN" duration="0.46" order="1" offsetX="269.1" offsetY="-84.7"/>
+				<Translation parentKey="IconTranslation" childKey="Icon" startDelay="2.5" smoothing="IN" duration="0.46" order="1" offsetX="269.1" offsetY="-84.7"/>
+				<Scripts>
+					<OnFinished function="PvPObjectiveBannerFrame_OnAnimFinished"/>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnLoad>
+				self.PlayBanner = PvPObjectiveBannerFrame_PlayBanner;
+				self.StopBanner = PvPObjectiveBannerFrame_StopBanner;
+			</OnLoad>
+		</Scripts>
 	</Frame>
 </Ui>

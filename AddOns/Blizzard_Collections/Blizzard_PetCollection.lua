@@ -100,6 +100,7 @@ function PetJournal_OnLoad(self)
 	self:RegisterEvent("COMPANION_UPDATE");
 	self:RegisterEvent("PET_BATTLE_LEVEL_CHANGED");
 	self:RegisterEvent("PET_BATTLE_QUEUE_STATUS");
+	self:RegisterEvent("UI_MODEL_SCENE_INFO_UPDATED");
 
 	self.listScroll.update = PetJournal_UpdatePetList;
 	self.listScroll.scrollBar.doNotHide = true;
@@ -177,6 +178,11 @@ function PetJournal_OnEvent(self, event, ...)
 		PetJournal.AchievementStatus.SumText:SetText(GetCategoryAchievementPoints(PET_ACHIEVEMENT_CATEGORY, true));
 	elseif event == "PET_BATTLE_QUEUE_STATUS" then
 		PetJournal_UpdatePetLoadOut();
+	elseif event == "UI_MODEL_SCENE_INFO_UPDATED" then
+		if (self:IsVisible()) then
+			PetJournal_UpdatePetCard(PetJournalPetCard, true);
+			PetJournal_UpdatePetLoadOut(true);
+		end
 	end
 end
 
@@ -458,7 +464,7 @@ function PetJournal_ShowPetSelect(self)
 end
 
 
-function PetJournal_UpdatePetLoadOut()
+function PetJournal_UpdatePetLoadOut(forceSceneChange)
 	PetJournal_UpdateFindBattleButton();
 	PetJournal.SpellSelect:Hide();
 	for i=1,MAX_ACTIVE_PETS do
@@ -483,7 +489,7 @@ function PetJournal_UpdatePetLoadOut()
 			loadoutPlate.icon:Hide();
 			loadoutPlate.qualityBorder:Hide();
 			loadoutPlate.favorite:Hide()
-			loadoutPlate.model:Hide();
+			loadoutPlate.modelScene:Hide();
 			loadoutPlate.xpBar:Hide();
 			loadoutPlate.healthFrame:Hide();
 			loadoutPlate.spell1:Hide();
@@ -514,7 +520,7 @@ function PetJournal_UpdatePetLoadOut()
 			loadoutPlate.icon:Hide();
 			loadoutPlate.qualityBorder:Hide();
 			loadoutPlate.favorite:Hide()
-			loadoutPlate.model:Hide();
+			loadoutPlate.modelScene:Hide();
 			loadoutPlate.xpBar:Hide();
 			loadoutPlate.healthFrame:Hide();
 			loadoutPlate.spell1:Hide();
@@ -615,22 +621,34 @@ function PetJournal_UpdatePetLoadOut()
 
 			loadoutPlate.isDead:SetShown(health <= 0);
 
-			loadoutPlate.model:Show();
+			loadoutPlate.modelScene:Show();
 			local modelChanged = false;
-			if ( displayID ~= loadoutPlate.displayID ) then
+			if ( displayID ~= loadoutPlate.displayID or forceSceneChange ) then
 				loadoutPlate.displayID = displayID;
-				loadoutPlate.model:SetDisplayInfo(displayID);
-				loadoutPlate.model:SetDoBlend(false);
+
+				local cardModelSceneID, loadoutModelSceneID = C_PetJournal.GetPetModelSceneInfoBySpeciesID(speciesID);
+
+				loadoutPlate.modelScene:TransitionToModelSceneID(loadoutModelSceneID, CAMERA_TRANSITION_TYPE_IMMEDIATE, CAMERA_MODIFICATION_TYPE_DISCARD, forceSceneChange);
+
+				local battlePetActor = loadoutPlate.modelScene:GetActorByTag("pet");
+				if ( battlePetActor ) then
+					battlePetActor:SetModelByCreatureDisplayID(displayID);
+					battlePetActor:SetAnimationBlendOperation(LE_MODEL_BLEND_OPERATION_NONE);
+				end
+
 				modelChanged = true;
 			end
 			local isDead = health <= 0;
-			if ( modelChanged or isDead ~= loadoutPlate.model.wasDead ) then
-				if ( isDead ) then
-					loadoutPlate.model:SetAnimation(6,-1);
-				else
-					loadoutPlate.model:SetAnimation(0,-1);
+			if ( modelChanged or isDead ~= loadoutPlate.modelScene.wasDead ) then
+				local battlePetActor = loadoutPlate.modelScene:GetActorByTag("pet");
+				if ( battlePetActor ) then
+					if ( isDead ) then
+						battlePetActor:SetAnimation(6, -1);
+					else
+						battlePetActor:SetAnimation(0, -1);
+					end
 				end
-				loadoutPlate.model.wasDead = isDead;
+				loadoutPlate.modelScene.wasDead = isDead;
 			end
 
 
@@ -999,7 +1017,7 @@ function PetJournalPetCard_OnClick(self, button)
 	end
 end
 
-function PetJournal_UpdatePetCard(self)
+function PetJournal_UpdatePetCard(self, forceSceneChange)
 	PetJournal.SpellSelect:Hide();
 
 	if (not PetJournalPetCard.petID and not PetJournalPetCard.speciesID) then
@@ -1015,8 +1033,7 @@ function PetJournal_UpdatePetCard(self)
 
 		self.TypeInfo:Hide();
 
-		self.model:Hide();
-		self.wrappedModel:Hide();
+		self.modelScene:Hide();
 		self.shadows:Hide();
 
 		self.AbilitiesBG1:Hide();
@@ -1157,39 +1174,39 @@ function PetJournal_UpdatePetCard(self)
 	end
 	self.PetInfo.speciesName = name;
 
-	Model_Reset(self.model);
-
-	self.model:Show();
+	self.modelScene:Show();
 	self.shadows:Show();
 	local modelChanged = false;
-	if ( displayID ~= self.displayID ) then
+	if ( displayID ~= self.displayID or forceSceneChange ) then
 		self.displayID = displayID;
-		self.model:SetDisplayInfo(displayID);
-		self.model:SetDoBlend(false);
+
+		local cardModelSceneID, loadoutModelSceneID = C_PetJournal.GetPetModelSceneInfoBySpeciesID(speciesID);
+
+		self.modelScene:TransitionToModelSceneID(cardModelSceneID, CAMERA_TRANSITION_TYPE_IMMEDIATE, CAMERA_MODIFICATION_TYPE_MAINTAIN, forceSceneChange);
+
+		local battlePetActor = self.modelScene:GetActorByTag("unwrapped");
+		if ( battlePetActor ) then
+			battlePetActor:SetModelByCreatureDisplayID(displayID);
+			battlePetActor:SetAnimationBlendOperation(LE_MODEL_BLEND_OPERATION_NONE);
+		end
+
 		modelChanged = true;
 	end
-	if ( modelChanged or self.model.wasDead ~= isDead ) then
-		if ( isDead ) then
-			self.model:SetAnimation(6,-1);
-		else
-			self.model:SetAnimation(0,-1);
+
+	if ( modelChanged or self.modelScene.wasDead ~= isDead ) then
+		local battlePetActor = self.modelScene:GetActorByTag("unwrapped");
+		if ( battlePetActor ) then
+			if ( isDead ) then
+				battlePetActor:SetAnimation(6, -1);
+			else
+				battlePetActor:SetAnimation(0, -1);
+			end
 		end
-		self.model.wasDead = isDead;
+
+		self.modelScene.wasDead = isDead;
 	end
 
-	if needsFanfare then
-		self.wrappedModel:Show();
-		if not self.UnwrapAnim:IsPlaying() then
-			self.model:SetAlpha(0);
-			self.wrappedModel:SetAnimation(0);
-			self.wrappedModel:SetAlpha(1);
-		end
-	else
-		self.wrappedModel:Hide();
-		if not self.UnwrapAnim:IsPlaying() then
-			self.model:SetAlpha(1);
-		end
-	end
+	self.modelScene:PrepareForFanfare(needsFanfare);
 
 	self.AbilitiesBG1:SetShown(canBattle);
 	self.AbilitiesBG2:SetShown(canBattle);
@@ -1224,23 +1241,18 @@ function PetJournal_UpdatePetCard(self)
 end
 
 function PetJournal_UnwrapPet(petID)
-	if PetJournalPetCard.UnwrapAnim:IsPlaying() then
+	if PetJournalPetCard.modelScene:IsUnwrapAnimating() or not C_PetJournal.PetNeedsFanfare(petID) then
 		return;
 	end
+
 	PetJournal_ShowPetCardByID(petID);
 
-	PetJournalPetCard.wrappedModel:SetAnimation(148);
-	PetJournalPetCard.UnwrapAnim:Play();
-	PlaySound("UI_Store_Unwrap");
-
-	C_Timer.After(.8, function()
-		PetJournalPetCard.model:ApplySpellVisualKit(73393, true);
-	end)
-
-	C_Timer.After(1.6, function()
+	local function OnFinishedCallback()
 		C_PetJournal.ClearFanfare(petID);
 		PetJournal_ShowPetCardByID(petID);
-	end)
+	end
+
+	PetJournalPetCard.modelScene:StartUnwrapAnimation(OnFinishedCallback);
 end
 
 function PetJournal_SetPendingCage(petID)

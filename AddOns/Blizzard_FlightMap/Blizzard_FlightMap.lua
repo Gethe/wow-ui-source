@@ -12,6 +12,8 @@ function FlightMapMixin:SetupTitle()
 end
 
 function FlightMapMixin:OnLoad()
+	MapCanvasMixin.OnLoad(self);
+
 	self:RegisterEvent("TAXIMAP_CLOSED");
 
 	self:SetMaxZoom(.85);
@@ -43,14 +45,20 @@ function FlightMapMixin:OnShow()
 	self:SetMapID(continentID);
 
 	self:ZoomOut();
+
+	MapCanvasMixin.OnShow(self);
 end
 
 function FlightMapMixin:OnHide()
 	CloseTaxiMap();
+
+	MapCanvasMixin.OnHide(self);
 end
 
 function FlightMapMixin:OnEvent(event, ...)
 	if event == "TAXIMAP_CLOSED" then
 		HideUIPanel(self);
 	end
+
+	MapCanvasMixin.OnEvent(self, event, ...);
 end

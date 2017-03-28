@@ -27,7 +27,7 @@ function MainMenuBar_ArtifactUpdateOverlayFrameText()
 		local xp = ArtifactWatchBar.StatusBar:GetAnimatedValue();
 		local _, xpForNextPoint = ArtifactWatchBar.StatusBar:GetMinMaxValues();
 		if xpForNextPoint > 0 then
-			ArtifactWatchBar.OverlayFrame.Text:SetFormattedText(ARTIFACT_POWER_BAR, xp, xpForNextPoint);
+			ArtifactWatchBar.OverlayFrame.Text:SetFormattedText(ARTIFACT_POWER_BAR, BreakUpLargeNumbers(xp), BreakUpLargeNumbers(xpForNextPoint));
 		end
 	end
 end
@@ -49,8 +49,7 @@ end
 
 function MainMenuBar_ArtifactTick_OnEnter(self)
 	GameTooltip_SetDefaultAnchor(GameTooltip, UIParent);
-	GameTooltip:SetText(ARTIFACT_POWER_TOOLTIP_TITLE:format(BreakUpLargeNumbers(ArtifactWatchBar.totalXP), BreakUpLargeNumbers(ArtifactWatchBar.xp), BreakUpLargeNumbers(ArtifactWatchBar.xpForNextPoint)), HIGHLIGHT_FONT_COLOR:GetRGB());
-	GameTooltip:AddLine(" ");
+	GameTooltip:SetText(ARTIFACT_POWER_TOOLTIP_TITLE:format(BreakUpLargeNumbers(ArtifactWatchBar.totalXP, true), BreakUpLargeNumbers(ArtifactWatchBar.xp, true), BreakUpLargeNumbers(ArtifactWatchBar.xpForNextPoint, true)), HIGHLIGHT_FONT_COLOR:GetRGB());
 	GameTooltip:AddLine(ARTIFACT_POWER_TOOLTIP_BODY:format(ArtifactWatchBar.numPointsAvailableToSpend), nil, nil, nil, true);
 
 	GameTooltip:Show();
@@ -121,16 +120,16 @@ function MainMenuBar_OnEvent(self, event, ...)
 	end
 end
 
-function MainMenuBar_GetNumArtifactTraitsPurchasableFromXP(pointsSpent, artifactXP)
+function MainMenuBar_GetNumArtifactTraitsPurchasableFromXP(pointsSpent, artifactXP, artifactTier)
 	local numPoints = 0;
-	local xpForNextPoint = C_ArtifactUI.GetCostForPointAtRank(pointsSpent);
+	local xpForNextPoint = C_ArtifactUI.GetCostForPointAtRank(pointsSpent, artifactTier);
 	while artifactXP >= xpForNextPoint and xpForNextPoint > 0 do
 		artifactXP = artifactXP - xpForNextPoint;
 
 		pointsSpent = pointsSpent + 1;
 		numPoints = numPoints + 1;
 
-		xpForNextPoint = C_ArtifactUI.GetCostForPointAtRank(pointsSpent);
+		xpForNextPoint = C_ArtifactUI.GetCostForPointAtRank(pointsSpent, artifactTier);
 	end
 	return numPoints, artifactXP, xpForNextPoint;
 end
@@ -141,8 +140,8 @@ function MainMenuBar_UpdateExperienceBars(newLevel)
 	if ( not newLevel ) then
 		newLevel = UnitLevel("player");
 	end
-	local artifactItemID, _, _, _, artifactTotalXP, artifactPointsSpent, _, _, _, _, _, _, artifactMaxed = C_ArtifactUI.GetEquippedArtifactInfo();
-	local showArtifact = artifactItemID and not artifactMaxed and (UnitLevel("player") >= MAX_PLAYER_LEVEL or GetCVarBool("showArtifactXPBar"));
+	local artifactItemID, _, _, _, artifactTotalXP, artifactPointsSpent, _, _, _, _, _, _, artifactTier = C_ArtifactUI.GetEquippedArtifactInfo();
+	local showArtifact = artifactItemID and (UnitLevel("player") >= MAX_PLAYER_LEVEL or GetCVarBool("showArtifactXPBar"));
 	local showXP = newLevel < MAX_PLAYER_LEVEL and not IsXPUserDisabled();
 	local showHonor = newLevel >= MAX_PLAYER_LEVEL and (IsWatchingHonorAsXP() or InActiveBattlefield() or IsInActiveWorldPVP());
 	local showRep = name;
@@ -169,7 +168,7 @@ function MainMenuBar_UpdateExperienceBars(newLevel)
 			SetWatchedFactionIndex(0);
 		end
 		local statusBar = ArtifactWatchBar.StatusBar;
-		local numPointsAvailableToSpend, xp, xpForNextPoint = MainMenuBar_GetNumArtifactTraitsPurchasableFromXP(artifactPointsSpent, artifactTotalXP);
+		local numPointsAvailableToSpend, xp, xpForNextPoint = MainMenuBar_GetNumArtifactTraitsPurchasableFromXP(artifactPointsSpent, artifactTotalXP, artifactTier);
 
 		statusBar:SetAnimatedValues(xp, 0, xpForNextPoint, numPointsAvailableToSpend + artifactPointsSpent);
 		if visibilityChanged or statusBar.itemID ~= itemID or C_ArtifactUI.IsAtForge() then
@@ -239,7 +238,7 @@ function MainMenuBar_UpdateExperienceBars(newLevel)
 			ReputationWatchBar.StatusBar:Reset();
 		end
 
-		local isCappedFriendship;
+		local isCapped;
 		-- do something different for friendships
 		local level;
 		if ( ReputationWatchBar.friendshipID ) then
@@ -250,11 +249,17 @@ function MainMenuBar_UpdateExperienceBars(newLevel)
 			else
 				-- max rank, make it look like a full bar
 				min, max, value = 0, 1, 1;
-				isCappedFriendship = true;
+				isCapped = true;
 			end
 			colorIndex = 5;		-- always color friendships green
+		elseif (C_Reputation.IsFactionParagon(factionID)) then
+			local currentValue, threshold = C_Reputation.GetFactionParagonInfo(factionID);
+			min, max, value = 0, threshold, currentValue;
 		else
 			level = reaction;
+			if (reaction == MAX_REPUTATION_REACTION) then
+				isCapped = true;
+			end
 		end
 
 		-- See if it was already shown or not
@@ -268,7 +273,7 @@ function MainMenuBar_UpdateExperienceBars(newLevel)
 		min = 0;
 		local statusBar = ReputationWatchBar.StatusBar;
 		statusBar:SetAnimatedValues(value, min, max, level);
-		if ( isCappedFriendship ) then
+		if ( isCapped ) then
 			ReputationWatchBar.OverlayFrame.Text:SetText(name);
 		else
 			ReputationWatchBar.OverlayFrame.Text:SetText(name.." "..value.." / "..max);

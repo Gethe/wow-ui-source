@@ -227,7 +227,7 @@ function PlayerTalentFrame_Toggle(suggestedTalentTab)
 			PlayerTalentTab_OnClick(_G["PlayerTalentFrameTab"..SPECIALIZATION_TAB]);
 		elseif ( GetNumUnspentTalents() > 0 ) then
 			PlayerTalentTab_OnClick(_G["PlayerTalentFrameTab"..TALENTS_TAB]);
-        elseif ( GetNumUnspectPvpTalents() > 0 ) then
+        elseif ( GetNumUnspentPvpTalents() > 0 ) then
             PlayerTalentTab_OnClick(_G["PlayerTalentFrameTab"..PVP_TALENTS_TAB]);
 		elseif ( selectedTab ) then
 			PlayerTalentTab_OnClick(_G["PlayerTalentFrameTab"..selectedTab]);
@@ -1427,7 +1427,7 @@ function PlayerTalentFrame_UpdateSpecFrame(self, spec)
 				frame.icon:SetAlpha(1);
 				local level = GetSpellLevelLearned(bonuses[i]);
 				local futureSpell = level and level > UnitLevel("player");
-				local spellLocked = futureSpell or not FindSpellBookSlotBySpellID(bonuses[i]);
+				local spellLocked = futureSpell or not FindSpellBookSlotBySpellID(bonuses[i], self.isPet);
 				if ( futureSpell ) then
 					frame.subText:SetFormattedText(SPELLBOOK_AVAILABLE_AT, level);
 				else

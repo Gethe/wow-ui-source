@@ -33,10 +33,10 @@
 			<ScrollFrame parentKey="ScrollContainer" inherits="MapCanvasFrameScrollContainerTemplate" />
 		</Frames>
 		<Scripts>
-			<OnLoad method="OnLoad" inherit="prepend"/>
-			<OnShow method="OnShow" inherit="append"/>
-			<OnEvent method="OnEvent" inherit="append"/>
-			<OnHide method="OnHide" inherit="append"/>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnEvent method="OnEvent"/>
+			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>
 </Ui>

@@ -827,6 +827,61 @@
 			</Layer>
 		</Layers>
 	</Button>
+	
+	<Button name="HonorAwardedAlertFrameTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" virtual="true" inherits="AlertFrameTemplate">
+		<Size x="249" y="70"/>
+		<Animations>
+			<AnimationGroup parentKey="animIn">
+				<Alpha fromAlpha="1" toAlpha="0" duration="0" order="1"/>
+				<Alpha fromAlpha="0" toAlpha="1" duration="0.2" order="2"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="waitAndAnimOut">
+				<Alpha startDelay="4.05" fromAlpha="1" toAlpha="0" duration="1.5" parentKey="animOut">
+					<Scripts>
+						<OnFinished>
+							self:GetRegionParent():Hide();
+						</OnFinished>
+					</Scripts>
+				</Alpha>
+			</AnimationGroup>
+		</Animations>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<!--PerPlayerLoot-Gold-->
+				<Texture parentKey="Background" file="Interface\LootFrame\LootToast" setAllPoints="true">
+					<TexCoords left="0.56347656" right="0.80664063" top="0.28906250" bottom="0.56640625"/>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="Icon" file="Interface\Icons\Achievement_LegionPVPTier4">
+					<Size x="38" y="38"/>
+					<Anchors>
+						<Anchor point="LEFT" x="16" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<!--ItemBorder-Gold-->
+				<Texture parentKey="IconBorder" file="Interface\LootFrame\LootToast">
+					<Size x="45" y="45"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="CENTER" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0.73242188" right="0.78906250" top="0.57421875" bottom="0.80078125"/>
+				</Texture>
+				<FontString parentKey="Label" inherits="GameFontNormal" justifyH="LEFT" text="YOU_RECEIVED">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.IconBorder" relativePoint="TOPRIGHT" x="7" y="-1"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Amount" inherits="GameFontHighlightMedium" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.IconBorder" relativePoint="BOTTOMRIGHT" x="10" y="8"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Button>
 
 	<Button name="LootWonAlertFrameTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" virtual="true" inherits="AlertFrameTemplate">
 		<Size x="276" y="96"/>

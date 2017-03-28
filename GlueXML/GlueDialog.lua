@@ -57,6 +57,16 @@ GlueDialogTypes["OKAY_WITH_URL"] = {
 	end,
 }
 
+GlueDialogTypes["OKAY_WITH_URL_INDEX"] = {
+	text = "",
+	button1 = DIALOG_HELP_MORE_INFO,
+	button2 = OKAY,
+	OnAccept = function()
+		local urlIndex = GlueDialog.data;
+		LoadURLIndex(urlIndex);
+	end,
+}
+
 GlueDialogTypes["OKAY_WITH_GENERIC_URL"] = {
 	text = "",
 	button1 = HELP,
@@ -287,11 +297,11 @@ GlueDialogTypes["CHARACTER_BOOST_NO_CHARACTERS_WARNING"] = {
 
 	OnAccept = function ()
 		CharSelectServicesFlowFrame:Hide();
-		CharacterSelect_CreateNewCharacter(LE_CHARACTER_CREATE_TYPE_NORMAL);
+		CharacterSelect_CreateNewCharacter(LE_CHARACTER_CREATE_TYPE_NORMAL, true);
 	end,
 
 	OnCancel = function ()
-		CharacterUpgradePopup_BeginCharacterUpdgradeFlow(GlueDialog.data);
+		CharacterUpgradePopup_BeginCharacterUpgradeFlow(GlueDialog.data);
 	end,
 }
 
@@ -312,6 +322,16 @@ GlueDialogTypes["CHARACTER_BOOST_FEATURE_RESTRICTED"] = {
 	button1 = OKAY,
 	escapeHides = true,
 };
+
+GlueDialogTypes["UNLOCK_REVOKED_UPGRADE_CHARACTER"] = {
+	button1 = YES,
+	button2 = NO,
+	escapeHides = true,
+
+	OnAccept = function ()
+		C_CharacterServices.RequestManualUnrevoke(GlueDialog.data);
+	end,
+}
 
 --[[
 

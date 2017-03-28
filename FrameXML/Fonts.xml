@@ -1826,6 +1826,24 @@
 		</Member>
 	</FontFamily>
 
+	<FontFamily name="Fancy20Font" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\MORPHEUS.TTF" height="20"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\K_Pagetext.TTF" height="20"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\ARKai_T.TTF" height="20"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\blei00d.TTF" height="20"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\MORPHEUS_CYR.TTF" height="20"/>
+		</Member>
+	</FontFamily>
+
 	<FontFamily name="Fancy24Font" virtual="true">
 		<Member alphabet="roman">
 			<Font font="Fonts\MORPHEUS.TTF" height="24"/>
@@ -2027,8 +2045,8 @@
 			<Font font="Fonts\FRIZQT__.TTF" height="9">
 				<Shadow>
 					<Offset>
-						<AbsDimension x="1" y="-1"/>
-					</Offset>
+            <AbsDimension x="0.64" y="-0.64"/>
+          </Offset>
 					<Color r="0" g="0" b="0"/>
 				</Shadow>
 			</Font>
@@ -2037,8 +2055,8 @@
 			<Font font="Fonts\2002.TTF" height="9">
 				<Shadow>
 					<Offset>
-						<AbsDimension x="1" y="-1"/>
-					</Offset>
+            <AbsDimension x="0.64" y="-0.64"/>
+          </Offset>
 					<Color r="0" g="0" b="0"/>
 				</Shadow>
 			</Font>
@@ -2047,8 +2065,8 @@
 			<Font font="Fonts\ARKai_T.ttf" height="9">
 				<Shadow>
 					<Offset>
-						<AbsDimension x="1" y="-1"/>
-					</Offset>
+            <AbsDimension x="0.64" y="-0.64"/>
+          </Offset>
 					<Color r="0" g="0" b="0"/>
 				</Shadow>
 			</Font>
@@ -2057,8 +2075,8 @@
 			<Font font="Fonts\blei00d.TTF" height="9">
 				<Shadow>
 					<Offset>
-						<AbsDimension x="1" y="-1"/>
-					</Offset>
+            <AbsDimension x="0.64" y="-0.64"/>
+          </Offset>
 					<Color r="0" g="0" b="0"/>
 				</Shadow>
 			</Font>
@@ -2067,8 +2085,8 @@
 			<Font font="Fonts\FRIZQT___CYR.TTF" height="9">
 				<Shadow>
 					<Offset>
-						<AbsDimension x="1" y="-1"/>
-					</Offset>
+            <AbsDimension x="0.64" y="-0.64"/>
+          </Offset>
 					<Color r="0" g="0" b="0"/>
 				</Shadow>
 			</Font>
@@ -2080,7 +2098,7 @@
 			<Font font="Fonts\FRIZQT__.TTF" height="12">
 				<Shadow>
 					<Offset>
-						<AbsDimension x="1" y="-1"/>
+						<AbsDimension x="0.64" y="-0.64"/>
 					</Offset>
 					<Color r="0" g="0" b="0"/>
 				</Shadow>
@@ -2090,8 +2108,8 @@
 			<Font font="Fonts\2002.TTF" height="12">
 				<Shadow>
 					<Offset>
-						<AbsDimension x="1" y="-1"/>
-					</Offset>
+            <AbsDimension x="0.64" y="-0.64"/>
+          </Offset>
 					<Color r="0" g="0" b="0"/>
 				</Shadow>
 			</Font>
@@ -2100,8 +2118,8 @@
 			<Font font="Fonts\ARKai_T.ttf" height="12">
 				<Shadow>
 					<Offset>
-						<AbsDimension x="1" y="-1"/>
-					</Offset>
+            <AbsDimension x="0.64" y="-0.64"/>
+          </Offset>
 					<Color r="0" g="0" b="0"/>
 				</Shadow>
 			</Font>
@@ -2110,8 +2128,8 @@
 			<Font font="Fonts\blei00d.TTF" height="12">
 				<Shadow>
 					<Offset>
-						<AbsDimension x="1" y="-1"/>
-					</Offset>
+            <AbsDimension x="0.64" y="-0.64"/>
+          </Offset>
 					<Color r="0" g="0" b="0"/>
 				</Shadow>
 			</Font>
@@ -2120,8 +2138,8 @@
 			<Font font="Fonts\FRIZQT___CYR.TTF" height="12">
 				<Shadow>
 					<Offset>
-						<AbsDimension x="1" y="-1"/>
-					</Offset>
+            <AbsDimension x="0.64" y="-0.64"/>
+          </Offset>
 					<Color r="0" g="0" b="0"/>
 				</Shadow>
 			</Font>

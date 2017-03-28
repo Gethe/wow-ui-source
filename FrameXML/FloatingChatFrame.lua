@@ -1579,6 +1579,7 @@ function FCF_Tab_OnClick(self, button)
 	if ( GetCVar("chatStyle") ~= "classic" ) then
 		ChatEdit_SetLastActiveWindow(chatFrame.editBox);
 	end
+	chatFrame:ResetAllFadeTimes();
 	FCF_FadeInChatFrame(chatFrame);
 end
 

@@ -1884,10 +1884,10 @@
 		</Scripts>
 	</Frame>
 
-	<Button name="HelpOpenTicketButton" parent="HelpMicroButton" hidden="true">
+	<Button name="HelpOpenTicketButton" parent="MainMenuMicroButton" hidden="true">
 		<Size x="34" y="35"/>
 		<Anchors>
-			<Anchor point="CENTER" relativeTo="HelpMicroButton" relativePoint="TOPRIGHT" x="-3" y="-26"/>
+			<Anchor point="CENTER" relativeTo="$parent" relativePoint="TOPRIGHT" x="-3" y="-26"/>
 		</Anchors>
 		<Frames>
 			<Frame name="$parentTutorial" inherits="GlowBoxTemplate" parentKey="tutorial" enableMouse="true" hidden="true" frameStrata="DIALOG">
@@ -1934,8 +1934,6 @@
 			<OnLoad>
 				self.refreshTime = 0;
 				self:RegisterEvent("UPDATE_TICKET");
-				self:RegisterEvent("STORE_STATUS_CHANGED");
-				HelpOpenTicketButton_Move();
 			</OnLoad>
 			<OnClick>
 				HelpOpenTicketButtonTutorial:Hide();
@@ -1970,16 +1968,15 @@
 		</HighlightTexture>
 	</Button>
 
-	<Button name="HelpOpenWebTicketButton" parent="HelpMicroButton" hidden="true">
+	<Button name="HelpOpenWebTicketButton" parent="MainMenuMicroButton" hidden="true">
 		<Size x="34" y="35"/>
 		<Anchors>
-			<Anchor point="CENTER" relativeTo="HelpMicroButton" relativePoint="TOPRIGHT" x="-3" y="-26"/>
+			<Anchor point="CENTER" relativeTo="$parent" relativePoint="TOPRIGHT" x="-3" y="-26"/>
 		</Anchors>
 		<Scripts>
 			<OnLoad>
 				self.refreshTime = 0;
 				self:RegisterEvent("UPDATE_WEB_TICKET")
-				HelpOpenTicketButton_Move();
 			</OnLoad>
 			<OnShow>
 				HelpOpenTicketButton:Hide();

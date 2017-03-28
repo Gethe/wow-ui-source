@@ -1,0 +1,5 @@
+## Interface: 70200
+## Title: Blizzard Contribution UI
+## Secure: 1
+## LoadOnDemand: 1
+Blizzard_Contribution.xml

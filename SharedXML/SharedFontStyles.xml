@@ -17,12 +17,33 @@
 	</Font>
 	<Font name="GameFontDisableHuge" inherits="GameFontNormalHuge" virtual="true">
 		<Color r="0.5" g="0.5" b="0.5"/>
-	</Font>	
+	</Font>
 	<Font name="GameFontNormalSmall" inherits="SystemFont_Shadow_Small" virtual="true">
+		<Color r="1.0" g="0.82" b="0"/>
+	</Font>
+	<Font name="GameFontNormalTiny" inherits="SystemFont_Tiny" virtual="true">
 		<Color r="1.0" g="0.82" b="0"/>
 	</Font>
 	<Font name="GameFontWhiteTiny" inherits="SystemFont_Tiny" virtual="true">
 		<Color r="1.0" g="1.0" b="1.0"/>
+	</Font>
+	<Font name="GameFontDisableTiny" inherits="SystemFont_Tiny" virtual="true">
+		<Color r="0.5" g="0.5" b="0.5"/>
+	</Font>
+	<Font name="GameFontBlackTiny" inherits="SystemFont_Tiny" virtual="true">
+		<Color r="0" g="0" b="0"/>
+	</Font>
+	<Font name="GameFontNormalTiny2" inherits="SystemFont_Tiny2" virtual="true">
+		<Color r="1.0" g="0.82" b="0"/>
+	</Font>
+	<Font name="GameFontWhiteTiny2" inherits="SystemFont_Tiny2" virtual="true">
+		<Color r="1.0" g="1.0" b="1.0"/>
+	</Font>
+	<Font name="GameFontDisableTiny2" inherits="SystemFont_Tiny2" virtual="true">
+		<Color r="0.5" g="0.5" b="0.5"/>
+	</Font>
+	<Font name="GameFontBlackTiny2" inherits="SystemFont_Tiny2" virtual="true">
+		<Color r="0" g="0" b="0"/>
 	</Font>
 	<Font name="GameFontNormalMed1" inherits="SystemFont_Med2" virtual="true">
 		<Shadow>
@@ -43,6 +64,9 @@
 		<Color r="1.0" g="0.82" b="0"/>
 	</Font>
 	<Font name="GameFontDisableSmall" inherits="GameFontNormalSmall" virtual="true">
+		<Color r="0.5" g="0.5" b="0.5"/>
+	</Font>
+	<Font name="GameFontDisableSmall2" inherits="SystemFont_Small2" virtual="true">
 		<Color r="0.5" g="0.5" b="0.5"/>
 	</Font>
 	<Font name="GameFontNormalHugeOutline2" inherits="SystemFont_Shadow_Outline_Huge2" virtual="true">

@@ -30,6 +30,7 @@ function QUEST_TRACKER_MODULE:OnFreeTypedLine(line)
 		line.Glow.Anim:Stop();
 		line.Sheen.Anim:Stop();
 		line.CheckFlash.Anim:Stop();
+		line.CheckFlash:SetAlpha(0);
 		line.FadeOutAnim:Stop();
 	end
 end
@@ -66,7 +67,8 @@ function QUEST_TRACKER_MODULE:OnBlockHeaderClick(block, mouseButton)
 				AutoQuestPopupTracker_RemovePopUp(block.id);
 				ShowQuestComplete(questLogIndex);
 			else
-				QuestLogPopupDetailFrame_Show(questLogIndex);
+				ShowUIPanel(WorldMapFrame);
+				QuestMapFrame_ShowQuestDetails(block.id);
 			end
 		end
 		return;

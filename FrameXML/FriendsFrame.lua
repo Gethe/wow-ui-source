@@ -316,15 +316,9 @@ function FriendsFrame_Update()
 			FriendsFrame_ShowSubFrame("QuickJoinFrame");
 		else
 			--Ignore
-			if ( IsVoiceChatEnabled() ) then
-				FriendsFrameMutePlayerButton:Show();
-				FriendsFrameIgnorePlayerButton:SetWidth(110);
-				FriendsFrameUnsquelchButton:SetWidth(111);
-			else
-				FriendsFrameMutePlayerButton:Hide();
-				FriendsFrameIgnorePlayerButton:SetWidth(131);
-				FriendsFrameUnsquelchButton:SetWidth(134);
-			end
+			FriendsFrameMutePlayerButton:Hide();
+			FriendsFrameIgnorePlayerButton:SetWidth(131);
+			FriendsFrameUnsquelchButton:SetWidth(134);
 			FriendsFrameTitleText:SetText(IGNORE_LIST);
 			FriendsFrame_ShowSubFrame("IgnoreListFrame");
 			IgnoreList_Update();
@@ -385,40 +379,11 @@ function FriendsTabHeader_ClickTab(tab)
 end
 
 function FriendsTabHeader_ResizeTabs()
-	local selectedIndex = PanelTemplates_GetSelectedTab(FriendsTabHeader);
-	if ( not selectedIndex ) then
-		return;
-	end
-
-	local currentWidth = 0;
-	local truncatedText = false;
-	for i = 1, FriendsTabHeader.numTabs do
-		local tab = _G["FriendsTabHeaderTab"..i];
-		currentWidth = currentWidth + tab:GetWidth();
-		if tab.Text:IsTruncated() then
-			truncatedText = true;
-		end
-	end
-	if ( not truncatedText and currentWidth <= FRIEND_TABS_MAX_WIDTH ) then
-		return;
-	end
-
 	local availableWidth = FRIEND_TABS_MAX_WIDTH;
 	if ( FriendsTabHeaderSoRButton:IsShown() ) then
 		availableWidth = availableWidth - 30;
 	end
-
-	local widthPerTab;
-
-	local currentTab = _G["FriendsTabHeaderTab"..selectedIndex];
-	PanelTemplates_TabResize(currentTab, 0);
-	availableWidth = availableWidth - currentTab:GetWidth();
-	widthPerTab = availableWidth / (FriendsTabHeader.numTabs - 1);
-	for i = 1, FriendsTabHeader.numTabs do
-		if ( i ~= selectedIndex ) then
-			PanelTemplates_TabResize(_G["FriendsTabHeaderTab"..i], 0, widthPerTab)
-		end
-	end
+	PanelTemplates_ResizeTabsToFit(FriendsTabHeader, availableWidth);
 end
 
 function FriendsListFrame_OnShow(self)
@@ -639,10 +604,7 @@ function IgnoreList_Update()
 	local button;
 	local numIgnores = GetNumIgnores();
 	local numBlocks = BNGetNumBlocked();
-	local numMutes = 0;
-	if ( IsVoiceChatEnabled() ) then
-		numMutes = GetNumMutes();
-	end
+
 	-- Headers stuff
 	local ignoredHeader, blockedHeader, mutedHeader;
 	if ( numIgnores > 0 ) then
@@ -655,15 +617,12 @@ function IgnoreList_Update()
 	else
 		blockedHeader = 0;
 	end
-	if ( numMutes > 0 ) then
-		mutedHeader = 1;
-	else
-		mutedHeader = 0;
-	end
+	mutedHeader = 0;
+
 	
 	local lastIgnoredIndex = numIgnores + ignoredHeader;
 	local lastBlockedIndex = lastIgnoredIndex + numBlocks + blockedHeader;
-	local lastMutedIndex = lastBlockedIndex + numMutes + mutedHeader;
+	local lastMutedIndex = lastBlockedIndex + mutedHeader;
 	local numEntries = lastMutedIndex;
 
 	FriendsFrameIgnoredHeader:Hide();
@@ -689,10 +648,6 @@ function IgnoreList_Update()
 		elseif ( numBlocks > 0 ) then
 			FriendsFrame_SelectSquelched(SQUELCH_TYPE_BLOCK_INVITE, 1);
 			selectedSquelchType = SQUELCH_TYPE_BLOCK_INVITE;
-			selectedSquelchIndex = 1;
-		elseif ( numMutes > 0 ) then
-			FriendsFrame_SelectSquelched(SQUELCH_TYPE_MUTE, 1);
-			selectedSquelchType = SQUELCH_TYPE_MUTE;
 			selectedSquelchIndex = 1;
 		end
 	end
@@ -1052,7 +1007,6 @@ function FriendsFrameUnsquelchButton_OnClick(self)
 		BNSetBlocked(blockID, false);
 	elseif ( selectedSquelchType == SQUELCH_TYPE_MUTE ) then
 		local name = GetMuteName(GetSelectedMute());
-		DelMute(name);
 	end
 	PlaySound("igMainMenuOptionCheckBoxOn");
 end
@@ -1070,10 +1024,6 @@ end
 
 function FriendsFrame_UnIgnore(button, name)
 	DelIgnore(name);
-end
-
-function FriendsFrame_UnMute(button, name)
-	DelMute(name);
 end
 
 function FriendsFrame_UnBlock(button, blockID)

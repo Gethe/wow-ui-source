@@ -28,6 +28,9 @@ end
 function ActiveQuestDataProviderMixin:RefreshAllData(fromOnShow)
 	self:RemoveAllData();
 
+	self.usedQuestNumbers = self.usedQuestNumbers or {};
+	self.pinsMissingNumbers = self.pinsMissingNumbers or {};
+
 	local mapAreaID = self:GetMap():GetMapID();
 	for zoneIndex = 1, C_MapCanvas.GetNumZones(mapAreaID) do
 		local zoneMapID, zoneName, zoneDepth, left, right, top, bottom = C_MapCanvas.GetZoneInfo(mapAreaID, zoneIndex);
@@ -37,13 +40,33 @@ function ActiveQuestDataProviderMixin:RefreshAllData(fromOnShow)
 			if activeQuestInfo then
 				local superTrackedQuestID = GetSuperTrackedQuestID();
 				for i, info in ipairs(activeQuestInfo) do
-					if (IsQuestComplete(info.questID) or info.questID == superTrackedQuestID) and not QuestUtils_IsQuestWorldQuest(info.questID) then
+					if not QuestUtils_IsQuestWorldQuest(info.questID) then
 						self:AddActiveQuest(info.questID, info.x, info.y);
 					end
 				end
 			end
 		end
 	end
+
+	self:AssignMissingNumbersToPins();
+end
+
+function ActiveQuestDataProviderMixin:AssignMissingNumbersToPins()
+	if #self.pinsMissingNumbers > 0 then
+		for questNumber = 1, MAX_NUM_QUESTS do
+			if not self.usedQuestNumbers[questNumber] then
+				local pin = table.remove(self.pinsMissingNumbers);
+				pin:AssignQuestNumber(questNumber);
+
+				if #self.pinsMissingNumbers == 0 then
+					break;
+				end
+			end
+		end
+
+		wipe(self.pinsMissingNumbers);
+	end
+	wipe(self.usedQuestNumbers);
 end
 
 function ActiveQuestDataProviderMixin:AddActiveQuest(questID, x, y)
@@ -51,6 +74,10 @@ function ActiveQuestDataProviderMixin:AddActiveQuest(questID, x, y)
 	pin.questID = questID;
 
 	local isSuperTracked = questID == GetSuperTrackedQuestID();
+	local isComplete = IsQuestComplete(questID);
+
+	pin.isSuperTracked = isSuperTracked;
+
 	if ( isSuperTracked ) then
 		pin:SetFrameLevel(100);
 	else
@@ -60,7 +87,14 @@ function ActiveQuestDataProviderMixin:AddActiveQuest(questID, x, y)
 	pin.Number:ClearAllPoints();
 	pin.Number:SetPoint("CENTER");
 
-	if IsQuestComplete(questID) then
+	if isSuperTracked or isComplete then
+		pin:SetAlphaLimits(nil, 0.0, 1.0);
+		pin:SetAlpha(1);
+	else
+		pin:SetAlphaLimits(2.0, 0.0, 1.0);
+	end
+
+	if isComplete then
 		-- If the quest is super tracked we want to show the selected circle behind it.
 		if ( isSuperTracked ) then
 			pin.Texture:SetSize(89, 90);
@@ -85,7 +119,7 @@ function ActiveQuestDataProviderMixin:AddActiveQuest(questID, x, y)
 			pin.Highlight:SetTexCoord(0.5, 1, 0, 0.5);
 			pin.Number:Hide();
 		end
-	elseif ( isSuperTracked ) then
+	else
 		pin.style = "numeric";	-- for tooltip
 		pin.Texture:SetSize(75, 75);
 		pin.Highlight:SetSize(75, 75);
@@ -94,16 +128,25 @@ function ActiveQuestDataProviderMixin:AddActiveQuest(questID, x, y)
 		pin.Texture:SetTexture("Interface/WorldMap/UI-QuestPoi-NumberIcons");
 		pin.Highlight:SetTexture("Interface/WorldMap/UI-QuestPoi-NumberIcons");
 
-		pin.Texture:SetTexCoord(0.500, 0.625, 0.375, 0.5);
+		if isSuperTracked then
+			pin.Texture:SetTexCoord(0.500, 0.625, 0.375, 0.5);
+		else
+			pin.Texture:SetTexCoord(0.875, 1, 0.375, 0.5);
+		end
+
 		pin.Highlight:SetTexCoord(0.625, 0.750, 0.375, 0.5);
 
 		-- try to match the number with tracker POI if possible
-		local questNumber = 1;
 		local poiButton = QuestPOI_FindButton(ObjectiveTrackerFrame.BlocksFrame, questID);
-		if ( poiButton and poiButton.style == "numeric" ) then
-			questNumber = poiButton.index;
+		if poiButton and poiButton.style == "numeric" then
+			local questNumber = poiButton.index;
+			self.usedQuestNumbers[questNumber] = true;
+
+			pin:AssignQuestNumber(questNumber);
+		else
+			table.insert(self.pinsMissingNumbers, pin);
 		end
-		pin.Number:SetTexCoord(QuestPOI_CalculateNumericTexCoords(questNumber, QUEST_POI_COLOR_BLACK));
+
 		pin.Number:Show();
 	end
 
@@ -115,7 +158,7 @@ end
 ActiveQuestPinMixin = CreateFromMixins(MapCanvasPinMixin);
 
 function ActiveQuestPinMixin:OnLoad()
-	self:SetAlphaLimits(1.0, 1.0, 1.0);
+	self:SetAlphaLimits(2.0, 0.0, 1.0);
 	self:SetScalingLimits(1, 1.5, 0.50);
 
 	self.UpdateTooltip = self.OnMouseEnter;
@@ -136,4 +179,12 @@ function ActiveQuestPinMixin:OnMouseLeave()
 	WorldMapPOIButton_OnLeave(self);
 
 	WorldMap_RestoreTooltip();
+end
+
+function ActiveQuestPinMixin:OnClick(button)
+	QuestPOIButton_OnClick(self, button);
+end
+
+function ActiveQuestPinMixin:AssignQuestNumber(questNumber)
+	self.Number:SetTexCoord(QuestPOI_CalculateNumericTexCoords(questNumber, self.isSuperTracked and QUEST_POI_COLOR_BLACK or QUEST_POI_COLOR_YELLOW));
 end

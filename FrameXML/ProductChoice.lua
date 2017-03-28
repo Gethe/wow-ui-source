@@ -5,6 +5,7 @@ function ProductChoiceFrame_OnLoad(self)
 	self:RegisterEvent("PLAYER_LOGIN");
 	self:RegisterEvent("PRODUCT_CHOICE_UPDATE");
 	self:RegisterEvent("PRODUCT_ASSIGN_TO_TARGET_FAILED");
+	self:RegisterEvent("UI_MODEL_SCENE_INFO_UPDATED");
 	ButtonFrameTemplate_HidePortrait(self);
 
 	self.TitleText:SetText(RECRUIT_A_FRIEND_REWARDS);
@@ -20,6 +21,14 @@ function ProductChoiceFrame_OnEvent(self, event, ...)
 		ProductChoiceFrame_ShowAlerts(self);
 	elseif ( event == "PRODUCT_ASSIGN_TO_TARGET_FAILED" ) then
 		StaticPopup_Show("PRODUCT_ASSIGN_TO_TARGET_FAILED");
+	elseif ( event == "UI_MODEL_SCENE_INFO_UPDATED" ) then
+		if ( ProductChoiceFrame.Inset.NoTakeBacksies.Dialog.ItemPreview:IsVisible() ) then
+			ProductChoiceFrame_RefreshConfirmationModel(ProductChoiceFrame.Inset.NoTakeBacksies, true);
+		end
+		
+		if ( ProductChoiceFrame:IsVisible() ) then
+			ProductChoiceFrame_SetUp(ProductChoiceFrame, true);
+		end
 	end
 end
 
@@ -88,7 +97,7 @@ function ProductChoiceFrame_Update(self)
 	self.Inset.ClaimButton:SetEnabled(selectedID ~= nil);
 end
 
-function ProductChoiceFrameItem_SetUpDisplay(self, data)
+function ProductChoiceFrameItem_SetUpDisplay(self, data, forceUpdate)
 	self.Name:SetText(data.name);
 	if ( data.subtitle ) then
 		self.SubTitle:SetFormattedText(PRODUCT_CHOICE_SUBTEXT, data.subtitle);
@@ -99,15 +108,21 @@ function ProductChoiceFrameItem_SetUpDisplay(self, data)
 	self.Covers.CheckMark:SetShown(data.alreadyHas);
 	self.Covers.Disabled:SetShown(data.disabled);
 	if ( data.modelDisplayID ) then
-		self.Model:SetDisplayInfo(data.modelDisplayID);
-		Model_Reset(self.Model);
-		self.Model:Show();
+		self.ModelScene:SetFromModelSceneID(data.modelSceneID, forceUpdate);
+
+		local item = self.ModelScene:GetActorByTag("item");
+		if ( item ) then
+			item:SetModelByCreatureDisplayID(data.modelDisplayID);
+			item:SetAnimationBlendOperation(LE_MODEL_BLEND_OPERATION_NONE);
+		end
+		
+		self.ModelScene:Show();
 		self.Shadow:Show();
 		self.Icon:Hide();
 		self.IconBorder:Hide();
 	else
 		self.Shadow:Hide();
-		self.Model:Hide();
+		self.ModelScene:Hide();
 		self.Shadow:Hide();
 		SetPortraitToTexture(self.Icon, data.textureName);
 		self.Icon:Show();
@@ -115,9 +130,8 @@ function ProductChoiceFrameItem_SetUpDisplay(self, data)
 	end
 end
 
-function ProductChoiceFrame_SetUp(self)
+function ProductChoiceFrame_SetUp(self, forceUpdate)
 	self.selectedData = nil;
-	self.Inset.NoTakeBacksies:Hide();
 
 	local choices = C_ProductChoice.GetChoices();
 	if ( #choices == 0 ) then
@@ -146,9 +160,9 @@ function ProductChoiceFrame_SetUp(self)
 			button:Hide();
 		else
 			button.data = data;
-			button.Model.PreviewButton:Show();
+			button.ModelScene.PreviewButton:Show();
 
-			ProductChoiceFrameItem_SetUpDisplay(button, data);
+			ProductChoiceFrameItem_SetUpDisplay(button, data, forceUpdate);
 			button:Show();
 		end
 	end
@@ -183,7 +197,7 @@ end
 
 function ProductChoiceItem_OnClick(self, button)
 	if ( self.data.modelDisplayID and IsModifiedClick("DRESSUP") ) then
-		ModelPreviewFrame_ShowModel(self.data.modelDisplayID);
+		ModelPreviewFrame_ShowModel(self.data.modelDisplayID, self.data.modelSceneID);
 	else
 		if ( not self.data.disabled ) then
 			PlaySound("igMainMenuOptionCheckBoxOn");
@@ -221,6 +235,10 @@ function ProductChoiceFrame_ShowConfirmation(confirmationFrame, choiceID, data)
 	confirmationFrame:Show();
 end
 
+function ProductChoiceFrame_RefreshConfirmationModel(confirmationFrame, forceUpdate)
+	ProductChoiceFrameItem_SetUpDisplay(confirmationFrame.Dialog.ItemPreview, confirmationFrame.data, forceUpdate);
+end
+
 function ProductChoiceFrame_PageClick(self, advance)
 	PlaySound("igSpellBookOpen");
 	local frame = ProductChoiceFrame;
@@ -232,4 +250,12 @@ function ProductChoiceFrame_PageClick(self, advance)
 	end
 
 	ProductChoiceFrame_SetUp(frame);
+end
+
+function ProductChoiceItemDisplay_OnMouseDown(self, ...)
+	self.ModelScene:OnMouseDown(...);
+end
+
+function ProductChoiceItemDisplay_OnMouseUp(self, ...)
+	self.ModelScene:OnMouseUp(...);
 end

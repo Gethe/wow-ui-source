@@ -449,7 +449,7 @@
 						value = math.floor(value * 100 + 0.5) / 100;
                         if (value ~= 0) then
                              value = math.max(0.5, value);
-                        end 
+                        end
    						self.value = value;
 						self:SetValue(value);
 						SetCVar(self.cvar, value);
@@ -948,9 +948,25 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
-			<CheckButton name="$parentFriendRequests" inherits="InterfaceOptionsCheckButtonTemplate">
+			<CheckButton name="$parentAutoAcceptQuickJoinRequests" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentBroadcasts" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "autoAcceptQuickJoinRequests";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentFriendRequests" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentAutoAcceptQuickJoinRequests" relativePoint="BOTTOMLEFT">
 						<Offset>
 							<AbsDimension x="0" y="-8"/>
 						</Offset>
@@ -1659,7 +1675,7 @@
 							</OnLoad>
                             <OnShow>
                                 local text = GetBindingKey("NAMEPLATES");
-	                            if (text and test ~= "") then
+	                            if (text and text ~= "") then
                                     self.Text:SetText(UNIT_NAMEPLATES_SHOW_ENEMIES.." ("..text..")");
                                 else
                                     self.Text:SetText(UNIT_NAMEPLATES_SHOW_ENEMIES);
@@ -1705,7 +1721,7 @@
 							</OnLoad>
 							<OnShow>
 								local text = GetBindingKey("FRIENDNAMEPLATES");
-								if (text and test ~= "") then
+								if (text and text ~= "") then
 									self.Text:SetText(UNIT_NAMEPLATES_SHOW_FRIENDS.." ("..text..")");
 								else
 									self.Text:SetText(UNIT_NAMEPLATES_SHOW_FRIENDS);

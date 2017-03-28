@@ -17,6 +17,7 @@ COOLDOWN_TYPE_NORMAL = 2;
 VIEWABLE_ACTION_BAR_PAGES = {1, 1, 1, 1, 1, 1};
 
 ACTION_HIGHLIGHT_MARKS = { };
+ON_BAR_HIGHLIGHT_MARKS = { };
 
 function MarkNewActionHighlight(action)
 	ACTION_HIGHLIGHT_MARKS[action] = true;
@@ -48,6 +49,34 @@ end
 
 function GetNewActionHighlightMark(action)
 	return ACTION_HIGHLIGHT_MARKS[action];
+end
+
+function ClearOnBarHighlightMarks()
+	ON_BAR_HIGHLIGHT_MARKS = {};
+end
+
+function GetOnBarHighlightMark(action)
+	return ON_BAR_HIGHLIGHT_MARKS[action];
+end
+
+local function UpdateOnBarHighlightMarks(actionButtonSlots)
+	if actionButtonSlots then
+		ON_BAR_HIGHLIGHT_MARKS = tInvert(actionButtonSlots);
+	else
+		ClearOnBarHighlightMarks();
+	end
+end
+
+function UpdateOnBarHighlightMarksBySpell(spellID)
+	UpdateOnBarHighlightMarks(C_ActionBar.FindSpellActionButtons(spellID));
+end
+
+function UpdateOnBarHighlightMarksByFlyout(flyoutID)
+	UpdateOnBarHighlightMarks(C_ActionBar.FindFlyoutActionButtons(flyoutID));
+end
+
+function UpdateOnBarHighlightMarksByPetAction(petAction)
+	UpdateOnBarHighlightMarks(C_ActionBar.FindPetActionButtons(petAction));
 end
 
 function GetActionButtonForID(id)
@@ -166,6 +195,9 @@ function ActionBarButtonEventsFrame_OnLoad(self)
 	self:RegisterEvent("UPDATE_BINDINGS");
 	self:RegisterEvent("UPDATE_SHAPESHIFT_FORM");
 	self:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN");
+	self:RegisterEvent("PET_BAR_UPDATE");
+	self:RegisterEvent("UNIT_FLAGS");
+	self:RegisterEvent("UNIT_AURA");
 end
 
 function ActionBarButtonEventsFrame_OnEvent(self, event, ...)
@@ -206,6 +238,7 @@ function ActionBarActionEventsFrame_OnLoad(self)
 	self:RegisterEvent("UPDATE_SUMMONPETS_ACTION");
 	self:RegisterEvent("LOSS_OF_CONTROL_ADDED");
 	self:RegisterEvent("LOSS_OF_CONTROL_UPDATE");
+	self:RegisterEvent("SPELL_UPDATE_ICON");
 end
 
 function ActionBarActionEventsFrame_OnEvent(self, event, ...)
@@ -334,6 +367,7 @@ function ActionButton_Update(self)
 		ActionButton_UpdateCooldown(self);
 		ActionButton_UpdateFlash(self);
 		ActionButton_UpdateHighlightMark(self);
+		ActionButton_UpdateSpellHighlightMark(self);
 	else
 		if ( self.eventsRegistered ) then
 			ActionBarActionEventsFrame_UnregisterFrame(self);
@@ -347,6 +381,9 @@ function ActionButton_Update(self)
 		end
 
 		ClearChargeCooldown(self);
+		
+		ActionButton_ClearFlash(self);
+		self:SetChecked(false);
 	end
 
 	-- Add a green border if button is an equipped item
@@ -405,6 +442,23 @@ end
 function ActionButton_UpdateHighlightMark(self)
 	if ( self.NewActionTexture ) then
 		self.NewActionTexture:SetShown(GetNewActionHighlightMark(self.action));
+	end
+end
+
+-- Shared between the action bar and the pet bar.
+function SharedActionButton_RefreshSpellHighlight(self, shown)
+	if ( shown ) then
+		self.SpellHighlightTexture:Show();
+		self.SpellHighlightAnim:Play();
+	else
+		self.SpellHighlightTexture:Hide();
+		self.SpellHighlightAnim:Stop();
+	end
+end
+
+function ActionButton_UpdateSpellHighlightMark(self)
+	if ( self.SpellHighlightTexture and self.SpellHighlightAnim ) then
+		SharedActionButton_RefreshSpellHighlight(self, GetOnBarHighlightMark(self.action));
 	end
 end
 
@@ -681,6 +735,10 @@ function ActionButton_OnEvent(self, event, ...)
 		ActionButton_UpdateHotkeys(self, self.buttonType);
 	elseif ( event == "PLAYER_TARGET_CHANGED" ) then	-- All event handlers below this line are only set when the button has an action
 		self.rangeTimer = -1;
+	elseif ( (((event == "UNIT_FLAGS") or (event == "UNIT_AURA")) and arg1 == "pet") or (event == "PET_BAR_UPDATE") ) then
+		-- Pet actions can also change the state of action buttons.
+		ActionButton_UpdateState(self);
+		ActionButton_UpdateFlash(self);
 	elseif ( (event == "ACTIONBAR_UPDATE_STATE") or
 		((event == "UNIT_ENTERED_VEHICLE" or event == "UNIT_EXITED_VEHICLE") and (arg1 == "player")) or
 		((event == "COMPANION_UPDATE") and (arg1 == "MOUNT")) ) then
@@ -750,6 +808,8 @@ function ActionButton_OnEvent(self, event, ...)
 				self.icon:SetTexture(texture);
 			end
 		end
+	elseif ( event == "SPELL_UPDATE_ICON" ) then
+		ActionButton_Update(self);
 	end
 end
 
@@ -834,8 +894,34 @@ function ActionButton_UpdateFlash(self)
 	local action = self.action;
 	if ( (IsAttackAction(action) and IsCurrentAction(action)) or IsAutoRepeatAction(action) ) then
 		ActionButton_StartFlash(self);
+		
+		local actionType, actionID, actionSubtype = GetActionInfo(action);
+		if ( actionSubtype == "pet" ) then
+			self:GetCheckedTexture():SetAlpha(0.5);
+		else
+			self:GetCheckedTexture():SetAlpha(1.0);
+		end
 	else
 		ActionButton_StopFlash(self);
+	end
+	
+	if ( self.AutoCastable ) then
+		self.AutoCastable:SetShown(C_ActionBar.IsAutoCastPetAction(action));
+		if ( C_ActionBar.IsEnabledAutoCastPetAction(action) ) then
+			self.AutoCastShine:Show();
+			AutoCastShine_AutoCastStart(self.AutoCastShine);
+		else
+			self.AutoCastShine:Hide();
+			AutoCastShine_AutoCastStop(self.AutoCastShine);
+		end
+	end
+end
+
+function ActionButton_ClearFlash(self)
+	if ( self.AutoCastable ) then
+		self.AutoCastable:Hide();
+		self.AutoCastShine:Hide();
+		AutoCastShine_AutoCastStop(self.AutoCastShine);
 	end
 end
 

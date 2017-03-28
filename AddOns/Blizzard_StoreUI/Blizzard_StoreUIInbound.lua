@@ -33,7 +33,11 @@ function StoreFrame_SetServicesCategory()
 end
 
 function StoreFrame_SelectLevel100BoostProduct(optionalGuid)
-	StoreFrame:SetAttribute("selectlevel100boostproduct", optionalGuid)
+	StoreFrame:SetAttribute("selectlevel100boostproduct", optionalGuid);
+end
+
+function StoreFrame_SelectUnrevokeBoostProduct(optionalGuid)
+	StoreFrame:SetAttribute("selectunrevokeboostproduct", optionalGuid);
 end
 
 if (InGlue()) then
@@ -44,5 +48,10 @@ if (InGlue()) then
 		data.realmName = GetServerName();
 		StoreFrame:SetAttribute("getvaserrormessage", data);
 		return StoreFrame:GetAttribute("vaserrormessageresult");
+	end
+
+	function StoreFrame_IsVASTransferProduct(productID)
+		StoreFrame:SetAttribute("isvastransferproduct", productID);
+		return StoreFrame:GetAttribute("isvastransferproductresult");
 	end
 end

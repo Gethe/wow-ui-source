@@ -1,0 +1,38 @@
+## Interface: 70200
+## Title: Blizzard API Documentation
+## Secure: 1
+## Author: Blizzard Entertainment
+## LoadOnDemand: 1
+
+BaseAPIMixin.lua
+FieldsAPIMixin.lua
+FunctionsAPIMixin.lua
+SystemsAPIMixin.lua
+TablesAPIMixin.lua
+Blizzard_APIDocumentation.lua
+
+# Start documentation files here
+SharedTypes.lua
+ActionBarFrameLua.lua
+ArtifactUILua.lua
+CalendarLua.lua
+ChallengeModeInfoLua.lua
+ContributionCollectorLua.lua
+EquipmentManagerLua.lua
+LootJournalLua.lua
+MailInfoLua.lua
+MerchantFrameLua.lua
+MountJournalLua.lua
+PartyInfoLua.lua
+PvpInfoLua.lua
+QuestTaskInfoLua.lua
+ReputationInfoLua.lua
+SocialQueueLua.lua
+StorePublicUI.lua
+Transmog.lua
+TransmogItems.lua
+TransmogSets.lua
+UIModelInfoLua.lua
+UnitLua.lua
+WorldMapLua.lua
+# End documentation files here

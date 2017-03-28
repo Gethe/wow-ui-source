@@ -8,8 +8,6 @@ QUESTINFO_FADE_IN = 0.5;
 QUEST_FRAME_AUTO_ACCEPT_QUEST_ID = 0;
 QUEST_FRAME_AUTO_ACCEPT_QUEST_START_ITEM_ID = 0;
 
-local MIN_RIGHT_BUTTON_WIDTH = 78;
-
 function QuestFrame_OnLoad(self)
 	self:RegisterEvent("QUEST_GREETING");
 	self:RegisterEvent("QUEST_DETAIL");
@@ -20,15 +18,6 @@ function QuestFrame_OnLoad(self)
 	self:RegisterEvent("QUEST_LOG_UPDATE");
 	self:RegisterEvent("UNIT_PORTRAIT_UPDATE");
 	self:RegisterEvent("LEARNED_SPELL_IN_TAB");
-	self:RegisterEvent("QUEST_IGNORED");
-
-	local buttonWidth;
-	buttonWidth = max(QuestFrameDetailPanel.IgnoreButton:GetFontString():GetStringWidth() + 30, MIN_RIGHT_BUTTON_WIDTH);
-	QuestFrameDetailPanel.IgnoreButton:SetWidth(buttonWidth);
-	QuestFrameProgressPanel.IgnoreButton:SetWidth(buttonWidth);
-	buttonWidth = max(QuestFrameDetailPanel.UnignoreButton:GetFontString():GetStringWidth() + 30, MIN_RIGHT_BUTTON_WIDTH);
-	QuestFrameDetailPanel.UnignoreButton:SetWidth(buttonWidth);
-	QuestFrameProgressPanel.UnignoreButton:SetWidth(buttonWidth);
 end
 
 function QuestFrame_OnEvent(self, event, ...)
@@ -107,12 +96,6 @@ function QuestFrame_OnEvent(self, event, ...)
 		if ( QuestInfoFrame.rewardsFrame:IsVisible() ) then
 			QuestInfo_ShowRewards();
 			QuestDetailScrollFrameScrollBar:SetValue(0);
-		end
-		return;
-	elseif ( event == "QUEST_IGNORED" ) then
-		if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_IGNORE_QUEST) then
-			StaticPopup_Show("QUEST_IGNORE_TUTORIAL");
-			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_IGNORE_QUEST, true);
 		end
 		return;
 	end
@@ -214,11 +197,6 @@ function QuestFrameProgressPanel_OnShow()
 	else
 		QuestFrameCompleteButton:Disable();
 	end
-	local canIgnore = CanIgnoreQuest();
-	local isIgnored = IsQuestIgnored();
-	QuestFrameGoodbyeButton:SetShown(not canIgnore and not isIgnored);
-	QuestFrameProgressPanel.IgnoreButton:SetShown(canIgnore and not isIgnored);
-	QuestFrameProgressPanel.UnignoreButton:SetShown(isIgnored);
 	QuestFrameProgressItems_Update();
 end
 
@@ -327,10 +305,7 @@ function QuestFrameGreetingPanel_OnShow()
 			local questTitleButton = _G["QuestTitleButton"..i];
 			local questTitleButtonIcon = _G[questTitleButton:GetName() .. "QuestIcon"];
 			local title, isComplete = GetActiveTitle(i);
-			if ( IsActiveQuestIgnored(i) ) then
-				questTitleButton:SetFormattedText(IGNORED_QUEST_DISPLAY, title);
-				questTitleButtonIcon:SetVertexColor(0.75,0.75,0.75);
-			elseif ( IsActiveQuestTrivial(i) ) then
+			if ( IsActiveQuestTrivial(i) ) then
 				questTitleButton:SetFormattedText(TRIVIAL_QUEST_DISPLAY, title);
 				questTitleButtonIcon:SetVertexColor(0.75,0.75,0.75);
 			else
@@ -371,7 +346,7 @@ function QuestFrameGreetingPanel_OnShow()
 		for i=(numActiveQuests + 1), (numActiveQuests + numAvailableQuests), 1 do
 			local questTitleButton = _G["QuestTitleButton"..i];
 			local questTitleButtonIcon = _G[questTitleButton:GetName() .. "QuestIcon"];
-			local isTrivial, frequency, isRepeatable, isLegendary, isIgnored = GetAvailableQuestInfo(i - numActiveQuests);
+			local isTrivial, frequency, isRepeatable, isLegendary = GetAvailableQuestInfo(i - numActiveQuests);
 			if ( isLegendary ) then
 				questTitleButtonIcon:SetTexture("Interface\\GossipFrame\\AvailableLegendaryQuestIcon");
 			elseif ( frequency == LE_QUEST_FREQUENCY_DAILY or frequency == LE_QUEST_FREQUENCY_WEEKLY ) then
@@ -381,10 +356,7 @@ function QuestFrameGreetingPanel_OnShow()
 			else
 				questTitleButtonIcon:SetTexture("Interface\\GossipFrame\\AvailableQuestIcon");
 			end
-			if ( isIgnored ) then
-				questTitleButton:SetFormattedText(IGNORED_QUEST_DISPLAY, GetAvailableTitle(i - numActiveQuests));
-				questTitleButtonIcon:SetVertexColor(0.5,0.5,0.5);
-			elseif ( isTrivial ) then
+			if ( isTrivial ) then
 				questTitleButton:SetFormattedText(TRIVIAL_QUEST_DISPLAY, GetAvailableTitle(i - numActiveQuests));
 				questTitleButtonIcon:SetVertexColor(0.5,0.5,0.5);
 			else
@@ -499,39 +471,16 @@ function QuestFrame_HideQuestPortrait()
 	QuestNPCModel:Hide();
 end
 
-
-function QuestFrameIgnoreButton_OnClick()
-	IgnoreQuest();
-	PlaySound("igQuestCancel");
-end
-
-function QuestFrameUnignoreButton_OnClick()
-	UnignoreQuest();
-	PlaySound("igQuestCancel");
-end
-
 function QuestFrameDetailPanel_OnShow()
 	QuestFrameRewardPanel:Hide();
 	QuestFrameProgressPanel:Hide();
 	QuestFrameGreetingPanel:Hide();
 	if ( QuestGetAutoAccept() ) then
 		QuestFrameDeclineButton:Hide();
-		QuestFrameDetailPanel.IgnoreButton:Hide();
-		QuestFrameDetailPanel.UnignoreButton:Hide();
 		QuestFrameCloseButton:Disable();
 		QuestFrame.autoQuest = true;
-	elseif ( IsQuestIgnored() ) then
-		QuestFrameDeclineButton:Hide();
-		QuestFrameDetailPanel.IgnoreButton:Hide();
-		QuestFrameDetailPanel.UnignoreButton:Show();
-	elseif ( CanIgnoreQuest() ) then
-		QuestFrameDeclineButton:Hide();
-		QuestFrameDetailPanel.IgnoreButton:Show();
-		QuestFrameDetailPanel.UnignoreButton:Hide();
 	else
 		QuestFrameDeclineButton:Show();
-		QuestFrameDetailPanel.IgnoreButton:Hide();
-		QuestFrameDetailPanel.UnignoreButton:Hide();
 	end
 	local material = QuestFrame_GetMaterial();
 	QuestFrame_SetMaterial(QuestFrameDetailPanel, material);

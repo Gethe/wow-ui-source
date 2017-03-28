@@ -1364,9 +1364,9 @@ function LFGRewardsFrame_UpdateFrame(parentFrame, dungeonID, background)
 
 	local itemButtonIndex = 1;
 	for i=1, numRewards do
-		local name, texture, numItems, isBonusReward = GetLFGDungeonRewardInfo(dungeonID, i);
+		local name, texture, numItems, isBonusReward, rewardType, rewardID = GetLFGDungeonRewardInfo(dungeonID, i);
 		if ( not isBonusReward ) then
-			lastFrame = LFGRewardsFrame_SetItemButton(parentFrame, dungeonID, itemButtonIndex, i, name, texture, numItems, nil);
+			lastFrame = LFGRewardsFrame_SetItemButton(parentFrame, dungeonID, itemButtonIndex, i, name, texture, numItems, rewardType, rewardID);
 			itemButtonIndex = itemButtonIndex + 1;
 		end
 	end
@@ -1376,8 +1376,8 @@ function LFGRewardsFrame_UpdateFrame(parentFrame, dungeonID, background)
 			local eligible, forTank, forHealer, forDamage, itemCount = GetLFGRoleShortageRewards(dungeonID, shortageIndex);
 			if ( eligible and ((tankChecked and forTank) or (healerChecked and forHealer) or (damageChecked and forDamage)) ) then
 				for rewardIndex=1, itemCount do
-					local name, texture, numItems = GetLFGDungeonShortageRewardInfo(dungeonID, shortageIndex, rewardIndex);
-					lastFrame = LFGRewardsFrame_SetItemButton(parentFrame, dungeonID, itemButtonIndex, rewardIndex, name, texture, numItems, shortageIndex, forTank, forHealer, forDamage);
+					local name, texture, numItems, _, rewardType, rewardID = GetLFGDungeonShortageRewardInfo(dungeonID, shortageIndex, rewardIndex);
+					lastFrame = LFGRewardsFrame_SetItemButton(parentFrame, dungeonID, itemButtonIndex, rewardIndex, name, texture, numItems, rewardType, rewardID, shortageIndex, forTank, forHealer, forDamage);
 					itemButtonIndex = itemButtonIndex + 1;
 				end
 			end
@@ -1475,7 +1475,7 @@ function LFGRewardsFrame_UpdateFrame(parentFrame, dungeonID, background)
 	parentFrame.spacer:SetPoint("TOPLEFT", lastFrame, "BOTTOMLEFT", 0, -10);
 end
 
-function LFGRewardsFrame_SetItemButton(parentFrame, dungeonID, index, id, name, texture, numItems, shortageIndex, showTankIcon, showHealerIcon, showDamageIcon)
+function LFGRewardsFrame_SetItemButton(parentFrame, dungeonID, index, id, name, texture, numItems, rewardType, rewardID, shortageIndex, showTankIcon, showHealerIcon, showDamageIcon)
 	local parentName = parentFrame:GetName();
 	local frame = _G[parentName.."Item"..index];
 	if ( not frame ) then
@@ -1533,6 +1533,13 @@ function LFGRewardsFrame_SetItemButton(parentFrame, dungeonID, index, id, name, 
 		else
 			frame.roleIcon1:SetPoint("LEFT", frame, "TOPLEFT", 10, -2);
 		end
+	end
+	
+	if ( rewardType == "item" ) then
+		SetItemButtonQuality(frame, select(3, GetItemInfo(rewardID)), rewardID);
+		frame.IconBorder:Show();
+	else
+		frame.IconBorder:Hide();
 	end
 	
 	frame:Show();

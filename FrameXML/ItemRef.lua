@@ -7,8 +7,8 @@ function SetItemRef(link, text, button, chatFrame)
 		else
 			namelink = strsub(link, 8);
 		end
-		
-		local name, lineid, chatType, chatTarget = strsplit(":", namelink);
+
+		local name, lineID, chatType, chatTarget = strsplit(":", namelink);
 		if ( name and (strlen(name) > 0) ) then
 			if ( IsModifiedClick("CHATLINK") ) then
 				local staticPopup;
@@ -52,9 +52,9 @@ function SetItemRef(link, text, button, chatFrame)
 				else
 					SendWho(WHO_TAG_EXACT..name);
 				end
-				
+
 			elseif ( button == "RightButton" and (not isGMLink) ) then
-				FriendsFrame_ShowDropdown(name, 1, lineid, chatType, chatFrame);
+				FriendsFrame_ShowDropdown(name, 1, lineID, chatType, chatFrame);
 			else
 				ChatFrame_SendTell(name, chatFrame);
 			end
@@ -62,8 +62,8 @@ function SetItemRef(link, text, button, chatFrame)
 		return;
 	elseif ( strsub(link, 1, 8) == "BNplayer" ) then
 		local namelink = strsub(link, 10);
-		
-		local name, bnetIDAccount, lineid, chatType, chatTarget = strsplit(":", namelink);
+
+		local name, bnetIDAccount, lineID, chatType, chatTarget = strsplit(":", namelink);
 		if ( name and (strlen(name) > 0) ) then
 			if ( IsModifiedClick("CHATLINK") ) then
 				--[[
@@ -128,7 +128,7 @@ function SetItemRef(link, text, button, chatFrame)
 		elseif ( button == "LeftButton" ) then
 			local chanLink = strsub(link, 9);
 			local chatType, chatTarget = strsplit(":", chanLink);
-			
+
 			if ( strupper(chatType) == "CHANNEL" ) then
 				if ( GetChannelName(tonumber(chatTarget))~=0 ) then
 					ChatFrame_OpenChat("/"..chatTarget, chatFrame);
@@ -274,6 +274,26 @@ function SetItemRef(link, text, button, chatFrame)
 			end
 		end
 		return;
+	elseif ( strsub(link, 1, 11) == "transmogset" ) then
+		if ( not CollectionsJournal ) then
+			CollectionsJournal_LoadUI();
+		end
+		if ( CollectionsJournal ) then
+			WardrobeCollectionFrame_OpenTransmogLink(link);
+		end
+		return;
+	elseif ( strsub(link, 1, 3) == "api" ) then
+		APIDocumentation_LoadUI();
+
+		local command = APIDocumentation.Commands.Default;
+		if button == "RightButton" then
+			command = APIDocumentation.Commands.CopyAPI;
+		elseif IsModifiedClick("CHATLINK") then
+			command = APIDocumentation.Commands.OpenDump;
+		end
+
+		APIDocumentation:HandleAPILink(link, command);
+		return;
 	end
 
 	if ( IsModifiedClick() ) then
@@ -318,18 +338,50 @@ function GetFixedLink(text, quality)
 			return (gsub(text, "(|H.+|h.+|h)", "|cffff80ff%1|r", 1));
 		elseif ( strsub(text, startLink + 2, startLink + 19) == "transmogappearance" ) then
 			return (gsub(text, "(|H.+|h.+|h)", "|cffff80ff%1|r", 1));
+		elseif ( strsub(text, startLink + 2, startLink + 12) == "transmogset" ) then
+			return (gsub(text, "(|H.+|h.+|h)", "|cffff80ff%1|r", 1));
 		end
 	end
 	--Nothing to change.
 	return text;
 end
 
+local function FormatLink(linkType, linkDisplayText, ...)
+	local linkFormatTable = { ("|H%s"):format(linkType), ... };
+	return table.concat(linkFormatTable, ":") .. ("|h%s|h"):format(linkDisplayText);
+end
+
 function GetBattlePetAbilityHyperlink(abilityID, maxHealth, power, speed)
 	local id, name = C_PetBattles.GetAbilityInfoByID(abilityID);
-	if ( name ) then
-		return format("|cff4e96f7|HbattlePetAbil:%d:%d:%d:%d|h[%s]|h|r", abilityID, maxHealth or 100, power or 0, speed or 0, name);
-	else
+	if not name then
 		GMError("Attempt to link ability when we don't have record.");
 		return "";
 	end
+
+	return ("|cff4e96f7%s|r"):format(FormatLink("battlePetAbil", name, abilityID, maxHealth or 100, power or 0, speed or 0));
+end
+
+function GetPlayerLink(characterName, linkDisplayText, lineID, chatType, chatTarget)
+	-- Use simplified link if possible
+	if lineID or chatType or chatTarget then
+		return FormatLink("player", linkDisplayText, characterName, lineID or 0, chatType or 0, chatTarget or "");
+	else
+		return FormatLink("player", linkDisplayText, characterName);
+	end
+end
+
+function GetGMLink(gmName, linkDisplayText, lineID)
+	if lineID then
+		return FormatLink("playerGM", linkDisplayText, gmName, lineID or 0);
+	else
+		return FormatLink("playerGM", linkDisplayText, gmName);
+	end
+end
+
+function GetBNPlayerLink(name, linkDisplayText, bnetIDAccount, lineID, chatType, chatTarget)
+	return FormatLink("BNplayer", linkDisplayText, name, bnetIDAccount, lineID or 0, chatType, chatTarget);
+end
+
+function SplitLink(link)
+	return link:match("^|H(.+)|h(.*)|h$");
 end

@@ -40,7 +40,7 @@
 			</OnLeave>
 		</Scripts>
 	</Button>
-	<Button name="CharSelectLockedTrialButtonTemplate" virtual="true" enableMouse="true" motionScriptsWhileDisabled="true" hidden="true">
+	<Button name="CharSelectLockedButtonTemplate" virtual="true" enableMouse="true" motionScriptsWhileDisabled="true" mixin="CharacterSelectLockedButtonMixin" hidden="true">
 		<Size x="63" y="76"/>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -49,16 +49,9 @@
 		</Layers>
 		<HighlightTexture atlas="UI-CharacterCreate-PadLock" alpha="0.1" alphaMode="ADD" setAllPoints="true"/>
 		<Scripts>
-			<OnEnter>
-				GlueTooltip:SetText(CHARACTER_SELECT_INFO_TRIAL_BOOST_LOCKED_TOOLTIP_TITLE, 1, 1, 1, 1, false);
-				GlueTooltip:AddLine(CHARACTER_SELECT_INFO_TRIAL_BOOST_LOCKED_TOOLTIP_TEXT, nil, nil, nil, nil, true);
-				GlueTooltip:Show();
-				GlueTooltip:SetOwner(self, "ANCHOR_LEFT", -16, -5);
-			</OnEnter>
-			<OnLeave>
-				GlueTooltip:Hide();
-			</OnLeave>
-			<OnClick function="CharSelectLockedTrialButton_OnClick"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnClick method="OnClick"/>
 		</Scripts>
 	</Button>
 	<!-- CharacterButton scripts may occassionally be disabled for Character Services purposes. -->
@@ -484,9 +477,7 @@
 							<OnLoad>
 								SetWorldFrameStrata(self);
 							</OnLoad>
-							<OnUpdateModel>
-								CharacterSelect_UpdateModel(self);
-							</OnUpdateModel>
+							<OnUpdate function="CharacterSelect_UpdateModel" />
 						</Scripts>
 					</ModelFFX>
 					<Frame name="LogoHoist" frameStrata="HIGH">
@@ -1091,7 +1082,7 @@
 										GlueParent_DeathKnightButtonSwap(self);
 									</OnUpdate>
 									<OnClick>
-										CharacterSelect_CreateNewCharacter(LE_CHARACTER_CREATE_TYPE_NORMAL);
+										CharacterSelect_CreateNewCharacter(LE_CHARACTER_CREATE_TYPE_NORMAL, true);
 									</OnClick>
 									<!-- We need to override the templates script because it will reset our textures. -->
 									<OnShow/>
@@ -2091,7 +2082,7 @@
                                     <Anchors>
                                         <Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="0" y="-8"/>
                                     </Anchors>
-                                    <TexCoords left="0.50878906" right="0.79980469" top="0.63085938" bottom="0.63281250"/>	
+                                    <TexCoords left="0.50878906" right="0.79980469" top="0.63085938" bottom="0.63281250"/>
                                 </Texture>
                                 <FontString parentKey="Notice" inherits="GameFontGreen" text="ACCOUNT_REACTIVATE_LOGOUT_NOTICE">
                                     <Size x="300" y="0"/>

@@ -44,6 +44,10 @@ function BattlefieldMinimap_OnLoad (self)
 	BattlefieldMinimap.updateTimer = 0;
 
 	BattlefieldMinimapUnitPositionFrame:SetMouseOverUnitExcluded("player", true);
+	BattlefieldMinimapUnitPositionFrame:SetPinTexture("player", "Interface\\Minimap\\MinimapArrow");
+	BattlefieldMinimapUnitPositionFrame:SetPinSize("player", 24);
+	BattlefieldMinimapUnitPositionFrame:SetPinSize("party", 8);
+	BattlefieldMinimapUnitPositionFrame:SetPinSize("raid", 8);
 end
 
 function BattlefieldMinimap_OnShow(self)
@@ -80,6 +84,7 @@ function BattlefieldMinimap_OnEvent(self, event, ...)
 
 			OpacityFrameSlider:SetValue(BattlefieldMinimapOptions.opacity);
 			BattlefieldMinimap_UpdateOpacity();
+			BattlefieldMinimap_UpdateShowPlayers();
 		end
 	elseif ( event == "PLAYER_ENTERING_WORLD" or event == "ZONE_CHANGED" or event == "ZONE_CHANGED_NEW_AREA" or event == "NEW_WMO_CHUNK" ) then
 		if ( BattlefieldMinimap:IsShown() ) then
@@ -156,7 +161,7 @@ function BattlefieldMinimap_Update()
 		local battlefieldPOIName = "BattlefieldMinimapPOI"..i;
 		local battlefieldPOI = _G[battlefieldPOIName];
 		if ( i <= numPOIs ) then
-			local landmarkType, name, description, textureIndex, x, y, maplinkID, showInBattleMap = GetMapLandmarkInfo(i);
+			local landmarkType, name, description, textureIndex, x, y, maplinkID, showInBattleMap = C_WorldMap.GetMapLandmarkInfo(i);
 			if ( WorldMap_ShouldShowLandmark(landmarkType) and showInBattleMap ) then
 				local x1, x2, y1, y2 = GetPOITextureCoords(textureIndex);
 				_G[battlefieldPOIName.."Texture"]:SetTexCoord(x1, x2, y1, y2);
@@ -284,10 +289,7 @@ function BattlefieldMinimap_OnUpdate(self, elapsed)
 		return;
 	end
 
-	BattlefieldMinimapUnitPositionFrame:ClearUnits();
-
-	--Position player
-	BattlefieldMinimapUnitPositionFrame:AddUnit("player", "Interface\\Minimap\\MinimapArrow", 24, 24, 1, 1, 1, 1, 7, true);
+	BattlefieldMinimapUnitPositionFrame:UpdatePlayerPins();
 
 	-- If resizing the frame then scale everything accordingly
 	if ( BattlefieldMinimap.resizing ) then
@@ -304,7 +306,7 @@ function BattlefieldMinimap_OnUpdate(self, elapsed)
 			local battlefieldPOIName = "BattlefieldMinimapPOI"..i;
 			local battlefieldPOI = _G[battlefieldPOIName];
 			if ( i <= numPOIs ) then
-				local landmarkType, name, description, textureIndex, x, y, maplinkID, showInBattleMap = GetMapLandmarkInfo(i);
+				local landmarkType, name, description, textureIndex, x, y, maplinkID, showInBattleMap = C_WorldMap.GetMapLandmarkInfo(i);
 				if ( WorldMap_ShouldShowLandmark(landmarkType) and showInBattleMap ) then
 					local x1, x2, y1, y2 = GetPOITextureCoords(textureIndex);
 					_G[battlefieldPOIName.."Texture"]:SetTexCoord(x1, x2, y1, y2);
@@ -324,30 +326,6 @@ function BattlefieldMinimap_OnUpdate(self, elapsed)
 	if ( not BattlefieldMinimapOptions.showPlayers ) then
 		wipe(BG_VEHICLES);
 	else
-		--Position groupmates
-		local timeNow = GetTime();
-		local isInRaid = IsInRaid();
-		local memberCount = 0;
-		local unitBase;
-
-		if isInRaid then
-			memberCount = MAX_RAID_MEMBERS;
-			unitBase = "raid";
-		elseif IsInGroup() then
-			memberCount = MAX_PARTY_MEMBERS;
-			unitBase = "party";
-		end
-
-		for i = 1, memberCount do
-			local unit = unitBase..i;
-			if UnitExists(unit) and not UnitIsUnit(unit, "player") then
-				local atlas = UnitInSubgroup(unit) and "WhiteCircle-RaidBlips" or "WhiteDotCircle-RaidBlips";
-				local class = select(2, UnitClass(unit));
-				local r, g, b = CheckColorOverrideForPVPInactive(unit, timeNow, GetClassColor(class));
-				BattlefieldMinimapUnitPositionFrame:AddUnitAtlas(unit, atlas, 8, 8, r, g, b, 1);
-			end
-		end
-
 		-- Position flags
 		local numFlags = GetNumBattlefieldFlagPositions();
 		for i=1, NUM_WORLDMAP_FLAGS do
@@ -409,8 +387,6 @@ function BattlefieldMinimap_OnUpdate(self, elapsed)
 			end
 		end
 	end
-
-	BattlefieldMinimapUnitPositionFrame:FinalizeUnits();
 
 	-- Fadein tab if mouse is over
 	if ( BattlefieldMinimap:IsMouseOver(45, -10, -5, 5) ) then
@@ -507,6 +483,7 @@ end
 
 function BattlefieldMinimapTabDropDown_TogglePlayers()
 	BattlefieldMinimapOptions.showPlayers = not BattlefieldMinimapOptions.showPlayers;
+	BattlefieldMinimap_UpdateShowPlayers();
 end
 
 function BattlefieldMinimapTabDropDown_ToggleLock()
@@ -519,6 +496,12 @@ function BattlefieldMinimapTabDropDown_ShowOpacity()
 	OpacityFrame.opacityFunc = BattlefieldMinimap_UpdateOpacity;
 	OpacityFrame:Show();
 	OpacityFrameSlider:SetValue(BattlefieldMinimapOptions.opacity);
+end
+
+function BattlefieldMinimap_UpdateShowPlayers()
+	-- showPlayers in this case actually means "show all units who are not the local player", because the player pin is always shown
+	BattlefieldMinimapUnitPositionFrame:SetShouldShowUnits("party", BattlefieldMinimapOptions.showPlayers);
+	BattlefieldMinimapUnitPositionFrame:SetShouldShowUnits("raid", BattlefieldMinimapOptions.showPlayers);
 end
 
 function BattlefieldMinimap_UpdateOpacity(opacity)

@@ -13,6 +13,25 @@ PET_WAIT_TEXTURE = "Interface\\Icons\\Spell_Nature_TimeStop";
 PET_DISMISS_TEXTURE = "Interface\\Icons\\Spell_Shadow_Teleport";
 PET_MOVE_TO_TEXTURE = "Interface\\Icons\\Ability_Hunter_Pet_Goto";
 
+PET_ACTION_HIGHLIGHT_MARKS = {};
+
+function ClearPetActionHighlightMarks()
+	PET_ACTION_HIGHLIGHT_MARKS = {};
+end
+
+function HasPetActionHighlightMark(index)
+	return PET_ACTION_HIGHLIGHT_MARKS[index];
+end
+
+function UpdatePetActionHighlightMarks(petAction)
+	local petBarIndices = C_ActionBar.GetPetActionPetBarIndices(petAction);
+	if petBarIndices then
+		PET_ACTION_HIGHLIGHT_MARKS = tInvert(petBarIndices);
+	else
+		ClearPetActionHighlightMarks();
+	end
+end
+
 function PetActionBar_OnLoad (self)
 	self:RegisterEvent("PLAYER_CONTROL_LOST");
 	self:RegisterEvent("PLAYER_CONTROL_GAINED");
@@ -164,6 +183,8 @@ function PetActionBar_Update (self)
 			petActionIcon:Hide();
 			petActionButton:SetNormalTexture("Interface\\Buttons\\UI-Quickslot");
 		end
+		
+		SharedActionButton_RefreshSpellHighlight(petActionButton, HasPetActionHighlightMark(i));
 	end
 	PetActionBar_UpdateCooldowns();
 	if ( not PetHasActionBar() ) then

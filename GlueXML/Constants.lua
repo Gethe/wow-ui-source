@@ -238,3 +238,23 @@ GLUE_CREDITS_SOUND_KITS = {
 };
 
 AUTO_LOGIN_WAIT_TIME = 1.75;
+
+NORMAL_FONT_COLOR			= CreateColor(1.0, 0.82, 0.0);
+HIGHLIGHT_FONT_COLOR		= CreateColor(1.0, 1.0, 1.0);
+RED_FONT_COLOR				= CreateColor(1.0, 0.1, 0.1);
+DIM_RED_FONT_COLOR			= CreateColor(0.8, 0.1, 0.1);
+GREEN_FONT_COLOR			= CreateColor(0.1, 1.0, 0.1);
+GRAY_FONT_COLOR				= CreateColor(0.5, 0.5, 0.5);
+YELLOW_FONT_COLOR			= CreateColor(1.0, 1.0, 0.0);
+BLUE_FONT_COLOR				= CreateColor(0, 0.749, 0.953);
+LIGHTYELLOW_FONT_COLOR		= CreateColor(1.0, 1.0, 0.6);
+ORANGE_FONT_COLOR			= CreateColor(1.0, 0.5, 0.25);
+PASSIVE_SPELL_FONT_COLOR	= CreateColor(0.77, 0.64, 0.0);
+BATTLENET_FONT_COLOR 		= CreateColor(0.510, 0.773, 1.0);
+TRANSMOGRIFY_FONT_COLOR		= CreateColor(1, 0.5, 1);
+DISABLED_FONT_COLOR			= CreateColor(0.498, 0.498, 0.498);
+LIGHTBLUE_FONT_COLOR		= CreateColor(0.53, 0.67, 1.0);
+
+HTML_START = "<html><body><p>";
+HTML_START_CENTERED = "<html><body><p align=\"center\">";
+HTML_END = "</p></body></html>";

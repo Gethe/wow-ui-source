@@ -32,6 +32,15 @@ function QuickJoinToastMixin:OnLoad()
 	end
 end
 
+function QuickJoinToastMixin:OnShow()
+	self:RegisterEvent("PVP_BRAWL_INFO_UPDATED");
+end
+
+function QuickJoinToastMixin:OnHide()
+	self:UnregisterEvent("PVP_BRAWL_INFO_UPDATED");
+	self:ClearCachedQueueData();
+end
+
 function QuickJoinToastMixin:OnEvent(event, ...)
 	if ( event == "SOCIAL_QUEUE_UPDATE" ) then
 		local guid, numAddedItems = ...;
@@ -50,6 +59,17 @@ function QuickJoinToastMixin:OnEvent(event, ...)
 		local guid = ...;
 		self:ProcessOrQueueUpdate(guid);
 		self:CheckShowToast();
+	elseif ( event == "PVP_BRAWL_INFO_UPDATED") then
+		if (self.displayedToast and self:HasCachedQueueData()) then
+			local updateQueues = false;
+			local text = self:GetCurrentText(updateQueues);
+			if (self.ToastToToastAnim:IsPlaying()) then
+				self.pendingText = text;
+				self.Toast2.Text:SetText(text);
+			else
+				self.Toast.Text:SetText(text);
+			end
+		end
 	end
 end
 
@@ -245,15 +265,16 @@ function QuickJoinToastMixin:ShowToast(group, priority)
 	self.displayedToast = group;
 
 	local queues = C_SocialQueue.GetGroupQueues(self.displayedToast.guid);
-	self.isLFGList = queues and queues[1] and queues[1].type == "lfglist";
+	self.isLFGList = queues and queues[1] and queues[1].queueData.queueType == "lfglist";
 
+	local updateQueues = true;
 	if ( self.oldToast ) then
-		local text = self:GetCurrentText();
+		local text = self:GetCurrentText(updateQueues);
 		self.Toast2.Text:SetText(text);
 		self.pendingText = text;
 		self.ToastToToastAnim:Play();
 	else
-		self.Toast.Text:SetText(self:GetCurrentText());
+		self.Toast.Text:SetText(self:GetCurrentText(updateQueues));
 		self.FriendToToastAnim:Play();
 	end
 
@@ -297,7 +318,7 @@ function QuickJoinToastMixin:UpdateQueueIcon()
 	if ( not self.displayedToast ) then
 		return;
 	end
-	
+
 	if ( self:GetButtonState() == "PUSHED" ) then
 		if ( self.isLFGList ) then
 			self.QueueButton:SetAtlas("quickjoin-button-group-down");
@@ -321,8 +342,10 @@ function QuickJoinToastMixin:OnEnter()
 	if ( self.displayedToast ) then
 		local queues = C_SocialQueue.GetGroupQueues(self.displayedToast.guid);
 		if ( queues ) then
+			local knowsLeader = SocialQueueUtil_HasRelationshipWithLeader(self.displayedToast.guid);
+
 			GameTooltip:SetOwner(self.Toast, self.isOnRight and "ANCHOR_LEFT" or "ANCHOR_RIGHT");
-			SocialQueueUtil_SetTooltip(GameTooltip, SOCIAL_QUEUE_TOOLTIP_HEADER, queues, true);
+			SocialQueueUtil_SetTooltip(GameTooltip, SOCIAL_QUEUE_TOOLTIP_HEADER, queues, true, knowsLeader);
 			GameTooltip:AddLine(" ");
 			GameTooltip:AddLine(SOCIAL_QUEUE_CLICK_TO_JOIN, GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
 			GameTooltip:Show();
@@ -336,7 +359,35 @@ function QuickJoinToastMixin:OnLeave()
 	GameTooltip:Hide();
 end
 
-function QuickJoinToastMixin:GetCurrentText()
+local function GetExtraQueueCount(queues)
+	local extraQueueCount = 0;
+
+	if ( #queues > 1 ) then
+		extraQueueCount = #queues - 1;
+	elseif ( queues[1].queueData.lfgIDs and #queues[1].queueData.lfgIDs > 1 ) then
+		extraQueueCount = #queues[1].queueData.lfgIDs - 1;
+	end
+
+	return extraQueueCount;
+end
+
+function QuickJoinToastMixin:HasCachedQueueData()
+	return self.queues ~= nil;
+end
+
+function QuickJoinToastMixin:CachedQueueData()
+	return self.queues;
+end
+
+function QuickJoinToastMixin:SetCachedQueueData(queues)
+	self.queues = queues;
+end
+
+function QuickJoinToastMixin:ClearCachedQueueData()
+	self:SetCachedQueueData(nil);
+end
+
+function QuickJoinToastMixin:GetCurrentText(updateQueues)
 	local group = self.displayedToast;
 
 	local members = SocialQueueUtil_SortGroupMembers(C_SocialQueue.GetGroupMembers(group.guid));
@@ -347,13 +398,21 @@ function QuickJoinToastMixin:GetCurrentText()
 	end
 	playerName = color..playerName..FONT_COLOR_CODE_CLOSE;
 
-	local queues = group:GetNewQueues();
-	local queueName = SocialQueueUtil_GetQueueName(queues[1]);
-	if ( #queues > 1 ) then
-		queueName = string.format(QUICK_JOIN_TOAST_EXTRA_QUEUES, queueName, #queues - 1);
+	local queues;
+	if (updateQueues) then
+		queues = group:GetNewQueues();
+		self:SetCachedQueueData(queues);
+	else
+		queues = self:CachedQueueData();
+	end
+	local queueName = SocialQueueUtil_GetQueueName(queues[1].queueData);
+	local extraQueueCount = GetExtraQueueCount(queues);
+
+	if ( extraQueueCount > 0 ) then
+		queueName = string.format(QUICK_JOIN_TOAST_EXTRA_QUEUES, queueName, extraQueueCount);
 	end
 
-	if ( queues[1].type == "lfglist" ) then
+	if ( queues[1].queueData.queueType == "lfglist" ) then
 		return string.format(QUICK_JOIN_TOAST_LFGLIST_MESSAGE, playerName, queueName);
 	else
 		return string.format(QUICK_JOIN_TOAST_MESSAGE, playerName, queueName);
@@ -467,9 +526,11 @@ function QuickJoinToast_GetPriorityFromQueue(queue)
 		return 0;
 	end
 
+	local queueData = queue.queueData;
+
 	local itemLevel = GetAverageItemLevel();
-	if ( queue.type == "lfglist" ) then
-		local id, activityID, name, comment, voiceChat, iLvl, honorLevel, age, numBNetFriends, numCharFriends, numGuildMates, isDelisted = C_LFGList.GetSearchResultInfo(queue.lfgListID);
+	if ( queueData.queueType == "lfglist" ) then
+		local id, activityID, name, comment, voiceChat, iLvl, honorLevel, age, numBNetFriends, numCharFriends, numGuildMates, isDelisted = C_LFGList.GetSearchResultInfo(queueData.lfgListID);
 		local fullName, shortName, categoryID, groupID, iLevel, filters, minLevel, maxPlayers, displayType, orderIndex, useHonorLevel, showQuickJoin = C_LFGList.GetActivityInfo(activityID);
 		--Filter by activity flags
 		if ( not showQuickJoin ) then
@@ -488,8 +549,8 @@ function QuickJoinToast_GetPriorityFromQueue(queue)
 			local ilvldiff = (iLevel - itemLevel) * QUICK_JOIN_CONFIG.THROTTLE_LFGLIST_ILVL_SCALING_BELOW;
 			return math.max(1, QUICK_JOIN_CONFIG.THROTTLE_LFGLIST_PRIORITY_BELOW - ilvldiff);
 		end
-	elseif ( queue.type == "lfg" ) then
-		local lfgID = queue.lfgID;
+	elseif ( queueData.queueType == "lfg" ) then
+		local lfgID = queueData.lfgIDs[1]; -- TODO: Determine whether or not to use multiple id's for priority scoring
 		local name, typeID, subtypeID, minLevel, maxLevel, recLevel, minRecLevel, maxRecLevel, expansionLevel, groupID, textureFilename, difficulty, maxPlayers, description, isHoliday, repAmount, minPlayers, isTimewalker, mapName, minGear = GetLFGDungeonInfo(lfgID);
 		if ( not name ) then
 			--We hotfix deleted an LFG entry?
@@ -501,7 +562,7 @@ function QuickJoinToast_GetPriorityFromQueue(queue)
 			return 0;
 		end
 
-		if ( typeid == TYPEID_RANDOM_DUNGEON ) then
+		if ( typeID == TYPEID_RANDOM_DUNGEON ) then
 			if ( GetRandomDungeonBestChoice() ~= lfgID ) then
 				return 1;
 			end
@@ -533,7 +594,7 @@ function QuickJoinToast_GetPriorityFromQueue(queue)
 			--Scenario, specific dungeons, etc.
 			return 1;
 		end
-	elseif ( queue.type == "pvp" ) then
+	elseif ( queueData.queueType == "pvp" ) then
 		--If the player is below honor level 10, assume they aren't interested in PvP
 		if ( UnitHonorLevel("player") < QUICK_JOIN_CONFIG.THROTTLE_PVP_HONOR_THRESHOLD and UnitPrestige("player") <= 0 ) then
 			return QUICK_JOIN_CONFIG.THROTTLE_PVP_PRIORITY_LOW;

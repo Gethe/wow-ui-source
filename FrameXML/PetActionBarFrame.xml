@@ -2,39 +2,37 @@
 ..\FrameXML\UI.xsd">
 	<Script file="PetActionBarFrame.lua"/>
 	<CheckButton name="PetActionButtonTemplate" inherits="SecureFrameTemplate, ActionButtonTemplate" frameStrata="MEDIUM" virtual="true">
-		<Size>
-			<AbsDimension x="30" y="30"/>
-		</Size>
+		<Size x="30" y="30"/>
 		<Layers>
 			<Layer level="OVERLAY">
 				<Texture name="$parentAutoCastable" file="Interface\Buttons\UI-AutoCastableOverlay" hidden="true">
-					<Size>
-						<AbsDimension x="58" y="58"/>
-					</Size>
+					<Size x="58" y="58"/>
 					<Anchors>
-						<Anchor point="CENTER">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="CENTER" x="0" y="0"/>
 					</Anchors>
-				</Texture>		
+				</Texture>	
+				<Texture parentKey="SpellHighlightTexture" atlas="bags-newitem" useAtlasSize="false" alphaMode="ADD" hidden="true">
+					<Size x="34" y="34"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
 			<Frame name="$parentShine" inherits="AutoCastShineTemplate">
 				<Anchors>
-					<Anchor point="CENTER">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="CENTER" x="0" y="0"/>
 				</Anchors>
-				<Size>
-					<AbsDimension x="28" y="28"/>
-				</Size>
+				<Size x="28" y="28"/>
 			</Frame>
 		</Frames>
+		<Animations>
+			<AnimationGroup parentKey="SpellHighlightAnim" looping="REPEAT">
+				<Alpha childKey="SpellHighlightTexture" smoothing="OUT" duration=".35" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="SpellHighlightTexture" smoothing="IN" duration=".35" order="2" fromAlpha="1" toAlpha="0"/>
+			</AnimationGroup>
+		</Animations>
 		<Scripts>
 			<OnLoad>
 				PetActionButton_OnLoad(self);
@@ -70,15 +68,9 @@
 			</OnUpdate>
 		</Scripts>
 		<NormalTexture name="$parentNormalTexture2" file="Interface\Buttons\UI-Quickslot2">
-			<Size>
-				<AbsDimension x="54" y="54"/>
-			</Size>
+			<Size x="54" y="54"/>
 			<Anchors>
-				<Anchor point="CENTER">
-					<Offset>
-						<AbsDimension x="0" y="-1"/>
-					</Offset>
-				</Anchor>
+				<Anchor point="CENTER" x="0" y="-1"/>
 			</Anchors>
 		</NormalTexture>
 	</CheckButton>

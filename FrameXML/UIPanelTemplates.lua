@@ -78,7 +78,7 @@ function BagSearch_OnChar(self, text)
 	local searchString = self:GetText();
 	if (string.len(searchString) >= MIN_REPEAT_CHARACTERS) then
 		local repeatChar = true;
-		for i=1, MIN_REPEAT_CHARACTERS - 1, 1 do 
+		for i=1, MIN_REPEAT_CHARACTERS - 1, 1 do
 			if ( string.sub(searchString,(0-i), (0-i)) ~= string.sub(searchString,(-1-i),(-1-i)) ) then
 				repeatChar = false;
 				break;
@@ -108,12 +108,12 @@ function UIFrameCache:New (frameType, baseName, parent, template)
 	if ( self ~= UIFrameCache ) then
 		error("Attempt to run factory method on class member");
 	end
-	
+
 	local frameCache = {};
 
 	setmetatable(frameCache, self);
 	self.__index = self;
-	
+
 	frameCache.frameType = frameType;
 	frameCache.baseName = baseName;
 	frameCache.parent = parent;
@@ -123,7 +123,7 @@ function UIFrameCache:New (frameType, baseName, parent, template)
 	frameCache.numFrames = 0;
 
 	tinsert(caches, frameCache);
-	
+
 	return frameCache;
 end
 
@@ -134,7 +134,7 @@ function UIFrameCache:GetFrame ()
 		tinsert(self.usedFrames, frame);
 		return frame;
 	end
-	
+
 	frame = CreateFrame(self.frameType, self.baseName .. self.numFrames + 1, self.parent, self.template);
 	frame.frameCache = self;
 	self.numFrames = self.numFrames + 1;
@@ -148,14 +148,14 @@ function UIFrameCache:ReleaseFrame (frame)
 			return;
 		end
 	end
-	
+
 	for k, v in next, self.usedFrames do
 		if ( v == frame ) then
 			tinsert(self.frames, frame);
 			tremove(self.usedFrames, k);
 			break;
 		end
-	end	
+	end
 end
 
 -- Truncated Button code
@@ -197,15 +197,15 @@ end
 function CapProgressBar_SetNotches(capBar, count)
 	local barWidth = capBar:GetWidth();
 	local barName = capBar:GetName();
-	
+
 	if ( capBar.notchCount and capBar.notchCount > count ) then
 		for i = count + 1, capBar.notchCount do
 			_G[barName.."Divider"..i]:Hide();
 		end
 	end
-	
+
 	local notchWidth = barWidth / count;
-	
+
 	for i=1, count - 1 do
 		local notch = _G[barName.."Divider"..i];
 		if ( not notch ) then
@@ -221,11 +221,11 @@ function CapProgressBar_Update(capBar, cap1Quantity, cap1Limit, cap2Quantity, ca
 	if ( totalLimit == 0) then
 		return;
 	end
-	
+
 	local barWidth = capBar:GetWidth() - 4;
 	local sizePerPoint = barWidth / totalLimit;
 	local progressWidth = totalQuantity * sizePerPoint;
-	
+
 	local cap1Width, cap2Width;
 	if ( cap2Quantity and cap2Limit ) then
 		cap1Width = min(cap1Limit - cap1Quantity, cap2Limit - cap2Quantity) * sizePerPoint;	--cap1 can't go past the cap2 LFG limit either.
@@ -234,18 +234,18 @@ function CapProgressBar_Update(capBar, cap1Quantity, cap1Limit, cap2Quantity, ca
 		cap1Width = (cap1Limit - cap1Quantity) * sizePerPoint;
 		cap2Width = 0;
 	end
-	
+
 	--Don't let it go past the end.
 	progressWidth = min(progressWidth, barWidth);
 	cap1Width = min(cap1Width, barWidth - progressWidth);
 	cap2Width = min(cap2Width, barWidth - progressWidth - cap1Width);
 	capBar.progress:SetWidth(progressWidth);
-	
+
 	capBar.cap1:SetWidth(cap1Width);
 	capBar.cap2:SetWidth(cap2Width);
-	
+
 	local lastFrame, lastRelativePoint = capBar, "LEFT";
-	
+
 	if ( progressWidth > 0 ) then
 		capBar.progress:Show();
 		capBar.progress:SetPoint("LEFT", lastFrame, lastRelativePoint, 2, 0);
@@ -253,7 +253,7 @@ function CapProgressBar_Update(capBar, cap1Quantity, cap1Limit, cap2Quantity, ca
 	else
 		capBar.progress:Hide();
 	end
-	
+
 	if ( cap1Width > 0 and not hasNoSharedStats) then
 		capBar.cap1:Show();
 		capBar.cap1Marker:Show();
@@ -263,7 +263,7 @@ function CapProgressBar_Update(capBar, cap1Quantity, cap1Limit, cap2Quantity, ca
 		capBar.cap1:Hide();
 		capBar.cap1Marker:Hide();
 	end
-	
+
 	if ( cap2Width > 0 and not hasNoSharedStats) then
 		capBar.cap2:Show();
 		capBar.cap2Marker:Show();
@@ -315,34 +315,34 @@ function SetCheckButtonIsRadio(button, isRadio)
 	if ( isRadio ) then
 		button:SetNormalTexture("Interface\\Buttons\\UI-RadioButton");
 		button:GetNormalTexture():SetTexCoord(0, 0.25, 0, 1);
-		
+
 		button:SetHighlightTexture("Interface\\Buttons\\UI-RadioButton");
 		button:GetHighlightTexture():SetTexCoord(0.5, 0.75, 0, 1);
-		
+
 		button:SetCheckedTexture("Interface\\Buttons\\UI-RadioButton");
 		button:GetCheckedTexture():SetTexCoord(0.25, 0.5, 0, 1);
-		
+
 		button:SetPushedTexture("Interface\\Buttons\\UI-RadioButton");
 		button:GetPushedTexture():SetTexCoord(0, 0.25, 0, 1);
-		
+
 		button:SetDisabledCheckedTexture("Interface\\Buttons\\UI-RadioButton");
 		button:GetDisabledCheckedTexture():SetTexCoord(0.75, 1, 0, 1);
 	else
 		button:SetNormalTexture("Interface\\Buttons\\UI-CheckBox-Up");
 		button:GetNormalTexture():SetTexCoord(0, 1, 0, 1);
-		
+
 		button:SetHighlightTexture("Interface\\Buttons\\UI-CheckBox-Highlight");
 		button:GetHighlightTexture():SetTexCoord(0, 1, 0, 1);
-		
+
 		button:SetCheckedTexture("Interface\\Buttons\\UI-CheckBox-Check");
 		button:GetCheckedTexture():SetTexCoord(0, 1, 0, 1);
-		
+
 		button:SetPushedTexture("Interface\\Buttons\\UI-CheckBox-Down");
 		button:GetPushedTexture():SetTexCoord(0, 1, 0, 1);
-		
+
 		button:SetDisabledCheckedTexture("Interface\\Buttons\\UI-CheckBox-Check-Disabled");
 		button:GetDisabledCheckedTexture():SetTexCoord(0, 1, 0, 1);
-	end	
+	end
 end
 
 --Inline hyperlinks
@@ -371,4 +371,20 @@ function InlineHyperlinkFrame_OnClick(self, link, text, button)
 		end
 	end
 	SetItemRef(link, text, button);
+end
+
+CurrencyTemplateMixin = {};
+
+function CurrencyTemplateMixin:SetCurrencyFromID(currencyID, amount, formatString, colorCode)
+	local _, _, currencyTexture = GetCurrencyInfo(currencyID);
+	local markup = CreateTextureMarkup(currencyTexture, 64, 64, 16, 16, 0, 1, 0, 1);
+	colorCode = colorCode or HIGHLIGHT_FONT_COLOR_CODE;
+
+	local currencyString = ("%s%s %s|r"):format(colorCode, BreakUpLargeNumbers(amount), markup);
+
+	if formatString then
+		self:SetText(formatString:format(currencyString));
+	else
+		self:SetText(currencyString);
+	end
 end

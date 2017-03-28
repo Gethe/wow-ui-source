@@ -2607,8 +2607,10 @@ function AchievementFrame_SelectAchievement(id, forceSelect, isComparison)
 				else
 					shown = true;
 				end
-			else
+			elseif AchievementFrameCategoriesContainerScrollBar:IsVisible() then
 				HybridScrollFrame_OnMouseWheel(AchievementFrameCategoriesContainer, -1);
+			else
+				break;
 			end			
 		end
 	end		
@@ -2672,7 +2674,7 @@ function AchievementFrameAchievements_FindSelection()
 				return;
 			end
 		end		
-		if ( AchievementFrameAchievementsContainerScrollBar:GetValue() == maxVal ) then		
+		if ( not AchievementFrameAchievementsContainerScrollBar:IsVisible() or AchievementFrameAchievementsContainerScrollBar:GetValue() == maxVal ) then		
 			return;
 		else
 			newHeight = newHeight + scrollHeight;
@@ -2721,7 +2723,7 @@ end
 function AchievementFrame_SelectStatisticByAchievementID(achievementID, isComparison)
 	if ( isComparison ) then
 		AchievementFrameTab_OnClick = AchievementFrameComparisonTab_OnClick;
-		AchievementFrameComparisonStats:Show();
+		AchievementFrameComparisonStatsContainer:Show();
 		AchievementFrameComparisonSummary:Hide();
 	else
 		AchievementFrameTab_OnClick = AchievementFrameBaseTab_OnClick;
@@ -2773,8 +2775,10 @@ function AchievementFrame_SelectStatisticByAchievementID(achievementID, isCompar
 			local _, maxVal = AchievementFrameCategoriesContainerScrollBar:GetMinMaxValues();
 			if ( AchievementFrameCategoriesContainerScrollBar:GetValue() == maxVal ) then
 				assert(false)
-			else
+			elseif AchievementFrameCategoriesContainerScrollBar:IsVisible() then
 				HybridScrollFrame_OnMouseWheel(AchievementFrameCategoriesContainer, -1);
+			else
+				break;
 			end			
 		end
 	end		
@@ -2808,8 +2812,10 @@ function AchievementFrame_SelectStatisticByAchievementID(achievementID, isCompar
 			local _, maxVal = scrollBar:GetMinMaxValues();
 			if ( scrollBar:GetValue() == maxVal ) then
 				assert(false)
-			else
+			elseif scrollBar:IsVisible() then
 				HybridScrollFrame_OnMouseWheel(container, -1);
+			else
+				break;
 			end			
 		end
 	end

@@ -386,28 +386,6 @@
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 				<BarColor r="0" g="0" b="1.0"/>
 			</StatusBar>
-			<Button name="$parentSpeaker" inherits="VoiceChatSpeakerTemplate">
-				<Size x="12" y="12"/>
-				<Anchors>
-					<Anchor point="BOTTOMLEFT" relativeTo="$parentTexture" relativePoint="BOTTOMLEFT" x="10" y="14"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						RaiseFrameLevelByTwo(self);
-					</OnLoad>
-				</Scripts>
-			</Button>
-			<Frame name="$parentSpeakerFrame" inherits="VoiceChatSpeakerTemplate" hidden="true">
-				<Size x="16" y="16"/>
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentTexture" relativePoint="RIGHT" x="-5" y="15"/>
-				</Anchors>
-				<Scripts>
-					<OnUpdate>
-						VoiceChat_OnUpdate(self, elapsed);
-					</OnUpdate>
-				</Scripts>
-			</Frame>
 			<Frame name="$parentReadyCheck" inherits="ReadyCheckStatusTemplate" hidden="true">
 				<Anchors>
 					<Anchor point="CENTER" relativeTo="$parentPortrait" relativePoint="CENTER" x="0" y="0"/>

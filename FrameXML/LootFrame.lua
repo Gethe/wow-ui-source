@@ -189,6 +189,7 @@ function LootFrame_UpdateButton(index)
 			local text = _G["LootButton"..index.."Text"];
 			if ( texture ) then
 				local color = ITEM_QUALITY_COLORS[quality];
+				SetItemButtonQuality(button, quality, GetLootSlotLink(slot));
 				_G["LootButton"..index.."IconTexture"]:SetTexture(texture);
 				text:SetText(item);
 				if( locked ) then
@@ -747,8 +748,13 @@ function GetBonusRollEncounterJournalLinkDifficulty()
 	return BonusRollFrame.difficultyID;
 end
 
+function EncounterJournalLinkButton_IsLinkDataAvailable()
+	return BonusRollFrame.instanceID and BonusRollFrame.encounterID and GetBonusRollEncounterJournalLinkDifficulty();
+end
+
 function EncounterJournalLinkButton_OnShow(self)
-	if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_BONUS_ROLL_ENCOUNTER_JOURNAL_LINK) then
+	local tutorialClosed = GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_BONUS_ROLL_ENCOUNTER_JOURNAL_LINK);
+	if not tutorialClosed and EncounterJournalLinkButton_IsLinkDataAvailable() then
 		self:GetParent().EncounterJournalLinkButtonHelp:Show();
 	end
 end
@@ -758,7 +764,7 @@ function EncounterJournalLinkButton_OnEnter(self)
 	GameTooltip:SetText(BONUS_ROLL_TOOLTIP_TITLE, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 	GameTooltip:AddLine(BONUS_ROLL_TOOLTIP_TEXT, nil, nil, nil, true);
 	
-	if ( BonusRollFrame.instanceID and BonusRollFrame.encounterID and GetBonusRollEncounterJournalLinkDifficulty() ) then
+	if ( EncounterJournalLinkButton_IsLinkDataAvailable() ) then
 		GameTooltip:AddLine(BONUS_ROLL_TOOLTIP_ENCOUNTER_JOURNAL_LINK, GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b, true);
 	end
 	

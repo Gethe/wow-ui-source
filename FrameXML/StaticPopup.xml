@@ -2,9 +2,24 @@
 ..\FrameXML\UI.xsd">
 	<Script file="StaticPopup.lua"/>
 	<Button name="StaticPopupButtonTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="128" y="21"/>
-		</Size>
+		<Size x="128" y="21"/>
+		<Animations>
+			<AnimationGroup parentKey="PulseAnim" looping="BOUNCE">
+				<Alpha childKey="Flash" fromAlpha="0" toAlpha="1" duration="0.5" order="1"/>
+				<Alpha childKey="Flash" fromAlpha="1" toAlpha="0" duration="0.5" order="2"/>
+			</AnimationGroup>
+		</Animations>
+		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="Flash" file="Interface\Buttons\UI-Panel-Button-Glow" alphaMode="ADD" alpha="0">
+					<Size x="140" y="40"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<TexCoords left="0.0" right="0.75" top="0.0" bottom="0.609375"/>
+				</Texture>
+			</Layer>
+		</Layers>
 		<Scripts>
 			<OnClick>
 				StaticPopup_OnClick(self:GetParent(), self:GetID());
@@ -13,10 +28,10 @@
 		<ButtonText name="$parentText">
 			<Anchors>
 				<Anchor point="CENTER">
-					<Offset x="0" y="1"/>					
+					<Offset x="0" y="1"/>
 				</Anchor>
 			</Anchors>
-		</ButtonText>		
+		</ButtonText>
 		<NormalTexture file="Interface\Buttons\UI-DialogBox-Button-Up">
 			<TexCoords left="0.0" right="1.0" top="0.0" bottom="0.71875"/>
 		</NormalTexture>
@@ -33,7 +48,7 @@
 		<DisabledFont style="GameFontDisable"/>
 		<HighlightFont style="GameFontHighlight"/>
 	</Button>
-	<Frame name="StaticPopupTemplate" toplevel="true" enableKeyboard="true" enableMouse="true" frameStrata="DIALOG" hidden="true" virtual="true">
+	<Frame name="StaticPopupTemplate" toplevel="true" enableKeyboard="true" enableMouse="true" frameStrata="DIALOG" hidden="true" hyperlinksEnabled="true" virtual="true">
 		<Size>
 			<AbsDimension x="320" y="72"/>
 		</Size>
@@ -50,7 +65,7 @@
 		</Backdrop>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString name="$parentText"  parentKey="text" inherits="GameFontHighlight">
+				<FontString name="$parentText" parentKey="text" inherits="GameFontHighlight">
 					<Size>
 						<AbsDimension x="290" y="0"/>
 					</Size>
@@ -97,7 +112,7 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-				<Layers>				
+				<Layers>
 					<Layer level="BACKGROUND">
 						<Texture name="$parentLeft" file="Interface\ChatFrame\UI-ChatInputBorder-Left2">
 							<Size>
@@ -258,6 +273,9 @@
 				self.moneyInputFrame = _G[name .. "MoneyInputFrame"];
 				self:RegisterEvent("DISPLAY_SIZE_CHANGED");
 			</OnLoad>
+			<OnHyperlinkClick function="StaticPopup_OnHyperlinkClick"/>
+			<OnHyperlinkEnter function="StaticPopup_OnHyperlinkEnter"/>
+			<OnHyperlinkLeave function="StaticPopup_OnHyperlinkLeave"/>
 		</Scripts>
 	</Frame>
 	<Frame name="StaticPopup1" inherits="StaticPopupTemplate" parent="UIParent" id="1">

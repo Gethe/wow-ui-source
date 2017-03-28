@@ -41,15 +41,9 @@
 	<Font name="GameFontHighlightLarge2" inherits="GameFontNormalLarge2" virtual="true">
 		<Color r="1.0" g="1.0" b="1.0"/>
 	</Font>
-	<Font name="GameFontDisableTiny" inherits="SystemFont_Tiny" virtual="true">
-		<Color r="0.5" g="0.5" b="0.5"/>
-	</Font>
 	<Font name="GameFontDisableLeft" inherits="GameFontDisable" justifyH="LEFT" virtual="true"/>
 	<Font name="GameFontGreen" inherits="GameFontNormal" virtual="true">
 		<Color r="0.1" g="1.0" b="0.1"/>
-	</Font>
-	<Font name="GameFontBlackTiny" inherits="SystemFont_Tiny" virtual="true">
-		<Color r="0" g="0" b="0"/>
 	</Font>
 	<Font name="GameFontWhiteSmall" inherits="GameFontBlackSmall" virtual="true">
 		<Color r="1.0" g="1.0" b="1.0"/>
@@ -103,6 +97,9 @@
 	<Font name="NumberFontNormalRightYellow" inherits="NumberFontNormalRight" virtual="true" >
 		<Color r="1.0" g="0.82" b="0"/>
 	</Font>
+	<Font name="NumberFontNormalRightGray" inherits="NumberFontNormalRight" virtual="true" >
+		<Color r="0.6" g="0.6" b="0.6"/>
+	</Font>
 	<Font name="NumberFontNormalYellow" inherits="NumberFontNormal" virtual="true" >
 		<Color r="1.0" g="0.82" b="0"/>
 	</Font>
@@ -124,6 +121,9 @@
 	</Font>
 	<Font name="NumberFontNormalLargeRightYellow" inherits="NumberFontNormalLargeRight" virtual="true" >
 		<Color r="1.0" g="0.82" b="0.0"/>
+	</Font>
+	<Font name="NumberFontNormalLargeRightGray" inherits="NumberFontNormalLargeRight" virtual="true" >
+		<Color r="0.6" g="0.6" b="0.6"/>
 	</Font>
 	<Font name="NumberFontNormalLargeYellow" inherits="NumberFontNormalLarge" virtual="true">
 		<Color r="1.0" g="0.82" b="0.0"/>

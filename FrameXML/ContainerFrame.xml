@@ -56,8 +56,8 @@
 		</Anchors>
 		<Animations>
 			<AnimationGroup parentKey="newitemglowAnim" setToFinalAlpha="true" looping="REPEAT">
-				<Alpha childKey="NewItemTexture" smoothing="NONE" duration="0.8" order="1" fromAlpha="1" toAlpha="0.4"/>
-				<Alpha childKey="NewItemTexture" smoothing="NONE" duration="0.8" order="2" fromAlpha="0.4" toAlpha="1"/>
+				<Alpha childKey="NewItemTexture" smoothing="NONE" duration="0.5" order="1" fromAlpha="1" toAlpha="0.2"/>
+				<Alpha childKey="NewItemTexture" smoothing="NONE" duration="0.5" order="2" fromAlpha="0.2" toAlpha="1"/>
 			</AnimationGroup>
 			<AnimationGroup parentKey="flashAnim" setToFinalAlpha="true">
 				<Alpha childKey="flash" smoothing="OUT" duration="0.6" order="1" fromAlpha="1" toAlpha="0"/>

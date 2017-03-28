@@ -1336,28 +1336,6 @@
 		end
 	</Binding>
 
-	<!-- Movie Recording Bindings header="MOVIE_RECORDING_SECTION" -->
-	<Binding name="MOVIE_RECORDING_STARTSTOP" platform="mac" category="BINDING_HEADER_MOVIE_RECORDING_SECTION">
-		if (MovieRecording_IsSupported()) then
-			MovieRecording_Toggle();
-		end
-	</Binding>
-	<Binding name="MOVIE_RECORDING_CANCEL" platform="mac" category="BINDING_HEADER_MOVIE_RECORDING_SECTION">
-		if(MovieRecording_IsSupported() and (MovieRecording_IsRecording() or MovieRecording_IsCompressing())) then
-			MacOptionsCancelFrame:Show();
-		end
-	</Binding>
-	<Binding name="MOVIE_RECORDING_COMPRESS" platform="mac" category="BINDING_HEADER_MOVIE_RECORDING_SECTION">
-		if (MovieRecording_IsSupported()) then
-			MovieRecording_SearchUncompressedMovie(true);
-		end
-	</Binding>
-	<Binding name="MOVIE_RECORDING_GUI" platform="mac" category="BINDING_HEADER_MOVIE_RECORDING_SECTION">
-		if (MovieRecording_IsSupported()) then
-			MovieRecording_ToggleGUI();
-		end
-	</Binding>
-
 	<!-- Modified Click Actions -->
 	<ModifiedClick action="SELFCAST" default="ALT"/>
 	<ModifiedClick action="FOCUSCAST" default="NONE"/>

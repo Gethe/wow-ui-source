@@ -7,6 +7,15 @@
 		<Frames>
 			<Cooldown name="$parentCooldown" parentKey="cooldown" inherits="CooldownFrameTemplate"/>
 		</Frames>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="UpgradeIcon" atlas="bags-greenarrow" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
 		<Scripts>
 			<OnEnter function="EquipmentFlyoutButton_OnEnter"/>
 			<OnLeave>

@@ -630,6 +630,14 @@
 					</Anchors>
 				</Texture>
 			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="IconBorder" file="Interface\Common\WhiteIconFrame" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 		</Layers>
 		<Frames>
 			<Frame name="$parentRoleIcon1" inherits="LFGRewardsLootShortageTemplate" parentKey="roleIcon1" hidden="true">
@@ -687,6 +695,9 @@
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
 					</Anchors>
+					<Shadow>
+						<Offset x="1" y="-1"/>
+					</Shadow>
 				</FontString>
 				<FontString name="$parentRewardsLabel" inherits="QuestTitleFontBlackShadow" justifyH="LEFT" parentKey="rewardsLabel" text="LFD_REWARDS">
 					<Anchors>
@@ -698,6 +709,9 @@
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentRewardsLabel" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
 					</Anchors>
+					<Shadow>
+						<Offset x="1" y="-1"/>
+					</Shadow>
 				</FontString>
 				<FontString name="$parentXPLabel" inherits="QuestFont" justifyH="LEFT" parentKey="xpLabel" text="EXPERIENCE_COLON">
 					<Anchors>

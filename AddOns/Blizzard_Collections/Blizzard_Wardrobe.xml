@@ -2,7 +2,7 @@
 ..\FrameXML\UI.xsd">
 	<Script file="Blizzard_Wardrobe.lua"/>
 	
-	<DressUpModel name="WardrobeModelTemplate" virtual="true">
+	<DressUpModel name="WardrobeItemsModelTemplate" mixin="WardrobeItemsModelMixin" virtual="true">
 		<Size x="78" y="104"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -73,13 +73,66 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad function="WardrobeCollectionFrameModel_OnLoad"/>
-			<OnEvent function="WardrobeCollectionFrameModel_OnEvent"/>
-			<OnModelLoaded function="WardrobeCollectionFrameModel_OnModelLoaded"/>
-			<OnMouseDown function="WardrobeCollectionFrameModel_OnMouseDown"/>
-			<OnEnter function="WardrobeCollectionFrameModel_OnEnter"/>
-			<OnLeave function="WardrobeCollectionFrameModel_OnLeave"/>
-			<OnShow function="WardrobeCollectionFrameModel_OnShow"/>
+			<OnLoad method="OnLoad"/>
+			<OnModelLoaded method="OnModelLoaded"/>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnShow method="OnShow"/>
+		</Scripts>
+	</DressUpModel>
+
+	<DressUpModel name="WardrobeSetsTransmogModelTemplate" mixin="WardrobeSetsTransmogModelMixin" virtual="true">
+		<Size x="129" y="186"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture setAllPoints="true">
+					<Color r="0" g="0" b="0"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="-1">
+				<Texture parentKey="Border" atlas="transmog-set-border-collected" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="-6"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="TransmogStateTexture" atlas="transmog-set-border-selected" useAtlasSize="true" alphaMode="ADD" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="HIGHLIGHT">
+				<Texture atlas="transmog-set-border-highlighted" alphaMode="ADD" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Favorite" setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Icon" atlas="collections-icon-favorites" useAtlasSize="true" hidden="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-12" y="13" relativePoint="TOPLEFT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnHide method="OnHide"/>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnModelLoaded method="OnModelLoaded"/>
 		</Scripts>
 	</DressUpModel>
 
@@ -111,7 +164,7 @@
 		<Scripts>
 			<OnClick>
 				PlaySound("UI_Transmog_GearSlotClick");
-				WardrobeCollectionFrame_SetActiveSlot(self.slot, self.transmogType);
+				WardrobeCollectionFrame.ItemsCollectionFrame:SetActiveSlot(self.slot, self.transmogType);
 			</OnClick>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
@@ -148,7 +201,7 @@
 		<Scripts>
 			<OnClick>
 				PlaySound("UI_Transmog_GearSlotClick");
-				WardrobeCollectionFrame_SetActiveSlot(self.slot, self.transmogType);
+				WardrobeCollectionFrame.ItemsCollectionFrame:SetActiveSlot(self.slot, self.transmogType);
 			</OnClick>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
@@ -158,182 +211,172 @@
 		</Scripts>
 	</Button>
 
-	<Frame name="WardrobeModelPendingTransmogFrame">
-		<Size x="78" y="104"/>
+	<Frame name="WardrobeSetsScrollFrameButtonTemplate" virtual="true">
+		<Size x="208" y="46"/>
 		<Layers>
-			<Layer level="ARTWORK" textureSubLevel="1">
-				<Texture parentKey="Glowframe" hidden="false" alpha="0" alphaMode="ADD" atlas="transmog-wardrobe-border-selected" useAtlasSize="true">
+			<Layer level="BACKGROUND">
+				<Texture atlas="PetList-ButtonBackground" parentKey="Background"/>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon">
+					<Size x="38" y="38"/>
+					<Anchors>
+						<Anchor point="LEFT" x="-42" y="0"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Name" inherits="GameFontNormal" justifyH="LEFT" maxLines="2">
+					<Size x="190" y="0"/>
+					<Anchors>
+						<Anchor point="LEFT" x="6" y="6"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Label" inherits="GameFontDisableSmallLeft" justifyH="LEFT" maxLines="1">
+					<Size x="190" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Name" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
+					</Anchors>
+					<Color r="0.329" g="0.329" b="0.329"/>
+				</FontString>
+				<Texture parentKey="ProgressBar">
+					<Size x="204" y="2"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="BOTTOMLEFT" x="2" y="4"/>
+					</Anchors>
+					<Color r="0.0118" g="0.247" b="0.00392" a="1"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="-1">
+				<Texture parentKey="IconCover">
+					<Size x="38" y="38"/>
+					<Anchors>
+						<Anchor point="LEFT" x="-42" y="0"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" a="0.7"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="SelectedTexture" atlas="PetList-ButtonSelect" hidden="true"/>
+				<Texture parentKey="Favorite" atlas="PetJournal-FavoritesIcon" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" x="-8" y="8"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="HIGHLIGHT">
+				<Texture parentKey="HighlightTexture" atlas="PetList-ButtonHighlight" setAllPoints="true"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnMouseUp>
+				if ( button == "LeftButton" ) then
+					PlaySound("igMainMenuOptionCheckBoxOn");
+					self:GetParent():GetParent():GetParent():SelectSetFromButton(self.setID);
+				elseif ( button == "RightButton" ) then
+					local dropDown = self:GetParent():GetParent().FavoriteDropDown;
+					dropDown.baseSetID = self.setID;
+					ToggleDropDownMenu(1, nil, dropDown, self, 0, 0);
+				end
+			</OnMouseUp>
+		</Scripts>
+	</Frame>
+
+	<Frame name="WardrobeSetsDetailsItemFrameTemplate" mixin="WardrobeSetsDetailsItemMixin" virtual="true">
+		<Size x="32" y="32"/>
+		<Layers>
+			<Layer level="BORDER">
+				<Texture parentKey="Icon">
+					<Size x="28" y="28"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="ARTWORK" textureSubLevel="2">
-				<Texture parentKey="Wisp1" hidden="false" alpha="0" alphaMode="ADD" atlas="transmog-wardrobe-border-selected-wisp" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="CENTER" x="33" y="-46"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="Wisp2" hidden="false" alpha="0" alphaMode="ADD" atlas="transmog-wardrobe-border-selected-wisp" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="CENTER" x="-33" y="45"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="Wisp3" hidden="false" alpha="0" alphaMode="ADD" atlas="transmog-wardrobe-border-selected-wisp" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="CENTER" x="-32" y="-46"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="Wisp4" hidden="false" alpha="0" alphaMode="ADD" atlas="transmog-wardrobe-border-selected-wisp" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="CENTER" x="32" y="45"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="Wisp5" hidden="false" alpha="0" alphaMode="ADD" atlas="transmog-wardrobe-border-selected-wisp" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="CENTER" x="33" y="-46"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="Wisp6" hidden="false" alpha="0" alphaMode="ADD" atlas="transmog-wardrobe-border-selected-wisp" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="CENTER" x="-33" y="45"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="Wisp7" hidden="false" alpha="0" alphaMode="ADD" atlas="transmog-wardrobe-border-selected-wisp" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="CENTER" x="-32" y="-46"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="Wisp8" hidden="false" alpha="0" alphaMode="ADD" atlas="transmog-wardrobe-border-selected-wisp" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="CENTER" x="32" y="45"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="Wisp9" hidden="false" alpha="0" alphaMode="ADD" atlas="transmog-wardrobe-border-selected-wisp" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="CENTER" x="33" y="-46"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="Wisp10" hidden="false" alpha="0" alphaMode="ADD" atlas="transmog-wardrobe-border-selected-wisp" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="CENTER" x="-33" y="45"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="Wisp11" hidden="false" alpha="0" alphaMode="ADD" atlas="transmog-wardrobe-border-selected-wisp" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="CENTER" x="-32" y="-46"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="Wisp12" hidden="false" alpha="0" alphaMode="ADD" atlas="transmog-wardrobe-border-selected-wisp" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="CENTER" x="32" y="45"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="Smoke1" hidden="false" alpha="0" alphaMode="ADD" atlas="transmog-wardrobe-border-selected-smoke" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="CENTER" relativePoint="LEFT" x="-1" y="0"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="Smoke2" hidden="false" alpha="0" alphaMode="ADD" atlas="transmog-wardrobe-border-selected-smoke" useAtlasSize="true">
-					<TexCoords left="0" right="1" top="1" bottom="0"/>
-					<Anchors>
-						<Anchor point="CENTER" relativePoint="RIGHT" x="1" y="0"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="Smoke3" hidden="false" alpha="0" alphaMode="ADD" atlas="transmog-wardrobe-border-selected-smoke" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="CENTER" relativePoint="LEFT" x="-1" y="0"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="Smoke4" hidden="false" alpha="0" alphaMode="ADD" atlas="transmog-wardrobe-border-selected-smoke" useAtlasSize="true">
-					<TexCoords left="0" right="1" top="1" bottom="0"/>
-					<Anchors>
-						<Anchor point="CENTER" relativePoint="RIGHT" x="1" y="0"/>
-					</Anchors>
-				</Texture>
-			</Layer>
 			<Layer level="OVERLAY">
-				<Texture parentKey="UndoIcon" atlas="transmog-icon-revert" useAtlasSize="true" hidden="true">
+				<Texture parentKey="IconBorder" atlas="loottab-set-itemborder-green" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="BOTTOM" x="0" y="-13"/>
+						<Anchor point="RIGHT" relativeKey="$parent.Icon" relativePoint="CENTER" x="20" y="1"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 		</Layers>
-		<Animations>
-			<AnimationGroup parentKey="TransmogSelectedAnim" setToFinalAlpha="true" looping="repeat">
-				<Translation childKey="Wisp1" duration="2" order="1" offsetX="-70" offsetY="0"/>
-				<Alpha childKey="Wisp1" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
-				<Alpha childKey="Wisp1" startDelay="1.5" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
-				<Rotation childKey="Wisp2" duration="0" order="1" degrees="180"/>
-				<Translation childKey="Wisp2" duration="2" order="1" offsetX="70" offsetY="0"/>
-				<Alpha childKey="Wisp2" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
-				<Alpha childKey="Wisp2" startDelay="1.5" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
-				<Rotation childKey="Wisp3" duration="0" order="1" degrees="-90"/>
-				<Translation childKey="Wisp3" duration="2" order="1" offsetX="0" offsetY="90"/>
-				<Alpha childKey="Wisp3" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
-				<Alpha childKey="Wisp3" startDelay="1.5" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
-				<Rotation childKey="Wisp4" duration="0" order="1" degrees="90"/>
-				<Translation childKey="Wisp4" duration="2" order="1" offsetX="0" offsetY="-90"/>
-				<Alpha childKey="Wisp4" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
-				<Alpha childKey="Wisp4" startDelay="1.5" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
-				<Translation childKey="Wisp5" duration="2" order="1" offsetX="-70" offsetY="0"/>
-				<Alpha childKey="Wisp5" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
-				<Alpha childKey="Wisp5" startDelay="1.5" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
-				<Rotation childKey="Wisp6" duration="0" order="1" degrees="180"/>
-				<Translation childKey="Wisp6" duration="2" order="1" offsetX="70" offsetY="0"/>
-				<Alpha childKey="Wisp6" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
-				<Alpha childKey="Wisp6" startDelay="1.5" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
-				<Rotation childKey="Wisp7" duration="0" order="1" degrees="-90"/>
-				<Translation childKey="Wisp7" duration="2" order="1" offsetX="0" offsetY="90"/>
-				<Alpha childKey="Wisp7" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
-				<Alpha childKey="Wisp7" startDelay="1.5" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
-				<Rotation childKey="Wisp8" duration="0" order="1" degrees="90"/>
-				<Translation childKey="Wisp8" duration="2" order="1" offsetX="0" offsetY="-90"/>
-				<Alpha childKey="Wisp8" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
-				<Alpha childKey="Wisp8" startDelay="1.5" duration="0.5" order="1" fromAlpha="1" toAlpha="0" endDelay="0.4"/>
-			</AnimationGroup>
-			<AnimationGroup parentKey="TransmogSelectedAnim2" setToFinalAlpha="true" looping="repeat">
-				<Alpha childKey="Glowframe" duration="1.2" order="1" fromAlpha="0" toAlpha="1"/>
-				<Alpha childKey="Glowframe" startDelay="1.2" duration="1.2" order="1" fromAlpha="1" toAlpha="0"/>
-			</AnimationGroup>
-			<AnimationGroup parentKey="TransmogSelectedAnim3" setToFinalAlpha="true" looping="repeat">
-				<Translation childKey="Wisp9" duration="4.4" order="1" offsetX="-70" offsetY="0"/>
-				<Alpha childKey="Wisp9" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
-				<Alpha childKey="Wisp9" startDelay="3.9" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
-				<Rotation childKey="Wisp10" duration="0" order="1" degrees="180"/>
-				<Translation childKey="Wisp10" duration="4.4" order="1" offsetX="70" offsetY="0"/>
-				<Alpha childKey="Wisp10" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
-				<Alpha childKey="Wisp10" startDelay="3.9" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
-				<Rotation childKey="Wisp11" duration="0" order="1" degrees="-90"/>
-				<Translation childKey="Wisp11" duration="4.4" order="1" offsetX="0" offsetY="90"/>
-				<Alpha childKey="Wisp11" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
-				<Alpha childKey="Wisp11" startDelay="3.9" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
-				<Rotation childKey="Wisp12" duration="0" order="1" degrees="90"/>
-				<Translation childKey="Wisp12" duration="4.4" order="1" offsetX="0" offsetY="-90"/>
-				<Alpha childKey="Wisp12" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
-				<Alpha childKey="Wisp12" startDelay="3.9" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
-			</AnimationGroup>
-			<AnimationGroup parentKey="TransmogSelectedAnim4" setToFinalAlpha="true" looping="repeat">
-				<Scale childKey="Smoke1" duration="3.2" order="1" fromScaleX="1" fromScaleY="1" toScaleX="1" toScaleY="2.6"/>
-				<Alpha childKey="Smoke1" duration="1.4" order="1" fromAlpha="0" toAlpha="0.75"/>
-				<Alpha childKey="Smoke1" startDelay="1.8" duration="1.4" order="1" fromAlpha="0.75" toAlpha="0"/>
-				<Scale childKey="Smoke2" duration="3.2" order="1" fromScaleX="1" fromScaleY="1" toScaleX="1" toScaleY="2.6"/>
-				<Alpha childKey="Smoke2" duration="1.4" order="1" fromAlpha="0" toAlpha="0.75"/>
-				<Alpha childKey="Smoke2" startDelay="1.8" duration="1.4" order="1" fromAlpha="0.75" toAlpha="0"/>
-			</AnimationGroup>
-			<AnimationGroup parentKey="TransmogSelectedAnim5" setToFinalAlpha="true" looping="repeat">
-				<Scale childKey="Smoke3" duration="5" order="1" fromScaleX="1" fromScaleY="1" toScaleX="1" toScaleY="2.6"/>
-				<Alpha childKey="Smoke3" duration="1.4" order="1" fromAlpha="0" toAlpha="0.5"/>
-				<Alpha childKey="Smoke3" startDelay="3.6" duration="1.4" order="1" fromAlpha="0.5" toAlpha="0"/>
-				<Scale childKey="Smoke4" duration="5" order="1" fromScaleX="1" fromScaleY="1" toScaleX="1" toScaleY="2.6"/>
-				<Alpha childKey="Smoke4" duration="1.4" order="1" fromAlpha="0" toAlpha="0.5"/>
-				<Alpha childKey="Smoke4" startDelay="3.6" duration="1.4" order="1" fromAlpha="0.5" toAlpha="0"/>
-			</AnimationGroup>
-		</Animations>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnMouseDown method="OnMouseDown"/>
+		</Scripts>
 	</Frame>
+
 	<Frame name="WardrobeCollectionFrame" parent="CollectionsJournal" setAllPoints="true" hidden="true">
 		<Frames>
+			<Button name="$parentTab1" parentKey="ItemsTab" inherits="TabButtonTemplate" text="WARDROBE_ITEMS" id="1" frameLevel="4" parentArray="Tabs">
+				<KeyValues>
+					<KeyValue key="minWidth" value="57" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="58" y="-28"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="WardrobeCollectionFrame_ClickTab"/>
+				</Scripts>
+			</Button>
+			<Button name="$parentTab2" parentKey="SetsTab" inherits="TabButtonTemplate" text="WARDROBE_SETS" id="2" frameLevel="4" parentArray="Tabs">
+				<KeyValues>
+					<KeyValue key="minWidth" value="57" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentTab1" relativePoint="RIGHT" x="0" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="WardrobeCollectionFrame_ClickTab"/>
+				</Scripts>
+			</Button>
+			<Frame parentKey="SetsTabHelpBox" inherits="GlowBoxTemplate" hidden="true" frameLevel="6">
+				<Size x="230" y="65"/>
+				<Anchors>
+					<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$parentTab2" x="0" y="-20"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="BigText" inherits="GameFontHighlight" justifyH="LEFT">
+							<Size x="186" y="0"/>
+							<Anchors>
+								<Anchor point="TOP" x="-10" y="-12"/>
+							</Anchors>
+						</FontString>
+						<Texture parentKey="ArrowUp" inherits="HelpPlateArrowUP">
+							<Size x="53" y="21"/>
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-3"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER">
+						<Texture parentKey="ArrowGlowUp" inherits="HelpPlateArrow-GlowUP" alphaMode="ADD" alpha="0.5">
+							<Size x="53" y="21"/>
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-3"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
+						<Anchors>
+							<Anchor point="TOPRIGHT" x="6" y="6"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								self:GetParent():Hide();
+								if (WardrobeFrame_IsAtTransmogrifier()) then
+									SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_SETS_VENDOR_TAB, true);
+								else
+									SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_SETS_TAB, true);
+								end
+							</OnClick>
+						</Scripts>
+					</Button>
+				</Frames>
+			</Frame>
 			<EditBox name="$parentSearchBox" parentKey="searchBox" inherits="SearchBoxTemplate" letters="40" motionScriptsWhileDisabled="true">
 				<Size x="115" y="20"/>
 				<Anchors>
@@ -505,7 +548,7 @@
 			<StatusBar parentKey="progressBar">
 				<Size x="196" y="13"/>
 				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.searchBox" relativePoint="LEFT" x="-32" y="0"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ItemsTab" relativePoint="TOPLEFT" x="195" y="-10"/>
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
@@ -552,7 +595,7 @@
 			<Button parentKey="FilterButton" inherits="UIMenuButtonStretchTemplate" text="FILTER">
 				<Size x="93" y="22"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="-12" y="-34"/>
+					<Anchor point="LEFT" relativeKey="$parent.searchBox" relativePoint="RIGHT" x="2" y="-1"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
@@ -583,7 +626,10 @@
 				</Scripts>
 			</Frame>
 
-			<Frame parentKey="ModelsFrame" inherits="CollectionsBackgroundTemplate">
+			<Frame parentKey="ItemsCollectionFrame" parentArray="ContentFrames" mixin="WardrobeItemsCollectionMixin" inherits="CollectionsBackgroundTemplate">
+				<KeyValues>
+					<KeyValue key="searchType" value="LE_TRANSMOG_SEARCH_TYPE_ITEMS" type="global"/>
+				</KeyValues>
 				<Layers>
 					<Layer level="ARTWORK">
 						<FontString parentKey="NoValidItemsLabel" inherits="GameFontNormalMed2" text="TRANSMOG_NO_VALID_ITEMS_EQUIPPED">
@@ -595,6 +641,11 @@
 					</Layer>
 				</Layers>
 				<Frames>
+					<Frame parentKey="PagingFrame" inherits="CollectionsPagingFrameTemplate">
+						<Anchors>
+							<Anchor point="BOTTOM" x="22" y="38"/>
+						</Anchors>
+					</Frame>
 					<Frame name="WardrobeModelRightClickDropDown" parentKey="RightClickDropDown" inherits="UIDropDownMenuTemplate" hidden="true"/>
 					<Frame parentKey="WeaponDropDown" name="$parentWeaponDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true" hidden="true">
 						<Size x="87" y="22"/>
@@ -611,96 +662,270 @@
 							<Anchor point="TOPLEFT" x="18" y="-20"/>
 						</Anchors>
 					</Frame>
-					<DressUpModel parentArray="Models" parentKey="ModelR1C1" inherits="WardrobeModelTemplate">
+					<DressUpModel parentArray="Models" parentKey="ModelR1C1" inherits="WardrobeItemsModelTemplate">
 						<Anchors>
 							<Anchor point="TOP" x="-238" y="-85"/>
 						</Anchors>
 					</DressUpModel>
-					<DressUpModel parentArray="Models" parentKey="ModelR1C2" inherits="WardrobeModelTemplate">
+					<DressUpModel parentArray="Models" parentKey="ModelR1C2" inherits="WardrobeItemsModelTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.ModelR1C1" relativePoint="TOPRIGHT" x="16" y="0"/>
 						</Anchors>
 					</DressUpModel>
-					<DressUpModel parentArray="Models" parentKey="ModelR1C3" inherits="WardrobeModelTemplate">
+					<DressUpModel parentArray="Models" parentKey="ModelR1C3" inherits="WardrobeItemsModelTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.ModelR1C2" relativePoint="TOPRIGHT" x="16" y="0"/>
 						</Anchors>
 					</DressUpModel>
-					<DressUpModel parentArray="Models" parentKey="ModelR1C4" inherits="WardrobeModelTemplate">
+					<DressUpModel parentArray="Models" parentKey="ModelR1C4" inherits="WardrobeItemsModelTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.ModelR1C3" relativePoint="TOPRIGHT" x="16" y="0"/>
 						</Anchors>
 					</DressUpModel>
-					<DressUpModel parentArray="Models" parentKey="ModelR1C5" inherits="WardrobeModelTemplate">
+					<DressUpModel parentArray="Models" parentKey="ModelR1C5" inherits="WardrobeItemsModelTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.ModelR1C4" relativePoint="TOPRIGHT" x="16" y="0"/>
 						</Anchors>
 					</DressUpModel>
-					<DressUpModel parentArray="Models" parentKey="ModelR1C6" inherits="WardrobeModelTemplate">
+					<DressUpModel parentArray="Models" parentKey="ModelR1C6" inherits="WardrobeItemsModelTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.ModelR1C5" relativePoint="TOPRIGHT" x="16" y="0"/>
 						</Anchors>
 					</DressUpModel>
-					<DressUpModel parentArray="Models" parentKey="ModelR2C1" inherits="WardrobeModelTemplate">
+					<DressUpModel parentArray="Models" parentKey="ModelR2C1" inherits="WardrobeItemsModelTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.ModelR1C1" relativePoint="BOTTOMLEFT" x="0" y="-24"/>
 						</Anchors>
 					</DressUpModel>
-					<DressUpModel parentArray="Models" parentKey="ModelR2C2" inherits="WardrobeModelTemplate">
+					<DressUpModel parentArray="Models" parentKey="ModelR2C2" inherits="WardrobeItemsModelTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.ModelR2C1" relativePoint="TOPRIGHT" x="16" y="0"/>
 						</Anchors>
 					</DressUpModel>
-					<DressUpModel parentArray="Models" parentKey="ModelR2C3" inherits="WardrobeModelTemplate">
+					<DressUpModel parentArray="Models" parentKey="ModelR2C3" inherits="WardrobeItemsModelTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.ModelR2C2" relativePoint="TOPRIGHT" x="16" y="0"/>
 						</Anchors>
 					</DressUpModel>
-					<DressUpModel parentArray="Models" parentKey="ModelR2C4" inherits="WardrobeModelTemplate">
+					<DressUpModel parentArray="Models" parentKey="ModelR2C4" inherits="WardrobeItemsModelTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.ModelR2C3" relativePoint="TOPRIGHT" x="16" y="0"/>
 						</Anchors>
 					</DressUpModel>
-					<DressUpModel parentArray="Models" parentKey="ModelR2C5" inherits="WardrobeModelTemplate">
+					<DressUpModel parentArray="Models" parentKey="ModelR2C5" inherits="WardrobeItemsModelTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.ModelR2C4" relativePoint="TOPRIGHT" x="16" y="0"/>
 						</Anchors>
 					</DressUpModel>
-					<DressUpModel parentArray="Models" parentKey="ModelR2C6" inherits="WardrobeModelTemplate">
+					<DressUpModel parentArray="Models" parentKey="ModelR2C6" inherits="WardrobeItemsModelTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.ModelR2C5" relativePoint="TOPRIGHT" x="16" y="0"/>
 						</Anchors>
 					</DressUpModel>
-					<DressUpModel parentArray="Models" parentKey="ModelR3C1" inherits="WardrobeModelTemplate">
+					<DressUpModel parentArray="Models" parentKey="ModelR3C1" inherits="WardrobeItemsModelTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.ModelR2C1" relativePoint="BOTTOMLEFT" x="0" y="-24"/>
 						</Anchors>
 					</DressUpModel>
-					<DressUpModel parentArray="Models" parentKey="ModelR3C2" inherits="WardrobeModelTemplate">
+					<DressUpModel parentArray="Models" parentKey="ModelR3C2" inherits="WardrobeItemsModelTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.ModelR3C1" relativePoint="TOPRIGHT" x="16" y="0"/>
 						</Anchors>
 					</DressUpModel>
-					<DressUpModel parentArray="Models" parentKey="ModelR3C3" inherits="WardrobeModelTemplate">
+					<DressUpModel parentArray="Models" parentKey="ModelR3C3" inherits="WardrobeItemsModelTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.ModelR3C2" relativePoint="TOPRIGHT" x="16" y="0"/>
 						</Anchors>
 					</DressUpModel>
-					<DressUpModel parentArray="Models" parentKey="ModelR3C4" inherits="WardrobeModelTemplate">
+					<DressUpModel parentArray="Models" parentKey="ModelR3C4" inherits="WardrobeItemsModelTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.ModelR3C3" relativePoint="TOPRIGHT" x="16" y="0"/>
 						</Anchors>
 					</DressUpModel>
-					<DressUpModel parentArray="Models" parentKey="ModelR3C5" inherits="WardrobeModelTemplate">
+					<DressUpModel parentArray="Models" parentKey="ModelR3C5" inherits="WardrobeItemsModelTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.ModelR3C4" relativePoint="TOPRIGHT" x="16" y="0"/>
 						</Anchors>
 					</DressUpModel>
-					<DressUpModel parentArray="Models" parentKey="ModelR3C6" inherits="WardrobeModelTemplate">
+					<DressUpModel parentArray="Models" parentKey="ModelR3C6" inherits="WardrobeItemsModelTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.ModelR3C5" relativePoint="TOPRIGHT" x="16" y="0"/>
 						</Anchors>
 					</DressUpModel>
+					<Frame parentKey="PendingTransmogFrame" hidden="true">
+						<Size x="78" y="104"/>
+						<Layers>
+							<Layer level="ARTWORK" textureSubLevel="1">
+								<Texture parentKey="Glowframe" hidden="false" alpha="0" alphaMode="ADD" atlas="transmog-wardrobe-border-selected" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="ARTWORK" textureSubLevel="2">
+								<Texture parentKey="Wisp1" hidden="false" alpha="0" alphaMode="ADD" atlas="transmog-wardrobe-border-selected-wisp" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER" relativePoint="BOTTOMRIGHT" x="-6" y="6"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="Wisp2" hidden="false" alpha="0" alphaMode="ADD" atlas="transmog-wardrobe-border-selected-wisp" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER" relativePoint="TOPLEFT" x="6" y="-7"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="Wisp3" hidden="false" alpha="0" alphaMode="ADD" atlas="transmog-wardrobe-border-selected-wisp" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER" relativePoint="BOTTOMLEFT" x="7" y="6"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="Wisp4" hidden="false" alpha="0" alphaMode="ADD" atlas="transmog-wardrobe-border-selected-wisp" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER" relativePoint="TOPRIGHT" x="-7" y="-7"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="Wisp5" hidden="false" alpha="0" alphaMode="ADD" atlas="transmog-wardrobe-border-selected-wisp" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER" relativePoint="BOTTOMRIGHT" x="-6" y="6"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="Wisp6" hidden="false" alpha="0" alphaMode="ADD" atlas="transmog-wardrobe-border-selected-wisp" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER" relativePoint="TOPLEFT" x="6" y="-7"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="Wisp7" hidden="false" alpha="0" alphaMode="ADD" atlas="transmog-wardrobe-border-selected-wisp" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER" relativePoint="BOTTOMLEFT" x="7" y="6"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="Wisp8" hidden="false" alpha="0" alphaMode="ADD" atlas="transmog-wardrobe-border-selected-wisp" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER" relativePoint="TOPRIGHT" x="-7" y="-7"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="Wisp9" hidden="false" alpha="0" alphaMode="ADD" atlas="transmog-wardrobe-border-selected-wisp" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER" relativePoint="BOTTOMRIGHT" x="-6" y="6"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="Wisp10" hidden="false" alpha="0" alphaMode="ADD" atlas="transmog-wardrobe-border-selected-wisp" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER" relativePoint="TOPLEFT" x="6" y="-7"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="Wisp11" hidden="false" alpha="0" alphaMode="ADD" atlas="transmog-wardrobe-border-selected-wisp" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER" relativePoint="BOTTOMLEFT" x="7" y="6"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="Wisp12" hidden="false" alpha="0" alphaMode="ADD" atlas="transmog-wardrobe-border-selected-wisp" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER" relativePoint="TOPRIGHT" x="-7" y="-7"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="Smoke1" hidden="false" alpha="0" alphaMode="ADD" atlas="transmog-wardrobe-border-selected-smoke" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER" relativePoint="LEFT" x="-1" y="0"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="Smoke2" hidden="false" alpha="0" alphaMode="ADD" atlas="transmog-wardrobe-border-selected-smoke" useAtlasSize="true">
+									<TexCoords left="0" right="1" top="1" bottom="0"/>
+									<Anchors>
+										<Anchor point="CENTER" relativePoint="RIGHT" x="1" y="0"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="Smoke3" hidden="false" alpha="0" alphaMode="ADD" atlas="transmog-wardrobe-border-selected-smoke" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER" relativePoint="LEFT" x="-1" y="0"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="Smoke4" hidden="false" alpha="0" alphaMode="ADD" atlas="transmog-wardrobe-border-selected-smoke" useAtlasSize="true">
+									<TexCoords left="0" right="1" top="1" bottom="0"/>
+									<Anchors>
+										<Anchor point="CENTER" relativePoint="RIGHT" x="1" y="0"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="OVERLAY">
+								<Texture parentKey="UndoIcon" atlas="transmog-icon-revert" useAtlasSize="true" hidden="true">
+									<Anchors>
+										<Anchor point="BOTTOM" x="0" y="-13"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Animations>
+							<AnimationGroup parentKey="TransmogSelectedAnim" setToFinalAlpha="true" looping="repeat">
+								<Translation childKey="Wisp1" duration="2" order="1" offsetX="-70" offsetY="0"/>
+								<Alpha childKey="Wisp1" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
+								<Alpha childKey="Wisp1" startDelay="1.5" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+								<Rotation childKey="Wisp2" duration="0" order="1" degrees="180"/>
+								<Translation childKey="Wisp2" duration="2" order="1" offsetX="70" offsetY="0"/>
+								<Alpha childKey="Wisp2" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
+								<Alpha childKey="Wisp2" startDelay="1.5" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+								<Rotation childKey="Wisp3" duration="0" order="1" degrees="-90"/>
+								<Translation childKey="Wisp3" duration="2" order="1" offsetX="0" offsetY="90"/>
+								<Alpha childKey="Wisp3" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
+								<Alpha childKey="Wisp3" startDelay="1.5" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+								<Rotation childKey="Wisp4" duration="0" order="1" degrees="90"/>
+								<Translation childKey="Wisp4" duration="2" order="1" offsetX="0" offsetY="-90"/>
+								<Alpha childKey="Wisp4" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
+								<Alpha childKey="Wisp4" startDelay="1.5" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+								<Translation childKey="Wisp5" duration="2" order="1" offsetX="-70" offsetY="0"/>
+								<Alpha childKey="Wisp5" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
+								<Alpha childKey="Wisp5" startDelay="1.5" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+								<Rotation childKey="Wisp6" duration="0" order="1" degrees="180"/>
+								<Translation childKey="Wisp6" duration="2" order="1" offsetX="70" offsetY="0"/>
+								<Alpha childKey="Wisp6" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
+								<Alpha childKey="Wisp6" startDelay="1.5" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+								<Rotation childKey="Wisp7" duration="0" order="1" degrees="-90"/>
+								<Translation childKey="Wisp7" duration="2" order="1" offsetX="0" offsetY="90"/>
+								<Alpha childKey="Wisp7" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
+								<Alpha childKey="Wisp7" startDelay="1.5" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+								<Rotation childKey="Wisp8" duration="0" order="1" degrees="90"/>
+								<Translation childKey="Wisp8" duration="2" order="1" offsetX="0" offsetY="-90"/>
+								<Alpha childKey="Wisp8" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
+								<Alpha childKey="Wisp8" startDelay="1.5" duration="0.5" order="1" fromAlpha="1" toAlpha="0" endDelay="0.4"/>
+							</AnimationGroup>
+							<AnimationGroup parentKey="TransmogSelectedAnim2" setToFinalAlpha="true" looping="repeat">
+								<Alpha childKey="Glowframe" duration="1.2" order="1" fromAlpha="0" toAlpha="1"/>
+								<Alpha childKey="Glowframe" startDelay="1.2" duration="1.2" order="1" fromAlpha="1" toAlpha="0"/>
+							</AnimationGroup>
+							<AnimationGroup parentKey="TransmogSelectedAnim3" setToFinalAlpha="true" looping="repeat">
+								<Translation childKey="Wisp9" duration="4.4" order="1" offsetX="-70" offsetY="0"/>
+								<Alpha childKey="Wisp9" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
+								<Alpha childKey="Wisp9" startDelay="3.9" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+								<Rotation childKey="Wisp10" duration="0" order="1" degrees="180"/>
+								<Translation childKey="Wisp10" duration="4.4" order="1" offsetX="70" offsetY="0"/>
+								<Alpha childKey="Wisp10" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
+								<Alpha childKey="Wisp10" startDelay="3.9" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+								<Rotation childKey="Wisp11" duration="0" order="1" degrees="-90"/>
+								<Translation childKey="Wisp11" duration="4.4" order="1" offsetX="0" offsetY="90"/>
+								<Alpha childKey="Wisp11" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
+								<Alpha childKey="Wisp11" startDelay="3.9" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+								<Rotation childKey="Wisp12" duration="0" order="1" degrees="90"/>
+								<Translation childKey="Wisp12" duration="4.4" order="1" offsetX="0" offsetY="-90"/>
+								<Alpha childKey="Wisp12" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
+								<Alpha childKey="Wisp12" startDelay="3.9" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+							</AnimationGroup>
+							<AnimationGroup parentKey="TransmogSelectedAnim4" setToFinalAlpha="true" looping="repeat">
+								<Scale childKey="Smoke1" duration="3.2" order="1" fromScaleX="1" fromScaleY="1" toScaleX="1" toScaleY="2.6"/>
+								<Alpha childKey="Smoke1" duration="1.4" order="1" fromAlpha="0" toAlpha="0.75"/>
+								<Alpha childKey="Smoke1" startDelay="1.8" duration="1.4" order="1" fromAlpha="0.75" toAlpha="0"/>
+								<Scale childKey="Smoke2" duration="3.2" order="1" fromScaleX="1" fromScaleY="1" toScaleX="1" toScaleY="2.6"/>
+								<Alpha childKey="Smoke2" duration="1.4" order="1" fromAlpha="0" toAlpha="0.75"/>
+								<Alpha childKey="Smoke2" startDelay="1.8" duration="1.4" order="1" fromAlpha="0.75" toAlpha="0"/>
+							</AnimationGroup>
+							<AnimationGroup parentKey="TransmogSelectedAnim5" setToFinalAlpha="true" looping="repeat">
+								<Scale childKey="Smoke3" duration="5" order="1" fromScaleX="1" fromScaleY="1" toScaleX="1" toScaleY="2.6"/>
+								<Alpha childKey="Smoke3" duration="1.4" order="1" fromAlpha="0" toAlpha="0.5"/>
+								<Alpha childKey="Smoke3" startDelay="3.6" duration="1.4" order="1" fromAlpha="0.5" toAlpha="0"/>
+								<Scale childKey="Smoke4" duration="5" order="1" fromScaleX="1" fromScaleY="1" toScaleX="1" toScaleY="2.6"/>
+								<Alpha childKey="Smoke4" duration="1.4" order="1" fromAlpha="0" toAlpha="0.5"/>
+								<Alpha childKey="Smoke4" startDelay="3.6" duration="1.4" order="1" fromAlpha="0.5" toAlpha="0"/>
+							</AnimationGroup>
+						</Animations>
+					</Frame>					
 					<Frame parentKey="HelpBox" inherits="GlowBoxTemplate" enableMouse="true" hidden="true" frameStrata="DIALOG">
 						<Size x="220" y="100"/>
 						<Layers>
@@ -744,48 +969,393 @@
 						</Scripts>
 					</Frame>
 				</Frames>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnShow method="OnShow"/>
+					<OnHide method="OnHide"/>
+					<OnEvent method="OnEvent"/>
+					<OnMouseWheel method="OnMouseWheel"/>
+				</Scripts>
 			</Frame>
-			<Frame parentKey="NavigationFrame" setAllPoints="true">
-				<Layers>
-					<Layer level="OVERLAY">
-						<FontString parentKey="PageText" inherits="CollectionsPageTextTemplate" />
-					</Layer>
-				</Layers>
+			<Frame parentKey="SetsCollectionFrame" parentArray="ContentFrames" mixin="WardrobeSetsCollectionMixin" hidden="true">
+				<KeyValues>
+					<KeyValue key="searchType" value="LE_TRANSMOG_SEARCH_TYPE_BASE_SETS" type="global"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" y="-60" x="4"/>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-6" y="5"/>
+				</Anchors>
 				<Frames>
-					<Button parentKey="PrevPageButton">
-						<Size x="32" y="32"/>
+					<Frame parentKey="LeftInset" useParentLevel="true" inherits="InsetFrameTemplate">
+						<Size x="260" y="496"/>
 						<Anchors>
-							<Anchor point="BOTTOM" x="20" y="43"/>
+							<Anchor point="TOPLEFT"/>
+							<Anchor point="BOTTOMLEFT"/>
+						</Anchors>
+					</Frame>
+					<Frame parentKey="RightInset" useParentLevel="true" inherits="CollectionsBackgroundTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.LeftInset" relativePoint="TOPRIGHT" x="22" y="0"/>
+							<Anchor point="BOTTOMRIGHT"/>
+						</Anchors>
+					</Frame>
+					<ScrollFrame name="$parentScrollFrame" parentKey="ScrollFrame" inherits="HybridScrollFrameTemplate" mixin="WardrobeSetsCollectionScrollFrameMixin">
+						<Size x="255" y="499"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" x="3" y="-36"/>
+						</Anchors>
+						<Frames>
+							<Slider name="$parentScrollBar" inherits="HybridScrollBarTrimTemplate" parentKey="scrollBar">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="4" y="20"/>
+									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="4" y="8"/>
+								</Anchors>
+							</Slider>
+							<Frame name="WardrobeSetsFavoriteDropDown" parentKey="FavoriteDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true"/>
+						</Frames>
+						<Scripts>
+							<OnLoad method="OnLoad"/>
+							<OnShow method="OnShow"/>
+							<OnHide method="OnHide"/>
+							<OnEvent method="OnEvent"/>
+						</Scripts>
+					</ScrollFrame>
+					<DressUpModel parentKey="Model" mixin="WardrobeSetsDetailsModelMixin">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.RightInset" x="3" y="-3"/>
+							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.RightInset" x="-4" y="3"/>
 						</Anchors>
 						<Scripts>
-							<OnClick>
-								PlaySound("igMainMenuOptionCheckBoxOn");
-								WardrobeCollectionFrame_PrevPage();
-							</OnClick>
+							<OnLoad method="OnLoad"/>
+							<OnUpdate method="OnUpdate"/>
+							<OnMouseDown method="OnMouseDown"/>
+							<OnMouseUp method="OnMouseUp"/>
+							<OnMouseWheel method="OnMouseWheel"/>
+							<OnModelLoaded method="OnModelLoaded"/>
 						</Scripts>
-						<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
-						<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
-						<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
-						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
-					</Button>
-					
-					<Button parentKey="NextPageButton">
-						<Size x="32" y="32"/>
+					</DressUpModel>
+					<Frame parentKey="DetailsFrame" frameLevel="5">
 						<Anchors>
-							<Anchor point="BOTTOM" x="55" y="43"/>
-						</Anchors>					
-						<Scripts>
-							<OnClick>
-								PlaySound("igMainMenuOptionCheckBoxOn");
-								WardrobeCollectionFrame_NextPage();
-							</OnClick>
-						</Scripts>
-						<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
-						<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
-						<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
-						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
-					</Button>
+							<Anchor point="TOPLEFT" relativeKey="$parent.RightInset" x="0" y="-3"/>
+							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.RightInset" x="-3" y="2"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture parentKey="ModelFadeTexture" atlas="transmog-set-model-cutoff-fade">
+									<Size x="0" y="178"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" x="2"/>
+										<Anchor point="TOPRIGHT"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="BORDER">
+								<Texture parentKey="IconRowBackground" atlas="transmog-set-iconrow-background" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="TOP" x="0" y="-78"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="ARTWORK">
+								<FontString parentKey="Name" inherits="Fancy24Font" maxLines="1" mixin="ShrinkUntilTruncateFontStringMixin">
+									<Size x="380" y="0"/>
+									<Anchors>
+										<Anchor point="TOP" x="0" y="-37"/>
+									</Anchors>
+									<Color r="1" g="0.82" b="0"/>
+									<Shadow>
+										<Offset x="1" y="-1" />
+										<Color r="0" g="0" b="0"/>
+									</Shadow>
+								</FontString>
+								<FontString parentKey="LongName" inherits="Fancy16Font" maxLines="2" hidden="true">
+									<Size x="380" y="0"/>
+									<Anchors>
+										<Anchor point="TOP" x="0" y="-30"/>
+									</Anchors>
+									<Color r="1" g="0.82" b="0"/>
+									<Shadow>
+										<Offset x="1" y="-1" />
+										<Color r="0" g="0" b="0"/>
+									</Shadow>
+								</FontString>
+								<FontString parentKey="Label" inherits="GameFontHighlight" maxLines="1">
+									<Size x="380" y="0"/>
+									<Anchors>
+										<Anchor point="TOP" x="0" y="-63"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Button name="WardrobeSetsCollectionVariantSetsButton" parentKey="VariantSetsButton" inherits="UIMenuButtonStretchTemplate" frameLevel="6">
+								<Size x="108" y="22"/>
+								<Anchors>
+									<Anchor point="TOPRIGHT" x="-6" y="-6"/>
+								</Anchors>
+								<Layers>
+									<Layer level="ARTWORK">
+										<Texture parentKey="Icon" atlas="friendslist-categorybutton-arrow-down" useAtlasSize="true">
+											<Anchors>
+												<Anchor point="RIGHT" relativeKey="$parent.Right" relativePoint="RIGHT" x="-5" y="-2"/>
+											</Anchors>
+										</Texture>
+									</Layer>
+								</Layers>
+								<Scripts>
+									<OnLoad inherit="prepend">
+										self.Text:ClearAllPoints();
+										self.Text:SetPoint("LEFT", 11, -1);
+										self.Text:SetSize(75, 10);
+										self.Text:SetJustifyH("LEFT");
+									</OnLoad>
+									<OnClick>
+										PlaySound("igMainMenuOptionCheckBoxOn");
+										ToggleDropDownMenu(1, nil, self:GetParent().VariantSetsDropDown, self:GetName(), 0, 1);
+									</OnClick>
+								</Scripts>
+							</Button>
+							<Frame name="WardrobeSetsCollectionVariantSetsDropDown" parentKey="VariantSetsDropDown" inherits="UIDropDownMenuTemplate">
+								<Scripts>
+									<OnLoad function="WardrobeSetsCollectionVariantSetsDropDown_OnLoad"/>
+								</Scripts>
+							</Frame>
+						</Frames>
+					</Frame>
 				</Frames>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnShow method="OnShow"/>
+					<OnHide method="OnHide"/>
+					<OnEvent method="OnEvent"/>
+					<OnMouseWheel method="OnMouseWheel"/>
+				</Scripts>
+			</Frame>
+			<Frame parentKey="SetsTransmogFrame" parentArray="ContentFrames" inherits="CollectionsBackgroundTemplate" mixin="WardrobeSetsTransmogMixin" hidden="true">
+				<KeyValues>
+					<KeyValue key="searchType" value="LE_TRANSMOG_SEARCH_TYPE_USABLE_SETS" type="global"/>
+				</KeyValues>
+				<Frames>
+					<Frame parentKey="PagingFrame" inherits="CollectionsPagingFrameTemplate">
+						<Anchors>
+							<Anchor point="BOTTOM" x="22" y="38"/>
+						</Anchors>
+					</Frame>
+					<DressUpModel parentArray="Models" parentKey="ModelR1C1" inherits="WardrobeSetsTransmogModelTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="50" y="-50"/>
+						</Anchors>
+					</DressUpModel>
+					<DressUpModel parentArray="Models" parentKey="ModelR1C2" inherits="WardrobeSetsTransmogModelTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.ModelR1C1" relativePoint="TOPRIGHT" x="13" y="0"/>
+						</Anchors>
+					</DressUpModel>
+					<DressUpModel parentArray="Models" parentKey="ModelR1C3" inherits="WardrobeSetsTransmogModelTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.ModelR1C2" relativePoint="TOPRIGHT" x="13" y="0"/>
+						</Anchors>
+					</DressUpModel>
+					<DressUpModel parentArray="Models" parentKey="ModelR1C4" inherits="WardrobeSetsTransmogModelTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.ModelR1C3" relativePoint="TOPRIGHT" x="13" y="0"/>
+						</Anchors>
+					</DressUpModel>
+					<DressUpModel parentArray="Models" parentKey="ModelR2C1" inherits="WardrobeSetsTransmogModelTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.ModelR1C1" relativePoint="BOTTOMLEFT" x="0" y="-14"/>
+						</Anchors>
+					</DressUpModel>
+					<DressUpModel parentArray="Models" parentKey="ModelR2C2" inherits="WardrobeSetsTransmogModelTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.ModelR2C1" relativePoint="TOPRIGHT" x="13" y="0"/>
+						</Anchors>
+					</DressUpModel>
+					<DressUpModel parentArray="Models" parentKey="ModelR2C3" inherits="WardrobeSetsTransmogModelTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.ModelR2C2" relativePoint="TOPRIGHT" x="13" y="0"/>
+						</Anchors>
+					</DressUpModel>
+					<DressUpModel parentArray="Models" parentKey="ModelR2C4" inherits="WardrobeSetsTransmogModelTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.ModelR2C3" relativePoint="TOPRIGHT" x="13" y="0"/>
+						</Anchors>
+					</DressUpModel>
+					<Frame parentKey="PendingTransmogFrame" hidden="true">
+						<Size x="129" y="186"/>
+						<Layers>
+							<Layer level="ARTWORK" textureSubLevel="1">
+								<Texture parentKey="Glowframe" hidden="false" alpha="0" alphaMode="ADD" atlas="transmog-set-border-selected" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="ARTWORK" textureSubLevel="2">
+								<Texture parentKey="Wisp1" hidden="false" alpha="0" alphaMode="ADD" atlas="transmog-wardrobe-border-selected-wisp" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER" relativePoint="BOTTOMRIGHT" x="-6" y="8"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="Wisp2" hidden="false" alpha="0" alphaMode="ADD" atlas="transmog-wardrobe-border-selected-wisp" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER" relativePoint="TOPLEFT" x="6" y="-9"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="Wisp3" hidden="false" alpha="0" alphaMode="ADD" atlas="transmog-wardrobe-border-selected-wisp" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER" relativePoint="BOTTOMLEFT" x="8" y="6"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="Wisp4" hidden="false" alpha="0" alphaMode="ADD" atlas="transmog-wardrobe-border-selected-wisp" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER" relativePoint="TOPRIGHT" x="-7" y="-7"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="Wisp5" hidden="false" alpha="0" alphaMode="ADD" atlas="transmog-wardrobe-border-selected-wisp" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER" relativePoint="BOTTOMRIGHT" x="-6" y="8"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="Wisp6" hidden="false" alpha="0" alphaMode="ADD" atlas="transmog-wardrobe-border-selected-wisp" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER" relativePoint="TOPLEFT" x="6" y="-9"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="Wisp7" hidden="false" alpha="0" alphaMode="ADD" atlas="transmog-wardrobe-border-selected-wisp" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER" relativePoint="BOTTOMLEFT" x="8" y="6"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="Wisp8" hidden="false" alpha="0" alphaMode="ADD" atlas="transmog-wardrobe-border-selected-wisp" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER" relativePoint="TOPRIGHT" x="-7" y="-7"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="Wisp9" hidden="false" alpha="0" alphaMode="ADD" atlas="transmog-wardrobe-border-selected-wisp" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER" relativePoint="BOTTOMRIGHT" x="-6" y="8"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="Wisp10" hidden="false" alpha="0" alphaMode="ADD" atlas="transmog-wardrobe-border-selected-wisp" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER" relativePoint="TOPLEFT" x="6" y="-9"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="Wisp11" hidden="false" alpha="0" alphaMode="ADD" atlas="transmog-wardrobe-border-selected-wisp" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER" relativePoint="BOTTOMLEFT" x="8" y="6"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="Wisp12" hidden="false" alpha="0" alphaMode="ADD" atlas="transmog-wardrobe-border-selected-wisp" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER" relativePoint="TOPRIGHT" x="-7" y="-7"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="Smoke1" hidden="false" alpha="0" alphaMode="ADD" atlas="transmog-wardrobe-border-selected-smoke" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER" relativePoint="LEFT" x="-1" y="0"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="Smoke2" hidden="false" alpha="0" alphaMode="ADD" atlas="transmog-wardrobe-border-selected-smoke" useAtlasSize="true">
+									<TexCoords left="0" right="1" top="1" bottom="0"/>
+									<Anchors>
+										<Anchor point="CENTER" relativePoint="RIGHT" x="1" y="0"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="Smoke3" hidden="false" alpha="0" alphaMode="ADD" atlas="transmog-wardrobe-border-selected-smoke" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER" relativePoint="LEFT" x="-1" y="0"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="Smoke4" hidden="false" alpha="0" alphaMode="ADD" atlas="transmog-wardrobe-border-selected-smoke" useAtlasSize="true">
+									<TexCoords left="0" right="1" top="1" bottom="0"/>
+									<Anchors>
+										<Anchor point="CENTER" relativePoint="RIGHT" x="1" y="0"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Animations>
+							<AnimationGroup parentKey="TransmogSelectedAnim" setToFinalAlpha="true" looping="repeat">
+								<Translation childKey="Wisp1" duration="2" order="1" offsetX="-121" offsetY="0"/>
+								<Alpha childKey="Wisp1" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
+								<Alpha childKey="Wisp1" startDelay="1.5" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+								<Rotation childKey="Wisp2" duration="0" order="1" degrees="180"/>
+								<Translation childKey="Wisp2" duration="2" order="1" offsetX="121" offsetY="0"/>
+								<Alpha childKey="Wisp2" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
+								<Alpha childKey="Wisp2" startDelay="1.5" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+								<Rotation childKey="Wisp3" duration="0" order="1" degrees="-90"/>
+								<Translation childKey="Wisp3" duration="2" order="1" offsetX="0" offsetY="172"/>
+								<Alpha childKey="Wisp3" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
+								<Alpha childKey="Wisp3" startDelay="1.5" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+								<Rotation childKey="Wisp4" duration="0" order="1" degrees="90"/>
+								<Translation childKey="Wisp4" duration="2" order="1" offsetX="0" offsetY="-172"/>
+								<Alpha childKey="Wisp4" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
+								<Alpha childKey="Wisp4" startDelay="1.5" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+								<Translation childKey="Wisp5" duration="2" order="1" offsetX="-121" offsetY="0"/>
+								<Alpha childKey="Wisp5" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
+								<Alpha childKey="Wisp5" startDelay="1.5" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+								<Rotation childKey="Wisp6" duration="0" order="1" degrees="180"/>
+								<Translation childKey="Wisp6" duration="2" order="1" offsetX="121" offsetY="0"/>
+								<Alpha childKey="Wisp6" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
+								<Alpha childKey="Wisp6" startDelay="1.5" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+								<Rotation childKey="Wisp7" duration="0" order="1" degrees="-90"/>
+								<Translation childKey="Wisp7" duration="2" order="1" offsetX="0" offsetY="172"/>
+								<Alpha childKey="Wisp7" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
+								<Alpha childKey="Wisp7" startDelay="1.5" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+								<Rotation childKey="Wisp8" duration="0" order="1" degrees="90"/>
+								<Translation childKey="Wisp8" duration="2" order="1" offsetX="0" offsetY="-172"/>
+								<Alpha childKey="Wisp8" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
+								<Alpha childKey="Wisp8" startDelay="1.5" duration="0.5" order="1" fromAlpha="1" toAlpha="0" endDelay="0.4"/>
+							</AnimationGroup>
+							<AnimationGroup parentKey="TransmogSelectedAnim2" setToFinalAlpha="true" looping="repeat">
+								<Alpha childKey="Glowframe" duration="1.2" order="1" fromAlpha="0" toAlpha="1"/>
+								<Alpha childKey="Glowframe" startDelay="1.2" duration="1.2" order="1" fromAlpha="1" toAlpha="0"/>
+							</AnimationGroup>
+							<AnimationGroup parentKey="TransmogSelectedAnim3" setToFinalAlpha="true" looping="repeat">
+								<Translation childKey="Wisp9" duration="4.4" order="1" offsetX="-121" offsetY="0"/>
+								<Alpha childKey="Wisp9" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
+								<Alpha childKey="Wisp9" startDelay="3.9" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+								<Rotation childKey="Wisp10" duration="0" order="1" degrees="180"/>
+								<Translation childKey="Wisp10" duration="4.4" order="1" offsetX="121" offsetY="0"/>
+								<Alpha childKey="Wisp10" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
+								<Alpha childKey="Wisp10" startDelay="3.9" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+								<Rotation childKey="Wisp11" duration="0" order="1" degrees="-90"/>
+								<Translation childKey="Wisp11" duration="4.4" order="1" offsetX="0" offsetY="172"/>
+								<Alpha childKey="Wisp11" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
+								<Alpha childKey="Wisp11" startDelay="3.9" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+								<Rotation childKey="Wisp12" duration="0" order="1" degrees="90"/>
+								<Translation childKey="Wisp12" duration="4.4" order="1" offsetX="0" offsetY="-172"/>
+								<Alpha childKey="Wisp12" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
+								<Alpha childKey="Wisp12" startDelay="3.9" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+							</AnimationGroup>
+							<AnimationGroup parentKey="TransmogSelectedAnim4" setToFinalAlpha="true" looping="repeat">
+								<Scale childKey="Smoke1" duration="3.2" order="1" fromScaleX="1" fromScaleY="1" toScaleX="1" toScaleY="2.6"/>
+								<Alpha childKey="Smoke1" duration="1.4" order="1" fromAlpha="0" toAlpha="0.75"/>
+								<Alpha childKey="Smoke1" startDelay="1.8" duration="1.4" order="1" fromAlpha="0.75" toAlpha="0"/>
+								<Scale childKey="Smoke2" duration="3.2" order="1" fromScaleX="1" fromScaleY="1" toScaleX="1" toScaleY="2.6"/>
+								<Alpha childKey="Smoke2" duration="1.4" order="1" fromAlpha="0" toAlpha="0.75"/>
+								<Alpha childKey="Smoke2" startDelay="1.8" duration="1.4" order="1" fromAlpha="0.75" toAlpha="0"/>
+							</AnimationGroup>
+							<AnimationGroup parentKey="TransmogSelectedAnim5" setToFinalAlpha="true" looping="repeat">
+								<Scale childKey="Smoke3" duration="5" order="1" fromScaleX="1" fromScaleY="1" toScaleX="1" toScaleY="2.6"/>
+								<Alpha childKey="Smoke3" duration="1.4" order="1" fromAlpha="0" toAlpha="0.5"/>
+								<Alpha childKey="Smoke3" startDelay="3.6" duration="1.4" order="1" fromAlpha="0.5" toAlpha="0"/>
+								<Scale childKey="Smoke4" duration="5" order="1" fromScaleX="1" fromScaleY="1" toScaleX="1" toScaleY="2.6"/>
+								<Alpha childKey="Smoke4" duration="1.4" order="1" fromAlpha="0" toAlpha="0.5"/>
+								<Alpha childKey="Smoke4" startDelay="3.6" duration="1.4" order="1" fromAlpha="0.5" toAlpha="0"/>
+							</AnimationGroup>
+						</Animations>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnShow method="OnShow"/>
+					<OnHide method="OnHide"/>
+					<OnEvent method="OnEvent"/>
+					<OnMouseWheel method="OnMouseWheel"/>
+				</Scripts>
 			</Frame>
 		</Frames>
 		<Scripts>
@@ -793,7 +1363,6 @@
 			<OnEvent function="WardrobeCollectionFrame_OnEvent"/>
 			<OnShow function="WardrobeCollectionFrame_OnShow"/>
 			<OnHide function="WardrobeCollectionFrame_OnHide"/>
-			<OnMouseWheel function="WardrobeCollectionFrame_OnMouseWheel"/>
 			<OnKeyDown function="WardrobeCollectionFrame_OnKeyDown"/>
 		</Scripts>
 	</Frame>
@@ -1512,7 +2081,6 @@
 		</Frames>
 		<Scripts>
 			<OnLoad function="WardrobeFrame_OnLoad"/>
-			<OnShow function="WardrobeFrame_OnShow"/>
 		</Scripts>
 	</Frame>
 </Ui>

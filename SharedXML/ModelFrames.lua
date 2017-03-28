@@ -192,6 +192,12 @@ function Model_OnUpdate(self, elapsedTime, rotationsPerSecond)
 	end
 end
 
+function Model_SetDefaultRotation(self, rotation)
+	self.defaultRotation = rotation;
+	self.rotation = rotation;
+	self:SetRotation(rotation);
+end
+
 function Model_Reset(self)
 	self.rotation = self.defaultRotation;
 	self:SetRotation(self.rotation);

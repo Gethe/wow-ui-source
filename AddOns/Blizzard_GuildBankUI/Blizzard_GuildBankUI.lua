@@ -8,8 +8,6 @@ NUM_GUILDBANK_COLUMNS = 7;
 MAX_TRANSACTIONS_SHOWN = 21;
 GUILDBANK_TRANSACTION_HEIGHT = 13;
 
-local GB_ICON_FILENAMES = nil;
-
 UIPanelWindows["GuildBankFrame"] = { area = "doublewide", pushable = 0, width = 793 };
 
 --REMOVE ME!
@@ -649,6 +647,35 @@ function GuildBankItemButton_OnLoad(self)
 		SplitGuildBankItem(GetCurrentGuildBankTab(), button:GetID(), split);
 	end
 	self.UpdateTooltip = GuildBankItemButton_OnEnter;
+end
+
+function GuildBankItemButton_OnClick(self, button)
+	if ( HandleModifiedItemClick(GetGuildBankItemLink(GetCurrentGuildBankTab(), self:GetID())) ) then
+		return;
+	end
+	if ( IsModifiedClick("SPLITSTACK") ) then
+		if ( not CursorHasItem() ) then
+			local texture, count, locked = GetGuildBankItemInfo(GetCurrentGuildBankTab(), self:GetID());
+			if ( not locked and count and count > 1) then
+				OpenStackSplitFrame(count, self, "BOTTOMLEFT", "TOPLEFT");
+			end
+		end
+		return;
+	end
+	local type, money = GetCursorInfo();
+	if ( type == "money" ) then
+		DepositGuildBankMoney(money);
+		ClearCursor();
+	elseif ( type == "guildbankmoney" ) then
+		DropCursorMoney();
+		ClearCursor();
+	else
+		if ( button == "RightButton" ) then
+			AutoStoreGuildBankItem(GetCurrentGuildBankTab(), self:GetID());
+		else
+			PickupGuildBankItem(GetCurrentGuildBankTab(), self:GetID());
+		end
+	end
 end
 
 function GuildBankItemButton_OnEnter(self)

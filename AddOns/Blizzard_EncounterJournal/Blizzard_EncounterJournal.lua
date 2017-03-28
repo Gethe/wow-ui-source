@@ -1163,7 +1163,7 @@ function EncounterJournal_ToggleHeaders(self, doNotShift)
 
 					local textLeftAnchor = infoHeader.button.expandedIcon;
 					--Show ability Icon
-					if abilityIcon ~= "" then
+					if abilityIcon then
 						infoHeader.button.abilityIcon:SetTexture(abilityIcon);
 						infoHeader.button.abilityIcon:Show();
 						textLeftAnchor = infoHeader.button.abilityIcon;
@@ -1536,6 +1536,9 @@ function EncounterJournal_SetLootButton(item)
 		elseif ( numEncounters > 2 ) then
 			item.boss:SetFormattedText(BOSS_INFO_STRING_MANY, EJ_GetEncounterInfo(encounterID));
 		end
+		
+		local itemName, _, quality = GetItemInfo(link);
+		SetItemButtonQuality(item, quality, itemID);
 	else
 		item.name:SetText(RETRIEVING_ITEM_INFO);
 		item.icon:SetTexture("Interface\\Icons\\INV_Misc_QuestionMark");
@@ -2665,7 +2668,7 @@ function EJSuggestFrame_RefreshDisplay()
 			suggestion.icon:SetTexture(data.iconPath);
 		else
 			suggestion.icon:SetMask("Interface\\CharacterFrame\\TempPortraitAlphaMask");
-			suggestion.icon:SetTexture("INTERFACE\\ICONS\\INV_MISC_QUESTIONMARK.BLP");
+			suggestion.icon:SetTexture(QUESTION_MARK_ICON);
 		end
 
 		suggestion.prevButton:SetEnabled(C_AdventureJournal.GetPrimaryOffset() > 0);
@@ -2738,7 +2741,7 @@ function EJSuggestFrame_RefreshDisplay()
 				suggestion.icon:SetTexture(data.iconPath);
 			else
 				suggestion.icon:SetMask("Interface\\CharacterFrame\\TempPortraitAlphaMask");
-				suggestion.icon:SetTexture("INTERFACE\\ICONS\\INV_MISC_QUESTIONMARK.BLP");
+				suggestion.icon:SetTexture(QUESTION_MARK_ICON);
 			end
 
 			EJSuggestFrame_UpdateRewards(suggestion);

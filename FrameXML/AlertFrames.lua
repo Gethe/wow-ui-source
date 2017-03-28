@@ -333,6 +333,8 @@ function AlertFrameMixin:OnEvent(event, ...)
 		elseif ( isPersonal and (typeIdentifier == "currency") ) then
 			-- only toast currency for personal loot
 			LootAlertSystem:AddAlert(itemLink, quantity, nil, nil, specID, true, false, lootSource);
+		elseif ( typeIdentifier == "honor" ) then
+			HonorAwardedAlertSystem:AddAlert(quantity);
 		end
 	elseif ( event == "SHOW_PVP_FACTION_LOOT_TOAST" ) then
 		local typeIdentifier, itemLink, quantity, specID, sex, isPersonal, lessAwesome = ...;

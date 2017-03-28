@@ -488,13 +488,15 @@ function WorldStateScoreFrame_OnLoad(self)
 	_G[self:GetName() .. "BtnCornerRight"]:Hide();
 	_G[self:GetName() .. "ButtonBottomBorder"]:Hide();
 	
-	local rowFrame, prevRowFrame = _, WorldStateScoreButton1;
+	local prevRowFrame = WorldStateScoreButton1;
 	for i=2,MAX_WORLDSTATE_SCORE_BUTTONS do
-		rowFrame = CreateFrame("FRAME", "WorldStateScoreButton"..i, WorldStateScoreFrame, "WorldStateScoreTemplate");
+		local rowFrame = CreateFrame("FRAME", "WorldStateScoreButton"..i, WorldStateScoreFrame, "WorldStateScoreTemplate");
 		rowFrame:SetPoint("TOPLEFT",  prevRowFrame, "BOTTOMLEFT", 0, 0);
 		rowFrame:SetPoint("TOPRIGHT",  prevRowFrame, "BOTTOMRIGHT", 0, 0);
 		prevRowFrame = rowFrame;
 	end
+	
+	self.onCloseCallback = WorldStateScoreFrame_OnClose;
 end
 
 function WorldStateButtonDropDown_Initialize()
@@ -1045,6 +1047,11 @@ function WorldStateScoreFrame_Resize()
 		end
 	end
 	return width;
+end
+
+function WorldStateScoreFrame_OnClose(self)
+	PlaySound("igCharacterInfoClose");
+	HideParentPanel(self);
 end
 
 function WorldStateScoreFrame_OnHide(self)

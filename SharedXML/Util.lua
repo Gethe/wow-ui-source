@@ -92,7 +92,7 @@ end
 
 function ClearClampedTextureRotation(texture)
 	if (texture.rotationDegrees) then
-		SetClampedRotation(0);
+		SetClampedTextureRotation(0);
 		texture.origTexCoords = nil;
 		texture.origWidth = nil;
 		texture.origHeight = nil;
@@ -153,6 +153,29 @@ function tInvert(tbl)
 	return inverted;
 end
 
+function tFilter(tbl, pred, isIndexTable)
+	local out = {};
+
+	if (isIndexTable) then
+		assert(tbl[1] ~= nil);
+		local currentIndex = 1;
+		for i, v in ipairs(tbl) do
+			if (pred(v)) then
+				out[currentIndex] = v;
+				currentIndex = currentIndex + 1;
+			end
+		end
+	else
+		for k, v in pairs(tbl) do
+			if (pred(v)) then
+				out[k] = v;
+			end
+		end
+	end
+
+	return out;
+end
+
 function CopyTable(settings)
 	local copy = {};
 	for k, v in pairs(settings) do
@@ -163,6 +186,16 @@ function CopyTable(settings)
 		end
 	end
 	return copy;
+end
+
+function FindInTableIf(tbl, pred)
+	for k, v in pairs(tbl) do
+		if (pred(v)) then
+			return k, v;
+		end
+	end
+
+	return nil;
 end
 
 function GetItemInfoFromHyperlink(link)
@@ -229,12 +262,12 @@ function GetMoneyString(money, separateThousands)
 		copperString = copper..COPPER_AMOUNT_SYMBOL;
 	else
 		if (separateThousands) then
-			goldString = format(GOLD_AMOUNT_TEXTURE_STRING, FormatLargeNumber(gold), 0, 0);
+			goldString = GOLD_AMOUNT_TEXTURE_STRING:format(FormatLargeNumber(gold), 0, 0);
 		else
-			goldString = format(GOLD_AMOUNT_TEXTURE, gold, 0, 0);
+			goldString = GOLD_AMOUNT_TEXTURE:format(gold, 0, 0);
 		end
-		silverString = format(SILVER_AMOUNT_TEXTURE, silver, 0, 0);
-		copperString = format(COPPER_AMOUNT_TEXTURE, copper, 0, 0);
+		silverString = SILVER_AMOUNT_TEXTURE:format(silver, 0, 0);
+		copperString = COPPER_AMOUNT_TEXTURE:format(copper, 0, 0);
 	end
 
 	local moneyString = "";
@@ -283,8 +316,12 @@ function ClampedPercentageBetween(value, startValue, endValue)
 end
 
 local TARGET_FRAME_PER_SEC = 60.0;
+function DeltaLerp(startValue, endValue, amount, timeSec)
+	return Lerp(startValue, endValue, Saturate(amount * timeSec * TARGET_FRAME_PER_SEC));
+end
+
 function FrameDeltaLerp(startValue, endValue, amount)
-	return Lerp(startValue, endValue, Saturate(amount * GetTickTime() * TARGET_FRAME_PER_SEC));
+	return DeltaLerp(startValue, endValue, amount, GetTickTime());
 end
 
 ----------------------------------
@@ -315,150 +352,6 @@ function TriStateCheckbox_SetState(checked, checkButton)
 		checkedTexture:SetDesaturated(true);
 		checkButton.state = 1;
 	end
-end
-
-ObjectPoolMixin = {};
-
-function ObjectPoolMixin:OnLoad(creationFunc, resetterFunc)
-	self.creationFunc = creationFunc;
-	self.resetterFunc = resetterFunc;
-
-	self.activeObjects = {};
-	self.inactiveObjects = {};
-
-	self.numActiveObjects = 0;
-end
-
-function ObjectPoolMixin:Acquire()
-	local numInactiveObjects = #self.inactiveObjects;
-	if numInactiveObjects > 0 then
-		local obj = self.inactiveObjects[numInactiveObjects];
-		self.activeObjects[obj] = true;
-		self.numActiveObjects = self.numActiveObjects + 1;
-		self.inactiveObjects[numInactiveObjects] = nil;
-		return obj, false;
-	end
-
-	local newObj = self.creationFunc(self);
-	if self.resetterFunc then
-		self.resetterFunc(self, newObj);
-	end
-	self.activeObjects[newObj] = true;
-	self.numActiveObjects = self.numActiveObjects + 1;
-	return newObj, true;
-end
-
-function ObjectPoolMixin:Release(obj)
-	assert(self.activeObjects[obj]);
-
-	self.inactiveObjects[#self.inactiveObjects + 1] = obj;
-	self.activeObjects[obj] = nil;
-	self.numActiveObjects = self.numActiveObjects - 1;
-	if self.resetterFunc then
-		self.resetterFunc(self, obj);
-	end
-end
-
-function ObjectPoolMixin:ReleaseAll()
-	for obj in pairs(self.activeObjects) do
-		self:Release(obj);
-	end
-end
-
-function ObjectPoolMixin:EnumerateActive()
-	return pairs(self.activeObjects);
-end
-
-function ObjectPoolMixin:GetNextActive(current)
-	return (next(self.activeObjects, current));
-end
-
-function ObjectPoolMixin:GetNumActive()
-	return self.numActiveObjects;
-end
-
-function ObjectPoolMixin:EnumerateInactive()
-	return ipairs(self.inactiveObjects);
-end
-
-function CreateObjectPool(creationFunc, resetterFunc)
-	local objectPool = CreateFromMixins(ObjectPoolMixin);
-	objectPool:OnLoad(creationFunc, resetterFunc);
-	return objectPool;
-end
-
-FramePoolMixin = Mixin({}, ObjectPoolMixin);
-
-local function FramePoolFactory(framePool)
-	return CreateFrame(framePool.frameType, nil, framePool.parent, framePool.frameTemplate);
-end
-
-function FramePoolMixin:OnLoad(frameType, parent, frameTemplate, resetterFunc)
-	ObjectPoolMixin.OnLoad(self, FramePoolFactory, resetterFunc);
-	self.frameType = frameType;
-	self.parent = parent;
-	self.frameTemplate = frameTemplate;
-end
-
-function FramePool_Hide(framePool, frame)
-	frame:Hide();
-end
-
-function FramePool_HideAndClearAnchors(framePool, frame)
-	frame:Hide();
-	frame:ClearAllPoints();
-end
-
-function CreateFramePool(frameType, parent, frameTemplate, resetterFunc)
-	local framePool = CreateFromMixins(FramePoolMixin);
-	framePool:OnLoad(frameType, parent, frameTemplate, resetterFunc or FramePool_HideAndClearAnchors);
-	return framePool;
-end
-
-TexturePoolMixin = Mixin({}, ObjectPoolMixin);
-
-local function TexturePoolFactory(texturePool)
-	return texturePool.parent:CreateTexture(nil, texturePool.layer, texturePool.textureTemplate, texturePool.subLayer);
-end
-
-function TexturePoolMixin:OnLoad(parent, layer, subLayer, textureTemplate, resetterFunc)
-	ObjectPoolMixin.OnLoad(self, TexturePoolFactory, resetterFunc);
-	self.parent = parent;
-	self.layer = layer;
-	self.subLayer = subLayer;
-	self.textureTemplate = textureTemplate;
-end
-
-TexturePool_Hide = FramePool_Hide;
-TexturePool_HideAndClearAnchors = FramePool_HideAndClearAnchors;
-
-function CreateTexturePool(parent, layer, subLayer, textureTemplate, resetterFunc)
-	local texturePool = CreateFromMixins(TexturePoolMixin);
-	texturePool:OnLoad(parent, layer, subLayer, textureTemplate, resetterFunc or TexturePool_HideAndClearAnchors);
-	return texturePool;
-end
-
-FontStringPoolMixin = Mixin({}, ObjectPoolMixin);
-
-local function FontStringPoolFactory(fontStringPool)
-	return fontStringPool.parent:CreateFontString(nil, fontStringPool.layer, fontStringPool.fontStringTemplate, fontStringPool.subLayer);
-end
-
-function FontStringPoolMixin:OnLoad(parent, layer, subLayer, fontStringTemplate, resetterFunc)
-	ObjectPoolMixin.OnLoad(self, FontStringPoolFactory, resetterFunc);
-	self.parent = parent;
-	self.layer = layer;
-	self.subLayer = subLayer;
-	self.fontStringTemplate = fontStringTemplate;
-end
-
-FontStringPool_Hide = FramePool_Hide;
-FontStringPool_HideAndClearAnchors = FramePool_HideAndClearAnchors;
-
-function CreateFontStringPool(parent, layer, subLayer, fontStringTemplate, resetterFunc)
-	local fontStringPool = CreateFromMixins(FontStringPoolMixin);
-	fontStringPool:OnLoad(parent, layer, subLayer, fontStringTemplate, resetterFunc or FontStringPool_HideAndClearAnchors);
-	return fontStringPool;
 end
 
 RectangleMixin = {};
@@ -704,6 +597,54 @@ function ColorMixin:WrapTextInColorCode(text)
 	return WrapTextInColorCode(text, self:GenerateHexColor());
 end
 
+-- Mix this into a FontString to have it resize until it stops truncating, or gets too small
+ShrinkUntilTruncateFontStringMixin = {};
+
+-- From largest to smallest
+function ShrinkUntilTruncateFontStringMixin:SetFontObjectsToTry(...)
+	self.fontObjectsToTry = { ... };
+	if self:GetText() then
+		self:ApplyFontObjects();
+	end
+end
+
+function ShrinkUntilTruncateFontStringMixin:ApplyFontObjects()
+	if not self.fontObjectsToTry then
+		error("No fonts applied to ShrinkUntilTruncateFontStringMixin, call SetFontObjectsToTry first");
+	end
+
+	for i, fontObject in ipairs(self.fontObjectsToTry) do
+		self:SetFontObject(fontObject);
+		if not self:IsTruncated() then
+			break;
+		end
+	end
+end
+
+function ShrinkUntilTruncateFontStringMixin:SetText(text)
+	if not self:GetFont() then
+		if not self.fontObjectsToTry then
+			error("No fonts applied to ShrinkUntilTruncateFontStringMixin, call SetFontObjectsToTry first");
+		end
+		self:SetFontObject(self.fontObjectsToTry[1]);
+	end
+
+	getmetatable(self).__index.SetText(self, text);
+	self:ApplyFontObjects();
+end
+
+function ShrinkUntilTruncateFontStringMixin:SetFormattedText(format, ...)
+	if not self:GetFont() then
+		if not self.fontObjectsToTry then
+			error("No fonts applied to ShrinkUntilTruncateFontStringMixin, call SetFontObjectsToTry first");
+		end
+		self:SetFontObject(self.fontObjectsToTry[1]);
+	end
+
+	getmetatable(self).__index.SetFormattedText(self, format, ...);
+	self:ApplyFontObjects();
+end
+
 -- Time --
 function SecondsToTime(seconds, noSeconds, notAbbreviated, maxCount, roundUp)
 	local time = "";
@@ -719,9 +660,9 @@ function SecondsToTime(seconds, noSeconds, notAbbreviated, maxCount, roundUp)
 			tempTime = floor(seconds / 86400);
 		end
 		if ( notAbbreviated ) then
-			time = format(D_DAYS,tempTime);
+			time = D_DAYS:format(tempTime);
 		else
-			time = format(DAYS_ABBR,tempTime);
+			time = DAYS_ABBR:format(tempTime);
 		end
 		seconds = mod(seconds, 86400);
 	end
@@ -736,9 +677,9 @@ function SecondsToTime(seconds, noSeconds, notAbbreviated, maxCount, roundUp)
 			tempTime = floor(seconds / 3600);
 		end
 		if ( notAbbreviated ) then
-			time = time..format(D_HOURS, tempTime);
+			time = time..D_HOURS:format(tempTime);
 		else
-			time = time..format(HOURS_ABBR, tempTime);
+			time = time..HOURS_ABBR:format(tempTime);
 		end
 		seconds = mod(seconds, 3600);
 	end
@@ -753,9 +694,9 @@ function SecondsToTime(seconds, noSeconds, notAbbreviated, maxCount, roundUp)
 			tempTime = floor(seconds / 60);
 		end
 		if ( notAbbreviated ) then
-			time = time..format(D_MINUTES, tempTime);
+			time = time..D_MINUTES:format(tempTime);
 		else
-			time = time..format(MINUTES_ABBR, tempTime);
+			time = time..MINUTES_ABBR:format(tempTime);
 		end
 		seconds = mod(seconds, 60);
 	end
@@ -763,11 +704,10 @@ function SecondsToTime(seconds, noSeconds, notAbbreviated, maxCount, roundUp)
 		if ( time ~= "" ) then
 			time = time..TIME_UNIT_DELIMITER;
 		end
-		seconds = format("%d", seconds);
 		if ( notAbbreviated ) then
-			time = time..format(D_SECONDS, seconds);
+			time = time..D_SECONDS:format(seconds);
 		else
-			time = time..format(SECONDS_ABBR, seconds);
+			time = time..SECONDS_ABBR:format(seconds);
 		end
 	end
 	return time;
@@ -791,17 +731,41 @@ function SecondsToTimeAbbrev(seconds)
 end
 
 function FormatShortDate(day, month, year)
-	if (LOCALE_enGB) then
-		return string.format(SHORTDATE_EU, day, month, year);
+	if (year) then
+		if (LOCALE_enGB) then
+			return SHORTDATE_EU:format(day, month, year);
+		else
+			return SHORTDATE:format(day, month, year);
+		end
 	else
-		return string.format(SHORTDATE, day, month, year);
+		if (LOCALE_enGB) then
+			return SHORTDATENOYEAR_EU:format(day, month);
+		else
+			return SHORTDATENOYEAR:format(day, month);
+		end
 	end
 end
 
+function Round(value)
+	if value < 0.0 then
+		return math.ceil(value - .5);
+	end
+	return math.floor(value + .5);
+end
+
+function FormatPercentage(percentage, roundToNearestInteger)
+	if roundToNearestInteger then
+		percentage = Round(percentage * 100);
+	else
+		percentage = percentage * 100;
+	end
+
+	return PERCENTAGE_STRING:format(percentage);
+end
+
 function CreateTextureMarkup(file, fileWidth, fileHeight, width, height, left, right, top, bottom)
-	return string.format(
-		  "|T%s:%d:%d:0:0:%d:%d:%d:%d:%d:%d|t"
-		, file
+	return ("|T%s:%d:%d:0:0:%d:%d:%d:%d:%d:%d|t"):format(
+		  file
 		, height
 		, width
 		, fileWidth
@@ -810,6 +774,16 @@ function CreateTextureMarkup(file, fileWidth, fileHeight, width, height, left, r
 		, right * fileWidth
 		, top * fileHeight
 		, bottom * fileHeight
+	);
+end
+
+function CreateAtlasMarkup(atlasName, height, width, offsetX, offsetY)
+	return ("|A:%s:%d:%d:%d:%d|a"):format(
+		  atlasName
+		, height or 0
+		, width or 0
+		, offsetX or 0
+		, offsetY or 0
 	);
 end
 

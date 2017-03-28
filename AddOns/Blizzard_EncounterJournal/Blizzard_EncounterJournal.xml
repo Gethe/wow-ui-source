@@ -1328,6 +1328,15 @@
 					<Color r="0.25" g="0.1484375" b=".02" a="1"/>
 				</FontString>
 			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="IconBorder" file="Interface\Common\WhiteIconFrame" hidden="true">
+					<Size x="37" y="37"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.icon"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.icon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 		</Layers>
 		<Scripts>
 			<OnClick>

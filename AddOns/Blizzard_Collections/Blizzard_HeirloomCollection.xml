@@ -175,30 +175,11 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			
-			<Frame parentKey="navigationFrame" setAllPoints="true">
-				<Layers>
-					<Layer level="OVERLAY">
-						<FontString parentKey="pageText" inherits="CollectionsPageTextTemplate" />
-					</Layer>
-				</Layers>
-				<Frames>
-					<Button parentKey="prevPageButton" inherits="CollectionsPrevPageButton">
-						<Scripts>
-							<OnClick>
-								self:GetParent():GetParent():PreviousPage()
-							</OnClick>
-						</Scripts>
-					</Button>
-					
-					<Button parentKey="nextPageButton" inherits="CollectionsNextPageButton">
-						<Scripts>
-							<OnClick>
-								self:GetParent():GetParent():NextPage()
-							</OnClick>
-						</Scripts>
-					</Button>
-				</Frames>
+
+			<Frame parentKey="PagingFrame" inherits="CollectionsPagingFrameTemplate">
+				<Anchors>
+					<Anchor point="BOTTOM" x="21" y="43"/>
+				</Anchors>
 			</Frame>
 			<Frame parentKey="UpgradeLevelHelpBox" inherits="GlowBoxTemplate" enableMouse="true" hidden="true" frameStrata="DIALOG">
 				<Size x="220" y="100"/>

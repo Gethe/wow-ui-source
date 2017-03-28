@@ -65,6 +65,8 @@
 						if GetSuperTrackedQuestID() ~= self.questID then
 							SetSuperTrackedQuestID(self.questID);
 						end
+
+						WorldMapPing_StartPingQuest(self.questID);
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -468,7 +470,7 @@
 			<Layer level="BACKGROUND">
 				<Texture parentKey="Icon" hidden="false" alpha="0" alphaMode="BLEND" atlas="bonusobjectives-title-icon" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.None" x="0" y="4"/>
+						<Anchor point="CENTER" x="0" y="4"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -489,14 +491,14 @@
 			<Layer level="BORDER">
 				<Texture parentKey="BG1" hidden="false" alpha="0" alphaMode="BLEND" atlas="bonusobjectives-title-bg" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.None"/>
+						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="BORDER" textureSubLevel="1">
 				<Texture parentKey="BG2" hidden="false" alpha="0" alphaMode="ADD" atlas="bonusobjectives-title-bg" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.None"/>
+						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
 			</Layer>

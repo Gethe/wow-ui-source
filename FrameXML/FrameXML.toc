@@ -1,19 +1,26 @@
 # Do not delete the following line!
-## Interface: 70100
+## Interface: 70200
 
 ## add C namespace augmentations here
 ..\SharedXML\C_TimerAugment.lua
 
 ## add snippets independent of modules here
 ..\SharedXML\Util.lua
+..\SharedXML\Pools.lua
+..\SharedXML\LoopingSoundEffect.lua
 ..\SharedXML\CircularBuffer.lua
 ..\SharedXML\FontableFrameMixin.lua
 ..\SharedXML\Vector2D.lua
+..\SharedXML\Vector3D.lua
+..\SharedXML\Spline.lua
 MixinUtil.lua
 
 ## intrinsics
 ..\SharedXML\ScrollingMessageFrame.xml
 
+..\SharedXML\ModelSceneTemplates.xml
+..\SharedXML\ModelSceneMixin.xml
+..\SharedXML\ModelSceneActorMixin.xml
 
 AnimatedStatusBar.xml
 FlowContainer.lua
@@ -126,6 +133,7 @@ TaxiFrame.xml
 BankFrame.xml
 ScrollOfResurrection.xml
 RoleSelectionTemplate.xml
+ItemRef.xml
 SocialQueue.xml
 QuickJoinToast.xml
 FriendsFrame.xml
@@ -140,7 +148,6 @@ WorldMapFrame.xml
 QuestMapFrame.xml
 RaidWarning.xml
 CinematicFrame.xml
-ItemRef.xml
 ComboFrame.xml
 TabardFrame.xml
 GuildRegistrarFrame.xml
@@ -160,7 +167,6 @@ LFRFrame.xml
 RaidFinder.xml
 ScenarioFinder.xml
 LFGList.xml
-MovieRecordingProgress.xml
 RatingMenuFrame.xml
 TalentFrameBase.lua
 TalentFrameTemplates.xml

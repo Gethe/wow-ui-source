@@ -3,10 +3,8 @@ ClassNameplateBarWarlock = {};
 function ClassNameplateBarWarlock:OnLoad()
 	self.class = "WARLOCK";
 	self.powerToken = "SOUL_SHARDS";
+	self.Shards = {};
 
-	for i = 1, #self.Shards do
-		self.Shards[i].on = false;
-	end
 	ClassNameplateBar.OnLoad(self);
 end
 
@@ -36,16 +34,41 @@ function ClassNameplateBarWarlock:OnEvent(event, ...)
 	return true;
 end
 
+function ClassNameplateBarWarlock:CreateShards()
+	local maxShards = UnitPowerMax("player", SPELL_POWER_SOUL_SHARDS);
+
+	while #self.Shards < maxShards do
+		local shard = CreateFrame("FRAME", nil, self, "ClassNameplateBarShardFrame");
+		shard.shardIndex = #self.Shards - 1;
+
+		if self.shardPoolAnchor then
+			shard:SetPoint("LEFT", self.shardPoolAnchor, "RIGHT", 4, 0);
+		else
+			shard:SetPoint("LEFT", self, "LEFT", 0, 0);
+		end
+
+		self.shardPoolAnchor = shard;
+		shard:Show();
+	end
+end
+
+function ClassNameplateBarWarlock:SetShard(shard, powerAmount)
+	local fillAmount = Saturate(powerAmount - shard.shardIndex);
+	local active = fillAmount >= 1;
+
+	if fillAmount ~= shard.fillAmount then
+		shard.fillAmount = fillAmount;
+
+		if active then
+			self:TurnOn(shard, shard.ShardOn, 1);
+			shard.PartialFill:SetValue(0);
+		else
+			self:TurnOff(shard, shard.ShardOn, 0);
+			shard.PartialFill:SetValue(fillAmount);
+		end
+	end
+end
+
 function ClassNameplateBarWarlock:UpdatePower()
-	local shards = UnitPower("player", SPELL_POWER_SOUL_SHARDS);
-	for i = 1, min(shards, #self.Shards) do
-		if (not self.Shards[i].on) then
-			self:TurnOn(self.Shards[i], self.Shards[i].ShardOn, 1);
-		end
-	end
-	for i = shards + 1, #self.Shards do
-		if (self.Shards[i].on) then
-			self:TurnOff(self.Shards[i], self.Shards[i].ShardOn, 0);
-		end
-	end
+	WarlockPowerBar_UpdatePower(self);
 end

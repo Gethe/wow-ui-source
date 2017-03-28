@@ -7,6 +7,10 @@ function ClassPowerBar:OnLoad()
 	self:Setup();
 end
 
+function ClassPowerBar:GetUnit()
+	return self:GetParent().unit;
+end
+
 function ClassPowerBar:SetTooltip(tooltipTitle, tooltip)
 	self.tooltipTitle = tooltipTitle;
 	self.tooltip = tooltip;
@@ -38,7 +42,7 @@ end
 function ClassPowerBar:OnEvent(event, ...)
 	if ( event == "UNIT_POWER_FREQUENT" ) then
 		local unitToken, powerToken = ...;
-		if ( unitToken ~= self:GetParent().unit ) then
+		if ( unitToken ~= self:GetUnit() ) then
 			return false; -- Preserve previous behavior by not handling this event here.
 		end
 

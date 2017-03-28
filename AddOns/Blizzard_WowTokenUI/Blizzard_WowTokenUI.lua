@@ -14,7 +14,7 @@ setfenv(1, tbl);
 Import("C_WowTokenSecure");
 Import("C_WowTokenPublic");
 Import("C_Timer");
-Import("C_PurchaseAPI");
+Import("C_StoreSecure");
 
 Import("math");
 Import("string");
@@ -105,6 +105,8 @@ Import("WEEKS_ABBR");
 Import("DAYS_ABBR");
 Import("HOURS_ABBR");
 Import("MINUTES_ABBR");
+Import("HTML_START_CENTERED");
+Import("HTML_END");
 
 Import("LE_TOKEN_RESULT_SUCCESS");
 Import("LE_TOKEN_RESULT_ERROR_OTHER");
@@ -257,7 +259,7 @@ local currencySpecific = {
 };
 
 local function currencyInfo()
-	local currency = C_PurchaseAPI.GetCurrencyID();
+	local currency = C_StoreSecure.GetCurrencyID();
 	local info = currencySpecific[currency];
 	return info;
 end
@@ -429,7 +431,7 @@ function WowTokenRedemptionFrame_OnEvent(self, event, ...)
 		local currentBalance, _, canRedeem, cannotRedeemReason = C_WowTokenSecure.GetBalanceRedemptionInfo();
 		if (canRedeem) then
 			WowTokenRedemptionFrame_EnableBalance(self);
-			self.RightDisplay.Format:SetText(GetBalanceRedemptionString());
+			self.RightDisplay.Format:SetText(HTML_START_CENTERED..GetBalanceRedemptionString()..HTML_END);
 			self.RightDisplay.Spinner:Hide();
 			self.RightDisplay.Format:Show();
 			self.RightDisplay.RedeemButton:Enable();
@@ -440,9 +442,9 @@ function WowTokenRedemptionFrame_OnEvent(self, event, ...)
 			if (cannotRedeemReason == LE_TOKEN_RESULT_ERROR_BALANCE_NEAR_CAP) then
 				local info = currencyInfo();
 				local amountStr = info.currencyFormat(currentBalance, 0);
-				self.RightDisplay.Format:SetText("<html><body><p align=\"center\">"..string.format(TOKEN_REDEEM_BALANCE_ERROR_CAP_FORMAT, amountStr).."</p></body></html>");
+				self.RightDisplay.Format:SetText(HTML_START_CENTERED..string.format(TOKEN_REDEEM_BALANCE_ERROR_CAP_FORMAT, amountStr)..HTML_END);
 			else
-				self.RightDisplay.Format:SetText("<html><body><p align=\"center\">"..TOKEN_REDEMPTION_UNAVAILABLE.."</p></body></html>");
+				self.RightDisplay.Format:SetText(HTML_START_CENTERED..TOKEN_REDEMPTION_UNAVAILABLE..HTML_END);
 			end
 			self.RightDisplay.Spinner:Hide();
 			self.RightDisplay.Format:Show();

@@ -46,18 +46,18 @@ function GuildFrame_OnShow(self)
 	GuildNameChangeAlertFrame.topAnchored = true;
 	GuildFrame.hasForcedNameChange = GetGuildRenameRequired();
 	GuildFrame_CheckName();
-	
+
 	if (GuildFrameTitleText:IsTruncated()) then
 		GuildFrame.TitleMouseover.tooltip = GuildFrameTitleText:GetText();
 	else
 		GuildFrame.TitleMouseover.tooltip = nil;
 	end
-	
+
 	-- keep points frame centered
 	local pointFrame = GuildPointFrame;
 	pointFrame.SumText:SetText(GetTotalAchievementPoints(true));
 	local width = pointFrame.SumText:GetStringWidth() + pointFrame.LeftCap:GetWidth() + pointFrame.RightCap:GetWidth() + pointFrame.Icon:GetWidth();
-	pointFrame:SetWidth(width); 
+	pointFrame:SetWidth(width);
 end
 
 function GuildFrame_OnHide(self)
@@ -141,7 +141,7 @@ function GuildFrame_CheckName()
 	if ( GuildFrame.hasForcedNameChange ) then
 		local clickableHelp = false
 		GuildNameChangeAlertFrame:Show();
-		
+
 		if ( IsGuildLeader() ) then
 			GuildNameChangeFrame.gmText:Show();
 			GuildNameChangeFrame.memberText:Hide();
@@ -158,8 +158,8 @@ function GuildFrame_CheckName()
 			GuildNameChangeFrame.renameText:Hide();
 			GuildNameChangeFrame.editBox:Hide();
 		end
-		
-		
+
+
 		if ( clickableHelp ) then
 			GuildNameChangeAlertFrame.alert:SetFontObject(GameFontHighlight);
 			GuildNameChangeAlertFrame.alert:ClearAllPoints();
@@ -211,7 +211,7 @@ end
 function GuildFrame_OpenAchievement(button, achievementID)
 	if ( not AchievementFrame ) then
 		AchievementFrame_LoadUI();
-	end	
+	end
 	if ( not AchievementFrame:IsShown() ) then
 		AchievementFrame_ToggleAchievementFrame();
 	end
@@ -252,7 +252,7 @@ function GuildFrame_UpdateScrollFrameWidth(scrollFrame)
 		scrollFrame.wideButtons = not scrollFrame.wideButtons;
 		scrollFrame:SetWidth(newButtonWidth);
 		scrollFrame.scrollChild:SetWidth(newButtonWidth);
-	end	
+	end
 end
 
 --****** Panels/Popups **********************************************************
@@ -268,7 +268,7 @@ function GuildFrame_ShowPanel(frameName)
 			frame = _G[value];
 		else
 			_G[value]:Hide();
-		end	
+		end
 	end
 	if ( frame ) then
 		frame:Show();
@@ -312,7 +312,7 @@ end
 function GuildFrame_TabClicked(self)
 	local updateRosterCount = false;
 	local tabIndex = self:GetID();
-	CloseGuildMenus();	
+	CloseGuildMenus();
 	PanelTemplates_SetTab(self:GetParent(), tabIndex);
 	if ( tabIndex == 1 ) then -- News
 		ButtonFrameTemplate_HideButtonBar(GuildFrame);
@@ -324,7 +324,7 @@ function GuildFrame_TabClicked(self)
 		GuildFactionFrame:Show();
 		updateRosterCount = true;
 		GuildFrameMembersCountLabel:Hide();
-	elseif ( tabIndex == 2 ) then -- Roster 
+	elseif ( tabIndex == 2 ) then -- Roster
 		ButtonFrameTemplate_HideButtonBar(GuildFrame);
 		GuildFrame_ShowPanel("GuildRosterFrame");
 		GuildFrameInset:SetPoint("TOPLEFT", 4, -90);
@@ -379,7 +379,11 @@ function GuildFactionBar_OnEnter(self)
 	--Normalize Values
 	barMax = barMax - barMin;
 	barValue = barValue - barMin;
-	
+
+	if (barMax == 0) then
+		barMax = 1;
+	end
+
 	GuildFactionBarLabel:Show();
 	local name, description = GetGuildFactionInfo();
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
@@ -391,6 +395,10 @@ function GuildFactionBar_OnEnter(self)
 end
 
 function GuildBar_SetProgress(bar, currentValue, maxValue)
+	if (maxValue == 0) then
+		maxValue = 1;
+	end
+
 	local MAX_BAR = bar:GetWidth() - 4;
 	local progress = min(MAX_BAR * currentValue / maxValue, MAX_BAR);
 	bar.progress:SetWidth(progress + 1);
@@ -413,7 +421,7 @@ end
 function GuildPerksFrame_OnLoad(self)
 	GuildFrame_RegisterPanel(self);
 	GuildPerksContainer.update = GuildPerks_Update;
-	HybridScrollFrame_CreateButtons(GuildPerksContainer, "GuildPerksButtonTemplate", 8, 0, "TOPLEFT", "TOPLEFT", 0, 0, "TOP", "BOTTOM");	
+	HybridScrollFrame_CreateButtons(GuildPerksContainer, "GuildPerksButtonTemplate", 8, 0, "TOPLEFT", "TOPLEFT", 0, 0, "TOP", "BOTTOM");
 	self:RegisterEvent("GUILD_ROSTER_UPDATE");
 	-- create buttons table for news update
 	local buttons = { };
@@ -485,7 +493,7 @@ function GuildPerks_Update()
 	local button, index;
 	local numPerks = GetNumGuildPerks();
 --	local guildLevel = GetGuildLevel();
-	
+
 	local totalHeight = numPerks * scrollFrame.buttonHeight;
 	local displayedHeight = numButtons * scrollFrame.buttonHeight;
 	local buttonWidth = scrollFrame.buttonWidth;
@@ -514,7 +522,7 @@ function GuildPerks_Update()
 		end
 	end
 	HybridScrollFrame_Update(scrollFrame, totalHeight, displayedHeight);
-		
+
 	-- update tooltip
 	if ( scrollFrame.activeButton ) then
 		GuildPerksButton_OnEnter(scrollFrame.activeButton);

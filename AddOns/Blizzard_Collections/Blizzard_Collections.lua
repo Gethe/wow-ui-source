@@ -1,5 +1,5 @@
 COLLECTIONS_FANFARE_ICON = "Interface/Icons/Item_Shop_GiftBox01";
-COLLECTIONS_FANFARE_DISPLAY_ID = 71933;
+COLLECTIONS_FANFARE_CREATURE_DISPLAY_ID = 71933;
 
 function CollectionsJournal_SetTab(self, tab)
 	PanelTemplates_SetTab(self, tab);

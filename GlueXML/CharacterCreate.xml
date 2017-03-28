@@ -1601,6 +1601,9 @@
 						</Frames>
 					</Frame>
 					<Frame name="CharCreateCharacterTypeFrame" inherits="CharCreateResizablePanelTemplate">
+						<KeyValues>
+							<KeyValue key="allowShowing" value="true" type="boolean"/>
+						</KeyValues>
 						<Size x="340" y="105" />
 						<Anchors>
 							<Anchor point="TOP" x="0" y="-3"/>
@@ -2267,7 +2270,7 @@
 			<OnEvent function="CharacterCreate_OnEvent"/>
 			<OnChar function="CharacterCreate_OnChar"/>
 			<OnKeyDown function="CharacterCreate_OnKeyDown"/>
-			<OnUpdateModel function="CharacterCreate_UpdateModel"/>
+			<OnUpdate function="CharacterCreate_UpdateModel"/>
 		</Scripts>
 	</ModelFFX>
 

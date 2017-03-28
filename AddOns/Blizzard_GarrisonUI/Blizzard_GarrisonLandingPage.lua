@@ -1,5 +1,9 @@
 GARRISON_FOLLOWER_MAX_LEVEL = 100;
-GARRISON_FOLLOWER_MAX_UPGRADE_QUALITY = 4;
+GARRISON_FOLLOWER_MAX_UPGRADE_QUALITY = {
+	[LE_FOLLOWER_TYPE_GARRISON_6_0] = LE_GARR_FOLLOWER_QUALITY_EPIC;
+	[LE_FOLLOWER_TYPE_SHIPYARD_6_2] = LE_GARR_FOLLOWER_QUALITY_EPIC;
+	[LE_FOLLOWER_TYPE_GARRISON_7_0] = LE_GARR_FOLLOWER_QUALITY_TITLE;
+}
 
 GARRISON_MISSION_NAME_FONT_COLOR	=	{r=0.78, g=0.75, b=0.73};
 GARRISON_MISSION_TYPE_FONT_COLOR	=	{r=0.8, g=0.7, b=0.53};
@@ -164,6 +168,7 @@ local function OnShipmentReleased(pool, shipmentFrame)
 	shipmentFrame.Border:Show();
 	shipmentFrame.BG:Hide();
 	shipmentFrame.Count:SetText(nil);
+	shipmentFrame.Swipe:Hide();
 end
 
 function GarrisonLandingPageReport_OnLoad(self)
@@ -207,7 +212,7 @@ end
 function GarrisonLandingPageReport_OnEvent(self, event)
 	if ( event == "GARRISON_LANDINGPAGE_SHIPMENTS" or event == "GARRISON_TALENT_UPDATE" or event == "GARRISON_TALENT_COMPLETE") then
 		GarrisonLandingPageReport_GetShipments(self);
-	elseif ( event == "GARRISON_MISSION_LIST_UPDATE" ) then
+	elseif ( event == "GARRISON_MISSION_LIST_UPDATE" or event == "GET_ITEM_INFO_RECEIVED" ) then
 		GarrisonLandingPageReportList_UpdateItems();
 	elseif ( event == "GARRISON_SHIPMENT_RECEIVED" ) then
 		C_Garrison.RequestLandingPageShipmentInfo();
@@ -407,6 +412,9 @@ end
 
 function GarrisonLandingPageReportList_OnHide(self)
 	self.missions = nil;
+	if ( GarrisonLandingPageReport:IsEventRegistered("GET_ITEM_INFO_RECEIVED") ) then
+		GarrisonLandingPageReport:UnregisterEvent("GET_ITEM_INFO_RECEIVED");
+	end
 end
 
 function GarrisonLandingPageReportTab_OnClick(self)
@@ -473,6 +481,7 @@ function GarrisonLandingPageReportList_UpdateAvailable()
 		GarrisonLandingPageReport.List.EmptyMissionText:SetText(nil);
 	end
 	
+	local allItemDataAvailable = true;
 	for i = 1, numButtons do
 		local button = buttons[i];
 		local index = offset + i; -- adjust index
@@ -512,8 +521,13 @@ function GarrisonLandingPageReportList_UpdateAvailable()
 				Reward.bonusAbilityDescription = nil;
 				if (reward.itemID) then
 					Reward.itemID = reward.itemID;
-					local _, _, _, _, _, _, _, _, _, itemTexture = GetItemInfo(reward.itemID);
+					local _, _, quality, _, _, _, _, _, _, itemTexture = GetItemInfo(reward.itemID);
 					Reward.Icon:SetTexture(itemTexture);
+					SetItemButtonQuality(Reward, quality, reward.itemID);
+					if ( not quality ) then
+						allItemDataAvailable = false;
+					end
+					
 					if ( reward.quantity > 1 ) then
 						Reward.Quantity:SetText(reward.quantity);
 						Reward.Quantity:Show();
@@ -563,6 +577,16 @@ function GarrisonLandingPageReportList_UpdateAvailable()
 			button:Show();
 		else
 			button:Hide();
+		end
+	end
+	
+	if ( allItemDataAvailable ) then
+		if ( GarrisonLandingPageReport:IsEventRegistered("GET_ITEM_INFO_RECEIVED") ) then
+			GarrisonLandingPageReport:UnregisterEvent("GET_ITEM_INFO_RECEIVED");
+		end
+	else
+		if ( not GarrisonLandingPageReport:IsEventRegistered("GET_ITEM_INFO_RECEIVED") ) then
+			GarrisonLandingPageReport:RegisterEvent("GET_ITEM_INFO_RECEIVED");
 		end
 	end
 	

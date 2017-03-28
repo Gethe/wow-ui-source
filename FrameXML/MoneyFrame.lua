@@ -602,6 +602,8 @@ function SetMoneyFrameColor(frameName, color)
 			fontObject = NumberFontNormalRightYellow;
 		elseif ( color == "red" ) then
 			fontObject = NumberFontNormalRightRed;
+		elseif ( color == "gray" ) then
+			fontObject = NumberFontNormalRightGray;
 		else
 			fontObject = NumberFontNormalRight;
 		end
@@ -610,6 +612,8 @@ function SetMoneyFrameColor(frameName, color)
 			fontObject = NumberFontNormalLargeRightYellow;
 		elseif ( color == "red" ) then
 			fontObject = NumberFontNormalLargeRightRed;
+		elseif ( color == "gray" ) then
+			fontObject = NumberFontNormalLargeRightGray;
 		else
 			fontObject = NumberFontNormalLargeRight;
 		end
@@ -624,12 +628,18 @@ function SetMoneyFrameColor(frameName, color)
 	copperButton:SetNormalFontObject(fontObject);
 end
 
-function AltCurrencyFrame_Update(frameName, texture, cost)
+function AltCurrencyFrame_Update(frameName, texture, cost, canAfford)
 	local iconWidth;
 	local button = _G[frameName];
 	local buttonTexture = _G[frameName.."Texture"];
 	button:SetText(cost);
 	buttonTexture:SetTexture(texture);
+	local fontColor = HIGHLIGHT_FONT_COLOR;
+	if (canAfford == false) then
+		fontColor = DISABLED_FONT_COLOR;
+	end
+	button.Text:SetTextColor(fontColor.r, fontColor.g, fontColor.b);
+	buttonTexture:SetDesaturated(canAfford == false);
 	if ( button.pointType == HONOR_POINTS ) then
 		iconWidth = 24;
 		buttonTexture:SetPoint("LEFT", _G[frameName.."Text"], "RIGHT", -1, -6);

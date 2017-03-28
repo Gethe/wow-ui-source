@@ -164,3 +164,10 @@ function AutoFollowStatus_OnUpdate(self, elapsed)
 		end
 	end
 end
+
+-- clear the zone text if we put other UI in the center area.
+function ZoneText_Clear()
+	ZoneTextString:SetText("");
+	SubZoneTextString:SetText("");
+	PVPInfoTextString:SetText("");
+end

@@ -302,6 +302,12 @@
 					</Anchors>
 					<TexCoords left="0.62500000" right="0.98437500" top="0.74218750" bottom="0.82812500"/>
 				</Texture>
+				<Texture parentKey="SpellHighlightTexture" atlas="bags-newitem" useAtlasSize="false" alphaMode="ADD" hidden="true">
+					<Size x="48" y="48"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 			<Layer level="BACKGROUND" textureSubLevel="1">
 				<Texture name="$parentTrainTextBackground" inherits="Spellbook-TrainTextBackground" parentKey="TrainTextBackground" hidden="true">
@@ -350,18 +356,16 @@
 			</OnHide>
 			<OnDragStart>
 				if (self.isPassive) then return end;
-				SpellButton_OnDrag(self, button);
+				SpellButton_OnDragStart(self, button);
 			</OnDragStart>
 			<OnReceiveDrag>
 				if (self.isPassive) then return end;
-				SpellButton_OnDrag(self);
+				SpellButton_OnReceiveDrag(self);
 			</OnReceiveDrag>
 			<OnEnter>
 				SpellButton_OnEnter(self, motion);
 			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
+			<OnLeave function="SpellButton_OnLeave"/>
 		</Scripts>
 		<Animations>
 			<AnimationGroup parentKey="GlyphActivateAnim" setToFinalAlpha="true">

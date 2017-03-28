@@ -493,7 +493,7 @@ function HonorExhaustionTick_Update(self, isMainMenuBar)
 	local exhaustionStateID, exhaustionStateName, exhaustionStateMultiplier, exhaustionTickSet;
 	exhaustionStateID, exhaustionStateName, exhaustionStateMultiplier = GetHonorRestState();
 	
-	if (not exhaustionThreshold or exhaustionTreshold == 0) then
+	if (not exhaustionThreshold or exhaustionThreshold == 0) then
 		self:Hide();
 		fillBar:Hide();
 		return;

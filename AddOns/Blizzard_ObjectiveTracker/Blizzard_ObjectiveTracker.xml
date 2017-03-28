@@ -202,6 +202,7 @@
 			<OnLoad>
 				self.Text:SetWidth(OBJECTIVE_TRACKER_TEXT_WIDTH);
 			</OnLoad>
+			<OnHide function="ObjectiveTrackerCheckLine_OnHide"/>
 		</Scripts>
 	</Frame>
 	

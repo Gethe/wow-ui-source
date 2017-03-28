@@ -133,21 +133,11 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				ArenaEnemyPetFrame_OnLoad(self);
-			</OnLoad>
-			<OnShow>
-				UnitFrame_Update(self);
-			</OnShow>
-			<OnEvent>
-				ArenaEnemyPetFrame_OnEvent(self, event, ...);
-			</OnEvent>
-			<OnEnter>
-				UnitFrame_OnEnter(self, motion);
-			</OnEnter>
-			<OnLeave>
-				UnitFrame_OnLeave(self, motion);
-			</OnLeave>
+			<OnLoad function="ArenaEnemyPetFrame_OnLoad"/>
+			<OnShow function="UnitFrame_Update"/>
+			<OnEvent function="ArenaEnemyPetFrame_OnEvent"/>
+			<OnEnter function="UnitFrame_OnEnter"/>
+			<OnLeave function="UnitFrame_OnLeave"/>
 		</Scripts>
 	</Button>
 	<Button name="ArenaPrepFrameTemplate" frameStrata="LOW" toplevel="true" movable="true" hidden="true" inherits="SecureUnitButtonTemplate" virtual="true">
@@ -282,7 +272,7 @@
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 				<BarColor r="0" g="0" b="1.0"/>
 			</StatusBar>
-			<StatusBar name="$parentCastingBar" inherits="ArenaCastingBarFrameTemplate">
+			<StatusBar parentKey="CastingBar" name="$parentCastingBar" inherits="ArenaCastingBarFrameTemplate">
 				<Anchors>
 					<Anchor point="RIGHT" relativePoint="LEFT" x="-15" y="-3"/>
 				</Anchors>
@@ -324,36 +314,27 @@
 				</Frames>
 			</Frame>
 			<Button name="$parentPetFrame" inherits="ArenaEnemyPetFrameTemplate" parentKey="petFrame"/>
+			<Frame parentKey="CC">
+				<Size x="18" y="18"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativePoint="LEFT" x="-12" y="-3"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Icon" setAllPoints="true"/>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Cooldown name="$parentCooldown" parentKey="Cooldown" inherits="CooldownFrameTemplate" setAllPoints="true"/>
+				</Frames>
+			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				local id = self:GetID();
-				self.debuffCountdown = 0; 
-				self.numDebuffs = 0;
-				self.noTextPrefix = 1;
-				local prefix = "ArenaEnemyFrame"..id;
-				UnitFrame_Initialize(self, "arena"..id,  _G[prefix.."Name"], nil,
-						_G[prefix.."HealthBar"], _G[prefix.."HealthBarText"], 
-						_G[prefix.."ManaBar"], _G[prefix.."ManaBarText"], nil, nil, nil,
-						_G[prefix.."MyHealPredictionBar"], _G[prefix.."OtherHealPredictionBar"],
-						_G[prefix.."TotalAbsorbBar"], _G[prefix.."TotalAbsorbBarOverlay"], _G[prefix.."OverAbsorbGlow"],
-						_G[prefix.."OverHealAbsorbGlow"], _G[prefix.."HealAbsorbBar"], _G[prefix.."HealAbsorbBarLeftShadow"],
-						_G[prefix.."HealAbsorbBarRightShadow"]);
-				SetTextStatusBarTextZeroText(_G[prefix.."HealthBar"], DEAD);
-				ArenaEnemyFrame_OnLoad(self);
-			</OnLoad>
-			<OnShow>
-				self:SetFrameLevel(2);
-			</OnShow>
-			<OnEvent>
-				ArenaEnemyFrame_OnEvent(self, event, ...);
-			</OnEvent>
-			<OnEnter>
-				UnitFrame_OnEnter(self);
-			</OnEnter>
-			<OnLeave>
-				UnitFrame_OnLeave(self);
-			</OnLeave>
+			<OnLoad function="ArenaEnemyFrame_OnLoad"/>
+			<OnShow function="ArenaEnemyFrame_OnShow"/>
+			<OnEvent function="ArenaEnemyFrame_OnEvent"/>
+			<OnEnter function="UnitFrame_OnEnter"/>
+			<OnLeave function="UnitFrame_OnLeave"/>
 		</Scripts>
 	</Button>
 	<Frame name="ArenaPrepFrames" hidden="true" parent="UIParent">
@@ -412,14 +393,14 @@
 				<Scripts>
 					<OnLoad>
 						self:RegisterEvent("SCRIPT_ARENA_PREP_OPPONENT_SPECIALIZATIONS");
-						UpdateArenaPrepBackground();
+						ArenaPrepFrames_UpdateBackground();
 					</OnLoad>
 					<OnShow>
 						self:SetFrameLevel(1);
 					</OnShow>
 					<OnEvent>
 						if ( event == "SCRIPT_ARENA_PREP_OPPONENT_SPECIALIZATIONS" ) then
-							UpdateArenaPrepBackground();
+							ArenaPrepFrames_UpdateBackground();
 							OpacityFrameSlider:SetValue(tonumber(GetCVar("partyBackgroundOpacity")));
 							ArenaPrepBackground_SetOpacity();
 						end

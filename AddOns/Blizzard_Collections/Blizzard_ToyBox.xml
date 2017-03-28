@@ -112,7 +112,7 @@
 				</Frames>
 				<Scripts>
 					<OnLoad>
-						self:SetHeight(self.BigText:GetHeight() + 29);
+						self:SetHeight(self.BigText:GetHeight() + HELPTIP_HEIGHT_PADDING);
 					</OnLoad>
 				</Scripts>
 			</Frame>
@@ -253,24 +253,10 @@
 			</Frame>
 
 			<!-- Paging -->
-			<Frame parentKey="navigationFrame" setAllPoints="true">
-				<Layers>
-					<Layer level="OVERLAY">
-						<FontString parentKey="pageText" inherits="CollectionsPageTextTemplate" />
-					</Layer>
-				</Layers>
-				<Frames>
-					<Button parentKey="prevPageButton" inherits="CollectionsPrevPageButton">
-						<Scripts>
-							<OnClick function="ToyBoxPrevPageButton_OnClick"/>
-						</Scripts>
-					</Button>
-					<Button parentKey="nextPageButton" inherits="CollectionsNextPageButton">
-						<Scripts>
-							<OnClick function="ToyBoxNextPageButton_OnClick"/>
-						</Scripts>
-					</Button>
-				</Frames>
+			<Frame parentKey="PagingFrame" inherits="CollectionsPagingFrameTemplate">
+				<Anchors>
+					<Anchor point="BOTTOM" x="21" y="43"/>
+				</Anchors>
 			</Frame>
 			<Frame name="$parentToyOptionsMenu" inherits="UIDropDownMenuTemplate" enableMouse="true" parentKey="toyOptionsMenu"/>
 		</Frames>

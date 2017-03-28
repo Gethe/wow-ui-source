@@ -2,8 +2,41 @@
 ..\FrameXML\UI.xsd">
 	<Script file="WorldMapBountyBoard.lua"/>
 	<Script file="WorldMapActionButton.lua"/>
+	<Script file="WorldMapPOIQuantizer.lua"/>
 	<Script file="WorldMapFrame.lua"/>
 	<Include file="WorldMapFrameTemplates.xml"/>
+
+	<Frame name="WorldMapPingTemplate" mixin="WorldMapPingMixin" virtual="true">
+		<Size x="70" y="70"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Expand" file="Interface/minimap/UI-Minimap-Ping-Expand" alpha="0">
+					<Size x="32" y="32"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="DriverAnimation" mixin="WorldMapPingAnimationMixin">
+				<Alpha childKey="Expand" fromAlpha="0" toAlpha="1"                      duration="0.2" order="1"/>
+				<Alpha childKey="Expand" fromAlpha="1" toAlpha="0" startDelay=".45"     duration="0.2" order="1"/>
+				<Alpha childKey="Expand" fromAlpha="0" toAlpha="1" startDelay=".575"    duration="0.2" order="1"/>
+				<Alpha childKey="Expand" fromAlpha="1" toAlpha="0" startDelay=".95"     duration="0.2" order="1"/>
+
+				<Scripts>
+					<OnPlay method="OnPlay"/>
+					<OnFinished method="OnStop"/>
+					<OnStop method="OnStop"/>
+				</Scripts>
+			</AnimationGroup>
+			<AnimationGroup parentKey="ScaleAnimation" looping="REPEAT">
+				<Scale childKey="Expand" fromScaleX=".5" fromScaleY=".5" toScaleX="1.2" toScaleY="1.2" duration=".575" order="1"/>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+
 	<Frame name="WorldMapFrame" frameStrata="FULLSCREEN" setAllPoints="true" hidden="true" enableKeyboard="true" enableMouse="true" clampedToScreen="true" toplevel="true" >
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="-8">
@@ -203,6 +236,7 @@
 									</Layer>
 									<Layer level="BACKGROUND" textureSubLevel="1">
 										<Texture name="WorldMapInvasionOverlay" atlas="legioninvasion-map-cover" />
+										<Texture name="WorldMapAreaPOIBannerOverlay" atlas="legioninvasion-map-cover" hidden="true"/>
 									</Layer>
 									<Layer level="OVERLAY">
 										<Texture name="WorldMapHighlight" alphaMode="ADD" hidden="true">
@@ -440,6 +474,7 @@
 											</OnEvent>
 										</Scripts>
 									</CinematicModel>
+									<Frame parentKey="POIPing" inherits="WorldMapPingTemplate"/>
 								</Frames>
 							</Frame>
 							<UnitPositionFrame name="WorldMapUnitPositionFrame" frameLevel="1500" inherits="UnitPositionFrameTemplate">
@@ -737,7 +772,7 @@
 			<OnUpdate>
 				if ( self.recalculatePadding ) then
 					self.recalculatePadding = nil;
-					WorldMapTooltip_CalculatePadding();
+					GameTooltip_CalculatePadding(self);
 				end
 				self.updateTooltip = (self.updateTooltip or TOOLTIP_UPDATE_TIME) - elapsed;
 				if ( self.updateTooltip > 0 ) then
@@ -778,68 +813,5 @@
 			<OnDragStop function="WorldMapTitleButton_OnDragStop" />
 		</Scripts>
 	</Button>
-	<Frame name="WorldMapTaskTooltipStatusBar">
-		<Size x="219" y="25"/>
-		<Frames>
-			<StatusBar parentKey="Bar" drawLayer="BACKGROUND" minValue="0" maxValue="100" defaultValue="0">
-				<Size x="215" y="15"/>
-				<Anchors>
-					<Anchor point="CENTER" x="0" y="0"/>
-				</Anchors>
-				<Layers>
-					<Layer level="BORDER">
-						<Texture parentKey="BorderLeft" file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder">
-							<Size x="9" y="22"/>
-							<Anchors>
-								<Anchor point="LEFT" x="-3" y="0"/>
-							</Anchors>
-							<TexCoords left="0.007843" right="0.043137" top="0.193548" bottom="0.774193"/>
-						</Texture>
-						<Texture parentKey="BorderRight" file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder">
-							<Size x="9" y="22"/>
-							<Anchors>
-								<Anchor point="RIGHT" x="3" y="0"/>
-							</Anchors>
-							<TexCoords left="0.043137" right="0.007843" top="0.193548" bottom="0.774193"/>
-						</Texture>
-						<Texture parentKey="BorderMid" file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder">
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.BorderLeft" relativePoint="TOPRIGHT"/>
-								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BorderRight" relativePoint="BOTTOMLEFT"/>
-							</Anchors>
-							<TexCoords left="0.113726" right="0.1490196" top="0.193548" bottom="0.774193"/>
-						</Texture>
-						<FontString parentKey="Label" inherits="GameFontHighlightMedium" justifyH="LEFT">
-						  <Anchors>
-							<Anchor point="CENTER" x="0" y="0"/>
-						  </Anchors>
-						</FontString>
-					</Layer>
-					<Layer level="ARTWORK">
-						<Texture parentKey="LeftDivider" file="Interface\GuildFrame\GuildFrame">
-							<Size x="7" y="14"/>
-							<Anchors>
-								<Anchor point="LEFT" x="66" y="0"/>
-							</Anchors>
-							<TexCoords left="0.41601563" right="0.42285156" top="0.91796875" bottom="0.94531250"/>
-						</Texture>
-						<Texture parentKey="RightDivider" file="Interface\GuildFrame\GuildFrame">
-							<Size x="7" y="14"/>
-							<Anchors>
-								<Anchor point="RIGHT" x="-66" y="0"/>
-							</Anchors>
-							<TexCoords left="0.41601563" right="0.42285156" top="0.91796875" bottom="0.94531250"/>
-						</Texture>
-					</Layer>
-					<Layer level="BACKGROUND" textureSubLevel="-1">
-						<Texture>
-							<Color r="0.04" g="0.07" b="0.18"/>
-						</Texture>
-					</Layer>
-				</Layers>
-				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
-				<BarColor r="0.26" g="0.42" b="1"/>
-			</StatusBar>
-		</Frames>
-	</Frame>
+	<Frame name="WorldMapTaskTooltipStatusBar" inherits="TooltipProgressBarTemplate"/>
 </Ui>

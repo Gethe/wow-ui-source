@@ -1,4 +1,16 @@
 ---------------------------------------------------------------------------------
+-- Global Constants
+---------------------------------------------------------------------------------
+FOLLOWER_QUALITY_COLORS = {
+	[LE_GARR_FOLLOWER_QUALITY_COMMON] = ITEM_QUALITY_COLORS[1]; -- Common
+	[LE_GARR_FOLLOWER_QUALITY_UNCOMMON] = ITEM_QUALITY_COLORS[2]; -- Uncommon
+	[LE_GARR_FOLLOWER_QUALITY_RARE] = ITEM_QUALITY_COLORS[3]; -- Rare
+	[LE_GARR_FOLLOWER_QUALITY_EPIC] = ITEM_QUALITY_COLORS[4]; -- Epic
+	[LE_GARR_FOLLOWER_QUALITY_LEGENDARY] = ITEM_QUALITY_COLORS[5]; -- Legendary
+	[LE_GARR_FOLLOWER_QUALITY_TITLE] = ITEM_QUALITY_COLORS[4]; -- Followers with the title (== 6) quality still appear as epic to players.
+};
+
+---------------------------------------------------------------------------------
 -- Display Options
 ---------------------------------------------------------------------------------
 GarrisonFollowerOptions = { };
@@ -237,11 +249,23 @@ function GarrisonFollowerPortraitMixin:SetPortraitIcon(iconFileID)
 end
 
 function GarrisonFollowerPortraitMixin:SetQuality(quality)
-	local color = quality and ITEM_QUALITY_COLORS[quality] or nil;
-	if (color) then
-		self:SetQualityColor(color.r, color.g, color.b);
-	else
+	self.quality = quality;
+	
+	if (quality == LE_GARR_FOLLOWER_QUALITY_TITLE) then
+		self.LevelBorder:SetAtlas("legionmission-portraitring_levelborder_epicplus", true);
+		self.PortraitRing:SetAtlas("legionmission-portraitring-epicplus", true);
+		self.PortraitRingQuality:Hide();
 		self:SetQualityColor(1, 1, 1);
+	else
+		self.LevelBorder:SetAtlas("GarrMission_PortraitRing_LevelBorder", true);
+		self.PortraitRing:SetAtlas("GarrMission_PortraitRing_Quality", true);
+		self.PortraitRingQuality:Show();
+		local color = quality and FOLLOWER_QUALITY_COLORS[quality] or nil;
+		if (color) then
+			self:SetQualityColor(color.r, color.g, color.b);
+		else
+			self:SetQualityColor(1, 1, 1);
+		end
 	end
 end
 
@@ -256,7 +280,11 @@ function GarrisonFollowerPortraitMixin:SetNoLevel()
 end
 
 function GarrisonFollowerPortraitMixin:SetLevel(level)
-	self.LevelBorder:SetAtlas("GarrMission_PortraitRing_LevelBorder");
+	if (self.quality == LE_GARR_FOLLOWER_QUALITY_TITLE) then
+		self.LevelBorder:SetAtlas("legionmission-portraitring_levelborder_epicplus", true);
+	else
+		self.LevelBorder:SetAtlas("GarrMission_PortraitRing_LevelBorder");
+	end
 	self.LevelBorder:SetWidth(58);
 	self.LevelBorder:Show();
 	self.Level:Show();

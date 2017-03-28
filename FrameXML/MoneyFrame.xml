@@ -40,7 +40,7 @@
 					</Anchors>
 					<TexCoords left="0.5" right="0.75" top="0" bottom="1"/>
 				</NormalTexture>
-				<ButtonText name="$parentText">
+				<ButtonText name="$parentText" parentKey="Text">
 					<Anchors>
 						<Anchor point="RIGHT">
 							<Offset>
@@ -79,7 +79,7 @@
 					</Anchors>
 					<TexCoords left="0.25" right="0.5" top="0" bottom="1"/>
 				</NormalTexture>
-				<ButtonText name="$parentText">
+				<ButtonText name="$parentText" parentKey="Text">
 					<Anchors>
 						<Anchor point="RIGHT">
 							<Offset>
@@ -118,7 +118,7 @@
 					</Anchors>
 					<TexCoords left="0" right="0.25" top="0" bottom="1"/>
 				</NormalTexture>
-				<ButtonText name="$parentText">
+				<ButtonText name="$parentText" parentKey="Text">
 					<Anchors>
 						<Anchor point="RIGHT">
 							<Offset>
@@ -207,7 +207,7 @@
 					</Anchors>
 					<TexCoords left="0.5" right="0.75" top="0" bottom="1"/>
 				</NormalTexture>
-				<ButtonText name="$parentText">
+				<ButtonText name="$parentText" parentKey="Text">
 					<Anchors>
 						<Anchor point="RIGHT">
 							<Offset>
@@ -246,7 +246,7 @@
 					</Anchors>
 					<TexCoords left="0.25" right="0.5" top="0" bottom="1"/>
 				</NormalTexture>
-				<ButtonText name="$parentText">
+				<ButtonText name="$parentText" parentKey="Text">
 					<Anchors>
 						<Anchor point="RIGHT">
 							<Offset>
@@ -285,7 +285,7 @@
 					</Anchors>
 					<TexCoords left="0" right="0.25" top="0" bottom="1"/>
 				</NormalTexture>
-				<ButtonText name="$parentText">
+				<ButtonText name="$parentText" parentKey="Text">
 					<Anchors>
 						<Anchor point="RIGHT">
 							<Offset>
@@ -332,7 +332,7 @@
 				ResetCursor();
 			</OnLeave>
 		</Scripts>
-		<ButtonText name="$parentText">
+		<ButtonText name="$parentText" parentKey="Text">
 			<Anchors>
 				<Anchor point="LEFT">
 					<Offset>

@@ -3,6 +3,19 @@ local NO_SPEC_FILTER = 0;
 local NO_CLASS_FILTER = 0;
 local NO_INV_TYPE_FILTER = 0;
 
+function LootJournal_GetPreviewClassAndSpec()
+	local classID, specID = C_LootJournal.GetClassAndSpecFilters();
+	if specID == 0 then
+		local spec = GetSpecialization();
+		if spec and classID == select(3, UnitClass("player")) then
+			specID = GetSpecializationInfo(spec, nil, nil, nil, UnitSex("player"));
+		else
+			specID = -1;
+		end
+	end
+	return classID, specID;
+end
+
 --=================================================================================================================================== 
 LootJournalMixin = { };
 
@@ -119,15 +132,7 @@ function LootJournalListMixin:ShowItemTooltip(button)
 	GameTooltip:SetOwner(button, "ANCHOR_RIGHT");
 	-- itemLink may not be available until after a GET_ITEM_INFO_RECEIVED event
 	if ( button.itemLink ) then
-		local classID, specID = C_LootJournal.GetClassAndSpecFilters();
-		if (specID == 0) then
-			local spec = GetSpecialization();
-			if (spec and classID == select(3, UnitClass("player"))) then
-				specID = GetSpecializationInfo(spec, nil, nil, nil, UnitSex("player"));
-			else
-				specID = -1;
-			end
-		end
+		local classID, specID = LootJournal_GetPreviewClassAndSpec();
 		GameTooltip:SetHyperlink(button.itemLink, classID, specID);
 	else
 		GameTooltip:SetItemByID(button.itemID);
@@ -285,46 +290,23 @@ function LootJournalLegendariesMixin:OnLoad()
 end
 
 function LootJournalLegendariesMixin:OnShow()
-	self:RegisterEvent("GET_ITEM_INFO_RECEIVED");
 	self:Refresh();
 end
 
 function LootJournalLegendariesMixin:OnHide()
-	self:UnregisterEvent("GET_ITEM_INFO_RECEIVED");
 	self.items = nil;
 end
 
-function LootJournalLegendariesMixin:OnEvent(event, ...)
-	if ( event == "GET_ITEM_INFO_RECEIVED" ) then
-		local itemID = ...;
-		for i = 1, #self.buttons do
-			if ( self.buttons[i].itemID == itemID ) then
-				self:ConfigureItemButton(self.buttons[i]);
-				return;
-			end
-		end
-		for i = 1, #self.rightSideButtons do
-			if ( self.rightSideButtons[i].itemID == itemID ) then
-				self:ConfigureItemButton(self.rightSideButtons[i]);
-				return;
-			end
-		end
+function LootJournalLegendariesMixin:ConfigureItemButton(button, itemInfo)
+	button.itemInfo = itemInfo;
+	button.ItemName:SetText(itemInfo.name);
+	button.ItemName:SetTextColor(GetItemQualityColor(itemInfo.quality));
+	local text = _G[itemInfo.inventoryTypeName];
+	if ( itemInfo.isCraftable ) then
+		text = format(LOOT_JOURNAL_LEGENDARIES_CRAFTED_ITEM, text);
 	end
-end
-
-function LootJournalLegendariesMixin:ConfigureItemButton(button)
-	local itemName, itemLink, itemQuality, _, _, _, _, _, itemEquipLoc, itemTexture = GetItemInfo(button.itemID);
-	button.itemLink = itemLink;	
-	if ( itemName ) then
-		button.ItemName:SetText(itemName);
-		button.ItemName:SetTextColor(GetItemQualityColor(itemQuality));
-		button.ItemType:SetText(_G[itemEquipLoc]);
-		button.Icon:SetTexture(itemTexture);
-	else
-		button.ItemName:SetText("");
-		button.ItemType:SetText("");
-		button.Icon:SetTexture(nil);
-	end
+	button.ItemType:SetText(text);
+	button.Icon:SetTexture(itemInfo.icon);
 	self:CheckItemButtonTooltip(button);
 end
 
@@ -348,14 +330,11 @@ function LootJournalLegendariesMixin:UpdateList()
 		end
 		local index = offset * LJ_LEGENDARY_NUM_COLS + i;
 		if ( index <= #self.items ) then
-			button.itemID = self.items[index];
-			button.itemLink = itemLink;
 			button:Show();
-			self:ConfigureItemButton(button);
+			self:ConfigureItemButton(button, self.items[index]);
 		else
 			button:Hide();
-			button.itemID = nil;
-			button.itemLink = nil;
+			button.itemInfo = nil;
 		end
 	end
 
@@ -366,8 +345,9 @@ end
 
 function LootJournalLegendariesMixin:ShowItemTooltip(button)
 	GameTooltip:SetOwner(button, "ANCHOR_RIGHT");
-	GameTooltip:SetItemByID(button.itemID);
-	self.tooltipItemID = button.itemID;
+	local classID, specID = LootJournal_GetPreviewClassAndSpec();
+	GameTooltip:SetHyperlink(button.itemInfo.link, classID, specID);
+	self.tooltipItemID = button.itemInfo.itemID;
 	GameTooltip_ShowCompareItem();
 end
 

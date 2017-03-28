@@ -463,7 +463,7 @@
 	 	</Scripts>
 	</Frame>
 
-	<Frame name="HonorLevelUpBanner" hidden="true">
+	<Frame name="HonorLevelUpBanner" frameStrata="DIALOG" hidden="true">
 		<Size x="128" y="128"/>
 		<Anchors>
 			<Anchor point="TOP" x="0" y="-133"/>
@@ -564,7 +564,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="PrestigeLevelUpBanner" hidden="true">
+	<Frame name="PrestigeLevelUpBanner" frameStrata="DIALOG" hidden="true">
 		<Size x="128" y="128"/>
 		<Anchors>
 			<Anchor point="TOP" x="0" y="-270"/>

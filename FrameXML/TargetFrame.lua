@@ -658,7 +658,7 @@ function TargetFrame_ShouldShowDebuffs(unit, caster, nameplateShowAll, casterIsA
 		return true;
 	end
 
-	if (caster and UnitIsUnit("player", caster)) then
+	if (caster and (UnitIsUnit("player", caster) or UnitIsUnit("pet", caster))) then
 		return true;
 	end
 
@@ -964,16 +964,6 @@ function TargetofTarget_Update(self, elapsed)
 	local show;
 	local parent = self:GetParent();
 	if ( SHOW_TARGET_OF_TARGET == "1" and UnitExists(parent.unit) and UnitExists(self.unit) and ( not UnitIsUnit(PlayerFrame.unit, parent.unit) ) and ( UnitHealth(parent.unit) > 0 ) ) then
-		if ( ( SHOW_TARGET_OF_TARGET_STATE == "5" ) or
-		     ( SHOW_TARGET_OF_TARGET_STATE == "4" and ( IsInGroup() ) ) or
-		     ( SHOW_TARGET_OF_TARGET_STATE == "3" and ( not IsInGroup() ) ) or
-		     ( SHOW_TARGET_OF_TARGET_STATE == "2" and ( IsInGroup() and not IsInRaid() ) ) or
-		     ( SHOW_TARGET_OF_TARGET_STATE == "1" and ( IsInRaid() ) ) ) then
-			show = true;
-		end
-	end
-
-	if ( show ) then
 		if ( not self:IsShown() ) then
 			self:Show();
 			if ( parent.spellbar ) then

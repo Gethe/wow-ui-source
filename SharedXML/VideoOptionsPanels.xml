@@ -1362,7 +1362,6 @@
 
 
 							BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-							BlizzardOptionsPanel_SetupDependentControl(useuiscale, self);
 						end
 					</OnLoad>
 					<OnValueChanged>
