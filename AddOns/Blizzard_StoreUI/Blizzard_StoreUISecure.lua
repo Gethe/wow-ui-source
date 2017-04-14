@@ -1257,8 +1257,7 @@ function StoreFrame_UpdateCard(card,entryID,discountReset,forceModelUpdate)
 		if (card.ProductName:IsTruncated()) then
 			card.ProductName:SetFontObject("GameFontNormalHuge3");
 		end
-
-		if (entryInfo.sharedData.isWowToken) then
+		if (entryInfo.sharedData.productDecorator == Enum.BattlepayProductDecorator.WoWToken) then
 			local price = C_WowTokenPublic.GetCurrentMarketPrice();
 			if (price) then
 				card.CurrentMarketPrice:SetText(string.format(TOKEN_CURRENT_AUCTION_VALUE, GetSecureMoneyString(price, true)));
@@ -1289,7 +1288,7 @@ function StoreFrame_UpdateCard(card,entryID,discountReset,forceModelUpdate)
 
 	if (card.Description) then
 		local description = entryInfo.sharedData.description;
-		if (entryInfo.sharedData.isWowToken) then
+		if (entryInfo.sharedData.productDecorator == Enum.BattlepayProductDecorator.WoWToken) then
 			local balanceEnabled = select(3, C_WowTokenPublic.GetCommerceSystemStatus());
 			local balanceAmount = C_WowTokenSecure.GetBalanceRedeemAmount();
 			description = BLIZZARD_STORE_TOKEN_DESC_30_DAYS;
@@ -2906,7 +2905,7 @@ function StoreProductCard_UpdateState(card)
 					name = "";
 					description = BLIZZARD_STORE_LOG_OUT_TO_PURCHASE_THIS_PRODUCT;
 				end
-				StoreTooltip_Show(name, description, isToken);
+				StoreTooltip_Show(name, description, entryInfo.sharedData.productDecorator == Enum.BattlepayProductDecorator.WoWToken);
 			end
 		end
 	end
