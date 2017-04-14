@@ -484,8 +484,7 @@ function WorldMapFrame_OnEvent(self, event, ...)
 				QuestMapFrame_Show();
 			end
 		else
-			--WorldMapBlobFrame:SetScale(WORLDMAP_QUESTLIST_SIZE);
-			--ScenarioPOIFrame:SetScale(WORLDMAP_FULLMAP_SIZE);	--If we ever need to add objectives on the map itself we should adjust this value
+			WorldMap_ToggleSizeUp();
 		end
 	elseif ( event == "DISPLAY_SIZE_CHANGED" ) then
 		WorldMapFrame_ResetPOIHitTranslations();
@@ -2274,8 +2273,6 @@ function WorldMapLevelDropDown_Update()
 
 		UIDropDownMenu_SetSelectedID(WorldMapLevelDropDown, levelID);
 		WorldMapLevelDropDown:Show();
-		if ( WORLDMAP_SETTINGS.size ~= WORLDMAP_WINDOWED_SIZE ) then
-		end
 	end
 end
 

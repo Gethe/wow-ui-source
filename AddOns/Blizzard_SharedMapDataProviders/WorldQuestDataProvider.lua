@@ -32,7 +32,7 @@ end
 
 function WorldQuestDataProviderMixin:OnShow()
 	assert(self.ticker == nil);
-	self.ticker = C_Timer.NewTicker(10, function() self:RefreshAllData() end);
+	self.ticker = C_Timer.NewTicker(0.5, function() self:RefreshAllData() end);
 end
 
 function WorldQuestDataProviderMixin:OnHide()

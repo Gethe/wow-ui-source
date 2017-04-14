@@ -142,6 +142,7 @@ local PvpInfoLua =
 			Returns =
 			{
 				{ Name = "battlegroundActive", Type = "bool", Nilable = false },
+				{ Name = "brawlActive", Type = "bool", Nilable = false },
 			},
 		},
 		{

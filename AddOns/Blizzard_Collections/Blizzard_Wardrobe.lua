@@ -974,7 +974,7 @@ function WardrobeItemsCollectionMixin:OnMouseWheel(delta)
 end
 
 function WardrobeItemsCollectionMixin:CanHandleKey(key)
-	if ( key == WARDROBE_PREV_VISUAL_KEY or key == WARDROBE_NEXT_VISUAL_KEY or key == WARDROBE_UP_VISUAL_KEY or key == WARDROBE_DOWN_VISUAL_KEY ) then
+	if ( WardrobeFrame_IsAtTransmogrifier() and (key == WARDROBE_PREV_VISUAL_KEY or key == WARDROBE_NEXT_VISUAL_KEY or key == WARDROBE_UP_VISUAL_KEY or key == WARDROBE_DOWN_VISUAL_KEY) ) then
 		return true;
 	end
 	return false;
@@ -1143,6 +1143,10 @@ function WardrobeUtils_GetAdjustedDisplayIndexFromKeyPress(contentFrame, index, 
 			newIndex = index + contentFrame.PAGE_SIZE * -direction;	-- reset by a full page in opposite direction
 			while ( GetPage(newIndex, contentFrame.PAGE_SIZE) ~= contentFrame.PagingFrame:GetCurrentPage() or newIndex > numEntries ) do
 				newIndex = newIndex + contentFrame.NUM_COLS * direction;
+				if ( newIndex < 1 or newIndex > numEntries + contentFrame.PAGE_SIZE ) then
+					newIndex = 1;
+					break;
+				end
 			end
 		end
 		index = newIndex;

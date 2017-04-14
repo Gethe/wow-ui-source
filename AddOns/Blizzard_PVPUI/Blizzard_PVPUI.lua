@@ -874,7 +874,7 @@ end
 function HonorFrameBonusFrame_Update()
 	local englishFaction = UnitFactionGroup("player");
 	local selectButton = nil;
-	local battlegroundEnlistmentActive = C_PvP.IsBattlegroundEnlistmentBonusActive();
+	local battlegroundEnlistmentActive, brawlEnlistmentActive = C_PvP.IsBattlegroundEnlistmentBonusActive();
 
 	-- random bg
 	do
@@ -970,6 +970,7 @@ function HonorFrameBonusFrame_Update()
 				button.Reward.experience = experience;
 				button.Reward.itemID = id;
 				button.Reward:Show();
+				button.Reward.EnlistmentBonus:SetShown(brawlEnlistmentActive);
 			else
 				button.Reward:Hide();
 			end
