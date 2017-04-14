@@ -31,6 +31,10 @@ local MailInfoLua =
 		},
 	},
 
+	Events =
+	{
+	},
+
 	Tables =
 	{
 	},

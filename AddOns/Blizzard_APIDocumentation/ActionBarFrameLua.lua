@@ -157,6 +157,10 @@ local ActionBarFrameLua =
 		},
 	},
 
+	Events =
+	{
+	},
+
 	Tables =
 	{
 	},

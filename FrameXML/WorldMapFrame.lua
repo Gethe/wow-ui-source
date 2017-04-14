@@ -392,7 +392,6 @@ function WorldMapFrame_OnHide(self)
 	UpdateMicroButtons();
 	CloseDropDownMenus();
 	PlaySound("igQuestLogClose");
-	WorldMap_ClearTextures();
 	if ( not self.toggling ) then
 		if ( QuestMapFrame:IsShown() ) then
 			QuestMapFrame_CheckTutorials();
@@ -1178,7 +1177,7 @@ function WorldMap_UpdateLandmarks()
 					WorldMap_ResetPOI(worldMapPOI, isObjectIcon, atlasIcon);
 
 					if (not atlasIcon) then
-						local x1, x2, y1, y2
+						local x1, x2, y1, y2;
 						if (isObjectIcon) then
 							x1, x2, y1, y2 = GetObjectIconTextureCoords(textureIndex);
 						else
@@ -1931,7 +1930,7 @@ end
 
 function WorldMap_AddQuestTimeToTooltip(questID)
 	local timeLeftMinutes = C_TaskQuest.GetQuestTimeLeftMinutes(questID);
-	if ( timeLeftMinutes ) then
+	if ( timeLeftMinutes and timeLeftMinutes > 0 ) then
 		local color = NORMAL_FONT_COLOR;
 		if ( timeLeftMinutes <= WORLD_QUESTS_TIME_CRITICAL_MINUTES ) then
 			color = RED_FONT_COLOR;
@@ -2619,16 +2618,6 @@ function WorldMap_GetVehicleTexture(vehicleType, isPossessed)
 		return;
 	end
 	return VEHICLE_TEXTURES[vehicleType][isPossessed];
-end
-
-function WorldMap_ClearTextures()
-	for i=1, NUM_WORLDMAP_OVERLAYS do
-		_G["WorldMapOverlay"..i]:SetTexture(nil);
-	end
-	local numOfDetailTiles = GetNumberOfDetailTiles();
-	for i=1, numOfDetailTiles do
-		_G["WorldMapDetailTile"..i]:SetTexture(nil);
-	end
 end
 
 function WorldMapUnit_OnEnter(self, motion)

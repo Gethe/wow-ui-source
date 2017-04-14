@@ -40,6 +40,10 @@ local CalendarLua =
 		},
 	},
 
+	Events =
+	{
+	},
+
 	Tables =
 	{
 		{
@@ -65,7 +69,7 @@ local CalendarLua =
 				{ Name = "calendarType", Type = "string", Nilable = false },
 				{ Name = "sequenceType", Type = "string", Nilable = false },
 				{ Name = "eventType", Type = "number", Nilable = false },
-				{ Name = "texture", Type = "string", Nilable = false },
+				{ Name = "iconTexture", Type = "number", Nilable = false },
 				{ Name = "modStatus", Type = "string", Nilable = false },
 				{ Name = "inviteStatus", Type = "number", Nilable = false },
 				{ Name = "invitedBy", Type = "string", Nilable = false },
@@ -85,7 +89,7 @@ local CalendarLua =
 			{
 				{ Name = "name", Type = "string", Nilable = false },
 				{ Name = "description", Type = "string", Nilable = false },
-				{ Name = "texture", Type = "string", Nilable = false },
+				{ Name = "texture", Type = "number", Nilable = false },
 				{ Name = "startTime", Type = "CalendarTime", Nilable = true },
 				{ Name = "endTime", Type = "CalendarTime", Nilable = true },
 			},

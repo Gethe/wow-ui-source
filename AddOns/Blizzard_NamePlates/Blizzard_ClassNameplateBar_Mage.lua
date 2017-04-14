@@ -4,7 +4,7 @@ function ClassNameplateBarMage:OnLoad()
 	self.class = "MAGE";
 	self.spec = SPEC_MAGE_ARCANE;
 	self.powerToken = "ARCANE_CHARGES";
-	
+
 	for i = 1, #self.Charges do
 		self.Charges[i].on = false;
 	end
@@ -12,7 +12,7 @@ function ClassNameplateBarMage:OnLoad()
 end
 
 function ClassNameplateBarMage:UpdatePower()
-	local charges = UnitPower("player", SPELL_POWER_ARCANE_CHARGES);
+	local charges = UnitPower("player", Enum.PowerType.ArcaneCharges);
 	for i = 1, min(charges, #self.Charges) do
 		if (not self.Charges[i].on) then
 			self:TurnOn(self.Charges[i], self.Charges[i].ChargeTexture, 1);

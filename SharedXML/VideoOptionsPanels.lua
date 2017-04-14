@@ -950,6 +950,12 @@ function Advanced_OnLoad (self)
 		_G[name .. "StereoHeader"]:Hide();
 		_G[name .. "StereoHeaderUnderline"]:Hide();
 	end
+	if ( IsMacClient() ) then
+		Advanced_BufferingDropDown:Hide();
+		Advanced_LagDropDown:Hide();
+		Advanced_HardwareCursorDropDown:Hide();
+		Advanced_MultisampleAntiAliasingDropDown:SetPoint("TOPLEFT", Advanced_DisplayHeaderUnderline, "BOTTOMLEFT", 120, -4);
+	end
 end
 
 --

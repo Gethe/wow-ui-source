@@ -51,6 +51,13 @@ function SystemsAPIMixin:GetDetailedOutputLines()
 		end
 	end
 
+	if self.Events and #self.Events > 0 then
+		table.insert(lines, APIDocumentation:GetIndentString() .. "Events");
+		for i, eventInfo in ipairs(self.Events) do
+			table.insert(lines, APIDocumentation:GetIndentString(2) .. eventInfo:GetSingleOutputLine());
+		end
+	end
+
 	if self.Tables and #self.Tables > 0 then
 		table.insert(lines, APIDocumentation:GetIndentString() .. "Tables");
 		for i, tableInfo in ipairs(self.Tables) do
@@ -83,10 +90,12 @@ function SystemsAPIMixin:FindAllAPIMatches(apiToSearchFor)
 	local matches = {
 		tables = {},
 		functions = {},
+		events = {},
 	};
 
 	APIDocumentationMixin:AddAllMatches(self.Tables, matches.tables, apiToSearchFor);
 	APIDocumentationMixin:AddAllMatches(self.Functions, matches.functions, apiToSearchFor);
+	APIDocumentationMixin:AddAllMatches(self.Events, matches.events, apiToSearchFor);
 
 	-- Only return something if we matched anything
 	for name, subTable in pairs(matches) do
@@ -110,10 +119,12 @@ function SystemsAPIMixin:ListAllAPI()
 	local allAPI = {
 		tables = {},
 		functions = {},
+		events = {},
 	};
 
 	AddAll(self.Tables, allAPI.tables);
 	AddAll(self.Functions, allAPI.functions);
+	AddAll(self.Events, allAPI.events);
 
 	return allAPI;
 end
@@ -124,4 +135,8 @@ end
 
 function SystemsAPIMixin:GetNumFunctions()
 	return self.Functions and #self.Functions or 0;
+end
+
+function SystemsAPIMixin:GetNumEvents()
+	return self.Events and #self.Events or 0;
 end

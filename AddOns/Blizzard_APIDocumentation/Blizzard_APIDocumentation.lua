@@ -6,6 +6,7 @@ function APIDocumentationMixin:OnLoad()
 	self.functions = {};
 	self.systems = {};
 	self.fields = {};
+	self.events = {};
 
 	self.Commands = {
 		Default = 1,
@@ -99,6 +100,8 @@ function APIDocumentationMixin:GetAPITableByTypeName(apiType)
 		return self.systems;
 	elseif apiType == "field" then
 		return self.fields;
+	elseif apiType == "event" then
+		return self.events;
 	end
 	return nil;
 end
@@ -135,14 +138,17 @@ function APIDocumentationMixin:OutputStats()
 	self:WriteLine("Stats:");
 	self:WriteLineF("Total systems: %d", #self.systems);
 	local totalFunctions = 0;
+	local totalEvents = 0;
 	local totalTables = 0;
 
 	for i, systemInfo in ipairs(self.systems) do
 		totalFunctions = totalFunctions + systemInfo:GetNumFunctions();
+		totalEvents = totalEvents + systemInfo:GetNumEvents();
 		totalTables = totalTables + systemInfo:GetNumTables();
 	end
 
 	self:WriteLineF("Total functions: %d", totalFunctions);
+	self:WriteLineF("Total events: %d", totalEvents);
 	self:WriteLineF("Total tables: %d", totalTables);
 end
 
@@ -188,12 +194,13 @@ function APIDocumentationMixin:OutputAllAPIMatches(apiToSearchFor)
 
 	local apiMatches = self:FindAllAPIMatches(apiToSearchFor);
 	if apiMatches then
-		local total = #apiMatches.tables + #apiMatches.functions + #apiMatches.systems;
+		local total = #apiMatches.tables + #apiMatches.functions + #apiMatches.events + #apiMatches.systems;
 		assert(total > 0);
 		self:WriteLineF("Found %d API that matches %q", total, apiToSearchFor);
 
 		self:OutputAPIMatches(apiMatches.systems, "system(s)");
 		self:OutputAPIMatches(apiMatches.functions, "function(s)");
+		self:OutputAPIMatches(apiMatches.events, "events(s)");
 		self:OutputAPIMatches(apiMatches.tables, "table(s)");
 	else
 		self:WriteLineF("No API found that matches %q", apiToSearchFor);
@@ -203,11 +210,12 @@ end
 function APIDocumentationMixin:OutputAllSystemAPIMatches(system, apiToSearchFor)
 	local apiMatches = system:FindAllAPIMatches(apiToSearchFor);
 	if apiMatches then
-		local total = #apiMatches.tables + #apiMatches.functions;
+		local total = #apiMatches.tables + #apiMatches.functions + #apiMatches.events;
 		assert(total > 0);
 		self:WriteLineF("Found %d API that matches %q", total, apiToSearchFor);
 
 		self:OutputAPIMatches(apiMatches.functions, "function(s)");
+		self:OutputAPIMatches(apiMatches.events, "events(s)");
 		self:OutputAPIMatches(apiMatches.tables, "table(s)");
 	else
 		self:WriteLineF("No API found that matches %q in %s", apiToSearchFor, system:GenerateAPILink());
@@ -220,6 +228,7 @@ function APIDocumentationMixin:OutputAllSystemAPI(system)
 		self:WriteLineF("All API in %s", system:GenerateAPILink());
 
 		self:OutputAPIMatches(apiMatches.functions, "function(s)");
+		self:OutputAPIMatches(apiMatches.events, "events(s)");
 		self:OutputAPIMatches(apiMatches.tables, "table(s)");
 	else
 		self:WriteLineF("No API found in %s", system:GenerateAPILink());
@@ -240,12 +249,14 @@ function APIDocumentationMixin:FindAllAPIMatches(apiToSearchFor)
 	local matches = {
 		tables = {},
 		functions = {},
+		events = {},
 		systems = {},
 	};
 
 	self:AddAllMatches(self.tables, matches.tables, apiToSearchFor);
 	self:AddAllMatches(self.functions, matches.functions, apiToSearchFor);
 	self:AddAllMatches(self.systems, matches.systems, apiToSearchFor);
+	self:AddAllMatches(self.events, matches.events, apiToSearchFor);
 
 	-- Only return something if we matched anything
 	for name, subTable in pairs(matches) do
@@ -330,6 +341,19 @@ function APIDocumentationMixin:AddFunction(documentationInfo)
 	end
 end
 
+function APIDocumentationMixin:AddEvent(documentationInfo)
+	Mixin(documentationInfo, EventsAPIMixin);
+
+	table.insert(self.events, documentationInfo);
+
+	if documentationInfo.Payload then
+		for i, field in ipairs(documentationInfo.Payload) do
+			field.Event = documentationInfo;
+			self:AddField(field);
+		end
+	end
+end
+
 function APIDocumentationMixin:AddField(documentationInfo)
 	Mixin(documentationInfo, FieldsAPIMixin);
 
@@ -344,6 +368,11 @@ function APIDocumentationMixin:AddSystem(documentationInfo)
 	for i, functionInfo in ipairs(documentationInfo.Functions) do
 		functionInfo.System = documentationInfo;
 		self:AddFunction(functionInfo);
+	end
+
+	for i, eventInfo in ipairs(documentationInfo.Events) do
+		eventInfo.System = documentationInfo;
+		self:AddEvent(eventInfo);
 	end
 
 	for i, tableInfo in ipairs(documentationInfo.Tables) do

@@ -172,12 +172,12 @@ end
 do
 	-- Use UnitPower instead
 	function UnitMana(unit)
-		return UnitPower(unit, Enum.PowerTypeEnum.PowerTypeMana);
+		return UnitPower(unit, Enum.PowerType.Mana);
 	end
 
 	-- Use UnitPowerMax instead
 	function UnitManaMax(unit)
-		return UnitPowerMax(unit, Enum.PowerTypeEnum.PowerTypeMana);
+		return UnitPowerMax(unit, Enum.PowerType.Mana);
 	end
 end
 
@@ -196,7 +196,7 @@ do
 				hour = event.startTime.hour;
 				minute = event.startTime.minute;
 			end
-			return event.title, hour, minute, event.calendarType, event.sequenceType, event.eventType, event.texture, event.modStatus, event.inviteStatus, event.invitedBy, event.difficulty, event.inviteType, event.sequenceIndex, event.numSequenceDays, event.difficultyName;
+			return event.title, hour, minute, event.calendarType, event.sequenceType, event.eventType, event.iconTexture, event.modStatus, event.inviteStatus, event.invitedBy, event.difficulty, event.inviteType, event.sequenceIndex, event.numSequenceDays, event.difficultyName;
 		else
 			return nil, 0, 0, "", "", 0, "", "", 0, "", 0, 0, 0, 0, "";
 		end

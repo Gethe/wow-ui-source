@@ -127,7 +127,7 @@
 		<NormalTexture atlas="_search-rowbg"/>
 		<PushedTexture atlas="_search-rowbg"/>
 		<HighlightTexture atlas="search-highlight"/>
-		<ButtonText parentKey="Label" setAllPoints="true" justifyH="LEFT" wordWrap="false">
+		<ButtonText parentKey="Label" setAllPoints="true" justifyH="LEFT" wordwrap="false">
 			<Anchors>
 				<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="5" y="0"/>
 				<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT" x="0" y="0"/>

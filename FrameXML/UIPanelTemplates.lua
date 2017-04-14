@@ -90,18 +90,6 @@ function BagSearch_OnChar(self, text)
 	end
 end
 
-function ScrollingEdit_OnTextChanged(self, scrollFrame)
-	-- force an update when the text changes
-	self.handleCursorChange = true;
-	ScrollingEdit_OnUpdate(self, 0, scrollFrame);
-end
-
-function ScrollingEdit_OnCursorChanged(self, x, y, w, h)
-	self.cursorOffset = y;
-	self.cursorHeight = h;
-	self.handleCursorChange = true;
-end
-
 UIFrameCache = CreateFrame("FRAME");
 local caches = {};
 function UIFrameCache:New (frameType, baseName, parent, template)

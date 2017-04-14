@@ -198,6 +198,7 @@ function ActionBarButtonEventsFrame_OnLoad(self)
 	self:RegisterEvent("PET_BAR_UPDATE");
 	self:RegisterEvent("UNIT_FLAGS");
 	self:RegisterEvent("UNIT_AURA");
+	self:RegisterEvent("PLAYER_MOUNT_DISPLAY_CHANGED");
 end
 
 function ActionBarButtonEventsFrame_OnEvent(self, event, ...)
@@ -743,7 +744,7 @@ function ActionButton_OnEvent(self, event, ...)
 		((event == "UNIT_ENTERED_VEHICLE" or event == "UNIT_EXITED_VEHICLE") and (arg1 == "player")) or
 		((event == "COMPANION_UPDATE") and (arg1 == "MOUNT")) ) then
 		ActionButton_UpdateState(self);
-	elseif ( event == "ACTIONBAR_UPDATE_USABLE" ) then
+	elseif ( event == "ACTIONBAR_UPDATE_USABLE" or event == "PLAYER_MOUNT_DISPLAY_CHANGED" ) then
 		ActionButton_UpdateUsable(self);
 	elseif ( event == "LOSS_OF_CONTROL_UPDATE" ) then
 		ActionButton_UpdateCooldown(self);

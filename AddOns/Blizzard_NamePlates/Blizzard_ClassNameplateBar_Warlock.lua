@@ -35,7 +35,7 @@ function ClassNameplateBarWarlock:OnEvent(event, ...)
 end
 
 function ClassNameplateBarWarlock:CreateShards()
-	local maxShards = UnitPowerMax("player", SPELL_POWER_SOUL_SHARDS);
+	local maxShards = UnitPowerMax("player", Enum.PowerType.SoulShards);
 
 	while #self.Shards < maxShards do
 		local shard = CreateFrame("FRAME", nil, self, "ClassNameplateBarShardFrame");

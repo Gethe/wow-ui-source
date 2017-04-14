@@ -166,7 +166,7 @@ local ContributionCollectorLua =
 
 			Returns =
 			{
-				{ Name = "contributionState", Type = "ContributionState", Nilable = false, Default = CONTRIBUTION_STATE_NONE },
+				{ Name = "contributionState", Type = "ContributionState", Nilable = false, Default = "None" },
 				{ Name = "contributionPercentageComplete", Type = "number", Nilable = false },
 				{ Name = "timeOfNextStateChange", Type = "number", Nilable = true },
 			},
@@ -199,6 +199,10 @@ local ContributionCollectorLua =
 				{ Name = "awaitingData", Type = "bool", Nilable = false },
 			},
 		},
+	},
+
+	Events =
+	{
 	},
 
 	Tables =

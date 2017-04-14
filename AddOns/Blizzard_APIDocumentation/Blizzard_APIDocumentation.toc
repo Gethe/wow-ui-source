@@ -9,6 +9,7 @@ FieldsAPIMixin.lua
 FunctionsAPIMixin.lua
 SystemsAPIMixin.lua
 TablesAPIMixin.lua
+EventsAPIMixin.lua
 Blizzard_APIDocumentation.lua
 
 # Start documentation files here
@@ -17,6 +18,7 @@ ActionBarFrameLua.lua
 ArtifactUILua.lua
 CalendarLua.lua
 ChallengeModeInfoLua.lua
+CommentatorFrameLua.lua
 ContributionCollectorLua.lua
 EquipmentManagerLua.lua
 LootJournalLua.lua
@@ -32,6 +34,7 @@ StorePublicUI.lua
 Transmog.lua
 TransmogItems.lua
 TransmogSets.lua
+UIManagerLua.lua
 UIModelInfoLua.lua
 UnitLua.lua
 WorldMapLua.lua

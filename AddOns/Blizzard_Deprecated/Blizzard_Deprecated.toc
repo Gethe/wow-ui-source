@@ -6,3 +6,4 @@
 ## Version: 1.0
 ## LoadOnDemand: 0
 Deprecated_7_2_0.lua
+Deprecated_7_2_5.lua

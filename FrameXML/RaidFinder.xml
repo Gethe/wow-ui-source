@@ -53,7 +53,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="NoRaidsCover" enableMouse="true" hidden="true" topLevel="true">
+			<Frame parentKey="NoRaidsCover" enableMouse="true" hidden="true" toplevel="true">
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="-6" y="-25"/>
 					<Anchor point="BOTTOMLEFT" x="3" y="4"/>

@@ -22,6 +22,10 @@ local MerchantFrameLua =
 		},
 	},
 
+	Events =
+	{
+	},
+
 	Tables =
 	{
 	},

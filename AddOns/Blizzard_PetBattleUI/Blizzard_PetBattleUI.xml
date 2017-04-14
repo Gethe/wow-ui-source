@@ -8,10 +8,14 @@
 	<Texture name="DebugTextureBlack" virtual="true">
 		<Color r="0" g="0" b="0"/>
 	</Texture>
-	<Frame name="PetBattleUnitFrame" virtual="true">
+	<Frame name="PetBattleUnitFrameUnclickable" virtual="true">
 		<Scripts>
 			<OnLoad function="PetBattleUnitFrame_OnLoad"/>
 			<OnEvent function="PetBattleUnitFrame_OnEvent"/>
+		</Scripts>
+	</Frame>
+	<Frame name="PetBattleUnitFrame" inherits="PetBattleUnitFrameUnclickable" virtual="true">
+		<Scripts>
 			<OnClick function="PetBattleUnitFrame_OnClick"/>
 		</Scripts>
 	</Frame>
@@ -43,7 +47,7 @@
 					</Anchors>
 					<TexCoords left="0.296875" right="0.5703125" top="0" bottom="0.515625"/>
 					<Color r="1" g="0" b="0"/>
-				</Texture>	
+				</Texture>
 			</Layer>
 		</Layers>
 		<Scripts>
@@ -90,7 +94,7 @@
 					</Anchors>
 					<TexCoords left="0.296875" right="0.5703125" top="0" bottom="0.515625"/>
 					<Color r="1" g="0" b="0"/>
-				</Texture>	
+				</Texture>
 			</Layer>
 		</Layers>
 	</Frame>
@@ -368,7 +372,7 @@
 		<Size x="30" y="30"/>
 		<TexCoords left="0.79687500" right="0.49218750" top="0.50390625" bottom="0.65625000"/>
 	</Texture>
-	<Frame name="PetBattleUnitTooltipTemplate" inherits="PetBattleUnitFrame,TooltipBorderedFrameTemplate" frameStrata="TOOLTIP" virtual="true" hidden="true">
+	<Frame name="PetBattleUnitTooltipTemplate" inherits="PetBattleUnitFrameUnclickable,TooltipBorderedFrameTemplate" frameStrata="TOOLTIP" virtual="true" hidden="true">
 		<Size x="260" y="190"/>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -712,7 +716,7 @@
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOP" x="0" y="0"/>
 					</Anchors>
-					<TexCoords left="0.56152344" right="0.00097656" top="0.00195313" bottom="0.23242188"/>	
+					<TexCoords left="0.56152344" right="0.00097656" top="0.00195313" bottom="0.23242188"/>
 				</Texture>
 			</Layer>
 			<Layer level="BACKGROUND" textureSubLevel="2">
@@ -955,20 +959,20 @@
 					</Layer>
 					<Layer level="ARTWORK" textureSubLevel="2">
 						<Texture parentKey="Border2" file="Interface\PetBattles\PetBattle-GoldSpeedFrame" hidden="true">
-							<Size x="110" y="109"/>	
+							<Size x="110" y="109"/>
 							<Anchors>
 								<Anchor point="CENTER" relativeKey="$parent.Icon"/>
 							</Anchors>
-							<TexCoords left="0.0" right="0.84375" top="0.0" bottom="0.8515625"/>	
+							<TexCoords left="0.0" right="0.84375" top="0.0" bottom="0.8515625"/>
 						</Texture>
 					</Layer>
 					<Layer level="ARTWORK" textureSubLevel="3">
 						<Texture parentKey="BorderFlash" alphaMode="ADD" file="Interface\PetBattles\PetBattle-GoldSpeedFrame" alpha="0">
-							<Size x="110" y="109"/>	
+							<Size x="110" y="109"/>
 							<Anchors>
 								<Anchor point="CENTER" relativeKey="$parent.Icon"/>
 							</Anchors>
-							<TexCoords left="0.0" right="0.84375" top="0.0" bottom="0.8515625"/>	
+							<TexCoords left="0.0" right="0.84375" top="0.0" bottom="0.8515625"/>
 						</Texture>
 					</Layer>
 					<Layer level="ARTWORK" textureSubLevel="4">
@@ -1122,20 +1126,20 @@
 					</Layer>
 					<Layer level="ARTWORK" textureSubLevel="2">
 						<Texture parentKey="Border2" file="Interface\PetBattles\PetBattle-GoldSpeedFrame" hidden="true">
-							<Size x="110" y="109"/>	
+							<Size x="110" y="109"/>
 							<Anchors>
 								<Anchor point="CENTER" relativeKey="$parent.Icon"/>
 							</Anchors>
-							<TexCoords left="0.0" right="0.84375" top="0.0" bottom="0.8515625"/>	
+							<TexCoords left="0.0" right="0.84375" top="0.0" bottom="0.8515625"/>
 						</Texture>
 					</Layer>
 					<Layer level="ARTWORK" textureSubLevel="3">
 						<Texture parentKey="BorderFlash" alphaMode="ADD" file="Interface\PetBattles\PetBattle-GoldSpeedFrame" alpha="0">
-							<Size x="110" y="109"/>	
+							<Size x="110" y="109"/>
 							<Anchors>
 								<Anchor point="CENTER" relativeKey="$parent.Icon"/>
 							</Anchors>
-							<TexCoords left="0.0" right="0.84375" top="0.0" bottom="0.8515625"/>	
+							<TexCoords left="0.0" right="0.84375" top="0.0" bottom="0.8515625"/>
 						</Texture>
 					</Layer>
 					<Layer level="ARTWORK" textureSubLevel="4">
@@ -1292,7 +1296,7 @@
 							<Anchors>
 								<Anchor point="TOPLEFT" x="-55" y="24"/>
 							</Anchors>
-							<TexCoords left="0.90136719" right="0.77734375" top="0.42578125" bottom="0.66992188"/>	
+							<TexCoords left="0.90136719" right="0.77734375" top="0.42578125" bottom="0.66992188"/>
 						</Texture>
 					</Layer>
 					<Layer level="BACKGROUND">
@@ -1352,7 +1356,7 @@
 									<Anchors>
 										<Anchor point="LEFT" relativePoint="RIGHT"  x="-11" y="0"/>
 									</Anchors>
-									<Size x="14" y="14"/>	
+									<Size x="14" y="14"/>
 									<TexCoords left="0.18750000" right="0.43750000" top="0.29687500" bottom="0.54687500"/>
 									<Color r="0.7450980392156863" g="0.6352941176470588" b="0.5176470588235294"/>
 								</Texture>
@@ -1429,7 +1433,7 @@
 								<Size x="80" y="22"/>
 								<Anchors>
 									<Anchor point="LEFT" x="25" y="0"/>
-								</Anchors>							
+								</Anchors>
 								<Scripts>
 									<OnLoad>
 										PetBattleActionButton_Initialize(self, LE_BATTLE_PET_ACTION_SKIP);
@@ -1457,7 +1461,7 @@
 									<Anchors>
 										<Anchor point="LEFT" x="-25" y="0"/>
 									</Anchors>
-									<TexCoords left="0.90332031" right="0.87988281" top="0.81250000" bottom="0.96484375"/>	
+									<TexCoords left="0.90332031" right="0.87988281" top="0.81250000" bottom="0.96484375"/>
 								</Texture>
 								<Texture parentKey="RightEndCap" inherits="BattleBar-ButtonBG-EndCap">
 									<Anchors>
@@ -1566,7 +1570,7 @@
 									<Anchors>
 										<Anchor point="LEFT" x="-25" y="0"/>
 									</Anchors>
-									<TexCoords left="0.90332031" right="0.87988281" top="0.81250000" bottom="0.96484375"/>	
+									<TexCoords left="0.90332031" right="0.87988281" top="0.81250000" bottom="0.96484375"/>
 								</Texture>
 								<Texture parentKey="RightEndCap" inherits="BattleBar-ButtonBG-EndCap">
 									<Anchors>
@@ -1607,7 +1611,7 @@
 			<Anchor point="BOTTOMRIGHT" x="-5" y="120"/>
 		</Anchors>
 	</Frame>
-	
+
 	<Frame name="StartSplash" parent="UIParent" hidden="true">
 		<Anchors>
 			<Anchor point="CENTER"/>
@@ -1623,11 +1627,11 @@
 					<AnimationGroup parentKey="splashAnim">
 						<Alpha fromAlpha="0" toAlpha="1" duration="0.1" startDelay="0" order="1" />
 						<Scale scaleX="2.0" scaleY="2.0" duration="0.15" startDelay="0" order="1" />
-										
+
 						<Scale scaleX="0.67" scaleY="0.67" duration="0.3" startDelay="0.0" order="2" />
-						
+
 						<Alpha fromAlpha="1" toAlpha="0" duration="0.3" startDelay="0.5" order="3"/>
-						
+
 						<Scripts>
 							<OnPlay>
 								local frame = self:GetParent();
@@ -1683,7 +1687,7 @@
 			</Frame>
 		</Frames>
 	</Frame>
-	<Frame name="PetBattleUnitFrameDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true">			
+	<Frame name="PetBattleUnitFrameDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true">
 		<Scripts>
 			<OnLoad>
 				self.initialize = PetBattleUnitFrameDropDown_Initialize;

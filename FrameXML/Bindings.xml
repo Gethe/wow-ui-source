@@ -1191,7 +1191,7 @@
 	</Binding>
 	<!-- Commentator Mode Bindings -->
 	<Binding name="TOGGLECOMMENTATOR" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
-		C_Commentator.ToggleMode();
+		C_Commentator.ToggleCheats();
 	</Binding>
 
 	<!-- Camera key bindings header="CAMERA" -->

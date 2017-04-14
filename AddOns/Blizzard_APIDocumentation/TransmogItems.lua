@@ -50,6 +50,10 @@ local TransmogItems =
 		},
 	},
 
+	Events =
+	{
+	},
+
 	Tables =
 	{
 	},

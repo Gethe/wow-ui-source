@@ -47,6 +47,7 @@ function PetActionBar_OnLoad (self)
 	self:RegisterEvent("PET_UI_UPDATE");
 	self:RegisterEvent("PLAYER_TARGET_CHANGED");
 	self:RegisterEvent("UPDATE_VEHICLE_ACTIONBAR");
+	self:RegisterEvent("PLAYER_MOUNT_DISPLAY_CHANGED");
 	self:RegisterUnitEvent("UNIT_AURA", "pet");
 	self.showgrid = 0;
 	PetActionBar_Update(self);
@@ -67,7 +68,7 @@ function PetActionBar_OnEvent (self, event, ...)
 			UnlockPetActionBar();
 			HidePetActionBar();
 		end
-	elseif ( event == "PLAYER_CONTROL_LOST" or event == "PLAYER_CONTROL_GAINED" or event == "PLAYER_FARSIGHT_FOCUS_CHANGED" or event == "PET_BAR_UPDATE_USABLE" or event == "PLAYER_TARGET_CHANGED") then
+	elseif ( event == "PLAYER_CONTROL_LOST" or event == "PLAYER_CONTROL_GAINED" or event == "PLAYER_FARSIGHT_FOCUS_CHANGED" or event == "PET_BAR_UPDATE_USABLE" or event == "PLAYER_TARGET_CHANGED" or event == "PLAYER_MOUNT_DISPLAY_CHANGED" ) then
 		PetActionBar_Update(self);
 	elseif ( (event == "UNIT_FLAGS") or (event == "UNIT_AURA") ) then
 		if ( arg1 == "pet" ) then

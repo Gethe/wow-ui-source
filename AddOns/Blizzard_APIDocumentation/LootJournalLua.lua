@@ -17,6 +17,10 @@ local LootJournalLua =
 		},
 	},
 
+	Events =
+	{
+	},
+
 	Tables =
 	{
 		{

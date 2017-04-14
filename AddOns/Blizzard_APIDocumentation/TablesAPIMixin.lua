@@ -20,6 +20,14 @@ function TablesAPIMixin:GetLinkHexColor()
 	return "55ffdd";
 end
 
+function TablesAPIMixin:GetFullName() -- override
+	if self.Type == "Enumeration" then
+		return ("Enum.%s"):format(self:GetName());
+	end
+
+	return BaseAPIMixin.GetFullName(self);
+end
+
 function TablesAPIMixin:MatchesSearchString(searchString)
 	if self:GetLoweredName():match(searchString) then
 		return true;

@@ -79,3 +79,7 @@ end
 function FieldsAPIMixin:GetReturnString(decorateOptionals, includeColorCodes)
 	return self:GetArgumentString(decorateOptionals, includeColorCodes); -- Nothing special currently
 end
+
+function FieldsAPIMixin:GetPayloadString(decorateOptionals, includeColorCodes)
+	return self:GetReturnString(decorateOptionals, includeColorCodes); -- Nothing special currently
+end

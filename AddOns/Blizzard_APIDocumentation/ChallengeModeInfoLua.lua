@@ -240,6 +240,10 @@ local ChallengeModeInfoLua =
 		},
 	},
 
+	Events =
+	{
+	},
+
 	Tables =
 	{
 		{

@@ -26,6 +26,10 @@ local StorePublicUI =
 		},
 	},
 
+	Events =
+	{
+	},
+
 	Tables =
 	{
 		{

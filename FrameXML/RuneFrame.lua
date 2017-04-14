@@ -37,12 +37,12 @@ end
 function RuneFrame_OnLoad (self)
 	-- Disable rune frame if not a death knight.
 	local _, class = UnitClass("player");
-	
+
 	if ( class ~= "DEATHKNIGHT" ) then
 		self:Hide();
 		return;
 	end
-	
+
 	self:RegisterEvent("RUNE_POWER_UPDATE");
 	self:RegisterEvent("RUNE_TYPE_UPDATE");
 	self:RegisterUnitEvent("UNIT_MAXPOWER", "player");
@@ -61,7 +61,7 @@ function RuneFrame_OnEvent (self, event, ...)
 	elseif ( event == "RUNE_POWER_UPDATE") then
 		local runeIndex, isEnergize = ...;
 		RuneFrame_RunePowerUpdate(runeIndex, isEnergize)
-		
+
 	elseif ( event == "RUNE_TYPE_UPDATE" ) then
 		local runeIndex = ...;
 		if ( runeIndex and runeIndex >= 1 and runeIndex <= CURRENT_MAX_RUNES ) then
@@ -71,12 +71,12 @@ function RuneFrame_OnEvent (self, event, ...)
 end
 
 function RuneFrame_RunePowerUpdate(runeIndex, isEnergize)
-	if runeIndex and runeIndex >= 1 and runeIndex <= CURRENT_MAX_RUNES  then 
+	if runeIndex and runeIndex >= 1 and runeIndex <= CURRENT_MAX_RUNES  then
 		local runeButton = _G["RuneButtonIndividual"..runeIndex];
 		local cooldown = runeButton.Cooldown;
-			
+
 		local start, duration, runeReady = GetRuneCooldown(runeIndex);
-			
+
 		if not runeReady  then
 			if start then
 				CooldownFrame_Set(cooldown, start, duration, true, true);
@@ -84,22 +84,22 @@ function RuneFrame_RunePowerUpdate(runeIndex, isEnergize)
 			runeButton.energize:Stop();
 		else
 			cooldown:Hide();
-			if (not isEnergize and not runeButton.energize:IsPlaying()) then 
+			if (not isEnergize and not runeButton.energize:IsPlaying()) then
 				runeButton.shine:SetVertexColor(1, 1, 1);
 				RuneButton_ShineFadeIn(runeButton.shine)
 			end
 		end
-			
+
 		if isEnergize  then
 			runeButton.energize:Play();
 		end
-	else 
+	else
 		assert(false, "Bad rune index")
 	end
 end
 
 function RuneFrame_UpdateNumberOfShownRunes()
-	CURRENT_MAX_RUNES = UnitPowerMax(RuneFrame:GetParent().unit, SPELL_POWER_RUNES);
+	CURRENT_MAX_RUNES = UnitPowerMax(RuneFrame:GetParent().unit, Enum.PowerType.Runes);
 	for i=1, MAX_RUNE_CAPACITY do
 		local runeButton = _G["RuneButtonIndividual"..i];
 		if(i <= CURRENT_MAX_RUNES) then

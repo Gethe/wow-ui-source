@@ -602,9 +602,9 @@ function PetJournal_UpdatePetLoadOut(forceSceneChange)
 			loadoutPlate.xpBar:SetMinMaxValues(0, maxXp);
 			loadoutPlate.xpBar:SetValue(xp);
 			local display = GetCVar("statusTextDisplay")
-			if (display == "3") then
+			if (display == "BOTH") then
 				loadoutPlate.xpBar.rankText:SetFormattedText(PET_BATTLE_CURRENT_XP_FORMAT_BOTH, xp, maxXp, xp/maxXp*100);
-			elseif (display == "2") then
+			elseif (display == "PERCENTAGE") then
 				loadoutPlate.xpBar.rankText:SetFormattedText(PET_BATTLE_CURRENT_XP_FORMAT_PERCENT, xp/maxXp*100);
 			else
 				loadoutPlate.xpBar.rankText:SetFormattedText(PET_BATTLE_CURRENT_XP_FORMAT_VERBOSE, xp, maxXp);

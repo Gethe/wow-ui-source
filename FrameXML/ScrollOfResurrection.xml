@@ -224,7 +224,7 @@
 			<Button inherits="UIPanelButtonTemplate" name="$parentCancelButton" text="CANCEL">
 				<Size x="120" y="22"/>
 				<Anchors>
-					<Anchor point="BOTTOMRIGHt" x="-15" y="15"/>
+					<Anchor point="BOTTOMRIGHT" x="-15" y="15"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>

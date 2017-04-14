@@ -509,11 +509,11 @@ end
 function AlertFrameMixin:BuildLFGRewardData()
 	local rewardData = {};
 
-	local name, typeID, subtypeID, textureFilename, moneyBase, moneyVar, experienceBase, experienceVar, numStrangers, numRewards = GetLFGCompletionReward();
+	local name, typeID, subtypeID, iconTextureFile, moneyBase, moneyVar, experienceBase, experienceVar, numStrangers, numRewards = GetLFGCompletionReward();
 
 	rewardData.name = name;
 	rewardData.subtypeID = subtypeID;
-	rewardData.textureFilename = textureFilename;
+	rewardData.iconTextureFile = iconTextureFile;
 	rewardData.moneyBase = moneyBase;
 	rewardData.moneyVar = moneyVar;
 	rewardData.experienceBase = experienceBase;

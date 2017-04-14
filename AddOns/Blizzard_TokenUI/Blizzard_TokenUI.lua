@@ -115,7 +115,7 @@ function TokenFrame_Update()
 				button.categoryRight:Hide();
 				button.categoryMiddle:Hide();
 				button.expandIcon:Hide();
-				button.count:SetText(count);
+				button.count:SetText(BreakUpLargeNumbers(count));
 				button.icon:SetTexture(icon);
 				if ( isWatched ) then
 					button.check:Show();
@@ -181,7 +181,7 @@ function BackpackTokenFrame_Update()
 			watchButton = _G["BackpackTokenFrameToken"..i];
 			watchButton.icon:SetTexture(icon);
 			if ( count <= 99999 ) then
-				watchButton.count:SetText(count);
+				watchButton.count:SetText(BreakUpLargeNumbers(count));
 			else
 				watchButton.count:SetText("*");
 			end

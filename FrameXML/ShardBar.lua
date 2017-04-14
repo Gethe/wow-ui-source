@@ -41,7 +41,7 @@ function WarlockPowerBar:OnEvent(event, ...)
 end
 
 function WarlockPowerBar:CreateShards()
-	local maxShards = UnitPowerMax(self:GetUnit(), SPELL_POWER_SOUL_SHARDS);
+	local maxShards = UnitPowerMax(self:GetUnit(), Enum.PowerType.SoulShards);
 
 	while #self.Shards < maxShards do
 		local shard = CreateFrame("FRAME", nil, self, "ShardTemplate");
@@ -101,7 +101,7 @@ function WarlockPowerBar_UpdatePower(self)
 end
 
 function WarlockPowerBar_UnitPower(unit)
-	local shardPower = UnitPower(unit, SPELL_POWER_SOUL_SHARDS, true);
-	local shardModifier = UnitPowerDisplayMod(SPELL_POWER_SOUL_SHARDS);
+	local shardPower = UnitPower(unit, Enum.PowerType.SoulShards, true);
+	local shardModifier = UnitPowerDisplayMod(Enum.PowerType.SoulShards);
 	return (shardModifier ~= 0) and (shardPower / shardModifier) or 0;
 end

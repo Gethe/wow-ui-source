@@ -386,7 +386,7 @@ function UIParent_OnLoad(self)
 
 	-- Invite confirmations
 	self:RegisterEvent("GROUP_INVITE_CONFIRMATION");
-	
+
 	-- Event(s) for the ArtifactUI
 	self:RegisterEvent("ARTIFACT_ENDGAME_REFUND");
 
@@ -923,7 +923,7 @@ local function PlayBattlefieldBanner(self)
 	-- battlefields
 	if ( not self.battlefieldBannerShown ) then
 		local bannerName, bannerDescription;
-	
+
 		if (C_PvP.IsInBrawl()) then
 			local brawlInfo = C_PvP.GetBrawlInfo();
 			if (brawlInfo) then
@@ -1564,7 +1564,7 @@ function UIParent_OnEvent(self, event, ...)
 		local numRefunded, refundedTier, bagOrInventorySlot = ...;
 		ArtifactFrame_LoadUI();
 		ArtifactFrame:OnTraitsRefunded(numRefunded, refundedTier);
-		
+
 	elseif ( event == "ADVENTURE_MAP_OPEN" ) then
 		OrderHall_LoadUI();
 		ShowUIPanel(OrderHallMissionFrame);
@@ -1783,23 +1783,7 @@ function UIParent_OnEvent(self, event, ...)
 			QuestChoiceFrame_Show();
 		end
 	elseif ( event == "LUA_WARNING" ) then
-		local warnType, message = ...;
-		LoadAddOn("Blizzard_DebugTools");
-		local loaded = IsAddOnLoaded("Blizzard_DebugTools");
-
-		local cvarName = "scriptWarnings";
-		if ( warnType == LUA_WARNING_TREAT_AS_ERROR ) then
-			cvarName = "scriptErrors";
-		end
-
-		if ( GetCVarBool(cvarName) ) then
-			if ( loaded ) then
-				ScriptErrorsFrame_OnError(message, warnType);
-			end
-		elseif ( loaded ) then
-			local HIDE_ERROR_FRAME = true;
-			ScriptErrorsFrame_OnError(message, warnType, HIDE_ERROR_FRAME);
-		end
+		HandleLuaWarning(...);
 	elseif ( event == "GARRISON_ARCHITECT_OPENED") then
 		if (not GarrisonBuildingFrame) then
 			Garrison_LoadUI();
@@ -4045,7 +4029,7 @@ function UpdateInviteConfirmationDialogs()
 end
 
 function UnitHasMana(unit)
-	if ( UnitPowerMax(unit, SPELL_POWER_MANA) > 0 ) then
+	if ( UnitPowerMax(unit, Enum.PowerType.Mana) > 0 ) then
 		return 1;
 	end
 	return nil;
@@ -4492,6 +4476,10 @@ function GMError(...)
 	end
 end
 
+function OnExcessiveErrors()
+	StaticPopup_Show("TOO_MANY_LUA_ERRORS");
+end
+
 function SetLargeGuildTabardTextures(unit, emblemTexture, backgroundTexture, borderTexture, tabardData)
 	-- texure dimensions are 1024x1024, icon dimensions are 64x64
 	local emblemSize, columns, offset;
@@ -4849,13 +4837,13 @@ function ShakeFrameRandom(frame, magnitude, duration, frequency)
 	if frequency <= 0 then
 		return;
 	end
-	
+
 	local shake = {};
 	for i = 1, math.ceil(duration / frequency) do
 		local xVariation, yVariation = math.random(-magnitude, magnitude), math.random(-magnitude, magnitude);
 		shake[i] = { x = xVariation, y = yVariation };
 	end
-	
+
 	ShakeFrame(frame, shake, duration, frequency);
 end
 

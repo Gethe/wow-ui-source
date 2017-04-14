@@ -169,6 +169,10 @@ local PvpInfoLua =
 		},
 	},
 
+	Events =
+	{
+	},
+
 	Tables =
 	{
 		{

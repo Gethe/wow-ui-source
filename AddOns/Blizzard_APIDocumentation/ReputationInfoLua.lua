@@ -48,6 +48,10 @@ local ReputationInfoLua =
 		},
 	},
 
+	Events =
+	{
+	},
+
 	Tables =
 	{
 	},

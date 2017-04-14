@@ -686,7 +686,7 @@ local RAID_BACKDROP_TABLE = {
 	insets = { left = 11, right = 12, top = 12, bottom = 11 }};
 
 function LFGDungeonReadyPopup_Update()	
-	local proposalExists, id, typeID, subtypeID, name, texture, role, hasResponded, totalEncounters, completedEncounters, numMembers, isLeader, _, _, isSilent = GetLFGProposal();
+	local proposalExists, id, typeID, subtypeID, name, backgroundTexture, role, hasResponded, totalEncounters, completedEncounters, numMembers, isLeader, _, _, isSilent = GetLFGProposal();
 	if ( not proposalExists ) then
 		LFGDebug("Proposal Hidden: No proposal exists.");
 		StaticPopupSpecial_Hide(LFGDungeonReadyPopup);
@@ -775,8 +775,6 @@ function LFGDungeonReadyPopup_Update()
 			LFGDungeonReadyDialog.background:SetDrawLayer("BACKGROUND");
 			LFGDungeonReadyDialog.background:SetWidth(294);
 			LFGDungeonReadyDialog.instanceInfo.underline:Show();
-		
-			LFGDungeonReadyDialog.background:SetTexture("Interface\\LFGFrame\\UI-LFG-BACKGROUND-RANDOMDUNGEON");
 			
 			LFGDungeonReadyDialog.label:SetText(RANDOM_DUNGEON_IS_READY);
 			
@@ -796,29 +794,17 @@ function LFGDungeonReadyPopup_Update()
 			LFGDungeonReadyPopup:SetHeight(223);
 			LFGDungeonReadyDialog.background:SetTexCoord(0, 1, 0, 1);
 			if ( subtypeID == LFG_SUBTYPEID_SCENARIO ) then
-				if ( LFG_IsHeroicScenario(id) ) then
-					texture = "Interface\\LFGFrame\\UI-LFG-BACKGROUND-HeroicScenario";
-					if ( typeID == TYPEID_RANDOM_DUNGEON ) then
-						name = RANDOM_SCENARIO;
-					end
-				else
-					texture = "Interface\\LFGFrame\\UI-LFG-BACKGROUND-RandomScenario";
-					-- change name for random
-					if ( typeID == TYPEID_RANDOM_DUNGEON ) then
-						name = RANDOM_SCENARIO;
-					end
+				-- change name for random
+				if ( typeID == TYPEID_RANDOM_DUNGEON ) then
+					name = RANDOM_SCENARIO;
 				end
 				LFGDungeonReadyDialog.background:SetDrawLayer("BORDER");
 				LFGDungeonReadyDialog.background:SetWidth(290);
 				LFGDungeonReadyDialog.instanceInfo.underline:Hide();
 			else
-				texture = "Interface\\LFGFrame\\UI-LFG-BACKGROUND-"..texture;
 				LFGDungeonReadyDialog.background:SetDrawLayer("BACKGROUND");
 				LFGDungeonReadyDialog.background:SetWidth(294);
 				LFGDungeonReadyDialog.instanceInfo.underline:Show();
-			end
-			if ( not LFGDungeonReadyDialog.background:SetTexture(texture) ) then	--We haven't added this texture yet. Default to the Deadmines.
-				LFGDungeonReadyDialog.background:SetTexture("Interface\\LFGFrame\\UI-LFG-BACKGROUND-Deadmines");	--DEBUG FIXME Default probably shouldn't be Deadmines
 			end
 			
 			if ( numMembers > 1 ) then
@@ -828,6 +814,9 @@ function LFGDungeonReadyPopup_Update()
 			end
 			LFGDungeonReadyDialog_UpdateInstanceInfo(name, completedEncounters, totalEncounters);
 			LFGDungeonReadyDialog.instanceInfo:Show();
+		end
+		if ( not LFGDungeonReadyDialog.background:SetTexture(backgroundTexture) ) then	--We haven't added this texture yet. Default to the Deadmines.
+			LFGDungeonReadyDialog.background:SetTexture("Interface\\LFGFrame\\UI-LFG-BACKGROUND-Deadmines");	--DEBUG FIXME Default probably shouldn't be Deadmines
 		end
 
 		local showRole = true;	-- scenarios will set this to false
@@ -1277,45 +1266,20 @@ function LFGRewardsFrame_UpdateFrame(parentFrame, dungeonID, background)
 
 	parentFrame:Show();
 	
-	local difficulty;
-	local dungeonDescription;
-	local textureFilename;
-	local dungeonName, typeID, subtypeID,_,_,_,_,_,_,_,textureFilename,difficulty,_,dungeonDescription, isHoliday, bonusRepAmount, _, isTimewalker = GetLFGDungeonInfo(dungeonID);
-	local isHeroic = difficulty > 0;
+	local dungeonName, typeID, subtypeID,_,_,_,_,_,_,_,backgroundTexture,difficulty,_,dungeonDescription, isHoliday, bonusRepAmount, _, isTimewalker = GetLFGDungeonInfo(dungeonID);
 	local isScenario = (subtypeID == LFG_SUBTYPEID_SCENARIO);
 	local doneToday, moneyAmount, moneyVar, experienceGained, experienceVar, numRewards, spellID = GetLFGDungeonRewards(dungeonID);
 	
-	local backgroundTexture;
-	
 	local leaderChecked, tankChecked, healerChecked, damageChecked = LFDQueueFrame_GetRoles();
 	
-	--HACK
-	if ( isScenario ) then
-		if ( LFG_IsHeroicScenario(dungeonID) ) then
-			backgroundTexture = "Interface\\LFGFrame\\UI-LFG-SCENARIO-Heroic";
-		else
-			backgroundTexture = "Interface\\LFGFrame\\UI-LFG-SCENARIO-Random";
-		end
-	else
-		if ( dungeonID == 341 ) then	--Trollpocalypse Heroic
-			backgroundTexture = "Interface\\LFGFrame\\UI-LFG-BACKGROUND-TROLLPOCALYPSE";
-		elseif ( dungeonID == 434 ) then	--Hour of Twilight Heroic
-			backgroundTexture = "Interface\\LFGFrame\\UI-LFG-BACKGROUND-HourofTwilightQ";
-		elseif ( textureFilename ~= "" ) then
-			if ( subtypeID == LFG_SUBTYPEID_RAID ) then
-				backgroundTexture = "Interface\\LFGFrame\\UI-LFG-BACKGROUND-"..textureFilename.."Q";
-			else
-				backgroundTexture = "Interface\\LFGFrame\\UI-LFG-HOLIDAY-BACKGROUND-"..textureFilename;
-			end
-		elseif ( isHeroic ) then
+	if ( not backgroundTexture ) then
+		if ( difficulty > 0 ) then
 			backgroundTexture = "Interface\\LFGFrame\\UI-LFG-BACKGROUND-HEROIC";
 		else
 			backgroundTexture = "Interface\\LFGFrame\\UI-LFG-BACKGROUND-QUESTPAPER";
 		end
 	end
-	if ( backgroundTexture ) then
-		background:SetTexture(backgroundTexture);
-	end
+	background:SetTexture(backgroundTexture);
 
 	local lastFrame = parentFrame.rewardsLabel;
 	if ( isTimewalker ) then

@@ -881,7 +881,7 @@ function Class_ActionBarCallout:OnBegin()
 	self.SuccessfulCastCount = 0;
 
 	local startingAbility = TutorialHelper:FilterByClass(TutorialData.StartingAbility);
-	
+
 	local isWarrior = TutorialHelper:GetClass() == "WARRIOR";
 	if (isWarrior) then
 		startingAbility = 88163; -- Warriors start off with melee as their "first" ability.
@@ -904,7 +904,7 @@ function Class_ActionBarCallout:Warrior_AttemptPointer2()
 	local requiredRage = 25; -- fallback value, something decentish
 	local costTable = GetSpellPowerCost(TutorialData.StartingAbility.WARRIOR);
 	for _, costInfo in pairs(costTable) do
-		if (costInfo.type == SPELL_POWER_RAGE) then
+		if (costInfo.type == Enum.PowerType.Rage) then
 			requiredRage = costInfo.cost;
 			break;
 		end
@@ -1113,7 +1113,7 @@ function Class_EquipFirstItemWatcher:GetPotentialItemUpgrades()
 	local potentialUpgrades = {};
 
 	local playerClass = select(2, UnitClass("player"));
-	
+
 	for i = 0, INVSLOT_LAST_EQUIPPED do
 		local existingItemIlvl = 0;
 		local existingItemWeaponType;
@@ -1144,7 +1144,7 @@ function Class_EquipFirstItemWatcher:GetPotentialItemUpgrades()
 					if (i == INVSLOT_MAINHAND) then
 						local weaponType = self:GetWeaponType(itemID);
 						match = (not existingItemWeaponType) or (existingItemWeaponType == weaponType);
-						
+
 						-- rouge's should only be recommended daggers
 						if ( playerClass == "ROGUE" and (itemInfo[12] ~= ITEMSUBCLASSTYPES["DAGGER"].classID or itemInfo[13] ~= ITEMSUBCLASSTYPES["DAGGER"].subClassID) ) then
 							match = false;
@@ -1160,7 +1160,7 @@ function Class_EquipFirstItemWatcher:GetPotentialItemUpgrades()
 								match = false;
 							end
 						end
-						
+
 						-- rouge's should only be recommended daggers
 						if ( playerClass == "ROGUE" and (itemInfo[12] ~= ITEMSUBCLASSTYPES["DAGGER"].classID or itemInfo[13] ~= ITEMSUBCLASSTYPES["DAGGER"].subClassID) ) then
 							match = false;

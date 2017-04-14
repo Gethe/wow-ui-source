@@ -46,7 +46,7 @@
 		<Frame parentKey="Textures" frameStrata="MEDIUM" setAllPoints="true">
 			<Layers>
 				<Layer level="OVERLAY">
-					<Texture parentKey="Shine" file="Interface\ComboFrame\ComboPoint" alphaMode="ADD" hidden="true" textureSubLevel="1">
+					<Texture parentKey="Shine" file="Interface\ComboFrame\ComboPoint" alphaMode="ADD" hidden="true">
 						<Size x="60" y="35"/>
 						<Anchors>
 							<Anchor point="CENTER">
@@ -55,13 +55,13 @@
 						</Anchors>
 						<TexCoords left="0.5625" right="1" top="0" bottom="1"/>
 					</Texture>
-					<Texture parentKey="EnergizeRing" hidden="false" alpha="0" alphaMode="BLEND" file="Interface\PlayerFrame\Deathknight-Energize-White" textureSubLevel="2">
+					<Texture parentKey="EnergizeRing" hidden="false" alpha="0" alphaMode="BLEND" file="Interface\PlayerFrame\Deathknight-Energize-White">
 						<Size x="32" y="0"/>
 						<Anchors>
 							<Anchor point="CENTER"/>
 						</Anchors>
 					</Texture>
-					<Texture parentKey="EnergizeGlow" hidden="false" alpha="0" alphaMode="ADD" file="Interface\PlayerFrame\Deathknight-Energize-Glow" textureSubLevel="2">
+					<Texture parentKey="EnergizeGlow" hidden="false" alpha="0" alphaMode="ADD" file="Interface\PlayerFrame\Deathknight-Energize-Glow">
 						<Size x="32" y="32"/>
 						<Anchors>
 							<Anchor point="CENTER"/>

@@ -1461,7 +1461,7 @@
 					<Frame name="$parentNavBar" inherits="NavBarTemplate" parentKey="navBar" hidden="true">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentStoneTex" relativePoint="BOTTOMLEFT" x="3" y="0"/>
-							<Anchor point="TOPRIGHT" relativeTo="$parentStoneTex" relativePoint="TOPRIGHT" x="-4" y=""/>
+							<Anchor point="TOPRIGHT" relativeTo="$parentStoneTex" relativePoint="TOPRIGHT" x="-4" y="0"/>
 						</Anchors>
 					</Frame>
 					<ScrollFrame name="$parentScrollFrame" inherits="HybridScrollFrameTemplate" parentKey="scrollFrame" hidden="true">
@@ -1795,7 +1795,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="BrowserSettingsTooltip" inherits="TooltipBorderedFrameTemplate" paernt="UIParent" frameStrata="FULLSCREEN_DIALOG" hidden="true" >
+	<Frame name="BrowserSettingsTooltip" inherits="TooltipBorderedFrameTemplate" parent="UIParent" frameStrata="FULLSCREEN_DIALOG" hidden="true" >
 		<Size x="250" y="100"/>
 		<Layers>
 			<Layer level="ARTWORK">

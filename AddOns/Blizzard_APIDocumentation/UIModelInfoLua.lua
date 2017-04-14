@@ -112,6 +112,10 @@ local UIModelInfoLua =
 		},
 	},
 
+	Events =
+	{
+	},
+
 	Tables =
 	{
 		{

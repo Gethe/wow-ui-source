@@ -3,7 +3,7 @@ ClassNameplateBarRogueDruid = {};
 function ClassNameplateBarRogueDruid:OnLoad()
 	self.class = "ROGUE";
 	self.powerToken = "COMBO_POINTS";
-	
+
 	for i = 1, #self.ComboPoints do
 		self.ComboPoints[i].on = false;
 	end
@@ -44,7 +44,7 @@ function ClassNameplateBarRogueDruid:SetupDruid()
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	local powerType, powerToken = UnitPowerType("player");
 	local showBar = false;
-	if (powerType == SPELL_POWER_ENERGY) then
+	if (powerType == Enum.PowerType.Energy) then
 		showBar = true;
 		self:RegisterUnitEvent("UNIT_POWER_FREQUENT", "player");
 		self:RegisterUnitEvent("UNIT_MAXPOWER", "player");
@@ -61,15 +61,15 @@ function ClassNameplateBarRogueDruid:SetupDruid()
 end
 
 function ClassNameplateBarRogueDruid:UpdateMaxPower()
-	local maxComboPoints = UnitPowerMax("player", SPELL_POWER_COMBO_POINTS);
-	
+	local maxComboPoints = UnitPowerMax("player", Enum.PowerType.ComboPoints);
+
 	for i = 1, maxComboPoints do
 		self.ComboPoints[i]:Show();
 	end
 	for i = maxComboPoints + 1, #self.ComboPoints do
 		self.ComboPoints[i]:Hide();
 	end
-	
+
 	self.maxUsablePoints = 5;
 	self.Combo6.Background:Hide();
 	if (maxComboPoints == 6) then
@@ -88,7 +88,7 @@ function ClassNameplateBarRogueDruid:UpdateMaxPower()
 		self:SetHeight(22);
 	end
 	self:SetWidth(self.Combo1:GetWidth() * self.maxUsablePoints + 4 * (self.maxUsablePoints - 1));
-	
+
 	if (self.Combo6.PointOff) then
 		self.Combo6.PointOff:SetShown(maxComboPoints == 6);
 	end
@@ -98,9 +98,9 @@ function ClassNameplateBarRogueDruid:UpdatePower()
 	if ( self.delayedUpdate ) then
 		return;
 	end
-	
-	local comboPoints = UnitPower("player", SPELL_POWER_COMBO_POINTS);
-	
+
+	local comboPoints = UnitPower("player", Enum.PowerType.ComboPoints);
+
 	-- If we had more than self.maxUsablePoints and then used a finishing move, fade out
 	-- the top row of points and then move the remaining points from the bottom up to the top
 	if ( self.lastPower and self.lastPower > self.maxUsablePoints and comboPoints == self.lastPower - self.maxUsablePoints ) then

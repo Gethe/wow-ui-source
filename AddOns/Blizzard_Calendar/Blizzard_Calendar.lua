@@ -96,10 +96,6 @@ local GetCVarBool = GetCVarBool;
 local PI = PI;
 local TWOPI = PI * 2.0;
 
--- dev constants
-CALENDAR_USE_SEQUENCE_FOR_EVENT_TEXTURE		= true;
-CALENDAR_USE_SEQUENCE_FOR_OVERLAY_TEXTURE	= false;
-
 -- local constants
 local CALENDAR_MAX_DAYS_PER_MONTH			= 42;		-- 6 weeks
 local CALENDAR_MAX_DARKDAYS_PER_MONTH		= 14;		-- max days from the previous and next months when viewing the current month
@@ -501,15 +497,6 @@ local CALENDAR_CALENDARTYPE_NAMEFORMAT = {
 		[""]				= CALENDAR_EVENTNAME_FORMAT_RAID_RESET,
 	},
 };
-local CALENDAR_CALENDARTYPE_TEXTURE_PATHS = {
---	["PLAYER"]				= "",
---	["GUILD_ANNOUNCEMENT"]	= "",
---	["GUILD_EVENT"]			= "",
---	["SYSTEM"]				= "",
-	["HOLIDAY"]				= "Interface\\Calendar\\Holidays\\",
---	["RAID_LOCKOUT"]		= "",
---	["RAID_RESET"]			= "",
-};
 local CALENDAR_CALENDARTYPE_TEXTURES = {
 	["PLAYER"] = {
 --		[""]				= "",
@@ -536,27 +523,6 @@ local CALENDAR_CALENDARTYPE_TEXTURES = {
 	["RAID_RESET"] = {
 --		[""]				= "",
 	},
-};
-local CALENDAR_CALENDARTYPE_TEXTURE_APPEND = {
---	["PLAYER"] = {
---	},
---	["GUILD_ANNOUNCEMENT"] = {
---	},
---	["GUILD_EVENT"] = {
---	},
---	["SYSTEM"] = {
---	},
-	["HOLIDAY"] = {
-		["START"]			= "Start",
-		["ONGOING"]			= "Ongoing",
-		["END"]				= "End",
-		["INFO"]			= "Info",
-		[""]				= "",
-	},
---	["RAID_LOCKOUT"] = {
---	},
---	["RAID_RESET"] = {
---	},
 };
 local CALENDAR_CALENDARTYPE_TCOORDS = {
 	["PLAYER"] = {
@@ -616,10 +582,6 @@ local CALENDAR_CALENDARTYPE_COLORS_TOOLTIP = {
 	["HOLIDAY"]				= NORMAL_FONT_COLOR,
 };
 
-local CALENDAR_EVENTTYPE_TEXTURE_PATHS = {
-	[CALENDAR_EVENTTYPE_RAID]		= "Interface\\LFGFrame\\LFGIcon-",
-	[CALENDAR_EVENTTYPE_DUNGEON]	= "Interface\\LFGFrame\\LFGIcon-",
-};
 local CALENDAR_EVENTTYPE_TEXTURES = {
 	[CALENDAR_EVENTTYPE_RAID]		= "Interface\\LFGFrame\\LFGIcon-Raid",
 	[CALENDAR_EVENTTYPE_DUNGEON]	= "Interface\\LFGFrame\\LFGIcon-Dungeon",
@@ -944,33 +906,14 @@ local function _CalendarFrame_GetEventTexture(index, eventType)
 	return nil;
 end
 
-local function _CalendarFrame_GetTextureFile(textureName, calendarType, sequenceType, eventType)
-	local texture, tcoords;
-	if ( textureName and textureName ~= "" ) then
-		if ( CALENDAR_CALENDARTYPE_TEXTURE_PATHS[calendarType] ) then
-			texture = CALENDAR_CALENDARTYPE_TEXTURE_PATHS[calendarType]..textureName;
-			if ( CALENDAR_CALENDARTYPE_TEXTURE_APPEND[calendarType] ) then
-				texture = texture..CALENDAR_CALENDARTYPE_TEXTURE_APPEND[calendarType][sequenceType];
-			end
-			tcoords = CALENDAR_CALENDARTYPE_TCOORDS[calendarType];
-		elseif ( CALENDAR_EVENTTYPE_TEXTURE_PATHS[eventType] ) then
-			texture = CALENDAR_EVENTTYPE_TEXTURE_PATHS[eventType]..textureName;
-			tcoords = CALENDAR_EVENTTYPE_TCOORDS[eventType];
-		elseif ( CALENDAR_CALENDARTYPE_TEXTURES[calendarType][sequenceType] ) then
-			texture = CALENDAR_CALENDARTYPE_TEXTURES[calendarType][sequenceType];
-			tcoords = CALENDAR_CALENDARTYPE_TCOORDS[calendarType];
-		elseif ( CALENDAR_EVENTTYPE_TEXTURES[eventType] ) then
-			texture = CALENDAR_EVENTTYPE_TEXTURES[eventType];
-			tcoords = CALENDAR_EVENTTYPE_TCOORDS[eventType];
-		end
-	elseif ( CALENDAR_CALENDARTYPE_TEXTURES[calendarType][sequenceType] ) then
-		texture = CALENDAR_CALENDARTYPE_TEXTURES[calendarType][sequenceType];
+local function _CalendarFrame_GetTextureCoords(calendarType, eventType)
+	local tcoords;
+	if ( calendarType == "HOLIDAY" ) then
 		tcoords = CALENDAR_CALENDARTYPE_TCOORDS[calendarType];
-	elseif ( CALENDAR_EVENTTYPE_TEXTURES[eventType] ) then
-		texture = CALENDAR_EVENTTYPE_TEXTURES[eventType];
+	else
 		tcoords = CALENDAR_EVENTTYPE_TCOORDS[eventType];
 	end
-	return texture, tcoords;
+	return tcoords;
 end
 
 local function _CalendarFrame_GetEventColor(calendarType, modStatus, inviteStatus, tooltip)
@@ -1707,7 +1650,7 @@ function CalendarFrame_UpdateDayTextures(dayButton, numEvents, firstEventButton,
 --	end
 
 	local monthOffset, day = dayButton.monthOffset, dayButton.day;
-	local texturePath, tcoords;
+	local tcoords;
 
 	-- set event textures
 	local eventBackground = _G[dayButtonName.."EventBackgroundTexture"];
@@ -1724,13 +1667,9 @@ function CalendarFrame_UpdateDayTextures(dayButton, numEvents, firstEventButton,
 		-- set day texture
 		local event = C_Calendar.GetDayEvent(monthOffset, day, firstEventButton.eventIndex);
 		eventTex:SetTexture();
-		if ( CALENDAR_USE_SEQUENCE_FOR_EVENT_TEXTURE and event.numSequenceDays ~= 2) then
-			texturePath, tcoords = _CalendarFrame_GetTextureFile(event.texture, event.calendarType, event.sequenceType, event.eventType);
-		else
-			texturePath, tcoords = _CalendarFrame_GetTextureFile(event.texture, event.calendarType, "", event.eventType);
-		end
-		if ( texturePath ) then
-			eventTex:SetTexture(texturePath);
+		tcoords = _CalendarFrame_GetTextureCoords(event.calendarType, event.eventType);
+		if ( event.iconTexture ) then
+			eventTex:SetTexture(event.iconTexture);
 			eventTex:SetTexCoord(tcoords.left, tcoords.right, tcoords.top, tcoords.bottom);
 			eventTex:Show();
 		else
@@ -1750,13 +1689,9 @@ function CalendarFrame_UpdateDayTextures(dayButton, numEvents, firstEventButton,
 		if ( event.numSequenceDays > 2 and not event.dontDisplayBanner ) then
 			-- by art/design request, we're not going to show sequence textures if the sequence only lasts up to 2 days
 			overlayTex:SetTexture();
-			if ( CALENDAR_USE_SEQUENCE_FOR_OVERLAY_TEXTURE ) then
-				texturePath, tcoords = _CalendarFrame_GetTextureFile(event.texture, event.calendarType, event.sequenceType, event.eventType);
-			else
-				texturePath, tcoords = _CalendarFrame_GetTextureFile(event.texture, event.calendarType, "ONGOING", event.eventType);
-			end
-			if ( texturePath ) then
-				overlayTex:SetTexture(texturePath);
+			tcoords = _CalendarFrame_GetTextureCoords(event.calendarType, event.eventType);
+			if ( event.iconTexture ) then
+				overlayTex:SetTexture(event.iconTexture);
 				overlayTex:SetTexCoord(tcoords.left, tcoords.right, tcoords.top, tcoords.bottom);
 				overlayTex:GetParent():Show();
 				return;
@@ -3084,8 +3019,8 @@ function CalendarViewEventFrame_Update()
 		name = GetDungeonNameWithDifficulty(name, difficultyInfo and difficultyInfo.difficultyName or eventTex.difficultyName);
 		CalendarViewEventTypeName:SetFormattedText(CALENDAR_VIEW_EVENTTYPE, safeselect(eventType, CalendarEventGetTypes()), name);
 		-- set the eventTex texture
-		if ( eventTex.texture ~= "" ) then
-			CalendarViewEventIcon:SetTexture(CALENDAR_EVENTTYPE_TEXTURE_PATHS[eventType]..eventTex.texture);
+		if ( eventTex.texture ) then
+			CalendarViewEventIcon:SetTexture(eventTex.texture);
 		else
 			CalendarViewEventIcon:SetTexture(CALENDAR_EVENTTYPE_TEXTURES[eventType]);
 		end
@@ -3777,8 +3712,8 @@ function CalendarCreateEventTexture_Update()
 		CalendarCreateEventTextureName:SetText(GetDungeonNameWithDifficulty(name, difficultyInfo and difficultyInfo.difficultyName or eventTex.difficultyName));
 		CalendarCreateEventTextureName:Show();
 		-- set the eventTex texture
-		if ( eventTex.texture ~= "" ) then
-			CalendarCreateEventIcon:SetTexture(CALENDAR_EVENTTYPE_TEXTURE_PATHS[eventType]..eventTex.texture);
+		if ( eventTex.texture ) then
+			CalendarCreateEventIcon:SetTexture(eventTex.texture);
 		else
 			CalendarCreateEventIcon:SetTexture(CALENDAR_EVENTTYPE_TEXTURES[eventType]);
 		end
@@ -4800,7 +4735,7 @@ function CalendarEventPickerScrollFrame_Update()
 	local numEvents = CalendarGetNumDayEvents(monthOffset, day);
 
 	local button, buttonName, buttonIcon, buttonTitle, buttonTime;
-	local texturePath, tcoords;
+	local tcoords;
 	local eventColor;
 	local i = 1;
 	while ( i <= numButtons and eventIndex <= numEvents ) do
@@ -4821,9 +4756,9 @@ function CalendarEventPickerScrollFrame_Update()
 
 				-- set event texture
 				buttonIcon:SetTexture();
-				texturePath, tcoords = _CalendarFrame_GetTextureFile(event.texture, event.calendarType, event.sequenceType, event.eventType);
-				if ( texturePath and texturePath ~= "" ) then
-					buttonIcon:SetTexture(texturePath);
+				tcoords = _CalendarFrame_GetTextureCoords(event.calendarType, event.eventType);
+				if ( event.iconTexture ) then
+					buttonIcon:SetTexture(event.iconTexture);
 					buttonIcon:SetTexCoord(tcoords.left, tcoords.right, tcoords.top, tcoords.bottom);
 					buttonIcon:Show();
 					buttonTitle:SetPoint("TOPLEFT", buttonIcon, "TOPRIGHT");
@@ -5108,8 +5043,8 @@ function CalendarTexturePickerScrollFrame_Update()
 				buttonIcon:SetTexture();
 				local tcoords = CALENDAR_EVENTTYPE_TCOORDS[eventType];
 				buttonIcon:SetTexCoord(tcoords.left, tcoords.right, tcoords.top, tcoords.bottom);
-				if ( eventTex.texture ~= "" ) then
-					buttonIcon:SetTexture(CALENDAR_EVENTTYPE_TEXTURE_PATHS[eventType]..eventTex.texture);
+				if ( eventTex.texture ) then
+					buttonIcon:SetTexture(eventTex.texture);
 				else
 					buttonIcon:SetTexture(CALENDAR_EVENTTYPE_TEXTURES[eventType]);
 				end

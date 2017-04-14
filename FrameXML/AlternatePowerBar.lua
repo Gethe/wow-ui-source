@@ -15,15 +15,15 @@ function AlternatePowerBar_Initialize(self)
 		self.powerName = ADDITIONAL_POWER_BAR_NAME;
 		self.powerIndex = ADDITIONAL_POWER_BAR_INDEX;
 	end
-	
+
 	self:RegisterEvent("UNIT_POWER");
 	self:RegisterEvent("UNIT_MAXPOWER");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("UNIT_DISPLAYPOWER");
 	self:RegisterEvent("UPDATE_VEHICLE_ACTIONBAR");
-	
+
 	SetTextStatusBarText(self, _G[self:GetName().."Text"])
-	
+
 	local info = PowerBarColor[self.powerName];
 	self:SetStatusBarColor(info.r, info.g, info.b);
 end
@@ -68,13 +68,13 @@ end
 
 ALT_MANA_BAR_PAIR_DISPLAY_INFO = {
 	DRUID = {
-		[SPELL_POWER_LUNAR_POWER] = true,
+		[Enum.PowerType.LunarPower] = true,
 	},
 	PRIEST = {
-		[SPELL_POWER_INSANITY] = true,
+		[Enum.PowerType.Insanity] = true,
 	},
 	SHAMAN = {
-		[SPELL_POWER_MAELSTROM] = true,
+		[Enum.PowerType.Maelstrom] = true,
 	},
 };
 

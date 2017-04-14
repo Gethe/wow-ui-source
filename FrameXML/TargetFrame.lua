@@ -597,7 +597,15 @@ function TargetFrame_UpdateAuras (self)
 					frameBorder:SetVertexColor(color.r, color.g, color.b);
 
 					-- set the debuff to be big if the buff is cast by the player or his pet
-					largeDebuffList[index] = (PLAYER_UNITS[caster]);
+					largeDebuffList[index] = false;
+					if caster then
+						for token, value in pairs(PLAYER_UNITS) do
+							if UnitIsUnit(caster, token) or UnitIsOwnerOrControllerOfUnit(token, caster) then
+								largeDebuffList[index] = value;
+								break;
+							end
+						end
+					end
 
 					numDebuffs = numDebuffs + 1;
 
@@ -658,7 +666,7 @@ function TargetFrame_ShouldShowDebuffs(unit, caster, nameplateShowAll, casterIsA
 		return true;
 	end
 
-	if (caster and (UnitIsUnit("player", caster) or UnitIsUnit("pet", caster))) then
+	if (caster and (UnitIsUnit("player", caster) or UnitIsOwnerOrControllerOfUnit("player", caster))) then
 		return true;
 	end
 

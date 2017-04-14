@@ -152,10 +152,6 @@
 						</FontString>
 					</Layer>
 				</Layers>
-				<Scripts>
-					<OnEnter function="LFDRoleCheckPopupDescription_OnEnter"/>
-					<OnLeave function="GameTooltip_Hide"/>
-				</Scripts>
 			</Frame>
 		</Frames>
 		<Scripts>
@@ -431,12 +427,12 @@
 										_G[myName.."ScrollBackground"]:SetParent(_G[myName.."ScrollBar"]);
 										_G[myName.."ScrollBackgroundTopLeft"]:SetParent(_G[myName.."ScrollBar"]);
 										_G[myName.."ScrollBackgroundBottomRight"]:SetParent(_G[myName.."ScrollBar"]);
-										
+
 										local scrollBar = _G[myName.."ScrollBar"];
 										scrollBar:ClearAllPoints();
 										scrollBar:SetPoint("BOTTOMLEFT", self, "BOTTOMRIGHT", 3, 7);
 										scrollBar:SetPoint("TOPLEFT", self, "TOPRIGHT", 3, -9);
-										
+
 										self.scrollBarHideable = true;
 										ScrollFrame_OnLoad(self);
 									</OnLoad>

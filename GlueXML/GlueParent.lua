@@ -60,6 +60,7 @@ function GlueParent_OnLoad(self)
 	self:RegisterEvent("OPEN_STATUS_DIALOG");
 	self:RegisterEvent("REALM_LIST_UPDATED");
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
+	self:RegisterEvent("LUA_WARNING");
 
 	OnDisplaySizeChanged(self);
 end
@@ -83,6 +84,8 @@ function GlueParent_OnEvent(self, event, ...)
 		RealmList_Update();
 	elseif ( event == "DISPLAY_SIZE_CHANGED" ) then
 		OnDisplaySizeChanged(self);
+	elseif ( event == "LUA_WARNING" ) then
+		HandleLuaWarning(...);
 	end
 end
 
@@ -616,6 +619,11 @@ end
 -- Utils
 -- =============================================================
 
+function HideUIPanel(self)
+	-- Glue specific implementation of this function, doesn't need to leverage FrameXML data.
+	self:Hide();
+end
+
 function IsKioskGlueEnabled()
 	return IsKioskModeEnabled() and not IsCompetitiveModeEnabled();
 end
@@ -728,6 +736,10 @@ function GMError(...)
 	if ( IsGMClient() ) then
 		error(...);
 	end
+end
+
+function OnExcessiveErrors()
+	-- Glue Implementation, no-op.
 end
 
 SecureMixin = Mixin;

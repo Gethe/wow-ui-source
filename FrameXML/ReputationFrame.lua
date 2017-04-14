@@ -199,7 +199,7 @@ function ReputationFrame_Update(showLFGPulse)
 			if ( isCapped ) then
 				factionRow.rolloverText = nil;
 			else
-				factionRow.rolloverText = HIGHLIGHT_FONT_COLOR_CODE.." "..format(REPUTATION_PROGRESS_FORMAT, barValue, barMax)..FONT_COLOR_CODE_CLOSE;
+				factionRow.rolloverText = HIGHLIGHT_FONT_COLOR_CODE.." "..format(REPUTATION_PROGRESS_FORMAT, BreakUpLargeNumbers(barValue), BreakUpLargeNumbers(barMax))..FONT_COLOR_CODE_CLOSE;
 			end
 			factionBar:SetFillStyle("STANDARD_NO_RANGE_FILL");
 			factionBar:SetMinMaxValues(0, barMax);

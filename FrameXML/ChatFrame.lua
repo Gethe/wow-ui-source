@@ -776,9 +776,11 @@ local function CastSequenceManager_OnEvent(self, event, ...)
 			name, rank = strlower(name), strlower(rank);
 			local nameplus = name.."()";
 			local fullname = name.."("..rank..")";
+			local overrideName = strlower(FindSpellOverrideNameByName(name));
+			local baseName = strlower(FindBaseSpellNameByName(name));
 			for sequence, entry in pairs(CastSequenceTable) do
 				local entryName = entry.spellNames[entry.index];
-				if ( entryName == name or entryName == nameplus or entryName == fullname ) then
+				if ( entryName == name or entryName == nameplus or entryName == fullname or entryName == overrideName or entryName == baseName ) then
 					if ( event == "UNIT_SPELLCAST_SENT" ) then
 						entry.pending = castID;
 					elseif ( entry.pending == castID ) then
@@ -2317,10 +2319,8 @@ SlashCmdList["DUMP"] = function(msg)
 end
 
 SlashCmdList["RELOAD"] = function(msg)
-	ConsoleExec("reloadui");
+	ReloadUI();
 end
-
-
 
 SlashCmdList["WARGAME"] = function(msg)
 	-- Parameters are (playername, area, isTournamentMode). Since the player name can be multiple words,
@@ -4650,7 +4650,7 @@ function VoiceMacroMenu_Click(self)
 			emote = EMOTE455_TOKEN;
 		end
 	end
-	
+
 	DoEmote(emote);
 	ChatMenu:Hide();
 end

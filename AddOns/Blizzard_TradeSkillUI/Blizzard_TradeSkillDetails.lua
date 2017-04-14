@@ -391,10 +391,9 @@ function TradeSkillDetailsMixin:OnReagentMouseEnter(reagentButton)
 end
 
 function TradeSkillDetailsMixin:OnReagentClicked(reagentButton)
-	if not GetCurrentKeyBoardFocus() then
+	local clickHandled = HandleModifiedItemClick(C_TradeSkillUI.GetRecipeReagentItemLink(self.selectedRecipeID, reagentButton.reagentIndex));
+	if not clickHandled then
 		TradeSkillFrame.SearchBox:SetText(reagentButton.Name:GetText());
-	else
-		HandleModifiedItemClick(C_TradeSkillUI.GetRecipeReagentItemLink(self.selectedRecipeID, reagentButton.reagentIndex));
 	end
 end
 

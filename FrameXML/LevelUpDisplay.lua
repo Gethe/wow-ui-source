@@ -359,7 +359,7 @@ function LevelUpDisplay_PlayScenario()
 end
 
 function LevelUpDisplay_BuildCharacterList(self)
-	local name, icon, link = "","",nil;
+	local name, icon, link = "",nil,nil;
 	self.unlockList = {};
 
 	if LEVEL_UP_EVENTS[self.level] then
@@ -376,16 +376,15 @@ function LevelUpDisplay_BuildCharacterList(self)
 															};
 	end	
 
-	local GUILD_EVENT_TEXTURE_PATH = "Interface\\LFGFrame\\LFGIcon-";
 	local dungeons = {GetLevelUpInstances(self.level, false)};
 	for _,dungeon in pairs(dungeons) do
 		name, icon, link = GetDungeonInfo(dungeon);
 		if link then -- link can come back as nil if there's no Dungeon Journal entry
-			self.unlockList[#self.unlockList +1] = { entryType = "dungeon", text = name, subText = LEVEL_UP_DUNGEON, icon = GUILD_EVENT_TEXTURE_PATH..icon, subIcon = SUBICON_TEXCOOR_LOCK,
+			self.unlockList[#self.unlockList +1] = { entryType = "dungeon", text = name, subText = LEVEL_UP_DUNGEON, icon = icon, subIcon = SUBICON_TEXCOOR_LOCK,
 																		link = LEVEL_UP_DUNGEON2.." "..link
 																	};
 		else
-			self.unlockList[#self.unlockList +1] = { entryType = "dungeon", text = name, subText = LEVEL_UP_DUNGEON, icon = GUILD_EVENT_TEXTURE_PATH..icon, subIcon = SUBICON_TEXCOOR_LOCK,
+			self.unlockList[#self.unlockList +1] = { entryType = "dungeon", text = name, subText = LEVEL_UP_DUNGEON, icon = icon, subIcon = SUBICON_TEXCOOR_LOCK,
 																		link = LEVEL_UP_DUNGEON2.." "..name
 																	};
 		end
@@ -395,11 +394,11 @@ function LevelUpDisplay_BuildCharacterList(self)
 	for _,raid in pairs(raids) do
 		name, icon, link = GetDungeonInfo(raid);
 		if link then -- link can come back as nil if there's no Dungeon Journal entry
-			self.unlockList[#self.unlockList +1] = { entryType = "dungeon", text = name, subText = LEVEL_UP_RAID, icon = GUILD_EVENT_TEXTURE_PATH..icon, subIcon = SUBICON_TEXCOOR_LOCK,
+			self.unlockList[#self.unlockList +1] = { entryType = "dungeon", text = name, subText = LEVEL_UP_RAID, icon = icon, subIcon = SUBICON_TEXCOOR_LOCK,
 																		link = LEVEL_UP_RAID2.." "..link
 																	};
 		else
-			self.unlockList[#self.unlockList +1] = { entryType = "dungeon", text = name, subText = LEVEL_UP_RAID, icon = GUILD_EVENT_TEXTURE_PATH..icon, subIcon = SUBICON_TEXCOOR_LOCK,
+			self.unlockList[#self.unlockList +1] = { entryType = "dungeon", text = name, subText = LEVEL_UP_RAID, icon = icon, subIcon = SUBICON_TEXCOOR_LOCK,
 																		link = LEVEL_UP_RAID2.." "..name
 																	};
 		end

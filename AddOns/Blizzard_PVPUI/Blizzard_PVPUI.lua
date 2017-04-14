@@ -522,6 +522,7 @@ function HonorFrame_UpdateQueueButtons()
 	local HonorFrame = HonorFrame;
 	local canQueue;
 	local arenaID;
+	local isBrawl;
 	if ( HonorFrame.type == "specific" ) then
 		if ( HonorFrame.SpecificFrame.selectionID ) then
 			canQueue = true;
@@ -530,6 +531,7 @@ function HonorFrame_UpdateQueueButtons()
 		if ( HonorFrame.BonusFrame.selectedButton ) then
 			canQueue = HonorFrame.BonusFrame.selectedButton.canQueue;
 			arenaID = HonorFrame.BonusFrame.selectedButton.arenaID;
+			isBrawl = HonorFrame.BonusFrame.selectedButton.isBrawl;
 		end
 	end
 
@@ -549,6 +551,10 @@ function HonorFrame_UpdateQueueButtons()
 				disabledReason = PVP_ARENA_NEED_MORE:format(minPlayers - groupSize);
 			end
 		end
+	end
+
+	if isBrawl and not canQueue then
+		disabledReason = INSTANCE_UNAVAILABLE_SELF_LEVEL_TOO_LOW;
 	end
 
 	if ( canQueue ) then
@@ -947,7 +953,9 @@ function HonorFrameBonusFrame_Update()
 		-- brawls
 		local button = HonorFrame.BonusFrame.BrawlButton;
 		local brawlInfo = C_PvP.GetBrawlInfo();
-		button.canQueue = brawlInfo and brawlInfo.active;
+		local isMaxLevel = UnitLevel("player") >= MAX_PLAYER_LEVEL;
+		button.canQueue = brawlInfo and brawlInfo.active and isMaxLevel;
+		button.isBrawl = true;
 
 		if (brawlInfo and brawlInfo.active) then
 			button:Enable();

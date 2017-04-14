@@ -122,6 +122,10 @@ local SocialQueueLua =
 		},
 	},
 
+	Events =
+	{
+	},
+
 	Tables =
 	{
 		{

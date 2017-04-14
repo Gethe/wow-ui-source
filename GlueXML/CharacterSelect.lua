@@ -130,6 +130,8 @@ function CharacterSelect_OnShow(self)
 
     UpdateAddonButton();
 
+    CharacterSelect_SetAutoSwitchRealm(false);
+
     local FROM_LOGIN_STATE_CHANGE = false;
     CharacterSelect_UpdateState(FROM_LOGIN_STATE_CHANGE);
 

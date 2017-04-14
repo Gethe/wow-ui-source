@@ -21,7 +21,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture name="$parentBorder" file="Interface\CharacterFrame\UI-CharacterFrame-GroupIndicator" tile="true" parentKey="DefaultBorder">
+				<Texture name="$parentBorder" file="Interface\CharacterFrame\UI-CharacterFrame-GroupIndicator" parentKey="DefaultBorder">
 					<Size>
 						<AbsDimension x="0" y="16"/>
 					</Size>

@@ -123,6 +123,10 @@ function GetTexCoordsForRole(role)
 	end
 end
 
+function ReloadUI()
+	C_UI.Reload();
+end
+
 function tDeleteItem(table, item)
 	local index = 1;
 	while table[index] do
@@ -322,6 +326,15 @@ end
 
 function FrameDeltaLerp(startValue, endValue, amount)
 	return DeltaLerp(startValue, endValue, amount, GetTickTime());
+end
+
+function GetNavigationButtonEnabledStates(count, index)
+	-- Returns indicate whether navigation for "previous" and "next" should be enabled, respectively.
+	if count > 1 then
+		return index > 1, index < count;
+	end
+
+	return false, false;
 end
 
 ----------------------------------

@@ -3,9 +3,9 @@
 ## Secure: 1
 ..\..\SharedXML\Spline.lua
 ..\..\SharedXML\Pools.lua
-..\..\SharedXML\ModelSceneTemplates.xml
-..\..\SharedXML\ModelSceneMixin.xml
-..\..\SharedXML\ModelSceneActorMixin.xml
+..\..\SharedXML\ModelSceneTemplatesScripts.xml
+..\..\SharedXML\ModelSceneMixinScripts.xml
+..\..\SharedXML\ModelSceneActorMixinScripts.xml
 Blizzard_StoreUI.xml
 Blizzard_StoreUIInsecure.xml
 Localization.lua

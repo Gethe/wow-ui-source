@@ -81,6 +81,8 @@ end
 function GarrisonLandingPageMixin:OnShow()
 	self:UpdateUIToGarrisonType();
 	PlaySound("UI_Garrison_GarrisonReport_Open");
+
+	self:RegisterEvent("GARRISON_HIDE_LANDING_PAGE")
 end
 
 function GarrisonLandingPageMixin:OnHide()
@@ -90,6 +92,8 @@ function GarrisonLandingPageMixin:OnHide()
 	StaticPopup_Hide("CONFIRM_FOLLOWER_ABILITY_UPGRADE");
 	GarrisonBonusAreaTooltip:Hide();
 	self.abilityCountersForMechanicTypes = nil;
+
+	self:UnregisterEvent("GARRISON_HIDE_LANDING_PAGE")
 end
 
 function GarrisonLandingPageMixin:GetFollowerList()
@@ -98,6 +102,12 @@ end
 
 function GarrisonLandingPageMixin:GetShipFollowerList()
 	return self.ShipFollowerList;
+end
+
+function GarrisonLandingPageMixin:OnEvent(event)
+	if (event == "GARRISON_HIDE_LANDING_PAGE") then
+		self:Hide();
+	end
 end
 
 

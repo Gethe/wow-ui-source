@@ -685,8 +685,9 @@ function SCENARIO_TRACKER_MODULE:AddProgressBar(block, line, criteriaIndex)
 		progressBar:RegisterEvent("SCENARIO_CRITERIA_UPDATE");
 		progressBar:Show();
 		progressBar.criteriaIndex = criteriaIndex;
-		ScenarioTrackerProgressBar_SetValue(progressBar, ScenarioTrackerProgressBar_GetProgress(progressBar));
 	end
+
+	ScenarioTrackerProgressBar_SetValue(progressBar, ScenarioTrackerProgressBar_GetProgress(progressBar));
 
 	progressBar.Bar.Icon:Hide();
 	progressBar.Bar.IconBG:Hide();
