@@ -665,7 +665,7 @@
             <ScrollFrame name="ChallengesModeWeeklyBest" parentKey="WeeklyBest" mixin="ChallengesFrameWeeklyBestMixin">
                 <Size x="550" y="372"/>
                 <Anchors>
-                    <Anchor point="TOPLEFT" x="6" y="-26"/>
+                    <Anchor point="TOPLEFT" x="6" y="-12"/>
                 </Anchors>
                 <ScrollChild>
                     <Frame parentKey="Child">
@@ -805,7 +805,7 @@
 			<Frame parentKey="GuildBest" mixin="ChallengesFrameGuildBestMixin" hidden="true">
                 <Size x="260" y="110"/>
                 <Anchors>
-                    <Anchor point="TOPLEFT" relativeKey="$parent.WeeklyBest.Child.Star" relativePoint="BOTTOMRIGHT" x="-16" y="10"/>
+                    <Anchor point="TOPLEFT" relativeKey="$parent.WeeklyBest.Child.Star" relativePoint="BOTTOMRIGHT" x="-16" y="30"/>
                 </Anchors>
                 <Layers>
                     <Layer level="BACKGROUND">
