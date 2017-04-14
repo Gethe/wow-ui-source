@@ -1214,9 +1214,9 @@ function CharacterSelect_AllowedToEnterWorld()
         return false;
     end
 
-    if (vasServiceInProgress) then
+    --[[if (vasServiceInProgress) then
         return false;
-    end
+    end]]
 
     return true;
 end
@@ -2866,7 +2866,7 @@ function GameRoomBillingFrameConvertMe_OnClick(self)
 
     frame.Before:SetText(FormatLargeNumber(minutes));
     frame.After:SetText(days);
-    frame.Description:SetText(HTML_START_CENTERTED..CONVERT_DESCRIPTION..HTML_END);
+    frame.Description:SetText(HTML_START_CENTERED..CONVERT_DESCRIPTION..HTML_END);
     frame.ConvertNowDescription:SetText(CONVERT_NOW_DESCRIPTION:format(days));
     frame:Show();
 end
