@@ -4135,7 +4135,6 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 	if ( info.StartDelay ) then
 		dialog.startDelay = info.StartDelay(dialog);
 		if (not dialog.startDelay or dialog.startDelay <= 0) then
-			dialog.startDelay = nil;
 			button1:Enable();
 		else
 			button1:Disable();
