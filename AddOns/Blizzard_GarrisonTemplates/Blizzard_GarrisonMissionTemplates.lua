@@ -115,6 +115,14 @@ function GarrisonMission:ShowMission(missionInfo)
 	GarrisonTruncationFrame_Check(missionPage.Stage.Title);
 	missionPage.environment = environment;
 	missionPage.xp = xp;
+	-- This is a fix for bug 496154. TODO: Add an icon for Elite difficulty that has a baked in glow.
+	if (environmentTexture == 1488824 or environmentTexture == 1488825) then
+		missionPage.Stage.MissionEnvIcon:SetSize(48,48);
+		missionPage.Stage.MissionEnvIcon:SetPoint("LEFT", self.MissionTab.MissionPage.Stage.MissionInfo.MissionEnv, "RIGHT", -11, 0);
+	else
+		missionPage.Stage.MissionEnvIcon:SetSize(16,16);
+		missionPage.Stage.MissionEnvIcon:SetPoint("LEFT", self.MissionTab.MissionPage.Stage.MissionInfo.MissionEnv, "RIGHT", 4, 0);
+	end
 	missionPage.Stage.MissionEnvIcon.Texture:SetTexture(environmentTexture);
 	if ( locPrefix ) then
 		missionPage.Stage.LocBack:SetAtlas("_"..locPrefix.."-Back", true);
