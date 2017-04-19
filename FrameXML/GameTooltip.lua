@@ -103,9 +103,10 @@ function GameTooltip_AddQuestRewardsToTooltipWithHeader(tooltip, questID, prefix
 		-- currency
 		local numQuestCurrencies = GetNumQuestLogRewardCurrencies(questID);
 		for i = 1, numQuestCurrencies do
-			local name, texture, numItems = GetQuestLogRewardCurrencyInfo(i, questID);
+			local name, texture, numItems, currencyID = GetQuestLogRewardCurrencyInfo(i, questID);
 			local text = BONUS_OBJECTIVE_REWARD_WITH_COUNT_FORMAT:format(texture, numItems, name);
-			tooltip:AddLine(text, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+			local currencyColor = GetColorForCurrencyReward(currencyID, numItems);
+			tooltip:AddLine(text, currencyColor:GetRGB());
 			hasAnySingleLineRewards = true;
 		end
 		-- honor

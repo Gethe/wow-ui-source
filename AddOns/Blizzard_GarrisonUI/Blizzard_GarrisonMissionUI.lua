@@ -1034,6 +1034,7 @@ function GarrisonMissionButton_SetRewards(self, rewards)
 			end
 			local Reward = self.Rewards[index];
 			Reward.Quantity:Hide();
+			Reward.Quantity:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
 			Reward.IconBorder:Hide();
 			Reward.itemID = nil;
 			Reward.currencyID = nil;
@@ -1063,6 +1064,8 @@ function GarrisonMissionButton_SetRewards(self, rewards)
 						end
 						Reward.currencyID = reward.currencyID;
 						Reward.Quantity:SetText(quantity);
+						local currencyColor = GetColorForCurrencyReward(reward.currencyID, quantity);
+						Reward.Quantity:SetTextColor(currencyColor:GetRGB());
 						Reward.Quantity:Show();
 					end
 				else

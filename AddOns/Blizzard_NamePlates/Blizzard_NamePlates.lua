@@ -80,7 +80,7 @@ function NamePlateDriverMixin:OnForbiddenNamePlateCreated(namePlateFrameBase)
 end
 
 function NamePlateDriverMixin:OnNamePlateAdded(namePlateUnitToken)
-	local namePlateFrameBase = C_NamePlate.GetNamePlateForUnit(namePlateUnitToken, true);
+	local namePlateFrameBase = C_NamePlate.GetNamePlateForUnit(namePlateUnitToken, issecure());
 	self:ApplyFrameOptions(namePlateFrameBase, namePlateUnitToken);
 
 	namePlateFrameBase:OnAdded(namePlateUnitToken, self);
@@ -127,7 +127,7 @@ function NamePlateDriverMixin:UpdateInsetsForType(namePlateType, namePlateFrameB
 end
 
 function NamePlateDriverMixin:OnNamePlateRemoved(namePlateUnitToken)
-	local namePlateFrameBase = C_NamePlate.GetNamePlateForUnit(namePlateUnitToken, true);
+	local namePlateFrameBase = C_NamePlate.GetNamePlateForUnit(namePlateUnitToken, issecure());
 
 	namePlateFrameBase:OnRemoved();
 end
@@ -151,14 +151,14 @@ function NamePlateDriverMixin:OnUnitAuraUpdate(unit)
 		end
 	end
 
-	local nameplate = C_NamePlate.GetNamePlateForUnit(unit, true);
+	local nameplate = C_NamePlate.GetNamePlateForUnit(unit, issecure());
 	if (nameplate) then
 		nameplate.UnitFrame.BuffFrame:UpdateBuffs(nameplate.namePlateUnitToken, filter);
 	end
 end
 
 function NamePlateDriverMixin:OnRaidTargetUpdate()
-	for _, frame in pairs(C_NamePlate.GetNamePlates(true)) do
+	for _, frame in pairs(C_NamePlate.GetNamePlates(issecure())) do
 		local icon = frame.UnitFrame.RaidTargetFrame.RaidTargetIcon;
 		local index = GetRaidTargetIndex(frame.namePlateUnitToken);
 		if ( index and not UnitIsUnit("player", frame.namePlateUnitToken) ) then
@@ -172,7 +172,7 @@ function NamePlateDriverMixin:OnRaidTargetUpdate()
 end
 
 function NamePlateDriverMixin:OnUnitFactionChanged(unit)
-	local nameplate = C_NamePlate.GetNamePlateForUnit(unit, true);
+	local nameplate = C_NamePlate.GetNamePlateForUnit(unit, issecure());
 	if (nameplate) then
 		CompactUnitFrame_UpdateName(nameplate.UnitFrame);
 		CompactUnitFrame_UpdateHealthColor(nameplate.UnitFrame);
@@ -192,7 +192,7 @@ function NamePlateDriverMixin:SetupClassNameplateBar(onTarget, bar)
 	end
 
 	if (onTarget and NamePlateTargetResourceFrame) then
-		local namePlateTarget = C_NamePlate.GetNamePlateForUnit("target", true);
+		local namePlateTarget = C_NamePlate.GetNamePlateForUnit("target", issecure());
 		if (namePlateTarget) then
 			bar:SetParent(NamePlateTargetResourceFrame);
 			NamePlateTargetResourceFrame:SetParent(namePlateTarget.UnitFrame);
@@ -203,7 +203,7 @@ function NamePlateDriverMixin:SetupClassNameplateBar(onTarget, bar)
 		end
 		NamePlateTargetResourceFrame:SetShown(namePlateTarget ~= nil);
 	elseif (not onTarget and NamePlatePlayerResourceFrame) then
-		local namePlatePlayer = C_NamePlate.GetNamePlateForUnit("player", true);
+		local namePlatePlayer = C_NamePlate.GetNamePlateForUnit("player", issecure());
 		if (namePlatePlayer) then
 			bar:SetParent(NamePlatePlayerResourceFrame);
 			NamePlatePlayerResourceFrame:SetParent(namePlatePlayer.UnitFrame);
@@ -303,7 +303,7 @@ function NamePlateDriverMixin:UpdateNamePlateOptions()
 	-- As each nameplate updates, it will handle updating preferred insets during its setup
 	self.preferredInsets = {};
 
-	for i, frame in ipairs(C_NamePlate.GetNamePlates(true)) do
+	for i, frame in ipairs(C_NamePlate.GetNamePlates(issecure())) do
 		self:ApplyFrameOptions(frame, frame.namePlateUnitToken);
 		CompactUnitFrame_UpdateAll(frame.UnitFrame);
 	end

@@ -3205,7 +3205,7 @@ StaticPopupDialogs["VOTE_BOOT_PLAYER"] = {
 	text = VOTE_BOOT_PLAYER,
 	button1 = YES,
 	button2 = NO,
-	StartDelay = function(self) if (self.data.seen) then return 0 else return 3 end end,
+	StartDelay = function(self) if (self.data) then return 0 else return 3 end end,
 	OnAccept = function(self)
 		SetLFGBootVote(true);
 	end,

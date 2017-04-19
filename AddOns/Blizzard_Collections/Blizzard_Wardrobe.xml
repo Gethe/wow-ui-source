@@ -1133,6 +1133,16 @@
 				<KeyValues>
 					<KeyValue key="searchType" value="LE_TRANSMOG_SEARCH_TYPE_USABLE_SETS" type="global"/>
 				</KeyValues>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="NoValidSetsLabel" inherits="GameFontNormalMed2" text="TRANSMOG_SETS_TAB_DISABLED">
+							<Anchors>
+								<Anchor point="CENTER" y="15"/>
+							</Anchors>
+							<Color r="0.804" g="0.725" b="0.616"/>
+						</FontString>
+					</Layer>
+				</Layers>
 				<Frames>
 					<Frame parentKey="PagingFrame" inherits="CollectionsPagingFrameTemplate">
 						<Anchors>

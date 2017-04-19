@@ -7,6 +7,16 @@ local CommentatorFrameLua =
 	Functions =
 	{
 		{
+			Name = "AddPlayerOverrideName",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "playerName", Type = "string", Nilable = false },
+				{ Name = "overrideName", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "ClearCameraTarget",
 			Type = "Function",
 		},
@@ -49,6 +59,43 @@ local CommentatorFrameLua =
 			Arguments =
 			{
 				{ Name = "token", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "ForceFollowTransition",
+			Type = "Function",
+		},
+		{
+			Name = "GetAdditionalCameraWeight",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "teamIndex", Type = "number", Nilable = false },
+				{ Name = "playerIndex", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetAdditionalCameraWeightByToken",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "token", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "weight", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetAllPlayerOverrideNames",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "nameEntries", Type = "table", InnerType = "NameOverrideEntry", Nilable = false },
 			},
 		},
 		{
@@ -95,6 +142,51 @@ local CommentatorFrameLua =
 			},
 		},
 		{
+			Name = "GetDistanceBeforeForcedHorizontalConvergence",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "distance", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetDurationToForceHorizontalConvergence",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "ms", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetExcludeDistance",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "excludeDistance", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetHardlockWeight",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "weight", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetHorizontalAngleThresholdToSmooth",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "angle", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetInstanceInfo",
 			Type = "Function",
 
@@ -111,6 +203,15 @@ local CommentatorFrameLua =
 				{ Name = "status", Type = "number", Nilable = false },
 				{ Name = "instanceIDLow", Type = "number", Nilable = false },
 				{ Name = "instanceIDHigh", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetLookAtLerpAmount",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "amount", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -131,12 +232,66 @@ local CommentatorFrameLua =
 			},
 		},
 		{
+			Name = "GetMaxNumPlayersPerTeam",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "maxNumPlayersPerTeam", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetMaxNumTeams",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "maxNumTeams", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetMode",
 			Type = "Function",
 
 			Returns =
 			{
 				{ Name = "commentatorMode", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetMsToHoldForHorizontalMovement",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "ms", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetMsToHoldForVerticalMovement",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "ms", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetMsToSmoothHorizontalChange",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "ms", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetMsToSmoothVerticalChange",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "ms", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -181,6 +336,38 @@ local CommentatorFrameLua =
 			},
 		},
 		{
+			Name = "GetPlayerCrowdControlInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "teamIndex", Type = "number", Nilable = false },
+				{ Name = "playerIndex", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "expiration", Type = "number", Nilable = false },
+				{ Name = "duration", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetPlayerFlagInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "teamIndex", Type = "number", Nilable = false },
+				{ Name = "playerIndex", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "hasFlag", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "GetPlayerInfo",
 			Type = "Function",
 
@@ -202,6 +389,79 @@ local CommentatorFrameLua =
 				{ Name = "healingTaken", Type = "number", Nilable = false },
 				{ Name = "kills", Type = "number", Nilable = false },
 				{ Name = "deaths", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetPlayerOverrideName",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "originalPlayerName", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "GetPlayerSpellCharges",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "teamIndex", Type = "number", Nilable = false },
+				{ Name = "playerIndex", Type = "number", Nilable = false },
+				{ Name = "spellID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "charges", Type = "number", Nilable = false },
+				{ Name = "maxCharges", Type = "number", Nilable = false },
+				{ Name = "startTime", Type = "number", Nilable = false },
+				{ Name = "duration", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetPositionLerpAmount",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "amount", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetSmoothFollowTransitioning",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "enabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "GetSoftlockWeight",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "weight", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetSpeedFactor",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "factor", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetTimeLeftInMatch",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "timeLeft", Type = "number", Nilable = true },
 			},
 		},
 		{
@@ -231,6 +491,15 @@ local CommentatorFrameLua =
 			},
 		},
 		{
+			Name = "IsSpectating",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isSpectating", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsUsingSmartCamera",
 			Type = "Function",
 
@@ -248,6 +517,40 @@ local CommentatorFrameLua =
 				{ Name = "factionIndex", Type = "number", Nilable = false },
 				{ Name = "playerIndex", Type = "number", Nilable = false },
 				{ Name = "lookAtIndex", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "RemoveAllOverrideNames",
+			Type = "Function",
+		},
+		{
+			Name = "RemovePlayerOverrideName",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "originalPlayerName", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "SetAdditionalCameraWeight",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "teamIndex", Type = "number", Nilable = false },
+				{ Name = "playerIndex", Type = "number", Nilable = false },
+				{ Name = "weight", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SetAdditionalCameraWeightByToken",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "token", Type = "string", Nilable = false },
+				{ Name = "weight", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -295,6 +598,70 @@ local CommentatorFrameLua =
 			},
 		},
 		{
+			Name = "SetDistanceBeforeForcedHorizontalConvergence",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "distance", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SetDurationToForceHorizontalConvergence",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "ms", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SetExcludeDistance",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "excludeDistance", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SetFollowCameraSpeeds",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "elasticSpeed", Type = "number", Nilable = false },
+				{ Name = "minSpeed", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SetHardlockWeight",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "weight", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SetHorizontalAngleThresholdToSmooth",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "angle", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SetLookAtLerpAmount",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "amount", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "SetMapAndInstanceIndex",
 			Type = "Function",
 
@@ -314,12 +681,84 @@ local CommentatorFrameLua =
 			},
 		},
 		{
+			Name = "SetMsToHoldForHorizontalMovement",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "ms", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SetMsToHoldForVerticalMovement",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "ms", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SetMsToSmoothHorizontalChange",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "ms", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SetMsToSmoothVerticalChange",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "ms", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SetPositionLerpAmount",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "amount", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "SetSmartCameraLocked",
 			Type = "Function",
 
 			Arguments =
 			{
 				{ Name = "locked", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SetSmoothFollowTransitioning",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "enabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SetSoftlockWeight",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "weight", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SetSpeedFactor",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "factor", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -390,6 +829,15 @@ local CommentatorFrameLua =
 
 	Tables =
 	{
+		{
+			Name = "NameOverrideEntry",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "originalName", Type = "string", Nilable = false },
+				{ Name = "overrideName", Type = "string", Nilable = false },
+			},
+		},
 	},
 };
 

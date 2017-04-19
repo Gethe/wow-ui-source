@@ -540,10 +540,11 @@ function BonusObjectiveTracker_ShowRewardsTooltip(block)
 		-- currency
 		local numQuestCurrencies = GetNumQuestLogRewardCurrencies(questID);
 		for i = 1, numQuestCurrencies do
-			local name, texture, numItems = GetQuestLogRewardCurrencyInfo(i, questID);
+			local name, texture, numItems, currencyID = GetQuestLogRewardCurrencyInfo(i, questID);
 			local text = string.format(BONUS_OBJECTIVE_REWARD_WITH_COUNT_FORMAT, texture, numItems, name);
-			GameTooltip:AddLine(text, 1, 1, 1);
-			end
+			local currencyColor = GetColorForCurrencyReward(currencyID, numItems);
+			GameTooltip:AddLine(text, currencyColor:GetRGB());
+		end
 		-- honor
 		local honorAmount = GetQuestLogRewardHonor(questID);
 		if ( honorAmount > 0 ) then

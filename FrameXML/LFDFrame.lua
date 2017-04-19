@@ -74,8 +74,13 @@ function LFDFrame_OnEvent(self, event, ...)
 	elseif ( event == "LFG_BOOT_PROPOSAL_UPDATE" ) then
 		local voteInProgress, didVote, myVote, targetName, totalVotes, bootVotes, timeLeft, reason = GetLFGBootProposal();
 		if ( voteInProgress and not didVote and targetName ) then
+			if (reason and reason ~= "") then
+				StaticPopupDialogs["VOTE_BOOT_PLAYER"].text = VOTE_BOOT_PLAYER;
+			else
+				StaticPopupDialogs["VOTE_BOOT_PLAYER"].text = VOTE_BOOT_PLAYER_NO_REASON;
+			end
 			-- Person who started the vote voted yes, the person being voted against voted no, so weve seen this before if we have more than 2 votes.
-			StaticPopup_Show("VOTE_BOOT_PLAYER", targetName, reason, { seen = totalVotes > 2 });
+			StaticPopup_Show("VOTE_BOOT_PLAYER", targetName, reason, totalVotes > 2 );
 		else
 			StaticPopup_Hide("VOTE_BOOT_PLAYER");
 		end

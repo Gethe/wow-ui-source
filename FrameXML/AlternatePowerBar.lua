@@ -21,6 +21,7 @@ function AlternatePowerBar_Initialize(self)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("UNIT_DISPLAYPOWER");
 	self:RegisterEvent("UPDATE_VEHICLE_ACTIONBAR");
+	self:RegisterEvent("UNIT_EXITED_VEHICLE");
 
 	SetTextStatusBarText(self, _G[self:GetName().."Text"])
 
@@ -29,7 +30,7 @@ function AlternatePowerBar_Initialize(self)
 end
 
 function AlternatePowerBar_OnEvent(self, event, ...)
-	if ( event == "UNIT_DISPLAYPOWER" or event == "UPDATE_VEHICLE_ACTIONBAR" ) then
+	if ( event == "UNIT_DISPLAYPOWER" or event == "UPDATE_VEHICLE_ACTIONBAR" or event == "UNIT_EXITED_VEHICLE" ) then
 		AlternatePowerBar_UpdatePowerType(self);
 	elseif ( event=="PLAYER_ENTERING_WORLD" ) then
 		AlternatePowerBar_UpdateMaxValues(self);

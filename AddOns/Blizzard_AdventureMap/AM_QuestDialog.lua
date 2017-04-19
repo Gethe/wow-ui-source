@@ -101,8 +101,10 @@ function AdventureMapQuestChoiceDialogMixin:RefreshRewards()
 	end
 
 	for currencyIndex = 1, GetNumQuestLogRewardCurrencies(self.questID) do
-		local name, texture, count = GetQuestLogRewardCurrencyInfo(currencyIndex, self.questID);
-		self:AddReward(name, texture, nil, count, "GameFontHighlightSmall");
+		local name, texture, count, currencyID = GetQuestLogRewardCurrencyInfo(currencyIndex, self.questID);
+		local rewardFrame = self:AddReward(name, texture, nil, count, "GameFontHighlightSmall");
+		local currencyColor = GetColorForCurrencyReward(currencyID, count);
+		rewardFrame.Count:SetTextColor(currencyColor:GetRGB());
 	end
 
 	for itemIndex = 1, GetNumQuestLogRewards(self.questID) do
@@ -149,10 +151,13 @@ function AdventureMapQuestChoiceDialogMixin:AddReward(label, texture, overlayTex
 			rewardFrame.Overlay:Hide();
 		end
 		rewardFrame.Count:SetText(count > 0 and count or nil);
+		rewardFrame.Count:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
 		rewardFrame.tooltipText = tooltipText;
 
 		rewardFrame:Show();
+		return rewardFrame;
 	end
+	return nil;
 end
 
 local MAX_DETAILS_HEIGHT = 304;

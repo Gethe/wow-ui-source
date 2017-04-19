@@ -1456,6 +1456,12 @@ function LFGRewardsFrame_SetItemButton(parentFrame, dungeonID, index, id, name, 
 	_G[parentName.."Item"..index.."Name"]:SetText(name);
 	SetItemButtonTexture(frame, texture);
 	SetItemButtonCount(frame, numItems);
+	if ( rewardType == "currency" ) then
+		local currencyColor = GetColorForCurrencyReward(rewardID, numItems)
+		frame.Count:SetTextColor(currencyColor:GetRGB());
+	else
+		frame.Count:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
+	end
 	frame.shortageIndex = shortageIndex;
 	frame.dungeonID = dungeonID;
 	

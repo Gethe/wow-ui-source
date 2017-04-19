@@ -34,6 +34,7 @@ function MonkStaggerBar_OnLoad(self)
 			self:RegisterEvent("PLAYER_ENTERING_WORLD");
 			self:RegisterEvent("UNIT_DISPLAYPOWER");
 			self:RegisterEvent("UPDATE_VEHICLE_ACTIONBAR");	
+			self:RegisterEvent("UNIT_EXITED_VEHICLE");
 		end
 		self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED");
 	end
@@ -44,7 +45,7 @@ end
 
 function MonkStaggerBar_OnEvent(self, event, arg1)
 	local parent = self:GetParent();
-	if ( event == "UNIT_DISPLAYPOWER" or event == "UPDATE_VEHICLE_ACTIONBAR" ) then
+	if ( event == "UNIT_DISPLAYPOWER" or event == "UPDATE_VEHICLE_ACTIONBAR" or event == "UNIT_EXITED_VEHICLE" ) then
 		MonkStaggerBar_UpdatePowerType(self);
 	elseif ( event == "PLAYER_SPECIALIZATION_CHANGED" ) then
 		if ( arg1 == nil or arg1 == parent.unit) then

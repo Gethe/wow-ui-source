@@ -622,7 +622,6 @@ function WardrobeCollectionFrame_SetContainer(parent)
 		collectionFrame.FilterButton:SetText(FILTER);
 		collectionFrame.ItemsTab:SetPoint("TOPLEFT", 58, -28);
 		WardrobeCollectionFrame_SetTab(collectionFrame.selectedCollectionTab);
-		PanelTemplates_EnableTab(collectionFrame, TAB_SETS);
 	elseif ( parent == WardrobeFrame ) then
 		collectionFrame:SetPoint("TOPRIGHT", 0, 0);
 		collectionFrame:SetSize(662, 606);
@@ -633,14 +632,7 @@ function WardrobeCollectionFrame_SetContainer(parent)
 		collectionFrame.ItemsCollectionFrame.WeaponDropDown:SetPoint("TOPRIGHT", -32, -25);
 		collectionFrame.FilterButton:SetText(SOURCES);
 		collectionFrame.ItemsTab:SetPoint("TOPLEFT", 8, -28);
-		local numCollectedSets = C_TransmogSets.GetBaseSetsCounts();
-		if ( numCollectedSets == 0 ) then
-			WardrobeCollectionFrame_SetTab(TAB_ITEMS);
-			PanelTemplates_DisableTab(collectionFrame, TAB_SETS);
-		else
-			WardrobeCollectionFrame_SetTab(collectionFrame.selectedTransmogTab);
-			PanelTemplates_EnableTab(collectionFrame, TAB_SETS);
-		end
+		WardrobeCollectionFrame_SetTab(collectionFrame.selectedTransmogTab);
 	end
 	-- changing the parent of a frame resets frame stratas and levels of all children
 	collectionFrame.ItemsCollectionFrame.HelpBox:SetFrameStrata("DIALOG");
@@ -2418,6 +2410,7 @@ function WardrobeItemsCollectionMixin:OnSearchUpdate(category)
 		self.resetPageOnSearchUpdated = nil;
 		self:ResetPage();
 	elseif ( WardrobeFrame_IsAtTransmogrifier() and WardrobeCollectionFrameSearchBox:GetText() == "" ) then
+		local _, _, selectedSourceID = WardrobeCollectionFrame_GetInfoForEquippedSlot(self.activeSlot, self.transmogType);
 		local categoryID = C_TransmogCollection.GetAppearanceSourceInfo(selectedSourceID);
 		if ( categoryID == self:GetActiveCategory() ) then
 			WardrobeCollectionFrame.ItemsCollectionFrame:GoToSourceID(selectedSourceID, self.activeSlot, self.transmogType, true);
@@ -3747,6 +3740,8 @@ function WardrobeSetsTransmogMixin:UpdateSets()
 	else
 		self.PendingTransmogFrame:Hide();
 	end
+
+	self.NoValidSetsLabel:SetShown(#usableSets == 0);
 end
 
 function WardrobeSetsTransmogMixin:OnPageChanged(userAction)
