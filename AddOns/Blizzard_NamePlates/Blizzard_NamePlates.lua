@@ -55,7 +55,7 @@ function NamePlateDriverMixin:OnEvent(event, ...)
 		self:UpdateNamePlateOptions();
 	elseif event == "CVAR_UPDATE" then
 		local name = ...;
-		if name == "SHOW_CLASS_COLOR_IN_V_KEY" or name == "SHOW_NAMEPLATE_LOSE_AGGRO_FLASH" then
+		if name == "SHOW_CLASS_COLOR_IN_V_KEY" or name == "SHOW_NAMEPLATE_LOSE_AGGRO_FLASH" or name == "UNIT_NAMEPLATES_SHOW_FRIENDLY_CLASS_COLORS" then
 			self:UpdateNamePlateOptions();
 		end
 	elseif event == "RAID_TARGET_UPDATE" then
@@ -139,6 +139,7 @@ end
 
 function NamePlateDriverMixin:OnUnitAuraUpdate(unit)
 	local filter;
+	local showAll = false;
 	if UnitIsUnit("player", unit) then
 		filter = "HELPFUL|INCLUDE_NAME_PLATE_ONLY";
 	else
@@ -147,13 +148,15 @@ function NamePlateDriverMixin:OnUnitAuraUpdate(unit)
 		-- Reaction 4 is neutral and less than 4 becomes increasingly more hostile
 			filter = "HARMFUL|INCLUDE_NAME_PLATE_ONLY";
 		else
-			filter = "NONE";
+			-- dispellable debuffs
+			filter = "HARMFUL|RAID";
+			showAll = true;
 		end
 	end
 
 	local nameplate = C_NamePlate.GetNamePlateForUnit(unit, issecure());
 	if (nameplate) then
-		nameplate.UnitFrame.BuffFrame:UpdateBuffs(nameplate.namePlateUnitToken, filter);
+		nameplate.UnitFrame.BuffFrame:UpdateBuffs(nameplate.namePlateUnitToken, filter, showAll);
 	end
 end
 
@@ -275,6 +278,8 @@ function NamePlateDriverMixin:UpdateNamePlateOptions()
 	DefaultCompactNamePlateEnemyFrameOptions.useClassColors = GetCVarBool("ShowClassColorInNameplate");
 	DefaultCompactNamePlateEnemyFrameOptions.playLoseAggroHighlight = GetCVarBool("ShowNamePlateLoseAggroFlash");
 
+	DefaultCompactNamePlateFriendlyFrameOptions.useClassColors = GetCVarBool("ShowClassColorInFriendlyNameplate");
+
 	local namePlateVerticalScale = tonumber(GetCVar("NamePlateVerticalScale"));
 	local zeroBasedScale = namePlateVerticalScale - 1.0;
 	local clampedZeroBasedScale = Saturate(zeroBasedScale);
@@ -326,6 +331,20 @@ function NamePlateBaseMixin:OnAdded(namePlateUnitToken, driverFrame)
 	CompactUnitFrame_SetUnit(self.UnitFrame, namePlateUnitToken);
 
 	self:ApplyOffsets();
+	
+	if C_Commentator.IsSpectating() then
+		self.UnitFrame.BuffFrame:SetActive(false);
+		if self.UnitFrame.CommentatorDisplayInfo then
+			self.UnitFrame.CommentatorDisplayInfo:Show();
+		else
+			CreateFrame("FRAME", nil, self.UnitFrame, "NamePlateCommentatorDisplayInfoTemplate");
+		end
+	else
+		self.UnitFrame.BuffFrame:SetActive(true);
+		if self.CommentatorDisplayInfo then
+			self.CommentatorDisplayInfo:Hide();
+		end
+	end
 end
 
 function NamePlateBaseMixin:OnRemoved()
@@ -453,7 +472,21 @@ function NameplateBuffContainerMixin:ShouldShowBuff(name, caster, nameplateShowP
 		   (nameplateShowPersonal and (caster == "player" or caster == "pet" or caster == "vehicle"));
 end
 
-function NameplateBuffContainerMixin:UpdateBuffs(unit, filter)
+function NameplateBuffContainerMixin:SetActive(isActive)
+	self.isActive = isActive;
+end
+
+function NameplateBuffContainerMixin:UpdateBuffs(unit, filter, showAll)
+	if not self.isActive then
+		for i = 1, BUFF_MAX_DISPLAY do
+			if (self.buffList[i]) then
+				self.buffList[i]:Hide();
+			end
+		end
+		
+		return;
+	end
+	
 	self.unit = unit;
 	self.filter = filter;
 	self:UpdateAnchor();
@@ -469,7 +502,7 @@ function NameplateBuffContainerMixin:UpdateBuffs(unit, filter)
 		for i = 1, BUFF_MAX_DISPLAY do
 			local name, rank, texture, count, debuffType, duration, expirationTime, caster, _, nameplateShowPersonal, spellId, _, _, _, nameplateShowAll = UnitAura(unit, i, filter);
 
-			if (self:ShouldShowBuff(name, caster, nameplateShowPersonal, nameplateShowAll, duration)) then
+			if (self:ShouldShowBuff(name, caster, nameplateShowPersonal, nameplateShowAll or showAll, duration)) then
 				if (not self.buffList[buffIndex]) then
 					self.buffList[buffIndex] = CreateFrame("Frame", self:GetParent():GetName() .. "Buff" .. buffIndex, self, "NameplateBuffButtonTemplate");
 					self.buffList[buffIndex]:SetMouseClickEnabled(false);

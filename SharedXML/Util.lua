@@ -161,7 +161,6 @@ function tFilter(tbl, pred, isIndexTable)
 	local out = {};
 
 	if (isIndexTable) then
-		assert(tbl[1] ~= nil);
 		local currentIndex = 1;
 		for i, v in ipairs(tbl) do
 			if (pred(v)) then

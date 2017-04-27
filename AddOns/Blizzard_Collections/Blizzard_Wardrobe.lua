@@ -1915,7 +1915,15 @@ function WardrobeSetsTransmogModelMixin:OnMouseDown(button)
 	if ( button == "LeftButton" ) then
 		self:GetParent():SelectSet(self.setID);
 		PlaySound("UI_Transmog_ItemClick");
+	elseif ( button == "RightButton" ) then
+		local dropDown = self:GetParent().RightClickDropDown;
+		if ( dropDown.activeFrame ~= self ) then
+			CloseDropDownMenus();
 		end
+		dropDown.activeFrame = self;
+		ToggleDropDownMenu(1, nil, dropDown, self, -6, -3);
+		PlaySound("igMainMenuOptionCheckBoxOn");
+	end
 end
 
 function WardrobeSetsTransmogModelMixin:OnEnter()
@@ -3618,6 +3626,7 @@ function WardrobeSetsTransmogMixin:OnShow()
 	self:RegisterEvent("TRANSMOG_COLLECTION_ITEM_UPDATE");
 	self:RegisterEvent("TRANSMOG_COLLECTION_UPDATED");
 	self:RegisterEvent("PLAYER_EQUIPMENT_CHANGED");
+	self:RegisterEvent("TRANSMOG_SETS_UPDATE_FAVORITE");
 	self:RefreshCameras();
 	local RESET_SELECTION = true;
 	self:Refresh(RESET_SELECTION);
@@ -3631,6 +3640,7 @@ function WardrobeSetsTransmogMixin:OnHide()
 	self:UnregisterEvent("TRANSMOG_COLLECTION_ITEM_UPDATE");
 	self:UnregisterEvent("TRANSMOG_COLLECTION_UPDATED");
 	self:UnregisterEvent("PLAYER_EQUIPMENT_CHANGED");
+	self:UnregisterEvent("TRANSMOG_SETS_UPDATE_FAVORITE");
 	self.loadingSetID = nil;
 	SetsDataProvider:ClearSets();
 	self.sourceQualityTable = nil;
@@ -3645,7 +3655,7 @@ function WardrobeSetsTransmogMixin:OnEvent(event, ...)
 			self.transmogrifySuccessUpdate = true;
 			C_Timer.After(0, function() self.transmogrifySuccessUpdate = nil; self:Refresh(); end);
 		end
-	elseif ( event == "TRANSMOG_COLLECTION_UPDATED" ) then
+	elseif ( event == "TRANSMOG_COLLECTION_UPDATED" or event == "TRANSMOG_SETS_UPDATE_FAVORITE" ) then
 		SetsDataProvider:ClearSets();
 		self:Refresh();
 		WardrobeCollectionFrame_UpdateProgressBar(C_TransmogSets.GetBaseSetsCounts());
@@ -3894,4 +3904,53 @@ function WardrobeSetsTransmogMixin:ResetPage()
 	end
 	self.PagingFrame:SetCurrentPage(page);
 	self:UpdateSets();
+end
+
+function WardrobeSetsTransmogMixin:OpenRightClickDropDown()
+	if ( not self.RightClickDropDown.activeFrame ) then
+		return;
+	end
+	local setID = self.RightClickDropDown.activeFrame.setID;
+	local info = UIDropDownMenu_CreateInfo();
+	if ( C_TransmogSets.GetIsFavorite(setID) ) then
+		info.text = BATTLE_PET_UNFAVORITE;
+		info.func = function() self:SetFavorite(setID, false); end
+	else
+		info.text = BATTLE_PET_FAVORITE;
+		info.func = function() self:SetFavorite(setID, true); end
+	end
+	info.notCheckable = true;
+	UIDropDownMenu_AddButton(info);
+	-- Cancel
+	info = UIDropDownMenu_CreateInfo();
+	info.notCheckable = true;
+	info.text = CANCEL;
+	UIDropDownMenu_AddButton(info);	
+end
+
+function WardrobeSetsTransmogMixin:SetFavorite(setID, favorite)
+	if ( favorite ) then
+		-- remove any existing favorite in this group
+		local isFavorite, isGroupFavorite = C_TransmogSets.GetIsFavorite(setID);
+		if ( isGroupFavorite ) then
+			local baseSetID = C_TransmogSets.GetBaseSetID(setID);
+			C_TransmogSets.SetIsFavorite(baseSetID, false);
+			local variantSets = C_TransmogSets.GetVariantSets(baseSetID);
+			for i, variantSet in ipairs(variantSets) do
+				C_TransmogSets.SetIsFavorite(variantSet.setID, false);
+			end
+		end
+		C_TransmogSets.SetIsFavorite(setID, true);
+	else
+		C_TransmogSets.SetIsFavorite(setID, false);
+	end
+end
+
+do
+	local function OpenRightClickDropDown(self)
+		self:GetParent():OpenRightClickDropDown();
+	end
+	function WardrobeSetsTransmogModelRightClickDropDown_OnLoad(self)
+		UIDropDownMenu_Initialize(self, OpenRightClickDropDown, "MENU");
+	end
 end

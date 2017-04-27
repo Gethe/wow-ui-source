@@ -67,7 +67,7 @@ function QUEST_TRACKER_MODULE:OnBlockHeaderClick(block, mouseButton)
 				AutoQuestPopupTracker_RemovePopUp(block.id);
 				ShowQuestComplete(questLogIndex);
 			else
-				ShowUIPanel(WorldMapFrame);
+				ShowQuestLog();
 				QuestMapFrame_ShowQuestDetails(block.id);
 			end
 		end

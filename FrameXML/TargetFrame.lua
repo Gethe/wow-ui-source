@@ -655,7 +655,7 @@ function TargetFrame_UpdateAuras (self)
 end
 
 --
---		Hide debuffs on mobs cast by players other than me and aren�t flagged to show to entire party on nameplates.
+--		Hide debuffs on mobs cast by players other than me and aren't flagged to show to entire party on nameplates.
 --
 function TargetFrame_ShouldShowDebuffs(unit, caster, nameplateShowAll, casterIsAPlayer)
 	if (GetCVarBool("noBuffDebuffFilterOnTarget")) then

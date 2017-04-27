@@ -1291,6 +1291,7 @@ NamePanelOptions = {
 
 	nameplateShowFriends = { text = "UNIT_NAMEPLATES_SHOW_FRIENDS" },
 	nameplateShowFriendlyMinions = { text = "UNIT_NAMEPLATES_SHOW_FRIENDLY_MINIONS" },
+	ShowClassColorInFriendlyNameplate = { text = "UNIT_NAMEPLATES_SHOW_FRIENDLY_CLASS_COLORS" },
 	nameplateShowEnemies = { text = "UNIT_NAMEPLATES_SHOW_ENEMIES" },
 	nameplateShowEnemyMinions = { text = "UNIT_NAMEPLATES_SHOW_ENEMY_MINIONS" },
 	nameplateShowEnemyMinus = { text = "UNIT_NAMEPLATES_SHOW_ENEMY_MINUS" },

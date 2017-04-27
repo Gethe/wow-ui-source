@@ -281,6 +281,7 @@
 					local dropDown = self:GetParent():GetParent().FavoriteDropDown;
 					dropDown.baseSetID = self.setID;
 					ToggleDropDownMenu(1, nil, dropDown, self, 0, 0);
+					PlaySound("igMainMenuOptionCheckBoxOn");
 				end
 			</OnMouseUp>
 		</Scripts>
@@ -1144,6 +1145,11 @@
 					</Layer>
 				</Layers>
 				<Frames>
+					<Frame name="WardrobeSetsTransmogModelRightClickDropDown" parentKey="RightClickDropDown" inherits="UIDropDownMenuTemplate" hidden="true">
+						<Scripts>
+							<OnLoad function="WardrobeSetsTransmogModelRightClickDropDown_OnLoad"/>
+						</Scripts>
+					</Frame>
 					<Frame parentKey="PagingFrame" inherits="CollectionsPagingFrameTemplate">
 						<Anchors>
 							<Anchor point="BOTTOM" x="22" y="38"/>

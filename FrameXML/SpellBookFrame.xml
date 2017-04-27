@@ -514,7 +514,7 @@
 				SpellButton_OnEnter(self, motion);
 			</OnEnter>
 			<OnLeave>
-				GameTooltip:Hide();
+				SpellButton_OnLeave(self, motion);
 			</OnLeave>
 		</Scripts>
 		<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>

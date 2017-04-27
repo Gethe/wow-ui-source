@@ -161,7 +161,6 @@ local ChallengeModeInfoLua =
 				{ Name = "mapChallengeModeID", Type = "number", Nilable = false },
 				{ Name = "affixIDs", Type = "table", InnerType = "number", Nilable = false },
 				{ Name = "keystoneLevel", Type = "number", Nilable = false },
-				{ Name = "keystoneEnergized", Type = "bool", Nilable = false },
 			},
 		},
 		{

@@ -17,6 +17,24 @@ local CommentatorFrameLua =
 			},
 		},
 		{
+			Name = "AddTrackedDefensiveAuras",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "spellIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "AddTrackedOffensiveAuras",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "spellIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "ClearCameraTarget",
 			Type = "Function",
 		},
@@ -353,6 +371,22 @@ local CommentatorFrameLua =
 			},
 		},
 		{
+			Name = "GetPlayerCrowdControlInfoByUnit",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "token", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "expiration", Type = "number", Nilable = false },
+				{ Name = "duration", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetPlayerFlagInfo",
 			Type = "Function",
 
@@ -465,6 +499,36 @@ local CommentatorFrameLua =
 			},
 		},
 		{
+			Name = "GetTrackedDefensiveCooldowns",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "teamIndex", Type = "number", Nilable = false },
+				{ Name = "playerIndex", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "trackedDefensiveCooldowns", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetTrackedOffensiveCooldowns",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "teamIndex", Type = "number", Nilable = false },
+				{ Name = "playerIndex", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "trackedCooldowns", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetWargameInfo",
 			Type = "Function",
 
@@ -479,6 +543,21 @@ local CommentatorFrameLua =
 				{ Name = "minPlayers", Type = "number", Nilable = false },
 				{ Name = "maxPlayers", Type = "number", Nilable = false },
 				{ Name = "isArena", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "HasTrackedAuras",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "token", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "hasOffensiveAura", Type = "bool", Nilable = false },
+				{ Name = "hasDefensiveAura", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -497,6 +576,66 @@ local CommentatorFrameLua =
 			Returns =
 			{
 				{ Name = "isSpectating", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsTrackedDefensiveAura",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isDefensiveTrigger", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsTrackedDefensiveCooldown",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "teamIndex", Type = "number", Nilable = false },
+				{ Name = "playerIndex", Type = "number", Nilable = false },
+				{ Name = "spellID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isTrackedCooldown", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsTrackedOffensiveAura",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isOffensiveTrigger", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsTrackedOffensiveCooldown",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "teamIndex", Type = "number", Nilable = false },
+				{ Name = "playerIndex", Type = "number", Nilable = false },
+				{ Name = "spellID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isTrackedCooldown", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -531,6 +670,22 @@ local CommentatorFrameLua =
 			{
 				{ Name = "originalPlayerName", Type = "string", Nilable = false },
 			},
+		},
+		{
+			Name = "RequestPlayerCooldownInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "teamIndex", Type = "number", Nilable = false },
+				{ Name = "playerIndex", Type = "number", Nilable = false },
+				{ Name = "requestedOffensiveCooldowns", Type = "table", InnerType = "number", Nilable = true },
+				{ Name = "requestedDefensiveCooldowns", Type = "table", InnerType = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "ResetTrackedAuras",
+			Type = "Function",
 		},
 		{
 			Name = "SetAdditionalCameraWeight",

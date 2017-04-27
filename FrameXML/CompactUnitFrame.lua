@@ -513,7 +513,15 @@ function CompactUnitFrame_UpdateName(frame)
 	if ( not ShouldShowName(frame) ) then
 		frame.name:Hide();
 	else
-		frame.name:SetText(GetUnitName(frame.unit, true));
+		local name = GetUnitName(frame.unit, true);
+		if ( C_Commentator.IsSpectating() and name ) then
+			local overrideName = C_Commentator.GetPlayerOverrideName(name);
+			if overrideName then
+				name = overrideName;
+			end
+		end
+
+		frame.name:SetText(name);
 
 		if ( CompactUnitFrame_IsTapDenied(frame) ) then
 			-- Use grey if not a player and can't get tap on unit
@@ -1644,6 +1652,7 @@ function DefaultCompactMiniFrameSetup(frame)
 end
 
 DefaultCompactNamePlateFriendlyFrameOptions = {
+	useClassColors = true,
 	displaySelectionHighlight = true,
 	displayAggroHighlight = false,
 	displayName = true,
