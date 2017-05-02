@@ -894,10 +894,11 @@ function ToggleGarrisonMissionUI()
 	GarrisonMissionFrame_ToggleFrame();
 end
 
-function ToggleOrderHallTalentUI()
+function ToggleOrderHallTalentUI(garrTalentTreeID)
 	if (not OrderHallTalentFrame) then
 		OrderHall_LoadUI();
 	end
+	OrderHallTalentFrame.garrTalentTreeID = garrTalentTreeID;
 	OrderHallTalentFrame_ToggleFrame();
 end
 
@@ -1831,7 +1832,8 @@ function UIParent_OnEvent(self, event, ...)
 		end
 		ShowUIPanel(GarrisonRecruiterFrame);
 	elseif ( event == "GARRISON_TALENT_NPC_OPENED") then
-		ToggleOrderHallTalentUI();
+		local _, garrTalentTreeID = ...;
+		ToggleOrderHallTalentUI(garrTalentTreeID);
 	elseif ( event == "PRODUCT_DISTRIBUTIONS_UPDATED" ) then
 		StoreFrame_CheckForFree(event);
 	elseif ( event == "LOADING_SCREEN_ENABLED" ) then
@@ -4860,4 +4862,20 @@ function ShakeFrame(frame, shake, maximumDuration, frequency)
 			frame.shakeTicker:Cancel();
 		end
 	end);
+end
+
+-- Currency Overflow --
+function WillCurrencyRewardOverflow(currencyID, rewardQuantity)
+	local name, quantity, icon, earnedThisWeek, weeklyMax, maxQuantity, discovered, rarity = GetCurrencyInfo(currencyID);
+	return maxQuantity > 0 and rewardQuantity + quantity > maxQuantity;
+end
+
+function GetColorForCurrencyReward(currencyID, rewardQuantity, defaultColor)
+	if WillCurrencyRewardOverflow(currencyID, rewardQuantity) then
+		return RED_FONT_COLOR;
+	elseif defaultColor then
+		return defaultColor;
+	else
+		return HIGHLIGHT_FONT_COLOR;
+	end
 end

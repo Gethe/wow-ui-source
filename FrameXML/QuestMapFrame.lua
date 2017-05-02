@@ -585,6 +585,8 @@ function QuestLogQuests_Update(poiTable)
 					if( tagCoords ) then
 						button.TagTexture:SetTexCoord( unpack(tagCoords) );
 						button.TagTexture:Show();
+					else
+						button.TagTexture:Hide();
 					end
 				else
 					button.TagTexture:Hide();

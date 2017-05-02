@@ -121,6 +121,19 @@ function PetActionBarFrame_OnUpdate(self, elapsed)
 		end
 		self.mode = "none";
 	end
+
+	local rangeTimer = self.rangeTimer;
+	if ( rangeTimer ) then
+		rangeTimer = rangeTimer - elapsed;
+		if ( rangeTimer <= 0 ) then
+			for i=1, NUM_PET_ACTION_SLOTS, 1 do
+				local name, subtext, texture, isToken, isActive, autoCastAllowed, autoCastEnabled, spellID, checksRange, inRange = GetPetActionInfo(i);
+				ActionButton_UpdateRangeIndicator(_G["PetActionButton" .. i], checksRange, inRange);
+			end
+			rangeTimer = TOOLTIP_UPDATE_TIME;
+		end
+		self.rangeTimer = rangeTimer;
+	end
 end
 
 function PetActionBar_Update (self)
@@ -192,6 +205,7 @@ function PetActionBar_Update (self)
 		--ControlReleased();
 		HidePetActionBar();
 	end
+	PetActionBarFrame.rangeTimer = -1;
 end
 
 function PetActionBar_UpdateCooldowns()
@@ -426,7 +440,13 @@ end
 function PetActionButton_SetHotkeys (self)
 	local binding = GetBindingText(GetBindingKey("BONUSACTIONBUTTON"..self:GetID()), true);
 	local hotkey = _G[self:GetName().."HotKey"];
-	hotkey:SetText(binding);
+	if ( binding == "" ) then
+		hotkey:SetText(RANGE_INDICATOR);
+		hotkey:Hide();
+	else
+		hotkey:SetText(binding);
+		hotkey:Show();
+	end
 end
 
 function LockPetActionBar()

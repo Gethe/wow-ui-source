@@ -861,29 +861,35 @@ function ActionButton_OnUpdate(self, elapsed)
 		rangeTimer = rangeTimer - elapsed;
 
 		if ( rangeTimer <= 0 ) then
-			local count = self.HotKey;
 			local valid = IsActionInRange(self.action);
-			if ( count:GetText() == RANGE_INDICATOR ) then
-				if ( valid == false ) then
-					count:Show();
-					count:SetVertexColor(1.0, 0.1, 0.1);
-				elseif ( valid ) then
-					count:Show();
-					count:SetVertexColor(0.6, 0.6, 0.6);
-				else
-					count:Hide();
-				end
-			else
-				if ( valid == false ) then
-					count:SetVertexColor(1.0, 0.1, 0.1);
-				else
-					count:SetVertexColor(0.6, 0.6, 0.6);
-				end
-			end
+			local checksRange = (valid ~= nil);
+			local inRange = checksRange and valid;
+			ActionButton_UpdateRangeIndicator(self, checksRange, inRange);
 			rangeTimer = TOOLTIP_UPDATE_TIME;
 		end
 
 		self.rangeTimer = rangeTimer;
+	end
+end
+
+function ActionButton_UpdateRangeIndicator(self, checksRange, inRange)
+	if ( self.HotKey:GetText() == RANGE_INDICATOR ) then
+		if ( checksRange ) then
+			self.HotKey:Show();
+			if ( inRange ) then
+				self.HotKey:SetVertexColor(LIGHTGRAY_FONT_COLOR:GetRGB());
+			else
+				self.HotKey:SetVertexColor(RED_FONT_COLOR:GetRGB());
+			end
+		else
+			self.HotKey:Hide();
+		end
+	else
+		if ( checksRange and not inRange ) then
+			self.HotKey:SetVertexColor(RED_FONT_COLOR:GetRGB());
+		else
+			self.HotKey:SetVertexColor(LIGHTGRAY_FONT_COLOR:GetRGB());
+		end
 	end
 end
 

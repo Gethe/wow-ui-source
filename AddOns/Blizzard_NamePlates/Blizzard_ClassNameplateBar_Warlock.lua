@@ -39,12 +39,12 @@ function ClassNameplateBarWarlock:CreateShards()
 
 	while #self.Shards < maxShards do
 		local shard = CreateFrame("FRAME", nil, self, "ClassNameplateBarShardFrame");
-		shard.shardIndex = #self.Shards - 1;
+		shard:Setup(#self.Shards - 1);
 
 		if self.shardPoolAnchor then
-			shard:SetPoint("LEFT", self.shardPoolAnchor, "RIGHT", 4, 0);
+			shard:SetPoint("LEFT", self.shardPoolAnchor, "RIGHT", 6, 0);
 		else
-			shard:SetPoint("LEFT", self, "LEFT", 0, 0);
+			shard:SetPoint("LEFT", self, "LEFT", -4, 0);
 		end
 
 		self.shardPoolAnchor = shard;
@@ -52,23 +52,27 @@ function ClassNameplateBarWarlock:CreateShards()
 	end
 end
 
-function ClassNameplateBarWarlock:SetShard(shard, powerAmount)
-	local fillAmount = Saturate(powerAmount - shard.shardIndex);
-	local active = fillAmount >= 1;
-
-	if fillAmount ~= shard.fillAmount then
-		shard.fillAmount = fillAmount;
-
-		if active then
-			self:TurnOn(shard, shard.ShardOn, 1);
-			shard.PartialFill:SetValue(0);
-		else
-			self:TurnOff(shard, shard.ShardOn, 0);
-			shard.PartialFill:SetValue(fillAmount);
-		end
-	end
-end
-
 function ClassNameplateBarWarlock:UpdatePower()
 	WarlockPowerBar_UpdatePower(self);
+end
+
+ClassNameplateBarWarlockShardMixin = CreateFromMixins(WarlockShardMixin);
+
+function ClassNameplateBarWarlockShardMixin:Update(powerAmount)
+	local fillAmount = Saturate(powerAmount - self.shardIndex);
+	local active = fillAmount >= 1;
+
+	local bar = self:GetParent();
+	if fillAmount ~= self.fillAmount then
+		self.fillAmount = fillAmount;
+
+		if active then
+			bar:TurnOn(self, self.ShardOn, 1);
+			self.PartialFill:SetValue(0);
+		else
+			bar:TurnOff(self, self.ShardOn, 0);
+			self.PartialFill:SetValue(fillAmount);
+		end
+		self:UpdateSpark(fillAmount);
+	end
 end

@@ -510,7 +510,7 @@ local CommentatorFrameLua =
 
 			Returns =
 			{
-				{ Name = "trackedDefensiveCooldowns", Type = "table", InnerType = "number", Nilable = false },
+				{ Name = "trackedDefensiveCooldowns", Type = "table", InnerType = "number", Nilable = true },
 			},
 		},
 		{
@@ -525,7 +525,7 @@ local CommentatorFrameLua =
 
 			Returns =
 			{
-				{ Name = "trackedCooldowns", Type = "table", InnerType = "number", Nilable = false },
+				{ Name = "trackedCooldowns", Type = "table", InnerType = "number", Nilable = true },
 			},
 		},
 		{
@@ -679,8 +679,6 @@ local CommentatorFrameLua =
 			{
 				{ Name = "teamIndex", Type = "number", Nilable = false },
 				{ Name = "playerIndex", Type = "number", Nilable = false },
-				{ Name = "requestedOffensiveCooldowns", Type = "table", InnerType = "number", Nilable = true },
-				{ Name = "requestedDefensiveCooldowns", Type = "table", InnerType = "number", Nilable = true },
 			},
 		},
 		{
@@ -706,6 +704,25 @@ local CommentatorFrameLua =
 			{
 				{ Name = "token", Type = "string", Nilable = false },
 				{ Name = "weight", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SetBlacklistedAuras",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "spellIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SetBlacklistedCooldowns",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "specID", Type = "number", Nilable = false },
+				{ Name = "spellIDs", Type = "table", InnerType = "number", Nilable = false },
 			},
 		},
 		{
@@ -878,6 +895,26 @@ local CommentatorFrameLua =
 			Arguments =
 			{
 				{ Name = "amount", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SetRequestedDefensiveCooldowns",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "specID", Type = "number", Nilable = false },
+				{ Name = "spellIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SetRequestedOffensiveCooldowns",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "specID", Type = "number", Nilable = false },
+				{ Name = "spellIDs", Type = "table", InnerType = "number", Nilable = false },
 			},
 		},
 		{

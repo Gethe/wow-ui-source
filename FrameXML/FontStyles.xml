@@ -276,4 +276,34 @@
 	<Font name="ArtifactAppearanceSetHighlightFont" inherits="Fancy24Font" virtual="true">
 		<Color r="1.0" g="1.0" b="1.0"/>
 	</Font>
+	
+	<Font name="CommentatorTeamScoreFont" inherits="SystemFont_Huge2" virtual="true">
+		<Shadow>
+			<Color r="0" g="0" b="0" a="0.9"/>
+			<Offset>
+				<AbsDimension x="2" y="0" />
+			</Offset>
+		</Shadow>
+	</Font>
+	<Font name="CommentatorDampeningFont" inherits="CommentatorTeamScoreFont" virtual="true"/>
+	<Font name="CommentatorTeamNameFont" inherits="SystemFont_Large" virtual="true">
+		<Color r="1" g=".82" b="0"/>
+		<Shadow>
+			<Color r="0" g="0" b="0" a="0.9"/>
+			<Offset>
+				<AbsDimension x="2" y="0" />
+			</Offset>
+		</Shadow>
+	</Font>
+	<Font name="CommentatorCCFont" inherits="SystemFont_OutlineThick_WTF" virtual="true">
+		<Color r="1" g="1" b="1" a="1"/>
+	</Font>
+
+	<Font name="CommentatorDeadFont" inherits="SystemFont_Huge2" virtual="true">
+		<Color r="1" g="1" b="1" a="1"/>
+	</Font>
+
+	<Font name="CommentatorDeadFontLarge" inherits="SystemFont_OutlineThick_WTF" outline="" virtual="true">
+		<Color r="1" g="1" b="1" a="1"/>
+	</Font>
 </Ui>

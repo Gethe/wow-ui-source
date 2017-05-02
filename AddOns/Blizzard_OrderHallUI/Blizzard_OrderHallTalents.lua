@@ -105,7 +105,7 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 	self:ReleaseAllPools();
 
 	self:RefreshCurrency();
-	self.trees = C_Garrison.GetTalentTrees(self.garrisonType, select(3, UnitClass("player")));
+	self.trees = C_Garrison.GetTalentTreeForID(self.garrisonType, self.garrTalentTreeID);
 	if not self.trees then
 		return;
 	end

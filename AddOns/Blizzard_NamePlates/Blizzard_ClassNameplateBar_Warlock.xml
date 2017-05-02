@@ -2,25 +2,26 @@
 ..\FrameXML\UI.xsd">
   <Script file="Blizzard_ClassNameplateBar_Warlock.lua"/>
 
-	<Frame name="ClassNameplateBarShardFrame" parentArray="Shards" virtual="true">
-		<Size x="17" y="17"/>
+	<Frame name="ClassNameplateBarShardFrame" parentArray="Shards" virtual="true" mixin="ClassNameplateBarWarlockShardMixin">
+		<Size x="17" y="22"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="ShardOff" atlas="nameplate-WarlockShard-Off" useAtlasSize="true">
+				<Texture parentKey="ShardOff" atlas="Warlock-EmptyShard" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture parentKey="ShardOn" atlas="nameplate-WarlockShard-On" useAtlasSize="true" alpha="0">
+				<Texture atlas="Warlock-Shard-Spark" parentKey="Spark"/>
+				<Texture parentKey="ShardOn" atlas="Warlock-ReadyShard" useAtlasSize="true" alpha="0">
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture parentKey="ShardGlow" atlas="nameplate-WarlockShard-Glow" useAtlasSize="true" alphaMode="ADD" alpha="0">
+				<Texture parentKey="ShardGlow" atlas="Warlock-ReadyShard-Glow" useAtlasSize="true" alphaMode="ADD" alpha="0">
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
@@ -33,7 +34,7 @@
 					<Anchor point="TOPLEFT" relativeKey="$parent.ShardFill" relativePoint="TOPLEFT"/>
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ShardFill" relativePoint="BOTTOMRIGHT"/>
 				</Anchors>
-				<BarTexture atlas="nameplate-WarlockShard-On"/>
+				<BarTexture atlas="Warlock-ReadyShard"/>
 			</StatusBar>
 		</Frames>
 		<Animations>
@@ -49,9 +50,6 @@
 	</Frame>
 
 	<Frame name="ClassNameplateBarWarlockFrame" inherits="ClassNameplateBarFrame" mixin="ClassNameplateBar, ClassNameplateBarWarlock">
-		<KeyValues>
-			<KeyValue key="scale" value=".6"/>
-		</KeyValues>
 		<Size x="101" y="24"/>
 	</Frame>
 </Ui>

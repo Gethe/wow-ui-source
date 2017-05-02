@@ -538,17 +538,16 @@ function BonusObjectiveTracker_ShowRewardsTooltip(block)
 			GameTooltip:AddLine(string.format(BONUS_OBJECTIVE_ARTIFACT_XP_FORMAT, artifactXP), 1, 1, 1);
 		end
 		-- currency
-		local numQuestCurrencies = GetNumQuestLogRewardCurrencies(questID);
-		for i = 1, numQuestCurrencies do
-			local name, texture, numItems, currencyID = GetQuestLogRewardCurrencyInfo(i, questID);
-			local text = string.format(BONUS_OBJECTIVE_REWARD_WITH_COUNT_FORMAT, texture, numItems, name);
-			local currencyColor = GetColorForCurrencyReward(currencyID, numItems);
-			GameTooltip:AddLine(text, currencyColor:GetRGB());
-		end
+		QuestUtils_AddQuestCurrencyRewardsToTooltip(questID, GameTooltip);
 		-- honor
 		local honorAmount = GetQuestLogRewardHonor(questID);
 		if ( honorAmount > 0 ) then
 			GameTooltip:AddLine(BONUS_OBJECTIVE_REWARD_WITH_COUNT_FORMAT:format("Interface\\ICONS\\Achievement_LegionPVPTier4", honorAmount, HONOR), 1, 1, 1);
+		end
+		-- money
+		local money = GetQuestLogRewardMoney(questID);
+		if ( money > 0 ) then
+			SetTooltipMoney(GameTooltip, money, nil);
 		end
 		-- items
 		local numQuestRewards = GetNumQuestLogRewards(questID);
@@ -556,7 +555,7 @@ function BonusObjectiveTracker_ShowRewardsTooltip(block)
 			local name, texture, numItems, quality, isUsable = GetQuestLogRewardInfo(i, questID);
 			local text;
 			if ( numItems > 1 ) then
-				text = string.format(BONUS_OBJECTIVE_REWARD_WITH_COUNT_FORMAT, texture, numItems, name);
+				text = string.format(BONUS_OBJECTIVE_REWARD_WITH_COUNT_FORMAT, texture, HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(numItems), name);
 			elseif( texture and name ) then
 				text = string.format(BONUS_OBJECTIVE_REWARD_FORMAT, texture, name);
 			end
@@ -564,11 +563,6 @@ function BonusObjectiveTracker_ShowRewardsTooltip(block)
 				local color = ITEM_QUALITY_COLORS[quality];
 				GameTooltip:AddLine(text, color.r, color.g, color.b);
 			end
-		end
-		-- money
-		local money = GetQuestLogRewardMoney(questID);
-		if ( money > 0 ) then
-			SetTooltipMoney(GameTooltip, money, nil);
 		end
 	end
 	GameTooltip:Show();

@@ -827,19 +827,3 @@ function CallbackRegistryBaseMixin:TriggerEvent(event, ...)
 		end
 	end
 end
-
--- Currency Overflow --
-function WillCurrencyRewardOverflow(currencyID, rewardQuantity)
-	local name, quantity, icon, earnedThisWeek, weeklyMax, maxQuantity, discovered, rarity = GetCurrencyInfo(currencyID);
-	return maxQuantity > 0 and rewardQuantity + quantity > maxQuantity;
-end
-
-function GetColorForCurrencyReward(currencyID, rewardQuantity, defaultColor)
-	if WillCurrencyRewardOverflow(currencyID, rewardQuantity) then
-		return RED_FONT_COLOR;
-	elseif defaultColor then
-		return defaultColor;
-	else
-		return HIGHLIGHT_FONT_COLOR;
-	end
-end

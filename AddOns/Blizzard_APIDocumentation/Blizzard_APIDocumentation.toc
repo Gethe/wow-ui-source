@@ -18,6 +18,7 @@ ActionBarFrameLua.lua
 ArtifactUILua.lua
 CalendarLua.lua
 ChallengeModeInfoLua.lua
+ChatBubblesLua.lua
 CommentatorFrameLua.lua
 ContributionCollectorLua.lua
 EquipmentManagerLua.lua

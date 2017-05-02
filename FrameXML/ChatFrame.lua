@@ -2385,6 +2385,71 @@ SlashCmdList["API"] = function(msg)
 	APIDocumentation:HandleSlashCommand(msg);
 end
 
+SlashCmdList["COMMENTATOR_OVERRIDE"] = function(msg)
+	if not IsAddonLoaded("Blizzard_Commentator") then
+		return;
+	end
+	
+	local originalName, overrideName = msg:match("^(%S-)%s+(.+)");
+	if not originalName or not overrideName then
+		DEFAULT_CHAT_FRAME:AddMessage(ERROR_SLASH_COMMENTATOROVERRIDE, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
+		DEFAULT_CHAT_FRAME:AddMessage(ERROR_SLASH_COMMENTATOROVERRIDE_EXAMPLE, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
+		return;
+	end
+
+	originalName = originalName:sub(1, 1):upper() .. originalName:sub(2, -1);
+	
+	DEFAULT_CHAT_FRAME:AddMessage((SLASH_COMMENTATOROVERRIDE_SUCCESS):format(originalName, overrideName), YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
+	C_Commentator.AddPlayerOverrideName(originalName, overrideName);
+end
+
+SlashCmdList["COMMENTATOR_NAMETEAM"] = function(msg)
+	if not IsAddonLoaded("Blizzard_Commentator") then
+		return;
+	end
+	
+	local teamIndex, teamName = msg:match("^(%d+) (.+)");
+	teamIndex = tonumber(teamIndex);
+	
+	if not teamIndex or not teamName then
+		DEFAULT_CHAT_FRAME:AddMessage(ERROR_SLASH_COMMENTATOR_NAMETEAM, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
+		DEFAULT_CHAT_FRAME:AddMessage(ERROR_SLASH_COMMENTATOR_NAMETEAM_EXAMPLE, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
+		return;
+	end
+		
+	if not C_Commentator.IsSpectating() then
+		DEFAULT_CHAT_FRAME:AddMessage(CONTEXT_ERROR_SLASH_COMMENTATOR_NAMETEAM, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
+	else
+		DEFAULT_CHAT_FRAME:AddMessage((SLASH_COMMENTATOR_NAMETEAM_SUCCESS):format(teamIndex, teamName), YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
+	end
+	
+	CommentatorTeamDisplay:UpdateTeamName(teamIndex, teamName);
+end
+
+SlashCmdList["COMMENTATOR_ASSIGNPLAYER"] = function(msg)
+	if not IsAddonLoaded("Blizzard_Commentator") then
+		return;
+	end
+	
+	local playerName, teamName = msg:match("^(%S-)%s+(.+)");
+	if not playerName or not teamName then
+		DEFAULT_CHAT_FRAME:AddMessage(ERROR_SLASH_COMMENTATOR_ASSIGNPLAYER, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
+		DEFAULT_CHAT_FRAME:AddMessage(ERROR_SLASH_COMMENTATOR_ASSIGNPLAYER_EXAMPLE, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
+		return;
+	end
+	
+	DEFAULT_CHAT_FRAME:AddMessage((SLASH_COMMENTATOR_ASSIGNPLAYER_SUCCESS):format(playerName, teamName), YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
+	CommentatorTeamDisplay:AssignPlayerToTeam(playerName, teamName);
+end
+
+SlashCmdList["RESET_COMMENTATOR_SETTINGS"] = function(msg)
+	if not IsAddonLoaded("Blizzard_Commentator") then
+		return;
+	end
+	
+	PvPCommentator:SetDefaultCommentatorSettings();
+end
+
 function ChatFrame_SetupListProxyTable(list)
 	if ( getmetatable(list) ) then
 		return;
