@@ -1339,6 +1339,9 @@ function WardrobeItemsCollectionMixin:SortVisuals()
 		if ( source1.isHideVisual ~= source2.isHideVisual ) then
 			return source1.isHideVisual;
 		end
+		if ( source1.requiresHoliday ~= source2.requiresHoliday and source1.isUsable and source2.isUsable ) then
+			return source1.requiresHoliday;
+		end
 		if ( source1.uiOrder and source2.uiOrder ) then
 			return source1.uiOrder > source2.uiOrder;
 		end

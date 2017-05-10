@@ -614,8 +614,8 @@ function PlayerFrame_UpdatePlaytime()
 	end
 end
 
-function PlayerFrame_SetupDeathKnniggetLayout ()
-	PlayerFrame:SetHitRectInsets(0,0,0,35);
+function PlayerFrame_SetupDeathKnightLayout ()
+	PlayerFrame:SetHitRectInsets(0,0,0,33);
 end
 
 function PlayerFrameMultiGroupFrame_OnLoad(self)
@@ -658,7 +658,7 @@ function PlayerFrameMultiGroupframe_OnEnter(self)
 end
 
 CustomClassLayouts = {
-	["DEATHKNIGHT"] = PlayerFrame_SetupDeathKnniggetLayout,
+	["DEATHKNIGHT"] = PlayerFrame_SetupDeathKnightLayout,
 }
 
 local layoutUpdated = false;

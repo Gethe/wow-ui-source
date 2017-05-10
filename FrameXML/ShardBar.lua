@@ -81,6 +81,19 @@ WarlockShardMixin = {};
 
 function WarlockShardMixin:Setup(shardIndex)
 	self.shardIndex = shardIndex;
+	self.widthByFillAmount = {
+		[0] = 0,
+		[1] = 6,
+		[2] = 12,
+		[3] = 14,
+		[4] = 18,
+		[5] = 22,
+		[6] = 22,
+		[7] = 24,
+		[8] = 22,
+		[9] = 18,
+		[10] = 0,
+	};
 end
 
 function WarlockShardMixin:Update(powerAmount)
@@ -113,25 +126,11 @@ function WarlockShardMixin:Update(powerAmount)
 	self:UpdateSpark(fillAmount);
 end
 
-local SPARK_WIDTH_BY_FILL_AMOUNT = {
-	[0] = 0,
-	[1] = 6,
-	[2] = 12,
-	[3] = 14,
-	[4] = 18,
-	[5] = 22,
-	[6] = 24,
-	[7] = 26,
-	[8] = 28,
-	[9] = 22,
-	[10] = 0,
-}
-
 function WarlockShardMixin:UpdateSpark(fillAmount)
 	self.Spark:SetShown(fillAmount > 0 and fillAmount < 1);
 	if (self.Spark:IsShown()) then
 		local sparkWidthIndex = math.floor(fillAmount * 10);
-		local fullOffset = SPARK_WIDTH_BY_FILL_AMOUNT[sparkWidthIndex];
+		local fullOffset = self.widthByFillAmount[sparkWidthIndex];
 		self.Spark:SetPoint("TOPLEFT", self.PartialFill:GetStatusBarTexture(), "TOP", -(fullOffset/2), 2);
 		self.Spark:SetPoint("BOTTOMRIGHT", self.PartialFill:GetStatusBarTexture(), "TOP", fullOffset/2, -2);
 	end

@@ -860,10 +860,15 @@ local function AddBonusObjectiveQuest(module, questID, posIndex, isTrackedWorldQ
 				end
 
 				local progressBar = module:AddProgressBar(block, block.currentLine, questID, finished);
-				if ( OBJECTIVE_TRACKER_UPDATE_REASON == OBJECTIVE_TRACKER_UPDATE_TASK_ADDED or OBJECTIVE_TRACKER_UPDATE_REASON == OBJECTIVE_TRACKER_UPDATE_WORLD_QUEST_ADDED ) then
-					if ( playEnterAnim ) then
-						progressBar.Bar.AnimIn:Play();
-					end
+				if ( playEnterAnim and (OBJECTIVE_TRACKER_UPDATE_REASON == OBJECTIVE_TRACKER_UPDATE_TASK_ADDED or OBJECTIVE_TRACKER_UPDATE_REASON == OBJECTIVE_TRACKER_UPDATE_WORLD_QUEST_ADDED) ) then
+					progressBar.Bar.AnimIn:Play();
+				elseif not progressBar.Bar.AnimIn:IsPlaying() then
+					-- Bug ID: 495448, setToFinal doesn't always work properly with sibling animations, hackily fix up the state here
+					progressBar.Bar.BarGlow:SetAlpha(0);
+					progressBar.Bar.Starburst:SetAlpha(0);
+					progressBar.Bar.BarFrame2:SetAlpha(0);
+					progressBar.Bar.BarFrame3:SetAlpha(0);
+					progressBar.Bar.Sheen:SetAlpha(0);
 				end
 			end
 		end

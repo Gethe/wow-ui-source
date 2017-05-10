@@ -2027,6 +2027,7 @@ function GarrisonFollowerTabMixin:ShowFollower(followerID, followerList)
 		followerInfo.abilities = { };
 		followerInfo.unlockableAbilities = { };
 		followerInfo.equipment = { };
+		followerInfo.unlockableEquipment = { };
 		followerInfo.combatAllySpellIDs = { };
 	end
 	GarrisonMissionPortrait_SetFollowerPortrait(self.PortraitFrame, followerInfo);

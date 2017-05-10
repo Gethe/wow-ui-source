@@ -64,11 +64,10 @@ function TalentFrame_Update(TalentFrame, talentUnit)
 				TalentFrame.talentInfo[tier] = nil;
 			end
 			
-			local rowShouldGlow = false;
+			local restartGlow = false;
 			for column=1, NUM_TALENT_COLUMNS do
 				-- Set the button info
-				local talentID, name, iconTexture, selected, available = GetTalentInfo(tier, column, TalentFrame.talentGroup, TalentFrame.inspect, talentUnit);
-				rowShouldGlow = rowShouldGlow or (available and not selected);
+				local talentID, name, iconTexture, selected, available, _, _, _, _, _, grantedByAura = GetTalentInfo(tier, column, TalentFrame.talentGroup, TalentFrame.inspect, talentUnit);
 				local button = talentRow["talent"..column];
 				button.tier = tier;
 				button.column = column;
@@ -82,20 +81,36 @@ function TalentFrame_Update(TalentFrame, talentUnit)
 					end
 
 					if(button.knownSelection ~= nil) then
-						if( selected ) then
+						if ( grantedByAura ) then
 							button.knownSelection:Show();
+							button.knownSelection:SetAtlas("Talent-Selection-Legendary");
+							button.knownSelection:SetDesaturated(disable);
+						elseif ( selected ) then
+							button.knownSelection:Show();
+							button.knownSelection:SetAtlas("Talent-Selection");
 							button.knownSelection:SetDesaturated(disable);
 						else
 							button.knownSelection:Hide();
 						end
 					end
+					button.shouldGlow = (available and not selected) and talentUnit == "player";
+					if ( button.grantedByAura ~= grantedByAura ) then
+						button.grantedByAura = grantedByAura;
+						restartGlow = true;
+					end
 					
 					if( TalentFrame.inspect ) then
-						SetDesaturation(button.icon, not selected);
-						button.border:SetShown(selected);
+						SetDesaturation(button.icon, not (selected or grantedByAura));
+						button.border:SetShown(selected or grantedByAura);
+						if ( grantedByAura ) then
+							local color = ITEM_QUALITY_COLORS[LE_ITEM_QUALITY_LEGENDARY];
+							button.border:SetVertexColor(color.r, color.g, color.b);
+						else
+							button.border:SetVertexColor(1, 1, 1);
+						end
 					else
 						button.disabled = (not tierAvailable or disable);
-						SetDesaturation(button.icon, button.disabled or (selectedTalent ~= 0 and not selected));
+						SetDesaturation(button.icon, (button.disabled or (selectedTalent ~= 0 and not selected)) and not grantedByAura);
 						button.Cover:SetShown(button.disabled);
 						button.highlight:SetAlpha((selected or not tierAvailable) and 0 or 1);
 					end
@@ -105,15 +120,7 @@ function TalentFrame_Update(TalentFrame, talentUnit)
 					button:Hide();
 				end
 			end
-			if ( talentRow.GlowFrame ) then
-				if ( rowShouldGlow and talentUnit == "player" ) then
-					talentRow.shouldGlow = true;
-					talentRow.GlowFrame:Show();
-				else
-					talentRow.shouldGlow = false;
-					talentRow.GlowFrame:Hide();
-				end
-			end
+			TalentFrame_UpdateRowGlow(talentRow, restartGlow);
 			-- do tier level number after every row
 			if(talentRow.level ~= nil) then
 				if ( selectedTalent == 0 and tierAvailable) then
@@ -134,6 +141,30 @@ function TalentFrame_Update(TalentFrame, talentUnit)
 	end
 end
 
+function TalentFrame_UpdateRowGlow(talentRow, restartGlow)
+	if ( talentRow.GlowFrame ) then
+		local somethingGlowing = false;
+		for i, button in ipairs(talentRow.talents) do
+			if ( button.shouldGlow and not button.grantedByAura ) then
+				somethingGlowing = true;
+				if ( restartGlow ) then
+					button.GlowFrame:Hide();
+				end
+				button.GlowFrame:Show();
+			else
+				button.GlowFrame:Hide();
+			end
+		end
+		if ( somethingGlowing ) then
+			if ( restartGlow ) then
+				talentRow.GlowFrame:Hide();
+			end
+			talentRow.GlowFrame:Show();
+		else
+			talentRow.GlowFrame:Hide();
+		end
+	end
+end
 
 function TalentFrame_UpdateSpecInfoCache(cache, inspect, pet, talentGroup)
 	-- initialize some cache info
@@ -186,7 +217,13 @@ function PVPTalentFrame_Update(self, talentUnit)
 		for column = 1, MAX_PVP_TALENT_COLUMNS do
 			local button = talentRow["Talent"..column];
 			local id, name, icon, selected, available, _, unlocked = GetPvpTalentInfo(tier, column, self.talentGroup, self.inspect, talentUnit);
-			rowShouldGlow = rowShouldGlow or (available and not selected);
+			-- if any buttons glow, the whole row should glow
+			button.shouldGlow = (available and not selected) or rowShouldGlow;
+			if ( column == 1 and button.shouldGlow ) then
+				-- since buttons on a row are unlocked from left to right, if the first
+				-- choice should glow, all of them should glow
+				rowShouldGlow = true;
+			end
 			if ( button.Name ) then
 				button.Name:SetText(name);
 			end
@@ -212,15 +249,7 @@ function PVPTalentFrame_Update(self, talentUnit)
 				end
 			end
 		end
-		if ( talentRow.GlowFrame ) then
-			if ( rowShouldGlow ) then
-				talentRow.shouldGlow = true;
-				talentRow.GlowFrame:Show();
-			else
-				talentRow.shouldGlow = false;
-				talentRow.GlowFrame:Hide();
-			end
-		end
+		TalentFrame_UpdateRowGlow(talentRow);
 	end
 
 	if ( not self.inspect ) then

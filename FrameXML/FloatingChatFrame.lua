@@ -66,8 +66,9 @@ function FloatingChatFrame_OnLoad(self)
 	chatTab.mouseOverAlpha = CHAT_FRAME_TAB_SELECTED_MOUSEOVER_ALPHA;
 	chatTab.noMouseAlpha = CHAT_FRAME_TAB_SELECTED_NOMOUSE_ALPHA;
 
-	FRAMELOCK_STATES.PETBATTLEOPENING[self:GetName()] = "hidden";
-	FRAMELOCK_STATES.PETBATTLEOPENING[chatTab:GetName()] = "hidden";
+	FRAMELOCK_STATES.COMMENTATOR_SPECTATING_MODE[self:GetName()] = "hidden";
+	FRAMELOCK_STATES.COMMENTATOR_SPECTATING_MODE[self:GetName().."Editbox"] = "hidden";
+	FRAMELOCK_STATES.COMMENTATOR_SPECTATING_MODE[chatTab:GetName()] = "hidden";
 	UpdateFrameLock(self);
 	UpdateFrameLock(chatTab);
 end

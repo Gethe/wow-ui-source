@@ -306,4 +306,25 @@
 	<Font name="CommentatorDeadFontLarge" inherits="SystemFont_OutlineThick_WTF" outline="" virtual="true">
 		<Color r="1" g="1" b="1" a="1"/>
 	</Font>
+	
+	<Font name="CommentatorVictoryFanfare" inherits="Game120Font" virtual="true">
+		<Color r="1" g="1" b="1" a="1"/>
+		<Shadow>
+			<Color r="0" g="0" b="0" a="0.9"/>
+			<Offset>
+				<AbsDimension x="2" y="0" />
+			</Offset>
+		</Shadow>
+	</Font>
+	
+	<Font name="CommentatorVictoryFanfareTeam" inherits="Game72Font" virtual="true">
+		<Color r="1" g="1" b="1" a="1"/>
+		<Shadow>
+			<Color r="0" g="0" b="0" a="0.9"/>
+			<Offset>
+				<AbsDimension x="2" y="0" />
+			</Offset>
+		</Shadow>
+	</Font>
+
 </Ui>

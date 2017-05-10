@@ -320,11 +320,12 @@ function GarrisonLandingPageReport_GetShipments(self)
 		end
 	end
 
-	local talentTrees = C_Garrison.GetTalentTrees(garrisonType, select(3, UnitClass("player")));
+	local talentTreeIDs = C_Garrison.GetTalentTreeIDsByClassID(garrisonType, select(3, UnitClass("player")));
 	-- this is a talent that has completed, but has not been seen in the talent UI yet.
 	local completeTalentID = C_Garrison.GetCompleteTalent(garrisonType);
-	if (talentTrees) then
-		for treeIndex, tree in ipairs(talentTrees) do
+	if (talentTreeIDs) then
+		for treeIndex, treeID in ipairs(talentTreeIDs) do
+			local _, tree = C_Garrison.GetTalentTreeInfoForID(garrisonType, treeID);
 			for talentIndex, talent in ipairs(tree) do
 				local showTalent = false;
 				if (talent.isBeingResearched) then

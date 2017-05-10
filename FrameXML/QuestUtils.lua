@@ -97,7 +97,7 @@ end
 
 function QuestUtils_GetQuestName(questID)
 	-- TODO: Make unified API for this?
-	local questName = select(4, GetTaskInfo(questID));
+	local questName = C_TaskQuest.GetQuestInfoByQuestID(questID);
 	if not questName then
 		local questIndex = GetQuestLogIndexByID(questID);
 		if questIndex and questIndex > 0 then

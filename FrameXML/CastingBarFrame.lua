@@ -335,18 +335,38 @@ function CastingBarFrame_OnEvent(self, event, ...)
 			self:SetMinMaxValues(0, self.maxValue);
 			self:SetValue(self.value);
 		end
-	elseif ( self.showShield and event == "UNIT_SPELLCAST_INTERRUPTIBLE" ) then
+	elseif ( event == "UNIT_SPELLCAST_INTERRUPTIBLE" or event == "UNIT_SPELLCAST_NOT_INTERRUPTIBLE" ) then
+		CastingBarFrame_UpdateInterruptibleState(self, event == "UNIT_SPELLCAST_NOT_INTERRUPTIBLE");
+	end
+end
+
+function CastingBarFrame_UpdateInterruptibleState(self, notInterruptible)
+	if ( self.casting or self.channeling ) then
+		local startColor = CastingBarFrame_GetEffectiveStartColor(self, self.channeling, notInterruptible);
+		self:SetStatusBarColor(startColor:GetRGB());
+
+		if self.flashColorSameAsStart then
+			self.Flash:SetVertexColor(startColor:GetRGB());
+		end
+
 		if ( self.BorderShield ) then
-			self.BorderShield:Hide();
-			if ( self.BarBorder ) then
-				self.BarBorder:Show();
+			if ( self.showShield and notInterruptible ) then
+				self.BorderShield:Show();
+				if ( self.BarBorder ) then
+					self.BarBorder:Hide();
+				end
+			else
+				self.BorderShield:Hide();
+				if ( self.BarBorder ) then
+					self.BarBorder:Show();
+				end
 			end
 		end
-	elseif ( self.showShield and event == "UNIT_SPELLCAST_NOT_INTERRUPTIBLE" ) then
-		if ( self.BorderShield ) then
-			self.BorderShield:Show();
-			if ( self.BarBorder ) then
-				self.BarBorder:Hide();
+
+		if ( self.Icon ) then
+			self.Icon:SetTexture(texture);
+			if ( self.iconWhenNoninterruptible ) then
+				self.Icon:SetShown(not notInterruptible);
 			end
 		end
 	end

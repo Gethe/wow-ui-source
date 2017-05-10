@@ -35,6 +35,24 @@ local CommentatorFrameLua =
 			},
 		},
 		{
+			Name = "AreTeamsSwapped",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "teamsAreSwapped", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "CanUseCommentatorCheats",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "canUseCommentatorCheats", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "ClearCameraTarget",
 			Type = "Function",
 		},
@@ -157,6 +175,15 @@ local CommentatorFrameLua =
 			Returns =
 			{
 				{ Name = "mapID", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "GetDampeningPercent",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "percentage", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -487,6 +514,20 @@ local CommentatorFrameLua =
 			Returns =
 			{
 				{ Name = "factor", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetStartLocation",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "mapID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "pos", Type = "vector3", Mixin = "Vector3DMixin", Nilable = false },
 			},
 		},
 		{
@@ -987,6 +1028,10 @@ local CommentatorFrameLua =
 				{ Name = "teamOneCaptain", Type = "string", Nilable = false },
 				{ Name = "teamTwoCaptain", Type = "string", Nilable = false },
 			},
+		},
+		{
+			Name = "SwapTeamSides",
+			Type = "Function",
 		},
 		{
 			Name = "ToggleCheats",

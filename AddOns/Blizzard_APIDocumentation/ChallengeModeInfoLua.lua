@@ -64,6 +64,16 @@ local ChallengeModeInfoLua =
 			},
 		},
 		{
+			Name = "GetDeathCount",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "numDeaths", Type = "number", Nilable = false },
+				{ Name = "timeLost", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetGuildLeaders",
 			Type = "Function",
 

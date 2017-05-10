@@ -2,7 +2,7 @@
 ..\FrameXML\UI.xsd">
   <Script file="Blizzard_ClassNameplateBar_DeathKnight.lua"/>
 	<Button name="ClassNameplateBarDeathKnightRuneButton" inherits="RuneButtonIndividualTemplate" virtual="true">
-		<Size x="18" y="20"/>
+		<Size x="26" y="26"/>
 		<!-- Parent template has a tooltip, we don't want to show tooltips on this frame. -->
 		<Scripts>
 			<OnEnter/>
@@ -15,32 +15,32 @@
 		<Frames>
 			<Button parentKey="Rune1" parentArray="Runes" inherits="ClassNameplateBarDeathKnightRuneButton">
 				<Anchors>
-					<Anchor point="BOTTOMLEFT"/>
+					<Anchor point="BOTTOMLEFT" x="-22" y="-6"/>
 				</Anchors>
 			</Button>
 			<Button parentKey="Rune2" parentArray="Runes" inherits="ClassNameplateBarDeathKnightRuneButton">
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.Rune1" relativePoint="RIGHT" x="-2" y="0"/>
+					<Anchor point="LEFT" relativeKey="$parent.Rune1" relativePoint="RIGHT" x="-3" y="0"/>
 				</Anchors>
 			</Button>
 			<Button parentKey="Rune3" parentArray="Runes" inherits="ClassNameplateBarDeathKnightRuneButton">
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.Rune2" relativePoint="RIGHT" x="-2" y="0"/>
+					<Anchor point="LEFT" relativeKey="$parent.Rune2" relativePoint="RIGHT" x="-3" y="0"/>
 				</Anchors>
 			</Button>
 			<Button parentKey="Rune4" parentArray="Runes" inherits="ClassNameplateBarDeathKnightRuneButton">
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.Rune3" relativePoint="RIGHT" x="-2" y="0"/>
+					<Anchor point="LEFT" relativeKey="$parent.Rune3" relativePoint="RIGHT" x="-3" y="0"/>
 				</Anchors>
 			</Button>
 			<Button parentKey="Rune5" parentArray="Runes" inherits="ClassNameplateBarDeathKnightRuneButton">
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.Rune4" relativePoint="RIGHT" x="-2" y="0"/>
+					<Anchor point="LEFT" relativeKey="$parent.Rune4" relativePoint="RIGHT" x="-3" y="0"/>
 				</Anchors>
 			</Button>
 			<Button parentKey="Rune6" parentArray="Runes" inherits="ClassNameplateBarDeathKnightRuneButton">
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.Rune5" relativePoint="RIGHT" x="-2" y="0"/>
+					<Anchor point="LEFT" relativeKey="$parent.Rune5" relativePoint="RIGHT" x="-3" y="0"/>
 				</Anchors>
 			</Button>
 		</Frames>

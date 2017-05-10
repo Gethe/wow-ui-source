@@ -58,6 +58,23 @@ end
 
 ClassNameplateBarWarlockShardMixin = CreateFromMixins(WarlockShardMixin);
 
+function ClassNameplateBarWarlockShardMixin:Setup(shardIndex)
+	WarlockShardMixin.Setup(self, shardIndex);
+	self.widthByFillAmount = {
+		[0] = 0,
+		[1] = 2,
+		[2] = 8,
+		[3] = 10,
+		[4] = 14,
+		[5] = 18,
+		[6] = 18,
+		[7] = 20,
+		[8] = 16,
+		[9] = 12,
+		[10] = 0,
+	};
+end
+
 function ClassNameplateBarWarlockShardMixin:Update(powerAmount)
 	local fillAmount = Saturate(powerAmount - self.shardIndex);
 	local active = fillAmount >= 1;

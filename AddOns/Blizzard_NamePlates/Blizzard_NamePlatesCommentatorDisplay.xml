@@ -63,8 +63,8 @@
 				<Frames>
 					<Cooldown parentKey="Cooldown" hideCountdownNumbers="true" drawEdge="true" inherits="CooldownFrameTemplate">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.$parent.Icon"/>
-							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.$parent.Icon"/>
+							<Anchor point="TOPLEFT" relativeKey="$parent.Icon"/>
+							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
 						</Anchors>
 						<SwipeTexture>
 							<Color r="0.17" g="0" b="0" a="0.8"/>

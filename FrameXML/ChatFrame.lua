@@ -2386,7 +2386,7 @@ SlashCmdList["API"] = function(msg)
 end
 
 SlashCmdList["COMMENTATOR_OVERRIDE"] = function(msg)
-	if not IsAddonLoaded("Blizzard_Commentator") then
+	if not IsAddOnLoaded("Blizzard_Commentator") then
 		return;
 	end
 	
@@ -2404,7 +2404,7 @@ SlashCmdList["COMMENTATOR_OVERRIDE"] = function(msg)
 end
 
 SlashCmdList["COMMENTATOR_NAMETEAM"] = function(msg)
-	if not IsAddonLoaded("Blizzard_Commentator") then
+	if not IsAddOnLoaded("Blizzard_Commentator") then
 		return;
 	end
 	
@@ -2427,7 +2427,7 @@ SlashCmdList["COMMENTATOR_NAMETEAM"] = function(msg)
 end
 
 SlashCmdList["COMMENTATOR_ASSIGNPLAYER"] = function(msg)
-	if not IsAddonLoaded("Blizzard_Commentator") then
+	if not IsAddOnLoaded("Blizzard_Commentator") then
 		return;
 	end
 	
@@ -2443,7 +2443,7 @@ SlashCmdList["COMMENTATOR_ASSIGNPLAYER"] = function(msg)
 end
 
 SlashCmdList["RESET_COMMENTATOR_SETTINGS"] = function(msg)
-	if not IsAddonLoaded("Blizzard_Commentator") then
+	if not IsAddOnLoaded("Blizzard_Commentator") then
 		return;
 	end
 	
@@ -3120,6 +3120,10 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 			if ( not globalstring ) then
 				globalstring = _G["CHAT_"..arg1.."_NOTICE"];
 			end
+			if not globalstring then
+				GMError(("Missing global string for %q"):format("CHAT_"..arg1.."_NOTICE_BN"));
+				return;
+			end
 			if(arg5 ~= "") then
 				-- TWO users in this notice (E.G. x kicked y)
 				self:AddMessage(format(globalstring, arg8, arg4, arg2, arg5), info.r, info.g, info.b, info.id);
@@ -3132,12 +3136,17 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 				self:AddMessage(CHAT_MSG_BLOCK_CHAT_CHANNEL_INVITE, info.r, info.g, info.b, info.id);
 			end
 		elseif (type == "CHANNEL_NOTICE") then
-			local globalstring = _G["CHAT_"..arg1.."_NOTICE_BN"];
+			local globalstring;
 			if( arg1 == "TRIAL_RESTRICTED" ) then
 				globalstring = CHAT_TRIAL_RESTRICTED_NOTICE_TRIAL;
 			else
+				globalstring = _G["CHAT_"..arg1.."_NOTICE_BN"];
 				if ( not globalstring ) then
 					globalstring = _G["CHAT_"..arg1.."_NOTICE"];
+					if not globalstring then
+						GMError(("Missing global string for %q"):format("CHAT_"..arg1.."_NOTICE"));
+						return;
+					end
 				end
 			end
 			local accessID = ChatHistory_GetAccessID(Chat_GetChatCategory(type), arg8);
@@ -3145,6 +3154,10 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 			self:AddMessage(format(globalstring, arg8, arg4), info.r, info.g, info.b, info.id, accessID, typeID);
 		elseif ( type == "BN_INLINE_TOAST_ALERT" ) then
 			local globalstring = _G["BN_INLINE_TOAST_"..arg1];
+			if not globalstring then
+				GMError(("Missing global string for %q"):format("BN_INLINE_TOAST_"..arg1));
+				return;
+			end
 			local message;
 			if ( arg1 == "FRIEND_REQUEST" ) then
 				message = globalstring;

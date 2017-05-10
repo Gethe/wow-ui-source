@@ -1,0 +1,18 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\..\FrameXML\UI.xsd">
+
+	<Script file="FadeToBlack.lua"/>
+	
+	<Frame name="CommentatorFadeToBlackFrame" frameStrata="TOOLTIP" enableMouse="false" parent="WorldFrame" setAllPoints="true" toplevel="true" clampedToScreen="true" alpha="0" mixin="FadeToBlackMixin">
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture >
+					<Color r="0.0" g="0.0" b="0.0" a="1.0"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnUpdate method="OnUpdate"/>
+		</Scripts>
+	</Frame>
+
+</Ui>

@@ -183,14 +183,14 @@
 	</Frame>
 
 	<Frame name="ScenarioChallengeModeAffixTemplate" parentArray="Affixes" virtual="true" mixin="ScenarioChallengeModeAffixMixin">
-		<Size x="34" y="34"/>
+		<Size x="22" y="22"/>
 		<Layers>
 			<Layer level="OVERLAY">
 				<Texture parentKey="Border" atlas="ChallengeMode-AffixRing-Sm" setAllPoints="true"/>
 			</Layer>
 			<Layer level="ARTWORK">
 				<Texture parentKey="Portrait">
-					<Size x="32" y="32"/>
+					<Size x="20" y="20"/>
 					<Anchors>
 						<Anchor point="CENTER" relativeKey="$parent.Border"/>
 					</Anchors>
@@ -400,6 +400,32 @@
 								</Layers>
 								<Scripts>
 									<OnEnter function="Scenario_ChallengeMode_TimesUpLootStatus_OnEnter"/>
+									<OnLeave function="GameTooltip_Hide"/>
+								</Scripts>
+							</Frame>
+							<Frame parentKey="DeathCount" hidden="true" enableMouse="true" mixin="ScenarioChallengeDeathCountMixin">
+								<Size x="20" y="16"/>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="BOTTOMRIGHT" x="-47" y="43"/>
+								</Anchors>
+								<Layers>
+									<Layer level="ARTWORK">
+										<Texture parentKey="Icon" atlas="poi-graveyard-neutral" useAtlasSize="true">
+											<Anchors>
+												<Anchor point="LEFT"/>
+											</Anchors>
+										</Texture>
+										<FontString parentKey="Count" inherits="GameFontHighlightSmall2">
+											<Anchors>
+												<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="1" y="0"/>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+								<Scripts>
+									<OnLoad method="OnLoad"/>
+									<OnEvent method="OnEvent"/>
+									<OnEnter method="OnEnter"/>
 									<OnLeave function="GameTooltip_Hide"/>
 								</Scripts>
 							</Frame>

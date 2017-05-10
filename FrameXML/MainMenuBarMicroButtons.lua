@@ -587,7 +587,11 @@ function EJMicroButton_OnEvent(self, event, ...)
 		end
 	elseif ( event == "PLAYER_AVG_ITEM_LEVEL_UPDATE" ) then
 		local playerLevel = UnitLevel("player");
-		if ( playerLevel == MAX_PLAYER_LEVEL_TABLE[GetExpansionLevel()]) then
+		local spec = GetSpecialization();
+		local ilvl = GetAverageItemLevel();
+		if ( playerLevel == MAX_PLAYER_LEVEL_TABLE[GetExpansionLevel()] and ((not self.lastEvaluatedSpec or self.lastEvaluatedSpec ~= spec) or (not self.lastEvaluatedIlvl or self.lastEvaluatedIlvl < ilvl))) then
+			self.lastEvaluatedSpec = spec;
+			self.lastEvaluatedIlvl = ilvl;
 			EJMicroButton_UpdateNewAdventureNotice(false);
 		end
 	elseif ( event == "ZONE_CHANGED_NEW_AREA" ) then

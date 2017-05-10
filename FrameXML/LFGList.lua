@@ -1702,10 +1702,43 @@ function LFGListSearchPanel_SetCategory(self, categoryID, filters, preferredFilt
 	self.CategoryName:SetText(name);
 end
 
+local function Higher(value)
+	return value + 1;
+end
+
+local function Lower(value)
+	return value - 1;
+end
+
+local function GetTermsTable(term)
+	local termsTable = { term };
+	local higherTerm = term:gsub("(%d+)", Higher);
+	if higherTerm ~= term then
+		table.insert(termsTable, higherTerm);
+		table.insert(termsTable, (term:gsub("(%d+)", Lower)));
+	end
+	return { matches = termsTable };
+end
+
+function LFGListSearchPanel_ParseSearchTerms(searchText)
+	local termSet = {};
+	
+	for term in searchText:gmatch("%S+") do
+		termSet[term] = true;
+	end
+	
+	local separatedTerms = {};
+	for term in pairs(termSet) do
+		table.insert(separatedTerms, GetTermsTable(term));
+	end
+	
+	return separatedTerms;
+end
+
 function LFGListSearchPanel_DoSearch(self)
 	local searchText = self.SearchBox:GetText();
 	local languages = C_LFGList.GetLanguageSearchFilter();
-	C_LFGList.Search(self.categoryID, searchText, self.filters, self.preferredFilters, languages);
+	C_LFGList.Search(self.categoryID, LFGListSearchPanel_ParseSearchTerms(searchText), self.filters, self.preferredFilters, languages);
 	self.searching = true;
 	self.searchFailed = false;
 	self.selectedResult = nil;

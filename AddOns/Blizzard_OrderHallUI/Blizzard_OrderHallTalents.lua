@@ -35,14 +35,9 @@ local function OnTalentButtonReleased(pool, button)
 end
 
 function OrderHallTalentFrameMixin:OnLoad()
-	local _, className, classID = UnitClass("player");
-
 	self.buttonPool = CreateFramePool("BUTTON", self, "GarrisonTalentButtonTemplate", OnTalentButtonReleased);
 	self.choiceTexturePool = CreateTexturePool(self, "BACKGROUND", 1, "GarrisonTalentChoiceTemplate");
 	self.arrowTexturePool = CreateTexturePool(self, "BACKGROUND", 2, "GarrisonTalentArrowTemplate");
-	self.ClassBackground:SetAtlas("orderhalltalents-background-"..className);
-	self.portrait:SetMask("Interface\\CharacterFrame\\TempPortraitAlphaMask");
-	self.portrait:SetTexture("INTERFACE\\ICONS\\crest_"..className);
 	self.TitleText:SetText(ORDER_HALL_TALENT_TITLE);
 
 	local primaryCurrency, _ = C_Garrison.GetCurrencyTypes(self.garrisonType);
@@ -105,9 +100,23 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 	self:ReleaseAllPools();
 
 	self:RefreshCurrency();
-	self.trees = C_Garrison.GetTalentTreeForID(self.garrisonType, self.garrTalentTreeID);
+	local uiTextureKit;
+	local garrTalentTreeID = C_Garrison.GetCurrentGarrTalentTreeID();
+	uiTextureKit, self.trees = C_Garrison.GetTalentTreeInfoForID(self.garrisonType, garrTalentTreeID);
 	if not self.trees then
 		return;
+	end
+	
+	if (uiTextureKit) then
+		self.ClassBackground:SetAtlas("orderhalltalents-background-"..uiTextureKit);
+		self.portrait:SetMask("Interface\\CharacterFrame\\TempPortraitAlphaMask");
+		self.portrait:SetTexture("orderhalltalents-portrait-"..uiTextureKit);
+	else
+		local _, className, classID = UnitClass("player");
+
+		self.ClassBackground:SetAtlas("orderhalltalents-background-"..className);
+		self.portrait:SetMask("Interface\\CharacterFrame\\TempPortraitAlphaMask");
+		self.portrait:SetTexture("INTERFACE\\ICONS\\crest_"..className);
 	end
 
 	local borderX = 168;
@@ -216,7 +225,6 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 	end
 
 end
-
 
 GarrisonTalentButtonMixin = { }
 

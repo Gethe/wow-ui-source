@@ -58,6 +58,44 @@
 		</Scripts>
 	</Button>
 
+	<Frame name="TalentRowGlowFrameTemplate" setAllPoints="true" virtual="true" hidden="true">
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="TopGlowLine" atlas="_talent-green-glow" horizTile="true" alpha="0">
+					<Size x="0" y = "14"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
+						<Anchor point="TOPRIGHT" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0" right="1" top="1" bottom="0"/>
+				</Texture>
+				<Texture parentKey="BottomGlowLine" atlas="_talent-green-glow" horizTile="true" alpha="0">
+					<Size x="0" y = "14"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="Anim" looping="REPEAT">
+				<Alpha childKey="TopGlowLine" order="1" fromAlpha="0.2" toAlpha="0.9" duration="1"/>
+				<Alpha childKey="BottomGlowLine" order="1" fromAlpha="0.2" toAlpha="0.9" duration="1"/>
+				<Alpha childKey="TopGlowLine" order="2" fromAlpha="0.9" toAlpha="0.2" duration="1"/>
+				<Alpha childKey="BottomGlowLine" order="2" fromAlpha="0.9" toAlpha="0.2" duration="1"/>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnShow>
+				self.Anim:Play();
+			</OnShow>
+			<OnHide>
+				self.Anim:Stop();
+			</OnHide>
+		</Scripts>
+	</Frame>
+
 	<Button name="PlayerTalentButtonTemplate" virtual="true">
 		<Size x="190" y="42"/>
 		<Layers>
@@ -95,6 +133,9 @@
 				<Anchor point="CENTER"/>
 			</Anchors>
 		</HighlightTexture>
+		<Frames>
+			<Frame parentKey="GlowFrame" inherits="TalentRowGlowFrameTemplate" setAllPoints="true"/>
+		</Frames>
 		<Scripts>
 			<OnLoad function="PlayerTalentButton_OnLoad"/>
 			<OnClick function="PlayerTalentButton_OnClick"/>
@@ -105,39 +146,6 @@
 			<OnReceiveDrag function="PlayerTalentFrameTalent_OnDrag" />
 		</Scripts>
 	</Button>
-
-	<Frame name="TalentRowGlowFrameTemplate" setAllPoints="true" virtual="true" hidden="true">
-		<Layers>
-			<Layer level="OVERLAY">
-				<Texture parentKey="TopGlowLine" atlas="_talent-green-glow" horizTile="true" alpha="0">
-					<Size x="629" y = "14"/>
-					<Anchors>
-						<Anchor point="TOP" x="0" y="0"/>
-					</Anchors>
-					<TexCoords left="0" right="1" top="1" bottom="0"/>
-				</Texture>
-				<Texture parentKey="BottomGlowLine" atlas="_talent-green-glow" horizTile="true" alpha="0">
-					<Size x="629" y = "14"/>
-					<Anchors>
-						<Anchor point="BOTTOM" x="0" y="0"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Animations>
-			<AnimationGroup parentKey="Anim" looping="REPEAT">
-				<Alpha childKey="TopGlowLine" order="1" fromAlpha="0.2" toAlpha="0.9" duration="1"/>
-				<Alpha childKey="BottomGlowLine" order="1" fromAlpha="0.2" toAlpha="0.9" duration="1"/>
-				<Alpha childKey="TopGlowLine" order="2" fromAlpha="0.9" toAlpha="0.2" duration="1"/>
-				<Alpha childKey="BottomGlowLine" order="2" fromAlpha="0.9" toAlpha="0.2" duration="1"/>
-			</AnimationGroup>
-		</Animations>
-		<Scripts>
-			<OnShow>
-				self.Anim:Play();
-			</OnShow>
-		</Scripts>
-	</Frame>
 
 	<Frame name="PlayerTalentRowTemplate" virtual="true">
 		<Size x="629" y="42"/>
@@ -221,7 +229,12 @@
 					<Anchor point="LEFT" relativeTo="$parentSeparator3" relativePoint="CENTER" x="0" y="0"/>
 				</Anchors>
 			</Button>
-			<Frame parentKey="GlowFrame" inherits="TalentRowGlowFrameTemplate"/>
+			<Frame parentKey="GlowFrame" inherits="TalentRowGlowFrameTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.talent1" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnEnter function="PlayerTalentFrameRow_OnEnter"/>
@@ -1150,6 +1163,9 @@
 				<Anchor point="CENTER"/>
 			</Anchors>
 		</HighlightTexture>
+		<Frames>
+			<Frame parentKey="GlowFrame" inherits="TalentRowGlowFrameTemplate" setAllPoints="true"/>
+		</Frames>
 		<Scripts>
 			<OnLoad function="PlayerPVPTalentButton_OnLoad"/>
 			<OnClick function="PlayerPVPTalentButton_OnClick"/>
@@ -1189,7 +1205,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button parentKey="Talent1" inherits="PVPTalentButtonTemplate">
+			<Button parentKey="Talent1" parentArray="talents" inherits="PVPTalentButtonTemplate">
 				<Anchors>
 					<Anchor point="LEFT" x="0" y="0"/>
 				</Anchors>
@@ -1197,7 +1213,7 @@
 					<KeyValue key="columnIndex" value="1" type="number"/>
 				</KeyValues>
 			</Button>
-			<Button parentKey="Talent2" inherits="PVPTalentButtonTemplate">
+			<Button parentKey="Talent2" parentArray="talents" inherits="PVPTalentButtonTemplate">
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.Talent1" relativePoint="RIGHT" x="0" y="0"/>
 				</Anchors>
@@ -1205,7 +1221,7 @@
 					<KeyValue key="columnIndex" value="2" type="number"/>
 				</KeyValues>
 			</Button>
-			<Button parentKey="Talent3" inherits="PVPTalentButtonTemplate">
+			<Button parentKey="Talent3" parentArray="talents" inherits="PVPTalentButtonTemplate">
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.Talent2" relativePoint="RIGHT" x="0" y="0"/>
 				</Anchors>
@@ -1213,7 +1229,12 @@
 					<KeyValue key="columnIndex" value="3" type="number"/>
 				</KeyValues>
 			</Button>
-			<Frame parentKey="GlowFrame" inherits="TalentRowGlowFrameTemplate"/>
+			<Frame parentKey="GlowFrame" inherits="TalentRowGlowFrameTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Talent1" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnEnter function="PlayerTalentFrameRow_OnEnter"/>

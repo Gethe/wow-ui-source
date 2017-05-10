@@ -443,6 +443,10 @@ function CombatLog_LoadUI()
 	UIParentLoadAddOn("Blizzard_CombatLog");
 end
 
+function Commentator_LoadUI()
+	UIParentLoadAddOn("Blizzard_Commentator");
+end
+
 function GuildBankFrame_LoadUI()
 	UIParentLoadAddOn("Blizzard_GuildBankUI");
 end
@@ -894,11 +898,10 @@ function ToggleGarrisonMissionUI()
 	GarrisonMissionFrame_ToggleFrame();
 end
 
-function ToggleOrderHallTalentUI(garrTalentTreeID)
+function ToggleOrderHallTalentUI()
 	if (not OrderHallTalentFrame) then
 		OrderHall_LoadUI();
 	end
-	OrderHallTalentFrame.garrTalentTreeID = garrTalentTreeID;
 	OrderHallTalentFrame_ToggleFrame();
 end
 
@@ -1231,6 +1234,10 @@ function UIParent_OnEvent(self, event, ...)
 		if ( instanceType == "arena" or instanceType == "pvp") then
 			Arena_LoadUI();
 		end
+		if ( C_Commentator.IsSpectating() ) then
+			Commentator_LoadUI();
+		end
+		
 		if ( UnitIsGhost("player") ) then
 			GhostFrame:Show();
 		else
@@ -1832,8 +1839,7 @@ function UIParent_OnEvent(self, event, ...)
 		end
 		ShowUIPanel(GarrisonRecruiterFrame);
 	elseif ( event == "GARRISON_TALENT_NPC_OPENED") then
-		local _, garrTalentTreeID = ...;
-		ToggleOrderHallTalentUI(garrTalentTreeID);
+		ToggleOrderHallTalentUI();
 	elseif ( event == "PRODUCT_DISTRIBUTIONS_UPDATED" ) then
 		StoreFrame_CheckForFree(event);
 	elseif ( event == "LOADING_SCREEN_ENABLED" ) then
@@ -3691,6 +3697,8 @@ function ToggleGameMenu()
 	if ( not UIParent:IsShown() ) then
 		UIParent:Show();
 		SetUIVisibility(true);
+	elseif ( C_Commentator.IsSpectating() and IsFrameLockActive("COMMENTATOR_SPECTATING_MODE") ) then
+		RemoveFrameLock("COMMENTATOR_SPECTATING_MODE");
 	elseif ( ModelPreviewFrame:IsShown() ) then
 		ModelPreviewFrame:Hide();
 	elseif ( StoreFrame_EscapePressed and StoreFrame_EscapePressed() ) then

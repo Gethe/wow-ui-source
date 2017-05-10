@@ -368,10 +368,12 @@ function AlertFrameMixin:OnEvent(event, ...)
 			GarrisonLandingPageMinimapButton.MinimapLoopPulseAnim:Play();
 		end
     elseif ( event == "GARRISON_TALENT_COMPLETE") then
-    	local garrisonType = ...;
-    	local talentID = C_Garrison.GetCompleteTalent(garrisonType);
-    	local talent = C_Garrison.GetTalent(talentID);
-        GarrisonTalentAlertSystem:AddAlert(garrisonType, talent);
+    	local garrisonType, doAlert = ...;
+    	if ( doAlert ) then
+			local talentID = C_Garrison.GetCompleteTalent(garrisonType);
+			local talent = C_Garrison.GetTalent(talentID);
+	        GarrisonTalentAlertSystem:AddAlert(garrisonType, talent);
+		end
 	elseif ( event == "GARRISON_MISSION_FINISHED" ) then
 		local followerTypeID, missionID = ...;
 		if ( DoesFollowerMatchCurrentGarrisonType(followerTypeID) ) then
@@ -549,7 +551,7 @@ function AlertFrameMixin:BuildScenarioRewardData()
 end
 
 function AlertFrameMixin:BuildQuestData(questID)
-	local _, _, _, taskName = GetTaskInfo(questID);
+	local taskName = C_TaskQuest.GetQuestInfoByQuestID(questID);
 
 	local questData =
 	{
