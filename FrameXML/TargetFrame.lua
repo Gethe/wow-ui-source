@@ -475,6 +475,17 @@ end
 
 local largeBuffList = {};
 local largeDebuffList = {};
+local function ShouldAuraBeLarge(caster)
+	if not caster then
+		return false;
+	end
+	
+	for token, value in pairs(PLAYER_UNITS) do
+		if UnitIsUnit(caster, token) or UnitIsOwnerOrControllerOfUnit(token, caster) then
+			return value;
+		end
+	end
+end
 
 function TargetFrame_UpdateAuras (self)
 	local frame, frameName;
@@ -526,9 +537,8 @@ function TargetFrame_UpdateAuras (self)
                 end
 
                 -- set the buff to be big if the buff is cast by the player or his pet
-                largeBuffList[i] = PLAYER_UNITS[caster];
-
-                numBuffs = numBuffs + 1;
+				numBuffs = numBuffs + 1;
+                largeBuffList[numBuffs] = ShouldAuraBeLarge(caster);
 
                 frame:ClearAllPoints();
                 frame:Show();
@@ -597,17 +607,8 @@ function TargetFrame_UpdateAuras (self)
 					frameBorder:SetVertexColor(color.r, color.g, color.b);
 
 					-- set the debuff to be big if the buff is cast by the player or his pet
-					largeDebuffList[index] = false;
-					if caster then
-						for token, value in pairs(PLAYER_UNITS) do
-							if UnitIsUnit(caster, token) or UnitIsOwnerOrControllerOfUnit(token, caster) then
-								largeDebuffList[index] = value;
-								break;
-							end
-						end
-					end
-
 					numDebuffs = numDebuffs + 1;
+					largeDebuffList[numDebuffs] = ShouldAuraBeLarge(caster);
 
 					frame:ClearAllPoints();
 					frame:Show();

@@ -132,7 +132,7 @@ function ActionBarController_UpdateAll(force)
 		end
 		
 		for k, frame in pairs(ActionBarButtonEventsFrame.frames) do
-			ActionButton_UpdateAction(frame);
+			ActionButton_UpdateAction(frame, force);
 		end
 	else
 		-- Otherwise, display the normal action bar

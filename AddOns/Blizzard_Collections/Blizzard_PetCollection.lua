@@ -925,6 +925,7 @@ function PetJournal_ShowPetDropdown(index, anchorTo, offsetX, offsetY, petID)
 		return;
 	end
 	ToggleDropDownMenu(1, nil, PetJournal.petOptionsMenu, anchorTo, offsetX, offsetY);
+	PlaySound("igMainMenuOptionCheckBoxOn");
 end
 
 function PetJournal_HidePetDropdown()

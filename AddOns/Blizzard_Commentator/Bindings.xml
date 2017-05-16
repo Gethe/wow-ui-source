@@ -17,6 +17,9 @@
 	<Binding name="COMMENTATORZOOMOUT" category="BINDING_HEADER_COMMENTATOR">
 		C_Commentator.ZoomOut();
 	</Binding>
+	<Binding name="COMMENTATORRESETZOOM" category="BINDING_HEADER_COMMENTATOR">
+		C_Commentator.ResetFoVTarget();
+	</Binding>
 	<Binding name="TOGGLE_SMART_CAMERA" category="BINDING_HEADER_COMMENTATOR">
 		C_Commentator.SetUseSmartCamera(not C_Commentator.IsUsingSmartCamera());
 	</Binding>
@@ -71,11 +74,7 @@
 		PvPCommentator:CheckScoreboard();
 	</Binding>
 	<Binding name="TOGGLE_FRAME_LOCK" category="BINDING_HEADER_COMMENTATOR">
-		if IsFrameLockActive("COMMENTATOR_SPECTATING_MODE") then
-			RemoveFrameLock("COMMENTATOR_SPECTATING_MODE");
-		else
-			AddFrameLock("COMMENTATOR_SPECTATING_MODE");
-		end
+		PvPCommentator:ToggleFrameLock();
 	</Binding>
 
 

@@ -105,7 +105,7 @@
 				</Layer>
 				<Layer level="ARTWORK">
 					<FontString parentKey="Text" inherits="GameFontHighlight">
-						<Size x="0" y="0"/>
+						<Size x="320" y="0"/>
 						<Anchors>
 							<Anchor point="TOP" x="0" y="-28"/>
 						</Anchors>

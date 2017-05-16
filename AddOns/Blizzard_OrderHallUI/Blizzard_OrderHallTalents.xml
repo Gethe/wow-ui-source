@@ -117,7 +117,7 @@
 		</KeyValues>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="ClassBackground">
+				<Texture parentKey="Background">
 					<Size x="322" y="498"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="OrderHallTalentFrameBg" x="4" y="-40"/>

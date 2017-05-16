@@ -7,6 +7,15 @@ local GarrisonInfoLua =
 	Functions =
 	{
 		{
+			Name = "GetCurrentGarrTalentTreeFriendshipFactionID",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "currentGarrTalentTreeFriendshipFactionID", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "GetCurrentGarrTalentTreeID",
 			Type = "Function",
 

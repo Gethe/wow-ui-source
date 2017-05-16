@@ -3747,6 +3747,18 @@ StaticPopupDialogs["PREMADE_GROUP_SEARCH_DELIST_WARNING"] = {
 	hideOnEscape = 1,
 }
 
+StaticPopupDialogs["PREMADE_GROUP_INSECURE_SEARCH"] = {
+	text = PREMADE_GROUP_INSECURE_SEARCH,
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function(self)
+		LFGListFrame_BeginFindQuestGroup(LFGListFrame, self.data);
+	end,
+	whileDead = 1,
+	showAlert = 1,
+	hideOnEscape = 1,
+}
+
 function StaticPopup_FindVisible(which, data)
 	local info = StaticPopupDialogs[which];
 	if ( not info ) then

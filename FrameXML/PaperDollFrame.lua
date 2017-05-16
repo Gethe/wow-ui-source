@@ -2411,6 +2411,7 @@ function PaperDollEquipmentManagerPane_Update(equipmentSetsDirty)
 			PaperDollEquipmentManagerPaneSaveSet:Enable();
 			PaperDollEquipmentManagerPaneEquipSet:Enable();
 		end
+		PaperDollFrame_IgnoreSlotsForSet(setID);
 	else
 		PaperDollEquipmentManagerPaneSaveSet:Disable();
 		PaperDollEquipmentManagerPaneEquipSet:Disable();

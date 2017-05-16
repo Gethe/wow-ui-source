@@ -662,6 +662,7 @@ function WardrobeCollectionFrame_SetTab(tabID)
 		WardrobeCollectionFrame.searchBox:SetPoint("TOPRIGHT", -107, -35);
 		WardrobeCollectionFrame.searchBox:SetWidth(115);
 		WardrobeCollectionFrame.FilterButton:Show();
+		WardrobeCollectionFrame.FilterButton:SetEnabled(WardrobeCollectionFrame.ItemsCollectionFrame.transmogType == LE_TRANSMOG_TYPE_APPEARANCE);
 	elseif ( tabID == TAB_SETS ) then
 		WardrobeCollectionFrame.ItemsCollectionFrame:Hide();
 		WardrobeCollectionFrame.searchBox:ClearAllPoints();
@@ -675,6 +676,7 @@ function WardrobeCollectionFrame_SetTab(tabID)
 			WardrobeCollectionFrame.searchBox:SetPoint("TOPLEFT", 19, -69);
 			WardrobeCollectionFrame.searchBox:SetWidth(145);
 			WardrobeCollectionFrame.FilterButton:Show();
+			WardrobeCollectionFrame.FilterButton:SetEnabled(true);
 		end
 		WardrobeCollectionFrame.SetsCollectionFrame:SetShown(not atTransmogrifier);
 		WardrobeCollectionFrame.SetsTransmogFrame:SetShown(atTransmogrifier);
@@ -1339,8 +1341,8 @@ function WardrobeItemsCollectionMixin:SortVisuals()
 		if ( source1.isHideVisual ~= source2.isHideVisual ) then
 			return source1.isHideVisual;
 		end
-		if ( source1.requiresHoliday ~= source2.requiresHoliday and source1.isUsable and source2.isUsable ) then
-			return source1.requiresHoliday;
+		if ( source1.hasActiveRequiredHoliday ~= source2.hasActiveRequiredHoliday ) then
+			return source1.hasActiveRequiredHoliday;
 		end
 		if ( source1.uiOrder and source2.uiOrder ) then
 			return source1.uiOrder > source2.uiOrder;
@@ -3020,11 +3022,7 @@ function WardrobeSetsCollectionMixin:OnShow()
 
 	if (self:GetParent().SetsTabHelpBox:IsShown()) then
 		self:GetParent().SetsTabHelpBox:Hide()
-		if (WardrobeFrame_IsAtTransmogrifier()) then
-			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_SETS_VENDOR_TAB, true);
-		else
-			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_SETS_TAB, true);
-		end
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_SETS_TAB, true);
 	end
 end
 
@@ -3635,6 +3633,11 @@ function WardrobeSetsTransmogMixin:OnShow()
 	self:Refresh(RESET_SELECTION);
 	WardrobeCollectionFrame_UpdateProgressBar(C_TransmogSets.GetBaseSetsCounts());
 	self.sourceQualityTable = { };
+
+	if (self:GetParent().SetsTabHelpBox:IsShown()) then
+		self:GetParent().SetsTabHelpBox:Hide();
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_SETS_VENDOR_TAB, true);
+	end
 end
 
 function WardrobeSetsTransmogMixin:OnHide()
@@ -3684,9 +3687,6 @@ function WardrobeSetsTransmogMixin:OnMouseWheel(value)
 end
 
 function WardrobeSetsTransmogMixin:Refresh(resetSelection)
-	local usableSets = SetsDataProvider:GetUsableSets();
-	self.PagingFrame:SetMaxPages(ceil(#usableSets / self.PAGE_SIZE));
-
 	self.appliedSetID = self:GetFirstMatchingSetID(self.APPLIED_SOURCE_INDEX);
 	if ( resetSelection ) then
 		self.selectedSetID = self:GetFirstMatchingSetID(self.SELECTED_SOURCE_INDEX);
@@ -3698,6 +3698,7 @@ end
 
 function WardrobeSetsTransmogMixin:UpdateSets()
 	local usableSets = SetsDataProvider:GetUsableSets();
+	self.PagingFrame:SetMaxPages(ceil(#usableSets / self.PAGE_SIZE));
 	local pendingTransmogModelFrame = nil;
 	local indexOffset = (self.PagingFrame:GetCurrentPage() - 1) * self.PAGE_SIZE;
 	for i = 1, self.PAGE_SIZE do
@@ -3754,7 +3755,7 @@ function WardrobeSetsTransmogMixin:UpdateSets()
 		self.PendingTransmogFrame:Hide();
 	end
 
-	self.NoValidSetsLabel:SetShown(#usableSets == 0);
+	self.NoValidSetsLabel:SetShown(not C_TransmogSets.HasUsableSets());
 end
 
 function WardrobeSetsTransmogMixin:OnPageChanged(userAction)
@@ -3898,6 +3899,7 @@ function WardrobeSetsTransmogMixin:ResetPage()
 	local page = 1;
 	if ( self.selectedSetID ) then
 		local usableSets = SetsDataProvider:GetUsableSets();
+		self.PagingFrame:SetMaxPages(ceil(#usableSets / self.PAGE_SIZE));
 		for i, set in ipairs(usableSets) do
 			if ( set.setID == self.selectedSetID ) then
 				page = GetPage(i, self.PAGE_SIZE);

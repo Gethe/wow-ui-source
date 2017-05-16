@@ -107,6 +107,9 @@ function TradeFrame_UpdatePlayerItem(id)
 		tradeItemButton.hasItem = 1;
 	else
 		tradeItemButton.hasItem = nil;
+		if ( GameTooltip:IsOwned(tradeItemButton) ) then
+			GameTooltip:Hide();
+		end
 	end
 	local _, dialog = StaticPopup_Visible("TRADE_POTENTIAL_REMOVE_TRANSMOG");
 	if ( dialog and dialog.data == id and not canLoseTransmog ) then
@@ -146,7 +149,9 @@ function TradeFrame_UpdateTargetItem(id)
 		SetItemButtonNameFrameVertexColor(tradeItem, 0.9, 0, 0);
 		SetItemButtonSlotVertexColor(tradeItem, 1.0, 0, 0);
 	end
-	
+	if ( not texture and GameTooltip:IsOwned(tradeItemButton) ) then
+		GameTooltip:Hide();
+	end
 	SetItemButtonQuality(tradeItemButton, quality, GetTradeTargetItemLink(id));
 end
 

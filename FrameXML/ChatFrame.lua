@@ -2400,7 +2400,17 @@ SlashCmdList["COMMENTATOR_OVERRIDE"] = function(msg)
 	originalName = originalName:sub(1, 1):upper() .. originalName:sub(2, -1);
 	
 	DEFAULT_CHAT_FRAME:AddMessage((SLASH_COMMENTATOROVERRIDE_SUCCESS):format(originalName, overrideName), YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
+	
 	C_Commentator.AddPlayerOverrideName(originalName, overrideName);
+	
+	-- Also add character name without the realm if we got CharacterName-Realm.
+	-- Prepend possible realm separators with % so they are matched literally
+	local realmSeparateMatchList = string.gsub(REALM_SEPARATORS, ".", "%%%1");
+	local characterName = string.match(originalName, "(..-)["..realmSeparateMatchList.."].");
+	if characterName and characterName ~= originalName then
+		DEFAULT_CHAT_FRAME:AddMessage((SLASH_COMMENTATOROVERRIDE_SUCCESS):format(characterName, overrideName), YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
+		C_Commentator.AddPlayerOverrideName(characterName, overrideName);
+	end
 end
 
 SlashCmdList["COMMENTATOR_NAMETEAM"] = function(msg)

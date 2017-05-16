@@ -121,7 +121,7 @@ function ComboPointPowerBar:UpdateMaxPower()
 		self.ComboBonus[i]:SetShown(DetermineComboBonusVisibility(i, maxComboPoints));
 	end
 
-	if (maxComboPoints == 5 or maxComboPoints == 8) then
+	if (maxComboPoints == 5 or maxComboPoints == 8 or maxComboPoints == 10) then
 		self.maxUsablePoints = 5;
 	elseif (maxComboPoints == 6) then
 		self.maxUsablePoints = 6;

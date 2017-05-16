@@ -160,6 +160,15 @@ local TransmogSets =
 			},
 		},
 		{
+			Name = "HasUsableSets",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "hasUsableSets", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsBaseSetCollected",
 			Type = "Function",
 

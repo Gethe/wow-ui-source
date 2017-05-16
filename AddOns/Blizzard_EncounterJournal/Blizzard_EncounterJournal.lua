@@ -2476,8 +2476,7 @@ function EJNAV_RefreshInstance()
 end
 
 function EJNAV_SelectInstance(self, index, navBar)
-	local showRaid = not EncounterJournal.instanceSelect.raidsTab:IsEnabled();
-	local instanceID = EJ_GetInstanceByIndex(index, showRaid);
+	local instanceID = EJ_GetInstanceByIndex(index, EJ_InstanceIsRaid());
 
 	--Clear any previous selection.
 	NavBar_Reset(navBar);

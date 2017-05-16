@@ -502,10 +502,21 @@ end
 
 local g_updatingBars = {};
 
+local function IsCloseEnough(bar, newValue, targetValue)
+	local min, max = bar:GetMinMaxValues();
+	local range = max - min;
+	if range > 0.0 then
+		return math.abs((newValue - targetValue) / range) < .00001;
+	end
+
+	return true;
+end
+
 local function ProcessSmoothStatusBars()
 	for bar, targetValue in pairs(g_updatingBars) do
 		local newValue = FrameDeltaLerp(bar:GetValue(), targetValue, .25);
-		if math.abs(newValue - targetValue) < .005 then
+
+		if IsCloseEnough(bar, newValue, targetValue) then
 			g_updatingBars[bar] = nil;
 		end
 
@@ -538,7 +549,7 @@ function SmoothStatusBarMixin:SetMinMaxSmoothedValue(min, max)
 	if targetValue then
 		local ratio = 1;
 		if max ~= 0 and self.lastSmoothedMax and self.lastSmoothedMax ~= 0 then
-			ratio = max / (self.lastSmoothedMax or max);
+			ratio = max / self.lastSmoothedMax;
 		end
 
 		g_updatingBars[self] = targetValue * ratio;

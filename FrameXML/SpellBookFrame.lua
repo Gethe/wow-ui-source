@@ -428,7 +428,7 @@ function SpellButton_OnEvent(self, event, ...)
 				-- We're part of a flyout
 				SpellBookFrame_UpdateSpells();
 			else
-				onActionBar = C_ActionBar.HasSpellActionButtons(actionID);
+				onActionBar = C_ActionBar.IsOnBarOrSpecialBar(actionID);
 			end
 		elseif ( slotType == "FLYOUT" ) then
 			onActionBar = C_ActionBar.HasFlyoutActionButtons(actionID);
@@ -825,7 +825,7 @@ function SpellButton_UpdateButton(self)
 				if ( slotType == "SPELL" ) then
 					-- If the spell is passive we never show the highlight.  Otherwise, check if there are any action
 					-- buttons with this spell.
-					self.SpellHighlightTexture:SetShown(not isPassive and not C_ActionBar.HasSpellActionButtons(actionID));
+					self.SpellHighlightTexture:SetShown(not isPassive and not C_ActionBar.IsOnBarOrSpecialBar(actionID));
 				elseif ( slotType == "FLYOUT" ) then
 					self.SpellHighlightTexture:SetShown(not C_ActionBar.HasFlyoutActionButtons(actionID));
 				elseif ( slotType == "PETACTION" ) then

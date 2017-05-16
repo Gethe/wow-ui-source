@@ -185,10 +185,11 @@ function GossipResize(titleButton)
 	titleButton:SetHeight( titleButton:GetTextHeight() + 2);
 end
 
-function NPCFriendshipStatusBar_Update(frame)
-	local id, rep, maxRep, name, text, texture, reaction, threshold, nextThreshold = GetFriendshipReputation();
+function NPCFriendshipStatusBar_Update(frame, factionID --[[ = nil ]])
+	local statusBar = NPCFriendshipStatusBar;
+	local id, rep, maxRep, name, text, texture, reaction, threshold, nextThreshold = GetFriendshipReputation(factionID);
+	statusBar.friendshipFactionID = id;
 	if ( id and id > 0 ) then
-		local statusBar = NPCFriendshipStatusBar;
 		statusBar:SetParent(frame);
 		-- if max rank, make it look like a full bar
 		if ( not nextThreshold ) then
@@ -201,12 +202,14 @@ function NPCFriendshipStatusBar_Update(frame)
 		end
 		statusBar:SetMinMaxValues(threshold, nextThreshold);
 		statusBar:SetValue(rep);
+		statusBar:ClearAllPoints();
+		statusBar:SetPoint("TOPLEFT", 73, -41);
 		statusBar:Show();
 	else
-		NPCFriendshipStatusBar:Hide();
+		statusBar:Hide();
 	end
 end
 
 function NPCFriendshipStatusBar_OnEnter(self)
-	ShowFriendshipReputationTooltip(nil, self, "ANCHOR_BOTTOMRIGHT");
+	ShowFriendshipReputationTooltip(self.friendshipFactionID, self, "ANCHOR_BOTTOMRIGHT");
 end

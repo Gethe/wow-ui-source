@@ -481,6 +481,7 @@ function AlertFrameMixin:UpdateAnchors()
 end
 
 function AlertFrameMixin:AddAlertFrame(frame)
+	self:UpdateAnchors();
 	frame:Show();
 	frame.animIn:Play();
 	if frame.glow then
@@ -503,8 +504,6 @@ function AlertFrameMixin:AddAlertFrame(frame)
 		frame.waitAndAnimOut.animOut:SetStartDelay(4.05);
 		frame.waitAndAnimOut:Play();
 	end
-
-	self:UpdateAnchors();
 end
 
 -- [[ AlertFrame Utility functions ]] --

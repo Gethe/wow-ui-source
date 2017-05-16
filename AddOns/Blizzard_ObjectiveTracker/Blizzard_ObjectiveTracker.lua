@@ -812,6 +812,7 @@ function ObjectiveTracker_ToggleDropDown(frame, handlerFunc)
 	dropDown.activeFrame = frame;
 	dropDown.initialize = handlerFunc;
 	ToggleDropDownMenu(1, nil, dropDown, "cursor", 3, -3);
+	PlaySound("igMainMenuOptionCheckBoxOn");
 end
 
 -- *****************************************************************************************************

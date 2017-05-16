@@ -101,6 +101,7 @@ end
 function ToyBox_ShowToyDropdown(itemID, anchorTo, offsetX, offsetY)	
 	ToyBox.menuItemID = itemID;
 	ToggleDropDownMenu(1, nil, ToyBox.toyOptionsMenu, anchorTo, offsetX, offsetY);
+	PlaySound("igMainMenuOptionCheckBoxOn");
 end
 
 function ToyBox_HideToyDropdown()

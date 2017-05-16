@@ -911,6 +911,7 @@ function GarrisonFollowerListButton_OnClick(self, button)
 				end
 				followerList.OptionDropDown.followerID = self.id;
 				ToggleDropDownMenu(1, nil, followerList.OptionDropDown, "cursor", 0, 0);
+				PlaySound("igMainMenuOptionCheckBoxOn");
 			else
 				followerList.OptionDropDown.followerID = nil;
 				CloseDropDownMenus();

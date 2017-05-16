@@ -193,6 +193,7 @@
 				<Scripts>
 					<OnClick>
 						ToggleDropDownMenu(1, nil, self:GetParent().FilterDropDown, self, 74, 15);
+						PlaySound("igMainMenuOptionCheckBoxOn");
 					</OnClick>
 				</Scripts>
 			</Button>

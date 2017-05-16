@@ -578,11 +578,13 @@ function EJMicroButton_OnEvent(self, event, ...)
 		self:UnregisterEvent("VARIABLES_LOADED");
 		self.varsLoaded = true;
 	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
+		self.lastEvaluatedLevel = UnitLevel("player");
 		self:UnregisterEvent("PLAYER_ENTERING_WORLD");
 		self.playerEntered = true;
 	elseif ( event == "UNIT_LEVEL" ) then
 		local unitToken = ...;
-		if unitToken == "player" then
+		if unitToken == "player" and (not self.lastEvaluatedLevel or UnitLevel(unitToken) > self.lastEvaluatedLevel) then
+			self.lastEvaluatedLevel = UnitLevel(unitToken);
 			EJMicroButton_UpdateNewAdventureNotice(true);
 		end
 	elseif ( event == "PLAYER_AVG_ITEM_LEVEL_UPDATE" ) then

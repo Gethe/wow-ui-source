@@ -1901,7 +1901,8 @@
 						<Anchor point="TOP" x="20" y="-18"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="Name" inherits="GameFontHighlight">
+				<FontString parentKey="Name" inherits="GameFontHighlight" mixin="ShrinkUntilTruncateFontStringMixin" maxLines="1">
+					<Size x="205" y="0"/>
 					<Anchors>
 						<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" y="-10"/>
 					</Anchors>
@@ -1915,6 +1916,14 @@
 				</Anchors>
 			</Frame>
 		</Frames>
+		<Scripts>
+			<OnLoad inherit="append">
+				self.Name:SetFontObjectsToTry(GameFontHighlight, GameFontHighlightSmall, GameFontWhiteTiny);
+			</OnLoad>
+			<OnShow inherit="append">
+				self.Name:ApplyFontObjects();
+			</OnShow>
+		</Scripts>
 	</Button>
 
 	<Button name="GarrisonShipFollowerAlertFrameTemplate" inherits="GarrisonFollowerAlertFrameTemplate" virtual="true">

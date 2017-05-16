@@ -695,7 +695,13 @@
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:element name="Frame" type="FrameType" substitutionGroup="LayoutFrame"/>
-	<xs:element name="UnitPositionFrame" type="FrameType" substitutionGroup="LayoutFrame"/>
+
+	<xs:complexType name="UnitPositionFrameType">
+		<xs:complexContent>
+			<xs:extension base="FrameType" />
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="UnitPositionFrame" type="UnitPositionFrameType" substitutionGroup="ui:Frame"/>
 
 	<xs:complexType name="ButtonType">
 		<xs:complexContent>

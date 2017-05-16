@@ -1,10 +1,9 @@
-ClassNameplateBarDeathKnight = {};
+ClassNameplateBarDeathKnight = Mixin({}, RuneFrameMixin);
 
 function ClassNameplateBarDeathKnight:OnLoad()
 	self.class = "DEATHKNIGHT";
 	self.powerToken = "RUNES";
 
-	Mixin(self, RuneFrameMixin);
 	RuneFrameMixin.OnLoad(self);
 	ClassNameplateBar.OnLoad(self);
 end
@@ -21,7 +20,7 @@ end
 
 function ClassNameplateBarDeathKnight:OnEvent(event, arg1, arg2)
 	if ( event == "RUNE_POWER_UPDATE" ) then
-		self:UpdateRunes();
+		C_Timer.After(.2, function() self:UpdateRunes() end);
 		return true;
 	end
 	if ( event == "PLAYER_SPECIALIZATION_CHANGED" or event == "PLAYER_ENTERING_WORLD" ) then

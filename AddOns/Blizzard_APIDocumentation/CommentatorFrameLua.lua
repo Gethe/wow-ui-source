@@ -723,6 +723,10 @@ local CommentatorFrameLua =
 			},
 		},
 		{
+			Name = "ResetFoVTarget",
+			Type = "Function",
+		},
+		{
 			Name = "ResetTrackedAuras",
 			Type = "Function",
 		},
@@ -882,6 +886,15 @@ local CommentatorFrameLua =
 			{
 				{ Name = "mapIndex", Type = "number", Nilable = false },
 				{ Name = "instanceIndex", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SetMouseDisabled",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "disabled", Type = "bool", Nilable = false },
 			},
 		},
 		{

@@ -160,6 +160,10 @@ function SocialQueueUtil_GetNameAndColor(guid, missingNameFallback)
 		return name, FRIENDS_WOW_NAME_COLOR_CODE, "wowfriend", playerLink;
 	end
 
+	if ( IsInGuild() and GetNumGuildMembers() == 0 ) then
+		GuildRoster();
+	end
+
 	if ( IsGuildMember(guid) ) then
 		return name, RGBTableToColorCode(ChatTypeInfo.GUILD), "guild", playerLink;
 	end

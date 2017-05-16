@@ -318,9 +318,14 @@ end
 
 function LFGListFrame_CheckPendingQuestIDSearch(self)
 	local questID = LFGListFrame_GetPendingQuestIDSearch(self);
-	if questID then
+	if questID and not C_LFGList.GetActiveEntryInfo() then
 		LFGListFrame_SetPendingQuestIDSearch(self, nil);
-		LFGListFrame_BeginFindQuestGroup(self, questID);
+		
+		if issecure() then
+			LFGListFrame_BeginFindQuestGroup(self, questID);
+		else
+			StaticPopup_Show("PREMADE_GROUP_INSECURE_SEARCH", QuestUtils_GetQuestName(questID), nil, questID);
+		end
 	end
 end
 
@@ -339,9 +344,11 @@ function LFGListFrame_BeginFindQuestGroup(self, questID)
 		return;
 	end
 
-	if C_LFGList.GetActiveEntryInfo() then -- fix issue when you're not the leader
-		C_LFGList.RemoveListing();
-		LFGListFrame_SetPendingQuestIDSearch(self, questID);
+	if C_LFGList.GetActiveEntryInfo() then
+		if LFGListUtil_CanListGroup() then
+			C_LFGList.RemoveListing();
+			LFGListFrame_SetPendingQuestIDSearch(self, questID);
+		end
 		return;
 	end
 
@@ -349,7 +356,7 @@ function LFGListFrame_BeginFindQuestGroup(self, questID)
 
 	local panel = self.CategorySelection;
 	LFGListCategorySelection_SelectCategory(panel, categoryID, filters);
-	LFGListCategorySelection_StartFindGroup(panel, questName, questID);
+	LFGListCategorySelection_StartFindGroup(panel, questName);
 	LFGListEntryCreation_SetAutoCreateMode(panel:GetParent().EntryCreation, "quest", activityID, questID);
 end
 
@@ -543,7 +550,7 @@ function LFGListCategorySelectionFindGroupButton_OnClick(self)
 	LFGListCategorySelection_StartFindGroup(panel);
 end
 
-function LFGListCategorySelection_StartFindGroup(self, searchText, questID)
+function LFGListCategorySelection_StartFindGroup(self, searchText)
 	local baseFilters = self:GetParent().baseFilters;
 
 	local searchPanel = self:GetParent().SearchPanel;
@@ -2834,6 +2841,10 @@ function LFGListUtil_CanSearchForGroup()
 	return canSearch;
 end
 
+function LFGListUtil_CanListGroup()
+	return LFGListUtil_IsAppEmpowered();
+end
+
 function LFGListUtil_AppendStatistic(label, value, title, lastTitle)
 	if ( title ~= lastTitle ) then
 		GameTooltip:AddLine(" ");
@@ -3232,8 +3243,10 @@ end
 
 function LFGListUtil_FindQuestGroup(questID)
 	if C_LFGList.GetActiveEntryInfo() then
-		if LFGListUtil_IsEntryEmpowered() then
+		if LFGListUtil_CanListGroup() then
 			StaticPopup_Show("PREMADE_GROUP_SEARCH_DELIST_WARNING", nil, nil, questID);
+		else
+			LFGListUtil_OpenBestWindow();
 		end
 	else
 		LFGListFrame_BeginFindQuestGroup(LFGListFrame, questID);

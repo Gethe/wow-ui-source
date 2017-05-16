@@ -380,6 +380,7 @@ function TradeSkillUIMixin:OnLinkToButtonClicked()
 			ChatEdit_InsertLink(link);
 		else
 			ToggleDropDownMenu(1, nil, self.LinkToDropDown, self.LinkToButton, 25, 25);
+			PlaySound("igMainMenuOptionCheckBoxOn");
 		end
 	end
 	PlaySound("igMainMenuOptionCheckBoxOn");

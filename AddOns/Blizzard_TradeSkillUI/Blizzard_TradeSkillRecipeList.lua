@@ -122,6 +122,7 @@ function TradeSkillRecipeListMixin:OnRecipeButtonClicked(recipeButton, recipeInf
 		if recipeInfo.learned and not C_TradeSkillUI.IsTradeSkillGuild() and not C_TradeSkillUI.IsNPCCrafting() and not C_TradeSkillUI.IsTradeSkillLinked() then
 			self.contextMenuRecipeID = recipeInfo.recipeID;
 			ToggleDropDownMenu(1, nil, self.RecipeOptionsMenu, recipeButton, 0, 0);
+			PlaySound("igMainMenuOptionCheckBoxOn");
 		end
 	end
 end

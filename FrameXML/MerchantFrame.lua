@@ -165,7 +165,7 @@ function MerchantFrame_UpdateItemQualityBorders(self)
 	
 	if ( MerchantFrame.selectedTab == 1 ) then
 		local numMerchantItems = GetMerchantNumItems();
-		for i=1, MERCHANT_ITEMS_PER_PAGE, 1 do
+		for i=1, MERCHANT_ITEMS_PER_PAGE do
 			local index = (((MerchantFrame.page - 1) * MERCHANT_ITEMS_PER_PAGE) + i);
 			local item = _G["MerchantItem"..i];
 			if ( index <= numMerchantItems ) then
@@ -194,7 +194,7 @@ function MerchantFrame_UpdateMerchantInfo()
 	MerchantPageText:SetFormattedText(MERCHANT_PAGE_NUMBER, MerchantFrame.page, math.ceil(numMerchantItems / MERCHANT_ITEMS_PER_PAGE));
 
 	local name, texture, price, stackCount, numAvailable, isPurchasable, isUsable, extendedCost;
-	for i=1, MERCHANT_ITEMS_PER_PAGE, 1 do
+	for i=1, MERCHANT_ITEMS_PER_PAGE do
 		local index = (((MerchantFrame.page - 1) * MERCHANT_ITEMS_PER_PAGE) + i);
 		local itemButton = _G["MerchantItem"..i.."ItemButton"];
 		local merchantButton = _G["MerchantItem"..i];
@@ -383,7 +383,7 @@ function MerchantFrame_UpdateAltCurrency(index, indexOnPage, canAfford)
 
 	-- update Alt Currency Frame with itemValues
 	if ( itemCount > 0 ) then
-		for i=1, MAX_ITEM_COST, 1 do
+		for i=1, MAX_ITEM_COST do
 			local itemTexture, itemValue, itemLink = GetMerchantItemCostItem(index, i);
 			if ( itemTexture ) then
 				usedCurrencies = usedCurrencies + 1;
@@ -404,7 +404,7 @@ function MerchantFrame_UpdateAltCurrency(index, indexOnPage, canAfford)
 			_G[frameName.."Item"..i]:Hide();
 		end
 	else
-		for i=1, MAX_ITEM_COST, 1 do
+		for i=1, MAX_ITEM_COST do
 			_G[frameName.."Item"..i]:Hide();
 		end
 	end
@@ -595,8 +595,8 @@ function MerchantItemButton_OnModifiedClick(self, button)
 			if (extendedCost) then
 				local itemCount = GetMerchantItemCostInfo(self:GetID());
 				for i = 1, MAX_ITEM_COST do
-					local itemTexture, itemValue, itemLink = GetMerchantItemCostItem(self:GetID(), i);
-					if (itemLink) then
+					local itemTexture, itemValue, itemLink, currencyName = GetMerchantItemCostItem(self:GetID(), i);
+					if (itemLink and not currencyName) then
 						local myCount = GetItemCount(itemLink, false, false, true);
 						canAfford = min(canAfford, floor(myCount / (itemValue / stackCount)));
 					end
@@ -652,10 +652,17 @@ function MerchantFrame_ConfirmExtendedItemCost(itemButton, numToPurchase)
 	
 	local maxQuality = 0;
 	local usingCurrency = false;
-	for i=1, MAX_ITEM_COST, 1 do
+	for i=1, MAX_ITEM_COST do
 		local itemTexture, costItemCount, itemLink, currencyName = GetMerchantItemCostItem(index, i);
 		costItemCount = costItemCount * (numToPurchase / stackCount); -- cost per stack times number of stacks
-		if ( itemLink ) then
+		if ( currencyName ) then
+			usingCurrency = true;
+			if ( itemsString ) then
+				itemsString = itemsString .. ", |T"..itemTexture..":0:0:0:-1|t ".. format(CURRENCY_QUANTITY_TEMPLATE, costItemCount, currencyName);
+			else
+				itemsString = " |T"..itemTexture..":0:0:0:-1|t "..format(CURRENCY_QUANTITY_TEMPLATE, costItemCount, currencyName);
+			end
+		elseif ( itemLink ) then
 			local _, _, itemQuality = GetItemInfo(itemLink);
 			maxQuality = math.max(itemQuality, maxQuality);
 			if ( itemsString ) then
@@ -663,14 +670,7 @@ function MerchantFrame_ConfirmExtendedItemCost(itemButton, numToPurchase)
 			else
 				itemsString = format(ITEM_QUANTITY_TEMPLATE, costItemCount, itemLink);
 			end
-		elseif ( currencyName ) then
-			usingCurrency = true;
-			if ( itemsString ) then
-				itemsString = itemsString .. ", |T"..itemTexture..":0:0:0:-1|t ".. format(CURRENCY_QUANTITY_TEMPLATE, costItemCount, currencyName);
-			else
-				itemsString = " |T"..itemTexture..":0:0:0:-1|t "..format(CURRENCY_QUANTITY_TEMPLATE, costItemCount, currencyName);
-			end
-		end		
+		end
 	end
 	if ( itemButton.showNonrefundablePrompt and itemButton.price ) then
 		if ( itemsString ) then

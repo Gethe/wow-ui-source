@@ -107,8 +107,26 @@ function PvPCommentatorMixin:ResetCommentator()
 		CommentatorFadeToBlackFrame:Stop();
 		CommentatorTeamDisplay:Hide();
 		self:SetAllUnitFramesVisibilityState(false);
-		RemoveFrameLock("COMMENTATOR_SPECTATING_MODE");
+		self:SetFrameLock(false);
 		self.state = TOURNAMENTARENA_ZONESTATE_SCANNING;
+	end
+end
+
+function PvPCommentatorMixin:SetFrameLock(enabled)
+	if enabled then
+		C_Commentator.SetMouseDisabled(true);
+		AddFrameLock("COMMENTATOR_SPECTATING_MODE");
+	else
+		C_Commentator.SetMouseDisabled(false);
+		RemoveFrameLock("COMMENTATOR_SPECTATING_MODE");
+	end
+end
+
+function PvPCommentatorMixin:ToggleFrameLock()
+	if IsFrameLockActive("COMMENTATOR_SPECTATING_MODE") then
+		self:SetFrameLock(false);
+	else
+		self:SetFrameLock(true);
 	end
 end
 
@@ -247,6 +265,11 @@ function PvPCommentatorMixin:SetDefaultCVars()
 	SetCVar("ShowClassColorInNameplate", "1");
 	
 	SetCVar("nameplateMinAlpha", ".75");
+	
+	SetCVar("nameplateOccludedAlphaMult", "1.0");
+	SetCVar("UnitNamePlayerGuild", "0");
+	SetCVar("UnitNameEnemyMinionName", "0");
+	SetCVar("UnitNameFriendlyMinionName", "0");
 end
 
 function PvPCommentatorMixin:OnEvent(event, ...)
@@ -462,6 +485,7 @@ function PvPCommentatorMixin:CheckObserverState()
 		end
 	elseif self.state == TOURNAMENTARENA_ZONESTATE_RESETTING then
 		if isSpectating then
+			C_Commentator.ResetFoVTarget();
 			if C_Commentator.GetTimeLeftInMatch() then
 				self:SetObserverState(TOURNAMENTARENA_ZONESTATE_OBSERVING);
 			else
@@ -485,7 +509,7 @@ function PvPCommentatorMixin:OnObserverStateChanged(oldState, newState)
 	if newState == TOURNAMENTARENA_ZONESTATE_TRANSFERRING_IN or newState == TOURNAMENTARENA_ZONESTATE_TRANSFERRING_OUT then
 		self:InvalidateAllPlayers();
 
-		AddFrameLock("COMMENTATOR_SPECTATING_MODE");
+		self:SetFrameLock(true);
 
 		ClearTarget();
 
@@ -508,13 +532,13 @@ function PvPCommentatorMixin:OnObserverStateChanged(oldState, newState)
 
 		self.currentSpeedFactor = nil;
 
-		AddFrameLock("COMMENTATOR_SPECTATING_MODE");
+		self:SetFrameLock(true);
 	elseif newState == TOURNAMENTARENA_ZONESTATE_SCANNING then
 		if C_Commentator.IsSpectating() then
 			C_Commentator.ExitInstance();
 		end
 		
-		RemoveFrameLock("COMMENTATOR_SPECTATING_MODE");
+		self:SetFrameLock(false);
 		CommentatorCooldownDisplayFrame:Hide();
 
 		ClearTarget();

@@ -1,15 +1,10 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Frame name="WorldMapFlagTemplate" hidden="true" virtual="true">
-		<Size>
-			<AbsDimension x="24" y="24"/>
-		</Size>
-		<Anchors>
-			<Anchor point="CENTER"/>
-		</Anchors>
+		<Size x="24" y="24"/>
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture name="$parentTexture" setAllPoints="true"/>
+				<Texture parentKey="Texture"/>
 			</Layer>
 		</Layers>
 		<Scripts>
@@ -220,7 +215,9 @@
 				end
 
 				if not EncounterJournal or not EncounterJournal:IsShown() then
-					ToggleEncounterJournal();
+					if not ToggleEncounterJournal() then
+						return;
+					end
 				end
 				EncounterJournal_ListInstances();
 				EncounterJournal_DisplayInstance(self.instanceID);

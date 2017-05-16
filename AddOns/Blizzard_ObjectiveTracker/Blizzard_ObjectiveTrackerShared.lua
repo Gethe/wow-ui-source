@@ -122,33 +122,6 @@ function QuestObjectiveFindGroup_ReleaseButton(self)
 	g_questFindGroupButtonPool:Release(self);
 end
 
-function QuestObjectiveFindGroupButton_UpdateEnabledState(self)
-	self:SetEnabled(LFGListUtil_CanSearchForGroup());
-end
-
-function QuestObjectiveFindGroupButton_Initialize(self)
-	QuestObjectiveFindGroupButton_UpdateEnabledState(self);
-end
-
-function QuestObjectiveFindGroup_SetEventsRegistered(self, registered)
-	local func = registered and self.RegisterEvent or self.UnregisterEvent;
-	func(self, "GROUP_JOINED");
-	func(self, "GROUP_LEFT");
-	func(self, "LFG_LIST_ACTIVE_ENTRY_UPDATE");
-end
-
-function QuestObjectiveFindGroup_OnEvent(self, event, ...)
-	QuestObjectiveFindGroupButton_UpdateEnabledState(self);
-end
-
-function QuestObjectiveFindGroup_OnShow(self)
-	QuestObjectiveFindGroup_SetEventsRegistered(self, true);
-end
-
-function QuestObjectiveFindGroup_OnHide(self)
-	QuestObjectiveFindGroup_SetEventsRegistered(self, false);
-end
-
 function QuestObjectiveFindGroup_OnMouseDown(self)
 	if self:IsEnabled() then
 		self.Icon:SetPoint("CENTER", self, "CENTER", -2, -1);
@@ -165,24 +138,11 @@ function QuestObjectiveFindGroup_OnEnter(self)
 	GameTooltip:SetOwner(self);
 	GameTooltip:AddLine(TOOLTIP_TRACKER_FIND_GROUP_BUTTON, HIGHLIGHT_FONT_COLOR:GetRGB());
 
-	if not self:IsEnabled() and C_LFGList.GetActiveEntryInfo() then
-		local r, g, b = RED_FONT_COLOR:GetRGB();
-		GameTooltip:AddLine(CANNOT_DO_THIS_WHILE_LFGLIST_LISTED, r, g, b, true);
-	end
-
 	GameTooltip:Show();
 end
 
 function QuestObjectiveFindGroup_OnLeave(self)
 	GameTooltip:Hide();
-end
-
-function QuestObjectiveFindGroup_OnEnable(self)
-	self.Icon:SetDesaturated(false);
-end
-
-function QuestObjectiveFindGroup_OnDisable(self)
-	self.Icon:SetDesaturated(true);
 end
 
 function QuestObjectiveFindGroup_OnClick(self)
@@ -229,7 +189,6 @@ function QuestObjectiveSetupBlockButton_FindGroup(block, questID)
 			block.groupFinderButton = groupFinderButton;
 		end
 
-		QuestObjectiveFindGroupButton_Initialize(groupFinderButton);
 		QuestObjectiveSetupBlockButton_AddRightButton(block, groupFinderButton, block.module.buttonOffsets.groupFinder);
 	else
 		QuestObjectiveReleaseBlockButton_FindGroup(block);
