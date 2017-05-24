@@ -53,6 +53,7 @@
 					<TexCoords left="0" right="0.25" top="0" bottom="0.5"/>
 				</Texture>
 				<FontString name="$parentTopLine" inherits="FriendsFont_Normal" justifyH="LEFT" justifyV="MIDDLE">
+					<Size x="0" y="10"/>
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>

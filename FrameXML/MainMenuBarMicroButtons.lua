@@ -561,7 +561,22 @@ function EJMicroButtonMixin:EvaluateAlertVisibility()
 
 				EJMicroButton_UpdateAlerts(true);
 			end
+			self:UpdateLastEvaluations();
 		end
+	end
+end
+
+function EJMicroButtonMixin:UpdateLastEvaluations()
+	local playerLevel = UnitLevel("player");
+
+	self.lastEvaluatedLevel = playerLevel;
+
+	if (playerLevel == MAX_PLAYER_LEVEL_TABLE[GetExpansionLevel()]) then
+		local spec = GetSpecialization();
+		local ilvl = GetAverageItemLevel();
+
+		self.lastEvaluatedSpec = spec;
+		self.lastEvaluatedIlvl = ilvl;
 	end
 end
 

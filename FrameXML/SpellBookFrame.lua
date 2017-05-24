@@ -99,6 +99,7 @@ function SpellBookFrame_OnLoad(self)
 	self:RegisterEvent("USE_GLYPH");
 	self:RegisterEvent("CANCEL_GLYPH_CAST");
 	self:RegisterEvent("ACTIVATE_GLYPH");
+	self:RegisterEvent("CURRENT_SPELL_CAST_CHANGED");
 
 	SpellBookFrame.bookType = BOOKTYPE_SPELL;
 	-- Init page nums
@@ -132,6 +133,11 @@ function SpellBookFrame_OnEvent(self, event, ...)
 			if ( GetNumSpellTabs() < SpellBookFrame.selectedSkillLine ) then
 				SpellBookFrame.selectedSkillLine = 2;
 			end
+			SpellBookFrame_Update();
+		end
+	elseif ( event == "CURRENT_SPELL_CAST_CHANGED" ) then
+		if (self.castingGlyphSlot and not IsCastingGlyph()) then
+			SpellBookFrame.castingGlyphSlot = nil;
 			SpellBookFrame_Update();
 		end
 	elseif ( event == "LEARNED_SPELL_IN_TAB" ) then
@@ -808,7 +814,7 @@ function SpellButton_UpdateButton(self)
 				self.AbilityHighlightAnim:Stop();
 				self.AbilityHighlight:Hide();
 			end
-			if (HasAttachedGlyph(actionID)) then
+			if (HasAttachedGlyph(actionID) or SpellBookFrame.castingGlyphSlot == slot) then
 				self.GlyphIcon:Show();
 			else
 				self.GlyphIcon:Hide();
@@ -1077,6 +1083,7 @@ function SpellBookFrame_OpenToPageForSlot(slot, reason)
 			button.GlyphIcon:Show();
 			button.GlyphTranslation:Show();
 			button.GlyphActivateAnim:Play();
+			SpellBookFrame.castingGlyphSlot = slot;
 		end
 	end
 end

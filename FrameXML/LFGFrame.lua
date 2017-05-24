@@ -891,7 +891,7 @@ function LFGDungeonReadyDialog_UpdateRewards(dungeonID, role)
 	for i = 1, numRewards do
 		local _, _, _, isBonusReward = GetLFGDungeonRewardInfo(dungeonID, i);
 		if ( not isBonusReward ) then
-			local frame = _G["LFGDungeonReadyDialogRewardsFrameReward"..frameID];
+			local frame = LFGDungeonReadyDialogRewardsFrame.Rewards[frameID];
 			if ( not frame ) then
 				frame = CreateFrame("FRAME", "LFGDungeonReadyDialogRewardsFrameReward"..frameID, LFGDungeonReadyDialogRewardsFrame, "LFGDungeonReadyRewardTemplate");
 				frame:SetID(frameID);
@@ -907,7 +907,7 @@ function LFGDungeonReadyDialog_UpdateRewards(dungeonID, role)
 			local eligible, forTank, forHealer, forDamage, itemCount = GetLFGRoleShortageRewards(dungeonID, shortageIndex);
 			if ( eligible and ((role == "TANK" and forTank) or (role == "HEALER" and forHealer) or (role == "DAMAGER" and forDamage)) ) then
 				for rewardIndex=1, itemCount do
-					local frame = _G["LFGDungeonReadyDialogRewardsFrameReward"..frameID];
+					local frame = LFGDungeonReadyDialogRewardsFrame.Rewards[frameID];
 					if ( not frame ) then
 						frame = CreateFrame("FRAME", "LFGDungeonReadyDialogRewardsFrameReward"..frameID, LFGDungeonReadyDialogRewardsFrame, "LFGDungeonReadyRewardTemplate");
 						frame:SetID(frameID);
@@ -922,24 +922,35 @@ function LFGDungeonReadyDialog_UpdateRewards(dungeonID, role)
 	
 	--Hide the unused ones
 	for i = frameID, LFD_MAX_REWARDS do
-		_G["LFGDungeonReadyDialogRewardsFrameReward"..i]:Hide();
+		LFGDungeonReadyDialogRewardsFrame.Rewards[i]:Hide();
 	end
 	
 	local usedButtons= frameID - 1;
 	
 	if ( usedButtons > 0 ) then
-		--Set up positions
-		local iconOffset;
-		if ( usedButtons > 2 ) then
-			iconOffset = -5;
-		else
-			iconOffset = 0;
-		end
-		local area = usedButtons * LFGDungeonReadyDialogRewardsFrameReward1:GetWidth() + (usedButtons - 1) * iconOffset;
-		
-		LFGDungeonReadyDialogRewardsFrameReward1:SetPoint("LEFT", LFGDungeonReadyDialogRewardsFrame, "CENTER", -area/2, 5);
-		for i = 2, usedButtons do
-			_G["LFGDungeonReadyDialogRewardsFrameReward"..i]:SetPoint("LEFT", "LFGDungeonReadyDialogRewardsFrameReward"..(i - 1), "RIGHT", iconOffset, 0);
+		local DOUBLE_ROW_MIN_THRESHOLD = 4;
+		local rowSize = math.floor((usedButtons + 1) / 2);
+		local numRows = usedButtons < DOUBLE_ROW_MIN_THRESHOLD and 1 or 2;
+		for row = 1, numRows do
+			local numInRow = row == 1 and rowSize or (usedButtons - rowSize);
+			local firstIndex = (row - 1) * rowSize + 1;
+			local baseReward = LFGDungeonReadyDialogRewardsFrame.Rewards[firstIndex];
+			--Set up positions
+			local iconOffset = -5;
+			local areaWidth = numInRow * baseReward:GetWidth() + (numInRow - 1) * iconOffset;
+			
+			local yOffset;
+			if numRows > 1 and row == 1 then
+				yOffset = baseReward:GetHeight();
+			else
+				yOffset = 5;
+			end
+			
+			baseReward:SetPoint("LEFT", LFGDungeonReadyDialogRewardsFrame, "CENTER", -areaWidth/2, yOffset);
+			for i = 2, numInRow do
+				local index = firstIndex + i - 1;
+				LFGDungeonReadyDialogRewardsFrame.Rewards[index]:SetPoint("LEFT", LFGDungeonReadyDialogRewardsFrame.Rewards[index - 1], "RIGHT", iconOffset, 0);
+			end
 		end
 	end
 end

@@ -751,6 +751,11 @@
 							<Anchor point="TOPLEFT" relativeKey="$parent.ModelR3C5" relativePoint="TOPRIGHT" x="16" y="0"/>
 						</Anchors>
 					</DressUpModel>
+					<DressUpModel parentKey="HiddenModel" inherits="WardrobeItemsModelTemplate" hidden="true">
+						<Anchors>
+							<Anchor point="BOTTOMLEFT"/>
+						</Anchors>
+					</DressUpModel>
 					<Frame parentKey="PendingTransmogFrame" hidden="true">
 						<Size x="78" y="104"/>
 						<Layers>

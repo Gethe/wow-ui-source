@@ -60,7 +60,7 @@ function RuneFrameMixin:OnEvent(event, ...)
 	if ( event == "PLAYER_SPECIALIZATION_CHANGED" or event == "PLAYER_ENTERING_WORLD" ) then
 		self:UpdateRunes(true);
 	elseif ( event == "RUNE_POWER_UPDATE") then
-		C_Timer.After(.2, function() self:UpdateRunes() end);
+		self:UpdateRunes();
 	end
 end
 
@@ -99,17 +99,21 @@ function RuneFrameMixin:UpdateRunes(isSpecChange)
 				cooldown:SetCooldown(start, duration);
 				self.runesOnCooldown[index] = runeIndex;
 			end
-			runeButton.Rune:SetAtlas("DK-Rune-CD");
+			runeButton.Rune:SetAlpha(0);
 			runeButton.energize:Stop();
 		else
 			runeButton.Rune:SetAtlas("DK-"..RUNE_KEY_BY_SPEC[specIndex].."-Rune-Ready");
 			if (self.runesOnCooldown[index]) then
 				local _, _, runeReadyNow = GetRuneCooldown(self.runesOnCooldown[index]);
 				if (runeReadyNow) then
+					runeButton.energize.RuneFade:SetDuration(tonumber(GetCVar("runeFadeTime")) or 0.2);
 					runeButton.energize:Play();
 					self.runesOnCooldown[index] = nil;
 				end
+			else
+				runeButton.Rune:SetAlpha(1);
 			end
+
 			cooldown:Hide();
 		end
 	end

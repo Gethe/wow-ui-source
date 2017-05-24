@@ -76,6 +76,11 @@ function QuickJoinMixin:OnEvent(event, ...)
 	elseif ( event == "PVP_BRAWL_INFO_UPDATED") then
 		self:RefreshEntries();
 	elseif ( event == "GUILD_ROSTER_UPDATE" ) then
+		local canRequestGuildRoster = ...;
+		if ( canRequestGuildRoster ) then
+			GuildRoster();
+		end
+		
 		self:UpdateScrollFrame();
 	end
 end

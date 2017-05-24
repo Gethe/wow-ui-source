@@ -168,6 +168,21 @@ function WardrobeTransmogFrame_UpdateSlotButton(slotButton)
 			slotButton.NoItemTexture:Show();
 		end
 	else
+		-- check for weapons lacking visual attachments
+		local correspondingWeaponButton = WardrobeTransmogFrame_GetSlotButton(slotButton.slotID, LE_TRANSMOG_TYPE_APPEARANCE);
+		local sourceID = WardrobeTransmogFrame_GetDisplayedSource(correspondingWeaponButton);
+		if ( sourceID ~= NO_TRANSMOG_SOURCE_ID and not WardrobeCollectionFrame_CanEnchantSource(sourceID) ) then
+			if ( hasPending or hasUndo ) then
+				-- clear anything in the enchant slot, otherwise cost and Apply button state will still reflect anything pending
+				C_Transmog.ClearPending(slotButton.slotID, slotButton.transmogType);
+			end
+			isTransmogrified = false;	-- handle legacy, this weapon could have had an illusion applied previously
+			canTransmogrify = false;
+			slotButton.invalidWeapon = true;
+		else
+			slotButton.invalidWeapon = false;
+		end
+
 		if ( hasPending or hasUndo or canTransmogrify ) then
 			slotButton.Icon:SetTexture(texture or ENCHANT_EMPTY_SLOT_FILEDATAID);
 			slotButton.NoItemTexture:Hide();
@@ -433,7 +448,9 @@ function WardrobeTransmogButton_OnEnter(self)
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 0, 0);
 		GameTooltip:SetText(WEAPON_ENCHANTMENT);
 		local baseSourceID, baseVisualID, appliedSourceID, appliedVisualID, pendingSourceID, pendingVisualID, hasPendingUndo = C_Transmog.GetSlotVisualInfo(slotID, LE_TRANSMOG_TYPE_ILLUSION);
-		if ( hasPending or hasUndo or canTransmogrify ) then
+		if ( self.invalidWeapon ) then
+			GameTooltip:AddLine(TRANSMOGRIFY_ILLUSION_INVALID_ITEM, TRANSMOGRIFY_FONT_COLOR.r, TRANSMOGRIFY_FONT_COLOR.g, TRANSMOGRIFY_FONT_COLOR.b, true);
+		elseif ( hasPending or hasUndo or canTransmogrify ) then
 			if ( baseSourceID > 0 ) then
 				local _, name = C_TransmogCollection.GetIllusionSourceInfo(baseSourceID);
 				GameTooltip:AddLine(name, GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
@@ -661,6 +678,7 @@ function WardrobeCollectionFrame_SetTab(tabID)
 		WardrobeCollectionFrame.searchBox:ClearAllPoints();
 		WardrobeCollectionFrame.searchBox:SetPoint("TOPRIGHT", -107, -35);
 		WardrobeCollectionFrame.searchBox:SetWidth(115);
+		WardrobeCollectionFrame.searchBox:SetEnabled(WardrobeCollectionFrame.ItemsCollectionFrame.transmogType == LE_TRANSMOG_TYPE_APPEARANCE);
 		WardrobeCollectionFrame.FilterButton:Show();
 		WardrobeCollectionFrame.FilterButton:SetEnabled(WardrobeCollectionFrame.ItemsCollectionFrame.transmogType == LE_TRANSMOG_TYPE_APPEARANCE);
 	elseif ( tabID == TAB_SETS ) then
@@ -678,6 +696,7 @@ function WardrobeCollectionFrame_SetTab(tabID)
 			WardrobeCollectionFrame.FilterButton:Show();
 			WardrobeCollectionFrame.FilterButton:SetEnabled(true);
 		end
+		WardrobeCollectionFrame.searchBox:SetEnabled(true);
 		WardrobeCollectionFrame.SetsCollectionFrame:SetShown(not atTransmogrifier);
 		WardrobeCollectionFrame.SetsTransmogFrame:SetShown(atTransmogrifier);
 	end
@@ -816,6 +835,7 @@ function WardrobeItemsCollectionMixin:OnLoad()
 	self:CreateSlotButtons();
 	self.BGCornerTopLeft:Hide();
 	self.BGCornerTopRight:Hide();
+	self.HiddenModel:SetKeepModelOnHide(true);
 
 	self.chosenVisualSources = { };
 
@@ -910,6 +930,8 @@ function WardrobeItemsCollectionMixin:OnHide()
 	self:UnregisterEvent("TRANSMOGRIFY_UPDATE");
 	self:UnregisterEvent("PLAYER_EQUIPMENT_CHANGED");
 	self:UnregisterEvent("TRANSMOGRIFY_SUCCESS");
+
+	StaticPopup_Hide("TRANSMOG_FAVORITE_WARNING");
 
 	WardrobeCollectionFrame_ClearSearch(LE_TRANSMOG_SEARCH_TYPE_ITEMS);
 
@@ -1380,21 +1402,29 @@ end
 function WardrobeCollectionFrame_GetWeaponInfoForEnchant(slot)
 	if ( not WardrobeFrame_IsAtTransmogrifier() and DressUpFrame:IsShown() ) then
 		local appearanceSourceID = DressUpModel:GetSlotTransmogSources(GetInventorySlotInfo(slot));
-		local _, appearanceVisualID, canEnchant = C_TransmogCollection.GetAppearanceSourceInfo(appearanceSourceID);
-		if ( canEnchant ) then
+		if ( WardrobeCollectionFrame_CanEnchantSource(appearanceSourceID) ) then
+			local _, appearanceVisualID = C_TransmogCollection.GetAppearanceSourceInfo(appearanceSourceID);
 			return appearanceSourceID, appearanceVisualID;
 		end
 	end
 
 	local appliedSourceID, appliedVisualID, selectedSourceID, selectedVisualID = WardrobeCollectionFrame_GetInfoForEquippedSlot(slot, LE_TRANSMOG_TYPE_APPEARANCE);
-	local _, _, canEnchant = C_TransmogCollection.GetAppearanceSourceInfo(selectedSourceID);
-	if ( canEnchant ) then
+	if ( WardrobeCollectionFrame_CanEnchantSource(selectedSourceID) ) then
 		return selectedSourceID, selectedVisualID;
 	else
 		local appearanceSourceID = C_TransmogCollection.GetIllusionFallbackWeaponSource();
 		local _, appearanceVisualID = C_TransmogCollection.GetAppearanceSourceInfo(appearanceSourceID);
 		return appearanceSourceID, appearanceVisualID;
 	end
+end
+
+function WardrobeCollectionFrame_CanEnchantSource(sourceID)
+	local _, visualID, canEnchant = C_TransmogCollection.GetAppearanceSourceInfo(sourceID);
+	if ( canEnchant ) then
+		WardrobeCollectionFrame.ItemsCollectionFrame.HiddenModel:SetItemAppearance(visualID);
+		return WardrobeCollectionFrame.ItemsCollectionFrame.HiddenModel:HasAttachmentPoints();
+	end
+	return false;
 end
 
 function WardrobeItemsCollectionMixin:UpdateItems()
@@ -2265,7 +2295,7 @@ function WardrobeCollectionFrameRightClickDropDown_Init(self)
 		end
 	end
 	info.notCheckable = true;
-	info.func = WardrobeCollectionFrameModelDropDown_SetFavorite;
+	info.func = function(_, visualID, value) WardrobeCollectionFrameModelDropDown_SetFavorite(visualID, value); end;
 	UIDropDownMenu_AddButton(info);
 	-- Cancel
 	info = UIDropDownMenu_CreateInfo();
@@ -2319,8 +2349,23 @@ function WardrobeCollectionFrameModelDropDown_SetSource(self, visualID, sourceID
 	WardrobeCollectionFrame.ItemsCollectionFrame:SetChosenVisualSource(visualID, sourceID);
 end
 
-function WardrobeCollectionFrameModelDropDown_SetFavorite(self, visualID, value)
+function WardrobeCollectionFrameModelDropDown_SetFavorite(visualID, value, confirmed)
 	local set = (value == 1);
+	if ( set and not confirmed ) then
+		local allSourcesConditional = true;
+		local sources = C_TransmogCollection.GetAppearanceSources(visualID);
+		for i, sourceInfo in ipairs(sources) do
+			local info = C_TransmogCollection.GetAppearanceInfoBySource(sourceInfo.sourceID);
+			if ( info.sourceIsCollectedPermanent ) then
+				allSourcesConditional = false;
+				break;
+			end
+		end
+		if ( allSourcesConditional ) then
+			StaticPopup_Show("TRANSMOG_FAVORITE_WARNING", nil, nil, visualID);
+			return;
+		end
+	end
 	C_TransmogCollection.SetIsAppearanceFavorite(visualID, set);
 	SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_MODEL_CLICK, true);
 	WardrobeCollectionFrame.ItemsCollectionFrame.HelpBox:Hide();

@@ -20,7 +20,7 @@ end
 
 function ClassNameplateBarDeathKnight:OnEvent(event, arg1, arg2)
 	if ( event == "RUNE_POWER_UPDATE" ) then
-		C_Timer.After(.2, function() self:UpdateRunes() end);
+		self:UpdateRunes();
 		return true;
 	end
 	if ( event == "PLAYER_SPECIALIZATION_CHANGED" or event == "PLAYER_ENTERING_WORLD" ) then

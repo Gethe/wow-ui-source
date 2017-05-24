@@ -3697,6 +3697,19 @@ StaticPopupDialogs["TRANSMOG_APPLY_WARNING"] = {
 	hasItemFrame = 1,
 }
 
+StaticPopupDialogs["TRANSMOG_FAVORITE_WARNING"] = {
+	text = TRANSMOG_FAVORITE_LOSE_REFUND_AND_TRADE,
+	button1 = OKAY,
+	button2 = CANCEL,
+	OnAccept = function(self)
+		local setFavorite = 1;
+		local confirmed = true;
+		WardrobeCollectionFrameModelDropDown_SetFavorite(self.data, setFavorite, confirmed);
+	end,
+	timeout = 0,
+	hideOnEscape = 1,
+}
+
 StaticPopupDialogs["CONFIRM_UNLOCK_TRIAL_CHARACTER"] = {
 	text = CHARACTER_UPGRADE_FINISH_BUTTON_POPUP_TEXT,
 	button1 = OKAY,

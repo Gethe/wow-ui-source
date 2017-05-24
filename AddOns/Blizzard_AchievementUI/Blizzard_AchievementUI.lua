@@ -794,6 +794,7 @@ function AchievementFrameAchievements_OnEvent (self, event, ...)
 		updateTrackedAchievements(GetTrackedAchievements());
 	elseif ( event == "ACHIEVEMENT_EARNED" ) then
 		local achievementID = ...;
+		AchievementFrameCategories_GetCategoryList(ACHIEVEMENTUI_CATEGORIES);
 		AchievementFrameCategories_Update();
 		AchievementFrameCategories_UpdateTooltip();
 		-- This has to happen before AchievementFrameAchievements_ForceUpdate() in order to achieve the behavior we want, since it clears the selection for progressive achievements.

@@ -75,6 +75,7 @@ local EJ_DIFFICULTIES =
 	{ prefix = PLAYER_DIFFICULTY1, difficultyID = 14 },
 	{ prefix = PLAYER_DIFFICULTY2, difficultyID = 15 },
 	{ prefix = PLAYER_DIFFICULTY6, difficultyID = 16 },
+	{ prefix = PLAYER_DIFFICULTY_TIMEWALKER, difficultyID = 33 },
 }
 
 local EJ_TIER_DATA =

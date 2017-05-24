@@ -1743,18 +1743,6 @@
 							</OnLoad>
 						</Scripts>
 					</CheckButton>
-					<CheckButton name="$parentFriendlyClassColors" inherits="InterfaceOptionsSmallCheckButtonTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentFriendlyMinions" relativePoint="BOTTOMLEFT" x="0" y="4"/>
-						</Anchors>
-						<Scripts>
-							<OnLoad>
-								self.type = CONTROLTYPE_CHECKBOX;
-								self.cvar = "ShowClassColorInFriendlyNameplate";
-								BlizzardOptionsPanel_RegisterControl(self, self:GetParent():GetParent());
-							</OnLoad>
-						</Scripts>
-					</CheckButton>
 					<Frame name="$parentMotionDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentAggroFlash" relativePoint="BOTTOMLEFT" x="-12" y="-32"/>

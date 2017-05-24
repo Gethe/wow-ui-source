@@ -210,7 +210,7 @@
 			</OnLeave>
 		</Scripts>
 	</Frame>
-	<Frame name="LFGDungeonReadyRewardTemplate" virtual="true">
+	<Frame name="LFGDungeonReadyRewardTemplate" parentArray="Rewards" virtual="true">
 		<Size x="40" y="40"/>
 		<Layers>
 			<Layer level="ARTWORK">

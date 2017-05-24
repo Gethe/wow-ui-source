@@ -113,6 +113,7 @@ function QuickJoinToastMixin:ProcessUpdate(guid)
 	if ( group:GetPriority() > 0 ) then
 		if ( not self.groupsAwaitingDisplay[guid] ) then
 			self.groupsAwaitingDisplay[guid] = true;
+			GuildRoster();
 			group:DelayUntil(GetTime() + QUICK_JOIN_CONFIG.DELAY_DURATION);
 		end
 	else

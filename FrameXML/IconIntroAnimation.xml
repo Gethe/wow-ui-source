@@ -6,7 +6,7 @@
 
 	<Frame name="IconIntroAnimTemplate" virtual="true" alpha="0.5">
 		<Animations>
-			<AnimationGroup parentKey="flyin">
+			<AnimationGroup parentKey="flyin" mixin="IconIntroFlyinAnimMixin">
 				<Alpha fromAlpha="1" toAlpha="0" startDelay="1.0" duration="0.5" order="1"/>
 				<Path curve="SMOOTH" duration="1.5" order="1">
 					<ControlPoints>
@@ -16,50 +16,8 @@
 				</Path>
 				<Alpha parentKey="wait"  fromAlpha="0" toAlpha="0" duration="0.1" order="2"/>
 				<Scripts>
-					<OnPlay>
-						local iconFrame = self:GetParent();
-						iconFrame.bg:SetTexture(iconFrame.icon:GetTexture());
-
-						local trail = iconFrame.trail;
-						if trail then
-							trail:Show();
-							trail.flyin:Stop();
-							trail.icon:SetTexture(iconFrame.icon:GetTexture());
-							trail.flyin:Play(1);
-							if iconFrame.isBase then
-								trail:SetFrameLevel(iconFrame:GetFrameLevel()-1);
-							else
-								trail:SetFrameLevel(iconFrame:GetFrameLevel());
-							end
-						end
-
-						if iconFrame.isBase then
-							iconFrame:GetParent():Show();
-							if iconFrame.glow:IsPlaying() then
-								iconFrame.glow:Stop();
-							end
-						end
-					</OnPlay>
-					<OnFinished>
-						local iconFrame = self:GetParent();
-						if iconFrame.isBase then
-							iconFrame.glow:Play();
-							SetBarSlotFromIntro(iconFrame.slot);
-							iconFrame.isFree = true;
-
-							local button;
-							if (iconFrame.multibar) then
-								button = _G["MultiBarBottomLeftButton"..iconFrame.pos];
-							else
-								button = _G["ActionButton"..iconFrame.pos];
-							end
-
-							MarkNewActionHighlight(button.action);
-							ActionButton_UpdateAction(button, true);
-						else
-							iconFrame:SetFrameLevel(1);
-						end
-					</OnFinished>
+					<OnPlay method="OnAnimPlay"/>
+					<OnFinished method="OnAnimFinished"/>
 				</Scripts>
 			</AnimationGroup>
 			<AnimationGroup parentKey="glow">
@@ -154,14 +112,14 @@
 
 
 
-	<Frame name="IconIntroTracker" toplevel="true" parent="UIParent" hidden="true">
+	<Frame name="IconIntroTracker" toplevel="true" parent="UIParent" hidden="true" mixin="IconIntroTrackerMixin">
 		<Size x="5" y="5"/>
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" x="20" y="20"/>
 		</Anchors>
 		<Scripts>
-			<OnLoad function="IconIntroTracker_OnLoad"/>
-			<OnEvent function="IconIntroTracker_OnEvent"/>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
 		</Scripts>
 	</Frame>
 </Ui>

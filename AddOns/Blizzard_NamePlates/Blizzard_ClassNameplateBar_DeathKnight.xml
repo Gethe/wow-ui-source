@@ -6,6 +6,7 @@
 		<!-- Parent template has a tooltip, we don't want to show tooltips on this frame. -->
 		<Scripts>
 			<OnLoad>
+				self.EmptyRune:SetSize(16, 16);
 				self.Rune:SetSize(16, 16);
 				self.EnergizeGlow:SetSize(16, 16);
 			</OnLoad>

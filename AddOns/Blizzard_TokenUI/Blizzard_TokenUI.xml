@@ -311,7 +311,7 @@
 			</OnHide>
 		</Scripts>
 	</Frame>
-	<Button name="BackpackTokenTemplate" hidden="true" virtual="true">
+	<Button name="BackpackTokenTemplate" parentArray="Tokens" hidden="true" virtual="true">
 		<Size x="50" y="12"/>
 		<Layers>
 			<Layer level="ARTWORK">

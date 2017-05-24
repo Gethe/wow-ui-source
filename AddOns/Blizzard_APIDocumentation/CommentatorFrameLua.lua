@@ -456,9 +456,14 @@ local CommentatorFrameLua =
 			Name = "GetPlayerOverrideName",
 			Type = "Function",
 
+			Arguments =
+			{
+				{ Name = "originalName", Type = "string", Nilable = false },
+			},
+
 			Returns =
 			{
-				{ Name = "originalPlayerName", Type = "string", Nilable = false },
+				{ Name = "overrideName", Type = "string", Nilable = false },
 			},
 		},
 		{

@@ -172,26 +172,22 @@ function TokenFramePopup_CloseIfHidden()
 end
 
 function BackpackTokenFrame_Update()
-	local watchButton;
-	local name, count, icon, currencyID;
 	for i=1, MAX_WATCHED_TOKENS do
-		name, count, icon, currencyID = GetBackpackCurrencyInfo(i);
-		-- Update watched tokens
-		if ( name ) then
-			watchButton = _G["BackpackTokenFrameToken"..i];
+		local watchButton = BackpackTokenFrame.Tokens[i];
+		local name, count, icon, currencyID = GetBackpackCurrencyInfo(i);
+
+		if name then
 			watchButton.icon:SetTexture(icon);
-			if ( count <= 99999 ) then
-				watchButton.count:SetText(BreakUpLargeNumbers(count));
-			else
-				watchButton.count:SetText("*");
-			end
+			watchButton.count:SetText(AbbreviateNumbers(count));
+
 			watchButton.currencyID = currencyID;
 			watchButton:Show();
-			BackpackTokenFrame.shouldShow = 1;
+
+			BackpackTokenFrame.shouldShow = true;
 			BackpackTokenFrame.numWatchedTokens = i;
 		else
-			_G["BackpackTokenFrameToken"..i]:Hide();
-			if ( i == 1 ) then
+			watchButton:Hide();
+			if i == 1 then
 				BackpackTokenFrame.shouldShow = nil;
 			end
 		end

@@ -514,9 +514,10 @@ end
 
 local function ProcessSmoothStatusBars()
 	for bar, targetValue in pairs(g_updatingBars) do
-		local newValue = FrameDeltaLerp(bar:GetValue(), targetValue, .25);
+		local effectiveTargetValue = Clamp(targetValue, bar:GetMinMaxValues());
+		local newValue = FrameDeltaLerp(bar:GetValue(), effectiveTargetValue, .25);
 
-		if IsCloseEnough(bar, newValue, targetValue) then
+		if IsCloseEnough(bar, newValue, effectiveTargetValue) then
 			g_updatingBars[bar] = nil;
 		end
 

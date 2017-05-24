@@ -128,11 +128,15 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 		return;
 	end
 	
+	-- Chromie is the original classAgnostic talent tree, and we added a back button to her talent frame
+	-- as a small quality of life improvement (this may or may not be relevent to classAgnostic talent trees in the future).
 	if (classAgnostic) then
 		self.TitleText:SetText(UnitName("npc"));
 		SetPortraitTexture(self.portrait, "npc");
+		self.BackButton:Show();
 	else
 		self.TitleText:SetText(ORDER_HALL_TALENT_TITLE);
+		self.BackButton:Hide();
 	end
 
 	local friendshipFactionID = C_Garrison.GetCurrentGarrTalentTreeFriendshipFactionID();
@@ -276,7 +280,7 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 					self:ClearResearchingTalentID();
 				end
 				talentFrame.Border:SetAtlas("orderhalltalents-spellborder-yellow");
-			elseif (talent.talentAvailability == LE_GARRISON_TALENT_AVAILABILITY_AVAILABLE or talent.hasInstantResearch) then
+			elseif (talent.talentAvailability == LE_GARRISON_TALENT_AVAILABILITY_AVAILABLE or (talent.hasInstantResearch and talent.talentAvailability == LE_GARRISON_TALENT_AVAILABILITY_UNAVAILABLE_ANOTHER_IS_RESEARCHING)) then
 				if ( currentTierCanBeResearchedCount < currentTierCount or talent.hasInstantResearch) then
 					talentFrame.AlphaIconOverlay:Show();
 					talentFrame.AlphaIconOverlay:SetAlpha(0.5);					
@@ -353,7 +357,7 @@ function GarrisonTalentButtonMixin:OnEnter()
 			GameTooltip:AddLine(str, 1, 1, 1);
 		end
 
-		if talent.talentAvailability == LE_GARRISON_TALENT_AVAILABILITY_AVAILABLE or (researchingTalentID and researchingTalentID ~= 0) then
+		if talent.talentAvailability == LE_GARRISON_TALENT_AVAILABILITY_AVAILABLE or ((researchingTalentID and researchingTalentID ~= 0) and talent.talentAvailability == LE_GARRISON_TALENT_AVAILABILITY_UNAVAILABLE_ANOTHER_IS_RESEARCHING) then
 			GameTooltip:AddLine(ORDER_HALL_TALENT_RESEARCH, 0, 1, 0);
 			self.Highlight:Show();
 		else
