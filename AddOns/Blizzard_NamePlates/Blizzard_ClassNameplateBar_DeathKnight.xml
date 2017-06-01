@@ -8,6 +8,7 @@
 			<OnLoad>
 				self.EmptyRune:SetSize(16, 16);
 				self.Rune:SetSize(16, 16);
+				self.Rune2:SetSize(16, 16);
 				self.EnergizeGlow:SetSize(16, 16);
 			</OnLoad>
 			<OnEnter/>

@@ -800,7 +800,19 @@ end
 
 BONUS_BUTTON_TOOLTIPS = {
 	RandomBG = {
-		tooltipKey = "RANDOM_BG",
+		func = function(self)
+			GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+			GameTooltip:SetText(BONUS_BUTTON_RANDOM_BG_TITLE, 1, 1, 1);
+			GameTooltip:AddLine(BONUS_BUTTON_RANDOM_BG_DESC, nil, nil, nil, true);
+			
+			local bgNames = HonorFrameBonusFrame_GetExcludedBattlegroundNames();
+			if bgNames then
+				local r, g, b = DULL_RED_FONT_COLOR:GetRGB();
+				GameTooltip:AddLine(BONUS_BUTTON_RANDOM_BG_EXCLUDED:format(bgNames), r, g, b, true);
+			end
+			
+			GameTooltip:Show();
+		end,
 	},
 	Skirmish = {
 		tooltipKey = "SKIRMISH",
@@ -1004,7 +1016,7 @@ function HonorFrameBonusFrame_Update()
 	end
 end
 
-function HonorFrameBonusFrame_UpdateExcludedBattlegrounds()
+function HonorFrameBonusFrame_GetExcludedBattlegroundNames()
 	local bgNames;
 	for i = 1, MAX_BLACKLIST_BATTLEGROUNDS do
 		local mapName = GetBlacklistMapName(i);
@@ -1016,6 +1028,12 @@ function HonorFrameBonusFrame_UpdateExcludedBattlegrounds()
 			end
 		end
 	end
+	
+	return bgNames;
+end
+
+function HonorFrameBonusFrame_UpdateExcludedBattlegrounds()
+	local bgNames = HonorFrameBonusFrame_GetExcludedBattlegroundNames();
 	if ( bgNames ) then
 		HonorFrame.BonusFrame.RandomBGButton.Contents.Title:SetPoint("LEFT", HonorFrame.BonusFrame.RandomBGButton.Contents, "LEFT", 14, 8);
 		HonorFrame.BonusFrame.RandomBGButton.Contents.ThumbTexture:Show();

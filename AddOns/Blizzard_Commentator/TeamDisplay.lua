@@ -76,8 +76,10 @@ function CommentatorTeamDisplayMixin:TryToMatchPreviousGame(teamName)
 end
 
 function CommentatorTeamDisplayMixin:RefreshPlayerNamesAndScores()
-	if not self.loaded then return end
-
+	if not self.loaded or not C_Commentator.IsSpectating() then
+		return;
+	end
+	
 	local newTeams = {};
 	
 	for teamIndex = 1, C_Commentator.GetMaxNumTeams() do

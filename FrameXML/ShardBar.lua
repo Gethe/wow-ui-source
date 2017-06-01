@@ -7,7 +7,7 @@ function WarlockPowerBar:OnLoad()
 	self.class = "WARLOCK";
 	self.spec = nil;
 	self.Shards = {};
-	
+
 	ClassPowerBar.OnLoad(self);
 end
 
@@ -66,7 +66,7 @@ function WarlockPowerBar_UpdatePower(self)
 	local shardPower = WarlockPowerBar_UnitPower(self:GetUnit());
 
 	-- Bug ID: 496542: Destruction is supposed to show partial soulshards, but Affliction and Demonology should only show full ones.
-	if GetSpecialization() ~= SPEC_WARLOCK_DESTRUCTION then 
+	if GetSpecialization() ~= SPEC_WARLOCK_DESTRUCTION then
 		shardPower = math.floor(shardPower);
 	end
 
@@ -94,7 +94,7 @@ function WarlockShardMixin:Setup(shardIndex)
 		[5] = 22,
 		[6] = 22,
 		[7] = 24,
-		[8] = 22,
+		[8] = 20,
 		[9] = 18,
 		[10] = 0,
 	};

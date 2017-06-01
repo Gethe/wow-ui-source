@@ -739,7 +739,7 @@ local CommentatorFrameLua =
 			Name = "SetAdditionalCameraWeight",
 			Type = "Function",
 
-			Returns =
+			Arguments =
 			{
 				{ Name = "teamIndex", Type = "number", Nilable = false },
 				{ Name = "playerIndex", Type = "number", Nilable = false },

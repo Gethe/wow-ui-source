@@ -44,7 +44,7 @@ function ClassNameplateBarWarlock:CreateShards()
 		if self.shardPoolAnchor then
 			shard:SetPoint("LEFT", self.shardPoolAnchor, "RIGHT", 6, 0);
 		else
-			shard:SetPoint("LEFT", self, "LEFT", -4, 0);
+			shard:SetPoint("LEFT", self, "LEFT", -4, -4);
 		end
 
 		self.shardPoolAnchor = shard;

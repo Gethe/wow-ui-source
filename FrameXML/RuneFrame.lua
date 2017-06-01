@@ -54,6 +54,7 @@ function RuneFrameMixin:OnLoad()
 	end
 	
 	self.runesOnCooldown = {};
+	self.spentAnimsActive = 0;
 end
 
 function RuneFrameMixin:OnEvent(event, ...)
@@ -79,10 +80,53 @@ local function RuneComparison(runeAIndex, runeBIndex)
 	return runeAIndex < runeBIndex;
 end
 
+function RuneFrameMixin:IsAnimatingRunesSpent()
+	return self.spentAnimsActive > 0;
+end
+
+function RuneFrameMixin:OnSpentAnimStarted()
+	self.spentAnimsActive = self.spentAnimsActive + 1;
+end
+
+function RuneFrameMixin:OnSpentAnimStopped()
+	self.spentAnimsActive = self.spentAnimsActive - 1;
+	if self.spentAnimsActive == 0 then
+		self:UpdateRunes(false);
+	end
+end
+
 function RuneFrameMixin:UpdateRunes(isSpecChange)
 	local specIndex = GetSpecialization();
 	table.sort(self.runeIndexes, RuneComparison);
 
+	if not isSpecChange and GetCVarBool("enableRuneSpentAnim") then
+		local numRunes = 0;
+		local previousNumRunes = 0;
+		for index, runeIndex in ipairs(self.runeIndexes) do
+			local _, _, runeReady = GetRuneCooldown(runeIndex);
+			if runeReady then
+				numRunes = numRunes + 1;
+			end
+			
+			if not self.runesOnCooldown[index] then
+				previousNumRunes = previousNumRunes + 1;
+			end
+		end
+		
+		if numRunes < previousNumRunes then
+			local flashTime = tonumber(GetCVar("runeSpentFlashTime")) or 0.15;
+			local fadeTime = tonumber(GetCVar("runeSpentFadeTime")) or 0.1;
+			for i = 1, previousNumRunes - numRunes do
+				local index = numRunes + i;
+				self.Runes[index].energize:Stop();
+				self.Runes[index].spent.RuneFlash:SetDuration(flashTime);
+				self.Runes[index].spent.RuneFade:SetStartDelay(flashTime);
+				self.Runes[index].spent.RuneFade:SetDuration(fadeTime);
+				self.Runes[index].spent:Play();
+			end
+		end
+	end
+	
 	for index, runeIndex in ipairs(self.runeIndexes) do
 		local runeButton = self.Runes[index];
 		local cooldown = runeButton.Cooldown;
@@ -94,27 +138,31 @@ function RuneFrameMixin:UpdateRunes(isSpecChange)
 
 		local start, duration, runeReady = GetRuneCooldown(runeIndex);
 
-		if not runeReady  then
-			if start then
-				cooldown:SetCooldown(start, duration);
-				self.runesOnCooldown[index] = runeIndex;
-			end
-			runeButton.Rune:SetAlpha(0);
-			runeButton.energize:Stop();
-		else
-			runeButton.Rune:SetAtlas("DK-"..RUNE_KEY_BY_SPEC[specIndex].."-Rune-Ready");
-			if (self.runesOnCooldown[index]) then
-				local _, _, runeReadyNow = GetRuneCooldown(self.runesOnCooldown[index]);
-				if (runeReadyNow) then
-					runeButton.energize.RuneFade:SetDuration(tonumber(GetCVar("runeFadeTime")) or 0.2);
-					runeButton.energize:Play();
-					self.runesOnCooldown[index] = nil;
+		if not runeReady then
+			self.runesOnCooldown[index] = runeIndex;
+			if not self:IsAnimatingRunesSpent() then
+				if start then
+					cooldown:SetCooldown(start, duration);
 				end
-			else
-				runeButton.Rune:SetAlpha(1);
+				runeButton.Rune:SetAlpha(0);
+				runeButton.energize:Stop();
 			end
+		else
+			if not runeButton.spent:IsPlaying() then
+				runeButton.Rune:SetAtlas("DK-"..RUNE_KEY_BY_SPEC[specIndex].."-Rune-Ready");
+				if (self.runesOnCooldown[index]) then
+					local _, _, runeReadyNow = GetRuneCooldown(self.runesOnCooldown[index]);
+					if (runeReadyNow) then
+						runeButton.energize.RuneFade:SetDuration(tonumber(GetCVar("runeFadeTime")) or 0.2);
+						runeButton.energize:Play();
+						self.runesOnCooldown[index] = nil;
+					end
+				else
+					runeButton.Rune:SetAlpha(1);
+				end
 
-			cooldown:Hide();
+				cooldown:Hide();
+			end
 		end
 	end
 end

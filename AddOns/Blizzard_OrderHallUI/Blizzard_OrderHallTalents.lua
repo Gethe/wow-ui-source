@@ -275,22 +275,36 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 				selectionAvailableInstantResearch = false;
 			end
 
+			-- Show as selected: You have researched this talent.
 			if (talent.selected and selectionAvailableInstantResearch) then
 				if (talent.selected and talent.researched and talent.id == researchingTalentID) then
 					self:ClearResearchingTalentID();
 				end
 				talentFrame.Border:SetAtlas("orderhalltalents-spellborder-yellow");
-			elseif (talent.talentAvailability == LE_GARRISON_TALENT_AVAILABILITY_AVAILABLE or (talent.hasInstantResearch and talent.talentAvailability == LE_GARRISON_TALENT_AVAILABILITY_UNAVAILABLE_ANOTHER_IS_RESEARCHING)) then
-				if ( currentTierCanBeResearchedCount < currentTierCount or talent.hasInstantResearch) then
-					talentFrame.AlphaIconOverlay:Show();
-					talentFrame.AlphaIconOverlay:SetAlpha(0.5);					
-					talentFrame.Border:Hide();
-				else
-					talentFrame.Border:SetAtlas("orderhalltalents-spellborder-green");
-				end
 			else
-				talentFrame.Border:SetAtlas("orderhalltalents-spellborder");
-				talentFrame.Icon:SetDesaturated(true);
+				local isAvailable = talent.talentAvailability == LE_GARRISON_TALENT_AVAILABILITY_AVAILABLE;
+				
+				-- We check for LE_GARRISON_TALENT_AVAILABILITY_UNAVAILABLE_ALREADY_HAVE to avoid a bug with
+				-- the Chromie UI (talents would flash grey when you switched to another talent in the same row).
+				local canDisplayAsAvailable = talent.talentAvailability == LE_GARRISON_TALENT_AVAILABILITY_UNAVAILABLE_ANOTHER_IS_RESEARCHING or talent.talentAvailability == LE_GARRISON_TALENT_AVAILABILITY_UNAVAILABLE_ALREADY_HAVE;
+				local shouldDisplayAsAvailable = canDisplayAsAvailable and talent.hasInstantResearch;
+				
+				-- Show as available: this is a new tier which you don't have any talents from or and old tier that you could change.
+				-- Note: For instant talents, to support the Chromie UI, we display as available even when another talent is researching (Jeff wants it this way).
+				if (isAvailable or shouldDisplayAsAvailable) then
+					if ( currentTierCanBeResearchedCount < currentTierCount) then
+						talentFrame.AlphaIconOverlay:Show();
+						talentFrame.AlphaIconOverlay:SetAlpha(0.5);
+						talentFrame.Border:Hide();
+					else
+						talentFrame.Border:SetAtlas("orderhalltalents-spellborder-green");
+					end
+					
+				-- Show as unavailable: You have not unlocked this tier yet or you have unlocked it but another research is already in progress.
+				else
+					talentFrame.Border:SetAtlas("orderhalltalents-spellborder");
+					talentFrame.Icon:SetDesaturated(true);
+				end
 			end
 			talentFrame:SetPoint("TOPLEFT", xOffset, yOffset);
 			talentFrame:Show();
@@ -383,7 +397,7 @@ function GarrisonTalentButtonMixin:OnClick()
 	local researchingTalentID = self:GetParent():GetResearchingTalentID();
 	if (researchingTalentID and researchingTalentID ~= 0 and researchingTalentID ~= self.talent.id) then
 		UIErrorsFrame:AddMessage(ERR_CANT_DO_THAT_RIGHT_NOW, RED_FONT_COLOR:GetRGBA());
-		return;
+		--return;
 	end
 	if (self.talent.talentAvailability == LE_GARRISON_TALENT_AVAILABILITY_AVAILABLE) then
 		local _, _, currencyTexture = GetCurrencyInfo(self:GetParent().currency);

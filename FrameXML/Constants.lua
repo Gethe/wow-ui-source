@@ -37,6 +37,7 @@ NORMAL_FONT_COLOR			= CreateColor(1.0, 0.82, 0.0);
 HIGHLIGHT_FONT_COLOR		= CreateColor(1.0, 1.0, 1.0);
 RED_FONT_COLOR				= CreateColor(1.0, 0.1, 0.1);
 DIM_RED_FONT_COLOR			= CreateColor(0.8, 0.1, 0.1);
+DULL_RED_FONT_COLOR			= CreateColor(0.75, 0.15, 0.15);
 GREEN_FONT_COLOR			= CreateColor(0.1, 1.0, 0.1);
 GRAY_FONT_COLOR				= CreateColor(0.5, 0.5, 0.5);
 YELLOW_FONT_COLOR			= CreateColor(1.0, 1.0, 0.0);

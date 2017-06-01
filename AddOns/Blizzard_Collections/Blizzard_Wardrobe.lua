@@ -3521,7 +3521,7 @@ function WardrobeSetsDetailsModelMixin:OnLoad()
 	self:SetAutoDress(false);
 	self:SetUnit("player");
 	self:UpdatePanAndZoomModelType();
-	self:SetLight(true, false, 0, 0.8, -1, 1, 1, 1, 1, 0.3, 1, 1, 1);
+	self:SetLight(true, false, -1, 0, 0, .7, .7, .7, .7, .6, 1, 1, 1);
 end
 
 function WardrobeSetsDetailsModelMixin:UpdatePanAndZoomModelType()

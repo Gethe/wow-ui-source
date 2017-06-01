@@ -48,7 +48,7 @@
 					<Anchor point="TOPLEFT" relativeKey="$parent.ShardOn" relativePoint="TOPLEFT"/>
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ShardOn" relativePoint="BOTTOMRIGHT"/>
 				</Anchors>
-				<BarTexture atlas="Warlock-ReadyShard"/>
+				<BarTexture atlas="Warlock-FillShard"/>
 			</StatusBar>
 		</Frames>
 		<Animations>
@@ -76,7 +76,7 @@
 	<Frame name="ClassNameplateBarWarlockFrame" inherits="ClassNameplateBarFrame" mixin="ClassNameplateBar, ClassNameplateBarWarlock">
 		<Size x="101" y="24"/>
 		<KeyValues>
-			<KeyValue key="scale" value="0.9" type="number"/>
+			<KeyValue key="scale" value="0.7" type="number"/>
 		</KeyValues>
 	</Frame>
 </Ui>

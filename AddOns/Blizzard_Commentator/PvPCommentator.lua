@@ -248,6 +248,17 @@ function PvPCommentatorMixin:SetDefaultCVars()
 	SetCVar("nameplateShowFriendlyGuardians", 0);
 	SetCVar("nameplateShowFriendlyTotems", 0);
 	
+	SetCVar("NamePlateHorizontalScale", 1.4);
+	SetCVar("NamePlateVerticalScale", 2.7);
+	SetCVar("nameplateShowAll", 1);
+
+	-- See InterfaceOptionsNPCNamesDropDown, we want these all off.
+	SetCVar("UnitNameFriendlySpecialNPCName", 0);
+	SetCVar("UnitNameHostleNPC", 0);
+	SetCVar("UnitNameInteractiveNPC", 0);
+	SetCVar("UnitNameNPC", 0);
+	SetCVar("ShowQuestUnitCircles", 0);
+	
 	SetCVar("ShowClassColorInNameplate", 0);
 	
 	SetCVar("nameplateMotion", 0);
@@ -270,6 +281,8 @@ function PvPCommentatorMixin:SetDefaultCVars()
 	SetCVar("UnitNamePlayerGuild", "0");
 	SetCVar("UnitNameEnemyMinionName", "0");
 	SetCVar("UnitNameFriendlyMinionName", "0");
+	
+	SetCVar("chatStyle", "classic");
 end
 
 function PvPCommentatorMixin:OnEvent(event, ...)
@@ -285,9 +298,7 @@ function PvPCommentatorMixin:OnEvent(event, ...)
 			C_Commentator.SnapCameraLookAtPoint();
 		end
 	elseif event == "COMMENTATOR_PLAYER_UPDATE" then
-		if self:CheckPlayers() then
-			self:FullPlayerRefresh();
-		end
+		self:FullPlayerRefresh();
 	elseif event == "COMMENTATOR_PLAYER_NAME_OVERRIDE_UPDATE" then
 		self:FullPlayerRefresh();
 	elseif event == "PLAYER_ENTERING_WORLD" then
@@ -416,24 +427,6 @@ function PvPCommentatorMixin:InvalidateAllPlayers()
 	end
 	
 	self:RefreshTeamFrameLayout();
-end
-
-function PvPCommentatorMixin:CheckPlayers()
-	for teamIndex = 1, #self.unitFrames do
-		for playerIndex = 1, #self.unitFrames[teamIndex] do
-			local token, playerName, faction, specId = C_Commentator.GetPlayerInfo(teamIndex, playerIndex);
-			local playerExists = token ~= nil;
-			local unitFrame = self.unitFrames[teamIndex][playerIndex];
-
-			if playerExists and not unitFrame:IsValid() then
-				return true;
-			elseif not playerExists and unitFrame:IsValid() then
-				return true;
-			end
-		end
-	end
-
-	return false;
 end
 
 function PvPCommentatorMixin:SetAllUnitFramesVisibilityState(visible)

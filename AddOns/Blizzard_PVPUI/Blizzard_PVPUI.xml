@@ -890,7 +890,7 @@
 															</Anchors>
 														</FontString>
 														<FontString parentKey="ExcludedBattlegrounds" inherits="GameFontNormalSmall" justifyH="LEFT">
-															<Size x="252" y="10"/>
+															<Size x="220" y="10"/>
 															<Anchors>
 																<Anchor point="LEFT" x="30" y="0"/>
 																<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="0" y="-2"/>
