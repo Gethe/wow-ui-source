@@ -1055,10 +1055,10 @@
 			<Font font="Fonts\K_Pagetext.TTF" height="36"/>
 		</Member>
 		<Member alphabet="simplifiedchinese">
-			<Font font="Fonts\ARKai_T.TTF" height="116"/>
+			<Font font="Fonts\ARKai_T.TTF" height="64"/>
 		</Member>
 		<Member alphabet="traditionalchinese">
-			<Font font="Fonts\blei00d.TTF" height="116"/>
+			<Font font="Fonts\blei00d.TTF" height="64"/>
 		</Member>
 		<Member alphabet="russian">
 			<Font font="Fonts\FRIZQT___CYR.TTF" height="36"/>
@@ -1070,13 +1070,13 @@
 			<Font font="Fonts\FRIZQT__.TTF" height="36" outline="NORMAL"/>
 		</Member>
 		<Member alphabet="korean">
-			<Font font="Fonts\K_Pagetext.TTF" height="106" outline="NORMAL"/>
+			<Font font="Fonts\K_Pagetext.TTF" height="64" outline="NORMAL"/>
 		</Member>
 		<Member alphabet="simplifiedchinese">
-			<Font font="Fonts\ARKai_T.TTF" height="116" outline="NORMAL"/>
+			<Font font="Fonts\ARKai_T.TTF" height="64" outline="NORMAL"/>
 		</Member>
 		<Member alphabet="traditionalchinese">
-			<Font font="Fonts\blei00d.TTF" height="116" outline="NORMAL"/>
+			<Font font="Fonts\blei00d.TTF" height="64" outline="NORMAL"/>
 		</Member>
 		<Member alphabet="russian">
 			<Font font="Fonts\FRIZQT___CYR.TTF" height="36" outline="NORMAL"/>

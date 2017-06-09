@@ -274,10 +274,14 @@ function RaidInfoFrame_UpdateSelectedIndex()
 	if (RaidInfoFrame.selectedRaidID) then
 		local savedInstances = GetNumSavedInstances();
 		for index=1, savedInstances do
-			local instanceName, instanceID, instanceReset, instanceDifficulty, locked, extended, instanceIDMostSig = GetSavedInstanceInfo(index);
+			local instanceName, instanceID, instanceReset, instanceDifficulty, locked, extended, instanceIDMostSig, _, _, _, _, _, extendDisabled = GetSavedInstanceInfo(index);
 			if ( string.format("%s_%s", instanceIDMostSig, instanceID) == RaidInfoFrame.selectedRaidID ) then
 				RaidInfoFrame.selectedIndex = index;
-				RaidInfoExtendButton:Enable();
+				if ( extendDisabled ) then
+					RaidInfoExtendButton:Disable();
+				else
+					RaidInfoExtendButton:Enable();
+				end
 				if ( extended ) then
 					RaidInfoExtendButton.doExtend = false;
 					RaidInfoExtendButton:SetText(UNEXTEND_RAID_LOCK);
