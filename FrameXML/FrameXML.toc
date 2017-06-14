@@ -34,8 +34,6 @@ FontStyles.xml
 
 
 ## add new modules below here
-
-BasicControls.xml
 WorldFrame.xml
 UIParent.xml
 QuestUtils.lua
@@ -46,6 +44,7 @@ MoneyFrame.xml
 MoneyInputFrame.lua
 MoneyInputFrame.xml
 ..\SharedXML\SharedUIPanelTemplates.xml
+..\SharedXML\SharedBasicControls.xml
 GameTooltip.xml
 UIMenu.xml
 UIDropDownMenu.xml
@@ -173,7 +172,6 @@ TalentFrameTemplates.xml
 ClassPowerBar.xml
 RuneFrame.xml
 ShardBar.xml
-EclipseBarFrame.xml
 ComboFramePlayer.xml
 InsanityBar.xml
 EasyMenu.lua

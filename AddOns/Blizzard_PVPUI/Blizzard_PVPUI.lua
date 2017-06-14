@@ -522,6 +522,7 @@ function HonorFrame_UpdateQueueButtons()
 	local HonorFrame = HonorFrame;
 	local canQueue;
 	local arenaID;
+	local isBrawl;
 	if ( HonorFrame.type == "specific" ) then
 		if ( HonorFrame.SpecificFrame.selectionID ) then
 			canQueue = true;
@@ -530,6 +531,7 @@ function HonorFrame_UpdateQueueButtons()
 		if ( HonorFrame.BonusFrame.selectedButton ) then
 			canQueue = HonorFrame.BonusFrame.selectedButton.canQueue;
 			arenaID = HonorFrame.BonusFrame.selectedButton.arenaID;
+			isBrawl = HonorFrame.BonusFrame.selectedButton.isBrawl;
 		end
 	end
 
@@ -549,6 +551,10 @@ function HonorFrame_UpdateQueueButtons()
 				disabledReason = PVP_ARENA_NEED_MORE:format(minPlayers - groupSize);
 			end
 		end
+	end
+
+	if isBrawl and not canQueue then
+		disabledReason = INSTANCE_UNAVAILABLE_SELF_LEVEL_TOO_LOW;
 	end
 
 	if ( canQueue ) then
@@ -794,7 +800,19 @@ end
 
 BONUS_BUTTON_TOOLTIPS = {
 	RandomBG = {
-		tooltipKey = "RANDOM_BG",
+		func = function(self)
+			GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+			GameTooltip:SetText(BONUS_BUTTON_RANDOM_BG_TITLE, 1, 1, 1);
+			GameTooltip:AddLine(BONUS_BUTTON_RANDOM_BG_DESC, nil, nil, nil, true);
+			
+			local bgNames = HonorFrameBonusFrame_GetExcludedBattlegroundNames();
+			if bgNames then
+				local r, g, b = DULL_RED_FONT_COLOR:GetRGB();
+				GameTooltip:AddLine(BONUS_BUTTON_RANDOM_BG_EXCLUDED:format(bgNames), r, g, b, true);
+			end
+			
+			GameTooltip:Show();
+		end,
 	},
 	Skirmish = {
 		tooltipKey = "SKIRMISH",
@@ -947,7 +965,9 @@ function HonorFrameBonusFrame_Update()
 		-- brawls
 		local button = HonorFrame.BonusFrame.BrawlButton;
 		local brawlInfo = C_PvP.GetBrawlInfo();
-		button.canQueue = brawlInfo and brawlInfo.active;
+		local isMaxLevel = UnitLevel("player") >= MAX_PLAYER_LEVEL;
+		button.canQueue = brawlInfo and brawlInfo.active and isMaxLevel;
+		button.isBrawl = true;
 
 		if (brawlInfo and brawlInfo.active) then
 			button:Enable();
@@ -996,7 +1016,7 @@ function HonorFrameBonusFrame_Update()
 	end
 end
 
-function HonorFrameBonusFrame_UpdateExcludedBattlegrounds()
+function HonorFrameBonusFrame_GetExcludedBattlegroundNames()
 	local bgNames;
 	for i = 1, MAX_BLACKLIST_BATTLEGROUNDS do
 		local mapName = GetBlacklistMapName(i);
@@ -1008,6 +1028,12 @@ function HonorFrameBonusFrame_UpdateExcludedBattlegrounds()
 			end
 		end
 	end
+	
+	return bgNames;
+end
+
+function HonorFrameBonusFrame_UpdateExcludedBattlegrounds()
+	local bgNames = HonorFrameBonusFrame_GetExcludedBattlegroundNames();
 	if ( bgNames ) then
 		HonorFrame.BonusFrame.RandomBGButton.Contents.Title:SetPoint("LEFT", HonorFrame.BonusFrame.RandomBGButton.Contents, "LEFT", 14, 8);
 		HonorFrame.BonusFrame.RandomBGButton.Contents.ThumbTexture:Show();
@@ -1311,10 +1337,11 @@ function ConquestFrameButton_OnEnter(self)
 	tooltip.SeasonBest:SetText(PVP_BEST_RATING..seasonBest);
 	tooltip.SeasonWon:SetText(PVP_GAMES_WON..seasonWon);
 	tooltip.SeasonGamesPlayed:SetText(PVP_GAMES_PLAYED..seasonPlayed);
-	
-	local maxWidth = max(tooltip.Title:GetStringWidth(),tooltip.WeeklyBest:GetStringWidth(),
-						tooltip.WeeklyGamesPlayed:GetStringWidth(),	tooltip.SeasonBest:GetStringWidth(),
-						tooltip.SeasonGamesPlayed:GetStringWidth());
+
+	local maxWidth = 0;
+	for i, fontString in ipairs(tooltip.Content) do
+		maxWidth = math.max(maxWidth, fontString:GetStringWidth());
+	end
 	
 	tooltip:SetWidth(maxWidth + CONQUEST_TOOLTIP_PADDING);
 	tooltip:SetPoint("TOPLEFT", self, "TOPRIGHT", 0, 0);

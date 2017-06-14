@@ -59,6 +59,12 @@ function FreeTimerTrackerTimer(timer)
 end
 
 function TimerTracker_OnEvent(self, event, ...)
+	if C_Commentator.IsSpectating() then
+		self:SetParent(WorldFrame);
+	else
+		self:SetParent(UIParent);
+	end
+	
 	if event == "START_TIMER" then
 		local timerType, timeSeconds, totalTime  = ...;
 		local timer;
@@ -89,7 +95,7 @@ function TimerTracker_OnEvent(self, event, ...)
 			end
 			
 			if not timer then
-				timer = CreateFrame("FRAME", self:GetName().."Timer"..(#self.timerList+1), UIParent, "StartTimerBar");
+				timer = CreateFrame("FRAME", self:GetName().."Timer"..(#self.timerList+1), self, "StartTimerBar");
 				self.timerList[#self.timerList+1] = timer;
 			end
 			
@@ -130,6 +136,15 @@ end
 
 function StartTimer_BigNumberOnUpdate(self, elapsed)
 	self.time = self.endTime - GetTime();
+	if C_Commentator.IsSpectating() then
+		if self.time < TIMER_DATA[self.type].mediumMarker then
+			self:SetAlpha(1);
+		else
+			self.bar:Hide();
+			return;
+		end
+	end
+	
 	self.updateTime = self.updateTime - elapsed;
 	local minutes, seconds = floor(self.time/60), floor(mod(self.time, 60)); 
 
@@ -217,8 +232,8 @@ function StartTimer_SetTexNumbers(self, ...)
 	if numberOffset > 0 then
 		PlaySoundKitID(25477, "SFX", false);
 		digits[1]:ClearAllPoints();
-		if self.anchorCenter then
-			digits[1]:SetPoint("CENTER", UIParent, "CENTER", numberOffset - digits[1].hw, 0);
+		if self.anchorCenter or C_Commentator.IsSpectating() then
+			digits[1]:SetPoint("CENTER", TimerTracker, "CENTER", numberOffset - digits[1].hw, 0);
 		else
 			digits[1]:SetPoint("CENTER", self, "CENTER", numberOffset - digits[1].hw, 0);
 		end
@@ -233,10 +248,17 @@ end
 
 function StartTimer_SetGoTexture(timer)
 	if ( timer.type == TIMER_TYPE_PVP ) then
-		local factionGroup = GetPlayerFactionGroup();
-		if ( factionGroup and factionGroup ~= "Neutral" ) then
-			timer.GoTexture:SetTexture("Interface\\Timer\\"..factionGroup.."-Logo");
-			timer.GoTextureGlow:SetTexture("Interface\\Timer\\"..factionGroup.."Glow-Logo");
+		if C_Commentator.IsSpectating() then
+			timer.GoTexture:SetAtlas("Swords-Logo");
+			timer.GoTextureGlow:SetAtlas("SwordsGlow-Logo");
+
+			StartTimer_SwitchToLargeDisplay(timer);
+		else
+			local factionGroup = GetPlayerFactionGroup();
+			if ( factionGroup and factionGroup ~= "Neutral" ) then
+				timer.GoTexture:SetTexture("Interface\\Timer\\"..factionGroup.."-Logo");
+				timer.GoTextureGlow:SetTexture("Interface\\Timer\\"..factionGroup.."Glow-Logo");
+			end
 		end
 	elseif ( timer.type == TIMER_TYPE_CHALLENGE_MODE ) then
 		timer.GoTexture:SetTexture("Interface\\Timer\\Challenges-Logo");

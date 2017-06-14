@@ -2,38 +2,53 @@
 ..\FrameXML\UI.xsd">
   <Script file="Blizzard_ClassNameplateBar_Warlock.lua"/>
 
-	<Frame name="ClassNameplateBarShardFrame" parentArray="Shards" virtual="true">
-		<Size x="17" y="17"/>
+	<Frame name="ClassNameplateBarShardFrame" parentArray="Shards" virtual="true" mixin="ClassNameplateBarWarlockShardMixin">
+		<Size x="17" y="22"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="ShardOff" atlas="nameplate-WarlockShard-Off" useAtlasSize="true">
+				<Texture parentKey="ShardOff" atlas="Warlock-EmptyShard" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture parentKey="ShardOn" atlas="nameplate-WarlockShard-On" useAtlasSize="true" alpha="0">
+				<Texture atlas="Warlock-Shard-Spark" parentKey="Spark"/>
+				<Texture parentKey="ShardOn" atlas="Warlock-ReadyShard" useAtlasSize="true" alpha="0">
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture parentKey="ShardGlow" atlas="nameplate-WarlockShard-Glow" useAtlasSize="true" alphaMode="ADD" alpha="0">
+				<Texture parentKey="ShardGlow" atlas="Warlock-ReadyShard-Glow" useAtlasSize="true" alphaMode="ADD" alpha="0">
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
+				</Texture>
+				<Texture file="Interface\PlayerFrame\UI-WarlockShard" alpha="0" parentKey="ShardSmokeA">
+					<Size x="32" y="32"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-8" y="5"/>
+					</Anchors>
+					<TexCoords left="0.01562500" right="0.51562500" top="0.34375000" bottom="0.59375000"/>
+				</Texture>
+				<Texture file="Interface\PlayerFrame\UI-WarlockShard" alpha="0" parentKey="ShardSmokeB">
+					<Size x="32" y="32"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.ShardSmokeA"/>
+					</Anchors>
+					<TexCoords right="0.01562500" left="0.51562500" bottom="0.34375000" top="0.59375000"/>
 				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
 			<StatusBar parentKey="PartialFill" setAllPoints="true" orientation="VERTICAL" minValue="0" maxValue="1" alpha="0.7">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.ShardFill" relativePoint="TOPLEFT"/>
-					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ShardFill" relativePoint="BOTTOMRIGHT"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ShardOn" relativePoint="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ShardOn" relativePoint="BOTTOMRIGHT"/>
 				</Anchors>
-				<BarTexture atlas="nameplate-WarlockShard-On"/>
+				<BarTexture atlas="Warlock-FillShard"/>
 			</StatusBar>
 		</Frames>
 		<Animations>
@@ -44,15 +59,25 @@
 			</AnimationGroup>
 			<AnimationGroup parentKey="Fadeout" setToFinalAlpha="true">
 				<Alpha parentKey="AlphaAnim" childKey="ShardOn" fromAlpha="1" toAlpha="0" duration="0.2"/>
+				<Alpha		childKey="ShardSmokeA" fromAlpha="0" toAlpha="1" duration="0.1" order="1"/>
+				<Alpha		childKey="ShardSmokeB" fromAlpha="0" toAlpha="1" duration="0.1" order="1"/>
+				<Rotation 	childKey="ShardSmokeA" radians="1.1" duration="0.3" order="1"/>
+				<Rotation	childKey="ShardSmokeB" radians="-0.9" duration="0.4" order="1"/>
+				<Scale 		childKey="ShardSmokeA" fromScaleX="1" toScaleX="1.2" fromScaleY="1" toScaleY="1.2" duration="0.3" order="1"/>
+				<Scale		childKey="ShardSmokeB" fromScaleX="1" toScaleX="2.5" fromScaleY="1" toScaleY="2.5" duration="0.4" order="1"/>
+				<Alpha		childKey="ShardSmokeA" fromAlpha="1" toAlpha="0" duration="0.25" order="2"/>
+				<Alpha		childKey="ShardSmokeB" fromAlpha="1" toAlpha="0" duration="0.25" order="2"/>
+				<Scale		childKey="ShardSmokeA" fromScaleX="1" toScaleX="0.4" fromScaleY="1" toScaleY="0.4" duration="0.25" order="2"/>
+				<Scale		childKey="ShardSmokeB" fromScaleX="1" toScaleX="0.4" fromScaleY="1" toScaleY="0.4" duration="0.25" order="2"/>
 			</AnimationGroup>
 		</Animations>
 	</Frame>
 
 	<Frame name="ClassNameplateBarWarlockFrame" inherits="ClassNameplateBarFrame" mixin="ClassNameplateBar, ClassNameplateBarWarlock">
-		<KeyValues>
-			<KeyValue key="scale" value=".6"/>
-		</KeyValues>
 		<Size x="101" y="24"/>
+		<KeyValues>
+			<KeyValue key="scale" value="0.7" type="number"/>
+		</KeyValues>
 	</Frame>
 </Ui>
 

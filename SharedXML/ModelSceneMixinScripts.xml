@@ -1,0 +1,8 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="ModelSceneCameras/CameraRegistry.lua"/>
+	<Script file="ModelSceneCameras/CameraBaseMixin.lua"/>
+	<Script file="ModelSceneCameras/OrbitCameraMixin.lua"/>
+
+	<Script file="ModelSceneMixin.lua"/>
+</Ui>

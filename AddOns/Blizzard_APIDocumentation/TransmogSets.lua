@@ -7,6 +7,29 @@ local TransmogSets =
 	Functions =
 	{
 		{
+			Name = "ClearLatestSource",
+			Type = "Function",
+		},
+		{
+			Name = "ClearNewSource",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "sourceID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "ClearSetNewSourcesForSlot",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "transmogSetID", Type = "number", Nilable = false },
+				{ Name = "slot", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetAllSourceIDs",
 			Type = "Function",
 
@@ -70,6 +93,43 @@ local TransmogSets =
 			},
 		},
 		{
+			Name = "GetLatestSource",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "sourceID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetSetNewSources",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "transmogSetID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "sourceIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetSetsContainingSourceID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "sourceID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "setIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetSourceIDsForSlot",
 			Type = "Function",
 
@@ -100,6 +160,15 @@ local TransmogSets =
 			},
 		},
 		{
+			Name = "HasUsableSets",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "hasUsableSets", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsBaseSetCollected",
 			Type = "Function",
 
@@ -114,6 +183,20 @@ local TransmogSets =
 			},
 		},
 		{
+			Name = "IsNewSource",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "sourceID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isNew", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "SetBaseSetsFilter",
 			Type = "Function",
 
@@ -121,6 +204,35 @@ local TransmogSets =
 			{
 				{ Name = "index", Type = "number", Nilable = false },
 				{ Name = "isChecked", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SetHasNewSources",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "transmogSetID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "hasNewSources", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SetHasNewSourcesForSlot",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "transmogSetID", Type = "number", Nilable = false },
+				{ Name = "slot", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "hasNewSources", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -133,6 +245,10 @@ local TransmogSets =
 				{ Name = "isFavorite", Type = "bool", Nilable = false },
 			},
 		},
+	},
+
+	Events =
+	{
 	},
 
 	Tables =

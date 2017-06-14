@@ -35,6 +35,7 @@ function QuickJoinMixin:SetEventsRegistered(registered)
 	func(self, "GROUP_LEFT");
 	func(self, "LFG_LIST_SEARCH_RESULT_UPDATED");
 	func(self, "PVP_BRAWL_INFO_UPDATED");
+	func(self, "GUILD_ROSTER_UPDATE");
 end
 
 function QuickJoinMixin:OnShow()
@@ -74,6 +75,13 @@ function QuickJoinMixin:OnEvent(event, ...)
 		self:UpdateJoinButtonState();
 	elseif ( event == "PVP_BRAWL_INFO_UPDATED") then
 		self:RefreshEntries();
+	elseif ( event == "GUILD_ROSTER_UPDATE" ) then
+		local canRequestGuildRoster = ...;
+		if ( canRequestGuildRoster ) then
+			GuildRoster();
+		end
+		
+		self:UpdateScrollFrame();
 	end
 end
 

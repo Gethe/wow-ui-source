@@ -361,6 +361,8 @@ function Scenario_ChallengeMode_ShowBlock(timerID, elapsedTime, timeLimit)
     end
 	block.TimesUpLootStatus:Hide();
 	Scenario_ChallengeMode_SetUpAffixes(block, affixes);
+	Scenario_ChallengeMode_SetUpDeathCount(block);
+
 	local statusBar = block.StatusBar;
 	statusBar:SetMinMaxValues(0, block.timeLimit);
 	Scenario_ChallengeMode_UpdateTime(block, elapsedTime);
@@ -395,7 +397,7 @@ function ScenarioChallengeModeAffixMixin:OnEnter()
 end
 
 function Scenario_ChallengeMode_SetUpAffixes(block,affixes)
-	local frameWidth, spacing, distance = 34, 4, -20;
+	local frameWidth, spacing, distance = 22, 4, -18;
 	local num = #affixes;
 	local leftPoint = 28 + (spacing * (num - 1)) + (frameWidth * num);
 	block.Affixes[1]:SetPoint("TOPLEFT", block, "TOPRIGHT", -leftPoint, distance);
@@ -414,6 +416,41 @@ function Scenario_ChallengeMode_SetUpAffixes(block,affixes)
 	for i = num + 1, #block.Affixes do
 		block.Affixes[i]:Hide();
 	end
+end
+
+ScenarioChallengeDeathCountMixin = {};
+
+function ScenarioChallengeDeathCountMixin:OnLoad()
+	self:RegisterEvent("CHALLENGE_MODE_DEATH_COUNT_UPDATED");
+end
+
+function ScenarioChallengeDeathCountMixin:OnEvent(event)
+	if (event == "CHALLENGE_MODE_DEATH_COUNT_UPDATED") then
+		self:Update();
+	end
+end
+
+function ScenarioChallengeDeathCountMixin:Update()
+	local count, timeLost = C_ChallengeMode.GetDeathCount();
+	self.count = count;
+	self.timeLost = timeLost;
+	if (timeLost and timeLost > 0 and count and count > 0) then
+		self:Show();
+		self.Count:SetText(count);
+	else
+		self:Hide();
+	end
+end
+
+function ScenarioChallengeDeathCountMixin:OnEnter()
+	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
+	GameTooltip:SetText(CHALLENGE_MODE_DEATH_COUNT_TITLE:format(self.count), 1, 1, 1);
+	GameTooltip:AddLine(CHALLENGE_MODE_DEATH_COUNT_DESCRIPTION:format(GetTimeStringFromSeconds(self.timeLost, false, true)));
+	GameTooltip:Show();
+end
+
+function Scenario_ChallengeMode_SetUpDeathCount(block)
+	block.DeathCount:Update();	
 end
 
 function Scenario_ChallengeMode_UpdateTime(block, elapsedTime)
@@ -685,8 +722,9 @@ function SCENARIO_TRACKER_MODULE:AddProgressBar(block, line, criteriaIndex)
 		progressBar:RegisterEvent("SCENARIO_CRITERIA_UPDATE");
 		progressBar:Show();
 		progressBar.criteriaIndex = criteriaIndex;
-		ScenarioTrackerProgressBar_SetValue(progressBar, ScenarioTrackerProgressBar_GetProgress(progressBar));
 	end
+
+	ScenarioTrackerProgressBar_SetValue(progressBar, ScenarioTrackerProgressBar_GetProgress(progressBar));
 
 	progressBar.Bar.Icon:Hide();
 	progressBar.Bar.IconBG:Hide();

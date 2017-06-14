@@ -55,7 +55,7 @@ function GuildFrame_OnShow(self)
 
 	-- keep points frame centered
 	local pointFrame = GuildPointFrame;
-	pointFrame.SumText:SetText(GetTotalAchievementPoints(true));
+	pointFrame.SumText:SetText(BreakUpLargeNumbers(GetTotalAchievementPoints(true)));
 	local width = pointFrame.SumText:GetStringWidth() + pointFrame.LeftCap:GetWidth() + pointFrame.RightCap:GetWidth() + pointFrame.Icon:GetWidth();
 	pointFrame:SetWidth(width);
 end

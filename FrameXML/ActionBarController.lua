@@ -64,6 +64,9 @@ function ActionBarController_OnEvent(self, event, ...)
 		ActionBarController_UpdateAll();
 	end
 	
+	if ( event == "UPDATE_BONUS_ACTIONBAR" ) then
+		IconIntroTracker:ResetAll();
+	end
 	
 	if ( event == "UNIT_DISPLAYPOWER" ) then
 		UnitFrameManaBar_Update(OverrideActionBarPowerBar, "vehicle");
@@ -132,7 +135,7 @@ function ActionBarController_UpdateAll(force)
 		end
 		
 		for k, frame in pairs(ActionBarButtonEventsFrame.frames) do
-			ActionButton_UpdateAction(frame);
+			ActionButton_UpdateAction(frame, force);
 		end
 	else
 		-- Otherwise, display the normal action bar

@@ -424,9 +424,13 @@ function WorldMapBountyBoardMixin:CacheWorldQuestDataForSelectedBounty()
 end
 
 function WorldMapBountyBoardMixin:FindBestMapForSelectedBounty()
-	local currentMapID = GetCurrentMapAreaID();
 	self:CacheWorldQuestDataForSelectedBounty();
 
+	if (#self.maps == 0) then
+		return;
+	end
+	
+	local currentMapID = GetCurrentMapAreaID();
 	local candidateMapID;
 
 	local maxQuests = 0;

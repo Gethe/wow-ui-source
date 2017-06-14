@@ -1997,6 +1997,7 @@ end
 
 function GarrisonMissionPage_SetReward(frame, reward)
 	frame.Quantity:Hide();
+	frame.Quantity:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
 	frame.IconBorder:Hide();
 	frame.itemID = nil;
 	frame.currencyID = nil;
@@ -2029,6 +2030,8 @@ function GarrisonMissionPage_SetReward(frame, reward)
 					frame.Name:SetText(currencyName);
 				end
 				frame.Quantity:SetText(reward.quantity);
+				local currencyColor = GetColorForCurrencyReward(reward.currencyID, reward.quantity);
+				frame.Quantity:SetTextColor(currencyColor:GetRGB());
 				frame.Quantity:Show();
 			end
 		elseif (reward.bonusAbilityID) then

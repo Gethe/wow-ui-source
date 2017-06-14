@@ -914,7 +914,14 @@ function ArtifactPerksMixin:OnRelicSlotMouseLeave(relicSlotIndex)
 	self:RefreshCursorHighlights();
 end
 
+function ArtifactPerksMixin:ClearAllRelicPowerHighlights()
+	local powers = C_ArtifactUI.GetPowers();
+	RelicHighlightHelper(self, false, unpack(powers));
+end
+
 function ArtifactPerksMixin:ShowHighlightForRelicItemID(itemID, itemLink)
+	self:ClearAllRelicPowerHighlights();
+
 	local couldFitInAnySlot = false;
 	for relicSlotIndex = 1, C_ArtifactUI.GetNumRelicSlots() do
 		if C_ArtifactUI.CanApplyRelicItemIDToSlot(itemID, relicSlotIndex) then

@@ -2070,6 +2070,7 @@ function GarrisonShipFollowerListButton_OnClick(self, button)
 			end
 			GarrisonShipyardFollowerOptionDropDown.followerID = self.id;
 			ToggleDropDownMenu(1, nil, GarrisonShipyardFollowerOptionDropDown, "cursor", 0, 0);
+			PlaySound("igMainMenuOptionCheckBoxOn");
 		end
 end
 

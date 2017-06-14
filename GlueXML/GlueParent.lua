@@ -20,6 +20,8 @@ SEX_NONE = 1;
 SEX_MALE = 2;
 SEX_FEMALE = 3;
 
+ACCOUNT_SUSPENDED_ERROR_CODE = 53;
+
 local function OnDisplaySizeChanged(self)
 	local width = GetScreenWidth();
 	local height = GetScreenHeight();
@@ -60,6 +62,7 @@ function GlueParent_OnLoad(self)
 	self:RegisterEvent("OPEN_STATUS_DIALOG");
 	self:RegisterEvent("REALM_LIST_UPDATED");
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
+	self:RegisterEvent("LUA_WARNING");
 
 	OnDisplaySizeChanged(self);
 end
@@ -83,6 +86,8 @@ function GlueParent_OnEvent(self, event, ...)
 		RealmList_Update();
 	elseif ( event == "DISPLAY_SIZE_CHANGED" ) then
 		OnDisplaySizeChanged(self);
+	elseif ( event == "LUA_WARNING" ) then
+		HandleLuaWarning(...);
 	end
 end
 
@@ -182,6 +187,18 @@ function GlueParent_UpdateDialogs()
 			local urlTag = string.format("%s_ERROR_%d_URL", errorCategory, errorID);
 			if ( _G[urlTag] ) then
 				hasURL = true;
+			end
+
+			if ( errorCategory == "BNET" and errorID == ACCOUNT_SUSPENDED_ERROR_CODE ) then
+				local remaining = C_Login.GetAccountSuspensionRemainingTime();
+				if (remaining) then
+					local days = floor(remaining / 86400);
+					local hours = floor((remaining / 3600) - (days * 24));
+					local minutes = floor((remaining / 60) - (days * 1440) - (hours * 60));
+					localizedString = localizedString:format(" "..ACCOUNT_SUSPENSION_EXPIRATION:format(days, hours, minutes));
+				else
+					localizedString = localizedString:format("");
+				end
 			end
 
 			--Append the errorCodeString
@@ -616,6 +633,11 @@ end
 -- Utils
 -- =============================================================
 
+function HideUIPanel(self)
+	-- Glue specific implementation of this function, doesn't need to leverage FrameXML data.
+	self:Hide();
+end
+
 function IsKioskGlueEnabled()
 	return IsKioskModeEnabled() and not IsCompetitiveModeEnabled();
 end
@@ -728,6 +750,10 @@ function GMError(...)
 	if ( IsGMClient() ) then
 		error(...);
 	end
+end
+
+function OnExcessiveErrors()
+	-- Glue Implementation, no-op.
 end
 
 SecureMixin = Mixin;

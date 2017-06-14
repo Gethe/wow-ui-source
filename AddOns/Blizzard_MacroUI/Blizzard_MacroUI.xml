@@ -320,7 +320,7 @@
 			<OnHide function="MacroFrame_OnHide"/>
 		</Scripts>
 	</Frame>
-	<Frame name="MacroPopupFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true">
+	<Frame name="MacroPopupFrame" toplevel="true" frameStrata="HIGH" parent="UIParent" movable="true" enableMouse="true" hidden="true">
 		<Size x="525" y="495"/>
 		<Anchors>
 			<Anchor point="TOPLEFT" relativeTo="MacroFrame" relativePoint="TOPRIGHT" x="0" y="0"/>

@@ -261,6 +261,12 @@
 						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" x="-8" y="8"/>
 					</Anchors>
 				</Texture>
+				<Texture parentKey="New" atlas="GarrMission-AbilityHighlight" alphaMode="ADD" hidden="true">
+					<Size x="56" y="56"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 			<Layer level="HIGHLIGHT">
 				<Texture parentKey="HighlightTexture" atlas="PetList-ButtonHighlight" setAllPoints="true"/>
@@ -275,6 +281,7 @@
 					local dropDown = self:GetParent():GetParent().FavoriteDropDown;
 					dropDown.baseSetID = self.setID;
 					ToggleDropDownMenu(1, nil, dropDown, self, 0, 0);
+					PlaySound("igMainMenuOptionCheckBoxOn");
 				end
 			</OnMouseUp>
 		</Scripts>
@@ -296,6 +303,18 @@
 					<Anchors>
 						<Anchor point="RIGHT" relativeKey="$parent.Icon" relativePoint="CENTER" x="20" y="1"/>
 					</Anchors>
+				</Texture>
+				<Texture parentKey="New" atlas="GarrMission-AbilityHighlight" alphaMode="ADD" hidden="true">
+					<Size x="48" y="48"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<Animations>
+						<AnimationGroup parentKey="Anim" looping="repeat">
+							<Alpha duration="1" order="1" fromAlpha="0.8" toAlpha="1"/>
+							<Alpha duration="1" order="2" fromAlpha="1" toAlpha="0.8"/>
+						</AnimationGroup>
+					</Animations>
 				</Texture>
 			</Layer>
 		</Layers>
@@ -326,6 +345,28 @@
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentTab1" relativePoint="RIGHT" x="0" y="0"/>
 				</Anchors>
+				<Frames>
+					<Frame parentKey="FlashFrame" hidden="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.SetsTab" relativePoint="TOPLEFT" x="0" y="-10"/>
+							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.SetsTab" relativePoint="BOTTOMRIGHT" x="0" y="-5"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight-yellow" setAllPoints="true" alphaMode="ADD"/>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnUpdate>
+								if ( self:IsMouseOver() ) then
+									self:SetAlpha(0);
+								else
+									self:SetAlpha(abs(mod(GetTime(), 2) - 1));
+								end
+							</OnUpdate>
+						</Scripts>
+					</Frame>
+				</Frames>
 				<Scripts>
 					<OnClick function="WardrobeCollectionFrame_ClickTab"/>
 				</Scripts>
@@ -545,53 +586,11 @@
 					</OnLoad>
 				</Scripts>
 			</Frame>
-			<StatusBar parentKey="progressBar">
-				<Size x="196" y="13"/>
+			<StatusBar parentKey="progressBar" inherits="CollectionsProgressBarTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.ItemsTab" relativePoint="TOPLEFT" x="195" y="-10"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ItemsTab" relativePoint="TOPLEFT" x="195" y="-11"/>
 				</Anchors>
-				<Layers>
-					<Layer level="OVERLAY">
-						<Texture parentKey="borderLeft" file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder">
-							<Size x="8" y="17"/>
-							<TexCoords left="0.007843" right="0.043137" top="0.193548" bottom="0.774193"/>
-							<Anchors>
-								<Anchor point="LEFT" x="-3" y="0"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="borderRight" file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder">
-							<Size x="8" y="17"/>
-							<TexCoords left="0.043137" right="0.007843" top="0.193548" bottom="0.774193"/>
-							<Anchors>
-								<Anchor point="RIGHT" x="4" y="0"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="borderMid" file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder">
-							<TexCoords left="0.113726" right="0.1490196" top="0.193548" bottom="0.774193"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.borderLeft" relativePoint="TOPRIGHT"/>
-								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.borderRight" relativePoint="BOTTOMLEFT"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="OVERLAY" textureSubLevel="1">
-						<FontString parentKey="text" inherits="TextStatusBarText" justifyH="CENTER">
-							<Size x="0" y="9"/>
-							<Anchors>
-								<Anchor point="CENTER" y="0"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-					<Layer parentKey="Background" level="BACKGROUND" textureSubLevel="-1">
-						<Texture>
-							<Color r="0.0" g="0.0" b="0.0" a="1.0"/>
-						</Texture>
-					</Layer>
-				</Layers>
-				<BarTexture file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar"/>
-				<BarColor r="0.03125" g="0.85" b="0.0"/>
 			</StatusBar>
-
 			<Button parentKey="FilterButton" inherits="UIMenuButtonStretchTemplate" text="FILTER">
 				<Size x="93" y="22"/>
 				<Anchors>
@@ -750,6 +749,11 @@
 					<DressUpModel parentArray="Models" parentKey="ModelR3C6" inherits="WardrobeItemsModelTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.ModelR3C5" relativePoint="TOPRIGHT" x="16" y="0"/>
+						</Anchors>
+					</DressUpModel>
+					<DressUpModel parentKey="HiddenModel" inherits="WardrobeItemsModelTemplate" hidden="true">
+						<Anchors>
+							<Anchor point="BOTTOMLEFT"/>
 						</Anchors>
 					</DressUpModel>
 					<Frame parentKey="PendingTransmogFrame" hidden="true">
@@ -1135,7 +1139,22 @@
 				<KeyValues>
 					<KeyValue key="searchType" value="LE_TRANSMOG_SEARCH_TYPE_USABLE_SETS" type="global"/>
 				</KeyValues>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="NoValidSetsLabel" inherits="GameFontNormalMed2" text="TRANSMOG_SETS_TAB_DISABLED">
+							<Anchors>
+								<Anchor point="CENTER" y="15"/>
+							</Anchors>
+							<Color r="0.804" g="0.725" b="0.616"/>
+						</FontString>
+					</Layer>
+				</Layers>
 				<Frames>
+					<Frame name="WardrobeSetsTransmogModelRightClickDropDown" parentKey="RightClickDropDown" inherits="UIDropDownMenuTemplate" hidden="true">
+						<Scripts>
+							<OnLoad function="WardrobeSetsTransmogModelRightClickDropDown_OnLoad"/>
+						</Scripts>
+					</Frame>
 					<Frame parentKey="PagingFrame" inherits="CollectionsPagingFrameTemplate">
 						<Anchors>
 							<Anchor point="BOTTOM" x="22" y="38"/>

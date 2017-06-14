@@ -459,6 +459,7 @@ function PVPReadyDialog_Display(self, index, displayName, isRated, queueType, ga
 
 	PlaySound("PVPTHROUGHQUEUE");
 	StaticPopupSpecial_Show(self);
+	FlashClientIcon();
 end
 
 -------------------------------------------------------------------------

@@ -168,7 +168,7 @@
 				</Texture>				
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture parentKey="CheckFlash" file="Interface\Scenarios\ScenarioIcon-Check" alphaMode="ADD" alpha="0">
+				<Texture parentKey="CheckFlash" file="Interface\Scenarios\ScenarioIcon-Check" alphaMode="ADD" alpha="0" hidden="true">
 					<Size x="16" y="16"/>
 					<Anchors>
 						<Anchor point="CENTER" relativeKey="$parent.Icon"/>

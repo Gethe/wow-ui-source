@@ -6,11 +6,10 @@ GlueFonts.xml
 GlueFontStyles.xml
 GlueLocalization.xml
 ..\SharedXML\SharedUIPanelTemplates.xml
+..\SharedXML\SharedBasicControls.xml
 GlueTemplates.xml
 ## add new files after here
 GlueButtons.xml
-GlueBasicControls.xml
-GlueDropDownMenuTemplates.xml
 GlueDropDownMenu.xml
 
 ..\SharedXML\Pools.lua

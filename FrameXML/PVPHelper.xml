@@ -51,7 +51,7 @@
 					</Anchors>
 					<TexCoords left="0.92675781" right="0.99511719" top="0.12304688" bottom="0.26171875"/>
 				</Texture>
-				<FontString name="$parentTitle" parentKey="title" inherits="GameFontHighlight" justifyH="CENTER" justifyV="CENTER">
+				<FontString name="$parentTitle" parentKey="title" inherits="GameFontHighlight" justifyH="CENTER" justifyV="MIDDLE">
 					<Size x="240" y="48"/>
 					<Anchors>
 						<Anchor point="TOP" x="0" y="-24"/>

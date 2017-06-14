@@ -16,13 +16,20 @@
 			<OnClick function="QuestMapLogHeaderButton_OnClick"/>
 			<OnEnter>
 				self.ButtonText:SetTextColor(1, 1, 1);
+				if ( self.ButtonText:IsTruncated() ) then
+					GameTooltip:ClearAllPoints();
+					GameTooltip:SetPoint("BOTTOMLEFT", self, "TOPRIGHT", 239, 0);
+					GameTooltip:SetOwner(self, "ANCHOR_PRESERVE");
+					GameTooltip:SetText(self.ButtonText:GetText(), HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, 1, 1);
+				end
 			</OnEnter>
 			<OnLeave>
 				self.ButtonText:SetTextColor(0.7, 0.7, 0.7);
+				GameTooltip:Hide();
 			</OnLeave>
 		</Scripts>
-		<ButtonText nonspacewrap="true" parentKey="ButtonText">
-			<Size x="0" y="10"/>
+		<ButtonText nonspacewrap="true" parentKey="ButtonText" justifyH="LEFT">
+			<Size x="234" y="10"/>
 			<Anchors>
 				<Anchor point="LEFT" relativePoint="RIGHT" x="5" y="0"/>
 			</Anchors>

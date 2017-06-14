@@ -590,7 +590,6 @@
 						</Frames>
 						<Scripts>
 							<OnLoad function="WoWAccountSelect_OnLoad"/>
-							<OnEvent function="WoWAccountSelect_OnEvent"/>
 							<OnKeyDown function="WoWAccountSelect_OnKeyDown"/>
 							<OnShow function="WoWAccountSelect_OnShow"/>
 						</Scripts>

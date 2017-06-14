@@ -24,6 +24,7 @@ BNET_CLIENT_APP = "App";
 BNET_CLIENT_HEROES = "Hero";
 BNET_CLIENT_OVERWATCH = "Pro";
 BNET_CLIENT_CLNT = "CLNT";
+BNET_CLIENT_SC = "S1";
 
 function BNet_OnLoad(self)
 	self:RegisterEvent("BN_DISCONNECTED");
@@ -440,6 +441,8 @@ function BNet_GetClientEmbeddedTexture(client, width, height, xOffset, yOffset)
 		textureString = "HotS";
 	elseif ( client == BNET_CLIENT_OVERWATCH ) then
 		textureString = "Overwatch";
+	elseif ( client == BNET_CLIENT_SC ) then
+		textureString = "SC"
 	else
 		textureString = "Battlenet";
 	end
@@ -459,6 +462,8 @@ function BNet_GetClientTexture(client)
 		return "Interface\\FriendsFrame\\Battlenet-HotSicon";
 	elseif ( client == BNET_CLIENT_OVERWATCH ) then
 		return "Interface\\FriendsFrame\\Battlenet-Overwatchicon";
+	elseif ( client == BNET_CLIENT_SC ) then
+		return "Interface\\FriendsFrame\\Battlenet-SCicon";
 	else
 		return "Interface\\FriendsFrame\\Battlenet-Battleneticon";
 	end

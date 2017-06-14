@@ -691,15 +691,16 @@ function PlayerTalentFrameRow_OnEnter(self)
 	self.BottomLine:Show();
 	if ( self.GlowFrame ) then
 		self.GlowFrame:Hide();
+		for i, button in ipairs(self.talents) do
+			button.GlowFrame:Hide();
+		end
 	end
 end
 
 function PlayerTalentFrameRow_OnLeave(self)
 	self.TopLine:Hide();
 	self.BottomLine:Hide();
-	if ( self.shouldGlow ) then
-		self.GlowFrame:Show();
-	end
+	TalentFrame_UpdateRowGlow(self);
 end
 
 local function HandleGeneralTalentFrameChatLink(self, talentName, talentLink)

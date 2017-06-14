@@ -561,7 +561,22 @@ function EJMicroButtonMixin:EvaluateAlertVisibility()
 
 				EJMicroButton_UpdateAlerts(true);
 			end
+			self:UpdateLastEvaluations();
 		end
+	end
+end
+
+function EJMicroButtonMixin:UpdateLastEvaluations()
+	local playerLevel = UnitLevel("player");
+
+	self.lastEvaluatedLevel = playerLevel;
+
+	if (playerLevel == MAX_PLAYER_LEVEL_TABLE[GetExpansionLevel()]) then
+		local spec = GetSpecialization();
+		local ilvl = GetAverageItemLevel();
+
+		self.lastEvaluatedSpec = spec;
+		self.lastEvaluatedIlvl = ilvl;
 	end
 end
 
@@ -578,16 +593,22 @@ function EJMicroButton_OnEvent(self, event, ...)
 		self:UnregisterEvent("VARIABLES_LOADED");
 		self.varsLoaded = true;
 	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
+		self.lastEvaluatedLevel = UnitLevel("player");
 		self:UnregisterEvent("PLAYER_ENTERING_WORLD");
 		self.playerEntered = true;
 	elseif ( event == "UNIT_LEVEL" ) then
 		local unitToken = ...;
-		if unitToken == "player" then
+		if unitToken == "player" and (not self.lastEvaluatedLevel or UnitLevel(unitToken) > self.lastEvaluatedLevel) then
+			self.lastEvaluatedLevel = UnitLevel(unitToken);
 			EJMicroButton_UpdateNewAdventureNotice(true);
 		end
 	elseif ( event == "PLAYER_AVG_ITEM_LEVEL_UPDATE" ) then
 		local playerLevel = UnitLevel("player");
-		if ( playerLevel == MAX_PLAYER_LEVEL_TABLE[GetExpansionLevel()]) then
+		local spec = GetSpecialization();
+		local ilvl = GetAverageItemLevel();
+		if ( playerLevel == MAX_PLAYER_LEVEL_TABLE[GetExpansionLevel()] and ((not self.lastEvaluatedSpec or self.lastEvaluatedSpec ~= spec) or (not self.lastEvaluatedIlvl or self.lastEvaluatedIlvl < ilvl))) then
+			self.lastEvaluatedSpec = spec;
+			self.lastEvaluatedIlvl = ilvl;
 			EJMicroButton_UpdateNewAdventureNotice(false);
 		end
 	elseif ( event == "ZONE_CHANGED_NEW_AREA" ) then

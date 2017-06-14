@@ -1,4 +1,20 @@
 
+TOOLTIP_QUEST_REWARDS_STYLE_DEFAULT = {
+	headerText = QUEST_REWARDS,
+	headerColor = NORMAL_FONT_COLOR,
+	prefixBlankLineCount = 1,
+	postHeaderBlankLineCount = 0,
+	wrapHeaderText = true,
+}
+
+TOOLTIP_QUEST_REWARDS_STYLE_CONTRIBUTION = {
+	headerText = CONTRIBUTION_REWARD_TOOLTIP_TEXT,
+	headerColor = NORMAL_FONT_COLOR,
+	prefixBlankLineCount = 0,
+	postHeaderBlankLineCount = 1,
+	wrapHeaderText = false,
+}
+
 function GameTooltip_UnitColor(unit)
 	local r, g, b;
 	if ( UnitPlayerControlled(unit) ) then
@@ -70,29 +86,27 @@ function GameTooltip_SetDefaultAnchor(tooltip, parent)
 	tooltip.default = 1;
 end
 
-function GameTooltip_AddQuestRewardsToTooltip(tooltip, questID)
-	GameTooltip_AddQuestRewardsToTooltipWithHeader(tooltip, questID, 1, QUEST_REWARDS, NORMAL_FONT_COLOR, true);
+function GameTooltip_AddBlankLinesToTooltip(tooltip, numLines)
+	while numLines ~= nil and numLines > 0 do
+		tooltip:AddLine(" ");
+		numLines = numLines - 1;
+	end
 end
 
-function GameTooltip_AddQuestRewardsToTooltipWithHeader(tooltip, questID, prefixBlankLineCount, headerText, headerColor, wrapHeaderText)
+function GameTooltip_AddQuestRewardsToTooltip(tooltip, questID, style)
+	if ( not style ) then
+		style = TOOLTIP_QUEST_REWARDS_STYLE_DEFAULT;
+	end
 	if ( GetQuestLogRewardXP(questID) > 0 or GetNumQuestLogRewardCurrencies(questID) > 0 or GetNumQuestLogRewards(questID) > 0 or GetQuestLogRewardMoney(questID) > 0 or GetQuestLogRewardArtifactXP(questID) > 0 or GetQuestLogRewardHonor(questID) ) then
-		while prefixBlankLineCount ~= nil and prefixBlankLineCount > 0 do
-			tooltip:AddLine(" ");
-			prefixBlankLineCount = prefixBlankLineCount - 1;
-		end
+		GameTooltip_AddBlankLinesToTooltip(tooltip, style.prefixBlankLineCount);
+		tooltip:AddLine(style.headerText, style.headerColor.r, style.headerColor.g, style.headerColor.b, style.wrapHeaderText);
+		GameTooltip_AddBlankLinesToTooltip(tooltip, style.postHeaderBlankLineCount);
 
-		tooltip:AddLine(headerText, headerColor.r, headerColor.g, headerColor.b, wrapHeaderText);
 		local hasAnySingleLineRewards = false;
 		-- xp
 		local xp = GetQuestLogRewardXP(questID);
 		if ( xp > 0 ) then
 			tooltip:AddLine(BONUS_OBJECTIVE_EXPERIENCE_FORMAT:format(xp), HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-			hasAnySingleLineRewards = true;
-		end
-		-- money
-		local money = GetQuestLogRewardMoney(questID);
-		if ( money > 0 ) then
-			SetTooltipMoney(tooltip, money, nil);
 			hasAnySingleLineRewards = true;
 		end
 		local artifactXP = GetQuestLogRewardArtifactXP(questID);
@@ -101,17 +115,20 @@ function GameTooltip_AddQuestRewardsToTooltipWithHeader(tooltip, questID, prefix
 			hasAnySingleLineRewards = true;
 		end
 		-- currency
-		local numQuestCurrencies = GetNumQuestLogRewardCurrencies(questID);
-		for i = 1, numQuestCurrencies do
-			local name, texture, numItems = GetQuestLogRewardCurrencyInfo(i, questID);
-			local text = BONUS_OBJECTIVE_REWARD_WITH_COUNT_FORMAT:format(texture, numItems, name);
-			tooltip:AddLine(text, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+		local numAddedQuestCurrencies = QuestUtils_AddQuestCurrencyRewardsToTooltip(questID, tooltip);
+		if ( numAddedQuestCurrencies > 0 ) then
 			hasAnySingleLineRewards = true;
 		end
 		-- honor
 		local honorAmount = GetQuestLogRewardHonor(questID);
 		if ( honorAmount > 0 ) then
 			tooltip:AddLine(BONUS_OBJECTIVE_REWARD_WITH_COUNT_FORMAT:format("Interface\\ICONS\\Achievement_LegionPVPTier4", honorAmount, HONOR), HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+			hasAnySingleLineRewards = true;
+		end
+		-- money
+		local money = GetQuestLogRewardMoney(questID);
+		if ( money > 0 ) then
+			SetTooltipMoney(tooltip, money, nil);
 			hasAnySingleLineRewards = true;
 		end
 

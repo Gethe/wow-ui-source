@@ -100,6 +100,7 @@ function PartyMemberFrame_OnLoad (self)
 	PartyMemberFrame_UpdateLeader(self);
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("GROUP_ROSTER_UPDATE");
+	self:RegisterEvent("UPDATE_ACTIVE_BATTLEFIELD");
 	self:RegisterEvent("PARTY_LEADER_CHANGED");
 	self:RegisterEvent("PARTY_LOOT_METHOD_CHANGED");
 	self:RegisterEvent("MUTELIST_UPDATE");
@@ -331,7 +332,7 @@ function PartyMemberFrame_OnEvent(self, event, ...)
 			PartyMemberFrame_UpdateMember(self);
 			PartyMemberFrame_UpdateOnlineStatus(self);
 		end
-	elseif ( event == "GROUP_ROSTER_UPDATE" ) then
+	elseif ( event == "GROUP_ROSTER_UPDATE" or event == "UPDATE_ACTIVE_BATTLEFIELD" ) then
 		PartyMemberFrame_UpdateMember(self);
 		PartyMemberFrame_UpdateArt(self);
 		PartyMemberFrame_UpdateAssignedRoles(self);

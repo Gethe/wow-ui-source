@@ -469,6 +469,17 @@
 		<xs:attribute name="alphaMode" type="ALPHAMODE" default="BLEND"/>
 	</xs:complexType>
 
+	<xs:complexType name="RectType">
+		<xs:attribute name="ULx" type="xs:float"/>
+		<xs:attribute name="ULy" type="xs:float"/>
+		<xs:attribute name="LLx" type="xs:float"/>
+		<xs:attribute name="LLy" type="xs:float"/>
+		<xs:attribute name="URx" type="xs:float"/>
+		<xs:attribute name="URy" type="xs:float"/>
+		<xs:attribute name="LRx" type="xs:float"/>
+		<xs:attribute name="LRy" type="xs:float"/>
+	</xs:complexType>
+	
 	<xs:complexType name="TextureType">
 		<xs:complexContent>
 			<xs:extension base="LayoutFrameType">
@@ -476,18 +487,13 @@
 					<xs:choice maxOccurs="unbounded">
 						<xs:element name="TexCoords">
 							<xs:complexType>
-								<xs:attribute name="left" type="xs:float" use="required"/>
-								<xs:attribute name="right" type="xs:float" use="required"/>
-								<xs:attribute name="top" type="xs:float" use="required"/>
-								<xs:attribute name="bottom" type="xs:float" use="required"/>
-								<xs:attribute name="ULx" type="xs:float"/>
-								<xs:attribute name="ULy" type="xs:float"/>
-								<xs:attribute name="LLx" type="xs:float"/>
-								<xs:attribute name="LLy" type="xs:float"/>
-								<xs:attribute name="URx" type="xs:float"/>
-								<xs:attribute name="URy" type="xs:float"/>
-								<xs:attribute name="LRx" type="xs:float"/>
-								<xs:attribute name="LRy" type="xs:float"/>
+								<xs:sequence minOccurs="0" maxOccurs="1">
+									<xs:element name="Rect" type="RectType"/>
+								</xs:sequence>								
+								<xs:attribute name="left" type="xs:float"/>
+								<xs:attribute name="right" type="xs:float"/>
+								<xs:attribute name="top" type="xs:float"/>
+								<xs:attribute name="bottom" type="xs:float"/>
 							</xs:complexType>
 						</xs:element>
 						<xs:element name="Color" type="ColorType"/>
@@ -690,6 +696,13 @@
 	</xs:complexType>
 	<xs:element name="Frame" type="FrameType" substitutionGroup="LayoutFrame"/>
 
+	<xs:complexType name="UnitPositionFrameType">
+		<xs:complexContent>
+			<xs:extension base="FrameType" />
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="UnitPositionFrame" type="UnitPositionFrameType" substitutionGroup="ui:Frame"/>
+
 	<xs:complexType name="ButtonType">
 		<xs:complexContent>
 			<xs:extension base="FrameType">
@@ -767,6 +780,7 @@
 				<xs:attribute name="defaultValue" type="xs:float"/>
 				<xs:attribute name="valueStep" type="xs:float"/>
 				<xs:attribute name="orientation" type="ui:ORIENTATION" default="VERTICAL"/>
+				<xs:attribute name="obeyStepOnDrag" type="xs:boolean"/>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
@@ -792,6 +806,7 @@
 				<xs:attribute name="autoFocus" type="xs:boolean" default="true"/>
 				<xs:attribute name="ignoreArrows" type="xs:boolean" default="false"/>
 				<xs:attribute name="countInvisibleLetters" type="xs:boolean" default="false"/>
+				<xs:attribute name="invisibleBytes" type="xs:int"/>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
@@ -1007,6 +1022,13 @@
 	<xs:complexType name="CooldownType">
 		<xs:complexContent>
 			<xs:extension base="FrameType">
+				<xs:sequence minOccurs="0">
+					<xs:choice maxOccurs="unbounded">
+						<xs:element name="SwipeTexture" type="TextureType"/>
+						<xs:element name="EdgeTexture" type="TextureType"/>
+						<xs:element name="BlingTexture" type="TextureType"/>
+					</xs:choice>
+				</xs:sequence>
 				<xs:attribute name="reverse" type="xs:boolean" default="false"/>
 				<xs:attribute name="hideCountdownNumbers" type="xs:boolean" default="false"/>
 				<xs:attribute name="drawEdge" type="xs:boolean" default="false"/>
@@ -1119,7 +1141,7 @@
 	<xs:complexType name="BrowserType">
 		<xs:complexContent>
 			<xs:extension base="FrameType">
-				<xs:attribute name="imefont" type="xs:string"/>
+				<xs:attribute name="IMEFont" type="xs:string"/>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>

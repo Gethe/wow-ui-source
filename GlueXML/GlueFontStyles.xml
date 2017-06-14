@@ -134,9 +134,6 @@
 	<Font name="NumberFontNormalSmallGray" inherits="NumberFontNormalSmall" outline="THICK" virtual="true">
 		<Color r="0.6" g="0.6" b="0.6"/>
 	</Font>
-	<Font name="NumberFontNormalLarge" inherits="NumberFont_Outline_Large" virtual="true">
-		<Color r="1.0" g="1.0" b="1.0"/>
-	</Font>
 
 	<Font name="DialogButtonNormalText" inherits="SystemFont_Large" virtual="true">
 		<Color r="1.0" g="0.82" b="0.0"/>

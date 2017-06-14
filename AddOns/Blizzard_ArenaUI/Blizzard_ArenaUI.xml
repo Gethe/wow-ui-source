@@ -188,9 +188,29 @@
 										<Anchor point="CENTER" x="-20" y="3"/>
 									</Anchors>
 								</FontString>
+								<FontString name="$parentHealthBarTextLeft" inherits="TextStatusBarText">
+									<Anchors>
+										<Anchor point="LEFT" x="0" y="3"/>
+									</Anchors>
+								</FontString>
+								<FontString name="$parentHealthBarTextRight" inherits="TextStatusBarText">
+									<Anchors>
+										<Anchor point="RIGHT" x="-36" y="3"/>
+									</Anchors>
+								</FontString>
 								<FontString name="$parentManaBarText" inherits="TextStatusBarText">
 									<Anchors>
 										<Anchor point="CENTER" x="-20" y="-6"/>
+									</Anchors>
+								</FontString>
+								<FontString name="$parentManaBarTextLeft" inherits="TextStatusBarText">
+									<Anchors>
+										<Anchor point="LEFT" x="0" y="-8"/>
+									</Anchors>
+								</FontString>
+								<FontString name="$parentManaBarTextRight" inherits="TextStatusBarText">
+									<Anchors>
+										<Anchor point="RIGHT" x="-36" y="-8"/>
 									</Anchors>
 								</FontString>
 							</Layer>
@@ -243,6 +263,8 @@
 						self.textLockable = 1;
 						self.cvar = "statusText";
 						self.cvarLabel = "STATUS_TEXT_PARTY";
+						self.LeftText = _G[self:GetName().."TextLeft"];
+						self.RightText = _G[self:GetName().."TextRight"];
 					</OnLoad>
 					<OnMouseUp>
 						self:GetParent():Click(button);
@@ -264,6 +286,8 @@
 						self.textLockable = 1;
 						self.cvar = "statusText";
 						self.cvarLabel = "STATUS_TEXT_PARTY";
+						self.LeftText = _G[self:GetName().."TextLeft"];
+						self.RightText = _G[self:GetName().."TextRight"];
 					</OnLoad>
 					<OnMouseUp>
 						self:GetParent():Click(button);

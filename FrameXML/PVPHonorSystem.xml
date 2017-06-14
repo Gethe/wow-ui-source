@@ -777,7 +777,7 @@
 						<Anchor point="CENTER" relativeKey="$parent.Wreath"/>
 					</Anchors>
 				</Texture>
-				<FontString parentKey="Level" inherits="Game18Font" hidden="false" alpha="0" alphaMode="ADD" text="5">
+				<FontString parentKey="Level" inherits="Game18Font" hidden="false" alpha="0" text="5">
 					<Anchors>
 						<Anchor point="CENTER" relativeKey="$parent.IconPlate" relativePoint="BOTTOM" x="0" y="24"/>
 					</Anchors>

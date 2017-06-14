@@ -99,6 +99,7 @@ function SpellBookFrame_OnLoad(self)
 	self:RegisterEvent("USE_GLYPH");
 	self:RegisterEvent("CANCEL_GLYPH_CAST");
 	self:RegisterEvent("ACTIVATE_GLYPH");
+	self:RegisterEvent("CURRENT_SPELL_CAST_CHANGED");
 
 	SpellBookFrame.bookType = BOOKTYPE_SPELL;
 	-- Init page nums
@@ -132,6 +133,11 @@ function SpellBookFrame_OnEvent(self, event, ...)
 			if ( GetNumSpellTabs() < SpellBookFrame.selectedSkillLine ) then
 				SpellBookFrame.selectedSkillLine = 2;
 			end
+			SpellBookFrame_Update();
+		end
+	elseif ( event == "CURRENT_SPELL_CAST_CHANGED" ) then
+		if (self.castingGlyphSlot and not IsCastingGlyph()) then
+			SpellBookFrame.castingGlyphSlot = nil;
 			SpellBookFrame_Update();
 		end
 	elseif ( event == "LEARNED_SPELL_IN_TAB" ) then
@@ -428,7 +434,7 @@ function SpellButton_OnEvent(self, event, ...)
 				-- We're part of a flyout
 				SpellBookFrame_UpdateSpells();
 			else
-				onActionBar = C_ActionBar.HasSpellActionButtons(actionID);
+				onActionBar = C_ActionBar.IsOnBarOrSpecialBar(actionID);
 			end
 		elseif ( slotType == "FLYOUT" ) then
 			onActionBar = C_ActionBar.HasFlyoutActionButtons(actionID);
@@ -808,7 +814,7 @@ function SpellButton_UpdateButton(self)
 				self.AbilityHighlightAnim:Stop();
 				self.AbilityHighlight:Hide();
 			end
-			if (HasAttachedGlyph(actionID)) then
+			if (HasAttachedGlyph(actionID) or SpellBookFrame.castingGlyphSlot == slot) then
 				self.GlyphIcon:Show();
 			else
 				self.GlyphIcon:Hide();
@@ -825,7 +831,7 @@ function SpellButton_UpdateButton(self)
 				if ( slotType == "SPELL" ) then
 					-- If the spell is passive we never show the highlight.  Otherwise, check if there are any action
 					-- buttons with this spell.
-					self.SpellHighlightTexture:SetShown(not isPassive and not C_ActionBar.HasSpellActionButtons(actionID));
+					self.SpellHighlightTexture:SetShown(not isPassive and not C_ActionBar.IsOnBarOrSpecialBar(actionID));
 				elseif ( slotType == "FLYOUT" ) then
 					self.SpellHighlightTexture:SetShown(not C_ActionBar.HasFlyoutActionButtons(actionID));
 				elseif ( slotType == "PETACTION" ) then
@@ -1077,6 +1083,7 @@ function SpellBookFrame_OpenToPageForSlot(slot, reason)
 			button.GlyphIcon:Show();
 			button.GlyphTranslation:Show();
 			button.GlyphActivateAnim:Play();
+			SpellBookFrame.castingGlyphSlot = slot;
 		end
 	end
 end

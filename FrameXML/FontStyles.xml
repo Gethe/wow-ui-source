@@ -34,7 +34,6 @@
 		<Color r="0.5" g="0.5" b="0.5"/>
 	</Font>
 	<Font name="GameFontNormalRight" inherits="GameFontNormal" justifyH="RIGHT" virtual="true"/>
-	<Font name="GameFontNormalCenter" inherits="GameFontNormal" justifyH="CENTER" virtual="true"/>
 	<Font name="GameFontHighlightLeft" inherits="GameFontHighlight" justifyH="LEFT" virtual="true"/>
 	<Font name="GameFontHighlightCenter" inherits="GameFontHighlight" justifyH="CENTER" virtual="true"/>
 	<Font name="GameFontHighlightRight" inherits="GameFontHighlight" justifyH="RIGHT" virtual="true"/>
@@ -47,7 +46,7 @@
 	</Font>
 	<Font name="GameFontWhiteSmall" inherits="GameFontBlackSmall" virtual="true">
 		<Color r="1.0" g="1.0" b="1.0"/>
-	</Font>	
+	</Font>
 	<Font name="GameFontWhite" inherits="GameFontBlack" virtual="true">
 		<Color r="1.0" g="1.0" b="1.0"/>
 	</Font>
@@ -76,9 +75,6 @@
 	<Font name="GameFontNormalLargeLeftTop" inherits="GameFontNormalLargeLeft" justifyV="TOP" virtual="true"/>
 	<Font name="GameFontGreenLarge" inherits="GameFontNormalLarge" virtual="true">
 		<Color r="0.1" g="1.0" b="0.1"/>
-	</Font>
-	<Font name="GameFontRedLarge" inherits="GameFontNormalLarge" virtual="true">
-		<Color r="1.0" g="0.1" b="0.1"/>
 	</Font>
 	<Font name="GameFontNormalHugeBlack" inherits="SystemFont_Huge1" virtual="true">
 		<Color r="0" g="0" b="0"/>
@@ -131,14 +127,7 @@
 	<Font name="NumberFontNormalHuge" inherits="NumberFont_Outline_Huge" virtual="true">
 		<Color r="1.0" g="1.0" b="1.0"/>
 	</Font>
-	
-	<Font name="ChatFontNormal" inherits="NumberFont_Shadow_Med" virtual="true">
-		<Color r="1.0" g="1.0" b="1.0"/>
-	</Font>
-	<Font name="ChatFontSmall" inherits="NumberFont_Shadow_Small" virtual="true">
-		<Color r="1.0" g="1.0" b="1.0"/>
-	</Font>
-	
+
 	<Font name="QuestTitleFont" inherits="QuestFont_Shadow_Huge" virtual="true">
 		<Color r="0" g="0" b="0"/>
 	</Font>
@@ -158,7 +147,7 @@
 	<Font name="QuestFontNormalSmall" inherits="GameFontBlack" virtual="true">
 		<Color r="0.30" g="0.18" b="0"/>
 	</Font>
-	
+
 	<Font name="QuestDifficulty_Impossible" inherits="GameFontNormalLeft" virtual="true">
 		<Color r="1.0" g="0.1" b="0.1"/>
 	</Font>
@@ -177,7 +166,7 @@
 	<Font name="QuestDifficulty_Header" inherits="GameFontNormalLeft" virtual="true">
 		<Color r="0.7" g="0.7" b="0.7"/>
 	</Font>
-	
+
 	<Font name="ItemTextFontNormal" inherits="QuestFont_Large" justifyH="LEFT" virtual="true">
 		<Color r="0.18" g="0.12" b="0.06"/>
 	</Font>
@@ -185,7 +174,7 @@
 	<Font name="MailTextFontNormal" inherits="MailFont_Large" justifyH="LEFT" virtual="true">
 		<Color r="0.18" g="0.12" b="0.06"/>
 	</Font>
-	
+
 	<Font name="SubSpellFont" inherits="SpellFont_Small" virtual="true">
 		<Color r="0.35" g="0.2" b="0"/>
 	</Font>
@@ -217,13 +206,13 @@
 	</Font>
 	<Font name="GameNormalNumberFont" inherits="NumberFont_GameNormal" virtual="true">
 		<Color r="1.0" g="0.82" b="0"/>
-	</Font>	
+	</Font>
 	<Font name="WhiteNormalNumberFont" inherits="NumberFont_GameNormal" virtual="true">
 		<Color r="1.0" g="1.0" b="1.0"/>
-	</Font>	
+	</Font>
 	<Font name="TextStatusBarTextLarge" inherits="SystemFont_Outline" virtual="true">
 		<Color r="1.0" g="1.0" b="1.0"/>
-	</Font>	
+	</Font>
 	<Font name="CombatLogFont" inherits="GameFontHighlight" justifyH="LEFT" virtual="true"/>
 	<Font name="GameTooltipText" inherits="Tooltip_Med" justifyH="LEFT" virtual="true">
 		<Color r="1.0" g="1.0" b="1.0"/>
@@ -249,15 +238,15 @@
 	<Font name="MovieSubtitleFont" inherits="GameFontNormalHugeOutline2" virtual="true">
 		<Color r="1.0" g="0.78" b="0"/>
 	</Font>
-	
+
 	<Font name="AchievementPointsFont" inherits="SystemFont_Shadow_Large" justifyH="CENTER" virtual="true">
 		<Color r="1.0" g="0.82" b="0"/>
-	</Font>	
+	</Font>
 	<Font name="AchievementPointsFontSmall" inherits="SystemFont_Shadow_Med1" justifyH="CENTER" virtual="true">
 		<Color r="1.0" g="0.82" b="0"/>
-	</Font>	
+	</Font>
 	<Font name="AchievementDescriptionFont" inherits="SystemFont_Small" justifyH="CENTER" justifyV="TOP" virtual="true">
-		<!-- 	You might be wondering why AchievementDescriptionFont inherits from SystemFont_Small and has its own shadow, rather than inheriting from SystemFont_Shadow_Small. 
+		<!-- 	You might be wondering why AchievementDescriptionFont inherits from SystemFont_Small and has its own shadow, rather than inheriting from SystemFont_Shadow_Small.
 			Good question! SystemFont_Shadow_Small and SystemFont_Small are the same height in most languages, but in Chinese, they are different. SystemFont_Small is the smaller of the two, and what
 			we need to use for things to fit at all well. -->
 		<Shadow>
@@ -271,7 +260,7 @@
 	<Font name="AchievementCriteriaFont" inherits="AchievementDescriptionFont" justifyH="LEFT" justifyV="MIDDLE" virtual="true"/>
 	<Font name="AchievementDateFont" inherits="AchievementFont_Small" justifyH="RIGHT" virtual="true">
 		<Color r="1.0" g="0.82" b="0"/>
-	</Font>	
+	</Font>
 	<Font name="VehicleMenuBarStatusBarText" inherits="SystemFont_Shadow_Med1" virtual="true">
 		<Color r="1.0" g="1.0" b="1.0"/>
 	</Font>
@@ -287,4 +276,55 @@
 	<Font name="ArtifactAppearanceSetHighlightFont" inherits="Fancy24Font" virtual="true">
 		<Color r="1.0" g="1.0" b="1.0"/>
 	</Font>
+	
+	<Font name="CommentatorTeamScoreFont" inherits="SystemFont_Huge2" virtual="true">
+		<Shadow>
+			<Color r="0" g="0" b="0" a="0.9"/>
+			<Offset>
+				<AbsDimension x="2" y="0" />
+			</Offset>
+		</Shadow>
+	</Font>
+	<Font name="CommentatorDampeningFont" inherits="CommentatorTeamScoreFont" virtual="true"/>
+	<Font name="CommentatorTeamNameFont" inherits="SystemFont_Large" virtual="true">
+		<Color r="1" g=".82" b="0"/>
+		<Shadow>
+			<Color r="0" g="0" b="0" a="0.9"/>
+			<Offset>
+				<AbsDimension x="2" y="0" />
+			</Offset>
+		</Shadow>
+	</Font>
+	<Font name="CommentatorCCFont" inherits="SystemFont_OutlineThick_WTF" virtual="true">
+		<Color r="1" g="1" b="1" a="1"/>
+	</Font>
+
+	<Font name="CommentatorDeadFont" inherits="SystemFont_Huge2" virtual="true">
+		<Color r="1" g="1" b="1" a="1"/>
+	</Font>
+
+	<Font name="CommentatorDeadFontLarge" inherits="SystemFont_OutlineThick_WTF" outline="" virtual="true">
+		<Color r="1" g="1" b="1" a="1"/>
+	</Font>
+	
+	<Font name="CommentatorVictoryFanfare" inherits="Game120Font" virtual="true">
+		<Color r="1" g="1" b="1" a="1"/>
+		<Shadow>
+			<Color r="0" g="0" b="0" a="0.9"/>
+			<Offset>
+				<AbsDimension x="2" y="0" />
+			</Offset>
+		</Shadow>
+	</Font>
+	
+	<Font name="CommentatorVictoryFanfareTeam" inherits="Game72Font" virtual="true">
+		<Color r="1" g="1" b="1" a="1"/>
+		<Shadow>
+			<Color r="0" g="0" b="0" a="0.9"/>
+			<Offset>
+				<AbsDimension x="2" y="0" />
+			</Offset>
+		</Shadow>
+	</Font>
+
 </Ui>

@@ -147,6 +147,20 @@ local ActionBarFrameLua =
 			},
 		},
 		{
+			Name = "IsOnBarOrSpecialBar",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isOnBarOrSpecialBar", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "ToggleAutoCastPetAction",
 			Type = "Function",
 
@@ -155,6 +169,10 @@ local ActionBarFrameLua =
 				{ Name = "slotID", Type = "number", Nilable = false },
 			},
 		},
+	},
+
+	Events =
+	{
 	},
 
 	Tables =

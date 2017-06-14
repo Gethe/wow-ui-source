@@ -1,6 +1,6 @@
 local EquipmentManagerLua =
 {
-	Name = "EquipementSet",
+	Name = "EquipmentSet",
 	Type = "System",
 	Namespace = "C_EquipmentSet",
 
@@ -271,6 +271,10 @@ local EquipmentManagerLua =
 				{ Name = "setWasEquipped", Type = "bool", Nilable = false },
 			},
 		},
+	},
+
+	Events =
+	{
 	},
 
 	Tables =

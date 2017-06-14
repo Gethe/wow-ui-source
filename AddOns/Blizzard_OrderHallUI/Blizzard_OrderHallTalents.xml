@@ -117,7 +117,7 @@
 		</KeyValues>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="ClassBackground">
+				<Texture parentKey="Background">
 					<Size x="322" y="498"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="OrderHallTalentFrameBg" x="4" y="-40"/>
@@ -203,6 +203,19 @@
 					<Anchor point="BOTTOMRIGHT" relativeTo="TradeFrame" relativePoint="TOPLEFT" x="338" y="-352"/>
 				</Anchors>
 			</Frame>
+			<Button parentKey="BackButton" inherits="UIPanelButtonTemplate" text="BACK">
+				<Size x="86" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-4" y="4"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound("igMainMenuOptionCheckBoxOn");
+						ReopenInteraction();
+					</OnClick>
+				</Scripts>
+			</Button>
+
 		</Frames>
 	</Frame>
 </Ui>

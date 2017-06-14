@@ -956,13 +956,13 @@
 						<Anchor point="CENTER" relativeKey="$parent.SkullCircle" x="-10" y="6"/>
 					</Anchors>
 				</Texture>
-				<FontString parentKey="Title" inherits="QuestFont_Enormous" alphaMode="BLEND" text="BOSS_YOU_DEGEATED">
+				<FontString parentKey="Title" inherits="QuestFont_Enormous" text="BOSS_YOU_DEFEATED">
 					<Anchors>
 						<Anchor point="TOP" relativeKey="$parent.BannerTop" x="0" y="-47"/>
 					</Anchors>
 					<Color r="1" g="0" b="0" a="0"/>
 				</FontString>
-				<FontString parentKey="SubTitle" inherits="GameFontNormalLarge" alphaMode="BLEND" text="BOSS_KILL_SUBTITLE">
+				<FontString parentKey="SubTitle" inherits="GameFontNormalLarge" text="BOSS_KILL_SUBTITLE">
 					<Anchors>
 						<Anchor point="TOP" relativeKey="$parent.BottomFillagree" relativePoint="BOTTOM" x="0" y="0"/>
 					</Anchors>

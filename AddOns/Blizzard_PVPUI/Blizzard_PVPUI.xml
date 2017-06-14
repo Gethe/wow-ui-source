@@ -890,7 +890,7 @@
 															</Anchors>
 														</FontString>
 														<FontString parentKey="ExcludedBattlegrounds" inherits="GameFontNormalSmall" justifyH="LEFT">
-															<Size x="252" y="10"/>
+															<Size x="220" y="10"/>
 															<Anchors>
 																<Anchor point="LEFT" x="30" y="0"/>
 																<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="0" y="-2"/>
@@ -1502,46 +1502,47 @@
 		</Backdrop>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString parentKey="Title" inherits="GameFontNormalMed3">
+				<FontString parentKey="Title" parentArray="Content" inherits="GameFontNormalMed3">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="15" y="-15"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="WeeklyLabel" inherits="GameFontNormalMed3" text="ARENA_WEEKLY_STATS">
+				<FontString parentKey="WeeklyLabel" parentArray="Content" inherits="GameFontNormalMed3" text="ARENA_WEEKLY_STATS">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" x="0" y="-13"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="WeeklyBest" inherits="GameFontHighlight" text="">
+				<FontString parentKey="WeeklyBest" parentArray="Content" inherits="GameFontHighlight" text="">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.WeeklyLabel" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="WeeklyGamesWon" inherits="GameFontHighlight" text="">
+				<FontString parentKey="WeeklyGamesWon" parentArray="Content" inherits="GameFontHighlight" text="">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.WeeklyBest" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="WeeklyGamesPlayed" inherits="GameFontHighlight" text="">
+				<FontString parentKey="WeeklyGamesPlayed" parentArray="Content" inherits="GameFontHighlight" text="">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.WeeklyGamesWon" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="SeasonLabel" inherits="GameFontNormalMed3" text="ARENA_SEASON_STATS">
+				<FontString parentKey="SeasonLabel" parentArray="Content" inherits="GameFontNormalMed3" text="ARENA_SEASON_STATS">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.WeeklyGamesPlayed" relativePoint="BOTTOMLEFT" x="0" y="-13"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="SeasonBest" inherits="GameFontHighlight" text="">
+				<FontString parentKey="SeasonBest" parentArray="Content" inherits="GameFontHighlight" text="">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.SeasonLabel" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="SeasonWon" inherits="GameFontHighlight" text="">
+				<FontString parentKey="SeasonWon" parentArray="Content" inherits="GameFontHighlight" text="">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.SeasonBest" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
 					</Anchors>
-				</FontString><FontString parentKey="SeasonGamesPlayed" inherits="GameFontHighlight" text="">
+				</FontString>
+				<FontString parentKey="SeasonGamesPlayed" parentArray="Content" inherits="GameFontHighlight" text="">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.SeasonWon" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
 					</Anchors>

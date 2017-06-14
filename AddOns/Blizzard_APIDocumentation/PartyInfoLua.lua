@@ -22,6 +22,10 @@ local PartyInfoLua =
 		},
 	},
 
+	Events =
+	{
+	},
+
 	Tables =
 	{
 	},

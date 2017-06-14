@@ -261,9 +261,9 @@ function ArenaEnemyFrame_OnEvent(self, event, unit, ...)
 		elseif ( event == "ARENA_CROWD_CONTROL_SPELL_UPDATE" ) then
 			local spellID = ...;
 			if (spellID ~= self.CC.spellID) then
-				local _, _, spellTexture = GetSpellInfo(spellID);
+				local spellTexture, spellTextureNoOverride = GetSpellTexture(spellID);
 				self.CC.spellID = spellID;
-				self.CC.Icon:SetTexture(spellTexture);
+				self.CC.Icon:SetTexture(spellTextureNoOverride);
 			end
 		end
 	end
@@ -273,9 +273,9 @@ function ArenaEnemyFrame_UpdateCrowdControl(self)
 	local spellID, startTime, duration = C_PvP.GetArenaCrowdControlInfo(self.unit);
 	if (spellID) then
 		if (spellID ~= self.CC.spellID) then
-			local _, _, spellTexture = GetSpellInfo(spellID);
+			local spellTexture, spellTextureNoOverride = GetSpellTexture(spellID);
 			self.CC.spellID = spellID;
-			self.CC.Icon:SetTexture(spellTexture);
+			self.CC.Icon:SetTexture(spellTextureNoOverride);
 		end
 		if (startTime ~= 0 and duration ~= 0) then
 			self.CC.Cooldown:SetCooldown(startTime/1000.0, duration/1000.0);

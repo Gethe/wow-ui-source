@@ -318,10 +318,6 @@
 										</Layers>
 										<Frames>
 											<Frame name="WorldMapUnitDropDown" inherits="UIDropDownMenuTemplate" clampedToScreen="true" id="1" hidden="true"/>
-											<Frame name="WorldMapFlag1" inherits="WorldMapFlagTemplate" id="1"/>
-											<Frame name="WorldMapFlag2" inherits="WorldMapFlagTemplate" id="2"/>
-											<Frame name="WorldMapFlag3" inherits="WorldMapFlagTemplate" id="3"/>
-											<Frame name="WorldMapFlag4" inherits="WorldMapFlagTemplate" id="4"/>
 											<Frame name="WorldMapCorpse" inherits="WorldMapCorpseTemplate">
 												<Size x="24" y="24"/>
 											</Frame>

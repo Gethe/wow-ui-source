@@ -98,8 +98,8 @@ function WardrobeOutfitDropDownMixin:IsOutfitDressed()
 			local sourceID = self:GetSlotSourceID(TRANSMOG_SLOTS[i].slot, LE_TRANSMOG_TYPE_APPEARANCE);
 			local slotID = GetInventorySlotInfo(TRANSMOG_SLOTS[i].slot);
 			if ( sourceID ~= NO_TRANSMOG_SOURCE_ID and sourceID ~= appearanceSources[slotID] ) then
-				-- hack: ignore artifacts
-				if (not IsSourceArtifact(sourceID)) then
+				-- No artifacts in outfits, their sourceID is overriden to NO_TRANSMOG_SOURCE_ID
+				if ( not IsSourceArtifact(sourceID) or appearanceSources[slotID] ~= NO_TRANSMOG_SOURCE_ID ) then
 					return false;
 				end
 			end
@@ -145,7 +145,12 @@ function WardrobeOutfitDropDownMixin:CheckOutfitForSave(name)
 					end
 				end
 				if ( isValidSource ) then
-					sources[slotID] = sourceID;
+					-- No artifacts in outfits, their sourceID is overriden to NO_TRANSMOG_SOURCE_ID
+					if ( IsSourceArtifact(sourceID) ) then
+						sources[slotID] = NO_TRANSMOG_SOURCE_ID;
+					else
+						sources[slotID] = sourceID;
+					end
 				end
 			elseif ( TRANSMOG_SLOTS[i].transmogType == LE_TRANSMOG_TYPE_ILLUSION ) then
 				if ( TRANSMOG_SLOTS[i].slot == "MAINHANDSLOT" ) then

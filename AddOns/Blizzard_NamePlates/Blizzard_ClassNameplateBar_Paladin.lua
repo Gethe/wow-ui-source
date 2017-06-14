@@ -48,8 +48,8 @@ function ClassNameplateBarPaladin:UpdatePower()
 		return;
 	end
 
-	local numHolyPower = UnitPower("player", SPELL_POWER_HOLY_POWER);
-	local maxHolyPower = UnitPowerMax("player", SPELL_POWER_HOLY_POWER);
+	local numHolyPower = UnitPower("player", Enum.PowerType.HolyPower);
+	local maxHolyPower = UnitPowerMax("player", Enum.PowerType.HolyPower);
 
 	-- If we had more than HOLY_POWER_FULL and then used HOLY_POWER_FULL amount of power, fade out
 	-- the top 3 and then move the remaining power from the bottom up to the top

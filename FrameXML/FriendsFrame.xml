@@ -5,22 +5,22 @@
 <!-- Patchwerk
 TRAVEL PASS
 <Texture name="TravelPass-Pressed.png" >
-	<Size x="24" y="32"/>	
-	<TexCoords left="0.01562500" right="0.39062500" top="0.00781250" bottom="0.25781250"/>	
+	<Size x="24" y="32"/>
+	<TexCoords left="0.01562500" right="0.39062500" top="0.00781250" bottom="0.25781250"/>
 </Texture>
 <Texture name="TravelPass-Normal.png" >
-	<Size x="24" y="32"/>	
-	<TexCoords left="0.42187500" right="0.79687500" top="0.00781250" bottom="0.25781250"/>	
+	<Size x="24" y="32"/>
+	<TexCoords left="0.42187500" right="0.79687500" top="0.00781250" bottom="0.25781250"/>
 </Texture>
 <Texture name="TravelPass-Hover.png" >
-	<Size x="24" y="32"/>	
-	<TexCoords left="0.01562500" right="0.39062500" top="0.27343750" bottom="0.52343750"/>	
+	<Size x="24" y="32"/>
+	<TexCoords left="0.01562500" right="0.39062500" top="0.27343750" bottom="0.52343750"/>
 </Texture>
 <Texture name="TravelPass-Disabled.png" >
-	<Size x="24" y="32"/>	
-	<TexCoords left="0.42187500" right="0.79687500" top="0.27343750" bottom="0.52343750"/>	
+	<Size x="24" y="32"/>
+	<TexCoords left="0.42187500" right="0.79687500" top="0.27343750" bottom="0.52343750"/>
 </Texture>
--->	
+-->
 
 	<Frame name="FriendsFrameHeaderTemplate" virtual="true" enableMouse="true">
 		<Size x="302" y="16"/>
@@ -34,7 +34,7 @@ TRAVEL PASS
 			</Layer>
 		</Layers>
 	</Frame>
-	
+
 	<Frame name="FriendsFrameFriendDividerTemplate" virtual="true" enableMouse="true">
 		<Size x="298" y="16"/>
 		<Layers>
@@ -143,7 +143,7 @@ TRAVEL PASS
 						<Anchor point="TOPLEFT" x="20" y="-4"/>
 					</Anchors>
 					<Color r="0.510" g="0.773" b="1" />
-				</FontString>						
+				</FontString>
 				<FontString name="$parentInfo" inherits="FriendsFont_Small" justifyH="LEFT" parentKey="info">
 					<Size x="260" y="10"/>
 					<Anchors>
@@ -163,7 +163,7 @@ TRAVEL PASS
 				</Anchors>
 				<NormalTexture name="$parentNormalTexture" file="Interface\FriendsFrame\TravelPass-Invite">
 					<Size x="24" y="32"/>
-					<TexCoords left="0.01562500" right="0.39062500" top="0.27343750" bottom="0.52343750"/>					
+					<TexCoords left="0.01562500" right="0.39062500" top="0.27343750" bottom="0.52343750"/>
 				</NormalTexture>
 				<PushedTexture name="$parentPushedTexture" file="Interface\FriendsFrame\TravelPass-Invite">
 					<Size x="24" y="32"/>
@@ -337,7 +337,7 @@ TRAVEL PASS
 								<Size x="28" y="28"/>
 								<Anchors>
 									<Anchor point="CENTER" x="0" y="-1"/>
-								</Anchors> 
+								</Anchors>
 							</Cooldown>
 						</Frames>
 						<Scripts>
@@ -372,7 +372,7 @@ TRAVEL PASS
 								GameTooltip:Hide();
 							</OnLeave>
 						</Scripts>
-					</Button>					
+					</Button>
 					<Button name="$parentNote">
 						<Size x="7" y="8"/>
 						<Anchors>
@@ -634,7 +634,7 @@ TRAVEL PASS
 										<Anchor point="CENTER"/>
 									</Anchors>
 									<Color r="1" g="0.82" b="0"/>
-								</FontString>								
+								</FontString>
 							</Layer>
 						</Layers>
 						<Scripts>
@@ -681,7 +681,7 @@ TRAVEL PASS
 										end
 									</OnClick>
 								</Scripts>
-							</Button>							
+							</Button>
 							<Frame parentKey="BroadcastFrame" frameStrata="HIGH" enableMouse="true" hidden="true">
 								<Size x="338" y="100"/>
 								<Anchors>
@@ -704,7 +704,7 @@ TRAVEL PASS
 											<Anchors>
 												<Anchor point="TOPLEFT" x="10" y="-10"/>
 												<Anchor point="BOTTOMRIGHT" x="-10" y="10"/>
-											</Anchors>											
+											</Anchors>
 											<Color r="0" g="0" b="0" a="0.7"/>
 										</Texture>
 									</Layer>
@@ -727,7 +727,7 @@ TRAVEL PASS
 										<Anchors>
 											<Anchor point="TOP" x="0" y="-44"/>
 											<Anchor point="BOTTOM" x="0" y="60"/>
-										</Anchors>										
+										</Anchors>
 										<Layers>
 											<Layer level="BACKGROUND">
 												<Texture parentKey="TopLeftBorder" file="Interface\Common\Common-Input-Border-TL">
@@ -808,14 +808,14 @@ TRAVEL PASS
 														FriendsFrameBattlenetFrame_UpdateBroadcast();
 														FriendsFrameBattlenetFrame_HideBroadcastFrame();
 													</OnClick>
-												</Scripts>												
-											</Button>											
+												</Scripts>
+											</Button>
 										</Frames>
 										<Scripts>
 											<OnLoad>
 												self.scrollBarHideable = 1;
 												self.ScrollBar:Hide();
-												
+
 												self.minHeight = 113 + self.EditBox.PromptText:GetHeight() * 2
 												self:GetParent():SetHeight(self.minHeight);
 												self.EditBox:SetPoint("TOPLEFT", 4, -4);
@@ -846,19 +846,19 @@ TRAVEL PASS
 														end
 														local scrollFrame = self:GetParent();
 														scrollFrame:GetParent():SetHeight(max(scrollFrame.minHeight, 111 + self:GetHeight()));
-													</OnTextChanged> 
+													</OnTextChanged>
 													<OnCursorChanged function="ScrollingEdit_OnCursorChanged"/>
 													<OnEscapePressed>
 														self:ClearFocus();
 													</OnEscapePressed>
 													<OnEnterPressed>
 														FriendsFrameBattlenetFrame_SetBroadcast();
-													</OnEnterPressed>													
+													</OnEnterPressed>
 												</Scripts>
 												<FontString inherits="FriendsFont_Small" spacing="2"/>
 											</EditBox>
 										</ScrollChild>
-									</ScrollFrame>								
+									</ScrollFrame>
 								</Frames>
 							</Frame>
 							<Frame parentKey="UnavailableInfoFrame" hidden="true">
@@ -876,7 +876,7 @@ TRAVEL PASS
 									<EdgeSize>
 										<AbsValue val="32"/>
 									</EdgeSize>
-								</Backdrop>							
+								</Backdrop>
 								<Layers>
 									<Layer level="ARTWORK">
 										<FontString parentKey="Label" inherits="FriendsFont_Large" text="BATTLENET_UNAVAILABLE">
@@ -970,14 +970,14 @@ TRAVEL PASS
 										<Anchor point="LEFT" x="3" y="0"/>
 									</Anchors>
 									<Color r="0.35" g="0.35" b="0.35"/>
-								</FontString>								
+								</FontString>
 							</Layer>
 							<Layer level="ARTWORK">
 								<Texture file="Interface\FriendsFrame\BroadcastIcon" parentKey="icon">
-									<Size x="16" y="16"/>										
+									<Size x="16" y="16"/>
 									<Anchors>
 										<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT" x="-5" y="-1"/>
-									</Anchors>									
+									</Anchors>
 								</Texture>
 							</Layer>
 						</Layers>
@@ -1235,11 +1235,10 @@ TRAVEL PASS
 						PanelTemplates_SetTab(self, 1);
 						FriendsTabHeader_ResizeTabs();
 					</OnLoad>
-					<OnShow function="PendingList_UpdateTab"/>
 				</Scripts>
 			</Frame>
 			<Frame name="FriendsListFrame" hidden="true" setAllPoints="true">
-				<Frames>				
+				<Frames>
 					<Button name="FriendsFrameAddFriendButton" inherits="UIPanelButtonTemplate" text="ADD_FRIEND">
 						<Size x="131" y="21"/>
 						<Anchors>
@@ -2032,7 +2031,7 @@ TRAVEL PASS
 			<EdgeSize>
 				<AbsValue val="32"/>
 			</EdgeSize>
-		</Backdrop>		
+		</Backdrop>
 		<Frames>
 			<Frame name="AddFriendInfoFrame" hidden="true">
 				<Size x="446" y="272"/>
@@ -2242,7 +2241,7 @@ TRAVEL PASS
 							<OnEscapePressed>
 								self:ClearFocus();
 							</OnEscapePressed>
-							<OnTextChanged function="AddFriendNameEditBox_OnTextChanged"/>			
+							<OnTextChanged function="AddFriendNameEditBox_OnTextChanged"/>
 						</Scripts>
 						<FontString inherits="FriendsFont_Small">
 							<Color r="1" g="1" b="1" />
@@ -2359,7 +2358,7 @@ TRAVEL PASS
 												else
 													AddFriendNoteEditBoxFill:Show();
 												end
-											</OnTextChanged> 
+											</OnTextChanged>
 											<OnCursorChanged function="ScrollingEdit_OnCursorChanged"/>
 											<OnUpdate>
 												ScrollingEdit_OnUpdate(self, elapsed, self:GetParent());
@@ -2373,7 +2372,7 @@ TRAVEL PASS
 								</ScrollChild>
 							</ScrollFrame>
 						</Frames>
-					</Frame>		
+					</Frame>
 					<Button name="$parentAcceptButton" inherits="UIPanelButtonTemplate" text="ADD_FRIEND">
 						<Size x="118" y="22"/>
 						<Anchors>
@@ -2538,7 +2537,7 @@ TRAVEL PASS
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
-						<FontString inherits="ChatFontNormal" text="FRIENDS_FRIENDS_WAITING">			
+						<FontString inherits="ChatFontNormal" text="FRIENDS_FRIENDS_WAITING">
 							<Anchors>
 								<Anchor point="CENTER" x="12" y="0"/>
 							</Anchors>
@@ -2605,7 +2604,7 @@ TRAVEL PASS
 			<EdgeSize>
 				<AbsValue val="32"/>
 			</EdgeSize>
-		</Backdrop>		
+		</Backdrop>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString inherits="FriendsFont_Normal" text="BATTLE_TAG_REQUEST">
@@ -2624,10 +2623,10 @@ TRAVEL PASS
 					<Anchors>
 						<Anchor point="CENTER" x="0" y="-10"/>
 					</Anchors>
-				</FontString>				
+				</FontString>
 			</Layer>
 		</Layers>
-		<Frames>			
+		<Frames>
 			<Button inherits="UIPanelButtonTemplate" text="SEND_REQUEST">
 				<Size x="128" y="22"/>
 				<Anchors>
@@ -2652,7 +2651,7 @@ TRAVEL PASS
 						StaticPopupSpecial_Hide(self:GetParent());
 					</OnClick>
 				</Scripts>
-			</Button>			
+			</Button>
 		</Frames>
 		<Scripts>
 			<OnLoad>

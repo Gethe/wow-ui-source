@@ -639,7 +639,6 @@ function AltCurrencyFrame_Update(frameName, texture, cost, canAfford)
 		fontColor = DISABLED_FONT_COLOR;
 	end
 	button.Text:SetTextColor(fontColor.r, fontColor.g, fontColor.b);
-	buttonTexture:SetDesaturated(canAfford == false);
 	if ( button.pointType == HONOR_POINTS ) then
 		iconWidth = 24;
 		buttonTexture:SetPoint("LEFT", _G[frameName.."Text"], "RIGHT", -1, -6);

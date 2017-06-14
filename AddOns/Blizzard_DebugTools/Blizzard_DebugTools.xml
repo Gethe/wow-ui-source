@@ -158,37 +158,11 @@
 					<Anchor point="TOPRIGHT" x="2" y="1"/>
 				</Anchors>
 			</Button>
-			<Frame name="$parentTitleButton">
+			<Frame name="$parentTitleButton" inherits="TitleDragAreaTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentTitleBG"/>
 					<Anchor point="BOTTOMRIGHT" relativeTo="$parentTitleBG"/>
 				</Anchors>
-				<Frames>
-					<Frame name="$parentHighlight" setAllPoints="true" hidden="true">
-						<Layers>
-							<Layer level="OVERLAY">
-								<Texture file="Interface\Buttons\UI-ListBox-Highlight" setAllPoints="true">
-									<Color r="1" g="1" b="1" a="0.4"/>
-								</Texture>
-							</Layer>
-						</Layers>
-					</Frame>
-				</Frames>
-				<Scripts>
-					<OnLoad>
-						self:RegisterForDrag("LeftButton");
-					</OnLoad>
-					<OnDragStart>
-						local eventTraceFrame = _G["EventTraceFrame"];
-						eventTraceFrame.moving = true;
-						eventTraceFrame:StartMoving();
-					</OnDragStart>
-					<OnDragStop>
-						local eventTraceFrame = _G["EventTraceFrame"];
-						eventTraceFrame.moving = nil;
-						eventTraceFrame:StopMovingOrSizing();
-					</OnDragStop>
-				</Scripts>
 			</Frame>
 			<Slider name="$parentScroll">
 				<Size x="16" y="0"/>
@@ -223,119 +197,6 @@
 			<OnUpdate function="EventTraceFrame_OnUpdate"/>
 			<OnKeyUp function="EventTraceFrame_OnKeyUp"/>
 			<!-- <OnSizeChanged function="EventTraceFrame_OnSizeChanged"/> Set in EventTraceFrame_OnLoad -->
-		</Scripts>
-	</Frame>
-	<Frame name="ScriptErrorsFrame" inherits="UIPanelDialogTemplate" frameStrata="TOOLTIP" movable="true" clampedToScreen="true" hidden="true" toplevel="true">
-		<Size x="384" y="260"/>
-		<Anchors>
-			<Anchor point="CENTER"/>
-		</Anchors>
-		<Layers>
-			<Layer level="ARTWORK">
-				<FontString parentKey="indexLabel" font="GameFontNormalCenter">
-					<Size x="70" y="16"/>
-					<Anchors>
-					    <Anchor point="BOTTOM" x="0" y="16"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-		<Frames>
-			<Frame name="$parentTitleButton">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentTitleBG"/>
-					<Anchor point="BOTTOMRIGHT" relativeTo="$parentTitleBG"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self:RegisterForDrag("LeftButton");
-					</OnLoad>
-					<OnDragStart>
-						local frame = _G["ScriptErrorsFrame"];
-						frame.moving = true;
-						frame:StartMoving();
-					</OnDragStart>
-					<OnDragStop>
-						local frame = _G["ScriptErrorsFrame"];
-						frame.moving = nil;
-						frame:StopMovingOrSizing();
-					</OnDragStop>
-				</Scripts>
-			</Frame>
-			<ScrollFrame name="$parentScrollFrame" inherits="UIPanelScrollFrameTemplate">
-				<Size x="343" y="194"/>
-				<Anchors>
-					<Anchor point="TOPLEFT" x="12" y="-30"/>
-				</Anchors>
-				<ScrollChild>
-					<EditBox name="$parentText" multiLine="true" letters="4000" autoFocus="false">
-						<Size x="343" y="194"/>
-						<Scripts>
-							<OnCursorChanged function="ScrollingEdit_OnCursorChanged"/>
-							<OnUpdate>
-								ScrollingEdit_OnUpdate(self, elapsed, self:GetParent());
-							</OnUpdate>
-							<OnEditFocusGained>
-								self:HighlightText(0);
-							</OnEditFocusGained>
-							<OnEscapePressed function="EditBox_ClearFocus"/>
-						</Scripts>
-						<FontString inherits="GameFontHighlightSmall"/>
-					</EditBox>
-				</ScrollChild>
-			</ScrollFrame>
-			<Button parentKey="reload" inherits="UIPanelButtonTemplate" text="RELOADUI">
-				<Size x="96" y="24"/>
-				<Anchors>
-				    <Anchor point="BOTTOMLEFT" relativeTo="$parent" x="10" y="12" />
-				</Anchors>
-				<Scripts>
-					<OnClick function="ReloadUI"/>
-				</Scripts>
-			</Button>
-			<Button parentKey="previous" id="2">
-				<Size x="32" y="32"/>
-				<Anchors>
-				    <Anchor point="RIGHT" relativeKey="$parent.indexLabel" relativePoint="LEFT"/>
-				</Anchors>
-
-				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
-				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
-				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
-				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
-
-				<Scripts>
-					<OnClick function="ScriptErrorsFrameButton_OnClick"/>
-				</Scripts>
-			</Button>
-			<Button parentKey="next" id="1">
-				<Size x="32" y="32" />
-				<Anchors>
-				    <Anchor point="LEFT" relativeKey="$parent.indexLabel" relativePoint="RIGHT"/>
-				</Anchors>
-
-				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
-				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
-				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
-				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
-
-				<Scripts>
-					<OnClick function="ScriptErrorsFrameButton_OnClick"/>
-				</Scripts>
-			</Button>
-			<Button parentKey="close" inherits="UIPanelButtonTemplate" text="CLOSE">
-				<Size x="96" y="24"/>
-				<Anchors>
-					<Anchor point="BOTTOMRIGHT" x="-8" y="12"/>
-				</Anchors>
-				<Scripts>
-					<OnClick function="HideParentPanel"/>
-				</Scripts>
-			</Button>
-		</Frames>
-		<Scripts>
-			<OnLoad function="ScriptErrorsFrame_OnLoad"/>
-			<OnShow function="ScriptErrorsFrame_OnShow"/>
 		</Scripts>
 	</Frame>
 

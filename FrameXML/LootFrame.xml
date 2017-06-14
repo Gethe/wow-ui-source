@@ -249,7 +249,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="4">
-				<Texture parentKey="WhiteFade" blendMode="ADD" alpha="0">
+				<Texture parentKey="WhiteFade" alphaMode="ADD" alpha="0">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="3" y="-3"/>
 						<Anchor point="BOTTOMRIGHT" x="-3" y="3"/>
@@ -683,7 +683,7 @@
 				<Texture parentKey="Highlight" file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD" setAllPoints="true" hidden="true"/>
 			</Layer>
 			<Layer level="ARTWORK">
-				<FontString inherits="GameFontNormal" parentKey="Name" justifyH="LEFT" justifyV="CENTER">
+				<FontString inherits="GameFontNormal" parentKey="Name" justifyH="LEFT" justifyV="MIDDLE">
 					<Size x="78" y="12"/>
 					<Anchors>
 						<Anchor point="LEFT" x="10" y="0"/>

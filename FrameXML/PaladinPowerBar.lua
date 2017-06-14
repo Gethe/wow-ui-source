@@ -46,7 +46,7 @@ function PaladinPowerBar:Setup()
 			self:SetAlpha(0);
 		end
 
-		self.maxHolyPower = UnitPowerMax("player", SPELL_POWER_HOLY_POWER);
+		self.maxHolyPower = UnitPowerMax("player", Enum.PowerType.HolyPower);
 		if ( self.maxHolyPower > HOLY_POWER_FULL ) then
 			self.bankBG:SetAlpha(1);
 		end
@@ -75,8 +75,8 @@ function PaladinPowerBar:UpdatePower()
 		return;
 	end
 
-	local numHolyPower = UnitPower( self:GetParent().unit, SPELL_POWER_HOLY_POWER );
-	local maxHolyPower = UnitPowerMax( self:GetParent().unit, SPELL_POWER_HOLY_POWER );
+	local numHolyPower = UnitPower( self:GetParent().unit, Enum.PowerType.HolyPower );
+	local maxHolyPower = UnitPowerMax( self:GetParent().unit, Enum.PowerType.HolyPower );
 
 	-- a little hacky but we want to signify that the bank is being used to replenish holy power
 	if ( self.lastPower and self.lastPower > HOLY_POWER_FULL and numHolyPower == self.lastPower - HOLY_POWER_FULL ) then

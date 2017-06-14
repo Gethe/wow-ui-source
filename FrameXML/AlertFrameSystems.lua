@@ -186,7 +186,7 @@ function DungeonCompletionAlertFrame_SetUp(frame, rewardData)
 		frame.instanceName:SetPoint("TOP", 25, -44);
 	end
 
-	frame.dungeonTexture:SetTexture("Interface\\LFGFrame\\LFGIcon-"..rewardData.textureFilename);
+	frame.dungeonTexture:SetTexture(rewardData.iconTextureFile);
 	frame.rewardData = rewardData;
 end
 
@@ -244,7 +244,7 @@ function ScenarioAlertFrame_SetUp(frame, rewardData)
 
 	--Set up the text and icon
 	frame.dungeonName:SetText(rewardData.name);
-	frame.dungeonTexture:SetTexture("Interface\\LFGFrame\\LFGIcon-"..rewardData.textureFilename);
+	frame.dungeonTexture:SetTexture(rewardData.iconTextureFile);
 	frame.rewardData = rewardData;
 end
 

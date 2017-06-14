@@ -3205,7 +3205,7 @@ StaticPopupDialogs["VOTE_BOOT_PLAYER"] = {
 	text = VOTE_BOOT_PLAYER,
 	button1 = YES,
 	button2 = NO,
-	StartDelay = function(self) if (self.data.seen) then return 0 else return 3 end end,
+	StartDelay = function(self) if (self.data) then return 0 else return 3 end end,
 	OnAccept = function(self)
 		SetLFGBootVote(true);
 	end,
@@ -3697,6 +3697,19 @@ StaticPopupDialogs["TRANSMOG_APPLY_WARNING"] = {
 	hasItemFrame = 1,
 }
 
+StaticPopupDialogs["TRANSMOG_FAVORITE_WARNING"] = {
+	text = TRANSMOG_FAVORITE_LOSE_REFUND_AND_TRADE,
+	button1 = OKAY,
+	button2 = CANCEL,
+	OnAccept = function(self)
+		local setFavorite = 1;
+		local confirmed = true;
+		WardrobeCollectionFrameModelDropDown_SetFavorite(self.data, setFavorite, confirmed);
+	end,
+	timeout = 0,
+	hideOnEscape = 1,
+}
+
 StaticPopupDialogs["CONFIRM_UNLOCK_TRIAL_CHARACTER"] = {
 	text = CHARACTER_UPGRADE_FINISH_BUTTON_POPUP_TEXT,
 	button1 = OKAY,
@@ -3737,6 +3750,18 @@ StaticPopupDialogs["EXPERIMENTAL_CVAR_WARNING"] = {
 
 StaticPopupDialogs["PREMADE_GROUP_SEARCH_DELIST_WARNING"] = {
 	text = PREMADE_GROUP_SEARCH_DELIST_WARNING_TEXT,
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function(self)
+		LFGListFrame_BeginFindQuestGroup(LFGListFrame, self.data);
+	end,
+	whileDead = 1,
+	showAlert = 1,
+	hideOnEscape = 1,
+}
+
+StaticPopupDialogs["PREMADE_GROUP_INSECURE_SEARCH"] = {
+	text = PREMADE_GROUP_INSECURE_SEARCH,
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function(self)

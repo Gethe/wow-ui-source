@@ -29,6 +29,10 @@ end
 
 
 function ExtraActionButtonKey(id, isDown)
+	if not HasExtraActionBar() then
+		return;
+	end
+
 	local button = _G["ExtraActionButton"..id];
 	
 	if isDown then

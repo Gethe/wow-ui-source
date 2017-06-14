@@ -251,6 +251,7 @@ function FriendsFrame_OnLoad(self)
 	self:RegisterEvent("BATTLETAG_INVITE_SHOW");
 	self:RegisterEvent("PARTY_REFER_A_FRIEND_UPDATED");
 	self:RegisterEvent("SOCIAL_QUEUE_UPDATE");
+	self:RegisterEvent("GUILD_ROSTER_UPDATE");
 	self:RegisterEvent("GROUP_JOINED");
 	self:RegisterEvent("GROUP_LEFT");
 	self.playersInBotRank = 0;
@@ -296,6 +297,7 @@ function FriendsFrame_OnShow()
 	UpdateMicroButtons();
 	FriendsFrame_CheckQuickJoinHelpTip();
 	FriendsFrame_UpdateQuickJoinTab(#C_SocialQueue.GetAllGroups());
+	GuildRoster();
 	PlaySound("igCharacterInfoTab");
 end
 
@@ -906,6 +908,13 @@ function FriendsFrame_OnEvent(self, event, ...)
 		if ( self:IsVisible() ) then
 			FriendsFrame_Update(); --TODO - Only update the buttons that need updating
 			FriendsFrame_UpdateQuickJoinTab(#C_SocialQueue.GetAllGroups());
+		end
+	elseif ( event == "GUILD_ROSTER_UPDATE" ) then
+		if ( self:IsVisible() ) then
+			local canRequestGuildRoster = ...;
+			if ( canRequestGuildRoster ) then
+				GuildRoster();
+			end
 		end
 	end
 end

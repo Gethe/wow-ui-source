@@ -3,13 +3,15 @@
 --This File is responsible for animating spells to the actionbar
 MULTIBOTTOMLEFTINDEX = 6;
 
-function IconIntroTracker_OnLoad(self)
+IconIntroTrackerMixin = {};
+
+function IconIntroTrackerMixin:OnLoad()
 	self.iconList = {};
 	self:RegisterEvent("SPELL_PUSHED_TO_ACTIONBAR");
 end
 
 
-function IconIntroTracker_OnEvent(self, event, ...)
+function IconIntroTrackerMixin:OnEvent(event, ...)
 	if event == "SPELL_PUSHED_TO_ACTIONBAR" then
 		local spellID, slotIndex, slotPos = ...;
 		ClearNewActionHighlight(slotIndex, true);
@@ -60,5 +62,70 @@ function IconIntroTracker_OnEvent(self, event, ...)
 
 		freeIcon.icon.flyin:Play(1);
 		freeIcon.isFree = false;
+	end
+end
+
+function IconIntroTrackerMixin:ResetAll()
+	for _, iconIntro in ipairs(self.iconList) do
+		if not iconIntro.isFree then
+			iconIntro.trail1.flyin:Stop();
+			iconIntro.trail1.flyin:OnAnimFinished();
+			iconIntro.trail2.flyin:Stop();
+			iconIntro.trail2.flyin:OnAnimFinished();
+			iconIntro.trail3.flyin:Stop();
+			iconIntro.trail3.flyin:OnAnimFinished();
+			iconIntro.icon.flyin:Stop();
+			iconIntro.icon.flyin:OnAnimFinished();
+			iconIntro.isFree = true;
+			iconIntro:Hide();
+		end
+	end
+end
+
+IconIntroFlyinAnimMixin = {};
+
+function IconIntroFlyinAnimMixin:OnAnimPlay()
+	local iconFrame = self:GetParent();
+	iconFrame.bg:SetTexture(iconFrame.icon:GetTexture());
+
+	local trail = iconFrame.trail;
+	if trail then
+		trail:Show();
+		trail.flyin:Stop();
+		trail.icon:SetTexture(iconFrame.icon:GetTexture());
+		trail.flyin:Play(1);
+		if iconFrame.isBase then
+			trail:SetFrameLevel(iconFrame:GetFrameLevel()-1);
+		else
+			trail:SetFrameLevel(iconFrame:GetFrameLevel());
+		end
+	end
+
+	if iconFrame.isBase then
+		iconFrame:GetParent():Show();
+		if iconFrame.glow:IsPlaying() then
+			iconFrame.glow:Stop();
+		end
+	end
+end
+
+function IconIntroFlyinAnimMixin:OnAnimFinished()
+	local iconFrame = self:GetParent();
+	if iconFrame.isBase then
+		iconFrame.glow:Play();
+		SetBarSlotFromIntro(iconFrame.slot);
+		iconFrame.isFree = true;
+
+		local button;
+		if (iconFrame.multibar) then
+			button = _G["MultiBarBottomLeftButton"..iconFrame.pos];
+		else
+			button = _G["ActionButton"..iconFrame.pos];
+		end
+
+		MarkNewActionHighlight(iconFrame.slot);
+		ActionButton_UpdateAction(button, true);
+	else
+		iconFrame:SetFrameLevel(1);
 	end
 end

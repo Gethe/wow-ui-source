@@ -1095,6 +1095,7 @@ function OpenAllMailMixin:Reset()
 	self.mailIndex = 1;
 	self.attachmentIndex = ATTACHMENTS_MAX;
 	self.timeUntilNextRetrieval = nil;
+	self.blacklistedItemIDs = nil;
 end
 
 function OpenAllMailMixin:StartOpening()
@@ -1102,6 +1103,7 @@ function OpenAllMailMixin:StartOpening()
 	self:Disable();
 	self:SetText(OPEN_ALL_MAIL_BUTTON_OPENING);
 	self:RegisterEvent("MAIL_INBOX_UPDATE");
+	self:RegisterEvent("MAIL_FAILED");
 	self.numToOpen = GetInboxNumItems();
 	self:AdvanceAndProcessNextItem();
 end
@@ -1111,19 +1113,25 @@ function OpenAllMailMixin:StopOpening()
 	self:Enable();
 	self:SetText(OPEN_ALL_MAIL_BUTTON);
 	self:UnregisterEvent("MAIL_INBOX_UPDATE");
+	self:UnregisterEvent("MAIL_FAILED");
 end
 
 function OpenAllMailMixin:AdvanceToNextItem()
 	local foundAttachment = false;
 	while ( not foundAttachment ) do
-		if ( C_Mail.HasInboxMoney(self.mailIndex) or HasInboxItem(self.mailIndex, self.attachmentIndex) ) then
+		local _, _, _, _, money, CODAmount, daysLeft, itemCount, _, _, _, _, isGM = GetInboxHeaderInfo(self.mailIndex);
+		local itemID = select(2, GetInboxItem(self.mailIndex, self.attachmentIndex));
+		local hasBlacklistedItem = self:IsItemBlacklisted(itemID);
+		local hasCOD = CODAmount and CODAmount > 0;
+		local hasMoneyOrItem = C_Mail.HasInboxMoney(self.mailIndex) or HasInboxItem(self.mailIndex, self.attachmentIndex);
+		if ( not hasBlacklistedItem and not hasCOD and hasMoneyOrItem ) then
 			foundAttachment = true;
 		else
 			self.attachmentIndex = self.attachmentIndex - 1;
 			if ( self.attachmentIndex == 0 ) then
 				break;
 			end
-		end		
+		end
 	end
 	
 	if ( not foundAttachment ) then
@@ -1175,10 +1183,15 @@ function OpenAllMailMixin:OnLoad()
 end
 
 function OpenAllMailMixin:OnEvent(event, ...)
-	if ( event == "MAIL_INBOX_UPDATE" ) then
+	if event == "MAIL_INBOX_UPDATE" then
 		if ( self.numToOpen ~= GetInboxNumItems() ) then
 			self.mailIndex = 1;
 			self.attachmentIndex = ATTACHMENTS_MAX;
+		end
+	elseif ( event == "MAIL_FAILED" ) then
+		local itemID = ...;
+		if ( itemID ) then
+			self:AddBlacklistedItem(itemID);
 		end
 	end
 end
@@ -1205,4 +1218,16 @@ end
 
 function OpenAllMailMixin:OnHide()
 	self:StopOpening();
+end
+
+function OpenAllMailMixin:AddBlacklistedItem(itemID)
+	if ( not self.blacklistedItemIDs ) then
+		self.blacklistedItemIDs = {};
+	end
+	
+	self.blacklistedItemIDs[itemID] = true;
+end
+
+function OpenAllMailMixin:IsItemBlacklisted(itemID)
+	return self.blacklistedItemIDs and self.blacklistedItemIDs[itemID];
 end

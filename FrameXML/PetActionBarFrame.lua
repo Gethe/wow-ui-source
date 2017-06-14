@@ -47,6 +47,7 @@ function PetActionBar_OnLoad (self)
 	self:RegisterEvent("PET_UI_UPDATE");
 	self:RegisterEvent("PLAYER_TARGET_CHANGED");
 	self:RegisterEvent("UPDATE_VEHICLE_ACTIONBAR");
+	self:RegisterEvent("PLAYER_MOUNT_DISPLAY_CHANGED");
 	self:RegisterUnitEvent("UNIT_AURA", "pet");
 	self.showgrid = 0;
 	PetActionBar_Update(self);
@@ -67,7 +68,7 @@ function PetActionBar_OnEvent (self, event, ...)
 			UnlockPetActionBar();
 			HidePetActionBar();
 		end
-	elseif ( event == "PLAYER_CONTROL_LOST" or event == "PLAYER_CONTROL_GAINED" or event == "PLAYER_FARSIGHT_FOCUS_CHANGED" or event == "PET_BAR_UPDATE_USABLE" or event == "PLAYER_TARGET_CHANGED") then
+	elseif ( event == "PLAYER_CONTROL_LOST" or event == "PLAYER_CONTROL_GAINED" or event == "PLAYER_FARSIGHT_FOCUS_CHANGED" or event == "PET_BAR_UPDATE_USABLE" or event == "PLAYER_TARGET_CHANGED" or event == "PLAYER_MOUNT_DISPLAY_CHANGED" ) then
 		PetActionBar_Update(self);
 	elseif ( (event == "UNIT_FLAGS") or (event == "UNIT_AURA") ) then
 		if ( arg1 == "pet" ) then
@@ -119,6 +120,19 @@ function PetActionBarFrame_OnUpdate(self, elapsed)
 			--Move the chat frame and edit box back down to original position
 		end
 		self.mode = "none";
+	end
+
+	local rangeTimer = self.rangeTimer;
+	if ( rangeTimer ) then
+		rangeTimer = rangeTimer - elapsed;
+		if ( rangeTimer <= 0 ) then
+			for i=1, NUM_PET_ACTION_SLOTS, 1 do
+				local name, subtext, texture, isToken, isActive, autoCastAllowed, autoCastEnabled, spellID, checksRange, inRange = GetPetActionInfo(i);
+				ActionButton_UpdateRangeIndicator(_G["PetActionButton" .. i], checksRange, inRange);
+			end
+			rangeTimer = TOOLTIP_UPDATE_TIME;
+		end
+		self.rangeTimer = rangeTimer;
 	end
 end
 
@@ -191,6 +205,7 @@ function PetActionBar_Update (self)
 		--ControlReleased();
 		HidePetActionBar();
 	end
+	PetActionBarFrame.rangeTimer = -1;
 end
 
 function PetActionBar_UpdateCooldowns()
@@ -425,7 +440,13 @@ end
 function PetActionButton_SetHotkeys (self)
 	local binding = GetBindingText(GetBindingKey("BONUSACTIONBUTTON"..self:GetID()), true);
 	local hotkey = _G[self:GetName().."HotKey"];
-	hotkey:SetText(binding);
+	if ( binding == "" ) then
+		hotkey:SetText(RANGE_INDICATOR);
+		hotkey:Hide();
+	else
+		hotkey:SetText(binding);
+		hotkey:Show();
+	end
 end
 
 function LockPetActionBar()

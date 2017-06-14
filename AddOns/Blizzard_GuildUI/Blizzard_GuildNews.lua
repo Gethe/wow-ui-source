@@ -17,7 +17,6 @@ local GUILD_EVENT_TEXTURES = {
 	[CALENDAR_EVENTTYPE_MEETING]	= "Interface\\Calendar\\MeetingIcon",
 	[CALENDAR_EVENTTYPE_OTHER]		= "Interface\\Calendar\\UI-Calendar-Event-Other",
 };
-local GUILD_EVENT_TEXTURE_PATH = "Interface\\LFGFrame\\LFGIcon-";
 
 function GuildNewsFrame_OnLoad(self)
 	GuildFrame_RegisterPanel(self);
@@ -152,7 +151,7 @@ end
 local SIX_DAYS = 6 * 24 * 60 * 60		-- time in seconds
 function GuildNewsButton_SetEvent( button, event_id )
 	local today = date("*t");
-	local month, day, weekday, hour, minute, eventType, title, calendarType, textureName = CalendarGetGuildEventInfo(event_id);
+	local month, day, weekday, hour, minute, eventType, title, calendarType, texture = CalendarGetGuildEventInfo(event_id);
 	local displayTime = GameTime_GetFormattedTime(hour, minute, true);
 	local displayDay;
 	
@@ -175,7 +174,7 @@ function GuildNewsButton_SetEvent( button, event_id )
 	GuildNewsButton_SetText(button, HIGHLIGHT_FONT_COLOR, GUILD_EVENT_FORMAT, displayDay, displayTime, title);
 	
 	button.text:SetPoint("LEFT", 24, 0);
-	GuildNewsButton_SetIcon( button, GUILD_EVENT_TEXTURE_PATH..textureName);	
+	GuildNewsButton_SetIcon( button, texture);	
 	button.index = event_id;
 	button.newsType = NEWS_GUILD_EVENT;
 

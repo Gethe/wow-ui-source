@@ -23,6 +23,7 @@ function CompactRaidFrameManager_OnLoad(self)
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
 	self:RegisterEvent("UI_SCALE_CHANGED");
 	self:RegisterEvent("GROUP_ROSTER_UPDATE");
+	self:RegisterEvent("UPDATE_ACTIVE_BATTLEFIELD");
 	self:RegisterEvent("UNIT_FLAGS");
 	self:RegisterEvent("PLAYER_FLAGS_CHANGED");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
@@ -49,7 +50,7 @@ local settings = { --[["Managed",]] "Locked", "SortMode", "KeepGroupsTogether", 
 function CompactRaidFrameManager_OnEvent(self, event, ...)
 	if ( event == "DISPLAY_SIZE_CHANGED" or event == "UI_SCALE_CHANGED" ) then
 		CompactRaidFrameManager_UpdateContainerBounds(self);
-	elseif ( event == "GROUP_ROSTER_UPDATE" ) then
+	elseif ( event == "GROUP_ROSTER_UPDATE" or event == "UPDATE_ACTIVE_BATTLEFIELD" ) then
 		CompactRaidFrameManager_UpdateShown(self);
 		CompactRaidFrameManager_UpdateDisplayCounts(self);
 		CompactRaidFrameManager_UpdateLabel(self);

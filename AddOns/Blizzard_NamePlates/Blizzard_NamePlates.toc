@@ -11,3 +11,5 @@ Blizzard_ClassNameplateBar_RogueDruid.xml
 Blizzard_ClassNameplateBar_Mage.xml
 Blizzard_ClassNameplateBar_Monk.xml
 Blizzard_ClassNameplateBar_Warlock.xml
+
+Blizzard_NamePlatesCommentatorDisplay.xml

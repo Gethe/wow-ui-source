@@ -5,7 +5,6 @@ NUM_WORLDMAP_SCENARIO_POIS = 0;
 NUM_WORLDMAP_TASK_POIS = 0;
 NUM_WORLDMAP_GRAVEYARDS = 0;
 NUM_WORLDMAP_OVERLAYS = 0;
-NUM_WORLDMAP_FLAGS = 4;
 NUM_WORLDMAP_DEBUG_ZONEMAP = 0;
 NUM_WORLDMAP_DEBUG_OBJECTS = 0;
 WORLDMAP_COSMIC_ID = -1;
@@ -198,6 +197,7 @@ WORLDMAP_SETTINGS = {
 WORLD_MAP_POI_FRAME_LEVEL_OFFSETS = {
 	DUNGEON_ENTRANCE = 100,
 	LANDMARK = 200,
+	TAXINODE = 300,
 
 	BONUS_OBJECTIVE = 500,
 	INVASION = 700,
@@ -349,6 +349,8 @@ function WorldMapFrame_OnLoad(self)
 
 	self.poiQuantizer = CreateFromMixins(WorldMapPOIQuantizerMixin);
 	self.poiQuantizer:OnLoad(WORLD_QUEST_NUM_CELLS_WIDE, WORLD_QUEST_NUM_CELLS_HIGH);
+
+	self.flagsPool = CreateFramePool("FRAME", WorldMapButton, "WorldMapFlagTemplate");
 end
 
 function WorldMapFrame_SetBonusObjectivesDirty()
@@ -392,7 +394,6 @@ function WorldMapFrame_OnHide(self)
 	UpdateMicroButtons();
 	CloseDropDownMenus();
 	PlaySound("igQuestLogClose");
-	WorldMap_ClearTextures();
 	if ( not self.toggling ) then
 		if ( QuestMapFrame:IsShown() ) then
 			QuestMapFrame_CheckTutorials();
@@ -1143,6 +1144,8 @@ function WorldMap_GetFrameLevelForLandmark(landmarkType)
 		return WORLD_MAP_POI_FRAME_LEVEL_OFFSETS.INVASION;
 	elseif landmarkType == LE_MAP_LANDMARK_TYPE_DUNGEON_ENTRANCE then
 		return WORLD_MAP_POI_FRAME_LEVEL_OFFSETS.DUNGEON_ENTRANCE;
+	elseif landmarkType == LE_MAP_LANDMARK_TYPE_TAXINODE then
+		return WORLD_MAP_POI_FRAME_LEVEL_OFFSETS.TAXINODE;
 	end
 	return WORLD_MAP_POI_FRAME_LEVEL_OFFSETS.LANDMARK;
 end
@@ -1178,7 +1181,7 @@ function WorldMap_UpdateLandmarks()
 					WorldMap_ResetPOI(worldMapPOI, isObjectIcon, atlasIcon);
 
 					if (not atlasIcon) then
-						local x1, x2, y1, y2
+						local x1, x2, y1, y2;
 						if (isObjectIcon) then
 							x1, x2, y1, y2 = GetObjectIconTextureCoords(textureIndex);
 						else
@@ -1931,7 +1934,7 @@ end
 
 function WorldMap_AddQuestTimeToTooltip(questID)
 	local timeLeftMinutes = C_TaskQuest.GetQuestTimeLeftMinutes(questID);
-	if ( timeLeftMinutes ) then
+	if ( timeLeftMinutes and timeLeftMinutes > 0 ) then
 		local color = NORMAL_FONT_COLOR;
 		if ( timeLeftMinutes <= WORLD_QUESTS_TIME_CRITICAL_MINUTES ) then
 			color = RED_FONT_COLOR;
@@ -2065,7 +2068,9 @@ function WorldMapPOI_OnClick(self, button)
 	if ( self.mapLinkID and self.landmarkType ~= LE_MAP_LANDMARK_TYPE_CONTRIBUTION ) then
 		if self.landmarkType == LE_MAP_LANDMARK_TYPE_DUNGEON_ENTRANCE then
 			if not EncounterJournal or not EncounterJournal:IsShown() then
-				ToggleEncounterJournal();
+				if not ToggleEncounterJournal() then
+					return;
+				end
 			end
 			EncounterJournal_ListInstances();
 			EncounterJournal_DisplayInstance(self.mapLinkID);
@@ -2489,25 +2494,26 @@ function WorldMapButton_OnUpdate(self, elapsed)
 	WorldMapUnitPositionFrame:UpdatePlayerPins();
 
 	-- Position flags
-	local numFlags = GetNumBattlefieldFlagPositions();
-	for i=1, numFlags do
-		local flagX, flagY, flagToken = GetBattlefieldFlagPosition(i);
-		local flagFrameName = "WorldMapFlag"..i;
-		local flagFrame = _G[flagFrameName];
-		if ( flagX == 0 and flagY == 0 ) then
-			flagFrame:Hide();
-		else
-			flagX = flagX * WorldMapDetailFrame:GetWidth();
-			flagY = -flagY * WorldMapDetailFrame:GetHeight();
-			flagFrame:SetPoint("CENTER", "WorldMapDetailFrame", "TOPLEFT", flagX / flagFrame:GetScale(), flagY / flagFrame:GetScale());
-			local flagTexture = _G[flagFrameName.."Texture"];
-			flagTexture:SetTexture("Interface\\WorldStateFrame\\"..flagToken);
-			flagFrame:Show();
+	do
+		local flagSize = WorldMapFrame_InWindowedMode() and BATTLEFIELD_ICON_SIZE_WINDOW or BATTLEFIELD_ICON_SIZE_FULL;
+		local flagScale = 1 / WorldMapDetailFrame:GetScale();
+
+		WorldMapFrame.flagsPool:ReleaseAll();
+		for flagIndex = 1, GetNumBattlefieldFlagPositions() do
+			local flagX, flagY, flagToken = GetBattlefieldFlagPosition(flagIndex);
+			if flagX ~= 0 or flagY ~= 0 then
+				local flagFrame = WorldMapFrame.flagsPool:Acquire();
+
+				flagX = flagX * WorldMapDetailFrame:GetWidth();
+				flagY = -flagY * WorldMapDetailFrame:GetHeight();
+				flagFrame:SetPoint("CENTER", WorldMapDetailFrame, "TOPLEFT", flagX / flagScale, flagY / flagScale);
+				flagFrame.Texture:SetTexture("Interface\\WorldStateFrame\\"..flagToken);
+
+				flagFrame:SetSize(flagSize, flagSize);
+				flagFrame:SetScale(flagScale);
+				flagFrame:Show();
+			end
 		end
-	end
-	for i=numFlags+1, NUM_WORLDMAP_FLAGS do
-		local flagFrame = _G["WorldMapFlag"..i];
-		flagFrame:Hide();
 	end
 
 	-- Position corpse
@@ -2588,21 +2594,15 @@ function WorldMapButton_OnUpdate(self, elapsed)
 end
 
 function WorldMap_UpdateBattlefieldFlagSizes(size)
-	for i=1, NUM_WORLDMAP_FLAGS do
-		local flagFrame = _G["WorldMapFlag"..i];
-		if flagFrame then
-			flagFrame:SetSize(size, size);
-		end
+	for flagFrame in WorldMapFrame.flagsPool:EnumerateActive() do
+		flagFrame:SetSize(size, size);
 	end
 end
 
 function WorldMap_UpdateBattlefieldFlagScales()
 	local newScale = 1 / WorldMapDetailFrame:GetScale();
-	for i=1, NUM_WORLDMAP_FLAGS do
-		local flagFrame = _G["WorldMapFlag"..i];
-		if flagFrame then
-			flagFrame:SetScale(newScale);
-		end
+	for flagFrame in WorldMapFrame.flagsPool:EnumerateActive() do
+		flagFrame:SetScale(newScale);
 	end
 end
 
@@ -2619,16 +2619,6 @@ function WorldMap_GetVehicleTexture(vehicleType, isPossessed)
 		return;
 	end
 	return VEHICLE_TEXTURES[vehicleType][isPossessed];
-end
-
-function WorldMap_ClearTextures()
-	for i=1, NUM_WORLDMAP_OVERLAYS do
-		_G["WorldMapOverlay"..i]:SetTexture(nil);
-	end
-	local numOfDetailTiles = GetNumberOfDetailTiles();
-	for i=1, numOfDetailTiles do
-		_G["WorldMapDetailTile"..i]:SetTexture(nil);
-	end
 end
 
 function WorldMapUnit_OnEnter(self, motion)
@@ -3406,38 +3396,39 @@ function EncounterJournal_AddMapButtons()
 		WorldMapBossButtonFrame:SetScript("OnUpdate", nil);
 	end
 
-	local width = WorldMapDetailFrame:GetWidth();
-	local height = WorldMapDetailFrame:GetHeight();
-
-	local bossButton, questPOI, displayInfo, _;
 	local index = 1;
-	local x, y, instanceID, name, description, encounterID = EJ_GetMapEncounter(index, WorldMapFrame.fromJournal);
-	while name do
-		bossButton = _G["EJMapButton"..index];
-		if not bossButton then -- create button
-			bossButton = CreateFrame("Button", "EJMapButton"..index, WorldMapBossButtonFrame, "EncounterMapButtonTemplate");
-		end
+	if CanShowEncounterJournal() then
+		local width = WorldMapDetailFrame:GetWidth();
+		local height = WorldMapDetailFrame:GetHeight();
 
-		bossButton.instanceID = instanceID;
-		bossButton.encounterID = encounterID;
-		bossButton.tooltipTitle = name;
-		bossButton.tooltipText = description;
-		bossButton:SetPoint("CENTER", WorldMapBossButtonFrame, "BOTTOMLEFT", x*width, y*height);
-		_, _, _, displayInfo = EJ_GetCreatureInfo(1, encounterID);
-		bossButton.displayInfo = displayInfo;
-		if ( displayInfo ) then
-			SetPortraitTexture(bossButton.bgImage, displayInfo);
-		else
-			bossButton.bgImage:SetTexture("DoesNotExist");
+		local x, y, instanceID, name, description, encounterID = EJ_GetMapEncounter(index, WorldMapFrame.fromJournal);
+		while name do
+			local bossButton = _G["EJMapButton"..index];
+			if not bossButton then
+				bossButton = CreateFrame("Button", "EJMapButton"..index, WorldMapBossButtonFrame, "EncounterMapButtonTemplate");
+			end
+
+			bossButton.instanceID = instanceID;
+			bossButton.encounterID = encounterID;
+			bossButton.tooltipTitle = name;
+			bossButton.tooltipText = description;
+			bossButton:SetPoint("CENTER", WorldMapBossButtonFrame, "BOTTOMLEFT", x*width, y*height);
+			local _, _, _, displayInfo = EJ_GetCreatureInfo(1, encounterID);
+			bossButton.displayInfo = displayInfo;
+			if ( displayInfo ) then
+				SetPortraitTexture(bossButton.bgImage, displayInfo);
+			else
+				bossButton.bgImage:SetTexture("DoesNotExist");
+			end
+			bossButton:Show();
+			index = index + 1;
+			x, y, instanceID, name, description, encounterID = EJ_GetMapEncounter(index, WorldMapFrame.fromJournal);
 		end
-		bossButton:Show();
-		index = index + 1;
-		x, y, instanceID, name, description, encounterID = EJ_GetMapEncounter(index, WorldMapFrame.fromJournal);
 	end
 
 	WorldMapFrame.hasBosses = index ~= 1;
 
-	bossButton = _G["EJMapButton"..index];
+	local bossButton = _G["EJMapButton"..index];
 	while bossButton do
 		bossButton:Hide();
 		index = index + 1;

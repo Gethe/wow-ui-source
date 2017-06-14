@@ -92,77 +92,6 @@
 		</Member>
 	</FontFamily>
 
-	<FontFamily name="SystemFont_Med3" virtual="true">
-		<Member alphabet="roman">
-			<Font font="Fonts\FRIZQT__.TTF" height="16"/>
-		</Member>
-		<Member alphabet="korean">
-			<Font font="Fonts\2002.TTF" height="16"/>
-		</Member>
-		<Member alphabet="simplifiedchinese">
-			<Font font="Fonts\ARKai_T.ttf" height="16"/>
-		</Member>
-		<Member alphabet="traditionalchinese">
-			<Font font="Fonts\BLEI00D.TTF" height="16"/>
-		</Member>
-		<Member alphabet="russian">
-			<Font font="Fonts\FRIZQT___CYR.TTF" height="16"/>
-		</Member>
-	</FontFamily>
-
-	<FontFamily name="SystemFont_Shadow_Med3" virtual="true">
-		<Member alphabet="roman">
-			<Font font="Fonts\FRIZQT__.TTF" height="14">
-				<Shadow>
-					<Offset>
-						<AbsDimension x="1" y="-1"/>
-					</Offset>
-					<Color r="0" g="0" b="0"/>
-				</Shadow>
-			</Font>
-		</Member>
-		<Member alphabet="korean">
-			<Font font="Fonts\2002.TTF" height="14">
-				<Shadow>
-					<Offset>
-						<AbsDimension x="1" y="-1"/>
-					</Offset>
-					<Color r="0" g="0" b="0"/>
-				</Shadow>
-			</Font>
-		</Member>
-		<Member alphabet="simplifiedchinese">
-			<Font font="Fonts\ARKai_T.ttf" height="14">
-				<Shadow>
-					<Offset>
-						<AbsDimension x="1" y="-1"/>
-					</Offset>
-					<Color r="0" g="0" b="0"/>
-				</Shadow>
-			</Font>
-		</Member>
-		<Member alphabet="traditionalchinese">
-			<Font font="Fonts\BLEI00D.TTF" height="14">
-				<Shadow>
-					<Offset>
-						<AbsDimension x="1" y="-1"/>
-					</Offset>
-					<Color r="0" g="0" b="0"/>
-				</Shadow>
-			</Font>
-		</Member>
-		<Member alphabet="russian">
-			<Font font="Fonts\FRIZQT___CYR.TTF" height="14">
-				<Shadow>
-					<Offset>
-						<AbsDimension x="1" y="-1"/>
-					</Offset>
-					<Color r="0" g="0" b="0"/>
-				</Shadow>
-			</Font>
-		</Member>
-	</FontFamily>
-
 	<FontFamily name="SystemFont_Shadow_Outline_Large" virtual="true">
 		<Member alphabet="roman">
 			<Font font="Fonts\FRIZQT__.TTF" height="18" outline="NORMAL">
@@ -320,23 +249,6 @@
 		</Member>
 		<Member alphabet="russian">
 			<Font font="Fonts\ARIALN.TTF" height="14" outline="THICK"/>
-		</Member>
-	</FontFamily>
-
-	<FontFamily name="NumberFont_Outline_Large" virtual="true">
-		<Member alphabet="roman">
-			<Font font="Fonts\ARIALN.TTF" height="16" outline="NORMAL"/>
-		</Member>
-		<Member alphabet="korean">
-			<Font font="Fonts\ARIALN.TTF" height="16" outline="NORMAL"/>
-		</Member>
-		<Member alphabet="simplifiedchinese">
-			<Font font="Fonts\ARKai_T.ttf" height="16" outline="NORMAL"/>
-		</Member>
-		<!-- MISSING TRADITIONAL CHINESE FONT HERE -->
-		<Member alphabet="traditionalchinese"></Member>
-		<Member alphabet="russian">
-			<Font font="Fonts\ARIALN.TTF" height="16" outline="NORMAL"/>
 		</Member>
 	</FontFamily>
 
@@ -743,18 +655,6 @@
 				</Shadow>
 				<Color r="1.0" g="1.0" b="1.0"/>
 			</Font>
-		</Member>
-	</FontFamily>
-
-	<FontFamily name="QuestFont_Huge" virtual="true">
-		<Member alphabet="roman">
-			<Font font="Fonts\MORPHEUS.ttf" height="18"/>
-		</Member>
-		<Member alphabet="korean"></Member>
-		<Member alphabet="simplifiedchinese"></Member>
-		<Member alphabet="traditionalchinese"></Member>
-		<Member alphabet="russian">
-			<Font font="Fonts\MORPHEUS_CYR.TTF" height="18"/>
 		</Member>
 	</FontFamily>
 </Ui>

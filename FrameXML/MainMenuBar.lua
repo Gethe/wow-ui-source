@@ -141,7 +141,7 @@ function MainMenuBar_UpdateExperienceBars(newLevel)
 		newLevel = UnitLevel("player");
 	end
 	local artifactItemID, _, _, _, artifactTotalXP, artifactPointsSpent, _, _, _, _, _, _, artifactTier = C_ArtifactUI.GetEquippedArtifactInfo();
-	local showArtifact = artifactItemID and (UnitLevel("player") >= MAX_PLAYER_LEVEL or GetCVarBool("showArtifactXPBar"));
+	local showArtifact = artifactItemID and (UnitLevel("player") >= MAX_PLAYER_LEVEL or GetCVarBool("showArtifactXPBar")) and not C_ArtifactUI.IsEquippedArtifactMaxed();
 	local showXP = newLevel < MAX_PLAYER_LEVEL and not IsXPUserDisabled();
 	local showHonor = newLevel >= MAX_PLAYER_LEVEL and (IsWatchingHonorAsXP() or InActiveBattlefield() or IsInActiveWorldPVP());
 	local showRep = name;
@@ -171,10 +171,10 @@ function MainMenuBar_UpdateExperienceBars(newLevel)
 		local numPointsAvailableToSpend, xp, xpForNextPoint = MainMenuBar_GetNumArtifactTraitsPurchasableFromXP(artifactPointsSpent, artifactTotalXP, artifactTier);
 
 		statusBar:SetAnimatedValues(xp, 0, xpForNextPoint, numPointsAvailableToSpend + artifactPointsSpent);
-		if visibilityChanged or statusBar.itemID ~= itemID or C_ArtifactUI.IsAtForge() then
+		if visibilityChanged or statusBar.artifactItemID ~= artifactItemID or C_ArtifactUI.IsAtForge() then
 			statusBar:Reset();
 		end
-		statusBar.itemID = itemID;
+		statusBar.artifactItemID = artifactItemID;
 		ArtifactWatchBar.xp = xp;
 		ArtifactWatchBar.totalXP = artifactTotalXP;
 		ArtifactWatchBar.xpForNextPoint = xpForNextPoint;
@@ -253,8 +253,12 @@ function MainMenuBar_UpdateExperienceBars(newLevel)
 			end
 			colorIndex = 5;		-- always color friendships green
 		elseif (C_Reputation.IsFactionParagon(factionID)) then
-			local currentValue, threshold = C_Reputation.GetFactionParagonInfo(factionID);
-			min, max, value = 0, threshold, currentValue;
+			local currentValue, threshold, _, hasRewardPending = C_Reputation.GetFactionParagonInfo(factionID);
+			min, max  = 0, threshold;
+			value = currentValue % threshold;
+			if hasRewardPending then 
+				value = value + threshold;
+			end
 		else
 			level = reaction;
 			if (reaction == MAX_REPUTATION_REACTION) then
@@ -270,6 +274,10 @@ function MainMenuBar_UpdateExperienceBars(newLevel)
 		-- Normalize values
 		max = max - min;
 		value = value - min;
+		if ( isCapped and max == 0 ) then
+			max = 1;
+			value = 1;
+		end
 		min = 0;
 		local statusBar = ReputationWatchBar.StatusBar;
 		statusBar:SetAnimatedValues(value, min, max, level);

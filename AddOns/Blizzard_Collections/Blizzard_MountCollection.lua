@@ -24,16 +24,10 @@ function MountJournal_OnEvent(self, event, ...)
 	if ( event == "MOUNT_JOURNAL_USABILITY_CHANGED" or event == "COMPANION_LEARNED" or event == "COMPANION_UNLEARNED" or event == "COMPANION_UPDATE" ) then
 		local companionType = ...;
 		if ( not companionType or companionType == "MOUNT" ) then
-			if (self:IsVisible()) then
-				MountJournal_UpdateMountList();
-				MountJournal_UpdateMountDisplay();
-			end
+			MountJournal_FullUpdate(self);
 		end
 	elseif ( event == "MOUNT_JOURNAL_SEARCH_UPDATED" ) then
-		if (self:IsVisible()) then
-			MountJournal_UpdateMountList();
-			MountJournal_UpdateMountDisplay();
-		end
+		MountJournal_FullUpdate(self);
 	elseif ( event == "UI_MODEL_SCENE_INFO_UPDATED" ) then
 		if (self:IsVisible()) then
 			MountJournal_UpdateMountDisplay(true);
@@ -41,12 +35,20 @@ function MountJournal_OnEvent(self, event, ...)
 	end
 end
 
-function MountJournal_OnShow(self)
-	MountJournal_UpdateMountList();
-	if (not MountJournal.selectedSpellID) then
-		MountJournal_Select(1);
+function MountJournal_FullUpdate(self)
+	if (self:IsVisible()) then
+		MountJournal_UpdateMountList();
+
+		if (not MountJournal.selectedSpellID) then
+			MountJournal_Select(1);
+		end
+
+		MountJournal_UpdateMountDisplay();
 	end
-	MountJournal_UpdateMountDisplay();
+end
+
+function MountJournal_OnShow(self)
+	MountJournal_FullUpdate(self);
 	SetPortraitToTexture(CollectionsJournalPortrait, "Interface\\Icons\\MountJournalPortrait");
 end
 
@@ -282,19 +284,6 @@ function MountJournal_Select(index)
 	MountJournal_UpdateMountDisplay();
 end
 
-function MountJournal_CollectAvailableFilters()
-	MountJournal.baseFilterTypes = {};
-	local numSources = C_PetJournal.GetNumPetSources();
-
-	for i = 1, numSources do
-		MountJournal.baseFilterTypes[i] = false
-	end
-	for i = 1, C_MountJournal.GetNumDisplayedMounts() do
-		local sourceType = select(6,C_MountJournal.GetDisplayedMountInfo(i))
-		MountJournal.baseFilterTypes[sourceType] = true;
-	end
-end
-
 function MountJournalMountButton_UseMount(mountID)
 	local creatureName, spellID, icon, active = C_MountJournal.GetMountInfoByID(mountID);
 	if ( active ) then
@@ -393,7 +382,7 @@ function MountJournalFilterDropDown_Initialize(self, level)
 		info.checked = C_MountJournal.GetCollectedFilterSetting(LE_MOUNT_JOURNAL_FILTER_NOT_COLLECTED);
 		info.isNotRadio = true;
 		UIDropDownMenu_AddButton(info, level)
-		
+
 		info.text = MOUNT_JOURNAL_FILTER_UNUSABLE
 		info.func = function(_, _, _, value)
 						C_MountJournal.SetCollectedFilterSetting(LE_MOUNT_JOURNAL_FILTER_UNUSABLE, value);
@@ -431,10 +420,9 @@ function MountJournalFilterDropDown_Initialize(self, level)
 		UIDropDownMenu_AddButton(info, level)
 
 		info.notCheckable = false;
-		MountJournal_CollectAvailableFilters();
 		local numSources = C_PetJournal.GetNumPetSources();
 		for i=1,numSources do
-			if ( MountJournal.baseFilterTypes[i] ) then
+			if C_MountJournal.IsValidSourceFilter(i) then
 				info.text = _G["BATTLE_PET_SOURCE_"..i];
 				info.func = function(_, _, _, value)
 								C_MountJournal.SetSourceFilter(i,value);
@@ -544,6 +532,7 @@ function MountJournal_ShowMountDropdown(index, anchorTo, offsetX, offsetY)
 		return;
 	end
 	ToggleDropDownMenu(1, nil, MountJournal.mountOptionsMenu, anchorTo, offsetX, offsetY);
+	PlaySound("igMainMenuOptionCheckBoxOn");
 end
 
 function MountJournal_HideMountDropdown()

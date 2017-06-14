@@ -222,7 +222,7 @@
 	            </Scripts>
             </Button>
 			<!-- Bank Slots  -->
-			<Frame name="BankSlotsFrame" SetAllPoints="true" useParentLevel="true" hidden="false">
+			<Frame name="BankSlotsFrame" setAllPoints="true" useParentLevel="true" hidden="false">
 				<Layers>
 					<Layer level="BORDER">
 						<Texture parentKey="LeftTopCorner-Shadow" file="Interface\BankFrame\CornersShadow" virtual="true" >
@@ -509,7 +509,7 @@
 							<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="0" y="40"/>
 						</Anchors>
 						<Layers>
-							<Layer level="BACKGROUNDBORDER">
+							<Layer level="BORDER">
 								<Texture name="$parentBottomLeftInner" file="Interface\GuildBankFrame\Corners" >
 									<Size x="32" y="32"/>
 									<Anchors>

@@ -311,14 +311,12 @@
 			</OnHide>
 		</Scripts>
 	</Frame>
-	<Button name="BackpackTokenTemplate" hidden="true" virtual="true">
-		<Size>
-			<AbsDimension x="50" y="12"/>
-		</Size>
+	<Button name="BackpackTokenTemplate" parentArray="Tokens" hidden="true" virtual="true">
+		<Size x="50" y="12"/>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString name="$parentCount" inherits="GameFontHighlightSmall" justifyH="RIGHT" parentKey="count">
-					<Size x="38" y="10"/>
+					<Size x="42" y="10"/>
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset x="0" y="0"/>

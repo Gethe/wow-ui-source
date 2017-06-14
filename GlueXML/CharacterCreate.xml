@@ -138,10 +138,6 @@
 
 	<Script file="CharacterCreate.lua"/>
 
-	<AnimationGroup name="RequirementPulseAnimationGroupTemplate" parentKey="RequirementPulse" setToFinalAlpha="true" looping="bounce" virtual="true">
-		<Alpha childKey="Title" duration="1" order="1" fromAlpha="1" toAlpha="0.2"/>
-	</AnimationGroup>
-
 	<Frame name="GlowyBorderFrame" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="-1">
@@ -1364,9 +1360,6 @@
 								<AbsValue val="16"/>
 							</EdgeSize>
 						</Backdrop>
-						<Animations>
-							<AnimationGroup inherits="RequirementPulseAnimationGroupTemplate"/>
-						</Animations>
 						<Scripts>
 							<OnEscapePressed function="CharacterCreate_Back"/>
 							<OnEnterPressed function="CharacterCreate_TryForward"/>
@@ -1938,9 +1931,6 @@
 										</FontString>
 									</Layer>
 								</Layers>
-								<Animations>
-									<AnimationGroup inherits="RequirementPulseAnimationGroupTemplate"/>
-								</Animations>
 							</Frame>
 
 							<Frame name="CharCreateSelectFactionFrame" hidden="true">
@@ -1982,9 +1972,6 @@
 										</Anchors>
 									</CheckButton>
 								</Frames>
-								<Animations>
-									<AnimationGroup inherits="RequirementPulseAnimationGroupTemplate"/>
-								</Animations>
 							</Frame>
 
 							<CheckButton name="CharacterCreateAlternateFormTop" hidden="true">

@@ -1,13 +1,13 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
-	<Script file="ModelSceneTemplates.lua"/>
+	<Include file="ModelSceneTemplatesScripts.xml"/>
 
 	<ScopedModifier scriptsUseGivenEnv="true">
 		<Button name="ModifyOrbitCameraBaseButtonTemplate" registerForClicks="LeftButtonDown, LeftButtonUp" mixin="ModifyOrbitCameraButtonMixin" virtual="true">
 			<KeyValues>
 				<KeyValue key="interpolationEnabled" value="false" type="boolean" />
 			</KeyValues>
-			
+
 			<Size x="35" y="35" />
 			<Scripts>
 				<OnMouseDown method="OnMouseDown" />
@@ -20,7 +20,7 @@
 				<KeyValue key="cameraMode" value="ORBIT_CAMERA_MOUSE_MODE_YAW_ROTATION" type="global" />
 				<KeyValue key="amountPerSecond" value="-3" type="number" />
 			</KeyValues>
-			
+
 			<Anchors>
 				<Anchor point="TOPRIGHT" relativePoint="BOTTOM" x="-5" y="50"/>
 			</Anchors>

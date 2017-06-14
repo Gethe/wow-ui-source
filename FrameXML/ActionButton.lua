@@ -198,6 +198,7 @@ function ActionBarButtonEventsFrame_OnLoad(self)
 	self:RegisterEvent("PET_BAR_UPDATE");
 	self:RegisterEvent("UNIT_FLAGS");
 	self:RegisterEvent("UNIT_AURA");
+	self:RegisterEvent("PLAYER_MOUNT_DISPLAY_CHANGED");
 end
 
 function ActionBarButtonEventsFrame_OnEvent(self, event, ...)
@@ -743,7 +744,7 @@ function ActionButton_OnEvent(self, event, ...)
 		((event == "UNIT_ENTERED_VEHICLE" or event == "UNIT_EXITED_VEHICLE") and (arg1 == "player")) or
 		((event == "COMPANION_UPDATE") and (arg1 == "MOUNT")) ) then
 		ActionButton_UpdateState(self);
-	elseif ( event == "ACTIONBAR_UPDATE_USABLE" ) then
+	elseif ( event == "ACTIONBAR_UPDATE_USABLE" or event == "PLAYER_MOUNT_DISPLAY_CHANGED" ) then
 		ActionButton_UpdateUsable(self);
 	elseif ( event == "LOSS_OF_CONTROL_UPDATE" ) then
 		ActionButton_UpdateCooldown(self);
@@ -860,29 +861,35 @@ function ActionButton_OnUpdate(self, elapsed)
 		rangeTimer = rangeTimer - elapsed;
 
 		if ( rangeTimer <= 0 ) then
-			local count = self.HotKey;
 			local valid = IsActionInRange(self.action);
-			if ( count:GetText() == RANGE_INDICATOR ) then
-				if ( valid == false ) then
-					count:Show();
-					count:SetVertexColor(1.0, 0.1, 0.1);
-				elseif ( valid ) then
-					count:Show();
-					count:SetVertexColor(0.6, 0.6, 0.6);
-				else
-					count:Hide();
-				end
-			else
-				if ( valid == false ) then
-					count:SetVertexColor(1.0, 0.1, 0.1);
-				else
-					count:SetVertexColor(0.6, 0.6, 0.6);
-				end
-			end
+			local checksRange = (valid ~= nil);
+			local inRange = checksRange and valid;
+			ActionButton_UpdateRangeIndicator(self, checksRange, inRange);
 			rangeTimer = TOOLTIP_UPDATE_TIME;
 		end
 
 		self.rangeTimer = rangeTimer;
+	end
+end
+
+function ActionButton_UpdateRangeIndicator(self, checksRange, inRange)
+	if ( self.HotKey:GetText() == RANGE_INDICATOR ) then
+		if ( checksRange ) then
+			self.HotKey:Show();
+			if ( inRange ) then
+				self.HotKey:SetVertexColor(LIGHTGRAY_FONT_COLOR:GetRGB());
+			else
+				self.HotKey:SetVertexColor(RED_FONT_COLOR:GetRGB());
+			end
+		else
+			self.HotKey:Hide();
+		end
+	else
+		if ( checksRange and not inRange ) then
+			self.HotKey:SetVertexColor(RED_FONT_COLOR:GetRGB());
+		else
+			self.HotKey:SetVertexColor(LIGHTGRAY_FONT_COLOR:GetRGB());
+		end
 	end
 end
 

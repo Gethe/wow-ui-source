@@ -22,6 +22,10 @@ local Transmog =
 		},
 	},
 
+	Events =
+	{
+	},
+
 	Tables =
 	{
 	},

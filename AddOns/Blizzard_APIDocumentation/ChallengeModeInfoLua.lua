@@ -64,6 +64,16 @@ local ChallengeModeInfoLua =
 			},
 		},
 		{
+			Name = "GetDeathCount",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "numDeaths", Type = "number", Nilable = false },
+				{ Name = "timeLost", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetGuildLeaders",
 			Type = "Function",
 
@@ -161,7 +171,6 @@ local ChallengeModeInfoLua =
 				{ Name = "mapChallengeModeID", Type = "number", Nilable = false },
 				{ Name = "affixIDs", Type = "table", InnerType = "number", Nilable = false },
 				{ Name = "keystoneLevel", Type = "number", Nilable = false },
-				{ Name = "keystoneEnergized", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -238,6 +247,10 @@ local ChallengeModeInfoLua =
 				{ Name = "success", Type = "bool", Nilable = false },
 			},
 		},
+	},
+
+	Events =
+	{
 	},
 
 	Tables =

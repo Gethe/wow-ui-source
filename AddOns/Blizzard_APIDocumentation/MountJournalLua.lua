@@ -7,6 +7,37 @@ local MountJournalLua =
 	Functions =
 	{
 		{
+			Name = "ClearFanfare",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "mountID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "ClearRecentFanfares",
+			Type = "Function",
+		},
+		{
+			Name = "Dismiss",
+			Type = "Function",
+		},
+		{
+			Name = "GetCollectedFilterSetting",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "filterIndex", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isChecked", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "GetDisplayedMountAllCreatureDisplayInfo",
 			Type = "Function",
 
@@ -18,6 +49,31 @@ local MountJournalLua =
 			Returns =
 			{
 				{ Name = "allDisplayInfo", Type = "table", InnerType = "MountCreatureDisplayInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetDisplayedMountInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "displayIndex", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "icon", Type = "number", Nilable = false },
+				{ Name = "isActive", Type = "bool", Nilable = false },
+				{ Name = "isUsable", Type = "bool", Nilable = false },
+				{ Name = "sourceType", Type = "number", Nilable = false },
+				{ Name = "isFavorite", Type = "bool", Nilable = false },
+				{ Name = "isFactionSpecific", Type = "bool", Nilable = false },
+				{ Name = "faction", Type = "number", Nilable = true },
+				{ Name = "shouldHideOnChar", Type = "bool", Nilable = false },
+				{ Name = "isCollected", Type = "bool", Nilable = false },
+				{ Name = "mountID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -40,6 +96,21 @@ local MountJournalLua =
 			},
 		},
 		{
+			Name = "GetIsFavorite",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "mountIndex", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isFavorite", Type = "bool", Nilable = false },
+				{ Name = "canSetFavorite", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "GetMountAllCreatureDisplayInfoByID",
 			Type = "Function",
 
@@ -51,6 +122,40 @@ local MountJournalLua =
 			Returns =
 			{
 				{ Name = "allDisplayInfo", Type = "table", InnerType = "MountCreatureDisplayInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetMountIDs",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "mountIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetMountInfoByID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "mountID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "icon", Type = "number", Nilable = false },
+				{ Name = "isActive", Type = "bool", Nilable = false },
+				{ Name = "isUsable", Type = "bool", Nilable = false },
+				{ Name = "sourceType", Type = "number", Nilable = false },
+				{ Name = "isFavorite", Type = "bool", Nilable = false },
+				{ Name = "isFactionSpecific", Type = "bool", Nilable = false },
+				{ Name = "faction", Type = "number", Nilable = true },
+				{ Name = "shouldHideOnChar", Type = "bool", Nilable = false },
+				{ Name = "isCollected", Type = "bool", Nilable = false },
+				{ Name = "mountID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -72,6 +177,145 @@ local MountJournalLua =
 				{ Name = "uiModelSceneID", Type = "number", Nilable = false },
 			},
 		},
+		{
+			Name = "GetNumDisplayedMounts",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "numMounts", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetNumMounts",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "numMounts", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetNumMountsNeedingFanfare",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "numMountsNeedingFanfare", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "IsSourceChecked",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "filterIndex", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isChecked", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsValidSourceFilter",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "filterIndex", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isValid", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "NeedsFanfare",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "mountID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "needsFanfare", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "Pickup",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "displayIndex", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SetAllSourceFilters",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "isChecked", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SetCollectedFilterSetting",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "filterIndex", Type = "number", Nilable = false },
+				{ Name = "isChecked", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SetIsFavorite",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "mountIndex", Type = "number", Nilable = false },
+				{ Name = "isFavorite", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SetSearch",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "searchValue", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "SetSourceFilter",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "filterIndex", Type = "number", Nilable = false },
+				{ Name = "isChecked", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SummonByID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "mountID", Type = "number", Nilable = false },
+			},
+		},
+	},
+
+	Events =
+	{
 	},
 
 	Tables =

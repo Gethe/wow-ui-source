@@ -1910,11 +1910,9 @@ end
 
 local RequirementsFlowMixin = {};
 
-function RequirementsFlowMixin:Initialize(completeButton, setCompleteButtonEnabledCallback, startCalloutAnimation, stopCalloutAnimation)
+function RequirementsFlowMixin:Initialize(completeButton, setCompleteButtonEnabledCallback)
 	self.completeButton = completeButton;
 	self.setCompleteButtonEnabledCallback = setCompleteButtonEnabledCallback;
-	self.startCalloutAnimation = startCalloutAnimation;
-	self.stopCalloutAnimation = stopCalloutAnimation;
 	self.requirements = {};
 end
 
@@ -1951,27 +1949,8 @@ function RequirementsFlowMixin:HideTooltip()
 	GlueTooltip:Hide();
 end
 
-function RequirementsFlowMixin:AddRequirement(requirementID, calloutFrame, description)
-	self.requirements[requirementID] = { complete = false, calloutFrame = calloutFrame, description = description };
-end
-
-function RequirementsFlowMixin:GetCalloutFrame(requirementID)
-	if requirementID then
-		return self.requirements[requirementID].calloutFrame;
-	end
-end
-
-function RequirementsFlowMixin:UpdateCalloutAnimation(requirementID)
-	if self.currentCalloutFrame then
-		self.stopCalloutAnimation(self.currentCalloutFrame);
-		self.currentCalloutFrame = nil;
-	end
-
-	local calloutFrame = self:GetCalloutFrame(requirementID);
-	if calloutFrame then
-		self.startCalloutAnimation(calloutFrame);
-		self.currentCalloutFrame = calloutFrame;
-	end
+function RequirementsFlowMixin:AddRequirement(requirementID, description)
+	self.requirements[requirementID] = { complete = false, description = description };
 end
 
 function RequirementsFlowMixin:SetRequirementComplete(requirementID, complete)
@@ -1990,7 +1969,6 @@ end
 
 function RequirementsFlowMixin:UpdateInstructions()
 	local firstIncompleteRequirement = self:GetFirstIncompleteRequirement();
-	self:UpdateCalloutAnimation(firstIncompleteRequirement);
 	self.setCompleteButtonEnabledCallback(firstIncompleteRequirement == nil);
 
 	if firstIncompleteRequirement and GetMouseFocus() == self.completeButton then
@@ -2014,20 +1992,11 @@ local function InitializeRequirementsFlow()
 			CharCreate_EnableNextButton(enabled);
 		end
 
-		local startCalloutAnimation = function(frame)
-			frame.RequirementPulse:Play();
-		end
+		finalizeRequirements:Initialize(CharCreateOkayButton, setCompleteEnabled);
 
-		local stopCalloutAnimation = function(frame)
-			frame.RequirementPulse:Stop();
-			frame.Title:SetAlpha(1);
-		end
-
-		finalizeRequirements:Initialize(CharCreateOkayButton, setCompleteEnabled, startCalloutAnimation, stopCalloutAnimation);
-
-		finalizeRequirements:AddRequirement(FINALIZE_REQ_HAS_SPEC, CharCreateSelectSpecFrame, CHARACTER_CREATION_REQUIREMENTS_PICK_SPEC);
-		finalizeRequirements:AddRequirement(FINALIZE_REQ_HAS_FACTION, CharCreateSelectFactionFrame, CHARACTER_CREATION_REQUIREMENTS_PICK_FACTION);
-		finalizeRequirements:AddRequirement(FINALIZE_REQ_HAS_NAME, CharacterCreateNameEdit, CHARACTER_CREATION_REQUIREMENTS_PICK_NAME);
+		finalizeRequirements:AddRequirement(FINALIZE_REQ_HAS_SPEC, CHARACTER_CREATION_REQUIREMENTS_PICK_SPEC);
+		finalizeRequirements:AddRequirement(FINALIZE_REQ_HAS_FACTION, CHARACTER_CREATION_REQUIREMENTS_PICK_FACTION);
+		finalizeRequirements:AddRequirement(FINALIZE_REQ_HAS_NAME, CHARACTER_CREATION_REQUIREMENTS_PICK_NAME);
 	end
 end
 

@@ -179,11 +179,11 @@ function ContributeButtonMixin:OnEnter()
 
 		if isEnabled or (self.contributionResult == Enum.ContributionResult.FailedConditionCheck) then
 			ContributionTooltip:SetText(CONTRIBUTION_REWARD_TOOLTIP_TITLE, HIGHLIGHT_FONT_COLOR:GetRGBA());
-			GameTooltip_AddQuestRewardsToTooltipWithHeader(ContributionTooltip, self.questID, 0, CONTRIBUTION_REWARD_TOOLTIP_TEXT, NORMAL_FONT_COLOR, false);
+			GameTooltip_AddQuestRewardsToTooltip(ContributionTooltip, self.questID, TOOLTIP_QUEST_REWARDS_STYLE_CONTRIBUTION);
 
 			local currencyID, requiredCurrency = C_ContributionCollector.GetRequiredContributionAmount(self.contributionID);
 			local currencyName, ownedCurrency = GetCurrencyInfo(currencyID);
-			local currencyLineColor = (ownedCurrency >= requiredCurrency) and NORMAL_FONT_COLOR or RED_FONT_COLOR;
+			local currencyLineColor = (ownedCurrency >= requiredCurrency) and NORMAL_FONT_COLOR or DISABLED_FONT_COLOR;
 			local currencyLine = CONTRIBUTION_TOOLTIP_PLAYER_CURRENCY_AMOUNT:format(BreakUpLargeNumbers(ownedCurrency), BreakUpLargeNumbers(requiredCurrency), currencyName);
 
 			ContributionTooltip.Currency:Show();
@@ -244,7 +244,7 @@ function ContributeButtonMixin:Update()
 
 	if canContribute or (result == Enum.ContributionResult.FailedConditionCheck) then
 		local currencyID, currencyAmount = C_ContributionCollector.GetRequiredContributionAmount(self.contributionID);
-		local currencyColorCode = canContribute and HIGHLIGHT_FONT_COLOR_CODE or RED_FONT_COLOR_CODE;
+		local currencyColorCode = canContribute and HIGHLIGHT_FONT_COLOR_CODE or DISABLED_FONT_COLOR_CODE;
 		self:SetCurrencyFromID(currencyID, currencyAmount, CONTIBUTION_REQUIRED_CURRENCY, currencyColorCode);
 	else
 		self:SetText(CONTRIBUTION_DISABLED);

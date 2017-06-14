@@ -135,6 +135,10 @@ local QuestTaskInfoLua =
 		},
 	},
 
+	Events =
+	{
+	},
+
 	Tables =
 	{
 		{

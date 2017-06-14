@@ -277,11 +277,6 @@ function LevelUpDisplay_OnEvent(self, event, ...)
 			LevelUpDisplay_Show(self);
 			LevelUpDisplaySide:Hide();
 		end
-	elseif ( event == "ZONE_CHANGED_NEW_AREA" ) then
-		self:UnregisterEvent("ZONE_CHANGED_NEW_AREA");
-		if ( self.type or self.queuedType ) then
-			LevelUpDisplay_Show(self);
-		end
 	elseif ( event == "PET_BATTLE_FINAL_ROUND" ) then
 		self.type = TOAST_PET_BATTLE_WINNER;
 		self.winner = arg1;
@@ -359,7 +354,7 @@ function LevelUpDisplay_PlayScenario()
 end
 
 function LevelUpDisplay_BuildCharacterList(self)
-	local name, icon, link = "","",nil;
+	local name, icon, link = "",nil,nil;
 	self.unlockList = {};
 
 	if LEVEL_UP_EVENTS[self.level] then
@@ -376,16 +371,15 @@ function LevelUpDisplay_BuildCharacterList(self)
 															};
 	end	
 
-	local GUILD_EVENT_TEXTURE_PATH = "Interface\\LFGFrame\\LFGIcon-";
 	local dungeons = {GetLevelUpInstances(self.level, false)};
 	for _,dungeon in pairs(dungeons) do
 		name, icon, link = GetDungeonInfo(dungeon);
 		if link then -- link can come back as nil if there's no Dungeon Journal entry
-			self.unlockList[#self.unlockList +1] = { entryType = "dungeon", text = name, subText = LEVEL_UP_DUNGEON, icon = GUILD_EVENT_TEXTURE_PATH..icon, subIcon = SUBICON_TEXCOOR_LOCK,
+			self.unlockList[#self.unlockList +1] = { entryType = "dungeon", text = name, subText = LEVEL_UP_DUNGEON, icon = icon, subIcon = SUBICON_TEXCOOR_LOCK,
 																		link = LEVEL_UP_DUNGEON2.." "..link
 																	};
 		else
-			self.unlockList[#self.unlockList +1] = { entryType = "dungeon", text = name, subText = LEVEL_UP_DUNGEON, icon = GUILD_EVENT_TEXTURE_PATH..icon, subIcon = SUBICON_TEXCOOR_LOCK,
+			self.unlockList[#self.unlockList +1] = { entryType = "dungeon", text = name, subText = LEVEL_UP_DUNGEON, icon = icon, subIcon = SUBICON_TEXCOOR_LOCK,
 																		link = LEVEL_UP_DUNGEON2.." "..name
 																	};
 		end
@@ -395,11 +389,11 @@ function LevelUpDisplay_BuildCharacterList(self)
 	for _,raid in pairs(raids) do
 		name, icon, link = GetDungeonInfo(raid);
 		if link then -- link can come back as nil if there's no Dungeon Journal entry
-			self.unlockList[#self.unlockList +1] = { entryType = "dungeon", text = name, subText = LEVEL_UP_RAID, icon = GUILD_EVENT_TEXTURE_PATH..icon, subIcon = SUBICON_TEXCOOR_LOCK,
+			self.unlockList[#self.unlockList +1] = { entryType = "dungeon", text = name, subText = LEVEL_UP_RAID, icon = icon, subIcon = SUBICON_TEXCOOR_LOCK,
 																		link = LEVEL_UP_RAID2.." "..link
 																	};
 		else
-			self.unlockList[#self.unlockList +1] = { entryType = "dungeon", text = name, subText = LEVEL_UP_RAID, icon = GUILD_EVENT_TEXTURE_PATH..icon, subIcon = SUBICON_TEXCOOR_LOCK,
+			self.unlockList[#self.unlockList +1] = { entryType = "dungeon", text = name, subText = LEVEL_UP_RAID, icon = icon, subIcon = SUBICON_TEXCOOR_LOCK,
 																		link = LEVEL_UP_RAID2.." "..name
 																	};
 		end
@@ -704,12 +698,6 @@ end
 
 function LevelUpDisplay_StartDisplay(self, beginUnlockList)
 	if ( self:IsShown() ) then
-		return;
-	end
-
-	if ( not IsPlayerInWorld() ) then
-		-- this is pretty much the zoning-into-a-scenario case
-		self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
 		return;
 	end
 

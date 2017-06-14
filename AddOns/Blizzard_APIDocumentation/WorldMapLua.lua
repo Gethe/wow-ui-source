@@ -49,6 +49,10 @@ local WorldMapLua =
 		},
 	},
 
+	Events =
+	{
+	},
+
 	Tables =
 	{
 	},

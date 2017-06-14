@@ -97,7 +97,7 @@ end
 
 function QuestUtils_GetQuestName(questID)
 	-- TODO: Make unified API for this?
-	local questName = select(4, GetTaskInfo(questID));
+	local questName = C_TaskQuest.GetQuestInfoByQuestID(questID);
 	if not questName then
 		local questIndex = GetQuestLogIndexByID(questID);
 		if questIndex and questIndex > 0 then
@@ -128,4 +128,31 @@ function QuestUtils_CanUseAutoGroupFinder(questID, isDropdownRequest)
 	end
 
 	return false;
+end
+
+function QuestUtils_AddQuestCurrencyRewardsToTooltip(questID, tooltip)
+	local numQuestCurrencies = GetNumQuestLogRewardCurrencies(questID);
+	local currencies = { };
+	for i = 1, numQuestCurrencies do
+		local name, texture, numItems, currencyID = GetQuestLogRewardCurrencyInfo(i, questID);
+		local rarity = select(8, GetCurrencyInfo(currencyID));
+		local currencyInfo = { name = name, texture = texture, numItems = numItems, currencyID = currencyID, rarity = rarity };
+		tinsert(currencies, currencyInfo);
+	end
+
+	table.sort(currencies,
+		function(currency1, currency2)
+			if currency1.rarity ~= currency2.rarity then
+				return currency1.rarity > currency2.rarity;
+			end
+			return currency1.currencyID > currency2.currencyID;
+		end
+	);
+
+	for i, currencyInfo in ipairs(currencies) do
+		local text = BONUS_OBJECTIVE_REWARD_WITH_COUNT_FORMAT:format(currencyInfo.texture, currencyInfo.numItems, currencyInfo.name);
+		local currencyColor = GetColorForCurrencyReward(currencyInfo.currencyID, currencyInfo.numItems);
+		tooltip:AddLine(text, currencyColor:GetRGB());
+	end
+	return numQuestCurrencies;
 end

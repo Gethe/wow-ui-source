@@ -3,12 +3,13 @@
 	<Font name="GameFontNormal" inherits="SystemFont_Shadow_Med1" virtual="true">
 		<Color r="1.0" g="0.82" b="0"/>
 	</Font>
+	<Font name="GameFontNormalCenter" inherits="GameFontNormal" justifyH="CENTER" virtual="true"/>
 	<Font name="GameFontDisable" inherits="GameFontNormal" virtual="true">
 		<Color r="0.5" g="0.5" b="0.5"/>
 	</Font>
 	<Font name="GameFontHighlight" inherits="GameFontNormal" virtual="true">
 		<Color r="1.0" g="1.0" b="1.0"/>
-	</Font>	
+	</Font>
 	<Font name="GameFontNormalHuge" inherits="SystemFont_Shadow_Huge1" virtual="true">
 		<Color r="1.0" g="0.82" b="0"/>
 	</Font>
@@ -86,7 +87,7 @@
 	</Font>
 	<Font name="GameFontBlackMedium" inherits="SystemFont_Med3" virtual="true">
 		<Color r="0" g="0" b="0"/>
-	</Font>	
+	</Font>
 	<Font name="GameFontBlackSmall" inherits="SystemFont_Small" virtual="true">
 		<Color r="0" g="0" b="0"/>
 	</Font>
@@ -113,12 +114,12 @@
 	</Font>
 	<Font name="GameFontDisableLarge" inherits="GameFontNormalLarge" virtual="true">
 		<Color r="0.5" g="0.5" b="0.5"/>
-	</Font>	
+	</Font>
 	<Font name="GameFontHighlightSmall" inherits="GameFontNormalSmall" virtual="true">
 		<Color r="1.0" g="1.0" b="1.0"/>
 	</Font>
-	<Font name="GameFontHighlightSmallLeft" inherits="GameFontHighlightSmall" justifyH="LEFT" virtual="true"/>	
-	<Font name="GameFontDisableSmallLeft" inherits="GameFontDisableSmall" justifyH="LEFT" virtual="true"/>	
+	<Font name="GameFontHighlightSmallLeft" inherits="GameFontHighlightSmall" justifyH="LEFT" virtual="true"/>
+	<Font name="GameFontDisableSmallLeft" inherits="GameFontDisableSmall" justifyH="LEFT" virtual="true"/>
 	<Font name="GameFontHighlightSmall2" inherits="SystemFont_Small2" virtual="true">
 		<Color r="1.0" g="1.0" b="1.0"/>
 	</Font>
@@ -142,10 +143,10 @@
 	</Font>
 	<Font name="GameFontNormalShadowHuge2" inherits="SystemFont_Shadow_Huge2" virtual="true">
 		<Color r="1.0" g="0.82" b="0"/>
-	</Font>	
+	</Font>
 	<Font name="GameFontNormalHugeOutline" inherits="SystemFont_Shadow_Huge1" virtual="true">
 		<Color r="1.0" g="0.82" b="0"/>
-	</Font>	
+	</Font>
 	<Font name="GameFontNormalHuge3" inherits="SystemFont_Shadow_Huge3" virtual="true">
 		<Color r="1.0" g="0.82" b="0"/>
 	</Font>
@@ -161,4 +162,4 @@
   <Font name="IMEHighlight" inherits="System_IME" justifyH="LEFT" virtual="true">
     <Color r="1.0" g="0.82" b="0"/>
   </Font>
-</Ui>	
+</Ui>

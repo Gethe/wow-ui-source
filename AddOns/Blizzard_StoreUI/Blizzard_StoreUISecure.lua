@@ -194,6 +194,8 @@ Import("BLIZZARD_STORE_VAS_ERROR_DISALLOWED_SOURCE_ACCOUNT");
 Import("BLIZZARD_STORE_VAS_ERROR_DISALLOWED_DESTINATION_ACCOUNT");
 Import("BLIZZARD_STORE_VAS_ERROR_LOWER_BOX_LEVEL");
 Import("BLIZZARD_STORE_VAS_ERROR_MAX_CHARACTERS_ON_SERVER");
+Import("BLIZZARD_STORE_VAS_ERROR_LAST_SAVE_TOO_DISTANT");
+Import("BLIZZARD_STORE_VAS_ERROR_BOOSTED_TOO_RECENTLY");
 Import("BLIZZARD_STORE_VAS_ERROR_OTHER");
 Import("BLIZZARD_STORE_VAS_ERROR_LABEL");
 Import("BLIZZARD_STORE_LEGION_PURCHASE_READY");
@@ -1066,6 +1068,13 @@ local vasErrorData = {
 	[Enum.VasError.HasCagedBattlePet] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_HAS_CAGED_BATTLE_PET,
 	},
+	[Enum.VasError.LastSaveTooDistant] = {
+		msg = BLIZZARD_STORE_VAS_ERROR_LAST_SAVE_TOO_DISTANT,
+	},
+	[Enum.VasError.BoostedTooRecently] = {
+		msg = BLIZZARD_STORE_VAS_ERROR_BOOSTED_TOO_RECENTLY,
+		notUserFixable = true,
+	}
 };
 
 local specialMagnifiers = {
@@ -2814,14 +2823,14 @@ function StoreVASValidationFrame_SetErrors(errors)
 end
 
 function StoreVASValidationFrame_OnVasProductComplete(self)
-local productID, guid, realmName = C_StoreSecure.GetVASCompletionInfo();
+	local productID, guid, realmName, shouldHandle = C_StoreSecure.GetVASCompletionInfo();
 	if (not productID) then
 		return;
 	end
 	local productInfo = C_StoreSecure.GetProductInfo(productID);
 	if (IsOnGlueScreen()) then
 		self:GetParent():Hide();
-		_G.StoreFrame_ShowGlueDialog(string.format(_G.BLIZZARD_STORE_VAS_PRODUCT_READY, productInfo.sharedData.name), guid, realmName);
+		_G.StoreFrame_ShowGlueDialog(string.format(_G.BLIZZARD_STORE_VAS_PRODUCT_READY, productInfo.sharedData.name), guid, realmName, shouldHandle);
 	else
 		self:GetParent():Hide();
 
@@ -4124,6 +4133,7 @@ function VASCharacterSelectionContinueButton_OnClick(self)
 			self:GetParent().ValidationDescription:SetTextColor(1.0, 0.1, 0.1);
 			self:GetParent().ValidationDescription:SetText(_G[reason]);
 			self:GetParent().ValidationDescription:Show();
+			StoreVASValidationState_Unlock();
 			self:GetParent().ContinueButton:Disable();
 			return;
 		end

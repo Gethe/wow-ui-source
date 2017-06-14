@@ -659,6 +659,15 @@ local ArtifactUILua =
 			},
 		},
 		{
+			Name = "IsEquippedArtifactMaxed",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "artifactMaxed", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsMaxedByRulesOrEffect",
 			Type = "Function",
 
@@ -733,6 +742,10 @@ local ArtifactUILua =
 				{ Name = "shouldSuppressForgeRotation", Type = "bool", Nilable = false },
 			},
 		},
+	},
+
+	Events =
+	{
 	},
 
 	Tables =

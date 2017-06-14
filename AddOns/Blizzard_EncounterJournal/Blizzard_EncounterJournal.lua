@@ -75,6 +75,7 @@ local EJ_DIFFICULTIES =
 	{ prefix = PLAYER_DIFFICULTY1, difficultyID = 14 },
 	{ prefix = PLAYER_DIFFICULTY2, difficultyID = 15 },
 	{ prefix = PLAYER_DIFFICULTY6, difficultyID = 16 },
+	{ prefix = PLAYER_DIFFICULTY_TIMEWALKER, difficultyID = 33 },
 }
 
 local EJ_TIER_DATA =
@@ -2476,8 +2477,7 @@ function EJNAV_RefreshInstance()
 end
 
 function EJNAV_SelectInstance(self, index, navBar)
-	local showRaid = not EncounterJournal.instanceSelect.raidsTab:IsEnabled();
-	local instanceID = EJ_GetInstanceByIndex(index, showRaid);
+	local instanceID = EJ_GetInstanceByIndex(index, EJ_InstanceIsRaid());
 
 	--Clear any previous selection.
 	NavBar_Reset(navBar);

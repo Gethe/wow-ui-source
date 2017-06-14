@@ -65,15 +65,10 @@
 		<DisabledTexture file="Interface\Buttons\UI-SquareButton-Disabled"/>
 		<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD" alpha=".5"/>
 		<Scripts>
-			<OnEvent function="QuestObjectiveFindGroup_OnEvent"/>
-			<OnShow function="QuestObjectiveFindGroup_OnShow"/>
-			<OnHide function="QuestObjectiveFindGroup_OnHide"/>
 			<OnMouseDown function="QuestObjectiveFindGroup_OnMouseDown"/>
 			<OnMouseUp function="QuestObjectiveFindGroup_OnMouseUp"/>
 			<OnEnter function="QuestObjectiveFindGroup_OnEnter"/>
 			<OnLeave function="QuestObjectiveFindGroup_OnLeave"/>
-			<OnEnable function="QuestObjectiveFindGroup_OnEnable"/>
-			<OnDisable function="QuestObjectiveFindGroup_OnDisable"/>
 			<OnClick function="QuestObjectiveFindGroup_OnClick"/>
 		</Scripts>
 	</Button>
