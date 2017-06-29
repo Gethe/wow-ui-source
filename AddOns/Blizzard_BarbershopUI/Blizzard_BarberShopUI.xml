@@ -47,7 +47,7 @@
 					<OnClick>
 						local parent = self:GetParent();
 						SetNextBarberShopStyle(parent:GetID(), true);
-						PlaySound("UChatScrollButton");
+						PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 						BarberShop_UpdateCost(parent:GetParent());
 						BarberShop_UpdateSelector(parent);
 					</OnClick>
@@ -72,7 +72,7 @@
 					<OnClick>
 						local parent = self:GetParent();
 						SetNextBarberShopStyle(parent:GetID());
-						PlaySound("UChatScrollButton");
+						PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 						BarberShop_UpdateCost(parent:GetParent());
 						BarberShop_UpdateSelector(parent);
 					</OnClick>
@@ -270,7 +270,7 @@
 				<Scripts>
 					<OnClick>
 						CancelBarberShop();
-						PlaySound("igCharacterInfoClose");
+						PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -287,7 +287,7 @@
 						BarberShop_ResetLabelColors();
 						BarberShop_UpdateCost(self:GetParent());
 						BarberShop_UpdateBanner(GetBarberShopStyleInfo(1));
-						PlaySound("igCharacterInfoClose");
+						PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 					</OnClick>
 				</Scripts>
 			</Button>

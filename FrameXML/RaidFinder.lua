@@ -36,7 +36,7 @@ function RaidFinderFrame_OnShow(self)
 	RaidFinderFrameFindRaidButton_Update();
 	LFGBackfillCover_Update(RaidFinderQueueFrame.PartyBackfill, true);
 	RaidFinderFrame_UpdateAvailability();
-	PlaySound("igCharacterInfoOpen");
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 end
 
 -- unused now, might need this logic for Group Finder

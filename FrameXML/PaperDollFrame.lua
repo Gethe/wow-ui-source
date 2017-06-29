@@ -1858,7 +1858,7 @@ end
 
 function PaperDollFrameItemFlyoutButton_OnClick (self)
 	if ( self.location == EQUIPMENTFLYOUT_IGNORESLOT_LOCATION ) then
-		PlaySound("igMainMenuOptionCheckBoxOn");
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 		local slot = EquipmentFlyoutFrame.button;
 		C_EquipmentSet.IgnoreSlotForSave(slot:GetID());
 		slot.ignored = true;
@@ -1866,7 +1866,7 @@ function PaperDollFrameItemFlyoutButton_OnClick (self)
 		EquipmentFlyout_Show(slot);
 		PaperDollEquipmentManagerPaneSaveSet:Enable();
 	elseif ( self.location == EQUIPMENTFLYOUT_UNIGNORESLOT_LOCATION ) then
-		PlaySound("igMainMenuOptionCheckBoxOn");
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 		local slot = EquipmentFlyoutFrame.button;
 		C_EquipmentSet.UnignoreSlotForSave(slot:GetID());
 		slot.ignored = nil;
@@ -2007,7 +2007,7 @@ end
 
 function GearSetButton_OnClick (self, button, down)
 	if ( self.setID ) then
-		PlaySound("igMainMenuOptionCheckBoxOn");		-- inappropriately named, but a good sound.
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);		-- inappropriately named, but a good sound.
 		PaperDollEquipmentManagerPane.selectedSetID = self.setID;
 		-- mark the ignored slots
 		PaperDollFrame_ClearIgnoredSlots();
@@ -2087,7 +2087,7 @@ end
 
 function GearManagerDialogPopup_OnShow (self)
 	GearManagerDialogPopup_AdjustAnchors(self);
-	PlaySound("igCharacterInfoOpen");
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 	self.setID = nil;
 	self.isEdit = false;
 	RecalculateGearManagerDialogPopup();
@@ -2350,7 +2350,7 @@ function PaperDollEquipmentManagerPane_OnEvent(self, event, ...)
 	if ( event == "EQUIPMENT_SWAP_FINISHED" ) then
 		local completed, setID = ...;
 		if ( completed ) then
-			PlaySoundKitID(1212); -- plays the equip sound for plate mail
+			PlaySound(SOUNDKIT.PUT_DOWN_SMALL_CHAIN); -- plays the equip sound for plate mail
 			if (self:IsShown()) then
 				self.selectedSetID = setID;
 				PaperDollEquipmentManagerPane_Update();
@@ -2533,7 +2533,7 @@ end
 function PaperDollEquipmentManagerPaneEquipSet_OnClick (self)
 	local selectedSetID = PaperDollEquipmentManagerPane.selectedSetID;
 	if ( selectedSetID) then
-		PlaySound("igCharacterInfoTab");			-- inappropriately named, but a good sound.
+		PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);			-- inappropriately named, but a good sound.
 		EquipmentManager_EquipSet(selectedSetID);
 	end
 end
@@ -2639,7 +2639,7 @@ function PaperDollTitlesPane_Update()
 end
 
 function PlayerTitleButton_OnClick(self)
-	PlaySound("igMainMenuOptionCheckBoxOff");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 	SetCurrentTitle(self.titleId);
 end
 
@@ -2720,7 +2720,7 @@ function PaperDollFrame_SetSidebar(self, index)
 		end
 		_G[PAPERDOLL_SIDEBARS[index].frame]:Show();
 		PaperDollFrame.currentSideBar = _G[PAPERDOLL_SIDEBARS[index].frame];
-		PlaySound("igMainMenuOptionCheckBoxOff");
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 		PaperDollFrame_UpdateSidebarTabs();
 	end
 end

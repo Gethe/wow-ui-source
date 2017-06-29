@@ -168,7 +168,7 @@ end
 
 function HelpFrame_OnShow(self)
 	UpdateMicroButtons();
-	PlaySound("igCharacterInfoOpen");
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 	GetGMStatus();
 	-- hearthstone button events
 	local button = HelpFrameCharacterStuckHearthstone;
@@ -181,7 +181,7 @@ function HelpFrame_OnShow(self)
 end
 
 function HelpFrame_OnHide(self)
-	PlaySound("igCharacterInfoClose");
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 	UpdateMicroButtons();
 	-- hearthstone button events
 	local button = HelpFrameCharacterStuckHearthstone;
@@ -467,7 +467,7 @@ end
 --
 
 function AccountSecurityOpenTicket_OnClick(self)
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	if ( HelpBrowser:HasConnection() ) then
 		local data = HelpFrameNavTbl[self:GetID()];
 		if ( not data.noSelection ) then
@@ -1247,7 +1247,7 @@ end
 
 
 function KnowledgeBase_ArticleOnClick(self)
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 
 	local buttonData = {
 		name = self.articleHeader,
@@ -1304,7 +1304,7 @@ end
 
 local hasResized = false;
 function HelpBrowser_ToggleTooltip(button, browser)
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	if (BrowserSettingsTooltip:IsShown()) then
 		BrowserSettingsTooltip:Hide();
 		BrowserSettingsTooltip.browser = nil;

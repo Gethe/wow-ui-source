@@ -61,7 +61,7 @@
 						self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 					</OnLoad>
 					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						if GetSuperTrackedQuestID() ~= self.questID then
 							SetSuperTrackedQuestID(self.questID);
 						end

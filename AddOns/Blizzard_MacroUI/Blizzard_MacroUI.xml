@@ -247,7 +247,7 @@
 						_G[self:GetName().."HighlightTexture"]:SetWidth(self:GetTextWidth() + 31);
 					</OnLoad>
 					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						PanelTemplates_SetTab(MacroFrame, self:GetID());
 						MacroFrame_SaveMacro();
 						MacroFrame_SetAccountMacros();
@@ -274,7 +274,7 @@
 						PanelTemplates_TabResize(self, -15, nil, nil, 150);
 					</OnLoad>
 					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						PanelTemplates_SetTab(MacroFrame, self:GetID());
 						MacroFrame_SaveMacro();
 						MacroFrame_SetCharacterMacros();
@@ -290,7 +290,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						StaticPopup_Show("CONFIRM_DELETE_SELECTED_MACRO");
 					</OnClick>
 				</Scripts>
@@ -455,7 +455,7 @@
 						<Scripts>
 							<OnClick>
 								MacroPopupFrame_CancelEdit();
-								PlaySound("gsTitleOptionOK");
+								PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK);
 							</OnClick>
 						</Scripts>
 					</Button>
@@ -467,7 +467,7 @@
 						<Scripts>
 							<OnClick>
 								MacroPopupOkayButton_OnClick();
-								PlaySound("gsTitleOptionOK");
+								PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK);
 							</OnClick>
 						</Scripts>
 					</Button>

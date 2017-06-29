@@ -273,6 +273,7 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("ARTIFACT_UPDATE");
 	self:RegisterEvent("ARTIFACT_TIER_CHANGED");
 	self:RegisterEvent("ARTIFACT_RESPEC_PROMPT");
+	self:RegisterEvent("ARTIFACT_RELIC_FORGE_UPDATE");
 
 	-- Events for Adventure Map UI
 	self:RegisterEvent("ADVENTURE_MAP_OPEN");
@@ -1313,7 +1314,7 @@ function UIParent_OnEvent(self, event, ...)
 	elseif ( event == "PET_BATTLE_PVP_DUEL_REQUEST_CANCEL" ) then
 		StaticPopup_Hide("PET_BATTLE_PVP_DUEL_REQUESTED");
 	elseif ( event == "PET_BATTLE_QUEUE_PROPOSE_MATCH" ) then
-		PlaySound("UI_PetBattles_PVP_ThroughQueue");
+		PlaySound(SOUNDKIT.UI_PET_BATTLES_PVP_THROUGH_QUEUE);
 		StaticPopupSpecial_Show(PetBattleQueueReadyFrame);
 	elseif ( event == "PET_BATTLE_QUEUE_PROPOSAL_DECLINED" or event == "PET_BATTLE_QUEUE_PROPOSAL_ACCEPTED" ) then
 		StaticPopupSpecial_Hide(PetBattleQueueReadyFrame);
@@ -1561,8 +1562,10 @@ function UIParent_OnEvent(self, event, ...)
 		ShowUIPanel(ItemSocketingFrame);
 
 	elseif ( event == "ARTIFACT_UPDATE" ) then
-		ArtifactFrame_LoadUI();
-		ShowUIPanel(ArtifactFrame);
+		if ( not C_ArtifactRelicForgeUI.IsAtForge() ) then
+			ArtifactFrame_LoadUI();
+			ShowUIPanel(ArtifactFrame);
+		end
 	elseif ( event == "ARTIFACT_TIER_CHANGED" ) then
 		local newTier, bagOrInventorySlot, slot = ...;
 		ArtifactFrame_LoadUI();
@@ -1581,6 +1584,10 @@ function UIParent_OnEvent(self, event, ...)
 		local numRefunded, refundedTier, bagOrInventorySlot = ...;
 		ArtifactFrame_LoadUI();
 		ArtifactFrame:OnTraitsRefunded(numRefunded, refundedTier);
+
+	elseif ( event == "ARTIFACT_RELIC_FORGE_UPDATE" ) then
+		ArtifactFrame_LoadUI();
+		ShowUIPanel(ArtifactRelicForgeFrame);
 
 	elseif ( event == "ADVENTURE_MAP_OPEN" ) then
 		OrderHall_LoadUI();
@@ -3714,7 +3721,7 @@ function ToggleGameMenu()
 	elseif ( WowTokenRedemptionFrame_EscapePressed and WowTokenRedemptionFrame_EscapePressed() ) then
 	elseif ( securecall("StaticPopup_EscapePressed") ) then
 	elseif ( GameMenuFrame:IsShown() ) then
-		PlaySound("igMainMenuQuit");
+		PlaySound(SOUNDKIT.IG_MAINMENU_QUIT);
 		HideUIPanel(GameMenuFrame);
 	elseif ( HelpFrame:IsShown() ) then
 		ToggleHelpFrame();
@@ -3760,7 +3767,7 @@ function ToggleGameMenu()
 	elseif ( ChallengesKeystoneFrame and ChallengesKeystoneFrame:IsShown() ) then
 		ChallengesKeystoneFrame:Hide();
 	else
-		PlaySound("igMainMenuOpen");
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
 		ShowUIPanel(GameMenuFrame);
 	end
 end

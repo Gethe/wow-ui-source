@@ -77,6 +77,7 @@ function CharacterSelect_OnLoad(self)
     self:RegisterEvent("STORE_STATUS_CHANGED");
     self:RegisterEvent("CHARACTER_UNDELETE_STATUS_CHANGED");
     self:RegisterEvent("CLIENT_FEATURE_STATUS_CHANGED)");
+	self:RegisterEvent("CHARACTER_COPY_STATUS_CHANGED")
     self:RegisterEvent("CHARACTER_UNDELETE_FINISHED");
     self:RegisterEvent("TOKEN_CAN_VETERAN_BUY_UPDATE");
     self:RegisterEvent("TOKEN_DISTRIBUTIONS_UPDATED");
@@ -530,6 +531,9 @@ function CharacterSelect_OnEvent(self, event, ...)
         end
     elseif ( event == "CLIENT_FEATURE_STATUS_CHANGED" ) then
         AccountUpgradePanel_Update(CharSelectAccountUpgradeButton.isExpanded);
+		CopyCharacterButton_UpdateButtonState();
+	elseif ( event == "CHARACTER_COPY_STATUS_CHANGED" ) then
+		CopyCharacterButton_UpdateButtonState();
     elseif ( event == "CHARACTER_UNDELETE_FINISHED" ) then
         GlueDialog_Hide("UNDELETING_CHARACTER");
         CharacterSelect_EndCharacterUndelete();
@@ -1027,7 +1031,7 @@ function UpdateCharacterList(skipSelect)
 end
 
 function CharacterSelectButton_OnClick(self)
-    PlaySound("gsCharacterCreationClass");
+    PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_CLASS);
     local id = self:GetID() + CHARACTER_LIST_OFFSET;
     if ( id ~= CharacterSelect.selectedIndex ) then
         CharacterSelect_SelectCharacter(id);
@@ -1096,7 +1100,7 @@ end
 function CharacterSelect_SelectCharacter(index, noCreate)
     if ( index == CharacterSelect.createIndex ) then
         if ( not noCreate ) then
-            PlaySound("gsCharacterSelectionCreateNew");
+            PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_CREATE_NEW);
             ClearCharacterTemplate();
             GlueParent_SetScreen("charcreate");
         end
@@ -1161,28 +1165,28 @@ function CharacterSelect_EnterWorld()
         return;
     end
 
-    PlaySound("gsCharacterSelectionEnterWorld");
+    PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_ENTER_WORLD);
     StopGlueAmbience();
     EnterWorld();
 end
 
 function CharacterSelect_Exit()
     CharacterSelect_SaveCharacterOrder();
-    PlaySound("gsCharacterSelectionExit");
+    PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_EXIT);
     C_Login.DisconnectFromServer();
 end
 
 function CharacterSelect_AccountOptions()
-    PlaySound("gsCharacterSelectionAcctOptions");
+    PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_ACCT_OPTIONS);
 end
 
 function CharacterSelect_TechSupport()
-    PlaySound("gsCharacterSelectionAcctOptions");
+    PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_ACCT_OPTIONS);
     LaunchURL(TECH_SUPPORT_URL);
 end
 
 function CharacterSelect_Delete()
-    PlaySound("gsCharacterSelectionDelCharacter");
+    PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_DEL_CHARACTER);
     if ( CharacterSelect.selectedIndex > 0 ) then
         CharacterSelect_SaveCharacterOrder();
         CharacterDeleteDialog:Show();
@@ -1190,7 +1194,7 @@ function CharacterSelect_Delete()
 end
 
 function CharacterSelect_ChangeRealm()
-    PlaySound("gsCharacterSelectionDelCharacter");
+    PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_DEL_CHARACTER);
     CharacterSelect_SaveCharacterOrder();
     CharacterSelect_SetAutoSwitchRealm(false);
     C_RealmList.RequestChangeRealmList();
@@ -1258,7 +1262,7 @@ function CharacterSelectRotateLeft_OnUpdate(self)
 end
 
 function CharacterSelect_ManageAccount()
-    PlaySound("gsCharacterSelectionAcctOptions");
+    PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_ACCT_OPTIONS);
     LaunchURL(AUTH_NO_TIME_URL);
 end
 
@@ -1275,7 +1279,7 @@ function CharacterSelect_PaidServiceOnClick(self, button, down, service)
 
     PAID_SERVICE_CHARACTER_ID = translatedIndex;
     PAID_SERVICE_TYPE = service;
-    PlaySound("gsCharacterSelectionCreateNew");
+    PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_CREATE_NEW);
     if (CharacterSelect.undeleting) then
         local guid = select(14, GetCharacterInfo(PAID_SERVICE_CHARACTER_ID));
         CharacterSelect.pendingUndeleteGuid = guid;
@@ -1330,7 +1334,7 @@ function CharacterSelectGoldPanelButton_DeathKnightSwap(self)
 end
 
 function CharacterSelectScrollDown_OnClick()
-    PlaySound("igInventoryRotateCharacter");
+    PlaySound(SOUNDKIT.IG_INVENTORY_ROTATE_CHARACTER);
     local numChars = GetNumCharacters();
     if ( numChars > 1 ) then
         if ( CharacterSelect.selectedIndex < GetNumCharacters() ) then
@@ -1349,7 +1353,7 @@ function CharacterSelectScrollDown_OnClick()
 end
 
 function CharacterSelectScrollUp_OnClick()
-    PlaySound("igInventoryRotateCharacter");
+    PlaySound(SOUNDKIT.IG_INVENTORY_ROTATE_CHARACTER);
     local numChars = GetNumCharacters();
     if ( numChars > 1 ) then
         if ( CharacterSelect.selectedIndex > 1 ) then
@@ -1669,7 +1673,7 @@ function AccountUpgradePanel_UpdateExpandState()
 end
 
 function CharSelectAccountUpgradeButton_OnClick(self)
-    PlaySound("gsTitleOptionOK");
+    PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK);
     local tag = AccountUpgradePanel_GetExpansionTag();
     ACCOUNT_UPGRADE_FEATURES[tag].upgradeOnClick();
 end
@@ -1849,7 +1853,7 @@ function CharacterSelect_DeleteCharacter(charID)
 
     DeleteCharacter(GetCharIDFromIndex(CharacterSelect.selectedIndex));
     CharacterDeleteDialog:Hide();
-    PlaySound("gsTitleOptionOK");
+    PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK);
     GlueDialog_Show("CHAR_DELETE_IN_PROGRESS");
 end
 
@@ -2051,7 +2055,7 @@ local function CharacterUpgradePopup_CheckSetPopupSeen(data)
 end
 
 local function HandleUpgradePopupButtonClick(self)
-    PlaySound("igMainMenuOptionCheckBoxOn"); -- TODO: Is there a better sound to play in case this is a close button?
+    PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON); -- TODO: Is there a better sound to play in case this is a close button?
     local data = self:GetParent().data;
     CharacterUpgradePopup_CheckSetPopupSeen(data);
     return data;
@@ -2322,13 +2326,13 @@ function CharacterServicesMaster_SetBlockFinishedState(block)
 end
 
 function CharacterServicesMasterBackButton_OnClick(self)
-    PlaySound("igMainMenuOptionCheckBoxOn");
+    PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
     local master = CharacterServicesMaster;
     master.flow:Rewind(master);
 end
 
 function CharacterServicesMasterNextButton_OnClick(self)
-    PlaySound("igMainMenuOptionCheckBoxOn");
+    PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
     local master = CharacterServicesMaster;
     if ( master.currentBlock.Popup and
         ( not master.currentBlock.ShowPopupIf or master.currentBlock:ShowPopupIf() )) then
@@ -2366,10 +2370,10 @@ function CharacterServicesMasterFinishButton_OnClick(self)
     local parent = master:GetParent();
     local success = master.flow:Finish(master);
     if (success) then
-        PlaySound("gsCharacterSelectionCreateNew");
+        PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_CREATE_NEW);
         parent:Hide();
     else
-        PlaySound("igMainMenuOptionCheckBoxOn");
+        PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
     end
 end
 
@@ -2404,7 +2408,7 @@ function CharacterUpgradeSecondChanceWarningFrameConfirmButton_OnClick(self)
 end
 
 function CharacterUpgradeSecondChanceWarningFrameCancelButton_OnClick(self)
-    PlaySound("igMainMenuOptionCheckBoxOn");
+    PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 
     CharacterUpgradeSecondChanceWarningFrame:Hide();
 
@@ -2538,24 +2542,24 @@ function CopyCharacterFromLive()
 end
 
 function CopyCharacter_AccountDataFromLive()
-    local allowed = CopyAccountCharactersAllowed();
-    if ( allowed >= 2 ) then
+    if ( not IsGMClient() ) then
         CopyAccountDataFromLive(GlueDropDownMenu_GetSelectedValue(CopyCharacterFrame.RegionID));
-    elseif ( allowed == 1 ) then
+    else
         CopyAccountDataFromLive(GlueDropDownMenu_GetSelectedValue(CopyCharacterFrame.RegionID), CopyCharacterFrame.RealmName:GetText(), CopyCharacterFrame.CharacterName:GetText());
     end
     GlueDialog_Show("COPY_IN_PROGRESS");
 end
 
 function CopyCharacterButton_OnLoad(self)
-    if (IsGMClient() and HideGMOnly()) then
-        return;
-    end
-    self:SetShown( CopyAccountCharactersAllowed() > 0 );
+	CopyCharacterButton_UpdateButtonState();
 end
 
 function CopyCharacterButton_OnClick(self)
     CopyCharacterFrame:SetShown( not CopyCharacterFrame:IsShown() );
+end
+
+function CopyCharacterButton_UpdateButtonState()
+	CopyCharacterButton:SetShown(C_CharacterServices.IsLiveRegionCharacterListEnabled() or C_CharacterServices.IsLiveRegionCharacterCopyEnabled() or C_CharacterServices.IsLiveRegionAccountCopyEnabled());
 end
 
 function CopyCharacterSearch_OnClick(self)
@@ -2589,7 +2593,7 @@ function CopyCharacterEntry_OnClick(self)
     self:LockHighlight();
     CopyCharacterFrame.SelectedButton = self;
     CopyCharacterFrame.SelectedIndex = self:GetID() + FauxScrollFrame_GetOffset(CopyCharacterFrame.scrollFrame);
-    CopyCharacterFrame.CopyButton:SetEnabled(true);
+    CopyCharacterFrame.CopyButton:SetEnabled(C_CharacterServices.IsLiveRegionCharacterCopyEnabled());
 end
 
 function CopyCharacterEntry_Highlight(self)
@@ -2651,17 +2655,18 @@ function CopyCharacterFrame_OnShow(self)
     ClearAccountCharacters();
     CopyCharacterFrame_Update(self.scrollFrame);
 
-    if ( CopyAccountCharactersAllowed() >= 2 ) then
+    if ( not IsGMClient() ) then
         self.RealmName:Hide();
         self.CharacterName:Hide();
         self.SearchButton:Hide();
         RequestAccountCharacters(GlueDropDownMenu_GetSelectedValue(CopyCharacterFrame.RegionID));
-    elseif ( CopyAccountCharactersAllowed() == 1) then
+    else
         self.RealmName:Show();
         self.RealmName:SetFocus();
         self.CharacterName:Show();
         self.SearchButton:Show();
     end
+	self.CopyAccountData:SetEnabled(C_CharacterServices.IsLiveRegionAccountCopyEnabled());
 end
 
 function CopyCharacterFrameRegionIDDropdown_Initialize()
@@ -2697,7 +2702,7 @@ end
 
 function CopyCharacterFrameRegionIDDropdown_OnClick(button)
     GlueDropDownMenu_SetSelectedValue(CopyCharacterFrame.RegionID, button.value);
-    if ( CopyAccountCharactersAllowed() >= 2 ) then
+    if ( not IsGMClient() ) then
         RequestAccountCharacters(button.value);
     end
 end

@@ -223,7 +223,7 @@ function BNToastFrame_Show()
 	local frame = BNToastFrame;
 	BNToastFrame_UpdateAnchor(true);
 	frame:Show();
-	PlaySoundKitID(18019);
+	PlaySound(SOUNDKIT.UI_BNET_TOAST);
 	frame.toastType = toastType;
 	frame.toastData = toastData;
 	frame.animIn:Play();

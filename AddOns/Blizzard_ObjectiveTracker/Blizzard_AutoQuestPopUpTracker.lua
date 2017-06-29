@@ -102,7 +102,7 @@ function AutoQuestPopupTracker_AddPopUp(questID, popUpType)
 	if ( AddAutoQuestPopUp(questID, popUpType) ) then
 		ObjectiveTracker_Expand();
 		ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_QUEST_ADDED, questID);
-		PlaySound("UI_AutoQuestComplete");
+		PlaySound(SOUNDKIT.UI_AUTO_QUEST_COMPLETE);
 		return true;
 	end
 	return false;

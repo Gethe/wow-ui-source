@@ -107,7 +107,7 @@ function KioskModeSplash_GetAutoEnterWorld()
 end
 
 function KioskModeSplashChoice_OnClick(self, button, down)
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	if (self:GetID() == 1) then
 		KioskModeSplash_SetMode("highlevel");
 	else

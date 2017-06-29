@@ -5,6 +5,7 @@ function GroupMembersDataProviderMixin:OnAdded(mapCanvas)
 	self:GetMap():SetPinTemplateType("GroupMembersPinTemplate", "UnitPositionFrame");
 	-- a single permanent pin
 	local pin = self:GetMap():AcquirePin("GroupMembersPinTemplate");
+	pin:SetTransformFlags(self:GetTransformFlags());
 	pin:SetPosition(0.5, 0.5);
 	pin:SetNeedsPeriodicUpdate(false);
 	pin:SetShouldShowUnits("player", false);

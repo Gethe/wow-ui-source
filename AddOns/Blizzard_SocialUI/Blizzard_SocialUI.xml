@@ -370,8 +370,8 @@
 					</Button>
 				</Frames>
 				<Scripts>
-					<OnShow> PlaySound("igMainMenuOpen"); </OnShow>
-					<OnHide> PlaySound("igMainMenuClose"); </OnHide>
+					<OnShow> PlaySound(SOUNDKIT.IG_MAINMENU_OPEN); </OnShow>
+					<OnHide> PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE); </OnHide>
 				</Scripts>
 			</Frame>
 			<Frame parentKey="BorderFrame" inherits="InsetFrameTemplate4">

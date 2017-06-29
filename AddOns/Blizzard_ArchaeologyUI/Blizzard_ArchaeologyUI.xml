@@ -100,7 +100,7 @@
 		<Scripts>
 			<OnClick>
 				ArchaeologyFrame_ShowArtifact(self:GetID() + ((ArchaeologyFrame.summaryPage.currentPage - 1) * ARCHAEOLOGY_MAX_RACES));
-				PlaySound("igSpellBookOpen");
+				PlaySound(SOUNDKIT.IG_SPELLBOOK_OPEN);
 			</OnClick>
 			<OnDisable>
 				SetDesaturation(self:GetNormalTexture(), true);
@@ -162,7 +162,7 @@
 		<Scripts>
 			<OnClick>
 				ArchaeologyFrame_ShowArtifact(self.raceIndex + ((ArchaeologyFrame.summaryPage.currentPage - 1) * ARCHAEOLOGY_MAX_RACES), self.projectIndex);
-				PlaySound("igSpellBookOpen");
+				PlaySound(SOUNDKIT.IG_SPELLBOOK_OPEN);
 			</OnClick>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT");
@@ -202,7 +202,7 @@
 				ArchaeologyFrame_KeyStoneClick(self);
 				GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 				GameTooltip:SetText(self.tooltip, NORMAL_FONT_COLOR[1], NORMAL_FONT_COLOR[2], NORMAL_FONT_COLOR[3], 1, true);
-				PlaySound("igMainMenuOptionCheckBoxOn");
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 			</OnClick>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_LEFT");
@@ -344,7 +344,7 @@
 				<Scripts>
 					<OnClick>
 						ArchaeologyFrame_OnTabClick(self)
-						PlaySound("igSpellBookOpen");
+						PlaySound(SOUNDKIT.IG_SPELLBOOK_OPEN);
 					</OnClick>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT");
@@ -378,7 +378,7 @@
 				<Scripts>
 					<OnClick>
 						ArchaeologyFrame_OnTabClick(self)
-						PlaySound("igSpellBookOpen");
+						PlaySound(SOUNDKIT.IG_SPELLBOOK_OPEN);
 					</OnClick>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT");
@@ -793,7 +793,7 @@
 								ArchaeologyFrame.artifactPage:Hide();
 								ArchaeologyFrame.completedPage:Show();
 								ArchaeologyFrame.raceFilterDropDown:Show();
-								PlaySound("igMainMenuOptionCheckBoxOn");
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 							</OnClick>
 						</Scripts>
 					</Button>
@@ -934,7 +934,7 @@
 				<Scripts>
 					<OnClick>
 						ArchaeologyFrame_OnTabClick(self);
-						PlaySound("igSpellBookOpen");
+						PlaySound(SOUNDKIT.IG_SPELLBOOK_OPEN);
 					</OnClick>
 				</Scripts>
 			</Button>

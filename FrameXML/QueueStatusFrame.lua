@@ -715,7 +715,7 @@ end
 ------------QueueStatusDropDown---------------
 ----------------------------------------------
 function QueueStatusDropDown_Show(self, relativeTo)
-	PlaySound("igMainMenuOpen");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
 	ToggleDropDownMenu(1, nil, self, relativeTo, 0, 0);
 end
 

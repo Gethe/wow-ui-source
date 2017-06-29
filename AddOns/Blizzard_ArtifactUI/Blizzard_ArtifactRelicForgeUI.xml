@@ -1,0 +1,248 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="Blizzard_ArtifactRelicForgeUI.lua"/>
+	
+	<Frame name="TempSelectTemplate" virtual="true">
+		<Size x="72" y="72" />
+		<Frames>
+			<Frame parentKey="SelectionBox" hidden="false" setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Top">
+							<Size x="0" y="2"/>
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+								<Anchor point="TOPRIGHT"/>
+							</Anchors>
+							<Color r="0" g="1" b="0"/>
+						</Texture>
+						<Texture parentKey="Bottom">
+							<Size x="0" y="2"/>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT"/>
+								<Anchor point="BOTTOMRIGHT"/>
+							</Anchors>
+							<Color r="0" g="1" b="0"/>
+						</Texture>
+						<Texture parentKey="Left">
+							<Size x="2" y="0"/>
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+								<Anchor point="BOTTOMLEFT"/>
+							</Anchors>
+							<Color r="0" g="1" b="0"/>
+						</Texture>
+						<Texture parentKey="Right">
+							<Size x="2" y="0"/>
+							<Anchors>
+								<Anchor point="TOPRIGHT"/>
+								<Anchor point="BOTTOMRIGHT"/>
+							</Anchors>
+							<Color r="0" g="1" b="0"/>
+						</Texture>				
+					</Layer>
+				</Layers>
+			</Frame>
+			<Button parentKey="AttuneButton" inherits="UIPanelButtonTemplate" hidden="true" text="Attune">
+				<Size x="100" y="22"/>
+				<Anchors>
+					<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						local relicSlot = self:GetParent():GetID();
+						self:GetParent():GetParent():Foo(relicSlot);
+					</OnClick>
+				</Scripts>
+			</Button>			
+		</Frames>
+	</Frame>
+	
+	<Button name="ArtifactRelicTalentButtonTemplate" parentArray="Talents" mixin="ArtifactRelicTalentButtonMixin" inherits="ArtifactPowerButtonTemplate" virtual="true">
+		<Animations>
+			<AnimationGroup parentKey="WaitingAnimation" setToFinalAlpha="true" looping="repeat">
+				<Alpha childKey="RingGlow" duration=".8" order="1" smoothing="IN_OUT" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="RingGlow" startDelay=".8" smoothing="IN_OUT" duration=".8" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="WhiteStarBurst" duration=".8" order="1" smoothing="IN_OUT" fromAlpha="0" toAlpha=".2"/>
+				<Alpha childKey="WhiteStarBurst" startDelay=".8" smoothing="IN_OUT" duration=".8" order="1" fromAlpha=".2" toAlpha="0"/>
+			</AnimationGroup>
+		</Animations>
+	</Button>
+
+	<Frame name="ArtifactRelicForgeFrame" parent="UIParent" mixin="ArtifactRelicForgeMixin" hidden="true" inherits="ButtonFrameTemplate">
+		<Size x="472" y="598"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="TEMP_HELP" inherits="GameFontHighlight" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="32" y="-180"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="TitleContainer" mixin="ArtifactRelicForgeTitleTemplateMixin" frameLevel="2000">
+				<Size x="0" y="100" />
+				<Anchors>
+					<Anchor point="TOPLEFT" y="-32"/>
+					<Anchor point="TOPRIGHT" y="-32"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY" textureSubLevel="-1">
+						<Texture parentKey="Background" hidden="true">
+							<Anchors>
+								<Anchor point="TOP" />
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString parentKey="ArtifactName" inherits="Fancy24Font" text="Relic Forge"> 
+							<Anchors>
+								<Anchor point="TOP" y="-8" />
+							</Anchors>
+							<Shadow>
+								<Offset x="1" y="-1" />
+								<Color r="0" g="0" b="0"/>
+							</Shadow>
+						</FontString>
+						<FontString parentKey="PointsRemainingLabel" inherits="SystemFont_Shadow_Large" mixin="AnimatedNumericFontStringMixin" hidden="true">
+							<Anchors>
+								<Anchor point="BOTTOM" y="-2"/>
+							</Anchors>
+							<Color r="1" g="1" b="1"/>
+						</FontString>
+						<FontString parentKey="ArtifactPower" inherits="SystemFont_Shadow_Large" text="ARTIFACT_POWER" hidden="true">
+							<Anchors>
+								<Anchor point="BOTTOM" relativeKey="$parent.PointsRemainingLabel" relativePoint="TOP" />
+							</Anchors>
+							<Color r=".901" g=".8" b=".501" />
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button parentKey="RelicSlot1" id="1" parentArray="RelicSlots" inherits="ArtifactsRelicSlotTemplate, TempSelectTemplate" />
+					<Button parentKey="RelicSlot2" id="2" parentArray="RelicSlots" inherits="ArtifactsRelicSlotTemplate, TempSelectTemplate" />
+					<Button parentKey="RelicSlot3" id="3" parentArray="RelicSlots" inherits="ArtifactsRelicSlotTemplate, TempSelectTemplate" />
+				</Frames>
+				<Scripts>
+					<OnShow method="OnShow" />
+					<OnHide method="OnHide" />
+					<OnEvent method="OnEvent" />
+					<OnUpdate method="OnUpdate" />
+				</Scripts>
+			</Frame>
+			<Button parentKey="Talent1" id="1" inherits="ArtifactRelicTalentButtonTemplate">
+				<Anchors>
+					<Anchor point="TOP" y="-226" />
+				</Anchors>
+			</Button>
+			<Button parentKey="Talent2" id="2" inherits="ArtifactRelicTalentButtonTemplate">
+				<Anchors>
+					<Anchor point="TOP" x="-80" y="-346" />
+				</Anchors>
+			</Button>		
+			<Button parentKey="Talent3" id="3" inherits="ArtifactRelicTalentButtonTemplate">
+				<Anchors>
+					<Anchor point="TOP" x="80" y="-346" />
+				</Anchors>
+			</Button>
+			<Button parentKey="Talent4" id="4" inherits="ArtifactRelicTalentButtonTemplate">
+				<Anchors>
+					<Anchor point="TOP" x="-160" y="-466" />
+				</Anchors>
+			</Button>			
+			<Button parentKey="Talent5" id="5" inherits="ArtifactRelicTalentButtonTemplate">
+				<Anchors>
+					<Anchor point="TOP" x="0" y="-466" />
+				</Anchors>
+			</Button>
+			<Button parentKey="Talent6" id="6" inherits="ArtifactRelicTalentButtonTemplate">
+				<Anchors>
+					<Anchor point="TOP" x="160" y="-466" />
+				</Anchors>
+			</Button>
+					<Button parentKey="PreviewRelicFrame" mixin="ArtifactRelicForgePreviewRelicMixin">
+						<Size x="36" y="36"/>
+						<Anchors>
+							<Anchor point="RIGHT" relativeKey="$parent.TitleContainer" x="-60" y="-8"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture parentKey="Icon" setAllPoints="true"/>
+							</Layer>
+							<Layer level="ARTWORK">
+								<Texture parentKey="Top">
+									<Size x="0" y="2"/>
+									<Anchors>
+										<Anchor point="TOPLEFT"/>
+										<Anchor point="TOPRIGHT"/>
+									</Anchors>
+									<Color r="0" g="1" b="0"/>
+								</Texture>
+								<Texture parentKey="Bottom">
+									<Size x="0" y="2"/>
+									<Anchors>
+										<Anchor point="BOTTOMLEFT"/>
+										<Anchor point="BOTTOMRIGHT"/>
+									</Anchors>
+									<Color r="0" g="1" b="0"/>
+								</Texture>
+								<Texture parentKey="Left">
+									<Size x="2" y="0"/>
+									<Anchors>
+										<Anchor point="TOPLEFT"/>
+										<Anchor point="BOTTOMLEFT"/>
+									</Anchors>
+									<Color r="0" g="1" b="0"/>
+								</Texture>
+								<Texture parentKey="Right">
+									<Size x="2" y="0"/>
+									<Anchors>
+										<Anchor point="TOPRIGHT"/>
+										<Anchor point="BOTTOMRIGHT"/>
+									</Anchors>
+									<Color r="0" g="1" b="0"/>
+								</Texture>				
+							</Layer>
+						</Layers>
+						<Frames>
+							<Frame parentKey="SelectionBox" inherits="TempSelectTemplate">
+								<Anchors>
+									<Anchor point="CENTER"/>
+								</Anchors>
+							</Frame>
+							<Button parentKey="AttuneButton" inherits="UIPanelButtonTemplate" text="Attune">
+								<Size x="100" y="22"/>
+								<Anchors>
+									<Anchor point="TOP" relativePoint="BOTTOM" relativeKey="$parent.SelectionBox" x="0" y="0"/>
+								</Anchors>
+								<Scripts>
+									<OnClick>
+										C_ArtifactRelicForgeUI.AttunePreviewRelic();
+									</OnClick>
+								</Scripts>
+							</Button>
+						</Frames>
+						<Scripts>
+							<OnLoad method="OnLoad"/>
+							<OnShow method="OnShow"/>
+							<OnHide method="OnHide"/>
+							<OnEvent method="OnEvent"/>
+							<OnEnter method="OnEnter"/>
+							<OnLeave function="GameTooltip_Hide"/>
+							<OnClick method="OnClick"/>
+						</Scripts>
+					</Button>			
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+
+</Ui>

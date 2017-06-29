@@ -143,9 +143,9 @@
 			</OnLeave>
 			<OnClick>
 				if ( self:GetChecked() ) then
-					PlaySound("igMainMenuOptionCheckBoxOn");
+					PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 				else
-					PlaySound("igMainMenuOptionCheckBoxOff");
+					PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 				end
 				BlizzardOptionsPanel_CheckButton_OnClick(self);
 				Graphics_EnableApply(self);
@@ -1089,7 +1089,7 @@
 					</OnLoad>
 					<OnClick>
 						GraphicsOptions_SelectBase()
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -1106,7 +1106,7 @@
 					</OnLoad>
 					<OnClick>
 						GraphicsOptions_SelectRaid()
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -1394,10 +1394,10 @@
 						local parent = (self:GetParent()):GetName();
 						local slider = _G[parent.."UIScaleSlider"];
 						if ( self:GetChecked() ) then
-							PlaySound("igMainMenuOptionCheckBoxOn");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 							VideoOptions_Enable(slider);
 						else
-							PlaySound("igMainMenuOptionCheckBoxOff");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 							VideoOptions_Disable(slider);
 						end
 						BlizzardOptionsPanel_CheckButton_OnClick(self);
@@ -1463,12 +1463,12 @@
 						local parent = (self:GetParent()):GetName();
 						local slider = _G[parent .. "MaxFPSSlider"];
 						if ( self:GetChecked() ) then
-							PlaySound("igMainMenuOptionCheckBoxOn");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 							VideoOptions_Enable(slider);
 							slider.newValue = 8;
 							slider:SetDisplayValue(8);
 						else
-							PlaySound("igMainMenuOptionCheckBoxOff");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 							VideoOptions_Disable(slider);
 							slider.newValue = 0;
 							slider:SetDisplayValue(0);
@@ -1530,12 +1530,12 @@
 						local parent = (self:GetParent()):GetName();
 						local slider = _G[parent .. "MaxFPSBKSlider"];
 						if ( self:GetChecked() ) then
-							PlaySound("igMainMenuOptionCheckBoxOn");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 							VideoOptions_Enable(slider);
 							slider.newValue = 8;
 							slider:SetDisplayValue(8);
 						else
-							PlaySound("igMainMenuOptionCheckBoxOff");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 							VideoOptions_Disable(slider);
 							slider.newValue = 0;
 							slider:SetDisplayValue(0);

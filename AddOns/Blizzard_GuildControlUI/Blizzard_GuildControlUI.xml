@@ -321,7 +321,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								PlaySound("igMainMenuOption");
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
 								StaticPopup_Show("CONFIRM_BUY_GUILDBANK_TAB");
 							</OnClick>
 						</Scripts>
@@ -753,12 +753,12 @@
 			<OnShow>
 				self.numSkipUpdates = 0;
 				GuildControlButton:LockHighlight();
-				PlaySound("igMainMenuOptionCheckBoxOn");
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 			</OnShow>
 			<OnHide>
 				StaticPopup_Hide("CONFIRM_RANK_AUTHENTICATOR_REMOVE");
 				GuildControlButton:UnlockHighlight();
-				PlaySound("igMainMenuOptionCheckBoxOff");
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 			</OnHide>
 			<OnLoad function="GuildControlUI_OnLoad"/>
 		</Scripts>
@@ -1196,9 +1196,9 @@
 						<Scripts>
 							<OnClick>
 								if ( self:GetChecked() ) then
-									PlaySound("igMainMenuOptionCheckBoxOff");
+									PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 								else
-									PlaySound("igMainMenuOptionCheckBoxOn");
+									PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 								end
 								GuildControlSetRankFlag(self:GetID(), self:GetChecked());
 								GuildControlPopupAcceptButton:Enable();
@@ -1220,9 +1220,9 @@
 						<Scripts>
 							<OnClick>
 								if ( self:GetChecked() ) then
-									PlaySound("igMainMenuOptionCheckBoxOff");
+									PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 								else
-									PlaySound("igMainMenuOptionCheckBoxOn");
+									PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 								end
 								GuildControlSetRankFlag(self:GetID(), self:GetChecked());
 								GuildControlPopupAcceptButton:Enable();

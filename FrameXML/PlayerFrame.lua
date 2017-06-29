@@ -117,7 +117,7 @@ function PlayerFrame_UpdatePvPStatus()
 	local factionGroup, factionName = UnitFactionGroup("player");
 	if ( UnitIsPVPFreeForAll("player") ) then
 		if ( not PlayerPVPIcon:IsShown() ) then
-			PlaySound("igPVPUpdate");
+			PlaySound(SOUNDKIT.IG_PVP_UPDATE);
 		end
 		local prestige = UnitPrestige("player");
 		if (prestige > 0) then
@@ -142,7 +142,7 @@ function PlayerFrame_UpdatePvPStatus()
 		PlayerPVPTimerText.timeLeft = nil;
 	elseif ( factionGroup and factionGroup ~= "Neutral" and UnitIsPVP("player") ) then
 		if ( not PlayerPVPIcon:IsShown() ) then
-			PlaySound("igPVPUpdate");
+			PlaySound(SOUNDKIT.IG_PVP_UPDATE);
 		end
 
 		local prestige = UnitPrestige("player");

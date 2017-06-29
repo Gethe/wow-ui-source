@@ -57,7 +57,7 @@ function CloseCalendarMenus()
 		if ( menu and menu:IsShown() ) then
 			if ( menu == CalendarFrame_GetEventFrame() ) then
 				CalendarFrame_CloseEvent();
-				PlaySound("igMainMenuQuit");
+				PlaySound(SOUNDKIT.IG_MAINMENU_QUIT);
 			else
 				menu:Hide();
 			end
@@ -1141,7 +1141,7 @@ function CalendarFrame_OnShow(self)
 
 	OpenCalendar();
 
-	PlaySound("igSpellBookOpen");
+	PlaySound(SOUNDKIT.IG_SPELLBOOK_OPEN);
 end
 
 function CalendarFrame_OnHide(self)
@@ -1167,7 +1167,7 @@ function CalendarFrame_OnHide(self)
 		_G[dayButtonName.."OverlayFrameTexture"]:SetTexture();
 	end
 
-	PlaySound("igSpellBookClose");
+	PlaySound(SOUNDKIT.IG_SPELLBOOK_CLOSE);
 end
 
 function CalendarFrame_OnMouseWheel(self, value)
@@ -1814,18 +1814,18 @@ function CalendarFrame_UpdateMonthOffsetButtons()
 end
 
 function CalendarPrevMonthButton_OnClick()
-	PlaySound("igAbiliityPageTurn");
+	PlaySound(SOUNDKIT.IG_ABILITY_PAGE_TURN);
 	CalendarFrame_OffsetMonth(-1);
 end
 
 function CalendarNextMonthButton_OnClick()
-	PlaySound("igAbiliityPageTurn");
+	PlaySound(SOUNDKIT.IG_ABILITY_PAGE_TURN);
 	CalendarFrame_OffsetMonth(1);
 end
 
 function CalendarFilterButton_OnClick(self)
 	ToggleDropDownMenu(1, nil, CalendarFilterDropDown, self, 0, 0);
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 end
 
 function CalendarFilterDropDown_OnLoad(self)
@@ -1875,7 +1875,7 @@ function CalendarFrame_PushModal(frame)
 		CalendarModalDummy:SetParent(frame);
 		CalendarModalDummy:SetFrameLevel(frame:GetFrameLevel() - 1);
 		CalendarModalDummy_Show();
-		PlaySound("igMainMenuOptionCheckBoxOn");
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	end
 end
 
@@ -1901,7 +1901,7 @@ function CalendarFrame_PopModal(popAll)
 			CalendarModalDummy:SetFrameLevel(top:GetFrameLevel() - 1);
 			CalendarModalDummy_Show();
 		end
-		PlaySound("igMainMenuQuit");
+		PlaySound(SOUNDKIT.IG_MAINMENU_QUIT);
 	end
 end
 
@@ -2517,7 +2517,7 @@ function CalendarDayButton_OnClick(self, button)
 		end
 	end
 
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 end
 
 -- CalendarDayButton_Click allows the OnClick for a day and its event buttons to do some of the same processing
@@ -2570,7 +2570,7 @@ function CalendarDayButtonMoreEventsButton_OnClick(self, button)
 		end
 	end
 
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 end
 
 
@@ -2613,7 +2613,7 @@ function CalendarDayEventButton_OnClick(self, button)
 		end
 	end
 
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 end
 
 function CalendarDayEventButton_Click(button, openEvent)
@@ -2721,7 +2721,7 @@ end
 function CalendarEventCloseButton_OnClick(self)
 	CalendarContextMenu_Hide();
 	CalendarFrame_CloseEvent();
-	PlaySound("igMainMenuQuit");
+	PlaySound(SOUNDKIT.IG_MAINMENU_QUIT);
 end
 
 function CalendarEventDescriptionScrollFrame_OnLoad(self)
@@ -2901,7 +2901,7 @@ end
 
 function CalendarEventInviteSortButton_OnClick(self)
 	CalendarEventSortInvites(self.criterion, self.criterion == CalendarEventGetInviteSortCriterion());
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	CalendarContextMenu_Hide(CalendarViewEventInviteContextMenu_Initialize);
 	CalendarContextMenu_Hide(CalendarCreateEventInviteContextMenu_Initialize);
 end
@@ -3383,7 +3383,7 @@ function CalendarViewEventInviteListButton_OnClick(self, button)
 		end
 	end
 
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 end
 
 function CalendarViewEventInviteListButton_Click(button)
@@ -3988,9 +3988,9 @@ end
 function CalendarCreateEventAutoApproveCheck_OnClick(self)
 	CalendarCreateEvent_SetAutoApprove();
 	if ( self:GetChecked() ) then
-		PlaySound("igMainMenuOptionCheckBoxOn");
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	else
-		PlaySound("igMainMenuOptionCheckBoxOff");
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 	end
 	CalendarCreateEventCreateButton_Update();
 end
@@ -4012,9 +4012,9 @@ end
 function CalendarCreateEventLockEventCheck_OnClick(self)
 	CalendarCreateEvent_SetLockEvent();
 	if ( self:GetChecked() ) then
-		PlaySound("igMainMenuOptionCheckBoxOn");
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	else
-		PlaySound("igMainMenuOptionCheckBoxOff");
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 	end
 	CalendarCreateEventCreateButton_Update();
 end
@@ -4159,7 +4159,7 @@ function CalendarCreateEventInviteListButton_OnClick(self, button)
 		end
 	end
 
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 end
 
 function CalendarCreateEventInviteListButton_Click(button)
@@ -4332,7 +4332,7 @@ function CalendarCreateEventInviteButton_OnClick(self)
 		--CalendarCreateEventInviteEdit:ClearFocus();
 	end
 
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 end
 
 function CalendarCreateEventInviteButton_OnUpdate(self)
@@ -4841,7 +4841,7 @@ function CalendarEventPickerButton_OnClick(self, button)
 		end
 	end
 
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 end
 
 function CalendarEventPickerButton_Click(button)
@@ -5101,7 +5101,7 @@ function CalendarTexturePickerButton_OnClick(self, button)
 	CalendarTexturePickerFrame.selectedTextureIndex = self.textureIndex;
 	self:LockHighlight();
 
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 end
 
 function CalendarTexturePickerButton_OnDoubleClick(self, button)
@@ -5247,7 +5247,7 @@ end
 
 function CalendarClassTotalsButton_OnClick(self)
 	ToggleDropDownMenu(1, nil, CalendarInviteToGroupDropDown, self, 0, 0);
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 end
 
 function CalendarClassTotalsButtonOnEnterDummy_OnEnter(self)

@@ -49,7 +49,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								PlaySound("igMainMenuOptionCheckBoxOn");
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 								ConfirmReadyCheck(1);
 								ReadyCheckFrame:Hide();
 							</OnClick>
@@ -62,7 +62,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								PlaySound("igMainMenuOptionCheckBoxOn");
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 								ConfirmReadyCheck();
 								ReadyCheckFrame:Hide();
 							</OnClick>
@@ -71,7 +71,7 @@
 				</Frames>
 				<Scripts>
 					<OnShow>
-						PlaySound("ReadyCheck");
+						PlaySound(SOUNDKIT.READY_CHECK);
 						FlashClientIcon();
 					</OnShow>
 				</Scripts>

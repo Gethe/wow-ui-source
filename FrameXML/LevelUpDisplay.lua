@@ -313,7 +313,7 @@ function LevelUpDisplay_OnEvent(self, event, ...)
 		self.recordTime = recordTime;
         self.level = level;
 		LevelUpDisplay_Show(self);
-		PlaySound("UI_70_ChallengeMode_NewRecord");
+		PlaySound(SOUNDKIT.UI_70_CHALLENGE_MODE_NEW_RECORD);
 	elseif ( event == "GARRISON_BUILDING_ACTIVATED" ) then
 		local _, buildingID = ...;
 		if (GARRISON_ABILITY_HACKS[buildingID]) then
@@ -748,7 +748,7 @@ function LevelUpDisplay_StartDisplay(self, beginUnlockList)
 		elseif ( self.type == TOAST_CHALLENGE_MODE_RECORD ) then
 			self.challengeModeFrame.LevelCompleted:SetFormattedText(CHALLENGE_MODE_POWER_LEVEL, self.level);
 			self.challengeModeFrame.RecordTime:SetFormattedText(CHALLENGE_MODE_NEW_BEST, GetTimeStringFromSeconds(self.recordTime / 1000));
-			PlaySound("UI_Challenges_NewRecord");
+			PlaySound(SOUNDKIT.UI_CHALLENGES_NEW_RECORD);
 			LevelUpDisplay:SetPoint("TOP", 0, -190);
 			playAnim = self.challengeModeFrame.challengeComplete;
 		else
@@ -770,13 +770,13 @@ function LevelUpDisplay_StartDisplay(self, beginUnlockList)
 			elseif ( self.type == TOAST_PET_BATTLE_WINNER ) then
 				LevelUpDisplay_BuildPetBattleWinnerList(self);
 				self.levelFrame.singleline:SetText(self.winnerString);
-				PlaySoundKitID(self.winnerSoundKitID);
+				PlaySound(self.winnerSoundKitID);
 				playAnim = self.levelFrame.fastReveal;
 			elseif (self.type == TOAST_QUEST_BOSS_EMOTE ) then
 				LevelUpDisplay_BuildEmptyList(self);
 				self.levelFrame.blockText:SetText(self.bossText);
 				if (self.sound and self.sound == true) then
-					PlaySound("RaidBossEmoteWarning");
+					PlaySound(SOUNDKIT.RAID_BOSS_EMOTE_WARNING);
 				end
 				playAnim = self.levelFrame.fastReveal;
 			elseif (self.type == TOAST_PET_BATTLE_CAPTURE ) then
@@ -1279,7 +1279,7 @@ function BossBanner_AnimSwitch(self, entry)
 	if ( next(self.pendingLoot) ) then
 		-- we have loot
 		self.AnimSwitch:Play();
-		PlaySound("UI_Personal_Loot_Banner");
+		PlaySound(SOUNDKIT.UI_PERSONAL_LOOT_BANNER);
 		entry.duration = 0.5;
 	else
 		entry.duration = 0;
@@ -1477,7 +1477,7 @@ function BossBanner_Play(self, data)
 			self:Show();
 			self.encounterID = data.encounterID;			
 			BossBanner_BeginAnims(self);
-			PlaySound("UI_Raid_Boss_Defeated");
+			PlaySound(SOUNDKIT.UI_RAID_BOSS_DEFEATED);
 		elseif ( data.mode == "LOOT" ) then
 			self.BannerTop:SetAlpha(1);
 			self.BannerBottom:SetAlpha(1);
@@ -1492,7 +1492,7 @@ function BossBanner_Play(self, data)
 			self.SubTitle:Hide();
 			self:Show();
 			BossBanner_BeginAnims(self, BB_STATE_LOOT_EXPAND);
-			PlaySound("UI_Personal_Loot_Banner");
+			PlaySound(SOUNDKIT.UI_PERSONAL_LOOT_BANNER);
 		end
 	end
 end

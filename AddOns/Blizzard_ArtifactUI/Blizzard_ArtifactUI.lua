@@ -68,7 +68,7 @@ function ArtifactUIMixin:OnLoad()
 end
 
 function ArtifactUIMixin:OnShow()
-	PlaySound("igCharacterInfoOpen");
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 
 	if self.queueTier2UpgradeAnim then
 		self.queueTier2UpgradeAnim = nil;
@@ -88,7 +88,7 @@ end
 
 function ArtifactUIMixin:OnHide()
 	ArtifactFrameUnderlay:Hide();
-	PlaySound("igCharacterInfoClose");
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 	C_ArtifactUI.Clear();
 
 	StaticPopup_Hide("CONFIRM_ARTIFACT_RESPEC");
@@ -113,7 +113,7 @@ function ArtifactUIMixin:OnEvent(event, ...)
 				self:SetupPerArtifactData();
 			end
 			self.PerksTab:Refresh(newItem);
-		else
+		elseif ( not C_ArtifactRelicForgeUI.IsAtForge() ) then
 			ShowUIPanel(self);
 		end
 	elseif event == "ARTIFACT_XP_UPDATE" then
@@ -300,7 +300,7 @@ function ArtifactUIMixin:OnInventoryItemMouseLeave(bag, slot)
 	local itemLink = itemInfo[7];
 	local itemID = itemInfo[10];
 
-	if itemID and IsArtifactRelicItem(itemID) and not CursorHasItem() then
+	if itemID and IsArtifactRelicItem(itemID) and not CursorHasItem() and self.PerksTab:IsVisible() then
 		self.PerksTab:HideHighlightForRelicItemID(itemID, itemLink);
 		self.PerksTab.TitleContainer:RefreshRelicHighlights();
 	end

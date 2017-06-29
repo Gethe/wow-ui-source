@@ -598,7 +598,7 @@ function UnitPopup_ShowMenu (dropdownMenu, which, unit, name, userData)
 			end
 		end
 	end
-	PlaySound("igMainMenuOpen");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
 end
 
 local function GetDropDownButtonText(button, dropdownMenu)
@@ -1521,7 +1521,7 @@ function UnitPopup_OnClick (self)
 	elseif ( button == "SET_NOTE" ) then
 		FriendsFrame.NotesID = fullname;
 		StaticPopup_Show("SET_FRIENDNOTE", fullname);
-		PlaySound("igCharacterInfoClose");
+		PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 	elseif ( button == "BN_REMOVE_FRIEND" ) then
 		local bnetIDAccount, accountName, _, isBattleTag = BNGetFriendInfoByID(dropdownFrame.bnetIDAccount);
 		if ( bnetIDAccount ) then
@@ -1536,7 +1536,7 @@ function UnitPopup_OnClick (self)
 	elseif ( button == "BN_SET_NOTE" ) then
 		FriendsFrame.NotesID = dropdownFrame.bnetIDAccount;
 		StaticPopup_Show("SET_BNFRIENDNOTE", fullname);
-		PlaySound("igCharacterInfoClose");
+		PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 	elseif ( button == "BN_VIEW_FRIENDS" ) then
 		FriendsFriendsFrame_Show(dropdownFrame.bnetIDAccount);
 	elseif ( button == "BN_INVITE" or button == "BN_SUGGEST_INVITE" or button == "BN_REQUEST_INVITE" ) then
@@ -1738,7 +1738,7 @@ function UnitPopup_OnClick (self)
 	elseif ( button == "GARRISON_VISIT" ) then
 		C_Garrison.SetUsingPartyGarrison( not C_Garrison.IsUsingPartyGarrison());
 	end
-	PlaySound("UChatScrollButton");
+	PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 end
 
 RAID_DIFFICULTY_MAP = {

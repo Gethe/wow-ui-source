@@ -84,14 +84,14 @@ function InspectFrame_OnShow(self)
 	if ( not self.unit ) then
 		return;
 	end
-	PlaySound("igCharacterInfoOpen");	
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);	
 	SetPortraitTexture(InspectFramePortrait, self.unit);
 	InspectFrameTitleText:SetText(GetUnitName(self.unit, true));
 end
 
 function InspectFrame_OnHide(self)
 	self.unit = nil;
-	PlaySound("igCharacterInfoClose");
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 
 	-- Clear the player being inspected
 	ClearInspectPlayer();
@@ -117,7 +117,7 @@ function InspectSwitchTabs(newID)
 end
 
 function InspectFrameTab_OnClick(self)
-	PlaySound("igCharacterInfoTab");
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
 	InspectSwitchTabs(self:GetID());
 end
 

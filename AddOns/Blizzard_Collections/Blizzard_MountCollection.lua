@@ -532,7 +532,7 @@ function MountJournal_ShowMountDropdown(index, anchorTo, offsetX, offsetY)
 		return;
 	end
 	ToggleDropDownMenu(1, nil, MountJournal.mountOptionsMenu, anchorTo, offsetX, offsetY);
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 end
 
 function MountJournal_HideMountDropdown()

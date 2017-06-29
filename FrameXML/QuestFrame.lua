@@ -141,7 +141,7 @@ end
 
 function QuestRewardCancelButton_OnClick()
 	HideUIPanel(QuestFrame);
-	PlaySound("igQuestCancel");
+	PlaySound(SOUNDKIT.IG_QUEST_CANCEL);
 end
 
 function QuestRewardCompleteButton_OnClick()
@@ -165,12 +165,12 @@ end
 
 function QuestProgressCompleteButton_OnClick()
 	CompleteQuest();
-	PlaySound("igQuestListOpen");
+	PlaySound(SOUNDKIT.IG_QUEST_LIST_OPEN);
 end
 
 function QuestGoodbyeButton_OnClick()
 	HideUIPanel(QuestFrame);
-	PlaySound("igQuestCancel");
+	PlaySound(SOUNDKIT.IG_QUEST_CANCEL);
 end
 
 function QuestRewardItem_OnClick(self)
@@ -378,7 +378,7 @@ function QuestFrameGreetingPanel_OnShow()
 end
 
 function QuestFrame_OnShow()
-	PlaySound("igQuestListOpen");
+	PlaySound(SOUNDKIT.IG_QUEST_LIST_OPEN);
 	if (TutorialFrame.id == 1 or TutorialFrame.id == 55 or TutorialFrame.id == 57) then
 		TutorialFrame_Hide();
 	end
@@ -414,7 +414,7 @@ function QuestFrame_OnHide()
 		end
 		TUTORIAL_QUEST_ACCEPTED = nil
 	end
-	PlaySound("igQuestListClose");
+	PlaySound(SOUNDKIT.IG_QUEST_LIST_CLOSE);
 end
 
 function QuestTitleButton_OnClick(self)
@@ -423,7 +423,7 @@ function QuestTitleButton_OnClick(self)
 	else
 		SelectAvailableQuest(self:GetID());
 	end
-	PlaySound("igQuestListSelect");
+	PlaySound(SOUNDKIT.IG_QUEST_LIST_SELECT);
 end
 
 function QuestFrame_UpdatePortraitText(text)
@@ -508,7 +508,7 @@ end
 
 function QuestDetailDeclineButton_OnClick()
 	HideUIPanel(QuestFrame);
-	PlaySound("igQuestCancel");
+	PlaySound(SOUNDKIT.IG_QUEST_CANCEL);
 end
 
 function QuestFrame_SetMaterial(frame, material)

@@ -243,7 +243,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						QuestMapQuestOptions_TrackQuest(self:GetParent().questID);
 					</OnClick>
 					<OnEnter>
@@ -528,7 +528,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								PlaySound("igMainMenuOptionCheckBoxOn");
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 								QuestMapFrame_ReturnFromQuestDetails();
 							</OnClick>
 						</Scripts>
@@ -714,7 +714,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								PlaySound("igMainMenuOptionCheckBoxOn");
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 								QuestMapQuestOptions_TrackQuest(QuestMapFrame_GetDetailQuestID())
 							</OnClick>
 							<OnEnter>

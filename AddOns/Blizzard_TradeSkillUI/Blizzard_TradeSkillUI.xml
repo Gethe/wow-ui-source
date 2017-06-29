@@ -168,7 +168,7 @@
 				<Scripts>
 					<OnClick>
 						if self.linkedName then
-							PlaySound("igMainMenuOptionCheckBoxOn");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 							ChatFrame_OpenChat(SLASH_WHISPER1.." "..self.linkedName.." ", DEFAULT_CHAT_FRAME);
 						end
 					</OnClick>
@@ -193,7 +193,7 @@
 				<Scripts>
 					<OnClick>
 						ToggleDropDownMenu(1, nil, self:GetParent().FilterDropDown, self, 74, 15);
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 					</OnClick>
 				</Scripts>
 			</Button>

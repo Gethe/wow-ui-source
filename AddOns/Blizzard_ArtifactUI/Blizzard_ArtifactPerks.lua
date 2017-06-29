@@ -1166,7 +1166,7 @@ end
 
 function ArtifactPerksMixin:AnimateInTierTwoReveal()
 	self.TitleContainer.PointsRemainingLabel:SnapToTarget();
-	PlaySound("UI_72_Artifact_Forge_Activate_Final_Tier");
+	PlaySound(SOUNDKIT.UI_72_ARTIFACT_FORGE_ACTIVATE_FINAL_TIER);
 	
 	self.CrestFrame.IntroCrestAnim:Play();
 	self:StartWithDelay(ARTIFACT_TIER_2_CONSTELLATION_DELAY, function ()
@@ -1240,7 +1240,7 @@ function ArtifactPerksMixin:PlayReveal(tier)
 		end
 
 		if tier == 1 then
-			PlaySound("UI_70_Artifact_Forge_Trait_FirstTrait");
+			PlaySound(SOUNDKIT.UI_70_ARTIFACT_FORGE_TRAIT_FIRST_TRAIT);
 		end
 	end
 end
@@ -1383,7 +1383,7 @@ function ArtifactTitleTemplateMixin:OnRelicSlotMouseEnter(relicSlot)
 		end
 	elseif relicSlot.relicLink then
 		GameTooltip:SetOwner(relicSlot, "ANCHOR_BOTTOMRIGHT", 0, 10);
-		GameTooltip:SetHyperlink(relicSlot.relicLink);
+		GameTooltip:SetSocketedRelic(relicSlot.relicSlotIndex);
 	elseif relicSlot.relicType then
 		GameTooltip:SetOwner(relicSlot, "ANCHOR_BOTTOMRIGHT", 0, 10);
 		local slotName = _G["RELIC_SLOT_TYPE_" .. relicSlot.relicType:upper()];
@@ -1409,7 +1409,7 @@ StaticPopupDialogs["CONFIRM_RELIC_REPLACE"] = {
 	OnAccept = function(self, relicSlotIndex)
 		C_ArtifactUI.ApplyCursorRelicToSlot(relicSlotIndex);
 		ArtifactFrame.PerksTab.TitleContainer.RelicSlots[relicSlotIndex].GlowAnim:Play();
-		PlaySound("UI_70_Artifact_Forge_Relic_Place");
+		PlaySound(SOUNDKIT.UI_70_ARTIFACT_FORGE_RELIC_PLACE);
 	end,
 	OnCancel = function()
 		ClearCursor();
@@ -1431,7 +1431,7 @@ function ArtifactTitleTemplateMixin:OnRelicSlotClicked(relicSlot)
 				else
 					C_ArtifactUI.ApplyCursorRelicToSlot(i);
 					self.RelicSlots[i].GlowAnim:Play();
-					PlaySound("UI_70_Artifact_Forge_Relic_Place");
+					PlaySound(SOUNDKIT.UI_70_ARTIFACT_FORGE_RELIC_PLACE);
 				end
 			else
 				local _, itemID = GetCursorInfo();
@@ -1483,6 +1483,7 @@ function ArtifactTitleTemplateMixin:EvaluateRelics()
 			relicSlot.Icon:SetAtlas("Relic-SlotBG", true);
 			relicSlot.Glass:Hide();
 			relicSlot.relicLink = nil;
+			relicSlot.Rank:Hide();
 		else
 			local relicName, relicIcon, relicType, relicLink = C_ArtifactUI.GetRelicInfo(i);
 
@@ -1505,6 +1506,15 @@ function ArtifactTitleTemplateMixin:EvaluateRelics()
 				relicSlot.Glass:Hide();
 			end
 			relicSlot.relicLink = relicLink;
+
+			local currentRank, canAddTalent = C_ArtifactUI.GetRelicSlotRankInfo(i);
+			if currentRank then
+				relicSlot.Rank:Show();
+				relicSlot.Rank.Text:SetText(currentRank);
+				relicSlot.Rank.Glow:SetShown(canAddTalent);
+			else
+				relicSlot.Rank:Hide();
+			end
 		end
 
 		

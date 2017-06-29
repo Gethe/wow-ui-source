@@ -497,7 +497,7 @@
 			<OnClick>
 				if not ChatEdit_TryInsertChatLink(self.link) then
 					EncounterJournal_DisplayInstance(self.instanceID);
-					PlaySound("igSpellBookOpen");
+					PlaySound(SOUNDKIT.IG_SPELLBOOK_OPEN);
 				end
 			</OnClick>
 		</Scripts>
@@ -562,7 +562,7 @@
 			</OnShow>
 			<OnClick>
 				EncounterJournal_SelectSearch(self:GetID())
-				PlaySound("igSpellBookOpen");
+				PlaySound(SOUNDKIT.IG_SPELLBOOK_OPEN);
 			</OnClick>
 		</Scripts>
 	</Button>
@@ -628,7 +628,7 @@
 			</OnLeave>
 			<OnClick>
 				EncounterJournal_SelectSearch(self:GetID());
-				PlaySound("igSpellBookOpen");
+				PlaySound(SOUNDKIT.IG_SPELLBOOK_OPEN);
 			</OnClick>
 		</Scripts>
 	</Button>
@@ -663,7 +663,7 @@
 			</OnEnable>
 			<OnClick>
 				EncounterJournal_DisplayCreature(self);
-				PlaySound("igMainMenuOption");
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
 			</OnClick>
 			<OnEnter>
 
@@ -740,7 +740,7 @@
 					EncounterJournal_SetTab(EncounterJournal.encounter.info.lootTab:GetID());
 				end
 				EncounterJournal_DisplayEncounter(self.encounterID);
-				PlaySound("igAbiliityPageTurn");
+				PlaySound(SOUNDKIT.IG_ABILITY_PAGE_TURN);
 			</OnClick>
 		</Scripts>
 	</Button>
@@ -1057,7 +1057,7 @@
 									EncounterJournal_DisplayCreature(self);
 								end
 								self:Enable();
-								PlaySound("igMainMenuOptionCheckBoxOn");
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 							</OnClick>
 						</Scripts>
 					</Button>
@@ -1089,7 +1089,7 @@
 
 						EncounterJournal_ToggleHeaders(self:GetParent())
 						self:GetScript("OnShow")(self);
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 					</OnClick>
 					<OnMouseDown>
 						self.tex.up[1]:Hide();
@@ -1343,7 +1343,7 @@
 				if (not HandleModifiedItemClick(self.link)) then
 					EncounterJournal_Loot_OnClick(self);
 				else
-					PlaySound("igMainMenuOption");
+					PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
 				end
 			</OnClick>
 			<OnEnter>
@@ -1604,7 +1604,7 @@
 							</OnShow>
 							<OnClick>
 								EncounterJournal_ShowFullSearch()
-								PlaySound("igMainMenuOptionCheckBoxOn");
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 							</OnClick>
 							<OnEnter function="EncounterJournalSearchBoxShowAllResults_OnEnter"/>
 						</Scripts>
@@ -1848,10 +1848,10 @@
 					<OnShow>
 						--always on top
 						self:SetFrameLevel(self:GetParent():GetFrameLevel()+10);
-						PlaySound("igSpellBookOpen");
+						PlaySound(SOUNDKIT.IG_SPELLBOOK_OPEN);
 					</OnShow>
 					<OnHide>
-						PlaySound("igSpellBookClose");
+						PlaySound(SOUNDKIT.IG_SPELLBOOK_CLOSE);
 					</OnHide>
 				</Scripts>
 			</Frame>
@@ -2368,7 +2368,7 @@
 								<Scripts>
 									<OnClick>
 										ToggleDropDownMenu(1, nil, self:GetParent().difficultyDD, self, 5, 0);
-										PlaySound("igMainMenuOptionCheckBoxOn");
+										PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 									</OnClick>
 								</Scripts>
 							</Button>
@@ -2597,7 +2597,7 @@
 														self.texture:SetPoint("TOPLEFT", 0, 0);
 													</OnMouseUp>
 													<OnClick>
-														PlaySound("igMainMenuOptionCheckBoxOn");
+														PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 														EJ_ResetLootFilter();
 														EncounterJournal_LootUpdate();
 														self:GetParent():Hide();
@@ -2610,7 +2610,7 @@
 										<Scripts>
 											<OnClick>
 												ToggleDropDownMenu(1, nil, self:GetParent().lootFilter, self, 5, 0);
-												PlaySound("igMainMenuOption");
+												PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
 											</OnClick>
 											<OnLoad inherit="prepend">
 												self:SetPoint("TOPLEFT", self:GetParent():GetParent(), "TOPRIGHT", -340, -13);
@@ -2624,7 +2624,7 @@
 										<Scripts>
 											<OnClick>
 												ToggleDropDownMenu(1, nil, self:GetParent().lootSlotFilter, self, 5, 0);
-												PlaySound("igMainMenuOption");
+												PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
 											</OnClick>
 											<OnLoad inherit="prepend">
 												self:SetPoint("TOPLEFT", self:GetParent():GetParent(), "TOPRIGHT", -230, -13);
@@ -2886,7 +2886,7 @@
 								<Scripts>
 									<OnClick>
 										EJSuggestFrame_PrevSuggestion();
-										PlaySoundKitID(858); -- igMainMenuOptionFaerTab
+										PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_FAER_TAB);
 									</OnClick>
 								</Scripts>
 								<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
@@ -2902,7 +2902,7 @@
 								<Scripts>
 									<OnClick>
 										EJSuggestFrame_NextSuggestion();
-										PlaySoundKitID(858); --igMainMenuOptionFaerTab
+										PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_FAER_TAB);
 									</OnClick>
 								</Scripts>
 								<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>

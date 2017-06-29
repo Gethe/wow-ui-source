@@ -1050,7 +1050,7 @@ function WorldStateScoreFrame_Resize()
 end
 
 function WorldStateScoreFrame_OnClose(self)
-	PlaySound("igCharacterInfoClose");
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 	HideParentPanel(self);
 end
 
@@ -1070,7 +1070,7 @@ function WorldStateScoreFrameTab_OnClick(tab)
 	end
 	WorldStateScoreFrameLabel:SetFormattedText(STAT_TEMPLATE, tab:GetText());
 	SetBattlefieldScoreFaction(faction);
-	PlaySound("igCharacterInfoTab");
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
 end
 
 function ToggleWorldStateScoreFrame()

@@ -225,7 +225,7 @@ function OptionsFrame_OnShow (self)
 end
 
 function OptionsFrame_OnHide (self)
-	PlaySound("gsTitleOptionExit");
+	PlaySound(SOUNDKIT.GS_TITLE_OPTION_EXIT);
 
 	if ( self.lastFrame ) then
 		self.lastFrame:Show();

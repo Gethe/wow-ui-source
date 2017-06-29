@@ -285,7 +285,7 @@ function QuickJoinToastMixin:ShowToast(group, priority)
 		self:SetHitRectInsets(0, -self.Toast:GetWidth(), 0, 0);
 	end
 	self:UpdateQueueIcon();
-	PlaySoundKitID(79739); --UI_71_Social_Queueing_Toast
+	PlaySound(SOUNDKIT.UI_71_SOCIAL_QUEUEING_TOAST);
 	C_SocialQueue.SignalToastDisplayed(group.guid, priority);
 end
 

@@ -107,7 +107,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PlaySound("gsTitleOptionExit");
+						PlaySound(SOUNDKIT.GS_TITLE_OPTION_EXIT);
 						HideUIPanel(RatingMenuFrame);
 					</OnClick>
 				</Scripts>
@@ -130,7 +130,7 @@
 			</OnHide>
 			<OnKeyDown>
 				if ( GetBindingFromClick(key) == "TOGGLEGAMEMENU" ) then
-					PlaySound("gsTitleOptionExit");
+					PlaySound(SOUNDKIT.GS_TITLE_OPTION_EXIT);
 					HideUIPanel(RatingMenuFrame);
 				elseif ( GetBindingFromClick(key) == "SCREENSHOT" ) then
 					RunBinding("SCREENSHOT");

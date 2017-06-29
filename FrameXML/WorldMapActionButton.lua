@@ -8,7 +8,7 @@ function WorldMapActionButtonMixin:OnEvent(event, ...)
 	elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
 		local unitTag, spellName, rank, lineID, spellID = ...;
 		if spellID == GetWorldMapActionButtonSpellInfo() then
-			PlaySound("UI_OrderHall_Talent_NukeFromOrbit");
+			PlaySound(SOUNDKIT.UI_ORDERHALL_TALENT_NUKE_FROM_ORBIT);
 		end
 	end
 end

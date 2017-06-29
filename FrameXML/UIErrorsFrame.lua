@@ -132,9 +132,9 @@ function UIErrorsMixin:TryDisplayMessage(messageType, message, r, g, b)
 
 		local errorName, soundKitID, voiceID = GetGameMessageInfo(messageType);
 		if voiceID then
-    		PlayVocalErrorSoundID(voiceID);
+			PlayVocalErrorSoundID(voiceID);
 		elseif soundKitID then
-			PlaySoundKitID(soundKitID);
+			PlaySound(soundKitID);
 		end
 	end
 end

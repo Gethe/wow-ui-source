@@ -139,7 +139,7 @@ end
 function AdventureMap_MissionDataProviderMixin:CompleteMission(missionInfo)
 	if not self.completingMissionInfo then
 		self.completingMissionInfo = missionInfo;
-		PlaySound("UI_Garrison_Mission_Complete_Encounter_Chance");
+		PlaySound(SOUNDKIT.UI_GARRISON_MISSION_COMPLETE_ENCOUNTER_CHANCE);
 		C_Garrison.MarkMissionComplete(missionInfo.missionID);
 	end
 end
@@ -150,7 +150,7 @@ function AdventureMap_MissionDataProviderMixin:OnMissionCompleteResponse(mission
 		self.completingMissionInfo = nil;
 
 		if succeeded then
-			PlaySound("UI_Garrison_CommandTable_MissionSuccess_Stinger");
+			PlaySound(SOUNDKIT.UI_GARRISON_COMMAND_TABLE_MISSION_SUCCESS_STINGER);
 		end
 
 		C_Garrison.MissionBonusRoll(missionID);

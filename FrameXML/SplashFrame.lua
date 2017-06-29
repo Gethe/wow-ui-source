@@ -311,13 +311,13 @@ function SplashFrame_Close()
 			OpenQuestDialog();
 		end
 	end
-	PlaySound("igMainMenuQuit");
+	PlaySound(SOUNDKIT.IG_MAINMENU_QUIT);
 end
 
 function SplashFrameStartButton_OnClick(self)
 	HideParentPanel(self);
 	OpenQuestDialog();
-	PlaySound("igMainMenuOpen");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
 end
 
 --- Splash Feature Sections---

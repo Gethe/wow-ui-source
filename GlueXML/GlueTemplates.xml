@@ -67,9 +67,9 @@
 		<Scripts>
 			<OnClick>
 				if ( self:GetChecked() ) then
-					PlaySound("igMainMenuOptionCheckBoxOn");
+					PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 				else
-					PlaySound("igMainMenuOptionCheckBoxOff");
+					PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 				end
 			</OnClick>
 		</Scripts>
@@ -183,7 +183,7 @@
 					<OnClick>
 						local parent = self:GetParent();
 						parent:SetValue(parent:GetValue() - (parent:GetHeight() / 2));
-						PlaySound("UChatScrollButton");
+						PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -195,7 +195,7 @@
 					<OnClick>
 						local parent = self:GetParent();
 						parent:SetValue(parent:GetValue() + (parent:GetHeight() / 2));
-						PlaySound("UChatScrollButton");
+						PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 					</OnClick>
 				</Scripts>
 			</Button>

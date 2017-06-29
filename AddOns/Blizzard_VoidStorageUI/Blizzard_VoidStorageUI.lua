@@ -142,7 +142,7 @@ function VoidStorageFrame_OnEvent(self, event, ...)
 end
 
 function VoidStorageFrame_OnShow(self)
-	PlaySound("UI_EtherealWindow_Open");
+	PlaySound(SOUNDKIT.UI_ETHEREAL_WINDOW_OPEN);
 	SetUpSideDressUpFrame(self, 726, 906, "TOPLEFT", "TOPRIGHT", -2, -15);
 	VoidStorageFrame_Update();
 end
@@ -214,7 +214,7 @@ function VoidStorageFrame_Update()
 end
 
 function VoidStorageFrame_OnHide(self)
-	PlaySound("UI_EtherealWindow_Close");
+	PlaySound(SOUNDKIT.UI_ETHEREAL_WINDOW_CLOSE);
 	StaticPopup_Hide("VOID_DEPOSIT_CONFIRM");
 	CloseVoidStorageFrame();
 	CloseSideDressUpFrame(self);

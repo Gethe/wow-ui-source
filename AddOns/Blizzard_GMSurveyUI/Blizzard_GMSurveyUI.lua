@@ -144,7 +144,7 @@ function GMSurveyRadioButton_OnClick(self)
 		else
 			radioButton:SetChecked(false);
 			radioButton:Enable();
-			PlaySound("igMainMenuOptionCheckBoxOn");
+			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 		end
 	end
 	-- check if all questions have an answer selected to enable the Submit button

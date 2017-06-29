@@ -88,7 +88,7 @@ function HybridScrollFrameScrollButton_OnClick (self, button, down)
 		self.timeSinceLast = (self.timeToStart or -0.2);
 		self:SetScript("OnUpdate", HybridScrollFrameScrollButton_OnUpdate);
 		HybridScrollFrame_OnMouseWheel (parent, self.direction);
-		PlaySound("UChatScrollButton");
+		PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 	else
 		self:SetScript("OnUpdate", nil);
 	end

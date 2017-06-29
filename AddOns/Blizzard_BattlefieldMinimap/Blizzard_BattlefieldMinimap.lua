@@ -53,7 +53,7 @@ function BattlefieldMinimap_OnLoad (self)
 end
 
 function BattlefieldMinimap_OnShow(self)
-	PlaySound("igQuestLogOpen");
+	PlaySound(SOUNDKIT.IG_QUEST_LOG_OPEN);
 	SetMapToCurrentZone();
 	BattlefieldMinimap_Update();
 	BattlefieldMinimap_UpdateOpacity(BattlefieldMinimapOptions.opacity);
@@ -61,7 +61,7 @@ function BattlefieldMinimap_OnShow(self)
 end
 
 function BattlefieldMinimap_OnHide(self)
-	PlaySound("igQuestLogClose");
+	PlaySound(SOUNDKIT.IG_QUEST_LOG_CLOSE);
 	BattlefieldMinimapTab:Hide();
 	BattlefieldMinimap_ClearTextures();
 	CloseDropDownMenus();
@@ -426,7 +426,7 @@ function BattlefieldMinimap_OnMouseUp(self, button, upInside)
 end
 
 function BattlefieldMinimapTab_OnClick(self, button)
-	PlaySound("UChatScrollButton");
+	PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 
 	-- If Rightclick bring up the options menu
 	if ( button == "RightButton" ) then

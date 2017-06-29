@@ -268,7 +268,7 @@ end
 
 function WorldMapBountyBoardMixin:SetSelectedBountyIndex(selectedBountyIndex)
 	self.selectedBountyIndex = selectedBountyIndex;
-	PlaySound("UI_WorldQuest_Map_Select");
+	PlaySound(SOUNDKIT.UI_WORLDQUEST_MAP_SELECT);
 	self:RefreshBountyTabs();
 	self:RefreshSelectedBounty();
 	if self.selectedBountyChangedCallback then

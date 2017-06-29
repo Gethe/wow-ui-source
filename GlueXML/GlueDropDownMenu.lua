@@ -572,7 +572,7 @@ function GlueDropDownMenuButton_OnClick(self)
 	else
 		self:GetParent():Hide();
 	end
-	PlaySound("UChatScrollButton");
+	PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 end
 
 function HideDropDownMenu(level)

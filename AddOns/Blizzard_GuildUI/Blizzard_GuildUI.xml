@@ -257,7 +257,7 @@
 					SortGuildRoster(self.sortType);
 					GuildRoster_Update();
 				end				
-				PlaySound("igMainMenuOptionCheckBoxOn");
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 			</OnClick>
 		</Scripts>
 		<ButtonText>
@@ -345,7 +345,7 @@
 			<OnClick>
 				GuildFrame_TabClicked(self);
 				PanelTemplates_Tab_OnClick(self, GuildFrame);
-				PlaySound("igCharacterInfoTab");
+				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
 			</OnClick>
 			<OnShow>
 				PanelTemplates_TabResize(self, 0);

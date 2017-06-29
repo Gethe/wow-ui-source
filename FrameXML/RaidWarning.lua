@@ -140,7 +140,7 @@ function RaidWarningFrame_OnEvent(self, event, message)
 		end		
 		
 		RaidNotice_AddMessage( self, message, ChatTypeInfo["RAID_WARNING"] );
-		PlaySound("RaidWarning");
+		PlaySound(SOUNDKIT.RAID_WARNING);
 	end
 end
 
@@ -169,9 +169,9 @@ function RaidBossEmoteFrame_OnEvent(self, event, ...)
 --		RaidNotice_AddMessage( RaidBossEmoteFrame, "This is a TEST of the MESSAGE!", ChatTypeInfo["RAID_BOSS_EMOTE"] );
 		if ( playSound ) then
 			if ( event == "RAID_BOSS_WHISPER" ) then
-				PlaySound("UI_RaidBossWhisperWarning");
+				PlaySound(SOUNDKIT.UI_RAID_BOSS_WHISPER_WARNING);
 			else
-				PlaySound("RaidBossEmoteWarning");
+				PlaySound(SOUNDKIT.RAID_BOSS_EMOTE_WARNING);
 			end
 		end
 	elseif ( event == "CLEAR_BOSS_EMOTES" ) then

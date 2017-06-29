@@ -871,7 +871,7 @@
 				SendMailBodyEditBox:SetText("");
 				SendMailNameEditBox:SetText("");
 				SendMailSubjectEditBox:SetText("");
-				PlaySound("igCharacterInfoClose");
+				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 				SetSendMailShowing(false);
 			</OnHide>
 			<OnMouseWheel function="MailFrame_OnMouseWheel"/>
@@ -1156,7 +1156,7 @@
 					<OnClick>
 						OpenMailFrame.updateButtonPositions = false;
 						TakeInboxTextItem(InboxFrame.openMailID);
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 					</OnClick>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");

@@ -91,6 +91,10 @@ function MapCanvasDataProviderMixin:SignalEvent(event, ...)
 	end
 end
 
+function MapCanvasDataProviderMixin:GetTransformFlags()
+	return self:GetMap():GetTransformFlags();
+end
+
 -- Provides a basic interface for something that is visible on the map canvas, like icons, blobs or text
 MapCanvasPinMixin = {};
 

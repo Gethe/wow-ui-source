@@ -164,7 +164,7 @@ function CachedLoginFrameContainer_Update(self)
 end
 
 function CachedLoginButton_OnClick(self)
-	PlaySound("gsLogin");
+	PlaySound(SOUNDKIT.GS_LOGIN);
 
 	local account = self:GetParent().account;
 	C_Login.CachedLogin(account);
@@ -187,7 +187,7 @@ function CachedLoginDeleteButton_OnClick(self)
 end
 
 function AccountLogin_Login()
-	PlaySound("gsLogin");
+	PlaySound(SOUNDKIT.GS_LOGIN);
 
 	if ( AccountLogin.UI.AccountEditBox:GetText() == "" ) then
 		GlueDialog_Show("OKAY", LOGIN_ENTER_NAME);
@@ -495,12 +495,12 @@ end
 -- =============================================================
 
 function AccountLogin_ManageAccount()
-	PlaySound("gsLoginNewAccount");
+	PlaySound(SOUNDKIT.GS_LOGIN_NEW_ACCOUNT);
 	LaunchURL(AUTH_NO_TIME_URL);
 end
 
 function AccountLogin_LaunchCommunitySite()
-	PlaySound("gsLoginNewAccount");
+	PlaySound(SOUNDKIT.GS_LOGIN_NEW_ACCOUNT);
 	LaunchURL(COMMUNITY_URL);
 end
 

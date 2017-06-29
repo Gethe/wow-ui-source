@@ -225,10 +225,10 @@
 					</OnLoad>
 					<OnClick>
 						if ( self:GetChecked() ) then
-							PlaySound("igMainMenuOptionCheckBoxOn");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 							SetCurrencyUnused(TokenFrame.selectedID, 1);
 						else
-							PlaySound("igMainMenuOptionCheckBoxOff");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 							SetCurrencyUnused(TokenFrame.selectedID, 0);
 						end
 						TokenFrame_Update();
@@ -264,10 +264,10 @@
 								self:SetChecked(false);
 								return;
 							end
-							PlaySound("igMainMenuOptionCheckBoxOn");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 							SetCurrencyBackpack(TokenFrame.selectedID, 1);
 						else
-							PlaySound("igMainMenuOptionCheckBoxOff");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 							SetCurrencyBackpack(TokenFrame.selectedID, 0);
 						end
 						TokenFrame_Update();
@@ -304,10 +304,10 @@
 		</Backdrop>
 		<Scripts>
 			<OnShow>
-				PlaySound("igCharacterInfoOpen");
+				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 			</OnShow>
 			<OnHide>
-				PlaySound("igCharacterInfoClose");
+				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 			</OnHide>
 		</Scripts>
 	</Frame>

@@ -40,7 +40,7 @@
 								<Texture file="Interface\COMMON\StreamBackground" name="$parentBackground" setAllPoints="true" parentKey="Background"/>
 							</Layer>
 							<Layer level="ARTWORK">
-								<Texture file="Interface\COMMON\StreamFrame" name="$parenAlpha" setAllPoints="true" />
+								<Texture file="Interface\COMMON\StreamFrame" parentKey="Alpha" setAllPoints="true" />
 							</Layer>
 						</Layers>
 					</Frame>
@@ -161,7 +161,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOff");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 						GlueParent_CloseSecondaryScreen();
 					</OnClick>
 				</Scripts>

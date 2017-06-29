@@ -15,11 +15,13 @@ Blizzard_APIDocumentation.lua
 # Start documentation files here
 SharedTypes.lua
 ActionBarFrameLua.lua
+ArtifactRelicForgeUILua.lua
 ArtifactUILua.lua
 CalendarLua.lua
 ChallengeModeInfoLua.lua
 ChatBubblesLua.lua
 CommentatorFrameLua.lua
+ConsoleLua.lua
 ContributionCollectorLua.lua
 EquipmentManagerLua.lua
 GarrisonInfoLua.lua

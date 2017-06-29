@@ -186,7 +186,7 @@
 					<OnClick>
 						local currentTab = self:GetParent():GetID();
 						if ( GetCurrentGuildBankTab() ~= currentTab or button == "RightButton" ) then
-							PlaySound("GuildBankOpenBag");
+							PlaySound(SOUNDKIT.GUILD_BANK_OPEN_BAG);
 						end
 						GuildBankTab_OnClick(self, button, currentTab);
 					</OnClick>
@@ -626,7 +626,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PlaySound("igMainMenuOption");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
 						StaticPopup_Hide("GUILDBANK_WITHDRAW");
 						if(StaticPopup_Visible("GUILDBANK_DEPOSIT")) then
 							StaticPopup_Hide("GUILDBANK_DEPOSIT");
@@ -643,7 +643,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PlaySound("igMainMenuOption");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
 						StaticPopup_Hide("GUILDBANK_DEPOSIT");
 						if(StaticPopup_Visible("GUILDBANK_WITHDRAW")) then
 							StaticPopup_Hide("GUILDBANK_WITHDRAW");
@@ -777,7 +777,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								PlaySound("igMainMenuOption");
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
 								StaticPopup_Show("CONFIRM_BUY_GUILDBANK_TAB");
 							</OnClick>
 						</Scripts>
@@ -855,7 +855,7 @@
 								self:SetWidth(_G[self:GetName().."Text"]:GetWidth()+40);
 							</OnLoad>
 							<OnClick>
-								PlaySound("igMainMenuOptionCheckBoxOn");
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 								if ( GuildBankTabInfoEditBox:GetText() ~= GuildBankTabInfoEditBox.text ) then
 									SetGuildBankText(GetCurrentGuildBankTab(), GuildBankTabInfoEditBox:GetText());
 									GuildBankTabInfoEditBox:ClearFocus();
@@ -1075,7 +1075,7 @@
 						<Scripts>
 							<OnClick>
 								GuildBankPopupFrame_CancelEdit(self)
-								PlaySound("gsTitleOptionOK");
+								PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK);
 							</OnClick>
 						</Scripts>
 					</Button>
@@ -1087,7 +1087,7 @@
 						<Scripts>
 							<OnClick>
 								GuildBankPopupOkayButton_OnClick(self);
-								PlaySound("gsTitleOptionOK");
+								PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK);
 							</OnClick>
 						</Scripts>
 					</Button>

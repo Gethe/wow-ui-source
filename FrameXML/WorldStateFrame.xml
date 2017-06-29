@@ -122,7 +122,7 @@
 				if ( self.sortType ) then
 					SortBattlefieldScoreData(self.sortType);
 				end
-				PlaySound("igMainMenuOptionCheckBoxOn");
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 			</OnClick>
 			<OnLeave>
 				GameTooltip:Hide();
@@ -1133,7 +1133,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PlaySound("igMainMenuOption");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
 						ConfirmOrLeaveBattlefield();
 					</OnClick>
 				</Scripts>

@@ -445,7 +445,7 @@ function TutorialFrame_Update(currentTutorial)
 		return;
 	end
 	
-	PlaySound("TutorialPopup");
+	PlaySound(SOUNDKIT.TUTORIAL_POPUP);
 	TutorialFrame_ClearTextures();
 	TutorialFrame.id = currentTutorial;
 	FlagTutorial(currentTutorial);
@@ -784,7 +784,7 @@ function TutorialFrame_NewTutorial(tutorialID, forceShow)
 end
 
 function TutorialFramePrevButton_OnClick(self)
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	local prevTutorial = GetPrevCompleatedTutorial(TutorialFrame.id);
 	while ( prevTutorial and DISPLAY_DATA[prevTutorial].tileHeight == 0) do
 		prevTutorial = GetPrevCompleatedTutorial(prevTutorial);
@@ -795,7 +795,7 @@ function TutorialFramePrevButton_OnClick(self)
 end
 
 function TutorialFrameNextButton_OnClick(self)
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	local nextTutorial = GetNextCompleatedTutorial(TutorialFrame.id);
 	while ( nextTutorial and DISPLAY_DATA[nextTutorial].tileHeight == 0) do
 		nextTutorial = GetNextCompleatedTutorial(nextTutorial);
@@ -819,7 +819,7 @@ function TutorialFrame_AlertButton_OnClick(self)
 end
 
 function TutorialFrame_Hide()
-	PlaySound("igMainMenuClose");
+	PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
 	HideUIPanel(TutorialFrame);
 	if ( getn(TUTORIALFRAME_QUEUE) > 0 ) then
 		TutorialFrame_AlertButton_OnClick( TutorialFrameAlertButton );

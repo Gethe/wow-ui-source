@@ -1,0 +1,50 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="Blizzard_TableInspectorAnchorDataProvider.lua"/>
+	
+	<Frame name="TableInspectAnchorDataProviderTitleTemplate" virtual="true">
+		<Size x="400" y="16"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Text" inherits="GameFontNormalLarge" justifyH="LEFT" text="anchor(s)">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="12" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+	
+	<Button name="TableInspectAnchorLineTemplate" mixin="TableInspectAnchorLineMixin" virtual="true">
+		<Size x="400" y="16"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Point" inherits="GameFontNormal" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="20" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="RelativeTo" inherits="GameFontNormal" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Point" relativePoint="RIGHT" x="4" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="RelativePoint" inherits="GameFontNormal" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.RelativeTo" relativePoint="RIGHT" x="4" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="XOffset" inherits="GameFontNormal" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.RelativePoint" relativePoint="RIGHT" x="4" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="YOffset" inherits="GameFontNormal" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.XOffset" relativePoint="RIGHT" x="4" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Button>
+</Ui>

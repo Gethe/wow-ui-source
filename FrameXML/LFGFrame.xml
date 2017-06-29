@@ -19,9 +19,9 @@
 				<Scripts>
 					<OnClick>
 						if ( self:GetChecked() ) then
-							PlaySound("igMainMenuOptionCheckBoxOn");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						else
-							PlaySound("igMainMenuOptionCheckBoxOff");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 						end
 						if ( self.onClick ) then
 							self.onClick(self, button);
@@ -444,7 +444,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								PlaySound("igCharacterInfoTab");
+								PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
 								LFGDebug("Proposal Hidden: Ready Dialog close button pressed.");
 								StaticPopupSpecial_Hide(LFGDungeonReadyPopup);
 							</OnClick>
@@ -460,7 +460,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								PlaySound("igCharacterInfoTab");
+								PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
 								AcceptProposal();
 							</OnClick>
 						</Scripts>
@@ -472,7 +472,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								PlaySound("igCharacterInfoTab");
+								PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
 								RejectProposal();
 							</OnClick>
 						</Scripts>
@@ -943,11 +943,11 @@
 				LFGInvitePopupRoleButtonDPS.checkButton.onClick = LFGInvitePopupCheckButton_OnClick;
 			</OnLoad>
 			<OnShow>
-				PlaySound("igPlayerInvite");
+				PlaySound(SOUNDKIT.IG_PLAYER_INVITE);
 			</OnShow>
 			<OnUpdate function="LFGInvitePopup_OnUpdate"/>
 			<OnHide>
-				PlaySound("igMainMenuClose");
+				PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
 				self:SetHeight(LFG_INVITE_POPUP_DEFAULT_HEIGHT);
 				self.QueueWarningText:Hide();
 			</OnHide>
@@ -1235,7 +1235,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PlaySound("UChatScrollButton");
+						PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 						self:GetParent():Hide();
 					</OnClick>
 				</Scripts>

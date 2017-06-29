@@ -670,8 +670,7 @@ function SecureAuraHeader_OnLoad(self)
 end
 
 function SecureAuraHeader_OnUpdate(self)
-	local hasMainHandEnchant, hasOffHandEnchant, _;
-	hasMainHandEnchant, _, _, hasOffHandEnchant, _, _ = GetWeaponEnchantInfo();
+	local hasMainHandEnchant, _, _, _, hasOffHandEnchant = GetWeaponEnchantInfo();
 	if ( hasMainHandEnchant ~= self:GetAttribute("_mainEnchanted") ) then
 		self:SetAttribute("_mainEnchanted", hasMainHandEnchant);
 	end
@@ -789,8 +788,7 @@ local function configureAuras(self, auraTable, consolidateTable, weaponPosition)
 		end
 	end
 	if ( weaponPosition ) then
-		local hasMainHandEnchant, hasOffHandEnchant, hasRangedEnchant, _;
-		hasMainHandEnchant, _, _, hasOffHandEnchant, _, _, hasRangedEnchant, _, _ = GetWeaponEnchantInfo();
+		local hasMainHandEnchant, _, _, _, hasOffHandEnchant, _, _, _, hasRangedEnchant = GetWeaponEnchantInfo();
 
 		for weapon=2,1,-1 do
 			local weaponAttr = "tempEnchant"..weapon

@@ -422,7 +422,7 @@ end
 function QuestMapQuestOptions_ShareQuest(questID)
 	local questLogIndex = GetQuestLogIndexByID(questID);
 	QuestLogPushQuest(questLogIndex);
-	PlaySound("igQuestLogOpen");
+	PlaySound(SOUNDKIT.IG_QUEST_LOG_OPEN);
 end
 
 function QuestMapQuestOptions_AbandonQuest(questID)
@@ -765,7 +765,7 @@ function ShowQuestLog()
 end
 
 function QuestMapLogHeaderButton_OnClick(self, button)
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	if ( button == "LeftButton" ) then
 		local _, _, _, _, isCollapsed = GetQuestLogTitle(self.questLogIndex);
 		if (isCollapsed) then
@@ -934,7 +934,7 @@ function QuestMapLogTitleButton_OnClick(self, button)
 		return;
 	end
 
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 
 	if ( IsShiftKeyDown() ) then
 		QuestMapQuestOptions_TrackQuest(self.questID);
@@ -1098,7 +1098,7 @@ end
 
 function QuestLogPopupDetailFrame_OnHide(self)
 	self.questID = nil;
-	PlaySound("igQuestLogClose");
+	PlaySound(SOUNDKIT.IG_QUEST_LOG_CLOSE);
 end
 
 function QuestLogPopupDetailFrame_Show(questLogIndex)
@@ -1122,7 +1122,7 @@ function QuestLogPopupDetailFrame_Show(questLogIndex)
 
 	QuestLogPopupDetailFrame_Update(true);
 	ShowUIPanel(QuestLogPopupDetailFrame);
-	PlaySound("igQuestLogOpen");
+	PlaySound(SOUNDKIT.IG_QUEST_LOG_OPEN);
 
 	-- portrait
 	local questPortrait, questPortraitText, questPortraitName = GetQuestLogPortraitGiver();

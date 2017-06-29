@@ -295,7 +295,7 @@
 						self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 					</OnLoad>
 					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						OptionsFrame_ToggleSubCategories(self);
 					</OnClick>
 				</Scripts>
@@ -309,7 +309,7 @@
 				OptionsListButton_OnLoad(self);
 			</OnLoad>
 			<OnClick>
-				PlaySound("igMainMenuOptionCheckBoxOn");
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 				OptionsListButton_OnClick(self, button);
 			</OnClick>
 			<OnEnter function="OptionsListButton_OnEnter"/>

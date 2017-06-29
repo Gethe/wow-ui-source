@@ -424,10 +424,10 @@
 				self.hideOnEscape = true;
 			</OnLoad>
 			<OnShow>
-				PlaySound("igMainMenuOpen");
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
 			</OnShow>
 			<OnHide>
-				PlaySound("igMainMenuClose");
+				PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
 			</OnHide>
 		</Scripts>
 	</Frame>

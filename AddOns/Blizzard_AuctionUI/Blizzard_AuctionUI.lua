@@ -192,7 +192,7 @@ function AuctionFrame_OnShow (self)
 	AuctionFrameTab_OnClick(AuctionFrameTab1);
 	SetPortraitTexture(AuctionPortraitTexture,"npc");
 	BrowseNoResultsText:SetText(BROWSE_SEARCH_TEXT);
-	PlaySound("AuctionWindowOpen");
+	PlaySound(SOUNDKIT.AUCTION_WINDOW_OPEN);
 
 	SetUpSideDressUpFrame(self, 840, 1020, "TOPLEFT", "TOPRIGHT", -2, -28);
 end
@@ -203,7 +203,7 @@ function AuctionFrameTab_OnClick(self, button, down, index)
 	AuctionFrameAuctions:Hide();
 	AuctionFrameBrowse:Hide();
 	AuctionFrameBid:Hide();
-	PlaySound("igCharacterInfoTab");
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
 	if ( index == 1 ) then
 		-- Browse tab
 		AuctionFrameTopLeft:SetTexture("Interface\\AuctionFrame\\UI-AuctionFrame-Browse-TopLeft");
@@ -1019,7 +1019,7 @@ end
 
 function BrowseWowTokenResultsBuyout_OnClick(self)
 	C_WowTokenPublic.BuyToken();
-	PlaySound("igMainMenuOpen");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
 end
 
 function BrowseWowTokenResultsBuyout_OnEnter(self)
@@ -1995,13 +1995,13 @@ end
 
 function AuctionsCreateAuctionButton_OnClick()
 	if (C_WowTokenPublic.IsAuctionableWowToken(select(10, GetAuctionSellItemInfo()))) then
-		PlaySound("igMainMenuOpen");
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
 		C_WowTokenPublic.SellToken();
 	else
 		LAST_ITEM_START_BID = MoneyInputFrame_GetCopper(StartPrice);
 		LAST_ITEM_BUYOUT = MoneyInputFrame_GetCopper(BuyoutPrice);
 		DropCursorMoney();
-		PlaySound("LOOTWINDOWCOINSOUND");
+		PlaySound(SOUNDKIT.LOOT_WINDOW_COIN_SOUND);
 		local startPrice = MoneyInputFrame_GetCopper(StartPrice);
 		local buyoutPrice = MoneyInputFrame_GetCopper(BuyoutPrice);
 		if ( AuctionFrameAuctions.priceType == PRICE_TYPE_UNIT ) then

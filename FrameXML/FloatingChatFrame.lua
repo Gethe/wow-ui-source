@@ -2344,7 +2344,7 @@ function FCFDockOverflowButton_UpdatePulseState(self)
 end
 
 function FCFDockOverflowButton_OnClick(self, button)
-	PlaySound("UChatScrollButton");
+	PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 	if ( self.list:IsShown() ) then
 		self.list:Hide();
 	else

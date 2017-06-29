@@ -6,6 +6,7 @@
 ..\..\SharedXML\ModelSceneTemplatesScripts.xml
 ..\..\SharedXML\ModelSceneMixinScripts.xml
 ..\..\SharedXML\ModelSceneActorMixinScripts.xml
+Blizzard_SimpleCheckout.xml
 Blizzard_StoreUI.xml
 Blizzard_StoreUIInsecure.xml
 Localization.lua

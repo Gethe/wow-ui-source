@@ -431,7 +431,7 @@ function CharacterCreate_OnEvent(self, event, ...)
 			CharacterCreateNameEdit:SetText(name);
 		end
 		CharacterCreateRandomName:Enable();
-		PlaySound("gsCharacterCreationLook");
+		PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_LOOK);
 	elseif ( event == "UPDATE_EXPANSION_LEVEL" ) then
 		-- Expansion level changed while online, so enable buttons as needed
 		if ( CharacterCreateFrame:IsShown() ) then
@@ -858,7 +858,7 @@ function CharacterCreate_UpdateModel(self)
 end
 
 function CharacterCreate_Finish()
-	PlaySound("gsCharacterCreationCreateChar");
+	PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_CREATE_CHAR);
 
 	if ( PAID_SERVICE_TYPE ) then
 		GlueDialog_Show("CONFIRM_PAID_SERVICE");
@@ -879,7 +879,7 @@ end
 
 function CharacterCreate_Back()
 	if ( CharacterCreateFrame.state == "CUSTOMIZATION" ) then
-		PlaySound("gsCharacterCreationCancel");
+		PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_CANCEL);
 		CharacterCreateFrame.state = "CLASSRACE"
 		CharCreateClassFrame:Show();
 		CharCreateRaceFrame:Show();
@@ -899,14 +899,14 @@ function CharacterCreate_Back()
 		SetFaceCustomizeCamera(false);
 	else
 		if( IsKioskGlueEnabled() ) then
-			PlaySound("gsCharacterCreationCancel");
+			PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_CANCEL);
 			GlueParent_SetScreen("kioskmodesplash");
 		else
 			if CharacterUpgrade_IsCreatedCharacterTrialBoost() then
 				CharacterUpgrade_ResetBoostData();
 			end
 
-			PlaySound("gsCharacterCreationCancel");
+			PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_CANCEL);
 			CHARACTER_SELECT_BACK_FROM_CREATE = true;
 			GlueParent_SetScreen("charselect");
 		end
@@ -923,7 +923,7 @@ end
 function CharacterCreate_Forward()
 	if ( CharacterCreateFrame.state == "CLASSRACE" ) then
 		CharacterCreateFrame.state = "CUSTOMIZATION"
-		PlaySound("gsCharacterSelectionCreateNew");
+		PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_CREATE_NEW);
 		CharCreateClassFrame:Hide();
 		CharCreateRaceFrame:Hide();
 		CharCreateMoreInfoButton:Hide();
@@ -1038,7 +1038,7 @@ function CharacterClass_SelectClass(self, forceAccept)
 			KioskModeCheckTrial(self:GetID());
 		end
 
-		PlaySound("gsCharacterCreationClass");
+		PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_CLASS);
 		local _,_,currClass = GetSelectedClass();
 		local id = self:GetID();
 		if ( currClass ~= id ) then
@@ -1073,7 +1073,7 @@ end
 
 function CharacterRace_OnClick(self, id, forceSelect)
 	if( self:IsEnabled() ) then
-		PlaySound("gsCharacterCreationClass");
+		PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_CLASS);
 		if ( GetSelectedRace() ~= id or forceSelect ) then
 			SetSelectedRace(id);
 			SetCharacterRace(id);
@@ -1163,12 +1163,12 @@ function SetCharacterGender(sex)
 end
 
 function CharacterCustomization_Left(id)
-	PlaySound("gsCharacterCreationLook");
+	PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_LOOK);
 	CycleCharCustomization(id, -1);
 end
 
 function CharacterCustomization_Right(id)
-	PlaySound("gsCharacterCreationLook");
+	PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_LOOK);
 	CycleCharCustomization(id, 1);
 end
 
@@ -1179,7 +1179,7 @@ function CharacterCreate_GenerateRandomName(button)
 end
 
 function CharacterCreate_Randomize()
-	PlaySound("gsCharacterCreationLook");
+	PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_LOOK);
 	RandomizeCharCustomization();
 	CharCreate_ResetFeaturesDisplay();
 end
@@ -1465,12 +1465,12 @@ function CharCreate_ChangeFeatureVariation(delta)
 	if ( endIndex < 1 or endIndex > numVariations ) then
 		return;
 	end
-	PlaySound("gsCharacterCreationClass");
+	PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_CLASS);
 	CharCreatePreviewFrame_SelectFeatureVariation(endIndex);
 end
 
 function CharCreatePreviewFrameButton_OnClick(self)
-	PlaySound("gsCharacterCreationClass");
+	PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_CLASS);
 	CharCreatePreviewFrame_SelectFeatureVariation(self.index);
 end
 
@@ -1822,7 +1822,7 @@ function CharacterCreate_SelectCharacterType(characterType)
 end
 
 function CharacterCreate_TypeButtonOnClick(self)
-	PlaySound("gsCharacterCreationClass"); -- TODO: Get more appropriate sound for this?
+	PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_CLASS); -- TODO: Get more appropriate sound for this?
 	CharacterCreate_SelectCharacterType(self.characterType);
 end
 

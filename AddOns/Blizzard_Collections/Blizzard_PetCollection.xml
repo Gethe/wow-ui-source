@@ -597,7 +597,7 @@
 							C_PetJournal.SetPetLoadOutInfo(self:GetParent():GetID(), petID);
 							PetJournal_UpdatePetLoadOut();
 							ClearCursor();
-							PlaySound("igAbilityIconDrop");
+							PlaySound(SOUNDKIT.IG_ABILITY_ICON_DROP);
 						end
 					</OnReceiveDrag>
 				</Scripts>
@@ -780,7 +780,7 @@
 					HandleModifiedItemClick(PetJournal_GetPetAbilityHyperlink(self.abilityID, self.petID));
 				else
 					C_PetJournal.SetAbility(self.slotIndex, self.abilityIndex, self.abilityID);
-					PlaySound("igMainMenuOptionCheckBoxOn");
+					PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 					PetJournal_UpdatePetLoadOut();
 					self:GetParent():Hide();
 				end
@@ -886,6 +886,55 @@
 				<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
 				<HighlightTexture name="$parentHighlight" file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
 			</Button>
+			<Button name="$parentSummonRandomFavoritePetButton" parentKey="SummonRandomFavoritePetButton" inherits="SecureFrameTemplate">
+				<Size>
+					<AbsDimension x="33" y="33"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER" relativePoint="TOPRIGHT" x="-175" y="-42"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="$parentIconTexture" parentKey="texture" file="Interface/Icons/INV_Pet_BabyMoose" setAllPoints="true"/>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="BlackCover" setAllPoints="true" hidden="true">
+							<Color r="0" g="0" b="0" a="0.6"/>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="1">
+						<Texture name="$parentBorder" inherits="ActionBarFlyoutButton-IconFrame">
+							<Size x="35" y="35"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentLockIcon" parentKey="LockIcon" file="Interface\PetBattles\PetBattle-LockIcon" setAllPoints="true" hidden="true"/>
+						<FontString name="$parentSpellName" inherits="GameFontNormal" maxLines="2" justifyH="RIGHT" parentKey="spellname">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT" relativeTo="$parentBorder" x="-2" y="0"/>
+							</Anchors>
+							<Size x="120" y="0"/>
+							<Color r="1" g="1" b="1"/>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Cooldown name="$parentCooldown" parentKey="cooldown" inherits="CooldownFrameTemplate"/>
+				</Frames>
+				<Scripts>
+					<OnLoad function="PetJournalSummonRandomFavoritePetButton_OnLoad"/>
+					<OnShow function="PetJournalSummonRandomFavoritePetButton_OnShow"/>
+					<OnHide function="PetJournalSummonRandomFavoritePetButton_OnHide"/>
+					<OnEvent function="PetJournalSummonRandomFavoritePetButton_OnEvent"/>
+					<OnClick function="PetJournalSummonRandomFavoritePetButton_OnClick"/>
+					<OnDragStart function="PetJournalSummonRandomFavoritePetButton_OnDragStart"/>
+					<OnEnter function="PetJournalSummonRandomFavoritePetButton_OnEnter"/>
+					<OnLeave function="PetJournalSummonRandomFavoritePetButton_OnLeave"/>
+				</Scripts>
+				<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
+				<HighlightTexture name="$parentHighlight" file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
+			</Button>
 			<Frame name="$parentLeftInset" useParentLevel="true" inherits="InsetFrameTemplate" parentKey="LeftInset">
 				<Size x="260" y="496"/>
 				<Anchors>
@@ -931,7 +980,7 @@
 				</Layers>
 				<Scripts>
 					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						ToggleDropDownMenu(1, nil, PetJournalFilterDropDown, "PetJournalFilterButton", 74, 15);
 					</OnClick>
 				</Scripts>
@@ -1650,7 +1699,7 @@
 						else
 							C_PetBattles.StartPVPMatchmaking();
 						end
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 					</OnClick>
 					<OnEnter function="PetJournalFindBattle_OnEnter"/>
 					<OnLeave>
@@ -1669,7 +1718,7 @@
 						MagicButton_OnLoad(self);
 					</OnLoad>
 					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						if(C_PetJournal.PetNeedsFanfare(PetJournalPetCard.petID)) then
 							PetJournal_UnwrapPet(PetJournalPetCard.petID);
 						else
@@ -1685,7 +1734,7 @@
 			<Button name="$parentAchievementStatus" parentKey="AchievementStatus">
 				<Size x="60" y="40"/>
 				<Anchors>
-					<Anchor point="TOP" x="0" y="-21"/>
+					<Anchor point="TOP" x="-50" y="-21"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">

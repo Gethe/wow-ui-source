@@ -695,7 +695,7 @@ function LFDPopupRoleCheckButton_OnEnter(self)
 end
 
 function LFDRoleCheckPopup_OnShow(self)
-	PlaySound("ReadyCheck");
+	PlaySound(SOUNDKIT.READY_CHECK);
 	FlashClientIcon();
 	LFDRoleCheckPopup_Update();
 	self:RegisterEvent("PVP_BRAWL_INFO_UPDATED");
@@ -753,7 +753,7 @@ function LFDRoleCheckPopup_Update()
 end
 
 function LFDRoleCheckPopupAccept_OnClick()
-	PlaySound("igCharacterInfoTab");
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
 
 	--Check if the role check is for a BG or not.
 	local _, _, _, _, _, isBGRoleCheck = GetLFGRoleUpdate();
@@ -773,7 +773,7 @@ function LFDRoleCheckPopupAccept_OnClick()
 end
 
 function LFDRoleCheckPopupDecline_OnClick()
-	PlaySound("igCharacterInfoTab");
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
 	StaticPopupSpecial_Hide(LFDRoleCheckPopup);
 	CompleteLFGRoleCheck(false);
 end

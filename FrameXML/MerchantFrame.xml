@@ -225,7 +225,7 @@
 					<OnLeave function="GameTooltip_Hide"/>
 					<OnClick>
 						RepairAllItems();
-						PlaySound("ITEM_REPAIR");
+						PlaySound(SOUNDKIT.ITEM_REPAIR);
 						GameTooltip:Hide();
 					</OnClick>
 					<OnEvent>
@@ -317,7 +317,7 @@
 						--FIXME!!! Need actual amount of guild money left to withdraw
 						if(CanGuildBankRepair()) then
 							RepairAllItems(true);
-							PlaySound("ITEM_REPAIR");
+							PlaySound(SOUNDKIT.ITEM_REPAIR);
 						end
 						GameTooltip:Hide();
 					</OnClick>

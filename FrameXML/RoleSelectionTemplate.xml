@@ -93,7 +93,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						StaticPopupSpecial_Hide(self:GetParent());
 					</OnClick>
 				</Scripts>
@@ -184,10 +184,10 @@
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnShow>
-				PlaySound("igMainMenuOpen");
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
 			</OnShow>
 			<OnHide>
-				PlaySound("igMainMenuClose");
+				PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
 			</OnHide>
 		</Scripts>
 	</Frame>

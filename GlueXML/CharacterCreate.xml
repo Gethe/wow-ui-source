@@ -722,7 +722,7 @@
 				self.text:SetPoint("CENTER", 0, 0);
 			</OnMouseUp>
 			<OnClick>
-				PlaySound("gsCharacterCreationClass");
+				PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_CLASS);
 				CharCreateSelectCustomizationType(self:GetID());
 			</OnClick>
 		</Scripts>
@@ -1226,7 +1226,7 @@
 								self:RegisterForClicks("LeftButtonDown", "LeftButtonUp");
 							</OnLoad>
 							<OnClick>
-								PlaySound("igInventoryRotateCharacter");
+								PlaySound(SOUNDKIT.IG_INVENTORY_ROTATE_CHARACTER);
 							</OnClick>
 							<OnUpdate>
 								CharacterCreateRotateLeft_OnUpdate(self);
@@ -1258,7 +1258,7 @@
 								self:RegisterForClicks("LeftButtonDown", "LeftButtonUp");
 							</OnLoad>
 							<OnClick>
-								PlaySound("igInventoryRotateCharacter");
+								PlaySound(SOUNDKIT.IG_INVENTORY_ROTATE_CHARACTER);
 							</OnClick>
 							<OnUpdate>
 								CharacterCreateRotateRight_OnUpdate(self);
@@ -1786,7 +1786,7 @@
 						</Layers>
 						<Scripts>
 							<OnClick>
-								PlaySound("igMainMenuOptionCheckBoxOn");
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 								if ( self.infoShown ) then
 									self.infoShown = nil;
 									CharCreateMoreInfoButtonTopGlow:Hide();
@@ -2000,7 +2000,7 @@
 										CharacterCreateAlternateFormTop:SetChecked(true);
 										CharacterCreateAlternateFormBottom:SetChecked(false);
 										if ( IsViewingAlteredForm() ) then
-											PlaySound("gsCharacterCreationClass");
+											PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_CLASS);
 											SetViewingAlteredForm(false);
 											CharCreate_PrepPreviewModels(true);
 											CharCreate_ResetFeaturesDisplay();
@@ -2048,7 +2048,7 @@
 										CharacterCreateAlternateFormTop:SetChecked(false);
 										CharacterCreateAlternateFormBottom:SetChecked(true);
 										if ( not IsViewingAlteredForm() ) then
-											PlaySound("gsCharacterCreationClass");
+											PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_CLASS);
 											SetViewingAlteredForm(true);
 											CharCreate_PrepPreviewModels(true);
 											CharCreate_ResetFeaturesDisplay();
@@ -2195,7 +2195,7 @@
 								self.pushedTexture:SetTexCoord(0, 0.5, 0, 1.0);
 							</OnLoad>
 							<OnClick>
-								PlaySound("gsCharacterCreationClass");
+								PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_CLASS);
 								if ( GetSelectedSex() ~= SEX_MALE ) then
 									SetCharacterGender(SEX_MALE);
 								else
@@ -2218,7 +2218,7 @@
 								self.pushedTexture:SetTexCoord(0.5, 1.0, 0, 1.0);
 							</OnLoad>
 							<OnClick>
-								PlaySound("gsCharacterCreationClass");
+								PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_CLASS);
 								if ( GetSelectedSex() ~= SEX_FEMALE ) then
 									SetCharacterGender(SEX_FEMALE);
 								else
@@ -2336,7 +2336,7 @@
 						<Scripts>
 							<OnClick>
 								CharacterTemplateConfirmDialog:Hide();
-								PlaySound("gsTitleOptionExit");
+								PlaySound(SOUNDKIT.GS_TITLE_OPTION_EXIT);
 							</OnClick>
 							<OnUpdate>
 								GlueParent_DeathKnightButtonSwap(self);

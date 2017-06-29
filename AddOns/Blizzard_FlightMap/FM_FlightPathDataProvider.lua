@@ -17,7 +17,8 @@ function FlightMap_FlightPathDataProviderMixin:RefreshAllData(fromOnShow)
 
 	self:CalculateLineThickness();
 
-	local taxiNodes = GetAllTaxiNodes();
+	local isForFlightMap = true;
+	local taxiNodes = GetAllTaxiNodes(nil, isForFlightMap);
 	for i, taxiNodeData in ipairs(taxiNodes) do
 		self:AddFlightNode(taxiNodeData);
 	end
@@ -74,8 +75,8 @@ function FlightMap_FlightPathDataProviderMixin:ShowBackgroundRoutesFromCurrent()
 				if not startPin or not destinationPin then
 					return; -- Incorrect flight data, will look broken until the data is adjusted
 				end
-
-				if not startPin.linkedPins[destinationPin] and not destinationPin.linkedPins[startPin] then
+				
+				if startPin:ShouldShowOutgoingFlightPaths() and not startPin.linkedPins[destinationPin] and not destinationPin.linkedPins[startPin] then
 					startPin.linkedPins[destinationPin] = true;
 					destinationPin.linkedPins[startPin] = true;
 
@@ -118,27 +119,33 @@ function FlightMap_FlightPathDataProviderMixin:AddFlightNode(taxiNodeData)
 	pin.taxiNodeData = taxiNodeData;
 	pin.owner = self;
 	pin.linkedPins = {};
-
+	pin.textureKitPrefix = taxiNodeData.textureKitPrefix;
+	if taxiNodeData.textureKitPrefix then
+		pin.atlasFormat = taxiNodeData.textureKitPrefix.."-%s";
+	else
+		pin.atlasFormat = "%s";
+	end
+		
 	if taxiNodeData.type == LE_FLIGHT_PATH_TYPE_CURRENT then
-		pin.Icon:SetAtlas("Taxi_Frame_Green");
-		pin.IconHighlight:SetAtlas("Taxi_Frame_Gray");
+		pin.Icon:SetAtlas(pin.atlasFormat:format("Taxi_Frame_Green"));
+		pin.IconHighlight:SetAtlas(pin.atlasFormat:format("Taxi_Frame_Gray"));
 		pin:SetSize(28, 28);
 		pin:Show();
 	elseif taxiNodeData.type == LE_FLIGHT_PATH_TYPE_REACHABLE then
-		pin.Icon:SetAtlas("Taxi_Frame_Gray");
-		pin.IconHighlight:SetAtlas("Taxi_Frame_Gray");
+		pin.Icon:SetAtlas(pin.atlasFormat:format("Taxi_Frame_Gray"));
+		pin.IconHighlight:SetAtlas(pin.atlasFormat:format("Taxi_Frame_Gray"));
 		pin:SetSize(20, 20);
 		pin:Show();
 	elseif taxiNodeData.type == LE_FLIGHT_PATH_TYPE_UNREACHABLE then
-		pin.Icon:SetAtlas("UI-Taxi-Icon-Nub");
-		pin.IconHighlight:SetAtlas("UI-Taxi-Icon-Nub");
+		pin.Icon:SetAtlas(pin.atlasFormat:format("UI-Taxi-Icon-Nub"));
+		pin.IconHighlight:SetAtlas(pin.atlasFormat:format("UI-Taxi-Icon-Nub"));
 		pin:SetSize(14, 14);
 		pin:Hide(); -- Only show if part of a route, handled in the route building functions
 	end
 end
 
 function FlightMap_FlightPathDataProviderMixin:CalculateLineThickness()
-	self.lineThickness = Lerp(1, 1.5, Saturate(1.25 * self:GetMap():GetCanvasZoomPercent())) * 25;
+	self.lineThickness = Lerp(1, 2, Saturate(1 - self:GetMap():GetCanvasZoomPercent())) * 45;
 end
 
 function FlightMap_FlightPathDataProviderMixin:OnCanvasScaleChanged()
@@ -192,9 +199,12 @@ function FlightMap_FlightPointPinMixin:OnMouseEnter()
 			SetTooltipMoney(GameTooltip, cost);
 		end
 
-		self.Icon:SetAtlas("Taxi_Frame_Yellow");
+		self.Icon:SetAtlas(self.atlasFormat:format("Taxi_Frame_Yellow"));
 		self.owner:RemoveRoute();
-		self.owner:HighlightRouteToPin(self);
+		
+		if self:ShouldShowOutgoingFlightPaths() then
+			self.owner:HighlightRouteToPin(self);
+		end
 	elseif self.taxiNodeData.type == LE_FLIGHT_PATH_TYPE_UNREACHABLE then
 		GameTooltip:AddLine(TAXI_PATH_UNREACHABLE, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
 	end
@@ -204,7 +214,11 @@ end
 
 function FlightMap_FlightPointPinMixin:OnMouseLeave()
 	if self.taxiNodeData.type == LE_FLIGHT_PATH_TYPE_REACHABLE then
-		self.Icon:SetAtlas("Taxi_Frame_Gray");
+		self.Icon:SetAtlas(self.atlasFormat:format("Taxi_Frame_Gray"));
 	end
 	GameTooltip_Hide();
+end
+
+function FlightMap_FlightPointPinMixin:ShouldShowOutgoingFlightPaths()
+	return self.textureKitPrefix ~= "FlightMaster_Argus";
 end

@@ -860,3 +860,54 @@ function NumericInputSpinnerMixin:OnUpdate(elapsed)
 		self.nextUpdate = self.nextUpdate + nextUpdateDelta;
 	end
 end
+
+MaximizeMinimizeButtonFrameMixin = {};
+
+function MaximizeMinimizeButtonFrameMixin:OnShow()
+	if self.cvar then
+		local minimized = GetCVarBool(self.cvar);
+		if minimized then
+			self:Minimize();
+		else
+			self:Maximize();
+		end
+	end
+end
+
+function MaximizeMinimizeButtonFrameMixin:SetMinimizedCVar(cvar)
+	self.cvar = cvar;
+end
+
+function MaximizeMinimizeButtonFrameMixin:SetOnMaximizedCallback(maximizedCallback)
+	self.maximizedCallback = maximizedCallback;
+end
+
+function MaximizeMinimizeButtonFrameMixin:Maximize()
+	if self.maximizedCallback then
+		self.maximizedCallback(self);
+	end
+
+	if self.cvar then
+		SetCVar(self.cvar, 0);
+	end
+	
+	self.MaximizeButton:Hide();
+	self.MinimizeButton:Show();
+end
+
+function MaximizeMinimizeButtonFrameMixin:SetOnMinimizedCallback(minimizedCallback)
+	self.minimizedCallback = minimizedCallback;
+end
+
+function MaximizeMinimizeButtonFrameMixin:Minimize()
+	if self.minimizedCallback then
+		self.minimizedCallback(self);
+	end
+	
+	if self.cvar then
+		SetCVar(self.cvar, 1);
+	end
+	
+	self.MaximizeButton:Show();
+	self.MinimizeButton:Hide();
+end

@@ -577,7 +577,7 @@ function GlueDialog_OnShow(self)
 end
 
 function GlueDialog_OnHide()
---	PlaySound("igMainMenuClose");
+--	PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
 end
 
 function GlueDialog_OnClick(self, button, down)
@@ -599,7 +599,7 @@ function GlueDialog_OnClick(self, button, down)
 			OnAlt();
 		end
 	end
-	PlaySound("gsTitleOptionOK");
+	PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK);
 end
 
 function GlueDialog_OnKeyDown(self, key)

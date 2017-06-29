@@ -238,7 +238,7 @@
 			<OnEvent function="ScrollOfResurrectionSelection_OnEvent"/>
 			<OnShow function="ScrollOfResurrectionSelection_OnShow"/>
 			<OnHide>
-				PlaySound("igSpellBookClose");
+				PlaySound(SOUNDKIT.IG_SPELLBOOK_CLOSE);
 			</OnHide>
 		</Scripts>
 	</Frame>
@@ -476,7 +476,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						StaticPopupSpecial_Hide(ScrollOfResurrectionFrame);
 					</OnClick>
 				</Scripts>

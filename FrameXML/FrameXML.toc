@@ -27,6 +27,7 @@ FlowContainer.lua
 FrameLocks.lua
 
 
+..\SharedXML\SoundKitConstants.lua
 Constants.lua
 Localization.xml
 Fonts.xml

@@ -109,7 +109,7 @@ end
 
 
 function ArchaeologyFrame_OnShow(self)
-	PlaySound("igSpellBookOpen");
+	PlaySound(SOUNDKIT.IG_SPELLBOOK_OPEN);
 	local _, _, arch = GetProfessions();
 	if arch then
 		local name, texture, rank, maxRank = GetProfessionInfo(arch);
@@ -143,7 +143,7 @@ end
 function ArchaeologyFrame_OnHide(self)
 	CloseResearch();
 	CloseDropDownMenus();
-	PlaySound("igSpellBookClose");
+	PlaySound(SOUNDKIT.IG_SPELLBOOK_CLOSE);
 end
 
 
@@ -650,7 +650,7 @@ function ArchaeologyFrame_KeyStoneClick(self)
 end
 
 function ArchaeologyFrame_PageClick(self, nextPage)
-	PlaySound("igSpellBookOpen");
+	PlaySound(SOUNDKIT.IG_SPELLBOOK_OPEN);
 	if nextPage then
 		ArchaeologyFrame.currentFrame.currentPage = ArchaeologyFrame.currentFrame.currentPage + 1;
 		ArchaeologyFrame.currentFrame:UpdateFrame();
@@ -664,7 +664,7 @@ function ArchaeologyFrame_PageClick(self, nextPage)
 end
 
 function ArchaeologyFrameSummary_PageClick(self, nextPage)
-	PlaySound("igSpellBookOpen");
+	PlaySound(SOUNDKIT.IG_SPELLBOOK_OPEN);
 	if nextPage then
 		ArchaeologyFrame.currentFrame.currentPage = ArchaeologyFrame.currentFrame.currentPage + 1;
 	else

@@ -283,11 +283,11 @@
 			<OnShow>
 				PVEFrame_OnShow(self);
 				UpdateMicroButtons();
-				PlaySound("igCharacterInfoOpen");
+				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 			</OnShow>
 			<OnHide>
 				UpdateMicroButtons();
-				PlaySound("igCharacterInfoClose");
+				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 			</OnHide>
 			<OnEvent function="PVEFrame_OnEvent"/>
 		</Scripts>

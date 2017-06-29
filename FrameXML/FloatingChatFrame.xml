@@ -325,7 +325,7 @@
 			</OnLoad>
 			<OnClick>
 				FCF_Tab_OnClick(self, button);
-				PlaySound("UChatScrollButton");
+				PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 			</OnClick>
 			<OnDoubleClick>
 				if ( button ~= "RightButton" ) then
@@ -468,7 +468,7 @@
 						</Layers>
 						<Scripts>
 							<OnClick>
-								PlaySound("igChatBottom");
+								PlaySound(SOUNDKIT.IG_CHAT_BOTTOM);
 								self:GetParent():GetParent():ScrollToBottom();
 							</OnClick>
 						</Scripts>
@@ -495,7 +495,7 @@
 								else
 									self:GetParent():GetParent():ScrollDown();
 								end
-								PlaySound("igChatScrollDown");
+								PlaySound(SOUNDKIT.IG_CHAT_SCROLL_DOWN);
 							</OnClick>
 						</Scripts>
 						<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Up"/>
@@ -521,7 +521,7 @@
 								else
 									self:GetParent():GetParent():ScrollUp();
 								end
-								PlaySound("igChatScrollUp");
+								PlaySound(SOUNDKIT.IG_CHAT_SCROLL_UP);
 							</OnClick>
 						</Scripts>
 						<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Up"/>
@@ -749,7 +749,7 @@
 		</Anchors>
 		<Scripts>
 			<OnClick>
-				PlaySound("igChatEmoteButton");
+				PlaySound(SOUNDKIT.IG_CHAT_EMOTE_BUTTON);
 				ChatFrame_OpenMenu();
 			</OnClick>
 			<OnEnter>

@@ -153,7 +153,7 @@ end
 
 function AdventureMap_QuestChoicePinMixin:OnClick(button)
 	if button == "LeftButton" then
-		PlaySound("UI_Mission_Map_Zoom");
+		PlaySound(SOUNDKIT.UI_MISSION_MAP_ZOOM);
 		self.owner:SelectQuestID(self.questID);
 	end
 end

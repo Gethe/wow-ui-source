@@ -213,7 +213,7 @@ end
 
 function VehicleSeatIndicatorDropDown_OnClick()
 	EjectPassengerFromSeat(UIDROPDOWNMENU_MENU_VALUE);
-	PlaySound("UChatScrollButton");
+	PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 end
 
 function VehicleSeatIndicatorDropDown_Initialize()

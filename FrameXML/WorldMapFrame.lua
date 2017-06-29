@@ -197,6 +197,7 @@ WORLDMAP_SETTINGS = {
 WORLD_MAP_POI_FRAME_LEVEL_OFFSETS = {
 	DUNGEON_ENTRANCE = 100,
 	LANDMARK = 200,
+	MAP_LINK = 201,
 	TAXINODE = 300,
 
 	BONUS_OBJECTIVE = 500,
@@ -382,7 +383,7 @@ function WorldMapFrame_OnShow(self)
 	else
 		WorldMapFrame.toggling = false;
 	end
-	PlaySound("igQuestLogOpen");
+	PlaySound(SOUNDKIT.IG_QUEST_LOG_OPEN);
 	CloseDropDownMenus();
 	DoEmote("READ", nil, true);
 
@@ -393,7 +394,7 @@ function WorldMapFrame_OnHide(self)
 	HelpPlate_Hide();
 	UpdateMicroButtons();
 	CloseDropDownMenus();
-	PlaySound("igQuestLogClose");
+	PlaySound(SOUNDKIT.IG_QUEST_LOG_CLOSE);
 	if ( not self.toggling ) then
 		if ( QuestMapFrame:IsShown() ) then
 			QuestMapFrame_CheckTutorials();
@@ -1146,6 +1147,8 @@ function WorldMap_GetFrameLevelForLandmark(landmarkType)
 		return WORLD_MAP_POI_FRAME_LEVEL_OFFSETS.DUNGEON_ENTRANCE;
 	elseif landmarkType == LE_MAP_LANDMARK_TYPE_TAXINODE then
 		return WORLD_MAP_POI_FRAME_LEVEL_OFFSETS.TAXINODE;
+	elseif landmarkType == LE_MAP_LANDMARK_TYPE_MAP_LINK then
+		return WORLD_MAP_POI_FRAME_LEVEL_OFFSETS.MAP_LINK
 	end
 	return WORLD_MAP_POI_FRAME_LEVEL_OFFSETS.LANDMARK;
 end
@@ -1166,6 +1169,10 @@ function WorldMap_UpdateLandmarks()
 	WorldMapFrame_ClearAreaLabel(WORLDMAP_AREA_LABEL_TYPE.AREA_POI_BANNER);
 	WorldMapAreaPOIBannerOverlay:Hide();
 
+	if WorldMapFrame.mapLinkPingInfo and GetCurrentMapAreaID() ~= WorldMapFrame.mapLinkPingInfo.mapID then
+		WorldMapFrame.mapLinkPingInfo = nil;
+	end
+	
 	for i=1, NUM_WORLDMAP_POIS do
 		local worldMapPOIName = "WorldMapFramePOI"..i;
 		local worldMapPOI = _G[worldMapPOIName];
@@ -1197,6 +1204,7 @@ function WorldMap_UpdateLandmarks()
 					worldMapPOI.name = name;
 					worldMapPOI.description = description;
 					worldMapPOI.mapLinkID = mapLinkID;
+					worldMapPOI.mapFloor = mapFloor;
 					worldMapPOI.poiID = poiID;
 					worldMapPOI.landmarkType = landmarkType;
 					if ( graveyardID and graveyardID > 0 ) then
@@ -1216,6 +1224,11 @@ function WorldMap_UpdateLandmarks()
 					end
 					worldMapPOI:Hide();		-- lame way to force tooltip redraw
 					worldMapPOI:Show();
+					
+					local pingInfo = WorldMapFrame.mapLinkPingInfo;
+					if pingInfo and landmarkType == LE_MAP_LANDMARK_TYPE_MAP_LINK and mapFloor == pingInfo.floorIndex then
+						WorldMapPing_StartPingPOI(worldMapPOI);
+					end
 				end
 			end
 
@@ -1261,6 +1274,8 @@ function WorldMap_UpdateLandmarks()
 			_G["WorldMapFrameGraveyard"..i]:Hide();
 		end
 	end
+	
+	WorldMapFrame.mapLinkPingInfo = nil;
 end
 
 function WorldMapFrame_Update()
@@ -1693,7 +1708,8 @@ function WorldMap_DoesLandMarkTypeShowHighlights(landmarkType)
 		or landmarkType == LE_MAP_LANDMARK_TYPE_TAXINODE
 		or landmarkType == LE_MAP_LANDMARK_TYPE_VIGNETTE
 		or landmarkType == LE_MAP_LANDMARK_TYPE_INVASION
-		or landmarkType == LE_MAP_LANDMARK_TYPE_CONTRIBUTION;
+		or landmarkType == LE_MAP_LANDMARK_TYPE_CONTRIBUTION
+		or landmarkType == LE_MAP_LANDMARK_TYPE_MAP_LINK;
 end
 
 function WorldMapPOI_AddContributionsToTooltip(tooltip, ...)
@@ -2028,7 +2044,7 @@ function TaskPOI_OnClick(self, button)
 			end
 		else
 			if ( not ChatEdit_TryInsertQuestLinkForQuestID(self.questID) ) then
-				PlaySound("igMainMenuOptionCheckBoxOn");
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 
 				if IsShiftKeyDown() then
 					if IsWorldQuestHardWatched(self.questID) or (IsWorldQuestWatched(self.questID) and GetSuperTrackedQuestID() == self.questID) then
@@ -2074,6 +2090,23 @@ function WorldMapPOI_OnClick(self, button)
 			end
 			EncounterJournal_ListInstances();
 			EncounterJournal_DisplayInstance(self.mapLinkID);
+		elseif self.landmarkType == LE_MAP_LANDMARK_TYPE_MAP_LINK then
+			-- We need to cache this data in advance because it can change when we change map IDs.
+			local currentMapID = GetCurrentMapAreaID();
+			local currentFloorIndex = GetCurrentMapDungeonLevel();
+			local mapID = self.mapLinkID
+			local floorIndex = self.mapFloor;
+			if floorIndex and mapID then
+				SetMapByID(mapID);
+				WorldMapFrame.mapLinkPingInfo = { mapID = currentMapID, floorIndex = currentFloorIndex };
+				SetDungeonMapLevel(floorIndex);
+			elseif mapID then
+				WorldMapFrame.mapLinkPingInfo = { mapID = currentMapID, floorIndex = currentFloorIndex };
+				SetMapByID(mapID);
+			elseif floorIndex then
+				WorldMapFrame.mapLinkPingInfo = { mapID = currentMapID, floorIndex = currentFloorIndex };
+				SetDungeonMapLevel(floorIndex);
+			end
 		else
 			ClickLandmark(self.mapLinkID);
 		end
@@ -2317,7 +2350,7 @@ function WorldMapLevelButton_OnClick(self)
 end
 
 function WorldMapZoomOutButton_OnClick()
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	WorldMapTooltip:Hide();
 
 	-- check if code needs to zoom out before going to the continent map
@@ -2790,10 +2823,8 @@ function WorldMap_ToggleSizeUp()
 	ButtonFrameTemplate_HidePortrait(WorldMapFrame.BorderFrame);
 	WorldMapFrame.NavBar:SetPoint("TOPLEFT", WorldMapFrame.BorderFrame, 10, -23);
 	WorldMapFrame.NavBar:SetWidth(1000);
-	WorldMapFrameSizeDownButton:Show();
 	-- hide small window elements
 	WorldMapTitleButton:Hide();
-	WorldMapFrameSizeUpButton:Hide();
 	ToggleMapFramerate();
 	-- floor dropdown
 	--WorldMapLevelDropDown:SetPoint("TOPLEFT", WorldMapDetailFrame, -18, 2);
@@ -2832,11 +2863,9 @@ function WorldMap_ToggleSizeDown()
 	QUEST_POI_FRAME_HEIGHT = WorldMapDetailFrame:GetHeight() * WORLDMAP_WINDOWED_SIZE;
 	-- hide big window elements
 	BlackoutWorld:Hide();
-	WorldMapFrameSizeDownButton:Hide();
 	ToggleMapFramerate();
 	-- show small window elements
 	WorldMapTitleButton:Show();
-	WorldMapFrameSizeUpButton:Show();
 	-- floor dropdown
 	--WorldMapLevelDropDown:SetPoint("TOPLEFT", WorldMapDetailFrame, "TOPLEFT", -18, 2);
 
@@ -3060,7 +3089,7 @@ function WorldMapTitleButton_OnLoad(self)
 end
 
 function WorldMapTitleButton_OnClick(self, button)
-	PlaySound("UChatScrollButton");
+	PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 
 	-- If Rightclick bring up the options menu
 	if ( button == "RightButton" ) then
@@ -3595,9 +3624,9 @@ function WorldMapTrackingOptionsDropDown_OnClick(self)
 	local value = self.value;
 
 	if (checked) then
-		PlaySound("igMainMenuOptionCheckBoxOn");
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	else
-		PlaySound("igMainMenuOptionCheckBoxOff");
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 	end
 
 	if (value == "quests") then
@@ -3887,6 +3916,12 @@ function WorldMapPing_StartPingQuest(questID)
 		local ping = WorldMapPOIFrame.POIPing;
 		local target = WorldMap_GetActiveTaskPOIForQuestID(questID);
 		ping:PlayOnFrame(target, questID);
+	end
+end
+
+function WorldMapPing_StartPingPOI(poiFrame)
+	if WorldMapFrame:IsVisible() then
+		WorldMapPOIFrame.POIPing:PlayOnFrame(poiFrame);
 	end
 end
 

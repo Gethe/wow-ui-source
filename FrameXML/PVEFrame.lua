@@ -148,7 +148,7 @@ function PVEFrame_UpdateTabs(self)
 end
 
 function PVEFrame_TabOnClick(self)
-	PlaySound("igCharacterInfoTab");
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
 	PVEFrame_ShowFrame(panels[self:GetID()].name);
 end
 

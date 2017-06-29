@@ -6,7 +6,7 @@
 		<Scripts>
 			<OnClick>
 				CollectionsJournal_SetTab(self:GetParent(), self:GetID());
-				PlaySound("UI_Toybox_Tabs");
+				PlaySound(SOUNDKIT.UI_TOYBOX_TABS);
 			</OnClick>
 		</Scripts>
 	</Button>

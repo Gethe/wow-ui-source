@@ -50,13 +50,13 @@ end
 function TabardCharacterModelRotateLeftButton_OnClick()
 	TabardModel.rotation = TabardModel.rotation - .03;
 	TabardModel:SetRotation(TabardModel.rotation);
-	PlaySound("igInventoryRotateCharacter");
+	PlaySound(SOUNDKIT.IG_INVENTORY_ROTATE_CHARACTER);
 end
 
 function TabardCharacterModelRotateRightButton_OnClick()
 	TabardModel.rotation = TabardModel.rotation + .03;
 	TabardModel:SetRotation(TabardModel.rotation);
-	PlaySound("igInventoryRotateCharacter");
+	PlaySound(SOUNDKIT.IG_INVENTORY_ROTATE_CHARACTER);
 end
 
 function TabardCharacterModelFrame_OnUpdate(self, elapsedTime)
@@ -77,13 +77,13 @@ function TabardCharacterModelFrame_OnUpdate(self, elapsedTime)
 end
 
 function TabardCustomization_Left(id)
-	PlaySound("gsCharacterCreationLook");
+	PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_LOOK);
 	TabardModel:CycleVariation(id,-1);
 	TabardFrame_UpdateTextures();
 end
 
 function TabardCustomization_Right(id)
-	PlaySound("gsCharacterCreationLook");
+	PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_LOOK);
 	TabardModel:CycleVariation(id,1);
 	TabardFrame_UpdateTextures();
 end

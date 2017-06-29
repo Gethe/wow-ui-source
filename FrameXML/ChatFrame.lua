@@ -1547,13 +1547,13 @@ end
 
 SecureCmdList["RANDOMPET"] = function(msg)
 	if ( SecureCmdOptionParse(msg) ) then
-		C_PetJournal.SummonRandomPet(true);
+		C_PetJournal.SummonRandomPet(false);
 	end
 end
 
 SecureCmdList["RANDOMFAVORITEPET"] = function(msg)
 	if ( SecureCmdOptionParse(msg) ) then
-		C_PetJournal.SummonRandomPet(false);
+		C_PetJournal.SummonRandomPet(true);
 	end
 end
 
@@ -1597,6 +1597,7 @@ end
 SlashCmdList = { };
 
 SlashCmdList["CONSOLE"] = function(msg)
+	forceinsecure();
 	ConsoleExec(msg);
 end
 
@@ -2146,7 +2147,7 @@ SlashCmdList["RAID_INFO"] = function(msg)
 	end
 end
 
-SlashCmdList["READYCHECK"] = function(msg)
+SlashCmdList[SOUNDKIT.READY_CHECK] = function(msg)
 	if ( UnitIsGroupLeader("player") or UnitIsGroupAssistant("player") ) then
 		DoReadyCheck();
 	end
@@ -2306,6 +2307,28 @@ SlashCmdList["EVENTTRACE"] = function(msg)
 	UIParentLoadAddOn("Blizzard_DebugTools");
 	EventTraceFrame_HandleSlashCmd(msg);
 end
+
+SlashCmdList["TABLEINSPECT"] = function(msg)
+	UIParentLoadAddOn("Blizzard_DebugTools");
+	
+	local focusedTable = nil;
+	if msg ~= "" and msg ~= " " then
+		local focusedFunction = loadstring(("return %s"):format(msg));
+		focusedTable = focusedFunction and focusedFunction();
+	end
+	
+	if focusedTable and type(focusedTable) == "table" then
+		DisplayTableInspectorWindow(focusedTable);
+	else
+		local highlightFrame = FrameStackTooltip:SetFrameStack();
+		if highlightFrame then
+			DisplayTableInspectorWindow(highlightFrame);
+		else
+			DisplayTableInspectorWindow(UIParent);
+		end
+	end
+end
+
 
 SlashCmdList["DUMP"] = function(msg)
 	if (not IsKioskModeEnabled() and not ScriptsDisallowedForBeta()) then
@@ -3346,7 +3369,7 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 			--BN_WHISPER FIXME
 			ChatEdit_SetLastTellTarget(arg2, type);
 			if ( self.tellTimer and (GetTime() > self.tellTimer) ) then
-				PlaySound("TellMessage");
+				PlaySound(SOUNDKIT.TELL_MESSAGE);
 			end
 			self.tellTimer = GetTime() + CHAT_TELL_ALERT_TIME;
 			--FCF_FlashTab(self);

@@ -345,7 +345,7 @@
 		</Layers>
 		<Scripts>
 			<OnClick>
-				PlaySound("igCharacterInfoTab");
+				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
 				PlayerSpecTab_OnClick(self, button, down);
 			</OnClick>
 			<OnEnter>
@@ -1570,7 +1570,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								PlaySound("UI_PVP_Honor_Prestige_WindowClose");
+								PlaySound(SOUNDKIT.UI_PVP_HONOR_PRESTIGE_WINDOW_CLOSE);
 								self:GetParent():Hide();
 							</OnClick>
 						</Scripts>
@@ -1582,7 +1582,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								PlaySound("UI_PVP_Honor_Prestige_RankUP");
+								PlaySound(SOUNDKIT.UI_PVP_HONOR_PRESTIGE_RANK_UP);
 								HideUIPanel(PlayerTalentFrame);
 								self:GetParent():Hide();
 								Prestige();
@@ -1596,7 +1596,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								PlaySound("UI_PVP_Honor_Prestige_WindowClose");
+								PlaySound(SOUNDKIT.UI_PVP_HONOR_PRESTIGE_WINDOW_CLOSE);
 								self:GetParent():Hide();
 							</OnClick>
 						</Scripts>

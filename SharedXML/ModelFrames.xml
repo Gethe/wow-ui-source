@@ -119,7 +119,7 @@
 							<OnClick>
 								local model = self:GetParent():GetParent();
 								Model_OnMouseWheel(model, 1);
-								PlaySound("igInventoryRotateCharacter");
+								PlaySound(SOUNDKIT.IG_INVENTORY_ROTATE_CHARACTER);
 							</OnClick>
 						</Scripts>
 					</Button>
@@ -137,7 +137,7 @@
 							<OnClick>
 								local model = self:GetParent():GetParent();
 								Model_OnMouseWheel(model, -1);
-								PlaySound("igInventoryRotateCharacter");
+								PlaySound(SOUNDKIT.IG_INVENTORY_ROTATE_CHARACTER);
 							</OnClick>
 						</Scripts>
 					</Button>
@@ -157,7 +157,7 @@
 								Model_StartPanning(self:GetParent():GetParent(), true);
 							</OnMouseDown>
 							<OnMouseUp>
-								PlaySound("igInventoryRotateCharacter");
+								PlaySound(SOUNDKIT.IG_INVENTORY_ROTATE_CHARACTER);
 							</OnMouseUp>
 						</Scripts>
 					</Button>
@@ -204,7 +204,7 @@
 							</OnLoad>
 							<OnClick>
 								Model_Reset(self:GetParent():GetParent());
-								PlaySound("igInventoryRotateCharacter");
+								PlaySound(SOUNDKIT.IG_INVENTORY_ROTATE_CHARACTER);
 							</OnClick>
 						</Scripts>
 					</Button>

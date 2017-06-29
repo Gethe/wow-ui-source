@@ -18,7 +18,7 @@ StaticPopupDialogs["ORDER_HALL_TALENT_RESEARCH"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnAccept = function(self)
-		PlaySound("UI_OrderHall_Talent_Select");
+		PlaySound(SOUNDKIT.UI_ORDERHALL_TALENT_SELECT);
 		C_Garrison.ResearchTalent(self.data.id);
 		if (not self.data.hasTime) then
 			self.data.button:GetParent():SetResearchingTalentID(self.data.id);
@@ -52,7 +52,7 @@ function OrderHallTalentFrameMixin:OnShow()
 	self:RegisterEvent("GARRISON_TALENT_UPDATE");
     self:RegisterEvent("GARRISON_TALENT_COMPLETE");
 	self:RegisterEvent("GARRISON_TALENT_NPC_CLOSED");
-	PlaySound("UI_OrderHall_TalentWindow_Open");
+	PlaySound(SOUNDKIT.UI_ORDERHALL_TALENT_WINDOW_OPEN);
 end
 
 function OrderHallTalentFrameMixin:OnHide()
@@ -64,7 +64,7 @@ function OrderHallTalentFrameMixin:OnHide()
 	self:ReleaseAllPools();
 	StaticPopup_Hide("ORDER_HALL_TALENT_RESEARCH");
 	C_Garrison.CloseTalentNPC();
-	PlaySound("UI_OrderHall_TalentWindow_Close");
+	PlaySound(SOUNDKIT.UI_ORDERHALL_TALENT_WINDOW_CLOSE);
 end
 
 function OrderHallTalentFrameMixin:OnEvent(event, ...)
@@ -311,7 +311,7 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 			
             if (talent.id == completeTalent) then
                 if (talent.selected and not talent.hasInstantResearch) then
-					PlaySound("UI_OrderHall_Talent_Ready_Check");
+					PlaySound(SOUNDKIT.UI_ORDERHALL_TALENT_READY_CHECK);
 					talentFrame.TalentDoneAnim:Play();
 				end
                 C_Garrison.ClearCompleteTalent(self.garrisonType);

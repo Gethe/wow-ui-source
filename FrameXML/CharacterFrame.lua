@@ -13,7 +13,7 @@ function ToggleCharacter (tab, onlyShow)
 						HideUIPanel(CharacterFrame);	
 					end
 				else
-					PlaySound("igCharacterInfoTab");
+					PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
 					CharacterFrame_ShowSubFrame(tab);
 				end
 			else
@@ -47,7 +47,7 @@ function CharacterFrameTab_OnClick (self, button)
 	elseif ( name == "CharacterFrameTab3" ) then
 		ToggleCharacter("TokenFrame");	
 	end
-	PlaySound("igCharacterInfoTab");
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
 end
 
 function CharacterFrame_OnLoad (self)
@@ -106,7 +106,7 @@ function CharacterFrame_OnEvent (self, event, ...)
 end
 
 function CharacterFrame_OnShow (self)
-	PlaySound("igCharacterInfoOpen");
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 	CharacterFrame_UpdatePortrait();
 	UpdateMicroButtons();
 	PlayerFrameHealthBar.showNumeric = true;
@@ -129,7 +129,7 @@ function CharacterFrame_OnShow (self)
 end
 
 function CharacterFrame_OnHide (self)
-	PlaySound("igCharacterInfoClose");
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 	UpdateMicroButtons();
 	PlayerFrameHealthBar.showNumeric = nil;
 	PlayerFrameManaBar.showNumeric = nil;

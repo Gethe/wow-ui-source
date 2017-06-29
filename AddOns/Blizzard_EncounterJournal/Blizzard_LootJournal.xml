@@ -163,7 +163,7 @@
 						<Scripts>
 							<OnClick>
 								ToggleDropDownMenu(1, nil, self:GetParent().SlotDropDown, self, 5, 0);
-								PlaySound("igMainMenuOptionCheckBoxOn");
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 							</OnClick>
 						</Scripts>
 					</Button>
@@ -180,7 +180,7 @@
 						<Scripts>
 							<OnClick>
 								ToggleDropDownMenu(1, nil, self:GetParent():GetParent().ClassDropDown, self, 5, 0);
-								PlaySound("igMainMenuOptionCheckBoxOn");
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 							</OnClick>
 						</Scripts>
 					</Button>
@@ -211,7 +211,7 @@
 						<Scripts>
 							<OnClick>
 								ToggleDropDownMenu(1, nil, self:GetParent():GetParent().ClassDropDown, self, 5, 0);
-								PlaySound("igMainMenuOptionCheckBoxOn");
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 							</OnClick>
 						</Scripts>
 					</Button>

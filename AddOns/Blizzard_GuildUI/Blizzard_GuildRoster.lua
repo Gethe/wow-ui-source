@@ -108,7 +108,7 @@ function GuildRoster_SortByColumn(column)
 			SortGuildRoster(column.sortType);
 		end
 	end
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 end
 
 --****** Guild members **********************************************************
@@ -374,12 +374,12 @@ function GuildRosterButton_OnClick(self, button)
 			if ( GuildMemberDetailFrame:IsShown() and self.guildIndex == GuildFrame.selectedGuildMember ) then
 				SetGuildRosterSelection(0);
 				GuildFrame.selectedGuildMember = 0;
-				PlaySound("igCharacterInfoClose");
+				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 				GuildMemberDetailFrame:Hide();
 			else
 				SetGuildRosterSelection(self.guildIndex);
 				GuildFrame.selectedGuildMember = self.guildIndex;
-				PlaySound("igCharacterInfoOpen");
+				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 				GuildFramePopup_Show(GuildMemberDetailFrame);
 				CloseDropDownMenus();
 			end
@@ -508,7 +508,7 @@ function GuildRoster_UpdateTradeSkills()
 end
 
 function GuildRosterTradeSkillHeader_OnClick(self)
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	if ( self.collapsed ) then
 		ExpandGuildTradeSkillHeader(self.skillID);
 	else
@@ -647,7 +647,7 @@ function GuildFrameDemoteButton_OnClick(self)
 		dialog.data = fullName;
 	else
 		GuildDemote(GuildFrame.selectedName);
-		PlaySound("UChatScrollButton");
+		PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 		GuildFrameDemoteButton:Disable();
 	end
 end
@@ -664,7 +664,7 @@ function GuildFramePromoteButton_OnClick(self)
 		dialog.data = fullName;
 	else
 		GuildPromote(GuildFrame.selectedName);
-		PlaySound("UChatScrollButton");
+		PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 		GuildFramePromoteButton:Disable();
 	end
 end

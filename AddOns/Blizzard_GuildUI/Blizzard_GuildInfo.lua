@@ -212,7 +212,7 @@ function GuildRecruitmentLevelButton_OnClick(index, userClick)
 		param = LFGUILD_PARAM_MAX_LEVEL;
 	end
 	if ( userClick ) then
-		PlaySound("igMainMenuOptionCheckBoxOn");
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 		SetGuildRecruitmentSettings(param, true);
 	end	
 end
@@ -220,9 +220,9 @@ end
 function GuildRecruitmentRoleButton_OnClick(self)
 	local checked = self:GetChecked();
 	if ( self:GetChecked() ) then
-		PlaySound("igMainMenuOptionCheckBoxOn");
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	else
-		PlaySound("igMainMenuOptionCheckBoxOff");
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 	end
 	SetGuildRecruitmentSettings(self:GetParent().param, checked);
 	GuildRecruitmentListGuildButton_Update();
@@ -245,7 +245,7 @@ function GuildRecruitmentListGuildButton_Update()
 end
 
 function GuildRecruitmentListGuildButton_OnClick(self)
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	local bQuest, bDungeon, bRaid, bPvP, bRP, bWeekdays, bWeekends, bTank, bHealer, bDamage, bAnyLevel, bMaxLevel, bListed = GetGuildRecruitmentSettings();
 	bListed = not bListed;
 	if ( bListed and GuildRecruitmentCommentEditBox:HasFocus() ) then
@@ -404,7 +404,7 @@ end
 
 function GuildRecruitmentApplicant_OnClick(self, button)
 	if ( button == "LeftButton" ) then
-		PlaySound("igMainMenuOptionCheckBoxOn");
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 		SetGuildApplicantSelection(self.index);
 		local commentHeight = self.fullComment:GetHeight();
 		if ( commentHeight > GUILD_COMMENT_HEIGHT ) then
@@ -527,7 +527,7 @@ function GuildTextEditFrame_Show(editType)
 	GuildFramePopup_Show(GuildTextEditFrame);
 	GuildTextEditBox:SetCursorPosition(0);
 	GuildTextEditBox:SetFocus();
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 end
 
 function GuildTextEditFrame_OnAccept()

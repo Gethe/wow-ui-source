@@ -544,6 +544,51 @@ function FrameStackTooltip_Toggle (showHidden, showRegions)
 	end
 end
 
+local function AnchorHighlight(frame, highlight, relativePoint)
+	highlight:SetAllPoints(frame);
+	highlight:Show();
+
+	if highlight.AnchorPoint then
+		if relativePoint then
+			highlight.AnchorPoint:ClearAllPoints();
+			highlight.AnchorPoint:SetPoint("CENTER", highlight, relativePoint);
+			highlight.AnchorPoint:Show();
+		else
+			highlight.AnchorPoint:Hide();
+		end
+	end
+end
+
+AnchorHighlightMixin = {};
+
+function AnchorHighlightMixin:RetrieveAnchorHighlight(pointIndex)
+	if not self.AnchorHighlights then
+		CreateFrame("FRAME", "FrameStackAnchorHighlightTemplate1", self, "FrameStackAnchorHighlightTemplate");
+	end
+	
+	while pointIndex > #self.AnchorHighlights do
+		CreateFrame("FRAME", "FrameStackAnchorHighlightTemplate"..(#self.AnchorHighlights + 1), self, "FrameStackAnchorHighlightTemplate");
+	end
+	
+	return self.AnchorHighlights[pointIndex];
+end
+
+function AnchorHighlightMixin:HighlightFrame(baseFrame)
+	AnchorHighlight(baseFrame, self);
+	
+	local pointIndex = 1;
+	while pointIndex <= baseFrame:GetNumPoints() do
+		local _, anchorFrame, anchorRelativePoint = baseFrame:GetPoint(pointIndex);
+		AnchorHighlight(anchorFrame, self:RetrieveAnchorHighlight(pointIndex), anchorRelativePoint);
+		pointIndex = pointIndex + 1;
+	end
+	
+	while self.AnchorHighlights and self.AnchorHighlights[pointIndex] do
+		self.AnchorHighlights[pointIndex]:Hide();
+		pointIndex = pointIndex + 1;
+	end
+end
+
 FRAMESTACK_UPDATE_TIME = .1
 local _timeSinceLast = 0
 local _altKeyDown = false
@@ -562,14 +607,13 @@ function FrameStackTooltip_OnUpdate (self, elapsed)
 	if ( _timeSinceLast <= 0 or highlightIndexChanged ~= 0 ) then
 		_timeSinceLast = FRAMESTACK_UPDATE_TIME;
 		local highlightFrame = self:SetFrameStack(self.showHidden, self.showRegions, highlightIndexChanged);
-
-		FrameStackHighlight:ClearAllPoints();
-		if (highlightFrame) then
-			FrameStackHighlight:SetPoint("BOTTOMLEFT", highlightFrame);
-			FrameStackHighlight:SetPoint("TOPRIGHT", highlightFrame);
-			FrameStackHighlight:Show();
-		else
-			FrameStackHighlight:Hide();
+		if highlightFrame then
+			FrameStackHighlight:HighlightFrame(highlightFrame);
+			
+			if ( IsControlKeyDown() ) then
+				TableAttributeDisplay:InspectTable(highlightFrame);
+				TableAttributeDisplay:Show();
+			end
 		end
 	end
 end

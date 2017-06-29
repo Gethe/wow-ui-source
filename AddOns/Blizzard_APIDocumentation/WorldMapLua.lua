@@ -45,6 +45,7 @@ local WorldMapLua =
 				{ Name = "isObjectIcon", Type = "bool", Nilable = true },
 				{ Name = "atlasName", Type = "string", Nilable = true },
 				{ Name = "displayAsBanner", Type = "bool", Nilable = true },
+				{ Name = "mapFloor", Type = "number", Nilable = true },
 			},
 		},
 	},

@@ -325,9 +325,9 @@ end
 
 function LootFrame_OnShow(self)
 	if( self.numLootItems == 0 ) then
-		PlaySound("LOOTWINDOWOPENEMPTY");
+		PlaySound(SOUNDKIT.LOOT_WINDOW_OPEN_EMPTY);
 	elseif( IsFishingLoot() ) then
-		PlaySound("FISHING REEL IN");
+		PlaySound(SOUNDKIT.FISHING_REEL_IN);
 		LootFramePortraitOverlay:SetTexture("Interface\\LootFrame\\FishingLoot-Icon");
 	end
 end
@@ -653,12 +653,12 @@ function BonusRollFrame_OnEvent(self, event, ...)
 		self.state = "rolling";
 		self.animFrame = 0;
 		self.animTime = 0;
-		PlaySoundKitID(31579);	--UI_BonusLootRoll_Start
+		PlaySound(SOUNDKIT.UI_BONUS_LOOT_ROLL_START);
 		--Make sure we don't keep playing the sound ad infinitum.
 		if ( self.rollSound ) then
 			StopSound(self.rollSound);
 		end
-		local _, soundHandle = PlaySoundKitID(31580);	--UI_BonusLootRoll_Loop
+		local _, soundHandle = PlaySound(SOUNDKIT.UI_BONUS_LOOT_ROLL_LOOP);
 		self.rollSound = soundHandle;
 		self.RollingFrame.LootSpinner:Show();
 		self.RollingFrame.LootSpinnerFinal:Hide();
@@ -722,7 +722,7 @@ function BonusRollFrame_OnUpdate(self, elapsed)
 				StopSound(self.rollSound);
 			end
 			self.rollSound = nil;
-			PlaySoundKitID(31581);	--UI_BonusLootRoll_End
+			PlaySound(SOUNDKIT.UI_BONUS_LOOT_ROLL_END);
 			self.RollingFrame.LootSpinner:Hide();
 			self.RollingFrame.LootSpinnerFinal:Show();
 			self.RollingFrame.LootSpinnerFinal:SetTexCoord(unpack(finalTextureTexCoords[self.rewardType]));

@@ -73,7 +73,7 @@ function DressUpTexturePath(raceFileName)
 	return "Interface\\DressUpFrame\\DressUpBackground-"..raceFileName;
 end
 
-function SetDressUpBackground(frame, fileName)
+function SetDressUpBackground(frame, fileName, atlasPostfix)
 	local texture = DressUpTexturePath(fileName);
 	
 	if ( frame.BGTopLeft ) then
@@ -87,6 +87,10 @@ function SetDressUpBackground(frame, fileName)
 	end
 	if ( frame.BGBottomRight ) then
 		frame.BGBottomRight:SetTexture(texture..4);
+	end
+	
+	if ( frame.ModelBackground and atlasPostfix ) then
+		frame.ModelBackground:SetAtlas("dressingroom-background-"..atlasPostfix);
 	end
 end
 
@@ -103,8 +107,8 @@ function DressUpFrame_Show()
 		DressUpFrame.mode = "player";
 		DressUpFrame.ResetButton:Show();
 
-		local race, fileName = UnitRace("player");
-		SetDressUpBackground(DressUpFrame, fileName);
+		local className, classFileName = UnitClass("player");
+		SetDressUpBackground(DressUpFrame, nil, classFileName);
 
 		ShowUIPanel(DressUpFrame);
 		DressUpModel:SetUnit("player");
@@ -153,13 +157,13 @@ end
 function SideDressUpFrame_OnShow(self)
 	SetUIPanelAttribute(self.parentFrame, "width", self.openWidth);
 	UpdateUIPanelPositions(self.parentFrame);
-	PlaySound("igCharacterInfoOpen");
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 end
 
 function SideDressUpFrame_OnHide(self)
 	SetUIPanelAttribute(self.parentFrame, "width", self.closedWidth);
 	UpdateUIPanelPositions();
-	PlaySound("igCharacterInfoClose");
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 end
 
 function SetUpSideDressUpFrame(parentFrame, closedWidth, openWidth, point, relativePoint, offsetX, offsetY)

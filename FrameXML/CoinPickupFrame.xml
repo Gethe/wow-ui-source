@@ -144,7 +144,7 @@
 		<Scripts>
 			<OnLoad function="DropCursorMoney"/>
 			<OnShow>
-				PlaySound("MONEYFRAMEOPEN");
+				PlaySound(SOUNDKIT.MONEY_FRAME_OPEN);
 			</OnShow>
 			<OnHide function="CoinPickupFrame_OnHide"/>
 			<OnChar function="CoinPickupFrame_OnChar"/>

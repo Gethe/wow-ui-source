@@ -28,14 +28,14 @@ function ItemUpgradeFrame_OnLoad(self)
 end
 
 function ItemUpgradeFrame_OnShow(self)
-	PlaySound("UI_EtherealWindow_Open");
+	PlaySound(SOUNDKIT.UI_ETHEREAL_WINDOW_OPEN);
 	ItemUpgradeFrame_Update();
 	
 	ItemUpgradeFrameMoneyFrame:Show();
 end
 
 function ItemUpgradeFrame_OnHide(self)
-	PlaySound("UI_EtherealWindow_Close");
+	PlaySound(SOUNDKIT.UI_ETHEREAL_WINDOW_CLOSE);
 	StaticPopup_Hide("CONFIRM_UPGRADE_ITEM");
 	CloseItemUpgrade();
 

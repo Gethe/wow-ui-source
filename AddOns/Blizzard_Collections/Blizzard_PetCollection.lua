@@ -4,6 +4,7 @@ local NUM_PET_ABILITIES = 6;
 PET_ACHIEVEMENT_CATEGORY = 15117;
 local MAX_PET_LEVEL = 25;
 local HEAL_PET_SPELL = 125439;
+local SUMMON_RANDOM_FAVORITE_PET_SPELL = 243819;
 
 local UNLOCK_REQUIREMENTS = {
 	[1] = {requirement = "SPELL", id = "119467"},
@@ -332,6 +333,93 @@ function PetJournalHealPetButton_OnEnter(self)
 		GameTooltip:Show();
 	end
 	self.UpdateTooltip = PetJournalHealPetButton_OnEnter;
+end
+
+-- SUMMON RANDOM FAVORITE PET ---
+
+function PetJournalSummonRandomFavoritePetButton_OnLoad(self)
+	self.spellID = SUMMON_RANDOM_FAVORITE_PET_SPELL;
+	self.petID = C_PetJournal.GetSummonRandomFavoritePetGUID();
+	local spellName, spellSubname, spellIcon = GetSpellInfo(self.spellID);
+	self.texture:SetTexture(spellIcon);
+	self.spellname:SetText(PET_JOURNAL_SUMMON_RANDOM_FAVORITE_PET);
+end
+
+function PetJournalSummonRandomFavoritePetButton_OnShow(self)
+	self:RegisterEvent("SPELL_UPDATE_COOLDOWN");
+	self:RegisterEvent("PET_BATTLE_OPENING_START");
+	self:RegisterEvent("PET_BATTLE_CLOSE");
+	PetJournalSummonRandomFavoritePetButton_UpdateCooldown(self);
+	PetJournalSummonRandomFavoritePetButton_UpdateSpellUsability(self);
+end
+
+function PetJournalSummonRandomFavoritePetButton_OnHide(self)
+	self:UnregisterEvent("PET_BATTLE_OPENING_START");
+	self:UnregisterEvent("PET_BATTLE_CLOSE");
+	self:UnregisterEvent("SPELL_UPDATE_COOLDOWN");
+end
+
+function PetJournalSummonRandomFavoritePetButton_UpdateCooldown(self)
+	local cooldown = self.cooldown;
+	local start, duration, enable = C_PetJournal.GetSummonBattlePetCooldown();
+	CooldownFrame_Set(cooldown, start, duration, enable);
+end
+
+function PetJournalSummonRandomFavoritePetButton_UpdateSpellUsability(self)
+	local numPets, numOwned = C_PetJournal.GetNumPets();
+	if ( numOwned > 0 ) then
+		if (C_PetBattles.IsInBattle()) then
+			self:SetButtonState("NORMAL", true);
+			self.texture:SetDesaturated(true);
+			self.LockIcon:Show();
+			self.BlackCover:Show();
+		else
+			self:SetButtonState("NORMAL", false);
+			self.texture:SetDesaturated(false);
+			self.LockIcon:Hide();
+			self.BlackCover:Hide();
+			self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+			self:RegisterForDrag("LeftButton");
+		end																				
+	else
+		self.BlackCover:Show();
+		self.texture:SetDesaturated(true);
+	end
+end
+
+function PetJournalSummonRandomFavoritePetButton_OnEvent(self, event, ...)
+	if ( event == "SPELL_UPDATE_COOLDOWN" ) then
+		PetJournalSummonRandomFavoritePetButton_UpdateCooldown(self);
+		-- Update tooltip
+		if ( GameTooltip:GetOwner() == self ) then
+			PetJournalSummonRandomFavoritePetButton_OnEnter(self);
+		end
+	elseif ( event == "PET_BATTLE_OPENING_START" or event == "PET_BATTLE_CLOSE" ) then
+		PetJournalSummonRandomFavoritePetButton_UpdateSpellUsability(self);
+	end
+end
+
+function PetJournalSummonRandomFavoritePetButton_OnClick(self)
+	C_PetJournal.SummonRandomPet(true);
+end
+
+function PetJournalSummonRandomFavoritePetButton_OnDragStart(self)
+	C_PetJournal.PickupSummonRandomPet();
+end
+
+function PetJournalSummonRandomFavoritePetButton_OnEnter(self)
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+
+	local numPets, numOwned = C_PetJournal.GetNumPets();
+	if ( numOwned > 0 and not C_PetBattles.IsInBattle()  ) then 
+		GameTooltip:SetCompanionPet(self.petID);
+	else
+		GameTooltip:SetSpellByID(self.spellID);
+	end
+end
+
+function PetJournalSummonRandomFavoritePetButton_OnLeave(self)
+	GameTooltip:Hide();
 end
 
 function PetJournalLoadout_GetRequiredLevel(loadoutPlate, abilityID)
@@ -925,7 +1013,7 @@ function PetJournal_ShowPetDropdown(index, anchorTo, offsetX, offsetY, petID)
 		return;
 	end
 	ToggleDropDownMenu(1, nil, PetJournal.petOptionsMenu, anchorTo, offsetX, offsetY);
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 end
 
 function PetJournal_HidePetDropdown()

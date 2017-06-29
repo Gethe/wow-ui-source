@@ -650,6 +650,28 @@ function MapCanvasMixin:EvaluateLockReasons()
 	end
 end
 
+function MapCanvasMixin:SetShouldShowSubzones(value)
+	self.shouldShowSubzones = value;
+end
+
+function MapCanvasMixin:ShouldShowSubzones()
+	return self.shouldShowSubzones;
+end
+
+function MapCanvasMixin:SetTransformFlag(flag, value)
+	if value then
+		self.transformFlags = self.transformFlags and bit.bor(self.transformFlags, flag) or flag;
+	else
+		if self.transformFlags and bit.band(self.transformFlags, flag) == flag then
+			self.transformFlags = self.transformFlags - flag;
+		end
+	end
+end
+
+function MapCanvasMixin:GetTransformFlags()
+	return self.transformFlags;
+end
+
 MapCanvasScrollControllerMixin = {};
 
 MAP_CANVAS_MOUSE_WHEEL_ZOOM_BEHAVIOR_SMOOTH = 1;
@@ -693,23 +715,34 @@ function MapCanvasScrollControllerMixin:OnMouseDown(button)
 	end
 end
 
-function MapCanvasScrollControllerMixin:FindBestZoneLocationForClick()
+function MapCanvasScrollControllerMixin:FindBestLocationForClick()
 	local endCursorX, endCursorY = self:GetCursorPosition();
 	local startDeltaX, startDeltaY = endCursorX - self.startCursorX, endCursorY - self.startCursorY;
 	local MAX_DIST_FOR_CLICK_SQ = 10;
+	
 	-- Make sure it was a click and not a pan
 	if startDeltaX * startDeltaX + startDeltaY * startDeltaY < MAX_DIST_FOR_CLICK_SQ then
 		local normalizedCursorX = self:NormalizeHorizontalSize(endCursorX / self:GetCanvasScale() - self.Child:GetLeft());
 		local normalizedCursorY = self:NormalizeVerticalSize(self.Child:GetTop() - endCursorY / self:GetCanvasScale());
 
-		local zoneMapID = C_MapCanvas.FindZoneAtPosition(self.mapID, normalizedCursorX, normalizedCursorY);
-		if zoneMapID then
-			local zoneName, zoneDepth, left, right, top, bottom = C_MapCanvas.GetZoneInfoByID(self.mapID, zoneMapID);
-			local centerX = left + (right - left) * .5;
-			local centerY = top + (bottom - top) * .5;
+		local x, y;
+		if self:GetParent():ShouldShowSubzones() then
+			local zoneMapID = C_MapCanvas.FindZoneAtPosition(self.mapID, normalizedCursorX, normalizedCursorY);
+			if zoneMapID then
+				local zoneName, zoneDepth, left, right, top, bottom = C_MapCanvas.GetZoneInfoByID(self.mapID, zoneMapID);
+				local centerX = left + (right - left) * .5;
+				local centerY = top + (bottom - top) * .5;
 
-			return centerX, centerY;
+				x = centerX;
+				y = centerY;
+			end
+		else
+			x = normalizedCursorX;
+			y = normalizedCursorY;
 		end
+
+		local minX, maxX, minY, maxY = self:CalculateScrollExtentsAtScale(self.maxScale);
+		return Clamp(x, minX, maxX), Clamp(y, minY, maxY);
 	end
 end
 
@@ -717,7 +750,7 @@ function MapCanvasScrollControllerMixin:TryPanOrZoomOnClick()
 	if self.mapID then
 		local shouldZoomOnClick = self:ShouldZoomInOnClick() and (self:IsZoomedOut() or self:IsZoomingOut());
 		if self:ShouldPanOnClick() or shouldZoomOnClick then
-			local x, y = self:FindBestZoneLocationForClick();
+			local x, y = self:FindBestLocationForClick();
 			if x and y then
 				self:SetPanTarget(x, y);
 				if shouldZoomOnClick then

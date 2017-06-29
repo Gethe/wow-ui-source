@@ -32,7 +32,7 @@ function GuildFrame_OnLoad(self)
 end
 
 function GuildFrame_OnShow(self)
-	PlaySound("igCharacterInfoOpen");
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 	GuildFrameTab1:Show();
 	GuildFrameTab3:Show();
 	GuildFrameTab4:Show();
@@ -61,7 +61,7 @@ function GuildFrame_OnShow(self)
 end
 
 function GuildFrame_OnHide(self)
-	PlaySound("igCharacterInfoClose");
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 	UpdateMicroButtons();
 	CloseGuildMenus();
 end

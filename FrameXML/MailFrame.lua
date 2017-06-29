@@ -69,7 +69,7 @@ function MailFrame_OnEvent(self, event, ...)
 		SendMailFrame_Update();
 	elseif ( event == "MAIL_SEND_SUCCESS" ) then
 		SendMailFrame_Reset();
-		PlaySound("igAbiliityPageTurn");
+		PlaySound(SOUNDKIT.IG_ABILITY_PAGE_TURN);
 		-- If open mail frame is open then switch the mail frame back to the inbox
 		if ( SendMailFrame.sendMode == "reply" ) then
 			MailFrameTab_OnClick(nil, 1);
@@ -140,7 +140,7 @@ function MailFrameTab_OnClick(self, tabID)
 		-- Set the send mode to dictate the flow after a mail is sent
 		SendMailFrame.sendMode = "send";
 	end
-	PlaySound("igSpellBookOpen");
+	PlaySound(SOUNDKIT.IG_SPELLBOOK_OPEN);
 end
 
 -- Inbox functions
@@ -284,7 +284,7 @@ function InboxFrame_OnClick(self, index)
 		--OpenMailFrame:Show();
 		ShowUIPanel(OpenMailFrame);
 		OpenMailFrameInset:SetPoint("TOPLEFT", 4, -80);
-		PlaySound("igSpellBookOpen");
+		PlaySound(SOUNDKIT.IG_SPELLBOOK_OPEN);
 	else
 		InboxFrame.openMailID = 0;
 		HideUIPanel(OpenMailFrame);		
@@ -335,14 +335,14 @@ function InboxFrameItem_OnEnter(self)
 end
 
 function InboxNextPage()
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	InboxFrame.pageNum = InboxFrame.pageNum + 1;
 	InboxGetMoreMail();	
 	InboxFrame_Update();
 end
 
 function InboxPrevPage()
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	InboxFrame.pageNum = InboxFrame.pageNum - 1;
 	InboxGetMoreMail();	
 	InboxFrame_Update();
@@ -361,12 +361,12 @@ function OpenMailFrame_OnHide()
 	StaticPopup_Hide("DELETE_MAIL");
 	if ( not InboxFrame.openMailID ) then
 		InboxFrame_Update();
-		PlaySound("igSpellBookClose");
+		PlaySound(SOUNDKIT.IG_SPELLBOOK_CLOSE);
 		return;
 	end
 
 	-- Determine if this is an auction temp invoice
-	local bodyText, texture, isTakeable, isInvoice = GetInboxText(InboxFrame.openMailID);
+	local isInvoice = select(5, GetInboxText(InboxFrame.openMailID));
 	local isAuctionTempInvoice = false;
 	if ( isInvoice ) then
 		local invoiceType, itemName, playerName, bid, buyout, deposit, consignment, moneyDelay, etaHour, etaMin = GetInboxInvoiceInfo(InboxFrame.openMailID);
@@ -382,7 +382,7 @@ function OpenMailFrame_OnHide()
 	end
 	InboxFrame.openMailID = 0;
 	InboxFrame_Update();
-	PlaySound("igSpellBookClose");
+	PlaySound(SOUNDKIT.IG_SPELLBOOK_CLOSE);
 end
 
 function OpenMailFrame_UpdateButtonPositions(letterIsTakeable, textCreated, stationeryIcon, money)
@@ -495,11 +495,11 @@ function OpenMail_Update()
 	OpenMailSender.Name:SetText(sender);
 	OpenMailSubject:SetText(subject);
 	-- Set Text
-	local bodyText, texture, isTakeable, isInvoice = GetInboxText(InboxFrame.openMailID);
+	local bodyText, stationeryID1, stationeryID2, isTakeable, isInvoice = GetInboxText(InboxFrame.openMailID);
 	OpenMailBodyText:SetText(bodyText, true);
-	if ( texture ) then
-		OpenStationeryBackgroundLeft:SetTexture(texture.."1");
-		OpenStationeryBackgroundRight:SetTexture(texture.."2");
+	if ( stationeryID1 and stationeryID2 ) then
+		OpenStationeryBackgroundLeft:SetTexture(stationeryID1);
+		OpenStationeryBackgroundRight:SetTexture(stationeryID2);
 	end
 
 	-- Is an invoice
@@ -819,7 +819,7 @@ function OpenMailAttachment_OnClick(self, index)
 		TakeInboxItem(InboxFrame.openMailID, index);
 		OpenMailFrame.updateButtonPositions = false;
 	end
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 end
 
 -- SendMail functions
@@ -1046,7 +1046,7 @@ function SendMailRadioButton_OnClick(index)
 		SendMailCODButton:SetChecked(true);
 		SendMailMoneyText:SetText(COD_AMOUNT);
 	end
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 end
 
 function SendMailMoneyButton_OnClick()

@@ -11,9 +11,9 @@
 		<Scripts>
 			<OnClick>
 				if ( self:GetChecked() ) then
-					PlaySound("igMainMenuOptionCheckBoxOn");
+					PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 				else
-					PlaySound("igMainMenuOptionCheckBoxOff");
+					PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 				end
 				SetGuildRecruitmentSettings(self:GetID(), self:GetChecked());
 				GuildRecruitmentListGuildButton_Update();
@@ -308,7 +308,7 @@
 					<OnClick>
 						PanelTemplates_Tab_OnClick(self, GuildInfoFrame);
 						GuildInfoFrame_Update();
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -324,7 +324,7 @@
 					<OnClick>
 						PanelTemplates_Tab_OnClick(self, GuildInfoFrame);
 						GuildInfoFrame_Update();
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -340,7 +340,7 @@
 					<OnClick>
 						PanelTemplates_Tab_OnClick(self, GuildInfoFrame);
 						GuildInfoFrame_Update();
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -1124,7 +1124,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						local name = GetGuildApplicantInfo(GetGuildApplicantSelection());
 						if ( name ) then
 							GuildInvite(name);
@@ -1139,7 +1139,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						DeclineGuildApplicant(GetGuildApplicantSelection());
 					</OnClick>
 				</Scripts>
@@ -1152,7 +1152,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						local name = GetGuildApplicantInfo(GetGuildApplicantSelection());
 						if ( name ) then
 							ChatFrame_SendTell(name);
@@ -1287,7 +1287,7 @@
 		<Scripts>
 			<OnLoad function="GuildTextEditFrame_OnLoad"/>
 			<OnHide>
-				PlaySound("igMainMenuOptionCheckBoxOff");
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 			</OnHide>
 		</Scripts>
 	</Frame>
@@ -1383,10 +1383,10 @@
 			<OnShow>
 				GuildViewLogButton:LockHighlight();
 				QueryGuildEventLog();
-				PlaySound("igMainMenuOptionCheckBoxOn");
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 			</OnShow>
 			<OnHide>
-				PlaySound("igMainMenuOptionCheckBoxOff");
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 				GuildViewLogButton:UnlockHighlight();
 			</OnHide>
 		</Scripts>

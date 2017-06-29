@@ -32,7 +32,7 @@ function SearchBoxTemplate_OnTextChanged(self)
 end
 
 function SearchBoxTemplateClearButton_OnClick(self)
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	local editBox = self:GetParent();
 	editBox:SetText("");
 	editBox:ClearFocus();
@@ -163,6 +163,22 @@ function TruncatedButton_OnLeave(self)
 	end
 end
 
+-- Truncated Tooltip Script code
+
+function TruncatedTooltipScript_OnEnter(self)
+	local text = self.truncatedTooltipScriptText or self.Text;
+	if text:IsTruncated() then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip:SetText(text:GetText());
+		GameTooltip:Show();
+	end
+end
+
+function TruncatedTooltipScript_OnLeave(self)
+	if GameTooltip:GetOwner() == self then
+		GameTooltip:Hide();
+	end
+end
 
 -- SquareButton template code
 SQUARE_BUTTON_TEXCOORDS = {

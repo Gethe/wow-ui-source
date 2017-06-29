@@ -231,7 +231,7 @@
 				self.icon:SetPoint("LEFT", 3, 0);
 			</OnMouseUp>
 			<OnClick>
-				PlaySound("igMainMenuOptionCheckBoxOn");
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 				local data = HelpFrameNavTbl[self:GetID()];
 				if ( not data.noSelection ) then
 					HelpFrame_SetSelectedButton(self);
@@ -259,7 +259,7 @@
 	<Button name="HelpFrameNavButtonTemplate" inherits="NavButtonTemplate" virtual="true">
 		<Scripts>
 			<OnClick>
-				PlaySound("igMainMenuOptionCheckBoxOn");
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 				if self.myclick ~= KnowledgeBase_Search then
 					KnowledgeBase_ClearSearch(HelpFrame.kbase.searchBox);
 				end
@@ -325,7 +325,7 @@
 				self.ldown:Show();
 				self.rup:Hide();
 				self.rdown:Show();
-				PlaySound("igMainMenuOptionCheckBoxOn");
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 			</OnMouseDown>
 			<OnMouseUp>
 				self.ldown:Hide();
@@ -426,7 +426,7 @@
 						self.tooltip = BROWSER_HOME_TOOLTIP;
 					</OnLoad>
 					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						local parent = self:GetParent()
 						parent:NavigateHome(parent.homepage);
 					</OnClick>
@@ -442,7 +442,7 @@
 						self:Disable();
 					</OnLoad>
 					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						self:GetParent():NavigateBack();
 					</OnClick>
 					<OnEnter>
@@ -466,7 +466,7 @@
 						self:Disable();
 					</OnLoad>
 					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						self:GetParent():NavigateForward();
 					</OnClick>
 					<OnEnter>
@@ -499,7 +499,7 @@
 						self.tooltip = BROWSER_RELOAD_TOOLTIP;
 					</OnLoad>
 					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						self:GetParent():NavigateReload();
 					</OnClick>
 				</Scripts>
@@ -523,7 +523,7 @@
 						self.tooltip = BROWSER_STOP_TOOLTIP;
 					</OnLoad>
 					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						self:GetParent():NavigateStop();
 					</OnClick>
 				</Scripts>
@@ -1375,7 +1375,7 @@
 								KnowledgeBase_ClearSearch(self)
 							</OnShow>
 							<OnEnterPressed>
-								PlaySound("igMainMenuOptionCheckBoxOn");
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 								KnowledgeBase_Search();
 								EditBox_ClearFocus(self);
 							</OnEnterPressed>
@@ -1433,7 +1433,7 @@
 										self.texture:SetPoint("TOPLEFT", 0, 0);
 									</OnMouseUp>
 									<OnClick>
-										PlaySound("igMainMenuOptionCheckBoxOn");
+										PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 										local editBox = self:GetParent();
 										if HelpFrame.kbase.hasSearch then
 											NavBar_Reset(HelpFrame.kbase.navBar);
@@ -1453,7 +1453,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								PlaySound("igMainMenuOptionCheckBoxOn");
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 								KnowledgeBase_Search();
 							</OnClick>
 						</Scripts>
@@ -1558,7 +1558,7 @@
 										</Anchors>
 										<Scripts>
 											<OnClick>
-												PlaySound("igMainMenuOptionCheckBoxOn");
+												PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 												self:GetParent():Hide();
 											</OnClick>
 										</Scripts>
@@ -1814,7 +1814,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						local browser = BrowserSettingsTooltip.browser
 						if (browser) then
 							browser:ClearCache();
@@ -1838,7 +1838,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						local browser = BrowserSettingsTooltip.browser
 						if (browser) then
 							browser:DeleteCookies();
@@ -2126,7 +2126,7 @@
 						self.text:SetText(BAD_PLAYER_NAME);
 					</OnLoad>
 					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						HelpFrame_SetReportPlayerNameSelection(self.reportType);
 					</OnClick>
 				</Scripts>
@@ -2142,7 +2142,7 @@
 						self.text:SetText(BAD_GUILD_NAME);
 					</OnLoad>
 					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						HelpFrame_SetReportPlayerNameSelection(self.reportType);
 					</OnClick>
 				</Scripts>
@@ -2266,7 +2266,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						local parent = self:GetParent();
 						ReportPlayer(parent.reportType, parent.target, parent.CommentFrame.EditBox:GetText());
 						StaticPopupSpecial_Hide(self:GetParent());
@@ -2280,7 +2280,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						StaticPopupSpecial_Hide(self:GetParent());
 					</OnClick>
 				</Scripts>
@@ -2448,7 +2448,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						ReportPlayer(PLAYER_REPORT_TYPE_CHEATING, self:GetParent().target, self:GetParent().CommentFrame.EditBox:GetText());
 						StaticPopupSpecial_Hide(self:GetParent());
 					</OnClick>
@@ -2461,7 +2461,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						StaticPopupSpecial_Hide(self:GetParent());
 					</OnClick>
 				</Scripts>

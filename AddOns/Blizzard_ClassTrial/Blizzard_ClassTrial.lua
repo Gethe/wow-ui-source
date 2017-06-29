@@ -42,7 +42,7 @@ function ClassTrialDialogMixin:ShowThanks()
 end
 
 function ClassTrialDialogMixin:HandleButtonClickCommon()
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	ClassTrialTimerDisplay:ShowTimer();
 end
 
@@ -84,7 +84,7 @@ end
 
 function ClassTrialDialogMixin:OnEvent(event, ...)
 	if event == "EVENT_CLASS_TRIAL_TIMER_START" then
-		self:ShowThanks("UI_70_Boost_ThanksforPlaying");
+		self:ShowThanks(SOUNDKIT.UI_70_BOOST_THANKSFORPLAYING);
 	elseif event == "EVENT_CLASS_TRIAL_UPGRADE_COMPLETE" then
 		self:OnUpgradeComplete();
 	end
@@ -92,7 +92,7 @@ end
 
 function ClassTrialDialogMixin:OnShow(sound)
 	ClassTrialTimerDisplay:Hide();
-	PlaySound(sound or "UI_70_Boost_ThanksforPlaying_Smaller");
+	PlaySound(sound or SOUNDKIT.UI_70_BOOST_THANKSFORPLAYING_SMALLER);
 end
 
 function ClassTrialDialogMixin:OnLoad()
@@ -154,7 +154,7 @@ function ClassTrialTimerDisplayMixin:OnEvent(event, ...)
 end
 
 function ClassTrialTimerDisplayMixin:OnMouseUp()
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	ClassTrialThanksForPlayingDialog:ShowThanks();
 end
 

@@ -55,7 +55,7 @@ function WorldQuestDataProviderMixin:RefreshAllData(fromOnShow)
 	for zoneIndex = 1, C_MapCanvas.GetNumZones(mapAreaID) do
 		local zoneMapID, zoneName, zoneDepth, left, right, top, bottom = C_MapCanvas.GetZoneInfo(mapAreaID, zoneIndex);
 		if zoneDepth <= 1 then -- Exclude subzones
-			local taskInfo = C_TaskQuest.GetQuestsForPlayerByMapID(zoneMapID, mapAreaID);
+			local taskInfo = C_TaskQuest.GetQuestsForPlayerByMapID(zoneMapID, mapAreaID, self:GetTransformFlags());
 
 			if taskInfo then
 				for i, info in ipairs(taskInfo) do

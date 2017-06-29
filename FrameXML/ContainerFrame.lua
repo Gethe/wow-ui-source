@@ -167,7 +167,7 @@ function ContainerFrame_OnHide(self)
 
 	if ( self:GetID() == KEYRING_CONTAINER ) then
 		UpdateMicroButtons();
-		PlaySound("KeyRingClose");
+		PlaySound(SOUNDKIT.KEY_RING_CLOSE);
 	else
 		if ( self:GetID() == 0 and BagHelpBox.wasShown ) then
 			BagHelpBox.wasShown = nil;
@@ -176,7 +176,7 @@ function ContainerFrame_OnHide(self)
 			BagHelpBox.owner = nil;
 			BagHelpBox:Hide();
 		end
-		PlaySound("igBackPackClose");
+		PlaySound(SOUNDKIT.IG_BACKPACK_CLOSE);
 	end
 
 	if ArtifactRelicHelpBox:IsShown() and ArtifactRelicHelpBox.owner == self then
@@ -249,9 +249,9 @@ function ContainerFrame_OnShow(self)
 	ContainerFrame1.bagsShown = ContainerFrame1.bagsShown + 1;
 	if ( self:GetID() == KEYRING_CONTAINER ) then
 		UpdateMicroButtons();
-		PlaySound("KeyRingOpen");
+		PlaySound(SOUNDKIT.KEY_RING_OPEN);
 	else
-		PlaySound("igBackPackOpen");
+		PlaySound(SOUNDKIT.IG_BACKPACK_OPEN);
 	end
  	ContainerFrame_Update(self);
 	

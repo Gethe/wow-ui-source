@@ -360,7 +360,7 @@ function PlayerTalentFrame_OnShow(self)
 	MicroButtonPulseStop(TalentMicroButton);
 	TalentMicroButtonAlert:Hide();
 
-	PlaySound("igCharacterInfoOpen");
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 	UpdateMicroButtons();
 
 	PlayerTalentFrameTalents.summariesShownWhenNoPrimary = true;
@@ -382,7 +382,7 @@ end
 function PlayerTalentFrame_OnHide()
 	HelpPlate_Hide();
 	UpdateMicroButtons();
-	PlaySound("igCharacterInfoClose");
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 	-- clear caches
 	for _, info in next, talentSpecInfoCache do
 		wipe(info);
@@ -945,7 +945,7 @@ function PlayerTalentFrameTab_OnClick(self)
 	local id = self:GetID();
 	PanelTemplates_SetTab(PlayerTalentFrame, id);
 	PlayerTalentFrame_Refresh();
-	PlaySound("igCharacterInfoTab");
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
 
 	HelpPlate_Hide();
 	local tutorial, helpPlate, mainHelpButton = PlayerTalentFrame_GetTutorial();
@@ -1233,7 +1233,7 @@ function SpecButton_OnLeave(self)
 end
 
 function SpecButton_OnClick(self)
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	self:GetParent().spellsScroll.ScrollBar:SetValue(0);
 	PlayerTalentFrame_UpdateSpecFrame(self:GetParent(), self:GetID());
 	GameTooltip:Hide();
@@ -1640,7 +1640,7 @@ function PlayerTalentFramePVPTalentsTalent_OnClick(self, button)
 			end
 
 			-- Pretend like we immediately got the talent by de-selecting the old talent and selecting the new one
-			PlaySound("igMainMenuOptionCheckBoxOn");
+			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 
 			if (not known) then
 				talentsFrame.talentInfo[row] = id;
@@ -1691,10 +1691,10 @@ local function InitializePVPTalentsXPBarDropDown(self, level)
 	info.checked = IsWatchingHonorAsXP();
 	info.func = function(_, _, _, value)
 		if ( value ) then
-			PlaySound("igMainMenuOptionCheckBoxOff");
+			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 			SetWatchingHonorAsXP(false);
 		else
-			PlaySound("igMainMenuOptionCheckBoxOn");
+			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 			SetWatchingHonorAsXP(true);
 			SetWatchedFactionIndex(0);
 		end
@@ -1811,7 +1811,7 @@ function PlayerTalentButton_OnClick(self, button)
 		end
 
 		-- Pretend like we immediately got the talent by de-selecting the old talent and selecting the new one
-		PlaySound("igMainMenuOptionCheckBoxOn");
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 		local learn = PlayerTalentFrameTalent_OnClick(self, button);
 
 		if (learn) then

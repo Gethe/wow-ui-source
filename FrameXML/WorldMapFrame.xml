@@ -97,30 +97,24 @@
 							<Anchor point="BOTTOMRIGHT" x="-7" y="28" />
 						</Anchors>
 					</Frame>
-					<Button name="WorldMapFrameSizeDownButton">
-						<Size x="32" y="32"/>
+					<Frame name="MaximizeMinimizeFrame" inherits="MaximizeMinimizeButtonFrameTemplate">
 						<Anchors>
 							<Anchor point="RIGHT" relativeKey="$parent.CloseButton" relativePoint="LEFT" x="10" y="0"/>
 						</Anchors>
 						<Scripts>
-							<OnClick function="WorldMapFrame_ToggleWindowSize" />
+							<OnLoad>
+								-- We don't have the mixin handle the CVar because we use specialized logic for setting it.
+								self:SetOnMaximizedCallback(WorldMapFrame_ToggleWindowSize);
+								self:SetOnMinimizedCallback(WorldMapFrame_ToggleWindowSize);
+
+								local minimized = GetCVarBool("miniWorldMap");
+								if minimized then
+									self.MinimizeButton:Hide();
+									self.MaximizeButton:Show();
+								end
+							</OnLoad>
 						</Scripts>
-						<NormalTexture file="Interface\Buttons\UI-Panel-SmallerButton-Up"/>
-						<PushedTexture file="Interface\Buttons\UI-Panel-SmallerButton-Down"/>
-						<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
-					</Button>
-					<Button name="WorldMapFrameSizeUpButton" hidden="true">
-						<Size x="32" y="32"/>
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="WorldMapFrameSizeDownButton" x="0" y="0"/>
-						</Anchors>
-						<Scripts>
-							<OnClick function="WorldMapFrame_ToggleWindowSize" />
-						</Scripts>
-						<NormalTexture file="Interface\Buttons\UI-Panel-BiggerButton-Up"/>
-						<PushedTexture file="Interface\Buttons\UI-Panel-BiggerButton-Down"/>
-						<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
-					</Button>
+					</Frame>
 				</Frames>
 			</Frame>
 			<Frame name="WorldMapTitleDropDown" inherits="UIDropDownMenuTemplate" hidden="true">
@@ -603,7 +597,7 @@
 									<OnClick>
 										local parent = self:GetParent();
 										ToggleDropDownMenu(1, nil, parent.DropDown, parent, 0, -5);
-										PlaySound("igMainMenuOptionCheckBoxOn");
+										PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 									</OnClick>
 									<OnMouseDown>
 										local parent = self:GetParent();
@@ -653,7 +647,7 @@
 						</HighlightTexture>
 						<Scripts>
 							<OnClick>
-								PlaySound("igMainMenuOptionCheckBoxOn");
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 								QuestMapFrame_Open(true);
 							</OnClick>
 						</Scripts>
@@ -682,7 +676,7 @@
 						</HighlightTexture>
 						<Scripts>
 							<OnClick>
-								PlaySound("igMainMenuOptionCheckBoxOn");
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 								QuestMapFrame_Close(true);
 							</OnClick>
 						</Scripts>

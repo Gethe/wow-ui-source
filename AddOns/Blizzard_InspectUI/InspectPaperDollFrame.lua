@@ -173,6 +173,6 @@ function InspectPaperDollViewButton_OnLoad(self)
 end
 
 function InspectPaperDollViewButton_OnClick(self)
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	DressUpSources(C_TransmogCollection.GetInspectSources());
 end

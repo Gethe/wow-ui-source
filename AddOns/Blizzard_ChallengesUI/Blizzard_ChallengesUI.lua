@@ -299,13 +299,13 @@ function ChallengesKeystoneFrameMixin:OnLoad()
 end
 
 function ChallengesKeystoneFrameMixin:OnShow()
-    PlaySound("UI_70_ChallengeMode_SocketPage_Open");
+    PlaySound(SOUNDKIT.UI_70_CHALLENGE_MODE_SOCKET_PAGE_OPEN);
     self:Reset();
 end
 
 function ChallengesKeystoneFrameMixin:OnHide()
     if (not self.startedChallengeMode) then
-        PlaySound("UI_70_ChallengeMode_SocketPage_Close");
+        PlaySound(SOUNDKIT.UI_70_CHALLENGE_MODE_SOCKET_PAGE_CLOSE);
     end
 	C_ChallengeMode.CloseKeystoneFrame();
 	C_ChallengeMode.ClearKeystone();
@@ -372,7 +372,7 @@ function ChallengesKeystoneFrameMixin:CreateAndPositionAffixes(num)
 end
 
 function ChallengesKeystoneFrameMixin:OnKeystoneSlotted()
-    PlaySound("UI_70_ChallengeMode_SocketPage_Socket");
+    PlaySound(SOUNDKIT.UI_70_CHALLENGE_MODE_SOCKET_PAGE_SOCKET);
 	self.InsertedAnim:Play();
 	self.RunesLargeAnim:Play();
 	self.RunesSmallAnim:Play();
@@ -405,13 +405,13 @@ function ChallengesKeystoneFrameMixin:OnKeystoneSlotted()
 end
 
 function ChallengesKeystoneFrameMixin:OnKeystoneRemoved()
-    PlaySound("UI_70_ChallengeMode_SocketPage_RemoveKeystone");
+    PlaySound(SOUNDKIT.UI_70_CHALLENGE_MODE_SOCKET_PAGE_REMOVE_KEYSTONE);
 	self:Reset();
 	self.StartButton:Disable();
 end
 
 function ChallengesKeystoneFrameMixin:StartChallengeMode()
-    PlaySound("UI_70_ChallengeMode_SocketPage_Activate");
+    PlaySound(SOUNDKIT.UI_70_CHALLENGE_MODE_SOCKET_PAGE_ACTIVATE_BUTTON);
     C_ChallengeMode.StartChallengeMode();
     self.startedChallengeMode = true;
     self:Hide();
@@ -565,11 +565,11 @@ function ChallengeModeCompleteBannerMixin:PlayBanner(data)
     if (data.onTime) then
         self.DescriptionLineOne:SetText(CHALLENGE_MODE_COMPLETE_BEAT_TIMER);
         self.DescriptionLineTwo:SetFormattedText(CHALLENGE_MODE_COMPLETE_KEYSTONE_UPGRADED, data.keystoneUpgradeLevels);
-        PlaySound("UI_70_ChallengeMode_KeystoneUpgrade");
+        PlaySound(SOUNDKIT.UI_70_CHALLENGE_MODE_KEYSTONE_UPGRADE);
     else
         self.DescriptionLineOne:SetText(CHALLENGE_MODE_COMPLETE_TIME_EXPIRED);
         self.DescriptionLineTwo:SetText(CHALLENGE_MODE_COMPLETE_TRY_AGAIN);
-        PlaySound("UI_70_ChallengeMode_Complete_NoUpgrade");
+        PlaySound(SOUNDKIT.UI_70_CHALLENGE_MODE_COMPLETE_NO_UPGRADE);
     end
     
     local sortedUnitTokens = self:GetSortedPartyMembers();

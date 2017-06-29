@@ -308,7 +308,7 @@
 			</OnClick>
 			<OnDoubleClick>
 				if ( self.setID ) then
-					PlaySound("igCharacterInfoTab");			-- inappropriately named, but a good sound.
+					PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);			-- inappropriately named, but a good sound.
 					EquipmentManager_EquipSet(self.setID);
 				end
 			</OnDoubleClick>
@@ -980,7 +980,7 @@
 						<Scripts>
 							<OnClick>
 								GearManagerDialogPopupCancel_OnClick(self, button, pushed);
-								PlaySound("gsTitleOptionOK");
+								PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK);
 							</OnClick>
 						</Scripts>
 					</Button>					
@@ -992,7 +992,7 @@
 						<Scripts>
 							<OnClick>
 								GearManagerDialogPopupOkay_OnClick(self, button, pushed);
-								PlaySound("gsTitleOptionOK");
+								PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK);
 							</OnClick>
 						</Scripts>
 					</Button>

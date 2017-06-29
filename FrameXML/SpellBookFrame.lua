@@ -354,21 +354,21 @@ end
 
 function SpellBookFrame_PlayOpenSound()
 	if ( SpellBookFrame.bookType == BOOKTYPE_SPELL ) then
-		PlaySound("igSpellBookOpen");
+		PlaySound(SOUNDKIT.IG_SPELLBOOK_OPEN);
 	elseif ( SpellBookFrame.bookType == BOOKTYPE_PET ) then
 		-- Need to change to pet book open sound
-		PlaySound("igAbilityOpen");
+		PlaySound(SOUNDKIT.IG_ABILITY_OPEN);
 	else
-		PlaySound("igSpellBookOpen");
+		PlaySound(SOUNDKIT.IG_SPELLBOOK_OPEN);
 	end
 end
 
 function SpellBookFrame_PlayCloseSound()
 	if ( SpellBookFrame.bookType == BOOKTYPE_SPELL ) then
-		PlaySound("igSpellBookClose");
+		PlaySound(SOUNDKIT.IG_SPELLBOOK_CLOSE);
 	else
 		-- Need to change to pet book close sound
-		PlaySound("igAbilityClose");
+		PlaySound(SOUNDKIT.IG_ABILITY_CLOSE);
 	end
 end
 
@@ -935,11 +935,11 @@ end
 function SpellBookPrevPageButton_OnClick()
 	local pageNum = SpellBook_GetCurrentPage() - 1;
 	if ( SpellBookFrame.bookType == BOOKTYPE_SPELL ) then
-		PlaySound("igAbiliityPageTurn");
+		PlaySound(SOUNDKIT.IG_ABILITY_PAGE_TURN);
 		SPELLBOOK_PAGENUMBERS[SpellBookFrame.selectedSkillLine] = pageNum;
 	else
 		-- Need to change to pet book pageturn sound
-		PlaySound("igAbiliityPageTurn");
+		PlaySound(SOUNDKIT.IG_ABILITY_PAGE_TURN);
 		SPELLBOOK_PAGENUMBERS[SpellBookFrame.bookType] = pageNum;
 	end
 	SpellBookFrame_Update();
@@ -948,11 +948,11 @@ end
 function SpellBookNextPageButton_OnClick()
 	local pageNum = SpellBook_GetCurrentPage() + 1;
 	if ( SpellBookFrame.bookType == BOOKTYPE_SPELL ) then
-		PlaySound("igAbiliityPageTurn");
+		PlaySound(SOUNDKIT.IG_ABILITY_PAGE_TURN);
 		SPELLBOOK_PAGENUMBERS[SpellBookFrame.selectedSkillLine] = pageNum;
 	else
 		-- Need to change to pet book pageturn sound
-		PlaySound("igAbiliityPageTurn");
+		PlaySound(SOUNDKIT.IG_ABILITY_PAGE_TURN);
 		SPELLBOOK_PAGENUMBERS[SpellBookFrame.bookType] = pageNum;
 	end
 	SpellBookFrame_Update();
@@ -981,7 +981,7 @@ end
 function SpellBookSkillLineTab_OnClick(self)
 	local id = self:GetID();
 	if ( SpellBookFrame.selectedSkillLine ~= id ) then
-		PlaySound("igAbiliityPageTurn");
+		PlaySound(SOUNDKIT.IG_ABILITY_PAGE_TURN);
 		SpellBookFrame.selectedSkillLine = id;
 		SpellBookFrame_Update();
 	else

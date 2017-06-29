@@ -69,10 +69,10 @@
 		<Scripts>
 			<OnLoad function="ModelPreviewFrame_OnLoad"/>
 			<OnShow>
-				PlaySound("igCharacterInfoOpen");
+				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 			</OnShow>
 			<OnHide>
-				PlaySound("igCharacterInfoClose");
+				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 			</OnHide>
 			<OnEvent function="ModelPreviewFrame_OnEvent"/>
 		</Scripts>

@@ -292,7 +292,7 @@ end
 function QuickJoinButtonMixin:OnClick(button)
 	if ( button == "LeftButton" ) then
 		if ( self:GetEntry():CanJoin() ) then
-			PlaySound("igMainMenuOptionCheckBoxOn");
+			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 			self:GetMainPanel():SelectGroup(self:GetEntry():GetGUID());
 		end
 	elseif ( button == "RightButton" ) then

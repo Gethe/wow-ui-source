@@ -74,6 +74,33 @@
 		</Animations>
 	</Frame>
 
+	<Frame name="ArtifactRelicRankTemplate" virtual="true">
+		<Size x="23" y="23"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Glow" atlas="Relic-Rankframe-glow" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="Background" atlas="Relic-Rankframe" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Text" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
 	<Button name="ArtifactsRelicSlotTemplate" motionScriptsWhileDisabled="true" virtual="true">
 		<Size x="72" y="72" />
 
@@ -125,6 +152,14 @@
 
 		<NormalTexture parentKey="NormalTexture" />
 		<HighlightTexture parentKey="HighlightTexture" alphaMode="ADD" />
+
+		<Frames>
+			<Frame parentKey="Rank" inherits="ArtifactRelicRankTemplate">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="25" y="6"/>
+				</Anchors>
+			</Frame>
+		</Frames>
 
 		<Scripts>
 			<OnEnter>

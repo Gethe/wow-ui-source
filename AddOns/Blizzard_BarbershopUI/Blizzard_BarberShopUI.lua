@@ -62,7 +62,7 @@ function BarberShop_OnShow(self)
 		BarberShopAltFormFrame:Hide();
 	end
 
-	PlaySound("BarberShop_Sit");
+	PlaySound(SOUNDKIT.BARBERSHOP_SIT);
 end
 
 function BarberShop_OnHide(self)
@@ -73,7 +73,7 @@ end
 
 function BarberShop_OnEvent(self, event, ...)
 	if(event == "BARBER_SHOP_SUCCESS") then
-		PlaySound("Barbershop_Haircut");
+		PlaySound(SOUNDKIT.BARBERSHOP_HAIRCUT);
 	end
 	BarberShop_Update(self);
 end

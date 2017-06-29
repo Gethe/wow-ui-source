@@ -355,6 +355,7 @@
 				<xs:attribute name="method" type="xs:string"/>
 				<xs:attribute name="inherit" type="SCRIPTINHERITTYPE" use="optional" default="none"/>
 				<xs:attribute name="intrinsicOrder" type="SCRIPTINTRINSICORDERTYPE" use="optional" default="none"/>
+				<xs:attribute name="autoEnableInput" type="xs:boolean" default="true"/>
 			</xs:extension>
 		</xs:simpleContent>
 	</xs:complexType>
@@ -1146,6 +1147,15 @@
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:element name="Browser" type="BrowserType" substitutionGroup="ui:Frame"/>
+
+	<xs:complexType name="CheckoutType">
+		<xs:complexContent>
+			<xs:extension base="FrameType">
+				<xs:attribute name="IMEFont" type="xs:string"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="Checkout" type="CheckoutType" substitutionGroup="ui:Frame"/>
 
 	<xs:complexType name="ModelSceneType">
 		<xs:complexContent>

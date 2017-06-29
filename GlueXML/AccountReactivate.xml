@@ -180,7 +180,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PlaySound("gsTitleOptionOK");
+						PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK);
 						C_WowTokenSecure.ConfirmBuyToken(true);
 						AccountReactivationInProgressDialog:Show();
 						CharacterSelect_UpdateButtonState();
@@ -195,7 +195,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PlaySound("gsTitleOptionExit");
+						PlaySound(SOUNDKIT.GS_TITLE_OPTION_EXIT);
 						C_WowTokenSecure.ConfirmBuyToken(false);
 						self:GetParent():Hide();
 						ReactivateAccountDialog_Open();
@@ -258,7 +258,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PlaySound("gsTitleOptionOK");
+						PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK);
 						self:GetParent():Hide();
 						C_WowTokenSecure.RedeemTokenConfirm(LE_TOKEN_REDEEM_TYPE_GAME_TIME);
 						AccountReactivationInProgressDialog:Show();
@@ -273,7 +273,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PlaySound("gsTitleOptionExit");
+						PlaySound(SOUNDKIT.GS_TITLE_OPTION_EXIT);
 						self:GetParent():Hide();
 						ReactivateAccountDialog_Open();
 					</OnClick>
@@ -349,7 +349,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PlaySound("gsTitleOptionExit");
+						PlaySound(SOUNDKIT.GS_TITLE_OPTION_EXIT);
 						self:GetParent():Hide();
 					</OnClick>
 				</Scripts>

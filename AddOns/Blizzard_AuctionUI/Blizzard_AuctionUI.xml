@@ -1021,7 +1021,7 @@
 								IsUsableCheckButtonText:SetText(USABLE_ITEMS);
 							</OnLoad>
 							<OnClick>
-								PlaySound("igMainMenuOptionCheckBoxOn");
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 							</OnClick>
 						</Scripts>
 					</CheckButton>
@@ -1045,7 +1045,7 @@
 								self:SetChecked(GetCVarBool("auctionDisplayOnCharacter"));
 							</OnShow>
 							<OnClick>
-								PlaySound("igMainMenuOptionCheckBoxOn");
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 								SetCVar("auctionDisplayOnCharacter", self:GetChecked());
 							</OnClick>
 							<OnEnter>
@@ -1106,7 +1106,7 @@
 						</Layers>
 						<Scripts>
 							<OnClick>
-								PlaySound("igMainMenuOptionCheckBoxOn");
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 								AuctionFrameBrowse.page = AuctionFrameBrowse.page - 1;
 								self:Disable();
 								BrowseScrollFrameScrollBar:SetValue(0);
@@ -1143,7 +1143,7 @@
 						</Layers>
 						<Scripts>
 							<OnClick>
-								PlaySound("igMainMenuOptionCheckBoxOn");
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 								AuctionFrameBrowse.page = AuctionFrameBrowse.page + 1;
 								self:Disable();
 								BrowseScrollFrameScrollBar:SetValue(0);
@@ -1256,7 +1256,7 @@
 								ExactMatchCheckButtonText:SetText(AH_EXACT_MATCH);
 							</OnLoad>
 							<OnClick>
-								PlaySound("igMainMenuOptionCheckBoxOn");
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 							</OnClick>
 							<OnEnter>
 								GameTooltip:SetOwner(self, "ANCHOR_LEFT");
@@ -2308,7 +2308,7 @@
 			<OnLoad function="AuctionFrame_OnLoad"/>
 			<OnShow function="AuctionFrame_OnShow"/>
 			<OnHide>
-				PlaySound("AuctionWindowClose");
+				PlaySound(SOUNDKIT.AUCTION_WINDOW_CLOSE);
 				StaticPopup_Hide("BUYOUT_AUCTION");
 				StaticPopup_Hide("CANCEL_AUCTION");
 				WowTokenGameTimeTutorial:Hide();

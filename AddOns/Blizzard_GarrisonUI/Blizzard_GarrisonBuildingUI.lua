@@ -180,14 +180,14 @@ function GarrisonBuildingFrame_OnShow(self)
 	else
 		GarrisonTownHall_Select();
 	end
-	PlaySound("UI_Garrison_ArchitectTable_Open");
+	PlaySound(SOUNDKIT.UI_GARRISON_ARCHITECT_TABLE_OPEN);
 end
 
 function GarrisonBuildingFrame_OnHide(self)
 	C_Garrison.CloseArchitect();
 	HelpPlate_Hide();
 	GarrisonBuildingPlacer_Clear();
-	PlaySound("UI_Garrison_ArchitectTable_Close");
+	PlaySound(SOUNDKIT.UI_GARRISON_ARCHITECT_TABLE_CLOSE);
 end
 
 function GarrisonBuildingFrame_OnEvent(self, event, ...)
@@ -228,9 +228,9 @@ function GarrisonBuildingFrame_OnEvent(self, event, ...)
 			end
 			if (newPlacement) then
 				if (rank > 1) then
-					PlaySound("UI_Garrison_ArchitectTable_UpgradeStart");
+					PlaySound(SOUNDKIT.UI_GARRISON_ARCHITECT_TABLE_UPGRADE_START);
 				else
-					PlaySound("UI_Garrison_ArchitectTable_BuildingPlacement");
+					PlaySound(SOUNDKIT.UI_GARRISON_ARCHITECT_TABLE_BUILDING_PLACEMENT);
 				end
 				Plot.BuildingCreateFlareAnim:Play();
 			end
@@ -286,7 +286,7 @@ function GarrisonBuildingFrame_OnEvent(self, event, ...)
 	elseif (event == "GARRISON_UPGRADEABLE_RESULT") then
 		GarrisonBuildingFrame_UpdateUpgradeButton();
 	elseif (event == "GARRISON_BUILDING_ERROR") then
-		PlaySound("UI_Garrison_ArchitectTable_BuildingPlacementError");
+		PlaySound(SOUNDKIT.UI_GARRISON_ARCHITECT_TABLE_BUILDING_PLACEMENT_ERROR);
 	end
 end
 
@@ -420,7 +420,7 @@ function GarrisonTownHall_OnLeave(self)
 end
 
 function GarrisonTownHall_OnClick(self)
-	PlaySound("UI_Garrison_ArchitectTable_BuildingSelect");
+	PlaySound(SOUNDKIT.UI_GARRISON_ARCHITECT_TABLE_BUILDING_SELECT);
 	GarrisonTownHall_Select();
 end
 
@@ -464,11 +464,11 @@ function GarrisonTownHall_StartUpgrade(self)
 	local _, currencyAmount = GetCurrencyInfo(GARRISON_CURRENCY);
 	if (currencyAmount < costMaterial) then
 		UIErrorsFrame:AddMessage(ERR_GARRISON_NOT_ENOUGH_CURRENCY, 1.0, 0.1, 0.1, 1.0);
-		PlaySound("UI_Garrison_ArchitectTable_BuildingPlacementError");
+		PlaySound(SOUNDKIT.UI_GARRISON_ARCHITECT_TABLE_BUILDING_PLACEMENT_ERROR);
 		return;
 	elseif (GetMoney() < costGold * COPPER_PER_GOLD) then
 		UIErrorsFrame:AddMessage(ERR_GARRISON_NOT_ENOUGH_GOLD, 1.0, 0.1, 0.1, 1.0);
-		PlaySound("UI_Garrison_ArchitectTable_BuildingPlacementError");
+		PlaySound(SOUNDKIT.UI_GARRISON_ARCHITECT_TABLE_BUILDING_PLACEMENT_ERROR);
 		return;
 	end
 	
@@ -489,7 +489,7 @@ function GarrisonTownHall_StartUpgrade(self)
 	confirmation:ClearAllPoints();
 	confirmation:SetPoint("BOTTOM", GarrisonBuildingFrame.MapFrame.TownHall, "TOP", 0, -40);
 	confirmation:Show();
-	PlaySound("UI_Garrison_ArchitectTable_Upgrade");
+	PlaySound(SOUNDKIT.UI_GARRISON_ARCHITECT_TABLE_UPGRADE);
 end
 
 function GarrisonTownHallUpgradeButton_OnEnter(self)
@@ -916,7 +916,7 @@ function GarrisonBuildingFrameTimerCancel_OnClick(self, button)
 	end
 	local dialog = StaticPopup_Show(popupText);
 	dialog.data = GarrisonBuildingFrame.selectedBuilding;
-	PlaySound("igMainMenuOpen");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
 end
 
 function GarrisonBuildingFrameTimerCancel_OnConfirm(selectedBuilding)
@@ -988,11 +988,11 @@ end
 function GarrisonBuildingAddFollowerButton_OnClick(self, button)
 	if (GarrisonBuildingFrame.FollowerList:IsShown()) then
 		GarrisonBuildingList_Show();
-		PlaySound("UI_Garrison_CommandTable_AssignFollower");
+		PlaySound(SOUNDKIT.UI_GARRISON_COMMAND_TABLE_ASSIGN_FOLLOWER);
 	elseif (not self.greyedOut) then
 		GarrisonBuildingFrame.FollowerList:Show();
 		GarrisonBuildingFrame.BuildingList:Hide();
-		PlaySound("UI_Garrison_CommandTable_AssignFollower")
+		PlaySound(SOUNDKIT.UI_GARRISON_COMMAND_TABLE_ASSIGN_FOLLOWER)
 	end
 end
 
@@ -1037,7 +1037,7 @@ function GarrisonBuildingFollowerButton_OnClick(self, button)
 	end
 	C_Garrison.AssignFollowerToBuilding(GarrisonBuildingFrame.selectedBuilding.plotID, self.info.followerID);
 	GarrisonBuildingList_Show();
-	PlaySound("UI_Garrison_CommandTable_SelectFollower");
+	PlaySound(SOUNDKIT.UI_GARRISON_COMMAND_TABLE_SELECT_FOLLOWER);
 end
 
 function GarrisonBuildingFollowerButton_GetFollowerList(self)
@@ -1109,7 +1109,7 @@ end
 
 function GarrisonBuildingTab_OnMouseDown(self)
 	if (GarrisonBuildingFrame.selectedTab ~= self) then
-		PlaySound("UI_Garrison_Nav_Tabs");
+		PlaySound(SOUNDKIT.UI_GARRISON_NAV_TABS);
 		GarrisonBuildingTab_Select(self);
 	end
 end
@@ -1120,7 +1120,7 @@ function GarrisonBuildingTab_Select(self)
 end
 
 function GarrisonBuildingListButton_OnMouseDown(self, button)
-	PlaySound("UI_Garrison_ArchitectTable_BuildingSelect");
+	PlaySound(SOUNDKIT.UI_GARRISON_ARCHITECT_TABLE_BUILDING_SELECT);
 	GarrisonBuildingListButton_Select(self);
 end
 
@@ -1422,7 +1422,7 @@ function GarrisonPlot_OnReceiveDrag(self)
 	if (dragPlotSize ~= myPlotSize or (self.buildingID and isPrebuilt)) then
 		UIErrorsFrame:AddMessage(ERR_GARRISON_INVALID_PLOT_BUILDING, 1.0, 0.1, 0.1, 1.0);
 		GarrisonBuildingPlacer_Clear();
-		PlaySound("UI_Garrison_ArchitectTable_BuildingPlacementError");
+		PlaySound(SOUNDKIT.UI_GARRISON_ARCHITECT_TABLE_BUILDING_PLACEMENT_ERROR);
 		return;
 	end
 		
@@ -1441,7 +1441,7 @@ function GarrisonPlot_OnReceiveDrag(self)
 	confirmation:ClearAllPoints();
 	confirmation:SetPoint("BOTTOM", self, "TOP", 0, 0);
 	confirmation:Show();
-	PlaySound("UI_Garrison_ArchitectTable_Upgrade");
+	PlaySound(SOUNDKIT.UI_GARRISON_ARCHITECT_TABLE_UPGRADE);
 	
 	local id, name, texPrefix, icon = C_Garrison.GetBuildingInfo(GarrisonBuildingPlacer.info.buildingID)
 	GarrisonPlot_SetBuilding(self, id, name, texPrefix, icon);
@@ -1471,7 +1471,7 @@ function GarrisonPlot_OnClick(self)
 			GarrisonBuildingFrame_ClearPlotHighlights();
 			self.PlotHighlight:Show();
 		end
-		PlaySound("UI_Garrison_ArchitectTable_BuildingSelect");
+		PlaySound(SOUNDKIT.UI_GARRISON_ARCHITECT_TABLE_BUILDING_SELECT);
 		return;
 	end
 	GarrisonBuildingList_Show();	
@@ -1483,7 +1483,7 @@ function GarrisonPlot_OnClick(self)
 	GarrisonPlot_ShowTooltip(self);
 	
 	if (self.buildingID) then
-		PlaySound("UI_Garrison_ArchitectTable_BuildingSelect");
+		PlaySound(SOUNDKIT.UI_GARRISON_ARCHITECT_TABLE_BUILDING_SELECT);
 		GarrisonBuildingList_SelectBuilding(self.buildingID);
 		return;
 	end
@@ -1493,14 +1493,14 @@ function GarrisonPlot_OnClick(self)
 		for i=1, #list.Buttons do
 			local Button = list.Buttons[i];
 			if (Button.info.buildingID == buildings[1]) then
-				PlaySound("UI_Garrison_ArchitectTable_BuildingSelect");
+				PlaySound(SOUNDKIT.UI_GARRISON_ARCHITECT_TABLE_BUILDING_SELECT);
 				GarrisonBuildingListButton_Select(Button);
 				return;
 			end
 		end
 	end
 
-	PlaySound("UI_Garrison_ArchitectTable_PlotSelect");
+	PlaySound(SOUNDKIT.UI_GARRISON_ARCHITECT_TABLE_PLOT_SELECT);
 	local plotSize = GarrisonBuildingFrame.plots[self.plotID].size;
 	GarrisonBuildingInfoBox_ShowEmptyPlot(plotSize);
 end
@@ -1737,11 +1737,11 @@ function GarrisonBuildingFrame_StartUpgrade(self)
 	local _, currencyAmount = GetCurrencyInfo(GARRISON_CURRENCY);
 	if (currencyAmount < currencyQty) then
 		UIErrorsFrame:AddMessage(ERR_GARRISON_NOT_ENOUGH_CURRENCY, 1.0, 0.1, 0.1, 1.0);
-		PlaySound("UI_Garrison_ArchitectTable_BuildingPlacementError");
+		PlaySound(SOUNDKIT.UI_GARRISON_ARCHITECT_TABLE_BUILDING_PLACEMENT_ERROR);
 		return;
 	elseif (GetMoney() < goldQty * COPPER_PER_GOLD) then
 		UIErrorsFrame:AddMessage(ERR_GARRISON_NOT_ENOUGH_GOLD, 1.0, 0.1, 0.1, 1.0);
-		PlaySound("UI_Garrison_ArchitectTable_BuildingPlacementError");
+		PlaySound(SOUNDKIT.UI_GARRISON_ARCHITECT_TABLE_BUILDING_PLACEMENT_ERROR);
 		return;
 	end
 
@@ -1758,7 +1758,7 @@ function GarrisonBuildingFrame_StartUpgrade(self)
 	confirmation:ClearAllPoints();
 	confirmation:SetPoint("BOTTOM", Plot, "TOP", 0, 0);
 	confirmation:Show();
-	PlaySound("UI_Garrison_ArchitectTable_Upgrade");
+	PlaySound(SOUNDKIT.UI_GARRISON_ARCHITECT_TABLE_UPGRADE);
 	
 	GarrisonPlot_SetBuilding(Plot, id, name, texPrefix, icon);
 end
@@ -1781,7 +1781,7 @@ end
 
 function GarrisonBuildingFrame_CancelConfirmation()
 	GarrisonBuildingFrame_ClearConfirmation();
-	PlaySound("UI_Garrison_ArchitectTable_UpgradeCancel");
+	PlaySound(SOUNDKIT.UI_GARRISON_ARCHITECT_TABLE_UPGRADE_CANCEL);
 end
 
 function GarrisonBuildingFrame_ClearConfirmation()

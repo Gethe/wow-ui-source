@@ -123,6 +123,11 @@ function GetTexCoordsForRole(role)
 	end
 end
 
+function ConvertPixelsToUI(pixels, frameScale)
+	local physicalScreenHeight = select(2, GetPhysicalScreenSize());
+	return (pixels * 768.0)/(physicalScreenHeight * frameScale);
+end
+
 function ReloadUI()
 	C_UI.Reload();
 end
@@ -337,7 +342,7 @@ function GetNavigationButtonEnabledStates(count, index)
 end
 
 ----------------------------------
--- TRIAL/VETERAN FUCNCTIONS
+-- TRIAL/VETERAN FUNCTIONS
 ----------------------------------
 function GameLimitedMode_IsActive()
 	return IsTrialAccount() or IsVeteranTrialAccount();
@@ -599,7 +604,7 @@ function ColorMixin:GetRGBA()
 end
 
 function ColorMixin:GetRGBAAsBytes()
-	return self.r * 255, self.g * 255, self.b * 255, self.a * 255;
+	return self.r * 255, self.g * 255, self.b * 255, (self.a or 1) * 255;
 end
 
 function ColorMixin:SetRGBA(r, g, b, a)

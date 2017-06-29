@@ -154,7 +154,7 @@
 				if ( not self.accepted ) then
 					DeclineGuild();
 				end
-				PlaySound("igMainMenuClose");
+				PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
 				StaticPopupSpecial_Hide(GuildInviteFrame);
 			</OnHide>
 			<OnEnter>

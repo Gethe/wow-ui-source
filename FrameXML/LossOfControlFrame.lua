@@ -145,7 +145,7 @@ function LossOfControlFrame_SetUpDisplay(self, animate, locType, spellID, text, 
 			self.TimeLeft.SecondsText.scrollTime = 0;
 			self.Cooldown:Hide();
 			self.Anim:Play();
-			PlaySoundKitID(34468);
+			PlaySound(SOUNDKIT.UI_LOSS_OF_CONTROL_START);
 		end
 		self.priority = priority;
 		self.spellID = spellID;

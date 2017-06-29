@@ -1514,7 +1514,7 @@
 					</Anchors>
 					<Scripts>
 						<OnClick>
-							PlaySound("UI_igStore_Cancel_Button");
+							PlaySound(SOUNDKIT.UI_IG_STORE_CANCEL_BUTTON);
 							self:GetParent():Hide();
 						</OnClick>
 					</Scripts>
@@ -2205,7 +2205,7 @@
 					</Anchors>
 					<Scripts>
 						<OnClick>
-							PlaySound("UI_igStore_PageNav_Button");
+							PlaySound(SOUNDKIT.UI_IG_STORE_PAGE_NAV_BUTTON);
 							self:GetParent().BuyButton:SetEnabled(self:GetChecked());
 						</OnClick>
 					</Scripts>

@@ -62,7 +62,7 @@ function ArtifactLevelUpToastMixin:PlayBanner(data)
 	self:Show();
 	
 	self.ArtifactLevelUpAnim:Play();
-	PlaySound("UI_70_Artifact_Forge_Toast_TraitAvailable");
+	PlaySound(SOUNDKIT.UI_70_ARTIFACT_FORGE_TOAST_TRAIT_AVAILABLE);
 end
 
 function ArtifactLevelUpToastMixin:StopBanner()

@@ -72,7 +72,7 @@ function Model_RotateLeft(model, rotationIncrement)
 	end
 	model.rotation = model.rotation - rotationIncrement;
 	model:SetRotation(model.rotation);
-	PlaySound("igInventoryRotateCharacter");
+	PlaySound(SOUNDKIT.IG_INVENTORY_ROTATE_CHARACTER);
 end
 
 function Model_RotateRight(model, rotationIncrement)
@@ -81,7 +81,7 @@ function Model_RotateRight(model, rotationIncrement)
 	end
 	model.rotation = model.rotation + rotationIncrement;
 	model:SetRotation(model.rotation);
-	PlaySound("igInventoryRotateCharacter");
+	PlaySound(SOUNDKIT.IG_INVENTORY_ROTATE_CHARACTER);
 end
 
 function Model_OnMouseDown(model, button)

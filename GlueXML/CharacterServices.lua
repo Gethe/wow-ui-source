@@ -559,12 +559,12 @@ local function resetScripts(button)
 		CharacterSelect.pressDownTime = 0;
 	end);
 	button.upButton:SetScript("OnClick", function(self)
-		PlaySound("igMainMenuOptionCheckBoxOn");
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 		local index = self:GetParent().index;
 		MoveCharacter(index, index - 1);
 	end);
 	button.downButton:SetScript("OnClick", function(self)
-		PlaySound("igMainMenuOptionCheckBoxOn");
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 		local index = self:GetParent().index;
 		MoveCharacter(index, index + 1);
 	end);
@@ -1324,7 +1324,7 @@ function CharacterUpgradeSpecSelectBlock:GetPopupText()
 end
 
 function CharacterUpgradeSelectSpecRadioButton_OnClick(self, button, down)
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 
 	local owner = self.owner;
 
@@ -1393,7 +1393,7 @@ function CharacterUpgradeFactionSelectBlock:OnSkip()
 end
 
 function CharacterUpgradeSelectFactionRadioButton_OnClick(self, button, down)
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 
 	local owner = self.owner;
 
