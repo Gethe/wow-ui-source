@@ -1875,6 +1875,18 @@ StaticPopupDialogs["CONFIM_BEFORE_USE"] = {
 	hideOnEscape = 1
 };
 
+StaticPopupDialogs["USE_NO_REFUND_CONFIRM"] = {
+	text = END_REFUND,
+	button1 = OKAY,
+	button2 = CANCEL,
+	OnAccept = function(self)
+		ConfirmNoRefundOnUse();
+	end,
+	timeout = 0,
+	exclusive = 1,
+	hideOnEscape = 1
+};
+
 StaticPopupDialogs["DELETE_ITEM"] = {
 	text = DELETE_ITEM,
 	button1 = YES,

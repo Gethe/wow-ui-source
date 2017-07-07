@@ -14,6 +14,8 @@ function AlertFrameSystems_Register()
 	GarrisonTalentAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem("GarrisonTalentAlertFrameTemplate", GarrisonTalentAlertFrame_SetUp);
 	WorldQuestCompleteAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem("WorldQuestCompleteAlertFrameTemplate", WorldQuestCompleteAlertFrame_SetUp, WorldQuestCompleteAlertFrame_Coalesce);
 	LegendaryItemAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem("LegendaryItemAlertFrameTemplate", LegendaryItemAlertFrame_SetUp);
+	NewPetAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem("NewPetAlertFrameTemplate", NewPetAlertFrame_SetUp);
+	NewMountAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem("NewMountAlertFrameTemplate", NewMountAlertFrame_SetUp);
 end
 
 -- [[ GuildChallengeAlertFrame ]] --
@@ -1026,4 +1028,66 @@ function LegendaryItemAlertFrame_OnLeave(self)
 	AlertFrame_ResumeOutAnimation(self);
 
 	GameTooltip:Hide();
+end
+
+-- [[ ItemAlertFrame (template) ]] ---
+
+ItemAlertFrameMixin = {};
+
+function ItemAlertFrameMixin:SetUpDisplay(icon, itemQuality, name, label)
+	self.Icon:SetTexture(icon);
+	self.IconBorder:SetAtlas(LOOT_BORDER_BY_QUALITY[itemQuality] or LOOT_BORDER_BY_QUALITY[LE_ITEM_QUALITY_UNCOMMON]);
+	self.Name:SetText(ITEM_QUALITY_COLORS[itemQuality].hex..name.."|r");
+	self.Label:SetText(label);
+end
+
+-- [[ NewPetAlertFrame ]] --
+
+function NewPetAlertFrame_SetUp(frame, petID)
+	frame:SetUp(petID);
+end
+
+NewPetAlertFrameMixin = CreateFromMixins(ItemAlertFrameMixin);
+
+function NewPetAlertFrameMixin:SetUp(petID)
+	self.petID = petID;
+	
+	local speciesID, customName, level, xp, maxXp, displayID, isFavorite, name, icon = C_PetJournal.GetPetInfoByPetID(petID);
+	local health, maxHealth, attack, speed, rarity = C_PetJournal.GetPetStats(petID);
+	local itemQuality = rarity - 1;
+	self:SetUpDisplay(icon, itemQuality, customName or name, YOU_EARNED_LABEL);
+end
+
+function NewPetAlertFrameMixin:OnClick(button, down)
+	if AlertFrame_OnClick(self, button, down) then
+		return;
+	end
+	
+	SetCollectionsJournalShown(true, COLLECTIONS_JOURNAL_TAB_INDEX_PETS);
+	PetJournal_SelectPet(PetJournal, self.petID);
+end
+
+-- [[ NewMountAlertFrame ]] --
+
+function NewMountAlertFrame_SetUp(frame, mountID)
+	frame:SetUp(mountID);
+end
+
+NewMountAlertFrameMixin = CreateFromMixins(ItemAlertFrameMixin);
+
+function NewMountAlertFrameMixin:SetUp(mountID)
+	self.mountID = mountID;
+	
+	local creatureName, spellID, icon, active, isUsable, sourceType = C_MountJournal.GetMountInfoByID(mountID);
+	local itemQuality = LE_ITEM_QUALITY_EPIC; -- Mounts don't have an inherent concept of quality so we always use epic (for now).
+	self:SetUpDisplay(icon, itemQuality, creatureName, YOU_EARNED_LABEL);
+end
+
+function NewMountAlertFrameMixin:OnClick(button, down)
+	if AlertFrame_OnClick(self, button, down) then
+		return;
+	end
+	
+	SetCollectionsJournalShown(true, COLLECTIONS_JOURNAL_TAB_INDEX_MOUNTS);
+	MountJournal_SelectByMountID(self.mountID);
 end

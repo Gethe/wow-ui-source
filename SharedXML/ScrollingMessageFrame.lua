@@ -98,6 +98,10 @@ function ScrollingMessageFrameMixin:SetOnScrollChangedCallback(onScrollChangedCa
 	self.onScrollChangedCallback = onScrollChangedCallback;
 end
 
+function ScrollingMessageFrameMixin:GetOnScrollChangedCallback()
+	return self.onScrollChangedCallback;
+end
+
 function ScrollingMessageFrameMixin:SetScrollOffset(offset)
 	local newOffset = Clamp(offset, 0, self:GetMaxScrollRange());
 	if newOffset ~= self.scrollOffset then

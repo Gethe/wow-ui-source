@@ -12,7 +12,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="BACKGROUND" textureSubLevel="1">
-				<Texture parentKey="BorderTop" hidden="true">
+				<Texture parentKey="BorderTop">
 					<Size y="1" />
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" relativeKey="$parent.Background" relativePoint="TOPLEFT" x="-1" y="0" />
@@ -74,7 +74,7 @@
 						self:GetParent():OnEditBoxTextChanged(self:GetText());
 					</OnTextChanged>
 					<OnEscapePressed>
-						self:SetText("");
+						self:GetParent():OnEscapePressed();
 					</OnEscapePressed>
 					<OnEnterPressed>
 						if IsShiftKeyDown() then
@@ -97,7 +97,7 @@
 						end
 					</OnKeyDown>
 					<OnCursorChanged>
-						self:GetParent():OnEditBoxTextChanged(self:GetText());
+						self:GetParent():OnEditBoxCursorChanged(self:GetText());
 					</OnCursorChanged>
 				</Scripts>
 				<FontString inherits="NumberFont_Shadow_Med">
@@ -160,7 +160,7 @@
 							</OnTextChanged>
 
 							<OnEscapePressed>
-								self:GetParent():GetParent().EditBox:SetFocus();
+								self:GetParent():GetParent():OnEscapePressed();
 							</OnEscapePressed>
 							<OnEnterPressed>
 								self:GetParent():GetParent().EditBox:SetFocus();
@@ -181,30 +181,42 @@
 					<Anchor point="BOTTOMLEFT" relativeKey="$parent.EditBox" relativePoint="TOPLEFT" x="0" y="4" />
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.EditBox" relativePoint="TOPRIGHT" x="-15" y="4" />
 				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Background">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-1" y="2" />
+								<Anchor point="BOTTOMRIGHT" x="1" y="-2" />
+							</Anchors>
+							<Color r=".1" g=".1" b=".1" a=".8"/>
+						</Texture>
+					</Layer>
+				</Layers>
 				<Frames>
-					<Frame name="Background" inherits="DeveloperConsoleBackgroundTemplate" />
-					
 					<Slider parentKey="ScrollBar" frameLevel="9500" obeyStepOnDrag="true" valueStep="1" minValue="0" maxValue="1">
-						<Size x="10" y="0"/>
+						<Size x="15" y="0"/>
 						<Anchors>
-							<Anchor point="TOPRIGHT" x="10" y="0"/>
-							<Anchor point="BOTTOMRIGHT" x="10" y="0" />
+							<Anchor point="TOPRIGHT" x="15" y="0"/>
+							<Anchor point="BOTTOMRIGHT" x="15" y="0" />
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
 								<Texture parentKey="Background">
-									<Color r=".1" g=".1" b=".1" a="1"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" x="1" y="1" />
+										<Anchor point="BOTTOMRIGHT" x="0" y="0" />
+									</Anchors>
+									<Color r=".1" g=".1" b=".1" a=".8"/>
 								</Texture>
 								<Texture parentKey="BorderLeft">
 									<Size x="1" />
 									<Anchors>
-										<Anchor point="TOPRIGHT" relativeKey="$parent.Background" relativePoint="TOPLEFT" x="-2" y="2" />
-										<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Background" relativePoint="BOTTOMLEFT" x="-2" y="-2" />
+										<Anchor point="TOPRIGHT" relativeKey="$parent.Background" relativePoint="TOPLEFT" x="0" y="0" />
+										<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Background" relativePoint="BOTTOMLEFT" x="0" y="0" />
 									</Anchors>
 									<Color r="1" g="1" b="1" a="1"/>
 								</Texture>
 							</Layer>
-							
 						</Layers>
 						<Scripts>
 							<OnValueChanged>
@@ -215,8 +227,8 @@
 							</OnValueChanged>
 						</Scripts>
 						<ThumbTexture file="Interface\Buttons\UI-ScrollBar-Knob">
-							<Size x="16" y="16"/>
-							<TexCoords left="0.25" right="0.75" top="0.25" bottom="0.75"/>
+							<Size x="24" y="24"/>
+							<TexCoords left="0.05" right="0.95" top="0.05" bottom="0.95"/>
 						</ThumbTexture>
 					</Slider>
 				</Frames>

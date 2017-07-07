@@ -182,6 +182,7 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("EQUIP_BIND_CONFIRM");
 	self:RegisterEvent("EQUIP_BIND_TRADEABLE_CONFIRM");
 	self:RegisterEvent("USE_BIND_CONFIRM");
+	self:RegisterEvent("USE_NO_REFUND_CONFIRM");
 	self:RegisterEvent("CONFIRM_BEFORE_USE");
 	self:RegisterEvent("DELETE_ITEM_CONFIRM");
 	self:RegisterEvent("QUEST_ACCEPT_CONFIRM");
@@ -850,21 +851,34 @@ function ToggleEncounterJournal()
 end
 
 
-function ToggleCollectionsJournal(whichFrame)
-	if ( not CollectionsJournal ) then
+COLLECTIONS_JOURNAL_TAB_INDEX_MOUNTS = 1;
+COLLECTIONS_JOURNAL_TAB_INDEX_PETS = COLLECTIONS_JOURNAL_TAB_INDEX_MOUNTS + 1;
+COLLECTIONS_JOURNAL_TAB_INDEX_TOYS = COLLECTIONS_JOURNAL_TAB_INDEX_PETS + 1;
+COLLECTIONS_JOURNAL_TAB_INDEX_HEIRLOOMS = COLLECTIONS_JOURNAL_TAB_INDEX_TOYS + 1;
+COLLECTIONS_JOURNAL_TAB_INDEX_APPEARANCES = COLLECTIONS_JOURNAL_TAB_INDEX_HEIRLOOMS + 1;
+
+function ToggleCollectionsJournal(tabIndex)
+	if CollectionsJournal then
+		local tabMatches = not tabIndex or tabIndex == PanelTemplates_GetSelectedTab(CollectionsJournal);
+		local isShown = CollectionsJournal:IsShown() and tabMatches;
+		SetCollectionsJournalShown(not isShown, tabIndex);
+	else
+		SetCollectionsJournalShown(true, tabIndex);
+	end
+end
+
+function SetCollectionsJournalShown(shown, tabIndex)
+	if not CollectionsJournal then
 		CollectionsJournal_LoadUI();
 	end
-	if ( CollectionsJournal ) then
-		if ( whichFrame ) then
-			-- if the request tab is being shown, close window
-			if ( CollectionsJournal:IsShown() and whichFrame == PanelTemplates_GetSelectedTab(CollectionsJournal) ) then
-				HideUIPanel(CollectionsJournal);
-			else
-				ShowUIPanel(CollectionsJournal);
-				CollectionsJournal_SetTab(CollectionsJournal, whichFrame);
+	if CollectionsJournal then
+		if shown then
+			ShowUIPanel(CollectionsJournal);
+			if tabIndex then
+				CollectionsJournal_SetTab(CollectionsJournal, tabIndex);
 			end
 		else
-			ToggleFrame(CollectionsJournal);
+			HideUIPanel(CollectionsJournal);
 		end
 	end
 end
@@ -1183,6 +1197,8 @@ function UIParent_OnEvent(self, event, ...)
 		end
 	elseif ( event == "USE_BIND_CONFIRM" ) then
 		StaticPopup_Show("USE_BIND");
+	elseif( event == "USE_NO_REFUND_CONFIRM" )then
+		StaticPopup_Show("USE_NO_REFUND_CONFIRM");
 	elseif ( event == "CONFIRM_BEFORE_USE" ) then
 		StaticPopup_Show("CONFIM_BEFORE_USE");
 	elseif ( event == "DELETE_ITEM_CONFIRM" ) then

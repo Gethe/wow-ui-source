@@ -11,13 +11,34 @@ function DeveloperConsoleAutoCompleteMixin:OnAvailableHeightChanged()
 	self.heightDirty = true;
 end
 
-function DeveloperConsoleAutoCompleteMixin:SetText(text)
-	if self.text ~= text then
-		self.text = text;
-		self:MarkDirty();
-		self:SetShown(self.text and #self.text > 0);
-		self:SetEntryIndex(1, true);
+function DeveloperConsoleAutoCompleteMixin:SetText(text, cursorPosition)
+	if self.text ~= text or self.cursorPosition ~= cursorPosition then
+		if self.text ~= text and self:GetSelectedText() ~= text then
+			self.text = text;
+			self.forceHidden = nil;
+			self:MarkDirty();
+			self:SetEntryIndex(1, true);
+		end
+
+		self:SetShown(self:ShouldTextBeVisible(text, cursorPosition));
 	end
+end
+
+function DeveloperConsoleAutoCompleteMixin:ShouldTextBeVisible(text, cursorPosition)
+	if self.forceHidden then
+		return false;
+	end
+
+	if text and #text > 0 then
+		return cursorPosition >= 0 and cursorPosition <= #text + 1;
+	end
+
+	return false;
+end
+
+function DeveloperConsoleAutoCompleteMixin:ForceHide()
+	self.forceHidden = true;
+	self:Hide();
 end
 
 function DeveloperConsoleAutoCompleteMixin:GetSelectedText()
@@ -29,15 +50,24 @@ function DeveloperConsoleAutoCompleteMixin:GetSelectedText()
 end
 
 function DeveloperConsoleAutoCompleteMixin:NextEntry()
-	self:SetEntryIndex(self:GetEntryIndex() + 1);
+	return self:SetEntryIndex(self:GetEntryIndex() + 1);
 end
 
 function DeveloperConsoleAutoCompleteMixin:PreviousEntry()
-	self:SetEntryIndex(self:GetEntryIndex() - 1);
+	return self:SetEntryIndex(self:GetEntryIndex() - 1);
+end
+
+function DeveloperConsoleAutoCompleteMixin:GetNumEntries()
+	return self.entryByIndex and #self.entryByIndex or 0;
 end
 
 function DeveloperConsoleAutoCompleteMixin:SetEntryIndex(entryIndex, dontSignalParent)
-	entryIndex = Clamp(entryIndex, 1, self.entryByIndex and #self.entryByIndex or 1);
+	local numEntries = self:GetNumEntries();
+	if numEntries == 0 then
+		return false;
+	end
+
+	entryIndex = (entryIndex - 1) % self:GetNumEntries() + 1;
 	if entryIndex ~= self:GetEntryIndex() then
 		local oldEntry = self.entryByIndex and self.entryByIndex[self:GetEntryIndex()];
 		if oldEntry then
@@ -54,7 +84,9 @@ function DeveloperConsoleAutoCompleteMixin:SetEntryIndex(entryIndex, dontSignalP
 		if not dontSignalParent then
 			self:GetParent():SetAutoCompleteText(entry.commandInfo.command, true);
 		end
+		return true;
 	end
+	return false;
 end
 
 function DeveloperConsoleAutoCompleteMixin:GetEntryIndex()
@@ -173,6 +205,7 @@ function DeveloperConsoleAutoCompleteMixin:DisplayResults()
 			entry:SetPoint("TOPLEFT", previous, "BOTTOMLEFT");
 		end
 		entry.commandInfo = commandInfo;
+		entry.index = i;
 
 		entry.Text:SetText(commandInfo.command);
 
@@ -214,7 +247,7 @@ function DeveloperConsoleAutoCompleteMixin:DisplayResults()
 end
 
 function DeveloperConsoleAutoCompleteMixin:OnEntryClicked(entry)
-	self:GetParent():SetAutoCompleteText(entry.commandInfo.command);
+	self:SetEntryIndex(entry.index);
 end
 
 local function SetEntryTooltip(tooltip, entry, text)

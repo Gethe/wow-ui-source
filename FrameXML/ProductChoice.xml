@@ -100,11 +100,7 @@
 						</Scripts>
 					</Button>
 				</Frames>
-				<Scripts>
-					<OnLoad inherit="append">
-						self:SetViewInsets(5, -5, -7, 67);
-					</OnLoad>
-				</Scripts>
+				<ViewInsets left="5" right="-5" top="-7" bottom="67"/>
 			</ModelScene>
 			<Frame parentKey="Covers" setAllPoints="true">
 				<Layers>

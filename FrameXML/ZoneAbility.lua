@@ -29,9 +29,9 @@ function ZoneAbilityFrame_OnLoad(self)
 end
 
 function ZoneAbilityFrame_OnEvent(self, event)
-	local spellID, garrisonType = GetZoneAbilitySpellInfo();
+	local spellID, type = GetZoneAbilitySpellInfo();
 	if ((event == "SPELLS_CHANGED" or event=="UNIT_AURA")) then
-		self.baseName = GetSpellInfo(spellID);
+		self.baseName = spellID and GetSpellInfo(spellID) or nil;
 	end
 
 	if (not self.baseName) then
@@ -45,7 +45,7 @@ function ZoneAbilityFrame_OnEvent(self, event)
 
 	if (self.buffSeen) then
 		if (not HasZoneAbilitySpellOnBar(self)) then
-			if ( not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_GARRISON_ZONE_ABILITY) and garrisonType == LE_GARRISON_TYPE_6_0 ) then
+			if ( not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_GARRISON_ZONE_ABILITY) and type == Enum.ZoneAbilityType.Garrison ) then
 				ZoneAbilityButtonAlert:SetHeight(ZoneAbilityButtonAlert.Text:GetHeight()+42);
 				ZoneAbilityButtonAlert:Show();
 				SetCVarBitfield( "closedInfoFrames", LE_FRAME_TUTORIAL_GARRISON_ZONE_ABILITY, true );
@@ -151,7 +151,7 @@ end
 
 function HasZoneAbility()
 	local spellID, garrisonType = GetZoneAbilitySpellInfo();
-	return (spellID ~= 0);
+	return (spellID ~= nil);
 end
 
 function GetLastZoneAbilitySpellTexture()

@@ -187,6 +187,14 @@ function DeveloperConsoleMixin:Toggle(shownRequested)
 	end
 end
 
+function DeveloperConsoleMixin:OnEscapePressed()
+	if self.AutoComplete:IsShown() then
+		self.AutoComplete:ForceHide();
+		return;
+	end
+	self:Toggle(false);
+end
+
 function DeveloperConsoleMixin:UpdateScrollbar()
 	local numMessages = self.MessageFrame:GetNumMessages();
 	self.MessageFrame.ScrollBar:SetMinMaxValues(1, numMessages);
@@ -226,6 +234,7 @@ end
 
 function DeveloperConsoleMixin:ExecuteCommand(text)
 	ConsoleExec(text, true);
+	self:AddMessage(("> %s"):format(text:gsub("\n", " > ")), Enum.ConsoleColorType.InputColor);
 	if self.commandCircularBuffer:GetEntryAtIndex(1) ~= text then
 		self.commandCircularBuffer:PushFront(text);
 		table.insert(self.savedVars.commandHistory, text);
@@ -241,10 +250,15 @@ function DeveloperConsoleMixin:OnEditBoxTextChanged(text)
 		return;
 	end
 
-	local commandText = self:FindBestEditCommand();
-	if self.AutoComplete:GetSelectedText() ~= commandText then
-		self.AutoComplete:SetText(commandText);
+	local commandText, startPosition = self:FindBestEditCommand();
+	self.AutoComplete:SetText(commandText, self.EditBox:GetCursorPosition() - (startPosition - 1));
+end
+
+function DeveloperConsoleMixin:OnEditBoxCursorChanged(text)
+	if self.ignoreNextTextChange then
+		return;
 	end
+	self:OnEditBoxTextChanged(text);
 end
 
 function DeveloperConsoleMixin:OnEditBoxArrowPressed(key)
@@ -271,17 +285,21 @@ end
 
 function DeveloperConsoleMixin:OnEditBoxTabPressed()
 	if IsControlKeyDown() then
-		C_Console.PrintAllMatchingCommands(self:FindBestEditCommand());
+		C_Console.PrintAllMatchingCommands((self:FindBestEditCommand()));
 	else
 		if IsShiftKeyDown() then
-			self.AutoComplete:PreviousEntry();
+			if self.AutoComplete:PreviousEntry() then
+				return;
+			end
 		else
 			if self.AutoComplete:GetSelectedText() == self:FindBestEditCommand() then
-				self.AutoComplete:NextEntry();
-			else
-				self:SetAutoCompleteText(self.AutoComplete:GetSelectedText(), true);
+				if self.AutoComplete:NextEntry() then
+					return;
+				end
 			end
 		end
+
+		self:SetAutoCompleteText(self.AutoComplete:GetSelectedText(), true);
 	end
 end
 
@@ -358,11 +376,12 @@ function DeveloperConsoleMixin:SetAutoCompleteText(newCommand, keepAutoComplete)
 	local currentText = self.EditBox:GetText();
 	local newTextStart = currentText:sub(1, startPosition - 1);
 	local newTextEnd = currentText:sub(endPosition + 1);
-	local newText = newTextStart .. (text:gsub("^(%S+)", newCommand) or newCommand) .. newTextEnd;
+	local commandArguments = text:match("^%S+%s+(.+)") or "";
+	local newText = newTextStart .. newCommand .. " " .. commandArguments .. newTextEnd;
 
-	self.EditBox:SetText(newText);
-	self.EditBox:SetCursorPosition(endPosition + (#newCommand - #text));
 	self.ignoreNextTextChange = keepAutoComplete;
+	self.EditBox:SetText(newText);
+	self.EditBox:SetCursorPosition(startPosition + #newCommand + 1 + #commandArguments);
 end
 
 function DeveloperConsoleMixin:FindBestEditCommandPositions()
@@ -388,7 +407,7 @@ end
 
 function DeveloperConsoleMixin:FindBestEditCommand()
 	local startPosition, endPosition, text = self:FindBestEditCommandPositions();
-	return text:match("^(%S+)") or text;
+	return text:match("^(%S+)") or text, startPosition, endPosition, text;
 end
 
 function DeveloperConsoleMixin:ResetCommandHistoryIndex()

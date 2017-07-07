@@ -38,6 +38,24 @@
 						</OnMouseUp>
 					</Scripts>
 				</Button>
+				<Frame parentKey="Background" enableMouse="true" enableMouseWheel="true" frameStrata="FULLSCREEN">
+					<Layers>
+						<Layer level="BACKGROUND">
+							<Texture setAllPoints="true" parentKey="Texture">
+								<Color r="0" g="0" b="0" a="0.1"/>
+							</Texture>
+						</Layer>
+					</Layers>
+					<Scripts>
+						<OnLoad>
+							self:SetPoint("TOPLEFT", UIParent, "TOPLEFT");
+							self:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT");
+						</OnLoad>
+						<OnMouseWheel>
+							-- this comment is here so that the handler doesn't get stripped out.
+						</OnMouseWheel>
+					</Scripts>
+				</Frame>
 			</Frames>
 			<Layers>
 				<Layer level="OVERLAY">

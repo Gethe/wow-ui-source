@@ -854,6 +854,7 @@
 				</xs:attribute>
 				<xs:attribute name="drawLayer" type="ui:DRAWLAYER" default="ARTWORK"/>
 			</xs:extension>
+			<xs:element name="ViewInsets" type="Inset"/>
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:element name="Model" type="ModelType" substitutionGroup="ui:Frame"/>
@@ -1173,7 +1174,8 @@
 						</xs:element>
 					</xs:choice>
 				</xs:sequence>
-
+				
+				<xs:element name="ViewInsets" type="Inset"/>
 				<xs:attribute name="fogNear" type="xs:float" default="0.0" />
 				<xs:attribute name="fogFar" type="xs:float" default="1.0" />
 				<xs:attribute name="drawLayer" type="ui:DRAWLAYER" default="ARTWORK"/>

@@ -137,8 +137,7 @@ function ArtifactsModelTemplate_OnModelLoaded(self)
 	end
 	self:SetLight(true, false, 0, 0, 0, .7, 1.0, 1.0, 1.0);
 	self:SetViewTranslation(-88, 0);
-	self:SetViewInsets(88, 88, 0, 0);
-				
+
 	self:SetDesaturation(self.desaturation or .5);
 
 	self:SetAnimation(animationSequence, 0);

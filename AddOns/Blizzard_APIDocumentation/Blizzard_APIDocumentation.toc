@@ -43,4 +43,5 @@ UIManagerLua.lua
 UIModelInfoLua.lua
 UnitLua.lua
 WorldMapLua.lua
+ZoneAbility.lua
 # End documentation files here

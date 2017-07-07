@@ -229,6 +229,8 @@ function AlertFrameMixin:OnLoad()
 	self:RegisterEvent("QUEST_LOOT_RECEIVED");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("VARIABLES_LOADED");
+	self:RegisterEvent("NEW_PET_ADDED");
+	self:RegisterEvent("NEW_MOUNT_ADDED");
 
 	self.alertFrameSubSystems = {};
 
@@ -415,6 +417,12 @@ function AlertFrameMixin:OnEvent(event, ...)
 	elseif ( event == "SHOW_LOOT_TOAST_LEGENDARY_LOOTED") then
 		local itemLink = ...;
 		LegendaryItemAlertSystem:AddAlert(itemLink);
+	elseif ( event == "NEW_PET_ADDED") then
+		local petID = ...;
+		NewPetAlertSystem:AddAlert(petID);
+	elseif ( event == "NEW_MOUNT_ADDED") then
+		local mountID = ...;
+		NewMountAlertSystem:AddAlert(mountID);
 	elseif ( event == "QUEST_TURNED_IN" ) then
 		local questID = ...;
 		if QuestUtils_IsQuestWorldQuest(questID) then

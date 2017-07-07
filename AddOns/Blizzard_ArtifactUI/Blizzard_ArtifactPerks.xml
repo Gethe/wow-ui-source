@@ -244,6 +244,7 @@
 			</OnEvent>
 			<OnModelLoaded function="ArtifactsModelTemplate_OnModelLoaded" />
 		</Scripts>
+		<ViewInsets left="88" right="88" top="0" bottom="0"/>
 	</PlayerModel>
 
 	<Frame name="ArtifactPerksTabTemplate" mixin="ArtifactPerksMixin" virtual="true" useParentLevel="true">

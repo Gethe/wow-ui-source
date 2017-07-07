@@ -1,16 +1,42 @@
 
-local TEMP_LAYOUT = {
-	[1] = { tier = 1, links = { }, side = "none" },		-- maybe side should be a keyvalue on button
-	[2] = { tier = 2, links = { 1 }, side = "light" },
-	[3] = { tier = 2, links = { 1 }, side = "void" },
-	[4] = { tier = 3, links = { 2 }, side = "light" },
-	[5] = { tier = 3, links = { 2, 3 }, side = "both" },
-	[6] = { tier = 3, links = { 3 }, side = "void" },
-}
+local TALENTS_LAYOUT = {
+	[1] = { row = 1, links = { }, talentType = RELIC_TALENT_TYPE_NEUTRAL },
+	[2] = { row = 2, links = { 1 }, talentType = RELIC_TALENT_TYPE_LIGHT },
+	[3] = { row = 2, links = { 1 }, talentType = RELIC_TALENT_TYPE_VOID },
+	[4] = { row = 3, links = { 2 }, talentType = RELIC_TALENT_TYPE_LIGHT },
+	[5] = { row = 3, links = { 2, 3 }, talentType = RELIC_TALENT_TYPE_NEUTRAL },
+	[6] = { row = 3, links = { 3 }, talentType = RELIC_TALENT_TYPE_VOID },
+};
+
+local TALENT_TYPES = {
+	[RELIC_TALENT_TYPE_LIGHT] =		{ stones = { key = "LightStones", template = "ArtifactRelicTalentLightStonesTemplate" }, backGlow = "Lighttrait-backglow", border = "Lighttrait-border" },
+	[RELIC_TALENT_TYPE_VOID] =		{ stones = { key = "DarkStones", template = "ArtifactRelicTalentVoidStonesTemplate" }, backGlow = "Darktrait-backglow", border = "Darktrait-border" },
+	[RELIC_TALENT_TYPE_NEUTRAL] =	{ border = "Mixedtrait-border" },
+};
+
+local TALENT_STYLES = {
+	[RELIC_TALENT_STYLE_CLOSED] = 		{ borderDesaturated = true, iconDesaturated = true, showStones = false, showBackGlow = false },
+	[RELIC_TALENT_STYLE_OPEN] = 		{ borderDesaturated = false, iconDesaturated = false, showStones = false, showBackGlow = false },
+	[RELIC_TALENT_STYLE_AVAILABLE] =	{ borderDesaturated = false, iconDesaturated = false, showStones = true, showBackGlow = true },
+	[RELIC_TALENT_STYLE_CHOSEN] = 		{ borderDesaturated = false, iconDesaturated = false, showStones = false, showBackGlow = false },
+};
+
+local LINK_ATLAS = {
+	[RELIC_TALENT_LINK_TYPE_LIGHT] = {
+		[RELIC_TALENT_LINK_STYLE_DISABLED] = "Disablelink",
+		[RELIC_TALENT_LINK_STYLE_POTENTIAL] = "Lightlink-blackinside",
+		[RELIC_TALENT_LINK_STYLE_ACTIVE] = "Lightlink-active",
+	},
+	[RELIC_TALENT_LINK_TYPE_VOID] = {
+		[RELIC_TALENT_LINK_STYLE_DISABLED] = "Disablelink",
+		[RELIC_TALENT_LINK_STYLE_POTENTIAL] = "Darklink-blackinside",
+		[RELIC_TALENT_LINK_STYLE_ACTIVE] = "Darklink-active",
+	},	
+};
 
 local PREVIEW_RELIC_SLOT = 4;
 
-UIPanelWindows["ArtifactRelicForgeFrame"] =		{ area = "left",	pushable = 0, xoffset = 35, yoffset = -9, bottomClampOverride = 100, showFailedFunc = C_ArtifactUI.Clear, };
+UIPanelWindows["ArtifactRelicForgeFrame"] =		{ area = "left",	pushable = 0, xoffset = 35, yoffset = -9, bottomClampOverride = 100, showFailedFunc = C_ArtifactRelicForgeUI.Clear, };
 
 -- ===========================================================================================================================
 ArtifactRelicForgeMixin = {};
@@ -19,25 +45,18 @@ function ArtifactRelicForgeMixin:OnLoad()
 	self.Inset:SetPoint("TOPLEFT", 20, -170);
 	self.Inset:SetPoint("BOTTOMRIGHT", -24, 26);
 
-	-- customize talent buttons
-	for i, talentButton in ipairs(self.Talents) do
-		talentButton.Icon:SetSize(45, 45);
-		talentButton.IconDesaturated:SetSize(45, 45);
-		talentButton.CircleMask:SetSize(45, 45);
-		talentButton.RankBorder:Hide();
-	end
-	-- links
-	self.lines = { };
-	for i, layout in ipairs(TEMP_LAYOUT) do
-		for j, linkIndex in ipairs(layout.links) do
-			self:LinkTalents(i, linkIndex, TEMP_LAYOUT[linkIndex].side);
-		end
-	end
+	ButtonFrameTemplate_HidePortrait(self);
+	ButtonFrameTemplate_HideButtonBar(self);
+	self.Inset:Hide();
+	self.TopTileStreaks:Hide();
 
-	-- << temp
-	self.TEMP_HELP:SetText(GREEN_FONT_COLOR:WrapTextInColorCode("Green").." : Base\n"..YELLOW_FONT_COLOR:WrapTextInColorCode("Yellow").." : Light\n"..RED_FONT_COLOR:WrapTextInColorCode("Red").." : Void\n")
-	-- >> temp
-	
+	self:CreateLink(RELIC_TALENT_LINK_TYPE_LIGHT, self.Talent1, self.Talent2);
+	self:CreateLink(RELIC_TALENT_LINK_TYPE_VOID, self.Talent1, self.Talent3);
+	self:CreateLink(RELIC_TALENT_LINK_TYPE_LIGHT, self.Talent2, self.Talent4);
+	self:CreateLink(RELIC_TALENT_LINK_TYPE_VOID, self.Talent2, self.Talent5);
+	self:CreateLink(RELIC_TALENT_LINK_TYPE_LIGHT, self.Talent3, self.Talent5);
+	self:CreateLink(RELIC_TALENT_LINK_TYPE_VOID, self.Talent3, self.Talent6);
+
 	self:SetRelicSlot(1);
 end
 
@@ -65,48 +84,15 @@ function ArtifactRelicForgeMixin:OnEvent(event, ...)
 	end
 end
 
+function ArtifactRelicForgeMixin:CreateLink(linkType, fromButton, toButton)
+	local template = (linkType == RELIC_TALENT_LINK_TYPE_LIGHT and "ArtifactRelicTalentLightLinkTemplate") or "ArtifactRelicTalentVoidLinkTemplate";
+	local link = CreateFrame("FRAME", nil, self, template);
+	link:SetUp(fromButton, toButton);
+end
+
 function ArtifactRelicForgeMixin:SetRelicSlot(relicSlot)
 	self.relicSlot = relicSlot
 	self:RefreshAll();
-end
-
-function ArtifactRelicForgeMixin:LinkTalents(fromIndex, toIndex, side)
-	local fromButton = self.Talents[fromIndex];
-	local toButton = self.Talents[toIndex];
-
-	local lineContainer = CreateFrame("FRAME", nil, self, "ArtifactDependencyLineTemplate");
-	-- << temp
-	if ( TEMP_LAYOUT[fromIndex].side == "light" ) then
-		lineContainer:SetConnectedColor(YELLOW_FONT_COLOR);
-	elseif ( TEMP_LAYOUT[fromIndex].side == "void" ) then
-		lineContainer:SetConnectedColor(RED_FONT_COLOR);
-	elseif ( TEMP_LAYOUT[fromIndex].side == "both" ) then
-		if ( TEMP_LAYOUT[toIndex].side == "light" ) then
-			lineContainer:SetConnectedColor(YELLOW_FONT_COLOR);
-		elseif ( TEMP_LAYOUT[toIndex].side == "void" ) then
-			lineContainer:SetConnectedColor(RED_FONT_COLOR);
-		end
-	end
-	lineContainer:SetDisconnectedColor(GRAY_FONT_COLOR);
-	-- >> temp
-
-	local fromCenter = CreateVector2D(fromButton:GetCenter());
-	fromCenter:ScaleBy(fromButton:GetEffectiveScale());
-
-	local toCenter = CreateVector2D(toButton:GetCenter());
-	toCenter:ScaleBy(toButton:GetEffectiveScale());
-
-	toCenter:Subtract(fromCenter);
-
-	lineContainer:CalculateTiling(toCenter:GetLength());
-
-	lineContainer:SetEndPoints(fromButton, toButton);
-	lineContainer:SetDisconnected();
-
-	lineContainer.toButton = toButton;
-	lineContainer.fromButton = fromButton;
-	
-	tinsert(self.lines, lineContainer);
 end
 
 function ArtifactRelicForgeMixin:RefreshAll()
@@ -151,59 +137,40 @@ function ArtifactRelicForgeMixin:RefreshTalents()
 		talentButton:Show();
 		talentButton.powerID = talentInfo.powerID;
 		talentButton.Icon:SetTexture(talentInfo.icon);
-		talentButton.IconDesaturated:SetTexture(talentInfo.icon);
-		talentButton.Icon:SetShown(talentInfo.canChoose or talentInfo.isChosen);
-		talentButton.canChoose = true;
-		-- << temp
-		local vertexColor = CreateColor(1, 1, 1);
-		local myLayoutInfo = TEMP_LAYOUT[index];
-		if ( myLayoutInfo.side == "none" ) then
-			vertexColor = CreateColor(0, 1, 0);
-		elseif ( myLayoutInfo.side == "light" ) then
-			vertexColor = CreateColor(1, 1, 0);
-		elseif ( myLayoutInfo.side == "void" ) then
-			vertexColor = CreateColor(1, 0, 0);
-		else
-			-- light or void?
-			for _, linkIndex in ipairs(myLayoutInfo.links) do
-				if ( talents[linkIndex].isChosen ) then
-					if ( TEMP_LAYOUT[linkIndex].side == "light" ) then
-						vertexColor = CreateColor(1, 1, 0);
-					else
-						vertexColor = CreateColor(1, 0, 0);
-					end
-					break;
-				end
+		talentButton.canChoose = talentInfo.canChoose;
+		talentButton.isChosen = talentInfo.isChosen;
+	
+		-- TODO: Is there a better way?
+		if ( index == 5 ) then
+			if ( talents[2].isChosen ) then
+				talentButton:SetTalentType(RELIC_TALENT_TYPE_VOID);
+			elseif ( talents[3].isChosen ) then
+				talentButton:SetTalentType(RELIC_TALENT_TYPE_LIGHT);
+			else
+				talentButton:SetTalentType(RELIC_TALENT_TYPE_NEUTRAL);
 			end
 		end
 
-		if talentInfo.isChosen then
-			talentButton.IconBorder:SetAtlas("Artifacts-PerkRing-MainProc", true);
-			talentButton.IconBorder:SetVertexColor(vertexColor:GetRGB());
-		else
-			talentButton.IconBorder:SetAtlas("Artifacts-PerkRing-Small", true);	
-			talentButton.IconBorder:SetVertexColor(1, 1, 1);
-		end
-		if ( talentInfo.canChoose ) then
-			talentButton.YellowRing:SetAlpha(0.5);
-			talentButton.YellowRing:SetVertexColor(vertexColor:GetRGB());
-			talentButton.WaitingAnimation:Play();
-		else
-			talentButton.YellowRing:SetAlpha(0);
-			talentButton.WaitingAnimation:Stop();
-		end
-		-- >> temp
+		talentButton:EvaluateStyle();
 	end
-	
-	-- << temp
-	for i, line in ipairs(self.lines) do
-		if ( (line.fromButton.canChoose or line.fromButton.isChosen) and line.toButton.isChosen ) then
-			line:SetConnected();
-		else
-			line:SetDisconnected();
+
+	for i, link in ipairs(self.Links) do
+		link:EvaluateStyle();
+	end
+end
+
+function ArtifactRelicForgeMixin:HasChoiceInRow(row)
+	for i, talentInfo in ipairs(TALENTS_LAYOUT) do
+		if ( talentInfo.row == row and self.Talents[i].isChosen ) then
+			return true;
 		end
 	end
-	-- >> temp
+	return false;
+end
+
+function ArtifactRelicForgeMixin:HasChoiceInSameRowAsTalentButton(button)
+	local layoutInfo = button:GetLayoutInfo();
+	return self:HasChoiceInRow(layoutInfo.row);
 end
 
 function ArtifactRelicForgeMixin:ChooseTalent(index)
@@ -231,7 +198,12 @@ function ArtifactRelicForgeTitleTemplateMixin:Foo(relicSlot)
 end
 
 --========================================================================================================================
-ArtifactRelicTalentButtonMixin = CreateFromMixins(ArtifactPowerButtonMixin);
+ArtifactRelicTalentButtonMixin = { };
+
+function ArtifactRelicTalentButtonMixin:OnLoad()
+	local layoutInfo = self:GetLayoutInfo();
+	self:SetTalentType(layoutInfo.talentType);
+end
 
 function ArtifactRelicTalentButtonMixin:OnClick()
 	if ( self.canChoose ) then
@@ -239,15 +211,94 @@ function ArtifactRelicTalentButtonMixin:OnClick()
 	end
 end
 
+function ArtifactRelicTalentButtonMixin:EvaluateStyle()
+	if ( self.isChosen ) then
+		self:SetStyle(RELIC_TALENT_STYLE_CHOSEN);
+	elseif ( self.canChoose ) then
+		self:SetStyle(RELIC_TALENT_STYLE_AVAILABLE);
+	else
+		self:SetStyle(RELIC_TALENT_STYLE_CLOSED);
+	end
+end
+
+local function CheckAndSetShown(object, isShown)
+	if object then
+		object:SetShown(isShown);
+	end
+end
+
+function ArtifactRelicTalentButtonMixin:SetStyle(style)
+	local styleInfo = TALENT_STYLES[style];
+	self.Border:SetDesaturated(styleInfo.borderDesaturated);
+	self.Icon:SetDesaturated(styleInfo.iconDesaturated);
+	CheckAndSetShown(self.BackGlow, styleInfo.showBackGlow);
+	CheckAndSetShown(self.Stones, styleInfo.showStones);
+end
+
+function ArtifactRelicTalentButtonMixin:GetLayoutInfo()
+	return TALENTS_LAYOUT[self:GetID()];
+end
+
+function ArtifactRelicTalentButtonMixin:SetTalentType(talentType)
+	if ( self.talentType == talentType ) then
+		return;
+	end
+	self.talentType = talentType;
+
+	local talentTypeInfo = TALENT_TYPES[talentType];
+	if ( talentTypeInfo.stones ) then
+		if ( not self[talentTypeInfo.stones.key] ) then
+			self[talentTypeInfo.stones.key] = CreateFrame("FRAME", nil, self, talentTypeInfo.stones.template);
+			self[talentTypeInfo.stones.key]:SetPoint("CENTER");
+		end
+		-- hide existing stones
+		if ( self.Stones ) then
+			self.Stones:Hide();
+		end
+		self.Stones = self[talentTypeInfo.stones.key];
+	end
+	if ( talentTypeInfo.backGlow ) then
+		if ( not self.BackGlow ) then
+			self.BackGlow = self:CreateTexture(nil, "BACKGROUND");
+			self.BackGlow:SetPoint("CENTER");
+		end
+		self.BackGlow:SetAtlas(talentTypeInfo.backGlow, true);
+	end
+	self.Border:SetAtlas(talentTypeInfo.border);	
+end
+
+--========================================================================================================================
+ArtifactRelicTalentLinkMixin = { };
+
+function ArtifactRelicTalentLinkMixin:SetUp(fromButton, toButton)
+	self.fromButton = fromButton;
+	self.toButton = toButton;
+	if ( self.linkType == RELIC_TALENT_LINK_TYPE_VOID ) then
+		self:SetPoint("TOPLEFT", fromButton, "BOTTOMRIGHT", -16, 2);
+	elseif ( self.linkType == RELIC_TALENT_LINK_TYPE_LIGHT ) then
+		self:SetPoint("TOPRIGHT", fromButton, "BOTTOMLEFT", 16, 2);
+	end
+end
+
+function ArtifactRelicTalentLinkMixin:EvaluateStyle()
+	if ( self.fromButton.isChosen and self.toButton.isChosen ) then
+		self:SetStyle(RELIC_TALENT_LINK_STYLE_ACTIVE);
+	elseif ( self.fromButton.isChosen and not self:GetParent():HasChoiceInSameRowAsTalentButton(self.toButton) ) then
+		self:SetStyle(RELIC_TALENT_LINK_STYLE_POTENTIAL);
+	else
+		self:SetStyle(RELIC_TALENT_LINK_STYLE_DISABLED);
+	end
+end
+
+function ArtifactRelicTalentLinkMixin:SetStyle(style)
+	self.Texture:SetAtlas(LINK_ATLAS[self.linkType][style]);
+end
+
 --========================================================================================================================
 ArtifactRelicForgePreviewRelicMixin = { };
 
 function ArtifactRelicForgePreviewRelicMixin:OnLoad()
 	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
-	self.Top:SetColorTexture(1, 1, 1);
-	self.Bottom:SetColorTexture(1, 1, 1);
-	self.Left:SetColorTexture(1, 1, 1);
-	self.Right:SetColorTexture(1, 1, 1);
 end
 
 function ArtifactRelicForgePreviewRelicMixin:OnShow()
