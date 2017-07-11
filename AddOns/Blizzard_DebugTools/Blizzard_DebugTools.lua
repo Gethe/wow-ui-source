@@ -529,17 +529,18 @@ function FrameStackTooltip_OnTooltipSetFrameStack(self, highlightFrame)
 	end
 end
 
-function FrameStackTooltip_Toggle (showHidden, showRegions)
-	local tooltip = _G["FrameStackTooltip"];
+function FrameStackTooltip_Toggle (showHidden, showRegions, showAnchors)
+	local tooltip = FrameStackTooltip;
 	if ( tooltip:IsVisible() ) then
 		tooltip:Hide();
 		FrameStackHighlight:Hide();
 	else
 		tooltip:SetOwner(UIParent, "ANCHOR_NONE");
-		tooltip:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -CONTAINER_OFFSET_X - 13, CONTAINER_OFFSET_Y);
+		tooltip:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -(CONTAINER_OFFSET_X or 0) - 13, (CONTAINER_OFFSET_Y or 0));
 		tooltip.default = 1;
 		tooltip.showRegions = showRegions;
 		tooltip.showHidden = showHidden;
+		tooltip.showAnchors = showAnchors;
 		tooltip:SetFrameStack(showHidden, showRegions);
 	end
 end
@@ -573,14 +574,16 @@ function AnchorHighlightMixin:RetrieveAnchorHighlight(pointIndex)
 	return self.AnchorHighlights[pointIndex];
 end
 
-function AnchorHighlightMixin:HighlightFrame(baseFrame)
+function AnchorHighlightMixin:HighlightFrame(baseFrame, showAnchors)
 	AnchorHighlight(baseFrame, self);
 	
 	local pointIndex = 1;
-	while pointIndex <= baseFrame:GetNumPoints() do
-		local _, anchorFrame, anchorRelativePoint = baseFrame:GetPoint(pointIndex);
-		AnchorHighlight(anchorFrame, self:RetrieveAnchorHighlight(pointIndex), anchorRelativePoint);
-		pointIndex = pointIndex + 1;
+	if (showAnchors) then
+		while pointIndex <= baseFrame:GetNumPoints() do
+			local _, anchorFrame, anchorRelativePoint = baseFrame:GetPoint(pointIndex);
+			AnchorHighlight(anchorFrame, self:RetrieveAnchorHighlight(pointIndex), anchorRelativePoint);
+			pointIndex = pointIndex + 1;
+		end
 	end
 	
 	while self.AnchorHighlights and self.AnchorHighlights[pointIndex] do
@@ -608,7 +611,7 @@ function FrameStackTooltip_OnUpdate (self, elapsed)
 		_timeSinceLast = FRAMESTACK_UPDATE_TIME;
 		local highlightFrame = self:SetFrameStack(self.showHidden, self.showRegions, highlightIndexChanged);
 		if highlightFrame then
-			FrameStackHighlight:HighlightFrame(highlightFrame);
+			FrameStackHighlight:HighlightFrame(highlightFrame, self.showAnchors);
 			
 			if ( IsControlKeyDown() ) then
 				TableAttributeDisplay:InspectTable(highlightFrame);
@@ -638,6 +641,12 @@ function FrameStackTooltip_OnShow (self)
 			self:SetPoint("TOPRIGHT", parent, "TOPRIGHT", -20, -20);
 		end
 	end
+end
+
+function FrameStackTooltip_OnHide(self)
+end
+
+function FrameStackTooltip_OnTooltipCleared(self)
 end
 
 FrameStackTooltip_OnEnter = FrameStackTooltip_OnShow;

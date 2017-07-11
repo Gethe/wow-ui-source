@@ -204,9 +204,11 @@
 		<Scripts>
 			<OnLoad function="FrameStackTooltip_OnLoad"/>
 			<OnShow function="FrameStackTooltip_OnShow"/>
+			<OnHide function="FrameStackTooltip_OnHide"/>
 			<OnEnter function="FrameStackTooltip_OnEnter"/>
 			<OnUpdate function="FrameStackTooltip_OnUpdate"/>
 			<OnEvent function="FrameStackTooltip_OnEvent"/>
+			<OnTooltipCleared function="FrameStackTooltip_OnTooltipCleared"/>
 			<OnTooltipSetFramestack function="FrameStackTooltip_OnTooltipSetFrameStack"/>
 		</Scripts>
 	</GameTooltip>

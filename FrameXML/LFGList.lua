@@ -2877,6 +2877,12 @@ local LFG_LIST_SEARCH_ENTRY_MENU = {
 		notCheckable = true,
 		menuList = {
 			{
+				text = LFG_LIST_SPAM,
+				func = function(_, id) C_LFGList.ReportSearchResult(id, "lfglistspam"); end,
+				arg1 = nil, --Search result ID goes here
+				notCheckable = true,
+			},
+			{
 				text = LFG_LIST_BAD_NAME,
 				func = function(_, id) C_LFGList.ReportSearchResult(id, "lfglistname"); end,
 				arg1 = nil, --Search result ID goes here
@@ -2885,13 +2891,6 @@ local LFG_LIST_SEARCH_ENTRY_MENU = {
 			{
 				text = LFG_LIST_BAD_DESCRIPTION,
 				func = function(_, id) C_LFGList.ReportSearchResult(id, "lfglistcomment"); end,
-				arg1 = nil, --Search reuslt ID goes here
-				notCheckable = true,
-				disabled = nil,	--Disabled if the description is just an empty string
-			},
-			{
-				text = LFG_LIST_BAD_VOICE_CHAT_COMMENT,
-				func = function(_, id) C_LFGList.ReportSearchResult(id, "lfglistvoicechat"); end,
 				arg1 = nil, --Search reuslt ID goes here
 				notCheckable = true,
 				disabled = nil,	--Disabled if the description is just an empty string

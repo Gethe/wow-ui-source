@@ -21,6 +21,7 @@ MixinUtil.lua
 ..\SharedXML\ModelSceneTemplates.xml
 ..\SharedXML\ModelSceneMixin.xml
 ..\SharedXML\ModelSceneActorMixin.xml
+..\SharedXML\FrameStack.lua
 
 AnimatedStatusBar.xml
 FlowContainer.lua

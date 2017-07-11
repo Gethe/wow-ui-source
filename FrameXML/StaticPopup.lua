@@ -3503,7 +3503,7 @@ StaticPopupDialogs["CONFIRM_LEAVE_INSTANCE_PARTY"] = {
 	button2 = CANCEL,
 	OnAccept = function(self, data)
 		if ( IsInGroup(LE_PARTY_CATEGORY_INSTANCE) ) then
-			LeaveParty();
+			LeaveInstanceParty();
 		end
 	end,
 	whileDead = 1,

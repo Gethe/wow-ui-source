@@ -765,6 +765,44 @@
 							</Anchors>
 						</HighlightTexture>
 					</Button>
+					<Button parentKey="ConfigurationWarnings" hidden="true">
+						<Size x="32" y="32"/>
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="CharSelectEnterWorldButton" relativePoint="RIGHT" x="10" y="0"/>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<Texture parentKey="PulseOverlay" setAllPoints="true" alphaMode="ADD" alpha="0" file="Interface\DialogFrame\UI-Dialog-Icon-AlertNew"/>
+							</Layer>
+						</Layers>
+						<Animations>
+							<AnimationGroup parentKey="PulseAnim" looping="REPEAT">
+								<Alpha childKey="PulseOverlay" fromAlpha="0" toAlpha="1" duration="1" order="1"/>
+								<Alpha childKey="PulseOverlay" fromAlpha="1" toAlpha="0" duration="1" order="2"/>
+							</AnimationGroup>
+						</Animations>
+						<Scripts>
+							<OnShow>
+								self.PulseAnim:Play();
+							</OnShow>
+							<OnClick>
+								local includeSeenWarnings = true;
+								CheckSystemRequirements(includeSeenWarnings);
+							</OnClick>
+							<OnEnter>
+								GlueTooltip:SetOwner(self, "ANCHOR_RIGHT");
+								GlueTooltip:SetText(CONFIGURATION_WARNINGS_TOOLTIP);
+								GlueTooltip:Show();
+							</OnEnter>
+							<OnLeave>
+								if GlueTooltip:GetOwner() == self then
+									GlueTooltip:Hide();
+								end
+							</OnLeave>
+						</Scripts>
+						<NormalTexture file="Interface\DialogFrame\UI-Dialog-Icon-AlertNew" />
+						<HighlightTexture file="Interface\DialogFrame\UI-Dialog-Icon-AlertNew" alphaMode="ADD" />
+					</Button>
 					<Button name="CharacterSelectBackButton" inherits="GlueButtonSmallTemplate" text="BACK">
 						<Size x="100" y="35"/>
 						<Anchors>

@@ -4700,6 +4700,18 @@ function GetTimeStringFromSeconds(timeAmount, hasMS, dropZeroHours)
 --	end
 end
 
+function IsInLFDBattlefield()
+	return IsLFGModeActive(LE_LFG_CATEGORY_BATTLEFIELD);
+end
+
+function LeaveInstanceParty()
+	if ( IsInLFDBattlefield() ) then
+		LFGTeleport(true);
+	else
+		LeaveParty();
+	end
+end
+
 function ConfirmOrLeaveLFGParty()
 	if ( not IsInGroup(LE_PARTY_CATEGORY_INSTANCE) ) then
 		return;
@@ -4713,7 +4725,7 @@ function ConfirmOrLeaveLFGParty()
 		end
 		StaticPopup_Show("CONFIRM_LEAVE_INSTANCE_PARTY", partyLFGCategory == LE_LFG_CATEGORY_WORLDPVP and CONFIRM_LEAVE_BATTLEFIELD or CONFIRM_LEAVE_INSTANCE_PARTY);
 	else
-		LeaveParty();
+		LeaveInstanceParty();
 	end
 end
 

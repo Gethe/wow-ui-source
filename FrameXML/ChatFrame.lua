@@ -2292,15 +2292,18 @@ end
 
 SlashCmdList["FRAMESTACK"] = function(msg)
 	UIParentLoadAddOn("Blizzard_DebugTools");
-	local showHiddenArg, showRegionsArg = strmatch(msg, "^%s*(%S+)%s+(%S+)%s*$");
-	if ( not showHiddenArg or not showRegionsArg ) then
-		showHiddenArg = strmatch(msg, "^%s*(%S+)%s*$");
-		showRegionsArg = "1";
-	end
-	local showHidden = showHiddenArg == "true" or showHiddenArg == "1";
-	local showRegions = showRegionsArg == "true" or showRegionsArg == "1";
 
-	FrameStackTooltip_Toggle(showHidden, showRegions);
+	local showHiddenArg, showRegionsArg, showAnchorsArg;
+
+	showHiddenArg, msg = string.match(msg or "", "^%s*(%S+)(.*)$");
+	showRegionsArg, msg = string.match(msg or "", "^%s*(%S+)(.*)$");
+	showAnchorsArg, msg =  string.match(msg or "", "^%s*(%S+)(.*)$");
+
+	local showHidden = StringToBoolean(showHiddenArg, false);
+	local showRegions = StringToBoolean(showRegionsArg, true);
+	local showAnchors = StrinToBoolean(showAnchorsArg, true);
+
+	FrameStackTooltip_Toggle(showHidden, showRegions, showAnchors);
 end
 
 SlashCmdList["EVENTTRACE"] = function(msg)

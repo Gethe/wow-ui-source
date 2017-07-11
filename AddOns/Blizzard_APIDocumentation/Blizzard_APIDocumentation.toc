@@ -21,6 +21,7 @@ CalendarLua.lua
 ChallengeModeInfoLua.lua
 ChatBubblesLua.lua
 CommentatorFrameLua.lua
+ConfigurationWarningsLua.lua
 ConsoleLua.lua
 ContributionCollectorLua.lua
 EquipmentManagerLua.lua

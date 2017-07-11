@@ -248,9 +248,9 @@ end
 
 function StartTimer_SetGoTexture(timer)
 	if ( timer.type == TIMER_TYPE_PVP ) then
-		if C_Commentator.IsSpectating() then
-			timer.GoTexture:SetAtlas("Swords-Logo");
-			timer.GoTextureGlow:SetAtlas("SwordsGlow-Logo");
+		if C_Commentator.IsSpectating() or IsInLFDBattlefield() then
+			timer.GoTexture:SetAtlas("countdown-swords");
+			timer.GoTextureGlow:SetAtlas("countdown-swords-glow");
 
 			StartTimer_SwitchToLargeDisplay(timer);
 		else

@@ -1663,7 +1663,9 @@ function StoreFrame_OnLoad(self)
 		bgFrame:EnableMouse(true);
 		-- background texture
 		local background = bgFrame:CreateTexture(nil, "BACKGROUND");
-		background:SetAllPoints(_G.GlueParent);
+		background:SetPoint("TOPLEFT", _G.GlueParent, "TOPLEFT", -1024, 0);
+		background:SetPoint("BOTTOMRIGHT", _G.GlueParent, "BOTTOMRIGHT", 1024, 0);
+
 		background:SetColorTexture(0, 0, 0, 0.75);
 	end
 	self:SetPoint("CENTER", nil, "CENTER", 0, 20); --Intentionally not anchored to UIParent.

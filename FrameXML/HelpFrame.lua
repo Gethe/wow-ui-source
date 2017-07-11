@@ -379,47 +379,6 @@ function HelpFrame_SetButtonEnabled(button, enabled)
 	end
 end
 
-function HelpFrame_SetReportPlayerByUnitTag(frame, unitTag)
-	SetPendingReportTarget(unitTag);
-	frame.target = "pending";
-end
-
-function HelpFrame_SetReportPlayerByLineID(frame, lineID)
-	frame.target = "pending";
-end
-
-function HelpFrame_SetReportPlayerByBattlefieldScoreIndex(frame, battlefieldScoreIndex)
-	BattlefieldSetPendingReportTarget(battlefieldScoreIndex);
-	frame.target = "pending";
-end
-
-function HelpFrame_ShowReportPlayerNameDialog()
-	local frame = ReportPlayerNameDialog;
-	frame.reportType = nil;
-	frame.CommentFrame.EditBox:SetText("");
-	frame.CommentFrame.EditBox.InformationText:Show();
-	HelpFrame_UpdateReportPlayerNameDialog();
-	StaticPopupSpecial_Show(frame);
-end
-
-function HelpFrame_SetReportPlayerNameSelection(reportType)
-	local frame = ReportPlayerNameDialog;
-	frame.reportType = reportType;
-	HelpFrame_UpdateReportPlayerNameDialog();
-end
-
-function HelpFrame_UpdateReportPlayerNameDialog()
-	local frame = ReportPlayerNameDialog;
-	frame.playerNameCheckButton:SetChecked(frame.reportType == PLAYER_REPORT_TYPE_BAD_PLAYER_NAME);
-	frame.guildNameCheckButton:SetChecked(frame.reportType == PLAYER_REPORT_TYPE_BAD_GUILD_NAME);
-
-	if ( frame.reportType ) then
-		frame.reportButton:Enable();
-	else
-		frame.reportButton:Disable();
-	end
-end
-
 function HelpFrame_ShowReportCheatingDialog()
 	local frame = ReportCheatingDialog;
 	frame.CommentFrame.EditBox:SetText("");

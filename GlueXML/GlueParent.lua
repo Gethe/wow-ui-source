@@ -63,6 +63,7 @@ function GlueParent_OnLoad(self)
 	self:RegisterEvent("REALM_LIST_UPDATED");
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
 	self:RegisterEvent("LUA_WARNING");
+	self:RegisterEvent("CONFIGURATION_WARNING");
 
 	OnDisplaySizeChanged(self);
 end
@@ -684,53 +685,13 @@ function MinutesToTime(mins, hideDays)
 	return time;
 end
 
-function CheckSystemRequirements( previousCheck )
-	if ( not previousCheck  ) then
-		if ( not IsCPUSupported() ) then
-			GlueDialog_Show("SYSTEM_INCOMPATIBLE_SSE");
-			return;
+function CheckSystemRequirements(includeSeenWarnings)
+	local configWarnings = C_ConfigurationWarnings.GetConfigurationWarnings(includeSeenWarnings);
+	for i, warning in ipairs(configWarnings) do
+		local text = C_ConfigurationWarnings.GetConfigurationWarningString(warning);
+		if text then
+			GlueDialog_Queue("CONFIGURATION_WARNING", text, { configurationWarning = warning });
 		end
-		previousCheck = nil;
-	end
-
-	if ( not previousCheck or previousCheck == "SSE" ) then
-		if ( not IsShaderModelSupported() ) then
-			GlueDialog_Show("FIXEDFUNCTION_UNSUPPORTED");
-			return;
-		end
-		previousCheck = nil;
-	end
-
-	if ( not previousCheck or previousCheck == "SHADERMODEL" ) then
-		if ( VideoDeviceState() == 1 ) then
-			GlueDialog_Show("DEVICE_BLACKLISTED");
-			return;
-		end
-		previousCheck = nil;
-	end
-
-	if ( not previousCheck or previousCheck == "DEVICE" ) then
-		if ( VideoDriverState() == 2 ) then
-			GlueDialog_Show("DRIVER_OUTOFDATE");
-			return;
-		end
-		previousCheck = nil;
-	end
-
-	if ( not previousCheck or previousCheck == "DRIVER_OOD" ) then
-		if ( VideoDriverState() == 1 ) then
-			GlueDialog_Show("DRIVER_BLACKLISTED");
-			return;
-		end
-		previousCheck = nil;
-	end
-
-	if ( not previousCheck or previousCheck == "DRIVER" ) then
-		if ( not WillShaderModelBeSupported() ) then
-			GlueDialog_Show("SHADER_MODEL_TO_BE_UNSUPPORTED");
-			return;
-		end
-		previousCheck = nil;
 	end
 end
 

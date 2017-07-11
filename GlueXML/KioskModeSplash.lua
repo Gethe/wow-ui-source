@@ -75,8 +75,10 @@ function KioskModeSplash_OnShow(self)
 end
 
 function KioskModeSplash_OnKeyDown(self,key)
-	if (CheckKioskModeRealmKey()) then
+	if CheckKioskModeRealmKey() then
 		C_RealmList.RequestChangeRealmList();
+	elseif CheckKioskModeQuitKey() then
+		QuitGame();
 	end
 end
 

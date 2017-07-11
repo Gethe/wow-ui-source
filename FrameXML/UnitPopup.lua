@@ -75,6 +75,7 @@ UnitPopupButtons = {
 	["REPORT_SPAM"]	= { text = REPORT_SPAMMING, dist = 0 },
 	["REPORT_BAD_LANGUAGE"] = { text = REPORT_BAD_LANGUAGE, dist = 0},
 	["REPORT_BAD_NAME"] = { text = REPORT_BAD_NAME, dist = 0 },
+	["REPORT_BAD_GUILD_NAME"] = { text = "REPORT_BAD_GUILD_NAME", dist = 0 },
 	["REPORT_CHEATING"] = { text = REPORT_CHEATING, dist = 0 },
 	["REPORT_BATTLE_PET"] = { text = REPORT_PET_NAME, dist = 0 },
 	["REPORT_PET"] = { text = REPORT_PET_NAME, dist = 0 },
@@ -114,8 +115,6 @@ UnitPopupButtons = {
 	["OPT_OUT_LOOT_DISABLE"] = { text = NO, dist = 0, checkable = 1 },
 
 	["BN_REPORT"] = { text = BNET_REPORT, dist = 0, nested = 1 },
-	["BN_REPORT_SPAM"] = { text = BNET_REPORT_SPAM, dist = 0 },
-	["BN_REPORT_ABUSE"] = { text = BNET_REPORT_ABUSE, dist = 0 },
 	["BN_REPORT_THREAT"] = { text = BNET_REPORT_THREAT, dist = 0 },
 	["BN_REPORT_NAME"] = { text = BNET_REPORT_NAME, dist = 0 },
 
@@ -223,10 +222,10 @@ UnitPopupMenus = {
 	["LOOT_THRESHOLD"] = { "ITEM_QUALITY2_DESC", "ITEM_QUALITY3_DESC", "ITEM_QUALITY4_DESC", "CANCEL" },
 	["SELECT_LOOT_SPECIALIZATION"] = { "LOOT_SPECIALIZATION_DEFAULT","LOOT_SPECIALIZATION_SPEC1", "LOOT_SPECIALIZATION_SPEC2", "LOOT_SPECIALIZATION_SPEC3", "LOOT_SPECIALIZATION_SPEC4"},
 	["OPT_OUT_LOOT_TITLE"] = { "OPT_OUT_LOOT_ENABLE", "OPT_OUT_LOOT_DISABLE"},
-	["REPORT_PLAYER"] = { "REPORT_SPAM", "REPORT_BAD_LANGUAGE", "REPORT_BAD_NAME", "REPORT_CHEATING" },
+	["REPORT_PLAYER"] = { "REPORT_SPAM", "REPORT_BAD_LANGUAGE", "REPORT_BAD_NAME", "REPORT_BAD_GUILD_NAME", "REPORT_CHEATING" },
 	["DUNGEON_DIFFICULTY"] = { "DUNGEON_DIFFICULTY1", "DUNGEON_DIFFICULTY2", "DUNGEON_DIFFICULTY3" },
 	["RAID_DIFFICULTY"] = { "RAID_DIFFICULTY1", "RAID_DIFFICULTY2", "RAID_DIFFICULTY3", "LEGACY_RAID_SUBSECTION_TITLE", "LEGACY_RAID_DIFFICULTY1", "LEGACY_RAID_DIFFICULTY2" },
-	["BN_REPORT"] = { "BN_REPORT_SPAM", "BN_REPORT_ABUSE", "BN_REPORT_NAME" },
+	["BN_REPORT"] = { "BN_REPORT_NAME" },
 	["MOVE_PLAYER_FRAME"] = { "UNLOCK_PLAYER_FRAME", "LOCK_PLAYER_FRAME", "RESET_PLAYER_FRAME_POSITION", "PLAYER_FRAME_SHOW_CASTBARS" },
 	["MOVE_TARGET_FRAME"] = { "UNLOCK_TARGET_FRAME", "LOCK_TARGET_FRAME", "RESET_TARGET_FRAME_POSITION" , "TARGET_FRAME_BUFFS_ON_TOP"},
 	["MOVE_FOCUS_FRAME"] = { "UNLOCK_FOCUS_FRAME", "LOCK_FOCUS_FRAME", "FOCUS_FRAME_BUFFS_ON_TOP"},
@@ -1458,17 +1457,19 @@ function UnitPopup_OnClick (self)
 		if ( dialog ) then
 			dialog.data = dropdownFrame.unit or tonumber(dropdownFrame.lineID);
 		end
-	elseif ( button == "REPORT_BAD_NAME" ) then
+	elseif ( button == "REPORT_BAD_NAME" or button == "REPORT_BAD_GUILD_NAME" ) then
 		if ( GMEuropaComplaintsEnabled() and not GMQuickTicketSystemThrottled() ) then
+			local target = "pending";
 			if (dropdownFrame.unit) then
-				HelpFrame_SetReportPlayerByUnitTag(ReportPlayerNameDialog, dropdownFrame.unit);
+				SetPendingReportTarget(dropdownFrame.unit);
 			elseif (tonumber(dropdownFrame.lineID)) then
-				HelpFrame_SetReportPlayerByLineID(ReportPlayerNameDialog, tonumber(dropdownFrame.lineID));
+				target = tonumber(dropdownFrame.lineID);
 			elseif (dropdownFrame.battlefieldScoreIndex) then
-				HelpFrame_SetReportPlayerByBattlefieldScoreIndex(ReportPlayerNameDialog, dropdownFrame.battlefieldScoreIndex);
+				BattlefieldSetPendingReportTarget(dropdownFrame.battlefieldScoreIndex);
 			end
 
-			HelpFrame_ShowReportPlayerNameDialog();
+			local reportType = button == "REPORT_BAD_NAME" and PLAYER_REPORT_TYPE_BAD_PLAYER_NAME or PLAYER_REPORT_TYPE_BAD_GUILD_NAME;
+			ReportPlayer(reportType, target);
 		else
 			UIErrorsFrame:AddMessage(ERR_REPORT_SUBMISSION_FAILED , 1.0, 0.1, 0.1, 1.0);
 			local info = ChatTypeInfo["SYSTEM"];

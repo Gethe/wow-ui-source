@@ -64,6 +64,7 @@ function ArtifactRelicForgeMixin:OnShow()
 	self:RegisterEvent("ARTIFACT_RELIC_TALENT_ADDED");
 	self:RegisterEvent("ARTIFACT_RELIC_FORGE_UPDATE");
 	self:RegisterEvent("ARTIFACT_RELIC_FORGE_CLOSE");
+	self:RegisterEvent("ARTIFACT_RELIC_FORGE_PREVIEW_RELIC_CHANGED");
 	self:RefreshAll();
 end
 
@@ -71,6 +72,7 @@ function ArtifactRelicForgeMixin:OnHide()
 	self:UnregisterEvent("ARTIFACT_RELIC_TALENT_ADDED");
 	self:UnregisterEvent("ARTIFACT_RELIC_FORGE_UPDATE");
 	self:UnregisterEvent("ARTIFACT_RELIC_FORGE_CLOSE");
+	self:UnregisterEvent("ARTIFACT_RELIC_FORGE_PREVIEW_RELIC_CHANGED");
 	C_ArtifactRelicForgeUI.Clear();
 end
 
@@ -81,6 +83,13 @@ function ArtifactRelicForgeMixin:OnEvent(event, ...)
 		self:RefreshAll();
 	elseif ( event == "ARTIFACT_RELIC_FORGE_CLOSE" ) then
 		HideUIPanel(self);
+	elseif ( event == "ARTIFACT_RELIC_FORGE_PREVIEW_RELIC_CHANGED" ) then
+		local relicItemID = C_ArtifactRelicForgeUI.GetPreviewRelicItemID();
+		if ( relicItemID ) then
+			self:SetRelicSlot(PREVIEW_RELIC_SLOT);
+		else
+			self:SetRelicSlot(1);
+		end
 	end
 end
 
@@ -91,7 +100,7 @@ function ArtifactRelicForgeMixin:CreateLink(linkType, fromButton, toButton)
 end
 
 function ArtifactRelicForgeMixin:SetRelicSlot(relicSlot)
-	self.relicSlot = relicSlot
+	self.relicSlot = relicSlot;
 	self:RefreshAll();
 end
 
@@ -103,18 +112,20 @@ function ArtifactRelicForgeMixin:RefreshAll()
 end
 
 function ArtifactRelicForgeMixin:RefreshRelics()
-	-- << temp
 	for i, relicSlotButton in ipairs(self.TitleContainer.RelicSlots) do
 		if relicSlotButton:GetID() == self.relicSlot then
 			local isAttuned, canAttune = C_ArtifactUI.GetRelicAttuneInfo(self.relicSlot)
-			relicSlotButton.SelectionBox:Show();
+			relicSlotButton.SelectedCircle:Show();
+			relicSlotButton.SelectedGlow:Show();
+			relicSlotButton.DarkGlow:Hide();
 			relicSlotButton.AttuneButton:SetShown(canAttune);
 		else
-			relicSlotButton.SelectionBox:Hide();
+			relicSlotButton.SelectedCircle:Hide();
+			relicSlotButton.SelectedGlow:Hide();
+			relicSlotButton.DarkGlow:Show();
 			relicSlotButton.AttuneButton:Hide();
 		end
 	end
-	-- >> temp	
 end
 
 function ArtifactRelicForgeMixin:RefreshTalents()
@@ -128,6 +139,9 @@ function ArtifactRelicForgeMixin:RefreshTalents()
 	if ( not talents ) then
 		for i, talentButton in ipairs(self.Talents) do
 			talentButton:Hide();
+		end
+		for i, link in ipairs(self.Links) do
+			link:SetStyle(RELIC_TALENT_LINK_STYLE_DISABLED);
 		end
 		return;
 	end
@@ -189,12 +203,28 @@ ArtifactRelicForgeTitleTemplateMixin = CreateFromMixins(ArtifactTitleTemplateMix
 function ArtifactRelicForgeTitleTemplateMixin:RefreshTitle()
 end
 
-function ArtifactRelicForgeTitleTemplateMixin:OnRelicSlotClicked(relicSlot)
-	self:GetParent():SetRelicSlot(relicSlot:GetID());
+function ArtifactRelicForgeTitleTemplateMixin:ApplyCursorRelicToSlot(relicSlotIndex)
+	ArtifactTitleTemplateMixin.ApplyCursorRelicToSlot(self, relicSlotIndex);
+	self:GetParent():SetRelicSlot(relicSlotIndex);
 end
 
-function ArtifactRelicForgeTitleTemplateMixin:Foo(relicSlot)
-	C_ArtifactRelicForgeUI.AttuneSocketedRelic(relicSlot);
+function ArtifactRelicForgeTitleTemplateMixin:OnRelicSlotClicked(button)
+	local relicSlotIndex = button:GetID();
+	if ( CursorHasItem() ) then
+		local type, itemID, itemLink = GetCursorInfo();
+		if ( C_ArtifactUI.CanApplyRelicItemIDToSlot(itemID, relicSlotIndex) ) then
+			local itemName = C_ArtifactUI.GetRelicInfo(relicSlotIndex);
+			if itemName then
+				StaticPopup_Show("CONFIRM_RELIC_REPLACE", nil, nil, { titleContainer = self, relicSlotIndex = relicSlotIndex });
+			else
+				self:ApplyCursorRelicToSlot(i);
+			end
+			return;
+		end
+	end
+	if ( C_ArtifactUI.GetRelicInfo(relicSlotIndex) ) then
+		self:GetParent():SetRelicSlot(relicSlotIndex);
+	end
 end
 
 --========================================================================================================================
@@ -209,6 +239,11 @@ function ArtifactRelicTalentButtonMixin:OnClick()
 	if ( self.canChoose ) then
 		self:GetParent():ChooseTalent(self:GetID());
 	end
+end
+
+function ArtifactRelicTalentButtonMixin:OnEnter()
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip:SetArtifactPowerByID(self.powerID);
 end
 
 function ArtifactRelicTalentButtonMixin:EvaluateStyle()
@@ -299,6 +334,7 @@ ArtifactRelicForgePreviewRelicMixin = { };
 
 function ArtifactRelicForgePreviewRelicMixin:OnLoad()
 	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+	self:RegisterForDrag("LeftButton");
 end
 
 function ArtifactRelicForgePreviewRelicMixin:OnShow()
@@ -328,7 +364,9 @@ function ArtifactRelicForgePreviewRelicMixin:OnClick(button)
 		if type == "item" and IsArtifactRelicItem(itemID) then
 			C_ArtifactRelicForgeUI.SetPreviewRelicFromCursor();
 		else
-			self:GetParent():SetRelicSlot(PREVIEW_RELIC_SLOT);
+			if ( C_ArtifactRelicForgeUI.GetPreviewRelicItemID() ) then
+				self:GetParent():SetRelicSlot(PREVIEW_RELIC_SLOT);
+			end
 		end
 	elseif ( button == "RightButton" ) then
 		C_ArtifactRelicForgeUI.ClearPreviewRelic();
@@ -337,7 +375,7 @@ end
 
 function ArtifactRelicForgePreviewRelicMixin:Update()
 	local isSelected = (self:GetParent().relicSlot == PREVIEW_RELIC_SLOT);
-	self.SelectionBox:SetShown(isSelected);
+	self.SelectedGlow:SetShown(isSelected);
 	local relicItemID = C_ArtifactRelicForgeUI.GetPreviewRelicItemID();
 	if ( relicItemID ) then
 		local itemID, class, subClass, invType, texture = GetItemInfoInstant(relicItemID);
@@ -350,3 +388,6 @@ function ArtifactRelicForgePreviewRelicMixin:Update()
 	end
 end
 
+function ArtifactRelicForgePreviewRelicMixin:OnDragStart()
+	C_ArtifactRelicForgeUI.PickUpPreviewRelic();
+end

@@ -253,6 +253,9 @@ function CharacterSelect_OnShow(self)
         CheckSystemRequirements();
         SetCheckedSystemRequirements(true);
     end
+
+	local includeSeenWarnings = true;
+	CharacterSelectUI.ConfigurationWarnings:SetShown(#C_ConfigurationWarnings.GetConfigurationWarnings(includeSeenWarnings) > 0);
 end
 
 function CharacterSelect_OnHide(self)
@@ -396,6 +399,8 @@ function CharacterSelect_OnUpdate(self, elapsed)
     if (STORE_IS_LOADED and StoreFrame_WaitingForCharacterListUpdate()) then
         StoreFrame_OnCharacterListUpdate();
     end
+	
+	GlueDialog_CheckQueuedDialogs();
 end
 
 function CharacterSelect_OnKeyDown(self,key)

@@ -102,10 +102,6 @@ function AccountLogin_Update()
 	if ( AccountLogin.UI.AccountsDropDown.active ) then
 		AccountLogin.UI.AccountsDropDown:SetShown(showButtonsAndStuff);
 	end
-    if ( shouldCheckSystemReqs and not HasCheckedSystemRequirements() ) then
-    	CheckSystemRequirements();
-        SetCheckedSystemRequirements(true);
-    end
 end
 
 function AccountLogin_UpdateSavedData(self)

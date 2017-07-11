@@ -960,7 +960,7 @@ function QueueStatusDropDown_AddLFGButtons(info, category)
 	info.leftPadding = 10;
 
 	if ( IsLFGModeActive(category) and IsPartyLFG() ) then
-		if ( IsAllowedToUserTeleport() ) then
+		if ( IsAllowedToUserTeleport() and not IsInLFDBattlefield() ) then
 			if ( IsInLFGDungeon() ) then
 				info.text = TELEPORT_OUT_OF_DUNGEON;
 				info.func = wrapFunc(LFGTeleport);

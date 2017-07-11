@@ -1405,10 +1405,8 @@ StaticPopupDialogs["CONFIRM_RELIC_REPLACE"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 
-	OnAccept = function(self, relicSlotIndex)
-		C_ArtifactUI.ApplyCursorRelicToSlot(relicSlotIndex);
-		ArtifactFrame.PerksTab.TitleContainer.RelicSlots[relicSlotIndex].GlowAnim:Play();
-		PlaySound(SOUNDKIT.UI_70_ARTIFACT_FORGE_RELIC_PLACE);
+	OnAccept = function(self, data)
+		data.titleContainer:ApplyCursorRelicToSlot(data.relicSlotIndex);
 	end,
 	OnCancel = function()
 		ClearCursor();
@@ -1420,17 +1418,21 @@ StaticPopupDialogs["CONFIRM_RELIC_REPLACE"] = {
 	hideOnEscape = true,
 };
 
+function ArtifactTitleTemplateMixin:ApplyCursorRelicToSlot(relicSlotIndex)
+	C_ArtifactUI.ApplyCursorRelicToSlot(relicSlotIndex);
+	self.RelicSlots[relicSlotIndex].GlowAnim:Play();
+	PlaySound(SOUNDKIT.UI_70_ARTIFACT_FORGE_RELIC_PLACE);
+end
+
 function ArtifactTitleTemplateMixin:OnRelicSlotClicked(relicSlot)
 	for i = 1, #self.RelicSlots do
 		if self.RelicSlots[i] == relicSlot then
 			if C_ArtifactUI.CanApplyCursorRelicToSlot(i) then
 				local itemName = C_ArtifactUI.GetRelicInfo(i);
 				if itemName then
-					StaticPopup_Show("CONFIRM_RELIC_REPLACE", nil, nil, i);
+					StaticPopup_Show("CONFIRM_RELIC_REPLACE", nil, nil, { titleContainer = self, relicSlotIndex = i });
 				else
-					C_ArtifactUI.ApplyCursorRelicToSlot(i);
-					self.RelicSlots[i].GlowAnim:Play();
-					PlaySound(SOUNDKIT.UI_70_ARTIFACT_FORGE_RELIC_PLACE);
+					self:ApplyCursorRelicToSlot(i);
 				end
 			else
 				local _, itemID = GetCursorInfo();

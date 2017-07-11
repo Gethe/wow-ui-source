@@ -27,6 +27,8 @@ GlueDropDownMenu.xml
 ..\SharedXML\ModelSceneTemplates.xml
 ..\SharedXML\ModelSceneMixin.xml
 ..\SharedXML\ModelSceneActorMixin.xml
+..\SharedXML\GameTooltipTemplate.xml
+..\SharedXML\FrameStack.lua
 
 ##New stuff!!!
 GlueAddons.lua
