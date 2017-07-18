@@ -1285,6 +1285,13 @@
 		<Color r="1.0" g="1.0" b="1.0"/>
 	</Font>
 
+	<Font name="ConsoleFontNormal" inherits="NumberFont_Shadow_Med" virtual="true">
+		<Color r="1.0" g="1.0" b="1.0"/>
+	</Font>
+	<Font name="ConsoleFontSmall" inherits="NumberFont_Shadow_Small" virtual="true">
+		<Color r="1.0" g="1.0" b="1.0"/>
+	</Font>
+
 	<FontFamily name="Tooltip_Med" virtual="true">
 		<Member alphabet="roman">
 			<Font font="Fonts\FRIZQT__.TTF" height="12"/>

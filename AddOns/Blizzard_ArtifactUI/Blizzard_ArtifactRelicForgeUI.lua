@@ -1,37 +1,66 @@
 
 local TALENTS_LAYOUT = {
 	[1] = { row = 1, links = { }, talentType = RELIC_TALENT_TYPE_NEUTRAL },
-	[2] = { row = 2, links = { 1 }, talentType = RELIC_TALENT_TYPE_LIGHT },
-	[3] = { row = 2, links = { 1 }, talentType = RELIC_TALENT_TYPE_VOID },
-	[4] = { row = 3, links = { 2 }, talentType = RELIC_TALENT_TYPE_LIGHT },
+	[2] = { row = 2, links = { 1 }, talentType = RELIC_TALENT_TYPE_VOID },
+	[3] = { row = 2, links = { 1 }, talentType = RELIC_TALENT_TYPE_LIGHT },
+	[4] = { row = 3, links = { 2 }, talentType = RELIC_TALENT_TYPE_VOID },
 	[5] = { row = 3, links = { 2, 3 }, talentType = RELIC_TALENT_TYPE_NEUTRAL },
-	[6] = { row = 3, links = { 3 }, talentType = RELIC_TALENT_TYPE_VOID },
+	[6] = { row = 3, links = { 3 }, talentType = RELIC_TALENT_TYPE_LIGHT },
 };
 
+local TALENT_MODEL_SCENE_ID = 61;
+local LIGHT_EFFECT_MODEL_ID = 166335;
+local VOID_EFFECT_MODEL_ID = 953305;
+
 local TALENT_TYPES = {
-	[RELIC_TALENT_TYPE_LIGHT] =		{ stones = { key = "LightStones", template = "ArtifactRelicTalentLightStonesTemplate" }, backGlow = "Lighttrait-backglow", border = "Lighttrait-border" },
-	[RELIC_TALENT_TYPE_VOID] =		{ stones = { key = "DarkStones", template = "ArtifactRelicTalentVoidStonesTemplate" }, backGlow = "Darktrait-backglow", border = "Darktrait-border" },
-	[RELIC_TALENT_TYPE_NEUTRAL] =	{ border = "Mixedtrait-border" },
+	[RELIC_TALENT_TYPE_LIGHT] =		{ 	stones = { key = "LightStones", template = "ArtifactRelicTalentLightStonesTemplate" },
+										glow = "Lighttrait-glow",
+										backGlow = "Lighttrait-backglow",
+										border = "Lighttrait-border",
+										effectTag = "lightEffect",
+										effectID = LIGHT_EFFECT_MODEL_ID,
+										activationTextures = {
+											BigWhirls = "ArtifactsFX-Whirls",
+											SpinningGlows = "ArtifactsFX-SpinningGlowys",
+											SpinningGlows2 = "ArtifactsFX-SpinningGlowys",
+											RingGlow = "ArtifactsFX-YellowRing",
+											RingBurst = "ArtifactsFX-YellowRing",
+											StarBurst = "ArtifactsFX-StarBurst",
+											PointBurstLeft = "ArtifactsFX-PointSideBurstLeft",
+											PointBurstRight = "ArtifactsFX-PointSideBurstRight",
+										},
+									},
+	[RELIC_TALENT_TYPE_VOID] =		{ 	stones = { key = "DarkStones", template = "ArtifactRelicTalentVoidStonesTemplate" },
+										glow = "Darktrait-glow",
+										backGlow = "Darktrait-backglow",
+										border = "Darktrait-border",
+										effectTag = "voidEffect",
+										effectID = VOID_EFFECT_MODEL_ID,
+										activationTextures = {
+											BigWhirls = "ArtifactsFX-Whirls-Purple",
+											SpinningGlows = "ArtifactsFX-SpinningGlowys-Purple",
+											SpinningGlows2 = "ArtifactsFX-SpinningGlowys-Purple",
+											RingGlow = "ArtifactsFX-YellowRing-Purple",
+											RingBurst = "ArtifactsFX-YellowRing-Purple",
+											StarBurst = "ArtifactsFX-StarBurst-Purple",
+											PointBurstLeft = "ArtifactsFX-PointSideBurstLeft-Purple",
+											PointBurstRight = "ArtifactsFX-PointSideBurstRight-Purple",
+										},
+									},
+	[RELIC_TALENT_TYPE_NEUTRAL] =	{ 	border = "Mixedtrait-border" },
 };
 
 local TALENT_STYLES = {
-	[RELIC_TALENT_STYLE_CLOSED] = 		{ borderDesaturated = true, iconDesaturated = true, showStones = false, showBackGlow = false },
-	[RELIC_TALENT_STYLE_OPEN] = 		{ borderDesaturated = false, iconDesaturated = false, showStones = false, showBackGlow = false },
-	[RELIC_TALENT_STYLE_AVAILABLE] =	{ borderDesaturated = false, iconDesaturated = false, showStones = true, showBackGlow = true },
-	[RELIC_TALENT_STYLE_CHOSEN] = 		{ borderDesaturated = false, iconDesaturated = false, showStones = false, showBackGlow = false },
+	[RELIC_TALENT_STYLE_CLOSED] = 		{ borderDesaturated = true, iconDesaturated = true, showStones = false, glowAnim = false, showModelScene = false },
+	[RELIC_TALENT_STYLE_OPEN] = 		{ borderDesaturated = false, iconDesaturated = false, showStones = false, glowAnim = false, showModelScene = false },
+	[RELIC_TALENT_STYLE_AVAILABLE] =	{ borderDesaturated = false, iconDesaturated = false, showStones = true, glowAnim = true, showModelScene = true  },
+	[RELIC_TALENT_STYLE_CHOSEN] = 		{ borderDesaturated = false, iconDesaturated = false, showStones = false, glowAnim = false, showModelScene = false },
 };
 
-local LINK_ATLAS = {
-	[RELIC_TALENT_LINK_TYPE_LIGHT] = {
-		[RELIC_TALENT_LINK_STYLE_DISABLED] = "Disablelink",
-		[RELIC_TALENT_LINK_STYLE_POTENTIAL] = "Lightlink-blackinside",
-		[RELIC_TALENT_LINK_STYLE_ACTIVE] = "Lightlink-active",
-	},
-	[RELIC_TALENT_LINK_TYPE_VOID] = {
-		[RELIC_TALENT_LINK_STYLE_DISABLED] = "Disablelink",
-		[RELIC_TALENT_LINK_STYLE_POTENTIAL] = "Darklink-blackinside",
-		[RELIC_TALENT_LINK_STYLE_ACTIVE] = "Darklink-active",
-	},	
+local LINK_STYLES = {
+	[RELIC_TALENT_LINK_STYLE_DISABLED] =	{ ActiveTexture = false, DisabledTexture = true, AnimFrame = false },
+	[RELIC_TALENT_LINK_STYLE_POTENTIAL] =	{ ActiveTexture = false, DisabledTexture = false, AnimFrame = true },
+	[RELIC_TALENT_LINK_STYLE_ACTIVE] =		{ ActiveTexture = true, DisabledTexture = false, AnimFrame = false },
 };
 
 local PREVIEW_RELIC_SLOT = 4;
@@ -50,14 +79,17 @@ function ArtifactRelicForgeMixin:OnLoad()
 	self.Inset:Hide();
 	self.TopTileStreaks:Hide();
 
-	self:CreateLink(RELIC_TALENT_LINK_TYPE_LIGHT, self.Talent1, self.Talent2);
-	self:CreateLink(RELIC_TALENT_LINK_TYPE_VOID, self.Talent1, self.Talent3);
-	self:CreateLink(RELIC_TALENT_LINK_TYPE_LIGHT, self.Talent2, self.Talent4);
-	self:CreateLink(RELIC_TALENT_LINK_TYPE_VOID, self.Talent2, self.Talent5);
-	self:CreateLink(RELIC_TALENT_LINK_TYPE_LIGHT, self.Talent3, self.Talent5);
-	self:CreateLink(RELIC_TALENT_LINK_TYPE_VOID, self.Talent3, self.Talent6);
+	self:CreateLink(RELIC_TALENT_LINK_TYPE_VOID, self.Talent1, self.Talent2);
+	self:CreateLink(RELIC_TALENT_LINK_TYPE_LIGHT, self.Talent1, self.Talent3);
+	self:CreateLink(RELIC_TALENT_LINK_TYPE_VOID, self.Talent2, self.Talent4);
+	self:CreateLink(RELIC_TALENT_LINK_TYPE_LIGHT, self.Talent2, self.Talent5);
+	self:CreateLink(RELIC_TALENT_LINK_TYPE_VOID, self.Talent3, self.Talent5);
+	self:CreateLink(RELIC_TALENT_LINK_TYPE_LIGHT, self.Talent3, self.Talent6);
 
-	self:SetRelicSlot(1);
+	self.activationFramesPool = CreateFramePool("FRAME", self, "ArtifactRelicTalentActivationFrameTemplate", function(pool, activationFrame) activationFrame:OnReset(pool); end);
+
+	-- neutral talent activation is same as light
+	TALENT_TYPES[RELIC_TALENT_TYPE_NEUTRAL].activationTextures = TALENT_TYPES[RELIC_TALENT_TYPE_LIGHT].activationTextures;
 end
 
 function ArtifactRelicForgeMixin:OnShow()
@@ -65,6 +97,9 @@ function ArtifactRelicForgeMixin:OnShow()
 	self:RegisterEvent("ARTIFACT_RELIC_FORGE_UPDATE");
 	self:RegisterEvent("ARTIFACT_RELIC_FORGE_CLOSE");
 	self:RegisterEvent("ARTIFACT_RELIC_FORGE_PREVIEW_RELIC_CHANGED");
+	self:RegisterEvent("UI_MODEL_SCENE_INFO_UPDATED");
+
+	self:SetRelicSlot(1);
 	self:RefreshAll();
 end
 
@@ -73,12 +108,21 @@ function ArtifactRelicForgeMixin:OnHide()
 	self:UnregisterEvent("ARTIFACT_RELIC_FORGE_UPDATE");
 	self:UnregisterEvent("ARTIFACT_RELIC_FORGE_CLOSE");
 	self:UnregisterEvent("ARTIFACT_RELIC_FORGE_PREVIEW_RELIC_CHANGED");
+	self:UnregisterEvent("UI_MODEL_SCENE_INFO_UPDATED");
 	C_ArtifactRelicForgeUI.Clear();
+	self:ClearActivations();
 end
 
 function ArtifactRelicForgeMixin:OnEvent(event, ...)
 	if ( event == "ARTIFACT_RELIC_TALENT_ADDED" ) then
-		self:RefreshTalents();	
+		self:RefreshTalents();
+	elseif ( event == "UI_MODEL_SCENE_INFO_UPDATED" ) then
+		for i, talentButton in ipairs(self.Talents) do
+			if ( talentButton.ModelScene ) then
+				talentButton.ModelScene.effectID = nil;
+			end
+		end
+		self:RefreshTalents();
 	elseif ( event == "ARTIFACT_RELIC_FORGE_UPDATE" ) then
 		self:RefreshAll();
 	elseif ( event == "ARTIFACT_RELIC_FORGE_CLOSE" ) then
@@ -100,8 +144,18 @@ function ArtifactRelicForgeMixin:CreateLink(linkType, fromButton, toButton)
 end
 
 function ArtifactRelicForgeMixin:SetRelicSlot(relicSlot)
+	if ( self.relicSlot ~= relicSlot ) then
+		self:ClearActivations();
+	end
 	self.relicSlot = relicSlot;
 	self:RefreshAll();
+end
+
+function ArtifactRelicForgeMixin:ClearActivations()
+	for i, talentButton in ipairs(self.Talents) do
+		talentButton.isChosen = nil;
+	end
+	self.activationFramesPool:ReleaseAll();
 end
 
 function ArtifactRelicForgeMixin:RefreshAll()
@@ -150,22 +204,31 @@ function ArtifactRelicForgeMixin:RefreshTalents()
 		local talentButton = self.Talents[index];
 		talentButton:Show();
 		talentButton.powerID = talentInfo.powerID;
-		talentButton.Icon:SetTexture(talentInfo.icon);
+		talentButton.IconFrame.Icon:SetTexture(talentInfo.icon);
 		talentButton.canChoose = talentInfo.canChoose;
+		local isChosenChanged = (talentButton.isChosen == false and talentInfo.isChosen == true);
 		talentButton.isChosen = talentInfo.isChosen;
 	
 		-- TODO: Is there a better way?
 		if ( index == 5 ) then
 			if ( talents[2].isChosen ) then
-				talentButton:SetTalentType(RELIC_TALENT_TYPE_VOID);
-			elseif ( talents[3].isChosen ) then
 				talentButton:SetTalentType(RELIC_TALENT_TYPE_LIGHT);
+			elseif ( talents[3].isChosen ) then
+				talentButton:SetTalentType(RELIC_TALENT_TYPE_VOID);
 			else
 				talentButton:SetTalentType(RELIC_TALENT_TYPE_NEUTRAL);
 			end
 		end
 
 		talentButton:EvaluateStyle();
+
+		if ( isChosenChanged ) then
+			local activationFrame = self.activationFramesPool:Acquire();
+			activationFrame:SetUpAndPlay(talentButton);
+		elseif ( not talentInfo.isChosen and self.activationFrame ) then
+			-- another relic was socketed in this slot while an activation anim was playing
+			self.activationFrame:Remove();
+		end
 	end
 
 	for i, link in ipairs(self.Links) do
@@ -256,18 +319,42 @@ function ArtifactRelicTalentButtonMixin:EvaluateStyle()
 	end
 end
 
-local function CheckAndSetShown(object, isShown)
-	if object then
-		object:SetShown(isShown);
-	end
-end
-
 function ArtifactRelicTalentButtonMixin:SetStyle(style)
 	local styleInfo = TALENT_STYLES[style];
-	self.Border:SetDesaturated(styleInfo.borderDesaturated);
-	self.Icon:SetDesaturated(styleInfo.iconDesaturated);
-	CheckAndSetShown(self.BackGlow, styleInfo.showBackGlow);
-	CheckAndSetShown(self.Stones, styleInfo.showStones);
+	self.IconFrame.Border:SetDesaturated(styleInfo.borderDesaturated);
+	self.IconFrame.Icon:SetDesaturated(styleInfo.iconDesaturated);
+	if ( styleInfo.glowAnim ) then
+		self.GlowAnim:Play();
+	else
+		self.GlowAnim:Stop();
+	end
+	if ( self.Stones ) then
+		if ( styleInfo.showStones ) then
+			self.Stones:Show();
+			self.Stones.FloatingAnim:Play();
+		else
+			self.Stones:Hide();
+			self.Stones.FloatingAnim:Stop();
+		end
+	end
+	if ( styleInfo.showModelScene ) then
+		local talentTypeInfo = TALENT_TYPES[self.talentType];
+		if ( talentTypeInfo.effectTag ) then	
+			if ( self.ModelScene.effectID ~= talentTypeInfo.effectID ) then
+				self.ModelScene:Show();
+				self.ModelScene:SetFromModelSceneID(TALENT_MODEL_SCENE_ID, true);
+				local effect = self.ModelScene:GetActorByTag(talentTypeInfo.effectTag);
+				if ( effect ) then
+					effect:SetModelByFileID(talentTypeInfo.effectID);
+					self.ModelScene.effectID = talentTypeInfo.effectID;
+				end
+			end
+		else
+			self.ModelScene:Hide();
+		end
+	else
+		self.ModelScene:Hide();
+	end
 end
 
 function ArtifactRelicTalentButtonMixin:GetLayoutInfo()
@@ -292,14 +379,13 @@ function ArtifactRelicTalentButtonMixin:SetTalentType(talentType)
 		end
 		self.Stones = self[talentTypeInfo.stones.key];
 	end
-	if ( talentTypeInfo.backGlow ) then
-		if ( not self.BackGlow ) then
-			self.BackGlow = self:CreateTexture(nil, "BACKGROUND");
-			self.BackGlow:SetPoint("CENTER");
-		end
-		self.BackGlow:SetAtlas(talentTypeInfo.backGlow, true);
+	if ( talentTypeInfo.glow ) then
+		self.GlowTexture:SetAtlas(talentTypeInfo.glow, true);
 	end
-	self.Border:SetAtlas(talentTypeInfo.border);	
+	if ( talentTypeInfo.backGlow ) then
+		self.BackGlowTexture:SetAtlas(talentTypeInfo.backGlow, true);
+	end
+	self.IconFrame.Border:SetAtlas(talentTypeInfo.border);
 end
 
 --========================================================================================================================
@@ -308,9 +394,9 @@ ArtifactRelicTalentLinkMixin = { };
 function ArtifactRelicTalentLinkMixin:SetUp(fromButton, toButton)
 	self.fromButton = fromButton;
 	self.toButton = toButton;
-	if ( self.linkType == RELIC_TALENT_LINK_TYPE_VOID ) then
+	if ( self.linkType == RELIC_TALENT_LINK_TYPE_LIGHT ) then
 		self:SetPoint("TOPLEFT", fromButton, "BOTTOMRIGHT", -16, 2);
-	elseif ( self.linkType == RELIC_TALENT_LINK_TYPE_LIGHT ) then
+	elseif ( self.linkType == RELIC_TALENT_LINK_TYPE_VOID ) then
 		self:SetPoint("TOPRIGHT", fromButton, "BOTTOMLEFT", 16, 2);
 	end
 end
@@ -326,7 +412,10 @@ function ArtifactRelicTalentLinkMixin:EvaluateStyle()
 end
 
 function ArtifactRelicTalentLinkMixin:SetStyle(style)
-	self.Texture:SetAtlas(LINK_ATLAS[self.linkType][style]);
+	local styleInfo = LINK_STYLES[style];
+	for key, enabled in pairs(styleInfo) do
+		self[key]:SetShown(enabled);
+	end
 end
 
 --========================================================================================================================
@@ -390,4 +479,36 @@ end
 
 function ArtifactRelicForgePreviewRelicMixin:OnDragStart()
 	C_ArtifactRelicForgeUI.PickUpPreviewRelic();
+end
+
+--========================================================================================================================
+ArtifactRelicTalentActivationMixin = { };
+
+function ArtifactRelicTalentActivationMixin:SetUpAndPlay(talentButton)
+	self:SetPoint("CENTER", talentButton, "CENTER");
+	self:Show();
+	if ( self.talentType ~= talentButton.talentType ) then
+		self.talentType = talentButton.talentType
+		for key, atlas in pairs(TALENT_TYPES[self.talentType].activationTextures) do
+			self[key]:SetAtlas(atlas, true);
+		end
+	end
+	self.Anim:Stop();
+	self.Anim:Play();
+	-- linkage
+	talentButton.activationFrame = self;
+	self.talentButton = talentButton;
+end
+
+function ArtifactRelicTalentActivationMixin:Remove()
+	self:GetParent().activationFramesPool:Release(self);
+end
+
+function ArtifactRelicTalentActivationMixin:OnReset(pool)
+	FramePool_HideAndClearAnchors(pool, self);
+	-- clear linkage
+	if ( self.talentButton ) then
+		self.talentButton.activationFrame = nil;
+		self.talentButton = nil;
+	end
 end

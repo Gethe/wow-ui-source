@@ -1,6 +1,6 @@
 local ADDON_NAME = ...;
-local DEFAULT_SAVED_VARS = { isShown = false, commandHistory = {}, messageHistory = {}, height = 300, };
-local SAVED_VARS_VERSION = 2;
+local DEFAULT_SAVED_VARS = { isShown = false, commandHistory = {}, messageHistory = {}, height = 300, fontHeight = 14 };
+local SAVED_VARS_VERSION = 3;
 
 local MAX_NUM_COMMAND_HISTORY = 100;
 local MAX_NUM_MESSAGE_HISTORY = 1000;
@@ -14,6 +14,7 @@ function DeveloperConsoleMixin:OnLoad()
 	self:RegisterEvent("CONSOLE_MESSAGE");
 	self:RegisterEvent("CONSOLE_CLEAR");
 	self:RegisterEvent("CONSOLE_COLORS_CHANGED");
+	self:RegisterEvent("CONSOLE_FONT_SIZE_CHANGED");
 	self:RegisterEvent("DEBUG_MENU_TOGGLED");
 
 	self.MessageFrame:SetMaxLines(MAX_NUM_MESSAGE_HISTORY);
@@ -72,10 +73,14 @@ end
 function DeveloperConsoleMixin:OnEvent(event, ...)
 	if event == "ADDON_LOADED" then
 		if ADDON_NAME == ... then
-			if not Blizzard_Console_SavedVars or not Blizzard_Console_SavedVars.version or Blizzard_Console_SavedVars.version < SAVED_VARS_VERSION then
+			if not Blizzard_Console_SavedVars or not Blizzard_Console_SavedVars.version then
 				Blizzard_Console_SavedVars = CopyTable(DEFAULT_SAVED_VARS);
-				Blizzard_Console_SavedVars.version = SAVED_VARS_VERSION;
+			elseif Blizzard_Console_SavedVars.version < SAVED_VARS_VERSION then
+				if Blizzard_Console_SavedVars.version < 3 then
+					Blizzard_Console_SavedVars.fontHeight = DEFAULT_SAVED_VARS.fontHeight;
+				end 
 			end
+			Blizzard_Console_SavedVars.version = SAVED_VARS_VERSION;
 
 			self.savedVars = Blizzard_Console_SavedVars;
 
@@ -87,6 +92,7 @@ function DeveloperConsoleMixin:OnEvent(event, ...)
 			self:RestoreCommandHistory();
 			self:SetShown(self.savedVars.isShown);
 			self:SetHeight(self.savedVars.height);
+			self:SetFontHeight(self.savedVars.fontHeight);
 			self:UpdateAnchors();
 		end
 	elseif event == "ADDONS_UNLOADING" then
@@ -105,6 +111,9 @@ function DeveloperConsoleMixin:OnEvent(event, ...)
 		self:Clear();
 	elseif event == "CONSOLE_COLORS_CHANGED" then
 		self:RefreshMessageFrame();
+	elseif event == "CONSOLE_FONT_SIZE_CHANGED" then
+		local fontHeight = C_Console.GetFontHeight();
+		self:SetFontHeight(fontHeight);
 	elseif event == "DEBUG_MENU_TOGGLED" then
 		self:UpdateAnchors();
 	end
@@ -128,6 +137,21 @@ end
 function DeveloperConsoleMixin:Clear()
 	self.savedVars.messageHistory = {};
 	self.MessageFrame:Clear();
+end
+
+function DeveloperConsoleMixin:SetFontHeight(fontHeight)
+	do
+		local fontFile, _, fontFlags = self.EditBox:GetFont();
+		self.EditBox:SetFont(fontFile, fontHeight, fontFlags);
+	end
+
+	do
+		local fontFile, _, fontFlags = self.MessageFrame:GetFont();
+		self.MessageFrame:SetFont(fontFile, fontHeight - 2, fontFlags);
+	end
+
+	self.savedVars.fontHeight = fontHeight;
+	C_Console.SetFontHeight(fontHeight);
 end
 
 function DeveloperConsoleMixin:RefreshMessageFrame()
@@ -192,6 +216,11 @@ function DeveloperConsoleMixin:OnEscapePressed()
 		self.AutoComplete:ForceHide();
 		return;
 	end
+	if self.EditBox:GetText() and #self.EditBox:GetText() > 0 then
+		self.EditBox:SetText("");
+		return;
+	end
+
 	self:Toggle(false);
 end
 

@@ -78,7 +78,7 @@
 		<Size x="23" y="23"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="Glow" atlas="Relic-Rankframe-glow" useAtlasSize="true" hidden="true">
+				<Texture parentKey="Glow" atlas="Relic-Rankframe-glow" useAtlasSize="true" alpha="0">
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
@@ -99,6 +99,12 @@
 				</FontString>
 			</Layer>
 		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="GlowAnim" setToFinalAlpha="true" looping="REPEAT">
+				<Alpha childKey="Glow" smoothing="NONE" duration="1" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="Glow" startDelay="1" smoothing="NONE" duration="1" order="1" fromAlpha="0" toAlpha="1"/>
+			</AnimationGroup>
+		</Animations>
 	</Frame>
 
 	<Button name="ArtifactsRelicSlotTemplate" motionScriptsWhileDisabled="true" virtual="true">

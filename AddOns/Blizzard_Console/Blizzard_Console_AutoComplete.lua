@@ -17,7 +17,7 @@ function DeveloperConsoleAutoCompleteMixin:SetText(text, cursorPosition)
 			self.text = text;
 			self.forceHidden = nil;
 			self:MarkDirty();
-			self:SetEntryIndex(1, true);
+			self:ClearEntryIndex(true);
 		end
 
 		self:SetShown(self:ShouldTextBeVisible(text, cursorPosition));
@@ -42,7 +42,7 @@ function DeveloperConsoleAutoCompleteMixin:ForceHide()
 end
 
 function DeveloperConsoleAutoCompleteMixin:GetSelectedText()
-	local entry = self.entryByIndex and self.entryByIndex[self:GetEntryIndex()];
+	local entry = self:GetEntryAtIndex(self:GetEntryIndex());
 	if entry then
 		return entry.commandInfo.command;
 	end
@@ -61,6 +61,30 @@ function DeveloperConsoleAutoCompleteMixin:GetNumEntries()
 	return self.entryByIndex and #self.entryByIndex or 0;
 end
 
+function DeveloperConsoleAutoCompleteMixin:GetEntryAtIndex(entryIndex)
+	return self.entryByIndex and self.entryByIndex[entryIndex] or nil;
+end
+
+function DeveloperConsoleAutoCompleteMixin:ClearEntryIndex(dontSignalParent)
+	if self:HasUserChosenEntryIndex() then
+		local oldEntry = self:GetEntryAtIndex(self:GetEntryIndex());
+		if oldEntry then
+			oldEntry.Selected:Hide();
+		end
+
+		self.entryIndex = nil;
+
+		local entry = self:GetEntryAtIndex(entryIndex);
+		if entry then
+			entry.Selected:Show();
+		end
+
+		if not dontSignalParent and entry then
+			self:GetParent():SetAutoCompleteText(entry.commandInfo.command, true);
+		end
+	end
+end
+
 function DeveloperConsoleAutoCompleteMixin:SetEntryIndex(entryIndex, dontSignalParent)
 	local numEntries = self:GetNumEntries();
 	if numEntries == 0 then
@@ -68,20 +92,20 @@ function DeveloperConsoleAutoCompleteMixin:SetEntryIndex(entryIndex, dontSignalP
 	end
 
 	entryIndex = (entryIndex - 1) % self:GetNumEntries() + 1;
-	if entryIndex ~= self:GetEntryIndex() then
-		local oldEntry = self.entryByIndex and self.entryByIndex[self:GetEntryIndex()];
+	if entryIndex ~= self:GetEntryIndex() or not self:HasUserChosenEntryIndex() then
+		local oldEntry = self:GetEntryAtIndex(self:GetEntryIndex());
 		if oldEntry then
 			oldEntry.Selected:Hide();
 		end
 
-		local entry = self.entryByIndex and self.entryByIndex[entryIndex];
+		local entry = self:GetEntryAtIndex(entryIndex);
 		if entry then
 			entry.Selected:Show();
 		end
 
 		self.entryIndex = entryIndex;
 
-		if not dontSignalParent then
+		if not dontSignalParent and entry then
 			self:GetParent():SetAutoCompleteText(entry.commandInfo.command, true);
 		end
 		return true;
@@ -91,6 +115,10 @@ end
 
 function DeveloperConsoleAutoCompleteMixin:GetEntryIndex()
 	return self.entryIndex or 1;
+end
+
+function DeveloperConsoleAutoCompleteMixin:HasUserChosenEntryIndex()
+	return self.entryIndex ~= nil;
 end
 
 function DeveloperConsoleAutoCompleteMixin:MarkDirty()
@@ -328,10 +356,11 @@ function DeveloperConsoleAutoCompleteMixin:CheckYield()
 	end
 end
 
-function ScoreStrings(searchText, otherString)
+local function ScoreStrings(searchText, otherString)
 	-- lower is better
 
-	local hasSubString = not not otherString:find(searchText, 1, true);
+	local subStringStartIndex, subStringEndIndex = otherString:find(searchText, 1, true);
+	local hasSubString = not not subStringStartIndex;
 
 	local editDistance = CalculateStringEditDistance(searchText, otherString);
 	if not hasSubString and editDistance == math.max(#searchText, #otherString) then
@@ -339,8 +368,9 @@ function ScoreStrings(searchText, otherString)
 	end
 	
 	local subStringScore = hasSubString and -#searchText * 10 or 0;
+	local startOfMatchScore = hasSubString and ClampedPercentageBetween(subStringStartIndex, 15, 1) * -2 * #searchText or 0;
 
-	return editDistance + subStringScore;
+	return editDistance + subStringScore + startOfMatchScore;
 end
 
 local function BinaryInsert(t, value)

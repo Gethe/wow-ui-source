@@ -54,9 +54,12 @@ end
 function FlightMapMixin:AddStandardDataProviders()
 	self:AddDataProvider(CreateFromMixins(FlightMap_FlightPathDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(ActiveQuestDataProviderMixin));
-	self:AddDataProvider(CreateFromMixins(GroupMembersDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(ClickToZoomDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(ZoneLabelDataProviderMixin));
+	
+	local groupMemberDataProvider = CreateFromMixins(GroupMembersDataProviderMixin);
+	groupMemberDataProvider:SetDynamicFrameStratas("HIGH", "DIALOG");
+	self:AddDataProvider(groupMemberDataProvider);
 	
 	local worldQuestDataProvider = CreateFromMixins(WorldQuestDataProviderMixin);
 	worldQuestDataProvider:SetMatchWorldMapFilters(true);

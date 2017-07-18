@@ -2299,9 +2299,9 @@ SlashCmdList["FRAMESTACK"] = function(msg)
 	showRegionsArg, msg = string.match(msg or "", "^%s*(%S+)(.*)$");
 	showAnchorsArg, msg =  string.match(msg or "", "^%s*(%S+)(.*)$");
 
-	local showHidden = StringToBoolean(showHiddenArg, false);
-	local showRegions = StringToBoolean(showRegionsArg, true);
-	local showAnchors = StrinToBoolean(showAnchorsArg, true);
+	local showHidden = StringToBoolean(showHiddenArg or "", false);
+	local showRegions = StringToBoolean(showRegionsArg or "", true);
+	local showAnchors = StringToBoolean(showAnchorsArg or "", true);
 
 	FrameStackTooltip_Toggle(showHidden, showRegions, showAnchors);
 end

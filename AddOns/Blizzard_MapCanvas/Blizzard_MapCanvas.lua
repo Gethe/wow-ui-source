@@ -725,7 +725,8 @@ function MapCanvasScrollControllerMixin:FindBestLocationForClick()
 		local normalizedCursorX = self:NormalizeHorizontalSize(endCursorX / self:GetCanvasScale() - self.Child:GetLeft());
 		local normalizedCursorY = self:NormalizeVerticalSize(self.Child:GetTop() - endCursorY / self:GetCanvasScale());
 
-		local x, y;
+		local x = normalizedCursorX;
+		local y = normalizedCursorY;
 		if self:GetParent():ShouldShowSubzones() then
 			local zoneMapID = C_MapCanvas.FindZoneAtPosition(self.mapID, normalizedCursorX, normalizedCursorY);
 			if zoneMapID then
@@ -736,9 +737,6 @@ function MapCanvasScrollControllerMixin:FindBestLocationForClick()
 				x = centerX;
 				y = centerY;
 			end
-		else
-			x = normalizedCursorX;
-			y = normalizedCursorY;
 		end
 
 		local minX, maxX, minY, maxY = self:CalculateScrollExtentsAtScale(self.maxScale);
@@ -1000,6 +998,8 @@ end
 
 function MapCanvasScrollControllerMixin:SetMapID(mapID)
 	self.mapID = mapID;
+	local backgroundAtlas = C_MapCanvas.GetBackgroundInfo(mapID);
+	self.Child.TiledBackground:SetAtlas(backgroundAtlas);
 end
 
 function MapCanvasScrollControllerMixin:SetShouldZoomInOnClick(shouldZoomInOnClick)

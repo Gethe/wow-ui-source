@@ -2601,7 +2601,8 @@ function StoreVASValidationFrame_SetVASStart(self)
 	self.CharacterSelectionFrame.ContinueButton:Disable();
 	self.CharacterSelectionFrame.ContinueButton:Show();
 	self.CharacterSelectionFrame.Spinner:Hide();
-	SelectedRealm = _G.GetServerName();
+	local realmList = C_StoreSecure.GetRealmList();
+	SelectedRealm = #realmList > 0 and realmList[1] or _G.GetServerName();
 
 	SelectedDestinationRealm = nil;
 	SelectedDestinationWowAccount = nil;

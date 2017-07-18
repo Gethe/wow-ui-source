@@ -1182,25 +1182,22 @@ function WardrobeUtils_GetAdjustedDisplayIndexFromKeyPress(contentFrame, index, 
 		if ( index > numEntries ) then
 			index = 1;
 		end
-	elseif ( key == WARDROBE_DOWN_VISUAL_KEY or key == WARDROBE_UP_VISUAL_KEY ) then
-		local direction = 1;
-		if ( key == WARDROBE_UP_VISUAL_KEY ) then
-			direction = -1;
+	elseif ( key == WARDROBE_DOWN_VISUAL_KEY ) then
+		local newIndex = index + contentFrame.NUM_COLS;
+		if ( newIndex > numEntries ) then
+			-- If you're at the last entry, wrap back around; otherwise go to the last entry.
+			index = index == numEntries and 1 or numEntries;
+		else
+			index = newIndex;
 		end
-
-		local newIndex = index;
-		newIndex = newIndex + contentFrame.NUM_COLS * direction;
-		if ( GetPage(newIndex, contentFrame.PAGE_SIZE) ~= contentFrame.PagingFrame:GetCurrentPage() or newIndex > numEntries ) then
-			newIndex = index + contentFrame.PAGE_SIZE * -direction;	-- reset by a full page in opposite direction
-			while ( GetPage(newIndex, contentFrame.PAGE_SIZE) ~= contentFrame.PagingFrame:GetCurrentPage() or newIndex > numEntries ) do
-				newIndex = newIndex + contentFrame.NUM_COLS * direction;
-				if ( newIndex < 1 or newIndex > numEntries + contentFrame.PAGE_SIZE ) then
-					newIndex = 1;
-					break;
-				end
-			end
+	elseif ( key == WARDROBE_UP_VISUAL_KEY ) then
+		local newIndex = index - contentFrame.NUM_COLS;
+		if ( newIndex < 1 ) then
+			-- If you're at the first entry, wrap back around; otherwise go to the first entry.
+			index = index == 1 and numEntries or 1;
+		else
+			index = newIndex;
 		end
-		index = newIndex;
 	end
 	return index;
 end

@@ -1059,8 +1059,9 @@ function ArtifactPerksMixin:TraitRefundSetup(numTraitsRefunded)
 	self:HideTier2();
 	if self:GetFinalPowerButtonByTier(1) then self:GetFinalPowerButtonByTier(1).Rank:SetText(1 + numTraitsRefunded); end
 	
-	local startingSound = "UI_72_Artifact_Forge_Final_Trait_Refund_Start";
-	local loopingSound = "UI_72_Artifact_Forge_Final_Trait_Refund_Loop";
+	local startingSound = SOUNDKIT.UI_72_ARTIFACT_FORGE_FINAL_TRAIT_REFUND_START;
+	local loopingSound = SOUNDKIT.UI_72_ARTIFACT_FORGE_FINAL_TRAIT_REFUND_LOOP;
+
 	local endingSound = nil;
 	local loopStartDelay = ARTIFACT_TIER_2_SOUND_REFUND_LOOP_START_DELAY;
 	local loopEndDelay = ARTIFACT_TIER_2_SOUND_REFUND_LOOP_STOP_DELAY;
@@ -1512,7 +1513,11 @@ function ArtifactTitleTemplateMixin:EvaluateRelics()
 			if currentRank then
 				relicSlot.Rank:Show();
 				relicSlot.Rank.Text:SetText(currentRank);
-				relicSlot.Rank.Glow:SetShown(canAddTalent);
+				if ( canAddTalent ) then
+					relicSlot.Rank.GlowAnim:Play();
+				else
+					relicSlot.Rank.GlowAnim:Stop();
+				end
 			else
 				relicSlot.Rank:Hide();
 			end

@@ -46,6 +46,7 @@ local WorldMapLua =
 				{ Name = "atlasName", Type = "string", Nilable = true },
 				{ Name = "displayAsBanner", Type = "bool", Nilable = true },
 				{ Name = "mapFloor", Type = "number", Nilable = true },
+				{ Name = "textureKitPrefix", Type = "string", Nilable = true },
 			},
 		},
 	},

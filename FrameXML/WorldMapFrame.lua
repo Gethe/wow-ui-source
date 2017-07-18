@@ -1177,7 +1177,7 @@ function WorldMap_UpdateLandmarks()
 		local worldMapPOIName = "WorldMapFramePOI"..i;
 		local worldMapPOI = _G[worldMapPOIName];
 		if ( i <= numPOIs ) then
-			local landmarkType, name, description, textureIndex, x, y, mapLinkID, inBattleMap, graveyardID, areaID, poiID, isObjectIcon, atlasIcon, displayAsBanner = C_WorldMap.GetMapLandmarkInfo(i);
+			local landmarkType, name, description, textureIndex, x, y, mapLinkID, inBattleMap, graveyardID, areaID, poiID, isObjectIcon, atlasIcon, displayAsBanner, mapFloor, textureKitPrefix = C_WorldMap.GetMapLandmarkInfo(i);
 			if( not WorldMap_ShouldShowLandmark(landmarkType) or (mapID ~= WORLDMAP_WINTERGRASP_ID and areaID == WORLDMAP_WINTERGRASP_POI_AREAID) or displayAsBanner ) then
 				worldMapPOI:Hide();
 			else
@@ -1185,7 +1185,7 @@ function WorldMap_UpdateLandmarks()
 				if ( landmarkType == LE_MAP_LANDMARK_TYPE_NORMAL and WorldMap_IsSpecialPOI(poiID) ) then	--We have special handling for Isle of the Thunder King
 					WorldMap_HandleSpecialPOI(worldMapPOI, poiID);
 				else
-					WorldMap_ResetPOI(worldMapPOI, isObjectIcon, atlasIcon);
+					WorldMap_ResetPOI(worldMapPOI, isObjectIcon, atlasIcon, textureKitPrefix);
 
 					if (not atlasIcon) then
 						local x1, x2, y1, y2;
@@ -2147,13 +2147,25 @@ function WorldMap_SetupAreaPOIBannerTexture(texture, isObjectIcon, atlasIcon)
 	texture:SetSize(77, 81);
 end
 
-function WorldMap_ResetPOI(button, isObjectIcon, atlasIcon)
+local ATLAS_WITH_TEXTURE_KIT_PREFIX = "%s-%s";
+function WorldMap_ResetPOI(button, isObjectIcon, atlasIcon, textureKitPrefix)
 	if (atlasIcon) then
+		if (textureKitPrefix) then
+			atlasIcon = ATLAS_WITH_TEXTURE_KIT_PREFIX:format(textureKitPrefix, atlasIcon);
+		end
 		button.Texture:SetAtlas(atlasIcon, true);
 		if button.HighlightTexture then
 			button.HighlightTexture:SetAtlas(atlasIcon, true);
 		end
-		button:SetSize(button.Texture:GetSize());
+		
+		local sizeX, sizeY = button.Texture:GetSize();
+		if (textureKitPrefix == "FlightMaster_Argus") then
+			sizeX = 21;
+			sizeY = 18;
+		end
+		button.Texture:SetSize(sizeX, sizeY);
+		button.HighlightTexture:SetSize(sizeX, sizeY);
+		button:SetSize(sizeX, sizeY);
 		button.Texture:SetPoint("CENTER", 0, 0);
 	elseif (isObjectIcon == true) then
 		button:SetWidth(32);

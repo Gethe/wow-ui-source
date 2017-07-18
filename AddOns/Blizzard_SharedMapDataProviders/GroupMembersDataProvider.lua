@@ -47,6 +47,24 @@ self.pin:SetSize(self:GetMap():DenormalizeHorizontalSize(1.0), self:GetMap():Den
 	self.pin:UpdateTooltips(GameTooltip);
 end
 
+function GroupMembersDataProviderMixin:SetDynamicFrameStratas(zoomedOut, zoomedIn, threshold)
+	self.zoomedOutStrata = zoomedOut;
+	self.zoomedInStrata = zoomedIn;
+	self.frameStrataThreshold = threshold or 0.5;
+end
+
+function GroupMembersDataProviderMixin:OnCanvasScaleChanged()
+	-- We change the frame strata so that players will show above other flight map icons while zoomed in
+	-- but not while zoomed out
+	if self.frameStrataThreshold then
+		if self:GetMap():GetCanvasScale() >= self.frameStrataThreshold then
+			self.pin:SetFrameStrata(self.zoomedInStrata);
+		else
+			self.pin:SetFrameStrata(self.zoomedOutStrata);
+		end
+	end
+end
+
 --[[ Group Members Pin ]]--
 GroupMembersPinMixin = CreateFromMixins(MapCanvasPinMixin);
 

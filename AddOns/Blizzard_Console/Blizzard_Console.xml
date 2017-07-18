@@ -71,7 +71,9 @@
 						end
 					</OnUpdate>
 					<OnTextChanged>
-						self:GetParent():OnEditBoxTextChanged(self:GetText());
+						local text = self:GetText();
+						self:GetParent():OnEditBoxTextChanged(text);
+						self.ClearTextButton:SetShown(#text > 0);
 					</OnTextChanged>
 					<OnEscapePressed>
 						self:GetParent():OnEscapePressed();
@@ -100,9 +102,21 @@
 						self:GetParent():OnEditBoxCursorChanged(self:GetText());
 					</OnCursorChanged>
 				</Scripts>
-				<FontString inherits="NumberFont_Shadow_Med">
+				<FontString inherits="ConsoleFontNormal">
 					<Color r="0.5" g="0.77" b="1.0"/>
 				</FontString>
+				<Frames>
+					<Button parentKey="ClearTextButton" hidden="true" inherits="UIPanelCloseButtonNoScripts" alpha=".5">
+						<Anchors>
+							<Anchor point="RIGHT" relativePoint="RIGHT" x="-10" y="0" />
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								self:GetParent():SetText("");
+							</OnClick>
+						</Scripts>
+					</Button>
+				</Frames>
 			</EditBox>
 
 			<Frame parentKey="Filters">
@@ -156,19 +170,37 @@
 						</Anchors>
 						<Scripts>
 							<OnTextChanged>
-								self:GetParent():GetParent():OnFilterEditBoxTextChanged(self:GetText());
+								local text = self:GetText();
+								self:GetParent():GetParent():OnFilterEditBoxTextChanged(text);
+								self.ClearTextButton:SetShown(#text > 0);
 							</OnTextChanged>
 
 							<OnEscapePressed>
+								if self:GetText() and self:GetText() > 0 then
+									self:SetText("");
+									return;
+								end
 								self:GetParent():GetParent():OnEscapePressed();
 							</OnEscapePressed>
 							<OnEnterPressed>
 								self:GetParent():GetParent().EditBox:SetFocus();
 							</OnEnterPressed>
 						</Scripts>
-						<FontString inherits="NumberFont_Shadow_Med">
+						<FontString inherits="ConsoleFontNormal">
 							<Color r=".5" g="1" b=".5"/>
 						</FontString>
+						<Frames>
+							<Button parentKey="ClearTextButton" hidden="true" inherits="UIPanelCloseButtonNoScripts" alpha=".5">
+								<Anchors>
+									<Anchor point="RIGHT" relativePoint="RIGHT" x="0" y="0" />
+								</Anchors>
+								<Scripts>
+									<OnClick>
+										self:GetParent():SetText("");
+									</OnClick>
+								</Scripts>
+							</Button>
+						</Frames>
 					</EditBox>
 				</Frames>
 			</Frame>
@@ -196,15 +228,15 @@
 					<Slider parentKey="ScrollBar" frameLevel="9500" obeyStepOnDrag="true" valueStep="1" minValue="0" maxValue="1">
 						<Size x="15" y="0"/>
 						<Anchors>
-							<Anchor point="TOPRIGHT" x="15" y="0"/>
-							<Anchor point="BOTTOMRIGHT" x="15" y="0" />
+							<Anchor point="TOPRIGHT" x="15" y="8"/>
+							<Anchor point="BOTTOMRIGHT" x="15" y="-8" />
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
 								<Texture parentKey="Background">
 									<Anchors>
-										<Anchor point="TOPLEFT" x="1" y="1" />
-										<Anchor point="BOTTOMRIGHT" x="0" y="0" />
+										<Anchor point="TOPLEFT" x="1" y="-7" />
+										<Anchor point="BOTTOMRIGHT" x="0" y="7" />
 									</Anchors>
 									<Color r=".1" g=".1" b=".1" a=".8"/>
 								</Texture>
@@ -235,7 +267,7 @@
 				<Scripts>
 					<OnLoad>
 						self:SetFading(false);
-						self:SetFontObject(NumberFont_Shadow_Small);
+						self:SetFontObject(ConsoleFontSmall);
 						self:SetJustifyH("LEFT");
 						self:SetHyperlinksEnabled(true);
 						self:SetTextCopyable(true);

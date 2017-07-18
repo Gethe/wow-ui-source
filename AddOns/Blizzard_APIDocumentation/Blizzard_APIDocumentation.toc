@@ -29,6 +29,7 @@ GarrisonInfoLua.lua
 LFGListInfoLua.lua
 LootJournalLua.lua
 MailInfoLua.lua
+MapCanvasLua.lua
 MerchantFrameLua.lua
 MountJournalLua.lua
 PartyInfoLua.lua

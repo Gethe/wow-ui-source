@@ -1,3 +1,11 @@
+
+local ClickToZoomStyles = {
+	[Enum.MapCanvasPosition.BottomLeft] = { point="BOTTOMLEFT", x = 75, y = 65, textPoint="LEFT" };
+	[Enum.MapCanvasPosition.BottomRight] = { point="BOTTOMRIGHT", x = -75, y = 65, textPoint="RIGHT" };
+	[Enum.MapCanvasPosition.TopLeft] = { point="TOPLEFT", x = 75, y = -65, textPoint="LEFT" };
+	[Enum.MapCanvasPosition.TopRight] = { point="TOPRIGHT", x = -75, y = -65, textPoint="RIGHT" };
+};
+
 ClickToZoomDataProviderMixin = CreateFromMixins(MapCanvasDataProviderMixin);
 
 function ClickToZoomDataProviderMixin:FadeIn()
@@ -33,7 +41,7 @@ function ClickToZoomDataProviderMixin:OnAdded(mapCanvas)
 		self.MapLabel = CreateFrame("FRAME", nil, self:GetMap(), "ClickToZoomDataProvider_LabelTemplate");
 	end
 
-	self.MapLabel:SetPoint("BOTTOMRIGHT", -75, 65);
+	self:UpdateStyle();
 	self.MapLabel:SetFrameStrata("HIGH");
 	self.MapLabel:SetAlpha(1);
 end
@@ -54,4 +62,29 @@ function ClickToZoomDataProviderMixin:RefreshAllData(fromOnShow)
 			self.MapLabel:SetAlpha(0);
 		end
 	end
+end
+
+function ClickToZoomDataProviderMixin:UpdateStyle()
+	local style = ClickToZoomStyles[self:GetClickToZoomStyle()];
+	self.MapLabel:ClearAllPoints();
+	self.MapLabel:SetPoint(style.point, style.x, style.y);
+	local text = self.MapLabel.Text;
+	text:ClearAllPoints();
+	text:SetPoint(style.textPoint);
+end
+
+function ClickToZoomDataProviderMixin:OnMapChanged()
+	self:UpdateStyle();
+end
+
+function ClickToZoomDataProviderMixin:GetClickToZoomStyle()
+	local mapID = self:GetMap():GetMapID();
+	if mapID then
+		local preferredStyle = C_MapCanvas.GetPreferredHelpTextPosition(mapID);
+		if preferredStyle then
+			return preferredStyle;
+		end
+	end
+	
+	return Enum.MapCanvasPosition.BottomRight;
 end

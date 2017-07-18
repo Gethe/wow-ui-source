@@ -43,7 +43,7 @@
 						C_ArtifactRelicForgeUI.AttuneSocketedRelic(relicSlot);
 					</OnClick>
 				</Scripts>
-			</Button>			
+			</Button>
 		</Frames>
 	</Frame>
 
@@ -88,6 +88,24 @@
 				</Texture>
 			</Layer>
 		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="FloatingAnim" setToFinalAlpha="true" looping="REPEAT">
+				<Translation childKey="Lightstone1" smoothing="NONE" duration="2" order="1" offsetX="1" offsetY="5"/>
+				<Translation childKey="Lightstone2" smoothing="NONE" duration="2" order="1" offsetX="2" offsetY="4"/>
+				<Translation childKey="Lightstone4" smoothing="NONE" duration="2" order="1" offsetX="2" offsetY="3"/>
+				<Translation childKey="Lightstone6" smoothing="NONE" duration="2" order="1" offsetX="1" offsetY="5"/>
+				<Translation childKey="Lightstone7" smoothing="NONE" duration="2" order="1" offsetX="2" offsetY="3"/>
+				<Translation childKey="Lightstone4" startDelay="3" smoothing="NONE" duration="2" order="1" offsetX="-2" offsetY="-3"/>
+				<Translation childKey="Lightstone3" smoothing="NONE" duration="3" order="1" offsetX="1" offsetY="5"/>
+				<Translation childKey="Lightstone5" smoothing="NONE" duration="3" order="1" offsetX="2" offsetY="5"/>
+				<Translation childKey="Lightstone7" startDelay="3" smoothing="NONE" duration="2" order="1" offsetX="-2" offsetY="-3"/>
+				<Translation childKey="Lightstone2" startDelay="4" smoothing="NONE" duration="2" order="1" offsetX="-2" offsetY="-4"/>
+				<Translation childKey="Lightstone1" startDelay="5" smoothing="NONE" duration="2" order="1" offsetX="-1" offsetY="-5"/>
+				<Translation childKey="Lightstone6" startDelay="5" smoothing="NONE" duration="2" order="1" offsetX="-1" offsetY="-5"/>
+				<Translation childKey="Lightstone3" startDelay="5" smoothing="NONE" duration="3" order="1" offsetX="-1" offsetY="-5"/>
+				<Translation childKey="Lightstone5" startDelay="5" smoothing="NONE" duration="3" order="1" offsetX="-2" offsetY="-5"/>
+			</AnimationGroup>
+		</Animations>
 	</Frame>
 
 	<Frame name="ArtifactRelicTalentVoidStonesTemplate" virtual="true">
@@ -131,48 +149,229 @@
 				</Texture>
 			</Layer>
 		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="FloatingAnim" setToFinalAlpha="true" looping="REPEAT">
+				<Translation childKey="Darkstone6" smoothing="NONE" duration="2" order="1" offsetX="1" offsetY="4"/>
+				<Translation childKey="Darkstone7" smoothing="NONE" duration="2" order="1" offsetX="1" offsetY="5"/>
+				<Translation childKey="Darkstone2" smoothing="NONE" duration="3" order="1" offsetX="1" offsetY="4"/>
+				<Translation childKey="Darkstone4" smoothing="NONE" duration="3" order="1" offsetX="2" offsetY="5"/>
+				<Translation childKey="Darkstone5" smoothing="NONE" duration="3" order="1" offsetX="2" offsetY="5"/>
+				<Translation childKey="Darkstone1" smoothing="NONE" duration="4" order="1" offsetX="2" offsetY="4"/>
+				<Translation childKey="Darkstone3" smoothing="NONE" duration="4" order="1" offsetX="2" offsetY="5"/>
+				<Translation childKey="Darkstone6" startDelay="4" smoothing="NONE" duration="2" order="1" offsetX="-1" offsetY="-4"/>
+				<Translation childKey="Darkstone2" startDelay="4" smoothing="NONE" duration="3" order="1" offsetX="-1" offsetY="-4"/>
+				<Translation childKey="Darkstone1" startDelay="4" smoothing="NONE" duration="4" order="1" offsetX="-2" offsetY="-4"/>
+				<Translation childKey="Darkstone7" startDelay="5" smoothing="NONE" duration="2" order="1" offsetX="-1" offsetY="-5"/>
+				<Translation childKey="Darkstone4" startDelay="5" smoothing="NONE" duration="3" order="1" offsetX="-2" offsetY="-5"/>
+				<Translation childKey="Darkstone5" startDelay="5" smoothing="NONE" duration="3" order="1" offsetX="-2" offsetY="-5"/>
+				<Translation childKey="Darkstone3" startDelay="5" smoothing="NONE" duration="4" order="1" offsetX="-2" offsetY="-5"/>
+			</AnimationGroup>
+		</Animations>
 	</Frame>
 
-	<Button name="ArtifactRelicTalentButtonTemplate" parentArray="Talents" mixin="ArtifactRelicTalentButtonMixin" virtual="true">
+	<Frame name="ArtifactRelicTalentActivationFrameTemplate" frameStrata="HIGH" mixin="ArtifactRelicTalentActivationMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="talentType" value="RELIC_TALENT_TYPE_LIGHT" type="global"/>
+		</KeyValues>
 		<Size x="46" y="46"/>
 		<Layers>
-			<Layer level="BORDER">
-				<Texture parentKey="Icon">
-					<Size x="46" y="46"/>
-					<Anchors>
-						<Anchor point="CENTER" x="0" y="1"/>
-					</Anchors>
-				</Texture>
-				<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
-					<Size x="44" y="44"/>
+			<Layer level="OVERLAY">
+				<Texture parentKey="BigWhirls" alpha="0" alphaMode="ADD" atlas="ArtifactsFX-Whirls" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
-					<MaskedTextures>
-						<MaskedTexture childKey="Icon"/>
-					</MaskedTextures>
-				</MaskTexture>
+					<Color r="1" g="0.83921568627451" b="0.45098039215686"/>
+				</Texture>
+				<Texture parentKey="SpinningGlows" alpha="0" alphaMode="ADD" atlas="ArtifactsFX-SpinningGlowys" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="SpinningGlows2" alpha="0" alphaMode="ADD" atlas="ArtifactsFX-SpinningGlowys" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RingGlow" alpha="0" alphaMode="ADD" atlas="ArtifactsFX-YellowRing" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" />
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RingBurst" alpha="0" alphaMode="ADD" atlas="ArtifactsFX-YellowRing" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
 			</Layer>
-			<Layer level="ARTWORK">
-				<Texture parentKey="Border" atlas="Mixedtrait-border" useAtlasSize="true">
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="StarBurst" alpha="0" alphaMode="ADD" atlas="ArtifactsFX-StarBurst" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="PointBurstLeft" alpha="0" alphaMode="ADD" atlas="ArtifactsFX-PointSideBurstLeft" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.RankBorder" relativePoint="LEFT" x="14" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="PointBurstRight" alpha="0" alphaMode="ADD" atlas="ArtifactsFX-PointSideBurstRight" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.RankBorder" relativePoint="RIGHT" x="-14" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="Anim" setToFinalAlpha="true">
+				<Alpha childKey="BigWhirls" startDelay="0.25" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="BigWhirls" startDelay="0.25" duration="0.75" order="1" fromScaleX="0.5" fromScaleY="0.5" toScaleX="1.25" toScaleY="1.25"/>
+				<Rotation childKey="BigWhirls" startDelay="0.25" smoothing="OUT" duration="0.75" order="1" degrees="-90"/>
+				<Alpha childKey="BigWhirls" startDelay="0.5" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="SpinningGlows" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="SpinningGlows" duration="0.75" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.75" toScaleY="0.75"/>
+				<Rotation childKey="SpinningGlows" smoothing="OUT" duration="0.75" order="1" degrees="-180"/>
+				<Alpha childKey="SpinningGlows" startDelay="0.25" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="SpinningGlows2" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="SpinningGlows2" duration="0.75" order="1" fromScaleX="0.9" fromScaleY="0.9" toScaleX="0.6" toScaleY="0.6"/>
+				<Rotation childKey="SpinningGlows2" smoothing="OUT" duration="0.75" order="1" degrees="-200"/>
+				<Alpha childKey="SpinningGlows2" startDelay="0.25" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="StarBurst" smoothing="IN" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="StarBurst" smoothing="IN" duration="0.5" order="1" fromScaleX="0.1" fromScaleY="0.1" toScaleX="1.5" toScaleY="1.5"/>
+				<Alpha childKey="StarBurst" startDelay="0.5" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="RingGlow" smoothing="OUT" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="RingGlow" startDelay="1" smoothing="NONE" duration="0.75" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="RingBurst" smoothing="OUT" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="RingBurst" startDelay="0.5" smoothing="NONE" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+				<Scale childKey="RingBurst" startDelay="0.25" duration="0.5" order="1" fromScaleX="1" fromScaleY="1" toScaleX="1.5" toScaleY="1.5"/>
+				<Alpha childKey="PointBurstLeft" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="PointBurstLeft" smoothing="IN_OUT" duration="0.4" order="1" fromScaleX="0.25" fromScaleY="0.75" toScaleX="1.5" toScaleY="1.0">
+					<Origin point="RIGHT">
+						<Offset x="-4" y="0"/>
+					</Origin>
+				</Scale>
+				<Alpha childKey="PointBurstLeft" startDelay="0.3" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="PointBurstRight" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="PointBurstRight" smoothing="IN_OUT" duration="0.4" order="1" fromScaleX="0.25" fromScaleY="0.75" toScaleX="1.5" toScaleY="1.0">
+					<Origin point="LEFT">
+						<Offset x="4" y="0"/>
+					</Origin>
+				</Scale>
+				<Alpha childKey="PointBurstRight" startDelay="0.3" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+				<Scripts>
+					<OnFinished>
+						self:GetParent():Remove();
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+	
+	<Frame name="ArtifactRelicTalentNeutralGlowTemplate" virtual="true">
+		<Size x="46" y="46"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="RingGlow" alpha="0" alphaMode="ADD" atlas="ArtifactsFX-YellowRing" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" />
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="WhiteStarBurst" alpha="0" alphaMode="ADD" atlas="AftLevelup-WhiteStarBurst" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="GlowAnim" setToFinalAlpha="true" looping="repeat">
+				<Alpha childKey="RingGlow" duration=".8" order="1" smoothing="IN_OUT" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="RingGlow" startDelay=".8" smoothing="IN_OUT" duration=".8" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="WhiteStarBurst" duration=".8" order="1" smoothing="IN_OUT" fromAlpha="0" toAlpha=".2"/>
+				<Alpha childKey="WhiteStarBurst" startDelay=".8" smoothing="IN_OUT" duration=".8" order="1" fromAlpha=".2" toAlpha="0"/>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+
+	<Button name="ArtifactRelicTalentButtonTemplate" parentArray="Talents" mixin="ArtifactRelicTalentButtonMixin" virtual="true">
+		<Size x="46" y="46"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="GlowTexture" alpha="0" alphaMode="BLEND" atlas="Lighttrait-glow" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BackGlowTexture" alpha="0" alphaMode="BLEND" atlas="Lighttrait-backglow" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<ModelScene parentKey="ModelScene" inherits="ModelSceneMixinTemplate" frameLevel="1">
+				<Size x="108" y="108"/>
+				<Anchors>
+					<Anchor point="CENTER" />
+				</Anchors>
+				<Scripts>
+					<OnHide>
+						self.effectID = nil;
+					</OnHide>
+				</Scripts>
+			</ModelScene>
+			<Frame parentKey="IconFrame" setAllPoints="true" frameLevel="2">
+				<Layers>
+					<Layer level="BORDER">
+						<Texture parentKey="Icon">
+							<Size x="46" y="46"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="1"/>
+							</Anchors>
+						</Texture>
+						<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+							<Size x="44" y="44"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+							<MaskedTextures>
+								<MaskedTexture childKey="Icon"/>
+							</MaskedTextures>
+						</MaskTexture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Border" atlas="Mixedtrait-border" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Animations>
+			<AnimationGroup parentKey="GlowAnim" setToFinalAlpha="true" looping="REPEAT">
+				<Alpha childKey="GlowTexture" smoothing="NONE" duration="2" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="GlowTexture" startDelay="2" smoothing="NONE" duration="2" order="1" fromAlpha="0" toAlpha="1"/>
+				<Scripts>
+					<OnPlay>
+						self:GetParent().BackGlowTexture:SetAlpha(1);
+					</OnPlay>
+					<OnStop>
+						self:GetParent().GlowTexture:SetAlpha(0);
+						self:GetParent().BackGlowTexture:SetAlpha(0);
+					</OnStop>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnClick method="OnClick"/>
 			<OnEnter method="OnEnter"/>
 			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
-		<Animations>
-			<AnimationGroup parentKey="Test" looping="REPEAT">
-				<Alpha childKey="Lightstone1" duration="1" order="1" fromAlpha="0" toAlpha="1"/>
-				<Alpha childKey="Lightstone1" duration="1" order="2" fromAlpha="1" toAlpha="0"/>
-			</AnimationGroup>
-		</Animations>
 	</Button>
 
 	<Frame name="ArtifactRelicTalentLightLinkTemplate" parentArray="Links" mixin="ArtifactRelicTalentLinkMixin" virtual="true">
@@ -182,35 +381,63 @@
 		<Size x="67" y="85"/>
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture parentKey="Texture" atlas="Lightlink-active" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-				</Texture>
 				<Texture parentKey="ActiveTexture" atlas="Lightlink-active" useAtlasSize="true" hidden="true">
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
-				</Texture>
-				<Texture parentKey="NormalTexture" atlas="Lightlink-blackinside" useAtlasSize="true" alpha="0.5" hidden="true">
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
+					<TexCoords left="1" right="0" top="0" bottom="1"/>
 				</Texture>
 				<Texture parentKey="DisabledTexture" atlas="Disablelink" useAtlasSize="true" hidden="true">
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="OVERLAY">
-				<Texture parentKey="GlowTexture" atlas="Lightlink-glow" useAtlasSize="true" hidden="true">
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
+					<TexCoords left="1" right="0" top="0" bottom="1"/>
 				</Texture>
 			</Layer>
 		</Layers>
+		<Frames>
+			<Frame parentKey="AnimFrame" hidden="true" setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK" textureSubLevel="2">
+						<Texture parentKey="Lightlink-blackinside" alphaMode="ADD" atlas="Lightlink-blackinside" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="0"/>
+							</Anchors>
+							<TexCoords left="1" right="0" top="0" bottom="1"/>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK" textureSubLevel="3">
+						<Texture parentKey="Lightlink-glow" alphaMode="ADD" atlas="Lightlink-glow" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="0"/>
+							</Anchors>
+							<TexCoords left="1" right="0" top="0" bottom="1"/>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK" textureSubLevel="4">
+						<Texture parentKey="Lightlink-ball" alphaMode="ADD" atlas="Lightlink-ball" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" x="-19" y="26"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="Anim" setToFinalAlpha="true" looping="REPEAT">
+						<Alpha childKey="Lightlink-blackinside" smoothing="NONE" duration="2" order="2" fromAlpha="0" toAlpha="1"/>
+						<Translation childKey="Lightlink-ball" smoothing="NONE" duration="3" order="2" offsetX="37" offsetY="-40"/>
+						<Alpha childKey="Lightlink-ball" startDelay="2" smoothing="NONE" duration="1" order="2" fromAlpha="1" toAlpha="0"/>
+						<Alpha childKey="Lightlink-blackinside" startDelay="2" smoothing="NONE" duration="2" order="2" fromAlpha="1" toAlpha="0"/>
+						<Translation childKey="Lightlink-ball" startDelay="3" endDelay="0.1" smoothing="NONE" duration="0.1" order="2" offsetX="-37" offsetY="40"/>
+					</AnimationGroup>
+				</Animations>
+				<Scripts>
+					<OnLoad>
+						self.Anim:Play();
+					</OnLoad>
+				</Scripts>
+			</Frame>
+		</Frames>
 	</Frame>
 
 	<Frame name="ArtifactRelicTalentVoidLinkTemplate" parentArray="Links" mixin="ArtifactRelicTalentLinkMixin" virtual="true">
@@ -220,40 +447,59 @@
 		<Size x="67" y="85"/>
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture parentKey="Texture" atlas="Lightlink-active" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-					<TexCoords left="1" right="0" top="0" bottom="1"/>
-				</Texture>
 				<Texture parentKey="ActiveTexture" atlas="Darklink-active" useAtlasSize="true" hidden="true">
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
-					<TexCoords left="1" right="0" top="0" bottom="1"/>
-				</Texture>
-				<Texture parentKey="NormalTexture" atlas="Darklink-blackinside" useAtlasSize="true" alpha="0.5" hidden="true">
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-					<TexCoords left="1" right="0" top="0" bottom="1"/>
 				</Texture>
 				<Texture parentKey="DisabledTexture" atlas="Disablelink" useAtlasSize="true" hidden="true">
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
-					<TexCoords left="1" right="0" top="0" bottom="1"/>
-				</Texture>
-			</Layer>
-			<Layer level="BORDER">
-				<Texture parentKey="GlowTexture" atlas="Darklink-glow" useAtlasSize="true" hidden="true">
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-					<TexCoords left="1" right="0" top="0" bottom="1"/>
 				</Texture>
 			</Layer>
 		</Layers>
+		<Frames>
+			<Frame parentKey="AnimFrame" hidden="true" setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK" textureSubLevel="2">
+						<Texture parentKey="Darklink-blackinside" alphaMode="ADD" atlas="Darklink-blackinside" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK" textureSubLevel="3">
+						<Texture parentKey="Darklink-glow" alphaMode="ADD" atlas="Darklink-glow" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK" textureSubLevel="4">
+						<Texture parentKey="Darklink-ball" alphaMode="ADD" atlas="Darklink-ball" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" x="19" y="26"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="Anim" setToFinalAlpha="true" looping="REPEAT">
+						<Alpha childKey="Darklink-blackinside" smoothing="NONE" duration="2" order="2" fromAlpha="0" toAlpha="1"/>
+						<Translation childKey="Darklink-ball" smoothing="NONE" duration="3" order="2" offsetX="-37" offsetY="-40"/>
+						<Alpha childKey="Darklink-ball" startDelay="2" smoothing="NONE" duration="1" order="2" fromAlpha="1" toAlpha="0"/>
+						<Alpha childKey="Darklink-blackinside" startDelay="2" smoothing="NONE" duration="2" order="2" fromAlpha="1" toAlpha="0"/>
+						<Translation childKey="Darklink-ball" startDelay="3" endDelay="0.1" smoothing="NONE" duration="0.1" order="2" offsetX="37" offsetY="40"/>
+					</AnimationGroup>
+				</Animations>
+				<Scripts>
+					<OnLoad>
+						self.Anim:Play();
+					</OnLoad>
+				</Scripts>
+			</Frame>
+		</Frames>
 	</Frame>
 
 	<Frame name="ArtifactRelicForgeFrame" parent="UIParent" mixin="ArtifactRelicForgeMixin" enableMouse="true" hidden="true" inherits="ButtonFrameTemplate">
@@ -367,7 +613,7 @@
 					<OnUpdate method="OnUpdate" />
 				</Scripts>
 			</Frame>
-			<Button parentKey="Talent1" id="1" inherits="ArtifactRelicTalentButtonTemplate">
+			<Button parentKey="Talent1" id="1" inherits="ArtifactRelicTalentButtonTemplate, ArtifactRelicTalentNeutralGlowTemplate">
 				<Anchors>
 					<Anchor point="CENTER" relativePoint="TOP" relativeKey="$parent.TalentsBackground" x="0" y="-69" />
 				</Anchors>

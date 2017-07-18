@@ -129,19 +129,18 @@ function FlightMap_FlightPathDataProviderMixin:AddFlightNode(taxiNodeData)
 	if taxiNodeData.type == LE_FLIGHT_PATH_TYPE_CURRENT then
 		pin.Icon:SetAtlas(pin.atlasFormat:format("Taxi_Frame_Green"));
 		pin.IconHighlight:SetAtlas(pin.atlasFormat:format("Taxi_Frame_Gray"));
-		pin:SetSize(28, 28);
 		pin:Show();
 	elseif taxiNodeData.type == LE_FLIGHT_PATH_TYPE_REACHABLE then
 		pin.Icon:SetAtlas(pin.atlasFormat:format("Taxi_Frame_Gray"));
 		pin.IconHighlight:SetAtlas(pin.atlasFormat:format("Taxi_Frame_Gray"));
-		pin:SetSize(20, 20);
 		pin:Show();
 	elseif taxiNodeData.type == LE_FLIGHT_PATH_TYPE_UNREACHABLE then
 		pin.Icon:SetAtlas(pin.atlasFormat:format("UI-Taxi-Icon-Nub"));
 		pin.IconHighlight:SetAtlas(pin.atlasFormat:format("UI-Taxi-Icon-Nub"));
-		pin:SetSize(14, 14);
 		pin:Hide(); -- Only show if part of a route, handled in the route building functions
 	end
+	
+	pin:UpdatePinSize(taxiNodeData.type);
 end
 
 function FlightMap_FlightPathDataProviderMixin:CalculateLineThickness()
@@ -219,6 +218,25 @@ function FlightMap_FlightPointPinMixin:OnMouseLeave()
 	GameTooltip_Hide();
 end
 
+local function IsVindicaarTextureKit(textureKitPrefix)
+	return textureKitPrefix == "FlightMaster_VindicaarArgus" or textureKitPrefix == "FlightMaster_VindicaarStygianWake" or textureKitPrefix == "FlightMaster_VindicaarMacAree";
+end
+
+function FlightMap_FlightPointPinMixin:UpdatePinSize(pinType)
+	if IsVindicaarTextureKit(self.textureKitPrefix) then
+		self:SetSize(44, 53);
+	elseif self.textureKitPrefix == "FlightMaster_Argus" then
+		self:SetSize(32, 27);
+	elseif pinType == LE_FLIGHT_PATH_TYPE_CURRENT then
+		self:SetSize(28, 28);
+	elseif pinType == LE_FLIGHT_PATH_TYPE_REACHABLE then
+		self:SetSize(20, 20);
+	elseif pinType == LE_FLIGHT_PATH_TYPE_UNREACHABLE then
+		self:SetSize(14, 14);
+	end
+end
+
 function FlightMap_FlightPointPinMixin:ShouldShowOutgoingFlightPaths()
-	return self.textureKitPrefix ~= "FlightMaster_Argus";
+	local isArgus = IsVindicaarTextureKit(self.textureKitPrefix) or self.textureKitPrefix == "FlightMaster_Argus";
+	return not isArgus;
 end

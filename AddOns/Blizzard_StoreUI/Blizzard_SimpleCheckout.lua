@@ -91,9 +91,20 @@ function SimpleCheckoutMixin:RecalculateSize()
 
 	local pixelSize = ConvertPixelsToUI(1, self:GetEffectiveScale());
 
-	local requestedWidth = Clamp(self.requestedWidth * pixelSize, 1, physicalWidth * 0.9);
-	local requestedHeight = Clamp(self.requestedHeight * pixelSize, 1, physicalHeight * 0.9);
+	-- Convert to ui coordinates, clamping to 90% of window size
+	local requestedWidth = Clamp(self.requestedWidth * pixelSize, 1, physicalWidth * pixelSize * 0.9);
+	local requestedHeight = Clamp(self.requestedHeight * pixelSize, 1, physicalHeight * pixelSize * 0.9);
 
+	-- Convert back to pixel coordinates; this will include any clamping done above
+	local uiWidth = requestedWidth / pixelSize;
+	local uiHeight = requestedHeight / pixelSize;
+
+	-- position frame on a pixel boundary.
+	local left = math.floor((physicalWidth - uiWidth) / 2) * pixelSize;
+	local bottom = math.floor((physicalHeight - uiHeight) / 2) * pixelSize;
+
+	self:ClearAllPoints();
+	self:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", left, bottom);
 	self:SetSize(requestedWidth, requestedHeight);
 
 	self.CloseButton:SetSize(20 * pixelSize, 20 * pixelSize);

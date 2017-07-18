@@ -336,7 +336,7 @@ function ScrollingMessageFrameMixin:UpdateSelectingText()
 
 	local x, y = self:GetScaledCursorPosition();
 	local characterIndex, visibleLineIndex = self:FindCharacterAndLineIndexAtCoordinate(x, y);
-	if characterIndex then
+	if characterIndex and (self.selectingCharacterIndex ~= characterIndex or self.selectingVisibleLineIndex ~= visibleLineIndex) then
 		local startLineIndex, endLineIndex = self.selectingVisibleLineIndex, visibleLineIndex;
 		local startCharacterIndex, endCharacterIndex = self.selectingCharacterIndex, characterIndex;
 
@@ -363,7 +363,7 @@ end
 
 function ScrollingMessageFrameMixin:GatherSelectedText(x, y)
 	local characterIndex, visibleLineIndex = self:FindCharacterAndLineIndexAtCoordinate(x, y);
-	if characterIndex then
+	if characterIndex and (self.selectingCharacterIndex ~= characterIndex or self.selectingVisibleLineIndex ~= visibleLineIndex) then
 		local pendingText = {};
 		local startLineIndex, endLineIndex = self.selectingVisibleLineIndex, visibleLineIndex;
 		local startCharacterIndex, endCharacterIndex = self.selectingCharacterIndex, characterIndex;

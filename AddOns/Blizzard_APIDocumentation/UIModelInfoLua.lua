@@ -121,9 +121,9 @@ local UIModelInfoLua =
 		{
 			Name = "ModelSceneType",
 			Type = "Enumeration",
-			NumValues = 9,
+			NumValues = 10,
 			MinValue = 0,
-			MaxValue = 8,
+			MaxValue = 9,
 			Fields =
 			{
 				{ Name = "MountJournal", Type = "ModelSceneType", EnumValue = 0 },
@@ -135,6 +135,7 @@ local UIModelInfoLua =
 				{ Name = "ArtifactTier2ForgingScene", Type = "ModelSceneType", EnumValue = 6 },
 				{ Name = "ArtifactTier2SlamEffect", Type = "ModelSceneType", EnumValue = 7 },
 				{ Name = "CommentatorVictoryFanfare", Type = "ModelSceneType", EnumValue = 8 },
+				{ Name = "ArtifactRelicTalentEffect", Type = "ModelSceneType", EnumValue = 9 },
 			},
 		},
 		{
