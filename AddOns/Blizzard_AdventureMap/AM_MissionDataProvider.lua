@@ -123,7 +123,6 @@ function AdventureMap_MissionDataProviderMixin:AddMissionPin(missionInfo)
 	pin.dataProvider = self;
 	pin:SetupMission(missionInfo);
 	pin:SetPosition(missionInfo.mapPosX, missionInfo.mapPosY);
-	pin:Show();
 end
 
 local function ShowGarrisonMission(dataProvider, missionInfo)
@@ -161,7 +160,6 @@ function AdventureMap_MissionDataProviderMixin:OnMissionCompleteResponse(mission
 		rewardPin.dataProvider = self;
 		rewardPin:ShowRewards(missionInfo);
 		rewardPin:SetPosition(missionInfo.mapPosX, missionInfo.mapPosY);
-		rewardPin:Show();
 	end
 end
 

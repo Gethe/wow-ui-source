@@ -662,7 +662,7 @@ function SpellButton_UpdateButton(self)
 	if ( not SpellBookFrame.selectedSkillLine ) then
 		SpellBookFrame.selectedSkillLine = 2;
 	end
-	local _, _, offset, numSlots, _, offSpecID = GetSpellTabInfo(SpellBookFrame.selectedSkillLine);
+	local _, _, offset, numSlots, _, offSpecID, shouldHide, specID = GetSpellTabInfo(SpellBookFrame.selectedSkillLine);
 	SpellBookFrame.selectedSkillLineNumSlots = numSlots;
 	SpellBookFrame.selectedSkillLineOffset = offset;
 	local isOffSpec = (offSpecID ~= 0) and (SpellBookFrame.bookType == BOOKTYPE_SPELL);
@@ -762,14 +762,12 @@ function SpellButton_UpdateButton(self)
 		self.FlyoutArrow:Hide();
 	end
 	
-	local specs =  {GetSpecsForSpell(slot, SpellBookFrame.bookType)};
-	local specName = table.concat(specs, PLAYER_LIST_DELIMITER);
 	if ( subSpellName == "" ) then
-		if ( IsTalentSpell(slot, SpellBookFrame.bookType) ) then
+		if ( IsTalentSpell(slot, SpellBookFrame.bookType, specID) ) then
 			if ( isPassive ) then
-				subSpellName = TALENT_PASSIVE
+				subSpellName = TALENT_PASSIVE;
 			else
-				subSpellName = TALENT
+				subSpellName = TALENT;
 			end
 		elseif ( isPassive ) then
 			subSpellName = SPELL_PASSIVE;
@@ -1144,7 +1142,7 @@ function SpellBookFrame_UpdateSkillLineTabs()
 		local skillLineTab = _G["SpellBookSkillLineTab"..i];
 		local prevTab = _G["SpellBookSkillLineTab"..i-1];
 		if ( i <= numSkillLineTabs and SpellBookFrame.bookType == BOOKTYPE_SPELL ) then
-			local name, texture, _, _, isGuild, offSpecID, shouldHide = GetSpellTabInfo(i);
+			local name, texture, _, _, isGuild, offSpecID, shouldHide, specID = GetSpellTabInfo(i);
 			
 			if ( shouldHide ) then
 				_G["SpellBookSkillLineTab"..i.."Flash"]:Hide();

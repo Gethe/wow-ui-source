@@ -219,9 +219,9 @@ function ArchaeologyFrame_UpdateSummary(self)
 		raceButton = self["race"..i];
 		local raceIndex = i + (ARCHAEOLOGY_MAX_RACES * (self.currentPage-1));
 		if raceIndex <= numRaces then
-			local name, texture, _, currencyAmount, projectAmount =  GetArchaeologyRaceInfo(raceIndex);
+			local name, texture, _, currencyAmount, projectAmount =  GetArchaeologyRaceInfo(raceIndex, false);
 
-			if texture and texture ~= "" then
+			if texture then
 				raceButton:GetNormalTexture():SetTexture(texture);
 				raceButton:GetHighlightTexture():SetTexture(texture);
 				raceButton.glow:SetTexture(texture);
@@ -265,7 +265,7 @@ end
 
 
 function ArchaeologyFrame_CurrentArtifactUpdate(self)
-	local RaceName, RaceTexture, RaceitemID	= GetArchaeologyRaceInfo(self.raceID);
+	local RaceName, RaceTexture, RaceitemID	= GetArchaeologyRaceInfo(self.raceID, true);
 	local name, description, rarity, icon, spellDescription, numSockets, bgTexture =  GetSelectedArtifactInfo();
 	self.currentName = name;
 	if 	self.solveFrame:IsShown() then
@@ -321,10 +321,10 @@ function ArchaeologyFrame_CurrentArtifactUpdate(self)
 		self.historyScroll.child.text:SetWidth(190);
 		self.artifactBG:SetTexture("");
 		self.raceRarity:SetText(RaceName.." - "..ITEM_QUALITY1_DESC);
-		if RaceTexture and RaceTexture ~= "" then
-			self.raceBG:SetTexture(RaceTexture.."BIG");
+		if RaceTexture then
+			self.raceBG:SetTexture(RaceTexture);
 		else
-			self.raceBG:SetTexture("Interface\\Archeology\\Arch-TempLogo".."BIG");
+			self.raceBG:SetTexture("Interface\\Archeology\\Arch-TempLogoBIG");
 		end
 	else
 		if 	self.solveFrame:IsShown() then

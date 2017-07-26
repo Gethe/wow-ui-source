@@ -2147,7 +2147,7 @@ SlashCmdList["RAID_INFO"] = function(msg)
 	end
 end
 
-SlashCmdList[SOUNDKIT.READY_CHECK] = function(msg)
+SlashCmdList["READYCHECK"] = function(msg)
 	if ( UnitIsGroupLeader("player") or UnitIsGroupAssistant("player") ) then
 		DoReadyCheck();
 	end

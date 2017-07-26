@@ -108,7 +108,6 @@ function AdventureMap_ZoneSummaryProviderMixin:AddSummaryPin(zoneName, centerX, 
 	pin.quests = quests;
 	pin.missions = missions;
 	pin:SetPosition(centerX, centerY);
-	pin:Show();
 end
 
 function AdventureMap_ZoneSummaryProviderMixin:AddInsetSummaryPin(mapInsetIndex, title, description, centerX, centerY, quests, missions)

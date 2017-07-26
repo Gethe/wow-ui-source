@@ -74,7 +74,6 @@ function AdventureMap_QuestOfferDataProviderMixin:AddQuest(questID, isTrivial, f
 	pin.IconHighlight:SetAtlas(iconAtlas, true);
 
 	pin:SetPosition(normalizedX, normalizedY, insetIndex);
-	pin:Show();
 end
 
 function AdventureMap_QuestOfferDataProviderMixin:OnQuestAccepted(pin)

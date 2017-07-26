@@ -25,6 +25,7 @@ BNET_CLIENT_HEROES = "Hero";
 BNET_CLIENT_OVERWATCH = "Pro";
 BNET_CLIENT_CLNT = "CLNT";
 BNET_CLIENT_SC = "S1";
+BNET_CLIENT_DESTINY2 = "DST2";
 
 function BNet_OnLoad(self)
 	self:RegisterEvent("BN_DISCONNECTED");
@@ -442,7 +443,9 @@ function BNet_GetClientEmbeddedTexture(client, width, height, xOffset, yOffset)
 	elseif ( client == BNET_CLIENT_OVERWATCH ) then
 		textureString = "Overwatch";
 	elseif ( client == BNET_CLIENT_SC ) then
-		textureString = "SC"
+		textureString = "SC";
+	elseif ( client == BNET_CLIENT_DESTINY2 ) then
+		textureString = "Destiny2";
 	else
 		textureString = "Battlenet";
 	end
@@ -464,6 +467,8 @@ function BNet_GetClientTexture(client)
 		return "Interface\\FriendsFrame\\Battlenet-Overwatchicon";
 	elseif ( client == BNET_CLIENT_SC ) then
 		return "Interface\\FriendsFrame\\Battlenet-SCicon";
+	elseif ( client == BNET_CLIENT_DESTINY2 ) then
+		return "Interface\\FriendsFrame\\Battlenet-Destiny2icon"; 
 	else
 		return "Interface\\FriendsFrame\\Battlenet-Battleneticon";
 	end

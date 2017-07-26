@@ -8,6 +8,7 @@ NUM_WORLDMAP_OVERLAYS = 0;
 NUM_WORLDMAP_DEBUG_ZONEMAP = 0;
 NUM_WORLDMAP_DEBUG_OBJECTS = 0;
 WORLDMAP_COSMIC_ID = -1;
+WORLDMAP_COSMIC_MAP_AREA_ID = -1;
 WORLDMAP_AZEROTH_ID = 0;
 WORLDMAP_OUTLAND_ID = 3;
 WORLDMAP_MAELSTROM_ID = 5;
@@ -270,6 +271,11 @@ function ToggleWorldMap()
 			QuestMapFrame_Close();
 		end
 	end
+	WorldMapFrame_SyncMaximizeMinimizeButton(WorldMapFrame.BorderFrame.MaximizeMinimizeFrame);
+end
+
+function WorldMapFrame_IsVindicaarTextureKit(textureKitPrefix)
+	return textureKitPrefix == "FlightMaster_VindicaarArgus" or textureKitPrefix == "FlightMaster_VindicaarStygianWake" or textureKitPrefix == "FlightMaster_VindicaarMacAree";
 end
 
 function WorldMapFrame_InWindowedMode()
@@ -1207,6 +1213,7 @@ function WorldMap_UpdateLandmarks()
 					worldMapPOI.mapFloor = mapFloor;
 					worldMapPOI.poiID = poiID;
 					worldMapPOI.landmarkType = landmarkType;
+					worldMapPOI.textureKitPrefix = textureKitPrefix;
 					if ( graveyardID and graveyardID > 0 ) then
 						worldMapPOI.graveyard = graveyardID;
 						numGraveyards = numGraveyards + 1;
@@ -1287,36 +1294,13 @@ function WorldMapFrame_Update()
 	if ( not mapName ) then
 		if ( GetCurrentMapContinent() == WORLDMAP_COSMIC_ID ) then
 			mapName = "Cosmic";
-			OutlandButton:Show();
-			AzerothButton:Show();
-			DraenorButton:Show();
 		else
-			-- Temporary Hack (Temporary meaning 11 yrs, haha)
+			-- Temporary Hack (Temporary meaning 14 yrs, haha)
 			mapName = "World";
-			OutlandButton:Hide();
-			AzerothButton:Hide();
-			DraenorButton:Hide();
-		end
-		DeepholmButton:Hide();
-		KezanButton:Hide();
-		LostIslesButton:Hide();
-		TheMaelstromButton:Hide();
-	else
-		OutlandButton:Hide();
-		AzerothButton:Hide();
-		DraenorButton:Hide();
-		if ( GetCurrentMapContinent() == WORLDMAP_MAELSTROM_ID and GetCurrentMapZone() == 0 ) then
-			DeepholmButton:Show();
-			KezanButton:Show();
-			LostIslesButton:Show();
-			TheMaelstromButton:Show();
-		else
-			DeepholmButton:Hide();
-			KezanButton:Hide();
-			LostIslesButton:Hide();
-			TheMaelstromButton:Hide();
 		end
 	end
+	
+	WorldMapFrame_UpdateCosmicButtons();
 
 	local dungeonLevel = GetCurrentMapDungeonLevel();
 	if (DungeonUsesTerrainMap()) then
@@ -1701,7 +1685,11 @@ do
 	end
 end
 
-function WorldMap_DoesLandMarkTypeShowHighlights(landmarkType)
+function WorldMap_DoesLandMarkTypeShowHighlights(landmarkType, textureKitPrefix)
+	if WorldMapFrame_IsVindicaarTextureKit(textureKitPrefix) then
+		return false;
+	end
+	
 	return landmarkType == LE_MAP_LANDMARK_TYPE_NORMAL
 		or landmarkType == LE_MAP_LANDMARK_TYPE_TAMER
 		or landmarkType == LE_MAP_LANDMARK_TYPE_GOSSIP
@@ -1744,7 +1732,7 @@ function WorldMapPOI_OnEnter(self)
 	if ( self.specialPOIInfo and self.specialPOIInfo.onEnter ) then
 		self.specialPOIInfo.onEnter(self, self.specialPOIInfo);
 	else
-		self.HighlightTexture:SetShown(WorldMap_DoesLandMarkTypeShowHighlights(self.landmarkType));
+		self.HighlightTexture:SetShown(WorldMap_DoesLandMarkTypeShowHighlights(self.landmarkType, self.textureKitPrefix));
 
 		if ( WorldMapPOI_ShouldShowAreaLabel(self) ) then
 			WorldMapFrame_SetAreaLabel(WORLDMAP_AREA_LABEL_TYPE.POI, self.name, self.description);
@@ -2771,6 +2759,16 @@ function WorldMapUnitDropDown_ReportAll_OnClick()
 	end
 end
 
+function WorldMapFrame_SyncMaximizeMinimizeButton(maximizeMinimizeFrame)
+	if (WorldMapFrame_InWindowedMode()) then
+		maximizeMinimizeFrame.MinimizeButton:Hide();
+		maximizeMinimizeFrame.MaximizeButton:Show();
+	else
+		maximizeMinimizeFrame.MinimizeButton:Show();
+		maximizeMinimizeFrame.MaximizeButton:Hide();
+	end
+end
+
 function WorldMapFrame_ToggleWindowSize()
 	-- close the frame first so the UI panel system can do its thing
 	WorldMapFrame.toggling = true;
@@ -2796,6 +2794,7 @@ function WorldMapFrame_ToggleWindowSize()
 	WorldMapFrame.blockWorldMapUpdate = nil;
 	WorldMapFrame_UpdateMap();
 	QuestMapFrame_UpdateAll();
+	WorldMapFrame_SyncMaximizeMinimizeButton(WorldMapFrame.BorderFrame.MaximizeMinimizeFrame);
 end
 
 function WorldMap_ToggleSizeUp()
@@ -3947,4 +3946,10 @@ function WorldMapPing_UpdatePing(frame, contextData)
 	if frame.worldMapPing and frame.worldMapPing:GetContextData() ~= contextData then
 		frame.worldMapPing:Stop();
 	end
+end
+
+function WorldMapFrame_MaximizeMinimizeFrame_OnLoad(self)
+	-- We don't have the mixin handle the CVar because we use specialized logic for setting it.
+	self:SetOnMaximizedCallback(WorldMapFrame_ToggleWindowSize);
+	self:SetOnMinimizedCallback(WorldMapFrame_ToggleWindowSize);
 end

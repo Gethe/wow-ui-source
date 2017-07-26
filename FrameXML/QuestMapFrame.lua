@@ -1082,6 +1082,9 @@ function GetZoneStoryID()
 		-- Broken Shore
 		["1021-Alliance"] = {11546, 1021},
 		["1021-Horde"] = {11546, 1021},
+		-- Argus
+		["1135-Alliance"] = {12066, 1135},
+		["1135-Horde"] = {12066, 1135},
 	};
 	if (achievementTable[key] ~= nil) then
 		return achievementTable[key][1], achievementTable[key][2];

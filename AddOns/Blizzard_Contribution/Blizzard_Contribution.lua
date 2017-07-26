@@ -113,7 +113,7 @@ function ContributionStatusMixin:Update()
 end
 
 function ContributionStatusMixin:PlayFlashAnimation()
-	PlaySound(SOUNDKIT.UI_72_BUILDINGS_CONTRIBUTE_RESOURCES, nil, false);
+	PlaySound(SOUNDKIT.UI_72_BUILDINGS_CONTRIBUTE_RESOURCES, nil, SOUNDKIT_ALLOW_DUPLICATES);
 
 	-- Only play the animation if it isn't playing or is almost finished.
 	local progress = self.FlashAnim:GetProgress();

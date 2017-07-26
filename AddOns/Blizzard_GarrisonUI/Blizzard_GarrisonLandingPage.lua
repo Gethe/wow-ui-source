@@ -325,7 +325,7 @@ function GarrisonLandingPageReport_GetShipments(self)
 	local completeTalentID = C_Garrison.GetCompleteTalent(garrisonType);
 	if (talentTreeIDs) then
 		for treeIndex, treeID in ipairs(talentTreeIDs) do
-			local _, _, tree = C_Garrison.GetTalentTreeInfoForID(garrisonType, treeID);
+			local _, _, tree = C_Garrison.GetTalentTreeInfoForID(treeID);
 			for talentIndex, talent in ipairs(tree) do
 				local showTalent = false;
 				if (talent.isBeingResearched) then

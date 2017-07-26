@@ -305,17 +305,17 @@ function CompactUnitFrame_UpdateAll(frame)
 end
 
 function CompactUnitFrame_UpdateInVehicle(frame)
-	local hasValidVehicleUI = UnitHasVehicleUI(frame.unit);
+	local shouldTargetVehicle = UnitHasVehicleUI(frame.unit) and false;--UnitTargetsVehicleInRaidUI(frame.unit);
 	local unitVehicleToken;
-	if ( hasValidVehicleUI ) then
+	if ( shouldTargetVehicle ) then
 		local prefix, id, suffix = string.match(frame.unit, "([^%d]+)([%d]*)(.*)")
 		unitVehicleToken = prefix.."pet"..id..suffix;
 		if ( not UnitExists(unitVehicleToken) ) then
-			hasValidVehicleUI = false;
+			shouldTargetVehicle = false;
 		end
 	end
 	
-	if ( hasValidVehicleUI ) then
+	if ( shouldTargetVehicle ) then
 		if ( not frame.hasValidVehicleDisplay ) then
 			frame.hasValidVehicleDisplay = true;
 			frame.displayedUnit = unitVehicleToken;

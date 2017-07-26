@@ -133,9 +133,9 @@ do
 		end
 
 		self.ScrollContainer:MarkCanvasDirty();
-
+		pin:Show();
 		pin:OnAcquired(...);
-
+		
 		return pin;
 	end
 end

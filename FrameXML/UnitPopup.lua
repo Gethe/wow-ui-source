@@ -75,7 +75,7 @@ UnitPopupButtons = {
 	["REPORT_SPAM"]	= { text = REPORT_SPAMMING, dist = 0 },
 	["REPORT_BAD_LANGUAGE"] = { text = REPORT_BAD_LANGUAGE, dist = 0},
 	["REPORT_BAD_NAME"] = { text = REPORT_BAD_NAME, dist = 0 },
-	["REPORT_BAD_GUILD_NAME"] = { text = "REPORT_BAD_GUILD_NAME", dist = 0 },
+	["REPORT_BAD_GUILD_NAME"] = { text = REPORT_BAD_GUILD_NAME, dist = 0 },
 	["REPORT_CHEATING"] = { text = REPORT_CHEATING, dist = 0 },
 	["REPORT_BATTLE_PET"] = { text = REPORT_PET_NAME, dist = 0 },
 	["REPORT_PET"] = { text = REPORT_PET_NAME, dist = 0 },
@@ -1169,6 +1169,10 @@ function UnitPopup_HideButtons ()
 			end
 		elseif ( value == "GARRISON_VISIT" ) then
 			if ( not C_Garrison.IsVisitGarrisonAvailable() ) then
+				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
+			end
+		elseif ( value == "REPORT_BAD_GUILD_NAME" ) then
+			if ( not dropdownMenu.unit or not GetGuildInfo(dropdownMenu.unit) ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		end

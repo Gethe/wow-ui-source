@@ -168,7 +168,6 @@ function WorldQuestDataProviderMixin:AddWorldQuest(info)
 	end
 
 	pin:SetPosition(info.x, info.y);
-	pin:Show();
 
 	C_TaskQuest.RequestPreloadRewardData(info.questId);
 
@@ -210,8 +209,6 @@ function WorldQuestPinMixin:RefreshVisuals()
 	else
 		self:SetAlphaLimits(2.0, 0.0, 1.0);
 	end
-	
-	self:Show();
 end
 
 function WorldQuestPinMixin:OnMouseEnter()

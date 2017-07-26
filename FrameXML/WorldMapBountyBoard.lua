@@ -305,6 +305,10 @@ function WorldMapBountyBoardMixin:ShowBountyTooltip(bountyIndex)
 
 		AddObjectives(bountyData.questID, bountyData.numObjectives);
 
+		if bountyData.turninRequirementText then
+			WorldMapTooltip:AddLine(bountyData.turninRequirementText, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
+		end
+
 		GameTooltip_AddQuestRewardsToTooltip(WorldMapTooltip, bountyData.questID);
 		WorldMapTooltip:Show();
 	else

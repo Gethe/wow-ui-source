@@ -76,7 +76,7 @@ function FlightMap_FlightPathDataProviderMixin:ShowBackgroundRoutesFromCurrent()
 					return; -- Incorrect flight data, will look broken until the data is adjusted
 				end
 				
-				if startPin:ShouldShowOutgoingFlightPaths() and not startPin.linkedPins[destinationPin] and not destinationPin.linkedPins[startPin] then
+				if not startPin.linkedPins[destinationPin] and not destinationPin.linkedPins[startPin] then
 					startPin.linkedPins[destinationPin] = true;
 					destinationPin.linkedPins[startPin] = true;
 
@@ -129,18 +129,16 @@ function FlightMap_FlightPathDataProviderMixin:AddFlightNode(taxiNodeData)
 	if taxiNodeData.type == LE_FLIGHT_PATH_TYPE_CURRENT then
 		pin.Icon:SetAtlas(pin.atlasFormat:format("Taxi_Frame_Green"));
 		pin.IconHighlight:SetAtlas(pin.atlasFormat:format("Taxi_Frame_Gray"));
-		pin:Show();
 	elseif taxiNodeData.type == LE_FLIGHT_PATH_TYPE_REACHABLE then
 		pin.Icon:SetAtlas(pin.atlasFormat:format("Taxi_Frame_Gray"));
 		pin.IconHighlight:SetAtlas(pin.atlasFormat:format("Taxi_Frame_Gray"));
-		pin:Show();
 	elseif taxiNodeData.type == LE_FLIGHT_PATH_TYPE_UNREACHABLE then
 		pin.Icon:SetAtlas(pin.atlasFormat:format("UI-Taxi-Icon-Nub"));
 		pin.IconHighlight:SetAtlas(pin.atlasFormat:format("UI-Taxi-Icon-Nub"));
-		pin:Hide(); -- Only show if part of a route, handled in the route building functions
 	end
 	
 	pin:UpdatePinSize(taxiNodeData.type);
+	pin:SetShown(taxiNodeData.type ~= LE_FLIGHT_PATH_TYPE_UNREACHABLE); -- Only show if part of a route, handled in the route building functions
 end
 
 function FlightMap_FlightPathDataProviderMixin:CalculateLineThickness()
@@ -201,9 +199,7 @@ function FlightMap_FlightPointPinMixin:OnMouseEnter()
 		self.Icon:SetAtlas(self.atlasFormat:format("Taxi_Frame_Yellow"));
 		self.owner:RemoveRoute();
 		
-		if self:ShouldShowOutgoingFlightPaths() then
-			self.owner:HighlightRouteToPin(self);
-		end
+		self.owner:HighlightRouteToPin(self);
 	elseif self.taxiNodeData.type == LE_FLIGHT_PATH_TYPE_UNREACHABLE then
 		GameTooltip:AddLine(TAXI_PATH_UNREACHABLE, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
 	end
@@ -218,15 +214,11 @@ function FlightMap_FlightPointPinMixin:OnMouseLeave()
 	GameTooltip_Hide();
 end
 
-local function IsVindicaarTextureKit(textureKitPrefix)
-	return textureKitPrefix == "FlightMaster_VindicaarArgus" or textureKitPrefix == "FlightMaster_VindicaarStygianWake" or textureKitPrefix == "FlightMaster_VindicaarMacAree";
-end
-
 function FlightMap_FlightPointPinMixin:UpdatePinSize(pinType)
-	if IsVindicaarTextureKit(self.textureKitPrefix) then
-		self:SetSize(44, 53);
+	if WorldMapFrame_IsVindicaarTextureKit(self.textureKitPrefix) then
+		self:SetSize(46, 55);
 	elseif self.textureKitPrefix == "FlightMaster_Argus" then
-		self:SetSize(32, 27);
+		self:SetSize(34, 28);
 	elseif pinType == LE_FLIGHT_PATH_TYPE_CURRENT then
 		self:SetSize(28, 28);
 	elseif pinType == LE_FLIGHT_PATH_TYPE_REACHABLE then
@@ -234,9 +226,4 @@ function FlightMap_FlightPointPinMixin:UpdatePinSize(pinType)
 	elseif pinType == LE_FLIGHT_PATH_TYPE_UNREACHABLE then
 		self:SetSize(14, 14);
 	end
-end
-
-function FlightMap_FlightPointPinMixin:ShouldShowOutgoingFlightPaths()
-	local isArgus = IsVindicaarTextureKit(self.textureKitPrefix) or self.textureKitPrefix == "FlightMaster_Argus";
-	return not isArgus;
 end

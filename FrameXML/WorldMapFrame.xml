@@ -97,22 +97,12 @@
 							<Anchor point="BOTTOMRIGHT" x="-7" y="28" />
 						</Anchors>
 					</Frame>
-					<Frame name="MaximizeMinimizeFrame" inherits="MaximizeMinimizeButtonFrameTemplate">
+					<Frame parentKey="MaximizeMinimizeFrame" inherits="MaximizeMinimizeButtonFrameTemplate">
 						<Anchors>
 							<Anchor point="RIGHT" relativeKey="$parent.CloseButton" relativePoint="LEFT" x="10" y="0"/>
 						</Anchors>
 						<Scripts>
-							<OnLoad>
-								-- We don't have the mixin handle the CVar because we use specialized logic for setting it.
-								self:SetOnMaximizedCallback(WorldMapFrame_ToggleWindowSize);
-								self:SetOnMinimizedCallback(WorldMapFrame_ToggleWindowSize);
-
-								local minimized = GetCVarBool("miniWorldMap");
-								if minimized then
-									self.MinimizeButton:Hide();
-									self.MaximizeButton:Show();
-								end
-							</OnLoad>
+							<OnLoad function="WorldMapFrame_MaximizeMinimizeFrame_OnLoad"/>
 						</Scripts>
 					</Frame>
 				</Frames>
@@ -804,4 +794,7 @@
 		</Scripts>
 	</Button>
 	<Frame name="WorldMapTaskTooltipStatusBar" inherits="TooltipProgressBarTemplate"/>
+	
+	<!-- This refers to the cosmic-style buttons statically so it needs to be loaded after the xml. -->
+	<Script file="WorldMapFrameCosmicButtons.lua"/>
 </Ui>

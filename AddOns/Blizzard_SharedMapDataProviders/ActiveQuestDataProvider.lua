@@ -38,7 +38,6 @@ function ActiveQuestDataProviderMixin:RefreshAllData(fromOnShow)
 			local activeQuestInfo = GetQuestsForPlayerByMapID(zoneMapID, mapAreaID, self:GetTransformFlags());
 
 			if activeQuestInfo then
-				local superTrackedQuestID = GetSuperTrackedQuestID();
 				for i, info in ipairs(activeQuestInfo) do
 					if not QuestUtils_IsQuestWorldQuest(info.questID) then
 						self:AddActiveQuest(info.questID, info.x, info.y);
@@ -151,7 +150,6 @@ function ActiveQuestDataProviderMixin:AddActiveQuest(questID, x, y)
 	end
 
 	pin:SetPosition(x, y);
-	pin:Show();
 end
 
 --[[ Active Quest Pin ]]--

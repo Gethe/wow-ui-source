@@ -74,7 +74,6 @@ function AdventureMap_QuestChoiceDataProviderMixin:AddChoicePin(questID, name, z
 	pin.zoneDescription = zoneDescription;
 	pin:SetPosition(normalizedX, normalizedY);
 	pin.owner = self;
-	pin:Show();
 
 	self.pinsByQuestID[questID] = pin;
 
@@ -117,7 +116,6 @@ end
 function AdventureMap_QuestChoiceDataProviderMixin:AddFogPin(questID, normalizedX, normalizedY)
 	local pin = self:GetMap():AcquirePin("AdventureMap_FogPinTemplate", self.playRevealAnims);
 	pin:SetPosition(normalizedX, normalizedY);
-	pin:Show();
 	return pin;
 end
 		

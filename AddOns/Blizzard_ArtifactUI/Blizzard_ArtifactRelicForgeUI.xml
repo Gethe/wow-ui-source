@@ -370,7 +370,7 @@
 			<OnLoad method="OnLoad"/>
 			<OnClick method="OnClick"/>
 			<OnEnter method="OnEnter"/>
-			<OnLeave function="GameTooltip_Hide"/>
+			<OnLeave method="OnLeave"/>
 		</Scripts>
 	</Button>
 
@@ -390,6 +390,18 @@
 				<Texture parentKey="DisabledTexture" atlas="Disablelink" useAtlasSize="true" hidden="true">
 					<Anchors>
 						<Anchor point="CENTER"/>
+					</Anchors>
+					<TexCoords left="1" right="0" top="0" bottom="1"/>
+				</Texture>
+				<Texture parentKey="DimTexture" alphaMode="ADD" atlas="Lightlink-blackinside" useAtlasSize="true" alpha="0.5" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="1" right="0" top="0" bottom="1"/>
+				</Texture>
+				<Texture parentKey="PotentialTexture" alphaMode="ADD" atlas="Lightlink-blackinside" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
 					</Anchors>
 					<TexCoords left="1" right="0" top="0" bottom="1"/>
 				</Texture>
@@ -438,6 +450,9 @@
 				</Scripts>
 			</Frame>
 		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
 	</Frame>
 
 	<Frame name="ArtifactRelicTalentVoidLinkTemplate" parentArray="Links" mixin="ArtifactRelicTalentLinkMixin" virtual="true">
@@ -455,6 +470,16 @@
 				<Texture parentKey="DisabledTexture" atlas="Disablelink" useAtlasSize="true" hidden="true">
 					<Anchors>
 						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="DimTexture" alphaMode="ADD" atlas="Darklink-blackinside" useAtlasSize="true" alpha="0.5" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="PotentialTexture" alphaMode="ADD" atlas="Darklink-blackinside" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -500,6 +525,9 @@
 				</Scripts>
 			</Frame>
 		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
 	</Frame>
 
 	<Frame name="ArtifactRelicForgeFrame" parent="UIParent" mixin="ArtifactRelicForgeMixin" enableMouse="true" hidden="true" inherits="ButtonFrameTemplate">
@@ -674,19 +702,6 @@
 						</Texture>
 					</Layer>
 				</Layers>
-				<Frames>
-					<Button parentKey="AttuneButton" inherits="UIPanelButtonTemplate" text="Attune">
-						<Size x="100" y="22"/>
-						<Anchors>
-							<Anchor point="BOTTOM" x="0" y="-28"/>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								C_ArtifactRelicForgeUI.AttunePreviewRelic();
-							</OnClick>
-						</Scripts>
-					</Button>
-				</Frames>
 				<Scripts>
 					<OnLoad method="OnLoad"/>
 					<OnShow method="OnShow"/>

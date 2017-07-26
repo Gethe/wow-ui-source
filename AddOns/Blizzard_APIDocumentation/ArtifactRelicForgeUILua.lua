@@ -35,6 +35,16 @@ local ArtifactRelicForgeUILua =
 			},
 		},
 		{
+			Name = "CanSetPreviewRelicFromCursor",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "canSet", Type = "bool", Nilable = false, Default = false },
+				{ Name = "bindWarning", Type = "bool", Nilable = false, Default = false },
+			},
+		},
+		{
 			Name = "Clear",
 			Type = "Function",
 		},

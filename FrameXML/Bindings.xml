@@ -775,28 +775,28 @@
 		end
 	</Binding>
 	<Binding name="TARGETPARTYMEMBER1" category="BINDING_HEADER_TARGETING">
-		if ( UnitIsUnit("party1", "target") or UnitHasVehicleUI("party1") ) then
+		if ( UnitIsUnit("party1", "target") or UnitTargetsVehicleInRaidUI("party1") ) then
 			TargetUnit("partypet1");
 		else
 			TargetUnit("party1");
 		end
 	</Binding>
 	<Binding name="TARGETPARTYMEMBER2" category="BINDING_HEADER_TARGETING">
-		if ( UnitIsUnit("party2", "target") or UnitHasVehicleUI("party2") ) then
+		if ( UnitIsUnit("party2", "target") or UnitTargetsVehicleInRaidUI("party2") ) then
 			TargetUnit("partypet2");
 		else
 			TargetUnit("party2");
 		end
 	</Binding>
 	<Binding name="TARGETPARTYMEMBER3" category="BINDING_HEADER_TARGETING">
-		if ( UnitIsUnit("party3", "target") or UnitHasVehicleUI("party3") ) then
+		if ( UnitIsUnit("party3", "target") or UnitTargetsVehicleInRaidUI("party3") ) then
 			TargetUnit("partypet3");
 		else
 			TargetUnit("party3");
 		end
 	</Binding>
 	<Binding name="TARGETPARTYMEMBER4" category="BINDING_HEADER_TARGETING">
-		if ( UnitIsUnit("party4", "target") or UnitHasVehicleUI("party4") ) then
+		if ( UnitIsUnit("party4", "target") or UnitTargetsVehicleInRaidUI("party4") ) then
 			TargetUnit("partypet4");
 		else
 			TargetUnit("party4");

@@ -139,13 +139,22 @@
 					<KeyValue key="maxMenuStringWidth" value="190" type="number"/>
 				</KeyValues>
 				<Anchors>
-					<Anchor point="TOP" x="-23" y="-30"/>
+					<Anchor point="TOP" x="-23" y="-28"/>
 				</Anchors>
 			</Frame>
 			<Frame name="MaximizeMinimizeFrame" inherits="MaximizeMinimizeButtonFrameTemplate">
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.CloseButton" relativePoint="LEFT" x="10" y="0"/>
 				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture atlas="UI-OuterBorderButtonPatch" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" relativePoint="LEFT" x="6" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
 				<Scripts>
 					<OnLoad>
 						function OnMaximize(frame)
@@ -167,7 +176,7 @@
 			<Button name="DressUpFrameCancelButton" inherits="UIPanelButtonTemplate" text="CLOSE">
 				<Size x="80" y="22"/>
 				<Anchors>
-					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-2" y="2"/>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-7" y="4"/>
 				</Anchors>
 				<Scripts>
 					<OnClick function="HideParentPanel"/>
@@ -209,6 +218,14 @@
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.DressUpModel"/>
 					</Anchors>
 				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString name="DressUpFrameTitleText" inherits="GameFontHighlight" text="DRESSUP_FRAME">
+					<Size x="300" y="14"/>
+					<Anchors>
+						<Anchor point="TOP" relativePoint="TOP" x="0" y="-4"/>
+					</Anchors>
+				</FontString>
 			</Layer>
 		</Layers>
 		<Scripts>

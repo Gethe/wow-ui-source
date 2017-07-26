@@ -9,7 +9,6 @@ function GroupMembersDataProviderMixin:OnAdded(mapCanvas)
 	pin:SetPosition(0.5, 0.5);
 	pin:SetNeedsPeriodicUpdate(false);
 	pin:SetShouldShowUnits("player", false);
-	pin:Show();
 	self.pin = pin;
 end
 

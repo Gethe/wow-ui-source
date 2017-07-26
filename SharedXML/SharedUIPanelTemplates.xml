@@ -1661,7 +1661,7 @@
 	<Frame name="MaximizeMinimizeButtonFrameTemplate" parentKey="MaxMinButtonFrame" mixin="MaximizeMinimizeButtonFrameMixin" virtual="true">
 		<Size x="32" y="32"/>
 		<Frames>
-			<Button name="MaximizeButton" parentKey="MaximizeButton" setAllPoints="true" hidden="true">
+			<Button parentKey="MaximizeButton" setAllPoints="true" hidden="true">
 				<Size x="32" y="32"/>
 				<Scripts>
 					<OnClick>
@@ -1672,7 +1672,7 @@
 				<PushedTexture file="Interface\Buttons\UI-Panel-BiggerButton-Down"/>
 				<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
 			</Button>
-			<Button name="MinimizeButton" parentKey="MinimizeButton" setAllPoints="true">
+			<Button parentKey="MinimizeButton" setAllPoints="true">
 				<Size x="32" y="32"/>
 				<Scripts>
 					<OnClick>
