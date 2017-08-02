@@ -115,7 +115,7 @@ function WorldStateAlwaysUpFrame_OnEvent(self, event, ...)
 	end
 end
 
-function WorldStateAlwaysUpFrame_AddFrame(alwaysUpShown, text, icon, dynamicIcon, dynamicTooltip, state)
+function WorldStateAlwaysUpFrame_AddFrame(alwaysUpShown, text, icon, dynamicIcon, dynamicFlashIcon, dynamicTooltip, state)
 	local name = "AlwaysUpFrame"..alwaysUpShown;
 	local frame;
 	if ( alwaysUpShown > NUM_ALWAYS_UP_UI_FRAMES ) then
@@ -140,11 +140,7 @@ function WorldStateAlwaysUpFrame_AddFrame(alwaysUpShown, text, icon, dynamicIcon
 	frameText:SetText(text);
 	frameIcon:SetTexture(icon);
 	frameDynamicIcon:SetTexture(dynamicIcon);
-	local flash = nil;
-	if ( dynamicIcon ~= "" ) then
-		flash = dynamicIcon.."Flash"
-	end
-	flashTexture:SetTexture(flash);
+	flashTexture:SetTexture(dynamicFlashIcon);
 	frameDynamicButton.tooltip = dynamicTooltip;
 	if ( state == 2 ) then
 		UIFrameFlash(frameFlash, 0.5, 0.5, -1);
@@ -165,20 +161,18 @@ end
 function WorldStateAlwaysUpFrame_Update()
 	local numUI = GetNumWorldStateUI();
 	local frame;
-	local extendedUI, extendedUIState1, extendedUIState2, extendedUIState3, uiInfo; 
-	local uiType, text, icon, state, hidden, dynamicIcon, tooltip, dynamicTooltip;
 	local inInstance, instanceType = IsInInstance();
 	local alwaysUpShown = 1;
 	local extendedUIShown = 1;
 	local alwaysUpHeight = 10;
 	for i=1, numUI do
-		uiType, state, hidden, text, icon, dynamicIcon, tooltip, dynamicTooltip, extendedUI, extendedUIState1, extendedUIState2, extendedUIState3 = GetWorldStateUIInfo(i);
+		local uiType, state, hidden, text, icon, dynamicIcon, dynamicFlashIcon, tooltip, dynamicTooltip, extendedUI, extendedUIState1, extendedUIState2, extendedUIState3 = GetWorldStateUIInfo(i);
 		if ( not hidden ) then
 			if ( state > 0 ) then
 				-- Handle always up frames and extended ui's completely differently
 				if ( extendedUI ~= "" ) then
 					-- extendedUI
-					uiInfo = ExtendedUI[extendedUI]
+					local uiInfo = ExtendedUI[extendedUI]
 					local name = uiInfo.name..extendedUIShown;
 					if ( extendedUIShown > NUM_EXTENDED_UI_FRAMES ) then
 						frame = uiInfo.create(extendedUIShown);
@@ -191,7 +185,7 @@ function WorldStateAlwaysUpFrame_Update()
 					extendedUIShown = extendedUIShown + 1;
 				else
 					-- Always Up
-					frame = WorldStateAlwaysUpFrame_AddFrame(alwaysUpShown, text, icon, dynamicIcon, dynamicTooltip, state);
+					frame = WorldStateAlwaysUpFrame_AddFrame(alwaysUpShown, text, icon, dynamicIcon, dynamicFlashIcon, dynamicTooltip, state);
 					alwaysUpShown = alwaysUpShown + 1;
 					alwaysUpHeight = alwaysUpHeight + frame:GetHeight();
 				end	
@@ -203,33 +197,6 @@ function WorldStateAlwaysUpFrame_Update()
 			end
 		end
 	end
-	
-	--[[
-	Disabling this for now
-	Long-term we'd like the battleground objectives to work more like this, but it's not working for 5.3
-	
-	local hordePoints, hordeMaxPoints = GetBattlegroundPoints(TEAM_HORDE);
-	local alliancePoints, allianceMaxPoints = GetBattlegroundPoints(TEAM_ALLIANCE);
-	
-	local scoreString = BATTLEGROUND_SCORE_VICTORY_POINTS;
-	if(GetAreaID() == 1105) then  -- Gold Rush BG
-		scoreString = BATTLEGROUND_SCORE_GOLD;
-	end
-	
-	if(allianceMaxPoints > 0) then
-		local text = format(scoreString, alliancePoints, allianceMaxPoints);
-		frame = WorldStateAlwaysUpFrame_AddFrame(alwaysUpShown, text, "Interface\\TargetingFrame\\UI-PVP-Alliance", "", 0, 1);
-		alwaysUpShown = alwaysUpShown + 1;
-		alwaysUpHeight = alwaysUpHeight + frame:GetHeight();
-	end
-	
-	if(hordeMaxPoints > 0) then
-		local text = format(scoreString, hordePoints, hordeMaxPoints);
-		frame = WorldStateAlwaysUpFrame_AddFrame(alwaysUpShown, text, "Interface\\TargetingFrame\\UI-PVP-Horde", "", 0, 1);
-		alwaysUpShown = alwaysUpShown + 1;
-		alwaysUpHeight = alwaysUpHeight + frame:GetHeight();
-	end
-	]]--
 	
 	for i=alwaysUpShown, NUM_ALWAYS_UP_UI_FRAMES do
 		frame = _G["AlwaysUpFrame"..i];

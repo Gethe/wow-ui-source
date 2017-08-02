@@ -94,12 +94,6 @@
 						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="-12" y="0"/>
 					</Anchors>
 				</Texture>
-				<FontString parentKey="Name" name="$parentName" inherits="GameFontHighlight" justifyH="LEFT" >
-					<Size  x="90" y="36"/>
-					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.NameFrame"  x="17" y="0"/>
-					</Anchors>
-				</FontString>
 			</Layer>
 			<Layer level="OVERLAY">
 				<Texture name="$parentSpellBorder" inherits="Spellbook-SlotFrame">
@@ -107,6 +101,12 @@
 						<Anchor point="CENTER" relativeKey="$parent.Icon" x="2" y="0"/>
 					</Anchors>
 				</Texture>
+				<FontString parentKey="Name" name="$parentName" inherits="GameFontHighlight" justifyH="LEFT" >
+					<Size  x="90" y="36"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.NameFrame"  x="17" y="0"/>
+					</Anchors>
+				</FontString>
 			</Layer>
 		</Layers>
 		<Scripts>

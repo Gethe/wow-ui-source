@@ -184,7 +184,7 @@ end
 function FlightMap_FlightPointPinMixin:OnMouseEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_PRESERVE");
 	GameTooltip:ClearAllPoints();
-	GameTooltip:SetPoint("TOPLEFT", self, "TOPRIGHT", 20, 0);
+	GameTooltip:SetPoint("BOTTOMLEFT", self, "TOPRIGHT", 0, 0);
 
 	GameTooltip:AddLine(self.taxiNodeData.name, nil, nil, nil, true);
 

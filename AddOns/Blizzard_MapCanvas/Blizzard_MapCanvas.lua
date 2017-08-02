@@ -662,10 +662,17 @@ function MapCanvasMixin:SetTransformFlag(flag, value)
 	if value then
 		self.transformFlags = self.transformFlags and bit.bor(self.transformFlags, flag) or flag;
 	else
-		if self.transformFlags and bit.band(self.transformFlags, flag) == flag then
+		if self:IsTransformFlagSet(flag) then
 			self.transformFlags = self.transformFlags - flag;
 		end
 	end
+end
+
+function MapCanvasMixin:IsTransformFlagSet(flag)
+	if self.transformFlags then
+		return bit.band(self.transformFlags, flag) == flag;
+	end
+	return false;
 end
 
 function MapCanvasMixin:GetTransformFlags()

@@ -133,6 +133,8 @@ local ArtifactRelicForgeUILua =
 				{ Name = "icon", Type = "number", Nilable = false, Default = 0 },
 				{ Name = "canChoose", Type = "bool", Nilable = false, Default = false },
 				{ Name = "isChosen", Type = "bool", Nilable = false, Default = false },
+				{ Name = "tier", Type = "number", Nilable = false, Default = 0 },
+				{ Name = "requiredArtifactLevel", Type = "number", Nilable = false, Default = 0 },
 			},
 		},
 	},

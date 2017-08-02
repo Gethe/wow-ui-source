@@ -293,10 +293,18 @@
 		<Color r="1" g="1" b="1" a="1"/>
 	</Font>
 
-	<Font name="CommentatorDeadFont" inherits="SystemFont_Huge2" virtual="true">
+	<Font name="CommentatorDeadFontSmall" inherits="SystemFont_Med1" virtual="true">
 		<Color r="1" g="1" b="1" a="1"/>
 	</Font>
-
+	
+	<Font name="CommentatorDeadFontMedium" inherits="SystemFont_Large" virtual="true">
+		<Color r="1" g="1" b="1" a="1"/>
+	</Font>
+	
+	<Font name="CommentatorDeadFontDefault" inherits="SystemFont_Huge2" virtual="true">
+		<Color r="1" g="1" b="1" a="1"/>
+	</Font>
+	
 	<Font name="CommentatorDeadFontLarge" inherits="SystemFont_OutlineThick_WTF" outline="" virtual="true">
 		<Color r="1" g="1" b="1" a="1"/>
 	</Font>

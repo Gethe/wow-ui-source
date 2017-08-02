@@ -64,7 +64,7 @@
 		</Layers>
 		<Scripts>
 			<OnEnter>
-				local questLineName, questName, _, _, _, floorLocation = C_Questline.GetQuestlineInfoByIndex(self.index);
+				local questLineName, questName, _, _, _, floorLocation, isLegendary = C_Questline.GetQuestlineInfoByIndex(self.index);
 				if ( questName ) then
 					WorldMapTooltip:SetOwner(self, "ANCHOR_LEFT");
 					WorldMapTooltip:SetText(questName);

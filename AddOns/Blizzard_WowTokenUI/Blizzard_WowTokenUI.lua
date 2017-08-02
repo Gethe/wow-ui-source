@@ -852,10 +852,6 @@ function WowTokenDialog_SetDialog(self, dialogName)
 		self.Description:SetWidth(min(maxStringWidth, self.Description:GetWidth()));
 		height = height + spacing + self.Description:GetHeight();
 		width = max(width, self.Description:GetWidth());
-	elseif (dialog.confirmationDesc) then
-		self.Description:Hide();
-		self.ConfirmationDesc:ClearAllPoints();
-		self.ConfirmationDesc:SetPoint("TOP", self.Title, "BOTTOM", 0, -spacing);
 	else
 		self.Description:Hide();
 	end
@@ -882,7 +878,7 @@ function WowTokenDialog_SetDialog(self, dialogName)
 		if (dialog.price) then
 			self.PriceLabel:SetWidth(0);
 			self.ConfirmationDescLine2:ClearAllPoints();
-			self.ConfirmationDescLine2:SetPoint("TOP", target, "BOTTOM", 0, -40 + self.ConfirmationDesc:GetHeight());
+			self.ConfirmationDescLine2:SetPoint("TOP", target, "BOTTOM", 0, -20 - self.ConfirmationDesc:GetHeight());
 			if (type(dialog.price) == "function") then
 				self.PriceLabel:SetText(dialog.price());
 			else

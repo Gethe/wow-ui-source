@@ -291,13 +291,13 @@ function QuestMapFrame_ShowQuestDetails(questID)
 	StaticPopup_Hide("ABANDON_QUEST_WITH_ITEMS");
 end
 
-function QuestMapFrame_CloseQuestDetails()
+function QuestMapFrame_CloseQuestDetails(optPortraitOwnerCheckFrame)
 	QuestMapFrame.QuestsFrame:Show();
 	QuestMapFrame.DetailsFrame:Hide();
 	QuestMapFrame.DetailsFrame.questID = nil;
 	QuestMapFrame.DetailsFrame.questMapID = nil;
 	QuestMapFrame_UpdateAll();
-	QuestFrame_HideQuestPortrait();
+	QuestFrame_HideQuestPortrait(optPortraitOwnerCheckFrame);
 
 	StaticPopup_Hide("ABANDON_QUEST");
 	StaticPopup_Hide("ABANDON_QUEST_WITH_ITEMS");
@@ -1083,8 +1083,14 @@ function GetZoneStoryID()
 		["1021-Alliance"] = {11546, 1021},
 		["1021-Horde"] = {11546, 1021},
 		-- Argus
-		["1135-Alliance"] = {12066, 1135},
-		["1135-Horde"] = {12066, 1135},
+		["1184-Alliance"] = {12066, 1184},
+		["1184-Horde"] = {12066, 1184},
+		["1135-Alliance"] = {12066, 1184},
+		["1135-Horde"] = {12066, 1184},
+		["1171-Alliance"] = {12066, 1184},
+		["1171-Horde"] = {12066, 1184},
+		["1170-Alliance"] = {12066, 1184},
+		["1170-Horde"] = {12066, 1184},
 	};
 	if (achievementTable[key] ~= nil) then
 		return achievementTable[key][1], achievementTable[key][2];

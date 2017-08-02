@@ -37,15 +37,9 @@
 		</Backdrop>
 		<Frames>
 			<Button name="$parentButton">
-				<Size>
-					<AbsDimension x="128" y="32"/>
-				</Size>
+				<Size x="128" y="32"/>
 				<Anchors>
-					<Anchor point="BOTTOM">
-						<Offset>
-							<AbsDimension x="0" y="16"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="BOTTOM" x="0" y="16"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>
@@ -125,49 +119,33 @@
 					</Anchors>
 					<TexCoords left="0.1171875" right="0.2421875" top="0" bottom="1"/>
 				</Texture>
+				<FontString parentKey="Title" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="12" y="-8"/>
+						<Anchor point="TOPRIGHT" x="-32" y="-24"/>
+					</Anchors>
+				</FontString>
 			</Layer>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentTitleBG" file="Interface\PaperDollInfoFrame\UI-GearManager-Title-Background">
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset x="8" y="-7"/>
-						</Anchor>
-						<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT">
-							<Offset x="-8" y="-24"/>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="8" y="-7"/>
+						<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="-8" y="-24"/>
 					</Anchors>
 				</Texture>
 				<Texture name="$parentDialogBG" file="Interface\PaperDollInfoFrame\UI-Character-CharacterTab-L1">
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset x="8" y="-24"/>
-						</Anchor>
-						<Anchor point="BOTTOMRIGHT">
-							<Offset x="-6" y="8"/>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="8" y="-24"/>
+						<Anchor point="BOTTOMRIGHT" x="-6" y="8"/>
 					</Anchors>
 					<TexCoords left="0.255" right="1" top="0.29" bottom="1"/>
 				</Texture>
-			</Layer>
-			<Layer level="OVERLAY">
-				<FontString parentKey="Title" inherits="GameFontNormal">
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset x="12" y="-8"/>
-						</Anchor>
-						<Anchor point="TOPRIGHT">
-							<Offset x="-32" y="-24"/>
-						</Anchor>
-					</Anchors>
-				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
 			<Button name="$parentClose" inherits="UIPanelCloseButton">
 				<Anchors>
-					<Anchor point="TOPRIGHT">
-						<Offset x="2" y="1"/>
-					</Anchor>
+					<Anchor point="TOPRIGHT" x="2" y="1"/>
 				</Anchors>
 			</Button>
 		</Frames>
@@ -184,11 +162,7 @@
 						<AbsDimension x="360" y="0"/>
 					</Size>
 					<Anchors>
-						<Anchor point="TOP">
-							<Offset>
-								<AbsDimension x="0" y="-16"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOP" x="0" y="-16"/>
 					</Anchors>
 				</FontString>
 			</Layer>

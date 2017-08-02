@@ -1384,6 +1384,15 @@ function ArtifactTitleTemplateMixin:OnRelicSlotMouseEnter(relicSlot)
 	elseif relicSlot.relicLink then
 		GameTooltip:SetOwner(relicSlot, "ANCHOR_BOTTOMRIGHT", 0, 10);
 		GameTooltip:SetSocketedRelic(relicSlot.relicSlotIndex);
+		local currentRank, canAddTalent, artifactLevelRequiredForNextRank = C_ArtifactUI.GetRelicSlotRankInfo(relicSlot.relicSlotIndex);
+		if ( canAddTalent ) then
+			GameTooltip:AddLine(" ");
+			GameTooltip:AddLine(ARTIFACT_RELIC_TALENT_AVAILABLE, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
+		elseif ( artifactLevelRequiredForNextRank ) then
+			GameTooltip:AddLine(" ");
+			GameTooltip:AddLine(ARTIFACT_RELIC_SLOT_NEXT_RANK:format(currentRank + 1, artifactLevelRequiredForNextRank), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
+		end
+		GameTooltip:Show();
 	elseif relicSlot.relicType then
 		GameTooltip:SetOwner(relicSlot, "ANCHOR_BOTTOMRIGHT", 0, 10);
 		local slotName = _G["RELIC_SLOT_TYPE_" .. relicSlot.relicType:upper()];

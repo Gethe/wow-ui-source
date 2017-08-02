@@ -466,7 +466,7 @@ function WorldMapFrame_OnEvent(self, event, ...)
 				self.dungeonLevel = dungeonLevel;
 			end
 			if ( QuestMapFrame.DetailsFrame.questMapID and QuestMapFrame.DetailsFrame.questMapID ~= GetCurrentMapAreaID() ) then
-				QuestMapFrame_CloseQuestDetails();
+				QuestMapFrame_CloseQuestDetails(self);
 			else
 				QuestMapFrame_UpdateAll();
 			end
@@ -504,7 +504,7 @@ function WorldMapFrame_OnEvent(self, event, ...)
 	elseif ( event == "SUPER_TRACKED_QUEST_CHANGED" ) then
 		local questID = ...;
 		WorldMapFrame_SetBonusObjectivesDirty();
-		QuestMapFrame_CloseQuestDetails();
+		QuestMapFrame_CloseQuestDetails(self);
 		WorldMapPOIFrame_SelectPOI(questID);
 	elseif ( event == "PLAYER_STARTED_MOVING" ) then
 		if ( GetCVarBool("mapFade") ) then
@@ -1143,7 +1143,14 @@ function WorldMap_ShouldShowLandmark(landmarkType)
 end
 
 function WorldMapPOI_ShouldShowAreaLabel(poi)
-	return poi.landmarkType ~= LE_MAP_LANDMARK_TYPE_CONTRIBUTION;
+	if poi.landmarkType == LE_MAP_LANDMARK_TYPE_CONTRIBUTION or poi.landmarkType == LE_MAP_LANDMARK_TYPE_INVASION then
+		return false;
+	end
+	if poi.poiID and C_WorldMap.IsAreaPOITimed(poi.poiID) then
+		return false;
+	end
+
+	return true;
 end
 
 function WorldMap_GetFrameLevelForLandmark(landmarkType)
@@ -1178,7 +1185,7 @@ function WorldMap_UpdateLandmarks()
 	if WorldMapFrame.mapLinkPingInfo and GetCurrentMapAreaID() ~= WorldMapFrame.mapLinkPingInfo.mapID then
 		WorldMapFrame.mapLinkPingInfo = nil;
 	end
-	
+
 	for i=1, NUM_WORLDMAP_POIS do
 		local worldMapPOIName = "WorldMapFramePOI"..i;
 		local worldMapPOI = _G[worldMapPOIName];
@@ -1231,7 +1238,7 @@ function WorldMap_UpdateLandmarks()
 					end
 					worldMapPOI:Hide();		-- lame way to force tooltip redraw
 					worldMapPOI:Show();
-					
+
 					local pingInfo = WorldMapFrame.mapLinkPingInfo;
 					if pingInfo and landmarkType == LE_MAP_LANDMARK_TYPE_MAP_LINK and mapFloor == pingInfo.floorIndex then
 						WorldMapPing_StartPingPOI(worldMapPOI);
@@ -1281,7 +1288,7 @@ function WorldMap_UpdateLandmarks()
 			_G["WorldMapFrameGraveyard"..i]:Hide();
 		end
 	end
-	
+
 	WorldMapFrame.mapLinkPingInfo = nil;
 end
 
@@ -1299,7 +1306,7 @@ function WorldMapFrame_Update()
 			mapName = "World";
 		end
 	end
-	
+
 	WorldMapFrame_UpdateCosmicButtons();
 
 	local dungeonLevel = GetCurrentMapDungeonLevel();
@@ -1497,7 +1504,7 @@ function WorldMapFrame_Update()
 	local numUsedStoryLineFrames = 0;
 	if ( not isContinent and mapID > 0 ) then
 		for i = 1, C_Questline.GetNumAvailableQuestlines() do
-			local questLineName, questName, x, y, isHidden, floorLocation = C_Questline.GetQuestlineInfoByIndex(i);
+			local questLineName, questName, x, y, isHidden, floorLocation, isLegendary = C_Questline.GetQuestlineInfoByIndex(i);
 			local showQuest = questLineName and x > 0 and y > 0;
 			if ( showQuest and isHidden ) then
 				local _, _, active = GetTrackingInfo(MINIMAP_TRACK_HIDDEN_QUESTS);
@@ -1512,7 +1519,9 @@ function WorldMapFrame_Update()
 				end
 				frame.index = i;
 				WorldMapPOIFrame_AnchorPOI(frame, x, y, WORLD_MAP_POI_FRAME_LEVEL_OFFSETS.STORY_LINE);
-				if ( isHidden ) then
+				if ( isLegendary ) then
+					frame.Texture:SetAtlas("QuestLegendary", true);
+				elseif ( isHidden ) then
 					frame.Texture:SetAtlas("TrivialQuests", true);
 				else
 					frame.Texture:SetAtlas("QuestNormal", true);
@@ -1689,7 +1698,7 @@ function WorldMap_DoesLandMarkTypeShowHighlights(landmarkType, textureKitPrefix)
 	if WorldMapFrame_IsVindicaarTextureKit(textureKitPrefix) then
 		return false;
 	end
-	
+
 	return landmarkType == LE_MAP_LANDMARK_TYPE_NORMAL
 		or landmarkType == LE_MAP_LANDMARK_TYPE_TAMER
 		or landmarkType == LE_MAP_LANDMARK_TYPE_GOSSIP
@@ -1724,6 +1733,20 @@ function WorldMapPOI_AddContributionsToTooltip(tooltip, ...)
 
 			tooltip:AddLine(tooltipLine, appearanceData.stateColor:GetRGB());
 		end
+	end
+end
+
+function WorldMapPOI_AddPOITimeLeftText(anchor, areaPoiID, name, description)
+	if name and #name > 0 and description and #description > 0 and C_WorldMap.IsAreaPOITimed(areaPoiID) then
+		WorldMapTooltip:SetOwner(anchor, "ANCHOR_RIGHT");
+		WorldMapTooltip:SetText(HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(name));
+		WorldMapTooltip:AddLine(NORMAL_FONT_COLOR:WrapTextInColorCode(description));
+		local timeLeftMinutes = C_WorldMap.GetAreaPOITimeLeft(areaPoiID);
+		if timeLeftMinutes then
+			local timeString = SecondsToTime(timeLeftMinutes * 60);
+			WorldMapTooltip:AddLine(BONUS_OBJECTIVE_TIME_LEFT:format(timeString), NORMAL_FONT_COLOR:GetRGB());
+		end
+		WorldMapTooltip:Show();
 	end
 end
 
@@ -1782,16 +1805,7 @@ function WorldMapPOI_OnEnter(self)
 
 			WorldMapTooltip:Show();
 		else
-			if (self.description and #self.description > 0) then
-				local timeLeftMinutes = C_WorldMap.GetAreaPOITimeLeft(self.poiID);
-				if (timeLeftMinutes) then
-					WorldMapTooltip:SetOwner(self, "ANCHOR_RIGHT");
-					WorldMapTooltip:SetText(HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(self.description));
-					local timeString = SecondsToTime(timeLeftMinutes * 60);
-					WorldMapTooltip:AddLine(BONUS_OBJECTIVE_TIME_LEFT:format(timeString), NORMAL_FONT_COLOR:GetRGB());
-					WorldMapTooltip:Show();
-				end
-			end
+			WorldMapPOI_AddPOITimeLeftText(self, self.poiID, self.name, self.description);
 		end
 	end
 end
@@ -2145,7 +2159,7 @@ function WorldMap_ResetPOI(button, isObjectIcon, atlasIcon, textureKitPrefix)
 		if button.HighlightTexture then
 			button.HighlightTexture:SetAtlas(atlasIcon, true);
 		end
-		
+
 		local sizeX, sizeY = button.Texture:GetSize();
 		if (textureKitPrefix == "FlightMaster_Argus") then
 			sizeX = 21;

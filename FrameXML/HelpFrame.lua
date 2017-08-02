@@ -379,6 +379,20 @@ function HelpFrame_SetButtonEnabled(button, enabled)
 	end
 end
 
+function HelpFrame_SetReportPlayerByUnitTag(frame, unitTag)
+	SetPendingReportTarget(unitTag);
+	frame.target = "pending";
+end
+
+function HelpFrame_SetReportPlayerByLineID(frame, lineID)
+	frame.target = "pending";
+end
+
+function HelpFrame_SetReportPlayerByBattlefieldScoreIndex(frame, battlefieldScoreIndex)
+	BattlefieldSetPendingReportTarget(battlefieldScoreIndex);
+	frame.target = "pending";
+end
+
 function HelpFrame_ShowReportCheatingDialog()
 	local frame = ReportCheatingDialog;
 	frame.CommentFrame.EditBox:SetText("");

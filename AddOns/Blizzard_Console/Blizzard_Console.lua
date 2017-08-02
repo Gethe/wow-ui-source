@@ -224,6 +224,28 @@ function DeveloperConsoleMixin:OnEscapePressed()
 	self:Toggle(false);
 end
 
+function DeveloperConsoleMixin:ShouldEditBoxTakeFocus()
+	if not self.savedVars.isShown then
+		return false;
+	end
+
+	if self.Filters.EditBox:HasFocus() then
+		return false;
+	end
+
+	if ScriptErrorsFrame:GetEditBox():HasFocus() then
+		return false;
+	end
+
+	return true;
+end
+
+function DeveloperConsoleMixin:OnEditBoxUpdate()
+	if self:ShouldEditBoxTakeFocus() then
+		self.EditBox:SetFocus();
+	end
+end
+
 function DeveloperConsoleMixin:UpdateScrollbar()
 	local numMessages = self.MessageFrame:GetNumMessages();
 	self.MessageFrame.ScrollBar:SetMinMaxValues(1, numMessages);

@@ -26,6 +26,8 @@ function CommentatorUnitFrameMixin:Initialize(align)
 	self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED");
 	self:RegisterEvent("ARENA_COOLDOWNS_UPDATE");
 	self:RegisterEvent("ARENA_CROWD_CONTROL_SPELL_UPDATE");
+	
+	self.DeadText:SetFontObjectsToTry(CommentatorDeadFontDefault, CommentatorDeadFontMedium, CommentatorDeadFontSmall);
 end
 
 function CommentatorUnitFrameMixin:OnEvent(event, ...)	
@@ -45,6 +47,10 @@ function CommentatorUnitFrameMixin:OnEvent(event, ...)
 			self:SetCrowdControlRemoverIcon(spellID);
 		end
 	end
+end
+
+function CommentatorUnitFrameMixin:OnSizeChanged()
+	self.DeadText:ApplyFontObjects();
 end
 
 local LAYOUT_TABLE = {
@@ -287,7 +293,7 @@ function CommentatorUnitFrameMixin:SetVisibility(canBeVisible)
 end
 
 function CommentatorUnitFrameMixin:UpdateVisibility()
-	self:SetShown(self.canBeVisible and self.token ~= nil);
+	self:SetShown(self.canBeVisible and self:IsValid());
 end
 
 function CommentatorUnitFrameMixin:ShouldResetAnimatedBars()

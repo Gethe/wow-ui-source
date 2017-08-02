@@ -65,10 +65,7 @@
 				</Frames>
 				<Scripts>
 					<OnUpdate>
-						local parent = self:GetParent();
-						if not parent.Filters.EditBox:HasFocus() and parent.savedVars.isShown then
-							self:SetFocus();
-						end
+						self:GetParent():OnEditBoxUpdate();
 					</OnUpdate>
 					<OnTextChanged>
 						local text = self:GetText();
@@ -176,7 +173,7 @@
 							</OnTextChanged>
 
 							<OnEscapePressed>
-								if self:GetText() and self:GetText() > 0 then
+								if self:GetText() and #self:GetText() > 0 then
 									self:SetText("");
 									return;
 								end

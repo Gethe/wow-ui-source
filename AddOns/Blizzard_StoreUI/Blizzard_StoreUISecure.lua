@@ -1221,6 +1221,11 @@ function StoreFrame_UpdateCard(card,entryID,discountReset,forceModelUpdate)
 			text = info.browseBuyButtonText;
 		end
 		card.BuyButton:SetText(text);
+
+		local alreadyOwned = entryInfo.alreadyOwned;
+		local buyableHere = entryInfo.sharedData.buyableHere;
+		local shouldEnableBuyButton = buyableHere and not alreadyOwned;
+		card.BuyButton:SetEnabled(shouldEnableBuyButton);
 	end
 
 	card.CurrentPrice:SetText(currencyFormat(entryInfo.sharedData.currentDollars, entryInfo.sharedData.currentCents));
@@ -1287,12 +1292,13 @@ function StoreFrame_UpdateCard(card,entryID,discountReset,forceModelUpdate)
 			card.NormalPrice:SetPoint("TOPLEFT", card.Description, "BOTTOMLEFT", 0, -28);
 		end
 
-		if (discount) then
+		if card.BuyButton then
 			card.BuyButton:ClearAllPoints();
-			card.BuyButton:SetPoint("TOPLEFT", card.NormalPrice, "BOTTOMLEFT", 0, -20);
-		else
-			card.BuyButton:ClearAllPoints();
-			card.BuyButton:SetPoint("TOPLEFT", card.CurrentPrice, "BOTTOMLEFT", 0, -20);
+			if discount then
+				card.BuyButton:SetPoint("TOPLEFT", card.NormalPrice, "BOTTOMLEFT", 0, -20);
+			else
+				card.BuyButton:SetPoint("TOPLEFT", card.CurrentPrice, "BOTTOMLEFT", 0, -20);
+			end
 		end
 	end
 
@@ -1323,10 +1329,6 @@ function StoreFrame_UpdateCard(card,entryID,discountReset,forceModelUpdate)
 		card.SalePrice:Hide();
 		card.Strikethrough:Hide();
 		card.CurrentPrice:Show();
-	end
-
-	if (card.BuyButton) then
-		card.BuyButton:SetEnabled(entryInfo.sharedData.buyableHere);
 	end
 
 	card:SetID(entryID);
@@ -1885,12 +1887,20 @@ function StoreFrame_UpdateBuyButton()
 	self.BuyButton:SetText(text);
 
 	if (not selectedEntryID) then
-		self.BuyButton:SetEnabled(false);
+		self.BuyButton:Disable();
+		self.BuyButton.PulseAnim:Stop();
+		return;
+	end
+
+	local entryInfo = C_StoreSecure.GetEntryInfo(selectedEntryID);
+	if entryInfo and entryInfo.alreadyOwned then
+		self.BuyButton:Disable();
+		self.BuyButton.PulseAnim:Stop();
 		return;
 	end
 
 	if ( not self.BuyButton:IsEnabled() ) then
-		self.BuyButton:SetEnabled(true);
+		self.BuyButton:Enable();
 		if ( self.BuyButton:IsVisible() ) then
 			self.BuyButton.PulseAnim:Play();
 		end
