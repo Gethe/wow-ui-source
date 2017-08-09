@@ -1,4 +1,4 @@
-## Interface: 70200
+## Interface: 70300
 ## Title: Blizzard Dungeon Journal
 ## Notes:  Show Boss Info
 ## Secure: 1

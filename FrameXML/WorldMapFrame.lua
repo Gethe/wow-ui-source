@@ -13,6 +13,7 @@ WORLDMAP_AZEROTH_ID = 0;
 WORLDMAP_OUTLAND_ID = 3;
 WORLDMAP_MAELSTROM_ID = 5;
 WORLDMAP_DRAENOR_ID = 7;
+WORLDMAP_ARGUS_ID = 9;
 MAELSTROM_ZONES_ID = { TheMaelstrom = 737, Deepholm = 640, Kezan = 605, TheLostIsles = 544 };
 MAELSTROM_ZONES_LEVELS = {
 				TheMaelstrom = {minLevel = 0, maxLevel = 0},

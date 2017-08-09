@@ -72,6 +72,15 @@ local ArtifactRelicForgeUILua =
 			},
 		},
 		{
+			Name = "GetPreviewRelicItemLink",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "link", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "GetPreviewRelicTalents",
 			Type = "Function",
 

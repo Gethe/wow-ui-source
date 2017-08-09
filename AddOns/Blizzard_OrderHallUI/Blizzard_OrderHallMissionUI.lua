@@ -464,6 +464,7 @@ end
 OrderHallMissionComplete = { }
 
 function OrderHallMissionComplete:ShowRewards()
+	local missionComplete = true;
 	local bonusRewards = self.BonusRewards;
 	self.NextMissionButton:Enable();
 	if ( not bonusRewards.success and not self.skipAnimations ) then
@@ -506,12 +507,12 @@ function OrderHallMissionComplete:ShowRewards()
 			rewardFrame:Hide();
 			C_Timer.After(firstItemDelay,
 				function()
-					GarrisonMissionPage_SetReward(rewardFrame, reward);
+					GarrisonMissionPage_SetReward(rewardFrame, reward, missionComplete);
 					rewardFrame.Anim:Play();
 				end
 			);
 		else
-			GarrisonMissionPage_SetReward(rewardFrame, reward);
+			GarrisonMissionPage_SetReward(rewardFrame, reward, missionComplete);
 			if (not self.skipAnimations) then
 				rewardFrame.Anim:Play();
 			end
@@ -537,12 +538,12 @@ function OrderHallMissionComplete:ShowRewards()
 			rewardFrame:Hide();
 			C_Timer.After(secondItemDelay,
 				function()
-					GarrisonMissionPage_SetReward(rewardFrame, currentMission.overmaxRewards[1]);
+					GarrisonMissionPage_SetReward(rewardFrame, currentMission.overmaxRewards[1], missionComplete);
 					rewardFrame.Anim:Play();
 				end
 			);
 		else
-			GarrisonMissionPage_SetReward(rewardFrame, currentMission.overmaxRewards[1]);
+			GarrisonMissionPage_SetReward(rewardFrame, currentMission.overmaxRewards[1], missionComplete);
 		end
 		prevRewardFrame = rewardFrame;
 	end

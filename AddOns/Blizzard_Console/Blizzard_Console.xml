@@ -33,7 +33,7 @@
 		</Layers>
 	</Frame>
 	
-	<Frame name="DeveloperConsole" flattenRenderLayers="true" enableMouse="true" frameStrata="FULLSCREEN_DIALOG" frameLevel="9000" hidden="true" mixin="DeveloperConsoleMixin">
+	<Frame name="DeveloperConsole" flattenRenderLayers="true" enableMouseClicks="true" frameStrata="FULLSCREEN_DIALOG" frameLevel="9000" hidden="true" mixin="DeveloperConsoleMixin">
 		<Anchors>
 			<Anchor point="TOPLEFT" />
 			<Anchor point="TOPRIGHT" />
@@ -202,7 +202,7 @@
 				</Frames>
 			</Frame>
 			
-			<ScrollingMessageFrame parentKey="MessageFrame" enableMouse="true">
+			<ScrollingMessageFrame parentKey="MessageFrame" enableMouseClicks="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.Filters" relativePoint="BOTTOMLEFT" x="0" y="-4" />
 					<Anchor point="TOPRIGHT" relativeKey="$parent.Filters" relativePoint="BOTTOMRIGHT" x="-15" y="-4" />
@@ -270,7 +270,16 @@
 						self:SetTextCopyable(true);
 					</OnLoad>
 					<OnHyperlinkClick>
-						ConsoleExec(link:sub(2), true);
+						local command = link:sub(2);
+						if IsShiftKeyDown() then
+							self:GetParent():InsertLinkedCommand(command);
+						else
+							ConsoleExec(command, true);
+							if button == "RightButton" then
+								self:GetParent():AddToCommandHistory(command);
+								self:GetParent():ResetCommandHistoryIndex();
+							end
+						end
 					</OnHyperlinkClick>
 				</Scripts>
 			</ScrollingMessageFrame>

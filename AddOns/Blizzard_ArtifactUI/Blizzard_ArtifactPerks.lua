@@ -1421,6 +1421,11 @@ StaticPopupDialogs["CONFIRM_RELIC_REPLACE"] = {
 	OnCancel = function()
 		ClearCursor();
 	end,
+	OnUpdate = function (self)
+		if ( not CursorHasItem() ) then
+			self:Hide();
+		end
+	end,
 
 	showAlert = true,
 	timeout = 0,
@@ -1526,6 +1531,7 @@ function ArtifactTitleTemplateMixin:EvaluateRelics()
 					relicSlot.Rank.GlowAnim:Play();
 				else
 					relicSlot.Rank.GlowAnim:Stop();
+					relicSlot.Rank.Glow:SetAlpha(0);
 				end
 			else
 				relicSlot.Rank:Hide();

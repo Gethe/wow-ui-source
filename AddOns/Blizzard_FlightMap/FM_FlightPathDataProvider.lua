@@ -76,7 +76,7 @@ function FlightMap_FlightPathDataProviderMixin:ShowBackgroundRoutesFromCurrent()
 					return; -- Incorrect flight data, will look broken until the data is adjusted
 				end
 				
-				if not startPin.linkedPins[destinationPin] and not destinationPin.linkedPins[startPin] then
+				if startPin:ShouldShowOutgoingFlightPathPreviews() and not startPin.linkedPins[destinationPin] and not destinationPin.linkedPins[startPin] then
 					startPin.linkedPins[destinationPin] = true;
 					destinationPin.linkedPins[startPin] = true;
 
@@ -119,23 +119,7 @@ function FlightMap_FlightPathDataProviderMixin:AddFlightNode(taxiNodeData)
 	pin.taxiNodeData = taxiNodeData;
 	pin.owner = self;
 	pin.linkedPins = {};
-	pin.textureKitPrefix = taxiNodeData.textureKitPrefix;
-	if taxiNodeData.textureKitPrefix then
-		pin.atlasFormat = taxiNodeData.textureKitPrefix.."-%s";
-	else
-		pin.atlasFormat = "%s";
-	end
-		
-	if taxiNodeData.type == LE_FLIGHT_PATH_TYPE_CURRENT then
-		pin.Icon:SetAtlas(pin.atlasFormat:format("Taxi_Frame_Green"));
-		pin.IconHighlight:SetAtlas(pin.atlasFormat:format("Taxi_Frame_Gray"));
-	elseif taxiNodeData.type == LE_FLIGHT_PATH_TYPE_REACHABLE then
-		pin.Icon:SetAtlas(pin.atlasFormat:format("Taxi_Frame_Gray"));
-		pin.IconHighlight:SetAtlas(pin.atlasFormat:format("Taxi_Frame_Gray"));
-	elseif taxiNodeData.type == LE_FLIGHT_PATH_TYPE_UNREACHABLE then
-		pin.Icon:SetAtlas(pin.atlasFormat:format("UI-Taxi-Icon-Nub"));
-		pin.IconHighlight:SetAtlas(pin.atlasFormat:format("UI-Taxi-Icon-Nub"));
-	end
+	pin:SetFlightPathStyle(taxiNodeData.textureKitPrefix, taxiNodeData.type);
 	
 	pin:UpdatePinSize(taxiNodeData.type);
 	pin:SetShown(taxiNodeData.type ~= LE_FLIGHT_PATH_TYPE_UNREACHABLE); -- Only show if part of a route, handled in the route building functions
@@ -168,7 +152,7 @@ function FlightMap_FlightPointPinMixin:OnLoad()
 	self:SetScalingLimits(1.25, 3.5, 1.5);
 
 	-- Flight points nudge other pins away.
-	self:SetNudgeSourceFactor(1);
+	self:SetNudgeSourceRadius(1);
 end
 
 function FlightMap_FlightPointPinMixin:OnAcquired()
@@ -216,7 +200,7 @@ end
 
 function FlightMap_FlightPointPinMixin:UpdatePinSize(pinType)
 	if WorldMapFrame_IsVindicaarTextureKit(self.textureKitPrefix) then
-		self:SetSize(46, 55);
+		self:SetSize(39, 42);
 	elseif self.textureKitPrefix == "FlightMaster_Argus" then
 		self:SetSize(34, 28);
 	elseif pinType == LE_FLIGHT_PATH_TYPE_CURRENT then
@@ -226,4 +210,36 @@ function FlightMap_FlightPointPinMixin:UpdatePinSize(pinType)
 	elseif pinType == LE_FLIGHT_PATH_TYPE_UNREACHABLE then
 		self:SetSize(14, 14);
 	end
+end
+
+function FlightMap_FlightPointPinMixin:SetFlightPathStyle(textureKitPrefix, taxiNodeType)
+	self.textureKitPrefix = textureKitPrefix;
+	self:SetNudgeSourceMagnitude(nil, nil);
+	self:SetNudgeSourceRadius(1);
+	if textureKitPrefix then
+		self.atlasFormat = textureKitPrefix.."-%s";
+		
+		if WorldMapFrame_IsVindicaarTextureKit(self.textureKitPrefix) then
+			self:SetNudgeSourceRadius(2);
+			self:SetNudgeSourceMagnitude(1.5, 2.2);
+		end
+	else
+		self.atlasFormat = "%s";
+	end
+
+	if taxiNodeType == LE_FLIGHT_PATH_TYPE_CURRENT then
+		self.Icon:SetAtlas(self.atlasFormat:format("Taxi_Frame_Green"));
+		self.IconHighlight:SetAtlas(self.atlasFormat:format("Taxi_Frame_Gray"));
+	elseif taxiNodeType == LE_FLIGHT_PATH_TYPE_REACHABLE then
+		self.Icon:SetAtlas(self.atlasFormat:format("Taxi_Frame_Gray"));
+		self.IconHighlight:SetAtlas(self.atlasFormat:format("Taxi_Frame_Gray"));
+	elseif taxiNodeType == LE_FLIGHT_PATH_TYPE_UNREACHABLE then
+		self.Icon:SetAtlas(self.atlasFormat:format("UI-Taxi-Icon-Nub"));
+		self.IconHighlight:SetAtlas(self.atlasFormat:format("UI-Taxi-Icon-Nub"));
+	end
+end
+
+function FlightMap_FlightPointPinMixin:ShouldShowOutgoingFlightPathPreviews()
+	local isArgus = WorldMapFrame_IsVindicaarTextureKit(self.textureKitPrefix) or self.textureKitPrefix == "FlightMaster_Argus";
+	return not isArgus;
 end

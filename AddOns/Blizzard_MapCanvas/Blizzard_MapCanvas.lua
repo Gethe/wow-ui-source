@@ -270,21 +270,22 @@ function MapCanvasMixin:CalculatePinNudging(targetPin)
 	if not targetPin:IgnoresNudging() and targetPin:GetNudgeTargetFactor() > 0 then
 		local normalizedX, normalizedY = targetPin:GetPosition();
 		for sourcePin in self:EnumerateAllPins() do
-			if targetPin ~= sourcePin and not sourcePin:IgnoresNudging() and sourcePin:GetNudgeSourceFactor() > 0 then
+			if targetPin ~= sourcePin and not sourcePin:IgnoresNudging() and sourcePin:GetNudgeSourceRadius() > 0 then
 				local otherNormalizedX, otherNormalizedY = sourcePin:GetPosition();
 				local distanceSquared = SquaredDistanceBetweenPoints(normalizedX, normalizedY, otherNormalizedX, otherNormalizedY);
 				
-				local nudgeFactor = targetPin:GetNudgeTargetFactor() * sourcePin:GetNudgeSourceFactor();
+				local nudgeFactor = targetPin:GetNudgeTargetFactor() * sourcePin:GetNudgeSourceRadius();
 				if distanceSquared < nudgeFactor * nudgeFactor then
+					local distance = math.sqrt(distanceSquared);
+					
 					-- Avoid divide by zero: just push it right.
 					if distanceSquared == 0 then
-						targetPin:SetNudgeVector(1, 0);
+						targetPin:SetNudgeVector(sourcePin, 1, 0);
 					else
-						local distance = math.sqrt(distanceSquared);
-						targetPin:SetNudgeVector((normalizedX - otherNormalizedX) / distance, (normalizedY - otherNormalizedY) / distance);
+						targetPin:SetNudgeVector(sourcePin, (normalizedX - otherNormalizedX) / distance, (normalizedY - otherNormalizedY) / distance);
 					end
 					
-					targetPin:SetNudgeFactor(nudgeFactor);
+					targetPin:SetNudgeFactor(1 - (distance / nudgeFactor));
 					break; -- This is non-exact: each target pin only gets pushed by one source pin.
 				end
 			end
@@ -420,7 +421,7 @@ end
 function MapCanvasMixin:SetPinPosition(pin, normalizedX, normalizedY, insetIndex)
 	self:ApplyPinPosition(pin, normalizedX, normalizedY, insetIndex);
 	if not pin:IgnoresNudging() then
-		if pin:GetNudgeSourceFactor() > 0 then
+		if pin:GetNudgeSourceRadius() > 0 then
 			-- If we nudge other things we need to recalculate all nudging.
 			self.pinNudgingDirty = true;
 		else
@@ -440,9 +441,9 @@ function MapCanvasMixin:ApplyPinPosition(pin, normalizedX, normalizedY, insetInd
 			local x = normalizedX;
 			local y = normalizedY;
 			
-			local nudgeVectorX, nudgeVectorY = pin:GetNudgeVector();
-			if nudgeVectorX and nudgeVectorY then
-				local finalNudgeFactor = pin:GetNudgeFactor() * pin:GetNudgeZoomFactor();
+			local sourcePin, nudgeVectorX, nudgeVectorY = pin:GetNudgeVector();
+			if sourcePin and nudgeVectorX and nudgeVectorY then
+				local finalNudgeFactor = pin:GetNudgeFactor() * pin:GetNudgeTargetFactor() * pin:GetNudgeZoomFactor() * sourcePin:GetNudgeSourceZoomMagnitude();
 				x = normalizedX + nudgeVectorX * finalNudgeFactor;
 				y = normalizedY + nudgeVectorY * finalNudgeFactor;
 			end

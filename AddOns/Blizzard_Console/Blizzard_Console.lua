@@ -42,7 +42,7 @@ function DeveloperConsoleMixin:RestoreMessageHistory()
 			local message, colorType = unpack(messageHistory[i]);
 			local color = C_Console.GetColorFromType(colorType);
 			local r, g, b = color:GetRGB();
-			self.MessageFrame:AddMessage(message, r, g, b, colorType);
+			self:AddMessageInternal(message, r, g, b, colorType);
 			table.insert(self.savedVars.messageHistory, messageHistory[i]);
 		end
 
@@ -120,18 +120,22 @@ function DeveloperConsoleMixin:OnEvent(event, ...)
 end
 
 function DeveloperConsoleMixin:AddMessage(message, colorType)
-	message = message:gsub("\n", "");
-
 	if not colorType then
 		colorType = Enum.ConsoleColorType.DefaultColor;
 	end
 	local color = C_Console.GetColorFromType(colorType);
-
 	local r, g, b = color:GetRGB();
-	self.MessageFrame:AddMessage(message, r, g, b, colorType);
-	self:UpdateScrollbar();
 
+	self:AddMessageInternal(message, r, g, b, colorType);
+	
 	table.insert(self.savedVars.messageHistory, { message, colorType });
+	self:UpdateScrollbar();
+end
+
+function DeveloperConsoleMixin:AddMessageInternal(message, r, g, b, colorType)
+	for line in message:gmatch("[^\r\n]+") do
+		self.MessageFrame:AddMessage(line, r, g, b, colorType);
+	end
 end
 
 function DeveloperConsoleMixin:Clear()
@@ -162,7 +166,8 @@ function DeveloperConsoleMixin:RefreshMessageFrame()
 		local message, colorType = unpack(messageInfo);
 		local color = C_Console.GetColorFromType(colorType);
 		local r, g, b = color:GetRGB();
-		self.MessageFrame:AddMessage(message, r, g, b, colorType);
+
+		self:AddMessageInternal(message, r, g, b, colorType);
 	end
 end
 
@@ -286,11 +291,20 @@ end
 function DeveloperConsoleMixin:ExecuteCommand(text)
 	ConsoleExec(text, true);
 	self:AddMessage(("> %s"):format(text:gsub("\n", " > ")), Enum.ConsoleColorType.InputColor);
+
+	self:AddToCommandHistory(text);
+	self:ResetCommandHistoryIndex();
+end
+
+function DeveloperConsoleMixin:AddToCommandHistory(text)
 	if self.commandCircularBuffer:GetEntryAtIndex(1) ~= text then
 		self.commandCircularBuffer:PushFront(text);
 		table.insert(self.savedVars.commandHistory, text);
 	end
-	self:ResetCommandHistoryIndex();
+end
+
+function DeveloperConsoleMixin:InsertLinkedCommand(text)
+	self.EditBox:Insert(text);
 end
 
 function DeveloperConsoleMixin:OnEditBoxTextChanged(text)

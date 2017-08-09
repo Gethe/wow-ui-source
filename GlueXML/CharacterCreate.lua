@@ -448,6 +448,7 @@ function CharacterCreate_OnEvent(self, event, ...)
 			CharacterSelect.selectLast = true;
 			GlueParent_SetScreen("charselect");
 		else
+			CharCreate_RefreshNextButton();
 			GlueDialog_Show("OKAY", _G[errorCode]);
 		end
 	elseif ( event == "CUSTOMIZE_CHARACTER_STARTED" ) then
@@ -682,18 +683,12 @@ function CharacterCreateEnumerateClasses()
 	end
 end
 
-function SetCharacterRace(id)
-	CharacterCreate.selectedRace = id;
-	for i=1, CharacterCreate.numRaces, 1 do
-		_G["CharCreateRaceButton"..i]:SetChecked(i == id);
-	end
-
-	local name, faction = GetFactionForRace(CharacterCreate.selectedRace);
-
+local function CanProceedThroughCharacterCreate()
 	-- during a paid service we have to set alliance/horde for neutral races
 	-- hard-coded for Pandaren because of alliance/horde pseudo buttons
+	local name, faction = GetFactionForRace(CharacterCreate.selectedRace);
 	local canProceed = true;
-	if ( id == PANDAREN_RACE_ID and PAID_SERVICE_TYPE ) then
+	if ( CharacterCreate.selectedRace == PANDAREN_RACE_ID and PAID_SERVICE_TYPE ) then
 		local _, currentFaction = PaidChange_GetCurrentFaction();
 		if ( PaidChange_GetCurrentRaceIndex() == PANDAREN_RACE_ID and PAID_SERVICE_TYPE == PAID_FACTION_CHANGE ) then
 			-- this is an original pandaren staying or becoming selected
@@ -715,11 +710,24 @@ function SetCharacterRace(id)
 				faction = currentFaction;
 			end
 		end
-	else
-		PandarenFactionButtons_ClearSelection();
 	end
+	
+	return canProceed, faction;
+end
+
+function SetCharacterRace(id)
+	CharacterCreate.selectedRace = id;
+	for i=1, CharacterCreate.numRaces, 1 do
+		_G["CharCreateRaceButton"..i]:SetChecked(i == id);
+	end
+
+	local canProceed, faction = CanProceedThroughCharacterCreate();
 	CharCreate_EnableNextButton(canProceed);
 
+	if ( CharacterCreate.selectedRace ~= PANDAREN_RACE_ID or not PAID_SERVICE_TYPE ) then
+		PandarenFactionButtons_ClearSelection();
+	end
+	
 	-- Cache current selected faction information in the case where user is applying a trial boost
 	CharacterCreate.selectedFactionID = FACTION_IDS[faction];
 
@@ -957,6 +965,7 @@ function CharacterCreate_Forward()
 		end
 	else
 		CharacterCreate_Finish();
+		CharCreate_EnableNextButton(false);
 	end
 end
 
@@ -1592,6 +1601,10 @@ function CharCreate_EnableNextButton(enabled)
 	button.Arrow:SetDesaturated(not enabled);
 	button.TopGlow:SetShown(enabled);
 	button.BottomGlow:SetShown(enabled);
+end
+
+function CharCreate_RefreshNextButton()
+	CharCreate_EnableNextButton(CanProceedThroughCharacterCreate());
 end
 
 function PandarenFactionButtons_OnLoad(self)

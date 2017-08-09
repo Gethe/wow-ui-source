@@ -39,6 +39,12 @@ local TALENT_TYPES = {
 											RingStationary = "ArtifactsFX-YellowRing",
 											TraitGlow = "Artifacts-PerkRing-WhiteGlow",
 										},
+										transitionTextures = {
+											SpinningGlows = "ArtifactsFX-SpinningGlowys",
+											RingGlow = "ArtifactsFX-YellowRing",
+											PointBurstLeft = "ArtifactsFX-PointSideBurstLeft",
+											PointBurstRight = "ArtifactsFX-PointSideBurstRight",
+										},
 										runeSuffix = "light",
 									},
 	[RELIC_TALENT_TYPE_VOID] =		{ 	stones = { key = "DarkStones", template = "ArtifactRelicTalentVoidStonesTemplate" },
@@ -65,6 +71,12 @@ local TALENT_TYPES = {
 											RingStationary = "ArtifactsFX-YellowRing-Purple",
 											TraitGlow = "Artifacts-PerkRing-PurpleGlow",
 										},
+										transitionTextures = {
+											SpinningGlows = "ArtifactsFX-SpinningGlowys-Purple",
+											RingGlow = "ArtifactsFX-YellowRing-Purple",
+											PointBurstLeft = "ArtifactsFX-PointSideBurstLeft-Purple",
+											PointBurstRight = "ArtifactsFX-PointSideBurstRight-Purple",
+										},
 										runeSuffix = "purple",
 									},
 	[RELIC_TALENT_TYPE_NEUTRAL] =	{ 	stones = { key = "NeutralStones", template = "ArtifactRelicTalentNeutralStonesTemplate" },
@@ -83,11 +95,17 @@ local TALENT_TYPES = {
 											RingStationary = "ArtifactsFX-YellowRing-Neutral",
 											TraitGlow = "Artifacts-PerkRing-NeutralGlow",
 										},
+										transitionTextures = {
+											SpinningGlows = "ArtifactsFX-SpinningGlowys",
+											RingGlow = "ArtifactsFX-YellowRing-Neutral",
+											PointBurstLeft = "ArtifactsFX-PointSideBurstLeft",
+											PointBurstRight = "ArtifactsFX-PointSideBurstRight",
+										},
 									},
 };
 
 local TALENT_STYLES = {
-	[RELIC_TALENT_STYLE_CLOSED] = 		{ borderDesaturated = true, iconDesaturated = true, showStones = false, glowAnim = false, showModelScene = false, iconVertexColorLevel = 0.4, borderVertexColorLevel = 1 },
+	[RELIC_TALENT_STYLE_CLOSED] = 		{ borderDesaturated = true, iconDesaturated = true, showStones = false, glowAnim = false, showModelScene = false, iconVertexColorLevel = 0.4, borderVertexColorLevel = 1, overrideBorderTexture = "Darktrait-border" },
 	[RELIC_TALENT_STYLE_UPCOMING] = 	{ borderDesaturated = false, iconDesaturated = false, showStones = false, glowAnim = false, showModelScene = false, iconVertexColorLevel = 0.5, borderVertexColorLevel = 0.8 },
 	[RELIC_TALENT_STYLE_AVAILABLE] =	{ borderDesaturated = false, iconDesaturated = false, showStones = true, glowAnim = true, showModelScene = true, iconVertexColorLevel = 1, borderVertexColorLevel = 1 },
 	[RELIC_TALENT_STYLE_CHOSEN] = 		{ borderDesaturated = false, iconDesaturated = false, showStones = false, glowAnim = false, showModelScene = false, iconVertexColorLevel = 1, borderVertexColorLevel = 1 },
@@ -102,6 +120,9 @@ local LINK_STYLE_ACTIVE_ELEMENT = {
 };
 
 local PREVIEW_RELIC_SLOT = 4;
+
+local LINK_SIDE_LEFT = 1;
+local LINK_SIDE_RIGHT = 2;
 
 UIPanelWindows["ArtifactRelicForgeFrame"] =		{ area = "left",	pushable = 0, xoffset = 35, yoffset = -9, bottomClampOverride = 100, showFailedFunc = C_ArtifactRelicForgeUI.Clear, };
 
@@ -155,12 +176,12 @@ function ArtifactRelicForgeMixin:OnLoad()
 	self.Inset:Hide();
 	self.TopTileStreaks:Hide();
 
-	self:CreateLink(RELIC_TALENT_LINK_TYPE_VOID, self.Talent1, self.Talent2);
-	self:CreateLink(RELIC_TALENT_LINK_TYPE_LIGHT, self.Talent1, self.Talent3);
-	self:CreateLink(RELIC_TALENT_LINK_TYPE_VOID, self.Talent2, self.Talent4);
-	self:CreateLink(RELIC_TALENT_LINK_TYPE_LIGHT, self.Talent2, self.Talent5);
-	self:CreateLink(RELIC_TALENT_LINK_TYPE_VOID, self.Talent3, self.Talent5);
-	self:CreateLink(RELIC_TALENT_LINK_TYPE_LIGHT, self.Talent3, self.Talent6);
+	self:CreateLink(RELIC_TALENT_LINK_TYPE_VOID, LINK_SIDE_LEFT, self.Talent1, self.Talent2);
+	self:CreateLink(RELIC_TALENT_LINK_TYPE_LIGHT, LINK_SIDE_RIGHT, self.Talent1, self.Talent3);
+	self:CreateLink(RELIC_TALENT_LINK_TYPE_VOID, LINK_SIDE_LEFT, self.Talent2, self.Talent4);
+	self:CreateLink(RELIC_TALENT_LINK_TYPE_VOID, LINK_SIDE_RIGHT, self.Talent2, self.Talent5);
+	self:CreateLink(RELIC_TALENT_LINK_TYPE_LIGHT, LINK_SIDE_LEFT, self.Talent3, self.Talent5);
+	self:CreateLink(RELIC_TALENT_LINK_TYPE_LIGHT, LINK_SIDE_RIGHT, self.Talent3, self.Talent6);
 
 	self.activationFramesPool = CreateFramePool("FRAME", self, "ArtifactRelicTalentActivationFrameTemplate", function(pool, activationFrame) activationFrame:OnReset(pool); end);
 
@@ -211,8 +232,10 @@ function ArtifactRelicForgeMixin:OnEvent(event, ...)
 		local relicItemID = C_ArtifactRelicForgeUI.GetPreviewRelicItemID();
 		if ( relicItemID ) then
 			self:SetRelicSlot(PREVIEW_RELIC_SLOT);
+		elseif ( self.relicSlot == PREVIEW_RELIC_SLOT ) then
+			self:SetRelicSlot(self.previousSocketedRelicSlot or 1);
 		else
-			self:SetRelicSlot(self.previousRelicSlot or 1);
+			self.PreviewRelicFrame:Update();
 		end
 	end
 end
@@ -254,10 +277,10 @@ function ArtifactRelicForgeMixin:CloseDialogs()
 	StaticPopup_Hide("CONFIRM_RELIC_ATTUNE");
 end
 
-function ArtifactRelicForgeMixin:CreateLink(linkType, fromButton, toButton)
+function ArtifactRelicForgeMixin:CreateLink(linkType, linkSide, fromButton, toButton)
 	local template = (linkType == RELIC_TALENT_LINK_TYPE_LIGHT and "ArtifactRelicTalentLightLinkTemplate") or "ArtifactRelicTalentVoidLinkTemplate";
 	local link = CreateFrame("FRAME", nil, self, template);
-	link:SetUp(fromButton, toButton);
+	link:SetUp(linkSide, fromButton, toButton);
 end
 
 function ArtifactRelicForgeMixin:SetRelicSlot(relicSlot)
@@ -265,7 +288,9 @@ function ArtifactRelicForgeMixin:SetRelicSlot(relicSlot)
 		self.currentRelicAttuned = nil;
 		self:ClearAnimations();
 		self:CloseDialogs();
-		self.previousRelicSlot = self.relicSlot;
+		if ( self.relicSlot ~= PREVIEW_RELIC_SLOT ) then
+			self.previousSocketedRelicSlot = self.relicSlot;
+		end
 	end
 	self.relicSlot = relicSlot;
 	self:RefreshAll();
@@ -274,10 +299,10 @@ end
 function ArtifactRelicForgeMixin:ClearAnimations()
 	for i, talentButton in ipairs(self.Talents) do
 		talentButton.isChosen = nil;
-		talentButton.RevealAnim:Stop();
+		talentButton:StopTriggeredAnimations();
 	end
 	for i, link in ipairs(self.Links) do
-		link.RevealAnim:Stop();
+		link:StopTriggeredAnimations();
 	end
 	self.activationFramesPool:ReleaseAll();
 	self.revealAnimCounter = 0;
@@ -365,9 +390,13 @@ function ArtifactRelicForgeMixin:RefreshTalents()
 		if ( isChosenChanged ) then
 			local activationFrame = self.activationFramesPool:Acquire();
 			activationFrame:SetUpAndPlay(talentButton);
-		elseif ( not talentInfo.isChosen and self.activationFrame ) then
+			local chosenParent = talentButton:GetChosenParent();
+			if ( chosenParent and chosenParent.ConversionBorder ) then
+				chosenParent.ConversionBorder.Anim:Play();
+			end
+		elseif ( not talentInfo.isChosen and talentButton.activationFrame ) then
 			-- another relic was socketed in this slot while an activation anim was playing
-			self.activationFrame:Remove();
+			talentButton.activationFrame:Remove();
 		end
 	end
 
@@ -377,30 +406,30 @@ function ArtifactRelicForgeMixin:RefreshTalents()
 
 	if ( revealTalents ) then
 		self:RevealTalents();
+	else
+		if ( self.newRelic and self.Talents[1].canChoose ) then
+			self.Talents[1]:StartTransitionAnim();
+		end
 	end
 
 	if ( self.mousedOverTalent ) then
-		self.mousedOverTalent:HighlightLinks();
+		self.mousedOverTalent:OnEnter();
 	end
+
+	self.newRelic = nil;
 end
 
 function ArtifactRelicForgeMixin:RevealTalents()
 	for i, talentButton in ipairs(self.Talents) do
-		talentButton:SetStyle(RELIC_TALENT_STYLE_CLOSED);
-		talentButton:SetRandomRune();
-		talentButton.RevealAnim:Play();
+		talentButton:StartRevealAnim();
 	end
 	for i, link in ipairs(self.Links) do
-		link.RevealTexture:Show();
-		link.RevealAnim:Stop();
-		link.RevealAnim:Play();
+		link:StartRevealAnim();
 	end
 	-- counter for buttons only since they start first and finish last
 	self.revealAnimCounter = #self.Talents;
-end
 
-function ArtifactRelicForgeMixin:StyleChangesAllowed()
-	return self.revealAnimCounter == 0;
+	PlaySound(SOUNDKIT.UI_73_ARTIFACT_RELICS_TRAIT_REVEAL_ONLY);
 end
 
 function ArtifactRelicForgeMixin:OnRevealAnimFinished()
@@ -455,6 +484,11 @@ end
 function ArtifactRelicForgeMixin:OnRelicSlotMouseLeave()
 end
 
+function ArtifactRelicForgeMixin:OnNewSocketedRelic(relicSlotIndex)
+	self.newRelic = true;
+	self:SetRelicSlot(relicSlotIndex);
+end
+
 --========================================================================================================================
 ArtifactRelicForgeTitleTemplateMixin = CreateFromMixins(ArtifactTitleTemplateMixin);
 
@@ -463,7 +497,12 @@ end
 
 function ArtifactRelicForgeTitleTemplateMixin:ApplyCursorRelicToSlot(relicSlotIndex)
 	ArtifactTitleTemplateMixin.ApplyCursorRelicToSlot(self, relicSlotIndex);
-	self:GetParent():SetRelicSlot(relicSlotIndex);
+	self:GetParent():OnNewSocketedRelic(relicSlotIndex);
+end
+
+function ArtifactRelicForgeTitleTemplateMixin:OnCursorUpdate()
+	ArtifactTitleTemplateMixin.OnCursorUpdate(self);
+	self:GetParent().PreviewRelicFrame:RefreshPulse();
 end
 
 function ArtifactRelicForgeTitleTemplateMixin:OnRelicSlotClicked(button)
@@ -475,7 +514,7 @@ function ArtifactRelicForgeTitleTemplateMixin:OnRelicSlotClicked(button)
 			if itemName then
 				StaticPopup_Show("CONFIRM_RELIC_REPLACE", nil, nil, { titleContainer = self, relicSlotIndex = relicSlotIndex });
 			else
-				self:ApplyCursorRelicToSlot(i);
+				self:ApplyCursorRelicToSlot(relicSlotIndex);
 			end
 			return;
 		end
@@ -497,6 +536,8 @@ end
 function ArtifactRelicTalentButtonMixin:OnClick()
 	if ( self.canChoose ) then
 		self:GetParent():ChooseTalent(self:GetID());
+	elseif ( self:GetParent():IsPreviewRelicSelected() ) then
+		UIErrorsFrame:AddMessage(RELIC_FORGE_SOCKET_PREVIEW_RELIC, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, 1.0);
 	end
 end
 
@@ -506,28 +547,17 @@ function ArtifactRelicTalentButtonMixin:OnEnter()
 	GameTooltip:ClearAllPoints();
 	GameTooltip:SetPoint("LEFT", self, "RIGHT", 8, 0);
 
-	local rankDisplayType;
-	local layoutInfo = self:GetLayoutInfo();
-	if ( layoutInfo.row == 1 ) then
-		rankDisplayType = Enum.ArtifactPowerTooltipRankDisplay.ShowNone;
-	elseif ( layoutInfo.row == 2 ) then
-		local powerInfo = C_ArtifactUI.GetPowerInfo(self.powerID);
-		if ( powerInfo.currentRank >= 2 ) then
-			rankDisplayType = Enum.ArtifactPowerTooltipRankDisplay.ShowCurrentOnly;
-		else
-			rankDisplayType = Enum.ArtifactPowerTooltipRankDisplay.ShowNone;
-		end
+	GameTooltip:SetArtifactPowerByID(self.powerID);
+	if ( self:GetParent():IsPreviewRelicSelected() ) then
+		GameTooltip:AddLine(" ");
+		GameTooltip:AddLine(RELIC_FORGE_SOCKET_PREVIEW_RELIC, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);		
 	else
-		rankDisplayType = Enum.ArtifactPowerTooltipRankDisplay.ShowBoth;
-	end
-	GameTooltip:SetArtifactPowerByID(self.powerID, rankDisplayType);
-	if ( not self:GetParent():IsPreviewRelicSelected() ) then
 		if ( self.canChoose ) then
 			GameTooltip:AddLine(" ");
 			GameTooltip:AddLine(RELIC_FORGE_LEARN_TRAIT, GREEN_FONT_COLOR:GetRGB());
 		elseif ( not self.isChosen and not self:IsReachable() ) then
 			GameTooltip:AddLine(" ");
-			GameTooltip:AddLine(RELIC_FORGE_TRAIT_DISABLED:format(layoutInfo.row), RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
+			GameTooltip:AddLine(RELIC_FORGE_TRAIT_DISABLED, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
 		else
 			local talents = C_ArtifactRelicForgeUI.GetSocketedRelicTalents(self:GetParent().relicSlot);
 			local talentInfo = talents[self:GetID()];
@@ -573,7 +603,7 @@ function ArtifactRelicTalentButtonMixin:IsReachable()
 end
 
 function ArtifactRelicTalentButtonMixin:HighlightLinks()
-	if ( self.canChoose or not self:IsReachable() ) then
+	if ( self.canChoose or not self:IsReachable() or self:GetParent():IsPreviewRelicSelected() ) then
 		return;
 	end
 	self:HighlightParentLinks();
@@ -611,6 +641,38 @@ function ArtifactRelicTalentButtonMixin:HighlightChildLinks()
 	end
 end
 
+function ArtifactRelicTalentButtonMixin:GetChosenParent()
+	local talents = C_ArtifactRelicForgeUI.GetSocketedRelicTalents(self:GetParent().relicSlot);
+	if ( not talents ) then
+		return nil;
+	end
+
+	local layoutInfo = self:GetLayoutInfo();
+	for i, talentIndex in ipairs(layoutInfo.links) do
+		if ( talents[talentIndex] and talents[talentIndex].isChosen ) then
+			return self:GetParent().Talents[talentIndex];
+		end
+	end
+	return nil;
+end
+
+function ArtifactRelicTalentButtonMixin:GetChosenChild()
+	local talents = C_ArtifactRelicForgeUI.GetSocketedRelicTalents(self:GetParent().relicSlot);
+	if ( not talents ) then
+		return nil;
+	end
+
+	local selfIndex = self:GetID();
+	for buttonIndex, layoutInfo in ipairs(TALENTS_LAYOUT) do
+		for linkIndex, parentButtonIndex in ipairs(layoutInfo.links) do
+			if ( parentButtonIndex == selfIndex and talents[buttonIndex].isChosen ) then			
+				return self:GetParent().Talents[buttonIndex];
+			end
+		end
+	end
+	return nil;
+end
+
 function ArtifactRelicTalentButtonMixin:EvaluateStyle()
 	if ( self.isChosen ) then
 		self:SetStyle(RELIC_TALENT_STYLE_CHOSEN);
@@ -624,10 +686,11 @@ function ArtifactRelicTalentButtonMixin:EvaluateStyle()
 end
 
 function ArtifactRelicTalentButtonMixin:SetStyle(style)
-	if ( not self:GetParent():StyleChangesAllowed() ) then
+	if ( not self:CanChangeStyle() ) then
 		return;
 	end
 
+	local talentTypeInfo = TALENT_TYPES[self.talentType];
 	local styleInfo = TALENT_STYLES[style];
 	local activeBorder;
 	if ( self.isChosen ) then
@@ -637,6 +700,11 @@ function ArtifactRelicTalentButtonMixin:SetStyle(style)
 		activeBorder = self.IconFrame.Border;
 		self.IconFrame.ChosenBorder:Hide();
 	end
+	if ( styleInfo.overrideBorderTexture ) then
+		self.IconFrame.Border:SetAtlas(styleInfo.overrideBorderTexture, true);
+	else
+		self.IconFrame.Border:SetAtlas(talentTypeInfo.border, true);
+	end
 	activeBorder:Show();
 	activeBorder:SetDesaturated(styleInfo.borderDesaturated);
 	activeBorder:SetVertexColor(styleInfo.borderVertexColorLevel, styleInfo.borderVertexColorLevel, styleInfo.borderVertexColorLevel);
@@ -645,19 +713,28 @@ function ArtifactRelicTalentButtonMixin:SetStyle(style)
 	if ( styleInfo.glowAnim ) then
 		self.GlowAnim:Play();
 	else
+		self.GlowTexture:SetAlpha(0);
+		self.BackGlowTexture:SetAlpha(0);
 		self.GlowAnim:Stop();
 	end
 	if ( self.Stones ) then
 		if ( styleInfo.showStones ) then
 			self.Stones:Show();
-			self.Stones.FloatingAnim:Play();
+			-- if parent was just chosen, then transition
+			local parent = self:GetChosenParent();
+			if ( parent and parent.activationFrame ) then
+				self:StartTransitionAnim(0.5);
+			end
+			-- Transition will take care of stones anim
+			if ( not self.TransitionAnim:IsPlaying() ) then
+				self.Stones.FloatingAnim:Play();
+			end
 		else
 			self.Stones:Hide();
 			self.Stones.FloatingAnim:Stop();
 		end
 	end
 	if ( styleInfo.showModelScene ) then
-		local talentTypeInfo = TALENT_TYPES[self.talentType];
 		if ( talentTypeInfo.effectTag ) then	
 			if ( self.ModelScene.effectID ~= talentTypeInfo.effectID ) then
 				self.ModelScene:Show();
@@ -686,17 +763,18 @@ function ArtifactRelicTalentButtonMixin:EvaluateTalentType()
 	if ( layoutInfo.talentType ~= RELIC_TALENT_TYPE_NEUTRAL ) then
 		return;
 	end
-	for i, talentIndex in ipairs(layoutInfo.links) do
-		local fromButton = self:GetParent().Talents[talentIndex];
-		if ( fromButton.isChosen ) then
-			if ( fromButton.talentType == RELIC_TALENT_TYPE_LIGHT ) then
-				self:SetTalentType(RELIC_TALENT_TYPE_VOID);
-			elseif ( fromButton.talentType == RELIC_TALENT_TYPE_VOID ) then
-				self:SetTalentType(RELIC_TALENT_TYPE_LIGHT);
-			end
+	-- and only if not at the preview
+	if ( not self:GetParent():IsPreviewRelicSelected() ) then
+		local determiningButton = self:GetChosenParent();
+		if ( not determiningButton ) then
+			determiningButton = self:GetChosenChild();
+		end
+		if ( determiningButton ) then
+			self:SetTalentType(determiningButton.talentType);
 			return;
 		end
 	end
+	-- Nothing chosen connects to this
 	self:SetTalentType(RELIC_TALENT_TYPE_NEUTRAL);
 end
 
@@ -729,6 +807,11 @@ function ArtifactRelicTalentButtonMixin:SetTalentType(talentType)
 			self.IconFrame[key]:SetAtlas(atlas, true);
 		end
 	end
+	if ( talentTypeInfo.transitionTextures ) then
+		for key, atlas in pairs(talentTypeInfo.transitionTextures) do
+			self.IconFrame[key]:SetAtlas(atlas, true);
+		end
+	end
 	self.IconFrame.Border:SetAtlas(talentTypeInfo.border, true);
 	self.IconFrame.ChosenBorder:SetAtlas(talentTypeInfo.chosenBorder, true);
 end
@@ -737,7 +820,72 @@ function ArtifactRelicTalentButtonMixin:SetRandomRune()
 	local NUM_RUNE_TYPES = 6;
 	local runeIndex = math.random(1, NUM_RUNE_TYPES);
 	local talentTypeInfo = TALENT_TYPES[self.talentType];
-	self.IconFrame.Rune:SetAtlas(("Rune-%02d-"):format(runeIndex)..talentTypeInfo.runeSuffix, true);
+	self.Rune:SetAtlas(("Rune-%02d-"):format(runeIndex)..talentTypeInfo.runeSuffix, true);
+end
+
+function ArtifactRelicTalentButtonMixin:StartRevealAnim()
+	if ( self.canChoose ) then
+		self:SetStyle(RELIC_TALENT_STYLE_UPCOMING);
+	end
+	self:LockStyleChanges();
+	self:SetRandomRune();
+	self.RevealAnim:Stop();
+	self.RevealAnim:Play();
+end
+
+function ArtifactRelicTalentButtonMixin:OnRevealAnimFinished()
+	self:UnlockStyleChanges();
+	self:GetParent():OnRevealAnimFinished();
+	if ( self.canChoose ) then
+		self:EvaluateStyle();
+		self:StartTransitionAnim();
+	end
+end
+
+function ArtifactRelicTalentButtonMixin:StartTransitionAnim(delay)
+	if ( self.TransitionAnim:IsPlaying() ) then
+		return;
+	end
+
+	self:LockStyleChanges();
+	self.Stones.FloatingAnim:Stop();
+	self.GlowAnim:Stop();
+	self.TransitionAnim.Start:SetEndDelay(delay or 0);
+	self.TransitionAnim:Stop();
+	self.TransitionAnim:Play();
+	local chosenParent = self:GetChosenParent();
+	if ( chosenParent ) then
+		local link = self:GetParent():GetLinkBetween(chosenParent, self);
+		link:StartTransitionAnim();
+	end
+end
+
+function ArtifactRelicTalentButtonMixin:OnTransitionAnimFinished()
+	self:UnlockStyleChanges();
+	self:EvaluateStyle();
+	self.Stones.FloatingAnim:Play();
+end
+
+function ArtifactRelicTalentButtonMixin:LockStyleChanges()
+	self.styleChangesLocked = true;
+end
+
+function ArtifactRelicTalentButtonMixin:UnlockStyleChanges()
+	self.styleChangesLocked = false;
+end
+
+function ArtifactRelicTalentButtonMixin:CanChangeStyle()
+	return not self.styleChangesLocked;
+end
+
+function ArtifactRelicTalentButtonMixin:StopTriggeredAnimations()
+	self.RevealAnim:Stop();
+	self.TransitionAnim:Stop();
+	self:UnlockStyleChanges();
+	self:EvaluateStyle();
+	if ( self.ConversionBorder ) then
+		self.ConversionBorder.Anim:Stop();
+	end
 end
 
 --========================================================================================================================
@@ -751,12 +899,21 @@ function ArtifactRelicTalentLinkMixin:OnLoad()
 	end
 end
 
-function ArtifactRelicTalentLinkMixin:SetUp(fromButton, toButton)
+function ArtifactRelicTalentLinkMixin:SetUp(linkSide, fromButton, toButton)
 	self.fromButton = fromButton;
 	self.toButton = toButton;
-	if ( self.linkType == RELIC_TALENT_LINK_TYPE_LIGHT ) then
+	if ( linkSide == LINK_SIDE_RIGHT ) then
+		for i, element in ipairs(self.Elements) do
+			if ( element:GetObjectType() == "Texture" ) then
+				element:SetTexCoord(1, 0, 0, 1);
+			end
+		end
+		self.AnimFrame.Background:SetTexCoord(1, 0, 0, 1);
+		self.AnimFrame.Glow:SetTexCoord(1, 0, 0, 1);
+		self.AnimFrame.Anim.BallTravel:SetOffset(37, -40);
+		self.AnimFrame.Ball:SetPoint("CENTER", -19, 26);
 		self:SetPoint("TOPLEFT", fromButton, "BOTTOMRIGHT", -16, 2);
-	elseif ( self.linkType == RELIC_TALENT_LINK_TYPE_VOID ) then
+	elseif ( linkSide == LINK_SIDE_LEFT ) then
 		self:SetPoint("TOPRIGHT", fromButton, "BOTTOMLEFT", 16, 2);
 	end
 	local layoutInfo = fromButton:GetLayoutInfo();
@@ -776,7 +933,7 @@ function ArtifactRelicTalentLinkMixin:EvaluateStyle()
 end
 
 function ArtifactRelicTalentLinkMixin:SetStyle(style)
-	if ( not self:GetParent():StyleChangesAllowed() ) then
+	if ( not self:CanChangeStyle() ) then
 		return;
 	end
 
@@ -784,6 +941,66 @@ function ArtifactRelicTalentLinkMixin:SetStyle(style)
 	for _, element in ipairs(self.Elements) do
 		element:SetShown(element == activeElement);
 	end
+end
+
+function ArtifactRelicTalentLinkMixin:StartRevealAnim()
+	if ( self:GetParent():IsPreviewRelicSelected() ) then
+		self.RevealAnim.Start:SetTargetKey(self.DimTexture);
+		self.RevealAnim.TargetAlpha:SetTargetKey(self.DimTexture);
+	else
+		self.RevealAnim.Start:SetTargetKey(self.DisabledTexture);
+		self.RevealAnim.TargetAlpha:SetTargetKey(self.DisabledTexture);
+	end
+	self:LockStyleChanges();
+	self.RevealTexture:Show();
+	self.RevealAnim:Stop();
+	self.RevealAnim:Play();
+end
+
+function ArtifactRelicTalentLinkMixin:OnRevealAnimFinished()
+	self:UnlockStyleChanges();
+	self:EvaluateStyle();
+end
+
+function ArtifactRelicTalentLinkMixin:StartTransitionAnim()
+	if ( self.TransitionAnim:IsPlaying() ) then
+		return;
+	end
+
+	self:SetStyle(RELIC_TALENT_LINK_STYLE_DISABLED);
+	self:LockStyleChanges();
+	self.DisabledTexture:Show();
+	self.TransitionTexture:Show();
+	self.TransitionAnim:Stop();
+	self.TransitionAnim:Play();
+end
+
+function ArtifactRelicTalentLinkMixin:OnTransitionAnimFinished()
+	self.DisabledTexture:SetAlpha(1);
+	self:UnlockStyleChanges();
+	self:EvaluateStyle();
+end
+
+function ArtifactRelicTalentLinkMixin:LockStyleChanges()
+	self.styleChangesLocked = true;
+end
+
+function ArtifactRelicTalentLinkMixin:UnlockStyleChanges()
+	self.styleChangesLocked = false;
+end
+
+function ArtifactRelicTalentLinkMixin:CanChangeStyle()
+	return not self.styleChangesLocked;
+end
+
+function ArtifactRelicTalentLinkMixin:StopTriggeredAnimations()
+	self.RevealAnim:Stop();
+	self.RevealTexture:Hide();
+	self.TransitionAnim:Stop();
+	self.TransitionTexture:Hide();
+	self.DisabledTexture:SetAlpha(1);
+	self:UnlockStyleChanges();
+	self:EvaluateStyle();
 end
 
 --========================================================================================================================
@@ -808,10 +1025,10 @@ function ArtifactRelicForgePreviewRelicMixin:OnEvent(event, ...)
 end
 
 function ArtifactRelicForgePreviewRelicMixin:OnEnter()
-	local relicItemID = C_ArtifactRelicForgeUI.GetPreviewRelicItemID();
-	if ( relicItemID ) then
+	local relicItemLink = C_ArtifactRelicForgeUI.GetPreviewRelicItemLink();
+	if ( relicItemLink ) then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		GameTooltip:SetItemByID(relicItemID);
+		GameTooltip:SetHyperlink(relicItemLink);
 	else
 		local type, itemID, itemLink = GetCursorInfo();
 		if type ~= "item" or not IsArtifactRelicItem(itemID) then
@@ -849,14 +1066,19 @@ end
 
 function ArtifactRelicForgePreviewRelicMixin:Update()
 	local isSelected = (self:GetParent().relicSlot == PREVIEW_RELIC_SLOT);
+	self:GetParent().PreviewRelicCover:SetShown(isSelected);
 	self.SelectedGlow:SetShown(isSelected);
+	self.SelectedGlow2:SetShown(isSelected);
 	local relicItemID = C_ArtifactRelicForgeUI.GetPreviewRelicItemID();
 	if ( relicItemID ) then
 		local itemID, class, subClass, invType, texture = GetItemInfoInstant(relicItemID);
 		self.Icon:SetTexture(texture);
+		self.Border:SetAtlas("Relicforge-Slot-frame-Active", true);
 	else
 		self.Icon:SetTexture();
+		self.Border:SetAtlas("Relicforge-Slot-frame", true);
 	end
+	self:RefreshPulse();
 end
 
 function ArtifactRelicForgePreviewRelicMixin:OnDragStart()
@@ -868,6 +1090,26 @@ function ArtifactRelicForgePreviewRelicMixin:SetRelicFromCursor()
 	local isAttuned, canAttune = C_ArtifactRelicForgeUI.GetPreviewRelicAttuneInfo();
 	if ( canAttune ) then
 		C_ArtifactRelicForgeUI.AttunePreviewRelic();
+	end
+end
+
+function ArtifactRelicForgePreviewRelicMixin:RefreshPulse()
+	local canSet, bindWarning = C_ArtifactRelicForgeUI.CanSetPreviewRelicFromCursor();
+	if ( canSet ) then
+		self.PulseBorder:Show();
+		if ( C_ArtifactRelicForgeUI.GetPreviewRelicItemID() ) then
+			self.PulseBorder:SetAtlas("Relicforge-Slot-frame", true);
+			self.PulseBorder.AnimWhenEmpty:Stop();
+			self.PulseBorder.AnimWhenFull:Play();
+		else
+			self.PulseBorder:SetAtlas("Relicforge-Slot-frame-Active", true);
+			self.PulseBorder.AnimWhenEmpty:Play();
+			self.PulseBorder.AnimWhenFull:Stop();
+		end
+	else
+		self.PulseBorder:Hide();
+		self.PulseBorder.AnimWhenEmpty:Stop();
+		self.PulseBorder.AnimWhenFull:Stop();
 	end
 end
 

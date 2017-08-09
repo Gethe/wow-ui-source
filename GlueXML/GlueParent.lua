@@ -258,7 +258,7 @@ function GlueParent_EnsureValidScreen()
 			"changingFrom", currentScreen,
 			"changingTo", bestScreen);
 
-		GlueParent_SetScreen(GlueParent_GetBestScreen());
+		GlueParent_SetScreen(bestScreen);
 	end
 end
 

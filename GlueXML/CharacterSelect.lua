@@ -1218,6 +1218,8 @@ function CharacterSelect_AllowedToEnterWorld()
         return false;
     elseif (CharSelectServicesFlowFrame:IsShown()) then
         return false;
+	elseif (IsKioskModeEnabled() and (CharacterSelect.hasPendingTrialBoost or KioskMode_IsWaitingOnTrial())) then
+		return false;
     end
 
     local isTrialBoost, isTrialBoostLocked, _, vasServiceInProgress = select(21, GetCharacterInfo(GetCharacterSelection()));
@@ -1867,12 +1869,16 @@ function KioskMode_SetWaitingOnTrial(waiting)
     KIOSK_MODE_WAITING_ON_TRIAL = waiting;
 end
 
+function KioskMode_IsWaitingOnTrial()
+    return KIOSK_MODE_WAITING_ON_TRIAL;
+end
+
 function KioskMode_CheckEnterWorld()
     if (not IsKioskModeEnabled()) then
         return;
     end
 
-    if (not KIOSK_MODE_WAITING_ON_TRIAL) then
+	if (not KioskMode_IsWaitingOnTrial()) then
         if (KioskModeSplash_GetAutoEnterWorld()) then
             EnterWorld();
         else

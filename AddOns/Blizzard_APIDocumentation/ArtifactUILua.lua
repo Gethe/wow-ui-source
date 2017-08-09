@@ -797,19 +797,6 @@ local ArtifactUILua =
 	Tables =
 	{
 		{
-			Name = "ArtifactPowerTooltipRankDisplay",
-			Type = "Enumeration",
-			NumValues = 3,
-			MinValue = 0,
-			MaxValue = 2,
-			Fields =
-			{
-				{ Name = "ShowBoth", Type = "ArtifactPowerTooltipRankDisplay", EnumValue = 0 },
-				{ Name = "ShowCurrentOnly", Type = "ArtifactPowerTooltipRankDisplay", EnumValue = 1 },
-				{ Name = "ShowNone", Type = "ArtifactPowerTooltipRankDisplay", EnumValue = 2 },
-			},
-		},
-		{
 			Name = "ArtifactArtInfo",
 			Type = "Structure",
 			Fields =

@@ -2179,12 +2179,14 @@ function FramePositionDelegate:ShowUIPanel(frame, force)
 	framePushable = GetUIPanelWindowInfo(frame, "pushable") or 0;
 
 	if ( UnitIsDead("player") and not GetUIPanelWindowInfo(frame, "whileDead") ) then
+		self:ShowUIPanelFailed(frame);
 		NotWhileDeadError();
 		return;
 	end
 
 	-- If the store-frame is open, we don't let people open up any other panels (just as if it were full-screened)
 	if ( StoreFrame_IsShown and StoreFrame_IsShown() ) then
+		self:ShowUIPanelFailed(frame);
 		return;
 	end
 

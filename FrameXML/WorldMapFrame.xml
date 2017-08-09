@@ -421,6 +421,49 @@
 													</Anchors>
 												</HighlightTexture>
 											</Button>
+											
+											<Button name="KrokuunButton" inherits="WorldMapFakeButtonTemplate">
+												<Size x="270" y="160"/>
+												<Anchors>
+													<Anchor point="BOTTOMRIGHT" x="-270" y="140"/>
+												</Anchors>
+												<KeyValues>
+													<KeyValue key="zoneID" value="1135" type="number"/>
+												</KeyValues>
+												<HighlightTexture atlas="Krokuun_Highlight" useAtlasSize="true" alphaMode="ADD">
+													<Anchors>
+														<Anchor point="BOTTOMRIGHT" relativeKey="$parent.$parent" relativePoint="BOTTOMRIGHT"/>
+													</Anchors>
+												</HighlightTexture>
+											</Button>
+											<Button name="MacAreeButton" inherits="WorldMapFakeButtonTemplate">
+												<Size x="200" y="175"/>
+												<Anchors>
+													<Anchor point="TOPRIGHT" x="-280" y="-120"/>
+												</Anchors>
+												<KeyValues>
+													<KeyValue key="zoneID" value="1170" type="number"/>
+												</KeyValues>
+												<HighlightTexture atlas="MacAree_Highlight" useAtlasSize="true" alphaMode="ADD">
+													<Anchors>
+														<Anchor point="TOPRIGHT" relativeKey="$parent.$parent" relativePoint="TOPRIGHT"/>
+													</Anchors>
+												</HighlightTexture>
+											</Button>
+											<Button name="AntoranWastesButton" inherits="WorldMapFakeButtonTemplate">
+												<Size x="210" y="220"/>
+												<Anchors>
+													<Anchor point="BOTTOMLEFT" x="220" y="190"/>
+												</Anchors>
+												<KeyValues>
+													<KeyValue key="zoneID" value="1171" type="number"/>
+												</KeyValues>
+												<HighlightTexture atlas="AntoranWastes_Highlight" useAtlasSize="true" alphaMode="ADD">
+													<Anchors>
+														<Anchor point="BOTTOMLEFT" relativeKey="$parent.$parent" relativePoint="BOTTOMLEFT"/>
+													</Anchors>
+												</HighlightTexture>
+											</Button>
 										</Frames>
 										<Scripts>
 											<OnLoad>

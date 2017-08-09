@@ -7,6 +7,10 @@ function WorldMapFrame_IsMaelstromContinentMap()
 	return GetCurrentMapContinent() == WORLDMAP_MAELSTROM_ID and GetCurrentMapZone() == 0;
 end
 
+function WorldMapFrame_IsArgusContinentMap()
+	return GetCurrentMapContinent() == WORLDMAP_ARGUS_ID and GetCurrentMapZone() == 0;
+end
+
 local CosmicStyleButtons = {
 	{
 		Buttons = {
@@ -28,6 +32,16 @@ local CosmicStyleButtons = {
 		
 		Predicate = WorldMapFrame_IsMaelstromContinentMap,
 	},	
+	
+	{
+		Buttons = {
+			KrokuunButton,
+			MacAreeButton,
+			AntoranWastesButton,
+		},
+		
+		Predicate = WorldMapFrame_IsArgusContinentMap,
+	},
 };
 	
 function WorldMapFrame_UpdateCosmicButtons()

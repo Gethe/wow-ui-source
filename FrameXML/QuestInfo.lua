@@ -461,7 +461,7 @@ function QuestInfo_ShowRewards()
 		rewardButtons[i]:Hide();
 	end
 
-	local questItem, name, texture, quality, isUsable, numItems;
+	local questItem, name, texture, quality, isUsable, numItems, itemID;
 	local rewardsCount = 0;
 	local lastFrame = rewardsFrame.Header;
 

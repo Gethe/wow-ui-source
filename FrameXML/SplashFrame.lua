@@ -57,6 +57,15 @@ SPLASH_SCREENS = {
 	},
 	["LEGION_CURRENT"] = {	id = NEWEST_SPLASH_SCREEN_VERSION, -- 7.3.0
 					questID = nil,
+					getQuestID = function()
+						local faction = UnitFactionGroup("player");
+						if faction == "Alliance" then
+							return 47221;
+						elseif faction == "Horde" then
+							return 47835;
+						end
+						return nil;
+					end,
 					leftTex = "splash-730-topleft",
 					rightTex = "splash-730-right",
 					bottomTex = "splash-730-botleft",
@@ -303,7 +312,7 @@ function SplashFrame_Close()
 		local showQuestDialog = questID and
 								( (frame.StartButton:IsShown() and frame.StartButton:IsEnabled()) or
 								  (SPLASH_SCREENS[tag].hideStartButton and SplashFrame.firstTimeViewed and not IsQuestFlaggedCompleted(questID) and
-								  		UnitLevel("player") >= (SPLASH_SCREENS[tag].minLevel)
+								  		UnitLevel("player") >= (SPLASH_SCREENS[tag].minDisplayLevel)
 										and ShouldEnableStartButton(questID)) );
 		HideUIPanel(frame);
 
