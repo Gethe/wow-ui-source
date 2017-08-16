@@ -33,8 +33,7 @@ function GroupMembersDataProviderMixin:OnMapChanged()
 end
 
 function GroupMembersDataProviderMixin:RefreshAllData(fromOnShow)
-self.pin:SetSize(self:GetMap():DenormalizeHorizontalSize(1.0), self:GetMap():DenormalizeVerticalSize(1.0));
-
+	self.pin:SetSize(self:GetMap():DenormalizeHorizontalSize(1.0), self:GetMap():DenormalizeVerticalSize(1.0));
 	local pinSize = 13 / FlightMapFrame.ScrollContainer:GetCanvasScale();
 	if self.pinSize ~= pinSize then
 		self.pin:SetPinSize("party", pinSize);
@@ -56,12 +55,14 @@ function GroupMembersDataProviderMixin:OnCanvasScaleChanged()
 	-- We change the frame strata so that players will show above other flight map icons while zoomed in
 	-- but not while zoomed out
 	if self.frameStrataThreshold then
-		if self:GetMap():GetCanvasScale() >= self.frameStrataThreshold then
+		if self:GetMap():GetCanvasZoomPercent() >= self.frameStrataThreshold then
 			self.pin:SetFrameStrata(self.zoomedInStrata);
 		else
 			self.pin:SetFrameStrata(self.zoomedOutStrata);
 		end
 	end
+	
+	self.pin:ApplyCurrentPosition();
 end
 
 --[[ Group Members Pin ]]--
@@ -70,5 +71,4 @@ GroupMembersPinMixin = CreateFromMixins(MapCanvasPinMixin);
 function GroupMembersPinMixin:OnLoad()
 	UnitPositionFrameMixin.OnLoad(self);
 	self:SetAlphaLimits(1.0, 1.0, 1.0);
-	self:SetScalingLimits(0, 1, 1);
 end

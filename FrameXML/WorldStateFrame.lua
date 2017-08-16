@@ -1113,7 +1113,7 @@ function ToggleWorldStateScoreFrame()
 			end
 		end
 
-		if ( ( not IsActiveBattlefieldArena() or GetBattlefieldWinner() ) and inBattlefield ) then
+		if ( ( not IsActiveBattlefieldArena() or GetBattlefieldWinner() or C_PvP.IsInBrawl() ) and inBattlefield ) then
 			ShowUIPanel(WorldStateScoreFrame);
 		end
 	end

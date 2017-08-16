@@ -786,6 +786,7 @@
 			<OnLoad function="LFDFrame_OnLoad"/>
 			<OnEvent function="LFDFrame_OnEvent"/>
 			<OnShow function="LFDFrame_OnShow"/>
+			<OnHide function="LFDFrame_OnHide"/>
 		</Scripts>
 	</Frame>
 </Ui>

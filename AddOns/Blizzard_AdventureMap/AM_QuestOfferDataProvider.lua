@@ -131,7 +131,7 @@ AdventureMap_QuestOfferPinMixin = CreateFromMixins(MapCanvasPinMixin);
 
 function AdventureMap_QuestOfferPinMixin:OnLoad()
 	self:SetAlphaStyle(AM_PIN_ALPHA_STYLE_VISIBLE_WHEN_ZOOMED_IN);
-	self:SetScalingLimits(1.25, 3.0, 1.5);
+	self:SetScalingLimits(1.25, 0.825, 1.275);
 end
 
 function AdventureMap_QuestOfferPinMixin:OnAcquired(playAnim)

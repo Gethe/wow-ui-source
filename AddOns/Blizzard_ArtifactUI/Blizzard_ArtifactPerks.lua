@@ -86,6 +86,20 @@ function ArtifactPerksMixin:OnEvent(event, ...)
 	end
 end
 
+function ArtifactPerksMixin:OnUIOpened()
+	self.RelicTalentAlert:Hide();
+	for i, relicSlot in ipairs(self.TitleContainer.RelicSlots) do
+		local currentRank, canAddTalent = C_ArtifactUI.GetRelicSlotRankInfo(i);
+		if ( canAddTalent ) then
+			self.RelicTalentAlert:SetPoint("TOP", relicSlot, "BOTTOM", 0, -20);
+			self.RelicTalentAlert:Show();
+			break;
+		end
+	end
+
+	self:Refresh(true);
+end
+
 function ArtifactPerksMixin:OnAppearanceChanging()
 	self.isAppearanceChanging = true;
 end
@@ -1449,20 +1463,23 @@ function ArtifactTitleTemplateMixin:OnRelicSlotClicked(relicSlot)
 				else
 					self:ApplyCursorRelicToSlot(i);
 				end
+				return true;
 			else
 				local _, itemID = GetCursorInfo();
 				if itemID and IsArtifactRelicItem(itemID) then
 					UIErrorsFrame:AddMessage(RELIC_SLOT_INVALID, 1.0, 0.1, 0.1, 1.0);
+					return true;
 				else
 					if IsModifiedClick() then
 						local _, _, _, itemLink = C_ArtifactUI.GetRelicInfo(i);
-						HandleModifiedItemClick(itemLink);
+						return HandleModifiedItemClick(itemLink);
 					end
 				end
 			end
 			break;
 		end
 	end
+	return false;
 end
 
 function ArtifactTitleTemplateMixin:RefreshRelicTooltips()

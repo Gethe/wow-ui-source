@@ -16,8 +16,7 @@ function FlightMapMixin:OnLoad()
 
 	self:RegisterEvent("TAXIMAP_CLOSED");
 
-	self:SetMaxZoom(.85);
-	self:SetMinZoom(.275);
+	self:SetMaxZoomMultiplier(0.85 / 0.75);
 
 	self:SetupTitle();
 
@@ -27,7 +26,7 @@ function FlightMapMixin:OnLoad()
 
 	self:AddStandardDataProviders();
 end
-
+	
 function FlightMapMixin:SetMapID(mapID)
 	MapCanvasMixin.SetMapID(self, mapID);
 	if self:ShouldShowSubzones() then
@@ -73,9 +72,10 @@ function FlightMapMixin:OnShow()
 	self:SetShouldShowSubzones(continentID ~= 1184);
 	self:SetMapID(continentID);
 
-	self:ZoomOut();
-
 	MapCanvasMixin.OnShow(self);
+	
+	self:ZoomOut();
+	
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
 end
 

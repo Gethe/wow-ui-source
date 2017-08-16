@@ -142,7 +142,7 @@ StaticPopupDialogs["CONFIRM_RELIC_ATTUNE"] = {
 			self:Hide();
 		end
 	end,
-	
+
 	showAlert = true,
 	timeout = 0,
 	exclusive = true,
@@ -158,7 +158,7 @@ StaticPopupDialogs["CONFIRM_RELIC_TALENT"] = {
 		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_RELIC_FORGE_LEARN_TRAIT, true);
 		C_ArtifactRelicForgeUI.AddRelicTalent(data.relicSlot, data.talentIndex);
 	end,
-	
+
 	timeout = 0,
 	exclusive = true,
 	hideOnEscape = true,
@@ -199,7 +199,6 @@ function ArtifactRelicForgeMixin:OnShow()
 
 	self:SetRelicSlot(1);
 	self:RefreshAll();
-	self:CheckTutorials();
 
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 end
@@ -246,20 +245,21 @@ local TUTORIALS = {
 };
 
 function ArtifactRelicForgeMixin:CheckTutorials()
-	for i, tutorialData in ipairs(TUTORIALS) do
-		if ( not GetCVarBitfield("closedInfoFrames", tutorialData.id) ) then
-			local glowBox = self.TutorialFrame.GlowBox;
-			glowBox.Text:SetText(tutorialData.text);
-			glowBox:SetHeight(glowBox.Text:GetHeight() + 58);
-			glowBox:ClearAllPoints();
-			glowBox:SetPoint("TOPLEFT", tutorialData.xOffset, tutorialData.yOffset);
-			glowBox.Button:SetText(tutorialData.buttonText);
-			self.TutorialFrame.id = tutorialData.id;
-			self.TutorialFrame:Show();
-			return;
+	if ( not self:IsRevealingTalents() and not self:IsPreviewRelicSelected() and C_ArtifactRelicForgeUI.GetSocketedRelicTalents(self.relicSlot) ) then
+		for i, tutorialData in ipairs(TUTORIALS) do
+			if ( not GetCVarBitfield("closedInfoFrames", tutorialData.id) ) then
+				local glowBox = self.TutorialFrame.GlowBox;
+				glowBox.Text:SetText(tutorialData.text);
+				glowBox:SetHeight(glowBox.Text:GetHeight() + 58);
+				glowBox:ClearAllPoints();
+				glowBox:SetPoint("TOPLEFT", tutorialData.xOffset, tutorialData.yOffset);
+				glowBox.Button:SetText(tutorialData.buttonText);
+				self.TutorialFrame.id = tutorialData.id;
+				self.TutorialFrame:Show();
+				return;
+			end
 		end
 	end
-	-- all tutorials have been acknowledged
 	self.TutorialFrame:Hide();
 	self.TutorialFrame.id = nil;
 end
@@ -296,6 +296,10 @@ function ArtifactRelicForgeMixin:SetRelicSlot(relicSlot)
 	self:RefreshAll();
 end
 
+function ArtifactRelicForgeMixin:IsRelicSlotSelected(relicSlot)
+	return self.relicSlot == relicSlot;
+end
+
 function ArtifactRelicForgeMixin:ClearAnimations()
 	for i, talentButton in ipairs(self.Talents) do
 		talentButton.isChosen = nil;
@@ -313,6 +317,7 @@ function ArtifactRelicForgeMixin:RefreshAll()
 	self:RefreshTalents();
 	self:RefreshRelics();
 	self.PreviewRelicFrame:Update();
+	self:CheckTutorials();
 end
 
 function ArtifactRelicForgeMixin:RefreshRelics()
@@ -406,10 +411,6 @@ function ArtifactRelicForgeMixin:RefreshTalents()
 
 	if ( revealTalents ) then
 		self:RevealTalents();
-	else
-		if ( self.newRelic and self.Talents[1].canChoose ) then
-			self.Talents[1]:StartTransitionAnim();
-		end
 	end
 
 	if ( self.mousedOverTalent ) then
@@ -435,8 +436,13 @@ end
 function ArtifactRelicForgeMixin:OnRevealAnimFinished()
 	self.revealAnimCounter = self.revealAnimCounter - 1;
 	if ( self.revealAnimCounter == 0 ) then
+		self:CheckTutorials();
 		self:RefreshTalents();
 	end
+end
+
+function ArtifactRelicForgeMixin:IsRevealingTalents()
+	return self.revealAnimCounter > 0;
 end
 
 function ArtifactRelicForgeMixin:HasChoiceInRow(row)
@@ -506,21 +512,14 @@ function ArtifactRelicForgeTitleTemplateMixin:OnCursorUpdate()
 end
 
 function ArtifactRelicForgeTitleTemplateMixin:OnRelicSlotClicked(button)
-	local relicSlotIndex = button:GetID();
-	if ( CursorHasItem() ) then
-		local type, itemID, itemLink = GetCursorInfo();
-		if ( C_ArtifactUI.CanApplyRelicItemIDToSlot(itemID, relicSlotIndex) ) then
-			local itemName = C_ArtifactUI.GetRelicInfo(relicSlotIndex);
-			if itemName then
-				StaticPopup_Show("CONFIRM_RELIC_REPLACE", nil, nil, { titleContainer = self, relicSlotIndex = relicSlotIndex });
-			else
-				self:ApplyCursorRelicToSlot(relicSlotIndex);
+	if ( not ArtifactTitleTemplateMixin.OnRelicSlotClicked(self, button) ) then
+		local relicSlotIndex = button:GetID();
+		if ( C_ArtifactUI.GetRelicInfo(relicSlotIndex) ) then
+			if ( not self:GetParent():IsRelicSlotSelected(relicSlotIndex) ) then
+				PlaySound(SOUNDKIT.PUT_DOWN_GEMS, nil, SOUNDKIT_ALLOW_DUPLICATES);
+				self:GetParent():SetRelicSlot(relicSlotIndex);
 			end
-			return;
 		end
-	end
-	if ( C_ArtifactUI.GetRelicInfo(relicSlotIndex) ) then
-		self:GetParent():SetRelicSlot(relicSlotIndex);
 	end
 end
 
@@ -534,10 +533,17 @@ function ArtifactRelicTalentButtonMixin:OnLoad()
 end
 
 function ArtifactRelicTalentButtonMixin:OnClick()
+	if ( ChatEdit_TryInsertChatLink(C_ArtifactUI.GetPowerHyperlink(self:GetPowerID())) ) then
+		return;
+	end
+
 	if ( self.canChoose ) then
 		self:GetParent():ChooseTalent(self:GetID());
-	elseif ( self:GetParent():IsPreviewRelicSelected() ) then
-		UIErrorsFrame:AddMessage(RELIC_FORGE_SOCKET_PREVIEW_RELIC, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, 1.0);
+	else
+		local errorText = self:GetChooseError();
+		if ( errorText ) then
+			UIErrorsFrame:AddMessage(errorText, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, 1.0);
+		end
 	end
 end
 
@@ -547,37 +553,48 @@ function ArtifactRelicTalentButtonMixin:OnEnter()
 	GameTooltip:ClearAllPoints();
 	GameTooltip:SetPoint("LEFT", self, "RIGHT", 8, 0);
 
-	GameTooltip:SetArtifactPowerByID(self.powerID);
-	if ( self:GetParent():IsPreviewRelicSelected() ) then
+	GameTooltip:SetArtifactPowerByID(self:GetPowerID());
+	if ( self.canChoose ) then
 		GameTooltip:AddLine(" ");
-		GameTooltip:AddLine(RELIC_FORGE_SOCKET_PREVIEW_RELIC, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);		
+		GameTooltip:AddLine(RELIC_FORGE_LEARN_TRAIT, GREEN_FONT_COLOR:GetRGB());
 	else
-		if ( self.canChoose ) then
+		local errorText = self:GetChooseError();
+		if ( errorText ) then
 			GameTooltip:AddLine(" ");
-			GameTooltip:AddLine(RELIC_FORGE_LEARN_TRAIT, GREEN_FONT_COLOR:GetRGB());
-		elseif ( not self.isChosen and not self:IsReachable() ) then
-			GameTooltip:AddLine(" ");
-			GameTooltip:AddLine(RELIC_FORGE_TRAIT_DISABLED, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
-		else
-			local talents = C_ArtifactRelicForgeUI.GetSocketedRelicTalents(self:GetParent().relicSlot);
-			local talentInfo = talents[self:GetID()];
-			if ( C_ArtifactUI.GetTotalPurchasedRanks() < talentInfo.requiredArtifactLevel ) then
-				GameTooltip:AddLine(" ");
-				GameTooltip:AddLine(RELIC_FORGE_RANK_REQUIRED:format(talentInfo.tier, talentInfo.requiredArtifactLevel), RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
-			elseif ( not self.isChosen and self:IsReachable() ) then
-				GameTooltip:AddLine(" ");
-				GameTooltip:AddLine(RELIC_FORGE_NO_ACTIVE_LINKS, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
-			end
+			GameTooltip:AddLine(errorText, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
 		end
 	end
 	GameTooltip:Show();
 	self:HighlightLinks();
 end
 
+function ArtifactRelicTalentButtonMixin:GetChooseError()
+	if ( self.canChoose ) then
+		return nil;
+	elseif ( self:GetParent():IsPreviewRelicSelected() ) then
+		return RELIC_FORGE_SOCKET_PREVIEW_RELIC;
+	elseif ( not self.isChosen and not self:IsReachable() ) then
+		return RELIC_FORGE_TRAIT_DISABLED;
+	else
+		local talents = C_ArtifactRelicForgeUI.GetSocketedRelicTalents(self:GetParent().relicSlot);
+		local talentInfo = talents[self:GetID()];
+		if ( C_ArtifactUI.GetTotalPurchasedRanks() < talentInfo.requiredArtifactLevel ) then
+			return RELIC_FORGE_RANK_REQUIRED:format(talentInfo.tier, talentInfo.requiredArtifactLevel);
+		elseif ( not self.isChosen and self:IsReachable() ) then
+			return RELIC_FORGE_NO_ACTIVE_LINKS;
+		end
+	end
+	return nil;
+end
+
 function ArtifactRelicTalentButtonMixin:OnLeave()
 	self:GetParent().mousedOverTalent = nil;
 	GameTooltip_Hide();
 	self:GetParent():RefreshTalents();
+end
+
+function ArtifactRelicTalentButtonMixin:GetPowerID()
+	return self.powerID;
 end
 
 function ArtifactRelicTalentButtonMixin:IsReachable()
@@ -665,7 +682,7 @@ function ArtifactRelicTalentButtonMixin:GetChosenChild()
 	local selfIndex = self:GetID();
 	for buttonIndex, layoutInfo in ipairs(TALENTS_LAYOUT) do
 		for linkIndex, parentButtonIndex in ipairs(layoutInfo.links) do
-			if ( parentButtonIndex == selfIndex and talents[buttonIndex].isChosen ) then			
+			if ( parentButtonIndex == selfIndex and talents[buttonIndex].isChosen ) then
 				return self:GetParent().Talents[buttonIndex];
 			end
 		end
@@ -735,7 +752,7 @@ function ArtifactRelicTalentButtonMixin:SetStyle(style)
 		end
 	end
 	if ( styleInfo.showModelScene ) then
-		if ( talentTypeInfo.effectTag ) then	
+		if ( talentTypeInfo.effectTag ) then
 			if ( self.ModelScene.effectID ~= talentTypeInfo.effectID ) then
 				self.ModelScene:Show();
 				self.ModelScene:SetFromModelSceneID(TALENT_MODEL_SCENE_ID, true);
@@ -972,6 +989,7 @@ function ArtifactRelicTalentLinkMixin:StartTransitionAnim()
 	self.DisabledTexture:Show();
 	self.TransitionTexture:Show();
 	self.TransitionAnim:Stop();
+	self.TransitionTexture:SetAlpha(0);
 	self.TransitionAnim:Play();
 end
 
@@ -1009,6 +1027,7 @@ ArtifactRelicForgePreviewRelicMixin = { };
 function ArtifactRelicForgePreviewRelicMixin:OnLoad()
 	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 	self:RegisterForDrag("LeftButton");
+	self.UpdateTooltip = self.OnEnter;
 end
 
 function ArtifactRelicForgePreviewRelicMixin:OnShow()
@@ -1054,13 +1073,15 @@ function ArtifactRelicForgePreviewRelicMixin:OnClick(button)
 			if type == "item" and IsArtifactRelicItem(itemID) then
 				UIErrorsFrame:AddMessage(ERR_ARTIFACT_RELIC_DOES_NOT_MATCH_ARTIFACT, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, 1.0);
 			else
-				if ( C_ArtifactRelicForgeUI.GetPreviewRelicItemID() ) then
+				if ( C_ArtifactRelicForgeUI.GetPreviewRelicItemID() and not self:GetParent():IsRelicSlotSelected(PREVIEW_RELIC_SLOT) ) then
+					PlaySound(SOUNDKIT.PUT_DOWN_GEMS, nil, SOUNDKIT_ALLOW_DUPLICATES);
 					self:GetParent():SetRelicSlot(PREVIEW_RELIC_SLOT);
 				end
 			end
 		end
-	elseif ( button == "RightButton" ) then
+	elseif ( button == "RightButton" and C_ArtifactRelicForgeUI.GetPreviewRelicItemID() ) then
 		C_ArtifactRelicForgeUI.ClearPreviewRelic();
+		PlaySound(SOUNDKIT.PICK_UP_GEMS);
 	end
 end
 

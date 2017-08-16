@@ -11,8 +11,13 @@ function WorldMapFrame_IsArgusContinentMap()
 	return GetCurrentMapContinent() == WORLDMAP_ARGUS_ID and GetCurrentMapZone() == 0;
 end
 
+function WorldMapFrame_IsBrokenIslesContinentMap()
+	return GetCurrentMapContinent() == WORLDMAP_BROKEN_ISLES_ID and GetCurrentMapZone() == 0;
+end
+
+
 local CosmicStyleButtons = {
-	{
+	{ -- Cosmic map
 		Buttons = {
 			OutlandButton,
 			AzerothButton,
@@ -22,7 +27,7 @@ local CosmicStyleButtons = {
 		Predicate = WorldMapFrame_IsCosmicMap,
 	},
 	
-	{
+	{ -- Maelstrom
 		Buttons = {
 			DeepholmButton,
 			KezanButton,
@@ -33,7 +38,15 @@ local CosmicStyleButtons = {
 		Predicate = WorldMapFrame_IsMaelstromContinentMap,
 	},	
 	
-	{
+	{ -- Broken Isles (Argus button)
+		Buttons = {
+			BrokenIslesArgusButton,
+		},
+		
+		Predicate = WorldMapFrame_IsBrokenIslesContinentMap,
+	},
+	
+	{ -- Argus continent map
 		Buttons = {
 			KrokuunButton,
 			MacAreeButton,

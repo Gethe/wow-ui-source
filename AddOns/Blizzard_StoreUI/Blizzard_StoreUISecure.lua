@@ -2572,6 +2572,7 @@ function StoreVASValidationFrame_OnLoad(self)
 	self:RegisterEvent("STORE_VAS_PURCHASE_COMPLETE");
 	self:RegisterEvent("VAS_TRANSFER_VALIDATION_UPDATE");
 	self:RegisterEvent("VAS_QUEUE_STATUS_UPDATE");
+	self:RegisterEvent("STORE_OPEN_SIMPLE_CHECKOUT");
 end
 
 function StoreVASValidationFrame_SetVASStart(self)
@@ -2788,6 +2789,8 @@ function StoreVASValidationFrame_OnEvent(self, event, ...)
 		local currencyInfo = currencyInfo();
 		local vasDisclaimerData = currencyInfo.vasDisclaimerData;
 		self.Disclaimer:SetText(HTML_START_CENTERED..string.format(vasDisclaimerData[VASServiceType].disclaimer, _G["VAS_QUEUE_"..VasQueueStatusToString[queueTime]])..HTML_END);
+	elseif ( event == "STORE_OPEN_SIMPLE_CHECKOUT" ) then
+		self:Hide();
 	end
 end
 

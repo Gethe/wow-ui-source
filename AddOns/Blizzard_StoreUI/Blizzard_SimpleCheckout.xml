@@ -44,6 +44,13 @@
 							<Texture setAllPoints="true" parentKey="Texture">
 								<Color r="0" g="0" b="0" a="0.1"/>
 							</Texture>
+							<Texture parentKey="BlackTexture">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeKey="$parent.$parent"/>
+									<Anchor point="BOTTOMRIGHT" relativeKey="$parent.$parent"/>
+								</Anchors>
+								<Color r="0" g="0" b="0" a="1"/>
+							</Texture>
 						</Layer>
 					</Layers>
 					<Scripts>

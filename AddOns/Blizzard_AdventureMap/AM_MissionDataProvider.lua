@@ -177,7 +177,7 @@ AdventureMap_MissionPinMixin = CreateFromMixins(MapCanvasPinMixin);
 
 function AdventureMap_MissionPinMixin:OnLoad()
 	self:SetAlphaStyle(AM_PIN_ALPHA_STYLE_VISIBLE_WHEN_ZOOMED_OUT);
-	self:SetScalingLimits(1.25, 3.0, 1.5);
+	self:SetScalingLimits(1.25, 0.825, 1.275);
 end
 
 function AdventureMap_MissionPinMixin:OnReleased()
@@ -321,7 +321,7 @@ end
 
 function AdventureMap_CombatAllyMissionPinMixin:OnLoad()
 	self:SetAlphaStyle(AM_PIN_ALPHA_STYLE_VISIBLE_WHEN_ZOOMED_OUT);
-	self:SetScalingLimits(1.25, 3.5, 1.5);
+	self:SetScalingLimits(1.25, 0.9625, 1.275);
 end
 
 function AdventureMap_CombatAllyMissionPinMixin:OnCanvasScaleChanged()
@@ -364,7 +364,7 @@ AdventureMap_MissionRewardPinMixin = CreateFromMixins(MapCanvasPinMixin);
 
 function AdventureMap_MissionRewardPinMixin:OnLoad()
 	self:SetAlphaStyle(AM_PIN_ALPHA_STYLE_VISIBLE_WHEN_ZOOMED_OUT);
-	self:SetScalingLimits(1.25, 3.0, 1.5);
+	self:SetScalingLimits(1.25, 0.825, 1.275);
 end
 
 function AdventureMap_MissionRewardPinMixin:ShowRewards(missionInfo)

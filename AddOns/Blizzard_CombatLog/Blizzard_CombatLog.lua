@@ -3533,7 +3533,7 @@ function SetItemRef(link, text, button, chatFrame)
 	elseif ( strsub(link, 1,5) == "spell" ) then
 		local _, spellId, glyphId, event = strsplit(":", link);
 		spellId = tonumber (spellId);
-		glyphId = tonumber (glyphId);
+		glyphId = tonumber (glyphId) or 0;
 
 		if ( IsModifiedClick("CHATLINK") ) then
 			if ( spellId > 0 ) then

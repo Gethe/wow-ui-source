@@ -19,6 +19,7 @@ local ARENA_2V2_REWARD = "arena2v2";
 local ARENA_3V3_REWARD = "arena3v3";
 local BG_BRAWL_REWARD = "bgbrawl";
 local ARENA_BRAWL_REWARD = "arenabrawl";
+local LFG_BRAWL_REWARD = "lfgbrawl";
 
 local REWARDS_AT_MAX_LEVEL = {
 	[RANDOM_BG_REWARD] = {
@@ -48,7 +49,11 @@ local REWARDS_AT_MAX_LEVEL = {
 	[ARENA_BRAWL_REWARD] = {
 		["FirstWin"] = 143713,
 		["NthWin"] = 138864,
-	}
+	},
+	[LFG_BRAWL_REWARD] = {
+		["FirstWin"] = 143713,
+		["NthWin"] = 138864,
+	},
 }
 
 function GetMaxLevelReward(bracketType, hasFirstWin)
@@ -980,6 +985,8 @@ function HonorFrameBonusFrame_Update()
 					rewards = GetMaxLevelReward(ARENA_BRAWL_REWARD, hasWon);
 				elseif (brawlInfo.brawlType == Enum.BrawlType.Battleground) then
 					rewards = GetMaxLevelReward(BG_BRAWL_REWARD, hasWon);
+				elseif (brawlInfo.brawlType == Enum.BrawlType.Lfg) then
+					rewards = GetMaxLevelReward(LFG_BRAWL_REWARD, hasWon);
 				end
 			end
 

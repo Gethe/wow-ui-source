@@ -13,6 +13,7 @@ WORLDMAP_AZEROTH_ID = 0;
 WORLDMAP_OUTLAND_ID = 3;
 WORLDMAP_MAELSTROM_ID = 5;
 WORLDMAP_DRAENOR_ID = 7;
+WORLDMAP_BROKEN_ISLES_ID = 8;
 WORLDMAP_ARGUS_ID = 9;
 MAELSTROM_ZONES_ID = { TheMaelstrom = 737, Deepholm = 640, Kezan = 605, TheLostIsles = 544 };
 MAELSTROM_ZONES_LEVELS = {
@@ -462,7 +463,13 @@ function WorldMapFrame_OnEvent(self, event, ...)
 			if ( self:IsShown() ) then
 				if ( mapID ~= self.mapID) then
 					self.mapID = mapID;
-					WorldMapUnitPositionFrame:StartPlayerPing(2, .25);
+					
+					if WorldMap_DoesCurrentMapHideMapIcons() then
+						WorldMapUnitPositionFrame:Hide();
+					else
+						WorldMapUnitPositionFrame:Show();
+						WorldMapUnitPositionFrame:StartPlayerPing(2, .25);
+					end
 				end
 				self.dungeonLevel = dungeonLevel;
 			end
@@ -1167,9 +1174,22 @@ function WorldMap_GetFrameLevelForLandmark(landmarkType)
 	return WORLD_MAP_POI_FRAME_LEVEL_OFFSETS.LANDMARK;
 end
 
+function WorldMap_DoesCurrentMapHideMapIcons(mapID)
+	local isArgusContinent = GetCurrentMapAreaID() == 1184;
+	return isArgusContinent;
+end
+
 local areaPOIBannerLabelTextureInfo = {};
 
 function WorldMap_UpdateLandmarks()
+	if WorldMap_DoesCurrentMapHideMapIcons() then
+		for i = 1, NUM_WORLDMAP_POIS do
+			local worldMapPOI = _G["WorldMapFramePOI"..i];
+			worldMapPOI:Hide();
+		end
+		return;
+	end
+	
 	local numPOIs = GetNumMapLandmarks();
 	if ( NUM_WORLDMAP_POIS < numPOIs ) then
 		for i=NUM_WORLDMAP_POIS+1, numPOIs do
@@ -2110,6 +2130,8 @@ function WorldMapPOI_OnClick(self, button)
 				WorldMapFrame.mapLinkPingInfo = { mapID = currentMapID, floorIndex = currentFloorIndex };
 				SetDungeonMapLevel(floorIndex);
 			end
+			
+			PlaySound(SOUNDKIT.IG_QUEST_LOG_OPEN);
 		else
 			ClickLandmark(self.mapLinkID);
 		end
@@ -2564,30 +2586,35 @@ function WorldMapButton_OnUpdate(self, elapsed)
 		end
 	end
 
-	-- Position corpse
-	local corpseX, corpseY = GetCorpseMapPosition();
-	if ( corpseX == 0 and corpseY == 0 ) then
+	if WorldMap_DoesCurrentMapHideMapIcons() then
 		WorldMapCorpse:Hide();
-	else
-		corpseX = corpseX * WorldMapDetailFrame:GetWidth();
-		corpseY = -corpseY * WorldMapDetailFrame:GetHeight();
-
-		WorldMapCorpse:SetPoint("CENTER", "WorldMapDetailFrame", "TOPLEFT", corpseX, corpseY);
-		WorldMapCorpse:SetFrameStrata("DIALOG");
-		WorldMapCorpse:Show();
-	end
-
-	-- Position Death Release marker
-	local deathReleaseX, deathReleaseY = GetDeathReleasePosition();
-	if ((deathReleaseX == 0 and deathReleaseY == 0) or UnitIsGhost("player")) then
 		WorldMapDeathRelease:Hide();
 	else
-		deathReleaseX = deathReleaseX * WorldMapDetailFrame:GetWidth();
-		deathReleaseY = -deathReleaseY * WorldMapDetailFrame:GetHeight();
+		-- Position corpse
+		local corpseX, corpseY = GetCorpseMapPosition();
+		if ( corpseX == 0 and corpseY == 0 ) then
+			WorldMapCorpse:Hide();
+		else
+			corpseX = corpseX * WorldMapDetailFrame:GetWidth();
+			corpseY = -corpseY * WorldMapDetailFrame:GetHeight();
 
-		WorldMapDeathRelease:SetPoint("CENTER", "WorldMapDetailFrame", "TOPLEFT", deathReleaseX, deathReleaseY);
-		WorldMapDeathRelease:SetFrameStrata("DIALOG");
-		WorldMapDeathRelease:Show();
+			WorldMapCorpse:SetPoint("CENTER", "WorldMapDetailFrame", "TOPLEFT", corpseX, corpseY);
+			WorldMapCorpse:SetFrameStrata("DIALOG");
+			WorldMapCorpse:Show();
+		end
+		
+			-- Position Death Release marker
+		local deathReleaseX, deathReleaseY = GetDeathReleasePosition();
+		if ((deathReleaseX == 0 and deathReleaseY == 0) or UnitIsGhost("player")) then
+			WorldMapDeathRelease:Hide();
+		else
+			deathReleaseX = deathReleaseX * WorldMapDetailFrame:GetWidth();
+			deathReleaseY = -deathReleaseY * WorldMapDetailFrame:GetHeight();
+
+			WorldMapDeathRelease:SetPoint("CENTER", "WorldMapDetailFrame", "TOPLEFT", deathReleaseX, deathReleaseY);
+			WorldMapDeathRelease:SetFrameStrata("DIALOG");
+			WorldMapDeathRelease:Show();
+		end
 	end
 
 	-- position vehicles

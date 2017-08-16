@@ -149,7 +149,7 @@ end
 FlightMap_FlightPointPinMixin = CreateFromMixins(MapCanvasPinMixin);
 
 function FlightMap_FlightPointPinMixin:OnLoad()
-	self:SetScalingLimits(1.25, 3.5, 1.5);
+	self:SetScalingLimits(1.25, 0.9625, 1.275);
 
 	-- Flight points nudge other pins away.
 	self:SetNudgeSourceRadius(1);
@@ -221,7 +221,10 @@ function FlightMap_FlightPointPinMixin:SetFlightPathStyle(textureKitPrefix, taxi
 		
 		if WorldMapFrame_IsVindicaarTextureKit(self.textureKitPrefix) then
 			self:SetNudgeSourceRadius(2);
-			self:SetNudgeSourceMagnitude(1.5, 2.2);
+			self:SetNudgeSourceMagnitude(1.5, 3.65);
+		elseif self.textureKitPrefix == "FlightMaster_Argus" then
+			self:SetNudgeSourceRadius(1.5);
+			self:SetNudgeSourceMagnitude(1, 2);
 		end
 	else
 		self.atlasFormat = "%s";

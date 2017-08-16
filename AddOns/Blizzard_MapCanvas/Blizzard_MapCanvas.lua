@@ -152,6 +152,10 @@ function MapCanvasMixin:RemoveAllPinsByTemplate(pinTemplate)
 end
 
 function MapCanvasMixin:RemovePin(pin)
+	if pin:GetNudgeSourceRadius() > 0 then
+		self.pinNudgingDirty = true;
+	end
+	
 	self.pinPools[pin.pinTemplate]:Release(pin);
 	self.ScrollContainer:MarkCanvasDirty();
 end
@@ -267,6 +271,7 @@ function SquaredDistanceBetweenPoints(firstX, firstY, secondX, secondY)
 end
 
 function MapCanvasMixin:CalculatePinNudging(targetPin)
+	targetPin:SetNudgeVector(nil, nil, nil, nil);
 	if not targetPin:IgnoresNudging() and targetPin:GetNudgeTargetFactor() > 0 then
 		local normalizedX, normalizedY = targetPin:GetPosition();
 		for sourcePin in self:EnumerateAllPins() do
@@ -280,9 +285,9 @@ function MapCanvasMixin:CalculatePinNudging(targetPin)
 					
 					-- Avoid divide by zero: just push it right.
 					if distanceSquared == 0 then
-						targetPin:SetNudgeVector(sourcePin, 1, 0);
+						targetPin:SetNudgeVector(sourcePin:GetNudgeSourceZoomedOutMagnitude(), sourcePin:GetNudgeSourceZoomedInMagnitude(), 1, 0);
 					else
-						targetPin:SetNudgeVector(sourcePin, (normalizedX - otherNormalizedX) / distance, (normalizedY - otherNormalizedY) / distance);
+						targetPin:SetNudgeVector(sourcePin:GetNudgeSourceZoomedOutMagnitude(), sourcePin:GetNudgeSourceZoomedInMagnitude(), (normalizedX - otherNormalizedX) / distance, (normalizedY - otherNormalizedY) / distance);
 					end
 					
 					targetPin:SetNudgeFactor(1 - (distance / nudgeFactor));
@@ -441,9 +446,9 @@ function MapCanvasMixin:ApplyPinPosition(pin, normalizedX, normalizedY, insetInd
 			local x = normalizedX;
 			local y = normalizedY;
 			
-			local sourcePin, nudgeVectorX, nudgeVectorY = pin:GetNudgeVector();
-			if sourcePin and nudgeVectorX and nudgeVectorY then
-				local finalNudgeFactor = pin:GetNudgeFactor() * pin:GetNudgeTargetFactor() * pin:GetNudgeZoomFactor() * sourcePin:GetNudgeSourceZoomMagnitude();
+			local nudgeVectorX, nudgeVectorY = pin:GetNudgeVector();
+			if nudgeVectorX and nudgeVectorY then
+				local finalNudgeFactor = pin:GetNudgeFactor() * pin:GetNudgeTargetFactor() * pin:GetNudgeZoomFactor();
 				x = normalizedX + nudgeVectorX * finalNudgeFactor;
 				y = normalizedY + nudgeVectorY * finalNudgeFactor;
 			end
@@ -577,6 +582,24 @@ end
 
 function MapCanvasMixin:SetMinZoom(scale)
 	self.ScrollContainer:SetMinZoom(scale);
+end
+
+function MapCanvasMixin:GetMaxZoomMultiplier(scale)
+	return self.maxScaleMultiplier or 1.0;
+end
+
+function MapCanvasMixin:GetMinZoomMultiplier(scale)
+	return self.minScaleMultiplier or 1.0;
+end
+
+function MapCanvasMixin:SetMaxZoomMultiplier(scale)
+	self.maxScaleMultiplier = scale;
+	self.ScrollContainer:RefreshCanvasScale();
+end
+
+function MapCanvasMixin:SetMinZoomMultiplier(scale)
+	self.minScaleMultiplier = scale;
+	self.ScrollContainer:RefreshCanvasScale();
 end
 
 function MapCanvasMixin:GetViewRect()
@@ -735,7 +758,7 @@ function MapCanvasScrollControllerMixin:FindBestLocationForClick()
 
 		local x = normalizedCursorX;
 		local y = normalizedCursorY;
-		if self:GetParent():ShouldShowSubzones() then
+		if self:GetMap():ShouldShowSubzones() then
 			local zoneMapID = C_MapCanvas.FindZoneAtPosition(self.mapID, normalizedCursorX, normalizedCursorY);
 			if zoneMapID then
 				local zoneName, zoneDepth, left, right, top, bottom = C_MapCanvas.GetZoneInfoByID(self.mapID, zoneMapID);
@@ -747,7 +770,7 @@ function MapCanvasScrollControllerMixin:FindBestLocationForClick()
 			end
 		end
 
-		local minX, maxX, minY, maxY = self:CalculateScrollExtentsAtScale(self.maxScale);
+		local minX, maxX, minY, maxY = self:CalculateScrollExtentsAtScale(self:GetScaleForMaxZoom());
 		return Clamp(x, minX, maxX), Clamp(y, minY, maxY);
 	end
 end
@@ -798,7 +821,7 @@ function MapCanvasScrollControllerMixin:OnMouseWheel(delta)
 			local normalizedCursorX = self:NormalizeHorizontalSize(cursorX / self:GetCanvasScale() - self.Child:GetLeft());
 			local normalizedCursorY = self:NormalizeVerticalSize(self.Child:GetTop() - cursorY / self:GetCanvasScale());
 
-			local minX, maxX, minY, maxY = self:CalculateScrollExtentsAtScale(self.maxScale);
+			local minX, maxX, minY, maxY = self:CalculateScrollExtentsAtScale(self:GetScaleForMaxZoom());
 			
 			self:SetPanTarget(Clamp(normalizedCursorX, minX, maxX), Clamp(normalizedCursorY, minY, maxY));
 		end
@@ -832,16 +855,12 @@ function MapCanvasScrollControllerMixin:SetCanvasSize(width, height)
 	self:CalculateScrollExtents();
 end
 
+function MapCanvasScrollControllerMixin:RefreshCanvasScale()
+	self:SetZoomTarget(self.zoomTarget or 0);
+end
+
 function MapCanvasScrollControllerMixin:CalculateScaleExtents()
-	if not self.maxScale then
-		self:SetMaxZoom(self.defaultMaxScale);
-	end
-
-	if not self.minScale then
-		self:SetMinZoom(self.defaultMinScale);
-	end
-
-	self.targetScale = Clamp(self.targetScale or self.minScale, self.minScale, self.maxScale);
+	self.targetScale = Clamp(self.targetScale or self:GetScaleForMinZoom(), self:GetScaleForMinZoom(), self:GetScaleForMaxZoom());
 end
 
 function MapCanvasScrollControllerMixin:CalculateScrollExtents()
@@ -878,7 +897,7 @@ function MapCanvasScrollControllerMixin:CalculateLerpScaling()
 		-- Because of the way zooming in + isLeftButtonDown is perceived, we want to reduce the zoom weight so that panning completes first
 		-- However, for zooming out we want to prefer the zoom then pan
 		local SCALE_DELTA_FACTOR = self:IsZoomingOut() and 1.5 or .01; 
-		local scaleDelta = (math.abs(self:GetCanvasScale() - self.targetScale) / (self.maxScale - self.minScale)) * SCALE_DELTA_FACTOR;
+		local scaleDelta = (math.abs(self:GetCanvasScale() - self.targetScale) / (self:GetScaleForMaxZoom() - self:GetScaleForMinZoom())) * SCALE_DELTA_FACTOR;
 		local scrollXDelta = math.abs(self:GetCurrentScrollX() - self.targetScrollX);
 		local scrollYDelta = math.abs(self:GetCurrentScrollY() - self.targetScrollY);
 
@@ -932,7 +951,7 @@ function MapCanvasScrollControllerMixin:OnUpdate(elapsed)
 		self:SetNormalizedHorizontalScroll(oldScrollX);
 		self:SetNormalizedVerticalScroll(oldScrollY);
 
-		self:GetParent():OnCanvasScaleChanged();
+		self:GetMap():OnCanvasScaleChanged();
 		self:MarkAreaTriggersDirty();
 		self:MarkViewRectDirty();
 	end
@@ -966,13 +985,13 @@ function MapCanvasScrollControllerMixin:OnUpdate(elapsed)
 	end
 	
 	if panChanged then
-		self:GetParent():OnCanvasPanChanged();
+		self:GetMap():OnCanvasPanChanged();
 	end
 
 	if self.areaTriggersDirty then
 		self.areaTriggersDirty = false;
 		local viewRect = self:GetViewRect();
-		self:GetParent():UpdateAreaTriggers(viewRect);
+		self:GetMap():UpdateAreaTriggers(viewRect);
 	end
 end
 
@@ -1006,6 +1025,9 @@ end
 
 function MapCanvasScrollControllerMixin:SetMapID(mapID)
 	self.mapID = mapID;
+	local mapMaxScale, mapMinScale = C_MapCanvas.GetScaleExtentsForMap(mapID);
+	self:SetMaxZoom(mapMaxScale);
+	self:SetMinZoom(mapMinScale);
 	local backgroundAtlas = C_MapCanvas.GetBackgroundInfo(mapID);
 	self.Child.TiledBackground:SetAtlas(backgroundAtlas);
 end
@@ -1028,18 +1050,20 @@ end
 
 function MapCanvasScrollControllerMixin:SetMaxZoom(scale)
 	self.maxScale = scale;
+	self:RefreshCanvasScale();
 end
 
 function MapCanvasScrollControllerMixin:SetMinZoom(scale)
 	self.minScale = scale;
+	self:RefreshCanvasScale();
 end
 
 function MapCanvasScrollControllerMixin:GetMaxZoomViewRect()
-	return self:CalculateViewRect(self.maxScale);
+	return self:CalculateViewRect(self:GetScaleForMaxZoom());
 end
 
 function MapCanvasScrollControllerMixin:GetMinZoomViewRect()
-	return self:CalculateViewRect(self.minScale);
+	return self:CalculateViewRect(self:GetScaleForMinZoom());
 end
 
 function MapCanvasScrollControllerMixin:CalculateViewRect(scale)
@@ -1077,15 +1101,16 @@ function MapCanvasScrollControllerMixin:SetPanTarget(normalizedX, normalizedY)
 end
 
 function MapCanvasScrollControllerMixin:SetZoomTarget(zoomTarget)
-	self.targetScale = Clamp(zoomTarget, self.minScale, self.maxScale);
+	self.zoomTarget = zoomTarget;
+	self.targetScale = Clamp(zoomTarget, self:GetScaleForMinZoom(), self:GetScaleForMaxZoom());
 end
 
 function MapCanvasScrollControllerMixin:ZoomIn()
-	self:SetZoomTarget(self.maxScale);
+	self:SetZoomTarget(self:GetScaleForMaxZoom());
 end
 
 function MapCanvasScrollControllerMixin:ZoomOut()
-	self:SetZoomTarget(self.minScale);
+	self:SetZoomTarget(self:GetScaleForMinZoom());
 	self:SetPanTarget(.5, .5);
 end
 
@@ -1098,19 +1123,23 @@ function MapCanvasScrollControllerMixin:IsZoomingOut()
 end
 
 function MapCanvasScrollControllerMixin:IsZoomedIn()
-	return self:GetCanvasScale() == self.maxScale;
+	return self:GetCanvasScale() == self:GetScaleForMaxZoom();
 end
 
 function MapCanvasScrollControllerMixin:IsZoomedOut()
-	return self:GetCanvasScale() == self.minScale;
+	return self:GetCanvasScale() == self:GetScaleForMinZoom();
+end
+
+function MapCanvasScrollControllerMixin:GetMap()
+	return self:GetParent();
 end
 
 function MapCanvasScrollControllerMixin:GetScaleForMaxZoom()
-	return self.maxScale;
+	return (self.maxScale or 1) * self:GetMap():GetMaxZoomMultiplier();
 end
 
 function MapCanvasScrollControllerMixin:GetScaleForMinZoom()
-	return self.minScale;
+	return (self.minScale or 1) * self:GetMap():GetMinZoomMultiplier();
 end
 
 function MapCanvasScrollControllerMixin:IsPanning()
@@ -1130,7 +1159,7 @@ function MapCanvasScrollControllerMixin:GetCurrentScrollY()
 end
 
 function MapCanvasScrollControllerMixin:GetCanvasZoomPercent()
-	return PercentageBetween(self:GetCanvasScale(), self.minScale, self.maxScale);
+	return PercentageBetween(self:GetCanvasScale(), self:GetScaleForMinZoom(), self:GetScaleForMaxZoom());
 end
 
 function MapCanvasScrollControllerMixin:SetNormalizedHorizontalScroll(scrollAmount)

@@ -1,4 +1,4 @@
-UIPanelWindows["ContributionCollectionFrame"] = { area = "center", allowOtherPanels = 1 };
+UIPanelWindows["ContributionCollectionFrame"] = { area = "center", allowOtherPanels = 1, showFailedFunc = C_ContributionCollector.Close, };
 
 ContributionRewardMixin = {};
 

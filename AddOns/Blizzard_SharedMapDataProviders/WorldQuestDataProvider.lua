@@ -179,7 +179,7 @@ WorldQuestPinMixin = CreateFromMixins(MapCanvasPinMixin);
 
 function WorldQuestPinMixin:OnLoad()
 	self:SetAlphaLimits(2.0, 0.0, 1.0);
-	self:SetScalingLimits(1, 1.5, 0.50);
+	self:SetScalingLimits(1, 0.4125, 0.425);
 
 	self.UpdateTooltip = self.OnMouseEnter;
 

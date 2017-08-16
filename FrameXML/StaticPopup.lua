@@ -1270,7 +1270,7 @@ StaticPopupDialogs["DEATH"] = {
 			self.button2:SetText(text);
 		end
 
-		if ( IsActiveBattlefieldArena() ) then
+		if ( IsActiveBattlefieldArena() and not C_PvP.IsInBrawl() ) then
 			self.text:SetText(DEATH_RELEASE_SPECTATOR);
 		elseif ( self.timeleft == -1 ) then
 			self.text:SetText(DEATH_RELEASE_NOTIMER);
@@ -1302,7 +1302,7 @@ StaticPopupDialogs["DEATH"] = {
 		self.button3:SetMotionScriptsWhileDisabled(false);
 	end,
 	OnAccept = function(self)
-		if ( IsActiveBattlefieldArena() ) then
+		if ( IsActiveBattlefieldArena() and not C_PvP.IsInBrawl() ) then
 			local info = ChatTypeInfo["SYSTEM"];
 			DEFAULT_CHAT_FRAME:AddMessage(ARENA_SPECTATOR, info.r, info.g, info.b, info.id);
 		end
@@ -3516,7 +3516,7 @@ StaticPopupDialogs["CONFIRM_LEAVE_BATTLEFIELD"] = {
 	button1 = YES,
 	button2 = CANCEL,
 	OnShow = function(self)
-		if ( IsActiveBattlefieldArena() ) then
+		if ( IsActiveBattlefieldArena() and not C_PvP.IsInBrawl() ) then
 			self.text:SetText(CONFIRM_LEAVE_ARENA);
 		else
 			self.text:SetText(CONFIRM_LEAVE_BATTLEFIELD);

@@ -34,6 +34,21 @@ local MapCanvasLua =
 				{ Name = "position", Type = "MapCanvasPosition", Nilable = false },
 			},
 		},
+		{
+			Name = "GetScaleExtentsForMap",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "mapAreaID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "maxScale", Type = "number", Nilable = false },
+				{ Name = "minScale", Type = "number", Nilable = false },
+			},
+		},
 	},
 
 	Events =

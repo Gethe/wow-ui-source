@@ -4618,7 +4618,7 @@ end
 
 function GetDisplayedAllyFrames()
 	local useCompact = GetCVarBool("useCompactPartyFrames")
-	if ( IsActiveBattlefieldArena() and not useCompact ) then
+	if ( IsActiveBattlefieldArena() and not useCompact and not C_PvP.IsInBrawl() ) then
 		return "party";
 	elseif ( IsInGroup() and (IsInRaid() or useCompact) ) then
 		return "raid";

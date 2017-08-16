@@ -150,17 +150,17 @@ function MapCanvasPinMixin:GetNudgeSourceRadius()
 	return self.nudgeSourceRadius or 0;
 end
 
-function MapCanvasPinMixin:SetNudgeSourceMagnitude(nudgeSourceMagnitudeZoomedOut, nudgeSourceMagnitudeZoomedIn)
-	self.nudgeSourceMagnitudeZoomedOut = nudgeSourceMagnitudeZoomedOut;
-	self.nudgeSourceMagnitudeZoomedIn = nudgeSourceMagnitudeZoomedIn;
+function MapCanvasPinMixin:SetNudgeSourceMagnitude(nudgeSourceZoomedOutMagnitude, nudgeSourceZoomedInMagnitude)
+	self.nudgeSourceZoomedOutMagnitude = nudgeSourceZoomedOutMagnitude;
+	self.nudgeSourceZoomedInMagnitude = nudgeSourceZoomedInMagnitude;
 end
 
-function MapCanvasPinMixin:GetNudgeSourceZoomMagnitude()
-	if self.nudgeSourceMagnitudeZoomedOut and self.nudgeSourceMagnitudeZoomedIn then
-		return Lerp(self.nudgeSourceMagnitudeZoomedOut, self.nudgeSourceMagnitudeZoomedIn, self:GetMap():GetCanvasZoomPercent());
-	end
-	
-	return self:GetNudgeSourceRadius() ~= 0 and 1 or 0;
+function MapCanvasPinMixin:GetNudgeSourceZoomedOutMagnitude()
+	return self.nudgeSourceZoomedOutMagnitude;
+end
+
+function MapCanvasPinMixin:GetNudgeSourceZoomedInMagnitude()
+	return self.nudgeSourceZoomedInMagnitude;
 end
 
 function MapCanvasPinMixin:SetNudgeZoomedInFactor(newFactor)
@@ -188,12 +188,21 @@ function MapCanvasPinMixin:GetMap()
 end
 
 function MapCanvasPinMixin:GetNudgeVector()
-	return self.nudgeSourcePin, self.nudgeVectorX, self.nudgeVectorY;
+	return self.nudgeVectorX, self.nudgeVectorY;
+end
+
+function MapCanvasPinMixin:GetNudgeSourcePinZoomedOutNudgeFactor()
+	return self.nudgeSourcePinZoomedOutNudgeFactor or 0;
+end
+
+function MapCanvasPinMixin:GetNudgeSourcePinZoomedInNudgeFactor()
+	return self.nudgeSourcePinZoomedInNudgeFactor or 0;
 end
 
 -- x and y should be a normalized vector.
-function MapCanvasPinMixin:SetNudgeVector(sourcePin, x, y)
-	self.nudgeSourcePin = sourcePin;
+function MapCanvasPinMixin:SetNudgeVector(sourcePinZoomedOutNudgeFactor, sourcePinZoomedInNudgeFactor, x, y)
+	self.nudgeSourcePinZoomedOutNudgeFactor = sourcePinZoomedOutNudgeFactor;
+	self.nudgeSourcePinZoomedInNudgeFactor = sourcePinZoomedInNudgeFactor;
 	self.nudgeVectorX = x;
 	self.nudgeVectorY = y;
 	self:ApplyCurrentPosition();
@@ -209,7 +218,10 @@ function MapCanvasPinMixin:SetNudgeFactor(nudgeFactor)
 end
 
 function MapCanvasPinMixin:GetNudgeZoomFactor()
-	return Lerp(self:GetZoomedOutNudgeFactor(), self:GetZoomedInNudgeFactor(), self:GetMap():GetCanvasZoomPercent());
+	local zoomPercent = self:GetMap():GetCanvasZoomPercent();
+	local targetFactor = Lerp(self:GetZoomedOutNudgeFactor(), self:GetZoomedInNudgeFactor(), zoomPercent);
+	local sourceFactor = Lerp(self:GetNudgeSourcePinZoomedOutNudgeFactor(), self:GetNudgeSourcePinZoomedInNudgeFactor(), zoomPercent);
+	return targetFactor * sourceFactor;
 end
 
 function MapCanvasPinMixin:SetPosition(normalizedX, normalizedY, insetIndex)
@@ -269,9 +281,9 @@ AM_PIN_SCALE_STYLE_WITH_TERRAIN = 3;
 
 function MapCanvasPinMixin:SetScaleStyle(scaleStyle)
 	if scaleStyle == AM_PIN_SCALE_STYLE_VISIBLE_WHEN_ZOOMED_IN then
-		self:SetScalingLimits(1.5, 0.0, 3.0);
+		self:SetScalingLimits(1.5, 0.0, 2.55);
 	elseif scaleStyle == AM_PIN_SCALE_STYLE_VISIBLE_WHEN_ZOOMED_OUT then
-		self:SetScalingLimits(1.5, 3.0, 0.0);
+		self:SetScalingLimits(1.5, 0.825, 0.0);
 	elseif scaleStyle == AM_PIN_SCALE_STYLE_WITH_TERRAIN then
 		self:SetScalingLimits(nil, nil, nil);
 		self:SetScale(1.0);
@@ -304,7 +316,8 @@ end
 
 function MapCanvasPinMixin:ApplyCurrentScale()
 	if self.startScale and self.startScale and self.endScale then
-		self:SetScale(Lerp(self.startScale, self.endScale, Saturate(self.scaleFactor * self:GetMap():GetCanvasZoomPercent())));
+		local parentScaleFactor = 1.0 / self:GetMap():GetCanvasScale();
+		self:SetScale(parentScaleFactor * Lerp(self.startScale, self.endScale, Saturate(self.scaleFactor * self:GetMap():GetCanvasZoomPercent())));
 		self:ApplyCurrentPosition();
 	end
 end

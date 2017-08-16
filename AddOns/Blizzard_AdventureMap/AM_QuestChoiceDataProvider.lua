@@ -136,7 +136,7 @@ end
 AdventureMap_QuestChoicePinMixin = CreateFromMixins(MapCanvasPinMixin);
 
 function AdventureMap_QuestChoicePinMixin:OnLoad()
-	self:SetScalingLimits(1.25, 3.0, 1.5);
+	self:SetScalingLimits(1.25, 0.825, 1.275);
 end
 
 function AdventureMap_QuestChoicePinMixin:OnAcquired(playAnim)

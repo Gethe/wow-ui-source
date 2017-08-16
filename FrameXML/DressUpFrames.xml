@@ -156,15 +156,17 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnLoad>
+					<OnLoad>						
 						function OnMaximize(frame)
 							frame:GetParent():SetSize(450, 545);
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						end
 						
 						self:SetOnMaximizedCallback(OnMaximize);
 						
 						function OnMinimize(frame)
 							frame:GetParent():SetSize(334, 423);
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						end
 						
 						self:SetOnMinimizedCallback(OnMinimize);
@@ -219,16 +221,11 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="OVERLAY">
-				<FontString name="DressUpFrameTitleText" inherits="GameFontHighlight" text="DRESSUP_FRAME">
-					<Size x="300" y="14"/>
-					<Anchors>
-						<Anchor point="TOP" relativePoint="TOP" x="0" y="-4"/>
-					</Anchors>
-				</FontString>
-			</Layer>
 		</Layers>
 		<Scripts>
+			<OnLoad>
+				self.TitleText:SetText(DRESSUP_FRAME);
+			</OnLoad>
 			<OnShow>
 				SetPortraitTexture(DressUpFramePortrait, "player");
 				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);

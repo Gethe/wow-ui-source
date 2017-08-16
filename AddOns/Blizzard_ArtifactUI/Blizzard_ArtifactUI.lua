@@ -78,7 +78,7 @@ function ArtifactUIMixin:OnShow()
 	self:EvaulateForgeState();
 	self:SetupPerArtifactData();
 	self:RefreshKnowledgeRanks();
-	self.PerksTab:Refresh(true);
+	self.PerksTab:OnUIOpened();
 	
 	self:RegisterEvent("ARTIFACT_XP_UPDATE");
 	self:RegisterEvent("ARTIFACT_RELIC_INFO_RECEIVED");
