@@ -97,30 +97,14 @@
 							<Anchor point="BOTTOMRIGHT" x="-7" y="28" />
 						</Anchors>
 					</Frame>
-					<Button name="WorldMapFrameSizeDownButton">
-						<Size x="32" y="32"/>
+					<Frame parentKey="MaximizeMinimizeFrame" inherits="MaximizeMinimizeButtonFrameTemplate">
 						<Anchors>
 							<Anchor point="RIGHT" relativeKey="$parent.CloseButton" relativePoint="LEFT" x="10" y="0"/>
 						</Anchors>
 						<Scripts>
-							<OnClick function="WorldMapFrame_ToggleWindowSize" />
+							<OnLoad function="WorldMapFrame_MaximizeMinimizeFrame_OnLoad"/>
 						</Scripts>
-						<NormalTexture file="Interface\Buttons\UI-Panel-SmallerButton-Up"/>
-						<PushedTexture file="Interface\Buttons\UI-Panel-SmallerButton-Down"/>
-						<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
-					</Button>
-					<Button name="WorldMapFrameSizeUpButton" hidden="true">
-						<Size x="32" y="32"/>
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="WorldMapFrameSizeDownButton" x="0" y="0"/>
-						</Anchors>
-						<Scripts>
-							<OnClick function="WorldMapFrame_ToggleWindowSize" />
-						</Scripts>
-						<NormalTexture file="Interface\Buttons\UI-Panel-BiggerButton-Up"/>
-						<PushedTexture file="Interface\Buttons\UI-Panel-BiggerButton-Down"/>
-						<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
-					</Button>
+					</Frame>
 				</Frames>
 			</Frame>
 			<Frame name="WorldMapTitleDropDown" inherits="UIDropDownMenuTemplate" hidden="true">
@@ -437,6 +421,84 @@
 													</Anchors>
 												</HighlightTexture>
 											</Button>
+											
+											<Button name="KrokuunButton" inherits="WorldMapFakeButtonTemplate">
+												<Size x="270" y="160"/>
+												<Anchors>
+													<Anchor point="BOTTOMRIGHT" x="-270" y="140"/>
+												</Anchors>
+												<KeyValues>
+													<KeyValue key="zoneID" value="1135" type="number"/>
+												</KeyValues>
+												<Scripts>
+													<OnLoad>
+														self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+													</OnLoad>
+												</Scripts>
+												<HighlightTexture atlas="Krokuun_Highlight" useAtlasSize="true" alphaMode="ADD">
+													<Anchors>
+														<Anchor point="BOTTOMRIGHT" relativeKey="$parent.$parent" relativePoint="BOTTOMRIGHT"/>
+													</Anchors>
+												</HighlightTexture>
+											</Button>
+											<Button name="MacAreeButton" inherits="WorldMapFakeButtonTemplate">
+												<Size x="200" y="175"/>
+												<Anchors>
+													<Anchor point="TOPRIGHT" x="-280" y="-120"/>
+												</Anchors>
+												<KeyValues>
+													<KeyValue key="zoneID" value="1170" type="number"/>
+												</KeyValues>
+												<Scripts>
+													<OnLoad>
+														self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+													</OnLoad>
+												</Scripts>
+												<HighlightTexture atlas="MacAree_Highlight" useAtlasSize="true" alphaMode="ADD">
+													<Anchors>
+														<Anchor point="TOPRIGHT" relativeKey="$parent.$parent" relativePoint="TOPRIGHT"/>
+													</Anchors>
+												</HighlightTexture>
+											</Button>
+											<Button name="AntoranWastesButton" inherits="WorldMapFakeButtonTemplate">
+												<Size x="210" y="220"/>
+												<Anchors>
+													<Anchor point="BOTTOMLEFT" x="220" y="190"/>
+												</Anchors>
+												<KeyValues>
+													<KeyValue key="zoneID" value="1171" type="number"/>
+												</KeyValues>
+												<Scripts>
+													<OnLoad>
+														self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+													</OnLoad>
+												</Scripts>
+												<HighlightTexture atlas="AntoranWastes_Highlight" useAtlasSize="true" alphaMode="ADD">
+													<Anchors>
+														<Anchor point="BOTTOMLEFT" relativeKey="$parent.$parent" relativePoint="BOTTOMLEFT"/>
+													</Anchors>
+												</HighlightTexture>
+											</Button>
+											
+											<Button name="BrokenIslesArgusButton" inherits="WorldMapFakeButtonTemplate">
+												<Size x="270" y="250"/>
+												<Anchors>
+													<Anchor point="TOPRIGHT" x="0" y="0"/>
+												</Anchors>
+												<KeyValues>
+													<KeyValue key="continent" value="9" type="number"/>
+												</KeyValues>
+												<Scripts>
+													<OnLoad>
+														self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+													</OnLoad>
+												</Scripts>
+												<HighlightTexture atlas="BrokenIslesHightlight" useAtlasSize="true" alphaMode="ADD">
+													<Anchors>
+														<Anchor point="TOPRIGHT" relativeKey="$parent.$parent" relativePoint="TOPRIGHT"/>
+													</Anchors>
+												</HighlightTexture>
+											</Button>
 										</Frames>
 										<Scripts>
 											<OnLoad>
@@ -603,7 +665,7 @@
 									<OnClick>
 										local parent = self:GetParent();
 										ToggleDropDownMenu(1, nil, parent.DropDown, parent, 0, -5);
-										PlaySound("igMainMenuOptionCheckBoxOn");
+										PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 									</OnClick>
 									<OnMouseDown>
 										local parent = self:GetParent();
@@ -653,7 +715,7 @@
 						</HighlightTexture>
 						<Scripts>
 							<OnClick>
-								PlaySound("igMainMenuOptionCheckBoxOn");
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 								QuestMapFrame_Open(true);
 							</OnClick>
 						</Scripts>
@@ -682,7 +744,7 @@
 						</HighlightTexture>
 						<Scripts>
 							<OnClick>
-								PlaySound("igMainMenuOptionCheckBoxOn");
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 								QuestMapFrame_Close(true);
 							</OnClick>
 						</Scripts>
@@ -810,4 +872,7 @@
 		</Scripts>
 	</Button>
 	<Frame name="WorldMapTaskTooltipStatusBar" inherits="TooltipProgressBarTemplate"/>
+	
+	<!-- This refers to the cosmic-style buttons statically so it needs to be loaded after the xml. -->
+	<Script file="WorldMapFrameCosmicButtons.lua"/>
 </Ui>

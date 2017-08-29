@@ -22,7 +22,7 @@ local function PlayArtifactTraitSound(sound)
 		ARTIFACT_TRAIT_SOUND_HANDLE = nil;
 	end
 	
-	local soundPlayed, handle = PlaySound(sound, "SFX", false);
+	local soundPlayed, handle = PlaySound(sound, "SFX", SOUNDKIT_ALLOW_DUPLICATES);
 	if soundPlayed then
 		ARTIFACT_TRAIT_SOUND_HANDLE = handle;
 	end
@@ -101,15 +101,15 @@ function ArtifactPowerButtonMixin:PlayPurchaseAnimation()
 		self.PointBurstLeft:SetVertexColor(1, 0.81960784313725, 0.3921568627451);
 		self.PointBurstRight:SetVertexColor(1, 0.81960784313725, 0.3921568627451);
 		self.FinalPointSpentAnim:Play();
-		PlayArtifactTraitSound("UI_70_Artifact_Forge_Trait_GoldTrait");
+		PlayArtifactTraitSound(SOUNDKIT.UI_70_ARTIFACT_FORGE_TRAIT_GOLD_TRAIT);
 	elseif self.isGoldMedal then
 		self.PointBurstLeft:SetVertexColor(1, 0.81960784313725, 0.3921568627451);
 		self.PointBurstRight:SetVertexColor(1, 0.81960784313725, 0.3921568627451);
 		self.GoldPointSpentAnim:Play();
 		if self.tier == 2 then
-			PlayArtifactTraitSound("UI_72_Artifact_Forge_Final_Trait_Unlocked");
+			PlayArtifactTraitSound(SOUNDKIT.UI_72_ARTIFACT_FORGE_FINAL_TRAIT_UNLOCKED);
 		else
-			PlayArtifactTraitSound("UI_70_Artifact_Forge_Trait_GoldTrait");
+			PlayArtifactTraitSound(SOUNDKIT.UI_70_ARTIFACT_FORGE_TRAIT_GOLD_TRAIT);
 		end
 	elseif self.isStart then
 		if self.tier ~= 1 then
@@ -117,7 +117,7 @@ function ArtifactPowerButtonMixin:PlayPurchaseAnimation()
 			self.PointBurstLeft:SetVertexColor(1, 0.81960784313725, 0.3921568627451);
 			self.PointBurstRight:SetVertexColor(1, 0.81960784313725, 0.3921568627451);
 			self.FinalPointSpentAnim:Play();
-			PlayArtifactTraitSound("UI_70_Artifact_Forge_Trait_GoldTrait");
+			PlayArtifactTraitSound(SOUNDKIT.UI_70_ARTIFACT_FORGE_TRAIT_GOLD_TRAIT);
 		end
 	else
 		if self.currentRank + 1 == self.maxRank then
@@ -126,7 +126,7 @@ function ArtifactPowerButtonMixin:PlayPurchaseAnimation()
 			self.PointBurstRight:SetVertexColor(1, 0.81960784313725, 0.3921568627451);
 			self.FinalPointSpentAnim:Play();
 			if ArtifactUI_HasPurchasedAnything() then
-				PlayArtifactTraitSound("UI_70_Artifact_Forge_Trait_FinalRank");
+				PlayArtifactTraitSound(SOUNDKIT.UI_70_ARTIFACT_FORGE_TRAIT_FINALRANK);
 			end
 		else
 			self.RingGlow:SetVertexColor(0.30980392156863, 1, 0.2156862745098);
@@ -134,7 +134,7 @@ function ArtifactPowerButtonMixin:PlayPurchaseAnimation()
 			self.PointBurstRight:SetVertexColor(0.30980392156863, 1, 0.2156862745098);
 			self.PointSpentAnim:Play();
 			if ArtifactUI_HasPurchasedAnything() then
-				PlayArtifactTraitSound("UI_70_Artifact_Forge_Trait_RankUp");
+				PlayArtifactTraitSound(SOUNDKIT.UI_70_ARTIFACT_FORGE_TRAIT_RANKUP);
 			end
 		end
 	end

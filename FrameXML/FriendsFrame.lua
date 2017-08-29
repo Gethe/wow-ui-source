@@ -297,8 +297,8 @@ function FriendsFrame_OnShow()
 	UpdateMicroButtons();
 	FriendsFrame_CheckQuickJoinHelpTip();
 	FriendsFrame_UpdateQuickJoinTab(#C_SocialQueue.GetAllGroups());
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
 	GuildRoster();
-	PlaySound("igCharacterInfoTab");
 end
 
 function FriendsFrame_Update()
@@ -359,7 +359,7 @@ end
 
 function FriendsFrame_OnHide()
 	UpdateMicroButtons();
-	PlaySound("igMainMenuClose");
+	PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
 	RaidInfoFrame:Hide();
 	for index, value in pairs(FRIENDSFRAME_SUBFRAMES) do
 		if ( value == "RaidFrame" ) then
@@ -377,7 +377,7 @@ function FriendsTabHeader_ClickTab(tab)
 	PanelTemplates_Tab_OnClick(tab, FriendsTabHeader);
 	FriendsTabHeader_ResizeTabs();
 	FriendsFrame_Update();
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 end
 
 function FriendsTabHeader_ResizeTabs()
@@ -921,7 +921,7 @@ end
 
 function FriendsFrameFriendButton_OnClick(self, button)
 	if ( button == "LeftButton" ) then
-		PlaySound("igMainMenuOptionCheckBoxOn");
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 		FriendsFrame_SelectFriend(self.buttonType, self.id);
 		FriendsList_Update();
 		-- if friends of friends frame is being shown, switch list if new selection is another battlenet friend
@@ -932,7 +932,7 @@ function FriendsFrameFriendButton_OnClick(self, button)
 			end
 		end
 	elseif ( button == "RightButton" ) then
-		PlaySound("igMainMenuOptionCheckBoxOn");
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 		if ( self.buttonType == FRIENDS_BUTTON_TYPE_BNET ) then
 			-- bnet friend
 			local bnetIDAccount, accountName, battleTag, isBattleTag, characterName, bnetIDGameAccount, client, isOnline = BNGetFriendInfo(self.id);
@@ -969,7 +969,7 @@ function FriendsFrameAddFriendButton_OnClick(self)
 	local name = GetUnitName("target", true);
 	if ( UnitIsPlayer("target") and UnitCanCooperate("player", "target") and not GetFriendInfo(name) ) then
 		AddFriend(name);
-		PlaySound("UChatScrollButton");
+		PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 	else
 		local _, battleTag, _, _, _, _, isRIDEnabled = BNGetInfo();
 		if ( ( battleTag or isRIDEnabled ) and BNFeaturesEnabledAndConnected() ) then
@@ -998,7 +998,7 @@ function FriendsFrameSendMessageButton_OnClick(self)
 		ChatFrame_SendSmartTell(name);
 	end
 	if ( name ) then
-		PlaySound("igMainMenuOptionCheckBoxOn");
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	end
 end
 
@@ -1017,7 +1017,7 @@ function FriendsFrameUnsquelchButton_OnClick(self)
 	elseif ( selectedSquelchType == SQUELCH_TYPE_MUTE ) then
 		local name = GetMuteName(GetSelectedMute());
 	end
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 end
 
 function FriendsFrameWhoButton_OnClick(self, button)
@@ -1042,20 +1042,20 @@ end
 function FriendsFrame_RemoveFriend()
 	if ( FriendsFrame.selectedFriend ) then
 		RemoveFriend(FriendsFrame.selectedFriend);
-		PlaySound("UChatScrollButton");
+		PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 	end
 end
 
 function FriendsFrame_SendMessage()
 	local name = GetFriendInfo(FriendsFrame.selectedFriend);
 	ChatFrame_SendTell(name);
-	PlaySound("UChatScrollButton");
+	PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 end
 
 function FriendsFrame_GroupInvite()
 	local name = GetFriendInfo(FriendsFrame.selectedFriend);
 	InviteToGroup(name);
-	PlaySound("UChatScrollButton");
+	PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 end
 
 function ToggleFriendsFrame(tab)
@@ -1810,7 +1810,7 @@ function AddFriendFrame_ShowInfo()
 	AddFriendFrame:SetHeight(AddFriendInfoFrame:GetHeight());
 	AddFriendInfoFrame:Show();
 	AddFriendEntryFrame:Hide();
-	PlaySound("igMainMenuOpen");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
 end
 
 function AddFriendFrame_ShowEntry()
@@ -1849,7 +1849,7 @@ function AddFriendFrame_ShowEntry()
 	if ( AddFriendFrame.editFocus ) then
 		AddFriendFrame.editFocus:SetFocus();
 	end
-	PlaySound("igMainMenuOpen");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
 end
 
 function AddFriendNameEditBox_OnTextChanged(self, userInput)
@@ -2044,7 +2044,7 @@ function FriendsFriendsList_Update()
 end
 
 function FriendsFriendsButton_OnClick(self)
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	FriendsFriendsFrame.selection = self.friendID;
 	FriendsFriendsList_Update();
 end
@@ -2055,7 +2055,7 @@ function FriendsFrameIgnoreButton_OnClick(self)
 end
 
 function FriendsFriendsFrame_SendRequest()
-	PlaySound("igCharacterInfoTab");
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
 	FriendsFriendsFrame.requested[FriendsFriendsFrame.selection] = true;
 	BNSendFriendInviteByID(FriendsFriendsFrame.selection);
 	FriendsFriendsFrame_Reset();
@@ -2161,7 +2161,7 @@ function FriendsFrame_BattlenetInvite(button, bnetIDAccount)
 				end
 			end
 			
-			PlaySound("igMainMenuOptionCheckBoxOn");
+			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 			local dropDown = TravelPassDropDown;
 			if ( dropDown.index ~= index ) then
 				CloseDropDownMenus();

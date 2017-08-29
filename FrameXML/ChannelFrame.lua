@@ -100,7 +100,7 @@ function ChannelFrame_New_OnClick()
 		--ChannelFrameDaughterFrameVoiceChat:SetChecked(true);
 		--ChannelFrameDaughterFrameVoiceChat:Show();
 		ChannelFrameDaughterFrame:Show();
-		PlaySound("UChatScrollButton");
+		PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 	end
 end
 
@@ -157,7 +157,7 @@ end
 function ChannelFrameDaughterFrame_OnHide()
 	ChannelFrameDaughterFrameChannelName:SetText("");
 	ChannelFrameDaughterFrameChannelPassword:SetText("");
-	PlaySound("UChatScrollButton");
+	PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 end
 
 --[ Channel List Functions ]--
@@ -351,7 +351,7 @@ end
 function ChannelList_OnClick(self, button)
 	local id = self:GetID();
 
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 
 	ChannelListDropDown.clicked = nil;
 

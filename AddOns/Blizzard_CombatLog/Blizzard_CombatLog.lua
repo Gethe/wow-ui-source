@@ -3533,7 +3533,7 @@ function SetItemRef(link, text, button, chatFrame)
 	elseif ( strsub(link, 1,5) == "spell" ) then
 		local _, spellId, glyphId, event = strsplit(":", link);
 		spellId = tonumber (spellId);
-		glyphId = tonumber (glyphId);
+		glyphId = tonumber (glyphId) or 0;
 
 		if ( IsModifiedClick("CHATLINK") ) then
 			if ( spellId > 0 ) then
@@ -3655,7 +3655,7 @@ function Blizzard_CombatLog_QuickButton_OnClick(id)
 		Blizzard_CombatLog_Refilter();
 	end
 	Blizzard_CombatLog_Update_QuickButtons();
-	PlaySound("UChatScrollButton");
+	PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 end
 
 function ShowQuickButton(filter)

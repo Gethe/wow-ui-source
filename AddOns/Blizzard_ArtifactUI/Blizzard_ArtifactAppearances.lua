@@ -64,7 +64,7 @@ function ArtifactAppearancesMixin:ProcessAppearanceDeltas(lastUnlockedAppearance
 	if lastUnlockedAppearances then
 		for appearanceID in pairs(currentUnlockedAppearances) do
 			if not lastUnlockedAppearances[appearanceID] then
-				PlaySound("UI_70_Artifact_Forge_Appearance_ApperanceUnlock");
+				PlaySound(SOUNDKIT.UI_70_ARTIFACT_FORGE_APPEARANCE_APPEARANCE_UNLOCK);
 				break;
 			end
 		end
@@ -156,9 +156,9 @@ function ArtifactAppearanceSlotMixin:OnClick(button)
 				local currentAppearanceSetID = C_ArtifactUI.GetAppearanceInfoByID(activeAppearanceID);
 				local newAppearanceSetID = C_ArtifactUI.GetAppearanceInfoByID(self.appearanceID);
 				if currentAppearanceSetID == newAppearanceSetID then
-					PlaySound("UI_70_Artifact_Forge_Appearance_ColorSelect", nil, false);
+					PlaySound(SOUNDKIT.UI_70_ARTIFACT_FORGE_APPEARANCE_COLOR_SELECT, nil, SOUNDKIT_ALLOW_DUPLICATES);
 				else
-					PlaySound("UI_70_Artifact_Forge_Appearance_ApperanceChange", nil, false);
+					PlaySound(SOUNDKIT.UI_70_ARTIFACT_FORGE_APPEARANCE_APPEARANCE_CHANGE, nil, SOUNDKIT_ALLOW_DUPLICATES);
 				end
 				
 				self:GetParent():GetParent():OnAppearanceChanging();
@@ -172,7 +172,7 @@ function ArtifactAppearanceSlotMixin:OnClick(button)
 				C_ArtifactUI.SetPreviewAppearance(self.appearanceID);
 				self:GetParent():Refresh();
 			end
-			PlaySound("UI_70_Artifact_Forge_Appearance_Locked");
+			PlaySound(SOUNDKIT.UI_70_ARTIFACT_FORGE_APPEARANCE_LOCKED);
 		end
 	end
 end

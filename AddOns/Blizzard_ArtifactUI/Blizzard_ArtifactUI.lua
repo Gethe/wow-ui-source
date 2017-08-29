@@ -68,7 +68,7 @@ function ArtifactUIMixin:OnLoad()
 end
 
 function ArtifactUIMixin:OnShow()
-	PlaySound("igCharacterInfoOpen");
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 
 	if self.queueTier2UpgradeAnim then
 		self.queueTier2UpgradeAnim = nil;
@@ -78,7 +78,7 @@ function ArtifactUIMixin:OnShow()
 	self:EvaulateForgeState();
 	self:SetupPerArtifactData();
 	self:RefreshKnowledgeRanks();
-	self.PerksTab:Refresh(true);
+	self.PerksTab:OnUIOpened();
 	
 	self:RegisterEvent("ARTIFACT_XP_UPDATE");
 	self:RegisterEvent("ARTIFACT_RELIC_INFO_RECEIVED");
@@ -88,7 +88,7 @@ end
 
 function ArtifactUIMixin:OnHide()
 	ArtifactFrameUnderlay:Hide();
-	PlaySound("igCharacterInfoClose");
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 	C_ArtifactUI.Clear();
 
 	StaticPopup_Hide("CONFIRM_ARTIFACT_RESPEC");
@@ -113,7 +113,7 @@ function ArtifactUIMixin:OnEvent(event, ...)
 				self:SetupPerArtifactData();
 			end
 			self.PerksTab:Refresh(newItem);
-		else
+		elseif ( not C_ArtifactRelicForgeUI.IsAtForge() ) then
 			ShowUIPanel(self);
 		end
 	elseif event == "ARTIFACT_XP_UPDATE" then
@@ -124,18 +124,6 @@ function ArtifactUIMixin:OnEvent(event, ...)
 		self.PerksTab:Refresh(false);
 	elseif event == "UI_SCALE_CHANGED" or event == "DISPLAY_SIZE_CHANGED" then
 		self.PerksTab:Refresh(true);
-	end
-end
-
-function ArtifactUIMixin:OnTierChanged(newTier, bagOrInventorySlot, slot)
-	if newTier == 2 then
-		self.queueTier2UpgradeAnim = true;
-		HideUIPanel(self);
-		if slot then
-			SocketContainerItem(bagOrInventorySlot, slot);
-		else
-			SocketInventoryItem(bagOrInventorySlot);
-		end
 	end
 end
 
@@ -300,7 +288,7 @@ function ArtifactUIMixin:OnInventoryItemMouseLeave(bag, slot)
 	local itemLink = itemInfo[7];
 	local itemID = itemInfo[10];
 
-	if itemID and IsArtifactRelicItem(itemID) and not CursorHasItem() then
+	if itemID and IsArtifactRelicItem(itemID) and not CursorHasItem() and self.PerksTab:IsVisible() then
 		self.PerksTab:HideHighlightForRelicItemID(itemID, itemLink);
 		self.PerksTab.TitleContainer:RefreshRelicHighlights();
 	end

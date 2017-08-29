@@ -261,7 +261,7 @@ StaticPopupDialogs["CONFIRM_UPGRADE_ITEM"] = {
 	button2 = NO,
 	OnAccept = function()
 		UpgradeItem();
-		PlaySoundKitID(23291);
+		PlaySound(SOUNDKIT.UI_REFORGING_REFORGE);
 	end,
 	OnCancel = function()
 		ItemUpgradeFrame_Update();
@@ -391,11 +391,11 @@ StaticPopupDialogs["CONFIRM_COMPLETE_EXPENSIVE_QUEST"] = {
 	button2 = CANCEL,
 	OnAccept = function()
 		GetQuestReward(QuestInfoFrame.itemChoice);
-		PlaySound("igQuestListComplete");
+		PlaySound(SOUNDKIT.IG_QUEST_LIST_COMPLETE);
 	end,
 	OnCancel = function()
 		DeclineQuest();
-		PlaySound("igQuestCancel");
+		PlaySound(SOUNDKIT.IG_QUEST_CANCEL);
 	end,
 	OnShow = function()
 		QuestInfoFrame.acceptButton:Disable();
@@ -413,7 +413,7 @@ StaticPopupDialogs["CONFIRM_ACCEPT_PVP_QUEST"] = {
 	end,
 	OnCancel = function()
 		DeclineQuest();
-		PlaySound("igQuestCancel");
+		PlaySound(SOUNDKIT.IG_QUEST_CANCEL);
 	end,
 	OnShow = function()
 		QuestFrameAcceptButton:Disable();
@@ -432,11 +432,11 @@ StaticPopupDialogs["USE_GUILDBANK_REPAIR"] = {
 	button2 = OKAY,
 	OnAccept = function()
 		RepairAllItems();
-		PlaySound("ITEM_REPAIR");
+		PlaySound(SOUNDKIT.ITEM_REPAIR);
 	end,
 	OnCancel = function ()
 		RepairAllItems(true);
-		PlaySound("ITEM_REPAIR");
+		PlaySound(SOUNDKIT.ITEM_REPAIR);
 	end,
 	timeout = 0,
 	hideOnEscape = 1
@@ -527,7 +527,7 @@ StaticPopupDialogs["CONFIRM_ACCEPT_SOCKETS"] = {
 	button2 = NO,
 	OnAccept = function(self)
 		AcceptSockets();
-		PlaySound("JewelcraftingFinalize");
+		PlaySound(SOUNDKIT.JEWEL_CRAFTING_FINALIZE);
 	end,
 	timeout = 0,
 	showAlert = 1,
@@ -751,7 +751,7 @@ StaticPopupDialogs["BFMGR_INVITED_TO_ENTER"] = {
 	whileDead = 1,
 	hideOnEscape = 1,
 	multiple = 1,
-	sound = "PVPTHROUGHQUEUE",
+	sound = SOUNDKIT.PVP_THROUGH_QUEUE,
 };
 
 StaticPopupDialogs["BFMGR_EJECT_PENDING"] = {
@@ -1270,7 +1270,7 @@ StaticPopupDialogs["DEATH"] = {
 			self.button2:SetText(text);
 		end
 
-		if ( IsActiveBattlefieldArena() ) then
+		if ( IsActiveBattlefieldArena() and not C_PvP.IsInBrawl() ) then
 			self.text:SetText(DEATH_RELEASE_SPECTATOR);
 		elseif ( self.timeleft == -1 ) then
 			self.text:SetText(DEATH_RELEASE_NOTIMER);
@@ -1302,7 +1302,7 @@ StaticPopupDialogs["DEATH"] = {
 		self.button3:SetMotionScriptsWhileDisabled(false);
 	end,
 	OnAccept = function(self)
-		if ( IsActiveBattlefieldArena() ) then
+		if ( IsActiveBattlefieldArena() and not C_PvP.IsInBrawl() ) then
 			local info = ChatTypeInfo["SYSTEM"];
 			DEFAULT_CHAT_FRAME:AddMessage(ARENA_SPECTATOR, info.r, info.g, info.b, info.id);
 		end
@@ -1545,7 +1545,7 @@ StaticPopupDialogs["PARTY_INVITE"] = {
 	text = "%s",
 	button1 = ACCEPT,
 	button2 = DECLINE,
-	sound = "igPlayerInvite",
+	sound = SOUNDKIT.IG_PLAYER_INVITE,
 	OnShow = function(self)
 		self.inviteAccepted = nil;
 	end,
@@ -1569,7 +1569,7 @@ StaticPopupDialogs["GROUP_INVITE_CONFIRMATION"] = {
 	text = "%s", --Filled out dynamically
 	button1 = ACCEPT,
 	button2 = DECLINE,
-	sound = "igPlayerInvite",
+	sound = SOUNDKIT.IG_PLAYER_INVITE,
 	OnAccept = function(self)
 		RespondToInviteConfirmation(self.data, true);
 	end,
@@ -1637,7 +1637,7 @@ StaticPopupDialogs["CHAT_CHANNEL_INVITE"] = {
 	text = CHAT_INVITE_NOTICE_POPUP,
 	button1 = ACCEPT,
 	button2 = DECLINE,
-	sound = "igPlayerInvite",
+	sound = SOUNDKIT.IG_PLAYER_INVITE,
 	OnShow = function(self)
 		StaticPopupDialogs["CHAT_CHANNEL_INVITE"].inviteAccepted = nil;
 	end,
@@ -1693,7 +1693,7 @@ StaticPopupDialogs["LEVEL_GRANT_PROPOSED"] = {
 	text = LEVEL_GRANT,
 	button1 = ACCEPT,
 	button2 = DECLINE,
-	sound = "igPlayerInvite",
+	sound = SOUNDKIT.IG_PLAYER_INVITE,
 	OnAccept = function(self)
 		AcceptLevelGrant();
 	end,
@@ -1750,7 +1750,7 @@ StaticPopupDialogs["CHAT_CHANNEL_PASSWORD"] = {
 	maxLetters = 31,
 	button1 = OKAY,
 	button2 = CANCEL,
-	sound = "igPlayerInvite",
+	sound = SOUNDKIT.IG_PLAYER_INVITE,
 	OnAccept = function(self, data)
 		ChatChannelPasswordHandler(self, data);
 	end,
@@ -1869,6 +1869,18 @@ StaticPopupDialogs["CONFIM_BEFORE_USE"] = {
 	button2 = CANCEL,
 	OnAccept = function(self)
 		ConfirmOnUse();
+	end,
+	timeout = 0,
+	exclusive = 1,
+	hideOnEscape = 1
+};
+
+StaticPopupDialogs["USE_NO_REFUND_CONFIRM"] = {
+	text = END_REFUND,
+	button1 = OKAY,
+	button2 = CANCEL,
+	OnAccept = function(self)
+		ConfirmNoRefundOnUse();
 	end,
 	timeout = 0,
 	exclusive = 1,
@@ -2074,7 +2086,7 @@ StaticPopupDialogs["ABANDON_QUEST"] = {
 		if ( QuestLogPopupDetailFrame:IsShown() ) then
 			HideUIPanel(QuestLogPopupDetailFrame);
 		end
-		PlaySound("igQuestLogAbandonQuest");
+		PlaySound(SOUNDKIT.IG_QUEST_LOG_ABANDON_QUEST);
 	end,
 	timeout = 0,
 	whileDead = 1,
@@ -2090,7 +2102,7 @@ StaticPopupDialogs["ABANDON_QUEST_WITH_ITEMS"] = {
 		if ( QuestLogPopupDetailFrame:IsShown() ) then
 			HideUIPanel(QuestLogPopupDetailFrame);
 		end
-		PlaySound("igQuestLogAbandonQuest");
+		PlaySound(SOUNDKIT.IG_QUEST_LOG_ABANDON_QUEST);
 	end,
 	timeout = 0,
 	whileDead = 1,
@@ -2463,7 +2475,7 @@ StaticPopupDialogs["DUEL_REQUESTED"] = {
 	text = DUEL_REQUESTED,
 	button1 = ACCEPT,
 	button2 = DECLINE,
-	sound = "igPlayerInvite",
+	sound = SOUNDKIT.IG_PLAYER_INVITE,
 	OnAccept = function(self)
 		AcceptDuel();
 	end,
@@ -2481,7 +2493,7 @@ StaticPopupDialogs["PET_BATTLE_PVP_DUEL_REQUESTED"] = {
 	text = PET_BATTLE_PVP_DUEL_REQUESTED,
 	button1 = ACCEPT,
 	button2 = DECLINE,
-	sound = "igPlayerInvite",
+	sound = SOUNDKIT.IG_PLAYER_INVITE,
 	OnAccept = function(self)
 		C_PetBattles.AcceptPVPDuel();
 	end,
@@ -3491,7 +3503,7 @@ StaticPopupDialogs["CONFIRM_LEAVE_INSTANCE_PARTY"] = {
 	button2 = CANCEL,
 	OnAccept = function(self, data)
 		if ( IsInGroup(LE_PARTY_CATEGORY_INSTANCE) ) then
-			LeaveParty();
+			LeaveInstanceParty();
 		end
 	end,
 	whileDead = 1,
@@ -3504,7 +3516,7 @@ StaticPopupDialogs["CONFIRM_LEAVE_BATTLEFIELD"] = {
 	button1 = YES,
 	button2 = CANCEL,
 	OnShow = function(self)
-		if ( IsActiveBattlefieldArena() ) then
+		if ( IsActiveBattlefieldArena() and not C_PvP.IsInBrawl() ) then
 			self.text:SetText(CONFIRM_LEAVE_ARENA);
 		else
 			self.text:SetText(CONFIRM_LEAVE_BATTLEFIELD);
@@ -4338,7 +4350,7 @@ function StaticPopup_EditBoxOnTextChanged(self, userInput)
 end
 
 function StaticPopup_OnShow(self)
-	PlaySound("igMainMenuOpen");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
 
 	local dialog = StaticPopupDialogs[self.which];
 	local OnShow = dialog.OnShow;
@@ -4355,7 +4367,7 @@ function StaticPopup_OnShow(self)
 end
 
 function StaticPopup_OnHide(self)
-	PlaySound("igMainMenuClose");
+	PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
 
 	StaticPopup_CollapseTable();
 

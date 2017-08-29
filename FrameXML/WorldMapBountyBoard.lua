@@ -200,6 +200,7 @@ function WorldMapBountyBoardMixin:RefreshSelectedBounty()
 			if title then
 				self.BountyName:SetText(title);
 
+				self:InvalidateMapCache();
 				self:RefreshSelectedBountyObjectives(bountyData);
 				return;
 			end
@@ -268,7 +269,7 @@ end
 
 function WorldMapBountyBoardMixin:SetSelectedBountyIndex(selectedBountyIndex)
 	self.selectedBountyIndex = selectedBountyIndex;
-	PlaySound("UI_WorldQuest_Map_Select");
+	PlaySound(SOUNDKIT.UI_WORLDQUEST_MAP_SELECT);
 	self:RefreshBountyTabs();
 	self:RefreshSelectedBounty();
 	if self.selectedBountyChangedCallback then
@@ -304,6 +305,10 @@ function WorldMapBountyBoardMixin:ShowBountyTooltip(bountyIndex)
 		WorldMapTooltip:AddLine(questDescription, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
 
 		AddObjectives(bountyData.questID, bountyData.numObjectives);
+
+		if bountyData.turninRequirementText then
+			WorldMapTooltip:AddLine(bountyData.turninRequirementText, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
+		end
 
 		GameTooltip_AddQuestRewardsToTooltip(WorldMapTooltip, bountyData.questID);
 		WorldMapTooltip:Show();
@@ -384,94 +389,118 @@ end
 
 function WorldMapBountyBoardMixin:OnTabClick(tab)
 	if not tab.isEmpty then
-		if (self:GetSelectedBountyIndex() ~= tab.bountyIndex) then
-			self.currentCandidateIndex = nil;
+		if self:GetSelectedBountyIndex() ~= tab.bountyIndex then
+			self.bestMapIndex = nil;
+			self:InvalidateMapCache();
 		end
 		self:SetSelectedBountyIndex(tab.bountyIndex);
 		self:FindBestMapForSelectedBounty();
 	end
 end
 
-function WorldMapBountyBoardMixin:CacheWorldQuestDataForSelectedBounty()
-	local continentIndex, continentID = GetCurrentMapContinent();
-	local continentMaps =  { GetMapZones(continentIndex) };
+function WorldMapBountyBoardMixin:InvalidateMapCache()
+	self.cachedMapInfo = nil;
+end
 
-	local maxQuests = 0;
-	for i = 1, #continentMaps, 2 do
-		local numQuests = 0;
-		local taskInfo = C_TaskQuest.GetQuestsForPlayerByMapID(continentMaps[i], continentID);
-		for _, info  in ipairs(taskInfo) do
-			if QuestUtils_IsQuestWorldQuest(info.questId) then
-				if self:IsWorldQuestCriteriaForSelectedBounty(info.questId) then
-					numQuests = numQuests + 1;
-				end
+function WorldMapBountyBoardMixin:CalculateNumActiveWorldQuestsForSelectedBountyByMap(areaMapID, parentAreaMapID)
+	local numQuests = 0;
+	local taskInfo = C_TaskQuest.GetQuestsForPlayerByMapID(areaMapID, parentAreaMapID);
+	for i, info  in ipairs(taskInfo) do
+		if QuestUtils_IsQuestWorldQuest(info.questId) then
+			if self:IsWorldQuestCriteriaForSelectedBounty(info.questId) then
+				numQuests = numQuests + 1;
 			end
 		end
-		-- The maps don't have a defined order, so we keep some semblance of order by reusing indexes.
-		local index = FindInTableIf(self.maps, function(v) return v.mapID == continentMaps[i] end);
-		if index then
-			self.maps[index].numQuests = numQuests;
-		else
-			tinsert(self.maps, { mapID = continentMaps[i], numQuests = numQuests });
-		end
-		if (numQuests > maxQuests) then
-			self.highestMapInfo.mapID = index and self.maps[index].mapID or continentMaps[i];
-			self.highestMapInfo.numQuests = numQuests;
-			maxQuests = numQuests;
+	end
+	return numQuests;
+end
+
+function WorldMapBountyBoardMixin:CacheMapsForSelectionBounty()
+	if self.cachedMapInfo then
+		return;
+	end
+
+	self.cachedMapInfo = {};
+
+	local continents = { GetMapContinents() };
+	for continentElementIndex = 1, #continents, 2 do
+		local continentIndex = (continentElementIndex + 1) / 2;
+
+		local zones = { GetMapZones(continentIndex) };
+		for zoneElementIndex = 1, #zones, 2 do
+			local zoneAreaMapID = zones[zoneElementIndex];
+			local numQuests = self:CalculateNumActiveWorldQuestsForSelectedBountyByMap(zoneAreaMapID, zoneAreaMapID);
+			if numQuests > 0 then
+				table.insert(self.cachedMapInfo, { zoneAreaMapID = zoneAreaMapID, count = numQuests });
+			end
 		end
 	end
-	self.maps = tFilter(self.maps, function(v) return v.numQuests > 0 end, true);
+
+	table.sort(self.cachedMapInfo, function(left, right) return right.count < left.count end);
+end
+
+function WorldMapBountyBoardMixin:FindCachedZoneMapIndexFromZoneAreaID(zoneMapAreaID)
+	assert(self.cachedMapInfo);
+
+	for i, mapInfo in ipairs(self.cachedMapInfo) do
+		if mapInfo.zoneAreaMapID == zoneMapAreaID then
+			return i;
+		end
+	end
+	return nil;
+end
+
+function WorldMapBountyBoardMixin:FindCachedZoneIndexFromContinentAreaID(continentMapAreaID)
+	local continents = { GetMapContinents() };
+	for continentElementIndex = 1, #continents, 2 do
+		local continentIndex = (continentElementIndex + 1) / 2;
+		local currentContinentAreaMapID = continents[continentElementIndex];
+
+		if currentContinentAreaMapID == continentAreaMapID then
+			local bestMapIndex = nil;
+			local zones = { GetMapZones(continentIndex) };
+			for zoneElementIndex = 1, #zones, 2 do
+				local zoneAreaMapID = zones[zoneElementIndex];
+				local mapIndex = self:FindCachedZoneMapIndexFromZoneAreaID(zoneAreaMapID);
+				if mapIndex and (not bestMapIndex or mapIndex < bestMapIndex) then
+					bestMapIndex = mapIndex;
+				end
+			end
+
+			return bestMapIndex;
+		end
+	end
+
+	return nil;
+end
+
+function WorldMapBountyBoardMixin:FindCachedZoneIndexFromCurrentMapAreaID()
+	local areaMapID, isContinent = GetCurrentMapAreaID();
+	if isContinent then
+		return self:FindCachedZoneIndexFromContinentAreaID(areaMapID);
+	end
+	return self:FindCachedZoneMapIndexFromZoneAreaID(areaMapID);
+end
+
+function WorldMapBountyBoardMixin:FindNextBestMapIndex(currentIndex)
+	assert(self.cachedMapInfo);
+
+	if currentIndex then
+		return currentIndex % #self.cachedMapInfo + 1;
+	end
+
+	return self:FindCachedZoneIndexFromCurrentMapAreaID() or 1;
 end
 
 function WorldMapBountyBoardMixin:FindBestMapForSelectedBounty()
-	self:CacheWorldQuestDataForSelectedBounty();
+	self:CacheMapsForSelectionBounty();
 
-	if (#self.maps == 0) then
+	if #self.cachedMapInfo == 0 then
 		return;
 	end
-	
-	local currentMapID = GetCurrentMapAreaID();
-	local candidateMapID;
 
-	local maxQuests = 0;
-	if (not self.currentCandidateIndex) then
-		local hierarchy = GetMapHierarchy();
-		for i, parentInfo in ipairs(hierarchy) do
-			if (not parentInfo.isContinent) then
-				ZoomOut();
-				local myParentMap = FindInTableIf(self.maps, function(v) return v.mapID == parentInfo.id end);
-				if (myParentMap) then
-					self.currentCandidateIndex = myParentMap;
-					break;
-				end
-			end
-		end
-
-		if (not self.currentCandidateIndex) then
-			local myMap = FindInTableIf(self.maps, function(v) return v.mapID == currentMapID end);
-			if (myMap) then
-				self.currentCandidateIndex = myMap;
-			end
-		end
-
-		if (not self.currentCandidateIndex) then
-			self.currentCandidateIndex = FindInTableIf(self.maps, function(v) return v.mapID == self.highestMapInfo.mapID end);
-		end
-		candidateMapID = self.maps[self.currentCandidateIndex].mapID;
-	elseif (#self.maps > 1) then
-		self.currentCandidateIndex = self.currentCandidateIndex + 1;
-		if (self.currentCandidateIndex > #self.maps) then
-			self.currentCandidateIndex = 1;
-		end
-		candidateMapID = self.maps[self.currentCandidateIndex].mapID;
-	else
-		self.currentCandidateIndex = 1;
-		candidateMapID = self.maps[1].mapID;
-	end
-
-	if ( candidateMapID and candidateMapID ~= currentMapID ) then
-		SetMapByID(candidateMapID);
-	end
+	self.bestMapIndex = self:FindNextBestMapIndex(self.bestMapIndex);
+	SetMapByID(self.cachedMapInfo[self.bestMapIndex].zoneAreaMapID);
 end
 
 function WorldMapBountyBoardMixin:TryShowingIntroTutorial()

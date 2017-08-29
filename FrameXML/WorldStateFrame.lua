@@ -36,6 +36,11 @@ SUBTRACTED_PLAYERS = {};
 
 ExtendedUI = {};
 
+CAPTURE_BAR_STYLE = {
+	["PVP"] = { BarBackground = "worldstate-capturebar-frame-factions", LeftBar = "worldstate-capturebar-blue", RightBar = "worldstate-capturebar-red", Middle="worldstate-capturebar-spark-yellow" },
+	["LFD_BATTLEFIELD"] = { BarBackground = "worldstate-capturebar-frame", LeftBar = "worldstate-capturebar-yellow", RightBar = "worldstate-capturebar-purple", Middle="worldstate-capturebar-spark-green" },
+};
+
 -- Always up stuff (i.e. capture the flag indicators)
 function WorldStateAlwaysUpFrame_OnLoad(self)
 	self:RegisterEvent("UPDATE_WORLD_STATES");
@@ -110,7 +115,7 @@ function WorldStateAlwaysUpFrame_OnEvent(self, event, ...)
 	end
 end
 
-function WorldStateAlwaysUpFrame_AddFrame(alwaysUpShown, text, icon, dynamicIcon, dynamicTooltip, state)
+function WorldStateAlwaysUpFrame_AddFrame(alwaysUpShown, text, icon, dynamicIcon, dynamicFlashIcon, dynamicTooltip, state)
 	local name = "AlwaysUpFrame"..alwaysUpShown;
 	local frame;
 	if ( alwaysUpShown > NUM_ALWAYS_UP_UI_FRAMES ) then
@@ -135,11 +140,7 @@ function WorldStateAlwaysUpFrame_AddFrame(alwaysUpShown, text, icon, dynamicIcon
 	frameText:SetText(text);
 	frameIcon:SetTexture(icon);
 	frameDynamicIcon:SetTexture(dynamicIcon);
-	local flash = nil;
-	if ( dynamicIcon ~= "" ) then
-		flash = dynamicIcon.."Flash"
-	end
-	flashTexture:SetTexture(flash);
+	flashTexture:SetTexture(dynamicFlashIcon);
 	frameDynamicButton.tooltip = dynamicTooltip;
 	if ( state == 2 ) then
 		UIFrameFlash(frameFlash, 0.5, 0.5, -1);
@@ -160,20 +161,18 @@ end
 function WorldStateAlwaysUpFrame_Update()
 	local numUI = GetNumWorldStateUI();
 	local frame;
-	local extendedUI, extendedUIState1, extendedUIState2, extendedUIState3, uiInfo; 
-	local uiType, text, icon, state, hidden, dynamicIcon, tooltip, dynamicTooltip;
 	local inInstance, instanceType = IsInInstance();
 	local alwaysUpShown = 1;
 	local extendedUIShown = 1;
 	local alwaysUpHeight = 10;
 	for i=1, numUI do
-		uiType, state, hidden, text, icon, dynamicIcon, tooltip, dynamicTooltip, extendedUI, extendedUIState1, extendedUIState2, extendedUIState3 = GetWorldStateUIInfo(i);
+		local uiType, state, hidden, text, icon, dynamicIcon, dynamicFlashIcon, tooltip, dynamicTooltip, extendedUI, extendedUIState1, extendedUIState2, extendedUIState3 = GetWorldStateUIInfo(i);
 		if ( not hidden ) then
 			if ( state > 0 ) then
 				-- Handle always up frames and extended ui's completely differently
 				if ( extendedUI ~= "" ) then
 					-- extendedUI
-					uiInfo = ExtendedUI[extendedUI]
+					local uiInfo = ExtendedUI[extendedUI]
 					local name = uiInfo.name..extendedUIShown;
 					if ( extendedUIShown > NUM_EXTENDED_UI_FRAMES ) then
 						frame = uiInfo.create(extendedUIShown);
@@ -186,7 +185,7 @@ function WorldStateAlwaysUpFrame_Update()
 					extendedUIShown = extendedUIShown + 1;
 				else
 					-- Always Up
-					frame = WorldStateAlwaysUpFrame_AddFrame(alwaysUpShown, text, icon, dynamicIcon, dynamicTooltip, state);
+					frame = WorldStateAlwaysUpFrame_AddFrame(alwaysUpShown, text, icon, dynamicIcon, dynamicFlashIcon, dynamicTooltip, state);
 					alwaysUpShown = alwaysUpShown + 1;
 					alwaysUpHeight = alwaysUpHeight + frame:GetHeight();
 				end	
@@ -198,33 +197,6 @@ function WorldStateAlwaysUpFrame_Update()
 			end
 		end
 	end
-	
-	--[[
-	Disabling this for now
-	Long-term we'd like the battleground objectives to work more like this, but it's not working for 5.3
-	
-	local hordePoints, hordeMaxPoints = GetBattlegroundPoints(TEAM_HORDE);
-	local alliancePoints, allianceMaxPoints = GetBattlegroundPoints(TEAM_ALLIANCE);
-	
-	local scoreString = BATTLEGROUND_SCORE_VICTORY_POINTS;
-	if(GetAreaID() == 1105) then  -- Gold Rush BG
-		scoreString = BATTLEGROUND_SCORE_GOLD;
-	end
-	
-	if(allianceMaxPoints > 0) then
-		local text = format(scoreString, alliancePoints, allianceMaxPoints);
-		frame = WorldStateAlwaysUpFrame_AddFrame(alwaysUpShown, text, "Interface\\TargetingFrame\\UI-PVP-Alliance", "", 0, 1);
-		alwaysUpShown = alwaysUpShown + 1;
-		alwaysUpHeight = alwaysUpHeight + frame:GetHeight();
-	end
-	
-	if(hordeMaxPoints > 0) then
-		local text = format(scoreString, hordePoints, hordeMaxPoints);
-		frame = WorldStateAlwaysUpFrame_AddFrame(alwaysUpShown, text, "Interface\\TargetingFrame\\UI-PVP-Horde", "", 0, 1);
-		alwaysUpShown = alwaysUpShown + 1;
-		alwaysUpHeight = alwaysUpHeight + frame:GetHeight();
-	end
-	]]--
 	
 	for i=alwaysUpShown, NUM_ALWAYS_UP_UI_FRAMES do
 		frame = _G["AlwaysUpFrame"..i];
@@ -423,41 +395,56 @@ function CaptureBar_Update(id, value, neutralPercent)
 	if ( not bar.oldValue ) then
 		bar.oldValue = position;
 	end
+
+	-- style
+	local style = "PVP";
+	if ( IsInLFDBattlefield() ) then
+		style = "LFD_BATTLEFIELD"
+	end
+	if ( bar.style ~= style ) then
+		bar.style = style;
+		for key, atlas in pairs(CAPTURE_BAR_STYLE[style]) do
+			if ( bar[key] ) then
+				bar[key]:SetAtlas(atlas);
+			else
+				bar.Indicator[key]:SetAtlas(atlas);
+			end
+		end
+	end
+
 	-- Show an arrow in the direction the bar is moving
 	if ( position < bar.oldValue ) then
-		_G["WorldStateCaptureBar"..id.."IndicatorLeft"]:Show();
-		_G["WorldStateCaptureBar"..id.."IndicatorRight"]:Hide();
+		bar.Indicator.Left:Show();
+		bar.Indicator.Right:Hide();
 	elseif ( position > bar.oldValue ) then
-		_G["WorldStateCaptureBar"..id.."IndicatorLeft"]:Hide();
-		_G["WorldStateCaptureBar"..id.."IndicatorRight"]:Show();
+		bar.Indicator.Left:Hide();
+		bar.Indicator.Right:Show();	
 	else
-		_G["WorldStateCaptureBar"..id.."IndicatorLeft"]:Hide();
-		_G["WorldStateCaptureBar"..id.."IndicatorRight"]:Hide();
+		bar.Indicator.Left:Hide();
+		bar.Indicator.Right:Hide();	
 	end
 	-- Figure out if the ticker is in neutral territory or on a faction's side
 	if ( value > (50 + neutralPercent/2) ) then
-		_G["WorldStateCaptureBar"..id.."LeftIconHighlight"]:Show();
-		_G["WorldStateCaptureBar"..id.."RightIconHighlight"]:Hide();
+		bar.LeftIconHighlight:Show();
+		bar.RightIconHighlight:Hide();
 	elseif ( value < (50 - neutralPercent/2) ) then
-		_G["WorldStateCaptureBar"..id.."LeftIconHighlight"]:Hide();
-		_G["WorldStateCaptureBar"..id.."RightIconHighlight"]:Show();
+		bar.LeftIconHighlight:Hide();
+		bar.RightIconHighlight:Show();
 	else
-		_G["WorldStateCaptureBar"..id.."LeftIconHighlight"]:Hide();
-		_G["WorldStateCaptureBar"..id.."RightIconHighlight"]:Hide();
+		bar.LeftIconHighlight:Hide();
+		bar.RightIconHighlight:Hide();
 	end
 	-- Setup the size of the neutral bar
-	local middleBar = _G["WorldStateCaptureBar"..id.."MiddleBar"];
-	local leftLine = _G["WorldStateCaptureBar"..id.."LeftLine"];
 	if ( neutralPercent == 0 ) then
-		middleBar:SetWidth(1);
-		leftLine:Hide();
+		bar.MiddleBar:SetWidth(1);
+		bar.LeftLine:Hide();
 	else
-		middleBar:SetWidth(neutralPercent/100*barSize);
-		leftLine:Show();
+		bar.MiddleBar:SetWidth(neutralPercent/100*barSize);
+		bar.LeftLine:Show();
 	end
 
 	bar.oldValue = position;
-	_G["WorldStateCaptureBar"..id.."Indicator"]:SetPoint("CENTER", "WorldStateCaptureBar"..id, "LEFT", position, 0);
+	bar.Indicator:SetPoint("CENTER", "WorldStateCaptureBar"..id, "LEFT", position, 0);
 end
 
 
@@ -516,12 +503,13 @@ function WorldStateScoreFrame_Update()
 	local isWargame = IsWargame();
 	local isSkirmish = IsArenaSkirmish();
 	local battlefieldWinner = GetBattlefieldWinner(); 
-	
-	local firstFrameAfterCustomStats = WorldStateScoreFrameHonorGained;
+	local isLFDBattlefield = IsInLFDBattlefield();
 
+	local firstFrameAfterCustomStats = WorldStateScoreFrameHonorGained;
 	WorldStateScoreFramePrestige:SetShown(UnitLevel("player") == MAX_PLAYER_LEVEL_TABLE[LE_EXPANSION_LEVEL_CURRENT]);
 	
-	if ( isArena ) then
+	-- LFD Battlefield scoreboard has the same contents as arena skirmish
+	if ( isArena or isLFDBattlefield ) then
 		-- Hide unused tabs
 		WorldStateScoreFrameTab1:Hide();
 		WorldStateScoreFrameTab2:Hide();
@@ -533,7 +521,7 @@ function WorldStateScoreFrame_Update()
 		WorldStateScoreFrameHonorGained:Hide();
 		WorldStateScoreFrameBgRating:Hide();
 
-		if ( isWargame or isSkirmish ) then
+		if ( isWargame or isSkirmish or isLFDBattlefield ) then
 			WorldStateScoreFrameRatingChange:Hide()
 		end
 		WorldStateScoreFrameName:SetWidth(325)
@@ -541,7 +529,7 @@ function WorldStateScoreFrame_Update()
 		-- Reanchor some columns.
 		WorldStateScoreFrameDamageDone:SetPoint("LEFT", WorldStateScoreFrameKB, "RIGHT", -5, 0);
 		WorldStateScoreFrameTeam:Hide();
-		if ( not isWargame and not isSkirmish ) then
+		if ( not isWargame and not isSkirmish and not isLFDBattlefield ) then
 			WorldStateScoreFrameRatingChange:Show();
 			WorldStateScoreFrameRatingChange:SetPoint("LEFT", WorldStateScoreFrameHealingDone, "RIGHT", 0, 0);
 			WorldStateScoreFrameRatingChange.sortType = "bgratingChange";
@@ -602,8 +590,11 @@ function WorldStateScoreFrame_Update()
 		if ( isArena ) then
 			WorldStateScoreFrameLeaveButton:SetText(LEAVE_ARENA);
 			WorldStateScoreFrameTimerLabel:SetText(TIME_TO_PORT_ARENA);
+		elseif ( isLFDBattlefield ) then
+			WorldStateScoreFrameLeaveButton:SetText(LEAVE_LFD_BATTLEFIELD);
+			WorldStateScoreFrameTimerLabel:SetText("");
 		else
-			WorldStateScoreFrameLeaveButton:SetText(LEAVE_BATTLEGROUND);				
+			WorldStateScoreFrameLeaveButton:SetText(LEAVE_BATTLEGROUND);
 			WorldStateScoreFrameTimerLabel:SetText(TIME_TO_PORT);
 		end
 		
@@ -646,6 +637,29 @@ function WorldStateScoreFrame_Update()
 				WorldStateScoreWinnerFrameLeft:SetVertexColor(0.85, 0.71, 0.26);
 				WorldStateScoreWinnerFrameRight:SetVertexColor(0.85, 0.71, 0.26);
 				WorldStateScoreWinnerFrameText:SetVertexColor(1, 0.82, 0);	
+			end
+		elseif ( isLFDBattlefield ) then
+			if ( GetBattlefieldTeamInfo(battlefieldWinner) ) then
+				local teamName;
+				if ( battlefieldWinner == 0) then
+					teamName = ARENA_TEAM_NAME_PURPLE;
+				else
+					teamName = ARENA_TEAM_NAME_GOLD;
+				end
+				WorldStateScoreWinnerFrameText:SetFormattedText(VICTORY_TEXT_LFD_BATTLEFIELD_WINS, teamName);
+			else
+				WorldStateScoreWinnerFrameText:SetText(VICTORY_TEXT_LFD_BATTLEFIELD_DRAW);
+			end
+			if ( battlefieldWinner == 0 ) then
+				-- Purple Team won
+				WorldStateScoreWinnerFrameLeft:SetVertexColor(0.57, 0.11, 0.57);
+				WorldStateScoreWinnerFrameRight:SetVertexColor(0.57, 0.11, 0.57);
+				WorldStateScoreWinnerFrameText:SetVertexColor(1, 0.1, 1);
+			else
+				-- Gold Team won
+				WorldStateScoreWinnerFrameLeft:SetVertexColor(0.85, 0.71, 0.26);
+				WorldStateScoreWinnerFrameRight:SetVertexColor(0.85, 0.71, 0.26);
+				WorldStateScoreWinnerFrameText:SetVertexColor(1, 0.82, 0);
 			end
 		else
 			WorldStateScoreWinnerFrameText:SetText(_G["VICTORY_TEXT"..battlefieldWinner]);
@@ -753,7 +767,9 @@ function WorldStateScoreFrame_Update()
 			end
 			
 			if ( prestige > 0 ) then
-				scoreButton.prestige.icon:SetTexture(GetPrestigeInfo(prestige) or 0);
+				local iconFileID, prestigeName = GetPrestigeInfo(prestige);
+				scoreButton.prestige.icon:SetTexture(iconFileID or 0);
+				scoreButton.prestige.tooltip = prestigeName; -- could be nil, that's ok.
 				scoreButton.prestige:Show();
 			else
 				scoreButton.prestige:Hide();
@@ -787,7 +803,7 @@ function WorldStateScoreFrame_Update()
 				teamDataFailed = 1;
 			end
 
-			if ( isArena ) then
+			if ( isArena or isLFDBattlefield ) then
 				scoreButton.name.text:SetWidth(350);
 				if ( isRegistered ) then
 					scoreButton.team:SetText(teamName);
@@ -878,6 +894,11 @@ function WorldStateScoreFrame_Update()
 						scoreButton.factionLeft:SetVertexColor(0.19, 0.57, 0.11);
 						scoreButton.factionRight:SetVertexColor(0.19, 0.57, 0.11);
 						scoreButton.name.text:SetVertexColor(0.1, 1.0, 0.1);
+					elseif ( isLFDBattlefield ) then
+						-- Purple Team
+						scoreButton.factionLeft:SetVertexColor(0.57, 0.11, 0.57);
+						scoreButton.factionRight:SetVertexColor(0.57, 0.11, 0.57);
+						scoreButton.name.text:SetVertexColor(1, 0.1, 1);
 					else
 						-- Horde
 						scoreButton.factionLeft:SetVertexColor(0.52, 0.075, 0.18);
@@ -890,6 +911,11 @@ function WorldStateScoreFrame_Update()
 						scoreButton.factionLeft:SetVertexColor(0.85, 0.71, 0.26);
 						scoreButton.factionRight:SetVertexColor(0.85, 0.71, 0.26);
 						scoreButton.name.text:SetVertexColor(1, 0.82, 0);
+					elseif ( isLFDBattlefield ) then
+						-- Gold Team
+						scoreButton.factionLeft:SetVertexColor(0.85, 0.71, 0.26);
+						scoreButton.factionRight:SetVertexColor(0.85, 0.71, 0.26);
+						scoreButton.name.text:SetVertexColor(1, 0.82, 0);
 					else
 						-- Alliance 
 						scoreButton.factionLeft:SetVertexColor(0.11, 0.26, 0.51);
@@ -897,7 +923,7 @@ function WorldStateScoreFrame_Update()
 						scoreButton.name.text:SetVertexColor(0, 0.68, 0.94);
 					end
 				end
-				if ( ( not isArena ) and ( name == UnitName("player") ) ) then
+				if ( ( not isArena and not isLFDBattlefield ) and ( name == UnitName("player") ) ) then
 					scoreButton.name.text:SetVertexColor(1.0, 0.82, 0);
 				end
 				scoreButton.factionLeft:Show();
@@ -943,7 +969,7 @@ function WorldStateScoreFrame_Update()
 	else
 		WorldStateScorePlayerCount:Hide();
 	end
-	if ( isArena ) then
+	if ( isArena or isLFDBattlefield ) then
 		WorldStateScorePlayerCount:Hide();
 	end
 
@@ -1050,7 +1076,7 @@ function WorldStateScoreFrame_Resize()
 end
 
 function WorldStateScoreFrame_OnClose(self)
-	PlaySound("igCharacterInfoClose");
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 	HideParentPanel(self);
 end
 
@@ -1070,7 +1096,7 @@ function WorldStateScoreFrameTab_OnClick(tab)
 	end
 	WorldStateScoreFrameLabel:SetFormattedText(STAT_TEMPLATE, tab:GetText());
 	SetBattlefieldScoreFaction(faction);
-	PlaySound("igCharacterInfoTab");
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
 end
 
 function ToggleWorldStateScoreFrame()
@@ -1087,7 +1113,7 @@ function ToggleWorldStateScoreFrame()
 			end
 		end
 
-		if ( ( not IsActiveBattlefieldArena() or GetBattlefieldWinner() ) and inBattlefield ) then
+		if ( ( not IsActiveBattlefieldArena() or GetBattlefieldWinner() or C_PvP.IsInBrawl() ) and inBattlefield ) then
 			ShowUIPanel(WorldStateScoreFrame);
 		end
 	end

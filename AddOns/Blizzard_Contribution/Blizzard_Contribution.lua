@@ -1,4 +1,4 @@
-UIPanelWindows["ContributionCollectionFrame"] = { area = "center", allowOtherPanels = 1 };
+UIPanelWindows["ContributionCollectionFrame"] = { area = "center", allowOtherPanels = 1, showFailedFunc = C_ContributionCollector.Close, };
 
 ContributionRewardMixin = {};
 
@@ -113,7 +113,7 @@ function ContributionStatusMixin:Update()
 end
 
 function ContributionStatusMixin:PlayFlashAnimation()
-	PlaySound("UI_72_Buildings_Contribute_Resources", nil, false);
+	PlaySound(SOUNDKIT.UI_72_BUILDINGS_CONTRIBUTE_RESOURCES, nil, SOUNDKIT_ALLOW_DUPLICATES);
 
 	-- Only play the animation if it isn't playing or is almost finished.
 	local progress = self.FlashAnim:GetProgress();
@@ -165,7 +165,7 @@ function ContributeButtonMixin:OnEvent(event, ...)
 end
 
 function ContributeButtonMixin:OnClick(button)
-	PlaySound("UI_72_Buildings_Contribute_Power_Menu_Click");
+	PlaySound(SOUNDKIT.UI_72_BUILDINGS_CONTRIBUTE_POWER_MENU_CLICK);
 	self:Disable();
 	self:GetParent():Contribute();
 end
@@ -385,7 +385,7 @@ function ContributionCollectionMixin:OnLoad()
 end
 
 function ContributionCollectionMixin:OnShow()
-	PlaySound("UI_72_Building_Contribution_Table_Open");
+	PlaySound(SOUNDKIT.UI_72_BUILDING_CONTRIBUTION_TABLE_OPEN);
 
 	self:RegisterEvent("CONTRIBUTION_COLLECTOR_UPDATE");
 	self:RegisterEvent("CONTRIBUTION_COLLECTOR_PENDING");
@@ -394,7 +394,7 @@ function ContributionCollectionMixin:OnShow()
 end
 
 function ContributionCollectionMixin:OnHide()
-	PlaySound("UI_72_Buildings_Contribution_Table_Close");
+	PlaySound(SOUNDKIT.UI_72_BUILDINGS_CONTRIBUTION_TABLE_CLOSE);
 
 	self:UnregisterEvent("CONTRIBUTION_COLLECTOR_UPDATE");
 	self:UnregisterEvent("CONTRIBUTION_COLLECTOR_PENDING");

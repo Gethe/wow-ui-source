@@ -471,7 +471,7 @@
 					self.updateInterval = self.updateInterval - elapsed;
 				else
 					self.updateInterval = PERFORMANCEBAR_UPDATE_INTERVAL;
-					status = GetFileStreamingStatus();
+					local status = GetFileStreamingStatus();
 					if(status==0) then
 						status = (GetBackgroundLoadingStatus()~=0) and 1 or 0;
 					end
@@ -523,10 +523,10 @@
 						end
 						CloseMenus();
 						CloseAllWindows()
-						PlaySound("igMainMenuOpen");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
 						ShowUIPanel(GameMenuFrame);
 					else
-						PlaySound("igMainMenuQuit");
+						PlaySound(SOUNDKIT.IG_MAINMENU_QUIT);
 						HideUIPanel(GameMenuFrame);
 						MainMenuMicroButton_SetNormal();
 					end
@@ -549,10 +549,10 @@
 							end
 							CloseMenus();
 							CloseAllWindows()
-							PlaySound("igMainMenuOpen");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
 							ShowUIPanel(GameMenuFrame);
 						else
-							PlaySound("igMainMenuQuit");
+							PlaySound(SOUNDKIT.IG_MAINMENU_QUIT);
 							HideUIPanel(GameMenuFrame);
 							MainMenuMicroButton_SetNormal();
 						end

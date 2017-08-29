@@ -779,7 +779,7 @@ end
 -- *****************************************************************************************************
 
 function ObjectiveTracker_MinimizeButton_OnClick(self)
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	if ( ObjectiveTrackerFrame.collapsed ) then
 		ObjectiveTracker_Expand();
 	else
@@ -812,7 +812,7 @@ function ObjectiveTracker_ToggleDropDown(frame, handlerFunc)
 	dropDown.activeFrame = frame;
 	dropDown.initialize = handlerFunc;
 	ToggleDropDownMenu(1, nil, dropDown, "cursor", 3, -3);
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 end
 
 -- *****************************************************************************************************

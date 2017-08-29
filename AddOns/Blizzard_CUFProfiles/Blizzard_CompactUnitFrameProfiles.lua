@@ -561,9 +561,9 @@ end
 
 function CompactUnitFrameProfilesCheckButton_OnClick(self, button)
 	if ( self:GetChecked() ) then
-		PlaySound("igMainMenuOptionCheckBoxOn");
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	else
-		PlaySound("igMainMenuOptionCheckBoxOff");
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 	end
 	SetRaidProfileOption(CompactUnitFrameProfiles.selectedProfile, self.optionName, self:GetChecked());
 	CompactUnitFrameProfiles_ApplyCurrentSettings();

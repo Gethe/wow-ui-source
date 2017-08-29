@@ -75,7 +75,7 @@ function CollectionsWrappedModelSceneMixin:StartUnwrapAnimation(OnFinishedCallba
 
 		wrappedActor:SetAnimation(148);
 
-		PlaySound("UI_Store_Unwrap");
+		PlaySound(SOUNDKIT.UI_STORE_UNWRAP);
 
 		C_Timer.After(.8, function()
 			for actor in self:EnumerateActiveActors() do

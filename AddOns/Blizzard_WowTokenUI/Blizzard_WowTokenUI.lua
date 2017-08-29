@@ -114,6 +114,7 @@ Import("LE_TOKEN_RESULT_ERROR_DISABLED");
 Import("LE_TOKEN_RESULT_ERROR_BALANCE_NEAR_CAP")
 Import("LE_TOKEN_REDEEM_TYPE_GAME_TIME");
 Import("LE_TOKEN_REDEEM_TYPE_BALANCE");
+Import("SOUNDKIT");
 
 BalanceEnabled = nil;
 BalanceAmount = 0;
@@ -390,11 +391,11 @@ function GetBalanceRedemptionString()
 end
 
 function WowTokenRedemptionFrame_OnShow(self)
-	PlaySound("igMainMenuOpen");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
 end
 
 function WowTokenRedemptionFrame_OnHide(self)
-	PlaySound("igMainMenuClose");
+	PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
 end
 
 function WowTokenRedemptionFrame_OnEvent(self, event, ...)
@@ -481,13 +482,13 @@ function WowTokenRedemptionRedeemButton_OnClick(self)
 	end
 	C_WowTokenSecure.RedeemToken(type);
 	WowTokenDialog_SetDialog(WowTokenDialog, dialogKey);
-	PlaySound("igMainMenuOpen");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
 end
 
 function WowTokenRedemptionFrameCloseButton_OnClick(self)
 	C_WowTokenSecure.CancelRedeem();
 	WowTokenRedemptionFrame:Hide();
-	PlaySound("igMainMenuClose");
+	PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
 end
 
 local function formatLargeNumber(amount)
@@ -631,10 +632,10 @@ dialogs = {
 			else
 				Outbound.RedeemFailed(LE_TOKEN_RESULT_ERROR_OTHER);
 			end
-			PlaySound("igMainMenuClose"); 
+			PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE); 
 		end,
 		button2 = CANCEL,
-		button2OnClick = function(self) self:Hide(); C_WowTokenSecure.CancelRedeem(); PlaySound("igMainMenuClose"); end,
+		button2OnClick = function(self) self:Hide(); C_WowTokenSecure.CancelRedeem(); PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE); end,
 		validate = function() return C_WowTokenSecure.IsRedemptionStillValid(); end,
 		onHide = function(self)
 			dialogs["WOW_TOKEN_REDEEM_CONFIRMATION_SUB"].spinner = true;
@@ -649,7 +650,7 @@ dialogs = {
 		title = TOKEN_COMPLETE_TITLE,
 		description = TOKEN_COMPLETE_GAME_TIME_DESCRIPTION,
 		button1 = OKAY,
-		button1OnClick = function(self) self:Hide(); PlaySound("igMainMenuClose"); end,
+		button1OnClick = function(self) self:Hide(); PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE); end,
 		point = { "CENTER", UIParent, "CENTER", 0, 240 },
 	};
 	["WOW_TOKEN_REDEEM_COMPLETION_KICK_SUB"] = {
@@ -657,7 +658,7 @@ dialogs = {
 		description = TOKEN_COMPLETE_GAME_TIME_DESCRIPTION,
 		confirmationDesc = TOKEN_YOU_WILL_BE_LOGGED_OUT,
 		button1 = OKAY,
-		button1OnClick = function(self) self:Hide(); PlaySound("igMainMenuClose"); end,
+		button1OnClick = function(self) self:Hide(); PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE); end,
 		point = { "CENTER", UIParent, "CENTER", 0, 240 },
 	};
 	["WOW_TOKEN_REDEEM_CONFIRMATION_BALANCE"] = {
@@ -679,10 +680,10 @@ dialogs = {
 			else
 				Outbound.RedeemFailed(LE_TOKEN_RESULT_ERROR_OTHER);
 			end
-			PlaySound("igMainMenuClose"); 
+			PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE); 
 		end,
 		button2 = CANCEL,
-		button2OnClick = function(self) self:Hide(); C_WowTokenSecure.CancelRedeem(); PlaySound("igMainMenuClose"); end,
+		button2OnClick = function(self) self:Hide(); C_WowTokenSecure.CancelRedeem(); PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE); end,
 		onHide = function(self)
 			dialogs["WOW_TOKEN_REDEEM_CONFIRMATION_BALANCE"].spinner = true;
 			dialogs["WOW_TOKEN_REDEEM_CONFIRMATION_BALANCE"].confirmationDesc = nil;
@@ -700,7 +701,7 @@ dialogs = {
 			return { GetBalanceString() };
 		end,
 		button1 = OKAY,
-		button1OnClick = function(self) self:Hide(); PlaySound("igMainMenuClose"); end,
+		button1OnClick = function(self) self:Hide(); PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE); end,
 		point = { "CENTER", UIParent, "CENTER", 0, 240 },
 	};
 	["WOW_TOKEN_CREATE_AUCTION"] = {
@@ -711,9 +712,9 @@ dialogs = {
 		confirmationDescLine2 = function() return string.format(TOKEN_CONFIRM_CREATE_AUCTION_LINE_2, GetTimeLeftString()) end,
 		price = function() return GetSecureMoneyString(C_WowTokenPublic.GetGuaranteedPrice()); end,
 		button1 = CREATE_AUCTION,
-		button1OnClick = function(self) C_WowTokenSecure.ConfirmSellToken(true); self:Hide(); PlaySound("LOOTWINDOWCOINSOUND"); end,
+		button1OnClick = function(self) C_WowTokenSecure.ConfirmSellToken(true); self:Hide(); PlaySound(SOUNDKIT.LOOT_WINDOW_COIN_SOUND); end,
 		button2 = CANCEL,
-		button2OnClick = function(self) C_WowTokenSecure.ConfirmSellToken(false); self:Hide(); PlaySound("igMainMenuClose"); end,
+		button2OnClick = function(self) C_WowTokenSecure.ConfirmSellToken(false); self:Hide(); PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE); end,
 		onShow = function(self)
 			self:SetAttribute("isauctiondialogshown", true);
 		end,
@@ -723,7 +724,7 @@ dialogs = {
 		end,
 		onCancelled = function(self)
 			C_WowTokenSecure.ConfirmSellToken(false);
-			PlaySound("igMainMenuClose");
+			PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
 		end,
 		timed = true,
 		showCautionText = 20,
@@ -748,9 +749,9 @@ dialogs = {
 			self.ConfirmationDesc:SetFontObject("GameFontNormal");
 		end,
 		button1 = ACCEPT,
-		button1OnClick = function(self) C_WowTokenSecure.ConfirmBuyToken(true); self:Hide(); PlaySound("igMainMenuClose"); end,
+		button1OnClick = function(self) C_WowTokenSecure.ConfirmBuyToken(true); self:Hide(); PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE); end,
 		button2 = CANCEL,
-		button2OnClick = function(self) C_WowTokenSecure.ConfirmBuyToken(false); self:Hide(); PlaySound("igMainMenuClose"); end,
+		button2OnClick = function(self) C_WowTokenSecure.ConfirmBuyToken(false); self:Hide(); PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE); end,
 		timed = true,
 		showCautionText = 20,
 		spacing = 6,
@@ -851,10 +852,6 @@ function WowTokenDialog_SetDialog(self, dialogName)
 		self.Description:SetWidth(min(maxStringWidth, self.Description:GetWidth()));
 		height = height + spacing + self.Description:GetHeight();
 		width = max(width, self.Description:GetWidth());
-	elseif (dialog.confirmationDesc) then
-		self.Description:Hide();
-		self.ConfirmationDesc:ClearAllPoints();
-		self.ConfirmationDesc:SetPoint("TOP", self.Title, "BOTTOM", 0, -spacing);
 	else
 		self.Description:Hide();
 	end
@@ -881,7 +878,7 @@ function WowTokenDialog_SetDialog(self, dialogName)
 		if (dialog.price) then
 			self.PriceLabel:SetWidth(0);
 			self.ConfirmationDescLine2:ClearAllPoints();
-			self.ConfirmationDescLine2:SetPoint("TOP", target, "BOTTOM", 0, -40 + self.ConfirmationDesc:GetHeight());
+			self.ConfirmationDescLine2:SetPoint("TOP", target, "BOTTOM", 0, -20 - self.ConfirmationDesc:GetHeight());
 			if (type(dialog.price) == "function") then
 				self.PriceLabel:SetText(dialog.price());
 			else

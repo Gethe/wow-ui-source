@@ -1331,9 +1331,9 @@ VideoData["Advanced_DesktopGamma"]={
 	onclick = 
 		function(self)
 			if ( self:GetChecked() ) then
-				PlaySound("igMainMenuOptionCheckBoxOn");
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 			else
-				PlaySound("igMainMenuOptionCheckBoxOff");
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 			end
 			BlizzardOptionsPanel_CheckButton_OnClick(self);
 			VideoOptionsValueChanged(self, (self:GetChecked() and 1 or 0));

@@ -369,7 +369,7 @@
 								</Anchors>
 								<Scripts>
 									<OnClick>
-										PlaySound("igMainMenuOption");
+										PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
 										StaticPopup_Show("CONFIRM_BUY_BANK_SLOT");
 									</OnClick>
 								</Scripts>
@@ -497,7 +497,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								PlaySound("igMainMenuOption");
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
 								DepositReagentBank();
 							</OnClick>
 						</Scripts>
@@ -612,7 +612,7 @@
 								</Anchors>
 								<Scripts>
 									<OnClick>
-										PlaySound("igMainMenuOption");
+										PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
 										StaticPopup_Show("CONFIRM_BUY_REAGENTBANK_TAB");
 									</OnClick>
 								</Scripts>

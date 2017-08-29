@@ -842,12 +842,12 @@
 				GMSurveyHeader:SetWidth(GMSurveyHeaderText:GetWidth() + 100);
 			</OnLoad>
 			<OnShow>
-				PlaySound("igCharacterInfoOpen");
+				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 				GMSurveyFrame_Update();
 				GMSurveyScrollFrame:SetVerticalScroll(0);
 			</OnShow>
 			<OnHide>
-				PlaySound("igCharacterInfoClose");
+				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 				HelpOpenTicketButton_Update();
 			</OnHide>
 		</Scripts>

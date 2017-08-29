@@ -147,13 +147,14 @@ end
 
 --Externally accessed functions
 function CompactUnitFrame_SetUnit(frame, unit)
-	if ( unit ~= frame.unit ) then
+	if ( unit ~= frame.unit or frame.hideCastbar ~= frame.optionTable.hideCastbar ) then
 		frame.unit = unit;
 		frame.displayedUnit = unit;	--May differ from unit if unit is in a vehicle.
 		frame.inVehicle = false;
 		frame.readyCheckStatus = nil
 		frame.readyCheckDecay = nil;
 		frame.isTanking = nil;
+		frame.hideCastbar = frame.optionTable.hideCastbar;
 		frame.healthBar.healthBackground = nil;
 		frame:SetAttribute("unit", unit);
 		if ( unit ) then
@@ -304,17 +305,17 @@ function CompactUnitFrame_UpdateAll(frame)
 end
 
 function CompactUnitFrame_UpdateInVehicle(frame)
-	local hasValidVehicleUI = UnitHasVehicleUI(frame.unit);
+	local shouldTargetVehicle = UnitHasVehicleUI(frame.unit) and false;--UnitTargetsVehicleInRaidUI(frame.unit);
 	local unitVehicleToken;
-	if ( hasValidVehicleUI ) then
+	if ( shouldTargetVehicle ) then
 		local prefix, id, suffix = string.match(frame.unit, "([^%d]+)([%d]*)(.*)")
 		unitVehicleToken = prefix.."pet"..id..suffix;
 		if ( not UnitExists(unitVehicleToken) ) then
-			hasValidVehicleUI = false;
+			shouldTargetVehicle = false;
 		end
 	end
 	
-	if ( hasValidVehicleUI ) then
+	if ( shouldTargetVehicle ) then
 		if ( not frame.hasValidVehicleDisplay ) then
 			frame.hasValidVehicleDisplay = true;
 			frame.displayedUnit = unitVehicleToken;
@@ -1791,6 +1792,8 @@ function DefaultCompactNamePlateFrameSetupInternal(frame, setupOptions, frameOpt
 			frame.name:SetFontObject(SystemFont_NamePlate);
 		end
 	end
+
+	frame.healthBar:SetShown(not setupOptions.hideHealthbar);
 
 	frame.castBar.BorderShield:SetSize(setupOptions.castBarShieldWidth, setupOptions.castBarShieldHeight);
 

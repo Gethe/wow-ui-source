@@ -186,7 +186,7 @@
 			<OnHide>
 				CloseTrainer();
 				UpdateMicroButtons();
-				PlaySound("igCharacterInfoClose");
+				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 				if ( StaticPopup_Visible("CONFIRM_PROFESSION") ) then
 					StaticPopup_Hide("CONFIRM_PROFESSION");
 				end

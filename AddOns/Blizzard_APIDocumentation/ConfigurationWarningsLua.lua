@@ -1,0 +1,87 @@
+local ConfigurationWarningsLua =
+{
+	Name = "ConfigurationWarnings",
+	Type = "System",
+	Namespace = "C_ConfigurationWarnings",
+
+	Functions =
+	{
+		{
+			Name = "GetConfigurationWarningSeen",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "configurationWarning", Type = "ConfigurationWarning", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "hasSeenConfigurationWarning", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "GetConfigurationWarningString",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "configurationWarning", Type = "ConfigurationWarning", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "configurationWarningString", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "GetConfigurationWarnings",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "includeSeenWarnings", Type = "bool", Nilable = false, Default = false },
+			},
+
+			Returns =
+			{
+				{ Name = "configurationWarnings", Type = "table", InnerType = "ConfigurationWarning", Nilable = false },
+			},
+		},
+		{
+			Name = "SetConfigurationWarningSeen",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "configurationWarning", Type = "ConfigurationWarning", Nilable = false },
+			},
+		},
+	},
+
+	Events =
+	{
+	},
+
+	Tables =
+	{
+		{
+			Name = "ConfigurationWarning",
+			Type = "Enumeration",
+			NumValues = 6,
+			MinValue = 0,
+			MaxValue = 5,
+			Fields =
+			{
+				{ Name = "ShaderModelWillBeOutdated", Type = "ConfigurationWarning", EnumValue = 0 },
+				{ Name = "ShaderModelIsOutdated", Type = "ConfigurationWarning", EnumValue = 1 },
+				{ Name = "ConsoleDeviceSseoUtdated", Type = "ConfigurationWarning", EnumValue = 2 },
+				{ Name = "DriverBlacklisted", Type = "ConfigurationWarning", EnumValue = 3 },
+				{ Name = "DriverOutOfDate", Type = "ConfigurationWarning", EnumValue = 4 },
+				{ Name = "DeviceBlacklisted", Type = "ConfigurationWarning", EnumValue = 5 },
+			},
+		},
+	},
+};
+
+APIDocumentation:AddDocumentationTable(ConfigurationWarningsLua);

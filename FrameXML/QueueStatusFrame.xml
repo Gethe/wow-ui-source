@@ -166,7 +166,7 @@
 				<Scripts>
 					<OnLoop>
 						if ( QueueStatusMinimapButton_OnGlowPulse(self:GetParent()) ) then
-							PlaySound("UI_GroupFinderReceiveApplication");
+							PlaySound(SOUNDKIT.UI_GROUP_FINDER_RECEIVE_APPLICATION);
 						end
 					</OnLoop>
 				</Scripts>

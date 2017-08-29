@@ -715,7 +715,7 @@ end
 ------------QueueStatusDropDown---------------
 ----------------------------------------------
 function QueueStatusDropDown_Show(self, relativeTo)
-	PlaySound("igMainMenuOpen");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
 	ToggleDropDownMenu(1, nil, self, relativeTo, 0, 0);
 end
 
@@ -894,7 +894,7 @@ function QueueStatusDropDown_AddBattlefieldButtons(info, idx)
 	elseif ( status == "active" ) then
 		local inArena = IsActiveBattlefieldArena();
 
-		if ( not inArena or GetBattlefieldWinner() or C_Commentator.GetMode() > 0) then
+		if ( not inArena or GetBattlefieldWinner() or C_Commentator.GetMode() > 0 or C_PvP.IsInBrawl() ) then
 			info.text = TOGGLE_SCOREBOARD;
 			info.func = wrapFunc(ToggleWorldStateScoreFrame);
 			info.arg1 = nil;
@@ -910,7 +910,7 @@ function QueueStatusDropDown_AddBattlefieldButtons(info, idx)
 			UIDropDownMenu_AddButton(info);
 		end
 
-		if ( inArena ) then
+		if ( inArena and not C_PvP.IsInBrawl() ) then
 			info.text = SURRENDER_ARENA;
 			info.func = wrapFunc(ConfirmSurrenderArena);
 			info.arg1 = nil;
@@ -960,7 +960,7 @@ function QueueStatusDropDown_AddLFGButtons(info, category)
 	info.leftPadding = 10;
 
 	if ( IsLFGModeActive(category) and IsPartyLFG() ) then
-		if ( IsAllowedToUserTeleport() ) then
+		if ( IsAllowedToUserTeleport() and not IsInLFDBattlefield() ) then
 			if ( IsInLFGDungeon() ) then
 				info.text = TELEPORT_OUT_OF_DUNGEON;
 				info.func = wrapFunc(LFGTeleport);
@@ -1123,7 +1123,7 @@ function QueueStatus_InActiveBattlefield()
 		if ( status == "active" ) then
 			local canShowScoreboard = false;
 			local inArena = IsActiveBattlefieldArena();
-			if ( not inArena or GetBattlefieldWinner() ) then
+			if not inArena or GetBattlefieldWinner() or C_PvP.IsInBrawl() then
 				canShowScoreboard = true;
 			end
 			return true, canShowScoreboard;

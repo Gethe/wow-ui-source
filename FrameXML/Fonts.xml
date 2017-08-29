@@ -1195,42 +1195,6 @@
 		</Member>
 	</FontFamily>
 
-	<FontFamily name="Tooltip_Med" virtual="true">
-		<Member alphabet="roman">
-			<Font font="Fonts\FRIZQT__.TTF" height="12"/>
-		</Member>
-		<Member alphabet="korean">
-			<Font font="Fonts\2002.TTF" height="13"/>
-		</Member>
-		<Member alphabet="simplifiedchinese">
-			<Font font="Fonts\ARHei.ttf" height="13"/>
-		</Member>
-		<Member alphabet="traditionalchinese">
-			<Font font="Fonts\bHEI00M.TTF" height="13"/>
-		</Member>
-		<Member alphabet="russian">
-			<Font font="Fonts\FRIZQT___CYR.TTF" height="12"/>
-		</Member>
-	</FontFamily>
-
-	<FontFamily name="Tooltip_Small" virtual="true">
-		<Member alphabet="roman">
-			<Font font="Fonts\FRIZQT__.TTF" height="10"/>
-		</Member>
-		<Member alphabet="korean">
-			<Font font="Fonts\2002.TTF" height="13"/>
-		</Member>
-		<Member alphabet="simplifiedchinese">
-			<Font font="Fonts\ARHei.ttf" height="12"/>
-		</Member>
-		<Member alphabet="traditionalchinese">
-			<Font font="Fonts\bHEI00M.TTF" height="12"/>
-		</Member>
-		<Member alphabet="russian">
-			<Font font="Fonts\FRIZQT___CYR.TTF" height="10"/>
-		</Member>
-	</FontFamily>
-
 	<FontFamily name="AchievementFont_Small" virtual="true">
 		<Member alphabet="roman">
 			<Font font="Fonts\FRIZQT__.TTF" height="10"/>

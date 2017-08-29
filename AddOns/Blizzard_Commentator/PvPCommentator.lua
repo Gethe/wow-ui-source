@@ -189,6 +189,7 @@ function PvPCommentatorMixin:SetDefaultBindings()
 	SetBinding("T", "TOGGLESMOOTHFOLLOWTRANSITIONS");
 	SetBinding("C", "TOGGLECAMERACOLLISION");
 	SetBinding("V", "CYCLEFOLLOWTRANSITONSPEED");
+	SaveBindings(GetCurrentBindingSet());
 end
 
 function PvPCommentatorMixin:SetNeedsFullRefresh(needed)
@@ -251,6 +252,8 @@ function PvPCommentatorMixin:SetDefaultCVars()
 	SetCVar("NamePlateHorizontalScale", 1.4);
 	SetCVar("NamePlateVerticalScale", 2.7);
 	SetCVar("nameplateShowAll", 1);
+	
+	SetCVar("nameplateSelectedScale", 1.5);
 
 	-- See InterfaceOptionsNPCNamesDropDown, we want these all off.
 	SetCVar("UnitNameFriendlySpecialNPCName", 0);

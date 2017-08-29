@@ -31,7 +31,7 @@ end
 
 function MacroFrame_OnShow(self)
 	MacroFrame_Update();
-	PlaySound("igCharacterInfoOpen");
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 	UpdateMicroButtons();
 	if ( not self.iconArrayBuilt ) then
 		BuildIconArray(MacroPopupFrame, "MacroPopupButton", "MacroPopupButtonTemplate", NUM_ICONS_PER_ROW, NUM_ICON_ROWS);
@@ -43,7 +43,7 @@ function MacroFrame_OnHide(self)
 	MacroPopupFrame:Hide();
 	MacroFrame_SaveMacro();
 	--SaveMacros();
-	PlaySound("igCharacterInfoClose");
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 	UpdateMicroButtons();
 	MACRO_ICON_FILENAMES = nil;
 	collectgarbage();
@@ -171,7 +171,7 @@ function MacroButton_OnClick(self, button)
 end
 
 function MacroFrameSaveButton_OnClick()
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	MacroFrame_SaveMacro();
 	MacroFrame_Update();
 	MacroPopupFrame:Hide();
@@ -179,7 +179,7 @@ function MacroFrameSaveButton_OnClick()
 end
 
 function MacroFrameCancelButton_OnClick()
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	MacroFrame_Update();
 	MacroPopupFrame:Hide();
 	MacroFrameText:ClearFocus();
@@ -283,7 +283,7 @@ function MacroPopupFrame_OnShow(self)
 	MacroPopupFrame_AdjustAnchors(self);
 	MacroPopupEditBox:SetFocus();
 
-	PlaySound("igCharacterInfoOpen");
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 	RefreshPlayerSpellIconInfo();
 	MacroPopupFrame_Update(self);
 	MacroPopupOkayButton_Update();

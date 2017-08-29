@@ -27,10 +27,10 @@ end
 
 function ToggleMinimap()
 	if(Minimap:IsShown()) then
-		PlaySound("igMiniMapClose");
+		PlaySound(SOUNDKIT.IG_MINIMAP_CLOSE);
 		Minimap:Hide();
 	else
-		PlaySound("igMiniMapOpen");
+		PlaySound(SOUNDKIT.IG_MINIMAP_OPEN);
 		Minimap:Show();
 	end
 	UpdateUIPanelPositions();
@@ -111,13 +111,13 @@ end
 
 function Minimap_SetPing(x, y, playSound)
 	if ( playSound ) then
-		PlaySound("MapPing");
+		PlaySound(SOUNDKIT.MAP_PING);
 	end
 end
 
 function Minimap_ZoomInClick()
 	MinimapZoomOut:Enable();
-	PlaySound("igMiniMapZoomIn");
+	PlaySound(SOUNDKIT.IG_MINIMAP_ZOOM_IN);
 	Minimap:SetZoom(Minimap:GetZoom() + 1);
 	if(Minimap:GetZoom() == (Minimap:GetZoomLevels() - 1)) then
 		MinimapZoomIn:Disable();
@@ -126,7 +126,7 @@ end
 
 function Minimap_ZoomOutClick()
 	MinimapZoomIn:Enable();
-	PlaySound("igMiniMapZoomOut");
+	PlaySound(SOUNDKIT.IG_MINIMAP_ZOOM_OUT);
 	Minimap:SetZoom(Minimap:GetZoom() - 1);
 	if(Minimap:GetZoom() == 0) then
 		MinimapZoomOut:Disable();
@@ -651,7 +651,7 @@ function GarrisonMinimap_Justify(text)
 end
 
 function GarrisonMinimapInvasion_ShowPulse(self)
-	PlaySound("UI_Garrison_Toast_InvasionAlert");
+	PlaySound(SOUNDKIT.UI_GARRISON_TOAST_INVASION_ALERT);
 	self.AlertText:SetText(GARRISON_LANDING_INVASION_ALERT);
 	GarrisonMinimap_Justify(self.AlertText);
 	GarrisonMinimap_SetPulseLock(self, GARRISON_ALERT_CONTEXT_INVASION, true);

@@ -222,7 +222,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						CompactUnitFrameProfiles_SaveChanges(CompactUnitFrameProfiles);
 					</OnClick>
 				</Scripts>
@@ -234,7 +234,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						CompactUnitFrameProfiles_ConfirmProfileDeletion(GetActiveRaidProfile());
 					</OnClick>
 				</Scripts>
@@ -363,7 +363,7 @@
 						<Scripts>
 							<OnClick>
 								--Also clicked via the OnEnterPressed script in the EditBox.
-								PlaySound("igMainMenuOptionCheckBoxOn");
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 								CompactUnitFrameProfiles_CreateProfile(strtrim(self:GetParent().editBox:GetText()));
 								CompactUnitFrameProfiles_HideNewProfileDialog();
 							</OnClick>
@@ -376,7 +376,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								PlaySound("igMainMenuOptionCheckBoxOn");
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 								CompactUnitFrameProfiles_HideNewProfileDialog();
 							</OnClick>
 						</Scripts>
@@ -403,7 +403,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								PlaySound("igMainMenuOptionCheckBoxOn");
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 								local newProfile = GetRaidProfileName(1);
 								if ( newProfile == self:GetParent().profile ) then
 									newProfile = GetRaidProfileName(2);
@@ -422,7 +422,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								PlaySound("igMainMenuOptionCheckBoxOn");
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 								self:GetParent():Hide();
 							</OnClick>
 						</Scripts>
@@ -449,7 +449,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								PlaySound("igMainMenuOptionCheckBoxOn");
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 								CompactUnitFrameProfiles_CancelChanges(CompactUnitFrameProfiles);
 								CompactUnitFrameProfiles_AfterConfirmUnsavedChanges();
 								self:GetParent():Hide();
@@ -463,7 +463,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								PlaySound("igMainMenuOptionCheckBoxOn");
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 								CompactUnitFrameProfiles_SaveChanges(CompactUnitFrameProfiles);
 								CompactUnitFrameProfiles_AfterConfirmUnsavedChanges();
 								self:GetParent():Hide();
@@ -477,7 +477,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								PlaySound("igMainMenuOptionCheckBoxOn");
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 								self:GetParent():Hide();
 							</OnClick>
 						</Scripts>
@@ -818,7 +818,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								PlaySound("igMainMenuOptionCheckBoxOn");
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 								CompactRaidFrameManager_ResetContainerPosition();
 							</OnClick>
 						</Scripts>

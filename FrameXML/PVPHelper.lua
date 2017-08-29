@@ -161,7 +161,7 @@ function PVPFramePopup_SetupPopUp(event, challengerName, bgName, timeout, tourna
 	PVPFramePopup.minimizeButton:Disable();
 	SetPortraitToTexture(PVPFramePopup.ringIcon,"Interface\\BattlefieldFrame\\UI-Battlefield-Icon");
 	StaticPopupSpecial_Show(PVPFramePopup);
-	PlaySound("ReadyCheck");
+	PlaySound(SOUNDKIT.READY_CHECK);
 	FlashClientIcon();
 end
 
@@ -286,7 +286,7 @@ function PVPRoleCheckPopup_OnEvent(self, event, ...)
 end
 
 function PVPRoleCheckPopup_OnShow(self)
-	PlaySound("ReadyCheck");
+	PlaySound(SOUNDKIT.READY_CHECK);
 	FlashClientIcon();
 	PVPRoleCheckPopup_UpdateSelectedRoles(self);
 	PVPRoleCheckPopup_UpdateRolesChangeable(self);
@@ -334,7 +334,7 @@ function PVPRoleCheckPopup_SetRoles()
 end
 
 function PVPRoleCheckPopupAccept_OnClick()
-	PlaySound("igCharacterInfoTab");
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
 	SetPVPRoles(PVPRoleCheckPopupRoleButtonTank.checkButton:GetChecked(),
 		PVPRoleCheckPopupRoleButtonHealer.checkButton:GetChecked(),
 		PVPRoleCheckPopupRoleButtonDPS.checkButton:GetChecked());
@@ -344,7 +344,7 @@ function PVPRoleCheckPopupAccept_OnClick()
 end
 
 function PVPRoleCheckPopupDecline_OnClick()
-	PlaySound("igCharacterInfoTab");
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
 	StaticPopupSpecial_Hide(PVPRoleCheckPopup);
 --	CompletePVPRoleCheck(false);
 end
@@ -457,7 +457,7 @@ function PVPReadyDialog_Display(self, index, displayName, isRated, queueType, ga
 
 	self:SetHeight(height);
 
-	PlaySound("PVPTHROUGHQUEUE");
+	PlaySound(SOUNDKIT.PVP_THROUGH_QUEUE);
 	StaticPopupSpecial_Show(self);
 	FlashClientIcon();
 end

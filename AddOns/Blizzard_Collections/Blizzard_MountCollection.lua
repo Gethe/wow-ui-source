@@ -277,6 +277,15 @@ end
 
 function MountJournal_Select(index)
 	local creatureName, spellID, icon, active, _, _, _, _, _, _, _, mountID = C_MountJournal.GetDisplayedMountInfo(index);
+	MountJournal_SetSelected(mountID, spellID);
+end
+
+function MountJournal_SelectByMountID(mountID)
+	local creatureName, spellID, icon, active = C_MountJournal.GetMountInfoByID(mountID);
+	MountJournal_SetSelected(mountID, spellID);
+end
+
+function MountJournal_SetSelected(mountID, spellID)
 	MountJournal.selectedSpellID = spellID;
 	MountJournal.selectedMountID = mountID;
 	MountJournal_HideMountDropdown();
@@ -532,7 +541,7 @@ function MountJournal_ShowMountDropdown(index, anchorTo, offsetX, offsetY)
 		return;
 	end
 	ToggleDropDownMenu(1, nil, MountJournal.mountOptionsMenu, anchorTo, offsetX, offsetY);
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 end
 
 function MountJournal_HideMountDropdown()

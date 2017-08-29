@@ -19,6 +19,7 @@ local ARENA_2V2_REWARD = "arena2v2";
 local ARENA_3V3_REWARD = "arena3v3";
 local BG_BRAWL_REWARD = "bgbrawl";
 local ARENA_BRAWL_REWARD = "arenabrawl";
+local LFG_BRAWL_REWARD = "lfgbrawl";
 
 local REWARDS_AT_MAX_LEVEL = {
 	[RANDOM_BG_REWARD] = {
@@ -48,7 +49,11 @@ local REWARDS_AT_MAX_LEVEL = {
 	[ARENA_BRAWL_REWARD] = {
 		["FirstWin"] = 143713,
 		["NthWin"] = 138864,
-	}
+	},
+	[LFG_BRAWL_REWARD] = {
+		["FirstWin"] = 143713,
+		["NthWin"] = 138864,
+	},
 }
 
 function GetMaxLevelReward(bracketType, hasFirstWin)
@@ -130,7 +135,7 @@ function PVPUIFrame_OnShow(self)
 		return;
 	end
 	UpdateMicroButtons();
-	PlaySound("igCharacterInfoOpen");
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 	RequestPVPRewards();
 
 	PVPUIFrame_UpdateSelectedRoles();
@@ -139,7 +144,7 @@ end
 
 function PVPUIFrame_OnHide(self)
 	UpdateMicroButtons();
-	PlaySound("igCharacterInfoClose");
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 	ClearBattlemaster();
 end
 
@@ -373,7 +378,7 @@ end
 
 function PVPQueueFrameButton_OnClick(self)
 	local frameName = pvpFrames[self:GetID()];
-	PlaySound("igCharacterInfoOpen");
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 	PVPQueueFrame_ShowFrame(_G[frameName]);
 end
 
@@ -714,7 +719,7 @@ function HonorFrameSpecificList_FindAndSelectBattleground(bgID)
 end
 
 function HonorFrameSpecificBattlegroundButton_OnClick(self)
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	HonorFrame.SpecificFrame.selectionID = self.bgID;
 	HonorFrameSpecificList_Update();
 end
@@ -980,6 +985,8 @@ function HonorFrameBonusFrame_Update()
 					rewards = GetMaxLevelReward(ARENA_BRAWL_REWARD, hasWon);
 				elseif (brawlInfo.brawlType == Enum.BrawlType.Battleground) then
 					rewards = GetMaxLevelReward(BG_BRAWL_REWARD, hasWon);
+				elseif (brawlInfo.brawlType == Enum.BrawlType.Lfg) then
+					rewards = GetMaxLevelReward(LFG_BRAWL_REWARD, hasWon);
 				end
 			end
 
@@ -1296,7 +1303,7 @@ function ConquestFrameButton_OnClick(self, button)
 	CloseDropDownMenus();
 	if ( button == "LeftButton" or self.teamIndex ) then
 		ConquestFrame_SelectButton(self);
-		PlaySound("igMainMenuOptionCheckBoxOn");
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	end
 end
 
@@ -1547,7 +1554,7 @@ function WarGameButtonHeader_OnClick(self)
 	end
 	WarGamesFrame.otherHeaderIndex = nil;	-- header location probably changed;
 	WarGamesFrame_Update();
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 end
 
 function WarGameButton_OnEnter(self)
@@ -1566,7 +1573,7 @@ function WarGameButton_OnClick(self)
 	local index = self:GetParent().index;
 	SetSelectedWarGameType(index);
 	WarGamesFrame_Update();
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 end
 
 function WarGameStartButton_Update()
@@ -1611,7 +1618,7 @@ function WarGameStartButton_GetErrorTooltip()
 end
 
 function WarGameStartButton_OnClick(self)
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	local name = GetWarGameTypeInfo(GetSelectedWarGameType());
 	if ( name ) then
 		StartWarGame("target", name, WarGameTournamentModeCheckButton:GetChecked());

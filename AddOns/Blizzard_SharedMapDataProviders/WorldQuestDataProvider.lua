@@ -55,7 +55,7 @@ function WorldQuestDataProviderMixin:RefreshAllData(fromOnShow)
 	for zoneIndex = 1, C_MapCanvas.GetNumZones(mapAreaID) do
 		local zoneMapID, zoneName, zoneDepth, left, right, top, bottom = C_MapCanvas.GetZoneInfo(mapAreaID, zoneIndex);
 		if zoneDepth <= 1 then -- Exclude subzones
-			local taskInfo = C_TaskQuest.GetQuestsForPlayerByMapID(zoneMapID, mapAreaID);
+			local taskInfo = C_TaskQuest.GetQuestsForPlayerByMapID(zoneMapID, mapAreaID, self:GetTransformFlags());
 
 			if taskInfo then
 				for i, info in ipairs(taskInfo) do
@@ -168,7 +168,6 @@ function WorldQuestDataProviderMixin:AddWorldQuest(info)
 	end
 
 	pin:SetPosition(info.x, info.y);
-	pin:Show();
 
 	C_TaskQuest.RequestPreloadRewardData(info.questId);
 
@@ -180,7 +179,7 @@ WorldQuestPinMixin = CreateFromMixins(MapCanvasPinMixin);
 
 function WorldQuestPinMixin:OnLoad()
 	self:SetAlphaLimits(2.0, 0.0, 1.0);
-	self:SetScalingLimits(1, 1.5, 0.50);
+	self:SetScalingLimits(1, 0.4125, 0.425);
 
 	self.UpdateTooltip = self.OnMouseEnter;
 
@@ -210,8 +209,6 @@ function WorldQuestPinMixin:RefreshVisuals()
 	else
 		self:SetAlphaLimits(2.0, 0.0, 1.0);
 	end
-	
-	self:Show();
 end
 
 function WorldQuestPinMixin:OnMouseEnter()

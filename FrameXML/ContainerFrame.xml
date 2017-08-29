@@ -309,7 +309,7 @@
 					<OnLeave function="ContainerFramePortraitButton_OnLeave" />
 					<OnClick>
 						local parent = self:GetParent();
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						ToggleDropDownMenu(1, nil, parent.FilterDropDown, self, 0, 0);
 					</OnClick>
 				</Scripts>
@@ -427,7 +427,7 @@
 		</HighlightTexture>
 		<Scripts>
 			<OnClick>
-				PlaySound("UI_BagSorting_01");
+				PlaySound(SOUNDKIT.UI_BAG_SORTING_01);
 				SortBags();
 			</OnClick>
 			<OnEnter>

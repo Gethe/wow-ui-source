@@ -105,7 +105,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						StaticPopupSpecial_Hide(self:GetParent());
 					</OnClick>
 				</Scripts>

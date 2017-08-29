@@ -654,7 +654,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								PlaySound("igMainMenuOptionCheckBoxOn");
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 								HideParentPanel(self);
 							</OnClick>
 						</Scripts>
@@ -687,9 +687,9 @@
 							<OnClick>
 								FactionToggleAtWar(GetSelectedFaction());
 								if ( self:GetChecked() ) then
-									PlaySound("igMainMenuOptionCheckBoxOn");
+									PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 								else
-									PlaySound("igMainMenuOptionCheckBoxOff");
+									PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 								end
 								ReputationFrame_Update();
 							</OnClick>
@@ -736,10 +736,10 @@
 							</OnLoad>
 							<OnClick>
 								if ( self:GetChecked() ) then
-									PlaySound("igMainMenuOptionCheckBoxOn");
+									PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 									SetFactionInactive(GetSelectedFaction());
 								else
-									PlaySound("igMainMenuOptionCheckBoxOff");
+									PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 									SetFactionActive(GetSelectedFaction());
 								end
 							</OnClick>
@@ -770,14 +770,14 @@
 							</OnLoad>
 							<OnClick>
 								if ( self:GetChecked() ) then
-									PlaySound("igMainMenuOptionCheckBoxOn");
+									PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 									SetWatchedFactionIndex(GetSelectedFaction());
 									SetWatchingHonorAsXP(false);
 									if (C_ArtifactUI.GetEquippedArtifactInfo()) then
 										SetCVar("showArtifactXPBar", false);
 									end
 								else
-									PlaySound("igMainMenuOptionCheckBoxOff");
+									PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 									SetWatchedFactionIndex(0);
 									SetCVar("showArtifactXPBar", true);
 								end
@@ -810,10 +810,10 @@
 							</OnLoad>
 							<OnClick>
 								if ( self:GetChecked() ) then
-									PlaySound("igMainMenuOptionCheckBoxOn");
+									PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 									ReputationBar_SetLFBonus(self.factionID)
 								else
-									PlaySound("igMainMenuOptionCheckBoxOff");
+									PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 									ReputationBar_SetLFBonus(0)
 								end
 							</OnClick>

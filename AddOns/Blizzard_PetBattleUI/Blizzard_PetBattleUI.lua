@@ -91,12 +91,12 @@ end
 
 function PetBattleFrame_OnEvent(self, event, ...)
 	if ( event == "PET_BATTLE_OPENING_START" ) then
-		PlaySoundKitID(32047); -- UI_PetBattle_Camera_Move_In
+		PlaySound(SOUNDKIT.UI_PET_BATTLE_CAMERA_MOVE_IN);
 		PetBattleFrame_Display(self);
 	elseif ( event == "PET_BATTLE_OPENING_DONE" ) then
 		PetBattleFrameTurnTimer_UpdateValues(self.BottomFrame.TurnTimer);
 		StartSplashTexture.splashAnim:Play();
-		PlaySoundKitID(31584); -- UI_PetBattle_Start
+		PlaySound(SOUNDKIT.UI_PET_BATTLE_START);
 		PetBattleFrame_UpdateSpeedIndicators(self);
 	elseif ( event == "PET_BATTLE_TURN_STARTED" ) then
 		PetBattleFrameTurnTimer_UpdateValues(self.BottomFrame.TurnTimer);
@@ -116,7 +116,7 @@ function PetBattleFrame_OnEvent(self, event, ...)
 		PetBattleFrame_UpdateSpeedIndicators(self);
 		PetBattleFrame_UpdateXpBar(self);
 	elseif ( event == "PET_BATTLE_OVER" ) then
-		PlaySoundKitID(32052); -- UI_PetBattle_Camera_Move_Out
+		PlaySound(SOUNDKIT.UI_PET_BATTLE_CAMERA_MOVE_OUT);
 	elseif ( event == "PET_BATTLE_CLOSE" ) then
 		PetBattleFrame_Remove(self);
 		StaticPopup_Hide("PET_BATTLE_FORFEIT");
@@ -806,7 +806,7 @@ function PetBattleActionButton_UpdateState(self)
 	if ( actionType == LE_BATTLE_PET_ACTION_TRAP ) then
 		if ( usable ) then
 			if ( not self.playedSound ) then
-				PlaySoundKitID(28814);
+				PlaySound(SOUNDKIT.UI_PET_BATTLES_TRAP_READY);
 				self.playedSound = true;
 			end
 			ActionButton_ShowOverlayGlow(self);

@@ -533,7 +533,7 @@
 							StaticPopup_Show("CONFIRM_ACCEPT_SOCKETS");
 						else
 							AcceptSockets();
-							PlaySound("JewelcraftingFinalize");
+							PlaySound(SOUNDKIT.JEWEL_CRAFTING_FINALIZE);
 						end
 					</OnClick>
 					<OnMouseDown>
@@ -560,7 +560,7 @@
 		<Scripts>
 			<OnLoad function="ItemSocketingFrame_OnLoad"/>
 			<OnShow>
-				PlaySound("igCharacterInfoOpen");
+				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 			</OnShow>
 			<OnEvent function="ItemSocketingFrame_OnEvent"/>
 			<OnHide>
@@ -568,7 +568,7 @@
 					ItemSocketingFrame_EnableSockets();
 					self.isSocketing = nil;
 				end
-				PlaySound("igCharacterInfoClose");
+				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 				StaticPopup_Hide("CONFIRM_ACCEPT_SOCKETS");
 				CloseSocketInfo();
 			</OnHide>

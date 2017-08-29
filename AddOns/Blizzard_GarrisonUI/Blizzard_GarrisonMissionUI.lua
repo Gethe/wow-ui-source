@@ -141,7 +141,7 @@ function GarrisonFollowerMission:OnShowMainFrame()
 	self:CheckCompleteMissions(true);
 	GarrisonThreatCountersFrame:SetParent(self.FollowerTab);
 	GarrisonThreatCountersFrame:SetPoint("TOPRIGHT", -12, 30);
-	PlaySound("UI_Garrison_CommandTable_Open");
+	PlaySound(SOUNDKIT.UI_GARRISON_COMMAND_TABLE_OPEN);
 end
 
 function GarrisonFollowerMission:OnHideMainFrame()
@@ -153,7 +153,7 @@ function GarrisonFollowerMission:OnHideMainFrame()
 	HelpPlate_Hide();
 	self:HideCompleteMissions(true);
 	MissionCompletePreload_Cancel(self);
-	PlaySound("UI_Garrison_CommandTable_Close");
+	PlaySound(SOUNDKIT.UI_GARRISON_COMMAND_TABLE_CLOSE);
 	StaticPopup_Hide("DEACTIVATE_FOLLOWER");
 	StaticPopup_Hide("ACTIVATE_FOLLOWER");
 	StaticPopup_Hide("CONFIRM_FOLLOWER_TEMPORARY_ABILITY");
@@ -316,7 +316,7 @@ function GarrisonFollowerMission:OnClickStartMissionButton()
 	if (not GarrisonMission.OnClickStartMissionButton(self)) then
 		return;
 	end
-	PlaySound("UI_Garrison_CommandTable_MissionStart");
+	PlaySound(SOUNDKIT.UI_GARRISON_COMMAND_TABLE_MISSION_START);
 	if (not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_GARRISON_LANDING)) then
 		GarrisonLandingPageTutorialBox:Show();
 	end
@@ -328,7 +328,7 @@ function GarrisonFollowerMission:AssignFollowerToMission(frame, info)
 	end
 
 	if info.slotSoundKitID then
-		PlaySoundKitID(info.slotSoundKitID);
+		PlaySound(info.slotSoundKitID);
 	end
 
 	local soundToPlay;
@@ -554,7 +554,7 @@ local tutorials = {
 
 -- TODO: Move these GarrisonMissionFrame_ functions to the GarrisonFollowerMission mixin
 function GarrisonFollowerMission:OnClickMissionTutorialButton()
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	self:CheckTutorials(true);
 end
 
@@ -837,7 +837,7 @@ function GarrisonMissionListMixin:OnUpdate()
 end
 
 function GarrisonMissionListTab_OnClick(self, button)
-	PlaySound("UI_Garrison_Nav_Tabs");
+	PlaySound(SOUNDKIT.UI_GARRISON_NAV_TABS);
 	GarrisonMissionListTab_SetTab(self);
 end
 
@@ -1446,7 +1446,7 @@ function GarrisonFollowerMissionComplete:AnimLine(entry)
 	local mechanicsFrame = self.Stage.EncountersFrame.MechanicsFrame;
 	local numMechs, playCounteredSound = self:ShowEncounterMechanics(encountersFrame, mechanicsFrame, self.encounterIndex);
 	if ( playCounteredSound ) then
-		PlaySound("UI_Garrison_Mission_Threat_Countered");
+		PlaySound(SOUNDKIT.UI_GARRISON_MISSION_THREAT_COUNTERED);
 	end
 	mechanicsFrame:SetParent(encountersFrame.Encounters[self.encounterIndex]);
 	mechanicsFrame:SetPoint("BOTTOM", encountersFrame.Encounters[self.encounterIndex], (numMechs - 1) * -16, -5);
@@ -1472,10 +1472,10 @@ function GarrisonFollowerMissionComplete:AnimPortrait(entry)
 	else
 		if ( self.currentMission.failedEncounter == self.encounterIndex ) then
 			encounter.CheckFrame.FailureAnim:Play();
-			PlaySound("UI_Garrison_Mission_Complete_Encounter_Fail");
+			PlaySound(SOUNDKIT.UI_GARRISON_MISSION_COMPLETE_ENCOUNTER_FAIL);
 		else
 			encounter.CheckFrame.SuccessAnim:Play();
-			PlaySound("UI_Garrison_Mission_Complete_Mission_Success");
+			PlaySound(SOUNDKIT.UI_GARRISON_MISSION_COMPLETE_MISSION_SUCCESS);
 		end
 	end
 	entry.duration = 0.5;

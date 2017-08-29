@@ -630,7 +630,7 @@
 				self.Border:SetPoint("CENTER", 0, 0);
 			</OnMouseUp>
 			<OnClick>
-				PlaySound("igMainMenuOptionCheckBoxOn");
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 				local frame = self:GetParent();
 				local searchBox = frame:GetParent():GetParent()[frame.listName].SearchBox;
 				local searchString = searchBox:GetText();

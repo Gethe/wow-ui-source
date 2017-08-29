@@ -163,11 +163,11 @@ function TargetFrame_OnEvent (self, event, ...)
 
 		if ( UnitExists(self.unit) and not IsReplacingUnit()) then
 			if ( UnitIsEnemy(self.unit, "player") ) then
-				PlaySound("igCreatureAggroSelect");
+				PlaySound(SOUNDKIT.IG_CREATURE_AGGRO_SELECT);
 			elseif ( UnitIsFriend("player", self.unit) ) then
-				PlaySound("igCharacterNPCSelect");
+				PlaySound(SOUNDKIT.IG_CHARACTER_NPC_SELECT);
 			else
-				PlaySound("igCreatureNeutralSelect");
+				PlaySound(SOUNDKIT.IG_CREATURE_NEUTRAL_SELECT);
 			end
 		end
 	elseif ( event == "INSTANCE_ENCOUNTER_ENGAGE_UNIT" ) then
@@ -249,7 +249,7 @@ function TargetFrame_OnVariablesLoaded()
 end
 
 function TargetFrame_OnHide (self)
-	PlaySound("INTERFACESOUND_LOSTTARGETUNIT");
+	PlaySound(SOUNDKIT.INTERFACE_SOUND_LOST_TARGET_UNIT);
 	CloseDropDownMenus();
 end
 

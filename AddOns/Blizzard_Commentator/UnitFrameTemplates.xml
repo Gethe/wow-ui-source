@@ -57,7 +57,7 @@
 			<Texture parentKey="CCOverlay" hidden="true" />
 			<Texture parentKey="DeathOverlay" hidden="true" />
 
-			<FontString parentKey="DeadText" inherits="CommentatorDeadFont" justifyV="MIDDLE" text="COMMENTATOR_UNITFRAME_DEAD_STR" hidden="true" />
+			<FontString parentKey="DeadText" inherits="CommentatorDeadFontDefault" mixin="ShrinkUntilTruncateFontStringMixin" maxLines="1" justifyV="MIDDLE" text="COMMENTATOR_UNITFRAME_DEAD_STR" hidden="true"/>
 		</Layer>
 
 		<Layer level="OVERLAY" textureSubLevel="3">
@@ -204,6 +204,7 @@
 	<Scripts>
 		<OnUpdate method="OnUpdate"/>
 		<OnEvent method="OnEvent"/>
+		<OnSizeChanged method="OnSizeChanged"/>
 	</Scripts>
 </Frame>
 </Ui>

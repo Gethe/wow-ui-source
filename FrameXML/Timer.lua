@@ -230,7 +230,7 @@ function StartTimer_SetTexNumbers(self, ...)
 	end
 	
 	if numberOffset > 0 then
-		PlaySoundKitID(25477, "SFX", false);
+		PlaySound(SOUNDKIT.UI_BATTLEGROUND_COUNTDOWN_TIMER, "SFX", SOUNDKIT_ALLOW_DUPLICATES);
 		digits[1]:ClearAllPoints();
 		if self.anchorCenter or C_Commentator.IsSpectating() then
 			digits[1]:SetPoint("CENTER", TimerTracker, "CENTER", numberOffset - digits[1].hw, 0);
@@ -248,9 +248,9 @@ end
 
 function StartTimer_SetGoTexture(timer)
 	if ( timer.type == TIMER_TYPE_PVP ) then
-		if C_Commentator.IsSpectating() then
-			timer.GoTexture:SetAtlas("Swords-Logo");
-			timer.GoTextureGlow:SetAtlas("SwordsGlow-Logo");
+		if C_Commentator.IsSpectating() or IsInLFDBattlefield() then
+			timer.GoTexture:SetAtlas("countdown-swords");
+			timer.GoTextureGlow:SetAtlas("countdown-swords-glow");
 
 			StartTimer_SwitchToLargeDisplay(timer);
 		else
@@ -275,7 +275,7 @@ function StartTimer_NumberAnimOnFinished(self)
 		self.startNumbers:Play();
 	else
 		FreeTimerTrackerTimer(self);
-		PlaySoundKitID(25478);
+		PlaySound(SOUNDKIT.UI_BATTLEGROUND_COUNTDOWN_FINISHED);
 		self.GoTextureAnim:Play();
 	end
 end

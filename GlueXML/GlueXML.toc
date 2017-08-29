@@ -1,6 +1,12 @@
 ##DebugHook.lua
 ..\SharedXML\C_TimerAugment.lua
 ..\SharedXML\Util.lua
+..\SharedXML\SoundKitConstants.lua
+..\SharedXML\Pools.lua
+..\SharedXML\CircularBuffer.lua
+..\SharedXML\FontableFrameMixin.lua
+## intrinsics
+..\SharedXML\ScrollingMessageFrame.xml
 Constants.lua
 GlueFonts.xml
 GlueFontStyles.xml
@@ -12,7 +18,6 @@ GlueTemplates.xml
 GlueButtons.xml
 GlueDropDownMenu.xml
 
-..\SharedXML\Pools.lua
 ..\SharedXML\LayoutFrame.xml
 ..\SharedXML\HybridScrollFrame.lua
 ..\SharedXML\HybridScrollFrame.xml
@@ -22,8 +27,11 @@ GlueDropDownMenu.xml
 ..\SharedXML\ModelSceneTemplates.xml
 ..\SharedXML\ModelSceneMixin.xml
 ..\SharedXML\ModelSceneActorMixin.xml
+..\SharedXML\GameTooltipTemplate.xml
+..\SharedXML\FrameStack.lua
 
 ##New stuff!!!
+GlueAddons.lua
 GlueParent.xml
 ## These SharedXML files need to be loaded after GlueParent.xml
 ..\SharedXML\IME.xml

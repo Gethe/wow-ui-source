@@ -31,7 +31,7 @@ function QuestFrame_OnEvent(self, event, ...)
 	if ( (event == "UNIT_PORTRAIT_UPDATE") and not QuestFrame:IsShown() ) then
 		return;
 	end
-		
+
 	if ( event == "QUEST_GREETING" ) then
 		QuestFrameGreetingPanel:Hide();
 		QuestFrameGreetingPanel:Show();
@@ -39,7 +39,7 @@ function QuestFrame_OnEvent(self, event, ...)
 		local questStartItemID = ...;
 		QUEST_FRAME_AUTO_ACCEPT_QUEST_ID = 0;
         QUEST_FRAME_AUTO_ACCEPT_QUEST_START_ITEM_ID = 0;
-        
+
 		if ( QuestIsFromAdventureMap() ) then
 			HideUIPanel(QuestLogPopupDetailFrame);
 			return;
@@ -54,7 +54,7 @@ function QuestFrame_OnEvent(self, event, ...)
             CloseQuest();
             return;
 		end
-        
+
 		if ( QuestGetAutoAccept() and QuestIsFromAreaTrigger()) then
 			if (AutoQuestPopupTracker_AddPopUp(GetQuestID(), "OFFER")) then
 				PlayAutoAcceptQuestSound();
@@ -72,7 +72,7 @@ function QuestFrame_OnEvent(self, event, ...)
 		QuestFrameProgressPanel:Show();
 	elseif ( event == "QUEST_COMPLETE" ) then
 		HideUIPanel(QuestLogPopupDetailFrame);
-		QuestFrameCompleteQuestButton:Enable();	
+		QuestFrameCompleteQuestButton:Enable();
 		QuestFrameRewardPanel:Hide();
 		QuestFrameRewardPanel:Show();
 	elseif ( event == "QUEST_ITEM_UPDATE" ) then
@@ -83,7 +83,7 @@ function QuestFrame_OnEvent(self, event, ...)
 			QuestFrameProgressItems_Update()
 			QuestProgressScrollFrameScrollBar:SetValue(0);
 		elseif ( QuestFrameRewardPanel:IsShown() ) then
-			QuestInfo_ShowRewards();		
+			QuestInfo_ShowRewards();
 			QuestRewardScrollFrameScrollBar:SetValue(0);
 		end
 	elseif ( event == "QUEST_LOG_UPDATE" ) then
@@ -120,7 +120,7 @@ function QuestFrame_SetPortrait()
 	else
 		QuestFramePortrait:SetTexture("Interface\\QuestFrame\\UI-QuestLog-BookIcon");
 	end
-	
+
 end
 
 function QuestFrameRewardPanel_OnShow()
@@ -141,7 +141,7 @@ end
 
 function QuestRewardCancelButton_OnClick()
 	HideUIPanel(QuestFrame);
-	PlaySound("igQuestCancel");
+	PlaySound(SOUNDKIT.IG_QUEST_CANCEL);
 end
 
 function QuestRewardCompleteButton_OnClick()
@@ -165,12 +165,12 @@ end
 
 function QuestProgressCompleteButton_OnClick()
 	CompleteQuest();
-	PlaySound("igQuestListOpen");
+	PlaySound(SOUNDKIT.IG_QUEST_LIST_OPEN);
 end
 
 function QuestGoodbyeButton_OnClick()
 	HideUIPanel(QuestFrame);
-	PlaySound("igQuestCancel");
+	PlaySound(SOUNDKIT.IG_QUEST_CANCEL);
 end
 
 function QuestRewardItem_OnClick(self)
@@ -206,11 +206,11 @@ function QuestFrameProgressItems_Update()
 	local questItemName = "QuestProgressItem";
 	local buttonIndex = 1;
 	if ( numRequiredItems > 0 or GetQuestMoneyToGet() > 0 or numRequiredCurrencies > 0) then
-		
+
 		-- If there's money required then anchor and display it
 		if ( GetQuestMoneyToGet() > 0 ) then
 			MoneyFrame_Update("QuestProgressRequiredMoneyFrame", GetQuestMoneyToGet());
-			
+
 			if ( GetQuestMoneyToGet() > GetMoney() ) then
 				-- Not enough money
 				QuestProgressRequiredMoneyText:SetTextColor(0, 0, 0);
@@ -233,7 +233,7 @@ function QuestFrameProgressItems_Update()
 
 		-- Keep track of how many actual required items there are, in case we hide all of them.
 		local actualNumRequiredItems = 0;
-		for i=1, numRequiredItems do	
+		for i=1, numRequiredItems do
 			local hidden = IsQuestItemHidden(i);
 			if (hidden == 0) then
 				local requiredItem = _G[questItemName..buttonIndex];
@@ -256,8 +256,8 @@ function QuestFrameProgressItems_Update()
 		else
 			QuestProgressRequiredItemsText:Hide();
 		end
-		
-		for i=1, numRequiredCurrencies do	
+
+		for i=1, numRequiredCurrencies do
 			local requiredItem = _G[questItemName..buttonIndex];
 			requiredItem.type = "required";
 			requiredItem.objectType = "currency";
@@ -269,7 +269,7 @@ function QuestFrameProgressItems_Update()
 			_G[questItemName..buttonIndex.."Name"]:SetText(name);
 			buttonIndex = buttonIndex+1;
 		end
-		
+
 	else
 		QuestProgressRequiredMoneyText:Hide();
 		QuestProgressRequiredMoneyFrame:Hide();
@@ -297,7 +297,7 @@ function QuestFrameGreetingPanel_OnShow()
 	if ( numActiveQuests == 0 ) then
 		CurrentQuestsText:Hide();
 		QuestGreetingFrameHorizontalBreak:Hide();
-	else 
+	else
 		CurrentQuestsText:SetPoint("TOPLEFT", "GreetingText", "BOTTOMLEFT", 0, -10);
 		CurrentQuestsText:Show();
 		QuestTitleButton1:SetPoint("TOPLEFT", "CurrentQuestsText", "BOTTOMLEFT", -10, -5);
@@ -378,7 +378,7 @@ function QuestFrameGreetingPanel_OnShow()
 end
 
 function QuestFrame_OnShow()
-	PlaySound("igQuestListOpen");
+	PlaySound(SOUNDKIT.IG_QUEST_LIST_OPEN);
 	if (TutorialFrame.id == 1 or TutorialFrame.id == 55 or TutorialFrame.id == 57) then
 		TutorialFrame_Hide();
 	end
@@ -414,7 +414,7 @@ function QuestFrame_OnHide()
 		end
 		TUTORIAL_QUEST_ACCEPTED = nil
 	end
-	PlaySound("igQuestListClose");
+	PlaySound(SOUNDKIT.IG_QUEST_LIST_CLOSE);
 end
 
 function QuestTitleButton_OnClick(self)
@@ -423,7 +423,7 @@ function QuestTitleButton_OnClick(self)
 	else
 		SelectAvailableQuest(self:GetID());
 	end
-	PlaySound("igQuestListSelect");
+	PlaySound(SOUNDKIT.IG_QUEST_LIST_SELECT);
 end
 
 function QuestFrame_UpdatePortraitText(text)
@@ -448,7 +448,7 @@ function QuestFrame_ShowQuestPortrait(parentFrame, portrait, text, name, x, y)
 	QuestNPCModel:SetPoint("TOPLEFT", parentFrame, "TOPRIGHT", x, y);
 	QuestNPCModel:Show();
 	QuestFrame_UpdatePortraitText(text);
-	
+
 	if (name and name ~= "") then
 		QuestNPCModelNameplate:Show();
 		QuestNPCModelBlankNameplate:Hide();
@@ -467,8 +467,12 @@ function QuestFrame_ShowQuestPortrait(parentFrame, portrait, text, name, x, y)
 	end
 end
 
-function QuestFrame_HideQuestPortrait()
-	QuestNPCModel:Hide();
+function QuestFrame_HideQuestPortrait(optPortraitOwnerCheckFrame)
+	optPortraitOwnerCheckFrame = optPortraitOwnerCheckFrame or QuestNPCModel:GetParent();
+	if optPortraitOwnerCheckFrame == QuestNPCModel:GetParent() then
+		QuestNPCModel:Hide();
+		QuestNPCModel:SetParent(nil);
+	end
 end
 
 function QuestFrameDetailPanel_OnShow()
@@ -508,7 +512,7 @@ end
 
 function QuestDetailDeclineButton_OnClick()
 	HideUIPanel(QuestFrame);
-	PlaySound("igQuestCancel");
+	PlaySound(SOUNDKIT.IG_QUEST_CANCEL);
 end
 
 function QuestFrame_SetMaterial(frame, material)
@@ -545,4 +549,4 @@ end
 function QuestFrame_SetTextColor(fontString, material)
 	local materialTextColor = GetMaterialTextColors(material);
 	fontString:SetTextColor(materialTextColor[1], materialTextColor[2], materialTextColor[3]);
-end 
+end

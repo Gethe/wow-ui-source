@@ -72,7 +72,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PlaySound("igCharacterInfoTab");
+						PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
 						StaticPopupSpecial_Hide(PVPFramePopup);
 					</OnClick>
 				</Scripts>
@@ -87,7 +87,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PlaySound("igCharacterInfoTab");
+						PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
 						PVPFramePopup_OnResponse(true);
 					</OnClick>
 				</Scripts>
@@ -99,7 +99,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PlaySound("igCharacterInfoTab");
+						PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
 						PVPFramePopup_OnResponse(false);
 					</OnClick>
 				</Scripts>
@@ -285,7 +285,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PlaySound("igCharacterInfoTab");
+						PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
 						StaticPopupSpecial_Hide(PVPReadyDialog);
 					</OnClick>
 				</Scripts>
@@ -306,7 +306,7 @@
 							end
 							StaticPopupSpecial_Hide(self:GetParent());
 						end
-						PlaySound("igCharacterInfoTab");
+						PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -320,7 +320,7 @@
 						if ( AcceptBattlefieldPort(self:GetParent().activeIndex, false) ) then
 							StaticPopupSpecial_Hide(self:GetParent());
 						end
-						PlaySound("igCharacterInfoTab");
+						PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
 					</OnClick>
 				</Scripts>
 			</Button>

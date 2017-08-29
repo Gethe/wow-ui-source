@@ -168,7 +168,7 @@ end
 
 function HelpFrame_OnShow(self)
 	UpdateMicroButtons();
-	PlaySound("igCharacterInfoOpen");
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 	GetGMStatus();
 	-- hearthstone button events
 	local button = HelpFrameCharacterStuckHearthstone;
@@ -181,7 +181,7 @@ function HelpFrame_OnShow(self)
 end
 
 function HelpFrame_OnHide(self)
-	PlaySound("igCharacterInfoClose");
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 	UpdateMicroButtons();
 	-- hearthstone button events
 	local button = HelpFrameCharacterStuckHearthstone;
@@ -393,33 +393,6 @@ function HelpFrame_SetReportPlayerByBattlefieldScoreIndex(frame, battlefieldScor
 	frame.target = "pending";
 end
 
-function HelpFrame_ShowReportPlayerNameDialog()
-	local frame = ReportPlayerNameDialog;
-	frame.reportType = nil;
-	frame.CommentFrame.EditBox:SetText("");
-	frame.CommentFrame.EditBox.InformationText:Show();
-	HelpFrame_UpdateReportPlayerNameDialog();
-	StaticPopupSpecial_Show(frame);
-end
-
-function HelpFrame_SetReportPlayerNameSelection(reportType)
-	local frame = ReportPlayerNameDialog;
-	frame.reportType = reportType;
-	HelpFrame_UpdateReportPlayerNameDialog();
-end
-
-function HelpFrame_UpdateReportPlayerNameDialog()
-	local frame = ReportPlayerNameDialog;
-	frame.playerNameCheckButton:SetChecked(frame.reportType == PLAYER_REPORT_TYPE_BAD_PLAYER_NAME);
-	frame.guildNameCheckButton:SetChecked(frame.reportType == PLAYER_REPORT_TYPE_BAD_GUILD_NAME);
-
-	if ( frame.reportType ) then
-		frame.reportButton:Enable();
-	else
-		frame.reportButton:Disable();
-	end
-end
-
 function HelpFrame_ShowReportCheatingDialog()
 	local frame = ReportCheatingDialog;
 	frame.CommentFrame.EditBox:SetText("");
@@ -467,7 +440,7 @@ end
 --
 
 function AccountSecurityOpenTicket_OnClick(self)
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	if ( HelpBrowser:HasConnection() ) then
 		local data = HelpFrameNavTbl[self:GetID()];
 		if ( not data.noSelection ) then
@@ -1247,7 +1220,7 @@ end
 
 
 function KnowledgeBase_ArticleOnClick(self)
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 
 	local buttonData = {
 		name = self.articleHeader,
@@ -1304,7 +1277,7 @@ end
 
 local hasResized = false;
 function HelpBrowser_ToggleTooltip(button, browser)
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	if (BrowserSettingsTooltip:IsShown()) then
 		BrowserSettingsTooltip:Hide();
 		BrowserSettingsTooltip.browser = nil;

@@ -1,5 +1,5 @@
 # Do not delete the following line!
-## Interface: 70200
+## Interface: 70300
 
 ## add C namespace augmentations here
 ..\SharedXML\C_TimerAugment.lua
@@ -21,12 +21,14 @@ MixinUtil.lua
 ..\SharedXML\ModelSceneTemplates.xml
 ..\SharedXML\ModelSceneMixin.xml
 ..\SharedXML\ModelSceneActorMixin.xml
+..\SharedXML\FrameStack.lua
 
 AnimatedStatusBar.xml
 FlowContainer.lua
 FrameLocks.lua
 
 
+..\SharedXML\SoundKitConstants.lua
 Constants.lua
 Localization.xml
 Fonts.xml

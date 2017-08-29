@@ -64,7 +64,7 @@ function LookingForGuild_UpdateRoleButton( button, canBeRole )
 end
 
 function LookingForGuildFrame_OnShow(self)
-	PlaySound("igCharacterInfoOpen");
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 	local canBeTank, canBeHealer, canBeDPS = UnitGetAvailableRoles("player");
 	
 	LookingForGuild_UpdateRoleButton(LookingForGuildTankButton, canBeTank);
@@ -92,7 +92,7 @@ function LookingForGuildFrame_OnEvent(self, event, ...)
 end
 
 function LookingForGuildFrame_OnHide(self)
-	PlaySound("igCharacterInfoClose");
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 	UpdateMicroButtons();
 end
 
@@ -150,9 +150,9 @@ end
 function LookingForGuildRoleButton_OnClick(self)
 	local checked = self:GetChecked();
 	if ( self:GetChecked() ) then
-		PlaySound("igMainMenuOptionCheckBoxOn");
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	else
-		PlaySound("igMainMenuOptionCheckBoxOff");
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 	end
 	SetLookingForGuildSettings(self:GetParent().param, checked);
 	LookingForGuildBrowseButton_Update();
@@ -323,7 +323,7 @@ function LookingForGuildGuild_OnClick(self, button)
 	if ( button == "LeftButton" ) then
 		local name, level, numMembers, achPoints, comment, cached, requestPending = GetRecruitingGuildInfo(self.index);
 		if ( not requestPending ) then
-			PlaySound("igMainMenuOptionCheckBoxOn");
+			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 			SetRecruitingGuildSelection(self.index);
 			local commentHeight = self.fullComment:GetHeight();
 			if ( commentHeight > GUILD_COMMENT_HEIGHT ) then
@@ -368,7 +368,7 @@ end
 
 function LookingForGuild_RequestMembership()
 	StaticPopupSpecial_Show(GuildFinderRequestMembershipFrame);
-	PlaySound("igMainMenuOpen");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
 	local name, level = GetRecruitingGuildInfo(GetRecruitingGuildSelection());
 	GuildFinderRequestMembershipFrameGuildName:SetText(name);
 	GuildFinderRequestMembershipEditBox:SetText(GetLookingForGuildComment());

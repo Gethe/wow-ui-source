@@ -219,7 +219,7 @@ function QuestPOIButton_OnClick(self)
 		return;
 	end
 
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	local questLogIndex = GetQuestLogIndexByID(questID);
 	if ( IsQuestWatched(questLogIndex) ) then
 		if ( IsShiftKeyDown() ) then

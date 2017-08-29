@@ -452,11 +452,11 @@
 			<OnEvent function="TradeFrame_OnEvent"/>
 			<OnShow>
 				TradeFrame_OnShow(self);
-				PlaySound("igCharacterInfoOpen");
+				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 			</OnShow>
 			<OnHide>
 				TradeFrame_OnHide();
-				PlaySound("igCharacterInfoClose");
+				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 			</OnHide>
 			<OnLoad function="TradeFrame_OnLoad"/>
 			<OnMouseUp function="TradeFrame_OnMouseUp"/>

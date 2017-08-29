@@ -191,7 +191,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						CompleteLFGReadyCheck(true);
 						LFDReadyCheckPopup:Hide();
 					</OnClick>
@@ -204,7 +204,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						CompleteLFGReadyCheck(false);
 						LFDReadyCheckPopup:Hide();
 					</OnClick>
@@ -213,7 +213,7 @@
 		</Frames>
 		<Scripts>
 			<OnShow>
-				PlaySound("ReadyCheck");
+				PlaySound(SOUNDKIT.READY_CHECK);
 				FlashClientIcon();
 			</OnShow>
 		</Scripts>
@@ -775,7 +775,7 @@
 				</Frames>
 				<Scripts>
 					<OnShow>
-						PlaySound("igCharacterInfoOpen");
+						PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 						RequestLFDPlayerLockInfo();
 						RequestLFDPartyLockInfo();
 					</OnShow>
@@ -786,6 +786,7 @@
 			<OnLoad function="LFDFrame_OnLoad"/>
 			<OnEvent function="LFDFrame_OnEvent"/>
 			<OnShow function="LFDFrame_OnShow"/>
+			<OnHide function="LFDFrame_OnHide"/>
 		</Scripts>
 	</Frame>
 </Ui>

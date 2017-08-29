@@ -164,7 +164,7 @@ function TalkingHeadFrame_PlayCurrent()
 		end
 		
 		
-		local success, voHandle = PlaySoundKitID(vo, "Talking Head", true, true);
+		local success, voHandle = PlaySound(vo, "Talking Head", true, true);
 		if ( success ) then
 			frame.voHandle = voHandle;
 		end

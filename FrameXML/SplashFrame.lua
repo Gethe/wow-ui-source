@@ -1,7 +1,7 @@
 LEGION_POSTPATCH_QUESTS = { Alliance = { 40519, 44663 }, Horde = { 43926, 44663 }};
 
 BASE_SPLASH_SCREEN_VERSION = 7;
-NEWEST_SPLASH_SCREEN_VERSION = 10;
+NEWEST_SPLASH_SCREEN_VERSION = 11;
 
 local function GetLegionQuestID()
 	local faction = UnitFactionGroup("player");
@@ -55,19 +55,28 @@ SPLASH_SCREENS = {
 								        },
 						},
 	},
-	["LEGION_CURRENT"] = {	id = NEWEST_SPLASH_SCREEN_VERSION, -- 7.2.5
+	["LEGION_CURRENT"] = {	id = NEWEST_SPLASH_SCREEN_VERSION, -- 7.3.0
 					questID = nil,
-					leftTex = "splash-725-topleft",
-					rightTex = "splash-725-right",
-					bottomTex = "splash-725-botleft",
+					getQuestID = function()
+						local faction = UnitFactionGroup("player");
+						if faction == "Alliance" then
+							return 47221;
+						elseif faction == "Horde" then
+							return 47835;
+						end
+						return nil;
+					end,
+					leftTex = "splash-730-topleft",
+					rightTex = "splash-730-right",
+					bottomTex = "splash-730-botleft",
 					header = SPLASH_BASE_HEADER,
-					label = SPLASH_LEGION_NEW_7_2_5_LABEL,
-					feature1Title = SPLASH_LEGION_NEW_7_2_5_FEATURE1_TITLE,
-					feature1Desc = SPLASH_LEGION_NEW_7_2_5_FEATURE1_DESC,
-					feature2Title = SPLASH_LEGION_NEW_7_2_5_FEATURE2_TITLE,
-					feature2Desc = SPLASH_LEGION_NEW_7_2_5_FEATURE2_DESC,
-					rightTitle = SPLASH_LEGION_NEW_7_2_5_RIGHT_TITLE,
-					rightDesc = SPLASH_LEGION_NEW_7_2_5_RIGHT_DESC,
+					label = SPLASH_LEGION_NEW_7_3_LABEL,
+					feature1Title = SPLASH_LEGION_NEW_7_3_FEATURE1_TITLE,
+					feature1Desc = SPLASH_LEGION_NEW_7_3_FEATURE1_DESC,
+					feature2Title = SPLASH_LEGION_NEW_7_3_FEATURE2_TITLE,
+					feature2Desc = SPLASH_LEGION_NEW_7_3_FEATURE2_DESC,
+					rightTitle = SPLASH_LEGION_NEW_7_3_RIGHT_TITLE,
+					rightDesc = SPLASH_LEGION_NEW_7_3_RIGHT_DESC,
 					rightDescSubText = SPLASH_OPENS_SOON,
 					rightDescSubTextPredicate = function() return not IsSplashFramePrimaryFeatureUnlocked() end,
 					rightTitleMaxLines = 1,
@@ -303,7 +312,7 @@ function SplashFrame_Close()
 		local showQuestDialog = questID and
 								( (frame.StartButton:IsShown() and frame.StartButton:IsEnabled()) or
 								  (SPLASH_SCREENS[tag].hideStartButton and SplashFrame.firstTimeViewed and not IsQuestFlaggedCompleted(questID) and
-								  		UnitLevel("player") >= (SPLASH_SCREENS[tag].minLevel)
+								  		UnitLevel("player") >= (SPLASH_SCREENS[tag].minDisplayLevel)
 										and ShouldEnableStartButton(questID)) );
 		HideUIPanel(frame);
 
@@ -311,13 +320,13 @@ function SplashFrame_Close()
 			OpenQuestDialog();
 		end
 	end
-	PlaySound("igMainMenuQuit");
+	PlaySound(SOUNDKIT.IG_MAINMENU_QUIT);
 end
 
 function SplashFrameStartButton_OnClick(self)
 	HideParentPanel(self);
 	OpenQuestDialog();
-	PlaySound("igMainMenuOpen");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
 end
 
 --- Splash Feature Sections---

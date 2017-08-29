@@ -394,7 +394,7 @@ function GuildNewsFiltersFrame_OnLoad(self)
 end
 
 function GuildNewsFiltersFrame_OnShow(self)
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	local filters = { GetGuildNewsFilters() };
 	for i = 1, #filters do
 		-- skip 8th flag - guild creation
@@ -412,10 +412,10 @@ end
 function GuildNewsFilter_OnClick(self)
 	local setting;
 	if ( self:GetChecked() ) then
-		PlaySound("igMainMenuOptionCheckBoxOn");
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 		setting = 1;
 	else
-		PlaySound("igMainMenuOptionCheckBoxOff");
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 		setting = 0;
 	end
 	SetGuildNewsFilter(self:GetID(), setting);

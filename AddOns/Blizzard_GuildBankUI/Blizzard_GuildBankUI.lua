@@ -186,7 +186,7 @@ function GuildBankFrame_OnShow()
 	GuildBankFrameTab_OnClick(GuildBankFrameTab1, 1);
 	GuildBankFrame_UpdateTabard();
 	GuildBankFrame_SelectAvailableTab();
-	PlaySound("GuildVaultOpen");
+	PlaySound(SOUNDKIT.GUILD_VAULT_OPEN);
 end
 
 function GuildBankFrame_OnHide(self)
@@ -195,7 +195,7 @@ function GuildBankFrame_OnHide(self)
 	StaticPopup_Hide("GUILDBANK_DEPOSIT");
 	StaticPopup_Hide("CONFIRM_BUY_GUILDBANK_TAB");
 	CloseGuildBankFrame();
-	PlaySound("GuildVaultClose");
+	PlaySound(SOUNDKIT.GUILD_VAULT_CLOSE);
 	GB_ICON_FILENAMES = nil;
 	collectgarbage();
 end
@@ -364,7 +364,7 @@ function GuildBankFrameTab_OnClick(tab, id, doNotUpdate)
 	if ( not doNotUpdate ) then
 		GuildBankFrame_Update();
 	end
-	PlaySound("igCharacterInfoTab");
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
 end
 
 function GuildBankFrame_UpdateTabBuyingInfo()
@@ -940,7 +940,7 @@ function GuildBankPopupFrame_OnShow(self)
 end
 
 function GuildBankPopupFrame_OnHide(self)
-	PlaySound("igCharacterInfoTab");
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
 end
 
 function GuildBankPopupButton_OnClick(self, button)

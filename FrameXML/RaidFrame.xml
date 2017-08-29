@@ -103,7 +103,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PlaySound("igCharacterInfoTab");
+						PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
 						RaidParentFrame_SetView(1);
 					</OnClick>
 				</Scripts>
@@ -118,7 +118,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PlaySound("igCharacterInfoTab");
+						PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
 						RaidParentFrame_SetView(2);
 					</OnClick>
 				</Scripts>
@@ -128,14 +128,14 @@
 			<OnLoad function="RaidParentFrame_OnLoad"/>
 			<OnShow>
 				UpdateMicroButtons();
-				PlaySound("igCharacterInfoOpen");
+				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 				RequestLFDPlayerLockInfo(); --This info coming back might affect the tab state.
 				RequestLFDPartyLockInfo();
 				RaidFinderFrame_UpdateTab();
 			</OnShow>
 			<OnHide>
 				UpdateMicroButtons();
-				PlaySound("igCharacterInfoClose");
+				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 			</OnHide>
 		</Scripts>
 	</Frame>
@@ -161,9 +161,9 @@
 					</OnEvent>
 					<OnClick>
 						if (self.enabled) then 
-							PlaySound("igMainMenuOptionCheckBoxOn");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						else
-							PlaySound("igMainMenuOptionCheckBoxOff");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 						end
 						SetEveryoneIsAssistant(self:GetChecked());	
 					</OnClick>
@@ -209,7 +209,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						ToggleRaidBrowser();
 					</OnClick>
 				</Scripts>
@@ -386,10 +386,10 @@
 				</Frames>
 				<Scripts>
 					<OnShow>
-						PlaySound("UChatScrollButton");
+						PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 					</OnShow>
 					<OnHide>
-						PlaySound("UChatScrollButton");
+						PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 					</OnHide>
 				</Scripts>
 			</Frame>

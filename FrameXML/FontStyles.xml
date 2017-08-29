@@ -214,12 +214,6 @@
 		<Color r="1.0" g="1.0" b="1.0"/>
 	</Font>
 	<Font name="CombatLogFont" inherits="GameFontHighlight" justifyH="LEFT" virtual="true"/>
-	<Font name="GameTooltipText" inherits="Tooltip_Med" justifyH="LEFT" virtual="true">
-		<Color r="1.0" g="1.0" b="1.0"/>
-	</Font>
-	<Font name="GameTooltipTextSmall" inherits="Tooltip_Small" justifyH="LEFT" virtual="true">
-		<Color r="1.0" g="1.0" b="1.0"/>
-	</Font>
 	<Font name="WorldMapTextFont" inherits="SystemFont_OutlineThick_WTF" virtual="true">
 		<Color r="1.0" g="0.9294" b="0.7607"/>
 	</Font>
@@ -299,10 +293,18 @@
 		<Color r="1" g="1" b="1" a="1"/>
 	</Font>
 
-	<Font name="CommentatorDeadFont" inherits="SystemFont_Huge2" virtual="true">
+	<Font name="CommentatorDeadFontSmall" inherits="SystemFont_Med1" virtual="true">
 		<Color r="1" g="1" b="1" a="1"/>
 	</Font>
-
+	
+	<Font name="CommentatorDeadFontMedium" inherits="SystemFont_Large" virtual="true">
+		<Color r="1" g="1" b="1" a="1"/>
+	</Font>
+	
+	<Font name="CommentatorDeadFontDefault" inherits="SystemFont_Huge2" virtual="true">
+		<Color r="1" g="1" b="1" a="1"/>
+	</Font>
+	
 	<Font name="CommentatorDeadFontLarge" inherits="SystemFont_OutlineThick_WTF" outline="" virtual="true">
 		<Color r="1" g="1" b="1" a="1"/>
 	</Font>

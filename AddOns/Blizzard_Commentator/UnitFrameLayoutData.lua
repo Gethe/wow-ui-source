@@ -90,13 +90,11 @@ local BASE_LAYOUT = {
 	},
 
 	DeadText = {
-		justifyH = "LEFT",
-
-		fontObject = "CommentatorDeadFont",
+		justifyH = "CENTER",
 
 		points = {
 			CreatePoint("TOPLEFT", "HealthBar", "TOPLEFT", 6, 0),
-			CreatePoint("BOTTOMRIGHT", "HealthBar", "BOTTOMRIGHT", -6, 0),
+			CreatePoint("BOTTOMRIGHT", "HealthBar", "BOTTOMRIGHT", -42, 0),
 		},
 	},
 
@@ -362,7 +360,7 @@ local RIGHT_LAYOUT = {
 
 	DeadText = {
 		mirrorPointsV = true,
-		justifyH = "RIGHT",
+		justifyH = "CENTER",
 	},
 
 	DeathIcon = {
@@ -462,10 +460,6 @@ local FOCUSED_LAYOUT = {
 			CreatePoint("TOPLEFT", "UnitFrame", "TOPLEFT", 84, -66),
 			CreatePoint("BOTTOMRIGHT", "UnitFrame", "BOTTOMRIGHT", 117, 2),
 		},
-	},
-
-	DeadText = {
-		fontObject = "CommentatorDeadFontLarge",
 	},
 
 	PowerBar = {

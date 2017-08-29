@@ -82,7 +82,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PlaySound("igCharacterInfoTab");
+						PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
 						UpgradeAccount();
 						self:GetParent():Hide();
 					</OnClick>
@@ -106,7 +106,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PlaySound("igCharacterInfoTab");
+						PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
 						self:GetParent():Hide();
 					</OnClick>
 				</Scripts>

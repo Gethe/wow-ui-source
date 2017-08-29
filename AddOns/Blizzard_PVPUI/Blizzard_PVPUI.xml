@@ -314,7 +314,7 @@
 		</Frames>
 		<Scripts>
 			<OnClick>
-				PlaySound("igMainMenuOptionCheckBoxOn");
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 				HonorFrameBonusFrame_SelectButton(self)
 			</OnClick>
 			<OnMouseDown>
@@ -863,7 +863,7 @@
 												self.DiceTexture:SetPoint("CENTER", 0, -2);
 											</OnMouseUp>
 											<OnClick>
-												PlaySound("igMainMenuOptionCheckBoxOn");
+												PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 												IncludedBattlegroundsDropDown_Toggle();
 											</OnClick>
 										</Scripts>
@@ -1016,7 +1016,7 @@
 								</Anchors>
 								<Scripts>
 									<OnClick>
-										PlaySound("igMainMenuOptionCheckBoxOn");
+										PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 										HonorFrame_Queue();
 									</OnClick>
 									<OnEnter>
@@ -1209,7 +1209,7 @@
 								</Anchors>
 								<Scripts>
 									<OnClick>
-										PlaySound("igMainMenuOptionCheckBoxOn");
+										PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 										ConquestFrameJoinButton_OnClick(self);
 									</OnClick>
 									<OnEnter>
@@ -1438,7 +1438,7 @@
 										self.text:SetFontObject(GameFontHighlightSmall);
 									</OnLoad>
 									<OnClick>
-										PlaySound("igMainMenuOptionCheckBoxOn");
+										PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 									</OnClick>
 									<OnEnter>
 										GameTooltip:SetOwner(self, "ANCHOR_RIGHT");

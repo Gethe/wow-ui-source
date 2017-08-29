@@ -301,10 +301,22 @@ function LootJournalLegendariesMixin:ConfigureItemButton(button, itemInfo)
 	button.itemInfo = itemInfo;
 	button.ItemName:SetText(itemInfo.name);
 	button.ItemName:SetTextColor(GetItemQualityColor(itemInfo.quality));
+	
 	local text = _G[itemInfo.inventoryTypeName];
-	if ( itemInfo.isCraftable ) then
-		text = format(LOOT_JOURNAL_LEGENDARIES_CRAFTED_ITEM, text);
+	
+	local sourceText;
+	if itemInfo.transmogSource == Enum.TransmogSource.Profession then
+		sourceText = LOOT_JOURNAL_LEGENDARIES_SOURCE_CRAFTED_ITEM;
+	elseif itemInfo.transmogSource == Enum.TransmogSource.Quest then
+		sourceText = LOOT_JOURNAL_LEGENDARIES_SOURCE_QUEST;
+	elseif itemInfo.transmogSource == Enum.TransmogSource.Achievement then
+		sourceText = LOOT_JOURNAL_LEGENDARIES_SOURCE_ACHIEVEMENT;
 	end
+
+	if sourceText then
+		text = LOOT_JOURNAL_LEGENDARIES_ITEM_WITH_SOURCE:format(text, sourceText);
+	end
+	
 	button.ItemType:SetText(text);
 	button.Icon:SetTexture(itemInfo.icon);
 	self:CheckItemButtonTooltip(button);

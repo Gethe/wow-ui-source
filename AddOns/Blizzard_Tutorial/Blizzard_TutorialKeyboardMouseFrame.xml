@@ -135,11 +135,11 @@
 		</Animations>
 		<Scripts>
 			<OnHide>
-				PlaySound("igCharacterInfoClose");
+				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 				NPE_TutorialKeyboardMouseFrame:MainFrame_OnHide();
 			</OnHide>
 			<OnShow>
-				PlaySound("igCharacterInfoOpen");
+				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 				self.TitleText:SetText(NPE_KEYBOARDANDMOUSETITLE);
 				self.portrait:SetMask("Interface\\CharacterFrame\\TempPortraitAlphaMask");
 				self.portrait:SetAtlas("NPE_Icon");

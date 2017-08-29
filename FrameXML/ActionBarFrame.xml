@@ -307,7 +307,7 @@
 		<Scripts>
 			<OnClick>
 				ActionBar_PageUp(self);
-				PlaySound("UChatScrollButton");
+				PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 			</OnClick>
 		</Scripts>
 		<NormalTexture file="Interface\MainMenuBar\UI-MainMenu-ScrollUpButton-Up"/>
@@ -332,7 +332,7 @@
 		<Scripts>
 			<OnClick>
 				ActionBar_PageDown(self);
-				PlaySound("UChatScrollButton");
+				PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 			</OnClick>
 		</Scripts>
 		<NormalTexture file="Interface\MainMenuBar\UI-MainMenu-ScrollDownButton-Up"/>

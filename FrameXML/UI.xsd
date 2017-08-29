@@ -355,6 +355,7 @@
 				<xs:attribute name="method" type="xs:string"/>
 				<xs:attribute name="inherit" type="SCRIPTINHERITTYPE" use="optional" default="none"/>
 				<xs:attribute name="intrinsicOrder" type="SCRIPTINTRINSICORDERTYPE" use="optional" default="none"/>
+				<xs:attribute name="autoEnableInput" type="xs:boolean" default="true"/>
 			</xs:extension>
 		</xs:simpleContent>
 	</xs:complexType>
@@ -853,6 +854,7 @@
 				</xs:attribute>
 				<xs:attribute name="drawLayer" type="ui:DRAWLAYER" default="ARTWORK"/>
 			</xs:extension>
+			<xs:element name="ViewInsets" type="Inset"/>
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:element name="Model" type="ModelType" substitutionGroup="ui:Frame"/>
@@ -1147,6 +1149,15 @@
 	</xs:complexType>
 	<xs:element name="Browser" type="BrowserType" substitutionGroup="ui:Frame"/>
 
+	<xs:complexType name="CheckoutType">
+		<xs:complexContent>
+			<xs:extension base="FrameType">
+				<xs:attribute name="IMEFont" type="xs:string"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="Checkout" type="CheckoutType" substitutionGroup="ui:Frame"/>
+
 	<xs:complexType name="ModelSceneType">
 		<xs:complexContent>
 			<xs:extension base="FrameType">
@@ -1163,7 +1174,8 @@
 						</xs:element>
 					</xs:choice>
 				</xs:sequence>
-
+				
+				<xs:element name="ViewInsets" type="Inset"/>
 				<xs:attribute name="fogNear" type="xs:float" default="0.0" />
 				<xs:attribute name="fogFar" type="xs:float" default="1.0" />
 				<xs:attribute name="drawLayer" type="ui:DRAWLAYER" default="ARTWORK"/>

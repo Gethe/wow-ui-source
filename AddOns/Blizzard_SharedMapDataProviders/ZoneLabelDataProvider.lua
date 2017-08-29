@@ -33,11 +33,13 @@ function ZoneLabelDataProviderMixin:RefreshAllData(fromOnShow)
 	self.numActiveAreas = 0;
 	self.activeAreas = {};
 
-	local mapAreaID = self:GetMap():GetMapID();
-	for zoneIndex = 1, C_MapCanvas.GetNumZones(mapAreaID) do
-		local zoneMapID, zoneName, zoneDepth, left, right, top, bottom = C_MapCanvas.GetZoneInfo(mapAreaID, zoneIndex);
-		if zoneDepth <= 1 then -- Exclude subzones
-			self:AddZone(zoneMapID, zoneName, left, right, top, bottom);
+	if self:GetMap():ShouldShowSubzones() then
+		local mapAreaID = self:GetMap():GetMapID();
+		for zoneIndex = 1, C_MapCanvas.GetNumZones(mapAreaID) do
+			local zoneMapID, zoneName, zoneDepth, left, right, top, bottom = C_MapCanvas.GetZoneInfo(mapAreaID, zoneIndex);
+			if zoneDepth <= 1 then -- Exclude subzones
+				self:AddZone(zoneMapID, zoneName, left, right, top, bottom);
+			end
 		end
 	end
 

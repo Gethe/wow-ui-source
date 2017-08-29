@@ -5,7 +5,7 @@ WardrobeOutfitDropDownMixin = { };
 function WardrobeOutfitDropDownMixin:OnLoad()
 	local button = _G[self:GetName().."Button"];
 	button:SetScript("OnClick", function(self)
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						WardrobeOutfitFrame:Toggle(self:GetParent());
 						end
 					);
@@ -49,6 +49,9 @@ function WardrobeOutfitDropDownMixin:UpdateSaveButton()
 	else
 		self.SaveButton:SetEnabled(false);
 	end
+end
+
+function WardrobeOutfitDropDownMixin:OnOutfitSaved(outfitID)
 end
 
 function WardrobeOutfitDropDownMixin:SelectOutfit(outfitID, loadOutfit)
@@ -315,6 +318,7 @@ function WardrobeOutfitFrameMixin:SaveOutfit(name)
 	local outfitID = C_TransmogCollection.SaveOutfit(name, self.sources, self.mainHandEnchant, self.offHandEnchant, icon);
 	if ( self.popupDropDown ) then
 		self.popupDropDown:SelectOutfit(outfitID);
+		self.popupDropDown:OnOutfitSaved(outfitID);
 	end
 end
 
@@ -413,7 +417,7 @@ end
 WardrobeOutfitButtonMixin = { };
 
 function WardrobeOutfitButtonMixin:OnClick()
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	WardrobeOutfitFrame:Hide();
 	if ( self.outfitID ) then
 		WardrobeOutfitFrame.dropDown:SelectOutfit(self.outfitID, true);

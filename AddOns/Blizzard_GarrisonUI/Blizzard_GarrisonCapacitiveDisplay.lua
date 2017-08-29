@@ -292,7 +292,7 @@ function GarrisonCapacitiveDisplayFrame_OnEvent(self, event, ...)
 end
 
 function GarrisonCapacitiveDisplayFrame_OnShow(self)
-	PlaySound("UI_Garrison_Shipments_Window_Open");
+	PlaySound(SOUNDKIT.UI_GARRISON_SHIPMENTS_WINDOW_OPEN);
 	self.Count:SetNumber(1);
 end
 
@@ -302,12 +302,12 @@ function GarrisonCapacitiveDisplayFrame_OnHide(self)
 		shipmentUpdater = nil;
 	end
 	C_Garrison.CloseTradeskillCrafter();
-	PlaySound("UI_Garrison_Shipments_Window_Close");
+	PlaySound(SOUNDKIT.UI_GARRISON_SHIPMENTS_WINDOW_CLOSE);
 end
 
 function GarrisonCapacitiveStartWorkOrder_OnClick(self)
 	C_Garrison.RequestShipmentCreation(GarrisonCapacitiveDisplayFrame.requested);
-	PlaySound("UI_Garrison_Start_Work_Order");
+	PlaySound(SOUNDKIT.UI_GARRISON_START_WORK_ORDER);
 	GarrisonCapacitiveDisplayFrame.Count:SetNumber(1);
 end
 
@@ -315,7 +315,7 @@ function GarrisonCapacitiveCreateAllWorkOrders_OnClick(self)
 	local available = GarrisonCapacitiveDisplayFrame.available;
 	if (available and available > 0) then
 		C_Garrison.RequestShipmentCreation(available);
-		PlaySound("UI_Garrison_Start_Work_Order");
+		PlaySound(SOUNDKIT.UI_GARRISON_START_WORK_ORDER);
 	end
 	GarrisonCapacitiveDisplayFrame.Count:SetNumber(1);
 end

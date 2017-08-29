@@ -1,4 +1,4 @@
-## Interface: 70200
+## Interface: 70300
 ## Title: Blizzard UI Debug Tools
 ## Notes: Tools for developing addons
 ## Secure: 1
@@ -9,4 +9,8 @@
 Dump.lua
 Blizzard_DebugTools.lua
 Blizzard_DebugTools.xml
+Blizzard_TableInspectorDataProvider.lua
+Blizzard_TableInspectorAnchorDataProvider.xml
+Blizzard_TableInspectorAttributeDataProvider.xml
+Blizzard_TableInspector.xml
 Localization.lua

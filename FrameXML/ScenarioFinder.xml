@@ -474,7 +474,7 @@
 				</Frames>
 				<Scripts>
 					<OnShow>
-						PlaySound("igCharacterInfoOpen");
+						PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 						RequestLFDPlayerLockInfo();
 						RequestLFDPartyLockInfo();
 					</OnShow>

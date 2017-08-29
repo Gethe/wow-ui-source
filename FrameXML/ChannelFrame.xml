@@ -223,9 +223,9 @@
 							<OnClick>
 								SetCVar("autojoinPartyVoice", self:GetChecked());
 								if ( self:GetChecked() ) then
-									PlaySound("igMainMenuOptionCheckBoxOff");
+									PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 								else
-									PlaySound("igMainMenuOptionCheckBoxOn");
+									PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 								end
 							</OnClick>
 						</Scripts>
@@ -261,9 +261,9 @@
 							<OnClick>
 								SetCVar("autojoinBGVoice", self:GetChecked());
 								if ( self:GetChecked() ) then
-									PlaySound("igMainMenuOptionCheckBoxOff");
+									PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 								else
-									PlaySound("igMainMenuOptionCheckBoxOn");
+									PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 								end
 							</OnClick>
 						</Scripts>
@@ -681,7 +681,7 @@
 			<OnClick>
 				ChannelPulloutTab_ReanchorLeft();
 				ChannelPulloutTab_OnClick(self, button);
-				PlaySound("UChatScrollButton");
+				PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 			</OnClick>
 			<OnEnter>
 				GameTooltip_AddNewbieTip(self, CHANNELPULLOUT_OPTIONS_LABEL, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_CHANNELPULLOUT_OPTIONS, 1);
@@ -738,7 +738,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOff");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 						ChannelPullout_ToggleDisplay(self);
 					</OnClick>
 				</Scripts>

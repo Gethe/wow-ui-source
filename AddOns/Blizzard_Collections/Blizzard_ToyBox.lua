@@ -13,7 +13,7 @@ function ToyBox_OnLoad(self)
 	self:RegisterEvent("TOYS_UPDATED");
 
 	self.OnPageChanged = function(userAction)
-		PlaySound("igAbiliityPageTurn");
+		PlaySound(SOUNDKIT.IG_ABILITY_PAGE_TURN);
 		ToyBox_UpdateButtons();
 	end
 end
@@ -101,7 +101,7 @@ end
 function ToyBox_ShowToyDropdown(itemID, anchorTo, offsetX, offsetY)	
 	ToyBox.menuItemID = itemID;
 	ToggleDropDownMenu(1, nil, ToyBox.toyOptionsMenu, anchorTo, offsetX, offsetY);
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 end
 
 function ToyBox_HideToyDropdown()

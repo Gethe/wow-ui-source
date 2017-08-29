@@ -400,10 +400,10 @@ function AddonList_Enable(index, enabled)
 
 	local character = UIDropDownMenu_GetSelectedValue(AddonCharacterDropDown);
 	if ( enabled ) then
-		PlaySound("igMainMenuOptionCheckBoxOn");
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 		EnableAddOn(index,character);
 	else
-		PlaySound("igMainMenuOptionCheckBoxOff");
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 		DisableAddOn(index,character);
 	end
 	AddonList_Update();
@@ -429,7 +429,7 @@ function AddonList_LoadAddOn(index)
 end
 
 function AddonList_OnOkay()
-	PlaySound("gsLoginChangeRealmOK");
+	PlaySound(SOUNDKIT.GS_LOGIN_CHANGE_REALM_OK);
 	AddonList_Hide(true);
 	if ( not InGlue() ) then
 		if ( AddonList.shouldReload ) then
@@ -439,7 +439,7 @@ function AddonList_OnOkay()
 end
 
 function AddonList_OnCancel()
-	PlaySound("gsLoginChangeRealmCancel");
+	PlaySound(SOUNDKIT.GS_LOGIN_CHANGE_REALM_CANCEL);
 	AddonList_Hide(false);
 end
 

@@ -86,6 +86,20 @@ function ArtifactPerksMixin:OnEvent(event, ...)
 	end
 end
 
+function ArtifactPerksMixin:OnUIOpened()
+	self.RelicTalentAlert:Hide();
+	for i, relicSlot in ipairs(self.TitleContainer.RelicSlots) do
+		local currentRank, canAddTalent = C_ArtifactUI.GetRelicSlotRankInfo(i);
+		if ( canAddTalent ) then
+			self.RelicTalentAlert:SetPoint("TOP", relicSlot, "BOTTOM", 0, -20);
+			self.RelicTalentAlert:Show();
+			break;
+		end
+	end
+
+	self:Refresh(true);
+end
+
 function ArtifactPerksMixin:OnAppearanceChanging()
 	self.isAppearanceChanging = true;
 end
@@ -137,8 +151,7 @@ function ArtifactsModelTemplate_OnModelLoaded(self)
 	end
 	self:SetLight(true, false, 0, 0, 0, .7, 1.0, 1.0, 1.0);
 	self:SetViewTranslation(-88, 0);
-	self:SetViewInsets(88, 88, 0, 0);
-				
+
 	self:SetDesaturation(self.desaturation or .5);
 
 	self:SetAnimation(animationSequence, 0);
@@ -1060,8 +1073,9 @@ function ArtifactPerksMixin:TraitRefundSetup(numTraitsRefunded)
 	self:HideTier2();
 	if self:GetFinalPowerButtonByTier(1) then self:GetFinalPowerButtonByTier(1).Rank:SetText(1 + numTraitsRefunded); end
 	
-	local startingSound = "UI_72_Artifact_Forge_Final_Trait_Refund_Start";
-	local loopingSound = "UI_72_Artifact_Forge_Final_Trait_Refund_Loop";
+	local startingSound = SOUNDKIT.UI_72_ARTIFACT_FORGE_FINAL_TRAIT_REFUND_START;
+	local loopingSound = SOUNDKIT.UI_72_ARTIFACT_FORGE_FINAL_TRAIT_REFUND_LOOP;
+
 	local endingSound = nil;
 	local loopStartDelay = ARTIFACT_TIER_2_SOUND_REFUND_LOOP_START_DELAY;
 	local loopEndDelay = ARTIFACT_TIER_2_SOUND_REFUND_LOOP_STOP_DELAY;
@@ -1166,7 +1180,7 @@ end
 
 function ArtifactPerksMixin:AnimateInTierTwoReveal()
 	self.TitleContainer.PointsRemainingLabel:SnapToTarget();
-	PlaySound("UI_72_Artifact_Forge_Activate_Final_Tier");
+	PlaySound(SOUNDKIT.UI_72_ARTIFACT_FORGE_ACTIVATE_FINAL_TIER);
 	
 	self.CrestFrame.IntroCrestAnim:Play();
 	self:StartWithDelay(ARTIFACT_TIER_2_CONSTELLATION_DELAY, function ()
@@ -1240,7 +1254,7 @@ function ArtifactPerksMixin:PlayReveal(tier)
 		end
 
 		if tier == 1 then
-			PlaySound("UI_70_Artifact_Forge_Trait_FirstTrait");
+			PlaySound(SOUNDKIT.UI_70_ARTIFACT_FORGE_TRAIT_FIRST_TRAIT);
 		end
 	end
 end
@@ -1383,7 +1397,16 @@ function ArtifactTitleTemplateMixin:OnRelicSlotMouseEnter(relicSlot)
 		end
 	elseif relicSlot.relicLink then
 		GameTooltip:SetOwner(relicSlot, "ANCHOR_BOTTOMRIGHT", 0, 10);
-		GameTooltip:SetHyperlink(relicSlot.relicLink);
+		GameTooltip:SetSocketedRelic(relicSlot.relicSlotIndex);
+		local currentRank, canAddTalent, artifactLevelRequiredForNextRank = C_ArtifactUI.GetRelicSlotRankInfo(relicSlot.relicSlotIndex);
+		if ( canAddTalent ) then
+			GameTooltip:AddLine(" ");
+			GameTooltip:AddLine(ARTIFACT_RELIC_TALENT_AVAILABLE, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
+		elseif ( artifactLevelRequiredForNextRank ) then
+			GameTooltip:AddLine(" ");
+			GameTooltip:AddLine(ARTIFACT_RELIC_SLOT_NEXT_RANK:format(currentRank + 1, artifactLevelRequiredForNextRank), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
+		end
+		GameTooltip:Show();
 	elseif relicSlot.relicType then
 		GameTooltip:SetOwner(relicSlot, "ANCHOR_BOTTOMRIGHT", 0, 10);
 		local slotName = _G["RELIC_SLOT_TYPE_" .. relicSlot.relicType:upper()];
@@ -1406,13 +1429,16 @@ StaticPopupDialogs["CONFIRM_RELIC_REPLACE"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 
-	OnAccept = function(self, relicSlotIndex)
-		C_ArtifactUI.ApplyCursorRelicToSlot(relicSlotIndex);
-		ArtifactFrame.PerksTab.TitleContainer.RelicSlots[relicSlotIndex].GlowAnim:Play();
-		PlaySound("UI_70_Artifact_Forge_Relic_Place");
+	OnAccept = function(self, data)
+		data.titleContainer:ApplyCursorRelicToSlot(data.relicSlotIndex);
 	end,
 	OnCancel = function()
 		ClearCursor();
+	end,
+	OnUpdate = function (self)
+		if ( not CursorHasItem() ) then
+			self:Hide();
+		end
 	end,
 
 	showAlert = true,
@@ -1421,32 +1447,39 @@ StaticPopupDialogs["CONFIRM_RELIC_REPLACE"] = {
 	hideOnEscape = true,
 };
 
+function ArtifactTitleTemplateMixin:ApplyCursorRelicToSlot(relicSlotIndex)
+	C_ArtifactUI.ApplyCursorRelicToSlot(relicSlotIndex);
+	self.RelicSlots[relicSlotIndex].GlowAnim:Play();
+	PlaySound(SOUNDKIT.UI_70_ARTIFACT_FORGE_RELIC_PLACE);
+end
+
 function ArtifactTitleTemplateMixin:OnRelicSlotClicked(relicSlot)
 	for i = 1, #self.RelicSlots do
 		if self.RelicSlots[i] == relicSlot then
 			if C_ArtifactUI.CanApplyCursorRelicToSlot(i) then
 				local itemName = C_ArtifactUI.GetRelicInfo(i);
 				if itemName then
-					StaticPopup_Show("CONFIRM_RELIC_REPLACE", nil, nil, i);
+					StaticPopup_Show("CONFIRM_RELIC_REPLACE", nil, nil, { titleContainer = self, relicSlotIndex = i });
 				else
-					C_ArtifactUI.ApplyCursorRelicToSlot(i);
-					self.RelicSlots[i].GlowAnim:Play();
-					PlaySound("UI_70_Artifact_Forge_Relic_Place");
+					self:ApplyCursorRelicToSlot(i);
 				end
+				return true;
 			else
 				local _, itemID = GetCursorInfo();
 				if itemID and IsArtifactRelicItem(itemID) then
 					UIErrorsFrame:AddMessage(RELIC_SLOT_INVALID, 1.0, 0.1, 0.1, 1.0);
+					return true;
 				else
 					if IsModifiedClick() then
 						local _, _, _, itemLink = C_ArtifactUI.GetRelicInfo(i);
-						HandleModifiedItemClick(itemLink);
+						return HandleModifiedItemClick(itemLink);
 					end
 				end
 			end
 			break;
 		end
 	end
+	return false;
 end
 
 function ArtifactTitleTemplateMixin:RefreshRelicTooltips()
@@ -1483,6 +1516,7 @@ function ArtifactTitleTemplateMixin:EvaluateRelics()
 			relicSlot.Icon:SetAtlas("Relic-SlotBG", true);
 			relicSlot.Glass:Hide();
 			relicSlot.relicLink = nil;
+			relicSlot.Rank:Hide();
 		else
 			local relicName, relicIcon, relicType, relicLink = C_ArtifactUI.GetRelicInfo(i);
 
@@ -1505,6 +1539,20 @@ function ArtifactTitleTemplateMixin:EvaluateRelics()
 				relicSlot.Glass:Hide();
 			end
 			relicSlot.relicLink = relicLink;
+
+			local currentRank, canAddTalent = C_ArtifactUI.GetRelicSlotRankInfo(i);
+			if currentRank then
+				relicSlot.Rank:Show();
+				relicSlot.Rank.Text:SetText(currentRank);
+				if ( canAddTalent ) then
+					relicSlot.Rank.GlowAnim:Play();
+				else
+					relicSlot.Rank.GlowAnim:Stop();
+					relicSlot.Rank.Glow:SetAlpha(0);
+				end
+			else
+				relicSlot.Rank:Hide();
+			end
 		end
 
 		

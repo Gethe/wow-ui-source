@@ -37,16 +37,22 @@ function BuilderSpender_OnUpdateFeedbackGain(self)
 		
 		local timeElapsedPercent = timeElapsed / timeEnd;
 		local currentValue = self.oldValue + (self.newValue - self.oldValue) * timeElapsedPercent;
-		local leftPosition = currentValue / self.maxValue * self:GetParent():GetWidth();
-		local width = (self.newValue - currentValue) / self.maxValue * self:GetWidth();
+		
+		local maxValue = self.maxValue;
+		if maxValue <= 0 then
+			maxValue = 1;
+		end
+		
+		local leftPosition = currentValue / maxValue * self:GetParent():GetWidth();
+		local width = (self.newValue - currentValue) / maxValue * self:GetWidth();
 		-- Setting a texture's width to 0 causes it to be full size, so when the width gets too small just hide it
 		if (width < 0.5) then
 			self.GainGlowTexture:Hide();
 			self.updatingGain = false;
 			return;
 		end
-		local texMinX = currentValue / self.maxValue;
-		local texMaxX = self.newValue / self.maxValue;
+		local texMinX = Clamp(currentValue / maxValue, 0, 1.0);
+		local texMaxX = Clamp(self.newValue / maxValue, 0, 1.0);
 
 		self.GainGlowTexture:ClearAllPoints();
 		self.GainGlowTexture:SetPoint("TOPLEFT", leftPosition, 0);

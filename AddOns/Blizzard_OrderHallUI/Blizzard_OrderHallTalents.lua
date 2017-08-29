@@ -18,7 +18,7 @@ StaticPopupDialogs["ORDER_HALL_TALENT_RESEARCH"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnAccept = function(self)
-		PlaySound("UI_OrderHall_Talent_Select");
+		PlaySound(SOUNDKIT.UI_ORDERHALL_TALENT_SELECT);
 		C_Garrison.ResearchTalent(self.data.id);
 		if (not self.data.hasTime) then
 			self.data.button:GetParent():SetResearchingTalentID(self.data.id);
@@ -52,7 +52,7 @@ function OrderHallTalentFrameMixin:OnShow()
 	self:RegisterEvent("GARRISON_TALENT_UPDATE");
     self:RegisterEvent("GARRISON_TALENT_COMPLETE");
 	self:RegisterEvent("GARRISON_TALENT_NPC_CLOSED");
-	PlaySound("UI_OrderHall_TalentWindow_Open");
+	PlaySound(SOUNDKIT.UI_ORDERHALL_TALENT_WINDOW_OPEN);
 end
 
 function OrderHallTalentFrameMixin:OnHide()
@@ -64,7 +64,7 @@ function OrderHallTalentFrameMixin:OnHide()
 	self:ReleaseAllPools();
 	StaticPopup_Hide("ORDER_HALL_TALENT_RESEARCH");
 	C_Garrison.CloseTalentNPC();
-	PlaySound("UI_OrderHall_TalentWindow_Close");
+	PlaySound(SOUNDKIT.UI_ORDERHALL_TALENT_WINDOW_CLOSE);
 end
 
 function OrderHallTalentFrameMixin:OnEvent(event, ...)
@@ -122,8 +122,15 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 
 	self:RefreshCurrency();
 	local garrTalentTreeID = C_Garrison.GetCurrentGarrTalentTreeID();
-	local uiTextureKit, classAgnostic, trees = C_Garrison.GetTalentTreeInfoForID(self.garrisonType, garrTalentTreeID);
-	if not trees then
+	if (garrTalentTreeID == nil or garrTalentTreeID == 0) then
+		local playerClass = select(3, UnitClass("player"));
+		local treeIDs = C_Garrison.GetTalentTreeIDsByClassID(self.garrisonType, playerClass);
+		if (treeIDs and #treeIDs > 0) then
+			garrTalentTreeID = treeIDs[1];
+		end
+	end
+	local uiTextureKit, classAgnostic, tree = C_Garrison.GetTalentTreeInfoForID(garrTalentTreeID);
+	if not tree then
 		self.refreshing = false;
 		return;
 	end
@@ -167,7 +174,6 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 
 	local borderX = 168;
 	local borderY = -86;
-	local treeSpacingX = 200;
 	local buttonSizeX = 39;
 	local buttonSizeY = 39;
 	local buttonSpacingX = 59;
@@ -181,142 +187,140 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 	local researchingTalentID = self:GetResearchingTalentID();
 	local researchingTalentTier = 0;
 
-	for treeIndex, tree in ipairs(trees) do
-		-- count how many talents are in each tier
-		local tierCount = {};
-		local tierCanBeResearchedCount = {};
-		for talentIndex, talent in ipairs(tree) do
-			tierCount[talent.tier + 1] = (tierCount[talent.tier + 1] or 0) + 1;
-			tierCanBeResearchedCount[talent.tier + 1] = tierCanBeResearchedCount[talent.tier + 1] or 0;
-			if (talent.talentAvailability == LE_GARRISON_TALENT_AVAILABILITY_AVAILABLE) then
-				tierCanBeResearchedCount[talent.tier + 1] = tierCanBeResearchedCount[talent.tier + 1] + 1;
-			end
-			talent.hasInstantResearch = talent.researchDuration == 0;
-			if (talent.id == researchingTalentID and talent.hasInstantResearch) then
-				if (not talent.selected) then
-					talent.selected = true;
-				end
-				researchingTalentTier = talent.tier;
-			end
+	-- count how many talents are in each tier
+	local tierCount = {};
+	local tierCanBeResearchedCount = {};
+	for talentIndex, talent in ipairs(tree) do
+		tierCount[talent.tier + 1] = (tierCount[talent.tier + 1] or 0) + 1;
+		tierCanBeResearchedCount[talent.tier + 1] = tierCanBeResearchedCount[talent.tier + 1] or 0;
+		if (talent.talentAvailability == LE_GARRISON_TALENT_AVAILABILITY_AVAILABLE) then
+			tierCanBeResearchedCount[talent.tier + 1] = tierCanBeResearchedCount[talent.tier + 1] + 1;
 		end
-
-		-- position arrows and choice backgrounds
-		for index = 1, #tierCount do
-			local tier = index - 1;
-			if (tierCount[index] == 2) then
-				local choiceBackground = self.choiceTexturePool:Acquire();
-				if (tierCanBeResearchedCount[index] == 2) then
-					choiceBackground:SetAtlas("orderhalltalents-choice-background-on", true);
-					choiceBackground:SetDesaturated(false);
-					local pulsingArrows = self.arrowTexturePool:Acquire();
-					pulsingArrows:SetPoint("CENTER", choiceBackground);
-					pulsingArrows.Pulse:Play();
-					pulsingArrows:Show();
-				elseif (tierCanBeResearchedCount[index] == 1) then
-					choiceBackground:SetAtlas("orderhalltalents-choice-background", true);
-					choiceBackground:SetDesaturated(false);
-				else
-					choiceBackground:SetAtlas("orderhalltalents-choice-background", true);
-					choiceBackground:SetDesaturated(true);
-				end
-				local tierWidth = (tierCount[index] * (buttonSizeX + buttonSpacingX)) - buttonSpacingX;
-				local xOffset = borderX + ((treeIndex - 1) * treeSpacingX) - (tierWidth / 2) - choiceBackgroundOffsetX;
-				local yOffset = borderY - ((buttonSpacingY + buttonSizeY) * tier) + choiceBackgroundOffsetY;
-				choiceBackground:SetPoint("TOP", xOffset, yOffset);
-				choiceBackground:Show();
+		talent.hasInstantResearch = talent.researchDuration == 0;
+		if (talent.id == researchingTalentID and talent.hasInstantResearch) then
+			if (not talent.selected) then
+				talent.selected = true;
 			end
-			self["Tick"..index]:Show();
+			researchingTalentTier = talent.tier;
 		end
+	end
 
-		local height = 566;
-		local insetheight = 504;
-		local bgheight = 498;
-
-		local change = 60;
-		local changecount = 0;
-
-		for index = #tierCount + 1, MAX_TIERS do
-			self["Tick"..index]:Hide();
-			changecount = changecount + 1;
-		end
-
-		local distance = change * changecount;
-		self:SetHeight(height - distance);
-		self.LeftInset:SetHeight(insetheight - distance);
-		self.Background:SetHeight(bgheight - distance);
-
-        local completeTalent = C_Garrison.GetCompleteTalent(self.garrisonType);
-
-		-- position talent buttons
-		for talentIndex, talent in ipairs(tree) do
-			local currentTierCount = tierCount[talent.tier + 1];
-			local currentTierCanBeResearchedCount = tierCanBeResearchedCount[talent.tier + 1];
-			local tierWidth = (currentTierCount * (buttonSizeX + buttonSpacingX)) - buttonSpacingX;
-			local talentFrame = self.buttonPool:Acquire();
-			talentFrame.Icon:SetTexture(talent.icon);
-			local xOffset = borderX + (treeIndex - 1) * treeSpacingX - (tierWidth / 2) + (buttonSizeX + buttonSpacingX) * talent.uiOrder;
-			local yOffset = borderY - (buttonSpacingY + buttonSizeY) * (talent.tier);
-
-			talentFrame.talent = talent;
-			
-			if (talent.isBeingResearched and not talent.hasInstantResearch) then
-				talentFrame.Cooldown:SetCooldownUNIX(talent.researchStartTime, talent.researchDuration);
-				talentFrame.Cooldown:Show();
-				talentFrame.AlphaIconOverlay:Show();
-				talentFrame.AlphaIconOverlay:SetAlpha(0.7);
-				talentFrame.CooldownTimerBackground:Show();
-				if (not talentFrame.timer) then
-					talentFrame.timer = C_Timer.NewTicker(1, function() talentFrame:Refresh(); end);
-				end
-			end
-
-			local selectionAvailableInstantResearch = true;
-			if (researchingTalentID ~= 0 and researchingTalentTier == talent.tier and researchingTalentID ~= talent.id) then
-				selectionAvailableInstantResearch = false;
-			end
-
-			-- Show as selected: You have researched this talent.
-			if (talent.selected and selectionAvailableInstantResearch) then
-				if (talent.selected and talent.researched and talent.id == researchingTalentID) then
-					self:ClearResearchingTalentID();
-				end
-				talentFrame.Border:SetAtlas("orderhalltalents-spellborder-yellow");
+	-- position arrows and choice backgrounds
+	for index = 1, #tierCount do
+		local tier = index - 1;
+		if (tierCount[index] == 2) then
+			local choiceBackground = self.choiceTexturePool:Acquire();
+			if (tierCanBeResearchedCount[index] == 2) then
+				choiceBackground:SetAtlas("orderhalltalents-choice-background-on", true);
+				choiceBackground:SetDesaturated(false);
+				local pulsingArrows = self.arrowTexturePool:Acquire();
+				pulsingArrows:SetPoint("CENTER", choiceBackground);
+				pulsingArrows.Pulse:Play();
+				pulsingArrows:Show();
+			elseif (tierCanBeResearchedCount[index] == 1) then
+				choiceBackground:SetAtlas("orderhalltalents-choice-background", true);
+				choiceBackground:SetDesaturated(false);
 			else
-				local isAvailable = talent.talentAvailability == LE_GARRISON_TALENT_AVAILABILITY_AVAILABLE;
-				
-				-- We check for LE_GARRISON_TALENT_AVAILABILITY_UNAVAILABLE_ALREADY_HAVE to avoid a bug with
-				-- the Chromie UI (talents would flash grey when you switched to another talent in the same row).
-				local canDisplayAsAvailable = talent.talentAvailability == LE_GARRISON_TALENT_AVAILABILITY_UNAVAILABLE_ANOTHER_IS_RESEARCHING or talent.talentAvailability == LE_GARRISON_TALENT_AVAILABILITY_UNAVAILABLE_ALREADY_HAVE;
-				local shouldDisplayAsAvailable = canDisplayAsAvailable and talent.hasInstantResearch;
-				
-				-- Show as available: this is a new tier which you don't have any talents from or and old tier that you could change.
-				-- Note: For instant talents, to support the Chromie UI, we display as available even when another talent is researching (Jeff wants it this way).
-				if (isAvailable or shouldDisplayAsAvailable) then
-					if ( currentTierCanBeResearchedCount < currentTierCount) then
-						talentFrame.AlphaIconOverlay:Show();
-						talentFrame.AlphaIconOverlay:SetAlpha(0.5);
-						talentFrame.Border:Hide();
-					else
-						talentFrame.Border:SetAtlas("orderhalltalents-spellborder-green");
-					end
-					
-				-- Show as unavailable: You have not unlocked this tier yet or you have unlocked it but another research is already in progress.
-				else
-					talentFrame.Border:SetAtlas("orderhalltalents-spellborder");
-					talentFrame.Icon:SetDesaturated(true);
-				end
+				choiceBackground:SetAtlas("orderhalltalents-choice-background", true);
+				choiceBackground:SetDesaturated(true);
 			end
-			talentFrame:SetPoint("TOPLEFT", xOffset, yOffset);
-			talentFrame:Show();
-			
-            if (talent.id == completeTalent) then
-                if (talent.selected and not talent.hasInstantResearch) then
-					PlaySound("UI_OrderHall_Talent_Ready_Check");
-					talentFrame.TalentDoneAnim:Play();
-				end
-                C_Garrison.ClearCompleteTalent(self.garrisonType);
-            end
+			local tierWidth = (tierCount[index] * (buttonSizeX + buttonSpacingX)) - buttonSpacingX;
+			local xOffset = borderX - (tierWidth / 2) - choiceBackgroundOffsetX;
+			local yOffset = borderY - ((buttonSpacingY + buttonSizeY) * tier) + choiceBackgroundOffsetY;
+			choiceBackground:SetPoint("TOP", xOffset, yOffset);
+			choiceBackground:Show();
 		end
+		self["Tick"..index]:Show();
+	end
+
+	local height = 566;
+	local insetheight = 504;
+	local bgheight = 498;
+
+	local change = 60;
+	local changecount = 0;
+
+	for index = #tierCount + 1, MAX_TIERS do
+		self["Tick"..index]:Hide();
+		changecount = changecount + 1;
+	end
+
+	local distance = change * changecount;
+	self:SetHeight(height - distance);
+	self.LeftInset:SetHeight(insetheight - distance);
+	self.Background:SetHeight(bgheight - distance);
+
+    local completeTalent = C_Garrison.GetCompleteTalent(self.garrisonType);
+
+	-- position talent buttons
+	for talentIndex, talent in ipairs(tree) do
+		local currentTierCount = tierCount[talent.tier + 1];
+		local currentTierCanBeResearchedCount = tierCanBeResearchedCount[talent.tier + 1];
+		local tierWidth = (currentTierCount * (buttonSizeX + buttonSpacingX)) - buttonSpacingX;
+		local talentFrame = self.buttonPool:Acquire();
+		talentFrame.Icon:SetTexture(talent.icon);
+		local xOffset = borderX - (tierWidth / 2) + (buttonSizeX + buttonSpacingX) * talent.uiOrder;
+		local yOffset = borderY - (buttonSpacingY + buttonSizeY) * (talent.tier);
+
+		talentFrame.talent = talent;
+			
+		if (talent.isBeingResearched and not talent.hasInstantResearch) then
+			talentFrame.Cooldown:SetCooldownUNIX(talent.researchStartTime, talent.researchDuration);
+			talentFrame.Cooldown:Show();
+			talentFrame.AlphaIconOverlay:Show();
+			talentFrame.AlphaIconOverlay:SetAlpha(0.7);
+			talentFrame.CooldownTimerBackground:Show();
+			if (not talentFrame.timer) then
+				talentFrame.timer = C_Timer.NewTicker(1, function() talentFrame:Refresh(); end);
+			end
+		end
+
+		local selectionAvailableInstantResearch = true;
+		if (researchingTalentID ~= 0 and researchingTalentTier == talent.tier and researchingTalentID ~= talent.id) then
+			selectionAvailableInstantResearch = false;
+		end
+
+		-- Show as selected: You have researched this talent.
+		if (talent.selected and selectionAvailableInstantResearch) then
+			if (talent.selected and talent.researched and talent.id == researchingTalentID) then
+				self:ClearResearchingTalentID();
+			end
+			talentFrame.Border:SetAtlas("orderhalltalents-spellborder-yellow");
+		else
+			local isAvailable = talent.talentAvailability == LE_GARRISON_TALENT_AVAILABILITY_AVAILABLE;
+				
+			-- We check for LE_GARRISON_TALENT_AVAILABILITY_UNAVAILABLE_ALREADY_HAVE to avoid a bug with
+			-- the Chromie UI (talents would flash grey when you switched to another talent in the same row).
+			local canDisplayAsAvailable = talent.talentAvailability == LE_GARRISON_TALENT_AVAILABILITY_UNAVAILABLE_ANOTHER_IS_RESEARCHING or talent.talentAvailability == LE_GARRISON_TALENT_AVAILABILITY_UNAVAILABLE_ALREADY_HAVE;
+			local shouldDisplayAsAvailable = canDisplayAsAvailable and talent.hasInstantResearch;
+				
+			-- Show as available: this is a new tier which you don't have any talents from or and old tier that you could change.
+			-- Note: For instant talents, to support the Chromie UI, we display as available even when another talent is researching (Jeff wants it this way).
+			if (isAvailable or shouldDisplayAsAvailable) then
+				if ( currentTierCanBeResearchedCount < currentTierCount) then
+					talentFrame.AlphaIconOverlay:Show();
+					talentFrame.AlphaIconOverlay:SetAlpha(0.5);
+					talentFrame.Border:Hide();
+				else
+					talentFrame.Border:SetAtlas("orderhalltalents-spellborder-green");
+				end
+					
+			-- Show as unavailable: You have not unlocked this tier yet or you have unlocked it but another research is already in progress.
+			else
+				talentFrame.Border:SetAtlas("orderhalltalents-spellborder");
+				talentFrame.Icon:SetDesaturated(true);
+			end
+		end
+		talentFrame:SetPoint("TOPLEFT", xOffset, yOffset);
+		talentFrame:Show();
+			
+        if (talent.id == completeTalent) then
+            if (talent.selected and not talent.hasInstantResearch) then
+				PlaySound(SOUNDKIT.UI_ORDERHALL_TALENT_READY_CHECK);
+				talentFrame.TalentDoneAnim:Play();
+			end
+            C_Garrison.ClearCompleteTalent(self.garrisonType);
+        end
 	end
 	self.refreshing = false;
 end
@@ -415,7 +419,7 @@ function GarrisonTalentButtonMixin:OnClick()
 			end
 			StaticPopup_Show("ORDER_HALL_TALENT_RESEARCH", str, nil, { id = self.talent.id, hasTime = hasTime, button = self });
 		else
-			PlaySound("UI_OrderHall_Talent_Select");
+			PlaySound(SOUNDKIT.UI_ORDERHALL_TALENT_SELECT);
 			C_Garrison.ResearchTalent(self.talent.id);
 			self:GetParent():SetResearchingTalentID(self.talent.id);
 		end

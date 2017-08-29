@@ -1759,6 +1759,13 @@
 			</OnLeave>
 		</Scripts>
 	</Button>
+	
+	<Frame name="TruncatedTooltipScriptTemplate" virtual="true">
+		<Scripts>
+			<OnEnter function="TruncatedTooltipScript_OnEnter"/>
+			<OnLeave function="TruncatedTooltipScript_OnLeave"/>
+		</Scripts>
+	</Frame>
 
 	<Frame name="HorizontalBarTemplate" virtual="true">
 		<Size x="300" y="6"/>
@@ -2221,7 +2228,7 @@
 				self.I:SetPoint("CENTER", 1, -1);
 			</OnMouseDown>
 			<OnMouseUp>
-				PlaySound("igMainMenuOptionCheckBoxOn");
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 				self.I:SetPoint("CENTER", 0, 0);
 			</OnMouseUp>
 			<OnHide function="Main_HelpPlate_Button_OnLeave"/>

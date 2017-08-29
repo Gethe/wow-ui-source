@@ -163,7 +163,7 @@
 		</Layers>
 		<Scripts>
 			<OnClick>
-				PlaySound("UI_Transmog_GearSlotClick");
+				PlaySound(SOUNDKIT.UI_TRANSMOG_GEAR_SLOT_CLICK);
 				WardrobeCollectionFrame.ItemsCollectionFrame:SetActiveSlot(self.slot, self.transmogType);
 			</OnClick>
 			<OnEnter>
@@ -200,7 +200,7 @@
 		</Layers>
 		<Scripts>
 			<OnClick>
-				PlaySound("UI_Transmog_GearSlotClick");
+				PlaySound(SOUNDKIT.UI_TRANSMOG_GEAR_SLOT_CLICK);
 				WardrobeCollectionFrame.ItemsCollectionFrame:SetActiveSlot(self.slot, self.transmogType);
 			</OnClick>
 			<OnEnter>
@@ -275,13 +275,13 @@
 		<Scripts>
 			<OnMouseUp>
 				if ( button == "LeftButton" ) then
-					PlaySound("igMainMenuOptionCheckBoxOn");
+					PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 					self:GetParent():GetParent():GetParent():SelectSetFromButton(self.setID);
 				elseif ( button == "RightButton" ) then
 					local dropDown = self:GetParent():GetParent().FavoriteDropDown;
 					dropDown.baseSetID = self.setID;
 					ToggleDropDownMenu(1, nil, dropDown, self, 0, 0);
-					PlaySound("igMainMenuOptionCheckBoxOn");
+					PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 				end
 			</OnMouseUp>
 		</Scripts>
@@ -608,7 +608,7 @@
 				</Layers>
 				<Scripts>
 					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						ToggleDropDownMenu(1, nil, WardrobeFilterDropDown, self, 74, 15);
 					</OnClick>
 					<OnEnable>
@@ -1114,7 +1114,7 @@
 										self.Text:SetJustifyH("LEFT");
 									</OnLoad>
 									<OnClick>
-										PlaySound("igMainMenuOptionCheckBoxOn");
+										PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 										ToggleDropDownMenu(1, nil, self:GetParent().VariantSetsDropDown, self:GetName(), 0, 1);
 									</OnClick>
 								</Scripts>
@@ -1852,7 +1852,7 @@
 								<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 								<Scripts>
 									<OnClick>
-										PlaySound("UI_Transmog_RevertingGearSlot");
+										PlaySound(SOUNDKIT.UI_TRANSMOG_REVERTING_GEAR_SLOT);
 										C_Transmog.ClearPending();
 									</OnClick>
 									<OnEnter>
@@ -2030,7 +2030,7 @@
 						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 						<Scripts>
 							<OnClick>
-								PlaySound("igMainMenuOptionCheckBoxOn");
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 								ToggleDropDownMenu(1, nil, self:GetParent().SpecDropDown, self, 0, 0);
 								self:GetParent().SpecHelpBox:Hide();
 								SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_SPECS_BUTTON, true);

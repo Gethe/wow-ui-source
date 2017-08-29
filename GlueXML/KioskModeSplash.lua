@@ -75,8 +75,10 @@ function KioskModeSplash_OnShow(self)
 end
 
 function KioskModeSplash_OnKeyDown(self,key)
-	if (CheckKioskModeRealmKey()) then
+	if CheckKioskModeRealmKey() then
 		C_RealmList.RequestChangeRealmList();
+	elseif CheckKioskModeQuitKey() then
+		QuitGame();
 	end
 end
 
@@ -107,7 +109,7 @@ function KioskModeSplash_GetAutoEnterWorld()
 end
 
 function KioskModeSplashChoice_OnClick(self, button, down)
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	if (self:GetID() == 1) then
 		KioskModeSplash_SetMode("highlevel");
 	else

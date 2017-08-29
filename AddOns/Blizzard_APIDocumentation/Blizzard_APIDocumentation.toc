@@ -1,4 +1,4 @@
-## Interface: 70200
+## Interface: 70300
 ## Title: Blizzard API Documentation
 ## Secure: 1
 ## Author: Blizzard Entertainment
@@ -15,17 +15,21 @@ Blizzard_APIDocumentation.lua
 # Start documentation files here
 SharedTypes.lua
 ActionBarFrameLua.lua
+ArtifactRelicForgeUILua.lua
 ArtifactUILua.lua
 CalendarLua.lua
 ChallengeModeInfoLua.lua
 ChatBubblesLua.lua
 CommentatorFrameLua.lua
+ConfigurationWarningsLua.lua
+ConsoleLua.lua
 ContributionCollectorLua.lua
 EquipmentManagerLua.lua
 GarrisonInfoLua.lua
 LFGListInfoLua.lua
 LootJournalLua.lua
 MailInfoLua.lua
+MapCanvasLua.lua
 MerchantFrameLua.lua
 MountJournalLua.lua
 PartyInfoLua.lua
@@ -41,4 +45,5 @@ UIManagerLua.lua
 UIModelInfoLua.lua
 UnitLua.lua
 WorldMapLua.lua
+ZoneAbility.lua
 # End documentation files here

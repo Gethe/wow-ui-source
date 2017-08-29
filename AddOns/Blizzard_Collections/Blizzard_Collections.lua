@@ -82,13 +82,13 @@ function CollectionsJournal_OnShow(self)
 	CollectionsMicroButtonAlert:Hide();
 	MicroButtonPulseStop(CollectionsMicroButton);
 
-	PlaySound("igCharacterInfoOpen");
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 	CollectionsJournal_UpdateSelectedTab(self);
 	UpdateMicroButtons();
 end
 
 function CollectionsJournal_OnHide(self)
-	PlaySound("igCharacterInfoClose");
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 	UpdateMicroButtons();
 
 	CollectionsMicroButton:EvaluateAlertVisibility();

@@ -231,9 +231,9 @@
 		<Scripts>
 			<OnClick>
 				if ( self:GetChecked() ) then
-					PlaySound("igMainMenuOptionCheckBoxOn");
+					PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 				else
-					PlaySound("igMainMenuOptionCheckBoxOff");
+					PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 				end
 				local tracked = AchievementButton_ToggleTracking(self:GetParent().id);
 				if ( not tracked ) then
@@ -2469,7 +2469,7 @@
 				<Scripts>
 					<OnClick>
 						AchievementFrameTab_OnClick(self:GetID());
-						PlaySound("igCharacterInfoTab");
+						PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -2480,7 +2480,7 @@
 				<Scripts>
 					<OnClick>
 						AchievementFrameTab_OnClick(self:GetID());
-						PlaySound("igCharacterInfoTab");
+						PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
 					</OnClick>
 				</Scripts>				
 			</Button>
@@ -2491,7 +2491,7 @@
 				<Scripts>
 					<OnClick>
 						AchievementFrameTab_OnClick(self:GetID());
-						PlaySound("igCharacterInfoTab");
+						PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -2519,7 +2519,7 @@
 						<Scripts>
 							<OnClick>
 								ToggleDropDownMenu(nil, nil, self:GetParent());
-								PlaySound("igMainMenuOptionCheckBoxOn");
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 							</OnClick>
 						</Scripts>
 						<NormalTexture name="$parentNormalTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Up">
@@ -2770,7 +2770,7 @@
 					</OnShow>
 					<OnClick>
 						AchievementFrame_ShowFullSearch();
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 					</OnClick>
 					<OnEnter function="AchievementFrameShowAllSearchResults_OnEnter"/>
 				</Scripts>
@@ -2906,10 +2906,10 @@
 					<OnShow>
 						--always on top
 						self:SetFrameLevel(self:GetParent():GetFrameLevel()+10);
-						PlaySound("igSpellBookOpen");
+						PlaySound(SOUNDKIT.IG_SPELLBOOK_OPEN);
 					</OnShow>
 					<OnHide>
-						PlaySound("igSpellBookClose");
+						PlaySound(SOUNDKIT.IG_SPELLBOOK_CLOSE);
 					</OnHide>
 				</Scripts>
 			</Frame>

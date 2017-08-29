@@ -82,7 +82,7 @@ TRAVEL PASS
 				</Layers>
 				<Scripts>
 					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						FriendsListPendingInviteDropDown.inviteID = self:GetParent().inviteID;
 						FriendsListPendingInviteDropDown.inviteIndex = self:GetParent().inviteIndex;
 						ToggleDropDownMenu(1, nil, FriendsListPendingInviteDropDown, self, -6, -3);
@@ -105,7 +105,7 @@ TRAVEL PASS
 					<OnClick>
 						FriendsList_ClosePendingInviteDialogs();
 						BNAcceptFriendInvite(self:GetParent().inviteID);
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -395,7 +395,7 @@ TRAVEL PASS
 							<OnClick>
 								FriendsFrame.NotesID = self:GetParent():GetParent():GetID();
 								local dialog = StaticPopup_Show("SET_FRIENDNOTE", GetFriendInfo(FriendsFrame.NotesID));
-								PlaySound("igCharacterInfoClose");
+								PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 							</OnClick>
 						</Scripts>
 						<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD">
@@ -414,7 +414,7 @@ TRAVEL PASS
 			</OnLoad>
 			<OnClick>
 				FriendsFrameFriendButton_OnClick(self, button);
-				PlaySound("igMainMenuOptionCheckBoxOn");
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 			</OnClick>
 		</Scripts>
 		<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD"/>
@@ -435,7 +435,7 @@ TRAVEL PASS
 		<Scripts>
 			<OnClick>
 				FriendsFrameIgnoreButton_OnClick(self);
-				PlaySound("igMainMenuOptionCheckBoxOn");
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 			</OnClick>
 		</Scripts>
 		<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD"/>
@@ -507,7 +507,7 @@ TRAVEL PASS
 			</OnLoad>
 			<OnClick>
 				FriendsFrameWhoButton_OnClick(self, button);
-				PlaySound("igMainMenuOptionCheckBoxOn");
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 			</OnClick>
 			<OnEnter>
 				if (self.tooltip1 and self.tooltip2) then
@@ -558,7 +558,7 @@ TRAVEL PASS
 				if ( self.sortType ) then
 					SortWho(self.sortType);
 				end
-				PlaySound("igMainMenuOptionCheckBoxOn");
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 			</OnClick>
 		</Scripts>
 		<ButtonText>
@@ -650,7 +650,7 @@ TRAVEL PASS
 								</Anchors>
 								<Scripts>
 									<OnClick>
-										PlaySound("igChatEmoteButton");
+										PlaySound(SOUNDKIT.IG_CHAT_EMOTE_BUTTON);
 										if ( self:GetParent().BroadcastFrame:IsShown() ) then
 											FriendsFrameBattlenetFrame_HideBroadcastFrame();
 										else
@@ -1418,7 +1418,7 @@ TRAVEL PASS
 										self.RightArrow:SetPoint("LEFT", 11, -2);
 									</OnMouseUp>
 									<OnClick>
-										PlaySound("igMainMenuOptionCheckBoxOn");
+										PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 										FriendsListFrame_ToggleInvites();
 									</OnClick>
 								</Scripts>
@@ -1482,7 +1482,7 @@ TRAVEL PASS
 										fullname = name.."-"..server;
 									end
 									AddIgnore(fullname);
-									PlaySound("UChatScrollButton");
+									PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 								else
 									StaticPopup_Show("ADD_IGNORE");
 								end
@@ -1526,7 +1526,7 @@ TRAVEL PASS
 										fullname = name.."-"..server;
 									end
 									AddMute(fullname);
-									PlaySound("UChatScrollButton");
+									PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 								else
 									StaticPopup_Show("ADD_MUTE");
 								end
@@ -1629,7 +1629,7 @@ TRAVEL PASS
 									<OnMouseUp>
 										if ( WHOFRAME_DROPDOWN_LIST[UIDropDownMenu_GetSelectedID(self)].sortType ) then
 											SortWho(WHOFRAME_DROPDOWN_LIST[UIDropDownMenu_GetSelectedID(self)].sortType);
-											PlaySound("igMainMenuOptionCheckBoxOn");
+											PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 										end
 									</OnMouseUp>
 								</Scripts>
@@ -1717,7 +1717,7 @@ TRAVEL PASS
 							<OnClick>
 								WhoFrameEditBox_OnEnterPressed(WhoFrameEditBox);
 								WhoFrame.selectedWho = nil;
-								PlaySound("igMainMenuOptionCheckBoxOn");
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 							</OnClick>
 						</Scripts>
 					</Button>
@@ -2404,7 +2404,7 @@ TRAVEL PASS
 			<OnShow function="AddFriendFrame_OnShow"/>
 			<OnHide>
 				AddFriendFrame.editFocus = nil;
-				PlaySound("igMainMenuClose");
+				PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
 			</OnHide>
 		</Scripts>
 	</Frame>
@@ -2583,10 +2583,10 @@ TRAVEL PASS
 				UIDropDownMenu_SetWidth(FriendsFriendsFrameDropDown, 120);
 			</OnLoad>
 			<OnShow>
-				PlaySound("igMainMenuOpen");
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
 			</OnShow>
 			<OnHide>
-				PlaySound("igMainMenuClose");
+				PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
 			</OnHide>
 			<OnEvent function="FriendsFriendsFrame_OnEvent"/>
 		</Scripts>
@@ -2634,7 +2634,7 @@ TRAVEL PASS
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						BNSendVerifiedBattleTagInvite();	-- unit should have been set with BNCheckBattleTagInviteToUnit or BNCheckBattleTagInviteToGuildMember
 						StaticPopupSpecial_Hide(self:GetParent());
 					</OnClick>
@@ -2647,7 +2647,7 @@ TRAVEL PASS
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						StaticPopupSpecial_Hide(self:GetParent());
 					</OnClick>
 				</Scripts>

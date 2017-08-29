@@ -2,7 +2,7 @@
 ..\FrameXML\UI.xsd">
 	<Script file="HealthBar.lua"/>
 	<Script file="GameTooltip.lua"/>
-	<Include file="GameTooltipTemplate.xml"/>
+	<Include file="..\SharedXML\GameTooltipTemplate.xml"/>
 	<GameTooltip name="ShoppingTooltip1" clampedToScreen="true" frameStrata="TOOLTIP" hidden="true" parent="UIParent" inherits="ShoppingTooltipTemplate"/>
 	<GameTooltip name="ShoppingTooltip2" clampedToScreen="true" frameStrata="TOOLTIP" hidden="true" parent="UIParent" inherits="ShoppingTooltipTemplate"/>
 	<GameTooltip name="GameTooltip" frameStrata="TOOLTIP" hidden="true" parent="UIParent" inherits="GameTooltipTemplate">

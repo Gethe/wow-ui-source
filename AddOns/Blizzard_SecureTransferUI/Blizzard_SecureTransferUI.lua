@@ -32,6 +32,7 @@ Import("COPPER_AMOUNT_TEXTURE_STRING");
 Import("SEND_ITEMS_TO_STRANGER_WARNING");
 Import("SEND_MONEY_TO_STRANGER_WARNING");
 Import("TRADE_ACCEPT_CONFIRMATION");
+Import("ACCEPT");
 
 local function formatLargeNumber(amount)
 	amount = tostring(amount);
@@ -96,9 +97,34 @@ function GetSecureMoneyString(money, separateThousands)
 	return moneyString;
 end
 
+function SecureTransferDialog_DelayedAccept(self)
+    self.Button1:Disable();
+    C_Timer.After(1, function()
+        self.Button1:Enable();
+    end);
+end
+
+function SecureTransferDialog_TimerOnAccept(self)
+	self.Button1:Disable();
+	self.acceptTimeLeft = 3;
+	self.Button1:SetText(self.acceptTimeLeft);
+	self.ticker = C_Timer.NewTicker(1, function()
+		self.acceptTimeLeft = self.acceptTimeLeft - 1;
+		if (self.acceptTimeLeft == 0) then
+			self.Button1:SetText(ACCEPT)
+			self.Button1:Enable();
+			self.ticker:Cancel();
+			return;
+		else
+			self.Button1:SetText(self.acceptTimeLeft);
+		end
+	end);
+end
+
 local SECURE_TRANSFER_DIALOGS = {
     ["CONFIRM_TRADE"] = {
         text = TRADE_ACCEPT_CONFIRMATION,
+		onShow = SecureTransferDialog_DelayedAccept,
         onAccept = function()
             C_SecureTransfer.AcceptTrade();
         end,
@@ -106,12 +132,14 @@ local SECURE_TRANSFER_DIALOGS = {
     ["SEND_MONEY_TO_STRANGER"] = {
         text = SEND_MONEY_TO_STRANGER_WARNING,
         money = function() local mailInfo = C_SecureTransfer.GetMailInfo(); return GetSecureMoneyString(mailInfo.sendMoney); end,
+		onShow = SecureTransferDialog_TimerOnAccept,
         onAccept = function(self)
             C_SecureTransfer.SendMail();
         end,
     },
     ["SEND_ITEMS_TO_STRANGER"] = {
         text = SEND_ITEMS_TO_STRANGER_WARNING,
+		onShow = SecureTransferDialog_TimerOnAccept,
         onAccept = function(self)
             C_SecureTransfer.SendMail();
         end,
@@ -173,10 +201,9 @@ function SecureTransferDialog_OnEvent(self, event)
 end
 
 function SecureTransferDialog_OnShow(self)
-    self.Button1:Disable();
-    C_Timer.After(1, function()
-        self.Button1:Enable();
-    end);
+    if currentDialog.onShow then
+		currentDialog.onShow(self);
+	end
 end
 
 function SecureTransferDialog_OnHide(self)

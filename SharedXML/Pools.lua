@@ -206,3 +206,84 @@ function CreateActorPool(parent, actorTemplate, resetterFunc)
 	actorPool:OnLoad(parent, actorTemplate, resetterFunc or ActorPool_HideAndClearModel);
 	return actorPool;
 end
+
+PoolCollection = {};
+
+function CreatePoolCollection()
+	local poolCollection = CreateFromMixins(PoolCollection);
+	poolCollection:OnLoad();
+	return poolCollection;
+end
+
+function PoolCollection:OnLoad()
+	self.pools = {};
+end
+
+function PoolCollection:CreatePool(frameType, parent, template, resetterFunc)
+	assert(self:GetPool(template) == nil);
+	local pool = CreateFramePool(frameType, parent, template, resetterFunc);
+	self.pools[template] = pool;
+	return pool;
+end
+
+function PoolCollection:GetPool(template)
+	return self.pools[template];
+end
+
+function PoolCollection:Acquire(template, parent, resetterFunc)
+	local pool = self:GetPool(template);
+	if pool then
+		return pool:Acquire();
+	end
+
+	return self:CreatePool(template, parent, resetterFunc):Acquire();
+end
+
+function PoolCollection:Release(template, object)
+	local pool = self:GetPool(template);
+	-- If we don't have a pool, then you're releasing an object to a pool that it doesn't belong to, which is very very bad.
+	assert(pool);
+	pool:Release(object);
+end
+
+function PoolCollection:ReleaseAllByTemplate(template)
+	local pool = self:GetPool(template);
+	if pool then
+		pool:ReleaseAll();
+	end
+end
+
+function PoolCollection:ReleaseAll()
+	for key, pool in pairs(self.pools) do
+		pool:ReleaseAll();
+	end
+end
+
+function PoolCollection:EnumerateActiveByTemplate(template)
+	local pool = self:GetPool(template);
+	if pool then
+		return pool:EnumerateActive();
+	end
+
+	return nop;
+end
+
+function PoolCollection:EnumerateActive()
+	local currentPoolKey, currentPool = next(self.pools, nil);
+	local currentObject = nil;
+	return function()
+		if currentPool then
+			currentObject = currentPool:GetNextActive(currentObject);
+			while not currentObject do
+				currentPoolKey, currentPool = next(self.pools, currentPoolKey);
+				if currentPool then
+					currentObject = currentPool:GetNextActive();
+				else
+					break;
+				end
+			end
+		end
+
+		return currentObject;
+	end, nil;
+end

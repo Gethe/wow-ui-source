@@ -126,7 +126,7 @@
 				</Layers>
 				<Scripts>
 					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						ItemTextPrevPage();
 					</OnClick>
 				</Scripts>
@@ -151,7 +151,7 @@
 				</Layers>
 				<Scripts>
 					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						ItemTextNextPage();
 					</OnClick>
 				</Scripts>
@@ -166,11 +166,11 @@
 			<OnEvent function="ItemTextFrame_OnEvent"/>
 			<OnUpdate function="ItemTextFrame_OnUpdate"/>
 			<OnShow>
-				PlaySound("igMainMenuOpen");
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
 			</OnShow>
 			<OnHide>
 				CloseItemText();
-				PlaySound("igMainMenuClose");
+				PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
 			</OnHide>
 		</Scripts>
 	</Frame>

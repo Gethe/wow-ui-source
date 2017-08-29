@@ -95,7 +95,7 @@ function MerchantFrame_OnShow(self)
 	ResetSetMerchantFilter();
 	
 	MerchantFrame_Update();
-	PlaySound("igCharacterInfoOpen");
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 end
 
 function MerchantFrame_OnHide(self)
@@ -107,7 +107,7 @@ function MerchantFrame_OnHide(self)
 	StaticPopup_Hide("CONFIRM_REFUND_TOKEN_ITEM");
 	StaticPopup_Hide("CONFIRM_REFUND_MAX_HONOR");
 	StaticPopup_Hide("CONFIRM_REFUND_MAX_ARENA_POINTS");
-	PlaySound("igCharacterInfoClose");
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 end
 
 function MerchantFrame_OnMouseWheel(self, value)
@@ -480,14 +480,14 @@ function MerchantFrame_UpdateBuybackInfo()
 end
 
 function MerchantPrevPageButton_OnClick()
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	MerchantFrame.page = MerchantFrame.page - 1;
 	MerchantFrame_CloseStackSplitFrame();
 	MerchantFrame_Update();
 end
 
 function MerchantNextPageButton_OnClick()
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	MerchantFrame.page = MerchantFrame.page + 1;
 	MerchantFrame_CloseStackSplitFrame();
 	MerchantFrame_Update();

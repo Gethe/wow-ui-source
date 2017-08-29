@@ -77,7 +77,7 @@ function QuestChoiceFrame_Show()
 end
 
 function QuestChoiceFrameOptionButton_OnClick(self)
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	local parent = self:GetParent();
 	if ( parent.optID ) then
 		if ( IsInGroup() and (QuestChoiceFrame.choiceID == GORGROND_GARRISON_ALLIANCE_CHOICE or QuestChoiceFrame.choiceID == GORGROND_GARRISON_HORDE_CHOICE) ) then

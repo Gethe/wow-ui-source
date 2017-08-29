@@ -339,14 +339,14 @@
 		<Scripts>
 			<OnLoad function="GossipFrame_OnLoad"/>
 			<OnShow>
-				PlaySound("igQuestListOpen");
+				PlaySound(SOUNDKIT.IG_QUEST_LIST_OPEN);
 				if ( StaticPopup_Visible("XP_LOSS") ) then
 					StaticPopup_Hide("XP_LOSS");
 				end
 			</OnShow>
 			<OnEvent function="GossipFrame_OnEvent"/>
 			<OnHide>
-				PlaySound("igQuestListClose");
+				PlaySound(SOUNDKIT.IG_QUEST_LIST_CLOSE);
 				CloseGossip();
 			</OnHide>
 			<OnMouseWheel function=""/>

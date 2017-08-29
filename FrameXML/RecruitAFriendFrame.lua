@@ -52,7 +52,7 @@ function RecruitAFriend_OnFriendsListShown()
 end
 
 function RecruitAFriend_OnShow(self)
-	PlaySound("igCharacterInfoOpen");
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 
 	local factionGroup, factionName = UnitFactionGroup("player");
 	self.CharacterInfo.Text:SetFormattedText(RAF_REALM_INFO, factionName, SelectedRealmName());

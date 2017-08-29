@@ -79,7 +79,7 @@ function UIMenuButton_OnClick(self)
 	end
 
 	self:GetParent():Hide();
-	PlaySound("UChatScrollButton");
+	PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 end
 
 function UIMenu_StartCounting(menu)

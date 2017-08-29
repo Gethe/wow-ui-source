@@ -80,13 +80,13 @@ end
 
 function GarrisonLandingPageMixin:OnShow()
 	self:UpdateUIToGarrisonType();
-	PlaySound("UI_Garrison_GarrisonReport_Open");
+	PlaySound(SOUNDKIT.UI_GARRISON_GARRISON_REPORT_OPEN);
 
 	self:RegisterEvent("GARRISON_HIDE_LANDING_PAGE")
 end
 
 function GarrisonLandingPageMixin:OnHide()
-	PlaySound("UI_Garrison_GarrisonReport_Close");
+	PlaySound(SOUNDKIT.UI_GARRISON_GARRISON_REPORT_CLOSE);
 	StaticPopup_Hide("CONFIRM_FOLLOWER_TEMPORARY_ABILITY");
 	StaticPopup_Hide("CONFIRM_FOLLOWER_UPGRADE");
 	StaticPopup_Hide("CONFIRM_FOLLOWER_ABILITY_UPGRADE");
@@ -106,7 +106,7 @@ end
 
 function GarrisonLandingPageMixin:OnEvent(event)
 	if (event == "GARRISON_HIDE_LANDING_PAGE") then
-		self:Hide();
+		HideUIPanel(self);
 	end
 end
 
@@ -139,7 +139,7 @@ function GarrisonLandingPageTab_OnLeave(self)
 end
 
 function GarrisonLandingPageTab_OnClick(self)
-	PlaySound("UI_Garrison_Nav_Tabs");
+	PlaySound(SOUNDKIT.UI_GARRISON_NAV_TABS);
 	GarrisonLandingPageTab_SetTab(self);
 end
 
@@ -325,7 +325,7 @@ function GarrisonLandingPageReport_GetShipments(self)
 	local completeTalentID = C_Garrison.GetCompleteTalent(garrisonType);
 	if (talentTreeIDs) then
 		for treeIndex, treeID in ipairs(talentTreeIDs) do
-			local _, _, tree = C_Garrison.GetTalentTreeInfoForID(garrisonType, treeID);
+			local _, _, tree = C_Garrison.GetTalentTreeInfoForID(treeID);
 			for talentIndex, talent in ipairs(tree) do
 				local showTalent = false;
 				if (talent.isBeingResearched) then
@@ -430,7 +430,7 @@ end
 
 function GarrisonLandingPageReportTab_OnClick(self)
 	if ( self == GarrisonLandingPageReport.unselectedTab ) then
-		PlaySound("UI_Garrison_Nav_Tabs");
+		PlaySound(SOUNDKIT.UI_GARRISON_NAV_TABS);
 		GarrisonLandingPageReport_SetTab(self);
 	end
 end

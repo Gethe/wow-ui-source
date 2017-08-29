@@ -230,7 +230,7 @@ function GarrisonFollowerList:OnEvent(event, ...)
 			local followerID = ...;
 			if ( followerID == self.followerTab.followerID ) then
 				self.followerTab.ModelCluster.Child.Model[1]:SetSpellVisualKit(6375);	-- level up visual;
-				PlaySound("UI_Garrison_CommandTable_Follower_LevelUp");
+				PlaySound(SOUNDKIT.UI_GARRISON_COMMAND_TABLE_FOLLOWER_LEVEL_UP);
 			end
 		end
 	elseif (event == "CURRENT_SPELL_CAST_CHANGED" or event == "CURSOR_UPDATE") then
@@ -847,7 +847,7 @@ function GarrisonFollowerListButton_OnClick(self, button)
 	local followerFrame = followerList.listScroll.followerFrame;
 	if ( button == "LeftButton" ) then
 		if ( followerFrame.selectedFollower ~= self.id ) then
-			PlaySound("UI_Garrison_CommandTable_SelectFollower");
+			PlaySound(SOUNDKIT.UI_GARRISON_COMMAND_TABLE_SELECT_FOLLOWER);
 			followerFrame.selectedFollower = self.id;
 		end
 
@@ -859,14 +859,14 @@ function GarrisonFollowerListButton_OnClick(self, button)
 			if ( self.isCollected ) then
 				if (followerList.expandedFollower == self.id) then
 					followerList.expandedFollower = nil;
-					PlaySound("UI_Garrison_CommandTable_FollowerAbilityClose");
+					PlaySound(SOUNDKIT.UI_GARRISON_COMMAND_TABLE_FOLLOWER_ABILITY_CLOSE);
 				else
 					followerList.expandedFollower = self.id;
-					PlaySound("UI_Garrison_CommandTable_FollowerAbilityOpen");
+					PlaySound(SOUNDKIT.UI_GARRISON_COMMAND_TABLE_FOLLOWER_ABILITY_OPEN);
 				end
 			else
 				followerList.expandedFollower = nil;
-				PlaySound("UI_Garrison_CommandTable_FollowerAbilityClose");
+				PlaySound(SOUNDKIT.UI_GARRISON_COMMAND_TABLE_FOLLOWER_ABILITY_CLOSE);
 			end
 		else
 			if ( not followerList.canExpand and followerList.expandedFollower ~= self.id ) then
@@ -911,7 +911,7 @@ function GarrisonFollowerListButton_OnClick(self, button)
 				end
 				followerList.OptionDropDown.followerID = self.id;
 				ToggleDropDownMenu(1, nil, followerList.OptionDropDown, "cursor", 0, 0);
-				PlaySound("igMainMenuOptionCheckBoxOn");
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 			else
 				followerList.OptionDropDown.followerID = nil;
 				CloseDropDownMenus();
@@ -1792,7 +1792,7 @@ function GarrisonFollowerTabMixin:ShowAbilities(followerInfo)
 		if ( followerInfo.isCollected and GarrisonFollowerAbilities_IsNew(self.lastUpdate, followerInfo.followerID, ability.id, GARRISON_FOLLOWER_ABILITY_TYPE_EITHER) ) then
 			if ( ability.temporary ) then
 				abilityFrame.LargeAbilityFeedbackGlowAnim:Play();
-				PlaySoundKitID(51324);
+				PlaySound(SOUNDKIT.UI_GARRISON_FOLLOWER_LEARN_TRAIT);
 			else
 				abilityFrame.IconButton.Icon:SetAlpha(0);
 				abilityFrame.IconButton.OldIcon:SetAlpha(1);

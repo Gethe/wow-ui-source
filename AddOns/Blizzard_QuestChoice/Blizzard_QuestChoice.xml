@@ -223,15 +223,20 @@
 						</Texture>
 					</Layer>
 					<Layer level="ARTWORK">
-						<FontString parentKey="Text" font="SystemFont_Large" justifyH="CENTER" justifyV="MIDDLE" maxLines="1">
+						<FontString parentKey="Text" font="SystemFont_Large" justifyH="CENTER" justifyV="MIDDLE" maxLines="1" mixin="ShrinkUntilTruncateFontStringMixin">
 							<Anchors>
-								<Anchor point="TOPLEFT" x="25"/>
-								<Anchor point="BOTTOMRIGHT" x="-25" y="2"/>
+								<Anchor point="TOPLEFT" x="28" y="2"/>
+								<Anchor point="BOTTOMRIGHT" x="-28" y="2"/>
 							</Anchors>
 							<Color r="0" g="0" b="0"/>
 						</FontString>
 					</Layer>
 				</Layers>
+				<Scripts>
+					<OnLoad>
+						self.Text:SetFontObjectsToTry("SystemFont_Large", "SystemFont_Med3", "SystemFont_Med2", "SystemFont_Med1", "Game11Font");
+					</OnLoad>
+				</Scripts>
 			</Frame>
 			<SimpleHTML parentKey="OptionText" inherits="InlineHyperlinkFrameTemplate">
 				<Size x="200"/>
@@ -437,10 +442,10 @@
 			<OnEvent function="QuestChoiceFrame_OnEvent"/>
 			<OnUpdate function="QuestChoiceFrame_OnUpdate"/>
 			<OnShow>
-				PlaySound("igQuestListOpen");
+				PlaySound(SOUNDKIT.IG_QUEST_LIST_OPEN);
 			</OnShow>
 			<OnHide>
-				PlaySound("igQuestListClose");
+				PlaySound(SOUNDKIT.IG_QUEST_LIST_CLOSE);
 				CloseQuestChoice();
 				StaticPopup_Hide("CONFIRM_GORGROND_GARRISON_CHOICE");
 			</OnHide>

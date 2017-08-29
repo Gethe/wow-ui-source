@@ -378,7 +378,7 @@ function BonusObjectiveTracker_AnimateReward(block)
 		rewardsFrame.Anim.RewardsBottomAnim:SetOffset(0, -contentsHeight);
 		rewardsFrame.Anim.RewardsShadowAnim:SetToScale(0.8, contentsHeight / 16);
 		rewardsFrame.Anim:Play();
-		PlaySoundKitID(45142); --UI_BonusEventSystemVignettes
+		PlaySound(SOUNDKIT.UI_BONUS_EVENT_SYSTEM_VIGNETTES);
 		-- configure reward frames
 		for i = 1, numRewards do
 			local rewardItem = rewardsFrame.Rewards[i];
@@ -958,7 +958,7 @@ local function UpdateQuestBonusObjectives(module)
 		end
 	end
 	if ( OBJECTIVE_TRACKER_UPDATE_REASON == OBJECTIVE_TRACKER_UPDATE_TASK_ADDED ) then
-		PlaySound("UI_Scenario_Stage_End");
+		PlaySound(SOUNDKIT.UI_SCENARIO_STAGE_END);
 	end
 end
 
@@ -1257,7 +1257,7 @@ function ObjectiveTrackerBonusBannerFrame_PlayBanner(self, questID)
 	local isWorldQuest = QuestUtils_IsQuestWorldQuest(questID);
 	self.BonusLabel:SetText(isWorldQuest and WORLD_QUEST_BANNER or BONUS_OBJECTIVE_BANNER);
 	if isWorldQuest then
-		PlaySound("UI_WorldQuest_Start");
+		PlaySound(SOUNDKIT.UI_WORLDQUEST_START);
 	end
 	-- offsets for anims
 	local trackerFrame = ObjectiveTrackerFrame;

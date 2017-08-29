@@ -148,9 +148,14 @@ function NamePlateDriverMixin:OnUnitAuraUpdate(unit)
 		-- Reaction 4 is neutral and less than 4 becomes increasingly more hostile
 			filter = "HARMFUL|INCLUDE_NAME_PLATE_ONLY";
 		else
-			-- dispellable debuffs
-			filter = "HARMFUL|RAID";
-			showAll = true;
+			local showDebuffsOnFriendly = GetCVarBool("nameplateShowDebuffsOnFriendly");
+			if (showDebuffsOnFriendly) then
+				-- dispellable debuffs
+				filter = "HARMFUL|RAID";
+				showAll = true;
+			else
+				filter = "NONE";
+			end
 		end
 	end
 
@@ -278,7 +283,10 @@ function NamePlateDriverMixin:UpdateNamePlateOptions()
 	DefaultCompactNamePlateEnemyFrameOptions.useClassColors = GetCVarBool("ShowClassColorInNameplate");
 	DefaultCompactNamePlateEnemyFrameOptions.playLoseAggroHighlight = GetCVarBool("ShowNamePlateLoseAggroFlash");
 
+	local showOnlyNames = GetCVarBool("nameplateShowOnlyNames");
 	DefaultCompactNamePlateFriendlyFrameOptions.useClassColors = GetCVarBool("ShowClassColorInFriendlyNameplate");
+	DefaultCompactNamePlateFriendlyFrameOptions.hideHealthbar = showOnlyNames;
+	DefaultCompactNamePlateFriendlyFrameOptions.hideCastbar = showOnlyNames;
 
 	local namePlateVerticalScale = tonumber(GetCVar("NamePlateVerticalScale"));
 	local zeroBasedScale = namePlateVerticalScale - 1.0;
@@ -299,6 +307,9 @@ function NamePlateDriverMixin:UpdateNamePlateOptions()
 	DefaultCompactNamePlateFrameSetUpOptions.castIconWidth = Lerp(10, 15, clampedZeroBasedScale);
 	DefaultCompactNamePlateFrameSetUpOptions.castIconHeight = Lerp(10, 15, clampedZeroBasedScale);
 
+	DefaultCompactNamePlateFrameSetUpOptions.hideHealthbar = showOnlyNames;
+	DefaultCompactNamePlateFrameSetUpOptions.hideCastbar = showOnlyNames;
+
 	local horizontalScale = tonumber(GetCVar("NamePlateHorizontalScale"));
 	C_NamePlate.SetNamePlateFriendlySize(self.baseNamePlateWidth * horizontalScale, self.baseNamePlateHeight * Lerp(1.0, 1.25, zeroBasedScale));
 	C_NamePlate.SetNamePlateEnemySize(self.baseNamePlateWidth * horizontalScale, self.baseNamePlateHeight * Lerp(1.0, 1.25, zeroBasedScale));
@@ -310,7 +321,7 @@ function NamePlateDriverMixin:UpdateNamePlateOptions()
 
 	for i, frame in ipairs(C_NamePlate.GetNamePlates(issecure())) do
 		self:ApplyFrameOptions(frame, frame.namePlateUnitToken);
-		CompactUnitFrame_UpdateAll(frame.UnitFrame);
+		CompactUnitFrame_SetUnit(frame.UnitFrame, frame.namePlateUnitToken);
 	end
 
 	if self.nameplateBar then

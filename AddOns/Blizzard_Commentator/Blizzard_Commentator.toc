@@ -1,5 +1,6 @@
-## Interface: 70200
+## Interface: 70300
 ## Title: Blizzard_Commentator
+## Secure: 1
 ## SavedVariables: g_TeamDefinitions, g_TeamDisplaySavedVars
 ## LoadOnDemand: 1
 

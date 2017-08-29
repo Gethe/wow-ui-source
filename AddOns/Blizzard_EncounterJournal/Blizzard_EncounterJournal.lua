@@ -242,7 +242,7 @@ function EncounterJournal_OnShow(self)
 	MicroButtonPulseStop(EJMicroButton);
 
 	UpdateMicroButtons();
-	PlaySound("igCharacterInfoOpen");
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 	EncounterJournal_LootUpdate()
 
 	local instanceSelect = EncounterJournal.instanceSelect;
@@ -282,7 +282,7 @@ end
 
 function EncounterJournal_OnHide(self)
 	UpdateMicroButtons();
-	PlaySound("igCharacterInfoClose");
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 	if self.searchBox.clearButton then
 		self.searchBox.clearButton:Click();
 	end
@@ -1377,7 +1377,7 @@ function EncounterJournal_ResetHeaders()
 		EJ_section_openTable[key] = nil;
 	end
 
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	EncounterJournal_Refresh();
 end
 
@@ -1491,7 +1491,7 @@ end
 function EncounterJournal_TabClicked(self, button)
 	local tabType = self:GetID();
 	EncounterJournal_SetTab(tabType);
-	PlaySound("igAbiliityPageTurn");
+	PlaySound(SOUNDKIT.IG_ABILITY_PAGE_TURN);
 end
 
 function EncounterJournal_SetTab(tabType)
@@ -1627,7 +1627,7 @@ end
 
 function EncounterJournal_Loot_OnClick(self)
 	if (EncounterJournal.encounterID ~= self.encounterID) then
-		PlaySound("igSpellBookOpen");
+		PlaySound(SOUNDKIT.IG_SPELLBOOK_OPEN);
 		EncounterJournal_DisplayEncounter(self.encounterID);
 	end
 end
@@ -2259,7 +2259,7 @@ function EJ_ContentTab_Select(id)
 		EncounterJournal_ListInstances();
 		EncounterJournal_EnableTierDropDown();
 	end
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 end
 
 function EJ_HideSuggestPanel()
@@ -2535,14 +2535,14 @@ end
 function EJSuggestFrame_NextSuggestion()
 	if ( C_AdventureJournal.GetPrimaryOffset() < C_AdventureJournal.GetNumAvailableSuggestions()-1 ) then
 		C_AdventureJournal.SetPrimaryOffset(C_AdventureJournal.GetPrimaryOffset()+1);
-		PlaySound("igAbiliityPageTurn");
+		PlaySound(SOUNDKIT.IG_ABILITY_PAGE_TURN);
 	end
 end
 
 function EJSuggestFrame_PrevSuggestion()
 	if( C_AdventureJournal.GetPrimaryOffset() > 0 ) then
 		C_AdventureJournal.SetPrimaryOffset(C_AdventureJournal.GetPrimaryOffset()-1);
-		PlaySound("igAbiliityPageTurn");
+		PlaySound(SOUNDKIT.IG_ABILITY_PAGE_TURN);
 	end
 end
 
@@ -2806,7 +2806,7 @@ end
 
 function EJSuggestFrame_OnClick(self)
 	C_AdventureJournal.ActivateEntry(self.index);
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 end
 
 function AdventureJournal_Reward_OnEnter(self)

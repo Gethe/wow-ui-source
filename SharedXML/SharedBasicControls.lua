@@ -1,4 +1,4 @@
-DEBUGLOCALS_LEVEL = 4;
+DEBUGLOCALS_LEVEL = 5;
 
 local ERROR_FORMAT = [[|cffffd200Message:|r|cffffffff %s|r
 |cffffd200Time:|r|cffffffff %s|r
@@ -77,7 +77,7 @@ function ScriptErrorsFrameMixin:OnError(msg, warnType, keepHidden)
 		LogAuroraClient("ae", "Lua Error", "message", msg, "stack", stack);
 	end
 
-	self:DisplayMessageInternal(msg, warnType, keepHidden, locals, msg..stack);
+	self:DisplayMessageInternal(msg, warnType, keepHidden, locals, msg.."\n"..stack);
 end
 
 function ScriptErrorsFrameMixin:OnWarning(msg, warnType, keepHidden)
@@ -109,8 +109,12 @@ function ScriptErrorsFrameMixin:DisplayMessage(msg, warnType, keepHidden, messag
 	end
 end
 
+function ScriptErrorsFrameMixin:GetEditBox()
+	return self.ScrollFrame.Text;
+end
+
 function ScriptErrorsFrameMixin:Update()
-	local editBox = self.ScrollFrame.Text;
+	local editBox = self:GetEditBox();
 	local index = self.index;
 	if ( not index or not self.order[index] ) then
 		index = #self.order;

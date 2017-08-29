@@ -118,7 +118,7 @@ function LFGListFrame_OnEvent(self, event, ...)
 		end
 
 		if ( createdNew ) then
-			PlaySound("PVPEnterQueue");
+			PlaySound(SOUNDKIT.PVP_ENTER_QUEUE);
 		end
 	elseif ( event == "LFG_LIST_ENTRY_CREATION_FAILED" ) then
 		self.EntryCreation.WorkingCover:Hide();
@@ -219,7 +219,7 @@ function LFGListFrame_OnShow(self)
 	C_LFGList.RequestAvailableActivities();
 	self.stopAssistPings = false;
 	QueueStatusMinimapButton_SetGlowLock(QueueStatusMinimapButton, "lfglist-applicant", false);
-	PlaySound("igCharacterInfoOpen");
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 end
 
 function LFGListFrame_OnHide(self)
@@ -531,7 +531,7 @@ function LFGListCategorySelectionStartGroupButton_OnClick(self)
 		return;
 	end
 
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 
 	local baseFilters = panel:GetParent().baseFilters;
 
@@ -546,7 +546,7 @@ function LFGListCategorySelectionFindGroupButton_OnClick(self)
 		return;
 	end
 
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	LFGListCategorySelection_StartFindGroup(panel);
 end
 
@@ -564,7 +564,7 @@ end
 --The individual category buttons
 function LFGListCategorySelectionButton_OnClick(self)
 	local panel = self:GetParent();
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	LFGListCategorySelection_SelectCategory(panel, self.categoryID, self.filters);
 	LFGListEntryCreation_ClearAutoCreateMode(panel:GetParent().EntryCreation);
 end
@@ -1011,7 +1011,7 @@ end
 
 function LFGListEntryCreationCancelButton_OnClick(self)
 	local panel = self:GetParent();
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	if ( LFGListEntryCreation_IsEditMode(panel) ) then
 		LFGListFrame_SetActivePanel(panel:GetParent(), panel:GetParent().ApplicationViewer);
 	else
@@ -1020,7 +1020,7 @@ function LFGListEntryCreationCancelButton_OnClick(self)
 end
 
 function LFGListEntryCreationListGroupButton_OnClick(self)
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	LFGListEntryCreation_ListGroup(self:GetParent());
 end
 
@@ -1529,7 +1529,7 @@ function LFGListApplicationViewerUtil_GetButtonHeight(numApplicants)
 end
 
 function LFGListApplicationViewerEditButton_OnClick(self)
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 
 	local panel = self:GetParent();
 	local entryCreation = panel:GetParent().EntryCreation;
@@ -1762,7 +1762,7 @@ function LFGListSearchPanel_DoSearch(self)
 end
 
 function LFGListSearchPanel_CreateGroupInstead(self)
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	local panel = self:GetParent():GetParent();
 	LFGListEntryCreation_Show(panel:GetParent().EntryCreation, panel.preferredFilters, panel.categoryID, panel.filters);
 end
@@ -1930,7 +1930,7 @@ end
 
 function LFGListSearchAutoCompleteButton_OnClick(self)
 	local panel = self:GetParent():GetParent();
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	panel.SearchBox:SetText( (C_LFGList.GetActivityInfo(self.activityID)) );
 	LFGListSearchPanel_DoSearch(panel);
 	panel.SearchBox:ClearFocus();
@@ -2213,10 +2213,10 @@ end
 function LFGListSearchEntry_OnClick(self, button)
 	local scrollFrame = self:GetParent():GetParent();
 	if ( button == "RightButton" ) then
-		PlaySound("igMainMenuOptionCheckBoxOn");
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 		EasyMenu(LFGListUtil_GetSearchEntryMenu(self.resultID), LFGListFrameDropDown, self, 290, -2, "MENU");
 	elseif ( scrollFrame:GetParent().selectedResult ~= self.resultID and LFGListSearchPanelUtil_CanSelectResult(self.resultID) ) then
-		PlaySound("igMainMenuOptionCheckBoxOn");
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 		LFGListSearchPanel_SelectResult(scrollFrame:GetParent(), self.resultID);
 	end
 end
@@ -2353,9 +2353,9 @@ end
 
 function LFGListRoleButtonCheckButton_OnClick(self)
 	if ( self:GetChecked() ) then
-		PlaySound("igMainMenuOptionCheckBoxOn");
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	else
-		PlaySound("igMainMenuOptionCheckBoxOff");
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 	end
 
 	local dialog = self:GetParent():GetParent();
@@ -2462,7 +2462,7 @@ function LFGListInviteDialog_Show(self, resultID)
 
 	StaticPopupSpecial_Show(self);
 
-	PlaySound("ReadyCheck");
+	PlaySound(SOUNDKIT.READY_CHECK);
 	FlashClientIcon();
 end
 
@@ -2877,6 +2877,12 @@ local LFG_LIST_SEARCH_ENTRY_MENU = {
 		notCheckable = true,
 		menuList = {
 			{
+				text = LFG_LIST_SPAM,
+				func = function(_, id) C_LFGList.ReportSearchResult(id, "lfglistspam"); end,
+				arg1 = nil, --Search result ID goes here
+				notCheckable = true,
+			},
+			{
 				text = LFG_LIST_BAD_NAME,
 				func = function(_, id) C_LFGList.ReportSearchResult(id, "lfglistname"); end,
 				arg1 = nil, --Search result ID goes here
@@ -2885,13 +2891,6 @@ local LFG_LIST_SEARCH_ENTRY_MENU = {
 			{
 				text = LFG_LIST_BAD_DESCRIPTION,
 				func = function(_, id) C_LFGList.ReportSearchResult(id, "lfglistcomment"); end,
-				arg1 = nil, --Search reuslt ID goes here
-				notCheckable = true,
-				disabled = nil,	--Disabled if the description is just an empty string
-			},
-			{
-				text = LFG_LIST_BAD_VOICE_CHAT_COMMENT,
-				func = function(_, id) C_LFGList.ReportSearchResult(id, "lfglistvoicechat"); end,
 				arg1 = nil, --Search reuslt ID goes here
 				notCheckable = true,
 				disabled = nil,	--Disabled if the description is just an empty string
@@ -2922,9 +2921,8 @@ function LFGListUtil_GetSearchEntryMenu(resultID)
 	LFG_LIST_SEARCH_ENTRY_MENU[2].tooltipText = (not applied) and LFG_LIST_MUST_SIGN_UP_TO_WHISPER;
 	LFG_LIST_SEARCH_ENTRY_MENU[3].menuList[1].arg1 = resultID;
 	LFG_LIST_SEARCH_ENTRY_MENU[3].menuList[2].arg1 = resultID;
-	LFG_LIST_SEARCH_ENTRY_MENU[3].menuList[2].disabled = (comment == "");
 	LFG_LIST_SEARCH_ENTRY_MENU[3].menuList[3].arg1 = resultID;
-	LFG_LIST_SEARCH_ENTRY_MENU[3].menuList[3].disabled = (voiceChat == "");
+	LFG_LIST_SEARCH_ENTRY_MENU[3].menuList[3].disabled = (comment == "");
 	LFG_LIST_SEARCH_ENTRY_MENU[3].menuList[4].arg1 = resultID;
 	LFG_LIST_SEARCH_ENTRY_MENU[3].menuList[4].disabled = not leaderName;
 	return LFG_LIST_SEARCH_ENTRY_MENU;

@@ -523,7 +523,7 @@
 								</Anchors>
 								<Scripts>
 									<OnClick>
-										PlaySound("gsLoginChangeRealmCancel");
+										PlaySound(SOUNDKIT.GS_LOGIN_CHANGE_REALM_CANCEL);
 										RealmList_OnCancel();
 									</OnClick>
 								</Scripts>
@@ -541,7 +541,7 @@
 								</Anchors>
 								<Scripts>
 									<OnClick>
-										PlaySound("gsLoginChangeRealmOK");
+										PlaySound(SOUNDKIT.GS_LOGIN_CHANGE_REALM_OK);
 										RealmList_OnOk();
 									</OnClick>
 								</Scripts>

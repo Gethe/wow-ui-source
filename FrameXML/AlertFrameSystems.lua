@@ -14,6 +14,8 @@ function AlertFrameSystems_Register()
 	GarrisonTalentAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem("GarrisonTalentAlertFrameTemplate", GarrisonTalentAlertFrame_SetUp);
 	WorldQuestCompleteAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem("WorldQuestCompleteAlertFrameTemplate", WorldQuestCompleteAlertFrame_SetUp, WorldQuestCompleteAlertFrame_Coalesce);
 	LegendaryItemAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem("LegendaryItemAlertFrameTemplate", LegendaryItemAlertFrame_SetUp);
+	NewPetAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem("NewPetAlertFrameTemplate", NewPetAlertFrame_SetUp);
+	NewMountAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem("NewMountAlertFrameTemplate", NewMountAlertFrame_SetUp);
 end
 
 -- [[ GuildChallengeAlertFrame ]] --
@@ -143,7 +145,7 @@ function DungeonCompletionAlertFrameReward_SetReward(frame, reward)
 end
 
 function DungeonCompletionAlertFrame_SetUp(frame, rewardData)
-	PlaySound("LFG_Rewards");
+	PlaySound(SOUNDKIT.LFG_REWARDS);
 
 	--For now we only have 1 dungeon alert frame. If you're completing more than one dungeon within ~5 seconds, tough luck.
 	local isRaid = rewardData.subtypeID == LFG_SUBTYPEID_RAID;
@@ -222,7 +224,7 @@ end
 
 -- [[ ScenarioAlertFrame ]] --
 function ScenarioAlertFrame_SetUp(frame, rewardData)
-	PlaySound("UI_Scenario_Ending");
+	PlaySound(SOUNDKIT.UI_SCENARIO_ENDING);
 
 	frame.BonusStar:SetShown(rewardData.hasBonusStep and rewardData.isBonusStepComplete);
 
@@ -250,7 +252,7 @@ end
 
 -- [[ScenarioLegionInvasionAlertFrame ]] --
 function ScenarioLegionInvasionAlertFrame_SetUp(frame, rewardQuestID, name, showBonusCompletion, xp, money)
-	PlaySound("UI_Scenario_Ending");
+	PlaySound(SOUNDKIT.UI_SCENARIO_ENDING);
 
 	frame.questID = rewardQuestID;
 	frame.ZoneName:SetText(name);
@@ -584,11 +586,11 @@ function LootWonAlertFrame_SetUp(self, itemLink, quantity, rollType, roll, specI
 
 	self.hyperlink = itemHyperLink;
 	if ( lessAwesome ) then
-		PlaySoundKitID(51402);	--UI_Raid_Loot_Toast_Lesser_Item_Won
+		PlaySound(SOUNDKIT.UI_RAID_LOOT_TOAST_LESSER_ITEM_WON);
 	elseif ( isUpgraded ) then
-		PlaySoundKitID(51561);	-- UI_Warforged_Item_Loot_Toast
+		PlaySound(SOUNDKIT.UI_WARFORGED_ITEM_LOOT_TOAST);
 	else
-		PlaySoundKitID(31578);	--UI_EpicLoot_Toast
+		PlaySound(SOUNDKIT.UI_EPICLOOT_TOAST);
 	end
 end
 
@@ -634,7 +636,7 @@ function LootUpgradeFrame_SetUp(self, itemLink, quantity, specID, baseQuality)
 	end
 
 	self.hyperlink = itemHyperLink;
-	PlaySoundKitID(31578);	--UI_EpicLoot_Toast
+	PlaySound(SOUNDKIT.UI_EPICLOOT_TOAST);
 end
 
 function LootUpgradeFrame_OnClick(self, button, down)
@@ -657,7 +659,7 @@ LootUpgradeAlertSystem = AlertFrame:AddQueuedAlertFrameSubSystem("LootUpgradeFra
 -- [[ MoneyWonAlertFrameTemplate ]] --
 function MoneyWonAlertFrame_SetUp(self, amount)
 	self.Amount:SetText(GetMoneyString(amount));
-	PlaySoundKitID(31578);	--UI_EpicLoot_Toast
+	PlaySound(SOUNDKIT.UI_EPICLOOT_TOAST);
 end
 
 MoneyWonAlertSystem = AlertFrame:AddQueuedAlertFrameSubSystem("MoneyWonAlertFrameTemplate", MoneyWonAlertFrame_SetUp, 6, math.huge);
@@ -665,7 +667,7 @@ MoneyWonAlertSystem = AlertFrame:AddQueuedAlertFrameSubSystem("MoneyWonAlertFram
 -- [[ HonorAwardedAlertFrameTemplate ]] --
 function HonorAwardedAlertFrame_SetUp(self, amount)
 	self.Amount:SetText(string.format(MERCHANT_HONOR_POINTS, amount));
-	PlaySoundKitID(31578);	--UI_EpicLoot_Toast
+	PlaySound(SOUNDKIT.UI_EPICLOOT_TOAST);
 end
 
 HonorAwardedAlertSystem = AlertFrame:AddQueuedAlertFrameSubSystem("HonorAwardedAlertFrameTemplate", HonorAwardedAlertFrame_SetUp, 6, math.huge);
@@ -674,7 +676,7 @@ HonorAwardedAlertSystem = AlertFrame:AddQueuedAlertFrameSubSystem("HonorAwardedA
 function DigsiteCompleteToastFrame_SetUp(frame, raceName, raceTexture)
 	frame.DigsiteType:SetText(raceName);
 	frame.DigsiteTypeTexture:SetTexture(raceTexture);
-	PlaySound("UI_DigsiteCompletion_Toast");
+	PlaySound(SOUNDKIT.UI_DIG_SITE_COMPLETION_TOAST);
 end
 
 -- [[ StorePurchaseAlertFrame ]] --
@@ -689,7 +691,7 @@ function StorePurchaseAlertFrame_SetUp(frame, type, icon, name, payloadID)
 	if ( frame.Title:IsTruncated() ) then
 		frame.Title:SetFontObject(GameFontNormal);
 	end
-	PlaySound("UI_igStore_PurchaseDelivered_Toast_01");
+	PlaySound(SOUNDKIT.UI_IG_STORE_PURCHASE_DELIVERED_TOAST_01);
 end
 
 function StorePurchaseAlertFrame_OnClick(self, button, down)
@@ -715,7 +717,7 @@ end
 function GarrisonBuildingAlertFrame_SetUp(frame, name, garrisonType)
 	frame.Name:SetFormattedText(GARRISON_BUILDING_COMPLETE_TOAST, name);
 	frame.garrisonType = garrisonType;
-	PlaySound("UI_Garrison_Toast_BuildingComplete");
+	PlaySound(SOUNDKIT.UI_GARRISON_TOAST_BUILDING_COMPLETE);
 end
 
 -- [[ GarrisonMissionAlertFrame ]] --
@@ -731,7 +733,7 @@ function GarrisonMissionAlertFrame_SetUp(frame, missionInfo)
 		frame.MissionType:SetPoint("TOPLEFT", frame, "TOPLEFT", 14, -8);
 	end
 
-	PlaySound("UI_Garrison_Toast_MissionComplete");
+	PlaySound(SOUNDKIT.UI_GARRISON_TOAST_MISSION_COMPLETE);
 end
 
 -- [[ GarrisonRandomMissionAlertFrame ]] --
@@ -755,7 +757,7 @@ function GarrisonRandomMissionAlertFrame_SetUp(frame, missionInfo)
 	frame.ItemLevel:SetShown(missionInfo.iLevel ~= 0);
 	frame.Rare:SetShown(missionInfo.isRare);
 	frame.garrisonType = GarrisonFollowerOptions[missionInfo.followerTypeID].garrisonType;
-	PlaySound("UI_Garrison_Toast_MissionComplete");
+	PlaySound(SOUNDKIT.UI_GARRISON_TOAST_MISSION_COMPLETE);
 end
 
 -- [[ GarrisonFollowerAlertFrame ]] --
@@ -791,7 +793,7 @@ function GarrisonCommonFollowerAlertFrame_SetUp(frame, followerID, name, quality
 		frame.DieIcon:Hide();
 	end
 
-	PlaySound("UI_Garrison_Toast_FollowerGained");
+	PlaySound(SOUNDKIT.UI_GARRISON_TOAST_FOLLOWER_GAINED);
 end
 
 function GarrisonFollowerAlertFrame_SetUp(frame, followerID, name, level, quality, isUpgraded, followerInfo)
@@ -876,7 +878,7 @@ end
 function GarrisonTalentAlertFrame_SetUp(frame, garrisonType, talent)
     frame.Icon:SetTexture(talent.icon);
 	frame.garrisonType = garrisonType;
-	PlaySound("UI_OrderHall_Talent_Ready_Toast");
+	PlaySound(SOUNDKIT.UI_ORDERHALL_TALENT_READY_TOAST);
 end
 
 -- [[ NewRecipeLearnedAlertFrame ]] --
@@ -896,7 +898,7 @@ function NewRecipeLearnedAlertFrame_SetUp(self, recipeID)
 	if tradeSkillID then
 		local recipeName = GetSpellInfo(recipeID);
 		if recipeName then
-			PlaySound("UI_Professions_NewRecipeLearned_Toast");
+			PlaySound(SOUNDKIT.UI_PROFESSIONS_NEW_RECIPE_LEARNED_TOAST);
 
 			self.Icon:SetMask("Interface\\CharacterFrame\\TempPortraitAlphaMask");
 			self.Icon:SetTexture(C_TradeSkillUI.GetTradeSkillTexture(tradeSkillID));
@@ -950,7 +952,7 @@ function WorldQuestCompleteAlertFrame_GetIconForQuestID(questID)
 end
 
 function WorldQuestCompleteAlertFrame_SetUp(frame, questData)
-	PlaySound("UI_WorldQuest_Complete");
+	PlaySound(SOUNDKIT.UI_WORLDQUEST_COMPLETE);
 
 	frame.questID = questData.questID;
 	frame.QuestName:SetText(questData.taskName);
@@ -1001,7 +1003,7 @@ function LegendaryItemAlertFrame_SetUp(frame, itemLink)
 	frame.hyperlink = itemHyperLink;
 	frame.Background2.animIn:Play();
 	frame.Background3.animIn:Play();
-	PlaySound("UI_LegendaryLoot_Toast");
+	PlaySound(SOUNDKIT.UI_LEGENDARY_LOOT_TOAST);
 end
 
 function LegendaryItemAlertFrame_OnClick(self, button, down)
@@ -1026,4 +1028,66 @@ function LegendaryItemAlertFrame_OnLeave(self)
 	AlertFrame_ResumeOutAnimation(self);
 
 	GameTooltip:Hide();
+end
+
+-- [[ ItemAlertFrame (template) ]] ---
+
+ItemAlertFrameMixin = {};
+
+function ItemAlertFrameMixin:SetUpDisplay(icon, itemQuality, name, label)
+	self.Icon:SetTexture(icon);
+	self.IconBorder:SetAtlas(LOOT_BORDER_BY_QUALITY[itemQuality] or LOOT_BORDER_BY_QUALITY[LE_ITEM_QUALITY_UNCOMMON]);
+	self.Name:SetText(ITEM_QUALITY_COLORS[itemQuality].hex..name.."|r");
+	self.Label:SetText(label);
+end
+
+-- [[ NewPetAlertFrame ]] --
+
+function NewPetAlertFrame_SetUp(frame, petID)
+	frame:SetUp(petID);
+end
+
+NewPetAlertFrameMixin = CreateFromMixins(ItemAlertFrameMixin);
+
+function NewPetAlertFrameMixin:SetUp(petID)
+	self.petID = petID;
+	
+	local speciesID, customName, level, xp, maxXp, displayID, isFavorite, name, icon = C_PetJournal.GetPetInfoByPetID(petID);
+	local health, maxHealth, attack, speed, rarity = C_PetJournal.GetPetStats(petID);
+	local itemQuality = rarity - 1;
+	self:SetUpDisplay(icon, itemQuality, customName or name, YOU_EARNED_LABEL);
+end
+
+function NewPetAlertFrameMixin:OnClick(button, down)
+	if AlertFrame_OnClick(self, button, down) then
+		return;
+	end
+	
+	SetCollectionsJournalShown(true, COLLECTIONS_JOURNAL_TAB_INDEX_PETS);
+	PetJournal_SelectPet(PetJournal, self.petID);
+end
+
+-- [[ NewMountAlertFrame ]] --
+
+function NewMountAlertFrame_SetUp(frame, mountID)
+	frame:SetUp(mountID);
+end
+
+NewMountAlertFrameMixin = CreateFromMixins(ItemAlertFrameMixin);
+
+function NewMountAlertFrameMixin:SetUp(mountID)
+	self.mountID = mountID;
+	
+	local creatureName, spellID, icon, active, isUsable, sourceType = C_MountJournal.GetMountInfoByID(mountID);
+	local itemQuality = LE_ITEM_QUALITY_EPIC; -- Mounts don't have an inherent concept of quality so we always use epic (for now).
+	self:SetUpDisplay(icon, itemQuality, creatureName, YOU_EARNED_LABEL);
+end
+
+function NewMountAlertFrameMixin:OnClick(button, down)
+	if AlertFrame_OnClick(self, button, down) then
+		return;
+	end
+	
+	SetCollectionsJournalShown(true, COLLECTIONS_JOURNAL_TAB_INDEX_MOUNTS);
+	MountJournal_SelectByMountID(self.mountID);
 end

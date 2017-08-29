@@ -182,6 +182,7 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("EQUIP_BIND_CONFIRM");
 	self:RegisterEvent("EQUIP_BIND_TRADEABLE_CONFIRM");
 	self:RegisterEvent("USE_BIND_CONFIRM");
+	self:RegisterEvent("USE_NO_REFUND_CONFIRM");
 	self:RegisterEvent("CONFIRM_BEFORE_USE");
 	self:RegisterEvent("DELETE_ITEM_CONFIRM");
 	self:RegisterEvent("QUEST_ACCEPT_CONFIRM");
@@ -271,8 +272,8 @@ function UIParent_OnLoad(self)
 
 	-- Events for Artifact UI
 	self:RegisterEvent("ARTIFACT_UPDATE");
-	self:RegisterEvent("ARTIFACT_TIER_CHANGED");
 	self:RegisterEvent("ARTIFACT_RESPEC_PROMPT");
+	self:RegisterEvent("ARTIFACT_RELIC_FORGE_UPDATE");
 
 	-- Events for Adventure Map UI
 	self:RegisterEvent("ADVENTURE_MAP_OPEN");
@@ -849,21 +850,34 @@ function ToggleEncounterJournal()
 end
 
 
-function ToggleCollectionsJournal(whichFrame)
-	if ( not CollectionsJournal ) then
+COLLECTIONS_JOURNAL_TAB_INDEX_MOUNTS = 1;
+COLLECTIONS_JOURNAL_TAB_INDEX_PETS = COLLECTIONS_JOURNAL_TAB_INDEX_MOUNTS + 1;
+COLLECTIONS_JOURNAL_TAB_INDEX_TOYS = COLLECTIONS_JOURNAL_TAB_INDEX_PETS + 1;
+COLLECTIONS_JOURNAL_TAB_INDEX_HEIRLOOMS = COLLECTIONS_JOURNAL_TAB_INDEX_TOYS + 1;
+COLLECTIONS_JOURNAL_TAB_INDEX_APPEARANCES = COLLECTIONS_JOURNAL_TAB_INDEX_HEIRLOOMS + 1;
+
+function ToggleCollectionsJournal(tabIndex)
+	if CollectionsJournal then
+		local tabMatches = not tabIndex or tabIndex == PanelTemplates_GetSelectedTab(CollectionsJournal);
+		local isShown = CollectionsJournal:IsShown() and tabMatches;
+		SetCollectionsJournalShown(not isShown, tabIndex);
+	else
+		SetCollectionsJournalShown(true, tabIndex);
+	end
+end
+
+function SetCollectionsJournalShown(shown, tabIndex)
+	if not CollectionsJournal then
 		CollectionsJournal_LoadUI();
 	end
-	if ( CollectionsJournal ) then
-		if ( whichFrame ) then
-			-- if the request tab is being shown, close window
-			if ( CollectionsJournal:IsShown() and whichFrame == PanelTemplates_GetSelectedTab(CollectionsJournal) ) then
-				HideUIPanel(CollectionsJournal);
-			else
-				ShowUIPanel(CollectionsJournal);
-				CollectionsJournal_SetTab(CollectionsJournal, whichFrame);
+	if CollectionsJournal then
+		if shown then
+			ShowUIPanel(CollectionsJournal);
+			if tabIndex then
+				CollectionsJournal_SetTab(CollectionsJournal, tabIndex);
 			end
 		else
-			ToggleFrame(CollectionsJournal);
+			HideUIPanel(CollectionsJournal);
 		end
 	end
 end
@@ -1182,6 +1196,8 @@ function UIParent_OnEvent(self, event, ...)
 		end
 	elseif ( event == "USE_BIND_CONFIRM" ) then
 		StaticPopup_Show("USE_BIND");
+	elseif( event == "USE_NO_REFUND_CONFIRM" )then
+		StaticPopup_Show("USE_NO_REFUND_CONFIRM");
 	elseif ( event == "CONFIRM_BEFORE_USE" ) then
 		StaticPopup_Show("CONFIM_BEFORE_USE");
 	elseif ( event == "DELETE_ITEM_CONFIRM" ) then
@@ -1313,7 +1329,7 @@ function UIParent_OnEvent(self, event, ...)
 	elseif ( event == "PET_BATTLE_PVP_DUEL_REQUEST_CANCEL" ) then
 		StaticPopup_Hide("PET_BATTLE_PVP_DUEL_REQUESTED");
 	elseif ( event == "PET_BATTLE_QUEUE_PROPOSE_MATCH" ) then
-		PlaySound("UI_PetBattles_PVP_ThroughQueue");
+		PlaySound(SOUNDKIT.UI_PET_BATTLES_PVP_THROUGH_QUEUE);
 		StaticPopupSpecial_Show(PetBattleQueueReadyFrame);
 	elseif ( event == "PET_BATTLE_QUEUE_PROPOSAL_DECLINED" or event == "PET_BATTLE_QUEUE_PROPOSAL_ACCEPTED" ) then
 		StaticPopupSpecial_Hide(PetBattleQueueReadyFrame);
@@ -1561,12 +1577,10 @@ function UIParent_OnEvent(self, event, ...)
 		ShowUIPanel(ItemSocketingFrame);
 
 	elseif ( event == "ARTIFACT_UPDATE" ) then
-		ArtifactFrame_LoadUI();
-		ShowUIPanel(ArtifactFrame);
-	elseif ( event == "ARTIFACT_TIER_CHANGED" ) then
-		local newTier, bagOrInventorySlot, slot = ...;
-		ArtifactFrame_LoadUI();
-		ArtifactFrame:OnTierChanged(newTier, bagOrInventorySlot, slot);
+		if ( not C_ArtifactRelicForgeUI.IsAtForge() ) then
+			ArtifactFrame_LoadUI();
+			ShowUIPanel(ArtifactFrame);
+		end
 	elseif ( event == "ARTIFACT_RESPEC_PROMPT" ) then
 		ArtifactFrame_LoadUI();
 		ShowUIPanel(ArtifactFrame);
@@ -1581,6 +1595,10 @@ function UIParent_OnEvent(self, event, ...)
 		local numRefunded, refundedTier, bagOrInventorySlot = ...;
 		ArtifactFrame_LoadUI();
 		ArtifactFrame:OnTraitsRefunded(numRefunded, refundedTier);
+
+	elseif ( event == "ARTIFACT_RELIC_FORGE_UPDATE" ) then
+		ArtifactFrame_LoadUI();
+		ShowUIPanel(ArtifactRelicForgeFrame);
 
 	elseif ( event == "ADVENTURE_MAP_OPEN" ) then
 		OrderHall_LoadUI();
@@ -2156,12 +2174,14 @@ function FramePositionDelegate:ShowUIPanel(frame, force)
 	framePushable = GetUIPanelWindowInfo(frame, "pushable") or 0;
 
 	if ( UnitIsDead("player") and not GetUIPanelWindowInfo(frame, "whileDead") ) then
+		self:ShowUIPanelFailed(frame);
 		NotWhileDeadError();
 		return;
 	end
 
 	-- If the store-frame is open, we don't let people open up any other panels (just as if it were full-screened)
 	if ( StoreFrame_IsShown and StoreFrame_IsShown() ) then
+		self:ShowUIPanelFailed(frame);
 		return;
 	end
 
@@ -3714,7 +3734,7 @@ function ToggleGameMenu()
 	elseif ( WowTokenRedemptionFrame_EscapePressed and WowTokenRedemptionFrame_EscapePressed() ) then
 	elseif ( securecall("StaticPopup_EscapePressed") ) then
 	elseif ( GameMenuFrame:IsShown() ) then
-		PlaySound("igMainMenuQuit");
+		PlaySound(SOUNDKIT.IG_MAINMENU_QUIT);
 		HideUIPanel(GameMenuFrame);
 	elseif ( HelpFrame:IsShown() ) then
 		ToggleHelpFrame();
@@ -3760,7 +3780,7 @@ function ToggleGameMenu()
 	elseif ( ChallengesKeystoneFrame and ChallengesKeystoneFrame:IsShown() ) then
 		ChallengesKeystoneFrame:Hide();
 	else
-		PlaySound("igMainMenuOpen");
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
 		ShowUIPanel(GameMenuFrame);
 	end
 end
@@ -4593,7 +4613,7 @@ end
 
 function GetDisplayedAllyFrames()
 	local useCompact = GetCVarBool("useCompactPartyFrames")
-	if ( IsActiveBattlefieldArena() and not useCompact ) then
+	if ( IsActiveBattlefieldArena() and not useCompact and not C_PvP.IsInBrawl() ) then
 		return "party";
 	elseif ( IsInGroup() and (IsInRaid() or useCompact) ) then
 		return "raid";
@@ -4677,6 +4697,18 @@ function GetTimeStringFromSeconds(timeAmount, hasMS, dropZeroHours)
 --	end
 end
 
+function IsInLFDBattlefield()
+	return IsLFGModeActive(LE_LFG_CATEGORY_BATTLEFIELD);
+end
+
+function LeaveInstanceParty()
+	if ( IsInLFDBattlefield() ) then
+		LFGTeleport(true);
+	else
+		LeaveParty();
+	end
+end
+
 function ConfirmOrLeaveLFGParty()
 	if ( not IsInGroup(LE_PARTY_CATEGORY_INSTANCE) ) then
 		return;
@@ -4690,7 +4722,7 @@ function ConfirmOrLeaveLFGParty()
 		end
 		StaticPopup_Show("CONFIRM_LEAVE_INSTANCE_PARTY", partyLFGCategory == LE_LFG_CATEGORY_WORLDPVP and CONFIRM_LEAVE_BATTLEFIELD or CONFIRM_LEAVE_INSTANCE_PARTY);
 	else
-		LeaveParty();
+		LeaveInstanceParty();
 	end
 end
 

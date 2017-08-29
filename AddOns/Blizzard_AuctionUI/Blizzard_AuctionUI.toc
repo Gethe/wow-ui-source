@@ -1,4 +1,4 @@
-## Interface: 70200
+## Interface: 70300
 ## Title: Blizzard Auction UI
 ## Secure: 1
 ## LoadOnDemand: 1

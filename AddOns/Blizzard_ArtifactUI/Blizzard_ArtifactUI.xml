@@ -5,7 +5,7 @@
 	<Button name="ArtifactFrameTabButtonTemplate" inherits="CharacterFrameTabButtonTemplate" frameStrata="LOW" virtual="true">
 		<Scripts>
 			<OnClick>
-				PlaySound("igCharacterInfoTab");
+				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
 				self:GetParent():SetTab(self:GetID());
 			</OnClick>
 		</Scripts>

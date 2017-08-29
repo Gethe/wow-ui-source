@@ -8,9 +8,9 @@
 		<Scripts>
 			<OnClick>
 				if ( self:GetChecked() ) then
-					PlaySound("igMainMenuOptionCheckBoxOn");
+					PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 				else
-					PlaySound("igMainMenuOptionCheckBoxOff");
+					PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 				end
 				InterfaceOptionsPanel_CheckButton_OnClick(self);
 			</OnClick>
@@ -601,7 +601,7 @@
 						end
 					</OnShow>
 					<OnClick>
-						PlaySound("gsTitleOptionOK");
+						PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK);
 						SetCVar("closedInfoFrames", ""); -- reset the help plates too
 						SetCVar("showNPETutorials", "1");
 						ResetTutorials();
@@ -830,9 +830,9 @@
 					<OnClick>
 						local value = ((self:GetChecked() and "1") or "0")
 						if ( value == "1" ) then
-							PlaySound("igMainMenuOptionCheckBoxOn");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						else
-							PlaySound("igMainMenuOptionCheckBoxOff");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 						end
 						self:SetValue(value);
 					</OnClick>
@@ -885,9 +885,9 @@
 					<OnClick>
 						local value = ((self:GetChecked() and "1") or "0")
 						if ( value == "1" ) then
-							PlaySound("igMainMenuOptionCheckBoxOn");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						else
-							PlaySound("igMainMenuOptionCheckBoxOff");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 						end
 						self:SetValue(value);
 					</OnClick>
@@ -2441,8 +2441,8 @@
 					<OnLoad>
 						C_Social.RegisterSocialBrowser(self);
 					</OnLoad>
-					<OnShow> PlaySound("igMainMenuOpen"); </OnShow>
-					<OnHide> PlaySound("igMainMenuClose"); </OnHide>
+					<OnShow> PlaySound(SOUNDKIT.IG_MAINMENU_OPEN); </OnShow>
+					<OnHide> PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE); </OnHide>
 					<OnExternalLink>
 						StaticPopup_Show("EXTERNAL_LINK", url, nil, {url=url, browser=self});
 					</OnExternalLink>

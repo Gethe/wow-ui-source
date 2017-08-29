@@ -110,7 +110,7 @@
 				</HighlightTexture>
 				<Scripts>
 					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						local index = self:GetParent().index;
 						MoveCharacter(index, index - 1);
 					</OnClick>
@@ -132,7 +132,7 @@
 				</HighlightTexture>
 				<Scripts>
 					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						local index = self:GetParent().index;
 						MoveCharacter(index, index + 1);
 					</OnClick>
@@ -548,7 +548,7 @@
 								</Layers>
 								<Scripts>
 									<OnClick>
-										PlaySound("igMainMenuOptionCheckBoxOn");
+										PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 										AccountUpgradePanel_ToggleExpandState();
 									</OnClick>
 								</Scripts>
@@ -718,7 +718,7 @@
 								self:RegisterForClicks("LeftButtonDown", "LeftButtonUp");
 							</OnLoad>
 							<OnClick>
-								PlaySound("igInventoryRotateCharacter");
+								PlaySound(SOUNDKIT.IG_INVENTORY_ROTATE_CHARACTER);
 							</OnClick>
 							<OnUpdate>
 								CharacterSelectRotateLeft_OnUpdate(self);
@@ -750,7 +750,7 @@
 								self:RegisterForClicks("LeftButtonDown", "LeftButtonUp");
 							</OnLoad>
 							<OnClick>
-								PlaySound("igInventoryRotateCharacter");
+								PlaySound(SOUNDKIT.IG_INVENTORY_ROTATE_CHARACTER);
 							</OnClick>
 							<OnUpdate>
 								CharacterSelectRotateRight_OnUpdate(self);
@@ -764,6 +764,44 @@
 								<Anchor point="CENTER" x="0" y="0"/>
 							</Anchors>
 						</HighlightTexture>
+					</Button>
+					<Button parentKey="ConfigurationWarnings" hidden="true">
+						<Size x="32" y="32"/>
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="CharSelectEnterWorldButton" relativePoint="RIGHT" x="10" y="0"/>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<Texture parentKey="PulseOverlay" setAllPoints="true" alphaMode="ADD" alpha="0" file="Interface\DialogFrame\UI-Dialog-Icon-AlertNew"/>
+							</Layer>
+						</Layers>
+						<Animations>
+							<AnimationGroup parentKey="PulseAnim" looping="REPEAT">
+								<Alpha childKey="PulseOverlay" fromAlpha="0" toAlpha="1" duration="1" order="1"/>
+								<Alpha childKey="PulseOverlay" fromAlpha="1" toAlpha="0" duration="1" order="2"/>
+							</AnimationGroup>
+						</Animations>
+						<Scripts>
+							<OnShow>
+								self.PulseAnim:Play();
+							</OnShow>
+							<OnClick>
+								local includeSeenWarnings = true;
+								CheckSystemRequirements(includeSeenWarnings);
+							</OnClick>
+							<OnEnter>
+								GlueTooltip:SetOwner(self, "ANCHOR_RIGHT");
+								GlueTooltip:SetText(CONFIGURATION_WARNINGS_TOOLTIP);
+								GlueTooltip:Show();
+							</OnEnter>
+							<OnLeave>
+								if GlueTooltip:GetOwner() == self then
+									GlueTooltip:Hide();
+								end
+							</OnLeave>
+						</Scripts>
+						<NormalTexture file="Interface\DialogFrame\UI-Dialog-Icon-AlertNew" />
+						<HighlightTexture file="Interface\DialogFrame\UI-Dialog-Icon-AlertNew" alphaMode="ADD" />
 					</Button>
 					<Button name="CharacterSelectBackButton" inherits="GlueButtonSmallTemplate" text="BACK">
 						<Size x="100" y="35"/>
@@ -793,7 +831,7 @@
 						</Layers>
 						<Scripts>
 							<OnClick>
-								PlaySound("gsCharacterSelectionDelCharacter");
+								PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_DEL_CHARACTER);
 								AddonList:Show();
 							</OnClick>
 							<OnUpdate>
@@ -1100,7 +1138,7 @@
 										self:SetWidth(self:GetTextWidth() + 73);
 									</OnLoad>
 									<OnClick>
-										PlaySound("igMainMenuOptionCheckBoxOn");
+										PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 										CharacterSelect_EndCharacterUndelete();
 									</OnClick>
 									<OnUpdate>
@@ -1131,7 +1169,7 @@
 										GlueTooltip:Hide();
 									</OnLeave>
 									<OnClick>
-										PlaySound("igMainMenuOptionCheckBoxOn");
+										PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 										CharacterSelect_StartCharacterUndelete();
 									</OnClick>
 									<OnMouseDown>
@@ -1609,13 +1647,13 @@
 						</Frames>
 						<Scripts>
 							<OnShow>
-								PlaySound("igCharacterInfoOpen");
+								PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 								CharacterSelect_UpdateButtonState();
 								CharSelectServicesCover:Show();
 								CharacterServicesMaster_UpdateServiceButton();
 							</OnShow>
 							<OnHide>
-								PlaySound("igCharacterInfoClose");
+								PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 								CharacterSelect_UpdateButtonState();
 								CharSelectServicesCover:Hide();
 								CharacterServicesMaster_UpdateServiceButton();
@@ -1633,7 +1671,7 @@
 								self:SetWidth(self:GetTextWidth() + 50);
 							</OnLoad>
 							<OnClick>
-								PlaySound("gsCharacterSelectionCreateNew");
+								PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_CREATE_NEW);
 								GlueParent_SetScreen("charcreate");
 							</OnClick>
 							<OnUpdate>
@@ -1687,7 +1725,7 @@
 										self:SetWidth(self:GetTextWidth() + 50);
 									</OnLoad>
 									<OnClick>
-										PlaySound("gsCharacterSelectionCreateNew");
+										PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_CREATE_NEW);
 										SetCharacterTemplate(GlueDropDownMenu_GetSelectedID(CharacterTemplatesFrameDropDown));
 										GlueParent_SetScreen("charcreate");
 									</OnClick>
@@ -2255,7 +2293,7 @@
 						<Scripts>
 							<OnClick>
 								CharacterDeleteDialog:Hide();
-								PlaySound("gsTitleOptionExit");
+								PlaySound(SOUNDKIT.GS_TITLE_OPTION_EXIT);
 							</OnClick>
 							<OnUpdate>
 								GlueParent_DeathKnightButtonSwap(self);

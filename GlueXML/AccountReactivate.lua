@@ -1,5 +1,5 @@
 function AccountReactivate_ReactivateNow()
-	PlaySound("gsTitleOptionOK");
+	PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK);
 	
 	-- open web page
 	LoadURLIndex(22);
@@ -7,7 +7,7 @@ end
 
 function AccountReactivate_Cancel()
 	SubscriptionRequestDialog:Hide();
-	PlaySound("gsTitleOptionExit");
+	PlaySound(SOUNDKIT.GS_TITLE_OPTION_EXIT);
 end
 
 function AccountReactivate_CloseDialogs(preserveSubscription)
@@ -271,7 +271,7 @@ function SubscriptionRequestDialog_Open()
 end
 
 function ReactivateAccountDialog_OnReactivate(self)
-	PlaySound("gsTitleOptionOK");
+	PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK);
 	if (self:GetParent().redeem) then
 		C_WowTokenSecure.RedeemToken(LE_TOKEN_REDEEM_TYPE_GAME_TIME);
 	else

@@ -306,6 +306,7 @@ Import("HTML_END");
 
 
 --Lua enums
+Import("SOUNDKIT");
 Import("LE_MODEL_BLEND_OPERATION_NONE");
 
 --Data
@@ -1220,6 +1221,11 @@ function StoreFrame_UpdateCard(card,entryID,discountReset,forceModelUpdate)
 			text = info.browseBuyButtonText;
 		end
 		card.BuyButton:SetText(text);
+
+		local alreadyOwned = entryInfo.alreadyOwned;
+		local buyableHere = entryInfo.sharedData.buyableHere;
+		local shouldEnableBuyButton = buyableHere and not alreadyOwned;
+		card.BuyButton:SetEnabled(shouldEnableBuyButton);
 	end
 
 	card.CurrentPrice:SetText(currencyFormat(entryInfo.sharedData.currentDollars, entryInfo.sharedData.currentCents));
@@ -1286,12 +1292,13 @@ function StoreFrame_UpdateCard(card,entryID,discountReset,forceModelUpdate)
 			card.NormalPrice:SetPoint("TOPLEFT", card.Description, "BOTTOMLEFT", 0, -28);
 		end
 
-		if (discount) then
+		if card.BuyButton then
 			card.BuyButton:ClearAllPoints();
-			card.BuyButton:SetPoint("TOPLEFT", card.NormalPrice, "BOTTOMLEFT", 0, -20);
-		else
-			card.BuyButton:ClearAllPoints();
-			card.BuyButton:SetPoint("TOPLEFT", card.CurrentPrice, "BOTTOMLEFT", 0, -20);
+			if discount then
+				card.BuyButton:SetPoint("TOPLEFT", card.NormalPrice, "BOTTOMLEFT", 0, -20);
+			else
+				card.BuyButton:SetPoint("TOPLEFT", card.CurrentPrice, "BOTTOMLEFT", 0, -20);
+			end
 		end
 	end
 
@@ -1322,10 +1329,6 @@ function StoreFrame_UpdateCard(card,entryID,discountReset,forceModelUpdate)
 		card.SalePrice:Hide();
 		card.Strikethrough:Hide();
 		card.CurrentPrice:Show();
-	end
-
-	if (card.BuyButton) then
-		card.BuyButton:SetEnabled(entryInfo.sharedData.buyableHere);
 	end
 
 	card:SetID(entryID);
@@ -1625,6 +1628,7 @@ function StoreFrame_OnLoad(self)
 	self:RegisterEvent("STORE_BOOST_AUTO_CONSUMED");
 	self:RegisterEvent("STORE_REFRESH");
 	self:RegisterEvent("UI_MODEL_SCENE_INFO_UPDATED");
+	self:RegisterEvent("STORE_OPEN_SIMPLE_CHECKOUT");
 
 	-- We have to call this from CharacterSelect on the glue screen because the addon engine will load
 	-- the store addon more than once if we try to make it ondemand, forcing us to load it before we
@@ -1661,7 +1665,9 @@ function StoreFrame_OnLoad(self)
 		bgFrame:EnableMouse(true);
 		-- background texture
 		local background = bgFrame:CreateTexture(nil, "BACKGROUND");
-		background:SetAllPoints(_G.GlueParent);
+		background:SetPoint("TOPLEFT", _G.GlueParent, "TOPLEFT", -1024, 0);
+		background:SetPoint("BOTTOMRIGHT", _G.GlueParent, "BOTTOMRIGHT", 1024, 0);
+
 		background:SetColorTexture(0, 0, 0, 0.75);
 	end
 	self:SetPoint("CENTER", nil, "CENTER", 0, 20); --Intentionally not anchored to UIParent.
@@ -1777,6 +1783,9 @@ function StoreFrame_OnEvent(self, event, ...)
 		if (self:IsVisible()) then
 			StoreFrame_SetCategory(true);
 		end
+	elseif ( event == "STORE_OPEN_SIMPLE_CHECKOUT" ) then
+		WaitingOnConfirmation = false;
+		StoreFrame_UpdateActivePanel(self);
 	end
 end
 
@@ -1795,7 +1804,7 @@ function StoreFrame_OnShow(self)
 	WaitingOnVASToCompleteToken = nil;
 
 	StoreFrame_UpdateCoverState();
-	PlaySound("UI_igStore_WindowOpen_Button");
+	PlaySound(SOUNDKIT.UI_IG_STORE_WINDOW_OPEN_BUTTON);
 end
 
 function StoreFrame_OnHide(self)
@@ -1810,7 +1819,8 @@ function StoreFrame_OnHide(self)
 	end
 
 	StoreVASValidationFrame:Hide();
-	PlaySound("UI_igStore_WindowClose_Button");
+	SimpleCheckout:Hide();
+	PlaySound(SOUNDKIT.UI_IG_STORE_WINDOW_CLOSE_BUTTON);
 end
 
 function StoreFrame_OnMouseWheel(self, value)
@@ -1877,12 +1887,20 @@ function StoreFrame_UpdateBuyButton()
 	self.BuyButton:SetText(text);
 
 	if (not selectedEntryID) then
-		self.BuyButton:SetEnabled(false);
+		self.BuyButton:Disable();
+		self.BuyButton.PulseAnim:Stop();
+		return;
+	end
+
+	local entryInfo = C_StoreSecure.GetEntryInfo(selectedEntryID);
+	if entryInfo and entryInfo.alreadyOwned then
+		self.BuyButton:Disable();
+		self.BuyButton.PulseAnim:Stop();
 		return;
 	end
 
 	if ( not self.BuyButton:IsEnabled() ) then
-		self.BuyButton:SetEnabled(true);
+		self.BuyButton:Enable();
 		if ( self.BuyButton:IsVisible() ) then
 			self.BuyButton.PulseAnim:Play();
 		end
@@ -2169,7 +2187,7 @@ function StoreFrameErrorAcceptButton_OnClick(self)
 		C_StoreSecure.AckFailure();
 	end
 	StoreFrame.ErrorFrame:Hide();
-	PlaySound("UI_igStore_PageNav_Button");
+	PlaySound(SOUNDKIT.UI_IG_STORE_PAGE_NAV_BUTTON);
 end
 
 function StoreFrameErrorWebsiteButton_OnClick(self)
@@ -2183,7 +2201,7 @@ end
 function StoreFrameBuyButton_OnClick(self)
 	local entryID = selectedEntryID
 	StoreFrame_BeginPurchase(entryID);
-	PlaySound("UI_igStore_Buy_Button");
+	PlaySound(SOUNDKIT.UI_IG_STORE_BUY_BUTTON);
 end
 
 function StoreFrame_BeginPurchase(entryID)
@@ -2244,7 +2262,7 @@ function StoreFramePrevPageButton_OnClick(self)
 	selectedEntryID = nil;
 	StoreFrame_SetCategory();
 
-	PlaySound("UI_igStore_PageNav_Button");
+	PlaySound(SOUNDKIT.UI_IG_STORE_PAGE_NAV_BUTTON);
 end
 
 function StoreFrame_SetPage(page)
@@ -2258,7 +2276,7 @@ function StoreFrameNextPageButton_OnClick(self)
 	selectedEntryID = nil;
 	StoreFrame_SetCategory();
 
-	PlaySound("UI_igStore_PageNav_Button");
+	PlaySound(SOUNDKIT.UI_IG_STORE_PAGE_NAV_BUTTON);
 end
 
 local VASServiceType = nil;
@@ -2495,7 +2513,7 @@ function StoreConfirmationFrame_Cancel(self)
 	C_StoreSecure.PurchaseProductConfirm(false);
 	StoreConfirmationFrame:Hide();
 
-	PlaySound("UI_igStore_Cancel_Button");
+	PlaySound(SOUNDKIT.UI_IG_STORE_CANCEL_BUTTON);
 end
 
 function StoreConfirmationFinalBuy_OnClick(self)
@@ -2509,10 +2527,10 @@ function StoreConfirmationFinalBuy_OnClick(self)
 		JustOrderedBoost = IsUpgrade;
 		JustOrderedLegion = IsLegion;
 		StoreStateDriverFrame.NoticeTextTimer:Play();
-		PlaySound("UI_igStore_ConfirmPurchase_Button");
+		PlaySound(SOUNDKIT.UI_IG_STORE_CONFIRM_PURCHASE_BUTTON);
 	else
 		StoreFrame_OnError(StoreFrame, Enum.StoreError.Other, false, "Fake");
-		PlaySound("UI_igStore_Cancel_Button");
+		PlaySound(SOUNDKIT.UI_IG_STORE_CANCEL_BUTTON);
 	end
 	StoreFrame_UpdateActivePanel(StoreFrame);
 	StoreConfirmationFrame:Hide();
@@ -2554,6 +2572,7 @@ function StoreVASValidationFrame_OnLoad(self)
 	self:RegisterEvent("STORE_VAS_PURCHASE_COMPLETE");
 	self:RegisterEvent("VAS_TRANSFER_VALIDATION_UPDATE");
 	self:RegisterEvent("VAS_QUEUE_STATUS_UPDATE");
+	self:RegisterEvent("STORE_OPEN_SIMPLE_CHECKOUT");
 end
 
 function StoreVASValidationFrame_SetVASStart(self)
@@ -2593,7 +2612,8 @@ function StoreVASValidationFrame_SetVASStart(self)
 	self.CharacterSelectionFrame.ContinueButton:Disable();
 	self.CharacterSelectionFrame.ContinueButton:Show();
 	self.CharacterSelectionFrame.Spinner:Hide();
-	SelectedRealm = _G.GetServerName();
+	local realmList = C_StoreSecure.GetRealmList();
+	SelectedRealm = #realmList > 0 and realmList[1] or _G.GetServerName();
 
 	SelectedDestinationRealm = nil;
 	SelectedDestinationWowAccount = nil;
@@ -2769,6 +2789,8 @@ function StoreVASValidationFrame_OnEvent(self, event, ...)
 		local currencyInfo = currencyInfo();
 		local vasDisclaimerData = currencyInfo.vasDisclaimerData;
 		self.Disclaimer:SetText(HTML_START_CENTERED..string.format(vasDisclaimerData[VASServiceType].disclaimer, _G["VAS_QUEUE_"..VasQueueStatusToString[queueTime]])..HTML_END);
+	elseif ( event == "STORE_OPEN_SIMPLE_CHECKOUT" ) then
+		self:Hide();
 	end
 end
 
@@ -2989,7 +3011,7 @@ function StoreProductCard_OnClick(self,button,down)
 		StoreProductCard_UpdateAllStates();
 
 		StoreFrame_UpdateBuyButton();
-		PlaySound("UI_igStore_PageNav_Button");
+		PlaySound(SOUNDKIT.UI_IG_STORE_PAGE_NAV_BUTTON);
 	end
 end
 
@@ -3304,7 +3326,7 @@ function StoreCategory_OnClick(self,button,down)
 	StoreFrame_SetCategory(self:GetID());
 
 	StoreProductCard_UpdateAllStates();
-	PlaySound("UI_igStore_PageNav_Button");
+	PlaySound(SOUNDKIT.UI_IG_STORE_PAGE_NAV_BUTTON);
 end
 
 ----------------------------------
@@ -3534,7 +3556,7 @@ function StoreDropDownMenuMenuButton_OnLoad(self)
 end
 
 function StoreDropDownMenuMenuButton_OnClick(self, button)
-	PlaySound("UChatScrollButton");
+	PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 	if (not InfoTable or not InfoCallback) then
 		-- This should not happen, it means our cache was cleared while the frame was opened.
 		-- We probably want a GMError here.
@@ -3804,7 +3826,7 @@ local VAS_AUTO_COMPLETE_SELECTION = nil;
 local VAS_AUTO_COMPLETE_ENTRIES = nil;
 
 function VASCharacterSelectionTransferRealmEditBoxAutoCompleteButton_OnClick(self)
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 
 	VAS_AUTO_COMPLETE_SELECTION = nil;
 	VAS_AUTO_COMPLETE_OFFSET = 0;
@@ -3897,7 +3919,7 @@ function VASCharacterSelectionTransferRealmEditBox_UpdateAutoComplete(self, text
 end
 
 function StoreAutoCompleteGoBack_OnClick(self)
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 
 	VAS_AUTO_COMPLETE_OFFSET = math.max(VAS_AUTO_COMPLETE_OFFSET - VAS_AUTO_COMPLETE_MAX_ENTRIES, 0);
 	VAS_AUTO_COMPLETE_SELECTION = nil;
@@ -3908,7 +3930,7 @@ function StoreAutoCompleteGoBack_OnClick(self)
 end
 
 function StoreAutoCompleteHasMore_OnClick(self)
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 
 	VAS_AUTO_COMPLETE_OFFSET = math.min(VAS_AUTO_COMPLETE_OFFSET + VAS_AUTO_COMPLETE_MAX_ENTRIES, #VAS_AUTO_COMPLETE_ENTRIES - 1);
 	VAS_AUTO_COMPLETE_SELECTION = nil;
@@ -3962,9 +3984,9 @@ function StoreAutoCompleteSelectionEnterPressed()
 end
 
 local function PlayCheckboxSound(self)
-	local sound = "igMainMenuOptionCheckBoxOn";
+	local sound = SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON;
 	if (not self:GetChecked()) then
-		sound = "igMainMenuOptionCheckBoxOff";
+		sound = SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF;
 	end
 	PlaySound(sound);
 end
@@ -4033,7 +4055,7 @@ function VASCharacterSelectionTransferBattlenetAccountEditbox_OnTextChanged(self
 end
 
 function VASCharacterSelectionRealmSelector_OnClick(self)
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 
 	if (self:GetParent().List:IsShown()) then
 		self:GetParent().List:Hide();
@@ -4051,7 +4073,7 @@ function VASCharacterSelectionRealmSelector_OnClick(self)
 end
 
 function VASCharacterSelectionCharacterSelector_OnClick(self)
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 
 	if (self:GetParent().List:IsShown()) then
 		self:GetParent().List:Hide();
@@ -4098,7 +4120,7 @@ function VASCharacterSelectionTimeout()
 end
 
 function VASCharacterSelectionContinueButton_OnClick(self)
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 
 	if (not SelectedRealm or not SelectedCharacter) then
 		-- This should not happen, as this button should be disabled unless you have both selected.
@@ -4138,14 +4160,9 @@ function VASCharacterSelectionContinueButton_OnClick(self)
 			return;
 		end
 	end
-	if ( VASServiceType == Enum.VasServiceType.CharacterTransfer ) then
-		if (SelectedDestinationWowAccount == BLIZZARD_STORE_VAS_DIFFERENT_BNET) then
-			isBnet = true;
-		else
-			isBnet = false;
-		end
-	end
 
+	local isCharacterTransfer = VASServiceType == Enum.VasServiceType.CharacterTransfer;
+	local isBnet = isCharacterTransfer and SelectedDestinationWowAccount == BLIZZARD_STORE_VAS_DIFFERENT_BNET;
 	if (isBnet and not IsVasBnetTransferValidated) then
 		C_StoreSecure.ValidateBnetTransfer(SelectedDestinationBnetAccount);
 		self:GetParent().ContinueButton:Hide();
@@ -4177,7 +4194,7 @@ function VASCharacterSelectionNewCharacterName_OnEnter(self)
 end
 
 function VASCharacterSelectionTransferAccountDropDown_OnClick(self)
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 
 	if (self:GetParent().List:IsShown()) then
 		self:GetParent().List:Hide();
@@ -4221,7 +4238,7 @@ function StripWoWAccountLicenseInfo(gameAccount)
 end
 
 function VASCharacterSelectionTransferBnetWoWAccountDropDown_OnClick(self)
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 
 	if (self:GetParent().List:IsShown()) then
 		self:GetParent().List:Hide();
@@ -4376,17 +4393,17 @@ function ServicesLogoutPopupConfirmButton_OnClick(self)
 	ServicesLogoutPopup.showReason = nil;
 
 	if doLogoutOnConfirm then
-		PlaySound("igMainMenuLogout");
+		PlaySound(SOUNDKIT.IG_MAINMENU_LOGOUT);
 		Outbound.Logout();
 	else
-		PlaySound("igMainMenuOptionCheckBoxOn");
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	end
 
 	ServicesLogoutPopup:Hide();
 end
 
 function ServicesLogoutPopupCancelButton_OnClick(self)
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	ServicesLogoutPopup:Hide();
 end
 

@@ -419,7 +419,7 @@
 				self.Border:SetPoint("CENTER", 0, 0);
 			</OnMouseUp>
 			<OnClick>
-				PlaySound("igMainMenuOptionCheckBoxOn");
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 				self.mainFrame.FollowerList.SearchBox:SetText(self.info.name);
 			</OnClick>
 		</Scripts>
@@ -656,7 +656,7 @@
 		</Size>
 		<Scripts>
 			<OnClick>
-				PlaySound("UI_Garrison_CommandTable_MissionClose");
+				PlaySound(SOUNDKIT.UI_GARRISON_COMMAND_TABLE_MISSION_CLOSE);
 				GarrisonMissionController_CloseMission(self);
 			</OnClick>
 		</Scripts>
@@ -1319,7 +1319,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PlaySound("UI_Garrison_CommandTable_Nav_Next");
+						PlaySound(SOUNDKIT.UI_GARRISON_COMMAND_TABLE_NAV_NEXT);
 						self:GetParent():GetParent():NextMission();
 					</OnClick>
 				</Scripts>

@@ -63,24 +63,25 @@ function ScrollingMessageFrameMixin:AdjustMessageColors(transformFunction)
 	end
 end
 
-function ScrollingMessageFrameMixin:ScrollUp()
-	self:SetScrollOffset(self:GetScrollOffset() + 1);
+function ScrollingMessageFrameMixin:ScrollByAmount(amount)
+	self:SetScrollOffset(self:GetScrollOffset() + amount);
 	self:ResetAllFadeTimes();
+end
+
+function ScrollingMessageFrameMixin:ScrollUp()
+	self:ScrollByAmount(1);
 end
 
 function ScrollingMessageFrameMixin:ScrollDown()
-	self:SetScrollOffset(self:GetScrollOffset() - 1);
-	self:ResetAllFadeTimes();
+	self:ScrollByAmount(-1);
 end
 
 function ScrollingMessageFrameMixin:PageUp()
-	self:SetScrollOffset(self:GetScrollOffset() + self:GetPagingScrollAmount());
-	self:ResetAllFadeTimes();
+	self:ScrollByAmount(self:GetPagingScrollAmount());
 end
 
 function ScrollingMessageFrameMixin:PageDown()
-	self:SetScrollOffset(self:GetScrollOffset() - self:GetPagingScrollAmount());
-	self:ResetAllFadeTimes();
+	self:ScrollByAmount(-self:GetPagingScrollAmount());
 end
 
 function ScrollingMessageFrameMixin:ScrollToTop()
@@ -93,11 +94,22 @@ function ScrollingMessageFrameMixin:ScrollToBottom()
 	self:ResetAllFadeTimes();
 end
 
+function ScrollingMessageFrameMixin:SetOnScrollChangedCallback(onScrollChangedCallback)
+	self.onScrollChangedCallback = onScrollChangedCallback;
+end
+
+function ScrollingMessageFrameMixin:GetOnScrollChangedCallback()
+	return self.onScrollChangedCallback;
+end
+
 function ScrollingMessageFrameMixin:SetScrollOffset(offset)
 	local newOffset = Clamp(offset, 0, self:GetMaxScrollRange());
 	if newOffset ~= self.scrollOffset then
 		self.scrollOffset = newOffset;
 		self:MarkDisplayDirty();
+		if self.onScrollChangedCallback then
+			self.onScrollChangedCallback(self, self.scrollOffset);
+		end
 	end
 end
 
@@ -130,6 +142,10 @@ end
 
 function ScrollingMessageFrameMixin:GetMaxLines()
 	return self.historyBuffer:GetMaxNumElements();
+end
+
+function ScrollingMessageFrameMixin:GetPagingScrollAmount()
+	return math.max(self:GetNumVisibleLines() - 1, 1);
 end
 
 function ScrollingMessageFrameMixin:SetFading(shouldFadeAfterInactivity)
@@ -169,6 +185,7 @@ end
 function ScrollingMessageFrameMixin:Clear()
 	if not self.historyBuffer:IsEmpty() then
 		self.historyBuffer:Clear();
+		self:SetScrollOffset(0);
 		self:MarkDisplayDirty();
 	end
 end
@@ -184,6 +201,23 @@ function ScrollingMessageFrameMixin:GetInsertMode()
 	return self.insertMode;
 end
 
+function ScrollingMessageFrameMixin:SetTextCopyable(textIsCopyable)
+	if self:IsTextCopyable() ~= textIsCopyable then
+		self.textIsCopyable = textIsCopyable;
+		if not self:IsTextCopyable() then
+			self:ResetSelectingText();
+		end
+	end
+end
+
+function ScrollingMessageFrameMixin:IsTextCopyable()
+	return self.textIsCopyable;
+end
+
+function ScrollingMessageFrameMixin:IsSelectingText()
+	return self.selectingCharacterIndex ~= nil;
+end
+
 -- "private" functions
 function ScrollingMessageFrameMixin:OnPreLoad()
 	self:InitializeFontableFrame("ScrollingMessageFrame");
@@ -195,6 +229,7 @@ function ScrollingMessageFrameMixin:OnPreLoad()
 	self.fadeDurationSecs = 3.0;
 	self.scrollOffset = 0;
 	self.overrideFadeTimestamp = 0;
+	self.textIsCopyable = false;
 
 	self.visibleLines = {};
 end
@@ -203,13 +238,196 @@ function ScrollingMessageFrameMixin:OnPostShow()
 	self:RefreshIfNecessary();
 end
 
+function ScrollingMessageFrameMixin:OnPostHide()
+	self:ResetSelectingText();
+end
+
 function ScrollingMessageFrameMixin:OnPostUpdate(elapsed)
-	self:RefreshIfNecessary();
-	self:UpdateFading();
+	if self:IsSelectingText() then
+		self:UpdateSelectingText();
+	else
+		self:RefreshIfNecessary();
+		self:UpdateFading();
+	end
 end
 
 function ScrollingMessageFrameMixin:OnPreSizeChanged()
 	self:MarkLayoutDirty();
+end
+
+function ScrollingMessageFrameMixin:OnPostMouseDown()
+	if self:IsTextCopyable() then
+		self:ResetAllFadeTimes();
+		self:RefreshIfNecessary();
+		self:UpdateFading();
+
+		local x, y = self:GetScaledCursorPosition();
+		self.selectingCharacterIndex, self.selectingVisibleLineIndex = self:FindCharacterAndLineIndexAtCoordinate(x, y);
+	end
+end
+
+function ScrollingMessageFrameMixin:OnPostMouseUp()
+	if self:IsSelectingText() then
+		local x, y = self:GetScaledCursorPosition();
+		local selectedText = self:GatherSelectedText(x, y);
+
+		if selectedText then
+			local REMOVE_MARKUP = true;
+			CopyToClipboard(selectedText, REMOVE_MARKUP);
+		end
+
+		self:ResetSelectingText();
+	end
+end
+
+function ScrollingMessageFrameMixin:ResetSelectingText()
+	if self:IsSelectingText() then
+		self:ResetAllFadeTimes();
+
+		self.selectingCharacterIndex, self.selectingVisibleLineIndex = nil, nil;
+
+		if self.highlightTexturePool then
+			self.highlightTexturePool:ReleaseAll();
+		end
+	end
+end
+
+function ScrollingMessageFrameMixin:CalculateSelectingCharacterIndicesForVisibleLine(lineIndex, startLineIndex, endLineIndex, startCharacterIndex, endCharacterIndex)
+	local visibleLine = self.visibleLines[lineIndex];
+	if lineIndex == startLineIndex and lineIndex == endLineIndex then
+		return math.min(startCharacterIndex, endCharacterIndex), math.max(startCharacterIndex, endCharacterIndex);
+	elseif lineIndex == startLineIndex then
+		if self:GetInsertMode() == SCROLLING_MESSAGE_FRAME_INSERT_MODE_TOP then
+			if endLineIndex > startLineIndex then
+				return startCharacterIndex, #visibleLine:GetText() + 1;
+			else
+				return 1, startCharacterIndex;
+			end
+		else
+			if endLineIndex > startLineIndex then
+				return 1, startCharacterIndex;
+			else
+				return startCharacterIndex, #visibleLine:GetText() + 1;
+			end
+		end
+	elseif lineIndex == endLineIndex then
+		if self:GetInsertMode() == SCROLLING_MESSAGE_FRAME_INSERT_MODE_TOP then
+			if endLineIndex > startLineIndex then
+				return 1, endCharacterIndex;
+			else
+				return endCharacterIndex, #visibleLine:GetText() + 1;
+			end
+		else
+			if endLineIndex > startLineIndex then
+				return endCharacterIndex, #visibleLine:GetText() + 1;
+			else
+				return 1, endCharacterIndex;
+			end
+		end
+	end
+
+	return 1, #visibleLine:GetText() + 1;
+end
+
+function ScrollingMessageFrameMixin:UpdateSelectingText()
+	if self.highlightTexturePool then
+		self.highlightTexturePool:ReleaseAll();
+	end
+
+	local x, y = self:GetScaledCursorPosition();
+	local characterIndex, visibleLineIndex = self:FindCharacterAndLineIndexAtCoordinate(x, y);
+	if characterIndex and (self.selectingCharacterIndex ~= characterIndex or self.selectingVisibleLineIndex ~= visibleLineIndex) then
+		local startLineIndex, endLineIndex = self.selectingVisibleLineIndex, visibleLineIndex;
+		local startCharacterIndex, endCharacterIndex = self.selectingCharacterIndex, characterIndex;
+
+		for lineIndex = math.min(startLineIndex, endLineIndex), math.max(startLineIndex, endLineIndex) do
+			local visibleLine = self.visibleLines[lineIndex];
+			if visibleLine:GetText() then
+				local selectingStartIndex, selectingEndIndex = self:CalculateSelectingCharacterIndicesForVisibleLine(lineIndex, startLineIndex, endLineIndex, startCharacterIndex, endCharacterIndex);
+				local screenAreaTable = visibleLine:CalculateScreenAreaFromCharacterSpan(selectingStartIndex, selectingEndIndex);
+
+				if screenAreaTable then
+					for i, screenArea in ipairs(screenAreaTable) do
+						local highlightTexture = self:AcquireHighlightTexture();
+
+						highlightTexture:SetPoint("BOTTOMLEFT", visibleLine, "BOTTOMLEFT", screenArea.left, screenArea.bottom);
+						highlightTexture:SetPoint("TOPRIGHT", visibleLine, "BOTTOMLEFT", screenArea.left + screenArea.width, screenArea.bottom + screenArea.height);
+
+						highlightTexture:Show();
+					end
+				end
+			end
+		end
+	end
+end
+
+function ScrollingMessageFrameMixin:GatherSelectedText(x, y)
+	local characterIndex, visibleLineIndex = self:FindCharacterAndLineIndexAtCoordinate(x, y);
+	if characterIndex and (self.selectingCharacterIndex ~= characterIndex or self.selectingVisibleLineIndex ~= visibleLineIndex) then
+		local pendingText = {};
+		local startLineIndex, endLineIndex = self.selectingVisibleLineIndex, visibleLineIndex;
+		local startCharacterIndex, endCharacterIndex = self.selectingCharacterIndex, characterIndex;
+
+		local effectiveStartLineIndex, effectiveEndLineIndex, direction;
+		if self:GetInsertMode() == SCROLLING_MESSAGE_FRAME_INSERT_MODE_TOP then
+			effectiveStartLineIndex = math.min(startLineIndex, endLineIndex);
+			effectiveEndLineIndex = math.max(startLineIndex, endLineIndex);
+			direction = 1;
+		else
+			effectiveStartLineIndex = math.max(startLineIndex, endLineIndex);
+			effectiveEndLineIndex = math.min(startLineIndex, endLineIndex);
+			direction = -1;
+		end
+
+		for lineIndex = effectiveStartLineIndex, effectiveEndLineIndex, direction do
+			local visibleLine = self.visibleLines[lineIndex];
+			local text = visibleLine:GetText();
+			if text then
+				local selectingStartIndex, selectingEndIndex = self:CalculateSelectingCharacterIndicesForVisibleLine(lineIndex, startLineIndex, endLineIndex, startCharacterIndex, endCharacterIndex);
+				local subText = text:sub(selectingStartIndex, selectingEndIndex);
+				table.insert(pendingText, subText);
+			end
+		end
+
+		return table.concat(pendingText, "\n");
+	end
+	return nil;
+end
+
+local function CalculateDistanceSqToLine(x, y, visibleLine)
+	-- perimeter would be more accurate, but this seems to work well enough
+	local cx, cy = visibleLine:GetCenter();
+
+	local dx = x - cx;
+	local dy = y - cy;
+
+	return dx * dx + dy * dy;
+end
+
+function ScrollingMessageFrameMixin:FindCharacterAndLineIndexAtCoordinate(x, y)
+	local closestLineIndex, closestCharacterIndex, closestDistance;
+	for lineIndex, visibleLine in ipairs(self.visibleLines) do
+		local characterIndex, isInside = visibleLine:FindCharacterIndexAtCoordinate(x, y);
+		if characterIndex then
+			if isInside then
+				return characterIndex, lineIndex;
+			end
+
+			local distanceToLine =  CalculateDistanceSqToLine(x, y, visibleLine);
+			if not closestDistance or distanceToLine < closestDistance then
+				closestLineIndex = lineIndex;
+				closestCharacterIndex = characterIndex;
+				closestDistance = distanceToLine;
+			end
+		end
+	end
+	return closestCharacterIndex, closestLineIndex;
+end
+
+function ScrollingMessageFrameMixin:GetScaledCursorPosition()
+	local scale = self:GetEffectiveScale();
+	local x, y = GetCursorPosition();
+	return x / scale, y / scale;
 end
 
 function ScrollingMessageFrameMixin:RefreshLayout()
@@ -338,15 +556,21 @@ function ScrollingMessageFrameMixin:AcquireFontString()
 	return fontString;
 end
 
+function ScrollingMessageFrameMixin:AcquireHighlightTexture()
+	if not self.highlightTexturePool then
+		self.highlightTexturePool = CreateTexturePool(self.FontStringContainer, "BACKGROUND", 1);
+	end
+
+	local texture = self.highlightTexturePool:Acquire();
+	texture:SetColorTexture(.37, .37, .37);
+	return texture;
+end
+
 function ScrollingMessageFrameMixin:CalculateLineSpacing()
 	local fontString = self:AcquireFontString();
 	local lineSpacing = fontString:GetLineHeight();
 	self.fontStringPool:Release(fontString);
 	return lineSpacing;
-end
-
-function ScrollingMessageFrameMixin:GetPagingScrollAmount()
-	return math.max(self:GetNumVisibleLines() - 1, 1);
 end
 
 function ScrollingMessageFrameMixin:PackageEntry(message, r, g, b, ...)
@@ -367,7 +591,7 @@ function ScrollingMessageFrameMixin:UnpackageEntry(entry)
 end
 
 function ScrollingMessageFrameMixin:CanEffectivelyFade()
-	return self.shouldFadeAfterInactivity and self:AtBottom();
+	return self.shouldFadeAfterInactivity and self:AtBottom() and not self:IsSelectingText();
 end
 
 function ScrollingMessageFrameMixin:UpdateFading()

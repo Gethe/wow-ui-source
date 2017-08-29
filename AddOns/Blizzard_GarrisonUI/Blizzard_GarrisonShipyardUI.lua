@@ -67,7 +67,7 @@ StaticPopupDialogs["GARRISON_SHIP_DECOMMISSION"] = {
 	button2 = NO,
 	OnAccept = function(self)
 		C_Garrison.RemoveFollower(self.data.followerID, true);
-		PlaySoundKitID(51871);
+		PlaySound(SOUNDKIT.UI_GARRISON_SHIPYARD_DECOMISSION_SHIP);
 	end,
 	OnShow = function(self)
 		local quality = C_Garrison.GetFollowerQuality(self.data.followerID);
@@ -143,7 +143,7 @@ function GarrisonShipyardMission:OnShowMainFrame()
 	end
 	self.MissionTab.MissionList.followerTypeID = self.followerTypeID;
 	self:CheckCompleteMissions(true);
-	PlaySound("UI_Garrison_CommandTable_Open");
+	PlaySound(SOUNDKIT.UI_GARRISON_COMMAND_TABLE_OPEN);
 	self:CheckFollowerCount();
 end
 
@@ -158,7 +158,7 @@ function GarrisonShipyardMission:OnHideMainFrame()
 	StaticPopup_Hide("DANGEROUS_MISSIONS");
 	StaticPopup_Hide("CONFIRM_FOLLOWER_EQUIPMENT");
 	GarrisonBonusAreaTooltip:Hide();
-	PlaySound("UI_Garrison_CommandTable_Close");
+	PlaySound(SOUNDKIT.UI_GARRISON_COMMAND_TABLE_CLOSE);
 end
 
 function GarrisonShipyardMission:UpdateCurrency()
@@ -348,7 +348,7 @@ function GarrisonShipyardMission:OnClickStartMissionButtonConfirm()
 	if (not GarrisonMission.OnClickStartMissionButton(self)) then
 		return;
 	end
-	PlaySound("UI_Garrison_Shipyard_Start_Mission");
+	PlaySound(SOUNDKIT.UI_GARRISON_SHIPYARD_START_MISSION);
 end
 
 function GarrisonShipyardMission:AssignFollowerToMission(frame, info)
@@ -357,15 +357,15 @@ function GarrisonShipyardMission:AssignFollowerToMission(frame, info)
 	end
 
 	if ( info.classSpec == 53 or info.classSpec == 58 ) then
-		PlaySound("UI_Garrison_Shipyard_Place_LandingCraft", nil, false);
+		PlaySound(SOUNDKIT.UI_GARRISON_SHIPYARD_PLACE_LANDING_CRAFT, nil, SOUNDKIT_ALLOW_DUPLICATES);
 	elseif ( info.classSpec == 54 or info.classSpec == 59 ) then
-		PlaySound("UI_Garrison_Shipyard_Place_Dreadnought", nil, false);
+		PlaySound(SOUNDKIT.UI_GARRISON_SHIPYARD_PLACE_DREADNOUGHT, nil, SOUNDKIT_ALLOW_DUPLICATES);
 	elseif ( info.classSpec == 55 or info.classSpec == 60 ) then
-		PlaySound("UI_Garrison_Shipyard_Place_Carrier", nil, false);
+		PlaySound(SOUNDKIT.UI_GARRISON_SHIPYARD_PLACE_CARRIER, nil, SOUNDKIT_ALLOW_DUPLICATES);
 	elseif ( info.classSpec == 56 or info.classSpec == 61 ) then
-		PlaySound("UI_Garrison_Shipyard_Place_Galleon", nil, false);
+		PlaySound(SOUNDKIT.UI_GARRISON_SHIPYARD_PLACE_GALLEON, nil, SOUNDKIT_ALLOW_DUPLICATES);
 	elseif ( info.classSpec == 57 or info.classSpec == 62 ) then
-		PlaySound("UI_Garrison_Shipyard_Place_Submarine", nil, false);
+		PlaySound(SOUNDKIT.UI_GARRISON_SHIPYARD_PLACE_SUBMARINE, nil, SOUNDKIT_ALLOW_DUPLICATES);
 	end
 	self:SetFollowerPortrait(frame, info, false, false);
 	local color = FOLLOWER_QUALITY_COLORS[info.quality];
@@ -549,7 +549,7 @@ function GarrisonShipyardMissionComplete:AnimLine(entry)
 		encountersFrame.Encounters[i].Name:Show();
 	end
 	if ( playCounteredSound ) then
-		PlaySound("UI_Garrison_Mission_Threat_Countered");
+		PlaySound(SOUNDKIT.UI_GARRISON_MISSION_THREAT_COUNTERED);
 	end
 end
 
@@ -580,9 +580,9 @@ function GarrisonShipyardMissionComplete:AnimPortrait(entry)
 		end
 	end
 	if ( self.currentMission.succeeded ) then
-		PlaySound("UI_Garrison_Mission_Complete_Mission_Success");
+		PlaySound(SOUNDKIT.UI_GARRISON_MISSION_COMPLETE_MISSION_SUCCESS);
 	else
-		PlaySound("UI_Garrison_Mission_Complete_Encounter_Fail");
+		PlaySound(SOUNDKIT.UI_GARRISON_MISSION_COMPLETE_ENCOUNTER_FAIL);
 	end
 	entry.duration = 0.5;
 end
@@ -641,19 +641,19 @@ end
 function GarrisonShipyardMissionComplete:PlaySplashAnim(followerFrame)
 	followerFrame.BoatDeathAnimations:SetCameraPosition(self.boatDeathCamPos[1], self.boatDeathCamPos[2], self.boatDeathCamPos[3]);
 	followerFrame.BoatDeathAnimations:SetSpellVisualKit(self.surviveAnim);
-	PlaySoundKitID(self.surviveSound, nil, false);
+	PlaySound(self.surviveSound, nil, SOUNDKIT_ALLOW_DUPLICATES);
 end
 
 function GarrisonShipyardMissionComplete:PlayExplosionAnim(followerFrame)
 	followerFrame.BoatDeathAnimations:SetCameraPosition(self.boatDeathCamPos[1], self.boatDeathCamPos[2], self.boatDeathCamPos[3]);
 	followerFrame.BoatDeathAnimations:SetSpellVisualKit(self.destroyAnim);
-	PlaySoundKitID(self.destroySound, nil, false);
+	PlaySound(self.destroySound, nil, SOUNDKIT_ALLOW_DUPLICATES);
 end
 
 function GarrisonShipyardMissionComplete:PlaySavedAnim(followerFrame)
 	followerFrame.BoatDeathAnimations:SetCameraPosition(self.boatDeathCamPos[1], self.boatDeathCamPos[2], self.boatDeathCamPos[3]);
 	followerFrame.BoatDeathAnimations:SetSpellVisualKit(self.saveAnim);
-	PlaySoundKitID(self.saveSound, nil, false);
+	PlaySound(self.saveSound, nil, SOUNDKIT_ALLOW_DUPLICATES);
 end
 
 function GarrisonShipyardMissionComplete:AnimBoatDeath(entry)
@@ -1241,7 +1241,7 @@ function GarrisonShipyardMap_UpdateMissions()
 end
 
 function GarrisonMissionFrame_OnClickShipyardTutorialButton(self)
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	GarrisonMissionTutorialFrame:Hide();
 	GarrisonShipyardMap_CheckTutorials();
 end
@@ -1752,7 +1752,7 @@ function GarrisonShipyardFollowerList:OnEvent(event, ...)
 			local followerID = ...;
 			if ( followerID == self.followerTab.followerID ) then
 				self.followerTab.Model:SetSpellVisualKit(6375);	-- level up visual;
-				PlaySound("UI_Garrison_CommandTable_Follower_LevelUp");
+				PlaySound(SOUNDKIT.UI_GARRISON_COMMAND_TABLE_FOLLOWER_LEVEL_UP);
 			end
 		end
 
@@ -2045,7 +2045,7 @@ end
 function GarrisonShipFollowerListButton_OnClick(self, button)
 	local mainFrame = self:GetParent():GetParent().followerFrame;
 	local followerList = self:GetParent():GetParent():GetParent();
-	PlaySound("UI_Garrison_CommandTable_SelectFollower");
+	PlaySound(SOUNDKIT.UI_GARRISON_COMMAND_TABLE_SELECT_FOLLOWER);
 
 	if (button == "LeftButton") then
 		mainFrame.selectedFollower = self.id;
@@ -2053,10 +2053,10 @@ function GarrisonShipFollowerListButton_OnClick(self, button)
 		if (followerList.canExpand) then
 			if (followerList.expandedFollower == self.id) then
 				followerList.expandedFollower = nil;
-				PlaySound("UI_Garrison_CommandTable_FollowerAbilityClose");
+				PlaySound(SOUNDKIT.UI_GARRISON_COMMAND_TABLE_FOLLOWER_ABILITY_CLOSE);
 			else
 				followerList.expandedFollower = self.id;
-				PlaySound("UI_Garrison_CommandTable_FollowerAbilityOpen");
+				PlaySound(SOUNDKIT.UI_GARRISON_COMMAND_TABLE_FOLLOWER_ABILITY_OPEN);
 			end
 		elseif (followerList.expandedFollower ~= self.id ) then
 			followerList.expandedFollower = nil;
@@ -2070,7 +2070,7 @@ function GarrisonShipFollowerListButton_OnClick(self, button)
 			end
 			GarrisonShipyardFollowerOptionDropDown.followerID = self.id;
 			ToggleDropDownMenu(1, nil, GarrisonShipyardFollowerOptionDropDown, "cursor", 0, 0);
-			PlaySound("igMainMenuOptionCheckBoxOn");
+			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 		end
 end
 

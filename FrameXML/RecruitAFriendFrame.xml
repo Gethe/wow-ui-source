@@ -192,7 +192,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						self:GetParent():Hide();
 					</OnClick>
 				</Scripts>
@@ -583,7 +583,7 @@
 			<OnEvent function="RecruitAFriend_OnEvent"/>
 			<OnShow function="RecruitAFriend_OnShow"/>
 			<OnHide>
-				PlaySound("igMainMenuClose");
+				PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
 			</OnHide>
 		</Scripts>
 	</Frame>
@@ -654,7 +654,7 @@
 		</Frames>
 		<Scripts>
 			<OnHide>
-				PlaySound("igCharacterInfoClose");
+				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 			</OnHide>
 		</Scripts>
 	</Frame>

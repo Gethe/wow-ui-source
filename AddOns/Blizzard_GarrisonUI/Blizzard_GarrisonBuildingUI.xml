@@ -994,7 +994,7 @@
 										self.texture:SetPoint("TOPLEFT", 0, 0);
 									</OnMouseUp>
 									<OnClick>
-										PlaySound("UI_Garrison_CommandTable_UnassignFollower");
+										PlaySound(SOUNDKIT.UI_GARRISON_COMMAND_TABLE_UNASSIGN_FOLLOWER);
 										C_Garrison.RemoveFollowerFromBuilding(GarrisonBuildingFrame.InfoBox.ID);
 									</OnClick>
 								</Scripts>

@@ -431,7 +431,7 @@ function CharacterCreate_OnEvent(self, event, ...)
 			CharacterCreateNameEdit:SetText(name);
 		end
 		CharacterCreateRandomName:Enable();
-		PlaySound("gsCharacterCreationLook");
+		PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_LOOK);
 	elseif ( event == "UPDATE_EXPANSION_LEVEL" ) then
 		-- Expansion level changed while online, so enable buttons as needed
 		if ( CharacterCreateFrame:IsShown() ) then
@@ -448,6 +448,7 @@ function CharacterCreate_OnEvent(self, event, ...)
 			CharacterSelect.selectLast = true;
 			GlueParent_SetScreen("charselect");
 		else
+			CharCreate_RefreshNextButton();
 			GlueDialog_Show("OKAY", _G[errorCode]);
 		end
 	elseif ( event == "CUSTOMIZE_CHARACTER_STARTED" ) then
@@ -682,18 +683,12 @@ function CharacterCreateEnumerateClasses()
 	end
 end
 
-function SetCharacterRace(id)
-	CharacterCreate.selectedRace = id;
-	for i=1, CharacterCreate.numRaces, 1 do
-		_G["CharCreateRaceButton"..i]:SetChecked(i == id);
-	end
-
-	local name, faction = GetFactionForRace(CharacterCreate.selectedRace);
-
+local function CanProceedThroughCharacterCreate()
 	-- during a paid service we have to set alliance/horde for neutral races
 	-- hard-coded for Pandaren because of alliance/horde pseudo buttons
+	local name, faction = GetFactionForRace(CharacterCreate.selectedRace);
 	local canProceed = true;
-	if ( id == PANDAREN_RACE_ID and PAID_SERVICE_TYPE ) then
+	if ( CharacterCreate.selectedRace == PANDAREN_RACE_ID and PAID_SERVICE_TYPE ) then
 		local _, currentFaction = PaidChange_GetCurrentFaction();
 		if ( PaidChange_GetCurrentRaceIndex() == PANDAREN_RACE_ID and PAID_SERVICE_TYPE == PAID_FACTION_CHANGE ) then
 			-- this is an original pandaren staying or becoming selected
@@ -715,11 +710,24 @@ function SetCharacterRace(id)
 				faction = currentFaction;
 			end
 		end
-	else
-		PandarenFactionButtons_ClearSelection();
 	end
+	
+	return canProceed, faction;
+end
+
+function SetCharacterRace(id)
+	CharacterCreate.selectedRace = id;
+	for i=1, CharacterCreate.numRaces, 1 do
+		_G["CharCreateRaceButton"..i]:SetChecked(i == id);
+	end
+
+	local canProceed, faction = CanProceedThroughCharacterCreate();
 	CharCreate_EnableNextButton(canProceed);
 
+	if ( CharacterCreate.selectedRace ~= PANDAREN_RACE_ID or not PAID_SERVICE_TYPE ) then
+		PandarenFactionButtons_ClearSelection();
+	end
+	
 	-- Cache current selected faction information in the case where user is applying a trial boost
 	CharacterCreate.selectedFactionID = FACTION_IDS[faction];
 
@@ -858,7 +866,7 @@ function CharacterCreate_UpdateModel(self)
 end
 
 function CharacterCreate_Finish()
-	PlaySound("gsCharacterCreationCreateChar");
+	PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_CREATE_CHAR);
 
 	if ( PAID_SERVICE_TYPE ) then
 		GlueDialog_Show("CONFIRM_PAID_SERVICE");
@@ -879,7 +887,7 @@ end
 
 function CharacterCreate_Back()
 	if ( CharacterCreateFrame.state == "CUSTOMIZATION" ) then
-		PlaySound("gsCharacterCreationCancel");
+		PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_CANCEL);
 		CharacterCreateFrame.state = "CLASSRACE"
 		CharCreateClassFrame:Show();
 		CharCreateRaceFrame:Show();
@@ -899,14 +907,14 @@ function CharacterCreate_Back()
 		SetFaceCustomizeCamera(false);
 	else
 		if( IsKioskGlueEnabled() ) then
-			PlaySound("gsCharacterCreationCancel");
+			PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_CANCEL);
 			GlueParent_SetScreen("kioskmodesplash");
 		else
 			if CharacterUpgrade_IsCreatedCharacterTrialBoost() then
 				CharacterUpgrade_ResetBoostData();
 			end
 
-			PlaySound("gsCharacterCreationCancel");
+			PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_CANCEL);
 			CHARACTER_SELECT_BACK_FROM_CREATE = true;
 			GlueParent_SetScreen("charselect");
 		end
@@ -923,7 +931,7 @@ end
 function CharacterCreate_Forward()
 	if ( CharacterCreateFrame.state == "CLASSRACE" ) then
 		CharacterCreateFrame.state = "CUSTOMIZATION"
-		PlaySound("gsCharacterSelectionCreateNew");
+		PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_CREATE_NEW);
 		CharCreateClassFrame:Hide();
 		CharCreateRaceFrame:Hide();
 		CharCreateMoreInfoButton:Hide();
@@ -957,6 +965,7 @@ function CharacterCreate_Forward()
 		end
 	else
 		CharacterCreate_Finish();
+		CharCreate_EnableNextButton(false);
 	end
 end
 
@@ -1038,7 +1047,7 @@ function CharacterClass_SelectClass(self, forceAccept)
 			KioskModeCheckTrial(self:GetID());
 		end
 
-		PlaySound("gsCharacterCreationClass");
+		PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_CLASS);
 		local _,_,currClass = GetSelectedClass();
 		local id = self:GetID();
 		if ( currClass ~= id ) then
@@ -1073,7 +1082,7 @@ end
 
 function CharacterRace_OnClick(self, id, forceSelect)
 	if( self:IsEnabled() ) then
-		PlaySound("gsCharacterCreationClass");
+		PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_CLASS);
 		if ( GetSelectedRace() ~= id or forceSelect ) then
 			SetSelectedRace(id);
 			SetCharacterRace(id);
@@ -1163,12 +1172,12 @@ function SetCharacterGender(sex)
 end
 
 function CharacterCustomization_Left(id)
-	PlaySound("gsCharacterCreationLook");
+	PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_LOOK);
 	CycleCharCustomization(id, -1);
 end
 
 function CharacterCustomization_Right(id)
-	PlaySound("gsCharacterCreationLook");
+	PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_LOOK);
 	CycleCharCustomization(id, 1);
 end
 
@@ -1179,7 +1188,7 @@ function CharacterCreate_GenerateRandomName(button)
 end
 
 function CharacterCreate_Randomize()
-	PlaySound("gsCharacterCreationLook");
+	PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_LOOK);
 	RandomizeCharCustomization();
 	CharCreate_ResetFeaturesDisplay();
 end
@@ -1465,12 +1474,12 @@ function CharCreate_ChangeFeatureVariation(delta)
 	if ( endIndex < 1 or endIndex > numVariations ) then
 		return;
 	end
-	PlaySound("gsCharacterCreationClass");
+	PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_CLASS);
 	CharCreatePreviewFrame_SelectFeatureVariation(endIndex);
 end
 
 function CharCreatePreviewFrameButton_OnClick(self)
-	PlaySound("gsCharacterCreationClass");
+	PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_CLASS);
 	CharCreatePreviewFrame_SelectFeatureVariation(self.index);
 end
 
@@ -1592,6 +1601,10 @@ function CharCreate_EnableNextButton(enabled)
 	button.Arrow:SetDesaturated(not enabled);
 	button.TopGlow:SetShown(enabled);
 	button.BottomGlow:SetShown(enabled);
+end
+
+function CharCreate_RefreshNextButton()
+	CharCreate_EnableNextButton(CanProceedThroughCharacterCreate());
 end
 
 function PandarenFactionButtons_OnLoad(self)
@@ -1822,7 +1835,7 @@ function CharacterCreate_SelectCharacterType(characterType)
 end
 
 function CharacterCreate_TypeButtonOnClick(self)
-	PlaySound("gsCharacterCreationClass"); -- TODO: Get more appropriate sound for this?
+	PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_CLASS); -- TODO: Get more appropriate sound for this?
 	CharacterCreate_SelectCharacterType(self.characterType);
 end
 

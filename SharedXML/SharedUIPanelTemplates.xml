@@ -967,7 +967,7 @@
 						local parent = self:GetParent();
 						local scrollStep = self:GetParent().scrollStep or (parent:GetHeight() / 2);
 						parent:SetValue(parent:GetValue() - scrollStep);
-						PlaySound("UChatScrollButton");
+						PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -980,7 +980,7 @@
 						local parent = self:GetParent();
 						local scrollStep = self:GetParent().scrollStep or (parent:GetHeight() / 2);
 						parent:SetValue(parent:GetValue() + scrollStep);
-						PlaySound("UChatScrollButton");
+						PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -1078,7 +1078,7 @@
 						local parent = self:GetParent();
 						local scrollStep = self:GetParent().scrollStep or (parent:GetHeight() / 2);
 						parent:SetValue(parent:GetValue() - scrollStep);
-						PlaySound("UChatScrollButton");
+						PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -1091,7 +1091,7 @@
 						local parent = self:GetParent();
 						local scrollStep = self:GetParent().scrollStep or (parent:GetHeight() / 2);
 						parent:SetValue(parent:GetValue() + scrollStep);
-						PlaySound("UChatScrollButton");
+						PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -1117,7 +1117,7 @@
 					<OnClick>
 						local parent = self:GetParent();
 						parent:SetValue(parent:GetValue() - (parent:GetHeight() / 2));
-						PlaySound("UChatScrollButton");
+						PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -1129,7 +1129,7 @@
 					<OnClick>
 						local parent = self:GetParent();
 						parent:SetValue(parent:GetValue() + (parent:GetHeight() / 2));
-						PlaySound("UChatScrollButton");
+						PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -1192,7 +1192,7 @@
 						local parent = self:GetParent();
 						local scrollStep = self:GetParent().scrollStep or (parent:GetHeight() / 2);
 						parent:SetValue(parent:GetValue() - scrollStep);
-						PlaySound("UChatScrollButton");
+						PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -1205,7 +1205,7 @@
 						local parent = self:GetParent();
 						local scrollStep = self:GetParent().scrollStep or (parent:GetHeight() / 2);
 						parent:SetValue(parent:GetValue() + scrollStep);
-						PlaySound("UChatScrollButton");
+						PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -1656,5 +1656,36 @@
 				<Rotation childKey="AnimFrame" order="1" duration="1" degrees="-360"/>
 			</AnimationGroup>
 		</Animations>
+	</Frame>
+	
+	<Frame name="MaximizeMinimizeButtonFrameTemplate" parentKey="MaxMinButtonFrame" mixin="MaximizeMinimizeButtonFrameMixin" virtual="true">
+		<Size x="32" y="32"/>
+		<Frames>
+			<Button parentKey="MaximizeButton" setAllPoints="true" hidden="true">
+				<Size x="32" y="32"/>
+				<Scripts>
+					<OnClick>
+						self:GetParent():Maximize();
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-Panel-BiggerButton-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-Panel-BiggerButton-Down"/>
+				<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
+			</Button>
+			<Button parentKey="MinimizeButton" setAllPoints="true">
+				<Size x="32" y="32"/>
+				<Scripts>
+					<OnClick>
+						self:GetParent():Minimize();
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-Panel-SmallerButton-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-Panel-SmallerButton-Down"/>
+				<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnShow method="OnShow"/>
+		</Scripts>
 	</Frame>
 </Ui>

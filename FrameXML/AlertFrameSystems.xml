@@ -2462,4 +2462,121 @@
 			<OnLoad function="AlertFrameSystems_Register"/>
 		</Scripts>
 	</Frame>
+	<Button name="ItemAlertFrameTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" virtual="true" mixin="ItemAlertFrameMixin" inherits="AlertFrameTemplate">
+		<Size x="276" y="96"/>
+		<Animations>
+			<AnimationGroup parentKey="animIn">
+				<Alpha fromAlpha="1" toAlpha="0" duration="0" order="1"/>
+				<Alpha fromAlpha="0" toAlpha="1" duration="0.2" order="2"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="waitAndAnimOut">
+				<Alpha startDelay="4.05" fromAlpha="1" toAlpha="0" duration="1.5" parentKey="animOut">
+					<Scripts>
+						<OnFinished>
+							self:GetRegionParent():Hide();
+						</OnFinished>
+					</Scripts>
+				</Alpha>
+			</AnimationGroup>
+		</Animations>
+		<Layers>
+			<Layer level="BORDER">
+				<Texture parentKey="Icon">
+					<Size x="52" y="52"/>
+					<Anchors>
+						<Anchor point="LEFT" x="23" y="-2"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="IconBorder" atlas="loottoast-itemborder-green">
+					<Size x="60" y="60"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Label" inherits="GameFontNormal" justifyH="LEFT" text="YOU_EARNED_LABEL">
+					<Size x="167" y="16"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPRIGHT" x="7" y="5"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Name" inherits="GameFontNormalMed3" justifyH="LEFT" justifyV="MIDDLE">
+					<Size x="167" y="33"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPRIGHT" x="10" y="-16"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<!--LootWin-Glow-->
+				<Texture atlas="loottoast-glow" alphaMode="ADD" hidden="true" parentKey="glow">
+					<Size>
+						<AbsDimension x="286" y="109"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+					<Animations>
+						<AnimationGroup parentKey="animIn">
+							<Alpha fromAlpha="0" toAlpha="1" duration="0.2" order="1"/>
+							<Alpha fromAlpha="1" toAlpha="0" duration="0.5" order="2"/>
+							<Scripts>
+								<OnFinished>
+									self:GetParent():Hide();
+								</OnFinished>
+							</Scripts>
+						</AnimationGroup>
+					</Animations>
+				</Texture>
+				<!--LootWin-Sheen-->
+				<Texture file="Interface\LootFrame\LootToast" alphaMode="ADD" hidden="true" parentKey="shine">
+					<Size x="171" y="75"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="-10" y="12"/>
+					</Anchors>
+					<Animations>
+						<AnimationGroup parentKey="animIn">
+							<Alpha fromAlpha="0" toAlpha="1" duration="0.1" order="1"/>
+							<Translation offsetX="165" offsetY="0" duration="0.425" order="2"/>
+							<Alpha startDelay="0.175" fromAlpha="1" toAlpha="0" duration="0.25" order="2"/>
+							<Scripts>
+								<OnFinished>
+									self:GetParent():Hide();
+								</OnFinished>
+							</Scripts>
+						</AnimationGroup>
+					</Animations>
+					<TexCoords left="0.56347656" right="0.73046875" top="0.57421875" bottom="0.86718750"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</Button>
+	
+	<Button name="NewPetAlertFrameTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" virtual="true" mixin="NewPetAlertFrameMixin" inherits="ItemAlertFrameTemplate">
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture parentKey="Background" atlas="PetToast-background" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Button>
+	
+	<Button name="NewMountAlertFrameTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" virtual="true" mixin="NewMountAlertFrameMixin" inherits="ItemAlertFrameTemplate">
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture parentKey="Background" atlas="MountToast-background" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Button>
 </Ui>

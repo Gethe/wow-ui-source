@@ -710,11 +710,7 @@
 						<Anchor point="TOPLEFT" x="8" y="-8"/>
 						<Anchor point="BOTTOMRIGHT" x="-8" y="8" />
 					</Anchors>
-					<Scripts>
-						<OnLoad inherit="append">
-							self:SetViewInsets(15, 15, 17, 77);
-						</OnLoad>
-					</Scripts>
+					<ViewInsets left="15" right="15" top="17" bottom="77"/>
 				</ModelScene>
 				<Button parentKey="Magnifier" enableMouse="true" hidden="true">
 					<Size x="31" y="35" />
@@ -934,11 +930,7 @@
 						<Anchor point="TOPLEFT" x="8" y="-8" />
 						<Anchor point="BOTTOMRIGHT" x="-8" y="8" />
 					</Anchors>
-					<Scripts>
-						<OnLoad inherit="append">
-							self:SetViewInsets(20, 400, 136, 180);
-						</OnLoad>
-					</Scripts>
+					<ViewInsets left="20" right="400" top="136" bottom="180"/>
 				</ModelScene>
 				<Frame parentKey="InvisibleMouseOverFrame" enableMouse="true" hidden="true">
 					<Size x="68" y="68" />
@@ -1165,11 +1157,7 @@
 						<Anchor point="TOPLEFT" x="8" y="-8" />
 						<Anchor point="BOTTOMRIGHT" x="-8" y="8" />
 					</Anchors>
-					<Scripts>
-						<OnLoad inherit="append">
-							self:SetViewInsets(20, 380, 40, 50);
-						</OnLoad>
-					</Scripts>
+					<ViewInsets left="20" right="380" top="40" bottom="50"/>
 				</ModelScene>
 				<Frame parentKey="InvisibleMouseOverFrame" enableMouse="true" hidden="true">
 					<Size x="70" y="70" />
@@ -1349,11 +1337,7 @@
 						<Anchor point="TOPLEFT" x="8" y="-8" />
 						<Anchor point="BOTTOMRIGHT" x="-8" y="8" />
 					</Anchors>
-					<Scripts>
-						<OnLoad inherit="append">
-							self:SetViewInsets(10, 165, 20, 15);
-						</OnLoad>
-					</Scripts>
+					<ViewInsets left="10" right="165" top="20" bottom="15"/>
 				</ModelScene>
 				<Button parentKey="Magnifier" hidden="true">
 					<Size x="31" y="35" />
@@ -1514,7 +1498,7 @@
 					</Anchors>
 					<Scripts>
 						<OnClick>
-							PlaySound("UI_igStore_Cancel_Button");
+							PlaySound(SOUNDKIT.UI_IG_STORE_CANCEL_BUTTON);
 							self:GetParent():Hide();
 						</OnClick>
 					</Scripts>
@@ -2205,7 +2189,7 @@
 					</Anchors>
 					<Scripts>
 						<OnClick>
-							PlaySound("UI_igStore_PageNav_Button");
+							PlaySound(SOUNDKIT.UI_IG_STORE_PAGE_NAV_BUTTON);
 							self:GetParent().BuyButton:SetEnabled(self:GetChecked());
 						</OnClick>
 					</Scripts>

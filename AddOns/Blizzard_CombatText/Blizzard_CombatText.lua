@@ -136,7 +136,9 @@ function CombatText_OnEvent(self, event, ...)
 	elseif ( event == "UNIT_POWER" ) then
 		if ( arg1 == self.unit ) then
 			local powerType, powerToken = UnitPowerType(self.unit);
-			if ( powerToken == "MANA" and (UnitPower(self.unit) / UnitPowerMax(self.unit)) <= COMBAT_TEXT_LOW_MANA_THRESHOLD ) then
+			local maxPower = UnitPowerMax(self.unit);
+			local currentPower = UnitPower(self.unit);
+			if ( maxPower ~= 0 and powerToken == "MANA" and (currentPower / maxPower) <= COMBAT_TEXT_LOW_MANA_THRESHOLD ) then
 				if ( not CombatText.lowMana ) then
 					messageType = "MANA_LOW";
 					CombatText.lowMana = 1;

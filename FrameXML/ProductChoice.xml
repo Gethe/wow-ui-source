@@ -100,11 +100,7 @@
 						</Scripts>
 					</Button>
 				</Frames>
-				<Scripts>
-					<OnLoad inherit="append">
-						self:SetViewInsets(5, -5, -7, 67);
-					</OnLoad>
-				</Scripts>
+				<ViewInsets left="5" right="-5" top="-7" bottom="67"/>
 			</ModelScene>
 			<Frame parentKey="Covers" setAllPoints="true">
 				<Layers>
@@ -226,7 +222,7 @@
 										</Anchors>
 										<Scripts>
 											<OnClick>
-												PlaySound("igMainMenuOptionCheckBoxOn");
+												PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 												ProductChoiceFrame_ClaimItem();
 											</OnClick>
 										</Scripts>
@@ -238,7 +234,7 @@
 										</Anchors>
 										<Scripts>
 											<OnClick>
-												PlaySound("igMainMenuOptionCheckBoxOn");
+												PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 												ProductChoiceFrame.Inset.NoTakeBacksies:Hide();
 											</OnClick>
 										</Scripts>
@@ -302,7 +298,7 @@
 			<OnEvent function="ProductChoiceFrame_OnEvent"/>
 			<OnShow function="ProductChoiceFrame_OnShow"/>
 			<OnHide>
-				PlaySound("igCharacterInfoClose");
+				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 			</OnHide>
 			<OnMouseWheel function="ProductChoiceFrame_OnMouseWheel"/>
 		</Scripts>

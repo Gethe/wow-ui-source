@@ -41,10 +41,10 @@ function WardrobeTransmogFrame_OnEvent(self, event, ...)
 		if ( slotButton ) then
 			local isTransmogrified, hasPending, isPendingCollected, canTransmogrify, cannotTransmogrifyReason, hasUndo = C_Transmog.GetSlotInfo(slotID, slotButton.transmogType);
 			if ( hasUndo ) then
-				PlaySound("UI_Transmogrify_Undo");
+				PlaySound(SOUNDKIT.UI_TRANSMOGRIFY_UNDO);
 			elseif ( not hasPending ) then
 				if ( slotButton.hadUndo ) then
-					PlaySound("UI_Transmogrify_Redo");
+					PlaySound(SOUNDKIT.UI_TRANSMOGRIFY_REDO);
 					slotButton.hadUndo = nil;
 				end
 			end
@@ -94,7 +94,7 @@ function WardrobeTransmogFrame_OnShow(self)
 	HideUIPanel(CollectionsJournal);
 	WardrobeCollectionFrame_SetContainer(WardrobeFrame);
 
-	PlaySound("UI_Transmog_OpenWindow");
+	PlaySound(SOUNDKIT.UI_TRANSMOG_OPEN_WINDOW);
 	self:RegisterEvent("PLAYER_EQUIPMENT_CHANGED");
 	local hasAlternateForm, inAlternateForm = HasAlternateForm();
 	if ( hasAlternateForm ) then
@@ -108,7 +108,7 @@ function WardrobeTransmogFrame_OnShow(self)
 end
 
 function WardrobeTransmogFrame_OnHide(self)
-	PlaySound("UI_Transmog_CloseWindow");
+	PlaySound(SOUNDKIT.UI_TRANSMOG_CLOSE_WINDOW);
 	StaticPopup_Hide("TRANSMOG_APPLY_WARNING");
 	self:UnregisterEvent("PLAYER_EQUIPMENT_CHANGED");
 	self:UnregisterEvent("UNIT_MODEL_CHANGED");
@@ -352,7 +352,8 @@ function WardrobeTransmogFrame_ApplyPending(lastAcceptedWarningIndex)
 	else
 		local success = C_Transmog.ApplyAllPending(GetCVarBool("transmogCurrentSpecOnly"));
 		if ( success ) then
-			PlaySound("UI_Transmog_Apply");
+			WardrobeTransmogFrame_OnTransmogApplied();
+			PlaySound(SOUNDKIT.UI_TRANSMOG_APPLY);
 			WardrobeTransmogFrame.applyWarningsTable = nil;
 			-- outfit tutorial
 			if ( not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_OUTFIT_DROPDOWN) ) then
@@ -369,7 +370,25 @@ function WardrobeTransmogFrame_ApplyPending(lastAcceptedWarningIndex)
 	end
 end
 
+function WardrobeTransmogFrame_OnTransmogApplied()
+	if WardrobeOutfitDropDown.selectedOutfitID and WardrobeOutfitDropDown:IsOutfitDressed() then
+		WardrobeTransmogFrame.OutfitDropDown:OnOutfitApplied(WardrobeOutfitDropDown.selectedOutfitID);
+	end
+end
+
 WardrobeOutfitMixin = { };
+
+function WardrobeOutfitMixin:OnOutfitApplied(outfitID)
+	local value = outfitID or "";
+	if GetCVarBool("transmogCurrentSpecOnly") then
+		local specIndex = GetSpecialization();
+		SetCVar("lastTransmogOutfitIDSpec"..specIndex, value);
+	else
+		for specIndex = 1, GetNumSpecializations() do
+			SetCVar("lastTransmogOutfitIDSpec"..specIndex, value);
+		end
+	end
+end
 
 function WardrobeOutfitMixin:LoadOutfit(outfitID)
 	if ( not outfitID ) then
@@ -389,17 +408,26 @@ function WardrobeOutfitMixin:GetSlotSourceID(slot, transmogType)
 	return sourceID;
 end
 
+function WardrobeOutfitMixin:OnOutfitSaved(outfitID)
+	local cost, numChanges = C_Transmog.GetCost();
+	if numChanges == 0 then
+		self:OnOutfitApplied(outfitID);
+	end
+end
+
 function WardrobeOutfitMixin:OnSelectOutfit(outfitID)
-	if ( outfitID ) then
-		SetCVar("lastTransmogOutfitID", outfitID);
-	else
-		-- outfitID can be 0, so use empty string for none
-		SetCVar("lastTransmogOutfitID", "");
+	-- outfitID can be 0, so use empty string for none
+	local value = outfitID or "";
+	for specIndex = 1, GetNumSpecializations() do
+		if GetCVar("lastTransmogOutfitIDSpec"..specIndex) == "" then
+			SetCVar("lastTransmogOutfitIDSpec"..specIndex, value);
+		end
 	end
 end
 
 function WardrobeOutfitMixin:GetLastOutfitID()
-	return tonumber(GetCVar("lastTransmogOutfitID"));
+	local specIndex = GetSpecialization();
+	return tonumber(GetCVar("lastTransmogOutfitIDSpec"..specIndex));
 end
 
 -- ***** BUTTONS
@@ -422,16 +450,16 @@ function WardrobeTransmogButton_OnClick(self, button)
 	self.hadUndo = hasUndo;
 	if ( button == "RightButton" ) then
 		if ( hasPending or hasUndo ) then
-			PlaySound("UI_Transmog_RevertingGearSlot");
+			PlaySound(SOUNDKIT.UI_TRANSMOG_REVERTING_GEAR_SLOT);
 			C_Transmog.ClearPending(slotID, self.transmogType);
 			WardrobeTransmogButton_Select(self, true);
 		elseif ( isTransmogrified ) then
-			PlaySound("UI_Transmog_RevertingGearSlot");
+			PlaySound(SOUNDKIT.UI_TRANSMOG_REVERTING_GEAR_SLOT);
 			C_Transmog.SetPending(slotID, self.transmogType, 0);
 			WardrobeTransmogButton_Select(self, true);
 		end
 	else
-		PlaySound("UI_Transmog_GearSlotClick");
+		PlaySound(SOUNDKIT.UI_TRANSMOG_GEAR_SLOT_CLICK);
 		WardrobeTransmogButton_Select(self, true);
 	end
 	if ( self.UndoButton ) then
@@ -659,7 +687,7 @@ end
 function WardrobeCollectionFrame_ClickTab(tab)
 	WardrobeCollectionFrame_SetTab(tab:GetID());
 	PanelTemplates_ResizeTabsToFit(WardrobeCollectionFrame, TABS_MAX_WIDTH);
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 end
 
 function WardrobeCollectionFrame_SetTab(tabID)
@@ -1154,25 +1182,22 @@ function WardrobeUtils_GetAdjustedDisplayIndexFromKeyPress(contentFrame, index, 
 		if ( index > numEntries ) then
 			index = 1;
 		end
-	elseif ( key == WARDROBE_DOWN_VISUAL_KEY or key == WARDROBE_UP_VISUAL_KEY ) then
-		local direction = 1;
-		if ( key == WARDROBE_UP_VISUAL_KEY ) then
-			direction = -1;
+	elseif ( key == WARDROBE_DOWN_VISUAL_KEY ) then
+		local newIndex = index + contentFrame.NUM_COLS;
+		if ( newIndex > numEntries ) then
+			-- If you're at the last entry, wrap back around; otherwise go to the last entry.
+			index = index == numEntries and 1 or numEntries;
+		else
+			index = newIndex;
 		end
-
-		local newIndex = index;
-		newIndex = newIndex + contentFrame.NUM_COLS * direction;
-		if ( GetPage(newIndex, contentFrame.PAGE_SIZE) ~= contentFrame.PagingFrame:GetCurrentPage() or newIndex > numEntries ) then
-			newIndex = index + contentFrame.PAGE_SIZE * -direction;	-- reset by a full page in opposite direction
-			while ( GetPage(newIndex, contentFrame.PAGE_SIZE) ~= contentFrame.PagingFrame:GetCurrentPage() or newIndex > numEntries ) do
-				newIndex = newIndex + contentFrame.NUM_COLS * direction;
-				if ( newIndex < 1 or newIndex > numEntries + contentFrame.PAGE_SIZE ) then
-					newIndex = 1;
-					break;
-				end
-			end
+	elseif ( key == WARDROBE_UP_VISUAL_KEY ) then
+		local newIndex = index - contentFrame.NUM_COLS;
+		if ( newIndex < 1 ) then
+			-- If you're at the first entry, wrap back around; otherwise go to the first entry.
+			index = index == 1 and numEntries or 1;
+		else
+			index = newIndex;
 		end
-		index = newIndex;
 	end
 	return index;
 end
@@ -1712,7 +1737,7 @@ function WardrobeItemsCollectionMixin:SelectVisual(visualID)
 	end
 	local slotID = GetInventorySlotInfo(self.activeSlot);
 	C_Transmog.SetPending(slotID, self.transmogType, sourceID);
-	PlaySound("UI_Transmog_ItemClick");
+	PlaySound(SOUNDKIT.UI_TRANSMOG_ITEM_CLICK);
 end
 
 function WardrobeCollectionFrame_OpenTransmogLink(link, transmogType)
@@ -1860,7 +1885,7 @@ function WardrobeItemsModelMixin:OnMouseDown(button)
 		end
 		dropDown.activeFrame = self;
 		ToggleDropDownMenu(1, nil, dropDown, self, -6, -3);
-		PlaySound("igMainMenuOptionCheckBoxOn");
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	end
 end
 
@@ -1949,7 +1974,7 @@ end
 function WardrobeSetsTransmogModelMixin:OnMouseDown(button)
 	if ( button == "LeftButton" ) then
 		self:GetParent():SelectSet(self.setID);
-		PlaySound("UI_Transmog_ItemClick");
+		PlaySound(SOUNDKIT.UI_TRANSMOG_ITEM_CLICK);
 	elseif ( button == "RightButton" ) then
 		local dropDown = self:GetParent().RightClickDropDown;
 		if ( dropDown.activeFrame ~= self ) then
@@ -1957,7 +1982,7 @@ function WardrobeSetsTransmogModelMixin:OnMouseDown(button)
 		end
 		dropDown.activeFrame = self;
 		ToggleDropDownMenu(1, nil, dropDown, self, -6, -3);
-		PlaySound("igMainMenuOptionCheckBoxOn");
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	end
 end
 
@@ -2431,7 +2456,7 @@ end
 -- ***** NAVIGATION
 
 function WardrobeItemsCollectionMixin:OnPageChanged(userAction)
-	PlaySound("UI_Transmog_PageTurn");
+	PlaySound(SOUNDKIT.UI_TRANSMOG_PAGE_TURN);
 	CloseDropDownMenus();
 	if ( userAction ) then
 		self:UpdateItems();
@@ -3694,6 +3719,7 @@ function WardrobeSetsTransmogMixin:OnHide()
 	self:UnregisterEvent("TRANSMOG_SETS_UPDATE_FAVORITE");
 	self.loadingSetID = nil;
 	SetsDataProvider:ClearSets();
+	WardrobeCollectionFrame_ClearSearch(LE_TRANSMOG_SEARCH_TYPE_USABLE_SETS);
 	self.sourceQualityTable = nil;
 end
 
@@ -3804,7 +3830,7 @@ function WardrobeSetsTransmogMixin:UpdateSets()
 end
 
 function WardrobeSetsTransmogMixin:OnPageChanged(userAction)
-	PlaySound("UI_Transmog_PageTurn");
+	PlaySound(SOUNDKIT.UI_TRANSMOG_PAGE_TURN);
 	CloseDropDownMenus();
 	if ( userAction ) then
 		self:UpdateSets();
@@ -3838,7 +3864,7 @@ function WardrobeSetsTransmogMixin:LoadSet(setID)
 		self.ignoreTransmogrifyUpdateEvent = true;
 		C_Transmog.ClearPending();
 		self.ignoreTransmogrifyUpdateEvent = false;
-		C_Transmog.LoadSources(transmogSources);
+		C_Transmog.LoadSources(transmogSources, -1, -1);
 	end
 end
 

@@ -69,7 +69,7 @@
 				</Layers>
 				<Scripts>
 					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						WardrobeOutfitEditFrame:ShowForOutfit(self:GetParent().outfitID);
 					</OnClick>
 				</Scripts>
@@ -109,7 +109,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						local dropDown = self:GetParent();
 						dropDown:CheckOutfitForSave(UIDropDownMenu_GetText(dropDown));
 					</OnClick>
@@ -238,7 +238,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						self:GetParent():OnAccept();
 					</OnClick>
 				</Scripts>
@@ -261,7 +261,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						self:GetParent():OnDelete();
 					</OnClick>
 				</Scripts>
@@ -274,7 +274,7 @@
 				self.DeleteButton:SetWidth(self.DeleteButton:GetTextWidth() + 50);
 			</OnLoad>
 			<OnHide>
-				PlaySound("igMainMenuClose");
+				PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
 			</OnHide>
 		</Scripts>
 	</Frame>

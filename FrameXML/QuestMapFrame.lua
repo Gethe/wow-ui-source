@@ -291,13 +291,13 @@ function QuestMapFrame_ShowQuestDetails(questID)
 	StaticPopup_Hide("ABANDON_QUEST_WITH_ITEMS");
 end
 
-function QuestMapFrame_CloseQuestDetails()
+function QuestMapFrame_CloseQuestDetails(optPortraitOwnerCheckFrame)
 	QuestMapFrame.QuestsFrame:Show();
 	QuestMapFrame.DetailsFrame:Hide();
 	QuestMapFrame.DetailsFrame.questID = nil;
 	QuestMapFrame.DetailsFrame.questMapID = nil;
 	QuestMapFrame_UpdateAll();
-	QuestFrame_HideQuestPortrait();
+	QuestFrame_HideQuestPortrait(optPortraitOwnerCheckFrame);
 
 	StaticPopup_Hide("ABANDON_QUEST");
 	StaticPopup_Hide("ABANDON_QUEST_WITH_ITEMS");
@@ -422,7 +422,7 @@ end
 function QuestMapQuestOptions_ShareQuest(questID)
 	local questLogIndex = GetQuestLogIndexByID(questID);
 	QuestLogPushQuest(questLogIndex);
-	PlaySound("igQuestLogOpen");
+	PlaySound(SOUNDKIT.IG_QUEST_LOG_OPEN);
 end
 
 function QuestMapQuestOptions_AbandonQuest(questID)
@@ -765,7 +765,7 @@ function ShowQuestLog()
 end
 
 function QuestMapLogHeaderButton_OnClick(self, button)
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	if ( button == "LeftButton" ) then
 		local _, _, _, _, isCollapsed = GetQuestLogTitle(self.questLogIndex);
 		if (isCollapsed) then
@@ -934,7 +934,7 @@ function QuestMapLogTitleButton_OnClick(self, button)
 		return;
 	end
 
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 
 	if ( IsShiftKeyDown() ) then
 		QuestMapQuestOptions_TrackQuest(self.questID);
@@ -1082,6 +1082,15 @@ function GetZoneStoryID()
 		-- Broken Shore
 		["1021-Alliance"] = {11546, 1021},
 		["1021-Horde"] = {11546, 1021},
+		-- Argus
+		["1184-Alliance"] = {12066, 1184},
+		["1184-Horde"] = {12066, 1184},
+		["1135-Alliance"] = {12066, 1184},
+		["1135-Horde"] = {12066, 1184},
+		["1171-Alliance"] = {12066, 1184},
+		["1171-Horde"] = {12066, 1184},
+		["1170-Alliance"] = {12066, 1184},
+		["1170-Horde"] = {12066, 1184},
 	};
 	if (achievementTable[key] ~= nil) then
 		return achievementTable[key][1], achievementTable[key][2];
@@ -1098,7 +1107,7 @@ end
 
 function QuestLogPopupDetailFrame_OnHide(self)
 	self.questID = nil;
-	PlaySound("igQuestLogClose");
+	PlaySound(SOUNDKIT.IG_QUEST_LOG_CLOSE);
 end
 
 function QuestLogPopupDetailFrame_Show(questLogIndex)
@@ -1122,7 +1131,7 @@ function QuestLogPopupDetailFrame_Show(questLogIndex)
 
 	QuestLogPopupDetailFrame_Update(true);
 	ShowUIPanel(QuestLogPopupDetailFrame);
-	PlaySound("igQuestLogOpen");
+	PlaySound(SOUNDKIT.IG_QUEST_LOG_OPEN);
 
 	-- portrait
 	local questPortrait, questPortraitText, questPortraitName = GetQuestLogPortraitGiver();

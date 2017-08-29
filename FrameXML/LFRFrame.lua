@@ -660,12 +660,12 @@ end
 
 function LFRBrowseButton_OnClick(self)
 	if ( LFRBrowseFrame.selectedName == self.unitName ) then
-		PlaySound("igMainMenuOptionCheckBoxOff");
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 		LFRBrowseFrame.selectedName = nil;
 		LFRBrowseFrame.selectedType = nil;
 		self:UnlockHighlight();
 	else
-		PlaySound("igMainMenuOptionCheckBoxOn");
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 		LFRBrowseFrame.selectedName = self.unitName;
 		LFRBrowseFrame.selectedType = self.type;
 		--Unlock all other highlights

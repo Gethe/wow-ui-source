@@ -51,7 +51,7 @@
 			<OnShow function="TaxiFrame_OnShow" />
 			<OnHide>
 				CloseTaxiMap();
-				PlaySound("igMainMenuClose");
+				PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
 			</OnHide>
 		</Scripts>
 	</Frame>

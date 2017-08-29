@@ -103,7 +103,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PlaySound("igQuestCancel");
+						PlaySound(SOUNDKIT.IG_QUEST_CANCEL);
 						self:GetParent():DeclineQuest();
 					</OnClick>
 				</Scripts>
@@ -137,7 +137,7 @@
 										local parent = self:GetParent();
 										local scrollStep = self:GetParent().scrollStep or (parent:GetHeight() / 2);
 										parent:SetValue(parent:GetValue() - scrollStep);
-										PlaySound("UChatScrollButton");
+										PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 									</OnClick>
 								</Scripts>
 							</Button>
@@ -150,7 +150,7 @@
 										local parent = self:GetParent();
 										local scrollStep = self:GetParent().scrollStep or (parent:GetHeight() / 2);
 										parent:SetValue(parent:GetValue() + scrollStep);
-										PlaySound("UChatScrollButton");
+										PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 									</OnClick>
 								</Scripts>
 							</Button>
@@ -253,7 +253,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PlaySound("igQuestCancel");
+						PlaySound(SOUNDKIT.IG_QUEST_CANCEL);
 						self:GetParent():DeclineQuest();
 					</OnClick>
 				</Scripts>

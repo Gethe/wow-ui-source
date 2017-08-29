@@ -125,6 +125,11 @@ retain("Vector3D_Add");
 retain("Vector3D_ScaleBy");
 retain("Vector3D_CalculateNormalFromYawPitch");
 retain("DeltaLerp");
+retain("SOUNDKIT");
+retain("GetScreenWidth");
+retain("GetScreenHeight");
+retain("GetPhysicalScreenSize");
+retain("ConvertPixelsToUI");
 
 --For auth challenge
 take("C_AuthChallenge");

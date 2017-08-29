@@ -1,5 +1,7 @@
 MAX_NUM_GLUE_DIALOG_BUTTONS = 3;
 
+local QUEUED_GLUE_DIALOGS = {};
+
 GlueDialogTypes = { };
 
 
@@ -228,66 +230,6 @@ GlueDialogTypes["QUEUED_WITH_FCM"] = {
 	end,
 }
 
-GlueDialogTypes["SYSTEM_INCOMPATIBLE_SSE"] = {
-	text = SYSTEM_INCOMPATIBLE_SSE,
-	button1 = OKAY,
-	html = 1,
-	showAlert = 1,
-	OnAccept = function ()
-		CheckSystemRequirements("SSE");
-	end
-}
-
-GlueDialogTypes["DEVICE_BLACKLISTED"] = {
-	text = DEVICE_BLACKLISTED,
-	button1 = OKAY,
-	html = 1,
-	showAlert = 1,
-	OnAccept = function ()
-		CheckSystemRequirements("DEVICE");
-	end
-}
-
-GlueDialogTypes["FIXEDFUNCTION_UNSUPPORTED"] = {
-	text = FIXEDFUNCTION_UNSUPPORTED,
-	button1 = OKAY,
-	html = 1,
-	showAlert = 1,
-	OnAccept = function ()
-		CheckSystemRequirements("SHADERMODEL");
-	end
-}
-
-GlueDialogTypes["DRIVER_BLACKLISTED"] = {
-	text = DRIVER_BLACKLISTED,
-	button1 = OKAY,
-	html = 1,
-	showAlert = 1,
-	OnAccept = function ()
-		CheckSystemRequirements("DRIVER");
-	end
-}
-
-GlueDialogTypes["DRIVER_OUTOFDATE"] = {
-	text = DRIVER_OUTOFDATE,
-	button1 = OKAY,
-	html = 1,
-	showAlert = 1,
-	OnAccept = function ()
-		CheckSystemRequirements("DRIVER_OOD");
-	end
-}
-
-GlueDialogTypes["SHADER_MODEL_TO_BE_UNSUPPORTED"] = {
-	text = SHADER_MODEL_TO_BE_UNSUPPORTED,
-	button1 = OKAY,
-	html = 1,
-	showAlert = 1,
-	OnAccept = function ()
-		CheckSystemRequirements("SHADERMODEL_TOBEUNSUPPORTED");
-	end
-}
-
 GlueDialogTypes["CHARACTER_BOOST_NO_CHARACTERS_WARNING"] = {
 	text = CHARACTER_BOOST_NO_CHARACTERS_WARNING_DIALOG_TEXT,
 	button1 = CHARACTER_BOOST_NO_CHARACTERS_WARNING_DIALOG_ACCEPT_WARNING,
@@ -354,6 +296,26 @@ GlueDialogTypes["LEGION_PURCHASE_READY"] = {
 		C_Login.DisconnectFromServer();
 	end,
 }
+
+GlueDialogTypes["CONFIGURATION_WARNING"] = {
+	button1 = OKAY,
+	OnAccept = function()
+		C_ConfigurationWarnings.SetConfigurationWarningSeen(GlueDialog.data.configurationWarning);
+	end,
+	showAlert = 1,
+	html = 1,
+}
+
+function GlueDialog_Queue(which, text, data)
+	table.insert(QUEUED_GLUE_DIALOGS, {which = which, text = text, data = data});
+end
+
+function GlueDialog_CheckQueuedDialogs()
+	if #QUEUED_GLUE_DIALOGS > 0 and not GlueDialog:IsShown() then
+		GlueDialog_Show(QUEUED_GLUE_DIALOGS[1].which, QUEUED_GLUE_DIALOGS[1].text, QUEUED_GLUE_DIALOGS[1].data);
+		table.remove(QUEUED_GLUE_DIALOGS, 1);
+	end
+end
 
 function GlueDialog_Show(which, text, data)
 	local dialogInfo = GlueDialogTypes[which];
@@ -577,7 +539,7 @@ function GlueDialog_OnShow(self)
 end
 
 function GlueDialog_OnHide()
---	PlaySound("igMainMenuClose");
+--	PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
 end
 
 function GlueDialog_OnClick(self, button, down)
@@ -599,7 +561,7 @@ function GlueDialog_OnClick(self, button, down)
 			OnAlt();
 		end
 	end
-	PlaySound("gsTitleOptionOK");
+	PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK);
 end
 
 function GlueDialog_OnKeyDown(self, key)

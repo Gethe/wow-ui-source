@@ -537,7 +537,7 @@ function EquipmentFlyoutPopoutButton_ShowAll()
 end
 
 function EquipmentFlyoutPopoutButton_OnClick(self)
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	if ( self.flyoutLocked ) then
 		self.flyoutLocked = false;
 		EquipmentFlyoutFrame:Hide();

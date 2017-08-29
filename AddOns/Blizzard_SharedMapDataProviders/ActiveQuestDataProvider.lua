@@ -35,10 +35,9 @@ function ActiveQuestDataProviderMixin:RefreshAllData(fromOnShow)
 	for zoneIndex = 1, C_MapCanvas.GetNumZones(mapAreaID) do
 		local zoneMapID, zoneName, zoneDepth, left, right, top, bottom = C_MapCanvas.GetZoneInfo(mapAreaID, zoneIndex);
 		if zoneDepth <= 1 then -- Exclude subzones
-			local activeQuestInfo = GetQuestsForPlayerByMapID(zoneMapID, mapAreaID);
+			local activeQuestInfo = GetQuestsForPlayerByMapID(zoneMapID, mapAreaID, self:GetTransformFlags());
 
 			if activeQuestInfo then
-				local superTrackedQuestID = GetSuperTrackedQuestID();
 				for i, info in ipairs(activeQuestInfo) do
 					if not QuestUtils_IsQuestWorldQuest(info.questID) then
 						self:AddActiveQuest(info.questID, info.x, info.y);
@@ -151,7 +150,6 @@ function ActiveQuestDataProviderMixin:AddActiveQuest(questID, x, y)
 	end
 
 	pin:SetPosition(x, y);
-	pin:Show();
 end
 
 --[[ Active Quest Pin ]]--
@@ -159,7 +157,7 @@ ActiveQuestPinMixin = CreateFromMixins(MapCanvasPinMixin);
 
 function ActiveQuestPinMixin:OnLoad()
 	self:SetAlphaLimits(2.0, 0.0, 1.0);
-	self:SetScalingLimits(1, 1.5, 0.50);
+	self:SetScalingLimits(1, 0.4125, 0.425);
 
 	self.UpdateTooltip = self.OnMouseEnter;
 

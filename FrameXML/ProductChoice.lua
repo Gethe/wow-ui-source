@@ -33,7 +33,7 @@ function ProductChoiceFrame_OnEvent(self, event, ...)
 end
 
 function ProductChoiceFrame_OnShow(self)
-	PlaySound("igCharacterInfoOpen");
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 	if ( self.secondAlertFrame ) then
 		self.secondAlertFrame:Hide();
 	end
@@ -200,7 +200,7 @@ function ProductChoiceItem_OnClick(self, button)
 		ModelPreviewFrame_ShowModel(self.data.modelDisplayID, self.data.modelSceneID);
 	else
 		if ( not self.data.disabled ) then
-			PlaySound("igMainMenuOptionCheckBoxOn");
+			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 			ProductChoiceFrame.selectedData = self.data;
 		end
 	end
@@ -224,7 +224,7 @@ end
 
 function ProductChoiceFrameInsetClaimButton_OnClick(self, button)
 	local frame = ProductChoiceFrame;
-	PlaySound("igCharacterInfoOpen");
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 	ProductChoiceFrame_ShowConfirmation(frame.Inset.NoTakeBacksies, frame.choiceID, frame.selectedData);
 end
 
@@ -240,7 +240,7 @@ function ProductChoiceFrame_RefreshConfirmationModel(confirmationFrame, forceUpd
 end
 
 function ProductChoiceFrame_PageClick(self, advance)
-	PlaySound("igSpellBookOpen");
+	PlaySound(SOUNDKIT.IG_SPELLBOOK_OPEN);
 	local frame = ProductChoiceFrame;
 	frame.selectedData = nil;
 	if (advance) then

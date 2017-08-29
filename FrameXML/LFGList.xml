@@ -149,7 +149,7 @@
 		</Layers>
 		<Scripts>
 			<OnClick>
-				PlaySound("igMainMenuOptionCheckBoxOn");
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 				LFGListEntryCreationActivityFinder_Select(self:GetParent():GetParent():GetParent():GetParent(), self.activityID);
 			</OnClick>
 			<OnEnter>
@@ -219,7 +219,7 @@
 				<HighlightTexture alphaMode="ADD"/>
 				<Scripts>
 					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						C_LFGList.SetApplicantMemberRole(self:GetParent():GetParent().applicantID, self:GetParent().memberIdx, self.role);
 					</OnClick>
 				</Scripts>
@@ -233,7 +233,7 @@
 				<HighlightTexture alphaMode="ADD"/>
 				<Scripts>
 					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						C_LFGList.SetApplicantMemberRole(self:GetParent():GetParent().applicantID, self:GetParent().memberIdx, self.role);
 					</OnClick>
 				</Scripts>
@@ -247,7 +247,7 @@
 				<HighlightTexture alphaMode="ADD"/>
 				<Scripts>
 					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						C_LFGList.SetApplicantMemberRole(self:GetParent():GetParent().applicantID, self:GetParent().memberIdx, self.role);
 					</OnClick>
 				</Scripts>
@@ -258,7 +258,7 @@
 				self:RegisterForClicks("RightButtonUp");
 			</OnLoad>
 			<OnClick>
-				PlaySound("igMainMenuOptionCheckBoxOn");
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 				EasyMenu(LFGListUtil_GetApplicantMemberMenu(self:GetParent().applicantID, self.memberIdx), LFGListFrameDropDown, self, 60, -5, "MENU");
 			</OnClick>
 			<OnEnter function="LFGListApplicantMember_OnEnter"/>
@@ -308,7 +308,7 @@
 				</Layers>
 				<Scripts>
 					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						if ( self.isAck ) then
 							C_LFGList.RemoveApplicant(self:GetParent().applicantID);
 						else
@@ -325,7 +325,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						if ( not IsInRaid(LE_PARTY_CATEGORY_HOME) and GetNumGroupMembers(LE_PARTY_CATEGORY_HOME) + self:GetParent().numMembers + C_LFGList.GetNumInvitedApplicantMembers() > MAX_PARTY_MEMBERS + 1 ) then
 							local dialog = StaticPopup_Show("LFG_LIST_INVITING_CONVERT_TO_RAID");
 							if ( dialog ) then
@@ -551,9 +551,9 @@
 				<Scripts>
 					<OnClick>
 						if ( self:GetChecked() ) then
-							PlaySound("igMainMenuOptionCheckBoxOn");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						else
-							PlaySound("igMainMenuOptionCheckBoxOff");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 						end
 					</OnClick>
 					<OnEnter>
@@ -613,10 +613,10 @@
 				<Scripts>
 					<OnClick>
 						if ( self:GetChecked() ) then
-							PlaySound("igMainMenuOptionCheckBoxOn");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 							self:GetParent().EditBox:SetFocus();
 						else
-							PlaySound("igMainMenuOptionCheckBoxOff");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 							self:GetParent().EditBox:ClearFocus();
 							self:GetParent().EditBox:SetText("");
 						end
@@ -832,7 +832,7 @@
 				</Layers>
 				<Scripts>
 					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						C_LFGList.CancelApplication(self:GetParent().resultID);
 					</OnClick>
 					<OnEnter>
@@ -1036,7 +1036,7 @@
 						</Layers>
 						<Scripts>
 							<OnClick>
-								PlaySound("igMainMenuOptionCheckBoxOn");
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 								ToggleDropDownMenu(1, nil, LFGListLanguageFilterDropDownFrame, self, 0, -2, "MENU");
 							</OnClick>
 						</Scripts>
@@ -1127,7 +1127,7 @@
 							</OnEnter>
 							<OnLeave function="GameTooltip_Hide"/>
 							<OnClick>
-								PlaySound("igMainMenuOptionCheckBoxOn");
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 								LFGListSearchPanel_DoSearch(self:GetParent());
 							</OnClick>
 						</Scripts>
@@ -1213,7 +1213,7 @@
 						<Scripts>
 							<OnClick>
 								local frame = self:GetParent():GetParent();
-								PlaySound("igMainMenuOptionCheckBoxOn");
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 								LFGListFrame_SetActivePanel(frame, frame.CategorySelection);
 							</OnClick>
 						</Scripts>
@@ -1225,7 +1225,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								PlaySound("igMainMenuOptionCheckBoxOn");
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 								LFGListSearchPanel_SignUp(self:GetParent());
 							</OnClick>
 						</Scripts>
@@ -1333,9 +1333,9 @@
 						<Scripts>
 							<OnClick>
 								if ( self:GetChecked() ) then
-									PlaySound("igMainMenuOptionCheckBoxOn");
+									PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 								else
-									PlaySound("igMainMenuOptionCheckBoxOff");
+									PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 								end
 								LFGListUtil_SetAutoAccept(self:GetChecked());
 							</OnClick>
@@ -1415,7 +1415,7 @@
 							</OnEnter>
 							<OnLeave function="GameTooltip_Hide"/>
 							<OnClick>
-								PlaySound("igMainMenuOptionCheckBoxOn");
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 								C_LFGList.RefreshApplicants();
 							</OnClick>
 						</Scripts>
@@ -1459,7 +1459,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								PlaySound("igMainMenuOptionCheckBoxOn");
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 								C_LFGList.RemoveListing();
 							</OnClick>
 						</Scripts>
@@ -1666,7 +1666,7 @@
 											</OnTextChanged>
 											<OnEnterPressed>
 												LFGListEntryCreationActivityFinder_Accept(self:GetParent():GetParent());
-												PlaySound("igMainMenuOptionCheckBoxOn");
+												PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 											</OnEnterPressed>
 										</Scripts>
 									</EditBox>
@@ -1697,7 +1697,7 @@
 										</Anchors>
 										<Scripts>
 											<OnClick>
-												PlaySound("igMainMenuOptionCheckBoxOn");
+												PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 												LFGListEntryCreationActivityFinder_Accept(self:GetParent():GetParent());
 											</OnClick>
 										</Scripts>
@@ -1709,7 +1709,7 @@
 										</Anchors>
 										<Scripts>
 											<OnClick>
-												PlaySound("igMainMenuOptionCheckBoxOn");
+												PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 												LFGListEntryCreationActivityFinder_Cancel(self:GetParent():GetParent());
 											</OnClick>
 										</Scripts>
@@ -1938,7 +1938,7 @@
 				<Scripts>
 					<OnClick>
 						local dialog = self:GetParent();
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						C_LFGList.ApplyToGroup(dialog.resultID, dialog.Description.EditBox:GetText(), dialog.TankButton:IsShown() and dialog.TankButton.CheckButton:GetChecked(), dialog.HealerButton:IsShown() and dialog.HealerButton.CheckButton:GetChecked(), dialog.DamagerButton:IsShown() and dialog.DamagerButton.CheckButton:GetChecked());
 						StaticPopupSpecial_Hide(dialog);
 					</OnClick>
@@ -1959,7 +1959,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						StaticPopupSpecial_Hide(self:GetParent());
 					</OnClick>
 				</Scripts>
@@ -2033,7 +2033,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						LFGListInviteDialog_Accept(self:GetParent());
 					</OnClick>
 				</Scripts>
@@ -2045,7 +2045,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						LFGListInviteDialog_Decline(self:GetParent());
 					</OnClick>
 				</Scripts>

@@ -208,7 +208,7 @@ function LFGEventFrame_OnEvent(self, event, ...)
 		LFGDungeonReadyPopup:SetScript("OnUpdate", nil);
 		LFGDungeonReadyStatus_ResetReadyStates();
 		StaticPopupSpecial_Show(LFGDungeonReadyPopup);
-		PlaySound("ReadyCheck");
+		PlaySound(SOUNDKIT.READY_CHECK);
 		FlashClientIcon();
 	elseif ( event == "LFG_PROPOSAL_DONE" ) then
 		LFGDebug("Proposal Hidden: Proposal done.");
@@ -651,7 +651,7 @@ end
 --Ready popup functions
 
 function LFGDungeonReadyPopup_OnFail()
-	PlaySound("LFG_Denied");
+	PlaySound(SOUNDKIT.LFG_DENIED);
 	if ( LFGDungeonReadyDialog:IsShown() ) then
 		LFGDebug("Proposal Hidden: Proposal failed.");
 		StaticPopupSpecial_Hide(LFGDungeonReadyPopup);
@@ -720,7 +720,19 @@ function LFGDungeonReadyPopup_Update()
 	LFGDungeonReadyDialog.leaveButton:SetText(leaveText);
 
 	if ( hasResponded ) then
-		if ( subtypeID == LFG_SUBTYPEID_RAID ) then
+		if ( subtypeID == LFG_SUBTYPEID_SCENARIO or subtypeID == LFG_SUBTYPEID_FLEXRAID or subtypeID == LFG_SUBTYPEID_WORLDPVP) then
+			LFGDungeonReadyDialog:Hide();
+			-- there may be solo scenarios
+			if ( numMembers > 1 ) then
+				LFGDungeonReadyStatus:Show();
+				LFGDungeonReadyStatusIndividual:Hide();
+				LFGDungeonReadyStatusGrouped:Hide();
+				LFGDungeonReadyStatusRoleless:Show();
+				LFGDungeonReadyStatusRoleless_UpdateCount(LFGDungeonReadyStatusRoleless.ready, numMembers);
+			else
+				LFGDungeonReadyStatus:Hide();
+			end
+		elseif ( numMembers > 5 or subtypeID == LFG_SUBTYPEID_RAID ) then
 			LFGDungeonReadyStatus:Show();
 			LFGDungeonReadyStatusIndividual:Hide();
 			LFGDungeonReadyStatusRoleless:Hide();
@@ -733,18 +745,6 @@ function LFGDungeonReadyPopup_Update()
 			
 			if ( not LFGDungeonReadyPopup:IsShown() or StaticPopup_IsLastDisplayedFrame(LFGDungeonReadyPopup) ) then
 				LFGDungeonReadyPopup:SetHeight(LFGDungeonReadyStatus:GetHeight());
-			end
-		elseif ( subtypeID == LFG_SUBTYPEID_SCENARIO or subtypeID == LFG_SUBTYPEID_FLEXRAID or subtypeID == LFG_SUBTYPEID_WORLDPVP) then
-			LFGDungeonReadyDialog:Hide();
-			-- there may be solo scenarios
-			if ( numMembers > 1 ) then
-				LFGDungeonReadyStatus:Show();
-				LFGDungeonReadyStatusIndividual:Hide();
-				LFGDungeonReadyStatusGrouped:Hide();
-				LFGDungeonReadyStatusRoleless:Show();
-				LFGDungeonReadyStatusRoleless_UpdateCount(LFGDungeonReadyStatusRoleless.ready, numMembers);
-			else
-				LFGDungeonReadyStatus:Hide();
 			end
 		else
 			LFGDungeonReadyStatus:Show();
@@ -1050,7 +1050,7 @@ function LFGDungeonReadyStatusIndividual_UpdateIcon(button)
 	elseif ( accepted ) then
 		if ( button.readyStatus ~= "accepted" ) then
 			button.readyStatus = "accepted";
-			PlaySound("LFG_RoleCheck");
+			PlaySound(SOUNDKIT.LFG_ROLE_CHECK);
 		end
 		button.statusIcon:SetTexture(READY_CHECK_READY_TEXTURE);
 	else
@@ -2153,7 +2153,7 @@ function LFGDungeonListCheckButton_OnClick(button, category, dungeonList, hidden
 	local dungeonID = parent.id;
 	local isChecked = button:GetChecked();
 
-	PlaySound(isChecked and "igMainMenuOptionCheckBoxOn" or "igMainMenuOptionCheckBoxOff");
+	PlaySound(isChecked and SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON or SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 	if ( LFGIsIDHeader(dungeonID) ) then
 		LFGDungeonList_SetHeaderEnabled(category, dungeonID, isChecked, dungeonList, hiddenByCollapseList);
 	else

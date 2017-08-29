@@ -140,7 +140,7 @@ function AchievementFrame_OnLoad (self)
 end
 
 function AchievementFrame_OnShow (self)
-	PlaySound("AchievementMenuOpen");
+	PlaySound(SOUNDKIT.ACHIEVEMENT_MENU_OPEN);
 	AchievementFrameHeaderPoints:SetText(BreakUpLargeNumbers(GetTotalAchievementPoints()));
 	if ( not AchievementFrame.wasShown ) then
 		AchievementFrame.wasShown = true;
@@ -151,7 +151,7 @@ function AchievementFrame_OnShow (self)
 end
 
 function AchievementFrame_OnHide (self)
-	PlaySound("AchievementMenuClose");
+	PlaySound(SOUNDKIT.ACHIEVEMENT_MENU_CLOSE);
 	AchievementFrame_HideSearchPreview();
 	self.searchResults:Hide();
 	self.searchBox:SetText("");

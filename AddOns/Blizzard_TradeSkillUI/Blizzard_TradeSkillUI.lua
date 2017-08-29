@@ -76,13 +76,13 @@ end
 
 function TradeSkillUIMixin:OnShow()
 	self:RefreshRetrievingDataFrame();
-	PlaySound("UI_ProfessionsWindow_Open");
+	PlaySound(SOUNDKIT.UI_PROFESSIONS_WINDOW_OPEN);
 end
 
 function TradeSkillUIMixin:OnHide()
 	C_TradeSkillUI.CloseTradeSkill();
 	C_Garrison.CloseGarrisonTradeskillNPC();
-	PlaySound("UI_ProfessionsWindow_Close");
+	PlaySound(SOUNDKIT.UI_PROFESSIONS_WINDOW_CLOSE);
 end
 
 function TradeSkillUIMixin:OnDataSourceChanged()
@@ -380,10 +380,10 @@ function TradeSkillUIMixin:OnLinkToButtonClicked()
 			ChatEdit_InsertLink(link);
 		else
 			ToggleDropDownMenu(1, nil, self.LinkToDropDown, self.LinkToButton, 25, 25);
-			PlaySound("igMainMenuOptionCheckBoxOn");
+			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 		end
 	end
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 end
 
 function TradeSkillUIMixin:InitLinkToMenu(dropdown, level)

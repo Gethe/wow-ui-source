@@ -507,7 +507,7 @@
 								self.text:SetText(USABLE_ITEMS);
 							</OnLoad>
 							<OnClick>
-								PlaySound("igMainMenuOptionCheckBoxOn");
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 							</OnClick>
 						</Scripts>
 					</CheckButton>
@@ -525,7 +525,7 @@
 								self:SetChecked(GetCVarBool("auctionDisplayOnCharacter"));
 							</OnShow>
 							<OnClick>
-								PlaySound("igMainMenuOptionCheckBoxOn");
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 								SetCVar("auctionDisplayOnCharacter", self:GetChecked());
 							</OnClick>
 							<OnEnter>
@@ -561,7 +561,7 @@
 						</Layers>
 						<Scripts>
 							<OnClick>
-								PlaySound("igMainMenuOptionCheckBoxOn");
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 							</OnClick>
 						</Scripts>
 						<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
@@ -586,7 +586,7 @@
 						</Layers>
 						<Scripts>
 							<OnClick>
-								PlaySound("igMainMenuOptionCheckBoxOn");
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 							</OnClick>
 						</Scripts>
 						<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>

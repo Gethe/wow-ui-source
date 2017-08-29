@@ -11,9 +11,9 @@
 		<Scripts>
 			<OnClick>
 				if ( self:GetChecked() ) then
-					PlaySound("igMainMenuOptionCheckBoxOn");
+					PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 				else
-					PlaySound("igMainMenuOptionCheckBoxOff");
+					PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 				end
 				AudioOptionsPanel_CheckButton_OnClick(self);
 			</OnClick>
@@ -479,7 +479,7 @@
 						BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
 						self.label:SetText(tostring(ceil(value * 100)).."%");
 						if (self:IsVisible()) then
-							PlaySound("igMainMenuOptionCheckBoxOn");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						end
 					</OnValueChanged>
 					<OnEnter>
@@ -537,7 +537,7 @@
 						self.value = value;
 						BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
 						if (self:IsVisible()) then
-							PlaySound("igMainMenuOptionCheckBoxOn", "SFX");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON, "SFX");
 						end
 					</OnValueChanged>
 					<OnEnter>
@@ -591,7 +591,7 @@
 						self.value = value;
 						BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
 						if (self:IsVisible()) then
-							PlaySound("igMainMenuOptionCheckBoxOn", "Music");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON, "Music");
 						end
 					</OnValueChanged>
 					<OnEnter>
@@ -645,7 +645,7 @@
 						self.value = value;
 						BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
 						if (self:IsVisible()) then
-							PlaySound("igMainMenuOptionCheckBoxOn", "Ambience");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON, "Ambience");
 						end
 					</OnValueChanged>
 					<OnEnter>
@@ -699,7 +699,7 @@
 						self.value = value;
 						BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
 						if (self:IsVisible()) then
-							PlaySound("igMainMenuOptionCheckBoxOn", "Dialog");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON, "Dialog");
 						end
 					</OnValueChanged>
 					<OnEnter>
@@ -943,7 +943,7 @@
 							</OnEnter>
 							<OnClick>
 								_G[self:GetName().."Texture"]:SetVertexColor(0.5, 0.5, 0.5);								
-								PlaySound("gsTitleOptionExit");
+								PlaySound(SOUNDKIT.GS_TITLE_OPTION_EXIT);
 								VoiceChat_RecordLoopbackSound(5);
 								self.clicked = 1;
 							</OnClick>
@@ -987,7 +987,7 @@
 								_G[self:GetName().."Texture"]:SetVertexColor(1, 1, 1);
 							</OnEnter>
 							<OnClick>
-								PlaySound("gsTitleOptionExit");
+								PlaySound(SOUNDKIT.GS_TITLE_OPTION_EXIT);
 								VoiceChat_StopRecordingLoopbackSound();
 								VoiceChat_PlayLoopbackSound();
 							</OnClick>

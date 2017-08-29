@@ -135,7 +135,7 @@ function CinematicsFrame_OnKeyDown(self, key)
 	if ( key == "PRINTSCREEN" ) then
 		Screenshot();
 	elseif ( key == "ESCAPE" ) then
-		PlaySound("igMainMenuOptionCheckBoxOff");
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 		GlueParent_CloseSecondaryScreen();
 	end	
 end

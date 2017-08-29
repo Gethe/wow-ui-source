@@ -617,7 +617,7 @@ function HeirloomsMixin:UpdateProgressBar()
 end
 
 function HeirloomsMixin:OnPageChanged(userAction)
-	PlaySound("igAbiliityPageTurn");
+	PlaySound(SOUNDKIT.IG_ABILITY_PAGE_TURN);
 	if userAction then
 		self:RefreshViewIfVisible();
 	end

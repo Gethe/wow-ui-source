@@ -358,9 +358,9 @@ end
 
 function GuildControlUI_CheckClicked(self)
 	if ( self:GetChecked() ) then
-		PlaySound("igMainMenuOptionCheckBoxOff");
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 	else
-		PlaySound("igMainMenuOptionCheckBoxOn");
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	end
 	GuildControlUI.numSkipUpdates = GuildControlUI.numSkipUpdates + 1;
 	GuildControlSetRankFlag(self:GetID(), self:GetChecked());
@@ -384,7 +384,7 @@ function GuildControlUI_AddRankButton_OnClick()
 	if ( activeEditBox ) then
 		activeEditBox:ClearFocus();
 	end
-	PlaySound("igMainMenuOpen");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
 	GuildControlAddRank(GUILD_NEW_RANK);
 	CloseDropDownMenus();
 end

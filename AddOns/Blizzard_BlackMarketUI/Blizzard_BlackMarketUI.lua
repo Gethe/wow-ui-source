@@ -20,12 +20,12 @@ function BlackMarketFrame_Show()
 	if ( not BlackMarketFrame:IsShown() ) then
 		C_BlackMarket.Close();
 	end
-	PlaySound("AuctionWindowOpen")
+	PlaySound(SOUNDKIT.AUCTION_WINDOW_OPEN)
 end
 
 function BlackMarketFrame_Hide()
 	HideUIPanel(BlackMarketFrame);
-	PlaySound("AuctionWindowClose");
+	PlaySound(SOUNDKIT.AUCTION_WINDOW_CLOSE);
 end
 
 function BlackMarketFrame_OnLoad(self)
@@ -74,12 +74,12 @@ function BlackMarketFrame_OnShow(self)
 	end
 
 	BlackMarketFrame.BidButton:Disable();
-	PlaySound("AuctionWindowOpen");
+	PlaySound(SOUNDKIT.AUCTION_WINDOW_OPEN);
 end
 
 function BlackMarketFrame_OnHide(self)
 	C_BlackMarket.Close();
-	PlaySound("AuctionWindowClose");
+	PlaySound(SOUNDKIT.AUCTION_WINDOW_CLOSE);
 end
 
 function BlackMarketFrame_UpdateHotItem(self)

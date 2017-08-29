@@ -46,11 +46,7 @@
 								</Anchors>
 							</Button>
 						</Frames>
-						<Scripts>
-							<OnLoad inherit="append">
-								self:SetViewInsets(0, 0, -60, 60);
-							</OnLoad>
-						</Scripts>
+						<ViewInsets left="0" right="0" top="-60" bottom="60"/>
 					</ModelScene>
 				</Frames>
 			</Frame>
@@ -69,10 +65,10 @@
 		<Scripts>
 			<OnLoad function="ModelPreviewFrame_OnLoad"/>
 			<OnShow>
-				PlaySound("igCharacterInfoOpen");
+				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 			</OnShow>
 			<OnHide>
-				PlaySound("igCharacterInfoClose");
+				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 			</OnHide>
 			<OnEvent function="ModelPreviewFrame_OnEvent"/>
 		</Scripts>

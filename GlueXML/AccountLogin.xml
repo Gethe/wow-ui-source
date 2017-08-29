@@ -349,9 +349,9 @@
 									SetSavedAccountName("");
 									ClearSavedAccountList();
 									AccountLogin_UpdateSavedData(AccountLogin);
-									PlaySound("igMainMenuOptionCheckBoxOff");
+									PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 								else
-									PlaySound("igMainMenuOptionCheckBoxOn");
+									PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 								end
 							</OnClick>
 						</Scripts>
@@ -562,7 +562,7 @@
 										</Anchors>
 										<Scripts>
 											<OnClick>
-												PlaySound("gsLoginChangeRealmOK");
+												PlaySound(SOUNDKIT.GS_LOGIN_CHANGE_REALM_OK);
 												WoWAccountSelect_OnAccept();
 											</OnClick>
 										</Scripts>
@@ -580,7 +580,7 @@
 										</Anchors>
 										<Scripts>
 											<OnClick function="WoWAccountSelect_OnCancel">
-												PlaySound("gsLoginChangeRealmCancel");
+												PlaySound(SOUNDKIT.GS_LOGIN_CHANGE_REALM_CANCEL);
 												WoWAccountSelect_OnCancel();
 											</OnClick>
 										</Scripts>

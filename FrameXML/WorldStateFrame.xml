@@ -122,7 +122,7 @@
 				if ( self.sortType ) then
 					SortBattlefieldScoreData(self.sortType);
 				end
-				PlaySound("igMainMenuOptionCheckBoxOn");
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 			</OnClick>
 			<OnLeave>
 				GameTooltip:Hide();
@@ -460,151 +460,81 @@
 		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentLeftBar" file="Interface\WorldStateFrame\WorldState-CaptureBar">
-					<Size>
-						<AbsDimension x="61" y="9"/>
-					</Size>
+				<Texture parentKey="LeftBar" name="$parentLeftBar" atlas="worldstate-capturebar-blue">
+					<Size x="61" y="9"/>
 					<Anchors>
-						<Anchor point="LEFT">
-							<Offset>
-								<AbsDimension x="26" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="LEFT" x="26" y="0"/>
 					</Anchors>
-					<TexCoords left="0.8203125" right="1.0" top="0" bottom="0.140625"/>
 				</Texture>
-				<Texture name="$parentRightBar" file="Interface\WorldStateFrame\WorldState-CaptureBar">
-					<Size>
-						<AbsDimension x="60" y="9"/>
-					</Size>
+				<Texture parentKey="RightBar" name="$parentRightBar" atlas="worldstate-capturebar-red">
+					<Size x="60" y="9"/>
 					<Anchors>
-						<Anchor point="RIGHT">
-							<Offset>
-								<AbsDimension x="-26" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="RIGHT" x="-26" y="0"/>
 					</Anchors>
-					<TexCoords left="0.8203125" right="1.0" top="0.171875" bottom="0.3125"/>
 				</Texture>
 			</Layer>
 			<Layer level="BORDER">
-				<Texture name="$parentMiddleBar" file="Interface\WorldStateFrame\WorldState-CaptureBar">
-					<Size>
-						<AbsDimension x="25" y="9"/>
-					</Size>
+				<Texture parentKey="MiddleBar" atlas="worldstate-capturebar-gray">
+					<Size x="25" y="9"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
-					<TexCoords left="0.8203125" right="1.0" top="0.34375" bottom="0.484375"/>
 				</Texture>				
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture file="Interface\WorldStateFrame\WorldState-CaptureBar">
-					<Size>
-						<AbsDimension x="173" y="26"/>
-					</Size>
+				<Texture parentKey="BarBackground" atlas="worldstate-capturebar-frame-factions">
+					<Size x="173" y="26"/>
 					<Anchors>
 						<Anchor point="TOP"/>
 					</Anchors>
-					<TexCoords left="0" right="0.67578125" top="0" bottom="0.40625"/>
 				</Texture>
-				<Texture name="$parentRightLine" file="Interface\WorldStateFrame\WorldState-CaptureBar">
-					<Size>
-						<AbsDimension x="3" y="8"/>
-					</Size>
+				<Texture parentKey="RightLine" atlas="worldstate-capturebar-frame-separater">
+					<Size x="3" y="8"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentMiddleBar" relativePoint="RIGHT">
-							<Offset>
-								<AbsDimension x="-1" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="LEFT" relativeKey="$parent.MiddleBar" relativePoint="RIGHT" x="-1" y="0"/>
 					</Anchors>
-					<TexCoords left="0.74609375" right="0.7578125" top="0" bottom="0.125"/>
 				</Texture>
-				<Texture name="$parentLeftLine" file="Interface\WorldStateFrame\WorldState-CaptureBar">
-					<Size>
-						<AbsDimension x="3" y="8"/>
-					</Size>
+				<Texture parentKey="LeftLine" atlas="worldstate-capturebar-frame-separater">
+					<Size x="3" y="8"/>
 					<Anchors>
-						<Anchor point="RIGHT" relativeTo="$parentMiddleBar" relativePoint="LEFT">
-							<Offset>
-								<AbsDimension x="1" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="RIGHT" relativeKey="$parent.MiddleBar" relativePoint="LEFT" x="1" y="0"/>
 					</Anchors>
-					<TexCoords left="0.74609375" right="0.7578125" top="0" bottom="0.125"/>
 				</Texture>
-				<Texture name="$parentLeftIconHighlight" file="Interface\WorldStateFrame\WorldState-CaptureBar" hidden="true" alphaMode="ADD">
-					<Size>
-						<AbsDimension x="27" y="28"/>
-					</Size>
+				<Texture parentKey="LeftIconHighlight" atlas="worldstate-capturebar-glow" hidden="true" alphaMode="ADD">
+					<Size x="27" y="28"/>
 					<Anchors>
-						<Anchor point="LEFT">
-							<Offset>
-								<AbsDimension x="-1" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="LEFT" x="-1" y="0"/>
 					</Anchors>
-					<TexCoords left="0" right="0.10546875" top="0.4375" bottom="0.875"/>
 				</Texture>
-				<Texture name="$parentRightIconHighlight" file="Interface\WorldStateFrame\WorldState-CaptureBar" hidden="true" alphaMode="ADD">
-					<Size>
-						<AbsDimension x="27" y="28"/>
-					</Size>
+				<Texture parentKey="RightIconHighlight" atlas="worldstate-capturebar-glow" hidden="true" alphaMode="ADD">
+					<Size x="27" y="28"/>
 					<Anchors>
-						<Anchor point="RIGHT">
-							<Offset>
-								<AbsDimension x="1" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="RIGHT" x="1" y="0"/>
 					</Anchors>
-					<TexCoords left="0" right="0.10546875" top="0.4375" bottom="0.875"/>
 				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame name="$parentIndicator">
-				<Size>
-					<AbsDimension x="5" y="18"/>
-				</Size>
+			<Frame parentKey="Indicator">
+				<Size x="5" y="18"/>
 				<Anchors>
 					<Anchor point="CENTER"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
-						<Texture file="Interface\WorldStateFrame\WorldState-CaptureBar" setAllPoints="true">
-							<Size>
-								<AbsDimension x="5" y="18"/>
-							</Size>
-							<TexCoords left="0.77734375" right="0.796875" top="0" bottom="0.28125"/>
-						</Texture>
+						<Texture parentKey="Middle" atlas="worldstate-capturebar-spark-green" setAllPoints="true"/>
 					</Layer>
 					<Layer level="BACKGROUND">
-						<Texture name="$parentLeft" file="Interface\WorldStateFrame\WorldState-CaptureBar" hidden="false">
-							<Size>
-								<AbsDimension x="8" y="15"/>
-							</Size>
+						<Texture parentKey="Left" atlas="worldstate-capturebar-arrow" useAtlasSize="true" hidden="false">
 							<Anchors>
-								<Anchor point="RIGHT" relativePoint="LEFT">
-									<Offset>
-										<AbsDimension x="1" y="0"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="RIGHT" relativePoint="LEFT" x="1" y="0"/>
 							</Anchors>
-							<TexCoords left="0.7265625" right="0.76171875" top="0.140625" bottom="0.375"/>
 						</Texture>
-						<Texture name="$parentRight" file="Interface\WorldStateFrame\WorldState-CaptureBar" hidden="false">
-							<Size>
-								<AbsDimension x="8" y="15"/>
-							</Size>
+						<Texture parentKey="Right" atlas="worldstate-capturebar-arrow" useAtlasSize="true" hidden="false">
 							<Anchors>
-								<Anchor point="LEFT" relativePoint="RIGHT">
-									<Offset>
-										<AbsDimension x="-1" y="0"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="LEFT" relativePoint="RIGHT" x="-1" y="0"/>
 							</Anchors>
-							<TexCoords left="0.76171875" right="0.7265625" top="0.140625" bottom="0.375"/>
+							<TexCoords left="1" right="0" top="0" bottom="1"/>
 						</Texture>
 					</Layer>
 				</Layers>
@@ -1133,8 +1063,12 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PlaySound("igMainMenuOption");
-						ConfirmOrLeaveBattlefield();
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
+						if IsInLFDBattlefield() then
+							ConfirmOrLeaveLFGParty();
+						else
+							ConfirmOrLeaveBattlefield();
+						end
 					</OnClick>
 				</Scripts>
 			</Button>

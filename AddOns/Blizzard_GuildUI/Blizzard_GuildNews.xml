@@ -228,7 +228,7 @@
 			<OnLoad function="GuildNewsFiltersFrame_OnLoad"/>
 			<OnShow function="GuildNewsFiltersFrame_OnShow"/>
 			<OnHide>
-				PlaySound("igMainMenuOptionCheckBoxOff");
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 			</OnHide>
 		</Scripts>
 	</Frame>
