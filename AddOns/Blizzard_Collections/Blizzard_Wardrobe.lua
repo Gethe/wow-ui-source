@@ -3864,7 +3864,7 @@ function WardrobeSetsTransmogMixin:LoadSet(setID)
 		self.ignoreTransmogrifyUpdateEvent = true;
 		C_Transmog.ClearPending();
 		self.ignoreTransmogrifyUpdateEvent = false;
-		C_Transmog.LoadSources(transmogSources);
+		C_Transmog.LoadSources(transmogSources, -1, -1);
 	end
 end
 

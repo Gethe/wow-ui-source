@@ -720,7 +720,19 @@ function LFGDungeonReadyPopup_Update()
 	LFGDungeonReadyDialog.leaveButton:SetText(leaveText);
 
 	if ( hasResponded ) then
-		if ( subtypeID == LFG_SUBTYPEID_RAID ) then
+		if ( subtypeID == LFG_SUBTYPEID_SCENARIO or subtypeID == LFG_SUBTYPEID_FLEXRAID or subtypeID == LFG_SUBTYPEID_WORLDPVP) then
+			LFGDungeonReadyDialog:Hide();
+			-- there may be solo scenarios
+			if ( numMembers > 1 ) then
+				LFGDungeonReadyStatus:Show();
+				LFGDungeonReadyStatusIndividual:Hide();
+				LFGDungeonReadyStatusGrouped:Hide();
+				LFGDungeonReadyStatusRoleless:Show();
+				LFGDungeonReadyStatusRoleless_UpdateCount(LFGDungeonReadyStatusRoleless.ready, numMembers);
+			else
+				LFGDungeonReadyStatus:Hide();
+			end
+		elseif ( numMembers > 5 or subtypeID == LFG_SUBTYPEID_RAID ) then
 			LFGDungeonReadyStatus:Show();
 			LFGDungeonReadyStatusIndividual:Hide();
 			LFGDungeonReadyStatusRoleless:Hide();
@@ -733,18 +745,6 @@ function LFGDungeonReadyPopup_Update()
 			
 			if ( not LFGDungeonReadyPopup:IsShown() or StaticPopup_IsLastDisplayedFrame(LFGDungeonReadyPopup) ) then
 				LFGDungeonReadyPopup:SetHeight(LFGDungeonReadyStatus:GetHeight());
-			end
-		elseif ( subtypeID == LFG_SUBTYPEID_SCENARIO or subtypeID == LFG_SUBTYPEID_FLEXRAID or subtypeID == LFG_SUBTYPEID_WORLDPVP) then
-			LFGDungeonReadyDialog:Hide();
-			-- there may be solo scenarios
-			if ( numMembers > 1 ) then
-				LFGDungeonReadyStatus:Show();
-				LFGDungeonReadyStatusIndividual:Hide();
-				LFGDungeonReadyStatusGrouped:Hide();
-				LFGDungeonReadyStatusRoleless:Show();
-				LFGDungeonReadyStatusRoleless_UpdateCount(LFGDungeonReadyStatusRoleless.ready, numMembers);
-			else
-				LFGDungeonReadyStatus:Hide();
 			end
 		else
 			LFGDungeonReadyStatus:Show();

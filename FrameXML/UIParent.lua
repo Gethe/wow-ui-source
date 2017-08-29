@@ -272,7 +272,6 @@ function UIParent_OnLoad(self)
 
 	-- Events for Artifact UI
 	self:RegisterEvent("ARTIFACT_UPDATE");
-	self:RegisterEvent("ARTIFACT_TIER_CHANGED");
 	self:RegisterEvent("ARTIFACT_RESPEC_PROMPT");
 	self:RegisterEvent("ARTIFACT_RELIC_FORGE_UPDATE");
 
@@ -1582,10 +1581,6 @@ function UIParent_OnEvent(self, event, ...)
 			ArtifactFrame_LoadUI();
 			ShowUIPanel(ArtifactFrame);
 		end
-	elseif ( event == "ARTIFACT_TIER_CHANGED" ) then
-		local newTier, bagOrInventorySlot, slot = ...;
-		ArtifactFrame_LoadUI();
-		ArtifactFrame:OnTierChanged(newTier, bagOrInventorySlot, slot);
 	elseif ( event == "ARTIFACT_RESPEC_PROMPT" ) then
 		ArtifactFrame_LoadUI();
 		ShowUIPanel(ArtifactFrame);

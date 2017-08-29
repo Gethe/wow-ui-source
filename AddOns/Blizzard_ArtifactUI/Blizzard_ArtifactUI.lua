@@ -127,18 +127,6 @@ function ArtifactUIMixin:OnEvent(event, ...)
 	end
 end
 
-function ArtifactUIMixin:OnTierChanged(newTier, bagOrInventorySlot, slot)
-	if newTier == 2 then
-		self.queueTier2UpgradeAnim = true;
-		HideUIPanel(self);
-		if slot then
-			SocketContainerItem(bagOrInventorySlot, slot);
-		else
-			SocketInventoryItem(bagOrInventorySlot);
-		end
-	end
-end
-
 function ArtifactUIMixin:OnTraitsRefunded(numRefunded, refundedTier)
 	self.PerksTab:OnTraitsRefunded(numRefunded, refundedTier);
 end
