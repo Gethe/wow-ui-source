@@ -526,7 +526,7 @@
 				</Scripts>
 			</StatusBar>
 
-			<ModelScene parentKey="modelScene" useParentLevel="true" inherits="ModelSceneMixinTemplate">
+			<ModelScene parentKey="modelScene" useParentLevel="true" inherits="ReversedLightingModelSceneMixinTemplate">
 				<Size x="130" y="96"/>
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="0" y="0"/>

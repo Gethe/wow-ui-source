@@ -12,5 +12,11 @@
 				<OnMouseWheel method="OnMouseWheel" />
 			</Scripts>
 		</ModelScene>
+		<ModelScene name="ReversedLightingModelSceneMixinTemplate" inherits="ModelSceneMixinTemplate" virtual="true">
+			<KeyValues>
+				<KeyValue key="reversedLighting" value="true" type="boolean"/>
+			</KeyValues>
+		</ModelScene>
+
 	</ScopedModifier>
 </Ui>

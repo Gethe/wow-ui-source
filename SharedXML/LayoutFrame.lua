@@ -1,3 +1,26 @@
+
+---------------
+--NOTE - Please do not change this section without talking to Dan
+local _, tbl = ...;
+if tbl then
+	tbl.SecureCapsuleGet = SecureCapsuleGet;
+
+	local function Import(name)
+		tbl[name] = tbl.SecureCapsuleGet(name);
+	end
+
+	Import("IsOnGlueScreen");
+
+	if ( tbl.IsOnGlueScreen() ) then
+		tbl._G = _G;	--Allow us to explicitly access the global environment at the glue screens
+	end
+
+	Import("GMError");
+	
+	setfenv(1, tbl);
+end
+----------------
+
 LayoutMixin = {};
 VerticalLayoutMixin = {};
 HorizontalLayoutMixin = {};
@@ -54,6 +77,7 @@ local function LayoutIndexComparator(left, right)
 end
 
 function LayoutMixin:Layout()
+	self.dirty = false;
 	local leftPadding, rightPadding, topPadding, bottomPadding = self:GetPadding(self);
 	
 	local children = {};
@@ -72,6 +96,20 @@ function LayoutMixin:Layout()
 	end
 	
 	self:SetSize(frameWidth, frameHeight);
+end
+
+function LayoutMixin:OnUpdate()
+	if self:IsDirty() then
+		self:Layout();
+	end
+end
+
+function LayoutMixin:MarkDirty()
+	self.dirty = true;
+end
+
+function LayoutMixin:IsDirty()
+	return self.dirty;
 end
 
 --------------------------------------------------------------------------------

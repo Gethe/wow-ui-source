@@ -73,11 +73,15 @@ function Minimap_SetTooltip( pvpType, factionName )
 			GameTooltip:AddLine( subzoneName, 1.0, 0.1, 0.1 );	
 			GameTooltip:AddLine(FREE_FOR_ALL_TERRITORY, 1.0, 0.1, 0.1);
 		elseif ( pvpType == "friendly" ) then
-			GameTooltip:AddLine( subzoneName, 0.1, 1.0, 0.1 );	
-			GameTooltip:AddLine(format(FACTION_CONTROLLED_TERRITORY, factionName), 0.1, 1.0, 0.1);
+			if (factionName and factionName ~= "") then
+				GameTooltip:AddLine( subzoneName, 0.1, 1.0, 0.1 );	
+				GameTooltip:AddLine(format(FACTION_CONTROLLED_TERRITORY, factionName), 0.1, 1.0, 0.1);
+			end
 		elseif ( pvpType == "hostile" ) then
-			GameTooltip:AddLine( subzoneName, 1.0, 0.1, 0.1 );	
-			GameTooltip:AddLine(format(FACTION_CONTROLLED_TERRITORY, factionName), 1.0, 0.1, 0.1);
+			if (factionName and factionName ~= "") then
+				GameTooltip:AddLine( subzoneName, 1.0, 0.1, 0.1 );	
+				GameTooltip:AddLine(format(FACTION_CONTROLLED_TERRITORY, factionName), 1.0, 0.1, 0.1);
+			end
 		elseif ( pvpType == "contested" ) then
 			GameTooltip:AddLine( subzoneName, 1.0, 0.7, 0.0 );	
 			GameTooltip:AddLine(CONTESTED_TERRITORY, 1.0, 0.7, 0.0);

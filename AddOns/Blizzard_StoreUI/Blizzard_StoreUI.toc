@@ -6,6 +6,9 @@
 ..\..\SharedXML\ModelSceneTemplatesScripts.xml
 ..\..\SharedXML\ModelSceneMixinScripts.xml
 ..\..\SharedXML\ModelSceneActorMixinScripts.xml
+..\..\SharedXML\LayoutFrame.lua
+..\..\SharedXML\ManagedLayoutFrame.lua
+..\..\SharedXML\BulletPoint.lua
 Blizzard_SimpleCheckout.xml
 Blizzard_StoreUI.xml
 Blizzard_StoreUIInsecure.xml

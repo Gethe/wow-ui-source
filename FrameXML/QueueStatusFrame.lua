@@ -960,8 +960,19 @@ function QueueStatusDropDown_AddLFGButtons(info, category)
 	info.leftPadding = 10;
 
 	if ( IsLFGModeActive(category) and IsPartyLFG() ) then
-		if ( IsAllowedToUserTeleport() and not IsInLFDBattlefield() ) then
-			if ( IsInLFGDungeon() ) then
+		local addExitOption = true;
+		if ( IsAllowedToUserTeleport() ) then
+			if ( IsInLFDBattlefield() ) then
+				local _, instanceType = IsInInstance();
+				if ( instanceType ~= "arena" and instanceType ~= "pvp" ) then
+					info.text = ENTER_DUNGEON;
+					info.func = wrapFunc(LFGTeleport);
+					info.arg1 = false;
+					info.disabled = false;
+					UIDropDownMenu_AddButton(info);
+					addExitOption = false;
+				end
+			elseif ( IsInLFGDungeon() ) then
 				info.text = TELEPORT_OUT_OF_DUNGEON;
 				info.func = wrapFunc(LFGTeleport);
 				info.arg1 = true;
@@ -975,11 +986,13 @@ function QueueStatusDropDown_AddLFGButtons(info, category)
 				UIDropDownMenu_AddButton(info);
 			end
 		end
-		info.text = (category == LE_LFG_CATEGORY_WORLDPVP) and LEAVE_BATTLEGROUND or INSTANCE_PARTY_LEAVE;
-		info.func = wrapFunc(ConfirmOrLeaveLFGParty);
-		info.arg1 = nil;
-		info.disabled = false;
-		UIDropDownMenu_AddButton(info);
+		if ( addExitOption ) then
+			info.text = (category == LE_LFG_CATEGORY_WORLDPVP) and LEAVE_BATTLEGROUND or INSTANCE_PARTY_LEAVE;
+			info.func = wrapFunc(ConfirmOrLeaveLFGParty);
+			info.arg1 = nil;
+			info.disabled = false;
+			UIDropDownMenu_AddButton(info);
+		end
 	end
 
 	if ( statuses.rolecheck ) then

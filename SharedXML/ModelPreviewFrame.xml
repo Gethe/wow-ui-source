@@ -12,24 +12,9 @@
 					<Anchor point="TOPLEFT" relativeKey="$parent.Inset" relativePoint="TOPLEFT" x="3" y="-3"/>
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Inset" relativePoint="BOTTOMRIGHT" x="-3" y="3"/>
 				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture parentKey="YesMountsTex" file="Interface\PetBattles\MountJournal-BG" setAllPoints="true">
-							<TexCoords left="0" right="0.78515625" top="0" bottom="1"/>	
-						</Texture>
-					</Layer>
-					<Layer level="OVERLAY">
-						<FontString parentKey="Name" inherits="GameFontHighlightLarge">
-							<Size x="280" y="0"/>
-							<Anchors>
-								<Anchor point="BOTTOM" x="0" y="60"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
 				<Frames>
 					<Frame parentKey="ShadowOverlay" inherits="ShadowOverlayTemplate" useParentLevel="true" setAllPoints="true"/>
-					<ModelScene parentKey="ModelScene" useParentLevel="true" inherits="ModelSceneMixinTemplate">
+					<ModelScene parentKey="ModelScene" useParentLevel="true" inherits="ReversedLightingModelSceneMixinTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="0" y="0"/>
 							<Anchor point="BOTTOMRIGHT" relativeKey="$parent"/>
@@ -45,10 +30,58 @@
 									<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="BOTTOM" x="5" y="50"/>
 								</Anchors>
 							</Button>
+							<Button parentKey="CarouselLeftButton">
+								<Size x="32" y="32"/>
+								<Anchors>
+									<Anchor point="TOPRIGHT" relativeKey="$parent" relativePoint="BOTTOM" x="-35" y="50"/>
+								</Anchors>
+								<Scripts>
+									<OnClick function="CarouselLeftButton_OnClick"/>
+								</Scripts>
+								<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
+								<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
+								<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
+								<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+							</Button>
+							<Button parentKey="CarouselRightButton">
+								<Size x="32" y="32"/>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="BOTTOM" x="35" y="50"/>
+								</Anchors>
+								<Scripts>
+									<OnClick function="CarouselRightButton_OnClick"/>
+								</Scripts>
+								<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
+								<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
+								<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
+								<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+							</Button>
 						</Frames>
 						<ViewInsets left="0" right="0" top="-60" bottom="60"/>
 					</ModelScene>
 				</Frames>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="YesMountsTex" file="Interface\PetBattles\MountJournal-BG" setAllPoints="true">
+							<TexCoords left="0" right="0.78515625" top="0" bottom="1"/>	
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString parentKey="Name" inherits="GameFontHighlightLarge">
+							<Size x="280" y="0"/>
+							<Anchors>
+								<Anchor point="BOTTOM" x="0" y="60"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="CarouselText" inherits="GameFontNormalMed3">
+							<Size x="64" y="0"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.ModelScene.CarouselLeftButton" relativePoint="RIGHT" x="-0" y="0"/>
+								<Anchor point="CENTER" relativeKey="$parent.ModelScene.CarouselLeftButton" relativePoint="CENTER" x="0" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
 			</Frame>
 			<Button name="$parentCloseButton" inherits="MagicButtonTemplate" parentKey="CloseButton" text="CLOSE">
 				<Size x="80" y="22"/>

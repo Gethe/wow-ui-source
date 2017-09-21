@@ -7,6 +7,10 @@ function StoreShowPreview(name, modelID, modelSceneID)
 	frame.Display.Name:SetText(name);
 end
 
+function StoreShowPreviews(displayInfoEntries)
+	ModelPreviewFrame_ShowModels(displayInfoEntries, false);
+end
+
 function StoreSetItemTooltip(itemID, left, top, point)
 	GameTooltip:SetOwner(UIParent, "ANCHOR_NONE");
 	GameTooltip:SetPoint(point, UIParent, "BOTTOMLEFT", left, top);

@@ -3478,38 +3478,40 @@ function EncounterJournal_AddMapButtons()
 		WorldMapBossButtonFrame:SetScript("OnUpdate", nil);
 	end
 
-	local index = 1;
+	local numEncounters = 0;
 	if CanShowEncounterJournal() then
 		local width = WorldMapDetailFrame:GetWidth();
 		local height = WorldMapDetailFrame:GetHeight();
 
-		local x, y, instanceID, name, description, encounterID = EJ_GetMapEncounter(index, WorldMapFrame.fromJournal);
-		while name do
-			local bossButton = _G["EJMapButton"..index];
-			if not bossButton then
-				bossButton = CreateFrame("Button", "EJMapButton"..index, WorldMapBossButtonFrame, "EncounterMapButtonTemplate");
-			end
+		local mapEncounters = C_EncounterJournal.GetCurrentMapEncounters(WorldMapFrame.fromJournal);
+		if ( mapEncounters ) then
+			numEncounters = #mapEncounters;
+			for index, mapEncounterInfo in ipairs(mapEncounters) do
+				local bossButton = _G["EJMapButton"..index];
+				if not bossButton then
+					bossButton = CreateFrame("Button", "EJMapButton"..index, WorldMapBossButtonFrame, "EncounterMapButtonTemplate");
+				end
 
-			bossButton.instanceID = instanceID;
-			bossButton.encounterID = encounterID;
-			bossButton.tooltipTitle = name;
-			bossButton.tooltipText = description;
-			bossButton:SetPoint("CENTER", WorldMapBossButtonFrame, "BOTTOMLEFT", x*width, y*height);
-			local _, _, _, displayInfo = EJ_GetCreatureInfo(1, encounterID);
-			bossButton.displayInfo = displayInfo;
-			if ( displayInfo ) then
-				SetPortraitTexture(bossButton.bgImage, displayInfo);
-			else
-				bossButton.bgImage:SetTexture("DoesNotExist");
+				local name, description, encounterID, rootSectionID, link, instanceID = EJ_GetEncounterInfo(mapEncounterInfo.encounterID);
+				bossButton.instanceID = instanceID;
+				bossButton.encounterID = encounterID;
+				bossButton.tooltipTitle = name;
+				bossButton.tooltipText = description;
+				bossButton:SetPoint("CENTER", WorldMapBossButtonFrame, "BOTTOMLEFT", mapEncounterInfo.mapX*width, mapEncounterInfo.mapY*height);
+				local _, _, _, displayInfo = EJ_GetCreatureInfo(1, encounterID);
+				bossButton.displayInfo = displayInfo;
+				if ( displayInfo ) then
+					SetPortraitTexture(bossButton.bgImage, displayInfo);
+				else
+					bossButton.bgImage:SetTexture("DoesNotExist");
+				end
+				bossButton:Show();
 			end
-			bossButton:Show();
-			index = index + 1;
-			x, y, instanceID, name, description, encounterID = EJ_GetMapEncounter(index, WorldMapFrame.fromJournal);
 		end
 	end
 
-	WorldMapFrame.hasBosses = index ~= 1;
-
+	WorldMapFrame.hasBosses = numEncounters > 0;
+	index = numEncounters + 1;
 	local bossButton = _G["EJMapButton"..index];
 	while bossButton do
 		bossButton:Hide();

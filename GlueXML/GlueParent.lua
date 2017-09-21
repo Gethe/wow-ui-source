@@ -643,12 +643,29 @@ function IsKioskGlueEnabled()
 	return IsKioskModeEnabled() and not IsCompetitiveModeEnabled();
 end
 
+function GetDisplayedExpansionLogo(expansionLevel)
+	local isTrial = expansionLevel == nil;
+	if isTrial then
+		return "Interface\\Glues\\Common\\Glues-WoW-StarterLogo";
+	elseif expansionLevel <= GetMinimumExpansionLevel() then
+		local expansionInfo = GetExpansionDisplayInfo(LE_EXPANSION_CLASSIC);
+		if expansionInfo then
+			return expansionInfo.logo;
+		end
+	else
+		local expansionInfo = GetExpansionDisplayInfo(expansionLevel);
+		if expansionInfo then
+			return expansionInfo.logo;
+		end
+	end
+	
+	return nil;
+end
+
 function SetExpansionLogo(texture, expansionLevel)
-	if ( EXPANSION_LOGOS[expansionLevel].texture ) then
-		texture:SetTexture(EXPANSION_LOGOS[expansionLevel].texture);
-		texture:Show();
-	elseif ( EXPANSION_LOGOS[expansionLevel].atlas ) then
-		texture:SetAtlas(EXPANSION_LOGOS[expansionLevel].atlas);
+	local logo = GetDisplayedExpansionLogo(expansionLevel);
+	if logo then
+		texture:SetTexture(logo);
 		texture:Show();
 	else
 		texture:Hide();
@@ -656,8 +673,8 @@ function SetExpansionLogo(texture, expansionLevel)
 end
 
 function UpgradeAccount()
-	PlaySound(SOUNDKIT.GS_LOGIN_NEW_ACCOUNT);
-	LoadURLIndex(2);
+	StoreFrame_SetGamesCategory();
+	ToggleStoreUI();
 end
 
 function MinutesToTime(mins, hideDays)

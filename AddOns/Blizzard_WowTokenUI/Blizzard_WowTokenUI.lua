@@ -77,6 +77,9 @@ Import("BLIZZARD_STORE_CURRENCY_FORMAT_BRL");
 Import("BLIZZARD_STORE_CURRENCY_FORMAT_ARS");
 Import("BLIZZARD_STORE_CURRENCY_FORMAT_CLP");
 Import("BLIZZARD_STORE_CURRENCY_FORMAT_AUD");
+Import("BLIZZARD_STORE_CURRENCY_FORMAT_JPY");
+Import("BLIZZARD_STORE_CURRENCY_FORMAT_CAD");
+Import("BLIZZARD_STORE_CURRENCY_FORMAT_NZD");
 Import("BLIZZARD_STORE_CURRENCY_RAW_ASTERISK");
 Import("BLIZZARD_STORE_CURRENCY_BETA");
 
@@ -133,6 +136,9 @@ local CURRENCY_AUD = 12;
 local CURRENCY_CPT = 14;
 local CURRENCY_TPT = 15;
 local CURRENCY_BETA = 16;
+local CURRENCY_JPY = 28;
+local CURRENCY_CAD = 29;
+local CURRENCY_NZD = 30;
 
 local currencyMult = 100;
 
@@ -217,6 +223,18 @@ local function currencyFormatBeta(dollars, cents)
 	return string.format(BLIZZARD_STORE_CURRENCY_BETA, formatCurrency(dollars, cents, true));
 end
 
+local function currencyFormatJPY(dollars, cents)
+	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_JPY, formatCurrency(dollars, cents, false));
+end
+
+local function currencyFormatCAD(dollars, cents)
+	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_CAD, formatCurrency(dollars, cents, false));
+end
+
+local function currencyFormatNZD(dollars, cents)
+	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_NZD, formatCurrency(dollars, cents, false));
+end
+
 local currencySpecific = {
 	[CURRENCY_USD] = { 
 		["currencyFormat"] = currencyFormatUSD,
@@ -256,6 +274,15 @@ local currencySpecific = {
 	},
 	[CURRENCY_BETA] ={ 
 		["currencyFormat"] = currencyFormatBeta,
+	},
+	[CURRENCY_JPY] = {
+		["currencyFormat"] = currencyFormatJPY,
+	},
+	[CURRENCY_CAD] = {
+		["currencyFormat"] = currencyFormatCAD,
+	},
+	[CURRENCY_NZD] = {
+		["currencyFormat"] = currencyFormatNZD,
 	},
 };
 

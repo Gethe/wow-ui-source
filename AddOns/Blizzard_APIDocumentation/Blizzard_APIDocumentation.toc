@@ -24,7 +24,9 @@ CommentatorFrameLua.lua
 ConfigurationWarningsLua.lua
 ConsoleLua.lua
 ContributionCollectorLua.lua
+EncounterJournalLua.lua
 EquipmentManagerLua.lua
+ExpansionLua.lua
 GarrisonInfoLua.lua
 LFGListInfoLua.lua
 LootJournalLua.lua

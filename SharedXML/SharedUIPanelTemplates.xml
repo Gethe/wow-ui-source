@@ -1662,7 +1662,7 @@
 		<Size x="32" y="32"/>
 		<Frames>
 			<Button parentKey="MaximizeButton" setAllPoints="true" hidden="true">
-				<Size x="32" y="32"/>
+				<HitRectInsets left="5" right="5" top="5" bottom="5"/>
 				<Scripts>
 					<OnClick>
 						self:GetParent():Maximize();
@@ -1673,7 +1673,7 @@
 				<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
 			</Button>
 			<Button parentKey="MinimizeButton" setAllPoints="true">
-				<Size x="32" y="32"/>
+				<HitRectInsets left="5" right="5" top="5" bottom="5"/>
 				<Scripts>
 					<OnClick>
 						self:GetParent():Minimize();

@@ -129,29 +129,7 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnShow>
-				local tag = max(GetAccountExpansionLevel(), GetExpansionLevel()) - 1;
-				local featureTable = ACCOUNT_UPGRADE_FEATURES[tag];
-				self.Logo:SetTexture(featureTable.logo);
-				for i=1, #featureTable do
-					local frame = _G["StarterEditionPopUpFeature"..i];
-					if ( not frame ) then
-						frame = CreateFrame("FRAME", "StarterEditionPopUpFeature"..i, StarterEditionPopUp, "UpgradeFrameFeatureLargeTemplate");
-						frame:SetPoint("TOPLEFT", _G["StarterEditionPopUpFeature"..(i-1)], "BOTTOMLEFT", 0, 0);
-					end
-
-					frame.icon:SetTexture(featureTable[i].icon);
-					frame.text:SetText(featureTable[i].text);
-				end
-				
-				local index = #featureTable+1;
-				local frame =  _G["StarterEditionPopUpFeature"..index];
-				while ( frame ) do
-					frame:Hide();
-					index = index + 1;
-					frame = _G["StarterEditionPopUpFeature"..index];
-				end
-			</OnShow>
+			<OnShow function="StarterEditionPopUp_OnShow"/>
 			<OnKeyDown>
 				local key = key;--Used to catch key input
 			</OnKeyDown>
