@@ -48,6 +48,7 @@ end
 function BulletPointMixin:SetContent(content)
 	self.Text:SetText(content);
 	self:UpdateHeight();
+	self:MarkDirty();
 end
 
 function BulletPointMixin:UpdateHeight()

@@ -1062,6 +1062,8 @@
 					</Anchors>
 					<Scripts>
 						<OnClick function="StoreFrameBuyButton_OnClick" />
+						<OnEnter function="StoreFrameBuyButton_OnEnter" />
+						<OnLeave function="StoreFrameBuyButton_OnLeave" />
 					</Scripts>
 				</Button>
 			</Frames>
@@ -1508,9 +1510,19 @@
 				</Layer>
 			</Layers>
 			<Scripts>
+				<!--
+							WARNING: ScopeModifiers don't work for templates!
+				These functions will fail to load properly if this template is instantiated outside
+				of the initial LoadAddon call becuase we'll have lost the scoped modifiers and the
+				reference to the addon environment if we instantiate them later.
+				
+				We have to manually set these scripts after the frame has been instantiated in Lua
+				for them to work properly.
+
 				<OnEnter function="StoreCategory_OnEnter" />
 				<OnLeave function="StoreCategory_OnLeave" />
 				<OnClick function="StoreCategory_OnClick" />
+				-->
 			</Scripts>
 		</Button>
 		<Frame name="GoldBorderFrameTemplate" virtual="true">
@@ -2745,12 +2757,32 @@
 			</Scripts>
 		</Frame>
 		
-		<Frame name="StoreBulletPointTemplate" inherits="BulletPointWithTextureTemplate" virtual="true">
+		<Frame name="StoreBulletPointTemplate" inherits="BulletPointWithTextureTemplate" hyperlinksEnabled="true" virtual="true">
 			<Scripts>
 				<OnLoad inherit="prepend">
 					self.Text:SetFontObject("GameFontNormalMed1");
 					self.Text:SetTextColor(1, 0.84, 0.55);
 				</OnLoad>
+				<OnHyperlinkEnter>
+					local grandparent = self:GetParent():GetParent();
+					local onEnterScript = grandparent:GetScript("OnEnter");
+					if onEnterScript then
+						onEnterScript(grandparent);
+					end
+				</OnHyperlinkEnter>
+				<OnHyperlinkLeave>
+					local grandparent = self:GetParent():GetParent();
+					local onLeaveScript = grandparent:GetScript("OnLeave");
+					if onLeaveScript then
+						onLeaveScript(grandparent);
+					end
+				</OnHyperlinkLeave>
+				<OnHyperlinkClick>
+					local linkType, index = string.split(":", link);
+					if ( linkType == "urlIndex" ) then
+						LoadURLIndex(tonumber(index));
+					end
+				</OnHyperlinkClick>
 			</Scripts>
 		</Frame>
 	</ScopedModifier>

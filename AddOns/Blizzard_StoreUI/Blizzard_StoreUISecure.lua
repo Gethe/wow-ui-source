@@ -933,7 +933,7 @@ local currencySpecific = {
 	[CURRENCY_JPY] = {
 		formatShort = currencyFormatJPY,
 		formatLong = currencyFormatJPY,
-		browseNotice = BLIZZARD_STORE_PLUS_TAX,
+		browseNotice = "",
 		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_GENERIC,
 		servicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_SERVICES,
 		vasNameChangeConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_NAME_CHANGE,
@@ -964,7 +964,7 @@ local currencySpecific = {
 	[CURRENCY_CAD] = {
 		formatShort = currencyFormatCAD,
 		formatLong = currencyFormatCAD,
-		browseNotice = BLIZZARD_STORE_PLUS_TAX,
+		browseNotice = "",
 		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_GENERIC,
 		servicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_SERVICES,
 		vasNameChangeConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_NAME_CHANGE,
@@ -1547,7 +1547,7 @@ function StoreFrame_SetNormalCategory(forceModelUpdate)
 
 	local products = C_StoreSecure.GetProducts(id);
 	local numTotal = #products;
-
+	
 	for i=1, NUM_STORE_PRODUCT_CARDS do
 		local card = self.ProductCards[i];
 		local entryID = products[i + NUM_STORE_PRODUCT_CARDS * (pageNum - 1)];
@@ -1577,8 +1577,8 @@ function StoreFrame_SetNormalCategory(forceModelUpdate)
 end
 
 function StoreFrame_SetCategory(forceModelUpdate)
-	local displayStyle = select(3, C_StoreSecure.GetProductGroupInfo(selectedCategoryID));
-	if (displayStyle == BATTLEPAY_GROUP_DISPLAY_SPLASH) then
+	local productGroupInfo = C_StoreSecure.GetProductGroupInfo(selectedCategoryID);
+	if (productGroupInfo.displayType == BATTLEPAY_GROUP_DISPLAY_SPLASH) then
 		StoreFrame_SetSplashCategory(forceModelUpdate);
 	else
 		StoreFrame_SetNormalCategory(forceModelUpdate);
@@ -1659,30 +1659,68 @@ function StoreFrame_CreateCards(self, num, numPerRow)
 	end
 end
 
+function StoreFrame_DoesProductGroupHavePurchasableItems(groupID)
+	local products = C_StoreSecure.GetProducts(groupID);
+	for _, entryID in ipairs(products) do
+		local entryInfo = C_StoreSecure.GetEntryInfo(entryID);
+		if not entryInfo.alreadyOwned then
+			return true;
+		end
+	end
+	
+	return false;
+end
+
+function StoreFrame_IsProductGroupDisabled(groupID)
+	local productGroupInfo = C_StoreSecure.GetProductGroupInfo(groupID);
+	local enabledForTrial = bit.band(productGroupInfo.flags, Enum.BattlepayProductGroupFlag.EnabledForTrial) == Enum.BattlepayProductGroupFlag.EnabledForTrial;
+	local displayAsDisabled = productGroupInfo.disabledTooltip ~= nil and not StoreFrame_DoesProductGroupHavePurchasableItems(groupID);
+	local trialRestricted = IsTrialAccount() and not enabledForTrial;
+	return displayAsDisabled or trialRestricted;
+end
+
 function StoreCategoryFrame_SetGroupID(self, groupID)
 	self:SetID(groupID);
-	local name, texture, _, enabledForTrial = C_StoreSecure.GetProductGroupInfo(groupID);
-	self.Icon:SetTexture(texture);
-	self.Text:SetText(name);
+	local productGroupInfo = C_StoreSecure.GetProductGroupInfo(groupID);
+	local enabledForTrial = bit.band(productGroupInfo.flags, Enum.BattlepayProductGroupFlag.EnabledForTrial) == Enum.BattlepayProductGroupFlag.EnabledForTrial;
+	self.Icon:SetTexture(productGroupInfo.texture);
+	self.Text:SetText(productGroupInfo.groupName);
 	self.SelectedTexture:SetShown(selectedCategoryID == groupID);
 	
+	local disabled = StoreFrame_IsProductGroupDisabled(groupID);
+	self:SetEnabled(selectedCategoryID ~= groupID and not disabled);
+	self.Category:SetDesaturated(disabled);
+	self.Icon:SetDesaturated(disabled);
+	self.Text:SetFontObject(disabled and "GameFontDisable" or "GameFontNormal");
+	
 	local trialRestricted = IsTrialAccount() and not enabledForTrial;
-	self:SetEnabled(selectedCategoryID ~= groupID and not trialRestricted);
-	self.Category:SetDesaturated(trialRestricted);
-	self.Icon:SetDesaturated(trialRestricted);
-	self.Text:SetFontObject(trialRestricted and "GameFontDisable" or "GameFontNormal");
-	self.disabledTooltip = trialRestricted and STORE_CATEGORY_TRIAL_DISABLED_TOOLTIP or nil;
+	if trialRestricted then
+		self.disabledTooltip = STORE_CATEGORY_TRIAL_DISABLED_TOOLTIP;
+	elseif disabled then
+		self.disabledTooltip = productGroupInfo.disabledTooltip;
+	else
+		self.disabledTooltip = nil;
+	end
 end
 
 function StoreFrame_UpdateCategories(self)
 	local categories = C_StoreSecure.GetProductGroups();
 
-	for i=1, #categories do
+	for i = 1, #categories do
 		local frame = self.CategoryFrames[i];
 		local groupID = categories[i];
 		if ( not frame ) then
 			frame = CreateForbiddenFrame("Button", nil, self, "StoreCategoryTemplate");
 
+			--[[
+							WARNING: ScopeModifiers don't work for templates!
+				These functions will fail to load properly if this template is instantiated outside
+				of the initial LoadAddon call becuase we'll have lost the scoped modifiers and the
+				reference to the addon environment if we instantiate them later.
+				
+				We have to manually set these scripts (below) for them to work properly.
+			--]]
+			
 			frame:SetScript("OnEnter", StoreCategory_OnEnter);
 			frame:SetScript("OnLeave", StoreCategory_OnLeave);
 			frame:SetScript("OnClick", StoreCategory_OnClick);
@@ -1699,7 +1737,7 @@ function StoreFrame_UpdateCategories(self)
 	self.BrowseNotice:ClearAllPoints();
 	self.BrowseNotice:SetPoint("TOP", self.CategoryFrames[#categories], "BOTTOM", 0, -15);
 
-	for i=#categories + 1, #self.CategoryFrames do
+	for i = #categories + 1, #self.CategoryFrames do
 		self.CategoryFrames[i]:Hide();
 	end
 end
@@ -1794,13 +1832,10 @@ function StoreFrame_GetDefaultCategory()
 	local isTrial = IsTrialAccount();
 	for i = 1, #productGroups do
 		local groupID = productGroups[i];
-		if isTrial then
-			local enabledForTrial = select(4, C_StoreSecure.GetProductGroupInfo(groupID));
-			if enabledForTrial then
+		if not StoreFrame_IsProductGroupDisabled(groupID) then
+			if isTrial or groupID == selectedCategoryID then
 				return groupID;
 			end
-		elseif groupID == selectedCategoryID then
-			return groupID;
 		end
 	end
 
@@ -2306,9 +2341,24 @@ function StoreFrameCloseButton_OnClick(self)
 end
 
 function StoreFrameBuyButton_OnClick(self)
-	local entryID = selectedEntryID
+	local parent = self:GetParent();
+	local entryID = StoreFrame_CardIsSplashPair(parent) and parent:GetID() or selectedEntryID;
 	StoreFrame_BeginPurchase(entryID);
 	PlaySound(SOUNDKIT.UI_IG_STORE_BUY_BUTTON);
+end
+
+function StoreFrameBuyButton_OnEnter(self)
+	local parent = self:GetParent();
+	if StoreFrame_CardIsSplashPair(parent) then
+		StoreSplashPairCard_OnEnter(parent);
+	end
+end
+
+function StoreFrameBuyButton_OnLeave(self)
+	local parent = self:GetParent();
+	if StoreFrame_CardIsSplashPair(parent) then
+		StoreSplashPairCard_OnLeave(parent);
+	end
 end
 
 function StoreFrame_BeginPurchase(entryID)

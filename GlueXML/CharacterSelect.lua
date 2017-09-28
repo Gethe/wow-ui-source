@@ -1495,12 +1495,13 @@ function AccountUpgradePanel_GetDisplayExpansionLevel()
 		return nil, LE_EXPANSION_CLASSIC;
     end
 	
-	local currentExpansionLevel = math.min(GetClientDisplayExpansionLevel(), math.max(GetAccountExpansionLevel(), GetExpansionLevel()));	
+	local currentExpansionLevel = math.min(GetClientDisplayExpansionLevel(), math.max(GetAccountExpansionLevel(), GetExpansionLevel()));		
+	local upgradeExpansionLevel = IsExpansionTrial() and currentExpansionLevel or currentExpansionLevel + 1;
+	
 	if currentExpansionLevel <= GetMinimumExpansionLevel() then
 		currentExpansionLevel = LE_EXPANSION_CLASSIC;
 	end
 	
-	local upgradeExpansionLevel = IsExpansionTrial() and currentExpansionLevel or currentExpansionLevel + 1;
 	if upgradeExpansionLevel and upgradeExpansionLevel <= GetMinimumExpansionLevel() then
 		upgradeExpansionLevel = LE_EXPANSION_CLASSIC;
 	end

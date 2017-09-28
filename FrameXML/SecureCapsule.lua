@@ -440,6 +440,7 @@ takeenum("BattlepayProductDecorator");
 takeenum("VasServiceType");
 takeenum("VasPurchaseState");
 takeenum("BattlepaySpecialProducts");
+takeenum("BattlepayProductGroupFlag");
 
 -- Secure Mixins
 -- where ... are the mixins to mixin
