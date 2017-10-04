@@ -1020,7 +1020,7 @@
 						<Color r="1" g="0.84" b="0.55" />
 					</FontString>
 				</Layer>
-				 <Layer level="OVERLAY">
+				<Layer level="OVERLAY">
 					<Texture parentKey="Strikethrough" inherits="store-strikethrough" hidden="true">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.NormalPrice" />
@@ -1035,6 +1035,15 @@
 				</Layer>
 			</Layers>
 			<Frames>
+				<Frame parentKey="DisabledOverlay" frameLevel="1000" setAllPoints="true" hidden="true">
+					<Layers>
+						<Layer level="OVERLAY" textureSubLevel="1">
+							<Texture setAllPoints="true" alpha=".55">
+								<Color r="0" g="0" b="0"/>
+							</Texture>
+						</Layer>
+					</Layers>
+				</Frame>
 				<Button parentKey="Magnifier" hidden="true">
 					<Size x="31" y="35" />
 					<Anchors>
@@ -1516,13 +1525,14 @@
 				of the initial LoadAddon call becuase we'll have lost the scoped modifiers and the
 				reference to the addon environment if we instantiate them later.
 				
-				We have to manually set these scripts after the frame has been instantiated in Lua
-				for them to work properly.
+				Except for the first category, which is declared in .xml, we have to manually set these
+				scripts after the frame has been instantiated in Lua for them to work properly.
 
+				-->
+				
 				<OnEnter function="StoreCategory_OnEnter" />
 				<OnLeave function="StoreCategory_OnLeave" />
 				<OnClick function="StoreCategory_OnClick" />
-				-->
 			</Scripts>
 		</Button>
 		<Frame name="GoldBorderFrameTemplate" virtual="true">

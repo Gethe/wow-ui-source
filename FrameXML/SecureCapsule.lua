@@ -334,6 +334,10 @@ take("BLIZZARD_STORE_BOOST_UNREVOKED_CONSUMPTION");
 take("BLIZZARD_STORE_DISCLAIMER_BOOST_TOKEN_100");
 take("BLIZZARD_STORE_DISCLAIMER_BOOST_TOKEN_100_CN");
 take("STORE_CATEGORY_TRIAL_DISABLED_TOOLTIP");
+take("BLIZZARD_STORE_BUNDLE_DISCOUNT_BANNER");
+take("BLIZZARD_STORE_BUNDLE_DISCOUNT_TOOLTIP_ADDENDUM");
+take("BLIZZARD_STORE_BUNDLE_DISCOUNT_TOOLTIP_REPLACEMENT");
+
 
 -- For Battle.net Token
 take("C_WowTokenSecure");
@@ -441,6 +445,7 @@ takeenum("VasServiceType");
 takeenum("VasPurchaseState");
 takeenum("BattlepaySpecialProducts");
 takeenum("BattlepayProductGroupFlag");
+takeenum("BattlepayGroupDisplayType");
 
 -- Secure Mixins
 -- where ... are the mixins to mixin

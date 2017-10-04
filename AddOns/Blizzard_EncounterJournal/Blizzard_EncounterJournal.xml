@@ -834,6 +834,9 @@
 				<FontString inherits="GameFontBlack" justifyH="LEFT" justifyV="TOP">
 					<Color r="0.25" g="0.1484375" b=".02" a="1"/>
 				</FontString>
+				<Scripts>
+					<OnHyperlinkEnter function="EncounterOverviewBulletTemplate_OnHyperlinkEnter"/>
+				</Scripts>
 			</SimpleHTML>
 		</Frames>
 	</Frame>

@@ -50,10 +50,7 @@ function GameMenuFrame_UpdateVisibleButtons(self)
 end
 
 function GameMenuFrame_UpdateStoreButtonState(self)
-	if ( GameLimitedMode_IsActive() ) then
-		self.disabledTooltip = ERR_RESTRICTED_ACCOUNT_TRIAL;
-		self:Disable();
-	elseif ( C_StorePublic.IsDisabledByParentalControls() ) then
+	if ( C_StorePublic.IsDisabledByParentalControls() ) then
 		self.disabledTooltip = BLIZZARD_STORE_ERROR_PARENTAL_CONTROLS;
 		self:Disable();		
 	elseif ( IsKioskModeEnabled() ) then

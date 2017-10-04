@@ -294,6 +294,16 @@ function SetItemRef(link, text, button, chatFrame)
 
 		APIDocumentation:HandleAPILink(link, command);
 		return;
+	elseif ( strsub(link, 1, 13) == "storecategory" ) then
+		local _, category = strsplit(":", link);
+		if category == "token" then
+			StoreFrame_SetTokenCategory();
+		elseif category == "games" then
+			StoreFrame_SetGamesCategory();
+		elseif category == "services" then
+			StoreFrame_SetServicesCategory();
+		end
+		ToggleStoreUI();
 	end
 
 	if ( IsModifiedClick() ) then

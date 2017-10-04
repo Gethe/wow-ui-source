@@ -907,6 +907,21 @@ function ToggleStoreUI()
 	StoreFrame_SetShown(not wasShown);
 end
 
+function SetStoreUIShown(shown)
+	if (IsKioskModeEnabled()) then
+		return;
+	end
+
+	Store_LoadUI();
+
+	local wasShown = StoreFrame_IsShown();
+	if ( not wasShown and shown ) then
+		--We weren't showing, now we are. We should hide all other panels.
+		securecall("CloseAllWindows");
+	end
+	StoreFrame_SetShown(shown);
+end
+
 function ToggleGarrisonBuildingUI()
 	if (not GarrisonBuildingFrame) then
 		Garrison_LoadUI();
@@ -1176,6 +1191,12 @@ function UIParent_OnEvent(self, event, ...)
 	elseif ( event == "LOGOUT_CANCEL" ) then
 		StaticPopup_Hide("CAMP");
 		StaticPopup_Hide("QUIT");
+	elseif ( event == "UPDATE_EXPANSION_LEVEL" ) then
+		local currentExpansionLevel, currentAccountExpansionLevel, previousExpansionLevel, previousAccountExpansionLevel = ...;
+		if IsTrialAccount() and currentAccountExpansionLevel ~= previousAccountExpansionLevel and previousAccountExpansionLevel == 0 then
+			SetStoreUIShown(false);
+			StaticPopup_Show("TRIAL_UPGRADE_LOGOUT_WARNING");
+		end
 	elseif ( event == "LOOT_BIND_CONFIRM" ) then
 		local texture, item, quantity, quality, locked = GetLootSlotInfo(arg1);
 		local dialog = StaticPopup_Show("LOOT_BIND", ITEM_QUALITY_COLORS[quality].hex..item.."|r");

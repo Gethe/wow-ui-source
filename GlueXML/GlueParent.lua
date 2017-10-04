@@ -22,6 +22,8 @@ SEX_FEMALE = 3;
 
 ACCOUNT_SUSPENDED_ERROR_CODE = 53;
 
+local WOW_GAMES_CATEGORY_ID = 33; -- Mirror of the same variable in Blizzard_StoreUISecure.lua
+
 local function OnDisplaySizeChanged(self)
 	local width = GetScreenWidth();
 	local height = GetScreenHeight();
@@ -673,8 +675,14 @@ function SetExpansionLogo(texture, expansionLevel)
 end
 
 function UpgradeAccount()
-	StoreFrame_SetGamesCategory();
-	ToggleStoreUI();
+	local info = C_StoreSecure.GetProductGroupInfo(WOW_GAMES_CATEGORY_ID);
+	if info then
+		StoreFrame_SetGamesCategory();
+		ToggleStoreUI();
+	else
+		PlaySound(SOUNDKIT.GS_LOGIN_NEW_ACCOUNT);
+		LoadURLIndex(2);
+	end
 end
 
 function MinutesToTime(mins, hideDays)
