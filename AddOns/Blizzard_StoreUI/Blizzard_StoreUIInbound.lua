@@ -24,6 +24,10 @@ function StoreFrame_SetTokenCategory()
 	StoreFrame:SetAttribute("settokencategory");
 end
 
+function StoreFrame_OpenGamesCategory()
+	StoreFrame:SetAttribute("opengamescategory");
+end
+
 function StoreFrame_SetGamesCategory()
 	StoreFrame:SetAttribute("setgamescategory");
 end

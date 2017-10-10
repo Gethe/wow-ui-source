@@ -94,6 +94,7 @@ function CharacterSelect_OnLoad(self)
     self:RegisterEvent("CONVERT_RESULT");
     self:RegisterEvent("VAS_CHARACTER_QUEUE_STATUS_UPDATE");
     self:RegisterEvent("LOGIN_STATE_CHANGED");
+	self:RegisterEvent("UPDATE_EXPANSION_LEVEL");
     self:RegisterEvent("CHARACTER_UPGRADE_UNREVOKE_RESULT");
 
     SetCharSelectModelFrame("CharacterSelectModel");
@@ -613,6 +614,8 @@ function CharacterSelect_OnEvent(self, event, ...)
     elseif ( event == "LOGIN_STATE_CHANGED" ) then
         local FROM_LOGIN_STATE_CHANGE = true;
         CharacterSelect_UpdateState(FROM_LOGIN_STATE_CHANGE);
+	elseif ( event == "UPDATE_EXPANSION_LEVEL" ) then
+		AccountUpgradePanel_Update(CharSelectAccountUpgradeButton.isExpanded);
     end
 end
 
@@ -1526,7 +1529,7 @@ function AccountUpgradePanel_GetBannerInfo()
 		end
 		
 		local features = AccountUpgradePanel_GetBrownBoxFeatures();
-		return nil, true, UPGRADE_ACCOUNT_SHORT, expansionDisplayInfo.logo, expansionDisplayInfo.banner, features;
+		return nil, CanUpgradeExpansion(), UPGRADE_ACCOUNT_SHORT, expansionDisplayInfo.logo, expansionDisplayInfo.banner, features;
 	elseif IsVeteranTrialAccount() then
 		local features = {
 			{ icon = "Interface\\Icons\\achievement_bg_returnxflags_def_wsg", text = VETERAN_FEATURE_1 },
@@ -1618,7 +1621,7 @@ function AccountUpgradePanel_UpdateExpandState()
     if ( CharacterSelectServerAlertFrame:IsShown() ) then
         CharSelectAccountUpgradeButton.isExpanded = false;
         CharSelectAccountUpgradeButton.expandCollapseButton:Hide();
-    elseif ( GameLimitedMode_IsActive() ) then
+    elseif ( GameLimitedMode_IsActive() and not IsTrialAccount() ) then
         CharSelectAccountUpgradeButton.isExpanded = true;
         CharSelectAccountUpgradeButton.expandCollapseButton:Show();
         CharSelectAccountUpgradeButton.expandCollapseButton:Disable();

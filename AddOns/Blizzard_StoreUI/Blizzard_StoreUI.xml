@@ -382,17 +382,6 @@
 						</EdgeSize>
 					</Backdrop>
 				</Frame>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture>
-							<Anchors>
-								<Anchor point="TOPLEFT" x="11" y="-12"/>
-								<Anchor point="BOTTOMRIGHT" x="-12" y="9"/>
-							</Anchors>
-							<Color r="0" g="0" b="0" a="1"/>
-						</Texture>
-					</Layer>
-				</Layers>
 				<Button inherits="StoreDropDownMenuButtonTemplate" id="1">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="16" y="-16"/>

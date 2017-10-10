@@ -2195,7 +2195,7 @@ function FCFDock_GetInsertIndex(dock, chatFrame, mouseX, mouseY)
 		return maxPosition + 1;
 	else
 		--Find the dynamic insertion spot
-		local maxPosition = 9^9;
+		local maxPosition = 387420489; -- 9^9
 		local leftTab = FCFDockScrollFrame_GetLeftmostTab(dock.scrollFrame);
 		local numDynTabsDisplayed = dock.scrollFrame:GetWidth() / dock.scrollFrame.dynTabSize;
 

@@ -1281,6 +1281,7 @@ function StoreFrame_UpdateCard(card, entryID, discountReset, forceModelUpdate)
 	local new = false;
 	local hot = false;
 	
+	card:Enable();
 	if ( entryInfo.alreadyOwned ) then
 		if StoreFrame_DoesProductGroupShowOwnedAsDisabled(selectedCategoryID) then
 			card:Disable();
@@ -1669,7 +1670,7 @@ function StoreFrame_SetCardStyle(self, style, numPerRow)
 			card:SetWidth(146 * 2);
 			card.Card:SetAtlas("shop-card-bundle", true);
 			card.Card:SetTexCoord(0, 1, 0, 1);
-
+			
 			card.HighlightTexture:SetAtlas("shop-card-bundle-hover", true);
 			card.HighlightTexture:SetTexCoord(0, 1, 0, 1);
 
@@ -1698,7 +1699,7 @@ function StoreFrame_SetCardStyle(self, style, numPerRow)
 			card.Card:SetSize(146, 209);
 			card.Card:SetTexture("Interface\\Store\\Store-Main");
 			card.Card:SetTexCoord(0.18457031, 0.32714844, 0.64550781, 0.84960938);
-			
+						
 			card.HighlightTexture:SetSize(140, 203);
 			card.HighlightTexture:SetTexture("Interface\\Store\\Store-Main");
 			card.HighlightTexture:SetTexCoord(0.37011719, 0.50683594, 0.54199219, 0.74023438);
@@ -2033,6 +2034,8 @@ function StoreFrame_OnEvent(self, event, ...)
 		if IsTrialAccount() and currentAccountExpansionLevel ~= previousAccountExpansionLevel and previousAccountExpansionLevel == 0 then
 			C_StoreSecure.SetDisconnectOnLogout(true);
 		end
+		
+		C_StoreSecure.GetProductList();
 	end
 end
 
@@ -2227,6 +2230,22 @@ function StoreFrame_OnAttributeChanged(self, name, value)
 		SetStoreCategoryFromAttribute(WOW_TOKEN_CATEGORY_ID);
 	elseif ( name == "setgamescategory" ) then
 		SetStoreCategoryFromAttribute(WOW_GAMES_CATEGORY_ID);
+	elseif ( name == "opengamescategory" ) then
+		local info = C_StoreSecure.GetProductGroupInfo(WOW_GAMES_CATEGORY_ID);
+		if info then
+			SetStoreCategoryFromAttribute(WOW_GAMES_CATEGORY_ID);
+			
+			if ( not IsOnGlueScreen() and not self:IsShown() ) then
+				--We weren't showing, now we are. We should hide all other panels.
+				Outbound.CloseAllWindows();
+			end
+			
+			self:Show();
+		else
+			PlaySound(SOUNDKIT.GS_LOGIN_NEW_ACCOUNT);
+			LoadURLIndex(2);
+		end
+
 	elseif ( name == "setservicescategory" ) then
 		SetStoreCategoryFromAttribute(WOW_SERVICES_CATEGORY_ID);
 	elseif ( name == "selectlevel100boostproduct") then
@@ -3457,8 +3476,11 @@ function StoreProductCard_ShowIcon(self, icon, itemID, overrideTexture)
 	self.Icon:Show();
 	self.InvisibleMouseOverFrame:SetShown(itemID);
 
+	self.Icon:ClearAllPoints();
+	self.Icon:SetPoint("CENTER", self, "TOP", 0, -69);
 	if (not overrideTexture) then
 		if (self == StoreFrame.SplashSingle) then
+			self.Icon:ClearAllPoints();
 			self.Icon:SetPoint("TOPLEFT", 88, -99);
 		end
 		self.Icon:SetSize(64, 64);
@@ -3481,7 +3503,11 @@ function StoreProductCard_ShowIcon(self, icon, itemID, overrideTexture)
 				adjustY = -(64 - height);
 			end
 
+			self.Icon:ClearAllPoints();
 			self.Icon:SetPoint("TOPLEFT", 88 + math.floor(adjustX / 2), -99 + math.floor(adjustY / 2));
+		elseif self.style == "double-wide" then
+			self.Icon:ClearAllPoints();
+			self.Icon:SetPoint("TOPLEFT", self, "TOPLEFT");
 		end
 		self.IconBorder:Hide();
 	end
@@ -4861,7 +4887,7 @@ function StoreFrameSplashSingle_SetStyle(self, style)
 			SecureMixin(self.ProductName, ShrinkUntilTruncateFontStringMixin);
 		end
 		self.ProductName:SetWidth(535);
-		self.ProductName:SetHeight(20);
+		self.ProductName:SetMaxLines(1);
 		self.ProductName:SetPoint("CENTER", 0, -32);
 		self.ProductName:SetJustifyH("CENTER");
 		self.ProductName:SetFontObjectsToTry("Game30Font", "GameFontNormalHuge2", "GameFontNormalLarge2");
@@ -4906,7 +4932,7 @@ function StoreFrameSplashSingle_SetStyle(self, style)
 			SecureMixin(self.ProductName, ShrinkUntilTruncateFontStringMixin);
 		end
 		self.ProductName:SetWidth(300);
-		self.ProductName:SetHeight(20);
+		self.ProductName:SetMaxLines(1);
 		self.ProductName:SetPoint("TOPLEFT", self.IconBorder, "TOPRIGHT", -45, -70);
 		self.ProductName:SetJustifyH("LEFT");
 		self.ProductName:SetFontObjectsToTry("GameFontNormalWTF2", "Game30Font", "GameFontNormalHuge3");

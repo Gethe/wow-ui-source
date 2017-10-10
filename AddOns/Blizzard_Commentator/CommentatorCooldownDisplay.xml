@@ -4,11 +4,6 @@
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="Icon" />
-				<FontString parentKey="Time" inherits="GameFontHighlightSmall">
-					<Anchors>
-						<Anchor point="TOP" relativePoint="BOTTOM" />
-					</Anchors>
-				</FontString>
 				<FontString parentKey="ChargesText" inherits="NumberFontNormal" justifyH="RIGHT">
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT" x="-2" y="2"/>
@@ -34,7 +29,16 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Cooldown parentKey="Cooldown" inherits="CooldownFrameTemplate" />
+			<Cooldown parentKey="Cooldown" inherits="CooldownFrameTemplate" >
+				<Scripts>
+					<OnLoad>
+						self:SetHideCountdownNumbers(false);
+					</OnLoad>
+				</Scripts>
+				<SwipeTexture>
+					<Color r="0" g="0" b="0" a="0.7"/>
+				</SwipeTexture>
+			</Cooldown>
 			<Cooldown parentKey="Charges" frameStrata="DIALOG" inherits="CooldownFrameTemplate">
 				<Scripts>
 					<OnLoad>
@@ -50,14 +54,6 @@
 		</Frames>
 		<Scripts>
 			<OnUpdate>
-				local timeLeft = self.enable and self.duration - (GetTime() - self.start) or 0;
-				if timeLeft >= 0.1 then
-					self.Time:SetFormattedText(SecondsToTimeAbbrev(timeLeft));
-					self.Time:Show();
-				else
-					self.Time:Hide();
-				end
-				
 				AnimateTexCoords(self.Ants, 256, 256, 48, 48, 22, elapsed, 0.01);
 			</OnUpdate>
 		</Scripts>

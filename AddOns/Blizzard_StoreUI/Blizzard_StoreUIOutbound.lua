@@ -35,3 +35,7 @@ end
 function Outbound.ConfirmClassTrialApplyToken()
 	securecall("ClassTrial_ConfirmApplyToken")
 end
+
+function Outbound.CloseAllWindows()
+	securecall("CloseAllWindows");
+end

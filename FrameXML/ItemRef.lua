@@ -298,12 +298,13 @@ function SetItemRef(link, text, button, chatFrame)
 		local _, category = strsplit(":", link);
 		if category == "token" then
 			StoreFrame_SetTokenCategory();
+			ToggleStoreUI();
 		elseif category == "games" then
-			StoreFrame_SetGamesCategory();
+			StoreFrame_OpenGamesCategory();
 		elseif category == "services" then
 			StoreFrame_SetServicesCategory();
+			ToggleStoreUI();
 		end
-		ToggleStoreUI();
 	end
 
 	if ( IsModifiedClick() ) then
