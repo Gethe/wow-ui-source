@@ -15,6 +15,15 @@ local ExpansionLua =
 			},
 		},
 		{
+			Name = "DoesCurrentLocaleSellExpansionLevels",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "regionSellsExpansions", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "GetAccountExpansionLevel",
 			Type = "Function",
 

@@ -164,11 +164,30 @@
 				</Scripts>
 				<FontString inherits="GlueFontHighlight"/>
 			</EditBox>
+			<Frame parentKey="Cover" setAllPoints="true" enableMouse="true" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="0" y="0" />
+					<Anchor point="BOTTOMRIGHT" x="0" y="0" />
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Texture" setAllPoints="true">
+							<Color r="0" g="0" b="0" a="0.7" />
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnShow>
+						self:SetFrameLevel(self:GetParent():GetFrameLevel()-1);
+					</OnShow>
+				</Scripts>
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad function="GlueDialog_OnLoad"/>
 			<OnShow function="GlueDialog_OnShow"/>
 			<OnHide function="GlueDialog_OnHide"/>
+			<OnUpdate function="GlueDialog_OnUpdate"/>
 			<OnKeyDown function="GlueDialog_OnKeyDown"/>
 		</Scripts>
 	</Frame>

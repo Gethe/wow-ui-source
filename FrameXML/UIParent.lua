@@ -1191,12 +1191,6 @@ function UIParent_OnEvent(self, event, ...)
 	elseif ( event == "LOGOUT_CANCEL" ) then
 		StaticPopup_Hide("CAMP");
 		StaticPopup_Hide("QUIT");
-	elseif ( event == "UPDATE_EXPANSION_LEVEL" ) then
-		local currentExpansionLevel, currentAccountExpansionLevel, previousExpansionLevel, previousAccountExpansionLevel = ...;
-		if IsTrialAccount() and currentAccountExpansionLevel ~= previousAccountExpansionLevel and previousAccountExpansionLevel == 0 then
-			SetStoreUIShown(false);
-			StaticPopup_Show("TRIAL_UPGRADE_LOGOUT_WARNING");
-		end
 	elseif ( event == "LOOT_BIND_CONFIRM" ) then
 		local texture, item, quantity, quality, locked = GetLootSlotInfo(arg1);
 		local dialog = StaticPopup_Show("LOOT_BIND", ITEM_QUALITY_COLORS[quality].hex..item.."|r");

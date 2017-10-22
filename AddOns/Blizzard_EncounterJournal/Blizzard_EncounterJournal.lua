@@ -939,14 +939,14 @@ function EncounterJournal_SetBullets(object, description, hideBullets)
 end
 
 function EncounterJournal_SetDescriptionWithBullets(infoHeader, description)
-	EncounterJournal_SetBullets(infoHeader.description, description, true);
+	EncounterJournal_SetBullets(infoHeader.overviewDescription, description, true);
 
 	infoHeader.descriptionBG:ClearAllPoints();
 	infoHeader.descriptionBG:SetPoint("TOPLEFT", infoHeader.button, "BOTTOMLEFT", 1, 0);
 	if (infoHeader.Bullets and #infoHeader.Bullets > 0) then
 		infoHeader.descriptionBG:SetPoint("BOTTOMRIGHT", infoHeader.Bullets[#infoHeader.Bullets], -1, -11);
 	else
-		infoHeader.descriptionBG:SetPoint("BOTTOMRIGHT", infoHeader.description, 9, -11);
+		infoHeader.descriptionBG:SetPoint("BOTTOMRIGHT", infoHeader.overviewDescription, 9, -11);
 	end
 	infoHeader.descriptionBG:Hide();
 	infoHeader.descriptionBGBottom:Hide();
@@ -957,6 +957,7 @@ function EncounterJournal_SetUpOverview(self, role, index)
 	if not self.overviews[index] then -- create a new header;
 		infoHeader = CreateFrame("FRAME", "EncounterJournalOverviewInfoHeader"..index, EncounterJournal.encounter.overviewFrame, "EncounterInfoTemplate");
 		infoHeader.description:Hide();
+		infoHeader.overviewDescription:Hide();
 		infoHeader.descriptionBG:Hide();
 		infoHeader.descriptionBGBottom:Hide();
 		infoHeader.button.abilityIcon:Hide();
@@ -1022,7 +1023,7 @@ function EncounterJournal_SetUpOverview(self, role, index)
 	infoHeader.button.link = link;
 	infoHeader.sectionID = nextSectionID;
 
-	infoHeader.description:SetWidth(infoHeader:GetWidth() - 20);
+	infoHeader.overviewDescription:SetWidth(infoHeader:GetWidth() - 20);
 	EncounterJournal_SetDescriptionWithBullets(infoHeader, description);
 	infoHeader:Show();
 end
@@ -1045,6 +1046,9 @@ function EncounterJournal_ToggleHeaders(self, doNotShift)
 	if hideHeaders then
 		self.button.expandedIcon:SetText("+");
 		self.description:Hide();
+		if (self.overviewDescription) then
+			self.overviewDescription:Hide();
+		end
 		self.descriptionBG:Hide();
 		self.descriptionBGBottom:Hide();
 
@@ -1061,11 +1065,11 @@ function EncounterJournal_ToggleHeaders(self, doNotShift)
 		end
 	else
 		if (not isOverview) then
-			if strlen(self.descriptionText or "") > 0 then
+			if strlen(self.description:GetText() or "") > 0 then
 				self.description:Show();
-				self.description:SetWidth(self:GetWidth() - 20);
-				self.description.Text:SetWidth(self:GetWidth() - 20);
-				EncounterJournal_SetDescriptionWithBullets(self, self.descriptionText);
+				if (self.overviewDescription) then
+					self.overviewDescription:Hide();
+				end
 				if self.button then
 					self.descriptionBG:Show();
 					self.descriptionBGBottom:Show();
@@ -1073,6 +1077,9 @@ function EncounterJournal_ToggleHeaders(self, doNotShift)
 				end
 			elseif self.button then
 				self.description:Hide();
+				if (self.overviewDescription) then
+					self.overviewDescription:Hide();
+				end
 				self.descriptionBG:Hide();
 				self.descriptionBGBottom:Hide();
 				self.button.expandedIcon:SetText("-");
@@ -1083,7 +1090,8 @@ function EncounterJournal_ToggleHeaders(self, doNotShift)
 				for i = 1, #self.Bullets do
 					self.Bullets[i]:Show();
 				end
-				self.description:Show();
+				self.description:Hide();
+				self.overviewDescription:Show();
 				self.descriptionBG:Show();
 				self.descriptionBGBottom:Show();
 
@@ -1142,7 +1150,7 @@ function EncounterJournal_ToggleHeaders(self, doNotShift)
 					infoHeader.myID = nextSectionID;
 					-- Spell names can show up in white, which clashes with the parchment, strip out white color codes.
 					description = description:gsub("\|cffffffff(.-)\|r", "%1");
-					infoHeader.descriptionText = description;
+					infoHeader.description:SetText(description);
 					infoHeader.button.title:SetText(title);
 					if topLevelSection then
 						infoHeader.button.title:SetFontObject("GameFontNormalMed3");

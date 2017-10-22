@@ -1783,14 +1783,6 @@ StaticPopupDialogs["CAMP"] = {
 	hideOnEscape = 1
 };
 
-StaticPopupDialogs["TRIAL_UPGRADE_LOGOUT_WARNING"] = {
-	text = TRIAL_UPGRADE_LOGOUT_WARNING,
-	timeout = 30,
-	whileDead = 1,
-	notClosableByLogout = 1,
-	hideOnEscape = 0
-};
-
 StaticPopupDialogs["QUIT"] = {
 	text = QUIT_TIMER,
 	button1 = QUIT_NOW,
@@ -3986,8 +3978,7 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 		 (which == "CONFIRM_SUMMON_SCENARIO") or
 		 (which == "CONFIRM_SUMMON_STARTING_AREA") or
 		 (which == "BFMGR_INVITED_TO_ENTER") or
-		 (which == "AREA_SPIRIT_HEAL") or
-		 (which == "TRIAL_UPGRADE_LOGOUT_WARNING") ) then
+		 (which == "AREA_SPIRIT_HEAL") ) then
 		text:SetText(" ");	-- The text will be filled in later.
 		text.text_arg1 = text_arg1;
 		text.text_arg2 = text_arg2;
@@ -4241,8 +4232,7 @@ function StaticPopup_OnUpdate(dialog, elapsed)
 			 (which == "CONFIRM_SUMMON_STARTING_AREA") or
 			 (which == "BFMGR_INVITED_TO_ENTER") or
 			 (which == "AREA_SPIRIT_HEAL") or
-			 (which == "SPELL_CONFIRMATION_PROMPT") or
-			 (which == "TRIAL_UPGRADE_LOGOUT_WARNING")) then
+			 (which == "SPELL_CONFIRMATION_PROMPT") ) then
 			local text = _G[dialog:GetName().."Text"];
 			timeleft = ceil(timeleft);
 			if ( (which == "INSTANCE_BOOT") or (which == "GARRISON_BOOT") ) then

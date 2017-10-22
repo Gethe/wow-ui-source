@@ -616,6 +616,13 @@ function CharacterSelect_OnEvent(self, event, ...)
         CharacterSelect_UpdateState(FROM_LOGIN_STATE_CHANGE);
 	elseif ( event == "UPDATE_EXPANSION_LEVEL" ) then
 		AccountUpgradePanel_Update(CharSelectAccountUpgradeButton.isExpanded);
+		
+		if not STORE_IS_LOADED or not StoreFrame_IsShown() then
+			local currentExpansionLevel, currentAccountExpansionLevel, previousExpansionLevel, previousAccountExpansionLevel = ...;
+			if IsTrialAccount() and currentAccountExpansionLevel ~= previousAccountExpansionLevel and previousAccountExpansionLevel == 0 then
+				GlueDialog_Show("BROWN_BOX_UPGRADE_LOGOUT_WARNING");
+			end
+		end
     end
 end
 
@@ -1523,13 +1530,24 @@ end
 
 function AccountUpgradePanel_GetBannerInfo()
 	if IsTrialAccount() then
-		local expansionDisplayInfo = GetExpansionDisplayInfo(LE_EXPANSION_CLASSIC);
+		local expansionDisplayInfo, features;
+		if DoesCurrentLocaleSellExpansionLevels() then
+			expansionDisplayInfo = GetExpansionDisplayInfo(LE_EXPANSION_CLASSIC);
+			features = AccountUpgradePanel_GetBrownBoxFeatures();
+		else
+			expansionDisplayInfo = GetExpansionDisplayInfo(LE_EXPANSION_LEVEL_CURRENT);
+			features = expansionDisplayInfo.features;
+			
+			-- Replace the boost feature.
+			features[3] = { icon = "Interface\\Icons\\Achievement_Quests_Completed_06", text = UPGRADE_FEATURE_2 }
+		end
+		
 		if not expansionDisplayInfo then
 			return nil, false;
 		end
-		
-		local features = AccountUpgradePanel_GetBrownBoxFeatures();
-		return nil, CanUpgradeExpansion(), UPGRADE_ACCOUNT_SHORT, expansionDisplayInfo.logo, expansionDisplayInfo.banner, features;
+
+		local shouldShowBanner = true;
+		return nil, shouldShowBanner, UPGRADE_ACCOUNT_SHORT, expansionDisplayInfo.logo, expansionDisplayInfo.banner, features;
 	elseif IsVeteranTrialAccount() then
 		local features = {
 			{ icon = "Interface\\Icons\\achievement_bg_returnxflags_def_wsg", text = VETERAN_FEATURE_1 },
@@ -1543,7 +1561,8 @@ function AccountUpgradePanel_GetBannerInfo()
 			return currentExpansionLevel, false;
 		end
 		
-		return currentExpansionLevel, true, REACTIVATE_ACCOUNT_NOW, expansionDisplayInfo.logo, expansionDisplayInfo.banner, features;
+		local shouldShowBanner = true;
+		return currentExpansionLevel, shouldShowBanner, REACTIVATE_ACCOUNT_NOW, expansionDisplayInfo.logo, expansionDisplayInfo.banner, features;
 	else
 		local currentExpansionLevel, upgradeLevel = AccountUpgradePanel_GetDisplayExpansionLevel();
 		local shouldShowBanner = GameLimitedMode_IsActive() or CanUpgradeExpansion();
@@ -1695,6 +1714,18 @@ function ToggleStoreUI()
         end
         StoreFrame_SetShown(not wasShown);
     end
+end
+
+function SetStoreUIShown(shown)
+	if (STORE_IS_LOADED) then
+		local wasShown = StoreFrame_IsShown();
+		if ( not wasShown and shown ) then
+			--We weren't showing, now we are. We should hide all other panels.
+			-- not sure if anything is needed here at the gluescreen
+		end
+		
+		StoreFrame_SetShown(shown);
+	end
 end
 
 function CharacterTemplatesFrameDropDown_OnClick(button)

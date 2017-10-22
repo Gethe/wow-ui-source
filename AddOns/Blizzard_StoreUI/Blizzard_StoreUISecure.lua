@@ -1330,7 +1330,8 @@ function StoreFrame_UpdateCard(card, entryID, discountReset, forceModelUpdate)
 
 		local alreadyOwned = entryInfo.alreadyOwned;
 		local buyableHere = entryInfo.sharedData.buyableHere;
-		local shouldEnableBuyButton = buyableHere and not alreadyOwned;
+		local restrictedInGame = selectedCategoryID == WOW_GAMES_CATEGORY_ID and IsTrialAccount() and not IsOnGlueScreen();
+		local shouldEnableBuyButton = buyableHere and not alreadyOwned and not restrictedInGame;
 		card.BuyButton:SetEnabled(shouldEnableBuyButton);
 	end
 
@@ -1470,9 +1471,20 @@ function StoreFrame_UpdateCard(card, entryID, discountReset, forceModelUpdate)
 
 	if (card.DisabledOverlay) then
 		local vasDisabled = entryInfo.sharedData.productDecorator == Enum.BattlepayProductDecorator.VasService and not IsOnGlueScreen();
+		local restrictedInGame = selectedCategoryID == WOW_GAMES_CATEGORY_ID and IsTrialAccount() and not IsOnGlueScreen();
 		local disabled = not card:IsEnabled();
-		card.DisabledOverlay:SetShown(disabled or vasDisabled);
-		card.Card:SetDesaturated(disabled);
+		
+		-- If the only reason we can't buy this product is that we're in-world, redirect to the glue shop.
+		if not disabled and not vasDisabled and restrictedInGame then
+			card.disabledTooltip = BLIZZARD_STORE_LOG_OUT_TO_PURCHASE_THIS_PRODUCT;
+		else
+			card.disabledTooltip = nil;
+		end
+		
+		local cardShouldBeDisabled = disabled or vasDisabled or restrictedInGame;
+		card.DisabledOverlay:SetShown(cardShouldBeDisabled);
+		card.Card:SetDesaturated(cardShouldBeDisabled);
+		card:SetEnabled(not cardShouldBeDisabled);
 	end
 
 	card:Show();
@@ -2031,11 +2043,10 @@ function StoreFrame_OnEvent(self, event, ...)
 		StoreFrame_UpdateActivePanel(self);
 	elseif ( event == "UPDATE_EXPANSION_LEVEL" ) then
 		local currentExpansionLevel, currentAccountExpansionLevel, previousExpansionLevel, previousAccountExpansionLevel = ...;
-		if IsTrialAccount() and currentAccountExpansionLevel ~= previousAccountExpansionLevel and previousAccountExpansionLevel == 0 then
-			C_StoreSecure.SetDisconnectOnLogout(true);
+		local upgradingFromTrial = IsTrialAccount() and currentAccountExpansionLevel ~= previousAccountExpansionLevel and previousAccountExpansionLevel == 0;
+		if not upgradingFromTrial then
+			C_StoreSecure.GetProductList();
 		end
-		
-		C_StoreSecure.GetProductList();
 	end
 end
 
@@ -2067,7 +2078,7 @@ function StoreFrame_OnHide(self)
 	if ( not IsOnGlueScreen() ) then
 		Outbound.UpdateMicroButtons();
 	end
-
+	
 	StoreVASValidationFrame:Hide();
 	SimpleCheckout:Hide();
 	PlaySound(SOUNDKIT.UI_IG_STORE_WINDOW_CLOSE_BUTTON);
@@ -3376,7 +3387,25 @@ function StoreProductCard_ShouldShowMagnifyingGlass(self)
 end
 
 function StoreSplashPairCard_OnEnter(self)
-	if not self:IsEnabled() then
+	local disabled = not self:IsEnabled();
+	local hasDisabledTooltip = disabled and self.disabledTooltip;
+	local hasProductTooltip = not disabled and self.productTooltipTitle;
+	if hasDisabledTooltip or hasProductTooltip then
+		StoreTooltip:ClearAllPoints();
+		if self.anchorRight then
+			StoreTooltip:SetPoint("BOTTOMLEFT", self, "TOPRIGHT", -7, -6);
+		else
+			StoreTooltip:SetPoint("BOTTOMRIGHT", self, "TOPLEFT", 7, -6);
+		end
+		
+		if hasDisabledTooltip then
+			StoreTooltip_Show("", self.disabledTooltip);
+		elseif hasProductTooltip then
+			StoreTooltip_Show(self.productTooltipTitle, self.productTooltipDescription);
+		end
+	end
+	
+	if disabled then
 		return;
 	end
 	
@@ -3386,12 +3415,6 @@ function StoreSplashPairCard_OnEnter(self)
 	
 	if StoreProductCard_ShouldShowMagnifyingGlass(self) then
 		StoreProductCard_ShowMagnifier(self);
-	end
-	
-	StoreTooltip:ClearAllPoints();
-	StoreTooltip:SetPoint("BOTTOMRIGHT", self, "TOPLEFT");
-	if self.productTooltipTitle then
-		StoreTooltip_Show(self.productTooltipTitle, self.productTooltipDescription);
 	end
 end
 

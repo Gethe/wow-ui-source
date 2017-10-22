@@ -44,17 +44,34 @@ function SimpleCheckoutMixin:OnEvent(event, ...)
 		end
 	elseif (event == "UI_SCALE_CHANGED" or event == "DISPLAY_SIZE_CHANGED") then
 		self:RecalculateSize();
+	elseif (event == "UPDATE_EXPANSION_LEVEL") then
+		if (IsOnGlueScreen()) then
+			local currentExpansionLevel, currentAccountExpansionLevel, previousExpansionLevel, previousAccountExpansionLevel = ...;
+			if (IsTrialAccount() and currentAccountExpansionLevel ~= previousAccountExpansionLevel and previousAccountExpansionLevel == 0) then
+				self.disconnectOnHide = true;
+			else
+				C_StoreSecure.GetProductList();
+			end
+		end
 	end
 end
 
 function SimpleCheckoutMixin:OnShow()
 	self:RegisterEvent("UI_SCALE_CHANGED");
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
+	self:RegisterEvent("UPDATE_EXPANSION_LEVEL");
+	self.disconnectOnHide = false;
 end
 
 function SimpleCheckoutMixin:OnHide()
 	self:UnregisterEvent("UI_SCALE_CHANGED");
 	self:UnregisterEvent("DISPLAY_SIZE_CHANGED");
+	self:UnregisterEvent("UPDATE_EXPANSION_LEVEL");
+	
+	if (IsOnGlueScreen() and self.disconnectOnHide) then
+		_G.SetStoreUIShown(false);
+		_G.GlueDialog_Show("BROWN_BOX_UPGRADE_LOGOUT_WARNING");
+	end
 
 	self:CloseCheckout();
 end

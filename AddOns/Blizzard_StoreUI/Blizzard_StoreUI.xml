@@ -951,7 +951,7 @@
 				<OnMouseUp function="StoreProductCard_OnMouseUp" />
 			</Scripts>
 		</Button>
-		<Button name="StoreSplashPairCardTemplate" virtual="true" hidden="true">
+		<Button name="StoreSplashPairCardTemplate" virtual="true" motionScriptsWhileDisabled="true" hidden="true">
 			<Size x="286" y="471" />
 			<KeyValues>
 				<KeyValue key="isSplash" value="true" type="boolean"/>
@@ -1053,7 +1053,7 @@
 						<KeyValue key="templateType" value="StoreBulletPointTemplate" type="string"/>
 					</KeyValues>
 				</Frame>
-				<Button parentKey="BuyButton" inherits="StoreButtonTemplate">
+				<Button parentKey="BuyButton" inherits="StoreButtonTemplate" motionScriptsWhileDisabled="true">
 					<Size x="140" y="30" />
 					<Anchors>
 						<Anchor point="BOTTOM" x="0" y="20" />
@@ -2066,6 +2066,9 @@
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.RightInset" relativePoint="TOPLEFT" x="10" y="-10" />
 					</Anchors>
+					<KeyValues>
+						<KeyValue key="anchorRight" value="true" type="boolean"/>
+					</KeyValues>
 				</Button>
 				<Button parentKey="SplashPairSecond" inherits="StoreSplashPairCardTemplate">
 					<Anchors>
@@ -2777,6 +2780,11 @@
 					end
 				</OnHyperlinkLeave>
 				<OnHyperlinkClick>
+					local grandparent = self:GetParent():GetParent();
+					if not grandparent:IsEnabled() then
+						return;
+					end
+					
 					local linkType, index = string.split(":", link);
 					if ( linkType == "urlIndex" ) then
 						LoadURLIndex(tonumber(index));

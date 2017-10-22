@@ -854,7 +854,7 @@
 		</Frames>
 	</Frame>
 
-	<Frame name="EncounterInfoTemplate" virtual="true">
+	<Frame name="EncounterInfoTemplate" virtual="true" inherits="InlineHyperlinkFrameTemplate">
 		<Animations>
 			<AnimationGroup parentKey="flashAnim">
 				<Alpha target="$parentHeaderButtonGlow" fromAlpha="0" toAlpha="1" duration="0.6" order="1"/>
@@ -1126,7 +1126,7 @@
 					</OnLeave>
 				</Scripts>
 			</Button>
-			<Frame parentKey="description" inherits="EncounterDescriptionTemplate">
+			<Frame parentKey="overviewDescription" inherits="EncounterDescriptionTemplate">
 				<Size x="95" y="10"/>
 				<Anchors>
 					<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$parentHeaderButton" x="0" y="-9"/>
@@ -1139,6 +1139,15 @@
 			</Frame>
 		</Frames>
 		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentDescription" inherits="GameFontBlack" justifyH="LEFT" parentKey="description">
+					<Size x="0" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$parentHeaderButton" x="0" y="-9"/>
+					</Anchors>
+					<Color r="0.25" g="0.1484375" b=".02" a="1"/>
+				</FontString>
+			</Layer>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentDescriptionBG" inherits="UI-EJ-AbilityTextBG" parentKey="descriptionBG">
 					<Size x="12" y="12"/>
@@ -1159,6 +1168,7 @@
 			<OnHide>
 				self:SetScript("OnUpdate", nil);
 			</OnHide>
+			<OnHyperlinkEnter function="EncounterJournal_OnHyperlinkEnter"/>
 		</Scripts>
 	</Frame>
 
