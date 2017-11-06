@@ -200,7 +200,7 @@ function QuestChoiceFrame_ShowRewards(numOptions)
 				currency = rewardFrame.Currencies["Currency"..j];
 				local currID, texture, quantity = GetQuestChoiceRewardCurrency(i, j); --there should only be one currency reward
 				currency.currencyID = currID;
-				currency.Icon:SetTexture("Interface\\Icons\\"..texture);
+				currency.Icon:SetTexture(texture);
 				currency.Quantity:SetText(quantity);
 				--set width of currency frame to barely hold icon and string
 				width = currency.Icon:GetWidth() + CURRENCY_SPACING + currency.Quantity:GetWidth();

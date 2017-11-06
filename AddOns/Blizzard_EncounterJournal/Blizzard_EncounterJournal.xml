@@ -834,6 +834,9 @@
 				<FontString inherits="GameFontBlack" justifyH="LEFT" justifyV="TOP">
 					<Color r="0.25" g="0.1484375" b=".02" a="1"/>
 				</FontString>
+				<Scripts>
+					<OnHyperlinkEnter function="EncounterJournal_OnHyperlinkEnter"/>
+				</Scripts>
 			</SimpleHTML>
 		</Frames>
 	</Frame>
@@ -844,11 +847,14 @@
 				<FontString inherits="GameFontBlack" justifyH="LEFT" justifyV="TOP">
 					<Color r="0.25" g="0.1484375" b=".02" a="1"/>
 				</FontString>
+				<Scripts>
+					<OnHyperlinkEnter function="EncounterJournal_OnHyperlinkEnter"/>
+				</Scripts>
 			</SimpleHTML>
 		</Frames>
 	</Frame>
 
-	<Frame name="EncounterInfoTemplate" virtual="true">
+	<Frame name="EncounterInfoTemplate" virtual="true" inherits="InlineHyperlinkFrameTemplate">
 		<Animations>
 			<AnimationGroup parentKey="flashAnim">
 				<Alpha target="$parentHeaderButtonGlow" fromAlpha="0" toAlpha="1" duration="0.6" order="1"/>
@@ -1162,6 +1168,7 @@
 			<OnHide>
 				self:SetScript("OnUpdate", nil);
 			</OnHide>
+			<OnHyperlinkEnter function="EncounterJournal_OnHyperlinkEnter"/>
 		</Scripts>
 	</Frame>
 

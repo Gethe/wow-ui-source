@@ -122,6 +122,10 @@ function FramePoolMixin:OnLoad(frameType, parent, frameTemplate, resetterFunc)
 	self.frameTemplate = frameTemplate;
 end
 
+function FramePoolMixin:GetTemplate()
+	return self.frameTemplate;
+end
+
 function FramePool_Hide(framePool, frame)
 	frame:Hide();
 end

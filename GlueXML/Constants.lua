@@ -18,20 +18,6 @@ EXPANSION_GLUE_MUSIC = {
 	[LE_EXPANSION_LEGION]					= SOUNDKIT.MUS_70_MAIN_TITLE,
 };
 
---Logos
-EXPANSION_LOGOS = {
-	TRIAL = {texture="Interface\\Glues\\Common\\Glues-WoW-StarterLogo"},
-	[LE_EXPANSION_CLASSIC] = {texture="Interface\\Glues\\Common\\Glues-WoW-ClassicLogo"},
-	[LE_EXPANSION_BURNING_CRUSADE] = {texture="Interface\\Glues\\Common\\Glues-WoW-BCLogo"},
-	[LE_EXPANSION_WRATH_OF_THE_LICH_KING] = {texture="Interface\\Glues\\Common\\Glues-WoW-WotLKLogo"},
-	[LE_EXPANSION_CATACLYSM] = {texture="Interface\\Glues\\Common\\Glues-WoW-CCLogo"},
-	[LE_EXPANSION_MISTS_OF_PANDARIA] = {texture="Interface\\Glues\\Common\\Glues-WoW-MPLogo"},
-	[LE_EXPANSION_WARLORDS_OF_DRAENOR] = {texture="Interface\\Glues\\Common\\GLUES-WOW-WODLOGO"},
-	-- logos after WoD should be atlas
-	[LE_EXPANSION_LEGION] = {atlas="Glues-WoW-LegionLogo"},
-	--When adding entries to here, make sure to update the zhTW and zhCN localization files.
-};
-
 GLUE_AMBIENCE_TRACKS = {
 	["HUMAN"]					= SOUNDKIT.AMB_GLUESCREEN_HUMAN,
 	["ORC"]						= SOUNDKIT.AMB_GLUESCREEN_ORC,

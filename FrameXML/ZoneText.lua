@@ -24,13 +24,17 @@ function SetZoneText(showZone)
 		ZoneTextString:SetTextColor(1.0, 0.1, 0.1);
 		SubZoneTextString:SetTextColor(1.0, 0.1, 0.1);
 	elseif ( pvpType == "friendly" ) then
-		pvpTextString:SetFormattedText(FACTION_CONTROLLED_TERRITORY, factionName);
-		pvpTextString:SetTextColor(0.1, 1.0, 0.1);
+		if (factionName and factionName ~= "") then
+			pvpTextString:SetFormattedText(FACTION_CONTROLLED_TERRITORY, factionName);
+			pvpTextString:SetTextColor(0.1, 1.0, 0.1);
+		end
 		ZoneTextString:SetTextColor(0.1, 1.0, 0.1);
 		SubZoneTextString:SetTextColor(0.1, 1.0, 0.1);
 	elseif ( pvpType == "hostile" ) then
-		pvpTextString:SetFormattedText(FACTION_CONTROLLED_TERRITORY, factionName);
-		pvpTextString:SetTextColor(1.0, 0.1, 0.1);
+		if (factionName and factionName ~= "") then
+			pvpTextString:SetFormattedText(FACTION_CONTROLLED_TERRITORY, factionName);
+			pvpTextString:SetTextColor(1.0, 0.1, 0.1);
+		end
 		ZoneTextString:SetTextColor(1.0, 0.1, 0.1);
 		SubZoneTextString:SetTextColor(1.0, 0.1, 0.1);
 	elseif ( pvpType == "contested" ) then

@@ -22,6 +22,8 @@ SEX_FEMALE = 3;
 
 ACCOUNT_SUSPENDED_ERROR_CODE = 53;
 
+local WOW_GAMES_CATEGORY_ID = 33; -- Mirror of the same variable in Blizzard_StoreUISecure.lua
+
 local function OnDisplaySizeChanged(self)
 	local width = GetScreenWidth();
 	local height = GetScreenHeight();
@@ -643,12 +645,29 @@ function IsKioskGlueEnabled()
 	return IsKioskModeEnabled() and not IsCompetitiveModeEnabled();
 end
 
+function GetDisplayedExpansionLogo(expansionLevel)
+	local isTrial = expansionLevel == nil;
+	if isTrial then
+		return "Interface\\Glues\\Common\\Glues-WoW-StarterLogo";
+	elseif expansionLevel <= GetMinimumExpansionLevel() then
+		local expansionInfo = GetExpansionDisplayInfo(LE_EXPANSION_CLASSIC);
+		if expansionInfo then
+			return expansionInfo.logo;
+		end
+	else
+		local expansionInfo = GetExpansionDisplayInfo(expansionLevel);
+		if expansionInfo then
+			return expansionInfo.logo;
+		end
+	end
+	
+	return nil;
+end
+
 function SetExpansionLogo(texture, expansionLevel)
-	if ( EXPANSION_LOGOS[expansionLevel].texture ) then
-		texture:SetTexture(EXPANSION_LOGOS[expansionLevel].texture);
-		texture:Show();
-	elseif ( EXPANSION_LOGOS[expansionLevel].atlas ) then
-		texture:SetAtlas(EXPANSION_LOGOS[expansionLevel].atlas);
+	local logo = GetDisplayedExpansionLogo(expansionLevel);
+	if logo then
+		texture:SetTexture(logo);
 		texture:Show();
 	else
 		texture:Hide();
@@ -656,8 +675,14 @@ function SetExpansionLogo(texture, expansionLevel)
 end
 
 function UpgradeAccount()
-	PlaySound(SOUNDKIT.GS_LOGIN_NEW_ACCOUNT);
-	LoadURLIndex(2);
+	local info = C_StoreSecure.GetProductGroupInfo(WOW_GAMES_CATEGORY_ID);
+	if info then
+		StoreFrame_SetGamesCategory();
+		ToggleStoreUI();
+	else
+		PlaySound(SOUNDKIT.GS_LOGIN_NEW_ACCOUNT);
+		LoadURLIndex(2);
+	end
 end
 
 function MinutesToTime(mins, hideDays)

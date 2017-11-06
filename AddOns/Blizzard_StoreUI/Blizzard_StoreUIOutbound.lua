@@ -12,6 +12,10 @@ function Outbound.ShowPreview(name, modelID, modelSceneID)
 	securecall("StoreShowPreview", name, modelID, modelSceneID);
 end
 
+function Outbound.ShowPreviews(displayInfoEntries)
+	securecall("StoreShowPreviews", displayInfoEntries);
+end
+
 function Outbound.HidePreviewFrame()
 	securecall("HidePreviewFrame");
 end
@@ -30,4 +34,8 @@ end
 
 function Outbound.ConfirmClassTrialApplyToken()
 	securecall("ClassTrial_ConfirmApplyToken")
+end
+
+function Outbound.CloseAllWindows()
+	securecall("CloseAllWindows");
 end

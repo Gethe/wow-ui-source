@@ -31,6 +31,14 @@ function ModelSceneMixin:OnLoad()
 	self.actorTemplate = "ModelSceneActorTemplate";
 	self.tagToActor = {};
 	self.tagToCamera = {};
+	
+	if self.reversedLighting then
+		local lightPosX, lightPosY, lightPosZ = self:GetLightPosition();
+		self:SetLightPosition(-lightPosX, -lightPosY, lightPosZ);
+		
+		local lightDirX, lightDirY, lightDirZ = self:GetLightDirection();
+		self:SetLightDirection(-lightDirX, -lightDirY, lightDirZ);
+	end
 end
 
 function ModelSceneMixin:ClearScene()

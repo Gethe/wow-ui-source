@@ -13,6 +13,9 @@
 ..\SharedXML\Vector2D.lua
 ..\SharedXML\Vector3D.lua
 ..\SharedXML\Spline.lua
+..\SharedXML\LayoutFrame.xml
+..\SharedXML\ManagedLayoutFrame.xml
+..\SharedXML\BulletPoint.xml
 MixinUtil.lua
 
 ## intrinsics
@@ -217,7 +220,6 @@ ZoneAbility.xml
 ArtifactToasts.xml
 ..\SharedXML\ModelPreviewFrame.xml
 SplashFrame.xml
-..\SharedXML\LayoutFrame.xml
 
 #Save off whatever we need available unmodified.
 SecureCapsule.lua

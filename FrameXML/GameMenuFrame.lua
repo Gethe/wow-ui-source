@@ -50,7 +50,7 @@ function GameMenuFrame_UpdateVisibleButtons(self)
 end
 
 function GameMenuFrame_UpdateStoreButtonState(self)
-	if ( GameLimitedMode_IsActive() ) then
+	if ( IsVeteranTrialAccount() ) then
 		self.disabledTooltip = ERR_RESTRICTED_ACCOUNT_TRIAL;
 		self:Disable();
 	elseif ( C_StorePublic.IsDisabledByParentalControls() ) then

@@ -907,6 +907,21 @@ function ToggleStoreUI()
 	StoreFrame_SetShown(not wasShown);
 end
 
+function SetStoreUIShown(shown)
+	if (IsKioskModeEnabled()) then
+		return;
+	end
+
+	Store_LoadUI();
+
+	local wasShown = StoreFrame_IsShown();
+	if ( not wasShown and shown ) then
+		--We weren't showing, now we are. We should hide all other panels.
+		securecall("CloseAllWindows");
+	end
+	StoreFrame_SetShown(shown);
+end
+
 function ToggleGarrisonBuildingUI()
 	if (not GarrisonBuildingFrame) then
 		Garrison_LoadUI();

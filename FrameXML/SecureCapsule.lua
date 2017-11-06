@@ -81,6 +81,7 @@ retain("IsOnGlueScreen");
 retain("math");
 retain("table");
 retain("string");
+retain("bit");
 retain("pairs");
 retain("ipairs");
 retain("next");
@@ -94,6 +95,7 @@ retain("type");
 retain("wipe");
 retain("error");
 retain("assert");
+retain("strtrim");
 retain("LoadURLIndex");
 retain("GetContainerNumFreeSlots");
 retain("GetCursorPosition");
@@ -130,6 +132,7 @@ retain("GetScreenWidth");
 retain("GetScreenHeight");
 retain("GetPhysicalScreenSize");
 retain("ConvertPixelsToUI");
+retain("IsTrialAccount");
 
 --For auth challenge
 take("C_AuthChallenge");
@@ -197,6 +200,9 @@ take("BLIZZARD_STORE_CURRENCY_FORMAT_BRL");
 take("BLIZZARD_STORE_CURRENCY_FORMAT_ARS");
 take("BLIZZARD_STORE_CURRENCY_FORMAT_CLP");
 take("BLIZZARD_STORE_CURRENCY_FORMAT_AUD");
+take("BLIZZARD_STORE_CURRENCY_FORMAT_JPY");
+take("BLIZZARD_STORE_CURRENCY_FORMAT_CAD");
+take("BLIZZARD_STORE_CURRENCY_FORMAT_NZD");
 take("BLIZZARD_STORE_CURRENCY_RAW_ASTERISK");
 take("BLIZZARD_STORE_CURRENCY_BETA");
 take("BLIZZARD_STORE_BROWSE_BATTLE_COINS_KR");
@@ -214,7 +220,7 @@ take("BLIZZARD_STORE_ERROR_MESSAGE_PAYMENT");
 take("BLIZZARD_STORE_ERROR_TITLE_BATTLEPAY_DISABLED");
 take("BLIZZARD_STORE_ERROR_MESSAGE_BATTLEPAY_DISABLED");
 take("BLIZZARD_STORE_SECOND_CHANCE_KR");
-take("BLIZZARD_STORE_LICENSE_ACK_TEXT");
+take("BLIZZARD_STORE_LICENSE_ACK_TEXT_KRW");
 take("BLIZZARD_STORE_LICENSE_ACK_TEXT_CN");
 take("BLIZZARD_STORE_LICENSE_ACK_TEXT_TW");
 take("BLIZZARD_STORE_LICENSE_ACK_TEXT_USD");
@@ -226,6 +232,9 @@ take("BLIZZARD_STORE_LICENSE_ACK_TEXT_CLP");
 take("BLIZZARD_STORE_LICENSE_ACK_TEXT_MXN");
 take("BLIZZARD_STORE_LICENSE_ACK_TEXT_BRL");
 take("BLIZZARD_STORE_LICENSE_ACK_TEXT_AUD");
+take("BLIZZARD_STORE_LICENSE_ACK_TEXT_JPY");
+take("BLIZZARD_STORE_LICENSE_ACK_TEXT_CAD");
+take("BLIZZARD_STORE_LICENSE_ACK_TEXT_NZD");
 take("BLIZZARD_STORE_REGION_LOCKED");
 take("BLIZZARD_STORE_REGION_LOCKED_SUBTEXT");
 take("BLIZZARD_STORE_ERROR_TITLE_INSUFFICIENT_BALANCE");
@@ -324,6 +333,11 @@ take("BLIZZARD_STORE_DISCLAIMER_CHARACTER_TRANSFER_CN");
 take("BLIZZARD_STORE_BOOST_UNREVOKED_CONSUMPTION");
 take("BLIZZARD_STORE_DISCLAIMER_BOOST_TOKEN_100");
 take("BLIZZARD_STORE_DISCLAIMER_BOOST_TOKEN_100_CN");
+take("STORE_CATEGORY_TRIAL_DISABLED_TOOLTIP");
+take("BLIZZARD_STORE_BUNDLE_DISCOUNT_BANNER");
+take("BLIZZARD_STORE_BUNDLE_DISCOUNT_TOOLTIP_ADDENDUM");
+take("BLIZZARD_STORE_BUNDLE_DISCOUNT_TOOLTIP_REPLACEMENT");
+
 
 -- For Battle.net Token
 take("C_WowTokenSecure");
@@ -425,10 +439,13 @@ retain("LE_MODEL_BLEND_OPERATION_NONE");
 takeenum("StoreError");
 takeenum("VasError");
 takeenum("BattlepayBoostProduct");
+takeenum("BattlepayDisplayFlag");
 takeenum("BattlepayProductDecorator");
 takeenum("VasServiceType");
 takeenum("VasPurchaseState");
 takeenum("BattlepaySpecialProducts");
+takeenum("BattlepayProductGroupFlag");
+takeenum("BattlepayGroupDisplayType");
 
 -- Secure Mixins
 -- where ... are the mixins to mixin

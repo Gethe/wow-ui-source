@@ -844,6 +844,13 @@ function EncounterJournal_UpdateButtonState(self)
 	self.tex.down[3]:Hide();
 end
 
+function EncounterJournal_OnHyperlinkEnter(self, link, text, fontString, left, bottom, width, height)
+	self.tooltipFrame:SetOwner(self, "ANCHOR_PRESERVE");
+	self.tooltipFrame:ClearAllPoints();
+	self.tooltipFrame:SetPoint("BOTTOMLEFT", fontString, "TOPLEFT", left + width, bottom);
+	self.tooltipFrame:SetHyperlink(link, EJ_GetDifficulty());
+end
+
 function EncounterJournal_CleanBullets(self, start, keep)
 	if (not self.Bullets) then return end
     start = start or 1;
@@ -1400,9 +1407,15 @@ end
 function EncounterJournal_FocusSectionCallback(self)
 	if self.cbCount > 0 then
 		local _, _, _, _, anchorY = self:GetPoint();
-		anchorY = abs(anchorY);
-		anchorY = anchorY - EncounterJournal.encounter.info.detailsScroll:GetHeight()/2;
-		EncounterJournal.encounter.info.detailsScroll.ScrollBar:SetValue(anchorY);
+		local scrollFrame = self:GetParent():GetParent();
+		if ( self.isOverview ) then
+			-- +4 puts the scrollbar all the way at the bottom when going to the last section
+			anchorY = scrollFrame:GetBottom() - self.descriptionBG:GetBottom() + 4;
+		else
+			anchorY = abs(anchorY);
+			anchorY = anchorY - scrollFrame:GetHeight()/2;
+		end
+		scrollFrame.ScrollBar:SetValue(anchorY);
 		self:SetScript("OnUpdate", nil);
 	end
 	self.cbCount = self.cbCount + 1;

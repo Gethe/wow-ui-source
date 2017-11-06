@@ -1769,12 +1769,8 @@ StaticPopupDialogs["CHAT_CHANNEL_PASSWORD"] = {
 StaticPopupDialogs["CAMP"] = {
 	text = CAMP_TIMER,
 	button1 = CANCEL,
-	--button2 = CAMP_NOW,
 	OnAccept = function(self)
 		CancelLogout();
-		--ForceLogout();
-		-- uncomment the next line once forced logouts are completely implemented (they currently have a failure case)
-		-- this.timeleft = 0;
 	end,
 	OnHide = function(self)
 		if ( self.timeleft > 0 ) then
@@ -1786,6 +1782,7 @@ StaticPopupDialogs["CAMP"] = {
 	whileDead = 1,
 	hideOnEscape = 1
 };
+
 StaticPopupDialogs["QUIT"] = {
 	text = QUIT_TIMER,
 	button1 = QUIT_NOW,
@@ -4235,7 +4232,7 @@ function StaticPopup_OnUpdate(dialog, elapsed)
 			 (which == "CONFIRM_SUMMON_STARTING_AREA") or
 			 (which == "BFMGR_INVITED_TO_ENTER") or
 			 (which == "AREA_SPIRIT_HEAL") or
-			 (which == "SPELL_CONFIRMATION_PROMPT")) then
+			 (which == "SPELL_CONFIRMATION_PROMPT") ) then
 			local text = _G[dialog:GetName().."Text"];
 			timeleft = ceil(timeleft);
 			if ( (which == "INSTANCE_BOOT") or (which == "GARRISON_BOOT") ) then

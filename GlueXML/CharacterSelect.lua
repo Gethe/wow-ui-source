@@ -94,6 +94,7 @@ function CharacterSelect_OnLoad(self)
     self:RegisterEvent("CONVERT_RESULT");
     self:RegisterEvent("VAS_CHARACTER_QUEUE_STATUS_UPDATE");
     self:RegisterEvent("LOGIN_STATE_CHANGED");
+	self:RegisterEvent("UPDATE_EXPANSION_LEVEL");
     self:RegisterEvent("CHARACTER_UPGRADE_UNREVOKE_RESULT");
 
     SetCharSelectModelFrame("CharacterSelectModel");
@@ -207,15 +208,6 @@ function CharacterSelect_OnShow(self)
 
     --Clear out the addons selected item
     GlueDropDownMenu_SetSelectedValue(AddonCharacterDropDown, true);
-
-    -- update banner art
-    local expansionLevel = min(GetClientDisplayExpansionLevel(), max(GetAccountExpansionLevel(), GetExpansionLevel()));
-    if ( expansionLevel > 0 ) then
-        expansionLevel = expansionLevel - 1; -- because the upgrade art is indexed as the previous expansion in ACCOUNT_UPGRADE_FEATURES
-        ACCOUNT_UPGRADE_FEATURES["VETERAN"].logo = ACCOUNT_UPGRADE_FEATURES[expansionLevel].logo;
-        ACCOUNT_UPGRADE_FEATURES["VETERAN"].atlasLogo = ACCOUNT_UPGRADE_FEATURES[expansionLevel].atlasLogo;
-        ACCOUNT_UPGRADE_FEATURES["VETERAN"].banner = ACCOUNT_UPGRADE_FEATURES[expansionLevel].banner;
-    end
 
     AccountUpgradePanel_Update(CharSelectAccountUpgradeButton.isExpanded);
 
@@ -622,6 +614,15 @@ function CharacterSelect_OnEvent(self, event, ...)
     elseif ( event == "LOGIN_STATE_CHANGED" ) then
         local FROM_LOGIN_STATE_CHANGE = true;
         CharacterSelect_UpdateState(FROM_LOGIN_STATE_CHANGE);
+	elseif ( event == "UPDATE_EXPANSION_LEVEL" ) then
+		AccountUpgradePanel_Update(CharSelectAccountUpgradeButton.isExpanded);
+		
+		if not STORE_IS_LOADED or not StoreFrame_IsShown() then
+			local currentExpansionLevel, currentAccountExpansionLevel, previousExpansionLevel, previousAccountExpansionLevel = ...;
+			if IsTrialAccount() and currentAccountExpansionLevel ~= previousAccountExpansionLevel and previousAccountExpansionLevel == 0 then
+				GlueDialog_Show("BROWN_BOX_UPGRADE_LOGOUT_WARNING");
+			end
+		end
     end
 end
 
@@ -1498,142 +1499,112 @@ function GetIndexFromCharID(charID)
     return 0;
 end
 
-ACCOUNT_UPGRADE_FEATURES = {
-    VETERAN = {
-        [1] = { icon = "Interface\\Icons\\achievement_bg_returnxflags_def_wsg", text = VETERAN_FEATURE_1 },
-        [2] = { icon = "Interface\\Icons\\achievement_reputation_01", text = VETERAN_FEATURE_2 },
-        [3] = { icon = "Interface\\Icons\\spell_holy_surgeoflight", text = VETERAN_FEATURE_3 },
-        logo = "Interface\\Glues\\Common\\Glues-WoW-WODLOGO",
-        banner = "accountupgradebanner-wod",
-        buttonText = REACTIVATE_ACCOUNT_NOW,
-        displayCheck =  function() return true end,
-        upgradeOnClick = function() SubscriptionRequestDialog_Open() end,
-    },
-    [LE_EXPANSION_BURNING_CRUSADE] = {
-        [1] = { icon = "Interface\\Icons\\achievement_level_85", text = UPGRADE_FEATURE_7 },
-        [2] = { icon = "Interface\\Icons\\achievement_firelands raid_ragnaros", text = UPGRADE_FEATURE_8 },
-        [3] = { icon = "Interface\\Icons\\Ability_Mount_CelestialHorse", text = UPGRADE_FEATURE_9 },
-        logo = "Interface\\Glues\\Common\\Glues-WoW-CCLogo",
-        banner = "accountupgradebanner-cataclysm",
-        buttonText =  UPGRADE_ACCOUNT_SHORT,
-        displayCheck =  function() return GameLimitedMode_IsActive() or CanUpgradeExpansion() end,
-        upgradeOnClick = UpgradeAccount,
-    },
-    [LE_EXPANSION_WRATH_OF_THE_LICH_KING] = {
-        [1] = { icon = "Interface\\Icons\\achievement_level_85", text = UPGRADE_FEATURE_7 },
-        [2] = { icon = "Interface\\Icons\\achievement_firelands raid_ragnaros", text = UPGRADE_FEATURE_8 },
-        [3] = { icon = "Interface\\Icons\\Ability_Mount_CelestialHorse", text = UPGRADE_FEATURE_9 },
-        logo = "Interface\\Glues\\Common\\Glues-WoW-CCLogo",
-        banner = "accountupgradebanner-cataclysm",
-        buttonText =  UPGRADE_ACCOUNT_SHORT,
-        displayCheck =  function() return GameLimitedMode_IsActive() or CanUpgradeExpansion() end,
-        upgradeOnClick = UpgradeAccount,
-    },
-    [LE_EXPANSION_CATACLYSM] = {
-        [1] = { icon = "Interface\\Icons\\achievement_level_90", text = UPGRADE_FEATURE_10 },
-        [2] = { icon = "Interface\\Glues\\AccountUpgrade\\upgrade-panda", text = UPGRADE_FEATURE_11 },
-        [3] = { icon = "Interface\\Icons\\achievement_zone_jadeforest", text = UPGRADE_FEATURE_12 },
-        logo = "Interface\\Glues\\Common\\Glues-WoW-MPLogo",
-        banner = "accountupgradebanner-mop",
-        buttonText =  UPGRADE_ACCOUNT_SHORT,
-        displayCheck =  function() return GameLimitedMode_IsActive() or CanUpgradeExpansion() end,
-        upgradeOnClick = UpgradeAccount,
-    },
-    [LE_EXPANSION_MISTS_OF_PANDARIA] = {
-        [1] = { icon = "Interface\\Icons\\Achievement_Quests_Completed_06", text = UPGRADE_FEATURE_2 },
-        [2] = { icon = "Interface\\Icons\\Achievement_Level_100", text = UPGRADE_FEATURE_14 },
-        [3] = { icon = "Interface\\Icons\\UI_Promotion_Garrisons", text = UPGRADE_FEATURE_15 },
-        logo = "Interface\\Glues\\Common\\Glues-WoW-WODLOGO",
-        banner = "accountupgradebanner-wod",
-        buttonText =  UPGRADE_ACCOUNT_SHORT,
-        displayCheck =  function() return GameLimitedMode_IsActive() or CanUpgradeExpansion() end,
-        upgradeOnClick = UpgradeAccount,
-    },
-    [LE_EXPANSION_WARLORDS_OF_DRAENOR] = {
-        [1] = { icon = "Interface\\Icons\\ClassIcon_DemonHunter", text = UPGRADE_FEATURE_16 },
-        [2] = { icon = "Interface\\Icons\\Icon_TreasureMap", text = UPGRADE_FEATURE_17 },
-        [3] = { icon = "Interface\\Icons\\UI_Promotion_CharacterBoost", text = UPGRADE_FEATURE_18 },
-        atlasLogo = "Glues-WoW-LegionLogo",
-        banner = "accountupgradebanner-legion",
-        buttonText = UPGRADE_ACCOUNT_SHORT,
-        displayCheck =  function() return GameLimitedMode_IsActive() or CanUpgradeExpansion() end,
-        upgradeOnClick = function()
-            if ( CharacterSelect_IsStoreAvailable() and C_StoreSecure.HasProductType(Enum.BattlepaySpecialProducts.Legion) ) then
-                StoreFrame_SetGamesCategory();
-                StoreFrame_SetShown(true);
-            else
-                -- if the store is down or parentally locked, send the player to the web
-                UpgradeAccount();
-            end
-        end,
-    },
-}
-
-local currentLocale = GetLocale();
-if currentLocale == "koKR" or currentLocale == "zhTW" then
-    ACCOUNT_UPGRADE_FEATURES[LE_EXPANSION_WARLORDS_OF_DRAENOR][3] = { icon = "Interface\\Icons\\Achievement_Quests_Completed_06", text = UPGRADE_FEATURE_2 }
-end
-
 -- Account upgrade panel
-function AccountUpgradePanel_GetExpansionTag()
-    local tag, logoTag;
-    if ( IsTrialAccount() ) then
-        -- Trial users have the starter edition logo with an upgrade banner that brings you to the lowest expansion level available.
-        tag = max(GetAccountExpansionLevel(), GetExpansionLevel()) - 1;
-        logoTag = "TRIAL";
-    elseif ( IsVeteranTrialAccount() ) then
-        -- Trial users have the starter edition logo with an upgrade banner that brings you to the lowest expansion level available.
-        tag = "VETERAN";
-        logoTag = min(GetClientDisplayExpansionLevel(), max(GetAccountExpansionLevel(), GetExpansionLevel()));
-    else
-        tag = min(GetClientDisplayExpansionLevel(), max(GetAccountExpansionLevel(), GetExpansionLevel()));
-        logoTag = tag;
-        if ( IsExpansionTrial() ) then
-            tag = tag - 1;
-        end
+function AccountUpgradePanel_GetDisplayExpansionLevel()
+    if IsTrialAccount() then
+		return nil, LE_EXPANSION_CLASSIC;
     end
-    return tag, logoTag;
+	
+	local currentExpansionLevel = math.min(GetClientDisplayExpansionLevel(), math.max(GetAccountExpansionLevel(), GetExpansionLevel()));		
+	local upgradeExpansionLevel = IsExpansionTrial() and currentExpansionLevel or currentExpansionLevel + 1;
+	
+	if currentExpansionLevel <= GetMinimumExpansionLevel() then
+		currentExpansionLevel = LE_EXPANSION_CLASSIC;
+	end
+	
+	if upgradeExpansionLevel and upgradeExpansionLevel <= GetMinimumExpansionLevel() then
+		upgradeExpansionLevel = LE_EXPANSION_CLASSIC;
+	end
+
+	return currentExpansionLevel, upgradeExpansionLevel;
 end
 
--- Account upgrade panel
+function AccountUpgradePanel_GetBrownBoxFeatures()
+	local brownBoxLevelCap = GetMaxLevelForExpansionLevel(GetMinimumExpansionLevel());
+	return {
+		{ icon = "Interface\\Icons\\achievement_quests_completed_06", text = TRIAL_FEATURE_1 },
+		{ icon = ("Interface\\Icons\\Achievement_Level_%s"):format(brownBoxLevelCap), text = TRIAL_FEATURE_LEVEL_CAP:format(brownBoxLevelCap) },
+		{ icon = "Interface\\Icons\\inv_misc_pocketwatch_01", text = TRIAL_FEATURE_2 },
+	};
+end
+
+function AccountUpgradePanel_GetBannerInfo()
+	if IsTrialAccount() then
+		local expansionDisplayInfo, features;
+		if DoesCurrentLocaleSellExpansionLevels() then
+			expansionDisplayInfo = GetExpansionDisplayInfo(LE_EXPANSION_CLASSIC);
+			features = AccountUpgradePanel_GetBrownBoxFeatures();
+		else
+			expansionDisplayInfo = GetExpansionDisplayInfo(LE_EXPANSION_LEVEL_CURRENT);
+			features = expansionDisplayInfo.features;
+			
+			-- Replace the boost feature.
+			features[3] = { icon = "Interface\\Icons\\Achievement_Quests_Completed_06", text = UPGRADE_FEATURE_2 }
+		end
+		
+		if not expansionDisplayInfo then
+			return nil, false;
+		end
+
+		local shouldShowBanner = true;
+		return nil, shouldShowBanner, UPGRADE_ACCOUNT_SHORT, expansionDisplayInfo.logo, expansionDisplayInfo.banner, features;
+	elseif IsVeteranTrialAccount() then
+		local features = {
+			{ icon = "Interface\\Icons\\achievement_bg_returnxflags_def_wsg", text = VETERAN_FEATURE_1 },
+			{ icon = "Interface\\Icons\\achievement_reputation_01", text = VETERAN_FEATURE_2 },
+			{ icon = "Interface\\Icons\\spell_holy_surgeoflight", text = VETERAN_FEATURE_3 },
+		};
+		
+		local currentExpansionLevel = AccountUpgradePanel_GetDisplayExpansionLevel();
+		local expansionDisplayInfo = GetExpansionDisplayInfo(currentExpansionLevel);
+		if not expansionDisplayInfo then
+			return currentExpansionLevel, false;
+		end
+		
+		local shouldShowBanner = true;
+		return currentExpansionLevel, shouldShowBanner, REACTIVATE_ACCOUNT_NOW, expansionDisplayInfo.logo, expansionDisplayInfo.banner, features;
+	else
+		local currentExpansionLevel, upgradeLevel = AccountUpgradePanel_GetDisplayExpansionLevel();
+		local shouldShowBanner = GameLimitedMode_IsActive() or CanUpgradeExpansion();
+		if shouldShowBanner then
+			local expansionDisplayInfo = GetExpansionDisplayInfo(upgradeLevel);
+			if not expansionDisplayInfo then
+				return currentExpansionLevel, false;
+			end
+		
+			return currentExpansionLevel, shouldShowBanner, UPGRADE_ACCOUNT_SHORT, expansionDisplayInfo.logo, expansionDisplayInfo.banner, expansionDisplayInfo.features;
+		else
+			return currentExpansionLevel, shouldShowBanner;
+		end
+	end
+end
+
 function AccountUpgradePanel_Update(isExpanded)
-    local tag, logoTag = AccountUpgradePanel_GetExpansionTag();
-
-    SetExpansionLogo(CharacterSelectLogo, logoTag);
-
-    if ( not ACCOUNT_UPGRADE_FEATURES[tag] or not ACCOUNT_UPGRADE_FEATURES[tag].displayCheck() ) then
-        CharSelectAccountUpgradePanel:Hide();
-        CharSelectAccountUpgradeButton:Hide();
-        CharSelectAccountUpgradeMiniPanel:Hide();
-        CharacterSelectServerAlertFrame:SetPoint("TOP", CharacterSelectLogo, "BOTTOM", 0, -5);
-    else
-        CharSelectAccountUpgradeButton:SetText(ACCOUNT_UPGRADE_FEATURES[tag].buttonText);
+	local currentExpansionLevel, shouldShowBanner, upgradeButtonText, upgradeLogo, upgradeBanner, features = AccountUpgradePanel_GetBannerInfo();
+	SetExpansionLogo(CharacterSelectLogo, currentExpansionLevel);
+    if ( shouldShowBanner ) then
+		CharSelectAccountUpgradeButton:SetText(upgradeButtonText);
         CharacterSelectServerAlertFrame:SetPoint("TOP", CharSelectAccountUpgradeMiniPanel, "BOTTOM", 0, -25);
-        local featureTable = ACCOUNT_UPGRADE_FEATURES[tag];
         CharSelectAccountUpgradeButton:Show();
         if ( isExpanded ) then
             CharSelectAccountUpgradePanel:Show();
             CharSelectAccountUpgradeMiniPanel:Hide();
 
-            if(featureTable.logo) then
-                CharSelectAccountUpgradePanel.logo:SetTexture(featureTable.logo);
-            else
-                CharSelectAccountUpgradePanel.logo:SetAtlas(featureTable.atlasLogo, false);
-            end
-            CharSelectAccountUpgradePanel.banner:SetAtlas(featureTable.banner, true);
+			CharSelectAccountUpgradePanel.logo:SetTexture(upgradeLogo);
+            CharSelectAccountUpgradePanel.banner:SetAtlas(upgradeBanner, true);
 
             local featureFrames = CharSelectAccountUpgradePanel.featureFrames;
-            for i=1, #featureTable do
+            for i=1, #features do
                 local frame = featureFrames[i];
                 if ( not frame ) then
                     frame = CreateFrame("FRAME", "CharSelectAccountUpgradePanelFeature"..i, CharSelectAccountUpgradePanel, "UpgradeFrameFeatureTemplate");
                     frame:SetPoint("TOPLEFT", featureFrames[i - 1], "BOTTOMLEFT", 0, 0);
                 end
 
-                frame.icon:SetTexture(featureTable[i].icon);
-                frame.text:SetText(featureTable[i].text);
+                frame.icon:SetTexture(features[i].icon);
+                frame.text:SetText(features[i].text);
             end
-            for i=#featureTable + 1, #featureFrames do
+            for i=#features + 1, #featureFrames do
                 featureFrames[i]:Hide();
             end
 
@@ -1644,17 +1615,18 @@ function AccountUpgradePanel_Update(isExpanded)
             CharSelectAccountUpgradePanel:Hide();
             CharSelectAccountUpgradeMiniPanel:Show();
 
-            if(featureTable.logo) then
-                CharSelectAccountUpgradeMiniPanel.logo:SetTexture(featureTable.logo);
-            else
-                CharSelectAccountUpgradeMiniPanel.logo:SetAtlas(featureTable.atlasLogo, false);
-            end
-            CharSelectAccountUpgradeMiniPanel.banner:SetAtlas(featureTable.banner, true);
+            CharSelectAccountUpgradeMiniPanel.logo:SetTexture(upgradeLogo);
+            CharSelectAccountUpgradeMiniPanel.banner:SetAtlas(upgradeBanner, true);
 
             CharSelectAccountUpgradeButtonExpandCollapseButton:SetNormalTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollDown-Up");
             CharSelectAccountUpgradeButtonExpandCollapseButton:SetPushedTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollDown-Down");
             CharSelectAccountUpgradeButtonExpandCollapseButton:SetDisabledTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollDown-Disabled");
         end
+	else
+		CharSelectAccountUpgradePanel:Hide();
+		CharSelectAccountUpgradeButton:Hide();
+		CharSelectAccountUpgradeMiniPanel:Hide();
+		CharacterSelectServerAlertFrame:SetPoint("TOP", CharacterSelectLogo, "BOTTOM", 0, -5);
     end
     CharSelectAccountUpgradeButton.isExpanded = isExpanded;
     SetCVar("expandUpgradePanel", isExpanded and "1" or "0");
@@ -1668,7 +1640,7 @@ function AccountUpgradePanel_UpdateExpandState()
     if ( CharacterSelectServerAlertFrame:IsShown() ) then
         CharSelectAccountUpgradeButton.isExpanded = false;
         CharSelectAccountUpgradeButton.expandCollapseButton:Hide();
-    elseif ( GameLimitedMode_IsActive() ) then
+    elseif ( GameLimitedMode_IsActive() and not IsTrialAccount() ) then
         CharSelectAccountUpgradeButton.isExpanded = true;
         CharSelectAccountUpgradeButton.expandCollapseButton:Show();
         CharSelectAccountUpgradeButton.expandCollapseButton:Disable();
@@ -1681,8 +1653,11 @@ end
 
 function CharSelectAccountUpgradeButton_OnClick(self)
     PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK);
-    local tag = AccountUpgradePanel_GetExpansionTag();
-    ACCOUNT_UPGRADE_FEATURES[tag].upgradeOnClick();
+	if IsVeteranTrialAccount() then
+		SubscriptionRequestDialog_Open();
+	else
+		UpgradeAccount();
+	end
 end
 
 function CharacterSelect_ScrollList(self, value)
@@ -1739,6 +1714,18 @@ function ToggleStoreUI()
         end
         StoreFrame_SetShown(not wasShown);
     end
+end
+
+function SetStoreUIShown(shown)
+	if (STORE_IS_LOADED) then
+		local wasShown = StoreFrame_IsShown();
+		if ( not wasShown and shown ) then
+			--We weren't showing, now we are. We should hide all other panels.
+			-- not sure if anything is needed here at the gluescreen
+		end
+		
+		StoreFrame_SetShown(shown);
+	end
 end
 
 function CharacterTemplatesFrameDropDown_OnClick(button)
@@ -1896,15 +1883,14 @@ function KioskMode_CheckCompetitiveMode()
         CharSelectAccountUpgradeButton:Show();
         CharSelectAccountUpgradeButton:Disable();
         CharSelectAccountUpgradeButtonExpandCollapseButton:Hide();
-        local featureTable = ACCOUNT_UPGRADE_FEATURES[LE_EXPANSION_LEVEL_PREVIOUS];
-        CharSelectAccountUpgradeMiniPanel:Show();
-
-        if(featureTable.logo) then
+        local featureTable = GetExpansionDisplayInfo(LE_EXPANSION_LEVEL_PREVIOUS);
+        if (featureTable) then
             CharSelectAccountUpgradeMiniPanel.logo:SetTexture(featureTable.logo);
-        else
-            CharSelectAccountUpgradeMiniPanel.logo:SetAtlas(featureTable.atlasLogo, false);
+			CharSelectAccountUpgradeMiniPanel.banner:SetAtlas(featureTable.banner, true);
+			CharSelectAccountUpgradeMiniPanel:Show();
+		else
+			CharSelectAccountUpgradeMiniPanel:Hide();
         end
-        CharSelectAccountUpgradeMiniPanel.banner:SetAtlas(featureTable.banner, true);
     end
 end
 

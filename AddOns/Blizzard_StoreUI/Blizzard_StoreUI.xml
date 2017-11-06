@@ -382,17 +382,6 @@
 						</EdgeSize>
 					</Backdrop>
 				</Frame>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture>
-							<Anchors>
-								<Anchor point="TOPLEFT" x="11" y="-12"/>
-								<Anchor point="BOTTOMRIGHT" x="-12" y="9"/>
-							</Anchors>
-							<Color r="0" g="0" b="0" a="1"/>
-						</Texture>
-					</Layer>
-				</Layers>
 				<Button inherits="StoreDropDownMenuButtonTemplate" id="1">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="16" y="-16"/>
@@ -572,16 +561,12 @@
 				</Layer>
 			</Layers>
 		</Frame>
-		<Button name="StoreProductCardSpecialMagnifierTemplate" enableMouse="true" alpha="0" virtual="true" parentArray="SpecialMagnifiers">
-			<Size x="46" y="47" />
-			<NormalTexture atlas="shop-games-magnifyingglass" />
-			<Scripts>
-				<OnShow>
-					self:SetFrameLevel(self:GetParent().ModelScene:GetFrameLevel()+1);
-				</OnShow>
-			</Scripts>
+		<Button name="StoreProductCardSpecialMagnifierTemplate" enableMouse="true" hidden="true" virtual="true" parentArray="SpecialMagnifiers">
+			<Size x="31" y="35" />
+			<NormalTexture inherits="store-icon-magnifyingglass" />
+			<HighlightTexture inherits="store-icon-magnifyingglass" alphaMode="ADD" />
 		</Button>
-		<Button name="StoreProductCardTemplate" virtual="true" hidden="true">
+		<Button name="StoreProductCardTemplate" motionScriptsWhileDisabled="true" virtual="true" hidden="true">
 			<Size x="146" y="209" />
 			<Layers>
 				<Layer level="BACKGROUND">
@@ -705,7 +690,7 @@
 				</Layer>
 			</Layers>
 			<Frames>
-				<ModelScene parentKey="ModelScene" useParentLevel="true" hidden="true" inherits="ModelSceneMixinTemplate">
+				<ModelScene parentKey="ModelScene" useParentLevel="true" hidden="true" inherits="ReversedLightingModelSceneMixinTemplate">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="8" y="-8"/>
 						<Anchor point="BOTTOMRIGHT" x="-8" y="8" />
@@ -723,9 +708,7 @@
 						<OnClick function="StoreProductCardMagnifyingGlass_OnClick" />
 						<OnEnter function="StoreProductCardMagnifyingGlass_OnEnter" />
 						<OnLeave function="StoreProductCardMagnifyingGlass_OnLeave" />
-						<OnShow>
-							self:SetFrameLevel(self:GetParent().ModelScene:GetFrameLevel()+1);
-						</OnShow>
+						<OnShow function="StoreCardDetail_SetLayerAboveModelScene"/>
 					</Scripts>
 				</Button>
 				<Frame parentKey="InvisibleMouseOverFrame" enableMouse="true" hidden="true">
@@ -749,9 +732,7 @@
 						</Layer>
 					</Layers>
 					<Scripts>
-						<OnShow>
-							self:SetFrameLevel(self:GetParent().ModelScene:GetFrameLevel()+1);
-						</OnShow>
+						<OnShow function="StoreCardDetail_SetLayerAboveModelScene"/>
 						<OnEnter function="StoreProductCardCheckmark_OnEnter"/>
 						<OnLeave function="StoreProductCardCheckmark_OnLeave"/>
 					</Scripts>
@@ -769,7 +750,7 @@
 			<Size x="576" y="471" />
 			<Layers>
 				<Layer level="BACKGROUND">
-					<Texture parentKey="Card" inherits="store-card-splash1" setAllPoints="true" />
+					<Texture parentKey="Card"/>
 				</Layer>
 				<Layer level="BACKGROUND" textureSubLevel="2">
 					<Texture parentKey="Shadows" inherits="store-card-petshadow" hidden="true">
@@ -799,11 +780,7 @@
 							<Anchor point="CENTER" relativeKey="$parent.IconBorder" relativePoint="CENTER" x="18" y="-26"/>
 						</Anchors>
 					</Texture>
-					<FontString parentKey="ProductName" inherits="GameFontNormalWTF2" justifyH="LEFT" justifyV="TOP">
-						<Size x="300" y="0" />
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.IconBorder" relativePoint="TOPRIGHT" x="-45" y="-70" />
-						</Anchors>
+					<FontString parentKey="ProductName" inherits="GameFontNormalWTF2" justifyV="TOP">
 						<Shadow>
 							<Offset>
 								<AbsDimension x="1" y="-1"/>
@@ -813,34 +790,24 @@
 						<Color r="1" g="1" b="1" />
 					</FontString>
 					<FontString parentKey="Description" inherits="GameFontNormalLarge" justifyH="LEFT" justifyV="TOP">
-						<Size x="340" y="0" />
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.ProductName" relativePoint="BOTTOMLEFT" x="0" y="-16" />
-						</Anchors>
 						<Color r="1" g="0.84" b="0.55" />
 					</FontString>
-					<FontString parentKey="CurrentMarketPrice" inherits="SystemFont_Shadow_Med2" justifyH="LEFT" hidden="true">
+					<FontString parentKey="CurrentMarketPrice" inherits="GameFontNormalMed2" justifyH="LEFT" hidden="true">
 						<Size x="340" y="0"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.Description" relativePoint="BOTTOMLEFT" x="0" y="-28" />
 						</Anchors>
 						<Color r=".733" g=".588" b=".31"/>
 					</FontString>
-					<FontString parentKey="CurrentPrice" inherits="GameFontNormalHugeOutline" >
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.Description" relativePoint="BOTTOMLEFT" x="0" y="-28" />
-						</Anchors>
+					<FontString parentKey="CurrentPrice" inherits="GameFontNormalLarge2" >
 						<Color r="1.0" g="0.82" b="0" />
 					</FontString>
 					<FontString parentKey="NormalPrice" inherits="GameFontNormalMed3">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.Description" relativePoint="BOTTOMLEFT" x="0" y="-28" />
-						</Anchors>
 						<Color r="0.8" g="0.66" b="0" />
 					</FontString>
-					<FontString parentKey="SalePrice" inherits="GameFontNormalHugeOutline" hidden="true">
+					<FontString parentKey="SalePrice" inherits="GameFontNormalLarge2" hidden="true">
 						<Anchors>
-							<Anchor point="BOTTOMLEFT" relativeKey="$parent.NormalPrice" relativePoint="BOTTOMRIGHT" x="4" y="0" />
+							<Anchor point="BOTTOMLEFT" relativeKey="$parent.NormalPrice" relativePoint="BOTTOMRIGHT" x="4" y="-1" />
 						</Anchors>
 						<Color r="0.1" g="1.0" b="0.1" />
 					</FontString>
@@ -925,7 +892,7 @@
 						</AnimationGroup>
 					</Animations>
 				</Frame>
-				<ModelScene parentKey="ModelScene" useParentLevel="true" hidden="true" inherits="ModelSceneMixinTemplate">
+				<ModelScene parentKey="ModelScene" useParentLevel="true" hidden="true" inherits="ReversedLightingModelSceneMixinTemplate">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="8" y="-8" />
 						<Anchor point="BOTTOMRIGHT" x="-8" y="8" />
@@ -944,9 +911,6 @@
 				</Frame>
 				<Button parentKey="BuyButton" inherits="StoreButtonTemplate">
 					<Size x="140" y="30" />
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.CurrentPrice" relativePoint="BOTTOMLEFT" x="0" y="-20" />
-					</Anchors>
 					<Scripts>
 						<OnClick function="StoreFrameBuyButton_OnClick" />
 					</Scripts>
@@ -960,9 +924,7 @@
 					<HighlightTexture inherits="store-icon-magnifyingglass" alphaMode="ADD" />
 					<Scripts>
 						<OnClick function="StoreProductCardMagnifyingGlass_OnClick" />
-						<OnShow>
-							self:SetFrameLevel(self:GetParent().ModelScene:GetFrameLevel()+1);
-						</OnShow>
+						<OnShow function="StoreCardDetail_SetLayerAboveModelScene"/>
 					</Scripts>
 				</Button>
 				<Frame parentKey="Checkmark" hidden="true">
@@ -976,9 +938,7 @@
 						</Layer>
 					</Layers>
 					<Scripts>
-						<OnShow>
-							self:SetFrameLevel(self:GetParent().ModelScene:GetFrameLevel()+1);
-						</OnShow>
+						<OnShow function="StoreCardDetail_SetLayerAboveModelScene"/>
 						<OnEnter function="StoreProductCardCheckmark_OnEnter"/>
 						<OnLeave function="StoreProductCardCheckmark_OnLeave"/>
 					</Scripts>
@@ -989,6 +949,126 @@
 				<OnClick function="StoreSplashSingleProductCard_OnClick"/>
 				<OnMouseDown function="StoreProductCard_OnMouseDown" />
 				<OnMouseUp function="StoreProductCard_OnMouseUp" />
+			</Scripts>
+		</Button>
+		<Button name="StoreSplashPairCardTemplate" virtual="true" motionScriptsWhileDisabled="true" hidden="true">
+			<Size x="286" y="471" />
+			<KeyValues>
+				<KeyValue key="isSplash" value="true" type="boolean"/>
+			</KeyValues>
+			<Layers>
+				<Layer level="BACKGROUND">
+					<Texture parentKey="Card" inherits="store-card-splash1" setAllPoints="true" />
+				</Layer>
+				<Layer level="ARTWORK">
+					<FontString parentKey="ProductName" inherits="GameFontNormalLarge" justifyH="CENTER" justifyV="TOP">
+						<Size x="250" y="10" />
+						<Anchors>
+							<Anchor point="CENTER" y="-10" />
+						</Anchors>
+						<Shadow>
+							<Offset>
+								<AbsDimension x="1" y="-1"/>
+							</Offset>
+							<Color r="0" g="0" b="0"/>
+						</Shadow>
+						<Color r="1" g="1" b="1" />
+					</FontString>
+					<FontString parentKey="CurrentMarketPrice" inherits="GameFontNormalMed2" justifyH="LEFT" hidden="true">
+						<Size x="250" y="0"/>
+						<Anchors>
+							<Anchor point="TOP" relativeKey="$parent.ProductName" relativePoint="BOTTOM" x="0" y="-4" />
+						</Anchors>
+						<Color r=".733" g=".588" b=".31"/>
+					</FontString>
+					<FontString parentKey="CurrentPrice" inherits="GameFontNormalLarge2" >
+						<Anchors>
+							<Anchor point="TOP" relativeKey="$parent.ProductName" relativePoint="BOTTOM" x="0" y="-16" />
+						</Anchors>
+						<Color r="1.0" g="0.82" b="0" />
+					</FontString>
+					<FontString parentKey="NormalPrice" inherits="GameFontNormal">
+						<Anchors>
+							<Anchor point="TOP" relativeKey="$parent.ProductName" relativePoint="BOTTOM" x="0" y="-8" />
+						</Anchors>
+						<Color r="0.8" g="0.66" b="0" />
+					</FontString>
+					<FontString parentKey="SalePrice" inherits="GameFontNormalLarge2" hidden="true">
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" relativeKey="$parent.NormalPrice" relativePoint="BOTTOMRIGHT" x="6" y="-2" />
+						</Anchors>
+						<Color r="0.1" g="1.0" b="0.1" />
+					</FontString>
+					<FontString parentKey="Description" inherits="GameFontNormalMed1" justifyH="LEFT" justifyV="TOP">
+						<Size x="250" y="0" />
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.ProductName" relativePoint="LEFT" />
+							<Anchor point="RIGHT" relativeKey="$parent.ProductName" relativePoint="RIGHT" />
+							<Anchor point="TOP" relativeKey="$parent.CurrentPrice" relativePoint="BOTTOM" x="0" y="-12" />
+						</Anchors>
+						<Color r="1" g="0.84" b="0.55" />
+					</FontString>
+				</Layer>
+				<Layer level="OVERLAY">
+					<Texture parentKey="Strikethrough" inherits="store-strikethrough" hidden="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.NormalPrice" />
+							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.NormalPrice" />
+						</Anchors>
+					</Texture>
+					<Texture parentKey="HighlightTexture" atlas="shop-card-half-hover" useAtlasSize="true" alphaMode="ADD" hidden="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="4" y="-4" />
+						</Anchors>
+					</Texture>
+				</Layer>
+			</Layers>
+			<Frames>
+				<Frame parentKey="DisabledOverlay" frameLevel="1000" setAllPoints="true" hidden="true">
+					<Layers>
+						<Layer level="OVERLAY" textureSubLevel="1">
+							<Texture setAllPoints="true" alpha=".55">
+								<Color r="0" g="0" b="0"/>
+							</Texture>
+						</Layer>
+					</Layers>
+				</Frame>
+				<Button parentKey="Magnifier" hidden="true">
+					<Size x="31" y="35" />
+					<Anchors>
+						<Anchor point="TOPLEFT" x="12" y="-12" />
+					</Anchors>
+					<NormalTexture inherits="store-icon-magnifyingglass" />
+					<HighlightTexture inherits="store-icon-magnifyingglass" alphaMode="ADD" />
+					<Scripts>
+						<OnClick function="StoreProductCardMagnifyingGlass_OnClick" />
+						<OnEnter function="StoreProductCardMagnifyingGlass_OnEnter" />
+						<OnLeave function="StoreProductCardMagnifyingGlass_OnLeave" />
+						<OnShow function="StoreCardDetail_SetLayerAboveModelScene"/>
+					</Scripts>
+				</Button>
+				<Frame parentKey="DescriptionBulletPointContainer" inherits="ManagedVerticalLayoutFrameTemplate">
+					<KeyValues>
+						<KeyValue key="fixedWidth" value="250" type="number"/>
+						<KeyValue key="templateType" value="StoreBulletPointTemplate" type="string"/>
+					</KeyValues>
+				</Frame>
+				<Button parentKey="BuyButton" inherits="StoreButtonTemplate" motionScriptsWhileDisabled="true">
+					<Size x="140" y="30" />
+					<Anchors>
+						<Anchor point="BOTTOM" x="0" y="20" />
+					</Anchors>
+					<Scripts>
+						<OnClick function="StoreFrameBuyButton_OnClick" />
+						<OnEnter function="StoreFrameBuyButton_OnEnter" />
+						<OnLeave function="StoreFrameBuyButton_OnLeave" />
+					</Scripts>
+				</Button>
+			</Frames>
+			<Scripts>
+				<OnLoad function="StoreProductCard_OnLoad" />
+				<OnEnter function="StoreSplashPairCard_OnEnter" />
+				<OnLeave function="StoreSplashPairCard_OnLeave" />
 			</Scripts>
 		</Button>
 		<Button name="StoreSplashPrimaryCardTemplate" virtual="true" hidden="true">
@@ -1048,7 +1128,7 @@
 					</FontString>
 					<FontString parentKey="SalePrice" inherits="GameFontNormalLarge2" hidden="true">
 						<Anchors>
-							<Anchor point="BOTTOMLEFT" relativeKey="$parent.NormalPrice" relativePoint="BOTTOMRIGHT" x="6" y="0" />
+							<Anchor point="BOTTOMLEFT" relativeKey="$parent.NormalPrice" relativePoint="BOTTOMRIGHT" x="6" y="-2" />
 						</Anchors>
 						<Color r="0.1" g="1.0" b="0.1" />
 					</FontString>
@@ -1152,7 +1232,7 @@
 						</AnimationGroup>
 					</Animations>
 				</Frame>
-				<ModelScene parentKey="ModelScene" useParentLevel="true" hidden="true" inherits="ModelSceneMixinTemplate">
+				<ModelScene parentKey="ModelScene" useParentLevel="true" hidden="true" inherits="ReversedLightingModelSceneMixinTemplate">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="8" y="-8" />
 						<Anchor point="BOTTOMRIGHT" x="-8" y="8" />
@@ -1180,9 +1260,7 @@
 						<OnClick function="StoreProductCardMagnifyingGlass_OnClick" />
 						<OnEnter function="StoreProductCardMagnifyingGlass_OnEnter" />
 						<OnLeave function="StoreProductCardMagnifyingGlass_OnLeave" />
-						<OnShow>
-							self:SetFrameLevel(self:GetParent().ModelScene:GetFrameLevel()+1);
-						</OnShow>
+						<OnShow function="StoreCardDetail_SetLayerAboveModelScene"/>
 					</Scripts>
 				</Button>
 				<Frame parentKey="Checkmark" hidden="true">
@@ -1196,9 +1274,7 @@
 						</Layer>
 					</Layers>
 					<Scripts>
-						<OnShow>
-							self:SetFrameLevel(self:GetParent().ModelScene:GetFrameLevel()+1);
-						</OnShow>
+						<OnShow function="StoreCardDetail_SetLayerAboveModelScene"/>
 						<OnEnter function="StoreProductCardCheckmark_OnEnter"/>
 						<OnLeave function="StoreProductCardCheckmark_OnLeave"/>
 					</Scripts>
@@ -1332,7 +1408,7 @@
 				</Layer>
 			</Layers>
 			<Frames>
-				<ModelScene parentKey="ModelScene" useParentLevel="true" hidden="true" inherits="ModelSceneMixinTemplate">
+				<ModelScene parentKey="ModelScene" useParentLevel="true" hidden="true" inherits="ReversedLightingModelSceneMixinTemplate">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="8" y="-8" />
 						<Anchor point="BOTTOMRIGHT" x="-8" y="8" />
@@ -1350,9 +1426,7 @@
 						<OnClick function="StoreProductCardMagnifyingGlass_OnClick" />
 						<OnEnter function="StoreProductCardMagnifyingGlass_OnEnter" />
 						<OnLeave function="StoreProductCardMagnifyingGlass_OnLeave" />
-						<OnShow>
-							self:SetFrameLevel(self:GetParent().ModelScene:GetFrameLevel()+1);
-						</OnShow>
+						<OnShow function="StoreCardDetail_SetLayerAboveModelScene"/>
 					</Scripts>
 				</Button>
 				<Frame parentKey="InvisibleMouseOverFrame" enableMouse="true" hidden="true">
@@ -1376,9 +1450,7 @@
 						</Layer>
 					</Layers>
 					<Scripts>
-						<OnShow>
-							self:SetFrameLevel(self:GetParent().ModelScene:GetFrameLevel()+1);
-						</OnShow>
+						<OnShow function="StoreCardDetail_SetLayerAboveModelScene"/>
 						<OnEnter function="StoreProductCardCheckmark_OnEnter"/>
 						<OnLeave function="StoreProductCardCheckmark_OnLeave"/>
 					</Scripts>
@@ -1393,7 +1465,7 @@
 				<OnMouseUp function="StoreProductCard_OnMouseUp" />
 			</Scripts>
 		</Button>
-		<Button name="StoreCategoryTemplate" virtual="true">
+		<Button name="StoreCategoryTemplate" motionScriptsWhileDisabled="true" virtual="true">
 			<Size x="176" y="38" />
 			<Layers>
 				<Layer level="BACKGROUND">
@@ -1436,6 +1508,17 @@
 				</Layer>
 			</Layers>
 			<Scripts>
+				<!--
+							WARNING: ScopeModifiers don't work for templates!
+				These functions will fail to load properly if this template is instantiated outside
+				of the initial LoadAddon call becuase we'll have lost the scoped modifiers and the
+				reference to the addon environment if we instantiate them later.
+				
+				Except for the first category, which is declared in .xml, we have to manually set these
+				scripts after the frame has been instantiated in Lua for them to work properly.
+
+				-->
+				
 				<OnEnter function="StoreCategory_OnEnter" />
 				<OnLeave function="StoreCategory_OnLeave" />
 				<OnClick function="StoreCategory_OnClick" />
@@ -1978,6 +2061,19 @@
 					<KeyValues>
 						<KeyValue key="isSplash" value="true" type="boolean"/>
 					</KeyValues>
+				</Button>
+				<Button parentKey="SplashPairFirst" inherits="StoreSplashPairCardTemplate">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.RightInset" relativePoint="TOPLEFT" x="10" y="-10" />
+					</Anchors>
+					<KeyValues>
+						<KeyValue key="anchorRight" value="true" type="boolean"/>
+					</KeyValues>
+				</Button>
+				<Button parentKey="SplashPairSecond" inherits="StoreSplashPairCardTemplate">
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.RightInset" relativePoint="TOPRIGHT" x="-10" y="-10" />
+					</Anchors>
 				</Button>
 				<Button parentKey="SplashPrimary" inherits="StoreSplashPrimaryCardTemplate">
 					<Anchors>
@@ -2660,6 +2756,40 @@
 			</Layers>
 			<Scripts>
 				<OnLoad function="StoreTooltip_OnLoad" />
+			</Scripts>
+		</Frame>
+		
+		<Frame name="StoreBulletPointTemplate" inherits="BulletPointWithTextureTemplate" hyperlinksEnabled="true" virtual="true">
+			<Scripts>
+				<OnLoad inherit="prepend">
+					self.Text:SetFontObject("GameFontNormalMed1");
+					self.Text:SetTextColor(1, 0.84, 0.55);
+				</OnLoad>
+				<OnHyperlinkEnter>
+					local grandparent = self:GetParent():GetParent();
+					local onEnterScript = grandparent:GetScript("OnEnter");
+					if onEnterScript then
+						onEnterScript(grandparent);
+					end
+				</OnHyperlinkEnter>
+				<OnHyperlinkLeave>
+					local grandparent = self:GetParent():GetParent();
+					local onLeaveScript = grandparent:GetScript("OnLeave");
+					if onLeaveScript then
+						onLeaveScript(grandparent);
+					end
+				</OnHyperlinkLeave>
+				<OnHyperlinkClick>
+					local grandparent = self:GetParent():GetParent();
+					if not grandparent:IsEnabled() then
+						return;
+					end
+					
+					local linkType, index = string.split(":", link);
+					if ( linkType == "urlIndex" ) then
+						LoadURLIndex(tonumber(index));
+					end
+				</OnHyperlinkClick>
 			</Scripts>
 		</Frame>
 	</ScopedModifier>

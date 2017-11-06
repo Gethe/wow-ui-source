@@ -306,6 +306,25 @@ GlueDialogTypes["CONFIGURATION_WARNING"] = {
 	html = 1,
 }
 
+GlueDialogTypes["BROWN_BOX_UPGRADE_LOGOUT_WARNING"] = {
+	text = TRIAL_UPGRADE_LOGOUT_WARNING,
+	button1 = CAMP_NOW,
+	OnAccept = function()
+		C_Login.DisconnectFromServer();
+	end,
+	OnCancel = function()
+		C_Login.DisconnectFromServer();
+	end,
+	OnHide = function()
+		C_Login.DisconnectFromServer();
+	end,
+	OnUpdate = function()
+		GlueDialogText:SetText(GlueDialogTypes["BROWN_BOX_UPGRADE_LOGOUT_WARNING"].text:format(math.ceil(GlueDialog.timeleft)));
+	end,
+	timeout = 15,
+	cover = true,
+}
+
 function GlueDialog_Queue(which, text, data)
 	table.insert(QUEUED_GLUE_DIALOGS, {which = which, text = text, data = data});
 end
@@ -405,9 +424,13 @@ function GlueDialog_Show(which, text, data)
 		GlueDialogButton2:Hide();
 		GlueDialogButton3:Hide();
 	end
+	
+	--Show/Hide the disable overlay on the rest of the screen
+	GlueDialog.Cover:SetShown(dialogInfo.cover);
 
 	-- Set the miscellaneous variables for the dialog
 	GlueDialog.which = which;
+	GlueDialog.timeleft = dialogInfo.timeout or 0;
 	GlueDialog.data = data;
 
 	-- Show or hide the alert icon
@@ -535,6 +558,28 @@ function GlueDialog_OnShow(self)
 	local OnShow = GlueDialogTypes[self.which].OnShow;
 	if ( OnShow ) then
 		OnShow();
+	end
+end
+
+function GlueDialog_OnUpdate(self, elapsed)
+	local which = self.which;
+	if ( self.timeleft > 0 ) then
+		local timeleft = self.timeleft - elapsed;
+		if ( timeleft <= 0 ) then
+			self.timeleft = 0;
+			local OnCancel = GlueDialogTypes[which].OnCancel;
+			if ( OnCancel ) then
+				OnCancel();
+			end
+			self:Hide();
+			return;
+		end
+		self.timeleft = timeleft;
+	end
+	
+	local OnUpdate = GlueDialogTypes[which].OnUpdate;
+	if ( OnUpdate ) then
+		OnUpdate(elapsed);
 	end
 end
 
