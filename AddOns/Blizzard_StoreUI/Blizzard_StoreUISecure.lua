@@ -1331,7 +1331,8 @@ function StoreFrame_UpdateCard(card, entryID, discountReset, forceModelUpdate)
 		local alreadyOwned = entryInfo.alreadyOwned;
 		local buyableHere = entryInfo.sharedData.buyableHere;
 		local restrictedInGame = selectedCategoryID == WOW_GAMES_CATEGORY_ID and IsTrialAccount() and not IsOnGlueScreen();
-		local shouldEnableBuyButton = buyableHere and not alreadyOwned and not restrictedInGame;
+		local trialRestricted = selectedCategoryID ~= WOW_GAMES_CATEGORY_ID and IsTrialAccount();
+		local shouldEnableBuyButton = buyableHere and not alreadyOwned and not restrictedInGame and not trialRestricted;
 		card.BuyButton:SetEnabled(shouldEnableBuyButton);
 	end
 
@@ -3289,7 +3290,7 @@ function StoreProductCard_OnEnter(self)
 		if (self.HighlightTexture) then
 			self.HighlightTexture:SetShown(selectedEntryID ~= self:GetID());
 		end
-		if (self.Magnifier and (not self.ModelScene or self.ModelScene:IsShown()) and self ~= StoreFrame.SplashSingle) then
+		if (self.Magnifier and StoreProductCard_ShouldShowMagnifyingGlass(self) and self ~= StoreFrame.SplashSingle) then
 			StoreProductCard_ShowMagnifier(self);
 		end
 	end

@@ -24,6 +24,7 @@ local pcall = pcall;
 local tostring = tostring;
 local newproxy = newproxy;
 local select = select;
+local wipe = wipe;
 
 local IsFrameHandle = IsFrameHandle;
 local IsWritableRestrictedTable = IsWritableRestrictedTable;
@@ -382,6 +383,34 @@ end
 
 setmetatable(LOCAL_Closure_Factories, { __index = ClosureFactories_index });
 
+local LOCAL_execution_count = 0;
+local LOCAL_references_frames = {};
+
+local LOCAL_CHECK_Frame = CreateFrame("Frame");
+
+local function CheckForbidden(frame)
+	return LOCAL_CHECK_Frame.IsForbidden(frame); 
+end
+
+local function MakeForbidden(frame)
+	LOCAL_CHECK_Frame.SetForbidden(frame); 
+end
+
+function PropagateForbiddenToReferencedFrames()
+	if (issecure()) then
+		for frame in pairs(LOCAL_references_frames) do
+			MakeForbidden(frame);
+		end
+		wipe(LOCAL_references_frames);
+	end
+end
+
+function AddReferencedFrame(frame)
+	if (issecure() and LOCAL_execution_count > 0) then
+		LOCAL_references_frames[frame] = true;
+	end
+end
+
 ---------------------------------------------------------------------------
 -- FUNCTION CALL
 
@@ -391,17 +420,22 @@ local function ReleaseAndReturn(workingEnv, ctrlHandle, pcallFlag, ...)
     -- Tampering at this point will irrevocably taint the protected
     -- environment, for now that's a handy protective measure.
     LOCAL_Function_Environment_Manager(false, workingEnv, ctrlHandle);
+	LOCAL_execution_count = LOCAL_execution_count - 1;
+	if (LOCAL_execution_count == 0) then
+		wipe(LOCAL_references_frames);
+	end
     if (pcallFlag) then
         return ...;
     end
     error("Call failed: " .. tostring( (...) ) );
 end
 
--- ? = CallRestrictedClosure(signature, workingEnv, onupdate, body, ...)
+-- ? = CallRestrictedClosure(owningFrame, signature, workingEnv, onupdate, body, ...)
 --
 -- Invoke a managed closure, looking its definition up from a factory
 -- and managing its environment during execution.
 --
+-- owningFrame-- frame that owns this call
 -- signature  -- function signature
 -- workingEnv -- the working environment, must be a restricted table
 -- ctrlHandle -- a control handle
@@ -409,7 +443,13 @@ end
 -- ...        -- any arguments to pass to the executing closure
 --
 -- Returns whatever the restricted closure returns
-function CallRestrictedClosure(signature, workingEnv, ctrlHandle, body, ...)
+function CallRestrictedClosure(owningFrame, signature, workingEnv, ctrlHandle, body, ...)
+	if (CheckForbidden(owningFrame)) then
+		PropagateForbiddenToReferencedFrames();
+		error("Cannot use SecureHandlers API on forbidden frames");
+        return;
+	end
+
     if (not IsWritableRestrictedTable(workingEnv)) then
         error("Invalid working environment");
         return;
@@ -438,6 +478,8 @@ function CallRestrictedClosure(signature, workingEnv, ctrlHandle, body, ...)
     end
 
     LOCAL_Function_Environment_Manager(true, workingEnv, ctrlHandle);
+	LOCAL_execution_count = LOCAL_execution_count + 1;
+	AddReferencedFrame(owningFrame);
     return ReleaseAndReturn(workingEnv, ctrlHandle, pcall( closure, ... ) );
 end
 

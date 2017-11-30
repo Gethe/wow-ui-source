@@ -566,7 +566,7 @@
 			<NormalTexture inherits="store-icon-magnifyingglass" />
 			<HighlightTexture inherits="store-icon-magnifyingglass" alphaMode="ADD" />
 		</Button>
-		<Button name="StoreProductCardTemplate" virtual="true" hidden="true">
+		<Button name="StoreProductCardTemplate" motionScriptsWhileDisabled="true" virtual="true" hidden="true">
 			<Size x="146" y="209" />
 			<Layers>
 				<Layer level="BACKGROUND">

@@ -207,8 +207,8 @@ function UpdateMicroButtons()
 	end
 	
 	if ( IsVeteranTrialAccount() ) then
-		self.disabledTooltip = ERR_RESTRICTED_ACCOUNT_TRIAL;
-		self:Disable();
+		StoreMicroButton.disabledTooltip = ERR_RESTRICTED_ACCOUNT_TRIAL;
+		StoreMicroButton:Disable();
 	elseif ( C_StorePublic.IsDisabledByParentalControls() ) then
 		StoreMicroButton.disabledTooltip = BLIZZARD_STORE_ERROR_PARENTAL_CONTROLS;
 		StoreMicroButton:Disable();
