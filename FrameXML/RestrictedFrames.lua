@@ -32,6 +32,9 @@ local GetManagedEnvironment = GetManagedEnvironment;
 
 local CallRestrictedClosure = CallRestrictedClosure;
 
+local AddReferencedFrame = AddReferencedFrame;
+local PropagateForbiddenToReferencedFrames = PropagateForbiddenToReferencedFrames;
+
 local forceinsecure = forceinsecure;
 local scrub = scrub;
 local pcall = pcall;
@@ -43,6 +46,16 @@ local pcall = pcall;
 -- HANDLE is the frame handle method namespace (populated below)
 local HANDLE = {};
 
+local LOCAL_CHECK_Frame = CreateFrame("Frame");
+
+local function CheckForbidden(frame)
+	return LOCAL_CHECK_Frame.IsForbidden(frame); 
+end
+
+local function MakeForbidden(frame)
+	LOCAL_CHECK_Frame.SetForbidden(frame); 
+end
+
 ---------------------------------------------------------------------------
 -- Action implementation support function
 --
@@ -53,17 +66,33 @@ local HANDLE = {};
 local function GetUnprotectedHandleFrame(handle)
     local frame = GetFrameHandleFrame(handle);
     if (frame) then
+		AddReferencedFrame(frame);
+
+        return frame;
+    end
+    error("Invalid frame handle");
+end
+
+local function GetPossiblyForbiddenHandleFrame(handle)
+    local frame, isProtected = GetFrameHandleFrame(handle);
+    if (frame and (isProtected
+                   or (frame:IsProtected() or not InCombatLockdown()))) then
         return frame;
     end
     error("Invalid frame handle");
 end
 
 local function GetHandleFrame(handle)
-    local frame, isProtected = GetFrameHandleFrame(handle);
-    if (frame and (isProtected
-                   or (frame:IsProtected() or not InCombatLockdown()))) then
-        return frame;
-    end
+	local frame = GetPossiblyForbiddenHandleFrame(handle);
+	if (frame) then
+		AddReferencedFrame(frame);
+
+		if (CheckForbidden(frame)) then
+			PropagateForbiddenToReferencedFrames();
+		else
+			return frame;
+		end
+	end
     error("Invalid frame handle");
 end
 
@@ -629,7 +658,7 @@ function HANDLE:Run(body, ...)
         -- be protected to have an environment or control!
         return;
     end
-    return scrub(CallRestrictedClosure("self,...",
+    return scrub(CallRestrictedClosure(frame, "self,...",
                                        env, self, body, self, ...));
 end
 
@@ -648,7 +677,7 @@ function HANDLE:RunFor(otherHandle, body, ...)
         return;
     end
     local env = GetManagedEnvironment(frame, true);
-    return scrub(CallRestrictedClosure("self,...",
+    return scrub(CallRestrictedClosure(frame, "self,...",
                                        env, self, body, otherHandle, ...));
 end
 
@@ -674,7 +703,7 @@ function HANDLE:RunAttribute(snippetAttr, ...)
         -- be protected to have an environment or control!
         return
     end
-    return scrub(CallRestrictedClosure("self,...",
+    return scrub(CallRestrictedClosure(frame, "self,...",
                                        env, self, body, self, ...));
 end
 
@@ -699,7 +728,7 @@ local function ChildUpdate_Helper(environment, controlHandle,
             if (body and type(body) == "string") then
                 local selfHandle = GetFrameHandle(child, true);
                 if (selfHandle) then
-                    CallRestrictedClosure("self,scriptid,message",
+                    CallRestrictedClosure(child, "self,scriptid,message",
                                           environment, controlHandle, body,
                                           selfHandle, scriptid, message);
                 end
