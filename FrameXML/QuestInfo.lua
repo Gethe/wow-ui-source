@@ -5,6 +5,8 @@ local SEAL_QUESTS = {
 	[43926] = { bgAtlas = "QuestBG-Horde", text = "|cff480404"..QUEST_WARCHIEF_VOLJIN.."|r", sealAtlas = "Quest-Horde-WaxSeal"},
 	[47221] = { bgAtlas = "QuestBG-TheHandofFate", },
 	[47835] = { bgAtlas = "QuestBG-TheHandofFate", },
+	[49929] = { bgAtlas = "QuestBG-Alliance" },
+	[49930] = { bgAtlas = "QuestBG-Horde" },
 };
 
 function QuestInfoTimerFrame_OnUpdate(self, elapsed)
@@ -773,6 +775,7 @@ function QuestInfo_ShowRewards()
 				SetItemButtonTexture(questItem, texture);
 				SetItemButtonTextureVertexColor(questItem, 1.0, 1.0, 1.0);
 				SetItemButtonNameFrameVertexColor(questItem, 1.0, 1.0, 1.0);
+				SetItemButtonQuality(questItem);
 
 				if ( buttonIndex > 1 ) then
 					if ( mod(buttonIndex,2) == 1 ) then

@@ -6,6 +6,45 @@ STATICPOPUP_TEXTURE_ALERT = "Interface\\DialogFrame\\UI-Dialog-Icon-AlertNew";
 STATICPOPUP_TEXTURE_ALERTGEAR = "Interface\\DialogFrame\\UI-Dialog-Icon-AlertOther";
 StaticPopupDialogs = { };
 
+local function GetSelfResurrectDialogOptions()
+	local resOptions = GetSortedSelfResurrectOptions();
+	if ( resOptions ) then
+		if ( IsEncounterLimitingResurrections() ) then
+			return resOptions[1], resOptions[2];
+		else
+			return resOptions[1];
+		end
+	end
+end
+
+local function OnResurrectButtonClick(selectedOption, reason)
+	if ( reason == "override" ) then
+		return;
+	end
+	if ( reason == "timeout" ) then
+		return;
+	end
+	if ( reason == "clicked" ) then
+		local found = false;
+		local resOptions = C_DeathInfo.GetSelfResurrectOptions();
+		if ( resOptions ) then
+			for i, option in pairs(resOptions) do
+				if ( option.optionType == selectedOption.optionType and option.id == selectedOption.id and option.canUse ) then
+					C_DeathInfo.UseSelfResurrectOption(option.optionType, option.id);
+					found = true;
+					break;
+				end
+			end
+		end
+		if ( not found ) then
+			RepopMe();
+		end
+		if ( CannotBeResurrected() ) then
+			return true;
+		end
+	end
+end
+
 StaticPopupDialogs["CONFIRM_OVERWRITE_EQUIPMENT_SET"] = {
 	text = CONFIRM_OVERWRITE_EQUIPMENT_SET,
 	button1 = YES,
@@ -1261,14 +1300,11 @@ StaticPopupDialogs["PETRENAMECONFIRM"] = {
 StaticPopupDialogs["DEATH"] = {
 	text = DEATH_RELEASE_TIMER,
 	button1 = DEATH_RELEASE,
-	button2 = USE_SOULSTONE,
-	button3 = DEATH_RECAP,
+	button2 = USE_SOULSTONE,	-- rez option 1
+	button3 = USE_SOULSTONE,	-- rez option 2
+	button4 = DEATH_RECAP,
 	OnShow = function(self)
 		self.timeleft = GetReleaseTimeRemaining();
-		local text = HasSoulstone();
-		if ( text ) then
-			self.button2:SetText(text);
-		end
 
 		if ( IsActiveBattlefieldArena() and not C_PvP.IsInBrawl() ) then
 			self.text:SetText(DEATH_RELEASE_SPECTATOR);
@@ -1278,18 +1314,18 @@ StaticPopupDialogs["DEATH"] = {
 		if ( not self.UpdateRecapButton ) then
 			self.UpdateRecapButton = function( self )
 				if ( DeathRecap_HasEvents() ) then
-					self.button3:Enable();
-					self.button3:SetScript("OnEnter", nil );
-					self.button3:SetScript("OnLeave", nil);
+					self.button4:Enable();
+					self.button4:SetScript("OnEnter", nil );
+					self.button4:SetScript("OnLeave", nil);
 				else
-					self.button3:Disable();
-					self.button3:SetMotionScriptsWhileDisabled(true);
-					self.button3:SetScript("OnEnter", function(self)
+					self.button4:Disable();
+					self.button4:SetMotionScriptsWhileDisabled(true);
+					self.button4:SetScript("OnEnter", function(self)
 						GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT");
 						GameTooltip:SetText(DEATH_RECAP_UNAVAILABLE);
 						GameTooltip:Show();
 					end );
-					self.button3:SetScript("OnLeave", GameTooltip_Hide);
+					self.button4:SetScript("OnLeave", GameTooltip_Hide);
 				end
 			end
 		end
@@ -1297,11 +1333,13 @@ StaticPopupDialogs["DEATH"] = {
 		self:UpdateRecapButton();
 	end,
 	OnHide = function(self)
-		self.button3:SetScript("OnEnter", nil );
-		self.button3:SetScript("OnLeave", nil);
-		self.button3:SetMotionScriptsWhileDisabled(false);
+		self.button2.option = nil;
+		self.button3.option = nil;
+		self.button4:SetScript("OnEnter", nil );
+		self.button4:SetScript("OnLeave", nil);
+		self.button4:SetMotionScriptsWhileDisabled(false);
 	end,
-	OnAccept = function(self)
+	OnButton1 = function(self)
 		if ( IsActiveBattlefieldArena() and not C_PvP.IsInBrawl() ) then
 			local info = ChatTypeInfo["SYSTEM"];
 			DEFAULT_CHAT_FRAME:AddMessage(ARENA_SPECTATOR, info.r, info.g, info.b, info.id);
@@ -1311,31 +1349,21 @@ StaticPopupDialogs["DEATH"] = {
 			return 1
 		end
 	end,
-	OnCancel = function(self, data, reason)
-		if ( reason == "override" ) then
-			return;
-		end
-		if ( reason == "timeout" ) then
-			return;
-		end
-		if ( reason == "clicked" ) then
-			if ( HasSoulstone() ) then
-				UseSoulstone();
-			else
-				RepopMe();
-			end
-			if ( CannotBeResurrected() ) then
-				return 1
-			end
-		end
+	OnButton2 = function(self, data, reason)
+		return OnResurrectButtonClick(self.button2.option, reason);
 	end,
-	OnAlt = function()
+	OnButton3 = function(self, data, reason)
+		return OnResurrectButtonClick(self.button3.option, reason);
+	end,
+	OnButton4 = function()
 		OpenDeathRecapUI();
+		return true;
 	end,
 	OnUpdate = function(self, elapsed)
 		if ( IsFalling() and not IsOutOfBounds()) then
 			self.button1:Disable();
 			self.button2:Disable();
+			self.button3:Disable();
 			return;
 		end
 
@@ -1368,10 +1396,20 @@ StaticPopupDialogs["DEATH"] = {
 			StaticPopup_Resize(self, self.which);
 		end
 
-		if( HasSoulstone() and CanUseSoulstone() ) then
-			self.button2:Enable();
-		else
-			self.button2:Disable();
+		local option1, option2 = GetSelfResurrectDialogOptions();
+		if ( option1 ) then
+			if ( option1.name ) then
+				self.button2:SetText(option1.name);
+			end
+			self.button2.option = option1;
+			self.button2:SetEnabled(option1.canUse);
+		end
+		if ( option2 ) then
+			if ( option2.name ) then
+				self.button3:SetText(option2.name);
+			end
+			self.button3.option = option2;
+			self.button3:SetEnabled(option2.canUse);
 		end
 
 		if ( self.UpdateRecapButton) then
@@ -1379,7 +1417,12 @@ StaticPopupDialogs["DEATH"] = {
 		end
 	end,
 	DisplayButton2 = function(self)
-		return HasSoulstone();
+		local option1, option2 = GetSelfResurrectDialogOptions();
+		return option1 ~= nil;
+	end,
+	DisplayButton3 = function(self)
+		local option1, option2 = GetSelfResurrectDialogOptions();
+		return option2 ~= nil;
 	end,
 
 	timeout = 0,
@@ -1459,7 +1502,8 @@ StaticPopupDialogs["RESURRECT_NO_TIMER"] = {
 		self.timeleft = GetCorpseRecoveryDelay() + 60;
 		self.hideOnEscape = nil;
 		self.declineTimeLeft = 5;
-		if (HasSoulstone()) then
+		local resOptions = C_DeathInfo.GetSelfResurrectOptions();
+		if ( resOptions and #resOptions > 0 ) then
 			self.declineTimeLeft = 1;
 		end
 		self.button2:SetText(self.declineTimeLeft);
@@ -3781,6 +3825,30 @@ StaticPopupDialogs["PREMADE_GROUP_INSECURE_SEARCH"] = {
 	hideOnEscape = 1,
 }
 
+StaticPopupDialogs["BACKPACK_INCREASE_SIZE"] = {
+	text = BACKPACK_AUTHENTICATOR_DIALOG_DESCRIPTION,
+	button1 = ACTIVATE,
+	button2 = CANCEL,
+	OnAccept = function(self)
+		LoadURLIndex(41);
+	end,
+	OnHide = function(self)
+		ContainerFrame_SetBackpackForceExtended(false);
+	end,
+	wide = true,
+	timeout = 0,
+	whileDead = 0,
+}
+
+StaticPopupDialogs["CLIENT_INVENTORY_FULL_OVERFLOW"] = {
+	text = BACKPACK_AUTHENTICATOR_FULL_INVENTORY,
+	button1 = OKAY,
+	hideOnEscape = 1,
+	timeout = 0,
+	whileDead = 1,
+	showAlert = 1,
+}
+
 function StaticPopup_FindVisible(which, data)
 	local info = StaticPopupDialogs[which];
 	if ( not info ) then
@@ -3808,9 +3876,11 @@ function StaticPopup_Resize(dialog, which)
 	local maxHeightSoFar, maxWidthSoFar = (dialog.maxHeightSoFar or 0), (dialog.maxWidthSoFar or 0);
 	local width = 320;
 
-	if ( dialog.numButtons == 3 ) then
+	if ( dialog.numButtons == 4 ) then
+		width = 574;
+	elseif ( dialog.numButtons == 3 ) then
 		width = 440;
-	elseif (info.showAlert or info.showAlertGear or info.closeButton) then
+	elseif (info.showAlert or info.showAlertGear or info.closeButton or info.wide) then
 		-- Widen
 		width = 420;
 	elseif ( info.editBoxWidth and info.editBoxWidth > 260 ) then
@@ -3859,6 +3929,13 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 		return nil;
 	end
 
+	if ( info.OnAccept and info.OnButton1 ) then
+		error("Dialog "..which.. " cannot have both OnAccept and OnButton1");
+	end
+	if ( info.OnCancel and info.OnButton2 ) then
+		error("Dialog "..which.. " cannot have both OnCancel and OnButton2");
+	end
+ 
 	if ( UnitIsDeadOrGhost("player") and not info.whileDead ) then
 		if ( info.OnCancel ) then
 			info.OnCancel();
@@ -4090,6 +4167,7 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 	local button1 = _G[dialog:GetName().."Button1"];
 	local button2 = _G[dialog:GetName().."Button2"];
 	local button3 = _G[dialog:GetName().."Button3"];
+	local button4 = _G[dialog:GetName().."Button4"];
 
 	do	--If there is any recursion in this block, we may get errors (tempButtonLocs is static). If you have to recurse, we'll have to create a new table each time.
 		assert(#tempButtonLocs == 0);	--If this fails, we're recursing. (See the table.wipe at the end of the block)
@@ -4097,6 +4175,7 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 		tinsert(tempButtonLocs, button1);
 		tinsert(tempButtonLocs, button2);
 		tinsert(tempButtonLocs, button3);
+		tinsert(tempButtonLocs, button4);
 
 		for i=#tempButtonLocs, 1, -1 do
 			--Do this stuff before we move it. (This is why we go back-to-front)
@@ -4114,7 +4193,9 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 		--Save off the number of buttons.
 		dialog.numButtons = numButtons;
 
-		if ( numButtons == 3 ) then
+		if ( numButtons == 4 ) then
+			tempButtonLocs[1]:SetPoint("BOTTOMRIGHT", dialog, "BOTTOM", -139, 16);
+		elseif ( numButtons == 3 ) then
 			tempButtonLocs[1]:SetPoint("BOTTOMRIGHT", dialog, "BOTTOM", -72, 16);
 		elseif ( numButtons == 2 ) then
 			tempButtonLocs[1]:SetPoint("BOTTOMRIGHT", dialog, "BOTTOM", -6, 16);
@@ -4420,27 +4501,49 @@ function StaticPopup_OnClick(dialog, index)
 	if ( not info ) then
 		return nil;
 	end
-	local hide = true;
-	if ( index == 1 ) then
-		local OnAccept = info.OnAccept;
-		if ( OnAccept ) then
-			hide = not OnAccept(dialog, dialog.data, dialog.data2);
+
+	if ( which == "DEATH" ) then
+		local func;	
+		if ( index == 1 ) then
+			func = info.OnAccept or info.OnButton1;
+		elseif ( index == 2 ) then
+			func = info.OnCancel or info.OnButton2;
+		elseif ( index == 3 ) then
+			func = info.OnButton3;
+		elseif ( index == 4 ) then
+			func = info.OnButton4;
 		end
-	elseif ( index == 3 ) then
-		local OnAlt = info.OnAlt;
-		if ( OnAlt ) then
-			OnAlt(dialog, dialog.data, "clicked");
+		
+		if ( func ) then
+			local keepOpen = func(dialog, dialog.data, "clicked");
+			if ( not keepOpen and which == dialog.which ) then
+				dialog:Hide();
+			end
 		end
 	else
-		local OnCancel = info.OnCancel;
-		if ( OnCancel ) then
-			hide = not OnCancel(dialog, dialog.data, "clicked");
+		-- Keeping this temporarily for backward compatibility
+		local hide = true;
+		if ( index == 1 ) then
+			local OnAccept = info.OnAccept or info.OnButton1;
+			if ( OnAccept ) then
+				hide = not OnAccept(dialog, dialog.data, dialog.data2);
+			end
+		elseif ( index == 3 ) then
+			local OnAlt = info.OnAlt;
+			if ( OnAlt ) then
+				OnAlt(dialog, dialog.data, "clicked");
+			end
+		else
+			local OnCancel = info.OnCancel;
+			if ( OnCancel ) then
+				hide = not OnCancel(dialog, dialog.data, "clicked");
+			end
 		end
-	end
 
-	if ( hide and (which == dialog.which) and ( index ~= 3 or not info.noCloseOnAlt) ) then
-		-- can dialog.which change inside one of the On* functions???
-		dialog:Hide();
+		if ( hide and (which == dialog.which) and ( index ~= 3 or not info.noCloseOnAlt) ) then
+			-- can dialog.which change inside one of the On* functions???
+			dialog:Hide();
+		end
 	end
 end
 

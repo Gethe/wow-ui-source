@@ -88,6 +88,15 @@ local ExpansionLua =
 			},
 		},
 		{
+			Name = "GetNumExpansions",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "numExpansions", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "IsExpansionTrial",
 			Type = "Function",
 

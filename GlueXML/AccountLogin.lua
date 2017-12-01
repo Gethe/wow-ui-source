@@ -467,8 +467,9 @@ end
 function AccountLogin_CheckAutoLogin()
 	if ( AccountLogin_CanAutoLogin() ) then
 		if ( AccountLogin.timerFinished ) then
-			local accountName, password = GetKioskLoginInfo();
+			local accountName, password, realmAddr = GetKioskLoginInfo();
 			if (accountName and password) then
+				SetKioskAutoRealmAddress(realmAddr);
 				AccountLogin.UI.PasswordEditBox:SetText(password);
 				C_Login.Login(accountName, AccountLogin.UI.PasswordEditBox);
 			else

@@ -16,13 +16,11 @@ GLUE_SECONDARY_SCREENS = {
 	["options"] = 		{ frame = "VideoOptionsFrame",	playMusic = true,	playAmbience = false,	fullScreen = false,	showSound = SOUNDKIT.GS_TITLE_OPTIONS },
 };
 
-SEX_NONE = 1;
-SEX_MALE = 2;
-SEX_FEMALE = 3;
-
 ACCOUNT_SUSPENDED_ERROR_CODE = 53;
 
-local WOW_GAMES_CATEGORY_ID = 33; -- Mirror of the same variable in Blizzard_StoreUISecure.lua
+-- Mirror of the same variables in Blizzard_StoreUISecure.lua
+local WOW_GAMES_CATEGORY_ID = 33; 
+WOW_GAME_TIME_CATEGORY_ID = 37;
 
 local function OnDisplaySizeChanged(self)
 	local width = GetScreenWidth();
@@ -493,7 +491,7 @@ end
 local function UpdateGlueTag()
 	local currentScreen = GlueParent_GetCurrentScreen();
 
-	local _, race, class, faction, currentTag;
+	local race, class, faction, currentTag;
 
 	-- Determine which API to use to get character information
 	if ( currentScreen == "charselect") then
@@ -502,9 +500,11 @@ local function UpdateGlueTag()
 		faction = ""; -- Don't need faction for character selection, its currently irrelevant
 
 	elseif ( currentScreen == "charcreate" ) then
-		_, class = GetSelectedClass();
-		_, race = GetNameForRace();
-		_, faction = GetFactionForRace(GetSelectedRace());
+		local classInfo = C_CharacterCreation.GetSelectedClass();
+		class = classInfo.name;
+		local raceID = C_CharacterCreation.GetSelectedRace();
+		race = C_CharacterCreation.GetNameForRace(raceID);
+		faction = C_CharacterCreation.GetFactionForRace(raceID);
 	end
 
 	-- Once valid information is available, determine the current tag
@@ -598,7 +598,7 @@ end
 -- Function to set the background model for character select and create screens
 function SetBackgroundModel(model, path)
 	if ( model == CharacterCreate ) then
-		SetCharCustomizeBackground(path);
+		C_CharacterCreation.SetCharCustomizeBackground(path);
 	else
 		SetCharSelectBackground(path);
 	end

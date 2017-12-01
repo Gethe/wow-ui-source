@@ -536,6 +536,23 @@ local CommentatorFrameLua =
 			},
 		},
 		{
+			Name = "GetTeamHighlightColor",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "teamIndex", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "highlightColorR", Type = "number", Nilable = false },
+				{ Name = "highlightColorG", Type = "number", Nilable = false },
+				{ Name = "highlightColorB", Type = "number", Nilable = false },
+				{ Name = "highlightColorA", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetTimeLeftInMatch",
 			Type = "Function",
 

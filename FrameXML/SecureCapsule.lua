@@ -124,8 +124,10 @@ retain("Saturate");
 retain("GetCursorDelta");
 retain("GetScaledCursorDelta");
 retain("Vector3D_Add");
+retain("Vector3D_Normalize");
 retain("Vector3D_ScaleBy");
 retain("Vector3D_CalculateNormalFromYawPitch");
+retain("Vector3D_CalculateYawPitchFromNormal");
 retain("DeltaLerp");
 retain("SOUNDKIT");
 retain("GetScreenWidth");
@@ -133,6 +135,7 @@ retain("GetScreenHeight");
 retain("GetPhysicalScreenSize");
 retain("ConvertPixelsToUI");
 retain("IsTrialAccount");
+retain("IsVeteranTrialAccount");
 
 --For auth challenge
 take("C_AuthChallenge");
@@ -334,9 +337,13 @@ take("BLIZZARD_STORE_BOOST_UNREVOKED_CONSUMPTION");
 take("BLIZZARD_STORE_DISCLAIMER_BOOST_TOKEN_100");
 take("BLIZZARD_STORE_DISCLAIMER_BOOST_TOKEN_100_CN");
 take("STORE_CATEGORY_TRIAL_DISABLED_TOOLTIP");
+take("STORE_CATEGORY_VETERAN_DISABLED_TOOLTIP");
 take("BLIZZARD_STORE_BUNDLE_DISCOUNT_BANNER");
 take("BLIZZARD_STORE_BUNDLE_DISCOUNT_TOOLTIP_ADDENDUM");
 take("BLIZZARD_STORE_BUNDLE_DISCOUNT_TOOLTIP_REPLACEMENT");
+take("BLIZZARD_STORE_BUNDLE_TOOLTIP_HEADER");
+take("BLIZZARD_STORE_BUNDLE_TOOLTIP_OWNED_DELIVERABLE");
+take("BLIZZARD_STORE_BUNDLE_TOOLTIP_UNOWNED_DELIVERABLE");
 
 
 -- For Battle.net Token
@@ -446,6 +453,7 @@ takeenum("VasPurchaseState");
 takeenum("BattlepaySpecialProducts");
 takeenum("BattlepayProductGroupFlag");
 takeenum("BattlepayGroupDisplayType");
+retainenum("ModelSceneSetting");
 
 -- Secure Mixins
 -- where ... are the mixins to mixin

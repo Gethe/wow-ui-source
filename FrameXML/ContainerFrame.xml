@@ -48,11 +48,7 @@
 	
 	<Button name="ContainerFrameItemButtonTemplate" inherits="ItemButtonTemplate" hidden="true" virtual="true">
 		<Anchors>
-			<Anchor point="BOTTOMRIGHT">
-				<Offset>
-					<AbsDimension x="0" y="0"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
 		</Anchors>
 		<Animations>
 			<AnimationGroup parentKey="newitemglowAnim" setToFinalAlpha="true" looping="REPEAT">
@@ -66,15 +62,9 @@
 		<Layers>
 			<Layer level="OVERLAY" textureSubLevel="2">
 				<Texture name="$parentIconQuestTexture">
-					<Size>
-						<AbsDimension x="37" y="38"/>
-					</Size>
+					<Size x="37" y="38"/>
 					<Anchors>
-						<Anchor point="TOP">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOP" x="0" y="0"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -87,6 +77,18 @@
 				<Texture parentKey="UpgradeIcon" atlas="bags-greenarrow" useAtlasSize="true" hidden="true">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BagStaticBottom" atlas="bags-static" alpha="0.2" alphaMode="ADD" hidden="true">
+					<Size x="172" y="37"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="-4" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BagStaticTop" atlas="bags-static" alpha="0.2" alphaMode="ADD" hidden="true">
+					<Size x="172" y="37"/>
+					<Anchors>
+						<Anchor point="BOTTOM" relativeKey="$parent.BagStaticBottom" relativePoint="TOP"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -105,6 +107,33 @@
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
+				</Texture>
+				<Texture parentKey="ExtendedSlot" file="Interface\Buttons\UI-Quickslot2" alpha="0.5" alphaMode="ADD" hidden="true">
+					<Size x="64" y="64"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="-1"/>
+					</Anchors>
+					<Scripts>
+						<OnLoad>
+							self:SetVertexColor(0.603, 0.875, 1);
+						</OnLoad>
+					</Scripts>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="4">
+				<Texture parentKey="ExtendedOverlay" alpha="1" alphaMode="MOD" hidden="true">
+					<Size x="37" y="37"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="-1"/>
+					</Anchors>
+					<Color r="0.603" g="0.875" b="1"/>
+				</Texture>
+				<Texture parentKey="ExtendedOverlay2" alpha="0.2" alphaMode="ADD" hidden="true">
+					<Size x="37" y="37"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="-1"/>
+					</Anchors>
+					<Color r="0.603" g="0.875" b="1"/>
 				</Texture>
 			</Layer>
 		</Layers>
@@ -150,86 +179,54 @@
 		</Scripts>
 	</Button>
 	<Frame name="ContainerFrameTemplate" frameStrata="MEDIUM" toplevel="true" movable="true" enableMouse="true" hidden="true" virtual="true">
-		<Size>
-			<AbsDimension x="256" y="256"/>
-		</Size>
+		<Size x="256" y="256"/>
 		<Layers>
 			<Layer level="BACKGROUND">
                 <Texture name="$parentPortrait" parentKey="Portrait">
-                    <Size>
-                        <AbsDimension x="40" y="40"/>
-                    </Size>
+                    <Size x="40" y="40"/>
                     <Anchors>
-                        <Anchor point="TOPLEFT">
-                            <Offset>
-                                <AbsDimension x="7" y="-5"/>
-                            </Offset>
-                        </Anchor>
+                        <Anchor point="TOPLEFT" x="7" y="-5"/>
                     </Anchors>
                 </Texture>
             </Layer>
 			<Layer level="ARTWORK">
 				<Texture name="$parentBackgroundTop" file="Interface\ContainerFrame\UI-Bag-Components">
-					<Size>
-						<AbsDimension x="256" y="512"/>
-					</Size>
+					<Size x="256" y="512"/>
 					<Anchors>
-						<Anchor point="TOPRIGHT" relativeTo="$parent">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPRIGHT" relativeTo="$parent" x="0" y="0"/>
 					</Anchors>
 				</Texture>
 				<Texture name="$parentBackgroundMiddle1" file="Interface\ContainerFrame\UI-Bag-Components">
-					<Size>
-						<AbsDimension x="256" y="512"/>
-					</Size>
+					<Size x="256" y="512"/>
 					<Anchors>
 						<Anchor point="TOP" relativeTo="$parentBackgroundTop" relativePoint="BOTTOM"/>
 					</Anchors>
 					<TexCoords left="0" right="1" top="0.3515625" bottom="0.8515625"/>
 				</Texture>
 				<Texture name="$parentBackgroundMiddle2" file="Interface\ContainerFrame\UI-Bag-Components" hidden="true">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
+					<Size x="256" y="256"/>
 					<Anchors>
 						<Anchor point="TOP" relativeTo="$parentBackgroundMiddle1" relativePoint="BOTTOM"/>
 					</Anchors>
 					<TexCoords left="0" right="1" top="0.353515625" bottom="0.8515625"/>
 				</Texture>
 				<Texture name="$parentBackgroundBottom" file="Interface\ContainerFrame\UI-Bag-Components">
-					<Size>
-						<AbsDimension x="256" y="10"/>
-					</Size>
+					<Size x="256" y="10"/>
 					<Anchors>
 						<Anchor point="TOP" relativeTo="$parentBackgroundMiddle1" relativePoint="BOTTOM"/>
 					</Anchors>
 					<TexCoords left="0" right="1" top="0.330078125" bottom="0.349609375"/>
 				</Texture>
 				<FontString name="$parentName" inherits="GameFontHighlight">
-					<Size>
-						<AbsDimension x="112" y="12"/>
-					</Size>
+					<Size x="112" y="12"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="47" y="-10"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="47" y="-10"/>
 					</Anchors>
 				</FontString>
 				<Texture name="$parentBackground1Slot" file="Interface\ContainerFrame\UI-Bag-1Slot" hidden="true">
-					<Size>
-						<AbsDimension x="99" y="74"/>
-					</Size>
+					<Size x="99" y="74"/>
 					<Anchors>
-						<Anchor point="TOPRIGHT">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPRIGHT" x="0" y="0"/>
 					</Anchors>
 					<TexCoords left="0" right="0.7734375" top="0" bottom="0.578125"/>
 				</Texture>
@@ -238,11 +235,7 @@
 		<Frames>
 			<Frame name="$parentMoneyFrame" inherits="SmallMoneyFrameTemplate" hidden="true">
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="-2" y="-231"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT" x="-2" y="-274"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
@@ -346,6 +339,107 @@
 					</OnClick>
 				</Scripts>
 			</Button>
+			<Button name="$parentAddSlotsButton" hidden="true">
+				<Size x="24" y="24"/>
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parent" relativePoint="TOPLEFT" x="17" y="-224"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture>
+							<Size x="16" y="16"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+							<Color r="0" g="0" b="0"/>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Border" file="Interface\Common\RingBorder" setAllPoints="true"/>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Icon" atlas="bags-icon-addslots">
+							<Size x="14" y="14"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<HighlightTexture atlas="bags-roundhighlight" alphaMode="ADD" hidden="true">
+					<Size x="20" y="20"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</HighlightTexture>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_LEFT");
+						GameTooltip:SetText(BACKPACK_AUTHENTICATOR_INCREASE_SIZE, 1, 1, 1);
+						GameTooltip:Show();
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+					<OnClick>
+						StaticPopup_Show("BACKPACK_INCREASE_SIZE");
+						ContainerFrame_SetBackpackForceExtended(true);
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Frame name="$parentExtraBagSlotsHelpBox" parentKey="ExtraBagSlotsHelpBox" inherits="GlowBoxTemplate" enableMouse="true" frameStrata="DIALOG">
+				<Size x="220" y="100"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPLEFT" x="-2" y="-206"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Arrow" inherits="HelpPlateArrowDOWN">
+							<Size x="53" y="21"/>
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="RIGHT" x="-6" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER">
+						<Texture parentKey="ArrowGlow" inherits="HelpPlateArrow-GlowDOWN" alphaMode="ADD" alpha="0.5">
+							<Size x="53" y="21"/>
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="RIGHT" x="-5" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString parentKey="Text" inherits="GameFontHighlightLeft" justifyV="TOP" text="BACKPACK_AUTHENTICATOR_EXTRA_SLOTS_ADDED">
+							<Size x="188" y="0"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="16" y="-20"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
+						<Anchors>
+							<Anchor point="TOPRIGHT" x="6" y="6"/>
+						</Anchors>
+						<Scripts>
+							<OnClick inherit="append">
+								SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_BAG_SLOTS_AUTHENTICATOR, true);
+							</OnClick>
+						</Scripts>
+					</Button>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						self.Text:SetSpacing(4);
+						SetClampedTextureRotation(self.Arrow, 270);
+						SetClampedTextureRotation(self.ArrowGlow, 270);
+					</OnLoad>
+					<OnShow>
+						self:SetHeight(self.Text:GetHeight() + 42);
+						self:SetFrameLevel(self:GetParent():GetFrameLevel()+10);
+					</OnShow>
+				</Scripts>
+			</Frame>
 			<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT" x="0" y="-1"/>
@@ -381,7 +475,7 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-		</Frames>
+		</Frames>	
 		<Scripts>
 			<OnEvent>
 				ContainerFrame_OnEvent(self, event, ...);

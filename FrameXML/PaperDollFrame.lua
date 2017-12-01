@@ -307,6 +307,7 @@ function PaperDollFrame_OnLoad (self)
 	self:RegisterUnitEvent("UNIT_AURA", "player");
 	self:RegisterEvent("SPELL_POWER_CHANGED");
 	self:RegisterEvent("CHARACTER_ITEM_FIXUP_NOTIFICATION");
+	self:RegisterEvent("TRIAL_STATUS_UPDATE");
 	-- flyout settings
 	PaperDollItemsFrame.flyoutSettings = {
 		onClickFunc = PaperDollFrameItemFlyoutButton_OnClick,
@@ -409,6 +410,8 @@ function PaperDollFrame_OnEvent (self, event, ...)
 		PaperDollFrame_UpdateStats();
 	elseif ( event == "SPELL_POWER_CHANGED" ) then
 		self:SetScript("OnUpdate", PaperDollFrame_QueuedUpdate);
+	elseif ( event == "TRIAL_STATUS_UPDATE" ) then
+		PaperDollFrame_SetLevel();
 	end
 end
 
@@ -442,8 +445,9 @@ function PaperDollFrame_SetLevel()
 			showTrialCap = true;
 		end
 	end
+
+	CharacterTrialLevelErrorText:SetShown(showTrialCap);
 	if (showTrialCap) then
-		CharacterTrialLevelErrorText:Show();
 		CharacterLevelText:SetPoint("CENTER", PaperDollFrame, "TOP", 0, -36);
 	else
 		CharacterLevelText:SetPoint("CENTER", PaperDollFrame, "TOP", 0, -42);

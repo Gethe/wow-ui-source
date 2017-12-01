@@ -218,8 +218,8 @@ function QuestMapFrame_ResetFilters()
 	local numEntries, numQuests = GetNumQuestLogEntries();
 	QuestMapFrame.ignoreQuestLogUpdate = true;
 	for questLogIndex = 1, numEntries do
-		local title, level, suggestedGroup, isHeader, isCollapsed, isComplete, frequency, questID, startEvent, displayQuestID, isOnMap, hasLocalPOI, isTask, isBounty, isStory = GetQuestLogTitle(questLogIndex);
-		local difficultyColor = GetQuestDifficultyColor(level);
+		local title, level, suggestedGroup, isHeader, isCollapsed, isComplete, frequency, questID, startEvent, displayQuestID, isOnMap, hasLocalPOI, isTask, isBounty, isStory, isHidden, isScaling = GetQuestLogTitle(questLogIndex);
+		local difficultyColor = GetQuestDifficultyColor(level, isScaling);
 		if ( isHeader ) then
 			if (isOnMap) then
 				ExpandQuestHeader(questLogIndex, true);
@@ -511,8 +511,8 @@ function QuestLogQuests_Update(poiTable)
 	local headerTitle, headerOnMap, headerShown, headerLogIndex, mapHeaderButtonIndex;
 	local noHeaders = true;
 	for questLogIndex = 1, numEntries do
-		local title, level, suggestedGroup, isHeader, isCollapsed, isComplete, frequency, questID, startEvent, displayQuestID, isOnMap, hasLocalPOI, isTask, isBounty, isStory, isHidden = GetQuestLogTitle(questLogIndex);
-		local difficultyColor = GetQuestDifficultyColor(level);
+		local title, level, suggestedGroup, isHeader, isCollapsed, isComplete, frequency, questID, startEvent, displayQuestID, isOnMap, hasLocalPOI, isTask, isBounty, isStory, isHidden, isScaling = GetQuestLogTitle(questLogIndex);
+		local difficultyColor = GetQuestDifficultyColor(level, isScaling);
 		if ( isHeader ) then
 			headerTitle = title;
 			headerOnMap = isOnMap;
@@ -783,8 +783,8 @@ function QuestMapLogTitleButton_OnEnter(self)
 	--	return;
 	--end
 	-- do block highlight
-	local title, level, suggestedGroup, isHeader, isCollapsed, isComplete, frequency, questID, startEvent, displayQuestID, isOnMap, hasLocalPOI = GetQuestLogTitle(self.questLogIndex);
-	local _, difficultyHighlightColor = GetQuestDifficultyColor(level);
+	local title, level, suggestedGroup, isHeader, isCollapsed, isComplete, frequency, questID, startEvent, displayQuestID, isOnMap, hasLocalPOI, isTask, isBounty, isStory, isHidden, isScaling = GetQuestLogTitle(self.questLogIndex);
+	local _, difficultyHighlightColor = GetQuestDifficultyColor(level, isScaling);
 	if ( isHeader ) then
 		_, difficultyHighlightColor = QuestDifficultyColors["header"];
 	end
@@ -910,8 +910,8 @@ end
 
 function QuestMapLogTitleButton_OnLeave(self)
 	-- remove block highlight
-	local title, level, suggestedGroup, isHeader = GetQuestLogTitle(self.questLogIndex);
-	local difficultyColor = GetQuestDifficultyColor(level);
+	local title, level, suggestedGroup, isHeader, isCollapsed, isComplete, frequency, questID, startEvent, displayQuestID, isOnMap, hasLocalPOI, isTask, isBounty, isStory, isHidden, isScaling = GetQuestLogTitle(self.questLogIndex);
+	local difficultyColor = GetQuestDifficultyColor(level, isScaling);
 	if ( isHeader ) then
 		difficultyColor = QuestDifficultyColors["header"];
 	end
@@ -1035,66 +1035,6 @@ end
 
 function QuestMapLog_HideStoryTooltip(self)
 	QuestScrollFrame.StoryTooltip:Hide();
-end
-
-function GetZoneStoryID()
-	local areaID = GetCurrentMapAreaID();
-	if ( IsMapGarrisonMap(areaID) ) then
-		local parentData = GetMapHierarchy();
-		if ( parentData ) then
-			areaID = parentData[1].id;
-		end
-	end
-	local key = areaID .. "-" .. UnitFactionGroup("player");
-	local achievementTable =
-	{
-		-- Frostfire Ridge
-		["941-Horde"] = {8671, 941},
-		-- Talador
-		["946-Alliance"] = {8920, 946},
-		["946-Horde"] = {8919, 946},
-		-- Shadowmoon Valley
-		["947-Alliance"] = {8845, 947},
-		-- Spires of Arak
-		["948-Alliance"] = {8925, 948},
-		["948-Horde"] = {8926, 948},
-		-- Gorgrond
-		["949-Alliance"] = {8923, 949},
-		["949-Horde"] = {8924, 949},
-		-- Nagrand
-		["950-Alliance"] = {8927, 950},
-		["950-Horde"] = {8928, 950},
-		-- Azsuna
-		["1015-Alliance"] = {10763, 1015},
-		["1015-Horde"] = {10763, 1015},
-		-- Highmountain
-		["1024-Alliance"] = {10059, 1024},
-		["1024-Horde"] = {10059, 1024},
-		-- Stormheim
-		["1017-Alliance"] = {10790, 1017},
-		["1017-Horde"] = {10790, 1017},
-		-- Suramar
-		["1033-Alliance"] = {11124, 1033},
-		["1033-Horde"] = {11124, 1033},
-		-- Val'sharah
-		["1018-Alliance"] = {10698, 1018},
-		["1018-Horde"] = {10698, 1018},
-		-- Broken Shore
-		["1021-Alliance"] = {11546, 1021},
-		["1021-Horde"] = {11546, 1021},
-		-- Argus
-		["1184-Alliance"] = {12066, 1184},
-		["1184-Horde"] = {12066, 1184},
-		["1135-Alliance"] = {12066, 1184},
-		["1135-Horde"] = {12066, 1184},
-		["1171-Alliance"] = {12066, 1184},
-		["1171-Horde"] = {12066, 1184},
-		["1170-Alliance"] = {12066, 1184},
-		["1170-Horde"] = {12066, 1184},
-	};
-	if (achievementTable[key] ~= nil) then
-		return achievementTable[key][1], achievementTable[key][2];
-	end
 end
 
 -- *****************************************************************************************************

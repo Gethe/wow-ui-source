@@ -160,10 +160,10 @@ function ReputationFrame_Update(showLFGPulse)
 				local paragonFrame = ReputationFrame.paragonFramesPool:Acquire();
 				paragonFrame.factionID = factionID;
 				paragonFrame:SetPoint("RIGHT", factionRow, 11, 0);
-				local currentValue, threshold, rewardQuestID, hasRewardPending = C_Reputation.GetFactionParagonInfo(factionID);
+				local currentValue, threshold, rewardQuestID, hasRewardPending, tooLowLevelForParagon = C_Reputation.GetFactionParagonInfo(factionID);
 				C_Reputation.RequestFactionParagonPreloadRewardData(factionID);
-				paragonFrame.Glow:SetShown(hasRewardPending);
-				paragonFrame.Check:SetShown(hasRewardPending);
+				paragonFrame.Glow:SetShown(not tooLowLevelForParagon and hasRewardPending);
+				paragonFrame.Check:SetShown(not tooLowLevelForParagon and hasRewardPending);
 				paragonFrame:Show();
 			end
 			local isCapped;
@@ -364,30 +364,34 @@ function ReputationParagonFrame_SetupParagonTooltip(frame, factionID)
 	local factionName, _, standingID = GetFactionInfoByID(factionID);
 	local gender = UnitSex("player");
 	local factionStandingtext = GetText("FACTION_STANDING_LABEL"..standingID, gender);
+	local currentValue, threshold, rewardQuestID, hasRewardPending, tooLowLevelForParagon = C_Reputation.GetFactionParagonInfo(factionID);
 
-	ReputationParagonTooltip:SetText(factionStandingtext);
-	local currentValue, threshold, rewardQuestID, hasRewardPending = C_Reputation.GetFactionParagonInfo(factionID);
-	local description = PARAGON_REPUTATION_TOOLTIP_TEXT:format(factionName);
-	if ( hasRewardPending ) then
-		local questIndex = GetQuestLogIndexByID(rewardQuestID);
-		local text = GetQuestLogCompletionText(questIndex);
-		if ( text and text ~= "" ) then
-			description = text;
-		end
-	end
-	ReputationParagonTooltip:AddLine(description, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, 1);
-	if ( not hasRewardPending ) then
-		GameTooltip_InsertFrame(ReputationParagonTooltip, ReputationParagonTooltipStatusBar);
-		ReputationParagonTooltipStatusBar.Bar:SetMinMaxValues(0, threshold);
-		local value = mod(currentValue, threshold);
-		-- show overflow if reward is pending
+	if ( tooLowLevelForParagon ) then
+		ReputationParagonTooltip:SetText(PARAGON_REPUTATION_TOOLTIP_TEXT_LOW_LEVEL);
+	else
+		ReputationParagonTooltip:SetText(factionStandingtext);
+		local description = PARAGON_REPUTATION_TOOLTIP_TEXT:format(factionName);
 		if ( hasRewardPending ) then
-			value = value + threshold;
+			local questIndex = GetQuestLogIndexByID(rewardQuestID);
+			local text = GetQuestLogCompletionText(questIndex);
+			if ( text and text ~= "" ) then
+				description = text;
+			end
 		end
-		ReputationParagonTooltipStatusBar.Bar:SetValue(value);
-		ReputationParagonTooltipStatusBar.Bar.Label:SetFormattedText(REPUTATION_PROGRESS_FORMAT, value, threshold);
+		ReputationParagonTooltip:AddLine(description, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, 1);
+		if ( not hasRewardPending ) then
+			GameTooltip_InsertFrame(ReputationParagonTooltip, ReputationParagonTooltipStatusBar);
+			ReputationParagonTooltipStatusBar.Bar:SetMinMaxValues(0, threshold);
+			local value = mod(currentValue, threshold);
+			-- show overflow if reward is pending
+			if ( hasRewardPending ) then
+				value = value + threshold;
+			end
+			ReputationParagonTooltipStatusBar.Bar:SetValue(value);
+			ReputationParagonTooltipStatusBar.Bar.Label:SetFormattedText(REPUTATION_PROGRESS_FORMAT, value, threshold);
+		end
+		GameTooltip_AddQuestRewardsToTooltip(ReputationParagonTooltip, rewardQuestID);
 	end
-	GameTooltip_AddQuestRewardsToTooltip(ReputationParagonTooltip, rewardQuestID);
 	ReputationParagonTooltip:Show();
 end
 

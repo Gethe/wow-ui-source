@@ -11,8 +11,15 @@ VISIBLE_CONTAINER_SPACING = 3;
 CONTAINER_OFFSET_Y = 70;
 CONTAINER_OFFSET_X = 0;
 CONTAINER_SCALE = 0.75;
-BACKPACK_HEIGHT = 255;
-
+BACKPACK_MONEY_OFFSET_DEFAULT = -231;
+BACKPACK_MONEY_HEIGHT_OFFSET_PER_EXTRA_ROW = 41;
+BACKPACK_BASE_HEIGHT = 255;
+BACKPACK_HEIGHT_OFFSET_PER_EXTRA_ROW = 43;
+BACKPACK_DEFAULT_TOPHEIGHT = 255;
+BACKPACK_EXTENDED_TOPHEIGHT = 226;
+BACKPACK_BASE_SIZE = 16;
+FIRST_BACKPACK_BUTTON_OFFSET_BASE = -225;
+FIRST_BACKPACK_BUTTON_OFFSET_PER_EXTRA_ROW = 41;
 FRAME_THAT_OPENED_BAGS = nil;
 
 function ContainerFrame_OnLoad(self)
@@ -22,6 +29,7 @@ function ContainerFrame_OnLoad(self)
 	self:RegisterEvent("UNIT_QUEST_LOG_CHANGED");
 	ContainerFrame1.bagsShown = 0;
 	ContainerFrame1.bags = {};
+	ContainerFrame1.forceExtended = false;
 end
 
 function ContainerFrame_OnEvent(self, event, ...)
@@ -74,12 +82,25 @@ function ContainerFrame_OnEvent(self, event, ...)
 	end
 end
 
+function ContainerFrame_GetContainerNumSlots(id)
+	local num = GetContainerNumSlots(id);
+	if (id == 0 and ContainerFrame1.forceExtended) then
+		num = num + 4;
+	end
+	return num;
+end
+
+function ContainerFrame_SetBackpackForceExtended(forceExtended)
+	ContainerFrame1.forceExtended = forceExtended;
+	OpenBag(0, true);
+end
+
 function ToggleBag(id)
 	if ( IsOptionFrameOpen() ) then
 		return;
 	end
 	
-	local size = GetContainerNumSlots(id);
+	local size = ContainerFrame_GetContainerNumSlots(id);
 	if ( size > 0 or id == KEYRING_CONTAINER ) then
 		local containerShowing;
 		for i=1, NUM_CONTAINER_FRAMES, 1 do
@@ -261,7 +282,7 @@ function ContainerFrame_OnShow(self)
 	end
 end
 
-function OpenBag(id)
+function OpenBag(id, force)
 	if ( not CanOpenPanels() ) then
 		if ( UnitIsDead("player") ) then
 			NotWhileDeadError();
@@ -269,17 +290,22 @@ function OpenBag(id)
 		return;
 	end
 
-	local size = GetContainerNumSlots(id);
+	local size = ContainerFrame_GetContainerNumSlots(id);
 	if ( size > 0 ) then
 		local containerShowing;
+		local containerFrame;
 		for i=1, NUM_CONTAINER_FRAMES, 1 do
 			local frame = _G["ContainerFrame"..i];
 			if ( frame:IsShown() and frame:GetID() == id ) then
 				containerShowing = i;
+				containerFrame = frame;
 			end
 		end
 		if ( not containerShowing ) then
 			ContainerFrame_GenerateFrame(ContainerFrame_GetOpenFrame(), size, id);
+		elseif (containerShowing and force) then
+			ContainerFrame_GenerateFrame(containerFrame, size, id);
+			ContainerFrame_Update(containerFrame);
 		end
 		if (not ContainerFrame1.allBags) then
 			CheckBagSettingsTutorial();
@@ -460,7 +486,7 @@ function ContainerFrame_Update(frame)
 	local isQuestItem, questId, isActive, questTexture;
 	local battlepayItemTexture, newItemTexture, flash, newItemAnim;
 	local tooltipOwner = GameTooltip:GetOwner();
-	
+	local baseSize = GetContainerNumSlots(id);	
 	frame.FilterIcon:Hide();
 	if ( id ~= 0 and not IsInventoryItemProfessionBag("player", ContainerIDToInventoryID(id)) ) then
 		for i = LE_BAG_FILTER_FLAG_EQUIPMENT, NUM_LE_BAG_FILTER_FLAGS do
@@ -512,6 +538,8 @@ function ContainerFrame_Update(frame)
 		SetItemButtonCount(itemButton, itemCount);
 		SetItemButtonDesaturated(itemButton, locked);
 		
+		ContainerFrameItemButton_SetForceExtended(itemButton, itemButton:GetID() > baseSize);
+
 		questTexture = _G[name.."Item"..i.."IconQuestTexture"];
 		if ( questId and not isActive ) then
 			questTexture:SetTexture(TEXTURE_ITEM_QUEST_BANG);
@@ -668,22 +696,99 @@ function ContainerFrame_GenerateFrame(frame, size, id)
 	local bgTexture1Slot = _G[name.."Background1Slot"];
 	local columns = NUM_CONTAINER_COLUMNS;
 	local rows = ceil(size / columns);
+	local backpackFirstButtonOffset = FIRST_BACKPACK_BUTTON_OFFSET_BASE;
+	local secured = IsAccountSecured();
+
 	-- if id = 0 then its the backpack
 	if ( id == 0 ) then
 		bgTexture1Slot:Hide();
-		_G[name.."MoneyFrame"]:Show();
-		-- Set Backpack texture
+
+		local extended = size > BACKPACK_BASE_SIZE;
+		local extraRows = 0;
+
 		bgTextureTop:SetTexture("Interface\\ContainerFrame\\UI-BackpackBackground");
-		bgTextureTop:SetHeight(256);
-		bgTextureTop:SetTexCoord(0, 1, 0, 1);
+		if (extended) then
+			extraRows = math.ceil((size - BACKPACK_BASE_SIZE) / columns);
+			bgTextureTop:SetHeight(BACKPACK_EXTENDED_TOPHEIGHT);
+			bgTextureTop:SetTexCoord(0, 1, 0, BACKPACK_EXTENDED_TOPHEIGHT / BACKPACK_DEFAULT_TOPHEIGHT);
+			backpackFirstButtonOffset = backpackFirstButtonOffset - (FIRST_BACKPACK_BUTTON_OFFSET_PER_EXTRA_ROW * extraRows);	
+		else
+			bgTextureTop:SetHeight(BACKPACK_DEFAULT_TOPHEIGHT);
+			bgTextureTop:SetTexCoord(0, 1, 0, 1);
+		end
 		bgTextureTop:Show();
+		bgTextureBottom:Hide();
+
+		_G[name.."MoneyFrame"]:Show();
+		_G[name.."MoneyFrame"]:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -2, BACKPACK_MONEY_OFFSET_DEFAULT - (BACKPACK_MONEY_HEIGHT_OFFSET_PER_EXTRA_ROW * extraRows));
+		_G[name.."AddSlotsButton"]:SetShown(not secured and not extended);
 
 		-- Hide unused textures
 		for i=1, MAX_BG_TEXTURES do
+			_G[name.."BackgroundMiddle"..i]:SetTexture("Interface\\ContainerFrame\\UI-Bag-Components");
 			_G[name.."BackgroundMiddle"..i]:Hide();
 		end
-		bgTextureBottom:Hide();
+
+		local middleBgHeight = 0;
+
+		if (frame.extendedOverlay) then
+			frame.extendedOverlay:Hide();
+		end
+
+		if (extended) then
+			local rowHeight = 41;
+			-- Subtract four, since the top part of the backpack texture contains four rows already
+			local remainingRows = extraRows;
+
+			-- Calculate the number of background textures we're going to need
+			bgTextureCount = ceil(remainingRows/ROWS_IN_BG_TEXTURE);
+			
+			-- Try to cycle all the middle bg textures
+			local firstRowPixelOffset = 9;
+			local firstRowTexCoordOffset = 0.353515625;
+			for i=1, bgTextureCount do
+				bgTextureMiddle = _G[name.."BackgroundMiddle"..i];
+				if ( remainingRows > ROWS_IN_BG_TEXTURE ) then
+					-- If more rows left to draw than can fit in a texture then draw the max possible
+					height = ( ROWS_IN_BG_TEXTURE*rowHeight ) - firstRowPixelOffset
+					bgTextureMiddle:SetHeight(ROWS_IN_BG_TEXTURE*rowHeight);
+					bgTextureMiddle:SetTexCoord(0, 1, firstRowTexCoordOffset, ( height/BG_TEXTURE_HEIGHT + firstRowTexCoordOffset) );
+					bgTextureMiddle:Show();
+					remainingRows = remainingRows - ROWS_IN_BG_TEXTURE;
+					middleBgHeight = middleBgHeight + ROWS_IN_BG_TEXTURE+rowHeight;
+				else
+					-- If not its a huge bag
+					bgTextureMiddle:Show();
+					height = remainingRows*rowHeight-firstRowPixelOffset;
+					bgTextureMiddle:SetHeight(remainingRows*rowHeight);
+					bgTextureMiddle:SetTexCoord(0, 1, firstRowTexCoordOffset, ( height/BG_TEXTURE_HEIGHT + firstRowTexCoordOffset) );
+					middleBgHeight = middleBgHeight + remainingRows*rowHeight;
+				end
+				if (extended and ContainerFrame1.forceExtended) then
+					if (not frame.extendedOverlay) then
+						frame.extendedOverlay = frame:CreateTexture(nil, "OVERLAY", 1);
+						frame.extendedOverlay:SetColorTexture(0.603, 0.875, 1);
+						frame.extendedOverlay:SetAlpha(1);
+						frame.extendedOverlay:SetBlendMode("MOD");
+					end
+					frame.extendedOverlay:SetWidth(CONTAINER_WIDTH-20);
+					frame.extendedOverlay:SetHeight(bgTextureMiddle:GetHeight()+2);
+					frame.extendedOverlay:SetPoint("CENTER", bgTextureMiddle, "CENTER", 34, -2);
+					frame.extendedOverlay:Show();
+				end
+			end
+			
+			-- Position and setup bottom texture
+			bgTextureBottom:SetPoint("TOP", bgTextureMiddle:GetName(), "BOTTOM", 0, 0);
+			bgTextureBottom:SetTexture("Interface\\ContainerFrame\\UI-BackpackBackground");
+			bgTextureBottom:SetHeight(BACKPACK_DEFAULT_TOPHEIGHT - BACKPACK_EXTENDED_TOPHEIGHT);
+			bgTextureBottom:SetTexCoord(0, 1, BACKPACK_EXTENDED_TOPHEIGHT / BACKPACK_DEFAULT_TOPHEIGHT, 1);
+			bgTextureBottom:Show();
+		end
+
+		BACKPACK_HEIGHT = BACKPACK_BASE_HEIGHT + middleBgHeight;
 		frame:SetHeight(BACKPACK_HEIGHT);
+		ManageBackpackTokenFrame(frame);
 	else
 		if (size == 1) then
 			-- Halloween gag gift
@@ -693,6 +798,7 @@ function ContainerFrame_GenerateFrame(frame, size, id)
 			bgTextureMiddle2:Hide();
 			bgTextureBottom:Hide();
 			_G[name.."MoneyFrame"]:Hide();
+			_G[name.."AddSlotsButton"]:Hide();
 		else
 			bgTexture1Slot:Hide();
 			bgTextureTop:Show();
@@ -715,7 +821,8 @@ function ContainerFrame_GenerateFrame(frame, size, id)
 			bgTextureBottom:SetTexture("Interface\\ContainerFrame\\UI-Bag-Components"..bagTextureSuffix);
 			-- Hide the moneyframe since its not the backpack
 			_G[name.."MoneyFrame"]:Hide();	
-			
+			_G[name.."AddSlotsButton"]:Hide();
+						
 			local bgTextureCount, height;
 			local rowHeight = 41;
 			-- Subtract one, since the top texture contains one row already
@@ -808,6 +915,7 @@ function ContainerFrame_GenerateFrame(frame, size, id)
 			SetBagPortraitTexture(_G[frame:GetName().."Portrait"], id);
 		end
 
+		local baseSize = GetContainerNumSlots(id);
 		local index, itemButton;
 		for i=1, size, 1 do
 			index = size - i + 1;
@@ -817,19 +925,31 @@ function ContainerFrame_GenerateFrame(frame, size, id)
 			if ( i == 1 ) then
 				-- Anchor the first item differently if its the backpack frame
 				if ( id == 0 ) then
-					itemButton:SetPoint("BOTTOMRIGHT", name, "TOPRIGHT", -12, -225);
+					itemButton:SetPoint("BOTTOMRIGHT", name, "TOPRIGHT", -12, backpackFirstButtonOffset);
 				else
 					itemButton:SetPoint("BOTTOMRIGHT", name, "BOTTOMRIGHT", -12, 9);
 				end
-				
 			else
 				if ( mod((i-1), columns) == 0 ) then
+					itemButton.shouldAnimateStatic = true;
 					itemButton:SetPoint("BOTTOMRIGHT", name.."Item"..(i - columns), "TOPRIGHT", 0, 4);	
 				else
 					itemButton:SetPoint("BOTTOMRIGHT", name.."Item"..(i - 1), "BOTTOMLEFT", -5, 0);	
 				end
 			end
+			
 			itemButton:Show();
+		end
+		if (id == 0 and secured and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_BAG_SLOTS_AUTHENTICATOR)) then
+			frame.ExtraBagSlotsHelpBox:Show();
+			ContainerFrame1.isHelpBoxShown = true;
+			ContainerFrame1.helpBoxFrame = frame.ExtraBagSlotsHelpBox;
+		else
+			frame.ExtraBagSlotsHelpBox:Hide();
+			if (id == 0) then
+				ContainerFrame1.isHelpBoxShown = false;
+				ContainerFrame1.helpBoxFrame = nil;
+			end
 		end
 	end
 	for i=size + 1, MAX_CONTAINER_ITEMS, 1 do
@@ -843,6 +963,9 @@ function ContainerFrame_GenerateFrame(frame, size, id)
 	frame:Show();
 	UpdateContainerFrameAnchors();
 	frame:Raise();
+	if (ContainerFrame1.isHelpBoxShown and ContainerFrame1.helpBoxFrame) then
+		ContainerFrame1.helpBoxFrame:Raise();
+	end
 end
 
 function UpdateContainerFrameAnchors()
@@ -926,10 +1049,10 @@ function ContainerFrameItemButton_UpdateItemUpgradeIcon(self)
 	self.timeSinceUpgradeCheck = 0;
 	
 	local itemIsUpgrade = IsContainerItemAnUpgrade(self:GetParent():GetID(), self:GetID());
-	if ( itemIsUpgrade == nil ) then -- nil means not all the data was available to determine if this is an upgrade.
+	if ( itemIsUpgrade == nil and not self.isExtended) then -- nil means not all the data was available to determine if this is an upgrade.
 		self.UpgradeIcon:SetShown(false);
 		self:SetScript("OnUpdate", ContainerFrameItemButton_OnUpdate);
-	else
+	elseif (not self.isExtended) then
 		self.UpgradeIcon:SetShown(itemIsUpgrade);
 		self:SetScript("OnUpdate", nil);
 	end
@@ -940,6 +1063,54 @@ function ContainerFrameItemButton_OnUpdate(self, elapsed)
 	self.timeSinceUpgradeCheck = self.timeSinceUpgradeCheck + elapsed;
 	if ( self.timeSinceUpgradeCheck >= ITEM_UPGRADE_CHECK_TIME ) then
 		ContainerFrameItemButton_UpdateItemUpgradeIcon(self);
+	end
+end
+
+local bagStaticDuration = 2.5;
+local bagStaticStartingHeight = 37;
+local bagStaticMovePerSec = bagStaticStartingHeight / bagStaticDuration;
+
+function ContainerFrameItemButton_BagStatic_AnimateUpdate(self, elapsed)
+	local shift = bagStaticMovePerSec * elapsed;
+	if (not self.currentHeight or (self.currentHeight - shift) <= 0) then
+		self.BagStaticTop:SetHeight(0);
+		self.BagStaticTop:SetTexCoord(0, 1, 0, 0);
+		self.BagStaticBottom:SetTexCoord(0, 1, 0, 1);
+		self.currentHeight = bagStaticStartingHeight;
+	end
+	self.currentHeight = self.currentHeight - shift;
+	self.BagStaticBottom:SetHeight(self.currentHeight);
+	self.BagStaticBottom:SetTexCoord(0, 1, 0, (self.currentHeight / bagStaticStartingHeight));
+	local topHeight = bagStaticStartingHeight - self.currentHeight;
+	if (topHeight < bagStaticStartingHeight and topHeight > 0) then
+		self.BagStaticTop:SetHeight(topHeight);
+		self.BagStaticTop:SetTexCoord(0, 1, 1 - (topHeight / bagStaticStartingHeight), 1);
+	end
+end
+
+function ContainerFrameItemButton_SetForceExtended(itemButton, extended)
+	if (extended) then
+		itemButton:GetNormalTexture():SetVertexColor(0.603, 0.875, 1);
+		itemButton.ExtendedOverlay:Show();
+		itemButton.ExtendedOverlay2:Show();
+		itemButton.ExtendedSlot:Show();
+		if ((itemButton:GetID() - 1) == GetContainerNumSlots(0)) then
+			itemButton.BagStaticBottom:Show();
+			itemButton.BagStaticTop:Show();
+			itemButton:SetScript("OnUpdate", ContainerFrameItemButton_BagStatic_AnimateUpdate);
+		end
+		itemButton:EnableMouse(false);
+		itemButton.isExtended = true;
+	else
+		itemButton:GetNormalTexture():SetVertexColor(1, 1, 1);
+		itemButton.ExtendedOverlay:Hide();
+		itemButton.ExtendedOverlay2:Hide();
+		itemButton.ExtendedSlot:Hide();
+		itemButton.BagStaticBottom:Hide();
+		itemButton.BagStaticTop:Hide();
+		itemButton:EnableMouse(true);
+		itemButton:SetScript("OnUpdate", nil);
+		itemButton.isExtended = false;
 	end
 end
 

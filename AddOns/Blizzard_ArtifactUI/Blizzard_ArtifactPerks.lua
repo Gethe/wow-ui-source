@@ -249,7 +249,7 @@ function ArtifactPerksMixin:RefreshPowers(newItem)
 		end
 
 		local meetsTier = currentTier >= powerButton:GetTier();
-		powerButton:SetShown(meetsTier);
+		powerButton:SetShown(meetsTier and (powerButton:GetTier() ~= 2 or not self.preppingTierTwoReveal));
 		powerButton:SetLinksEnabled(meetsTier and not powerButton:IsFinal());
 	end
 
@@ -354,7 +354,6 @@ function ArtifactPerksMixin:GetOrCreateCurvedDependencyLine(lineIndex)
 	end
 
 	lineContainer = CreateFrame("FRAME", nil, self, "ArtifactCurvedDependencyLineTemplate");
-
 	return lineContainer;
 end
 
@@ -397,7 +396,7 @@ function ArtifactPerksMixin:TryRefresh()
 
 		local finalTier2WasUnlocked = self.wasFinalPowerButtonUnlockedByTier[2];
 		self:RefreshPowers(self.newItem);
-		
+
 		self.TitleContainer:SetPointsRemaining(C_ArtifactUI.GetPointsRemaining());
 
 		self.perksDirty = false;
@@ -405,7 +404,11 @@ function ArtifactPerksMixin:TryRefresh()
 		self.isAppearanceChanging = nil;
 		
 		if not self.numArtifactTraitsRefunded and (C_ArtifactUI.GetArtifactTier() == 2 or C_ArtifactUI.IsMaxedByRulesOrEffect())then
-			self:ShowTier2();
+			if self.preppingTierTwoReveal then
+				self:HideTier2();
+			else
+				self:ShowTier2();
+			end
 			self.CrestFrame.CrestRune1:SetAlpha(1.0);
 			self.CrestFrame.RunePulse:Play();
 			self.Model.BackgroundFront:SetAlpha(self.Model.backgroundFrontTargetAlpha);
@@ -982,7 +985,7 @@ end
 
 local function QueueReveal(self, powerButton, distance, tier)
 	-- The very first power for tier 1 doesn't need to animate in since it is already visible.
-	local noAnimation = powerButton.tier == 1 and powerButton:IsStart();
+	local noAnimation = powerButton:GetTier() == 1 and powerButton:IsStart();
 	if noAnimation or powerButton:QueueRevealAnimation(distance * ARTIFACT_REVEAL_DELAY_SECS_PER_DISTANCE[tier]) then
 		for linkedPowerID, linkedLineContainer in pairs(powerButton.links) do
 			local linkedPowerButton = self.powerIDToPowerButton[linkedPowerID];
@@ -1049,6 +1052,11 @@ function ArtifactPerksMixin:ShowTier2()
 end
 
 function ArtifactPerksMixin:SkipTier2Animation()
+	if self.preppingTierTwoReveal then
+		self.preppingTierTwoReveal = nil;
+		self.perksDirty = true;
+	end
+
 	self:CancelAllTimedAnimations();
 	
 	if C_ArtifactUI.GetArtifactTier() == 2 then
@@ -1123,10 +1131,7 @@ function ArtifactPerksMixin:AnimateTraitRefund(numTraitsRefunded)
 
 	local button = self:GetFinalPowerButtonByTier(1);
 	if not button or numTraitsRefunded == 0 then
-		self:HideTier2();
-		self:StartWithDelay(ARTIFACT_TIER_2_REVEAL_START_DELAY, function ()
-			self:AnimateInTierTwoReveal();
-		end);
+		self:PrepTierTwoReveal(ARTIFACT_TIER_2_REVEAL_START_DELAY);
 		
 		return;
 	end
@@ -1169,19 +1174,25 @@ function ArtifactPerksMixin:AnimateTraitRefund(numTraitsRefunded)
 				self:StartWithDelay(ARTIFACT_TIER_2_SOUND_REFUND_END_DELAY, function ()
 					self.traitRefundSoundEmitter:FinishLoopingSound();
 				end);
-	
-				self:StartWithDelay(ARTIFACT_TIER_2_RUNE_FLASH_DELAY, function ()
-					self:AnimateInTierTwoReveal();
-				end);
+
+				self:PrepTierTwoReveal(ARTIFACT_TIER_2_RUNE_FLASH_DELAY);
 			end
 		end, numTraitsRefunded);
+	end);
+end
+
+function ArtifactPerksMixin:PrepTierTwoReveal(delay)
+	self:HideTier2();
+	self.preppingTierTwoReveal = true;
+	self:StartWithDelay(delay, function ()
+		self:AnimateInTierTwoReveal();
 	end);
 end
 
 function ArtifactPerksMixin:AnimateInTierTwoReveal()
 	self.TitleContainer.PointsRemainingLabel:SnapToTarget();
 	PlaySound(SOUNDKIT.UI_72_ARTIFACT_FORGE_ACTIVATE_FINAL_TIER);
-	
+
 	self.CrestFrame.IntroCrestAnim:Play();
 	self:StartWithDelay(ARTIFACT_TIER_2_CONSTELLATION_DELAY, function ()
 		self:AnimateInTierTwoPowers();
@@ -1190,6 +1201,7 @@ end
 
 function ArtifactPerksMixin:AnimateInTierTwoPowers()
 	-- Show all the tier 2 components and set up their alpha to be animated in.
+	self.preppingTierTwoReveal = nil;
 	self:ShowTier2();
 	self.CrestFrame.CrestRune1:SetAlpha(0.0);
 	
@@ -1248,7 +1260,7 @@ function ArtifactPerksMixin:PlayReveal(tier)
 		QueueReveal(self, self:GetStartingPowerButtonByTier(tier), 0, tier);
 
 		for powerID, powerButton in pairs(self.powerIDToPowerButton) do
-			if powerButton.tier == tier and powerButton:IsShown() and powerButton:PlayRevealAnimation(OnRevealFinished) then
+			if powerButton:GetTier() == tier and powerButton:IsShown() and powerButton:PlayRevealAnimation(OnRevealFinished) then
 				self.numRevealsPlaying = self.numRevealsPlaying + 1;
 			end
 		end

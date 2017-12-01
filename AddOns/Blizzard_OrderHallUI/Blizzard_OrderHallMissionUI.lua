@@ -536,10 +536,13 @@ function OrderHallMissionComplete:ShowRewards()
 		self.BonusRewards.BonusChanceLabel:Hide();
 		if ( not self.skipAnimations ) then
 			rewardFrame:Hide();
+			local rewardMissionID = self.currentMission.missionID;
 			C_Timer.After(secondItemDelay,
 				function()
-					GarrisonMissionPage_SetReward(rewardFrame, currentMission.overmaxRewards[1], missionComplete);
-					rewardFrame.Anim:Play();
+					if ( rewardMissionID == self.currentMission.missionID ) then
+						GarrisonMissionPage_SetReward(rewardFrame, currentMission.overmaxRewards[1], missionComplete);
+						rewardFrame.Anim:Play();
+					end
 				end
 			);
 		else

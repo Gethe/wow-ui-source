@@ -54,6 +54,7 @@
 				<Scripts>
 					<OnLoad>
 						self:RegisterEvent("STORE_STATUS_CHANGED");
+						self:RegisterEvent("TRIAL_STATUS_UPDATE");
 						GameMenuFrame_UpdateStoreButtonState(self);
 					</OnLoad>
 					<OnShow function="GameMenuFrame_UpdateStoreButtonState"/>

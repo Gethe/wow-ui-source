@@ -340,6 +340,10 @@
 		</Scripts>
 	</Button>
 	<Button name="CollectionsMicroButton" inherits="MainMenuBarMicroButton" mixin="CollectionMicroButtonMixin" parent="UIParent">
+		<KeyValues>
+			<KeyValue key="lastNumMountsNeedingFanfare" value="0" type="number"/>
+			<KeyValue key="lastNumPetsNeedingFanfare" value="0" type="number"/>
+		</KeyValues>
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="LFDMicroButton" relativePoint="BOTTOMRIGHT">
 				<Offset>

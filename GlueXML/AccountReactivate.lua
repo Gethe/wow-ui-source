@@ -1,8 +1,12 @@
 function AccountReactivate_ReactivateNow()
-	PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK);
-	
-	-- open web page
-	LoadURLIndex(22);
+	local info = C_StoreSecure.GetProductGroupInfo(WOW_GAME_TIME_CATEGORY_ID);
+	if info then
+		StoreFrame_SelectGameTimeProduct();
+		ToggleStoreUI();
+	else
+		PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK);
+		LoadURLIndex(22);
+	end
 end
 
 function AccountReactivate_Cancel()
@@ -35,6 +39,7 @@ function ReactivateAccountDialog_OnLoad(self)
 	self:RegisterEvent("TOKEN_REDEEM_RESULT");
 	self:RegisterEvent("TOKEN_BUY_RESULT");
 	self:RegisterEvent("TOKEN_MARKET_PRICE_UPDATED");
+	self:RegisterEvent("TRIAL_STATUS_UPDATE");
 end
 
 function GetTimeLeftMinuteString(minutes)
@@ -171,6 +176,10 @@ function ReactivateAccountDialog_OnEvent(self, event, ...)
 				AccountReactivationInProgressDialog:Hide();
 			end
 			CharacterSelect_UpdateButtonState();
+		end
+	elseif (event == "TRIAL_STATUS_UPDATE") then
+		if (not IsVeteranTrialAccount()) then
+			AccountReactivate_CloseDialogs();
 		end
 	end
 end

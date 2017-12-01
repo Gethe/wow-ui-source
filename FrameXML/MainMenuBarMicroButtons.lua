@@ -483,13 +483,14 @@ do
 
 		local numMountsNeedingFanfare = C_MountJournal.GetNumMountsNeedingFanfare();
 		local numPetsNeedingFanfare = C_PetJournal.GetNumPetsNeedingFanfare();
-		if numMountsNeedingFanfare > 0 or numPetsNeedingFanfare > 0 then
-			if MainMenuMicroButton_ShowAlert(CollectionsMicroButtonAlert, numMountsNeedingFanfare + numPetsNeedingFanfare > 1 and COLLECTION_UNOPENED_PLURAL or COLLECTION_UNOPENED_SINGULAR, LE_FRAME_TUTORIAL_WRAPPED_COLLECTION_ITEMS) then
+		if numMountsNeedingFanfare > self.lastNumMountsNeedingFanfare or numPetsNeedingFanfare > self.lastNumPetsNeedingFanfare then
+			if MainMenuMicroButton_ShowAlert(CollectionsMicroButtonAlert, numMountsNeedingFanfare + numPetsNeedingFanfare > 1 and COLLECTION_UNOPENED_PLURAL or COLLECTION_UNOPENED_SINGULAR) then
 				MicroButtonPulse(self);
 				SafeSetCollectionJournalTab(numMountsNeedingFanfare > 0 and 1 or 2);
-				return;
 			end
 		end
+		self.lastNumMountsNeedingFanfare = numMountsNeedingFanfare;
+		self.lastNumPetsNeedingFanfare = numPetsNeedingFanfare;
 	end
 
 	function CollectionsMicroButton_OnEvent(self, event, ...)

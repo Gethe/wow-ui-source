@@ -93,9 +93,9 @@ function ToyBoxOptionsMenu_Init(self, level)
 	UIDropDownMenu_AddButton(info, level);
 	info.disabled = nil;
 	
-	info.text = CANCEL
-	info.func = nil
-	UIDropDownMenu_AddButton(info, level)
+	info.text = CANCEL;
+	info.func = nil;
+	UIDropDownMenu_AddButton(info, level);
 end
 
 function ToyBox_ShowToyDropdown(itemID, anchorTo, offsetX, offsetY)	
@@ -171,7 +171,7 @@ function ToySpellButton_UpdateButton(self)
 	local slotFrameCollected = self.slotFrameCollected;
 	local slotFrameUncollected = self.slotFrameUncollected;
 	local slotFrameUncollectedInnerGlow = self.slotFrameUncollectedInnerGlow;
-	local iconFavoriteTexture = self.cooldownWrapper.slotFavorite;
+	local iconFavoriteTexture = self.cooldownWrapper.slotFavorite; 
 
 	if (self.itemID == -1) then	
 		self:Hide();		
@@ -287,67 +287,78 @@ function ToyBoxFilterDropDown_OnLoad(self)
 	UIDropDownMenu_Initialize(self, ToyBoxFilterDropDown_Initialize, "MENU");
 end
 
+function ToyBoxUpdateFilteredInformation()
+	ToyBox.firstCollectedToyID = 0;
+	ToyBox_UpdatePages();
+	ToyBox_UpdateButtons();
+end
+
 function ToyBoxFilterDropDown_Initialize(self, level)
 	local info = UIDropDownMenu_CreateInfo();
 	info.keepShownOnClick = true;	
 
 	if level == 1 then
-		info.text = COLLECTED
+		info.text = COLLECTED;
 		info.func = function(_, _, _, value)
-						ToyBox.firstCollectedToyID = 0;
 						C_ToyBox.SetCollectedShown(value);
-						ToyBox_UpdatePages();
-						ToyBox_UpdateButtons();
+						ToyBoxUpdateFilteredInformation(); 
 					end 
 		info.checked = C_ToyBox.GetCollectedShown();
 		info.isNotRadio = true;
-		UIDropDownMenu_AddButton(info, level)
+		UIDropDownMenu_AddButton(info, level);
 
-		info.text = NOT_COLLECTED
+		info.text = NOT_COLLECTED;
 		info.func = function(_, _, _, value)
-						ToyBox.firstCollectedToyID = 0;
 						C_ToyBox.SetUncollectedShown(value);
-						ToyBox_UpdatePages();
-						ToyBox_UpdateButtons();
+						ToyBoxUpdateFilteredInformation(); 
 					end 
 		info.checked = C_ToyBox.GetUncollectedShown();
 		info.isNotRadio = true;
-		UIDropDownMenu_AddButton(info, level)
-
-		info.checked = 	nil;
+		UIDropDownMenu_AddButton(info, level);
+		
+		info.text = PET_JOURNAL_FILTER_USABLE_ONLY;
+		info.func = function(_, _, _, value)
+						C_ToyBox.SetUnusableShown(not value);
+						ToyBoxUpdateFilteredInformation(); 
+					end
+		info.checked = not C_ToyBox.GetUnusableShown();
+		info.isNotRadio = true;
+		UIDropDownMenu_AddButton(info, level);
+		
+		info.checked = nil;
 		info.isNotRadio = nil;
 		info.func =  nil;
 		info.hasArrow = true;
 		info.notCheckable = true;
-
-		info.text = SOURCES
+		
+		info.text = SOURCES;
 		info.value = 1;
-		UIDropDownMenu_AddButton(info, level)
+		UIDropDownMenu_AddButton(info, level);
+		
+		info.text = EXPANSION_FILTER_TEXT;
+		info.value = 2;
+		UIDropDownMenu_AddButton(info, level);
 	else
 		if UIDROPDOWNMENU_MENU_VALUE == 1 then
 			info.hasArrow = false;
 			info.isNotRadio = true;
 			info.notCheckable = true;				
 		
-			info.text = CHECK_ALL
+			info.text = CHECK_ALL;
 			info.func = function()
-							ToyBox.firstCollectedToyID = 0;
 							C_ToyBox.SetAllSourceTypeFilters(true);
 							UIDropDownMenu_Refresh(ToyBoxFilterDropDown, 1, 2);
-							ToyBox_UpdatePages();
-							ToyBox_UpdateButtons();
+							ToyBoxUpdateFilteredInformation();
 						end
-			UIDropDownMenu_AddButton(info, level)
+			UIDropDownMenu_AddButton(info, level);
 			
-			info.text = UNCHECK_ALL
+			info.text = UNCHECK_ALL;
 			info.func = function()
-							ToyBox.firstCollectedToyID = 0;
 							C_ToyBox.SetAllSourceTypeFilters(false);
 							UIDropDownMenu_Refresh(ToyBoxFilterDropDown, 1, 2);
-							ToyBox_UpdatePages();
-							ToyBox_UpdateButtons();
+							ToyBoxUpdateFilteredInformation();
 						end
-			UIDropDownMenu_AddButton(info, level)
+			UIDropDownMenu_AddButton(info, level);
 		
 			info.notCheckable = false;
 			local numSources = C_PetJournal.GetNumPetSources();
@@ -355,14 +366,45 @@ function ToyBoxFilterDropDown_Initialize(self, level)
 				if (i == 1 or i == 2 or i == 3 or i == 4 or i == 7 or i == 8) then -- Drop/Quest/Vendor/Profession/WorldEvent/Promotion
 					info.text = _G["BATTLE_PET_SOURCE_"..i];
 					info.func = function(_, _, _, value)
-								ToyBox.firstCollectedToyID = 0;
 								C_ToyBox.SetSourceTypeFilter(i, value);
-								ToyBox_UpdatePages();
-								ToyBox_UpdateButtons();
+								ToyBoxUpdateFilteredInformation();
 							end
 					info.checked = function() return not C_ToyBox.IsSourceTypeFilterChecked(i) end;
 					UIDropDownMenu_AddButton(info, level);
 				end
+			end
+		end
+		if UIDROPDOWNMENU_MENU_VALUE == 2 then
+			info.hasArrow = false;
+			info.isNotRadio = true;
+			info.notCheckable = true;				
+		
+			info.text = CHECK_ALL;
+			info.func = function()
+							C_ToyBox.SetAllExpansionTypeFilters(true);
+							UIDropDownMenu_Refresh(ToyBoxFilterDropDown, 1, 2);
+							ToyBoxUpdateFilteredInformation();
+						end
+			UIDropDownMenu_AddButton(info, level);
+			
+			info.text = UNCHECK_ALL;
+			info.func = function()
+							C_ToyBox.SetAllExpansionTypeFilters(false);
+							UIDropDownMenu_Refresh(ToyBoxFilterDropDown, 1, 2);
+							ToyBoxUpdateFilteredInformation();
+						end
+			UIDropDownMenu_AddButton(info, level);
+	
+			info.notCheckable = false;
+			local numExpansions = GetNumExpansions();
+			for i=1,numExpansions do
+				info.text = _G["EXPANSION_NAME"..i-1]; --Since the global strings for expansion are 0 - Max Expansion
+				info.func = function(_, _, _, value)
+							C_ToyBox.SetExpansionTypeFilter(i, value);
+							ToyBoxUpdateFilteredInformation();
+						end
+				info.checked = function() return not C_ToyBox.IsExpansionTypeFilterChecked(i) end;
+				UIDropDownMenu_AddButton(info, level);
 			end
 		end
 	end

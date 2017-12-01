@@ -544,7 +544,7 @@ function LootWonAlertFrame_SetUp(self, itemLink, quantity, rollType, roll, specI
 	self.ItemName:SetText(itemName);
 	local color = ITEM_QUALITY_COLORS[itemRarity];
 	self.ItemName:SetVertexColor(color.r, color.g, color.b);
-	self.IconBorder:SetAtlas(LOOT_BORDER_BY_QUALITY[itemRarity] or LOOT_BORDER_BY_QUALITY[LE_ITEM_QUALITY_UNCOMMON]);
+	self.IconBorder:SetAtlas(LOOT_BORDER_BY_QUALITY[itemRarity] or "loottoast-itemborder-gold");
 	if ( specID and specID > 0 and not isCurrency ) then
 		local id, name, description, texture, role, class = GetSpecializationInfoByID(specID);
 		self.SpecIcon:SetTexture(texture);

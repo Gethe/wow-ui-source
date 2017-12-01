@@ -31,18 +31,15 @@ local overviewPriorities = {
 	[1] = "DAMAGER",
 	[2] = "HEALER",
 	[3] = "TANK",
+	[4] = "NONE",
 }
 
+local NONE_FLAG = -1;
 local flagsByRole = {
 	["DAMAGER"] = 1,
 	["HEALER"] = 2,
 	["TANK"] = 0,
-}
-
-local rolesByFlag = {
-	[0] = "TANK",
-	[1] = "DAMAGER",
-	[2] = "HEALER"
+	["NONE"] = NONE_FLAG,
 }
 
 local EJ_Tabs = {};
@@ -128,6 +125,7 @@ function EncounterJournal_OnLoad(self)
 	self:RegisterEvent("EJ_DIFFICULTY_UPDATE");
 	self:RegisterEvent("UNIT_PORTRAIT_UPDATE");
 	self:RegisterEvent("SEARCH_DB_LOADED");
+	self:RegisterEvent("UI_MODEL_SCENE_INFO_UPDATED");
 
 	self.encounter.freeHeaders = {};
 	self.encounter.usedHeaders = {};
@@ -252,10 +250,7 @@ function EncounterJournal_OnShow(self)
 	local _, instanceType, difficultyID = GetInstanceInfo();
 	if ( EncounterJournal_HasChangedContext(instanceID, instanceType, difficultyID) ) then
 		EncounterJournal_ResetDisplay(instanceID, instanceType, difficultyID);
-	elseif ( EncounterJournal.queuedPortraitUpdate ) then
-		-- fixes portraits when switching between fullscreen and windowed mode
-		EncounterJournal_UpdatePortraits();
-		EncounterJournal.queuedPortraitUpdate = false;
+		EncounterJournal.queuedPortraitUpdate = nil;
 	elseif ( self.encounter.overviewFrame:IsShown() and EncounterJournal.overviewDefaultRole and not EncounterJournal.encounter.overviewFrame.linkSection ) then
 		local spec, role;
 
@@ -269,6 +264,12 @@ function EncounterJournal_OnShow(self)
 		if ( EncounterJournal.overviewDefaultRole ~= role ) then
 			EncounterJournal_ToggleHeaders(EncounterJournal.encounter.overviewFrame);
 		end
+	end
+
+	if ( EncounterJournal.queuedPortraitUpdate ) then
+		-- fixes portraits when switching between fullscreen and windowed mode
+		EncounterJournal.queuedPortraitUpdate = false;
+		EncounterJournal_UpdatePortraits();
 	end
 
 	local tierData = EJ_TIER_DATA[EJ_GetCurrentTier()];
@@ -314,6 +315,9 @@ function EncounterJournal_OnEvent(self, event, ...)
 		end
 	elseif event == "SEARCH_DB_LOADED" then
 		EncounterJournal_RestartSearchTracking();
+	elseif event == "UI_MODEL_SCENE_INFO_UPDATED" then
+		local forceUpdate = true;
+		EncounterJournal_ShowCreatures(forceUpdate);
 	end
 end
 
@@ -508,7 +512,7 @@ function EncounterJournal_DisplayInstance(instanceID, noButton)
 	local self = EncounterJournal.encounter;
 	EncounterJournal.instanceSelect:Hide();
 	EncounterJournal.encounter:Show();
-	EncounterJournal.ceatureDisplayID = 0;
+	EncounterJournal.creatureDisplayID = 0;
 
 	EncounterJournal.instanceID = instanceID;
 	EncounterJournal.encounterID = nil;
@@ -712,7 +716,7 @@ function EncounterJournal_DisplayEncounter(encounterID, noButton)
 	-- Setup Creatures
 	local id, name, displayInfo, iconImage;
 	for i=1,MAX_CREATURES_PER_ENCOUNTER do
-		id, name, description, displayInfo, iconImage = EJ_GetCreatureInfo(i);
+		id, name, description, displayInfo, iconImage, uiModelSceneID = EJ_GetCreatureInfo(i);
 
 		if id then
 			local button = EncounterJournal_GetCreatureButton(i);
@@ -721,6 +725,7 @@ function EncounterJournal_DisplayEncounter(encounterID, noButton)
 			button.id = id;
 			button.description = description;
 			button.displayInfo = displayInfo;
+			button.uiModelSceneID = uiModelSceneID;
 		end
 	end
 
@@ -753,62 +758,66 @@ function EncounterJournal_DisplayEncounter(encounterID, noButton)
 	end
 end
 
-function EncounterJournal_DisplayCreature(self)
+function EncounterJournal_DisplayCreature(self, forceUpdate)
 	if EncounterJournal.encounter.info.shownCreatureButton then
 		EncounterJournal.encounter.info.shownCreatureButton:Enable();
 	end
 
-	if EncounterJournal.ceatureDisplayID == self.displayInfo then
-		--Don't refresh the same model
-	elseif self.displayInfo then
-		EncounterJournal.encounter.info.model:SetDisplayInfo(self.displayInfo);
-		EncounterJournal.ceatureDisplayID = self.displayInfo;
+	local modelScene = EncounterJournal.encounter.info.model;
+
+	if self.displayInfo and (EncounterJournal.creatureDisplayID ~= self.displayInfo or forceUpdate) then
+		modelScene:SetFromModelSceneID(self.uiModelSceneID, forceUpdate);
+
+		local creature = modelScene:GetActorByTag("creature");
+		if creature then
+			creature:SetModelByCreatureDisplayID(self.displayInfo, forceUpdate);
+		end
+
+		EncounterJournal.creatureDisplayID = self.displayInfo;
 	end
 
-	EncounterJournal.encounter.info.model.imageTitle:SetText(self.name);
-	if (IsGMClient()) then
-		local displayID, name = EncounterJournal.encounter.info.model:GetModelInfo();
-		EncounterJournal.encounter.info.model.modelName:SetText(name);
-		EncounterJournal.encounter.info.model.modelDisplayId:SetText(displayID);
-		EncounterJournal.encounter.info.model.modelName:Show();
-		EncounterJournal.encounter.info.model.modelDisplayId:Show();
-		EncounterJournal.encounter.info.model.modelNameLabel:Show();
-		EncounterJournal.encounter.info.model.modelDisplayIdLabel:Show();
-		if (EncounterJournal.encounter.info.model.modelName:IsTruncated()) then
+	modelScene.imageTitle:SetText(self.name);
+
+	local isGMClient = IsGMClient();
+	modelScene.modelName:SetShown(isGMClient);
+	modelScene.modelDisplayId:SetShown(isGMClient);
+	modelScene.modelNameLabel:SetShown(isGMClient);
+	modelScene.modelDisplayIdLabel:SetShown(isGMClient);
+
+	if (isGMClient) then
+		local numActors = modelScene:GetNumActors();
+		local actor = (numActors > 0) and modelScene:GetActorAtIndex(1);
+		local displayID = actor and actor:GetModelFileID() or "";
+		local name = actor and actor:GetModelPath() or "";
+
+		modelScene.modelName:SetText(name);
+		modelScene.modelDisplayId:SetText(displayID);
+
+		if (modelScene.modelName:IsTruncated()) then
 			local pos = string.find(name, "\\[^\\]*$");
 			name = name:sub(1, pos - 1) .. "\\\n" .. name:sub(pos + 1);
-			EncounterJournal.encounter.info.model.modelName:SetText(name);
+			modelScene.modelName:SetText(name);
 		end
-	else
-		EncounterJournal.encounter.info.model.modelName:Hide();
-		EncounterJournal.encounter.info.model.modelDisplayId:Hide();
-		EncounterJournal.encounter.info.model.modelNameLabel:Hide();
-		EncounterJournal.encounter.info.model.modelDisplayIdLabel:Hide();
 	end
 
 	self:Disable();
 	EncounterJournal.encounter.info.shownCreatureButton = self;
 end
 
-function EncounterJournal_ShowCreatures()
-	local button;
-	local creatures = EncounterJournal.encounter.info.creatureButtons;
-	for i=1, #creatures do
-		button = creatures[i];
-		if (button.displayInfo) then
-			button:Show();
-			if (i==1) then
-				EncounterJournal_DisplayCreature(button)
+function EncounterJournal_ShowCreatures(forceUpdate)
+	for index, creatureButton in ipairs(EncounterJournal.encounter.info.creatureButtons) do
+		if (creatureButton.displayInfo) then
+			creatureButton:Show();
+			if index == 1 then
+				EncounterJournal_DisplayCreature(creatureButton, forceUpdate);
 			end
 		end
 	end
 end
 
 function EncounterJournal_HideCreatures()
-	local button;
-	local creatures = EncounterJournal.encounter.info.creatureButtons;
-	for i=1, #creatures do
-		creatures[i]:Hide()
+	for index, creatureButton in ipairs(EncounterJournal.encounter.info.creatureButtons) do
+		creatureButton:Hide();
 	end
 end
 
@@ -820,12 +829,12 @@ function EncounterJournal_UpdateButtonState(self)
 	if self:GetParent().expanded then
 		self.tex = self.textures.expanded;
 		oldtex = self.textures.collapsed;
-		self.expandedIcon:SetTextColor(0.929, 0.788, 0.620);
-		self.title:SetTextColor(0.929, 0.788, 0.620);
+		self.expandedIcon:SetTextColor(PAPER_FRAME_EXPANDED_COLOR:GetRGB());
+		self.title:SetTextColor(PAPER_FRAME_EXPANDED_COLOR:GetRGB());
 	else
 		self.tex = self.textures.collapsed;
-		self.expandedIcon:SetTextColor(0.827, 0.659, 0.463);
-		self.title:SetTextColor(0.827, 0.659, 0.463);
+		self.expandedIcon:SetTextColor(PAPER_FRAME_COLLAPSED_COLOR:GetRGB());
+		self.title:SetTextColor(PAPER_FRAME_COLLAPSED_COLOR:GetRGB());
 	end
 
 	oldtex.up[1]:Hide();
@@ -878,7 +887,7 @@ function EncounterJournal_SetBullets(object, description, hideBullets)
 		return;
 	end
 
-	local desc = string.match(description, "(.-)\$bullet;");
+	local desc = strtrim(string.match(description, "(.-)\$bullet;"));
 
 	if (desc) then
 		object.Text:SetText(desc);
@@ -894,7 +903,7 @@ function EncounterJournal_SetBullets(object, description, hideBullets)
 	local k = 1;
 	local skipped = 0;
 	for j = 1,#bullets do
-		local text = bullets[j];
+		local text = strtrim(bullets[j]).."|n|n";
 		if (text and text ~= "") then
 			local bullet;
 			bullet = parent.Bullets and parent.Bullets[k];
@@ -952,7 +961,7 @@ function EncounterJournal_SetDescriptionWithBullets(infoHeader, description)
 	infoHeader.descriptionBGBottom:Hide();
 end
 
-function EncounterJournal_SetUpOverview(self, role, index)
+function EncounterJournal_SetUpOverview(self, overviewSectionID, index)
 	local infoHeader;
 	if not self.overviews[index] then -- create a new header;
 		infoHeader = CreateFrame("FRAME", "EncounterJournalOverviewInfoHeader"..index, EncounterJournal.encounter.overviewFrame, "EncounterInfoTemplate");
@@ -999,33 +1008,61 @@ function EncounterJournal_SetUpOverview(self, role, index)
 	end
 
 	wipe(infoHeader.Bullets);
-	local title, description, siblingID, link, flag1;
-
-	local _, _, _, _, _, _, nextSectionID =  EJ_GetSectionInfo(self.rootOverviewSectionID);
-
-	while nextSectionID do
-		title, description, _, _, _, siblingID, _, filteredByDifficulty, link, _, flag1 = EJ_GetSectionInfo(nextSectionID);
-		if (role == rolesByFlag[flag1] and not filteredByDifficulty) then
-			break;
-		end
-		nextSectionID = siblingID;
-	end
+	local title, description, _, _, _, siblingID, _, filteredByDifficulty, link, _, flag1 = EJ_GetSectionInfo(overviewSectionID);
 
 	if (not title) then
 		infoHeader:Hide();
 		return;
 	end
 
-	infoHeader.button.icon1:Show();
-	EncounterJournal_SetFlagIcon(infoHeader.button.icon1.icon, flag1);
+	if ( flag1 ) then
+		infoHeader.button.icon1:Show();
+		EncounterJournal_SetFlagIcon(infoHeader.button.icon1.icon, flag1);
+	else
+		infoHeader.button.icon1:Hide();
+	end
 
 	infoHeader.button.title:SetText(title);
 	infoHeader.button.link = link;
-	infoHeader.sectionID = nextSectionID;
+	infoHeader.sectionID = overviewSectionID;
 
 	infoHeader.overviewDescription:SetWidth(infoHeader:GetWidth() - 20);
 	EncounterJournal_SetDescriptionWithBullets(infoHeader, description);
 	infoHeader:Show();
+end
+
+local function GetOverviewSections(rootOverviewSectionID)
+	local overviewSections = { };
+	local title, description, headerType, abilityIcon, displayInfo, nextSectionID, childSectionID, filteredByDifficulty, link, startsOpen, flag1 =  EJ_GetSectionInfo(rootOverviewSectionID);
+	nextSectionID = childSectionID;
+	while nextSectionID do
+		local thisSectionID = nextSectionID;
+		title, description, headerType, abilityIcon, displayInfo, nextSectionID, childSectionID, filteredByDifficulty, link, startsOpen, flag1 =  EJ_GetSectionInfo(nextSectionID);
+		if (not filteredByDifficulty) then
+			overviewSections[thisSectionID] = flag1 or NONE_FLAG;
+		end
+	end
+	return overviewSections;
+end
+
+local function GetOverviewSectionIDForRole(overviewSections, role)
+	for sectionID, flag in pairs(overviewSections) do
+		if (flag == flagsByRole[role]) then
+			return sectionID;
+		end
+	end
+	return nil;
+end
+
+local function SetUpSectionsForRole(self, overviewSections, role, currentIndex)
+	local roleSectionID = GetOverviewSectionIDForRole(overviewSections, role);
+	while ( roleSectionID ) do
+		EncounterJournal_SetUpOverview(self, roleSectionID, currentIndex);
+		currentIndex = currentIndex + 1;
+		overviewSections[roleSectionID] = nil;
+		roleSectionID = GetOverviewSectionIDForRole(overviewSections, role);
+	end
+	return currentIndex;
 end
 
 function EncounterJournal_ToggleHeaders(self, doNotShift)
@@ -1293,14 +1330,14 @@ function EncounterJournal_ToggleHeaders(self, doNotShift)
 				role = "DAMAGER";
 			end
 
-			EncounterJournal_SetUpOverview(self, role, 1);
-
-			local k = 2;
-			for i = 1, 3 do
-				local otherRole = overviewPriorities[i];
+			local overviewSections = GetOverviewSections(self.rootOverviewSectionID);
+			-- character role
+			local nextIndex = SetUpSectionsForRole(self, overviewSections, role, 1);
+			local hasRoleSection = nextIndex > 1;
+			-- other roles
+			for i, otherRole in ipairs(overviewPriorities) do
 				if (otherRole ~= role) then
-					EncounterJournal_SetUpOverview(self, otherRole, k);
-					k = k + 1;
+					nextIndex = SetUpSectionsForRole(self, overviewSections, otherRole, nextIndex);
 				end
 			end
 
@@ -1324,7 +1361,9 @@ function EncounterJournal_ToggleHeaders(self, doNotShift)
 			else
 				self.overviews[1].expanded = false;
 				EncounterJournal.overviewDefaultRole = role;
-				EncounterJournal_ToggleHeaders(self.overviews[1]);
+				if ( hasRoleSection ) then
+					EncounterJournal_ToggleHeaders(self.overviews[1]);
+				end
 			end
 		end
 	end
@@ -1482,10 +1521,9 @@ function EncounterJournal_ClearDetails()
 		freeHeaders[#freeHeaders+1] = used;
 	end
 
-	local creatures = EncounterJournal.encounter.info.creatureButtons;
-	for i=1, #creatures do
-		creatures[i]:Hide();
-		creatures[i].displayInfo = nil;
+	for index, creatureButton in ipairs(EncounterJournal.encounter.info.creatureButtons) do
+		creatureButton:Hide();
+		creatureButton.displayInfo = nil;
 	end
 
 	local bossIndex = 1
@@ -1550,7 +1588,7 @@ function EncounterJournal_SetLootButton(item)
 		elseif ( numEncounters > 2 ) then
 			item.boss:SetFormattedText(BOSS_INFO_STRING_MANY, EJ_GetEncounterInfo(encounterID));
 		end
-		
+
 		local itemName, _, quality = GetItemInfo(link);
 		SetItemButtonQuality(item, quality, itemID);
 	else

@@ -967,6 +967,34 @@
 		</Member>
 	</FontFamily>
 
+	<FontFamily name="DestinyFontMed" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\MORPHEUS.ttf" height="14">
+				<Color r="0.1" g="0.1" b="0.1"/>
+			</Font>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\K_Pagetext.ttf" height="14">
+				<Color r="0.1" g="0.1" b="0.1"/>
+			</Font>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\ARKai_T.ttf" height="14">
+				<Color r="0.1" g="0.1" b="0.1"/>
+			</Font>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\blei00d.ttf" height="14">
+				<Color r="0.1" g="0.1" b="0.1"/>
+			</Font>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\MORPHEUS_CYR.TTF" height="14">
+				<Color r="0.1" g="0.1" b="0.1"/>
+			</Font>
+		</Member>
+	</FontFamily>
+
 	<FontFamily name="DestinyFontLarge" virtual="true">
 		<Member alphabet="roman">
 			<Font font="Fonts\MORPHEUS.ttf" height="18">

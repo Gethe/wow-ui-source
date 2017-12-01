@@ -16,6 +16,7 @@ function MainMenuBar_OnLoad(self)
 	self:RegisterEvent("ACTIONBAR_PAGE_CHANGED");
 	self:RegisterEvent("CURRENCY_DISPLAY_UPDATE");
 	self:RegisterEvent("UNIT_LEVEL");
+	self:RegisterEvent("TRIAL_STATUS_UPDATE");
 	
 	MainMenuBar.state = "player";
 	MainMenuBarPageNumber:SetText(GetActionBarPage());
@@ -117,6 +118,8 @@ function MainMenuBar_OnEvent(self, event, ...)
 		if ( unitToken == "player" ) then
 			UpdateMicroButtons();
 		end
+	elseif ( event == "TRIAL_STATUS_UPDATE" ) then
+		UpdateMicroButtons();
 	end
 end
 

@@ -628,30 +628,30 @@ ICON_LIST = {
 --Links tags from Global Strings to indicies for entries in ICON_LIST. This way addons can easily replace icons
 ICON_TAG_LIST =
 {
-	[strlower(ICON_TAG_RAID_TARGET_STAR1)] = 1,
-	[strlower(ICON_TAG_RAID_TARGET_STAR2)] = 1,
-	[strlower(ICON_TAG_RAID_TARGET_CIRCLE1)] = 2,
-	[strlower(ICON_TAG_RAID_TARGET_CIRCLE2)] = 2,
-	[strlower(ICON_TAG_RAID_TARGET_DIAMOND1)] = 3,
-	[strlower(ICON_TAG_RAID_TARGET_DIAMOND2)] = 3,
-	[strlower(ICON_TAG_RAID_TARGET_TRIANGLE1)] = 4,
-	[strlower(ICON_TAG_RAID_TARGET_TRIANGLE2)] = 4,
-	[strlower(ICON_TAG_RAID_TARGET_MOON1)] = 5,
-	[strlower(ICON_TAG_RAID_TARGET_MOON2)] = 5,
-	[strlower(ICON_TAG_RAID_TARGET_SQUARE1)] = 6,
-	[strlower(ICON_TAG_RAID_TARGET_SQUARE2)] = 6,
-	[strlower(ICON_TAG_RAID_TARGET_CROSS1)] = 7,
-	[strlower(ICON_TAG_RAID_TARGET_CROSS2)] = 7,
-	[strlower(ICON_TAG_RAID_TARGET_SKULL1)] = 8,
-	[strlower(ICON_TAG_RAID_TARGET_SKULL2)] = 8,
-	[strlower(RAID_TARGET_1)] = 1,
-	[strlower(RAID_TARGET_2)] = 2,
-	[strlower(RAID_TARGET_3)] = 3,
-	[strlower(RAID_TARGET_4)] = 4,
-	[strlower(RAID_TARGET_5)] = 5,
-	[strlower(RAID_TARGET_6)] = 6,
-	[strlower(RAID_TARGET_7)] = 7,
-	[strlower(RAID_TARGET_8)] = 8,
+	 	[strlower(ICON_TAG_RAID_TARGET_STAR1)] = 1,
+ 	[strlower(ICON_TAG_RAID_TARGET_STAR2)] = 1,
+	[strlower(ICON_TAG_RAID_TARGET_STAR3)] = 1,
+ 	[strlower(ICON_TAG_RAID_TARGET_CIRCLE1)] = 2,
+ 	[strlower(ICON_TAG_RAID_TARGET_CIRCLE2)] = 2,
+	[strlower(ICON_TAG_RAID_TARGET_CIRCLE3)] = 2,
+ 	[strlower(ICON_TAG_RAID_TARGET_DIAMOND1)] = 3,
+ 	[strlower(ICON_TAG_RAID_TARGET_DIAMOND2)] = 3,
+	[strlower(ICON_TAG_RAID_TARGET_DIAMOND3)] = 3,
+ 	[strlower(ICON_TAG_RAID_TARGET_TRIANGLE1)] = 4,
+ 	[strlower(ICON_TAG_RAID_TARGET_TRIANGLE2)] = 4,
+	[strlower(ICON_TAG_RAID_TARGET_TRIANGLE3)] = 4,
+ 	[strlower(ICON_TAG_RAID_TARGET_MOON1)] = 5,
+ 	[strlower(ICON_TAG_RAID_TARGET_MOON2)] = 5,
+	[strlower(ICON_TAG_RAID_TARGET_MOON3)] = 5,
+ 	[strlower(ICON_TAG_RAID_TARGET_SQUARE1)] = 6,
+ 	[strlower(ICON_TAG_RAID_TARGET_SQUARE2)] = 6,
+	[strlower(ICON_TAG_RAID_TARGET_SQUARE3)] = 6,
+ 	[strlower(ICON_TAG_RAID_TARGET_CROSS1)] = 7,
+ 	[strlower(ICON_TAG_RAID_TARGET_CROSS2)] = 7,
+	[strlower(ICON_TAG_RAID_TARGET_CROSS3)] = 7,
+ 	[strlower(ICON_TAG_RAID_TARGET_SKULL1)] = 8,
+ 	[strlower(ICON_TAG_RAID_TARGET_SKULL2)] = 8,
+	[strlower(ICON_TAG_RAID_TARGET_SKULL3)] = 8,
 }
 
 GROUP_TAG_LIST =
@@ -1581,6 +1581,10 @@ SecureCmdList["USE_TOY"] = function(msg)
 	end
 end
 
+SecureCmdList["LOGOUT"] = function(msg)
+	Logout();
+end
+
 -- Pre-populate the secure command hash table
 for index, value in pairs(SecureCmdList) do
 	local i = 1;
@@ -1695,10 +1699,6 @@ SlashCmdList["INSPECT"] = function(msg)
 		return;
 	end
 	InspectUnit("target");
-end
-
-SlashCmdList["LOGOUT"] = function(msg)
-	Logout();
 end
 
 SlashCmdList["QUIT"] = function(msg)
@@ -2313,13 +2313,13 @@ end
 
 SlashCmdList["TABLEINSPECT"] = function(msg)
 	UIParentLoadAddOn("Blizzard_DebugTools");
-	
+
 	local focusedTable = nil;
 	if msg ~= "" and msg ~= " " then
 		local focusedFunction = loadstring(("return %s"):format(msg));
 		focusedTable = focusedFunction and focusedFunction();
 	end
-	
+
 	if focusedTable and type(focusedTable) == "table" then
 		DisplayTableInspectorWindow(focusedTable);
 	else
@@ -2415,7 +2415,7 @@ SlashCmdList["COMMENTATOR_OVERRIDE"] = function(msg)
 	if not IsAddOnLoaded("Blizzard_Commentator") then
 		return;
 	end
-	
+
 	local originalName, overrideName = msg:match("^(%S-)%s+(.+)");
 	if not originalName or not overrideName then
 		DEFAULT_CHAT_FRAME:AddMessage(ERROR_SLASH_COMMENTATOROVERRIDE, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
@@ -2424,11 +2424,11 @@ SlashCmdList["COMMENTATOR_OVERRIDE"] = function(msg)
 	end
 
 	originalName = originalName:sub(1, 1):upper() .. originalName:sub(2, -1);
-	
+
 	DEFAULT_CHAT_FRAME:AddMessage((SLASH_COMMENTATOROVERRIDE_SUCCESS):format(originalName, overrideName), YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
-	
+
 	C_Commentator.AddPlayerOverrideName(originalName, overrideName);
-	
+
 	-- Also add character name without the realm if we got CharacterName-Realm.
 	-- Prepend possible realm separators with % so they are matched literally
 	local realmSeparateMatchList = string.gsub(REALM_SEPARATORS, ".", "%%%1");
@@ -2443,23 +2443,23 @@ SlashCmdList["COMMENTATOR_NAMETEAM"] = function(msg)
 	if not IsAddOnLoaded("Blizzard_Commentator") then
 		return;
 	end
-	
+
 	local teamIndex, teamName = msg:match("^(%d+) (.+)");
 	teamIndex = tonumber(teamIndex);
-	
+
 	if not teamIndex or not teamName then
 		DEFAULT_CHAT_FRAME:AddMessage(ERROR_SLASH_COMMENTATOR_NAMETEAM, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
 		DEFAULT_CHAT_FRAME:AddMessage(ERROR_SLASH_COMMENTATOR_NAMETEAM_EXAMPLE, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
 		return;
 	end
-		
+
 	if not C_Commentator.IsSpectating() then
 		DEFAULT_CHAT_FRAME:AddMessage(CONTEXT_ERROR_SLASH_COMMENTATOR_NAMETEAM, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
 		return;
 	else
 		DEFAULT_CHAT_FRAME:AddMessage((SLASH_COMMENTATOR_NAMETEAM_SUCCESS):format(teamIndex, teamName), YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
 	end
-	
+
 	CommentatorTeamDisplay:UpdateTeamName(teamIndex, teamName);
 end
 
@@ -2467,14 +2467,14 @@ SlashCmdList["COMMENTATOR_ASSIGNPLAYER"] = function(msg)
 	if not IsAddOnLoaded("Blizzard_Commentator") then
 		return;
 	end
-	
+
 	local playerName, teamName = msg:match("^(%S-)%s+(.+)");
 	if not playerName or not teamName then
 		DEFAULT_CHAT_FRAME:AddMessage(ERROR_SLASH_COMMENTATOR_ASSIGNPLAYER, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
 		DEFAULT_CHAT_FRAME:AddMessage(ERROR_SLASH_COMMENTATOR_ASSIGNPLAYER_EXAMPLE, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
 		return;
 	end
-	
+
 	DEFAULT_CHAT_FRAME:AddMessage((SLASH_COMMENTATOR_ASSIGNPLAYER_SUCCESS):format(playerName, teamName), YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
 	CommentatorTeamDisplay:AssignPlayerToTeam(playerName, teamName);
 end
@@ -2483,7 +2483,7 @@ SlashCmdList["RESET_COMMENTATOR_SETTINGS"] = function(msg)
 	if not IsAddOnLoaded("Blizzard_Commentator") then
 		return;
 	end
-	
+
 	PvPCommentator:SetDefaultCommentatorSettings();
 end
 

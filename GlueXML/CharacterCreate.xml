@@ -479,9 +479,12 @@
 	<CheckButton name="CharCreateRaceButtonTemplate" inherits="CharCreateIconButtonTemplate" virtual="true">
 		<Scripts>
 			<OnClick>
-				CharacterRace_OnClick(self, self:GetID());
+				CharacterRace_OnClick(self, self.raceID);
 			</OnClick>
 		</Scripts>
+		<KeyValues>
+			<KeyValue key="bottomPadding" value="20" type="number"/>
+		</KeyValues>
 		<NormalTexture name="$parentNormalTexture" parentKey="NormalTexture" file="Interface\Glues\CharacterCreate\UI-CharacterCreate-Races"/>
 		<PushedTexture name="$parentPushedTexture" parentKey="PushedTexture" file="Interface\Glues\CharacterCreate\UI-CharacterCreate-Races">
 			<Size x="50" y="50"/>
@@ -492,9 +495,12 @@
 	</CheckButton>
 	<CheckButton name="CharCreateClassButtonTemplate" virtual="true" motionScriptsWhileDisabled="true">
 		<Size x="40" y="40"/>
+		<KeyValues>
+			<KeyValue key="bottomPadding" value="15" type="number"/>
+		</KeyValues>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentShadow" file="Interface\Glues\CharacterCreate\UI-CharacterCreatePatchwerk">
+				<Texture parentKey="Shadow" file="Interface\Glues\CharacterCreate\UI-CharacterCreatePatchwerk">
 					<Size x="60" y="60"/>
 					<Anchors>
 						<Anchor point="CENTER" x="0" y="0"/>
@@ -503,14 +509,14 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture name="$parentBevelEdge" file="Interface\Glues\CharacterCreate\UI-CharacterCreate-Highlights" parentKey="bevel">
+				<Texture parentKey="BevelEdge">
 					<Size x="44" y="44"/>
 					<Anchors>
 						<Anchor point="CENTER" x="0" y="0"/>
 					</Anchors>
 					<TexCoords left="0" right="0.5" top="0.5" bottom="1.0"/>
 				</Texture>
-				<Texture name="$parentDisableTexture" parentKey="DisableTexture" hidden="true">
+				<Texture parentKey="DisableTexture" hidden="true">
 					<Size x="44" y="44"/>
 					<Anchors>
 						<Anchor point="CENTER" x="0" y="0"/>
@@ -522,14 +528,14 @@
 		<Scripts>
 			<OnMouseDown>
 				if( self:IsEnabled() ) then
-					_G[self:GetName().."BevelEdge"]:SetPoint("CENTER", self, "CENTER", 2, -2);
-					_G[self:GetName().."Shadow"]:SetSize(63, 63);
+					self.BevelEdge:SetPoint("CENTER", self, "CENTER", 2, -2);
+					self.Shadow:SetSize(63, 63);
 				end
 			</OnMouseDown>
 			<OnMouseUp>
 				if( self:IsEnabled() ) then
-					_G[self:GetName().."BevelEdge"]:SetPoint("CENTER", self, "CENTER", 0, 0);
-					_G[self:GetName().."Shadow"]:SetSize(68, 68);
+					self.BevelEdge:SetPoint("CENTER", self, "CENTER", 0, 0);
+					self.Shadow:SetSize(68, 68);
 				end
 			</OnMouseUp>
 			<OnEnable>
@@ -1428,12 +1434,18 @@
 							<Frame name="CharCreateRaceButtonsFrame" setAllPoints="true">
 								<Layers>
 									<Layer level="BACKGROUND" textureSubLevel="-2">
-										<Texture name="$parentBanners" file="Interface\Glues\CharacterCreate\UI-CharacterCreatePatchwerk">
+										<Texture parentKey="ClassicBanners" file="Interface\Glues\CharacterCreate\UI-CharacterCreatePatchwerk">
 											<Size x="186" y="566"/>
 											<Anchors>
 												<Anchor point="TOP" x="0" y="-96"/>
 											</Anchors>
 											<TexCoords left="0.00195313" right="0.41210938" top="0.00097656" bottom="0.60156250"/>
+										</Texture>
+										<Texture parentKey="AlliedRaceBanners" atlas="AlliedRaces-AllianceHordeBanner" useAtlasSize="false" hidden="true">
+											<Size x="188" y="478"/>
+											<Anchors>
+												<Anchor point="TOP" x="0" y="-96"/>
+											</Anchors>
 										</Texture>
 									</Layer>
 									<Layer level="BACKGROUND" textureSubLevel="-1">
@@ -1467,81 +1479,53 @@
 									</Layer>
 								</Layers>
 								<Frames>
-									<CheckButton name="CharCreateRaceButton1" inherits="CharCreateRaceButtonTemplate" id="1">
+									<Frame parentKey="AllianceRaces" inherits="VerticalLayoutFrame">
 										<Anchors>
 											<Anchor point="TOP" relativePoint="TOP" x="-43" y="-136"/>
 										</Anchors>
-									</CheckButton>
-									<CheckButton name="CharCreateRaceButton2" inherits="CharCreateRaceButtonTemplate" id="2">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="CharCreateRaceButton1" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
-										</Anchors>
-									</CheckButton>
-									<CheckButton name="CharCreateRaceButton3" inherits="CharCreateRaceButtonTemplate" id="3">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="CharCreateRaceButton2" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
-										</Anchors>
-									</CheckButton>
-									<CheckButton name="CharCreateRaceButton4" inherits="CharCreateRaceButtonTemplate" id="4">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="CharCreateRaceButton3" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
-										</Anchors>
-									</CheckButton>
-									<CheckButton name="CharCreateRaceButton5" inherits="CharCreateRaceButtonTemplate" id="5">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="CharCreateRaceButton4" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
-										</Anchors>
-									</CheckButton>
-									<CheckButton name="CharCreateRaceButton6" inherits="CharCreateRaceButtonTemplate" id="6">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="CharCreateRaceButton5" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
-										</Anchors>
-									</CheckButton>
-									<CheckButton name="CharCreateRaceButton7" inherits="CharCreateRaceButtonTemplate" id="7">
+										<Frames>
+											<CheckButton parentKey="Pandaren" inherits="CharCreateRaceButtonTemplate" hidden="true">
+												<KeyValues>
+													<KeyValue key="raceID" value="RACE_NAME_BUTTON_ID_MAP.PANDAREN" type="global"/>
+													<KeyValue key="layoutIndex" value="99" type="number"/>
+													<KeyValue key="topPadding" value="20" type="number"/>
+												</KeyValues>
+												<Scripts>
+													<OnClick function="PandarenFactionButton_OnClick"/>
+												</Scripts>
+											</CheckButton>
+										</Frames>
+									</Frame>
+									<Frame parentKey="HordeRaces" inherits="VerticalLayoutFrame">
 										<Anchors>
 											<Anchor point="TOP" relativePoint="TOP" x="43" y="-136"/>
 										</Anchors>
-									</CheckButton>
-									<CheckButton name="CharCreateRaceButton8" inherits="CharCreateRaceButtonTemplate" id="8">
+										<Frames>
+											<CheckButton parentKey="Pandaren" inherits="CharCreateRaceButtonTemplate" hidden="true">
+												<KeyValues>
+													<KeyValue key="raceID" value="RACE_NAME_BUTTON_ID_MAP.PANDAREN" type="global"/>
+													<KeyValue key="layoutIndex" value="99" type="number"/>
+													<KeyValue key="topPadding" value="20" type="number"/>
+												</KeyValues>
+												<Scripts>
+													<OnClick function="PandarenFactionButton_OnClick"/>
+												</Scripts>
+											</CheckButton>
+										</Frames>
+									</Frame>
+									<Frame parentKey="NeutralRaces" inherits="VerticalLayoutFrame">
 										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="CharCreateRaceButton7" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
+											<Anchor point="TOPLEFT" relativeKey="$parent.AllianceRaces" relativePoint="BOTTOM" x="17" y="-16"/>
 										</Anchors>
-									</CheckButton>
-									<CheckButton name="CharCreateRaceButton9" inherits="CharCreateRaceButtonTemplate" id="9">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="CharCreateRaceButton8" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
-										</Anchors>
-									</CheckButton>
-									<CheckButton name="CharCreateRaceButton10" inherits="CharCreateRaceButtonTemplate" id="10">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="CharCreateRaceButton9" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
-										</Anchors>
-									</CheckButton>
-									<CheckButton name="CharCreateRaceButton12" inherits="CharCreateRaceButtonTemplate" id="12">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="CharCreateRaceButton10" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
-										</Anchors>
-									</CheckButton>
-									<CheckButton name="CharCreateRaceButton11" inherits="CharCreateRaceButtonTemplate" id="11">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="CharCreateRaceButton12" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
-										</Anchors>
-									</CheckButton>
-									<CheckButton name="CharCreateRaceButton13" inherits="CharCreateRaceButtonTemplate" id="13">
-										<Anchors>
-											<Anchor point="BOTTOM" x="-2" y="-524"/>
-										</Anchors>
-									</CheckButton>
-									<CheckButton name="CharCreateRaceButton14" inherits="CharCreateRaceButtonTemplate" id="14">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="CharCreateRaceButton12" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
-										</Anchors>
-									</CheckButton>
+										<KeyValues>
+											<KeyValue key="bottomPadding" value="20" type="number"/>
+										</KeyValues>
+									</Frame>
 									<Frame name="RecruitAFriendFactionHighlight" hidden="true" inherits="GlowyBorderFrame"/>
 									<Frame name="RecruitAFriendPandaHighlight" hidden="true" inherits="GlowyBorderFrame">
 										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="CharCreateRaceButton13" relativePoint="TOPLEFT" x="-17" y="10"/>
-											<Anchor point="BOTTOMRIGHT" relativeTo="CharCreateRaceButton13" relativePoint="BOTTOMRIGHT" x="17" y="-23"/>
+											<Anchor point="TOPLEFT" relativeKey="$parent.NeutralRaces" relativePoint="TOPLEFT" x="-17" y="10"/>
+											<Anchor point="BOTTOMRIGHT" relativeKey="$parent.NeutralRaces" relativePoint="BOTTOMRIGHT" x="17" y="-23"/>
 										</Anchors>
 									</Frame>
 									<Frame name="RecruitAFriendFactionNotice" enableMouse="true" frameStrata="HIGH" hidden="true" inherits="GlowyNoticeFrame"/>
@@ -1562,27 +1546,6 @@
 										</Texture>
 									</Layer>
 								</Layers>
-								<Frames>
-									<CheckButton name="$parentAllianceButton" inherits="CharCreateRaceButtonTemplate" parentKey="AllianceButton">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="CharCreateRaceButton6" relativePoint="BOTTOMLEFT" x="0" y="-42"/>
-										</Anchors>
-										<Scripts>
-											<OnClick function="PandarenFactionButton_OnClick"/>
-										</Scripts>
-									</CheckButton>
-									<CheckButton name="$parentHordeButton" inherits="CharCreateRaceButtonTemplate" parentKey="HordeButton">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="CharCreateRaceButton11" relativePoint="BOTTOMLEFT" x="0" y="-42"/>
-										</Anchors>
-										<Scripts>
-											<OnClick function="PandarenFactionButton_OnClick"/>
-										</Scripts>
-									</CheckButton>
-								</Frames>
-								<Scripts>
-									<OnLoad function="PandarenFactionButtons_OnLoad"/>
-								</Scripts>
 							</Frame>
 							<Frame inherits="CharCreateResizablePanelTemplate" setAllPoints="true">
 								<Scripts>
@@ -1615,7 +1578,7 @@
 						<Frames>
 							<Button parentArray="typeButtons" inherits="CharacterCreateCharacterTypeButtonTemplate">
 								<KeyValues>
-									<KeyValue key="characterType" value="LE_CHARACTER_CREATE_TYPE_NORMAL" type="global"/>
+									<KeyValue key="characterType" value="Enum.CharacterCreateType.Normal" type="global"/>
 									<KeyValue key="titleText" value="CHARACTER_TYPE_FRAME_NEW_CHARACTER" type="global"/>
 								</KeyValues>
 								<Anchors>
@@ -1636,7 +1599,7 @@
 
 							<Button parentArray="typeButtons" inherits="CharacterCreateCharacterTypeButtonTemplate">
 								<KeyValues>
-									<KeyValue key="characterType" value="LE_CHARACTER_CREATE_TYPE_TRIAL_BOOST" type="global"/>
+									<KeyValue key="characterType" value="Enum.CharacterCreateType.TrialBoost" type="global"/>
 									<KeyValue key="titleText" value="CHARACTER_TYPE_FRAME_TRIAL_BOOST_CHARACTER" type="global"/>
 								</KeyValues>
 								<Anchors>
@@ -1683,66 +1646,11 @@
 									<Anchor point="BOTTOMLEFT"/>
 								</Anchors>
 							</Frame>
-							<CheckButton name="CharCreateClassButton1" inherits="CharCreateClassButtonTemplate" id="1">
+							<Frame parentKey="ClassIcons" inherits="VerticalLayoutFrame">
 								<Anchors>
 									<Anchor point="TOP" relativeTo="CharCreateClassLabel" relativePoint="BOTTOM" x="0" y="-8"/>
 								</Anchors>
-							</CheckButton>
-							<CheckButton name="CharCreateClassButton2" inherits="CharCreateClassButtonTemplate" id="2">
-								<Anchors>
-									<Anchor point="TOP" relativeTo="CharCreateClassButton1NameFrameText" relativePoint="BOTTOM" x="0" y="-10"/>
-								</Anchors>
-							</CheckButton>
-							<CheckButton name="CharCreateClassButton3" inherits="CharCreateClassButtonTemplate" id="3">
-								<Anchors>
-									<Anchor point="TOP" relativeTo="CharCreateClassButton2NameFrameText" relativePoint="BOTTOM" x="0" y="-10"/>
-								</Anchors>
-							</CheckButton>
-							<CheckButton name="CharCreateClassButton4" inherits="CharCreateClassButtonTemplate" id="4">
-								<Anchors>
-									<Anchor point="TOP" relativeTo="CharCreateClassButton3NameFrameText" relativePoint="BOTTOM" x="0" y="-10"/>
-								</Anchors>
-							</CheckButton>
-							<CheckButton name="CharCreateClassButton5" inherits="CharCreateClassButtonTemplate" id="5">
-								<Anchors>
-									<Anchor point="TOP" relativeTo="CharCreateClassButton4NameFrameText" relativePoint="BOTTOM" x="0" y="-10"/>
-								</Anchors>
-							</CheckButton>
-							<CheckButton name="CharCreateClassButton7" inherits="CharCreateClassButtonTemplate" id="7">
-								<Anchors>
-									<Anchor point="TOP" relativeTo="CharCreateClassButton5NameFrameText" relativePoint="BOTTOM" x="0" y="-10"/>
-								</Anchors>
-							</CheckButton>
-							<CheckButton name="CharCreateClassButton8" inherits="CharCreateClassButtonTemplate" id="8">
-								<Anchors>
-									<Anchor point="TOP" relativeTo="CharCreateClassButton7NameFrameText" relativePoint="BOTTOM" x="0" y="-10"/>
-								</Anchors>
-							</CheckButton>
-							<CheckButton name="CharCreateClassButton9" inherits="CharCreateClassButtonTemplate" id="9">
-								<Anchors>
-									<Anchor point="TOP" relativeTo="CharCreateClassButton8NameFrameText" relativePoint="BOTTOM" x="0" y="-10"/>
-								</Anchors>
-							</CheckButton>
-							<CheckButton name="CharCreateClassButton10" inherits="CharCreateClassButtonTemplate" id="10">
-								<Anchors>
-									<Anchor point="TOP" relativeTo="CharCreateClassButton9NameFrameText" relativePoint="BOTTOM" x="0" y="-10"/>
-								</Anchors>
-							</CheckButton>
-							<CheckButton name="CharCreateClassButton11" inherits="CharCreateClassButtonTemplate" id="11">
-								<Anchors>
-									<Anchor point="TOP" relativeTo="CharCreateClassButton10NameFrameText" relativePoint="BOTTOM" x="0" y="-10"/>
-								</Anchors>
-							</CheckButton>
-							<CheckButton name="CharCreateClassButton12" inherits="CharCreateClassButtonTemplate" id="12">
-								<Anchors>
-									<Anchor point="TOP" relativeTo="CharCreateClassButton11NameFrameText" relativePoint="BOTTOM" x="0" y="-10"/>
-								</Anchors>
-							</CheckButton>
-							<CheckButton name="CharCreateClassButton6" inherits="CharCreateClassButtonTemplate" id="6">
-								<Anchors>
-									<Anchor point="TOP" relativeTo="CharCreateClassButton12NameFrameText" relativePoint="BOTTOM" x="0" y="-10"/>
-								</Anchors>
-							</CheckButton>
+							</Frame>
 						</Frames>
 						<Scripts>
 							<OnHide>
@@ -1760,11 +1668,20 @@
 							<Anchor point="BOTTOMRIGHT" relativeTo="CharCreateClassFrame" relativePoint="BOTTOMLEFT" x="-1" y="51"/>
 						</Anchors>
 					</Frame>
-					<Button name="CharCreateMoreInfoButton" inherits="CharCreateNavButtonTemplate" text="CHAR_CREATE_MORE_INFO">
+					<Button name="CharCreateAlliedRacesButton" inherits="CharCreateNavButtonTemplate" text="CHARACTER_CREATE_MORE_RACES" hidden="true">
 						<Size x="180" y="62"/>
 						<Anchors>
 							<Anchor point="CENTER" relativeTo="CharCreateRaceFrame" x="0" y="0"/>
 							<Anchor point="BOTTOM" x="0" y="-6"/>
+						</Anchors>
+						<Scripts>
+							<OnClick function="CharCreateAlliedRacesButton_OnClick"/>
+						</Scripts>
+					</Button>
+					<Button name="CharCreateMoreInfoButton" inherits="CharCreateNavButtonTemplate" text="CHAR_CREATE_MORE_INFO">
+						<Size x="180" y="62"/>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" x="-146" y="-5"/>
 						</Anchors>
 						<Layers>
 							<Layer level="OVERLAY" textureSubLevel="1">
@@ -1999,9 +1916,9 @@
 									<OnClick>
 										CharacterCreateAlternateFormTop:SetChecked(true);
 										CharacterCreateAlternateFormBottom:SetChecked(false);
-										if ( IsViewingAlteredForm() ) then
+										if ( C_CharacterCreation.IsViewingAlteredForm() ) then
 											PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_CLASS);
-											SetViewingAlteredForm(false);
+											C_CharacterCreation.SetViewingAlteredForm(false);
 											CharCreate_PrepPreviewModels(true);
 											CharCreate_ResetFeaturesDisplay();
 										end
@@ -2047,9 +1964,9 @@
 									<OnClick>
 										CharacterCreateAlternateFormTop:SetChecked(false);
 										CharacterCreateAlternateFormBottom:SetChecked(true);
-										if ( not IsViewingAlteredForm() ) then
+										if ( not C_CharacterCreation.IsViewingAlteredForm() ) then
 											PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_CLASS);
-											SetViewingAlteredForm(true);
+											C_CharacterCreation.SetViewingAlteredForm(true);
 											CharCreate_PrepPreviewModels(true);
 											CharCreate_ResetFeaturesDisplay();
 										end
@@ -2196,8 +2113,8 @@
 							</OnLoad>
 							<OnClick>
 								PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_CLASS);
-								if ( GetSelectedSex() ~= SEX_MALE ) then
-									SetCharacterGender(SEX_MALE);
+								if ( C_CharacterCreation.GetSelectedSex() ~= Enum.Unitsex.Male ) then
+									SetCharacterGender(Enum.Unitsex.Male);
 								else
 									self:SetChecked(true);
 								end
@@ -2219,8 +2136,8 @@
 							</OnLoad>
 							<OnClick>
 								PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_CLASS);
-								if ( GetSelectedSex() ~= SEX_FEMALE ) then
-									SetCharacterGender(SEX_FEMALE);
+								if ( C_CharacterCreation.GetSelectedSex() ~= Enum.Unitsex.Female ) then
+									SetCharacterGender(Enum.Unitsex.Female);
 								else
 									self:SetChecked(true);
 								end
@@ -2306,7 +2223,7 @@
 						<Scripts>
 							<OnClick>
 								CharacterTemplateConfirmDialog:Hide();
-								CreateCharacter(CharacterCreateNameEdit:GetText(), "Horde");
+								C_CharacterCreation.CreateCharacter(CharacterCreateNameEdit:GetText(), "Horde");
 							</OnClick>
 							<OnUpdate>
 								GlueParent_DeathKnightButtonSwap(self);
@@ -2321,7 +2238,7 @@
 						<Scripts>
 							<OnClick>
 								CharacterTemplateConfirmDialog:Hide();
-								CreateCharacter(CharacterCreateNameEdit:GetText(), "Alliance");
+								C_CharacterCreation.CreateCharacter(CharacterCreateNameEdit:GetText(), "Alliance");
 							</OnClick>
 							<OnUpdate>
 								GlueParent_DeathKnightButtonSwap(self);

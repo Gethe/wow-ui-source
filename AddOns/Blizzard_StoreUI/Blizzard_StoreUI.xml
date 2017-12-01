@@ -1500,7 +1500,24 @@
 				</Layer>
 				<Layer level="OVERLAY">
 					<Texture parentKey="Icon">
-						<Size x="64" y="64"/>
+						<Size x="22" y="22"/>
+						<Anchors>
+							<Anchor point="CENTER" relativeKey="$parent" relativePoint="LEFT" x="15" y="2"/>
+						</Anchors>
+					</Texture>
+					<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+						<Size x="22" y="22"/>
+						<Anchors>
+							<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="CENTER"/>
+						</Anchors>
+						<MaskedTextures>
+							<MaskedTexture childKey="Icon"/>
+						</MaskedTextures>
+					</MaskTexture>
+				</Layer>
+				<Layer level="OVERLAY" textureSubLevel="1">
+					<Texture parentKey="IconFrame" atlas="category-icon-ring">
+						<Size x="37" y="37"/>
 						<Anchors>
 							<Anchor point="CENTER" relativeKey="$parent" relativePoint="LEFT" x="15" y="2"/>
 						</Anchors>
@@ -1596,6 +1613,21 @@
 			<DisabledFont style="GameFontDisableTiny2"/>
 			<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
 		</Button>
+		<Frame name="StoreVASRaceFactionIconFrameTemplate" parentArray="Icons" virtual="true">
+			<Size x="26" y="26"/>
+			<Layers>
+				<Layer level="OVERLAY">
+					<Texture parentKey="Border" atlas="vas-receipt-icon-characterborder" useAtlasSize="true">
+						<Anchors>
+							<Anchor point="CENTER"/>
+						</Anchors>
+					</Texture>
+				</Layer>
+				<Layer level="ARTWORK">
+					<Texture parentKey="Icon" setAllPoints="true"/>
+				</Layer>
+			</Layers>
+		</Frame>
 		<Frame name="StoreStateDriverFrame">
 			<Animations>
 				<AnimationGroup parentKey="NoticeTextTimer">
@@ -2444,6 +2476,13 @@
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.SelectedCharacterFrame" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
 							</Anchors>
+							<Frames>
+								<Frame parentKey="FromIcon" inherits="StoreVASRaceFactionIconFrameTemplate">
+									<Anchors>
+										<Anchor point="LEFT" x="54" y="0"/>
+									</Anchors>
+								</Frame>
+							</Frames>
 							<Layers>
 								<Layer level="BACKGROUND">
 									<Texture atlas="vas-receipt-greenbg" useAtlasSize="true">
@@ -2453,18 +2492,23 @@
 									</Texture>
 								</Layer>
 								<Layer level="ARTWORK">
-									<Texture atlas="vas-receipt-icon-horde" useAtlasSize="true" parentKey="FromTex" parentArray="Textures" hidden="true">
+									<Texture parentKey="ArrowTex" atlas="vas-receipt-brownarrow" useAtlasSize="true" hidden="true">
 										<Anchors>
-											<Anchor point="LEFT"/>
+											<Anchor point="LEFT" relativeKey="$parent.FromIcon" relativePoint="RIGHT" x="4" y="0"/>
 										</Anchors>
 									</Texture>
-									<Texture atlas="vas-receipt-brownarrow" useAtlasSize="true" parentArray="Textures" hidden="true">
+									<FontString parentKey="ViewRaces" inherits="GameFontBlackSmall" justifyH="CENTER" justifyV="CENTER">
+										<Size x="90" y="26"/>
 										<Anchors>
-											<Anchor point="LEFT" relativeKey="$parent.FromTex" relativePoint="RIGHT" x="4" y="0"/>
+											<Anchor point="LEFT" relativeKey="$parent.ArrowTex" relativePoint="RIGHT" x="34" y="0"/>
 										</Anchors>
-									</Texture>
+									</FontString>
 								</Layer>
 							</Layers>
+							<Scripts>
+								<OnEnter function="VASCharacterSelectionChangeIconFrame_OnEnter"/>
+								<OnLeave function="VASCharacterSelectionChangeIconFrame_OnLeave"/>
+							</Scripts>
 						</Frame>
 						<Frame parentKey="RealmSelector" inherits="StoreDropDownMenuTemplate" enableMouse="true">
 							<Size x="150" y="22"/>
@@ -2688,6 +2732,18 @@
 									</FontString>
 								</Layer>
 							</Layers>
+							<Frames>
+								<Frame parentKey="LabelMouseOver" enableMouse="true">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.Label" relativePoint="TOPLEFT"/>
+										<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Label" relativePoint="BOTTOMRIGHT"/>
+									</Anchors>
+									<Scripts>
+										<OnEnter function="VASCharacterSelectionChangeIconFrame_OnEnter"/>
+										<OnLeave function="VASCharacterSelectionChangeIconFrame_OnLeave"/>
+									</Scripts>
+								</Frame>
+							</Frames>
 							<Scripts>
 								<OnClick function="TransferFactionCheckbox_OnClick"/>
 							</Scripts>

@@ -79,6 +79,7 @@ function LFGListFrame_OnLoad(self)
 	self:RegisterEvent("GROUP_ROSTER_UPDATE");
 	self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED");
 	self:RegisterEvent("PLAYER_ROLES_ASSIGNED");
+	self:RegisterEvent("TRIAL_STATUS_UPDATE");
 	self:RegisterEvent("LFG_LIST_AVAILABILITY_UPDATE");
 	self:RegisterEvent("LFG_LIST_ACTIVE_ENTRY_UPDATE");
 	self:RegisterEvent("LFG_LIST_ENTRY_CREATION_FAILED");
@@ -105,7 +106,7 @@ function LFGListFrame_OnLoad(self)
 end
 
 function LFGListFrame_OnEvent(self, event, ...)
-	if ( event == "LFG_LIST_AVAILABILITY_UPDATE" ) then
+	if ( event == "LFG_LIST_AVAILABILITY_UPDATE" or event == "TRIAL_STATUS_UPDATE") then
 		LFGListFrame_FixPanelValid(self);
 	elseif ( event == "LFG_LIST_ACTIVE_ENTRY_UPDATE" ) then
 		local createdNew = ...;
@@ -1631,6 +1632,10 @@ function LFGListSearchPanel_OnEvent(self, event, ...)
 	--Note: events are dispatched from the base frame. Add RegisterEvent there.
 	if ( event == "LFG_LIST_SEARCH_RESULTS_RECEIVED" ) then
 		StaticPopupSpecial_Hide(LFGListApplicationDialog);
+		if ( self.searching ) then
+			-- got new list from server, everything we were filtering out should be gone
+			self.filteredIDs = nil;
+		end
 		self.searching = false;
 		self.searchFailed = false;
 		LFGListSearchPanel_UpdateResultList(self);
@@ -1665,6 +1670,13 @@ function LFGListSearchPanel_OnEvent(self, event, ...)
 	if ( tContains(LFG_LIST_ACTIVE_QUEUE_MESSAGE_EVENTS, event) ) then
 		LFGListSearchPanel_UpdateButtonStatus(self);
 	end
+end
+
+function LFGListSearchPanel_AddFilteredID(self, id)
+	if ( not self.filteredIDs ) then
+		self.filteredIDs = { };
+	end
+	tinsert(self.filteredIDs, id);
 end
 
 function LFGListSearchPanel_OnShow(self)
@@ -1770,6 +1782,9 @@ end
 function LFGListSearchPanel_UpdateResultList(self)
 	self.totalResults, self.results = C_LFGList.GetSearchResults();
 	self.applications = C_LFGList.GetApplications();
+	if ( self.filteredIDs ) then
+		LFGListUtil_FilterSearchResults(self.results, self.filteredIDs);
+	end
 	LFGListUtil_SortSearchResults(self.results);
 end
 
@@ -2800,6 +2815,17 @@ function LFGListUtil_SortSearchResults(results)
 	table.sort(results, LFGListUtil_SortSearchResultsCB);
 end
 
+function LFGListUtil_FilterSearchResults(results, filteredIDs)
+	for i, id in ipairs(filteredIDs) do
+		for j = #results, 1, -1 do
+			if ( results[i] == id ) then
+				tremove(results, j);
+				break;
+			end
+		end
+	end
+end
+
 function LFGListUtil_FilterApplicants(applicants)
 	--[[for i=#applicants, 1, -1 do
 		local id, status, pendingStatus, numMembers, isNew = C_LFGList.GetApplicantInfo(applicants[i]);
@@ -2878,7 +2904,14 @@ local LFG_LIST_SEARCH_ENTRY_MENU = {
 		menuList = {
 			{
 				text = LFG_LIST_SPAM,
-				func = function(_, id) C_LFGList.ReportSearchResult(id, "lfglistspam"); end,
+				func = function(_, id)
+					CloseDropDownMenus();
+					C_LFGList.ReportSearchResult(id, "lfglistspam");
+					local panel = LFGListFrame.SearchPanel;
+					LFGListSearchPanel_AddFilteredID(panel, id);
+					LFGListSearchPanel_UpdateResultList(panel);
+					LFGListSearchPanel_UpdateResults(panel);
+				end,
 				arg1 = nil, --Search result ID goes here
 				notCheckable = true,
 			},
