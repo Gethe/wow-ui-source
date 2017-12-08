@@ -883,6 +883,7 @@
 		</Layers>
 	</Button>
 
+	<Texture name="LootUpgradeFrame_ArrowTemplate" hidden="false" alpha="0" alphaMode="BLEND" atlas="loottoast-arrow-blue" useAtlasSize="true" virtual ="true"/>
 	<Button name="LootWonAlertFrameTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" virtual="true" inherits="AlertFrameTemplate">
 		<Size x="276" y="96"/>
 		<KeyValues>
@@ -1084,7 +1085,6 @@
 		</Scripts>
 	</Button>
 
-	<Texture name="LootUpgradeFrame_ArrowTemplate" hidden="false" alpha="0" alphaMode="BLEND" atlas="loottoast-arrow-blue" useAtlasSize="true" virtual ="true"/>
 	<FontString name="LootUpgradeFrame_ItemNameTemplate" inherits="GameFontNormalMed3"  justifyH="LEFT" justifyV="MIDDLE" hidden="false" wordwrap="true" virtual ="true">
 		<Size x="160" y="34"/>
 		<Color r="1" g="1" b="1"/>

@@ -1407,7 +1407,7 @@
 										<Anchor point="TOP" x="0" y="-45"/>
 									</Anchors>
 								</FontString>
-								<FontString parentKey="Description" inherits="GameFontNormalMed2" justifyH="CENTER" justivyV="TOP">
+								<FontString parentKey="Description" inherits="GameFontNormalMed2" justifyH="CENTER" justifyV="TOP">
 									<Size x="360" y="0"/>
 									<Anchors>
 										<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="0" y="-20"/>
@@ -2086,7 +2086,7 @@
                             </OnLoad>
                         </Scripts>
                     </Frame>
-                    <Frame name="ConversionInProgressDialog"  inherits="GlueModalFrameTemplate" topLevel="true" enableMouse="true" frameStrata="DIALOG" hidden="true">
+                    <Frame name="ConversionInProgressDialog"  inherits="GlueModalFrameTemplate" toplevel="true" enableMouse="true" frameStrata="DIALOG" hidden="true">
                         <Size x="350" y="64"/>
                         <Anchors>
                             <Anchor point="CENTER" x="0" y="140"/>
@@ -2504,19 +2504,19 @@
 				<FontString parentKey="Server" inherits="GameFontNormalSmall" justifyH="LEFT">
 					<Size x="150" y="12"/>
 					<Anchors>
-						<Anchor point="LEFT" relativekey="$parent.Name" relativePoint="RIGHT" x="10" y="0"/>
+						<Anchor point="LEFT" relativeKey="$parent.Name" relativePoint="RIGHT" x="10" y="0"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="Class" inherits="GameFontNormalSmall" justifyH="LEFT">
 					<Size x="100" y="12"/>
 					<Anchors>
-						<Anchor point="LEFT" relativekey="$parent.Server" relativePoint="RIGHT" x="10" y="0"/>
+						<Anchor point="LEFT" relativeKey="$parent.Server" relativePoint="RIGHT" x="10" y="0"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="Level" inherits="GameFontNormalSmall" justifyH="LEFT">
 					<Size x="50" y="12"/>
 					<Anchors>
-						<Anchor point="LEFT" relativekey="$parent.Class" relativePoint="RIGHT" x="10" y="0"/>
+						<Anchor point="LEFT" relativeKey="$parent.Class" relativePoint="RIGHT" x="10" y="0"/>
 					</Anchors>
 				</FontString>
 			</Layer>

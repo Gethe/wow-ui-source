@@ -95,7 +95,7 @@ PAPERDOLL_SIDEBARS = {
 		icon = "Interface\\PaperDollInfoFrame\\PaperDollSidebarTabs";
 		texCoords = {0.01562500, 0.53125000, 0.32421875, 0.46093750};
 		disabledTooltip = NO_TITLES_TOOLTIP;
-		IsActive = function () 
+		IsActive = function ()
 			-- You always have the "No Title" title so you need to have more than one to have an option.
 			return #GetKnownTitles() > 1;
 		end
@@ -228,15 +228,16 @@ PAPERDOLL_STATCATEGORIES= {
 	[2] = {
 		categoryFrame = "EnhancementsCategory",
 		stats = {
-			[1] = { stat = "CRITCHANCE", hideAt = 0 },
-			[2] = { stat = "HASTE", hideAt = 0 },
-			[3] = { stat = "MASTERY", hideAt = 0 },
-			[4] = { stat = "VERSATILITY", hideAt = 0 },
-			[5] = { stat = "LIFESTEAL", hideAt = 0 },
-			[6] = { stat = "AVOIDANCE", hideAt = 0 },
-			[7] = { stat = "DODGE", roles =  { "TANK" } },
-			[8] = { stat = "PARRY", hideAt = 0, roles =  { "TANK" } },
-			[9] = { stat = "BLOCK", hideAt = 0, roles =  { "TANK" } },
+			{ stat = "CRITCHANCE", hideAt = 0 },
+			{ stat = "HASTE", hideAt = 0 },
+			{ stat = "MASTERY", hideAt = 0 },
+			{ stat = "VERSATILITY", hideAt = 0 },
+			{ stat = "LIFESTEAL", hideAt = 0 },
+			{ stat = "AVOIDANCE", hideAt = 0 },
+			{ stat = "MOVESPEED", hideAt = 100 },
+			{ stat = "DODGE", roles =  { "TANK" } },
+			{ stat = "PARRY", hideAt = 0, roles =  { "TANK" } },
+			{ stat = "BLOCK" , hideAt = 0, roles =  { "TANK" } },
 		},
 	},
 };
@@ -641,7 +642,7 @@ function PaperDollFrame_SetStat(statFrame, unit, statIndex)
 					if ( increasedParryChance > 0 ) then
 						statFrame.tooltip2 = statFrame.tooltip2.."|n|n"..format(CR_PARRY_BASE_STAT_TOOLTIP, increasedParryChance);
 					end
-				end	
+				end
 			else
 				statFrame.tooltip2 = STAT_NO_BENEFIT_TOOLTIP;
 			end
@@ -1315,8 +1316,14 @@ function MovementSpeed_OnUpdate(statFrame, elapsedTime)
 end
 
 function PaperDollFrame_SetMovementSpeed(statFrame, unit)
+	if ( unit ~= "player" ) then
+		statFrame:Hide();
+		return;
+	end
+
 	statFrame.wasSwimming = nil;
 	statFrame.unit = unit;
+	statFrame:Show();
 	MovementSpeed_OnUpdate(statFrame);
 
 	statFrame.onEnterFunc = MovementSpeed_OnEnter;
@@ -1386,7 +1393,7 @@ function PaperDollFrame_OnShow (self)
 	PaperDollBgDesaturate(true);
 	PaperDollSidebarTabs:Show();
 	PaperDollFrame_UpdateInventoryFixupComplete(self);
-	
+
 	self:GetParent().ReputationTabHelpBox:SetShown(ShouldShowExaltedPlusHelpTip());
 end
 
@@ -1753,7 +1760,7 @@ end
 
 function PaperDollFrame_UpdateStats()
 	local level = UnitLevel("player");
-	local categoryYOffset = -5;
+	local categoryYOffset = 0;
 	local statYOffset = 0;
 
 	if ( level >= MIN_PLAYER_LEVEL_FOR_ITEM_LEVEL_DISPLAY ) then
@@ -1761,13 +1768,15 @@ function PaperDollFrame_UpdateStats()
 		CharacterStatsPane.ItemLevelFrame.Value:SetTextColor(GetItemLevelColor());
 		CharacterStatsPane.ItemLevelCategory:Show();
 		CharacterStatsPane.ItemLevelFrame:Show();
-		CharacterStatsPane.AttributesCategory:SetPoint("TOP", 0, -76);
+		CharacterStatsPane.AttributesCategory:ClearAllPoints();
+		CharacterStatsPane.AttributesCategory:SetPoint("TOP", CharacterStatsPane.ItemLevelFrame, "BOTTOM", 0, 0);
 	else
 		CharacterStatsPane.ItemLevelCategory:Hide();
 		CharacterStatsPane.ItemLevelFrame:Hide();
-		CharacterStatsPane.AttributesCategory:SetPoint("TOP", 0, -20);
-		categoryYOffset = -12;
-		statYOffset = -6;
+		CharacterStatsPane.AttributesCategory:ClearAllPoints();
+		CharacterStatsPane.AttributesCategory:SetPoint("TOP", CharacterStatsPane, "TOP", 0, -2);
+		categoryYOffset = -11;
+		statYOffset = -5;
 	end
 
 	local spec = GetSpecialization();
@@ -1922,12 +1931,12 @@ end
 
 function GearSetEditButton_OnClick(self, button)
 	GearSetButton_OnClick(self:GetParent(), button);
-	
+
 	if ( self.Dropdown.gearSetButton ~= self:GetParent() ) then
 		HideDropDownMenu(1);
 		self.Dropdown.gearSetButton = self:GetParent();
 	end
-	
+
 	ToggleDropDownMenu(1, nil, self.Dropdown, self, 0, 0);
 end
 
@@ -1951,7 +1960,7 @@ function GearSetEditButtonDropDown_Initialize(dropdownFrame, level, menuList)
 		info.checked = function()
 			return C_EquipmentSet.GetEquipmentSetAssignedSpec(equipmentSetID) == i;
 		end;
-		
+
 		info.func = function()
 			local currentSpecIndex = C_EquipmentSet.GetEquipmentSetAssignedSpec(equipmentSetID);
 			if ( currentSpecIndex ~= i ) then
@@ -1959,11 +1968,11 @@ function GearSetEditButtonDropDown_Initialize(dropdownFrame, level, menuList)
 			else
 				C_EquipmentSet.UnassignEquipmentSetSpec(equipmentSetID);
 			end
-			
+
 			GearSetButton_UpdateSpecInfo(gearSetButton);
 			PaperDollEquipmentManagerPane_Update(true);
 		end;
-		
+
 		local specID = GetSpecializationInfo(i);
 		info.text = select(2, GetSpecializationInfoByID(specID));
 		UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
@@ -1990,7 +1999,7 @@ function GearSetButton_SetSpecInfo(self, specID)
 		self.SpecIcon:Hide();
 		self.SpecRing:Hide();
 	end
-	
+
 end
 
 function GearSetButton_UpdateSpecInfo(self)
@@ -1998,13 +2007,13 @@ function GearSetButton_UpdateSpecInfo(self)
 		GearSetButton_SetSpecInfo(self, nil);
 		return;
 	end
-	
+
 	local specIndex = C_EquipmentSet.GetEquipmentSetAssignedSpec(self.setID);
 	if ( not specIndex ) then
 		GearSetButton_SetSpecInfo(self, nil);
 		return;
 	end
-	
+
 	local specID = GetSpecializationInfo(specIndex);
 	GearSetButton_SetSpecInfo(self, specID);
 end
@@ -2051,9 +2060,9 @@ end
 
 function GearManagerDialogPopup_OnLoad (self)
 	self.buttons = {};
-	
+
 	BuildIconArray(GearManagerDialogPopup, "GearManagerDialogPopupButton", "GearSetPopupButtonTemplate", NUM_GEARSET_ICONS_PER_ROW, NUM_GEARSET_ICON_ROWS, OnGearManagerDialogPopupButtonCreated);
-	
+
 	self.SetSelection = function(self, fTexture, Value)
 		if(fTexture) then
 			self.selectedTexture = Value;
@@ -2063,7 +2072,7 @@ function GearManagerDialogPopup_OnLoad (self)
 			self.selectedIcon = Value;
 		end
 	end
-	
+
 	GearManagerDialogPopupScrollFrame.ScrollBar.scrollStep = 8 * GEARSET_ICON_ROW_HEIGHT;
 end
 
@@ -2072,7 +2081,7 @@ function GearManagerDialogPopup_AdjustAnchors (self)
 	local rightSpace = GetScreenWidth() - PaperDollFrame:GetRight();
 	self.parentLeft = PaperDollFrame:GetLeft();
 	local leftSpace = self.parentLeft;
-	
+
 	self:ClearAllPoints();
 	if ( leftSpace >= rightSpace ) then
 		if ( leftSpace < self:GetWidth() + GEAR_MANAGER_POPUP_FRAME_MINIMUM_PADDING ) then
@@ -2383,20 +2392,20 @@ end
 
 function SortEquipmentSetIDs(equipmentSetIDs)
 	local sortedIDs = {};
-	
+
 	-- Add all the spec-assigned sets first because they should appear first.
 	for i, equipmentSetID in ipairs(equipmentSetIDs) do
 		if C_EquipmentSet.GetEquipmentSetAssignedSpec(equipmentSetID) then
 			sortedIDs[#sortedIDs + 1] = equipmentSetID;
 		end
 	end
-	
+
 	for i, equipmentSetID in ipairs(equipmentSetIDs) do
 		if not C_EquipmentSet.GetEquipmentSetAssignedSpec(equipmentSetID) then
 			sortedIDs[#sortedIDs + 1] = equipmentSetID;
 		end
 	end
-		
+
 	return sortedIDs;
 end
 
@@ -2406,7 +2415,7 @@ function PaperDollEquipmentManagerPane_Update(equipmentSetsDirty)
 	if (PaperDollEquipmentManagerPane.selectedSetID) then
 		_, _, setID, isEquipped = C_EquipmentSet.GetEquipmentSetInfo(PaperDollEquipmentManagerPane.selectedSetID);
 	end
-	
+
 	if (setID) then
 		if (isEquipped) then
 			PaperDollEquipmentManagerPaneSaveSet:Disable();
@@ -2513,7 +2522,7 @@ function PaperDollEquipmentManagerPane_Update(equipmentSetsDirty)
 			else
 				buttons[i].Stripe:Hide();
 			end
-			
+
 			GearSetButton_UpdateSpecInfo(buttons[i]);
 		else
 			buttons[i]:Hide();

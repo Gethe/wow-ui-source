@@ -2154,7 +2154,7 @@
 				<OnMouseWheel function="StoreFrame_OnMouseWheel" />
 			</Scripts>
 		</Frame>
-		<Frame name="StoreConfirmationFrame" frameStrata="FULLSCREEN_DIALOG" topLevel="true" parent="StoreFrame" inherits="GoldBorderFrameTemplate" clampedToScreen="true" hidden="true">
+		<Frame name="StoreConfirmationFrame" frameStrata="FULLSCREEN_DIALOG" toplevel="true" parent="StoreFrame" inherits="GoldBorderFrameTemplate" clampedToScreen="true" hidden="true">
 			<Size x="403" y="556" />
 			<Layers>
 				<Layer level="BACKGROUND">
@@ -2330,7 +2330,7 @@
 				<OnEvent function="StoreConfirmationFrame_OnEvent" />
 			</Scripts>
 		</Frame>
-		<Frame name="StoreVASValidationFrame" frameStrata="FULLSCREEN_DIALOG" topLevel="true" parent="StoreFrame" inherits="GoldBorderFrameTemplate" hidden="true">
+		<Frame name="StoreVASValidationFrame" frameStrata="FULLSCREEN_DIALOG" toplevel="true" parent="StoreFrame" inherits="GoldBorderFrameTemplate" hidden="true">
 			<Size x="403" y="626" />
 			<Layers>
 				<Layer level="BACKGROUND">
@@ -2438,7 +2438,7 @@
 					</Anchors>
 					<Layers>
 						<Layer level="ARTWORK" textureSubLevel="1">
-							<Texture parentKey="SelectedCharacterFrame" atlas="vas-receipt-selectedcharbg" useatlassize="true">
+							<Texture parentKey="SelectedCharacterFrame" atlas="vas-receipt-selectedcharbg" useAtlasSize="true">
 								<Anchors>
 									<Anchor point="TOP" x="0" y="-170" />
 								</Anchors>
@@ -2792,7 +2792,7 @@
 				<OnEvent function="StoreVASValidationFrame_OnEvent"/>
 			</Scripts>
 		</Frame>
-		<Frame name="StoreTooltip" inherits="TooltipBorderedFrameTemplate" frameStrata="TOOLTIP" topLevel="true" parent="StoreFrame" clampedToScreen="true" hidden="true">
+		<Frame name="StoreTooltip" inherits="TooltipBorderedFrameTemplate" frameStrata="TOOLTIP" toplevel="true" parent="StoreFrame" clampedToScreen="true" hidden="true">
 			<Size x="0" y="200" />
 			<Layers>
 				<Layer level="ARTWORK">

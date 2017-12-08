@@ -458,7 +458,7 @@
 						<Anchor point="BOTTOMRIGHT" x="-2" y="2"/>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentTitleBg" inherits="_UI-Frame-TitleTileBG">
+				<Texture name="$parentTitleBg" inherits="_UI-Frame-TitleTileBg">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="2" y="-3"/>
 						<Anchor point="TOPRIGHT" x="-25" y="-3"/>

@@ -545,7 +545,7 @@
 									</AnimationGroup>
 								</Animations>
 								<Frames>
-									<Frame name="GarrisonLandingPageTutorialBox" inherits="GlowBoxTemplate" enableMouse="true" hidden="true" frameStrata="DIALOG" frameLevel="2" topLevel="true">
+									<Frame name="GarrisonLandingPageTutorialBox" inherits="GlowBoxTemplate" enableMouse="true" hidden="true" frameStrata="DIALOG" frameLevel="2" toplevel="true">
 										<Size x="220" y="100"/>
 										<Anchors>
 											<Anchor point="RIGHT" relativePoint="LEFT" x="-25" y="0"/>

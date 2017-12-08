@@ -616,7 +616,7 @@
 	<Button name="EncounterCreatureButtonTemplate" motionScriptsWhileDisabled="true" virtual="true" hidden="true">
 		<Size x="64" y="61"/>
 		<Layers>
-			<Layer level="BACKGROUND" TextureSubLevel="6">
+			<Layer level="BACKGROUND" textureSubLevel="6">
 				<Texture name="$parentCreature" parentKey="creature">
 					<Size x="40" y="40"/>
 					<Anchors>
@@ -671,7 +671,7 @@
 					<Anchor point="TOPLEFT" x="-4" y="13"/>
 				</Anchors>
 				<Layers>
-					<Layer level="OVERLAY" TextureSubLevel="6">
+					<Layer level="OVERLAY" textureSubLevel="6">
 						<Texture name="$parentCreature" file="Interface\EncounterJournal\UI-EJ-BOSS-Default" parentKey="creature">
 							<Size x="128" y="64"/>
 							<Anchors>

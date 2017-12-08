@@ -1459,7 +1459,7 @@
 								<Anchor point="TOP" relativeKey="$parent.Label" relativePoint="BOTTOM" x="0" y="10"/>
 							</Anchors>
 						</Texture>
-						<FontString ParentKey="NextRank" inherits="GameFontNormalLarge" text="5">
+						<FontString parentKey="NextRank" inherits="GameFontNormalLarge" text="5">
 							<Anchors>
 								<Anchor point="CENTER" relativeKey="$parent.Laurel" relativePoint="BOTTOM" x="0" y="46"/>
 							</Anchors>
@@ -1473,7 +1473,7 @@
 						</FontString>
                         <Texture parentKey="TopDivider" atlas="honorsystem-prestige-rewardline" useAtlasSize="true">
                             <Anchors>
-                                <Anchor point="TOP" relativeKey="$parent.NextRankLabel" relativePoint="BOTOM" x="0" y="-40"/>
+                                <Anchor point="TOP" relativeKey="$parent.NextRankLabel" x="0" y="-50"/>
                             </Anchors>
                         </Texture>
                         <FontString parentKey="NextMaxLevelReward" inherits="GameFontNormal">

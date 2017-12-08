@@ -248,7 +248,7 @@
 			<Button parentKey="CloseButton" inherits="UIPanelButtonTemplate" text="CLOSE">
 				<Size x="144" y="21"/>
 				<Anchors>
-					<Anchor Point="BOTTOM" x="0" y="15"/>
+					<Anchor point="BOTTOM" x="0" y="15"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>

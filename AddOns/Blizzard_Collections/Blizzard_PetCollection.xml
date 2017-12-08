@@ -1770,13 +1770,13 @@
 							</Anchors>
 							<TexCoords left="0" right=".5" top="0" bottom="0.5"/>
 						</Texture>
-						<Fontstring parentKey="SumText" inherits="GameFontNormalLarge" text="25">
+						<FontString parentKey="SumText" inherits="GameFontNormalLarge" text="25">
 							<Anchors>
 								<Anchor point="RIGHT" relativePoint="LEFT" relativeTo="$parentIcon" x="-4" y="4"/>
 							</Anchors>
 							<Size x="0" y="0"/>
 							<TexCoords left="0.75683594" right="0.98632813" top="0.00097656" bottom="0.04882813"/>
-						</Fontstring>
+						</FontString>
 					</Layer>
 				</Layers>
 				<Scripts>

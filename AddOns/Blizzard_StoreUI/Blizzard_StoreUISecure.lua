@@ -3279,7 +3279,7 @@ function StoreProductCard_UpdateState(card)
 					xoffset = -4;
 				end
 				local name = entryInfo.sharedData.name:gsub("|n", " ");
-				local description = entryInfo.sharedData.description;
+				local description = entryInfo.sharedData.description or "";
 				if StoreProductCard_ShouldAddBundleInformationToTooltip(card, entryInfo) then
 					description = description..BLIZZARD_STORE_BUNDLE_TOOLTIP_HEADER;
 					for i, deliverableInfo in ipairs(entryInfo.sharedData.deliverables) do
@@ -3290,7 +3290,7 @@ function StoreProductCard_UpdateState(card)
 						end
 					end
 				end
-				
+
 				if StoreProductCard_ShouldAddDiscountInformationToTooltip(card) then
 					local info = currencyInfo();
 					local discounted, discountPercentage, discountDollars, discountCents = StoreFrame_GetDiscountInformation(entryInfo.sharedData);

@@ -2883,7 +2883,7 @@
 					</Button>
 					<ScrollFrame name="$parentScrollFrame" parentKey="scrollFrame" inherits="HybridScrollFrameTemplate">
 						<Anchors>
-							<Anchor point="TOPEFT" relativeKey="$parent.topLeftCorner2" x="4" y="-8"/>
+							<Anchor point="TOPLEFT" relativeKey="$parent.topLeftCorner2" x="4" y="-8"/>
 							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.bottomRightCorner" x="-24" y="8"/>
 						</Anchors>
 						<Frames>

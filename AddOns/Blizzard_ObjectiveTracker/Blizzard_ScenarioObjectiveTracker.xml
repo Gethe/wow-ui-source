@@ -324,7 +324,7 @@
 									</Anchors>
 								</Texture>
 							</Layer>
-							<Layer level="BACKGROUND" textureSublevel="1">
+							<Layer level="BACKGROUND" textureSubLevel="1">
 								<Texture parentKey="TimerBG" atlas="ChallengeMode-TimerBG" useAtlasSize="true">
 									<Anchors>
 										<Anchor point="BOTTOM" x="0" y="13"/>

@@ -34,9 +34,9 @@
 				<Layers>
 					<Layer level="BACKGROUND">
 						<Texture parentKey="Background" atlas="honorsystem-bar-background" useAtlasSize="true">
-							<Anchor>
+							<Anchors>
 								<Anchor point="CENTER" relativeKey="$parent.Frame" relativePoint="CENTER"/>
-							</Anchor>
+							</Anchors>
 						</Texture>
 					</Layer>
 					<Layer level="BACKGROUND" textureSubLevel="1">
@@ -228,9 +228,9 @@
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture parentKey="Frame" atlas="honorsystem-bar-frame-small" useAtlasSize="true">
-					<Anchor>
+					<Anchors>
 						<Anchor point="CENTER"/>
-					</Anchor>
+					</Anchors>
 				</Texture>
 				<FontString parentKey="Level" inherits="GameFontNormal" justifyH="CENTER">
 					<Anchors>
@@ -249,9 +249,9 @@
 					<Layer level="BACKGROUND">
 						<Texture parentKey="Background" atlas="honorsystem-bar-background">
 							<Size x="270" y="18"/>
-							<Anchor>
+							<Anchors>
 								<Anchor point="CENTER" relativeKey="$parent.Frame" relativePoint="CENTER"/>
-							</Anchor>
+							</Anchors>
 						</Texture>
 					</Layer>
 					<Layer level="BACKGROUND" textureSubLevel="1">

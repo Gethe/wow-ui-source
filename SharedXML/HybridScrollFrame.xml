@@ -199,7 +199,7 @@
 	<!-- This is a scrollframe with no border and a black texture for a track -->
 	<ScrollFrame name="MinimalHybridScrollFrameTemplate" inherits="HybridScrollFrameTemplate" virtual="true">
 		<Frames>
-			<Slider name="$parentScrollBar" inherits="MinimalHybridScrollBarTemplate" parentKey="ScrollBar">
+			<Slider name="$parentScrollBar" inherits="MinimalHybridScrollBarTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="-17"/>
 					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="17"/>

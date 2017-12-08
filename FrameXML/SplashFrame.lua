@@ -1,7 +1,7 @@
 LEGION_POSTPATCH_QUESTS = { Alliance = { 40519, 44663 }, Horde = { 43926, 44663 }};
 
 BASE_SPLASH_SCREEN_VERSION = 7;
-NEWEST_SPLASH_SCREEN_VERSION = 11;
+NEWEST_SPLASH_SCREEN_VERSION = 12;
 
 local function GetLegionQuestID()
 	local faction = UnitFactionGroup("player");
@@ -55,28 +55,22 @@ SPLASH_SCREENS = {
 								        },
 						},
 	},
-	["LEGION_CURRENT"] = {	id = NEWEST_SPLASH_SCREEN_VERSION, -- 7.3.0
+	["LEGION_CURRENT"] = {	id = NEWEST_SPLASH_SCREEN_VERSION, -- 7.3.5
 					questID = nil,
 					getQuestID = function()
-						local faction = UnitFactionGroup("player");
-						if faction == "Alliance" then
-							return 47221;
-						elseif faction == "Horde" then
-							return 47835;
-						end
 						return nil;
 					end,
-					leftTex = "splash-730-topleft",
-					rightTex = "splash-730-right",
-					bottomTex = "splash-730-botleft",
+					leftTex = "splash-735-topleft",
+					rightTex = "splash-735-right",
+					bottomTex = "splash-735-botleft",
 					header = SPLASH_BASE_HEADER,
-					label = SPLASH_LEGION_NEW_7_3_LABEL,
-					feature1Title = SPLASH_LEGION_NEW_7_3_FEATURE1_TITLE,
-					feature1Desc = SPLASH_LEGION_NEW_7_3_FEATURE1_DESC,
-					feature2Title = SPLASH_LEGION_NEW_7_3_FEATURE2_TITLE,
-					feature2Desc = SPLASH_LEGION_NEW_7_3_FEATURE2_DESC,
-					rightTitle = SPLASH_LEGION_NEW_7_3_RIGHT_TITLE,
-					rightDesc = SPLASH_LEGION_NEW_7_3_RIGHT_DESC,
+					label = SPLASH_LEGION_NEW_7_3_5_LABEL,
+					feature1Title = SPLASH_LEGION_NEW_7_3_5_FEATURE1_TITLE,
+					feature1Desc = SPLASH_LEGION_NEW_7_3_5_FEATURE1_DESC,
+					feature2Title = SPLASH_LEGION_NEW_7_3_5_FEATURE2_TITLE,
+					feature2Desc = SPLASH_LEGION_NEW_7_3_5_FEATURE2_DESC,
+					rightTitle = SPLASH_LEGION_NEW_7_3_5_RIGHT_TITLE,
+					rightDesc = SPLASH_LEGION_NEW_7_3_5_RIGHT_DESC,
 					rightDescSubText = SPLASH_OPENS_SOON,
 					rightDescSubTextPredicate = function() return not IsSplashFramePrimaryFeatureUnlocked() end,
 					rightTitleMaxLines = 1,

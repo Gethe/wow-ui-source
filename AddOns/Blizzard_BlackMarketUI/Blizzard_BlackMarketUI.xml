@@ -254,7 +254,7 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Frame parentkey="CurrentBid" name="$parentCurrentBidMoneyFrame" inherits="SmallMoneyFrameTemplate">
+			<Frame parentKey="CurrentBid" name="$parentCurrentBidMoneyFrame" inherits="SmallMoneyFrameTemplate">
 				<Anchors>
 					<Anchor point="RIGHT" x="6" y="-3"/>
 				</Anchors>
@@ -744,7 +744,7 @@
 							</OnLeave>
 						</Scripts>
 					</Frame>
-					<Frame parentkey="BlackMarketHotItemBidPrice" name="HotItemCurrentBidMoneyFrame" inherits="SmallMoneyFrameTemplate">
+					<Frame parentKey="BlackMarketHotItemBidPrice" name="HotItemCurrentBidMoneyFrame" inherits="SmallMoneyFrameTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.TimeLeft" relativePoint="BOTTOM" x="0" y="-5"/>
 						</Anchors>
