@@ -1463,10 +1463,6 @@ function StoreFrame_UpdateCard(card, entryID, discountReset, forceModelUpdate)
 		StoreProductCard_HideIcon(card);
 	end
 
-	if card == StoreFrame.SplashSingle then
-		StoreProductCard_UpdateMagnifier(card);
-	end
-
 	if (discounted) then
 		StoreProductCard_ShowDiscount(card, currencyFormat(entryInfo.sharedData.currentDollars, entryInfo.sharedData.currentCents), discountReset);
 	else
@@ -1478,6 +1474,10 @@ function StoreFrame_UpdateCard(card, entryID, discountReset, forceModelUpdate)
 
 	card:SetID(entryID);
 	StoreProductCard_UpdateState(card);
+
+	if card == StoreFrame.SplashSingle then
+		StoreProductCard_UpdateMagnifier(card);
+	end
 
 	if (card.BannerFadeIn and not card:IsShown()) then
 		card.BannerFadeIn.FadeAnim:Play();
@@ -3251,8 +3251,8 @@ function StoreProductCard_ShouldAddDiscountInformationToTooltip(self)
 end
 
 function StoreProductCard_ShouldAddBundleInformationToTooltip(self, entryInfo)
-	-- For now, all bundles are double-wide and there are no other double-wide cards.
-	return self.style == "double-wide" and #entryInfo.sharedData.deliverables > 0;
+	-- For now, we're not displaying this part of the tooltip.
+	return false; -- self.style == "double-wide" and #entryInfo.sharedData.deliverables > 0;
 end
 
 function StoreProductCard_UpdateState(card)

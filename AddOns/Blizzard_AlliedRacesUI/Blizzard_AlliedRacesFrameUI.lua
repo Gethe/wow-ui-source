@@ -109,7 +109,15 @@ function AlliedRacesFrameMixin:LoadRaceData(raceID)
 	end
 	
 	self:SetModelFrameBackground(raceInfo.modelBackgroundAtlas);
-	self:UpdateModel(raceInfo.femaleModelID);
+	if (UnitSex("player") == 2) then
+		self:UpdateModel(raceInfo.maleModelID);
+		self.ModelFrame.AlliedRacesMaleButton:SetChecked(true);
+		self.ModelFrame.AlliedRacesFemaleButton:SetChecked(false);
+	else
+		self:UpdateModel(raceInfo.femaleModelID);
+		self.ModelFrame.AlliedRacesMaleButton:SetChecked(false);
+		self.ModelFrame.AlliedRacesFemaleButton:SetChecked(true);
+	end
 	self.ModelFrame.AlliedRacesFemaleButton.FemaleModelID = raceInfo.femaleModelID; 
 	self.ModelFrame.AlliedRacesMaleButton.MaleModelID = raceInfo.maleModelID; 
 	
@@ -136,7 +144,7 @@ function AlliedRacesFrameMixin:SetModelFrameBackground(backgroundAtlas)
 end
 
 function AlliedRacesFrameMixin:UpdateModel(modelID)
-	self.ModelFrame:SetCreature(modelID);
+	self.ModelFrame:SetDisplayInfo(modelID);
 end
 
 function AlliedRacesFrameMixin:OnLoad()

@@ -2116,7 +2116,26 @@ function ScenarioPOI_OnLeave()
 end
 
 function WorldMapPOI_OnClick(self, button)
-	if ( self.mapLinkID and self.landmarkType ~= LE_MAP_LANDMARK_TYPE_CONTRIBUTION ) then
+	if self.landmarkType == LE_MAP_LANDMARK_TYPE_MAP_LINK then
+		-- We need to cache this data in advance because it can change when we change map IDs.
+		local currentMapID = GetCurrentMapAreaID();
+		local currentFloorIndex = GetCurrentMapDungeonLevel();
+		local mapID = self.mapLinkID;
+		local floorIndex = self.mapFloor;
+		if floorIndex and mapID then
+			SetMapByID(mapID);
+			WorldMapFrame.mapLinkPingInfo = { mapID = currentMapID, floorIndex = currentFloorIndex };
+			SetDungeonMapLevel(floorIndex);
+		elseif mapID then
+			WorldMapFrame.mapLinkPingInfo = { mapID = currentMapID, floorIndex = currentFloorIndex };
+			SetMapByID(mapID);
+		elseif floorIndex then
+			WorldMapFrame.mapLinkPingInfo = { mapID = currentMapID, floorIndex = currentFloorIndex };
+			SetDungeonMapLevel(floorIndex);
+		end
+
+		PlaySound(SOUNDKIT.IG_QUEST_LOG_OPEN);
+	elseif ( self.mapLinkID and self.landmarkType ~= LE_MAP_LANDMARK_TYPE_CONTRIBUTION ) then
 		if self.landmarkType == LE_MAP_LANDMARK_TYPE_DUNGEON_ENTRANCE then
 			if not EncounterJournal or not EncounterJournal:IsShown() then
 				if not ToggleEncounterJournal() then
@@ -2125,25 +2144,6 @@ function WorldMapPOI_OnClick(self, button)
 			end
 			EncounterJournal_ListInstances();
 			EncounterJournal_DisplayInstance(self.mapLinkID);
-		elseif self.landmarkType == LE_MAP_LANDMARK_TYPE_MAP_LINK then
-			-- We need to cache this data in advance because it can change when we change map IDs.
-			local currentMapID = GetCurrentMapAreaID();
-			local currentFloorIndex = GetCurrentMapDungeonLevel();
-			local mapID = self.mapLinkID
-			local floorIndex = self.mapFloor;
-			if floorIndex and mapID then
-				SetMapByID(mapID);
-				WorldMapFrame.mapLinkPingInfo = { mapID = currentMapID, floorIndex = currentFloorIndex };
-				SetDungeonMapLevel(floorIndex);
-			elseif mapID then
-				WorldMapFrame.mapLinkPingInfo = { mapID = currentMapID, floorIndex = currentFloorIndex };
-				SetMapByID(mapID);
-			elseif floorIndex then
-				WorldMapFrame.mapLinkPingInfo = { mapID = currentMapID, floorIndex = currentFloorIndex };
-				SetDungeonMapLevel(floorIndex);
-			end
-
-			PlaySound(SOUNDKIT.IG_QUEST_LOG_OPEN);
 		else
 			ClickLandmark(self.mapLinkID);
 		end

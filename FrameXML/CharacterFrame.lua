@@ -63,7 +63,8 @@ function CharacterFrame_OnLoad (self)
 	SetTextStatusBarTextPrefix(PlayerFrameHealthBar, HEALTH);
 	SetTextStatusBarTextPrefix(PlayerFrameManaBar, MANA);
 	SetTextStatusBarTextPrefix(MainMenuExpBar, XP);
-	TextStatusBar_UpdateTextString(MainMenuExpBar);
+	ExpBar_UpdateTextString();
+		
 	-- Tab Handling code
 	PanelTemplates_SetNumTabs(self, NUM_CHARACTERFRAME_TABS);
 	PanelTemplates_SetTab(self, 1);

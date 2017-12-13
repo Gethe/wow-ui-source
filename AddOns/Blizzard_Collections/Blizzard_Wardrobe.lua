@@ -2245,6 +2245,12 @@ function WardrobeCollectionFrame_SetAppearanceTooltip(contentFrame, sources, pri
 		elseif ( not WardrobeFrame_IsAtTransmogrifier() ) then
 			GameTooltip:AddLine(WARDROBE_TOOLTIP_TRANSMOGRIFIER, GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b, 1, 1);
 		end
+		if ( not useError ) then
+			local holidayName = C_TransmogCollection.GetSourceRequiredHoliday(headerSourceID);
+			if ( holidayName ) then
+				GameTooltip:AddLine(TRANSMOG_APPEARANCE_USABLE_HOLIDAY:format(holidayName), LIGHTBLUE_FONT_COLOR.r, LIGHTBLUE_FONT_COLOR.g, LIGHTBLUE_FONT_COLOR.b, true);
+			end
+		end
 	end
 
 	GameTooltip:Show();

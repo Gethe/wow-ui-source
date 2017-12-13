@@ -238,6 +238,12 @@ function MicroButtonPulseStop(self)
 	g_flashingMicroButtons[self] = nil;
 end
 
+function MicroButton_KioskModeDisable(self)
+	if (IsKioskModeEnabled()) then
+		self:Disable();
+	end
+end
+
 function AchievementMicroButton_OnEvent(self, event, ...)
 	if (IsKioskModeEnabled()) then
 		return;
@@ -672,6 +678,44 @@ function EJMicroButton_UpdateAlerts( flag )
 		EJMicroButton:UnregisterEvent("UNIT_LEVEL");
 		EJMicroButton:UnregisterEvent("PLAYER_AVG_ITEM_LEVEL_UPDATE");
 		EJMicroButton_ClearNewAdventureNotice()
+	end
+end
+
+StoreMicroButtonMixin = {};
+
+function StoreMicroButton_OnLoad(self)
+	LoadMicroButtonTextures(self, "BStore");
+	self.tooltipText = BLIZZARD_STORE;
+	self:RegisterEvent("STORE_STATUS_CHANGED");
+	if (IsKioskModeEnabled()) then
+		self:Disable();
+	end
+	if (IsRestrictedAccount()) then
+		self:RegisterEvent("PLAYER_LEVEL_UP");
+		self:RegisterEvent("PLAYER_ENTERING_WORLD");
+	end
+end
+
+function StoreMicroButton_OnEvent(self, event, ...)
+	if (event == "PLAYER_LEVEL_UP") then
+		local level = ...;
+		self:EvaluateAlertVisibility(level);
+	elseif (event == "PLAYER_ENTERING_WORLD") then
+		self:EvaluateAlertVisibility(UnitLevel("player"));
+	end
+	UpdateMicroButtons();
+	if (IsKioskModeEnabled()) then
+		self:Disable();
+	end
+end
+
+function StoreMicroButtonMixin:EvaluateAlertVisibility(level)
+	if (IsTrialAccount()) then
+		local rLevel = GetRestrictedAccountData();
+		if (level >= rLevel and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRIAL_BANKED_XP)) then
+			MainMenuMicroButton_ShowAlert(StoreMicroButtonAlert, STORE_MICRO_BUTTON_ALERT_TRIAL_CAP_REACHED);
+			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRIAL_BANKED_XP, true);
+		end
 	end
 end
 

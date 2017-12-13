@@ -233,27 +233,15 @@
 					</OnEvent>
 					<OnShow>
 						if ( GetCVar("xpBarText") == "1" ) then
-							TextStatusBar_UpdateTextString(self);
+							ExpBar_UpdateTextString();
 						end
 					</OnShow>
-					<OnEnter>
-						TextStatusBar_UpdateTextString(self);
-						ShowTextStatusBarText(self);
-						ExhaustionTick.timer = 1;
-						local label = XPBAR_LABEL;
-						if (GameLimitedMode_IsActive()) then
-							local rLevel = GetRestrictedAccountData();
-							if UnitLevel("player") >= rLevel then
-								label = label.." "..RED_FONT_COLOR_CODE..CAP_REACHED_TRIAL.."|r";
-							end
-						end
-
-						GameTooltip_AddNewbieTip(self, label, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_XPBAR, 1);
-						GameTooltip.canAddRestStateLine = 1;
-						ExhaustionToolTipText();
-					</OnEnter>
+					<OnEnter function="ExpBar_OnEnter"/>
 					<OnLeave>
 						HideTextStatusBarText(self);
+						if (GameLimitedMode_IsActive()) then
+							MicroButtonPulseStop(StoreMicroButton);
+						end
 						GameTooltip:Hide();
 						ExhaustionTick.timer = nil;
 					</OnLeave>

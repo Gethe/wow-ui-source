@@ -987,22 +987,22 @@
 							</Layer>
 						</Layers>
 					</Frame>
-					<Frame name="$parentIcon1" inherits="EncounterSectionIconTemplate" parentKey="icon1">
+					<Frame name="$parentIcon1" inherits="EncounterSectionIconTemplate" parentKey="icon1" parentArray="icons">
 						<Anchors>
 							<Anchor point="RIGHT" x="5" y="0"/>
 						</Anchors>
 					</Frame>
-					<Frame name="$parentIcon2" inherits="EncounterSectionIconTemplate" parentKey="icon2">
+					<Frame name="$parentIcon2" inherits="EncounterSectionIconTemplate" parentKey="icon2" parentArray="icons">
 						<Anchors>
 							<Anchor point="RIGHT" relativeTo="$parentIcon1" relativePoint="LEFT" x="10" y="0"/>
 						</Anchors>
 					</Frame>
-					<Frame name="$parentIcon3" inherits="EncounterSectionIconTemplate" parentKey="icon3">
+					<Frame name="$parentIcon3" inherits="EncounterSectionIconTemplate" parentKey="icon3" parentArray="icons">
 						<Anchors>
 							<Anchor point="RIGHT" relativeTo="$parentIcon2" relativePoint="LEFT" x="10" y="0"/>
 						</Anchors>
 					</Frame>
-					<Frame name="$parentIcon4" inherits="EncounterSectionIconTemplate" parentKey="icon4">
+					<Frame name="$parentIcon4" inherits="EncounterSectionIconTemplate" parentKey="icon4" parentArray="icons">
 						<Anchors>
 							<Anchor point="RIGHT" relativeTo="$parentIcon3" relativePoint="LEFT" x="19" y="0"/>
 						</Anchors>

@@ -5,8 +5,8 @@ local SEAL_QUESTS = {
 	[43926] = { bgAtlas = "QuestBG-Horde", text = "|cff480404"..QUEST_WARCHIEF_VOLJIN.."|r", sealAtlas = "Quest-Horde-WaxSeal"},
 	[47221] = { bgAtlas = "QuestBG-TheHandofFate", },
 	[47835] = { bgAtlas = "QuestBG-TheHandofFate", },
-	[49929] = { bgAtlas = "QuestBG-Alliance" },
-	[49930] = { bgAtlas = "QuestBG-Horde" },
+	[49929] = { bgAtlas = "QuestBG-Alliance", sealAtlas = "Quest-Alliance-WaxSeal" },
+	[49930] = { bgAtlas = "QuestBG-Horde", sealAtlas = "Quest-Horde-WaxSeal" },
 };
 
 function QuestInfoTimerFrame_OnUpdate(self, elapsed)

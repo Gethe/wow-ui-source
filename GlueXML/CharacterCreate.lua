@@ -1098,7 +1098,7 @@ function CharacterCreate_Forward()
 
 		CharCreateOkayButton:SetText(FINISH);
 		CharacterCreateNameEdit:Show();
-		if ( ALLOW_RANDOM_NAME_BUTTON ) then
+		if ( ALLOW_RANDOM_NAME_BUTTON and not CharacterCreate_IsAlliedRacePreview() ) then
 			CharacterCreateRandomName:Show();
 		end
 
@@ -1881,6 +1881,28 @@ function PandarenFactionButton_OnClick(self)
 end
 
 ---------------------------------------------
+-- CharCreateRaceButton script functions
+---------------------------------------------
+function CharCreateRaceButton_OnEnter(self)
+	local raceData = C_CharacterCreation.GetRaceDataByID(self.raceID);
+	if (raceData.isAlliedRace) then
+		local hasExpansion, hasAchievement = C_CharacterCreation.GetAlliedRaceCreationRequirements(self.raceID);
+		CharacterCreateTooltip:SetOwner(self, "ANCHOR_RIGHT", 8, -5);
+		CharacterCreateTooltip:SetText(raceData.name, 1, 1, 1, 1, true);
+		if (not hasExpansion) then
+			CharacterCreateTooltip:AddLine(CHARACTER_CREATION_REQUIREMENTS_NEED_8_0, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, 1, true);
+		end
+		if (not hasAchievement) then
+			CharacterCreateTooltip:AddLine(CHARACTER_CREATION_REQUIREMENTS_NEED_ACHIEVEMENT, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, 1, true);
+		end	
+	end
+end
+
+function CharCreateRaceButton_OnLeave(self)
+	CharacterCreateTooltip:Hide();
+end
+
+---------------------------------------------
 -- CharCreateClassButton script functions
 ---------------------------------------------
 function CharCreateClassButton_OnEnter(self)
@@ -1894,7 +1916,9 @@ function CharCreateClassButton_OnEnter(self)
 	CharacterCreateTooltip:AddLine(self.tooltip.description, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1, true);
 	CharacterCreateTooltip:AddLine(self.tooltip.footer, nil, nil, nil, nil, true);
 
-	if not IsKioskGlueEnabled() and CharacterUpgrade_IsCreatedCharacterTrialBoost() and not CharacterCreate_IsTrialBoostAllowedForClass(self.classFilename) then
+	local raceData = C_CharacterCreation.GetRaceDataByID(C_CharacterCreation.GetSelectedRace());
+	local classData = C_CharacterCreation.GetClassDataByID(self.classID);
+	if not IsKioskGlueEnabled() and CharacterUpgrade_IsCreatedCharacterTrialBoost() and not CharacterCreate_IsTrialBoostAllowedForClass(classData, raceData) then
 		CharacterCreateTooltip:AddLine(CHARACTER_TYPE_FRAME_TRIAL_BOOST_CHARACTER_TOOLTIP_INVALID, 1, 0, 0, 1, true);
 	end
 end
@@ -1936,8 +1960,8 @@ end
 -- CharacterCreate Type Button script functions
 ---------------------------------------------
 
-local function IsBoostAllowed(classInfo)
-	return C_CharacterServices.IsTrialBoostEnabled() and classInfo.allowBoost;
+local function IsBoostAllowed(classInfo, raceData)
+	return C_CharacterServices.IsTrialBoostEnabled() and classInfo.allowBoost and raceData.enabled;
 end
 
 local function UpdateLevelText(button, classInfo, raceData)
@@ -1954,14 +1978,14 @@ function CharacterCreate_UpdateCharacterTypeButtons()
 	for index, button in ipairs(CharCreateCharacterTypeFrame.typeButtons) do
 		UpdateLevelText(button, classInfo, raceData);
 		if (button.characterType == Enum.CharacterCreateType.TrialBoost) then
-			button:SetEnabled(IsBoostAllowed(classInfo));
+			button:SetEnabled(IsBoostAllowed(classInfo, raceData));
 		end
 	end
 
 	if CharCreateCharacterTypeFrame:IsShown() then
 		local isTrialBoost = C_CharacterCreation.GetCharacterCreateType() == Enum.CharacterCreateType.TrialBoost;
-		if isTrialBoost and not IsBoostAllowed(classInfo) then
-			CharacterCreate_SelectCharacterType(Emum.CharacterCreateType.Normal);
+		if isTrialBoost and not IsBoostAllowed(classInfo, raceData) then
+			CharacterCreate_SelectCharacterType(Enum.CharacterCreateType.Normal);
 		end
 	end
 end
@@ -2079,9 +2103,10 @@ end
 
 function CharacterCreate_UpdateClassTrialCustomizationFrames()
 	local classInfo = C_CharacterCreation.GetSelectedClass();
+	local raceData = C_CharacterCreation.GetRaceDataByID(C_CharacterCreation.GetSelectedRace());
 	local isTrialBoost = CharacterUpgrade_IsCreatedCharacterTrialBoost();
 	local isCustomization = CharacterCreateFrame.state == "CUSTOMIZATION";
-	local showTrialFrames = isTrialBoost and isCustomization and IsBoostAllowed(classFilename);
+	local showTrialFrames = isTrialBoost and isCustomization and IsBoostAllowed(classInfo, raceData);
 
 	local showSpecializations = showTrialFrames;
 	local showFactions = showTrialFrames and C_CharacterCreation.IsNeutralRace(CharacterCreate.selectedRace);
@@ -2090,7 +2115,7 @@ function CharacterCreate_UpdateClassTrialCustomizationFrames()
 		local gender = C_CharacterCreation.GetSelectedSex();
 		local allowAllSpecs = false;
 
-		CharCreateSelectSpecFrame.classFilename = classFilename;
+		CharCreateSelectSpecFrame.classFilename = classInfo.fileName;
 		CharacterServices_UpdateSpecializationButtons(classInfo.classID, gender, CharCreateSelectSpecFrame, CharCreateSelectSpecFrame, allowAllSpecs, isTrialBoost);
 
 		local frameTop, frameBottom = CharCreateSelectSpecFrame:GetTop(), CharCreateSelectSpecFrame:GetBottom();
@@ -2227,6 +2252,7 @@ function CharacterCreate_UpdateOkayButton()
 			local hasExpansion, hasAchievement = C_CharacterCreation.GetAlliedRaceCreationRequirements(C_CharacterCreation.GetSelectedRace());
 			finalizeRequirements:SetRequirementComplete(FINALIZE_REQ_ALLIED_RACE_EXPANSION, hasExpansion);
 			finalizeRequirements:SetRequirementComplete(FINALIZE_REQ_ALLIED_RACE_ACHIEVEMENT, hasAchievement);
+			finalizeRequirements:SetRequirementComplete(FINALIZE_REQ_HAS_NAME, true);
 		else
 			local isTrialBoost = CharacterUpgrade_IsCreatedCharacterTrialBoost();
 			finalizeRequirements:SetRequirementComplete(FINALIZE_REQ_HAS_SPEC, not isTrialBoost or CharCreateSelectSpecFrame.selected ~= nil);
@@ -2239,8 +2265,8 @@ function CharacterCreate_UpdateOkayButton()
 	end
 end
 
-function CharacterCreate_IsTrialBoostAllowedForClass(classFilename)
-	return IsBoostAllowed(classFilename);
+function CharacterCreate_IsTrialBoostAllowedForClass(classInfo, raceData)
+	return IsBoostAllowed(classInfo, raceData);
 end
 
 function CharacterCreate_GetSelectedFaction()

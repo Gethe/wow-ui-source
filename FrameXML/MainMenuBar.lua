@@ -7,10 +7,67 @@ function ExpBar_Update()
 	local nextXP = UnitXPMax("player");
 	local level = UnitLevel("player");
 
-	local min, max = math.min(0, currXP), nextXP;
-	MainMenuExpBar:SetAnimatedValues(currXP, min, max, level);
+	local isCapped = false;
+	if (GameLimitedMode_IsActive()) then
+		local rLevel = GetRestrictedAccountData();
+		if UnitLevel("player") >= rLevel then
+			isCapped = true;
+			MainMenuExpBar:SetAnimatedValues(1, 0, 1, level);
+			MainMenuExpBar:ProcessChangesInstantly();
+			MainMenuExpBar:SetStatusBarColor(0.58, 0.0, 0.55, 1.0);
+			MainMenuExpBar:SetAnimatedTextureColors(0.58, 0.0, 0.55, 1.0);
+		end
+	end
+	if (not isCapped) then
+		local min, max = math.min(0, currXP), nextXP;
+		MainMenuExpBar:SetAnimatedValues(currXP, min, max, level);
+	end
 end
 
+function ExpBar_UpdateTextString() 
+	TextStatusBar_UpdateTextString(MainMenuExpBar);
+	if (GameLimitedMode_IsActive()) then
+		local rLevel = GetRestrictedAccountData();
+		if (UnitLevel("player") >= rLevel) then
+			local nextXP = UnitXPMax("player");
+			local trialXP = UnitTrialXP("player");
+			MainMenuExpBar.TextString:SetText(MainMenuExpBar.prefix.." "..trialXP.." / "..nextXP);
+		end
+	end
+end
+
+function ExpBar_OnEnter(self)
+	ShowTextStatusBarText(self);
+	ExpBar_UpdateTextString();
+	local label = XPBAR_LABEL;
+	if (GameLimitedMode_IsActive()) then
+		local rLevel = GetRestrictedAccountData();
+		if UnitLevel("player") >= rLevel then
+			local trialXP = UnitTrialXP("player");
+			local bankedLevels = UnitTrialBankedLevels("player");
+			if (trialXP > 0) then
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+				local text = TRIAL_CAP_BANKED_XP_TOOLTIP;
+				if (bankedLevels > 0) then
+					text = TRIAL_CAP_BANKED_LEVELS_TOOLTIP:format(bankedLevels);
+				end
+				GameTooltip:SetText(text, nil, nil, nil, nil, true);
+				GameTooltip:Show();
+				if (IsTrialAccount()) then
+					MicroButtonPulse(StoreMicroButton);
+				end
+				return
+			else
+				label = label.." "..RED_FONT_COLOR_CODE..CAP_REACHED_TRIAL.."|r";
+			end
+		end
+	end						
+	ExhaustionTick.timer = 1;
+
+	GameTooltip_AddNewbieTip(self, label, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_XPBAR, 1);
+	GameTooltip.canAddRestStateLine = 1;
+	ExhaustionToolTipText();
+end
 
 function MainMenuBar_OnLoad(self)
 	self:RegisterEvent("ACTIONBAR_PAGE_CHANGED");
@@ -308,7 +365,7 @@ function MainMenuBar_UpdateExperienceBars(newLevel)
 	end
 
 	-- update the xp bar
-	TextStatusBar_UpdateTextString(MainMenuExpBar);
+	ExpBar_UpdateTextString();	
 	ExpBar_Update();
 	
 	if ( visibilityChanged ) then
@@ -423,6 +480,17 @@ function ExhaustionTick_OnLoad(self)
 end
 
 function ExhaustionTick_OnEvent(self, event, ...)
+	if (IsRestrictedAccount()) then
+		local rlevel = GetRestrictedAccountData();
+		if (UnitLevel("player") >= rlevel) then
+			MainMenuExpBar:SetStatusBarColor(0.0, 0.39, 0.88, 1.0);
+			MainMenuExpBar:SetAnimatedTextureColors(0.0, 0.39, 0.88, 1.0);
+			ExhaustionTick:Hide();
+			ExhaustionLevelFillBar:Hide();
+			self:UnregisterAllEvents();	
+			return;
+		end
+	end
 	if ((event == "PLAYER_ENTERING_WORLD") or (event == "PLAYER_XP_UPDATE") or (event == "UPDATE_EXHAUSTION") or (event == "PLAYER_LEVEL_UP")) then
 		local playerCurrXP = UnitXP("player");
 		local playerMaxXP = UnitXPMax("player");

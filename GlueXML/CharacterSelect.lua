@@ -75,7 +75,32 @@ end
 
 function CharacterSelectLockedButtonMixin:OnClick()
     CharacterSelectButton_OnClick(self.characterSelectButton);
-    CharacterSelect_ShowBoostUnlockDialog(self.guid);
+
+	if GlobalGlueContextMenu_GetOwner() == self then
+		GlobalGlueContextMenu_Release();
+	else
+		local availableBoostTypes = GetAvailableBoostTypesForCharacterByGUID(self.guid);
+		if #availableBoostTypes > 1 then
+			local glueContextMenu = GlobalGlueContextMenu_Acquire(self);
+			glueContextMenu:SetPoint("TOPRIGHT", self, "TOPLEFT", 15, -12);
+
+			for i, boostType in ipairs(availableBoostTypes) do
+				local flowData = C_CharacterServices.GetCharacterServiceDisplayData(boostType);
+				local function CharacterSelectLockedButtonContextMenuButton_OnClick() CharacterUpgradePopup_BeginCharacterUpgradeFlow(flowData, guid); end;
+				glueContextMenu:AddButton(CHARACTER_SELECT_PADLOCK_DROP_DOWN_USE_BOOST:format(flowData.flowTitle), CharacterSelectLockedButtonContextMenuButton_OnClick);
+			end
+
+			local function CloseContextMenu()
+				GlobalGlueContextMenu_Release();
+			end
+
+			glueContextMenu:AddButton(CANCEL, CloseContextMenu);
+
+			glueContextMenu:Show();
+		else
+			CharacterSelect_ShowBoostUnlockDialog(self.guid);
+		end
+	end
 end
 
 function CharacterSelect_OnLoad(self)
@@ -429,6 +454,8 @@ function CharacterSelect_OnKeyDown(self,key)
             CopyCharacterFrame:Hide();
         elseif (CharacterSelect.undeleting) then
             CharacterSelect_EndCharacterUndelete();
+		elseif ( GlobalGlueContextMenu_IsShown() ) then
+			GlobalGlueContextMenu_Release();
         else
             CharacterSelect_Exit();
         end
@@ -657,19 +684,17 @@ function CharacterSelect_SetupPadlockForCharacterButton(button, guid)
 
     padlock.guid = guid;
 
-	local purchasableBoostType = C_CharacterServices.GetActiveCharacterUpgradeBoostType();
-	local boostDisplayData = C_CharacterServices.GetCharacterServiceDisplayData(purchasableBoostType);	
     local isTrialBoost, isTrialBoostLocked, revokedCharacterUpgrade = select(22, GetCharacterInfoByGUID(guid));
     if isTrialBoost and isTrialBoostLocked then
         padlock.tooltipTitle = CHARACTER_SELECT_INFO_TRIAL_BOOST_LOCKED_TOOLTIP_TITLE;
-        padlock.tooltipText = CHARACTER_SELECT_INFO_TRIAL_BOOST_LOCKED_TOOLTIP_TEXT:format(boostDisplayData.flowTitle);
+        padlock.tooltipText = CHARACTER_SELECT_INFO_TRIAL_BOOST_LOCKED_TOOLTIP_TEXT;
     elseif revokedCharacterUpgrade then
         padlock.tooltipTitle = CHARACTER_SELECT_REVOKED_BOOST_TOKEN_LOCKED_TOOLTIP_TITLE;
-        padlock.tooltipText = CHARACTER_SELECT_REVOKED_BOOST_TOKEN_LOCKED_TOOLTIP_TEXT:format(boostDisplayData.flowTitle);
+        padlock.tooltipText = CHARACTER_SELECT_REVOKED_BOOST_TOKEN_LOCKED_TOOLTIP_TEXT;
     else
         GMError("Invalid lock type");
     end
-
+	
     padlock:SetParent(button);
     padlock:SetPoint("TOPRIGHT", button, "TOPLEFT", 5, 12);
 
@@ -1163,9 +1188,11 @@ function CharacterSelect_SelectCharacter(index, noCreate)
         -- Update the text of the EnterWorld button based on the type of character that's selected, default to "enter world"
         local text = ENTER_WORLD;
 
-        local isTrialBoostLocked = select(23,GetCharacterInfo(GetCharacterSelection()));
+        local isTrialBoostLocked, revokedCharacterUpgrade = select(23,GetCharacterInfo(GetCharacterSelection()));
         if ( isTrialBoostLocked ) then
             text = ENTER_WORLD_UNLOCK_TRIAL_CHARACTER;
+		elseif ( revokedCharacterUpgrade ) then
+			text = ENTER_WORLD_UNLOCK_REVOKED_CHARACTER_UPGRADE;
         end
 
         CharSelectEnterWorldButton:SetText(text);
@@ -1177,7 +1204,7 @@ function CharacterSelect_SelectCharacterByGUID(guid)
     local num = math.min(GetNumCharacters(), MAX_CHARACTERS_DISPLAYED);
 
     for i = 1, num do
-        if (select(14, GetCharacterInfo(GetCharIDFromIndex(i + CHARACTER_LIST_OFFSET))) == guid) then
+        if (select(15, GetCharacterInfo(GetCharIDFromIndex(i + CHARACTER_LIST_OFFSET))) == guid) then
             local button = _G["CharSelectCharacterButton"..i];
             CharacterSelectButton_OnClick(button);
             button.selection:Show();
@@ -1203,10 +1230,6 @@ function CharacterSelect_EnterWorld()
 
     if ( locked ) then
         SubscriptionRequestDialog_Open();
-        return;
-    end
-
-    if ( CharacterSelect_ShowBoostUnlockDialog(guid) ) then
         return;
     end
 
@@ -1262,8 +1285,9 @@ function CharacterSelect_AllowedToEnterWorld()
 		return false;
     end
 
-    local isTrialBoost, isTrialBoostLocked, _, vasServiceInProgress = select(22, GetCharacterInfo(GetCharacterSelection()));
-    if (isTrialBoost and (isTrialBoostLocked or not C_CharacterServices.IsTrialBoostEnabled())) then
+    local isTrialBoost, isTrialBoostLocked, revokedCharacterUpgrade, vasServiceInProgress = select(22, GetCharacterInfo(GetCharacterSelection()));
+	local trialBoostUnavailable = isTrialBoost and (isTrialBoostLocked or not C_CharacterServices.IsTrialBoostEnabled());
+    if (revokedCharacterUpgrade or trialBoostUnavailable) then
         return false;
     end
 
@@ -2093,7 +2117,8 @@ end
 
 function CharacterUpgradePopup_OnCharacterBoostDelivered(boostType, guid, reason)
     if reason == "forUnrevokeBoost" then
-        CharacterSelect_BeginUnrevokeBoostToken(guid);
+		local flowData = C_CharacterServices.GetCharacterServiceDisplayData(boostType);
+		CharacterUpgradePopup_BeginCharacterUpgradeFlow(flowData, guid);
     else
         local flowData = C_CharacterServices.GetCharacterServiceDisplayData(boostType);
 
@@ -2133,11 +2158,6 @@ end
 function CharacterUpgradePopup_OnCloseClick(self)
     HandleUpgradePopupButtonClick(self);
     CharacterServicesMaster_UpdateServiceButton();
-end
-
-function CharacterSelect_BeginUnrevokeBoostToken(guid)
-    local dialogText = CHARACTER_SELECT_REVOKED_BOOST_TOKEN_DIALOG_TEXT:format(GetCharacterInfoByGUID(guid));
-    GlueDialog_Show("UNLOCK_REVOKED_UPGRADE_CHARACTER", dialogText, guid);
 end
 
 function CharacterServicesTokenBoost_OnClick(self)
@@ -2821,9 +2841,11 @@ function CharacterSelect_ShowStoreFrameForBoostType(boostType, guid, reason)
 end
 
 function CharacterSelect_CheckApplyBoostToUnlockTrialCharacter(guid)
-    local hasBoost, boostType = C_CharacterServices.HasRequiredBoostForClassTrial();
-    if hasBoost then
-        local flowData = C_CharacterServices.GetCharacterServiceDisplayData(boostType);
+    local availableBoostTypes = GetAvailableBoostTypesForCharacterByGUID(guid);
+    if #availableBoostTypes >= 1 then
+		-- We should only ever get in this case if #availableBoostTypes == 1. If there is more than 1 available
+		-- boost type then users use a dropdown to choose a boost.
+        local flowData = C_CharacterServices.GetCharacterServiceDisplayData(availableBoostTypes[1]);
         CharacterUpgradePopup_BeginUnlockTrialCharacter(flowData, guid);
     else
 	    local purchasableBoostType = C_CharacterServices.GetActiveCharacterUpgradeBoostType();
@@ -2834,7 +2856,8 @@ end
 function CharacterSelect_CheckApplyBoostToUnrevokeBoost(guid)
     local hasBoost, boostType = C_CharacterServices.HasRequiredBoostForUnrevoke();
     if hasBoost then
-        CharacterSelect_BeginUnrevokeBoostToken(guid);
+		local flowData = C_CharacterServices.GetCharacterServiceDisplayData(boostType);
+		CharacterUpgradePopup_BeginCharacterUpgradeFlow(flowData, guid);
     else
 		local purchasableBoostType = C_CharacterServices.GetActiveCharacterUpgradeBoostType();
         CharacterSelect_ShowStoreFrameForBoostType(purchasableBoostType, guid, "forUnrevokeBoost");

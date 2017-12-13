@@ -17,6 +17,7 @@ GlueTemplates.xml
 ## add new files after here
 GlueButtons.xml
 GlueDropDownMenu.xml
+GlueContextMenu.xml
 
 ..\SharedXML\LayoutFrame.xml
 ..\SharedXML\HybridScrollFrame.lua

@@ -492,6 +492,10 @@
 				<Anchor point="CENTER" x="2" y="-2"/>
 			</Anchors>
 		</PushedTexture>
+		<Scripts>
+			<OnEnter function="CharCreateRaceButton_OnEnter"/>
+			<OnLeave function="CharCreateRaceButton_OnLeave"/>
+		</Scripts>
 	</CheckButton>
 	<CheckButton name="CharCreateClassButtonTemplate" virtual="true" motionScriptsWhileDisabled="true">
 		<Size x="40" y="40"/>

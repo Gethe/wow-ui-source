@@ -165,6 +165,9 @@ PAPERDOLL_STATINFO = {
 	["AVOIDANCE"] = {
 		updateFunc = function(statFrame, unit) PaperDollFrame_SetAvoidance(statFrame, unit); end
 	},
+	["SPEED"] = {
+		updateFunc = function(statFrame, unit) PaperDollFrame_SetSpeed(statFrame, unit); end
+	},
 
 	-- Attack
 	["ATTACK_DAMAGE"] = {
@@ -234,7 +237,7 @@ PAPERDOLL_STATCATEGORIES= {
 			{ stat = "VERSATILITY", hideAt = 0 },
 			{ stat = "LIFESTEAL", hideAt = 0 },
 			{ stat = "AVOIDANCE", hideAt = 0 },
-			{ stat = "MOVESPEED", hideAt = 100 },
+			{ stat = "SPEED", hideAt = 0 },
 			{ stat = "DODGE", roles =  { "TANK" } },
 			{ stat = "PARRY", hideAt = 0, roles =  { "TANK" } },
 			{ stat = "BLOCK" , hideAt = 0, roles =  { "TANK" } },
@@ -1327,8 +1330,6 @@ function PaperDollFrame_SetMovementSpeed(statFrame, unit)
 	MovementSpeed_OnUpdate(statFrame);
 
 	statFrame.onEnterFunc = MovementSpeed_OnEnter;
-	-- TODO: Fix if we decide to show movement speed
-	-- statFrame:SetScript("OnUpdate", MovementSpeed_OnUpdate);
 end
 
 function CharacterSpellBonusDamage_OnEnter (self)

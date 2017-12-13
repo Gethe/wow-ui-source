@@ -203,11 +203,7 @@
 					self:Disable();
 				end
 			</OnLoad>
-			<OnShow>
-				if (IsKioskModeEnabled()) then
-					self:Disable();
-				end
-			</OnShow>
+			<OnShow function="MicroButton_KioskModeDisable"/>
 			<OnEvent function="AchievementMicroButton_OnEvent"/>
 			<OnClick>
 				ToggleAchievementFrame();
@@ -291,11 +287,7 @@
 					self:Disable();
 				end
 			</OnLoad>
-			<OnShow>
-				if (IsKioskModeEnabled()) then
-					self:Disable();
-				end
-			</OnShow>
+			<OnShow function="MicroButton_KioskModeDisable"/>
 			<OnEvent function="GuildMicroButton_OnEvent"/>
 			<OnClick>
 				ToggleGuildFrame();
@@ -321,11 +313,7 @@
 					self:Disable();
 				end
 			</OnLoad>
-			<OnShow>
-				if (IsKioskModeEnabled()) then
-					self:Disable();
-				end
-			</OnShow>
+			<OnShow function="MicroButton_KioskModeDisable"/>
 			<OnEvent>
 				if (IsKioskModeEnabled()) then
 					return;
@@ -394,16 +382,12 @@
 		</Frames>
 		<Scripts>
 			<OnLoad function="EJMicroButton_OnLoad"/>
-			<OnShow>
-				if (IsKioskModeEnabled()) then
-					self:Disable();
-				end
-			</OnShow>
+			<OnShow function="MicroButton_KioskModeDisable"/>
 			<OnEvent function="EJMicroButton_OnEvent"/>
 			<OnClick function="ToggleEncounterJournal"/>
 		</Scripts>
 	</Button>
-	<Button name="StoreMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">
+	<Button name="StoreMicroButton" inherits="MainMenuBarMicroButton" mixin="StoreMicroButtonMixin" parent="UIParent">
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="EJMicroButton" relativePoint="BOTTOMRIGHT">
 				<Offset>
@@ -412,25 +396,9 @@
 			</Anchor>
 		</Anchors>
 		<Scripts>
-			<OnLoad>
-				LoadMicroButtonTextures(self, "BStore");
-				self.tooltipText = BLIZZARD_STORE;
-				self:RegisterEvent("STORE_STATUS_CHANGED");
-				if (IsKioskModeEnabled()) then
-					self:Disable();
-				end
-			</OnLoad>
-			<OnShow>
-				if (IsKioskModeEnabled()) then
-					self:Disable();
-				end
-			</OnShow>
-			<OnEvent>
-				UpdateMicroButtons();
-				if (IsKioskModeEnabled()) then
-					self:Disable();
-				end
-			</OnEvent>
+			<OnLoad function="StoreMicroButton_OnLoad"/>
+			<OnShow function="MicroButton_KioskModeDisable"/>
+			<OnEvent function="StoreMicroButton_OnEvent"/>
 			<OnClick function="ToggleStoreUI"/>
 		</Scripts>
 	</Button>
@@ -635,5 +603,13 @@
 				SetCVar("advJournalLastOpened", GetServerTime() );
 			</OnHide>
 		</Scripts>
+	</Frame>
+	<Frame name="StoreMicroButtonAlert" inherits="MicroButtonAlertTemplate">
+		<KeyValues>
+			<KeyValue key="MicroButton" value="StoreMicroButton" type="global"/>
+		</KeyValues>
+		<Anchors>
+			<Anchor point="BOTTOM" relativeTo="StoreMicroButton" relativePoint="TOP" x="0" y="-8"/>
+		</Anchors>
 	</Frame>
 </Ui>
