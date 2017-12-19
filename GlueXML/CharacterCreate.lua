@@ -346,6 +346,16 @@ function CharacterCreate_OnShow()
 	CharCreateRaceButtonsFrame.ClassicBanners:Show();
 	CharCreateRaceButtonsFrame.AlliedRaceBanners:Hide();
 	C_CharacterCreation.SetCurrentRaceMode(Enum.CharacterCreateRaceMode.Normal);
+	if (PAID_SERVICE_TYPE) then
+		local raceID = C_PaidServices.GetCurrentRaceID();
+		local raceData = C_CharacterCreation.GetRaceDataByID(raceID);
+		if (raceData.isAlliedRace) then
+			CharCreateRaceButtonsFrame.ClassicBanners:Hide();
+			CharCreateRaceButtonsFrame.AlliedRaceBanners:Show();
+			C_CharacterCreation.SetCurrentRaceMode(Enum.CharacterCreateRaceMode.AlliedRace);
+		end
+	end
+
 	CharacterCreateEnumerateRaces();
 
 	SetCharacterRace(C_CharacterCreation.GetSelectedRace());
@@ -554,6 +564,30 @@ function GetRaceAtlas(raceName, gender)
 	return ("raceicon-%s-%s"):format(raceName, gender);
 end
 
+function CharacterCreate_GetRandomRace()
+	local races = C_CharacterCreation.GetAvailableRaces();
+
+	if (PAID_SERVICE_TYPE) then
+		local classID = C_PaidServices.GetCurrentClassID();
+		local faction = C_CharacterCreation.GetFactionForRace(C_PaidServices.GetCurrentRaceID());
+		if (PAID_SERVICE_TYPE == PAID_FACTION_CHANGE) then
+			races = tFilter(races, function(raceData) return raceData.enabled and C_CharacterCreation.IsRaceClassValid(raceData.raceID, classID) and faction ~= C_CharacterCreation.GetFactionForRace(raceData.raceID) end, true);
+		elseif (PAID_SERVICE_TYPE == PAID_RACE_CHANGE) then
+			races = tFilter(races, function(raceData) return raceData.enabled and C_CharacterCreation.IsRaceClassValid(raceData.raceID, classID) and faction == C_CharacterCreation.GetFactionForRace(raceData.raceID) end, true);
+		else
+			return nil;
+		end
+	end
+
+	if (#races == 0) then
+		return nil;
+	elseif (#races == 1) then
+		return races[1].raceID;
+	else
+		return races[math.random(1, #races)].raceID;
+	end
+end
+
 function CharacterCreateEnumerateRaces(modeChange)
 	local races = C_CharacterCreation.GetAvailableRaces();
 
@@ -598,11 +632,6 @@ function CharacterCreateEnumerateRaces(modeChange)
 		button.NormalTexture:SetAtlas(atlas);
 		button.PushedTexture:SetAtlas(atlas);
 		button.nameFrame.text:SetText(name);
-		local maxStringWidth = 60;
-		if (button.nameFrame.text:GetStringWidth() > maxStringWidth) then
-			local splitName = strsplit(" ", name);
-			button.nameFrame.text:SetText(splitName);
-		end
 		
 		local kioskModeData = IsKioskGlueEnabled() and KioskModeSplash_GetModeData();
 		local disableTexture = button.DisableTexture;
@@ -651,8 +680,11 @@ function CharacterCreateEnumerateRaces(modeChange)
 	CharCreateRaceButtonsFrame.NeutralRaces:Layout();
 
 	if (modeChange) then
-		local raceID = races[math.random(1, #races)].raceID;
-		CharCreateSelectRace(raceID, true);
+		local raceID = CharacterCreate_GetRandomRace();
+
+		if (raceID) then
+			CharCreateSelectRace(raceID, true);
+		end
 	end
 end
 
@@ -987,8 +1019,37 @@ end
 function CharacterCreate_OnChar()
 end
 
+function CharacterCreate_GetValidAlliedRacePaidServiceOptions()
+	local validOptions = C_CharacterCreation.GetAvailableRaces(Enum.CharacterCreateRaceMode.AlliedRace);
+
+	local classID = C_PaidServices.GetCurrentClassID();
+	local faction = C_PaidServices.GetCurrentFaction();
+	local level = C_PaidServices.GetCurrentLevel();
+
+	if (not level or level < 20) then
+		return nil;
+	end
+
+	if (PAID_SERVICE_TYPE == PAID_FACTION_CHANGE) then
+		validOptions = tFilter(validOptions, function(raceData) return raceData.enabled and C_CharacterCreation.IsRaceClassValid(raceData.raceID, classID) and faction ~= C_CharacterCreation.GetFactionForRace(raceData.raceID) end, true);
+	elseif (PAID_SERVICE_TYPE == PAID_RACE_CHANGE) then
+		validOptions = tFilter(validOptions, function(raceData) return raceData.enabled and C_CharacterCreation.IsRaceClassValid(raceData.raceID, classID) and faction == C_CharacterCreation.GetFactionForRace(raceData.raceID) end, true);
+	else
+		validOptions = nil;
+	end
+
+	return validOptions;
+end
+
 function CharacterCreate_UpdateAlliedRaceButton()
-	CharCreateAlliedRacesButton:SetShown(C_CharacterCreation.ShouldShowAlliedRacesButton() and C_CharacterCreation.GetCurrentRaceMode() == Enum.CharacterCreateRaceMode.Normal and CharacterCreateFrame.state == "CLASSRACE");
+	local shouldShow = C_CharacterCreation.ShouldShowAlliedRacesButton() and C_CharacterCreation.GetCurrentRaceMode() == Enum.CharacterCreateRaceMode.Normal;
+
+	if (shouldShow and PAID_SERVICE_TYPE) then
+		local validOptions = CharacterCreate_GetValidAlliedRacePaidServiceOptions();
+		shouldShow = validOptions and #validOptions > 0;
+	end
+
+	CharCreateAlliedRacesButton:SetShown(shouldShow);
 end
 
 function CharacterCreate_OnKeyDown(self, key)
@@ -1045,7 +1106,7 @@ function CharacterCreate_Back()
 
 		-- back to normal camera
 		C_CharacterCreation.SetFaceCustomizeCamera(false);
-	elseif (C_CharacterCreation.GetCurrentRaceMode() == Enum.CharacterCreateRaceMode.AlliedRace) then
+	elseif (C_CharacterCreation.GetCurrentRaceMode() == Enum.CharacterCreateRaceMode.AlliedRace and (not PAID_SERVICE_TYPE or PAID_SERVICE_TYPE ~= PAID_CHARACTER_CUSTOMIZATION)) then
 		C_CharacterCreation.SetCurrentRaceMode(Enum.CharacterCreateRaceMode.Normal);
 		CharacterCreate_UpdateAlliedRaceButton();	
 		CharCreateRaceButtonsFrame.ClassicBanners:Show();
@@ -1885,10 +1946,12 @@ end
 ---------------------------------------------
 function CharCreateRaceButton_OnEnter(self)
 	local raceData = C_CharacterCreation.GetRaceDataByID(self.raceID);
+
+	CharacterCreateTooltip:SetOwner(self, "ANCHOR_RIGHT", 8, -5);
+	CharacterCreateTooltip:SetText(raceData.name, 1, 1, 1, 1, true);
+
 	if (raceData.isAlliedRace) then
 		local hasExpansion, hasAchievement = C_CharacterCreation.GetAlliedRaceCreationRequirements(self.raceID);
-		CharacterCreateTooltip:SetOwner(self, "ANCHOR_RIGHT", 8, -5);
-		CharacterCreateTooltip:SetText(raceData.name, 1, 1, 1, 1, true);
 		if (not hasExpansion) then
 			CharacterCreateTooltip:AddLine(CHARACTER_CREATION_REQUIREMENTS_NEED_8_0, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, 1, true);
 		end
@@ -1965,11 +2028,21 @@ local function IsBoostAllowed(classInfo, raceData)
 end
 
 local function UpdateLevelText(button, classInfo, raceData)
-	button.levelText:SetText(CHARACTER_TYPE_FRAME_STARTING_LEVEL:format(C_CharacterCreation.GetStartingLevel(C_CharacterCreation.GetClassDataByID(classInfo.classID), raceData, button.characterType == Enum.CharacterCreateType.TrialBoost)));
+	button.levelText:SetText(CHARACTER_TYPE_FRAME_STARTING_LEVEL:format(CharacterCreate_GetStartingLevel(button.characterType == Enum.CharacterCreateType.TrialBoost)));
 end
 
 function CharacterCreate_TypeButtonOnLoad(self)
 	self.typeText:SetText(self.titleText);
+end
+
+function CharacterCreate_GetStartingLevel(forTrialBoost)
+	if ( forTrialBoost ) then
+		return C_CharacterCreation.GetTrialBoostStartingLevel();
+	else
+		local classInfo = C_CharacterCreation.GetSelectedClass();
+		local raceData = C_CharacterCreation.GetRaceDataByID(C_CharacterCreation.GetSelectedRace());
+		return max(classInfo.startingLevel, raceData.startingLevel);
+	end
 end
 
 function CharacterCreate_UpdateCharacterTypeButtons()

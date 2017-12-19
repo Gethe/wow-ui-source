@@ -1455,8 +1455,7 @@
 									<OnEnter>
 										local buttonTooltip = CHARACTER_UPGRADE_POPUP_TRY_NEW_CLASS_DISABLED_TOOLTIP;
 										if C_CharacterServices.IsTrialBoostEnabled() then
-											-- This will need to be revisited later.
-											local boostLevel = self:GetParent().data.level;
+											local boostLevel = C_CharacterCreation.GetTrialBoostStartingLevel();
 											buttonTooltip = CHARACTER_UPGRADE_POPUP_TRY_NEW_CLASS_TOOLTIP:format(boostLevel);
 										end
 										GlueTooltip:SetOwner(self, "ANCHOR_RIGHT");

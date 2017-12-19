@@ -197,6 +197,7 @@ function SplashFrame_Display(tag, showStartButton)
 		"Game72Font",
 		"Game60Font",
 		"Game48Font",
+		"Game46Font",
 		"Game36Font",
 		"Game32Font",
 		"Game27Font",

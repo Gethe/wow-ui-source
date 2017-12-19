@@ -88,6 +88,23 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame parentKey="CoverFrame" frameLevel="1" enableMouse="true" enableKeyboard="true" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="UIParent"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="UIParent"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND" textureSubLevel="-1">
+						<Texture setAllPoints="true">
+							<Color r="0" g="0" b="0" a="0.5"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnKeyDown function="nop"/>
+					<OnKeyUp function="nop"/>
+				</Scripts>
+			</Frame>
 			<Frame name="$parentExtraFrame" parentKey="extraFrame" enableMouse="true"/>
 			<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
 				<Anchors>
@@ -264,16 +281,7 @@
 			<OnHide>
 				StaticPopup_OnHide(self);
 			</OnHide>
-			<OnLoad>
-				local name = self:GetName();
-				self.button1 = _G[name .. "Button1"];
-				self.button2 = _G[name .. "Button2"];
-				self.button3 = _G[name .. "Button3"];
-				self.text = _G[name .. "Text"];
-				self.icon = _G[name .. "AlertIcon"];
-				self.moneyInputFrame = _G[name .. "MoneyInputFrame"];
-				self:RegisterEvent("DISPLAY_SIZE_CHANGED");
-			</OnLoad>
+			<OnLoad function="StaticPopup_OnLoad" />
 			<OnHyperlinkClick function="StaticPopup_OnHyperlinkClick"/>
 			<OnHyperlinkEnter function="StaticPopup_OnHyperlinkEnter"/>
 			<OnHyperlinkLeave function="StaticPopup_OnHyperlinkLeave"/>
@@ -281,11 +289,7 @@
 	</Frame>
 	<Frame name="StaticPopup1" inherits="StaticPopupTemplate" parent="UIParent" id="1">
 		<Anchors>
-			<Anchor point="TOP">
-				<Offset>
-					<AbsDimension x="0" y="-135"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="TOP" x="0" y="-135"/>
 		</Anchors>
 	</Frame>
 	<Frame name="StaticPopup2" inherits="StaticPopupTemplate" parent="UIParent" id="2">

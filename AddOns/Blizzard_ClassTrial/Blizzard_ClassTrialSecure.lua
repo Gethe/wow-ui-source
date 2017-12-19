@@ -12,20 +12,20 @@ setfenv(1, tbl);
 ----------------
 
 Import("C_CharacterServices");
+Import("C_SharedCharacterServices");
 Import("pairs");
 Import("Enum");
 
-local function ClassTrialDoCharacterUpgrade(guid, confirmed)
-	local hasBoost, requiredBoostType = C_CharacterServices.HasRequiredBoostForClassTrial();
-
-	if hasBoost then
+local function ClassTrialDoCharacterUpgrade(guid, boostType, confirmed)
+	local upgradeDistributions = C_SharedCharacterServices.GetUpgradeDistributions();
+	if upgradeDistributions[boostType] and upgradeDistributions[boostType].amount >= 1 then
 		if confirmed then
-			C_CharacterServices.AssignUpgradeDistribution(guid, 0, 0, 0, requiredBoostType);
+			C_CharacterServices.AssignUpgradeDistribution(guid, 0, 0, 0, boostType);
 		else
-			Outbound.ShowUpgradeConfirmation();
+			Outbound.ShowUpgradeConfirmation(guid, boostType);
 		end
 	else
-		Outbound.ShowStoreServices();
+		Outbound.ShowStoreServices(guid, boostType);
 	end
 end
 
@@ -42,12 +42,12 @@ function ClassTrialSecureFrameMixin:OnEvent(event, ...)
 end
 
 function ClassTrialSecureFrameMixin:OnAttributeChanged(name, value)
-	local guid = value;
+	local data = value;
 
 	if (name == "upgradecharacter") then
-		ClassTrialDoCharacterUpgrade(guid, false);
+		ClassTrialDoCharacterUpgrade(data.guid, data.boostType, false);
 	elseif name == "upgradecharacter-confirm" then
-		ClassTrialDoCharacterUpgrade(guid, true);
+		ClassTrialDoCharacterUpgrade(data.guid, data.boostType, true);
 	elseif name == "updateboostpurchasebutton" then
 		self:OutboundUpdateBoost();
 	end

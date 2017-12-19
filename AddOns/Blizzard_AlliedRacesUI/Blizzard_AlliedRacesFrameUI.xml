@@ -95,7 +95,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="AlliedRacesFrame" toplevel="true" parent="UIParent" inherits="ButtonFrameTemplate" mixin="AlliedRacesFrameMixin">
+	<Frame name="AlliedRacesFrame" toplevel="true" parent="UIParent" inherits="ButtonFrameTemplate" mixin="AlliedRacesFrameMixin" hidden="true">
 		<Size x="704" y="607"/>
 		<Anchors>
 			<Anchor point="LEFT" x="20" y="40"/> 
@@ -357,11 +357,12 @@
 				</Frames>
 				<Layers>
 					<Layer level="ARTWORK">
-						<FontString parentKey="AlliedRacesRaceName" inherits="DestinyFontHuge" justifyH="CENTER" mixin="ShrinkUntilTruncateFontStringMixin">
-							<Size x="310" y="40"/>
+						<FontString parentKey="AlliedRacesRaceName" inherits="Fancy48Font" justifyH="CENTER" mixin="ShrinkUntilTruncateFontStringMixin">
+							<Size x="270" y="40"/>
 							<Anchors>
-								<Anchor point="TOPRIGHT" relativeTo="AlliedRacesFrame" x="-25" y="-38"/>
+								<Anchor point="TOPRIGHT" relativeTo="AlliedRacesFrame" x="-52" y="-38"/>
 							</Anchors>
+							<Color r="0.1" g="0.1" b="0.1"/>
 						</FontString>
 					</Layer>
 				</Layers>

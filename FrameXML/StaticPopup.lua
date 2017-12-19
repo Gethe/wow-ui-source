@@ -1752,6 +1752,55 @@ StaticPopupDialogs["LEVEL_GRANT_PROPOSED"] = {
 	hideOnEscape = 1
 };
 
+do
+	local warningSeenBefore = false;
+	StaticPopupDialogs["LEVEL_GRANT_PROPOSED_ALLIED_RACE"] = {
+		text = LEVEL_GRANT_ALLIED_RACE,
+		button1 = ACCEPT,
+		button2 = DECLINE,
+		sound = SOUNDKIT.IG_PLAYER_INVITE,
+		OnAccept = function(self)
+			AcceptLevelGrant();
+		end,
+		OnCancel = function(self)
+			if (self.ticker) then
+				self.ticker:Cancel();
+				self.ticker = nil;
+			end
+			DeclineLevelGrant();
+		end,
+		OnShow = function(self)
+			if (not warningSeenBefore) then
+				self.button1:Disable();
+				self.timeLeft = 3;
+				self.button1:SetText(self.timeLeft);
+				self.ticker = C_Timer.NewTicker(1, function()
+					self.timeLeft = self.timeLeft - 1;
+					self.button1:SetText(self.timeLeft);
+					if (self.timeLeft <= 0) then
+						self.ticker:Cancel();
+						self.ticker = nil;
+						self.button1:SetText(OKAY);
+						self.button1:Enable();
+						warningSeenBefore = true;
+					end
+				end);
+			end
+		end,
+		OnHide = function(self)
+			if (self.ticker) then
+				self.ticker:Cancel();
+				self.ticker = nil;
+			end
+			DeclineLevelGrant();
+		end,
+		showAlert = 1,
+		timeout = STATICPOPUP_TIMEOUT,
+		whileDead = 1,
+		hideOnEscape = 1
+	};
+end
+
 StaticPopupDialogs["BN_BLOCK_FAILED_TOO_MANY_RID"] = {
 	text = BN_BLOCK_FAILED_TOO_MANY_RID,
 	button1 = OKAY,
@@ -3767,14 +3816,15 @@ StaticPopupDialogs["CONFIRM_UNLOCK_TRIAL_CHARACTER"] = {
 	text = CHARACTER_UPGRADE_FINISH_BUTTON_POPUP_TEXT,
 	button1 = OKAY,
 	button2 = CANCEL,
-	OnAccept = function()
-		ClassTrialThanksForPlayingDialog:ConfirmCharacterBoost();
+	OnAccept = function(self, data)
+		ClassTrialThanksForPlayingDialog:ConfirmCharacterBoost(data.guid, data.boostType);
 	end,
 	OnCancel = function()
 		ClassTrialThanksForPlayingDialog:ShowThanks();
 	end,
 	timeout = 0,
 	whileDead = 1,
+	fullScreenCover = true,
 }
 
 StaticPopupDialogs["DANGEROUS_SCRIPTS_WARNING"] = {
@@ -3849,6 +3899,45 @@ StaticPopupDialogs["CLIENT_INVENTORY_FULL_OVERFLOW"] = {
 	showAlert = 1,
 }
 
+do
+	local warningSeenBefore = false;
+	StaticPopupDialogs["RAF_GRANT_LEVEL_ALLIED_RACE"] = {
+		text = LEVEL_GRANT_ALLIED_RACE_WARNING,
+		button1 = OKAY,
+		button2 = CANCEL,
+		OnAccept = function(self)
+			GrantLevel(self.data);
+		end,
+		OnShow = function(self)
+			if (not warningSeenBefore) then
+				self.button1:Disable();
+				self.timeLeft = 3;
+				self.button1:SetText(self.timeLeft);
+				self.ticker = C_Timer.NewTicker(1, function()
+					self.timeLeft = self.timeLeft - 1;
+					self.button1:SetText(self.timeLeft);
+					if (self.timeLeft <= 0) then
+						self.ticker:Cancel();
+						self.ticker = nil;
+						self.button1:SetText(OKAY);
+						self.button1:Enable();
+						warningSeenBefore = true;
+					end
+				end);
+			end
+		end,
+		OnHide = function(self)
+			if (self.ticker) then
+				self.ticker:Cancel();
+				self.ticker = nil;
+			end
+		end,
+		showAlert = 1,
+		whileDead = 0,
+		hideOnEscape = 1,
+	}
+end
+
 function StaticPopup_FindVisible(which, data)
 	local info = StaticPopupDialogs[which];
 	if ( not info ) then
@@ -3876,19 +3965,23 @@ function StaticPopup_Resize(dialog, which)
 	local maxHeightSoFar, maxWidthSoFar = (dialog.maxHeightSoFar or 0), (dialog.maxWidthSoFar or 0);
 	local width = 320;
 
-	if ( dialog.numButtons == 4 ) then
-		width = 574;
-	elseif ( dialog.numButtons == 3 ) then
-		width = 440;
-	elseif (info.showAlert or info.showAlertGear or info.closeButton or info.wide) then
-		-- Widen
-		width = 420;
-	elseif ( info.editBoxWidth and info.editBoxWidth > 260 ) then
-		width = width + (info.editBoxWidth - 260);
-	elseif ( which == "HELP_TICKET" ) then
-		width = 350;
-	elseif ( which == "GUILD_IMPEACH" ) then
-		width = 375;
+	if ( info.verticalButtonLayout ) then
+		width = width + 30;
+	else
+		if ( dialog.numButtons == 4 ) then
+			width = 574;
+		elseif ( dialog.numButtons == 3 ) then
+			width = 440;
+		elseif (info.showAlert or info.showAlertGear or info.closeButton or info.wide) then
+			-- Widen
+			width = 420;
+		elseif ( info.editBoxWidth and info.editBoxWidth > 260 ) then
+			width = width + (info.editBoxWidth - 260);
+		elseif ( which == "HELP_TICKET" ) then
+			width = 350;
+		elseif ( which == "GUILD_IMPEACH" ) then
+			width = 375;
+		end
 	end
 	if ( dialog.insertedFrame ) then
 		width = max(width, dialog.insertedFrame:GetWidth());
@@ -3916,6 +4009,10 @@ function StaticPopup_Resize(dialog, which)
 		height = height + 64;
 	end
 
+	if ( info.verticalButtonLayout ) then
+		height = height + 16 + (26 * (dialog.numButtons - 1));
+	end
+	
 	if ( height > maxHeightSoFar ) then
 		dialog:SetHeight(height);
 		dialog.maxHeightSoFar = height;
@@ -3953,7 +4050,7 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 	if ( info.exclusive ) then
 		StaticPopup_HideExclusive();
 	end
-
+	
 	if ( info.cancels ) then
 		for index = 1, STATICPOPUP_NUMDIALOGS, 1 do
 			local frame = _G["StaticPopup"..index];
@@ -4037,6 +4134,8 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 		end
 		return nil;
 	end
+
+	dialog.CoverFrame:SetShown(info.fullScreenCover);
 
 	dialog.maxHeightSoFar, dialog.maxWidthSoFar = 0, 0;
 	-- Set the text of the dialog
@@ -4193,19 +4292,29 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 		--Save off the number of buttons.
 		dialog.numButtons = numButtons;
 
-		if ( numButtons == 4 ) then
-			tempButtonLocs[1]:SetPoint("BOTTOMRIGHT", dialog, "BOTTOM", -139, 16);
-		elseif ( numButtons == 3 ) then
-			tempButtonLocs[1]:SetPoint("BOTTOMRIGHT", dialog, "BOTTOM", -72, 16);
-		elseif ( numButtons == 2 ) then
-			tempButtonLocs[1]:SetPoint("BOTTOMRIGHT", dialog, "BOTTOM", -6, 16);
-		elseif ( numButtons == 1 ) then
-			tempButtonLocs[1]:SetPoint("BOTTOM", dialog, "BOTTOM", 0, 16);
+		tempButtonLocs[1]:ClearAllPoints();
+		if ( info.verticalButtonLayout ) then
+			tempButtonLocs[1]:SetPoint("TOP", dialog.text, "BOTTOM", 0, -16);
+		else
+			if ( numButtons == 4 ) then
+				tempButtonLocs[1]:SetPoint("BOTTOMRIGHT", dialog, "BOTTOM", -139, 16);
+			elseif ( numButtons == 3 ) then
+				tempButtonLocs[1]:SetPoint("BOTTOMRIGHT", dialog, "BOTTOM", -72, 16);
+			elseif ( numButtons == 2 ) then
+				tempButtonLocs[1]:SetPoint("BOTTOMRIGHT", dialog, "BOTTOM", -6, 16);
+			elseif ( numButtons == 1 ) then
+				tempButtonLocs[1]:SetPoint("BOTTOM", dialog, "BOTTOM", 0, 16);
+			end
 		end
 
 		for i=1, numButtons do
 			if ( i > 1 ) then
-				tempButtonLocs[i]:SetPoint("LEFT", tempButtonLocs[i-1], "RIGHT", 13, 0);
+				tempButtonLocs[i]:ClearAllPoints();
+				if info.verticalButtonLayout then
+					tempButtonLocs[i]:SetPoint("TOP", tempButtonLocs[i-1], "BOTTOM", 0, -6);
+				else
+					tempButtonLocs[i]:SetPoint("LEFT", tempButtonLocs[i-1], "RIGHT", 13, 0);
+				end
 			end
 
 			local width = tempButtonLocs[i]:GetTextWidth();
@@ -4502,7 +4611,7 @@ function StaticPopup_OnClick(dialog, index)
 		return nil;
 	end
 
-	if ( which == "DEATH" ) then
+	if ( which == "DEATH" or which == "CLASS_TRIAL_CHOOSE_BOOST_TYPE" ) then
 		local func;	
 		if ( index == 1 ) then
 			func = info.OnAccept or info.OnButton1;
@@ -4681,9 +4790,38 @@ function StaticPopup_IsLastDisplayedFrame(frame)
 	return false;
 end
 
-function StaticPopup_OnEvent(self)
+function StaticPopup_OnLoad(self)
+	local name = self:GetName();
+	self.button1 = _G[name .. "Button1"];
+	self.button2 = _G[name .. "Button2"];
+	self.button3 = _G[name .. "Button3"];
+	self.text = _G[name .. "Text"];
+	self.icon = _G[name .. "AlertIcon"];
+	self.moneyInputFrame = _G[name .. "MoneyInputFrame"];
+	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
+	self:RegisterEvent("SPELL_NAME_UPDATE");
+end
+
+function StaticPopup_OnEvent(self, event, ...)
 	self.maxHeightSoFar = 0;
 	StaticPopup_Resize(self, self.which);
+	if ( event == "SPELL_NAME_UPDATE" ) then
+		local spellID, spellName = ...;
+		local info = StaticPopupDialogs[self.which];
+		if ( not info ) then
+			return nil;
+		end
+		for index = 1, STATICPOPUP_NUMDIALOGS, 1 do
+			local frame = _G["StaticPopup"..index];
+			if frame and frame.data and frame.data.pendingSpellID == spellID then
+				frame.data.name = spellName;
+				if frame:IsShown() then
+					info.OnShow(frame);
+					StaticPopup_Resize(self, self.which);
+				end
+			end
+		end
+	end
 end
 
 function StaticPopup_HideExclusive()

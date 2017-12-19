@@ -41,6 +41,12 @@ function ArtifactPowerButtonMixin:GenerateRune()
 	return ("Rune-%02d-light"):format(runeIndex)
 end
 
+function ArtifactPowerButtonMixin:OnShow()
+	if ( self.inInstabilityMode ) then
+		self:SetNextInstabilityTime(GetTime());
+	end
+end
+
 function ArtifactPowerButtonMixin:OnEnter()
 	if self.style ~= ARTIFACT_POWER_STYLE_RUNE and not self.locked then
 		local _, cursorItemID = GetCursorInfo();
@@ -202,6 +208,12 @@ function ArtifactPowerButtonMixin:PlayRevealAnimation(onFinishedAnimation)
 		return true;
 	end
 	return false;
+end
+
+function ArtifactPowerButtonMixin:PlayInstabilityAnimation()
+	self.LightRune:Show();
+	self.InstabilityAnim:SetScript("OnFinished", OnRevealAnimFinished);
+	self.InstabilityAnim:Play();
 end
 
 function ArtifactPowerButtonMixin:UpdatePowerType()
@@ -638,4 +650,65 @@ function ArtifactPowerButtonMixin:StopAllAnimations()
 	self.FinalPowerUnlockedAnim:Stop();
 	self.FirstPointWaitingAnimation:Stop();
 	self.Tier2FinalPowerSparks:Stop();
+end
+
+function ArtifactPowerButtonMixin:SetNextInstabilityTime(baseTime)
+	self.nextInstabilityTime = GetTime() + 3 + math.random() * 5;
+end
+
+function ArtifactPowerButtonMixin:EnterInstabilityMode()
+	self.inInstabilityMode = true;
+	self.LightRune:SetDrawLayer("OVERLAY", 3);
+	self:SetNextInstabilityTime(GetTime());
+	self:SetScript("OnUpdate", self.OnUpdate);
+end
+
+function ArtifactPowerButtonMixin:OnUpdate(elapsed)
+	local timeNow = GetTime();
+	if ( elapsed > 1 ) then
+		self:SetNextInstabilityTime(timeNow + max(0, 3 - elapsed));
+	elseif ( timeNow > self.nextInstabilityTime ) then
+		self:SetNextInstabilityTime(timeNow + 3);
+		self:TriggerInstability();
+	end
+end
+
+local function OnInstabilityLightHit(self)
+	local powerButton = self:GetParent():GetParent();
+	powerButton:PlayInstabilityAnimation();
+end
+
+function ArtifactPowerButtonMixin:TriggerInstability()
+	local perksTab = self:GetParent();
+	local sourceX = perksTab:GetWidth() / 2;
+	local sourceY = perksTab.TitleContainer:GetHeight();
+
+	local point, parent, relativePoint, targetX, targetY = self:GetPoint();
+	targetY = -targetY;
+
+	local label = perksTab.TitleContainer.InstabilityPointsRemainingPool:Acquire();
+	label:SetParent(perksTab.TitleContainer);
+	label:SetPoint("CENTER", perksTab.TitleContainer.PointsRemainingLabel);
+	label:Show();
+	local deltaX = sourceX - targetX;
+	local deltaY = targetY - sourceY;
+	label.Anim.Move:SetOffset(deltaX * 0.3, deltaY * 0.3);
+	label:SetText(perksTab.TitleContainer.PointsRemainingLabel:GetText());
+	label.Anim:Play();
+
+	if not self.FloatingNumbers or not self.FloatingNumbers[1] then
+		CreateFrame("Frame", nil, self, "ArtifactFloatingRankStringTemplate");
+	end
+	local animatedNumber = self.FloatingNumbers[1];
+	animatedNumber:SetPoint(point, parent, relativePoint, sourceX, -sourceY);
+	animatedNumber.Rune:SetAtlas(self:GenerateRune(), true);
+	animatedNumber.InstabilityMoveAndFade.Move:SetOffset(targetX - sourceX, sourceY - targetY);
+	animatedNumber.InstabilityMoveAndFade.Rotation:SetDegrees(math.random(-180, 180));
+	animatedNumber.InstabilityMoveAndFade.RuneMove:SetOffset(targetX - sourceX, sourceY - targetY);
+	animatedNumber.InstabilityMoveAndFade.RuneRotation:SetDegrees(math.random(-180, 180));
+	animatedNumber.InstabilityMoveAndFade:Play();
+	animatedNumber.InstabilityMoveAndFade:SetScript("OnFinished", OnInstabilityLightHit);
+	animatedNumber:Show();
+
+	self:GetParent().traitRefundSoundEmitter:StartLoopingSound();
 end

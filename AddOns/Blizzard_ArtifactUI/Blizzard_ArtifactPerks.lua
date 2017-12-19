@@ -109,11 +109,17 @@ function ArtifactPerksMixin:RefreshModel()
 	local _, _, _, _, _, _, uiCameraID, altHandUICameraID, _, _, _, modelAlpha, modelDesaturation = C_ArtifactUI.GetAppearanceInfoByID(artifactAppearanceID);
 
 	self.Model.uiCameraID = uiCameraID;
+	self.InstabilityShakeModel.uiCameraID = uiCameraID;
+	self.InstabilityEffectModel.uiCameraID = uiCameraID;
 	self.Model.desaturation = modelDesaturation;
 	if itemAppearanceID then
 		self.Model:SetItemAppearance(itemAppearanceID);
+		self.InstabilityShakeModel:SetItemAppearance(itemAppearanceID);
+		self.InstabilityEffectModel:SetItemAppearance(itemAppearanceID);
 	else
 		self.Model:SetItem(itemID, appearanceModID);
+		self.InstabilityShakeModel:SetItem(itemID, appearanceModID);
+		self.InstabilityEffectModel:SetItem(itemID, appearanceModID);
 	end
 
 	local backgroundFrontTargetAlpha = 1.0 - (modelAlpha or 1.0);
@@ -124,19 +130,35 @@ function ArtifactPerksMixin:RefreshModel()
 	self.Model.ForgingEffectAnimOut.Fade:SetToAlpha(backgroundFrontTargetAlpha);
 	self.Model.BackgroundFront:SetAlpha(backgroundFrontTargetAlpha);
 
-	self.Model:SetModelDrawLayer(altOnTop and "BORDER" or "ARTWORK");
-	self.AltModel:SetModelDrawLayer(altOnTop and "ARTWORK" or "BORDER");
+	local baseModelFrameLevel = 505;
+	local baseAltModelFrameLevel = 500;
+	if ( altOnTop ) then
+		baseModelFrameLevel, baseAltModelFrameLevel = baseAltModelFrameLevel, baseModelFrameLevel;
+	end
+
+	self.Model:SetFrameLevel(baseModelFrameLevel);
+	self.InstabilityShakeModel:SetFrameLevel(baseModelFrameLevel + 1);
+	self.InstabilityEffectModel:SetFrameLevel(baseModelFrameLevel + 2);
 
 	if altItemID and altHandUICameraID then
 		self.AltModel.uiCameraID = altHandUICameraID;
+		self.AltInstabilityShakeModel.uiCameraID = altHandUICameraID;
+		self.AltInstabilityEffectModel.uiCameraID = altHandUICameraID;
 		self.AltModel.desaturation = modelDesaturation;
 		if altItemAppearanceID then
 			self.AltModel:SetItemAppearance(altItemAppearanceID);
+			self.AltInstabilityShakeModel:SetItemAppearance(altItemAppearanceID);
+			self.AltInstabilityEffectModel:SetItemAppearance(altItemAppearanceID);
 		else
 			self.AltModel:SetItem(altItemID, appearanceModID);
+			self.AltInstabilityShakeModel:SetItem(altItemID, appearanceModID);
+			self.AltInstabilityEffectModel:SetItem(altItemID, appearanceModID);
 		end
 
 		self.AltModel:Show();
+		self.AltModel:SetFrameLevel(baseAltModelFrameLevel);
+		self.AltInstabilityShakeModel:SetFrameLevel(baseAltModelFrameLevel + 1);
+		self.AltInstabilityEffectModel:SetFrameLevel(baseAltModelFrameLevel + 2);
 	else
 		self.AltModel:Hide();
 	end
@@ -152,7 +174,11 @@ function ArtifactsModelTemplate_OnModelLoaded(self)
 	self:SetLight(true, false, 0, 0, 0, .7, 1.0, 1.0, 1.0);
 	self:SetViewTranslation(-88, 0);
 
-	self:SetDesaturation(self.desaturation or .5);
+	if ( self.useShadowEffect ) then
+		self:SetShadowEffect(1);
+	else
+		self:SetDesaturation(self.desaturation or .5);
+	end
 
 	self:SetAnimation(animationSequence, 0);
 end
@@ -165,6 +191,8 @@ function ArtifactPerksMixin:RefreshBackground()
 		local bgAtlas = ("%s-BG"):format(artifactArtInfo.textureKit);
 		self.BackgroundBack:SetAtlas(bgAtlas);
 		self.Model.BackgroundFront:SetAtlas(bgAtlas);
+		self.Model.InstabilityBackground1:SetAtlas(bgAtlas);
+		self.Model.InstabilityBackground2:SetAtlas(bgAtlas);
 		self.Tier2ForgingScene.BackgroundMiddle:SetAtlas(bgAtlas);
 		self.Tier2ForgingScene.BackgroundMiddle:Show();
 
@@ -189,8 +217,25 @@ function ArtifactPerksMixin:RefreshBackground()
 	end
 end
 
+function ArtifactPerksMixin:RefreshNextInstabilityTime()
+	self.nextInstabilityTime = GetTime() + math.random(5, 10);
+end
+
 function ArtifactPerksMixin:OnUpdate(elapsed)
 	self:TryRefresh();
+	if ( self.inInstabilityMode ) then
+		local timeNow = GetTime();
+		if ( timeNow > self.nextInstabilityTime ) then
+			self:RefreshNextInstabilityTime();
+			ShakeFrameRandom(ArtifactFrame, 1, 1.5, 0.05);
+		end
+		self.shakeCooldown = self.shakeCooldown - elapsed;
+		if ( self.shakeCooldown <= 0 ) then
+			ShakeFrameRandom(self.InstabilityShakeModel, 6, 1.5, 0.05);
+			ShakeFrameRandom(self.AltInstabilityShakeModel, 6, 1.5, 0.05);
+			self.shakeCooldown = math.random(2, 4);
+		end
+	end
 end
 
 function ArtifactPerksMixin:AreAllGoldMedalsPurchasedByTier(tier)
@@ -317,6 +362,17 @@ function ArtifactPerksMixin:RefreshPowerTiers()
 				self.Tier2ForgingScene.ForgingEffect = forgingEffect;
 			end
 			
+			for i, scene in ipairs(self.InstabilityForgingScenes) do
+				scene:Show();
+				scene:SetFromModelSceneID(TIER_2_FORGING_MODEL_SCENE_ID, true);
+				local forgingEffect = scene:GetActorByTag("effect");
+				if ( forgingEffect ) then
+					forgingEffect:SetModelByFileID(TIER_2_FORGING_EFFECT_MODEL_ID);
+					forgingEffect:SetAlpha(1);
+					scene.ForgingEffect = forgingEffect;
+				end
+			end
+
 			self.Tier2SlamEffectModelScene:SetFromModelSceneID(TIER_2_SLAM_EFFECT_MODEL_SCENE_ID, true);
 			local slamEffect = self.Tier2SlamEffectModelScene:GetActorByTag("effect");
 			if ( slamEffect ) then
@@ -1113,6 +1169,61 @@ function ArtifactPerksMixin:CancelAllTimedAnimations()
 	end
 end
 
+function ArtifactPerksMixin:BeginInstability()
+	self.inInstabilityMode = true;
+	self.CrestFrame.InstabilityRunesAnim:Play();
+	self.Model.InstabilityBackground1.Anim:Play();
+	for i, frame in pairs(self.InstabilityCrests) do
+		frame.Anim:Play();
+	end
+	local powerButtonFrameLevel;
+	for button in self.powerButtonPool:EnumerateActive() do
+		button:EnterInstabilityMode();
+		if ( not powerButtonFrameLevel ) then
+			powerButtonFrameLevel = button:GetFrameLevel() - 1;
+		end
+	end
+	self.Tier2ForgingScene:SetFrameLevel(powerButtonFrameLevel);
+	self.Tier2ForgingScene.ForgingEffect:SetAlpha(1);
+	for i, scene in ipairs(self.InstabilityForgingScenes) do
+		scene:SetAlpha(1);
+		scene:SetFrameLevel(powerButtonFrameLevel);
+	end
+	self:RefreshNextInstabilityTime();
+
+	self.TitleContainer.InstabilityPointsRemainingPool = CreateFontStringPool(self, "OVERLAY", 0, "ArtifactInstabilityPointsRemainingTemplate");
+	-- TODO: Figure out how the artifact power will change
+	self.TitleContainer.PointsRemainingLabel:SetAnimatedDurationTimeSec(3600);
+	self.TitleContainer.PointsRemainingLabel:SetAnimatedValue(C_ArtifactUI.GetPointsRemaining() + 1000000000000);
+
+	self.shakeCooldown = math.random(2, 4);
+	self.InstabilityShakeModel:Show();	
+	self.InstabilityShakeModel:SetShadowEffect(1);
+	self.InstabilityShakeModel.AlphaAnim:Play();	
+	self.InstabilityEffectModel:Show();
+	self.InstabilityEffectModel:SetShadowEffect(1);
+	self.InstabilityEffectModel.AlphaAnim:Play();
+
+	if ( self.AltModel:IsShown() ) then
+		self.AltInstabilityShakeModel:Show();	
+		self.AltInstabilityShakeModel:SetShadowEffect(1);
+		self.AltInstabilityShakeModel.AlphaAnim:Play();
+
+		self.AltInstabilityEffectModel:Show();
+		self.AltInstabilityEffectModel:SetShadowEffect(1);
+		self.AltInstabilityEffectModel.AlphaAnim:Play();
+	end
+
+	-- TODO: Figure out what to do about sound
+	local startingSound = SOUNDKIT.UI_72_ARTIFACT_FORGE_FINAL_TRAIT_REFUND_START;
+	local loopingSound = SOUNDKIT.UI_72_ARTIFACT_FORGE_FINAL_TRAIT_REFUND_LOOP;
+	local endingSound = nil;
+	local loopStartDelay = ARTIFACT_TIER_2_SOUND_REFUND_LOOP_START_DELAY;
+	local loopEndDelay = ARTIFACT_TIER_2_SOUND_REFUND_LOOP_STOP_DELAY;
+	local loopFadeTime = ARTIFACT_TIER_2_SOUND_REFUND_LOOP_FADE_OUT_TIME;
+	self.traitRefundSoundEmitter = CreateLoopingSoundEffectEmitter(startingSound, loopingSound, endingSound, loopStartDelay, loopEndDelay, loopFadeTime);
+end
+
 function ArtifactPerksMixin:AnimateTraitRefund(numTraitsRefunded)
 	self:CancelAllTimedAnimations();
 	self.CrestFrame.RunePulse:Stop();
@@ -1603,4 +1714,50 @@ function ArtifactTitleTemplateMixin:SetExpandedState(expanded)
 
 		self:SetHeight(self.expanded and 140 or 90);
 	end
+end
+
+------------------------------------------------------------------
+--   ArtifactInstabilityCrestFrameTemplate
+------------------------------------------------------------------
+
+ArtifactInstabilityCrestFrameTemplateMixin = {}
+
+function ArtifactInstabilityCrestFrameTemplateMixin:OnLoad()
+	self.Anim.Start:SetStartDelay(self.startDelay);
+	self.Anim.Rotation1:SetDegrees(self.baseRotation);
+	self.Anim.Rotation2:SetDegrees(self.baseRotation);
+	self.Anim.Rotation3:SetDegrees(self.baseRotation);
+end
+
+function ArtifactInstabilityCrestFrameTemplateMixin:OnAnimLoop(anim)
+	if ( not self.isFixed ) then
+		local alphaDuration = 5 * math.random() + 2;
+		local scaleDuration = alphaDuration + .01;
+		anim.Alpha1:SetDuration(alphaDuration);
+		anim.Scale1:SetDuration(scaleDuration);
+		anim.Alpha2:SetDuration(alphaDuration);
+		anim.Scale2:SetDuration(scaleDuration);
+		anim.Alpha3:SetDuration(alphaDuration);
+		anim.Scale3:SetDuration(scaleDuration);
+
+		local delayDuration = 2 * math.random();
+		anim.Start:SetStartDelay(delayDuration);
+	else
+		anim.Start:SetStartDelay(0);
+	end
+
+	local degrees = anim:GetParent().baseRotation + math.random(-45, 45);
+	anim.Rotation1:SetDegrees(degrees);
+	anim.Rotation2:SetDegrees(degrees);
+	anim.Rotation3:SetDegrees(degrees);
+
+	local spinDegrees = math.random(-50, 0);
+	anim.Rotation4:SetDegrees(spinDegrees);
+	anim.Rotation5:SetDegrees(spinDegrees);
+	anim.Rotation6:SetDegrees(spinDegrees);
+
+	local alphaMax = 0.5 + math.random() * 0.5;
+	anim.Alpha1:SetToAlpha(alphaMax);
+	anim.Alpha2:SetToAlpha(alphaMax);
+	anim.Alpha3:SetToAlpha(alphaMax);
 end

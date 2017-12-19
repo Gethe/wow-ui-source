@@ -18,6 +18,7 @@ function QuestFrame_OnLoad(self)
 	self:RegisterEvent("QUEST_LOG_UPDATE");
 	self:RegisterEvent("UNIT_PORTRAIT_UPDATE");
 	self:RegisterEvent("LEARNED_SPELL_IN_TAB");
+	self:RegisterEvent("SPELL_NAME_UPDATE");
 end
 
 function QuestFrame_OnEvent(self, event, ...)
@@ -38,21 +39,21 @@ function QuestFrame_OnEvent(self, event, ...)
 	elseif ( event == "QUEST_DETAIL" ) then
 		local questStartItemID = ...;
 		QUEST_FRAME_AUTO_ACCEPT_QUEST_ID = 0;
-        QUEST_FRAME_AUTO_ACCEPT_QUEST_START_ITEM_ID = 0;
+		QUEST_FRAME_AUTO_ACCEPT_QUEST_START_ITEM_ID = 0;
 
 		if ( QuestIsFromAdventureMap() ) then
 			HideUIPanel(QuestLogPopupDetailFrame);
 			return;
 		end
 
-        if(questStartItemID ~= nil and questStartItemID ~= 0) then
-            QUEST_FRAME_AUTO_ACCEPT_QUEST_ID = GetQuestID();
-            QUEST_FRAME_AUTO_ACCEPT_QUEST_START_ITEM_ID = questStartItemID;
+		if(questStartItemID ~= nil and questStartItemID ~= 0) then
+			QUEST_FRAME_AUTO_ACCEPT_QUEST_ID = GetQuestID();
+			QUEST_FRAME_AUTO_ACCEPT_QUEST_START_ITEM_ID = questStartItemID;
 			if (AutoQuestPopupTracker_AddPopUp(GetQuestID(), "OFFER")) then
-                PlayAutoAcceptQuestSound();
-            end
-            CloseQuest();
-            return;
+				PlayAutoAcceptQuestSound();
+			end
+			CloseQuest();
+			return;
 		end
 
 		if ( QuestGetAutoAccept() and QuestIsFromAreaTrigger()) then
@@ -98,6 +99,14 @@ function QuestFrame_OnEvent(self, event, ...)
 			QuestDetailScrollFrameScrollBar:SetValue(0);
 		end
 		return;
+	elseif ( event == "SPELL_NAME_UPDATE" ) then
+		local spellID, spellName = ...;
+		for spellRewardFrame in QuestInfoFrame.rewardsFrame.spellRewardPool:EnumerateActive() do
+			if (spellRewardFrame.spellID == spellID) then
+				spellRewardFrame.Name:SetText(spellName);
+			end
+		end
+		return;
 	end
 	if( not SplashFrame:IsShown() )then
 		QuestFrame_SetPortrait();
@@ -118,7 +127,7 @@ function QuestFrame_SetPortrait()
 	if ( UnitExists("questnpc") ) then
 		SetPortraitTexture(QuestFramePortrait, "questnpc");
 	else
-		QuestFramePortrait:SetTexture("Interface\\QuestFrame\\UI-QuestLog-BookIcon");
+		QuestFramePortrait:SetTexture(136797);	-- "Interface\\QuestFrame\\UI-QuestLog-BookIcon.blp"
 	end
 
 end
@@ -314,12 +323,12 @@ function QuestFrameGreetingPanel_OnShow()
 			end
 			if ( isComplete ) then
 				if ( IsActiveQuestLegendary(i) ) then
-					questTitleButtonIcon:SetTexture("Interface\\GossipFrame\\ActiveLegendaryQuestIcon");
+					questTitleButtonIcon:SetTexture(646979);	-- "Interface\\GossipFrame\\ActiveLegendaryQuestIcon.blp"
 				else
-					questTitleButtonIcon:SetTexture("Interface\\GossipFrame\\ActiveQuestIcon");
+					questTitleButtonIcon:SetTexture(132048);	-- "Interface\\GossipFrame\\ActiveQuestIcon.blp"
 				end
 			else
-				questTitleButtonIcon:SetTexture("Interface\\GossipFrame\\IncompleteQuestIcon");
+				questTitleButtonIcon:SetTexture(365195);		-- "Interface\\GossipFrame\\IncompleteQuestIcon.blp"
 			end
 			questTitleButton:SetHeight(questTitleButton:GetTextHeight() + 2);
 			questTitleButton:SetID(i);
@@ -348,13 +357,13 @@ function QuestFrameGreetingPanel_OnShow()
 			local questTitleButtonIcon = _G[questTitleButton:GetName() .. "QuestIcon"];
 			local isTrivial, frequency, isRepeatable, isLegendary = GetAvailableQuestInfo(i - numActiveQuests);
 			if ( isLegendary ) then
-				questTitleButtonIcon:SetTexture("Interface\\GossipFrame\\AvailableLegendaryQuestIcon");
+				questTitleButtonIcon:SetTexture(646980);	-- "Interface\\GossipFrame\\AvailableLegendaryQuestIcon.blp"
 			elseif ( frequency == LE_QUEST_FREQUENCY_DAILY or frequency == LE_QUEST_FREQUENCY_WEEKLY ) then
-				questTitleButtonIcon:SetTexture("Interface\\GossipFrame\\DailyQuestIcon");
+				questTitleButtonIcon:SetTexture(368364);	-- "Interface\\GossipFrame\\DailyQuestIcon.blp"
 			elseif ( isRepeatable ) then
-				questTitleButtonIcon:SetTexture("Interface\\GossipFrame\\DailyActiveQuestIcon");
+				questTitleButtonIcon:SetTexture(368577);	-- "Interface\\GossipFrame\\DailyActiveQuestIcon.blp"
 			else
-				questTitleButtonIcon:SetTexture("Interface\\GossipFrame\\AvailableQuestIcon");
+				questTitleButtonIcon:SetTexture(132049);	-- "Interface\\GossipFrame\\AvailableQuestIcon.blp"
 			end
 			if ( isTrivial ) then
 				questTitleButton:SetFormattedText(TRIVIAL_QUEST_DISPLAY, GetAvailableTitle(i - numActiveQuests));

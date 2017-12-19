@@ -455,7 +455,8 @@
 						</Texture>
 					</Layer>
 					<Layer level="ARTWORK">
-						<FontString name="$parentText" inherits="GlueFontNormalSmall" parentKey="text">
+						<FontString name="$parentText" inherits="GlueFontNormalSmall" parentKey="text" maxLines="1">
+							<Size x="90" y="0"/>
 							<Anchors>
 								<Anchor point="BOTTOM" x="2" y="-7"/>
 							</Anchors>
@@ -834,7 +835,8 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<FontString name="$parentTitle" inherits="FactionName_Shadow_Huge" parentKey="title">
+				<FontString name="$parentTitle" inherits="FactionName_Shadow_Huge" parentKey="title" justifyH="LEFT" mixin="ShrinkUntilTruncateFontStringMixin" maxLines="1">
+					<Size x="180" y="0"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentHeaderTex" x="24" y="-2"/>
 					</Anchors>
@@ -932,6 +934,9 @@
 			</ScrollFrame>
 		</Frames>
 		<Scripts>
+			<OnLoad>
+				self.title:SetFontObjectsToTry(FactionName_Shadow_Huge, FactionName_Shadow_Large, FactionName_Shadow_Medium);
+			</OnLoad>
 			<OnShow function="CharacterCreate_InfoTemplate_OnShow"/>
 		</Scripts>
 	</Frame>
@@ -1614,7 +1619,7 @@
 									<OnEnter inherit="append">
 										GlueTooltip:SetOwner(self, "ANCHOR_BOTTOM", 0, -10);
 										GlueTooltip:SetText(CHARACTER_TYPE_FRAME_TRIAL_BOOST_CHARACTER);
-										GlueTooltip:AddLine(CHARACTER_TYPE_FRAME_TRIAL_BOOST_CHARACTER_TOOLTIP, 1, 1, 1, 1, true);
+										GlueTooltip:AddLine(CHARACTER_TYPE_FRAME_TRIAL_BOOST_CHARACTER_TOOLTIP:format(C_CharacterCreation.GetTrialBoostStartingLevel()), 1, 1, 1, 1, true);
 
 										if not self:IsEnabled() then
 											GlueTooltip:AddLine(CHARACTER_TYPE_FRAME_TRIAL_BOOST_CHARACTER_TOOLTIP_INVALID, 1, 0, 0, 1, true);

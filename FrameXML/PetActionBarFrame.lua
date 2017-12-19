@@ -48,6 +48,7 @@ function PetActionBar_OnLoad (self)
 	self:RegisterEvent("PLAYER_TARGET_CHANGED");
 	self:RegisterEvent("UPDATE_VEHICLE_ACTIONBAR");
 	self:RegisterEvent("PLAYER_MOUNT_DISPLAY_CHANGED");
+	self:RegisterEvent("SPELL_NAME_UPDATE");
 	self:RegisterUnitEvent("UNIT_AURA", "pet");
 	self.showgrid = 0;
 	PetActionBar_Update(self);
@@ -82,6 +83,15 @@ function PetActionBar_OnEvent (self, event, ...)
 		PetActionBar_HideGrid();
 	elseif ( event =="PET_BAR_HIDE" ) then
 		HidePetActionBar();
+	elseif ( event == "SPELL_NAME_UPDATE" ) then
+		local spellID, spellName = ...;
+		for i=1, NUM_PET_ACTION_SLOTS, 1 do
+			local buttonName = "PetActionButton" .. i;
+			local petActionButton = _G[buttonName];
+			if (petActionButton.spellID == spellID) then
+				petActionButton.tooltipName = spellName;
+			end
+		end
 	end
 end
 
@@ -144,10 +154,11 @@ function PetActionBar_Update (self)
 		petActionIcon = _G[buttonName.."Icon"];
 		petAutoCastableTexture = _G[buttonName.."AutoCastable"];
 		petAutoCastShine = _G[buttonName.."Shine"];
-		local name, subtext, texture, isToken, isActive, autoCastAllowed, autoCastEnabled = GetPetActionInfo(i);
+		local name, subtext, texture, isToken, isActive, autoCastAllowed, autoCastEnabled, spellID = GetPetActionInfo(i);
 		if ( not isToken ) then
 			petActionIcon:SetTexture(texture);
 			petActionButton.tooltipName = name;
+			petActionButton.spellID = spellID;
 		else
 			petActionIcon:SetTexture(_G[texture]);
 			petActionButton.tooltipName = _G[name];

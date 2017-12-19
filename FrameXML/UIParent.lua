@@ -63,6 +63,7 @@ UIPanelWindows["CinematicFrame"] =				{ area = "full",			pushable = 0, 		xoffset
 UIPanelWindows["ChatConfigFrame"] =				{ area = "center",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
 UIPanelWindows["WorldStateScoreFrame"] =		{ area = "center",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
 UIPanelWindows["QuestChoiceFrame"] =			{ area = "center",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 0, allowOtherPanels = 1 };
+UIPanelWindows["WarboardQuestChoiceFrame"] =	{ area = "center",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 0, allowOtherPanels = 1 };
 UIPanelWindows["GarrisonBuildingFrame"] =		{ area = "center",			pushable = 0,		whileDead = 1, 		width = 1002, 	allowOtherPanels = 1};
 UIPanelWindows["GarrisonMissionFrame"] =		{ area = "center",			pushable = 0,		whileDead = 1, 		checkFit = 1,	allowOtherPanels = 1, extraWidth = 20,	extraHeight = 100 };
 UIPanelWindows["GarrisonShipyardFrame"] =		{ area = "center",			pushable = 0,		whileDead = 1, 		checkFit = 1,	allowOtherPanels = 1, extraWidth = 20,	extraHeight = 100 };
@@ -581,6 +582,10 @@ end
 
 function QuestChoice_LoadUI()
 	UIParentLoadAddOn("Blizzard_QuestChoice");
+end
+
+function WarboardQuestChoice_LoadUI()
+	UIParentLoadAddOn("Blizzard_WarboardUI");
 end
 
 function Store_LoadUI()
@@ -1696,7 +1701,12 @@ function UIParent_OnEvent(self, event, ...)
 		local info = ChatTypeInfo["SYSTEM"];
 		DEFAULT_CHAT_FRAME:AddMessage(BENCHMARK_TAXI_MODE_OFF, info.r, info.g, info.b, info.id);
 	elseif ( event == "LEVEL_GRANT_PROPOSED" ) then
-		StaticPopup_Show("LEVEL_GRANT_PROPOSED", arg1);
+		local isAlliedRace, hasHeritageArmorUnlocked = UnitAlliedRaceInfo("player");
+		if (isAlliedRace and not hasHeritageArmorUnlocked) then
+			StaticPopup_Show("LEVEL_GRANT_PROPOSED_ALLIED_RACE", arg1);
+		else
+			StaticPopup_Show("LEVEL_GRANT_PROPOSED", arg1);
+		end
 	elseif ( event == "CHAT_MSG_WHISPER" and arg6 == "GM" ) then	--GMChatUI
 		GMChatFrame_LoadUI(event, ...);
 	elseif ( event == "WOW_MOUSE_NOT_FOUND" ) then
@@ -1843,9 +1853,13 @@ function UIParent_OnEvent(self, event, ...)
 	-- Quest Choice trigger event
 
 	elseif ( event == "QUEST_CHOICE_UPDATE" ) then
-		QuestChoice_LoadUI();
-		if ( QuestChoiceFrame_Show) then
-			QuestChoiceFrame_Show();
+		local uiTextureKitID = select(4, GetQuestChoiceInfo());
+		if (uiTextureKitID and uiTextureKitID ~= 0) then
+			WarboardQuestChoice_LoadUI();
+			WarboardQuestChoiceFrame:TryShow();
+		else
+			QuestChoice_LoadUI();
+			QuestChoiceFrame:TryShow();
 		end
 	elseif ( event == "LUA_WARNING" ) then
 		HandleLuaWarning(...);
@@ -4954,6 +4968,9 @@ function ShakeFrameRandom(frame, magnitude, duration, frequency)
 end
 
 function ShakeFrame(frame, shake, maximumDuration, frequency)
+	if ( frame.shakeTicker and not frame.shakeTicker:IsCancelled() )  then
+		return;
+	end
 	local point, relativeFrame, relativePoint, x, y = frame:GetPoint();
 	local shakeIndex = 1;
 	local endTime = GetTime() + maximumDuration;

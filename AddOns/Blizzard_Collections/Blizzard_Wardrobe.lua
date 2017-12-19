@@ -266,14 +266,15 @@ function WardrobeTransmogFrame_UpdateWeaponModel(slot)
 	local appearanceSourceID = WardrobeTransmogFrame_GetDisplayedSource(weaponSlotButton);
 	if ( appearanceSourceID ~= NO_TRANSMOG_SOURCE_ID ) then
 		local illusionSourceID = WardrobeTransmogFrame_GetDisplayedSource(enchantSlotButton);
-		local categoryID = C_TransmogCollection.GetAppearanceSourceInfo(appearanceSourceID);
-		-- don't specify a slot for ranged weapons
-		if ( WardrobeUtils_IsCategoryRanged(categoryID) ) then
-			slot = nil;
-		end
 		-- check existing equipped on model. we don't want to update it if the same because the hand will open/close.
 		local existingAppearanceSourceID, existingIllustionSourceID = WardrobeTransmogFrame.Model:GetSlotTransmogSources(slotID);
 		if ( existingAppearanceSourceID ~= appearanceSourceID or existingIllustionSourceID ~= illusionSourceID ) then
+			-- don't specify a slot when applying or removing ranged weapons because of bows
+			local categoryID = C_TransmogCollection.GetAppearanceSourceInfo(appearanceSourceID);
+			local existingCategoryID = C_TransmogCollection.GetAppearanceSourceInfo(existingAppearanceSourceID);
+			if ( WardrobeUtils_IsCategoryRanged(categoryID) or WardrobeUtils_IsCategoryRanged(existingCategoryID) ) then
+				slot = nil;
+			end
 			WardrobeTransmogFrame.Model:TryOn(appearanceSourceID, slot, illusionSourceID);
 		end
 	end	

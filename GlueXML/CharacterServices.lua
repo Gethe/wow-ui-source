@@ -538,7 +538,7 @@ end
 
 local function IsUsingValidProductForTrialBoost(flowData)
 	local boostType = flowData.boostType;
-	local _, requiredBoost = C_CharacterServices.HasRequiredBoostForClassTrial();
+	local requiredBoost = C_CharacterServices.GetActiveClassTrialBoostType();
 	return boostType ~= nil and boostType == requiredBoost;
 end
 
@@ -571,8 +571,8 @@ local function CanBoostCharacter(class, level, boostInProgress, isTrialBoost, va
 	return IsBoostFlowValidForCharacter(CharacterUpgradeFlow.data, class, level, boostInProgress, isTrialBoost, vasServiceInProgress);
 end
 
-local function IsCharacterEligibleForVeteranBonus(level, isTrialBoost)
-	return level >= UPGRADE_BONUS_LEVEL and not isTrialBoost; -- TODO: Resolve with design on who gets the bonus
+local function IsCharacterEligibleForVeteranBonus(level, isTrialBoost, revokedCharacterUpgrade)
+	return level >= UPGRADE_BONUS_LEVEL and not isTrialBoost and not revokedCharacterUpgrade;
 end
 
 local function SetCharacterButtonEnabled(button, enabled)
@@ -823,14 +823,14 @@ function CharacterUpgradeCharacterSelectBlock:Initialize(results)
 	for i = 1, numDisplayedCharacters do
 		local button = _G["CharSelectCharacterButton"..i];
 		_G["CharSelectPaidService"..i]:Hide();
-		local class, _, level, _, _, _, _, _, _, _, playerguid, _, _, _, boostInProgress, _, _, isTrialBoost, _, _, vasServiceInProgress = select(5, GetCharacterInfo(GetCharIDFromIndex(i+CHARACTER_LIST_OFFSET)));
+		local class, _, level, _, _, _, _, _, _, _, playerguid, _, _, _, boostInProgress, _, _, isTrialBoost, _, revokedCharacterUpgrade, vasServiceInProgress = select(5, GetCharacterInfo(GetCharIDFromIndex(i+CHARACTER_LIST_OFFSET)));
 		local canBoostCharacter = CanBoostCharacter(class, level, boostInProgress, isTrialBoost, vasServiceInProgress);
 
 		SetCharacterButtonEnabled(button, canBoostCharacter);
 
 		if (canBoostCharacter) then
 			self.frame.ControlsFrame.Arrows[i]:Show();
-			self.frame.ControlsFrame.BonusIcons[i]:SetShown(IsCharacterEligibleForVeteranBonus(level, isTrialBoost));
+			self.frame.ControlsFrame.BonusIcons[i]:SetShown(IsCharacterEligibleForVeteranBonus(level, isTrialBoost, revokedCharacterUpgrade));
 
 			button:SetScript("OnClick", function(button)
 				self:SaveResultInfo(button, playerguid);
@@ -856,9 +856,9 @@ function CharacterUpgradeCharacterSelectBlock:Initialize(results)
 	end
 
 	for i = 1, GetNumCharacters() do
-		local class, _, level, _, _, _, _, _, _, _, _, _, _, _, boostInProgress, _, _, isTrialBoost, _, _, vasServiceInProgress = select(5, GetCharacterInfo(GetCharIDFromIndex(i)));
+		local class, _, level, _, _, _, _, _, _, _, _, _, _, _, boostInProgress, _, _, isTrialBoost, _, revokedCharacterUpgrade, vasServiceInProgress = select(5, GetCharacterInfo(GetCharIDFromIndex(i)));
 		if CanBoostCharacter(class, level, boostInProgress, isTrialBoost, vasServiceInProgress) then
-			if IsCharacterEligibleForVeteranBonus(level, isTrialBoost) then
+			if IsCharacterEligibleForVeteranBonus(level, isTrialBoost, revokedCharacterUpgrade) then
 				self.hasVeteran = true;
 			end
 			numEligible = numEligible + 1;
@@ -916,8 +916,8 @@ function CharacterUpgradeCharacterSelectBlock:GetResult()
 end
 
 function CharacterUpgradeCharacterSelectBlock:FormatResult()
-	local name, _, _, class, classFileName, _, level, _, _, _, _, _, _, _, _, prof1, prof2, _, _, _, _, isTrialBoost = GetCharacterInfo(self.charid);
-	if (IsCharacterEligibleForVeteranBonus(level, isTrialBoost)) then
+	local name, _, _, class, classFileName, _, level, _, _, _, _, _, _, _, _, prof1, prof2, _, _, _, _, isTrialBoost, _, revokedCharacterUpgrade = GetCharacterInfo(self.charid);
+	if (IsCharacterEligibleForVeteranBonus(level, isTrialBoost, revokedCharacterUpgrade)) then
 		local defaults = defaultProfessions[classDefaultProfessionMap[classFileName]];
 		if (prof1 == 0 and prof2 == 0) then
 			prof1 = defaults[1];
@@ -1238,7 +1238,7 @@ function CharacterUpgradeSpecSelectBlock:Initialize(results, wasFromRewind)
 	-- When boosting to level 100, prevent the selection of non-recommended specs, but still auto-select from
 	-- the limited number of specs that the user can choose from
 	local flags = CharacterUpgradeFlow.data.flags;
-	local restrictToRecommendedSpecs = isNewCharacter and bit.band(flags, Enum.CharacterServiceInfoFlag.RestrictToRecommendedSpecs) == Enum.CharacterServiceInfoFlag.RestrictToRecommendedSpecs;
+	local restrictToRecommendedSpecs = bit.band(flags, Enum.CharacterServiceInfoFlag.RestrictToRecommendedSpecs) == Enum.CharacterServiceInfoFlag.RestrictToRecommendedSpecs;
 	
 	CharacterServices_UpdateSpecializationButtons(classID, gender+1, self.frame.ControlsFrame, CharacterUpgradeSpecSelectBlock, not restrictToRecommendedSpecs, nil, self.currentSpecID);
 end

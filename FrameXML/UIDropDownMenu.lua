@@ -263,6 +263,18 @@ function UIDropDownMenu_AddSeparator(info, level)
 	UIDropDownMenu_AddButton(info, level);
 end
 
+function UIDropDownMenu_GetNumButtons(level)
+	local listFrame = _G["DropDownList"..level];
+	return listFrame and (listFrame.numButtons) or 0;
+end
+
+function UIDropDownMenu_GetButton(level, index)
+	local listFrame = _G["DropDownList"..level];
+	local listFrameName = listFrame:GetName();
+	local button = _G[listFrameName.."Button"..index];
+	return button;
+end
+
 function UIDropDownMenu_AddButton(info, level)
 	--[[
 	Might to uncomment this if there are performance issues

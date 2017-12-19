@@ -53,6 +53,7 @@ end
 function ClassTrainerFrame_OnLoad(self)
 	self:RegisterEvent("TRAINER_UPDATE");
 	self:RegisterEvent("TRAINER_DESCRIPTION_UPDATE");
+	self:RegisterEvent("TRAINER_SERVICE_INFO_NAME_UPDATE");
 	MoneyFrame_SetMaxDisplayWidth(ClassTrainerFrameMoneyFrame, 152);
 
 
@@ -102,6 +103,10 @@ function ClassTrainerFrame_OnEvent(self, event, ...)
 		ClassTrainerFrame_Update();
 	elseif ( event == "TRAINER_DESCRIPTION_UPDATE" ) then
 		ClassTrainer_SetSelection(GetTrainerSelectionIndex());
+	elseif ( event == "TRAINER_SERVICE_INFO_NAME_UPDATE" ) then
+		-- It would be really cool if I could uniquely identify the button associated
+		-- with a particular spell here, and only update the name on that button.
+		ClassTrainerFrame_Update();
 	end
 end
 
@@ -154,7 +159,7 @@ function ClassTrainerFrame_Update()
 	-- Fill in the skill buttons
 	for i=1, numButtons do
 		local skillIndex = i + offset;
-		local skillButton = buttons[i]; 
+		local skillButton = buttons[i];
 		if ( skillIndex <= numTrainerServices) then	
 			ClassTrainerFrame_SetServiceButton( skillButton, skillIndex, playerMoney, selected, isTradeSkill );
 		else

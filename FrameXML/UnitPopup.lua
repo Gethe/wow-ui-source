@@ -1657,7 +1657,12 @@ function UnitPopup_OnClick (self)
 	elseif ( button == "RAF_SUMMON" ) then
 		SummonFriend(unit)
 	elseif ( button == "RAF_GRANT_LEVEL" ) then
-		GrantLevel(unit);
+		local isAlliedRace = UnitAlliedRaceInfo(unit);
+		if (isAlliedRace) then
+			StaticPopup_Show("RAF_GRANT_LEVEL_ALLIED_RACE", nil, nil, unit);
+		else
+			GrantLevel(unit);
+		end
 	elseif ( button == "ITEM_QUALITY2_DESC" or button == "ITEM_QUALITY3_DESC" or button == "ITEM_QUALITY4_DESC" ) then
 		local id = self:GetID()+1;
 		SetLootThreshold(id);

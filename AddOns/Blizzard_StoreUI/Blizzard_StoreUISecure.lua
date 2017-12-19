@@ -1463,7 +1463,12 @@ function StoreFrame_UpdateCard(card, entryID, discountReset, forceModelUpdate)
 		StoreProductCard_HideIcon(card);
 	end
 
-	if (discounted) then
+	if bit.band(entryInfo.sharedData.flags, Enum.BattlepayDisplayFlag.HiddenPrice) == Enum.BattlepayDisplayFlag.HiddenPrice then
+		card.NormalPrice:Hide();
+		card.SalePrice:Hide();
+		card.Strikethrough:Hide();
+		card.CurrentPrice:Hide();
+	elseif (discounted) then
 		StoreProductCard_ShowDiscount(card, currencyFormat(entryInfo.sharedData.currentDollars, entryInfo.sharedData.currentCents), discountReset);
 	else
 		card.NormalPrice:Hide();
@@ -3364,6 +3369,7 @@ function StoreProductCard_CheckShowStorePreviewOnClick(self)
 		showPreview = IsModifiedClick("DRESSUP");
 	end
 	if ( showPreview ) then
+		local entryInfo = C_StoreSecure.GetEntryInfo(self:GetID());		
 		if ( entryInfo.displayID ) then
 			StoreFrame_ShowPreview(entryInfo.name, entryInfo.displayID, entryInfo.modelSceneID);
 		end

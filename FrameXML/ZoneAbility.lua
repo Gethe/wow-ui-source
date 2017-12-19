@@ -32,6 +32,7 @@ function ZoneAbilityFrame_OnEvent(self, event)
 	local spellID, type = GetZoneAbilitySpellInfo();
 	if ((event == "SPELLS_CHANGED" or event=="UNIT_AURA")) then
 		self.baseName = spellID and GetSpellInfo(spellID) or nil;
+		self.spellID = spellID; 
 	end
 
 	if (not self.baseName) then
@@ -59,7 +60,7 @@ function ZoneAbilityFrame_OnEvent(self, event)
 		ZoneAbilityFrame_Update(self);
 	else
 		if (not self.CurrentTexture) then
-			self.CurrentTexture = select(3, GetSpellInfo(self.baseName));
+			self.CurrentTexture = select(3, GetSpellInfo(self.spellID));
 		end
 		self:Hide();
 	end
@@ -82,7 +83,8 @@ function ZoneAbilityFrame_Update(self)
 	if (not self.baseName) then
 		return;
 	end
-	local name, _, tex, _, _, _, spellID = GetSpellInfo(self.baseName);
+	local spellID = self.spellID;
+	local name, _, tex = GetSpellInfo(spellID);
 
 	self.CurrentTexture = tex;
 	self.CurrentSpell = name;
@@ -100,7 +102,7 @@ function ZoneAbilityFrame_Update(self)
 		self.SpellButton.Count:SetText("");
 	end
 
-	local start, duration, enable = GetSpellCooldown(name);
+	local start, duration, enable = GetSpellCooldown(spellID);
 	
 	if (usesCharges and charges < maxCharges) then
 		StartChargeCooldown(self.SpellButton, chargeStart, chargeDuration, enable);
@@ -118,7 +120,7 @@ function HasZoneAbilitySpellOnBar(self)
 		return false;
 	end
 
-	local name = GetSpellInfo(self.baseName);
+	local name = GetSpellInfo(self.spellID);
 	for i = 1, (LE_NUM_NORMAL_ACTION_PAGES * LE_NUM_ACTIONS_PER_PAGE) + 1, 1 do
 		local type, id = GetActionInfo(i);
 
