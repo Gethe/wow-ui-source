@@ -696,6 +696,15 @@ local ArtifactUILua =
 			},
 		},
 		{
+			Name = "IsArtifactInstabilityInEffect",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "inEffect", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsAtForge",
 			Type = "Function",
 

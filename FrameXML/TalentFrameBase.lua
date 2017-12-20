@@ -67,11 +67,10 @@ function TalentFrame_Update(TalentFrame, talentUnit)
 			local restartGlow = false;
 			for column=1, NUM_TALENT_COLUMNS do
 				-- Set the button info
-				local talentID, name, iconTexture, selected, available, spellID, _, _, _, _, grantedByAura = GetTalentInfo(tier, column, TalentFrame.talentGroup, TalentFrame.inspect, talentUnit);
+				local talentID, name, iconTexture, selected, available, _, _, _, _, _, grantedByAura = GetTalentInfo(tier, column, TalentFrame.talentGroup, TalentFrame.inspect, talentUnit);
 				local button = talentRow["talent"..column];
 				button.tier = tier;
 				button.column = column;
-				button.spellID = spellID;
 				
 				if (button and name) then
 					button:SetID(talentID);
@@ -217,7 +216,7 @@ function PVPTalentFrame_Update(self, talentUnit)
 		local rowShouldGlow = false;
 		for column = 1, MAX_PVP_TALENT_COLUMNS do
 			local button = talentRow["Talent"..column];
-			local id, name, icon, selected, available, spellID, unlocked = GetPvpTalentInfo(tier, column, self.talentGroup, self.inspect, talentUnit);
+			local id, name, icon, selected, available, _, unlocked = GetPvpTalentInfo(tier, column, self.talentGroup, self.inspect, talentUnit);
 			-- if any buttons glow, the whole row should glow
 			button.shouldGlow = (available and not selected) or rowShouldGlow;
 			if ( column == 1 and button.shouldGlow ) then
@@ -230,7 +229,6 @@ function PVPTalentFrame_Update(self, talentUnit)
 			end
 			button.Icon:SetTexture(icon);
 			button.pvpTalentID = id;
-			button.spellID = spellID;
 			if ( self.inspect ) then
 				SetDesaturation(button.Icon, not selected);
 				button.border:SetShown(selected);

@@ -27,7 +27,6 @@ function TradeSkillUIMixin:OnLoad()
 
 	self:RegisterEvent("TRADE_SKILL_CLOSE");
 	self:RegisterEvent("GARRISON_TRADESKILL_NPC_CLOSED");
-	self:RegisterEvent("SPELL_NAME_UPDATE");
 
 	UIDropDownMenu_Initialize(self.FilterDropDown, function(...) self:InitFilterMenu(...) end, "MENU");
 	UIDropDownMenu_Initialize(self.LinkToDropDown, function(...) self:InitLinkToMenu(...) end, "MENU");
@@ -61,7 +60,7 @@ function TradeSkillUIMixin:OnEvent(event, ...)
 		if self:IsVisible() then
 			self:RefreshTitle();
 		end
-	elseif event == "TRADE_SKILL_FILTER_UPDATE" or event == "SPELL_NAME_UPDATE" then
+	elseif event == "TRADE_SKILL_FILTER_UPDATE" then
 		if self:IsVisible() then
 			self.RecipeList:Refresh();
 		end

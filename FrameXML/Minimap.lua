@@ -23,7 +23,6 @@ function Minimap_OnLoad(self)
 	self:RegisterEvent("MINIMAP_UPDATE_ZOOM");
 	self:RegisterEvent("PLAYER_TARGET_CHANGED");
 	self:RegisterEvent("FOCUS_TARGET_CHANGED");
-	self:RegisterEvent("SPELL_NAME_UPDATE");
 end
 
 function ToggleMinimap()
@@ -110,17 +109,6 @@ function Minimap_OnEvent(self, event, ...)
 			MinimapZoomIn:Disable();
 		elseif ( zoom == 0 ) then
 			MinimapZoomOut:Disable();
-		end
-	elseif ( event == "SPELL_NAME_UPDATE" ) then
-		local spellID, spellName = ...;
-		for level=1, UIDROPDOWNMENU_MAXLEVELS do
-			local numButtons = UIDropDownMenu_GetNumButtons(level);
-			for index = 1, numButtons do
-				local button = UIDropDownMenu_GetButton(level, index);
-				if button.spellID == spellID then
-					button:SetText(spellName);
-				end
-			end
 		end
 	end
 end
@@ -328,7 +316,7 @@ function MiniMapTrackingDropDown_Initialize(self, level)
 	end
 
 	for id=1, count do
-		name, texture, active, category, nested, spellID  = GetTrackingInfo(id);
+		name, texture, active, category, nested  = GetTrackingInfo(id);
 		info = UIDropDownMenu_CreateInfo();
 		info.text = name;
 		info.checked = MiniMapTrackingDropDownButton_IsActive;
@@ -348,23 +336,13 @@ function MiniMapTrackingDropDown_Initialize(self, level)
 			info.tCoordTop = 0;
 			info.tCoordBottom = 1;
 		end
-		local added = false;
 		if (level == 1 and 
 			(nested < 0 or -- this tracking shouldn't be nested
 			(nested == HUNTER_TRACKING and class ~= "HUNTER") or 
 			(numTracking == 1 and category == "spell"))) then -- this is a hunter tracking ability, but you only have one
 			UIDropDownMenu_AddButton(info, level);
-			added = true;
 		elseif (level == 2 and (nested == TOWNSFOLK or (nested == HUNTER_TRACKING and class == "HUNTER")) and nested == UIDROPDOWNMENU_MENU_VALUE) then
 			UIDropDownMenu_AddButton(info, level);
-			added = true;
-		end
-		if added then
-			local numButtons = UIDropDownMenu_GetNumButtons(level);
-			if numButtons > 0 then
-				local button = UIDropDownMenu_GetButton(level, numButtons);
-				button.spellID = spellID;
-			end
 		end
 	end
 	

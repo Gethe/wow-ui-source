@@ -69,13 +69,19 @@ function ArtifactPerksMixin:OnShow()
 	self.modelTransformElapsed = 0;
 	self:RegisterEvent("CURSOR_UPDATE");
 	self:RegisterEvent("UI_MODEL_SCENE_INFO_UPDATED");
+	if ( self.instabilitySoundEmitter ) then
+		self.instabilitySoundEmitter:StartLoopingSound();
+	end
 end
 
-function ArtifactPerksMixin:OnHide()	
+function ArtifactPerksMixin:OnHide()
 	self:UnregisterEvent("CURSOR_UPDATE");
 	self:UnregisterEvent("UI_MODEL_SCENE_INFO_UPDATED");
 	self:CancelAllTimedAnimations();
 	self:SkipTier2Animation();
+	if ( self.instabilitySoundEmitter ) then
+		self.instabilitySoundEmitter:CancelLoopingSound();
+	end
 end
 
 function ArtifactPerksMixin:OnEvent(event, ...)
@@ -301,6 +307,11 @@ function ArtifactPerksMixin:RefreshPowers(newItem)
 	self:RefreshPowerTiers();
 	self:RefreshDependencies(powers);
 	self:RefreshRelics();
+
+	-- Instability needs the buttons created first
+	if ( not self.inInstabilityMode and self.powerButtonPool:GetNumActive() > 0 and C_ArtifactUI.IsArtifactInstabilityInEffect() ) then
+		self:BeginInstability();
+	end	
 end
 
 function ArtifactPerksMixin:RefreshFinalPowerForTier(tier, isUnlocked)
@@ -1192,7 +1203,6 @@ function ArtifactPerksMixin:BeginInstability()
 	self:RefreshNextInstabilityTime();
 
 	self.TitleContainer.InstabilityPointsRemainingPool = CreateFontStringPool(self, "OVERLAY", 0, "ArtifactInstabilityPointsRemainingTemplate");
-	-- TODO: Figure out how the artifact power will change
 	self.TitleContainer.PointsRemainingLabel:SetAnimatedDurationTimeSec(3600);
 	self.TitleContainer.PointsRemainingLabel:SetAnimatedValue(C_ArtifactUI.GetPointsRemaining() + 1000000000000);
 
@@ -1214,14 +1224,8 @@ function ArtifactPerksMixin:BeginInstability()
 		self.AltInstabilityEffectModel.AlphaAnim:Play();
 	end
 
-	-- TODO: Figure out what to do about sound
-	local startingSound = SOUNDKIT.UI_72_ARTIFACT_FORGE_FINAL_TRAIT_REFUND_START;
-	local loopingSound = SOUNDKIT.UI_72_ARTIFACT_FORGE_FINAL_TRAIT_REFUND_LOOP;
-	local endingSound = nil;
-	local loopStartDelay = ARTIFACT_TIER_2_SOUND_REFUND_LOOP_START_DELAY;
-	local loopEndDelay = ARTIFACT_TIER_2_SOUND_REFUND_LOOP_STOP_DELAY;
-	local loopFadeTime = ARTIFACT_TIER_2_SOUND_REFUND_LOOP_FADE_OUT_TIME;
-	self.traitRefundSoundEmitter = CreateLoopingSoundEffectEmitter(startingSound, loopingSound, endingSound, loopStartDelay, loopEndDelay, loopFadeTime);
+	self.instabilitySoundEmitter = CreateLoopingSoundEffectEmitter(nil, SOUNDKIT.UI_73_ARTIFACT_OVERLOADED, nil, 0, 0, 0);
+	self.instabilitySoundEmitter:StartLoopingSound();
 end
 
 function ArtifactPerksMixin:AnimateTraitRefund(numTraitsRefunded)

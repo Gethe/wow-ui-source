@@ -27,7 +27,7 @@ function AlliedRacesFrameMixin:SetupObjectiveBulletPool(achievementID, criteriaI
 				bulletFrame:SetPoint("TOPLEFT", objectivesFrame, "TOPLEFT", 13, -30);
 			end
 		else
-			bulletFrame:SetPoint("TOP", self.lastBullet, "BOTTOM", 0, -self.lastBullet.Text:GetHeight());
+			bulletFrame:SetPoint("TOP", self.lastBullet, "BOTTOM", 0, -(self.lastBullet.Text:GetHeight() - 12));
 		end
 		
 		bulletFrame.Bullet:SetShown(not completed); 
@@ -43,9 +43,9 @@ function AlliedRacesFrameMixin:SetupAbilityPool(index, racialAbility)
 	local abilityButton = self.abilityPool:Acquire(); 
 	
 	if (index == 1) then
-		abilityButton:SetPoint("TOPLEFT", childFrame.RaceDescriptionText, "BOTTOMLEFT", -7, -30);
+		abilityButton:SetPoint("TOPLEFT", childFrame.RaceDescriptionText, "BOTTOMLEFT", -7, -10);
 	else
-		abilityButton:SetPoint("TOP", self.lastAbility, "BOTTOM", 0, -15);
+		abilityButton:SetPoint("TOP", self.lastAbility, "BOTTOM", 0, -9);
 	end
 	
 	abilityButton.Text:SetText(racialAbility.name);
@@ -77,13 +77,13 @@ function AlliedRacesFrameMixin:UpdateObjectivesFrame(achievementID)
 		end
 	end
 	
-	objectivesFrame:SetPoint("TOPLEFT", self.lastAbility, "BOTTOMLEFT", 4, -20); 
+	objectivesFrame:SetPoint("TOPLEFT", self.lastAbility, "BOTTOMLEFT", 4, -14); 
 	self:SetDescriptionWithBullets(objectivesFrame, description);
 end
 
 function AlliedRacesFrameMixin:SetDescriptionWithBullets(objectivesFrame, description)
 	objectivesFrame.DescriptionBG:SetPoint("TOPLEFT", objectivesFrame.HeaderButton, "BOTTOMLEFT", 1, 0);
-	objectivesFrame.DescriptionBG:SetPoint("BOTTOMRIGHT", self.lastBullet, -13, -self.lastBullet.Text:GetHeight());
+	objectivesFrame.DescriptionBG:SetPoint("BOTTOMRIGHT", self.lastBullet, -13, -(self.lastBullet.Text:GetHeight() - 12));
 	objectivesFrame.DescriptionBG:Show();
 	objectivesFrame.DescriptionBGBottom:Show();
 end

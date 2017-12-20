@@ -1042,7 +1042,7 @@ function CharacterCreate_GetValidAlliedRacePaidServiceOptions()
 end
 
 function CharacterCreate_UpdateAlliedRaceButton()
-	local shouldShow = C_CharacterCreation.ShouldShowAlliedRacesButton() and C_CharacterCreation.GetCurrentRaceMode() == Enum.CharacterCreateRaceMode.Normal;
+	local shouldShow = C_CharacterCreation.ShouldShowAlliedRacesButton() and C_CharacterCreation.GetCurrentRaceMode() == Enum.CharacterCreateRaceMode.Normal and CharacterCreateFrame.state == "CLASSRACE";
 
 	if (shouldShow and PAID_SERVICE_TYPE) then
 		local validOptions = CharacterCreate_GetValidAlliedRacePaidServiceOptions();
@@ -2033,6 +2033,24 @@ end
 
 function CharacterCreate_TypeButtonOnLoad(self)
 	self.typeText:SetText(self.titleText);
+end
+
+function CharacterCreate_TypeButtonOnEnter(self)
+	GlueTooltip:SetOwner(self, "ANCHOR_BOTTOM", 0, -10);
+	GlueTooltip:SetText(CHARACTER_TYPE_FRAME_TRIAL_BOOST_CHARACTER);
+	GlueTooltip:AddLine(CHARACTER_TYPE_FRAME_TRIAL_BOOST_CHARACTER_TOOLTIP:format(C_CharacterCreation.GetTrialBoostStartingLevel()), 1, 1, 1, 1, true);
+
+	if not self:IsEnabled() then
+		local classData = C_CharacterCreation.GetSelectedClass();
+		if (not classData.allowBoost) then
+			GlueTooltip:AddLine(CHARACTER_TYPE_FRAME_TRIAL_BOOST_CHARACTER_TOOLTIP_INVALID, 1, 0, 0, 1, true);
+		end
+
+		local raceData = C_CharacterCreation.GetRaceDataByID(C_CharacterCreation.GetSelectedRace());
+		if (not raceData.enabled) then
+			GlueTooltip:AddLine(CHARACTER_TYPE_FRAME_TRIAL_BOOST_CHARACTER_TOOLTIP_INVALID_ALLIED_RACE, 1, 0, 0, 1, true);
+		end
+	end
 end
 
 function CharacterCreate_GetStartingLevel(forTrialBoost)

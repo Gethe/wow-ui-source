@@ -409,12 +409,13 @@ function LevelUpDisplay_BuildCharacterList(self)
 		hackTable = hackTable[self.level];
 		for _,spelltype in pairs(hackTable) do
 			if LEVEL_UP_TYPES[spelltype] and LEVEL_UP_TYPES[spelltype].spellID then 
-				name, _, icon = GetSpellInfo(LEVEL_UP_TYPES[spelltype].spellID);
 				if LEVEL_UP_TYPES[spelltype].feature then
+					name, _, icon = GetSpellInfo(LEVEL_UP_TYPES[spelltype].spellID);
 					self.unlockList[#self.unlockList +1] = { text = name, subText = LEVEL_UP_FEATURE, icon = icon, subIcon = SUBICON_TEXCOOR_LOCK,
 																			link=LEVEL_UP_FEATURE2.." "..GetSpellLink(LEVEL_UP_TYPES[spelltype].spellID)
 																		};
 				else
+					name, _, icon = GetSpellInfo(LEVEL_UP_TYPES[spelltype].spellID);
 					self.unlockList[#self.unlockList +1] = { text = name, subText = LEVEL_UP_ABILITY, icon = icon, subIcon = SUBICON_TEXCOOR_BOOK,
 																			link=LEVEL_UP_ABILITY2.." "..GetSpellLink(LEVEL_UP_TYPES[spelltype].spellID)
 																		};

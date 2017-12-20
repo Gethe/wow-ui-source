@@ -7,7 +7,7 @@ local contentTextureKitRegions = {
 local titleTextureKitRegions = {
 	["Left"] = "warboard-title-%s-left",
 	["Right"] = "warboard-title-%s-right",
-	["Middle"] = "warboard-title-%s-title",
+	["Middle"] = "_warboard-title-%s-middle",
 }
 
 function WarboardQuestChoiceFrameMixin:OnLoad()
@@ -24,9 +24,10 @@ function WarboardQuestChoiceFrameMixin:ShowRewards(numChoices)
 end
 
 function WarboardQuestChoiceFrameMixin:TryShow()
-	local uiTextureKitID = select(4, GetQuestChoiceInfo());
+	local uiTextureKitID, hideWarboardHeader = select(4, GetQuestChoiceInfo());
 	SetupTextureKits(uiTextureKitID, self, contentTextureKitRegions);
 	SetupTextureKits(uiTextureKitID, self.Title, titleTextureKitRegions);
+	self.Header:SetShown(not hideWarboardHeader);
 	QuestChoiceFrameMixin.TryShow(self);
 end
 

@@ -1616,15 +1616,7 @@
 								</Anchors>
 								<Scripts>
 									<OnLoad inherit="append" function="CharacterCreate_TypeButtonOnLoad"/>
-									<OnEnter inherit="append">
-										GlueTooltip:SetOwner(self, "ANCHOR_BOTTOM", 0, -10);
-										GlueTooltip:SetText(CHARACTER_TYPE_FRAME_TRIAL_BOOST_CHARACTER);
-										GlueTooltip:AddLine(CHARACTER_TYPE_FRAME_TRIAL_BOOST_CHARACTER_TOOLTIP:format(C_CharacterCreation.GetTrialBoostStartingLevel()), 1, 1, 1, 1, true);
-
-										if not self:IsEnabled() then
-											GlueTooltip:AddLine(CHARACTER_TYPE_FRAME_TRIAL_BOOST_CHARACTER_TOOLTIP_INVALID, 1, 0, 0, 1, true);
-										end
-									</OnEnter>
+									<OnEnter inherit="append" function="CharacterCreate_TypeButtonOnEnter"/>
 									<OnLeave inherit="append">
 										GlueTooltip:Hide();
 									</OnLeave>

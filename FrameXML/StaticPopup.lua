@@ -4292,18 +4292,20 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 		--Save off the number of buttons.
 		dialog.numButtons = numButtons;
 
-		tempButtonLocs[1]:ClearAllPoints();
-		if ( info.verticalButtonLayout ) then
-			tempButtonLocs[1]:SetPoint("TOP", dialog.text, "BOTTOM", 0, -16);
-		else
-			if ( numButtons == 4 ) then
-				tempButtonLocs[1]:SetPoint("BOTTOMRIGHT", dialog, "BOTTOM", -139, 16);
-			elseif ( numButtons == 3 ) then
-				tempButtonLocs[1]:SetPoint("BOTTOMRIGHT", dialog, "BOTTOM", -72, 16);
-			elseif ( numButtons == 2 ) then
-				tempButtonLocs[1]:SetPoint("BOTTOMRIGHT", dialog, "BOTTOM", -6, 16);
-			elseif ( numButtons == 1 ) then
-				tempButtonLocs[1]:SetPoint("BOTTOM", dialog, "BOTTOM", 0, 16);
+		if numButtons > 0 then
+			tempButtonLocs[1]:ClearAllPoints();
+			if ( info.verticalButtonLayout ) then
+				tempButtonLocs[1]:SetPoint("TOP", dialog.text, "BOTTOM", 0, -16);
+			else
+				if ( numButtons == 4 ) then
+					tempButtonLocs[1]:SetPoint("BOTTOMRIGHT", dialog, "BOTTOM", -139, 16);
+				elseif ( numButtons == 3 ) then
+					tempButtonLocs[1]:SetPoint("BOTTOMRIGHT", dialog, "BOTTOM", -72, 16);
+				elseif ( numButtons == 2 ) then
+					tempButtonLocs[1]:SetPoint("BOTTOMRIGHT", dialog, "BOTTOM", -6, 16);
+				elseif ( numButtons == 1 ) then
+					tempButtonLocs[1]:SetPoint("BOTTOM", dialog, "BOTTOM", 0, 16);
+				end
 			end
 		end
 
@@ -4790,38 +4792,9 @@ function StaticPopup_IsLastDisplayedFrame(frame)
 	return false;
 end
 
-function StaticPopup_OnLoad(self)
-	local name = self:GetName();
-	self.button1 = _G[name .. "Button1"];
-	self.button2 = _G[name .. "Button2"];
-	self.button3 = _G[name .. "Button3"];
-	self.text = _G[name .. "Text"];
-	self.icon = _G[name .. "AlertIcon"];
-	self.moneyInputFrame = _G[name .. "MoneyInputFrame"];
-	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
-	self:RegisterEvent("SPELL_NAME_UPDATE");
-end
-
-function StaticPopup_OnEvent(self, event, ...)
+function StaticPopup_OnEvent(self)
 	self.maxHeightSoFar = 0;
 	StaticPopup_Resize(self, self.which);
-	if ( event == "SPELL_NAME_UPDATE" ) then
-		local spellID, spellName = ...;
-		local info = StaticPopupDialogs[self.which];
-		if ( not info ) then
-			return nil;
-		end
-		for index = 1, STATICPOPUP_NUMDIALOGS, 1 do
-			local frame = _G["StaticPopup"..index];
-			if frame and frame.data and frame.data.pendingSpellID == spellID then
-				frame.data.name = spellName;
-				if frame:IsShown() then
-					info.OnShow(frame);
-					StaticPopup_Resize(self, self.which);
-				end
-			end
-		end
-	end
 end
 
 function StaticPopup_HideExclusive()

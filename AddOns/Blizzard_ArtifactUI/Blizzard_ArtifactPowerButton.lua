@@ -653,7 +653,19 @@ function ArtifactPowerButtonMixin:StopAllAnimations()
 end
 
 function ArtifactPowerButtonMixin:SetNextInstabilityTime(baseTime)
-	self.nextInstabilityTime = GetTime() + 3 + math.random() * 5;
+	local cooldown;
+	local pointsSpent = select(6, C_ArtifactUI.GetArtifactInfo());
+	local concordance = pointsSpent - 51;
+	if ( concordance > 80 ) then
+		cooldown = 3;
+	elseif ( concordance > 70 ) then
+		cooldown = 10;
+	elseif ( concordance > 60 ) then
+		cooldown = 20;
+	else
+		cooldown = 40;
+	end
+	self.nextInstabilityTime = baseTime + math.random() * cooldown;
 end
 
 function ArtifactPowerButtonMixin:EnterInstabilityMode()
@@ -709,6 +721,4 @@ function ArtifactPowerButtonMixin:TriggerInstability()
 	animatedNumber.InstabilityMoveAndFade:Play();
 	animatedNumber.InstabilityMoveAndFade:SetScript("OnFinished", OnInstabilityLightHit);
 	animatedNumber:Show();
-
-	self:GetParent().traitRefundSoundEmitter:StartLoopingSound();
 end

@@ -72,7 +72,6 @@ local EncounterJournalLua =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "spellID", Type = "number", Nilable = false },
 				{ Name = "title", Type = "string", Nilable = false },
 				{ Name = "description", Type = "string", Nilable = false },
 				{ Name = "headerType", Type = "number", Nilable = false },
