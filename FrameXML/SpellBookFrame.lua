@@ -402,6 +402,11 @@ function SpellButton_OnEvent(self, event, ...)
 	if ( event == "SPELLS_CHANGED" or event == "UPDATE_SHAPESHIFT_FORM" ) then
 		-- need to listen for UPDATE_SHAPESHIFT_FORM because attack icons change when the shapeshift form changes
 		SpellButton_UpdateButton(self);
+	elseif ( event == "SPELL_NAME_UPDATE" ) then
+		local spellID = ...;
+		if self.spellID == spellID then
+			SpellButton_UpdateButton(self);
+		end
 	elseif ( event == "SPELL_UPDATE_COOLDOWN" ) then
 		SpellButton_UpdateCooldown(self);
 		-- Update tooltip
@@ -460,6 +465,7 @@ function SpellButton_OnShow(self)
 	self:RegisterEvent("PET_BAR_UPDATE");
 	self:RegisterEvent("CURSOR_UPDATE");
 	self:RegisterEvent("ACTIONBAR_SLOT_CHANGED");
+	self:RegisterEvent("SPELL_NAME_UPDATE");
 
 	--SpellButton_UpdateButton(self);
 end
@@ -475,6 +481,7 @@ function SpellButton_OnHide(self)
 	self:UnregisterEvent("PET_BAR_UPDATE");
 	self:UnregisterEvent("CURSOR_UPDATE");
 	self:UnregisterEvent("ACTIONBAR_SLOT_CHANGED");
+	self:UnregisterEvent("SPELL_NAME_UPDATE");
 end
  
 function SpellButton_OnEnter(self)
@@ -531,7 +538,8 @@ function SpellButton_OnClick(self, button)
 				if ( IsPendingGlyphRemoval() ) then
 					StaticPopup_Show("CONFIRM_GLYPH_REMOVAL", nil, nil, {name = GetCurrentGlyphNameForSpell(spellID), id = spellID});
 				else
-					StaticPopup_Show("CONFIRM_GLYPH_PLACEMENT", nil, nil, {name = GetPendingGlyphName(), currentName = GetCurrentGlyphNameForSpell(spellID), id = spellID});
+					local pendingGlyphSpellName, pendingGlyphSpellID = GetPendingGlyphName();
+					StaticPopup_Show("CONFIRM_GLYPH_PLACEMENT", nil, nil, {name = pendingGlyphSpellName, pendingSpellID = pendingGlyphSpellID, currentName = GetCurrentGlyphNameForSpell(spellID), id = spellID});
 				end
 			else
 				AttachGlyphToSpell(spellID);
@@ -572,7 +580,7 @@ function SpellButton_OnModifiedClick(self, button)
 	end
 	if ( IsModifiedClick("CHATLINK") ) then
 		if ( MacroFrameText and MacroFrameText:HasFocus() ) then
-			local spellName, subSpellName = GetSpellBookItemName(slot, SpellBookFrame.bookType);
+			local spellName, subSpellName, spellID = GetSpellBookItemName(slot, SpellBookFrame.bookType);
 			if ( spellName and not IsPassiveSpell(slot, SpellBookFrame.bookType) ) then
 				if ( subSpellName and (strlen(subSpellName) > 0) ) then
 					ChatEdit_InsertLink(spellName.."("..subSpellName..")");
@@ -702,7 +710,7 @@ function SpellButton_UpdateButton(self)
 		autoCastableTexture:Hide();
 		SpellBook_ReleaseAutoCastShine(self.shine);
 		self.shine = nil;
-		highlightTexture:SetTexture("Interface\\Buttons\\ButtonHilight-Square");
+		highlightTexture:SetTexture(130718); -- "Interface\\Buttons\\ButtonHilight-Square.blp"
 		self:SetChecked(false);
 		slotFrame:Hide();
 		self.IconTextureBg:Hide();
@@ -752,7 +760,7 @@ function SpellButton_UpdateButton(self)
 		self.shine = nil;
 	end
 
-	local spellName, subSpellName = GetSpellBookItemName(slot, SpellBookFrame.bookType);
+	local spellName, subSpellName, spellID = GetSpellBookItemName(slot, SpellBookFrame.bookType);
 	local isPassive = IsPassiveSpell(slot, SpellBookFrame.bookType);
 	self.isPassive = isPassive;
 
@@ -782,6 +790,7 @@ function SpellButton_UpdateButton(self)
 		self.SpellSubName:SetHeight(0);
 	end
 
+	self.spellID = spellID;
 	iconTexture:SetTexture(texture);
 	spellString:SetText(spellName);
 	subSpellString:SetText(subSpellName);
@@ -1218,7 +1227,7 @@ end
 function UpdateProfessionButton(self)
 	local spellIndex = self:GetID() + self:GetParent().spellOffset;
 	local texture = GetSpellBookItemTexture(spellIndex, SpellBookFrame.bookType);
-	local spellName, subSpellName = GetSpellBookItemName(spellIndex, SpellBookFrame.bookType);
+	local spellName, subSpellName, spellID = GetSpellBookItemName(spellIndex, SpellBookFrame.bookType);
 	local isPassive = IsPassiveSpell(spellIndex, SpellBookFrame.bookType);
 	if ( isPassive ) then
 		self.highlightTexture:SetTexture("Interface\\Buttons\\UI-PassiveHighlight");
@@ -1243,6 +1252,7 @@ function UpdateProfessionButton(self)
 		self.unlearn:Hide();
 	end
 	
+	self.spellID = spellID;
 	self.spellString:SetText(spellName);
 	self.subSpellString:SetText(subSpellName);	
 	self.iconTexture:SetTexture(texture);

@@ -26,7 +26,8 @@ function SpellFlyoutButton_OnClick(self)
 				if ( IsPendingGlyphRemoval() ) then
 					StaticPopup_Show("CONFIRM_GLYPH_REMOVAL", nil, nil, {name = GetCurrentGlyphNameForSpell(self.spellID), id = self.spellID});
 				else
-					StaticPopup_Show("CONFIRM_GLYPH_PLACEMENT", nil, nil, {name = GetPendingGlyphName(), currentName = GetCurrentGlyphNameForSpell(self.spellID), id = self.spellID});
+					local pendingGlyphSpellName, pendingGlyphSpellID = GetPendingGlyphName();
+					StaticPopup_Show("CONFIRM_GLYPH_PLACEMENT", nil, nil, {name = pendingGlyphSpellName, pendingSpellID = pendingGlyphSpellID, currentName = GetCurrentGlyphNameForSpell(self.spellID), id = self.spellID});
 				end
 			else
 				AttachGlyphToSpell(self.spellID);
@@ -198,6 +199,17 @@ function SpellFlyout_OnEvent(self, event, ...)
 		self:Hide();
 	elseif (event == "ACTIONBAR_PAGE_CHANGED") then
 		self:Hide();
+	elseif (event == "SPELL_NAME_UPDATE") then
+		local spellID, spellName = ...;
+		local i = 1;
+		local button = _G["SpellFlyoutButton"..i];
+		while (button and button:IsShown()) do
+			if (button.spellID == spellID) then
+				button.spellName = spellName;
+			end
+			i = i+1;
+			button = _G["SpellFlyoutButton"..i];
+		end
 	end
 end
 
@@ -389,6 +401,7 @@ function SpellFlyout_OnShow(self)
 		self:RegisterEvent("PET_STABLE_UPDATE");
 		self:RegisterEvent("PET_STABLE_SHOW");
 		self:RegisterEvent("SPELL_FLYOUT_UPDATE");
+		self:RegisterEvent("SPELL_NAME_UPDATE");
 		self.eventsRegistered = true;
 	end
 	if (self.isActionBar) then
@@ -406,6 +419,7 @@ function SpellFlyout_OnHide(self)
 		self:UnregisterEvent("PET_STABLE_UPDATE");
 		self:UnregisterEvent("PET_STABLE_SHOW");
 		self:UnregisterEvent("SPELL_FLYOUT_UPDATE");
+		self:UnregisterEvent("SPELL_NAME_UPDATE");
 		self.eventsRegistered = false;
 	end
 	if (self:IsShown()) then

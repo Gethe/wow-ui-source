@@ -654,13 +654,12 @@ end
 
 function ArtifactPowerButtonMixin:SetNextInstabilityTime(baseTime)
 	local cooldown;
-	local pointsSpent = select(6, C_ArtifactUI.GetArtifactInfo());
-	local concordance = pointsSpent - 51;
-	if ( concordance > 80 ) then
+	local instabilityLevel = self:GetParent():GetInstabilityLevel();
+	if ( instabilityLevel == ARTIFACT_INSTABILITY_LEVEL_HIGHEST ) then
 		cooldown = 3;
-	elseif ( concordance > 70 ) then
+	elseif ( instabilityLevel == ARTIFACT_INSTABILITY_LEVEL_HIGH ) then
 		cooldown = 10;
-	elseif ( concordance > 60 ) then
+	elseif ( instabilityLevel == ARTIFACT_INSTABILITY_LEVEL_MEDIUM ) then
 		cooldown = 20;
 	else
 		cooldown = 40;
@@ -688,6 +687,10 @@ end
 local function OnInstabilityLightHit(self)
 	local powerButton = self:GetParent():GetParent();
 	powerButton:PlayInstabilityAnimation();
+	local soundKit = powerButton:GetParent():GetInstabilityOrbImpactSoundKit();
+	if (soundKit) then
+		PlaySound(soundKit, "SFX", SOUNDKIT_ALLOW_DUPLICATES);
+	end
 end
 
 function ArtifactPowerButtonMixin:TriggerInstability()
@@ -707,6 +710,11 @@ function ArtifactPowerButtonMixin:TriggerInstability()
 	label.Anim.Move:SetOffset(deltaX * 0.3, deltaY * 0.3);
 	label:SetText(perksTab.TitleContainer.PointsRemainingLabel:GetText());
 	label.Anim:Play();
+
+	local orbSoundKit = self:GetParent():GetInstabilityOrbSoundKit();
+	if (orbSoundKit) then
+		PlaySound(orbSoundKit, "SFX", SOUNDKIT_ALLOW_DUPLICATES);
+	end
 
 	if not self.FloatingNumbers or not self.FloatingNumbers[1] then
 		CreateFrame("Frame", nil, self, "ArtifactFloatingRankStringTemplate");

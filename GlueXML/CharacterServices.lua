@@ -549,13 +549,17 @@ local function IsUsingValidProductForCreateNewCharacterBoost()
 	return not IsUsingValidProductForTrialBoost(CharacterUpgradeFlow.data);
 end
 
-local function IsBoostFlowValidForCharacter(flowData, class, level, boostInProgress, isTrialBoost, vasServiceInProgress)
+local function IsBoostFlowValidForCharacter(flowData, class, level, boostInProgress, isTrialBoost, revokedCharacterUpgrade, vasServiceInProgress)
 	if (boostInProgress or vasServiceInProgress or class == "DEMONHUNTER") then
 		return false;
 	end
 
 	if isTrialBoost then
 		if level >= flowData.level and not IsUsingValidProductForTrialBoost(flowData) then
+			return false;
+		end
+	elseif revokedCharacterUpgrade then
+		if level > flowData.level then
 			return false;
 		end
 	else
@@ -567,8 +571,8 @@ local function IsBoostFlowValidForCharacter(flowData, class, level, boostInProgr
 	return true;
 end
 
-local function CanBoostCharacter(class, level, boostInProgress, isTrialBoost, vasServiceInProgress)
-	return IsBoostFlowValidForCharacter(CharacterUpgradeFlow.data, class, level, boostInProgress, isTrialBoost, vasServiceInProgress);
+local function CanBoostCharacter(class, level, boostInProgress, isTrialBoost, revokedCharacterUpgrade, vasServiceInProgress)
+	return IsBoostFlowValidForCharacter(CharacterUpgradeFlow.data, class, level, boostInProgress, isTrialBoost, revokedCharacterUpgrade, vasServiceInProgress);
 end
 
 local function IsCharacterEligibleForVeteranBonus(level, isTrialBoost, revokedCharacterUpgrade)
@@ -602,9 +606,9 @@ function GetAvailableBoostTypesForCharacterByGUID(characterGUID)
 	local availableBoosts = {};
 	local upgradeDistributions = C_SharedCharacterServices.GetUpgradeDistributions();
 	if upgradeDistributions then
-		local class, _, level, _, _, _, _, _, _, _, playerguid, _, _, _, boostInProgress, _, _, isTrialBoost, _, _, vasServiceInProgress = select(5, GetCharacterInfoByGUID(characterGUID));
+		local class, _, level, _, _, _, _, _, _, _, playerguid, _, _, _, boostInProgress, _, _, isTrialBoost, _, revokedCharacterUpgrade, vasServiceInProgress = select(5, GetCharacterInfoByGUID(characterGUID));
 		for boostType, data in pairs(upgradeDistributions) do
-			if IsBoostFlowValidForCharacter(C_CharacterServices.GetCharacterServiceDisplayData(boostType), class, level, boostInProgress, isTrialBoost, vasServiceInProgress) then
+			if IsBoostFlowValidForCharacter(C_CharacterServices.GetCharacterServiceDisplayData(boostType), class, level, boostInProgress, isTrialBoost, revokedCharacterUpgrade, vasServiceInProgress) then
 				availableBoosts[#availableBoosts + 1] = boostType;
 			end
 		end
@@ -824,7 +828,7 @@ function CharacterUpgradeCharacterSelectBlock:Initialize(results)
 		local button = _G["CharSelectCharacterButton"..i];
 		_G["CharSelectPaidService"..i]:Hide();
 		local class, _, level, _, _, _, _, _, _, _, playerguid, _, _, _, boostInProgress, _, _, isTrialBoost, _, revokedCharacterUpgrade, vasServiceInProgress = select(5, GetCharacterInfo(GetCharIDFromIndex(i+CHARACTER_LIST_OFFSET)));
-		local canBoostCharacter = CanBoostCharacter(class, level, boostInProgress, isTrialBoost, vasServiceInProgress);
+		local canBoostCharacter = CanBoostCharacter(class, level, boostInProgress, isTrialBoost, revokedCharacterUpgrade, vasServiceInProgress);
 
 		SetCharacterButtonEnabled(button, canBoostCharacter);
 
@@ -857,7 +861,7 @@ function CharacterUpgradeCharacterSelectBlock:Initialize(results)
 
 	for i = 1, GetNumCharacters() do
 		local class, _, level, _, _, _, _, _, _, _, _, _, _, _, boostInProgress, _, _, isTrialBoost, _, revokedCharacterUpgrade, vasServiceInProgress = select(5, GetCharacterInfo(GetCharIDFromIndex(i)));
-		if CanBoostCharacter(class, level, boostInProgress, isTrialBoost, vasServiceInProgress) then
+		if CanBoostCharacter(class, level, boostInProgress, isTrialBoost, revokedCharacterUpgrade, vasServiceInProgress) then
 			if IsCharacterEligibleForVeteranBonus(level, isTrialBoost, revokedCharacterUpgrade) then
 				self.hasVeteran = true;
 			end
@@ -1121,6 +1125,17 @@ local function CreateSpecButton(parent, buttonIndex, layoutData)
 	return frame;
 end
 
+local function CharacterServices_IsCurrentSpecializationAllowed(classID, gender, currentSpecID)
+	for i = 1, 4 do
+		local specID, _, _, _, _, isRecommended, isAllowed = GetSpecializationInfoForClassID(classID, i, gender);
+		if specID == currentSpecID then
+			return isRecommended or isAllowed;
+		end
+	end
+	
+	return false;
+end
+
 function CharacterServices_UpdateSpecializationButtons(classID, gender, parentFrame, owner, allowAllSpecs, isTrialBoost, currentSpecID)
 	local numSpecs = GetNumSpecializationsForClassID(classID);
 
@@ -1147,6 +1162,8 @@ function CharacterServices_UpdateSpecializationButtons(classID, gender, parentFr
 
 	local hasActualChoice = (availableSpecsToChoose > 1);
 	local canChooseFromAllSpecs = allowAllSpecs or (hasActualChoice and availableSpecsToChoose == numSpecs);
+	local isCurrentSpecAllowed = canChooseFromAllSpecs or CharacterServices_IsCurrentSpecializationAllowed(classID, gender, currentSpecID);
+	local autoSelectedSpecID;
 	
 	for i = 1, 4 do
 		if not parentFrame.SpecButtons[i] then
@@ -1156,19 +1173,25 @@ function CharacterServices_UpdateSpecializationButtons(classID, gender, parentFr
 		local button = parentFrame.SpecButtons[i];
 		button.owner = owner;
 		button.isRecommended = nil;
-
+		
 		if i <= numSpecs then
 			local specID, name, description, icon, role, isRecommended, isAllowed = GetSpecializationInfoForClassID(classID, i, gender);
 			local allowed = allowAllSpecs or isAllowed or isRecommended;
 			local isCurrentSpec = specID == currentSpecID;
-
+			
 			-- We prefer to show a player's current spec instead of a recommended spec. We should only show
 			-- the recommended spec if you're boosting a brand new character.
-			local showRecommendedLabel = isCurrentSpec or (not currentSpecID and isRecommended) or (hasActualChoice and not canChooseFromAllSpecs and isAllowed);
-
+			local showRecommendedLabel;
+			if isCurrentSpecAllowed then
+				showRecommendedLabel = isCurrentSpec;
+			else
+				showRecommendedLabel = isRecommended;
+			end
+			
 			button:SetID(specID);
 			button.SpecIcon:SetTexture(icon);
 			button.SpecIcon:SetDesaturated(not allowed);
+			button.Frame:SetDesaturated(not allowed);
 			button.SpecName:SetText(name);
 			button.RoleIcon:SetTexCoord(GetTexCoordsForRole(role));
 			button.RoleIcon:SetDesaturated(not allowed);
@@ -1177,16 +1200,15 @@ function CharacterServices_UpdateSpecializationButtons(classID, gender, parentFr
 			button.Recommended:SetShown(showRecommendedLabel);
 			button.isRecommended = isRecommended;
 
-			-- If only the one recommended spec can be picked, change the text to reflect that the user
-			-- has no real choice here.
-			if hasActualChoice and (isCurrentSpec or isRecommended) then
-				if isCurrentSpec then
+			if showRecommendedLabel then
+				autoSelectedSpecID = specID;
+				if not hasActualChoice then
+					button.Recommended:SetText(CHAR_SPEC_AVAILABLE);
+				elseif isCurrentSpec then
 					button.Recommended:SetText(CHARACTER_UPGRADE_FLOW_CHAR_SPEC_CURRENT);
 				elseif isRecommended then
 					button.Recommended:SetText(CHAR_SPEC_RECOMMENEDED);
 				end
-			else
-				button.Recommended:SetText(CHAR_SPEC_AVAILABLE);
 			end
 
 			if allowed then
@@ -1213,7 +1235,7 @@ function CharacterServices_UpdateSpecializationButtons(classID, gender, parentFr
 	end
 
 	if owner.OnUpdateSpecButtons then
-		owner:OnUpdateSpecButtons(allowAllSpecs);
+		owner:OnUpdateSpecButtons(autoSelectedSpecID);
 	end
 end
 
@@ -1243,9 +1265,10 @@ function CharacterUpgradeSpecSelectBlock:Initialize(results, wasFromRewind)
 	CharacterServices_UpdateSpecializationButtons(classID, gender+1, self.frame.ControlsFrame, CharacterUpgradeSpecSelectBlock, not restrictToRecommendedSpecs, nil, self.currentSpecID);
 end
 
-function CharacterUpgradeSpecSelectBlock:OnUpdateSpecButtons(allowAllSpecs)
-	if not allowAllSpecs or self.selected or self.currentSpecID then
-		ClickRecommendedSpecButton(self.frame.ControlsFrame, self.selected or self.currentSpecID);
+function CharacterUpgradeSpecSelectBlock:OnUpdateSpecButtons(autoSelectedSpecID)
+	local overrideSpec = self.selected or autoSelectedSpecID;
+	if overrideSpec then
+		ClickRecommendedSpecButton(self.frame.ControlsFrame, overrideSpec);
 	end
 end
 

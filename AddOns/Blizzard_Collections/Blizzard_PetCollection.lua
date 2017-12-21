@@ -260,11 +260,13 @@ function PetJournalHealPetButton_OnShow(self)
 	self:RegisterEvent("SPELLS_CHANGED");
 	self:RegisterEvent("PET_BATTLE_OPENING_START");
 	self:RegisterEvent("PET_BATTLE_CLOSE");
+	self:RegisterEvent("SPELL_NAME_UPDATE");
 	PetJournalHealPetButton_UpdateCooldown(self);
 	PetJournalHealPetButton_UpdateUsability(self);
 end
 
 function PetJournalHealPetButton_OnHide(self)
+	self:UnregisterEvent("SPELL_NAME_UPDATE");
 	self:UnregisterEvent("PET_BATTLE_OPENING_START");
 	self:UnregisterEvent("PET_BATTLE_CLOSE");
 	self:UnregisterEvent("SPELL_UPDATE_COOLDOWN");
@@ -310,6 +312,11 @@ function PetJournalHealPetButton_OnEvent(self, event, ...)
 		end
 	elseif ( event == "SPELLS_CHANGED" or event == "PET_BATTLE_OPENING_START" or event == "PET_BATTLE_CLOSE" ) then
 		PetJournalHealPetButton_UpdateUsability(self);
+	elseif ( event == "SPELL_NAME_UPDATE" ) then
+		local spellID, spellName = ...;
+		if (spellID == self.spellID) then
+			self.spellname:SetText(spellName);
+		end
 	end
 end
 

@@ -92,9 +92,14 @@ function QuestChoiceFrameMixin:Update()
 		local option = self.Options[i];
 		option.optID = optID;
 		option.OptionButton:SetText(buttonText);
-		option.OptionText:SetText(description);
+		if (option.justifyCenter) then
+			option.OptionText:SetText("<html><body><p align=\"CENTER\">"..description.."</p></body></html>");
+		else
+			option.OptionText:SetText(description);
+		end
 		if header and #header > 0 then
 			option.Header:Show();
+			option.Header.Text:SetHeight(0);
 			option.Header.Text:SetText(header);
 		else
 			option.Header:Hide();

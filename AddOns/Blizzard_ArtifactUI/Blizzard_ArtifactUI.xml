@@ -31,7 +31,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="VisitForgeOverlay" setAllPoints="true" frameLevel="500" enableMouse="true" hidden="false">
+			<Frame parentKey="VisitForgeOverlay" setAllPoints="true" frameLevel="3500" enableMouse="true" hidden="false">
 				<Layers>
 					<Layer level="BACKGROUND">
 						<Texture parentKey="Background">
@@ -167,7 +167,9 @@
 					<OnEnter>
 						self:GetParent():OnKnowledgeEnter(self);
 					</OnEnter>
-					<OnLeave function="GameTooltip_Hide" />
+					<OnLeave>
+						self:GetParent():OnKnowledgeLeave(self);
+					</OnLeave>
 				</Scripts>
 			</Frame>
 			<Frame parentKey="KnowledgeLevelHelpBox" inherits="GlowBoxTemplate" enableMouse="true" hidden="true" frameStrata="DIALOG">

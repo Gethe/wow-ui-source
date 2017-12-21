@@ -1047,6 +1047,13 @@
 						<OnShow function="StoreCardDetail_SetLayerAboveModelScene"/>
 					</Scripts>
 				</Button>
+				<ModelScene parentKey="ModelScene" useParentLevel="true" hidden="true" inherits="ReversedLightingModelSceneMixinTemplate">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="8" y="-8" />
+						<Anchor point="BOTTOMRIGHT" x="-8" y="8" />
+					</Anchors>
+					<ViewInsets left="20" right="20" top="20" bottom="160"/>
+				</ModelScene>
 				<Frame parentKey="DescriptionBulletPointContainer" inherits="ManagedVerticalLayoutFrameTemplate">
 					<KeyValues>
 						<KeyValue key="fixedWidth" value="250" type="number"/>

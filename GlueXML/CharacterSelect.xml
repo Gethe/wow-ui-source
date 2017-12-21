@@ -1419,7 +1419,7 @@
 						<Frames>
 							<Button parentKey="CloseButton" inherits="UIPanelCloseButtonNoScripts">
 								<Anchors>
-									<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-8" y="-8"/>
+									<Anchor point="CENTER" relativeKey="$parent.CloseButtonBG" x="1"/>
 								</Anchors>
 								<Scripts>
 									<OnClick function="CharacterUpgradePopup_OnCloseClick"/>

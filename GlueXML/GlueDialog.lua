@@ -283,7 +283,8 @@ GlueDialogTypes["BOOST_ALLIED_RACE_HERITAGE_ARMOR_WARNING"] = {
 	button2 = CANCEL,
 	html = 1,
 	OnAccept = function()
-		CharacterServicesMaster_Advance();
+		-- Character select auto advances to spec select.
+		CharacterServicesMaster_Update();
 	end,
 	OnCancel = function()
 		local master = CharacterServicesMaster;

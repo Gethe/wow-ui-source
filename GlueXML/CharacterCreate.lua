@@ -10,6 +10,8 @@ CHARACTER_CREATE_INITIAL_FACING = nil;
 NUM_PREVIEW_FRAMES = 14;
 WORGEN_RACE_ID = 22;
 PANDAREN_RACE_ID = 24;
+PANDAREN_ALLIANCE_RACE_ID = 25;
+PANDAREN_HORDE_RACE_ID = 26;
 
 PAID_CHARACTER_CUSTOMIZATION = 1;
 PAID_RACE_CHANGE = 2;
@@ -348,6 +350,10 @@ function CharacterCreate_OnShow()
 	C_CharacterCreation.SetCurrentRaceMode(Enum.CharacterCreateRaceMode.Normal);
 	if (PAID_SERVICE_TYPE) then
 		local raceID = C_PaidServices.GetCurrentRaceID();
+		-- Fix up pandaren raceIDs
+		if (IsPandarenRace(raceID)) then
+			raceID = PANDAREN_RACE_ID;
+		end
 		local raceData = C_CharacterCreation.GetRaceDataByID(raceID);
 		if (raceData.isAlliedRace) then
 			CharCreateRaceButtonsFrame.ClassicBanners:Hide();
@@ -666,7 +672,7 @@ function CharacterCreateEnumerateRaces(modeChange)
 	end
 	
 	if ( PAID_SERVICE_TYPE ) then
-		if ( PAID_SERVICE_TYPE == PAID_FACTION_CHANGE and C_CharacterCreation.GetCurrentRaceMode() == Enum.CharacterCreateRaceMode.Normal) then
+		if ( PAID_SERVICE_TYPE == PAID_FACTION_CHANGE and C_CharacterCreation.GetCurrentRaceMode() == Enum.CharacterCreateRaceMode.Normal and C_CharacterCreation.IsRaceClassValid(PANDAREN_RACE_ID, C_PaidServices.GetCurrentClassID())) then
 			PandarenFactionButtons_Show();
 		else
 			PandarenFactionButtons_Hide();
@@ -844,16 +850,17 @@ local function CanProceedThroughCharacterCreate()
 	-- hard-coded for Pandaren because of alliance/horde pseudo buttons
 	local name, faction = C_CharacterCreation.GetFactionForRace(CharacterCreate.selectedRace);
 	local canProceed = true;
-	if ( CharacterCreate.selectedRace == PANDAREN_RACE_ID and PAID_SERVICE_TYPE ) then
+	if ( IsPandarenRace(C_CharacterCreation.GetSelectedRace()) and PAID_SERVICE_TYPE ) then
 		local _, currentFaction = C_PaidServices.GetCurrentFaction();
-		if ( C_PaidServices.GetCurrentRaceID() == PANDAREN_RACE_ID and PAID_SERVICE_TYPE == PAID_FACTION_CHANGE ) then
+		if ( IsPandarenRace(C_PaidServices.GetCurrentRaceID()) and PAID_SERVICE_TYPE == PAID_FACTION_CHANGE ) then
 			-- this is an original pandaren staying or becoming selected
 			-- check the pseudo-buttons
 			faction = PandarenFactionButtons_GetSelectedFaction();
 			if ( faction == currentFaction ) then
 				canProceed = false;
 			end
-		else
+		end
+		if (canProceed) then
 			-- for faction change use the opposite faction of current character
 			if ( PAID_SERVICE_TYPE == PAID_FACTION_CHANGE ) then
 				if ( currentFaction == "Horde" ) then
@@ -1543,7 +1550,7 @@ function CharacterChangeFixup()
 
 		local numAllowedRaces = FixupPool(CharacterCreate.allianceFramePool) + FixupPool(CharacterCreate.hordeFramePool) + FixupPool(CharacterCreate.neutralFramePool);
 		
-		if ( numAllowedRaces > 1 ) then
+		if ( numAllowedRaces > 0 ) then
 			CharCreateRaceButtonsFrame:SetAlpha(1);
 		else
 			CharCreateRaceButtonsFrame:SetAlpha(0.5);
@@ -1861,28 +1868,43 @@ function CharCreate_RefreshNextButton()
 	CharCreate_EnableNextButton(CanProceedThroughCharacterCreate());
 end
 
+function IsPandarenRace(raceID)
+	return raceID == PANDAREN_RACE_ID or raceID == PANDAREN_ALLIANCE_RACE_ID or raceID == PANDAREN_HORDE_RACE_ID;
+end
+
 function PandarenFactionButtons_Show()
 	local frame = CharCreatePandarenFactionFrame;
 	-- set the name
-	local raceName = C_CharacterCreation.GetNameForRace(24);
+	local raceName = C_CharacterCreation.GetNameForRace(PANDAREN_RACE_ID);
 	local allianceButton = CharCreateRaceButtonsFrame.AllianceRaces.Pandaren;
 	local hordeButton = CharCreateRaceButtonsFrame.HordeRaces.Pandaren;
 	allianceButton.nameFrame.text:SetText(raceName);
 	allianceButton.tooltip = raceName;
 	hordeButton.nameFrame.text:SetText(raceName);
 	hordeButton.tooltip = raceName;
+	allianceButton:Enable();
 	allianceButton:Show();
+	hordeButton:Enable();
 	hordeButton:Show();
 	-- set the texture
 	PandarenFactionButtons_SetTextures();
 	-- set selected button
 	local _, faction = C_PaidServices.GetCurrentFaction();
-	-- deselect first in case of multiple pandaren faction changes
-	PandarenFactionButtons_ClearSelection();
-	if (faction == "Alliance") then
-		allianceButton:SetChecked(true);
+	local raceID = C_PaidServices.GetCurrentRaceID();
+	if (not IsPandarenRace(raceID)) then
+		if (faction == "Alliance") then
+			allianceButton:Disable();
+		else
+			hordeButton:Disable();
+		end
 	else
-		hordeButton:SetChecked(true);
+		-- deselect first in case of multiple pandaren faction changes
+		PandarenFactionButtons_ClearSelection();
+		if (faction == "Alliance") then
+			allianceButton:SetChecked(true);
+		else
+			hordeButton:SetChecked(true);
+		end
 	end
 	frame:Show();
 	frame:SetFrameLevel(CharCreateRaceButtonsFrame.AllianceRaces.Pandaren:GetFrameLevel() - 2);
@@ -1937,8 +1959,8 @@ end
 
 function PandarenFactionButton_OnClick(self)
 	PandarenFactionButtons_ClearSelection();
-	CharacterRace_OnClick(self, self.raceID, true);
 	self:SetChecked(true);
+	CharacterRace_OnClick(self, self.raceID, true);
 end
 
 ---------------------------------------------
@@ -2352,7 +2374,7 @@ function CharacterCreate_UpdateOkayButton()
 		finalizeRequirements:UpdateInstructions();
 	else
 		finalizeRequirements:RemoveScripts();
-		CharCreate_EnableNextButton(true);
+		CharCreate_EnableNextButton(CanProceedThroughCharacterCreate());
 	end
 end
 

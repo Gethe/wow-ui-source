@@ -281,16 +281,7 @@
 			<OnHide>
 				StaticPopup_OnHide(self);
 			</OnHide>
-			<OnLoad>
-				local name = self:GetName();
-				self.button1 = _G[name .. "Button1"];
-				self.button2 = _G[name .. "Button2"];
-				self.button3 = _G[name .. "Button3"];
-				self.text = _G[name .. "Text"];
-				self.icon = _G[name .. "AlertIcon"];
-				self.moneyInputFrame = _G[name .. "MoneyInputFrame"];
-				self:RegisterEvent("DISPLAY_SIZE_CHANGED");
-			</OnLoad>
+			<OnLoad function="StaticPopup_OnLoad" />
 			<OnHyperlinkClick function="StaticPopup_OnHyperlinkClick"/>
 			<OnHyperlinkEnter function="StaticPopup_OnHyperlinkEnter"/>
 			<OnHyperlinkLeave function="StaticPopup_OnHyperlinkLeave"/>

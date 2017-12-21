@@ -78,7 +78,7 @@ function Model_RotateLeft(model, rotationIncrement)
 	if ( not rotationIncrement ) then
 		rotationIncrement = 0.03;
 	end
-	model.rotation = model.rotation - rotationIncrement;
+	model.rotation = model.rotation + rotationIncrement;
 	model:SetRotation(model.rotation);
 	PlaySound(SOUNDKIT.IG_INVENTORY_ROTATE_CHARACTER);
 end
@@ -87,7 +87,7 @@ function Model_RotateRight(model, rotationIncrement)
 	if ( not rotationIncrement ) then
 		rotationIncrement = 0.03;
 	end
-	model.rotation = model.rotation + rotationIncrement;
+	model.rotation = model.rotation - rotationIncrement;
 	model:SetRotation(model.rotation);
 	PlaySound(SOUNDKIT.IG_INVENTORY_ROTATE_CHARACTER);
 end
@@ -185,16 +185,22 @@ function Model_OnUpdate(self, elapsedTime, rotationsPerSecond)
 		rightButton = self.RotateRightButton or (self:GetName() and _G[self:GetName().."RotateRightButton"]);
 	end
 
-	if ( leftButton and leftButton:GetButtonState() == "PUSHED" ) then
+	Model_UpdateRotation(self, leftButton, rightButton, elapsedTime, rotationsPerSecond);
+end
+
+function Model_UpdateRotation(self, leftButton, rightButton, elapsedTime, rotationsPerSecond)
+	rotationsPerSecond = rotationsPerSecond or ROTATIONS_PER_SECOND;
+	
+	if ( rightButton and rightButton:GetButtonState() == "PUSHED" ) then
 		self.rotation = self.rotation + (elapsedTime * 2 * PI * rotationsPerSecond);
-		if ( self.rotation < 0 ) then
-			self.rotation = self.rotation + (2 * PI);
-		end
-		self:SetRotation(self.rotation);
-	elseif ( rightButton and rightButton:GetButtonState() == "PUSHED" ) then
-		self.rotation = self.rotation - (elapsedTime * 2 * PI * rotationsPerSecond);
 		if ( self.rotation > (2 * PI) ) then
 			self.rotation = self.rotation - (2 * PI);
+		end
+		self:SetRotation(self.rotation);
+	elseif ( leftButton and leftButton:GetButtonState() == "PUSHED" ) then
+		self.rotation = self.rotation - (elapsedTime * 2 * PI * rotationsPerSecond);
+		if ( self.rotation < 0 ) then
+			self.rotation = self.rotation + (2 * PI);
 		end
 		self:SetRotation(self.rotation);
 	end

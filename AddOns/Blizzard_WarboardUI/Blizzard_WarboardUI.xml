@@ -4,19 +4,29 @@
 	
 	<Button name="WarboardQuestChoiceOptionTemplate" virtual="true">
 		<Size x="240" y="332"/>
+		<KeyValues>
+			<KeyValue key="justifyCenter" value="true" type="boolean"/>
+		</KeyValues>
 		<Layers>
 			<Layer level="OVERLAY">
-				<Texture parentKey="Artwork">
-					<Size x="178" y="98"/>
-					<!-- Actual art should always be 200x100, centered in 256x128-->
+				<Texture parentKey="Nail" atlas="warboard-parchment-nail">
+					<Size x="33" y="32"/>
 					<Anchors>
-						<Anchor point="TOP" x="0" y="-50"/>
+						<Anchor point="TOP" x="-3" y="-5"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="1">
-				<Texture parentKey="Border" atlas="warboard-parchment-answerborder">
-					<Size x="184" y="104"/>
+				<Texture parentKey="Artwork">
+					<Size x="178" y="81"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-54"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Border" atlas="warboard-parchment-answerborder" alphaMode="MOD">
+					<Size x="190" y="93"/>
 					<Anchors>
 						<Anchor point="TOP" x="0" y="-48"/>
 					</Anchors>
@@ -27,7 +37,7 @@
 			<Button parentKey="OptionButton" mixin="QuestChoiceOptionButtonMixin" inherits="UIPanelButtonTemplate">
 				<Size x="175" y="22"/>
 				<Anchors>
-					<Anchor point="BOTTOM" x="0" y="34"/>
+					<Anchor point="BOTTOM" x="0" y="46"/>
 				</Anchors>
 				<ButtonText name="$parentText" parentKey="Text">
 					<Anchors>
@@ -49,7 +59,7 @@
 				<Layers>
 					<Layer level="BORDER">
 						<Texture parentKey="Background" atlas="warboard-parchment">
-							<Size x="240" y="332"/>
+							<Size x="251" y="339"/>
 							<Anchors>
 								<Anchor point="TOP"/>
 							</Anchors>
@@ -57,8 +67,9 @@
 					</Layer>
 					<Layer level="ARTWORK">
 						<FontString parentKey="Text" font="SystemFont_Huge1" justifyH="CENTER" justifyV="MIDDLE">
+							<Size x="180"/>
 							<Anchors>
-								<Anchor point="TOP" relativeKey="$parent.$parent.Artwork" relativePoint="BOTTOM" x="0" y="-16"/>
+								<Anchor point="TOP" relativeKey="$parent.$parent.Artwork" relativePoint="BOTTOM" x="0" y="-21"/>
 							</Anchors>
 							<Color r="0" g="0" b="0"/>
 						</FontString>
@@ -68,13 +79,13 @@
 			<SimpleHTML parentKey="OptionText" inherits="InlineHyperlinkFrameTemplate">
 				<Size x="180"/>
 				<Anchors>
-					<Anchor point="TOP" relativeKey="$parent.Artwork" relativePoint="BOTTOM" x="0" y="-48"/>
-					<Anchor point="BOTTOM" relativeKey="$parent.OptionButton" relativePoint="TOP" y="35"/>
+					<Anchor point="TOP" relativeKey="$parent.Header.Text" relativePoint="BOTTOM" x="0" y="-12"/>
+					<Anchor point="BOTTOM" relativeKey="$parent.OptionButton" relativePoint="TOP" y="39"/>
 				</Anchors>
 				<Scripts>
 					<OnSizeChanged>self:GetParent():GetParent():SetPendingUpdate();</OnSizeChanged>
 				</Scripts>
-				<FontString inherits="Game13Font" justifyH="LEFT" justifyV="TOP">
+				<FontString inherits="Game12Font" justifyH="CENTER" justifyV="TOP">
 					<Color r="0.28" g="0.02" b="0.02" />
 				</FontString>
 			</SimpleHTML>
@@ -89,10 +100,10 @@
 			<KeyValue key="fixedWidth" value="600" type="number"/>
 			<KeyValue key="expand" value="true" type="boolean"/>
 			<KeyValue key="topPadding" value="150" type="number"/>
-			<KeyValue key="bottomPadding" value="50" type="number"/>
-			<KeyValue key="leftPadding" value="46" type="number"/>
-			<KeyValue key="rightPadding" value="46" type="number"/>
-			<KeyValue key="spacing" value="22" type="number"/>
+			<KeyValue key="bottomPadding" value="35" type="number"/>
+			<KeyValue key="leftPadding" value="58" type="number"/>
+			<KeyValue key="rightPadding" value="58" type="number"/>
+			<KeyValue key="spacing" value="30" type="number"/>
 		</KeyValues>
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="1">
@@ -259,7 +270,7 @@
 				<Size x="500" y="85"/>
 				<Anchors>
 					<Anchor point="TOP" relativeKey="$parent.Header" relativePoint="BOTTOM"/>
-					<Anchor point="LEFT" relativeKey="$parent.Option1" relativePoint="LEFT" x="6" y="0"/>
+					<Anchor point="LEFT" relativeKey="$parent.Option1" relativePoint="LEFT" x="-3" y="0"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">

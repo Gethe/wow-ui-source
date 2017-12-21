@@ -267,7 +267,13 @@ function ArtifactUIMixin:OnKnowledgeEnter(knowledgeFrame)
 		end
 	end
 	
+	knowledgeFrame.UpdateTooltip = function() ArtifactFrame:OnKnowledgeEnter(knowledgeFrame); end;
 	GameTooltip:Show();
+end
+
+function ArtifactUIMixin:OnKnowledgeLeave(knowledgeFrame)
+	knowledgeFrame.UpdateTooltip = nil;
+	GameTooltip:Hide();
 end
 
 function ArtifactUIMixin:OnInventoryItemMouseEnter(bag, slot)

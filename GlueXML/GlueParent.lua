@@ -461,6 +461,10 @@ local glueScreenTags =
 		["BLOODELF"] = true,
 		["GOBLIN"] = true,
 		["WORGEN"] = true,
+		["VOIDELF"] = true,
+		["LIGHTFORGEDDRAENEI"] = true,
+		["NIGHTBORNE"] = true,
+		["HIGHMOUNTAINTAUREN"] = true,
 	},
 };
 

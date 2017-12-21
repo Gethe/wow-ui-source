@@ -11,6 +11,7 @@ function GuildFrame_OnLoad(self)
 	self:RegisterEvent("UPDATE_FACTION");
 	self:RegisterEvent("GUILD_RENAME_REQUIRED");
 	self:RegisterEvent("REQUIRED_GUILD_RENAME_RESULT");
+	self:RegisterEvent("SPELL_NAME_UPDATE");
 	GuildFrame.hasForcedNameChange = GetGuildRenameRequired();
 	PanelTemplates_SetNumTabs(self, 5);
 	RequestGuildRewards();
@@ -103,6 +104,20 @@ function GuildFrame_OnEvent(self, event, ...)
 			GuildFrame_CheckName();
 		else
 			UIErrorsFrame:AddMessage(ERR_GUILD_NAME_INVALID, 1.0, 0.1, 0.1, 1.0);
+		end
+	elseif ( event == "SPELL_NAME_UPDATE" ) then
+		local spellID, spellName = ...;
+		local scrollFrame = GuildPerksContainer;
+		local offset = HybridScrollFrame_GetOffset(scrollFrame);
+		local buttons = scrollFrame.buttons;
+		local numButtons = #buttons;
+		local numPerks = GetNumGuildPerks();
+		for i = 1, numButtons do
+			local button = buttons[i];
+			local index = offset + i;
+			if ( button.spellID == spellID and index <= numPerks ) then
+				button.name:SetText(spellName);
+			end
 		end
 	end
 end

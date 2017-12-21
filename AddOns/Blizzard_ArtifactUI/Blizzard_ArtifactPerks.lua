@@ -36,6 +36,11 @@ ARTIFACT_TIER_2_SOUND_REFUND_END_DELAY = 0.9;
 ARTIFACT_TIER_2_SOUND_REFUND_LOOP_STOP_DELAY = 0.0;
 ARTIFACT_TIER_2_SOUND_REFUND_LOOP_FADE_OUT_TIME = 500;
 
+ARTIFACT_INSTABILITY_LEVEL_HIGHEST = 1;
+ARTIFACT_INSTABILITY_LEVEL_HIGH = 2;
+ARTIFACT_INSTABILITY_LEVEL_MEDIUM = 3;
+ARTIFACT_INSTABILITY_LEVEL_LOW = 4;
+
 local TIER_2_FINAL_POWER_REVEAL_REVEAL_DELAY = 0.5;
 local TIER_2_FINAL_POWER_REVEAL_SHAKE_DELAY = 0.345;
 local TIER_2_FINAL_POWER_REVEAL_SHAKE = ARTIFACT_TIER_2_SHAKE;
@@ -69,7 +74,8 @@ function ArtifactPerksMixin:OnShow()
 	self.modelTransformElapsed = 0;
 	self:RegisterEvent("CURSOR_UPDATE");
 	self:RegisterEvent("UI_MODEL_SCENE_INFO_UPDATED");
-	if ( self.instabilitySoundEmitter ) then
+	if ( self.playInstabilityLoopingSound ) then
+		self.instabilitySoundEmitter = CreateLoopingSoundEffectEmitter(nil, self:GetInstabilityLoopingSoundKit(), nil, 0, 0, 0);
 		self.instabilitySoundEmitter:StartLoopingSound();
 	end
 end
@@ -81,6 +87,7 @@ function ArtifactPerksMixin:OnHide()
 	self:SkipTier2Animation();
 	if ( self.instabilitySoundEmitter ) then
 		self.instabilitySoundEmitter:CancelLoopingSound();
+		self.instabilitySoundEmitter = nil;
 	end
 end
 
@@ -104,6 +111,59 @@ function ArtifactPerksMixin:OnUIOpened()
 	end
 
 	self:Refresh(true);
+end
+
+function ArtifactPerksMixin:GetInstabilityLevel()
+	local pointsSpent = select(6, C_ArtifactUI.GetArtifactInfo());
+	local concordance = pointsSpent - 51;
+	if ( concordance > 80 ) then
+		return ARTIFACT_INSTABILITY_LEVEL_HIGHEST;
+	elseif ( concordance > 70 ) then
+		return ARTIFACT_INSTABILITY_LEVEL_HIGH;
+	elseif ( concordance > 60 ) then
+		return ARTIFACT_INSTABILITY_LEVEL_MEDIUM;
+	else
+		return ARTIFACT_INSTABILITY_LEVEL_LOW;
+	end
+end
+
+function ArtifactPerksMixin:GetInstabilityLoopingSoundKit()
+	local instabilityLevel = self:GetInstabilityLevel();
+	if instabilityLevel == ARTIFACT_INSTABILITY_LEVEL_HIGHEST then
+		return SOUNDKIT.UI_73_ARTIFACT_OVERLOADED_HIGHEST;
+	elseif instabilityLevel == ARTIFACT_INSTABILITY_LEVEL_HIGH then
+		return SOUNDKIT.UI_73_ARTIFACT_OVERLOADED_HIGH;
+	elseif instabilityLevel == ARTIFACT_INSTABILITY_LEVEL_MEDIUM then
+		return SOUNDKIT.UI_73_ARTIFACT_OVERLOADED_MEDIUM;
+	else
+		return SOUNDKIT.UI_73_ARTIFACT_OVERLOADED_LOW;
+	end
+end
+
+function ArtifactPerksMixin:GetInstabilityOrbSoundKit()
+	local instabilityLevel = self:GetInstabilityLevel();
+	if instabilityLevel == ARTIFACT_INSTABILITY_LEVEL_HIGHEST then
+		return SOUNDKIT.UI_73_ARTIFACT_OVERLOADED_ORB_HIGHEST;
+	elseif instabilityLevel == ARTIFACT_INSTABILITY_LEVEL_HIGH then
+		return SOUNDKIT.UI_73_ARTIFACT_OVERLOADED_ORB_HIGH;
+	elseif instabilityLevel == ARTIFACT_INSTABILITY_LEVEL_MEDIUM then
+		return SOUNDKIT.UI_73_ARTIFACT_OVERLOADED_ORB_MEDIUM;
+	else
+		return SOUNDKIT.UI_73_ARTIFACT_OVERLOADED_ORB_LOW;
+	end
+end
+
+function ArtifactPerksMixin:GetInstabilityOrbImpactSoundKit()
+	local instabilityLevel = self:GetInstabilityLevel();
+	if instabilityLevel == ARTIFACT_INSTABILITY_LEVEL_HIGHEST then
+		return nil;
+	elseif instabilityLevel == ARTIFACT_INSTABILITY_LEVEL_HIGH then
+		return nil;
+	elseif instabilityLevel == ARTIFACT_INSTABILITY_LEVEL_MEDIUM then
+		return SOUNDKIT.UI_73_ARTIFACT_OVERLOADED_ORB_IMPACT_MEDIUM;
+	else
+		return SOUNDKIT.UI_73_ARTIFACT_OVERLOADED_ORB_IMPACT_LOW;
+	end
 end
 
 function ArtifactPerksMixin:OnAppearanceChanging()
@@ -1224,7 +1284,8 @@ function ArtifactPerksMixin:BeginInstability()
 		self.AltInstabilityEffectModel.AlphaAnim:Play();
 	end
 
-	self.instabilitySoundEmitter = CreateLoopingSoundEffectEmitter(nil, SOUNDKIT.UI_73_ARTIFACT_OVERLOADED, nil, 0, 0, 0);
+	self.playInstabilityLoopingSound = true;
+	self.instabilitySoundEmitter = CreateLoopingSoundEffectEmitter(nil, self:GetInstabilityLoopingSoundKit(), nil, 0, 0, 0);
 	self.instabilitySoundEmitter:StartLoopingSound();
 end
 

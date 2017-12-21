@@ -12,10 +12,12 @@ local titleTextureKitRegions = {
 
 function WarboardQuestChoiceFrameMixin:OnLoad()
 	self.QuestionText = self.Title.Text;
-	self.initOptionHeight = 332;
-	self.optionStaticHeight = 270;
-	self.initWindowHeight = 544;
-	self.initOptionBackgroundHeight = 332;
+	self.initOptionHeight = 337;
+	self.optionStaticHeight = 275;
+	self.initWindowHeight = 549;
+	self.initOptionBackgroundHeight = 337;
+	self.initOptionHeaderTextHeight = 20;
+
 	QuestChoiceFrameMixin.OnLoad(self);
 end
 
@@ -32,8 +34,18 @@ function WarboardQuestChoiceFrameMixin:TryShow()
 end
 
 function WarboardQuestChoiceFrameMixin:OnHeightChanged(heightDiff)
+	local maxHeaderTextHeight = self.initOptionHeaderTextHeight;
+	
 	for _, option in pairs(self.Options) do
-		option.Header.Background:SetHeight(self.initOptionBackgroundHeight + heightDiff);
+		maxHeaderTextHeight = math.max(maxHeaderTextHeight, option.Header.Text:GetHeight());
+	end
+
+	local headerTextDifference = math.floor(maxHeaderTextHeight) - self.initOptionHeaderTextHeight;
+
+	for _, option in pairs(self.Options) do
+		option.Header.Text:SetHeight(maxHeaderTextHeight);
+		option:SetHeight(option:GetHeight() + headerTextDifference);
+		option.Header.Background:SetHeight(self.initOptionBackgroundHeight + heightDiff + headerTextDifference);
 	end
 end
 
@@ -42,5 +54,5 @@ function WarboardQuestChoiceFrameMixin:Update()
 
 	local _, _, numOptions = GetQuestChoiceInfo();
 
-	self.Title:SetPoint("RIGHT", self.Options[numOptions], "RIGHT", -6, 0);
+	self.Title:SetPoint("RIGHT", self.Options[numOptions], "RIGHT", 3, 0);
 end

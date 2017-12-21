@@ -152,7 +152,7 @@ function AlliedRacesFrameMixin:OnLoad()
 	self.bulletPool = CreateFramePool("FRAME", self.RaceInfoFrame.ScrollFrame.Child, "AlliedRaceOverviewBulletsTemplate");
 	self:RegisterEvent("ALLIED_RACE_CLOSE");
 	self.TopTileStreaks:Hide();
-	self.RaceInfoFrame.AlliedRacesRaceName:SetFontObjectsToTry("Fancy48Font", "Fancy32Font", "Fancy30Font", "Fancy27Font", "Fancy24Font", "Fancy24Font", "Fancy18Font", "Fancy16Font");
+	self.RaceInfoFrame.AlliedRacesRaceName:SetFontObjectsToTry("Fancy32Font", "Fancy30Font", "Fancy27Font", "Fancy24Font", "Fancy24Font", "Fancy18Font", "Fancy16Font");
 end
 
 function AlliedRacesFrameMixin:OnEvent(self, event, ...)
