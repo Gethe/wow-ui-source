@@ -1020,7 +1020,7 @@
 								<Anchors>
 									<Anchor point="TOPLEFT" x="10" y="-10"/>
 								</Anchors>
-								<FontString inherits="MailTextFontNormal" nonspacewrap="true"/>
+								<FontString inherits="MailTextFontNormal" nonspacewrap="true" justifyH="LEFT"/>
 							</SimpleHTML>
 							<Frame name="OpenMailInvoiceFrame" setAllPoints="true">
 								<Layers>

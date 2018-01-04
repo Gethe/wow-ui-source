@@ -4,9 +4,6 @@
 	
 	<Button name="WarboardQuestChoiceOptionTemplate" virtual="true">
 		<Size x="240" y="332"/>
-		<KeyValues>
-			<KeyValue key="justifyCenter" value="true" type="boolean"/>
-		</KeyValues>
 		<Layers>
 			<Layer level="OVERLAY">
 				<Texture parentKey="Nail" atlas="warboard-parchment-nail">
@@ -66,7 +63,7 @@
 						</Texture>
 					</Layer>
 					<Layer level="ARTWORK">
-						<FontString parentKey="Text" font="SystemFont_Huge1" justifyH="CENTER" justifyV="MIDDLE">
+						<FontString parentKey="Text" font="Game20Font" justifyH="CENTER" justifyV="MIDDLE">
 							<Size x="180"/>
 							<Anchors>
 								<Anchor point="TOP" relativeKey="$parent.$parent.Artwork" relativePoint="BOTTOM" x="0" y="-21"/>
@@ -295,10 +292,11 @@
 						</Texture>
 					</Layer>
 					<Layer level="ARTWORK">
-						<FontString parentKey="Text" inherits="GameFontHighlightLarge" justifyH="CENTER">
+						<FontString parentKey="Text" inherits="Game16Font" justifyH="CENTER">
 							<Anchors>
 								<Anchor point="CENTER" relativeKey="$parent.Middle"/>
 							</Anchors>
+							<Color r="1.0" g="1.0" b="1.0"/>
 						</FontString>
 					</Layer>
 				</Layers>

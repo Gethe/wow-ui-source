@@ -4815,7 +4815,7 @@ function StaticPopup_OnEvent(self, event, ...)
 		end
 		for index = 1, STATICPOPUP_NUMDIALOGS, 1 do
 			local frame = _G["StaticPopup"..index];
-			if frame and frame.data and frame.data.pendingSpellID == spellID then
+			if frame and frame.data and type(frame.data) == "table" and frame.data.pendingSpellID == spellID then
 				frame.data.name = spellName;
 				if frame:IsShown() then
 					info.OnShow(frame);

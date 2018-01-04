@@ -1125,9 +1125,9 @@ end
 SecureCmdList["CAST"] = function(msg)
     local action, target = SecureCmdOptionParse(msg);
     if ( action ) then
-    	local spell = GetSpellInfo(action)
+    	local spellExists = DoesSpellExist(action)
 		local name, bag, slot = SecureCmdItemParse(action);
-		if ( spell ) then
+		if ( spellExists ) then
 			CastSpellByName(action, target);
 		elseif ( slot or GetItemInfo(name) ) then
 			SecureCmdUseItem(name, bag, slot, target);

@@ -93,6 +93,25 @@ do
 	end
 end
 
+function LootJournalItemButtonTemplate_OnEnter(self)
+	local listFrame = self:GetParent();
+	while ( listFrame and not listFrame.ShowItemTooltip ) do
+		listFrame = listFrame:GetParent();
+	end
+	if ( listFrame ) then
+		listFrame:ShowItemTooltip(self);
+		self:SetScript("OnUpdate", LootJournalItemButton_OnUpdate);
+		self.UpdateTooltip = LootJournalItemButtonTemplate_OnEnter;
+	end
+end
+
+function LootJournalItemButtonTemplate_OnLeave(self)
+	self.UpdateTooltip = nil;
+	GameTooltip:Hide();
+	self:SetScript("OnUpdate", nil);
+	ResetCursor();
+end
+
 --=================================================================================================================================== 
 LootJournalListMixin = { };
 

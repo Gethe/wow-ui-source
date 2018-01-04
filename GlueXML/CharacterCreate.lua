@@ -201,6 +201,9 @@ MODEL_CAMERA_CONFIG = {
 		["HighmountainTauren"] = { tx = 0.516, ty = -0.003, tz = 1.654, cz = 1.647, distance = 1.266, light =  0.80 },
 		["VoidElf"] = { tx = 0.009, ty = -0.120, tz = 1.914, cz = 1.712, distance = 0.727, light =  0.80 },
 		["LightforgedDraenei"] = { tx = 0.191, ty = -0.015, tz = 2.302, cz = 2.160, distance = 1.116, light =  0.80 },
+		["Nightborne6"] = { tx = 0, ty = 0, tz = 1.95, cz = 1.792, distance = 1.75, light =  0.85 },
+		["LightforgedDraenei6"] = { tx = 0, ty = 0, tz = 1.642, cz = 1.792, distance = 2.692, light =  0.80 },
+		["HighmountainTauren6"] = { tx = -0.216, ty = -0.203, tz = 1.654, cz = 1.647, distance = 3.566, light =  0.80 },
 	},
 	[1] = {
 		["Draenei"] = { tx = 0.155, ty = 0.009, tz = 2.177, cz = 1.971, distance = 0.734, light =  0.75 },
@@ -227,6 +230,9 @@ MODEL_CAMERA_CONFIG = {
 		["HighmountainTauren"] = { tx = 0.337, ty = -0.008, tz = 1.918, cz = 1.855, distance = 0.891, light =  0.75 },
 		["VoidElf"] = { tx = -0.072, ty = 0.009, tz = 1.789, cz = 1.792, distance = 0.717, light =  0.80 },
 		["LightforgedDraenei"] = { tx = 0.155, ty = 0.009, tz = 2.177, cz = 1.971, distance = 0.734, light =  0.75 },
+		["Nightborne6"] = { tx = 0, ty = 0, tz = 1.85, cz = 1.792, distance = 1.6, light =  0.85 },
+		["LightforgedDraenei6"] = { tx = -0.271, ty = 0, tz = 1.642, cz = 1.971, distance = 1.492, light =  0.80 },
+		["HighmountainTauren6"] = { tx = 0.137, ty = -0.008, tz = 1.918, cz = 1.855, distance = 1.591, light =  0.75 },
 	}
 };
 
@@ -536,24 +542,32 @@ end
 function CharacterCreateFrame_UpdateRecruitInfo()
 	local active, faction = C_RecruitAFriend.GetRecruitInfo();
 	if ( active and not PAID_SERVICE_TYPE ) then
+		local anchorFrame, notice;
 		if ( faction == FACTION_GROUP_HORDE ) then
-			RecruitAFriendFactionHighlight:SetPoint("TOPLEFT", CharCreateRaceButton7, "TOPLEFT", -17, 35);
-			RecruitAFriendFactionHighlight:SetPoint("BOTTOMRIGHT", CharCreateRaceButton11, "BOTTOMRIGHT", 17, -29);
-			ShowGlowyDialog(RecruitAFriendFactionNotice, RECRUIT_A_FRIEND_FACTION_SUGGESTION_HORDE, true);
-			RecruitAFriendFactionNotice:SetPoint("LEFT", CharCreateRaceButton8, "RIGHT", 40, 0);
+			anchorFrame = CharCreateRaceButtonsFrame.HordeRaces;
+			notice = RECRUIT_A_FRIEND_FACTION_SUGGESTION_HORDE;
 		else
-			RecruitAFriendFactionHighlight:SetPoint("TOPLEFT", CharCreateRaceButton1, "TOPLEFT", -17, 35);
-			RecruitAFriendFactionHighlight:SetPoint("BOTTOMRIGHT", CharCreateRaceButton6, "BOTTOMRIGHT", 17, -29);
-			ShowGlowyDialog(RecruitAFriendFactionNotice, RECRUIT_A_FRIEND_FACTION_SUGGESTION_ALLIANCE, true);
-			RecruitAFriendFactionNotice:SetPoint("LEFT", CharCreateRaceButton2, "RIGHT", 40, 0);
+			anchorFrame = CharCreateRaceButtonsFrame.AllianceRaces;
+			notice = RECRUIT_A_FRIEND_FACTION_SUGGESTION_ALLIANCE;
 		end
+		RecruitAFriendFactionHighlight:SetPoint("TOPLEFT", anchorFrame, "TOPLEFT", -17, 10);
+		RecruitAFriendFactionHighlight:SetPoint("BOTTOMRIGHT", anchorFrame, "BOTTOMRIGHT", 17, -6);
+		ShowGlowyDialog(RecruitAFriendFactionNotice, notice, true);
+		RecruitAFriendFactionNotice:SetPoint("LEFT", anchorFrame, "TOPRIGHT", 35, -95);
 		RecruitAFriendFactionHighlight:Show();
-		RecruitAFriendPandaHighlight:Show();
+		RecruitAFriendPandaHighlight:SetShown(C_CharacterCreation.GetCurrentRaceMode() == Enum.CharacterCreateRaceMode.Normal);
+		local raceID = CharacterCreate_GetRandomRace();
+
+		if (raceID) then
+			CharCreateSelectRace(raceID, true);
+			return true;		
+		end
 	else
 		RecruitAFriendFactionHighlight:Hide();
 		RecruitAFriendPandaHighlight:Hide();
 		RecruitAFriendFactionNotice:Hide();
 	end
+	return false;
 end
 
 -- For these races, the names are shortened for the atlas
@@ -583,6 +597,13 @@ function CharacterCreate_GetRandomRace()
 		else
 			return nil;
 		end
+	end
+
+	local active, faction = C_RecruitAFriend.GetRecruitInfo();
+	if (active) then
+		local classID = C_CharacterCreation.GetSelectedClass().classID;
+		local matchFaction = faction == FACTION_GROUP_HORDE and "Horde" or "Alliance";
+		races = tFilter(races, function(raceData) return raceData.enabled and C_CharacterCreation.IsRaceClassValid(raceData.raceID, classID) and matchFaction == select(2,C_CharacterCreation.GetFactionForRace(raceData.raceID)) end, true);
 	end
 
 	if (#races == 0) then
@@ -686,10 +707,13 @@ function CharacterCreateEnumerateRaces(modeChange)
 	CharCreateRaceButtonsFrame.NeutralRaces:Layout();
 
 	if (modeChange) then
-		local raceID = CharacterCreate_GetRandomRace();
+		local raceSelected = CharacterCreateFrame_UpdateRecruitInfo();
+		if (not raceSelected) then
+			local raceID = CharacterCreate_GetRandomRace();
 
-		if (raceID) then
-			CharCreateSelectRace(raceID, true);
+			if (raceID) then
+				CharCreateSelectRace(raceID, true);
+			end
 		end
 	end
 end
@@ -1883,8 +1907,10 @@ function PandarenFactionButtons_Show()
 	hordeButton.nameFrame.text:SetText(raceName);
 	hordeButton.tooltip = raceName;
 	allianceButton:Enable();
+	SetButtonDesaturated(allianceButton, false);
 	allianceButton:Show();
 	hordeButton:Enable();
+	SetButtonDesaturated(hordeButton, false);
 	hordeButton:Show();
 	-- set the texture
 	PandarenFactionButtons_SetTextures();
@@ -1894,8 +1920,10 @@ function PandarenFactionButtons_Show()
 	if (not IsPandarenRace(raceID)) then
 		if (faction == "Alliance") then
 			allianceButton:Disable();
+			SetButtonDesaturated(allianceButton, true);
 		else
 			hordeButton:Disable();
+			SetButtonDesaturated(hordeButton, true);
 		end
 	else
 		-- deselect first in case of multiple pandaren faction changes

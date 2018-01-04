@@ -1719,8 +1719,16 @@ function LFGDungeonList_EvaluateListState(category)
 	return enabled, queued;
 end
 
+local function GetLFGDifficultyColor(level, isScalingDungeon)
+	if (not isScalingDungeon) then
+		return GetQuestDifficultyColor(level);
+	end
+
+	return QuestDifficultyColors["difficult"], QuestDifficultyHighlightColors["difficult"];
+end
+
 function LFGDungeonListButton_SetDungeon(button, dungeonID, enabled, checkedList)
-	local name, typeID, subtypeID, minLevel, maxLevel, recLevel, minRecLevel, maxRecLevel, expansionLevel, groupID, textureFilename, difficulty, maxPlayers, description, isHoliday = GetLFGDungeonInfo(dungeonID);
+	local name, typeID, subtypeID, minLevel, maxLevel, recLevel, minRecLevel, maxRecLevel, expansionLevel, groupID, textureFilename, difficulty, maxPlayers, description, isHoliday, bonusRepAmount, minPlayers, isRandomTimewalker, mapName, minGear, isScalingDungeon = GetLFGDungeonInfo(dungeonID);
 	button.id = dungeonID;
 	if ( LFGIsIDHeader(dungeonID) ) then
 		button.instanceName:SetText(name);
@@ -1757,7 +1765,7 @@ function LFGDungeonListButton_SetDungeon(button, dungeonID, enabled, checkedList
 			button.level:SetText(format(LFD_LEVEL_FORMAT_RANGE, minLevel, maxLevel));
 		end
 		button.level:Show();
-		local difficultyColor = GetQuestDifficultyColor(recLevel);
+		local difficultyColor = GetLFGDifficultyColor(recLevel, isScalingDungeon);
 		button.level:SetFontObject(difficultyColor.font);
 		
 		if ( enabled ) then

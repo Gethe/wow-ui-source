@@ -625,7 +625,8 @@
 				<Size x="257" y="78"/>
 				<Layers>
 					<Layer level="ARTWORK">
-						<FontString parentKey="Text" inherits="QuestFont_Huge" justifyH="LEFT">
+						<FontString parentKey="Text" inherits="QuestFont_Huge" mixin="ShrinkUntilTruncateFontStringMixin" justifyH="LEFT">
+							<Size x="160" y="44"/>
 							<Anchors>
 								<Anchor point="LEFT" x="5" y="-12"/>
 							</Anchors>
@@ -637,6 +638,11 @@
 						</Texture>
 					</Layer>
 				</Layers>
+				<Scripts>
+					<OnLoad>
+						self.Text:SetFontObjectsToTry("QuestFont_Huge", "QuestFont_Large", "Fancy14Font", "Fancy12Font");
+					</OnLoad>
+				</Scripts>
 			</Frame>
 		</Frames>
 		<Scripts>

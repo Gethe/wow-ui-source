@@ -141,6 +141,8 @@ function CharacterSelect_OnLoad(self)
 	self:RegisterEvent("UPDATE_EXPANSION_LEVEL");
 	self:RegisterEvent("TRIAL_STATUS_UPDATE");
     self:RegisterEvent("CHARACTER_UPGRADE_UNREVOKE_RESULT");
+	self:RegisterEvent("MIN_EXPANSION_LEVEL_UPDATED");
+	self:RegisterEvent("MAX_EXPANSION_LEVEL_UPDATED");
 
     SetCharSelectModelFrame("CharacterSelectModel");
 
@@ -666,9 +668,12 @@ function CharacterSelect_OnEvent(self, event, ...)
     elseif ( event == "LOGIN_STATE_CHANGED" ) then
         local FROM_LOGIN_STATE_CHANGE = true;
         CharacterSelect_UpdateState(FROM_LOGIN_STATE_CHANGE);
-	elseif ( event == "UPDATE_EXPANSION_LEVEL" or event == "TRIAL_STATUS_UPDATE" ) then
+	elseif ( event == "TRIAL_STATUS_UPDATE" ) then
 		AccountUpgradePanel_Update(CharSelectAccountUpgradeButton.isExpanded);
-    end
+		UpdateCharacterList();
+	elseif ( event == "UPDATE_EXPANSION_LEVEL" or event == "MIN_EXPANSION_LEVEL_UPDATED" or event == "MAX_EXPANSION_LEVEL_UPDATED" ) then
+		AccountUpgradePanel_Update(CharSelectAccountUpgradeButton.isExpanded);
+	end
 end
 
 function CharacterSelect_SetPendingTrialBoost(hasPendingTrialBoost, factionID, specID)
@@ -2220,7 +2225,7 @@ function CharacterServicesMaster_OnCharacterListUpdate()
             CharSelectServicesFlowFrame:Show();
             CharacterServicesMaster_SetFlow(CharacterServicesMaster, CharacterUpgradeFlow);
         end
-
+        
         CharacterUpgrade_ResetBoostData();
         C_CharacterServices.SetAutomaticBoost(nil);
     elseif (C_CharacterServices.HasQueuedUpgrade()) then

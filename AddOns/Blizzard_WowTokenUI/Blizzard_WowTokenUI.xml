@@ -206,7 +206,7 @@
 									end
 								</OnHyperlinkClick>
 							</Scripts>
-							<FontString inherits="GameFontNormal" />
+							<FontString inherits="GameFontNormal" justifyH="LEFT" />
 						</SimpleHTML>
 						<Frame parentKey="Spinner" inherits="LoadingSpinnerTemplate" hidden="true">
 							<Anchors>

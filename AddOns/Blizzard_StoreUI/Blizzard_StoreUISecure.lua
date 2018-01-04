@@ -330,7 +330,7 @@ Import("LE_MODEL_BLEND_OPERATION_NONE");
 --Lua constants
 local WOW_TOKEN_CATEGORY_ID = 30;
 
--- Mirror of the same variables in GlueParent.lua
+-- Mirror of the same variables in GlueParent.lua and UIParent.lua
 local WOW_GAMES_CATEGORY_ID = 33;
 local WOW_GAME_TIME_CATEGORY_ID = 37;
 
@@ -1290,7 +1290,9 @@ function StoreFrame_UpdateCard(card, entryID, discountReset, forceModelUpdate)
 	local hot = false;
 
 	if ( entryInfo.alreadyOwned ) then
-		card.Checkmark:Show();
+		if card.Checkmark then
+			card.Checkmark:Show();
+		end
 	elseif ( card.NewTexture and new ) then
 		card.NewTexture:Show();
 	elseif ( card.HotTexture and hot ) then
@@ -1381,9 +1383,9 @@ function StoreFrame_UpdateCard(card, entryID, discountReset, forceModelUpdate)
 
 	if (card == StoreFrame.SplashSingle) then
 		if bit.band(entryInfo.sharedData.flags, Enum.BattlepayDisplayFlag.UseHorizontalLayoutForFullCard) == Enum.BattlepayDisplayFlag.UseHorizontalLayoutForFullCard then
-			StoreFrameSplashSingle_SetStyle(StoreFrame.SplashSingle, "horizontal");
+			StoreFrameSplashSingle_SetStyle(StoreFrame.SplashSingle, "horizontal", entryInfo.sharedData.overrideBackground);
 		else
-			StoreFrameSplashSingle_SetStyle(StoreFrame.SplashSingle, nil);
+			StoreFrameSplashSingle_SetStyle(StoreFrame.SplashSingle, nil, entryInfo.sharedData.overrideBackground);
 		end
 		if (entryInfo.sharedData.productDecorator == Enum.BattlepayProductDecorator.WoWToken) then
 			local price = C_WowTokenPublic.GetCurrentMarketPrice();
@@ -1493,7 +1495,9 @@ function StoreFrame_UpdateCard(card, entryID, discountReset, forceModelUpdate)
 	if (entryInfo.alreadyOwned and StoreFrame_DoesProductGroupShowOwnedAsDisabled(selectedCategoryID)) then
 		card:Disable();
 		card.Card:SetDesaturated(true);
-		card.Checkmark:Hide();
+		if card.Checkmark then
+			card.Checkmark:Hide();
+		end
 	end
 
 	if (card.DisabledOverlay) then
@@ -1908,6 +1912,7 @@ function StoreFrame_OnLoad(self)
 	self:RegisterEvent("UPDATE_EXPANSION_LEVEL");
 	self:RegisterEvent("TRIAL_STATUS_UPDATE");
 	self:RegisterEvent("SIMPLE_CHECKOUT_CLOSED");
+	self:RegisterEvent("SUBSCRIPTION_CHANGED_KICK_IMMINENT");
 
 	-- We have to call this from CharacterSelect on the glue screen because the addon engine will load
 	-- the store addon more than once if we try to make it ondemand, forcing us to load it before we
@@ -2080,6 +2085,11 @@ function StoreFrame_OnEvent(self, event, ...)
 		-- Close the shop after you purchase game time
 		if WasVeteran and not IsVeteranTrialAccount() then
 			self:Hide();
+		end
+	elseif (event == "SUBSCRIPTION_CHANGED_KICK_IMMINENT") then
+		if not SimpleCheckout:IsShown() then
+			self:Hide();
+			_G.GlueDialog_Show("SUBSCRIPTION_CHANGED_KICK_WARNING");
 		end
 	end
 end
@@ -4107,10 +4117,9 @@ function VASCharacterSelectionChangeIconFrame_OnEnter(self)
 
 	local descStr = "";
 	local seenAlliedRace = false;
-	local needAlliedRaceWarning = character.level >= 25;
 	for i = 1, #races do
 		local raceInfo = races[i];
-		if (raceInfo.isAlliedRace and needAlliedRaceWarning and not raceInfo.isHeritageArmorUnlocked) then
+		if (raceInfo.isAlliedRace and not raceInfo.isHeritageArmorUnlocked) then
 			descStr = descStr .. string.format(_G.BLIZZARD_STORE_VAS_RACE_CHANGE_TOOLTIP_LINE_ALLIED_RACE, raceInfo.raceName);
 			seenAlliedRace = true;
 		else
@@ -4986,7 +4995,19 @@ function StoreFrame_CardIsSplashPair(self, card)
 	return card == self.SplashPairFirst or card == self.SplashPairSecond;
 end
 
-function StoreFrameSplashSingle_SetStyle(self, style)
+function StoreFrameSplashSingle_SetStyle(self, style, overrideBackground)
+	self.Card:ClearAllPoints();
+	if overrideBackground then
+		self.Card:SetPoint("CENTER");
+		self.Card:SetAtlas(overrideBackground, true);
+		self.Card:SetTexCoord(0, 1, 0, 1);
+	else
+		self.Card:SetPoint("TOPLEFT");
+		self.Card:SetPoint("BOTTOMRIGHT");
+		self.Card:SetTexture("Interface\\Store\\Store-Main");
+		self.Card:SetTexCoord(0.00097656, 0.56347656, 0.00097656, 0.46093750);
+	end
+
 	if style == "horizontal" then
 		self.SplashBanner:Hide();
 		self.SplashBannerText:Hide();
@@ -5027,11 +5048,6 @@ function StoreFrameSplashSingle_SetStyle(self, style)
 		self.Checkmark:ClearAllPoints();
 		self.Checkmark:SetPoint("LEFT", self.Magnifier, "RIGHT", 9, 0);
 		self.Checkmark:Hide();
-
-		self.Card:ClearAllPoints();
-		self.Card:SetPoint("CENTER");
-		self.Card:SetAtlas("shop-card-full-legiondeluxe", true);
-		self.Card:SetTexCoord(0, 1, 0, 1);
 	else
 		self.SplashBanner:Show();
 		self.SplashBannerText:Show();
@@ -5069,11 +5085,5 @@ function StoreFrameSplashSingle_SetStyle(self, style)
 
 		self.Checkmark:ClearAllPoints();
 		self.Checkmark:SetPoint("BOTTOM", self.Magnifier, "TOP", 5, 2);
-
-		self.Card:ClearAllPoints();
-		self.Card:SetPoint("TOPLEFT");
-		self.Card:SetPoint("BOTTOMRIGHT");
-		self.Card:SetTexture("Interface\\Store\\Store-Main");
-		self.Card:SetTexCoord(0.00097656, 0.56347656, 0.00097656, 0.46093750);
 	end
 end

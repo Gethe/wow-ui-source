@@ -1,6 +1,9 @@
 TOOLTIP_UPDATE_TIME = 0.2;
 BOSS_FRAME_CASTBAR_HEIGHT = 16;
 
+-- Mirror of the same Variable in StoreSecureUI.lua and GlueParent.lua
+WOW_GAMES_CATEGORY_ID = 33; 
+
 -- Alpha animation stuff
 FADEFRAMES = {};
 FLASHFRAMES = {};
@@ -1982,7 +1985,7 @@ function UIParent_OnEvent(self, event, ...)
 		ShowUIPanel(AlliedRacesFrame);
 	else
 		if (DeathRecapFrame) then
-			DeathRecapFrame_OnEvent(self, event, ...);
+			DeathRecapFrame_OnEvent(DeathRecapFrame, event, ...);
 		end
 	end
 end

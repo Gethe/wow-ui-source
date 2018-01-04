@@ -1968,7 +1968,7 @@
 										end
 									</OnHyperlinkClick>
 								</Scripts>
-								<FontString inherits="GameFontNormalLarge">
+								<FontString inherits="GameFontNormalLarge" justifyH="LEFT">
                                     <Shadow>
                                         <Offset>
                                             <AbsDimension x="0" y="0"/>

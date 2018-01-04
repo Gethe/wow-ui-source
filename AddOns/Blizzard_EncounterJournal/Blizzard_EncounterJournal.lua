@@ -430,13 +430,23 @@ function EncounterJournal_GetCreatureButton(index)
 	end
 
 	local self = EncounterJournal.encounter.info;
-	local button = self.creatureButtons[index]
+	local button = self.creatureButtons[index];
 	if (not button) then
 		button = CreateFrame("BUTTON", nil, self, "EncounterCreatureButtonTemplate");
 		button:SetPoint("TOPLEFT", self.creatureButtons[index-1], "BOTTOMLEFT", 0, 8);
 		self.creatureButtons[index] = button;
 	end
 	return button;
+end
+
+function EncounterJournal_FindCreatureButtonForDisplayInfo(displayInfo)
+	for index, button in ipairs(EncounterJournal.encounter.info.creatureButtons) do
+		if button.displayInfo == displayInfo then
+			return button;
+		end
+	end
+	
+	return nil;	
 end
 
 function EncounterJournal_UpdatePortraits()
@@ -884,6 +894,13 @@ function EncounterJournal_DisplayCreature(self, forceUpdate)
 
 	self:Disable();
 	EncounterJournal.encounter.info.shownCreatureButton = self;
+
+	-- Ensure that the models tab properly updates the selected button (it's possible to display creatures here
+	-- that only have a portrait/creature button on the abilities tab).
+	local creatureButton = EncounterJournal_FindCreatureButtonForDisplayInfo(self.displayInfo);
+	if creatureButton and creatureButton:IsShown() then
+		creatureButton:Click();
+	end
 end
 
 function EncounterJournal_ShowCreatures(forceUpdate)
@@ -897,9 +914,14 @@ function EncounterJournal_ShowCreatures(forceUpdate)
 	end
 end
 
-function EncounterJournal_HideCreatures()
+function EncounterJournal_HideCreatures(clearDisplayInfo)
 	for index, creatureButton in ipairs(EncounterJournal.encounter.info.creatureButtons) do
 		creatureButton:Hide();
+
+		if clearDisplayInfo then
+			creatureButton.displayInfo = nil;
+			creatureButton.uiModelSceneID = nil;
+		end
 	end
 end
 
@@ -1276,7 +1298,12 @@ function EncounterJournal_ToggleHeaders(self, doNotShift)
 					infoHeader.parentID = parentID;
 					infoHeader.myID = nextSectionID;
 					-- Spell names can show up in white, which clashes with the parchment, strip out white color codes.
-					local description = sectionInfo.description:gsub("\|cffffffff(.-)\|r", "%1");
+					local description;
+					if sectionInfo.description then
+						description = sectionInfo.description:gsub("\|cffffffff(.-)\|r", "%1");
+					else
+						description = RETRIEVING_DATA;
+					end
 					infoHeader.description:SetText(description);
 					infoHeader.button.title:SetText(sectionInfo.title);
 
@@ -1575,10 +1602,8 @@ function EncounterJournal_ClearDetails()
 		freeHeaders[#freeHeaders+1] = used;
 	end
 
-	for index, creatureButton in ipairs(EncounterJournal.encounter.info.creatureButtons) do
-		creatureButton:Hide();
-		creatureButton.displayInfo = nil;
-	end
+	local clearDisplayInfo = true;
+	EncounterJournal_HideCreatures(clearDisplayInfo);
 
 	local bossIndex = 1
 	local bossButton = _G["EncounterJournalBossButton"..bossIndex];

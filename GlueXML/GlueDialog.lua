@@ -310,6 +310,25 @@ GlueDialogTypes["CONFIGURATION_WARNING"] = {
 	html = 1,
 }
 
+GlueDialogTypes["SUBSCRIPTION_CHANGED_KICK_WARNING"] = {
+	text = TRIAL_UPGRADE_LOGOUT_WARNING,
+	button1 = CAMP_NOW,
+	OnAccept = function()
+		C_Login.DisconnectFromServer();
+	end,
+	OnCancel = function()
+		C_Login.DisconnectFromServer();
+	end,
+	OnHide = function()
+		C_Login.DisconnectFromServer();
+	end,
+	OnUpdate = function()
+		GlueDialogText:SetText(GlueDialogTypes["SUBSCRIPTION_CHANGED_KICK_WARNING"].text:format(math.ceil(GlueDialog.timeleft)));
+	end,
+	timeout = 15,
+	cover = true,
+}
+
 function GlueDialog_Queue(which, text, data)
 	table.insert(QUEUED_GLUE_DIALOGS, {which = which, text = text, data = data});
 end

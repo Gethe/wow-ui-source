@@ -54,5 +54,18 @@ function WarboardQuestChoiceFrameMixin:Update()
 
 	local _, _, numOptions = GetQuestChoiceInfo();
 
-	self.Title:SetPoint("RIGHT", self.Options[numOptions], "RIGHT", 3, 0);
+	if (numOptions == 1) then
+		local textWidth = self.Title.Text:GetWidth();
+		local neededWidth = math.max(120, (textWidth/2)-40);
+
+		local newWidth = (neededWidth*2)+430;
+		self.fixedWidth = math.max(600, newWidth);
+		self.Title:SetPoint("LEFT", self.Option1, "LEFT", -neededWidth, 0);
+		self.Title:SetPoint("RIGHT", self.Option1, "RIGHT", neededWidth, 0);
+	else
+		self.fixedWidth = 600;
+		self.Title:SetPoint("LEFT", self.Option1, "LEFT", -3, 0);
+		self.Title:SetPoint("RIGHT", self.Options[numOptions], "RIGHT", 3, 0);
+	end
+	self:Layout();
 end

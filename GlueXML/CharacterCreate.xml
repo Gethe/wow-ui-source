@@ -1534,7 +1534,7 @@
 									<Frame name="RecruitAFriendPandaHighlight" hidden="true" inherits="GlowyBorderFrame">
 										<Anchors>
 											<Anchor point="TOPLEFT" relativeKey="$parent.NeutralRaces" relativePoint="TOPLEFT" x="-17" y="10"/>
-											<Anchor point="BOTTOMRIGHT" relativeKey="$parent.NeutralRaces" relativePoint="BOTTOMRIGHT" x="17" y="-23"/>
+											<Anchor point="BOTTOMRIGHT" relativeKey="$parent.NeutralRaces" relativePoint="BOTTOMRIGHT" x="17" y="6"/>
 										</Anchors>
 									</Frame>
 									<Frame name="RecruitAFriendFactionNotice" enableMouse="true" frameStrata="HIGH" hidden="true" inherits="GlowyNoticeFrame"/>

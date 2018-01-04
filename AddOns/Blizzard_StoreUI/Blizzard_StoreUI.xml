@@ -2316,7 +2316,7 @@
 							end
 						</OnHyperlinkClick>
 					</Scripts>
-					<FontString inherits="GameFontNormalSmall" />
+					<FontString inherits="GameFontNormalSmall" justifyH="LEFT" />
 				</SimpleHTML>
 				<CheckButton parentKey="LicenseAcceptButton" inherits="StoreCheckButtonTemplate">
 					<Anchors>
@@ -2436,7 +2436,7 @@
 							end
 						</OnHyperlinkClick>
 					</Scripts>
-					<FontString inherits="GameFontBlackSmall2" />
+					<FontString inherits="GameFontBlackSmall2" justifyH="LEFT" />
 				</SimpleHTML>
 				<Frame parentKey="CharacterSelectionFrame" useParentLevel="true">
 					<Anchors>

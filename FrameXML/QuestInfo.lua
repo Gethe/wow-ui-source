@@ -90,7 +90,7 @@ function QuestInfo_Display(template, parentFrame, acceptButton, material, mapVie
 	local elementsTable = template.elements;
 	local lastFrame;
 	for i = 1, #elementsTable, 3 do
-		local shownFrame, bottomShownFrame = elementsTable[i]();
+		local shownFrame, bottomShownFrame = elementsTable[i](parentFrame);
 		if ( shownFrame ) then
 			shownFrame:SetParent(parentFrame);
 			if ( lastFrame ) then
@@ -330,8 +330,10 @@ function QuestInfo_ShowRewardText()
 	return QuestInfoRewardText;
 end
 
-function QuestInfo_ShowSeal()
+function QuestInfo_ShowSeal(parentFrame)
 	local frame = QuestInfoSealFrame;
+	-- Temporary anchor to ensure :IsTruncated will work for the seal text.
+	frame:SetPoint("CENTER", parentFrame or UIParent);
 	if frame.sealInfo then
 		if frame.sealInfo.text then
 			frame.Text:SetText(frame.sealInfo.text);

@@ -12,6 +12,7 @@ function TradeFrame_OnLoad(self)
 	self:RegisterEvent("TRADE_POTENTIAL_BIND_ENCHANT");
 	self:RegisterEvent("TRADE_POTENTIAL_REMOVE_TRANSMOG");
 	self:RegisterEvent("GET_ITEM_INFO_RECEIVED");
+	self:RegisterEvent("SPELL_NAME_UPDATE");
 	TradeFrameInset:SetPoint("TOPLEFT", 4, -440);
 	TradeRecipientItemsInsetBg:SetAlpha(0.1);
 	TradeRecipientMoneyInsetBg:SetAlpha(0);

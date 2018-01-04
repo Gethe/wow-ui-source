@@ -901,7 +901,8 @@ function CharacterUpgradeCharacterSelectBlock:ShouldShowPopup()
 	local raceData = C_CharacterCreation.GetRaceDataByID(RACE_NAME_BUTTON_ID_MAP[strupper(raceFilename)]);
 	local seenPopupBefore = self.seenPopup;
 	self.seenPopup = true;
-	return raceData.isAlliedRace and not raceData.heritageArmorUnlocked and not seenPopupBefore;
+	local isTrialBoost = select(22, GetCharacterInfo(self.charid));
+	return not isTrialBoost and raceData.isAlliedRace and not raceData.heritageArmorUnlocked and not seenPopupBefore;
 end
 
 function CharacterUpgradeCharacterSelectBlock:GetPopupText()
