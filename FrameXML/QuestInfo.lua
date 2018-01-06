@@ -578,7 +578,7 @@ function QuestInfo_ShowRewards()
 			local spellBucket = spellBuckets[spellBucketType];
 			if spellBucket then
 				for i, rewardSpellIndex in ipairs(spellBucket) do
-					local texture, name, isTradeskillSpell, isSpellLearned, hideSpellLearnText, isBoostSpell, garrFollowerID, spellID = spellGetter(rewardSpellIndex);
+					local texture, name, isTradeskillSpell, isSpellLearned, hideSpellLearnText, isBoostSpell, garrFollowerID = spellGetter(rewardSpellIndex);
 					-- hideSpellLearnText is a quest flag
 					if i == 1 and not hideSpellLearnText then
 						local header = rewardsFrame.spellHeaderPool:Acquire();
@@ -609,7 +609,6 @@ function QuestInfo_ShowRewards()
 						spellRewardFrame.Icon:SetTexture(texture);
 						spellRewardFrame.Name:SetText(name);
 						spellRewardFrame.rewardSpellIndex = rewardSpellIndex;
-						spellRewardFrame.spellID = spellID;
 						spellRewardFrame:Show();
 
 						anchorFrame = spellRewardFrame;

@@ -15,21 +15,23 @@ MirrorTimerColors["FEIGNDEATH"] = {
 	r = 1.00, g = 0.70, b = 0.00
 };
 
-function MirrorTimer_Show(timer, value, maxvalue, scale, paused, label, spellID)
+function MirrorTimer_Show(timer, value, maxvalue, scale, paused, label)
 
 	-- Pick a free dialog to use
 	local dialog = nil;
-	-- Find an open dialog of the requested type
-	for index = 1, MIRRORTIMER_NUMTIMERS, 1 do
-		local frame = _G["MirrorTimer"..index];
-		if ( frame:IsShown() and (frame.timer == timer) ) then
-			dialog = frame;
-			break;
+	if ( not dialog ) then
+		-- Find an open dialog of the requested type
+		for index = 1, MIRRORTIMER_NUMTIMERS, 1 do
+			local frame = _G["MirrorTimer"..index];
+			if ( frame:IsShown() and (frame.timer == timer) ) then
+				dialog = frame;
+				break;
+			end
 		end
 	end
 	if ( not dialog ) then
 		-- Find a free dialog
-		for index = 1, MIRRORTIMER_NUMTIMERS, 1 do
+		for index = 1, STATICPOPUP_NUMDIALOGS, 1 do
 			local frame = _G["MirrorTimer"..index];
 			if ( not frame:IsShown() ) then
 				dialog = frame;
@@ -49,7 +51,6 @@ function MirrorTimer_Show(timer, value, maxvalue, scale, paused, label, spellID)
 	else
 		dialog.paused = nil;
 	end
-	dialog.spellID = spellID;
 
 	-- Set the text of the dialog
 	local text = _G[dialog:GetName().."Text"];
@@ -72,28 +73,18 @@ function MirrorTimerFrame_OnLoad(self)
 	self:RegisterEvent("MIRROR_TIMER_PAUSE");
 	self:RegisterEvent("MIRROR_TIMER_STOP");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
-	self:RegisterEvent("SPELL_NAME_UPDATE");
 	self.timer = nil;
 end
 
 function MirrorTimerFrame_OnEvent(self, event, ...)
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
 		for index=1, MIRRORTIMER_NUMTIMERS do
-			local timer, value, maxvalue, scale, paused, label, spellID = GetMirrorTimerInfo(index);
+			local timer, value, maxvalue, scale, paused, label = GetMirrorTimerInfo(index);
 			if ( timer ==  "UNKNOWN") then
 				self:Hide();
 				self.timer = nil;
 			else
-				MirrorTimer_Show(timer, value, maxvalue, scale, paused, label, spellID)
-			end
-		end
-	elseif event == "SPELL_NAME_UPDATE" then
-		local spellID, spellName = ...;
-		for index = 1, MIRRORTIMER_NUMTIMERS, 1 do
-			local frame = _G["MirrorTimer"..index];
-			if frame.spellID == spellID then
-				local text = _G[frame:GetName().."Text"];
-				text:SetText(spellName);
+				MirrorTimer_Show(timer, value, maxvalue, scale, paused, label)
 			end
 		end
 	end

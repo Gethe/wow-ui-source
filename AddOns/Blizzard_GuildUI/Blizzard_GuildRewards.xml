@@ -76,7 +76,10 @@
 				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 			</OnLoad>
 			<OnEnter function="GuildRewardsButton_OnEnter"/>
-			<OnLeave function="GuildRewardsButton_OnLeave"/>
+			<OnLeave>
+				GameTooltip:Hide();
+				GuildRewardsFrame.activeButton = nil;
+			</OnLeave>
 			<OnClick function="GuildRewardsButton_OnClick"/> 
 		</Scripts>
 	</Button>

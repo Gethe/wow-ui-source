@@ -1,19 +1,4 @@
 NUM_DEATH_RECAP_EVENTS = 5;
-
-function DeathRecapFrame_OnEvent(self, event, ...)
-	if ( event == "SPELL_NAME_UPDATE" ) then
-		local spellID, spellName = ...;
-		for i = 1, NUM_DEATH_RECAP_EVENTS do
-			local entry = self.DeathRecapEntry[i];
-			if entry and entry.SpellInfo.spellId == spellID then
-				entry.SpellInfo.Name:SetText(spellName);
-				local dmgInfo = entry.DamageInfo;
-				dmgInfo.spellName = spellName;
-			end
-		end
-	end
-end
-
 function DeathRecapFrame_OpenRecap( recapID )
 	local self = DeathRecapFrame;
 	

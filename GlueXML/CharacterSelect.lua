@@ -86,7 +86,7 @@ function CharacterSelectLockedButtonMixin:OnClick()
 
 			for i, boostType in ipairs(availableBoostTypes) do
 				local flowData = C_CharacterServices.GetCharacterServiceDisplayData(boostType);
-				local function CharacterSelectLockedButtonContextMenuButton_OnClick() CharacterUpgradePopup_BeginCharacterUpgradeFlow(flowData, guid); end;
+				local function CharacterSelectLockedButtonContextMenuButton_OnClick() CharacterUpgradePopup_BeginCharacterUpgradeFlow(flowData, self.guid); end;
 				glueContextMenu:AddButton(CHARACTER_SELECT_PADLOCK_DROP_DOWN_USE_BOOST:format(flowData.flowTitle), CharacterSelectLockedButtonContextMenuButton_OnClick);
 			end
 
@@ -1738,6 +1738,20 @@ function CharacterSelect_ScrollList(self, value)
     end
 end
 
+function CharacterSelect_ScrollToCharacter(self, characterGUID)
+	local numCharacters = GetNumCharacters();
+	local maxScroll = numCharacters - MAX_CHARACTERS_DISPLAYED;
+	for i = 1, maxScroll do
+		local guid = select(15, GetCharacterInfo(i));
+		if guid == characterGUID then
+			CharacterSelect_ScrollList(self, i);
+			return;
+		end
+	end
+	
+	CharacterSelect_ScrollList(self, maxScroll);
+end
+
 function CharacterTemplatesFrame_Update()
     if (IsGMClient() and HideGMOnly()) then
         return;
@@ -2025,7 +2039,9 @@ function CharacterServicesMaster_UpdateServiceButton()
 		local boostFrame = CharacterSelect.CharacterBoosts[i];
 		local boostFrameIsBetterCandidate = not freeFrame or boostFrame.data.expansion > freeFrame.data.expansion;
 		if boostFrameIsBetterCandidate and boostFrame.hasFreeBoost then
-			freeFrame = boostFrame;
+			if boostFrame.data.expansion <= GetAccountExpansionLevel() then
+				freeFrame = boostFrame;
+			end
 		end
 	end
 	
@@ -2130,23 +2146,29 @@ function CharacterUpgradePopup_OnCharacterBoostDelivered(boostType, guid, reason
         local flowData = C_CharacterServices.GetCharacterServiceDisplayData(boostType);
 
         if reason == "forClassTrialUnlock" then
-            CharacterUpgradePopup_BeginUnlockTrialCharacter(flowData, guid);
+            CharacterUpgradePopup_BeginCharacterUpgradeFlow(flowData, guid);
         else
             CharacterUpgradePopup_BeginCharacterUpgradeFlow(flowData);
         end
     end
 end
 
-function CharacterUpgradePopup_BeginCharacterUpgradeFlow(data, trialCharacterGuid)
-    CharacterUpgradePopup_CheckSetPopupSeen(data);
+function CharacterUpgradePopup_BeginCharacterUpgradeFlow(data, guid)
+	CharacterUpgradeFlow:SetTrialBoostGuid(nil);
+	
+	if guid then
+		local isTrialBoost, isTrialBoostLocked, revokedCharacterUpgrade = select(22, GetCharacterInfoByGUID(guid)); 
+		if isTrialBoost then
+			CharacterUpgradeFlow:SetTrialBoostGuid(guid);
+		else
+			CharacterUpgradeFlow:SetAutoSelectGuid(guid);
+		end
+	end
+
+	CharacterUpgradePopup_CheckSetPopupSeen(data);
     CharacterUpgradeFlow:SetTarget(data);
     CharSelectServicesFlowFrame:Show();
-    CharacterUpgradeFlow:SetTrialBoostGuid(trialCharacterGuid);
-    CharacterServicesMaster_SetFlow(CharacterServicesMaster, CharacterUpgradeFlow);
-end
-
-function CharacterUpgradePopup_BeginUnlockTrialCharacter(flowData, guid)
-    CharacterUpgradePopup_BeginCharacterUpgradeFlow(flowData, guid);
+	CharacterServicesMaster_SetFlow(CharacterServicesMaster, CharacterUpgradeFlow);
 end
 
 function CharacterUpgradePopup_OnStartClick(self)
@@ -2215,19 +2237,28 @@ function CharacterServicesMaster_OnCharacterListUpdate()
         KioskMode_SetWaitingOnTrial(false);
         KioskMode_CheckEnterWorld();
     elseif (CharacterUpgrade_IsCreatedCharacterUpgrade() or startAutomatically) then
-        if (CharacterUpgrade_IsCreatedCharacterUpgrade()) then
-			CharacterUpgradeFlow:SetTarget(CHARACTER_UPGRADE_CREATE_CHARACTER_DATA);
+		if (C_CharacterServices.GetAutomaticBoostCharacter()) then
+			local automaticBoostCharacterGUID = C_CharacterServices.GetAutomaticBoostCharacter();
+			CharacterSelect_ScrollToCharacter(CharacterSelect, automaticBoostCharacterGUID);
+			CharacterUpgradePopup_BeginCharacterUpgradeFlow(C_CharacterServices.GetCharacterServiceDisplayData(automaticBoostType), automaticBoostCharacterGUID);
+			CharacterSelect_SelectCharacterByGUID(automaticBoostCharacterGUID);
         else
-            CharacterUpgradeFlow:SetTarget(C_CharacterServices.GetCharacterServiceDisplayData(automaticBoostType), false);
-        end
+			if (CharacterUpgrade_IsCreatedCharacterUpgrade()) then
+				CharacterUpgradeFlow:SetTarget(CHARACTER_UPGRADE_CREATE_CHARACTER_DATA);
+			else
+				CharacterUpgradeFlow:SetTarget(C_CharacterServices.GetCharacterServiceDisplayData(automaticBoostType), false);
+			end
+			
+			if CharacterUpgradeFlow.data then
+				CharSelectServicesFlowFrame:Show();
+				CharacterServicesMaster_SetFlow(CharacterServicesMaster, CharacterUpgradeFlow);
+			end
 
-        if CharacterUpgradeFlow.data then
-            CharSelectServicesFlowFrame:Show();
-            CharacterServicesMaster_SetFlow(CharacterServicesMaster, CharacterUpgradeFlow);
-        end
+			CharacterUpgrade_ResetBoostData();
+		end
         
-        CharacterUpgrade_ResetBoostData();
         C_CharacterServices.SetAutomaticBoost(nil);
+		C_CharacterServices.SetAutomaticBoostCharacter(nil);
     elseif (C_CharacterServices.HasQueuedUpgrade()) then
         local guid = C_CharacterServices.GetQueuedUpgradeGUID();
 
@@ -2853,7 +2884,7 @@ function CharacterSelect_CheckApplyBoostToUnlockTrialCharacter(guid)
 		-- We should only ever get in this case if #availableBoostTypes == 1. If there is more than 1 available
 		-- boost type then users use a dropdown to choose a boost.
         local flowData = C_CharacterServices.GetCharacterServiceDisplayData(availableBoostTypes[1]);
-        CharacterUpgradePopup_BeginUnlockTrialCharacter(flowData, guid);
+        CharacterUpgradePopup_BeginCharacterUpgradeFlow(flowData, guid);
     else
 	    local purchasableBoostType = C_CharacterServices.GetActiveCharacterUpgradeBoostType();
         CharacterSelect_ShowStoreFrameForBoostType(purchasableBoostType, guid, "forClassTrialUnlock");

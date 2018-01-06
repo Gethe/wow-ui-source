@@ -281,7 +281,6 @@ function PlayerTalentFrame_OnLoad(self)
 	self:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED");
 	self:RegisterEvent("PREVIEW_TALENT_PRIMARY_TREE_CHANGED");
 	self:RegisterEvent("PLAYER_LEARN_TALENT_FAILED");
-	self:RegisterEvent("SPELL_NAME_UPDATE");
 	self.inspect = false;
 	self.talentGroup = 1;
 	self.hasBeenShown = false;
@@ -398,59 +397,6 @@ function PlayerTalentFrame_OnClickClose(self)
 	PlayerTalentFrame_Close();
 end
 
-function PlayerTalentFrame_UpdateSpecFrameSpellName(self, spellID, spellName)
-	local scrollChild = self.spellsScroll.child;
-	local i = 1;
-	while scrollChild["abilityButton"..i] do
-		local frame = scrollChild["abilityButton"..i];
-		if frame.spellID == spellID then
-			frame.name:SetText(spellName);
-		end
-		i = i + 1;
-	end
-end
-
--- This update function (based on TalentFrame_Update) and the PVP version below
--- (based on PVPTalentFrame_Update) are so agonizingly similar it hurts my brain.
--- Copy/paste code FTL. -CM
-function PlayerTalentFrame_UpdateTalentsFrameSpellName(self, spellID, spellName)
-	for tier = 1, MAX_TALENT_TIERS do
-		local talentRow = self["tier"..tier];
-		for column = 1, NUM_TALENT_COLUMNS do
-			local button = talentRow["talent"..column];
-			if button.spellID == spellID then
-				button.name:SetText(spellName);
-			end
-		end
-	end
-end
-
-function PlayerTalentFrame_UpdatePVPTalentsFrameSpellName(self, spellID, spellName)
-	for tier = 1, MAX_PVP_TALENT_TIERS do
-		local talentRow = self["Tier"..tier];
-		for column = 1, MAX_PVP_TALENT_COLUMNS do
-			local button = talentRow["Talent"..column];
-			if button.spellID == spellID and button.Name then
-				button.Name:SetText(spellName);
-			end
-		end
-	end
-end
-
-function PlayerTalentFrame_UpdateSpellName(spellID, spellName)
-	local selectedTab = PanelTemplates_GetSelectedTab(PlayerTalentFrame);
-
-	if (selectedTab == TALENTS_TAB) then
-		PlayerTalentFrame_UpdateTalentsFrameSpellName(PlayerTalentFrameTalents, spellID, spellName);
-	elseif (selectedTab == SPECIALIZATION_TAB) then
-		PlayerTalentFrame_UpdateSpecFrameSpellName(PlayerTalentFrameSpecialization, spellID, spellName);
-	elseif (selectedTab == PVP_TALENTS_TAB) then
-		PlayerTalentFrame_UpdatePVPTalentsFrameSpellName(PlayerTalentFramePVPTalents.Talents, spellID, spellName);
-	elseif (selectedTab == PET_SPECIALIZATION_TAB) then
-		PlayerTalentFrame_UpdateSpecFrameSpellName(PlayerTalentFramePetSpecialization, spellID, spellName);
-	end
-end
-
 function PlayerTalentFrame_OnEvent(self, event, ...)
 	local arg1 = ...;
 	if (self:IsShown()) then
@@ -470,9 +416,6 @@ function PlayerTalentFrame_OnEvent(self, event, ...)
 			end
 		elseif (event == "LEARNED_SPELL_IN_TAB") then
 			-- Must update the Mastery bonus if you just learned Mastery
-		elseif (event == "SPELL_NAME_UPDATE") then
-			local spellID, spellName = ...;
-			PlayerTalentFrame_UpdateSpellName(spellID, spellName);
 		end
 	end
 	if (event == "PLAYER_LEARN_TALENT_FAILED") then
@@ -1243,12 +1186,6 @@ function PlayerSpecTab_OnEnter(self)
 	end
 end
 
-function PlayerSpecSpellTemplate_BuildCoreAbilityTooltip(self, id, spellName)
-	GameTooltip:SetText(spellName, HIGHLIGHT_FONT_COLOR:GetRGB());
-	local r, g, b = NORMAL_FONT_COLOR:GetRGB();
-    GameTooltip:AddLine(_G[SPEC_CORE_ABILITY_TEXT[id].."_CORE_ABILITY_"..self.index], r, g, b, true);
-end
-
 function PlayerSpecSpellTemplate_OnEnter(self)
     local specFrame = self:GetParent():GetParent():GetParent();
 	local shownSpec = specFrame.previewSpec;
@@ -1260,11 +1197,11 @@ function PlayerSpecSpellTemplate_OnEnter(self)
 	end
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 
-	self.id = id;
 	if (id and SPEC_CORE_ABILITY_TEXT[id]) then
-		self:RegisterEvent("SPELL_NAME_UPDATE");
 		local spellName = GetSpellInfo(self.spellID);
-		PlayerSpecSpellTemplate_BuildCoreAbilityTooltip(self, id, spellName);
+		GameTooltip:SetText(spellName, HIGHLIGHT_FONT_COLOR:GetRGB());
+		local r, g, b = NORMAL_FONT_COLOR:GetRGB();
+        GameTooltip:AddLine(_G[SPEC_CORE_ABILITY_TEXT[id].."_CORE_ABILITY_"..self.index], r, g, b, true);
 	else
 		GameTooltip:SetSpellByID(self.spellID, false, false, true);
 		if ( self.extraTooltip ) then
@@ -1272,22 +1209,6 @@ function PlayerSpecSpellTemplate_OnEnter(self)
 		end
 	end
 	GameTooltip:Show();
-end
-
-function PlayerSpecSpellTemplate_OnLeave(self)
-	self:UnregisterEvent("SPELL_NAME_UPDATE");
-	GameTooltip_Hide();
-end
-
-function PlayerSpecSpellTemplate_OnEvent(self, event, ...)
-	if event == "SPELL_NAME_UPDATE" then
-		local spellID, spellName = ...;
-		if self.spellID == spellID then
-			GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-			PlayerSpecSpellTemplate_BuildCoreAbilityTooltip(self, self.id, spellName);
-			GameTooltip:Show();
-		end
-	end
 end
 
 function PlayerTalentFrame_CreateSpecSpellButton(self, index)

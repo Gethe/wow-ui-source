@@ -58,8 +58,6 @@
 
 CHARACTER_UPGRADE_CREATE_CHARACTER_DATA = nil;
 
-local UPGRADE_90_MAX_LEVEL = 90;
-local UPGRADE_100_MAX_LEVEL = 100;
 local UPGRADE_BONUS_LEVEL = 60;
 
 CURRENCY_KRW = 3;
@@ -327,6 +325,21 @@ function CharacterUpgradeFlow:IsTrialBoost()
 	return self.isTrialBoost;
 end
 
+function CharacterUpgradeFlow:IsUnrevoke()
+	if self:IsTrialBoost() then
+		return false;
+	end
+	
+	local results = self:BuildResults(self.numSteps);
+	if not results.charid then
+		-- We haven't chosen a character yet.
+		return nil;
+	end
+	
+	local experienceLevel = select(7, GetCharacterInfo(results.charid));
+	return experienceLevel >= self.data.level;
+end
+
 function CharacterUpgradeFlow:Initialize(controller)
 	CharacterUpgradeSecondChanceWarningFrame.warningAccepted = false;
 
@@ -415,24 +428,30 @@ function CharacterUpgradeFlow:Finish(controller)
 		CharacterUpgradeSecondChanceWarningFrame:Show();
 		return false;
 	end
-
+	
 	local results = self:BuildResults(self.numSteps);
-	if (not results.faction) then
-		-- Non neutral character, convert faction group to id.
-		results.faction = FACTION_IDS[C_CharacterServices.GetFactionGroupByIndex(results.charid)];
-	end
-	local guid = select(15, GetCharacterInfo(results.charid));
-	if (guid ~= results.playerguid) then
-		-- Bail because guid has changed!
-		message(CHARACTER_UPGRADE_CHARACTER_LIST_CHANGED_ERROR);
-		self:Restart(controller);
-		return false;
-	end
+	if self:IsUnrevoke() then
+		local guid = select(15, GetCharacterInfo(results.charid));
+		C_CharacterServices.RequestManualUnrevoke(guid);
+	else
+		
+		if (not results.faction) then
+			-- Non neutral character, convert faction group to id.
+			results.faction = FACTION_IDS[C_CharacterServices.GetFactionGroupByIndex(results.charid)];
+		end
+		local guid = select(15, GetCharacterInfo(results.charid));
+		if (guid ~= results.playerguid) then
+			-- Bail because guid has changed!
+			message(CHARACTER_UPGRADE_CHARACTER_LIST_CHANGED_ERROR);
+			self:Restart(controller);
+			return false;
+		end
 
-	self:SetTrialBoostGuid(nil);
+		self:SetTrialBoostGuid(nil);
 
-	CharacterServicesMaster.pendingGuid = results.playerguid;
-	C_CharacterServices.AssignUpgradeDistribution(results.playerguid, results.faction, results.spec, results.classId, self.data.boostType);
+		CharacterServicesMaster.pendingGuid = results.playerguid;
+		C_CharacterServices.AssignUpgradeDistribution(results.playerguid, results.faction, results.spec, results.classId, self.data.boostType);
+	end
 	return true;
 end
 
@@ -440,6 +459,10 @@ function CharacterUpgradeFlow:GetFinishLabel()
 	-- "Level Up!" is replaced with "Unlock!" when unlocking a trial boost character.
 	if self:IsTrialBoost() then
 		return CHARACTER_UPGRADE_UNLOCK_TRIAL_CHARACTER_FINISH_LABEL;
+	end
+	
+	if self:IsUnrevoke() then
+		return CHARACTER_UPGRADE_UNREVOKE_CHARACTER_FINISH_LABEL;
 	end
 
 	return self.FinishLabel;
@@ -1264,6 +1287,10 @@ function CharacterUpgradeSpecSelectBlock:Initialize(results, wasFromRewind)
 	local restrictToRecommendedSpecs = bit.band(flags, Enum.CharacterServiceInfoFlag.RestrictToRecommendedSpecs) == Enum.CharacterServiceInfoFlag.RestrictToRecommendedSpecs;
 	
 	CharacterServices_UpdateSpecializationButtons(classID, gender+1, self.frame.ControlsFrame, CharacterUpgradeSpecSelectBlock, not restrictToRecommendedSpecs, nil, self.currentSpecID);
+end
+
+function CharacterUpgradeSpecSelectBlock:SkipIf(results)
+	return CharacterUpgradeFlow:IsUnrevoke();
 end
 
 function CharacterUpgradeSpecSelectBlock:OnUpdateSpecButtons(autoSelectedSpecID)

@@ -52,8 +52,9 @@
 				end
 			</OnReceiveDrag>
 			<OnEnter function="PlayerSpecSpellTemplate_OnEnter"/>
-			<OnLeave function="PlayerSpecSpellTemplate_OnLeave"/>
-			<OnEvent function="PlayerSpecSpellTemplate_OnEvent"/>
+			<OnLeave>
+				GameTooltip_Hide();
+			</OnLeave>
 		</Scripts>
 	</Button>
 

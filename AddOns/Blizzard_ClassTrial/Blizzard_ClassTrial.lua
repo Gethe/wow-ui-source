@@ -1,4 +1,14 @@
 
+local function ClassTrialChooseBoostType_OnClick(self, boostType)
+		-- Hide early to avoid having the dialogs try to stack.
+		self:Hide();
+		if boostType == C_CharacterServices.GetActiveClassTrialBoostType() then
+			ClassTrialDialogMixin:StartCharacterUpgrade(boostType);
+		else
+			StaticPopup_Show("CLASS_TRIAL_CHOOSE_BOOST_LOGOUT_PROMPT", nil, nil, boostType);
+		end
+end
+
 StaticPopupDialogs["CLASS_TRIAL_CHOOSE_BOOST_TYPE"] = {
 	text = CLASS_TRIAL_CHOOSE_BOOST_TYPE_TEXT,
 	button1 = ACCEPT,
@@ -21,14 +31,10 @@ StaticPopupDialogs["CLASS_TRIAL_CHOOSE_BOOST_TYPE"] = {
 		end
 	end,
 	OnButton1 = function(self, data)
-		-- Hide early to avoid having the dialogs try to stack.
-		self:Hide();
-		ClassTrialDialogMixin:StartCharacterUpgrade(data[1]);
+		ClassTrialChooseBoostType_OnClick(self, data[1]);
 	end,
 	OnButton2 = function(self, data)
-		-- Hide early to avoid having the dialogs try to stack.
-		self:Hide();
-		ClassTrialDialogMixin:StartCharacterUpgrade(data[2]);
+		ClassTrialChooseBoostType_OnClick(self, data[2]);
 	end,
 	OnButton3 = function ()
 		ClassTrialThanksForPlayingDialog:ShowThanks();
@@ -37,6 +43,25 @@ StaticPopupDialogs["CLASS_TRIAL_CHOOSE_BOOST_TYPE"] = {
 	timeout = 0,
 	whileDead = 1,
 	verticalButtonLayout = true,
+	fullScreenCover = true,
+};
+
+StaticPopupDialogs["CLASS_TRIAL_CHOOSE_BOOST_LOGOUT_PROMPT"] = {
+	text = CLASS_TRIAL_CHOOSE_BOOST_LOGOUT_PROMPT_TEXT,
+	button1 = CAMP_NOW,
+	button2 = CANCEL,
+
+	OnAccept = function(self, boostType)
+		C_CharacterServices.SetAutomaticBoost(boostType);
+		C_CharacterServices.SetAutomaticBoostCharacter(UnitGUID("player"));
+		Logout();
+	end,
+	OnCancel = function()
+		ClassTrialThanksForPlayingDialog:ShowThanks();
+	end,
+
+	timeout = 0,
+	whileDead = 1,
 	fullScreenCover = true,
 };
 

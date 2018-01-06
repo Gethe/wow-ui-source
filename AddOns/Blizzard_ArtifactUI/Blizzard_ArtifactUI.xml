@@ -167,9 +167,7 @@
 					<OnEnter>
 						self:GetParent():OnKnowledgeEnter(self);
 					</OnEnter>
-					<OnLeave>
-						self:GetParent():OnKnowledgeLeave(self);
-					</OnLeave>
+					<OnLeave function="GameTooltip_Hide" />
 				</Scripts>
 			</Frame>
 			<Frame parentKey="KnowledgeLevelHelpBox" inherits="GlowBoxTemplate" enableMouse="true" hidden="true" frameStrata="DIALOG">

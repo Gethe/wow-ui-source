@@ -3010,7 +3010,6 @@
 								self:SetBackdrop(nil);
 								self.shoppingTooltips = { ShoppingTooltip1, ShoppingTooltip2 };
 							</OnLoad>
-							<OnUpdate function="GameTooltip_OnUpdate"/>
 						</Scripts>
 					</GameTooltip>
 				</Frames>

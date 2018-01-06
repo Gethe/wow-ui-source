@@ -4,8 +4,21 @@
 
 	<Button name="LootJournalItemButtonTemplate" virtual="true">
 		<Scripts>
-			<OnEnter function="LootJournalItemButtonTemplate_OnEnter"/>
-			<OnLeave function="LootJournalItemButtonTemplate_OnLeave"/>
+			<OnEnter>
+				local listFrame = self:GetParent();
+				while ( listFrame and not listFrame.ShowItemTooltip ) do
+					listFrame = listFrame:GetParent();
+				end
+				if ( listFrame ) then
+					listFrame:ShowItemTooltip(self);
+					self:SetScript("OnUpdate", LootJournalItemButton_OnUpdate);
+				end
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+				self:SetScript("OnUpdate", nil);
+				ResetCursor();
+			</OnLeave>
 			<OnClick>
 				HandleModifiedItemClick(self.itemInfo and self.itemInfo.link or self.itemLink);
 			</OnClick>

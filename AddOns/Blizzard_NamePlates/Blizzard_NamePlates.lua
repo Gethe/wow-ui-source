@@ -433,19 +433,11 @@ function NameplateBuffContainerMixin:OnLoad()
 	self.baseYOffset = 0;
 	self.BuffFrameUpdateTime = 0;
 	self:RegisterEvent("PLAYER_TARGET_CHANGED");
-	self:RegisterEvent("SPELL_NAME_UPDATE");
 end
 
 function NameplateBuffContainerMixin:OnEvent(event, ...)
 	if (event == "PLAYER_TARGET_CHANGED") then
 		self:UpdateAnchor();
-	elseif (event == "SPELL_NAME_UPDATE") then
-		local spellID, spellName = ...;
-		for i = 1, BUFF_MAX_DISPLAY do
-			if (self.buffList[i] and self.buffList[i].spellID == spellID) then
-				self.buffList[i].name = spellName;
-			end
-		end
 	end
 end
 
@@ -537,7 +529,6 @@ function NameplateBuffContainerMixin:UpdateBuffs(unit, filter, showAll)
 				else
 					buff.CountFrame.Count:Hide();
 				end
-				buff.spellID = spellId;
 
 				CooldownFrame_Set(buff.Cooldown, expirationTime - duration, duration, duration > 0, true);
 

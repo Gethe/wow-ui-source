@@ -715,7 +715,6 @@ local CastSequenceFreeList = {};
 local function CreateCanonicalActions(entry, ...)
 	entry.spells = {};
 	entry.spellNames = {};
-	entry.spellID = {};
 	entry.items = {};
 	local count = 0;
 	for i=1, select("#", ...) do
@@ -724,10 +723,8 @@ local function CreateCanonicalActions(entry, ...)
 			count = count + 1;
 			if ( GetItemInfo(action) or select(3, SecureCmdItemParse(action)) ) then
 				entry.items[count] = action;
-				local spellName, _, spellID = GetItemSpell(action);
-				entry.spells[count] = strlower(spellName or "");
+				entry.spells[count] = strlower(GetItemSpell(action) or "");
 				entry.spellNames[count] = entry.spells[count];
-				entry.spellID[count] = spellID;
 			else
 				entry.spells[count] = action;
 				entry.spellNames[count] = gsub(action, "!*(.*)", "%1");
@@ -761,17 +758,6 @@ local function CastSequenceManager_OnEvent(self, event, ...)
 	if ( event == "PLAYER_DEAD" ) then
 		for sequence, entry in pairs(CastSequenceTable) do
 			ResetCastSequence(sequence, entry);
-		end
-		return;
-	end
-
-	if ( event == "SPELL_NAME_UPDATE" ) then
-		local spellID, spellName = ...;
-		for sequence, entry in pairs(CastSequenceTable) do
-			if entry.spellID[entry.index] == spellID then
-				entry.spells[entry.index] = strlower(spellName);
-				entry.spellNames[entry.index] = entry.spells[entry.index];
-			end
 		end
 		return;
 	end
@@ -861,7 +847,6 @@ local function ExecuteCastSequence(sequence, target)
 		CastSequenceManager:RegisterEvent("UNIT_SPELLCAST_FAILED_QUIET");
 		CastSequenceManager:RegisterEvent("PLAYER_TARGET_CHANGED");
 		CastSequenceManager:RegisterEvent("PLAYER_REGEN_ENABLED");
-		CastSequenceManager:RegisterEvent("SPELL_NAME_UPDATE");
 		CastSequenceManager:SetScript("OnEvent", CastSequenceManager_OnEvent);
 		CastSequenceManager:SetScript("OnUpdate", CastSequenceManager_OnUpdate);
 	end
@@ -905,15 +890,12 @@ local function ExecuteCastSequence(sequence, target)
 	if ( item ) then
 		local name, bag, slot = SecureCmdItemParse(item);
 		if ( slot ) then
-			local spellName, spellID;
 			if ( name ) then
-				spellName, _, spellID = GetItemSpell(name);
-				spell = strlower(spellName or "");
+				spell = strlower(GetItemSpell(name) or "");
 			else
 				spell = "";
 			end
 			entry.spellNames[entry.index] = spell;
-			entry.spellID[entry.index] = spellID;
 		end
 		if ( IsEquippableItem(name) and not IsEquippedItem(name) ) then
 			EquipItemByName(name);
@@ -1125,9 +1107,9 @@ end
 SecureCmdList["CAST"] = function(msg)
     local action, target = SecureCmdOptionParse(msg);
     if ( action ) then
-    	local spellExists = DoesSpellExist(action)
+    	local spell = GetSpellInfo(action)
 		local name, bag, slot = SecureCmdItemParse(action);
-		if ( spellExists ) then
+		if ( spell ) then
 			CastSpellByName(action, target);
 		elseif ( slot or GetItemInfo(name) ) then
 			SecureCmdUseItem(name, bag, slot, target);

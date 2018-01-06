@@ -9,7 +9,6 @@ function TradeSkillDetailsMixin:OnLoad()
 
 	self:RegisterEvent("UPDATE_TRADESKILL_RECAST");
 	self:RegisterEvent("PLAYTIME_CHANGED");
-	self:RegisterEvent("SPELL_NAME_UPDATE");
 end
 
 function TradeSkillDetailsMixin:OnUpdate()
@@ -25,14 +24,6 @@ function TradeSkillDetailsMixin:OnEvent(event, ...)
 	elseif event == "PLAYTIME_CHANGED" then
 		if self:IsVisible() then
 			self:RefreshButtons();
-		end
-	elseif event == "SPELL_NAME_UPDATE" then
-		local spellID, spellName = ...;
-		if self.selectedRecipeID == spellID then
-			self.Contents.RecipeName:SetText(spellName);
-			local recipeDescription = C_TradeSkillUI.GetRecipeDescription(spellID);
-			self.Contents.Description:SetText(recipeDescription);
-			self.Contents.RequirementLabel:SetPoint("TOPLEFT", self.Contents.Description, "BOTTOMLEFT", 0, -18);
 		end
 	end
 end

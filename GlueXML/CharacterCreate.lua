@@ -1370,7 +1370,7 @@ end
 function CharacterRace_OnClick(self, id, forceSelect)
 	if( self:IsEnabled() ) then
 		PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_CLASS);
-		if (CharCreateSelectRace(id, forceSelect)) then		
+		if (not CharCreateSelectRace(id, forceSelect)) then
 			self:SetChecked(true);
 		end
 	else

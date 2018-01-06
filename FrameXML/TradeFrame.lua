@@ -12,7 +12,6 @@ function TradeFrame_OnLoad(self)
 	self:RegisterEvent("TRADE_POTENTIAL_BIND_ENCHANT");
 	self:RegisterEvent("TRADE_POTENTIAL_REMOVE_TRANSMOG");
 	self:RegisterEvent("GET_ITEM_INFO_RECEIVED");
-	self:RegisterEvent("SPELL_NAME_UPDATE");
 	TradeFrameInset:SetPoint("TOPLEFT", 4, -440);
 	TradeRecipientItemsInsetBg:SetAlpha(0.1);
 	TradeRecipientMoneyInsetBg:SetAlpha(0);
@@ -59,13 +58,6 @@ function TradeFrame_OnEvent(self, event, ...)
 		end
 	elseif ( event == "TRADE_POTENTIAL_REMOVE_TRANSMOG" ) then
 		StaticPopup_Show("TRADE_POTENTIAL_REMOVE_TRANSMOG", arg1, nil, arg2);
-	elseif event == "SPELL_NAME_UPDATE" then
-		for i=1, MAX_TRADE_ITEMS, 1 do
-			local buttonText = _G["TradePlayerItem"..i.."Name"];
-			if buttonText.spellID == arg1 then
-				buttonText:SetText(GREEN_FONT_COLOR_CODE..arg2..FONT_COLOR_CODE_CLOSE);		
-			end
-		end
 	end
 end
 
@@ -85,13 +77,12 @@ function TradeFrame_Update()
 end
 
 function TradeFrame_UpdatePlayerItem(id)
-	local name, texture, numItems, quality, enchantment, canLoseTransmog, enchantSpellID = GetTradePlayerItemInfo(id);
+	local name, texture, numItems, quality, enchantment, canLoseTransmog = GetTradePlayerItemInfo(id);
 	local buttonText = _G["TradePlayerItem"..id.."Name"];
 	
 	-- See if its the enchant slot
 	if ( id == TRADE_ENCHANT_SLOT ) then
 		if ( name ) then
-			buttonText.spellID = enchantSpellID;
 			if ( enchantment ) then
 				buttonText:SetText(GREEN_FONT_COLOR_CODE..enchantment..FONT_COLOR_CODE_CLOSE);		
 			else

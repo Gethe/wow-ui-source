@@ -258,7 +258,6 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("BAG_OVERFLOW_WITH_FULL_INVENTORY");
 	self:RegisterEvent("LOADING_SCREEN_ENABLED");
 	self:RegisterEvent("LOADING_SCREEN_DISABLED");
-	self:RegisterEvent("SPELL_NAME_UPDATE");
 
 	-- Events for auction UI handling
 	self:RegisterEvent("AUCTION_HOUSE_SHOW");
@@ -1010,7 +1009,7 @@ end
 
 -- UIParent_OnEvent --
 function UIParent_OnEvent(self, event, ...)
-	local arg1, arg2, arg3, arg4, arg5, arg6, arg7 = ...;
+	local arg1, arg2, arg3, arg4, arg5, arg6 = ...;
 	if ( event == "CURRENT_SPELL_CAST_CHANGED" ) then
 		if ( SpellCanTargetGarrisonFollower(0) or SpellCanTargetGarrisonFollowerAbility(0, 0) ) then
 
@@ -1351,7 +1350,7 @@ function UIParent_OnEvent(self, event, ...)
 			StaticPopup_Hide("CONFIRM_LEAVE_INSTANCE_PARTY");
 		end
 	elseif ( event == "MIRROR_TIMER_START" ) then
-		MirrorTimer_Show(arg1, arg2, arg3, arg4, arg5, arg6, arg7);
+		MirrorTimer_Show(arg1, arg2, arg3, arg4, arg5, arg6);
 	elseif ( event == "DUEL_REQUESTED" ) then
 		StaticPopup_Show("DUEL_REQUESTED", arg1);
 	elseif ( event == "DUEL_OUTOFBOUNDS" ) then
@@ -1983,10 +1982,6 @@ function UIParent_OnEvent(self, event, ...)
 		local raceID = ...; 
 		AlliedRacesFrame:LoadRaceData(raceID);
 		ShowUIPanel(AlliedRacesFrame);
-	else
-		if (DeathRecapFrame) then
-			DeathRecapFrame_OnEvent(DeathRecapFrame, event, ...);
-		end
 	end
 end
 

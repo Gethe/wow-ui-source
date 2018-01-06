@@ -125,7 +125,6 @@ function EncounterJournal_OnLoad(self)
 	self:RegisterEvent("EJ_DIFFICULTY_UPDATE");
 	self:RegisterEvent("UNIT_PORTRAIT_UPDATE");
 	self:RegisterEvent("SEARCH_DB_LOADED");
-	self:RegisterEvent("SPELL_NAME_UPDATE");
 	self:RegisterEvent("UI_MODEL_SCENE_INFO_UPDATED");
 
 	self.encounter.freeHeaders = {};
@@ -292,91 +291,6 @@ function EncounterJournal_OnHide(self)
 	self.shouldDisplayDifficulty = nil;
 end
 
-local function EncounterJournal_IsHeaderTypeOverview(headerType)
-	return headerType == EJ_HTYPE_OVERVIEW;
-end
-
-local function EncounterJournal_GetRootAfterOverviews(rootSectionID)
-	local nextSectionID = rootSectionID;
-
-	repeat
-		local info = C_EncounterJournal.GetSectionInfo(nextSectionID);
-		local isOverview = info and EncounterJournal_IsHeaderTypeOverview(info.headerType);
-		if isOverview then
-			nextSectionID = info.siblingSectionID;
-		end
-	until not isOverview;
-
-	return nextSectionID;
-end
-
-local function EncounterJournal_CheckForOverview(rootSectionID)
-	local sectionInfo = C_EncounterJournal.GetSectionInfo(rootSectionID);
-	return sectionInfo and EncounterJournal_IsHeaderTypeOverview(sectionInfo.headerType);
-end
-
-local function EncounterJournal_SearchForOverview(instanceID)
-	local bossIndex = 1;
-	local _, _, bossID = EJ_GetEncounterInfoByIndex(bossIndex);
-	while bossID do
-		local _, _, _, rootSectionID = EJ_GetEncounterInfo(bossID);
-
-		if (EncounterJournal_CheckForOverview(rootSectionID)) then
-			return true;
-		end
-
-		bossIndex = bossIndex + 1;
-		_, _, bossID = EJ_GetEncounterInfoByIndex(bossIndex);
-	end
-
-	return false;
-end
-
-local function EncounterJournal_UpdateSpellName(self, spellID, spellName)
-	if self.encounter.encounterID then
-		local rootSectionID = select(4, EJ_GetEncounterInfo(self.encounter.encounterID));
-		if (EncounterJournal_CheckForOverview(rootSectionID)) then
-			if self.encounter.overviewFrame.spellID == spellID then
-				local sectionInfo = C_EncounterJournal.GetSectionInfo(rootSectionID);
-				EncounterJournal_SetBullets(self.encounter.overviewFrame.overviewDescription, sectionInfo.description, false);
-			end
-		end
-	end
-
-	-- Overview frames
-	for overviewIndex, overview in ipairs(self.encounter.overviewFrame.overviews) do
-		if overview.spellID == spellID then
-			local sectionInfo = C_EncounterJournal.GetSectionInfo(overview.sectionID);
-			overview.button.title:SetText(spellName);
-			EncounterJournal_SetDescriptionWithBullets(overview, sectionInfo.description);
-		end
-	end
-
-	-- Section info
-	for headerIndex, header in ipairs(self.encounter.usedHeaders) do
-		if header.spellID == spellID then
-			local sectionInfo = C_EncounterJournal.GetSectionInfo(header.myID);
-			local description = sectionInfo.description:gsub("\|cffffffff(.-)\|r", "%1");
-			header.description:SetText(description);
-			header.button.title:SetText(spellName);
-		end
-	end
-
-	-- Search results
-	for resultIndex, resultButton in ipairs(self.searchResults.scrollFrame.buttons) do
-		if resultButton.spellID == spellID then
-			resultButton.name:SetText(spellName);
-		end
-	end
-
-	-- Search preview
-	for previewIndex, previewButton in ipairs(self.searchBox.searchPreview) do
-		if previewButton.spellID == spellID then
-			previewButton.name:SetText(spellName);
-		end
-	end
-end
-
 function EncounterJournal_OnEvent(self, event, ...)
 	if  event == "EJ_LOOT_DATA_RECIEVED" then
 		local itemID = ...
@@ -404,9 +318,6 @@ function EncounterJournal_OnEvent(self, event, ...)
 	elseif event == "UI_MODEL_SCENE_INFO_UPDATED" then
 		local forceUpdate = true;
 		EncounterJournal_ShowCreatures(forceUpdate);
-	elseif event == "SPELL_NAME_UPDATE" then
-		local spellID, spellName = ...;
-		EncounterJournal_UpdateSpellName(self, spellID, spellName);
 	end
 end
 
@@ -546,6 +457,46 @@ end
 function EncounterJournalInstanceButton_OnClick(self)
 	NavBar_Reset(EncounterJournal.navBar);
 	EncounterJournal_DisplayInstance(EncounterJournal.instanceID);
+end
+
+local function EncounterJournal_IsHeaderTypeOverview(headerType)
+	return headerType == EJ_HTYPE_OVERVIEW;
+end
+
+local function EncounterJournal_GetRootAfterOverviews(rootSectionID)
+	local nextSectionID = rootSectionID;
+
+	repeat
+		local info = C_EncounterJournal.GetSectionInfo(nextSectionID);
+		local isOverview = info and EncounterJournal_IsHeaderTypeOverview(info.headerType);
+		if isOverview then
+			nextSectionID = info.siblingSectionID;
+		end
+	until not isOverview;
+
+	return nextSectionID;
+end
+
+local function EncounterJournal_CheckForOverview(rootSectionID)
+	local sectionInfo = C_EncounterJournal.GetSectionInfo(rootSectionID);
+	return sectionInfo and EncounterJournal_IsHeaderTypeOverview(sectionInfo.headerType);
+end
+
+local function EncounterJournal_SearchForOverview(instanceID)
+	local bossIndex = 1;
+	local _, _, bossID = EJ_GetEncounterInfoByIndex(bossIndex);
+	while bossID do
+		local _, _, _, rootSectionID = EJ_GetEncounterInfo(bossID);
+
+		if (EncounterJournal_CheckForOverview(rootSectionID)) then
+			return true;
+		end
+
+		bossIndex = bossIndex + 1;
+		_, _, bossID = EJ_GetEncounterInfoByIndex(bossIndex);
+	end
+
+	return false;
 end
 
 local function EncounterJournal_SetupIconFlags(sectionID, infoHeaderButton)
@@ -742,7 +693,6 @@ function EncounterJournal_DisplayEncounter(encounterID, noButton)
 
 	local overviewFound;
 	if (sectionInfo and EncounterJournal_IsHeaderTypeOverview(sectionInfo.headerType)) then
-		self.overviewFrame.spellID = sectionInfo.spellID;
 		self.overviewFrame.loreDescription:SetHeight(0);
 		self.overviewFrame.loreDescription:SetWidth(self.overviewFrame:GetWidth() - 5);
 		self.overviewFrame.loreDescription:SetText(description);
@@ -1122,7 +1072,6 @@ function EncounterJournal_SetUpOverview(self, overviewSectionID, index)
 
 	EncounterJournal_SetupIconFlags(overviewSectionID, infoHeader.button);
 
-	infoHeader.spellID = sectionInfo.spellID;
 	infoHeader.button.title:SetText(sectionInfo.title);
 	infoHeader.button.link = sectionInfo.link;
 	infoHeader.sectionID = overviewSectionID;
@@ -1293,17 +1242,11 @@ function EncounterJournal_ToggleHeaders(self, doNotShift)
 					numAdded = numAdded + 1;
 					toggleTempList[#toggleTempList+1] = infoHeader;
 
-					infoHeader.spellID = sectionInfo.spellID;
 					infoHeader.button.link = sectionInfo.link;
 					infoHeader.parentID = parentID;
 					infoHeader.myID = nextSectionID;
 					-- Spell names can show up in white, which clashes with the parchment, strip out white color codes.
-					local description;
-					if sectionInfo.description then
-						description = sectionInfo.description:gsub("\|cffffffff(.-)\|r", "%1");
-					else
-						description = RETRIEVING_DATA;
-					end
+					local description = sectionInfo.description:gsub("\|cffffffff(.-)\|r", "%1");
 					infoHeader.description:SetText(description);
 					infoHeader.button.title:SetText(sectionInfo.title);
 
@@ -1811,7 +1754,7 @@ function EncounterJournal_Refresh(self)
 end
 
 function EncounterJournal_GetSearchDisplay(index)
-	local spellID, name, icon, path, typeText, displayInfo, itemID, _;
+	local name, icon, path, typeText, displayInfo, itemID, _;
 	local id, stype, _, instanceID, encounterID, itemLink = EJ_GetSearchResult(index);
 	if stype == EJ_STYPE_INSTANCE then
 		name, _, _, icon = EJ_GetInstanceInfo(id);
@@ -1820,16 +1763,14 @@ function EncounterJournal_GetSearchDisplay(index)
 		name = EJ_GetEncounterInfo(id);
 		typeText = ENCOUNTER_JOURNAL_ENCOUNTER;
 		path = EJ_GetInstanceInfo(instanceID);
-		icon = 	533888;	-- "Interface\\EncounterJournal\\UI-EJ-GenericSearchCreature.blp"
-		--_, _, _, displayInfo = EJ_GetCreatureInfo(1, encounterID);
+		icon = "Interface\\EncounterJournal\\UI-EJ-GenericSearchCreature"
 	elseif stype == EJ_STYPE_SECTION then
 		local sectionInfo = C_EncounterJournal.GetSectionInfo(id);
-		spellID = sectionInfo and sectionInfo.spellID;
 		displayInfo = sectionInfo and sectionInfo.creatureDisplayID or 0;
 		if displayInfo > 0 then
 			typeText = ENCOUNTER_JOURNAL_ENCOUNTER_ADD;
 			displayInfo = nil;
-			icon = 533888;	-- "Interface\\EncounterJournal\\UI-EJ-GenericSearchCreature.blp"
+			icon = "Interface\\EncounterJournal\\UI-EJ-GenericSearchCreature";
 		else
 			typeText = ENCOUNTER_JOURNAL_ABILITY;
 		end
@@ -1846,11 +1787,11 @@ function EncounterJournal_GetSearchDisplay(index)
 				break;
 			end
 		end
-		icon = 533888;	-- "Interface\\EncounterJournal\\UI-EJ-GenericSearchCreature.blp"
+		icon = "Interface\\EncounterJournal\\UI-EJ-GenericSearchCreature"
 		typeText = ENCOUNTER_JOURNAL_ENCOUNTER
 		path = EJ_GetInstanceInfo(instanceID).." > "..EJ_GetEncounterInfo(encounterID);
 	end
-	return spellID, name, icon, path, typeText, displayInfo, itemID, stype, itemLink;
+	return name, icon, path, typeText, displayInfo, itemID, stype, itemLink;
 end
 
 function EncounterJournal_SelectSearch(index)
@@ -1883,14 +1824,13 @@ function EncounterJournal_SearchUpdate()
 		result = results[i];
 		index = offset + i;
 		if index <= numResults then
-			local spellID, name, icon, path, typeText, displayInfo, itemID, stype, itemLink = EncounterJournal_GetSearchDisplay(index);
+			local name, icon, path, typeText, displayInfo, itemID, stype, itemLink = EncounterJournal_GetSearchDisplay(index);
 			if stype == EJ_STYPE_INSTANCE then
 				result.icon:SetTexCoord(0.16796875, 0.51171875, 0.03125, 0.71875);
 			else
 				result.icon:SetTexCoord(0, 1, 0, 1);
 			end
 
-			result.spellID = spellID;
 			result.name:SetText(name);
 			result.resultType:SetText(typeText);
 			result.path:SetText(path);
@@ -2043,8 +1983,7 @@ function EncounterJournal_UpdateSearchPreview()
 	for index = 1, EJ_NUM_SEARCH_PREVIEWS do
 		local button = EncounterJournal.searchBox.searchPreview[index];
 		if index <= numResults then
-			local spellID, name, icon, path, typeText, displayInfo, itemID, stype, itemLink = EncounterJournal_GetSearchDisplay(index);
-			button.spellID = spellID;
+			local name, icon, path, typeText, displayInfo, itemID, stype, itemLink = EncounterJournal_GetSearchDisplay(index);
 			button.name:SetText(name);
 			button.icon:SetTexture(icon);
 			button.link = itemLink;
@@ -3042,7 +2981,6 @@ function AdventureJournal_Reward_OnEnter(self)
 
 			local tooltip = frame.Item1.tooltip;
 			tooltip:SetOwner(frame.Item1, "ANCHOR_NONE");
-			frame.Item1.UpdateTooltip = function() AdventureJournal_Reward_OnEnter(self) end;
 			if ( rewardData.itemLink ) then
 				tooltip:SetHyperlink(rewardData.itemLink);
 				GameTooltip_ShowCompareItem(tooltip, frame.Item1);

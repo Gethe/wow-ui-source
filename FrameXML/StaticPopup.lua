@@ -4792,38 +4792,9 @@ function StaticPopup_IsLastDisplayedFrame(frame)
 	return false;
 end
 
-function StaticPopup_OnLoad(self)
-	local name = self:GetName();
-	self.button1 = _G[name .. "Button1"];
-	self.button2 = _G[name .. "Button2"];
-	self.button3 = _G[name .. "Button3"];
-	self.text = _G[name .. "Text"];
-	self.icon = _G[name .. "AlertIcon"];
-	self.moneyInputFrame = _G[name .. "MoneyInputFrame"];
-	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
-	self:RegisterEvent("SPELL_NAME_UPDATE");
-end
-
-function StaticPopup_OnEvent(self, event, ...)
+function StaticPopup_OnEvent(self)
 	self.maxHeightSoFar = 0;
 	StaticPopup_Resize(self, self.which);
-	if ( event == "SPELL_NAME_UPDATE" ) then
-		local spellID, spellName = ...;
-		local info = StaticPopupDialogs[self.which];
-		if ( not info ) then
-			return nil;
-		end
-		for index = 1, STATICPOPUP_NUMDIALOGS, 1 do
-			local frame = _G["StaticPopup"..index];
-			if frame and frame.data and type(frame.data) == "table" and frame.data.pendingSpellID == spellID then
-				frame.data.name = spellName;
-				if frame:IsShown() then
-					info.OnShow(frame);
-					StaticPopup_Resize(self, self.which);
-				end
-			end
-		end
-	end
 end
 
 function StaticPopup_HideExclusive()
