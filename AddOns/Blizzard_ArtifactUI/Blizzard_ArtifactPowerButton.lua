@@ -650,6 +650,11 @@ function ArtifactPowerButtonMixin:StopAllAnimations()
 	self.FinalPowerUnlockedAnim:Stop();
 	self.FirstPointWaitingAnimation:Stop();
 	self.Tier2FinalPowerSparks:Stop();
+	self.InstabilityAnim:Stop();
+	
+	if self.FloatingNumbers and self.FloatingNumbers[1] then
+		self.FloatingNumbers[1].InstabilityMoveAndFade:Stop();
+	end
 end
 
 function ArtifactPowerButtonMixin:SetNextInstabilityTime(baseTime)
@@ -693,6 +698,12 @@ local function OnInstabilityLightHit(self)
 	end
 end
 
+local function OnInstabilityPointsRemainingAnimFinished(self)
+	local label = self:GetParent();
+	local pool = label:GetParent().InstabilityPointsRemainingPool;
+	pool:Release(label);
+end
+ 
 function ArtifactPowerButtonMixin:TriggerInstability()
 	local perksTab = self:GetParent();
 	local sourceX = perksTab:GetWidth() / 2;
@@ -709,6 +720,7 @@ function ArtifactPowerButtonMixin:TriggerInstability()
 	local deltaY = targetY - sourceY;
 	label.Anim.Move:SetOffset(deltaX * 0.3, deltaY * 0.3);
 	label:SetText(perksTab.TitleContainer.PointsRemainingLabel:GetText());
+	label.Anim:SetScript("OnFinished", OnInstabilityPointsRemainingAnimFinished);
 	label.Anim:Play();
 
 	local orbSoundKit = self:GetParent():GetInstabilityOrbSoundKit();

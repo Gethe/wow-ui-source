@@ -20,9 +20,17 @@ local function ClassTrialDoCharacterUpgrade(guid, boostType, confirmed)
 	local upgradeDistributions = C_SharedCharacterServices.GetUpgradeDistributions();
 	if upgradeDistributions[boostType] and upgradeDistributions[boostType].amount >= 1 then
 		if confirmed then
-			C_CharacterServices.AssignUpgradeDistribution(guid, 0, 0, 0, boostType);
+			if boostType == C_CharacterServices.GetActiveClassTrialBoostType() then
+				C_CharacterServices.AssignUpgradeDistribution(guid, 0, 0, 0, boostType);
+			else
+				Outbound.ShowUpgradeLogoutConfirmation(boostType);
+			end
 		else
-			Outbound.ShowUpgradeConfirmation(guid, boostType);
+			if boostType == C_CharacterServices.GetActiveClassTrialBoostType() then
+				Outbound.ShowUpgradeConfirmation(guid, boostType);
+			else
+				Outbound.ShowUpgradeLogoutConfirmation(boostType);
+			end
 		end
 	else
 		Outbound.ShowStoreServices(guid, boostType);

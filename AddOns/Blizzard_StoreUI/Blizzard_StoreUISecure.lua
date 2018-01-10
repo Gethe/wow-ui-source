@@ -1491,13 +1491,15 @@ function StoreFrame_UpdateCard(card, entryID, discountReset, forceModelUpdate)
 		card.BannerFadeIn:Show();
 	end
 
-	card:Enable();
 	if (entryInfo.alreadyOwned and StoreFrame_DoesProductGroupShowOwnedAsDisabled(selectedCategoryID)) then
 		card:Disable();
 		card.Card:SetDesaturated(true);
 		if card.Checkmark then
 			card.Checkmark:Hide();
 		end
+	else
+		card:Enable();
+		card.Card:SetDesaturated(false);
 	end
 
 	if (card.DisabledOverlay) then
@@ -1955,7 +1957,7 @@ function StoreFrame_OnLoad(self)
 		background:SetColorTexture(0, 0, 0, 0.75);
 	end
 	self:SetPoint("CENTER", nil, "CENTER", 0, 20); --Intentionally not anchored to UIParent.
-	StoreDialog:SetPoint("CENTER", nil, "CENTER", 0, 40);
+	StoreDialog:SetPoint("CENTER", nil, "CENTER", 0, 150);
 	StoreFrame_CreateCards(self, NUM_STORE_PRODUCT_CARDS, NUM_STORE_PRODUCT_CARDS_PER_ROW);
 
 	StoreFrame_HideAllSplashFrames(self);

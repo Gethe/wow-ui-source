@@ -9,6 +9,10 @@ function Outbound.ShowUpgradeConfirmation(guid, boostType)
 	securecall("StaticPopup_Show", "CONFIRM_UNLOCK_TRIAL_CHARACTER", nil, nil, data);
 end
 
+function Outbound.ShowUpgradeLogoutConfirmation(boostType)
+	securecall("StaticPopup_Show", "CLASS_TRIAL_CHOOSE_BOOST_LOGOUT_PROMPT", nil, nil, boostType);
+end
+
 function Outbound.ShowStoreServices(guid, boostType)
 	securecall("ClassTrial_ShowStoreServices", guid, boostType);
 end

@@ -2116,9 +2116,7 @@ function DisplayBattlepayTokenFreeFrame(freeFrame)
 		popupFrame.Bottom:SetAtlas(popupData.textureKitPrefix.."-boostpopup-bottom", true);
 		popupFrame.CloseButtonBG:SetAtlas(popupData.textureKitPrefix.."-boostpopup-exit-frame", true);
 		
-		popupFrame:ClearAllPoints();
-		popupFrame:SetPoint("CENTER");
-		popupFrame:SetHeight( popupFrame:GetTop() - popupFrame.LaterButton:GetBottom() + 45 );
+		popupFrame:SetHeight(180 + popupFrame.Description:GetHeight() + popupFrame.Title:GetHeight());
 		popupFrame:Show();
 	end
 end

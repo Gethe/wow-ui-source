@@ -18,6 +18,10 @@ function WarboardQuestChoiceFrameMixin:OnLoad()
 	self.initOptionBackgroundHeight = 337;
 	self.initOptionHeaderTextHeight = 20;
 
+	for _, option in pairs(self.Options) do
+		option.Header.Text:SetFontObjectsToTry("Game20Font", "Game18Font", "Game16Font", "Game13Font");
+	end
+
 	QuestChoiceFrameMixin.OnLoad(self);
 end
 
@@ -60,6 +64,7 @@ function WarboardQuestChoiceFrameMixin:Update()
 
 		local newWidth = (neededWidth*2)+430;
 		self.fixedWidth = math.max(600, newWidth);
+		self.leftPadding = ((self.fixedWidth - self.Option1:GetWidth()) / 2) - 4;
 		self.Title:SetPoint("LEFT", self.Option1, "LEFT", -neededWidth, 0);
 		self.Title:SetPoint("RIGHT", self.Option1, "RIGHT", neededWidth, 0);
 	else

@@ -1719,7 +1719,10 @@
 		<Frame name="StoreDialog" parent="UIParent" frameStrata="DIALOG" toplevel="true" enableMouse="true" hidden="true">
 			<Size x="434" y="100" />
 			<!-- Anchors are set in lua -->
-			<Backdrop edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+				<BackgroundInsets>
+					<AbsInset left="11" right="12" top="11" bottom="11"/>
+				</BackgroundInsets>
 				<TileSize>
 					<AbsValue val="32" />
 				</TileSize>
@@ -1728,18 +1731,9 @@
 				</EdgeSize>
 			</Backdrop>
 			<Layers>
-				<Layer level="BACKGROUND">
-					<Texture>
-						<Anchors>
-							<Anchor point="TOPLEFT" x="5" y="-5" />
-							<Anchor point="BOTTOMRIGHT" x="-5" y="5" />
-						</Anchors>
-						<Color r="0" g="0" b="0" a="1" />
-					</Texture>
-				</Layer>
 				<Layer level="ARTWORK">
 					<FontString parentKey="Description" inherits="GameFontNormalMed2">
-						<Size x="400" y="0"/>
+						<Size x="380" y="0"/>
 						<Anchors>
 							<Anchor point="TOP" x="0" y="-26"/>
 						</Anchors>

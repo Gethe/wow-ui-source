@@ -925,14 +925,18 @@ function CharacterUpgradeCharacterSelectBlock:ShouldShowPopup()
 	local seenPopupBefore = self.seenPopup;
 	self.seenPopup = true;
 	local isTrialBoost = select(22, GetCharacterInfo(self.charid));
-	return not isTrialBoost and raceData.isAlliedRace and not raceData.heritageArmorUnlocked and not seenPopupBefore;
+	return not isTrialBoost and raceData.isAlliedRace and not raceData.hasHeritageArmor and not seenPopupBefore;
 end
 
 function CharacterUpgradeCharacterSelectBlock:GetPopupText()
 	local _, _, raceFilename, _, _, _, _, _, _, _, _, _, _, _, _, _, _, gender = GetCharacterInfo(self.charid);
 	local raceData = C_CharacterCreation.GetRaceDataByID(RACE_NAME_BUTTON_ID_MAP[strupper(raceFilename)]);
 
-	return formatDescription(BOOST_ALLIED_RACE_HERITAGE_ARMOR_WARNING:format(raceData.name), gender+1);
+	if GetCurrentRegionName() == "CN" then
+		return formatDescription(BOOST_ALLIED_RACE_HERITAGE_ARMOR_WARNING_CN:format(raceData.name), gender+1);
+	else
+		return formatDescription(BOOST_ALLIED_RACE_HERITAGE_ARMOR_WARNING:format(raceData.name), gender+1);
+	end
 end
 
 function CharacterUpgradeCharacterSelectBlock:IsFinished()

@@ -63,7 +63,7 @@
 						</Texture>
 					</Layer>
 					<Layer level="ARTWORK">
-						<FontString parentKey="Text" font="Game20Font" justifyH="CENTER" justifyV="MIDDLE">
+						<FontString parentKey="Text" font="Game20Font" mixin="ShrinkUntilTruncateFontStringMixin" justifyH="CENTER" justifyV="MIDDLE">
 							<Size x="180"/>
 							<Anchors>
 								<Anchor point="TOP" relativeKey="$parent.$parent.Artwork" relativePoint="BOTTOM" x="0" y="-21"/>

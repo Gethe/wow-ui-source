@@ -313,6 +313,9 @@ GlueDialogTypes["CONFIGURATION_WARNING"] = {
 GlueDialogTypes["SUBSCRIPTION_CHANGED_KICK_WARNING"] = {
 	text = TRIAL_UPGRADE_LOGOUT_WARNING,
 	button1 = CAMP_NOW,
+	OnShow = function()
+		AccountReactivate_CloseDialogs();
+	end,
 	OnAccept = function()
 		C_Login.DisconnectFromServer();
 	end,
@@ -327,6 +330,8 @@ GlueDialogTypes["SUBSCRIPTION_CHANGED_KICK_WARNING"] = {
 	end,
 	timeout = 15,
 	cover = true,
+	anchorPoint = "CENTER",
+	anchorOffsetY = 150,
 }
 
 function GlueDialog_Queue(which, text, data)
@@ -353,6 +358,13 @@ function GlueDialog_Show(which, text, data)
 		end
 	end
 
+	GlueDialogBackground:ClearAllPoints();
+	if dialogInfo.anchorPoint then
+		GlueDialogBackground:SetPoint(dialogInfo.anchorPoint, dialogInfo.anchorOffsetX or 0, dialogInfo.anchorOffsetY or 0);
+	else
+		GlueDialogBackground:SetPoint("CENTER");
+	end
+	
 	GlueDialog.data = data;
 	local glueText;
 	if ( dialogInfo.html ) then

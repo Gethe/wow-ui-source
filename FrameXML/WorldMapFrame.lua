@@ -1540,8 +1540,7 @@ function WorldMapFrame_Update()
 			local questLineName, questName, x, y, isHidden, floorLocation, isLegendary = C_Questline.GetQuestlineInfoByIndex(i);
 			local showQuest = questLineName and x > 0 and y > 0;
 			if ( showQuest and isHidden ) then
-				local _, _, active = GetTrackingInfo(MINIMAP_TRACK_HIDDEN_QUESTS);
-				showQuest = active;
+				showQuest = IsTrackingHiddenQuests();
 			end
 			if ( showQuest ) then
 				numUsedStoryLineFrames = numUsedStoryLineFrames + 1;

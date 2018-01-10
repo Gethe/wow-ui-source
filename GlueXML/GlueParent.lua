@@ -64,6 +64,7 @@ function GlueParent_OnLoad(self)
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
 	self:RegisterEvent("LUA_WARNING");
 	self:RegisterEvent("CONFIGURATION_WARNING");
+	self:RegisterEvent("SUBSCRIPTION_CHANGED_KICK_IMMINENT");
 
 	OnDisplaySizeChanged(self);
 end
@@ -89,6 +90,10 @@ function GlueParent_OnEvent(self, event, ...)
 		OnDisplaySizeChanged(self);
 	elseif ( event == "LUA_WARNING" ) then
 		HandleLuaWarning(...);
+	elseif ( event == "SUBSCRIPTION_CHANGED_KICK_IMMINENT" ) then
+		if not StoreFrame_IsShown() then
+			GlueDialog_Show("SUBSCRIPTION_CHANGED_KICK_WARNING");
+		end
 	end
 end
 

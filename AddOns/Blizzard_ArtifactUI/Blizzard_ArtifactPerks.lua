@@ -225,8 +225,12 @@ function ArtifactPerksMixin:RefreshModel()
 		self.AltModel:SetFrameLevel(baseAltModelFrameLevel);
 		self.AltInstabilityShakeModel:SetFrameLevel(baseAltModelFrameLevel + 1);
 		self.AltInstabilityEffectModel:SetFrameLevel(baseAltModelFrameLevel + 2);
+		self.AltInstabilityShakeModel:Show();
+		self.AltInstabilityEffectModel:Show();
 	else
 		self.AltModel:Hide();
+		self.AltInstabilityShakeModel:Hide();
+		self.AltInstabilityEffectModel:Hide();
 	end
 end
 
@@ -324,6 +328,9 @@ function ArtifactPerksMixin:RefreshPowers(newItem)
 	if newItem or not self.powerIDToPowerButton then
 		self.powerButtonPool:ReleaseAll();
 		self.powerIDToPowerButton = {};
+		if (self.TitleContainer.InstabilityPointsRemainingPool) then
+			self.TitleContainer.InstabilityPointsRemainingPool:ReleaseAll();
+		end
 	end
 
 	local currentTier = C_ArtifactUI.GetArtifactTier();
@@ -524,7 +531,11 @@ function ArtifactPerksMixin:TryRefresh()
 		local finalTier2WasUnlocked = self.wasFinalPowerButtonUnlockedByTier[2];
 		self:RefreshPowers(self.newItem);
 
-		self.TitleContainer:SetPointsRemaining(C_ArtifactUI.GetPointsRemaining());
+		if (self.inInstabilityMode) then
+			self:SetupInstabilityPoints();
+		else
+			self.TitleContainer:SetPointsRemaining(C_ArtifactUI.GetPointsRemaining());
+		end
 
 		self.perksDirty = false;
 		self.newItem = nil;
@@ -1240,6 +1251,27 @@ function ArtifactPerksMixin:CancelAllTimedAnimations()
 	end
 end
 
+function ArtifactPerksMixin:CalculateInstabilityPoints(time)
+	time = time - 1514764800;
+
+	local y = 3e-12 * (time * time) - 2e-5 * time - 8e-13;
+	y = math.pow(y, 6) + 4e13;
+	return y;
+end
+
+function ArtifactPerksMixin:SetupInstabilityPoints()
+	local duration = 3600;
+	self.TitleContainer.PointsRemainingLabel:SetAnimatedDurationTimeSec(duration);
+
+	local time = GetServerTime();
+	local startingValue = self:CalculateInstabilityPoints(time);
+	local endingValue = self:CalculateInstabilityPoints(time + duration);
+	self.TitleContainer.PointsRemainingLabel:SetAnimatedValue(startingValue);
+	self.TitleContainer.PointsRemainingLabel:SnapToTarget();
+
+	self.TitleContainer.PointsRemainingLabel:SetAnimatedValue(endingValue);
+end
+
 function ArtifactPerksMixin:BeginInstability()
 	self.inInstabilityMode = true;
 	self.CrestFrame.InstabilityRunesAnim:Play();
@@ -1255,7 +1287,9 @@ function ArtifactPerksMixin:BeginInstability()
 		end
 	end
 	self.Tier2ForgingScene:SetFrameLevel(powerButtonFrameLevel);
-	self.Tier2ForgingScene.ForgingEffect:SetAlpha(1);
+	if (self.Tier2ForgingScene.ForgingEffect) then
+		self.Tier2ForgingScene.ForgingEffect:SetAlpha(1);
+	end
 	for i, scene in ipairs(self.InstabilityForgingScenes) do
 		scene:SetAlpha(1);
 		scene:SetFrameLevel(powerButtonFrameLevel);
@@ -1263,8 +1297,7 @@ function ArtifactPerksMixin:BeginInstability()
 	self:RefreshNextInstabilityTime();
 
 	self.TitleContainer.InstabilityPointsRemainingPool = CreateFontStringPool(self, "OVERLAY", 0, "ArtifactInstabilityPointsRemainingTemplate");
-	self.TitleContainer.PointsRemainingLabel:SetAnimatedDurationTimeSec(3600);
-	self.TitleContainer.PointsRemainingLabel:SetAnimatedValue(C_ArtifactUI.GetPointsRemaining() + 1000000000000);
+	self:SetupInstabilityPoints();
 
 	self.shakeCooldown = math.random(2, 4);
 	self.InstabilityShakeModel:Show();	

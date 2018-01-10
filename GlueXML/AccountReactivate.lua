@@ -199,6 +199,8 @@ function ReactivateAccountDialog_CanOpen()
 		return false;
 	elseif (not CharacterSelect_HasVeteranEligibilityInfo()) then
 		return false;
+	elseif (GlueDialog:IsShown()) then
+		return false;
 	end
 
 	return true;

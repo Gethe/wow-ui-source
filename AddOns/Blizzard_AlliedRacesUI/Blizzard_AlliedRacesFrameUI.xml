@@ -95,7 +95,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="AlliedRacesFrame" toplevel="true" parent="UIParent" inherits="ButtonFrameTemplate" mixin="AlliedRacesFrameMixin" hidden="true">
+	<Frame name="AlliedRacesFrame" toplevel="true" parent="UIParent" inherits="ButtonFrameTemplate" mixin="AlliedRacesFrameMixin" enableMouse="true" hidden="true">
 		<Size x="704" y="607"/>
 		<Anchors>
 			<Anchor point="LEFT" x="20" y="40"/> 

@@ -1627,10 +1627,10 @@ function CharCreate_PrepPreviewModels(reloadModels)
 
 	-- need to reload models class was swapped to or from DK
 	local classInfo = C_CharacterCreation.GetSelectedClass();
-	if ( classInfo.fileName == "DEATHKNIGHT" or displayFrame.lastClass == "DEATHKNIGHT" ) and ( classInfo.classID ~= displayFrame.lastClass ) then
+	if ( classInfo.fileName == "DEATHKNIGHT" or displayFrame.lastClassID == CLASS_NAME_BUTTON_ID_MAP["DEATHKNIGHT"] ) and ( classInfo.classID ~= displayFrame.lastClassID ) then
 		reloadModels = true;
 	end
-	displayFrame.lastClass = classInfo.classID;
+	displayFrame.lastClassID = classInfo.classID;
 
 	-- always clear the featureType
 	for index, previewFrame in pairs(displayFrame.previews) do
