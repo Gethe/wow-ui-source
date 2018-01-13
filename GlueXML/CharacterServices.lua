@@ -1203,7 +1203,7 @@ function CharacterServices_UpdateSpecializationButtons(classID, gender, parentFr
 		button.isRecommended = nil;
 		
 		if i <= numSpecs then
-			local specID, name, description, icon, role, isRecommended, isAllowed = GetSpecializationInfoForClassID(classID, i, gender);
+			local specID, name, description, icon, role, isRecommended, isAllowed = GetSpecializationInfoForClassID(classID, i, gender + 1);
 			local allowed = allowAllSpecs or isAllowed or isRecommended;
 			local isCurrentSpec = specID == currentSpecID;
 			

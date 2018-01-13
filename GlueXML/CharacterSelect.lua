@@ -1740,7 +1740,11 @@ end
 
 function CharacterSelect_ScrollToCharacter(self, characterGUID)
 	local numCharacters = GetNumCharacters();
-	local maxScroll = numCharacters - MAX_CHARACTERS_DISPLAYED;
+	if numCharacters <= MAX_CHARACTERS_DISPLAYED then
+		return;
+	end
+
+	local maxScroll = max(numCharacters - MAX_CHARACTERS_DISPLAYED, 0);
 	for i = 1, maxScroll do
 		local guid = select(15, GetCharacterInfo(i));
 		if guid == characterGUID then
@@ -2038,13 +2042,13 @@ function CharacterServicesMaster_UpdateServiceButton()
 	for i = 1, CharacterSelect.numActiveCharacterBoosts do
 		local boostFrame = CharacterSelect.CharacterBoosts[i];
 		local boostFrameIsBetterCandidate = not freeFrame or boostFrame.data.expansion > freeFrame.data.expansion;
-		if boostFrameIsBetterCandidate and boostFrame.hasFreeBoost then
+		if boostFrameIsBetterCandidate then
 			if boostFrame.data.expansion <= GetAccountExpansionLevel() then
 				freeFrame = boostFrame;
 			end
 		end
 	end
-	
+
     if freeFrame and C_SharedCharacterServices.GetLastSeenUpgradePopup() < freeFrame.data.expansion then
 		DisplayBattlepayTokenFreeFrame(freeFrame);
 	end

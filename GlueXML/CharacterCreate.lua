@@ -2257,7 +2257,7 @@ function CharacterCreate_UpdateClassTrialCustomizationFrames()
 		local allowAllSpecs = false;
 
 		CharCreateSelectSpecFrame.classFilename = classInfo.fileName;
-		CharacterServices_UpdateSpecializationButtons(classInfo.classID, gender, CharCreateSelectSpecFrame, CharCreateSelectSpecFrame, allowAllSpecs, isTrialBoost);
+		CharacterServices_UpdateSpecializationButtons(classInfo.classID, gender+1, CharCreateSelectSpecFrame, CharCreateSelectSpecFrame, allowAllSpecs, isTrialBoost);
 
 		local frameTop, frameBottom = CharCreateSelectSpecFrame:GetTop(), CharCreateSelectSpecFrame:GetBottom();
 		for index, button in pairs(CharCreateSelectSpecFrame.SpecButtons) do

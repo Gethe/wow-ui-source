@@ -504,13 +504,13 @@ local function UpdateGlueTag()
 
 	-- Determine which API to use to get character information
 	if ( currentScreen == "charselect") then
-		class = select(4, GetCharacterInfo(GetCharacterSelection()));
+		class = select(5, GetCharacterInfo(GetCharacterSelection()));
 		race = select(2, GetCharacterRace(GetCharacterSelection()));
 		faction = ""; -- Don't need faction for character selection, its currently irrelevant
 
 	elseif ( currentScreen == "charcreate" ) then
 		local classInfo = C_CharacterCreation.GetSelectedClass();
-		class = classInfo.name;
+		class = classInfo.fileName;
 		local raceID = C_CharacterCreation.GetSelectedRace();
 		race = C_CharacterCreation.GetNameForRace(raceID);
 		faction = C_CharacterCreation.GetFactionForRace(raceID);
