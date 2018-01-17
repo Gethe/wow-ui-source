@@ -68,9 +68,9 @@ local ConfigurationWarningsLua =
 		{
 			Name = "ConfigurationWarning",
 			Type = "Enumeration",
-			NumValues = 6,
+			NumValues = 8,
 			MinValue = 0,
-			MaxValue = 5,
+			MaxValue = 7,
 			Fields =
 			{
 				{ Name = "ShaderModelWillBeOutdated", Type = "ConfigurationWarning", EnumValue = 0 },
@@ -79,6 +79,8 @@ local ConfigurationWarningsLua =
 				{ Name = "DriverBlacklisted", Type = "ConfigurationWarning", EnumValue = 3 },
 				{ Name = "DriverOutOfDate", Type = "ConfigurationWarning", EnumValue = 4 },
 				{ Name = "DeviceBlacklisted", Type = "ConfigurationWarning", EnumValue = 5 },
+				{ Name = "GraphicsApiwIllBeOutdated", Type = "ConfigurationWarning", EnumValue = 6 },
+				{ Name = "OsBitsWillBeOutdated", Type = "ConfigurationWarning", EnumValue = 7 },
 			},
 		},
 	},

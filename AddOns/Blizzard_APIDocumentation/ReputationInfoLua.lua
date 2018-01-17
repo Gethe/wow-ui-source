@@ -21,6 +21,7 @@ local ReputationInfoLua =
 				{ Name = "threshold", Type = "number", Nilable = false },
 				{ Name = "rewardQuestID", Type = "number", Nilable = false },
 				{ Name = "hasRewardPending", Type = "bool", Nilable = false },
+				{ Name = "tooLowLevelForParagon", Type = "bool", Nilable = false },
 			},
 		},
 		{

@@ -1,0 +1,9 @@
+## Interface: 70300
+## Title: Blizzard_AlliedRacesIO
+## Notes: Hooray for new races! So neat! :3
+## Author: Blizzard Entertainment
+## Version: 1.0
+## LoadOnDemand: 1
+
+Blizzard_AlliedRacesFrameUI.xml 
+Blizzard_AlliedRacesFrameUI.lua

@@ -9,9 +9,21 @@ STYLE_CUSTOM_DISPLAY3 = 8;
 STYLE_CUSTOM_DISPLAY4 = 9;
 STYLE_NUM_CUSTOM_DISPLAY = 4;
 
+-- NOTE: annoyingly, barbershop style enum and char customization enum are different
+-- TODO: find a shared place for this with CharacterCreate.lua
+CHAR_CUSTOMIZE_SKIN_COLOR = 1;
+CHAR_CUSTOMIZE_FACE = 2;
+CHAR_CUSTOMIZE_HAIR_STYLE = 3;
+CHAR_CUSTOMIZE_HAIR_COLOR = 4;
+CHAR_CUSTOMIZE_FACIAL_HAIR = 5;
+CHAR_CUSTOMIZE_TATTOO_STYLE = 6;
+CHAR_CUSTOMIZE_HORNS = 7;
+CHAR_CUSTOMIZE_FACEWEAR = 8;
+CHAR_CUSTOMIZE_TATTOO_COLOR = 9;
+
+CHAR_CUSTOMIZE_CUSTOM_DISPLAY_FIRST = CHAR_CUSTOMIZE_TATTOO_STYLE;
+
 function BarberShop_OnLoad(self)
-	BarberShop_UpdateHairCustomization(self);
-	BarberShop_UpdateFacialHairCustomization(self);
 	self:RegisterEvent("BARBER_SHOP_APPEARANCE_APPLIED");
 	self:RegisterEvent("BARBER_SHOP_SUCCESS");
 	self:RegisterEvent("BARBER_SHOP_COST_UPDATE")
@@ -26,8 +38,8 @@ function BarberShop_OnLoad(self)
 			self.SkinColorSelector:Show();
 		end
 	end
-	
-	BarberShop_UpdateCustomDisplays(self)
+
+	BarberShop_UpdateCustomizationOptions(self);
 end
 
 function BarberShop_OnShow(self)
@@ -112,17 +124,23 @@ function BarberShop_UpdateSelector(self)
 	local name, _, _, isCurrent = GetBarberShopStyleInfo(self:GetID());
 	BarberShop_UpdateBanner(name);
 	BarberShop_SetLabelColor(self.Category, isCurrent);
-	BarberShop_UpdateCustomDisplays(self:GetParent());
+	BarberShop_UpdateCustomizationOptions(self:GetParent());
 end
 
-function BarberShop_UpdateHairCustomization(self)
-	local hairCustomization = GetHairCustomization();
-	self.HairStyleSelector.Category:SetText(_G["HAIR_"..hairCustomization.."_STYLE"]);
-	self.HairColorSelector.Category:SetText(_G["HAIR_"..hairCustomization.."_COLOR"]);
-end
+function BarberShop_UpdateCustomizationOptions(self)
+	self.HairStyleSelector.Category:SetText(GetCustomizationDetails(CHAR_CUSTOMIZE_HAIR_STYLE));
+	self.HairColorSelector.Category:SetText(GetCustomizationDetails(CHAR_CUSTOMIZE_HAIR_COLOR));
+	self.FacialHairSelector.Category:SetText(GetCustomizationDetails(CHAR_CUSTOMIZE_FACIAL_HAIR));
 
-function BarberShop_UpdateFacialHairCustomization(self)
-	self.FacialHairSelector.Category:SetText(_G["FACIAL_HAIR_"..GetFacialHairCustomization()]);
+	for i = 1, STYLE_NUM_CUSTOM_DISPLAY do
+		local barberStyle = STYLE_CUSTOM_DISPLAY1 + i - 1;
+		self.Selector[barberStyle]:SetShown(IsBarberShopStyleValid(barberStyle));
+
+		local charCustomization = CHAR_CUSTOMIZE_CUSTOM_DISPLAY_FIRST + i - 1;
+		self.Selector[barberStyle].Category:SetText(GetCustomizationDetails(charCustomization));
+	end
+
+	self:Layout();
 end
 
 function BarberShop_SetLabelColor(label, isCurrent)
@@ -137,11 +155,4 @@ function BarberShop_ResetLabelColors()
 	for i=1, #BarberShopFrame.Selector do
 		BarberShop_SetLabelColor(BarberShopFrame.Selector[i].Category, i);
 	end
-end
-
-function BarberShop_UpdateCustomDisplays(self)
-	for i = STYLE_CUSTOM_DISPLAY1, (STYLE_CUSTOM_DISPLAY1 + STYLE_NUM_CUSTOM_DISPLAY - 1) do
-		self.Selector[i]:SetShown(IsBarberShopStyleValid(i));
-	end
-	self:Layout();
 end

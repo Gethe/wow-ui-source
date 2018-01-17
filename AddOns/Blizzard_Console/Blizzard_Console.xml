@@ -79,8 +79,11 @@
 						if IsShiftKeyDown() then
 							self:Insert("\n");
 						else
-							self:GetParent():ExecuteCommand(self:GetText());
-							self:SetText("");
+							local text = self:GetText();
+							if text and #text > 0 then
+								self:GetParent():ExecuteCommand(self:GetText());
+								self:SetText("");
+							end
 						end
 					</OnEnterPressed>
 					<OnTabPressed>

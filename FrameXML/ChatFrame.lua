@@ -628,22 +628,30 @@ ICON_LIST = {
 --Links tags from Global Strings to indicies for entries in ICON_LIST. This way addons can easily replace icons
 ICON_TAG_LIST =
 {
-	[strlower(ICON_TAG_RAID_TARGET_STAR1)] = 1,
-	[strlower(ICON_TAG_RAID_TARGET_STAR2)] = 1,
-	[strlower(ICON_TAG_RAID_TARGET_CIRCLE1)] = 2,
-	[strlower(ICON_TAG_RAID_TARGET_CIRCLE2)] = 2,
-	[strlower(ICON_TAG_RAID_TARGET_DIAMOND1)] = 3,
-	[strlower(ICON_TAG_RAID_TARGET_DIAMOND2)] = 3,
-	[strlower(ICON_TAG_RAID_TARGET_TRIANGLE1)] = 4,
-	[strlower(ICON_TAG_RAID_TARGET_TRIANGLE2)] = 4,
-	[strlower(ICON_TAG_RAID_TARGET_MOON1)] = 5,
-	[strlower(ICON_TAG_RAID_TARGET_MOON2)] = 5,
-	[strlower(ICON_TAG_RAID_TARGET_SQUARE1)] = 6,
-	[strlower(ICON_TAG_RAID_TARGET_SQUARE2)] = 6,
-	[strlower(ICON_TAG_RAID_TARGET_CROSS1)] = 7,
-	[strlower(ICON_TAG_RAID_TARGET_CROSS2)] = 7,
-	[strlower(ICON_TAG_RAID_TARGET_SKULL1)] = 8,
-	[strlower(ICON_TAG_RAID_TARGET_SKULL2)] = 8,
+	 	[strlower(ICON_TAG_RAID_TARGET_STAR1)] = 1,
+ 	[strlower(ICON_TAG_RAID_TARGET_STAR2)] = 1,
+	[strlower(ICON_TAG_RAID_TARGET_STAR3)] = 1,
+ 	[strlower(ICON_TAG_RAID_TARGET_CIRCLE1)] = 2,
+ 	[strlower(ICON_TAG_RAID_TARGET_CIRCLE2)] = 2,
+	[strlower(ICON_TAG_RAID_TARGET_CIRCLE3)] = 2,
+ 	[strlower(ICON_TAG_RAID_TARGET_DIAMOND1)] = 3,
+ 	[strlower(ICON_TAG_RAID_TARGET_DIAMOND2)] = 3,
+	[strlower(ICON_TAG_RAID_TARGET_DIAMOND3)] = 3,
+ 	[strlower(ICON_TAG_RAID_TARGET_TRIANGLE1)] = 4,
+ 	[strlower(ICON_TAG_RAID_TARGET_TRIANGLE2)] = 4,
+	[strlower(ICON_TAG_RAID_TARGET_TRIANGLE3)] = 4,
+ 	[strlower(ICON_TAG_RAID_TARGET_MOON1)] = 5,
+ 	[strlower(ICON_TAG_RAID_TARGET_MOON2)] = 5,
+	[strlower(ICON_TAG_RAID_TARGET_MOON3)] = 5,
+ 	[strlower(ICON_TAG_RAID_TARGET_SQUARE1)] = 6,
+ 	[strlower(ICON_TAG_RAID_TARGET_SQUARE2)] = 6,
+	[strlower(ICON_TAG_RAID_TARGET_SQUARE3)] = 6,
+ 	[strlower(ICON_TAG_RAID_TARGET_CROSS1)] = 7,
+ 	[strlower(ICON_TAG_RAID_TARGET_CROSS2)] = 7,
+	[strlower(ICON_TAG_RAID_TARGET_CROSS3)] = 7,
+ 	[strlower(ICON_TAG_RAID_TARGET_SKULL1)] = 8,
+ 	[strlower(ICON_TAG_RAID_TARGET_SKULL2)] = 8,
+	[strlower(ICON_TAG_RAID_TARGET_SKULL3)] = 8,
 	[strlower(RAID_TARGET_1)] = 1,
 	[strlower(RAID_TARGET_2)] = 2,
 	[strlower(RAID_TARGET_3)] = 3,
@@ -1581,6 +1589,10 @@ SecureCmdList["USE_TOY"] = function(msg)
 	end
 end
 
+SecureCmdList["LOGOUT"] = function(msg)
+	Logout();
+end
+
 -- Pre-populate the secure command hash table
 for index, value in pairs(SecureCmdList) do
 	local i = 1;
@@ -1695,10 +1707,6 @@ SlashCmdList["INSPECT"] = function(msg)
 		return;
 	end
 	InspectUnit("target");
-end
-
-SlashCmdList["LOGOUT"] = function(msg)
-	Logout();
 end
 
 SlashCmdList["QUIT"] = function(msg)
@@ -2313,13 +2321,13 @@ end
 
 SlashCmdList["TABLEINSPECT"] = function(msg)
 	UIParentLoadAddOn("Blizzard_DebugTools");
-	
+
 	local focusedTable = nil;
 	if msg ~= "" and msg ~= " " then
 		local focusedFunction = loadstring(("return %s"):format(msg));
 		focusedTable = focusedFunction and focusedFunction();
 	end
-	
+
 	if focusedTable and type(focusedTable) == "table" then
 		DisplayTableInspectorWindow(focusedTable);
 	else
@@ -2415,7 +2423,7 @@ SlashCmdList["COMMENTATOR_OVERRIDE"] = function(msg)
 	if not IsAddOnLoaded("Blizzard_Commentator") then
 		return;
 	end
-	
+
 	local originalName, overrideName = msg:match("^(%S-)%s+(.+)");
 	if not originalName or not overrideName then
 		DEFAULT_CHAT_FRAME:AddMessage(ERROR_SLASH_COMMENTATOROVERRIDE, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
@@ -2424,11 +2432,11 @@ SlashCmdList["COMMENTATOR_OVERRIDE"] = function(msg)
 	end
 
 	originalName = originalName:sub(1, 1):upper() .. originalName:sub(2, -1);
-	
+
 	DEFAULT_CHAT_FRAME:AddMessage((SLASH_COMMENTATOROVERRIDE_SUCCESS):format(originalName, overrideName), YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
-	
+
 	C_Commentator.AddPlayerOverrideName(originalName, overrideName);
-	
+
 	-- Also add character name without the realm if we got CharacterName-Realm.
 	-- Prepend possible realm separators with % so they are matched literally
 	local realmSeparateMatchList = string.gsub(REALM_SEPARATORS, ".", "%%%1");
@@ -2443,23 +2451,23 @@ SlashCmdList["COMMENTATOR_NAMETEAM"] = function(msg)
 	if not IsAddOnLoaded("Blizzard_Commentator") then
 		return;
 	end
-	
+
 	local teamIndex, teamName = msg:match("^(%d+) (.+)");
 	teamIndex = tonumber(teamIndex);
-	
+
 	if not teamIndex or not teamName then
 		DEFAULT_CHAT_FRAME:AddMessage(ERROR_SLASH_COMMENTATOR_NAMETEAM, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
 		DEFAULT_CHAT_FRAME:AddMessage(ERROR_SLASH_COMMENTATOR_NAMETEAM_EXAMPLE, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
 		return;
 	end
-		
+
 	if not C_Commentator.IsSpectating() then
 		DEFAULT_CHAT_FRAME:AddMessage(CONTEXT_ERROR_SLASH_COMMENTATOR_NAMETEAM, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
 		return;
 	else
 		DEFAULT_CHAT_FRAME:AddMessage((SLASH_COMMENTATOR_NAMETEAM_SUCCESS):format(teamIndex, teamName), YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
 	end
-	
+
 	CommentatorTeamDisplay:UpdateTeamName(teamIndex, teamName);
 end
 
@@ -2467,14 +2475,14 @@ SlashCmdList["COMMENTATOR_ASSIGNPLAYER"] = function(msg)
 	if not IsAddOnLoaded("Blizzard_Commentator") then
 		return;
 	end
-	
+
 	local playerName, teamName = msg:match("^(%S-)%s+(.+)");
 	if not playerName or not teamName then
 		DEFAULT_CHAT_FRAME:AddMessage(ERROR_SLASH_COMMENTATOR_ASSIGNPLAYER, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
 		DEFAULT_CHAT_FRAME:AddMessage(ERROR_SLASH_COMMENTATOR_ASSIGNPLAYER_EXAMPLE, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
 		return;
 	end
-	
+
 	DEFAULT_CHAT_FRAME:AddMessage((SLASH_COMMENTATOR_ASSIGNPLAYER_SUCCESS):format(playerName, teamName), YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
 	CommentatorTeamDisplay:AssignPlayerToTeam(playerName, teamName);
 end
@@ -2483,7 +2491,7 @@ SlashCmdList["RESET_COMMENTATOR_SETTINGS"] = function(msg)
 	if not IsAddOnLoaded("Blizzard_Commentator") then
 		return;
 	end
-	
+
 	PvPCommentator:SetDefaultCommentatorSettings();
 end
 
@@ -2991,6 +2999,54 @@ function ChatFrame_GetMobileEmbeddedTexture(r, g, b)
 	return format("|TInterface\\ChatFrame\\UI-ChatIcon-ArmoryChat:14:14:0:0:16:16:0:16:0:16:%d:%d:%d|t", r, g, b);
 end
 
+function ChatFrame_CanChatGroupPerformExpressionExpansion(chatGroup)
+	if chatGroup == "RAID" then
+		return true;
+	end
+
+	if chatGroup == "INSTANCE_CHAT" then
+		return IsInRaid(LE_PARTY_CATEGORY_INSTANCE);
+	end
+
+	return false;
+end
+
+do
+	local seenGroups = {};
+	function ChatFrame_ReplaceIconAndGroupExpressions(message, noIconReplacement, noGroupReplacement)
+		wipe(seenGroups);
+
+		for tag in string.gmatch(message, "%b{}") do
+			local term = strlower(string.gsub(tag, "[{}]", ""));
+			if ( not noIconReplacement and ICON_TAG_LIST[term] and ICON_LIST[ICON_TAG_LIST[term]] ) then
+				message = string.gsub(message, tag, ICON_LIST[ICON_TAG_LIST[term]] .. "0|t");
+			elseif ( not noGroupReplacement and GROUP_TAG_LIST[term] ) then
+				local groupIndex = GROUP_TAG_LIST[term];
+				if not seenGroups[groupIndex] then
+					seenGroups[groupIndex] = true;
+					local groupList = "[";
+					for i=1, GetNumGroupMembers() do
+						local name, rank, subgroup, level, class, classFileName = GetRaidRosterInfo(i);
+						if ( name and subgroup == groupIndex ) then
+							local classColorTable = RAID_CLASS_COLORS[classFileName];
+							if ( classColorTable ) then
+								name = string.format("\124cff%.2x%.2x%.2x%s\124r", classColorTable.r*255, classColorTable.g*255, classColorTable.b*255, name);
+							end
+							groupList = groupList..(groupList == "[" and "" or PLAYER_LIST_DELIMITER)..name;
+						end
+					end
+					if groupList ~= "[" then
+						groupList = groupList.."]";
+						message = string.gsub(message, tag, groupList, 1);
+					end
+				end
+			end
+		end
+
+		return message;
+	end
+end
+
 function ChatFrame_MessageEventHandler(self, event, ...)
 	if ( strsub(event, 1, 8) == "CHAT_MSG" ) then
 		local arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17 = ...;
@@ -3275,28 +3331,7 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 			end
 
 			-- Search for icon links and replace them with texture links.
-			for tag in string.gmatch(arg1, "%b{}") do
-				local term = strlower(string.gsub(tag, "[{}]", ""));
-				-- If arg17 is true, don't convert to raid icons
-				if ( not arg17 and ICON_TAG_LIST[term] and ICON_LIST[ICON_TAG_LIST[term]] ) then
-					arg1 = string.gsub(arg1, tag, ICON_LIST[ICON_TAG_LIST[term]] .. "0|t");
-				elseif ( GROUP_TAG_LIST[term] ) then
-					local groupIndex = GROUP_TAG_LIST[term];
-					local groupList = "[";
-					for i=1, GetNumGroupMembers() do
-						local name, rank, subgroup, level, class, classFileName = GetRaidRosterInfo(i);
-						if ( name and subgroup == groupIndex ) then
-							local classColorTable = RAID_CLASS_COLORS[classFileName];
-							if ( classColorTable ) then
-								name = string.format("\124cff%.2x%.2x%.2x%s\124r", classColorTable.r*255, classColorTable.g*255, classColorTable.b*255, name);
-							end
-							groupList = groupList..(groupList == "[" and "" or PLAYER_LIST_DELIMITER)..name;
-						end
-					end
-					groupList = groupList.."]";
-					arg1 = string.gsub(arg1, tag, groupList);
-				end
-			end
+			arg1 = ChatFrame_ReplaceIconAndGroupExpressions(arg1, arg17, not ChatFrame_CanChatGroupPerformExpressionExpansion(chatGroup)); -- If arg17 is true, don't convert to raid icons
 
 			--Remove groups of many spaces
 			arg1 = RemoveExtraSpaces(arg1);

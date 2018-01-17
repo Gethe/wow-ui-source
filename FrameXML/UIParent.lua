@@ -1,6 +1,9 @@
 TOOLTIP_UPDATE_TIME = 0.2;
 BOSS_FRAME_CASTBAR_HEIGHT = 16;
 
+-- Mirror of the same Variable in StoreSecureUI.lua and GlueParent.lua
+WOW_GAMES_CATEGORY_ID = 33; 
+
 -- Alpha animation stuff
 FADEFRAMES = {};
 FLASHFRAMES = {};
@@ -55,6 +58,7 @@ UIPanelWindows["RaidParentFrame"] =				{ area = "left",			pushable = 1,	whileDea
 UIPanelWindows["RaidBrowserFrame"] =			{ area = "left",			pushable = 1,	};
 UIPanelWindows["DeathRecapFrame"] =				{ area = "center",			pushable = 0,	whileDead = 1, allowOtherPanels = 1};
 UIPanelWindows["WardrobeFrame"] =				{ area = "left",			pushable = 0,	width = 965 };
+UIPanelWindows["AlliedRacesFrame"] =			{ area = "left",			pushable = 1,	whileDead = 1};
 
 -- Frames NOT using the new Templates
 UIPanelWindows["WorldMapFrame"] =				{ area = "full",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
@@ -62,6 +66,7 @@ UIPanelWindows["CinematicFrame"] =				{ area = "full",			pushable = 0, 		xoffset
 UIPanelWindows["ChatConfigFrame"] =				{ area = "center",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
 UIPanelWindows["WorldStateScoreFrame"] =		{ area = "center",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
 UIPanelWindows["QuestChoiceFrame"] =			{ area = "center",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 0, allowOtherPanels = 1 };
+UIPanelWindows["WarboardQuestChoiceFrame"] =	{ area = "center",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 0, allowOtherPanels = 1 };
 UIPanelWindows["GarrisonBuildingFrame"] =		{ area = "center",			pushable = 0,		whileDead = 1, 		width = 1002, 	allowOtherPanels = 1};
 UIPanelWindows["GarrisonMissionFrame"] =		{ area = "center",			pushable = 0,		whileDead = 1, 		checkFit = 1,	allowOtherPanels = 1, extraWidth = 20,	extraHeight = 100 };
 UIPanelWindows["GarrisonShipyardFrame"] =		{ area = "center",			pushable = 0,		whileDead = 1, 		checkFit = 1,	allowOtherPanels = 1, extraWidth = 20,	extraHeight = 100 };
@@ -250,7 +255,7 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("SAVED_VARIABLES_TOO_LARGE");
 	self:RegisterEvent("AUTH_CHALLENGE_UI_INVALID");
 	self:RegisterEvent("EXPERIMENTAL_CVAR_CONFIRMATION_NEEDED");
-
+	self:RegisterEvent("BAG_OVERFLOW_WITH_FULL_INVENTORY");
 	self:RegisterEvent("LOADING_SCREEN_ENABLED");
 	self:RegisterEvent("LOADING_SCREEN_DISABLED");
 
@@ -394,6 +399,9 @@ function UIParent_OnLoad(self)
 	-- Event(s) for PVP
 	self:RegisterEvent("UPDATE_BATTLEFIELD_STATUS");
 	self:RegisterEvent("PVP_BRAWL_INFO_UPDATED");
+	
+	-- Event(s) for Allied Races
+	self:RegisterEvent("ALLIED_RACE_OPEN"); 	
 end
 
 function UIParent_OnShow(self)
@@ -426,6 +434,10 @@ function UIParentLoadAddOn(name)
 		end
 	end
 	return loaded;
+end
+
+function AlliedRaces_LoadUI()
+	UIParentLoadAddOn("Blizzard_AlliedRacesUI");
 end
 
 function AuctionFrame_LoadUI()
@@ -573,6 +585,10 @@ end
 
 function QuestChoice_LoadUI()
 	UIParentLoadAddOn("Blizzard_QuestChoice");
+end
+
+function WarboardQuestChoice_LoadUI()
+	UIParentLoadAddOn("Blizzard_WarboardUI");
 end
 
 function Store_LoadUI()
@@ -1306,6 +1322,11 @@ function UIParent_OnEvent(self, event, ...)
 				end
 			end
 		end
+		
+		local resurrectOfferer = ResurrectGetOfferer();
+		if resurrectOfferer then
+			ShowResurrectRequest(resurrectOfferer);
+		end
 
 		--Group Loot Roll Windows.
 		local pendingLootRollIDs = GetActiveLootRollIDs();
@@ -1683,7 +1704,12 @@ function UIParent_OnEvent(self, event, ...)
 		local info = ChatTypeInfo["SYSTEM"];
 		DEFAULT_CHAT_FRAME:AddMessage(BENCHMARK_TAXI_MODE_OFF, info.r, info.g, info.b, info.id);
 	elseif ( event == "LEVEL_GRANT_PROPOSED" ) then
-		StaticPopup_Show("LEVEL_GRANT_PROPOSED", arg1);
+		local isAlliedRace, hasHeritageArmorUnlocked = UnitAlliedRaceInfo("player");
+		if (isAlliedRace and not hasHeritageArmorUnlocked) then
+			StaticPopup_Show("LEVEL_GRANT_PROPOSED_ALLIED_RACE", arg1);
+		else
+			StaticPopup_Show("LEVEL_GRANT_PROPOSED", arg1);
+		end
 	elseif ( event == "CHAT_MSG_WHISPER" and arg6 == "GM" ) then	--GMChatUI
 		GMChatFrame_LoadUI(event, ...);
 	elseif ( event == "WOW_MOUSE_NOT_FOUND" ) then
@@ -1700,7 +1726,9 @@ function UIParent_OnEvent(self, event, ...)
 		StaticPopup_Show("ERR_AUTH_CHALLENGE_UI_INVALID");
 	elseif( event == "EXPERIMENTAL_CVAR_CONFIRMATION_NEEDED" ) then
 		StaticPopup_Show("EXPERIMENTAL_CVAR_WARNING");
-
+	elseif ( event == "BAG_OVERFLOW_WITH_FULL_INVENTORY") then
+		StaticPopup_Show("CLIENT_INVENTORY_FULL_OVERFLOW");
+		
 	-- Events for Archaeology
 	elseif ( event == "ARCHAEOLOGY_TOGGLE" ) then
 		ArchaeologyFrame_LoadUI();
@@ -1828,9 +1856,13 @@ function UIParent_OnEvent(self, event, ...)
 	-- Quest Choice trigger event
 
 	elseif ( event == "QUEST_CHOICE_UPDATE" ) then
-		QuestChoice_LoadUI();
-		if ( QuestChoiceFrame_Show) then
-			QuestChoiceFrame_Show();
+		local uiTextureKitID = select(4, GetQuestChoiceInfo());
+		if (uiTextureKitID and uiTextureKitID ~= 0) then
+			WarboardQuestChoice_LoadUI();
+			WarboardQuestChoiceFrame:TryShow();
+		else
+			QuestChoice_LoadUI();
+			QuestChoiceFrame:TryShow();
 		end
 	elseif ( event == "LUA_WARNING" ) then
 		HandleLuaWarning(...);
@@ -1945,6 +1977,11 @@ function UIParent_OnEvent(self, event, ...)
 		if ( ContributionCollectionUI_Hide ) then
 			ContributionCollectionUI_Hide();
 		end
+	elseif (event == "ALLIED_RACE_OPEN" ) then
+		AlliedRaces_LoadUI(); 
+		local raceID = ...; 
+		AlliedRacesFrame:LoadRaceData(raceID);
+		ShowUIPanel(AlliedRacesFrame);
 	end
 end
 
@@ -4222,7 +4259,11 @@ function RefreshDebuffs(frame, unit, numDebuffs, suffix, checkCVar)
 	end
 end
 
-function GetQuestDifficultyColor(level)
+function GetQuestDifficultyColor(level, isScaling)
+	if (isScaling) then
+		return GetScalingQuestDifficultyColor(level);
+	end
+	
 	return GetRelativeDifficultyColor(UnitLevel("player"), level);
 end
 
@@ -4241,6 +4282,22 @@ function GetRelativeDifficultyColor(unitLevel, challengeLevel)
 	elseif ( levelDiff >= -4 ) then
 		return QuestDifficultyColors["difficult"], QuestDifficultyHighlightColors["difficult"];
 	elseif ( -levelDiff <= GetQuestGreenRange() ) then
+		return QuestDifficultyColors["standard"], QuestDifficultyHighlightColors["standard"];
+	else
+		return QuestDifficultyColors["trivial"], QuestDifficultyHighlightColors["trivial"];
+	end
+end
+
+function GetScalingQuestDifficultyColor(questLevel)
+	local playerLevel = UnitLevel("player");
+	local levelDiff = questLevel - playerLevel;
+	if ( levelDiff >= 5 ) then
+		return QuestDifficultyColors["impossible"], QuestDifficultyHighlightColors["impossible"];
+	elseif ( levelDiff >= 3 ) then
+		return QuestDifficultyColors["verydifficult"], QuestDifficultyHighlightColors["verydifficult"];
+	elseif ( levelDiff >= 0 ) then
+		return QuestDifficultyColors["difficult"], QuestDifficultyHighlightColors["difficult"];
+	elseif ( -levelDiff <= GetScalingQuestGreenRange() ) then
 		return QuestDifficultyColors["standard"], QuestDifficultyHighlightColors["standard"];
 	else
 		return QuestDifficultyColors["trivial"], QuestDifficultyHighlightColors["trivial"];
@@ -4914,6 +4971,9 @@ function ShakeFrameRandom(frame, magnitude, duration, frequency)
 end
 
 function ShakeFrame(frame, shake, maximumDuration, frequency)
+	if ( frame.shakeTicker and not frame.shakeTicker:IsCancelled() )  then
+		return;
+	end
 	local point, relativeFrame, relativePoint, x, y = frame:GetPoint();
 	local shakeIndex = 1;
 	local endTime = GetTime() + maximumDuration;
@@ -4942,4 +5002,22 @@ function GetColorForCurrencyReward(currencyID, rewardQuantity, defaultColor)
 	else
 		return HIGHLIGHT_FONT_COLOR;
 	end
+end
+
+function GetSortedSelfResurrectOptions()
+	local options = C_DeathInfo.GetSelfResurrectOptions();
+	if ( not options ) then
+		return nil;
+	end
+	table.sort(options, function(a, b)
+		if ( a.canUse ~= b.canUse ) then
+			return a.canUse;
+		end
+		if ( a.isLimited ~= b.isLimited ) then
+			return not a.isLimited;
+		end
+		-- lowest priority is first
+		return a.priority < b.priority end
+	);
+	return options;
 end

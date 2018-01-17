@@ -118,7 +118,7 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="BACKGROUND" texturesublevel="1">
+			<Layer level="BACKGROUND" textureSubLevel="1">
 				<Texture parentKey="Icon" alpha="0.5" desaturated="true">
 					<Size x="62" y="62"/>
 					<Anchors>

@@ -67,7 +67,7 @@
 		CommentatorCooldownDisplayFrame:MarkDirty();
 		CommentatorTeamDisplay:RefreshPlayerNamesAndScores();
 	</Binding>
-	<Binding name="TOGGLE_CASTER_COOLDOWN_DISPLAY" category="BINDING_HEADER_COMMENTATOR">
+	<Binding name="TOGGLE_CASTER_COOLDOWN_DISPLAY" header="COMMENTATORMISC" category="BINDING_HEADER_COMMENTATOR">
 		PvPCommentator:ToggleCommentatorCooldownDisplay();
 	</Binding>
 	<Binding name="CHECK_FOR_SCOREBOARD" category="BINDING_HEADER_COMMENTATOR">
@@ -75,6 +75,9 @@
 	</Binding>
 	<Binding name="TOGGLE_FRAME_LOCK" category="BINDING_HEADER_COMMENTATOR">
 		PvPCommentator:ToggleFrameLock();
+	</Binding>
+	<Binding name="TOGGLE_NAMEPLATE_SIZE" category="BINDING_HEADER_COMMENTATOR">
+		PvPCommentator:ToggleNameplateSizeCVars();
 	</Binding>
 
 

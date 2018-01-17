@@ -1047,6 +1047,13 @@
 						<OnShow function="StoreCardDetail_SetLayerAboveModelScene"/>
 					</Scripts>
 				</Button>
+				<ModelScene parentKey="ModelScene" useParentLevel="true" hidden="true" inherits="ReversedLightingModelSceneMixinTemplate">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="8" y="-8" />
+						<Anchor point="BOTTOMRIGHT" x="-8" y="8" />
+					</Anchors>
+					<ViewInsets left="20" right="20" top="20" bottom="160"/>
+				</ModelScene>
 				<Frame parentKey="DescriptionBulletPointContainer" inherits="ManagedVerticalLayoutFrameTemplate">
 					<KeyValues>
 						<KeyValue key="fixedWidth" value="250" type="number"/>
@@ -1500,7 +1507,24 @@
 				</Layer>
 				<Layer level="OVERLAY">
 					<Texture parentKey="Icon">
-						<Size x="64" y="64"/>
+						<Size x="22" y="22"/>
+						<Anchors>
+							<Anchor point="CENTER" relativeKey="$parent" relativePoint="LEFT" x="15" y="2"/>
+						</Anchors>
+					</Texture>
+					<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+						<Size x="22" y="22"/>
+						<Anchors>
+							<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="CENTER"/>
+						</Anchors>
+						<MaskedTextures>
+							<MaskedTexture childKey="Icon"/>
+						</MaskedTextures>
+					</MaskTexture>
+				</Layer>
+				<Layer level="OVERLAY" textureSubLevel="1">
+					<Texture parentKey="IconFrame" atlas="category-icon-ring">
+						<Size x="37" y="37"/>
 						<Anchors>
 							<Anchor point="CENTER" relativeKey="$parent" relativePoint="LEFT" x="15" y="2"/>
 						</Anchors>
@@ -1596,6 +1620,21 @@
 			<DisabledFont style="GameFontDisableTiny2"/>
 			<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
 		</Button>
+		<Frame name="StoreVASRaceFactionIconFrameTemplate" parentArray="Icons" virtual="true">
+			<Size x="26" y="26"/>
+			<Layers>
+				<Layer level="OVERLAY">
+					<Texture parentKey="Border" atlas="vas-receipt-icon-characterborder" useAtlasSize="true">
+						<Anchors>
+							<Anchor point="CENTER"/>
+						</Anchors>
+					</Texture>
+				</Layer>
+				<Layer level="ARTWORK">
+					<Texture parentKey="Icon" setAllPoints="true"/>
+				</Layer>
+			</Layers>
+		</Frame>
 		<Frame name="StoreStateDriverFrame">
 			<Animations>
 				<AnimationGroup parentKey="NoticeTextTimer">
@@ -1680,7 +1719,10 @@
 		<Frame name="StoreDialog" parent="UIParent" frameStrata="DIALOG" toplevel="true" enableMouse="true" hidden="true">
 			<Size x="434" y="100" />
 			<!-- Anchors are set in lua -->
-			<Backdrop edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+				<BackgroundInsets>
+					<AbsInset left="11" right="12" top="11" bottom="11"/>
+				</BackgroundInsets>
 				<TileSize>
 					<AbsValue val="32" />
 				</TileSize>
@@ -1689,18 +1731,9 @@
 				</EdgeSize>
 			</Backdrop>
 			<Layers>
-				<Layer level="BACKGROUND">
-					<Texture>
-						<Anchors>
-							<Anchor point="TOPLEFT" x="5" y="-5" />
-							<Anchor point="BOTTOMRIGHT" x="-5" y="5" />
-						</Anchors>
-						<Color r="0" g="0" b="0" a="1" />
-					</Texture>
-				</Layer>
 				<Layer level="ARTWORK">
 					<FontString parentKey="Description" inherits="GameFontNormalMed2">
-						<Size x="400" y="0"/>
+						<Size x="380" y="0"/>
 						<Anchors>
 							<Anchor point="TOP" x="0" y="-26"/>
 						</Anchors>
@@ -2122,7 +2155,7 @@
 				<OnMouseWheel function="StoreFrame_OnMouseWheel" />
 			</Scripts>
 		</Frame>
-		<Frame name="StoreConfirmationFrame" frameStrata="FULLSCREEN_DIALOG" topLevel="true" parent="StoreFrame" inherits="GoldBorderFrameTemplate" clampedToScreen="true" hidden="true">
+		<Frame name="StoreConfirmationFrame" frameStrata="FULLSCREEN_DIALOG" toplevel="true" parent="StoreFrame" inherits="GoldBorderFrameTemplate" clampedToScreen="true" hidden="true">
 			<Size x="403" y="556" />
 			<Layers>
 				<Layer level="BACKGROUND">
@@ -2277,7 +2310,7 @@
 							end
 						</OnHyperlinkClick>
 					</Scripts>
-					<FontString inherits="GameFontNormalSmall" />
+					<FontString inherits="GameFontNormalSmall" justifyH="LEFT" />
 				</SimpleHTML>
 				<CheckButton parentKey="LicenseAcceptButton" inherits="StoreCheckButtonTemplate">
 					<Anchors>
@@ -2298,7 +2331,7 @@
 				<OnEvent function="StoreConfirmationFrame_OnEvent" />
 			</Scripts>
 		</Frame>
-		<Frame name="StoreVASValidationFrame" frameStrata="FULLSCREEN_DIALOG" topLevel="true" parent="StoreFrame" inherits="GoldBorderFrameTemplate" hidden="true">
+		<Frame name="StoreVASValidationFrame" frameStrata="FULLSCREEN_DIALOG" toplevel="true" parent="StoreFrame" inherits="GoldBorderFrameTemplate" hidden="true">
 			<Size x="403" y="626" />
 			<Layers>
 				<Layer level="BACKGROUND">
@@ -2397,7 +2430,7 @@
 							end
 						</OnHyperlinkClick>
 					</Scripts>
-					<FontString inherits="GameFontBlackSmall2" />
+					<FontString inherits="GameFontBlackSmall2" justifyH="LEFT" />
 				</SimpleHTML>
 				<Frame parentKey="CharacterSelectionFrame" useParentLevel="true">
 					<Anchors>
@@ -2406,7 +2439,7 @@
 					</Anchors>
 					<Layers>
 						<Layer level="ARTWORK" textureSubLevel="1">
-							<Texture parentKey="SelectedCharacterFrame" atlas="vas-receipt-selectedcharbg" useatlassize="true">
+							<Texture parentKey="SelectedCharacterFrame" atlas="vas-receipt-selectedcharbg" useAtlasSize="true">
 								<Anchors>
 									<Anchor point="TOP" x="0" y="-170" />
 								</Anchors>
@@ -2444,6 +2477,13 @@
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.SelectedCharacterFrame" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
 							</Anchors>
+							<Frames>
+								<Frame parentKey="FromIcon" inherits="StoreVASRaceFactionIconFrameTemplate">
+									<Anchors>
+										<Anchor point="LEFT" x="54" y="0"/>
+									</Anchors>
+								</Frame>
+							</Frames>
 							<Layers>
 								<Layer level="BACKGROUND">
 									<Texture atlas="vas-receipt-greenbg" useAtlasSize="true">
@@ -2453,18 +2493,23 @@
 									</Texture>
 								</Layer>
 								<Layer level="ARTWORK">
-									<Texture atlas="vas-receipt-icon-horde" useAtlasSize="true" parentKey="FromTex" parentArray="Textures" hidden="true">
+									<Texture parentKey="ArrowTex" atlas="vas-receipt-brownarrow" useAtlasSize="true" hidden="true">
 										<Anchors>
-											<Anchor point="LEFT"/>
+											<Anchor point="LEFT" relativeKey="$parent.FromIcon" relativePoint="RIGHT" x="4" y="0"/>
 										</Anchors>
 									</Texture>
-									<Texture atlas="vas-receipt-brownarrow" useAtlasSize="true" parentArray="Textures" hidden="true">
+									<FontString parentKey="ViewRaces" inherits="GameFontBlackSmall" justifyH="CENTER" justifyV="CENTER">
+										<Size x="90" y="26"/>
 										<Anchors>
-											<Anchor point="LEFT" relativeKey="$parent.FromTex" relativePoint="RIGHT" x="4" y="0"/>
+											<Anchor point="LEFT" relativeKey="$parent.ArrowTex" relativePoint="RIGHT" x="34" y="0"/>
 										</Anchors>
-									</Texture>
+									</FontString>
 								</Layer>
 							</Layers>
+							<Scripts>
+								<OnEnter function="VASCharacterSelectionChangeIconFrame_OnEnter"/>
+								<OnLeave function="VASCharacterSelectionChangeIconFrame_OnLeave"/>
+							</Scripts>
 						</Frame>
 						<Frame parentKey="RealmSelector" inherits="StoreDropDownMenuTemplate" enableMouse="true">
 							<Size x="150" y="22"/>
@@ -2688,6 +2733,18 @@
 									</FontString>
 								</Layer>
 							</Layers>
+							<Frames>
+								<Frame parentKey="LabelMouseOver" enableMouse="true">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.Label" relativePoint="TOPLEFT"/>
+										<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Label" relativePoint="BOTTOMRIGHT"/>
+									</Anchors>
+									<Scripts>
+										<OnEnter function="VASCharacterSelectionChangeIconFrame_OnEnter"/>
+										<OnLeave function="VASCharacterSelectionChangeIconFrame_OnLeave"/>
+									</Scripts>
+								</Frame>
+							</Frames>
 							<Scripts>
 								<OnClick function="TransferFactionCheckbox_OnClick"/>
 							</Scripts>
@@ -2736,7 +2793,7 @@
 				<OnEvent function="StoreVASValidationFrame_OnEvent"/>
 			</Scripts>
 		</Frame>
-		<Frame name="StoreTooltip" inherits="TooltipBorderedFrameTemplate" frameStrata="TOOLTIP" topLevel="true" parent="StoreFrame" clampedToScreen="true" hidden="true">
+		<Frame name="StoreTooltip" inherits="TooltipBorderedFrameTemplate" frameStrata="TOOLTIP" toplevel="true" parent="StoreFrame" clampedToScreen="true" hidden="true">
 			<Size x="0" y="200" />
 			<Layers>
 				<Layer level="ARTWORK">

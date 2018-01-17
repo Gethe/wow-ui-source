@@ -15,6 +15,7 @@ Blizzard_APIDocumentation.lua
 # Start documentation files here
 SharedTypes.lua
 ActionBarFrameLua.lua
+AlliedRacesFrame.lua
 ArtifactRelicForgeUILua.lua
 ArtifactUILua.lua
 CalendarLua.lua
@@ -24,6 +25,7 @@ CommentatorFrameLua.lua
 ConfigurationWarningsLua.lua
 ConsoleLua.lua
 ContributionCollectorLua.lua
+DeathInfoLua.lua
 EncounterJournalLua.lua
 EquipmentManagerLua.lua
 ExpansionLua.lua

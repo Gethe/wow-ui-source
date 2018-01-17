@@ -19,10 +19,6 @@
 		<Size x="64" y="27"/>
 		<TexCoords left="0.00000000" right="1.00000000" top="0.16601563" bottom="0.21875000"/>
 	</Texture>
-	<Texture name="_PaperHeader-SelectUp-Mid" file="Interface\EncounterJournal\UI-EncounterJournalTextures_Tile" virtual="true" horizTile="true" >
-		<Size x="64" y="29"/>
-		<TexCoords left="0.00000000" right="1.00000000" top="0.22265625" bottom="0.27929688"/>
-	</Texture>
 	<Texture name="_PaperHeader-UnSelectDown-Mid" file="Interface\EncounterJournal\UI-EncounterJournalTextures_Tile" virtual="true" horizTile="true" >
 		<Size x="64" y="29"/>
 		<TexCoords left="0.00000000" right="1.00000000" top="0.28320313" bottom="0.33984375"/>
@@ -62,10 +58,6 @@
 		<Size x="20" y="20"/>
 		<TexCoords left="0.00195313" right="0.04101563" top="0.00097656" bottom="0.02050781"/>
 	</Texture>
-	<Texture name="UI-EJ-AbilityTextBottomBorder" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-		<Size x="243" y="9"/>
-		<TexCoords left="0.04492188" right="0.51953125" top="0.00097656" bottom="0.00976563"/>
-	</Texture>
 	<Texture name="UI-EJ-DungeonGridTab-SelectedGlow" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
 		<Size x="64" y="15"/>
 		<TexCoords left="0.52343750" right="0.64843750" top="0.00097656" bottom="0.01562500"/>
@@ -77,10 +69,6 @@
 	<Texture name="UI-EJ-ReturnToDefault" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
 		<Size x="21" y="20"/>
 		<TexCoords left="0.90625000" right="0.94726563" top="0.00097656" bottom="0.02050781"/>
-	</Texture>
-	<Texture name="UI-EJ-AbilityTextBG" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-		<Size x="256" y="80"/>
-		<TexCoords left="0.00195313" right="0.50195313" top="0.02246094" bottom="0.10058594"/>
 	</Texture>
 	<Texture name="UI-EJ-BossModelButton" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
 		<Size x="64" y="61"/>
@@ -214,10 +202,6 @@
 		<Size x="62" y="61"/>
 		<TexCoords left="0.81445313" right="0.93554688" top="0.33300781" bottom="0.39257813"/>
 	</Texture>
-	<Texture name="UI-EJ-PaperHeader-SelectUp-Left" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
-		<Size x="64" y="29"/>
-		<TexCoords left="0.81445313" right="0.93945313" top="0.39453125" bottom="0.42285156"/>
-	</Texture>
 	<Texture name="UI-EJ-DungeonButton-Up" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
 		<Size x="174" y="96"/>
 		<TexCoords left="0.00195313" right="0.34179688" top="0.42871094" bottom="0.52246094"/>
@@ -341,10 +325,6 @@
 	<Texture name="UI-EJ-Tab-AbilitiesIcon-UnSelected" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true">
 		<Size x="48" y="43"/>
 		<TexCoords left="0.904296875" right="0.99609375" top="0.70703125" bottom="0.748046875"/>
-	</Texture>
-	<Texture name="UI-EJ-Bullet" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true">
-		<Size x="13" y="13"/>
-		<TexCoords left="0.974609375" right="1.0" top="0.7509765625" bottom="0.763671875"/>
 	</Texture>
 	<Texture name="UI-EJ-Header-Overview" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true">
 		<Size x="327" y="30"/>
@@ -636,7 +616,7 @@
 	<Button name="EncounterCreatureButtonTemplate" motionScriptsWhileDisabled="true" virtual="true" hidden="true">
 		<Size x="64" y="61"/>
 		<Layers>
-			<Layer level="BACKGROUND" TextureSubLevel="6">
+			<Layer level="BACKGROUND" textureSubLevel="6">
 				<Texture name="$parentCreature" parentKey="creature">
 					<Size x="40" y="40"/>
 					<Anchors>
@@ -691,7 +671,7 @@
 					<Anchor point="TOPLEFT" x="-4" y="13"/>
 				</Anchors>
 				<Layers>
-					<Layer level="OVERLAY" TextureSubLevel="6">
+					<Layer level="OVERLAY" textureSubLevel="6">
 						<Texture name="$parentCreature" file="Interface\EncounterJournal\UI-EJ-BOSS-Default" parentKey="creature">
 							<Size x="128" y="64"/>
 							<Anchors>
@@ -818,7 +798,7 @@
 		<Size x="115" y="15"/>
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture parentKey="Bullet" inherits="UI-EJ-Bullet">
+				<Texture parentKey="Bullet" inherits="UI-PaperOverlay-Bullet">
 					<Anchors>
 						<Anchor point="TOPLEFT"/>
 					</Anchors>
@@ -894,12 +874,12 @@
 						</FontString>
 					</Layer>
 					<Layer level="BACKGROUND">
-						<Texture name="$parentELeftUp" inherits="UI-EJ-PaperHeader-SelectUp-Left" parentKey="eLeftUp" hidden="true">
+						<Texture name="$parentELeftUp" inherits="UI-PaperOverlay-PaperHeader-SelectUp-Left" parentKey="eLeftUp" hidden="true">
 							<Anchors>
 								<Anchor point="LEFT" x="-1" y="-1"/>
 							</Anchors>
 						</Texture>
-						<Texture name="$parentERightUp" inherits="UI-EJ-PaperHeader-SelectUp-Right" parentKey="eRightUp" hidden="true">
+						<Texture name="$parentERightUp" inherits="UI-PaperOverlay-PaperHeader-SelectUp-Right" parentKey="eRightUp" hidden="true">
 							<Anchors>
 								<Anchor point="RIGHT" x="3" y="-1"/>
 							</Anchors>
@@ -936,7 +916,7 @@
 						</Texture>
 					</Layer>
 					<Layer level="BACKGROUND" textureSubLevel="-2">
-						<Texture name="$parentEMidUp" inherits="_PaperHeader-SelectUp-Mid" parentKey="eMidUp" hidden="true">
+						<Texture name="$parentEMidUp" inherits="UI-PaperOverlay-PaperHeader-SelectUp-Mid" parentKey="eMidUp" hidden="true">
 							<Anchors>
 								<Anchor point="LEFT" relativeTo="$parentELeftUp" relativePoint="RIGHT" x="-32" y="0"/>
 								<Anchor point="RIGHT" relativeTo="$parentERightUp" relativePoint="LEFT" x="32" y="0"/>
@@ -1007,22 +987,22 @@
 							</Layer>
 						</Layers>
 					</Frame>
-					<Frame name="$parentIcon1" inherits="EncounterSectionIconTemplate" parentKey="icon1">
+					<Frame name="$parentIcon1" inherits="EncounterSectionIconTemplate" parentKey="icon1" parentArray="icons">
 						<Anchors>
 							<Anchor point="RIGHT" x="5" y="0"/>
 						</Anchors>
 					</Frame>
-					<Frame name="$parentIcon2" inherits="EncounterSectionIconTemplate" parentKey="icon2">
+					<Frame name="$parentIcon2" inherits="EncounterSectionIconTemplate" parentKey="icon2" parentArray="icons">
 						<Anchors>
 							<Anchor point="RIGHT" relativeTo="$parentIcon1" relativePoint="LEFT" x="10" y="0"/>
 						</Anchors>
 					</Frame>
-					<Frame name="$parentIcon3" inherits="EncounterSectionIconTemplate" parentKey="icon3">
+					<Frame name="$parentIcon3" inherits="EncounterSectionIconTemplate" parentKey="icon3" parentArray="icons">
 						<Anchors>
 							<Anchor point="RIGHT" relativeTo="$parentIcon2" relativePoint="LEFT" x="10" y="0"/>
 						</Anchors>
 					</Frame>
-					<Frame name="$parentIcon4" inherits="EncounterSectionIconTemplate" parentKey="icon4">
+					<Frame name="$parentIcon4" inherits="EncounterSectionIconTemplate" parentKey="icon4" parentArray="icons">
 						<Anchors>
 							<Anchor point="RIGHT" relativeTo="$parentIcon3" relativePoint="LEFT" x="19" y="0"/>
 						</Anchors>
@@ -1149,14 +1129,14 @@
 				</FontString>
 			</Layer>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentDescriptionBG" inherits="UI-EJ-AbilityTextBG" parentKey="descriptionBG">
+				<Texture name="$parentDescriptionBG" inherits="UI-PaperOverlay-AbilityTextBG" parentKey="descriptionBG">
 					<Size x="12" y="12"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentDescription" x="-9" y="12"/>
 						<Anchor point="BOTTOMRIGHT" relativeTo="$parentDescription" x="9" y="-11"/>
 					</Anchors>
 				</Texture>
-				<Texture inherits="UI-EJ-AbilityTextBottomBorder" parentKey="descriptionBGBottom">
+				<Texture inherits="UI-PaperOverlay-AbilityTextBottomBorder" parentKey="descriptionBGBottom">
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentDescriptionBG" relativePoint="BOTTOMLEFT" x="0" y="0"/>
 						<Anchor point="RIGHT" relativeTo="$parentDescriptionBG" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
@@ -2663,7 +2643,7 @@
 									</OnShow>
 								</Scripts>
 							</ScrollFrame>
-							<PlayerModel name="$parentModelFrame" parentKey="model" inherits="ModelTemplate" >
+							<ModelScene name="$parentModelFrame" parentKey="model" inherits="ModelSceneMixinTemplate">
 								<Size x="390" y="423"/>
 								<Anchors>
 									<Anchor point="BOTTOMRIGHT" x="-3" y="1"/>
@@ -2733,13 +2713,11 @@
 										EncounterJournal.encounter.info.rightShadow:Hide();
 										EncounterJournal.encounter.info.difficulty:Hide();
 									</OnShow>
-									<OnLoad>
-										Model_OnLoad(self);
-										self:SetCamDistanceScale(1.0);
+									<OnLoad inherit="append">
 										self:GetParent().imageTitle = self.imageTitle;
 									</OnLoad>
 								</Scripts>
-							</PlayerModel>
+							</ModelScene>
 							<Button name="$parentCreatureButton1" inherits="EncounterCreatureButtonTemplate" parentArray="creatureButtons">
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeTo="$parentModelFrame" x="3" y="-35"/>

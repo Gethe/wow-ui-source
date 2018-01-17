@@ -816,6 +816,19 @@ function CreateAtlasMarkup(atlasName, height, width, offsetX, offsetY)
 	);
 end
 
+function SetupTextureKits(textureKitID, frame, regions)
+	local textureKit = GetUITextureKitInfo(textureKitID);
+	if (not textureKit) then
+		return;
+	end
+
+	for region, fmt in pairs(regions) do
+		if (frame[region]) then
+			frame[region]:SetAtlas(fmt:format(textureKit));
+		end
+	end
+end
+
 CallbackRegistryBaseMixin = {};
 
 function CallbackRegistryBaseMixin:OnLoad()

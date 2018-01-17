@@ -11,37 +11,29 @@ end
 setfenv(1, tbl);
 ----------------
 
+Import("C_CharacterServices");
 Import("C_SharedCharacterServices");
 Import("pairs");
 Import("Enum");
 
-local function HasRequiredUpgradeProduct()
-	local upgrades = C_SharedCharacterServices.GetUpgradeDistributions();
-	local hasBoost = false;
-	local useFreeBoost = false;
-	local requiredProduct = Enum.BattlepayBoostProduct.Level100Boost;
-
-	for id, data in pairs(upgrades) do
-		if id == requiredProduct then
-			hasBoost = hasBoost or (data.numPaid) > 0 or (data.numFree > 0);
-			useFreeBoost = useFreeBoost or (data.numFree > 0);
-		end
-	end
-
-	return requiredProduct, hasBoost, useFreeBoost;
-end
-
-local function ClassTrialDoCharacterUpgrade(guid, confirmed)
-	local productID, hasBoost, useFreeBoost = HasRequiredUpgradeProduct();
-
-	if hasBoost then
+local function ClassTrialDoCharacterUpgrade(guid, boostType, confirmed)
+	local upgradeDistributions = C_SharedCharacterServices.GetUpgradeDistributions();
+	if upgradeDistributions[boostType] and upgradeDistributions[boostType].amount >= 1 then
 		if confirmed then
-			C_SharedCharacterServices.AssignUpgradeDistribution(guid, 0, 0, 0, useFreeBoost, productID);
+			if boostType == C_CharacterServices.GetActiveClassTrialBoostType() then
+				C_CharacterServices.AssignUpgradeDistribution(guid, 0, 0, 0, boostType);
+			else
+				Outbound.ShowUpgradeLogoutConfirmation(boostType);
+			end
 		else
-			Outbound.ShowUpgradeConfirmation();
+			if boostType == C_CharacterServices.GetActiveClassTrialBoostType() then
+				Outbound.ShowUpgradeConfirmation(guid, boostType);
+			else
+				Outbound.ShowUpgradeLogoutConfirmation(boostType);
+			end
 		end
 	else
-		Outbound.ShowStoreServices();
+		Outbound.ShowStoreServices(guid, boostType);
 	end
 end
 
@@ -58,18 +50,17 @@ function ClassTrialSecureFrameMixin:OnEvent(event, ...)
 end
 
 function ClassTrialSecureFrameMixin:OnAttributeChanged(name, value)
-	local guid = value;
+	local data = value;
 
 	if (name == "upgradecharacter") then
-		ClassTrialDoCharacterUpgrade(guid, false);
+		ClassTrialDoCharacterUpgrade(data.guid, data.boostType, false);
 	elseif name == "upgradecharacter-confirm" then
-		ClassTrialDoCharacterUpgrade(guid, true);
+		ClassTrialDoCharacterUpgrade(data.guid, data.boostType, true);
 	elseif name == "updateboostpurchasebutton" then
 		self:OutboundUpdateBoost();
 	end
 end
 
 function ClassTrialSecureFrameMixin:OutboundUpdateBoost()
-	local _, hasBoost = HasRequiredUpgradeProduct();
-	Outbound.SetClassTrialHasAvailableBoost(hasBoost);
+	Outbound.SetClassTrialHasAvailableBoost(C_CharacterServices.HasRequiredBoostForClassTrial());
 end

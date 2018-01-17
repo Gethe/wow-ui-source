@@ -376,6 +376,17 @@ local function QueueStatus_GetAllRelevantLFG(category, queuedList)
 	return queuedList;
 end
 
+local function GetDisplayNameFromCategory(category)
+	if (category == LE_LFG_CATEGORY_BATTLEFIELD) then
+		local brawlInfo = C_PvP.GetBrawlInfo();
+		if (brawlInfo and brawlInfo.active and brawlInfo.name) then
+			return brawlInfo.name;
+		end
+	end
+
+	return LFG_CATEGORY_NAMES[category];
+end
+
 function QueueStatusEntry_SetUpLFG(entry, category)
 	--Figure out which one we're going to have as primary
 	local activeIndex = nil;
@@ -438,20 +449,20 @@ function QueueStatusEntry_SetUpLFG(entry, category)
 		end
 		
 		if ( category == LE_LFG_CATEGORY_WORLDPVP ) then
-			QueueStatusEntry_SetMinimalDisplay(entry, LFG_CATEGORY_NAMES[category], QUEUED_STATUS_IN_PROGRESS, subTitle, extraText);
+			QueueStatusEntry_SetMinimalDisplay(entry, GetDisplayNameFromCategory(category), QUEUED_STATUS_IN_PROGRESS, subTitle, extraText);
 		else
-			QueueStatusEntry_SetFullDisplay(entry, LFG_CATEGORY_NAMES[category], queuedTime, myWait, tank, healer, dps, totalTanks, totalHealers, totalDPS, tankNeeds, healerNeeds, dpsNeeds, subTitle, extraText);
+			QueueStatusEntry_SetFullDisplay(entry, GetDisplayNameFromCategory(category), queuedTime, myWait, tank, healer, dps, totalTanks, totalHealers, totalDPS, tankNeeds, healerNeeds, dpsNeeds, subTitle, extraText);
 		end
 	elseif ( mode == "proposal" ) then
-		QueueStatusEntry_SetMinimalDisplay(entry, LFG_CATEGORY_NAMES[category], QUEUED_STATUS_PROPOSAL, subTitle, extraText);
+		QueueStatusEntry_SetMinimalDisplay(entry, GetDisplayNameFromCategory(category), QUEUED_STATUS_PROPOSAL, subTitle, extraText);
 	elseif ( mode == "listed" ) then
-		QueueStatusEntry_SetMinimalDisplay(entry, LFG_CATEGORY_NAMES[category], QUEUED_STATUS_LISTED, subTitle, extraText);
+		QueueStatusEntry_SetMinimalDisplay(entry, GetDisplayNameFromCategory(category), QUEUED_STATUS_LISTED, subTitle, extraText);
 	elseif ( mode == "suspended" ) then
-		QueueStatusEntry_SetMinimalDisplay(entry, LFG_CATEGORY_NAMES[category], QUEUED_STATUS_SUSPENDED, subTitle, extraText);
+		QueueStatusEntry_SetMinimalDisplay(entry, GetDisplayNameFromCategory(category), QUEUED_STATUS_SUSPENDED, subTitle, extraText);
 	elseif ( mode == "rolecheck" ) then
-		QueueStatusEntry_SetMinimalDisplay(entry, LFG_CATEGORY_NAMES[category], QUEUED_STATUS_ROLE_CHECK_IN_PROGRESS, subTitle, extraText);
+		QueueStatusEntry_SetMinimalDisplay(entry, GetDisplayNameFromCategory(category), QUEUED_STATUS_ROLE_CHECK_IN_PROGRESS, subTitle, extraText);
 	elseif ( mode == "lfgparty" or mode == "abandonedInDungeon" ) then
-		local title = LFG_CATEGORY_NAMES[category];
+		local title;
 		if (C_PvP.IsInBrawl()) then
 			local brawlInfo = C_PvP.GetBrawlInfo();
 			if (brawlInfo and brawlInfo.active and brawlInfo.longDescription) then
@@ -462,10 +473,12 @@ function QueueStatusEntry_SetUpLFG(entry, category)
 					subtitle = brawlInfo.longDescription;
 				end
 			end
+		else
+			title = GetDisplayNameFromCategory(category);
 		end
 		QueueStatusEntry_SetMinimalDisplay(entry, title, QUEUED_STATUS_IN_PROGRESS, subTitle, extraText);
 	else
-		QueueStatusEntry_SetMinimalDisplay(entry, LFG_CATEGORY_NAMES[category], QUEUED_STATUS_UNKNOWN, subTitle, extraText);
+		QueueStatusEntry_SetMinimalDisplay(entry, GetDisplayNameFromCategory(category), QUEUED_STATUS_UNKNOWN, subTitle, extraText);
 	end
 end
 
@@ -946,7 +959,7 @@ function QueueStatusDropDown_AddLFGButtons(info, category)
 		end
 	end
 
-	local name = LFG_CATEGORY_NAMES[category];
+	local name = GetDisplayNameFromCategory(category);
 	if ( IsLFGModeActive(category) ) then
 		name = "|cff19ff19"..name.."|r";
 	end

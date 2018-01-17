@@ -26,9 +26,6 @@ function PromotionFrame_AwaitingPromotion()
 		--We received this info earlier, just display it
 		PromotionFrame_ReceivePromotion(PromotionFrame, unpack(DELAYED_PROMO_INFO));
 		DELAYED_PROMO_INFO = nil;
-	elseif ( self.receivingMsg and IsTrialAccount() and not HasShownTrialPopUp() ) then
-		--We haven't received any info, but we want to wait until we do.
-		PromotionAwaitingFrame:Show();
 	end
 end
 

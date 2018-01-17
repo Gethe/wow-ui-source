@@ -387,7 +387,7 @@ end
 function UpdateArenaEnemyBackground(force)
 	if ( (SHOW_PARTY_BACKGROUND == "1") or force ) then
 		ArenaEnemyBackground:Show();
-		local numOpps = GetNumArenaOpponents();
+		local numOpps = min(GetNumArenaOpponents(), MAX_ARENA_ENEMIES);
 		if ( numOpps > 0 ) then
 			ArenaEnemyBackground:SetPoint("BOTTOMLEFT", "ArenaEnemyFrame"..numOpps.."PetFrame", "BOTTOMLEFT", -15, -10);
 		else

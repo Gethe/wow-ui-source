@@ -209,6 +209,9 @@ function UpdateMicroButtons()
 	if ( IsVeteranTrialAccount() ) then
 		StoreMicroButton.disabledTooltip = ERR_RESTRICTED_ACCOUNT_TRIAL;
 		StoreMicroButton:Disable();
+	elseif ( IsTrialAccount() and not C_StorePublic.DoesGroupHavePurchaseableProducts(WOW_GAMES_CATEGORY_ID) ) then
+		StoreMicroButton.disabledTooltip = ERR_RESTRICTED_ACCOUNT_TRIAL;
+		StoreMicroButton:Disable();
 	elseif ( C_StorePublic.IsDisabledByParentalControls() ) then
 		StoreMicroButton.disabledTooltip = BLIZZARD_STORE_ERROR_PARENTAL_CONTROLS;
 		StoreMicroButton:Disable();
@@ -236,6 +239,12 @@ end
 function MicroButtonPulseStop(self)
 	UIFrameFlashStop(self.Flash);
 	g_flashingMicroButtons[self] = nil;
+end
+
+function MicroButton_KioskModeDisable(self)
+	if (IsKioskModeEnabled()) then
+		self:Disable();
+	end
 end
 
 function AchievementMicroButton_OnEvent(self, event, ...)
@@ -483,13 +492,14 @@ do
 
 		local numMountsNeedingFanfare = C_MountJournal.GetNumMountsNeedingFanfare();
 		local numPetsNeedingFanfare = C_PetJournal.GetNumPetsNeedingFanfare();
-		if numMountsNeedingFanfare > 0 or numPetsNeedingFanfare > 0 then
-			if MainMenuMicroButton_ShowAlert(CollectionsMicroButtonAlert, numMountsNeedingFanfare + numPetsNeedingFanfare > 1 and COLLECTION_UNOPENED_PLURAL or COLLECTION_UNOPENED_SINGULAR, LE_FRAME_TUTORIAL_WRAPPED_COLLECTION_ITEMS) then
+		if numMountsNeedingFanfare > self.lastNumMountsNeedingFanfare or numPetsNeedingFanfare > self.lastNumPetsNeedingFanfare then
+			if MainMenuMicroButton_ShowAlert(CollectionsMicroButtonAlert, numMountsNeedingFanfare + numPetsNeedingFanfare > 1 and COLLECTION_UNOPENED_PLURAL or COLLECTION_UNOPENED_SINGULAR) then
 				MicroButtonPulse(self);
 				SafeSetCollectionJournalTab(numMountsNeedingFanfare > 0 and 1 or 2);
-				return;
 			end
 		end
+		self.lastNumMountsNeedingFanfare = numMountsNeedingFanfare;
+		self.lastNumPetsNeedingFanfare = numPetsNeedingFanfare;
 	end
 
 	function CollectionsMicroButton_OnEvent(self, event, ...)
@@ -671,6 +681,44 @@ function EJMicroButton_UpdateAlerts( flag )
 		EJMicroButton:UnregisterEvent("UNIT_LEVEL");
 		EJMicroButton:UnregisterEvent("PLAYER_AVG_ITEM_LEVEL_UPDATE");
 		EJMicroButton_ClearNewAdventureNotice()
+	end
+end
+
+StoreMicroButtonMixin = {};
+
+function StoreMicroButton_OnLoad(self)
+	LoadMicroButtonTextures(self, "BStore");
+	self.tooltipText = BLIZZARD_STORE;
+	self:RegisterEvent("STORE_STATUS_CHANGED");
+	if (IsKioskModeEnabled()) then
+		self:Disable();
+	end
+	if (IsRestrictedAccount()) then
+		self:RegisterEvent("PLAYER_LEVEL_UP");
+		self:RegisterEvent("PLAYER_ENTERING_WORLD");
+	end
+end
+
+function StoreMicroButton_OnEvent(self, event, ...)
+	if (event == "PLAYER_LEVEL_UP") then
+		local level = ...;
+		self:EvaluateAlertVisibility(level);
+	elseif (event == "PLAYER_ENTERING_WORLD") then
+		self:EvaluateAlertVisibility(UnitLevel("player"));
+	end
+	UpdateMicroButtons();
+	if (IsKioskModeEnabled()) then
+		self:Disable();
+	end
+end
+
+function StoreMicroButtonMixin:EvaluateAlertVisibility(level)
+	if (IsTrialAccount()) then
+		local rLevel = GetRestrictedAccountData();
+		if (level >= rLevel and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRIAL_BANKED_XP)) then
+			MainMenuMicroButton_ShowAlert(StoreMicroButtonAlert, STORE_MICRO_BUTTON_ALERT_TRIAL_CAP_REACHED);
+			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRIAL_BANKED_XP, true);
+		end
 	end
 end
 

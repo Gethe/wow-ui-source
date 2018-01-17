@@ -194,7 +194,7 @@ GlueDialogTypes["CONFIRM_PAID_SERVICE"] = {
 	OnAccept = function()
 		-- need to get desired faction in case of pandaren doing faction change to another pandaren
 		-- this will be nil in any other case
-		CreateCharacter(CharacterCreateNameEdit:GetText(), PandarenFactionButtons_GetSelectedFaction());
+		C_CharacterCreation.CreateCharacter(CharacterCreateNameEdit:GetText(), PandarenFactionButtons_GetSelectedFaction());
 	end,
 }
 
@@ -239,7 +239,7 @@ GlueDialogTypes["CHARACTER_BOOST_NO_CHARACTERS_WARNING"] = {
 
 	OnAccept = function ()
 		CharSelectServicesFlowFrame:Hide();
-		CharacterSelect_CreateNewCharacter(LE_CHARACTER_CREATE_TYPE_NORMAL, true);
+		CharacterSelect_CreateNewCharacter(Enum.CharacterCreateType.Normal, true);
 	end,
 
 	OnCancel = function ()
@@ -265,16 +265,6 @@ GlueDialogTypes["CHARACTER_BOOST_FEATURE_RESTRICTED"] = {
 	escapeHides = true,
 };
 
-GlueDialogTypes["UNLOCK_REVOKED_UPGRADE_CHARACTER"] = {
-	button1 = YES,
-	button2 = NO,
-	escapeHides = true,
-
-	OnAccept = function ()
-		C_CharacterServices.RequestManualUnrevoke(GlueDialog.data);
-	end,
-}
-
 GlueDialogTypes["BOOST_NOT_RECOMMEND_SPEC_WARNING"] = {
 	text = BOOST_NOT_RECOMMEND_SPEC_WARNING,
 	button1 = OKAY,
@@ -286,6 +276,20 @@ GlueDialogTypes["BOOST_NOT_RECOMMEND_SPEC_WARNING"] = {
 		local master = CharacterServicesMaster;
 		master.flow:Rewind(master);
 	end,
+}
+
+GlueDialogTypes["BOOST_ALLIED_RACE_HERITAGE_ARMOR_WARNING"] = {
+	button1 = CONTINUE,
+	button2 = CANCEL,
+	html = 1,
+	OnAccept = function()
+		-- Character select auto advances to spec select.
+		CharacterServicesMaster_Update();
+	end,
+	OnCancel = function()
+		local master = CharacterServicesMaster;
+		master.flow:Restart(master);
+	end,	
 }
 
 GlueDialogTypes["LEGION_PURCHASE_READY"] = {
@@ -306,9 +310,12 @@ GlueDialogTypes["CONFIGURATION_WARNING"] = {
 	html = 1,
 }
 
-GlueDialogTypes["BROWN_BOX_UPGRADE_LOGOUT_WARNING"] = {
+GlueDialogTypes["SUBSCRIPTION_CHANGED_KICK_WARNING"] = {
 	text = TRIAL_UPGRADE_LOGOUT_WARNING,
 	button1 = CAMP_NOW,
+	OnShow = function()
+		AccountReactivate_CloseDialogs();
+	end,
 	OnAccept = function()
 		C_Login.DisconnectFromServer();
 	end,
@@ -319,10 +326,12 @@ GlueDialogTypes["BROWN_BOX_UPGRADE_LOGOUT_WARNING"] = {
 		C_Login.DisconnectFromServer();
 	end,
 	OnUpdate = function()
-		GlueDialogText:SetText(GlueDialogTypes["BROWN_BOX_UPGRADE_LOGOUT_WARNING"].text:format(math.ceil(GlueDialog.timeleft)));
+		GlueDialogText:SetText(GlueDialogTypes["SUBSCRIPTION_CHANGED_KICK_WARNING"].text:format(math.ceil(GlueDialog.timeleft)));
 	end,
 	timeout = 15,
 	cover = true,
+	anchorPoint = "CENTER",
+	anchorOffsetY = 150,
 }
 
 function GlueDialog_Queue(which, text, data)
@@ -349,6 +358,13 @@ function GlueDialog_Show(which, text, data)
 		end
 	end
 
+	GlueDialogBackground:ClearAllPoints();
+	if dialogInfo.anchorPoint then
+		GlueDialogBackground:SetPoint(dialogInfo.anchorPoint, dialogInfo.anchorOffsetX or 0, dialogInfo.anchorOffsetY or 0);
+	else
+		GlueDialogBackground:SetPoint("CENTER");
+	end
+	
 	GlueDialog.data = data;
 	local glueText;
 	if ( dialogInfo.html ) then

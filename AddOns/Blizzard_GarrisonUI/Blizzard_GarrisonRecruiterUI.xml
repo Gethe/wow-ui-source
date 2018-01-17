@@ -113,7 +113,7 @@
 			<Frame parentKey="Abilities">
 				<Size x="188" y="160"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.PortraitFrame" realtivePoint="BOTTOMLEFT" x="8" y="-68"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.PortraitFrame" x="8" y="-68"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
@@ -243,7 +243,7 @@
 				<Frames>
 					<CheckButton parentKey="Radio1" inherits="GarrisonRecruiterRadioButtonTemplate" id="1">
 						<Anchors>
-							<Anchor point="LEFTTOP" relativeKey="$parent.Line1" relativePoint="LEFTBOTTOM" x="0" y="-12"/>
+							<Anchor point="TOPLEFT" relativeKey="$parent.Line1" relativePoint="BOTTOMLEFT" x="0" y="-11"/>
 						</Anchors>
 						<Scripts>
 							<OnClick function="GarrisonRecruiterType_OnClick" />
@@ -275,7 +275,7 @@
 
 					<Frame parentKey="Counter" inherits="GarrisonAbilityCounterTemplate">
 						<Anchors>
-							<Anchor point="LEFTTOP" relativeKey="$parent.Line2" relativePoint="LEFTBOTTOM" x="6" y="-48"/>
+							<Anchor point="TOPLEFT" relativeKey="$parent.Line2" relativePoint="BOTTOMLEFT" x="6" y="-47"/>
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK" >

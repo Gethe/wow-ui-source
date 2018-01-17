@@ -266,14 +266,15 @@ function WardrobeTransmogFrame_UpdateWeaponModel(slot)
 	local appearanceSourceID = WardrobeTransmogFrame_GetDisplayedSource(weaponSlotButton);
 	if ( appearanceSourceID ~= NO_TRANSMOG_SOURCE_ID ) then
 		local illusionSourceID = WardrobeTransmogFrame_GetDisplayedSource(enchantSlotButton);
-		local categoryID = C_TransmogCollection.GetAppearanceSourceInfo(appearanceSourceID);
-		-- don't specify a slot for ranged weapons
-		if ( WardrobeUtils_IsCategoryRanged(categoryID) ) then
-			slot = nil;
-		end
 		-- check existing equipped on model. we don't want to update it if the same because the hand will open/close.
 		local existingAppearanceSourceID, existingIllustionSourceID = WardrobeTransmogFrame.Model:GetSlotTransmogSources(slotID);
 		if ( existingAppearanceSourceID ~= appearanceSourceID or existingIllustionSourceID ~= illusionSourceID ) then
+			-- don't specify a slot when applying or removing ranged weapons because of bows
+			local categoryID = C_TransmogCollection.GetAppearanceSourceInfo(appearanceSourceID);
+			local existingCategoryID = C_TransmogCollection.GetAppearanceSourceInfo(existingAppearanceSourceID);
+			if ( WardrobeUtils_IsCategoryRanged(categoryID) or WardrobeUtils_IsCategoryRanged(existingCategoryID) ) then
+				slot = nil;
+			end
 			WardrobeTransmogFrame.Model:TryOn(appearanceSourceID, slot, illusionSourceID);
 		end
 	end	
@@ -649,6 +650,14 @@ local SET_MODEL_PAN_AND_ZOOM_LIMITS = {
 	["Pandaren2"] = { maxZoom = 2.9342107772827, panMaxLeft = -0.36421552300453, panMaxRight = 0.50203305482864, panMaxTop = -0.11241528391838, panMaxBottom = -2.3707413673401 },
 	["Goblin2"] = { maxZoom = 2.4605259895325, panMaxLeft = -0.31328883767128, panMaxRight = 0.39014467597008, panMaxTop = -0.089733943343162, panMaxBottom = -1.3402827978134 },
 	["Goblin3"] = { maxZoom = 2.9605259895325, panMaxLeft = -0.26144406199455, panMaxRight = 0.30945864319801, panMaxTop = -0.07625275105238, panMaxBottom = -1.2928194999695 },
+	["LightforgedDraenei2"] = { maxZoom = 2.2105259895325, panMaxLeft = -0.56983226537705, panMaxRight = 0.82581323385239, panMaxTop = -0.17342753708363, panMaxBottom = -2.6428601741791 },
+	["LightforgedDraenei3"] = { maxZoom = 3.0592098236084, panMaxLeft = -0.33429977297783, panMaxRight = 0.29183092713356, panMaxTop = -0.079871296882629, panMaxBottom = -2.4141833782196 },
+	["HighmountainTauren2"] = { maxZoom = 2.1118416786194, panMaxLeft = -0.82946360111237, panMaxRight = 0.83975899219513, panMaxTop = -0.061676319688559, panMaxBottom = -2.035267829895 },
+	["HighmountainTauren3"] = { maxZoom = 2.9605259895325, panMaxLeft = -0.37433895468712, panMaxRight = 0.40420442819595, panMaxTop = -0.1868137717247, panMaxBottom = -2.2116675376892 },
+	["Nightborne3"] = { maxZoom = 2.9539475440979, panMaxLeft = -0.27334463596344, panMaxRight = 0.27148312330246, panMaxTop = -0.094710879027844, panMaxBottom = -2.3087983131409 },
+	["Nightborne2"] = { maxZoom = 2.9144732952118, panMaxLeft = -0.45042458176613, panMaxRight = 0.47114592790604, panMaxTop = -0.10513981431723, panMaxBottom = -2.4612309932709 },
+	["VoidElf3"] = { maxZoom = 3.1644730567932, panMaxLeft = -0.2654082775116, panMaxRight = 0.28886350989342, panMaxTop = -0.049619361758232, panMaxBottom = -1.9943760633469 },
+	["VoidElf2"] = { maxZoom = 3.1710524559021, panMaxLeft = -0.25901651382446, panMaxRight = 0.45525884628296, panMaxTop = -0.085230752825737, panMaxBottom = -2.0548067092895 },
 };
 
 function WardrobeCollectionFrame_SetContainer(parent)
@@ -1741,20 +1750,18 @@ function WardrobeItemsCollectionMixin:SelectVisual(visualID)
 end
 
 function WardrobeCollectionFrame_OpenTransmogLink(link, transmogType)
+	if ( not CollectionsJournal:IsVisible() or not WardrobeCollectionFrame:IsVisible() ) then
+		ToggleCollectionsJournal(5);
+	end
+
 	local linkType, id = strsplit(":", link);
 
 	if ( linkType == "transmogappearance" ) then
 		local sourceID = tonumber(id);
-		if ( not WardrobeCollectionFrame:IsVisible() ) then
-			ToggleCollectionsJournal(5);
-		end
 		WardrobeCollectionFrame_SetTab(TAB_ITEMS);
 		WardrobeCollectionFrame.ItemsCollectionFrame:GoToSourceID(sourceID, nil, LE_TRANSMOG_TYPE_APPEARANCE);
 	elseif ( linkType == "transmogset") then
 		local setID = tonumber(id);
-		if ( not WardrobeCollectionFrame:IsVisible() ) then
-			ToggleCollectionsJournal(5);
-		end
 		WardrobeCollectionFrame_SetTab(TAB_SETS);
 		WardrobeCollectionFrame.SetsCollectionFrame:SelectSet(setID);
 	end
@@ -2238,6 +2245,12 @@ function WardrobeCollectionFrame_SetAppearanceTooltip(contentFrame, sources, pri
 			GameTooltip:AddLine(useError, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
 		elseif ( not WardrobeFrame_IsAtTransmogrifier() ) then
 			GameTooltip:AddLine(WARDROBE_TOOLTIP_TRANSMOGRIFIER, GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b, 1, 1);
+		end
+		if ( not useError ) then
+			local holidayName = C_TransmogCollection.GetSourceRequiredHoliday(headerSourceID);
+			if ( holidayName ) then
+				GameTooltip:AddLine(TRANSMOG_APPEARANCE_USABLE_HOLIDAY:format(holidayName), LIGHTBLUE_FONT_COLOR.r, LIGHTBLUE_FONT_COLOR.g, LIGHTBLUE_FONT_COLOR.b, true);
+			end
 		end
 	end
 
@@ -3063,6 +3076,7 @@ end
 
 function WardrobeSetsCollectionMixin:OnShow()
 	self:RegisterEvent("GET_ITEM_INFO_RECEIVED");
+	self:RegisterEvent("TRANSMOG_COLLECTION_ITEM_UPDATE");
 	self:RegisterEvent("TRANSMOG_COLLECTION_UPDATED");
 	-- select the first set if not init
 	local baseSets = SetsDataProvider:GetBaseSets();
@@ -3098,6 +3112,7 @@ end
 
 function WardrobeSetsCollectionMixin:OnHide()
 	self:UnregisterEvent("GET_ITEM_INFO_RECEIVED");
+	self:UnregisterEvent("TRANSMOG_COLLECTION_ITEM_UPDATE");
 	self:UnregisterEvent("TRANSMOG_COLLECTION_UPDATED");
 	SetsDataProvider:ClearSets();
 	WardrobeCollectionFrame_ClearSearch(LE_TRANSMOG_SEARCH_TYPE_BASE_SETS);
@@ -3111,6 +3126,10 @@ function WardrobeSetsCollectionMixin:OnEvent(event, ...)
 				self:SetItemFrameQuality(itemFrame);
 				break;
 			end
+		end
+	elseif ( event == "TRANSMOG_COLLECTION_ITEM_UPDATE" ) then
+		for itemFrame in self.DetailsFrame.itemFramesPool:EnumerateActive() do
+			self:SetItemFrameQuality(itemFrame);
 		end
 	elseif ( event == "TRANSMOG_COLLECTION_UPDATED" ) then
 		SetsDataProvider:ClearSets();

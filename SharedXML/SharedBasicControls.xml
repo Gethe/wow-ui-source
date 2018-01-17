@@ -122,7 +122,7 @@
 				<FontString parentKey="Title" inherits="GameFontNormal">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="12" y="-8"/>
-						<Anchor point="TOPRIGHT" x="-32" y="-24"/>
+						<Anchor point="TOPRIGHT" x="-32" y="-8"/>
 					</Anchors>
 				</FontString>
 			</Layer>

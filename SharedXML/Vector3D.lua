@@ -1,6 +1,8 @@
 -- Protecting from addons since we use this in secure code.
 local cos = math.cos;
 local sin = math.sin;
+local atan2 = math.atan2;
+local asin = math.asin;
 
 function Vector3D_ScaleBy(scalar, x, y, z)
 	return x * scalar, y * scalar, z * scalar;
@@ -42,6 +44,14 @@ function Vector3D_CalculateNormalFromYawPitch(yaw, pitch)
 	return	cos(-pitch) * cos(yaw),
 			cos(-pitch) * sin(yaw),
 			sin(-pitch);
+end
+
+function Vector3D_CalculateYawPitchFromNormal(x, y, z)
+	if x ~= 0 or y ~= 0 then
+		return atan2(y, x), asin(-z);
+	end
+
+	return 0, asin(-z);
 end
 
 Vector3DMixin = {};

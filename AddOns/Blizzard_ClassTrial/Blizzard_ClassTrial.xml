@@ -25,7 +25,7 @@
 				<Texture parentKey="DialogFrame" atlas="ClassTrial-End-Frame">
 					<Size x="563" y="345"/>
 					<Anchors>
-						<Anchor point="CENTER"/>
+						<Anchor point="TOP" x="0" y="-135"/>
 					</Anchors>
 				</Texture>
 			</Layer>

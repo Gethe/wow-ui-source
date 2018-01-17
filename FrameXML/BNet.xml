@@ -7,7 +7,7 @@
 			<OnEvent function="BNet_OnEvent"/>
 		</Scripts>
 	</Frame>
-	
+
 	<Frame name="BNToastFrame" parent="UIParent" hidden="true" frameStrata="LOW" toplevel="true">
 		<Animations>
 			<AnimationGroup name="$parentAnimIn" parentKey="animIn">
@@ -90,7 +90,7 @@
 					</Anchors>
 					<Color r="0.486" g="0.518" b="0.541" />
 				</FontString>
-				<FontString name="$parentDoubleLine" inherits="FriendsFont_Normal" justifyH="LEFT" justifyV="MIDDLE">			
+				<FontString name="$parentDoubleLine" inherits="FriendsFont_Normal" justifyH="LEFT" justifyV="MIDDLE">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="44" y="0"/>
 						<Anchor point="BOTTOMRIGHT" x="-20" y="0"/>

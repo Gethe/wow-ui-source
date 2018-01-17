@@ -2062,3 +2062,28 @@ function AuctionProgressFrame_OnUpdate(self)
 		end
 	end
 end
+
+function WowTokenGameTimeTutorialStoreButton_OnEvent(self, event)
+	if event == "TRIAL_STATUS_UPDATE" then
+		WowTokenGameTimeTutorialStoreButton_UpdateState(self);
+	end
+end
+
+function WowTokenGameTimeTutorialStoreButton_UpdateState(self)
+	if GameLimitedMode_IsActive() then
+		self.tooltip = ERR_FEATURE_RESTRICTED_TRIAL;
+		self:Disable();
+	else
+		self.tooltip = nil;
+		self:Enable();
+	end
+end
+
+function WowTokenGameTimeTutorialStoreButton_OnLoad(self)
+	local fontString = self:GetFontString();
+	fontString:SetPoint("CENTER", 8, 2);
+	self.Logo:ClearAllPoints();
+	self.Logo:SetPoint("RIGHT", fontString, "LEFT", -2, 0);
+	WowTokenGameTimeTutorialStoreButton_UpdateState(self);
+	self:RegisterEvent("TRIAL_STATUS_UPDATE");
+end

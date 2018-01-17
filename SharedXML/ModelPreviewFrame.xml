@@ -17,7 +17,7 @@
 					<ModelScene parentKey="ModelScene" useParentLevel="true" inherits="ReversedLightingModelSceneMixinTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="0" y="0"/>
-							<Anchor point="BOTTOMRIGHT" relativeKey="$parent"/>
+							<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT" x="-1" y="0"/>
 						</Anchors>
 						<Frames>
 							<Button parentKey="RotateLeftButton" inherits="RotateOrbitCameraLeftButtonTemplate">
@@ -74,9 +74,9 @@
 							</Anchors>
 						</FontString>
 						<FontString parentKey="CarouselText" inherits="GameFontNormalMed3">
-							<Size x="64" y="0"/>
 							<Anchors>
 								<Anchor point="LEFT" relativeKey="$parent.ModelScene.CarouselLeftButton" relativePoint="RIGHT" x="-0" y="0"/>
+								<Anchor point="RIGHT" relativeKey="$parent.ModelScene.CarouselRightButton" relativePoint="LEFT" x="-0" y="0"/>
 								<Anchor point="CENTER" relativeKey="$parent.ModelScene.CarouselLeftButton" relativePoint="CENTER" x="0" y="0"/>
 							</Anchors>
 						</FontString>

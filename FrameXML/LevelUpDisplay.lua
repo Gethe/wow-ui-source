@@ -1473,7 +1473,6 @@ function BossBanner_Play(self, data)
 				self.SubTitle:Show();
 			end
 			self.Title:Show();
-			self.SubTitle:Show();
 			self:Show();
 			self.encounterID = data.encounterID;			
 			BossBanner_BeginAnims(self);

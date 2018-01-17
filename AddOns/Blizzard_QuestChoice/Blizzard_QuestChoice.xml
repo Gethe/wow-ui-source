@@ -1,7 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
-	<Script file="Blizzard_QuestChoice.lua"/>
-
 	<!-- Art pieces to hide border seams -->
 	<Texture name="QuestChoiceLeftHide" file="Interface\QuestionFrame\Question-Main" virtual="true">
 		<Size x="86" y="39"/>
@@ -20,7 +18,7 @@
 		<TexCoords left="0.82617188" right="0.89062500" top="0.30468750" bottom="0.48046875"/>
 	</Texture>
 
-	<Button name="QuestChoiceItemTemplate" virtual="true">
+	<Button name="QuestChoiceItemTemplate" mixin="QuestChoiceItemMixin" virtual="true">
 		<Size x="167" y="41"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -54,10 +52,10 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnEnter function="QuestChoiceFrame_OnItemEnter" />
+			<OnEnter method="OnEnter" />
 			<OnLeave function="GameTooltip_Hide"/>
-			<OnUpdate function="QuestChoiceFrame_OnItemUpdate"/>
-			<OnClick function="QuestChoiceFrame_OnItemModifiedClick"/>
+			<OnUpdate method="OnUpdate"/>
+			<OnClick method="OnModifiedClick"/>
 		</Scripts>
 	</Button>
 	<Frame name="QuestChoiceCurrencyTemplate" virtual="true">
@@ -189,7 +187,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button parentKey="OptionButton" inherits="UIPanelButtonTemplate">
+			<Button parentKey="OptionButton" mixin="QuestChoiceOptionButtonMixin" inherits="UIPanelButtonTemplate">
 				<Size x="175" y="22"/>
 				<Anchors>
 					<Anchor point="BOTTOM"/>
@@ -201,9 +199,9 @@
 					</Anchors>
 				</ButtonText>
 				<Scripts>
-					<OnClick function="QuestChoiceFrameOptionButton_OnClick"/>
-					<OnEnter function="QuestChoiceFrameOptionButton_OnEnter"/>
-					<OnLeave function="QuestChoiceFrameOptionButton_OnLeave"/>
+					<OnClick method="OnClick"/>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
 				</Scripts>
 			</Button>
 			<Frame parentKey="Rewards" inherits="QuestChoiceRewardsTemplate">
@@ -245,14 +243,14 @@
 					<Anchor point="BOTTOM" relativeKey="$parent.Rewards" relativePoint="TOP" y="35"/>
 				</Anchors>
 				<Scripts>
-					<OnSizeChanged>QuestChoiceFrame_SetPendingUpdate(self:GetParent():GetParent());</OnSizeChanged>
+					<OnSizeChanged>self:GetParent():GetParent():SetPendingUpdate();</OnSizeChanged>
 				</Scripts>
 				<FontString inherits="GameFontBlack" justifyH="LEFT" justifyV="TOP"/>
 			</SimpleHTML>
 		</Frames>
 	</Button>
 
-	<Frame name="QuestChoiceFrame" frameStrata="HIGH" hidden="true" enableMouse="true" parent="UIParent" toplevel="true" inherits="HorizontalLayoutFrame">
+	<Frame name="QuestChoiceFrame" frameStrata="HIGH" mixin="QuestChoiceFrameMixin" hidden="true" enableMouse="true" parent="UIParent" toplevel="true" inherits="HorizontalLayoutFrame">
 		<Size x="600" y="480"/>
 		<Anchors>
 			<Anchor point="CENTER" />
@@ -438,9 +436,9 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad function="QuestChoiceFrame_OnLoad"/>
-			<OnEvent function="QuestChoiceFrame_OnEvent"/>
-			<OnUpdate function="QuestChoiceFrame_OnUpdate"/>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnUpdate method="OnUpdate"/>
 			<OnShow>
 				PlaySound(SOUNDKIT.IG_QUEST_LIST_OPEN);
 			</OnShow>

@@ -1,0 +1,324 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="Blizzard_WarboardUI.lua"/>
+	
+	<Button name="WarboardQuestChoiceOptionTemplate" virtual="true">
+		<Size x="240" y="332"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Nail" atlas="warboard-parchment-nail">
+					<Size x="33" y="32"/>
+					<Anchors>
+						<Anchor point="TOP" x="-3" y="-5"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="Artwork">
+					<Size x="178" y="81"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-54"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Border" atlas="warboard-parchment-answerborder" alphaMode="MOD">
+					<Size x="190" y="93"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-48"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="OptionButton" mixin="QuestChoiceOptionButtonMixin" inherits="UIPanelButtonTemplate">
+				<Size x="175" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="46"/>
+				</Anchors>
+				<ButtonText name="$parentText" parentKey="Text">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="4" y="0"/>
+						<Anchor point="BOTTOMRIGHT" x="-4" y="0"/>
+					</Anchors>
+				</ButtonText>
+				<Scripts>
+					<OnClick method="OnClick"/>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+				</Scripts>
+			</Button>
+			<Frame parentKey="Header" useParentLevel="true">
+				<Size x="256" y="32"/>
+				<Anchors>
+					<Anchor point="TOP" y="10"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BORDER">
+						<Texture parentKey="Background" atlas="warboard-parchment">
+							<Size x="251" y="339"/>
+							<Anchors>
+								<Anchor point="TOP"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Text" font="Game20Font" mixin="ShrinkUntilTruncateFontStringMixin" justifyH="CENTER" justifyV="MIDDLE">
+							<Size x="180"/>
+							<Anchors>
+								<Anchor point="TOP" relativeKey="$parent.$parent.Artwork" relativePoint="BOTTOM" x="0" y="-21"/>
+							</Anchors>
+							<Color r="0" g="0" b="0"/>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<SimpleHTML parentKey="OptionText" inherits="InlineHyperlinkFrameTemplate">
+				<Size x="180"/>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.Header.Text" relativePoint="BOTTOM" x="0" y="-12"/>
+					<Anchor point="BOTTOM" relativeKey="$parent.OptionButton" relativePoint="TOP" y="39"/>
+				</Anchors>
+				<Scripts>
+					<OnSizeChanged>self:GetParent():GetParent():SetPendingUpdate();</OnSizeChanged>
+				</Scripts>
+				<FontString inherits="Game12Font" justifyH="CENTER" justifyV="TOP">
+					<Color r="0.28" g="0.02" b="0.02" />
+				</FontString>
+			</SimpleHTML>
+		</Frames>
+	</Button>
+	<Frame name="WarboardQuestChoiceFrame" frameStrata="HIGH" mixin="WarboardQuestChoiceFrameMixin" hidden="true" enableMouse="true" parent="UIParent" toplevel="true" inherits="HorizontalLayoutFrame">
+		<Size x="600" y="544"/>
+		<Anchors>
+			<Anchor point="CENTER" />
+		</Anchors>
+		<KeyValues>
+			<KeyValue key="fixedWidth" value="600" type="number"/>
+			<KeyValue key="expand" value="true" type="boolean"/>
+			<KeyValue key="topPadding" value="150" type="number"/>
+			<KeyValue key="bottomPadding" value="35" type="number"/>
+			<KeyValue key="leftPadding" value="58" type="number"/>
+			<KeyValue key="rightPadding" value="58" type="number"/>
+			<KeyValue key="spacing" value="30" type="number"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture parentKey="Top" atlas="_Garr_WoodFrameTile-Top" horizTile="true" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="2"/>
+						<Anchor point="TOPRIGHT" x="-4"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Bottom" atlas="_Garr_WoodFrameTile-Bottom" horizTile="true" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" />
+						<Anchor point="BOTTOMRIGHT" x="-4"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Left" atlas="!Garr_WoodFrameTile-Left" vertTile="true" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"  y="-22"/>
+						<Anchor point="BOTTOMLEFT" />
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Right" atlas="!Garr_WoodFrameTile-Left" vertTile="true" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT"  y="-22"/>
+						<Anchor point="BOTTOMRIGHT" />
+					</Anchors>
+					<TexCoords left="1.0" right="0.0" top="0.0" bottom="1.0"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Header" atlas="warboard-header-alliance">
+					<Size x="354" y="105"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="72"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture name="$parentTopRightCorner" inherits="UI-Frame-BotCornerRight">
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="0" y="6"/>
+					</Anchors>
+					<TexCoords left="0.13281250" right="0.21875000" top="0.98437500" bottom="0.89843750"/>
+				</Texture>
+				<Texture name="$parentTopLeftCorner" inherits="UI-Frame-BotCornerLeft" parentKey="topLeftCorner">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-6" y="6"/>
+					</Anchors>
+					<TexCoords left="0.00781250" right="0.11718750" top="0.74218750" bottom="0.63281250"/>
+				</Texture>
+				<Texture name="$parentTopBorder" inherits="_UI-Frame-Bot" parentKey="topBorderBar">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentTopLeftCorner" relativePoint="TOPRIGHT" y="-3"/>
+						<Anchor point="TOPRIGHT" relativeTo="$parentTopRightCorner" relativePoint="TOPLEFT" y="-3"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentBotLeftCorner" inherits="UI-Frame-BotCornerLeft">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="-6" y="-5"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentBotRightCorner" inherits="UI-Frame-BotCornerRight">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="0" y="-5"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentBottomBorder" inherits="_UI-Frame-Bot">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeTo="$parentBotLeftCorner" relativePoint="BOTTOMRIGHT" y="0"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBotRightCorner" relativePoint="BOTTOMLEFT" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentLeftBorder" inherits="!UI-Frame-LeftTile" parentKey="leftBorderBar">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentTopLeftCorner" relativePoint="BOTTOMLEFT"/>
+						<Anchor point="BOTTOMLEFT" relativeTo="$parentBotLeftCorner" relativePoint="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentRightBorder" inherits="!UI-Frame-RightTile">
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeTo="$parentTopRightCorner" relativePoint="BOTTOMRIGHT" x="1"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBotRightCorner" relativePoint="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<!-- This frame is used to position the corner texutures above other frames (for example the scroll frame of the adventure map.)
+			The above textures can be put into this frame as well, but they have anchors via their parentKey, so don't want to move them here.-->
+			<Frame parentKey="GarrCorners" setAllPoints="true" frameLevel="3">
+				<Layers>
+					<Layer level="BACKGROUND" textureSubLevel="2">
+						<Texture parentKey="TopLeftGarrCorner" atlas="Garr_WoodFrameCorner" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="2" y="-2"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="TopRightGarrCorner" atlas="Garr_WoodFrameCorner" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPRIGHT" x="-4" y="-2"/>
+							</Anchors>
+							<TexCoords left="1.0" right="0.0" top="0.0" bottom="1.0"/>
+						</Texture>
+						<Texture parentKey="BottomLeftGarrCorner" atlas="Garr_WoodFrameCorner" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" x="2" y="2"/>
+							</Anchors>
+							<TexCoords left="0.0" right="1.0" top="1.0" bottom="0.0"/>
+						</Texture>
+						<Texture parentKey="BottomRightGarrCorner" atlas="Garr_WoodFrameCorner" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" x="-4" y="2"/>
+							</Anchors>
+							<TexCoords left="1.0" right="0.0" top="1.0" bottom="0.0"/>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame name="$parentOption1" parentKey="Option1" parentArray="Options" inherits="WarboardQuestChoiceOptionTemplate">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="1" type="number"/>
+				</KeyValues>
+			</Frame>
+			<Frame name="$parentOption2" parentKey="Option2" parentArray="Options" inherits="WarboardQuestChoiceOptionTemplate">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="2" type="number"/>
+				</KeyValues>
+			</Frame>
+			<Frame name="$parentOption3" parentKey="Option3" parentArray="Options" inherits="WarboardQuestChoiceOptionTemplate">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="3" type="number"/>
+				</KeyValues>
+			</Frame>
+			<Frame name="$parentOption4" parentKey="Option4" parentArray="Options" inherits="WarboardQuestChoiceOptionTemplate">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="4" type="number"/>
+				</KeyValues>
+			</Frame>
+			<Frame parentKey="Background" clipChildren="true" useParentLevel="true">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND" textureSubLevel="-1">
+						<Texture parentKey="BackgroundTile" atlas="warboard-background">
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+								<Anchor point="BOTTOMLEFT" x="597" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="FlippedBackgroundTile" atlas="warboard-background">
+							<Size x="597" y="0"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.BackgroundTile" relativePoint="TOPRIGHT"/>
+								<Anchor point="BOTTOMLEFT" relativeKey="$parent.BackgroundTile" relativePoint="BOTTOMRIGHT"/>
+							</Anchors>
+							<TexCoords left="1" right="0" top="1" bottom="0"/>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="Title">
+				<Size x="500" y="85"/>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.Header" relativePoint="BOTTOM"/>
+					<Anchor point="LEFT" relativeKey="$parent.Option1" relativePoint="LEFT" x="-3" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Left" atlas="warboard-title-alliance-left" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="LEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Right" atlas="warboard-title-alliance-right" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="RIGHT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BACKGROUND" textureSubLevel="1">
+						<Texture parentKey="Middle" atlas="_warboard-title-alliance-middle" horizTile="true">
+							<Size x="0" y="85"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.Left" relativePoint="RIGHT" x="-60" y="0"/>
+								<Anchor point="RIGHT" relativeKey="$parent.Right" relativePoint="LEFT" x="60" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Text" inherits="Game16Font" justifyH="CENTER">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.Middle"/>
+							</Anchors>
+							<Color r="1.0" g="1.0" b="1.0"/>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButton" frameLevel="4">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="2" y="2" />
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnUpdate method="OnUpdate"/>
+			<OnShow>
+				PlaySound(SOUNDKIT.IG_QUEST_LIST_OPEN);
+			</OnShow>
+			<OnHide>
+				PlaySound(SOUNDKIT.IG_QUEST_LIST_CLOSE);
+				CloseQuestChoice();
+				StaticPopup_Hide("CONFIRM_GORGROND_GARRISON_CHOICE");
+			</OnHide>
+		</Scripts>
+	</Frame>
+</Ui>

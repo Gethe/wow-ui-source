@@ -225,6 +225,7 @@ function CommentatorUnitFrameMixin:SetTeamAndPlayer(teamIndex, playerIndex)
 		self.tokenChanging = true;
 
 		self.Name:SetText(playerName);
+		self.Name:SetTextColor(C_Commentator.GetTeamHighlightColor(teamIndex));
 
 		self:SetClass(select(2, UnitClass(self.token)))
 

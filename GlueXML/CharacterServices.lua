@@ -32,7 +32,7 @@
 --  :OnRewind() - This function is called in response to the flow:Rewind call if the block needs to handle any logic here.
 --  :SkipIf() - Skip this block if a certain result is present
 --  :OnSkip() - If you have a SkipIf() then OnSkip() will perform any actions you need if you are skipped.
---  :ShowPopupIf() - If you have a .Popup, then ShowPopupIf will perform a check if the popup should appear.
+--  :ShouldShowPopup() - If you have a .Popup, then ShouldShowPopup will perform a check if the popup should appear.
 --  :GetPopupText() - If you have a .Popup, then GetPopupText fetch the text to display.
 --
 -- The following members must be present on a block:
@@ -58,26 +58,28 @@
 
 CHARACTER_UPGRADE_CREATE_CHARACTER_DATA = nil;
 
-local UPGRADE_90_MAX_LEVEL = 90;
-local UPGRADE_100_MAX_LEVEL = 100;
 local UPGRADE_BONUS_LEVEL = 60;
 
 CURRENCY_KRW = 3;
 
 RACE_NAME_BUTTON_ID_MAP = {
 	["HUMAN"] = 1,
-	["DWARF"] = 2,
-	["NIGHTELF"] = 3,
-	["GNOME"] = 4,
-	["DRAENEI"] = 5,
-	["WORGEN"] = 6,
-	["PANDAREN"] = 13,
-	["ORC"] = 7,
-	["SCOURGE"] = 8,
-	["TAUREN"] = 9,
-	["TROLL"] = 10,
-	["BLOODELF"] = 12,
-	["GOBLIN"] = 11,
+	["DWARF"] = 3,
+	["NIGHTELF"] = 4,
+	["GNOME"] = 7,
+	["DRAENEI"] = 11,
+	["WORGEN"] = 22,
+	["PANDAREN"] = 24,
+	["ORC"] = 2,
+	["SCOURGE"] = 5,
+	["TAUREN"] = 6,
+	["TROLL"] = 8,
+	["BLOODELF"] = 10,
+	["GOBLIN"] = 9,
+	["NIGHTBORNE"] = 27,
+	["HIGHMOUNTAINTAUREN"] = 28,
+	["VOIDELF"] = 29,
+	["LIGHTFORGEDDRAENEI"] = 30,
 };
 
 CLASS_NAME_BUTTON_ID_MAP = {
@@ -175,7 +177,7 @@ GlueDialogTypes["BOOST_FACTION_CHANGE_IN_PROGRESS"] = {
 	escapeHides = true,
 };
 
-local CharacterUpgradeCharacterSelectBlock = { Back = false, Next = false, Finish = false, AutoAdvance = true, ResultsLabel = SELECT_CHARACTER_RESULTS_LABEL, ActiveLabel = SELECT_CHARACTER_ACTIVE_LABEL, };
+local CharacterUpgradeCharacterSelectBlock = { Back = false, Next = false, Finish = false, AutoAdvance = true, ResultsLabel = SELECT_CHARACTER_RESULTS_LABEL, ActiveLabel = SELECT_CHARACTER_ACTIVE_LABEL, Popup = "BOOST_ALLIED_RACE_HERITAGE_ARMOR_WARNING" };
 local CharacterUpgradeSpecSelectBlock = { Back = true, Next = true, Finish = false, ActiveLabel = SELECT_SPEC_ACTIVE_LABEL, ResultsLabel = SELECT_SPEC_RESULTS_LABEL, Popup = "BOOST_NOT_RECOMMEND_SPEC_WARNING" };
 local CharacterUpgradeFactionSelectBlock = { Back = true, Next = true, Finish = false, ActiveLabel = SELECT_FACTION_ACTIVE_LABEL, ResultsLabel = SELECT_FACTION_RESULTS_LABEL };
 local CharacterUpgradeEndStep = { Back = true, Next = false, Finish = true, HiddenStep = true, SkipOnRewind = true };
@@ -196,96 +198,6 @@ CharacterUpgradeFlow = {
 
 	numSteps = 4,
 };
-
-CharacterUpgrade_Items = {
-	[Enum.BattlepayBoostProduct.Level90Boost] = {
-		free = {
-			productId = Enum.BattlepayBoostProduct.Level90Boost,
-			Size = { x = 72, y = 68 },
-			icon = "Interface\\Icons\\achievement_level_90",
-			iconBorder = "services-ring-wod",
-
-			maxLevel = UPGRADE_90_MAX_LEVEL,
-			expansion = LE_EXPANSION_WARLORDS_OF_DRAENOR,
-			popupDesc = {
-				title = CHARACTER_UPGRADE_FREE_90_POPUP_TITLE,
-				desc = CHARACTER_UPGRADE_FREE_90_POPUP_DESCRIPTION,
-				width = 430,
-				offset = { x = 8, y = 26 },
-				topAtlas = "boostpopup-wod-top",
-				middleAtlas = "boostpopup-wod-middle",
-				bottomAtlas = "boostpopup-wod-bottom",
-			},
-
-			tooltipTitle = CHARACTER_UPGRADE_WOD_TOKEN_TITLE,
-			tooltipDesc = CHARACTER_UPGRADE_WOD_TOKEN_DESCRIPTION,
-			flowTitle = CHARACTER_UPGRADE_90_FLOW_LABEL,
-
-			glowOffset = { x = 2, y = 4 },
-			free = true,
-
-			professionLevel = 600,
-		},
-		paid = {
-			productId = Enum.BattlepayBoostProduct.Level90Boost,
-			icon = "Interface\\Icons\\achievement_level_90",
-			iconBorder = "services-ring",
-
-			maxLevel = UPGRADE_90_MAX_LEVEL,
-			tooltipTitle = CHARACTER_UPGRADE_90_TOKEN_TITLE,
-			tooltipDesc = CHARACTER_UPGRADE_90_TOKEN_DESCRIPTION,
-			flowTitle = CHARACTER_UPGRADE_90_FLOW_LABEL,
-
-			professionLevel = 600,
-		},
-	},
-	[Enum.BattlepayBoostProduct.Level100Boost] = {
-		free = {
-			productId = Enum.BattlepayBoostProduct.Level100Boost,
-			icon = "Interface\\Icons\\achievement_level_100",
-			iconBorder = "services-ring",
-
-			maxLevel = UPGRADE_100_MAX_LEVEL,
-			expansion = LE_EXPANSION_LEGION,
-			popupDesc = {
-				title = CHARACTER_UPGRADE_FREE_100_POPUP_TITLE,
-				desc = CHARACTER_UPGRADE_FREE_100_POPUP_DESCRIPTION,
-				width = 430,
-				offset = { x = 0, y = 0 },
-				centerScreenAnchorOverride = true,
-				topAtlas = "boostpopup-legion-top",
-				middleAtlas = "boostpopup-legion-middle",
-				bottomAtlas = "boostpopup-legion-bottom",
-				closeButtonAtlas = "boostpopup-legion-exit-frame",
-			},
-
-			tooltipTitle = CHARACTER_UPGRADE_100_TOKEN_TITLE,
-			tooltipDesc = CHARACTER_UPGRADE_100_TOKEN_DESCRIPTION,
-			flowTitle = CHARACTER_UPGRADE_100_FLOW_LABEL,
-			free = true,
-
-			professionLevel = 700,
-		},
-		paid = {
-			productId = Enum.BattlepayBoostProduct.Level100Boost,
-			icon = "Interface\\Icons\\achievement_level_100",
-			iconBorder = "services-ring",
-			maxLevel = UPGRADE_100_MAX_LEVEL,
-			tooltipTitle = CHARACTER_UPGRADE_100_TOKEN_TITLE,
-			tooltipDesc = CHARACTER_UPGRADE_100_TOKEN_DESCRIPTION,
-			flowTitle = CHARACTER_UPGRADE_100_FLOW_LABEL,
-
-			professionLevel = 700,
-		},
-	}
-}
-
-CharacterUpgrade_DisplayOrder = {
-	{ productId = Enum.BattlepayBoostProduct.Level90Boost,		free = false},
-	{ productId = Enum.BattlepayBoostProduct.Level90Boost,		free = true	},
-	{ productId = Enum.BattlepayBoostProduct.Level100Boost,		free = true	},
-	{ productId = Enum.BattlepayBoostProduct.Level100Boost ,	free = false},
-}
 
 function CharacterServicesFlowPrototype:BuildResults(steps)
 	if (not self.results) then
@@ -403,18 +315,29 @@ function CharacterUpgradeFlow:SetTrialBoostGuid(guid)
 	self.isTrialBoost = guid ~= nil;
 
 	if self.isTrialBoost then
-		CharacterUpgradeSpecSelectBlock.SkipOnRewind = true;
-		CharacterUpgradeSpecSelectBlock.HiddenStep = true;
 		CharacterUpgradeFactionSelectBlock.SkipOnRewind = true;
 	else
-		CharacterUpgradeSpecSelectBlock.SkipOnRewind = nil;
-		CharacterUpgradeSpecSelectBlock.HiddenStep = nil;
 		CharacterUpgradeFactionSelectBlock.SkipOnRewind = nil;
 	end
 end
 
 function CharacterUpgradeFlow:IsTrialBoost()
 	return self.isTrialBoost;
+end
+
+function CharacterUpgradeFlow:IsUnrevoke()
+	if self:IsTrialBoost() then
+		return false;
+	end
+	
+	local results = self:BuildResults(self.numSteps);
+	if not results.charid then
+		-- We haven't chosen a character yet.
+		return nil;
+	end
+	
+	local experienceLevel = select(7, GetCharacterInfo(results.charid));
+	return experienceLevel >= self.data.level;
 end
 
 function CharacterUpgradeFlow:Initialize(controller)
@@ -464,7 +387,7 @@ function CharacterUpgradeFlow:Advance(controller)
 
 		local results = self:BuildResults(self.step);
 		if (self.step == 1) then
-			local level = select(6, GetCharacterInfo(results.charid));
+			local level = select(7, GetCharacterInfo(results.charid));
 			if (level >= UPGRADE_BONUS_LEVEL) then
 				self.Steps[2].ExtraOffset = 45;
 			else
@@ -505,24 +428,30 @@ function CharacterUpgradeFlow:Finish(controller)
 		CharacterUpgradeSecondChanceWarningFrame:Show();
 		return false;
 	end
-
+	
 	local results = self:BuildResults(self.numSteps);
-	if (not results.faction) then
-		-- Non neutral character, convert faction group to id.
-		results.faction = FACTION_IDS[C_CharacterServices.GetFactionGroupByIndex(results.charid)];
-	end
-	local guid = select(14, GetCharacterInfo(results.charid));
-	if (guid ~= results.playerguid) then
-		-- Bail because guid has changed!
-		message(CHARACTER_UPGRADE_CHARACTER_LIST_CHANGED_ERROR);
-		self:Restart(controller);
-		return false;
-	end
+	if self:IsUnrevoke() then
+		local guid = select(15, GetCharacterInfo(results.charid));
+		C_CharacterServices.RequestManualUnrevoke(guid);
+	else
+		
+		if (not results.faction) then
+			-- Non neutral character, convert faction group to id.
+			results.faction = FACTION_IDS[C_CharacterServices.GetFactionGroupByIndex(results.charid)];
+		end
+		local guid = select(15, GetCharacterInfo(results.charid));
+		if (guid ~= results.playerguid) then
+			-- Bail because guid has changed!
+			message(CHARACTER_UPGRADE_CHARACTER_LIST_CHANGED_ERROR);
+			self:Restart(controller);
+			return false;
+		end
 
-	self:SetTrialBoostGuid(nil);
+		self:SetTrialBoostGuid(nil);
 
-	CharacterServicesMaster.pendingGuid = results.playerguid;
-	C_SharedCharacterServices.AssignUpgradeDistribution(results.playerguid, results.faction, results.spec, results.classId, self.data.free, self.data.productId);
+		CharacterServicesMaster.pendingGuid = results.playerguid;
+		C_CharacterServices.AssignUpgradeDistribution(results.playerguid, results.faction, results.spec, results.classId, self.data.boostType);
+	end
 	return true;
 end
 
@@ -530,6 +459,10 @@ function CharacterUpgradeFlow:GetFinishLabel()
 	-- "Level Up!" is replaced with "Unlock!" when unlocking a trial boost character.
 	if self:IsTrialBoost() then
 		return CHARACTER_UPGRADE_UNLOCK_TRIAL_CHARACTER_FINISH_LABEL;
+	end
+	
+	if self:IsUnrevoke() then
+		return CHARACTER_UPGRADE_UNREVOKE_CHARACTER_FINISH_LABEL;
 	end
 
 	return self.FinishLabel;
@@ -614,40 +547,46 @@ local function replaceAllScripts()
 end
 
 function CharacterUpgrade_IsCreatedCharacterUpgrade()
-	return GetCharacterCreateType() == LE_CHARACTER_CREATE_TYPE_BOOST;
+	return C_CharacterCreation.GetCharacterCreateType() == Enum.CharacterCreateType.Boost;
 end
 
 function CharacterUpgrade_IsCreatedCharacterTrialBoost()
-	return GetCharacterCreateType() == LE_CHARACTER_CREATE_TYPE_TRIAL_BOOST;
+	return C_CharacterCreation.GetCharacterCreateType() == Enum.CharacterCreateType.TrialBoost;
 end
 
 function CharacterUpgrade_ResetBoostData()
-	SetCharacterCreateType(LE_CHARACTER_CREATE_TYPE_NORMAL);
+	C_CharacterCreation.SetCharacterCreateType(Enum.CharacterCreateType.Normal);
 	CHARACTER_UPGRADE_CREATE_CHARACTER_DATA = nil;
 end
 
-local function IsUsingValidProductForTrialBoost()
-	return CharacterUpgradeFlow.data.productId == Enum.BattlepayBoostProduct.Level100Boost;
+local function IsUsingValidProductForTrialBoost(flowData)
+	local boostType = flowData.boostType;
+	local requiredBoost = C_CharacterServices.GetActiveClassTrialBoostType();
+	return boostType ~= nil and boostType == requiredBoost;
 end
 
 local function IsUsingValidProductForCreateNewCharacterBoost()
 	-- To prevent player confusion, when trial boost create is shown, do not show the normal boost create character button
 	-- As different products are added this may need to be updated to reflect specific cases, but for now it's
 	-- sufficient to make trial/normal create mutually exclusive.
-	return not IsUsingValidProductForTrialBoost();
+	return not IsUsingValidProductForTrialBoost(CharacterUpgradeFlow.data);
 end
 
-local function CanBoostCharacter(class, level, boostInProgress, isTrialBoost, vasServiceInProgress)
+local function IsBoostFlowValidForCharacter(flowData, class, level, boostInProgress, isTrialBoost, revokedCharacterUpgrade, vasServiceInProgress)
 	if (boostInProgress or vasServiceInProgress or class == "DEMONHUNTER") then
 		return false;
 	end
 
 	if isTrialBoost then
-		if not IsUsingValidProductForTrialBoost() then
+		if level >= flowData.level and not IsUsingValidProductForTrialBoost(flowData) then
+			return false;
+		end
+	elseif revokedCharacterUpgrade then
+		if level > flowData.level then
 			return false;
 		end
 	else
-		if level >= CharacterUpgradeFlow.data.maxLevel then
+		if level >= flowData.level then
 			return false;
 		end
 	end
@@ -655,8 +594,12 @@ local function CanBoostCharacter(class, level, boostInProgress, isTrialBoost, va
 	return true;
 end
 
-local function IsCharacterEligibleForVeteranBonus(level, isTrialBoost)
-	return level >= UPGRADE_BONUS_LEVEL and not isTrialBoost; -- TODO: Resolve with design on who gets the bonus
+local function CanBoostCharacter(class, level, boostInProgress, isTrialBoost, revokedCharacterUpgrade, vasServiceInProgress)
+	return IsBoostFlowValidForCharacter(CharacterUpgradeFlow.data, class, level, boostInProgress, isTrialBoost, revokedCharacterUpgrade, vasServiceInProgress);
+end
+
+local function IsCharacterEligibleForVeteranBonus(level, isTrialBoost, revokedCharacterUpgrade)
+	return level >= UPGRADE_BONUS_LEVEL and not isTrialBoost and not revokedCharacterUpgrade;
 end
 
 local function SetCharacterButtonEnabled(button, enabled)
@@ -671,6 +614,30 @@ local function SetCharacterButtonEnabled(button, enabled)
 	end
 
 	button:SetEnabled(enabled);
+end
+
+local function formatDescription(description, gender)
+	if (not strfind(description, "%$")) then
+		return description;
+	end
+
+	-- This is a very simple parser that will only handle $G/$g tokens
+	return gsub(description, "$[Gg]([^:]+):([^;]+);", "%"..gender);
+end
+
+function GetAvailableBoostTypesForCharacterByGUID(characterGUID)
+	local availableBoosts = {};
+	local upgradeDistributions = C_SharedCharacterServices.GetUpgradeDistributions();
+	if upgradeDistributions then
+		local class, _, level, _, _, _, _, _, _, _, playerguid, _, _, _, boostInProgress, _, _, isTrialBoost, _, revokedCharacterUpgrade, vasServiceInProgress = select(5, GetCharacterInfoByGUID(characterGUID));
+		for boostType, data in pairs(upgradeDistributions) do
+			if IsBoostFlowValidForCharacter(C_CharacterServices.GetCharacterServiceDisplayData(boostType), class, level, boostInProgress, isTrialBoost, revokedCharacterUpgrade, vasServiceInProgress) then
+				availableBoosts[#availableBoosts + 1] = boostType;
+			end
+		end
+	end
+	
+	return availableBoosts;
 end
 
 function CharacterUpgradeCharacterSelectBlock:SetCharacterSelectErrorFrameShown(showError)
@@ -812,6 +779,7 @@ function CharacterUpgradeCharacterSelectBlock:Initialize(results)
 			self.frame.BonusResults[i]:Hide();
 		end
 	end
+	self.seenPopup = false;
 	self.frame.NoBonusResult:Hide();
 	enableScroll(CharacterSelectCharacterFrame.scrollBar);
 
@@ -836,7 +804,7 @@ function CharacterUpgradeCharacterSelectBlock:Initialize(results)
 
 			self.index = CharacterSelect.selectedIndex;
 			self.charid = GetCharIDFromIndex(CharacterSelect.selectedIndex);
-			self.playerguid = select(14, GetCharacterInfo(self.charid));
+			self.playerguid = select(15, GetCharacterInfo(self.charid));
 
 			local button = _G["CharSelectCharacterButton"..numDisplayedCharacters];
 			replaceScripts(button);
@@ -882,14 +850,14 @@ function CharacterUpgradeCharacterSelectBlock:Initialize(results)
 	for i = 1, numDisplayedCharacters do
 		local button = _G["CharSelectCharacterButton"..i];
 		_G["CharSelectPaidService"..i]:Hide();
-		local class, _, level, _, _, _, _, _, _, _, playerguid, _, _, _, boostInProgress, _, _, isTrialBoost, _, _, vasServiceInProgress = select(4, GetCharacterInfo(GetCharIDFromIndex(i+CHARACTER_LIST_OFFSET)));
-		local canBoostCharacter = CanBoostCharacter(class, level, boostInProgress, isTrialBoost, vasServiceInProgress);
+		local class, _, level, _, _, _, _, _, _, _, playerguid, _, _, _, boostInProgress, _, _, isTrialBoost, _, revokedCharacterUpgrade, vasServiceInProgress = select(5, GetCharacterInfo(GetCharIDFromIndex(i+CHARACTER_LIST_OFFSET)));
+		local canBoostCharacter = CanBoostCharacter(class, level, boostInProgress, isTrialBoost, revokedCharacterUpgrade, vasServiceInProgress);
 
 		SetCharacterButtonEnabled(button, canBoostCharacter);
 
 		if (canBoostCharacter) then
 			self.frame.ControlsFrame.Arrows[i]:Show();
-			self.frame.ControlsFrame.BonusIcons[i]:SetShown(IsCharacterEligibleForVeteranBonus(level, isTrialBoost));
+			self.frame.ControlsFrame.BonusIcons[i]:SetShown(IsCharacterEligibleForVeteranBonus(level, isTrialBoost, revokedCharacterUpgrade));
 
 			button:SetScript("OnClick", function(button)
 				self:SaveResultInfo(button, playerguid);
@@ -915,9 +883,9 @@ function CharacterUpgradeCharacterSelectBlock:Initialize(results)
 	end
 
 	for i = 1, GetNumCharacters() do
-		local class, _, level, _, _, _, _, _, _, _, _, _, _, _, boostInProgress, _, _, isTrialBoost, _, _, vasServiceInProgress = select(4, GetCharacterInfo(GetCharIDFromIndex(i)));
-		if CanBoostCharacter(class, level, boostInProgress, isTrialBoost, vasServiceInProgress) then
-			if IsCharacterEligibleForVeteranBonus(level, isTrialBoost) then
+		local class, _, level, _, _, _, _, _, _, _, _, _, _, _, boostInProgress, _, _, isTrialBoost, _, revokedCharacterUpgrade, vasServiceInProgress = select(5, GetCharacterInfo(GetCharIDFromIndex(i)));
+		if CanBoostCharacter(class, level, boostInProgress, isTrialBoost, revokedCharacterUpgrade, vasServiceInProgress) then
+			if IsCharacterEligibleForVeteranBonus(level, isTrialBoost, revokedCharacterUpgrade) then
 				self.hasVeteran = true;
 			end
 			numEligible = numEligible + 1;
@@ -934,7 +902,7 @@ function CharacterUpgradeCharacterSelectBlock:Initialize(results)
 	local hasEligibleBoostCharacter = (numEligible > 0);
 	local canCreateCharacter = numDisplayedCharacters < MAX_CHARACTERS_DISPLAYED_BASE;
 	local canShowCreateNewCharacterButton = canCreateCharacter and IsUsingValidProductForCreateNewCharacterBoost();
-	local canCreateTrialBoostCharacter = canCreateCharacter and (C_CharacterServices.IsTrialBoostEnabled() and IsUsingValidProductForTrialBoost());
+	local canCreateTrialBoostCharacter = canCreateCharacter and (C_CharacterServices.IsTrialBoostEnabled() and IsUsingValidProductForTrialBoost(CharacterUpgradeFlow.data));
 
 	self:SetOptionUsed(self.OPTION_INDEX_STEP_LABEL, hasEligibleBoostCharacter);
 	self:SetOptionUsed(self.OPTION_INDEX_CREATE_NEW_CHARACTER, canShowCreateNewCharacterButton);
@@ -951,6 +919,26 @@ function CharacterUpgradeCharacterSelectBlock:Initialize(results)
 	self:SetCharacterSelectErrorFrameShown(showBoostError);
 end
 
+function CharacterUpgradeCharacterSelectBlock:ShouldShowPopup()
+	local _, _, raceFilename = GetCharacterInfo(self.charid);
+	local raceData = C_CharacterCreation.GetRaceDataByID(RACE_NAME_BUTTON_ID_MAP[strupper(raceFilename)]);
+	local seenPopupBefore = self.seenPopup;
+	self.seenPopup = true;
+	local isTrialBoost = select(22, GetCharacterInfo(self.charid));
+	return not isTrialBoost and raceData.isAlliedRace and not raceData.hasHeritageArmor and not seenPopupBefore;
+end
+
+function CharacterUpgradeCharacterSelectBlock:GetPopupText()
+	local _, _, raceFilename, _, _, _, _, _, _, _, _, _, _, _, _, _, _, gender = GetCharacterInfo(self.charid);
+	local raceData = C_CharacterCreation.GetRaceDataByID(RACE_NAME_BUTTON_ID_MAP[strupper(raceFilename)]);
+
+	if GetCurrentRegionName() == "CN" then
+		return formatDescription(BOOST_ALLIED_RACE_HERITAGE_ARMOR_WARNING_CN:format(raceData.name), gender+1);
+	else
+		return formatDescription(BOOST_ALLIED_RACE_HERITAGE_ARMOR_WARNING:format(raceData.name), gender+1);
+	end
+end
+
 function CharacterUpgradeCharacterSelectBlock:IsFinished()
 	return self.charid ~= nil;
 end
@@ -960,8 +948,8 @@ function CharacterUpgradeCharacterSelectBlock:GetResult()
 end
 
 function CharacterUpgradeCharacterSelectBlock:FormatResult()
-	local name, _, class, classFileName, _, level, _, _, _, _, _, _, _, _, prof1, prof2, _, _, _, _, isTrialBoost = GetCharacterInfo(self.charid);
-	if (IsCharacterEligibleForVeteranBonus(level, isTrialBoost)) then
+	local name, _, _, class, classFileName, _, level, _, _, _, _, _, _, _, _, prof1, prof2, _, _, _, _, isTrialBoost, _, revokedCharacterUpgrade = GetCharacterInfo(self.charid);
+	if (IsCharacterEligibleForVeteranBonus(level, isTrialBoost, revokedCharacterUpgrade)) then
 		local defaults = defaultProfessions[classDefaultProfessionMap[classFileName]];
 		if (prof1 == 0 and prof2 == 0) then
 			prof1 = defaults[1];
@@ -1055,7 +1043,7 @@ function CharacterUpgradeSelectCharacterFrame_OnLoad(self)
 end
 
 function CharacterUpgrade_SetupFlowForNewCharacter(characterType)
-	if characterType == LE_CHARACTER_CREATE_TYPE_BOOST then
+	if characterType == Enum.CharacterCreateType.Boost then
 		CharacterUpgradeCharacterSelectBlock.createNum = GetNumCharacters();
 
 		if CharacterServicesMaster.flow then
@@ -1070,12 +1058,12 @@ function CharacterUpgrade_BeginNewCharacterCreation(characterType)
 end
 
 function CharacterUpgradeCreateCharacter_OnClick(self)
-	CharacterUpgrade_BeginNewCharacterCreation(LE_CHARACTER_CREATE_TYPE_BOOST);
+	CharacterUpgrade_BeginNewCharacterCreation(Enum.CharacterCreateType.Boost);
 end
 
 function CharacterUpgradeClassTrial_OnClick(self)
 	CharSelectServicesFlowFrame:Hide();
-	CharacterUpgrade_BeginNewCharacterCreation(LE_CHARACTER_CREATE_TYPE_TRIAL_BOOST);
+	CharacterUpgrade_BeginNewCharacterCreation(Enum.CharacterCreateType.TrialBoost);
 end
 
 -- There are currently no script overrides to recommended specs, add them here if necessary.
@@ -1101,15 +1089,6 @@ function ClickRecommendedSpecButton(ownerFrame, overrideSpecID)
 	if specButton then
 		specButton:Click();
 	end
-end
-
-local function formatDescription(description, gender)
-	if (not strfind(description, "%$")) then
-		return description;
-	end
-
-	-- This is a very simple parser that will only handle $G/$g tokens
-	return gsub(description, "$[Gg]([^:]+):([^;]+);", "%"..gender);
 end
 
 local function createTooltipText(description, gender, isRecommended, isTrialBoost)
@@ -1174,7 +1153,18 @@ local function CreateSpecButton(parent, buttonIndex, layoutData)
 	return frame;
 end
 
-function CharacterServices_UpdateSpecializationButtons(classID, gender, parentFrame, owner, allowAllSpecs, isTrialBoost)
+local function CharacterServices_IsCurrentSpecializationAllowed(classID, gender, currentSpecID)
+	for i = 1, 4 do
+		local specID, _, _, _, _, isRecommended, isAllowed = GetSpecializationInfoForClassID(classID, i, gender);
+		if specID == currentSpecID then
+			return isRecommended or isAllowed;
+		end
+	end
+	
+	return false;
+end
+
+function CharacterServices_UpdateSpecializationButtons(classID, gender, parentFrame, owner, allowAllSpecs, isTrialBoost, currentSpecID)
 	local numSpecs = GetNumSpecializationsForClassID(classID);
 
 	if not parentFrame.SpecButtons then
@@ -1200,7 +1190,9 @@ function CharacterServices_UpdateSpecializationButtons(classID, gender, parentFr
 
 	local hasActualChoice = (availableSpecsToChoose > 1);
 	local canChooseFromAllSpecs = allowAllSpecs or (hasActualChoice and availableSpecsToChoose == numSpecs);
-
+	local isCurrentSpecAllowed = canChooseFromAllSpecs or CharacterServices_IsCurrentSpecializationAllowed(classID, gender, currentSpecID);
+	local autoSelectedSpecID;
+	
 	for i = 1, 4 do
 		if not parentFrame.SpecButtons[i] then
 			parentFrame.SpecButtons[i] = CreateSpecButton(parentFrame, i, layoutData);
@@ -1209,15 +1201,25 @@ function CharacterServices_UpdateSpecializationButtons(classID, gender, parentFr
 		local button = parentFrame.SpecButtons[i];
 		button.owner = owner;
 		button.isRecommended = nil;
-
+		
 		if i <= numSpecs then
-			local specID, name, description, icon, role, isRecommended, isAllowed = GetSpecializationInfoForClassID(classID, i, gender);
+			local specID, name, description, icon, role, isRecommended, isAllowed = GetSpecializationInfoForClassID(classID, i, gender + 1);
 			local allowed = allowAllSpecs or isAllowed or isRecommended;
-			local showRecommendedLabel = isRecommended or (hasActualChoice and not canChooseFromAllSpecs and isAllowed);
-
+			local isCurrentSpec = specID == currentSpecID;
+			
+			-- We prefer to show a player's current spec instead of a recommended spec. We should only show
+			-- the recommended spec if you're boosting a brand new character.
+			local showRecommendedLabel;
+			if isCurrentSpecAllowed then
+				showRecommendedLabel = isCurrentSpec;
+			else
+				showRecommendedLabel = isRecommended;
+			end
+			
 			button:SetID(specID);
 			button.SpecIcon:SetTexture(icon);
 			button.SpecIcon:SetDesaturated(not allowed);
+			button.Frame:SetDesaturated(not allowed);
 			button.SpecName:SetText(name);
 			button.RoleIcon:SetTexCoord(GetTexCoordsForRole(role));
 			button.RoleIcon:SetDesaturated(not allowed);
@@ -1226,12 +1228,15 @@ function CharacterServices_UpdateSpecializationButtons(classID, gender, parentFr
 			button.Recommended:SetShown(showRecommendedLabel);
 			button.isRecommended = isRecommended;
 
-			-- If only the one recommended spec can be picked, change the text to reflect that the user
-			-- has no real choice here.
-			if isRecommended and hasActualChoice then
-				button.Recommended:SetText(CHAR_SPEC_RECOMMENEDED);
-			else
-				button.Recommended:SetText(CHAR_SPEC_AVAILABLE);
+			if showRecommendedLabel then
+				autoSelectedSpecID = specID;
+				if not hasActualChoice then
+					button.Recommended:SetText(CHAR_SPEC_AVAILABLE);
+				elseif isCurrentSpec then
+					button.Recommended:SetText(CHARACTER_UPGRADE_FLOW_CHAR_SPEC_CURRENT);
+				elseif isRecommended then
+					button.Recommended:SetText(CHAR_SPEC_RECOMMENEDED);
+				end
 			end
 
 			if allowed then
@@ -1258,7 +1263,7 @@ function CharacterServices_UpdateSpecializationButtons(classID, gender, parentFr
 	end
 
 	if owner.OnUpdateSpecButtons then
-		owner:OnUpdateSpecButtons(allowAllSpecs);
+		owner:OnUpdateSpecButtons(autoSelectedSpecID);
 	end
 end
 
@@ -1269,34 +1274,33 @@ function CharacterUpgradeSpecSelectBlock:Initialize(results, wasFromRewind)
 
 	self.specButtonClickedCallback = CharacterServicesMaster_Update;
 
-	local _, _, _, classFilename, classID, _, _, _, _, _, _, _, _, playerguid, _, _, gender = GetCharacterInfo(results.charid);
+	local _, _, _, _, classFilename, classID, experienceLevel, _, _, _, _, _, _, _, playerguid, _, _, gender, _, _, _, _, _, _, _, _, specID = GetCharacterInfo(results.charid);
 	self.classID = classID;
 	self.frame.ControlsFrame.classFilename = classFilename;
 
+	local isNewCharacter = experienceLevel < 10;
+	if isNewCharacter then
+		self.currentSpecID = nil;
+	else
+		self.currentSpecID = specID;
+	end
+
 	-- When boosting to level 100, prevent the selection of non-recommended specs, but still auto-select from
 	-- the limited number of specs that the user can choose from
-	local allowAllSpecs = CharacterUpgradeFlow.data.productId ~= Enum.BattlepayBoostProduct.Level100Boost;
-
-	CharacterServices_UpdateSpecializationButtons(classID, gender, self.frame.ControlsFrame, CharacterUpgradeSpecSelectBlock, allowAllSpecs);
-
-	-- Determine if this should auto-advance and cache off relevant information
-	local autoSelectGuid = CharacterUpgradeFlow:GetAutoSelectGuid();
-	if autoSelectGuid ~= nil then
-		if playerguid == autoSelectGuid then
-			local recommendedSpecButton = GetRecommendedSpecButton(self.frame.ControlsFrame);
-			if recommendedSpecButton then
-				self.selected = recommendedSpecButton:GetID();
-				self.AutoAdvance = true;
-			end
-		end
-	else
-		self.AutoAdvance = false;
-	end
+	local flags = CharacterUpgradeFlow.data.flags;
+	local restrictToRecommendedSpecs = bit.band(flags, Enum.CharacterServiceInfoFlag.RestrictToRecommendedSpecs) == Enum.CharacterServiceInfoFlag.RestrictToRecommendedSpecs;
+	
+	CharacterServices_UpdateSpecializationButtons(classID, gender+1, self.frame.ControlsFrame, CharacterUpgradeSpecSelectBlock, not restrictToRecommendedSpecs, nil, self.currentSpecID);
 end
 
-function CharacterUpgradeSpecSelectBlock:OnUpdateSpecButtons(allowAllSpecs)
-	if not allowAllSpecs or self.selected then
-		ClickRecommendedSpecButton(self.frame.ControlsFrame, self.selected);
+function CharacterUpgradeSpecSelectBlock:SkipIf(results)
+	return CharacterUpgradeFlow:IsUnrevoke();
+end
+
+function CharacterUpgradeSpecSelectBlock:OnUpdateSpecButtons(autoSelectedSpecID)
+	local overrideSpec = self.selected or autoSelectedSpecID;
+	if overrideSpec then
+		ClickRecommendedSpecButton(self.frame.ControlsFrame, overrideSpec);
 	end
 end
 
@@ -1312,7 +1316,7 @@ function CharacterUpgradeSpecSelectBlock:FormatResult()
 	return GetSpecializationNameForSpecID(self.selected);
 end
 
-function CharacterUpgradeSpecSelectBlock:ShowPopupIf()
+function CharacterUpgradeSpecSelectBlock:ShouldShowPopup()
 	-- If it ever becomes possible to select non-recommended specs, then re-enable this.
 	--local role = select(5, GetSpecializationInfoForSpecID(self.selected));
 	--return role == "HEALER";

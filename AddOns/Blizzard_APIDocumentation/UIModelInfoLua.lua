@@ -119,6 +119,17 @@ local UIModelInfoLua =
 	Tables =
 	{
 		{
+			Name = "ModelSceneSetting",
+			Type = "Enumeration",
+			NumValues = 1,
+			MinValue = 1,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "AlignLightToOrbitDelta", Type = "ModelSceneSetting", EnumValue = 0 },
+			},
+		},
+		{
 			Name = "ModelSceneType",
 			Type = "Enumeration",
 			NumValues = 10,
@@ -175,6 +186,7 @@ local UIModelInfoLua =
 				{ Name = "zoomedYawOffset", Type = "number", Nilable = false },
 				{ Name = "zoomedPitchOffset", Type = "number", Nilable = false },
 				{ Name = "zoomedRollOffset", Type = "number", Nilable = false },
+				{ Name = "flags", Type = "ModelSceneSetting", Nilable = false },
 			},
 		},
 	},

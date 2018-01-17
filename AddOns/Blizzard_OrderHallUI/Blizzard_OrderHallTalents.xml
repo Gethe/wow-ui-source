@@ -11,7 +11,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="1">
-				<Texture parentKey="AlphaIconOverlay" textureSubLevel="1">
+				<Texture parentKey="AlphaIconOverlay">
 					<Color a="1" r="0.0" g="0.0" b="0.0"/>
 				</Texture>
 			</Layer>

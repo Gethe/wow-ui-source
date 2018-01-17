@@ -550,19 +550,8 @@
 													</Layer>
 												</Layers>
 												<Scripts>
-													<OnLoad>
-														local fontString = self:GetFontString();
-														fontString:SetPoint("CENTER", 8, 2);
-														self.Logo:ClearAllPoints();
-														self.Logo:SetPoint("RIGHT", fontString, "LEFT", -2, 0);
-														if (GameLimitedMode_IsActive()) then
-															self.tooltip = ERR_FEATURE_RESTRICTED_TRIAL;
-															self:Disable();
-														else
-															self.tooltip = nil;
-															self:Enable();
-														end
-													</OnLoad>
+													<OnLoad function="WowTokenGameTimeTutorialStoreButton_OnLoad"/>
+													<OnEvent function="WowTokenGameTimeTutorialStoreButton_OnEvent"/>
 													<OnClick>
 														ToggleStoreUI();
 														StoreFrame_SetTokenCategory();

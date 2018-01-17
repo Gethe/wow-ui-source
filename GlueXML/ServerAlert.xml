@@ -52,9 +52,9 @@
 								LaunchURL(link);
 							</OnHyperlinkClick>
 						</Scripts>
-						<FontString inherits="GlueFontHighlightSmall" spacing="2"/>
-						<FontStringHeader1 inherits="GlueFontNormalLarge" spacing="4"/>
-						<FontStringHeader2 inherits="GlueFontHighlight" spacing="4"/>
+						<FontString inherits="GlueFontHighlightSmall" spacing="2" justifyH="LEFT" />
+						<FontStringHeader1 inherits="GlueFontNormalLarge" spacing="4" justifyH="LEFT" />
+						<FontStringHeader2 inherits="GlueFontHighlight" spacing="4" justifyH="LEFT" />
 					</SimpleHTML>
 				</ScrollChild>
 			</ScrollFrame>

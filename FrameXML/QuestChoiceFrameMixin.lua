@@ -15,8 +15,8 @@ StaticPopupDialogs["CONFIRM_GORGROND_GARRISON_CHOICE"] = {
 	button1 = OKAY,
 	button2 = CANCEL,
 	OnAccept = function(self)
-		SendQuestChoiceResponse(self.data);
-		HideUIPanel(QuestChoiceFrame);
+		SendQuestChoiceResponse(self.data.response);
+		HideUIPanel(self.data.owner);
 	end,
 	hideOnEscape = 1,
 	timeout = 0,
@@ -30,8 +30,8 @@ StaticPopupDialogs["CONFIRM_PLAYER_CHOICE"] = {
 	button1 = OKAY,
 	button2 = CANCEL,
 	OnAccept = function(self)
-		SendQuestChoiceResponse(self.data);
-		HideUIPanel(QuestChoiceFrame);
+		SendQuestChoiceResponse(self.data.response);
+		HideUIPanel(self.data.owner);
 	end,
 	hideOnEscape = 1,
 	timeout = 0,
@@ -39,71 +39,44 @@ StaticPopupDialogs["CONFIRM_PLAYER_CHOICE"] = {
 	whileDead = 1,
 }
 
-function QuestChoiceFrame_OnLoad(self)
+QuestChoiceFrameMixin = {};
+
+function QuestChoiceFrameMixin:OnLoad()
 	self.defaultLeftPadding = self.leftPadding;
 	self.defaultRightPadding = self.rightPadding;
 	self.defaultSpacing = self.spacing;
 
-	self:RegisterEvent("QUEST_CHOICE_UPDATE");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("PLAYER_DEAD");
 	self:RegisterEvent("QUEST_CHOICE_CLOSE");
 end
 
-function QuestChoiceFrame_OnEvent(self, event)
+function QuestChoiceFrameMixin:OnEvent(event)
 	if (event == "QUEST_CHOICE_UPDATE") then
-		QuestChoiceFrame_SetPendingUpdate(self);
-	elseif (event == "PLAYER_DEAD" or event == "PLAYER_ENTERING_WORLD" or event=="QUEST_CHOICE_CLOSE") then
+		self:SetPendingUpdate();
+	elseif (event == "PLAYER_DEAD" or event == "PLAYER_ENTERING_WORLD" or event == "QUEST_CHOICE_CLOSE") then
 		HideUIPanel(self);
 	end
 end
 
-function QuestChoiceFrame_OnUpdate(self, elapsed)
+function QuestChoiceFrameMixin:OnUpdate(elapsed)
 	if self.hasPendingUpdate then
-		QuestChoiceFrame_Update(self);
+		self:Update();
 	end
 end
 
-function QuestChoiceFrame_SetPendingUpdate(self)
+function QuestChoiceFrameMixin:SetPendingUpdate()
 	self.hasPendingUpdate = true;
 end
 
-function QuestChoiceFrame_Show()
-	local self = QuestChoiceFrame;
+function QuestChoiceFrameMixin:TryShow()
 	if (not self:IsShown()) then
 		ShowUIPanel(self)
-		QuestChoiceFrame_Update(QuestChoiceFrame);
+		self:Update();
 	end
 end
 
-function QuestChoiceFrameOptionButton_OnClick(self)
-	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-	local parent = self:GetParent();
-	if ( parent.optID ) then
-		if ( IsInGroup() and (QuestChoiceFrame.choiceID == GORGROND_GARRISON_ALLIANCE_CHOICE or QuestChoiceFrame.choiceID == GORGROND_GARRISON_HORDE_CHOICE) ) then
-			StaticPopup_Show("CONFIRM_GORGROND_GARRISON_CHOICE", nil, nil, parent.optID);
-		elseif ( parent.confirmationText ) then
-			StaticPopup_Show("CONFIRM_PLAYER_CHOICE", parent.confirmationText, nil, parent.optID);
-		else
-			SendQuestChoiceResponse(parent.optID);
-			HideUIPanel(QuestChoiceFrame);
-		end
-	end
-end
-
-function QuestChoiceFrameOptionButton_OnEnter(self)
-	if ( self.Text:IsTruncated() ) then
-		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		GameTooltip:SetText(self.Text:GetText(), 1, 1, 1, 1, true);
-		GameTooltip:Show();
-	end
-end
-
-function QuestChoiceFrameOptionButton_OnLeave(self)
-	GameTooltip:Hide();
-end
-
-function QuestChoiceFrame_Update(self)
+function QuestChoiceFrameMixin:Update()
 	self.hasPendingUpdate = false;
 
 	local choiceID, questionText, numOptions = GetQuestChoiceInfo();
@@ -116,12 +89,13 @@ function QuestChoiceFrame_Update(self)
 
 	for i=1, numOptions do
 		local optID, buttonText, description, header, artFile, confirmationText = GetQuestChoiceOptionInfo(i);
-		local option = QuestChoiceFrame.Options[i];
+		local option = self.Options[i];
 		option.optID = optID;
 		option.OptionButton:SetText(buttonText);
 		option.OptionText:SetText(description);
 		if header and #header > 0 then
 			option.Header:Show();
+			option.Header.Text:SetHeight(0);
 			option.Header.Text:SetText(header);
 		else
 			option.Header:Hide();
@@ -130,48 +104,57 @@ function QuestChoiceFrame_Update(self)
 		option.confirmationText = confirmationText;
 	end
 
-	QuestChoiceFrame_ShowRewards(numOptions)
+	self:ShowRewards(numOptions)
 
 	--make window taller if there is too much stuff
-	local maxHeight = INIT_OPTION_HEIGHT;
+	local initOptionHeight = self.initOptionHeight or INIT_OPTION_HEIGHT;
+	local optionStaticHeight = self.optionStaticHeight or OPTION_STATIC_HEIGHT;
+	local maxHeight = initOptionHeight;
 	for i=1, numOptions do
-		local option = QuestChoiceFrame.Options[i];
-		local currHeight = OPTION_STATIC_HEIGHT;
+		local option = self.Options[i];
+		local currHeight = optionStaticHeight;
 
 		currHeight = currHeight + option.OptionText:GetContentHeight();
-		currHeight = currHeight + option.Rewards:GetHeight() + 25;
+		if (option.Rewards) then
+			currHeight = currHeight + option.Rewards:GetHeight() + 25;
+		end
 		maxHeight = math.max(currHeight, maxHeight);
 	end
 	for i=1, numOptions do
-		local option = QuestChoiceFrame.Options[i];
+		local option = self.Options[i];
 		option:SetHeight(maxHeight);
 	end
-	local heightDiff = maxHeight - INIT_OPTION_HEIGHT;
+	local heightDiff = maxHeight - initOptionHeight;
 	heightDiff = max(heightDiff, 0);
-	QuestChoiceFrame:SetHeight(INIT_WINDOW_HEIGHT + heightDiff);
-	for i = 1, #QuestChoiceFrame.Options do
-		QuestChoiceFrame.Options[i]:SetShown(i <= numOptions);
+	local initWindowHeight = self.initWindowHeight or INIT_WINDOW_HEIGHT;
+	self:SetHeight(initWindowHeight + heightDiff);
+	if (self.OnHeightChanged) then
+		self:OnHeightChanged(heightDiff);
+	end
+	
+	for i = 1, #self.Options do
+		self.Options[i]:SetShown(i <= numOptions);
 	end
 	if numOptions == 1 then
-		QuestChoiceFrame.leftPadding = (QuestChoiceFrame.fixedWidth - QuestChoiceFrame.Option1:GetWidth()) / 2;
-		QuestChoiceFrame.rightPadding = 0;
-		QuestChoiceFrame.spacing = 0;
+		self.leftPadding = (self.fixedWidth - self.Option1:GetWidth()) / 2;
+		self.rightPadding = 0;
+		self.spacing = 0;
 	elseif numOptions == 4 then
-		QuestChoiceFrame.leftPadding = 50;
-		QuestChoiceFrame.rightPadding = 50;
-		QuestChoiceFrame.spacing = 20;
+		self.leftPadding = 50;
+		self.rightPadding = 50;
+		self.spacing = 20;
 	else
-		QuestChoiceFrame.leftPadding = self.defaultLeftPadding;
-		QuestChoiceFrame.rightPadding = self.defaultRightPadding;
-		QuestChoiceFrame.spacing = self.defaultSpacing;
+		self.leftPadding = self.defaultLeftPadding;
+		self.rightPadding = self.defaultRightPadding;
+		self.spacing = self.defaultSpacing;
 	end
 
 	self:Layout();
 end
 
-function QuestChoiceFrame_ShowRewards(numOptions)
+function QuestChoiceFrameMixin:ShowRewards(numOptions)
 	for i=1, numOptions do
-		local rewardFrame = QuestChoiceFrame["Option"..i].Rewards;
+		local rewardFrame = self["Option"..i].Rewards;
 		local height = INIT_REWARDS_HEIGHT;
 		local title, skillID, skillPoints, money, xp, numItems, numCurrencies, numChoices, numReps = GetQuestChoiceRewardInfo(i);
 
@@ -241,7 +224,7 @@ function QuestChoiceFrame_ShowRewards(numOptions)
 			local repFrame = rewardFrame.ReputationsFrame.Reputation1;
 			local factionFrame = repFrame.Faction;
 			local amountFrame = repFrame.Amount;
-			local dummyString = QuestChoiceFrame.DummyString;
+			local dummyString = self.DummyString;
 			local factionID, quantity = GetQuestChoiceRewardFaction(i, 1); --there should only be one reputation reward
 			local factionName = format(REWARD_REPUTATION, GetFactionInfoByID(factionID));
 			dummyString:SetText(factionName);
@@ -265,16 +248,47 @@ function QuestChoiceFrame_ShowRewards(numOptions)
 	end
 end
 
-function QuestChoiceFrame_OnItemEnter(self)
+QuestChoiceOptionButtonMixin = {};
+
+function QuestChoiceOptionButtonMixin:OnClick()
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+	local parent = self:GetParent();
+	if ( parent.optID ) then
+		if ( IsInGroup() and (parent.choiceID == GORGROND_GARRISON_ALLIANCE_CHOICE or parent.choiceID == GORGROND_GARRISON_HORDE_CHOICE) ) then
+			StaticPopup_Show("CONFIRM_GORGROND_GARRISON_CHOICE", nil, nil, { response = parent.optID, owner = parent:GetParent() });
+		elseif ( parent.confirmationText ) then
+			StaticPopup_Show("CONFIRM_PLAYER_CHOICE", parent.confirmationText, nil, { response = parent.optID, owner = parent:GetParent() });
+		else
+			SendQuestChoiceResponse(parent.optID);
+			HideUIPanel(parent:GetParent());
+		end
+	end
+end
+
+function QuestChoiceOptionButtonMixin:OnEnter()
+	if ( self.Text:IsTruncated() ) then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip:SetText(self.Text:GetText(), 1, 1, 1, 1, true);
+		GameTooltip:Show();
+	end
+end
+
+function QuestChoiceOptionButtonMixin:OnLeave()
+	GameTooltip:Hide();
+end
+
+QuestChoiceItemButtonMixin = {};
+
+function QuestChoiceItemButtonMixin:OnEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_TOP");
 	if GameTooltip:SetItemByID(self.itemID) then
-		self.UpdateTooltip = QuestChoiceFrame_OnItemEnter;
+		self.UpdateTooltip = self.OnEnter;
 	else
 		self.UpdateTooltip = nil;
 	end
 end
 
-function QuestChoiceFrame_OnItemUpdate(self)
+function QuestChoiceItemButtonMixin:OnUpdate()
 	if GameTooltip:IsOwned(self) then
 		if IsModifiedClick("DRESSUP") then
 			ShowInspectCursor();
@@ -284,7 +298,7 @@ function QuestChoiceFrame_OnItemUpdate(self)
 	end
 end
 
-function QuestChoiceFrame_OnItemModifiedClick(self, button)
+function QuestChoiceItemButtonMixin:OnModifiedClick(button)
 	local modifiedClick = IsModifiedClick();
 	if ( modifiedClick ) then
 		HandleModifiedItemClick(self.itemLink);

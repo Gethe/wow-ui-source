@@ -5,6 +5,8 @@ local SEAL_QUESTS = {
 	[43926] = { bgAtlas = "QuestBG-Horde", text = "|cff480404"..QUEST_WARCHIEF_VOLJIN.."|r", sealAtlas = "Quest-Horde-WaxSeal"},
 	[47221] = { bgAtlas = "QuestBG-TheHandofFate", },
 	[47835] = { bgAtlas = "QuestBG-TheHandofFate", },
+	[49929] = { bgAtlas = "QuestBG-Alliance", text = "|cff042c54"..QUEST_KING_ANDUIN_WRYNN.."|r", sealAtlas = "Quest-Alliance-WaxSeal" },
+	[49930] = { bgAtlas = "QuestBG-Horde", text = "|cff480404"..QUEST_WARCHIEF_SYLVANAS_WINDRUNNER.."|r", sealAtlas = "Quest-Horde-WaxSeal" },
 };
 
 function QuestInfoTimerFrame_OnUpdate(self, elapsed)
@@ -88,7 +90,7 @@ function QuestInfo_Display(template, parentFrame, acceptButton, material, mapVie
 	local elementsTable = template.elements;
 	local lastFrame;
 	for i = 1, #elementsTable, 3 do
-		local shownFrame, bottomShownFrame = elementsTable[i]();
+		local shownFrame, bottomShownFrame = elementsTable[i](parentFrame);
 		if ( shownFrame ) then
 			shownFrame:SetParent(parentFrame);
 			if ( lastFrame ) then
@@ -328,8 +330,10 @@ function QuestInfo_ShowRewardText()
 	return QuestInfoRewardText;
 end
 
-function QuestInfo_ShowSeal()
+function QuestInfo_ShowSeal(parentFrame)
 	local frame = QuestInfoSealFrame;
+	-- Temporary anchor to ensure :IsTruncated will work for the seal text.
+	frame:SetPoint("CENTER", parentFrame or UIParent);
 	if frame.sealInfo then
 		if frame.sealInfo.text then
 			frame.Text:SetText(frame.sealInfo.text);
@@ -773,6 +777,7 @@ function QuestInfo_ShowRewards()
 				SetItemButtonTexture(questItem, texture);
 				SetItemButtonTextureVertexColor(questItem, 1.0, 1.0, 1.0);
 				SetItemButtonNameFrameVertexColor(questItem, 1.0, 1.0, 1.0);
+				SetItemButtonQuality(questItem);
 
 				if ( buttonIndex > 1 ) then
 					if ( mod(buttonIndex,2) == 1 ) then

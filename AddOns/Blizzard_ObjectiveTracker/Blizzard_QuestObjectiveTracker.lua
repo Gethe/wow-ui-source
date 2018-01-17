@@ -28,7 +28,9 @@ function QUEST_TRACKER_MODULE:OnFreeTypedLine(line)
 	if ( line.state ) then
 		line.state = nil;
 		line.Glow.Anim:Stop();
+		line.Glow:SetAlpha(0);
 		line.Sheen.Anim:Stop();
+		line.Sheen:SetAlpha(0);
 		line.CheckFlash.Anim:Stop();
 		line.CheckFlash:SetAlpha(0);
 		line.FadeOutAnim:Stop();

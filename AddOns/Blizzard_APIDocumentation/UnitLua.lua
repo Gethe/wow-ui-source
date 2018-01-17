@@ -6,6 +6,21 @@ local UnitLua =
 	Functions =
 	{
 		{
+			Name = "UnitAlliedRaceInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isAlliedRace", Type = "bool", Nilable = false },
+				{ Name = "hasHeritageArmorUnlocked", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "UnitIsOwnerOrControllerOfUnit",
 			Type = "Function",
 

@@ -36,12 +36,16 @@ function StoreFrame_SetServicesCategory()
 	StoreFrame:SetAttribute("setservicescategory");
 end
 
-function StoreFrame_SelectLevel100BoostProduct(optionalGuid)
-	StoreFrame:SetAttribute("selectlevel100boostproduct", optionalGuid);
+function StoreFrame_SelectBoost(boostType, reason, guid)
+	local data = {};
+	data.boostType = boostType;
+	data.reason = reason;
+	data.guid = guid;
+	StoreFrame:SetAttribute("selectboost", data);
 end
 
-function StoreFrame_SelectUnrevokeBoostProduct(optionalGuid)
-	StoreFrame:SetAttribute("selectunrevokeboostproduct", optionalGuid);
+function StoreFrame_SelectGameTimeProduct()
+	StoreFrame:SetAttribute("selectgametime", true);
 end
 
 if (InGlue()) then

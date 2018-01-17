@@ -74,6 +74,12 @@
 			<Frame name="$parentButtonText" setAllPoints="true" parentKey="buttonText">
 				<Layers>
 					<Layer level="BORDER">
+						<FontString name="$parentLastVersion" inherits="GlueFontHighlightSmall" justifyH="LEFT" parentKey="LastVersion">
+							<Size x="0" y="0"/>
+							<Anchors>
+								<Anchor point="TOPRIGHT" x="-48" y="-5"/>
+							</Anchors>
+						</FontString>
 						<FontString name="$parentName" inherits="GlueFontNormal" justifyH="LEFT" parentKey="name">
 							<Anchors>
 								<Anchor point="TOPLEFT" x="0" y="-5"/>
@@ -352,7 +358,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture parentKey="IconBorder" setAllPoints="true">
+				<Texture parentKey="IconBorder" atlas="services-ring" setAllPoints="true">
 					<Size x="59" y="60"/>
 					<Anchors>
 						<Anchor point="TOP"/>
@@ -592,6 +598,9 @@
 								self.isExpanded = GetCVarBool("expandUpgradePanel");
 								self:RegisterEvent("ACCOUNT_DATA_INITIALIZED");
 							</OnLoad>
+							<OnShow>
+								AccountUpgradePanel_UpdateExpandState();
+							</OnShow>
 							<OnEvent>
 								if ( event == "ACCOUNT_DATA_INITIALIZED" ) then
 									AccountUpgradePanel_UpdateExpandState();
@@ -1120,7 +1129,7 @@
 										GlueParent_DeathKnightButtonSwap(self);
 									</OnUpdate>
 									<OnClick>
-										CharacterSelect_CreateNewCharacter(LE_CHARACTER_CREATE_TYPE_NORMAL, true);
+										CharacterSelect_CreateNewCharacter(Enum.CharacterCreateType.Normal, true);
 									</OnClick>
 									<!-- We need to override the templates script because it will reset our textures. -->
 									<OnShow/>
@@ -1362,6 +1371,9 @@
 
 					<Frame name="UpgradePopupFrame" frameStrata="HIGH" hidden="true">
 						<Size x="430" y="250"/>
+						<Anchors>
+							<Anchor point="CENTER"/>
+						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
 								<Texture parentKey="Top">
@@ -1395,7 +1407,7 @@
 										<Anchor point="TOP" x="0" y="-45"/>
 									</Anchors>
 								</FontString>
-								<FontString parentKey="Description" inherits="GameFontNormalMed2" justifyH="CENTER" justivyV="TOP">
+								<FontString parentKey="Description" inherits="GameFontNormalMed2" justifyH="CENTER" justifyV="TOP">
 									<Size x="360" y="0"/>
 									<Anchors>
 										<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="0" y="-20"/>
@@ -1407,7 +1419,7 @@
 						<Frames>
 							<Button parentKey="CloseButton" inherits="UIPanelCloseButtonNoScripts">
 								<Anchors>
-									<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-8" y="-8"/>
+									<Anchor point="CENTER" relativeKey="$parent.CloseButtonBG" x="1"/>
 								</Anchors>
 								<Scripts>
 									<OnClick function="CharacterUpgradePopup_OnCloseClick"/>
@@ -1421,7 +1433,9 @@
 								<Scripts>
 									<OnEnter>
 										GlueTooltip:SetOwner(self, "ANCHOR_RIGHT");
-										GlueTooltip:SetText(CHARACTER_UPGRADE_POPUP_BOOST_EXISTING_CHARACTER_TOOLTIP, nil, nil, nil, nil, true);
+										local boostTitle = self:GetParent().data.flowTitle;
+										local tooltip = CHARACTER_UPGRADE_POPUP_BOOST_EXISTING_CHARACTER_TOOLTIP:format(boostTitle);
+										GlueTooltip:SetText(tooltip, nil, nil, nil, nil, true);
 									</OnEnter>
 									<OnLeave>
 										GlueTooltip:Hide();
@@ -1439,7 +1453,11 @@
 										self:SetEnabled(C_CharacterServices.IsTrialBoostEnabled());
 									</OnShow>
 									<OnEnter>
-										local buttonTooltip = C_CharacterServices.IsTrialBoostEnabled() and CHARACTER_UPGRADE_POPUP_TRY_NEW_CLASS_TOOLTIP or CHARACTER_UPGRADE_POPUP_TRY_NEW_CLASS_DISABLED_TOOLTIP;
+										local buttonTooltip = CHARACTER_UPGRADE_POPUP_TRY_NEW_CLASS_DISABLED_TOOLTIP;
+										if C_CharacterServices.IsTrialBoostEnabled() then
+											local boostLevel = C_CharacterCreation.GetTrialBoostStartingLevel();
+											buttonTooltip = CHARACTER_UPGRADE_POPUP_TRY_NEW_CLASS_TOOLTIP:format(boostLevel);
+										end
 										GlueTooltip:SetOwner(self, "ANCHOR_RIGHT");
 										GlueTooltip:SetText(buttonTooltip, nil, nil, nil, nil, true);
 									</OnEnter>
@@ -1726,7 +1744,7 @@
 									</OnLoad>
 									<OnClick>
 										PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_CREATE_NEW);
-										SetCharacterTemplate(GlueDropDownMenu_GetSelectedID(CharacterTemplatesFrameDropDown));
+										C_CharacterCreation.SetCharacterTemplate(GlueDropDownMenu_GetSelectedID(CharacterTemplatesFrameDropDown));
 										GlueParent_SetScreen("charcreate");
 									</OnClick>
 								</Scripts>
@@ -1950,7 +1968,7 @@
 										end
 									</OnHyperlinkClick>
 								</Scripts>
-								<FontString inherits="GameFontNormalLarge">
+								<FontString inherits="GameFontNormalLarge" justifyH="LEFT">
                                     <Shadow>
                                         <Offset>
                                             <AbsDimension x="0" y="0"/>
@@ -2067,7 +2085,7 @@
                             </OnLoad>
                         </Scripts>
                     </Frame>
-                    <Frame name="ConversionInProgressDialog"  inherits="GlueModalFrameTemplate" topLevel="true" enableMouse="true" frameStrata="DIALOG" hidden="true">
+                    <Frame name="ConversionInProgressDialog"  inherits="GlueModalFrameTemplate" toplevel="true" enableMouse="true" frameStrata="DIALOG" hidden="true">
                         <Size x="350" y="64"/>
                         <Anchors>
                             <Anchor point="CENTER" x="0" y="140"/>
@@ -2485,19 +2503,19 @@
 				<FontString parentKey="Server" inherits="GameFontNormalSmall" justifyH="LEFT">
 					<Size x="150" y="12"/>
 					<Anchors>
-						<Anchor point="LEFT" relativekey="$parent.Name" relativePoint="RIGHT" x="10" y="0"/>
+						<Anchor point="LEFT" relativeKey="$parent.Name" relativePoint="RIGHT" x="10" y="0"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="Class" inherits="GameFontNormalSmall" justifyH="LEFT">
 					<Size x="100" y="12"/>
 					<Anchors>
-						<Anchor point="LEFT" relativekey="$parent.Server" relativePoint="RIGHT" x="10" y="0"/>
+						<Anchor point="LEFT" relativeKey="$parent.Server" relativePoint="RIGHT" x="10" y="0"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="Level" inherits="GameFontNormalSmall" justifyH="LEFT">
 					<Size x="50" y="12"/>
 					<Anchors>
-						<Anchor point="LEFT" relativekey="$parent.Class" relativePoint="RIGHT" x="10" y="0"/>
+						<Anchor point="LEFT" relativeKey="$parent.Class" relativePoint="RIGHT" x="10" y="0"/>
 					</Anchors>
 				</FontString>
 			</Layer>

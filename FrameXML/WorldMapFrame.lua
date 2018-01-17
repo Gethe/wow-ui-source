@@ -425,6 +425,7 @@ function WorldMapFrame_OnHide(self)
 	end
 	CancelEmote();
 	self.mapID = nil;
+	self.continentID = nil;
 	self.dungeonLevel = nil;
 
 	self.AnimAlphaOut:Stop();
@@ -448,7 +449,9 @@ function WorldMapFrame_OnEvent(self, event, ...)
 		end
 	elseif ( event == "WORLD_MAP_UPDATE" or event == "REQUEST_CEMETERY_LIST_RESPONSE" or event == "QUESTLINE_UPDATE" or event == "MINIMAP_UPDATE_TRACKING" ) then
 		local mapID = GetCurrentMapAreaID();
+		local continentID = GetCurrentMapContinent();
 		local dungeonLevel = GetCurrentMapDungeonLevel();
+
 		if ( not self.blockWorldMapUpdate and self:IsShown() ) then
 			-- if we are exiting a micro dungeon we should update the world map
 			if (event == "REQUEST_CEMETERY_LIST_RESPONSE") then
@@ -457,13 +460,22 @@ function WorldMapFrame_OnEvent(self, event, ...)
 					SetMapToCurrentZone();
 				end
 			end
-			WorldMapFrame_UpdateMap(mapID == self.mapID and dungeonLevel == self.dungeonLevel);
+
+			local continentMatch = self.continentID == continentID;
+			local mapMatch = self.mapID == mapID;
+			local dungeonLevelMatch = self.dungeonLevel == dungeonLevel;
+			local skipDropDownUpdate = continentMatch and mapMatch and dungeonLevelMatch;
+
+			WorldMapFrame_UpdateMap(skipDropDownUpdate);
 		end
+
+		self.continentID = continentID;
+
 		if ( event == "WORLD_MAP_UPDATE" ) then
 			if ( self:IsShown() ) then
 				if ( mapID ~= self.mapID) then
 					self.mapID = mapID;
-					
+
 					if WorldMap_DoesCurrentMapHideMapIcons() then
 						WorldMapUnitPositionFrame:Hide();
 					else
@@ -1189,7 +1201,7 @@ function WorldMap_UpdateLandmarks()
 		end
 		return;
 	end
-	
+
 	local numPOIs = GetNumMapLandmarks();
 	if ( NUM_WORLDMAP_POIS < numPOIs ) then
 		for i=NUM_WORLDMAP_POIS+1, numPOIs do
@@ -1528,8 +1540,7 @@ function WorldMapFrame_Update()
 			local questLineName, questName, x, y, isHidden, floorLocation, isLegendary = C_Questline.GetQuestlineInfoByIndex(i);
 			local showQuest = questLineName and x > 0 and y > 0;
 			if ( showQuest and isHidden ) then
-				local _, _, active = GetTrackingInfo(MINIMAP_TRACK_HIDDEN_QUESTS);
-				showQuest = active;
+				showQuest = IsTrackingHiddenQuests();
 			end
 			if ( showQuest ) then
 				numUsedStoryLineFrames = numUsedStoryLineFrames + 1;
@@ -2104,7 +2115,26 @@ function ScenarioPOI_OnLeave()
 end
 
 function WorldMapPOI_OnClick(self, button)
-	if ( self.mapLinkID and self.landmarkType ~= LE_MAP_LANDMARK_TYPE_CONTRIBUTION ) then
+	if self.landmarkType == LE_MAP_LANDMARK_TYPE_MAP_LINK then
+		-- We need to cache this data in advance because it can change when we change map IDs.
+		local currentMapID = GetCurrentMapAreaID();
+		local currentFloorIndex = GetCurrentMapDungeonLevel();
+		local mapID = self.mapLinkID;
+		local floorIndex = self.mapFloor;
+		if floorIndex and mapID then
+			SetMapByID(mapID);
+			WorldMapFrame.mapLinkPingInfo = { mapID = currentMapID, floorIndex = currentFloorIndex };
+			SetDungeonMapLevel(floorIndex);
+		elseif mapID then
+			WorldMapFrame.mapLinkPingInfo = { mapID = currentMapID, floorIndex = currentFloorIndex };
+			SetMapByID(mapID);
+		elseif floorIndex then
+			WorldMapFrame.mapLinkPingInfo = { mapID = currentMapID, floorIndex = currentFloorIndex };
+			SetDungeonMapLevel(floorIndex);
+		end
+
+		PlaySound(SOUNDKIT.IG_QUEST_LOG_OPEN);
+	elseif ( self.mapLinkID and self.landmarkType ~= LE_MAP_LANDMARK_TYPE_CONTRIBUTION ) then
 		if self.landmarkType == LE_MAP_LANDMARK_TYPE_DUNGEON_ENTRANCE then
 			if not EncounterJournal or not EncounterJournal:IsShown() then
 				if not ToggleEncounterJournal() then
@@ -2113,25 +2143,6 @@ function WorldMapPOI_OnClick(self, button)
 			end
 			EncounterJournal_ListInstances();
 			EncounterJournal_DisplayInstance(self.mapLinkID);
-		elseif self.landmarkType == LE_MAP_LANDMARK_TYPE_MAP_LINK then
-			-- We need to cache this data in advance because it can change when we change map IDs.
-			local currentMapID = GetCurrentMapAreaID();
-			local currentFloorIndex = GetCurrentMapDungeonLevel();
-			local mapID = self.mapLinkID
-			local floorIndex = self.mapFloor;
-			if floorIndex and mapID then
-				SetMapByID(mapID);
-				WorldMapFrame.mapLinkPingInfo = { mapID = currentMapID, floorIndex = currentFloorIndex };
-				SetDungeonMapLevel(floorIndex);
-			elseif mapID then
-				WorldMapFrame.mapLinkPingInfo = { mapID = currentMapID, floorIndex = currentFloorIndex };
-				SetMapByID(mapID);
-			elseif floorIndex then
-				WorldMapFrame.mapLinkPingInfo = { mapID = currentMapID, floorIndex = currentFloorIndex };
-				SetDungeonMapLevel(floorIndex);
-			end
-			
-			PlaySound(SOUNDKIT.IG_QUEST_LOG_OPEN);
 		else
 			ClickLandmark(self.mapLinkID);
 		end
@@ -2599,10 +2610,14 @@ function WorldMapButton_OnUpdate(self, elapsed)
 			corpseY = -corpseY * WorldMapDetailFrame:GetHeight();
 
 			WorldMapCorpse:SetPoint("CENTER", "WorldMapDetailFrame", "TOPLEFT", corpseX, corpseY);
-			WorldMapCorpse:SetFrameStrata("DIALOG");
+			if ( WorldMapFrame_InWindowedMode() ) then
+				WorldMapCorpse:SetFrameStrata("DIALOG");
+			else
+				WorldMapCorpse:SetFrameStrata("FULLSCREEN_DIALOG");
+			end
 			WorldMapCorpse:Show();
 		end
-		
+
 			-- Position Death Release marker
 		local deathReleaseX, deathReleaseY = GetDeathReleasePosition();
 		if ((deathReleaseX == 0 and deathReleaseY == 0) or UnitIsGhost("player")) then

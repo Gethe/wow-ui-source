@@ -153,21 +153,29 @@ function ACHIEVEMENT_TRACKER_MODULE:Update()
 				end
 			else
 				-- single criteria type of achievement
-				local colorStyle = IsAchievementEligible(achievementID) and OBJECTIVE_TRACKER_COLOR["Normal"] or OBJECTIVE_TRACKER_COLOR["Failed"];
-				local line = ACHIEVEMENT_TRACKER_MODULE:AddObjective(block, 1, description, nil, nil, OBJECTIVE_DASH_STYLE_SHOW, colorStyle);
 				-- check if we're supposed to show a timer bar for this
 				local timerShown = false;
+				local timerFailed = false;
+				local timerCriteriaDuration = 0;
+				local timerCriteriaStartTime = 0;
 				for timedCriteriaID, timedCriteria in next, TIMED_CRITERIA do
 					if ( timedCriteria.achievementID == achievementID ) then
 						local elapsed = GetTime() - timedCriteria.startTime;
 						if ( elapsed <= timedCriteria.duration ) then
-							ACHIEVEMENT_TRACKER_MODULE:AddTimerBar(block, line, timedCriteria.duration, timedCriteria.startTime);
+							timerCriteriaDuration = timedCriteria.duration;
+							timerCriteriaStartTime = timedCriteria.startTime;
 							timerShown = true;
+						else
+							timerFailed = true;
 						end
 						break;
 					end
 				end
-				if ( not timerShown and line.TimerBar ) then
+				local colorStyle = (not timerFailed and IsAchievementEligible(achievementID)) and OBJECTIVE_TRACKER_COLOR["Normal"] or OBJECTIVE_TRACKER_COLOR["Failed"];
+				local line = ACHIEVEMENT_TRACKER_MODULE:AddObjective(block, 1, description, nil, nil, OBJECTIVE_DASH_STYLE_SHOW, colorStyle);
+				if ( timerShown ) then
+					ACHIEVEMENT_TRACKER_MODULE:AddTimerBar(block, line, timerCriteriaDuration, timerCriteriaStartTime);
+				elseif ( line.TimerBar ) then
 					ACHIEVEMENT_TRACKER_MODULE:FreeTimerBar(block, line);
 				end
 			end
@@ -189,8 +197,6 @@ end
 function AchievementObjectiveTracker_OnAchievementUpdate(achievementID, criteriaID, elapsed, duration)
 	if ( not elapsed or not duration ) then
 		-- Don't do anything
-	elseif ( elapsed >= duration ) then
-		TIMED_CRITERIA[criteriaID] = nil;
 	else
 		-- we're already handling timer bars for achievements with visible criteria
 		-- we use this system to handle timer bars for the rest
@@ -205,5 +211,7 @@ function AchievementObjectiveTracker_OnAchievementUpdate(achievementID, criteria
 	end
 	if ( IsTrackedAchievement(achievementID) ) then
 		ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_ACHIEVEMENT);
+	else
+		TIMED_CRITERIA[criteriaID] = nil;
 	end
 end

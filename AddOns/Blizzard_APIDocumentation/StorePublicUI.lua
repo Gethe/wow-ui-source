@@ -7,6 +7,20 @@ local StorePublicUI =
 	Functions =
 	{
 		{
+			Name = "DoesGroupHavePurchaseableProducts",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "groupID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "hasPurchaseableProducts", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsDisabledByParentalControls",
 			Type = "Function",
 

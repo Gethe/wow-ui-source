@@ -98,11 +98,11 @@ LootJournalListMixin = { };
 
 function LootJournalListMixin:Refresh()
 	self.dirty = true;
-	local offset = self.ScrollBar:GetValue();
+	local offset = self.scrollBar:GetValue();
 	if ( offset == 0 ) then
 		self:UpdateList();
 	else
-		self.ScrollBar:SetValue(0);
+		self.scrollBar:SetValue(0);
 	end
 	if ( self.ClassButton ) then
 		self:UpdateClassButtonText();
@@ -161,7 +161,7 @@ function LootJournalListMixin:SetClassAndSpecFilters(newClassFilter, newSpecFilt
 	local classFilter, specFilter = C_LootJournal.GetClassAndSpecFilters();
 	if not self.classAndSpecFiltersSet or classFilter ~= newClassFilter or specFilter ~= newSpecFilter then
 		C_LootJournal.SetClassAndSpecFilters(newClassFilter, newSpecFilter);
-		self.ScrollBar:SetValue(0);
+		self.scrollBar:SetValue(0);
 		self:Refresh();
 	end
 
@@ -278,7 +278,7 @@ local LJ_LEGENDARY_BOTTOM_BUFFER = 4;
 local LJ_LEGENDARY_NUM_COLS = 2;
 
 function LootJournalLegendariesMixin:OnLoad()
-	self.ScrollBar.trackBG:Hide();
+	self.scrollBar.trackBG:Hide();
 	self.update = LootJournalLegendariesMixin.UpdateList;
 	HybridScrollFrame_CreateButtons(self, "LootJournalLegendaryButtonTemplate", LJ_LEGENDARY_X_OFFSET, -LJ_LEGENDARY_Y_OFFSET, "TOPLEFT", nil, nil, -LJ_LEGENDARY_BUTTON_SPACING);
 	self.rightSideButtons = { };
@@ -444,7 +444,7 @@ local LJ_ITEMSET_BUTTON_SPACING = 13;
 local LJ_ITEMSET_BOTTOM_BUFFER = 4;
 
 function LootJournalItemSetsMixin:OnLoad()
-	self.ScrollBar.trackBG:Hide();
+	self.scrollBar.trackBG:Hide();
 	self.update = LootJournalItemSetsMixin.UpdateList;	
 	HybridScrollFrame_CreateButtons(self, "LootJournalItemSetButtonTemplate", LJ_ITEMSET_X_OFFSET, -LJ_ITEMSET_Y_OFFSET, "TOPLEFT", nil, nil, -LJ_ITEMSET_BUTTON_SPACING);
 end

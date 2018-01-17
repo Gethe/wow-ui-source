@@ -23,6 +23,7 @@ function TradeSkillUIMixin:OnLoad()
 	self:RegisterEvent("TRADE_SKILL_FILTER_UPDATE");
 
 	self:RegisterEvent("SKILL_LINES_CHANGED");
+	self:RegisterEvent("TRIAL_STATUS_UPDATE");
 
 	self:RegisterEvent("TRADE_SKILL_CLOSE");
 	self:RegisterEvent("GARRISON_TRADESKILL_NPC_CLOSED");
@@ -64,6 +65,10 @@ function TradeSkillUIMixin:OnEvent(event, ...)
 			self.RecipeList:Refresh();
 		end
 	elseif event == "SKILL_LINES_CHANGED" then
+		if self:IsVisible() then
+			self:RefreshSkillRank();
+		end
+	elseif event == "TRIAL_STATUS_UPDATE" then
 		if self:IsVisible() then
 			self:RefreshSkillRank();
 		end

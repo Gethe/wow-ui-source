@@ -404,7 +404,7 @@
 				</FontString>
 				<FontString parentKey="SiegebreakerWarning" parentArray="Lines" inherits="GameFontNormalLeftRed" justifyH="LEFT" wordwrap="true" text="GARRISON_SHIPYARD_MISSION_COMPLETE_SIEGEBREAKER_TOOLTIP">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Reward" relativePoint="BOTTOMLEFT" x="0" y="-8" hidden="true"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Reward" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
 					</Anchors>
 					<KeyValues>
 						<KeyValue key="yspacing" value="8" type="number"/>

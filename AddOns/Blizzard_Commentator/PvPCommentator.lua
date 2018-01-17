@@ -180,6 +180,7 @@ function PvPCommentatorMixin:SetDefaultBindings()
 	
 	SetBinding("N", "TOGGLE_CASTER_COOLDOWN_DISPLAY");
 	SetBinding("CTRL-SHIFT-N", "CHECK_FOR_SCOREBOARD");
+	SetBinding("SHIFT-N", "TOGGLE_NAMEPLATE_SIZE");
 	
 	SetBinding("CAPSLOCK", "TOGGLE_SMART_CAMERA_LOCK");
 
@@ -226,6 +227,21 @@ function PvPCommentatorMixin:SetDefaultCommentatorSettings()
 	self:SetDefaultCVars();
 end
 
+local COMMENTATOR_NAMEPLATE_HORIZONTAL_SCALE = 1.4;
+local COMMENTATOR_NAMEPLATE_VERTICAL_SCALE = 2.7;
+function PvPCommentatorMixin:ToggleNameplateSizeCVars()
+	local namePlateHorizontalScale = tonumber(GetCVar("NamePlateHorizontalScale"));
+	if namePlateHorizontalScale > 1.0 then
+		SetCVar("NamePlateHorizontalScale", 1.0);
+		SetCVar("NamePlateVerticalScale", (COMMENTATOR_NAMEPLATE_VERTICAL_SCALE / COMMENTATOR_NAMEPLATE_HORIZONTAL_SCALE));
+	else
+		SetCVar("NamePlateHorizontalScale", COMMENTATOR_NAMEPLATE_HORIZONTAL_SCALE);
+		SetCVar("NamePlateVerticalScale", COMMENTATOR_NAMEPLATE_VERTICAL_SCALE);
+	end
+	
+	NamePlateDriverFrame:UpdateNamePlateOptions();
+end
+
 function PvPCommentatorMixin:SetDefaultCVars()
 	SetCVar("UnitNameFriendlyPlayerName", 1);
 	SetCVar("UnitNameFriendlyPetName", 1);
@@ -249,11 +265,10 @@ function PvPCommentatorMixin:SetDefaultCVars()
 	SetCVar("nameplateShowFriendlyGuardians", 0);
 	SetCVar("nameplateShowFriendlyTotems", 0);
 	
-	SetCVar("NamePlateHorizontalScale", 1.4);
-	SetCVar("NamePlateVerticalScale", 2.7);
-	SetCVar("nameplateShowAll", 1);
-	
+	SetCVar("NamePlateHorizontalScale", COMMENTATOR_NAMEPLATE_HORIZONTAL_SCALE);
+	SetCVar("NamePlateVerticalScale", COMMENTATOR_NAMEPLATE_VERTICAL_SCALE);
 	SetCVar("nameplateSelectedScale", 1.5);
+	SetCVar("nameplateShowAll", 1);
 
 	-- See InterfaceOptionsNPCNamesDropDown, we want these all off.
 	SetCVar("UnitNameFriendlySpecialNPCName", 0);

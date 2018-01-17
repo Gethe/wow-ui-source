@@ -62,11 +62,11 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Fontstring parentKey="Title" inherits="GameFontHighlightLarge"  text="SOCIAL_SCREENSHOT_PREFILL_TOOLTIP">
+				<FontString parentKey="Title" inherits="GameFontHighlightLarge"  text="SOCIAL_SCREENSHOT_PREFILL_TOOLTIP">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="10" y="-10"/>
 					</Anchors>
-				</Fontstring>
+				</FontString>
 				<Texture parentKey="Image">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="10" y="-36"/>

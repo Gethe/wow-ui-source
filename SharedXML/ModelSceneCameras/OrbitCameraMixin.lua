@@ -1,10 +1,10 @@
 --[[
-	OrbitCameraMixin - A simple camera that can orbit a target point at a fixed distance. 
+	OrbitCameraMixin - A simple camera that can orbit a target point at a fixed distance.
 
 	The orbit is represented using a distance from a target point in world space and yaw, pitch and roll.
 	The yaw, pitch and roll represent the camera's orientation, or inversely the direction of the camera from the target point.
 
-	Optionally, the target, orientation and zoom can have splines that are added to the respective axes. The splines are fed the zoom percentage to calculate the point on the spline. 
+	Optionally, the target, orientation and zoom can have splines that are added to the respective axes. The splines are fed the zoom percentage to calculate the point on the spline.
 	This is ideal for changing view points based on zoom distance from the target. For example, target model's face on zoom in and center on the model on zoom out.
 ]]
 
@@ -25,13 +25,15 @@ if tbl then
 	end
 
 	setfenv(1, tbl);
-	
+
 	Import("Saturate");
 	Import("PercentageBetween");
 	Import("Lerp");
 	Import("Vector3D_Add");
+	Import("Vector3D_Normalize");
 	Import("Vector3D_ScaleBy");
 	Import("Vector3D_CalculateNormalFromYawPitch");
+	Import("Vector3D_CalculateYawPitchFromNormal");
 	Import("GetScaledCursorDelta");
 	Import("DeltaLerp");
 end
@@ -52,7 +54,7 @@ local function TryCreateZoomSpline(x, y, z, existingSpline)
 		local spline = existingSpline or CreateCatmullRomSpline(3);
 		spline:ClearPoints();
 		spline:AddPoint(0, 0, 0);
-		spline:AddPoint(x, y, z); 
+		spline:AddPoint(x, y, z);
 
 		return spline;
 	end
@@ -67,7 +69,7 @@ function OrbitCameraMixin:ApplyFromModelSceneCameraInfo(modelSceneCameraInfo, tr
 	self:SetTarget(transitionalCameraInfo.target:GetXYZ());
 	self:SetTargetSpline(TryCreateZoomSpline(transitionalCameraInfo.zoomedTargetOffset:GetXYZ()), self:GetTargetSpline());
 	self:SetOrientationSpline(TryCreateZoomSpline(transitionalCameraInfo.zoomedYawOffset, transitionalCameraInfo.zoomedPitchOffset, transitionalCameraInfo.zoomedRollOffset), self:GetOrientationSpline());
-	
+
 	self:SetMinZoomDistance(transitionalCameraInfo.minZoomDistance);
 	self:SetMaxZoomDistance(transitionalCameraInfo.maxZoomDistance);
 
@@ -80,6 +82,13 @@ function OrbitCameraMixin:ApplyFromModelSceneCameraInfo(modelSceneCameraInfo, tr
 	if transitionType == CAMERA_TRANSITION_TYPE_IMMEDIATE then
 		self:SnapAllInterpolatedValues();
 	end
+
+	self:SaveInitialTransform(transitionalCameraInfo);
+end
+
+function OrbitCameraMixin:SaveInitialTransform(cameraInfo)
+	self.initialLightYaw, self.initialLightPitch = Vector3D_CalculateYawPitchFromNormal(Vector3D_Normalize(self:GetOwningScene():GetLightDirection()));
+	self.initialCameraYaw, self.initialCameraPitch = self:GetYaw(), self:GetPitch();
 end
 
 function OrbitCameraMixin:SetTarget(x, y, z)
@@ -210,11 +219,11 @@ function OrbitCameraMixin:GetDerivedTarget()
 	if targetSpline then
 		return Vector3D_Add(targetX, targetY, targetZ, targetSpline:CalculatePointOnGlobalCurve(1.0 - self:GetZoomPercent()));
 	end
-	
+
 	return targetX, targetY, targetZ;
 end
 
-function OrbitCameraMixin:GetDerivedOrientation() 
+function OrbitCameraMixin:GetDerivedOrientation()
 	local yaw, pitch, roll = self:GetYaw(), self:GetPitch(), self:GetRoll();
 
 	local orientationSpline = self:GetOrientationSpline();
@@ -236,12 +245,24 @@ function OrbitCameraMixin:GetDerivedZoomDistance()
 	return zoomDistance;
 end
 
---[[ 
+function OrbitCameraMixin:SetAlignLightToOrbitDelta(alignLightToOrbitDelta)
+	if alignLightToOrbitDelta then
+		self.modelSceneCameraInfo.flags = bit.bor(self.modelSceneCameraInfo.flags, Enum.ModelSceneSetting.AlignLightToOrbitDelta);
+	else
+		self.modelSceneCameraInfo.flags = bit.band(self.modelSceneCameraInfo.flags, bit.bnot(Enum.ModelSceneSetting.AlignLightToOrbitDelta));
+	end
+end
+
+function OrbitCameraMixin:ShouldAlignLightToOrbitDelta()
+	return bit.band(self.modelSceneCameraInfo.flags, Enum.ModelSceneSetting.AlignLightToOrbitDelta) == Enum.ModelSceneSetting.AlignLightToOrbitDelta;
+end
+
+--[[
 	Interpolation API
 	For each API, "amount" is the percentage to approach in an "ideal" frame (60 fps), such that setting the value to >= 1 would snap to the desired target and <= 0 would freeze the interpolation.
 	Setting to nil will disable the interpolation.
 ]]
- 
+
 function OrbitCameraMixin:SetYawInterpolationAmount(yawInterpolationAmount)
 	self.yawInterpolationAmount = yawInterpolationAmount;
 end
@@ -428,6 +449,14 @@ function OrbitCameraMixin:HandleMouseMovement(mode, delta, snapToValue)
 	end
 end
 
+function OrbitCameraMixin:ResetDefaultInputModes()
+	self:SetLeftMouseButtonXMode(ORBIT_CAMERA_MOUSE_MODE_YAW_ROTATION, true);
+	self:SetLeftMouseButtonYMode(ORBIT_CAMERA_MOUSE_MODE_NOTHING);
+	self:SetRightMouseButtonXMode(ORBIT_CAMERA_MOUSE_MODE_NOTHING);
+	self:SetRightMouseButtonYMode(ORBIT_CAMERA_MOUSE_MODE_NOTHING);
+	self:SetMouseWheelMode(ORBIT_CAMERA_MOUSE_MODE_ZOOM, false);
+end
+
 -- "private" function
 function OrbitCameraMixin:OnAdded() -- override
 	self.buttonModes = {};
@@ -437,7 +466,7 @@ function OrbitCameraMixin:OnAdded() -- override
 	local targetSpline = CreateCatmullRomSpline(3);
 	targetSpline:AddPoint(0, 0, 0);
 	targetSpline:AddPoint(0, 0, .5);
-	
+
 	self:SetTargetSpline(targetSpline);
 
 	self:SetMinZoomDistance(6);
@@ -455,11 +484,7 @@ function OrbitCameraMixin:OnAdded() -- override
 	self:SetRollInterpolationAmount(.15);
 	self:SetTargetInterpolationAmount(.15);
 
-	self:SetLeftMouseButtonXMode(ORBIT_CAMERA_MOUSE_MODE_YAW_ROTATION, true);
-	self:SetLeftMouseButtonYMode(ORBIT_CAMERA_MOUSE_MODE_NOTHING);
-	self:SetRightMouseButtonXMode(ORBIT_CAMERA_MOUSE_MODE_NOTHING);
-	self:SetRightMouseButtonYMode(ORBIT_CAMERA_MOUSE_MODE_NOTHING);
-	self:SetMouseWheelMode(ORBIT_CAMERA_MOUSE_MODE_ZOOM, false);
+	self:ResetDefaultInputModes();
 end
 
 function OrbitCameraMixin:GetDeltaModifierForCameraMode(mode)
@@ -494,6 +519,7 @@ function OrbitCameraMixin:OnUpdate(elapsed) -- override
 
 	self:UpdateInterpolationTargets(elapsed);
 	self:UpdateCameraOrientationAndPosition();
+	self:UpdateLight();
 end
 
 local function InterpolateDimension(lastValue, targetValue, amount, elapsed)
@@ -525,6 +551,18 @@ function OrbitCameraMixin:UpdateCameraOrientationAndPosition()
 
 	self:SetPosition(self:CalculatePositionByDistanceFromTarget(targetX, targetY, targetZ, zoomDistance, axisAngleX, axisAngleY, axisAngleZ));
 	self:GetOwningScene():SetCameraOrientationByYawPitchRoll(yaw, pitch, roll);
+end
+
+function OrbitCameraMixin:UpdateLight()
+	if self:ShouldAlignLightToOrbitDelta() then
+		local cameraDeltaYaw = self.interpolatedYaw - self.initialCameraYaw;
+		local cameraDeltaPitch = self.interpolatedPitch - self.initialCameraPitch;
+
+		local lightYaw = self.initialLightYaw + cameraDeltaYaw;
+		local lightPitch = self.initialLightPitch + cameraDeltaPitch;
+
+		self:GetOwningScene():SetLightDirection(Vector3D_CalculateNormalFromYawPitch(lightYaw, lightPitch));
+	end
 end
 
 function OrbitCameraMixin:CalculatePositionByDistanceFromTarget(targetX, targetY, targetZ, zoomDistance, axisAngleX, axisAngleY, axisAngleZ)

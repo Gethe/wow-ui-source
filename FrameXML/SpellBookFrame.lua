@@ -92,8 +92,9 @@ end
 
 function SpellBookFrame_OnLoad(self)
 	self:RegisterEvent("SPELLS_CHANGED");
-	self:RegisterEvent("LEARNED_SPELL_IN_TAB");	
+	self:RegisterEvent("LEARNED_SPELL_IN_TAB");
 	self:RegisterEvent("SKILL_LINES_CHANGED");
+	self:RegisterEvent("TRIAL_STATUS_UPDATE");
 	self:RegisterEvent("PLAYER_GUILD_UPDATE");
 	self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED");
 	self:RegisterEvent("USE_GLYPH");
@@ -152,7 +153,7 @@ function SpellBookFrame_OnEvent(self, event, ...)
 				SpellBookFrame.flashTabs = 1;
 			end
 		end
-	elseif (event == "SKILL_LINES_CHANGED") then
+	elseif (event == "SKILL_LINES_CHANGED" or event == "TRIAL_STATUS_UPDATE") then
 		SpellBook_UpdateProfTab();
 	elseif (event == "PLAYER_GUILD_UPDATE") then
 		-- default to class tab if the selected one is gone - happens if you leave a guild with perks 
@@ -1278,6 +1279,11 @@ function FormatProfession(frame, index)
 		else
 			frame.statusBar.capRight:Hide();
 		end
+
+		frame.statusBar.capped:Hide();
+		frame.statusBar.rankText:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
+		frame.statusBar.tooltip = nil;
+
 		-- trial cap
 		if ( GameLimitedMode_IsActive() ) then
 			local _, _, profCap = GetRestrictedAccountData();
@@ -1285,10 +1291,6 @@ function FormatProfession(frame, index)
 				frame.statusBar.capped:Show();
 				frame.statusBar.rankText:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
 				frame.statusBar.tooltip = RED_FONT_COLOR_CODE..CAP_REACHED_TRIAL..FONT_COLOR_CODE_CLOSE;
-			else
-				frame.statusBar.capped:Hide();
-				frame.statusBar.rankText:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-				frame.statusBar.tooltip = nil;
 			end
 		end
 		

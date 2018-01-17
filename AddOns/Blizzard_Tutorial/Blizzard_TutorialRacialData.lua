@@ -30,7 +30,7 @@ TutorialData.StartingAbility = {
 	PRIEST	= 585,		-- Smite
 	SHAMAN	= 188196,	-- Lightning Bolt
 	MAGE	= 116,		-- Frostbolt
-	WARLOCK	= 686,		-- Shadow Bolt
+	WARLOCK	= 232670,	-- Shadow Bolt
 	MONK	= 100780,	-- Tier Palm
 	DRUID	= 190984,	-- Solar Wrath
 }

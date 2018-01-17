@@ -31,7 +31,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="VisitForgeOverlay" setAllPoints="true" frameLevel="500" enableMouse="true" hidden="false">
+			<Frame parentKey="VisitForgeOverlay" setAllPoints="true" frameLevel="3500" enableMouse="true" hidden="false">
 				<Layers>
 					<Layer level="BACKGROUND">
 						<Texture parentKey="Background">

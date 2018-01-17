@@ -693,7 +693,7 @@
                                 </FontString>
                                 <FontString parentKey="Label" inherits="Fancy24Font" text="CHALLENGE_MODE_WEEKLY_BEST">
                                     <Anchors>
-                                        <Anchor point="TOPLEFT" relativekey="$parent.Star" relativePoint="TOPRIGHT" x="-16" y="-39"/>
+                                        <Anchor point="TOPLEFT" relativeKey="$parent.Star" relativePoint="TOPRIGHT" x="-16" y="-39"/>
                                     </Anchors>
                                     <Color r="1.0" g="1.0" b="1.0"/>
                                     <Shadow>
@@ -761,7 +761,7 @@
                         <Frames>
                             <Frame hidden="true" inherits="ChallengesKeystoneFrameAffixTemplate">
                                 <Anchors>
-                                    <Anchor point="TOPLEFT" relativeKey="$parent.DungeonName" relativePOint="BOTTOMLEFT" x="0" y="-13"/>
+                                    <Anchor point="TOPLEFT" relativeKey="$parent.DungeonName" relativePoint="BOTTOMLEFT" x="0" y="-13"/>
                                 </Anchors>
                             </Frame>
                         </Frames>

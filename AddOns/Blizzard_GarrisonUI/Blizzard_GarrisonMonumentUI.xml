@@ -17,7 +17,7 @@
 				<FontString parentKey="Title" inherits="GameFontHighlightSmall" justifyH="CENTER" justifyV="CENTER" text="GARRISON_MONUMENTS_TITLE">
 					<Size x="120" y="20"/>
 					<Anchors>
-						<Anchor point="Top" relativeKey="$parent.Background" x="0" y="-13"/>
+						<Anchor point="TOP" relativeKey="$parent.Background" x="0" y="-13"/>
 					</Anchors>
 				</FontString>
 			</Layer>

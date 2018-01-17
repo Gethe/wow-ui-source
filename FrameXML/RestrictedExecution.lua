@@ -25,6 +25,7 @@ local tostring = tostring;
 local newproxy = newproxy;
 local select = select;
 local wipe = wipe;
+local pairs = pairs;
 
 local IsFrameHandle = IsFrameHandle;
 local IsWritableRestrictedTable = IsWritableRestrictedTable;

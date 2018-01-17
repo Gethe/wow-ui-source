@@ -23,7 +23,8 @@ function GameMenuFrame_UpdateVisibleButtons(self)
 		GameMenuButtonOptions:SetPoint("TOP", GameMenuButtonWhatsNew, "BOTTOM", 0, -16);
 	end
 
-	if ( C_StorePublic.IsEnabled() ) then
+	local storeIsRestricted = IsTrialAccount() and not C_StorePublic.DoesGroupHavePurchaseableProducts(WOW_GAMES_CATEGORY_ID);
+	if ( C_StorePublic.IsEnabled() and not storeIsRestricted ) then
 		height = height + 20;
 		GameMenuButtonStore:Show();
 		buttonToReanchor:SetPoint("TOP", GameMenuButtonStore, "BOTTOM", 0, reanchorYOffset);
