@@ -2049,7 +2049,8 @@ function CharacterServicesMaster_UpdateServiceButton()
 		end
 	end
 
-    if freeFrame and C_SharedCharacterServices.GetLastSeenUpgradePopup() < freeFrame.data.expansion then
+	local MINIMUM_BOOST_POPUP_SHOWN = 7;
+    if freeFrame and freeFrame.data.expansion >= MINIMUM_BOOST_POPUP_SHOWN and C_SharedCharacterServices.GetLastSeenUpgradePopup() < freeFrame.data.expansion then
 		DisplayBattlepayTokenFreeFrame(freeFrame);
 	end
 end
