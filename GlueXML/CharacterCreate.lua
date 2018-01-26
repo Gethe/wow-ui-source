@@ -830,8 +830,8 @@ function CharacterCreateEnumerateClasses()
 
 	local pool = CharacterCreate.classFramePool;
 	pool:ReleaseAll();
-	local index = 1;
-	for classID, classData in pairs(classes) do
+	for index, classData in pairs(classes) do
+		classID = classData.classID;
 		local button = pool:Acquire();
 		button.layoutIndex = index;
 		if (classID == CLASS_NAME_BUTTON_ID_MAP["DEATHKNIGHT"]) then
@@ -841,7 +841,6 @@ function CharacterCreateEnumerateClasses()
 		button:Show();
 
 		SetupClassButton(button, classID, classData);
-		index = index + 1;
 	end
 
 	if (not C_CharacterCreation.CanCreateDemonHunter()) then
@@ -850,7 +849,9 @@ function CharacterCreateEnumerateClasses()
             button:SetSize(44, 44);
         end
 		local button = FindButtonForClassID(CLASS_NAME_BUTTON_ID_MAP["DEMONHUNTER"]);
-		button:Hide();
+		if ( button ) then
+			button:Hide();
+		end
 		CharCreateClassFrame.ClassIcons:Layout();
     end
 

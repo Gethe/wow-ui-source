@@ -42,6 +42,7 @@ Import("C_ClassTrial");
 Import("C_AuthChallenge");
 Import("C_Timer");
 Import("C_WowTokenPublic");
+Import("C_StorePublic");
 Import("C_WowTokenSecure");
 Import("CreateForbiddenFrame");
 Import("IsGMClient");
@@ -2289,8 +2290,7 @@ function StoreFrame_OnAttributeChanged(self, name, value)
 	elseif ( name == "setgamescategory" ) then
 		SetStoreCategoryFromAttribute(WOW_GAMES_CATEGORY_ID);
 	elseif ( name == "opengamescategory" ) then
-		local info = C_StoreSecure.GetProductGroupInfo(WOW_GAMES_CATEGORY_ID);
-		if info then
+		if C_StorePublic.DoesGroupHavePurchaseableProducts(WOW_GAMES_CATEGORY_ID) then
 			SetStoreCategoryFromAttribute(WOW_GAMES_CATEGORY_ID);
 
 			if ( not IsOnGlueScreen() and not self:IsShown() ) then

@@ -136,6 +136,7 @@ retain("GetPhysicalScreenSize");
 retain("ConvertPixelsToUI");
 retain("IsTrialAccount");
 retain("IsVeteranTrialAccount");
+retain("C_StorePublic");
 
 --For auth challenge
 take("C_AuthChallenge");
