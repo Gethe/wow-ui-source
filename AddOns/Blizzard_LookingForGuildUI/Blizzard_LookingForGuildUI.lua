@@ -10,19 +10,17 @@ function LookingForGuildFrame_OnLoad(self)
 	PanelTemplates_SetNumTabs(self, 3);
 	self.selectedTab = 1;
 	PanelTemplates_UpdateTabs(self);
-	self.Inset:SetPoint("TOPLEFT", 4, -64);	
+	self.Inset:SetPoint("TOPLEFT", 4, -64);
 
 	local factionGroup = UnitFactionGroup("player");
 	if ( factionGroup == "Alliance" ) then
 		LookingForGuildFrameTabardEmblem:SetTexture("Interface\\FriendsFrame\\PlusManz-Alliance");
-		LookingForGuildFrameTabardEmblem:SetPoint("TOPLEFT", 1, 0);
 	else
-		LookingForGuildFrameTabardEmblem:SetTexture("Interface\\FriendsFrame\\PlusManz-Horde");	
-		LookingForGuildFrameTabardEmblem:SetPoint("TOPLEFT", 0, 0);
+		LookingForGuildFrameTabardEmblem:SetTexture("Interface\\FriendsFrame\\PlusManz-Horde");
 	end
-	
+
 	LookingForGuildFrameTitleText:SetText(LOOKINGFORGUILD);
-	
+
 	self:RegisterEvent("PLAYER_GUILD_UPDATE");
 	self:RegisterEvent("LF_GUILD_BROWSE_UPDATED");
 	self:RegisterEvent("LF_GUILD_MEMBERSHIP_LIST_UPDATED");
@@ -66,7 +64,7 @@ end
 function LookingForGuildFrame_OnShow(self)
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 	local canBeTank, canBeHealer, canBeDPS = UnitGetAvailableRoles("player");
-	
+
 	LookingForGuild_UpdateRoleButton(LookingForGuildTankButton, canBeTank);
 	LookingForGuild_UpdateRoleButton(LookingForGuildHealerButton, canBeHealer);
 	LookingForGuild_UpdateRoleButton(LookingForGuildDamagerButton, canBeDPS);
@@ -185,7 +183,7 @@ function LookingForGuildStartFrame_OnLoad(self)
 	LookingForGuildBrowseButton_Update();
 	-- comment
 	LookingForGuildCommentEditBox:SetText(GetLookingForGuildComment());
-	
+
 	LookingForGuildBrowseButton:SetWidth(max(116, LookingForGuildBrowseButton:GetTextWidth() + 24));
 end
 
@@ -225,8 +223,8 @@ function LookingForGuildBrowseFrame_OnLoad(self)
 	LookingForGuildRequestButton:SetWidth(max(116, LookingForGuildRequestButton:GetTextWidth() + 24));
 	LookingForGuildBrowseFrameContainer.update = LookingForGuild_Update;
 	HybridScrollFrame_CreateButtons(LookingForGuildBrowseFrameContainer, "LookingForGuildGuildTemplate", 0, 0);
-	
-	LookingForGuildBrowseFrameContainerScrollBar.Show = 
+
+	LookingForGuildBrowseFrameContainerScrollBar.Show =
 		function (self)
 			LookingForGuildBrowseFrameContainer:SetWidth(304);
 			for _, button in next, LookingForGuildBrowseFrameContainer.buttons do
@@ -234,8 +232,8 @@ function LookingForGuildBrowseFrame_OnLoad(self)
 				button.fullComment:SetWidth(223);
 			end
 			getmetatable(self).__index.Show(self);
-		end	
-	LookingForGuildBrowseFrameContainerScrollBar.Hide = 
+		end
+	LookingForGuildBrowseFrameContainerScrollBar.Hide =
 		function (self)
 			LookingForGuildBrowseFrameContainer:SetWidth(320);
 			for _, button in next, LookingForGuildBrowseFrameContainer.buttons do
@@ -293,7 +291,7 @@ function LookingForGuild_Update()
 				end
 			end
 			button:SetHeight(buttonHeight);
-			
+
 			button:Show();
 			button.index = index;
 		else
@@ -304,7 +302,7 @@ function LookingForGuild_Update()
 	if ( not selection ) then
 		HybridScrollFrame_CollapseButton(scrollFrame);
 	end
-	
+
 	local totalHeight = numGuilds * GUILD_BUTTON_HEIGHT;
 	if ( scrollFrame.largeButtonHeight ) then
 		totalHeight = totalHeight + (scrollFrame.largeButtonHeight - GUILD_BUTTON_HEIGHT);
@@ -349,7 +347,7 @@ function LookingForGuildGuild_ShowTooltip(self)
 	if ( bDungeon ) then buf = buf.."\n"..QUEST_DASH..GUILD_INTEREST_DUNGEON; end
 	if ( bRaid ) then buf = buf.."\n"..QUEST_DASH..GUILD_INTEREST_RAID; end
 	if ( bPvP ) then buf = buf.."\n"..QUEST_DASH..GUILD_INTEREST_PVP; end
-	if ( bRP ) then buf = buf.."\n"..QUEST_DASH..GUILD_INTEREST_RP; end	
+	if ( bRP ) then buf = buf.."\n"..QUEST_DASH..GUILD_INTEREST_RP; end
 	GameTooltip:AddLine(GUILD_INTEREST..HIGHLIGHT_FONT_COLOR_CODE..buf..FONT_COLOR_CODE_CLOSE);
 	-- availability
 	buf = "";
@@ -362,7 +360,7 @@ function LookingForGuildGuild_ShowTooltip(self)
 	if ( bHealer ) then buf = buf.."\n"..QUEST_DASH..HEALER; end
 	if ( bDamage ) then buf = buf.."\n"..QUEST_DASH..DAMAGER; end
 	GameTooltip:AddLine(CLASS_ROLES..HIGHLIGHT_FONT_COLOR_CODE..buf..FONT_COLOR_CODE_CLOSE);
-	
+
 	GameTooltip:Show();
 end
 
@@ -388,16 +386,16 @@ end
 function LookingForGuildAppsFrame_OnLoad(self)
 	LookingForGuildAppsFrameContainer.update = LookingForGuildApps_Update;
 	HybridScrollFrame_CreateButtons(LookingForGuildAppsFrameContainer, "LookingForGuildAppTemplate", 0, 0);
-	
-	LookingForGuildAppsFrameContainerScrollBar.Show = 
+
+	LookingForGuildAppsFrameContainerScrollBar.Show =
 		function (self)
 			LookingForGuildAppsFrameContainer:SetWidth(304);
 			for _, button in next, LookingForGuildAppsFrameContainer.buttons do
 				button:SetWidth(301);
 			end
 			getmetatable(self).__index.Show(self);
-		end	
-	LookingForGuildAppsFrameContainerScrollBar.Hide = 
+		end
+	LookingForGuildAppsFrameContainerScrollBar.Hide =
 		function (self)
 			LookingForGuildAppsFrameContainer:SetWidth(320);
 			for _, button in next, LookingForGuildAppsFrameContainer.buttons do
@@ -405,7 +403,7 @@ function LookingForGuildAppsFrame_OnLoad(self)
 			end
 			getmetatable(self).__index.Hide(self);
 		end
-		
+
 	LookingForGuildApps_Update();
 end
 
@@ -423,7 +421,7 @@ function LookingForGuildApps_Update()
 		LookingForGuildFrameTab3:SetFormattedText(LFGUILD_TAB_REQUESTS, numApps);
 	end
 	PanelTemplates_TabResize(LookingForGuildFrameTab3, 0);
-	
+
 	for i = 1, numButtons do
 		button = buttons[i];
 		index = offset + i;
@@ -459,7 +457,7 @@ function LookingForGuildApp_ShowTooltip(self)
 	if ( bDungeon ) then buf = buf.."\n"..QUEST_DASH..GUILD_INTEREST_DUNGEON; end
 	if ( bRaid ) then buf = buf.."\n"..QUEST_DASH..GUILD_INTEREST_RAID; end
 	if ( bPvP ) then buf = buf.."\n"..QUEST_DASH..GUILD_INTEREST_PVP; end
-	if ( bRP ) then buf = buf.."\n"..QUEST_DASH..GUILD_INTEREST_RP; end	
+	if ( bRP ) then buf = buf.."\n"..QUEST_DASH..GUILD_INTEREST_RP; end
 	GameTooltip:AddLine(GUILD_INTEREST..HIGHLIGHT_FONT_COLOR_CODE..buf..FONT_COLOR_CODE_CLOSE);
 	-- availability
 	buf = "";
@@ -472,6 +470,39 @@ function LookingForGuildApp_ShowTooltip(self)
 	if ( bHealer ) then buf = buf.."\n"..QUEST_DASH..HEALER; end
 	if ( bDamage ) then buf = buf.."\n"..QUEST_DASH..DAMAGER; end
 	GameTooltip:AddLine(CLASS_ROLES..HIGHLIGHT_FONT_COLOR_CODE..buf..FONT_COLOR_CODE_CLOSE);
-	
+
 	GameTooltip:Show();
+end
+
+function LookingForGuildFrame_CreateUIElements()
+	if LookingForGuildFrame then
+		return;
+	end
+
+	if GetCVarBool("useHighResolutionUITextures") then
+		CreateFrame("Frame", "LookingForGuildFrame", UIParent, "ButtonFrameTemplate-HighRes, LookingForGuildFrameTemplate");
+	else
+		CreateFrame("Frame", "LookingForGuildFrame", UIParent, "ButtonFrameTemplate, LookingForGuildFrameTemplate");
+		LookingForGuildFrameTabardBorder:SetSize(60, 60);
+		LookingForGuildFrameTabardBorder:SetPoint("CENTER", LookingForGuildFrameTabardBackground, "CENTER", 0, -3);
+	end
+
+	CreateFrame("Frame", "LookingForGuildStartFrame", UIParent, "LookingForGuildStartFrameTemplate");
+	CreateFrame("Frame", "LookingForGuildBrowseFrame", UIParent, "LookingForGuildBrowseFrameTemplate");
+	CreateFrame("Frame", "LookingForGuildAppsFrame", UIParent, "LookingForGuildAppsFrameTemplate");
+end
+
+LookingForGuildLoaderMixin = {}
+
+function LookingForGuildLoaderMixin:OnLoad()
+	self:RegisterEvent("ADDON_LOADED");
+end
+
+function LookingForGuildLoaderMixin:OnEvent(event, ...)
+	if event == "ADDON_LOADED" then
+		local addonName = ...;
+		if addonName and addonName == "Blizzard_LookingForGuildUI" then
+			LookingForGuildFrame_CreateUIElements();
+		end
+	end
 end

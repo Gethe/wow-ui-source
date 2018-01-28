@@ -253,7 +253,6 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("SPELL_CONFIRMATION_PROMPT");
 	self:RegisterEvent("SPELL_CONFIRMATION_TIMEOUT");
 	self:RegisterEvent("SAVED_VARIABLES_TOO_LARGE");
-	self:RegisterEvent("AUTH_CHALLENGE_UI_INVALID");
 	self:RegisterEvent("EXPERIMENTAL_CVAR_CONFIRMATION_NEEDED");
 	self:RegisterEvent("BAG_OVERFLOW_WITH_FULL_INVENTORY");
 	self:RegisterEvent("LOADING_SCREEN_ENABLED");
@@ -839,10 +838,6 @@ function ToggleRaidBrowser()
 end
 
 function CanShowEncounterJournal()
-	if ( IsKioskModeEnabled() ) then
-		return false;
-	end
-
 	if ( not C_AdventureJournal.CanBeShown() ) then
 		return false;
 	end
@@ -967,14 +962,16 @@ function OpenDeathRecapUI(id)
 end
 
 function InspectUnit(unit)
-	if (IsKioskModeEnabled()) then
-		return;
-	end
-
 	InspectFrame_LoadUI();
 	if ( InspectFrame_Show ) then
 		InspectFrame_Show(unit);
 	end
+end
+
+function OpenAzeriteEmpoweredItemUI(itemLocation)
+	UIParentLoadAddOn("Blizzard_AzeriteUI");
+	AzeriteEmpoweredItemUI:SetToItemAtLocation(itemLocation);
+	ShowUIPanel(AzeriteEmpoweredItemUI);
 end
 
 local function PlayBattlefieldBanner(self)
@@ -1722,8 +1719,6 @@ function UIParent_OnEvent(self, event, ...)
 		end
     elseif (event == "SPEC_INVOLUNTARILY_CHANGED" ) then
         StaticPopup_Show("SPEC_INVOLUNTARILY_CHANGED")
-	elseif( event == "AUTH_CHALLENGE_UI_INVALID" ) then
-		StaticPopup_Show("ERR_AUTH_CHALLENGE_UI_INVALID");
 	elseif( event == "EXPERIMENTAL_CVAR_CONFIRMATION_NEEDED" ) then
 		StaticPopup_Show("EXPERIMENTAL_CVAR_WARNING");
 	elseif ( event == "BAG_OVERFLOW_WITH_FULL_INVENTORY") then
@@ -1755,7 +1750,7 @@ function UIParent_OnEvent(self, event, ...)
 
 	-- Events for adventure journal
 	elseif ( event == "AJ_OPEN" ) then
-		if (not IsKioskModeEnabled() and C_AdventureJournal.CanBeShown()) then
+		if (C_AdventureJournal.CanBeShown()) then
 			if ( not EncounterJournal ) then
 				EncounterJournal_LoadUI();
 			end
@@ -2061,8 +2056,8 @@ UIPARENT_ALTERNATE_FRAME_POSITIONS = {
 UIPARENT_MANAGED_FRAME_POSITIONS = {
 	--Items with baseY set to "true" are positioned based on the value of menuBarTop and their offset needs to be repeatedly evaluated as menuBarTop can change.
 	--"yOffset" gets added to the value of "baseY", which is used for values based on menuBarTop.
-	["MultiBarBottomLeft"] = {baseY = 17, watchBar = 1, maxLevel = 1, anchorTo = "ActionButton1", point = "BOTTOMLEFT", rpoint = "TOPLEFT"};
-	["MultiBarRight"] = {baseY = 98, watchBar = 1, anchorTo = "UIParent", point = "BOTTOMRIGHT", rpoint = "BOTTOMRIGHT"};
+	["MultiBarBottomLeft"] = {baseY = 12, watchBar = 1, maxLevel = 1, anchorTo = "ActionButton1", point = "BOTTOMLEFT", rpoint = "TOPLEFT"};
+	["MultiBarBottomRight"] = {baseY = 0, watchBar = 1, maxLevel = 1, anchorTo = "ActionButton12", point = "TOPLEFT", rpoint = "TOPRIGHT", xOffset = 45};
 	["VoiceChatTalkers"] = {baseY = true, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, watchBar = 1};
 	["GroupLootContainer"] = {baseY = true, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1};
 	["TutorialFrameAlertButton"] = {baseY = true, yOffset = -10, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, watchBar = 1};
@@ -2075,9 +2070,9 @@ UIPARENT_MANAGED_FRAME_POSITIONS = {
 	["ZoneAbilityFrame"] = {baseY = true, yOffset = 100, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, tutorialAlert = 1, extraActionBarFrame = 1};
 	["ChatFrame1"] = {baseY = true, yOffset = 40, bottomLeft = actionBarOffset-8, justBottomRightAndStance = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, maxLevel = 1, point = "BOTTOMLEFT", rpoint = "BOTTOMLEFT", xOffset = 32};
 	["ChatFrame2"] = {baseY = true, yOffset = 40, bottomRight = actionBarOffset-8, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, rightLeft = -2*actionBarOffset, rightRight = -actionBarOffset, watchBar = 1, maxLevel = 1, point = "BOTTOMRIGHT", rpoint = "BOTTOMRIGHT", xOffset = -32};
-	["StanceBarFrame"] = {baseY = 0, bottomLeft = actionBarOffset, watchBar = 1, maxLevel = 1, anchorTo = "MainMenuBar", point = "BOTTOMLEFT", rpoint = "TOPLEFT", xOffset = 30};
-	["PossessBarFrame"] = {baseY = 0, bottomLeft = actionBarOffset, watchBar = 1, maxLevel = 1, anchorTo = "MainMenuBar", point = "BOTTOMLEFT", rpoint = "TOPLEFT", xOffset = 30};
-	["MultiCastActionBarFrame"] = {baseY = 0, bottomLeft = actionBarOffset, watchBar = 1, maxLevel = 1, anchorTo = "MainMenuBar", point = "BOTTOMLEFT", rpoint = "TOPLEFT", xOffset = 30};
+	["StanceBarFrame"] = {baseY = 8, bottomLeft = actionBarOffset, watchBar = 1, maxLevel = 1, anchorTo = "MainMenuBar", point = "BOTTOMLEFT", rpoint = "TOPLEFT", xOffset = 30};
+	["PossessBarFrame"] = {baseY = 8, bottomLeft = actionBarOffset, watchBar = 1, maxLevel = 1, anchorTo = "MainMenuBar", point = "BOTTOMLEFT", rpoint = "TOPLEFT", xOffset = 30};
+	["MultiCastActionBarFrame"] = {baseY = 8, bottomLeft = actionBarOffset, watchBar = 1, maxLevel = 1, anchorTo = "MainMenuBar", point = "BOTTOMLEFT", rpoint = "TOPLEFT", xOffset = 30};
 	["AuctionProgressFrame"] = {baseY = true, yOffset = 18, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, tutorialAlert = 1};
 	["TalkingHeadFrame"] = {baseY = true, yOffset = 0, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, tutorialAlert = 1, playerPowerBarAlt = 1, extraActionBarFrame = 1, ZoneAbilityFrame = 1, classResourceOverlayFrame = 1};
 
@@ -2085,12 +2080,16 @@ UIPARENT_MANAGED_FRAME_POSITIONS = {
 	-- These indexes require global variables of the same name to be declared. For example, if I have an index ["FOO"] then I need to make sure the global variable
 	-- FOO exists before this table is constructed. The function UIParent_ManageFramePosition will use the "FOO" table index to change the value of the FOO global
 	-- variable so that other modules can use the most up-to-date value of FOO without having knowledge of the UIPARENT_MANAGED_FRAME_POSITIONS table.
-	["CONTAINER_OFFSET_X"] = {baseX = 0, rightLeft = 2*actionBarOffset+3, rightRight = actionBarOffset+3, isVar = "xAxis"};
+	["CONTAINER_OFFSET_X"] = {baseX = 0, rightActionBarsX = "variable", isVar = "xAxis"};
 	["CONTAINER_OFFSET_Y"] = {baseY = true, yOffset = 10, bottomEither = actionBarOffset, watchBar = 1, isVar = "yAxis"};
 	["BATTLEFIELD_TAB_OFFSET_Y"] = {baseY = 210, bottomRight = actionBarOffset, watchBar = 1, isVar = "yAxis"};
-	["PETACTIONBAR_YPOS"] = {baseY = 97, bottomLeft = actionBarOffset, justBottomRightAndStance = actionBarOffset, watchBar = 1, maxLevel = 1, isVar = "yAxis"};
+	["PETACTIONBAR_YPOS"] = {baseY = 97, bottomLeft = actionBarOffset + 3, justBottomRightAndStance = actionBarOffset, watchBar = 1, maxLevel = 1, isVar = "yAxis"};
 	["MULTICASTACTIONBAR_YPOS"] = {baseY = 0, bottomLeft = actionBarOffset, watchBar = 1, maxLevel = 1, isVar = "yAxis"};
-	["OBJTRACKER_OFFSET_X"] = {baseX = 10, rightLeft = 2*actionBarOffset-7, rightRight = actionBarOffset-7, isVar = "xAxis"};
+	["OBJTRACKER_OFFSET_X"] = {baseX = 12, rightActionBarsX = "variable", isVar = "xAxis"};
+};
+
+local UIPARENT_VARIABLE_OFFSETS = {
+	["rightActionBarsX"] = 0,
 };
 
 -- If any Var entries in UIPARENT_MANAGED_FRAME_POSITIONS are used exclusively by addons, they should be declared here and not in one of the addon's files.
@@ -2103,7 +2102,7 @@ OBJTRACKER_OFFSET_X = 0;
 for _, data in pairs(UIPARENT_MANAGED_FRAME_POSITIONS) do
 	for flag, value in pairs(data) do
 		if ( flag == "watchBar" ) then
-			data[flag] = value * 9;
+			data[flag] = value * -2;
 		elseif ( flag == "maxLevel" ) then
 			data[flag] = value * -5;
 		elseif ( flag == "pet" ) then
@@ -2147,11 +2146,16 @@ function UIParent_ManageFramePosition(index, value, yOffsetFrames, xOffsetFrames
 	-- Iterate through frames that affect y offsets
 	local hasBottomEitherFlag;
 	for _, flag in pairs(yOffsetFrames) do
-		if ( value[flag] ) then
-			if ( flag == "bottomEither" ) then
-				hasBottomEitherFlag = 1;
+		local flagValue = value[flag];
+		if ( flagValue ) then
+			if ( flagValue == "variable" ) then
+				yOffset = yOffset + UIPARENT_VARIABLE_OFFSETS[flag];
+			else
+				if ( flag == "bottomEither" ) then
+					hasBottomEitherFlag = 1;
+				end
+				yOffset = yOffset + flagValue;
 			end
-			yOffset = yOffset + value[flag];
 		end
 	end
 
@@ -2163,8 +2167,13 @@ function UIParent_ManageFramePosition(index, value, yOffsetFrames, xOffsetFrames
 
 	-- Iterate through frames that affect x offsets
 	for _, flag in pairs(xOffsetFrames) do
-		if ( value[flag] ) then
-			xOffset = xOffset + value[flag];
+		local flagValue = value[flag];
+		if ( flagValue ) then
+			if ( flagValue == "variable" ) then
+				xOffset = xOffset + UIPARENT_VARIABLE_OFFSETS[flag];
+			else
+				xOffset = xOffset + flagValue;
+			end
 		end
 	end
 
@@ -2669,6 +2678,8 @@ function FramePositionDelegate:UpdateUIPanelPositions(currentFrame)
 end
 
 function FramePositionDelegate:UIParentManageFramePositions()
+	UIPARENT_VARIABLE_OFFSETS["rightActionBarsX"] = VerticalMultiBarsContainer:GetWidth();
+
 	-- Update the variable with the happy magic number.
 	UpdateMenuBarTop();
 
@@ -2695,21 +2706,23 @@ function FramePositionDelegate:UIParentManageFramePositions()
 	elseif ( PetBattleFrame and PetBattleFrame:IsShown() ) then
 		tinsert(yOffsetFrames, "petBattleFrame");
 	else
-		if ( MultiBarBottomLeft:IsShown() or MultiBarBottomRight:IsShown() ) then
-			tinsert(yOffsetFrames, "bottomEither");
+		if ( MultiBarBottomLeft:IsShown() or MultiBarBottomRight:IsShown() ) then	 	 
+			tinsert(yOffsetFrames, "bottomEither");	 	 
+		end	 	 
+		if ( MultiBarBottomRight:IsShown() ) then	 	 
+			tinsert(yOffsetFrames, "bottomRight");	 	 
+			hasBottomRight = 1;	 	 
+		end	 	 
+		if ( MultiBarBottomLeft:IsShown() ) then	 	 
+			tinsert(yOffsetFrames, "bottomLeft");	 	 
+			hasBottomLeft = 1;	 	 
+		end	 	 
+		-- TODO: Leaving this here for now since ChatFrame2 references it. Do we still need ChatFrame2 to be managed?
+		if ( MultiBarRight:IsShown() ) then
+			tinsert(xOffsetFrames, "rightRight");	 	 
 		end
-		if ( MultiBarBottomRight:IsShown() ) then
-			tinsert(yOffsetFrames, "bottomRight");
-			hasBottomRight = 1;
-		end
-		if ( MultiBarBottomLeft:IsShown() ) then
-			tinsert(yOffsetFrames, "bottomLeft");
-			hasBottomLeft = 1;
-		end
-		if ( MultiBarLeft:IsShown() ) then
-			tinsert(xOffsetFrames, "rightLeft");
-		elseif ( MultiBarRight:IsShown() ) then
-			tinsert(xOffsetFrames, "rightRight");
+		if ( MultiBarRight:IsShown() ) then
+			tinsert(xOffsetFrames, "rightActionBarsX");
 		end
 		if (PetActionBarFrame_IsAboveStance and PetActionBarFrame_IsAboveStance()) then
 			tinsert(yOffsetFrames, "justBottomRightAndStance");
@@ -2720,17 +2733,7 @@ function FramePositionDelegate:UIParentManageFramePositions()
 			tinsert(yOffsetFrames, "pet");
 			hasPetBar = 1;
 		end
-		local numWatchBars = 0;
-		numWatchBars = numWatchBars + (ReputationWatchBar:IsShown() and 1 or 0);
-		numWatchBars = numWatchBars + (HonorWatchBar:IsShown() and 1 or 0);
-		numWatchBars = numWatchBars + (ArtifactWatchBar:IsShown() and 1 or 0);
-		numWatchBars = numWatchBars + (MainMenuExpBar:IsShown() and 1 or 0);
-		if ( numWatchBars > 1 ) then
-			tinsert(yOffsetFrames, "watchBar");
-		end
-		if ( MainMenuBarMaxLevelBar:IsShown() ) then
-			tinsert(yOffsetFrames, "maxLevel");
-		end
+		
 		if ( TutorialFrameAlertButton:IsShown() ) then
 			tinsert(yOffsetFrames, "tutorialAlert");
 		end

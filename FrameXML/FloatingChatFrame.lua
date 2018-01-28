@@ -202,7 +202,7 @@ function FCFOptionsDropDown_Initialize(dropDown)
 				info.value = value;
 				info.func = FCF_SetChatWindowFontSize;
 
-				local fontFile, fontHeight, fontFlags = FCF_GetCurrentChatFrame():GetFont();
+				local fontFile, fontHeight, fontFlags = chatFrame:GetFont();
 				if ( value == floor(fontHeight+0.5) ) then
 					info.checked = 1;
 				end
@@ -213,30 +213,45 @@ function FCFOptionsDropDown_Initialize(dropDown)
 		end
 		return;
 	end
+	
 	-- Window options
 	info = UIDropDownMenu_CreateInfo();
 	local dropDownChatFrame = FCF_GetCurrentChatFrame(dropDown);
-	if ( dropDownChatFrame and dropDownChatFrame ~= DEFAULT_CHAT_FRAME and dropDownChatFrame.isDocked ) then
-		info.text = UNDOCK_WINDOW;
-	elseif ( dropDownChatFrame and dropDownChatFrame.isLocked ) then
-		info.text = UNLOCK_WINDOW;
-	else
-		info.text = LOCK_WINDOW;
+	if( dropDownChatFrame ) then
+		if( dropDownChatFrame == GENERAL_CHAT_DOCK.primary ) then 
+			info.text = dropDownChatFrame.isLocked and UNLOCK_WINDOW or LOCK_WINDOW;
+			info.func = FCF_ToggleLockOnDockedFrame;
+		else 
+			if(dropDownChatFrame.isDocked) then
+				info.text = UNDOCK_WINDOW;
+				info.func = FCF_ToggleLock;
+			elseif ( dropDownChatFrame.isLocked ) then 
+				info.text = UNLOCK_WINDOW;
+				info.func = FCF_ToggleLockOnDockedFrame;
+			else 
+				info.text = LOCK_WINDOW;
+				info.func = FCF_ToggleLock;
+			end
+		end
+		info.notCheckable = 1;
+		UIDropDownMenu_AddButton(info);
+		--Add Unlock Button for docked windows
+		if( dropDownChatFrame ~= GENERAL_CHAT_DOCK.primary ) then
+			if(dropDownChatFrame.isDocked) then
+				info = UIDropDownMenu_CreateInfo();
+				info.text = dropDownChatFrame.isLocked and UNLOCK_WINDOW or LOCK_WINDOW;
+				info.func = FCF_ToggleLockOnDockedFrame; 
+				info.notCheckable = 1;
+				UIDropDownMenu_AddButton(info);
+			end
+		end	
+		--Add Uninteractable button
+		info = UIDropDownMenu_CreateInfo();
+		info.text = dropDownChatFrame.isUninteractable and MAKE_INTERACTABLE or MAKE_UNINTERACTABLE;
+		info.func = FCF_ToggleUninteractable;
+		info.notCheckable = 1;
+		UIDropDownMenu_AddButton(info);
 	end
-	info.func = FCF_ToggleLock;
-	info.notCheckable = 1;
-	UIDropDownMenu_AddButton(info);
-
-	--Add Uninteractable button
-	info = UIDropDownMenu_CreateInfo();
-	if ( FCF_GetCurrentChatFrame(dropDown) and FCF_GetCurrentChatFrame(dropDown).isUninteractable) then
-		info.text = MAKE_INTERACTABLE;
-	else
-		info.text = MAKE_UNINTERACTABLE;
-	end
-	info.func = FCF_ToggleUninteractable;
-	info.notCheckable = 1;
-	UIDropDownMenu_AddButton(info);
 
 	if ( not isTemporary ) then
 		-- Add name button
@@ -265,25 +280,25 @@ function FCFOptionsDropDown_Initialize(dropDown)
 			info = UIDropDownMenu_CreateInfo();
 			info.text = CLOSE_CHAT_WINDOW;
 			info.func = FCF_PopInWindow;
-			info.arg1 = FCF_GetCurrentChatFrame(dropDown);
-			info.notCheckable = 1;
-			UIDropDownMenu_AddButton(info);
-		elseif ( chatFrame.isTemporary and (chatFrame.chatType == "WHISPER" or chatFrame.chatType == "BN_WHISPER") ) then
-			info = UIDropDownMenu_CreateInfo();
-			info.text = CLOSE_CHAT_WHISPER_WINDOW;
-			info.func = FCF_PopInWindow;
-			info.arg1 = FCF_GetCurrentChatFrame(dropDown);
-			info.notCheckable = 1;
-			UIDropDownMenu_AddButton(info);
-		elseif ( chatFrame.isTemporary ) then
-			info = UIDropDownMenu_CreateInfo();
-			info.text = CLOSE_CHAT_WINDOW;
-			info.func = FCF_Close;
-			info.arg1 = FCF_GetCurrentChatFrame(dropDown);
+			info.arg1 = dropDownChatFrame;
 			info.notCheckable = 1;
 			UIDropDownMenu_AddButton(info);
 		else
-			error(format("Unhandled temporary window type. chatType: %s, chatTarget %s", tostring(chatFrame.chatType), tostring(chatFrame.chatTarget)));
+			if (chatFrame.chatType == "WHISPER" or chatFrame.chatType == "BN_WHISPER" ) then
+				info = UIDropDownMenu_CreateInfo();
+				info.text = CLOSE_CHAT_WHISPER_WINDOW;
+				info.func = FCF_PopInWindow;
+				info.arg1 = dropDownChatFrame;
+				info.notCheckable = 1;
+				UIDropDownMenu_AddButton(info);
+			else
+				info = UIDropDownMenu_CreateInfo();
+				info.text = CLOSE_CHAT_WINDOW;
+				info.func = FCF_Close;
+				info.arg1 = dropDownChatFrame;
+				info.notCheckable = 1;
+				UIDropDownMenu_AddButton(info);
+			end
 		end
 	end
 
@@ -930,6 +945,15 @@ function FCF_StripChatMsg(string)
 	end
 end
 
+function FCF_ToggleLockOnDockedFrame()
+	local chatFrame = FCF_GetCurrentChatFrame();
+	local newLockValue = not chatFrame.isLocked; 
+	
+	for _, frame in pairs(FCFDock_GetChatFrames(GENERAL_CHAT_DOCK)) do
+		FCF_SetLocked(frame, newLockValue);
+	end
+end
+
 function FCF_ToggleLock()
 	local chatFrame = FCF_GetCurrentChatFrame();
 	if ( chatFrame.isLocked ) then
@@ -1179,7 +1203,7 @@ function FCFTab_OnUpdate(self, elapsed)
 	end
 
 	FCF_UpdateButtonSide(chatFrame);
-	if ( chatFrame == GENERAL_CHAT_DOCK.primary ) then
+	if ( chatFrame == GENERAL_CHAT_DOCK.primary or not chatFrame.isLocked ) then
 		for _, frame in pairs(FCFDock_GetChatFrames(GENERAL_CHAT_DOCK)) do
 			FCF_SetButtonSide(frame, FCF_GetButtonSide(GENERAL_CHAT_DOCK.primary));
 		end
@@ -1994,7 +2018,11 @@ function FCFDock_AddChatFrame(dock, chatFrame, position)
 		chatFrame:ClearAllPoints();
 		chatFrame:SetAllPoints(dock.primary);
 		chatFrame:SetMovable(false);
-		chatFrame:SetResizable(false);
+		if(dock.primary.isLocked) then 
+			chatFrame:SetResizable(false);
+		else
+			chatFrame:SetResizable(true);
+		end
 	end
 
 	chatFrame.buttonFrame.minimizeButton:Hide();

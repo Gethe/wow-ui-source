@@ -29,8 +29,6 @@ function PlayerFrame_OnLoad(self)
 	self:RegisterEvent("PLAYER_UPDATE_RESTING");
 	self:RegisterEvent("PARTY_LEADER_CHANGED");
 	self:RegisterEvent("PARTY_LOOT_METHOD_CHANGED");
-	self:RegisterEvent("VOICE_START");
-	self:RegisterEvent("VOICE_STOP");
 	self:RegisterEvent("GROUP_ROSTER_UPDATE");
 	self:RegisterEvent("READY_CHECK");
 	self:RegisterEvent("READY_CHECK_CONFIRM");
@@ -45,7 +43,7 @@ function PlayerFrame_OnLoad(self)
 	self:RegisterEvent("HONOR_PRESTIGE_UPDATE");
 	self:RegisterUnitEvent("UNIT_COMBAT", "player", "vehicle");
 	self:RegisterUnitEvent("UNIT_MAXPOWER", "player", "vehicle");
-	
+
 	-- Chinese playtime stuff
 	self:RegisterEvent("PLAYTIME_CHANGED");
 
@@ -255,14 +253,6 @@ function PlayerFrame_OnEvent(self, event, ...)
 			PlayerMasterIcon:Show();
 		else
 			PlayerMasterIcon:Hide();
-		end
-	elseif ( event == "VOICE_START") then
-		if ( arg1 == "player" ) then
-			PlayerFrame_UpdateVoiceStatus(true);
-		end
-	elseif ( event == "VOICE_STOP" ) then
-		if ( arg1 == "player" ) then
-			PlayerFrame_UpdateVoiceStatus(false);
 		end
 	elseif ( event == "PLAYTIME_CHANGED" ) then
 		PlayerFrame_UpdatePlaytime();

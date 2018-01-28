@@ -121,9 +121,6 @@ function QueueStatusFrame_OnLoad(self)
 	self:RegisterEvent("LFG_LIST_SEARCH_RESULT_UPDATED");
 	self:RegisterEvent("LFG_LIST_APPLICANT_UPDATED");
 
-	--For PvP Role Checks
-	self:RegisterEvent("PVP_ROLE_CHECK_UPDATED");
-
 	--For PvP
 	self:RegisterEvent("UPDATE_BATTLEFIELD_STATUS");
 	self:RegisterEvent("PVP_BRAWL_INFO_UPDATED");
@@ -131,13 +128,6 @@ function QueueStatusFrame_OnLoad(self)
 	--For World PvP stuff
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
 	self:RegisterEvent("ZONE_CHANGED");
-	self:RegisterEvent("BATTLEFIELD_MGR_QUEUE_REQUEST_RESPONSE");
-	self:RegisterEvent("BATTLEFIELD_MGR_QUEUE_STATUS_UPDATE");
-	self:RegisterEvent("BATTLEFIELD_MGR_EJECT_PENDING");
-	self:RegisterEvent("BATTLEFIELD_MGR_EJECTED");
-	self:RegisterEvent("BATTLEFIELD_MGR_QUEUE_INVITE");
-	self:RegisterEvent("BATTLEFIELD_MGR_ENTRY_INVITE");
-	self:RegisterEvent("BATTLEFIELD_MGR_ENTERED");
 
 	--For Pet Battles
 	self:RegisterEvent("PET_BATTLE_QUEUE_STATUS");

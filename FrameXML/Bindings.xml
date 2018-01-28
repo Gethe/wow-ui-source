@@ -1189,6 +1189,9 @@
 	<Binding name="TOGGLEANIMKITDISPLAY" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
 		ToggleAnimKitDisplay();
 	</Binding>
+	<Binding name="TOGGLEDEBUGAIDISPLAY" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
+		ToggleDebugAIDisplay();
+	</Binding>
 	<!-- Commentator Mode Bindings -->
 	<Binding name="TOGGLECOMMENTATOR" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
 		C_Commentator.ToggleCheats();
@@ -1344,7 +1347,7 @@
 	<ModifiedClick action="STICKYCAMERA" default="CTRL"/>
 	<ModifiedClick action="CHATLINK" default="SHIFT-BUTTON1"/>
 	<ModifiedClick action="DRESSUP" default="CTRL-BUTTON1"/>
-	<ModifiedClick action="SOCKETITEM" default="SHIFT-BUTTON2"/>
+	<ModifiedClick action="EXPANDITEM" default="SHIFT-BUTTON2"/>
 	<ModifiedClick action="SPLITSTACK" default="SHIFT"/>
 	<ModifiedClick action="PICKUPACTION" default="SHIFT"/>
 	<ModifiedClick action="PICKUPITEM" default="SHIFT"/>

@@ -915,10 +915,10 @@ function Class_ActionBarCallout:Warrior_AttemptPointer2()
 		self:Warrior_InitiatePointer2();
 	else
 		local unitPowerID; -- this local must exist before the closure below is constructed
-		unitPowerID = Dispatcher:RegisterEvent("UNIT_POWER", function()
+		unitPowerID = Dispatcher:RegisterEvent("UNIT_POWER_UPDATE", function()
 				if (UnitPower('player') >= requiredRage) then
 					self:Warrior_InitiatePointer2();
-					Dispatcher:UnregisterEvent("UNIT_POWER", unitPowerID);
+					Dispatcher:UnregisterEvent("UNIT_POWER_UPDATE", unitPowerID);
 				end
 			end);
 	end
@@ -1478,11 +1478,9 @@ end
 
 -- Watch for units dying while in combat.  if that happened, check the unit to see if the
 -- player can loot it and if so, prompt the player to loot
-function Class_LootCorpseWatcher:COMBAT_LOG_EVENT_UNFILTERED(timestamp, logEvent, ...)
-	if ((logEvent == "UNIT_DIED") or (logEvent == "UNIT_DESTROYED")) then
-		--- !!! VarArgs can't be passed into closures
-		local unitGUID = select(6, ...);
-
+function Class_LootCorpseWatcher:COMBAT_LOG_EVENT_UNFILTERED(timestamp, logEvent)
+	local logEvent, _, _, _, _, unitGUID = CombatLogGetCurrentEventInfo();
+	if logEvent == "UNIT_DIED" or logEvent == "UNIT_DESTROYED" then
 		-- Wait for mirror data
 		C_Timer.After(1, function()
 				if CanLootUnit(unitGUID) then

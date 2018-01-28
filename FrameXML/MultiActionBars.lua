@@ -1,9 +1,9 @@
 NUM_MULTIBAR_BUTTONS = 12;
-
-function MultiActionBarFrame_OnLoad (self)
-	-- Hack no longer needed here.
-	-- This is where i will load the actionbar states
-end
+VERTICAL_MULTI_BAR_HEIGHT = 503;
+VERTICAL_MULTI_BAR_WIDTH = 41;
+VERTICAL_MULTI_BAR_VERTICAL_SPACING = 20;
+VERTICAL_MULTI_BAR_HORIZONTAL_SPACING = 2;
+VERTICAL_MULTI_BAR_MIN_SCALE = 0.6944;
 
 function MultiActionButtonDown (bar, id)
 	local button = _G[bar.."Button"..id];
@@ -27,7 +27,6 @@ function MultiActionButtonUp (bar, id)
 	end
 end
 
-
 function IsNormalActionBarState()
 	return MainMenuBar:IsShown();
 end
@@ -45,13 +44,20 @@ function MultiActionBar_Update ()
 	if ( SHOW_MULTI_ACTIONBAR_2 and IsNormalActionBarState()) then
 		MultiBarBottomRight:Show();
 		VIEWABLE_ACTION_BAR_PAGES[BOTTOMRIGHT_ACTIONBAR_PAGE] = nil;
+		MainMenuBar_ChangeMenuBarSizeAndPosition(true);
+		StatusTrackingBarManager:UpdateBarsShown();
 	else
 		MultiBarBottomRight:Hide();
+		MainMenuBar_ChangeMenuBarSizeAndPosition(false);
+		StatusTrackingBarManager:UpdateBarsShown();
 		VIEWABLE_ACTION_BAR_PAGES[BOTTOMRIGHT_ACTIONBAR_PAGE] = 1;
 	end
+	local showRight = false;
+	local showLeft = false;
 	if ( SHOW_MULTI_ACTIONBAR_3 and IsNormalActionBarState()) then
 		MultiBarRight:Show();
 		VIEWABLE_ACTION_BAR_PAGES[RIGHT_ACTIONBAR_PAGE] = nil;
+		showRight = true;
 	else
 		MultiBarRight:Hide();
 		VIEWABLE_ACTION_BAR_PAGES[RIGHT_ACTIONBAR_PAGE] = 1;
@@ -59,10 +65,52 @@ function MultiActionBar_Update ()
 	if ( SHOW_MULTI_ACTIONBAR_3 and SHOW_MULTI_ACTIONBAR_4 and IsNormalActionBarState()) then
 		MultiBarLeft:Show();
 		VIEWABLE_ACTION_BAR_PAGES[LEFT_ACTIONBAR_PAGE] = nil;
+		showLeft = true;
 	else
 		MultiBarLeft:Hide();
 		VIEWABLE_ACTION_BAR_PAGES[LEFT_ACTIONBAR_PAGE] = 1;
 	end
+
+	if ( showRight ) then
+		local topLimit = MinimapCluster:GetBottom() + 14;	-- increasing by 14 here because we can overlap since the cluster is bigger than the elements it contains
+		local availableSpace = topLimit - MicroButtonAndBagsBar:GetTop() - 14;	-- reducing by 14 here because we want some space beween the action buttons and the bags
+		local contentWidth = VERTICAL_MULTI_BAR_WIDTH;
+		local contentHeight = VERTICAL_MULTI_BAR_HEIGHT;
+		if ( showLeft ) then
+			contentHeight = contentHeight + VERTICAL_MULTI_BAR_HEIGHT + VERTICAL_MULTI_BAR_VERTICAL_SPACING;
+			MultiBarLeft:ClearAllPoints();
+			if ( contentHeight * VERTICAL_MULTI_BAR_MIN_SCALE > availableSpace ) then
+				MultiBarLeft:SetPoint("TOPRIGHT", MultiBarRight, "TOPLEFT", -VERTICAL_MULTI_BAR_HORIZONTAL_SPACING, 0);
+				contentHeight = VERTICAL_MULTI_BAR_HEIGHT;
+				contentWidth = VERTICAL_MULTI_BAR_WIDTH * 2 + VERTICAL_MULTI_BAR_HORIZONTAL_SPACING;
+			else
+				MultiBarLeft:SetPoint("TOP", MultiBarRight, "BOTTOM", 0, -VERTICAL_MULTI_BAR_VERTICAL_SPACING);
+			end
+		end
+
+		local scale = 1;
+		if ( contentHeight > availableSpace ) then
+			scale = availableSpace / contentHeight;
+		end
+		MultiBarRight:SetScale(scale);
+		if ( showLeft ) then
+			MultiBarLeft:SetScale(scale);
+		end
+		VerticalMultiBarsContainer:SetSize(contentWidth * scale, contentHeight * scale);
+
+		-- center position, and if we run into the minimap cluster, move it down just enough
+		local yOffset = (contentHeight - VERTICAL_MULTI_BAR_HEIGHT) / 2;
+		VerticalMultiBarsContainer:SetPoint("RIGHT", 0, yOffset);
+		local barTop = VerticalMultiBarsContainer:GetTop();
+		if ( topLimit < barTop ) then
+			yOffset = yOffset + topLimit - barTop;
+			VerticalMultiBarsContainer:SetPoint("RIGHT", 0, yOffset);
+		end
+	else
+		VerticalMultiBarsContainer:SetSize(0, 0);
+	end
+	-- TODO: Evaluate how often we're doing multiple calls of UIParent_ManageFramePositions per frame
+	UIParent_ManageFramePositions();
 end
 
 function MultiActionBar_ShowAllGrids ()

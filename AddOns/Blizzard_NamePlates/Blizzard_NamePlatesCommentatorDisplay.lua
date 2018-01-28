@@ -22,7 +22,4 @@ function NamePlateCommentatorDisplayInfoMixin:OnUpdate()
 	local offensiveActive, defensiveActive = C_Commentator.HasTrackedAuras(parent.unit);
 	self.OffensiveCooldownModel:SetShown(offensiveActive);
 	self.DefensiveCooldownModel:SetShown(defensiveActive);
-	
-	parent:Hide();
-	parent:Show();
 end

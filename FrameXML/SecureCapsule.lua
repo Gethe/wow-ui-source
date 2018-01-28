@@ -487,3 +487,4 @@ take("SecureMixin");
 take("CreateFromSecureMixins");
 
 retain("ShrinkUntilTruncateFontStringMixin");
+retain("PortraitFrameTemplateMixin");

@@ -1314,7 +1314,7 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<EditBox name="$parentSearchBox" parentKey="searchBox" autoFocus="false" hidden="true">
+					<EditBox name="$parentSearchBox" parentKey="searchBox" autoFocus="false" hidden="true" bytes="128">
 						<Size x="320" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" x="15" y="-12"/>
@@ -1367,9 +1367,6 @@
 							</Layer>
 						</Layers>
 						<Scripts>
-							<OnLoad>
-								self:SetMaxBytes(128);
-							</OnLoad>
 							<OnShow>
 								self:SetTextInsets(16, 0, 0, 0);
 								KnowledgeBase_ClearSearch(self)
@@ -1933,7 +1930,6 @@
 		<Scripts>
 			<OnLoad>
 				self.refreshTime = 0;
-				self:RegisterEvent("UPDATE_TICKET");
 			</OnLoad>
 			<OnClick>
 				HelpOpenTicketButtonTutorial:Hide();
@@ -1945,7 +1941,6 @@
 					HelpFrame_ShowFrame(HELPFRAME_SUBMIT_TICKET);
 				end
 			</OnClick>
-			<OnEvent function="HelpOpenTicketButton_OnEvent"/>
 			<OnEnter>
 				self:SetScript("OnUpdate", HelpOpenTicketButton_OnUpdate);
 			</OnEnter>

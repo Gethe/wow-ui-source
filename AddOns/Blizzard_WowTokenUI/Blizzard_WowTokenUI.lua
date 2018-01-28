@@ -118,6 +118,7 @@ Import("LE_TOKEN_RESULT_ERROR_BALANCE_NEAR_CAP")
 Import("LE_TOKEN_REDEEM_TYPE_GAME_TIME");
 Import("LE_TOKEN_REDEEM_TYPE_BALANCE");
 Import("SOUNDKIT");
+Import("PortraitFrameTemplateMixin");
 
 BalanceEnabled = nil;
 BalanceAmount = 0;
@@ -306,10 +307,10 @@ function WowTokenRedemptionFrame_OnLoad(self)
 	self:SetPoint("CENTER", UIParent, "CENTER", 0, 60);
 
 	self.portrait:Hide();
-	self.portraitFrame:Hide();
-	self.topLeftCorner:Show();
-	self.topBorderBar:SetPoint("TOPLEFT", self.topLeftCorner, "TOPRIGHT",  0, 0);
-	self.leftBorderBar:SetPoint("TOPLEFT", self.topLeftCorner, "BOTTOMLEFT",  0, 0);
+	self.PortraitFrame:Hide();
+	self.TopLeftCorner:Show();
+	self.TopBorder:SetPoint("TOPLEFT", self.topLeftCorner, "TOPRIGHT",  0, 0);
+	self.LeftBorder:SetPoint("TOPLEFT", self.topLeftCorner, "BOTTOMLEFT",  0, 0);
 
 	self:RegisterEvent("TOKEN_REDEEM_FRAME_SHOW");
 	self:RegisterEvent("TOKEN_REDEEM_GAME_TIME_UPDATED");

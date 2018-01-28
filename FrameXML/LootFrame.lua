@@ -24,7 +24,7 @@ end
 function LootFrame_OnEvent(self, event, ...)
 	if ( event == "LOOT_OPENED" ) then
 		local autoLoot = ...;
-		if( autoLoot == 1 ) then
+		if( autoLoot ) then
 			LootFrame_InitAutoLootTable( self );
 			LootFrame:SetScript("OnUpdate", LootFrame_OnUpdate);
 			self.AutoLootDelay = LOOTFRAME_AUTOLOOT_DELAY;
@@ -36,7 +36,7 @@ function LootFrame_OnEvent(self, event, ...)
 		self.page = 1;
 		LootFrame_Show(self);
 		if ( not self:IsShown()) then
-			CloseLoot(autoLoot == 0);	-- The parameter tells code that we were unable to open the UI
+			CloseLoot(not autoLoot);	-- The parameter tells code that we were unable to open the UI
 		end
 	elseif( event == "LOOT_READY" ) then
 		LootFrame_InitAutoLootTable( self );

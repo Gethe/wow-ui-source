@@ -3285,67 +3285,15 @@ end
 --
 -- Save the original event handler
 local original_OnEvent = COMBATLOG:GetScript("OnEvent");
-COMBATLOG:SetScript("OnEvent",
 
-function(self, event, ...)
+COMBATLOG:SetScript("OnEvent", function(self, event, ...)
 		if ( event == "COMBAT_LOG_EVENT" ) then
-			CombatLog_AddEvent(...);
-			return;
-		elseif ( event == "COMBAT_LOG_EVENT_UNFILTERED") then
-			--[[
-			local timestamp, event, srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags = select(1, ...);
-			local message = string.format("%s, %s, %s, 0x%x, %s, %s, 0x%x",
-					       --date("%H:%M:%S", timestamp),
-					       event,
-					       srcGUID, srcName or "nil", srcFlags,
-					       dstGUID, dstName or "nil", dstFlags);
-
-			for i = 9, select("#", ...) do
-				message = message..", "..tostring(select(i, ...));
-			end
-			ChatFrame1:AddMessage(message);
-			--COMBATLOG:AddMessage(message);
-			]]
-			return;
+			CombatLog_AddEvent(CombatLogGetCurrentEventInfo());
 		else
 			original_OnEvent(self, event, ...);
 		end
 	end
 );
---COMBATLOG:RegisterEvent("COMBAT_LOG_EVENT");
---COMBATLOG:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED");
-
---[[
-_G[COMBATLOG:GetName().."Tab"]:SetScript("OnDragStart",
-	function(self, event, ...)
-		local chatFrame = _G["ChatFrame"..this:GetID()];
-		if ( chatFrame == DEFAULT_CHAT_FRAME ) then
-			if (chatFrame.isLocked) then
-				return;
-			end
-			chatFrame:StartMoving();
-			MOVING_CHATFRAME = chatFrame;
-			return;
-		elseif ( chatFrame.isDocked ) then
-			FCF_UnDockFrame(chatFrame);
-			FCF_SetLocked(chatFrame, false);
-			local chatTab = _G[chatFrame:GetName().."Tab"];
-			local x,y = chatTab:GetCenter();
-			if ( x and y ) then
-				x = x - (chatTab:GetWidth()/2);
-				y = y - (chatTab:GetHeight()/2);
-				chatTab:ClearAllPoints();
-				chatFrame:ClearAllPoints();
-				chatFrame:SetPoint("TOPLEFT", "UIParent", "BOTTOMLEFT", x, y - CombatLogQuickButtonFrame:GetHeight());
-			end
-			FCF_SetTabPosition(chatFrame, 0);
-			chatFrame:StartMoving();
-			MOVING_CHATFRAME = chatFrame;
-		end
-		SELECTED_CHAT_FRAME = chatFrame;
-	end
-);
-]]--
 
 --
 -- XML Function Overrides Part 2

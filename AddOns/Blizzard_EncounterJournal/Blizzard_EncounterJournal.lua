@@ -86,6 +86,14 @@ local EJ_TIER_DATA =
 	[7] = { backgroundTexture = "Interface\\EncounterJournal\\UI-EJ-Legion", r = 1.0, g = 0.8, b = 0.0 },
 }
 
+function GetEJTierData(tier)
+	if tier <= #EJ_TIER_DATA then
+		return EJ_TIER_DATA[tier];
+	end
+	
+	return EJ_TIER_DATA[1];
+end
+
 ExpansionEnumToEJTierDataTableId = {
 	[LE_EXPANSION_CLASSIC] = 1,
 	[LE_EXPANSION_BURNING_CRUSADE] = 2,
@@ -95,6 +103,15 @@ ExpansionEnumToEJTierDataTableId = {
 	[LE_EXPANSION_WARLORDS_OF_DRAENOR] = 6,
 	[LE_EXPANSION_LEGION] = 7,
 }
+
+function GetEJTierDataTableID(expansion)
+	local data = ExpansionEnumToEJTierDataTableId[expansion];
+	if data then
+		return data;
+	end
+	
+	return ExpansionEnumToEJTierDataTableId[LE_EXPANSION_CLASSIC];
+end
 
 local EncounterJournalSlotFilters = {
 	{ invType = LE_ITEM_FILTER_TYPE_HEAD, invTypeName = INVTYPE_HEAD },
@@ -123,7 +140,7 @@ function EncounterJournal_OnLoad(self)
 	SetPortraitToTexture(EncounterJournalPortrait,"Interface\\EncounterJournal\\UI-EJ-PortraitIcon");
 	self:RegisterEvent("EJ_LOOT_DATA_RECIEVED");
 	self:RegisterEvent("EJ_DIFFICULTY_UPDATE");
-	self:RegisterEvent("UNIT_PORTRAIT_UPDATE");
+	self:RegisterEvent("PORTRAITS_UPDATED");
 	self:RegisterEvent("SEARCH_DB_LOADED");
 	self:RegisterEvent("UI_MODEL_SCENE_INFO_UPDATED");
 
@@ -182,7 +199,6 @@ function EncounterJournal_OnLoad(self)
 	if( not raidInstanceID ) then
 		instanceSelect.raidsTab.grayBox:Show();
 	end
-
 	-- set the suggestion panel frame to open by default
 	EJSuggestFrame_OpenFrame();
 end
@@ -272,15 +288,26 @@ function EncounterJournal_OnShow(self)
 		EncounterJournal_UpdatePortraits();
 	end
 
-	local tierData = EJ_TIER_DATA[EJ_GetCurrentTier()];
+	local tierData = GetEJTierData(EJ_GetCurrentTier());
 	if ( not instanceSelect.suggestTab:IsEnabled() or EncounterJournal.suggestFrame:IsShown() ) then
-		tierData = EJ_TIER_DATA[EJSuggestTab_GetPlayerTierIndex()];
+		tierData = GetEJTierData(EJSuggestTab_GetPlayerTierIndex());
 	end
 	instanceSelect.bg:SetTexture(tierData.backgroundTexture);
 	instanceSelect.raidsTab.selectedGlow:SetVertexColor(tierData.r, tierData.g, tierData.b);
 	instanceSelect.dungeonsTab.selectedGlow:SetVertexColor(tierData.r, tierData.g, tierData.b);
+	EncounterJournal_CheckLevelAndDisplayLootTab(); 
 end
 
+function EncounterJournal_CheckLevelAndDisplayLootTab()
+
+	local instanceSelect = EncounterJournal.instanceSelect;
+	
+	if(UnitLevel("player") < 100) then
+		PanelTemplates_HideTab(instanceSelect, instanceSelect.LootJournalTab.id)
+	else
+		PanelTemplates_ShowTab(instanceSelect, instanceSelect.LootJournalTab.id)
+	end
+end
 function EncounterJournal_OnHide(self)
 	UpdateMicroButtons();
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
@@ -308,13 +335,12 @@ function EncounterJournal_OnEvent(self, event, ...)
 	elseif event == "EJ_DIFFICULTY_UPDATE" then
 		--fix the difficulty buttons
 		EncounterJournal_UpdateDifficulty(...);
-	elseif event == "UNIT_PORTRAIT_UPDATE" then
-		local unit = ...;
-		if not unit then
-			EncounterJournal_UpdatePortraits();
-		end
+	elseif event == "PORTRAITS_UPDATED" then
+		EncounterJournal_UpdatePortraits();
 	elseif event == "SEARCH_DB_LOADED" then
 		EncounterJournal_RestartSearchTracking();
+	elseif event == "PLAYER_LEVEL_UP" and EncounterJournal:IsShown() then
+		EncounterJournal_CheckLevelAndDisplayLootTab();
 	elseif event == "UI_MODEL_SCENE_INFO_UPDATED" then
 		local forceUpdate = true;
 		EncounterJournal_ShowCreatures(forceUpdate);
@@ -2271,7 +2297,7 @@ function EJSuggestTab_GetPlayerTierIndex()
 			minDiff = diff;
 		end
 	end
-	return ExpansionEnumToEJTierDataTableId[expansionId];
+	return GetEJTierDataTableID(expansionId);
 end
 
 function EJ_ContentTab_OnClick(self)
@@ -2299,9 +2325,9 @@ function EJ_ContentTab_Select(id)
 	-- Setup background
 	local tierData;
 	if ( id == instanceSelect.suggestTab.id ) then
-		tierData = EJ_TIER_DATA[EJSuggestTab_GetPlayerTierIndex()];
+		tierData = GetEJTierData(EJSuggestTab_GetPlayerTierIndex());
 	else
-		tierData = EJ_TIER_DATA[EJ_GetCurrentTier()];
+		tierData = GetEJTierData(EJ_GetCurrentTier());
 	end
 	selectedTab.selectedGlow:SetVertexColor(tierData.r, tierData.g, tierData.b);
 	selectedTab.selectedGlow:Show();
@@ -2345,7 +2371,7 @@ function EJ_HideSuggestPanel()
 
 		EncounterJournal_EnableTierDropDown();
 
-		local tierData = EJ_TIER_DATA[EJ_GetCurrentTier()];
+		local tierData = GetEJTierData(EJ_GetCurrentTier());
 		instanceSelect.bg:SetTexture(tierData.backgroundTexture);
 		instanceSelect.raidsTab.selectedGlow:SetVertexColor(tierData.r, tierData.g, tierData.b);
 		instanceSelect.dungeonsTab.selectedGlow:SetVertexColor(tierData.r, tierData.g, tierData.b);
@@ -2390,7 +2416,7 @@ function EncounterJournal_TierDropDown_Select(_, tier)
 	instanceSelect.dungeonsTab.grayBox:Hide();
 	instanceSelect.raidsTab.grayBox:Hide();
 
-	local tierData = EJ_TIER_DATA[tier];
+	local tierData = GetEJTierData(tier);
 	instanceSelect.bg:SetTexture(tierData.backgroundTexture);
 	instanceSelect.raidsTab.selectedGlow:SetVertexColor(tierData.r, tierData.g, tierData.b);
 	instanceSelect.dungeonsTab.selectedGlow:SetVertexColor(tierData.r, tierData.g, tierData.b);
@@ -2586,6 +2612,7 @@ function EJSuggestFrame_OnLoad(self)
 
 	self:RegisterEvent("AJ_REWARD_DATA_RECEIVED");
 	self:RegisterEvent("AJ_REFRESH_DISPLAY");
+	self:RegisterEvent("PLAYER_LEVEL_UP"); 
 end
 
 function EJSuggestFrame_OnEvent(self, event, ...)
@@ -2665,7 +2692,7 @@ local AdventureJournal_RightDescriptionFonts = {
 function EJSuggestFrame_RefreshDisplay()
 	local instanceSelect = EncounterJournal.instanceSelect;
 	local tab = EncounterJournal.instanceSelect.suggestTab;
-	local tierData = EJ_TIER_DATA[EJSuggestTab_GetPlayerTierIndex()];
+	local tierData = GetEJTierData(EJSuggestTab_GetPlayerTierIndex());
 	tab.selectedGlow:SetVertexColor(tierData.r, tierData.g, tierData.b);
 	tab.selectedGlow:Show();
 	instanceSelect.bg:SetTexture(tierData.backgroundTexture);

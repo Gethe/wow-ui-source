@@ -20,7 +20,6 @@ function TradeSkillUIMixin:OnLoad()
 	self:RegisterEvent("TRADE_SKILL_LIST_UPDATE");
 	self:RegisterEvent("TRADE_SKILL_DETAILS_UPDATE");
 	self:RegisterEvent("TRADE_SKILL_NAME_UPDATE");
-	self:RegisterEvent("TRADE_SKILL_FILTER_UPDATE");
 
 	self:RegisterEvent("SKILL_LINES_CHANGED");
 	self:RegisterEvent("TRIAL_STATUS_UPDATE");
@@ -59,10 +58,6 @@ function TradeSkillUIMixin:OnEvent(event, ...)
 	elseif event == "TRADE_SKILL_NAME_UPDATE" then
 		if self:IsVisible() then
 			self:RefreshTitle();
-		end
-	elseif event == "TRADE_SKILL_FILTER_UPDATE" then
-		if self:IsVisible() then
-			self.RecipeList:Refresh();
 		end
 	elseif event == "SKILL_LINES_CHANGED" then
 		if self:IsVisible() then

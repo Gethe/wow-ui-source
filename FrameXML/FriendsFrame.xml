@@ -1727,7 +1727,7 @@ TRAVEL PASS
 							<Anchor point="BOTTOMRIGHT" x="-5" y="26"/>
 						</Anchors>
 					</Frame>
-					<EditBox name="WhoFrameEditBox" autoFocus="false" frameStrata="HIGH" historyLines="32">
+					<EditBox name="WhoFrameEditBox" autoFocus="false" frameStrata="HIGH" historyLines="32" bytes="256">
 						<Size x="296" y="32"/>
 						<Anchors>
 							<Anchor point="BOTTOM" x="-10" y="20"/>
@@ -1737,7 +1737,7 @@ TRAVEL PASS
 							<OnEnterPressed function="WhoFrameEditBox_OnEnterPressed"/>
 							<OnEscapePressed function="EditBox_ClearFocus"/>
 						</Scripts>
-						<FontString inherits="ChatFontNormal" bytes="256"/>
+						<FontString inherits="ChatFontNormal"/>
 					</EditBox>
 					<ScrollFrame name="WhoListScrollFrame" inherits="FauxScrollFrameTemplate">
 						<Size x="296" y="287"/>
@@ -2576,7 +2576,6 @@ TRAVEL PASS
 			<OnLoad>
 				self:RegisterEvent("BN_REQUEST_FOF_SUCCEEDED");
 				self:RegisterEvent("BN_DISCONNECTED");
-				self:RegisterEvent("BN_REQUEST_FOF_FAILED");
 				self.requested = { };
 				self.hideOnEscape = true;
 				self.exclusive = true;

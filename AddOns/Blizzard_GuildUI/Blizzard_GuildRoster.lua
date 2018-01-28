@@ -73,8 +73,8 @@ function GuildRosterFrame_OnEvent(self, event, ...)
 		end
 	elseif ( event == "GUILD_ROSTER_UPDATE" ) then
 		if ( currentGuildView ~= "tradeskill" ) then
-			local arg1 = ...;
-			if ( arg1 ) then
+			local canRequestRosterUpdate = ...;
+			if ( canRequestRosterUpdate ) then
 				GuildRoster();
 			end		
 			GuildRoster_Update();

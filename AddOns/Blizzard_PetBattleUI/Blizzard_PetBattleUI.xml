@@ -1590,7 +1590,7 @@
 						<Scripts>
 							<OnShow>
 								UpdateMicroButtonsParent(self);
-								MoveMicroButtons("TOPLEFT", self, "TOPLEFT", -10, 27, true);
+								MoveMicroButtons("TOPLEFT", self, "TOPLEFT", -6, 1, true);
 							</OnShow>
 						</Scripts>
 					</Frame>

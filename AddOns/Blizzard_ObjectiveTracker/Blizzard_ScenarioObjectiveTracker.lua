@@ -651,7 +651,7 @@ function ScenarioTrackerProgressBar_GetProgress(self)
 	if (self.criteriaIndex) then
 		return select(4, C_Scenario.GetCriteriaInfo(self.criteriaIndex)) or 0;
 	else
-		return select(9, C_Scenario.GetStepInfo()) or 0;
+		return select(10, C_Scenario.GetStepInfo()) or 0;
 	end
 end
 
@@ -731,7 +731,7 @@ function SCENARIO_TRACKER_MODULE:AddProgressBar(block, line, criteriaIndex)
 	progressBar.Bar.BarGlow:SetAtlas("bonusobjectives-bar-glow", true);
 
 	if (not criteriaIndex) then
-		local rewardQuestID = select(10, C_Scenario.GetStepInfo());
+		local rewardQuestID = select(11, C_Scenario.GetStepInfo());
 
 		if (rewardQuestID ~= 0) then
 			-- reward icon; try the first item
@@ -845,7 +845,7 @@ function SCENARIO_CONTENT_TRACKER_MODULE:Update()
 	BlocksFrame.contentsHeight = 0;
 	SCENARIO_TRACKER_MODULE.contentsHeight = 0;
 
-	local stageName, stageDescription, numCriteria, _, _, _, numSpells, spellInfo, weightedProgress = C_Scenario.GetStepInfo();
+	local stageName, stageDescription, numCriteria, _, _, _, _, numSpells, spellInfo, weightedProgress = C_Scenario.GetStepInfo();
 	local inChallengeMode = (scenarioType == LE_SCENARIO_TYPE_CHALLENGE_MODE);
 	local inProvingGrounds = (scenarioType == LE_SCENARIO_TYPE_PROVING_GROUNDS);
 	local dungeonDisplay = (scenarioType == LE_SCENARIO_TYPE_USE_DUNGEON_DISPLAY);

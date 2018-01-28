@@ -222,7 +222,7 @@ function ContainerFrame_OnShow(self)
 	self.FilterIcon:Hide();
 	if ( self:GetID() == 0 ) then
 		local shouldShow = true;
-		if (IsCharacterNewlyBoosted() or FRAME_THAT_OPENED_BAGS ~= nil) then
+		if (IsCharacterNewlyBoosted() or FRAME_THAT_OPENED_BAGS ~= nil or IsKioskModeEnabled()) then
 			shouldShow = false;
 		else
 			for i = BACKPACK_CONTAINER + 1, NUM_BAG_SLOTS, 1 do
@@ -384,7 +384,7 @@ end
 
 function CheckBagSettingsTutorial()
 	local shouldShow = true;
-	if (IsCharacterNewlyBoosted() or FRAME_THAT_OPENED_BAGS ~= nil) then
+	if (IsCharacterNewlyBoosted() or FRAME_THAT_OPENED_BAGS ~= nil or IsKioskModeEnabled()) then
 		shouldShow = false;
 	else
 		for i = BACKPACK_CONTAINER + 1, NUM_BAG_SLOTS, 1 do
@@ -528,7 +528,7 @@ function ContainerFrame_Update(frame)
 		ArtifactRelicHelpBox:Hide();
 	end
 
-	local shouldDoRelicChecks = not BagHelpBox:IsShown() and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_ARTIFACT_RELIC_MATCH);
+	local shouldDoRelicChecks = not BagHelpBox:IsShown() and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_ARTIFACT_RELIC_MATCH) and not IsKioskModeEnabled();
 
 	for i=1, frame.size, 1 do
 		itemButton = _G[name.."Item"..i];
@@ -1253,8 +1253,13 @@ function ContainerFrameItemButton_OnModifiedClick(self, button)
 	if ( HandleModifiedItemClick(GetContainerItemLink(self:GetParent():GetID(), self:GetID())) ) then
 		return;
 	end
-	if ( IsModifiedClick("SOCKETITEM") ) then
-		SocketContainerItem(self:GetParent():GetID(), self:GetID());
+	if ( IsModifiedClick("EXPANDITEM") ) then
+		local itemLocation = ItemLocation:CreateFromBagAndSlot(self:GetParent():GetID(), self:GetID());
+		if C_Item.DoesItemExist(itemLocation) and C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItem(itemLocation) then
+			OpenAzeriteEmpoweredItemUI(itemLocation);
+		else
+			SocketContainerItem(self:GetParent():GetID(), self:GetID());
+		end
 	end
 	if ( not CursorHasItem() and IsModifiedClick("SPLITSTACK") ) then
 		local texture, itemCount, locked = GetContainerItemInfo(self:GetParent():GetID(), self:GetID());

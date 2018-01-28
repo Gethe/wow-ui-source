@@ -314,16 +314,6 @@
 							<Anchor point="TOPLEFT"/>
 						</Anchors>
 						<Frames>
-							<Button parentArray="Headers" inherits="QuestLogHeaderTemplate">
-								<Anchors>
-									<Anchor point="TOPLEFT" x="1" y="-6"/>
-								</Anchors>
-							</Button>
-							<Button parentArray="Titles" inherits="QuestLogTitleTemplate">
-								<Anchors>
-									<Anchor point="TOPLEFT"/>
-								</Anchors>
-							</Button>
 							<Frame parentKey="StoryHeader" hidden="true">
 								<Size x="262" y="59"/>
 								<Anchors>
@@ -474,12 +464,7 @@
 					</Frame>
 				</Frames>
 				<Scripts>
-					<OnLoad>
-						ScrollFrame_OnLoad(self);
-						self.Contents.StoryHeader.HighlightTexture:SetVertexColor(0.243, 0.570, 1);
-						self.StoryTooltip:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
-						self.StoryTooltip:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
-					</OnLoad>
+					<OnLoad function="QuestsFrame_OnLoad"/>
 				</Scripts>
 			</ScrollFrame>
 			<Frame parentKey="DetailsFrame" hidden="true">

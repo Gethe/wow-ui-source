@@ -114,7 +114,8 @@ SPEC_SPELLS_DISPLAY[70] = { 35395,10,	184575,10,	20271,10,	85256,10,	53385,10,	1
 
 SPEC_SPELLS_DISPLAY[71] = { 12294,10,	167105,10,	1464,10,	163201,10,	1680,10,	184783,10	}; --Arms
 SPEC_SPELLS_DISPLAY[72] = { 23881,10,	184367,10,	85288,10,	100130,10,	190411,10,	184361,10	}; --Fury
-SPEC_SPELLS_DISPLAY[73] = { 23922,10,	20243,10,	2565,10,	190456,10,	6572,10,	6343,10		}; --Protection
+SPEC_SPELLS_DISPLAY[73] = { 23922,10,	20243,10,	2565,10,	23920,10,	6572,10,	6343,10		}; --Protection
+
 
 SPEC_SPELLS_DISPLAY[102] = { 190984,10,	194153,10,	78674,10,	8921,10,	93402,10,	191034,10	}; --Balance
 SPEC_SPELLS_DISPLAY[103] = { 5221,10,	1822,10,	1079,10,	22568,10,	106832,10,	213764,10	}; --Feral
@@ -125,7 +126,7 @@ SPEC_SPELLS_DISPLAY[250] = { 206930,10,	49998,10,	195182,10,	43265,10,	50842,10,
 SPEC_SPELLS_DISPLAY[251] = { 49020,10,	49143,10,	49184,10,	196770,10,	51128,10,	59057,10	}; --Frost
 SPEC_SPELLS_DISPLAY[252] = { 85948,10,	55090,10,	77575,10,	47541,10,	43265,10,	46584,10	}; --Unholy
 
-SPEC_SPELLS_DISPLAY[253] = { 193455,10,	120679,10,	34026,10,	2643,10,	19574,10,	193530,10	}; --Beastmaster
+SPEC_SPELLS_DISPLAY[253] = { 193455,10,	217200,10,	34026,10,	2643,10,	19574,10,	193530,10	}; --Beastmaster
 SPEC_SPELLS_DISPLAY[254] = { 185358,10,	19434,10,	185901,10,	2643,10,	186387,10,	185987,10	}; --Marksmanship
 SPEC_SPELLS_DISPLAY[255] = { 190928,10, 202800,10,	185855,10,	186270,10,	187708,10,	191433,10	}; --Survival
 
@@ -272,14 +273,12 @@ end
 
 function PlayerTalentFrame_OnLoad(self)
 	self:RegisterEvent("ADDON_LOADED");
-	self:RegisterEvent("PREVIEW_TALENT_POINTS_CHANGED");
 	self:RegisterEvent("UNIT_MODEL_CHANGED");
 	self:RegisterEvent("UNIT_LEVEL");
 	self:RegisterEvent("LEARNED_SPELL_IN_TAB");
 	self:RegisterEvent("PLAYER_TALENT_UPDATE");
 	self:RegisterEvent("PET_SPECIALIZATION_CHANGED");
 	self:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED");
-	self:RegisterEvent("PREVIEW_TALENT_PRIMARY_TREE_CHANGED");
 	self:RegisterEvent("PLAYER_LEARN_TALENT_FAILED");
 	self.inspect = false;
 	self.talentGroup = 1;
@@ -403,8 +402,6 @@ function PlayerTalentFrame_OnEvent(self, event, ...)
 		if ( event == "ADDON_LOADED" ) then
 			PlayerTalentFrame_ClearTalentSelections();
 		elseif ( event == "PET_SPECIALIZATION_CHANGED" or
-				 event == "PREVIEW_TALENT_POINTS_CHANGED" or
-				 event == "PREVIEW_TALENT_PRIMARY_TREE_CHANGED" or
 				 event == "PLAYER_TALENT_UPDATE" ) then
 			PlayerTalentFrame_Refresh();
 		elseif ( event == "UNIT_LEVEL") then
@@ -1645,13 +1642,12 @@ function PlayerTalentFramePVPTalentsTalent_OnClick(self, button)
 			if (not known) then
 				talentsFrame.talentInfo[row] = id;
 
-				local isRowFree, prevSelected = GetPvpTalentRowSelectionInfo(row);
-				if (not isRowFree) then
-					RemovePvpTalent(prevSelected);
-				end
 				if (not LearnPvpTalent(id)) then
 					talentsFrame.talentInfo[row] = nil;
 				end
+				PVPTalentFrame_Update(PlayerTalentFramePVPTalents);
+			else
+				RemovePvpTalent(id);
 				PVPTalentFrame_Update(PlayerTalentFramePVPTalents);
 			end
 		end
@@ -1699,7 +1695,7 @@ local function InitializePVPTalentsXPBarDropDown(self, level)
 			SetWatchedFactionIndex(0);
 		end
 
-		MainMenuBar_UpdateExperienceBars();
+		StatusTrackingBarManager:UpdateBarsShown();
 	end
 
 	UIDropDownMenu_AddButton(info, level);
@@ -1781,7 +1777,6 @@ function PlayerTalentButton_OnLoad(self)
 	end
 
 	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
-	self:RegisterEvent("PREVIEW_TALENT_POINTS_CHANGED");
 	self:RegisterEvent("PLAYER_TALENT_UPDATE");
 	self:RegisterForDrag("LeftButton");
 end

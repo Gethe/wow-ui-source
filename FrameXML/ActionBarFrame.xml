@@ -56,8 +56,7 @@
 			</OnUpdate>
 		</Scripts>
 	</CheckButton>
-	<CheckButton name="ActionBarButtonTemplate" inherits="ActionBarButtonCodeTemplate, ActionButtonTemplate" virtual="true">
-	</CheckButton>
+	<CheckButton name="ActionBarButtonTemplate" inherits="ActionBarButtonCodeTemplate, ActionButtonTemplate" virtual="true"/>
 	<Frame name="ActionBarButtonSpellActivationAlert" virtual="true">
 		<Animations>
 			<AnimationGroup parentKey="animIn">
@@ -184,122 +183,68 @@
 	</Frame>
 	<CheckButton name="ActionButton1" inherits="ActionBarButtonTemplate" parent="MainMenuBarArtFrame" id="1">
 		<Anchors>
-			<Anchor point="BOTTOMLEFT">
-				<Offset>
-					<AbsDimension x="8" y="4"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="BOTTOMLEFT" relativeTo="MainMenuBarArtFrameBackground" x="8" y="4"/>
 		</Anchors>
 	</CheckButton>
 	<CheckButton name="ActionButton2" inherits="ActionBarButtonTemplate" parent="MainMenuBarArtFrame" id="2">
 		<Anchors>
-			<Anchor point="LEFT" relativeTo="ActionButton1" relativePoint="RIGHT">
-				<Offset>
-					<AbsDimension x="6" y="0"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="LEFT" relativeTo="ActionButton1" relativePoint="RIGHT" x="6" y="0"/>
 		</Anchors>
 	</CheckButton>
 	<CheckButton name="ActionButton3" inherits="ActionBarButtonTemplate" parent="MainMenuBarArtFrame" id="3">
 		<Anchors>
-			<Anchor point="LEFT" relativeTo="ActionButton2" relativePoint="RIGHT">
-				<Offset>
-					<AbsDimension x="6" y="0"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="LEFT" relativeTo="ActionButton2" relativePoint="RIGHT" x="6" y="0"/>
 		</Anchors>
 	</CheckButton>
 	<CheckButton name="ActionButton4" inherits="ActionBarButtonTemplate" parent="MainMenuBarArtFrame" id="4">
 		<Anchors>
-			<Anchor point="LEFT" relativeTo="ActionButton3" relativePoint="RIGHT">
-				<Offset>
-					<AbsDimension x="6" y="0"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="LEFT" relativeTo="ActionButton3" relativePoint="RIGHT" x="6" y="0"/>
 		</Anchors>
 	</CheckButton>
 	<CheckButton name="ActionButton5" inherits="ActionBarButtonTemplate" parent="MainMenuBarArtFrame" id="5">
 		<Anchors>
-			<Anchor point="LEFT" relativeTo="ActionButton4" relativePoint="RIGHT">
-				<Offset>
-					<AbsDimension x="6" y="0"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="LEFT" relativeTo="ActionButton4" relativePoint="RIGHT" x="6" y="0"/>
 		</Anchors>
 	</CheckButton>
 	<CheckButton name="ActionButton6" inherits="ActionBarButtonTemplate" parent="MainMenuBarArtFrame" id="6">
 		<Anchors>
-			<Anchor point="LEFT" relativeTo="ActionButton5" relativePoint="RIGHT">
-				<Offset>
-					<AbsDimension x="6" y="0"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="LEFT" relativeTo="ActionButton5" relativePoint="RIGHT" x="6" y="0"/>
 		</Anchors>
 	</CheckButton>
 	<CheckButton name="ActionButton7" inherits="ActionBarButtonTemplate" parent="MainMenuBarArtFrame" id="7">
 		<Anchors>
-			<Anchor point="LEFT" relativeTo="ActionButton6" relativePoint="RIGHT">
-				<Offset>
-					<AbsDimension x="6" y="0"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="LEFT" relativeTo="ActionButton6" relativePoint="RIGHT" x="6" y="0"/>
 		</Anchors>
 	</CheckButton>
 	<CheckButton name="ActionButton8" inherits="ActionBarButtonTemplate" parent="MainMenuBarArtFrame" id="8">
 		<Anchors>
-			<Anchor point="LEFT" relativeTo="ActionButton7" relativePoint="RIGHT">
-				<Offset>
-					<AbsDimension x="6" y="0"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="LEFT" relativeTo="ActionButton7" relativePoint="RIGHT" x="6" y="0"/>
 		</Anchors>
 	</CheckButton>
 	<CheckButton name="ActionButton9" inherits="ActionBarButtonTemplate" parent="MainMenuBarArtFrame" id="9">
 		<Anchors>
-			<Anchor point="LEFT" relativeTo="ActionButton8" relativePoint="RIGHT">
-				<Offset>
-					<AbsDimension x="6" y="0"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="LEFT" relativeTo="ActionButton8" relativePoint="RIGHT" x="6" y="0"/>
 		</Anchors>
 	</CheckButton>
 	<CheckButton name="ActionButton10" inherits="ActionBarButtonTemplate" parent="MainMenuBarArtFrame" id="10">
 		<Anchors>
-			<Anchor point="LEFT" relativeTo="ActionButton9" relativePoint="RIGHT">
-				<Offset>
-					<AbsDimension x="6" y="0"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="LEFT" relativeTo="ActionButton9" relativePoint="RIGHT" x="6" y="0"/>
 		</Anchors>
 	</CheckButton>
 	<CheckButton name="ActionButton11" inherits="ActionBarButtonTemplate" parent="MainMenuBarArtFrame" id="11">
 		<Anchors>
-			<Anchor point="LEFT" relativeTo="ActionButton10" relativePoint="RIGHT">
-				<Offset>
-					<AbsDimension x="6" y="0"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="LEFT" relativeTo="ActionButton10" relativePoint="RIGHT" x="6" y="0"/>
 		</Anchors>
 	</CheckButton>
 	<CheckButton name="ActionButton12" inherits="ActionBarButtonTemplate" parent="MainMenuBarArtFrame" id="12">
 		<Anchors>
-			<Anchor point="LEFT" relativeTo="ActionButton11" relativePoint="RIGHT">
-				<Offset>
-					<AbsDimension x="6" y="0"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="LEFT" relativeTo="ActionButton11" relativePoint="RIGHT" x="6" y="0"/>
 		</Anchors>
 	</CheckButton>
 	<Button name="ActionBarUpButton" parent="MainMenuBarArtFrame">
-		<Size>
-			<AbsDimension x="32" y="32"/>
-		</Size>
+		<Size x="21" y="19"/>
 		<Anchors>
-			<Anchor point="CENTER" relativeTo="MainMenuBarArtFrame" relativePoint="TOPLEFT">
-				<Offset>
-					<AbsDimension x="522" y="-22"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="RIGHT" relativeTo="ActionButton12" x="25" y="9"/>
 		</Anchors>
 		<HitRectInsets>
 			<AbsInset left="6" right="6" top="7" bottom="7"/>
@@ -310,21 +255,15 @@
 				PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 			</OnClick>
 		</Scripts>
-		<NormalTexture file="Interface\MainMenuBar\UI-MainMenu-ScrollUpButton-Up"/>
-		<PushedTexture file="Interface\MainMenuBar\UI-MainMenu-ScrollUpButton-Down"/>
-		<DisabledTexture file="Interface\Buttons\UI-ScrollBar-ScrollUpButton-Disabled"/>
-		<HighlightTexture alphaMode="ADD" file="Interface\MainMenuBar\UI-MainMenu-ScrollUpButton-Highlight"/>
+		<NormalTexture atlas="hud-MainMenuBar-arrowup-up"/>
+		<PushedTexture atlas="hud-MainMenuBar-arrowup-down"/>
+		<DisabledTexture atlas="hud-MainMenuBar-arrowup-disabled"/>
+		<HighlightTexture alphaMode="ADD" atlas="hud-MainMenuBar-arrowup-highlight"/>
 	</Button>
 	<Button name="ActionBarDownButton" parent="MainMenuBarArtFrame">
-		<Size>
-			<AbsDimension x="32" y="32"/>
-		</Size>
+		<Size x="21" y="19"/>
 		<Anchors>
-			<Anchor point="CENTER" relativeTo="MainMenuBarArtFrame" relativePoint="TOPLEFT">
-				<Offset>
-					<AbsDimension x="522" y="-42"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="CENTER" relativeTo="ActionBarUpButton" relativePoint="BOTTOMLEFT" x="10" y="-10"/>
 		</Anchors>
 		<HitRectInsets>
 			<AbsInset left="6" right="6" top="7" bottom="7"/>
@@ -335,9 +274,9 @@
 				PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 			</OnClick>
 		</Scripts>
-		<NormalTexture file="Interface\MainMenuBar\UI-MainMenu-ScrollDownButton-Up"/>
-		<PushedTexture file="Interface\MainMenuBar\UI-MainMenu-ScrollDownButton-Down"/>
-		<DisabledTexture file="Interface\Buttons\UI-ScrollBar-ScrollDownButton-Disabled"/>
-		<HighlightTexture alphaMode="ADD" file="Interface\MainMenuBar\UI-MainMenu-ScrollDownButton-Highlight"/>
+		<NormalTexture atlas="hud-MainMenuBar-arrowdown-up"/>
+		<PushedTexture atlas="hud-MainMenuBar-arrowdown-down"/>
+		<DisabledTexture atlas="hud-MainMenuBar-arrowdown-disabled"/>
+		<HighlightTexture alphaMode="ADD" atlas="hud-MainMenuBar-arrowdown-highlight"/>
 	</Button>
 </Ui>

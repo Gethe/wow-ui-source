@@ -12,10 +12,37 @@
 					</Anchors>
 				</Texture>
 			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="3">
+				<Texture parentKey="AzeriteTexture" atlas="AzeriteArmor-CharacterInfo-Border" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 		</Layers>
 		<Frames>
 			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate"/>
 			<Button name="$parentPopoutButton" parentKey="popoutButton" inherits="EquipmentFlyoutPopoutButtonTemplate"/>
+			<Frame parentKey="RankFrame">
+				<Size x="28" y="24" />
+				<Anchors>
+					<Anchor point="CENTER" relativePoint="BOTTOM" y="6"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY" textureSubLevel="4">
+						<Texture parentKey="Texture" atlas="Artifacts-PointsBox" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<FontString parentKey="Label" inherits="GameFontNormal">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.RankTexture"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
 		</Frames>
         <Scripts>
             <OnLoad>
@@ -495,6 +522,7 @@
 						<Scripts>
 							<OnLoad>
 								self:RegisterEvent("UNIT_PORTRAIT_UPDATE");
+								self:RegisterEvent("PORTRAITS_UPDATED");
 								self:RegisterEvent("PLAYER_ENTERING_WORLD");
 								
 								local tcoords = PAPERDOLL_SIDEBARS[self:GetID()].texCoords;
@@ -505,9 +533,11 @@
 							<OnEvent>
 								if ( event == "UNIT_PORTRAIT_UPDATE" ) then
 									local unit = ...;
-									if ( not unit or unit == "player" ) then
+									if ( unit == "player" ) then
 										SetPortraitTexture(self.Icon, "player");
 									end
+								elseif ( event == "PORTRAITS_UPDATED" ) then
+									SetPortraitTexture(self.Icon, "player");
 								elseif ( event == "PLAYER_ENTERING_WORLD" ) then
 									SetPortraitTexture(self.Icon, "player");
 								end

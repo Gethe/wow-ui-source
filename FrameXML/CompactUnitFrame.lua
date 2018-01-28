@@ -84,7 +84,7 @@ function CompactUnitFrame_OnEvent(self, event, ...)
 		elseif ( event == "UNIT_MAXPOWER" ) then
 			CompactUnitFrame_UpdateMaxPower(self);
 			CompactUnitFrame_UpdatePower(self);
-		elseif ( event == "UNIT_POWER" ) then
+		elseif ( event == "UNIT_POWER_UPDATE" ) then
 			CompactUnitFrame_UpdatePower(self);
 		elseif ( event == "UNIT_DISPLAYPOWER" or event == "UNIT_POWER_BAR_SHOW" or event == "UNIT_POWER_BAR_HIDE" ) then
 			CompactUnitFrame_UpdateMaxPower(self);
@@ -226,7 +226,7 @@ function CompactUnitFrame_UpdateUnitEvents(frame)
 	frame:RegisterUnitEvent("UNIT_HEALTH", unit, displayedUnit);
 	frame:RegisterUnitEvent("UNIT_HEALTH_FREQUENT", unit, displayedUnit);
 	frame:RegisterUnitEvent("UNIT_MAXPOWER", unit, displayedUnit);
-	frame:RegisterUnitEvent("UNIT_POWER", unit, displayedUnit);
+	frame:RegisterUnitEvent("UNIT_POWER_UPDATE", unit, displayedUnit);
 	frame:RegisterUnitEvent("UNIT_AURA", unit, displayedUnit);
 	frame:RegisterUnitEvent("UNIT_THREAT_SITUATION_UPDATE", unit, displayedUnit);
 	frame:RegisterUnitEvent("UNIT_THREAT_LIST_UPDATE", unit, displayedUnit);

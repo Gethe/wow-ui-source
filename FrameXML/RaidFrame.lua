@@ -15,7 +15,6 @@ function RaidFrame_OnLoad(self)
 	self:RegisterEvent("GROUP_ROSTER_UPDATE");
 	self:RegisterEvent("UPDATE_INSTANCE_INFO");
 	self:RegisterEvent("PARTY_LEADER_CHANGED");
-	self:RegisterEvent("VOICE_STATUS_UPDATE");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("READY_CHECK");
 	self:RegisterEvent("READY_CHECK_CONFIRM");
@@ -82,8 +81,7 @@ function RaidFrame_OnEvent(self, event, ...)
 			RaidFrameRaidInfoButton:Disable();
 		end
 		RaidInfoFrame_Update(true);
-	elseif ( event == "GROUP_ROSTER_UPDATE" or event == "PARTY_LEADER_CHANGED" or
-		event == "VOICE_STATUS_UPDATE" or event == "PARTY_LFG_RESTRICTED" ) then
+	elseif ( event == "GROUP_ROSTER_UPDATE" or event == "PARTY_LEADER_CHANGED" or event == "PARTY_LFG_RESTRICTED" ) then
 		RaidFrame_Update();
 	end
 end

@@ -188,7 +188,6 @@ VideoData["Display_DisplayModeDropDown"]={
 	dependent = {
 		"Display_ResolutionDropDown",
 		"Display_RefreshDropDown",
-		"Advanced_GammaSlider",
 	},
 	GetSafeValue =
 		function(self)
@@ -240,14 +239,12 @@ VideoData["Display_PrimaryMonitorDropDown"]={
 		"Display_DisplayModeDropDown",
 		"Display_ResolutionDropDown",	--resolutions may disappear when we change the monitor
 		"Display_RefreshDropDown",
-		"Advanced_GammaSlider",
 	},
 	landscape =
 		function(self)
 			local ratio = GetMonitorAspectRatio(self:GetValue());
 			return (ratio>=1.0);
 		end,
-	clientRestart = true,
 }
 
 -------------------------------------------------------------------------------------------------------
@@ -1278,67 +1275,6 @@ VideoData["Advanced_MaxFPSCheckBox"]={
 VideoData["Advanced_MaxFPSBKCheckBox"]={
 	name = MAXFPSBK_CHECK;
 	tooltip = OPTION_MAXFPSBK_CHECK,
-}
--------------------------------------------------------------------------------------------------------
-VideoData["Advanced_GammaSlider"]={
-	name = GAMMA;
-	tooltip = OPTION_TOOLTIP_GAMMA,
-	type = CONTROLTYPE_SLIDER,
-	onrefresh =
-		function(self)
-			local parent = (self:GetParent()):GetName();
-			local checkbox = _G[parent .. "DesktopGamma"];
-			if((IsMacClient() and not Display_DisplayModeDropDown:fullscreenmode()) or (not IsMacClient() and Display_DisplayModeDropDown:windowedmode())) then
-				self:Hide();
-				checkbox:Hide();
-			else
-				self:Show();
-				checkbox:Show();
-				local value = Advanced_DesktopGamma:GetChecked();
-				if(Advanced_DesktopGamma:GetChecked()) then
-					VideoOptions_Disable(self);
-				else
-					VideoOptions_Enable(self);
-				end
-			end
-		end,
-	initialize = function(self)
-	end,
-}
--------------------------------------------------------------------------------------------------------
-VideoData["Advanced_DesktopGamma"]={
-	name = DESKTOP_GAMMA;
-	tooltip = OPTION_TOOLTIP_DESKTOP_GAMMA,
-	cvar = "desktopGamma",
-	GetValue =
-		function(self)
-			return BlizzardOptionsPanel_GetCVarSafe(self.cvar);
-		end,
-	SetValue = 
-		function (self, value)
-			BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
-			self:SetChecked(value and value ~= 0);
-			Advanced_GammaSlider:onrefresh();
-		end,
-	SetDisplayValue =
-		function (self, value)
-			self:SetValue(value);	-- live updating
-		end,
-	onload =
-		function(self)
-			self:SetChecked(self:GetValue() and self:GetValue() ~= 0);
-		end,
-	onclick = 
-		function(self)
-			if ( self:GetChecked() ) then
-				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-			else
-				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
-			end
-			BlizzardOptionsPanel_CheckButton_OnClick(self);
-			VideoOptionsValueChanged(self, (self:GetChecked() and 1 or 0));
-			Graphics_EnableApply(self);
-		end,
 }
 VideoData["Advanced_UseUIScale"]={
 	name = USE_UISCALE;

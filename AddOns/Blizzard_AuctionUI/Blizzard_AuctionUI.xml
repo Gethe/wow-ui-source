@@ -884,7 +884,7 @@
 							</Anchor>
 						</Anchors>
 					</Button>
-					<EditBox name="BrowseName" autoFocus="false" inherits="SearchBoxTemplate">
+					<EditBox name="BrowseName" autoFocus="false" inherits="SearchBoxTemplate" bytes="64">
 						<Size>
 							<AbsDimension x="140" y="16"/>
 						</Size>
@@ -908,7 +908,7 @@
 								self:ClearFocus();
 							</OnEnterPressed>
 						</Scripts>
-						<FontString inherits="ChatFontNormal" bytes="64"/>
+						<FontString inherits="ChatFontNormal"/>
 					</EditBox>
 					<EditBox name="BrowseMinLevel" letters="3" numeric="true" autoFocus="false" inherits="InputBoxTemplate">
 						<Size>

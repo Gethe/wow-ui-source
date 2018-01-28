@@ -426,7 +426,7 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<EditBox parentKey="SearchName" autoFocus="false" inherits="InputBoxTemplate">
+					<EditBox parentKey="SearchName" autoFocus="false" inherits="InputBoxTemplate" bytes="64">
 						<Size x="140" y="16"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.SearchNameText" relativePoint="BOTTOMLEFT" x="3" y="-6"/>
@@ -443,7 +443,7 @@
 								self:ClearFocus();
 							</OnEnterPressed>
 						</Scripts>
-						<FontString inherits="ChatFontNormal" bytes="64"/>
+						<FontString inherits="ChatFontNormal"/>
 					</EditBox>
 					<EditBox parentKey="SearchMinLevel" name="BlackMarketMinLevel" letters="2" numeric="true" autoFocus="false" inherits="InputBoxTemplate">
 						<Size x="25" y="16"/>

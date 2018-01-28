@@ -946,9 +946,3 @@ function AudioOptionsVoicePanelOutputDeviceDropDown_OnClick(self)
 	UIDropDownMenu_SetSelectedValue(dropdown, value);
 	dropdown:SetValue(value);
 end
-
-function AudioOptionsVoicePanelOutputDeviceDropDown_OnEvent(self, event, ...)
-	if ( event == "VOICE_CHAT_ENABLED_UPDATE" ) then
-		UIDropDownMenu_Initialize(self, AudioOptionsVoicePanelOutputDeviceDropDown_Initialize);
-	end
-end

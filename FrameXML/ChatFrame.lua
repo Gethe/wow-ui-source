@@ -1643,6 +1643,10 @@ SlashCmdList["INVITE"] = function(msg)
 		ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
 		return;
 	end
+	if(msg == nil) then
+		ChatFrame_DisplayUsageError(ERR_NO_TARGET_OR_NAME);
+		return;
+	end
 	InviteToGroup(msg);
 end
 
@@ -1654,12 +1658,20 @@ SlashCmdList["REQUEST_INVITE"] = function(msg)
 		ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
 		return;
 	end
+	if(msg == nil) then
+		ChatFrame_DisplayUsageError(ERR_NO_TARGET_OR_NAME);
+		return;
+	end
 	RequestInviteFromUnit(msg);
 end
 
 SlashCmdList["UNINVITE"] = function(msg)
 	if(msg == "") then
 		msg = GetUnitName("target", true);
+	end
+	if(msg == nil) then
+		ChatFrame_DisplayUsageError(ERR_NO_TARGET_OR_NAME);
+		return;
 	end
 	UninviteUnit(msg);
 end
@@ -1703,9 +1715,6 @@ SlashCmdList["TRADE"] = function(msg)
 end
 
 SlashCmdList["INSPECT"] = function(msg)
-	if (IsKioskModeEnabled()) then
-		return;
-	end
 	InspectUnit("target");
 end
 
@@ -2585,10 +2594,7 @@ function ChatFrame_OnLoad(self)
 	self:RegisterEvent("UPDATE_CHAT_COLOR");
 	self:RegisterEvent("UPDATE_CHAT_WINDOWS");
 	self:RegisterEvent("CHAT_MSG_CHANNEL");
-	self:RegisterEvent("ZONE_UNDER_ATTACK");
 	self:RegisterEvent("UPDATE_INSTANCE_INFO");
-	self:RegisterEvent("NEW_TITLE_EARNED");
-	self:RegisterEvent("OLD_TITLE_LOST");
 	self:RegisterEvent("UPDATE_CHAT_COLOR_NAME_BY_CLASS");
 	self:RegisterEvent("VARIABLES_LOADED");
 	self:RegisterEvent("CHAT_SERVER_DISCONNECTED");
@@ -2900,11 +2906,6 @@ function ChatFrame_SystemEventHandler(self, event, ...)
 	elseif ( event == "GUILD_MOTD" ) then
 		ChatFrame_DisplayGMOTD(self, ...);
 		return true;
-	elseif ( event == "ZONE_UNDER_ATTACK" ) then
-		local arg1 = ...;
-		local info = ChatTypeInfo["SYSTEM"];
-		self:AddMessage(format(ZONE_UNDER_ATTACK, arg1), info.r, info.g, info.b, info.id);
-		return true;
 	elseif ( event == "UPDATE_INSTANCE_INFO" ) then
 		if ( RaidFrame.hasRaidInfo ) then
 			local info = ChatTypeInfo["SYSTEM"];
@@ -2913,16 +2914,6 @@ function ChatFrame_SystemEventHandler(self, event, ...)
 				RaidFrame.slashCommand = nil;
 			end
 		end
-		return true;
-	elseif ( event == "NEW_TITLE_EARNED" ) then
-		local arg1 = ...;
-		local info = ChatTypeInfo["SYSTEM"];
-		self:AddMessage(format(NEW_TITLE_EARNED, arg1), info.r, info.g, info.b, info.id);
-		return true;
-	elseif ( event == "OLD_TITLE_LOST" ) then
-		local arg1 = ...;
-		local info = ChatTypeInfo["SYSTEM"];
-		self:AddMessage(format(OLD_TITLE_LOST, arg1), info.r, info.g, info.b, info.id);
 		return true;
 	elseif ( event == "CHAT_SERVER_DISCONNECTED" ) then
 		local info = ChatTypeInfo["SYSTEM"];

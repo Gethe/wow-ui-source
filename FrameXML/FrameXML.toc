@@ -37,6 +37,13 @@ Localization.xml
 Fonts.xml
 FontStyles.xml
 
+..\SharedXML\PropertyBindingMixin.lua
+..\SharedXML\PropertyButton.xml
+..\SharedXML\PropertyFontString.xml
+..\SharedXML\PropertySlider.xml
+
+ObjectAPI\ItemLocation.lua
+ObjectAPI\Item.lua
 
 ## add new modules below here
 WorldFrame.xml
@@ -218,6 +225,7 @@ MapBar.xml
 ProductChoice.xml
 ZoneAbility.xml
 ArtifactToasts.xml
+AzeriteItemToasts.xml
 ..\SharedXML\ModelPreviewFrame.xml
 SplashFrame.xml
 QuestChoiceFrameMixin.lua

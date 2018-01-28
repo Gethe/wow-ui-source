@@ -96,16 +96,10 @@
 		</Scripts>
 		<CheckedTexture alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight"/>
 	</CheckButton>
-	<CheckButton name="MainMenuBarBackpackButton" inherits="ItemButtonTemplate, ItemAnimTemplate" parent="MainMenuBarArtFrame" id="0">
-		<Size>
-			<AbsDimension x="30" y="30"/>
-		</Size>
+	<CheckButton name="MainMenuBarBackpackButton" inherits="ItemButtonTemplate, ItemAnimTemplate" parent="MicroButtonAndBagsBar" id="0">
+		<Size x="30" y="30"/>
 		<Anchors>
-			<Anchor point="BOTTOMRIGHT">
-				<Offset>
-					<AbsDimension x="-4" y="6"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="TOPRIGHT" x="-4" y="-4"/>
 		</Anchors>
 		<Scripts>
 			<OnLoad>
@@ -147,7 +141,7 @@
 		</Scripts>
 		<CheckedTexture alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight"/>
 	</CheckButton>
-	<CheckButton name="CharacterBag0Slot" inherits="BagSlotButtonTemplate" parent="MainMenuBarArtFrame">
+	<CheckButton name="CharacterBag0Slot" inherits="BagSlotButtonTemplate" parent="MicroButtonAndBagsBar">
 		<Anchors>
 			<Anchor point="RIGHT" relativeTo="MainMenuBarBackpackButton" relativePoint="LEFT">
 				<Offset>
@@ -156,7 +150,7 @@
 			</Anchor>
 		</Anchors>
 	</CheckButton>
-	<CheckButton name="CharacterBag1Slot" inherits="BagSlotButtonTemplate" parent="MainMenuBarArtFrame">
+	<CheckButton name="CharacterBag1Slot" inherits="BagSlotButtonTemplate" parent="MicroButtonAndBagsBar">
 		<Anchors>
 			<Anchor point="RIGHT" relativeTo="CharacterBag0Slot" relativePoint="LEFT">
 				<Offset>
@@ -165,7 +159,7 @@
 			</Anchor>
 		</Anchors>
 	</CheckButton>
-	<CheckButton name="CharacterBag2Slot" inherits="BagSlotButtonTemplate" parent="MainMenuBarArtFrame">
+	<CheckButton name="CharacterBag2Slot" inherits="BagSlotButtonTemplate" parent="MicroButtonAndBagsBar">
 		<Anchors>
 			<Anchor point="RIGHT" relativeTo="CharacterBag1Slot" relativePoint="LEFT">
 				<Offset>
@@ -174,7 +168,7 @@
 			</Anchor>
 		</Anchors>
 	</CheckButton>
-	<CheckButton name="CharacterBag3Slot" inherits="BagSlotButtonTemplate" parent="MainMenuBarArtFrame">
+	<CheckButton name="CharacterBag3Slot" inherits="BagSlotButtonTemplate" parent="MicroButtonAndBagsBar">
 		<Anchors>
 			<Anchor point="RIGHT" relativeTo="CharacterBag2Slot" relativePoint="LEFT">
 				<Offset>

@@ -468,7 +468,7 @@ LOOTWONALERTFRAME_VALUES={
 
 -- NOTE - This may also be called for an externally created frame. (E.g. bonus roll has its own frame)
 function LootWonAlertFrame_SetUp(self, itemLink, quantity, rollType, roll, specID, isCurrency, showFactionBG, lootSource, lessAwesome, isUpgraded, wonRoll, showRatedBG)
-	local itemName, itemHyperLink, itemRarity, itemTexture;
+	local itemName, itemHyperLink, itemRarity, itemTexture, _;
 	if (isCurrency) then
 		itemName, _, itemTexture, _, _, _, _, itemRarity = GetCurrencyInfo(itemLink);
 		if ( lootSource == LOOT_SOURCE_GARRISON_CACHE ) then
@@ -687,13 +687,14 @@ function DigsiteCompleteToastFrame_SetUp(frame, raceName, raceTexture)
 end
 
 -- [[ StorePurchaseAlertFrame ]] --
-function StorePurchaseAlertFrame_SetUp(frame, type, icon, name, payloadID)
+function StorePurchaseAlertFrame_SetUp(frame, type, icon, name, payloadID, payloadGUID)
 	frame.Icon:SetTexture(icon);
 	frame.Title:SetFontObject(GameFontNormalLarge);
 	frame.Title:SetText(name);
 
 	frame.type = type;
 	frame.payloadID = payloadID;
+	frame.payloadGUID = payloadGUID;
 
 	if ( frame.Title:IsTruncated() ) then
 		frame.Title:SetFontObject(GameFontNormal);

@@ -51,9 +51,10 @@ function CharacterFrameTab_OnClick (self, button)
 end
 
 function CharacterFrame_OnLoad (self)
+	PortraitFrameTemplateMixin.OnLoad(self);
+
 	self:RegisterEvent("UNIT_NAME_UPDATE");
 	self:RegisterEvent("PLAYER_PVP_RANK_CHANGED");
-	self:RegisterEvent("PREVIEW_TALENT_POINTS_CHANGED");
 	self:RegisterEvent("PLAYER_TALENT_UPDATE");
 	self:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED");
 	ButtonFrameTemplate_HideButtonBar(self);
@@ -62,9 +63,6 @@ function CharacterFrame_OnLoad (self)
 
 	SetTextStatusBarTextPrefix(PlayerFrameHealthBar, HEALTH);
 	SetTextStatusBarTextPrefix(PlayerFrameManaBar, MANA);
-	SetTextStatusBarTextPrefix(MainMenuExpBar, XP);
-	ExpBar_UpdateTextString();
-		
 	-- Tab Handling code
 	PanelTemplates_SetNumTabs(self, NUM_CHARACTERFRAME_TABS);
 	PanelTemplates_SetTab(self, 1);
@@ -99,9 +97,7 @@ function CharacterFrame_OnEvent (self, event, ...)
 		return;
 	elseif ( event == "PLAYER_PVP_RANK_CHANGED" ) then
 		CharacterFrameTitleText:SetText(UnitPVPName("player"));
-	elseif (	event == "PREVIEW_TALENT_POINTS_CHANGED"
-				or event == "PLAYER_TALENT_UPDATE"
-				or event == "ACTIVE_TALENT_GROUP_CHANGED") then
+	elseif ( event == "PLAYER_TALENT_UPDATE" or event == "ACTIVE_TALENT_GROUP_CHANGED" ) then
 		CharacterFrame_UpdatePortrait();
 	end
 end
@@ -114,17 +110,15 @@ function CharacterFrame_OnShow (self)
 	PlayerFrameManaBar.showNumeric = true;
 	PlayerFrameAlternateManaBar.showNumeric = true;
 	MonkStaggerBar.showNumeric = true;
-	MainMenuExpBar.showNumeric = true;
 	PetFrameHealthBar.showNumeric = true;
 	PetFrameManaBar.showNumeric = true;
 	ShowTextStatusBarText(PlayerFrameHealthBar);
 	ShowTextStatusBarText(PlayerFrameManaBar);
 	ShowTextStatusBarText(PlayerFrameAlternateManaBar);
 	ShowTextStatusBarText(MonkStaggerBar);
-	ShowTextStatusBarText(MainMenuExpBar);
 	ShowTextStatusBarText(PetFrameHealthBar);
 	ShowTextStatusBarText(PetFrameManaBar);
-	ShowWatchBarText(ReputationWatchBar);
+	StatusTrackingBarManager:SetTextLocked(true);
 	
 	MicroButtonPulseStop(CharacterMicroButton);	--Stop the button pulse
 end
@@ -136,17 +130,15 @@ function CharacterFrame_OnHide (self)
 	PlayerFrameManaBar.showNumeric = nil;
 	PlayerFrameAlternateManaBar.showNumeric = nil;
 	MonkStaggerBar.showNumeric = nil;
-	MainMenuExpBar.showNumeric =nil;
 	PetFrameHealthBar.showNumeric = nil;
 	PetFrameManaBar.showNumeric = nil;
 	HideTextStatusBarText(PlayerFrameHealthBar);
 	HideTextStatusBarText(PlayerFrameManaBar);
 	HideTextStatusBarText(PlayerFrameAlternateManaBar);
 	HideTextStatusBarText(MonkStaggerBar);
-	HideTextStatusBarText(MainMenuExpBar);
 	HideTextStatusBarText(PetFrameHealthBar);
 	HideTextStatusBarText(PetFrameManaBar);
-	HideWatchBarText(ReputationWatchBar);
+	StatusTrackingBarManager:SetTextLocked(false);
 	PaperDollFrame.currentSideBar = nil;
 end
 

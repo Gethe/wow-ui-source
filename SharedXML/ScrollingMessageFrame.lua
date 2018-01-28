@@ -102,6 +102,14 @@ function ScrollingMessageFrameMixin:GetOnScrollChangedCallback()
 	return self.onScrollChangedCallback;
 end
 
+function ScrollingMessageFrameMixin:SetOnTextCopiedCallback(onTextCopiedCallback)
+	self.onTextCopiedCallback = onTextCopiedCallback;
+end
+
+function ScrollingMessageFrameMixin:GetOnTextCopiedCallback()
+	return self.onTextCopiedCallback;
+end
+
 function ScrollingMessageFrameMixin:SetScrollOffset(offset)
 	local newOffset = Clamp(offset, 0, self:GetMaxScrollRange());
 	if newOffset ~= self.scrollOffset then
@@ -271,12 +279,17 @@ function ScrollingMessageFrameMixin:OnPostMouseUp()
 		local x, y = self:GetScaledCursorPosition();
 		local selectedText = self:GatherSelectedText(x, y);
 
+		local numCopied = nil;
 		if selectedText then
 			local REMOVE_MARKUP = true;
-			CopyToClipboard(selectedText, REMOVE_MARKUP);
+			numCopied = CopyToClipboard(selectedText, REMOVE_MARKUP);
 		end
 
 		self:ResetSelectingText();
+
+		if numCopied and selectedText and self.onTextCopiedCallback then
+			self.onTextCopiedCallback(self, selectedText, numCopied);
+		end
 	end
 end
 
@@ -413,7 +426,7 @@ function ScrollingMessageFrameMixin:FindCharacterAndLineIndexAtCoordinate(x, y)
 				return characterIndex, lineIndex;
 			end
 
-			local distanceToLine =  CalculateDistanceSqToLine(x, y, visibleLine);
+			local distanceToLine = CalculateDistanceSqToLine(x, y, visibleLine);
 			if not closestDistance or distanceToLine < closestDistance then
 				closestLineIndex = lineIndex;
 				closestCharacterIndex = characterIndex;

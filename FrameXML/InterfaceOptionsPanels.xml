@@ -2166,6 +2166,9 @@
 						end
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 						self:RegisterEvent("VARIABLES_LOADED");
+						if (IsKioskModeEnabled()) then
+							self:RegisterEvent("PLAYER_ENTERING_WORLD");
+						end
 					</OnLoad>
 					<OnEvent>
 						self.setFunc(GetCVar(self.cvar));

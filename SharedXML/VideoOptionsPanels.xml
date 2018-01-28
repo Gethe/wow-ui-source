@@ -1612,65 +1612,6 @@
 					</OnShow>
 				</Scripts>
 			</Slider>
-			<Slider name="$parentGammaSlider" inherits="VideoOptionsSliderTemplate" minValue="-0.5" maxValue="0.5" defaultValue="0" valueStep=".1">
-				<Size x="10" y="17"/>
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentRenderScaleSlider" relativePoint="BOTTOMLEFT" x="0" y="-25" />
-				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture name="$parentGrayScale" file="Interface\OptionsFrame\21stepgrayscale">
-							<Size x="10" y="16"/>
-							<Anchors>
-								<Anchor point="BOTTOMLEFT">
-									<Offset x="0" y="-30"/>
-								</Anchor>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnLoad>
-						local width = 2 * (Display_VerticalSyncDropDown:GetWidth() - 25 - 25);
-						self:SetWidth(width );
-						_G[self:GetName() .. "GrayScale"]:SetWidth(width);
-						self.label = GAMMA;
-						self.SetDisplayValue = self.SetValue;
-						self.SetValue = function (self, value)
-							self:SetDisplayValue(value);
-							SetGamma(value);
-						end
-						self.GetCurrentValue = function (self) return GetGamma(); end;
-
-						_G[self:GetName().."Text"]:SetFontObject("OptionsFontSmall");
-						_G[self:GetName().."Text"]:SetText(GAMMA);
-						_G[self:GetName().."Low"]:SetText("-");
-						_G[self:GetName().."High"]:SetText("+");
-						VideoOptionsSlider_OnLoad(self);
-					</OnLoad>
-					<OnValueChanged>
-						if(userInput) then
-							Graphics_EnableApply(self);
-							self.newValue = value;
-							if ( self:GetParent():IsShown() ) then
-								SetGamma(value);
-							end
-						end
-					</OnValueChanged>
-				</Scripts>
-			</Slider>
-			<CheckButton name="$parentDesktopGamma" inherits="VideoOptionsSmallCheckButtonTemplate">
-				<Anchors>
-					<Anchor point="RIGHT" relativeTo="$parentGammaSlider" relativePoint="LEFT">
-						<Offset x="0" y="0"/>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						self:onclick();
-					</OnClick>
-				</Scripts>
-			</CheckButton>
 		</Frames>
 
 		<!-- stereo -->

@@ -152,19 +152,19 @@ end
 
 function ButtonFrameTemplate_HidePortrait(self)
 	self.portrait:Hide();
-	self.portraitFrame:Hide();
-	self.topLeftCorner:Show();
-	self.topBorderBar:SetPoint("TOPLEFT", self.topLeftCorner, "TOPRIGHT",  0, 0);
-	self.leftBorderBar:SetPoint("TOPLEFT", self.topLeftCorner, "BOTTOMLEFT",  0, 0);
+	self.PortraitFrame:Hide();
+	self.TopLeftCorner:Show();
+	self.TopBorder:SetPoint("TOPLEFT", self.TopLeftCorner, "TOPRIGHT",  0, 0);
+	self.LeftBorder:SetPoint("TOPLEFT", self.TopLeftCorner, "BOTTOMLEFT",  0, 0);
 end
 
 
 function ButtonFrameTemplate_ShowPortrait(self)
 	self.portrait:Show();
-	self.portraitFrame:Show();
-	self.topLeftCorner:Hide();
-	self.topBorderBar:SetPoint("TOPLEFT", self.portraitFrame, "TOPRIGHT",  0, -10);
-	self.leftBorderBar:SetPoint("TOPLEFT", self.portraitFrame, "BOTTOMLEFT",  8, 0);
+	self.PortraitFrame:Show();
+	self.TopLeftCorner:Hide();
+	self.TopBorder:SetPoint("TOPLEFT", self.PortraitFrame, "TOPRIGHT",  0, -10);
+	self.LeftBorder:SetPoint("TOPLEFT", self.PortraitFrame, "BOTTOMLEFT",  8, 0);
 end
 
 -- A bit ugly, we want the talent frame to display a dialog box in certain conditions.
@@ -910,4 +910,24 @@ function MaximizeMinimizeButtonFrameMixin:Minimize()
 	
 	self.MaximizeButton:Show();
 	self.MinimizeButton:Hide();
+end
+
+PortraitFrameTemplateMixin = {}
+
+function PortraitFrameTemplateMixin:OnLoad()
+
+	local use2XFrameTextures = GetCVarBool("useHighResolutionUITextures");
+	if (use2XFrameTextures) then
+		self.PortraitFrame:SetAtlas("UI-Frame-Portrait-2x");
+		self.TopRightCorner:SetAtlas("UI-Frame-TopCornerRight-2x");
+
+		self.TopBorder:SetAtlas("_UI-Frame-TittleTile2x");
+		
+		self.BotLeftCorner:SetAtlas("UI-Frame-BotCornerLeft-2x");
+		self.BotRightCorner:SetAtlas("UI-Frame-BotCornerRight-2x");
+
+		self.BottomBorder:SetAtlas("_UI-Frame-Bot2x");
+		self.LeftBorder:SetAtlas("!UI-Frame-LeftTile2x");
+		self.RightBorder:SetAtlas("!UI-Frame-RightTile2x");
+	end
 end

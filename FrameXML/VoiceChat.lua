@@ -21,9 +21,9 @@ function VoiceChatTalkers_OnLoad()
 	local buttonFrame = CreateFrame("FRAME", "VoiceChatTalkersButton1", VoiceChatTalkers, "VoiceChatButtonTemplate");
 	tinsert(VoiceChatTalkers.buttons, buttonFrame);
 	buttonFrame:SetPoint("TOPLEFT", 0, -8);
-	VoiceChatTalkers:RegisterEvent("VOICE_PLATE_START")
-	VoiceChatTalkers:RegisterEvent("VOICE_PLATE_STOP")
-	VoiceChatTalkers:RegisterEvent("VOICE_LEFT_SESSION")
+	--VoiceChatTalkers:RegisterEvent("VOICE_PLATE_START")
+	--VoiceChatTalkers:RegisterEvent("VOICE_PLATE_STOP")
+	--VoiceChatTalkers:RegisterEvent("VOICE_LEFT_SESSION")
 	VoiceChatTalkers:RegisterEvent("PLAYER_ENTERING_WORLD")
 	VoiceChatTalkers:RegisterForDrag("LeftButton");
 	VoiceChatTalkers:SetAlpha(0);

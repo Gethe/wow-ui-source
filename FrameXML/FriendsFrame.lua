@@ -226,12 +226,10 @@ function FriendsFrame_OnLoad(self)
 	PanelTemplates_SetNumTabs(self, 4);
 	self.selectedTab = 1;
 	PanelTemplates_UpdateTabs(self);
-	self:RegisterEvent("FRIENDLIST_SHOW");
 	self:RegisterEvent("FRIENDLIST_UPDATE");
 	self:RegisterEvent("IGNORELIST_UPDATE");
 	self:RegisterEvent("MUTELIST_UPDATE");
 	self:RegisterEvent("WHO_LIST_UPDATE");
-	self:RegisterEvent("VOICE_CHAT_ENABLED_UPDATE");
 	self:RegisterEvent("GROUP_ROSTER_UPDATE");
 	self:RegisterEvent("PLAYER_FLAGS_CHANGED");
 	self:RegisterEvent("BN_FRIEND_LIST_SIZE_CHANGED");
@@ -241,7 +239,6 @@ function FriendsFrame_OnLoad(self)
 	self:RegisterEvent("BN_FRIEND_INVITE_REMOVED");
 	self:RegisterEvent("BN_CUSTOM_MESSAGE_CHANGED");
 	self:RegisterEvent("BN_CUSTOM_MESSAGE_LOADED");
-	self:RegisterEvent("BN_SELF_ONLINE");
 	self:RegisterEvent("BN_BLOCK_LIST_UPDATED");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("BN_CONNECTED");
@@ -851,9 +848,6 @@ function FriendsFrame_OnEvent(self, event, ...)
 				FriendsFrame_SummonButton_Update(button.summonButton);
 			end
 		end
-	elseif ( event == "FRIENDLIST_SHOW" ) then
-		FriendsList_Update();
-		FriendsFrame_Update();
 	elseif ( event == "FRIENDLIST_UPDATE" or event == "GROUP_ROSTER_UPDATE" ) then
 		FriendsList_Update();
 	elseif ( event == "BN_FRIEND_LIST_SIZE_CHANGED" or event == "BN_FRIEND_INFO_CHANGED" ) then
@@ -891,12 +885,10 @@ function FriendsFrame_OnEvent(self, event, ...)
 	elseif ( event == "WHO_LIST_UPDATE" ) then
 		WhoList_Update();
 		FriendsFrame_Update();
-	elseif ( event == "VOICE_CHAT_ENABLED_UPDATE" ) then
-		VoiceChat_Toggle();
 	elseif ( event == "PLAYER_FLAGS_CHANGED" or event == "BN_INFO_CHANGED") then
 		FriendsFrameStatusDropDown_Update();
 		FriendsFrame_CheckBattlenetStatus();
-	elseif ( event == "PLAYER_ENTERING_WORLD" or event == "BN_CONNECTED" or event == "BN_DISCONNECTED" or event == "BN_SELF_ONLINE") then
+	elseif ( event == "PLAYER_ENTERING_WORLD" or event == "BN_CONNECTED" or event == "BN_DISCONNECTED") then
 		FriendsFrame_CheckBattlenetStatus();
 		-- We want to remove any friends from the frame so they don't linger when it's first re-opened.
 		if (event == "BN_DISCONNECTED") then
@@ -2081,8 +2073,6 @@ function FriendsFriendsFrame_OnEvent(self, event)
 			waitFrame:Hide();
 			FriendsFriendsList_Update();
 		end	
-	elseif ( event == "BN_REQUEST_FOF_FAILED" ) then
-		-- FIX ME - need an error here
 	elseif ( event == "BN_DISCONNECTED" ) then
 		FriendsFriendsFrame_Close();
 	end

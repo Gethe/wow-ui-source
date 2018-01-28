@@ -1,5 +1,13 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
+	<Include file="UIDropDownMenuTemplates.lua"/>
+	<Frame name="UIDropDownCustomMenuEntryTemplate" enableMouse="true" mixin="UIDropDownCustomMenuEntryMixin" virtual="true">
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Frame>
+
 	<Button name="UIDropDownMenuButtonTemplate" virtual="true">
 		<Size x="100" y="16"/>
 		<Layers>
@@ -92,7 +100,7 @@
 						<Offset>
 							<AbsDimension x="0" y="0"/>
 						</Offset>
-					</Anchor>                   
+					</Anchor>
 				</Anchors>
 				<Scripts>
 					<OnClick>
@@ -146,7 +154,7 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad>		
+			<OnLoad>
 				self:SetFrameLevel(self:GetParent():GetFrameLevel()+2);
 			</OnLoad>
 			<OnClick>
@@ -279,7 +287,7 @@
 		</Size>
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture name="$parentLeft" file="Interface\Glues\CharacterCreate\CharacterCreate-LabelFrame">
+				<Texture name="$parentLeft" parentKey="Left" file="Interface\Glues\CharacterCreate\CharacterCreate-LabelFrame">
 					<Size>
 						<AbsDimension x="25" y="64"/>
 					</Size>
@@ -292,21 +300,21 @@
 					</Anchors>
 					<TexCoords left="0" right="0.1953125" top="0" bottom="1"/>
 				</Texture>
-				<Texture name="$parentMiddle" file="Interface\Glues\CharacterCreate\CharacterCreate-LabelFrame">
+				<Texture name="$parentMiddle" parentKey="Middle" file="Interface\Glues\CharacterCreate\CharacterCreate-LabelFrame">
 					<Size>
 						<AbsDimension x="115" y="64"/>
 					</Size>
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
+						<Anchor point="LEFT" relativeKey="$parent.Left" relativePoint="RIGHT"/>
 					</Anchors>
 					<TexCoords left="0.1953125" right="0.8046875" top="0" bottom="1"/>
 				</Texture>
-				<Texture name="$parentRight" file="Interface\Glues\CharacterCreate\CharacterCreate-LabelFrame">
+				<Texture name="$parentRight" parentKey="Right" file="Interface\Glues\CharacterCreate\CharacterCreate-LabelFrame">
 					<Size>
 						<AbsDimension x="25" y="64"/>
 					</Size>
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentMiddle" relativePoint="RIGHT"/>
+						<Anchor point="LEFT" relativeKey="$parent.Middle" relativePoint="RIGHT"/>
 					</Anchors>
 					<TexCoords left="0.8046875" right="1" top="0" bottom="1"/>
 				</Texture>
@@ -315,7 +323,7 @@
 						<AbsDimension x="0" y="10"/>
 					</Size>
 					<Anchors>
-						<Anchor point="RIGHT" relativeTo="$parentRight">
+						<Anchor point="RIGHT" relativeKey="$parent.Right">
 							<Offset>
 								<AbsDimension x="-43" y="2"/>
 							</Offset>
@@ -342,7 +350,7 @@
 					<AbsDimension x="24" y="24"/>
 				</Size>
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativeTo="$parentRight">
+					<Anchor point="TOPRIGHT" relativeKey="$parent.Right">
 						<Offset>
 							<AbsDimension x="-16" y="-18"/>
 						</Offset>
@@ -368,7 +376,7 @@
 						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 					</OnClick>
 				</Scripts>
-				<NormalTexture name="$parentNormalTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Up">
+				<NormalTexture name="$parentNormalTexture" parentKey="NormalTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Up">
 					<Size>
 						<AbsDimension x="24" y="24"/>
 					</Size>
@@ -376,7 +384,7 @@
 						<Anchor point="RIGHT"/>
 					</Anchors>
 				</NormalTexture>
-				<PushedTexture name="$parentPushedTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Down">
+				<PushedTexture name="$parentPushedTexture" parentKey="PushedTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Down">
 					<Size>
 						<AbsDimension x="24" y="24"/>
 					</Size>
@@ -384,7 +392,7 @@
 						<Anchor point="RIGHT"/>
 					</Anchors>
 				</PushedTexture>
-				<DisabledTexture name="$parentDisabledTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Disabled">
+				<DisabledTexture name="$parentDisabledTexture" parentKey="DisabledTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Disabled">
 					<Size>
 						<AbsDimension x="24" y="24"/>
 					</Size>
@@ -392,7 +400,7 @@
 						<Anchor point="RIGHT"/>
 					</Anchors>
 				</DisabledTexture>
-				<HighlightTexture name="$parentHighlightTexture" file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD">
+				<HighlightTexture name="$parentHighlightTexture" parentKey="HighlightTexture" file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD">
 					<Size>
 						<AbsDimension x="24" y="24"/>
 					</Size>

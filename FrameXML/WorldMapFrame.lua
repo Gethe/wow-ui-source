@@ -291,7 +291,7 @@ function WorldMapFrame_OnLoad(self)
 	self:RegisterEvent("VARIABLES_LOADED");
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
 	self:RegisterEvent("REQUEST_CEMETERY_LIST_RESPONSE");
-	self:RegisterEvent("UNIT_PORTRAIT_UPDATE");
+	self:RegisterEvent("PORTRAITS_UPDATED");
 	self:RegisterEvent("RESEARCH_ARTIFACT_DIG_SITE_UPDATED");
 	self:RegisterEvent("SUPER_TRACKED_QUEST_CHANGED");
 	self:RegisterEvent("PLAYER_STARTED_MOVING");
@@ -519,7 +519,7 @@ function WorldMapFrame_OnEvent(self, event, ...)
 		--if ( WatchFrame.showObjectives and self:IsShown() ) then
 		--	WorldMapFrame_UpdateQuests();
 		--end
-	elseif ( event == "UNIT_PORTRAIT_UPDATE" ) then
+	elseif ( event == "PORTRAITS_UPDATED" ) then
 		EncounterJournal_UpdateMapButtonPortraits();
 	elseif ( event == "SUPER_TRACKED_QUEST_CHANGED" ) then
 		local questID = ...;
@@ -3232,8 +3232,6 @@ local MAX_ZOOM = 1.495;
 
 function WorldMapScrollFrame_OnMouseWheel(self, delta)
 	local scrollFrame = WorldMapScrollFrame;
-	local oldScrollH = scrollFrame:GetHorizontalScroll();
-	local oldScrollV = scrollFrame:GetVerticalScroll();
 
 	-- get the mouse position on the frame, with 0,0 at top left
 	local cursorX, cursorY = GetCursorPosition();
@@ -3245,6 +3243,14 @@ function WorldMapScrollFrame_OnMouseWheel(self, delta)
 	end
 	local frameX = cursorX / relativeFrame:GetScale() - scrollFrame:GetLeft();
 	local frameY = scrollFrame:GetTop() - cursorY / relativeFrame:GetScale();
+
+	WorldMapScrollFrame_OnMouseWheelAtPosition(self, delta, GetCursorPosition());
+end
+
+function WorldMapScrollFrame_OnMouseWheelAtPosition(self, delta, frameX, frameY)
+	local scrollFrame = WorldMapScrollFrame;
+	local oldScrollH = scrollFrame:GetHorizontalScroll();
+	local oldScrollV = scrollFrame:GetVerticalScroll();
 
 	local oldScale = WorldMapDetailFrame:GetScale();
 	local newScale = oldScale + delta * 0.3;
@@ -3646,10 +3652,9 @@ function WorldMapTrackingOptionsDropDown_Initialize()
 		UIDropDownMenu_AddButton(info);
 	end
 
-	UIDropDownMenu_AddSeparator(info);
-	-- Clear out the info from the separator wholesale.
-	info = UIDropDownMenu_CreateInfo();
+	UIDropDownMenu_AddSeparator();
 
+	info = UIDropDownMenu_CreateInfo();
 	info.isTitle = true;
 	info.notCheckable = true;
 	info.text = WORLD_QUEST_REWARD_FILTERS_TITLE;

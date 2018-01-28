@@ -1031,15 +1031,6 @@ function ArtifactRelicForgePreviewRelicMixin:OnLoad()
 end
 
 function ArtifactRelicForgePreviewRelicMixin:OnShow()
-	self:RegisterEvent("ARTIFACT_PENDING_ATTUNE_RELIC_UPDATE");
-	self:Update();
-end
-
-function ArtifactRelicForgePreviewRelicMixin:OnHide()
-	self:UnregisterEvent("ARTIFACT_PENDING_ATTUNE_RELIC_UPDATE");
-end
-
-function ArtifactRelicForgePreviewRelicMixin:OnEvent(event, ...)
 	self:Update();
 end
 

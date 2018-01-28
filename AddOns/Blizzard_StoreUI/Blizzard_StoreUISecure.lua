@@ -80,6 +80,7 @@ Import("CreateFromSecureMixins");
 Import("ShrinkUntilTruncateFontStringMixin");
 Import("IsTrialAccount");
 Import("IsVeteranTrialAccount");
+Import("PortraitFrameTemplateMixin");
 
 --GlobalStrings
 Import("BLIZZARD_STORE");
@@ -1871,7 +1872,7 @@ function StoreFrame_UpdateCategories(self)
 			--[[
 							WARNING: ScopeModifiers don't work for templates!
 				These functions will fail to load properly if this template is instantiated outside
-				of the initial LoadAddon call becuase we'll have lost the scoped modifiers and the
+				of the initial LoadAddon call because we'll have lost the scoped modifiers and the
 				reference to the addon environment if we instantiate them later.
 
 				We have to manually set these scripts (below) for them to work properly.
@@ -2556,6 +2557,17 @@ function StoreFrameBuyButton_OnLeave(self)
 		StoreSplashPairCard_OnLeave(parent);
 	end
 end
+
+function SplashSingleBuyButton_OnEnter(self)
+	local parent = self:GetParent();
+	StoreSplashSingleCard_OnEnter(parent);
+end
+
+function SplashSingleBuyButton_OnLeave(self)
+	local parent = self:GetParent();
+	StoreProductCard_OnLeave(parent);
+end
+
 
 function StoreFrame_BeginPurchase(entryID)
 	local entryInfo = C_StoreSecure.GetEntryInfo(entryID);
@@ -3349,6 +3361,19 @@ function StoreProductCard_UpdateAllStates()
 	StoreProductCard_UpdateState(StoreFrame.SplashPrimary);
 	StoreProductCard_UpdateState(StoreFrame.SplashSecondary1);
 	StoreProductCard_UpdateState(StoreFrame.SplashSecondary2);
+end
+
+function StoreSplashSingleCard_OnEnter(self)
+	if self.productTooltipTitle then
+		StoreTooltip:ClearAllPoints();
+		if self.anchorRight then
+			StoreTooltip:SetPoint("BOTTOMLEFT", self, "TOPRIGHT", -7, -6);
+		else
+			StoreTooltip:SetPoint("BOTTOMRIGHT", self, "TOPLEFT", 7, -6);
+		end
+
+		StoreTooltip_Show(self.productTooltipTitle, self.productTooltipDescription);
+	end
 end
 
 function StoreProductCard_OnEnter(self)

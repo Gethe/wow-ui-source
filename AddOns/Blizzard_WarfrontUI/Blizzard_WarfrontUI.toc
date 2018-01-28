@@ -1,0 +1,7 @@
+## Interface: 70300
+## Title: Blizzard Warfront UI
+## Secure: 1
+## Author: Blizzard Entertainment
+## LoadOnDemand: 0
+Blizzard_WarfrontUI.xml
+Localization.lua

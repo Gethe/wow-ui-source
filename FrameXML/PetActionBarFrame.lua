@@ -42,7 +42,6 @@ function PetActionBar_OnLoad (self)
 	self:RegisterEvent("PET_BAR_UPDATE_COOLDOWN");
 	self:RegisterEvent("PET_BAR_SHOWGRID");
 	self:RegisterEvent("PET_BAR_HIDEGRID");
-	self:RegisterEvent("PET_BAR_HIDE");
 	self:RegisterEvent("PET_BAR_UPDATE_USABLE");
 	self:RegisterEvent("PET_UI_UPDATE");
 	self:RegisterEvent("PLAYER_TARGET_CHANGED");
@@ -80,8 +79,6 @@ function PetActionBar_OnEvent (self, event, ...)
 		PetActionBar_ShowGrid();
 	elseif ( event =="PET_BAR_HIDEGRID" ) then
 		PetActionBar_HideGrid();
-	elseif ( event =="PET_BAR_HIDE" ) then
-		HidePetActionBar();
 	end
 end
 

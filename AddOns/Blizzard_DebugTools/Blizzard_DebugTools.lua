@@ -525,7 +525,7 @@ function FrameStackTooltip_OnTooltipSetFrameStack(self, highlightFrame)
 	end
 
 	if fsobj then
-		self:AddLine(string.format("\n\nfsobj = %s", fsobj:GetDebugName()));
+		self:AddLine(("\nfsobj = %s"):format(fsobj:GetDebugName()));
 	end
 end
 
@@ -566,17 +566,17 @@ function AnchorHighlightMixin:RetrieveAnchorHighlight(pointIndex)
 	if not self.AnchorHighlights then
 		CreateFrame("FRAME", "FrameStackAnchorHighlightTemplate1", self, "FrameStackAnchorHighlightTemplate");
 	end
-	
+
 	while pointIndex > #self.AnchorHighlights do
 		CreateFrame("FRAME", "FrameStackAnchorHighlightTemplate"..(#self.AnchorHighlights + 1), self, "FrameStackAnchorHighlightTemplate");
 	end
-	
+
 	return self.AnchorHighlights[pointIndex];
 end
 
 function AnchorHighlightMixin:HighlightFrame(baseFrame, showAnchors)
 	AnchorHighlight(baseFrame, self);
-	
+
 	local pointIndex = 1;
 	if (showAnchors) then
 		while pointIndex <= baseFrame:GetNumPoints() do
@@ -585,7 +585,7 @@ function AnchorHighlightMixin:HighlightFrame(baseFrame, showAnchors)
 			pointIndex = pointIndex + 1;
 		end
 	end
-	
+
 	while self.AnchorHighlights and self.AnchorHighlights[pointIndex] do
 		self.AnchorHighlights[pointIndex]:Hide();
 		pointIndex = pointIndex + 1;
@@ -612,7 +612,7 @@ function FrameStackTooltip_OnUpdate (self, elapsed)
 		local highlightFrame = self:SetFrameStack(self.showHidden, self.showRegions, highlightIndexChanged);
 		if highlightFrame then
 			FrameStackHighlight:HighlightFrame(highlightFrame, self.showAnchors);
-			
+
 			if ( IsControlKeyDown() ) then
 				TableAttributeDisplay:InspectTable(highlightFrame);
 				TableAttributeDisplay:Show();

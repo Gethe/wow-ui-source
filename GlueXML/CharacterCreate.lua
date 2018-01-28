@@ -84,6 +84,9 @@ RACE_ICON_TCOORDS = {
 
 	["LIGHTFORGEDDRAENEI_MALE"]	= {0.5, 0.625, 0, 0.25},
 	["LIGHTFORGEDDRAENEI_FEMALE"]	= {0.5, 0.625, 0.5, 0.75},
+
+	["ZANDALARITROLL_MALE"]		= {0.25, 0.375, 0.25, 0.5},
+	["ZANDALARITROLL_FEMALE"]	= {0.25, 0.375, 0.75, 1.0},
 };
 
 CHARCREATE_CLASS_TOOLTIP = {};
@@ -204,6 +207,7 @@ MODEL_CAMERA_CONFIG = {
 		["Nightborne6"] = { tx = 0, ty = 0, tz = 1.95, cz = 1.792, distance = 1.75, light =  0.85 },
 		["LightforgedDraenei6"] = { tx = 0, ty = 0, tz = 1.642, cz = 1.792, distance = 2.692, light =  0.80 },
 		["HighmountainTauren6"] = { tx = -0.216, ty = -0.203, tz = 1.654, cz = 1.647, distance = 3.566, light =  0.80 },
+		["ZandalariTroll"] = { tx = 0.402, ty = 0.016, tz = 2.076, cz = 1.980, distance = 0.943, light =  0.75 },
 	},
 	[1] = {
 		["Draenei"] = { tx = 0.155, ty = 0.009, tz = 2.177, cz = 1.971, distance = 0.734, light =  0.75 },
@@ -233,6 +237,7 @@ MODEL_CAMERA_CONFIG = {
 		["Nightborne6"] = { tx = 0, ty = 0, tz = 1.85, cz = 1.792, distance = 1.6, light =  0.85 },
 		["LightforgedDraenei6"] = { tx = -0.271, ty = 0, tz = 1.642, cz = 1.971, distance = 1.492, light =  0.80 },
 		["HighmountainTauren6"] = { tx = 0.137, ty = -0.008, tz = 1.918, cz = 1.855, distance = 1.591, light =  0.75 },
+		["ZandalariTroll"] = { tx = 0.031, ty = -0.082, tz = 2.226, cz = 2.248, distance = 0.674, light =  0.75 },
 	}
 };
 
@@ -400,33 +405,34 @@ function CharacterCreate_OnShow()
 			return;
 		end
 		local available = {};
-		for k, v in pairs(kioskModeData.races) do
+		local raceList = KioskModeSplash_GetRaceList(); 
+		for k, v in pairs(raceList) do
 			if (v) then
 				tinsert(available, k);
 			end
 		end
 
 		local rid = KioskModeSplash_GetIDForSelection("races", available[math.random(1, #available)]);
+
 		C_CharacterCreation.SetSelectedRace(rid);
-
+		SetCharacterRace(rid);
+		
 		CharacterCreateEnumerateClasses();
-
-		local currentRace = C_CharacterCreation.GetSelectedRace();
 		local available = {};
 		for k, v in pairs(kioskModeData.classes) do
 			if (v) then
 				local id = KioskModeSplash_GetIDForSelection("classes", k);
-				if (IsClassAllowedInKioskMode(id) and C_CharacterCreation.IsRaceClassValid(currentRace, id)) then
+				if (C_CharacterCreation.IsClassAllowedInKioskMode(id) and C_CharacterCreation.IsRaceClassValid(rid, id)) then
 					tinsert(available, k);
 				end
 			end
 		end
 
 		local cid = KioskModeSplash_GetIDForSelection("classes", available[math.random(1, #available)]);
-
-		KioskModeCheckTrial(cid);
+		
+		KioskModeCheckHighLevel(cid);
 		C_CharacterCreation.SetSelectedClass(cid);
-		C_CharacterCreation.SetSelectedRace(C_CharacterCreation.GetSelectedRace());
+		SetCharacterClass(cid);
 
 		C_CharacterCreation.RandomizeCharCustomization(true);
 		KioskModeSplash_SetAutoEnterWorld(false);
@@ -587,6 +593,11 @@ end
 function CharacterCreate_GetRandomRace()
 	local races = C_CharacterCreation.GetAvailableRaces();
 
+	local kioskModeData = IsKioskGlueEnabled() and KioskModeSplash_GetModeData();
+	local raceList = kioskModeData and KioskModeSplash_GetRaceList();
+	-- Filter the list if were in kiosk mode
+	races = tFilter(races, function(v) return not raceList or raceList[strupper(v.fileName)] end, true);
+	
 	if (PAID_SERVICE_TYPE) then
 		local classID = C_PaidServices.GetCurrentClassID();
 		local faction = C_CharacterCreation.GetFactionForRace(C_PaidServices.GetCurrentRaceID());
@@ -661,18 +672,24 @@ function CharacterCreateEnumerateRaces(modeChange)
 		button.nameFrame.text:SetText(name);
 		
 		local kioskModeData = IsKioskGlueEnabled() and KioskModeSplash_GetModeData();
+		local raceList = kioskModeData and KioskModeSplash_GetRaceList();
 		local disableTexture = button.DisableTexture;
-		if (raceData.enabled and (not kioskModeData or kioskModeData.races[strupper(raceData.fileName)])) then
+
+		local hiddenInKiosk = false;
+		if ( raceData.enabled and (not raceList or raceList[strupper(raceData.fileName)]) ) then
 			button:Enable();
 			SetButtonDesaturated(button);
 			button.name = name;
 			button.tooltip = name;
 			disableTexture:Hide();
 		else
-			if (C_CharacterCreation.ShouldShowAlliedRacesButton() and C_CharacterCreation.GetCurrentRaceMode() == Enum.CharacterCreateRaceMode.AlliedRace) then
+			if (C_CharacterCreation.ShouldShowAlliedRacesButton() and C_CharacterCreation.GetCurrentRaceMode() == Enum.CharacterCreateRaceMode.AlliedRace and not IsKioskModeEnabled()) then
 				button:Enable();
 			else
 				button:Disable();
+				if (C_CharacterCreation.GetCurrentRaceMode() == Enum.CharacterCreateRaceMode.AlliedRace and IsKioskModeEnabled()) then
+					hiddenInKiosk = true;
+				end
 			end
 			SetButtonDesaturated(button, true);
 			button.name = name;
@@ -688,7 +705,7 @@ function CharacterCreateEnumerateRaces(modeChange)
 			end
 			disableTexture:SetShown(IsKioskGlueEnabled());
 		end
-		button:Show();
+		button:SetShown(not hiddenInKiosk);
 		indexRef[key] = indexRef[key] + 1;
 	end
 	
@@ -834,7 +851,7 @@ function CharacterCreateEnumerateClasses()
 		classID = classData.classID;
 		local button = pool:Acquire();
 		button.layoutIndex = index;
-		if (classID == CLASS_NAME_BUTTON_ID_MAP["DEATHKNIGHT"]) then
+		if (classID == C_CharacterCreation.GetClassIDFromName("DEATHKNIGHT")) then
 			button.layoutIndex = 99;
 		end
 		SetButtonDesaturated(button, false);
@@ -848,7 +865,7 @@ function CharacterCreateEnumerateClasses()
         for button in CharacterCreate.classFramePool:EnumerateActive() do
             button:SetSize(44, 44);
         end
-		local button = FindButtonForClassID(CLASS_NAME_BUTTON_ID_MAP["DEMONHUNTER"]);
+		local button = FindButtonForClassID(C_CharacterCreation.GetClassIDFromName("DEMONHUNTER"));
 		if ( button ) then
 			button:Hide();
 		end
@@ -1074,7 +1091,8 @@ function CharacterCreate_GetValidAlliedRacePaidServiceOptions()
 end
 
 function CharacterCreate_UpdateAlliedRaceButton()
-	local shouldShow = C_CharacterCreation.ShouldShowAlliedRacesButton() and C_CharacterCreation.GetCurrentRaceMode() == Enum.CharacterCreateRaceMode.Normal and CharacterCreateFrame.state == "CLASSRACE";
+	local kioskModeHide = IsKioskGlueEnabled() and KioskModeSplash_GetMode() == "newcharacter";
+	local shouldShow = C_CharacterCreation.ShouldShowAlliedRacesButton() and C_CharacterCreation.GetCurrentRaceMode() == Enum.CharacterCreateRaceMode.Normal and CharacterCreateFrame.state == "CLASSRACE" and not kioskModeHide;
 
 	if (shouldShow and PAID_SERVICE_TYPE) then
 		local validOptions = CharacterCreate_GetValidAlliedRacePaidServiceOptions();
@@ -1287,7 +1305,7 @@ end
 function CharacterClass_SelectClass(self, forceAccept)
 	if( self:IsEnabled() ) then
 		if (IsKioskGlueEnabled()) then
-			KioskModeCheckTrial(self.classID);
+			KioskModeCheckHighLevel(self.classID);
 		end
 
 		PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_CLASS);
@@ -1304,7 +1322,7 @@ function CharacterClass_SelectClass(self, forceAccept)
 			SetCharacterClass(id);
 			SetCharacterRace(C_CharacterCreation.GetSelectedRace());
 			CharacterChangeFixup();
-			local demonHunterID = CLASS_NAME_BUTTON_ID_MAP["DEMONHUNTER"];
+			local demonHunterID = C_CharacterCreation.GetClassIDFromName("DEMONHUNTER");
 			if (currClass == demonHunterID or id == demonHunterID) then
 				C_CharacterCreation.RandomizeCharCustomization(true);
 			end
@@ -1336,14 +1354,14 @@ function CharCreateSelectRace(id, forceSelect)
 			for k, v in pairs(kioskModeData.classes) do
 				if (v) then
 					local cid = KioskModeSplash_GetIDForSelection("classes", k);
-					if (IsClassAllowedInKioskMode(cid) and IsRaceClassValid(id, cid)) then
+					if (C_CharacterCreation.IsClassAllowedInKioskMode(cid) and C_CharacterCreation.IsRaceClassValid(id, cid)) then
 						tinsert(available, k);
 					end
 				end
 			end
 
 			local fcid = KioskModeSplash_GetIDForSelection("classes", available[math.random(1, #available)]);
-			KioskModeCheckTrial(fcid);
+			KioskModeCheckHighLevel(fcid);
 			C_CharacterCreation.SetSelectedClass(fcid);
 			SetCharacterClass(fcid);
 			SetCharacterRace(C_CharacterCreation.GetSelectedRace());
@@ -1475,27 +1493,48 @@ function CharacterCreate_UpdateCustomizationOptions()
 	end
 end
 
-function KioskModeCheckTrial(classID)
+function KioskModeCheckHighLevel(classID)
 	if (IsKioskGlueEnabled()) then
 		local kioskModeData = KioskModeSplash_GetModeData();
 		if (not kioskModeData) then -- why?
 			return;
 		end
-		local useTrial = nil;
-		if (kioskModeData.trial and kioskModeData.trial.enabled) then
-			useTrial = true;
-			for i, v in ipairs(kioskModeData.trial.ignoreClasses) do
-				local id = CLASS_NAME_BUTTON_ID_MAP[v];
-				if (id == classID) then
-					useTrial = nil;
-					break;
+		CharacterUpgrade_ResetBoostData();
+		C_CharacterCreation.ClearCharacterTemplate();
+		if (kioskModeData.trial) then
+			local useTrial = nil;
+			if (kioskModeData.trial.enabled) then
+				useTrial = true;
+				for i, classFilename in ipairs(kioskModeData.trial.ignoreClasses) do
+					local id = C_CharacterCreation.GetClassIDFromName(classFilename);
+					if (id == classID) then
+						useTrial = nil;
+						break;
+					end
 				end
 			end
-		end
-		if (useTrial) then
-			CharacterUpgrade_BeginNewCharacterCreation(Enum.CharacterCreateType.TrialBoost);
-		else
-			CharacterUpgrade_ResetBoostData();
+			if (useTrial) then
+				CharacterUpgrade_BeginNewCharacterCreation(Enum.CharacterCreateType.TrialBoost);
+			else
+				CharacterUpgrade_ResetBoostData();
+			end
+		elseif (kioskModeData.template) then
+			local useTemplate = nil;
+			if (kioskModeData.template.enabled) then
+				useTemplate = kioskModeData.template.index;
+				for i, classFilename in ipairs(kioskModeData.template.ignoreClasses) do
+					local id = C_CharacterCreation.GetClassIDFromName(classFilename);
+					if (id == classID) then
+						useTemplate = nil;
+						break;
+					end
+				end
+			end
+			if (useTemplate) then
+				C_CharacterCreation.SetCharacterTemplate(useTemplate);
+			else
+				C_CharacterCreation.ClearCharacterTemplate();
+			end
 		end
 	end
 end
@@ -1628,7 +1667,7 @@ function CharCreate_PrepPreviewModels(reloadModels)
 
 	-- need to reload models class was swapped to or from DK
 	local classInfo = C_CharacterCreation.GetSelectedClass();
-	if ( classInfo.fileName == "DEATHKNIGHT" or displayFrame.lastClassID == CLASS_NAME_BUTTON_ID_MAP["DEATHKNIGHT"] ) and ( classInfo.classID ~= displayFrame.lastClassID ) then
+	if ( classInfo.fileName == "DEATHKNIGHT" or displayFrame.lastClassID == C_CharacterCreation.GetClassIDFromName("DEATHKNIGHT") ) and ( classInfo.classID ~= displayFrame.lastClassID ) then
 		reloadModels = true;
 	end
 	displayFrame.lastClassID = classInfo.classID;

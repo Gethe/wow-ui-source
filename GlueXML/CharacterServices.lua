@@ -62,41 +62,6 @@ local UPGRADE_BONUS_LEVEL = 60;
 
 CURRENCY_KRW = 3;
 
-RACE_NAME_BUTTON_ID_MAP = {
-	["HUMAN"] = 1,
-	["DWARF"] = 3,
-	["NIGHTELF"] = 4,
-	["GNOME"] = 7,
-	["DRAENEI"] = 11,
-	["WORGEN"] = 22,
-	["PANDAREN"] = 24,
-	["ORC"] = 2,
-	["SCOURGE"] = 5,
-	["TAUREN"] = 6,
-	["TROLL"] = 8,
-	["BLOODELF"] = 10,
-	["GOBLIN"] = 9,
-	["NIGHTBORNE"] = 27,
-	["HIGHMOUNTAINTAUREN"] = 28,
-	["VOIDELF"] = 29,
-	["LIGHTFORGEDDRAENEI"] = 30,
-};
-
-CLASS_NAME_BUTTON_ID_MAP = {
-	["WARRIOR"] = 1,
-	["PALADIN"] = 2,
-	["HUNTER"] = 3,
-	["ROGUE"] = 4,
-	["PRIEST"] = 5,
-	["DEATHKNIGHT"] = 6,
-	["SHAMAN"] = 7,
-	["MAGE"] = 8,
-	["WARLOCK"] = 9,
-	["MONK"] = 10,
-	["DRUID"] = 11,
-	["DEMONHUNTER"] = 12,
-};
-
 local factionLogoTextures = {
 	[1]	= "Interface\\Icons\\Inv_Misc_Tournaments_banner_Orc",
 	[2]	= "Interface\\Icons\\Achievement_PVP_A_A",
@@ -921,7 +886,7 @@ end
 
 function CharacterUpgradeCharacterSelectBlock:ShouldShowPopup()
 	local _, _, raceFilename = GetCharacterInfo(self.charid);
-	local raceData = C_CharacterCreation.GetRaceDataByID(RACE_NAME_BUTTON_ID_MAP[strupper(raceFilename)]);
+	local raceData = C_CharacterCreation.GetRaceDataByID(C_CharacterCreation.GetRaceIDFromName(raceFilename));
 	local seenPopupBefore = self.seenPopup;
 	self.seenPopup = true;
 	local isTrialBoost = select(22, GetCharacterInfo(self.charid));
@@ -930,7 +895,7 @@ end
 
 function CharacterUpgradeCharacterSelectBlock:GetPopupText()
 	local _, _, raceFilename, _, _, _, _, _, _, _, _, _, _, _, _, _, _, gender = GetCharacterInfo(self.charid);
-	local raceData = C_CharacterCreation.GetRaceDataByID(RACE_NAME_BUTTON_ID_MAP[strupper(raceFilename)]);
+	local raceData = C_CharacterCreation.GetRaceDataByID(C_CharacterCreation.GetRaceIDFromName(raceFilename));
 
 	if GetCurrentRegionName() == "CN" then
 		return formatDescription(BOOST_ALLIED_RACE_HERITAGE_ARMOR_WARNING_CN:format(raceData.name), gender+1);

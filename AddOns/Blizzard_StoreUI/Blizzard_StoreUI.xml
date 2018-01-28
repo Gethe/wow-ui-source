@@ -913,6 +913,8 @@
 					<Size x="140" y="30" />
 					<Scripts>
 						<OnClick function="StoreFrameBuyButton_OnClick" />
+						<OnEnter function="SplashSingleBuyButton_OnEnter" />
+						<OnLeave function="SplashSingleBuyButton_OnLeave" />
 					</Scripts>
 				</Button>
 				<Button parentKey="Magnifier" hidden="true">
@@ -949,6 +951,8 @@
 				<OnClick function="StoreSplashSingleProductCard_OnClick"/>
 				<OnMouseDown function="StoreProductCard_OnMouseDown" />
 				<OnMouseUp function="StoreProductCard_OnMouseUp" />
+				<OnEnter function="StoreSplashSingleCard_OnEnter" />
+				<OnLeave function="StoreProductCard_OnLeave" />
 			</Scripts>
 		</Button>
 		<Button name="StoreSplashPairCardTemplate" virtual="true" motionScriptsWhileDisabled="true" hidden="true">
@@ -2093,6 +2097,7 @@
 					</Anchors>
 					<KeyValues>
 						<KeyValue key="isSplash" value="true" type="boolean"/>
+						<KeyValue key="anchorRight" value="true" type="boolean"/>
 					</KeyValues>
 				</Button>
 				<Button parentKey="SplashPairFirst" inherits="StoreSplashPairCardTemplate">

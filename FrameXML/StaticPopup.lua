@@ -6,6 +6,23 @@ STATICPOPUP_TEXTURE_ALERT = "Interface\\DialogFrame\\UI-Dialog-Icon-AlertNew";
 STATICPOPUP_TEXTURE_ALERTGEAR = "Interface\\DialogFrame\\UI-Dialog-Icon-AlertOther";
 StaticPopupDialogs = { };
 
+
+local function SetupLockOnDeclineButtonAndEscape(self, declineTimeLeft)
+	self.declineTimeLeft = declineTimeLeft or .5;
+	self.button2:SetButtonState("NORMAL", true);
+	self.ticker = C_Timer.NewTicker(.5, function()
+		self.declineTimeLeft = self.declineTimeLeft - .5;
+		if (self.declineTimeLeft == 0) then
+			self.ticker:Cancel();
+			self.button2:SetButtonState("NORMAL", false);
+			return;
+		else 
+			self.button2:SetButtonState("NORMAL", true);
+		end
+	end);
+	self.hideOnEscape = false; 
+end
+
 local function GetSelfResurrectDialogOptions()
 	local resOptions = GetSortedSelfResurrectOptions();
 	if ( resOptions ) then
@@ -97,21 +114,6 @@ StaticPopupDialogs["ERR_SOR_STARTING_EXPERIENCE_INCOMPLETE"] = {
 	whileDead = 1,
 	hideOnEscape = 1,
 	showAlert = 1,
-}
-
-StaticPopupDialogs["ERR_AUTH_CHALLENGE_UI_INVALID"] = {
-	text = ERR_AUTH_CHALLENGE_UI_INVALID,
-	button1 = OKAY,
-	button2 = nil,
-	timeout = 0,
-	OnAccept = function()
-	end,
-	OnCancel = function()
-	end,
-	whileDead = 1,
-	hideOnEscape = 1,
-	showAlert = 1,
-	exclusive = 1,
 }
 
 StaticPopupDialogs["CONFIRM_DELETE_EQUIPMENT_SET"] = {
@@ -739,6 +741,9 @@ StaticPopupDialogs["BFMGR_INVITED_TO_QUEUE"] = {
 	text = WORLD_PVP_INVITED,
 	button1 = ACCEPT,
 	button2 = CANCEL,
+	OnShow = function(self)
+		SetupLockOnDeclineButtonAndEscape(self);
+	end,
 	OnAccept = function(self, battleID)
 		BattlefieldMgrQueueInviteResponse(battleID,1);
 	end,
@@ -747,7 +752,6 @@ StaticPopupDialogs["BFMGR_INVITED_TO_QUEUE"] = {
 	end,
 	timeout = 0,
 	whileDead = 1,
-	hideOnEscape = 1,
 	multiple = 1
 };
 
@@ -755,6 +759,9 @@ StaticPopupDialogs["BFMGR_INVITED_TO_QUEUE_WARMUP"] = {
 	text = WORLD_PVP_INVITED_WARMUP;
 	button1 = ACCEPT,
 	button2 = CANCEL,
+	OnShow = function(self)
+		SetupLockOnDeclineButtonAndEscape(self);
+	end,
 	OnAccept = function(self, battleID)
 		BattlefieldMgrQueueInviteResponse(battleID,1);
 	end,
@@ -763,7 +770,6 @@ StaticPopupDialogs["BFMGR_INVITED_TO_QUEUE_WARMUP"] = {
 	end,
 	timeout = 0,
 	whileDead = 1,
-	hideOnEscape = 1,
 	multiple = 1
 };
 
@@ -778,6 +784,7 @@ StaticPopupDialogs["BFMGR_INVITED_TO_ENTER"] = {
 				self.timeleft = timeleft;
 			end
 		end
+		SetupLockOnDeclineButtonAndEscape(self);
 	end,
 	OnAccept = function(self, battleID)
 		BattlefieldMgrEntryInviteResponse(battleID, true);
@@ -788,7 +795,6 @@ StaticPopupDialogs["BFMGR_INVITED_TO_ENTER"] = {
 	timeout = 0,
 	timeoutInformationalOnly = 1;
 	whileDead = 1,
-	hideOnEscape = 1,
 	multiple = 1,
 	sound = SOUNDKIT.PVP_THROUGH_QUEUE,
 };
@@ -1430,6 +1436,7 @@ StaticPopupDialogs["DEATH"] = {
 	interruptCinematic = 1,
 	notClosableByLogout = 1,
 	noCancelOnReuse = 1,
+	hideOnEscape = false,
 	noCloseOnAlt = true,
 	cancels = "RECOVER_CORPSE"
 };
@@ -1441,6 +1448,7 @@ StaticPopupDialogs["RESURRECT"] = {
 	button2 = DECLINE,
 	OnShow = function(self)
 		self.timeleft = GetCorpseRecoveryDelay() + 60;
+		SetupLockOnDeclineButtonAndEscape(self);
 	end,
 	OnAccept = function(self)
 		AcceptResurrect();
@@ -1460,8 +1468,7 @@ StaticPopupDialogs["RESURRECT"] = {
 	cancels = "DEATH",
 	interruptCinematic = 1,
 	notClosableByLogout = 1,
-	hideOnEscape = 1,
-	noCancelOnReuse = 1
+	noCancelOnReuse = 1,
 };
 StaticPopupDialogs["RESURRECT_NO_SICKNESS"] = {
 	StartDelay = GetCorpseRecoveryDelay,
@@ -1471,6 +1478,7 @@ StaticPopupDialogs["RESURRECT_NO_SICKNESS"] = {
 	button2 = DECLINE,
 	OnShow = function(self)
 		self.timeleft = GetCorpseRecoveryDelay() + 60;
+		SetupLockOnDeclineButtonAndEscape(self);
 	end,
 	OnAccept = function(self)
 		AcceptResurrect();
@@ -1490,7 +1498,6 @@ StaticPopupDialogs["RESURRECT_NO_SICKNESS"] = {
 	cancels = "DEATH",
 	interruptCinematic = 1,
 	notClosableByLogout = 1,
-	hideOnEscape = 1,
 	noCancelOnReuse = 1
 };
 StaticPopupDialogs["RESURRECT_NO_TIMER"] = {
@@ -1500,26 +1507,14 @@ StaticPopupDialogs["RESURRECT_NO_TIMER"] = {
 	button2 = DECLINE,
 	OnShow = function(self)
 		self.timeleft = GetCorpseRecoveryDelay() + 60;
-		self.hideOnEscape = nil;
-		self.declineTimeLeft = 5;
+		local declineTimeLeft;
 		local resOptions = C_DeathInfo.GetSelfResurrectOptions();
 		if ( resOptions and #resOptions > 0 ) then
-			self.declineTimeLeft = 1;
+			declineTimeLeft = 1;
+		else 
+			declineTimeLeft = 5; 
 		end
-		self.button2:SetText(self.declineTimeLeft);
-		self.button2:Disable();
-		self.ticker = C_Timer.NewTicker(1, function()
-			self.declineTimeLeft = self.declineTimeLeft - 1;
-			if (self.declineTimeLeft == 0) then
-				self.button2:SetText(DECLINE)
-				self.button2:Enable();
-				self.ticker:Cancel();
-				self.hideOnEscape = 1;
-				return;
-			else
-				self.button2:SetText(self.declineTimeLeft);
-			end
-		end);
+		SetupLockOnDeclineButtonAndEscape(self, declineTimeLeft);
 	end,
 	OnHide = function(self)
 		if (self.ticker) then
@@ -1545,7 +1540,6 @@ StaticPopupDialogs["RESURRECT_NO_TIMER"] = {
 	cancels = "DEATH",
 	interruptCinematic = 1,
 	notClosableByLogout = 1,
-	hideOnEscape = 1,
 	noCancelOnReuse = 1
 };
 StaticPopupDialogs["SKINNED"] = {
@@ -1560,6 +1554,10 @@ StaticPopupDialogs["SKINNED_REPOP"] = {
 	text = DEATH_CORPSE_SKINNED,
 	button1 = DEATH_RELEASE,
 	button2 = DECLINE,
+	OnShow = function(self)
+		self.timeleft = GetCorpseRecoveryDelay() + 60;
+		SetupLockOnDeclineButtonAndEscape(self);
+	end,
 	OnAccept = function(self)
 		StaticPopup_Hide("RESURRECT");
 		StaticPopup_Hide("RESURRECT_NO_SICKNESS");
@@ -1570,7 +1568,6 @@ StaticPopupDialogs["SKINNED_REPOP"] = {
 	whileDead = 1,
 	interruptCinematic = 1,
 	notClosableByLogout = 1,
-	hideOnEscape = 1
 };
 StaticPopupDialogs["TRADE"] = {
 	text = TRADE_WITH_QUESTION,
@@ -1592,6 +1589,7 @@ StaticPopupDialogs["PARTY_INVITE"] = {
 	sound = SOUNDKIT.IG_PLAYER_INVITE,
 	OnShow = function(self)
 		self.inviteAccepted = nil;
+		SetupLockOnDeclineButtonAndEscape(self);
 	end,
 	OnAccept = function(self)
 		AcceptGroup();
@@ -1971,6 +1969,18 @@ StaticPopupDialogs["USE_NO_REFUND_CONFIRM"] = {
 	button2 = CANCEL,
 	OnAccept = function(self)
 		ConfirmNoRefundOnUse();
+	end,
+	timeout = 0,
+	exclusive = 1,
+	hideOnEscape = 1
+};
+
+StaticPopupDialogs["CONFIRM_AZERITE_EMPOWERED_BIND"] = {
+	text = AZERITE_EMPOWERED_BIND_NO_DROP,
+	button1 = OKAY,
+	button2 = CANCEL,
+	OnAccept = function(self, data)
+		C_AzeriteEmpoweredItem.SelectPower(data.empoweredItemLocation, data.azeritePowerID);
 	end,
 	timeout = 0,
 	exclusive = 1,
@@ -3043,6 +3053,7 @@ StaticPopupDialogs["CONFIRM_SUMMON"] = {
 	button2 = CANCEL,
 	OnShow = function(self)
 		self.timeleft = GetSummonConfirmTimeLeft();
+		SetupLockOnDeclineButtonAndEscape(self);
 	end,
 	OnAccept = function(self)
 		ConfirmSummon();
@@ -3060,7 +3071,6 @@ StaticPopupDialogs["CONFIRM_SUMMON"] = {
 	timeout = 0,
 	interruptCinematic = 1,
 	notClosableByLogout = 1,
-	hideOnEscape = 1,
 };
 
 StaticPopupDialogs["CONFIRM_SUMMON_SCENARIO"] = {

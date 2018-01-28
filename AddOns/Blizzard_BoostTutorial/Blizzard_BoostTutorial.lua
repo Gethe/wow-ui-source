@@ -213,8 +213,8 @@ function BoostTutorial:Init()
 
 	MainMenuMicroButton_SetAlertsEnabled(false);
 
-	eventFrame:RegisterEvent("EVENT_TUTORIAL_UNHIGHLIGHT_SPELL");
-	eventFrame:RegisterEvent("EVENT_TUTORIAL_HIGHLIGHT_SPELL");
+	eventFrame:RegisterEvent("TUTORIAL_UNHIGHLIGHT_SPELL");
+	eventFrame:RegisterEvent("TUTORIAL_HIGHLIGHT_SPELL");
 	eventFrame:RegisterEvent("SPELL_PUSHED_TO_ACTIONBAR");
 	eventFrame:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED");
 	eventFrame:RegisterEvent("ACTIONBAR_SLOT_CHANGED");

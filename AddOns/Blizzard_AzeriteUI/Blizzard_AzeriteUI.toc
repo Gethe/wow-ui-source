@@ -1,0 +1,15 @@
+## Interface: 70300
+## Title: Blizzard Azerite UI
+## Secure: 1
+## LoadOnDemand: 1
+
+Blizzard_AzeriteEmpoweredItemUITemplates.xml
+
+AzeriteEmpoweredItemPowerMixin.lua
+AzeriteEmpoweredItemPowerMixin.xml
+
+AzeriteEmpoweredItemTierMixin.xml
+AzeriteEmpoweredItemTierMixin.lua
+
+Blizzard_AzeriteEmpoweredItemUI.lua
+Blizzard_AzeriteEmpoweredItemUI.xml

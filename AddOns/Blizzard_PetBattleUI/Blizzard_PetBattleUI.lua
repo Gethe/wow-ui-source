@@ -72,7 +72,6 @@ function PetBattleFrame_OnLoad(self)
 	self:RegisterEvent("PET_BATTLE_OPENING_START");
 	self:RegisterEvent("PET_BATTLE_OPENING_DONE");
 
-	self:RegisterEvent("PET_BATTLE_TURN_STARTED");
 	self:RegisterEvent("PET_BATTLE_PET_ROUND_PLAYBACK_COMPLETE");
 	self:RegisterEvent("PET_BATTLE_PET_CHANGED");
 	self:RegisterEvent("PET_BATTLE_XP_CHANGED");
@@ -98,8 +97,6 @@ function PetBattleFrame_OnEvent(self, event, ...)
 		StartSplashTexture.splashAnim:Play();
 		PlaySound(SOUNDKIT.UI_PET_BATTLE_START);
 		PetBattleFrame_UpdateSpeedIndicators(self);
-	elseif ( event == "PET_BATTLE_TURN_STARTED" ) then
-		PetBattleFrameTurnTimer_UpdateValues(self.BottomFrame.TurnTimer);
 	elseif ( event == "PET_BATTLE_PET_ROUND_PLAYBACK_COMPLETE" ) then
 		PetBattleFrameTurnTimer_UpdateValues(self.BottomFrame.TurnTimer);
 		PetBattleFrame_UpdatePetSelectionFrame(self);

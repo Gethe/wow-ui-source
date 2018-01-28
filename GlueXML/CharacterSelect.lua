@@ -111,16 +111,13 @@ function CharacterSelect_OnLoad(self)
     self.selectedIndex = 0;
     self.selectLast = false;
     self.characterPadlockPool = CreateFramePool("BUTTON", self, "CharSelectLockedButtonTemplate");
-    self:RegisterEvent("ADDON_LIST_UPDATE");
     self:RegisterEvent("CHARACTER_LIST_UPDATE");
     self:RegisterEvent("UPDATE_SELECTED_CHARACTER");
-    self:RegisterEvent("SELECT_LAST_CHARACTER");
-    self:RegisterEvent("SELECT_FIRST_CHARACTER");
     self:RegisterEvent("FORCE_RENAME_CHARACTER");
     self:RegisterEvent("CHAR_RENAME_IN_PROGRESS");
     self:RegisterEvent("STORE_STATUS_CHANGED");
     self:RegisterEvent("CHARACTER_UNDELETE_STATUS_CHANGED");
-    self:RegisterEvent("CLIENT_FEATURE_STATUS_CHANGED)");
+    self:RegisterEvent("CLIENT_FEATURE_STATUS_CHANGED");
 	self:RegisterEvent("CHARACTER_COPY_STATUS_CHANGED")
     self:RegisterEvent("CHARACTER_UNDELETE_FINISHED");
     self:RegisterEvent("TOKEN_CAN_VETERAN_BUY_UPDATE");
@@ -482,15 +479,7 @@ end
 
 VAS_QUEUE_TIMES = {};
 function CharacterSelect_OnEvent(self, event, ...)
-    if ( event == "ADDON_LIST_UPDATE" ) then
-        ADDON_LIST_RECEIVED = true;
-        if (not STORE_IS_LOADED) then
-            STORE_IS_LOADED = LoadAddOn("Blizzard_StoreUI");
-            LoadAddOn("Blizzard_AuthChallengeUI");
-            CharacterSelect_UpdateStoreButton();
-        end
-        UpdateAddonButton();
-    elseif ( event == "CHARACTER_LIST_UPDATE" ) then
+    if ( event == "CHARACTER_LIST_UPDATE" ) then
         PromotionFrame_AwaitingPromotion();
 
         local listSize = ...;
@@ -549,11 +538,6 @@ function CharacterSelect_OnEvent(self, event, ...)
             CHARACTER_LIST_OFFSET = self.selectedIndex - MAX_CHARACTERS_DISPLAYED;
         end
         UpdateCharacterSelection(self);
-    elseif ( event == "SELECT_LAST_CHARACTER" ) then
-        self.selectLast = true;
-    elseif ( event == "SELECT_FIRST_CHARACTER" ) then
-        CHARACTER_LIST_OFFSET = 0;
-        CharacterSelect_SelectCharacter(1, 1);
     elseif ( event == "FORCE_RENAME_CHARACTER" ) then
         GlueDialog_Hide();
         local message = ...;
@@ -1973,7 +1957,9 @@ function KioskMode_CheckEnterWorld()
         if (KioskModeSplash_GetAutoEnterWorld()) then
             EnterWorld();
         else
-            KioskDeleteAllCharacters();
+			if (not IsGMClient()) then
+            	KioskDeleteAllCharacters();
+			end
             if (IsKioskGlueEnabled()) then
                 GlueParent_SetScreen("kioskmodesplash");
             end
@@ -2208,7 +2194,6 @@ function CharacterServicesMaster_OnLoad(self)
     self.flows = {};
 
     self:RegisterEvent("PRODUCT_DISTRIBUTIONS_UPDATED");
-    self:RegisterEvent("CHARACTER_UPGRADE_STARTED");
     self:RegisterEvent("PRODUCT_ASSIGN_TO_TARGET_FAILED");
 end
 
@@ -2217,9 +2202,6 @@ local completedGuid;
 function CharacterServicesMaster_OnEvent(self, event, ...)
     if (event == "PRODUCT_DISTRIBUTIONS_UPDATED") then
         CharacterServicesMaster_UpdateServiceButton();
-    elseif (event == "CHARACTER_UPGRADE_STARTED") then
-        UpdateCharacterList(true);
-        UpdateCharacterSelection(CharacterSelect);
     elseif (event == "PRODUCT_ASSIGN_TO_TARGET_FAILED") then
         if (CharacterServicesMaster.pendingGuid and C_CharacterServices.DoesGUIDHavePendingFactionChange(CharacterServicesMaster.pendingGuid)) then
             CharacterServicesMaster.pendingGuid = nil;

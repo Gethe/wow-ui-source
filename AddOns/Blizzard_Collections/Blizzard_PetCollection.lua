@@ -92,7 +92,6 @@ function PetJournalUtil_GetDisplayName(petID)
 end
 
 function PetJournal_OnLoad(self)
-	self:RegisterEvent("UNIT_PORTRAIT_UPDATE");
 	self:RegisterEvent("PET_JOURNAL_LIST_UPDATE");
 	self:RegisterEvent("PET_JOURNAL_PET_DELETED");
 	self:RegisterEvent("PET_JOURNAL_PETS_HEALED");
@@ -1147,6 +1146,7 @@ function PetJournal_UpdatePetCard(self, forceSceneChange)
 	local isDead = false;
 	local needsFanfare = false;
 	local speciesID, customName, level, name, icon, petType, creatureID, xp, maxXp, displayID, isFavorite, sourceText, description, isWild, canBattle, tradable, unique;
+	local _;
 	if PetJournalPetCard.petID then
 		speciesID, customName, level, xp, maxXp, displayID, isFavorite, name, icon, petType, creatureID, sourceText, description, isWild, canBattle, tradable, unique = C_PetJournal.GetPetInfoByPetID(PetJournalPetCard.petID);
 		if ( not speciesID ) then

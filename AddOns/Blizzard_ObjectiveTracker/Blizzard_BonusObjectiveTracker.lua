@@ -234,23 +234,20 @@ end
 
 function BonusObjectiveTracker_OnEvent(self, event, ...)
 	if ( event == "CRITERIA_COMPLETE" and not ObjectiveTrackerFrame.collapsed ) then
-		local id = ...;
-		if( id > 0 ) then
-			local tblBonusSteps = C_Scenario.GetBonusSteps();
-			for i = 1, #tblBonusSteps do
-				local bonusStepIndex = tblBonusSteps[i];
-				local _, _, numCriteria = C_Scenario.GetStepInfo(bonusStepIndex);
-				local blockKey = -bonusStepIndex;	-- so it won't collide with quest IDs
-				local block = self.module:GetBlock(blockKey);
-				if( block ) then
-					for criteriaIndex = 1, numCriteria do
-						local _, _, _, _, _, _, _, _, criteriaID = C_Scenario.GetCriteriaInfoByStep(bonusStepIndex, criteriaIndex);
-						if( id == criteriaID ) then
-							local questID = C_Scenario.GetBonusStepRewardQuestID(bonusStepIndex);
-							if ( questID ~= 0 ) then
-								BonusObjectiveTracker_AddReward(questID, block);
-								return;
-							end
+		local tblBonusSteps = C_Scenario.GetBonusSteps();
+		for i = 1, #tblBonusSteps do
+			local bonusStepIndex = tblBonusSteps[i];
+			local _, _, numCriteria = C_Scenario.GetStepInfo(bonusStepIndex);
+			local blockKey = -bonusStepIndex;	-- so it won't collide with quest IDs
+			local block = self.module:GetBlock(blockKey);
+			if( block ) then
+				for criteriaIndex = 1, numCriteria do
+					local _, _, _, _, _, _, _, _, criteriaID = C_Scenario.GetCriteriaInfoByStep(bonusStepIndex, criteriaIndex);
+					if( id == criteriaID ) then
+						local questID = C_Scenario.GetBonusStepRewardQuestID(bonusStepIndex);
+						if ( questID ~= 0 ) then
+							BonusObjectiveTracker_AddReward(questID, block);
+							return;
 						end
 					end
 				end
@@ -644,7 +641,7 @@ local function UpdateScenarioBonusObjectives(module)
 			local bonusStepIndex = tblBonusSteps[i];
 			local supersededIndex = BonusObjectiveTracker_GetSupersedingStep(bonusStepIndex);
 			if (supersededIndex) then
-				local name, description, numCriteria, stepFailed, isBonusStep, isForCurrentStepOnly = C_Scenario.GetStepInfo(bonusStepIndex);
+				local name, description, numCriteria, stepFailed, isBonusStep, isForCurrentStepOnly, shouldShowBonusObjective = C_Scenario.GetStepInfo(bonusStepIndex);
 				local completed = true;
 				for criteriaIndex = 1, numCriteria do
 					local criteriaString, criteriaType, criteriaCompleted, quantity, totalQuantity, flags, assetID, quantityString, criteriaID, duration, elapsed, criteriaFailed = C_Scenario.GetCriteriaInfoByStep(bonusStepIndex, criteriaIndex);
@@ -671,84 +668,86 @@ local function UpdateScenarioBonusObjectives(module)
 
 		for i = 1, #tblBonusSteps do
 			local bonusStepIndex = tblBonusSteps[i];
-			local name, description, numCriteria, stepFailed, isBonusStep, isForCurrentStepOnly = C_Scenario.GetStepInfo(bonusStepIndex);
-			local blockKey = -bonusStepIndex;	-- so it won't collide with quest IDs
-			local existingBlock = module:GetExistingBlock(blockKey);
-			local block = module:GetBlock(blockKey);
-			local stepFinished = true;
-			for criteriaIndex = 1, numCriteria do
-				local criteriaString, criteriaType, criteriaCompleted, quantity, totalQuantity, flags, assetID, quantityString, criteriaID, duration, elapsed, criteriaFailed, isWeightedProgress = C_Scenario.GetCriteriaInfoByStep(bonusStepIndex, criteriaIndex);
-				if ( criteriaString ) then
-					if (not isWeightedProgress) then
-						criteriaString = string.format("%d/%d %s", quantity, totalQuantity, criteriaString);
-					end
-					if ( criteriaCompleted ) then
-						local existingLine = block.lines[criteriaIndex];
-						module:AddObjective(block, criteriaIndex, criteriaString, nil, nil, OBJECTIVE_DASH_STYLE_HIDE_AND_COLLAPSE, OBJECTIVE_TRACKER_COLOR["Complete"]);
-						local line = block.currentLine;
-						if ( existingLine and not line.finished ) then
-							line.Glow.Anim:Play();
-							line.Sheen.Anim:Play();
+			local name, description, numCriteria, stepFailed, isBonusStep, isForCurrentStepOnly, shouldShowBonusObjective = C_Scenario.GetStepInfo(bonusStepIndex);
+			if shouldShowBonusObjective then
+				local blockKey = -bonusStepIndex;	-- so it won't collide with quest IDs
+				local existingBlock = module:GetExistingBlock(blockKey);
+				local block = module:GetBlock(blockKey);
+				local stepFinished = true;
+				for criteriaIndex = 1, numCriteria do
+					local criteriaString, criteriaType, criteriaCompleted, quantity, totalQuantity, flags, assetID, quantityString, criteriaID, duration, elapsed, criteriaFailed, isWeightedProgress = C_Scenario.GetCriteriaInfoByStep(bonusStepIndex, criteriaIndex);
+					if ( criteriaString ) then
+						if (not isWeightedProgress) then
+							criteriaString = string.format("%d/%d %s", quantity, totalQuantity, criteriaString);
 						end
-						line.finished = true;
-					elseif ( criteriaFailed ) then
-						stepFinished = false;
-						module:AddObjective(block, criteriaIndex, criteriaString, nil, nil, OBJECTIVE_DASH_STYLE_HIDE_AND_COLLAPSE, OBJECTIVE_TRACKER_COLOR["Failed"]);
+						if ( criteriaCompleted ) then
+							local existingLine = block.lines[criteriaIndex];
+							module:AddObjective(block, criteriaIndex, criteriaString, nil, nil, OBJECTIVE_DASH_STYLE_HIDE_AND_COLLAPSE, OBJECTIVE_TRACKER_COLOR["Complete"]);
+							local line = block.currentLine;
+							if ( existingLine and not line.finished ) then
+								line.Glow.Anim:Play();
+								line.Sheen.Anim:Play();
+							end
+							line.finished = true;
+						elseif ( criteriaFailed ) then
+							stepFinished = false;
+							module:AddObjective(block, criteriaIndex, criteriaString, nil, nil, OBJECTIVE_DASH_STYLE_HIDE_AND_COLLAPSE, OBJECTIVE_TRACKER_COLOR["Failed"]);
+						else
+							stepFinished = false;
+							module:AddObjective(block, criteriaIndex, criteriaString, nil, nil, OBJECTIVE_DASH_STYLE_HIDE_AND_COLLAPSE);
+						end
+						-- timer bar
+						if ( duration > 0 and elapsed <= duration and not (criteriaFailed or criteriaCompleted) ) then
+							module:AddTimerBar(block, block.currentLine, duration, GetTime() - elapsed);
+						elseif ( block.currentLine.TimerBar ) then
+							module:FreeTimerBar(block, block.currentLine);
+						end
+						if ( criteriaIndex > 1 ) then
+							local line = block.currentLine;
+							line.Icon:Hide();
+						end
+					end
+				end
+				-- first line is going to display an icon
+				local firstLine = block.lines[1];
+				if ( firstLine ) then
+					if ( stepFailed ) then
+						firstLine.Icon:SetAtlas("Objective-Fail", true);
+					elseif ( stepFinished ) then
+						firstLine.Icon:SetAtlas("Tracker-Check", true);
+						-- play anim if needed
+						if ( existingBlock and not block.finished ) then
+							firstLine.CheckFlash:Show();
+							firstLine.CheckFlash.Anim:Play();
+							if (BonusObjectiveTracker_GetSupersedingStep(bonusStepIndex)) then
+								BonusObjectiveTracker_SetBlockState(block, "FINISHED");
+							end
+						end
+						block.finished = true;
 					else
-						stepFinished = false;
-						module:AddObjective(block, criteriaIndex, criteriaString, nil, nil, OBJECTIVE_DASH_STYLE_HIDE_AND_COLLAPSE);
+						firstLine.Icon:SetAtlas("Objective-Nub", true);
 					end
-					-- timer bar
-					if ( duration > 0 and elapsed <= duration and not (criteriaFailed or criteriaCompleted) ) then
-						module:AddTimerBar(block, block.currentLine, duration, GetTime() - elapsed);
-					elseif ( block.currentLine.TimerBar ) then
-						module:FreeTimerBar(block, block.currentLine);
-					end
-					if ( criteriaIndex > 1 ) then
-						local line = block.currentLine;
-						line.Icon:Hide();
-					end
+					firstLine.Icon:ClearAllPoints();
+					firstLine.Icon:SetPoint("CENTER", firstLine.IconAnchor, "CENTER", 0, 0);
+					firstLine.Icon:Show();
 				end
-			end
-			-- first line is going to display an icon
-			local firstLine = block.lines[1];
-			if ( firstLine ) then
-				if ( stepFailed ) then
-					firstLine.Icon:SetAtlas("Objective-Fail", true);
-				elseif ( stepFinished ) then
-					firstLine.Icon:SetAtlas("Tracker-Check", true);
-					-- play anim if needed
-					if ( existingBlock and not block.finished ) then
-						firstLine.CheckFlash:Show();
-						firstLine.CheckFlash.Anim:Play();
-						if (BonusObjectiveTracker_GetSupersedingStep(bonusStepIndex)) then
-							BonusObjectiveTracker_SetBlockState(block, "FINISHED");
-						end
-					end
-					block.finished = true;
-				else
-					firstLine.Icon:SetAtlas("Objective-Nub", true);
+				block:SetHeight(block.height + module.blockPadding);
+
+				if ( not ObjectiveTracker_AddBlock(block) ) then
+					-- there was no room to show the header and the block, bail
+					block.used = false;
+					break;
 				end
-				firstLine.Icon:ClearAllPoints();
-				firstLine.Icon:SetPoint("CENTER", firstLine.IconAnchor, "CENTER", 0, 0);
-				firstLine.Icon:Show();
-			end
-			block:SetHeight(block.height + module.blockPadding);
 
-			if ( not ObjectiveTracker_AddBlock(block) ) then
-				-- there was no room to show the header and the block, bail
-				block.used = false;
-				break;
-			end
+				block:Show();
+				module:FreeUnusedLines(block);
 
-			block:Show();
-			module:FreeUnusedLines(block);
-
-			if ( block.state ~= "FINISHED" ) then
-				if ( not existingBlock and isForCurrentStepOnly ) then
-					BonusObjectiveTracker_SetBlockState(block, "ENTERING");
-				else
-					BonusObjectiveTracker_SetBlockState(block, "PRESENT");
+				if ( block.state ~= "FINISHED" ) then
+					if ( not existingBlock and isForCurrentStepOnly ) then
+						BonusObjectiveTracker_SetBlockState(block, "ENTERING");
+					else
+						BonusObjectiveTracker_SetBlockState(block, "PRESENT");
+					end
 				end
 			end
 		end
@@ -972,8 +971,8 @@ function BonusObjectiveTrackerModuleMixin:Update()
 		if ( BANNER_BONUS_OBJECTIVE_ID == OBJECTIVE_TRACKER_UPDATE_ID ) then
 			-- we just finished the banner for this, clear the data so the block displays
 			BANNER_BONUS_OBJECTIVE_ID = nil;
-		elseif ( not self:GetExistingBlock(OBJECTIVE_TRACKER_UPDATE_ID) and TopBannerManager_IsIdle() ) then
-			-- if we don't already have a block for this and there's no other banner playing we should do the banner
+		elseif( TopBannerManager_IsIdle() ) then
+			-- if there's no other banner showing we should show the banner
 			TopBannerManager_Show(ObjectiveTrackerBonusBannerFrame, OBJECTIVE_TRACKER_UPDATE_ID);
 		end
 	end

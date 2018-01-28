@@ -16,7 +16,7 @@ end
 UnitPopupButtons = {
 	["CANCEL"] = { text = CANCEL, dist = 0, space = 1 },
 	["TRADE"] = { text = TRADE, dist = 2 },
-	["INSPECT"] = { text = INSPECT, dist = 0, disabledInKioskMode = true },
+	["INSPECT"] = { text = INSPECT, dist = 0, disabledInKioskMode = false },
 	["ACHIEVEMENTS"] = { text = COMPARE_ACHIEVEMENTS, dist = 1, disabledInKioskMode = true },
 	["TARGET"] = { text = TARGET, dist = 0 },
 	["IGNORE"]	= {
@@ -26,7 +26,7 @@ UnitPopupButtons = {
 		end,
 	},
 	["POP_OUT_CHAT"] = { text = MOVE_TO_WHISPER_WINDOW, dist = 0 },
-	["DUEL"] = { text = DUEL, dist = 3, space = 1, disabledInKioskMode = true },
+	["DUEL"] = { text = DUEL, dist = 3, space = 1, disabledInKioskMode = false },
 	["PET_BATTLE_PVP_DUEL"] = { text = PET_BATTLE_PVP_DUEL, dist = 5, space = 1, disabledInKioskMode = true },
 	["WHISPER"]	= { text = WHISPER, dist = 0 },
 	["INVITE"]	= { text = PARTY_INVITE, dist = 0 },
@@ -388,7 +388,7 @@ function UnitPopup_ShowMenu (dropdownMenu, which, unit, name, userData)
 
 				if ( previousWasSubsectionTitle ) then
 					if ( not cntButton.isSubsectionTitle ) then
-						UIDropDownMenu_AddSeparator(info, UIDROPDOWNMENU_MENU_LEVEL);
+						UIDropDownMenu_AddSeparator(UIDROPDOWNMENU_MENU_LEVEL);
 						UnitPopup_AddDropDownButton(info, dropdownMenu, UnitPopupButtons[subsectionTitleValue], subsectionTitleValue, UIDROPDOWNMENU_MENU_LEVEL);
 					else
 						UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][subsectionTitleIndex] = 0;
@@ -577,7 +577,7 @@ function UnitPopup_ShowMenu (dropdownMenu, which, unit, name, userData)
 
 			if ( previousWasSubsectionTitle ) then
 				if ( not cntButton.isSubsectionTitle ) then
-					UIDropDownMenu_AddSeparator(info, UIDROPDOWNMENU_MENU_LEVEL);
+					UIDropDownMenu_AddSeparator(UIDROPDOWNMENU_MENU_LEVEL);
 					UnitPopup_AddDropDownButton(info, dropdownMenu, UnitPopupButtons[subsectionTitleValue], subsectionTitleValue);
 				else
 					UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][subsectionTitleIndex] = 0;

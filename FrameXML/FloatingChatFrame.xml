@@ -437,7 +437,13 @@
 
 						self:GetHighlightTexture():Hide();
 						
-						chatFrame:StartSizing("BOTTOMRIGHT");
+						if( self:GetParent().isDocked ) then 
+							GENERAL_CHAT_DOCK.primary:StartSizing("BOTTOMRIGHT"); 
+						else
+							self:GetParent():StartSizing("BOTTOMRIGHT"); 
+						end
+						
+						
 					</OnMouseDown>
 					<OnMouseUp>
 						self:SetButtonState("NORMAL", false);
@@ -445,7 +451,11 @@
 
 						self:GetHighlightTexture():Show();
 						
-						self:GetParent():StopMovingOrSizing();
+						if( self:GetParent().isDocked ) then 
+							GENERAL_CHAT_DOCK.primary:StopMovingOrSizing(); 
+						else
+							self:GetParent():StopMovingOrSizing(); 
+						end
 						FCF_SavePositionAndDimensions(self:GetParent());
 					</OnMouseUp>
 				</Scripts>

@@ -225,6 +225,32 @@
 					</Layer>
 				</Layers>
 				<Frames>
+					<Frame parentKey="CopyNoticeFrame" frameLevel="9800" hidden="true">
+						<Size y="75" />
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" />
+							<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" />
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<FontString parentKey="Label" inherits="SystemFont_Shadow_Large">
+									<Color r="1" g="1" b="0"/>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Animations>
+							<AnimationGroup parentKey="Anim">
+								<Alpha fromAlpha="0" toAlpha="1" duration=".25" order="1"/>
+								<Alpha fromAlpha="1" toAlpha="0" startDelay="1" duration=".5" order="2"/>
+
+								<Scripts>
+									<OnFinished>
+										self:GetParent():Hide();
+									</OnFinished>
+								</Scripts>
+							</AnimationGroup>
+						</Animations>
+					</Frame>
 					<Slider parentKey="ScrollBar" frameLevel="9500" obeyStepOnDrag="true" valueStep="1" minValue="0" maxValue="1">
 						<Size x="15" y="0"/>
 						<Anchors>

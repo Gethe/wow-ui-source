@@ -3486,8 +3486,8 @@ function CalendarCreateEventFrame_OnEvent(self, event, ...)
 --]]
 		elseif ( event == "GUILD_ROSTER_UPDATE" or event == "PLAYER_GUILD_UPDATE" ) then
 			if ( event == "GUILD_ROSTER_UPDATE" ) then
-				local arg1 = ...;
-				if ( arg1 ) then
+				local canRequestRosterUpdate = ...;
+				if ( canRequestRosterUpdate ) then
 					GuildRoster();
 				end
 			end
@@ -4365,7 +4365,6 @@ end
 
 function CalendarCreateEventRaidInviteButton_OnLoad(self)
 	self:RegisterEvent("GROUP_ROSTER_UPDATE");
-	self:RegisterEvent("PARTY_CONVERTED_TO_RAID");
 
 	self:SetWidth(self:GetTextWidth() + 40);
 end
@@ -4378,14 +4377,6 @@ function CalendarCreateEventRaidInviteButton_OnEvent(self, event, ...)
 				-- in case we weren't able to convert to a raid when the player clicked the raid invite button
 				-- (which means the player was not in a party), we want to convert to a raid now since he has a party
 				ConvertToRaid();
-			end
-		elseif ( event == "PARTY_CONVERTED_TO_RAID" ) then
-			CalendarCreateEventRaidInviteButton_Update();
-			if ( self.inviteLostMembers ) then
-				-- should already be in a raid at this point, invite members who were not invited due to the party to raid conversion
-				local maxInviteCount = MAX_RAID_MEMBERS - GetNumGroupMembers(LE_PARTY_CATEGORY_HOME);
-				local inviteCount = _CalendarFrame_InviteToRaid(maxInviteCount);
-				self.inviteLostMembers = false;
 			end
 		end
 	end
@@ -4404,8 +4395,6 @@ function CalendarCreateEventRaidInviteButton_OnClick(self)
 				ConvertToRaid();
 				return;
 			end
-			--...and I'm NOT already in a party, then I need to form a party first (happens below),
-			-- then form a raid to fit everyone (happens in response to the PARTY_CONVERTED_TO_RAID event)
 		end
 		maxInviteCount = MAX_PARTY_MEMBERS + 1 - realNumGroupMembers;
 	else
@@ -4503,8 +4492,8 @@ end
 
 function CalendarMassInviteFrame_OnEvent(self, event, ...)
 	if ( event == "GUILD_ROSTER_UPDATE" ) then
-		local arg1 = ...;
-		if ( arg1 ) then
+		local canRequestRosterUpdate = ...;
+		if ( canRequestRosterUpdate ) then
 			GuildRoster();
 		end
 	end

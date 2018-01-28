@@ -600,6 +600,7 @@ function GarrisonBuildingInfoBox_ShowBuilding(ID, owned, showLock)
 	end
 	-- currencyID, currencyQty, and goldQty from above are the cost of the building's current level, which we do not display. What we do display is the cost of the next level.
 	if ( id and owned ) then
+		local _;
 		_, _, _, _, _, currencyID, currencyQty, goldQty = C_Garrison.GetBuildingUpgradeInfo(id);
 	end
 	infoBox.canActivate = canActivate;
@@ -1038,10 +1039,6 @@ function GarrisonBuildingFollowerButton_OnClick(self, button)
 	C_Garrison.AssignFollowerToBuilding(GarrisonBuildingFrame.selectedBuilding.plotID, self.info.followerID);
 	GarrisonBuildingList_Show();
 	PlaySound(SOUNDKIT.UI_GARRISON_COMMAND_TABLE_SELECT_FOLLOWER);
-end
-
-function GarrisonBuildingFollowerButton_GetFollowerList(self)
-	return self:GetParent():GetParent():GetParent():GetParent().followers;
 end
 
 function GarrisonBuildingFollowerButton_GetFollowerList(self)

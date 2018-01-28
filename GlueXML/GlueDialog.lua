@@ -538,7 +538,7 @@ function GlueDialog_Show(which, text, data)
 		end
 	end
 
-	GlueDialogBackground:SetHeight(displayHeight);
+	GlueDialogBackground:SetHeight(math.floor(displayHeight + 0.5));
 
 	GlueDialog:Show();
 end

@@ -440,8 +440,8 @@ function GuildPerksFrame_OnEvent(self, event, ...)
 		return;
 	end
 	if ( event == "GUILD_ROSTER_UPDATE" ) then
-		local arg1 = ...;
-		if ( arg1 ) then
+		local canRequestRosterUpdate = ...;
+		if ( canRequestRosterUpdate ) then
 			GuildRoster();
 		end
 	end

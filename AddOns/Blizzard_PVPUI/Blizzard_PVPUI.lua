@@ -285,7 +285,6 @@ function PVPQueueFrame_OnEvent(self, event, ...)
 			PVPQueueFrame:UnregisterEvent("PLAYER_LEVEL_UP");
 		end
 	elseif ( event == "UPDATE_BATTLEFIELD_STATUS" or event == "ZONE_CHANGED_NEW_AREA" or event == "ZONE_CHANGED") then
-		local arg1 = ...
 		PVP_UpdateStatus();
 	elseif ( event == "BATTLEFIELDS_SHOW" ) then
 		local isArena, bgID = ...;

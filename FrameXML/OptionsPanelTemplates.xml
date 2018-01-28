@@ -41,7 +41,7 @@
 		<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
 	 	<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
 		<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
-		<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>		
+		<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
 	</CheckButton>
 	<CheckButton name="OptionsCheckButtonTemplate" virtual="true" inherits="OptionsBaseCheckButtonTemplate">
 		<Layers>
@@ -73,27 +73,11 @@
 			</Layer>
 		</Layers>
 	</CheckButton>
-	<Slider name="OptionsSliderTemplate" orientation="HORIZONTAL" virtual="true" enableMouse="true">
-		<Size>
-			<AbsDimension x="144" y="17"/>
-		</Size>
-		<HitRectInsets>
-			<AbsInset left="0" right="0" top="-10" bottom="-10"/>
-		</HitRectInsets>
-		<Backdrop bgFile="Interface\Buttons\UI-SliderBar-Background" edgeFile="Interface\Buttons\UI-SliderBar-Border" tile="true">
-			<EdgeSize>
-				<AbsValue val="8"/>
-			</EdgeSize>
-			<TileSize>
-				<AbsValue val="8"/>
-			</TileSize>
-			<BackgroundInsets>
-				<AbsInset left="3" right="3" top="6" bottom="6"/>
-			</BackgroundInsets>
-		</Backdrop>
+	<Slider name="OptionsSliderTemplate" inherits="HorizontalSliderTemplate" virtual="true">
+		<Size x="144" y="17"/>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString name="$parentText" inherits="GameFontHighlight">
+				<FontString name="$parentText" parentKey="Text" inherits="GameFontHighlight">
 					<Anchors>
 						<Anchor point="BOTTOM" relativePoint="TOP"/>
 					</Anchors>
@@ -135,11 +119,6 @@
 				GameTooltip:Hide();
 			</OnLeave>
 		</Scripts>
-		<ThumbTexture name="$parentThumb" file="Interface\Buttons\UI-SliderBar-Button-Horizontal">
-			<Size>
-				<AbsDimension x="32" y="32"/>
-			</Size>
-		</ThumbTexture>
 	</Slider>
 	<Frame name="OptionsBoxTemplate" virtual="true">
 		<Layers>

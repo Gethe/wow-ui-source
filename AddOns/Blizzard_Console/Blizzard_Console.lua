@@ -28,6 +28,14 @@ function DeveloperConsoleMixin:OnLoad()
 		messageFrame.ScrollBar:SetValue(messageFrame:GetNumMessages() - offset);
 	end);
 
+	self.MessageFrame:SetOnTextCopiedCallback(function(messageFrame, text, numCharsCopied)
+		messageFrame.CopyNoticeFrame.Anim:Stop();
+
+		messageFrame.CopyNoticeFrame.Label:SetFormattedText("%s characters copied to clipboard.", BreakUpLargeNumbers(numCharsCopied))
+		messageFrame.CopyNoticeFrame:Show();
+		messageFrame.CopyNoticeFrame.Anim:Play();
+	end);
+
 	self.filterText = "";
 end
 
@@ -209,6 +217,8 @@ function DeveloperConsoleMixin:Toggle(shownRequested)
 			self:Show();
 		else
 			self.EditBox:ClearFocus();
+			self.MessageFrame.CopyNoticeFrame.Anim:Stop();
+			self.MessageFrame.CopyNoticeFrame:Hide()
 		end
 	
 		self.Anim.Translation:SetOffset(0, self.savedVars.height);

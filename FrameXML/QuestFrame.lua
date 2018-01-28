@@ -17,6 +17,7 @@ function QuestFrame_OnLoad(self)
 	self:RegisterEvent("QUEST_ITEM_UPDATE");
 	self:RegisterEvent("QUEST_LOG_UPDATE");
 	self:RegisterEvent("UNIT_PORTRAIT_UPDATE");
+	self:RegisterEvent("PORTRAITS_UPDATED");
 	self:RegisterEvent("LEARNED_SPELL_IN_TAB");
 end
 
@@ -25,10 +26,10 @@ function QuestFrame_OnEvent(self, event, ...)
 		HideUIPanel(QuestFrame);
 		return;
 	end
-	if ( (event == "QUEST_ITEM_UPDATE") and not QuestFrame:IsShown() ) then
+	if ( event == "QUEST_ITEM_UPDATE" and not QuestFrame:IsShown() ) then
 		return;
 	end
-	if ( (event == "UNIT_PORTRAIT_UPDATE") and not QuestFrame:IsShown() ) then
+	if (event == "UNIT_PORTRAIT_UPDATE" or event == "PORTRAITS_UPDATED") and not QuestFrame:IsShown() then
 		return;
 	end
 

@@ -2830,6 +2830,7 @@ function AchievementFrameComparison_OnLoad (self)
 	self:RegisterEvent("ACHIEVEMENT_EARNED");
 	self:RegisterEvent("INSPECT_ACHIEVEMENT_READY");
 	self:RegisterEvent("UNIT_PORTRAIT_UPDATE");
+	self:RegisterEvent("PORTRAITS_UPDATED");
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
 end
 
@@ -2904,12 +2905,16 @@ function AchievementFrameComparison_OnHide ()
 end
 
 function AchievementFrameComparison_OnEvent (self, event, ...)
-	if ( event == "INSPECT_ACHIEVEMENT_READY" ) then
+	if event == "INSPECT_ACHIEVEMENT_READY" then
 		AchievementFrameComparisonHeaderPoints:SetText(GetComparisonAchievementPoints());
 		AchievementFrameComparison_UpdateStatusBars(achievementFunctions.selectedCategory)
-	elseif ( event == "UNIT_PORTRAIT_UPDATE" or event == "DISPLAY_SIZE_CHANGED") then
+	elseif event == "DISPLAY_SIZE_CHANGED" then
+		SetAchievementComparisonPortrait(AchievementFrameComparisonHeaderPortrait);
+	elseif event == "PORTRAITS_UPDATED" then
+		SetAchievementComparisonPortrait(AchievementFrameComparisonHeaderPortrait);
+	elseif event == "UNIT_PORTRAIT_UPDATE" then
 		local updateUnit = ...;
-		if ( not updateUnit or UnitName(updateUnit) == AchievementFrameComparisonHeaderName:GetText() ) then
+		if UnitName(updateUnit) == AchievementFrameComparisonHeaderName:GetText() then
 			SetAchievementComparisonPortrait(AchievementFrameComparisonHeaderPortrait);
 		end
 	end
@@ -3812,15 +3817,13 @@ function AchievementFrame_SetSearchPreviewSelection(selectedIndex)
 	
 	AchievementFrame.showAllSearchResults.selectedTexture:Hide();
 	
-	
-	if ( selectedIndex > numShown ) then
-		-- Wrap under to the beginning.
+	if ( numShown <= 0 ) then
+		-- Default to the first entry.
 		selectedIndex = 1;
-	elseif ( selectedIndex < 1 ) then
-		-- Wrap over to the end;
-		selectedIndex = numShown;
+	else
+		selectedIndex = (selectedIndex - 1) % numShown + 1;
 	end
-	
+
 	AchievementFrame.searchBox.selectedIndex = selectedIndex;
 	
 	if ( selectedIndex == ACHIEVEMENT_FRAME_SHOW_ALL_RESULTS_INDEX ) then

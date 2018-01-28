@@ -979,9 +979,6 @@ function RaidPullout_Update(pullOutFrame)
 			pulloutButton:RegisterEvent("UNIT_HEALTH");
 			pulloutButton:RegisterEvent("UNIT_AURA");
 			pulloutButton:RegisterEvent("UNIT_NAME_UPDATE");
-			pulloutButton:RegisterEvent("VOICE_STATUS_UPDATE");
-			pulloutButton:RegisterEvent("VOICE_START");
-			pulloutButton:RegisterEvent("VOICE_STOP");
 			pulloutButton:RegisterEvent("UNIT_ENTERED_VEHICLE");
 			pulloutButton:RegisterEvent("UNIT_EXITED_VEHICLE");
 			pulloutButton:Show();
@@ -990,9 +987,6 @@ function RaidPullout_Update(pullOutFrame)
 			pulloutButton:UnregisterEvent("UNIT_HEALTH");
 			pulloutButton:UnregisterEvent("UNIT_AURA");
 			pulloutButton:UnregisterEvent("UNIT_NAME_UPDATE");
-			pulloutButton:UnregisterEvent("VOICE_STATUS_UPDATE");
-			pulloutButton:UnregisterEvent("VOICE_START");
-			pulloutButton:UnregisterEvent("VOICE_STOP");
 			pulloutButton:UnregisterEvent("UNIT_ENTERED_VEHICLE");
 			pulloutButton:UnregisterEvent("UNIT_EXITED_VEHICLE");
 			pulloutButton:Hide();
@@ -1035,29 +1029,6 @@ function RaidPulloutButton_OnEvent(self, event, ...)
 				RefreshAuras(self, self.unit, MAX_RAID_AURAS, "Aura", true, self:GetParent().showBuffs);
 			end
 		end
-	elseif ( event == "VOICE_START") then
-		local arg1 = ...;
-		if ( arg1 == (self.secondaryUnit or self.unit) ) then
-			speaker.timer = nil;
-			speaker:Show();
-			UIFrameFadeIn(speaker, 0.2, speaker:GetAlpha(), 1);
-			if ( not self.muted ) then
-				VoiceChat_Animate(speaker, 1);
-			end
-		end
-	elseif ( event == "VOICE_STOP" ) then
-		local arg1 = ...;
-		if ( arg1 == (self.secondaryUnit or self.unit) ) then
-			speaker.timer = VOICECHAT_DELAY;
-			VoiceChat_Animate(speaker, nil);
-			if ( self.muted ) then
-				speaker:Show();
-			else
-				UIFrameFadeOut(speaker, 0.2, speaker:GetAlpha(), 0);
-			end
-		end
-	elseif ( event == "VOICE_STATUS_UPDATE" ) then
-		RaidPulloutButton_UpdateVoice(self);
 	elseif (( event == "UNIT_ENTERED_VEHICLE" ) or ( event == "UNIT_EXITED_VEHICLE" )) then
 		local arg1 = ...;
 		if ( arg1 == (self.secondaryUnit or self.unit) ) then

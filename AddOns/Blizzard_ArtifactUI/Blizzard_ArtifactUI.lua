@@ -64,7 +64,6 @@ function ArtifactUIMixin:OnLoad()
 
 	self:RegisterEvent("ARTIFACT_UPDATE");
 	self:RegisterEvent("ARTIFACT_CLOSE");
-	self:RegisterEvent("ARTIFACT_MAX_RANKS_UPDATE");
 end
 
 function ArtifactUIMixin:OnShow()

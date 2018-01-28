@@ -608,8 +608,8 @@
 				self.name = _G[self:GetName() .. "Name"];
 				self.name:SetPoint("TOPLEFT", "$parentSpeaker", "TOPRIGHT", 8, -1);
 				self:EnableMouseWheel();
-				self:RegisterEvent("VOICE_PLATE_START");
-				self:RegisterEvent("VOICE_PLATE_STOP");
+				--self:RegisterEvent("VOICE_PLATE_START");
+				--self:RegisterEvent("VOICE_PLATE_STOP");
 				self:SetScript("OnEvent", ChannelPulloutRosterButton_OnEvent);
 			</OnLoad>
 			<OnMouseWheel>

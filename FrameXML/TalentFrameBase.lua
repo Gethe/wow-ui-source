@@ -207,13 +207,7 @@ function PVPTalentFrame_Update(self, talentUnit)
 	local numTalentSelections = 0;
 	for tier = 1, MAX_PVP_TALENT_TIERS do
 		local talentRow = self.Talents["Tier"..tier];
-		local isRowFree, prevSelected = GetPvpTalentRowSelectionInfo(tier);
-
-		if ( not self.inspect and prevSelected == self.talentInfo[tier] ) then
-			self.talentInfo[tier] = nil;
-		end
-
-		local rowShouldGlow = false;
+		local rowShouldGlow = (GetNumUnspentPvpTalents() > 0);
 		for column = 1, MAX_PVP_TALENT_COLUMNS do
 			local button = talentRow["Talent"..column];
 			local id, name, icon, selected, available, _, unlocked = GetPvpTalentInfo(tier, column, self.talentGroup, self.inspect, talentUnit);

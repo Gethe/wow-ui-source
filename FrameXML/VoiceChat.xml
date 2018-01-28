@@ -259,9 +259,9 @@
 			<OnLoad>
 				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 				self:SetFrameLevel(self:GetFrameLevel()+1);
-				self:RegisterEvent("VOICE_SESSIONS_UPDATE");
+				--self:RegisterEvent("VOICE_SESSIONS_UPDATE");
 				self:RegisterEvent("PLAYER_ENTERING_WORLD");
-				self:RegisterEvent("VOICE_SELF_MUTE");
+				--self:RegisterEvent("VOICE_SELF_MUTE");
 			</OnLoad>
 			<OnShow>
 				MiniMapVoiceChatFrameBackground:SetAlpha(0.6);

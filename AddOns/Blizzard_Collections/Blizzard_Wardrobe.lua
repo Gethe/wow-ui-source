@@ -2722,8 +2722,8 @@ function WardrobeFilterDropDown_InitializeBaseSets(self, level)
 	info.checked = C_TransmogSets.GetBaseSetsFilter(LE_TRANSMOG_SET_FILTER_UNCOLLECTED);
 	UIDropDownMenu_AddButton(info, level);
 
-	UIDropDownMenu_AddSeparator(info);
-	-- reset to remove separator
+	UIDropDownMenu_AddSeparator();
+
 	info = UIDropDownMenu_CreateInfo();
 	info.keepShownOnClick = true;
 	info.isNotRadio = true;

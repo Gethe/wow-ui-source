@@ -1,7 +1,12 @@
 
 local MIN_STORY_TOOLTIP_WIDTH = 240;
 
---tooltipButton;
+local tooltipButton;
+
+local titleFramePool;
+local objectiveFramePool;
+local headerFramePool;
+
 
 function QuestMapFrame_OnLoad(self)
 	self:RegisterEvent("QUEST_LOG_UPDATE");
@@ -374,6 +379,19 @@ function QuestMapFrame_CheckQuestCriteria(questID, criteriaID, description, fulf
 	return true;
 end
 
+-- Quests Frame
+
+function QuestsFrame_OnLoad(self)
+	ScrollFrame_OnLoad(self);
+	self.Contents.StoryHeader.HighlightTexture:SetVertexColor(0.243, 0.570, 1);
+	self.StoryTooltip:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
+	self.StoryTooltip:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
+
+	titleFramePool = CreateFramePool("BUTTON", QuestMapFrame.QuestsFrame.Contents, "QuestLogTitleTemplate");
+	objectiveFramePool = CreateFramePool("FRAME", QuestMapFrame.QuestsFrame.Contents, "QuestLogObjectiveTemplate");
+	headerFramePool = CreateFramePool("BUTTON", QuestMapFrame.QuestsFrame.Contents, "QuestLogHeaderTemplate");
+end
+
 -- *****************************************************************************************************
 -- ***** QUEST OPTIONS DROPDOWN
 -- *****************************************************************************************************
@@ -444,45 +462,191 @@ end
 -- ***** QUEST LIST
 -- *****************************************************************************************************
 
-function QuestLogQuests_GetHeaderButton(index)
-	local headers = QuestMapFrame.QuestsFrame.Contents.Headers;
-	if ( not headers[index] ) then
-		local header = CreateFrame("BUTTON", nil, QuestMapFrame.QuestsFrame.Contents, "QuestLogHeaderTemplate");
-		headers[index] = header;
-	end
-	return headers[index];
-end
+function QuestLogQuests_AddQuestButton(prevButton, questLogIndex, poiTable, title, level, suggestedGroup, isHeader, isCollapsed, isComplete, frequency, questID, startEvent, displayQuestID, isOnMap, hasLocalPOI, isTask, isBounty, isStory, isHidden, isScaling)
+	local totalHeight = 8;
+	button = titleFramePool:Acquire();
+	button.questID = questID;
+	local difficultyColor = GetQuestDifficultyColor(level, isScaling);
 
-function QuestLogQuests_GetTitleButton(index)
-	local titles = QuestMapFrame.QuestsFrame.Contents.Titles;
-	if ( not titles[index] ) then
-		local title = CreateFrame("BUTTON", nil, QuestMapFrame.QuestsFrame.Contents, "QuestLogTitleTemplate");
-		titles[index] = title;
+	if ( displayQuestID ) then
+		title = questID.." - "..title;
 	end
-	return titles[index];
-end
+	if ( ENABLE_COLORBLIND_MODE == "1" ) then
+		title = "["..level.."] " .. title;
+	end
 
-local OBJECTIVE_FRAMES = { };
-function QuestLog_GetObjectiveFrame(index)
-	if ( not OBJECTIVE_FRAMES[index] ) then
-		local frame = CreateFrame("FRAME", "QLOF"..index, QuestMapFrame.QuestsFrame.Contents, "QuestLogObjectiveTemplate");
-		OBJECTIVE_FRAMES[index] = frame;
+	-- If not a header see if any nearby group mates are on this quest
+	local partyMembersOnQuest = 0;
+	for j=1, GetNumSubgroupMembers() do
+		if ( IsUnitOnQuestByQuestID(questID, "party"..j) ) then
+			partyMembersOnQuest = partyMembersOnQuest + 1;
+		end
 	end
-	return OBJECTIVE_FRAMES[index];
+
+	if ( partyMembersOnQuest > 0 ) then
+		title = "["..partyMembersOnQuest.."] "..title;
+	end
+
+	button.Text:SetText(title);
+	button.Text:SetTextColor( difficultyColor.r, difficultyColor.g, difficultyColor.b );
+
+	totalHeight = totalHeight + button.Text:GetHeight();
+	if ( IsQuestHardWatched(questLogIndex) ) then
+		button.Check:Show();
+		button.Check:SetPoint("LEFT", button.Text, button.Text:GetWrappedWidth() + 2, 0);
+	else
+		button.Check:Hide();
+	end
+
+	-- tag. daily icon can be alone or before other icons except for COMPLETED or FAILED
+	local tagID;
+	local questTagID, tagName = GetQuestTagInfo(questID);
+	if ( isComplete and isComplete < 0 ) then
+		tagID = "FAILED";
+	elseif ( isComplete and isComplete > 0 ) then
+		tagID = "COMPLETED";
+	elseif( questTagID and questTagID == QUEST_TAG_ACCOUNT ) then
+		local factionGroup = GetQuestFactionGroup(questID);
+		if( factionGroup ) then
+			if ( factionGroup == LE_QUEST_FACTION_HORDE ) then
+				tagID = "HORDE";
+			else
+				tagID = "ALLIANCE";
+			end
+		else
+			tagID = QUEST_TAG_ACCOUNT;
+		end
+	elseif( frequency == LE_QUEST_FREQUENCY_DAILY and (not isComplete or isComplete == 0) ) then
+		tagID = "DAILY";
+	elseif( frequency == LE_QUEST_FREQUENCY_WEEKLY and (not isComplete or isComplete == 0) )then
+		tagID = "WEEKLY";
+	elseif( questTagID ) then
+		tagID = questTagID;
+	end
+
+	if ( tagID ) then
+		local tagCoords = QUEST_TAG_TCOORDS[tagID];
+		if( tagCoords ) then
+			button.TagTexture:SetTexCoord( unpack(tagCoords) );
+			button.TagTexture:Show();
+		else
+			button.TagTexture:Hide();
+		end
+	else
+		button.TagTexture:Hide();
+	end
+
+	-- POI/objectives
+	local requiredMoney = GetQuestLogRequiredMoney(questLogIndex);
+	local playerMoney = GetMoney();
+	local numObjectives = GetNumQuestLeaderBoards(questLogIndex);
+	-- complete?
+	if ( isComplete and isComplete < 0 ) then
+		isComplete = false;
+	elseif ( numObjectives == 0 and playerMoney >= requiredMoney and not startEvent) then
+		isComplete = true;
+	end
+	-- objectives
+	if ( isComplete ) then
+		local objectiveFrame = objectiveFramePool:Acquire();
+		objectiveFrame.questID = questID;
+		objectiveFrame:Show();
+		local completionText = GetQuestLogCompletionText(questLogIndex) or QUEST_WATCH_QUEST_READY;
+		objectiveFrame.Text:SetText(completionText);
+		local height = objectiveFrame.Text:GetStringHeight();
+		objectiveFrame:SetHeight(height);
+		objectiveFrame:SetPoint("TOPLEFT", button.Text, "BOTTOMLEFT", 0, -3);
+		totalHeight = totalHeight + height + 3;
+	else
+		local prevObjective;
+		for i = 1, numObjectives do
+			local text, objectiveType, finished = GetQuestLogLeaderBoard(i, questLogIndex);
+			if ( text and not finished ) then
+				local objectiveFrame = objectiveFramePool:Acquire();
+				objectiveFrame.questID = questID;
+				objectiveFrame:Show();
+				objectiveFrame.Text:SetText(text);
+				local height = objectiveFrame.Text:GetStringHeight();
+				objectiveFrame:SetHeight(height);
+				if ( prevObjective ) then
+					objectiveFrame:SetPoint("TOPLEFT", prevObjective, "BOTTOMLEFT", 0, -2);
+					height = height + 2;
+				else
+					objectiveFrame:SetPoint("TOPLEFT", button.Text, "BOTTOMLEFT", 0, -3);
+					height = height + 3;
+				end
+				totalHeight = totalHeight + height;
+				prevObjective = objectiveFrame;
+			end
+		end
+		if ( requiredMoney > playerMoney ) then
+			local objectiveFrame = objectiveFramePool:Aquire();
+			objectiveFrame.questID = questID;
+			objectiveFrame:Show();
+			objectiveFrame.Text:SetText(GetMoneyString(playerMoney).." / "..GetMoneyString(requiredMoney));
+			local height = objectiveFrame.Text:GetStringHeight();
+			objectiveFrame:SetHeight(height);
+			if ( prevObjective ) then
+				objectiveFrame:SetPoint("TOPLEFT", prevObjective, "BOTTOMLEFT", 0, -2);
+				height = height + 2;
+			else
+				objectiveFrame:SetPoint("TOPLEFT", button.Text, "BOTTOMLEFT", 0, -3);
+				height = height + 3;
+			end
+			totalHeight = totalHeight + height;
+		end
+	end
+	-- POI
+
+	if ( hasLocalPOI and GetCVarBool("questPOI") ) then
+		local poiButton;
+		if ( isComplete ) then
+			poiButton = QuestPOI_GetButton(QuestScrollFrame.Contents, questID, "normal", nil);
+		else
+			for i = 1, #poiTable do
+				if ( poiTable[i] == questID ) then
+					poiButton = QuestPOI_GetButton(QuestScrollFrame.Contents, questID, "numeric", i);
+					break;
+				end
+			end
+		end
+		if ( poiButton ) then
+			poiButton:SetPoint("TOPLEFT", button, 6, -4);
+			poiButton.parent = button;
+		end
+		-- extra room because of POI icon
+		totalHeight = totalHeight + 6;
+		button.Text:SetPoint("TOPLEFT", 31, -8);
+	else
+		button.Text:SetPoint("TOPLEFT", 31, -4);
+	end
+
+	button:SetHeight(totalHeight);
+	button.questLogIndex = questLogIndex;
+	button:ClearAllPoints();
+	if ( prevButton ) then
+		button:SetPoint("TOPLEFT", prevButton, "BOTTOMLEFT", 0, 0);
+	else
+		button:SetPoint("TOPLEFT", 1, -6);
+	end
+	button:Show();
+	prevButton = button;
+
+	return prevButton;
 end
 
 function QuestLogQuests_Update(poiTable)
-	local playerMoney = GetMoney();
     local numEntries, numQuests = GetNumQuestLogEntries();
-	local showPOIs = GetCVarBool("questPOI");
+
+	titleFramePool:ReleaseAll();
+	objectiveFramePool:ReleaseAll();
+	headerFramePool:ReleaseAll();
 
 	local mapID, isContinent = GetCurrentMapAreaID();
 
 	local button, prevButton;
 
 	QuestPOI_ResetUsage(QuestScrollFrame.Contents);
-
-	local poiFrameLevel = QuestLogQuests_GetHeaderButton(1):GetFrameLevel() + 2;
 
 	local storyID, storyMapID = GetZoneStoryID();
 	if ( storyID ) then
@@ -505,28 +669,25 @@ function QuestLogQuests_Update(poiTable)
 	end
 
 	local headerIndex = 0;
-	local titleIndex = 0;
-	local objectiveIndex = 0;
 	local headerCollapsed = false;
 	local headerTitle, headerOnMap, headerShown, headerLogIndex, mapHeaderButtonIndex;
 	local noHeaders = true;
+
 	for questLogIndex = 1, numEntries do
 		local title, level, suggestedGroup, isHeader, isCollapsed, isComplete, frequency, questID, startEvent, displayQuestID, isOnMap, hasLocalPOI, isTask, isBounty, isStory, isHidden, isScaling = GetQuestLogTitle(questLogIndex);
-		local difficultyColor = GetQuestDifficultyColor(level, isScaling);
 		if ( isHeader ) then
 			headerTitle = title;
 			headerOnMap = isOnMap;
 			headerShown = false;
 			headerLogIndex = questLogIndex;
 			headerCollapsed = isCollapsed;
-			difficultyColor = QuestDifficultyColors["header"];
 		elseif ( not isTask and not isHidden and (not isBounty or IsQuestComplete(questID))) then
 			-- we have at least one valid entry, show the header for it
 			if ( not headerShown ) then
 				headerShown = true;
 				noHeaders = false;
 				headerIndex = headerIndex + 1;
-				button = QuestLogQuests_GetHeaderButton(headerIndex);
+				button = headerFramePool:Acquire();
 				if (headerCollapsed) then
 					button:SetNormalTexture("Interface\\Buttons\\UI-PlusButton-Up");
 				else
@@ -552,181 +713,13 @@ function QuestLogQuests_Update(poiTable)
 			end
 
 			if (not headerCollapsed) then
-				local totalHeight = 8;
-				titleIndex = titleIndex + 1;
-				button = QuestLogQuests_GetTitleButton(titleIndex);
-				button.questID = questID;
-
-				if ( displayQuestID ) then
-					title = questID.." - "..title;
-				end
-				if ( ENABLE_COLORBLIND_MODE == "1" ) then
-					title = "["..level.."] " .. title;
-				end
-
-				-- If not a header see if any nearby group mates are on this quest
-				local partyMembersOnQuest = 0;
-				for j=1, GetNumSubgroupMembers() do
-					if ( IsUnitOnQuestByQuestID(questID, "party"..j) ) then
-						partyMembersOnQuest = partyMembersOnQuest + 1;
-					end
-				end
-
-				if ( partyMembersOnQuest > 0 ) then
-					title = "["..partyMembersOnQuest.."] "..title;
-				end
-
-				button.Text:SetText(title);
-				button.Text:SetTextColor( difficultyColor.r, difficultyColor.g, difficultyColor.b );
-
-				totalHeight = totalHeight + button.Text:GetHeight();
-				if ( IsQuestHardWatched(questLogIndex) ) then
-					button.Check:Show();
-					button.Check:SetPoint("LEFT", button.Text, button.Text:GetWrappedWidth() + 2, 0);
-				else
-					button.Check:Hide();
-				end
-
-				-- tag. daily icon can be alone or before other icons except for COMPLETED or FAILED
-				local tagID;
-				local questTagID, tagName = GetQuestTagInfo(questID);
-				if ( isComplete and isComplete < 0 ) then
-					tagID = "FAILED";
-				elseif ( isComplete and isComplete > 0 ) then
-					tagID = "COMPLETED";
-				elseif( questTagID and questTagID == QUEST_TAG_ACCOUNT ) then
-					local factionGroup = GetQuestFactionGroup(questID);
-					if( factionGroup ) then
-						tagID = "ALLIANCE";
-						if ( factionGroup == LE_QUEST_FACTION_HORDE ) then
-							tagID = "HORDE";
-						end
-					else
-						tagID = QUEST_TAG_ACCOUNT;
-					end
-				elseif( frequency == LE_QUEST_FREQUENCY_DAILY and (not isComplete or isComplete == 0) ) then
-					tagID = "DAILY";
-				elseif( frequency == LE_QUEST_FREQUENCY_WEEKLY and (not isComplete or isComplete == 0) )then
-					tagID = "WEEKLY";
-				elseif( questTagID ) then
-					tagID = questTagID;
-				end
-
-				if ( tagID ) then
-					local tagCoords = QUEST_TAG_TCOORDS[tagID];
-					if( tagCoords ) then
-						button.TagTexture:SetTexCoord( unpack(tagCoords) );
-						button.TagTexture:Show();
-					else
-						button.TagTexture:Hide();
-					end
-				else
-					button.TagTexture:Hide();
-				end
-
-				-- POI/objectives
-				local requiredMoney = GetQuestLogRequiredMoney(questLogIndex);
-				local numObjectives = GetNumQuestLeaderBoards(questLogIndex);
-				-- complete?
-				if ( isComplete and isComplete < 0 ) then
-					isComplete = false;
-				elseif ( numObjectives == 0 and playerMoney >= requiredMoney and not startEvent) then
-					isComplete = true;
-				end
-				-- objectives
-				if ( isComplete ) then
-					objectiveIndex = objectiveIndex + 1;
-					local objectiveFrame = QuestLog_GetObjectiveFrame(objectiveIndex);
-					objectiveFrame.questID = questID;
-					objectiveFrame:Show();
-					local completionText = GetQuestLogCompletionText(questLogIndex) or QUEST_WATCH_QUEST_READY;
-					objectiveFrame.Text:SetText(completionText);
-					local height = objectiveFrame.Text:GetStringHeight();
-					objectiveFrame:SetHeight(height);
-					objectiveFrame:SetPoint("TOPLEFT", button.Text, "BOTTOMLEFT", 0, -3);
-					totalHeight = totalHeight + height + 3;
-				else
-					local prevObjective;
-					for i = 1, numObjectives do
-						local text, objectiveType, finished = GetQuestLogLeaderBoard(i, questLogIndex);
-						if ( text and not finished ) then
-							objectiveIndex = objectiveIndex + 1;
-							local objectiveFrame = QuestLog_GetObjectiveFrame(objectiveIndex);
-							objectiveFrame.questID = questID;
-							objectiveFrame:Show();
-							objectiveFrame.Text:SetText(text);
-							local height = objectiveFrame.Text:GetStringHeight();
-							objectiveFrame:SetHeight(height);
-							if ( prevObjective ) then
-								objectiveFrame:SetPoint("TOPLEFT", prevObjective, "BOTTOMLEFT", 0, -2);
-								height = height + 2;
-							else
-								objectiveFrame:SetPoint("TOPLEFT", button.Text, "BOTTOMLEFT", 0, -3);
-								height = height + 3;
-							end
-							totalHeight = totalHeight + height;
-							prevObjective = objectiveFrame;
-						end
-					end
-					if ( requiredMoney > playerMoney ) then
-						objectiveIndex = objectiveIndex + 1;
-						local objectiveFrame = QuestLog_GetObjectiveFrame(objectiveIndex);
-						objectiveFrame.questID = questID;
-						objectiveFrame:Show();
-						objectiveFrame.Text:SetText(GetMoneyString(playerMoney).." / "..GetMoneyString(requiredMoney));
-						local height = objectiveFrame.Text:GetStringHeight();
-						objectiveFrame:SetHeight(height);
-						if ( prevObjective ) then
-							objectiveFrame:SetPoint("TOPLEFT", prevObjective, "BOTTOMLEFT", 0, -2);
-							height = height + 2;
-						else
-							objectiveFrame:SetPoint("TOPLEFT", button.Text, "BOTTOMLEFT", 0, -3);
-							height = height + 3;
-						end
-						totalHeight = totalHeight + height;
-					end
-				end
-				-- POI
-				if ( hasLocalPOI and showPOIs ) then
-					local poiButton;
-					if ( isComplete ) then
-						poiButton = QuestPOI_GetButton(QuestScrollFrame.Contents, questID, "normal", nil);
-					else
-						for i = 1, #poiTable do
-							if ( poiTable[i] == questID ) then
-								poiButton = QuestPOI_GetButton(QuestScrollFrame.Contents, questID, "numeric", i);
-								break;
-							end
-						end
-					end
-					if ( poiButton ) then
-						poiButton:SetPoint("TOPLEFT", button, 6, -4);
-						poiButton:SetFrameLevel(poiFrameLevel);
-						poiButton.parent = button;
-					end
-					-- extra room because of POI icon
-					totalHeight = totalHeight + 6;
-					button.Text:SetPoint("TOPLEFT", 31, -8);
-				else
-					button.Text:SetPoint("TOPLEFT", 31, -4);
-				end
-
-				button:SetHeight(totalHeight);
-				button.questLogIndex = questLogIndex;
-				button:ClearAllPoints();
-				if ( prevButton ) then
-					button:SetPoint("TOPLEFT", prevButton, "BOTTOMLEFT", 0, 0);
-				else
-					button:SetPoint("TOPLEFT", 1, -6);
-				end
-				button:Show();
-				prevButton = button;
+				prevButton = QuestLogQuests_AddQuestButton(prevButton, questLogIndex, poiTable, title, level, suggestedGroup, isHeader, isCollapsed, isComplete, frequency, questID, startEvent, displayQuestID, isOnMap, hasLocalPOI, isTask, isBounty, isStory, isHidden, isScaling);
 			end
 		end
 	end
 
 	-- background
-	if ( titleIndex == 0 and noHeaders ) then
+	if ( titleFramePool:GetNumActive() == 0 and noHeaders ) then
 		QuestScrollFrame.Background:SetAtlas("NoQuestsBackground", true);
 	else
 		QuestScrollFrame.Background:SetAtlas("QuestLogBackground", true);
@@ -735,15 +728,6 @@ function QuestLogQuests_Update(poiTable)
 	QuestPOI_SelectButtonByQuestID(QuestScrollFrame.Contents, GetSuperTrackedQuestID());
 
 	-- clean up
-	for i = headerIndex + 1, #QuestMapFrame.QuestsFrame.Contents.Headers do
-		QuestMapFrame.QuestsFrame.Contents.Headers[i]:Hide();
-	end
-	for i = titleIndex + 1, #QuestMapFrame.QuestsFrame.Contents.Titles do
-		QuestMapFrame.QuestsFrame.Contents.Titles[i]:Hide();
-	end
-	for i = objectiveIndex + 1, #OBJECTIVE_FRAMES do
-		OBJECTIVE_FRAMES[i]:Hide();
-	end
 	QuestPOI_HideUnusedButtons(QuestScrollFrame.Contents);
 end
 
@@ -789,7 +773,8 @@ function QuestMapLogTitleButton_OnEnter(self)
 		_, difficultyHighlightColor = QuestDifficultyColors["header"];
 	end
 	self.Text:SetTextColor( difficultyHighlightColor.r, difficultyHighlightColor.g, difficultyHighlightColor.b );
-	for _, line in pairs(OBJECTIVE_FRAMES) do
+
+	for line in objectiveFramePool:EnumerateActive() do
 		if ( line.questID == self.questID ) then
 			line.Text:SetTextColor(1, 1, 1);
 		end
@@ -798,8 +783,7 @@ function QuestMapLogTitleButton_OnEnter(self)
 	if ( not IsQuestComplete(self.questID) ) then
 		WorldMapBlobFrame:DrawBlob(self.questID, true);
 	end
-
-
+	
 	GameTooltip:ClearAllPoints();
 	GameTooltip:SetPoint("TOPLEFT", self, "TOPRIGHT", 34, 0);
 	GameTooltip:SetOwner(self, "ANCHOR_PRESERVE");
@@ -916,7 +900,7 @@ function QuestMapLogTitleButton_OnLeave(self)
 		difficultyColor = QuestDifficultyColors["header"];
 	end
 	self.Text:SetTextColor( difficultyColor.r, difficultyColor.g, difficultyColor.b );
-	for _, line in pairs(OBJECTIVE_FRAMES) do
+	for line in objectiveFramePool:EnumerateActive() do
 		if ( line.questID == self.questID ) then
 			line.Text:SetTextColor(0.8, 0.8, 0.8);
 		end

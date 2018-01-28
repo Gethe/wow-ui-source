@@ -86,7 +86,7 @@ function OverrideActionBar_OnEvent(self, event, ...)
 	elseif ( event == "UNIT_ENTERED_VEHICLE" ) then
 		OverrideActionBar_CalcSize();
 	elseif ( event == "UNIT_ENTERING_VEHICLE" ) then
-		self.HasExit, self.HasPitch = select(8, ...);
+		self.HasExit, self.HasPitch = select(6, ...);
 	end
 end
 
@@ -147,13 +147,13 @@ end
 
 
 function OverrideActionBar_GetMicroButtonAnchor()
-	local x, y = 542, 41;
+	local x, y = 548, 43;
 	if OverrideActionBar.HasExit and OverrideActionBar.HasPitch then
-		x = 625;
+		x = 631;
 	elseif OverrideActionBar.HasPitch then
-		x = 629;
+		x = 635;
 	elseif OverrideActionBar.HasExit then
-		x = 537;
+		x = 543;
 	end
 	return x,y
 end

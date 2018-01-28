@@ -900,9 +900,9 @@ end
 function ChannelPulloutRoster_OnLoad (self)
 	self:RegisterEvent("VARIABLES_LOADED")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
-	self:RegisterEvent("VOICE_SESSIONS_UPDATE");
+	--self:RegisterEvent("VOICE_SESSIONS_UPDATE");
 	self:RegisterEvent("CHANNEL_ROSTER_UPDATE");
-	self:RegisterEvent("VOICE_CHANNEL_STATUS_UPDATE");
+	--self:RegisterEvent("VOICE_CHANNEL_STATUS_UPDATE");
 	self:SetScript("OnEvent", ChannelPulloutRoster_OnEvent);
 	self.members = {};
 	self.scroll = _G[self:GetName() .. "Scroll"];

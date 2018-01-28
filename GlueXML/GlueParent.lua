@@ -56,14 +56,11 @@ function GlueParent_OnLoad(self)
 	UIParent = self;
 
 	self:RegisterEvent("FRAMES_LOADED");
-	self:RegisterEvent("ACCOUNT_MESSAGES_BODY_LOADED");
 	self:RegisterEvent("LOGIN_STATE_CHANGED");
-	self:RegisterEvent("LOGIN_FAILED");
 	self:RegisterEvent("OPEN_STATUS_DIALOG");
 	self:RegisterEvent("REALM_LIST_UPDATED");
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
 	self:RegisterEvent("LUA_WARNING");
-	self:RegisterEvent("CONFIGURATION_WARNING");
 	self:RegisterEvent("SUBSCRIPTION_CHANGED_KICK_IMMINENT");
 
 	OnDisplaySizeChanged(self);
@@ -510,7 +507,9 @@ local function UpdateGlueTag()
 
 	elseif ( currentScreen == "charcreate" ) then
 		local classInfo = C_CharacterCreation.GetSelectedClass();
-		class = classInfo.fileName;
+		if (classInfo) then
+			class = classInfo.fileName;
+		end
 		local raceID = C_CharacterCreation.GetSelectedRace();
 		race = C_CharacterCreation.GetNameForRace(raceID);
 		faction = C_CharacterCreation.GetFactionForRace(raceID);

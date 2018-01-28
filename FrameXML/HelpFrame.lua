@@ -144,9 +144,6 @@ local BROWSER_TOOLTIP_BUTTON_WIDTH = 150;
 function HelpFrame_OnLoad(self)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("UPDATE_GM_STATUS");
-	self:RegisterEvent("UPDATE_TICKET");
-	self:RegisterEvent("GMSURVEY_DISPLAY");
-	self:RegisterEvent("GMRESPONSE_RECEIVED");
 	self:RegisterEvent("QUICK_TICKET_SYSTEM_STATUS");
 	self:RegisterEvent("QUICK_TICKET_THROTTLE_CHANGED");
 	self:RegisterEvent("SIMPLE_BROWSER_WEB_PROXY_FAILED");
@@ -205,44 +202,6 @@ function HelpFrame_OnEvent(self, event, ...)
 				StaticPopup_Show("HELP_TICKET_QUEUE_DISABLED");
 			end
 		end
-	elseif ( event == "GMSURVEY_DISPLAY" ) then
-		-- If there's a survey to display then fill out info and return
-		TicketStatusTitleText:SetText(CHOSEN_FOR_GMSURVEY);
-		TicketStatusTime:Hide();
-		TicketStatusFrame:SetHeight(TicketStatusTitleText:GetHeight() + 20);
-		TicketStatusFrame:Show();
-		TicketStatusFrame.hasGMSurvey = true;
-		haveResponse = false;
-		haveTicket = false;
-		UIFrameFlash(TicketStatusFrameIcon, 0.75, 0.75, 20);
-	elseif ( event == "UPDATE_TICKET" ) then
-		local category, ticketDescription = ...;
-		-- If there are args then the player has a ticket
-		if ( category and ticketDescription ) then
-			-- Has an open ticket
-			haveTicket = true;
-		else
-			-- the player does not have a ticket
-			haveTicket = false;
-			haveResponse = false;
-			if ( not TicketStatusFrame.hasGMSurvey and not TicketStatusFrame.hasWebTicket ) then
-				TicketStatusFrame:Hide();
-			end
-		end
-	elseif ( event == "GMRESPONSE_RECEIVED" ) then
-		local ticketDescription, response = ...;
-
-		haveResponse = true;
-		-- i know this is a little confusing since you can have a ticket while you have a response, but having a response
-		-- basically implies that you can't make a *new* ticket until you deal with the response...maybe it should be
-		-- called haveNewTicket but that would probably be even more confusing
-		haveTicket = false;
-
-		TicketStatusTitleText:SetText(GM_RESPONSE_ALERT);
-		TicketStatusTime:SetText("");
-		TicketStatusTime:Hide();
-		TicketStatusFrame:Show();
-		TicketStatusFrame.hasGMSurvey = false;
 	elseif ( event == "QUICK_TICKET_SYSTEM_STATUS" or event == "QUICK_TICKET_THROTTLE_CHANGED" ) then
 		HelpFrame_UpdateQuickTicketSystemStatus();
 	elseif ( event == "SIMPLE_BROWSER_WEB_PROXY_FAILED" ) then
@@ -543,68 +502,6 @@ function HelpOpenTicketButton_OnUpdate(self, elapsed)
 	end
 end
 
-function HelpOpenTicketButton_OnEvent(self, event, ...)
-	if ( event == "UPDATE_TICKET" ) then
-		local category, ticketDescription, ticketOpenTime, oldestTicketTime, updateTime, assignedToGM, openedByGM, waitTimeOverrideMessage, waitTimeOverrideMinutes = ...;
-		-- ticketOpenTime,   time_t that this ticket was created
-		-- oldestTicketTime, time_t of the oldest unassigned ticket in the region.
-		-- updateTime,       age in seconds (freshness) of our ticket wait time estimates from the GM dept
-		if ( category and (not GMChatStatusFrame or not GMChatStatusFrame:IsShown()) ) then
-			self:Show();
-			self.titleText = TICKET_STATUS;
-			local statusText;
-			self.ticketTimer = nil;
-			if ( openedByGM == GMTICKET_OPENEDBYGM_STATUS_OPENED ) then
-				-- if ticket has been opened by a gm
-				if ( assignedToGM == GMTICKET_ASSIGNEDTOGM_STATUS_ESCALATED ) then
-					statusText = GM_TICKET_ESCALATED;
-				else
-					statusText = GM_TICKET_SERVICE_SOON;
-				end
-			else
-				local estimatedWaitTime = (oldestTicketTime - ticketOpenTime);
-				if ( estimatedWaitTime < 0 ) then
-					estimatedWaitTime = 0;
-				end
-
-				if ( #waitTimeOverrideMessage > 0 ) then
-					-- the server is specifing the full message to display to the user
-					if (waitTimeOverrideMinutes) then
-						statusText = format(waitTimeOverrideMessage, SecondsToTime(waitTimeOverrideMinutes*60,1));
-					else
-						statusText = waitTimeOverrideMessage;
-					end
-					estimatedWaitTime = waitTimeOverrideMinutes*60;
-				elseif ( oldestTicketTime < 0 or updateTime < 0 or updateTime > 3600 ) then
-					statusText = GM_TICKET_UNAVAILABLE;
-				elseif ( estimatedWaitTime > 7200 ) then
-					-- if wait is over 2 hrs
-					statusText = GM_TICKET_HIGH_VOLUME;
-				elseif ( estimatedWaitTime > 300 ) then
-					-- if wait is over 5 mins
-					statusText = format(GM_TICKET_WAIT_TIME, SecondsToTime(estimatedWaitTime, 1));
-				else
-					statusText = GM_TICKET_SERVICE_SOON;
-				end
-			end
-			
-			self.statusText = statusText;
-
-			self.haveResponse = false;
-			self.haveTicket = true;
-		else
-			-- the player does not have a ticket
-			self.haveResponse = false;
-			self.haveTicket = false;
-			if ( TicketStatusFrame.hasGMSurvey ) then
-				self:Show();
-			else
-				self:Hide();
-			end
-		end
-	end
-end
-
 function HelpOpenTicketButton_Update()
 	local self = HelpOpenTicketButton;
 	if ( self.haveTicket or TicketStatusFrame.hasGMSurvey ) then
@@ -700,18 +597,11 @@ end
 
 
 function TicketStatusFrame_OnLoad(self)
-	self:RegisterEvent("GMRESPONSE_RECEIVED");
 	self:RegisterEvent("UPDATE_WEB_TICKET");
 end
 
 function TicketStatusFrame_OnEvent(self, event, ...)
-	if ( event == "GMRESPONSE_RECEIVED" ) then
-		if ( not GMChatStatusFrame or not GMChatStatusFrame:IsShown() ) then
-			self:Show();
-		else
-			self:Hide();
-		end
-	elseif (event == "UPDATE_WEB_TICKET") then
+	if (event == "UPDATE_WEB_TICKET") then
 		local hasTicket, numTickets, ticketStatus, caseIndex = ...;
 		self.haveWebSurvey = false;
 		TicketStatusTime:SetText("");
