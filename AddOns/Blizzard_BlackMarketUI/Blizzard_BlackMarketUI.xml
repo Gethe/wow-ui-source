@@ -254,7 +254,7 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Frame parentkey="CurrentBid" name="$parentCurrentBidMoneyFrame" inherits="SmallMoneyFrameTemplate">
+			<Frame parentKey="CurrentBid" name="$parentCurrentBidMoneyFrame" inherits="SmallMoneyFrameTemplate">
 				<Anchors>
 					<Anchor point="RIGHT" x="6" y="-3"/>
 				</Anchors>
@@ -507,7 +507,7 @@
 								self.text:SetText(USABLE_ITEMS);
 							</OnLoad>
 							<OnClick>
-								PlaySound("igMainMenuOptionCheckBoxOn");
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 							</OnClick>
 						</Scripts>
 					</CheckButton>
@@ -525,7 +525,7 @@
 								self:SetChecked(GetCVarBool("auctionDisplayOnCharacter"));
 							</OnShow>
 							<OnClick>
-								PlaySound("igMainMenuOptionCheckBoxOn");
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 								SetCVar("auctionDisplayOnCharacter", self:GetChecked());
 							</OnClick>
 							<OnEnter>
@@ -561,7 +561,7 @@
 						</Layers>
 						<Scripts>
 							<OnClick>
-								PlaySound("igMainMenuOptionCheckBoxOn");
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 							</OnClick>
 						</Scripts>
 						<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
@@ -586,7 +586,7 @@
 						</Layers>
 						<Scripts>
 							<OnClick>
-								PlaySound("igMainMenuOptionCheckBoxOn");
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 							</OnClick>
 						</Scripts>
 						<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
@@ -744,7 +744,7 @@
 							</OnLeave>
 						</Scripts>
 					</Frame>
-					<Frame parentkey="BlackMarketHotItemBidPrice" name="HotItemCurrentBidMoneyFrame" inherits="SmallMoneyFrameTemplate">
+					<Frame parentKey="BlackMarketHotItemBidPrice" name="HotItemCurrentBidMoneyFrame" inherits="SmallMoneyFrameTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.TimeLeft" relativePoint="BOTTOM" x="0" y="-5"/>
 						</Anchors>
@@ -895,7 +895,7 @@
 				</Scripts>
 			</Button>
 			<Frame name="BlackMarketBidPrice" inherits="MoneyInputFrameTemplate">
-				<Size x="100" y="20"/>
+				<Size x="110" y="20"/>
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BidButton" relativePoint="BOTTOMLEFT" x="0" y="0"/>
 				</Anchors>

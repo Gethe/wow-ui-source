@@ -26,9 +26,6 @@ function PromotionFrame_AwaitingPromotion()
 		--We received this info earlier, just display it
 		PromotionFrame_ReceivePromotion(PromotionFrame, unpack(DELAYED_PROMO_INFO));
 		DELAYED_PROMO_INFO = nil;
-	elseif ( self.receivingMsg and IsTrialAccount() and not HasShownTrialPopUp() ) then
-		--We haven't received any info, but we want to wait until we do.
-		PromotionAwaitingFrame:Show();
 	end
 end
 
@@ -89,3 +86,29 @@ function PromotionAwaitingFrame_OnUpdate(self, elapsed)
 	end
 end
 
+function StarterEditionPopUp_OnShow(self)
+	local featureTable = GetExpansionDisplayInfo(LE_EXPANSION_CLASSIC);
+	if featureTable then
+		self.Logo:SetTexture(featureTable.logo);
+	end
+	
+	local features = AccountUpgradePanel_GetBrownBoxFeatures();
+	for i, feature in ipairs(features) do
+		local frame = _G["StarterEditionPopUpFeature"..i];
+		if ( not frame ) then
+			frame = CreateFrame("FRAME", "StarterEditionPopUpFeature"..i, StarterEditionPopUp, "UpgradeFrameFeatureLargeTemplate");
+			frame:SetPoint("TOPLEFT", _G["StarterEditionPopUpFeature"..(i-1)], "BOTTOMLEFT", 0, 0);
+		end
+
+		frame.icon:SetTexture(feature.icon);
+		frame.text:SetText(feature.text);
+	end
+	
+	local index = #features+1;
+	local frame =  _G["StarterEditionPopUpFeature"..index];
+	while ( frame ) do
+		frame:Hide();
+		index = index + 1;
+		frame = _G["StarterEditionPopUpFeature"..index];
+	end
+end

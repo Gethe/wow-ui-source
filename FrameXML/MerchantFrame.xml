@@ -17,7 +17,7 @@
 						<Anchor point="LEFT" relativeTo="$parentSlotTexture" relativePoint="RIGHT" x="-9" y="-18"/>
 					</Anchors>
 				</Texture>
-				<FontString name="$parentName" inherits="GameFontNormalSmall" text="Item Name" justifyH="LEFT">
+				<FontString parentKey="Name" name="$parentName" inherits="GameFontNormalSmall" text="Item Name" justifyH="LEFT">
 					<Size x="100" y="30"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentSlotTexture" relativePoint="RIGHT" x="-5" y="7"/>
@@ -26,7 +26,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button name="$parentItemButton" inherits="ItemButtonTemplate">
+			<Button parentKey="ItemButton" name="$parentItemButton" inherits="ItemButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parent"/>
 				</Anchors>
@@ -71,6 +71,7 @@
 					<OnLoad>
 						SmallMoneyFrame_OnLoad(self);
 						MoneyFrame_SetType(self, "STATIC");
+						MoneyFrame_SetMaxDisplayWidth(self, 100);
 					</OnLoad>
 				</Scripts>
 			</Frame>
@@ -224,7 +225,7 @@
 					<OnLeave function="GameTooltip_Hide"/>
 					<OnClick>
 						RepairAllItems();
-						PlaySound("ITEM_REPAIR");
+						PlaySound(SOUNDKIT.ITEM_REPAIR);
 						GameTooltip:Hide();
 					</OnClick>
 					<OnEvent>
@@ -316,7 +317,7 @@
 						--FIXME!!! Need actual amount of guild money left to withdraw
 						if(CanGuildBankRepair()) then
 							RepairAllItems(true);
-							PlaySound("ITEM_REPAIR");
+							PlaySound(SOUNDKIT.ITEM_REPAIR);
 						end
 						GameTooltip:Hide();
 					</OnClick>
@@ -360,7 +361,7 @@
 								<Anchor point="LEFT" relativeTo="$parentSlotTexture" relativePoint="RIGHT" x="-9" y="-10"/>
 							</Anchors>
 						</Texture>
-						<FontString name="$parentName" inherits="GameFontNormalSmall" text="Item Name" justifyH="LEFT">
+						<FontString parentKey="Name" name="$parentName" inherits="GameFontNormalSmall" text="Item Name" justifyH="LEFT">
 							<Size x="90" y="30"/>
 							<Anchors>
 								<Anchor point="LEFT" relativeTo="$parentSlotTexture" relativePoint="RIGHT" x="-5" y="10"/>
@@ -369,7 +370,7 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Button name="$parentItemButton" inherits="ItemButtonTemplate">
+					<Button parentKey="ItemButton" name="$parentItemButton" inherits="ItemButtonTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parent"/>
 						</Anchors>
@@ -389,7 +390,11 @@
 							<OnEnter>
 								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 								GameTooltip:SetBuybackItem(GetNumBuybackItems());
-								ShowMerchantSellCursor(self:GetID());
+								if (CanAffordMerchantItem(self:GetID()) == false) then
+									SetCursor("BUY_ERROR_CURSOR");
+								else
+									SetCursor("BUY_CURSOR");
+								end
 							</OnEnter>
 							<OnLeave function="GameTooltip_HideResetCursor"/>
 						</Scripts>
@@ -538,28 +543,7 @@
 			<OnLoad function="MerchantFrame_OnLoad"/>
 			<OnShow function="MerchantFrame_OnShow"/>
 			<OnEvent function="MerchantFrame_OnEvent"/>
-			<OnUpdate>
-				if ( self.update == true ) then
-					self.update = false;
-					if ( self:IsVisible() ) then
-						MerchantFrame_Update();
-					end
-				end
-				if ( MerchantFrame.itemHover ) then
-					if ( IsModifiedClick("DRESSUP") ) then
-						ShowInspectCursor();
-					else
-						ShowMerchantSellCursor(MerchantFrame.itemHover);
-					end
-				end
-				if ( MerchantRepairItemButton:IsShown() ) then
-					if ( InRepairMode() ) then
-						MerchantRepairItemButton:LockHighlight();
-					else
-						MerchantRepairItemButton:UnlockHighlight();
-					end
-				end
-			</OnUpdate>
+			<OnUpdate function="MerchantFrame_OnUpdate"/>
 			<OnMouseUp>
 				if ( MerchantFrame.refundItem ) then
 					if ( ContainerFrame_GetExtendedPriceString(MerchantFrame.refundItem, MerchantFrame.refundItemEquipped)) then

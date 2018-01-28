@@ -181,7 +181,8 @@
 								</Texture>
 							</Layer>
 							<Layer level="ARTWORK" textureSubLevel="1">
-								<FontString parentKey="ShipmentName" inherits="GameFontNormal">
+								<FontString parentKey="ShipmentName" inherits="GameFontNormal" justifyH="Left">
+									<Size x="240" y="16"/>
 									<Anchors>
 										<Anchor point="TOPLEFT" relativeKey="$parent.$parent.IconBG" relativePoint="TOPLEFT" x="6" y="-6"/>
 									</Anchors>

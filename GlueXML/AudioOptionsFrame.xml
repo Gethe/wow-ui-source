@@ -45,7 +45,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PlaySound("igMainMenuOption");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
 						AudioOptionsFrameDefault_OnClick(self, button);
 					</OnClick>
 				</Scripts>

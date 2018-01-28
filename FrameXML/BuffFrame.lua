@@ -13,6 +13,7 @@ NUM_TEMP_ENCHANT_FRAMES = 3;
 BUFF_BUTTON_HEIGHT = 30;
 BUFF_FRAME_BASE_EXTENT = 13;	-- pixels from the top of the screen to the top edge of the buff frame, needed to calculate extent for UIParentManageFramePositions
 BUFF_HORIZ_SPACING = -5;
+DEFAULT_AURA_DURATION_FONT = "GameFontNormalSmall";
 
 
 DebuffTypeColor = { };
@@ -235,6 +236,18 @@ function AuraButton_OnUpdate(self)
 		timeLeft = timeLeft / self.timeMod;
 	end
 	self.timeLeft = max( timeLeft, 0 );
+	
+	if ( SMALLER_AURA_DURATION_FONT_MIN_THRESHOLD ) then
+		local aboveMinThreshold = self.timeLeft > SMALLER_AURA_DURATION_FONT_MIN_THRESHOLD;
+		local belowMaxThreshold = not SMALLER_AURA_DURATION_FONT_MAX_THRESHOLD or self.timeLeft < SMALLER_AURA_DURATION_FONT_MAX_THRESHOLD;
+		if ( aboveMinThreshold and belowMaxThreshold ) then
+			self.duration:SetFontObject(SMALLER_AURA_DURATION_FONT);
+			self.duration:SetPoint("TOP", self, "BOTTOM", 0, SMALLER_AURA_DURATION_OFFSET_Y);
+		else
+			self.duration:SetFontObject(DEFAULT_AURA_DURATION_FONT);
+			self.duration:SetPoint("TOP", self, "BOTTOM");
+		end
+	end
 
 	if ( BuffFrame.BuffFrameUpdateTime > 0 ) then
 		return;

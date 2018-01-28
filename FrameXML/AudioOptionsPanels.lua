@@ -379,10 +379,6 @@ end
 
 function AudioOptionsVoicePanel_OnEvent (self, event, ...)
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
-		if ( IsVoiceChatAllowedByServer() ) then
-			OptionsFrame_AddCategory(VideoOptionsFrame, self);
-			BlizzardOptionsPanel_OnEvent(self, event, ...);
-		end
 		self:UnregisterEvent(event);
 	end
 end
@@ -399,9 +395,6 @@ function AudioOptionsVoicePanel_OnHide (self)
 	if ( VoiceChatTalkers_CanHide() ) then
 		VoiceChatTalkers_FadeOut();
 	end
-
-	VoiceChat_StopPlayingLoopbackSound();
-	VoiceChat_StopRecordingLoopbackSound();
 end
 
 function AudioOptionsVoicePanelEnableVoice_UpdateControls (value)
@@ -470,8 +463,6 @@ function AudioOptionsVoicePanel_DisableMicrophoneControls ()
 	UIDropDownMenu_DisableDropDown(AudioOptionsVoicePanelInputDeviceDropDown);
 	RecordLoopbackSoundButton:Disable();
 	PlayLoopbackSoundButton:Disable();
-	VoiceChat_StopRecordingLoopbackSound();
-	VoiceChat_StopPlayingLoopbackSound();
 
 	for index in pairs(AudioOptionsVoicePanelFrameMicrophoneList) do
 		_G[index]:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
@@ -815,10 +806,10 @@ function AudioOptionsVoicePanelChatModeDropDown_OnLoad (self)
 
 	self.cvar = "VoiceChatMode";
 
-	local voiceChatMode = BlizzardOptionsPanel_GetCVarSafe(self.cvar);
+	local voiceChatMode = 0;
 
 	self.tooltip = _G["OPTION_TOOLTIP_VOICE_TYPE"..(voiceChatMode+1)];
-	self.defaultValue = BlizzardOptionsPanel_GetCVarDefaultSafe(self.cvar);
+	self.defaultValue = 0;
 	self.value = voiceChatMode;
 	self.newValue = voiceChatMode;
 	self.restart = true;

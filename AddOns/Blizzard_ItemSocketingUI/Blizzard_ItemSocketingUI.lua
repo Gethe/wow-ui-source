@@ -150,7 +150,7 @@ function ItemSocketingFrame_Update()
 	-- Playsound if all sockets are matched 
 	if ( numMatches == numSockets ) then
 		-- Will probably need a new sound
-		PlaySound("MapPing");
+		PlaySound(SOUNDKIT.MAP_PING);
 	end
 
 	-- Position the sockets and show/hide the border graphics

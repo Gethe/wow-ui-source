@@ -140,8 +140,8 @@ function AchievementFrame_OnLoad (self)
 end
 
 function AchievementFrame_OnShow (self)
-	PlaySound("AchievementMenuOpen");
-	AchievementFrameHeaderPoints:SetText(GetTotalAchievementPoints());
+	PlaySound(SOUNDKIT.ACHIEVEMENT_MENU_OPEN);
+	AchievementFrameHeaderPoints:SetText(BreakUpLargeNumbers(GetTotalAchievementPoints()));
 	if ( not AchievementFrame.wasShown ) then
 		AchievementFrame.wasShown = true;
 		AchievementCategoryButton_OnClick(AchievementFrameCategoriesContainerButton1);
@@ -151,7 +151,7 @@ function AchievementFrame_OnShow (self)
 end
 
 function AchievementFrame_OnHide (self)
-	PlaySound("AchievementMenuClose");
+	PlaySound(SOUNDKIT.ACHIEVEMENT_MENU_CLOSE);
 	AchievementFrame_HideSearchPreview();
 	self.searchResults:Hide();
 	self.searchBox:SetText("");
@@ -225,7 +225,7 @@ function AchievementFrame_ToggleView()
 			AchievementFrameGuildEmblemRight:SetVertexColor(0.4, 0.2, 0, 0.5);
 		end
 	end
-	AchievementFrameHeaderPoints:SetText(GetTotalAchievementPoints(IN_GUILD_VIEW));
+	AchievementFrameHeaderPoints:SetText(BreakUpLargeNumbers(GetTotalAchievementPoints(IN_GUILD_VIEW)));
 end
 
 function AchievementFrameBaseTab_OnClick (id)
@@ -794,15 +794,16 @@ function AchievementFrameAchievements_OnEvent (self, event, ...)
 		updateTrackedAchievements(GetTrackedAchievements());
 	elseif ( event == "ACHIEVEMENT_EARNED" ) then
 		local achievementID = ...;
+		AchievementFrameCategories_GetCategoryList(ACHIEVEMENTUI_CATEGORIES);
 		AchievementFrameCategories_Update();
 		AchievementFrameCategories_UpdateTooltip();
 		-- This has to happen before AchievementFrameAchievements_ForceUpdate() in order to achieve the behavior we want, since it clears the selection for progressive achievements.
 		local selection = AchievementFrameAchievements.selection;
 		AchievementFrameAchievements_ForceUpdate();
-		if ( AchievementFrameAchievementsContainer:IsShown() and selection == achievementID ) then
+		if ( AchievementFrameAchievementsContainer:IsVisible() and selection == achievementID ) then
 			AchievementFrame_SelectAchievement(selection, true);
 		end
-		AchievementFrameHeaderPoints:SetText(GetTotalAchievementPoints(IN_GUILD_VIEW));
+		AchievementFrameHeaderPoints:SetText(BreakUpLargeNumbers(GetTotalAchievementPoints(IN_GUILD_VIEW)));
 
 	elseif ( event == "CRITERIA_UPDATE" ) then
 		if ( AchievementFrameAchievements.selection ) then
@@ -1317,7 +1318,7 @@ function AchievementButton_DisplayAchievement (button, category, achievement, se
 		button.icon.texture:SetTexture(icon);
 		if ( completed or wasEarnedByMe ) then
 			button.completed = true;
-			button.dateCompleted:SetText(string.format(SHORTDATE, day, month, year));
+			button.dateCompleted:SetText(FormatShortDate(day, month, year));
 			button.dateCompleted:Show();
 			if ( button.saturatedStyle ~= saturatedStyle ) then
 				button:Saturate();
@@ -1685,7 +1686,7 @@ function AchievementObjectives_DisplayProgressiveAchievement (objectivesFrame, i
 		miniAchievement.name = achievementName;
 		miniAchievement.desc = description;
 		if ( month ) then
-			miniAchievement.date = string.format(SHORTDATE, day, month, year);
+			miniAchievement.date = FormatShortDate(day, month, year);
 		end
 		i = index;
 	end
@@ -1832,7 +1833,7 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id, renderOffSc
 			local id, achievementName, points, achievementCompleted, month, day, year, description, flags, iconpath = GetAchievementInfo(assetID);
 			
 			if ( month ) then
-				metaCriteria.date = string.format(SHORTDATE, day, month, year);
+				metaCriteria.date = FormatShortDate(day, month, year)
 			else
 				metaCriteria.date = nil;
 			end
@@ -2352,7 +2353,7 @@ function AchievementFrameSummary_UpdateAchievements(...)
 			button.id = id;
 
 			if ( completed ) then
-				button.dateCompleted:SetText(string.format(SHORTDATE, day, month, year));
+				button.dateCompleted:SetText(FormatShortDate(day, month, year));
 			else
 				button.dateCompleted:SetText("");
 			end
@@ -2391,7 +2392,7 @@ function AchievementFrameSummary_UpdateAchievements(...)
 					button.icon.texture:SetTexture(icon);
 					button.id = id;
 					if ( month ) then
-						button.dateCompleted:SetText(string.format(SHORTDATE, day, month, year));
+						button.dateCompleted:SetText(FormatShortDate(day, month, year));
 					else
 						button.dateCompleted:SetText("");
 					end
@@ -2416,7 +2417,7 @@ function AchievementFrameSummaryCategoriesStatusBar_Update()
 	local total, completed = GetNumCompletedAchievements(IN_GUILD_VIEW);
 	AchievementFrameSummaryCategoriesStatusBar:SetMinMaxValues(0, total);
 	AchievementFrameSummaryCategoriesStatusBar:SetValue(completed);
-	AchievementFrameSummaryCategoriesStatusBarText:SetText(completed.."/"..total);
+	AchievementFrameSummaryCategoriesStatusBarText:SetText(BreakUpLargeNumbers(completed).."/"..BreakUpLargeNumbers(total));
 end
 
 function AchievementFrameSummaryAchievement_OnLoad(self)
@@ -2593,7 +2594,7 @@ function AchievementFrame_SelectAchievement(id, forceSelect, isComparison)
 			if ( button.categoryID == category ) then
 				found = true;
 			end
-			if ( button.categoryID == category and math.ceil(button:GetBottom()) >= math.ceil(AchievementFrameAchievementsContainer:GetBottom())) then
+			if ( button.categoryID == category and math.ceil(button:GetBottom()) >= math.ceil(AchievementFrameAchievementsContainerScrollChild:GetBottom())) then
 				shown = true;
 			end
 		end
@@ -2607,27 +2608,30 @@ function AchievementFrame_SelectAchievement(id, forceSelect, isComparison)
 				else
 					shown = true;
 				end
-			else
+			elseif AchievementFrameCategoriesContainerScrollBar:IsVisible() then
 				HybridScrollFrame_OnMouseWheel(AchievementFrameCategoriesContainer, -1);
+			else
+				break;
 			end			
 		end
 	end		
 	
-	local container, scrollBar = AchievementFrameAchievementsContainer, AchievementFrameAchievementsContainerScrollBar;
+	local container, child, scrollBar = AchievementFrameAchievementsContainer, AchievementFrameAchievementsContainerScrollChild, AchievementFrameAchievementsContainerScrollBar;
 	if ( isComparison ) then
 		container = AchievementFrameComparisonContainer;
+		child = AchievementFrameComparisonContainerScrollChild;
 		scrollBar = AchievementFrameComparisonContainerScrollBar;
 	end
 	
 	achievementFunctions.clearFunc();
-	achievementFunctions.updateFunc();
 	scrollBar:SetValue(0);
+	achievementFunctions.updateFunc();
 	
 	local shown = false;
 	local previousScrollValue;
 	while ( not shown ) do
 		for _, button in next, container.buttons do
-			if ( button.id == id and math.ceil(button:GetTop()) >= math.ceil(container:GetBottom())) then
+			if ( button.id == id and math.ceil(button:GetTop()) >= math.ceil(child:GetBottom())) then
 				if ( not isComparison ) then
 					-- The "True" here ignores modifiers, so you don't accidentally track or link this achievement. :P
 					AchievementButton_OnClick(button, nil, nil, true);
@@ -2672,7 +2676,7 @@ function AchievementFrameAchievements_FindSelection()
 				return;
 			end
 		end		
-		if ( AchievementFrameAchievementsContainerScrollBar:GetValue() == maxVal ) then		
+		if ( not AchievementFrameAchievementsContainerScrollBar:IsVisible() or AchievementFrameAchievementsContainerScrollBar:GetValue() == maxVal ) then		
 			return;
 		else
 			newHeight = newHeight + scrollHeight;
@@ -2721,7 +2725,7 @@ end
 function AchievementFrame_SelectStatisticByAchievementID(achievementID, isComparison)
 	if ( isComparison ) then
 		AchievementFrameTab_OnClick = AchievementFrameComparisonTab_OnClick;
-		AchievementFrameComparisonStats:Show();
+		AchievementFrameComparisonStatsContainer:Show();
 		AchievementFrameComparisonSummary:Hide();
 	else
 		AchievementFrameTab_OnClick = AchievementFrameBaseTab_OnClick;
@@ -2764,7 +2768,7 @@ function AchievementFrame_SelectStatisticByAchievementID(achievementID, isCompar
 	local shown = false;
 	while ( not shown ) do
 		for _, button in next, AchievementFrameCategoriesContainer.buttons do
-			if ( button.categoryID == category and math.ceil(button:GetBottom()) >= math.ceil(AchievementFrameAchievementsContainer:GetBottom())) then
+			if ( button.categoryID == category and math.ceil(button:GetBottom()) >= math.ceil(AchievementFrameAchievementsContainerScrollChild:GetBottom())) then
 				shown = true;
 			end
 		end
@@ -2773,15 +2777,18 @@ function AchievementFrame_SelectStatisticByAchievementID(achievementID, isCompar
 			local _, maxVal = AchievementFrameCategoriesContainerScrollBar:GetMinMaxValues();
 			if ( AchievementFrameCategoriesContainerScrollBar:GetValue() == maxVal ) then
 				assert(false)
-			else
+			elseif AchievementFrameCategoriesContainerScrollBar:IsVisible() then
 				HybridScrollFrame_OnMouseWheel(AchievementFrameCategoriesContainer, -1);
+			else
+				break;
 			end			
 		end
 	end		
 	
-	local container, scrollBar = AchievementFrameStatsContainer, AchievementFrameStatsContainerScrollBar;
+	local container, child, scrollBar = AchievementFrameStatsContainer, AchievementFrameStatsContainerScrollChild, AchievementFrameStatsContainerScrollBar;
 	if ( isComparison ) then
 		container = AchievementFrameComparisonStatsContainer;
+		child = AchievementFrameComparisonStatsContainerScrollChild;
 		scrollBar = AchievementFrameComparisonStatsContainerScrollBar;
 	end
 	
@@ -2791,7 +2798,7 @@ function AchievementFrame_SelectStatisticByAchievementID(achievementID, isCompar
 	local shown = false;
 	while ( not shown ) do
 		for _, button in next, container.buttons do
-			if ( button.id == achievementID and math.ceil(button:GetBottom()) >= math.ceil(container:GetBottom())) then
+			if ( button.id == achievementID and math.ceil(button:GetBottom()) >= math.ceil(child:GetBottom())) then
 				if ( not isComparison ) then
 					AchievementStatButton_OnClick(button);
 				end
@@ -2808,8 +2815,10 @@ function AchievementFrame_SelectStatisticByAchievementID(achievementID, isCompar
 			local _, maxVal = scrollBar:GetMinMaxValues();
 			if ( scrollBar:GetValue() == maxVal ) then
 				assert(false)
-			else
+			elseif scrollBar:IsVisible() then
 				HybridScrollFrame_OnMouseWheel(container, -1);
+			else
+				break;
 			end			
 		end
 	end
@@ -3017,7 +3026,7 @@ function AchievementFrameComparison_DisplayAchievement (button, category, index)
 		
 		if ( completed ) then
 			player.completed = true;
-			player.dateCompleted:SetText(string.format(SHORTDATE, day, month, year));
+			player.dateCompleted:SetText(FormatShortDate(day, month, year));
 			player.dateCompleted:Show();
 			if ( player.saturatedStyle ~= saturatedStyle ) then
 				player:Saturate();
@@ -3030,7 +3039,7 @@ function AchievementFrameComparison_DisplayAchievement (button, category, index)
 		
 		if ( friendCompleted ) then
 			friend.completed = true;
-			friend.status:SetText(string.format(SHORTDATE, friendDay, friendMonth, friendYear));
+			friend.status:SetText(FormatShortDate(friendDay, friendMonth, friendYear));
 			if ( friend.saturatedStyle ~= saturatedStyle ) then
 				friend:Saturate();
 			end

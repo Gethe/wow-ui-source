@@ -11,7 +11,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="1">
-				<Texture parentKey="AlphaIconOverlay" textureSubLevel="1">
+				<Texture parentKey="AlphaIconOverlay">
 					<Color a="1" r="0.0" g="0.0" b="0.0"/>
 				</Texture>
 			</Layer>
@@ -105,7 +105,7 @@
 		<Color r="0.27" g="0.27" b="0.27"/>
 	</FontString>
 	<Frame name="OrderHallTalentFrame" inherits="PortraitFrameTemplate" toplevel="true" enableMouse="true" parent="UIParent" hidden="true" mixin="OrderHallTalentFrameMixin">
-		<Size x="336" y="450"/>
+		<Size x="336" y="566"/>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnShow method="OnShow"/>
@@ -117,8 +117,8 @@
 		</KeyValues>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="ClassBackground">
-					<Size x="322" y="382"/>
+				<Texture parentKey="Background">
+					<Size x="322" y="498"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="OrderHallTalentFrameBg" x="4" y="-40"/>
 					</Anchors>
@@ -167,6 +167,16 @@
 						<Anchor point="CENTER" relativeKey="$parent.Tick5" relativePoint="CENTER" y="-58"/>
 					</Anchors>
 				</FontString>
+				<FontString parentKey="Tick7" inherits="OrderHallTalentFrameTick" text="VII">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Tick6" relativePoint="CENTER" y="-58"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Tick8" inherits="OrderHallTalentFrameTick" text="VIII">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Tick7" relativePoint="CENTER" y="-58"/>
+					</Anchors>
+				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -187,12 +197,25 @@
 				</Scripts>
 			</Frame>
 			<Frame name="ClassHallTalentInset" inherits="InsetFrameTemplate" parentKey="LeftInset" useParentLevel="true">
-				<Size x="328" y="388"/>
+				<Size x="328" y="504"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="3" y="-58"/>
 					<Anchor point="BOTTOMRIGHT" relativeTo="TradeFrame" relativePoint="TOPLEFT" x="338" y="-352"/>
 				</Anchors>
 			</Frame>
+			<Button parentKey="BackButton" inherits="UIPanelButtonTemplate" text="BACK">
+				<Size x="86" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-4" y="4"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+						ReopenInteraction();
+					</OnClick>
+				</Scripts>
+			</Button>
+
 		</Frames>
 	</Frame>
 </Ui>

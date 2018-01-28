@@ -370,6 +370,7 @@ end
 function EquipmentFlyout_DisplayButton(button, paperDollItemSlot)
 	local location = button.location;
 	if ( not location ) then
+		button.UpgradeIcon:Hide();
 		return;
 	end
 	if ( location >= EQUIPMENTFLYOUT_FIRST_SPECIAL_LOCATION ) then
@@ -377,8 +378,8 @@ function EquipmentFlyout_DisplayButton(button, paperDollItemSlot)
 		return;
 	end
 
-	local id, name, textureName, count, durability, maxDurability, invType, locked, start, duration, enable, setTooltip, quality = EquipmentManager_GetItemInfoByLocation(location);
-
+	local id, name, textureName, count, durability, maxDurability, invType, locked, start, duration, enable, setTooltip, quality, isUpgrade = EquipmentManager_GetItemInfoByLocation(location);
+	button.UpgradeIcon:SetShown(isUpgrade);
 	local broken = ( maxDurability and durability == 0 );
 	if ( textureName ) then
 		SetItemButtonTexture(button, textureName);
@@ -394,8 +395,9 @@ function EquipmentFlyout_DisplayButton(button, paperDollItemSlot)
 		SetItemButtonQuality(button, quality);
 
 		CooldownFrame_Set(button.cooldown, start, duration, enable);
-
-		button.UpdateTooltip = function () GameTooltip:SetOwner(EquipmentFlyoutFrame.buttonFrame, "ANCHOR_RIGHT", 6, -EquipmentFlyoutFrame.buttonFrame:GetHeight() - 6); setTooltip(); end;
+		
+		button.UpdateTooltip = function() EquipmentFlyoutButton_UpdateTooltip(button, GameTooltip); end
+		button.setTooltip = setTooltip;
 		if ( button:IsMouseOver() ) then
 			button.UpdateTooltip();
 		end
@@ -415,6 +417,7 @@ end
 
 function EquipmentFlyout_DisplaySpecialButton(button, paperDollItemSlot)
 	local location = button.location;
+	button.UpgradeIcon:Hide();
 	if ( location == EQUIPMENTFLYOUT_IGNORESLOT_LOCATION ) then
 		SetItemButtonTexture(button, "Interface\\PaperDollInfoFrame\\UI-GearManager-LeaveItem-Opaque");
 		SetItemButtonCount(button, nil);
@@ -534,7 +537,7 @@ function EquipmentFlyoutPopoutButton_ShowAll()
 end
 
 function EquipmentFlyoutPopoutButton_OnClick(self)
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	if ( self.flyoutLocked ) then
 		self.flyoutLocked = false;
 		EquipmentFlyoutFrame:Hide();
@@ -564,4 +567,22 @@ function EquipmentFlyoutPopoutButton_SetReversed(self, isReversed)
 			self:GetHighlightTexture():SetTexCoord(0.15625, 1, 0.84375, 1, 0.15625, 0.5, 0.84375, 0.5);
 		end
 	end
+end
+
+function EquipmentFlyoutButton_UpdateTooltipAnchors(self, tooltip)
+	local x = self:GetRight();
+	local anchorFromLeft = x < GetScreenWidth() / 2;
+
+	if ( anchorFromLeft ) then
+		tooltip:SetAnchorType("ANCHOR_RIGHT");
+	else
+		tooltip:SetAnchorType("ANCHOR_LEFT");
+	end
+end
+
+function EquipmentFlyoutButton_UpdateTooltip(self, tooltip)
+	tooltip:SetOwner(self, "ANCHOR_NONE");
+	EquipmentFlyoutButton_UpdateTooltipAnchors(self, tooltip);
+	self.setTooltip();
+	GameTooltip_ShowCompareItem(tooltip);
 end

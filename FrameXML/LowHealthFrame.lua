@@ -77,16 +77,24 @@ function LowHealthFrameMixin:DetermineFlashState()
 		return LOW_HEALTH_FRAME_STATE_DISABLED;
 	end
 
+	if ( CinematicFrame and CinematicFrame:IsShown() ) then
+		return LOW_HEALTH_FRAME_STATE_DISABLED;
+	end
+
+	if ( MovieFrame and MovieFrame:IsShown() ) then
+		return LOW_HEALTH_FRAME_STATE_DISABLED;
+	end
+
 	-- flash if we're in combat and can't see the world
 	if self.inCombat then
-		if GetCVarBool("screenEdgeFlash") and GetUIPanel("fullscreen") and CinematicFrame and not CinematicFrame:IsShown() then
+		if GetCVarBool("screenEdgeFlash") and GetUIPanel("fullscreen") then
 			return LOW_HEALTH_FRAME_STATE_FULLSCREEN;
 		end
 	end
 
 	-- flash if our health is low
 	if self:IsAtLowHealth() then
-		if not GetCVarBool("doNotFlashLowHealthWarning") and not GetUIPanel("fullscreen") and CinematicFrame and not CinematicFrame:IsShown() then
+		if not GetCVarBool("doNotFlashLowHealthWarning") and not GetUIPanel("fullscreen") then
 			return LOW_HEALTH_FRAME_STATE_LOW_HEALTH;
 		end
 	end

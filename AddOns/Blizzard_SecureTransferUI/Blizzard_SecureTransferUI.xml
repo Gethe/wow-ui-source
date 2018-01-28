@@ -1,0 +1,149 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="Blizzard_SecureTransferUIOutbound.lua"/>
+	<Script file="Blizzard_SecureTransferUI.lua"/>
+	<ScopedModifier forbidden="true" scriptsUseGivenEnv="true">
+        <Button name="SecureTransferButtonTemplate" virtual="true">
+			<Size x="40" y="22" />
+			<Layers>
+				<Layer level="BACKGROUND">
+					<Texture parentKey="Left" file="Interface\Buttons\UI-Panel-Button-Up">
+						<Size x="12" y="22" />
+						<Anchors>
+							<Anchor point="TOPLEFT" />
+							<Anchor point="BOTTOMLEFT" />
+						</Anchors>
+						<TexCoords left="0" right="0.09375" top="0" bottom="0.6875" />
+					</Texture>
+					<Texture parentKey="Right" file="Interface\Buttons\UI-Panel-Button-Up">
+						<Size x="12" y="22" />
+						<Anchors>
+							<Anchor point="TOPRIGHT" />
+							<Anchor point="BOTTOMRIGHT" />
+						</Anchors>
+						<TexCoords left="0.53125" right="0.625" top="0" bottom="0.6875" />
+					</Texture>
+					<Texture parentKey="Middle" file="Interface\Buttons\UI-Panel-Button-Up">
+						<Size x="12" y="22" />
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.Left" relativePoint="TOPRIGHT" />
+							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Right" relativePoint="BOTTOMLEFT" />
+						</Anchors>
+						<TexCoords left="0.09375" right="0.53125" top="0" bottom="0.6875" />
+					</Texture>
+				</Layer>
+			</Layers>
+			<Scripts>
+				<OnLoad>
+					if ( not self:IsEnabled() ) then
+						self.Left:SetTexture("Interface\\Buttons\\UI-Panel-Button-Disabled");
+						self.Middle:SetTexture("Interface\\Buttons\\UI-Panel-Button-Disabled");
+						self.Right:SetTexture("Interface\\Buttons\\UI-Panel-Button-Disabled");
+					end
+				</OnLoad>
+				<OnMouseDown>
+					if ( self:IsEnabled() ) then
+						self.Left:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down");
+						self.Middle:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down");
+						self.Right:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down");
+					end
+				</OnMouseDown>
+				<OnMouseUp>
+					if ( self:IsEnabled() ) then
+						self.Left:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
+						self.Middle:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
+						self.Right:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
+					end
+				</OnMouseUp>
+				<OnDisable>
+					self.Left:SetTexture("Interface\\Buttons\\UI-Panel-Button-Disabled");
+					self.Middle:SetTexture("Interface\\Buttons\\UI-Panel-Button-Disabled");
+					self.Right:SetTexture("Interface\\Buttons\\UI-Panel-Button-Disabled");
+				</OnDisable>
+				<OnEnable>
+					self.Left:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
+					self.Middle:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
+					self.Right:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
+				</OnEnable>
+			</Scripts>
+			<ButtonText parentKey="Text" />
+			<NormalFont style="GameFontNormal"/>
+			<HighlightFont style="GameFontHighlight"/>
+			<DisabledFont style="GameFontDisable"/>
+			<HighlightTexture inherits="UIPanelButtonHighlightTexture" />
+		</Button>
+        <Frame name="SecureTransferDialog" parent="UIParent" frameStrata="DIALOG" toplevel="true" enableMouse="true" hidden="true">
+			<Size x="434" y="122" />
+			<Anchors>
+				<Anchor point="TOP" x="0" y="-135"/>
+			</Anchors>
+			<Backdrop edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+				<TileSize>
+					<AbsValue val="32" />
+				</TileSize>
+				<EdgeSize>
+					<AbsValue val="32" />
+				</EdgeSize>
+			</Backdrop>
+			<Layers>
+				<Layer level="BACKGROUND">
+					<Texture>
+						<Anchors>
+							<Anchor point="TOPLEFT" x="5" y="-5" />
+							<Anchor point="BOTTOMRIGHT" x="-5" y="5" />
+						</Anchors>
+						<Color r="0" g="0" b="0" a="1" />
+					</Texture>
+				</Layer>
+				<Layer level="BORDER">
+					<Texture parentKey="CautionIcon" file="Interface\DialogFrame\UI-Dialog-Icon-AlertNew">
+						<Size x="32" y="32"/>
+						<Anchors>
+							<Anchor point="LEFT" x="24" y="0"/>
+						</Anchors>
+					</Texture>
+				</Layer>
+				<Layer level="ARTWORK">
+					<FontString parentKey="Text" inherits="GameFontHighlight">
+						<Size x="320" y="0"/>
+						<Anchors>
+							<Anchor point="TOP" x="0" y="-28"/>
+						</Anchors>
+					</FontString>
+					<FontString parentKey="MoneyLabel" inherits="NumberFontNormal" hidden="true" justifyH="LEFT">
+						<Size x="0" y="0"/>
+						<Anchors>
+							<Anchor point="TOP" relativeKey="$parent.Text" relativePoint="BOTTOM" x="0" y="-8"/>
+						</Anchors>
+					</FontString>
+				</Layer>
+			</Layers>
+			<Frames>
+				<Button parentKey="Button1" inherits="SecureTransferButtonTemplate" text="OKAY" id="1">
+					<Size x="120" y="22"/>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM" x="-8" y="16"/>
+					</Anchors>
+					<Scripts>
+						<OnClick function="SecureTransferDialogButton_OnClick"/>
+					</Scripts>
+				</Button>
+				<Button parentKey="Button2" inherits="SecureTransferButtonTemplate" text="CANCEL" id="2">
+					<Size x="120" y="22"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOM" x="8" y="16"/>
+					</Anchors>
+					<Scripts>
+						<OnClick function="SecureTransferDialogButton_OnClick"/>
+					</Scripts>
+				</Button>
+			</Frames>
+			<Scripts>
+				<OnLoad function="SecureTransferDialog_OnLoad"/>
+				<OnEvent function="SecureTransferDialog_OnEvent"/>
+				<OnShow function="SecureTransferDialog_OnShow"/>
+				<OnHide function="SecureTransferDialog_OnHide"/>
+			</Scripts>
+		</Frame>
+    </ScopedModifier>
+</Ui>

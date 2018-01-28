@@ -1,6 +1,6 @@
 local GARRISON_FOLLOWER_TOOLTIP = {};
          
-function GarrisonFollowerTooltip_Show(garrisonFollowerID, collected, quality, level, xp, levelxp, itemLevel, spec1, ability1, ability2, ability3, ability4, trait1, trait2, trait3, trait4, noAbilityDescriptions, underBiased, tooltipFrame, xpWidth)
+function GarrisonFollowerTooltip_Show(garrisonFollowerID, collected, quality, level, xp, levelxp, itemLevel, spec1, ability1, ability2, ability3, ability4, trait1, trait2, trait3, trait4, noAbilityDescriptions, underBiased, underBiasedReason, tooltipFrame, xpWidth)
 	GARRISON_FOLLOWER_TOOLTIP.garrisonFollowerID = garrisonFollowerID;
 	GARRISON_FOLLOWER_TOOLTIP.followerTypeID = C_Garrison.GetFollowerTypeByID(garrisonFollowerID);
 	GARRISON_FOLLOWER_TOOLTIP.collected = collected;
@@ -25,6 +25,7 @@ function GarrisonFollowerTooltip_Show(garrisonFollowerID, collected, quality, le
 	GARRISON_FOLLOWER_TOOLTIP.isTroop = C_Garrison.GetFollowerIsTroop(garrisonFollowerID);
 	GARRISON_FOLLOWER_TOOLTIP.noAbilityDescriptions = noAbilityDescriptions;
 	GARRISON_FOLLOWER_TOOLTIP.underBiased = underBiased;
+	GARRISON_FOLLOWER_TOOLTIP.underBiasedReason = underBiasedReason;
 
 	if (not tooltipFrame) then
 		if (GARRISON_FOLLOWER_TOOLTIP.followerTypeID == LE_FOLLOWER_TYPE_SHIPYARD_6_2) then

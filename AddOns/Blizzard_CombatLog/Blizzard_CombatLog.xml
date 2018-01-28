@@ -83,7 +83,7 @@
 					</OnLoad>
 					<OnClick>
 						EasyMenu(Blizzard_CombatLog_CreateFilterMenu(), CombatLogDropDown, "cursor", nil, nil, "MENU");
-						PlaySound("UChatScrollButton");
+						PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 					</OnClick>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");

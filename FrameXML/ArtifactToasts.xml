@@ -189,12 +189,12 @@
 				<Alpha childKey="WhiteStarBurst" smoothing="IN" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
 				<Alpha childKey="WhiteStarBurst" startDelay="0.3" smoothing="OUT" duration="0.25" order="1" fromAlpha="1" toAlpha="0"/>
 				<Alpha childKey="GlowLine" startDelay="0.25" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
-				<Scale childKey="GlowLine" startDelay="0.25" smoothing="OUT" duration="0.25" order="1" fromScaleX="0" fromScaleY="1" toScaleX="1" toScaleY="1"/>
+				<Scale childKey="GlowLine" startDelay="0.25" smoothing="OUT" duration="0.25" order="1" fromScaleX="0.001" fromScaleY="1" toScaleX="1" toScaleY="1"/>
 				<Alpha childKey="GlowLineBottom" startDelay="0.25" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
-				<Scale childKey="GlowLineBottom" startDelay="0.25" smoothing="OUT" duration="0.25" order="1" fromScaleX="0" fromScaleY="1" toScaleX="1" toScaleY="1"/>
+				<Scale childKey="GlowLineBottom" startDelay="0.25" smoothing="OUT" duration="0.25" order="1" fromScaleX="0.001" fromScaleY="1" toScaleX="1" toScaleY="1"/>
 				<Translation childKey="GlowLineBottom" startDelay="0.6" smoothing="IN_OUT" duration="0.35" order="1" offsetX="0" offsetY="-77"/>
 				<Alpha childKey="ToastBG" startDelay="0.6" duration="0.35" order="1" fromAlpha="0" toAlpha="1"/>
-				<Scale childKey="ToastBG" startDelay="0.6" smoothing="IN_OUT" duration="0.35" order="1" fromScaleX="1" fromScaleY="0" toScaleX="1" toScaleY="1">
+				<Scale childKey="ToastBG" startDelay="0.6" smoothing="IN_OUT" duration="0.35" order="1" fromScaleX="1" fromScaleY="0.001" toScaleX="1" toScaleY="1">
 					<Origin point="TOP">
 						<Offset x="0" y="0"/>
 					</Origin>
@@ -205,23 +205,23 @@
 				<Alpha childKey="LineBurst1" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
 				<Translation childKey="LineBurst1" smoothing="IN_OUT" duration="0.75" order="1" offsetX="0" offsetY="25"/>
 				<Alpha childKey="LineBurst1" duration="0.75" order="1" fromAlpha="1" toAlpha="0"/>
-				<Scale childKey="LineBurst1" smoothing="IN_OUT" duration="0.25" order="1" fromScaleX="1" fromScaleY="0" toScaleX="1" toScaleY="1"/>
+				<Scale childKey="LineBurst1" smoothing="IN_OUT" duration="0.25" order="1" fromScaleX="1" fromScaleY="0.001" toScaleX="1" toScaleY="1"/>
 				<Alpha childKey="LineBurst2" startDelay="0.2" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
 				<Translation childKey="LineBurst2" startDelay="0.2" smoothing="IN_OUT" duration="0.75" order="1" offsetX="0" offsetY="20"/>
 				<Alpha childKey="LineBurst2" startDelay="0.2" duration="0.75" order="1" fromAlpha="1" toAlpha="0"/>
-				<Scale childKey="LineBurst2" startDelay="0.2" smoothing="IN_OUT" duration="0.25" order="1" fromScaleX="1" fromScaleY="0" toScaleX="1" toScaleY="1"/>
+				<Scale childKey="LineBurst2" startDelay="0.2" smoothing="IN_OUT" duration="0.25" order="1" fromScaleX="1" fromScaleY="0.001" toScaleX="1" toScaleY="1"/>
 				<Alpha childKey="LineBurst3" startDelay="0.15" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
 				<Translation childKey="LineBurst3" startDelay="0.15" smoothing="IN_OUT" duration="0.75" order="1" offsetX="0" offsetY="15"/>
 				<Alpha childKey="LineBurst3" startDelay="0.15" duration="0.75" order="1" fromAlpha="1" toAlpha="0"/>
-				<Scale childKey="LineBurst3" startDelay="0.15" smoothing="IN_OUT" duration="0.25" order="1" fromScaleX="1" fromScaleY="0" toScaleX="1" toScaleY="0.75"/>
+				<Scale childKey="LineBurst3" startDelay="0.15" smoothing="IN_OUT" duration="0.25" order="1" fromScaleX="1" fromScaleY="0.001" toScaleX="1" toScaleY="0.75"/>
 				<Alpha childKey="LineBurst4" startDelay="0.5" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
 				<Translation childKey="LineBurst4" startDelay="0.5" smoothing="IN_OUT" duration="0.75" order="1" offsetX="0" offsetY="15"/>
 				<Alpha childKey="LineBurst4" startDelay="0.5" duration="0.75" order="1" fromAlpha="1" toAlpha="0"/>
-				<Scale childKey="LineBurst4" startDelay="0.5" smoothing="IN_OUT" duration="0.25" order="1" fromScaleX="1" fromScaleY="0" toScaleX="1" toScaleY="0.75"/>
+				<Scale childKey="LineBurst4" startDelay="0.5" smoothing="IN_OUT" duration="0.25" order="1" fromScaleX="1" fromScaleY="0.001" toScaleX="1" toScaleY="0.75"/>
 				<Alpha childKey="LineBurst5" startDelay="0.5" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
 				<Translation childKey="LineBurst5" startDelay="0.5" smoothing="IN_OUT" duration="0.75" order="1" offsetX="0" offsetY="10"/>
 				<Alpha childKey="LineBurst5" startDelay="0.5" duration="0.75" order="1" fromAlpha="1" toAlpha="0"/>
-				<Scale childKey="LineBurst5" startDelay="0.5" smoothing="IN_OUT" duration="0.25" order="1" fromScaleX="1" fromScaleY="0" toScaleX="1" toScaleY="0.5"/>
+				<Scale childKey="LineBurst5" startDelay="0.5" smoothing="IN_OUT" duration="0.25" order="1" fromScaleX="1" fromScaleY="0.001" toScaleX="1" toScaleY="0.5"/>
 				<Alpha childKey="Stars1" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
 				<Scale childKey="Stars1" duration="0.5" order="1" fromScaleX="1" fromScaleY="1" toScaleX="1.25" toScaleY="1.25"/>
 				<Alpha childKey="Stars1" startDelay="0.75" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
@@ -231,11 +231,11 @@
 				<Alpha childKey="Stars2" startDelay="0.75" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
 				<Translation childKey="Stars2" smoothing="IN_OUT" duration="1.5" order="1" offsetX="0" offsetY="45"/>
 				<Alpha childKey="CloudyLineRight" smoothing="IN" duration="0.75" order="1" fromAlpha="0" toAlpha="1"/>
-				<Scale childKey="CloudyLineRight" smoothing="OUT" duration="0.5" order="1" fromScaleX="0.25" fromScaleY="0" toScaleX="0.75" toScaleY="1"/>
+				<Scale childKey="CloudyLineRight" smoothing="OUT" duration="0.5" order="1" fromScaleX="0.25" fromScaleY="0.001" toScaleX="0.75" toScaleY="1"/>
 				<Alpha childKey="CloudyLineRMover" smoothing="IN" duration="0.75" order="1" fromAlpha="0" toAlpha="0.5"/>
 				<Translation childKey="CloudyLineRMover" smoothing="OUT" duration="6" order="1" offsetX="40" offsetY="0"/>
 				<Alpha childKey="CloudyLineLeft" smoothing="IN" duration="0.75" order="1" fromAlpha="0" toAlpha="1"/>
-				<Scale childKey="CloudyLineLeft" smoothing="OUT" duration="0.5" order="1" fromScaleX="0.25" fromScaleY="0" toScaleX="0.75" toScaleY="1"/>
+				<Scale childKey="CloudyLineLeft" smoothing="OUT" duration="0.5" order="1" fromScaleX="0.25" fromScaleY="0.001" toScaleX="0.75" toScaleY="1"/>
 				<Alpha childKey="CloudyLineLMover" smoothing="IN" duration="0.75" order="1" fromAlpha="0" toAlpha="0.5"/>
 				<Translation childKey="CloudyLineLMover" smoothing="OUT" duration="6" order="1" offsetX="-40" offsetY="0"/>
 				<Alpha childKey="BottomLineLeft" startDelay="0.95" smoothing="OUT" duration="0.3" order="1" fromAlpha="0" toAlpha="1"/>

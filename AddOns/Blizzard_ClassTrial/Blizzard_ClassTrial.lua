@@ -1,3 +1,70 @@
+
+local function ClassTrialChooseBoostType_OnClick(self, boostType)
+		-- Hide early to avoid having the dialogs try to stack.
+		self:Hide();
+		if boostType == C_CharacterServices.GetActiveClassTrialBoostType() then
+			ClassTrialDialogMixin:StartCharacterUpgrade(boostType);
+		else
+			StaticPopup_Show("CLASS_TRIAL_CHOOSE_BOOST_LOGOUT_PROMPT", nil, nil, boostType);
+		end
+end
+
+StaticPopupDialogs["CLASS_TRIAL_CHOOSE_BOOST_TYPE"] = {
+	text = CLASS_TRIAL_CHOOSE_BOOST_TYPE_TEXT,
+	button1 = ACCEPT,
+	button2 = ACCEPT,
+	button3 = CANCEL,
+
+	OnShow = function(self)
+		if #self.data >= 2 then
+			local info1 = C_CharacterServices.GetCharacterServiceDisplayData(self.data[1]);
+			self.button1:SetText(info1.flowTitle);
+			local info2 = C_CharacterServices.GetCharacterServiceDisplayData(self.data[2]);
+			self.button2:SetText(info2.flowTitle);
+			
+			local maxWidth = math.max(self.button1:GetTextWidth(), self.button2:GetTextWidth());
+			local buttonWidth = maxWidth + 60;
+			self.button1:SetWidth(buttonWidth);
+			self.button2:SetWidth(buttonWidth);
+		else
+			self:Hide();
+		end
+	end,
+	OnButton1 = function(self, data)
+		ClassTrialChooseBoostType_OnClick(self, data[1]);
+	end,
+	OnButton2 = function(self, data)
+		ClassTrialChooseBoostType_OnClick(self, data[2]);
+	end,
+	OnButton3 = function ()
+		ClassTrialThanksForPlayingDialog:ShowThanks();
+	end,
+
+	timeout = 0,
+	whileDead = 1,
+	verticalButtonLayout = true,
+	fullScreenCover = true,
+};
+
+StaticPopupDialogs["CLASS_TRIAL_CHOOSE_BOOST_LOGOUT_PROMPT"] = {
+	text = CLASS_TRIAL_CHOOSE_BOOST_LOGOUT_PROMPT_TEXT,
+	button1 = CAMP_NOW,
+	button2 = CANCEL,
+
+	OnAccept = function(self, boostType)
+		C_CharacterServices.SetAutomaticBoost(boostType);
+		C_CharacterServices.SetAutomaticBoostCharacter(UnitGUID("player"));
+		Logout();
+	end,
+	OnCancel = function()
+		ClassTrialThanksForPlayingDialog:ShowThanks();
+	end,
+
+	timeout = 0,
+	whileDead = 1,
+	fullScreenCover = true,
+};
+
 local classFilenameToAtlas = {
 	["WARRIOR"] = "ClassTrial-Warrior-Ring",
 	["PALADIN"] = "ClassTrial-Paladin-Ring",
@@ -16,16 +83,16 @@ function ClassTrial_SetHasAvailableBoost(hasBoost)
 	ClassTrialThanksForPlayingDialog:UpdateDialogButtons(hasBoost);
 end
 
-function ClassTrial_ConfirmApplyToken()
-	ClassTrialSecureFrame:SetAttribute("upgradecharacter-confirm", UnitGUID("player"));
+function ClassTrial_ConfirmApplyToken(guid, boostType)
+	ClassTrialSecureFrame:SetAttribute("upgradecharacter-confirm", { guid = guid, boostType = boostType });
 end
 
-function ClassTrial_ShowStoreServices()
+function ClassTrial_ShowStoreServices(guid, boostType)
 	if not StoreFrame_IsShown or not StoreFrame_IsShown() then
 		ToggleStoreUI();
 	end
 
-	StoreFrame_SelectLevel100BoostProduct();
+	StoreFrame_SelectBoost(boostType, "forClassTrialUnlock", guid);
 end
 
 ClassTrialDialogMixin = {}
@@ -41,18 +108,38 @@ function ClassTrialDialogMixin:ShowThanks()
 	self:Show();
 end
 
+function ClassTrialDialogMixin:StartCharacterUpgrade(boostType)
+	ClassTrialSecureFrame:SetAttribute("upgradecharacter", { guid = UnitGUID("player"), boostType = boostType });
+end
+
 function ClassTrialDialogMixin:HandleButtonClickCommon()
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	ClassTrialTimerDisplay:ShowTimer();
 end
 
 function ClassTrialDialogMixin:BuyCharacterBoost()
 	self:HandleButtonClickCommon();
-	ClassTrialSecureFrame:SetAttribute("upgradecharacter", UnitGUID("player"));
+	local classTrialBoostType = C_CharacterServices.GetActiveClassTrialBoostType();
+	local activeBoostType = C_CharacterServices.GetActiveCharacterUpgradeBoostType();
+	if classTrialBoostType ~= activeBoostType then
+		local upgradeDistributions = C_SharedCharacterServices.GetUpgradeDistributions();
+		local classTrialBoostDistributions = upgradeDistributions[classTrialBoostType];
+		local activeBoostDistributions = upgradeDistributions[activeBoostType];
+		if classTrialBoostDistributions and classTrialBoostDistributions.amount >= 1 and activeBoostDistributions and activeBoostDistributions.amount >= 1 then
+			StaticPopup_Show("CLASS_TRIAL_CHOOSE_BOOST_TYPE", nil, nil, { activeBoostType, classTrialBoostType });
+		elseif classTrialBoostDistributions and classTrialBoostDistributions.amount >= 1 then
+			ClassTrialDialogMixin:StartCharacterUpgrade(classTrialBoostType);
+		else
+			-- Either apply the boost the player already has, or prompt them to buy a new one.
+			ClassTrialDialogMixin:StartCharacterUpgrade(activeBoostType);
+		end
+	else
+		ClassTrialDialogMixin:StartCharacterUpgrade(classTrialBoostType);
+	end
 end
 
-function ClassTrialDialogMixin:ConfirmCharacterBoost()
-	ClassTrial_ConfirmApplyToken();
+function ClassTrialDialogMixin:ConfirmCharacterBoost(guid, boostType)
+	ClassTrial_ConfirmApplyToken(guid, boostType);
 end
 
 function ClassTrialDialogMixin:DecideLater()
@@ -84,7 +171,7 @@ end
 
 function ClassTrialDialogMixin:OnEvent(event, ...)
 	if event == "EVENT_CLASS_TRIAL_TIMER_START" then
-		self:ShowThanks("UI_70_Boost_ThanksforPlaying");
+		self:ShowThanks(SOUNDKIT.UI_70_BOOST_THANKSFORPLAYING);
 	elseif event == "EVENT_CLASS_TRIAL_UPGRADE_COMPLETE" then
 		self:OnUpgradeComplete();
 	end
@@ -92,7 +179,7 @@ end
 
 function ClassTrialDialogMixin:OnShow(sound)
 	ClassTrialTimerDisplay:Hide();
-	PlaySound(sound or "UI_70_Boost_ThanksforPlaying_Smaller");
+	PlaySound(sound or SOUNDKIT.UI_70_BOOST_THANKSFORPLAYING_SMALLER);
 end
 
 function ClassTrialDialogMixin:OnLoad()
@@ -154,7 +241,7 @@ function ClassTrialTimerDisplayMixin:OnEvent(event, ...)
 end
 
 function ClassTrialTimerDisplayMixin:OnMouseUp()
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	ClassTrialThanksForPlayingDialog:ShowThanks();
 end
 

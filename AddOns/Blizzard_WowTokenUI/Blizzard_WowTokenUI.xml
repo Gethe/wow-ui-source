@@ -56,7 +56,7 @@
 						self.Right:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
 					end
 				</OnMouseUp>
-				<OnShow function="StoreButton_OnShow" />
+				<OnShow function="WoWTokenButton_OnShow" />
 				<OnDisable>
 					self.Left:SetTexture("Interface\\Buttons\\UI-Panel-Button-Disabled");
 					self.Middle:SetTexture("Interface\\Buttons\\UI-Panel-Button-Disabled");
@@ -75,7 +75,7 @@
 			<HighlightTexture inherits="UIPanelButtonHighlightTexture" />
 		</Button>
 		<Frame name="WowTokenRedemptionFrame" inherits="PortraitFrameTemplateNoCloseButton" frameStrata="DIALOG" parent="UIParent" enableMouse="true" hidden="true">
-			<Size x="325" y="450"/>
+			<Size x="650" y="450"/>
 			<!-- Anchored to the screen as a whole in lua -->
 			<Layers>
 				<Layer level="ARTWORK">
@@ -97,17 +97,24 @@
 						<OnClick function="WowTokenRedemptionFrameCloseButton_OnClick" />
 					</Scripts>
 				</Button>
-				<Frame parentKey="Inset" useParentLevel="true" inherits="InsetFrameTemplate">
+				<Frame parentKey="LeftInset" useParentLevel="true" inherits="InsetFrameTemplate">
 					<Size x="317" y="440" />
 					<Anchors>
 						<Anchor point="TOPLEFT" x="4" y="-61" />
 						<Anchor point="BOTTOMLEFT" x="4" y="6" />
 					</Anchors>
 				</Frame>
-				<Frame parentKey="Display" useParentLevel="true">
+				<Frame parentKey="RightInset" useParentLevel="true" inherits="InsetFrameTemplate">
+					<Size x="317" y="440" />
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Inset" relativePoint="TOPLEFT" x="3" y="-3" />
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Inset" relativePoint="BOTTOMRIGHT" x="-3" y="3" />
+						<Anchor point="TOPRIGHT" x="-6" y="-61" />
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.LeftInset" relativePoint="BOTTOMRIGHT" x="0" y="0" />
+					</Anchors>
+				</Frame>
+				<Frame parentKey="LeftDisplay" useParentLevel="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.LeftInset" relativePoint="TOPLEFT" x="3" y="-3" />
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.LeftInset" relativePoint="BOTTOMRIGHT" x="-3" y="3" />
 					</Anchors>
 					<Layers>
 						<Layer level="ARTWORK">
@@ -160,9 +167,76 @@
 						</Button>
 					</Frames>
 				</Frame>
+				<Frame parentKey="RightDisplay" useParentLevel="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.RightInset" relativePoint="TOPLEFT" x="3" y="-3" />
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.RightInset" relativePoint="BOTTOMRIGHT" x="-3" y="3" />
+					</Anchors>
+					<Layers>
+						<Layer level="ARTWORK">
+							<FontString parentKey="Title" inherits="GameFontNormalHuge" text="TOKEN_REDEEM_BALANCE_TITLE">
+								<Anchors>
+									<Anchor point="TOP" x="0" y="-16"/>
+								</Anchors>
+							</FontString>
+							<Texture parentKey="Image" atlas="token-choice-bnet" useAtlasSize="true">
+								<Anchors>
+									<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="3" y="17"/>
+								</Anchors>
+							</Texture>
+							<FontString parentKey="Description" inherits="GameFontHighlight">
+								<Size x="280" y="0"/>
+								<Anchors>
+									<Anchor point="TOP" y="-191"/>
+								</Anchors>
+							</FontString>
+						</Layer>
+					</Layers>
+					<Frames>
+						<SimpleHTML parentKey="Format">
+							<Size x="280" y="140"/>
+							<Anchors>
+								<Anchor point="TOP" x="0" y="-247"/>
+							</Anchors>
+							<Scripts>
+								<OnHyperlinkClick>
+									local linkType, index = string.split(":", link);
+									if ( linkType == "urlIndex" ) then
+										LoadURLIndex(tonumber(index));
+									end
+								</OnHyperlinkClick>
+							</Scripts>
+							<FontString inherits="GameFontNormal" justifyH="LEFT" />
+						</SimpleHTML>
+						<Frame parentKey="Spinner" inherits="LoadingSpinnerTemplate" hidden="true">
+							<Anchors>
+								<Anchor point="TOP" x="0" y="-235"/>
+							</Anchors>
+							<Scripts>
+								<OnLoad>
+									self.Anim:Play();
+								</OnLoad>
+							</Scripts>
+						</Frame>
+						<Button parentKey="RedeemButton" inherits="WowTokenButtonTemplate" text="TOKEN_REDEEM_BALANCE_BUTTON_LABEL" id="2">
+							<Size x="234" y="28"/>
+							<Anchors>
+								<Anchor point="BOTTOM" x="0" y="20"/>
+							</Anchors>
+							<Scripts>
+								<OnClick function="WowTokenRedemptionRedeemButton_OnClick"/>
+							</Scripts>
+							<NormalFont style="GameFontNormalLarge" />
+							<HighlightFont style="GameFontHighlightLarge" />
+							<DisabledFont style="GameFontDisableLarge" />
+						</Button>
+					</Frames>
+				</Frame>
 			</Frames>
 			<Scripts>
 				<OnLoad function="WowTokenRedemptionFrame_OnLoad"/>
+				<OnShow function="WowTokenRedemptionFrame_OnShow"/>
+				<OnHide function="WowTokenRedemptionFrame_OnHide"/>
 				<OnEvent function="WowTokenRedemptionFrame_OnEvent"/>
 				<OnAttributeChanged function="WowTokenRedemptionFrame_OnAttributeChanged"/>
 			</Scripts>

@@ -18,7 +18,7 @@ function TokenButton_OnLoad(self)
 end
 
 function TokenFrame_OnLoad()
-	TokenFrameContainerScrollBar.Show = 
+	TokenFrameContainerScrollBar.Show =
 		function (self)
 			TokenFrameContainer:SetPoint("BOTTOMRIGHT", CharacterFrameInset, "BOTTOMRIGHT", -23, 4);
 			for _, button in next, _G["TokenFrameContainer"].buttons do
@@ -27,8 +27,8 @@ function TokenFrame_OnLoad()
 			TokenFrameContainer.scrollChild:SetWidth(295);
 			getmetatable(self).__index.Show(self);
 		end
-		
-	TokenFrameContainerScrollBar.Hide = 
+
+	TokenFrameContainerScrollBar.Hide =
 		function (self)
 			TokenFrameContainer:SetPoint("BOTTOMRIGHT", CharacterFrameInset, "BOTTOMRIGHT", -4, 4);
 			for _, button in next, TokenFrameContainer.buttons do
@@ -65,7 +65,7 @@ end
 
 function TokenFrame_Update()
 	local numTokenTypes = GetCurrencyListSize();
-	
+
 	if ( numTokenTypes == 0 ) then
 		CharacterFrameTab3:Hide();
 	else
@@ -115,7 +115,7 @@ function TokenFrame_Update()
 				button.categoryRight:Hide();
 				button.categoryMiddle:Hide();
 				button.expandIcon:Hide();
-				button.count:SetText(count);
+				button.count:SetText(BreakUpLargeNumbers(count));
 				button.icon:SetTexture(icon);
 				if ( isWatched ) then
 					button.check:Show();
@@ -172,26 +172,27 @@ function TokenFramePopup_CloseIfHidden()
 end
 
 function BackpackTokenFrame_Update()
-	local watchButton;
-	local name, count, icon, currencyID;
 	for i=1, MAX_WATCHED_TOKENS do
-		name, count, icon, currencyID = GetBackpackCurrencyInfo(i);
-		-- Update watched tokens
-		if ( name ) then
-			watchButton = _G["BackpackTokenFrameToken"..i];
+		local watchButton = BackpackTokenFrame.Tokens[i];
+		local name, count, icon, currencyID = GetBackpackCurrencyInfo(i);
+
+		if name then
 			watchButton.icon:SetTexture(icon);
-			if ( count <= 99999 ) then
-				watchButton.count:SetText(count);
-			else
-				watchButton.count:SetText("*");
+
+			local currencyText = BreakUpLargeNumbers(count);
+			if strlenutf8(currencyText) > 5 then
+				currencyText = AbbreviateNumbers(count);
 			end
+
+			watchButton.count:SetText(currencyText);
 			watchButton.currencyID = currencyID;
 			watchButton:Show();
-			BackpackTokenFrame.shouldShow = 1;
+
+			BackpackTokenFrame.shouldShow = true;
 			BackpackTokenFrame.numWatchedTokens = i;
 		else
-			_G["BackpackTokenFrameToken"..i]:Hide();
-			if ( i == 1 ) then
+			watchButton:Hide();
+			if i == 1 then
 				BackpackTokenFrame.shouldShow = nil;
 			end
 		end
@@ -264,7 +265,7 @@ function TokenButton_OnClick(self)
 				BackpackTokenFrame_Update();
 				ManageBackpackTokenFrame();
 			else
-				
+
 				if ( TokenFramePopup:IsShown() ) then
 					if ( TokenFrame.selectedID == self.index ) then
 						TokenFramePopup:Hide();

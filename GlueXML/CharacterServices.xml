@@ -193,33 +193,25 @@
 				<Layers>
 					<Layer level="ARTWORK">
 						<FontString parentKey="OrLabel" inherits="GameFontNormalMed3" text="SERVICES_CONJUNCTION_OR" hidden="true">
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.$parent.StepActiveLabel" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
-							</Anchors>
 							<Color r="0.5" g="0.5" b="0.5"/>
 						</FontString>
 						<FontString parentKey="OrLabel2" inherits="GameFontNormalMed3" text="SERVICES_CONJUNCTION_OR" hidden="true">
-							<Anchors>
-								<Anchor point="TOPLEFT" x="84" y="-128" />
-							</Anchors>
+							<Color r="0.5" g="0.5" b="0.5"/>
+						</FontString>
+						<FontString parentKey="ClassTrialButtonHintText" inherits="GameFontNormalMed3" justifyH="LEFT" justifyV="TOP" hidden="true" text="SERVICES_TRIAL_BOOST_HINT">
+							<Size x="260" y="45"/>
 							<Color r="0.5" g="0.5" b="0.5"/>
 						</FontString>
 					</Layer>
 				</Layers>
 				<Frames>
 					<Button parentKey="CreateCharacterButton" inherits="GlueButtonTemplate" text="CREATE_NEW_CHARACTER" hidden="true">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.OrLabel" relativePoint="BOTTOMLEFT" x="0.0" y="-5.0" />
-						</Anchors>
 						<Scripts>
 							<OnClick function="CharacterUpgradeCreateCharacter_OnClick"/>
 							<OnUpdate function="GlueParent_DeathKnightButtonSwap"/>
 						</Scripts>
 					</Button>
 					<Button parentKey="CreateCharacterClassTrialButton" inherits="GlueButtonTemplate" text="CHARACTER_UPGRADE_POPUP_TRY_NEW_CLASS" hidden="true">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.OrLabel2" relativePoint="BOTTOMLEFT" x="0" y="-5.0" />
-						</Anchors>
 						<Scripts>
 							<OnClick function="CharacterUpgradeClassTrial_OnClick"/>
 							<OnUpdate function="GlueParent_DeathKnightButtonSwap"/>

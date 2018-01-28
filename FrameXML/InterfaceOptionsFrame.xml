@@ -10,7 +10,7 @@
 				OptionsListButton_OnLoad(self, InterfaceOptionsListButton_ToggleSubCategories);
 			</OnLoad>
 			<OnClick>
-				PlaySound("igMainMenuOptionCheckBoxOn");
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 				InterfaceOptionsListButton_OnClick(self, button);
 			</OnClick>
 		</Scripts>
@@ -206,7 +206,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PlaySound("igCharacterInfoTab");
+						PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
 						PanelTemplates_Tab_OnClick(self, InterfaceOptionsFrame);
 						InterfaceOptionsFrame_TabOnClick();
 					</OnClick>
@@ -239,7 +239,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PlaySound("igCharacterInfoTab");
+						PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
 						PanelTemplates_Tab_OnClick(self, InterfaceOptionsFrame);
 						InterfaceOptionsFrame_TabOnClick();
 					</OnClick>

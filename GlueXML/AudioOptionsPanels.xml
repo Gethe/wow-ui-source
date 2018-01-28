@@ -11,9 +11,9 @@
 		<Scripts>
 			<OnClick>
 				if ( self:GetChecked() ) then
-					PlaySound("igMainMenuOptionCheckBoxOn");
+					PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 				else
-					PlaySound("igMainMenuOptionCheckBoxOff");
+					PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 				end
 				AudioOptionsPanel_CheckButton_OnClick(self);
 			</OnClick>
@@ -481,7 +481,7 @@
 						BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
 						self.label:SetText(tostring(ceil(value * 100)).."%");
 						if (self:IsVisible()) then
-							PlaySound("igMainMenuOptionCheckBoxOn");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						end
 					</OnValueChanged>
 					<OnEnter>
@@ -542,7 +542,7 @@
 						self.value = value;
 						BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
 						if (self:IsVisible()) then
-							PlaySound("igMainMenuOptionCheckBoxOn", "SFX");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON, "SFX");
 						end
 					</OnValueChanged>
 					<OnEnter>
@@ -596,7 +596,7 @@
 						self.value = value;
 						BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
 						if (self:IsVisible()) then
-							PlaySound("igMainMenuOptionCheckBoxOn", "Music");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON, "Music");
 						end
 					</OnValueChanged>
 					<OnEnter>
@@ -650,7 +650,7 @@
 						self.value = value;
 						BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
 						if (self:IsVisible()) then
-							PlaySound("igMainMenuOptionCheckBoxOn", "Ambience");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON, "Ambience");
 						end
 					</OnValueChanged>
 					<OnEnter>
@@ -704,7 +704,7 @@
 						self.value = value;
 						BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
 						if (self:IsVisible()) then
-							PlaySound("igMainMenuOptionCheckBoxOn", "Dialog");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON, "Dialog");
 						end
 					</OnValueChanged>
 					<OnEnter>

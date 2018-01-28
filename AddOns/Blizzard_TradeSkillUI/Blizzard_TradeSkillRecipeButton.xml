@@ -199,11 +199,11 @@
 				self.Count:SetPoint("LEFT", self.Text, "RIGHT", 2, 0);
 			</OnLoad>
 			<OnClick>
-				if IsModifiedClick() then
-					HandleModifiedItemClick(C_TradeSkillUI.GetRecipeLink(self.tradeSkillInfo.recipeID));
+				if self.isHeader then
+					self:GetParent():GetParent():OnHeaderButtonClicked(self, self.tradeSkillInfo, button);
 				else
-					if self.isHeader then
-						self:GetParent():GetParent():OnHeaderButtonClicked(self, self.tradeSkillInfo, button);
+					if IsModifiedClick() then
+						HandleModifiedItemClick(C_TradeSkillUI.GetRecipeLink(self.tradeSkillInfo.recipeID));
 					else
 						self:GetParent():GetParent():OnRecipeButtonClicked(self, self.tradeSkillInfo, button);
 					end

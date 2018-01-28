@@ -8,7 +8,7 @@
 				if ( self.sortType ) then
 					SearchLFGSort(self.sortType);
 				end
-				PlaySound("igMainMenuOptionCheckBoxOn");
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 			</OnClick>
 		</Scripts>
 	</Button>
@@ -140,7 +140,7 @@
 		<Scripts>
 			<OnClick>
 				LFRFrame_SetActiveTab(self:GetID());
-				PlaySound("igCharacterInfoTab");
+				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
 			</OnClick>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
@@ -245,7 +245,7 @@
 													LFRQueueFrameCommentExplanation:Show();
 												end
 												SetLFGComment(self:GetText());
-												PlaySound("UChatScrollButton");
+												PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 											</OnEditFocusLost>
 											<OnEscapePressed function="EditBox_ClearFocus"/>
 											<OnEnterPressed function="EditBox_ClearFocus"/>
@@ -380,7 +380,7 @@
 											LFRQueueFrameComment:ClearFocus();
 										else
 											--The comment is already set, so they didn't need to click this... we'll give some feedback anyway.
-											PlaySound("UChatScrollButton");
+											PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 										end
 									</OnClick>
 								</Scripts>
@@ -616,7 +616,7 @@
 								</Anchors>
 								<Scripts>
 									<OnClick>
-										PlaySound("UChatScrollButton");
+										PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 										ChatFrame_SendTell(LFRBrowseFrame.selectedName);
 									</OnClick>
 								</Scripts>
@@ -628,7 +628,7 @@
 								</Anchors>
 								<Scripts>
 									<OnClick>
-										PlaySound("UChatScrollButton");
+										PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 										InviteToGroup(LFRBrowseFrame.selectedName);
 									</OnClick>
 								</Scripts>
@@ -640,7 +640,7 @@
 								</Anchors>
 								<Scripts>
 									<OnClick>
-										PlaySound("UChatScrollButton");
+										PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 										RefreshLFGList();
 									</OnClick>
 									<OnUpdate function="LFRBrowseFrameRefreshButton_OnUpdate"/>
@@ -695,10 +695,10 @@
 			SetPortraitToTexture(self.portrait, "Interface\\LFGFrame\\UI-LFR-PORTRAIT");
 		</OnLoad>
 		<OnShow>
-			PlaySound("igCharacterInfoTab");
+			PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
 		</OnShow>
 		<OnHide>
-			PlaySound("igMainMenuClose");
+			PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
 		</OnHide>
 	</Scripts>
 	</Frame>

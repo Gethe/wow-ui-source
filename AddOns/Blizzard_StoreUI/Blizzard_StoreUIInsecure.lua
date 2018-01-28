@@ -1,10 +1,14 @@
 -- DO NOT PUT ANY SENSITIVE CODE IN THIS FILE
 -- This file does not have access to the secure (forbidden) code.  It is only called via Outbound and no function in this file should ever return values.
 
-function StoreShowPreview(name, modelID)
+function StoreShowPreview(name, modelID, modelSceneID)
 	local frame = ModelPreviewFrame;
-	ModelPreviewFrame_ShowModel(modelID, false);
+	ModelPreviewFrame_ShowModel(modelID, modelSceneID, false);
 	frame.Display.Name:SetText(name);
+end
+
+function StoreShowPreviews(displayInfoEntries)
+	ModelPreviewFrame_ShowModels(displayInfoEntries, false);
 end
 
 function StoreSetItemTooltip(itemID, left, top, point)
@@ -34,7 +38,14 @@ if (InGlue()) then
 		OnAccept = function()
 			local data = GlueDialog.data;
 
+			if (not data.shouldHandle) then
+				VASCharacterGUID = nil;
+				GetCharacterListUpdate();
+				return;
+			end
+
 			if (GetServerName() ~= data.realmName) then
+				CharacterSelect_SetAutoSwitchRealm(true);
 				C_StoreGlue.ChangeRealmByCharacterGUID(data.guid);
 			else
 				UpdateCharacterList(true);
@@ -50,15 +61,23 @@ if (InGlue()) then
 
 	function StoreFrame_OnCharacterListUpdate()
 		if (C_StoreGlue.GetVASProductReady()) then
-			local _, guid, realmName = C_PurchaseAPI.GetVASCompletionInfo();
+			local productID, guid, realmName, shouldHandle = C_StoreSecure.GetVASCompletionInfo();
+			C_StoreGlue.ClearVASProductReady();
+
+			if (not shouldHandle) then
+				VASCharacterGUID = nil;
+				GetCharacterListUpdate();
+				return;
+			end
+
 			VASCharacterGUID = guid;
 
-		    if (GetServerName() ~= realmName) then
-			    C_StoreGlue.ChangeRealmByCharacterGUID(guid);
+			if (GetServerName() ~= realmName or StoreFrame_IsVASTransferProduct(productID)) then
+				CharacterSelect_SetAutoSwitchRealm(true);
+				C_StoreGlue.ChangeRealmByCharacterGUID(guid);
 		    else
-			    UpdateCharacterList(true);
+				UpdateCharacterList(true);
 		    end
-			C_StoreGlue.ClearVASProductReady();
 			return;
 		end
 
@@ -68,7 +87,7 @@ if (InGlue()) then
 		end
 	end
 
-	function StoreFrame_ShowGlueDialog(text, guid, realmName)
-		GlueDialog_Show("VAS_PRODUCT_DELIVERED", text, { ["guid"] = guid, ["realmName"] = realmName });
+	function StoreFrame_ShowGlueDialog(text, guid, realmName, shouldHandle)
+		GlueDialog_Show("VAS_PRODUCT_DELIVERED", text, { ["guid"] = guid, ["realmName"] = realmName, ["shouldHandle"] = shouldHandle });
 	end
 end

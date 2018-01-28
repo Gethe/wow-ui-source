@@ -55,6 +55,7 @@
 
 		<Scripts>
 			<OnLoad method="OnLoad"/>
+			<OnUpdate method="OnUpdate"/>
 			<OnShow method="OnShow"/>
 			<OnEvent method="OnEvent"/>
 			<OnHide method="OnHide"/>

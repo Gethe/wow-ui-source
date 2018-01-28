@@ -33,15 +33,18 @@ function MailFrame_OnLoad(self)
 	self:RegisterEvent("CLOSE_INBOX_ITEM");
 	self:RegisterEvent("MAIL_LOCK_SEND_ITEMS");
 	self:RegisterEvent("MAIL_UNLOCK_SEND_ITEMS");
+	self:RegisterEvent("TRIAL_STATUS_UPDATE");
 	-- Set previous and next fields
 	MoneyInputFrame_SetPreviousFocus(SendMailMoney, SendMailBodyEditBox);
 	MoneyInputFrame_SetNextFocus(SendMailMoney, SendMailNameEditBox);
 	MoneyFrame_SetMaxDisplayWidth(SendMailMoneyFrame, 160);
-	
-	if (GameLimitedMode_IsActive()) then
-		MailFrameTab2:Hide();
-		self.trialError:Show();
-	end
+	MailFrame_UpdateTrialState(self);
+end
+
+function MailFrame_UpdateTrialState(self)
+	local isTrialOrVeteran = GameLimitedMode_IsActive();
+	MailFrameTab2:SetShown(not isTrialOrVeteran);
+	self.trialError:SetShown(isTrialOrVeteran);
 end
 
 function MailFrame_OnEvent(self, event, ...)
@@ -69,7 +72,7 @@ function MailFrame_OnEvent(self, event, ...)
 		SendMailFrame_Update();
 	elseif ( event == "MAIL_SEND_SUCCESS" ) then
 		SendMailFrame_Reset();
-		PlaySound("igAbiliityPageTurn");
+		PlaySound(SOUNDKIT.IG_ABILITY_PAGE_TURN);
 		-- If open mail frame is open then switch the mail frame back to the inbox
 		if ( SendMailFrame.sendMode == "reply" ) then
 			MailFrameTab_OnClick(nil, 1);
@@ -101,6 +104,8 @@ function MailFrame_OnEvent(self, event, ...)
 	elseif ( event == "MAIL_UNLOCK_SEND_ITEMS") then
 		SendMailFrameLockSendMail:Hide();
 		StaticPopup_Hide("CONFIRM_MAIL_ITEM_UNREFUNDABLE");
+	elseif ( event == "TRIAL_STATUS_UPDATE" ) then
+		MailFrame_UpdateTrialState(self);
 	end
 end
 
@@ -140,7 +145,7 @@ function MailFrameTab_OnClick(self, tabID)
 		-- Set the send mode to dictate the flow after a mail is sent
 		SendMailFrame.sendMode = "send";
 	end
-	PlaySound("igSpellBookOpen");
+	PlaySound(SOUNDKIT.IG_SPELLBOOK_OPEN);
 end
 
 -- Inbox functions
@@ -164,7 +169,7 @@ function InboxFrame_Update()
 	for i=1, INBOXITEMS_TO_DISPLAY do
 		if ( index <= numItems ) then
 			-- Setup mail item
-			packageIcon, stationeryIcon, sender, subject, money, CODAmount, daysLeft, itemCount, wasRead, x, y, z, isGM, firstItemQuantity = GetInboxHeaderInfo(index);
+			packageIcon, stationeryIcon, sender, subject, money, CODAmount, daysLeft, itemCount, wasRead, x, y, z, isGM, firstItemQuantity, firstItemID = GetInboxHeaderInfo(index);
 			
 			-- Set icon
 			if ( packageIcon ) and ( not isGM ) then
@@ -184,6 +189,12 @@ function InboxFrame_Update()
 			button.hasItem = itemCount;
 			button.itemCount = itemCount;
 			SetItemButtonCount(button, firstItemQuantity);
+			if ( firstItemQuantity ) then
+				SetItemButtonQuality(button, select(3, GetItemInfo(firstItemID)), firstItemID);
+			else
+				button.IconBorder:Hide();
+			end
+			
 			buttonIcon = _G["MailItem"..i.."ButtonIcon"];
 			buttonIcon:SetTexture(icon);
 			subjectText = _G["MailItem"..i.."Subject"];
@@ -197,6 +208,7 @@ function InboxFrame_Update()
 				subjectText:SetTextColor(0.75, 0.75, 0.75);
 				_G["MailItem"..i.."ButtonSlot"]:SetVertexColor(0.5, 0.5, 0.5);
 				SetDesaturation(buttonIcon, true);
+				button.IconBorder:SetVertexColor(0.5, 0.5, 0.5);
 			else
 				senderText:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 				subjectText:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
@@ -277,7 +289,7 @@ function InboxFrame_OnClick(self, index)
 		--OpenMailFrame:Show();
 		ShowUIPanel(OpenMailFrame);
 		OpenMailFrameInset:SetPoint("TOPLEFT", 4, -80);
-		PlaySound("igSpellBookOpen");
+		PlaySound(SOUNDKIT.IG_SPELLBOOK_OPEN);
 	else
 		InboxFrame.openMailID = 0;
 		HideUIPanel(OpenMailFrame);		
@@ -328,14 +340,14 @@ function InboxFrameItem_OnEnter(self)
 end
 
 function InboxNextPage()
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	InboxFrame.pageNum = InboxFrame.pageNum + 1;
 	InboxGetMoreMail();	
 	InboxFrame_Update();
 end
 
 function InboxPrevPage()
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	InboxFrame.pageNum = InboxFrame.pageNum - 1;
 	InboxGetMoreMail();	
 	InboxFrame_Update();
@@ -354,12 +366,12 @@ function OpenMailFrame_OnHide()
 	StaticPopup_Hide("DELETE_MAIL");
 	if ( not InboxFrame.openMailID ) then
 		InboxFrame_Update();
-		PlaySound("igSpellBookClose");
+		PlaySound(SOUNDKIT.IG_SPELLBOOK_CLOSE);
 		return;
 	end
 
 	-- Determine if this is an auction temp invoice
-	local bodyText, texture, isTakeable, isInvoice = GetInboxText(InboxFrame.openMailID);
+	local isInvoice = select(5, GetInboxText(InboxFrame.openMailID));
 	local isAuctionTempInvoice = false;
 	if ( isInvoice ) then
 		local invoiceType, itemName, playerName, bid, buyout, deposit, consignment, moneyDelay, etaHour, etaMin = GetInboxInvoiceInfo(InboxFrame.openMailID);
@@ -375,7 +387,7 @@ function OpenMailFrame_OnHide()
 	end
 	InboxFrame.openMailID = 0;
 	InboxFrame_Update();
-	PlaySound("igSpellBookClose");
+	PlaySound(SOUNDKIT.IG_SPELLBOOK_CLOSE);
 end
 
 function OpenMailFrame_UpdateButtonPositions(letterIsTakeable, textCreated, stationeryIcon, money)
@@ -488,11 +500,11 @@ function OpenMail_Update()
 	OpenMailSender.Name:SetText(sender);
 	OpenMailSubject:SetText(subject);
 	-- Set Text
-	local bodyText, texture, isTakeable, isInvoice = GetInboxText(InboxFrame.openMailID);
+	local bodyText, stationeryID1, stationeryID2, isTakeable, isInvoice = GetInboxText(InboxFrame.openMailID);
 	OpenMailBodyText:SetText(bodyText, true);
-	if ( texture ) then
-		OpenStationeryBackgroundLeft:SetTexture(texture.."1");
-		OpenStationeryBackgroundRight:SetTexture(texture.."2");
+	if ( stationeryID1 and stationeryID2 ) then
+		OpenStationeryBackgroundLeft:SetTexture(stationeryID1);
+		OpenStationeryBackgroundRight:SetTexture(stationeryID2);
 	end
 
 	-- Is an invoice
@@ -812,7 +824,7 @@ function OpenMailAttachment_OnClick(self, index)
 		TakeInboxItem(InboxFrame.openMailID, index);
 		OpenMailFrame.updateButtonPositions = false;
 	end
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 end
 
 -- SendMail functions
@@ -825,9 +837,8 @@ function SendMailMailButton_OnClick(self)
 	if ( SendMailSendMoneyButton:GetChecked() ) then
 		-- Send Money
 		if ( copper > 0 ) then
-			-- Open confirmation dialog
-			StaticPopup_Show("SEND_MONEY", SendMailNameEditBox:GetText());
-			return;
+			-- Confirmation is now done through the secure transfer system
+			SetSendMailMoney(copper)
 		end
 	else
 		-- Send C.O.D.
@@ -840,6 +851,10 @@ end
 
 function SendMailFrame_SendMail()
 	SendMail(SendMailNameEditBox:GetText(), SendMailSubjectEditBox:GetText(), SendMailBodyEditBox:GetText());
+end
+
+function SendMailFrame_EnableSendMailButton()
+	SendMailMailButton:Enable();
 end
 
 function SendMailFrame_Update()
@@ -1036,7 +1051,7 @@ function SendMailRadioButton_OnClick(index)
 		SendMailCODButton:SetChecked(true);
 		SendMailMoneyText:SetText(COD_AMOUNT);
 	end
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 end
 
 function SendMailMoneyButton_OnClick()
@@ -1071,4 +1086,153 @@ function SendMailAttachment_OnEnter(self)
 		GameTooltip:SetText(ATTACHMENT_TEXT, 1.0, 1.0, 1.0);
 	end
 	self.UpdateTooltip = SendMailAttachment_OnEnter;
+end
+
+-----------------------------------------------------------------------------------------------
+---------------------------------------- Open All Mail ----------------------------------------
+-----------------------------------------------------------------------------------------------
+
+local OPEN_ALL_MAIL_MIN_DELAY = 0.15;
+
+OpenAllMailMixin = {};
+
+function OpenAllMailMixin:Reset()
+	self.mailIndex = 1;
+	self.attachmentIndex = ATTACHMENTS_MAX;
+	self.timeUntilNextRetrieval = nil;
+	self.blacklistedItemIDs = nil;
+end
+
+function OpenAllMailMixin:StartOpening()
+	self:Reset();
+	self:Disable();
+	self:SetText(OPEN_ALL_MAIL_BUTTON_OPENING);
+	self:RegisterEvent("MAIL_INBOX_UPDATE");
+	self:RegisterEvent("MAIL_FAILED");
+	self.numToOpen = GetInboxNumItems();
+	self:AdvanceAndProcessNextItem();
+end
+
+function OpenAllMailMixin:StopOpening()
+	self:Reset();
+	self:Enable();
+	self:SetText(OPEN_ALL_MAIL_BUTTON);
+	self:UnregisterEvent("MAIL_INBOX_UPDATE");
+	self:UnregisterEvent("MAIL_FAILED");
+end
+
+function OpenAllMailMixin:AdvanceToNextItem()
+	local foundAttachment = false;
+	while ( not foundAttachment ) do
+		local _, _, _, _, money, CODAmount, daysLeft, itemCount, _, _, _, _, isGM = GetInboxHeaderInfo(self.mailIndex);
+		local itemID = select(2, GetInboxItem(self.mailIndex, self.attachmentIndex));
+		local hasBlacklistedItem = self:IsItemBlacklisted(itemID);
+		local hasCOD = CODAmount and CODAmount > 0;
+		local hasMoneyOrItem = C_Mail.HasInboxMoney(self.mailIndex) or HasInboxItem(self.mailIndex, self.attachmentIndex);
+		if ( not hasBlacklistedItem and not hasCOD and hasMoneyOrItem ) then
+			foundAttachment = true;
+		else
+			self.attachmentIndex = self.attachmentIndex - 1;
+			if ( self.attachmentIndex == 0 ) then
+				break;
+			end
+		end
+	end
+	
+	if ( not foundAttachment ) then
+		self.mailIndex = self.mailIndex + 1;
+		self.attachmentIndex = ATTACHMENTS_MAX;
+		if ( self.mailIndex > GetInboxNumItems() ) then
+			return false;
+		end
+		
+		return self:AdvanceToNextItem();
+	end
+	
+	return true;
+end
+
+function OpenAllMailMixin:AdvanceAndProcessNextItem()
+	if ( CalculateTotalNumberOfFreeBagSlots() == 0 ) then
+		self:StopOpening();
+		return;
+	end
+	
+	if ( self:AdvanceToNextItem() ) then
+		self:ProcessNextItem();
+	else
+		self:StopOpening();
+	end
+end
+
+function OpenAllMailMixin:ProcessNextItem()
+	local _, _, _, _, money, CODAmount, daysLeft, itemCount, _, _, _, _, isGM = GetInboxHeaderInfo(self.mailIndex);
+	if ( isGM or (CODAmount and CODAmount > 0) ) then
+		self:AdvanceAndProcessNextItem();
+		return;
+	end
+	
+	if ( money > 0 ) then
+		TakeInboxMoney(self.mailIndex);
+		self.timeUntilNextRetrieval = OPEN_ALL_MAIL_MIN_DELAY;
+	elseif ( itemCount and itemCount > 0 ) then
+		TakeInboxItem(self.mailIndex, self.attachmentIndex);
+		self.timeUntilNextRetrieval = OPEN_ALL_MAIL_MIN_DELAY;
+	else
+		self:AdvanceAndProcessNextItem();
+	end
+end
+
+function OpenAllMailMixin:OnLoad()
+	self:Reset();
+end
+
+function OpenAllMailMixin:OnEvent(event, ...)
+	if event == "MAIL_INBOX_UPDATE" then
+		if ( self.numToOpen ~= GetInboxNumItems() ) then
+			self.mailIndex = 1;
+			self.attachmentIndex = ATTACHMENTS_MAX;
+		end
+	elseif ( event == "MAIL_FAILED" ) then
+		local itemID = ...;
+		if ( itemID ) then
+			self:AddBlacklistedItem(itemID);
+		end
+	end
+end
+
+function OpenAllMailMixin:OnUpdate(dt)
+	if ( self.timeUntilNextRetrieval ) then
+		self.timeUntilNextRetrieval = self.timeUntilNextRetrieval - dt;
+		
+		if ( self.timeUntilNextRetrieval <= 0 ) then
+			if ( not C_Mail.IsCommandPending() ) then
+				self.timeUntilNextRetrieval = nil;
+				self:AdvanceAndProcessNextItem();
+			else
+				-- Delay until the current mail command is done processing.
+				self.timeUntilNextRetrieval = OPEN_ALL_MAIL_MIN_DELAY;
+			end
+		end
+	end
+end
+
+function OpenAllMailMixin:OnClick()
+	self:StartOpening();
+end
+
+function OpenAllMailMixin:OnHide()
+	self:StopOpening();
+end
+
+function OpenAllMailMixin:AddBlacklistedItem(itemID)
+	if ( not self.blacklistedItemIDs ) then
+		self.blacklistedItemIDs = {};
+	end
+	
+	self.blacklistedItemIDs[itemID] = true;
+end
+
+function OpenAllMailMixin:IsItemBlacklisted(itemID)
+	return self.blacklistedItemIDs and self.blacklistedItemIDs[itemID];
 end

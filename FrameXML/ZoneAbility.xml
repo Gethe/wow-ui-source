@@ -69,7 +69,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="ZoneAbilityButtonAlert" inherits="MicroButtonAlertTemplate" parent="ZoneAbilityFrame" frameStrata="MEDIUM" topLevel="false">
+	<Frame name="ZoneAbilityButtonAlert" inherits="MicroButtonAlertTemplate" parent="ZoneAbilityFrame" frameStrata="MEDIUM" toplevel="false">
 		<Anchors>
 			<Anchor point="BOTTOM" relativeTo="ZoneAbilityFrame" relativePoint="TOP" x="0" y="8"/>
 		</Anchors>

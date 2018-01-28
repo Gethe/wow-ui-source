@@ -20,26 +20,24 @@ function ArtifactLevelUpToastMixin:OnEvent(event, ...)
 end
 
 function ArtifactLevelUpToastMixin:EvaluateTrigger()
-	local hasArtifactEquipped = HasArtifactEquipped();
+	local itemID, altItemID, name, icon, xp, pointsSpent, quality, artifactAppearanceID, appearanceModID, itemAppearanceID, altItemAppearanceID, altOnTop, artifactTier = C_ArtifactUI.GetEquippedArtifactInfo();
+	local showArtifact = itemID ~= nil;
+	if self.showArtifact ~= showArtifact or C_ArtifactUI.IsAtForge() then
+		self.showArtifact = showArtifact;
 
-	if self.hasArtifactEquipped ~= hasArtifactEquipped or C_ArtifactUI.IsAtForge() then
-		self.hasArtifactEquipped = hasArtifactEquipped;
-
-		if self.hasArtifactEquipped then
-			local itemID, altItemID, name, icon, xp, pointsSpent, quality, artifactAppearanceID, appearanceModID, itemAppearanceID, altItemAppearanceID, altOnTop = C_ArtifactUI.GetEquippedArtifactInfo();
-			self.currentArtifactPurchasableTraits = MainMenuBar_GetNumArtifactTraitsPurchasableFromXP(pointsSpent, xp);
+		if self.showArtifact then
+			self.currentArtifactPurchasableTraits = MainMenuBar_GetNumArtifactTraitsPurchasableFromXP(pointsSpent, xp, artifactTier);
 			self.currentItemID = itemID;
 		else
 			self.currentArtifactPurchasableTraits = nil;
 			self.currentItemID = nil;
 		end
-	elseif self.hasArtifactEquipped then
-		local itemID, altItemID, name, icon, xp, pointsSpent, quality, artifactAppearanceID, appearanceModID, itemAppearanceID, altItemAppearanceID, altOnTop = C_ArtifactUI.GetEquippedArtifactInfo();
-		local artifactPurchasableTraits = MainMenuBar_GetNumArtifactTraitsPurchasableFromXP(pointsSpent, xp);
+	elseif self.showArtifact then
+		local artifactPurchasableTraits = MainMenuBar_GetNumArtifactTraitsPurchasableFromXP(pointsSpent, xp, artifactTier);
 		if self.currentItemID == itemID then
 			if self.currentArtifactPurchasableTraits < artifactPurchasableTraits then
-				local _, titleName = C_ArtifactUI.GetEquippedArtifactArtInfo();
-				TopBannerManager_Show(self, { name = titleName, icon = icon, });
+				local artifactArtInfo = C_ArtifactUI.GetEquippedArtifactArtInfo();
+				TopBannerManager_Show(self, { name = artifactArtInfo.titleName, icon = icon, });
 			end
 			self.currentArtifactPurchasableTraits = artifactPurchasableTraits;
 		else
@@ -64,7 +62,7 @@ function ArtifactLevelUpToastMixin:PlayBanner(data)
 	self:Show();
 	
 	self.ArtifactLevelUpAnim:Play();
-	PlaySound("UI_70_Artifact_Forge_Toast_TraitAvailable");
+	PlaySound(SOUNDKIT.UI_70_ARTIFACT_FORGE_TOAST_TRAIT_AVAILABLE);
 end
 
 function ArtifactLevelUpToastMixin:StopBanner()

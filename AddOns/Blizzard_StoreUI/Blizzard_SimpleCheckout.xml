@@ -1,0 +1,88 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="Blizzard_SimpleCheckout.lua"/>
+	<Line name="SimpleCheckoutBorder" thickness="1" virtual="true">
+	</Line>
+	<Line name="SimpleCheckoutInsideBorder" virtual="true" inherits="SimpleCheckoutBorder">
+		<Color r="1.0" g="1.0" b="1.0" a="0.2"/>
+	</Line>
+	<Line name="SimpleCheckoutOutsideBorder" virtual="true" inherits="SimpleCheckoutBorder">
+		<Color r="0.0" g="0.0" b="0.0" a="1.0"/>
+	</Line>
+	<ScopedModifier forbidden="true" scriptsUseGivenEnv="true">
+		<Checkout name="SimpleCheckout" parent="UIParent" frameStrata="FULLSCREEN_DIALOG" IMEFont="ChatFontNormal" toplevel="true" hidden="true" mixin="SimpleCheckoutMixin">
+			<Anchors>
+				<Anchor point="CENTER" relativePoint="CENTER" relativeTo="UIParent"/>
+			</Anchors>
+			<Size x="800" y="600"/>
+			<Frames>
+				<Button parentKey="CloseButton">
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="-5" y="-6" />
+					</Anchors>
+					<Size x="20" y="20"/>
+					<DisabledTexture atlas="simplecheckout-close-normal-1x"/>
+					<NormalTexture atlas="simplecheckout-close-normal-1x"/>
+					<PushedTexture atlas="simplecheckout-close-pressed-1x"/>
+					<HighlightTexture atlas="simplecheckout-close-hover-1x" alphaMode="ADD"/>
+					<Scripts>
+						<OnClick>
+							PlaySound(SOUNDKIT.UI_IG_STORE_CANCEL_BUTTON);
+							self:GetParent():Hide();
+						</OnClick>
+						<OnMouseDown>
+							self:SetHighlightTexture(nil);
+						</OnMouseDown>
+						<OnMouseUp>
+							self:SetHighlightAtlas("simplecheckout-close-hover-1x");
+						</OnMouseUp>
+					</Scripts>
+				</Button>
+				<Frame parentKey="Background" enableMouse="true" enableMouseWheel="true" frameStrata="FULLSCREEN">
+					<Layers>
+						<Layer level="BACKGROUND">
+							<Texture setAllPoints="true" parentKey="Texture">
+								<Color r="0" g="0" b="0" a="0.1"/>
+							</Texture>
+							<Texture parentKey="BlackTexture">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeKey="$parent.$parent"/>
+									<Anchor point="BOTTOMRIGHT" relativeKey="$parent.$parent"/>
+								</Anchors>
+								<Color r="0" g="0" b="0" a="1"/>
+							</Texture>
+						</Layer>
+					</Layers>
+					<Scripts>
+						<OnLoad>
+							self:SetPoint("TOPLEFT", UIParent, "TOPLEFT");
+							self:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT");
+						</OnLoad>
+						<OnMouseWheel>
+							-- this comment is here so that the handler doesn't get stripped out.
+						</OnMouseWheel>
+					</Scripts>
+				</Frame>
+			</Frames>
+			<Layers>
+				<Layer level="OVERLAY">
+					<Line parentKey="TopInside" inherits="SimpleCheckoutInsideBorder"/>
+					<Line parentKey="BottomInside" inherits="SimpleCheckoutInsideBorder"/>
+					<Line parentKey="LeftInside" inherits="SimpleCheckoutInsideBorder"/>
+					<Line parentKey="RightInside" inherits="SimpleCheckoutInsideBorder"/>
+					<Line parentKey="TopOutside" inherits="SimpleCheckoutOutsideBorder"/>
+					<Line parentKey="BottomOutside" inherits="SimpleCheckoutOutsideBorder"/>
+					<Line parentKey="LeftOutside" inherits="SimpleCheckoutOutsideBorder"/>
+					<Line parentKey="RightOutside" inherits="SimpleCheckoutOutsideBorder"/>
+				</Layer>
+			</Layers>
+			<Scripts>
+				<OnLoad method="OnLoad"/>
+				<OnEvent method="OnEvent"/>
+				<OnHide method="OnHide"/>
+				<OnShow method="OnShow"/>
+				<OnRequestNewSize method="OnRequestNewSize"/>
+			</Scripts>
+		</Checkout>
+	</ScopedModifier>
+</Ui>

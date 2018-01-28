@@ -108,7 +108,7 @@ function GuildRoster_SortByColumn(column)
 			SortGuildRoster(column.sortType);
 		end
 	end
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 end
 
 --****** Guild members **********************************************************
@@ -374,24 +374,24 @@ function GuildRosterButton_OnClick(self, button)
 			if ( GuildMemberDetailFrame:IsShown() and self.guildIndex == GuildFrame.selectedGuildMember ) then
 				SetGuildRosterSelection(0);
 				GuildFrame.selectedGuildMember = 0;
-				PlaySound("igCharacterInfoClose");
+				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 				GuildMemberDetailFrame:Hide();
 			else
 				SetGuildRosterSelection(self.guildIndex);
 				GuildFrame.selectedGuildMember = self.guildIndex;
-				PlaySound("igCharacterInfoOpen");
+				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 				GuildFramePopup_Show(GuildMemberDetailFrame);
 				CloseDropDownMenus();
 			end
 			GuildRoster_Update();
 		else
-			local fullName, rank, rankIndex, level, class, zone, note, officernote, online, isAway, classFileName, achievementPoints, achievementRank, isMobile = GetGuildRosterInfo(self.guildIndex);
-			GuildRoster_ShowMemberDropDown(fullName, online, isMobile);
+			local fullName, rank, rankIndex, level, class, zone, note, officernote, online, isAway, classFileName, achievementPoints, achievementRank, isMobile, sorEligible, rep, guid = GetGuildRosterInfo(self.guildIndex);
+			GuildRoster_ShowMemberDropDown(fullName, online, isMobile, guid);
 		end
 	end
 end
 
-function GuildRoster_ShowMemberDropDown(name, online, isMobile)
+function GuildRoster_ShowMemberDropDown(name, online, isMobile, guid)
 	local initFunc = GuildMemberDropDown_Initialize;
 	if ( not online and not isMobile ) then
 		initFunc = GuildMemberOfflineDropDown_Initialize;
@@ -400,11 +400,12 @@ function GuildRoster_ShowMemberDropDown(name, online, isMobile)
 	GuildMemberDropDown.name = name;
 	GuildMemberDropDown.isMobile = isMobile;
 	GuildMemberDropDown.initialize = initFunc;
+	GuildMemberDropDown.guid = guid; --Not included on tradeskill pane
 	ToggleDropDownMenu(1, nil, GuildMemberDropDown, "cursor");
 end
 
 function GuildMemberDropDown_Initialize()
-	UnitPopup_ShowMenu(UIDROPDOWNMENU_OPEN_MENU, "GUILD", nil, GuildMemberDropDown.name);
+	UnitPopup_ShowMenu(UIDROPDOWNMENU_OPEN_MENU, "GUILD", nil, GuildMemberDropDown.name, { guid = GuildMemberDropDown.guid });
 end
 
 function GuildMemberOfflineDropDown_Initialize()
@@ -507,7 +508,7 @@ function GuildRoster_UpdateTradeSkills()
 end
 
 function GuildRosterTradeSkillHeader_OnClick(self)
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	if ( self.collapsed ) then
 		ExpandGuildTradeSkillHeader(self.skillID);
 	else
@@ -646,7 +647,7 @@ function GuildFrameDemoteButton_OnClick(self)
 		dialog.data = fullName;
 	else
 		GuildDemote(GuildFrame.selectedName);
-		PlaySound("UChatScrollButton");
+		PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 		GuildFrameDemoteButton:Disable();
 	end
 end
@@ -663,7 +664,7 @@ function GuildFramePromoteButton_OnClick(self)
 		dialog.data = fullName;
 	else
 		GuildPromote(GuildFrame.selectedName);
-		PlaySound("UChatScrollButton");
+		PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 		GuildFramePromoteButton:Disable();
 	end
 end

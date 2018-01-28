@@ -7,15 +7,73 @@ function ExpBar_Update()
 	local nextXP = UnitXPMax("player");
 	local level = UnitLevel("player");
 
-	local min, max = math.min(0, currXP), nextXP;
-	MainMenuExpBar:SetAnimatedValues(currXP, min, max, level);
+	local isCapped = false;
+	if (GameLimitedMode_IsActive()) then
+		local rLevel = GetRestrictedAccountData();
+		if UnitLevel("player") >= rLevel then
+			isCapped = true;
+			MainMenuExpBar:SetAnimatedValues(1, 0, 1, level);
+			MainMenuExpBar:ProcessChangesInstantly();
+			MainMenuExpBar:SetStatusBarColor(0.58, 0.0, 0.55, 1.0);
+			MainMenuExpBar:SetAnimatedTextureColors(0.58, 0.0, 0.55, 1.0);
+		end
+	end
+	if (not isCapped) then
+		local min, max = math.min(0, currXP), nextXP;
+		MainMenuExpBar:SetAnimatedValues(currXP, min, max, level);
+	end
 end
 
+function ExpBar_UpdateTextString() 
+	TextStatusBar_UpdateTextString(MainMenuExpBar);
+	if (GameLimitedMode_IsActive()) then
+		local rLevel = GetRestrictedAccountData();
+		if (UnitLevel("player") >= rLevel) then
+			local nextXP = UnitXPMax("player");
+			local trialXP = UnitTrialXP("player");
+			MainMenuExpBar.TextString:SetText(MainMenuExpBar.prefix.." "..trialXP.." / "..nextXP);
+		end
+	end
+end
+
+function ExpBar_OnEnter(self)
+	ShowTextStatusBarText(self);
+	ExpBar_UpdateTextString();
+	local label = XPBAR_LABEL;
+	if (GameLimitedMode_IsActive()) then
+		local rLevel = GetRestrictedAccountData();
+		if UnitLevel("player") >= rLevel then
+			local trialXP = UnitTrialXP("player");
+			local bankedLevels = UnitTrialBankedLevels("player");
+			if (trialXP > 0) then
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+				local text = TRIAL_CAP_BANKED_XP_TOOLTIP;
+				if (bankedLevels > 0) then
+					text = TRIAL_CAP_BANKED_LEVELS_TOOLTIP:format(bankedLevels);
+				end
+				GameTooltip:SetText(text, nil, nil, nil, nil, true);
+				GameTooltip:Show();
+				if (IsTrialAccount()) then
+					MicroButtonPulse(StoreMicroButton);
+				end
+				return
+			else
+				label = label.." "..RED_FONT_COLOR_CODE..CAP_REACHED_TRIAL.."|r";
+			end
+		end
+	end						
+	ExhaustionTick.timer = 1;
+
+	GameTooltip_AddNewbieTip(self, label, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_XPBAR, 1);
+	GameTooltip.canAddRestStateLine = 1;
+	ExhaustionToolTipText();
+end
 
 function MainMenuBar_OnLoad(self)
 	self:RegisterEvent("ACTIONBAR_PAGE_CHANGED");
 	self:RegisterEvent("CURRENCY_DISPLAY_UPDATE");
 	self:RegisterEvent("UNIT_LEVEL");
+	self:RegisterEvent("TRIAL_STATUS_UPDATE");
 	
 	MainMenuBar.state = "player";
 	MainMenuBarPageNumber:SetText(GetActionBarPage());
@@ -27,7 +85,7 @@ function MainMenuBar_ArtifactUpdateOverlayFrameText()
 		local xp = ArtifactWatchBar.StatusBar:GetAnimatedValue();
 		local _, xpForNextPoint = ArtifactWatchBar.StatusBar:GetMinMaxValues();
 		if xpForNextPoint > 0 then
-			ArtifactWatchBar.OverlayFrame.Text:SetFormattedText(ARTIFACT_POWER_BAR, xp, xpForNextPoint);
+			ArtifactWatchBar.OverlayFrame.Text:SetFormattedText(ARTIFACT_POWER_BAR, BreakUpLargeNumbers(xp), BreakUpLargeNumbers(xpForNextPoint));
 		end
 	end
 end
@@ -49,8 +107,7 @@ end
 
 function MainMenuBar_ArtifactTick_OnEnter(self)
 	GameTooltip_SetDefaultAnchor(GameTooltip, UIParent);
-	GameTooltip:SetText(ARTIFACT_POWER_TOOLTIP_TITLE:format(BreakUpLargeNumbers(ArtifactWatchBar.totalXP), BreakUpLargeNumbers(ArtifactWatchBar.xp), BreakUpLargeNumbers(ArtifactWatchBar.xpForNextPoint)), HIGHLIGHT_FONT_COLOR:GetRGB());
-	GameTooltip:AddLine(" ");
+	GameTooltip:SetText(ARTIFACT_POWER_TOOLTIP_TITLE:format(BreakUpLargeNumbers(ArtifactWatchBar.totalXP, true), BreakUpLargeNumbers(ArtifactWatchBar.xp, true), BreakUpLargeNumbers(ArtifactWatchBar.xpForNextPoint, true)), HIGHLIGHT_FONT_COLOR:GetRGB());
 	GameTooltip:AddLine(ARTIFACT_POWER_TOOLTIP_BODY:format(ArtifactWatchBar.numPointsAvailableToSpend), nil, nil, nil, true);
 
 	GameTooltip:Show();
@@ -118,19 +175,21 @@ function MainMenuBar_OnEvent(self, event, ...)
 		if ( unitToken == "player" ) then
 			UpdateMicroButtons();
 		end
+	elseif ( event == "TRIAL_STATUS_UPDATE" ) then
+		UpdateMicroButtons();
 	end
 end
 
-function MainMenuBar_GetNumArtifactTraitsPurchasableFromXP(pointsSpent, artifactXP)
+function MainMenuBar_GetNumArtifactTraitsPurchasableFromXP(pointsSpent, artifactXP, artifactTier)
 	local numPoints = 0;
-	local xpForNextPoint = C_ArtifactUI.GetCostForPointAtRank(pointsSpent);
+	local xpForNextPoint = C_ArtifactUI.GetCostForPointAtRank(pointsSpent, artifactTier);
 	while artifactXP >= xpForNextPoint and xpForNextPoint > 0 do
 		artifactXP = artifactXP - xpForNextPoint;
 
 		pointsSpent = pointsSpent + 1;
 		numPoints = numPoints + 1;
 
-		xpForNextPoint = C_ArtifactUI.GetCostForPointAtRank(pointsSpent);
+		xpForNextPoint = C_ArtifactUI.GetCostForPointAtRank(pointsSpent, artifactTier);
 	end
 	return numPoints, artifactXP, xpForNextPoint;
 end
@@ -141,10 +200,10 @@ function MainMenuBar_UpdateExperienceBars(newLevel)
 	if ( not newLevel ) then
 		newLevel = UnitLevel("player");
 	end
-
-	local showArtifact = HasArtifactEquipped();
+	local artifactItemID, _, _, _, artifactTotalXP, artifactPointsSpent, _, _, _, _, _, _, artifactTier = C_ArtifactUI.GetEquippedArtifactInfo();
+	local showArtifact = artifactItemID and (UnitLevel("player") >= MAX_PLAYER_LEVEL or GetCVarBool("showArtifactXPBar")) and not C_ArtifactUI.IsEquippedArtifactMaxed();
 	local showXP = newLevel < MAX_PLAYER_LEVEL and not IsXPUserDisabled();
-	local showHonor = newLevel >= MAX_PLAYER_LEVEL and (IsWatchingHonorAsXP() or InActiveBattlefield());
+	local showHonor = newLevel >= MAX_PLAYER_LEVEL and (IsWatchingHonorAsXP() or InActiveBattlefield() or IsInActiveWorldPVP());
 	local showRep = name;
 	local numBarsShowing = 0;
 	--******************* EXPERIENCE **************************************
@@ -165,18 +224,19 @@ function MainMenuBar_UpdateExperienceBars(newLevel)
 		visibilityChanged = true;
 	end
 	if ( showArtifact ) then
+		if (UnitLevel("player") < MAX_PLAYER_LEVEL) then
+			SetWatchedFactionIndex(0);
+		end
 		local statusBar = ArtifactWatchBar.StatusBar;
-		local itemID, altItemID, name, icon, totalXP, pointsSpent, quality, artifactAppearanceID, appearanceModID, itemAppearanceID, altItemAppearanceID, altOnTop = C_ArtifactUI.GetEquippedArtifactInfo();
+		local numPointsAvailableToSpend, xp, xpForNextPoint = MainMenuBar_GetNumArtifactTraitsPurchasableFromXP(artifactPointsSpent, artifactTotalXP, artifactTier);
 
-		local numPointsAvailableToSpend, xp, xpForNextPoint = MainMenuBar_GetNumArtifactTraitsPurchasableFromXP(pointsSpent, totalXP);
-
-		statusBar:SetAnimatedValues(xp, 0, xpForNextPoint, numPointsAvailableToSpend + pointsSpent);
-		if visibilityChanged or statusBar.itemID ~= itemID or C_ArtifactUI.IsAtForge() then
+		statusBar:SetAnimatedValues(xp, 0, xpForNextPoint, numPointsAvailableToSpend + artifactPointsSpent);
+		if visibilityChanged or statusBar.artifactItemID ~= artifactItemID or C_ArtifactUI.IsAtForge() then
 			statusBar:Reset();
 		end
-		statusBar.itemID = itemID;
+		statusBar.artifactItemID = artifactItemID;
 		ArtifactWatchBar.xp = xp;
-		ArtifactWatchBar.totalXP = totalXP;
+		ArtifactWatchBar.totalXP = artifactTotalXP;
 		ArtifactWatchBar.xpForNextPoint = xpForNextPoint;
 		ArtifactWatchBar.numPointsAvailableToSpend = numPointsAvailableToSpend;
 		ArtifactWatchBar:Show();
@@ -238,7 +298,7 @@ function MainMenuBar_UpdateExperienceBars(newLevel)
 			ReputationWatchBar.StatusBar:Reset();
 		end
 
-		local isCappedFriendship;
+		local isCapped;
 		-- do something different for friendships
 		local level;
 		if ( ReputationWatchBar.friendshipID ) then
@@ -249,11 +309,21 @@ function MainMenuBar_UpdateExperienceBars(newLevel)
 			else
 				-- max rank, make it look like a full bar
 				min, max, value = 0, 1, 1;
-				isCappedFriendship = true;
+				isCapped = true;
 			end
 			colorIndex = 5;		-- always color friendships green
+		elseif (C_Reputation.IsFactionParagon(factionID)) then
+			local currentValue, threshold, _, hasRewardPending = C_Reputation.GetFactionParagonInfo(factionID);
+			min, max  = 0, threshold;
+			value = currentValue % threshold;
+			if hasRewardPending then 
+				value = value + threshold;
+			end
 		else
 			level = reaction;
+			if (reaction == MAX_REPUTATION_REACTION) then
+				isCapped = true;
+			end
 		end
 
 		-- See if it was already shown or not
@@ -264,10 +334,14 @@ function MainMenuBar_UpdateExperienceBars(newLevel)
 		-- Normalize values
 		max = max - min;
 		value = value - min;
+		if ( isCapped and max == 0 ) then
+			max = 1;
+			value = 1;
+		end
 		min = 0;
 		local statusBar = ReputationWatchBar.StatusBar;
 		statusBar:SetAnimatedValues(value, min, max, level);
-		if ( isCappedFriendship ) then
+		if ( isCapped ) then
 			ReputationWatchBar.OverlayFrame.Text:SetText(name);
 		else
 			ReputationWatchBar.OverlayFrame.Text:SetText(name.." "..value.." / "..max);
@@ -291,7 +365,7 @@ function MainMenuBar_UpdateExperienceBars(newLevel)
 	end
 
 	-- update the xp bar
-	TextStatusBar_UpdateTextString(MainMenuExpBar);
+	ExpBar_UpdateTextString();	
 	ExpBar_Update();
 	
 	if ( visibilityChanged ) then
@@ -406,6 +480,17 @@ function ExhaustionTick_OnLoad(self)
 end
 
 function ExhaustionTick_OnEvent(self, event, ...)
+	if (IsRestrictedAccount()) then
+		local rlevel = GetRestrictedAccountData();
+		if (UnitLevel("player") >= rlevel) then
+			MainMenuExpBar:SetStatusBarColor(0.0, 0.39, 0.88, 1.0);
+			MainMenuExpBar:SetAnimatedTextureColors(0.0, 0.39, 0.88, 1.0);
+			ExhaustionTick:Hide();
+			ExhaustionLevelFillBar:Hide();
+			self:UnregisterAllEvents();	
+			return;
+		end
+	end
 	if ((event == "PLAYER_ENTERING_WORLD") or (event == "PLAYER_XP_UPDATE") or (event == "UPDATE_EXHAUSTION") or (event == "PLAYER_LEVEL_UP")) then
 		local playerCurrXP = UnitXP("player");
 		local playerMaxXP = UnitXPMax("player");
@@ -715,6 +800,8 @@ function HonorWatchBar_OnLoad(self)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("HONOR_XP_UPDATE");
 	self:RegisterEvent("CVAR_UPDATE");
+	self:RegisterEvent("ZONE_CHANGED");
+	self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
     self.OverlayFrame.Text:SetPoint("CENTER", 0, -1);
 	self.StatusBar:SetOnAnimatedValueChangedCallback(MainMenuBar_HonorUpdateOverlayFrameText);
 	self.StatusBar.OnFinishedCallback = function(...)

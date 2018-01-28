@@ -122,7 +122,7 @@ AuctionSort["bidder_duration"] = {
 -- list sorts
 AuctionSort["list_level"] = {
 	{ column = "duration",	reverse = true	},
-	{ column = "bid",		reverse = true	},
+	{ column = "unitprice",		reverse = false },
 	{ column = "quantity",	reverse = false	},
 	{ column = "minbidbuyout",	reverse = true	},
 	{ column = "name",		reverse = true	},
@@ -130,7 +130,7 @@ AuctionSort["list_level"] = {
 	{ column = "level",		reverse = false	},
 };
 AuctionSort["list_duration"] = {
-	{ column = "bid",		reverse = false	},
+	{ column = "unitprice",		reverse = false },
 	{ column = "quantity",	reverse = true	},
 	{ column = "minbidbuyout",	reverse = false	},
 	{ column = "name",		reverse = false	},
@@ -140,7 +140,7 @@ AuctionSort["list_duration"] = {
 };
 AuctionSort["list_seller"] = {
 	{ column = "duration",	reverse = false	},
-	{ column = "bid",		reverse = false },
+	{ column = "unitprice",		reverse = false },
 	{ column = "quantity",	reverse = true	},
 	{ column = "minbidbuyout",	reverse = false	},
 	{ column = "name",		reverse = false	},
@@ -148,18 +148,18 @@ AuctionSort["list_seller"] = {
 	{ column = "quality",	reverse = false	},
 	{ column = "seller",	reverse = false	},
 };
-AuctionSort["list_bid"] = {
+AuctionSort["list_unitprice"] = {
 	{ column = "duration",	reverse = false	},
 	{ column = "quantity",	reverse = true	},
 	{ column = "name",		reverse = false	},
 	{ column = "level",		reverse = true	},
 	{ column = "quality",	reverse = false	},
-	{ column = "bid",		reverse = false	},
+	{ column = "unitprice",	reverse = false	},
 };
 
 AuctionSort["list_quality"] = {
 	{ column = "duration",	reverse = false	},
-	{ column = "bid",		reverse = false	},
+	{ column = "unitprice",		reverse = false },
 	{ column = "quantity",	reverse = true	},
 	{ column = "minbidbuyout",	reverse = false	},
 	{ column = "name",		reverse = false	},
@@ -373,14 +373,26 @@ do -- Armor
 	local plateCategory = armorCategory:CreateSubCategoryAndFilter(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_PLATE);
 	plateCategory:AddBulkInventoryTypeCategories(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_PLATE, ArmorInventoryTypes);
 
+	local plateChestCategory = plateCategory:FindSubCategoryByName(GetItemInventorySlotInfo(LE_INVENTORY_TYPE_CHEST_TYPE));
+	plateChestCategory:AddFilter(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_PLATE, LE_INVENTORY_TYPE_ROBE_TYPE);
+
 	local mailCategory = armorCategory:CreateSubCategoryAndFilter(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_MAIL);
 	mailCategory:AddBulkInventoryTypeCategories(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_MAIL, ArmorInventoryTypes);
 	
+	local mailChestCategory = mailCategory:FindSubCategoryByName(GetItemInventorySlotInfo(LE_INVENTORY_TYPE_CHEST_TYPE));
+	mailChestCategory:AddFilter(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_MAIL, LE_INVENTORY_TYPE_ROBE_TYPE);
+
 	local leatherCategory = armorCategory:CreateSubCategoryAndFilter(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_LEATHER);
 	leatherCategory:AddBulkInventoryTypeCategories(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_LEATHER, ArmorInventoryTypes);
 
+	local leatherChestCategory = leatherCategory:FindSubCategoryByName(GetItemInventorySlotInfo(LE_INVENTORY_TYPE_CHEST_TYPE));
+	leatherChestCategory:AddFilter(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_LEATHER, LE_INVENTORY_TYPE_ROBE_TYPE);
+
 	local clothCategory = armorCategory:CreateSubCategoryAndFilter(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_CLOTH);
 	clothCategory:AddBulkInventoryTypeCategories(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_CLOTH, ArmorInventoryTypes);
+
+	local clothChestCategory = clothCategory:FindSubCategoryByName(GetItemInventorySlotInfo(LE_INVENTORY_TYPE_CHEST_TYPE));
+	clothChestCategory:AddFilter(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_CLOTH, LE_INVENTORY_TYPE_ROBE_TYPE);
 
 	local miscCategory = armorCategory:CreateSubCategory(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_GENERIC);
 	miscCategory:CreateSubCategoryAndFilter(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_GENERIC, LE_INVENTORY_TYPE_NECK_TYPE);
@@ -445,6 +457,7 @@ end
 do -- Battle Pets
 	local battlePetsCategory = AuctionFrame_CreateCategory(AUCTION_CATEGORY_BATTLE_PETS);
 	battlePetsCategory:GenerateSubCategoriesAndFiltersFromSubClass(LE_ITEM_CLASS_BATTLEPET);
+	battlePetsCategory:CreateSubCategoryAndFilter(LE_ITEM_CLASS_MISCELLANEOUS, LE_ITEM_MISCELLANEOUS_COMPANION_PET);
 end
 
 do -- Quest Items
@@ -454,7 +467,11 @@ end
 
 do -- Miscellaneous
 	local miscellaneousCategory = AuctionFrame_CreateCategory(AUCTION_CATEGORY_MISCELLANEOUS);
-	miscellaneousCategory:GenerateSubCategoriesAndFiltersFromSubClass(LE_ITEM_CLASS_MISCELLANEOUS);
+	miscellaneousCategory:CreateSubCategoryAndFilter(LE_ITEM_CLASS_MISCELLANEOUS, LE_ITEM_MISCELLANEOUS_JUNK);
+	miscellaneousCategory:CreateSubCategoryAndFilter(LE_ITEM_CLASS_MISCELLANEOUS, LE_ITEM_MISCELLANEOUS_REAGENT);
+	miscellaneousCategory:CreateSubCategoryAndFilter(LE_ITEM_CLASS_MISCELLANEOUS, LE_ITEM_MISCELLANEOUS_HOLIDAY);
+	miscellaneousCategory:CreateSubCategoryAndFilter(LE_ITEM_CLASS_MISCELLANEOUS, LE_ITEM_MISCELLANEOUS_OTHER);
+	miscellaneousCategory:CreateSubCategoryAndFilter(LE_ITEM_CLASS_MISCELLANEOUS, LE_ITEM_MISCELLANEOUS_MOUNT);
 end
 
 do -- WoW Token

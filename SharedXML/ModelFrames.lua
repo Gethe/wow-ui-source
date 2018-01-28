@@ -35,6 +35,14 @@ local ModelSettings = {
 	["WorgenFemaleAlt"] = { panMaxLeft = -0.3, panMaxRight = 0.3, panMaxTop = 1.2, panMaxBottom = -0.2, panValue = 45 },
 	["PandarenMale"] = { panMaxLeft = -0.7, panMaxRight = 0.9, panMaxTop = 1.1, panMaxBottom = -0.5, panValue = 31 },
 	["PandarenFemale"] = { panMaxLeft = -0.5, panMaxRight = 0.6, panMaxTop = 1.3, panMaxBottom = -0.4, panValue = 32 },	
+	["NightborneMale"] = { panMaxLeft = -0.5, panMaxRight = 0.5, panMaxTop = 1.5, panMaxBottom = -0.4, panValue = 30 },
+	["NightborneFemale"] = { panMaxLeft = -0.4, panMaxRight = 0.4, panMaxTop = 1.4, panMaxBottom = -0.4, panValue = 33 },
+	["HighmountainTaurenMale"] = { panMaxLeft = -0.7, panMaxRight = 0.9, panMaxTop = 1.1, panMaxBottom = -0.5, panValue = 31 },
+	["HighmountainTaurenFemale"] = { panMaxLeft = -0.5, panMaxRight = 0.6, panMaxTop = 1.3, panMaxBottom = -0.4, panValue = 32 },
+	["VoidElfMale"] = { panMaxLeft = -0.5, panMaxRight = 0.4, panMaxTop = 1.3, panMaxBottom = -0.3, panValue = 36 },
+	["VoidElfFemale"] = { panMaxLeft = -0.3, panMaxRight = 0.2, panMaxTop = 1.2, panMaxBottom = -0.3, panValue = 38 },
+	["LightforgedDraeneiMale"] = { panMaxLeft = -0.6, panMaxRight = 0.6, panMaxTop = 1.4, panMaxBottom = -0.4, panValue = 28 },
+	["LightforgedDraeneiFemale"] = { panMaxLeft = -0.3, panMaxRight = 0.3, panMaxTop = 1.4, panMaxBottom = -0.3, panValue = 31 },
 }
 
 local playerRaceSex;
@@ -70,18 +78,18 @@ function Model_RotateLeft(model, rotationIncrement)
 	if ( not rotationIncrement ) then
 		rotationIncrement = 0.03;
 	end
-	model.rotation = model.rotation - rotationIncrement;
+	model.rotation = model.rotation + rotationIncrement;
 	model:SetRotation(model.rotation);
-	PlaySound("igInventoryRotateCharacter");
+	PlaySound(SOUNDKIT.IG_INVENTORY_ROTATE_CHARACTER);
 end
 
 function Model_RotateRight(model, rotationIncrement)
 	if ( not rotationIncrement ) then
 		rotationIncrement = 0.03;
 	end
-	model.rotation = model.rotation + rotationIncrement;
+	model.rotation = model.rotation - rotationIncrement;
 	model:SetRotation(model.rotation);
-	PlaySound("igInventoryRotateCharacter");
+	PlaySound(SOUNDKIT.IG_INVENTORY_ROTATE_CHARACTER);
 end
 
 function Model_OnMouseDown(model, button)
@@ -177,19 +185,31 @@ function Model_OnUpdate(self, elapsedTime, rotationsPerSecond)
 		rightButton = self.RotateRightButton or (self:GetName() and _G[self:GetName().."RotateRightButton"]);
 	end
 
-	if ( leftButton and leftButton:GetButtonState() == "PUSHED" ) then
+	Model_UpdateRotation(self, leftButton, rightButton, elapsedTime, rotationsPerSecond);
+end
+
+function Model_UpdateRotation(self, leftButton, rightButton, elapsedTime, rotationsPerSecond)
+	rotationsPerSecond = rotationsPerSecond or ROTATIONS_PER_SECOND;
+	
+	if ( rightButton and rightButton:GetButtonState() == "PUSHED" ) then
 		self.rotation = self.rotation + (elapsedTime * 2 * PI * rotationsPerSecond);
-		if ( self.rotation < 0 ) then
-			self.rotation = self.rotation + (2 * PI);
-		end
-		self:SetRotation(self.rotation);
-	elseif ( rightButton and rightButton:GetButtonState() == "PUSHED" ) then
-		self.rotation = self.rotation - (elapsedTime * 2 * PI * rotationsPerSecond);
 		if ( self.rotation > (2 * PI) ) then
 			self.rotation = self.rotation - (2 * PI);
 		end
 		self:SetRotation(self.rotation);
+	elseif ( leftButton and leftButton:GetButtonState() == "PUSHED" ) then
+		self.rotation = self.rotation - (elapsedTime * 2 * PI * rotationsPerSecond);
+		if ( self.rotation < 0 ) then
+			self.rotation = self.rotation + (2 * PI);
+		end
+		self:SetRotation(self.rotation);
 	end
+end
+
+function Model_SetDefaultRotation(self, rotation)
+	self.defaultRotation = rotation;
+	self.rotation = rotation;
+	self:SetRotation(rotation);
 end
 
 function Model_Reset(self)

@@ -375,7 +375,7 @@ function BlizzardOptionsPanel_OnEvent (frame, event, ...)
 				end
 			end
 		end
-		frame:UnregisterEvent(event);	
+		frame:UnregisterEvent(event);
 	end
 end
 
@@ -392,7 +392,7 @@ function BlizzardOptionsPanel_RegisterControl (control, parentFrame)
 end
 
 function BlizzardOptionsPanel_SetupControl (control)
-	if ( control.type == CONTROLTYPE_CHECKBOX ) then			
+	if ( control.type == CONTROLTYPE_CHECKBOX ) then
 		if ( control.cvar ) then
 			local value = GetCVar(control.cvar);
 			control.value = value;
@@ -460,12 +460,12 @@ function BlizzardOptionsPanel_SetupDependentControl (dependency, control)
 	if ( not dependency ) then
 		return;
 	end
-	
+
 	assert(control);
-	
+
 	dependency.dependentControls = dependency.dependentControls or {};
 	tinsert(dependency.dependentControls, control);
-	
+
 	if ( control.type ~= CONTROLTYPE_DROPDOWN ) then
 		control.Disable = function (self) getmetatable(self).__index.Disable(self) _G[self:GetName().."Text"]:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b) end;
 		control.Enable = function (self) getmetatable(self).__index.Enable(self) _G[self:GetName().."Text"]:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b) end;
@@ -474,4 +474,3 @@ function BlizzardOptionsPanel_SetupDependentControl (dependency, control)
 		control.Enable = function (self) UIDropDownMenu_EnableDropDown(self) end;
 	end
 end
-

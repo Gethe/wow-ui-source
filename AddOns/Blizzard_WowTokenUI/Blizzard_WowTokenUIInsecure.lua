@@ -4,7 +4,7 @@
 function RedeemFailed(result)
 	local error;
 	if (result == LE_TOKEN_RESULT_ERROR_TRIAL_RESTRICTED) then
-		error = ERR_RESTRICTED_ACCOUNT_TRIAL;
+		error = TOKEN_TRIAL_RESTRICTIONS;
 	elseif (result == LE_TOKEN_RESULT_ERROR_DISABLED) then
 		error = TOKEN_AUCTIONS_UNAVAILABLE;
 	else

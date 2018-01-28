@@ -1,0 +1,194 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="RoleSelectionTemplate.lua"/>
+	<Button name="RoleSelectionRoleTemplate" mixin="RoleSelectionRoleMixin" virtual="true" motionScriptsWhileDisabled="true">
+		<Size>
+			<AbsDimension x="48" y="48"/>
+		</Size>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture file="Interface\LFGFrame\UI-LFG-ICON-ROLES" setAllPoints="true" parentKey="Cover" alpha="0.5" hidden="true">
+					<TexCoords left="0" right="0.2617" top="0.5234" bottom="0.7851"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<CheckButton parentKey="CheckButton">
+				<Size x="24" y="24"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="-5" y="-5"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent():OnClick(button);
+					</OnClick>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+				<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+				<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+				<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
+			</CheckButton>
+		</Frames>
+		<Scripts>
+			<OnEnter>
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+				GameTooltip:SetText(_G["ROLE_DESCRIPTION"..self:GetID()], nil, nil, nil, nil, true);
+				if ( self.permDisabled ) then
+					GameTooltip:AddLine(YOUR_CLASS_MAY_NOT_PERFORM_ROLE, 1, 0, 0, true);
+				elseif ( self.tempDisabled and self.errorString ) then
+					GameTooltip:AddLine(self.errorString, 1, 0, 0, true);
+				end
+				GameTooltip:Show();
+				if ( self.CheckButton:IsEnabled() ) then
+					self.CheckButton:LockHighlight();
+				end
+			</OnEnter>
+			<OnClick>
+				if ( self.CheckButton:IsEnabled() ) then
+					self:OnClick(button);
+				end
+			</OnClick>
+			<OnLeave>
+				GameTooltip:Hide();
+				self.CheckButton:UnlockHighlight();
+			</OnLeave>
+		</Scripts>
+		<NormalTexture file="Interface\LFGFrame\UI-LFG-ICON-ROLES"/>
+	</Button>
+	<Frame name="RoleSelectionTemplate" mixin="RoleSelectionMixin" virtual="true">
+		<Size x="306" y="160"/>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString inherits="GameFontHighlight" justifyH="CENTER" text="SELECT_YOUR_ROLE">
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-15"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="QueueWarningText" inherits="GameFontHighlight" justifyH="CENTER" text="ACCEPTING_INVITE_WILL_REMOVE_QUEUE" hidden="true">
+					<Size x="240" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-120"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="CloseButton">
+				<Size x="32" y="32"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-2" y="-2"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+						StaticPopupSpecial_Hide(self:GetParent());
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Down"/>
+				<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
+			</Button>
+			<Button parentKey="RoleButtonTank" parentArray="Roles" inherits="RoleSelectionRoleTemplate" id="2">
+				<Size x="70" y="70"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="35" y="-35"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.permDisabledTip = YOUR_CLASS_MAY_NOT_PERFORM_ROLE;
+						self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("TANK"));
+						self.role = "TANK";
+					</OnLoad>
+				</Scripts>
+			</Button>
+			<Button parentKey="RoleButtonHealer" parentArray="Roles" inherits="RoleSelectionRoleTemplate" id="3">
+				<Size x="70" y="70"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.RoleButtonTank" relativePoint="RIGHT" x="15" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.permDisabledTip = YOUR_CLASS_MAY_NOT_PERFORM_ROLE;
+						self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("HEALER"));
+						self.role = "HEALER";
+					</OnLoad>
+				</Scripts>
+			</Button>
+			<Button parentKey="RoleButtonDPS" parentArray="Roles" inherits="RoleSelectionRoleTemplate" id="1">
+				<Size>
+					<AbsDimension x="70" y="70"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.RoleButtonHealer" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="15" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.permDisabledTip = YOUR_CLASS_MAY_NOT_PERFORM_ROLE;
+						self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("DAMAGER"));
+						self.role = "DAMAGER";
+					</OnLoad>
+				</Scripts>
+			</Button>
+			<Button parentKey="AcceptButton" inherits="UIPanelButtonTemplate" text="ACCEPT">
+				<Size>
+					<AbsDimension x="115" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="-3" y="15"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent():OnAccept();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button parentKey="CancelButton" inherits="UIPanelButtonTemplate" text="CANCEL">
+				<Size>
+					<AbsDimension x="115" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.AcceptButton" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="6" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent():OnCancel();
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow>
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
+			</OnShow>
+			<OnHide>
+				PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
+			</OnHide>
+		</Scripts>
+	</Frame>
+</Ui>

@@ -113,34 +113,10 @@ end
 
 function RaidWarningFrame_OnEvent(self, event, message)
 	if ( event == "CHAT_MSG_RAID_WARNING" ) then
-		
-		--Task 21207: Add the ability to link raid icons to other players
-		local term;
-		for tag in string.gmatch(message, "%b{}") do
-			term = strlower(string.gsub(tag, "[{}]", ""));
-			if ( ICON_TAG_LIST[term] and ICON_LIST[ICON_TAG_LIST[term]] ) then
-				-- Using 0 as the height to make the texture match the font height
-				message = string.gsub(message, tag, ICON_LIST[ICON_TAG_LIST[term]] .. "0|t");
-			elseif ( GROUP_TAG_LIST[term] ) then
-				local groupIndex = GROUP_TAG_LIST[term];
-				local groupList = "[";
-				for i=1, GetNumGroupMembers() do
-					local name, rank, subgroup, level, class, classFileName = GetRaidRosterInfo(i);
-					if ( name and subgroup == groupIndex ) then
-						local classColorTable = RAID_CLASS_COLORS[classFileName];
-						if ( classColorTable ) then
-							name = string.format("\124cff%.2x%.2x%.2x%s\124r", classColorTable.r*255, classColorTable.g*255, classColorTable.b*255, name);
-						end
-						groupList = groupList..(groupList == "[" and "" or PLAYER_LIST_DELIMITER)..name;
-					end
-				end
-				groupList = groupList.."]";
-				message = string.gsub(message, tag, groupList);
-			end
-		end		
+		message = ChatFrame_ReplaceIconAndGroupExpressions(message);
 		
 		RaidNotice_AddMessage( self, message, ChatTypeInfo["RAID_WARNING"] );
-		PlaySound("RaidWarning");
+		PlaySound(SOUNDKIT.RAID_WARNING);
 	end
 end
 
@@ -169,9 +145,9 @@ function RaidBossEmoteFrame_OnEvent(self, event, ...)
 --		RaidNotice_AddMessage( RaidBossEmoteFrame, "This is a TEST of the MESSAGE!", ChatTypeInfo["RAID_BOSS_EMOTE"] );
 		if ( playSound ) then
 			if ( event == "RAID_BOSS_WHISPER" ) then
-				PlaySound("UI_RaidBossWhisperWarning");
+				PlaySound(SOUNDKIT.UI_RAID_BOSS_WHISPER_WARNING);
 			else
-				PlaySound("RaidBossEmoteWarning");
+				PlaySound(SOUNDKIT.RAID_BOSS_EMOTE_WARNING);
 			end
 		end
 	elseif ( event == "CLEAR_BOSS_EMOTES" ) then

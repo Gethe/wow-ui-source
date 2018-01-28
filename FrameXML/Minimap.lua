@@ -27,10 +27,10 @@ end
 
 function ToggleMinimap()
 	if(Minimap:IsShown()) then
-		PlaySound("igMiniMapClose");
+		PlaySound(SOUNDKIT.IG_MINIMAP_CLOSE);
 		Minimap:Hide();
 	else
-		PlaySound("igMiniMapOpen");
+		PlaySound(SOUNDKIT.IG_MINIMAP_OPEN);
 		Minimap:Show();
 	end
 	UpdateUIPanelPositions();
@@ -73,11 +73,15 @@ function Minimap_SetTooltip( pvpType, factionName )
 			GameTooltip:AddLine( subzoneName, 1.0, 0.1, 0.1 );	
 			GameTooltip:AddLine(FREE_FOR_ALL_TERRITORY, 1.0, 0.1, 0.1);
 		elseif ( pvpType == "friendly" ) then
-			GameTooltip:AddLine( subzoneName, 0.1, 1.0, 0.1 );	
-			GameTooltip:AddLine(format(FACTION_CONTROLLED_TERRITORY, factionName), 0.1, 1.0, 0.1);
+			if (factionName and factionName ~= "") then
+				GameTooltip:AddLine( subzoneName, 0.1, 1.0, 0.1 );	
+				GameTooltip:AddLine(format(FACTION_CONTROLLED_TERRITORY, factionName), 0.1, 1.0, 0.1);
+			end
 		elseif ( pvpType == "hostile" ) then
-			GameTooltip:AddLine( subzoneName, 1.0, 0.1, 0.1 );	
-			GameTooltip:AddLine(format(FACTION_CONTROLLED_TERRITORY, factionName), 1.0, 0.1, 0.1);
+			if (factionName and factionName ~= "") then
+				GameTooltip:AddLine( subzoneName, 1.0, 0.1, 0.1 );	
+				GameTooltip:AddLine(format(FACTION_CONTROLLED_TERRITORY, factionName), 1.0, 0.1, 0.1);
+			end
 		elseif ( pvpType == "contested" ) then
 			GameTooltip:AddLine( subzoneName, 1.0, 0.7, 0.0 );	
 			GameTooltip:AddLine(CONTESTED_TERRITORY, 1.0, 0.7, 0.0);
@@ -111,13 +115,13 @@ end
 
 function Minimap_SetPing(x, y, playSound)
 	if ( playSound ) then
-		PlaySound("MapPing");
+		PlaySound(SOUNDKIT.MAP_PING);
 	end
 end
 
 function Minimap_ZoomInClick()
 	MinimapZoomOut:Enable();
-	PlaySound("igMiniMapZoomIn");
+	PlaySound(SOUNDKIT.IG_MINIMAP_ZOOM_IN);
 	Minimap:SetZoom(Minimap:GetZoom() + 1);
 	if(Minimap:GetZoom() == (Minimap:GetZoomLevels() - 1)) then
 		MinimapZoomIn:Disable();
@@ -126,7 +130,7 @@ end
 
 function Minimap_ZoomOutClick()
 	MinimapZoomIn:Enable();
-	PlaySound("igMiniMapZoomOut");
+	PlaySound(SOUNDKIT.IG_MINIMAP_ZOOM_OUT);
 	Minimap:SetZoom(Minimap:GetZoom() - 1);
 	if(Minimap:GetZoom() == 0) then
 		MinimapZoomOut:Disable();
@@ -472,6 +476,18 @@ function MiniMapInstanceDifficulty_Update()
 	end
 end
 
+function MiniMapInstanceDifficulty_OnEnter(self)
+	local _, instanceType, difficulty, _, maxPlayers, playerDifficulty, isDynamicInstance, _, instanceGroupSize, lfgID = GetInstanceInfo();
+	local isLFR = select(8, GetDifficultyInfo(difficulty))
+	if (isLFR and lfgID) then
+		GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT", 8, 8);
+		local name = GetLFGDungeonInfo(lfgID);
+		GameTooltip:SetText(RAID_FINDER, 1, 1, 1);
+		GameTooltip:AddLine(name);
+		GameTooltip:Show();
+	end
+end
+
 function GuildInstanceDifficulty_OnEnter(self)
 	local guildName = GetGuildInfo("player");
 	local _, instanceType, _, _, maxPlayers = GetInstanceInfo();
@@ -518,23 +534,29 @@ function GarrisonLandingPageMinimapButton_OnEvent(self, event, ...)
 	if (event == "GARRISON_HIDE_LANDING_PAGE") then
 		self:Hide();
 	elseif (event == "GARRISON_SHOW_LANDING_PAGE") then
+		GarrisonLandingPageMinimapButton_UpdateIcon(self);
 		self:Show();
 	elseif ( event == "GARRISON_BUILDING_ACTIVATABLE" ) then
-		GarrisonMinimapBuilding_ShowPulse(self);
+		local buildingName, garrisonType = ...;
+		if ( garrisonType == C_Garrison.GetLandingPageGarrisonType() ) then
+			GarrisonMinimapBuilding_ShowPulse(self);
+		end
 	elseif ( event == "GARRISON_BUILDING_ACTIVATED" or event == "GARRISON_ARCHITECT_OPENED") then
 		GarrisonMinimap_HidePulse(self, GARRISON_ALERT_CONTEXT_BUILDING);
 	elseif ( event == "GARRISON_MISSION_FINISHED" ) then
 		local followerType = ...;
-		GarrisonMinimapMission_ShowPulse(self, followerType);
+		if ( DoesFollowerMatchCurrentGarrisonType(followerType) ) then
+			GarrisonMinimapMission_ShowPulse(self, followerType);
+		end
 	elseif ( event == "GARRISON_MISSION_NPC_OPENED" ) then
 		local followerType = ...;
-		if followerType == LE_FOLLOWER_TYPE_GARRISON_6_0 then
-			GarrisonMinimap_HidePulse(self, GARRISON_ALERT_CONTEXT_MISSION[LE_FOLLOWER_TYPE_GARRISON_6_0]);
-		end
+		GarrisonMinimap_HidePulse(self, GARRISON_ALERT_CONTEXT_MISSION[followerType]);
 	elseif ( event == "GARRISON_SHIPYARD_NPC_OPENED" ) then
 		GarrisonMinimap_HidePulse(self, GARRISON_ALERT_CONTEXT_MISSION[LE_FOLLOWER_TYPE_SHIPYARD_6_2]);
 	elseif (event == "GARRISON_INVASION_AVAILABLE") then
-		GarrisonMinimapInvasion_ShowPulse(self);
+		if ( C_Garrison.GetLandingPageGarrisonType() == LE_GARRISON_TYPE_6_0 ) then
+			GarrisonMinimapInvasion_ShowPulse(self);
+		end
 	elseif (event == "GARRISON_INVASION_UNAVAILABLE") then
 		GarrisonMinimap_HidePulse(self, GARRISON_ALERT_CONTEXT_INVASION);
 	elseif (event == "SHIPMENT_UPDATE") then
@@ -545,12 +567,9 @@ function GarrisonLandingPageMinimapButton_OnEvent(self, event, ...)
 	end
 end
 
-function GarrisonLandingPageMinimapButton_OnShow(self)
-	GarrisonLandingPageMinimapButton_UpdateIcon(self);
-end
-
 function GarrisonLandingPageMinimapButton_UpdateIcon(self)
-	if (C_Garrison.GetLandingPageGarrisonType() == LE_GARRISON_TYPE_6_0) then
+	local garrisonType = C_Garrison.GetLandingPageGarrisonType();
+	if (garrisonType == LE_GARRISON_TYPE_6_0) then
 		self.faction = UnitFactionGroup("player");
 		if ( self.faction == "Horde" ) then
 			self:GetNormalTexture():SetAtlas("GarrLanding-MinimapIcon-Horde-Up", true)
@@ -561,7 +580,7 @@ function GarrisonLandingPageMinimapButton_UpdateIcon(self)
 		end
 		self.title = GARRISON_LANDING_PAGE_TITLE;
 		self.description = MINIMAP_GARRISON_LANDING_PAGE_TOOLTIP;
-	else
+	elseif (garrisonType == LE_GARRISON_TYPE_7_0) then
 		local _, className = UnitClass("player");
 		self:GetNormalTexture():SetAtlas("legionmission-landingbutton-"..className.."-up", true);
 		self:GetPushedTexture():SetAtlas("legionmission-landingbutton-"..className.."-down", true);
@@ -636,7 +655,7 @@ function GarrisonMinimap_Justify(text)
 end
 
 function GarrisonMinimapInvasion_ShowPulse(self)
-	PlaySound("UI_Garrison_Toast_InvasionAlert");
+	PlaySound(SOUNDKIT.UI_GARRISON_TOAST_INVASION_ALERT);
 	self.AlertText:SetText(GARRISON_LANDING_INVASION_ALERT);
 	GarrisonMinimap_Justify(self.AlertText);
 	GarrisonMinimap_SetPulseLock(self, GARRISON_ALERT_CONTEXT_INVASION, true);

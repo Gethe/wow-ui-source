@@ -66,9 +66,21 @@
 	</Binding>
 	<Binding name="TOGGLESHEATH" category="BINDING_HEADER_MOVEMENT">
 		ToggleSheath();
+		if ( DressUpModel:IsShown() ) then
+			DressUpModel:SetSheathed(not DressUpModel:GetSheathed());
+		end
+		if ( WardrobeTransmogFrame and WardrobeTransmogFrame.Model:IsShown() ) then
+			WardrobeTransmogFrame.Model:SetSheathed(not WardrobeTransmogFrame.Model:GetSheathed());
+		end
 	</Binding>
 	<Binding name="TOGGLEAUTORUN" category="BINDING_HEADER_MOVEMENT">
 		ToggleAutoRun();
+	</Binding>
+	<Binding name="STARTAUTORUN" category="BINDING_HEADER_MOVEMENT">
+		StartAutoRun();
+	</Binding>
+	<Binding name="STOPAUTORUN" category="BINDING_HEADER_MOVEMENT">
+		StopAutoRun();
 	</Binding>
 	<Binding name="PITCHUP" runOnUp="true" category="BINDING_HEADER_MOVEMENT">
 		if ( keystate == "down" ) then
@@ -763,28 +775,28 @@
 		end
 	</Binding>
 	<Binding name="TARGETPARTYMEMBER1" category="BINDING_HEADER_TARGETING">
-		if ( UnitIsUnit("party1", "target") or UnitHasVehicleUI("party1") ) then
+		if ( UnitIsUnit("party1", "target") or UnitTargetsVehicleInRaidUI("party1") ) then
 			TargetUnit("partypet1");
 		else
 			TargetUnit("party1");
 		end
 	</Binding>
 	<Binding name="TARGETPARTYMEMBER2" category="BINDING_HEADER_TARGETING">
-		if ( UnitIsUnit("party2", "target") or UnitHasVehicleUI("party2") ) then
+		if ( UnitIsUnit("party2", "target") or UnitTargetsVehicleInRaidUI("party2") ) then
 			TargetUnit("partypet2");
 		else
 			TargetUnit("party2");
 		end
 	</Binding>
 	<Binding name="TARGETPARTYMEMBER3" category="BINDING_HEADER_TARGETING">
-		if ( UnitIsUnit("party3", "target") or UnitHasVehicleUI("party3") ) then
+		if ( UnitIsUnit("party3", "target") or UnitTargetsVehicleInRaidUI("party3") ) then
 			TargetUnit("partypet3");
 		else
 			TargetUnit("party3");
 		end
 	</Binding>
 	<Binding name="TARGETPARTYMEMBER4" category="BINDING_HEADER_TARGETING">
-		if ( UnitIsUnit("party4", "target") or UnitHasVehicleUI("party4") ) then
+		if ( UnitIsUnit("party4", "target") or UnitTargetsVehicleInRaidUI("party4") ) then
 			TargetUnit("partypet4");
 		else
 			TargetUnit("party4");
@@ -1008,6 +1020,9 @@
 	<Binding name="TOGGLEFRIENDSTAB" category="BINDING_HEADER_INTERFACE">
 		ToggleFriendsFrame(1);
 	</Binding>
+	<Binding name="TOGGLEQUICKJOINTAB" category="BINDING_HEADER_INTERFACE">
+		ToggleQuickJoinPanel();
+	</Binding>
 	<Binding name="TOGGLEWHOTAB" category="BINDING_HEADER_INTERFACE">
 		ToggleFriendsFrame(2);
 	</Binding>
@@ -1045,6 +1060,9 @@
 	</Binding>
 	<Binding name="TOGGLECOLLECTIONSHEIRLOOM" category="BINDING_HEADER_INTERFACE">
 		ToggleCollectionsJournal(4);
+	</Binding>
+	<Binding name="TOGGLECOLLECTIONSWARDROBE" category="BINDING_HEADER_INTERFACE">
+		ToggleCollectionsJournal(5);
 	</Binding>
 
 	<Binding name="TOGGLEENCOUNTERJOURNAL" header="BLANK15" category="BINDING_HEADER_INTERFACE">
@@ -1173,7 +1191,7 @@
 	</Binding>
 	<!-- Commentator Mode Bindings -->
 	<Binding name="TOGGLECOMMENTATOR" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
-		C_Commentator.ToggleMode();
+		C_Commentator.ToggleCheats();
 	</Binding>
 
 	<!-- Camera key bindings header="CAMERA" -->
@@ -1315,28 +1333,6 @@
 			CameraOrSelectOrMoveStart();
 		else
 			CameraOrSelectOrMoveStop(IsModifiedClick("STICKYCAMERA"));
-		end
-	</Binding>
-
-	<!-- Movie Recording Bindings header="MOVIE_RECORDING_SECTION" -->
-	<Binding name="MOVIE_RECORDING_STARTSTOP" platform="mac" category="BINDING_HEADER_MOVIE_RECORDING_SECTION">
-		if (MovieRecording_IsSupported()) then
-			MovieRecording_Toggle();
-		end
-	</Binding>
-	<Binding name="MOVIE_RECORDING_CANCEL" platform="mac" category="BINDING_HEADER_MOVIE_RECORDING_SECTION">
-		if(MovieRecording_IsSupported() and (MovieRecording_IsRecording() or MovieRecording_IsCompressing())) then
-			MacOptionsCancelFrame:Show();
-		end
-	</Binding>
-	<Binding name="MOVIE_RECORDING_COMPRESS" platform="mac" category="BINDING_HEADER_MOVIE_RECORDING_SECTION">
-		if (MovieRecording_IsSupported()) then
-			MovieRecording_SearchUncompressedMovie(true);
-		end
-	</Binding>
-	<Binding name="MOVIE_RECORDING_GUI" platform="mac" category="BINDING_HEADER_MOVIE_RECORDING_SECTION">
-		if (MovieRecording_IsSupported()) then
-			MovieRecording_ToggleGUI();
 		end
 	</Binding>
 

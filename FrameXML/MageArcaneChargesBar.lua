@@ -10,8 +10,8 @@ function MagePowerBar:OnLoad()
 end
 
 function MagePowerBar:UpdatePower()
-	local power = UnitPower("player", SPELL_POWER_ARCANE_CHARGES, true);
-	
+	local power = UnitPower("player", Enum.PowerType.ArcaneCharges, true);
+
 	for i = 1, power do
 		local charge = self.Charges[i];
 		if (not charge.on) then

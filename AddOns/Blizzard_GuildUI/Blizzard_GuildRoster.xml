@@ -377,9 +377,9 @@
 					<OnClick>
 						SetGuildRosterSelection(0);
 						if ( self:GetChecked() ) then
-							PlaySound("igMainMenuOptionCheckBoxOff");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 						else
-							PlaySound("igMainMenuOptionCheckBoxOn");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						end
 						SetGuildRosterShowOffline(self:GetChecked());
 						GuildRoster_Update();
@@ -558,7 +558,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						HideParentPanel(self);
 					</OnClick>
 				</Scripts>

@@ -36,7 +36,7 @@ function RaidFinderFrame_OnShow(self)
 	RaidFinderFrameFindRaidButton_Update();
 	LFGBackfillCover_Update(RaidFinderQueueFrame.PartyBackfill, true);
 	RaidFinderFrame_UpdateAvailability();
-	PlaySound("igCharacterInfoOpen");
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 end
 
 -- unused now, might need this logic for Group Finder
@@ -184,40 +184,88 @@ local function isRaidFinderDungeonDisplayable(id)
 end
 
 function RaidFinderQueueFrameSelectionDropDown_Initialize(self)
-	local info = UIDropDownMenu_CreateInfo();
+
+	local sortedDungeons = { };
+	local function InsertDungeonData(id, name, mapName, isAvailable)
+		local t = { id = id, name = name, mapName = mapName, isAvailable = isAvailable };
+		local foundMap = false;
+		for i = 1, #sortedDungeons do
+			if ( sortedDungeons[i].mapName == mapName ) then
+				foundMap = true;
+			else
+				if ( foundMap ) then
+					tinsert(sortedDungeons, i, t);
+					return;
+				end
+			end
+		end
+		tinsert(sortedDungeons, t);
+	end
 	
 	-- If we ever change this logic, we also need to change the logic in RaidFinderFrame_UpdateAvailability
 	for i=1, GetNumRFDungeons() do
-		local id, name = GetRFDungeonInfo(i);
+		local dungeonInfo = { GetRFDungeonInfo(i) };
+		local id = dungeonInfo[1];
+		local name = dungeonInfo[2];
+		local mapName = dungeonInfo[20];
 		local isAvailable, isAvailableToPlayer, hideIfUnmet = IsLFGDungeonJoinable(id);
 		if( not hideIfUnmet or isAvailable ) then
 			if ( isAvailable or isAvailableToPlayer or isRaidFinderDungeonDisplayable(id) ) then
-				if ( isAvailable ) then
-					info.text = name; --Note that the dropdown text may be manually changed in RaidFinderQueueFrame_SetRaid
-					info.value = id;
-					info.isTitle = nil;
-					info.func = RaidFinderQueueFrameSelectionDropDownButton_OnClick;
-					info.disabled = nil;
-					info.checked = (RaidFinderQueueFrame.raid == info.value);
-					info.tooltipWhileDisabled = nil;
-					info.tooltipOnButton = nil;
-					info.tooltipTitle = nil;
-					info.tooltipText = nil;
-					UIDropDownMenu_AddButton(info);
+				InsertDungeonData(id, name, mapName, isAvailable);
+			end
+		end
+	end
+
+	local info = UIDropDownMenu_CreateInfo();
+	local currentMapName = nil;
+	for i = 1, #sortedDungeons do
+		if ( currentMapName ~= sortedDungeons[i].mapName ) then
+			currentMapName = sortedDungeons[i].mapName;
+			info.text = sortedDungeons[i].mapName;
+			info.isTitle = 1;
+			info.notCheckable = 1;
+			info.tooltipOnButton = nil;
+			UIDropDownMenu_AddButton(info);
+			info.notCheckable = nil;
+		end
+		if ( sortedDungeons[i].isAvailable ) then
+			info.text = sortedDungeons[i].name; --Note that the dropdown text may be manually changed in RaidFinderQueueFrame_SetRaid
+			info.value = sortedDungeons[i].id;
+			info.isTitle = nil;
+			info.func = RaidFinderQueueFrameSelectionDropDownButton_OnClick;
+			info.disabled = nil;
+			info.checked = (RaidFinderQueueFrame.raid == info.value);
+			info.tooltipWhileDisabled = nil;
+			info.tooltipOnButton = 1;
+			info.tooltipTitle = RAID_BOSSES;
+			local encounters;
+			local numEncounters = GetLFGDungeonNumEncounters(sortedDungeons[i].id);
+			for j = 1, numEncounters do
+				local bossName, _, isKilled = GetLFGDungeonEncounterInfo(sortedDungeons[i].id, j);
+				local colorCode = "";
+				if ( isKilled ) then
+					colorCode = RED_FONT_COLOR_CODE;
+				end
+				if encounters then
+					encounters = encounters.."|n"..colorCode..bossName..FONT_COLOR_CODE_CLOSE;
 				else
-					info.text = name; --Note that the dropdown text may be manually changed in RaidFinderQueueFrame_SetRaid
-					info.value = id;
-					info.isTitle = nil;
-					info.func = nil;
-					info.disabled = 1;
-					info.checked = nil;
-					info.tooltipWhileDisabled = 1;
-					info.tooltipOnButton = 1;
-					info.tooltipTitle = YOU_MAY_NOT_QUEUE_FOR_THIS;
-					info.tooltipText = LFGConstructDeclinedMessage(id);
-					UIDropDownMenu_AddButton(info);
+					encounters = colorCode..bossName..FONT_COLOR_CODE_CLOSE;
 				end
 			end
+			info.tooltipText = encounters;
+			UIDropDownMenu_AddButton(info);
+		else
+			info.text = sortedDungeons[i].name; --Note that the dropdown text may be manually changed in RaidFinderQueueFrame_SetRaid
+			info.value = sortedDungeons[i].id;
+			info.isTitle = nil;
+			info.func = nil;
+			info.disabled = 1;
+			info.checked = nil;
+			info.tooltipWhileDisabled = 1;
+			info.tooltipOnButton = 1;
+			info.tooltipTitle = YOU_MAY_NOT_QUEUE_FOR_THIS;
+			info.tooltipText = LFGConstructDeclinedMessage(sortedDungeons[i].id);
+			UIDropDownMenu_AddButton(info);
 		end
 	end
 end

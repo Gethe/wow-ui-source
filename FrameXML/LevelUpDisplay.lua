@@ -277,11 +277,6 @@ function LevelUpDisplay_OnEvent(self, event, ...)
 			LevelUpDisplay_Show(self);
 			LevelUpDisplaySide:Hide();
 		end
-	elseif ( event == "ZONE_CHANGED_NEW_AREA" ) then
-		self:UnregisterEvent("ZONE_CHANGED_NEW_AREA");
-		if ( self.type or self.queuedType ) then
-			LevelUpDisplay_Show(self);
-		end
 	elseif ( event == "PET_BATTLE_FINAL_ROUND" ) then
 		self.type = TOAST_PET_BATTLE_WINNER;
 		self.winner = arg1;
@@ -318,7 +313,7 @@ function LevelUpDisplay_OnEvent(self, event, ...)
 		self.recordTime = recordTime;
         self.level = level;
 		LevelUpDisplay_Show(self);
-		PlaySound("UI_70_ChallengeMode_NewRecord");
+		PlaySound(SOUNDKIT.UI_70_CHALLENGE_MODE_NEW_RECORD);
 	elseif ( event == "GARRISON_BUILDING_ACTIVATED" ) then
 		local _, buildingID = ...;
 		if (GARRISON_ABILITY_HACKS[buildingID]) then
@@ -359,7 +354,7 @@ function LevelUpDisplay_PlayScenario()
 end
 
 function LevelUpDisplay_BuildCharacterList(self)
-	local name, icon, link = "","",nil;
+	local name, icon, link = "",nil,nil;
 	self.unlockList = {};
 
 	if LEVEL_UP_EVENTS[self.level] then
@@ -376,16 +371,15 @@ function LevelUpDisplay_BuildCharacterList(self)
 															};
 	end	
 
-	local GUILD_EVENT_TEXTURE_PATH = "Interface\\LFGFrame\\LFGIcon-";
 	local dungeons = {GetLevelUpInstances(self.level, false)};
 	for _,dungeon in pairs(dungeons) do
 		name, icon, link = GetDungeonInfo(dungeon);
 		if link then -- link can come back as nil if there's no Dungeon Journal entry
-			self.unlockList[#self.unlockList +1] = { entryType = "dungeon", text = name, subText = LEVEL_UP_DUNGEON, icon = GUILD_EVENT_TEXTURE_PATH..icon, subIcon = SUBICON_TEXCOOR_LOCK,
+			self.unlockList[#self.unlockList +1] = { entryType = "dungeon", text = name, subText = LEVEL_UP_DUNGEON, icon = icon, subIcon = SUBICON_TEXCOOR_LOCK,
 																		link = LEVEL_UP_DUNGEON2.." "..link
 																	};
 		else
-			self.unlockList[#self.unlockList +1] = { entryType = "dungeon", text = name, subText = LEVEL_UP_DUNGEON, icon = GUILD_EVENT_TEXTURE_PATH..icon, subIcon = SUBICON_TEXCOOR_LOCK,
+			self.unlockList[#self.unlockList +1] = { entryType = "dungeon", text = name, subText = LEVEL_UP_DUNGEON, icon = icon, subIcon = SUBICON_TEXCOOR_LOCK,
 																		link = LEVEL_UP_DUNGEON2.." "..name
 																	};
 		end
@@ -395,11 +389,11 @@ function LevelUpDisplay_BuildCharacterList(self)
 	for _,raid in pairs(raids) do
 		name, icon, link = GetDungeonInfo(raid);
 		if link then -- link can come back as nil if there's no Dungeon Journal entry
-			self.unlockList[#self.unlockList +1] = { entryType = "dungeon", text = name, subText = LEVEL_UP_RAID, icon = GUILD_EVENT_TEXTURE_PATH..icon, subIcon = SUBICON_TEXCOOR_LOCK,
+			self.unlockList[#self.unlockList +1] = { entryType = "dungeon", text = name, subText = LEVEL_UP_RAID, icon = icon, subIcon = SUBICON_TEXCOOR_LOCK,
 																		link = LEVEL_UP_RAID2.." "..link
 																	};
 		else
-			self.unlockList[#self.unlockList +1] = { entryType = "dungeon", text = name, subText = LEVEL_UP_RAID, icon = GUILD_EVENT_TEXTURE_PATH..icon, subIcon = SUBICON_TEXCOOR_LOCK,
+			self.unlockList[#self.unlockList +1] = { entryType = "dungeon", text = name, subText = LEVEL_UP_RAID, icon = icon, subIcon = SUBICON_TEXCOOR_LOCK,
 																		link = LEVEL_UP_RAID2.." "..name
 																	};
 		end
@@ -707,12 +701,6 @@ function LevelUpDisplay_StartDisplay(self, beginUnlockList)
 		return;
 	end
 
-	if ( not IsPlayerInWorld() ) then
-		-- this is pretty much the zoning-into-a-scenario case
-		self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
-		return;
-	end
-
 	self:SetHeight(72);
 	self:Show();
 	ZoneTextFrame:Hide();	--LevelUpDisplay is more important than zoning text
@@ -760,7 +748,7 @@ function LevelUpDisplay_StartDisplay(self, beginUnlockList)
 		elseif ( self.type == TOAST_CHALLENGE_MODE_RECORD ) then
 			self.challengeModeFrame.LevelCompleted:SetFormattedText(CHALLENGE_MODE_POWER_LEVEL, self.level);
 			self.challengeModeFrame.RecordTime:SetFormattedText(CHALLENGE_MODE_NEW_BEST, GetTimeStringFromSeconds(self.recordTime / 1000));
-			PlaySound("UI_Challenges_NewRecord");
+			PlaySound(SOUNDKIT.UI_CHALLENGES_NEW_RECORD);
 			LevelUpDisplay:SetPoint("TOP", 0, -190);
 			playAnim = self.challengeModeFrame.challengeComplete;
 		else
@@ -782,13 +770,13 @@ function LevelUpDisplay_StartDisplay(self, beginUnlockList)
 			elseif ( self.type == TOAST_PET_BATTLE_WINNER ) then
 				LevelUpDisplay_BuildPetBattleWinnerList(self);
 				self.levelFrame.singleline:SetText(self.winnerString);
-				PlaySoundKitID(self.winnerSoundKitID);
+				PlaySound(self.winnerSoundKitID);
 				playAnim = self.levelFrame.fastReveal;
 			elseif (self.type == TOAST_QUEST_BOSS_EMOTE ) then
 				LevelUpDisplay_BuildEmptyList(self);
 				self.levelFrame.blockText:SetText(self.bossText);
 				if (self.sound and self.sound == true) then
-					PlaySound("RaidBossEmoteWarning");
+					PlaySound(SOUNDKIT.RAID_BOSS_EMOTE_WARNING);
 				end
 				playAnim = self.levelFrame.fastReveal;
 			elseif (self.type == TOAST_PET_BATTLE_CAPTURE ) then
@@ -1268,7 +1256,7 @@ end
 -- ************************************************************************************************************************************************************
 
 local BB_EXPAND_TIME = 0.25;		-- time to expand per item
-local BB_EXPAND_HEIGHT = 47;		-- pixels to expand per item
+local BB_EXPAND_HEIGHT = 50;		-- pixels to expand per item
 local BB_MAX_LOOT = 7;
 
 local BB_STATE_BANNER_IN = 1;		-- banner is animating in
@@ -1291,7 +1279,7 @@ function BossBanner_AnimSwitch(self, entry)
 	if ( next(self.pendingLoot) ) then
 		-- we have loot
 		self.AnimSwitch:Play();
-		PlaySound("UI_Personal_Loot_Banner");
+		PlaySound(SOUNDKIT.UI_PERSONAL_LOOT_BANNER);
 		entry.duration = 0.5;
 	else
 		entry.duration = 0;
@@ -1335,7 +1323,7 @@ function BossBanner_AnimLootInsert(self, entry)
 end
 
 function BossBanner_ConfigureLootFrame(lootFrame, data)
-	local itemName, itemLink, itemRarity, _, _, _, _, _, _, itemTexture = GetItemInfo(data.itemLink);
+	local itemName, itemLink, itemRarity, _, _, _, _, _, _, itemTexture, _, _, _, _, _, setID = GetItemInfo(data.itemLink);
 	lootFrame.ItemName:SetText(itemName);
 	local rarityColor = ITEM_QUALITY_COLORS[itemRarity];
 	lootFrame.ItemName:SetTextColor(rarityColor.r, rarityColor.g, rarityColor.b);
@@ -1350,6 +1338,23 @@ function BossBanner_ConfigureLootFrame(lootFrame, data)
 	else
 		lootFrame.Count:Hide();
 	end
+
+	if (setID) then
+		local setName = GetItemSetInfo(setID);
+		lootFrame.ItemName:ClearAllPoints();
+		lootFrame.ItemName:SetPoint("TOPLEFT", 56, -2);
+		lootFrame.SetName:SetText(BOSS_BANNER_LOOT_SET:format(setName));
+		lootFrame.SetName:Show();
+		lootFrame.PlayerName:ClearAllPoints();
+		lootFrame.PlayerName:SetPoint("TOPLEFT", lootFrame.SetName, "BOTTOMLEFT", 0, 0);
+	else
+		lootFrame.ItemName:ClearAllPoints();
+		lootFrame.ItemName:SetPoint("TOPLEFT", 56, -7);
+		lootFrame.SetName:Hide();
+		lootFrame.PlayerName:ClearAllPoints();
+		lootFrame.PlayerName:SetPoint("TOPLEFT", lootFrame.ItemName, "BOTTOMLEFT", 0, 0);
+	end
+
 	lootFrame.PlayerName:SetText(data.playerName);
 	local classColor = RAID_CLASS_COLORS[data.className];
 	lootFrame.PlayerName:SetTextColor(classColor.r, classColor.g, classColor.b);
@@ -1468,11 +1473,10 @@ function BossBanner_Play(self, data)
 				self.SubTitle:Show();
 			end
 			self.Title:Show();
-			self.SubTitle:Show();
 			self:Show();
 			self.encounterID = data.encounterID;			
 			BossBanner_BeginAnims(self);
-			PlaySound("UI_Raid_Boss_Defeated");
+			PlaySound(SOUNDKIT.UI_RAID_BOSS_DEFEATED);
 		elseif ( data.mode == "LOOT" ) then
 			self.BannerTop:SetAlpha(1);
 			self.BannerBottom:SetAlpha(1);
@@ -1487,7 +1491,7 @@ function BossBanner_Play(self, data)
 			self.SubTitle:Hide();
 			self:Show();
 			BossBanner_BeginAnims(self, BB_STATE_LOOT_EXPAND);
-			PlaySound("UI_Personal_Loot_Banner");
+			PlaySound(SOUNDKIT.UI_PERSONAL_LOOT_BANNER);
 		end
 	end
 end

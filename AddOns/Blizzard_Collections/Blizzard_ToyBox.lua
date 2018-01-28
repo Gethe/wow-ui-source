@@ -1,7 +1,6 @@
 local TOYS_PER_PAGE = 18;
 
 function ToyBox_OnLoad(self)
-	self.currentPage = 1;
 	self.firstCollectedToyID = 0; -- used to track which toy gets the favorite helpbox
 	self.mostRecentCollectedToyID = UIParent.mostRecentCollectedToyID or nil;
 	self.newToys = UIParent.newToys or {};
@@ -12,6 +11,11 @@ function ToyBox_OnLoad(self)
 	UIDropDownMenu_Initialize(self.toyOptionsMenu, ToyBoxOptionsMenu_Init, "MENU");
 
 	self:RegisterEvent("TOYS_UPDATED");
+
+	self.OnPageChanged = function(userAction)
+		PlaySound(SOUNDKIT.IG_ABILITY_PAGE_TURN);
+		ToyBox_UpdateButtons();
+	end
 end
 
 function ToyBox_OnEvent(self, event, itemID, new)
@@ -62,11 +66,7 @@ end
 function ToyBox_OnMouseWheel(self, value)
 	SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TOYBOX_MOUSEWHEEL_PAGING, true);
 	self.mousewheelPagingHelpBox:Hide();
-	if(value > 0) then
-		ToyBoxPrevPageButton_OnClick()		
-	else
-		ToyBoxNextPageButton_OnClick()
-	end
+	ToyBox.PagingFrame:OnMouseWheel(value);
 end
 
 function ToyBoxOptionsMenu_Init(self, level)
@@ -93,14 +93,15 @@ function ToyBoxOptionsMenu_Init(self, level)
 	UIDropDownMenu_AddButton(info, level);
 	info.disabled = nil;
 	
-	info.text = CANCEL
-	info.func = nil
-	UIDropDownMenu_AddButton(info, level)
+	info.text = CANCEL;
+	info.func = nil;
+	UIDropDownMenu_AddButton(info, level);
 end
 
 function ToyBox_ShowToyDropdown(itemID, anchorTo, offsetX, offsetY)	
 	ToyBox.menuItemID = itemID;
 	ToggleDropDownMenu(1, nil, ToyBox.toyOptionsMenu, anchorTo, offsetX, offsetY);
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 end
 
 function ToyBox_HideToyDropdown()
@@ -159,7 +160,7 @@ function ToySpellButton_OnDrag(self)
 end
 
 function ToySpellButton_UpdateButton(self)
-	local itemIndex = (ToyBox_GetCurrentPage() - 1) * TOYS_PER_PAGE + self:GetID();
+	local itemIndex = (ToyBox.PagingFrame:GetCurrentPage() - 1) * TOYS_PER_PAGE + self:GetID();
 	self.itemID = C_ToyBox.GetToyFromIndex(itemIndex);
 
 	local toyString = self.name;
@@ -170,7 +171,7 @@ function ToySpellButton_UpdateButton(self)
 	local slotFrameCollected = self.slotFrameCollected;
 	local slotFrameUncollected = self.slotFrameUncollected;
 	local slotFrameUncollectedInnerGlow = self.slotFrameUncollectedInnerGlow;
-	local iconFavoriteTexture = self.cooldownWrapper.slotFavorite;
+	local iconFavoriteTexture = self.cooldownWrapper.slotFavorite; 
 
 	if (self.itemID == -1) then	
 		self:Hide();		
@@ -239,12 +240,6 @@ function ToySpellButton_UpdateButton(self)
 	CollectionsSpellButton_UpdateCooldown(self);
 end
 
-function ToyBox_GetCurrentPage()
-	if (ToyBox.currentPage == nil) then ToyBox.currentPage = 1 end;
-
-	return ToyBox.currentPage;
-end
-
 function ToyBox_UpdateButtons()
 	ToyBox.favoriteHelpBox:Hide();
 	for i = 1, TOYS_PER_PAGE do
@@ -255,42 +250,14 @@ end
 
 function ToyBox_UpdatePages()
 	local maxPages = 1 + math.floor( math.max((C_ToyBox.GetNumFilteredToys() - 1), 0) / TOYS_PER_PAGE);
-	if ( maxPages == nil or maxPages == 0 ) then
-		return;
-	end
+	ToyBox.PagingFrame:SetMaxPages(maxPages)
 	if ToyBox.mostRecentCollectedToyID then
 		local toyPage = ToyBox_FindPageForToyID(ToyBox.mostRecentCollectedToyID);
 		if toyPage then
-			ToyBox.currentPage = toyPage;
+			ToyBox.PagingFrame:SetCurrentPage(toyPage);
 		end
 		ToyBox.mostRecentCollectedToyID = nil;
 	end
-
-	if ( ToyBox.currentPage > maxPages ) then
-		ToyBox.currentPage = maxPages;
-		if ( ToyBox.currentPage == 1 ) then
-			ToyBox.navigationFrame.prevPageButton:Disable();
-		else
-			ToyBox.navigationFrame.prevPageButton:Enable();
-		end
-		if ( ToyBox.currentPage == maxPages ) then
-			ToyBox.navigationFrame.nextPageButton:Disable();
-		else
-			ToyBox.navigationFrame.nextPageButton:Enable();
-		end
-	end
-	if ( ToyBox.currentPage == 1 ) then
-		ToyBox.navigationFrame.prevPageButton:Disable();
-	else
-		ToyBox.navigationFrame.prevPageButton:Enable();
-	end
-	if ( ToyBox.currentPage == maxPages ) then
-		ToyBox.navigationFrame.nextPageButton:Disable();
-	else
-		ToyBox.navigationFrame.nextPageButton:Enable();
-	end
-
-	ToyBox.navigationFrame.pageText:SetFormattedText(COLLECTION_PAGE_NUMBER, ToyBox.currentPage, maxPages);
 end
 
 function ToyBox_UpdateProgressBar(self)
@@ -301,32 +268,6 @@ function ToyBox_UpdateProgressBar(self)
 	self.progressBar:SetValue(currentProgress);
 
 	self.progressBar.text:SetFormattedText(TOY_PROGRESS_FORMAT, currentProgress, maxProgress);
-end
-
-function ToyBoxPrevPageButton_OnClick()
-	if (ToyBox.currentPage > 1) then
-		PlaySound("igAbiliityPageTurn");
-		ToyBox.currentPage = math.max(1, ToyBox.currentPage - 1);
-		ToyBox_UpdatePages();
-		ToyBox_UpdateButtons();
-	end
-end
-
-function ToyBoxNextPageButton_OnClick()
-	local maxPages = 1 + math.floor( math.max((C_ToyBox.GetNumFilteredToys() - 1), 0) / TOYS_PER_PAGE);
-	if (ToyBox.currentPage < maxPages) then
-		-- show the mousewheel tip after the player's advanced a few pages
-		if(ToyBox.currentPage > 2) then
-			if(not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TOYBOX_MOUSEWHEEL_PAGING) and GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TOYBOX_FAVORITE)) then
-				ToyBox.mousewheelPagingHelpBox:Show();
-			end
-		end
-
-		PlaySound("igAbiliityPageTurn");
-		ToyBox.currentPage = ToyBox.currentPage + 1;
-		ToyBox_UpdatePages();
-		ToyBox_UpdateButtons();
-	end
 end
 
 function ToyBox_OnSearchTextChanged(self)
@@ -346,67 +287,78 @@ function ToyBoxFilterDropDown_OnLoad(self)
 	UIDropDownMenu_Initialize(self, ToyBoxFilterDropDown_Initialize, "MENU");
 end
 
+function ToyBoxUpdateFilteredInformation()
+	ToyBox.firstCollectedToyID = 0;
+	ToyBox_UpdatePages();
+	ToyBox_UpdateButtons();
+end
+
 function ToyBoxFilterDropDown_Initialize(self, level)
 	local info = UIDropDownMenu_CreateInfo();
 	info.keepShownOnClick = true;	
 
 	if level == 1 then
-		info.text = COLLECTED
+		info.text = COLLECTED;
 		info.func = function(_, _, _, value)
-						ToyBox.firstCollectedToyID = 0;
 						C_ToyBox.SetCollectedShown(value);
-						ToyBox_UpdatePages();
-						ToyBox_UpdateButtons();
+						ToyBoxUpdateFilteredInformation(); 
 					end 
 		info.checked = C_ToyBox.GetCollectedShown();
 		info.isNotRadio = true;
-		UIDropDownMenu_AddButton(info, level)
+		UIDropDownMenu_AddButton(info, level);
 
-		info.text = NOT_COLLECTED
+		info.text = NOT_COLLECTED;
 		info.func = function(_, _, _, value)
-						ToyBox.firstCollectedToyID = 0;
 						C_ToyBox.SetUncollectedShown(value);
-						ToyBox_UpdatePages();
-						ToyBox_UpdateButtons();
+						ToyBoxUpdateFilteredInformation(); 
 					end 
 		info.checked = C_ToyBox.GetUncollectedShown();
 		info.isNotRadio = true;
-		UIDropDownMenu_AddButton(info, level)
-
-		info.checked = 	nil;
+		UIDropDownMenu_AddButton(info, level);
+		
+		info.text = PET_JOURNAL_FILTER_USABLE_ONLY;
+		info.func = function(_, _, _, value)
+						C_ToyBox.SetUnusableShown(not value);
+						ToyBoxUpdateFilteredInformation(); 
+					end
+		info.checked = not C_ToyBox.GetUnusableShown();
+		info.isNotRadio = true;
+		UIDropDownMenu_AddButton(info, level);
+		
+		info.checked = nil;
 		info.isNotRadio = nil;
 		info.func =  nil;
 		info.hasArrow = true;
 		info.notCheckable = true;
-
-		info.text = SOURCES
+		
+		info.text = SOURCES;
 		info.value = 1;
-		UIDropDownMenu_AddButton(info, level)
+		UIDropDownMenu_AddButton(info, level);
+		
+		info.text = EXPANSION_FILTER_TEXT;
+		info.value = 2;
+		UIDropDownMenu_AddButton(info, level);
 	else
 		if UIDROPDOWNMENU_MENU_VALUE == 1 then
 			info.hasArrow = false;
 			info.isNotRadio = true;
 			info.notCheckable = true;				
 		
-			info.text = CHECK_ALL
+			info.text = CHECK_ALL;
 			info.func = function()
-							ToyBox.firstCollectedToyID = 0;
 							C_ToyBox.SetAllSourceTypeFilters(true);
 							UIDropDownMenu_Refresh(ToyBoxFilterDropDown, 1, 2);
-							ToyBox_UpdatePages();
-							ToyBox_UpdateButtons();
+							ToyBoxUpdateFilteredInformation();
 						end
-			UIDropDownMenu_AddButton(info, level)
+			UIDropDownMenu_AddButton(info, level);
 			
-			info.text = UNCHECK_ALL
+			info.text = UNCHECK_ALL;
 			info.func = function()
-							ToyBox.firstCollectedToyID = 0;
 							C_ToyBox.SetAllSourceTypeFilters(false);
 							UIDropDownMenu_Refresh(ToyBoxFilterDropDown, 1, 2);
-							ToyBox_UpdatePages();
-							ToyBox_UpdateButtons();
+							ToyBoxUpdateFilteredInformation();
 						end
-			UIDropDownMenu_AddButton(info, level)
+			UIDropDownMenu_AddButton(info, level);
 		
 			info.notCheckable = false;
 			local numSources = C_PetJournal.GetNumPetSources();
@@ -414,14 +366,45 @@ function ToyBoxFilterDropDown_Initialize(self, level)
 				if (i == 1 or i == 2 or i == 3 or i == 4 or i == 7 or i == 8) then -- Drop/Quest/Vendor/Profession/WorldEvent/Promotion
 					info.text = _G["BATTLE_PET_SOURCE_"..i];
 					info.func = function(_, _, _, value)
-								ToyBox.firstCollectedToyID = 0;
 								C_ToyBox.SetSourceTypeFilter(i, value);
-								ToyBox_UpdatePages();
-								ToyBox_UpdateButtons();
+								ToyBoxUpdateFilteredInformation();
 							end
 					info.checked = function() return not C_ToyBox.IsSourceTypeFilterChecked(i) end;
 					UIDropDownMenu_AddButton(info, level);
 				end
+			end
+		end
+		if UIDROPDOWNMENU_MENU_VALUE == 2 then
+			info.hasArrow = false;
+			info.isNotRadio = true;
+			info.notCheckable = true;				
+		
+			info.text = CHECK_ALL;
+			info.func = function()
+							C_ToyBox.SetAllExpansionTypeFilters(true);
+							UIDropDownMenu_Refresh(ToyBoxFilterDropDown, 1, 2);
+							ToyBoxUpdateFilteredInformation();
+						end
+			UIDropDownMenu_AddButton(info, level);
+			
+			info.text = UNCHECK_ALL;
+			info.func = function()
+							C_ToyBox.SetAllExpansionTypeFilters(false);
+							UIDropDownMenu_Refresh(ToyBoxFilterDropDown, 1, 2);
+							ToyBoxUpdateFilteredInformation();
+						end
+			UIDropDownMenu_AddButton(info, level);
+	
+			info.notCheckable = false;
+			local numExpansions = GetNumExpansions();
+			for i=1,numExpansions do
+				info.text = _G["EXPANSION_NAME"..i-1]; --Since the global strings for expansion are 0 - Max Expansion
+				info.func = function(_, _, _, value)
+							C_ToyBox.SetExpansionTypeFilter(i, value);
+							ToyBoxUpdateFilteredInformation();
+						end
+				info.checked = function() return not C_ToyBox.IsExpansionTypeFilterChecked(i) end;
+				UIDropDownMenu_AddButton(info, level);
 			end
 		end
 	end

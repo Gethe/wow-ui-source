@@ -222,7 +222,7 @@
 	            </Scripts>
             </Button>
 			<!-- Bank Slots  -->
-			<Frame name="BankSlotsFrame" SetAllPoints="true" useParentLevel="true" hidden="false">
+			<Frame name="BankSlotsFrame" setAllPoints="true" useParentLevel="true" hidden="false">
 				<Layers>
 					<Layer level="BORDER">
 						<Texture parentKey="LeftTopCorner-Shadow" file="Interface\BankFrame\CornersShadow" virtual="true" >
@@ -369,7 +369,7 @@
 								</Anchors>
 								<Scripts>
 									<OnClick>
-										PlaySound("igMainMenuOption");
+										PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
 										StaticPopup_Show("CONFIRM_BUY_BANK_SLOT");
 									</OnClick>
 								</Scripts>
@@ -410,7 +410,7 @@
 				</Scripts>
 			</Frame>
 			<!-- Reagent Bank Slots  -->
-			<Frame name="ReagentBankFrame" SetAllPoints="true" useParentLevel="true" hidden="true">
+			<Frame name="ReagentBankFrame" setAllPoints="true" useParentLevel="true" hidden="true">
 				<Layers>
 					<Layer level="ARTWORK">
 						<Texture parentKey="BG1" atlas="bank-slots" useAtlasSize="true" >
@@ -497,7 +497,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								PlaySound("igMainMenuOption");
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
 								DepositReagentBank();
 							</OnClick>
 						</Scripts>
@@ -509,7 +509,7 @@
 							<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="0" y="40"/>
 						</Anchors>
 						<Layers>
-							<Layer level="BACKGROUNDBORDER">
+							<Layer level="BORDER">
 								<Texture name="$parentBottomLeftInner" file="Interface\GuildBankFrame\Corners" >
 									<Size x="32" y="32"/>
 									<Anchors>
@@ -612,14 +612,13 @@
 								</Anchors>
 								<Scripts>
 									<OnClick>
-										PlaySound("igMainMenuOption");
+										PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
 										StaticPopup_Show("CONFIRM_BUY_REAGENTBANK_TAB");
 									</OnClick>
 								</Scripts>
 							</Button>
 						</Frames>
 						<Scripts>
-							<OnShow function="ReagentBankFrame_UpdateTabBuyingInfo"/>
 							<OnLoad function="RaiseFrameLevel"/>
 						</Scripts>
 					</Frame>

@@ -8,3 +8,8 @@ function WowTokenRedemptionFrame_EscapePressed()
 	WowTokenRedemptionFrame:SetAttribute("action", "EscapePressed");
 	return WowTokenRedemptionFrame:GetAttribute("escaperesult");
 end
+
+function WowTokenRedemptionFrame_GetBalanceString()
+	WowTokenRedemptionFrame:SetAttribute("getbalancestring");
+	return WowTokenRedemptionFrame:GetAttribute("balancestring");
+end

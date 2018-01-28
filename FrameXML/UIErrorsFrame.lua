@@ -14,10 +14,10 @@ function UIErrorsMixin:OnEvent(event, ...)
 		self:AddMessage(message, r, g, b, 1.0);
 	elseif event == "UI_INFO_MESSAGE" then
 		local messageType, message = ...;
-		self:TryDisplayMessage(messageType, message, 1.0, 1.0, 0.0);
+		self:TryDisplayMessage(messageType, message, YELLOW_FONT_COLOR:GetRGB());
 	elseif event == "UI_ERROR_MESSAGE" then
 		local messageType, message = ...;
-		self:TryDisplayMessage(messageType, message, 1.0, 0.1, 0.1);
+		self:TryDisplayMessage(messageType, message, RED_FONT_COLOR:GetRGB());
 	end
 end
 
@@ -26,14 +26,18 @@ function UIErrorsMixin:OnUpdate()
 	local now = GetTime();
 	local needsMoreUpdates = false;
 	for fontString, timeStart in pairs(self.flashingFontStrings) do
-		if fontString:IsShown() and now - timeStart <= FLASH_DURATION_SEC then
-			local percent = (now - timeStart) / FLASH_DURATION_SEC;
-			local easedPercent = (percent > .5 and (1.0 - percent) / .5 or percent / .5) * .4;
+		if fontString:GetText() == fontString.origMsg then
+			if fontString:IsShown() and now - timeStart <= FLASH_DURATION_SEC then
+				local percent = (now - timeStart) / FLASH_DURATION_SEC;
+				local easedPercent = (percent > .5 and (1.0 - percent) / .5 or percent / .5) * .4;
 
-			fontString:SetTextColor(fontString.origR + easedPercent, fontString.origG + easedPercent, fontString.origB + easedPercent);
-			needsMoreUpdates = true;
+				fontString:SetTextColor(fontString.origR + easedPercent, fontString.origG + easedPercent, fontString.origB + easedPercent);
+				needsMoreUpdates = true;
+			else
+				fontString:SetTextColor(fontString.origR, fontString.origG, fontString.origB);
+				self.flashingFontStrings[fontString] = nil;
+			end
 		else
-			fontString:SetTextColor(fontString.origR, fontString.origG, fontString.origB);
 			self.flashingFontStrings[fontString] = nil;
 		end
 	end
@@ -98,6 +102,7 @@ function UIErrorsMixin:FlashFontString(fontString)
 			self.flashingFontStrings[fontString] = GetTime();
 		else
 			fontString.origR, fontString.origG, fontString.origB = fontString:GetTextColor();
+			fontString.origMsg = fontString:GetText();
 			self.flashingFontStrings[fontString] = GetTime();
 		end
 		self:SetScript("OnUpdate", self.OnUpdate);
@@ -127,9 +132,9 @@ function UIErrorsMixin:TryDisplayMessage(messageType, message, r, g, b)
 
 		local errorName, soundKitID, voiceID = GetGameMessageInfo(messageType);
 		if voiceID then
-    		PlayVocalErrorSoundID(voiceID);
+			PlayVocalErrorSoundID(voiceID);
 		elseif soundKitID then
-			PlaySoundKitID(soundKitID);
+			PlaySound(soundKitID);
 		end
 	end
 end

@@ -1,5 +1,5 @@
 function DestinyFrame_OnEvent(self, event)
-	PlaySound("igSpellBookOpen");
+	PlaySound(SOUNDKIT.IG_SPELLBOOK_OPEN);
 	MoveForwardStop();	-- in case the player was moving, need to check if it'll work in blizzcon build
 	DestinyFrame_UpdateRecruitInfo(self);
 	self:Show();

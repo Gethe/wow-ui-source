@@ -155,6 +155,10 @@ function UnitFrame_SetUnit (self, unit, healthbar, manabar)
 			UnitFrameManaBar_RegisterDefaultEvents(manabar);
 		end
 		healthbar:RegisterUnitEvent("UNIT_MAXHEALTH", unit);
+		
+		if ( self.PlayerFrameHealthBarAnimatedLoss ) then
+			self.PlayerFrameHealthBarAnimatedLoss:SetUnitHealthBar(unit, healthbar);
+		end
 	end
 
 	self.unit = unit;
@@ -595,8 +599,8 @@ AnimatedHealthLossMixin = {};
 
 function AnimatedHealthLossMixin:OnLoad()
 	self:SetStatusBarColor(1, 0, 0, 1);
-	self:SetDuration(.75);
-	self:SetStartDelay(.2);
+	self:SetDuration(.25);
+	self:SetStartDelay(.1);
 	self:SetPauseDelay(.05);
 	self:SetPostponeDelay(.05);
 end
@@ -682,7 +686,7 @@ function AnimatedHealthLossMixin:UpdateHealth(currentHealth, previousHealth)
 		-- and pause briefly when new damage occurs.
 		self.animationStartValue = self:GetHealthLossAnimationData(previousHealth, self.animationStartValue);
 		self.animationStartTime = GetTime() + self.animationPauseDelay;
-	elseif not hasLoss and hasStarted and currentHealth >= self.animationStartValue then
+	elseif not hasLoss and hasBegun and currentHealth >= self.animationStartValue then
 		self:CancelAnimation();
 	end
 end
@@ -795,7 +799,7 @@ function UnitFrameManaBar_Initialize (unit, statusbar, statustext, frequentUpdat
 	if ( frequentUpdates ) then
 		statusbar:RegisterEvent("VARIABLES_LOADED");
 	end
-	if ( GetCVarBool("predictedPower") and frequentUpdates ) then
+	if ( frequentUpdates ) then
 		statusbar:SetScript("OnUpdate", UnitFrameManaBar_OnUpdate);
 	else
 		UnitFrameManaBar_RegisterDefaultEvents(statusbar);
@@ -815,7 +819,7 @@ function UnitFrameManaBar_OnEvent(self, event, ...)
 		TextStatusBar_OnEvent(self, event, ...);
 	elseif ( event == "VARIABLES_LOADED" ) then
 		self:UnregisterEvent("VARIABLES_LOADED");
-		if ( GetCVarBool("predictedPower") and self.frequentUpdates ) then
+		if ( self.frequentUpdates ) then
 			self:SetScript("OnUpdate", UnitFrameManaBar_OnUpdate);
 			UnitFrameManaBar_UnregisterDefaultEvents(self);
 		else

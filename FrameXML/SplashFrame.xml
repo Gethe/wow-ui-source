@@ -79,6 +79,13 @@
 						<Anchor point="BOTTOM" x="164" y="183"/>
 					</Anchors>
 				</FontString>
+				<FontString parentKey="RightDescriptionSubtext" inherits="SystemFont_Shadow_Med2" spacing="4">
+					<Size x="234" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.RightDescription" relativePoint="BOTTOM" x="0" y="-5"/>
+					</Anchors>
+					<Color r="0" g="1" b="0"/>
+				</FontString>
 				<FontString parentKey="RightTitle" inherits="Game32Font" justifyV="BOTTOM">
 					<Anchors>
 						<Anchor point="BOTTOM" relativeKey="$parent.RightDescription" relativePoint="TOP" x="0" y="10"/>
@@ -91,15 +98,6 @@
 					</Shadow>
 					<Color r="1" g=".82" b="0"/>
 				</FontString>
-			</Layer>
-			<Layer level="BORDER">
-				<Texture>
-					<Color r="0" g="1" b="0" a="0"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.RightDescription"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.RightDescription"/>
-					</Anchors>
-				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>

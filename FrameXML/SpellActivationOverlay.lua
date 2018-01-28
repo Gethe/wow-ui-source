@@ -111,7 +111,7 @@ function SpellActivationOverlay_ShowOverlay(self, spellID, texturePath, position
 	overlay.texture:SetVertexColor(r / 255, g / 255, b / 255);
 	
 	overlay.animOut:Stop();	--In case we're in the process of animating this out.
-	PlaySoundKitID(23287);
+	PlaySound(SOUNDKIT.UI_POWER_AURA_GENERIC);
 	overlay:Show();
 end
 

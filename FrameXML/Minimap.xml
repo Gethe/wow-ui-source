@@ -332,7 +332,7 @@
 											<OnEvent function="MiniMapTracking_Update"/>
 											<OnClick>
 												ToggleDropDownMenu(1, nil, MiniMapTrackingDropDown, "MiniMapTracking", 0, -5);
-												PlaySound("igMainMenuOptionCheckBoxOn");
+												PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 											</OnClick>
 											<OnMouseDown>
 												MiniMapTrackingIcon:SetPoint("TOPLEFT", MiniMapTracking, "TOPLEFT", 8, -8);
@@ -413,73 +413,6 @@
 								<PushedTexture file="Interface\Minimap\UI-Minimap-ZoomOutButton-Down"/>
 								<DisabledTexture file="Interface\Minimap\UI-Minimap-ZoomOutButton-Disabled"/>
 								<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
-							</Button>
-							<Button name="MiniMapRecordingButton" hidden="true">
-								<Size>
-									<AbsDimension x="27" y="27"/>
-								</Size>
-								<Anchors>
-									<Anchor point="RIGHT">
-										<Offset>
-											<AbsDimension x="-1" y="0"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-								<Layers>
-									<Layer level="BORDER">
-										<Texture name="MiniMapWorldIcon" file="Interface\Minimap\MovieRecordingIcon">
-											<Size>
-												<AbsDimension x="15" y="15"/>
-											</Size>
-											<Anchors>
-												<Anchor point="CENTER">
-													<Offset>
-														<AbsDimension x="-1" y="1"/>
-													</Offset>
-												</Anchor>
-											</Anchors>
-										</Texture>
-									</Layer>
-									<Layer level="OVERLAY">
-										<Texture name="MiniMapRecordingBorder" file="Interface\Minimap\MiniMap-TrackingBorder">
-											<Size>
-												<AbsDimension x="41" y="41"/>
-											</Size>
-											<Anchors>
-												<Anchor point="TOPLEFT"/>
-											</Anchors>
-										</Texture>
-									</Layer>
-								</Layers>
-								<Scripts>
-									<OnEnter>
-										if ( GetCVar("UberTooltips") == "1" ) then
-											GameTooltip_SetDefaultAnchor(GameTooltip, UIParent);
-											MINIMAP_RECORDING_INDICATOR_ON = true;
-										end
-									</OnEnter>
-									<OnLeave>
-										GameTooltip:Hide();
-										MINIMAP_RECORDING_INDICATOR_ON = false;
-									</OnLeave>
-									<OnLoad>
-										self:RegisterEvent("MOVIE_RECORDING_PROGRESS");
-									</OnLoad>
-									<OnEvent>
-										if ( event == "MOVIE_RECORDING_PROGRESS" ) then
-											if( MovieRecording_IsRecording() and GetCVar("MovieRecordingIcon") == "1") then
-												self:Show();
-											else
-												self:Hide();
-											end
-										end
-									</OnEvent>
-									<OnUpdate>
-										if ( MINIMAP_RECORDING_INDICATOR_ON ) then
-											GameTooltip:SetText(MOVIE_RECORDING_RECORDING..MovieRecording_GetTime());
-										end
-									</OnUpdate>
-								</Scripts>
 							</Button>
 							<Button name="GarrisonLandingPageMinimapButton" hidden="true">
 								<Size x="53" y="53"/>
@@ -612,7 +545,7 @@
 									</AnimationGroup>
 								</Animations>
 								<Frames>
-									<Frame name="GarrisonLandingPageTutorialBox" inherits="GlowBoxTemplate" enableMouse="true" hidden="true" frameStrata="DIALOG" frameLevel="2" topLevel="true">
+									<Frame name="GarrisonLandingPageTutorialBox" inherits="GlowBoxTemplate" enableMouse="true" hidden="true" frameStrata="DIALOG" frameLevel="2" toplevel="true">
 										<Size x="220" y="100"/>
 										<Anchors>
 											<Anchor point="RIGHT" relativePoint="LEFT" x="-25" y="0"/>
@@ -663,7 +596,6 @@
 								<Scripts>
 									<OnLoad function="GarrisonLandingPageMinimapButton_OnLoad"/>
 									<OnEvent function="GarrisonLandingPageMinimapButton_OnEvent"/>
-									<OnShow function="GarrisonLandingPageMinimapButton_OnShow"/>
 									<OnClick function="GarrisonLandingPageMinimapButton_OnClick"/>
 									<OnEnter>
 										GameTooltip:SetOwner(self, "ANCHOR_LEFT");
@@ -737,6 +669,8 @@
 						self:RegisterEvent("GUILD_PARTY_STATE_UPDATED");
 					</OnLoad>
 					<OnEvent function="MiniMapInstanceDifficulty_OnEvent" />
+					<OnEnter function="MiniMapInstanceDifficulty_OnEnter"/>
+					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Frame>
 			<Frame name="GuildInstanceDifficulty" hidden="true" enableMouse="true">

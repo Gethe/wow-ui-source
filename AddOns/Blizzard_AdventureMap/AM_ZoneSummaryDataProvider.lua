@@ -108,7 +108,6 @@ function AdventureMap_ZoneSummaryProviderMixin:AddSummaryPin(zoneName, centerX, 
 	pin.quests = quests;
 	pin.missions = missions;
 	pin:SetPosition(centerX, centerY);
-	pin:Show();
 end
 
 function AdventureMap_ZoneSummaryProviderMixin:AddInsetSummaryPin(mapInsetIndex, title, description, centerX, centerY, quests, missions)
@@ -128,7 +127,7 @@ AdventureMap_ZoneSummaryPinMixin = CreateFromMixins(MapCanvasPinMixin);
 
 function AdventureMap_ZoneSummaryPinMixin:OnLoad()
 	self:SetAlphaStyle(AM_PIN_ALPHA_STYLE_VISIBLE_WHEN_ZOOMED_OUT);
-	self:SetScalingLimits(1.25, 3.0, 1.5);
+	self:SetScalingLimits(1.25, 0.825, 1.275);
 end
 
 function AdventureMap_ZoneSummaryPinMixin:OnAcquired(playAnim)

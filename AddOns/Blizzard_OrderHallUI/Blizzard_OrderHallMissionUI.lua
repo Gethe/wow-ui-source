@@ -384,7 +384,7 @@ function OrderHallMission:MissionCompleteInitialize(missionList, index)
 	local mission = missionList[index];
 
 	local bonusChance = Clamp(C_Garrison.GetMissionSuccessChance(mission.missionID) - 100, 0, 100);
-	if (bonusChance > 0) then
+	if (bonusChance > 0 and #self.MissionComplete.currentMission.overmaxRewards ~= 0) then
 		self.MissionComplete.BonusRewards.BonusChanceLabel:SetFormattedText(GARRISON_MISSION_COMPLETE_BONUS_CHANCE, bonusChance);
 		self.MissionComplete.BonusRewards.BonusChanceLabel:Show();
 	else
@@ -464,6 +464,7 @@ end
 OrderHallMissionComplete = { }
 
 function OrderHallMissionComplete:ShowRewards()
+	local missionComplete = true;
 	local bonusRewards = self.BonusRewards;
 	self.NextMissionButton:Enable();
 	if ( not bonusRewards.success and not self.skipAnimations ) then
@@ -473,7 +474,7 @@ function OrderHallMissionComplete:ShowRewards()
 	self.missionRewardEffectsPool:ReleaseAll();
 
 	local currentMission = self.currentMission;
-	local overmaxSucceeded = currentMission.overmaxSucceeded;
+	local overmaxSucceeded = currentMission.overmaxSucceeded and #currentMission.overmaxRewards ~= 0;
 
 	if (overmaxSucceeded and not self.skipAnimations) then
 		self.BonusText.BonusTextGlowAnim:Play();
@@ -485,8 +486,7 @@ function OrderHallMissionComplete:ShowRewards()
 	local secondItemDelay = 1;
 
 	-- There should be exactly 1 base reward, but display them all even if there is more.
-	local hasOvermaxRewardItem = overmaxSucceeded and #currentMission.overmaxRewards ~= 0;
-	local numRewards = #currentMission.rewards + (hasOvermaxRewardItem and 1 or 0);
+	local numRewards = #currentMission.rewards + (overmaxSucceeded and 1 or 0);
 	local prevRewardFrame;
 	for id, reward in pairs(currentMission.rewards) do
 		local rewardFrame = self.missionRewardEffectsPool:Acquire();
@@ -507,12 +507,12 @@ function OrderHallMissionComplete:ShowRewards()
 			rewardFrame:Hide();
 			C_Timer.After(firstItemDelay,
 				function()
-					GarrisonMissionPage_SetReward(rewardFrame, reward);
+					GarrisonMissionPage_SetReward(rewardFrame, reward, missionComplete);
 					rewardFrame.Anim:Play();
 				end
 			);
 		else
-			GarrisonMissionPage_SetReward(rewardFrame, reward);
+			GarrisonMissionPage_SetReward(rewardFrame, reward, missionComplete);
 			if (not self.skipAnimations) then
 				rewardFrame.Anim:Play();
 			end
@@ -536,17 +536,17 @@ function OrderHallMissionComplete:ShowRewards()
 		self.BonusRewards.BonusChanceLabel:Hide();
 		if ( not self.skipAnimations ) then
 			rewardFrame:Hide();
+			local rewardMissionID = self.currentMission.missionID;
 			C_Timer.After(secondItemDelay,
 				function()
-					GarrisonMissionPage_SetReward(rewardFrame, currentMission.overmaxRewards[1]);
-					rewardFrame.Anim:Play();
+					if ( rewardMissionID == self.currentMission.missionID ) then
+						GarrisonMissionPage_SetReward(rewardFrame, currentMission.overmaxRewards[1], missionComplete);
+						rewardFrame.Anim:Play();
+					end
 				end
 			);
 		else
-			GarrisonMissionPage_SetReward(rewardFrame, currentMission.overmaxRewards[1]);
-			if (not self.skipAnimations) then
-				Reward.Anim:Play();
-			end
+			GarrisonMissionPage_SetReward(rewardFrame, currentMission.overmaxRewards[1], missionComplete);
 		end
 		prevRewardFrame = rewardFrame;
 	end

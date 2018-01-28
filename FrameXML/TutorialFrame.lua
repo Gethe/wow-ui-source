@@ -112,7 +112,7 @@ local DISPLAY_DATA = {
 	[22] = { --TUTORIAL_FRIENDS
 		tileHeight = 10, 
 		anchorData = {align = "RIGHT", xOff = -25, yOff = -150},
-		callOut	= {parent = "FriendsMicroButton", align = "TOPLEFT", xOff = -4, yOff = 6, width = 38, height = 45},
+		callOut	= {parent = "QuickJoinToastButton", align = "TOPLEFT", xOff = -4, yOff = 6, width = 38, height = 45},
 		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -29, bottomRight_yOff = 35},
 		notNPE = true,
 	},
@@ -445,7 +445,7 @@ function TutorialFrame_Update(currentTutorial)
 		return;
 	end
 	
-	PlaySound("TutorialPopup");
+	PlaySound(SOUNDKIT.TUTORIAL_POPUP);
 	TutorialFrame_ClearTextures();
 	TutorialFrame.id = currentTutorial;
 	FlagTutorial(currentTutorial);
@@ -784,7 +784,7 @@ function TutorialFrame_NewTutorial(tutorialID, forceShow)
 end
 
 function TutorialFramePrevButton_OnClick(self)
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	local prevTutorial = GetPrevCompleatedTutorial(TutorialFrame.id);
 	while ( prevTutorial and DISPLAY_DATA[prevTutorial].tileHeight == 0) do
 		prevTutorial = GetPrevCompleatedTutorial(prevTutorial);
@@ -795,7 +795,7 @@ function TutorialFramePrevButton_OnClick(self)
 end
 
 function TutorialFrameNextButton_OnClick(self)
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	local nextTutorial = GetNextCompleatedTutorial(TutorialFrame.id);
 	while ( nextTutorial and DISPLAY_DATA[nextTutorial].tileHeight == 0) do
 		nextTutorial = GetNextCompleatedTutorial(nextTutorial);
@@ -819,7 +819,7 @@ function TutorialFrame_AlertButton_OnClick(self)
 end
 
 function TutorialFrame_Hide()
-	PlaySound("igMainMenuClose");
+	PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
 	HideUIPanel(TutorialFrame);
 	if ( getn(TUTORIALFRAME_QUEUE) > 0 ) then
 		TutorialFrame_AlertButton_OnClick( TutorialFrameAlertButton );

@@ -92,7 +92,7 @@ function CombatText_OnEvent(self, event, ...)
 		CombatText_ClearAnimationList();
 		return;
 	end
-	
+
 	local arg1, data, arg3, arg4 = ...;
 
 	-- Set up the messageType
@@ -128,7 +128,7 @@ function CombatText_OnEvent(self, event, ...)
 				CombatText.lowHealth = nil;
 			end
 		end
-		
+
 		-- Didn't meet any of the criteria so just return
 		if ( not messageType ) then
 			return;
@@ -136,7 +136,9 @@ function CombatText_OnEvent(self, event, ...)
 	elseif ( event == "UNIT_POWER" ) then
 		if ( arg1 == self.unit ) then
 			local powerType, powerToken = UnitPowerType(self.unit);
-			if ( powerToken == "MANA" and (UnitPower(self.unit) / UnitPowerMax(self.unit)) <= COMBAT_TEXT_LOW_MANA_THRESHOLD ) then
+			local maxPower = UnitPowerMax(self.unit);
+			local currentPower = UnitPower(self.unit);
+			if ( maxPower ~= 0 and powerToken == "MANA" and (currentPower / maxPower) <= COMBAT_TEXT_LOW_MANA_THRESHOLD ) then
 				if ( not CombatText.lowMana ) then
 					messageType = "MANA_LOW";
 					CombatText.lowMana = 1;
@@ -145,7 +147,7 @@ function CombatText_OnEvent(self, event, ...)
 				CombatText.lowMana = nil;
 			end
 		end
-		
+
 		-- Didn't meet any of the criteria so just return
 		if ( not messageType ) then
 			return;
@@ -201,7 +203,7 @@ function CombatText_OnEvent(self, event, ...)
 
 	local isStaggered = info.isStaggered;
 	if ( messageType == "" ) then
-	
+
 	elseif ( messageType == "DAMAGE_CRIT" or messageType == "SPELL_DAMAGE_CRIT" ) then
 		displayType = "crit";
 		message = "-"..BreakUpLargeNumbers(data);
@@ -259,10 +261,10 @@ function CombatText_OnEvent(self, event, ...)
 			or arg3 == "DEMONIC_FURY") then
 			message = data.." ".._G[arg3];
 			info = PowerBarColor[arg3];
-		elseif ( arg3 == "HOLY_POWER" 
-				or arg3 == "SOUL_SHARDS" 
-				or arg3 == "CHI" 
-				or arg3 == "COMBO_POINTS" 
+		elseif ( arg3 == "HOLY_POWER"
+				or arg3 == "SOUL_SHARDS"
+				or arg3 == "CHI"
+				or arg3 == "COMBO_POINTS"
 				or arg3 == "ARCANE_CHARGES" ) then
 			local numPower = UnitPower( "player" , GetPowerEnumFromEnergizeString(arg3) );
 			message = "<"..numPower.." ".._G[arg3]..">";
@@ -339,7 +341,7 @@ function CombatText_OnEvent(self, event, ...)
 		else
 			message = "+"..BreakUpLargeNumbers(arg3).."("..COMBAT_TEXT_ABSORB..")";
 		end
-	else 
+	else
 		message = _G["COMBAT_TEXT_"..messageType];
 		if ( not message ) then
 			message = _G[messageType];
@@ -349,33 +351,32 @@ function CombatText_OnEvent(self, event, ...)
 	-- Add the message
 	if ( message ) then
 		CombatText_AddMessage(message, COMBAT_TEXT_SCROLL_FUNCTION, info.r, info.g, info.b, displayType, isStaggered);
-	end	
+	end
 end
 
+local powerEnumFromEnergizeStringLookup =
+{
+	MANA = Enum.PowerType.Mana,
+	RAGE = Enum.PowerType.Rage,
+	FOCUS = Enum.PowerType.Focus,
+	ENERGY = Enum.PowerType.Energy,
+	COMBO_POINTS = Enum.PowerType.ComboPoints,
+	RUNES = Enum.PowerType.Runes,
+	RUNIC_POWER = Enum.PowerType.RunicPower,
+	SOUL_SHARDS = Enum.PowerType.SoulShards,
+	LUNAR_POWER = Enum.PowerType.LunarPower,
+	HOLY_POWER = Enum.PowerType.HolyPower,
+	ALTERNATE = Enum.PowerType.Alternate,
+	MAELSTROM = Enum.PowerType.Maelstrom,
+	CHI = Enum.PowerType.Chi,
+	ARCANE_CHARGES = Enum.PowerType.ArcaneCharges,
+	FURY = Enum.PowerType.Fury,
+	PAIN = Enum.PowerType.Pain,
+	INSANITY = Enum.PowerType.Insanity,
+}
+
 function GetPowerEnumFromEnergizeString(power)
-	if (power == "MANA") then 
-		return SPELL_POWER_MANA;
-	elseif ( power == "RAGE") then 
-		return SPELL_POWER_RAGE;
-	elseif ( power == "FOCUS") then 
-		return SPELL_POWER_FOCUS;
-	elseif ( power == "ENERGY") then 
-		return SPELL_POWER_ENERGY;
-	elseif ( power == "RUNIC_POWER") then 
-		return SPELL_POWER_RUNIC_POWER;
-	elseif ( power == "DEMONIC_FURY") then
-		return SPELL_POWER_DEMONIC_FURY;
-	elseif ( power == "HOLY_POWER" ) then
-		return SPELL_POWER_HOLY_POWER;
-	elseif ( power == "SOUL_SHARDS" ) then
-		return SPELL_POWER_SOUL_SHARDS;
-	elseif ( power == "CHI" ) then
-		return SPELL_POWER_CHI;
-	elseif ( power == "COMBO_POINTS" ) then
-		return SPELL_POWER_COMBO_POINTS;
-	elseif ( power == "ARCANE_CHARGES" ) then
-		return SPELL_POWER_ARCANE_CHARGES;
-	end
+	return powerEnumFromEnergizeStringLookup[power] or Enum.PowerType.NumPowerTypes;
 end
 
 function CombatText_OnUpdate(self, elapsed)
@@ -422,7 +423,7 @@ function CombatText_AddMessage(message, scrollFunction, r, g, b, displayType, is
 	if ( noStringsAvailable ) then
 		return;
 	end
-	
+
 	string:SetText(message);
 	string:SetTextColor(r, g, b);
 	string.scrollTime = 0;
@@ -431,7 +432,7 @@ function CombatText_AddMessage(message, scrollFunction, r, g, b, displayType, is
 	else
 		string.scrollFunction = scrollFunction;
 	end
-	
+
 	-- See which direction the message should flow
 	local yDir;
 	local lowestMessage;
@@ -531,7 +532,7 @@ function CombatText_GetAvailableString()
 		string = _G["CombatText"..i];
 		if ( not string:IsShown() ) then
 			return string;
-		end 
+		end
 	end
 	return CombatText_GetOldestString(), 1;
 end
@@ -612,8 +613,8 @@ function CombatText_UpdateDisplayedMessages()
 			endX = 0,
 			endY = 609 * COMBAT_TEXT_Y_SCALE
 		};
-		
-	elseif ( COMBAT_TEXT_FLOAT_MODE == "2" ) then	
+
+	elseif ( COMBAT_TEXT_FLOAT_MODE == "2" ) then
 		COMBAT_TEXT_SCROLL_FUNCTION = CombatText_StandardScroll;
 		COMBAT_TEXT_LOCATIONS = {
 			startX = 0,

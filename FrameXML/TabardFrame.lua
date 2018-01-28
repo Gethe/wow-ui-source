@@ -47,43 +47,26 @@ function TabardFrame_OnEvent(self, event, ...)
 	end
 end
 
-function TabardCharacterModelRotateLeftButton_OnClick()
-	TabardModel.rotation = TabardModel.rotation - .03;
-	TabardModel:SetRotation(TabardModel.rotation);
-	PlaySound("igInventoryRotateCharacter");
+function TabardCharacterModelRotateLeftButton_OnClick(self)
+	Model_RotateLeft(self:GetParent());
 end
 
-function TabardCharacterModelRotateRightButton_OnClick()
-	TabardModel.rotation = TabardModel.rotation + .03;
-	TabardModel:SetRotation(TabardModel.rotation);
-	PlaySound("igInventoryRotateCharacter");
+function TabardCharacterModelRotateRightButton_OnClick(self)
+	Model_RotateRight(self:GetParent());
 end
 
 function TabardCharacterModelFrame_OnUpdate(self, elapsedTime)
-	if ( TabardCharacterModelRotateRightButton:GetButtonState() == "PUSHED" ) then
-		self.rotation = self.rotation + (elapsedTime * 2 * PI * ROTATIONS_PER_SECOND);
-		if ( self.rotation < 0 ) then
-			self.rotation = self.rotation + (2 * PI);
-		end
-		self:SetRotation(self.rotation);
-	end
-	if ( TabardCharacterModelRotateLeftButton:GetButtonState() == "PUSHED" ) then
-		self.rotation = self.rotation - (elapsedTime * 2 * PI * ROTATIONS_PER_SECOND);
-		if ( self.rotation > (2 * PI) ) then
-			self.rotation = self.rotation - (2 * PI);
-		end
-		self:SetRotation(self.rotation);
-	end
+	Model_UpdateRotation(self, TabardCharacterModelRotateLeftButton, TabardCharacterModelRotateRightButton, elapsedTime);
 end
 
 function TabardCustomization_Left(id)
-	PlaySound("gsCharacterCreationLook");
+	PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_LOOK);
 	TabardModel:CycleVariation(id,-1);
 	TabardFrame_UpdateTextures();
 end
 
 function TabardCustomization_Right(id)
-	PlaySound("gsCharacterCreationLook");
+	PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_LOOK);
 	TabardModel:CycleVariation(id,1);
 	TabardFrame_UpdateTextures();
 end

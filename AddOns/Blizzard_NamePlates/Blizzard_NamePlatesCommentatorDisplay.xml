@@ -1,0 +1,81 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="Blizzard_NamePlatesCommentatorDisplay.lua" />
+
+	<Frame name="NamePlateCommentatorDisplayInfoTemplate" parentKey="CommentatorDisplayInfo" setAllPoints="true" mixin="NamePlateCommentatorDisplayInfoMixin" virtual="true">
+		<Frames>
+			<Model parentKey="OffensiveCooldownModel" frameStrata="BACKGROUND" drawLayer="OVERLAY" hidden="true" alpha="0.55">
+				<Size x="1800" y="24" />
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.$parent.healthBar" relativePoint="BOTTOM" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnShow>
+						self:SetModel([[Spells\ograid_engine_flame.m2]]);
+					</OnShow>
+					<OnModelLoaded>
+						self:MakeCurrentCameraCustom();
+						self:SetPosition(0, 0, 0);
+						self:SetFacing(0);
+						self:SetCameraTarget(0, 0.6, 0);
+						self:SetModelScale(0.09);
+						self:SetCameraPosition(0, 0, 20);
+						self:SetCameraFacing(math.pi / 2);
+					</OnModelLoaded>
+				</Scripts>
+			</Model>
+			<Model parentKey="DefensiveCooldownModel" frameStrata="BACKGROUND" drawLayer="BACKGROUND" hidden="true" alpha="0.7">
+				<Size x="356" y="356" />
+				<Anchors>
+					<Anchor point="CENTER" y="165"/>
+				</Anchors>
+				<Scripts>
+					<OnShow>
+						self:SetModel([[Spells\SPELLREFLECTION_STATE_SHIELD.m2]]);
+					</OnShow>
+					<OnModelLoaded>
+						self:MakeCurrentCameraCustom();
+						self:SetPosition(0, 0, 0);
+						self:SetFacing(0);
+						self:SetCameraTarget(0, 0, 5);
+						self:SetModelScale(1.4);
+						self:SetCameraPosition(10, 0, 0);
+						self:SetCameraFacing(0);
+					</OnModelLoaded>
+				</Scripts>
+			</Model>
+			
+			<Frame parentKey="CCIndicator" frameLevel="95">
+				<Size x="40" y="40"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.$parent.healthBar" relativePoint="LEFT" x="-2"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="icon">
+							<Size x="40" y="40"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Cooldown parentKey="Cooldown" hideCountdownNumbers="true" drawEdge="true" inherits="CooldownFrameTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.Icon"/>
+							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
+						</Anchors>
+						<SwipeTexture>
+							<Color r="0.17" g="0" b="0" a="0.8"/>
+						</SwipeTexture>
+						<EdgeTexture file="Interface\Cooldown\edge-LoC.blp"/>
+					</Cooldown>
+				</Frames>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnUpdate method="OnUpdate"/>
+		</Scripts>
+	</Frame>
+</Ui>

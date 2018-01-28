@@ -63,6 +63,10 @@ function MapCanvasDataProviderMixin:GetMap()
 	return self.owningMap;
 end
 
+function MapCanvasDataProviderMixin:OnMapChanged()
+	--  Optionally override in your mixin, called when map ID changes
+end
+
 function MapCanvasDataProviderMixin:RegisterEvent(event)
 	-- Since data providers aren't frames this provides a similar method of event registration, but always calls self:OnEvent(event, ...)
 	if not self.registeredEvents then
@@ -85,6 +89,10 @@ function MapCanvasDataProviderMixin:SignalEvent(event, ...)
 	if self.registeredEvents and self.registeredEvents[event] then
 		self:OnEvent(event, ...);
 	end
+end
+
+function MapCanvasDataProviderMixin:GetTransformFlags()
+	return self:GetMap():GetTransformFlags();
 end
 
 -- Provides a basic interface for something that is visible on the map canvas, like icons, blobs or text
@@ -126,15 +134,101 @@ function MapCanvasPinMixin:OnMapInsetMouseLeave(mapInsetIndex)
 	-- Optionally override in your mixin, called when a map inset loses mouse focus
 end
 
+function MapCanvasPinMixin:SetNudgeTargetFactor(newFactor)
+	self.nudgeTargetFactor = newFactor;
+end
+
+function MapCanvasPinMixin:GetNudgeTargetFactor()
+	return self.nudgeTargetFactor or 0;
+end
+
+function MapCanvasPinMixin:SetNudgeSourceRadius(newRadius)
+	self.nudgeSourceRadius = newRadius;
+end
+
+function MapCanvasPinMixin:GetNudgeSourceRadius()
+	return self.nudgeSourceRadius or 0;
+end
+
+function MapCanvasPinMixin:SetNudgeSourceMagnitude(nudgeSourceZoomedOutMagnitude, nudgeSourceZoomedInMagnitude)
+	self.nudgeSourceZoomedOutMagnitude = nudgeSourceZoomedOutMagnitude;
+	self.nudgeSourceZoomedInMagnitude = nudgeSourceZoomedInMagnitude;
+end
+
+function MapCanvasPinMixin:GetNudgeSourceZoomedOutMagnitude()
+	return self.nudgeSourceZoomedOutMagnitude;
+end
+
+function MapCanvasPinMixin:GetNudgeSourceZoomedInMagnitude()
+	return self.nudgeSourceZoomedInMagnitude;
+end
+
+function MapCanvasPinMixin:SetNudgeZoomedInFactor(newFactor)
+	self.zoomedInNudge = newFactor;
+end
+
+function MapCanvasPinMixin:GetZoomedInNudgeFactor()
+	return self.zoomedInNudge or 0;
+end
+
+function MapCanvasPinMixin:SetNudgeZoomedOutFactor(newFactor)
+	self.zoomedOutNudge = newFactor;
+end
+
+function MapCanvasPinMixin:GetZoomedOutNudgeFactor()
+	return self.zoomedOutNudge or 0;
+end
+
+function MapCanvasPinMixin:IgnoresNudging()
+	return self.insetIndex or (self:GetNudgeSourceRadius() == 0 and self:GetNudgeTargetFactor() == 0);
+end
+
 function MapCanvasPinMixin:GetMap()
 	return self.owningMap;
+end
+
+function MapCanvasPinMixin:GetNudgeVector()
+	return self.nudgeVectorX, self.nudgeVectorY;
+end
+
+function MapCanvasPinMixin:GetNudgeSourcePinZoomedOutNudgeFactor()
+	return self.nudgeSourcePinZoomedOutNudgeFactor or 0;
+end
+
+function MapCanvasPinMixin:GetNudgeSourcePinZoomedInNudgeFactor()
+	return self.nudgeSourcePinZoomedInNudgeFactor or 0;
+end
+
+-- x and y should be a normalized vector.
+function MapCanvasPinMixin:SetNudgeVector(sourcePinZoomedOutNudgeFactor, sourcePinZoomedInNudgeFactor, x, y)
+	self.nudgeSourcePinZoomedOutNudgeFactor = sourcePinZoomedOutNudgeFactor;
+	self.nudgeSourcePinZoomedInNudgeFactor = sourcePinZoomedInNudgeFactor;
+	self.nudgeVectorX = x;
+	self.nudgeVectorY = y;
+	self:ApplyCurrentPosition();
+end
+
+function MapCanvasPinMixin:GetNudgeFactor()
+	return self.nudgeFactor or 0;
+end
+
+function MapCanvasPinMixin:SetNudgeFactor(nudgeFactor)
+	self.nudgeFactor = nudgeFactor;
+	self:ApplyCurrentPosition();
+end
+
+function MapCanvasPinMixin:GetNudgeZoomFactor()
+	local zoomPercent = self:GetMap():GetCanvasZoomPercent();
+	local targetFactor = Lerp(self:GetZoomedOutNudgeFactor(), self:GetZoomedInNudgeFactor(), zoomPercent);
+	local sourceFactor = Lerp(self:GetNudgeSourcePinZoomedOutNudgeFactor(), self:GetNudgeSourcePinZoomedInNudgeFactor(), zoomPercent);
+	return targetFactor * sourceFactor;
 end
 
 function MapCanvasPinMixin:SetPosition(normalizedX, normalizedY, insetIndex)
 	self.normalizedX = normalizedX;
 	self.normalizedY = normalizedY;
 	self.insetIndex = insetIndex;
-	self:ApplyCurrentPosition();
+	self:GetMap():SetPinPosition(self, normalizedX, normalizedY, insetIndex);
 end
 
 -- Returns the global position if not part of an inset, otherwise returns local coordinates of that inset
@@ -187,9 +281,9 @@ AM_PIN_SCALE_STYLE_WITH_TERRAIN = 3;
 
 function MapCanvasPinMixin:SetScaleStyle(scaleStyle)
 	if scaleStyle == AM_PIN_SCALE_STYLE_VISIBLE_WHEN_ZOOMED_IN then
-		self:SetScalingLimits(1.5, 0.0, 3.0);
+		self:SetScalingLimits(1.5, 0.0, 2.55);
 	elseif scaleStyle == AM_PIN_SCALE_STYLE_VISIBLE_WHEN_ZOOMED_OUT then
-		self:SetScalingLimits(1.5, 3.0, 0.0);
+		self:SetScalingLimits(1.5, 0.825, 0.0);
 	elseif scaleStyle == AM_PIN_SCALE_STYLE_WITH_TERRAIN then
 		self:SetScalingLimits(nil, nil, nil);
 		self:SetScale(1.0);
@@ -217,12 +311,13 @@ function MapCanvasPinMixin:SetAlphaStyle(alphaStyle)
 end
 
 function MapCanvasPinMixin:ApplyCurrentPosition()
-	self:GetMap():SetPinPosition(self, self.normalizedX, self.normalizedY, self.insetIndex);
+	self:GetMap():ApplyPinPosition(self, self.normalizedX, self.normalizedY, self.insetIndex);
 end
 
 function MapCanvasPinMixin:ApplyCurrentScale()
 	if self.startScale and self.startScale and self.endScale then
-		self:SetScale(Lerp(self.startScale, self.endScale, Saturate(self.scaleFactor * self:GetMap():GetCanvasZoomPercent())));
+		local parentScaleFactor = 1.0 / self:GetMap():GetCanvasScale();
+		self:SetScale(parentScaleFactor * Lerp(self.startScale, self.endScale, Saturate(self.scaleFactor * self:GetMap():GetCanvasZoomPercent())));
 		self:ApplyCurrentPosition();
 	end
 end

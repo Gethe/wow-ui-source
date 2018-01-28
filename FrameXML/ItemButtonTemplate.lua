@@ -17,6 +17,7 @@ function SetItemButtonCount(button, count, abbreviate)
 			count = "*";
 		end
 		countString:SetText(count);
+		countString:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
 		countString:Show();
 	else
 		countString:Hide();

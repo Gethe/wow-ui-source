@@ -11,21 +11,12 @@ COIN_BUTTON_WIDTH = 32;
 
 MoneyTypeInfo = { };
 MoneyTypeInfo["PLAYER"] = {
+	OnloadFunc = function(self)
+		self:RegisterEvent("TRIAL_STATUS_UPDATE");
+	end,
+	
 	UpdateFunc = function(self)
-		local money = (GetMoney() - GetCursorMoney() - GetPlayerTradeMoney());
-		if self.trialErrorButton then
-			if ( GameLimitedMode_IsActive() ) then
-				local _, rMoney = GetRestrictedAccountData();
-				if money >= rMoney then
-					self.trialErrorButton:Show();
-				else
-					self.trialErrorButton:Hide();
-				end
-			else
-				self.trialErrorButton:Hide();
-			end
-		end
-		return money;
+		return MoneyFrame_UpdateTrialErrorButton(self);
 	end,
 
 	PickupFunc = function(self, amount)
@@ -192,6 +183,7 @@ function MoneyFrame_OnLoad (self)
 	self:RegisterEvent("TRADE_MONEY_CHANGED");
 	self:RegisterEvent("SEND_MAIL_MONEY_CHANGED");
 	self:RegisterEvent("SEND_MAIL_COD_CHANGED");
+	self:RegisterEvent("TRIAL_STATUS_UPDATE");
 	MoneyFrame_SetType(self, "PLAYER");
 end
 
@@ -213,6 +205,7 @@ function SmallMoneyFrame_OnLoad(self, moneyType)
 		self:RegisterEvent("TRADE_MONEY_CHANGED");
 		self:RegisterEvent("SEND_MAIL_MONEY_CHANGED");
 		self:RegisterEvent("SEND_MAIL_COD_CHANGED");
+		self:RegisterEvent("TRIAL_STATUS_UPDATE");
 		self.small = 1;
 		MoneyFrame_SetType(self, "PLAYER");
 	end
@@ -227,6 +220,8 @@ function MoneyFrame_OnEvent (self, event, ...)
 	
 	if ( event == "PLAYER_MONEY" and moneyType == "PLAYER" ) then
 		MoneyFrame_UpdateMoney(self);
+	elseif ( event == "TRIAL_STATUS_UPDATE" and moneyType == "PLAYER" ) then
+		MoneyFrame_UpdateTrialErrorButton(self);
 	elseif ( event == "PLAYER_TRADE_MONEY" and (moneyType == "PLAYER" or moneyType == "PLAYER_TRADE") ) then
 		MoneyFrame_UpdateMoney(self);
 	elseif ( event == "TRADE_MONEY_CHANGED" and moneyType == "TARGET_TRADE" ) then
@@ -420,18 +415,20 @@ function MoneyFrame_Update(frameName, money, forceShow)
 			silverButton:SetWidth(COIN_BUTTON_WIDTH);
 		end
 		
-		width = width + silverButton:GetWidth();
+		local silverWidth = silverButton:GetWidth();
 		goldButton:SetPoint("RIGHT", frameName.."SilverButton", "LEFT", spacing, 0);
 		if ( goldButton:IsShown() ) then
-			width = width - spacing;
+			silverWidth = silverWidth - spacing;
 		end
 		if ( info.showSmallerCoins ) then
 			showLowerDenominations = 1;
 		end
 		-- hide silver if not enough room
-		if ( maxDisplayWidth and width > maxDisplayWidth ) then
+		if ( maxDisplayWidth and (width + silverWidth) > maxDisplayWidth ) then
 			hideSilver = true;
 			frame.showTooltip = true;
+		else
+			width = width + silverWidth;
 		end
 	end
 	if ( hideSilver ) then
@@ -449,15 +446,17 @@ function MoneyFrame_Update(frameName, money, forceShow)
 			copperButton:SetWidth(COIN_BUTTON_WIDTH);
 		end
 		
-		width = width + copperButton:GetWidth();
+		local copperWidth = copperButton:GetWidth();
 		silverButton:SetPoint("RIGHT", frameName.."CopperButton", "LEFT", spacing, 0);
 		if ( silverButton:IsShown() or goldButton:IsShown() ) then
-			width = width - spacing;
+			copperWidth = copperWidth - spacing;
 		end
 		-- hide copper if not enough room
-		if ( maxDisplayWidth and width > maxDisplayWidth ) then
+		if ( maxDisplayWidth and (width + copperWidth) > maxDisplayWidth ) then
 			hideCopper = true;
 			frame.showTooltip = true;
+		else
+			width = width + copperWidth;
 		end
 	end
 	if ( hideCopper ) then
@@ -511,80 +510,15 @@ function MoneyFrame_Update(frameName, money, forceShow)
 	end
 end
 
-function RefreshMoneyFrame(frameName, money, small, collapse, showSmallerCoins)
-	--[[
-	local gold = floor(money / (COPPER_PER_SILVER * SILVER_PER_GOLD));
-	local silver = floor((money - (gold * COPPER_PER_SILVER * SILVER_PER_GOLD)) / COPPER_PER_SILVER);
-	local copper = mod(money, COPPER_PER_SILVER);
-
-	local goldButton = _G[frameName.."GoldButton"];
-	local silverButton = _G[frameName.."SilverButton"];
-	local copperButton = _G[frameName.."CopperButton"];
-
-	local iconWidth = MONEY_ICON_WIDTH;
-	local spacing = MONEY_BUTTON_SPACING;
-	if ( small > 0 ) then
-		iconWidth = MONEY_ICON_WIDTH_SMALL;
-		spacing = MONEY_BUTTON_SPACING_SMALL;
+function MoneyFrame_UpdateTrialErrorButton(self)
+	local money = (GetMoney() - GetCursorMoney() - GetPlayerTradeMoney());
+	if self.trialErrorButton then
+		local _, rMoney = GetRestrictedAccountData();
+		local moneyIsRestricted = GameLimitedMode_IsActive() and money >= rMoney;
+		self.trialErrorButton:SetShown(moneyIsRestricted);
 	end
-
-	goldButton:SetText(gold);
-	goldButton:SetWidth(goldButton:GetTextWidth() + iconWidth);
-	goldButton:Show();
-	silverButton:SetText(silver);
-	silverButton:SetWidth(silverButton:GetTextWidth() + iconWidth);
-	silverButton:Show();
-	copperButton:SetText(copper);
-	copperButton:SetWidth(copperButton:GetTextWidth() + iconWidth);
-	copperButton:Show();
-
-	local frame = _G[frameName];
-	frame.staticMoney = money;
-
-	if ( collapse == 0 ) then
-		return;
-	end
-
-	local width = 13;
-	local showLowerDenominations;
-	if ( gold > 0 ) then
-		width = width + goldButton:GetWidth();
-		if ( showSmallerCoins ) then
-			showLowerDenominations = 1;
-		end
-	else
-		goldButton:Hide();
-	end
-
-	if ( silver > 0 or showLowerDenominations ) then
-		width = width + silverButton:GetWidth();
-		goldButton:SetPoint("RIGHT", frameName.."SilverButton", "LEFT", spacing, 0);
-		if ( goldButton:IsShown() ) then
-			width = width - spacing;
-		end
-		if ( showSmallerCoins ) then
-			showLowerDenominations = 1;
-		end
-	else
-		silverButton:Hide();
-		goldButton:SetPoint("RIGHT", frameName.."SilverButton",	"RIGHT", 0, 0);
-	end
-
-	-- Used if we're not showing lower denominations
-	if ( copper > 0 or showLowerDenominations or showSmallerCoins == "Backpack") then
-		width = width + copperButton:GetWidth();
-		silverButton:SetPoint("RIGHT", frameName.."CopperButton", "LEFT", spacing, 0);
-		if ( silverButton:IsShown() ) then
-			width = width - spacing;
-		end
-	else
-		copperButton:Hide();
-		silverButton:SetPoint("RIGHT", frameName.."CopperButton", "RIGHT", 0, 0);
-	end
-
-	frame:SetWidth(width);
-
-	]]
+	
+	return money;
 end
 
 function SetMoneyFrameColor(frameName, color)
@@ -598,6 +532,8 @@ function SetMoneyFrameColor(frameName, color)
 			fontObject = NumberFontNormalRightYellow;
 		elseif ( color == "red" ) then
 			fontObject = NumberFontNormalRightRed;
+		elseif ( color == "gray" ) then
+			fontObject = NumberFontNormalRightGray;
 		else
 			fontObject = NumberFontNormalRight;
 		end
@@ -606,6 +542,8 @@ function SetMoneyFrameColor(frameName, color)
 			fontObject = NumberFontNormalLargeRightYellow;
 		elseif ( color == "red" ) then
 			fontObject = NumberFontNormalLargeRightRed;
+		elseif ( color == "gray" ) then
+			fontObject = NumberFontNormalLargeRightGray;
 		else
 			fontObject = NumberFontNormalLargeRight;
 		end
@@ -620,12 +558,17 @@ function SetMoneyFrameColor(frameName, color)
 	copperButton:SetNormalFontObject(fontObject);
 end
 
-function AltCurrencyFrame_Update(frameName, texture, cost)
+function AltCurrencyFrame_Update(frameName, texture, cost, canAfford)
 	local iconWidth;
 	local button = _G[frameName];
 	local buttonTexture = _G[frameName.."Texture"];
 	button:SetText(cost);
 	buttonTexture:SetTexture(texture);
+	local fontColor = HIGHLIGHT_FONT_COLOR;
+	if (canAfford == false) then
+		fontColor = DISABLED_FONT_COLOR;
+	end
+	button.Text:SetTextColor(fontColor.r, fontColor.g, fontColor.b);
 	if ( button.pointType == HONOR_POINTS ) then
 		iconWidth = 24;
 		buttonTexture:SetPoint("LEFT", _G[frameName.."Text"], "RIGHT", -1, -6);

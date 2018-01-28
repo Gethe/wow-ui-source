@@ -147,11 +147,11 @@ end
 function TimeManagerFrame_OnShow(self)
 	TimeManager_Update();
 	TimeManagerStopwatchCheck:SetChecked(StopwatchFrame:IsShown());
-	PlaySound("igCharacterInfoOpen");
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 end
 
 function TimeManagerFrame_OnHide(self)
-	PlaySound("igCharacterInfoClose");
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 end
 
 function TimeManagerCloseButton_OnClick()
@@ -161,9 +161,9 @@ end
 function TimeManagerStopwatchCheck_OnClick(self)
 	Stopwatch_Toggle();
 	if ( self:GetChecked() ) then
-		PlaySound("igMainMenuOptionCheckBoxOn");
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	else
-		PlaySound("igMainMenuQuit");
+		PlaySound(SOUNDKIT.IG_MAINMENU_QUIT);
 	end
 end
 
@@ -352,10 +352,10 @@ end
 function TimeManagerAlarmEnabledButton_OnClick(self)
 	_TimeManager_Setting_SetBool(CVAR_ALARM_ENABLED, "alarmEnabled", not Settings.alarmEnabled);
 	if ( Settings.alarmEnabled ) then
-		PlaySound("igMainMenuOptionCheckBoxOn");
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 		TimeManager_StartCheckingAlarm();
 	else
-		PlaySound("igMainMenuOptionCheckBoxOff");
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 		if ( TimeManagerClockButton.alarmFiring ) then
 			TimeManager_TurnOffAlarm();
 		end
@@ -365,9 +365,9 @@ end
 function TimeManagerMilitaryTimeCheck_OnClick(self)
 	TimeManager_ToggleTimeFormat();
 	if ( self:GetChecked() ) then
-		PlaySound("igMainMenuOptionCheckBoxOn");
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	else
-		PlaySound("igMainMenuOptionCheckBoxOff");
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 	end
 end
 
@@ -395,9 +395,9 @@ function TimeManagerLocalTimeCheck_OnClick(self)
 	-- since we're changing which time type we're checking, we need to check the alarm now
 	TimeManager_StartCheckingAlarm();
 	if ( self:GetChecked() ) then
-		PlaySound("igMainMenuOptionCheckBoxOn");
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	else
-		PlaySound("igMainMenuOptionCheckBoxOff");
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 	end
 end
 
@@ -437,7 +437,7 @@ end
 
 function TimeManagerClockButton_OnClick(self)
 	if ( self.alarmFiring ) then
-		PlaySound("igMainMenuQuit");
+		PlaySound(SOUNDKIT.IG_MAINMENU_QUIT);
 		TimeManager_TurnOffAlarm();
 	else
 		TimeManager_Toggle();
@@ -506,7 +506,7 @@ end
 function TimeManager_FireAlarmWarning()
 	TimeManagerClockButton.checkAlarmWarning = false;
 
-	PlaySound("AlarmClockWarning1");
+	PlaySound(SOUNDKIT.ALARM_CLOCK_WARNING_1);
 end
 
 function TimeManager_FireAlarm()
@@ -519,7 +519,7 @@ function TimeManager_FireAlarm()
 		DEFAULT_CHAT_FRAME:AddMessage(Settings.alarmMessage, info.r, info.g, info.b, info.id);
 		RaidNotice_AddMessage(RaidWarningFrame, Settings.alarmMessage, ChatTypeInfo["RAID_WARNING"]);
 	end
-	PlaySound("AlarmClockWarning2");
+	PlaySound(SOUNDKIT.ALARM_CLOCK_WARNING_2);
 	UIFrameFlash(TimeManagerAlarmFiredTexture, 0.5, 0.5, -1);
 	-- show the clock if necessary, but record its current state so it can return to that state after
 	-- the player turns the alarm off
@@ -629,11 +629,11 @@ end
 
 function Stopwatch_FinishCountdown()
 	Stopwatch_Clear();
-	PlaySound("AlarmClockWarning3");
+	PlaySound(SOUNDKIT.ALARM_CLOCK_WARNING_3);
 end
 
 function StopwatchCloseButton_OnClick()
-	PlaySound("igMainMenuQuit");
+	PlaySound(SOUNDKIT.IG_MAINMENU_QUIT);
 	StopwatchFrame:Hide();
 end
 
@@ -741,16 +741,16 @@ end
 
 function StopwatchResetButton_OnClick()
 	Stopwatch_Clear();
-	PlaySound("igMainMenuOptionCheckBoxOff");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 end
 
 function StopwatchPlayPauseButton_OnClick(self)
 	if ( self.playing ) then
 		Stopwatch_Pause();
-		PlaySound("igMainMenuOptionCheckBoxOff");
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 	else
 		Stopwatch_Play();
-		PlaySound("igMainMenuOptionCheckBoxOn");
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	end
 end
 

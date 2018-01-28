@@ -23,6 +23,7 @@ function TradeSkillUIMixin:OnLoad()
 	self:RegisterEvent("TRADE_SKILL_FILTER_UPDATE");
 
 	self:RegisterEvent("SKILL_LINES_CHANGED");
+	self:RegisterEvent("TRIAL_STATUS_UPDATE");
 
 	self:RegisterEvent("TRADE_SKILL_CLOSE");
 	self:RegisterEvent("GARRISON_TRADESKILL_NPC_CLOSED");
@@ -67,6 +68,10 @@ function TradeSkillUIMixin:OnEvent(event, ...)
 		if self:IsVisible() then
 			self:RefreshSkillRank();
 		end
+	elseif event == "TRIAL_STATUS_UPDATE" then
+		if self:IsVisible() then
+			self:RefreshSkillRank();
+		end
 	elseif event == "TRADE_SKILL_CLOSE" then
 		HideUIPanel(self);
 	elseif event == "GARRISON_TRADESKILL_NPC_CLOSED" then
@@ -76,13 +81,13 @@ end
 
 function TradeSkillUIMixin:OnShow()
 	self:RefreshRetrievingDataFrame();
-	PlaySound("UI_ProfessionsWindow_Open");
+	PlaySound(SOUNDKIT.UI_PROFESSIONS_WINDOW_OPEN);
 end
 
 function TradeSkillUIMixin:OnHide()
 	C_TradeSkillUI.CloseTradeSkill();
 	C_Garrison.CloseGarrisonTradeskillNPC();
-	PlaySound("UI_ProfessionsWindow_Close");
+	PlaySound(SOUNDKIT.UI_PROFESSIONS_WINDOW_CLOSE);
 end
 
 function TradeSkillUIMixin:OnDataSourceChanged()
@@ -101,6 +106,7 @@ function TradeSkillUIMixin:OnDataSourceChanged()
 	self:ClearSlotFilter();	
 
 	CloseDropDownMenus();
+	self.SearchBox:SetText("");
 end
 
 function TradeSkillUIMixin:RefreshRetrievingDataFrame()
@@ -379,9 +385,10 @@ function TradeSkillUIMixin:OnLinkToButtonClicked()
 			ChatEdit_InsertLink(link);
 		else
 			ToggleDropDownMenu(1, nil, self.LinkToDropDown, self.LinkToButton, 25, 25);
+			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 		end
 	end
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 end
 
 function TradeSkillUIMixin:InitLinkToMenu(dropdown, level)

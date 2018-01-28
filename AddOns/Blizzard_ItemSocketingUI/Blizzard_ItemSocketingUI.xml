@@ -214,7 +214,7 @@
 					<Size x="100" y="21"/>	
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.ButtonFrame-Left" relativePoint="TOPRIGHT"/>
-						<Ancher point="TOPRIGHT" relativeKey="$parent.ButtonFrame-Right" relativePoint="TOPLEFT"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.ButtonFrame-Right" relativePoint="TOPLEFT"/>
 					</Anchors>
 					<TexCoords left="0.00000000" right="1.00000000" top="0.00781250" bottom="0.17187500"/>	
 				</Texture>
@@ -533,7 +533,7 @@
 							StaticPopup_Show("CONFIRM_ACCEPT_SOCKETS");
 						else
 							AcceptSockets();
-							PlaySound("JewelcraftingFinalize");
+							PlaySound(SOUNDKIT.JEWEL_CRAFTING_FINALIZE);
 						end
 					</OnClick>
 					<OnMouseDown>
@@ -560,7 +560,7 @@
 		<Scripts>
 			<OnLoad function="ItemSocketingFrame_OnLoad"/>
 			<OnShow>
-				PlaySound("igCharacterInfoOpen");
+				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 			</OnShow>
 			<OnEvent function="ItemSocketingFrame_OnEvent"/>
 			<OnHide>
@@ -568,7 +568,7 @@
 					ItemSocketingFrame_EnableSockets();
 					self.isSocketing = nil;
 				end
-				PlaySound("igCharacterInfoClose");
+				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 				StaticPopup_Hide("CONFIRM_ACCEPT_SOCKETS");
 				CloseSocketInfo();
 			</OnHide>

@@ -161,7 +161,7 @@ function PVPFramePopup_SetupPopUp(event, challengerName, bgName, timeout, tourna
 	PVPFramePopup.minimizeButton:Disable();
 	SetPortraitToTexture(PVPFramePopup.ringIcon,"Interface\\BattlefieldFrame\\UI-Battlefield-Icon");
 	StaticPopupSpecial_Show(PVPFramePopup);
-	PlaySound("ReadyCheck");
+	PlaySound(SOUNDKIT.READY_CHECK);
 	FlashClientIcon();
 end
 
@@ -286,7 +286,7 @@ function PVPRoleCheckPopup_OnEvent(self, event, ...)
 end
 
 function PVPRoleCheckPopup_OnShow(self)
-	PlaySound("ReadyCheck");
+	PlaySound(SOUNDKIT.READY_CHECK);
 	FlashClientIcon();
 	PVPRoleCheckPopup_UpdateSelectedRoles(self);
 	PVPRoleCheckPopup_UpdateRolesChangeable(self);
@@ -334,7 +334,7 @@ function PVPRoleCheckPopup_SetRoles()
 end
 
 function PVPRoleCheckPopupAccept_OnClick()
-	PlaySound("igCharacterInfoTab");
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
 	SetPVPRoles(PVPRoleCheckPopupRoleButtonTank.checkButton:GetChecked(),
 		PVPRoleCheckPopupRoleButtonHealer.checkButton:GetChecked(),
 		PVPRoleCheckPopupRoleButtonDPS.checkButton:GetChecked());
@@ -344,7 +344,7 @@ function PVPRoleCheckPopupAccept_OnClick()
 end
 
 function PVPRoleCheckPopupDecline_OnClick()
-	PlaySound("igCharacterInfoTab");
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
 	StaticPopupSpecial_Hide(PVPRoleCheckPopup);
 --	CompletePVPRoleCheck(false);
 end
@@ -354,24 +354,35 @@ end
 ---------------------------------------------------------------------------
 function PVPReadyDialog_OnLoad(self)
 	self:RegisterEvent("UPDATE_BATTLEFIELD_STATUS");
+	self:RegisterEvent("PVP_BRAWL_INFO_UPDATED");
 end
 
 function PVPReadyDialog_OnEvent(self, event, ...)
 	if ( event == "UPDATE_BATTLEFIELD_STATUS" ) then
 		local i = ...;
-		local status, mapName, teamSize, registeredMatch, suspendedQueue, queueType, gameType, role = GetBattlefieldStatus(i);
-		if ( status == "confirm" ) then
-			if ( not PVPReadyDialog_Showing(i) ) then
-				PVPReadyDialog_Display(self, i, mapName, registeredMatch, queueType, gameType, role);
-			end
-		else
-			if ( PVPReadyDialog_Showing(i) ) then
-				StaticPopupSpecial_Hide(self);
-			end
+		PVPReadyDialog_Update(self, i);
+		self.battlefieldIndex = i;
+	elseif ( event == "PVP_BRAWL_INFO_UPDATED" ) then
+		if (self.battlefieldIndex) then 
+			PVPReadyDialog_Update(self, self.battlefieldIndex);
 		end
 	end
 end
 
+function PVPReadyDialog_Update(self, index) 
+	local status, mapName, teamSize, registeredMatch, suspendedQueue, queueType, gameType, role = GetBattlefieldStatus(index);
+	if ( status == "confirm" ) then
+		PVPReadyDialog_Display(self, index, mapName, registeredMatch, queueType, gameType, role);
+	else
+		if ( PVPReadyDialog_Showing(index) ) then
+			StaticPopupSpecial_Hide(self);
+		end
+	end
+end
+
+function PVPReadyDialog_OnHide(self)
+	self.battlefieldIndex = nil;
+end
 
 function PVPReadyDialog_Showing(index)
 	return PVPReadyDialog:IsShown() and PVPReadyDialog.activeIndex == index;
@@ -446,8 +457,9 @@ function PVPReadyDialog_Display(self, index, displayName, isRated, queueType, ga
 
 	self:SetHeight(height);
 
-	PlaySound("PVPTHROUGHQUEUE");
+	PlaySound(SOUNDKIT.PVP_THROUGH_QUEUE);
 	StaticPopupSpecial_Show(self);
+	FlashClientIcon();
 end
 
 -------------------------------------------------------------------------

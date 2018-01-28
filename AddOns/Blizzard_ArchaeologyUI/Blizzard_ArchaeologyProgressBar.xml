@@ -6,7 +6,7 @@
 	<Size x="240" y="24"/>
 	<!-- Anchored with the UIPARENT_MANAGED_FRAME_POSITIONS system.
 	<Anchors>
-		<Anchor point="BOTTOM" relativeTo="CastingBarFrame" relativePoint="Top" x="0" y="10"/>
+		<Anchor point="BOTTOM" relativeTo="CastingBarFrame" relativePoint="TOP" x="0" y="10"/>
 	</Anchors>
 	-->
 	<Animations>
@@ -26,7 +26,7 @@
 			<Alpha startDelay="1.3" fromAlpha="1" toAlpha="0" duration="0.2" order="1"/>
 			<Scripts>
 				<OnFinished>
-					DigsiteCompleteAlertSystem:AddAlert(self:GetParent().researchFieldID);
+					DigsiteCompleteAlertSystem:AddAlert(GetArchaeologyRaceInfoByID(self:GetParent().researchFieldID));
 					self:GetParent():Hide();
 				</OnFinished>
 			</Scripts>

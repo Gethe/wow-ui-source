@@ -58,15 +58,50 @@
 		</Scripts>
 	</Button>
 
+	<Frame name="TalentRowGlowFrameTemplate" setAllPoints="true" virtual="true" hidden="true">
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="TopGlowLine" atlas="_talent-green-glow" horizTile="true" alpha="0">
+					<Size x="0" y = "14"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
+						<Anchor point="TOPRIGHT" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0" right="1" top="1" bottom="0"/>
+				</Texture>
+				<Texture parentKey="BottomGlowLine" atlas="_talent-green-glow" horizTile="true" alpha="0">
+					<Size x="0" y = "14"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="Anim" looping="REPEAT">
+				<Alpha childKey="TopGlowLine" order="1" fromAlpha="0.2" toAlpha="0.9" duration="1"/>
+				<Alpha childKey="BottomGlowLine" order="1" fromAlpha="0.2" toAlpha="0.9" duration="1"/>
+				<Alpha childKey="TopGlowLine" order="2" fromAlpha="0.9" toAlpha="0.2" duration="1"/>
+				<Alpha childKey="BottomGlowLine" order="2" fromAlpha="0.9" toAlpha="0.2" duration="1"/>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnShow>
+				self.Anim:Play();
+			</OnShow>
+			<OnHide>
+				self.Anim:Stop();
+			</OnHide>
+		</Scripts>
+	</Frame>
+
 	<Button name="PlayerTalentButtonTemplate" virtual="true">
 		<Size x="190" y="42"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentIconTexture" parentKey="icon">
 					<Size x="36" y="36"/>
-					<Anchors>
-						<Anchor point="LEFT" x="35" y="0"/>
-					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="1">
@@ -77,10 +112,6 @@
 					</Anchors>
 				</Texture>
 				<FontString name="$parentName" inherits="GameFontNormalSmall" justifyH="LEFT" parentKey="name">
-					<Size x="90" y="35"/>
-					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentIconTexture" relativePoint="RIGHT" x="10" y="0"/>
-					</Anchors>
 					<Color r="1.0" g="1.0" b="1.0" a="1.0"/>
 				</FontString>
 			</Layer>
@@ -102,13 +133,11 @@
 				<Anchor point="CENTER"/>
 			</Anchors>
 		</HighlightTexture>
+		<Frames>
+			<Frame parentKey="GlowFrame" inherits="TalentRowGlowFrameTemplate" setAllPoints="true"/>
+		</Frames>
 		<Scripts>
-			<OnLoad>
-				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
-				self:RegisterEvent("PREVIEW_TALENT_POINTS_CHANGED");
-				self:RegisterEvent("PLAYER_TALENT_UPDATE");
-				self:RegisterForDrag("LeftButton");
-			</OnLoad>
+			<OnLoad function="PlayerTalentButton_OnLoad"/>
 			<OnClick function="PlayerTalentButton_OnClick"/>
 			<OnEvent function="PlayerTalentFrameTalent_OnEvent" />
 			<OnEnter function="PlayerTalentFrameTalent_OnEnter" />
@@ -117,39 +146,6 @@
 			<OnReceiveDrag function="PlayerTalentFrameTalent_OnDrag" />
 		</Scripts>
 	</Button>
-
-	<Frame name="TalentRowGlowFrameTemplate" setAllPoints="true" virtual="true" hidden="true">
-		<Layers>
-			<Layer level="OVERLAY">
-				<Texture parentKey="TopGlowLine" atlas="_talent-green-glow" horizTile="true" alpha="0">
-					<Size x="629" y = "14"/>
-					<Anchors>
-						<Anchor point="TOP" x="0" y="0"/>
-					</Anchors>
-					<TexCoords left="0" right="1" top="1" bottom="0"/>
-				</Texture>
-				<Texture parentKey="BottomGlowLine" atlas="_talent-green-glow" horizTile="true" alpha="0">
-					<Size x="629" y = "14"/>
-					<Anchors>
-						<Anchor point="BOTTOM" x="0" y="0"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Animations>
-			<AnimationGroup parentKey="Anim" looping="REPEAT">
-				<Alpha childKey="TopGlowLine" order="1" fromAlpha="0.2" toAlpha="0.9" duration="1"/>
-				<Alpha childKey="BottomGlowLine" order="1" fromAlpha="0.2" toAlpha="0.9" duration="1"/>
-				<Alpha childKey="TopGlowLine" order="2" fromAlpha="0.9" toAlpha="0.2" duration="1"/>
-				<Alpha childKey="BottomGlowLine" order="2" fromAlpha="0.9" toAlpha="0.2" duration="1"/>
-			</AnimationGroup>
-		</Animations>
-		<Scripts>
-			<OnShow>
-				self.Anim:Play();
-			</OnShow>
-		</Scripts>
-	</Frame>
 
 	<Frame name="PlayerTalentRowTemplate" virtual="true">
 		<Size x="629" y="42"/>
@@ -233,7 +229,12 @@
 					<Anchor point="LEFT" relativeTo="$parentSeparator3" relativePoint="CENTER" x="0" y="0"/>
 				</Anchors>
 			</Button>
-			<Frame parentKey="GlowFrame" inherits="TalentRowGlowFrameTemplate"/>
+			<Frame parentKey="GlowFrame" inherits="TalentRowGlowFrameTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.talent1" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnEnter function="PlayerTalentFrameRow_OnEnter"/>
@@ -344,7 +345,7 @@
 		</Layers>
 		<Scripts>
 			<OnClick>
-				PlaySound("igCharacterInfoTab");
+				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
 				PlayerSpecTab_OnClick(self, button, down);
 			</OnClick>
 			<OnEnter>
@@ -1134,7 +1135,6 @@
 					</Anchors>
 				</Texture>
 				<FontString parentKey="Name" inherits="GameFontHighlightSmall" justifyH="LEFT" text="Pyrofireburn">
-					<Size x="90" y="35"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="10" y="0"/>
 					</Anchors>
@@ -1163,11 +1163,11 @@
 				<Anchor point="CENTER"/>
 			</Anchors>
 		</HighlightTexture>
+		<Frames>
+			<Frame parentKey="GlowFrame" inherits="TalentRowGlowFrameTemplate" setAllPoints="true"/>
+		</Frames>
 		<Scripts>
-			<OnLoad>
-				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
-				self:RegisterForDrag("LeftButton");
-			</OnLoad>
+			<OnLoad function="PlayerPVPTalentButton_OnLoad"/>
 			<OnClick function="PlayerPVPTalentButton_OnClick"/>
 			<OnDragStart function="PlayerTalentFramePVPTalentsTalent_OnDrag"/>
 			<OnEnter function="PlayerTalentFramePVPTalentsTalent_OnEnter"/>
@@ -1205,7 +1205,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button parentKey="Talent1" inherits="PVPTalentButtonTemplate">
+			<Button parentKey="Talent1" parentArray="talents" inherits="PVPTalentButtonTemplate">
 				<Anchors>
 					<Anchor point="LEFT" x="0" y="0"/>
 				</Anchors>
@@ -1213,7 +1213,7 @@
 					<KeyValue key="columnIndex" value="1" type="number"/>
 				</KeyValues>
 			</Button>
-			<Button parentKey="Talent2" inherits="PVPTalentButtonTemplate">
+			<Button parentKey="Talent2" parentArray="talents" inherits="PVPTalentButtonTemplate">
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.Talent1" relativePoint="RIGHT" x="0" y="0"/>
 				</Anchors>
@@ -1221,7 +1221,7 @@
 					<KeyValue key="columnIndex" value="2" type="number"/>
 				</KeyValues>
 			</Button>
-			<Button parentKey="Talent3" inherits="PVPTalentButtonTemplate">
+			<Button parentKey="Talent3" parentArray="talents" inherits="PVPTalentButtonTemplate">
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.Talent2" relativePoint="RIGHT" x="0" y="0"/>
 				</Anchors>
@@ -1229,7 +1229,12 @@
 					<KeyValue key="columnIndex" value="3" type="number"/>
 				</KeyValues>
 			</Button>
-			<Frame parentKey="GlowFrame" inherits="TalentRowGlowFrameTemplate"/>
+			<Frame parentKey="GlowFrame" inherits="TalentRowGlowFrameTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Talent1" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnEnter function="PlayerTalentFrameRow_OnEnter"/>
@@ -1436,7 +1441,7 @@
 					</OnHide>
 				</Scripts>
 			</Frame>
-			<Frame name="PVPTalentPrestigeLevelDialog" parentKey="PrestigeLevelDialog" inherits="PortraitFrameTemplate" frameStrata="DIALOG" hidden="true">
+			<Frame name="PVPTalentPrestigeLevelDialog" parentKey="PrestigeLevelDialog" inherits="PortraitFrameTemplateNoCloseButton" enableMouse="true" frameStrata="DIALOG" hidden="true">
 				<Size x="325" y="500"/>
 				<Anchors>
 					<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER" x="0" y="100"/>
@@ -1454,7 +1459,7 @@
 								<Anchor point="TOP" relativeKey="$parent.Label" relativePoint="BOTTOM" x="0" y="10"/>
 							</Anchors>
 						</Texture>
-						<FontString ParentKey="NextRank" inherits="GameFontNormalLarge" text="5">
+						<FontString parentKey="NextRank" inherits="GameFontNormalLarge" text="5">
 							<Anchors>
 								<Anchor point="CENTER" relativeKey="$parent.Laurel" relativePoint="BOTTOM" x="0" y="46"/>
 							</Anchors>
@@ -1468,7 +1473,7 @@
 						</FontString>
                         <Texture parentKey="TopDivider" atlas="honorsystem-prestige-rewardline" useAtlasSize="true">
                             <Anchors>
-                                <Anchor point="TOP" relativeKey="$parent.NextRankLabel" relativePoint="BOTOM" x="0" y="-40"/>
+                                <Anchor point="TOP" relativeKey="$parent.NextRankLabel" x="0" y="-50"/>
                             </Anchors>
                         </Texture>
                         <FontString parentKey="NextMaxLevelReward" inherits="GameFontNormal">
@@ -1482,11 +1487,12 @@
                                 <Anchor point="TOP" relativeKey="$parent.TopDivider" relativePoint="BOTTOM" x="0" y="-78"/>
                             </Anchors>
                         </Texture>
-						<FontString parentKey="Warning" inherits="GameFontRed" text="PVP_PRESTIGE_RANK_UP_WARNING">
+						<FontString parentKey="Warning" inherits="GameFontNormal" text="PVP_PRESTIGE_RANK_UP_WARNING">
 							<Size x="300" y="0"/>
 							<Anchors>
 								<Anchor point="BOTTOM" x="0" y="60"/>
 							</Anchors>
+							<Color r="1.0" g="1.0" b="0.0"/>
 						</FontString>
 					</Layer>
 					<Layer level="BACKGROUND">
@@ -1564,7 +1570,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								PlaySound("UI_PVP_Honor_Prestige_WindowClose");
+								PlaySound(SOUNDKIT.UI_PVP_HONOR_PRESTIGE_WINDOW_CLOSE);
 								self:GetParent():Hide();
 							</OnClick>
 						</Scripts>
@@ -1576,7 +1582,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								PlaySound("UI_PVP_Honor_Prestige_RankUP");
+								PlaySound(SOUNDKIT.UI_PVP_HONOR_PRESTIGE_RANK_UP);
 								HideUIPanel(PlayerTalentFrame);
 								self:GetParent():Hide();
 								Prestige();
@@ -1590,7 +1596,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								PlaySound("UI_PVP_Honor_Prestige_WindowClose");
+								PlaySound(SOUNDKIT.UI_PVP_HONOR_PRESTIGE_WINDOW_CLOSE);
 								self:GetParent():Hide();
 							</OnClick>
 						</Scripts>

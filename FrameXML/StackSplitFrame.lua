@@ -1,5 +1,5 @@
 
-function OpenStackSplitFrame(maxStack, parent, anchor, anchorTo)
+function OpenStackSplitFrame(maxStack, parent, anchor, anchorTo, stackCount)
 	if ( StackSplitFrame.owner ) then
 		StackSplitFrame.owner.hasStackSplit = 0;
 	end
@@ -12,7 +12,8 @@ function OpenStackSplitFrame(maxStack, parent, anchor, anchorTo)
 	StackSplitFrame.maxStack = maxStack;
 	StackSplitFrame.owner = parent;
 	parent.hasStackSplit = 1;
-	StackSplitFrame.split = 1;
+	StackSplitFrame.minSplit = stackCount or 1;
+	StackSplitFrame.split = StackSplitFrame.minSplit;
 	StackSplitFrame.typing = 0;
 	StackSplitText:SetText(StackSplitFrame.split);
 	StackSplitLeftButton:Disable();
@@ -57,14 +58,14 @@ function StackSplitFrame_OnChar(self,text)
 	end
 
 	if ( self.typing == 0 ) then
-		self.typing = 1;
+		self.typing = self.minSplit;
 		self.split = 0;
 	end
 
-	local split = (self.split * 10) + text;
+	local split = (self.split * 10) + (text * self.minSplit);
 	if ( split == self.split ) then
 		if( self.split == 0 ) then
-			self.split = 1;
+			self.split = self.minSplit;
 		end
 		return;
 	end
@@ -77,7 +78,7 @@ function StackSplitFrame_OnChar(self,text)
 		else
 			StackSplitRightButton:Enable();
 		end
-		if ( split == 1 ) then
+		if ( split == self.minSplit ) then
 			StackSplitLeftButton:Disable();
 		else
 			StackSplitLeftButton:Enable();
@@ -90,13 +91,13 @@ end
 function StackSplitFrame_OnKeyDown(self,key)
 	local numKey = gsub(key, "NUMPAD", "");
 	if ( key == "BACKSPACE" or key == "DELETE" ) then
-		if ( self.typing == 0 or self.split == 1 ) then
+		if ( self.typing == 0 or self.split == self.minSplit ) then
 			return;
 		end
 
 		self.split = floor(self.split / 10);
-		if ( self.split <= 1 ) then
-			self.split = 1;
+		if ( self.split <= self.minSplit ) then
+			self.split = self.minSplit;
 			self.typing = 0;
 			StackSplitLeftButton:Disable();
 		else
@@ -138,13 +139,13 @@ function StackSplitFrame_OnKeyUp(self,key)
 end
 
 function StackSplitFrameLeft_Click()
-	if ( StackSplitFrame.split == 1 ) then
+	if ( StackSplitFrame.split == StackSplitFrame.minSplit ) then
 		return;
 	end
 
-	StackSplitFrame.split = StackSplitFrame.split - 1;
+	StackSplitFrame.split = StackSplitFrame.split - StackSplitFrame.minSplit;
 	StackSplitText:SetText(StackSplitFrame.split);
-	if ( StackSplitFrame.split == 1 ) then
+	if ( StackSplitFrame.split == StackSplitFrame.minSplit ) then
 		StackSplitLeftButton:Disable();
 	end
 	StackSplitRightButton:Enable();
@@ -155,7 +156,7 @@ function StackSplitFrameRight_Click()
 		return;
 	end
 
-	StackSplitFrame.split = StackSplitFrame.split + 1;
+	StackSplitFrame.split = StackSplitFrame.split + StackSplitFrame.minSplit;
 	StackSplitText:SetText(StackSplitFrame.split);
 	if ( StackSplitFrame.split == StackSplitFrame.maxStack ) then
 		StackSplitRightButton:Disable();

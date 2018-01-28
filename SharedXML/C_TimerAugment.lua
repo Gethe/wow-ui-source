@@ -47,3 +47,7 @@ end
 function TickerPrototype:Cancel()
 	self._cancelled = true;
 end
+
+function TickerPrototype:IsCancelled()
+	return self._cancelled;
+end

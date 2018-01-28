@@ -7,7 +7,7 @@ function QuestSuperTracking_OnQuestTracked(questID)
 		-- now check if quest is at the top of the tracker
 		if ( GetQuestWatchInfo(1) == questID ) then
 			SetSuperTrackedQuestID(questID);
-		end		
+		end
 		PENDING_QUEST_ID = nil;
 	else
 		-- no POI info, could be arriving later
@@ -51,7 +51,7 @@ function QuestSuperTracking_ChooseClosestQuest()
 			end
 		end
 	end
-	
+
 	if ( not closestQuestID ) then
 		for i = 1, GetNumQuestWatches() do
 			local questID, title, questLogIndex = GetQuestWatchInfo(i);
@@ -67,7 +67,7 @@ function QuestSuperTracking_ChooseClosestQuest()
 	-- If nothing with POI data is being tracked expand search to quest log
 	if ( not closestQuestID ) then
 		for questLogIndex = 1, GetNumQuestLogEntries() do
-			local title, level, suggestedGroup, isHeader, isCollapsed, isComplete, frequency, questID = GetQuestLogTitle(questLogIndex);	
+			local title, level, suggestedGroup, isHeader, isCollapsed, isComplete, frequency, questID = GetQuestLogTitle(questLogIndex);
 			if ( not isHeader and QuestHasPOIInfo(questID) ) then
 				local distSqr, onContinent = GetDistanceSqToQuest(questLogIndex);
 				if ( onContinent and distSqr <= minDistSqr ) then
@@ -94,7 +94,7 @@ function QuestSuperTracking_IsSuperTrackedQuestValid()
 
 	if GetQuestLogIndexByID(trackedQuestID) == 0 then
 		-- Might be a tracked world quest that isn't in our log yet
-		if QuestMapFrame_IsQuestWorldQuest(trackedQuestID) and IsWorldQuestWatched(trackedQuestID) then
+		if QuestUtils_IsQuestWorldQuest(trackedQuestID) and IsWorldQuestWatched(trackedQuestID) then
 			return C_TaskQuest.IsActive(trackedQuestID);
 		end
 		return false;

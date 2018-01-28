@@ -220,6 +220,13 @@ function BoostTutorial:Init()
 	eventFrame:RegisterEvent("ACTIONBAR_SLOT_CHANGED");
 	eventFrame:RegisterEvent("UPDATE_BONUS_ACTIONBAR");
 	eventFrame:RegisterEvent("SCENARIO_UPDATE");
+
+	if (C_CharacterServicesPublic.ShouldSeeControlPopup()) then
+		if (not NPE_TutorialKeyboardMouseFrame_Frame) then
+			UIParentLoadAddOn("Blizzard_Tutorial");
+		end
+		NPE_TutorialKeyboardMouseFrame_Frame:Show();
+	end
 end
 
 BoostTutorial:Init();

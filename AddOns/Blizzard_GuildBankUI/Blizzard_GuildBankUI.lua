@@ -1,8 +1,8 @@
 MAX_GUILDBANK_SLOTS_PER_TAB = 98;
 NUM_SLOTS_PER_GUILDBANK_GROUP = 14;
 NUM_GUILDBANK_ICONS_SHOWN = 0;
-NUM_GUILDBANK_ICONS_PER_ROW = 4;
-NUM_GUILDBANK_ICON_ROWS = 4;
+NUM_GUILDBANK_ICONS_PER_ROW = 10;
+NUM_GUILDBANK_ICON_ROWS = 9;
 GUILDBANK_ICON_ROW_HEIGHT = 36;
 NUM_GUILDBANK_COLUMNS = 7;
 MAX_TRANSACTIONS_SHOWN = 21;
@@ -186,7 +186,18 @@ function GuildBankFrame_OnShow()
 	GuildBankFrameTab_OnClick(GuildBankFrameTab1, 1);
 	GuildBankFrame_UpdateTabard();
 	GuildBankFrame_SelectAvailableTab();
-	PlaySound("GuildVaultOpen");
+	PlaySound(SOUNDKIT.GUILD_VAULT_OPEN);
+end
+
+function GuildBankFrame_OnHide(self)
+	GuildBankPopupFrame:Hide();
+	StaticPopup_Hide("GUILDBANK_WITHDRAW");
+	StaticPopup_Hide("GUILDBANK_DEPOSIT");
+	StaticPopup_Hide("CONFIRM_BUY_GUILDBANK_TAB");
+	CloseGuildBankFrame();
+	PlaySound(SOUNDKIT.GUILD_VAULT_CLOSE);
+	GB_ICON_FILENAMES = nil;
+	collectgarbage();
 end
 
 function GuildBankFrame_Update()
@@ -353,7 +364,7 @@ function GuildBankFrameTab_OnClick(tab, id, doNotUpdate)
 	if ( not doNotUpdate ) then
 		GuildBankFrame_Update();
 	end
-	PlaySound("igCharacterInfoTab");
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
 end
 
 function GuildBankFrame_UpdateTabBuyingInfo()
@@ -543,14 +554,6 @@ function GuildBankFrame_UpdateTabs()
 		GuildBankTabLimitBackgroundRight:Show();
 		GuildBankCashFlowLabel:Hide();
 		GuildBankCashFlowMoneyFrame:Hide();
-	elseif ( GuildBankFrame.mode == "moneylog" and GetSpellInfo(83940) ) then	-- Cash Flow rank 1
-		GuildBankFrame_UpdateCashFlowMoney();
-		GuildBankTabLimitBackground:Show();
-		GuildBankTabLimitBackgroundLeft:Show();
-		GuildBankTabLimitBackgroundRight:Show();
-		GuildBankLimitLabel:Hide();
-		GuildBankCashFlowLabel:Show();
-		GuildBankCashFlowMoneyFrame:Show();
 	else
 		GuildBankLimitLabel:Hide();
 		GuildBankTabLimitBackground:Hide();
@@ -636,6 +639,35 @@ function GuildBankItemButton_OnLoad(self)
 		SplitGuildBankItem(GetCurrentGuildBankTab(), button:GetID(), split);
 	end
 	self.UpdateTooltip = GuildBankItemButton_OnEnter;
+end
+
+function GuildBankItemButton_OnClick(self, button)
+	if ( HandleModifiedItemClick(GetGuildBankItemLink(GetCurrentGuildBankTab(), self:GetID())) ) then
+		return;
+	end
+	if ( IsModifiedClick("SPLITSTACK") ) then
+		if ( not CursorHasItem() ) then
+			local texture, count, locked = GetGuildBankItemInfo(GetCurrentGuildBankTab(), self:GetID());
+			if ( not locked and count and count > 1) then
+				OpenStackSplitFrame(count, self, "BOTTOMLEFT", "TOPLEFT");
+			end
+		end
+		return;
+	end
+	local type, money = GetCursorInfo();
+	if ( type == "money" ) then
+		DepositGuildBankMoney(money);
+		ClearCursor();
+	elseif ( type == "guildbankmoney" ) then
+		DropCursorMoney();
+		ClearCursor();
+	else
+		if ( button == "RightButton" ) then
+			AutoStoreGuildBankItem(GetCurrentGuildBankTab(), self:GetID());
+		else
+			PickupGuildBankItem(GetCurrentGuildBankTab(), self:GetID());
+		end
+	end
 end
 
 function GuildBankItemButton_OnEnter(self)
@@ -800,10 +832,12 @@ function GuildBankFrame_UpdateTabInfo(tab)
 	end
 end
 
---Popup functions
-local GB_ICON_FILENAMES = {};
-
+--------------------Popup functions--------------------
 function GuildBankPopupFrame_RefreshIconList ()
+	if ( GB_ICON_FILENAMES ) then
+		return;
+	end
+	
 	GB_ICON_FILENAMES = {};
 	GB_ICON_FILENAMES[1] = "INV_MISC_QUESTIONMARK";
 
@@ -865,10 +899,24 @@ function GuildBankPopupFrame_Update(tab)
 	end
 	
 	-- Scrollbar stuff
-	FauxScrollFrame_Update(GuildBankPopupScrollFrame, ceil(numguildBankIcons / NUM_GUILDBANK_ICONS_PER_ROW) , NUM_GUILDBANK_ICON_ROWS, GUILDBANK_ICON_ROW_HEIGHT );
+	FauxScrollFrame_Update(GuildBankPopupScrollFrame, ceil(numguildBankIcons / NUM_GUILDBANK_ICONS_PER_ROW) + 1, NUM_GUILDBANK_ICON_ROWS, GUILDBANK_ICON_ROW_HEIGHT );
 end
 
+function GuildBankPopupFrame_OnLoad(self)
+	GuildBankPopupScrollFrame.ScrollBar.scrollStep = 8 * GUILDBANK_ICON_ROW_HEIGHT;
+end
+
+local GUILD_BANK_POPUP_FRAME_MINIMUM_PADDING = 40;	
 function GuildBankPopupFrame_OnShow(self)
+	local rightPos = GuildBankFrame:GetRight();
+	local space = GetScreenWidth() - rightPos;
+	self:ClearAllPoints();
+	if ( space < self:GetWidth() + GUILD_BANK_POPUP_FRAME_MINIMUM_PADDING ) then
+		self:SetPoint("TOPRIGHT", GuildBankFrame, "TOPRIGHT", -10, -30);
+	else
+		self:SetPoint("TOPLEFT", GuildBankFrame, "TOPRIGHT", 38, 0);
+	end
+	
 	local name = GetGuildBankTabInfo(GetCurrentGuildBankTab());
 	if ( not name or name == "" ) then
 		name = format(GUILDBANK_TAB_NUMBER, GetCurrentGuildBankTab());
@@ -876,12 +924,15 @@ function GuildBankPopupFrame_OnShow(self)
 	GuildBankPopupEditBox:SetText(name);
 	GuildBankPopupFrame.selectedIcon = nil;
 	GuildBankPopupFrame_RefreshIconList();
+
+	if ( not self.iconArrayBuilt ) then
+		BuildIconArray(GuildBankPopupFrame, "GuildBankPopupButton", "GuildBankPopupButtonTemplate", NUM_GUILDBANK_ICONS_PER_ROW, NUM_GUILDBANK_ICON_ROWS);
+		self.iconArrayBuilt = true;
+	end
 end
 
 function GuildBankPopupFrame_OnHide(self)
-	PlaySound("igCharacterInfoTab");
-	GB_ICON_FILENAMES = nil;
-	collectgarbage();
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
 end
 
 function GuildBankPopupButton_OnClick(self, button)

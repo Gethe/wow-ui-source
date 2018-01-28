@@ -1,9 +1,9 @@
 NUM_MACROS_PER_ROW = 6;
-NUM_ICONS_PER_ROW = 5;
-NUM_ICON_ROWS = 4;
+NUM_ICONS_PER_ROW = 10;
+NUM_ICON_ROWS = 9;
 NUM_MACRO_ICONS_SHOWN = NUM_ICONS_PER_ROW * NUM_ICON_ROWS;
 MACRO_ICON_ROW_HEIGHT = 36;
-local MACRO_ICON_FILENAMES = {};
+local MACRO_ICON_FILENAMES = nil;
 
 UIPanelWindows["MacroFrame"] = { area = "left", pushable = 1, whileDead = 1, width = PANEL_DEFAULT_WIDTH };
 
@@ -31,16 +31,22 @@ end
 
 function MacroFrame_OnShow(self)
 	MacroFrame_Update();
-	PlaySound("igCharacterInfoOpen");
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 	UpdateMicroButtons();
+	if ( not self.iconArrayBuilt ) then
+		BuildIconArray(MacroPopupFrame, "MacroPopupButton", "MacroPopupButtonTemplate", NUM_ICONS_PER_ROW, NUM_ICON_ROWS);
+		self.iconArrayBuilt = true;
+	end
 end
 
 function MacroFrame_OnHide(self)
 	MacroPopupFrame:Hide();
 	MacroFrame_SaveMacro();
 	--SaveMacros();
-	PlaySound("igCharacterInfoClose");
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 	UpdateMicroButtons();
+	MACRO_ICON_FILENAMES = nil;
+	collectgarbage();
 end
 
 function MacroFrame_SetAccountMacros()
@@ -165,7 +171,7 @@ function MacroButton_OnClick(self, button)
 end
 
 function MacroFrameSaveButton_OnClick()
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	MacroFrame_SaveMacro();
 	MacroFrame_Update();
 	MacroPopupFrame:Hide();
@@ -173,7 +179,7 @@ function MacroFrameSaveButton_OnClick()
 end
 
 function MacroFrameCancelButton_OnClick()
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	MacroFrame_Update();
 	MacroPopupFrame:Hide();
 	MacroFrameText:ClearFocus();
@@ -247,10 +253,37 @@ function MacroButtonContainer_OnLoad(self)
 	end
 end
 
+local MACRO_POPUP_FRAME_MINIMUM_PADDING = 40;
+function MacroPopupFrame_AdjustAnchors(self)
+	local rightSpace = GetScreenWidth() - MacroFrame:GetRight();
+	self.parentLeft = MacroFrame:GetLeft();
+	local leftSpace = self.parentLeft;
+	
+	self:ClearAllPoints();
+	if ( leftSpace >= rightSpace ) then
+		if ( leftSpace < self:GetWidth() + MACRO_POPUP_FRAME_MINIMUM_PADDING ) then
+			self:SetPoint("TOPRIGHT", MacroFrame, "TOPLEFT", self:GetWidth() + MACRO_POPUP_FRAME_MINIMUM_PADDING - leftSpace, 0);
+		else
+			self:SetPoint("TOPRIGHT", MacroFrame, "TOPLEFT", -5, 0);
+		end
+	else
+		if ( rightSpace < self:GetWidth() + MACRO_POPUP_FRAME_MINIMUM_PADDING ) then
+			self:SetPoint("TOPLEFT", MacroFrame, "TOPRIGHT", rightSpace - (self:GetWidth() + MACRO_POPUP_FRAME_MINIMUM_PADDING), 0);
+		else
+			self:SetPoint("TOPLEFT", MacroFrame, "TOPRIGHT", 0, 0);
+		end
+	end
+end
+	
+function MacroPopupFrame_OnLoad(self)
+	MacroPopupScrollFrame.ScrollBar.scrollStep = 8 * MACRO_ICON_ROW_HEIGHT;
+end
+
 function MacroPopupFrame_OnShow(self)
+	MacroPopupFrame_AdjustAnchors(self);
 	MacroPopupEditBox:SetFocus();
 
-	PlaySound("igCharacterInfoOpen");
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 	RefreshPlayerSpellIconInfo();
 	MacroPopupFrame_Update(self);
 	MacroPopupOkayButton_Update();
@@ -267,6 +300,12 @@ function MacroPopupFrame_OnShow(self)
 	MacroFrameTab1:Disable();
 	MacroFrameTab2:Disable();
 	
+end
+
+function MacroPopupFrame_OnUpdate(self)
+	if (self.parentLeft ~= MacroFrame:GetLeft()) then
+		MacroPopupFrame_AdjustAnchors(self);
+	end
 end
 
 function MacroPopupFrame_OnHide(self)
@@ -290,20 +329,19 @@ function MacroPopupFrame_OnHide(self)
 	end
 	-- Enable tabs
 	PanelTemplates_UpdateTabs(MacroFrame);
-	MACRO_ICON_FILENAMES = nil;
-	collectgarbage();
 end
 
 --[[
 RefreshPlayerSpellIconInfo() builds the table MACRO_ICON_FILENAMES with known spells followed by all icons (could be repeats)
 ]]
 function RefreshPlayerSpellIconInfo()
-
-	MACRO_ICON_FILENAMES = {};
-	MACRO_ICON_FILENAMES[1] = "INV_MISC_QUESTIONMARK";
-	local index = 2;
-	local numFlyouts = 0;
-
+	if ( MACRO_ICON_FILENAMES ) then
+		return;
+	end
+	
+	-- We need to avoid adding duplicate spellIDs from the spellbook tabs for your other specs.
+	local activeIcons = {};
+	
 	for i = 1, GetNumSpellTabs() do
 		local tab, tabTex, offset, numSpells, _ = GetSpellTabInfo(i);
 		offset = offset + 1;
@@ -312,10 +350,9 @@ function RefreshPlayerSpellIconInfo()
 			--to get spell info by slot, you have to pass in a pet argument
 			local spellType, ID = GetSpellBookItemInfo(j, "player"); 
 			if (spellType ~= "FUTURESPELL") then
-				local spellTexture = strupper(GetSpellBookItemTextureFileName(j, "player"));
-				if ( not string.match( spellTexture, "INTERFACE\\BUTTONS\\") ) then
-					MACRO_ICON_FILENAMES[index] = gsub( spellTexture, "INTERFACE\\ICONS\\", "");
-					index = index + 1;
+				local fileID = GetSpellBookItemTexture(j, "player");
+				if (fileID) then
+					activeIcons[fileID] = true;
 				end
 			end
 			if (spellType == "FLYOUT") then
@@ -324,14 +361,22 @@ function RefreshPlayerSpellIconInfo()
 					for k = 1, numSlots do 
 						local spellID, overrideSpellID, isKnown = GetFlyoutSlotInfo(ID, k)
 						if (isKnown) then
-							MACRO_ICON_FILENAMES[index] = gsub( strupper(GetSpellTextureFileName(spellID)), "INTERFACE\\ICONS\\", ""); 
-							index = index + 1;
+							local fileID = GetSpellTexture(spellID);
+							if (fileID) then
+								activeIcons[fileID] = true;
+							end
 						end
 					end
 				end
 			end
 		end
 	end
+
+	MACRO_ICON_FILENAMES = { "INV_MISC_QUESTIONMARK" };
+	for fileDataID in pairs(activeIcons) do
+		MACRO_ICON_FILENAMES[#MACRO_ICON_FILENAMES + 1] = fileDataID;
+	end
+
 	GetLooseMacroIcons( MACRO_ICON_FILENAMES );
 	GetLooseMacroItemIcons( MACRO_ICON_FILENAMES );
 	GetMacroIcons( MACRO_ICON_FILENAMES );
@@ -395,7 +440,7 @@ function MacroPopupFrame_Update(self)
 	end
 	
 	-- Scrollbar stuff
-	FauxScrollFrame_Update(MacroPopupScrollFrame, ceil(numMacroIcons / NUM_ICONS_PER_ROW) , NUM_ICON_ROWS, MACRO_ICON_ROW_HEIGHT );
+	FauxScrollFrame_Update(MacroPopupScrollFrame, ceil(numMacroIcons / NUM_ICONS_PER_ROW) + 1, NUM_ICON_ROWS, MACRO_ICON_ROW_HEIGHT );
 end
 
 function MacroPopupFrame_CancelEdit()

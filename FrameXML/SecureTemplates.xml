@@ -14,6 +14,13 @@
         </Scripts>
     </Button>
 
+	<!-- A template that can perform secure actions outside of combat -->
+	<Button name="InsecureActionButtonTemplate" virtual="true">
+		<Scripts>
+			<OnClick> if not InCombatLockdown() then SecureActionButton_OnClick(self, button, down); end</OnClick>
+		</Scripts>
+	</Button>
+
     <!-- A variant of SecureActionButtonTemplate used for unit buttons -->
     <Button name="SecureUnitButtonTemplate" inherits="SecureFrameTemplate" virtual="true">
         <Scripts>

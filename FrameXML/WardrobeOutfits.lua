@@ -5,7 +5,7 @@ WardrobeOutfitDropDownMixin = { };
 function WardrobeOutfitDropDownMixin:OnLoad()
 	local button = _G[self:GetName().."Button"];
 	button:SetScript("OnClick", function(self)
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						WardrobeOutfitFrame:Toggle(self:GetParent());
 						end
 					);
@@ -49,6 +49,9 @@ function WardrobeOutfitDropDownMixin:UpdateSaveButton()
 	else
 		self.SaveButton:SetEnabled(false);
 	end
+end
+
+function WardrobeOutfitDropDownMixin:OnOutfitSaved(outfitID)
 end
 
 function WardrobeOutfitDropDownMixin:SelectOutfit(outfitID, loadOutfit)
@@ -98,8 +101,8 @@ function WardrobeOutfitDropDownMixin:IsOutfitDressed()
 			local sourceID = self:GetSlotSourceID(TRANSMOG_SLOTS[i].slot, LE_TRANSMOG_TYPE_APPEARANCE);
 			local slotID = GetInventorySlotInfo(TRANSMOG_SLOTS[i].slot);
 			if ( sourceID ~= NO_TRANSMOG_SOURCE_ID and sourceID ~= appearanceSources[slotID] ) then
-				-- hack: ignore artifacts
-				if (not IsSourceArtifact(sourceID)) then
+				-- No artifacts in outfits, their sourceID is overriden to NO_TRANSMOG_SOURCE_ID
+				if ( not IsSourceArtifact(sourceID) or appearanceSources[slotID] ~= NO_TRANSMOG_SOURCE_ID ) then
 					return false;
 				end
 			end
@@ -145,7 +148,12 @@ function WardrobeOutfitDropDownMixin:CheckOutfitForSave(name)
 					end
 				end
 				if ( isValidSource ) then
-					sources[slotID] = sourceID;
+					-- No artifacts in outfits, their sourceID is overriden to NO_TRANSMOG_SOURCE_ID
+					if ( IsSourceArtifact(sourceID) ) then
+						sources[slotID] = NO_TRANSMOG_SOURCE_ID;
+					else
+						sources[slotID] = sourceID;
+					end
 				end
 			elseif ( TRANSMOG_SLOTS[i].transmogType == LE_TRANSMOG_TYPE_ILLUSION ) then
 				if ( TRANSMOG_SLOTS[i].slot == "MAINHANDSLOT" ) then
@@ -310,6 +318,7 @@ function WardrobeOutfitFrameMixin:SaveOutfit(name)
 	local outfitID = C_TransmogCollection.SaveOutfit(name, self.sources, self.mainHandEnchant, self.offHandEnchant, icon);
 	if ( self.popupDropDown ) then
 		self.popupDropDown:SelectOutfit(outfitID);
+		self.popupDropDown:OnOutfitSaved(outfitID);
 	end
 end
 
@@ -408,7 +417,7 @@ end
 WardrobeOutfitButtonMixin = { };
 
 function WardrobeOutfitButtonMixin:OnClick()
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	WardrobeOutfitFrame:Hide();
 	if ( self.outfitID ) then
 		WardrobeOutfitFrame.dropDown:SelectOutfit(self.outfitID, true);

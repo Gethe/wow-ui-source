@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="ChatFrame.lua"/>
-	<ScrollingMessageFrame name="ChatFrameTemplate" frameStrata="BACKGROUND" toplevel="true" displayDuration="120.0" maxLines="128" hidden="true" virtual="true">
+	<ScrollingMessageFrame name="ChatFrameTemplate" frameStrata="BACKGROUND" toplevel="true" hidden="true" virtual="true">
 		<Scripts>
 			<OnLoad>
 				ChatFrame_OnLoad(self);
@@ -16,9 +16,8 @@
 				ChatFrame_OnHyperlinkShow(self, link, text, button);
 			</OnHyperlinkClick>
 		</Scripts>
-		<FontString inherits="ChatFontNormal" justifyH="LEFT" indented="true" nonspacewrap="true"/>
 	</ScrollingMessageFrame>
-	<EditBox name="ChatFrameEditBoxTemplate" inherits="AutoCompleteEditBoxTemplate" autoFocus="false" ignoreArrows="true" frameStrata="DIALOG" toplevel="true" historyLines="32" letters="255" hidden="true" virtual="true">
+	<EditBox name="ChatFrameEditBoxTemplate" inherits="AutoCompleteEditBoxTemplate" autoFocus="false" ignoreArrows="true" frameStrata="DIALOG" toplevel="true" historyLines="32" letters="255" invisibleBytes="256" hidden="true" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentLeft" file="Interface\ChatFrame\UI-ChatInputBorder-Left2">
@@ -138,7 +137,7 @@
 				ChatEdit_OnChar(self)
 			</OnChar>
 		</Scripts>
-		<FontString inherits="ChatFontNormal" bytes="256"/>
+		<FontString inherits="ChatFontNormal" bytes="512"/>
 	</EditBox>
 	<Frame name="ChatChannelDropDown" inherits="UIDropDownMenuTemplate"/>
 	<Frame name="ChatBNPlayerDropDown" inherits="UIDropDownMenuTemplate"/>

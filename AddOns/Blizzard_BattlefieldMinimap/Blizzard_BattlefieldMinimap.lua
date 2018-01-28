@@ -39,23 +39,29 @@ function BattlefieldMinimap_OnLoad (self)
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
 	self:RegisterEvent("PLAYER_LOGOUT");
 	self:RegisterEvent("WORLD_MAP_UPDATE");
-	self:RegisterEvent("GROUP_ROSTER_UPDATE");
 	self:RegisterEvent("NEW_WMO_CHUNK");
 
+	self.flagsPool = CreateFramePool("FRAME", self, "BattlefieldMapFlagTemplate");
+
 	BattlefieldMinimap.updateTimer = 0;
+
+	BattlefieldMinimapUnitPositionFrame:SetMouseOverUnitExcluded("player", true);
+	BattlefieldMinimapUnitPositionFrame:SetPinTexture("player", "Interface\\Minimap\\MinimapArrow");
+	BattlefieldMinimapUnitPositionFrame:SetPinSize("player", 24);
+	BattlefieldMinimapUnitPositionFrame:SetPinSize("party", 8);
+	BattlefieldMinimapUnitPositionFrame:SetPinSize("raid", 8);
 end
 
 function BattlefieldMinimap_OnShow(self)
-	PlaySound("igQuestLogOpen");
+	PlaySound(SOUNDKIT.IG_QUEST_LOG_OPEN);
 	SetMapToCurrentZone();
 	BattlefieldMinimap_Update();
 	BattlefieldMinimap_UpdateOpacity(BattlefieldMinimapOptions.opacity);
 	BattlefieldMinimapTab:Show();
-	WorldMapFrame_UpdateUnits("BattlefieldMinimapRaid", "BattlefieldMinimapParty");
 end
 
 function BattlefieldMinimap_OnHide(self)
-	PlaySound("igQuestLogClose");
+	PlaySound(SOUNDKIT.IG_QUEST_LOG_CLOSE);
 	BattlefieldMinimapTab:Hide();
 	BattlefieldMinimap_ClearTextures();
 	CloseDropDownMenus();
@@ -80,6 +86,7 @@ function BattlefieldMinimap_OnEvent(self, event, ...)
 
 			OpacityFrameSlider:SetValue(BattlefieldMinimapOptions.opacity);
 			BattlefieldMinimap_UpdateOpacity();
+			BattlefieldMinimap_UpdateShowPlayers();
 		end
 	elseif ( event == "PLAYER_ENTERING_WORLD" or event == "ZONE_CHANGED" or event == "ZONE_CHANGED_NEW_AREA" or event == "NEW_WMO_CHUNK" ) then
 		if ( BattlefieldMinimap:IsShown() ) then
@@ -101,10 +108,6 @@ function BattlefieldMinimap_OnEvent(self, event, ...)
 	elseif ( event == "WORLD_MAP_UPDATE" ) then
 		if ( BattlefieldMinimap:IsVisible() ) then
 			BattlefieldMinimap_Update();
-		end
-	elseif ( event == "GROUP_ROSTER_UPDATE" ) then
-		if ( self:IsShown() ) then
-			WorldMapFrame_UpdateUnits("BattlefieldMinimapRaid", "BattlefieldMinimapParty");
 		end
 	end
 end
@@ -136,7 +139,7 @@ function BattlefieldMinimap_Update()
 	else
 		path = "Interface\\WorldMap\\MicroDungeon\\"..mapFileName.."\\"..microDungeonMapName.."\\"..microDungeonMapName;
 	end
-	
+
 	if ( dungeonLevel > 0 ) then
 		path = path..dungeonLevel.."_";
 	end
@@ -160,7 +163,7 @@ function BattlefieldMinimap_Update()
 		local battlefieldPOIName = "BattlefieldMinimapPOI"..i;
 		local battlefieldPOI = _G[battlefieldPOIName];
 		if ( i <= numPOIs ) then
-			local landmarkType, name, description, textureIndex, x, y, maplinkID, showInBattleMap = GetMapLandmarkInfo(i);
+			local landmarkType, name, description, textureIndex, x, y, maplinkID, showInBattleMap = C_WorldMap.GetMapLandmarkInfo(i);
 			if ( WorldMap_ShouldShowLandmark(landmarkType) and showInBattleMap ) then
 				local x1, x2, y1, y2 = GetPOITextureCoords(textureIndex);
 				_G[battlefieldPOIName.."Texture"]:SetTexCoord(x1, x2, y1, y2);
@@ -287,20 +290,9 @@ function BattlefieldMinimap_OnUpdate(self, elapsed)
 		BattlefieldMinimap.updateTimer = BattlefieldMinimap.updateTimer - elapsed;
 		return;
 	end
-	
-	--Position player
-	local playerX, playerY = GetPlayerMapPosition("player");
-	if ( playerX == 0 and playerY == 0 ) then
-		BattlefieldMinimapPlayer:Hide();
-	else
-		playerX = playerX * BattlefieldMinimap:GetWidth();
-		playerY = -playerY * BattlefieldMinimap:GetHeight();
-		BattlefieldMinimapPlayer:SetPoint("CENTER", "BattlefieldMinimap", "TOPLEFT", playerX, playerY);
-		UpdateWorldMapArrow(BattlefieldMinimapPlayer.icon);
-		UpdateWorldMapArrow(BattlefieldMinimapPlayer.iconHighlight);
-		BattlefieldMinimapPlayer:Show();
-	end
-	
+
+	BattlefieldMinimapUnitPositionFrame:UpdatePlayerPins();
+
 	-- If resizing the frame then scale everything accordingly
 	if ( BattlefieldMinimap.resizing ) then
 		local sizeUnit = BattlefieldMinimap:GetWidth()/4;
@@ -316,7 +308,7 @@ function BattlefieldMinimap_OnUpdate(self, elapsed)
 			local battlefieldPOIName = "BattlefieldMinimapPOI"..i;
 			local battlefieldPOI = _G[battlefieldPOIName];
 			if ( i <= numPOIs ) then
-				local landmarkType, name, description, textureIndex, x, y, maplinkID, showInBattleMap = GetMapLandmarkInfo(i);
+				local landmarkType, name, description, textureIndex, x, y, maplinkID, showInBattleMap = C_WorldMap.GetMapLandmarkInfo(i);
 				if ( WorldMap_ShouldShowLandmark(landmarkType) and showInBattleMap ) then
 					local x1, x2, y1, y2 = GetPOITextureCoords(textureIndex);
 					_G[battlefieldPOIName.."Texture"]:SetTexCoord(x1, x2, y1, y2);
@@ -334,82 +326,28 @@ function BattlefieldMinimap_OnUpdate(self, elapsed)
 	end
 
 	if ( not BattlefieldMinimapOptions.showPlayers ) then
-		for i=1, MAX_PARTY_MEMBERS do
-			_G["BattlefieldMinimapParty"..i]:Hide();
-		end
-		for i=1, MAX_RAID_MEMBERS do
-			_G["BattlefieldMinimapRaid"..i]:Hide();
-		end
 		wipe(BG_VEHICLES);
 	else
-		--Position groupmates
-		local playerCount = 0;
-		if ( IsInRaid() ) then
-			for i=1, MAX_PARTY_MEMBERS do
-				local partyMemberFrame = _G["BattlefieldMinimapParty"..i];
-				partyMemberFrame:Hide();
-			end
-			for i=1, MAX_RAID_MEMBERS do
-				local unit = "raid"..i;
-				local partyX, partyY = GetPlayerMapPosition(unit);
-				local partyMemberFrame = _G["BattlefieldMinimapRaid"..(playerCount + 1)];
-				if ( (partyX ~= 0 or partyY ~= 0) and not UnitIsUnit("raid"..i, "player") ) then
-					partyX = partyX * BattlefieldMinimap:GetWidth();
-					partyY = -partyY * BattlefieldMinimap:GetHeight();
-					partyMemberFrame:SetPoint("CENTER", "BattlefieldMinimap", "TOPLEFT", partyX, partyY);
-					partyMemberFrame.name = nil;
-					partyMemberFrame.unit = unit;
-					partyMemberFrame:Show();
-					playerCount = playerCount + 1;
-				else
-					partyMemberFrame:Hide();
-				end
-			end
-		else
-			for i=1, MAX_RAID_MEMBERS do
-				_G["BattlefieldMinimapRaid"..i]:Hide();
-			end
-			for i=1, MAX_PARTY_MEMBERS do
-				local partyX, partyY = GetPlayerMapPosition("party"..i);
-				local partyMemberFrame = _G["BattlefieldMinimapParty"..i];
-				if ( partyX == 0 and partyY == 0 ) then
-					partyMemberFrame:Hide();
-				else
-					partyX = partyX * BattlefieldMinimap:GetWidth();
-					partyY = -partyY * BattlefieldMinimap:GetHeight();
-					partyMemberFrame:SetPoint("CENTER", "BattlefieldMinimap", "TOPLEFT", partyX, partyY);
-					partyMemberFrame:Show();
-				end
-			end
-		end
-
 		-- Position flags
-		local numFlags = GetNumBattlefieldFlagPositions();
-		for i=1, NUM_WORLDMAP_FLAGS do
-			local flagFrameName = "BattlefieldMinimapFlag"..i;
-			local flagFrame = _G[flagFrameName];
-			if ( i <= numFlags ) then
-				local flagX, flagY, flagToken = GetBattlefieldFlagPosition(i);
-				local flagTexture = _G[flagFrameName.."Texture"];
-				if ( flagX == 0 and flagY == 0 ) then
-					flagFrame:Hide();
-				else
-					flagX = flagX * BattlefieldMinimap:GetWidth();
-					flagY = -flagY * BattlefieldMinimap:GetHeight();
-					flagFrame:SetPoint("CENTER", "BattlefieldMinimap", "TOPLEFT", flagX, flagY);
-					local flagTexture = _G[flagFrameName.."Texture"];
-					flagTexture:SetTexture("Interface\\WorldStateFrame\\"..flagToken);
-					flagFrame:Show();
-				end
-			else
-				flagFrame:Hide();
+		self.flagsPool:ReleaseAll();
+		for flagIndex = 1, GetNumBattlefieldFlagPositions() do
+			local flagX, flagY, flagToken = GetBattlefieldFlagPosition(flagIndex);
+			if flagX ~= 0 or flagY ~= 0 then
+				local flagFrame = self.flagsPool:Acquire();
+
+				flagX = flagX * self:GetWidth();
+				flagY = -flagY * self:GetHeight();
+				flagFrame:SetPoint("CENTER", self, "TOPLEFT", flagX, flagY);
+
+				flagFrame.Texture:SetTexture("Interface\\WorldStateFrame\\"..flagToken);
+				flagFrame:Show();
 			end
 		end
 
 		-- position vehicles
 		local numVehicles = GetNumBattlefieldVehicles();
 		local totalVehicles = #BG_VEHICLES;
-		local playerBlipFrameLevel = BattlefieldMinimapRaid1:GetFrameLevel();
+		local playerBlipFrameLevel = BattlefieldMinimapUnitPositionFrame:GetFrameLevel();
 		local index = 0;
 		for i=1, numVehicles do
 			if (i > totalVehicles) then
@@ -442,7 +380,7 @@ function BattlefieldMinimap_OnUpdate(self, elapsed)
 			for i=index+1, totalVehicles do
 				BG_VEHICLES[i]:Hide();
 			end
-		end	
+		end
 	end
 
 	-- Fadein tab if mouse is over
@@ -450,7 +388,7 @@ function BattlefieldMinimap_OnUpdate(self, elapsed)
 		-- If mouse is hovering don't show the tab until the elapsed time reaches the tab show delay
 		if ( BattlefieldMinimap.hover ) then
 			if ( BattlefieldMinimap.hoverTime > BATTLEFIELD_TAB_SHOW_DELAY ) then
-				-- If the battlefieldtab's alpha is less than the current default, then fade it in 
+				-- If the battlefieldtab's alpha is less than the current default, then fade it in
 				if ( not BattlefieldMinimap.hasBeenFaded and (BattlefieldMinimap.oldAlpha and BattlefieldMinimap.oldAlpha < DEFAULT_BATTLEFIELD_TAB_ALPHA) ) then
 					UIFrameFadeIn(BattlefieldMinimapTab, BATTLEFIELD_TAB_FADE_TIME, BattlefieldMinimap.oldAlpha, DEFAULT_BATTLEFIELD_TAB_ALPHA);
 					-- Set the fact that the chatFrame has been faded so we don't try to fade it again
@@ -477,11 +415,18 @@ function BattlefieldMinimap_OnUpdate(self, elapsed)
 		end
 		BattlefieldMinimap.hoverTime = 0;
 	end
+
+	BattlefieldMinimapUnitPositionFrame:UpdateTooltips(GameTooltip);
 end
 
+function BattlefieldMinimap_OnMouseUp(self, button, upInside)
+	if upInside then
+		WorldMap_HandleUnitClick(BattlefieldMinimapUnitPositionFrame:GetCurrentMouseOverUnits(), button);
+	end
+end
 
 function BattlefieldMinimapTab_OnClick(self, button)
-	PlaySound("UChatScrollButton");
+	PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 
 	-- If Rightclick bring up the options menu
 	if ( button == "RightButton" ) then
@@ -533,6 +478,7 @@ end
 
 function BattlefieldMinimapTabDropDown_TogglePlayers()
 	BattlefieldMinimapOptions.showPlayers = not BattlefieldMinimapOptions.showPlayers;
+	BattlefieldMinimap_UpdateShowPlayers();
 end
 
 function BattlefieldMinimapTabDropDown_ToggleLock()
@@ -545,6 +491,12 @@ function BattlefieldMinimapTabDropDown_ShowOpacity()
 	OpacityFrame.opacityFunc = BattlefieldMinimap_UpdateOpacity;
 	OpacityFrame:Show();
 	OpacityFrameSlider:SetValue(BattlefieldMinimapOptions.opacity);
+end
+
+function BattlefieldMinimap_UpdateShowPlayers()
+	-- showPlayers in this case actually means "show all units who are not the local player", because the player pin is always shown
+	BattlefieldMinimapUnitPositionFrame:SetShouldShowUnits("party", BattlefieldMinimapOptions.showPlayers);
+	BattlefieldMinimapUnitPositionFrame:SetShouldShowUnits("raid", BattlefieldMinimapOptions.showPlayers);
 end
 
 function BattlefieldMinimap_UpdateOpacity(opacity)
@@ -563,57 +515,4 @@ function BattlefieldMinimap_UpdateOpacity(opacity)
 	end
 	BattlefieldMinimapCloseButton:SetAlpha(alpha);
 	BattlefieldMinimapCorner:SetAlpha(alpha);
-end
-
-
-function BattlefieldMinimapUnit_OnEnter(self, motion)
-	-- Adjust the tooltip based on which side the unit button is on
-	local x, y = self:GetCenter();
-	local parentX, parentY = self:GetParent():GetCenter();
-	if ( x > parentX ) then
-		GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-	else
-		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	end
-	
-	-- See which POI's are in the same region and include their names in the tooltip
-	local unitButton;
-	local newLineString = "";
-	local tooltipText = "";
-	
-	-- Check party
-	for i=1, MAX_PARTY_MEMBERS do
-		unitButton = _G["BattlefieldMinimapParty"..i];
-		if ( unitButton:IsVisible() and unitButton:IsMouseOver() ) then
-			if ( PlayerIsPVPInactive(unitButton.unit) ) then
-				tooltipText = tooltipText..newLineString..format(PLAYER_IS_PVP_AFK, UnitName(unitButton.unit));
-			else
-				tooltipText = tooltipText..newLineString..UnitName(unitButton.unit);
-			end
-			newLineString = "\n";
-		end
-	end
-	--Check Raid
-	for i=1, MAX_RAID_MEMBERS do
-		unitButton = _G["BattlefieldMinimapRaid"..i];
-		if ( unitButton:IsVisible() and unitButton:IsMouseOver() ) then
-			-- Handle players not in your raid or party, but on your team
-			if ( unitButton.name ) then
-				if ( PlayerIsPVPInactive(unitButton.name) ) then
-					tooltipText = tooltipText..newLineString..format(PLAYER_IS_PVP_AFK, unitButton.name);
-				else
-					tooltipText = tooltipText..newLineString..unitButton.name;		
-				end
-			else
-				if ( PlayerIsPVPInactive(unitButton.unit) ) then
-					tooltipText = tooltipText..newLineString..format(PLAYER_IS_PVP_AFK, UnitName(unitButton.unit));
-				else
-					tooltipText = tooltipText..newLineString..UnitName(unitButton.unit);
-				end
-			end
-			newLineString = "\n";
-		end
-	end
-	GameTooltip:SetText(tooltipText);
-	GameTooltip:Show();
 end

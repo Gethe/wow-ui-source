@@ -4,15 +4,15 @@ function PaladinResourceOverlay:OnLoad()
 	self.class = "PALADIN";
 	self.spec = SPEC_PALADIN_RETRIBUTION;
 	self.powerToken = "HOLY_POWER";
-	
+
 	for i = 1, #self.Runes do
 		self.Runes[i].on = false;
 		self.Runes[i].OffTexture:SetAtlas("ClassOverlay-HolyPower" .. i .. "off", true);
 		self.Runes[i].OnTexture:SetAtlas("ClassOverlay-HolyPower" .. i .. "on", true);
 	end
-	
+
 	self.Background:SetAlpha(0.5);
-	
+
 	ClassResourceOverlay.OnLoad(self);
 end
 
@@ -51,10 +51,10 @@ function PaladinResourceOverlay:UpdatePower()
 	if ( self.delayedUpdate ) then
 		return;
 	end
-	
-	local numHolyPower = UnitPower("player", SPELL_POWER_HOLY_POWER);
-	local maxHolyPower = UnitPowerMax("player", SPELL_POWER_HOLY_POWER);
-	
+
+	local numHolyPower = UnitPower("player", Enum.PowerType.HolyPower);
+	local maxHolyPower = UnitPowerMax("player", Enum.PowerType.HolyPower);
+
 	-- If we had more than HOLY_POWER_FULL and then used HOLY_POWER_FULL amount of power, fade out
 	-- the top 3 and then move the remaining power from the bottom up to the top
 	if ( self.lastPower and self.lastPower > HOLY_POWER_FULL and numHolyPower == self.lastPower - HOLY_POWER_FULL ) then

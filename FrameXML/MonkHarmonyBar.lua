@@ -5,12 +5,12 @@ function MonkPowerBar:OnLoad()
 	self:SetPowerTokens("CHI", "DARK_FORCE");
 	self.class = "MONK";
 	self.spec = SPEC_MONK_WINDWALKER;
-	
+
 	ClassPowerBar.OnLoad(self);
 end
 
 function MonkPowerBar:OnEvent(event, arg1, arg2)
-	
+
 	if (event ~= "UNIT_POWER_FREQUENT") then
 		self:UpdateMaxPower();
 	end
@@ -19,7 +19,7 @@ end
 
 function MonkPowerBar:Setup()
 	local showBar = ClassPowerBar.Setup(self);
-	
+
 	if (showBar) then
 		self:RegisterUnitEvent("UNIT_MAXPOWER", "player");
 	else
@@ -32,7 +32,7 @@ function MonkPowerBar:SetEnergy(lightEnergy, active)
 		if (lightEnergy.deactivate:IsPlaying()) then
 			lightEnergy.deactivate:Stop();
 		end
-		
+
 		if (not lightEnergy.active and not lightEnergy.activate:IsPlaying()) then
 			lightEnergy.activate:Play();
 			lightEnergy.active = true;
@@ -41,7 +41,7 @@ function MonkPowerBar:SetEnergy(lightEnergy, active)
 		if (lightEnergy.activate:IsPlaying()) then
 			lightEnergy.activate:Stop();
 		end
-		
+
 		if (lightEnergy.active and not lightEnergy.deactivate:IsPlaying()) then
 			lightEnergy.deactivate:Play();
 			lightEnergy.active = false;
@@ -50,16 +50,16 @@ function MonkPowerBar:SetEnergy(lightEnergy, active)
 end
 
 function MonkPowerBar:UpdatePower()
-	local light = UnitPower("player", SPELL_POWER_CHI );
-	
+	local light = UnitPower("player", Enum.PowerType.Chi );
+
 	for i = 1, self.maxLight do
 		self:SetEnergy(self.LightEnergy[i], i<=light);
 	end
 end
 
 function MonkPowerBar:UpdateMaxPower()
-	-- if max light changed, show/hide the 5th and update anchors 
-	local maxLight = UnitPowerMax("player", SPELL_POWER_CHI );
+	-- if max light changed, show/hide the 5th and update anchors
+	local maxLight = UnitPowerMax("player", Enum.PowerType.Chi );
 	if ( self.maxLight ~= maxLight ) then
 		local startX, xOffset, orbOff, lightOrb;
 
@@ -96,7 +96,7 @@ function MonkPowerBar:UpdateMaxPower()
 			end
 			orb:Show();
 		end
-		
+
 		for i = maxLight+1, #self.LightEnergy do
 			local orb = self.LightEnergy[i];
 			if (orb) then

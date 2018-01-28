@@ -8,7 +8,7 @@ function OpenCoinPickupFrame(multiplier, maxMoney, parent)
 	if ( GetCursorMoney() > 0 ) then
 		if ( CoinPickupFrame.owner ) then
 			MoneyTypeInfo[parent.moneyType].DropFunc(CoinPickupFrame);
-			PlaySound("igBackPackCoinSelect");
+			PlaySound(SOUNDKIT.IG_BACKPACK_COIN_SELECT);
 		end
 		CoinPickupFrame:Hide();
 		return;
@@ -73,7 +73,7 @@ function OpenCoinPickupFrame(multiplier, maxMoney, parent)
 
 	CoinPickupFrame:SetPoint("BOTTOMRIGHT", parent, "TOPRIGHT", 0, 0);
 	CoinPickupFrame:Show();
-	PlaySound("igBackPackCoinSelect");
+	PlaySound(SOUNDKIT.IG_BACKPACK_COIN_SELECT);
 end
 
 function UpdateCoinPickupFrame(maxMoney)
@@ -224,12 +224,12 @@ function CoinPickupFrameOkay_Click()
 		MoneyTypeInfo[CoinPickupFrame.owner.moneyType].PickupFunc(CoinPickupFrame, CoinPickupFrame.money * CoinPickupFrame.multiplier);
 	end
 	CoinPickupFrame:Hide();
-	PlaySound("igBackPackCoinOK");
+	PlaySound(SOUNDKIT.IG_BACKPACK_COIN_OK);
 end
 
 function CoinPickupFrameCancel_Click()
 	CoinPickupFrame:Hide();
-	PlaySound("igBackPackCoinCancel");
+	PlaySound(SOUNDKIT.IG_BACKPACK_COIN_CANCEL);
 end
 
 function CoinPickupFrame_OnHide()
@@ -244,5 +244,5 @@ function CoinPickupFrame_OnHide()
 		COINFRAME_BINDING_CACHE[key] = nil;
 	end
 	
-	PlaySound("MONEYFRAMECLOSE");
+	PlaySound(SOUNDKIT.MONEY_FRAME_CLOSE);
 end

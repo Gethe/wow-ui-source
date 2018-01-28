@@ -148,7 +148,8 @@ function RaidGroupFrame_OnLoad()
 	RaidFrame:RegisterEvent("UNIT_LEVEL");
 	RaidFrame:RegisterEvent("UNIT_HEALTH");
 	RaidFrame:RegisterEvent("PLAYER_ENTERING_WORLD");
-	RaidFrame:RegisterEvent("VARIABLES_LOADED")
+	RaidFrame:RegisterEvent("VARIABLES_LOADED");
+	RaidFrame:RegisterEvent("RAID_ROSTER_UPDATE");
 	RaidFrame:SetScript("OnHide", RaidGroupFrame_OnHide);
 	RaidFrame:SetScript("OnEvent", RaidGroupFrame_OnEvent);
 	RaidFrame:SetScript("OnUpdate", RaidGroupFrame_OnUpdate);
@@ -183,6 +184,8 @@ function RaidGroupFrame_OnEvent(self, event, ...)
 		RaidPullout_RenewFrames();
 	elseif ( event == "VARIABLES_LOADED" ) then
 		RaidFrame.showRange = GetCVarBool("showRaidRange");
+	elseif ( event == "RAID_ROSTER_UPDATE" ) then
+		RaidGroupFrame_Update();
 	end
 end
 
@@ -1322,79 +1325,6 @@ function RaidPulloutDropDown_Initialize()
 	local currentPullout = UIDROPDOWNMENU_OPEN_MENU:GetParent();
 	local unit, voice, muted, silenced, pvpType;
 	local info = UIDropDownMenu_CreateInfo();
-
-	if ( IsVoiceChatEnabled() ) then
-		-- Display the option to mute voice chat.	
-		for i=1, currentPullout.numPulloutButtons do
-			local button = _G[currentPullout:GetName().."Button"..i];
-			if ( button:IsMouseOver() ) then
-				unit = (button.secondaryUnit or button.unit);
-				break;
-			end
-		end
-		if ( unit and currentPullout.filterID ~= "PETS" ) then
-			if ( UnitInBattleground("player") ) then
-				pvpType = "battleground";
-			else
-				pvpType = "raid";
-			end
-			voice = GetVoiceStatus(UnitName(unit), pvpType);
-		end
-		if ( voice ) then
-			-- Set a name header
-			if ( not UnitIsUnit(unit, "player") or UnitIsGroupAssistant("player") ) then
-				info = UIDropDownMenu_CreateInfo();
-				info.text = UnitName(unit);
-				info.isTitle = 1;
-				info.notCheckable = nil;
-				info.disabled = nil;
-				UIDropDownMenu_AddButton(info);
-
-				-- Set a mute option
-				muted = IsMuted(UnitName(unit));	
-				if ( muted ) then
-					info.text = UNMUTE;
-				else
-					info.text = MUTE;
-				end
-				info.func = function()
-					AddOrDelMute(unit);
-				end;
-				info.checked = nil;
-				info.isTitle = nil;
-				info.notCheckable = nil;
-				info.disabled = nil;
-				UIDropDownMenu_AddButton(info);
-			end
-			
-			-- Display the option to silence voice chat if RaidLeader.	
-			if ( UnitIsGroupAssistant("player") ) then
-				silenced = UnitIsSilenced(UnitName(unit), "raid");	
-				if ( not silenced ) then
-					info.text = RAID_SILENCE;
-					info.func = function()
-						ChannelSilenceVoice("raid", UnitName(unit));
-					end;
-				else
-					info.text = RAID_UNSILENCE;
-					info.func = function()
-						ChannelUnSilenceVoice("raid", UnitName(unit));
-					end;
-				end
-				info.isTitle = nil;
-				info.notCheckable = nil;
-				info.disabled = nil;
-				UIDropDownMenu_AddButton(info);
-			end
-			if ( not UnitIsUnit(unit, "player") or UnitIsGroupAssistant("player") ) then
-				-- spacer
-				info = UIDropDownMenu_CreateInfo();
-				info.isTitle = 1;
-				info.notCheckable = 1;
-				UIDropDownMenu_AddButton(info);
-			end
-		end
-	end
 
 	-- Show target if it is allowed
 	info.text = SHOW_TARGET;

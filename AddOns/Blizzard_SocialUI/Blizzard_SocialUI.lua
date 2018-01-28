@@ -63,13 +63,13 @@ function SocialPostFrame_OnShow(self)
 	SocialItemButton_Update();
 	SocialPostButton_Update();
 	self:SetAttribute("isshown", true);
-	PlaySound("igMainMenuOpen");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
 end
 
 function SocialPostFrame_OnHide(self)
 	self:SetAttribute("isshown", false);
 	OffScreenFrame:Flush();
-	PlaySound("igMainMenuClose");
+	PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
 end
 
 function SocialPostFrame_OnAttributeChanged(self, name, value)
@@ -228,7 +228,7 @@ function SocialPostButton_OnClick(self)
 		SocialPostFrame.SocialMessageFrame.EditBox:SetText("");
 		UIErrorsFrame:AddMessage(SOCIAL_TWITTER_TWEET_SENDING , 1.0, 1.0, 0.0, 1.0);
 	end
-	PlaySound("igMainMenuClose");
+	PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
 end
 
 function SocialPostButton_OnEnter(self)
@@ -384,7 +384,7 @@ function SocialScreenshotButton_OnClick(self)
 	local alreadyShown = SocialPostFrame.ImageFrame:IsShown();
 	SocialPrefillScreenshotText(C_Social.GetLastScreenshot());
 	if (alreadyShown) then
-		PlaySound("igMainMenuOption");
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
 	end
 end
 
@@ -517,7 +517,7 @@ function SocialAchievementButton_OnClick(self)
 		local alreadyShown = SocialPostFrame.ImageFrame:IsShown();
 		SocialPrefillAchievementText(id, true, name);
 		if (alreadyShown) then
-			PlaySound("igMainMenuOption");
+			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
 		end
 	end
 end
@@ -600,7 +600,7 @@ function SocialItemButton_OnClick(self)
 	if (id) then
 		SocialPrefillItemText(id, true, creationContext, name, quality);
 	end
-	PlaySound("igMainMenuOption");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
 end
 
 function SocialItemButton_OnEnter(self)
@@ -651,14 +651,14 @@ end
 function SocialCropScreenshotButton_OnClick(self)
 	SocialTextureFrame_ResetImageSize();
 	SocialScreenshotCrop_SetEnabled(true);
-	PlaySound("igMainMenuOption");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
 end
 
 function SocialCropCancelButton_OnClick(self)
 	SocialScreenshotCrop_ResetCropBox();
 	SocialTextureFrame_ResetImageSize();
 	SocialScreenshotCrop_SetEnabled(false);
-	PlaySound("igMainMenuOption");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
 end
 
 function SocialCropSaveButton_OnClick(self)
@@ -683,7 +683,7 @@ function SocialCropSaveButton_OnClick(self)
 	
 	SocialScreenshotCrop_SetEnabled(false);
 	textureFrame.Texture:SetTexCoord(texMinX, texMaxX, texMinY, texMaxY);
-	PlaySound("igMainMenuOption");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
 end
 
 function SocialScreenshotCrop_SetEnabled(enable)

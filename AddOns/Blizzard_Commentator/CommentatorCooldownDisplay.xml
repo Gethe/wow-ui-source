@@ -1,0 +1,261 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\..\FrameXML\UI.xsd">
+	<Frame name="CommentatorCooldownTemplate" inherits="CooldownFrameTemplate" useParentLevel="true" mixin="CommentatorCooldownFrameMixin" virtual="true">
+		<Size x="36" y="36" />
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Icon" />
+				<FontString parentKey="ChargesText" inherits="NumberFontNormal" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="-2" y="2"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="ActiveGlow" file="Interface\SpellActivationOverlay\IconAlert" hidden="true">
+					<TexCoords left="0.00781250" right="0.50781250" top="0.27734375" bottom="0.52734375"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPLEFT" x="-10" y="10"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT" x="10" y="-10"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Ants" file="Interface\SpellActivationOverlay\IconAlertAnts" hidden="true">
+					<Size x="44" y="44"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Cooldown parentKey="Cooldown" inherits="CooldownFrameTemplate" >
+				<Scripts>
+					<OnLoad>
+						self:SetHideCountdownNumbers(false);
+					</OnLoad>
+				</Scripts>
+				<SwipeTexture>
+					<Color r="0" g="0" b="0" a="0.7"/>
+				</SwipeTexture>
+			</Cooldown>
+			<Cooldown parentKey="Charges" frameStrata="DIALOG" inherits="CooldownFrameTemplate">
+				<Scripts>
+					<OnLoad>
+						self:SetHideCountdownNumbers(true);
+						self:SetDrawEdge(true);
+						self:SetDrawSwipe(false);
+					</OnLoad>
+					<OnCooldownDone>
+						self:GetParent():Update();
+					</OnCooldownDone>
+				</Scripts>
+			</Cooldown>
+		</Frames>
+		<Scripts>
+			<OnUpdate>
+				AnimateTexCoords(self.Ants, 256, 256, 48, 48, 22, elapsed, 0.01);
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+	
+	<Frame name="CommentatorCooldownPlayerTemplate" enableMouse="true" mixin="CommentatorCooldownPlayerMixin" virtual="true">
+		<Size x="450" y="50"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="RoleIcon">
+					<Size x="40" y="40" />
+					<Anchors>
+						<Anchor point="CENTER" relativePoint="LEFT" x="20" />
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Name" inherits="GameFontNormal" justifyH="LEFT" maxLines="1">
+					<Size x="90" />
+					<Anchors>
+						<Anchor point="LEFT" x="35" />
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Container">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="135" />
+					<Anchor point="BOTTOMRIGHT" x="-10" />
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+	
+	<Frame name="CommentatorCooldownTeamTemplate" parentArray="TeamFrames" mixin="CommentatorCooldownTeamMixin" virtual="true">
+		<Size x="450"/>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-1">
+				<Texture parentKey="Center">
+					<Color r="0" g="0" b="0" a="1"/>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="0">
+				<Texture parentKey="ColoredTopLeft" parentArray="ColoredCorners">
+					<Size x="20" y="20" />
+					<Anchors>
+						<Anchor point="TOPLEFT" />
+					</Anchors>
+					<TexCoords left="0" right="0.625" top="0" bottom="0.625"/>
+				</Texture>
+				<Texture parentKey="ColoredTopRight" parentArray="ColoredCorners">
+					<Size x="20" y="20" />
+					<Anchors>
+						<Anchor point="TOPRIGHT" />
+					</Anchors>
+					<TexCoords left="0.625" right="0" top="0" bottom="0.625"/>
+				</Texture>
+				<Texture parentKey="ColoredBottomLeft" parentArray="ColoredCorners">
+					<Size x="20" y="20" />
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" />
+					</Anchors>
+					<TexCoords left="0" right="0.625" top="0.625" bottom="0"/>
+				</Texture>
+				<Texture parentKey="ColoredBottomRight" parentArray="ColoredCorners">
+					<Size x="20" y="20" />
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" />
+					</Anchors>
+					<TexCoords left="0.625" right="0" top="0.625" bottom="0"/>
+				</Texture>
+
+				<Texture parentKey="ColoredTop" parentArray="ColoredSides">
+					<Size y="20" />
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.ColoredTopLeft" relativePoint="RIGHT" />
+						<Anchor point="RIGHT" relativeKey="$parent.ColoredTopRight" relativePoint="LEFT" />
+					</Anchors>
+					<TexCoords left="0" right="1" top="0" bottom="0.625"/>
+				</Texture>
+				<Texture parentKey="ColoredBottom" parentArray="ColoredSides">
+					<Size y="20" />
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.ColoredBottomLeft" relativePoint="RIGHT" />
+						<Anchor point="RIGHT" relativeKey="$parent.ColoredBottomRight" relativePoint="LEFT" />
+					</Anchors>
+					<TexCoords left="0" right="1" top="0.625" bottom="0"/>
+				</Texture>
+				<Texture parentKey="ColoredLeft" parentArray="ColoredSides">
+					<Size x="20" />
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.ColoredTopLeft" relativePoint="BOTTOM" />
+						<Anchor point="BOTTOM" relativeKey="$parent.ColoredBottomLeft" relativePoint="TOP" />
+					</Anchors>
+					<TexCoords>
+						<Rect ULx="0" ULy="0" LLx="1" LLy="0" URx="0" URy="0.625" LRx="1" LRy="0.625"/>
+					</TexCoords>
+				</Texture>
+				<Texture parentKey="ColoredRight" parentArray="ColoredSides">
+					<Size x="20" />
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.ColoredTopRight" relativePoint="BOTTOM" />
+						<Anchor point="BOTTOM" relativeKey="$parent.ColoredBottomRight" relativePoint="TOP" />
+					</Anchors>
+					<TexCoords>
+						<Rect ULx="0" ULy="0.625" LLx="1" LLy="0.625" URx="0" URy="0" LRx="1" LRy="0"/>
+					</TexCoords>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture parentKey="TopLeft" atlas="tournamentarena-frame-topleft">
+					<Size x="35" y="35" />
+					<Anchors>
+						<Anchor point="CENTER" relativePoint="TOPLEFT" />
+					</Anchors>
+					<TexCoords left="0" right="0.53125" top="0" bottom="0.53125"/>
+				</Texture>
+				<Texture parentKey="TopRight" atlas="tournamentarena-frame-topright">
+					<Size x="35" y="35" />
+					<Anchors>
+						<Anchor point="CENTER" relativePoint="TOPRIGHT" />
+					</Anchors>
+					<TexCoords left="0.46875" right="1" top="0" bottom="0.53125"/>
+				</Texture>
+				<Texture parentKey="BottomLeft" atlas="tournamentarena-frame-botleft">
+					<Size x="35" y="35" />
+					<Anchors>
+						<Anchor point="CENTER" relativePoint="BOTTOMLEFT" />
+					</Anchors>
+					<TexCoords left="0" right="0.53125" top="0.46875" bottom="1"/>
+				</Texture>
+				<Texture parentKey="BottomRight" atlas="tournamentarena-frame-botright">
+					<Size x="35" y="35" />
+					<Anchors>
+						<Anchor point="CENTER" relativePoint="BOTTOMRIGHT" />
+					</Anchors>
+					<TexCoords left="0.46875" right="1" top="0.46875" bottom="1"/>
+				</Texture>
+
+				<Texture parentKey="Top" atlas="tournamentarena-frame-top">
+					<Size y="35" />
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.TopLeft" relativePoint="RIGHT" />
+						<Anchor point="RIGHT" relativeKey="$parent.TopRight" relativePoint="LEFT" />
+					</Anchors>
+					<TexCoords left="0" right="1" top="0" bottom="0.53125"/>
+				</Texture>
+				<Texture parentKey="Bottom" atlas="tournamentarena-frame-bot">
+					<Size y="35" />
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.BottomLeft" relativePoint="RIGHT" />
+						<Anchor point="RIGHT" relativeKey="$parent.BottomRight" relativePoint="LEFT" />
+					</Anchors>
+					<TexCoords left="0" right="1" top="0.46875" bottom="1"/>
+				</Texture>
+				<Texture parentKey="Left" atlas="tournamentarena-frame-left">
+					<Size x="35" />
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.TopLeft" relativePoint="BOTTOM" />
+						<Anchor point="BOTTOM" relativeKey="$parent.BottomLeft" relativePoint="TOP" />
+					</Anchors>
+					<TexCoords left="0" right="0.53125" top="0" bottom="1"/>
+				</Texture>
+				<Texture parentKey="Left" atlas="tournamentarena-frame-right">
+					<Size x="35" />
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.TopRight" relativePoint="BOTTOM" />
+						<Anchor point="BOTTOM" relativeKey="$parent.BottomRight" relativePoint="TOP" />
+					</Anchors>
+					<TexCoords left="0.46875" right="1" top="0" bottom="1"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+	
+	<Frame name="CommentatorCooldownDisplayFrame" parent="WorldFrame" hidden="true" frameStrata="HIGH" mixin="CommentatorCooldownDisplayMixin">
+		<Size x="930"/>
+		<Anchors>
+			<Anchor point="TOP" y="-100"/>
+			<Anchor point="BOTTOM" y="100"/>
+		</Anchors>
+		<Frames>
+			<Frame parentKey="TeamFrame1" inherits="CommentatorCooldownTeamTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="TeamFrame2" inherits="CommentatorCooldownTeamTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnUpdate method="OnUpdate"/>
+		</Scripts>
+	</Frame>
+</Ui>

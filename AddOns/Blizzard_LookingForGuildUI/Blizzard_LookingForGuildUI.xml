@@ -10,9 +10,9 @@
 		<Scripts>
 			<OnClick>
 				if ( self:GetChecked() ) then
-					PlaySound("igMainMenuOptionCheckBoxOn");
+					PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 				else
-					PlaySound("igMainMenuOptionCheckBoxOff");
+					PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 				end
 				SetLookingForGuildSettings(self:GetID(), self:GetChecked());
 				LookingForGuildBrowseButton_Update();
@@ -320,7 +320,7 @@
 						self.texture:SetPoint("TOPLEFT", 0, 0);
 					</OnMouseUp>
 					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						CancelGuildMembershipRequest(self:GetParent().index);
 						RequestRecruitingGuildsList();
 					</OnClick>
@@ -406,7 +406,7 @@
 					<OnClick>
 						PanelTemplates_Tab_OnClick(self, LookingForGuildFrame);
 						LookingForGuildFrame_Update();
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -422,7 +422,7 @@
 					<OnClick>
 						PanelTemplates_Tab_OnClick(self, LookingForGuildFrame);
 						LookingForGuildFrame_Update();
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -438,7 +438,7 @@
 					<OnClick>
 						PanelTemplates_Tab_OnClick(self, LookingForGuildFrame);
 						LookingForGuildFrame_Update();
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -1184,7 +1184,7 @@
 				self.hideOnEscape = true;
 			</OnLoad>
 			<OnHide>
-				PlaySound("igMainMenuClose");
+				PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
 			</OnHide>
 		</Scripts>
 	</Frame>

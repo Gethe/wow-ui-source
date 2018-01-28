@@ -100,15 +100,13 @@ function PartyMemberFrame_OnLoad (self)
 	PartyMemberFrame_UpdateLeader(self);
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("GROUP_ROSTER_UPDATE");
+	self:RegisterEvent("UPDATE_ACTIVE_BATTLEFIELD");
 	self:RegisterEvent("PARTY_LEADER_CHANGED");
 	self:RegisterEvent("PARTY_LOOT_METHOD_CHANGED");
 	self:RegisterEvent("MUTELIST_UPDATE");
 	self:RegisterEvent("IGNORELIST_UPDATE");
 	self:RegisterEvent("UNIT_FACTION");
-	self:RegisterEvent("VOICE_START");
-	self:RegisterEvent("VOICE_STOP");
 	self:RegisterEvent("VARIABLES_LOADED");
-	self:RegisterEvent("VOICE_STATUS_UPDATE");
 	self:RegisterEvent("READY_CHECK");
 	self:RegisterEvent("READY_CHECK_CONFIRM");
 	self:RegisterEvent("READY_CHECK_FINISHED");
@@ -272,32 +270,6 @@ function PartyMemberFrame_UpdateVoiceStatus (self)
 	else
 		mode = "party";
 	end
-	local status = GetVoiceStatus("party"..id, mode);
-	local statusIcon = _G["PartyMemberFrame"..id.."Speaker"];
-	local muted = GetMuteStatus("party"..id, mode);
-	local mutedIcon = _G["PartyMemberFrame"..id.."SpeakerMuted"];
-
-	_G["PartyMemberFrame"..id.."SpeakerOn"]:SetVertexColor(0.7, 0.7, 0.7);
-	if ( status ) then
-		statusIcon:Show();
-	else
-		statusIcon:Hide();
-	end
-	if ( muted ) then
-		mutedIcon:Show();
-	else
-		mutedIcon:Hide();
-	end
-	-- Update the talking speaker thingie if they are talking or not.
-	local speaker = _G["PartyMemberFrame"..id.."SpeakerFrame"];
-	local state = UnitIsTalking(UnitName("party"..id));
-	if ( state ) then
-		VoiceChat_Animate(speaker, 1);
-		speaker:Show();
-	else
-		VoiceChat_Animate(speaker, nil);
-		speaker:Hide();
-	end
 end
 
 function PartyMemberFrame_UpdateReadyCheck (self)
@@ -354,14 +326,13 @@ function PartyMemberFrame_OnEvent(self, event, ...)
 	
 	local unit = "party"..selfID;
 	local unitPet = "partypet"..selfID;
-	local speaker = _G[self:GetName().."SpeakerFrame"];
 	
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
 		if ( UnitExists("party"..self:GetID()) ) then
 			PartyMemberFrame_UpdateMember(self);
 			PartyMemberFrame_UpdateOnlineStatus(self);
 		end
-	elseif ( event == "GROUP_ROSTER_UPDATE" ) then
+	elseif ( event == "GROUP_ROSTER_UPDATE" or event == "UPDATE_ACTIVE_BATTLEFIELD" ) then
 		PartyMemberFrame_UpdateMember(self);
 		PartyMemberFrame_UpdateArt(self);
 		PartyMemberFrame_UpdateAssignedRoles(self);
@@ -413,22 +384,8 @@ function PartyMemberFrame_OnEvent(self, event, ...)
 			end
 			ReadyCheck_Finish(_G["PartyMemberFrame"..self:GetID().."ReadyCheck"], finishTime);
 		end
-	elseif ( event == "VOICE_START") then
-		if ( arg1 == unit ) then
-			speaker.timer = nil;
-			UIFrameFadeIn(speaker, 0.2, speaker:GetAlpha(), 1);
-			VoiceChat_Animate(speaker, 1);
-		end
-	elseif ( event == "VOICE_STOP" ) then
-		if ( arg1 == unit ) then
-			speaker.timer = VOICECHAT_DELAY;
-			VoiceChat_Animate(speaker, nil);
-		end
 	elseif ( event == "VARIABLES_LOADED" ) then
 		PartyMemberFrame_UpdatePet(self);
-		PartyMemberFrame_UpdateVoiceStatus(self);
-	elseif ( event == "VOICE_STATUS_UPDATE" ) then
-		PartyMemberFrame_UpdateVoiceStatus(self);
 	elseif ( event == "UNIT_ENTERED_VEHICLE" ) then
 		if ( arg1 == "party"..selfID ) then
 			if ( arg2 and UnitIsConnected("party"..selfID) ) then

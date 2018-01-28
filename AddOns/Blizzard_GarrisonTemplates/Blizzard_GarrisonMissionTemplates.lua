@@ -92,7 +92,7 @@ function GarrisonMission:OnClickMission(missionInfo)
 		return false;
 	end
 	
-	PlaySound("UI_Garrison_CommandTable_SelectMission");
+	PlaySound(SOUNDKIT.UI_GARRISON_COMMAND_TABLE_SELECT_MISSION);
 	return true;
 end
 
@@ -115,6 +115,14 @@ function GarrisonMission:ShowMission(missionInfo)
 	GarrisonTruncationFrame_Check(missionPage.Stage.Title);
 	missionPage.environment = environment;
 	missionPage.xp = xp;
+	-- This is a fix for bug 496154. TODO: Add an icon for Elite difficulty that has a baked in glow.
+	if (environmentTexture == 1488824 or environmentTexture == 1488825) then
+		missionPage.Stage.MissionEnvIcon:SetSize(48,48);
+		missionPage.Stage.MissionEnvIcon:SetPoint("LEFT", self.MissionTab.MissionPage.Stage.MissionInfo.MissionEnv, "RIGHT", -11, 0);
+	else
+		missionPage.Stage.MissionEnvIcon:SetSize(16,16);
+		missionPage.Stage.MissionEnvIcon:SetPoint("LEFT", self.MissionTab.MissionPage.Stage.MissionInfo.MissionEnv, "RIGHT", 4, 0);
+	end
 	missionPage.Stage.MissionEnvIcon.Texture:SetTexture(environmentTexture);
 	if ( locPrefix ) then
 		missionPage.Stage.LocBack:SetAtlas("_"..locPrefix.."-Back", true);
@@ -278,7 +286,12 @@ end
 function GarrisonMission:UpdateMissionData(missionPage)
 	local lastUpdate = missionPage.lastUpdate;
 	local totalTimeString, totalTimeSeconds, isMissionTimeImproved, successChance, partyBuffs, missionEffects, xpBonus, currencyMultipliers, goldMultiplier = C_Garrison.GetPartyMissionInfo(missionPage.missionInfo.missionID);
-
+	
+	--Hacky fix for Bug 473557.  We don't want the color code to be directly in front of the number of days so that our 
+	--language rules parser can properly recognize plural/singular forms.  Previously "1 |4day:days;" becomes "|c...Time: |r|cffff19191 |4day:days;|r"
+	--and the parser reads 19191 days (plural) instead of 1 day (singular).  Now "1 |4day:days;" becomes "|c...Time:|r|cffff1919 1 |4day:days;|r"
+	totalTimeString = " "..totalTimeString;
+	
 	-- TIME
 	if ( missionEffects.hasMissionTimeNegativeEffect ) then
 		totalTimeString = RED_FONT_COLOR:WrapTextInColorCode(totalTimeString);
@@ -303,16 +316,16 @@ function GarrisonMission:UpdateMissionData(missionPage)
 		rewardsFrame:SetScript("OnUpdate", GarrisonMissionPageRewardsFrame_OnUpdate);
 		rewardsFrame.ChanceGlowAnim:Play();
 		if ( successChance < 100 ) then
-			PlaySound("UI_Garrison_CommandTable_IncreasedSuccessChance");
+			PlaySound(SOUNDKIT.UI_GARRISON_COMMAND_TABLE_INCREASED_SUCCESS_CHANCE);
 		elseif (successChance < 200 ) then
-			PlaySound("UI_Garrison_CommandTable_100Success");
+			PlaySound(SOUNDKIT.UI_GARRISON_COMMAND_TABLE_100_SUCCESS);
 		else
-			PlaySound("UI_Mission_200Percent");
+			PlaySound(SOUNDKIT.UI_MISSION_200_PERCENT);
 		end
 	else
 		-- no need to animate if chance is not increasing
-		if ( rewardsFrame.currentChance and successChance < rewardsFrame.currentChance ) then
-			PlaySound("UI_Garrison_CommandTable_ReducedSuccessChance");
+		if ( rewardsFrame.currentChance and successChance < rewardsFrame.currentChance and missionPage:IsShown()) then
+			PlaySound(SOUNDKIT.UI_GARRISON_COMMAND_TABLE_REDUCED_SUCCESS_CHANCE);
 		end
 		GarrisonMissionPageRewardsFrame_SetSuccessChance(rewardsFrame, successChance, missionEffects);
 	end
@@ -382,7 +395,7 @@ function GarrisonMission:UpdateMissionData(missionPage)
 				envCheckFrame.Check:Show();
 				envCheckFrame.Anim:Stop();
 				envCheckFrame.Anim:Play();
-				PlaySound("UI_Garrison_Mission_Threat_Countered");
+				PlaySound(SOUNDKIT.UI_GARRISON_MISSION_THREAT_COUNTERED);
 			end
 		else
 			envCheckFrame.Check:Hide();
@@ -635,7 +648,7 @@ function GarrisonMission:RemoveFollowerFromMission(frame, updateValues)
 	if (followerID) then
 		C_Garrison.RemoveFollowerFromMission(missionPage.missionInfo.missionID, followerID);
 		if (updateValues) then
-			PlaySound("UI_Garrison_CommandTable_UnassignFollower");
+			PlaySound(SOUNDKIT.UI_GARRISON_COMMAND_TABLE_UNASSIGN_FOLLOWER);
 		end
 	end
 	
@@ -808,7 +821,7 @@ function GarrisonMission:OnClickViewCompletedMissionsButton()
 		MissionCompletePreload_StartTimeout(GARRISON_MODEL_PRELOAD_TIME, self.OnClickViewCompletedMissionsButton, self);
 		return;
 	end
-	PlaySound("UI_Garrison_CommandTable_ViewMissionReport");
+	PlaySound(SOUNDKIT.UI_GARRISON_COMMAND_TABLE_VIEW_MISSION_REPORT);
 
 	self:GetCompleteDialog():Hide();
 	self.FollowerTab:Hide();
@@ -904,6 +917,7 @@ function GarrisonMission:MissionCompleteInitialize(missionList, index)
 		self:SetEnemyPortrait(encounter, encounters[i], encounter.Elite, #enemies[i].mechanics);
 	end
 
+	missionCompleteFrame:KillFollowerXPAnims();
 	missionCompleteFrame.pendingXPAwards = { };
 	missionCompleteFrame.animInfo = {};
 	stage.followers = {};
@@ -1026,7 +1040,7 @@ function GarrisonMission:MissionCompleteInitialize(missionList, index)
 		missionCompleteFrame.ChanceFrame.Banner:SetAlpha(0);
 		missionCompleteFrame.ChanceFrame.Banner:SetWidth(200);
 		missionCompleteFrame.ChanceFrame.SuccessChanceInAnim:Play();		
-		PlaySound("UI_Garrison_Mission_Complete_Encounter_Chance");
+		PlaySound(SOUNDKIT.UI_GARRISON_MISSION_COMPLETE_ENCOUNTER_CHANCE);
 		C_Garrison.MarkMissionComplete(mission.missionID);
 	end
 	missionCompleteFrame.NextMissionButton:Disable();
@@ -1093,6 +1107,7 @@ function GarrisonMissionComplete:OnLoad()
 	self:SetAnimationControl();
 
 	self.missionRewardEffectsPool = CreateFramePool("FRAME", self.BonusRewards, "GarrisonMissionRewardEffectsTemplate", OnGarrisonMissionRewardReleased);
+	self.BonusRewards.Rewards = {};
 end
 
 function GarrisonMissionComplete:OnEvent(event, ...)
@@ -1444,9 +1459,9 @@ function GarrisonMissionComplete:AnimModels(entry, failPanType, successPanType, 
 				currentAnim.playImpactSound = true;
 			end
 		end
-		PlaySound("UI_Garrison_MissionEncounter_Animation_Generic");		
+		PlaySound(SOUNDKIT.UI_GARRISON_MISSION_ENCOUNTER_ANIMATION_GENERIC);		
 		if ( currentAnim.castSoundID ) then
-			PlaySoundKitID(currentAnim.castSoundID);
+			PlaySound(currentAnim.castSoundID);
 		end
 		-- enemy model is optional
 		if ( modelRight.state == "loaded" ) then
@@ -1484,10 +1499,10 @@ end
 function GarrisonMissionComplete:AnimPlayImpactSound(entry)
 	local currentAnim = self.animInfo[self.encounterIndex];
 	if ( currentAnim.playImpactSound ) then
-		PlaySoundKitID(currentAnim.impactSoundID);
+		PlaySound(currentAnim.impactSoundID);
 		entry.duration = 0.9 - currentAnim.impactDelay;
 	elseif ( currentAnim.playTargetImpactSound ) then
-		PlaySoundKitID(currentAnim.targetImpactSoundID);
+		PlaySound(currentAnim.targetImpactSoundID);
 		entry.duration = 0.9 - currentAnim.impactDelay;
 	else
 		entry.duration = 0;
@@ -1503,20 +1518,20 @@ function GarrisonMissionComplete:AnimRewards(entry)
 		self.ChanceFrame.ResultText:SetTextColor(0.1, 1, 0.1);
 		self.ChanceFrame.ResultAnim:Play();
 		self.BonusRewards.ChestModel:SetAnimation(0, 0);
-		PlaySound("UI_Garrison_CommandTable_MissionSuccess_Stinger");
+		PlaySound(SOUNDKIT.UI_GARRISON_COMMAND_TABLE_MISSION_SUCCESS_STINGER);
 	else
 		self.ChanceFrame.ResultText:SetText(GARRISON_MISSION_FAILED);
 		self.ChanceFrame.ResultText:SetTextColor(1, 0.1, 0.1);
 		self.ChanceFrame.ResultAnim:Play();
 		self.NextMissionButton:Enable();
-		PlaySound("UI_Garrison_Mission_Complete_MissionFail_Stinger");
+		PlaySound(SOUNDKIT.UI_GARRISON_MISSION_COMPLETE_MISSION_FAIL_STINGER);
 	end
 end
 
 function GarrisonMissionComplete:AnimLockBurst(entry)
 	if ( self.currentMission.succeeded ) then
 		self.BonusRewards.ChestModel.LockBurstAnim:Play();
-		PlaySound("UI_Garrison_CommandTable_ChestUnlock");
+		PlaySound(SOUNDKIT.UI_GARRISON_COMMAND_TABLE_CHEST_UNLOCK);
 		if ( C_Garrison.CanOpenMissionChest(self.currentMission.missionID) ) then
 			self.BonusRewards.ChestModel.ClickFrame:Show();
 		end
@@ -1592,7 +1607,7 @@ function GarrisonMissionComplete:OnSkipKeyPressed(key)
 					self.ChanceFrame.ResultText:SetText(GARRISON_MISSION_SUCCESS);
 					self.ChanceFrame.ResultText:SetTextColor(0.1, 1, 0.1);
 					if ( playSound ) then
-						PlaySound("UI_Garrison_CommandTable_MissionSuccess_Stinger");
+						PlaySound(SOUNDKIT.UI_GARRISON_COMMAND_TABLE_MISSION_SUCCESS_STINGER);
 					end
 					-- remove chest
 					self.BonusRewards.ChestModel.OpenAnim:Stop();
@@ -1605,7 +1620,7 @@ function GarrisonMissionComplete:OnSkipKeyPressed(key)
 					self.ChanceFrame.ResultText:SetText(GARRISON_MISSION_FAILED);
 					self.ChanceFrame.ResultText:SetTextColor(1, 0.1, 0.1);
 					if ( playSound ) then
-						PlaySound("UI_Garrison_Mission_Complete_MissionFail_Stinger");
+						PlaySound(SOUNDKIT.UI_GARRISON_MISSION_COMPLETE_MISSION_FAIL_STINGER);
 					end
 					-- enable Next button
 					self.NextMissionButton:Enable();
@@ -1728,13 +1743,13 @@ function GarrisonMissionComplete:AnimFollowerXP(followerID, xpAward, oldXP, oldL
 				end
 			else
 				-- save for later
-				local t = {};
-				t.followerID = followerID;
-				t.xpAward = xpAward;
-				t.oldXP = oldXP;
-				t.oldLevel = oldLevel;
-				t.oldQuality = oldQuality;
-				tinsert(self.pendingXPAwards, t);
+	local t = {};
+	t.followerID = followerID;
+	t.xpAward = xpAward;
+	t.oldXP = oldXP;
+	t.oldLevel = oldLevel;
+	t.oldQuality = oldQuality;
+	tinsert(self.pendingXPAwards, t);
 			end
 			break;
 		end
@@ -1751,7 +1766,7 @@ function GarrisonMissionComplete:AnimFollowerCheerAndTroopDeath(followerID)
 	end
 
 	if (mission.succeeded) then
-		PlaySound("UI_Mission_Success_Cheers");
+		PlaySound(SOUNDKIT.UI_MISSION_SUCCESS_CHEERS);
 	end
 
 	for i = 1, #mission.followers do
@@ -1899,7 +1914,7 @@ function GarrisonMissionComplete:AnimXPBarOnFinish(xpBar)
 					for _, model in ipairs(cluster.Model) do
 						if ( model.followerID == followerFrame.followerID and model:IsShown() ) then
 							model:SetSpellVisualKit(6375);	-- level up visual
-							PlaySound("UI_Garrison_CommandTable_Follower_LevelUp");
+							PlaySound(SOUNDKIT.UI_GARRISON_COMMAND_TABLE_FOLLOWER_LEVEL_UP);
 							break;
 						end
 					end
@@ -1920,6 +1935,15 @@ function GarrisonMissionComplete:AnimXPBarOnFinish(xpBar)
 		self:AnimXPBar(xpBar);
 	else
 		self:OnFollowerXPFinished(xpBar:GetParent());
+	end
+end
+
+function GarrisonMissionComplete:KillFollowerXPAnims()
+	for _, followerFrame in pairs(self.Stage.FollowersFrame.Followers) do
+		followerFrame.XPGain.FadeIn:Stop();
+		followerFrame.XP:SetScript("OnUpdate", nil);
+		followerFrame.LevelUpFrame.Anim:Stop();
+		followerFrame.activeAnims = 0;
 	end
 end
 
@@ -1971,8 +1995,9 @@ function GarrisonMissionFrame_SetItemRewardDetails(frame)
 	end
 end
 
-function GarrisonMissionPage_SetReward(frame, reward)
+function GarrisonMissionPage_SetReward(frame, reward, missionComplete)
 	frame.Quantity:Hide();
+	frame.Quantity:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
 	frame.IconBorder:Hide();
 	frame.itemID = nil;
 	frame.currencyID = nil;
@@ -2005,6 +2030,10 @@ function GarrisonMissionPage_SetReward(frame, reward)
 					frame.Name:SetText(currencyName);
 				end
 				frame.Quantity:SetText(reward.quantity);
+				if ( not missionComplete ) then
+					local currencyColor = GetColorForCurrencyReward(reward.currencyID, reward.quantity);
+					frame.Quantity:SetTextColor(currencyColor:GetRGB());
+				end
 				frame.Quantity:Show();
 			end
 		elseif (reward.bonusAbilityID) then
@@ -2088,7 +2117,12 @@ function GarrisonMissionPage_UpdateRewardQuantities(rewardsFrame, currencyMultip
 end
 
 function GarrisonMissionPageRewardsFrame_SetSuccessChance(self, chance, missionEffects)
-	local successChanceColor = missionEffects and missionEffects.hasSuccessChanceNegativeEffect and RED_FONT_COLOR or GREEN_FONT_COLOR;
+	local successChanceColor = GREEN_FONT_COLOR;
+	if (missionEffects) then
+		if ((chance < 0 and missionEffects.hasUncounterableSuccessChanceNegativeEffect) or missionEffects.hasSuccessChanceNegativeEffect) then
+			successChanceColor = RED_FONT_COLOR;
+		end
+	end
 
 	self.Chance:SetFormattedText(successChanceColor:WrapTextInColorCode(PERCENTAGE_STRING), chance);
 	self.ChanceLabel:SetText(successChanceColor:WrapTextInColorCode(GARRISON_MISSION_CHANCE));
@@ -2103,7 +2137,7 @@ function GarrisonMissionPageRewardsFrame_OnUpdate(self, elapsed)
 	GarrisonMissionPageRewardsFrame_SetSuccessChance(self, newChance, self:GetParent().missionEffects);
 	if ( newChance == self.endingChance ) then
 		if ( newChance == 100 ) then
-			PlaySoundKitID(43507);	-- 100% chance reached
+			PlaySound(SOUNDKIT.UI_GARRISON_MISSION_100_PERCENT_CHANCE_REACHED_NOT_USED);	-- 100% chance reached
 		end
 		GarrisonMissionPageRewardsFrame_StopUpdate(self);
 	end
@@ -2154,7 +2188,7 @@ function GarrisonMissionPageMixin:SetCounters(followers, enemies, missionID)
 	local bonusEffects = C_Garrison.GetMissionBonusAbilityEffects(missionID);
 	for i = 1, #bonusEffects do
 		local mechanicTypeID = bonusEffects[i].mechanicTypeID;
-		if(mechanic ~= 0) then
+		if(mechanicTypeID ~= 0) then
 			self:CheckCounter(enemies, mechanicTypeID);
 		end
 	end
@@ -2180,7 +2214,7 @@ function GarrisonMissionPageMixin:SetCounters(followers, enemies, missionID)
 	end
 	
 	if ( playSound ) then
-		PlaySound("UI_Garrison_Mission_Threat_Countered");
+		PlaySound(SOUNDKIT.UI_GARRISON_MISSION_THREAT_COUNTERED);
 	end
 end
 
@@ -2211,7 +2245,7 @@ end
 
 function GarrisonMissionController_OnClickTab(tab)
 	local mainFrame = tab:GetParent();
-	PlaySound("UI_Garrison_Nav_Tabs");
+	PlaySound(SOUNDKIT.UI_GARRISON_NAV_TABS);
 	PanelTemplates_SetTab(mainFrame, tab:GetID());
 	mainFrame:SelectTab(tab:GetID());
 end
@@ -2324,7 +2358,7 @@ function GarrisonMissionCompleteChest_OnMouseDown(self)
 			end
 		);
 		C_Garrison.MissionBonusRoll(missionCompleteFrame.currentMission.missionID);
-		PlaySound("UI_Garrison_CommandTable_ChestUnlock_Gold_Success");
+		PlaySound(SOUNDKIT.UI_GARRISON_COMMAND_TABLE_CHEST_UNLOCK_GOLD_SUCCESS);
 		missionCompleteFrame.NextMissionButton:Disable();
 	end
 end

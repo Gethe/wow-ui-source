@@ -1,0 +1,19 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="ScrollingMessageFrame.lua"/>
+
+	<Frame name="ScrollingMessageFrame" secureMixin="ScrollingMessageFrameMixin" intrinsic="true">
+		<Frames>
+			<Frame parentKey="FontStringContainer" clipChildren="true" propagateHyperlinksToParent="true" setAllPoints="true" />
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnPreLoad" intrinsicOrder="precall" />
+			<OnUpdate method="OnPostUpdate" intrinsicOrder="postcall" />
+			<OnShow method="OnPostShow" intrinsicOrder="postcall" />
+			<OnHide method="OnPostHide" intrinsicOrder="postcall" />
+			<OnSizeChanged method="OnPreSizeChanged" intrinsicOrder="precall" />
+			<OnMouseDown method="OnPostMouseDown" intrinsicOrder="postcall" autoEnableInput="false" />
+			<OnMouseUp method="OnPostMouseUp" intrinsicOrder="postcall" autoEnableInput="false" />
+		</Scripts>
+	</Frame>
+</Ui>

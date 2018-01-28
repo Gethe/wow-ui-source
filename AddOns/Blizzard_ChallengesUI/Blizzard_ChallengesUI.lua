@@ -1,13 +1,9 @@
 local NUM_REWARDS_PER_MEDAL = 2;
+local MAX_PER_ROW = 9;
 
-local function CreateFrames(self, array, num, spacing, template)
-    local index = #self[array] + 1;
-    
+local function CreateFrames(self, array, num, template)
     while (#self[array] < num) do
 		local frame = CreateFrame("Frame", nil, self, template);
-		local prev = self[array][index - 1];
-		frame:SetPoint("LEFT", prev, "RIGHT", spacing, 0);
-		index = index + 1;
 	end
     
     for i = num + 1, #self[array] do
@@ -15,12 +11,45 @@ local function CreateFrames(self, array, num, spacing, template)
 	end
 end
     
-local function CenterFrames(frame, num, anchorPoint, anchor, relativePoint, width, spacing, distance)
-    local fullWidth = (width*num) + (spacing * (num - 1));
+local function ReanchorFrames(frames, anchorPoint, anchor, relativePoint, width, spacing, distance)
+    local num = #frames;
+    local numButtons = math.min(MAX_PER_ROW, num);
+    local fullWidth = (width * numButtons) + (spacing * (numButtons - 1));
     local halfWidth = fullWidth / 2;
     
-    frame:ClearAllPoints();
-    frame:SetPoint(anchorPoint, anchor, relativePoint, -halfWidth, distance);
+    local numRows = math.floor((num + MAX_PER_ROW - 1) / MAX_PER_ROW) - 1;
+    local fullDistance = numRows * frames[1]:GetHeight() + (numRows + 1) * distance;
+    
+    -- First frame
+    frames[1]:ClearAllPoints();
+    frames[1]:SetPoint(anchorPoint, anchor, relativePoint, -halfWidth, fullDistance);
+
+    -- first row
+    for i = 2, math.min(MAX_PER_ROW, #frames) do
+        frames[i]:SetPoint("LEFT", frames[i-1], "RIGHT", spacing, 0);
+    end
+
+    -- n-rows after
+    if (num > MAX_PER_ROW) then
+        local currentExtraRow = 0;
+        local finished = false;
+        repeat
+            local setFirst = false;
+            for i = (MAX_PER_ROW + (MAX_PER_ROW * currentExtraRow)) + 1, (MAX_PER_ROW + (MAX_PER_ROW * currentExtraRow)) + MAX_PER_ROW do
+                if (not frames[i]) then
+                    finished = true;
+                    break;
+                end
+                if (not setFirst) then
+                    frames[i]:SetPoint("TOPLEFT", frames[i - (MAX_PER_ROW + (MAX_PER_ROW * currentExtraRow))], "BOTTOMLEFT", 0, -distance);
+                    setFirst = true;
+                else
+                    frames[i]:SetPoint("LEFT", frames[i-1], "RIGHT", spacing, 0);
+                end
+            end
+            currentExtraRow = currentExtraRow + 1;
+        until finished;
+    end
 end
 
 function ChallengesFrame_OnLoad(self)
@@ -29,8 +58,7 @@ function ChallengesFrame_OnLoad(self)
     self:RegisterEvent("CHALLENGE_MODE_LEADERS_UPDATE");
     
     self.leadersAvailable = false;
-	self.maps = { };
-	C_ChallengeMode.GetMapTable(self.maps);
+	self.maps = C_ChallengeMode.GetMapTable();
 end
 
 function ChallengesFrame_OnEvent(self, event)
@@ -82,8 +110,8 @@ function ChallengesFrame_Update(self)
     
     local num = #sortedMaps;
 
-    CreateFrames(self, "DungeonIcons", num, spacing, "ChallengesDungeonIconFrameTemplate");
-    CenterFrames(self.DungeonIcons[1], num, "BOTTOMLEFT", self, "BOTTOM", frameWidth, spacing, distance);
+    CreateFrames(self, "DungeonIcons", num, "ChallengesDungeonIconFrameTemplate");
+    ReanchorFrames(self.DungeonIcons, "BOTTOMLEFT", self, "BOTTOM", frameWidth, spacing, distance);
     
     for i = 1, #sortedMaps do
         local frame = self.DungeonIcons[i];
@@ -173,21 +201,21 @@ function ChallengesGuildBestMixin:SetUp(leaderInfo)
         str = CHALLENGE_MODE_GUILD_BEST_LINE_YOU;
     end
     
-    local classColorStr = RAID_CLASS_COLORS[leaderInfo.class].colorStr;
+    local classColorStr = RAID_CLASS_COLORS[leaderInfo.classFileName].colorStr;
     
     self.CharacterName:SetText(str:format(classColorStr, leaderInfo.name));
-    self.Level:SetText(leaderInfo.level);
+    self.Level:SetText(leaderInfo.keystoneLevel);
 end
 
 function ChallengesGuildBestMixin:OnEnter()
     local leaderInfo = self.leaderInfo;
     
     GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-    local name = C_ChallengeMode.GetMapInfo(leaderInfo.mapid);
+    local name = C_ChallengeMode.GetMapInfo(leaderInfo.mapChallengeModeID);
     GameTooltip:SetText(name, 1, 1, 1);
-    GameTooltip:AddLine(CHALLENGE_MODE_POWER_LEVEL:format(leaderInfo.level));
+    GameTooltip:AddLine(CHALLENGE_MODE_POWER_LEVEL:format(leaderInfo.keystoneLevel));
     for i = 1, #leaderInfo.members do
-        local classColorStr = RAID_CLASS_COLORS[leaderInfo.members[i].class].colorStr;
+        local classColorStr = RAID_CLASS_COLORS[leaderInfo.members[i].classFileName].colorStr;
         GameTooltip:AddLine(CHALLENGE_MODE_GUILD_BEST_LINE:format(classColorStr,leaderInfo.members[i].name));
     end
     GameTooltip:Show();
@@ -230,7 +258,7 @@ function ChallengesFrameWeeklyBestMixin:SetUp(hasWeeklyRun, bestData)
         for i = 1, #bestData.affixes + 2 do
             local frame = self.Child.Affixes[i];
             if (not frame) then
-                frame = CreateFrame("Frame", nil, self, "ChallengesKeystoneFrameAffixTemplate");
+                frame = CreateFrame("Frame", nil, self.Child, "ChallengesKeystoneFrameAffixTemplate");
                 frame:SetPoint("LEFT", self.Child.Affixes[i-1], "RIGHT", 10, 0);
             end
             if (i == 1) then
@@ -271,13 +299,13 @@ function ChallengesKeystoneFrameMixin:OnLoad()
 end
 
 function ChallengesKeystoneFrameMixin:OnShow()
-    PlaySound("UI_70_ChallengeMode_SocketPage_Open");
+    PlaySound(SOUNDKIT.UI_70_CHALLENGE_MODE_SOCKET_PAGE_OPEN);
     self:Reset();
 end
 
 function ChallengesKeystoneFrameMixin:OnHide()
     if (not self.startedChallengeMode) then
-        PlaySound("UI_70_ChallengeMode_SocketPage_Close");
+        PlaySound(SOUNDKIT.UI_70_CHALLENGE_MODE_SOCKET_PAGE_CLOSE);
     end
 	C_ChallengeMode.CloseKeystoneFrame();
 	C_ChallengeMode.ClearKeystone();
@@ -293,7 +321,9 @@ function ChallengesKeystoneFrameMixin:Reset()
 	self.RunesSmallAnim:Stop();
 	self.RunesSmallRotateAnim:Stop();
 	self.StartButton:Disable();
-	
+	self.TimeLimit:Hide();
+    self.DungeonName:Hide();
+
 	for i = 1, #self.Affixes do
 		self.Affixes[i]:Hide();
 	end
@@ -312,13 +342,7 @@ function ChallengesKeystoneFrameMixin:OnMouseUp()
 	end
 end
 
-function ChallengesKeystoneFrameMixin:ShowKeystoneFrame()
-	local _, _, _, _, _, _, _, mapID = GetInstanceInfo();
-	local name, _, timeLimit = C_ChallengeMode.GetMapInfo(mapID);
-
-	self.DungeonName:SetText(name);
-	self.TimeLimit:SetText(SecondsToTime(timeLimit, false, true));
-
+function ChallengesKeystoneFrameMixin:ShowKeystoneFrame()	
 	self:Show();
 end
 
@@ -348,7 +372,7 @@ function ChallengesKeystoneFrameMixin:CreateAndPositionAffixes(num)
 end
 
 function ChallengesKeystoneFrameMixin:OnKeystoneSlotted()
-    PlaySound("UI_70_ChallengeMode_SocketPage_Socket");
+    PlaySound(SOUNDKIT.UI_70_CHALLENGE_MODE_SOCKET_PAGE_SOCKET);
 	self.InsertedAnim:Play();
 	self.RunesLargeAnim:Play();
 	self.RunesSmallAnim:Play();
@@ -356,9 +380,15 @@ function ChallengesKeystoneFrameMixin:OnKeystoneSlotted()
 	self.RunesSmallRotateAnim:Play();
 	self.InstructionBackground:Hide();
 	self.Instructions:Hide();
-	self.TimeLimit:Show();
-	local mapID, affixes, powerLevel, charged = C_ChallengeMode.GetSlottedKeystoneInfo();
 	
+	local mapID, affixes, powerLevel, charged = C_ChallengeMode.GetSlottedKeystoneInfo();
+	local name, _, timeLimit = C_ChallengeMode.GetMapInfo(mapID);
+
+    self.DungeonName:SetText(name);
+    self.DungeonName:Show();
+    self.TimeLimit:SetText(SecondsToTime(timeLimit, false, true));
+    self.TimeLimit:Show();
+
 	self.PowerLevel:SetText(CHALLENGE_MODE_POWER_LEVEL:format(powerLevel));
 	self.PowerLevel:Show();
 	
@@ -375,13 +405,13 @@ function ChallengesKeystoneFrameMixin:OnKeystoneSlotted()
 end
 
 function ChallengesKeystoneFrameMixin:OnKeystoneRemoved()
-    PlaySound("UI_70_ChallengeMode_SocketPage_RemoveKeystone");
+    PlaySound(SOUNDKIT.UI_70_CHALLENGE_MODE_SOCKET_PAGE_REMOVE_KEYSTONE);
 	self:Reset();
 	self.StartButton:Disable();
 end
 
 function ChallengesKeystoneFrameMixin:StartChallengeMode()
-    PlaySound("UI_70_ChallengeMode_SocketPage_Activate");
+    PlaySound(SOUNDKIT.UI_70_CHALLENGE_MODE_SOCKET_PAGE_ACTIVATE_BUTTON);
     C_ChallengeMode.StartChallengeMode();
     self.startedChallengeMode = true;
     self:Hide();
@@ -491,7 +521,7 @@ function ChallengesKeystoneFrameAffixMixin:SetUp(affixInfo)
 
 		local _, _, filedataid = C_ChallengeMode.GetAffixInfo(affixID);
 
-		SetPortraitToTexture(self.Portrait, filedataid);
+        SetPortraitToTexture(self.Portrait, filedataid);
 
 		self.Percent:Hide();
 
@@ -535,11 +565,11 @@ function ChallengeModeCompleteBannerMixin:PlayBanner(data)
     if (data.onTime) then
         self.DescriptionLineOne:SetText(CHALLENGE_MODE_COMPLETE_BEAT_TIMER);
         self.DescriptionLineTwo:SetFormattedText(CHALLENGE_MODE_COMPLETE_KEYSTONE_UPGRADED, data.keystoneUpgradeLevels);
-        PlaySound("UI_70_ChallengeMode_KeystoneUpgrade");
+        PlaySound(SOUNDKIT.UI_70_CHALLENGE_MODE_KEYSTONE_UPGRADE);
     else
         self.DescriptionLineOne:SetText(CHALLENGE_MODE_COMPLETE_TIME_EXPIRED);
         self.DescriptionLineTwo:SetText(CHALLENGE_MODE_COMPLETE_TRY_AGAIN);
-        PlaySound("UI_70_ChallengeMode_Complete_NoUpgrade");
+        PlaySound(SOUNDKIT.UI_70_CHALLENGE_MODE_COMPLETE_NO_UPGRADE);
     end
     
     local sortedUnitTokens = self:GetSortedPartyMembers();
@@ -608,8 +638,8 @@ end
 function ChallengeModeCompleteBannerMixin:CreateAndPositionPartyMembers(num)
 	local frameWidth, spacing, distance = 61, 22, -100;
     
-    CreateFrames(self, "PartyMembers", num, spacing, "ChallengeModeBannerPartyMemberTemplate");
-    CenterFrames(self.PartyMembers[1], num, "TOPLEFT", self.Title, "TOP", frameWidth, spacing, distance);
+    CreateFrames(self, "PartyMembers", num, "ChallengeModeBannerPartyMemberTemplate");
+    ReanchorFrames(self.PartyMembers, "TOPLEFT", self.Title, "TOP", frameWidth, spacing, distance);
 end
 
 function ChallengeModeCompleteBannerMixin:PerformAnimOut()

@@ -1,6 +1,9 @@
 TOOLTIP_UPDATE_TIME = 0.2;
 BOSS_FRAME_CASTBAR_HEIGHT = 16;
 
+-- Mirror of the same Variable in StoreSecureUI.lua and GlueParent.lua
+WOW_GAMES_CATEGORY_ID = 33; 
+
 -- Alpha animation stuff
 FADEFRAMES = {};
 FLASHFRAMES = {};
@@ -55,6 +58,7 @@ UIPanelWindows["RaidParentFrame"] =				{ area = "left",			pushable = 1,	whileDea
 UIPanelWindows["RaidBrowserFrame"] =			{ area = "left",			pushable = 1,	};
 UIPanelWindows["DeathRecapFrame"] =				{ area = "center",			pushable = 0,	whileDead = 1, allowOtherPanels = 1};
 UIPanelWindows["WardrobeFrame"] =				{ area = "left",			pushable = 0,	width = 965 };
+UIPanelWindows["AlliedRacesFrame"] =			{ area = "left",			pushable = 1,	whileDead = 1};
 
 -- Frames NOT using the new Templates
 UIPanelWindows["WorldMapFrame"] =				{ area = "full",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
@@ -62,6 +66,7 @@ UIPanelWindows["CinematicFrame"] =				{ area = "full",			pushable = 0, 		xoffset
 UIPanelWindows["ChatConfigFrame"] =				{ area = "center",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
 UIPanelWindows["WorldStateScoreFrame"] =		{ area = "center",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
 UIPanelWindows["QuestChoiceFrame"] =			{ area = "center",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 0, allowOtherPanels = 1 };
+UIPanelWindows["WarboardQuestChoiceFrame"] =	{ area = "center",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 0, allowOtherPanels = 1 };
 UIPanelWindows["GarrisonBuildingFrame"] =		{ area = "center",			pushable = 0,		whileDead = 1, 		width = 1002, 	allowOtherPanels = 1};
 UIPanelWindows["GarrisonMissionFrame"] =		{ area = "center",			pushable = 0,		whileDead = 1, 		checkFit = 1,	allowOtherPanels = 1, extraWidth = 20,	extraHeight = 100 };
 UIPanelWindows["GarrisonShipyardFrame"] =		{ area = "center",			pushable = 0,		whileDead = 1, 		checkFit = 1,	allowOtherPanels = 1, extraWidth = 20,	extraHeight = 100 };
@@ -113,6 +118,14 @@ UIChildWindows = {
 	"GearManagerDialog",
 };
 
+function UpdateUIParentRelativeToDebugMenu()
+	if (DebugMenu and DebugMenu.IsVisible()) then
+		UIParent:SetPoint("TOPLEFT", 0, -DebugMenu.GetMenuHeight());
+	else
+		UIParent:SetPoint("TOPLEFT", 0, 0);
+	end
+end
+
 UISpecialFrames = {
 	"ItemRefTooltip",
 	"ColorPickerFrame",
@@ -147,7 +160,12 @@ WORLD_QUEST_QUALITY_COLORS = {
 	[LE_WORLD_QUEST_QUALITY_EPIC] = ITEM_QUALITY_COLORS[LE_ITEM_QUALITY_EPIC];
 };
 
+-- Protecting from addons since we use this in GetScaledCursorDelta which is used in secure code.
+local _UIParentGetEffectiveScale;
+local _UIParentRef;
 function UIParent_OnLoad(self)
+	_UIParentGetEffectiveScale = self.GetEffectiveScale;
+	_UIParentRef = self;
 	self:RegisterEvent("PLAYER_LOGIN");
 	self:RegisterEvent("PLAYER_DEAD");
 	self:RegisterEvent("SELF_RES_SPELL_CHANGED");
@@ -169,6 +187,7 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("EQUIP_BIND_CONFIRM");
 	self:RegisterEvent("EQUIP_BIND_TRADEABLE_CONFIRM");
 	self:RegisterEvent("USE_BIND_CONFIRM");
+	self:RegisterEvent("USE_NO_REFUND_CONFIRM");
 	self:RegisterEvent("CONFIRM_BEFORE_USE");
 	self:RegisterEvent("DELETE_ITEM_CONFIRM");
 	self:RegisterEvent("QUEST_ACCEPT_CONFIRM");
@@ -196,6 +215,7 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("AREA_SPIRIT_HEALER_IN_RANGE");
 	self:RegisterEvent("AREA_SPIRIT_HEALER_OUT_OF_RANGE");
 	self:RegisterEvent("BIND_ENCHANT");
+	self:RegisterEvent("ACTION_WILL_BIND_ITEM");
 	self:RegisterEvent("REPLACE_ENCHANT");
 	self:RegisterEvent("TRADE_REPLACE_ENCHANT");
 	self:RegisterEvent("END_BOUND_TRADEABLE");
@@ -234,7 +254,8 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("SPELL_CONFIRMATION_TIMEOUT");
 	self:RegisterEvent("SAVED_VARIABLES_TOO_LARGE");
 	self:RegisterEvent("AUTH_CHALLENGE_UI_INVALID");
-
+	self:RegisterEvent("EXPERIMENTAL_CVAR_CONFIRMATION_NEEDED");
+	self:RegisterEvent("BAG_OVERFLOW_WITH_FULL_INVENTORY");
 	self:RegisterEvent("LOADING_SCREEN_ENABLED");
 	self:RegisterEvent("LOADING_SCREEN_DISABLED");
 
@@ -257,6 +278,7 @@ function UIParent_OnLoad(self)
 	-- Events for Artifact UI
 	self:RegisterEvent("ARTIFACT_UPDATE");
 	self:RegisterEvent("ARTIFACT_RESPEC_PROMPT");
+	self:RegisterEvent("ARTIFACT_RELIC_FORGE_UPDATE");
 
 	-- Events for Adventure Map UI
 	self:RegisterEvent("ADVENTURE_MAP_OPEN");
@@ -264,10 +286,6 @@ function UIParent_OnLoad(self)
 	-- Events for taxi benchmarking
 	self:RegisterEvent("ENABLE_TAXI_BENCHMARK");
 	self:RegisterEvent("DISABLE_TAXI_BENCHMARK");
-
-	-- Push to talk
-	self:RegisterEvent("VOICE_PUSH_TO_TALK_START");
-	self:RegisterEvent("VOICE_PUSH_TO_TALK_STOP");
 
 	-- Events for BarberShop Handling
 	self:RegisterEvent("BARBER_SHOP_OPEN");
@@ -304,6 +322,10 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("VOID_STORAGE_OPEN");
 	self:RegisterEvent("VOID_STORAGE_CLOSE");
 
+	-- Events for contributions
+	self:RegisterEvent("CONTRIBUTION_COLLECTOR_OPEN");
+	self:RegisterEvent("CONTRIBUTION_COLLECTOR_CLOSE");
+
 	-- Events for Trial caps
 	self:RegisterEvent("TRIAL_CAP_REACHED_MONEY");
 	self:RegisterEvent("TRIAL_CAP_REACHED_LEVEL");
@@ -331,6 +353,9 @@ function UIParent_OnLoad(self)
 
 	-- Lua warnings
 	self:RegisterEvent("LUA_WARNING");
+
+	-- debug menu
+	self:RegisterEvent("DEBUG_MENU_TOGGLED");
 
 	-- Garrison
 	self:RegisterEvent("GARRISON_ARCHITECT_OPENED");
@@ -364,6 +389,19 @@ function UIParent_OnLoad(self)
 
 	-- Used to determine when to load BoostTutorial
 	self:RegisterEvent("SCENARIO_UPDATE");
+
+	-- Invite confirmations
+	self:RegisterEvent("GROUP_INVITE_CONFIRMATION");
+
+	-- Event(s) for the ArtifactUI
+	self:RegisterEvent("ARTIFACT_ENDGAME_REFUND");
+
+	-- Event(s) for PVP
+	self:RegisterEvent("UPDATE_BATTLEFIELD_STATUS");
+	self:RegisterEvent("PVP_BRAWL_INFO_UPDATED");
+	
+	-- Event(s) for Allied Races
+	self:RegisterEvent("ALLIED_RACE_OPEN"); 	
 end
 
 function UIParent_OnShow(self)
@@ -398,6 +436,10 @@ function UIParentLoadAddOn(name)
 	return loaded;
 end
 
+function AlliedRaces_LoadUI()
+	UIParentLoadAddOn("Blizzard_AlliedRacesUI");
+end
+
 function AuctionFrame_LoadUI()
 	UIParentLoadAddOn("Blizzard_AuctionUI");
 end
@@ -412,6 +454,10 @@ end
 
 function CombatLog_LoadUI()
 	UIParentLoadAddOn("Blizzard_CombatLog");
+end
+
+function Commentator_LoadUI()
+	UIParentLoadAddOn("Blizzard_Commentator");
 end
 
 function GuildBankFrame_LoadUI()
@@ -541,6 +587,10 @@ function QuestChoice_LoadUI()
 	UIParentLoadAddOn("Blizzard_QuestChoice");
 end
 
+function WarboardQuestChoice_LoadUI()
+	UIParentLoadAddOn("Blizzard_WarboardUI");
+end
+
 function Store_LoadUI()
 	UIParentLoadAddOn("Blizzard_StoreUI");
 end
@@ -563,6 +613,10 @@ end
 
 function FlightMap_LoadUI()
 	UIParentLoadAddOn("Blizzard_FlightMap");
+end
+
+function APIDocumentation_LoadUI()
+	UIParentLoadAddOn("Blizzard_APIDocumentation");
 end
 
 --[[
@@ -782,16 +836,23 @@ function ToggleRaidBrowser()
 	else
 		ShowUIPanel(RaidBrowserFrame);
 	end
-
 end
 
-function ToggleEncounterJournal()
-	if (IsKioskModeEnabled()) then
-		return;
+function CanShowEncounterJournal()
+	if ( IsKioskModeEnabled() ) then
+		return false;
 	end
 
 	if ( not C_AdventureJournal.CanBeShown() ) then
-		return;
+		return false;
+	end
+
+	return true;
+end
+
+function ToggleEncounterJournal()
+	if ( not CanShowEncounterJournal() ) then
+		return false;
 	end
 
 	if ( not EncounterJournal ) then
@@ -799,25 +860,40 @@ function ToggleEncounterJournal()
 	end
 	if ( EncounterJournal ) then
 		ToggleFrame(EncounterJournal);
+		return true;
 	end
+	return false;
 end
 
 
-function ToggleCollectionsJournal(whichFrame)
-	if ( not CollectionsJournal ) then
+COLLECTIONS_JOURNAL_TAB_INDEX_MOUNTS = 1;
+COLLECTIONS_JOURNAL_TAB_INDEX_PETS = COLLECTIONS_JOURNAL_TAB_INDEX_MOUNTS + 1;
+COLLECTIONS_JOURNAL_TAB_INDEX_TOYS = COLLECTIONS_JOURNAL_TAB_INDEX_PETS + 1;
+COLLECTIONS_JOURNAL_TAB_INDEX_HEIRLOOMS = COLLECTIONS_JOURNAL_TAB_INDEX_TOYS + 1;
+COLLECTIONS_JOURNAL_TAB_INDEX_APPEARANCES = COLLECTIONS_JOURNAL_TAB_INDEX_HEIRLOOMS + 1;
+
+function ToggleCollectionsJournal(tabIndex)
+	if CollectionsJournal then
+		local tabMatches = not tabIndex or tabIndex == PanelTemplates_GetSelectedTab(CollectionsJournal);
+		local isShown = CollectionsJournal:IsShown() and tabMatches;
+		SetCollectionsJournalShown(not isShown, tabIndex);
+	else
+		SetCollectionsJournalShown(true, tabIndex);
+	end
+end
+
+function SetCollectionsJournalShown(shown, tabIndex)
+	if not CollectionsJournal then
 		CollectionsJournal_LoadUI();
 	end
-	if ( CollectionsJournal ) then
-		if ( whichFrame ) then
-			-- if the request tab is being shown, close window
-			if ( CollectionsJournal:IsShown() and whichFrame == PanelTemplates_GetSelectedTab(CollectionsJournal) ) then
-				HideUIPanel(CollectionsJournal);
-			else
-				ShowUIPanel(CollectionsJournal);
-				CollectionsJournal_SetTab(CollectionsJournal, whichFrame);
+	if CollectionsJournal then
+		if shown then
+			ShowUIPanel(CollectionsJournal);
+			if tabIndex then
+				CollectionsJournal_SetTab(CollectionsJournal, tabIndex);
 			end
 		else
-			ToggleFrame(CollectionsJournal);
+			HideUIPanel(CollectionsJournal);
 		end
 	end
 end
@@ -845,6 +921,21 @@ function ToggleStoreUI()
 		securecall("CloseAllWindows");
 	end
 	StoreFrame_SetShown(not wasShown);
+end
+
+function SetStoreUIShown(shown)
+	if (IsKioskModeEnabled()) then
+		return;
+	end
+
+	Store_LoadUI();
+
+	local wasShown = StoreFrame_IsShown();
+	if ( not wasShown and shown ) then
+		--We weren't showing, now we are. We should hide all other panels.
+		securecall("CloseAllWindows");
+	end
+	StoreFrame_SetShown(shown);
 end
 
 function ToggleGarrisonBuildingUI()
@@ -886,6 +977,35 @@ function InspectUnit(unit)
 	end
 end
 
+local function PlayBattlefieldBanner(self)
+	-- battlefields
+	if ( not self.battlefieldBannerShown ) then
+		local bannerName, bannerDescription;
+
+		if (C_PvP.IsInBrawl()) then
+			local brawlInfo = C_PvP.GetBrawlInfo();
+			if (brawlInfo) then
+				bannerName = brawlInfo.name;
+				bannerDescription = brawlInfo.shortDescription;
+			end
+		else
+		    for i=1, GetMaxBattlefieldID() do
+			    local status, mapName, _, _, _, _, _, _, _, shortDescription, _ = GetBattlefieldStatus(i);
+			    if ( status and status == "active" ) then
+				    bannerName = mapName;
+				    bannerDescription = shortDescription;
+				    break;
+			    end
+		    end
+		end
+
+		if ( bannerName ) then
+			UIParentLoadAddOn("Blizzard_PVPUI");
+			C_Timer.After(1, function() TopBannerManager_Show(PvPObjectiveBannerFrame, { name=bannerName, description=bannerDescription }); end);
+			self.battlefieldBannerShown = true;
+		end
+	end
+end
 
 -- UIParent_OnEvent --
 function UIParent_OnEvent(self, event, ...)
@@ -950,6 +1070,7 @@ function UIParent_OnEvent(self, event, ...)
 			if ( arg1 ) then
 				StaticPopup_Hide("BIND_ENCHANT");
 				StaticPopup_Hide("REPLACE_ENCHANT");
+				StaticPopup_Hide("ACTION_WILL_BIND_ITEM");
 			end
 			StaticPopup_Hide("TRADE_REPLACE_ENCHANT");
 			StaticPopup_Hide("END_BOUND_TRADEABLE");
@@ -980,7 +1101,7 @@ function UIParent_OnEvent(self, event, ...)
 			GMChatFrame:Show()
 			local info = ChatTypeInfo["WHISPER"];
 			GMChatFrame:AddMessage(format(GM_CHAT_LAST_SESSION, "|TInterface\\ChatFrame\\UI-ChatIcon-Blizz:12:20:0:0:32:16:4:28:0:16|t "..
-			"|HplayerGM:"..lastTalkedToGM.."|h".."["..lastTalkedToGM.."]".."|h"), info.r, info.g, info.b, info.id);
+				GetGMLink(lastTalkedToGM, "["..lastTalkedToGM.."]")), info.r, info.g, info.b, info.id);
 			GMChatFrameEditBox:SetAttribute("tellTarget", lastTalkedToGM);
 			GMChatFrameEditBox:SetAttribute("chatType", "WHISPER");
 		end
@@ -1051,18 +1172,29 @@ function UIParent_OnEvent(self, event, ...)
 			dialog.data = arg1;
 		end
 	elseif ( event == "PARTY_INVITE_REQUEST" ) then
+		local name, tank, healer, damage, isXRealm, allowMultipleRoles, inviterGuid = ...;
+
+		-- Color the name by our relationship
+		local modifiedName, color, selfRelationship = SocialQueueUtil_GetNameAndColor(inviterGuid);
+		if ( selfRelationship ) then
+			name = color..name..FONT_COLOR_CODE_CLOSE;
+		end
+
 		-- if there's a role, it's an LFG invite
-		if ( arg2 or arg3 or arg4 ) then
+		if ( tank or healer or damage ) then
 			StaticPopupSpecial_Show(LFGInvitePopup);
-			LFGInvitePopup_Update(arg1, arg2, arg3, arg4, arg6);
-		elseif ( arg5 ) then	--It's a X-realm invite
-			StaticPopup_Show("PARTY_INVITE_XREALM", arg1);
+			LFGInvitePopup_Update(name, tank, healer, damage, allowMultipleRoles);
 		else
-			StaticPopup_Show("PARTY_INVITE", arg1);
+			local text = isXRealm and INVITATION_XREALM or INVITATION;
+			text = string.format(text, name);
+
+			if ( WillAcceptInviteRemoveQueues() ) then
+				text = text.."\n\n"..ACCEPTING_INVITE_WILL_REMOVE_QUEUE;
+			end
+			StaticPopup_Show("PARTY_INVITE", text);
 		end
 	elseif ( event == "PARTY_INVITE_CANCEL" ) then
 		StaticPopup_Hide("PARTY_INVITE");
-		StaticPopup_Hide("PARTY_INVITE_XREALM");
 		StaticPopupSpecial_Hide(LFGInvitePopup);
 	elseif ( event == "GUILD_INVITE_REQUEST" ) then
 		StaticPopup_Show("GUILD_INVITE", arg1, arg2);
@@ -1095,6 +1227,8 @@ function UIParent_OnEvent(self, event, ...)
 		end
 	elseif ( event == "USE_BIND_CONFIRM" ) then
 		StaticPopup_Show("USE_BIND");
+	elseif( event == "USE_NO_REFUND_CONFIRM" )then
+		StaticPopup_Show("USE_NO_REFUND_CONFIRM");
 	elseif ( event == "CONFIRM_BEFORE_USE" ) then
 		StaticPopup_Show("CONFIM_BEFORE_USE");
 	elseif ( event == "DELETE_ITEM_CONFIRM" ) then
@@ -1156,6 +1290,10 @@ function UIParent_OnEvent(self, event, ...)
 		if ( instanceType == "arena" or instanceType == "pvp") then
 			Arena_LoadUI();
 		end
+		if ( C_Commentator.IsSpectating() ) then
+			Commentator_LoadUI();
+		end
+		
 		if ( UnitIsGhost("player") ) then
 			GhostFrame:Show();
 		else
@@ -1168,12 +1306,14 @@ function UIParent_OnEvent(self, event, ...)
 		-- display loot specialization setting
 		PrintLootSpecialization();
 
+		UpdateUIParentRelativeToDebugMenu();
+
 		--Bonus roll/spell confirmation.
 		local spellConfirmations = GetSpellConfirmationPromptsInfo();
 
 		for i, spellConfirmation in ipairs(spellConfirmations) do
 			if spellConfirmation.spellID then
-				if confirmType == LE_SPELL_CONFIRMATION_PROMPT_TYPE_STATIC_TEXT then
+				if spellConfirmation.confirmType == LE_SPELL_CONFIRMATION_PROMPT_TYPE_STATIC_TEXT then
 					StaticPopup_Show("SPELL_CONFIRMATION_PROMPT", spellConfirmation.text, spellConfirmation.duration, spellConfirmation.spellID);
 				elseif spellConfirmation.confirmType == LE_SPELL_CONFIRMATION_PROMPT_TYPE_SIMPLE_WARNING then
 					StaticPopup_Show("SPELL_CONFIRMATION_WARNING", spellConfirmation.text, nil, spellConfirmation.spellID);
@@ -1181,6 +1321,11 @@ function UIParent_OnEvent(self, event, ...)
 					BonusRollFrame_StartBonusRoll(spellConfirmation.spellID, spellConfirmation.text, spellConfirmation.duration, spellConfirmation.currencyID);
 				end
 			end
+		end
+		
+		local resurrectOfferer = ResurrectGetOfferer();
+		if resurrectOfferer then
+			ShowResurrectRequest(resurrectOfferer);
 		end
 
 		--Group Loot Roll Windows.
@@ -1191,9 +1336,13 @@ function UIParent_OnEvent(self, event, ...)
 		end
 		OrderHall_CheckCommandBar();
 
+		self.battlefieldBannerShown = nil;
+
 		NPETutorial_AttemptToBegin(event);
 		ClassTrial_AttemptLoad();
 		BoostTutorial_AttemptLoad();
+	elseif ( event == "UPDATE_BATTLEFIELD_STATUS" or event == "PVP_BRAWL_INFO_UPDATED" ) then
+		PlayBattlefieldBanner(self);
 	elseif ( event == "GROUP_ROSTER_UPDATE" ) then
 		-- Hide/Show party member frames
 		RaidOptionsFrame_UpdatePartyFrames();
@@ -1216,7 +1365,7 @@ function UIParent_OnEvent(self, event, ...)
 	elseif ( event == "PET_BATTLE_PVP_DUEL_REQUEST_CANCEL" ) then
 		StaticPopup_Hide("PET_BATTLE_PVP_DUEL_REQUESTED");
 	elseif ( event == "PET_BATTLE_QUEUE_PROPOSE_MATCH" ) then
-		PlaySound("UI_PetBattles_PVP_ThroughQueue");
+		PlaySound(SOUNDKIT.UI_PET_BATTLES_PVP_THROUGH_QUEUE);
 		StaticPopupSpecial_Show(PetBattleQueueReadyFrame);
 	elseif ( event == "PET_BATTLE_QUEUE_PROPOSAL_DECLINED" or event == "PET_BATTLE_QUEUE_PROPOSAL_ACCEPTED" ) then
 		StaticPopupSpecial_Hide(PetBattleQueueReadyFrame);
@@ -1259,6 +1408,8 @@ function UIParent_OnEvent(self, event, ...)
 		StaticPopup_Show("AREA_SPIRIT_HEAL");
 	elseif ( event == "AREA_SPIRIT_HEALER_OUT_OF_RANGE" ) then
 		StaticPopup_Hide("AREA_SPIRIT_HEAL");
+	elseif (event == "ACTION_WILL_BIND_ITEM") then
+		StaticPopup_Show("ACTION_WILL_BIND_ITEM");
 	elseif ( event == "BIND_ENCHANT" ) then
 		StaticPopup_Show("BIND_ENCHANT");
 	elseif ( event == "REPLACE_ENCHANT" ) then
@@ -1326,13 +1477,13 @@ function UIParent_OnEvent(self, event, ...)
 			dialog.data2 = arg2;
 		end
 	elseif ( event == "SPELL_CONFIRMATION_PROMPT" ) then
-		local spellID, confirmType, text, duration, currencyID = ...;
+		local spellID, confirmType, text, duration, currencyID, difficultyID = ...;
 		if ( confirmType == LE_SPELL_CONFIRMATION_PROMPT_TYPE_STATIC_TEXT ) then
 			StaticPopup_Show("SPELL_CONFIRMATION_PROMPT", text, duration, spellID);
 		elseif ( confirmType == LE_SPELL_CONFIRMATION_PROMPT_TYPE_SIMPLE_WARNING ) then
 			StaticPopup_Show("SPELL_CONFIRMATION_WARNING", text, nil, spellID);
 		elseif ( confirmType == LE_SPELL_CONFIRMATION_PROMPT_TYPE_BONUS_ROLL ) then
-			BonusRollFrame_StartBonusRoll(spellID, text, duration, currencyID);
+			BonusRollFrame_StartBonusRoll(spellID, text, duration, currencyID, difficultyID);
 		end
 	elseif ( event == "SPELL_CONFIRMATION_TIMEOUT" ) then
 		local spellID, confirmType = ...;
@@ -1462,9 +1613,10 @@ function UIParent_OnEvent(self, event, ...)
 		ShowUIPanel(ItemSocketingFrame);
 
 	elseif ( event == "ARTIFACT_UPDATE" ) then
-		ArtifactFrame_LoadUI();
-		ShowUIPanel(ArtifactFrame);
-
+		if ( not C_ArtifactRelicForgeUI.IsAtForge() ) then
+			ArtifactFrame_LoadUI();
+			ShowUIPanel(ArtifactFrame);
+		end
 	elseif ( event == "ARTIFACT_RESPEC_PROMPT" ) then
 		ArtifactFrame_LoadUI();
 		ShowUIPanel(ArtifactFrame);
@@ -1474,6 +1626,15 @@ function UIParent_OnEvent(self, event, ...)
 		else
 			StaticPopup_Show("CONFIRM_ARTIFACT_RESPEC", BreakUpLargeNumbers(C_ArtifactUI.GetRespecCost()));
 		end
+
+	elseif ( event == "ARTIFACT_ENDGAME_REFUND" ) then
+		local numRefunded, refundedTier, bagOrInventorySlot = ...;
+		ArtifactFrame_LoadUI();
+		ArtifactFrame:OnTraitsRefunded(numRefunded, refundedTier);
+
+	elseif ( event == "ARTIFACT_RELIC_FORGE_UPDATE" ) then
+		ArtifactFrame_LoadUI();
+		ShowUIPanel(ArtifactRelicForgeFrame);
 
 	elseif ( event == "ADVENTURE_MAP_OPEN" ) then
 		OrderHall_LoadUI();
@@ -1542,26 +1703,13 @@ function UIParent_OnEvent(self, event, ...)
 		end
 		local info = ChatTypeInfo["SYSTEM"];
 		DEFAULT_CHAT_FRAME:AddMessage(BENCHMARK_TAXI_MODE_OFF, info.r, info.g, info.b, info.id);
-
-	-- Push to talk
-	elseif ( event == "VOICE_PUSH_TO_TALK_START" and GetVoiceCurrentSessionID() ) then
-		if ( GetCVarBool("PushToTalkSound") ) then
-			PlaySound("VoiceChatOn");
-		end
-		-- Animate the player frame speaker even if not broadcasting
-		if  ( GetCVar("VoiceChatMode") == "0" ) then
-			UIFrameFadeIn(PlayerSpeakerFrame, 0.2, PlayerSpeakerFrame:GetAlpha(), 1);
-		end
-	elseif ( event == "VOICE_PUSH_TO_TALK_STOP" ) then
-		if ( GetCVarBool("PushToTalkSound") and GetVoiceCurrentSessionID() ) then
-			PlaySound("VoiceChatOff");
-		end
-		-- Stop Animation
-		if  ( GetCVar("VoiceChatMode") == "0" and PlayerSpeakerFrame:GetAlpha() > 0 ) then
-			UIFrameFadeOut(PlayerSpeakerFrame, 0.2, PlayerSpeakerFrame:GetAlpha(), 0);
-		end
 	elseif ( event == "LEVEL_GRANT_PROPOSED" ) then
-		StaticPopup_Show("LEVEL_GRANT_PROPOSED", arg1);
+		local isAlliedRace, hasHeritageArmorUnlocked = UnitAlliedRaceInfo("player");
+		if (isAlliedRace and not hasHeritageArmorUnlocked) then
+			StaticPopup_Show("LEVEL_GRANT_PROPOSED_ALLIED_RACE", arg1);
+		else
+			StaticPopup_Show("LEVEL_GRANT_PROPOSED", arg1);
+		end
 	elseif ( event == "CHAT_MSG_WHISPER" and arg6 == "GM" ) then	--GMChatUI
 		GMChatFrame_LoadUI(event, ...);
 	elseif ( event == "WOW_MOUSE_NOT_FOUND" ) then
@@ -1576,7 +1724,11 @@ function UIParent_OnEvent(self, event, ...)
         StaticPopup_Show("SPEC_INVOLUNTARILY_CHANGED")
 	elseif( event == "AUTH_CHALLENGE_UI_INVALID" ) then
 		StaticPopup_Show("ERR_AUTH_CHALLENGE_UI_INVALID");
-
+	elseif( event == "EXPERIMENTAL_CVAR_CONFIRMATION_NEEDED" ) then
+		StaticPopup_Show("EXPERIMENTAL_CVAR_WARNING");
+	elseif ( event == "BAG_OVERFLOW_WITH_FULL_INVENTORY") then
+		StaticPopup_Show("CLIENT_INVENTORY_FULL_OVERFLOW");
+		
 	-- Events for Archaeology
 	elseif ( event == "ARCHAEOLOGY_TOGGLE" ) then
 		ArchaeologyFrame_LoadUI();
@@ -1704,29 +1856,16 @@ function UIParent_OnEvent(self, event, ...)
 	-- Quest Choice trigger event
 
 	elseif ( event == "QUEST_CHOICE_UPDATE" ) then
-		QuestChoice_LoadUI();
-		if ( QuestChoiceFrame_Show) then
-			QuestChoiceFrame_Show();
+		local uiTextureKitID = select(4, GetQuestChoiceInfo());
+		if (uiTextureKitID and uiTextureKitID ~= 0) then
+			WarboardQuestChoice_LoadUI();
+			WarboardQuestChoiceFrame:TryShow();
+		else
+			QuestChoice_LoadUI();
+			QuestChoiceFrame:TryShow();
 		end
 	elseif ( event == "LUA_WARNING" ) then
-		local warnType, message = ...;
-		debuginfo();
-		LoadAddOn("Blizzard_DebugTools");
-		local loaded = IsAddOnLoaded("Blizzard_DebugTools");
-
-		local cvarName = "scriptWarnings";
-		if ( warnType == LUA_WARNING_TREAT_AS_ERROR ) then
-			cvarName = "scriptErrors";
-		end
-
-		if ( GetCVarBool(cvarName) ) then
-			if ( loaded ) then
-				ScriptErrorsFrame_OnError(message, warnType);
-			end
-		elseif ( loaded ) then
-			local HIDE_ERROR_FRAME = true;
-			ScriptErrorsFrame_OnError(message, warnType, HIDE_ERROR_FRAME);
-		end
+		HandleLuaWarning(...);
 	elseif ( event == "GARRISON_ARCHITECT_OPENED") then
 		if (not GarrisonBuildingFrame) then
 			Garrison_LoadUI();
@@ -1827,6 +1966,22 @@ function UIParent_OnEvent(self, event, ...)
 		end
 	elseif (event == "SCENARIO_UPDATE") then
 		BoostTutorial_AttemptLoad();
+	elseif (event == "DEBUG_MENU_TOGGLED") then
+		UpdateUIParentRelativeToDebugMenu();
+	elseif ( event == "GROUP_INVITE_CONFIRMATION" ) then
+		UpdateInviteConfirmationDialogs();
+	elseif ( event == "CONTRIBUTION_COLLECTOR_OPEN" ) then
+		UIParentLoadAddOn("Blizzard_Contribution");
+		ContributionCollectionUI_Show();
+	elseif (event == "CONTRIBUTION_COLLECTOR_CLOSE" ) then
+		if ( ContributionCollectionUI_Hide ) then
+			ContributionCollectionUI_Hide();
+		end
+	elseif (event == "ALLIED_RACE_OPEN" ) then
+		AlliedRaces_LoadUI(); 
+		local raceID = ...; 
+		AlliedRacesFrame:LoadRaceData(raceID);
+		ShowUIPanel(AlliedRacesFrame);
 	end
 end
 
@@ -1916,7 +2071,7 @@ UIPARENT_MANAGED_FRAME_POSITIONS = {
 	["CastingBarFrame"] = {baseY = true, yOffset = 40, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, tutorialAlert = 1, playerPowerBarAlt = 1, extraActionBarFrame = 1, ZoneAbilityFrame = 1, talkingHeadFrame = 1, classResourceOverlayFrame = 1, classResourceOverlayOffset = 1};
 	["ClassResourceOverlayParentFrame"] = {baseY = true, yOffset = 0, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, tutorialAlert = 1, playerPowerBarAlt = 1, extraActionBarFrame = 1, ZoneAbilityFrame = 1 };
 	["PlayerPowerBarAlt"] = UIPARENT_ALTERNATE_FRAME_POSITIONS["PlayerPowerBarAlt_Bottom"];
-	["ExtraActionBarFrame"] = {baseY = true, yOffset = 40, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, tutorialAlert = 1};
+	["ExtraActionBarFrame"] = {baseY = true, yOffset = 0, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, tutorialAlert = 1};
 	["ZoneAbilityFrame"] = {baseY = true, yOffset = 100, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, tutorialAlert = 1, extraActionBarFrame = 1};
 	["ChatFrame1"] = {baseY = true, yOffset = 40, bottomLeft = actionBarOffset-8, justBottomRightAndStance = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, maxLevel = 1, point = "BOTTOMLEFT", rpoint = "BOTTOMLEFT", xOffset = 32};
 	["ChatFrame2"] = {baseY = true, yOffset = 40, bottomRight = actionBarOffset-8, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, rightLeft = -2*actionBarOffset, rightRight = -actionBarOffset, watchBar = 1, maxLevel = 1, point = "BOTTOMRIGHT", rpoint = "BOTTOMRIGHT", xOffset = -32};
@@ -2071,12 +2226,14 @@ function FramePositionDelegate:ShowUIPanel(frame, force)
 	framePushable = GetUIPanelWindowInfo(frame, "pushable") or 0;
 
 	if ( UnitIsDead("player") and not GetUIPanelWindowInfo(frame, "whileDead") ) then
+		self:ShowUIPanelFailed(frame);
 		NotWhileDeadError();
 		return;
 	end
 
 	-- If the store-frame is open, we don't let people open up any other panels (just as if it were full-screened)
 	if ( StoreFrame_IsShown and StoreFrame_IsShown() ) then
+		self:ShowUIPanelFailed(frame);
 		return;
 	end
 
@@ -2783,10 +2940,10 @@ function FramePositionDelegate:UIParentManageFramePositions()
 		local numArenaOpponents = GetNumArenaOpponents();
 		if ( ArenaEnemyFrames and ArenaEnemyFrames:IsShown() and (numArenaOpponents > 0) ) then
 			ObjectiveTrackerFrame:ClearAllPoints();
-			ObjectiveTrackerFrame:SetPoint("TOPRIGHT", "ArenaEnemyFrame"..numArenaOpponents, "BOTTOMRIGHT", 2, -35);
+			ObjectiveTrackerFrame:SetPoint("TOPRIGHT", ArenaEnemyFrames_GetBestAnchorUnitFrameForOppponent(numArenaOpponents), "BOTTOMRIGHT", 2, -35);
 		elseif ( ArenaPrepFrames and ArenaPrepFrames:IsShown() and (numArenaOpponents > 0) ) then
 			ObjectiveTrackerFrame:ClearAllPoints();
-			ObjectiveTrackerFrame:SetPoint("TOPRIGHT", "ArenaPrepFrame"..numArenaOpponents, "BOTTOMRIGHT", 2, -35);
+			ObjectiveTrackerFrame:SetPoint("TOPRIGHT", ArenaPrepFrames_GetBestAnchorUnitFrameForOppponent(numArenaOpponents), "BOTTOMRIGHT", 2, -35);
 		else
 			-- We're using Simple Quest Tracking, automagically size and position!
 			ObjectiveTrackerFrame:ClearAllPoints();
@@ -3569,8 +3726,14 @@ function BuildMultilineTooltip(globalStringName, tooltip, r, g, b)
 end
 
 function GetScaledCursorPosition()
-	local uiScale = UIParent:GetScale();
+	local uiScale = UIParent:GetEffectiveScale();
 	local x, y = GetCursorPosition();
+	return x / uiScale, y / uiScale;
+end
+
+function GetScaledCursorDelta()
+	local uiScale = _UIParentGetEffectiveScale(_UIParentRef);
+	local x, y = GetCursorDelta();
 	return x / uiScale, y / uiScale;
 end
 
@@ -3615,13 +3778,15 @@ function ToggleGameMenu()
 	if ( not UIParent:IsShown() ) then
 		UIParent:Show();
 		SetUIVisibility(true);
+	elseif ( C_Commentator.IsSpectating() and IsFrameLockActive("COMMENTATOR_SPECTATING_MODE") ) then
+		PvPCommentator:SetFrameLock(false);
 	elseif ( ModelPreviewFrame:IsShown() ) then
 		ModelPreviewFrame:Hide();
 	elseif ( StoreFrame_EscapePressed and StoreFrame_EscapePressed() ) then
 	elseif ( WowTokenRedemptionFrame_EscapePressed and WowTokenRedemptionFrame_EscapePressed() ) then
 	elseif ( securecall("StaticPopup_EscapePressed") ) then
 	elseif ( GameMenuFrame:IsShown() ) then
-		PlaySound("igMainMenuQuit");
+		PlaySound(SOUNDKIT.IG_MAINMENU_QUIT);
 		HideUIPanel(GameMenuFrame);
 	elseif ( HelpFrame:IsShown() ) then
 		ToggleHelpFrame();
@@ -3667,7 +3832,7 @@ function ToggleGameMenu()
 	elseif ( ChallengesKeystoneFrame and ChallengesKeystoneFrame:IsShown() ) then
 		ChallengesKeystoneFrame:Hide();
 	else
-		PlaySound("igMainMenuOpen");
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
 		ShowUIPanel(GameMenuFrame);
 	end
 end
@@ -3834,7 +3999,7 @@ end
 
 function CanGroupInvite()
 	if ( IsInGroup() ) then
-		if ( UnitIsGroupLeader("player") or UnitIsGroupAssistant("player") ) then
+		if ( not HasLFGRestrictions() and (UnitIsGroupLeader("player") or UnitIsGroupAssistant("player")) ) then
 			return true;
 		else
 			return false;
@@ -3845,7 +4010,7 @@ function CanGroupInvite()
 end
 
 function InviteToGroup(name)
-	if ( not IsInRaid() and GetNumGroupMembers() > MAX_PARTY_MEMBERS) then
+	if ( not IsInRaid() and GetNumGroupMembers() > MAX_PARTY_MEMBERS and CanGroupInvite() ) then
 		local dialog = StaticPopup_Show("CONVERT_TO_RAID");
 		if ( dialog ) then
 			dialog.data = name;
@@ -3855,8 +4020,107 @@ function InviteToGroup(name)
 	end
 end
 
+function GetSocialColoredName(displayName, guid)
+	local _, color, relationship = SocialQueueUtil_GetNameAndColor(guid);
+	if ( relationship ) then
+		return color..displayName..FONT_COLOR_CODE_CLOSE;
+	end
+	return displayName;
+end
+
+function UpdateInviteConfirmationDialogs()
+	if ( StaticPopup_FindVisible("GROUP_INVITE_CONFIRMATION") ) then
+		return;
+	end
+
+	local firstInvite = GetNextPendingInviteConfirmation();
+	if ( not firstInvite ) then
+		return;
+	end
+
+	local confirmationType, name, guid, rolesInvalid, willConvertToRaid = GetInviteConfirmationInfo(firstInvite);
+	local text = "";
+	if ( confirmationType == LE_INVITE_CONFIRMATION_REQUEST ) then
+		local suggesterGuid, suggesterName, relationship, isQuickJoin = GetInviteReferralInfo(firstInvite);
+
+		--If we ourselves have a relationship with this player, we'll just act as if they asked through us.
+		local _, color, selfRelationship, playerLink = SocialQueueUtil_GetNameAndColor(guid, name);
+		local safeLink = playerLink and "["..playerLink.."]" or name;
+
+		if ( isQuickJoin and selfRelationship and GetCVarBool("autoAcceptQuickJoinRequests") ) then
+			RespondToInviteConfirmation(firstInvite, true);
+			return;
+		end
+
+		if ( selfRelationship ) then
+			if ( isQuickJoin ) then
+				text = text..INVITE_CONFIRMATION_REQUEST_QUICKJOIN:format(color..safeLink..FONT_COLOR_CODE_CLOSE);
+			else
+				text = text..INVITE_CONFIRMATION_REQUEST:format(color..name..FONT_COLOR_CODE_CLOSE);
+			end
+		elseif ( suggesterGuid ) then
+			suggesterName = GetSocialColoredName(suggesterName, suggesterGuid);
+
+			if ( relationship == LE_INVITE_CONFIRMATION_RELATION_FRIEND ) then
+				if ( isQuickJoin ) then
+					text = text..INVITE_CONFIRMATION_REQUEST_FRIEND_QUICKJOIN:format(suggesterName, color..safeLink..FONT_COLOR_CODE_CLOSE);
+				else
+					text = text..INVITE_CONFIRMATION_REQUEST_FRIEND:format(suggesterName, name);
+				end
+			elseif ( relationship == LE_INVITE_CONFIRMATION_RELATION_GUILD ) then
+				if ( isQuickJoin ) then
+					text = text..string.format(INVITE_CONFIRMATION_REQUEST_GUILD_QUICKJOIN, suggesterName, color..safeLink..FONT_COLOR_CODE_CLOSE);
+				else
+					text = text..string.format(INVITE_CONFIRMATION_REQUEST_GUILD, suggesterName, name);
+				end
+			else
+				if ( isQuickJoin ) then
+					text = text..string.format(INVITE_CONFIRMATION_REQUEST, color..safeLink..FONT_COLOR_CODE_CLOSE);
+				else
+					text = text..string.format(INVITE_CONFIRMATION_REQUEST, name);
+				end
+			end
+		else
+			if ( isQuickJoin ) then
+				text = text..string.format(INVITE_CONFIRMATION_REQUEST_QUICKJOIN, color..safeLink..FONT_COLOR_CODE_CLOSE);
+			else
+				text = text..string.format(INVITE_CONFIRMATION_REQUEST, name);
+			end
+		end
+	elseif ( confirmationType == LE_INVITE_CONFIRMATION_SUGGEST ) then
+		local suggesterGuid, suggesterName, relationship, isQuickJoin = GetInviteReferralInfo(firstInvite);
+		suggesterName = GetSocialColoredName(suggesterName, suggesterGuid);
+		name = GetSocialColoredName(name, guid);
+
+		-- Only using a single string here, if somebody is suggesting a person to join the group, QuickJoin text doesn't apply.
+		text = text..string.format(INVITE_CONFIRMATION_SUGGEST, suggesterName, name);
+	end
+
+	local invalidQueues = C_PartyInfo.GetInviteConfirmationInvalidQueues(firstInvite);
+	if ( invalidQueues and #invalidQueues > 0 ) then
+		if ( text ~= "" ) then
+			text = text.."\n\n"
+		end
+
+		if ( rolesInvalid ) then
+			text = text..string.format(INSTANCE_UNAVAILABLE_OTHER_NO_VALID_ROLES, name).."\n";
+		end
+		text = text..string.format(INVITE_CONFIRMATION_QUEUE_WARNING, name);
+		for i=1, #invalidQueues do
+			local queueName = SocialQueueUtil_GetQueueName(invalidQueues[i]);
+			text = text.."\n"..NORMAL_FONT_COLOR_CODE..queueName..FONT_COLOR_CODE_CLOSE;
+		end
+	end
+
+	if ( willConvertToRaid ) then
+		text = text.."\n\n"..RED_FONT_COLOR_CODE..LFG_LIST_CONVERT_TO_RAID_WARNING..FONT_COLOR_CODE_CLOSE;
+	end
+
+	StaticPopup_Show("GROUP_INVITE_CONFIRMATION", text, nil, firstInvite);
+end
+
 function UnitHasMana(unit)
-	if ( UnitPowerMax(unit, SPELL_POWER_MANA) > 0 ) then
+	if ( UnitPowerMax(unit, Enum.PowerType.Mana) > 0 ) then
 		return 1;
 	end
 	return nil;
@@ -3995,7 +4259,11 @@ function RefreshDebuffs(frame, unit, numDebuffs, suffix, checkCVar)
 	end
 end
 
-function GetQuestDifficultyColor(level)
+function GetQuestDifficultyColor(level, isScaling)
+	if (isScaling) then
+		return GetScalingQuestDifficultyColor(level);
+	end
+	
 	return GetRelativeDifficultyColor(UnitLevel("player"), level);
 end
 
@@ -4014,6 +4282,22 @@ function GetRelativeDifficultyColor(unitLevel, challengeLevel)
 	elseif ( levelDiff >= -4 ) then
 		return QuestDifficultyColors["difficult"], QuestDifficultyHighlightColors["difficult"];
 	elseif ( -levelDiff <= GetQuestGreenRange() ) then
+		return QuestDifficultyColors["standard"], QuestDifficultyHighlightColors["standard"];
+	else
+		return QuestDifficultyColors["trivial"], QuestDifficultyHighlightColors["trivial"];
+	end
+end
+
+function GetScalingQuestDifficultyColor(questLevel)
+	local playerLevel = UnitLevel("player");
+	local levelDiff = questLevel - playerLevel;
+	if ( levelDiff >= 5 ) then
+		return QuestDifficultyColors["impossible"], QuestDifficultyHighlightColors["impossible"];
+	elseif ( levelDiff >= 3 ) then
+		return QuestDifficultyColors["verydifficult"], QuestDifficultyHighlightColors["verydifficult"];
+	elseif ( levelDiff >= 0 ) then
+		return QuestDifficultyColors["difficult"], QuestDifficultyHighlightColors["difficult"];
+	elseif ( -levelDiff <= GetScalingQuestGreenRange() ) then
 		return QuestDifficultyColors["standard"], QuestDifficultyHighlightColors["standard"];
 	else
 		return QuestDifficultyColors["trivial"], QuestDifficultyHighlightColors["trivial"];
@@ -4303,6 +4587,10 @@ function GMError(...)
 	end
 end
 
+function OnExcessiveErrors()
+	StaticPopup_Show("TOO_MANY_LUA_ERRORS");
+end
+
 function SetLargeGuildTabardTextures(unit, emblemTexture, backgroundTexture, borderTexture, tabardData)
 	-- texure dimensions are 1024x1024, icon dimensions are 64x64
 	local emblemSize, columns, offset;
@@ -4397,7 +4685,7 @@ end
 
 function GetDisplayedAllyFrames()
 	local useCompact = GetCVarBool("useCompactPartyFrames")
-	if ( IsActiveBattlefieldArena() and not useCompact ) then
+	if ( IsActiveBattlefieldArena() and not useCompact and not C_PvP.IsInBrawl() ) then
 		return "party";
 	elseif ( IsInGroup() and (IsInRaid() or useCompact) ) then
 		return "raid";
@@ -4440,11 +4728,11 @@ end
 NUMBER_ABBREVIATION_DATA = {
 	-- Order these from largest to smallest
 	-- (significandDivisor and fractionDivisor should multiply to be equal to breakpoint)
-	{ breakpoint = 100000000,	abbreviation = SECOND_NUMBER_CAP_NO_SPACE,	significandDivisor = 1000000,	fractionDivisor = 1 },
-	{ breakpoint = 10000000,	abbreviation = SECOND_NUMBER_CAP_NO_SPACE,	significandDivisor = 100000,	fractionDivisor = 10 },
-	{ breakpoint = 1000000,		abbreviation = SECOND_NUMBER_CAP_NO_SPACE,	significandDivisor = 10000,		fractionDivisor = 100 },
-	{ breakpoint = 10000,		abbreviation = FIRST_NUMBER_CAP_NO_SPACE,	significandDivisor = 100,		fractionDivisor = 10 },
-	{ breakpoint = 1000,		abbreviation = FIRST_NUMBER_CAP_NO_SPACE,	significandDivisor = 10,		fractionDivisor = 100 },
+	{ breakpoint = 100000000,	abbreviation = SECOND_NUMBER_CAP_NO_SPACE,	significandDivisor = 10000000,	fractionDivisor = 1 },
+	{ breakpoint = 10000000,	abbreviation = SECOND_NUMBER_CAP_NO_SPACE,	significandDivisor = 1000000,	fractionDivisor = 1 },
+	{ breakpoint = 1000000,		abbreviation = SECOND_NUMBER_CAP_NO_SPACE,	significandDivisor = 100000,		fractionDivisor = 10 },
+	{ breakpoint = 10000,		abbreviation = FIRST_NUMBER_CAP_NO_SPACE,	significandDivisor = 1000,		fractionDivisor = 1 },
+	{ breakpoint = 1000,		abbreviation = FIRST_NUMBER_CAP_NO_SPACE,	significandDivisor = 100,		fractionDivisor = 10 },
 }
 
 function AbbreviateNumbers(value)
@@ -4481,6 +4769,18 @@ function GetTimeStringFromSeconds(timeAmount, hasMS, dropZeroHours)
 --	end
 end
 
+function IsInLFDBattlefield()
+	return IsLFGModeActive(LE_LFG_CATEGORY_BATTLEFIELD);
+end
+
+function LeaveInstanceParty()
+	if ( IsInLFDBattlefield() ) then
+		LFGTeleport(true);
+	else
+		LeaveParty();
+	end
+end
+
 function ConfirmOrLeaveLFGParty()
 	if ( not IsInGroup(LE_PARTY_CATEGORY_INSTANCE) ) then
 		return;
@@ -4494,7 +4794,7 @@ function ConfirmOrLeaveLFGParty()
 		end
 		StaticPopup_Show("CONFIRM_LEAVE_INSTANCE_PARTY", partyLFGCategory == LE_LFG_CATEGORY_WORLDPVP and CONFIRM_LEAVE_BATTLEFIELD or CONFIRM_LEAVE_INSTANCE_PARTY);
 	else
-		LeaveParty();
+		LeaveInstanceParty();
 	end
 end
 
@@ -4504,6 +4804,10 @@ function ConfirmOrLeaveBattlefield()
 	else
 		StaticPopup_Show("CONFIRM_LEAVE_BATTLEFIELD");
 	end
+end
+
+function ConfirmSurrenderArena()
+	StaticPopup_Show("CONFIRM_SURRENDER_ARENA");
 end
 
 function GetCurrentScenarioType()
@@ -4537,6 +4841,34 @@ function PrintLootSpecialization()
 	end
 end
 
+function BuildIconArray(parent, baseName, template, rowSize, numRows, onButtonCreated)
+	local previousButton = CreateFrame("CheckButton", baseName.."1", parent, template);
+	local cornerButton = previousButton;
+	previousButton:SetID(1);
+	previousButton:SetPoint("TOPLEFT", 26, -85);
+	if ( onButtonCreated ) then
+		onButtonCreated(parent, previousButton);
+	end
+
+	local numIcons = rowSize * numRows;
+	for i = 2, numIcons do
+		local newButton = CreateFrame("CheckButton", baseName..i, parent, template);
+		newButton:SetID(i);
+		if ( i % rowSize == 1 ) then
+			newButton:SetPoint("TOPLEFT", cornerButton, "BOTTOMLEFT", 0, -8);
+			cornerButton = newButton;
+		else
+			newButton:SetPoint("LEFT", previousButton, "RIGHT", 10, 0);
+		end
+
+		previousButton = newButton;
+		newButton:Hide();
+		if ( onButtonCreated ) then
+			onButtonCreated(parent, newButton);
+		end
+	end
+end
+
 function GetSmoothProgressChange(value, displayedValue, range, elapsed, minPerSecond, maxPerSecond)
 	maxPerSecond = maxPerSecond or 0.7;
 	minPerSecond = minPerSecond or 0.3;
@@ -4564,5 +4896,128 @@ function RGBTableToColorCode(rgbTable)
 	return RGBToColorCode(rgbTable.r, rgbTable.g, rgbTable.b);
 end
 
+function WillAcceptInviteRemoveQueues()
+	--Dungeon/Raid Finder
+	for i=1, NUM_LE_LFG_CATEGORYS do
+		local mode = GetLFGMode(i);
+		if ( mode and mode ~= "lfgparty" ) then
+			return true;
+		end
+	end
+
+	--Don't need to look at LFGList listings because we can't accept invites while in one
+
+	--LFGList applications
+	local apps = C_LFGList.GetApplications();
+	for i=1, #apps do
+		local _, appStatus = C_LFGList.GetApplicationInfo(apps[i]);
+		if ( appStatus == "applied" or appStatus == "invited" ) then
+			return true;
+		end
+	end
+
+	--PvP
+	for i=1, GetMaxBattlefieldID() do
+		local status, mapName, teamSize, registeredMatch, suspend = GetBattlefieldStatus(i);
+		if ( status == "queued" or status == "confirmed" ) then
+			return true;
+		end
+	end
+
+	return false;
+end
+
+--Only really works on friends and guild-mates
+function GetDisplayedInviteType(guid)
+	if ( IsInGroup() ) then
+		if ( UnitIsGroupLeader("player") or UnitIsGroupAssistant("player") ) then
+			return "INVITE";
+		else
+			return "SUGGEST_INVITE";
+		end
+	else
+		if ( not guid ) then
+			return "INVITE";
+		end
+
+		local party, isSoloQueueParty = C_SocialQueue.GetGroupForPlayer(guid);
+		if ( party and not isSoloQueueParty ) then --In a real party, not a secret hidden party for solo queuing
+			return "REQUEST_INVITE";
+		elseif ( WillAcceptInviteRemoveQueues() ) then
+			return "INVITE";
+		elseif ( party ) then --They are queued solo for something
+			return "REQUEST_INVITE";
+		else
+			return "INVITE";
+		end
+	end
+end
+
 function nop()
+end
+
+function ShakeFrameRandom(frame, magnitude, duration, frequency)
+	if frequency <= 0 then
+		return;
+	end
+
+	local shake = {};
+	for i = 1, math.ceil(duration / frequency) do
+		local xVariation, yVariation = math.random(-magnitude, magnitude), math.random(-magnitude, magnitude);
+		shake[i] = { x = xVariation, y = yVariation };
+	end
+
+	ShakeFrame(frame, shake, duration, frequency);
+end
+
+function ShakeFrame(frame, shake, maximumDuration, frequency)
+	if ( frame.shakeTicker and not frame.shakeTicker:IsCancelled() )  then
+		return;
+	end
+	local point, relativeFrame, relativePoint, x, y = frame:GetPoint();
+	local shakeIndex = 1;
+	local endTime = GetTime() + maximumDuration;
+	frame.shakeTicker = C_Timer.NewTicker(frequency, function()
+		local xVariation, yVariation = shake[shakeIndex].x, shake[shakeIndex].y;
+		frame:SetPoint(point, relativeFrame, relativePoint, x + xVariation, y + yVariation);
+		shakeIndex = shakeIndex + 1;
+		if shakeIndex > #shake or GetTime() >= endTime then
+			frame:SetPoint(point, relativeFrame, relativePoint, x, y);
+			frame.shakeTicker:Cancel();
+		end
+	end);
+end
+
+-- Currency Overflow --
+function WillCurrencyRewardOverflow(currencyID, rewardQuantity)
+	local name, quantity, icon, earnedThisWeek, weeklyMax, maxQuantity, discovered, rarity = GetCurrencyInfo(currencyID);
+	return maxQuantity > 0 and rewardQuantity + quantity > maxQuantity;
+end
+
+function GetColorForCurrencyReward(currencyID, rewardQuantity, defaultColor)
+	if WillCurrencyRewardOverflow(currencyID, rewardQuantity) then
+		return RED_FONT_COLOR;
+	elseif defaultColor then
+		return defaultColor;
+	else
+		return HIGHLIGHT_FONT_COLOR;
+	end
+end
+
+function GetSortedSelfResurrectOptions()
+	local options = C_DeathInfo.GetSelfResurrectOptions();
+	if ( not options ) then
+		return nil;
+	end
+	table.sort(options, function(a, b)
+		if ( a.canUse ~= b.canUse ) then
+			return a.canUse;
+		end
+		if ( a.isLimited ~= b.isLimited ) then
+			return not a.isLimited;
+		end
+		-- lowest priority is first
+		return a.priority < b.priority end
+	);
+	return options;
 end

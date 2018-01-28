@@ -13,6 +13,7 @@ function MountJournal_OnLoad(self)
 	self:RegisterEvent("COMPANION_UPDATE");
 	self:RegisterEvent("MOUNT_JOURNAL_USABILITY_CHANGED");
 	self:RegisterEvent("MOUNT_JOURNAL_SEARCH_UPDATED");
+	self:RegisterEvent("UI_MODEL_SCENE_INFO_UPDATED");
 	self.ListScrollFrame.update = MountJournal_UpdateMountList;
 	self.ListScrollFrame.scrollBar.doNotHide = true;
 	HybridScrollFrame_CreateButtons(self.ListScrollFrame, "MountListButtonTemplate", 44, 0);
@@ -23,25 +24,31 @@ function MountJournal_OnEvent(self, event, ...)
 	if ( event == "MOUNT_JOURNAL_USABILITY_CHANGED" or event == "COMPANION_LEARNED" or event == "COMPANION_UNLEARNED" or event == "COMPANION_UPDATE" ) then
 		local companionType = ...;
 		if ( not companionType or companionType == "MOUNT" ) then
-			if (self:IsVisible()) then
-				MountJournal_UpdateMountList();
-				MountJournal_UpdateMountDisplay();
-			end
+			MountJournal_FullUpdate(self);
 		end
 	elseif ( event == "MOUNT_JOURNAL_SEARCH_UPDATED" ) then
+		MountJournal_FullUpdate(self);
+	elseif ( event == "UI_MODEL_SCENE_INFO_UPDATED" ) then
 		if (self:IsVisible()) then
-			MountJournal_UpdateMountList();
-			MountJournal_UpdateMountDisplay();
+			MountJournal_UpdateMountDisplay(true);
 		end
 	end
 end
 
-function MountJournal_OnShow(self)
-	MountJournal_UpdateMountList();
-	if (not MountJournal.selectedSpellID) then
-		MountJournal_Select(1);
+function MountJournal_FullUpdate(self)
+	if (self:IsVisible()) then
+		MountJournal_UpdateMountList();
+
+		if (not MountJournal.selectedSpellID) then
+			MountJournal_Select(1);
+		end
+
+		MountJournal_UpdateMountDisplay();
 	end
-	MountJournal_UpdateMountDisplay();
+end
+
+function MountJournal_OnShow(self)
+	MountJournal_FullUpdate(self);
 	SetPortraitToTexture(CollectionsJournalPortrait, "Interface\\Icons\\MountJournalPortrait");
 end
 
@@ -55,6 +62,7 @@ function MountJournal_UpdateMountList()
 	local buttons = scrollFrame.buttons;
 
 	local numMounts = C_MountJournal.GetNumMounts();
+	MountJournal.numOwned = 0;
 	local showMounts = true;
 	local playerLevel = UnitLevel("player");
 	if  ( numMounts < 1 ) then
@@ -62,6 +70,13 @@ function MountJournal_UpdateMountList()
 		MountJournal.MountDisplay.NoMounts:Show();
 		showMounts = false;
 	else
+		local mountIDs = C_MountJournal.GetMountIDs();
+		for i, mountID in ipairs(mountIDs) do
+			local _, _, _, _, _, _, _, _, _, hideOnChar, isCollected = C_MountJournal.GetMountInfoByID(mountID);
+			if (isCollected and hideOnChar ~= true) then
+				MountJournal.numOwned = MountJournal.numOwned + 1;
+			end
+		end
 		MountJournal.MountDisplay.NoMounts:Hide();
 	end
 
@@ -72,12 +87,12 @@ function MountJournal_UpdateMountList()
 		if ( displayIndex <= numDisplayedMounts and showMounts ) then
 			local index = displayIndex;
 			local creatureName, spellID, icon, active, isUsable, sourceType, isFavorite, isFactionSpecific, faction, isFiltered, isCollected, mountID = C_MountJournal.GetDisplayedMountInfo(index);
-			local needsFanFare = C_MountJournal.NeedsFanfare(mountID);
+			local needsFanfare = C_MountJournal.NeedsFanfare(mountID);
 
 			button.name:SetText(creatureName);
-			button.icon:SetTexture(needsFanFare and COLLECTIONS_FANFARE_ICON or icon);
-			button.new:SetShown(needsFanFare);
-			button.newGlow:SetShown(needsFanFare);
+			button.icon:SetTexture(needsFanfare and COLLECTIONS_FANFARE_ICON or icon);
+			button.new:SetShown(needsFanfare);
+			button.newGlow:SetShown(needsFanfare);
 
 			button.index = index;
 			button.spellID = spellID;
@@ -101,7 +116,7 @@ function MountJournal_UpdateMountList()
 			button.unusable:Hide();
 			button.iconBorder:Hide();
 			button.background:SetVertexColor(1, 1, 1, 1);
-			if (isUsable or needsFanFare) then
+			if (isUsable or needsFanfare) then
 				button.DragButton:SetEnabled(true);
 				button.additionalText = nil;
 				button.icon:SetDesaturated(false);
@@ -175,16 +190,27 @@ function MountJournalMountButton_UpdateTooltip(self)
 	GameTooltip:SetMountBySpellID(self.spellID);
 end
 
-function MountJournal_UpdateMountDisplay()
+function MountJournalMountButton_ChooseFallbackMountToDisplay(mountID)
+	local allCreatureDisplays = C_MountJournal.GetMountAllCreatureDisplayInfoByID(mountID);
+	if allCreatureDisplays and #allCreatureDisplays > 0 then
+		return allCreatureDisplays[math.random(1, #allCreatureDisplays)].creatureDisplayID;
+	end
+	return 0;
+end
+
+function MountJournal_UpdateMountDisplay(forceSceneChange)
 	if ( MountJournal.selectedMountID ) then
 		local creatureName, spellID, icon, active, isUsable, sourceType = C_MountJournal.GetMountInfoByID(MountJournal.selectedMountID);
-		if ( MountJournal.MountDisplay.lastDisplayed ~= spellID ) then
-			local creatureDisplayID, descriptionText, sourceText, isSelfMount = C_MountJournal.GetMountInfoExtraByID(MountJournal.selectedMountID);
-			local needsFanFare = C_MountJournal.NeedsFanfare(MountJournal.selectedMountID);
+		local needsFanfare = C_MountJournal.NeedsFanfare(MountJournal.selectedMountID);
+		if ( MountJournal.MountDisplay.lastDisplayed ~= spellID or forceSceneChange ) then
+			local creatureDisplayID, descriptionText, sourceText, isSelfMount, _, modelSceneID = C_MountJournal.GetMountInfoExtraByID(MountJournal.selectedMountID);
+			if not creatureDisplayID then
+				creatureDisplayID = MountJournalMountButton_ChooseFallbackMountToDisplay(MountJournal.selectedMountID);
+			end
 
 			MountJournal.MountDisplay.InfoButton.Name:SetText(creatureName);
 
-			if needsFanFare then
+			if needsFanfare then
 				MountJournal.MountDisplay.InfoButton.New:Show();
 				MountJournal.MountDisplay.InfoButton.NewGlow:Show();
 
@@ -204,42 +230,32 @@ function MountJournal_UpdateMountDisplay()
 
 			MountJournal.MountDisplay.lastDisplayed = spellID;
 
-			if creatureDisplayID == 0 then
-				local raceID = UnitRace("player");
-				local gender = UnitSex("player");
-				MountJournal.MountDisplay.ModelFrame:SetCustomRace(raceID, gender);
-			else
-				MountJournal.MountDisplay.ModelFrame:SetDisplayInfo(creatureDisplayID);
-			end
+			MountJournal.MountDisplay.ModelScene:TransitionToModelSceneID(modelSceneID, CAMERA_TRANSITION_TYPE_IMMEDIATE, CAMERA_MODIFICATION_TYPE_MAINTAIN, forceSceneChange);
 
-			-- mount self idle animation
-			if (isSelfMount) then
-				MountJournal.MountDisplay.ModelFrame:SetDoBlend(false);
-				MountJournal.MountDisplay.ModelFrame:SetAnimation(618, -1); -- MountSelfIdle
-			end
+			MountJournal.MountDisplay.ModelScene:PrepareForFanfare(needsFanfare);
 
-			if needsFanFare then
-				MountJournal.MountDisplay.WrappedModelFrame:Show();
-				if not MountJournal.MountDisplay.UnwrapAnim:IsPlaying() then
-					MountJournal.MountDisplay.ModelFrame:SetAlpha(0);
-					MountJournal.MountDisplay.WrappedModelFrame:SetAnimation(0);
-					MountJournal.MountDisplay.WrappedModelFrame:SetAlpha(1);
-				end
-			else
-				MountJournal.MountDisplay.WrappedModelFrame:Hide();
-				if not MountJournal.MountDisplay.UnwrapAnim:IsPlaying() then
-					MountJournal.MountDisplay.ModelFrame:SetAlpha(1);
+			local mountActor = MountJournal.MountDisplay.ModelScene:GetActorByTag("unwrapped");
+			if mountActor then
+				mountActor:SetModelByCreatureDisplayID(creatureDisplayID);
+
+				-- mount self idle animation
+				if (isSelfMount) then
+					mountActor:SetAnimationBlendOperation(LE_MODEL_BLEND_OPERATION_NONE);
+					mountActor:SetAnimation(618); -- MountSelfIdle
+				else
+					mountActor:SetAnimationBlendOperation(LE_MODEL_BLEND_OPERATION_ANIM);
+					mountActor:SetAnimation(0);
 				end
 			end
 		end
 
-		MountJournal.MountDisplay.ModelFrame:Show();
+		MountJournal.MountDisplay.ModelScene:Show();
 		MountJournal.MountDisplay.YesMountsTex:Show();
 		MountJournal.MountDisplay.InfoButton:Show();
 		MountJournal.MountDisplay.NoMountsTex:Hide();
 		MountJournal.MountDisplay.NoMounts:Hide();
 
-		if (C_MountJournal.NeedsFanfare(MountJournal.selectedMountID) ) then
+		if ( needsFanfare ) then
 			MountJournal.MountButton:SetText(UNWRAP)
 			MountJournal.MountButton:Enable();
 		elseif ( active ) then
@@ -251,7 +267,7 @@ function MountJournal_UpdateMountDisplay()
 		end
 	else
 		MountJournal.MountDisplay.InfoButton:Hide();
-		MountJournal.MountDisplay.ModelFrame:Hide();
+		MountJournal.MountDisplay.ModelScene:Hide();
 		MountJournal.MountDisplay.YesMountsTex:Hide();
 		MountJournal.MountDisplay.NoMountsTex:Show();
 		MountJournal.MountDisplay.NoMounts:Show();
@@ -261,6 +277,15 @@ end
 
 function MountJournal_Select(index)
 	local creatureName, spellID, icon, active, _, _, _, _, _, _, _, mountID = C_MountJournal.GetDisplayedMountInfo(index);
+	MountJournal_SetSelected(mountID, spellID);
+end
+
+function MountJournal_SelectByMountID(mountID)
+	local creatureName, spellID, icon, active = C_MountJournal.GetMountInfoByID(mountID);
+	MountJournal_SetSelected(mountID, spellID);
+end
+
+function MountJournal_SetSelected(mountID, spellID)
 	MountJournal.selectedSpellID = spellID;
 	MountJournal.selectedMountID = mountID;
 	MountJournal_HideMountDropdown();
@@ -268,40 +293,19 @@ function MountJournal_Select(index)
 	MountJournal_UpdateMountDisplay();
 end
 
-function MountJournal_CollectAvailableFilters()
-	MountJournal.baseFilterTypes = {};
-	local numSources = C_PetJournal.GetNumPetSources();
-
-	for i = 1, numSources do
-		MountJournal.baseFilterTypes[i] = false
-	end
-	for i = 1, C_MountJournal.GetNumDisplayedMounts() do
-		local sourceType = select(6,C_MountJournal.GetDisplayedMountInfo(i))
-		MountJournal.baseFilterTypes[sourceType] = true;
-	end
-end
-
 function MountJournalMountButton_UseMount(mountID)
 	local creatureName, spellID, icon, active = C_MountJournal.GetMountInfoByID(mountID);
 	if ( active ) then
 		C_MountJournal.Dismiss();
 	elseif ( C_MountJournal.NeedsFanfare(mountID) ) then
-		if MountJournal.MountDisplay.UnwrapAnim:IsPlaying() then
-			return;
-		end
-
-		MountJournal.MountDisplay.WrappedModelFrame:SetAnimation(148);
-		MountJournal.MountDisplay.UnwrapAnim:Play();
-		PlaySound("UI_Store_Unwrap");
-		C_Timer.After(.8, function()
-			MountJournal.MountDisplay.ModelFrame:ApplySpellVisualKit(73393, true);
-		end)
-		C_Timer.After(1.6, function()
+		local function OnFinishedCallback()
 			C_MountJournal.ClearFanfare(mountID);
 			MountJournal_HideMountDropdown();
 			MountJournal_UpdateMountList();
 			MountJournal_UpdateMountDisplay();
-		end)
+		end
+
+		MountJournal.MountDisplay.ModelScene:StartUnwrapAnimation(OnFinishedCallback);
 	else
 		C_MountJournal.SummonByID(mountID);
 	end
@@ -388,6 +392,14 @@ function MountJournalFilterDropDown_Initialize(self, level)
 		info.isNotRadio = true;
 		UIDropDownMenu_AddButton(info, level)
 
+		info.text = MOUNT_JOURNAL_FILTER_UNUSABLE
+		info.func = function(_, _, _, value)
+						C_MountJournal.SetCollectedFilterSetting(LE_MOUNT_JOURNAL_FILTER_UNUSABLE, value);
+					end
+		info.checked = C_MountJournal.GetCollectedFilterSetting(LE_MOUNT_JOURNAL_FILTER_UNUSABLE);
+		info.isNotRadio = true;
+		UIDropDownMenu_AddButton(info, level)
+
 		info.checked = 	nil;
 		info.isNotRadio = nil;
 		info.func =  nil;
@@ -417,10 +429,9 @@ function MountJournalFilterDropDown_Initialize(self, level)
 		UIDropDownMenu_AddButton(info, level)
 
 		info.notCheckable = false;
-		MountJournal_CollectAvailableFilters();
 		local numSources = C_PetJournal.GetNumPetSources();
 		for i=1,numSources do
-			if ( MountJournal.baseFilterTypes[i] ) then
+			if C_MountJournal.IsValidSourceFilter(i) then
 				info.text = _G["BATTLE_PET_SOURCE_"..i];
 				info.func = function(_, _, _, value)
 								C_MountJournal.SetSourceFilter(i,value);
@@ -462,6 +473,7 @@ function MountOptionsMenu_Init(self, level)
 	local info = UIDropDownMenu_CreateInfo();
 	info.notCheckable = true;
 
+	local active = select(4, C_MountJournal.GetMountInfoByID(MountJournal.menuMountID));
 	local needsFanfare = C_MountJournal.NeedsFanfare(MountJournal.menuMountID);
 
 	if (needsFanfare) then
@@ -529,6 +541,7 @@ function MountJournal_ShowMountDropdown(index, anchorTo, offsetX, offsetY)
 		return;
 	end
 	ToggleDropDownMenu(1, nil, MountJournal.mountOptionsMenu, anchorTo, offsetX, offsetY);
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 end
 
 function MountJournal_HideMountDropdown()

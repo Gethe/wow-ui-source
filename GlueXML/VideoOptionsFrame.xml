@@ -22,7 +22,7 @@
 						self:Disable();
 					</OnLoad>				
 					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						VideoOptionsFrameOkay_OnClick(self, button, down, true);
 						self:Disable();
 					</OnClick>
@@ -67,7 +67,7 @@
 			</Anchors>
 				<Scripts>
 					<OnClick>
-						PlaySound("igMainMenuOption");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
 						VideoOptionsFrameDefault_OnClick(self, button);
 					</OnClick>
 				</Scripts>

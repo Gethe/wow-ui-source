@@ -1,0 +1,48 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Include file="ModelSceneTemplatesScripts.xml"/>
+
+	<ScopedModifier scriptsUseGivenEnv="true">
+		<Button name="ModifyOrbitCameraBaseButtonTemplate" registerForClicks="LeftButtonDown, LeftButtonUp" mixin="ModifyOrbitCameraButtonMixin" virtual="true">
+			<KeyValues>
+				<KeyValue key="interpolationEnabled" value="false" type="boolean" />
+			</KeyValues>
+
+			<Size x="35" y="35" />
+			<Scripts>
+				<OnMouseDown method="OnMouseDown" />
+				<OnMouseUp method="OnMouseUp" />
+			</Scripts>
+		</Button>
+
+		<Button name="RotateOrbitCameraLeftButtonTemplate" inherits="ModifyOrbitCameraBaseButtonTemplate" virtual="true">
+			<KeyValues>
+				<KeyValue key="cameraMode" value="ORBIT_CAMERA_MOUSE_MODE_YAW_ROTATION" type="global" />
+				<KeyValue key="amountPerSecond" value="-3" type="number" />
+			</KeyValues>
+
+			<Anchors>
+				<Anchor point="TOPRIGHT" relativePoint="BOTTOM" x="-5" y="50"/>
+			</Anchors>
+
+			<NormalTexture file="Interface\Buttons\UI-RotationLeft-Button-Up"/>
+			<PushedTexture file="Interface\Buttons\UI-RotationLeft-Button-Down"/>
+			<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
+		</Button>
+
+		<Button name="RotateOrbitCameraRightButtonTemplate" inherits="ModifyOrbitCameraBaseButtonTemplate" virtual="true">
+			<KeyValues>
+				<KeyValue key="cameraMode" value="ORBIT_CAMERA_MOUSE_MODE_YAW_ROTATION" type="global" />
+				<KeyValue key="amountPerSecond" value="3" type="number" />
+			</KeyValues>
+
+			<Anchors>
+				<Anchor point="TOPLEFT" relativePoint="BOTTOM" x="5" y="50"/>
+			</Anchors>
+
+			<NormalTexture file="Interface\Buttons\UI-RotationRight-Button-Up"/>
+			<PushedTexture file="Interface\Buttons\UI-RotationRight-Button-Down"/>
+			<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
+		</Button>
+	</ScopedModifier>
+</Ui>

@@ -80,27 +80,28 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<PlayerModel parentKey="Model" inherits="MouseDisabledModelTemplate">
-				<Size x="130" y="125"/>
+			<ModelScene parentKey="ModelScene" useParentLevel="true" inherits="ModelSceneMixinTemplate">
 				<Anchors>
-					<Anchor point="TOP" x="0" y="-20"/>
+					<Anchor point="TOPLEFT" x="8" y="-8" />
+					<Anchor point="BOTTOMRIGHT" x="-8" y="8" />
 				</Anchors>
 				<Frames>
 					<Button parentKey="PreviewButton" hidden="true">
 						<Size x="29" y="33"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" x="0" y="10"/>
+							<Anchor point="TOPLEFT" x="4" y="-4"/>
 						</Anchors>
 						<NormalTexture inherits="productchoice-icon-magnifyingglass"/>
 						<HighlightTexture inherits="productchoice-icon-magnifyingglass" alphaMode="ADD"/>
 						<Scripts>
 							<OnClick>
-								ModelPreviewFrame_ShowModel(self:GetParent():GetParent().data.modelDisplayID);
+								ModelPreviewFrame_ShowModel(self:GetParent():GetParent().data.modelDisplayID, self:GetParent():GetParent().data.modelSceneID);
 							</OnClick>
 						</Scripts>
 					</Button>
 				</Frames>
-			</PlayerModel>
+				<ViewInsets left="5" right="-5" top="-7" bottom="67"/>
+			</ModelScene>
 			<Frame parentKey="Covers" setAllPoints="true">
 				<Layers>
 					<Layer level="OVERLAY">
@@ -118,25 +119,18 @@
 				</Layers>
 				<Scripts>
 					<OnShow>
-						self:SetFrameLevel(self:GetParent().Model:GetFrameLevel() + 1);
+						self:SetFrameLevel(self:GetParent().ModelScene:GetFrameLevel() + 1);
 					</OnShow>
 				</Scripts>
 			</Frame>
 		</Frames>
+		<Scripts>
+			<OnMouseDown function="ProductChoiceItemDisplay_OnMouseDown" />
+			<OnMouseUp function="ProductChoiceItemDisplay_OnMouseUp" />
+		</Scripts>
 	</Frame>
 	<CheckButton name="ProductChoiceItemTemplate" inherits="ProductChoiceItemDisplayTemplate" virtual="true">
 		<Scripts>
-			<OnLoad>
-				self:RegisterForDrag("LeftButton");
-			</OnLoad>
-			<OnDragStart>
-				ProductChoiceFrame_StartRotating(ProductChoiceFrame, self.id);
-				Model_OnMouseDown(self.Model, button);
-			</OnDragStart>
-			<OnDragStop>
-				Model_OnMouseUp(self.Model, button);
-				ProductChoiceFrame_StopRotating(ProductChoiceFrame);
-			</OnDragStop>
 			<OnClick function="ProductChoiceItem_OnClick"/>
 		</Scripts>
 		<HighlightTexture inherits="productchoice-card-hover" alphaMode="ADD">
@@ -228,7 +222,7 @@
 										</Anchors>
 										<Scripts>
 											<OnClick>
-												PlaySound("igMainMenuOptionCheckBoxOn");
+												PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 												ProductChoiceFrame_ClaimItem();
 											</OnClick>
 										</Scripts>
@@ -240,7 +234,7 @@
 										</Anchors>
 										<Scripts>
 											<OnClick>
-												PlaySound("igMainMenuOptionCheckBoxOn");
+												PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 												ProductChoiceFrame.Inset.NoTakeBacksies:Hide();
 											</OnClick>
 										</Scripts>
@@ -304,7 +298,7 @@
 			<OnEvent function="ProductChoiceFrame_OnEvent"/>
 			<OnShow function="ProductChoiceFrame_OnShow"/>
 			<OnHide>
-				PlaySound("igCharacterInfoClose");
+				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 			</OnHide>
 			<OnMouseWheel function="ProductChoiceFrame_OnMouseWheel"/>
 		</Scripts>

@@ -102,10 +102,6 @@ function AccountLogin_Update()
 	if ( AccountLogin.UI.AccountsDropDown.active ) then
 		AccountLogin.UI.AccountsDropDown:SetShown(showButtonsAndStuff);
 	end
-    if ( shouldCheckSystemReqs and not HasCheckedSystemRequirements() ) then
-    	CheckSystemRequirements();
-        SetCheckedSystemRequirements(true);
-    end
 end
 
 function AccountLogin_UpdateSavedData(self)
@@ -142,7 +138,7 @@ function CachedLoginFrameContainer_Update(self)
 			if ( not frame ) then
 				frame = CreateFrame("FRAME", nil, self, "CachedLoginFrameTemplate");
 				if ( i == 1 ) then
-					frame:SetPoint("TOPRIGHT", self, "TOPRIGHT", -5, -5);
+					frame:SetPoint("TOPRIGHT", self, "TOPRIGHT", -5, -25);
 				else
 					frame:SetPoint("TOP", frames[i-1], "BOTTOM", 0, 5);
 				end
@@ -164,7 +160,7 @@ function CachedLoginFrameContainer_Update(self)
 end
 
 function CachedLoginButton_OnClick(self)
-	PlaySound("gsLogin");
+	PlaySound(SOUNDKIT.GS_LOGIN);
 
 	local account = self:GetParent().account;
 	C_Login.CachedLogin(account);
@@ -187,7 +183,7 @@ function CachedLoginDeleteButton_OnClick(self)
 end
 
 function AccountLogin_Login()
-	PlaySound("gsLogin");
+	PlaySound(SOUNDKIT.GS_LOGIN);
 
 	if ( AccountLogin.UI.AccountEditBox:GetText() == "" ) then
 		GlueDialog_Show("OKAY", LOGIN_ENTER_NAME);
@@ -471,8 +467,9 @@ end
 function AccountLogin_CheckAutoLogin()
 	if ( AccountLogin_CanAutoLogin() ) then
 		if ( AccountLogin.timerFinished ) then
-			local accountName, password = GetKioskLoginInfo();
+			local accountName, password, realmAddr = GetKioskLoginInfo();
 			if (accountName and password) then
+				SetKioskAutoRealmAddress(realmAddr);
 				AccountLogin.UI.PasswordEditBox:SetText(password);
 				C_Login.Login(accountName, AccountLogin.UI.PasswordEditBox);
 			else
@@ -495,12 +492,12 @@ end
 -- =============================================================
 
 function AccountLogin_ManageAccount()
-	PlaySound("gsLoginNewAccount");
+	PlaySound(SOUNDKIT.GS_LOGIN_NEW_ACCOUNT);
 	LaunchURL(AUTH_NO_TIME_URL);
 end
 
 function AccountLogin_LaunchCommunitySite()
-	PlaySound("gsLoginNewAccount");
+	PlaySound(SOUNDKIT.GS_LOGIN_NEW_ACCOUNT);
 	LaunchURL(COMMUNITY_URL);
 end
 

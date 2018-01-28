@@ -35,7 +35,7 @@
 		</Size>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentSlotTexture" file="Interface\Buttons\UI-EmptySlot">
+				<Texture name="$parentSlotTexture" parentKey="SlotTexture" file="Interface\Buttons\UI-EmptySlot">
 					<Size x="64" y="64"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="-13" y="13"/>
@@ -452,11 +452,11 @@
 			<OnEvent function="TradeFrame_OnEvent"/>
 			<OnShow>
 				TradeFrame_OnShow(self);
-				PlaySound("igCharacterInfoOpen");
+				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 			</OnShow>
 			<OnHide>
 				TradeFrame_OnHide();
-				PlaySound("igCharacterInfoClose");
+				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 			</OnHide>
 			<OnLoad function="TradeFrame_OnLoad"/>
 			<OnMouseUp function="TradeFrame_OnMouseUp"/>

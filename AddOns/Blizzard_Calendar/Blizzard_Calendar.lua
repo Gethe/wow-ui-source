@@ -57,7 +57,7 @@ function CloseCalendarMenus()
 		if ( menu and menu:IsShown() ) then
 			if ( menu == CalendarFrame_GetEventFrame() ) then
 				CalendarFrame_CloseEvent();
-				PlaySound("igMainMenuQuit");
+				PlaySound(SOUNDKIT.IG_MAINMENU_QUIT);
 			else
 				menu:Hide();
 			end
@@ -95,10 +95,6 @@ local strtrim = strtrim;
 local GetCVarBool = GetCVarBool;
 local PI = PI;
 local TWOPI = PI * 2.0;
-
--- dev constants
-CALENDAR_USE_SEQUENCE_FOR_EVENT_TEXTURE		= true;
-CALENDAR_USE_SEQUENCE_FOR_OVERLAY_TEXTURE	= false;
 
 -- local constants
 local CALENDAR_MAX_DAYS_PER_MONTH			= 42;		-- 6 weeks
@@ -449,7 +445,7 @@ local CALENDAR_INVITESTATUS_INFO = {
 	},
 };
 
-local CALENDAR_CALENDARTYPE_NAMEFORMAT = {
+local CALENDAR_CALENDARTYPE_TOOLTIP_NAMEFORMAT = {
 	["PLAYER"] = {
 		[""]				= "%s",
 	},
@@ -466,6 +462,7 @@ local CALENDAR_CALENDARTYPE_NAMEFORMAT = {
 		["START"]			= CALENDAR_EVENTNAME_FORMAT_START,
 		["END"]				= CALENDAR_EVENTNAME_FORMAT_END,
 		[""]				= "%s",
+		["ONGOING"]			= "%s",
 	},
 	["RAID_LOCKOUT"] = {
 		[""]				= CALENDAR_EVENTNAME_FORMAT_RAID_LOCKOUT,
@@ -474,14 +471,31 @@ local CALENDAR_CALENDARTYPE_NAMEFORMAT = {
 		[""]				= CALENDAR_EVENTNAME_FORMAT_RAID_RESET,
 	},
 };
-local CALENDAR_CALENDARTYPE_TEXTURE_PATHS = {
---	["PLAYER"]				= "",
---	["GUILD_ANNOUNCEMENT"]	= "",
---	["GUILD_EVENT"]			= "",
---	["SYSTEM"]				= "",
-	["HOLIDAY"]				= "Interface\\Calendar\\Holidays\\",
---	["RAID_LOCKOUT"]		= "",
---	["RAID_RESET"]			= "",
+local CALENDAR_CALENDARTYPE_NAMEFORMAT = {
+	["PLAYER"] = {
+		[""]				= "%s",
+	},
+	["GUILD_ANNOUNCEMENT"] = {
+		[""]				= "%s",
+	},
+	["GUILD_EVENT"] = {
+		[""]				= "%s",
+	},
+	["SYSTEM"] = {
+		[""]				= "%s",
+	},
+	["HOLIDAY"] = {
+		["START"]			= "%s",
+		["END"]				= "%s",
+		[""]				= "%s",
+		["ONGOING"]			= "%s",
+	},
+	["RAID_LOCKOUT"] = {
+		[""]				= CALENDAR_EVENTNAME_FORMAT_RAID_LOCKOUT,
+	},
+	["RAID_RESET"] = {
+		[""]				= CALENDAR_EVENTNAME_FORMAT_RAID_RESET,
+	},
 };
 local CALENDAR_CALENDARTYPE_TEXTURES = {
 	["PLAYER"] = {
@@ -509,27 +523,6 @@ local CALENDAR_CALENDARTYPE_TEXTURES = {
 	["RAID_RESET"] = {
 --		[""]				= "",
 	},
-};
-local CALENDAR_CALENDARTYPE_TEXTURE_APPEND = {
---	["PLAYER"] = {
---	},
---	["GUILD_ANNOUNCEMENT"] = {
---	},
---	["GUILD_EVENT"] = {
---	},
---	["SYSTEM"] = {
---	},
-	["HOLIDAY"] = {
-		["START"]			= "Start",
-		["ONGOING"]			= "Ongoing",
-		["END"]				= "End",
-		["INFO"]			= "Info",
-		[""]				= "",
-	},
---	["RAID_LOCKOUT"] = {
---	},
---	["RAID_RESET"] = {
---	},
 };
 local CALENDAR_CALENDARTYPE_TCOORDS = {
 	["PLAYER"] = {
@@ -585,10 +578,10 @@ local CALENDAR_CALENDARTYPE_COLORS = {
 	["RAID_RESET"]			= HIGHLIGHT_FONT_COLOR,
 };
 
-local CALENDAR_EVENTTYPE_TEXTURE_PATHS = {
-	[CALENDAR_EVENTTYPE_RAID]		= "Interface\\LFGFrame\\LFGIcon-",
-	[CALENDAR_EVENTTYPE_DUNGEON]	= "Interface\\LFGFrame\\LFGIcon-",
+local CALENDAR_CALENDARTYPE_COLORS_TOOLTIP = {
+	["HOLIDAY"]				= NORMAL_FONT_COLOR,
 };
+
 local CALENDAR_EVENTTYPE_TEXTURES = {
 	[CALENDAR_EVENTTYPE_RAID]		= "Interface\\LFGFrame\\LFGIcon-Raid",
 	[CALENDAR_EVENTTYPE_DUNGEON]	= "Interface\\LFGFrame\\LFGIcon-Dungeon",
@@ -646,6 +639,7 @@ local CALENDAR_FILTER_CVARS = {
 	{text = CALENDAR_FILTER_RAID_LOCKOUTS,		cvar = "calendarShowLockouts"		},
 	{text = CALENDAR_FILTER_RAID_RESETS,		cvar = "calendarShowResets"			},
 	{text = CALENDAR_FILTER_WEEKLY_HOLIDAYS,	cvar = "calendarShowWeeklyHolidays"	},
+	{text = CALENDAR_FILTER_BATTLEGROUND,		cvar = "calendarShowBattlegrounds"	},
 };
 
 -- local data
@@ -912,42 +906,25 @@ local function _CalendarFrame_GetEventTexture(index, eventType)
 	return nil;
 end
 
-local function _CalendarFrame_GetTextureFile(textureName, calendarType, sequenceType, eventType)
-	local texture, tcoords;
-	if ( textureName and textureName ~= "" ) then
-		if ( CALENDAR_CALENDARTYPE_TEXTURE_PATHS[calendarType] ) then
-			texture = CALENDAR_CALENDARTYPE_TEXTURE_PATHS[calendarType]..textureName;
-			if ( CALENDAR_CALENDARTYPE_TEXTURE_APPEND[calendarType] ) then
-				texture = texture..CALENDAR_CALENDARTYPE_TEXTURE_APPEND[calendarType][sequenceType];
-			end
-			tcoords = CALENDAR_CALENDARTYPE_TCOORDS[calendarType];
-		elseif ( CALENDAR_EVENTTYPE_TEXTURE_PATHS[eventType] ) then
-			texture = CALENDAR_EVENTTYPE_TEXTURE_PATHS[eventType]..textureName;
-			tcoords = CALENDAR_EVENTTYPE_TCOORDS[eventType];
-		elseif ( CALENDAR_CALENDARTYPE_TEXTURES[calendarType][sequenceType] ) then
-			texture = CALENDAR_CALENDARTYPE_TEXTURES[calendarType][sequenceType];
-			tcoords = CALENDAR_CALENDARTYPE_TCOORDS[calendarType];
-		elseif ( CALENDAR_EVENTTYPE_TEXTURES[eventType] ) then
-			texture = CALENDAR_EVENTTYPE_TEXTURES[eventType];
-			tcoords = CALENDAR_EVENTTYPE_TCOORDS[eventType];
-		end
-	elseif ( CALENDAR_CALENDARTYPE_TEXTURES[calendarType][sequenceType] ) then
-		texture = CALENDAR_CALENDARTYPE_TEXTURES[calendarType][sequenceType];
+local function _CalendarFrame_GetTextureCoords(calendarType, eventType)
+	local tcoords;
+	if ( calendarType == "HOLIDAY" ) then
 		tcoords = CALENDAR_CALENDARTYPE_TCOORDS[calendarType];
-	elseif ( CALENDAR_EVENTTYPE_TEXTURES[eventType] ) then
-		texture = CALENDAR_EVENTTYPE_TEXTURES[eventType];
+	else
 		tcoords = CALENDAR_EVENTTYPE_TCOORDS[eventType];
 	end
-	return texture, tcoords;
+	return tcoords;
 end
 
-local function _CalendarFrame_GetEventColor(calendarType, modStatus, inviteStatus)
+local function _CalendarFrame_GetEventColor(calendarType, modStatus, inviteStatus, tooltip)
 	if ( calendarType == "PLAYER" or calendarType == "GUILD_ANNOUNCEMENT" or calendarType == "GUILD_EVENT" ) then
 		if ( modStatus == "MODERATOR" or modStatus == "CREATOR" ) then
 			return CALENDAR_EVENTCOLOR_MODERATOR;
 		elseif ( inviteStatus and CALENDAR_INVITESTATUS_INFO[inviteStatus] ) then
 			return CALENDAR_INVITESTATUS_INFO[inviteStatus].color;
 		end
+	elseif ( tooltip and CALENDAR_CALENDARTYPE_COLORS_TOOLTIP[calendarType] ) then
+		return CALENDAR_CALENDARTYPE_COLORS_TOOLTIP[calendarType];
 	elseif ( CALENDAR_CALENDARTYPE_COLORS[calendarType] ) then
 		return CALENDAR_CALENDARTYPE_COLORS[calendarType];
 	end
@@ -1164,7 +1141,7 @@ function CalendarFrame_OnShow(self)
 
 	OpenCalendar();
 
-	PlaySound("igSpellBookOpen");
+	PlaySound(SOUNDKIT.IG_SPELLBOOK_OPEN);
 end
 
 function CalendarFrame_OnHide(self)
@@ -1190,7 +1167,7 @@ function CalendarFrame_OnHide(self)
 		_G[dayButtonName.."OverlayFrameTexture"]:SetTexture();
 	end
 
-	PlaySound("igSpellBookClose");
+	PlaySound(SOUNDKIT.IG_SPELLBOOK_CLOSE);
 end
 
 function CalendarFrame_OnMouseWheel(self, value)
@@ -1495,6 +1472,14 @@ function CalendarFrame_UpdateDay(index, day, monthOffset, isSelected, isContext,
 	end
 end
 
+local function ShouldDisplayEventOnCalendar(event)
+	local shouldDisplayBeginEnd = event and event.sequenceType ~= "ONGOING";
+	if ( event.sequenceType == "END" and event.dontDisplayEnd ) then
+		shouldDisplayBeginEnd = false;
+	end
+	return shouldDisplayBeginEnd;
+end
+
 function CalendarFrame_UpdateDayEvents(index, day, monthOffset, selectedEventIndex, contextEventIndex)
 	local dayButton = CalendarDayButtons[index];
 	local dayButtonName = dayButton:GetName();
@@ -1516,13 +1501,13 @@ function CalendarFrame_UpdateDayEvents(index, day, monthOffset, selectedEventInd
 	local numViewableEvents = 0;
 	local firstHolidayIndex;
 	for i = 1, numEvents do
-		local title, hour, minute, calendarType, sequenceType = CalendarGetDayEvent(monthOffset, day, i);
-		if ( title ) then
-			if ( calendarType == "HOLIDAY" and not firstHolidayIndex ) then
+		local event = C_Calendar.GetDayEvent(monthOffset, day, i);
+		if ( event ) then
+			if ( event.calendarType == "HOLIDAY" and not firstHolidayIndex ) then
 				-- record the first holiday index...the first holiday can have sequenceType "ONGOING"
 				firstHolidayIndex = i;
 			end
-			if ( sequenceType ~= "ONGOING" ) then
+			if ( event.sequenceType ~= "ONGOING" ) then
 				numViewableEvents = numViewableEvents + 1;
 			end
 		end
@@ -1569,10 +1554,10 @@ function CalendarFrame_UpdateDayEvents(index, day, monthOffset, selectedEventInd
 		eventButtonText1 = _G[eventButtonName.."Text1"];
 		eventButtonText2 = _G[eventButtonName.."Text2"];
 
-		local title, hour, minute, calendarType, sequenceType, eventType, texture,
-			modStatus, inviteStatus, invitedBy, difficulty, inviteType,
-			sequenceIndex, numSequenceDays, difficultyName = CalendarGetDayEvent(monthOffset, day, eventIndex);
-		if ( title and sequenceType ~= "ONGOING" ) then
+		local event = C_Calendar.GetDayEvent(monthOffset, day, eventIndex);
+
+		if ( ShouldDisplayEventOnCalendar(event) ) then
+			local date = (event.sequenceType == "END") and event.endTime or event.startTime;
 			-- set the event button if the sequence type is not ongoing
 
 			-- record the event Index
@@ -1581,27 +1566,27 @@ function CalendarFrame_UpdateDayEvents(index, day, monthOffset, selectedEventInd
 			-- set the event button size
 			eventButton:SetHeight(buttonHeight);
 			-- set the event time and title
-			if ( calendarType == "HOLIDAY" ) then
+			if ( event.calendarType == "HOLIDAY" ) then
 				-- any event that does not display the time should go here
 				eventButtonText2:Hide();
-				eventButtonText1:SetFormattedText(CALENDAR_CALENDARTYPE_NAMEFORMAT[calendarType][sequenceType], title);
+				eventButtonText1:SetFormattedText(CALENDAR_CALENDARTYPE_NAMEFORMAT[event.calendarType][event.sequenceType], event.title);
 				eventButtonText1:ClearAllPoints();
 				eventButtonText1:SetAllPoints(eventButton);
 				eventButtonText1:Show();
-			elseif ( calendarType == "RAID_LOCKOUT" or calendarType == "RAID_RESET" ) then
+			elseif ( event.calendarType == "RAID_LOCKOUT" or event.calendarType == "RAID_RESET" ) then
 				eventButtonText2:Hide();
-				title = GetDungeonNameWithDifficulty(title, difficultyName);
-				eventButtonText1:SetFormattedText(CALENDAR_CALENDARTYPE_NAMEFORMAT[calendarType][sequenceType], title);
+				local title = GetDungeonNameWithDifficulty(event.title, event.difficultyName);
+				eventButtonText1:SetFormattedText(CALENDAR_CALENDARTYPE_NAMEFORMAT[event.calendarType][event.sequenceType], title);
 				eventButtonText1:ClearAllPoints();
 				eventButtonText1:SetAllPoints(eventButton);
 				eventButtonText1:Show();
 			else
-				eventButtonText2:SetText(GameTime_GetFormattedTime(hour, minute, showingBigEvents));
+				eventButtonText2:SetText(GameTime_GetFormattedTime(date.hour, date.minute, showingBigEvents));
 				eventButtonText2:ClearAllPoints();
 				eventButtonText2:SetPoint(text2Point, eventButton, text2Point);
 				eventButtonText2:SetJustifyH(text2JustifyH);
 				eventButtonText2:Show();
-				eventButtonText1:SetFormattedText(CALENDAR_CALENDARTYPE_NAMEFORMAT[calendarType][sequenceType], title);
+				eventButtonText1:SetFormattedText(CALENDAR_CALENDARTYPE_NAMEFORMAT[event.calendarType][event.sequenceType], event.title);
 				eventButtonText1:ClearAllPoints();
 				eventButtonText1:SetPoint("TOPLEFT", eventButton, "TOPLEFT");
 				if ( text1RelPoint ) then
@@ -1610,7 +1595,7 @@ function CalendarFrame_UpdateDayEvents(index, day, monthOffset, selectedEventInd
 				eventButtonText1:Show();
 			end
 			-- set the event color
-			eventColor = _CalendarFrame_GetEventColor(calendarType, modStatus, inviteStatus);
+			eventColor = _CalendarFrame_GetEventColor(event.calendarType, event.modStatus, event.inviteStatus);
 			eventButtonText1:SetTextColor(eventColor.r, eventColor.g, eventColor.b);
 
 			-- anchor the event button
@@ -1665,7 +1650,7 @@ function CalendarFrame_UpdateDayTextures(dayButton, numEvents, firstEventButton,
 --	end
 
 	local monthOffset, day = dayButton.monthOffset, dayButton.day;
-	local texturePath, tcoords;
+	local tcoords;
 
 	-- set event textures
 	local eventBackground = _G[dayButtonName.."EventBackgroundTexture"];
@@ -1680,16 +1665,11 @@ function CalendarFrame_UpdateDayTextures(dayButton, numEvents, firstEventButton,
 		eventBackground:Show();
 
 		-- set day texture
-		local title, hour, minute, calendarType, sequenceType, eventType, texture,
-			_, _, _, _, _, _, numSequenceDays = CalendarGetDayEvent(monthOffset, day, firstEventButton.eventIndex);
+		local event = C_Calendar.GetDayEvent(monthOffset, day, firstEventButton.eventIndex);
 		eventTex:SetTexture();
-		if ( CALENDAR_USE_SEQUENCE_FOR_EVENT_TEXTURE and numSequenceDays ~= 2) then
-			texturePath, tcoords = _CalendarFrame_GetTextureFile(texture, calendarType, sequenceType, eventType);
-		else
-			texturePath, tcoords = _CalendarFrame_GetTextureFile(texture, calendarType, "", eventType);
-		end
-		if ( texturePath ) then
-			eventTex:SetTexture(texturePath);
+		tcoords = _CalendarFrame_GetTextureCoords(event.calendarType, event.eventType);
+		if ( event.iconTexture ) then
+			eventTex:SetTexture(event.iconTexture);
 			eventTex:SetTexCoord(tcoords.left, tcoords.right, tcoords.top, tcoords.bottom);
 			eventTex:Show();
 		else
@@ -1705,20 +1685,13 @@ function CalendarFrame_UpdateDayTextures(dayButton, numEvents, firstEventButton,
 	local overlayTex = _G[dayButtonName.."OverlayFrameTexture"];
 	if ( firstHolidayIndex ) then
 		-- for now, the overlay texture is the first holiday's sequence texture
-		local title, hour, minute, calendarType, sequenceType, eventType, texture,
-			modStatus, inviteStatus, invitedBy, difficulty, inviteType,
-			sequenceIndex, numSequenceDays = CalendarGetDayEvent(monthOffset, day, firstHolidayIndex);
---		local sequenceIndex, numSequenceDays, sequenceType = CalendarGetDayEventSequenceInfo(monthOffset, day, firstHolidayIndex);
-		if ( numSequenceDays > 2 ) then
+		local event = C_Calendar.GetDayEvent(monthOffset, day, firstHolidayIndex);
+		if ( event.numSequenceDays > 2 and not event.dontDisplayBanner ) then
 			-- by art/design request, we're not going to show sequence textures if the sequence only lasts up to 2 days
 			overlayTex:SetTexture();
-			if ( CALENDAR_USE_SEQUENCE_FOR_OVERLAY_TEXTURE ) then
-				texturePath, tcoords = _CalendarFrame_GetTextureFile(texture, calendarType, sequenceType, eventType);
-			else
-				texturePath, tcoords = _CalendarFrame_GetTextureFile(texture, calendarType, "ONGOING", eventType);
-			end
-			if ( texturePath ) then
-				overlayTex:SetTexture(texturePath);
+			tcoords = _CalendarFrame_GetTextureCoords(event.calendarType, event.eventType);
+			if ( event.iconTexture ) then
+				overlayTex:SetTexture(event.iconTexture);
 				overlayTex:SetTexCoord(tcoords.left, tcoords.right, tcoords.top, tcoords.bottom);
 				overlayTex:GetParent():Show();
 				return;
@@ -1841,18 +1814,18 @@ function CalendarFrame_UpdateMonthOffsetButtons()
 end
 
 function CalendarPrevMonthButton_OnClick()
-	PlaySound("igAbiliityPageTurn");
+	PlaySound(SOUNDKIT.IG_ABILITY_PAGE_TURN);
 	CalendarFrame_OffsetMonth(-1);
 end
 
 function CalendarNextMonthButton_OnClick()
-	PlaySound("igAbiliityPageTurn");
+	PlaySound(SOUNDKIT.IG_ABILITY_PAGE_TURN);
 	CalendarFrame_OffsetMonth(1);
 end
 
 function CalendarFilterButton_OnClick(self)
 	ToggleDropDownMenu(1, nil, CalendarFilterDropDown, self, 0, 0);
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 end
 
 function CalendarFilterDropDown_OnLoad(self)
@@ -1902,7 +1875,7 @@ function CalendarFrame_PushModal(frame)
 		CalendarModalDummy:SetParent(frame);
 		CalendarModalDummy:SetFrameLevel(frame:GetFrameLevel() - 1);
 		CalendarModalDummy_Show();
-		PlaySound("igMainMenuOptionCheckBoxOn");
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	end
 end
 
@@ -1928,7 +1901,7 @@ function CalendarFrame_PopModal(popAll)
 			CalendarModalDummy:SetFrameLevel(top:GetFrameLevel() - 1);
 			CalendarModalDummy_Show();
 		end
-		PlaySound("igMainMenuQuit");
+		PlaySound(SOUNDKIT.IG_MAINMENU_QUIT);
 	end
 end
 
@@ -2147,10 +2120,9 @@ function CalendarDayContextMenu_Initialize(self, flags, dayButton, eventButton)
 
 	if ( showEvent ) then
 		local eventIndex = eventButton.eventIndex;
-		local title, hour, minute, calendarType, sequenceType, eventType, texture,
-			modStatus, inviteStatus, invitedBy, difficulty, inviteType = CalendarGetDayEvent(monthOffset, day, eventIndex);
+		local event = C_Calendar.GetDayEvent(monthOffset, day, eventIndex);
 		-- add context items for the selected event
-		if ( _CalendarFrame_IsPlayerCreatedEvent(calendarType) ) then
+		if ( _CalendarFrame_IsPlayerCreatedEvent(event.calendarType) ) then
 			local canEdit = CalendarContextEventCanEdit(monthOffset, day, eventIndex);
 			local canRemove = CalendarContextEventCanRemove(monthOffset, day, eventIndex);
 			if ( canEdit ) then
@@ -2177,11 +2149,11 @@ function CalendarDayContextMenu_Initialize(self, flags, dayButton, eventButton)
 				UIMenu_AddButton(self, CALENDAR_DELETE_EVENT, nil, CalendarDayContextMenu_DeleteEvent);
 				needSpacer = true;
 			end
-			if ( calendarType ~= "GUILD_ANNOUNCEMENT" ) then
-				if ( validCreationDate and _CalendarFrame_CanInviteeRSVP(inviteStatus) ) then
+			if ( event.calendarType ~= "GUILD_ANNOUNCEMENT" ) then
+				if ( validCreationDate and _CalendarFrame_CanInviteeRSVP(event.inviteStatus) ) then
 					-- spacer
-					if ( _CalendarFrame_IsSignUpEvent(calendarType, inviteType) ) then
-						if ( inviteStatus == CALENDAR_INVITESTATUS_NOT_SIGNEDUP ) then
+					if ( _CalendarFrame_IsSignUpEvent(event.calendarType, event.inviteType) ) then
+						if ( event.inviteStatus == CALENDAR_INVITESTATUS_NOT_SIGNEDUP ) then
 							-- sign up
 							if ( needSpacer ) then
 								UIMenu_AddButton(self, "");
@@ -2194,26 +2166,26 @@ function CalendarDayContextMenu_Initialize(self, flags, dayButton, eventButton)
 							end
 							UIMenu_AddButton(self, CALENDAR_REMOVE_SIGNUP, nil, CalendarDayContextMenu_RemoveInvite);
 						end
-					elseif ( modStatus ~= "CREATOR" ) then
+					elseif ( event.modStatus ~= "CREATOR" ) then
 						if ( needSpacer ) then
 							UIMenu_AddButton(self, "");
 						end
 						-- accept invitation
-						if ( inviteStatus ~= CALENDAR_INVITESTATUS_ACCEPTED ) then
+						if ( event.inviteStatus ~= CALENDAR_INVITESTATUS_ACCEPTED ) then
 							UIMenu_AddButton(self, CALENDAR_ACCEPT_INVITATION, nil, CalendarDayContextMenu_AcceptInvite);
 						end
 						-- tentative invitation
-						if ( inviteStatus ~= CALENDAR_INVITESTATUS_TENTATIVE ) then
+						if ( event.inviteStatus ~= CALENDAR_INVITESTATUS_TENTATIVE ) then
 							UIMenu_AddButton(self, CALENDAR_TENTATIVE_INVITATION, nil, CalendarDayContextMenu_TentativeInvite);
 						end
 						-- decline invitation
-						if ( inviteStatus ~= CALENDAR_INVITESTATUS_DECLINED ) then
+						if ( event.inviteStatus ~= CALENDAR_INVITESTATUS_DECLINED ) then
 							UIMenu_AddButton(self, CALENDAR_DECLINE_INVITATION, nil, CalendarDayContextMenu_DeclineInvite);
 						end
 					end
 					needSpacer = false;
 				end
-				if ( _CalendarFrame_CanRemoveEvent(modStatus, calendarType, inviteType, inviteStatus) ) then
+				if ( _CalendarFrame_CanRemoveEvent(event.modStatus, event.calendarType, event.inviteType, event.inviteStatus) ) then
 					-- spacer
 					if ( needSpacer ) then
 						UIMenu_AddButton(self, "");
@@ -2394,70 +2366,103 @@ function CalendarDayButton_OnEnter(self)
 		return;
 	end
 
+	local events = {};
+	-- gather up the events we are going to show
+	for i = 1, numEvents do
+		local event = C_Calendar.GetDayEvent(monthOffset, day, i);
+		if (event) then
+			tinsert(events, event);
+		end
+	end
+	-- sort by time, and ongoing events sort to the bottom
+	table.sort(events, function(a, b)
+		if ((a.sequenceType == "ONGOING") ~= (b.sequenceType == "ONGOING")) then
+			return a.sequenceType ~= "ONGOING";
+		elseif (a.sequenceType == "ONGOING" and a.sequenceIndex ~= b.sequenceIndex) then
+			return a.sequenceIndex > b.sequenceIndex;
+		end
+
+		if (a.startTime.hour ~= b.startTime.hour) then
+			return a.startTime.hour < b.startTime.hour;
+		end
+
+		return a.startTime.minute < b.startTime.minute;
+	end)
+
 	-- add events
 	local eventTime, eventColor;
 	local numShownEvents = 0;
-	for i = 1, numEvents do
-		local title, hour, minute, calendarType, sequenceType, eventType, texture,
-			modStatus, inviteStatus, invitedBy, difficulty, inviteType,
-			sequenceIndex, numSequenceDays, difficultyName = CalendarGetDayEvent(monthOffset, day, i);
-		if ( title and sequenceType ~= "ONGOING" ) then
-			if ( numShownEvents == 0 ) then
-				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-				GameTooltip:ClearLines();
+	local numOngoingEvents = 0;
+	for i, event in ipairs(events) do
+		local title = event.title;
+		if ( numShownEvents == 0 ) then
+			GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+			GameTooltip:ClearLines();
 
-				-- add date if we hit our first viewable event
-				local fullDate = format(FULLDATE, _CalendarFrame_GetFullDateFromDay(self));
-				GameTooltip:AddLine(fullDate, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-				GameTooltip:AddLine(" ");
+			-- add date if we hit our first viewable event
+			local fullDate = format(FULLDATE, _CalendarFrame_GetFullDateFromDay(self));
+			GameTooltip:AddLine(fullDate, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+			GameTooltip:AddLine(" ");
+		elseif (numOngoingEvents == 0) then
+			-- ongoing events don't have an extra space between them
+			GameTooltip:AddLine(" ");
+		end
+
+		if (event.sequenceType == "ONGOING") then
+			if (numOngoingEvents == 0) then
+				-- Precede first ongoing event with Ongoing: label
+				GameTooltip:AddLine(CALENDAR_TOOLTIP_ONGOING, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+			end
+			numOngoingEvents = numOngoingEvents + 1;
+			-- display as date range
+			eventTime = format(CALENDAR_TOOLTIP_DATE_RANGE, FormatShortDate(event.startTime.monthDay, event.startTime.month), FormatShortDate(event.endTime.monthDay, event.endTime.month));
+		elseif (event.sequenceType == "END") then
+			eventTime = GameTime_GetFormattedTime(event.endTime.hour, event.endTime.minute, true);
+		else
+			eventTime = GameTime_GetFormattedTime(event.startTime.hour, event.startTime.minute, true);
+		end
+		eventColor = _CalendarFrame_GetEventColor(event.calendarType, event.modStatus, event.inviteStatus, true);
+		if ( event.calendarType == "RAID_RESET" or event.calendarType == "RAID_LOCKOUT" ) then
+			title = GetDungeonNameWithDifficulty(title, event.difficultyName);
+		end
+		GameTooltip:AddDoubleLine(
+			format(CALENDAR_CALENDARTYPE_TOOLTIP_NAMEFORMAT[event.calendarType][event.sequenceType], title),
+			eventTime,
+			eventColor.r, eventColor.g, eventColor.b,
+			HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b,
+			1
+		);
+		if ( _CalendarFrame_IsPlayerCreatedEvent(event.calendarType) ) then
+			local text;
+			if ( UnitIsUnit("player", event.invitedBy) ) then
+				if ( event.calendarType == "GUILD_ANNOUNCEMENT" ) then
+					text = CALENDAR_ANNOUNCEMENT_CREATEDBY_YOURSELF;
+				elseif ( event.calendarType == "GUILD_EVENT" ) then
+					text = CALENDAR_GUILDEVENT_INVITEDBY_YOURSELF;
+				else
+					text = CALENDAR_EVENT_INVITEDBY_YOURSELF;
+				end
 			else
-				GameTooltip:AddLine(" ");
-			end
-
-			eventTime = GameTime_GetFormattedTime(hour, minute, true);
-			eventColor = _CalendarFrame_GetEventColor(calendarType, modStatus, inviteStatus);
-			if ( calendarType == "RAID_RESET" or calendarType == "RAID_LOCKOUT" ) then
-				title = GetDungeonNameWithDifficulty(title, difficultyName);
-			end
-			GameTooltip:AddDoubleLine(
-				format(CALENDAR_CALENDARTYPE_NAMEFORMAT[calendarType][sequenceType], title),
-				eventTime,
-				eventColor.r, eventColor.g, eventColor.b,
-				HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b,
-				1
-			);
-			if ( _CalendarFrame_IsPlayerCreatedEvent(calendarType) ) then
-				local text;
-				if ( UnitIsUnit("player", invitedBy) ) then
-					if ( calendarType == "GUILD_ANNOUNCEMENT" ) then
-						text = CALENDAR_ANNOUNCEMENT_CREATEDBY_YOURSELF;
-					elseif ( calendarType == "GUILD_EVENT" ) then
-						text = CALENDAR_GUILDEVENT_INVITEDBY_YOURSELF;
+				if ( _CalendarFrame_IsSignUpEvent(event.calendarType, event.inviteType) ) then
+					local inviteStatusInfo = _CalendarFrame_SafeGetInviteStatusInfo(event.inviteStatus);
+					if ( event.inviteStatus == CALENDAR_INVITESTATUS_NOT_SIGNEDUP or
+							event.inviteStatus == CALENDAR_INVITESTATUS_SIGNEDUP ) then
+						text = inviteStatusInfo.name;
 					else
-						text = CALENDAR_EVENT_INVITEDBY_YOURSELF;
+						text = format(CALENDAR_SIGNEDUP_FOR_GUILDEVENT_WITH_STATUS, inviteStatusInfo.name);
 					end
 				else
-					if ( _CalendarFrame_IsSignUpEvent(calendarType, inviteType) ) then
-						local inviteStatusInfo = _CalendarFrame_SafeGetInviteStatusInfo(inviteStatus);
-						if ( inviteStatus == CALENDAR_INVITESTATUS_NOT_SIGNEDUP or
-							 inviteStatus == CALENDAR_INVITESTATUS_SIGNEDUP ) then
-							text = inviteStatusInfo.name;
-						else
-							text = format(CALENDAR_SIGNEDUP_FOR_GUILDEVENT_WITH_STATUS, inviteStatusInfo.name);
-						end
+					if ( event.calendarType == "GUILD_ANNOUNCEMENT" ) then
+						text = format(CALENDAR_ANNOUNCEMENT_CREATEDBY_PLAYER, _CalendarFrame_SafeGetName(event.invitedBy));
 					else
-						if ( calendarType == "GUILD_ANNOUNCEMENT" ) then
-							text = format(CALENDAR_ANNOUNCEMENT_CREATEDBY_PLAYER, _CalendarFrame_SafeGetName(invitedBy));
-						else
-							text = format(CALENDAR_EVENT_INVITEDBY_PLAYER, _CalendarFrame_SafeGetName(invitedBy));
-						end
+						text = format(CALENDAR_EVENT_INVITEDBY_PLAYER, _CalendarFrame_SafeGetName(event.invitedBy));
 					end
 				end
-				GameTooltip:AddLine(text, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 			end
-
-			numShownEvents = numShownEvents + 1;
+			GameTooltip:AddLine(text, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 		end
+
+		numShownEvents = numShownEvents + 1;
 	end
 	if ( numShownEvents > 0 ) then
 		GameTooltip:Show();
@@ -2512,7 +2517,7 @@ function CalendarDayButton_OnClick(self, button)
 		end
 	end
 
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 end
 
 -- CalendarDayButton_Click allows the OnClick for a day and its event buttons to do some of the same processing
@@ -2565,7 +2570,7 @@ function CalendarDayButtonMoreEventsButton_OnClick(self, button)
 		end
 	end
 
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 end
 
 
@@ -2608,7 +2613,7 @@ function CalendarDayEventButton_OnClick(self, button)
 		end
 	end
 
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 end
 
 function CalendarDayEventButton_Click(button, openEvent)
@@ -2661,19 +2666,25 @@ function CalendarViewHolidayFrame_OnHide(self)
 end
 
 function CalendarViewHolidayFrame_Update()
-	local name, description, texture = CalendarGetHolidayInfo(CalendarGetEventIndex());
-	CalendarTitleFrame_SetText(CalendarViewHolidayTitleFrame, name);
-	CalendarViewHolidayDescription:SetText(description);
-	CalendarViewHolidayInfoTexture:SetTexture();
+	local holidayInfo = C_Calendar.GetHolidayInfo(CalendarGetEventIndex());
+	if (holidayInfo) then
+		CalendarTitleFrame_SetText(CalendarViewHolidayTitleFrame, holidayInfo.name);
+		local description = holidayInfo.description;
+		if (holidayInfo.startTime and holidayInfo.endTime) then
+			description = format(CALENDAR_HOLIDAYFRAME_BEGINSENDS, description, FormatShortDate(holidayInfo.startTime.monthDay, holidayInfo.startTime.month), GameTime_GetFormattedTime(holidayInfo.startTime.hour, holidayInfo.startTime.minute, true), FormatShortDate(holidayInfo.endTime.monthDay, holidayInfo.endTime.month), GameTime_GetFormattedTime(holidayInfo.endTime.hour, holidayInfo.endTime.minute, true));
+		end
+		CalendarViewHolidayDescription:SetText(description);
+		CalendarViewHolidayInfoTexture:SetTexture();
 
-	local texture = CALENDAR_CALENDARTYPE_TEXTURES["HOLIDAY"]["INFO"];
-	local tcoords = CALENDAR_CALENDARTYPE_TCOORDS["HOLIDAY"];
-	if ( texture ) then
-		CalendarViewHolidayInfoTexture:SetTexture(texture);
-		CalendarViewHolidayInfoTexture:SetTexCoord(tcoords.left, tcoords.right, tcoords.top, tcoords.bottom);
-		CalendarViewHolidayInfoTexture:Show();
-	else
-		CalendarViewHolidayInfoTexture:Hide();
+		local texture = CALENDAR_CALENDARTYPE_TEXTURES["HOLIDAY"]["INFO"];
+		local tcoords = CALENDAR_CALENDARTYPE_TCOORDS["HOLIDAY"];
+		if ( texture ) then
+			CalendarViewHolidayInfoTexture:SetTexture(texture);
+			CalendarViewHolidayInfoTexture:SetTexCoord(tcoords.left, tcoords.right, tcoords.top, tcoords.bottom);
+			CalendarViewHolidayInfoTexture:Show();
+		else
+			CalendarViewHolidayInfoTexture:Hide();
+		end
 	end
 end
 
@@ -2710,7 +2721,7 @@ end
 function CalendarEventCloseButton_OnClick(self)
 	CalendarContextMenu_Hide();
 	CalendarFrame_CloseEvent();
-	PlaySound("igMainMenuQuit");
+	PlaySound(SOUNDKIT.IG_MAINMENU_QUIT);
 end
 
 function CalendarEventDescriptionScrollFrame_OnLoad(self)
@@ -2890,7 +2901,7 @@ end
 
 function CalendarEventInviteSortButton_OnClick(self)
 	CalendarEventSortInvites(self.criterion, self.criterion == CalendarEventGetInviteSortCriterion());
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	CalendarContextMenu_Hide(CalendarViewEventInviteContextMenu_Initialize);
 	CalendarContextMenu_Hide(CalendarCreateEventInviteContextMenu_Initialize);
 end
@@ -3008,8 +3019,8 @@ function CalendarViewEventFrame_Update()
 		name = GetDungeonNameWithDifficulty(name, difficultyInfo and difficultyInfo.difficultyName or eventTex.difficultyName);
 		CalendarViewEventTypeName:SetFormattedText(CALENDAR_VIEW_EVENTTYPE, safeselect(eventType, CalendarEventGetTypes()), name);
 		-- set the eventTex texture
-		if ( eventTex.texture ~= "" ) then
-			CalendarViewEventIcon:SetTexture(CALENDAR_EVENTTYPE_TEXTURE_PATHS[eventType]..eventTex.texture);
+		if ( eventTex.texture ) then
+			CalendarViewEventIcon:SetTexture(eventTex.texture);
 		else
 			CalendarViewEventIcon:SetTexture(CALENDAR_EVENTTYPE_TEXTURES[eventType]);
 		end
@@ -3372,7 +3383,7 @@ function CalendarViewEventInviteListButton_OnClick(self, button)
 		end
 	end
 
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 end
 
 function CalendarViewEventInviteListButton_Click(button)
@@ -3427,7 +3438,7 @@ function CalendarCreateEventFrame_OnLoad(self)
 	UIDropDownMenu_Initialize(CalendarCreateEventAMPMDropDown, CalendarCreateEventAMPMDropDown_Initialize);
 	UIDropDownMenu_SetWidth(CalendarCreateEventAMPMDropDown, 40, 40);
 	UIDropDownMenu_Initialize(CalendarCreateEventDifficultyOptionDropDown, CalendarCreateEventDifficultyOptionDropDown_Initialize);
-	UIDropDownMenu_SetWidth(CalendarCreateEventDifficultyOptionDropDown, 100, 40);
+	UIDropDownMenu_SetWidth(CalendarCreateEventDifficultyOptionDropDown, 100);
 end
 
 function CalendarCreateEventFrame_OnEvent(self, event, ...)
@@ -3701,8 +3712,8 @@ function CalendarCreateEventTexture_Update()
 		CalendarCreateEventTextureName:SetText(GetDungeonNameWithDifficulty(name, difficultyInfo and difficultyInfo.difficultyName or eventTex.difficultyName));
 		CalendarCreateEventTextureName:Show();
 		-- set the eventTex texture
-		if ( eventTex.texture ~= "" ) then
-			CalendarCreateEventIcon:SetTexture(CALENDAR_EVENTTYPE_TEXTURE_PATHS[eventType]..eventTex.texture);
+		if ( eventTex.texture ) then
+			CalendarCreateEventIcon:SetTexture(eventTex.texture);
 		else
 			CalendarCreateEventIcon:SetTexture(CALENDAR_EVENTTYPE_TEXTURES[eventType]);
 		end
@@ -3977,9 +3988,9 @@ end
 function CalendarCreateEventAutoApproveCheck_OnClick(self)
 	CalendarCreateEvent_SetAutoApprove();
 	if ( self:GetChecked() ) then
-		PlaySound("igMainMenuOptionCheckBoxOn");
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	else
-		PlaySound("igMainMenuOptionCheckBoxOff");
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 	end
 	CalendarCreateEventCreateButton_Update();
 end
@@ -4001,9 +4012,9 @@ end
 function CalendarCreateEventLockEventCheck_OnClick(self)
 	CalendarCreateEvent_SetLockEvent();
 	if ( self:GetChecked() ) then
-		PlaySound("igMainMenuOptionCheckBoxOn");
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	else
-		PlaySound("igMainMenuOptionCheckBoxOff");
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 	end
 	CalendarCreateEventCreateButton_Update();
 end
@@ -4148,7 +4159,7 @@ function CalendarCreateEventInviteListButton_OnClick(self, button)
 		end
 	end
 
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 end
 
 function CalendarCreateEventInviteListButton_Click(button)
@@ -4321,7 +4332,7 @@ function CalendarCreateEventInviteButton_OnClick(self)
 		--CalendarCreateEventInviteEdit:ClearFocus();
 	end
 
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 end
 
 function CalendarCreateEventInviteButton_OnUpdate(self)
@@ -4702,8 +4713,8 @@ function CalendarEventPickerScrollFrame_Update()
 	local offset = HybridScrollFrame_GetOffset(CalendarEventPickerScrollFrame);
 	local eventIndex = 1 + offset;
 	for i=1, offset do
-		local title, hour, minute, calendarType, sequenceType = CalendarGetDayEvent(monthOffset, day, i);
-		if ( title and sequenceType == "ONGOING" ) then
+		local event = C_Calendar.GetDayEvent(monthOffset, day, i);
+		if ( event.title and event.sequenceType == "ONGOING" ) then
 			eventIndex = eventIndex + 1;
 		end
 	end
@@ -4724,14 +4735,15 @@ function CalendarEventPickerScrollFrame_Update()
 	local numEvents = CalendarGetNumDayEvents(monthOffset, day);
 
 	local button, buttonName, buttonIcon, buttonTitle, buttonTime;
-	local texturePath, tcoords;
+	local tcoords;
 	local eventColor;
 	local i = 1;
 	while ( i <= numButtons and eventIndex <= numEvents ) do
-		local title, hour, minute, calendarType, sequenceType, eventType, texture,
-			modStatus, inviteStatus, invitedBy, difficulty, inviteType,
-			sequenceIndex, numSequenceDays, difficultyName = CalendarGetDayEvent(monthOffset, day, eventIndex);
-		if ( sequenceType ~= "ONGOING" ) then
+		local event = C_Calendar.GetDayEvent(monthOffset, day, eventIndex);
+		local title = event.title;
+		local date = (event.sequenceType == "END") and event.endTime or event.startTime;
+
+		if ( event.sequenceType ~= "ONGOING" ) then
 			-- pretend like ongoing events aren't even in the event list
 			button = buttons[i];
 			if ( title ) then
@@ -4744,9 +4756,9 @@ function CalendarEventPickerScrollFrame_Update()
 
 				-- set event texture
 				buttonIcon:SetTexture();
-				texturePath, tcoords = _CalendarFrame_GetTextureFile(texture, calendarType, sequenceType, eventType);
-				if ( texturePath and texturePath ~= "" ) then
-					buttonIcon:SetTexture(texturePath);
+				tcoords = _CalendarFrame_GetTextureCoords(event.calendarType, event.eventType);
+				if ( event.iconTexture ) then
+					buttonIcon:SetTexture(event.iconTexture);
 					buttonIcon:SetTexCoord(tcoords.left, tcoords.right, tcoords.top, tcoords.bottom);
 					buttonIcon:Show();
 					buttonTitle:SetPoint("TOPLEFT", buttonIcon, "TOPRIGHT");
@@ -4756,20 +4768,20 @@ function CalendarEventPickerScrollFrame_Update()
 				end
 
 				-- set event title and time
-				if ( calendarType == "HOLIDAY" ) then
+				if ( event.calendarType == "HOLIDAY" ) then
 					buttonTime:Hide();
 					buttonTitle:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT");
 				else
-					if ( calendarType == "RAID_RESET" or calendarType == "RAID_LOCKOUT" ) then
-						title = GetDungeonNameWithDifficulty(title, difficultyName);
+					if ( event.calendarType == "RAID_RESET" or event.calendarType == "RAID_LOCKOUT" ) then
+						title = GetDungeonNameWithDifficulty(title, event.difficultyName);
 					end
-					buttonTime:SetText(GameTime_GetFormattedTime(hour, minute, true));
+					buttonTime:SetText(GameTime_GetFormattedTime(date.hour, date.minute, true));
 					buttonTime:Show();
 					buttonTitle:SetPoint("BOTTOMLEFT", buttonTime, "BOTTOMLEFT");
 				end
-				buttonTitle:SetFormattedText(CALENDAR_CALENDARTYPE_NAMEFORMAT[calendarType][sequenceType], title);
+				buttonTitle:SetFormattedText(CALENDAR_CALENDARTYPE_NAMEFORMAT[event.calendarType][event.sequenceType], title);
 				-- set event color
-				eventColor = _CalendarFrame_GetEventColor(calendarType, modStatus, inviteStatus);
+				eventColor = _CalendarFrame_GetEventColor(event.calendarType, event.modStatus, event.inviteStatus);
 				buttonTitle:SetTextColor(eventColor.r, eventColor.g, eventColor.b);
 
 				-- set selected event
@@ -4829,7 +4841,7 @@ function CalendarEventPickerButton_OnClick(self, button)
 		end
 	end
 
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 end
 
 function CalendarEventPickerButton_Click(button)
@@ -5031,8 +5043,8 @@ function CalendarTexturePickerScrollFrame_Update()
 				buttonIcon:SetTexture();
 				local tcoords = CALENDAR_EVENTTYPE_TCOORDS[eventType];
 				buttonIcon:SetTexCoord(tcoords.left, tcoords.right, tcoords.top, tcoords.bottom);
-				if ( eventTex.texture ~= "" ) then
-					buttonIcon:SetTexture(CALENDAR_EVENTTYPE_TEXTURE_PATHS[eventType]..eventTex.texture);
+				if ( eventTex.texture ) then
+					buttonIcon:SetTexture(eventTex.texture);
 				else
 					buttonIcon:SetTexture(CALENDAR_EVENTTYPE_TEXTURES[eventType]);
 				end
@@ -5089,7 +5101,7 @@ function CalendarTexturePickerButton_OnClick(self, button)
 	CalendarTexturePickerFrame.selectedTextureIndex = self.textureIndex;
 	self:LockHighlight();
 
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 end
 
 function CalendarTexturePickerButton_OnDoubleClick(self, button)
@@ -5235,7 +5247,7 @@ end
 
 function CalendarClassTotalsButton_OnClick(self)
 	ToggleDropDownMenu(1, nil, CalendarInviteToGroupDropDown, self, 0, 0);
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 end
 
 function CalendarClassTotalsButtonOnEnterDummy_OnEnter(self)

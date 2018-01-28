@@ -1,0 +1,138 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="QuickJoin.lua"/>
+
+	<FontString name="QuickJoinButtonMemberTemplate" virtual="true" inherits="GameFontNormalSmall" justifyH="LEFT">
+		<Size x="80" y="16"/>
+	</FontString>
+	<FontString name="QuickJoinButtonQueueTemplate" virtual="true" inherits="GameFontNormalSmall" text="Random Warlords of Draenor Heroic Dungeon or Something" justifyH="LEFT">
+		<Size x="186" y="16"/>
+	</FontString>
+	<Button name="QuickJoinButtonTemplate" hyperlinksEnabled="true" mixin="QuickJoinButtonMixin" virtual="true">
+		<Size x="297" y="25"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" file="Interface\GuildFrame\GuildFrame">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="-1"/>
+						<Anchor point="BOTTOMRIGHT" x="0" y="1"/>
+					</Anchors>
+					<TexCoords left="0.36230469" right="0.38183594" top="0.95898438" bottom="0.99804688"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentArray="Members" inherits="QuickJoinButtonMemberTemplate">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="3" y="-6"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="Icon" atlas="socialqueuing-icon-eye" useAtlasSize="false">
+					<Anchors>
+						<!--This gets changed in code-->
+						<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="87" y="-5"/>
+					</Anchors>
+					<Size x="16" y="17"/>
+				</Texture>
+				<FontString parentArray="Queues" inherits="QuickJoinButtonQueueTemplate">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="106" y="-6"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="Highlight" atlas="socialqueuing-row-highlight" hidden="true" alpha="0.5" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="-1"/>
+						<Anchor point="BOTTOMRIGHT" x="0" y="1"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Selected" atlas="socialqueuing-row-select" hidden="true" alpha="0.4" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="-1"/>
+						<Anchor point="BOTTOMRIGHT" x="0" y="1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnClick method="OnClick"/>
+			<OnHyperlinkClick method="OnHyperlinkClick"/>
+
+			<!-- Forward to regular enter/leave handlers -->
+			<OnHyperlinkEnter method="OnEnter"/>
+			<OnHyperlinkLeave method="OnLeave"/>
+		</Scripts>
+	</Button>
+	<Frame name="QuickJoinFrame" parent="FriendsFrame" hidden="true" setAllPoints="true" mixin="QuickJoinMixin">
+		<Frames>
+			<Frame name="QuickJoinFrameDropDown" inherits="UIDropDownMenuTemplate"/>
+			<ScrollFrame name="QuickJoinScrollFrame" parentKey="ScrollFrame" inherits="HybridScrollFrameTemplate">
+				<Size x="302" y="307"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="FriendsFrame" x="8" y="-87"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+							<Size x="29" y="102"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-6" y="5"/>
+							</Anchors>
+							<TexCoords left="0" right="0.445" top="0" bottom="0.4"/>
+						</Texture>
+						<Texture name="$parentBottom" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+							<Size x="29" y="106"/>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-6" y="-5"/>
+							</Anchors>
+							<TexCoords left="0.515625" right="0.960625" top="0" bottom="0.4140625"/>
+						</Texture>
+						<Texture name="$parentMiddle" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+							<Size x="29" y="1"/>
+							<Anchors>
+								<Anchor point="TOP" relativeTo="$parentTop" relativePoint="BOTTOM"/>
+								<Anchor point="BOTTOM" relativeTo="$parentBottom" relativePoint="TOP"/>
+							</Anchors>
+							<TexCoords left="0" right="0.445" top=".75" bottom="1.0"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Slider name="$parentScrollBar" inherits="MinimalHybridScrollBarTemplate" parentKey="scrollBar">
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="FriendsFrame" relativePoint="TOPRIGHT" x="-14" y="-101"/>
+							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="6" y="12"/>
+						</Anchors>
+					</Slider>
+				</Frames>
+			</ScrollFrame>
+			<Button parentKey="JoinQueueButton" inherits="MagicButtonTemplate" text="JOIN_QUEUE" motionScriptsWhileDisabled="true">
+				<Size x="135" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-3" y="4"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="QuickJoin_JoinQueueButtonOnClick"/>
+					<OnEnter>
+						if ( self.tooltip ) then
+							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+							GameTooltip:SetText(self.tooltip, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1, true);
+							GameTooltip:Show();
+						end
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+	<Frame name="QuickJoinRoleSelectionFrame" parent="UIParent" mixin="QuickJoinRoleSelectionMixin" inherits="RoleSelectionTemplate" hidden="true"/>
+</Ui>

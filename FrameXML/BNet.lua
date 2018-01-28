@@ -10,7 +10,7 @@ local BN_TOAST_TYPE_OFFLINE = 2;
 local BN_TOAST_TYPE_BROADCAST = 3;
 local BN_TOAST_TYPE_PENDING_INVITES = 4;
 local BN_TOAST_TYPE_NEW_INVITE = 5;
-BN_TOAST_TOP_OFFSET = 40;
+BN_TOAST_TOP_OFFSET = 70;
 BN_TOAST_BOTTOM_OFFSET = -12;
 BN_TOAST_RIGHT_OFFSET = -1;
 BN_TOAST_LEFT_OFFSET = 1;
@@ -24,6 +24,8 @@ BNET_CLIENT_APP = "App";
 BNET_CLIENT_HEROES = "Hero";
 BNET_CLIENT_OVERWATCH = "Pro";
 BNET_CLIENT_CLNT = "CLNT";
+BNET_CLIENT_SC = "S1";
+BNET_CLIENT_DESTINY2 = "DST2";
 
 function BNet_OnLoad(self)
 	self:RegisterEvent("BN_DISCONNECTED");
@@ -43,18 +45,18 @@ function BNet_OnEvent(self, event, ...)
 	end
 end
 
---Name can only be an account name (realID or battletag)
+--Name can be a realID or plain battletag with no 4 digit number (e.g. Murky McGrill or LichKing).
 function BNet_GetBNetIDAccount(name)
 	return GetAutoCompletePresenceID(name);
 end
 
---Name can only be a character name
-function BNet_GetBNetIDGameAccount(name)
+--Name must be a character name from your friends list.
+function BNet_GetBNetIDAccountFromCharacterName(name)
 	local _, numBNetOnline = BNGetNumFriends();
 	for i = 1, numBNetOnline do
-		local battleTag, _, characterName, bnetIDGameAccount = select(3, BNGetFriendInfo(i));
-		if ( (characterName and strcmputf8i(name, characterName) == 0) or (battleTag and strcmputf8i(name, battleTag) == 0) ) then
-			return bnetIDGameAccount;
+		local opaqueID, displayName, battleTag, _, characterName = BNGetFriendInfo(i);
+		if ( (characterName and strcmputf8i(name, characterName) == 0) ) then
+			return opaqueID;
 		end
 	end	
 end
@@ -222,7 +224,7 @@ function BNToastFrame_Show()
 	local frame = BNToastFrame;
 	BNToastFrame_UpdateAnchor(true);
 	frame:Show();
-	PlaySoundKitID(18019);
+	PlaySound(SOUNDKIT.UI_BNET_TOAST);
 	frame.toastType = toastType;
 	frame.toastData = toastData;
 	frame.animIn:Play();
@@ -307,7 +309,11 @@ function BNToastFrame_OnClick(self)
 		if ( not FriendsFrame:IsShown() ) then
 			ToggleFriendsFrame(1);
 		end
-		FriendsTabHeaderTab3:Click();
+		local collapsed = GetCVarBool("friendInvitesCollapsed");
+		if ( collapsed ) then
+			FriendsListFrame_ToggleInvites();
+		end
+		FriendsTabHeaderTab1:Click();
 	elseif ( toastType == BN_TOAST_TYPE_ONLINE or toastType == BN_TOAST_TYPE_BROADCAST ) then
 		local bnetIDAccount, accountName = BNGetFriendInfoByID(toastData);
 		if ( accountName ) then	--This player may have been removed from our friends list, so we may not have a name.
@@ -436,6 +442,10 @@ function BNet_GetClientEmbeddedTexture(client, width, height, xOffset, yOffset)
 		textureString = "HotS";
 	elseif ( client == BNET_CLIENT_OVERWATCH ) then
 		textureString = "Overwatch";
+	elseif ( client == BNET_CLIENT_SC ) then
+		textureString = "SC";
+	elseif ( client == BNET_CLIENT_DESTINY2 ) then
+		textureString = "Destiny2";
 	else
 		textureString = "Battlenet";
 	end
@@ -455,6 +465,10 @@ function BNet_GetClientTexture(client)
 		return "Interface\\FriendsFrame\\Battlenet-HotSicon";
 	elseif ( client == BNET_CLIENT_OVERWATCH ) then
 		return "Interface\\FriendsFrame\\Battlenet-Overwatchicon";
+	elseif ( client == BNET_CLIENT_SC ) then
+		return "Interface\\FriendsFrame\\Battlenet-SCicon";
+	elseif ( client == BNET_CLIENT_DESTINY2 ) then
+		return "Interface\\FriendsFrame\\Battlenet-Destiny2icon"; 
 	else
 		return "Interface\\FriendsFrame\\Battlenet-Battleneticon";
 	end

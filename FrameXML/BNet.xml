@@ -7,8 +7,8 @@
 			<OnEvent function="BNet_OnEvent"/>
 		</Scripts>
 	</Frame>
-	
-	<Frame name="BNToastFrame" parent="UIParent" hidden="true" frameStrata="LOW">
+
+	<Frame name="BNToastFrame" parent="UIParent" hidden="true" frameStrata="LOW" toplevel="true">
 		<Animations>
 			<AnimationGroup name="$parentAnimIn" parentKey="animIn">
 				<Alpha fromAlpha="1" toAlpha="0" duration="0" order="1"/>
@@ -53,6 +53,7 @@
 					<TexCoords left="0" right="0.25" top="0" bottom="0.5"/>
 				</Texture>
 				<FontString name="$parentTopLine" inherits="FriendsFont_Normal" justifyH="LEFT" justifyV="MIDDLE">
+					<Size x="0" y="10"/>
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
@@ -89,7 +90,7 @@
 					</Anchors>
 					<Color r="0.486" g="0.518" b="0.541" />
 				</FontString>
-				<FontString name="$parentDoubleLine" inherits="FriendsFont_Normal" justifyH="LEFT" justifyV="MIDDLE">			
+				<FontString name="$parentDoubleLine" inherits="FriendsFont_Normal" justifyH="LEFT" justifyV="MIDDLE">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="44" y="0"/>
 						<Anchor point="BOTTOMRIGHT" x="-20" y="0"/>
@@ -423,10 +424,10 @@
 				self.hideOnEscape = true;
 			</OnLoad>
 			<OnShow>
-				PlaySound("igMainMenuOpen");
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
 			</OnShow>
 			<OnHide>
-				PlaySound("igMainMenuClose");
+				PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
 			</OnHide>
 		</Scripts>
 	</Frame>

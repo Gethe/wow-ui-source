@@ -239,10 +239,10 @@
 			</OnEvent>
 			<OnShow>
 				GuildRegistrar_OnShow();
-				PlaySound("igQuestListOpen");
+				PlaySound(SOUNDKIT.IG_QUEST_LIST_OPEN);
 			</OnShow>
 			<OnHide>
-				PlaySound("igQuestListClose");
+				PlaySound(SOUNDKIT.IG_QUEST_LIST_CLOSE);
 				StaticPopup_Hide("CONFIRM_GUILD_CHARTER_PURCHASE");
 				CloseGuildRegistrar();
 			</OnHide>

@@ -62,11 +62,11 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Fontstring parentKey="Title" inherits="GameFontHighlightLarge"  text="SOCIAL_SCREENSHOT_PREFILL_TOOLTIP">
+				<FontString parentKey="Title" inherits="GameFontHighlightLarge"  text="SOCIAL_SCREENSHOT_PREFILL_TOOLTIP">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="10" y="-10"/>
 					</Anchors>
-				</Fontstring>
+				</FontString>
 				<Texture parentKey="Image">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="10" y="-36"/>
@@ -370,8 +370,8 @@
 					</Button>
 				</Frames>
 				<Scripts>
-					<OnShow> PlaySound("igMainMenuOpen"); </OnShow>
-					<OnHide> PlaySound("igMainMenuClose"); </OnHide>
+					<OnShow> PlaySound(SOUNDKIT.IG_MAINMENU_OPEN); </OnShow>
+					<OnHide> PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE); </OnHide>
 				</Scripts>
 			</Frame>
 			<Frame parentKey="BorderFrame" inherits="InsetFrameTemplate4">

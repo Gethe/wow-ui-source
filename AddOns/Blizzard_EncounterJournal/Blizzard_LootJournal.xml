@@ -20,7 +20,7 @@
 				ResetCursor();
 			</OnLeave>
 			<OnClick>
-				HandleModifiedItemClick(self.itemLink);
+				HandleModifiedItemClick(self.itemInfo and self.itemInfo.link or self.itemLink);
 			</OnClick>
 		</Scripts>
 	</Button>
@@ -38,10 +38,12 @@
 				</Texture>
 			</Layer>
 			<Layer level="BORDER">
-				<Texture parentKey="Background" atlas="loottab-item-background" useAtlasSize="true">
+				<Texture parentKey="Background" file="Interface\EncounterJournal\loottab-item-background">
+					<Size x="382" y="92"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="-15" y="15"/>
 					</Anchors>
+					<TexCoords left="0" right="0.74609375" top="0" bottom="0.71875"/>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
@@ -161,7 +163,7 @@
 						<Scripts>
 							<OnClick>
 								ToggleDropDownMenu(1, nil, self:GetParent().SlotDropDown, self, 5, 0);
-								PlaySound("igMainMenuOptionCheckBoxOn");
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 							</OnClick>
 						</Scripts>
 					</Button>
@@ -178,7 +180,7 @@
 						<Scripts>
 							<OnClick>
 								ToggleDropDownMenu(1, nil, self:GetParent():GetParent().ClassDropDown, self, 5, 0);
-								PlaySound("igMainMenuOptionCheckBoxOn");
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 							</OnClick>
 						</Scripts>
 					</Button>
@@ -209,7 +211,7 @@
 						<Scripts>
 							<OnClick>
 								ToggleDropDownMenu(1, nil, self:GetParent():GetParent().ClassDropDown, self, 5, 0);
-								PlaySound("igMainMenuOptionCheckBoxOn");
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 							</OnClick>
 						</Scripts>
 					</Button>

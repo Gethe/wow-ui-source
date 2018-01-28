@@ -1,0 +1,32 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="ClickToZoomDataProvider.lua"/>
+	
+	<Frame name="ClickToZoomDataProvider_LabelTemplate" virtual="true">
+		<Size x="1" y="1"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Text" inherits="SystemFont_Huge1_Outline" text="FLIGHT_MAP_CLICK_TO_ZOOM_HINT">
+					<Anchors>
+						<Anchor point="RIGHT"/>
+					</Anchors>
+					<Shadow>
+						<Offset>
+							<AbsDimension x="1" y="-1"/>
+						</Offset>
+						<Color r="0" g="0" b="0"/>
+					</Shadow>
+					<Color r="1" g="0.82" b="0"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="FadeInAnim" setToFinalAlpha="true">
+				<Alpha fromAlpha="0" toAlpha="1" duration=".3" order="1" smoothing="IN" />
+			</AnimationGroup>
+			<AnimationGroup parentKey="FadeOutAnim" setToFinalAlpha="true">
+				<Alpha fromAlpha="1" toAlpha="0" duration=".3" order="1" smoothing="OUT"  />
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+</Ui>

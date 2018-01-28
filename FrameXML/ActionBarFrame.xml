@@ -13,7 +13,9 @@
 				ActionButton_OnEvent(self, event, ...);
 			</OnEvent>
 			<OnClick>
-				if (not self.zoneAbilityDisabled) then
+				if button == "RightButton" and C_ActionBar.IsAutoCastPetAction(self.action) then
+					C_ActionBar.ToggleAutoCastPetAction(self.action);
+				elseif (not self.zoneAbilityDisabled) then
   					SecureActionButton_OnClick(self, button);
   	 			end
   	 		</OnClick>
@@ -35,7 +37,7 @@
 			</OnReceiveDrag>
 			<OnEnter>
 				if (self.NewActionTexture) then
-					MarkNewActionHighlight(self.action, false);
+					ClearNewActionHighlight(self.action);
 					ActionButton_UpdateAction(self, true);
 				end
 				ActionButton_SetTooltip(self);
@@ -305,7 +307,7 @@
 		<Scripts>
 			<OnClick>
 				ActionBar_PageUp(self);
-				PlaySound("UChatScrollButton");
+				PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 			</OnClick>
 		</Scripts>
 		<NormalTexture file="Interface\MainMenuBar\UI-MainMenu-ScrollUpButton-Up"/>
@@ -330,7 +332,7 @@
 		<Scripts>
 			<OnClick>
 				ActionBar_PageDown(self);
-				PlaySound("UChatScrollButton");
+				PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 			</OnClick>
 		</Scripts>
 		<NormalTexture file="Interface\MainMenuBar\UI-MainMenu-ScrollDownButton-Up"/>

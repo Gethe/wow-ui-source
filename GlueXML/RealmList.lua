@@ -322,7 +322,7 @@ function RealmListTab_OnClick(tab)
 end
 
 function RealmHelpText_OnShow(self)
-	self:SetText("<html><body><p>" .. string.format(REALM_HELP_FRAME_TEXT, REALM_HELP_FRAME_URL) .. "</p></body></html>");
+	self:SetText(HTML_START .. string.format(REALM_HELP_FRAME_TEXT, REALM_HELP_FRAME_URL) .. HTML_END);
 end
 
 REALM_LIST_POPULATION_ORDERING = {

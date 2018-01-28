@@ -3,8 +3,8 @@
 -- Lua code to support the various handlers and templates which can execute
 -- code in a secure, but restricted, environment.
 --
--- Daniel Stephens (iriel@vigilance-committee.org)
--- Nevin Flanagan (alestane@comcast.net)
+-- Daniel Stephens
+-- Nevin Flanagan
 ---------------------------------------------------------------------------
 
 -- Local references to things so that they can't be subverted
@@ -26,6 +26,8 @@ local InCombatLockdown = InCombatLockdown;
 local CallRestrictedClosure = CallRestrictedClosure;
 local GetFrameHandle = GetFrameHandle;
 local GetManagedEnvironment = GetManagedEnvironment;
+
+local IsFrameWidget = C_Widget.IsFrameWidget;
 
 -- SoftError(message)
 -- Report an error message without stopping execution
@@ -53,7 +55,7 @@ local function SecureHandler_Self_Execute(self, signature, body, ...)
 
 	local environment = GetManagedEnvironment(self, true);
 
-	return CallRestrictedClosure(signature, environment, selfHandle,
+	return CallRestrictedClosure(self, signature, environment, selfHandle,
 								 body, selfHandle, ...);
 end
 
@@ -69,7 +71,7 @@ local function SecureHandler_Other_Execute(header, self, signature, body, ...)
 	if (not selfHandle) then return; end
 
 	local environment = GetManagedEnvironment(header, true);
-	return CallRestrictedClosure(signature, environment, controlHandle,
+	return CallRestrictedClosure(self, signature, environment, controlHandle,
 								 body, selfHandle, ...);
 end
 
@@ -157,7 +159,7 @@ local function PickupAny(kind, target, detail, ...)
 	elseif kind == 'companion' then
 		PickupCompanion(target, detail)
 	elseif kind == 'equipmentset' then
-		PickupEquipmentSet(target);
+		C_EquipmentSet.PickupEquipmentSet(target);
 	end
 end
 
@@ -386,7 +388,8 @@ local function Wrapped_Drag(self, header, preBody, postBody, wrap, ...)
 			local controlHandle = GetFrameHandle(header, true, true);
 			local button = ...;
 			local pickupType, target, x1, x2, x3 =
-				CallRestrictedClosure("self,button,kind,value,...",
+				CallRestrictedClosure(self, 
+									 "self,button,kind,value,...",
 									  environment,
 									  controlHandle, preBody,
 									  selfHandle, button,
@@ -459,8 +462,10 @@ local LOCAL_Wrap_Handlers = {
 
 -- Quick sanity check that a frame looks like a frame
 local function IsValidFrame(frame)
-	return (type(frame) == "table") and (type(frame[0]) == "userdata");
+	return IsFrameWidget(frame);
 end
+
+local CheckForbidden, MakeForbidden;
 
 -- 'Action' handler for most of the API methods, invoked somewhat indirectly
 -- via attribute sets so as to allow secure execution (doesn't work from
@@ -480,7 +485,11 @@ local function API_OnAttributeChanged(self, name, value)
 
 	-- _execute runs code in the context of a header
 	if (name == "_execute") then
-		local frame =  self:GetAttribute("_apiframe");
+		local frame = self:GetAttribute("_apiframe");
+		if (CheckForbidden(frame)) then
+			error("Cannot use SecureHandlers API on forbidden frames");
+			return;
+		end
 		self:SetAttribute("_execute", nil);
 		if (type(value) ~= "string") then
 			error("Invalid execute body");
@@ -500,32 +509,50 @@ local function API_OnAttributeChanged(self, name, value)
 		self:SetAttribute("_wrap", nil);
 		if (type(value) ~= "string") then
 			error("Invalid wrap script id");
+			return;
 		end
 		if (not IsValidFrame(frame)) then
 			error("Invalid wrap frame");
+			return;
+		end
+		if (CheckForbidden(frame)) then
+			error("Cannot use SecureHandlers API on forbidden frames");
+			return;
 		end
 		if (not IsValidFrame(header)) then
 			error("Invalid header frame");
+			return;
+		end
+		if (CheckForbidden(header)) then
+			MakeForbidden(frame);
+			error("Cannot use SecureHandlers API on forbidden frames");
+			return;
 		end
 		if (type(preBody) ~= "string") then
 			error("Invalid pre-handler body");
+			return;
 		end
 		if (postBody ~= nil and type(postBody) ~= "string") then
 			error("Invalid post-handler body");
+			return;
 		end
 		if (not select(2, header:IsProtected())) then
 			error("Header frame must be explicitly protected");
+			return;
 		end
 		local script = value;
 		if (not frame:HasScript(script)) then
 			error("Frame does not support script '" .. script .. "'");
+			return;
 		end
 		if (not issecure()) then
 			error("Wrap frame cannot be used");
+			return;
 		end
 		local handler = LOCAL_Wrap_Handlers[value];
 		if (not handler) then
 			error("Unsupported script type '" .. value .. "'");
+			return;
 		end
 		local wrapper = CreateWrapper(frame, value, header,
 									  handler, preBody, postBody);
@@ -543,13 +570,20 @@ local function API_OnAttributeChanged(self, name, value)
 		self:SetAttribute("_unwrap", nil);
 		if (type(value) ~= "string") then
 			error("Invalid unwrap script id");
+			return;
 		end
 		if (not IsValidFrame(frame)) then
 			error("Invalid unwrap frame");
+			return;
+		end
+		if (CheckForbidden(frame)) then
+			error("Cannot use SecureHandlers API on forbidden frames");
+			return;
 		end
 		local script = value;
 		if (not frame:HasScript(script)) then
 			error("Frame does not support script '" .. script .. "'");
+			return;
 		end
 		local header, preBody, postBody = RemoveWrapper(frame, script);
 		if (type(data) == "table") then
@@ -573,8 +607,17 @@ local function API_OnAttributeChanged(self, name, value)
 			error("Invalid destination frame");
 			return;
 		end
+		if (CheckForbidden(frame)) then
+			error("Cannot use SecureHandlers API on forbidden frames");
+			return;
+		end
 		if (not IsValidFrame(value)) then
 			error("Invalid referenced frame");
+			return;
+		end
+		if (CheckForbidden(value)) then
+			MakeForbbiden(frame);
+			error("Cannot use SecureHandlers API on forbidden frames");
 			return;
 		end
 
@@ -590,6 +633,14 @@ end
 local LOCAL_API_Frame = CreateFrame("Frame", "SecureHandlersUpdateFrame",
 								nil, "SecureFrameTemplate");
 
+function CheckForbidden(frame)
+	return LOCAL_API_Frame.IsForbidden(frame); 
+end
+
+function MakeForbidden(frame)
+	LOCAL_API_Frame.SetForbidden(frame); 
+end
+
 LOCAL_API_Frame:SetScript("OnAttributeChanged", API_OnAttributeChanged);
 
 -- Wrap the script on a frame to invoke snippets against a header
@@ -598,12 +649,21 @@ function SecureHandlerWrapScript(frame, script, header, preBody, postBody)
 		error("Invalid frame");
 		return;
 	end
+	if (CheckForbidden(frame)) then
+		error("Cannot use SecureHandlers API on forbidden frames");
+		return;
+	end
 	if (type(script) ~= "string") then
 		error("Invalid script id");
 		return;
 	end
 	if (header and not IsValidFrame(header)) then
 		error("Invalid header frame");
+		return;
+	end
+	if (header and CheckForbidden(header)) then
+		MakeForbbiden(frame);
+		error("Cannot use SecureHandlers API on forbidden frames");
 		return;
 	end
 	if (not select(2, header:IsProtected())) then
@@ -631,9 +691,15 @@ local UNWRAP_TEMP_TABLE = {};
 function SecureHandlerUnwrapScript(frame, script)
 	if (not IsValidFrame(frame)) then
 		error("Invalid frame");
+		return;
+	end
+	if (CheckForbidden(frame)) then
+		error("Cannot use SecureHandlers API on forbidden frames");
+		return;
 	end
 	if (type(script) ~= "string") then
 		error("Invalid script id");
+		return;
 	end
 	wipe(UNWRAP_TEMP_TABLE);
 	UNWRAP_TEMP_TABLE[1] = false;
@@ -661,6 +727,10 @@ function SecureHandlerExecute(frame, body)
 		error("Invalid header frame");
 		return;
 	end
+	if (CheckForbidden(frame)) then
+		error("Cannot use SecureHandlers API on forbidden frames");
+		return;
+	end
 	if (not select(2, frame:IsProtected())) then
 		error("Header frame must be explicitly protected");
 		return;
@@ -679,12 +749,20 @@ function SecureHandlerSetFrameRef(frame, label, refFrame)
 		error("Invalid frame");
 		return;
 	end
+	if (CheckForbidden(frame)) then
+		error("Cannot use SecureHandlers API on forbidden frames");
+		return;
+	end
 	if (type(label) ~= "string") then
 		error("Invalid body");
 		return;
 	end
 	if (not IsValidFrame(refFrame)) then
 		error("Invalid reference frame");
+		return;
+	end
+	if (CheckForbidden(refFrame)) then
+		error("Cannot use SecureHandlers API on forbidden frames");
 		return;
 	end
 	LOCAL_API_Frame:SetAttribute("_apiframe", frame);

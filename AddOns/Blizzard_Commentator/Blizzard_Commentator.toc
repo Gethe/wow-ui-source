@@ -1,0 +1,19 @@
+## Interface: 70300
+## Title: Blizzard_Commentator
+## Secure: 1
+## SavedVariables: g_TeamDefinitions, g_TeamDisplaySavedVars
+## LoadOnDemand: 1
+
+UnitFrameTemplates.xml
+
+UnitFrame.lua
+UnitFrameLayoutData.lua
+
+TeamDisplay.xml
+
+CommentatorCooldownDisplay.lua
+CommentatorCooldownDisplay.xml
+
+FadeToBlack.xml
+CommentatorVictoryFanfare.xml
+PvPCommentator.xml

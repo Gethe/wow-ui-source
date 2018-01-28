@@ -411,7 +411,7 @@
 		</Layers>
 		<Scripts>
 			<OnClick>
-				PlaySound("UChatScrollButton");
+				PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 				ChatConfig_UpdateCombatTabs(self:GetID());
 			</OnClick>
 			<OnLeave>
@@ -833,7 +833,7 @@
 								<Scripts>
 									<OnClick>
 										ChatConfig_MoveFilterUp();
-										PlaySound("UChatScrollButton");
+										PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 									</OnClick>
 									<OnEnter>
 										GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
@@ -863,7 +863,7 @@
 								<Scripts>
 									<OnClick>
 										ChatConfig_MoveFilterDown();
-										PlaySound("UChatScrollButton");
+										PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 									</OnClick>
 									<OnEnter>
 										GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
@@ -1994,7 +1994,7 @@
 				<Scripts>
 					<OnClick>
 						ChatConfigCancel_OnClick();
-						PlaySound("gsTitleOptionOK");
+						PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK);
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -2017,7 +2017,7 @@
 							Blizzard_CombatLog_ApplyFilters(Blizzard_CombatLog_CurrentSettings);
 							Blizzard_CombatLog_Refilter();
 						end
-						PlaySound("gsTitleOptionOK");
+						PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK);
 					</OnClick>
 				</Scripts>
 			</Button>

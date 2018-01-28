@@ -97,7 +97,7 @@
 		<DisabledFont style="GameFontHighlightSmall"/>
 	</Button>
 
-	<Frame name="GarrisonMissionRewardEffectsTemplate" virtual="true">
+	<Frame name="GarrisonMissionRewardEffectsTemplate" parentArray="Rewards" virtual="true">
 		<Size x="152" y="41"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -266,12 +266,12 @@
 					<Anchor point="LEFT" relativePoint="RIGHT" relativeKey="$parent.MissionXP" x="4"/>
 				</Anchors>
 			</Frame>
-			<Frame parentKey="Reward1" parentArray="Rewards" inherits="GarrisonMissionRewardEffectsTemplate">
+			<Frame parentKey="Reward1" inherits="GarrisonMissionRewardEffectsTemplate">
 				<Anchors>
 					<Anchor point="LEFT"/>
 				</Anchors>
 			</Frame>
-			<Frame parentKey="Reward2" parentArray="Rewards" inherits="GarrisonMissionRewardEffectsTemplate">
+			<Frame parentKey="Reward2" inherits="GarrisonMissionRewardEffectsTemplate">
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.Reward1" relativePoint="RIGHT" x="6" y="0"/>
 				</Anchors>
@@ -419,7 +419,7 @@
 				self.Border:SetPoint("CENTER", 0, 0);
 			</OnMouseUp>
 			<OnClick>
-				PlaySound("igMainMenuOptionCheckBoxOn");
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 				self.mainFrame.FollowerList.SearchBox:SetText(self.info.name);
 			</OnClick>
 		</Scripts>
@@ -455,8 +455,8 @@
 			<Layer level="ARTWORK" textureSubLevel="3">
 				<Texture atlas="GarrMission_MissionParchment" vertTile="true" horizTile="true" useAtlasSize="true" alpha="0.5">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="LocBack"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="LocBack"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.LocBack"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.LocBack"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -656,7 +656,7 @@
 		</Size>
 		<Scripts>
 			<OnClick>
-				PlaySound("UI_Garrison_CommandTable_MissionClose");
+				PlaySound(SOUNDKIT.UI_GARRISON_COMMAND_TABLE_MISSION_CLOSE);
 				GarrisonMissionController_CloseMission(self);
 			</OnClick>
 		</Scripts>
@@ -1155,11 +1155,6 @@
 					</OnLoad>
 				</Scripts>
 			</CinematicModel>
-			<Frame parentArray="Rewards" hidden="true" inherits="GarrisonMissionRewardEffectsTemplate">
-				<Anchors>
-					<Anchor point="RIGHT" x="-18"/>
-				</Anchors>
-			</Frame>
 			<Frame parentKey="Saturated" useParentLevel="true" setAllPoints="true" hidden="true">
 				<Animations>
 					<AnimationGroup parentKey="FadeIn" setToFinalAlpha="true">
@@ -1324,7 +1319,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PlaySound("UI_Garrison_CommandTable_Nav_Next");
+						PlaySound(SOUNDKIT.UI_GARRISON_COMMAND_TABLE_NAV_NEXT);
 						self:GetParent():GetParent():NextMission();
 					</OnClick>
 				</Scripts>

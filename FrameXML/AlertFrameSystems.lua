@@ -1,26 +1,28 @@
 function AlertFrameSystems_Register()
-	GuildChallengeAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem(GuildChallengeAlertFrame, GuildChallengeAlertFrame_SetUp);
-	DungeonCompletionAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem(DungeonCompletionAlertFrame, DungeonCompletionAlertFrame_SetUp);
-	ScenarioAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem(ScenarioAlertFrame, ScenarioAlertFrame_SetUp);
-	InvasionAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem(ScenarioLegionInvasionAlertFrame, ScenarioLegionInvasionAlertFrame_SetUp, ScenarioLegionInvasionAlertFrame_Coalesce);
-	DigsiteCompleteAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem(DigsiteCompleteToastFrame, DigsiteCompleteToastFrame_SetUp);
-	StorePurchaseAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem(StorePurchaseAlertFrame, StorePurchaseAlertFrame_SetUp);
-	GarrisonBuildingAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem(GarrisonBuildingAlertFrame, GarrisonBuildingAlertFrame_SetUp);
-	GarrisonMissionAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem(GarrisonMissionAlertFrame, GarrisonMissionAlertFrame_SetUp);
-	GarrisonShipMissionAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem(GarrisonShipMissionAlertFrame, GarrisonMissionAlertFrame_SetUp);
-	GarrisonRandomMissionAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem(GarrisonRandomMissionAlertFrame, GarrisonRandomMissionAlertFrame_SetUp);
-	GarrisonFollowerAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem(GarrisonFollowerAlertFrame, GarrisonFollowerAlertFrame_SetUp);
-	GarrisonShipFollowerAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem(GarrisonShipFollowerAlertFrame, GarrisonShipFollowerAlertFrame_SetUp);
-	GarrisonTalentAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem(GarrisonTalentAlertFrame, GarrisonTalentAlertFrame_SetUp);
-	WorldQuestCompleteAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem(WorldQuestCompleteAlertFrame, WorldQuestCompleteAlertFrame_SetUp, WorldQuestCompleteAlertFrame_Coalesce);
-	LegendaryItemAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem(LegendaryItemAlertFrame, LegendaryItemAlertFrame_SetUp);
+	GuildChallengeAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem("GuildChallengeAlertFrameTemplate", GuildChallengeAlertFrame_SetUp);
+	DungeonCompletionAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem("DungeonCompletionAlertFrameTemplate", DungeonCompletionAlertFrame_SetUp);
+	ScenarioAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem("ScenarioAlertFrameTemplate", ScenarioAlertFrame_SetUp);
+	InvasionAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem("ScenarioLegionInvasionAlertFrameTemplate", ScenarioLegionInvasionAlertFrame_SetUp, ScenarioLegionInvasionAlertFrame_Coalesce);
+	DigsiteCompleteAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem("DigsiteCompleteToastFrameTemplate", DigsiteCompleteToastFrame_SetUp);
+	StorePurchaseAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem("StorePurchaseAlertFrameTemplate", StorePurchaseAlertFrame_SetUp);
+	GarrisonBuildingAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem("GarrisonBuildingAlertFrameTemplate", GarrisonBuildingAlertFrame_SetUp);
+	GarrisonMissionAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem("GarrisonStandardMissionAlertFrameTemplate", GarrisonMissionAlertFrame_SetUp);
+	GarrisonShipMissionAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem("GarrisonShipMissionAlertFrameTemplate", GarrisonMissionAlertFrame_SetUp);
+	GarrisonRandomMissionAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem("GarrisonRandomMissionAlertFrameTemplate", GarrisonRandomMissionAlertFrame_SetUp);
+	GarrisonFollowerAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem("GarrisonStandardFollowerAlertFrameTemplate", GarrisonFollowerAlertFrame_SetUp);
+	GarrisonShipFollowerAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem("GarrisonShipFollowerAlertFrameTemplate", GarrisonShipFollowerAlertFrame_SetUp);
+	GarrisonTalentAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem("GarrisonTalentAlertFrameTemplate", GarrisonTalentAlertFrame_SetUp);
+	WorldQuestCompleteAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem("WorldQuestCompleteAlertFrameTemplate", WorldQuestCompleteAlertFrame_SetUp, WorldQuestCompleteAlertFrame_Coalesce);
+	LegendaryItemAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem("LegendaryItemAlertFrameTemplate", LegendaryItemAlertFrame_SetUp);
+	NewPetAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem("NewPetAlertFrameTemplate", NewPetAlertFrame_SetUp);
+	NewMountAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem("NewMountAlertFrameTemplate", NewMountAlertFrame_SetUp);
 end
 
 -- [[ GuildChallengeAlertFrame ]] --
 function GuildChallengeAlertFrame_SetUp(frame, challengeType, count, max)
-	GuildChallengeAlertFrameType:SetText(_G["GUILD_CHALLENGE_TYPE"..challengeType]);
-	GuildChallengeAlertFrameCount:SetFormattedText(GUILD_CHALLENGE_PROGRESS_FORMAT, count, max);
-	SetLargeGuildTabardTextures("player", GuildChallengeAlertFrameEmblemIcon, GuildChallengeAlertFrameEmblemBackground, GuildChallengeAlertFrameEmblemBorder);
+	frame.Type:SetText(_G["GUILD_CHALLENGE_TYPE"..challengeType]);
+	frame.Count:SetFormattedText(GUILD_CHALLENGE_PROGRESS_FORMAT, count, max);
+	SetLargeGuildTabardTextures("player", frame.EmblemIcon, frame.EmblemBackground, frame.EmblemBorder);
 end
 
 function GuildChallengeAlertFrame_OnClick(self, button, down)
@@ -40,174 +42,46 @@ function DungeonCompletionAlertFrame_OnLoad(self)
 	self.glow = self.glowFrame.glow;
 end
 
-DUNGEON_COMPLETION_MAX_REWARDS = 1;
-function DungeonCompletionAlertFrame_SetUp(frame)
-	PlaySound("LFG_Rewards");
-	--For now we only have 1 dungeon alert frame. If you're completing more than one dungeon within ~5 seconds, tough luck.
-	local name, typeID, subtypeID, textureFilename, moneyBase, moneyVar, experienceBase, experienceVar, numStrangers, numRewards = GetLFGCompletionReward();
-	
-	if ( subtypeID == LFG_SUBTYPEID_RAID ) then
-		frame.raidArt:Show();
-		frame.dungeonArt1:Hide();
-		frame.dungeonArt2:Hide();
-		frame.dungeonArt3:Hide();
-		frame.dungeonArt4:Hide();
-		frame.dungeonTexture:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", 26, 18);
-	else
-		frame.raidArt:Hide();
-		frame.dungeonArt1:Show();
-		frame.dungeonArt2:Show();
-		frame.dungeonArt3:Show();
-		frame.dungeonArt4:Show();
-		frame.dungeonTexture:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", 13, 13);
-	end
-	
-	--Set up the rewards
-	local moneyAmount = moneyBase + moneyVar * numStrangers;
-	local experienceGained = experienceBase + experienceVar * numStrangers;
-	
-	local rewardsOffset = 0;
+-- NOTE: Previously lived in the client, moved out because it's simpler to create this in lua
+-- Potentially move this to a utility file.
+function TooltipSetLFGCompletionReward(tooltip, itemLink, bonusQuantity)
+	bonusQuantity = bonusQuantity or 0;
 
-	if ( moneyAmount > 0 or experienceGained > 0 ) then --hasMiscReward ) then
-		SetPortraitToTexture(DungeonCompletionAlertFrameReward1.texture, "Interface\\Icons\\inv_misc_coin_02");
-		DungeonCompletionAlertFrameReward1.rewardID = 0;
-		DungeonCompletionAlertFrameReward1:Show();
+	tooltip:SetHyperlink(itemLink);
 
-		rewardsOffset = 1;
+	if bonusQuantity > 0 then
+		tooltip:AddLine(" ");
+
+		local bonusValor = BONUS_VALOR_TOOLTIP:format(HIGHLIGHT_FONT_COLOR:GenerateHexColor(), bonusQuantity);
+		local bonusValorLine = string.format("|c%s|r", bonusValor);
+		tooltip:AddLine(bonusValorLine);
 	end
-	
-	for i = 1, numRewards do
-		local frameID = (i + rewardsOffset);
-		local reward = _G["DungeonCompletionAlertFrameReward"..frameID];
-		if ( not reward ) then
-			reward = CreateFrame("FRAME", "DungeonCompletionAlertFrameReward"..frameID, DungeonCompletionAlertFrame, "DungeonCompletionAlertFrameRewardTemplate");
-			reward:SetID(frameID);
-			DUNGEON_COMPLETION_MAX_REWARDS = frameID;
-		end
-		DungeonCompletionAlertFrameReward_SetReward(reward, i);
-	end
-	
-	local usedButtons = numRewards + rewardsOffset;
-	--Hide the unused ones
-	for i = usedButtons + 1, DUNGEON_COMPLETION_MAX_REWARDS do
-		_G["DungeonCompletionAlertFrameReward"..i]:Hide();
-	end
-	
-	if ( usedButtons > 0 ) then
-		--Set up positions
-		local spacing = 36;
-		DungeonCompletionAlertFrameReward1:SetPoint("TOP", DungeonCompletionAlertFrame, "TOP", -spacing/2 * usedButtons + 41, 0);
-		for i = 2, usedButtons do
-			_G["DungeonCompletionAlertFrameReward"..i]:SetPoint("CENTER", "DungeonCompletionAlertFrameReward"..(i - 1), "CENTER", spacing, 0);
-		end
-	end
-	
-	--Set up the text and icons.
-	
-	frame.instanceName:SetText(name);
-	if ( subtypeID == LFG_SUBTYPEID_HEROIC ) then
-		frame.heroicIcon:Show();
-		frame.instanceName:SetPoint("TOP", 33, -44);
-	else
-		frame.heroicIcon:Hide();
-		frame.instanceName:SetPoint("TOP", 25, -44);
-	end
-		
-	frame.dungeonTexture:SetTexture("Interface\\LFGFrame\\LFGIcon-"..textureFilename);
 end
 
-function DungeonCompletionAlertFrameReward_SetReward(frame, index)
-	local texturePath, quantity = GetLFGCompletionRewardItem(index);
-	SetPortraitToTexture(frame.texture, texturePath);
-	frame.rewardID = index;
-	frame:Show();
+-- Utility to acquire or create a reward frame and clear all fields.
+-- Potentially move to frame pools.
+local function GetRewardFrame(frame, templateName)
+	frame.numUsedRewardFrames = (frame.numUsedRewardFrames or 0) + 1;
+	local rewardFrame = frame.RewardFrames and frame.RewardFrames[frame.numUsedRewardFrames] or CreateFrame("BUTTON", nil, frame, templateName);
+
+	rewardFrame.itemLink = nil;
+	rewardFrame.money = nil;
+	rewardFrame.xp = nil;
+	rewardFrame.currencyIndex = nil;
+	rewardFrame.rewardID = nil;
+	rewardFrame:Show();
+
+	return rewardFrame;
 end
 
-function DungeonCompletionAlertFrameReward_OnEnter(self)
-	AlertFrame_StopOutAnimation(self:GetParent());
-	
-	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	if ( self.rewardID == 0 ) then
-		GameTooltip:AddLine(YOU_RECEIVED);
-		local name, typeID, subtypeID, textureFilename, moneyBase, moneyVar, experienceBase, experienceVar, numStrangers, numRewards = GetLFGCompletionReward();
-
-		local moneyAmount = moneyBase + moneyVar * numStrangers;
-		local experienceGained = experienceBase + experienceVar * numStrangers;
-		
-		if ( experienceGained > 0 ) then
-			GameTooltip:AddLine(string.format(GAIN_EXPERIENCE, experienceGained));
+local function ResetRewardFrames(frame)
+	if frame.RewardFrames then
+		for _, rewardFrame in ipairs(frame.RewardFrames) do
+			rewardFrame:Hide();
 		end
-		if ( moneyAmount > 0 ) then
-			SetTooltipMoney(GameTooltip, moneyAmount, nil);
-		end
-	else
-		GameTooltip:SetLFGCompletionReward(self.rewardID);
+
+		frame.numUsedRewardFrames = 0;
 	end
-	GameTooltip:Show();
-end
-
-function DungeonCompletionAlertFrameReward_OnLeave(frame)
-	AlertFrame_ResumeOutAnimation(frame:GetParent());
-	GameTooltip:Hide();
-end
-
--- [[ ScenarioAlertFrame ]] --
-SCENARIO_MAX_REWARDS = 1;
-function ScenarioAlertFrame_SetUp(frame)
-	PlaySound("UI_Scenario_Ending");
-	--For now we only have 1 scenario alert frame
-	local name, typeID, subtypeID, textureFilename, moneyBase, moneyVar, experienceBase, experienceVar, numStrangers, numRewards = GetLFGCompletionReward();
-	
-	-- bonus?
-	local _, _, _, _, hasBonusStep, isBonusStepComplete = C_Scenario.GetInfo();
-	if ( hasBonusStep and isBonusStepComplete ) then
-		frame.BonusStar:Show();
-	else
-		frame.BonusStar:Hide();
-	end
-
-	--Set up the rewards
-	local moneyAmount = moneyBase + moneyVar * numStrangers;
-	local experienceGained = experienceBase + experienceVar * numStrangers;
-
-	local rewardsOffset = 0;
-
-	if ( moneyAmount > 0 or experienceGained > 0 ) then --hasMiscReward ) then
-		SetPortraitToTexture(frame.reward1.texture, "Interface\\Icons\\inv_misc_coin_02");
-		frame.reward1.rewardID = 0;
-		frame.reward1:Show();
-
-		rewardsOffset = 1;
-	end
-
-	for i = 1, numRewards do
-		local frameID = (i + rewardsOffset);
-		local reward = _G["ScenarioAlertFrameReward"..frameID];
-		if ( not reward ) then
-			reward = CreateFrame("FRAME", "ScenarioAlertFrameReward"..frameID, ScenarioAlertFrame, "DungeonCompletionAlertFrameRewardTemplate");
-			SCENARIO_MAX_REWARDS = frameID;
-		end
-		DungeonCompletionAlertFrameReward_SetReward(reward, i);
-	end
-
-	local usedButtons = numRewards + rewardsOffset;
-	--Hide the unused ones
-	for i = usedButtons + 1, SCENARIO_MAX_REWARDS do
-		_G["ScenarioAlertFrameReward"..i]:Hide();
-	end
-
-	if ( usedButtons > 0 ) then
-		--Set up positions
-		local spacing = 36;
-		frame.reward1:SetPoint("TOP", frame, "TOP", -spacing/2 * usedButtons + 41, 8);
-		for i = 2, usedButtons do
-			_G["ScenarioAlertFrameReward"..i]:SetPoint("CENTER", "ScenarioAlertFrameReward"..(i - 1), "CENTER", spacing, 0);
-		end
-	end
-
-	--Set up the text and icon
-	frame.dungeonName:SetText(name);
-	frame.dungeonTexture:SetTexture("Interface\\LFGFrame\\LFGIcon-"..textureFilename);
 end
 
 function StandardRewardAlertFrame_AdjustRewardAnchors(frame)
@@ -219,10 +93,6 @@ function StandardRewardAlertFrame_AdjustRewardAnchors(frame)
 			else
 				frame.RewardFrames[i]:SetPoint("TOP", frame, "TOP", -SPACING / 2 * frame.numUsedRewardFrames + 41, 8);
 			end
-		end
-
-		for i = frame.numUsedRewardFrames + 1, #frame.RewardFrames do
-			frame.RewardFrames[i]:Hide();
 		end
 	end
 end
@@ -245,79 +115,190 @@ function StandardRewardAlertFrame_OnEnter(self)
 	GameTooltip:Show();
 end
 
--- [[ScenarioLegionInvasionAlertFrame ]] --
-function ScenarioLegionInvasionAlertFrame_SetUp(frame, rewardQuestID, rewardItemLink)
-	if rewardItemLink then
-		-- If we're seeing this with a reward the scenario hasn't been completed yet, no toast until scenario complete is triggered
-		return false;
+local function SetRewardInternal(frame, texture, rewardID)
+	SetPortraitToTexture(frame.texture, texture);
+	frame.rewardID = rewardID;
+end
+
+function DungeonCompletionAlertFrameReward_SetRewardMoney(frame, optionalMoney)
+	SetRewardInternal(frame, "Interface\\Icons\\inv_misc_coin_02", 0);
+	if optionalMoney then
+		frame.money = optionalMoney;
+	end
+end
+
+function DungeonCompletionAlertFrameReward_SetRewardXP(frame, optionalXP)
+	SetRewardInternal(frame, "Interface\\Icons\\xp_icon", 0);
+	if optionalXP then
+		frame.xp = optionalXP;
+	end
+end
+
+function DungeonCompletionAlertFrameReward_SetRewardItem(frame, itemLink, texture)
+	SetRewardInternal(frame, texture);
+	frame.itemLink = itemLink;
+end
+
+function DungeonCompletionAlertFrameReward_SetReward(frame, reward)
+	SetRewardInternal(frame, reward.texturePath, reward.rewardID);
+	frame.reward = reward;
+end
+
+function DungeonCompletionAlertFrame_SetUp(frame, rewardData)
+	PlaySound(SOUNDKIT.LFG_REWARDS);
+
+	--For now we only have 1 dungeon alert frame. If you're completing more than one dungeon within ~5 seconds, tough luck.
+	local isRaid = rewardData.subtypeID == LFG_SUBTYPEID_RAID;
+	frame.raidArt:SetShown(isRaid);
+	frame.dungeonArt1:SetShown(not isRaid);
+	frame.dungeonArt2:SetShown(not isRaid);
+	frame.dungeonArt3:SetShown(not isRaid);
+	frame.dungeonArt4:SetShown(not isRaid);
+
+	if ( isRaid ) then
+		frame.dungeonTexture:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", 26, 18);
+	else
+		frame.dungeonTexture:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", 13, 13);
 	end
 
-	PlaySound("UI_Scenario_Ending");
+	--Set up the rewards
+	ResetRewardFrames(frame);
 
-	local scenarioName, currentStage, numStages, flags, hasBonusStep, isBonusStepComplete, _, xp, money, scenarioType, areaName = C_Scenario.GetInfo();
+	-- Use Money type icon for both money and xp here.
+	if ( rewardData.moneyAmount > 0 or rewardData.experienceGained > 0 ) then
+		local rewardFrame = GetRewardFrame(frame, "DungeonCompletionAlertFrameRewardTemplate");
+		DungeonCompletionAlertFrameReward_SetRewardMoney(rewardFrame);
+	end
+
+	for i = 1, rewardData.numRewards do
+		local rewardFrame = GetRewardFrame(frame, "DungeonCompletionAlertFrameRewardTemplate");
+		DungeonCompletionAlertFrameReward_SetReward(rewardFrame, rewardData.rewards[i]);
+	end
+
+	StandardRewardAlertFrame_AdjustRewardAnchors(frame);
+
+	--Set up the text and icons.
+
+	frame.instanceName:SetText(rewardData.name);
+	if ( rewardData.subtypeID == LFG_SUBTYPEID_HEROIC ) then
+		frame.heroicIcon:Show();
+		frame.instanceName:SetPoint("TOP", 33, -44);
+	else
+		frame.heroicIcon:Hide();
+		frame.instanceName:SetPoint("TOP", 25, -44);
+	end
+
+	frame.dungeonTexture:SetTexture(rewardData.iconTextureFile);
+	frame.rewardData = rewardData;
+end
+
+function DungeonCompletionAlertFrameReward_OnEnter(self)
+	local parent = self:GetParent();
+	local rewardData = parent.rewardData;
+
+	AlertFrame_StopOutAnimation(parent);
+
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+
+	if ( self.rewardID == 0 ) then
+		GameTooltip:AddLine(YOU_RECEIVED);
+
+		if ( rewardData.experienceGained > 0 ) then
+			GameTooltip:AddLine(string.format(GAIN_EXPERIENCE, rewardData.experienceGained));
+		end
+
+		if ( rewardData.moneyAmount > 0 ) then
+			SetTooltipMoney(GameTooltip, rewardData.moneyAmount, nil);
+		end
+	elseif ( self.reward.rewardItemLink ) then
+		TooltipSetLFGCompletionReward(GameTooltip, self.reward.rewardItemLink, self.reward.bonusQuantity);
+	end
+
+	GameTooltip:Show();
+end
+
+function DungeonCompletionAlertFrameReward_OnLeave(frame)
+	AlertFrame_ResumeOutAnimation(frame:GetParent());
+	GameTooltip:Hide();
+end
+
+-- [[ ScenarioAlertFrame ]] --
+function ScenarioAlertFrame_SetUp(frame, rewardData)
+	PlaySound(SOUNDKIT.UI_SCENARIO_ENDING);
+
+	frame.BonusStar:SetShown(rewardData.hasBonusStep and rewardData.isBonusStepComplete);
+
+	--Set up the rewards
+	ResetRewardFrames(frame);
+
+	-- Use Money type icon for both money and xp here.
+	if ( rewardData.moneyAmount > 0 or rewardData.experienceGained > 0 ) then
+		local rewardFrame = GetRewardFrame(frame, "DungeonCompletionAlertFrameRewardTemplate");
+		DungeonCompletionAlertFrameReward_SetRewardMoney(rewardFrame);
+	end
+
+	for i = 1, rewardData.numRewards do
+		local rewardFrame = GetRewardFrame(frame, "DungeonCompletionAlertFrameRewardTemplate");
+		DungeonCompletionAlertFrameReward_SetReward(rewardFrame, rewardData.rewards[i]);
+	end
+
+	StandardRewardAlertFrame_AdjustRewardAnchors(frame);
+
+	--Set up the text and icon
+	frame.dungeonName:SetText(rewardData.name);
+	frame.dungeonTexture:SetTexture(rewardData.iconTextureFile);
+	frame.rewardData = rewardData;
+end
+
+-- [[ScenarioLegionInvasionAlertFrame ]] --
+function ScenarioLegionInvasionAlertFrame_SetUp(frame, rewardQuestID, name, showBonusCompletion, xp, money)
+	PlaySound(SOUNDKIT.UI_SCENARIO_ENDING);
 
 	frame.questID = rewardQuestID;
-	frame.ZoneName:SetText(areaName or scenarioName);
-	frame.BonusStar:SetShown(hasBonusStep and isBonusStepComplete);
+	frame.ZoneName:SetText(name);
+	frame.BonusStar:SetShown(showBonusCompletion);
 
-	frame.numUsedRewardFrames = 0;
+	ResetRewardFrames(frame);
+
 	if money > 0 then
-		frame.numUsedRewardFrames = frame.numUsedRewardFrames + 1;
-		local rewardFrame = frame.RewardFrames and frame.RewardFrames[frame.numUsedRewardFrames] or CreateFrame("FRAME", nil, frame, "InvasionAlertFrameRewardTemplate");
-
-		SetPortraitToTexture(rewardFrame.texture, "Interface\\Icons\\inv_misc_coin_02");
-		rewardFrame.itemLink = nil;
-		rewardFrame.money = money;
-		rewardFrame.xp = nil;
-		rewardFrame:Show();
+		local rewardFrame = GetRewardFrame(frame, "InvasionAlertFrameRewardTemplate");
+		DungeonCompletionAlertFrameReward_SetRewardMoney(rewardFrame, money);
 	end
 
 	if xp > 0 and UnitLevel("player") < MAX_PLAYER_LEVEL then
-		frame.numUsedRewardFrames = frame.numUsedRewardFrames + 1;
-		local rewardFrame = frame.RewardFrames and frame.RewardFrames[frame.numUsedRewardFrames] or CreateFrame("FRAME", nil, frame, "InvasionAlertFrameRewardTemplate");
-
-		SetPortraitToTexture(rewardFrame.texture, "Interface\\Icons\\xp_icon");
-		rewardFrame.itemLink = nil;
-		rewardFrame.money = nil;
-		rewardFrame.xp = xp;
-		rewardFrame:Show();
+		local rewardFrame = GetRewardFrame(frame, "InvasionAlertFrameRewardTemplate");
+		DungeonCompletionAlertFrameReward_SetRewardXP(rewardFrame, xp);
 	end
 
 	StandardRewardAlertFrame_AdjustRewardAnchors(frame);
 end
 
-function ScenarioLegionInvasionAlertFrame_Coalesce(frame, questID, rewardItemLink)
+function ScenarioLegionInvasionAlertFrame_Coalesce(frame, questID, rewardItemLink, texture)
 	if frame.questID == questID then
-		frame.numUsedRewardFrames = frame.numUsedRewardFrames + 1;
-		local rewardFrame = frame.RewardFrames and frame.RewardFrames[frame.numUsedRewardFrames] or CreateFrame("FRAME", nil, frame, "WorldQuestFrameRewardTemplate");
-		
-		local _, _, _, _, texture = GetItemInfoInstant(rewardItemLink);
-		SetPortraitToTexture(rewardFrame.texture, texture);
-		rewardFrame.itemLink = rewardItemLink;
-		rewardFrame.money = nil;
-		rewardFrame.xp = nil;
-		rewardFrame:Show();
-
+		local rewardFrame = GetRewardFrame(frame, "WorldQuestFrameRewardTemplate");
+		DungeonCompletionAlertFrameReward_SetRewardItem(rewardFrame, rewardItemLink, texture);
 		StandardRewardAlertFrame_AdjustRewardAnchors(frame);
+
+		return ALERT_FRAME_COALESCE_SUCCESS;
 	end
 
-	return ALERT_FRAME_COALESCE_STOP;
+	return ALERT_FRAME_COALESCE_CONTINUE;
 end
 
 -- [[ AchievementAlertFrame ]] --
 function AchievementAlertFrame_SetUp(frame, achievementID, alreadyEarned)
 	local _, name, points, completed, month, day, year, description, flags, icon, rewardText, isGuildAch, wasEarnedByMe, earnedBy = GetAchievementInfo(achievementID);
-	
+
 	local displayName = frame.Name;
 	local shieldPoints = frame.Shield.Points;
 	local shieldIcon = frame.Shield.Icon;
 	local unlocked = frame.Unlocked;
 	local oldCheevo = frame.OldAchievement;
-	
+
 	displayName:SetText(name);
 
 	AchievementShield_SetPoints(points, shieldPoints, GameFontNormal, GameFontNormalSmall);
-	
+
 	if ( isGuildAch ) then
 		local guildName = frame.GuildName;
 		local guildBorder = frame.GuildBorder;
@@ -393,7 +374,7 @@ function AchievementAlertFrame_SetUp(frame, achievementID, alreadyEarned)
 			frame.shine:SetTexCoord(0.78125, 0.912109375, 0, 0.28125);
 			frame.shine:SetPoint("BOTTOMLEFT", 0, 8);
 		end
-		
+
 		if (alreadyEarned) then
 			frame.oldCheevo = true;
 			shieldPoints:Hide();
@@ -402,17 +383,17 @@ function AchievementAlertFrame_SetUp(frame, achievementID, alreadyEarned)
 			displayName:SetPoint("BOTTOMLEFT", 72, 37);
 			displayName:SetPoint("BOTTOMRIGHT", -25, 37);
 			unlocked:SetPoint("TOP", 21, -23);
-		end	
+		end
 	end
-	
+
 	if ( points == 0 ) then
 		shieldIcon:SetTexture([[Interface\AchievementFrame\UI-Achievement-Shields-NoPoints]]);
 	else
 		shieldIcon:SetTexture([[Interface\AchievementFrame\UI-Achievement-Shields]]);
 	end
-	
+
 	frame.Icon.Texture:SetTexture(icon);
-	
+
 	frame.id = achievementID;
 	return true;
 end
@@ -421,22 +402,22 @@ function AchievementAlertFrame_OnClick (self, button, down)
 	if( AlertFrame_OnClick(self, button, down) ) then
 		return;
 	end
-	
+
 	local id = self.id;
 	if ( not id ) then
 		return;
 	end
-	
+
 	CloseAllWindows();
 	ShowUIPanel(AchievementFrame);
-	
+
 	local _, _, _, achCompleted = GetAchievementInfo(id);
 	if ( achCompleted and (ACHIEVEMENTUI_SELECTEDFILTER == AchievementFrameFilters[ACHIEVEMENT_FILTER_INCOMPLETE].func) ) then
 		AchievementFrame_SetFilter(ACHIEVEMENT_FILTER_ALL);
 	elseif ( (not achCompleted) and (ACHIEVEMENTUI_SELECTEDFILTER == AchievementFrameFilters[ACHIEVEMENT_FILTER_COMPLETE].func) ) then
 		AchievementFrame_SetFilter(ACHIEVEMENT_FILTER_ALL);
 	end
-	
+
 	AchievementFrame_SelectAchievement(id)
 end
 
@@ -446,10 +427,10 @@ AchievementAlertSystem:SetCanShowMoreConditionFunc(function() return not C_PetBa
 -- [[ CriteriaAlertFrame ]] --
 function CriteriaAlertFrame_SetUp(frame, achievementID, criteriaString)
 	local _, name, points, completed, month, day, year, description, flags, icon, rewardText, isGuildAch = GetAchievementInfo(achievementID);
-	
+
 	frame.Name:SetText(criteriaString);
 	frame.Icon.Texture:SetTexture(icon);
-	
+
 	frame.id = achievementID;
 end
 
@@ -474,17 +455,19 @@ LOOTUPGRADEFRAME_QUALITY_TEXTURES = {
 
 -- [[ LootWonAlertFrameTemplate ]] --
 LOOTWONALERTFRAME_VALUES={
-	Default = { bgOffsetX=0, bgOffsetY=0, labelOffsetX=7, labelOffsetY=5, labelText=YOU_WON_LABEL, glowAtlas="loottoast-glow"},
-	DefaultPersonal = { bgOffsetX=0, bgOffsetY=0, labelOffsetX=7, labelOffsetY=5, labelText=YOU_RECEIVED_LABEL, glowAtlas="loottoast-glow"},
+	WonRoll = { bgOffsetX=0, bgOffsetY=0, labelOffsetX=7, labelOffsetY=5, labelText=YOU_WON_LABEL, glowAtlas="loottoast-glow"},
+	Default = { bgOffsetX=0, bgOffsetY=0, labelOffsetX=7, labelOffsetY=5, labelText=YOU_RECEIVED_LABEL, glowAtlas="loottoast-glow"},
 	Upgraded = { bgOffsetX=0, bgOffsetY=0, labelOffsetX=7, labelOffsetY=5, labelText=ITEM_UPGRADED_LABEL, bgAtlas="LootToast-MoreAwesome", glowAtlas="loottoast-glow"},
 	LessAwesome = { bgOffsetX=0, bgOffsetY=0, labelOffsetX=7, labelOffsetY=5, labelText=YOU_RECEIVED_LABEL, bgAtlas="LootToast-LessAwesome"},
 	GarrisonCache = { bgOffsetX=-4, bgOffsetY=0, labelOffsetX=7, labelOffsetY=1, labelText=GARRISON_CACHE, glowAtlas="CacheToast-Glow", bgAtlas="CacheToast", noIconBorder=true, iconUnderBG=true},
 	Horde = { bgOffsetX=-1, bgOffsetY=-1, labelOffsetX=7, labelOffsetY=3, labelText=YOU_EARNED_LABEL, pvpAtlas="loottoast-bg-horde", glowAtlas="loottoast-glow"},
 	Alliance = { bgOffsetX=-1, bgOffsetY=-1, labelOffsetX=7, labelOffsetY=3, labelText=YOU_EARNED_LABEL, pvpAtlas="loottoast-bg-alliance", glowAtlas="loottoast-glow"},
+	RatedHorde = { bgOffsetX=0, bgOffsetY=0, labelOffsetX=7, labelOffsetY=3, labelText=YOU_EARNED_LABEL, pvpAtlas="pvprated-loottoast-bg-horde", glowAtlas="loottoast-glow"},
+	RatedAlliance = { bgOffsetX=0, bgOffsetY=0, labelOffsetX=7, labelOffsetY=3, labelText=YOU_EARNED_LABEL, pvpAtlas="pvprated-loottoast-bg-alliance", glowAtlas="loottoast-glow"},
 }
 
 -- NOTE - This may also be called for an externally created frame. (E.g. bonus roll has its own frame)
-function LootWonAlertFrame_SetUp(self, itemLink, quantity, rollType, roll, specID, isCurrency, showFactionBG, lootSource, lessAwesome, isUpgraded, isPersonal)
+function LootWonAlertFrame_SetUp(self, itemLink, quantity, rollType, roll, specID, isCurrency, showFactionBG, lootSource, lessAwesome, isUpgraded, wonRoll, showRatedBG)
 	local itemName, itemHyperLink, itemRarity, itemTexture;
 	if (isCurrency) then
 		itemName, _, itemTexture, _, _, _, _, itemRarity = GetCurrencyInfo(itemLink);
@@ -493,12 +476,12 @@ function LootWonAlertFrame_SetUp(self, itemLink, quantity, rollType, roll, specI
 		else
 			itemName = format(CURRENCY_QUANTITY_TEMPLATE, quantity, itemName);
 		end
-		itemHyperLink = itemLink;		
+		itemHyperLink = itemLink;
 	else
 		itemName, itemHyperLink, itemRarity, _, _, _, _, _, _, itemTexture = GetItemInfo(itemLink);
 	end
 
-	local windowInfo = (isPersonal or isCurrency) and LOOTWONALERTFRAME_VALUES.DefaultPersonal or LOOTWONALERTFRAME_VALUES.Default;
+	local windowInfo = wonRoll and LOOTWONALERTFRAME_VALUES.WonRoll or LOOTWONALERTFRAME_VALUES.Default;
 	if( showFactionBG ) then
 		local factionGroup = UnitFactionGroup("player");
 		windowInfo = LOOTWONALERTFRAME_VALUES[factionGroup]
@@ -506,7 +489,17 @@ function LootWonAlertFrame_SetUp(self, itemLink, quantity, rollType, roll, specI
 		self.PvPBackground:SetPoint("CENTER", windowInfo.bgOffsetX, windowInfo.bgOffsetY);
 		self.Background:Hide();
 		self.BGAtlas:Hide();
-		self.PvPBackground:Show();	
+		self.RatedPvPBackground:Hide();
+		self.PvPBackground:Show();
+	elseif ( showRatedBG ) then
+		local factionGroup = UnitFactionGroup("player");
+		windowInfo = LOOTWONALERTFRAME_VALUES["Rated"..factionGroup]
+		self.RatedPvPBackground:SetAtlas(windowInfo.pvpAtlas, true);
+		self.RatedPvPBackground:SetPoint("CENTER", windowInfo.bgOffsetX, windowInfo.bgOffsetY);
+		self.Background:Hide();
+		self.BGAtlas:Hide();
+		self.PvPBackground:Hide();
+		self.RatedPvPBackground:Show();
 	else
 		if ( lootSource == LOOT_SOURCE_GARRISON_CACHE ) then
 			windowInfo = LOOTWONALERTFRAME_VALUES["GarrisonCache"];
@@ -526,6 +519,7 @@ function LootWonAlertFrame_SetUp(self, itemLink, quantity, rollType, roll, specI
 			self.BGAtlas:Hide();
 		end
 		self.PvPBackground:Hide();
+		self.RatedPvPBackground:Hide();
 	end
 	if windowInfo.glowAtlas then
 		self.glow:SetAtlas(windowInfo.glowAtlas);
@@ -533,7 +527,7 @@ function LootWonAlertFrame_SetUp(self, itemLink, quantity, rollType, roll, specI
 	else
 		self.glow.suppressGlow = true;
 	end
-	
+
 	self.IconBorder:SetShown(not windowInfo.noIconBorder);
 	if ( windowInfo.iconUnderBG ) then
 		self.Icon:SetDrawLayer("BACKGROUND");
@@ -541,18 +535,25 @@ function LootWonAlertFrame_SetUp(self, itemLink, quantity, rollType, roll, specI
 		self.Icon:SetDrawLayer("BORDER");
 	end
 
-	self.Label:SetText(windowInfo.labelText);	
+	self.Label:SetText(windowInfo.labelText);
 	self.Label:SetPoint("TOPLEFT", self.Icon, "TOPRIGHT", windowInfo.labelOffsetX, windowInfo.labelOffsetY);
-	
+
 	self.isCurrency = isCurrency;
 
 	self.Icon:SetTexture(itemTexture);
 	self.ItemName:SetText(itemName);
 	local color = ITEM_QUALITY_COLORS[itemRarity];
 	self.ItemName:SetVertexColor(color.r, color.g, color.b);
-	self.IconBorder:SetAtlas(LOOT_BORDER_BY_QUALITY[itemRarity] or LOOT_BORDER_BY_QUALITY[LE_ITEM_QUALITY_UNCOMMON]);
+	local atlas = LOOT_BORDER_BY_QUALITY[itemRarity];
+	local desaturate = false;
+	if (not atlas) then
+		atlas = "loottoast-itemborder-gold";
+		desaturate = true;
+	end
+	self.IconBorder:SetAtlas(atlas);
+	self.IconBorder:SetDesaturated(desaturate);
 	if ( specID and specID > 0 and not isCurrency ) then
-		local id, name, description, texture, background, role, class = GetSpecializationInfoByID(specID);
+		local id, name, description, texture, role, class = GetSpecializationInfoByID(specID);
 		self.SpecIcon:SetTexture(texture);
 		self.SpecIcon:Show();
 		self.SpecRing:Show();
@@ -587,16 +588,16 @@ function LootWonAlertFrame_SetUp(self, itemLink, quantity, rollType, roll, specI
 	else
 		for i = 1, self.numArrows do
 			self["Arrow"..i]:SetAlpha(0);
-		end	
+		end
 	end
-	
+
 	self.hyperlink = itemHyperLink;
 	if ( lessAwesome ) then
-		PlaySoundKitID(51402);	--UI_Raid_Loot_Toast_Lesser_Item_Won
+		PlaySound(SOUNDKIT.UI_RAID_LOOT_TOAST_LESSER_ITEM_WON);
 	elseif ( isUpgraded ) then
-		PlaySoundKitID(51561);	-- UI_Warforged_Item_Loot_Toast
+		PlaySound(SOUNDKIT.UI_WARFORGED_ITEM_LOOT_TOAST);
 	else
-		PlaySoundKitID(31578);	--UI_EpicLoot_Toast
+		PlaySound(SOUNDKIT.UI_EPICLOOT_TOAST);
 	end
 end
 
@@ -604,7 +605,7 @@ function LootWonAlertFrame_OnClick(self, button, down)
 	if( AlertFrame_OnClick(self, button, down) ) then
 		return;
 	end
-	if (self.isCurrency) then 
+	if (self.isCurrency) then
 		return;
 	end
 	local itemID = GetItemInfoFromHyperlink(self.hyperlink);
@@ -621,7 +622,7 @@ function LootUpgradeFrame_SetUp(self, itemLink, quantity, specID, baseQuality)
 	local itemName, itemHyperLink, itemRarity, _, _, _, _, _, _, itemTexture = GetItemInfo(itemLink);
 	local baseQualityColor = ITEM_QUALITY_COLORS[baseQuality];
 	local upgradeQualityColor = ITEM_QUALITY_COLORS[itemRarity];
-	
+
 	self.Icon:SetTexture(itemTexture);
 	self.BaseQualityItemName:SetText(itemName);
 	self.BaseQualityItemName:SetTextColor(baseQualityColor.r, baseQualityColor.g, baseQualityColor.b);
@@ -631,18 +632,18 @@ function LootUpgradeFrame_SetUp(self, itemLink, quantity, specID, baseQuality)
 	self.WhiteText2:SetText(itemName);
 	self.TitleText:SetText(format(LOOTUPGRADEFRAME_TITLE, _G["ITEM_QUALITY"..itemRarity.."_DESC"]));
 	self.TitleText:SetTextColor(upgradeQualityColor.r, upgradeQualityColor.g, upgradeQualityColor.b);
-	
+
 	local baseTexture = LOOTUPGRADEFRAME_QUALITY_TEXTURES[baseQuality] or LOOTUPGRADEFRAME_QUALITY_TEXTURES[LE_ITEM_QUALITY_UNCOMMON];
 	local upgradeTexture = LOOTUPGRADEFRAME_QUALITY_TEXTURES[itemRarity] or LOOTUPGRADEFRAME_QUALITY_TEXTURES[LE_ITEM_QUALITY_UNCOMMON];
 	self.BaseQualityBorder:SetAtlas(baseTexture.border, true);
 	self.UpgradeQualityBorder:SetAtlas(upgradeTexture.border, true);
-	
+
 	for i = 1, self.numArrows do
 		self["Arrow"..i]:SetAtlas(upgradeTexture.arrow, true);
 	end
 
 	self.hyperlink = itemHyperLink;
-	PlaySoundKitID(31578);	--UI_EpicLoot_Toast
+	PlaySound(SOUNDKIT.UI_EPICLOOT_TOAST);
 end
 
 function LootUpgradeFrame_OnClick(self, button, down)
@@ -665,17 +666,24 @@ LootUpgradeAlertSystem = AlertFrame:AddQueuedAlertFrameSubSystem("LootUpgradeFra
 -- [[ MoneyWonAlertFrameTemplate ]] --
 function MoneyWonAlertFrame_SetUp(self, amount)
 	self.Amount:SetText(GetMoneyString(amount));
-	PlaySoundKitID(31578);	--UI_EpicLoot_Toast
+	PlaySound(SOUNDKIT.UI_EPICLOOT_TOAST);
 end
 
 MoneyWonAlertSystem = AlertFrame:AddQueuedAlertFrameSubSystem("MoneyWonAlertFrameTemplate", MoneyWonAlertFrame_SetUp, 6, math.huge);
 
+-- [[ HonorAwardedAlertFrameTemplate ]] --
+function HonorAwardedAlertFrame_SetUp(self, amount)
+	self.Amount:SetText(string.format(MERCHANT_HONOR_POINTS, amount));
+	PlaySound(SOUNDKIT.UI_EPICLOOT_TOAST);
+end
+
+HonorAwardedAlertSystem = AlertFrame:AddQueuedAlertFrameSubSystem("HonorAwardedAlertFrameTemplate", HonorAwardedAlertFrame_SetUp, 6, math.huge);
+
 -- [[ DigsiteCompleteToastFrame ]] --
-function DigsiteCompleteToastFrame_SetUp(frame, researchBranchID)
-	local raceName, raceTexture	= GetArchaeologyRaceInfoByID(researchBranchID);
+function DigsiteCompleteToastFrame_SetUp(frame, raceName, raceTexture)
 	frame.DigsiteType:SetText(raceName);
 	frame.DigsiteTypeTexture:SetTexture(raceTexture);
-	PlaySound("UI_DigsiteCompletion_Toast");
+	PlaySound(SOUNDKIT.UI_DIG_SITE_COMPLETION_TOAST);
 end
 
 -- [[ StorePurchaseAlertFrame ]] --
@@ -683,14 +691,14 @@ function StorePurchaseAlertFrame_SetUp(frame, type, icon, name, payloadID)
 	frame.Icon:SetTexture(icon);
 	frame.Title:SetFontObject(GameFontNormalLarge);
 	frame.Title:SetText(name);
-	
+
 	frame.type = type;
 	frame.payloadID = payloadID;
 
 	if ( frame.Title:IsTruncated() ) then
 		frame.Title:SetFontObject(GameFontNormal);
 	end
-	PlaySound("UI_igStore_PurchaseDelivered_Toast_01");
+	PlaySound(SOUNDKIT.UI_IG_STORE_PURCHASE_DELIVERED_TOAST_01);
 end
 
 function StorePurchaseAlertFrame_OnClick(self, button, down)
@@ -698,32 +706,32 @@ function StorePurchaseAlertFrame_OnClick(self, button, down)
 		return;
 	end
 
-	if (self.type == LE_STORE_DELIVERY_TYPE_ITEM) then
+	if (self.type == Enum.StoreDeliveryType.Item) then
 		local slot = SearchBagsForItem(self.payloadID);
 		if (slot >= 0) then
 			OpenBag(slot);
 		end
-	elseif (self.type == LE_STORE_DELIVERY_TYPE_MOUNT) then
+	elseif (self.type == Enum.StoreDeliveryType.Mount) then
 		ToggleCollectionsJournal(1);
-	elseif (self.type == LE_STORE_DELIVERY_TYPE_BATTLEPET) then
+	elseif (self.type == Enum.StoreDeliveryType.Battlepet) then
 		ToggleCollectionsJournal(2);
-	elseif (self.type == LE_STORE_DELIVERY_TYPE_COLLECTION) then
+	elseif (self.type == Enum.StoreDeliveryType.Collection) then
 		ToggleCollectionsJournal(5);
 	end
 end
 
 -- [[ GarrisonBuildingAlertFrame ]] --
-function GarrisonBuildingAlertFrame_SetUp(frame, name)
+function GarrisonBuildingAlertFrame_SetUp(frame, name, garrisonType)
 	frame.Name:SetFormattedText(GARRISON_BUILDING_COMPLETE_TOAST, name);
-	PlaySound("UI_Garrison_Toast_BuildingComplete");
+	frame.garrisonType = garrisonType;
+	PlaySound(SOUNDKIT.UI_GARRISON_TOAST_BUILDING_COMPLETE);
 end
 
 -- [[ GarrisonMissionAlertFrame ]] --
-function GarrisonMissionAlertFrame_SetUp(frame, missionID)
-	local missionInfo = C_Garrison.GetBasicMissionInfo(missionID);
-
+function GarrisonMissionAlertFrame_SetUp(frame, missionInfo)
 	frame.Name:SetText(missionInfo.name);
 	frame.MissionType:SetAtlas(missionInfo.typeAtlas);
+	frame.garrisonType = GarrisonFollowerOptions[missionInfo.followerTypeID].garrisonType;
 	if (missionInfo.followerTypeID == LE_FOLLOWER_TYPE_GARRISON_7_0) then
 		frame.MissionType:SetSize(50, 50);
 		frame.MissionType:SetPoint("TOPLEFT", frame, "TOPLEFT", 21, -14);
@@ -732,12 +740,11 @@ function GarrisonMissionAlertFrame_SetUp(frame, missionID)
 		frame.MissionType:SetPoint("TOPLEFT", frame, "TOPLEFT", 14, -8);
 	end
 
-	PlaySound("UI_Garrison_Toast_MissionComplete");
+	PlaySound(SOUNDKIT.UI_GARRISON_TOAST_MISSION_COMPLETE);
 end
 
 -- [[ GarrisonRandomMissionAlertFrame ]] --
-function GarrisonRandomMissionAlertFrame_SetUp(frame, missionID)
-	local missionInfo = C_Garrison.GetBasicMissionInfo(missionID);
+function GarrisonRandomMissionAlertFrame_SetUp(frame, missionInfo)
 	frame.Level:SetText(missionInfo.level);
 	frame.ItemLevel:SetText("(" .. missionInfo.iLevel .. ")");
 	if (missionInfo.iLevel ~= 0 and missionInfo.isRare) then
@@ -756,7 +763,8 @@ function GarrisonRandomMissionAlertFrame_SetUp(frame, missionID)
 
 	frame.ItemLevel:SetShown(missionInfo.iLevel ~= 0);
 	frame.Rare:SetShown(missionInfo.isRare);
-	PlaySound("UI_Garrison_Toast_MissionComplete");
+	frame.garrisonType = GarrisonFollowerOptions[missionInfo.followerTypeID].garrisonType;
+	PlaySound(SOUNDKIT.UI_GARRISON_TOAST_MISSION_COMPLETE);
 end
 
 -- [[ GarrisonFollowerAlertFrame ]] --
@@ -776,7 +784,7 @@ function GarrisonCommonFollowerAlertFrame_SetUp(frame, followerID, name, quality
 	else
 		frame.FollowerBG:Hide();
 	end
-	
+
 	frame.Arrows.ArrowsAnim:Stop();
 	if ( isUpgraded ) then
 		local upgradeTexture = LOOTUPGRADEFRAME_QUALITY_TEXTURES[quality] or LOOTUPGRADEFRAME_QUALITY_TEXTURES[LE_ITEM_QUALITY_UNCOMMON];
@@ -792,11 +800,11 @@ function GarrisonCommonFollowerAlertFrame_SetUp(frame, followerID, name, quality
 		frame.DieIcon:Hide();
 	end
 
-	PlaySound("UI_Garrison_Toast_FollowerGained");
+	PlaySound(SOUNDKIT.UI_GARRISON_TOAST_FOLLOWER_GAINED);
 end
 
-function GarrisonFollowerAlertFrame_SetUp(frame, followerID, name, level, quality, isUpgraded)
-	frame.followerInfo = C_Garrison.GetFollowerInfo(followerID);
+function GarrisonFollowerAlertFrame_SetUp(frame, followerID, name, level, quality, isUpgraded, followerInfo)
+	frame.followerInfo = followerInfo;
 	frame.PortraitFrame:SetupPortrait(frame.followerInfo);
 	if ( frame.followerInfo.isTroop ) then
 		if ( isUpgraded ) then
@@ -816,8 +824,8 @@ function GarrisonFollowerAlertFrame_SetUp(frame, followerID, name, level, qualit
 	GarrisonCommonFollowerAlertFrame_SetUp(frame, followerID, name, quality, isUpgraded);
 end
 
-function GarrisonShipFollowerAlertFrame_SetUp(frame, followerID, name, class, texPrefix, level, quality, isUpgraded)
-	frame.followerInfo = C_Garrison.GetFollowerInfo(followerID);
+function GarrisonShipFollowerAlertFrame_SetUp(frame, followerID, name, class, texPrefix, level, quality, isUpgraded, followerInfo)
+	frame.followerInfo = followerInfo;
 	local mapAtlas = texPrefix .. "-List";
 	frame.Portrait:SetAtlas(mapAtlas, false);
 	local color = ITEM_QUALITY_COLORS[quality];
@@ -828,12 +836,12 @@ function GarrisonShipFollowerAlertFrame_SetUp(frame, followerID, name, class, te
 		frame.Title:SetText(GARRISON_SHIPYARD_FOLLOWER_ADDED_TOAST);
 	end
 	frame.Class:SetText(class);
-	GarrisonCommonFollowerAlertFrame_SetUp(GarrisonShipFollowerAlertFrame, followerID, name, 0, isUpgraded);
+	GarrisonCommonFollowerAlertFrame_SetUp(frame, followerID, name, 0, isUpgraded);
 end
 
 function GarrisonFollowerAlertFrame_OnEnter(self)
 	AlertFrame_StopOutAnimation(self);
-	
+
 	local link = C_Garrison.GetFollowerLink(self.followerID);
 	if ( link ) then
 		GarrisonFollowerTooltip:ClearAllPoints();
@@ -860,12 +868,24 @@ function GarrisonFollowerAlertFrame_OnClick(self, button, down)
 	ShowGarrisonLandingPage(GarrisonFollowerOptions[self.followerInfo.followerTypeID].garrisonType);
 end
 
+function GarrisonAlertFrame_OnClick(self, button, down)
+	if( AlertFrame_OnClick(self, button, down) ) then
+		return;
+	end
+	self:Hide();
+	if (not GarrisonLandingPage) then
+		Garrison_LoadUI();
+	end
+	if (self.garrisonType) then
+		ShowGarrisonLandingPage(self.garrisonType);
+	end
+end
+
 -- [[ GarrisonTalentAlertFrame ]] --
-function GarrisonTalentAlertFrame_SetUp(frame, garrisonType)
-    local talentID = C_Garrison.GetCompleteTalent(garrisonType);
-    local talent = C_Garrison.GetTalent(talentID);
+function GarrisonTalentAlertFrame_SetUp(frame, garrisonType, talent)
     frame.Icon:SetTexture(talent.icon);
-	PlaySound("UI_OrderHall_Talent_Ready_Toast");
+	frame.garrisonType = garrisonType;
+	PlaySound(SOUNDKIT.UI_ORDERHALL_TALENT_READY_TOAST);
 end
 
 -- [[ NewRecipeLearnedAlertFrame ]] --
@@ -885,11 +905,11 @@ function NewRecipeLearnedAlertFrame_SetUp(self, recipeID)
 	if tradeSkillID then
 		local recipeName = GetSpellInfo(recipeID);
 		if recipeName then
-			PlaySound("UI_Professions_NewRecipeLearned_Toast");
+			PlaySound(SOUNDKIT.UI_PROFESSIONS_NEW_RECIPE_LEARNED_TOAST);
 
 			self.Icon:SetMask("Interface\\CharacterFrame\\TempPortraitAlphaMask");
 			self.Icon:SetTexture(C_TradeSkillUI.GetTradeSkillTexture(tradeSkillID));
-		
+
 			local rank = GetSpellRank(recipeID);
 			self.Title:SetText(rank and rank > 1 and UPGRADED_RECIPE_LEARNED_TITLE or NEW_RECIPE_LEARNED_TITLE);
 
@@ -922,7 +942,7 @@ NewRecipeLearnedAlertSystem = AlertFrame:AddQueuedAlertFrameSubSystem("NewRecipe
 
 -- [[WorldQuestCompleteAlertFrame ]] --
 function WorldQuestCompleteAlertFrame_GetIconForQuestID(questID)
-	local tagID, tagName, worldQuestType, rarity, isElite, tradeskillLineIndex = GetQuestTagInfo(questID);
+	local tagID, tagName, worldQuestType, rarity, isElite, tradeskillLineIndex, displayTimeLeft = GetQuestTagInfo(questID);
 
 	if ( worldQuestType == LE_QUEST_TAG_TYPE_PVP ) then
 		return "Interface\\Icons\\achievement_arena_2v2_1";
@@ -931,85 +951,50 @@ function WorldQuestCompleteAlertFrame_GetIconForQuestID(questID)
 	elseif ( worldQuestType == LE_QUEST_TAG_TYPE_PROFESSION ) then
 		local tradeskillLineID = select(7, GetProfessionInfo(tradeskillLineIndex));
 		return C_TradeSkillUI.GetTradeSkillTexture(tradeskillLineID);
-	elseif ( worldQuestType == LE_QUEST_TAG_TYPE_DUNGEON ) then
+	elseif ( worldQuestType == LE_QUEST_TAG_TYPE_DUNGEON or worldQuestType == LE_QUEST_TAG_TYPE_RAID ) then
 		return "Interface\\Icons\\INV_Misc_Bone_Skull_02";
 	end
 
 	return "Interface\\Icons\\Achievement_Quests_Completed_TwilightHighlands";
 end
 
-function WorldQuestCompleteAlertFrame_SetUp(frame, questID, rewardItemLink)
-	PlaySound("UI_WorldQuest_Complete");
+function WorldQuestCompleteAlertFrame_SetUp(frame, questData)
+	PlaySound(SOUNDKIT.UI_WORLDQUEST_COMPLETE);
 
-	frame.questID = questID;
-	local isInArea, isOnMap, numObjectives, taskName, displayAsObjective = GetTaskInfo(questID);
-	frame.QuestName:SetText(taskName);
+	frame.questID = questData.questID;
+	frame.QuestName:SetText(questData.taskName);
 
-	local icon = WorldQuestCompleteAlertFrame_GetIconForQuestID(questID);
-	frame.QuestTexture:SetTexture(icon);
+	frame.QuestTexture:SetTexture(questData.icon);
 
-	frame.numUsedRewardFrames = 0;
-	local money = GetQuestLogRewardMoney(questID);
-	if money > 0 then
-		frame.numUsedRewardFrames = frame.numUsedRewardFrames + 1;
-		local rewardFrame = frame.RewardFrames and frame.RewardFrames[frame.numUsedRewardFrames] or CreateFrame("FRAME", nil, frame, "WorldQuestFrameRewardTemplate");
+	ResetRewardFrames(frame);
 
-		SetPortraitToTexture(rewardFrame.texture, "Interface\\Icons\\inv_misc_coin_02");
-		rewardFrame.itemLink = nil;
-		rewardFrame.money = money;
-		rewardFrame.xp = nil;
-		rewardFrame.currencyIndex = nil;
-		rewardFrame:Show();
+	if questData.money > 0 then
+		local rewardFrame = GetRewardFrame(frame, "WorldQuestFrameRewardTemplate");
+		DungeonCompletionAlertFrameReward_SetRewardMoney(rewardFrame, questData.money);
 	end
 
-	local xp = GetQuestLogRewardXP(questID);
-	if xp > 0 and UnitLevel("player") < MAX_PLAYER_LEVEL then
-		frame.numUsedRewardFrames = frame.numUsedRewardFrames + 1;
-		local rewardFrame = frame.RewardFrames and frame.RewardFrames[frame.numUsedRewardFrames] or CreateFrame("FRAME", nil, frame, "WorldQuestFrameRewardTemplate");
-
-		SetPortraitToTexture(rewardFrame.texture, "Interface\\Icons\\xp_icon");
-		rewardFrame.itemLink = nil;
-		rewardFrame.money = nil;
-		rewardFrame.xp = xp;
-		rewardFrame.currencyIndex = nil;
-		rewardFrame:Show();
+	if questData.xp > 0 and UnitLevel("player") < MAX_PLAYER_LEVEL then
+		local rewardFrame = GetRewardFrame(frame, "WorldQuestFrameRewardTemplate");
+		DungeonCompletionAlertFrameReward_SetRewardXP(rewardFrame, questData.xp);
 	end
 
-	for currencyIndex = 1, GetNumQuestLogRewardCurrencies(questID) do
-		local name, texture, count = GetQuestLogRewardCurrencyInfo(currencyIndex, questID);
-
-		frame.numUsedRewardFrames = frame.numUsedRewardFrames + 1;
-		local rewardFrame = frame.RewardFrames and frame.RewardFrames[frame.numUsedRewardFrames] or CreateFrame("FRAME", nil, frame, "WorldQuestFrameRewardTemplate");
-
-		SetPortraitToTexture(rewardFrame.texture, texture);
-		rewardFrame.itemLink = nil;
-		rewardFrame.money = nil;
-		rewardFrame.xp = nil;
-		rewardFrame.currencyIndex = currencyIndex;
-		rewardFrame:Show();
+	if questData.currencyRewards then
+		for currencyIndex, currencyTexture in ipairs(questData.currencyRewards) do
+			local rewardFrame = GetRewardFrame(frame, "WorldQuestFrameRewardTemplate");
+			SetPortraitToTexture(rewardFrame.texture, currencyTexture);
+			rewardFrame.currencyIndex = currencyIndex;
+		end
 	end
 
-	if rewardItemLink then
-		WorldQuestCompleteAlertFrame_Coalesce(frame, questID, rewardItemLink)
-	else
-		StandardRewardAlertFrame_AdjustRewardAnchors(frame);
-	end
+	StandardRewardAlertFrame_AdjustRewardAnchors(frame);
 end
 
-function WorldQuestCompleteAlertFrame_Coalesce(frame, questID, rewardItemLink)
+function WorldQuestCompleteAlertFrame_Coalesce(frame, questID, rewardItemLink, texture)
 	if frame.questID == questID and rewardItemLink then
-		frame.numUsedRewardFrames = frame.numUsedRewardFrames + 1;
-		local rewardFrame = frame.RewardFrames and frame.RewardFrames[frame.numUsedRewardFrames] or CreateFrame("FRAME", nil, frame, "WorldQuestFrameRewardTemplate");
-		local _, _, _, _, texture = GetItemInfoInstant(rewardItemLink);
-		SetPortraitToTexture(rewardFrame.texture, texture);
-		rewardFrame.itemLink = rewardItemLink;
-		rewardFrame.money = nil;
-		rewardFrame.xp = nil;
-		rewardFrame.currencyIndex = nil;
-		rewardFrame:Show();
-
+		local rewardFrame = GetRewardFrame(frame, "WorldQuestFrameRewardTemplate");
+		DungeonCompletionAlertFrameReward_SetRewardItem(rewardFrame, rewardItemLink, texture);
 		StandardRewardAlertFrame_AdjustRewardAnchors(frame);
-		return ALERT_FRAME_COALESCE_STOP;
+		return ALERT_FRAME_COALESCE_SUCCESS;
 	end
 
 	return ALERT_FRAME_COALESCE_CONTINUE;
@@ -1017,7 +1002,7 @@ end
 
 -- [[LegendaryItemAlertFrame ]] --
 function LegendaryItemAlertFrame_SetUp(frame, itemLink)
-	itemName, itemHyperLink, itemRarity, _, _, _, _, _, _, itemTexture = GetItemInfo(itemLink);
+	local itemName, itemHyperLink, itemRarity, _, _, _, _, _, _, itemTexture = GetItemInfo(itemLink);
 	frame.Icon:SetTexture(itemTexture);
 	frame.ItemName:SetText(itemName);
 	local color = ITEM_QUALITY_COLORS[itemRarity];
@@ -1025,7 +1010,7 @@ function LegendaryItemAlertFrame_SetUp(frame, itemLink)
 	frame.hyperlink = itemHyperLink;
 	frame.Background2.animIn:Play();
 	frame.Background3.animIn:Play();
-	PlaySound("UI_LegendaryLoot_Toast");
+	PlaySound(SOUNDKIT.UI_LEGENDARY_LOOT_TOAST);
 end
 
 function LegendaryItemAlertFrame_OnClick(self, button, down)
@@ -1040,7 +1025,7 @@ end
 
 function LegendaryItemAlertFrame_OnEnter(self)
 	AlertFrame_StopOutAnimation(self);
-	
+
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip:SetHyperlink(self.hyperlink);
 	GameTooltip:Show();
@@ -1050,4 +1035,66 @@ function LegendaryItemAlertFrame_OnLeave(self)
 	AlertFrame_ResumeOutAnimation(self);
 
 	GameTooltip:Hide();
+end
+
+-- [[ ItemAlertFrame (template) ]] ---
+
+ItemAlertFrameMixin = {};
+
+function ItemAlertFrameMixin:SetUpDisplay(icon, itemQuality, name, label)
+	self.Icon:SetTexture(icon);
+	self.IconBorder:SetAtlas(LOOT_BORDER_BY_QUALITY[itemQuality] or LOOT_BORDER_BY_QUALITY[LE_ITEM_QUALITY_UNCOMMON]);
+	self.Name:SetText(ITEM_QUALITY_COLORS[itemQuality].hex..name.."|r");
+	self.Label:SetText(label);
+end
+
+-- [[ NewPetAlertFrame ]] --
+
+function NewPetAlertFrame_SetUp(frame, petID)
+	frame:SetUp(petID);
+end
+
+NewPetAlertFrameMixin = CreateFromMixins(ItemAlertFrameMixin);
+
+function NewPetAlertFrameMixin:SetUp(petID)
+	self.petID = petID;
+	
+	local speciesID, customName, level, xp, maxXp, displayID, isFavorite, name, icon = C_PetJournal.GetPetInfoByPetID(petID);
+	local health, maxHealth, attack, speed, rarity = C_PetJournal.GetPetStats(petID);
+	local itemQuality = rarity - 1;
+	self:SetUpDisplay(icon, itemQuality, customName or name, YOU_EARNED_LABEL);
+end
+
+function NewPetAlertFrameMixin:OnClick(button, down)
+	if AlertFrame_OnClick(self, button, down) then
+		return;
+	end
+	
+	SetCollectionsJournalShown(true, COLLECTIONS_JOURNAL_TAB_INDEX_PETS);
+	PetJournal_SelectPet(PetJournal, self.petID);
+end
+
+-- [[ NewMountAlertFrame ]] --
+
+function NewMountAlertFrame_SetUp(frame, mountID)
+	frame:SetUp(mountID);
+end
+
+NewMountAlertFrameMixin = CreateFromMixins(ItemAlertFrameMixin);
+
+function NewMountAlertFrameMixin:SetUp(mountID)
+	self.mountID = mountID;
+	
+	local creatureName, spellID, icon, active, isUsable, sourceType = C_MountJournal.GetMountInfoByID(mountID);
+	local itemQuality = LE_ITEM_QUALITY_EPIC; -- Mounts don't have an inherent concept of quality so we always use epic (for now).
+	self:SetUpDisplay(icon, itemQuality, creatureName, YOU_EARNED_LABEL);
+end
+
+function NewMountAlertFrameMixin:OnClick(button, down)
+	if AlertFrame_OnClick(self, button, down) then
+		return;
+	end
+	
+	SetCollectionsJournalShown(true, COLLECTIONS_JOURNAL_TAB_INDEX_MOUNTS);
+	MountJournal_SelectByMountID(self.mountID);
 end

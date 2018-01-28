@@ -1,4 +1,16 @@
 ---------------------------------------------------------------------------------
+-- Global Constants
+---------------------------------------------------------------------------------
+FOLLOWER_QUALITY_COLORS = {
+	[LE_GARR_FOLLOWER_QUALITY_COMMON] = ITEM_QUALITY_COLORS[1]; -- Common
+	[LE_GARR_FOLLOWER_QUALITY_UNCOMMON] = ITEM_QUALITY_COLORS[2]; -- Uncommon
+	[LE_GARR_FOLLOWER_QUALITY_RARE] = ITEM_QUALITY_COLORS[3]; -- Rare
+	[LE_GARR_FOLLOWER_QUALITY_EPIC] = ITEM_QUALITY_COLORS[4]; -- Epic
+	[LE_GARR_FOLLOWER_QUALITY_LEGENDARY] = ITEM_QUALITY_COLORS[5]; -- Legendary
+	[LE_GARR_FOLLOWER_QUALITY_TITLE] = ITEM_QUALITY_COLORS[4]; -- Followers with the title (== 6) quality still appear as epic to players.
+};
+
+---------------------------------------------------------------------------------
 -- Display Options
 ---------------------------------------------------------------------------------
 GarrisonFollowerOptions = { };
@@ -21,7 +33,7 @@ GarrisonFollowerOptions[LE_FOLLOWER_TYPE_GARRISON_6_0] = {
 	missionAbilityTooltipFrame = "GarrisonFollowerAbilityTooltip",
 	missionCompleteUseNeutralChest = false,
 	missionFrame = "GarrisonMissionFrame",
-	missionPageAssignFollowerSound = "UI_Garrison_CommandTable_AssignFollower",
+	missionPageAssignFollowerSound = SOUNDKIT.UI_GARRISON_COMMAND_TABLE_ASSIGN_FOLLOWER,
 	missionPageAssignTroopSound = nil,
 	missionPageMechanicYOffset = -16,
 	missionPageShowXPInMissionInfo = false,
@@ -40,6 +52,7 @@ GarrisonFollowerOptions[LE_FOLLOWER_TYPE_GARRISON_6_0] = {
 		LANDING_COMPLETE = GARRISON_LANDING_BUILDING_COMPLEATE,
 		RETURN_TO_START = GARRISON_MISSION_TOOLTIP_RETURN_TO_START,
 		CONFIRM_EQUIPMENT = GARRISON_FOLLOWER_CONFIRM_EQUIPMENT,
+		CONFIRM_EQUIPMENT_REPLACEMENT = nil,
 		TRAITS_LABEL = GARRISON_TRAITS,
 		FOLLOWER_ADDED_TOAST = GARRISON_FOLLOWER_ADDED_TOAST,
 		FOLLOWER_ADDED_UPGRADED_TOAST = GARRISON_FOLLOWER_ADDED_UPGRADED_TOAST,
@@ -89,6 +102,7 @@ GarrisonFollowerOptions[LE_FOLLOWER_TYPE_SHIPYARD_6_2] = {
 		LANDING_COMPLETE = GARRISON_LANDING_BUILDING_COMPLEATE,
 		RETURN_TO_START = GARRISON_SHIPYARD_MISSION_TOOLTIP_RETURN_TO_START,
 		CONFIRM_EQUIPMENT = GARRISON_SHIPYARD_CONFIRM_EQUIPMENT,
+		CONFIRM_EQUIPMENT_REPLACEMENT = GARRISON_FOLLOWER_CONFIRM_EQUIPMENT_REPLACEMENT,
 		TRAITS_LABEL = nil;
 		FOLLOWER_ADDED_TOAST = GARRISON_SHIPYARD_FOLLOWER_ADDED_TOAST,
 		FOLLOWER_ADDED_UPGRADED_TOAST = GARRISON_SHIPYARD_FOLLOWER_ADDED_UPGRADED_TOAST,
@@ -119,8 +133,8 @@ GarrisonFollowerOptions[LE_FOLLOWER_TYPE_GARRISON_7_0] = {
 	missionAbilityTooltipFrame = "GarrisonFollowerMissionAbilityWithoutCountersTooltip",
 	missionCompleteUseNeutralChest = true,
 	missionFrame = "OrderHallMissionFrame",
-	missionPageAssignFollowerSound = "UI_Mission_SlotChampion",
-	missionPageAssignTroopSound = "UI_Mission_SlotTroop",
+	missionPageAssignFollowerSound = SOUNDKIT.UI_GARRISON_COMMAND_TABLE_SLOT_CHAMPION, 
+	missionPageAssignTroopSound = SOUNDKIT.UI_GARRISON_COMMAND_TABLE_SLOT_TROOP,
 	missionPageMechanicYOffset = -32,
 	missionPageShowXPInMissionInfo = true,
 	missionPageMaxCountersInFollowerFrame = 3,
@@ -138,6 +152,7 @@ GarrisonFollowerOptions[LE_FOLLOWER_TYPE_GARRISON_7_0] = {
 		LANDING_COMPLETE = ORDER_HALL_LANDING_COMPLETE,
 		RETURN_TO_START = ORDER_HALL_MISSION_TOOLTIP_RETURN_TO_START,
 		CONFIRM_EQUIPMENT = GARRISON_FOLLOWER_CONFIRM_EQUIPMENT,
+		CONFIRM_EQUIPMENT_REPLACEMENT = GARRISON_FOLLOWER_CONFIRM_EQUIPMENT_REPLACEMENT,
 		TRAITS_LABEL = ORDER_HALL_EQUIPMENT_SLOTS,
 		FOLLOWER_ADDED_TOAST = ORDER_HALL_FOLLOWER_ADDED_TOAST,
 		FOLLOWER_ADDED_UPGRADED_TOAST = ORDER_HALL_FOLLOWER_ADDED_UPGRADED_TOAST,
@@ -160,12 +175,12 @@ function GetPrimaryGarrisonFollowerType(garrTypeID)
 	return nil;
 end
 
-function ShouldShowFollowerAbilityBorder(followerTypeID, abilityInfo) 
+function ShouldShowFollowerAbilityBorder(followerTypeID, abilityInfo)
 	return GarrisonFollowerOptions[followerTypeID].showSpikyBordersOnSpecializationAbilities and abilityInfo.isSpecialization;
 end
 
 
-function ShouldShowILevelInFollowerList(followerInfo) 
+function ShouldShowILevelInFollowerList(followerInfo)
 	return GarrisonFollowerOptions[followerInfo.followerTypeID].showILevelInFollowerList and followerInfo.isMaxLevel and not followerInfo.isTroop;
 end
 
@@ -209,6 +224,16 @@ function ShowGarrisonLandingPage(garrTypeID)
 
 end
 
+function DoesFollowerMatchCurrentGarrisonType(followerType)
+	if followerType == LE_FOLLOWER_TYPE_GARRISON_7_0 then
+		return C_Garrison.GetLandingPageGarrisonType() == LE_GARRISON_TYPE_7_0;
+	elseif followerType == LE_FOLLOWER_TYPE_GARRISON_6_0 or followerType == LE_FOLLOWER_TYPE_SHIPYARD_6_2 then
+		return C_Garrison.GetLandingPageGarrisonType() == LE_GARRISON_TYPE_6_0;
+	end
+
+	return false;
+end
+
 ---------------------------------------------------------------------------------
 --- Follower Portrait                                                         ---
 ---------------------------------------------------------------------------------
@@ -224,11 +249,23 @@ function GarrisonFollowerPortraitMixin:SetPortraitIcon(iconFileID)
 end
 
 function GarrisonFollowerPortraitMixin:SetQuality(quality)
-	local color = quality and ITEM_QUALITY_COLORS[quality] or nil;
-	if (color) then
-		self:SetQualityColor(color.r, color.g, color.b);
-	else
+	self.quality = quality;
+	
+	if (quality == LE_GARR_FOLLOWER_QUALITY_TITLE) then
+		self.LevelBorder:SetAtlas("legionmission-portraitring_levelborder_epicplus", true);
+		self.PortraitRing:SetAtlas("legionmission-portraitring-epicplus", true);
+		self.PortraitRingQuality:Hide();
 		self:SetQualityColor(1, 1, 1);
+	else
+		self.LevelBorder:SetAtlas("GarrMission_PortraitRing_LevelBorder", true);
+		self.PortraitRing:SetAtlas("GarrMission_PortraitRing_Quality", true);
+		self.PortraitRingQuality:Show();
+		local color = quality and FOLLOWER_QUALITY_COLORS[quality] or nil;
+		if (color) then
+			self:SetQualityColor(color.r, color.g, color.b);
+		else
+			self:SetQualityColor(1, 1, 1);
+		end
 	end
 end
 
@@ -243,7 +280,11 @@ function GarrisonFollowerPortraitMixin:SetNoLevel()
 end
 
 function GarrisonFollowerPortraitMixin:SetLevel(level)
-	self.LevelBorder:SetAtlas("GarrMission_PortraitRing_LevelBorder");
+	if (self.quality == LE_GARR_FOLLOWER_QUALITY_TITLE) then
+		self.LevelBorder:SetAtlas("legionmission-portraitring_levelborder_epicplus", true);
+	else
+		self.LevelBorder:SetAtlas("GarrMission_PortraitRing_LevelBorder");
+	end
 	self.LevelBorder:SetWidth(58);
 	self.LevelBorder:Show();
 	self.Level:Show();

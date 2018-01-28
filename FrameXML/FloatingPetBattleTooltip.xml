@@ -119,9 +119,6 @@ UI.xsd">
 				</FontString>
 			</Layer>
 		</Layers>
-		<Frames>
-			
-		</Frames>
 		<Scripts>
 			<OnLoad function="BattlePetTooltip_OnLoad"/>
 		</Scripts>
@@ -129,6 +126,9 @@ UI.xsd">
 	
 	<Frame name="FloatingBattlePetTooltip" inherits="BattlePetTooltipTemplate" movable="true" toplevel="true">
 		<Size x="260" y="150"/>
+		<Anchors>
+			<Anchor point="BOTTOM" x="0" y="80"/>
+		</Anchors>
 		<Layers>	
 			<Layer level="ARTWORK">
 				<Texture parentKey="Delimiter">
@@ -140,9 +140,6 @@ UI.xsd">
 				</Texture>
 			</Layer>
 		</Layers>
-		<Anchors>
-			<Anchor point="BOTTOM" x="0" y="80"/>
-		</Anchors>
 		<Frames>
 			<Button parentKey="CloseButton">
 				<Size x="32" y="32"/>

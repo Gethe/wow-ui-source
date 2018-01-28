@@ -1,16 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Include file="..\SharedXML\SharedFontStyles.xml"/>
-
-	<Script>
-		NORMAL_FONT_COLOR = {r=1.0, g=0.82, b=0};
-		HIGHLIGHT_FONT_COLOR = {r=1.0, g=1.0, b=1.0};
-		GRAY_FONT_COLOR = {r=0.5, g=0.5, b=0.5};
-		GREEN_FONT_COLOR = {r=0.1, g=1.0, b=0.1};
-		RED_FONT_COLOR = {r=1.0, g=0.1, b=0.1};
-		BLUE_FONT_COLOR = {r=0, g=0.749, b=0.953};
-	</Script>
-
 	<!-- This GlueFonts.xml is loaded before GlueFontStyles.xml Set up Font objects to be localized in GlueFonts.xml not GlueFontStyles.xml -->
 
 	<Font name="GlueFontNormal" inherits="SystemFont_Outline_Med2" virtual="true">
@@ -70,7 +60,7 @@
 	<Font name="GlueFontNormalSmallLeft" inherits="GlueFontNormalSmall" justifyH="LEFT" virtual="true"/>
 	<Font name="GlueFontNormalExtraSmall" inherits="SystemFont_Shadow_Outline_Small" virtual="true">
 		<Color r="1.0" g="0.78" b="0"/>
-	</Font>	
+	</Font>
 	<Font name="GlueFontNormalExtraSmallLeft" inherits="GlueFontNormalExtraSmall" justifyH="LEFT" virtual="true"/>
 	<Font name="GlueFontHighlightSmall" inherits="GlueFontNormalSmall" virtual="true">
 		<Color r="1.0" g="1.0" b="1.0"/>
@@ -134,7 +124,7 @@
 	<Font name="GlueEditBoxFont" inherits="EditBoxFont_Large" virtual="true">
 		<Color r="1.0" g="1.0" b="1.0"/>
 	</Font>
-	
+
 	<Font name="NumberFontNormal" inherits="NumberFont_OutlineThick_Med2" virtual="true">
 		<Color r="1.0" g="1.0" b="1.0"/>
 	</Font>
@@ -144,10 +134,7 @@
 	<Font name="NumberFontNormalSmallGray" inherits="NumberFontNormalSmall" outline="THICK" virtual="true">
 		<Color r="0.6" g="0.6" b="0.6"/>
 	</Font>
-	<Font name="NumberFontNormalLarge" inherits="NumberFont_Outline_Large" virtual="true">
-		<Color r="1.0" g="1.0" b="1.0"/>
-	</Font>
-	
+
 	<Font name="DialogButtonNormalText" inherits="SystemFont_Large" virtual="true">
 		<Color r="1.0" g="0.82" b="0.0"/>
 	</Font>
@@ -166,7 +153,7 @@
 	<Font name="OptionsFontSmallLeft" inherits="OptionsFontSmall" justifyH="LEFT" virtual="true"/>
 	<Font name="OptionsFontHighlightSmallLeft" inherits="OptionsFontHighlightSmall" justifyH="LEFT" virtual="true"/>
 	<Font name="OptionsFontHighlightSmallLeftTop" inherits="OptionsFontHighlightSmallLeft" justifyV="TOP" virtual="true"/>
-	
+
 	<Font name="CharacterCreateTooltipFont" inherits="SystemFont_Outline_Med2" virtual="true">
 		<Color r="1.0" g="1.0" b="1.0"/>
 	</Font>

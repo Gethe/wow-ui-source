@@ -1,5 +1,5 @@
 COLLECTIONS_FANFARE_ICON = "Interface/Icons/Item_Shop_GiftBox01";
-COLLECTIONS_FANFARE_DISPLAY_ID = 71933;
+COLLECTIONS_FANFARE_CREATURE_DISPLAY_ID = 71933;
 
 function CollectionsJournal_SetTab(self, tab)
 	PanelTemplates_SetTab(self, tab);
@@ -82,13 +82,13 @@ function CollectionsJournal_OnShow(self)
 	CollectionsMicroButtonAlert:Hide();
 	MicroButtonPulseStop(CollectionsMicroButton);
 
-	PlaySound("igCharacterInfoOpen");
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 	CollectionsJournal_UpdateSelectedTab(self);
 	UpdateMicroButtons();
 end
 
 function CollectionsJournal_OnHide(self)
-	PlaySound("igCharacterInfoClose");
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 	UpdateMicroButtons();
 
 	CollectionsMicroButton:EvaluateAlertVisibility();

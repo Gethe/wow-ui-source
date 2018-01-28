@@ -13,7 +13,7 @@
 					<Layer level="ARTWORK">
 						<FontString parentKey="Name" inherits="Fancy22Font" alpha="0.01" justifyH="LEFT">
 							<Anchors>
-								<Anchor point="RIGHT" x="-12" y="0"/>
+								<Anchor point="RIGHT" x="-42" y="0"/>
 							</Anchors>
 							<Color r="1" g=".82" b="0"/>
 						</FontString>

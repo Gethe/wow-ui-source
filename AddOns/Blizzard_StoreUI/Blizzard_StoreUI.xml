@@ -382,17 +382,6 @@
 						</EdgeSize>
 					</Backdrop>
 				</Frame>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture>
-							<Anchors>
-								<Anchor point="TOPLEFT" x="11" y="-12"/>
-								<Anchor point="BOTTOMRIGHT" x="-12" y="9"/>
-							</Anchors>
-							<Color r="0" g="0" b="0" a="1"/>
-						</Texture>
-					</Layer>
-				</Layers>
 				<Button inherits="StoreDropDownMenuButtonTemplate" id="1">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="16" y="-16"/>
@@ -489,6 +478,11 @@
 					<Anchors>
 						<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="8" y="-8"/>
 					</Anchors>
+					<Scripts>
+						<OnShow>
+							self:SetFrameLevel(self:GetParent():GetFrameLevel()+6);
+						</OnShow>
+					</Scripts>
 				</Button>
 			</Frames>
 			<Scripts>
@@ -567,16 +561,12 @@
 				</Layer>
 			</Layers>
 		</Frame>
-		<Button name="StoreProductCardSpecialMagnifierTemplate" enableMouse="true" alpha="0" virtual="true" parentArray="SpecialMagnifiers">
-			<Size x="46" y="47" />
-			<NormalTexture atlas="shop-games-magnifyingglass" />
-			<Scripts>
-				<OnShow>
-					self:SetFrameLevel(self:GetParent().Model:GetFrameLevel()+1);
-				</OnShow>
-			</Scripts>
+		<Button name="StoreProductCardSpecialMagnifierTemplate" enableMouse="true" hidden="true" virtual="true" parentArray="SpecialMagnifiers">
+			<Size x="31" y="35" />
+			<NormalTexture inherits="store-icon-magnifyingglass" />
+			<HighlightTexture inherits="store-icon-magnifyingglass" alphaMode="ADD" />
 		</Button>
-		<Button name="StoreProductCardTemplate" virtual="true" hidden="true">
+		<Button name="StoreProductCardTemplate" motionScriptsWhileDisabled="true" virtual="true" hidden="true">
 			<Size x="146" y="209" />
 			<Layers>
 				<Layer level="BACKGROUND">
@@ -597,7 +587,7 @@
 					<Texture parentKey="Icon" hidden="true">
 						<Size x="63" y="63" />
 						<Anchors>
-							<Anchor point="CENTER" relativePoint="TOP" x="0" y="-66" />
+							<Anchor point="CENTER" relativePoint="TOP" x="0" y="-69" />
 						</Anchors>
 					</Texture>
 				</Layer>
@@ -700,15 +690,13 @@
 				</Layer>
 			</Layers>
 			<Frames>
-				<PlayerModel parentKey="Model" creature="12257" hidden="true">
-					<Size x="126" y="124" />
+				<ModelScene parentKey="ModelScene" useParentLevel="true" hidden="true" inherits="ReversedLightingModelSceneMixinTemplate">
 					<Anchors>
-						<Anchor point="BOTTOM" x="0" y="80" />
+						<Anchor point="TOPLEFT" x="8" y="-8"/>
+						<Anchor point="BOTTOMRIGHT" x="-8" y="8" />
 					</Anchors>
-					<Scripts>
-						<OnUpdate function="StoreProductCardModel_OnUpdate" />
-					</Scripts>
-				</PlayerModel>
+					<ViewInsets left="15" right="15" top="17" bottom="77"/>
+				</ModelScene>
 				<Button parentKey="Magnifier" enableMouse="true" hidden="true">
 					<Size x="31" y="35" />
 					<Anchors>
@@ -720,9 +708,7 @@
 						<OnClick function="StoreProductCardMagnifyingGlass_OnClick" />
 						<OnEnter function="StoreProductCardMagnifyingGlass_OnEnter" />
 						<OnLeave function="StoreProductCardMagnifyingGlass_OnLeave" />
-						<OnShow>
-							self:SetFrameLevel(self:GetParent().Model:GetFrameLevel()+1);
-						</OnShow>
+						<OnShow function="StoreCardDetail_SetLayerAboveModelScene"/>
 					</Scripts>
 				</Button>
 				<Frame parentKey="InvisibleMouseOverFrame" enableMouse="true" hidden="true">
@@ -746,9 +732,7 @@
 						</Layer>
 					</Layers>
 					<Scripts>
-						<OnShow>
-							self:SetFrameLevel(self:GetParent().Model:GetFrameLevel()+1);
-						</OnShow>
+						<OnShow function="StoreCardDetail_SetLayerAboveModelScene"/>
 						<OnEnter function="StoreProductCardCheckmark_OnEnter"/>
 						<OnLeave function="StoreProductCardCheckmark_OnLeave"/>
 					</Scripts>
@@ -758,15 +742,15 @@
 				<OnEnter function="StoreProductCard_OnEnter" />
 				<OnLeave function="StoreProductCard_OnLeave" />
 				<OnClick function="StoreProductCard_OnClick" />
-				<OnDragStart function="StoreProductCard_OnDragStart" />
-				<OnDragStop function="StoreProductCard_OnDragStop" />
+				<OnMouseDown function="StoreProductCard_OnMouseDown" />
+				<OnMouseUp function="StoreProductCard_OnMouseUp" />
 			</Scripts>
 		</Button>
 		<Button name="StoreSplashSingleCardTemplate" virtual="true" hidden="true">
 			<Size x="576" y="471" />
 			<Layers>
 				<Layer level="BACKGROUND">
-					<Texture parentKey="Card" inherits="store-card-splash1" setAllPoints="true" />
+					<Texture parentKey="Card"/>
 				</Layer>
 				<Layer level="BACKGROUND" textureSubLevel="2">
 					<Texture parentKey="Shadows" inherits="store-card-petshadow" hidden="true">
@@ -779,7 +763,7 @@
 					<Texture parentKey="Icon" hidden="true">
 						<Size x="68" y="68" />
 						<Anchors>
-							<Anchor point="TOPLEFT" x="86" y="-96" />
+							<Anchor point="TOPLEFT" x="88" y="-99" />
 						</Anchors>
 					</Texture>
 				</Layer>
@@ -796,11 +780,7 @@
 							<Anchor point="CENTER" relativeKey="$parent.IconBorder" relativePoint="CENTER" x="18" y="-26"/>
 						</Anchors>
 					</Texture>
-					<FontString parentKey="ProductName" inherits="GameFontNormalWTF2" justifyH="LEFT" justifyV="TOP">
-						<Size x="300" y="0" />
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.IconBorder" relativePoint="TOPRIGHT" x="-45" y="-70" />
-						</Anchors>
+					<FontString parentKey="ProductName" inherits="GameFontNormalWTF2" justifyV="TOP">
 						<Shadow>
 							<Offset>
 								<AbsDimension x="1" y="-1"/>
@@ -810,34 +790,24 @@
 						<Color r="1" g="1" b="1" />
 					</FontString>
 					<FontString parentKey="Description" inherits="GameFontNormalLarge" justifyH="LEFT" justifyV="TOP">
-						<Size x="340" y="0" />
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.ProductName" relativePoint="BOTTOMLEFT" x="0" y="-16" />
-						</Anchors>
 						<Color r="1" g="0.84" b="0.55" />
 					</FontString>
-					<FontString parentKey="CurrentMarketPrice" inherits="SystemFont_Shadow_Med2" justifyH="LEFT" hidden="true">
+					<FontString parentKey="CurrentMarketPrice" inherits="GameFontNormalMed2" justifyH="LEFT" hidden="true">
 						<Size x="340" y="0"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.Description" relativePoint="BOTTOMLEFT" x="0" y="-28" />
 						</Anchors>
 						<Color r=".733" g=".588" b=".31"/>
 					</FontString>
-					<FontString parentKey="CurrentPrice" inherits="GameFontNormalHugeOutline" >
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.Description" relativePoint="BOTTOMLEFT" x="0" y="-28" />
-						</Anchors>
+					<FontString parentKey="CurrentPrice" inherits="GameFontNormalLarge2" >
 						<Color r="1.0" g="0.82" b="0" />
 					</FontString>
 					<FontString parentKey="NormalPrice" inherits="GameFontNormalMed3">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.Description" relativePoint="BOTTOMLEFT" x="0" y="-28" />
-						</Anchors>
 						<Color r="0.8" g="0.66" b="0" />
 					</FontString>
-					<FontString parentKey="SalePrice" inherits="GameFontNormalHugeOutline" hidden="true">
+					<FontString parentKey="SalePrice" inherits="GameFontNormalLarge2" hidden="true">
 						<Anchors>
-							<Anchor point="BOTTOMLEFT" relativeKey="$parent.NormalPrice" relativePoint="BOTTOMRIGHT" x="4" y="0" />
+							<Anchor point="BOTTOMLEFT" relativeKey="$parent.NormalPrice" relativePoint="BOTTOMRIGHT" x="4" y="-1" />
 						</Anchors>
 						<Color r="0.1" g="1.0" b="0.1" />
 					</FontString>
@@ -908,7 +878,7 @@
 					</Anchors>
 					<Layers>
 						<Layer level="OVERLAY">
-							<Texture parentKey="Banner" inherits="store-card-splash-banner" setAllPoint="true" alphaMode="ADD" />
+							<Texture parentKey="Banner" inherits="store-card-splash-banner" setAllPoints="true" alphaMode="ADD" />
 						</Layer>
 					</Layers>
 					<Animations>
@@ -922,15 +892,13 @@
 						</AnimationGroup>
 					</Animations>
 				</Frame>
-				<PlayerModel parentKey="Model" creature="12257" hidden="true">
-					<Size x="260" y="244" />
+				<ModelScene parentKey="ModelScene" useParentLevel="true" hidden="true" inherits="ReversedLightingModelSceneMixinTemplate">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="-25" y="-30" />
+						<Anchor point="TOPLEFT" x="8" y="-8" />
+						<Anchor point="BOTTOMRIGHT" x="-8" y="8" />
 					</Anchors>
-					<Scripts>
-						<OnUpdate function="StoreProductCardModel_OnUpdate" />
-					</Scripts>
-				</PlayerModel>
+					<ViewInsets left="20" right="400" top="136" bottom="180"/>
+				</ModelScene>
 				<Frame parentKey="InvisibleMouseOverFrame" enableMouse="true" hidden="true">
 					<Size x="68" y="68" />
 					<Anchors>
@@ -943,9 +911,6 @@
 				</Frame>
 				<Button parentKey="BuyButton" inherits="StoreButtonTemplate">
 					<Size x="140" y="30" />
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.CurrentPrice" relativePoint="BOTTOMLEFT" x="0" y="-20" />
-					</Anchors>
 					<Scripts>
 						<OnClick function="StoreFrameBuyButton_OnClick" />
 					</Scripts>
@@ -959,9 +924,7 @@
 					<HighlightTexture inherits="store-icon-magnifyingglass" alphaMode="ADD" />
 					<Scripts>
 						<OnClick function="StoreProductCardMagnifyingGlass_OnClick" />
-						<OnShow>
-							self:SetFrameLevel(self:GetParent().Model:GetFrameLevel()+1);
-						</OnShow>
+						<OnShow function="StoreCardDetail_SetLayerAboveModelScene"/>
 					</Scripts>
 				</Button>
 				<Frame parentKey="Checkmark" hidden="true">
@@ -975,9 +938,7 @@
 						</Layer>
 					</Layers>
 					<Scripts>
-						<OnShow>
-							self:SetFrameLevel(self:GetParent().Model:GetFrameLevel()+1);
-						</OnShow>
+						<OnShow function="StoreCardDetail_SetLayerAboveModelScene"/>
 						<OnEnter function="StoreProductCardCheckmark_OnEnter"/>
 						<OnLeave function="StoreProductCardCheckmark_OnLeave"/>
 					</Scripts>
@@ -985,22 +946,136 @@
 			</Frames>
 			<Scripts>
 				<OnLoad function="StoreProductCard_OnLoad" />
-				<OnDragStart function="StoreProductCard_OnDragStart" />
-				<OnDragStop function="StoreProductCard_OnDragStop" />
-				<OnClick>
-					local showPreview;
-					if ( IsOnGlueScreen() ) then
-						showPreview = _G.IsControlKeyDown();
-					else
-						showPreview = IsModifiedClick("DRESSUP");
-					end
-					if ( showPreview ) then
-						local entryInfo = C_PurchaseAPI.GetEntryInfo(self:GetID());
-						if ( entryInfo.modelID ) then
-							Outbound.ShowPreview(entryInfo.name, entryInfo.modelID);
-						end
-					end
-				</OnClick>
+				<OnClick function="StoreSplashSingleProductCard_OnClick"/>
+				<OnMouseDown function="StoreProductCard_OnMouseDown" />
+				<OnMouseUp function="StoreProductCard_OnMouseUp" />
+			</Scripts>
+		</Button>
+		<Button name="StoreSplashPairCardTemplate" virtual="true" motionScriptsWhileDisabled="true" hidden="true">
+			<Size x="286" y="471" />
+			<KeyValues>
+				<KeyValue key="isSplash" value="true" type="boolean"/>
+			</KeyValues>
+			<Layers>
+				<Layer level="BACKGROUND">
+					<Texture parentKey="Card" inherits="store-card-splash1" setAllPoints="true" />
+				</Layer>
+				<Layer level="ARTWORK">
+					<FontString parentKey="ProductName" inherits="GameFontNormalLarge" justifyH="CENTER" justifyV="TOP">
+						<Size x="250" y="10" />
+						<Anchors>
+							<Anchor point="CENTER" y="-10" />
+						</Anchors>
+						<Shadow>
+							<Offset>
+								<AbsDimension x="1" y="-1"/>
+							</Offset>
+							<Color r="0" g="0" b="0"/>
+						</Shadow>
+						<Color r="1" g="1" b="1" />
+					</FontString>
+					<FontString parentKey="CurrentMarketPrice" inherits="GameFontNormalMed2" justifyH="LEFT" hidden="true">
+						<Size x="250" y="0"/>
+						<Anchors>
+							<Anchor point="TOP" relativeKey="$parent.ProductName" relativePoint="BOTTOM" x="0" y="-4" />
+						</Anchors>
+						<Color r=".733" g=".588" b=".31"/>
+					</FontString>
+					<FontString parentKey="CurrentPrice" inherits="GameFontNormalLarge2" >
+						<Anchors>
+							<Anchor point="TOP" relativeKey="$parent.ProductName" relativePoint="BOTTOM" x="0" y="-16" />
+						</Anchors>
+						<Color r="1.0" g="0.82" b="0" />
+					</FontString>
+					<FontString parentKey="NormalPrice" inherits="GameFontNormal">
+						<Anchors>
+							<Anchor point="TOP" relativeKey="$parent.ProductName" relativePoint="BOTTOM" x="0" y="-8" />
+						</Anchors>
+						<Color r="0.8" g="0.66" b="0" />
+					</FontString>
+					<FontString parentKey="SalePrice" inherits="GameFontNormalLarge2" hidden="true">
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" relativeKey="$parent.NormalPrice" relativePoint="BOTTOMRIGHT" x="6" y="-2" />
+						</Anchors>
+						<Color r="0.1" g="1.0" b="0.1" />
+					</FontString>
+					<FontString parentKey="Description" inherits="GameFontNormalMed1" justifyH="LEFT" justifyV="TOP">
+						<Size x="250" y="0" />
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.ProductName" relativePoint="LEFT" />
+							<Anchor point="RIGHT" relativeKey="$parent.ProductName" relativePoint="RIGHT" />
+							<Anchor point="TOP" relativeKey="$parent.CurrentPrice" relativePoint="BOTTOM" x="0" y="-12" />
+						</Anchors>
+						<Color r="1" g="0.84" b="0.55" />
+					</FontString>
+				</Layer>
+				<Layer level="OVERLAY">
+					<Texture parentKey="Strikethrough" inherits="store-strikethrough" hidden="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.NormalPrice" />
+							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.NormalPrice" />
+						</Anchors>
+					</Texture>
+					<Texture parentKey="HighlightTexture" atlas="shop-card-half-hover" useAtlasSize="true" alphaMode="ADD" hidden="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="4" y="-4" />
+						</Anchors>
+					</Texture>
+				</Layer>
+			</Layers>
+			<Frames>
+				<Frame parentKey="DisabledOverlay" frameLevel="1000" setAllPoints="true" hidden="true">
+					<Layers>
+						<Layer level="OVERLAY" textureSubLevel="1">
+							<Texture setAllPoints="true" alpha=".55">
+								<Color r="0" g="0" b="0"/>
+							</Texture>
+						</Layer>
+					</Layers>
+				</Frame>
+				<Button parentKey="Magnifier" hidden="true">
+					<Size x="31" y="35" />
+					<Anchors>
+						<Anchor point="TOPLEFT" x="12" y="-12" />
+					</Anchors>
+					<NormalTexture inherits="store-icon-magnifyingglass" />
+					<HighlightTexture inherits="store-icon-magnifyingglass" alphaMode="ADD" />
+					<Scripts>
+						<OnClick function="StoreProductCardMagnifyingGlass_OnClick" />
+						<OnEnter function="StoreProductCardMagnifyingGlass_OnEnter" />
+						<OnLeave function="StoreProductCardMagnifyingGlass_OnLeave" />
+						<OnShow function="StoreCardDetail_SetLayerAboveModelScene"/>
+					</Scripts>
+				</Button>
+				<ModelScene parentKey="ModelScene" useParentLevel="true" hidden="true" inherits="ReversedLightingModelSceneMixinTemplate">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="8" y="-8" />
+						<Anchor point="BOTTOMRIGHT" x="-8" y="8" />
+					</Anchors>
+					<ViewInsets left="20" right="20" top="20" bottom="160"/>
+				</ModelScene>
+				<Frame parentKey="DescriptionBulletPointContainer" inherits="ManagedVerticalLayoutFrameTemplate">
+					<KeyValues>
+						<KeyValue key="fixedWidth" value="250" type="number"/>
+						<KeyValue key="templateType" value="StoreBulletPointTemplate" type="string"/>
+					</KeyValues>
+				</Frame>
+				<Button parentKey="BuyButton" inherits="StoreButtonTemplate" motionScriptsWhileDisabled="true">
+					<Size x="140" y="30" />
+					<Anchors>
+						<Anchor point="BOTTOM" x="0" y="20" />
+					</Anchors>
+					<Scripts>
+						<OnClick function="StoreFrameBuyButton_OnClick" />
+						<OnEnter function="StoreFrameBuyButton_OnEnter" />
+						<OnLeave function="StoreFrameBuyButton_OnLeave" />
+					</Scripts>
+				</Button>
+			</Frames>
+			<Scripts>
+				<OnLoad function="StoreProductCard_OnLoad" />
+				<OnEnter function="StoreSplashPairCard_OnEnter" />
+				<OnLeave function="StoreSplashPairCard_OnLeave" />
 			</Scripts>
 		</Button>
 		<Button name="StoreSplashPrimaryCardTemplate" virtual="true" hidden="true">
@@ -1060,7 +1135,7 @@
 					</FontString>
 					<FontString parentKey="SalePrice" inherits="GameFontNormalLarge2" hidden="true">
 						<Anchors>
-							<Anchor point="BOTTOMLEFT" relativeKey="$parent.NormalPrice" relativePoint="BOTTOMRIGHT" x="6" y="0" />
+							<Anchor point="BOTTOMLEFT" relativeKey="$parent.NormalPrice" relativePoint="BOTTOMRIGHT" x="6" y="-2" />
 						</Anchors>
 						<Color r="0.1" g="1.0" b="0.1" />
 					</FontString>
@@ -1150,7 +1225,7 @@
 					</Anchors>
 					<Layers>
 						<Layer level="OVERLAY">
-							<Texture parentKey="Banner" inherits="store-card-splash-banner" setAllPoint="true" alphaMode="ADD" />
+							<Texture parentKey="Banner" inherits="store-card-splash-banner" setAllPoints="true" alphaMode="ADD" />
 						</Layer>
 					</Layers>
 					<Animations>
@@ -1164,15 +1239,13 @@
 						</AnimationGroup>
 					</Animations>
 				</Frame>
-				<PlayerModel parentKey="Model" creature="12257" hidden="true">
-					<Size x="200" y="184" />
+				<ModelScene parentKey="ModelScene" useParentLevel="true" hidden="true" inherits="ReversedLightingModelSceneMixinTemplate">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="10" y="-30" />
+						<Anchor point="TOPLEFT" x="8" y="-8" />
+						<Anchor point="BOTTOMRIGHT" x="-8" y="8" />
 					</Anchors>
-					<Scripts>
-						<OnUpdate function="StoreProductCardModel_OnUpdate" />
-					</Scripts>
-				</PlayerModel>
+					<ViewInsets left="20" right="380" top="40" bottom="50"/>
+				</ModelScene>
 				<Frame parentKey="InvisibleMouseOverFrame" enableMouse="true" hidden="true">
 					<Size x="70" y="70" />
 					<Anchors>
@@ -1194,9 +1267,7 @@
 						<OnClick function="StoreProductCardMagnifyingGlass_OnClick" />
 						<OnEnter function="StoreProductCardMagnifyingGlass_OnEnter" />
 						<OnLeave function="StoreProductCardMagnifyingGlass_OnLeave" />
-						<OnShow>
-							self:SetFrameLevel(self:GetParent().Model:GetFrameLevel()+1);
-						</OnShow>
+						<OnShow function="StoreCardDetail_SetLayerAboveModelScene"/>
 					</Scripts>
 				</Button>
 				<Frame parentKey="Checkmark" hidden="true">
@@ -1210,9 +1281,7 @@
 						</Layer>
 					</Layers>
 					<Scripts>
-						<OnShow>
-							self:SetFrameLevel(self:GetParent().Model:GetFrameLevel()+1);
-						</OnShow>
+						<OnShow function="StoreCardDetail_SetLayerAboveModelScene"/>
 						<OnEnter function="StoreProductCardCheckmark_OnEnter"/>
 						<OnLeave function="StoreProductCardCheckmark_OnLeave"/>
 					</Scripts>
@@ -1220,11 +1289,11 @@
 			</Frames>
 			<Scripts>
 				<OnLoad function="StoreProductCard_OnLoad" />
-				<OnDragStart function="StoreProductCard_OnDragStart" />
-				<OnDragStop function="StoreProductCard_OnDragStop" />
 				<OnEnter function="StoreProductCard_OnEnter" />
 				<OnLeave function="StoreProductCard_OnLeave" />
 				<OnClick function="StoreProductCard_OnClick" />
+				<OnMouseDown function="StoreProductCard_OnMouseDown" />
+				<OnMouseUp function="StoreProductCard_OnMouseUp" />
 			</Scripts>
 		</Button>
 		<Button name="StoreSplashSecondaryCardTemplate" virtual="true" hidden="true">
@@ -1346,15 +1415,13 @@
 				</Layer>
 			</Layers>
 			<Frames>
-				<PlayerModel parentKey="Model" creature="12257" hidden="true">
-					<Size x="125" y="136" />
+				<ModelScene parentKey="ModelScene" useParentLevel="true" hidden="true" inherits="ReversedLightingModelSceneMixinTemplate">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="5" y="-5" />
+						<Anchor point="TOPLEFT" x="8" y="-8" />
+						<Anchor point="BOTTOMRIGHT" x="-8" y="8" />
 					</Anchors>
-					<Scripts>
-						<OnUpdate function="StoreProductCardModel_OnUpdate" />
-					</Scripts>
-				</PlayerModel>
+					<ViewInsets left="10" right="165" top="20" bottom="15"/>
+				</ModelScene>
 				<Button parentKey="Magnifier" hidden="true">
 					<Size x="31" y="35" />
 					<Anchors>
@@ -1366,9 +1433,7 @@
 						<OnClick function="StoreProductCardMagnifyingGlass_OnClick" />
 						<OnEnter function="StoreProductCardMagnifyingGlass_OnEnter" />
 						<OnLeave function="StoreProductCardMagnifyingGlass_OnLeave" />
-						<OnShow>
-							self:SetFrameLevel(self:GetParent().Model:GetFrameLevel()+1);
-						</OnShow>
+						<OnShow function="StoreCardDetail_SetLayerAboveModelScene"/>
 					</Scripts>
 				</Button>
 				<Frame parentKey="InvisibleMouseOverFrame" enableMouse="true" hidden="true">
@@ -1392,9 +1457,7 @@
 						</Layer>
 					</Layers>
 					<Scripts>
-						<OnShow>
-							self:SetFrameLevel(self:GetParent().Model:GetFrameLevel()+1);
-						</OnShow>
+						<OnShow function="StoreCardDetail_SetLayerAboveModelScene"/>
 						<OnEnter function="StoreProductCardCheckmark_OnEnter"/>
 						<OnLeave function="StoreProductCardCheckmark_OnLeave"/>
 					</Scripts>
@@ -1402,14 +1465,14 @@
 			</Frames>
 			<Scripts>
 				<OnLoad function="StoreProductCard_OnLoad" />
-				<OnDragStart function="StoreProductCard_OnDragStart" />
-				<OnDragStop function="StoreProductCard_OnDragStop" />
 				<OnEnter function="StoreProductCard_OnEnter" />
 				<OnLeave function="StoreProductCard_OnLeave" />
 				<OnClick function="StoreProductCard_OnClick" />
+				<OnMouseDown function="StoreProductCard_OnMouseDown" />
+				<OnMouseUp function="StoreProductCard_OnMouseUp" />
 			</Scripts>
 		</Button>
-		<Button name="StoreCategoryTemplate" virtual="true">
+		<Button name="StoreCategoryTemplate" motionScriptsWhileDisabled="true" virtual="true">
 			<Size x="176" y="38" />
 			<Layers>
 				<Layer level="BACKGROUND">
@@ -1444,7 +1507,24 @@
 				</Layer>
 				<Layer level="OVERLAY">
 					<Texture parentKey="Icon">
-						<Size x="64" y="64"/>
+						<Size x="22" y="22"/>
+						<Anchors>
+							<Anchor point="CENTER" relativeKey="$parent" relativePoint="LEFT" x="15" y="2"/>
+						</Anchors>
+					</Texture>
+					<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+						<Size x="22" y="22"/>
+						<Anchors>
+							<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="CENTER"/>
+						</Anchors>
+						<MaskedTextures>
+							<MaskedTexture childKey="Icon"/>
+						</MaskedTextures>
+					</MaskTexture>
+				</Layer>
+				<Layer level="OVERLAY" textureSubLevel="1">
+					<Texture parentKey="IconFrame" atlas="category-icon-ring">
+						<Size x="37" y="37"/>
 						<Anchors>
 							<Anchor point="CENTER" relativeKey="$parent" relativePoint="LEFT" x="15" y="2"/>
 						</Anchors>
@@ -1452,6 +1532,17 @@
 				</Layer>
 			</Layers>
 			<Scripts>
+				<!--
+							WARNING: ScopeModifiers don't work for templates!
+				These functions will fail to load properly if this template is instantiated outside
+				of the initial LoadAddon call becuase we'll have lost the scoped modifiers and the
+				reference to the addon environment if we instantiate them later.
+				
+				Except for the first category, which is declared in .xml, we have to manually set these
+				scripts after the frame has been instantiated in Lua for them to work properly.
+
+				-->
+				
 				<OnEnter function="StoreCategory_OnEnter" />
 				<OnLeave function="StoreCategory_OnLeave" />
 				<OnClick function="StoreCategory_OnClick" />
@@ -1514,12 +1605,35 @@
 					</Anchors>
 					<Scripts>
 						<OnClick>
-							PlaySound("UI_igStore_Cancel_Button");
+							PlaySound(SOUNDKIT.UI_IG_STORE_CANCEL_BUTTON);
 							self:GetParent():Hide();
 						</OnClick>
 					</Scripts>
 				</Button>
 			</Frames>
+		</Frame>
+		<Button name="StoreAutoCompleteButtonTemplate" parentArray="Buttons" virtual="true">
+			<Size x="140" y="14"/>
+			<ButtonText parentKey="Text" justifyH="LEFT"/>
+			<NormalFont style="GameFontWhiteTiny2"/>
+			<HighlightFont style="GameFontWhiteTiny2"/>
+			<DisabledFont style="GameFontDisableTiny2"/>
+			<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
+		</Button>
+		<Frame name="StoreVASRaceFactionIconFrameTemplate" parentArray="Icons" virtual="true">
+			<Size x="26" y="26"/>
+			<Layers>
+				<Layer level="OVERLAY">
+					<Texture parentKey="Border" atlas="vas-receipt-icon-characterborder" useAtlasSize="true">
+						<Anchors>
+							<Anchor point="CENTER"/>
+						</Anchors>
+					</Texture>
+				</Layer>
+				<Layer level="ARTWORK">
+					<Texture parentKey="Icon" setAllPoints="true"/>
+				</Layer>
+			</Layers>
 		</Frame>
 		<Frame name="StoreStateDriverFrame">
 			<Animations>
@@ -1605,7 +1719,10 @@
 		<Frame name="StoreDialog" parent="UIParent" frameStrata="DIALOG" toplevel="true" enableMouse="true" hidden="true">
 			<Size x="434" y="100" />
 			<!-- Anchors are set in lua -->
-			<Backdrop edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+				<BackgroundInsets>
+					<AbsInset left="11" right="12" top="11" bottom="11"/>
+				</BackgroundInsets>
 				<TileSize>
 					<AbsValue val="32" />
 				</TileSize>
@@ -1614,18 +1731,9 @@
 				</EdgeSize>
 			</Backdrop>
 			<Layers>
-				<Layer level="BACKGROUND">
-					<Texture>
-						<Anchors>
-							<Anchor point="TOPLEFT" x="5" y="-5" />
-							<Anchor point="BOTTOMRIGHT" x="-5" y="5" />
-						</Anchors>
-						<Color r="0" g="0" b="0" a="1" />
-					</Texture>
-				</Layer>
 				<Layer level="ARTWORK">
 					<FontString parentKey="Description" inherits="GameFontNormalMed2">
-						<Size x="400" y="0"/>
+						<Size x="380" y="0"/>
 						<Anchors>
 							<Anchor point="TOP" x="0" y="-26"/>
 						</Anchors>
@@ -1987,6 +2095,19 @@
 						<KeyValue key="isSplash" value="true" type="boolean"/>
 					</KeyValues>
 				</Button>
+				<Button parentKey="SplashPairFirst" inherits="StoreSplashPairCardTemplate">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.RightInset" relativePoint="TOPLEFT" x="10" y="-10" />
+					</Anchors>
+					<KeyValues>
+						<KeyValue key="anchorRight" value="true" type="boolean"/>
+					</KeyValues>
+				</Button>
+				<Button parentKey="SplashPairSecond" inherits="StoreSplashPairCardTemplate">
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.RightInset" relativePoint="TOPRIGHT" x="-10" y="-10" />
+					</Anchors>
+				</Button>
 				<Button parentKey="SplashPrimary" inherits="StoreSplashPrimaryCardTemplate">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.RightInset" relativePoint="TOPLEFT" x="10" y="-10" />
@@ -2029,22 +2150,12 @@
 				<OnLoad function="StoreFrame_OnLoad" />
 				<OnEvent function="StoreFrame_OnEvent" />
 				<OnShow function="StoreFrame_OnShow" />
-				<OnHide>
-					self:SetAttribute("isshown", false);
-					-- TODO: Fix so will only hide if Store showed the preview frame
-					Outbound.HidePreviewFrame();
-					if ( not IsOnGlueScreen() ) then
-						Outbound.UpdateMicroButtons();
-					end
-
-					StoreVASValidationFrame:Hide();
-					PlaySound("UI_igStore_WindowClose_Button");
-				</OnHide>
+				<OnHide function="StoreFrame_OnHide" />
 				<OnAttributeChanged function="StoreFrame_OnAttributeChanged" />
 				<OnMouseWheel function="StoreFrame_OnMouseWheel" />
 			</Scripts>
 		</Frame>
-		<Frame name="StoreConfirmationFrame" frameStrata="FULLSCREEN_DIALOG" topLevel="true" parent="StoreFrame" inherits="GoldBorderFrameTemplate" clampedToScreen="true" hidden="true">
+		<Frame name="StoreConfirmationFrame" frameStrata="FULLSCREEN_DIALOG" toplevel="true" parent="StoreFrame" inherits="GoldBorderFrameTemplate" clampedToScreen="true" hidden="true">
 			<Size x="403" y="556" />
 			<Layers>
 				<Layer level="BACKGROUND">
@@ -2100,9 +2211,9 @@
 				</Layer>
 				<Layer level="ARTWORK" textureSubLevel="1">
 					<Texture parentKey="Icon">
-						<Size x="63" y="63" />
+						<Size x="64" y="64" />
 						<Anchors>
-							<Anchor point="TOP" x="-120" y="-66" />
+							<Anchor point="TOP" x="-120" y="-68" />
 						</Anchors>
 					</Texture>
 				</Layer>
@@ -2167,7 +2278,7 @@
 							</Anchors>
 							<Scripts>
 								<OnHyperlinkClick>
-									local linkType, index = (":"):split(link);
+									local linkType, index = string.split(":", link);
 									if ( linkType == "urlIndex" ) then
 										LoadURLIndex(tonumber(index));
 									end
@@ -2193,13 +2304,13 @@
 					</Anchors>
 					<Scripts>
 						<OnHyperlinkClick>
-							local linkType, index = (":"):split(link);
+							local linkType, index = string.split(":", link);
 							if ( linkType == "urlIndex" ) then
 								LoadURLIndex(tonumber(index));
 							end
 						</OnHyperlinkClick>
 					</Scripts>
-					<FontString inherits="GameFontNormalSmall" />
+					<FontString inherits="GameFontNormalSmall" justifyH="LEFT" />
 				</SimpleHTML>
 				<CheckButton parentKey="LicenseAcceptButton" inherits="StoreCheckButtonTemplate">
 					<Anchors>
@@ -2207,7 +2318,7 @@
 					</Anchors>
 					<Scripts>
 						<OnClick>
-							PlaySound("UI_igStore_PageNav_Button");
+							PlaySound(SOUNDKIT.UI_IG_STORE_PAGE_NAV_BUTTON);
 							self:GetParent().BuyButton:SetEnabled(self:GetChecked());
 						</OnClick>
 					</Scripts>
@@ -2220,7 +2331,7 @@
 				<OnEvent function="StoreConfirmationFrame_OnEvent" />
 			</Scripts>
 		</Frame>
-		<Frame name="StoreVASValidationFrame" frameStrata="FULLSCREEN_DIALOG" topLevel="true" parent="StoreFrame" inherits="GoldBorderFrameTemplate" hidden="true">
+		<Frame name="StoreVASValidationFrame" frameStrata="FULLSCREEN_DIALOG" toplevel="true" parent="StoreFrame" inherits="GoldBorderFrameTemplate" hidden="true">
 			<Size x="403" y="626" />
 			<Layers>
 				<Layer level="BACKGROUND">
@@ -2228,7 +2339,7 @@
 						<Size x="376" y="0" />
 						<Anchors>
 							<Anchor point="TOP" x="0" y="-14"/>
-							<Anchor point="BOTTOM" x="0" y="0"/>
+							<Anchor point="BOTTOM" x="0" y="4"/>
 						</Anchors>
 					</Texture>
 				</Layer>
@@ -2244,7 +2355,7 @@
 				<Layer level="BORDER">
 					<Texture parentKey="ParchmentBottom" inherits="store-receipt-parchment-bottom">
 						<Anchors>
-							<Anchor point="BOTTOM" x="0" y="0" />
+							<Anchor point="BOTTOM" x="0" y="4" />
 						</Anchors>
 					</Texture>
 				</Layer>
@@ -2313,13 +2424,13 @@
 					</Anchors>
 					<Scripts>
 						<OnHyperlinkClick>
-							local linkType, index = (":"):split(link);
+							local linkType, index = string.split(":", link);
 							if ( linkType == "urlIndex" ) then
 								LoadURLIndex(tonumber(index));
 							end
 						</OnHyperlinkClick>
 					</Scripts>
-					<FontString inherits="GameFontBlackSmall" />
+					<FontString inherits="GameFontBlackSmall2" justifyH="LEFT" />
 				</SimpleHTML>
 				<Frame parentKey="CharacterSelectionFrame" useParentLevel="true">
 					<Anchors>
@@ -2328,9 +2439,9 @@
 					</Anchors>
 					<Layers>
 						<Layer level="ARTWORK" textureSubLevel="1">
-							<Texture parentKey="SelectedCharacterFrame" atlas="vas-receipt-selectedcharbg" useatlassize="true">
+							<Texture parentKey="SelectedCharacterFrame" atlas="vas-receipt-selectedcharbg" useAtlasSize="true">
 								<Anchors>
-									<Anchor point="BOTTOM" x="0" y="230" />
+									<Anchor point="TOP" x="0" y="-170" />
 								</Anchors>
 							</Texture>
 							<FontString parentKey="SelectedCharacterName" inherits="GameFontNormalHugeOutline2">
@@ -2338,7 +2449,8 @@
 									<Anchor point="TOPLEFT" relativeKey="$parent.SelectedCharacterFrame" relativePoint="TOPLEFT" x="72" y="-16"/>
 								</Anchors>
 							</FontString>
-							<FontString parentKey="SelectedCharacterDescription" inherits="GameFontHighlightSmall">
+							<FontString parentKey="SelectedCharacterDescription" inherits="GameFontHighlightSmall2" justifyH="LEFT">
+								<Size x="220" y="14"/>
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeKey="$parent.SelectedCharacterName" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
 								</Anchors>
@@ -2365,6 +2477,13 @@
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.SelectedCharacterFrame" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
 							</Anchors>
+							<Frames>
+								<Frame parentKey="FromIcon" inherits="StoreVASRaceFactionIconFrameTemplate">
+									<Anchors>
+										<Anchor point="LEFT" x="54" y="0"/>
+									</Anchors>
+								</Frame>
+							</Frames>
 							<Layers>
 								<Layer level="BACKGROUND">
 									<Texture atlas="vas-receipt-greenbg" useAtlasSize="true">
@@ -2374,18 +2493,23 @@
 									</Texture>
 								</Layer>
 								<Layer level="ARTWORK">
-									<Texture atlas="vas-receipt-icon-horde" useAtlasSize="true" parentKey="FromTex" parentArray="Textures" hidden="true">
+									<Texture parentKey="ArrowTex" atlas="vas-receipt-brownarrow" useAtlasSize="true" hidden="true">
 										<Anchors>
-											<Anchor point="LEFT"/>
+											<Anchor point="LEFT" relativeKey="$parent.FromIcon" relativePoint="RIGHT" x="4" y="0"/>
 										</Anchors>
 									</Texture>
-									<Texture atlas="vas-receipt-brownarrow" useAtlasSize="true" parentArray="Textures" hidden="true">
+									<FontString parentKey="ViewRaces" inherits="GameFontBlackSmall" justifyH="CENTER" justifyV="CENTER">
+										<Size x="90" y="26"/>
 										<Anchors>
-											<Anchor point="LEFT" relativeKey="$parent.FromTex" relativePoint="RIGHT" x="4" y="0"/>
+											<Anchor point="LEFT" relativeKey="$parent.ArrowTex" relativePoint="RIGHT" x="34" y="0"/>
 										</Anchors>
-									</Texture>
+									</FontString>
 								</Layer>
 							</Layers>
+							<Scripts>
+								<OnEnter function="VASCharacterSelectionChangeIconFrame_OnEnter"/>
+								<OnLeave function="VASCharacterSelectionChangeIconFrame_OnLeave"/>
+							</Scripts>
 						</Frame>
 						<Frame parentKey="RealmSelector" inherits="StoreDropDownMenuTemplate" enableMouse="true">
 							<Size x="150" y="22"/>
@@ -2444,14 +2568,218 @@
 								</OnLeave>
 							</Scripts>
 						</EditBox>
-						<Frame parentKey="DestinationRealmSelector" inherits="StoreDropDownMenuTemplate" enableMouse="true">
+						<CheckButton parentKey="TransferRealmCheckbox" inherits="StoreCheckButtonTemplate">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.SelectedCharacterFrame" relativePoint="BOTTOMLEFT" x="2" y="-8"/>
+							</Anchors>
+							<Layers>
+								<Layer level="BACKGROUND">
+									<Texture parentKey="Shade">
+										<Anchors>
+											<Anchor point="TOPLEFT" x="7" y="-7"/>
+											<Anchor point="BOTTOMRIGHT" x="-7" y="7"/>
+										</Anchors>
+										<Color r="0" g="0" b="0" a=".8"/>
+									</Texture>
+								</Layer>
+								<Layer level="ARTWORK">
+									<FontString parentKey="Label" inherits="GameFontBlack" text="BLIZZARD_STORE_VAS_TRANSFER_REALM" justifyH="LEFT">
+										<Size x="124" y="14"/>
+										<Anchors>
+											<Anchor point="LEFT" relativePoint="RIGHT" x="4" y="0"/>
+										</Anchors>
+									</FontString>
+								</Layer>
+							</Layers>
+							<Scripts>
+								<OnClick function="TransferRealmCheckbox_OnClick"/>
+							</Scripts>
+						</CheckButton>
+						<EditBox parentKey="TransferRealmEditbox" letters="100" inherits="StoreEditBoxTemplate">
+							<Size x="140" y="22"/>
+							<Anchors>
+								<Anchor point="TOPRIGHT" relativeKey="$parent.SelectedCharacterFrame" relativePoint="BOTTOMRIGHT" x="8" y="-10"/>
+							</Anchors>
+							<Layers>
+								<Layer level="ARTWORK">
+									<FontString parentKey="EmptyText" inherits="GameFontDisable" text="BLIZZARD_STORE_VAS_REALM_NAME">
+										<Anchors>
+											<Anchor point="LEFT"/>
+										</Anchors>
+									</FontString>
+								</Layer>
+							</Layers>
+							<Scripts>
+								<OnCursorChanged function="VASCharacterSelectionTransferRealmEditBox_OnCursorChanged"/>
+								<OnTextChanged function="VASCharacterSelectionTransferRealmEditBox_OnTextChanged"/>
+								<OnShow>
+									self:SetFrameLevel(self:GetParent():GetFrameLevel()+7);
+								</OnShow>
+								<OnKeyDown inherit="append">
+									if (key == "DOWN") then
+										StoreAutoCompleteIncrementSelection();
+									elseif (key == "UP") then
+										StoreAutoCompleteDecrementSelection();
+									elseif (key == "ENTER") then
+										StoreAutoCompleteSelectionEnterPressed();
+									elseif (key == "ESCAPE") then
+										self:GetParent().TransferRealmAutoCompleteBox:Hide();
+									end
+								</OnKeyDown>
+							</Scripts>
+						</EditBox>
+						<Frame parentKey="TransferRealmAutoCompleteBox" hidden="true">
+							<Size x="154" y="5"/>
+							<Anchors>
+								<Anchor point="TOP" relativeKey="$parent.TransferRealmEditbox" relativePoint="BOTTOM" x="-4" y="14"/>
+							</Anchors>
+							<Backdrop bgFile="Interface\Glues\Common\Glue-Tooltip-Background" edgeFile="Interface\Glues\Common\Glue-Tooltip-Border" tile="true">
+								<BackgroundInsets>
+									<AbsInset left="10" right="5" top="4" bottom="9"/>
+								</BackgroundInsets>
+								<TileSize>
+									<AbsValue val="16"/>
+								</TileSize>
+								<EdgeSize>
+									<AbsValue val="16"/>
+								</EdgeSize>
+							</Backdrop>
+							<Layers>
+								<Layer level="BACKGROUND">
+									<Texture parentKey="Shade">
+										<Anchors>
+											<Anchor point="TOPLEFT" x="11" y="-7"/>
+											<Anchor point="BOTTOMRIGHT" x="-7" y="7"/>
+										</Anchors>
+										<Color r="0" g="0" b="0" a=".8"/>
+									</Texture>
+								</Layer>
+							</Layers>
+							<Frames>
+								<Button name="AutoCompleteButton1" inherits="StoreAutoCompleteButtonTemplate">
+									<Anchors>
+										<Anchor point="TOP" x="6" y="-12"/>
+									</Anchors>
+									<Scripts>
+										<OnClick function="VASCharacterSelectionTransferRealmEditBoxAutoCompleteButton_OnClick"/>
+									</Scripts>
+								</Button>
+							</Frames>
+							<Scripts>
+								<OnShow>
+									self:SetFrameLevel(self:GetParent():GetFrameLevel()+4);
+								</OnShow>
+								<OnHide function="TransferRealmAutoCompleteBox_OnHide"/>
+							</Scripts>
+						</Frame>
+						<CheckButton parentKey="TransferAccountCheckbox" inherits="StoreCheckButtonTemplate">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.TransferRealmCheckbox" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
+							</Anchors>
+							<Layers>
+								<Layer level="BACKGROUND">
+									<Texture parentKey="Shade">
+										<Anchors>
+											<Anchor point="TOPLEFT" x="7" y="-7"/>
+											<Anchor point="BOTTOMRIGHT" x="-7" y="7"/>
+										</Anchors>
+										<Color r="0" g="0" b="0" a=".8"/>
+									</Texture>
+								</Layer>
+								<Layer level="ARTWORK">
+									<FontString parentKey="Label" inherits="GameFontBlack" text="BLIZZARD_STORE_VAS_TRANSFER_ACCOUNT" justifyH="LEFT">
+										<Size x="124" y="14"/>
+										<Anchors>
+											<Anchor point="LEFT" relativePoint="RIGHT" x="4" y="0"/>
+										</Anchors>
+									</FontString>
+								</Layer>
+							</Layers>
+							<Scripts>
+								<OnClick function="TransferAccountCheckbox_OnClick"/>
+							</Scripts>
+						</CheckButton>
+						<Frame parentKey="TransferAccountDropDown" inherits="StoreDropDownMenuTemplate" enableMouse="true">
 							<Size x="150" y="22"/>
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.SelectedCharacterFrame" relativePoint="BOTTOMLEFT" x="-16" y="-24"/>
+								<Anchor point="TOPLEFT" relativeKey="$parent.TransferRealmEditbox" relativePoint="BOTTOMLEFT" x="-20" y="-12"/>
 							</Anchors>
 							<Scripts>
 								<OnLoad>
-									self.Button:SetScript("OnClick", VASCharacterSelectionDestinationRealmSelector_OnClick);
+									self.Button:SetScript("OnClick", VASCharacterSelectionTransferAccountDropDown_OnClick);
+								</OnLoad>
+							</Scripts>
+						</Frame>
+						<CheckButton parentKey="TransferFactionCheckbox" inherits="StoreCheckButtonTemplate">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.TransferAccountCheckbox" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
+							</Anchors>
+							<Layers>
+								<Layer level="BACKGROUND">
+									<Texture parentKey="Shade">
+										<Anchors>
+											<Anchor point="TOPLEFT" x="7" y="-7"/>
+											<Anchor point="BOTTOMRIGHT" x="-7" y="7"/>
+										</Anchors>
+										<Color r="0" g="0" b="0" a=".8"/>
+									</Texture>
+								</Layer>
+								<Layer level="ARTWORK">
+									<FontString parentKey="Label" inherits="GameFontBlack" justifyH="LEFT">
+										<Size x="280" y="14"/>
+										<Anchors>
+											<Anchor point="LEFT" relativePoint="RIGHT" x="4" y="0"/>
+										</Anchors>
+									</FontString>
+								</Layer>
+							</Layers>
+							<Frames>
+								<Frame parentKey="LabelMouseOver" enableMouse="true">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.Label" relativePoint="TOPLEFT"/>
+										<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Label" relativePoint="BOTTOMRIGHT"/>
+									</Anchors>
+									<Scripts>
+										<OnEnter function="VASCharacterSelectionChangeIconFrame_OnEnter"/>
+										<OnLeave function="VASCharacterSelectionChangeIconFrame_OnLeave"/>
+									</Scripts>
+								</Frame>
+							</Frames>
+							<Scripts>
+								<OnClick function="TransferFactionCheckbox_OnClick"/>
+							</Scripts>
+						</CheckButton>
+						<EditBox parentKey="TransferBattlenetAccountEditbox" letters="100" inherits="StoreEditBoxTemplate">
+							<Size x="220" y="22"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.TransferAccountCheckbox" relativePoint="BOTTOMLEFT" x="14" y="-20"/>
+							</Anchors>
+							<Layers>
+								<Layer level="ARTWORK">
+									<FontString parentKey="EmptyText" inherits="GameFontDisable" text="BLIZZARD_STORE_VAS_EMAIL_ADDRESS">
+										<Anchors>
+											<Anchor point="LEFT"/>
+										</Anchors>
+									</FontString>
+									<FontString inherits="GameFontBlack" text="BLIZZARD_STORE_VAS_DESTINATION_BNET_ACCOUNT">
+										<Anchors>
+											<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="-4" y="4"/>
+										</Anchors>
+									</FontString>
+								</Layer>
+							</Layers>
+							<Scripts>
+								<OnTextChanged function="VASCharacterSelectionTransferBattlenetAccountEditbox_OnTextChanged"/>
+							</Scripts>
+						</EditBox>
+						<Frame parentKey="TransferBnetWoWAccountDropDown" inherits="StoreDropDownMenuTemplate" enableMouse="true">
+							<Size x="150" y="22"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.TransferBattlenetAccountEditbox" relativePoint="BOTTOMLEFT" x="-20" y="-12"/>
+							</Anchors>
+							<Scripts>
+								<OnLoad>
+									self.Button:SetScript("OnClick", VASCharacterSelectionTransferBnetWoWAccountDropDown_OnClick);
 								</OnLoad>
 							</Scripts>
 						</Frame>
@@ -2465,7 +2793,7 @@
 				<OnEvent function="StoreVASValidationFrame_OnEvent"/>
 			</Scripts>
 		</Frame>
-		<Frame name="StoreTooltip" inherits="TooltipBorderedFrameTemplate" frameStrata="TOOLTIP" topLevel="true" parent="StoreFrame" clampedToScreen="true" hidden="true">
+		<Frame name="StoreTooltip" inherits="TooltipBorderedFrameTemplate" frameStrata="TOOLTIP" toplevel="true" parent="StoreFrame" clampedToScreen="true" hidden="true">
 			<Size x="0" y="200" />
 			<Layers>
 				<Layer level="ARTWORK">
@@ -2485,6 +2813,40 @@
 			</Layers>
 			<Scripts>
 				<OnLoad function="StoreTooltip_OnLoad" />
+			</Scripts>
+		</Frame>
+		
+		<Frame name="StoreBulletPointTemplate" inherits="BulletPointWithTextureTemplate" hyperlinksEnabled="true" virtual="true">
+			<Scripts>
+				<OnLoad inherit="prepend">
+					self.Text:SetFontObject("GameFontNormalMed1");
+					self.Text:SetTextColor(1, 0.84, 0.55);
+				</OnLoad>
+				<OnHyperlinkEnter>
+					local grandparent = self:GetParent():GetParent();
+					local onEnterScript = grandparent:GetScript("OnEnter");
+					if onEnterScript then
+						onEnterScript(grandparent);
+					end
+				</OnHyperlinkEnter>
+				<OnHyperlinkLeave>
+					local grandparent = self:GetParent():GetParent();
+					local onLeaveScript = grandparent:GetScript("OnLeave");
+					if onLeaveScript then
+						onLeaveScript(grandparent);
+					end
+				</OnHyperlinkLeave>
+				<OnHyperlinkClick>
+					local grandparent = self:GetParent():GetParent();
+					if not grandparent:IsEnabled() then
+						return;
+					end
+					
+					local linkType, index = string.split(":", link);
+					if ( linkType == "urlIndex" ) then
+						LoadURLIndex(tonumber(index));
+					end
+				</OnHyperlinkClick>
 			</Scripts>
 		</Frame>
 	</ScopedModifier>

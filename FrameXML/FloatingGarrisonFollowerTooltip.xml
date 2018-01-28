@@ -2,6 +2,60 @@
 UI.xsd">
 	<Script file="FloatingGarrisonFollowerTooltip.lua"/>
 
+	<Frame name="GarrisonFollowerAbilityTemplate" virtual="true">
+		<Size x="200" y="20"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon">
+					<Size x="20" y="20"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="2"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Name" inherits="GameFontNormal" justifyH="LEFT">
+					<Size x="200" y="0"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="4"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Description" inherits="GameFontHighlight" justifyH="LEFT" wordwrap="true">
+					<Size x="200" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Name" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="CounterIcon">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Description" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Details" inherits="GameFontHighlight" justifyH="LEFT">
+					<Size x="176" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.CounterIcon" relativePoint="TOPRIGHT" x="8" y="-1"/>
+					</Anchors>
+					<Color r="0.698" g="0.941" b="1" a="1"/>
+				</FontString>
+
+				<Texture atlas="GarrMission_EncounterAbilityBorder" useAtlasSize="true" parentKey="CounterIconBorder" hidden="true">
+					<Size x="15" y="15"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.CounterIcon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture parentKey="Border" atlas="GarrMission_EncounterAbilityBorder" hidden="true">
+					<Size x="30" y="30"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+	
 	<Frame name="GarrisonFollowerTooltipTemplate" parent="UIParent" frameStrata="TOOLTIP" clampedToScreen="true" virtual="true" hidden="true" inherits="TooltipBorderedFrameTemplate">
 		<Size x="260" y="80"/>
 		<Layers>
@@ -187,61 +241,6 @@ UI.xsd">
 		</Scripts>
 	</Frame>
 
-
-	<Frame name="GarrisonFollowerAbilityTemplate" virtual="true">
-		<Size x="200" y="20"/>
-		<Layers>
-			<Layer level="ARTWORK">
-				<Texture parentKey="Icon">
-					<Size x="20" y="20"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="2"/>
-					</Anchors>
-				</Texture>
-				<FontString parentKey="Name" inherits="GameFontNormal" justifyH="LEFT">
-					<Size x="200" y="0"/>
-					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="4"/>
-					</Anchors>
-				</FontString>
-				<FontString parentKey="Description" inherits="GameFontHighlight" justifyH="LEFT" wordwrap="true">
-					<Size x="200" y="0"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Name" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
-					</Anchors>
-				</FontString>
-				<Texture parentKey="CounterIcon">
-					<Size x="16" y="16"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Description" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
-					</Anchors>
-				</Texture>
-				<FontString parentKey="Details" inherits="GameFontHighlight" justifyH="LEFT">
-					<Size x="176" y="0"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.CounterIcon" relativePoint="TOPRIGHT" x="8" y="-1"/>
-					</Anchors>
-					<Color r="0.698" g="0.941" b="1" a="1"/>
-				</FontString>
-
-				<Texture atlas="GarrMission_EncounterAbilityBorder" useAtlasSize="true" parentKey="CounterIconBorder" hidden="true">
-					<Size x="15" y="15"/>
-					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.CounterIcon"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="ARTWORK" textureSubLevel="1">
-				<Texture parentKey="Border" atlas="GarrMission_EncounterAbilityBorder" hidden="true">
-					<Size x="30" y="30"/>
-					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-	</Frame>
-
 	<Frame name="FloatingGarrisonFollowerTooltip" inherits="GarrisonFollowerTooltipTemplate" movable="true" toplevel="true">
 		<Size x="260" y="150"/>
 		<Anchors>
@@ -381,11 +380,11 @@ UI.xsd">
 					</Anchors>
 				</FontString>
 				<FontString parentKey="Description" inherits="GameTooltipText" justifyH="LEFT" wordwrap="true">
-					<Size x="210" y="0"/>
-					<Color r="1.0" g="0.82" b="0.0"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="BOTTOMLEFT" x="0" y="-6"/>
 					</Anchors>
+					<Size x="210" y="0"/>
+					<Color r="1.0" g="0.82" b="0.0"/>
 				</FontString>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="1">
@@ -535,6 +534,9 @@ UI.xsd">
 			<OnMouseUp>
 				self:StopMovingOrSizing();
 			</OnMouseUp>
+			<OnShow function="FloatingGarrisonMissionTooltip_OnShow"/>
+			<OnHide function="FloatingGarrisonMissionTooltip_OnHide"/>
+			<OnEvent function="FloatingGarrisonMissionTooltip_OnEvent"/>
 		</Scripts>
 	</Frame>
 

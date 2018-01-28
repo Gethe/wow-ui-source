@@ -19,9 +19,9 @@
 				<Scripts>
 					<OnClick>
 						if ( self:GetChecked() ) then
-							PlaySound("igMainMenuOptionCheckBoxOn");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						else
-							PlaySound("igMainMenuOptionCheckBoxOff");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 						end
 						if ( self.onClick ) then
 							self.onClick(self, button);
@@ -210,7 +210,7 @@
 			</OnLeave>
 		</Scripts>
 	</Frame>
-	<Frame name="LFGDungeonReadyRewardTemplate" virtual="true">
+	<Frame name="LFGDungeonReadyRewardTemplate" parentArray="Rewards" virtual="true">
 		<Size x="40" y="40"/>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -444,7 +444,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								PlaySound("igCharacterInfoTab");
+								PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
 								LFGDebug("Proposal Hidden: Ready Dialog close button pressed.");
 								StaticPopupSpecial_Hide(LFGDungeonReadyPopup);
 							</OnClick>
@@ -460,7 +460,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								PlaySound("igCharacterInfoTab");
+								PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
 								AcceptProposal();
 							</OnClick>
 						</Scripts>
@@ -472,7 +472,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								PlaySound("igCharacterInfoTab");
+								PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
 								RejectProposal();
 							</OnClick>
 						</Scripts>
@@ -630,6 +630,14 @@
 					</Anchors>
 				</Texture>
 			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="IconBorder" file="Interface\Common\WhiteIconFrame" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 		</Layers>
 		<Frames>
 			<Frame name="$parentRoleIcon1" inherits="LFGRewardsLootShortageTemplate" parentKey="roleIcon1" hidden="true">
@@ -687,6 +695,9 @@
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
 					</Anchors>
+					<Shadow>
+						<Offset x="1" y="-1"/>
+					</Shadow>
 				</FontString>
 				<FontString name="$parentRewardsLabel" inherits="QuestTitleFontBlackShadow" justifyH="LEFT" parentKey="rewardsLabel" text="LFD_REWARDS">
 					<Anchors>
@@ -698,6 +709,9 @@
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentRewardsLabel" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
 					</Anchors>
+					<Shadow>
+						<Offset x="1" y="-1"/>
+					</Shadow>
 				</FontString>
 				<FontString name="$parentXPLabel" inherits="QuestFont" justifyH="LEFT" parentKey="xpLabel" text="EXPERIENCE_COLON">
 					<Anchors>
@@ -858,6 +872,12 @@
 						<Anchor point="TOP" x="0" y="-15"/>
 					</Anchors>
 				</FontString>
+				<FontString parentKey="QueueWarningText" inherits="GameFontHighlight" justifyH="CENTER" text="ACCEPTING_INVITE_WILL_REMOVE_QUEUE" hidden="true">
+					<Size x="240" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-138"/>
+					</Anchors>
+				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -923,11 +943,13 @@
 				LFGInvitePopupRoleButtonDPS.checkButton.onClick = LFGInvitePopupCheckButton_OnClick;
 			</OnLoad>
 			<OnShow>
-				PlaySound("igPlayerInvite");
+				PlaySound(SOUNDKIT.IG_PLAYER_INVITE);
 			</OnShow>
 			<OnUpdate function="LFGInvitePopup_OnUpdate"/>
 			<OnHide>
-				PlaySound("igMainMenuClose");
+				PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
+				self:SetHeight(LFG_INVITE_POPUP_DEFAULT_HEIGHT);
+				self.QueueWarningText:Hide();
 			</OnHide>
 		</Scripts>
 	</Frame>
@@ -1213,7 +1235,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PlaySound("UChatScrollButton");
+						PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 						self:GetParent():Hide();
 					</OnClick>
 				</Scripts>

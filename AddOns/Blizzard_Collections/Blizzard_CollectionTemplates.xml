@@ -164,189 +164,6 @@
 		</Anchors>
 
 		<Layers>
-			<Layer level="OVERLAY">
-				<Texture parentKey="OverlayShadowTopLeft" atlas="collections-background-shadow-small" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="4" y="-4"/>
-					</Anchors>
-				</Texture>
-
-				<Texture parentKey="OverlayShadowTop" atlas="collections-background-shadow-small" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="17" y="-4"/>
-						<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-17" y="-4"/>
-					</Anchors>
-					<TexCoords left="0.9999" right="1" top="0" bottom="1"/>
-				</Texture>
-
-				<Texture parentKey="OverlayShadowTopRight" atlas="collections-background-shadow-small" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-4" y="-4"/>
-					</Anchors>
-					<TexCoords left="1" right="0" top="0" bottom="1"/>
-				</Texture>
-
-				<Texture parentKey="OverlayShadowLeft" atlas="collections-background-shadow-small" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="4" y="-17"/>
-						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" x="4" y="17"/>
-					</Anchors>
-					<TexCoords left="0" right="1" top="0.9999" bottom="1"/>
-				</Texture>
-
-				<Texture parentKey="OverlayShadowBottomLeft" atlas="collections-background-shadow-small" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" x="4" y="4"/>
-					</Anchors>
-					<TexCoords left="0" right="1" top="1" bottom="0"/>
-				</Texture>
-
-				<Texture parentKey="OverlayShadowRight" atlas="collections-background-shadow-small" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-4" y="-17"/>
-						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-4" y="17"/>
-					</Anchors>
-					<TexCoords left="1" right="0" top="0.9999" bottom="1"/>
-				</Texture>
-
-				<Texture parentKey="OverlayShadowBottomRight" atlas="collections-background-shadow-small" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-4" y="4"/>
-					</Anchors>
-					<TexCoords left="1" right="0" top="1" bottom="0"/>
-				</Texture>
-
-				<Texture parentKey="OverlayShadowBottom" atlas="collections-background-shadow-small" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" x="17" y="4"/>
-						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-17" y="4"/>
-					</Anchors>
-					<TexCoords left="0.9999" right="1" top="1" bottom="0"/>
-				</Texture>
-			</Layer>
-
-			<Layer level="ARTWORK" textureSubLevel="1">
-				<Texture parentKey="BGCornerFilagreeBottomLeft" atlas="collections-background-filagree" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" x="4" y="4"/>
-					</Anchors>
-					<TexCoords left="0.0" right="1.0" top="0.0" bottom="1.0"/>
-				</Texture>
-
-				<Texture parentKey="BGCornerFilagreeBottomRight" atlas="collections-background-filagree" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT" x="-4" y="4"/>
-					</Anchors>
-					<TexCoords left="1.0" right="0.0" top="0.0" bottom="1.0"/>
-				</Texture>
-			</Layer>
-
-			<Layer level="ARTWORK" textureSubLevel="2">
-				<Texture parentKey="BGCornerTopLeft" atlas="collections-background-corner" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="4" y="-4"/>
-					</Anchors>
-				</Texture>
-
-				<Texture parentKey="BGCornerTopRight" atlas="collections-background-corner" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="TOPRIGHT" x="-4" y="-4"/>
-					</Anchors>
-					<TexCoords left="1.0" right="0.0" top="0.0" bottom="1.0"/>
-				</Texture>
-
-				<Texture parentKey="BGCornerBottomLeft" atlas="collections-background-corner" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" x="4" y="4"/>
-					</Anchors>
-					<TexCoords left="0.0" right="1.0" top="1.0" bottom="0.0"/>
-				</Texture>
-
-				<Texture parentKey="BGCornerBottomRight" atlas="collections-background-corner" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT" x="-4" y="4"/>
-					</Anchors>
-					<TexCoords left="1.0" right="0.0" top="1.0" bottom="0.0"/>
-				</Texture>
-			</Layer>
-
-			<Layer level="BORDER" textureSubLevel="1">
-				<Texture parentKey="ShadowLineTop" atlas="_collections-background-line" useAtlasSize="true" horizTile="true">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="4" y="-13" />
-						<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="-4" y="-17"/>
-					</Anchors>
-				</Texture>
-
-				<Texture parentKey="ShadowLineBottom" atlas="_collections-background-line" useAtlasSize="true" horizTile="true">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="4" y="17" />
-						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-4" y="13"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-
-			<Layer level="BORDER" textureSubLevel="2">
-				<Texture parentKey="ShadowCornerTopLeft" atlas="collections-background-shadow-large" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="4" y="-4"/>
-					</Anchors>
-				</Texture>
-
-				<Texture parentKey="ShadowCornerTopRight" atlas="collections-background-shadow-large" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-4" y="-4" />
-					</Anchors>
-					<TexCoords left="1.0" right="0.0" top="0.0" bottom="1.0"/>
-				</Texture>
-
-				<Texture parentKey="ShadowCornerBottomLeft" atlas="collections-background-shadow-large" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" x="4" y="4"/>
-					</Anchors>
-					<TexCoords left="0.0" right="1.0" top="1.0" bottom="0.0"/>
-				</Texture>
-
-				<Texture parentKey="ShadowCornerBottomRight" atlas="collections-background-shadow-large" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-4" y="4"/>
-					</Anchors>
-					<TexCoords left="1.0" right="0.0" top="1.0" bottom="0.0"/>
-				</Texture>
-
-				<Texture parentKey="ShadowCornerTop" atlas="collections-background-shadow-large" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="149" y="-4"/>
-						<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-149" y="-4"/>
-					</Anchors>
-					<TexCoords left="0.9999" right="1" top="0" bottom="1"/>
-				</Texture>
-
-				<Texture parentKey="ShadowCornerLeft" atlas="collections-background-shadow-large" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="4" y="-151"/>
-						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" x="4" y="151"/>
-					</Anchors>
-					<TexCoords left="0" right="1" top="0.9999" bottom="1"/>
-				</Texture>
-
-				<Texture parentKey="ShadowCornerRight" atlas="collections-background-shadow-large" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-4" y="-151"/>
-						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-4" y="151"/>
-					</Anchors>
-					<TexCoords left="1" right="0" top="0.9999" bottom="1"/>
-				</Texture>
-
-				<Texture parentKey="ShadowCornerBottom" atlas="collections-background-shadow-large" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" x="149" y="4"/>
-						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-149" y="4"/>
-					</Anchors>
-					<TexCoords left="0.9999" right="1" top="1" bottom="0"/>
-				</Texture>
-			</Layer>
-
 			<Layer level="BACKGROUND">
 				<Texture parentKey="BackgroundTile" atlas="collections-background-tile" useAtlasSize="true" vertTile="true" horizTile="true">
 					<Anchors>
@@ -355,21 +172,199 @@
 					</Anchors>
 				</Texture>
 			</Layer>
+			
+			<Layer level="BORDER" textureSubLevel="2">
+				<Texture parentKey="ShadowCornerTopLeft" atlas="collections-background-shadow-large" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.BackgroundTile"/>
+					</Anchors>
+				</Texture>
+
+				<Texture parentKey="ShadowCornerTopRight" atlas="collections-background-shadow-large" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.BackgroundTile"/>
+					</Anchors>
+					<TexCoords left="1.0" right="0.0" top="0.0" bottom="1.0"/>
+				</Texture>
+
+				<Texture parentKey="ShadowCornerBottomLeft" atlas="collections-background-shadow-large" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.BackgroundTile"/>
+					</Anchors>
+					<TexCoords left="0.0" right="1.0" top="1.0" bottom="0.0"/>
+				</Texture>
+
+				<Texture parentKey="ShadowCornerBottomRight" atlas="collections-background-shadow-large" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BackgroundTile"/>
+					</Anchors>
+					<TexCoords left="1.0" right="0.0" top="1.0" bottom="0.0"/>
+				</Texture>
+
+				<Texture parentKey="ShadowCornerTop" atlas="collections-background-shadow-large" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.ShadowCornerTopLeft" relativePoint="TOPRIGHT"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.ShadowCornerTopRight" relativePoint="TOPLEFT"/>
+					</Anchors>
+					<TexCoords left="0.9999" right="1" top="0" bottom="1"/>
+				</Texture>
+
+				<Texture parentKey="ShadowCornerLeft" atlas="collections-background-shadow-large" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.ShadowCornerTopLeft" relativePoint="BOTTOMLEFT"/>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.ShadowCornerBottomLeft" relativePoint="TOPLEFT"/>
+					</Anchors>
+					<TexCoords left="0" right="1" top="0.9999" bottom="1"/>
+				</Texture>
+
+				<Texture parentKey="ShadowCornerRight" atlas="collections-background-shadow-large" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.ShadowCornerTopRight" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ShadowCornerBottomRight" relativePoint="TOPRIGHT"/>
+					</Anchors>
+					<TexCoords left="1" right="0" top="0.9999" bottom="1"/>
+				</Texture>
+
+				<Texture parentKey="ShadowCornerBottom" atlas="collections-background-shadow-large" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.ShadowCornerBottomLeft" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ShadowCornerBottomRight" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+					<TexCoords left="0.9999" right="1" top="1" bottom="0"/>
+				</Texture>
+			</Layer>
+			
+			<Layer level="OVERLAY">
+				<Texture parentKey="OverlayShadowTopLeft" atlas="collections-background-shadow-small" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.BackgroundTile"/>
+					</Anchors>
+				</Texture>
+				
+				<Texture parentKey="OverlayShadowTopRight" atlas="collections-background-shadow-small" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.BackgroundTile"/>
+					</Anchors>
+					<TexCoords left="1" right="0" top="0" bottom="1"/>
+				</Texture>
+
+				<Texture parentKey="OverlayShadowBottomLeft" atlas="collections-background-shadow-small" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.BackgroundTile"/>
+					</Anchors>
+					<TexCoords left="0" right="1" top="1" bottom="0"/>
+				</Texture>
+
+				<Texture parentKey="OverlayShadowBottomRight" atlas="collections-background-shadow-small" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BackgroundTile"/>
+					</Anchors>
+					<TexCoords left="1" right="0" top="1" bottom="0"/>
+				</Texture>
+
+				<Texture parentKey="OverlayShadowTop" atlas="collections-background-shadow-small" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.OverlayShadowTopLeft" relativePoint="TOPRIGHT" x="0" y="0"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.OverlayShadowTopRight" relativePoint="TOPLEFT" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0.9999" right="1" top="0" bottom="1"/>
+				</Texture>
+				
+				<Texture parentKey="OverlayShadowLeft" atlas="collections-background-shadow-small" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.OverlayShadowTopLeft" relativePoint="BOTTOMLEFT"/>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.OverlayShadowBottomLeft" relativePoint="TOPLEFT"/>
+					</Anchors>
+					<TexCoords left="0" right="1" top="0.9999" bottom="1"/>
+				</Texture>
+
+				<Texture parentKey="OverlayShadowRight" atlas="collections-background-shadow-small" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.OverlayShadowTopRight" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.OverlayShadowBottomRight" relativePoint="TOPRIGHT"/>
+					</Anchors>
+					<TexCoords left="1" right="0" top="0.9999" bottom="1"/>
+				</Texture>
+
+				<Texture parentKey="OverlayShadowBottom" atlas="collections-background-shadow-small" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.OverlayShadowBottomLeft" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.OverlayShadowBottomRight" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0.9999" right="1" top="1" bottom="0"/>
+				</Texture>
+			</Layer>
+
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture parentKey="BGCornerFilagreeBottomLeft" atlas="collections-background-filagree" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.BackgroundTile"/>
+					</Anchors>
+					<TexCoords left="0.0" right="1.0" top="0.0" bottom="1.0"/>
+				</Texture>
+
+				<Texture parentKey="BGCornerFilagreeBottomRight" atlas="collections-background-filagree" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BackgroundTile"/>
+					</Anchors>
+					<TexCoords left="1.0" right="0.0" top="0.0" bottom="1.0"/>
+				</Texture>
+			</Layer>
+
+			<Layer level="ARTWORK" textureSubLevel="2">
+				<Texture parentKey="BGCornerTopLeft" atlas="collections-background-corner" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.BackgroundTile"/>
+					</Anchors>
+				</Texture>
+
+				<Texture parentKey="BGCornerTopRight" atlas="collections-background-corner" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.BackgroundTile"/>
+					</Anchors>
+					<TexCoords left="1.0" right="0.0" top="0.0" bottom="1.0"/>
+				</Texture>
+
+				<Texture parentKey="BGCornerBottomLeft" atlas="collections-background-corner" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.BackgroundTile"/>
+					</Anchors>
+					<TexCoords left="0.0" right="1.0" top="1.0" bottom="0.0"/>
+				</Texture>
+
+				<Texture parentKey="BGCornerBottomRight" atlas="collections-background-corner" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BackgroundTile"/>
+					</Anchors>
+					<TexCoords left="1.0" right="0.0" top="1.0" bottom="0.0"/>
+				</Texture>
+			</Layer>
+
+			<Layer level="BORDER" textureSubLevel="1">
+				<Texture parentKey="ShadowLineTop" atlas="_collections-background-line" useAtlasSize="true" horizTile="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.BackgroundTile" x="0" y="-9" />
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BackgroundTile" relativePoint="TOPRIGHT" x="0" y="-13"/>
+					</Anchors>
+				</Texture>
+
+				<Texture parentKey="ShadowLineBottom" atlas="_collections-background-line" useAtlasSize="true" horizTile="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.BackgroundTile" relativePoint="BOTTOMLEFT" x="0" y="13" />
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BackgroundTile" x="0" y="9"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+
 		</Layers>
 	</Frame>
 
 	<FontString name="CollectionsPageTextTemplate" inherits="GameFontWhite" justifyH="RIGHT" virtual="true">
 		<Size x="102" y="0" />
-		<Anchors>
-			<Anchor point="BOTTOM" x="-57" y="53" />
-		</Anchors>
 	</FontString>
 
 	<Button name="CollectionsPrevPageButton" virtual="true">
 		<Size x="32" y="32" />
-		<Anchors>
-			<Anchor point="BOTTOMRIGHT" x="-315" y="43" />
-		</Anchors>
 		<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
 		<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
 		<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
@@ -378,27 +373,48 @@
 	
 	<Button name="CollectionsNextPageButton" virtual="true">
 		<Size x="32" y="32" />
-		<Anchors>
-			<Anchor point="BOTTOMRIGHT" x="-280" y="43" />
-		</Anchors>
 		<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
 		<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
 		<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
 		<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 	</Button>
 
-	<PlayerModel name="CollectionsWrappedModelFrame" enableMouse="true" hidden="true" inherits="MouseDisabledModelTemplate" virtual="true">
-		<KeyValues>
-			<KeyValue key="normalIntensity" value="0.75" type="number"/>
-			<KeyValue key="highlightIntensity" value="1.2" type="number"/>
-		</KeyValues>
+	<Frame name="CollectionsPagingFrameTemplate" mixin="CollectionsPagingMixin" virtual="true">
+		<!-- why 33? it makes it so the button textures display without rounding fuzziness on my screen -->
+		<Size x="33" y="32"/>
+		<Frames>
+			<Button parentKey="PrevPageButton" inherits="CollectionsPrevPageButton">
+				<Anchors>
+					<Anchor point="LEFT" x="0" y="0" />
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent():PreviousPage();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button parentKey="NextPageButton" inherits="CollectionsNextPageButton">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.PrevButton" relativePoint="RIGHT" x="3" y="0" />
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent():NextPage();
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="PageText" inherits="CollectionsPageTextTemplate">
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.PrevButton" relativePoint="LEFT" x="-11" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
 		<Scripts>
-			<OnShow>
-				self:SetDisplayInfo(COLLECTIONS_FANFARE_DISPLAY_ID);
-				self:SetLight(true, false, 0, 0, 0, self.normalIntensity, 1.0, 1.0, 1.0);
-			</OnShow>
-			<OnEnter function="CollectionsWrappedModelFrame_OnEnter" />
-			<OnLeave function="CollectionsWrappedModelFrame_OnLeave" />
+			<OnLoad method="OnLoad"/>
 		</Scripts>
-	</PlayerModel>
+	</Frame>
 </Ui>

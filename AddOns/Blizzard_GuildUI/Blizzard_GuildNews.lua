@@ -7,7 +7,8 @@ local NEWS_ITEM_CRAFTED = 4;
 local NEWS_ITEM_PURCHASED = 5;
 local NEWS_GUILD_LEVEL = 6;
 local NEWS_GUILD_CREATE = 7;
-local NEWS_GUILD_EVENT = 8;
+local NEWS_LEGENDARY_LOOTED = 8;
+local NEWS_GUILD_EVENT = 9;
 
 local GUILD_EVENT_TEXTURES = {
 	--[CALENDAR_EVENTTYPE_RAID]		= "Interface\\LFGFrame\\LFGIcon-",
@@ -16,7 +17,6 @@ local GUILD_EVENT_TEXTURES = {
 	[CALENDAR_EVENTTYPE_MEETING]	= "Interface\\Calendar\\MeetingIcon",
 	[CALENDAR_EVENTTYPE_OTHER]		= "Interface\\Calendar\\UI-Calendar-Event-Other",
 };
-local GUILD_EVENT_TEXTURE_PATH = "Interface\\LFGFrame\\LFGIcon-";
 
 function GuildNewsFrame_OnLoad(self)
 	GuildFrame_RegisterPanel(self);
@@ -151,7 +151,7 @@ end
 local SIX_DAYS = 6 * 24 * 60 * 60		-- time in seconds
 function GuildNewsButton_SetEvent( button, event_id )
 	local today = date("*t");
-	local month, day, weekday, hour, minute, eventType, title, calendarType, textureName = CalendarGetGuildEventInfo(event_id);
+	local month, day, weekday, hour, minute, eventType, title, calendarType, texture = CalendarGetGuildEventInfo(event_id);
 	local displayTime = GameTime_GetFormattedTime(hour, minute, true);
 	local displayDay;
 	
@@ -174,7 +174,7 @@ function GuildNewsButton_SetEvent( button, event_id )
 	GuildNewsButton_SetText(button, HIGHLIGHT_FONT_COLOR, GUILD_EVENT_FORMAT, displayDay, displayTime, title);
 	
 	button.text:SetPoint("LEFT", 24, 0);
-	GuildNewsButton_SetIcon( button, GUILD_EVENT_TEXTURE_PATH..textureName);	
+	GuildNewsButton_SetIcon( button, texture);	
 	button.index = event_id;
 	button.newsType = NEWS_GUILD_EVENT;
 
@@ -234,7 +234,7 @@ function GuildNewsButton_OnEnter(self)
 	GameTooltip:Hide();
 	local newsType = self.newsType;
 	self.UpdateTooltip = nil;
-	if ( newsType == NEWS_ITEM_LOOTED or newsType == NEWS_ITEM_CRAFTED or newsType == NEWS_ITEM_PURCHASED ) then
+	if ( newsType == NEWS_ITEM_LOOTED or newsType == NEWS_ITEM_CRAFTED or newsType == NEWS_ITEM_PURCHASED or newsType == NEWS_LEGENDARY_LOOTED ) then
 		GuildNewsButton_AnchorTooltip(self);
 		local _, _, _, _, text2, _, _, _ = GetGuildNewsInfo(self.index);
 		GameTooltip:SetHyperlink(text2);
@@ -388,17 +388,17 @@ end
 
 function GuildNewsFiltersFrame_OnLoad(self)
 	GuildFrame_RegisterPopup(self);
-	for i = 1, 6 do
-		_G["GuildNewsFilterButton"..i.."Text"]:SetText(_G["GUILD_NEWS_FILTER"..i]);
+	for _, filterButton in ipairs(self.GuildNewsFilterButtons) do
+		filterButton.Text:SetText(_G["GUILD_NEWS_FILTER"..filterButton:GetID()]);
 	end
 end
 
 function GuildNewsFiltersFrame_OnShow(self)
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	local filters = { GetGuildNewsFilters() };
 	for i = 1, #filters do
 		-- skip 8th flag - guild creation
-		local checkbox = _G["GuildNewsFilterButton"..i];
+		local checkbox = self.GuildNewsFilterButtons[i];
 		if ( checkbox ) then
 			if ( filters[i] ) then
 				checkbox:SetChecked(true);
@@ -412,10 +412,10 @@ end
 function GuildNewsFilter_OnClick(self)
 	local setting;
 	if ( self:GetChecked() ) then
-		PlaySound("igMainMenuOptionCheckBoxOn");
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 		setting = 1;
 	else
-		PlaySound("igMainMenuOptionCheckBoxOff");
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 		setting = 0;
 	end
 	SetGuildNewsFilter(self:GetID(), setting);

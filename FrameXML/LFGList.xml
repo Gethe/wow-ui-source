@@ -127,7 +127,7 @@
 		<NormalTexture atlas="_search-rowbg"/>
 		<PushedTexture atlas="_search-rowbg"/>
 		<HighlightTexture atlas="search-highlight"/>
-		<ButtonText parentKey="Label" setAllPoints="true" justifyH="LEFT" wordWrap="false">
+		<ButtonText parentKey="Label" setAllPoints="true" justifyH="LEFT" wordwrap="false">
 			<Anchors>
 				<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="5" y="0"/>
 				<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
@@ -149,7 +149,7 @@
 		</Layers>
 		<Scripts>
 			<OnClick>
-				PlaySound("igMainMenuOptionCheckBoxOn");
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 				LFGListEntryCreationActivityFinder_Select(self:GetParent():GetParent():GetParent():GetParent(), self.activityID);
 			</OnClick>
 			<OnEnter>
@@ -213,13 +213,13 @@
 			<Button parentKey="RoleIcon1">
 				<Size x="18" y="18"/>
 				<Anchors>
-					<Anchor point="LEFT" x="116" y="0"/>
+					<Anchor point="LEFT" x="104" y="0"/>
 				</Anchors>
 				<NormalTexture/>
 				<HighlightTexture alphaMode="ADD"/>
 				<Scripts>
 					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						C_LFGList.SetApplicantMemberRole(self:GetParent():GetParent().applicantID, self:GetParent().memberIdx, self.role);
 					</OnClick>
 				</Scripts>
@@ -227,13 +227,27 @@
 			<Button parentKey="RoleIcon2">
 				<Size x="18" y="18"/>
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.RoleIcon1" relativePoint="RIGHT" x="3" y="0"/>
+					<Anchor point="LEFT" relativeKey="$parent.RoleIcon1" relativePoint="RIGHT" x="1" y="0"/>
 				</Anchors>
 				<NormalTexture/>
 				<HighlightTexture alphaMode="ADD"/>
 				<Scripts>
 					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+						C_LFGList.SetApplicantMemberRole(self:GetParent():GetParent().applicantID, self:GetParent().memberIdx, self.role);
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button parentKey="RoleIcon3">
+				<Size x="18" y="18"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.RoleIcon2" relativePoint="RIGHT" x="1" y="0"/>
+				</Anchors>
+				<NormalTexture/>
+				<HighlightTexture alphaMode="ADD"/>
+				<Scripts>
+					<OnClick>
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						C_LFGList.SetApplicantMemberRole(self:GetParent():GetParent().applicantID, self:GetParent().memberIdx, self.role);
 					</OnClick>
 				</Scripts>
@@ -244,7 +258,7 @@
 				self:RegisterForClicks("RightButtonUp");
 			</OnLoad>
 			<OnClick>
-				PlaySound("igMainMenuOptionCheckBoxOn");
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 				EasyMenu(LFGListUtil_GetApplicantMemberMenu(self:GetParent().applicantID, self.memberIdx), LFGListFrameDropDown, self, 60, -5, "MENU");
 			</OnClick>
 			<OnEnter function="LFGListApplicantMember_OnEnter"/>
@@ -294,7 +308,7 @@
 				</Layers>
 				<Scripts>
 					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						if ( self.isAck ) then
 							C_LFGList.RemoveApplicant(self:GetParent().applicantID);
 						else
@@ -311,7 +325,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						if ( not IsInRaid(LE_PARTY_CATEGORY_HOME) and GetNumGroupMembers(LE_PARTY_CATEGORY_HOME) + self:GetParent().numMembers + C_LFGList.GetNumInvitedApplicantMembers() > MAX_PARTY_MEMBERS + 1 ) then
 							local dialog = StaticPopup_Show("LFG_LIST_INVITING_CONVERT_TO_RAID");
 							if ( dialog ) then
@@ -388,7 +402,7 @@
 				<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
 				<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
 				<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
-				<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>	
+				<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
 			</CheckButton>
 		</Frames>
 		<Scripts>
@@ -493,6 +507,10 @@
 			Optional
 			<KeyValue key="tabCategory" value="tabCategoryLabel" type="string"/>
 		</KeyValues-->
+		<KeyValues>
+			<KeyValue key="disabledColor" value="GRAY_FONT_COLOR" type="global"/>
+			<KeyValue key="enabledColor" value="HIGHLIGHT_FONT_COLOR" type="global"/>
+		</KeyValues>
 		<Scripts>
 			<OnLoad>
 				if ( self.tabCategory ) then
@@ -503,6 +521,64 @@
 			<OnTabPressed function="LFGListEditBox_OnTabPressed"/>
 		</Scripts>
 	</EditBox>
+	<Frame name="LFGListOptionCheckButtonTemplate" virtual="true">
+		<!--KeyValues>
+			Required
+			<KeyValue key="label" value="LABEL_TEXT" type="global"/>
+			Optional
+			<KeyValue key="tooltip" value="LABEL_TEXT" type="global"/>
+		</KeyValues-->
+		<Size x="296" y="22"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Label" inherits="GameFontHighlightSmall" justifyH="LEFT">
+					<Size x="150" y="14"/>
+					<Anchors>
+						<Anchor point="LEFT" x="24"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<CheckButton parentKey="CheckButton">
+				<Size x="22" y="22"/>
+				<HitRectInsets>
+					<AbsInset left="0" right="-130" top="0" bottom="0"/>
+				</HitRectInsets>
+				<Anchors>
+					<Anchor point="LEFT" x="0" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						if ( self:GetChecked() ) then
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+						else
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
+						end
+					</OnClick>
+					<OnEnter>
+						local tooltip = self:GetParent().tooltip;
+						if ( tooltip ) then
+							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+							GameTooltip:SetText(tooltip, nil, nil, nil, nil, true);
+							GameTooltip:Show();
+						end
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+				<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+				<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+				<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>	
+			</CheckButton>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				self.Label:SetText(self.label);
+			</OnLoad>
+		</Scripts>
+	</Frame>
 	<Frame name="LFGListRequirementTemplate" virtual="true">
 		<Size x="296" y="22"/>
 		<!--KeyValues>
@@ -537,10 +613,10 @@
 				<Scripts>
 					<OnClick>
 						if ( self:GetChecked() ) then
-							PlaySound("igMainMenuOptionCheckBoxOn");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 							self:GetParent().EditBox:SetFocus();
 						else
-							PlaySound("igMainMenuOptionCheckBoxOff");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 							self:GetParent().EditBox:ClearFocus();
 							self:GetParent().EditBox:SetText("");
 						end
@@ -550,7 +626,7 @@
 				<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
 				<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
 				<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
-				<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>	
+				<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
 			</CheckButton>
 			<EditBox parentKey="EditBox" inherits="LFGListEditBoxTemplate">
 				<Size x="125" y="22"/>
@@ -756,7 +832,7 @@
 				</Layers>
 				<Scripts>
 					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						C_LFGList.CancelApplication(self:GetParent().resultID);
 					</OnClick>
 					<OnEnter>
@@ -959,10 +1035,10 @@
 							</Layer>
 						</Layers>
 						<Scripts>
-							<OnClick> 
-								PlaySound("igMainMenuOptionCheckBoxOn");
+							<OnClick>
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 								ToggleDropDownMenu(1, nil, LFGListLanguageFilterDropDownFrame, self, 0, -2, "MENU");
-							</OnClick>	
+							</OnClick>
 						</Scripts>
 					</Button>
 					<Frame name="LFGListLanguageFilterDropDownFrame" inherits="UIDropDownMenuTemplate">
@@ -1051,7 +1127,7 @@
 							</OnEnter>
 							<OnLeave function="GameTooltip_Hide"/>
 							<OnClick>
-								PlaySound("igMainMenuOptionCheckBoxOn");
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 								LFGListSearchPanel_DoSearch(self:GetParent());
 							</OnClick>
 						</Scripts>
@@ -1085,10 +1161,7 @@
 									<Anchor point="TOP" relativeKey="$parent.NoResultsFound" relativePoint="BOTTOM" x="0" y="-20"/>
 								</Anchors>
 								<Scripts>
-									<OnClick>
-										PlaySound("igMainMenuOptionCheckBoxOn");
-										LFGListSearchPanel_CreateGroupInstead(self:GetParent():GetParent());
-									</OnClick>
+									<OnClick function="LFGListSearchPanel_CreateGroupInstead"/>
 									<OnEnter>
 										if ( self.tooltip ) then
 											GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
@@ -1140,7 +1213,7 @@
 						<Scripts>
 							<OnClick>
 								local frame = self:GetParent():GetParent();
-								PlaySound("igMainMenuOptionCheckBoxOn");
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 								LFGListFrame_SetActivePanel(frame, frame.CategorySelection);
 							</OnClick>
 						</Scripts>
@@ -1152,7 +1225,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								PlaySound("igMainMenuOptionCheckBoxOn");
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 								LFGListSearchPanel_SignUp(self:GetParent());
 							</OnClick>
 						</Scripts>
@@ -1181,9 +1254,16 @@
 							</Anchors>
 							<Color r="1" g="0.82" b="0"/>
 						</FontString>
-						<FontString parentKey="ItemLevel" inherits="GameFontNormalSmall">
+						<FontString parentKey="PrivateGroup" inherits="GameFontNormalSmall">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.InfoBackground" relativePoint="TOPLEFT" x="12" y="-52"/>
+							</Anchors>
+							<Color r="0.51" g="0.77" b="1"/>
+						</FontString>
+						<FontString parentKey="ItemLevel" inherits="GameFontNormalSmall">
+							<Anchors>
+								<!--Reanchored in Lua-->
+								<Anchor point="LEFT" relativeKey="$parent.PrivateGroup" relativePoint="RIGHT" x="3" y="0"/>
 							</Anchors>
 						</FontString>
 					</Layer>
@@ -1253,9 +1333,9 @@
 						<Scripts>
 							<OnClick>
 								if ( self:GetChecked() ) then
-									PlaySound("igMainMenuOptionCheckBoxOn");
+									PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 								else
-									PlaySound("igMainMenuOptionCheckBoxOff");
+									PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 								end
 								LFGListUtil_SetAutoAccept(self:GetChecked());
 							</OnClick>
@@ -1264,7 +1344,7 @@
 						<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
 						<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
 						<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
-						<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>	
+						<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
 					</CheckButton>
 					<Frame parentKey="Inset" useParentLevel="true" inherits="InsetFrameTemplate">
 						<Size x="215" y="496"/>
@@ -1274,13 +1354,13 @@
 						</Anchors>
 					</Frame>
 					<Button parentKey="NameColumnHeader" inherits="LFGListColumnHeaderTemplate" text="NAME">
-						<Size x="110" y="24"/>
+						<Size x="100" y="24"/>
 						<Anchors>
 							<Anchor point="BOTTOMLEFT" relativeKey="$parent.Inset" relativePoint="TOPLEFT" x="0" y="0"/>
 						</Anchors>
 					</Button>
 					<Button parentKey="RoleColumnHeader" inherits="LFGListColumnHeaderTemplate" text="ROLE">
-						<Size x="52" y="24"/>
+						<Size x="62" y="24"/>
 						<Anchors>
 							<Anchor point="LEFT" relativeKey="$parent.NameColumnHeader" relativePoint="RIGHT" x="0" y="0"/>
 						</Anchors>
@@ -1335,7 +1415,7 @@
 							</OnEnter>
 							<OnLeave function="GameTooltip_Hide"/>
 							<OnClick>
-								PlaySound("igMainMenuOptionCheckBoxOn");
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 								C_LFGList.RefreshApplicants();
 							</OnClick>
 						</Scripts>
@@ -1379,7 +1459,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								PlaySound("igMainMenuOptionCheckBoxOn");
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 								C_LFGList.RemoveListing();
 							</OnClick>
 						</Scripts>
@@ -1475,12 +1555,12 @@
 						</FontString>
 						<FontString parentKey="NameLabel" inherits="GameFontNormalLeft" text="LFG_LIST_TITLE">
 							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="20" y="-183"/>
+								<Anchor point="LEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="20" y="-181"/>
 							</Anchors>
 						</FontString>
 						<FontString parentKey="DescriptionLabel" inherits="GameFontNormalLeft" text="LFG_LIST_DETAILS">
 							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="20" y="-240"/>
+								<Anchor point="LEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="20" y="-237"/>
 							</Anchors>
 						</FontString>
 					</Layer>
@@ -1586,7 +1666,7 @@
 											</OnTextChanged>
 											<OnEnterPressed>
 												LFGListEntryCreationActivityFinder_Accept(self:GetParent():GetParent());
-												PlaySound("igMainMenuOptionCheckBoxOn");
+												PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 											</OnEnterPressed>
 										</Scripts>
 									</EditBox>
@@ -1617,7 +1697,7 @@
 										</Anchors>
 										<Scripts>
 											<OnClick>
-												PlaySound("igMainMenuOptionCheckBoxOn");
+												PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 												LFGListEntryCreationActivityFinder_Accept(self:GetParent():GetParent());
 											</OnClick>
 										</Scripts>
@@ -1629,7 +1709,7 @@
 										</Anchors>
 										<Scripts>
 											<OnClick>
-												PlaySound("igMainMenuOptionCheckBoxOn");
+												PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 												LFGListEntryCreationActivityFinder_Cancel(self:GetParent():GetParent());
 											</OnClick>
 										</Scripts>
@@ -1655,6 +1735,12 @@
 								InputBoxInstructions_OnTextChanged(self);
 								LFGListEntryCreation_UpdateValidState(self:GetParent());
 							</OnTextChanged>
+							<OnDisable inherit="append">
+								self:SetMaxLetters(0);
+							</OnDisable>
+							<OnEnable inherit="append">
+								self:SetMaxLetters(31);
+							</OnEnable>
 						</Scripts>
 					</EditBox>
 					<Frame parentKey="CategoryDropDown" name="LFGListEntryCreationCategoryDropDown" inherits="UIDropDownMenuTemplate">
@@ -1678,7 +1764,7 @@
 					<ScrollFrame parentKey="Description" name="LFGListEntryCreationDescription" inherits="InputScrollFrameTemplate">
 						<Size x="283" y="46"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.Inset" relativePoint="TOPLEFT" x="26" y="-196"/>
+							<Anchor point="TOPLEFT" relativeKey="$parent.Inset" relativePoint="TOPLEFT" x="26" y="-193"/>
 						</Anchors>
 						<KeyValues>
 							<KeyValue key="maxLetters" value="255" type="number"/>
@@ -1695,7 +1781,7 @@
 					</ScrollFrame>
 					<Frame parentKey="ItemLevel" inherits="LFGListRequirementTemplate">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.Inset" relativePoint="TOPLEFT" x="20" y="-260"/>
+							<Anchor point="TOPLEFT" relativeKey="$parent.Inset" relativePoint="TOPLEFT" x="20" y="-258"/>
 						</Anchors>
 						<KeyValues>
 							 <KeyValue key="label" value="LFG_LIST_ITEM_LEVEL_REQ" type="global"/>
@@ -1707,7 +1793,7 @@
 					</Frame>
 					<Frame parentKey="HonorLevel" inherits="LFGListRequirementTemplate">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.ItemLevel" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+							<Anchor point="TOPLEFT" relativeKey="$parent.ItemLevel" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
 						</Anchors>
 						<KeyValues>
 							 <KeyValue key="label" value="LFG_LIST_HONOR_LEVEL_REQ" type="global"/>
@@ -1722,13 +1808,22 @@
 							<KeyValue key="maxLetters" value="31" type="number"/>
 						</KeyValues>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.HonorLevel" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+							<Anchor point="TOPLEFT" relativeKey="$parent.HonorLevel" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
 						</Anchors>
 						<KeyValues>
 							 <KeyValue key="label" value="LFG_LIST_VOICE_CHAT" type="global"/>
 							 <KeyValue key="instructions" value="LFG_LIST_VOICE_CHAT_INSTR" type="global"/>
 							<KeyValue key="tabCategory" value="ENTRY_CREATION" type="string"/>
 						</KeyValues>
+					</Frame>
+					<Frame parentKey="PrivateGroup" inherits="LFGListOptionCheckButtonTemplate">
+						<KeyValues>
+							<KeyValue key="label" value="LFG_LIST_PRIVATE" type="global"/>
+							<KeyValue key="tooltip" value="LFG_LIST_PRIVATE_TOOLTIP" type="global"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.VoiceChat" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
+						</Anchors>
 					</Frame>
 					<Button parentKey="ListGroupButton" inherits="LFGListMagicButtonTemplate" text="LIST_GROUP" motionScriptsWhileDisabled="true">
 						<Size x="135" y="22"/>
@@ -1768,6 +1863,7 @@
 			<OnLoad function="LFGListFrame_OnLoad"/>
 			<OnEvent function="LFGListFrame_OnEvent"/>
 			<OnShow function="LFGListFrame_OnShow"/>
+			<OnHide function="LFGListFrame_OnHide"/>
 		</Scripts>
 	</Frame>
 	<Frame name="LFGListApplicationDialog" parent="UIParent" frameStrata="DIALOG" hidden="true" enableMouse="true">
@@ -1842,7 +1938,7 @@
 				<Scripts>
 					<OnClick>
 						local dialog = self:GetParent();
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						C_LFGList.ApplyToGroup(dialog.resultID, dialog.Description.EditBox:GetText(), dialog.TankButton:IsShown() and dialog.TankButton.CheckButton:GetChecked(), dialog.HealerButton:IsShown() and dialog.HealerButton.CheckButton:GetChecked(), dialog.DamagerButton:IsShown() and dialog.DamagerButton.CheckButton:GetChecked());
 						StaticPopupSpecial_Hide(dialog);
 					</OnClick>
@@ -1863,7 +1959,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						StaticPopupSpecial_Hide(self:GetParent());
 					</OnClick>
 				</Scripts>
@@ -1937,7 +2033,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						LFGListInviteDialog_Accept(self:GetParent());
 					</OnClick>
 				</Scripts>
@@ -1949,7 +2045,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						LFGListInviteDialog_Decline(self:GetParent());
 					</OnClick>
 				</Scripts>

@@ -526,20 +526,14 @@
 				</Scripts>
 			</StatusBar>
 
-			<PlayerModel name="$parentModelFrame" useParentLevel="true" parentKey="model">
+			<ModelScene parentKey="modelScene" useParentLevel="true" inherits="ReversedLightingModelSceneMixinTemplate">
 				<Size x="130" y="96"/>
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="0" y="0"/>
 				</Anchors>
-				<Scripts>
-					<OnLoad>
-						Model_OnLoad(self);
-						self:SetRotation(-MODELFRAME_DEFAULT_ROTATION);
-					</OnLoad>
-					<OnEvent function="Model_OnEvent"/>
-				</Scripts>
+
 				<Frames>
-					<Button name="$parentCardButton" setAllPoints="true">
+					<Button parentKey="cardButton" setAllPoints="true">
 						<Scripts>
 							<OnClick>
 								PetJournal_ShowPetCardByID(self:GetParent():GetParent().petID);
@@ -547,7 +541,7 @@
 						</Scripts>
 					</Button>
 				</Frames>
-			</PlayerModel>
+			</ModelScene>
 
 			<Button name="$parentSetButton" parentKey="setButton" setAllPoints="true" hidden="true">
 				<Animations>
@@ -603,7 +597,7 @@
 							C_PetJournal.SetPetLoadOutInfo(self:GetParent():GetID(), petID);
 							PetJournal_UpdatePetLoadOut();
 							ClearCursor();
-							PlaySound("igAbilityIconDrop");
+							PlaySound(SOUNDKIT.IG_ABILITY_ICON_DROP);
 						end
 					</OnReceiveDrag>
 				</Scripts>
@@ -710,7 +704,6 @@
 			<OnLoad>
 				self.abilities = {};
 				self.abilityLevels = {};
-				self.model:EnableMouse(false);
 				self:RegisterForClicks("LeftButtonDown", "LeftButtonUp");
 			</OnLoad>
 			<OnClick>
@@ -787,7 +780,7 @@
 					HandleModifiedItemClick(PetJournal_GetPetAbilityHyperlink(self.abilityID, self.petID));
 				else
 					C_PetJournal.SetAbility(self.slotIndex, self.abilityIndex, self.abilityID);
-					PlaySound("igMainMenuOptionCheckBoxOn");
+					PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 					PetJournal_UpdatePetLoadOut();
 					self:GetParent():Hide();
 				end
@@ -893,6 +886,55 @@
 				<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
 				<HighlightTexture name="$parentHighlight" file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
 			</Button>
+			<Button name="$parentSummonRandomFavoritePetButton" parentKey="SummonRandomFavoritePetButton" inherits="SecureFrameTemplate">
+				<Size>
+					<AbsDimension x="33" y="33"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER" relativePoint="TOPRIGHT" x="-175" y="-42"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="$parentIconTexture" parentKey="texture" file="Interface/Icons/INV_Pet_BabyMoose" setAllPoints="true"/>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="BlackCover" setAllPoints="true" hidden="true">
+							<Color r="0" g="0" b="0" a="0.6"/>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="1">
+						<Texture name="$parentBorder" inherits="ActionBarFlyoutButton-IconFrame">
+							<Size x="35" y="35"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentLockIcon" parentKey="LockIcon" file="Interface\PetBattles\PetBattle-LockIcon" setAllPoints="true" hidden="true"/>
+						<FontString name="$parentSpellName" inherits="GameFontNormal" maxLines="2" justifyH="RIGHT" parentKey="spellname">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT" relativeTo="$parentBorder" x="-2" y="0"/>
+							</Anchors>
+							<Size x="130" y="0"/>
+							<Color r="1" g="1" b="1"/>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Cooldown name="$parentCooldown" parentKey="cooldown" inherits="CooldownFrameTemplate"/>
+				</Frames>
+				<Scripts>
+					<OnLoad function="PetJournalSummonRandomFavoritePetButton_OnLoad"/>
+					<OnShow function="PetJournalSummonRandomFavoritePetButton_OnShow"/>
+					<OnHide function="PetJournalSummonRandomFavoritePetButton_OnHide"/>
+					<OnEvent function="PetJournalSummonRandomFavoritePetButton_OnEvent"/>
+					<OnClick function="PetJournalSummonRandomFavoritePetButton_OnClick"/>
+					<OnDragStart function="PetJournalSummonRandomFavoritePetButton_OnDragStart"/>
+					<OnEnter function="PetJournalSummonRandomFavoritePetButton_OnEnter"/>
+					<OnLeave function="PetJournalSummonRandomFavoritePetButton_OnLeave"/>
+				</Scripts>
+				<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
+				<HighlightTexture name="$parentHighlight" file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
+			</Button>
 			<Frame name="$parentLeftInset" useParentLevel="true" inherits="InsetFrameTemplate" parentKey="LeftInset">
 				<Size x="260" y="496"/>
 				<Anchors>
@@ -938,7 +980,7 @@
 				</Layers>
 				<Scripts>
 					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						ToggleDropDownMenu(1, nil, PetJournalFilterDropDown, "PetJournalFilterButton", 74, 15);
 					</OnClick>
 				</Scripts>
@@ -1603,23 +1645,34 @@
 							</OnLeave>
 						</Scripts>
 					</StatusBar>
-					<PlayerModel name="$parentModelFrame" parentKey="model" inherits="ModelTemplate">
+					<ModelScene parentKey="modelScene" useParentLevel="true" inherits="ModelSceneMixinTemplate" mixin="CollectionsWrappedModelSceneMixin">
+						<KeyValues>
+							<KeyValue key="normalIntensity" value="0.75" type="number"/>
+							<KeyValue key="highlightIntensity" value="1.2" type="number"/>
+						</KeyValues>
+
 						<Size x="173" y="135"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" x="45" y="-21"/>
 						</Anchors>
-					</PlayerModel>
-					<PlayerModel name="$parentWrappedModelFrame" parentKey="wrappedModel" inherits="CollectionsWrappedModelFrame" frameStrata="DIALOG">
-						<Size x="173" y="135"/>
-						<Anchors>
-							<Anchor point="TOPLEFT" x="45" y="-21"/>
-						</Anchors>
+
 						<Scripts>
-							<OnMouseUp>
-								PetJournal_UnwrapPet(PetJournalPetCard.petID);
+							<OnMouseUp inherit="append">
+								if PetJournalPetCard.petID then
+									PetJournal_UnwrapPet(PetJournalPetCard.petID);
+								end
 							</OnMouseUp>
+							<OnEnter method="OnMouseEnter" />
+							<OnLeave method="OnMouseLeave" />
+							<OnShow method="OnShow" />
 						</Scripts>
-					</PlayerModel>
+						<Animations>
+							<AnimationGroup parentKey="UnwrapAnim" setToFinalAlpha="true">
+								<Alpha parentKey="WrappedAnim" startDelay="1.2" fromAlpha="1" toAlpha="0" duration=".3" order="1"/>
+								<Alpha parentKey="UnwrappedAnim" startDelay="1.2" fromAlpha="0" toAlpha="1" duration=".3" order="1"/>
+							</AnimationGroup>
+						</Animations>
+					</ModelScene>
 				</Frames>
 				<Animations>
 					<AnimationGroup parentKey="UnwrapAnim" setToFinalAlpha="true">
@@ -1652,7 +1705,7 @@
 						else
 							C_PetBattles.StartPVPMatchmaking();
 						end
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 					</OnClick>
 					<OnEnter function="PetJournalFindBattle_OnEnter"/>
 					<OnLeave>
@@ -1671,7 +1724,7 @@
 						MagicButton_OnLoad(self);
 					</OnLoad>
 					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						if(C_PetJournal.PetNeedsFanfare(PetJournalPetCard.petID)) then
 							PetJournal_UnwrapPet(PetJournalPetCard.petID);
 						else
@@ -1687,7 +1740,7 @@
 			<Button name="$parentAchievementStatus" parentKey="AchievementStatus">
 				<Size x="60" y="40"/>
 				<Anchors>
-					<Anchor point="TOP" x="0" y="-21"/>
+					<Anchor point="TOP" x="-50" y="-21"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
@@ -1723,13 +1776,13 @@
 							</Anchors>
 							<TexCoords left="0" right=".5" top="0" bottom="0.5"/>
 						</Texture>
-						<Fontstring parentKey="SumText" inherits="GameFontNormalLarge" text="25">
+						<FontString parentKey="SumText" inherits="GameFontNormalLarge" text="25">
 							<Anchors>
 								<Anchor point="RIGHT" relativePoint="LEFT" relativeTo="$parentIcon" x="-4" y="4"/>
 							</Anchors>
 							<Size x="0" y="0"/>
 							<TexCoords left="0.75683594" right="0.98632813" top="0.00097656" bottom="0.04882813"/>
-						</Fontstring>
+						</FontString>
 					</Layer>
 				</Layers>
 				<Scripts>

@@ -30,7 +30,7 @@ local kioskModeData = {
 			["DEMONHUNTER"] = true,
 			["DEATHKNIGHT"] = true,
 		},
-		["template"] = { ["enabled"] = true, ["index"] = 1, ["ignoreClasses"] = { "DEMONHUNTER" } },
+		["trial"] = { ["enabled"] = true, ["ignoreClasses"] = { "DEMONHUNTER" } },
 	},
 	["newcharacter"] = {
 		["races"] = {
@@ -74,6 +74,14 @@ function KioskModeSplash_OnShow(self)
 	self.mode = nil;
 end
 
+function KioskModeSplash_OnKeyDown(self,key)
+	if CheckKioskModeRealmKey() then
+		C_RealmList.RequestChangeRealmList();
+	elseif CheckKioskModeQuitKey() then
+		QuitGame();
+	end
+end
+
 function KioskModeSplash_SetMode(mode)
 	KioskModeSplash.mode = mode;
 end
@@ -101,7 +109,7 @@ function KioskModeSplash_GetAutoEnterWorld()
 end
 
 function KioskModeSplashChoice_OnClick(self, button, down)
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	if (self:GetID() == 1) then
 		KioskModeSplash_SetMode("highlevel");
 	else

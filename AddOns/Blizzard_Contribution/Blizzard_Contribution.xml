@@ -1,0 +1,375 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/..\FrameXML\UI.xsd">
+	<Script file="Blizzard_Contribution.lua"/>
+
+	<Frame name="ContributionHeaderTemplate" virtual="true">
+		<Size x="251" y="39"/>
+		<Layers>
+			<Layer level="BORDER">
+				<Texture parentKey="Background" atlas="Legionfall_Banner" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOP"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Text" font="QuestFontHighlight" justifyH="CENTER" justifyV="MIDDLE" maxLines="1">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="24" y="-4" />
+					<Anchor point="BOTTOMRIGHT" x="-24" y="13" />
+				</Anchors>
+					<Color r="0" g="0" b="0"/>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="ContributionStateTemplate" virtual="true">
+		<Size x="256" y="150" />
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="2">
+				<Texture parentKey="Border" atlas="Legionfall_GrayFrame" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOP"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture parentKey="Icon">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Border" x="7" y="-7" />
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Border" x="-7" y="7" />
+					</Anchors>
+				</Texture>
+				<Texture parentKey="TextBG" atlas="Legionfall_BuildingInfoBackground" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Border" relativePoint="BOTTOM" y="-10"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Text" font="SystemFont_Med1" justifyH="CENTER" justifyV="MIDDLE" maxLines="1">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.TextBG"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.TextBG"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="ContributionRewardTemplate" parentArray="Rewards" mixin="ContributionRewardMixin" enableMouseMotion="true" virtual="true">
+		<Size x="220" y="45"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Border" file="Interface\Common\WhiteIconFrame">
+					<Size x="36" y="36"/>
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Icon">
+					<Size x="36" y="36"/>
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="PadLock" atlas="Legionfall_Padlock" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Border" atlas="Legionfall_GrayFrame_Buffs" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="RewardName" font="QuestFont" justifyH="LEFT" justifyV="MIDDLE">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Border" relativePoint="TOPRIGHT" x="5"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT" x="0"/>
+					</Anchors>
+					<Color r="0" g="0" b="0"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="MouseOver" mixin="ContributionRewardMouseOverMixin" enableMouseMotion="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Border"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Border"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+				</Scripts>
+			</Frame>
+		</Frames>
+	</Frame>
+
+	<StatusBar name="ContributionStatusTemplate" mixin="ContributionStatusMixin" drawLayer="BACKGROUND" minValue="0" maxValue="1" virtual="true">
+		<KeyValues>
+			<KeyValue key="updateDelay" value="1" type="number"/>
+			<KeyValue key="nextUpdate" value="0" type="number"/>
+		</KeyValues>
+		<Size x="224" y="15" />
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="BG" atlas="Legionfall_BarBackground">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-2.0" y="2.0" />
+						<Anchor point="BOTTOMRIGHT" x="2.0" y="-2.0" />
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Spark" atlas="Legionfall_BarSpark" alphaMode="ADD">
+					<Size x="8" y="32"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Border" atlas="Legionfall_BarFrame">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-8.0" y="8.0" />
+						<Anchor point="BOTTOMRIGHT" x="8.0" y="-8.0" />
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Text" inherits="TextStatusBarTextLarge" setAllPoints="true" justifyV="MIDDLE" maxLines="1"/>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="BorderGlow" alpha="0" alphaMode="ADD" atlas="Legionfall_BarFrame-Glow" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Border"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Border"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<Texture parentKey="BarGlow" alpha="0" alphaMode="BLEND" atlas="OBJFX-BarGlow">
+					<Size x="230" y="37" />
+					<Anchors>
+						<Anchor point="TOP" x="0.0" y="11.0" />
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="3">
+				<Texture parentKey="SparkGlow" alpha="0" alphaMode="ADD" atlas="OBJFX_LineGlow">
+					<Size x="100" y="30"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Spark" x="-4.0" y="0" />
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="FlashAnim" setToFinalAlpha="true">
+				<Alpha childKey="BarGlow" 								duration="0.5" order="1" fromAlpha="0" toAlpha=".75"/>
+				<Alpha childKey="BarGlow" 			startDelay="0.5" 	duration="0.5" order="1" fromAlpha=".75" toAlpha="0"/>
+				<Alpha childKey="BorderGlow"  							duration="0.5" order="1" fromAlpha="0" toAlpha=".5" smoothing="NONE"/>
+				<Alpha childKey="BorderGlow"		startDelay="0.5" 	duration="0.5" order="1" fromAlpha=".5" toAlpha="0" smoothing="NONE"/>
+				<Alpha childKey="SparkGlow"								duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="SparkGlow" 		startDelay="0.5" 	duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+				<Translation childKey="SparkGlow" 						duration="0.5" order="1" offsetX="2" offsetY="0"/>
+				<Scale childKey="SparkGlow" 							duration="0.25" order="1" fromScaleX="0.15" fromScaleY="1" toScaleX="0.2" toScaleY="1">
+					<Origin point="LEFT">
+						<Offset x="20" y="0"/>
+					</Origin>
+				</Scale>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnUpdate method="OnUpdate"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</StatusBar>
+
+	<Frame name="ContributionTemplate" mixin="ContributionMixin" virtual="true">
+		<Size x="256" y="455"/>
+		<Frames>
+			<Frame parentKey="Header" inherits="ContributionHeaderTemplate">
+				<Anchors>
+					<Anchor point="TOP"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="State" inherits="ContributionStateTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.Header" relativePoint="BOTTOM" x="0" y="6"/>
+				</Anchors>
+			</Frame>
+			<StatusBar parentKey="Status" inherits="ContributionStatusTemplate">
+				<Anchors>
+					<Anchor point="BOTTOM" x="3.0" y="29.0" />
+				</Anchors>
+			</StatusBar>
+			<Button parentKey="ContributeButton" inherits="UIPanelButtonTemplate" mixin="CurrencyTemplateMixin, ContributeButtonMixin" motionScriptsWhileDisabled="true">
+				<Size x="169" y="24" />
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.Status" relativePoint="BOTTOM" x="0.0" y="-24.0" />
+				</Anchors>
+				<Scripts>
+					<OnShow method="OnShow"/>
+					<OnHide method="OnHide"/>
+					<OnClick method="OnClick"/>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+					<OnEvent method="OnEvent"/>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Description" font="QuestFont" justifyH="LEFT" justifyV="TOP">
+					<Size x="0" y="103" />
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.State" relativePoint="BOTTOMLEFT" x="26" y="-3" />
+						<Anchor point="TOPRIGHT" relativeKey="$parent.State" relativePoint="BOTTOMRIGHT" x="-26" y="-3" />
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="ContributionCollectionFrame" frameStrata="HIGH" hidden="true" enableMouse="true" parent="UIParent" toplevel="true" inherits="HorizontalLayoutFrame" mixin="ContributionCollectionMixin">
+		<Size x="869" y="579"/>
+		<Anchors>
+			<Anchor point="CENTER" />
+		</Anchors>
+
+		<KeyValues>
+			<KeyValue key="fixedWidth" value="869" type="number"/>
+			<KeyValue key="fixedHeight" value="579" type="number"/>
+			<KeyValue key="topPadding" value="62" type="number"/>
+			<KeyValue key="bottomPadding" value="45" type="number"/>
+			<KeyValue key="leftPadding" value="45" type="number"/>
+			<KeyValue key="rightPadding" value="75" type="number"/>
+			<KeyValue key="spacing" value="8" type="number"/>
+		</KeyValues>
+
+		<Layers>
+			<Layer level="BORDER">
+				<Texture parentKey="Background" atlas="Legionfall_Background" setAllPoints="true"/>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
+				<Layers>
+					<Layer level="BORDER">
+						<Texture parentKey="CloseButtonBackground" atlas="Legionfall_ExitFrame" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-15" y="-18" />
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow inherit="append" method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+
+	<GameTooltip name="ContributionTooltip" parent="UIParent" inherits="GameTooltipTemplate">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Currency" font="GameFontNormal" justifyH="LEFT" justifyV="TOP">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" x="10" y="10"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="ItemTooltip" inherits="EmbeddedItemTooltip" hidden="true">
+				<Size x="100" y="100"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.Currency" relativePoint="TOPLEFT" x="0" y="10"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad inherit="prepend">
+						self.Tooltip.shoppingTooltips = { ShoppingTooltip1, ShoppingTooltip2 };
+					</OnLoad>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
+				self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
+				self.shoppingTooltips = { ShoppingTooltip1, ShoppingTooltip2 };
+			</OnLoad>
+			<OnUpdate>
+				if ( self.recalculatePadding ) then
+					self.recalculatePadding = nil;
+					ContributionTooltip_CalculatePadding(self);
+				end
+
+				self.updateTooltip = (self.updateTooltip or TOOLTIP_UPDATE_TIME) - elapsed;
+				if ( self.updateTooltip > 0 ) then
+					return;
+				end
+				self.updateTooltip = TOOLTIP_UPDATE_TIME;
+
+				if self:GetOwner() then
+					self:GetOwner():OnEnter();
+				end
+			</OnUpdate>
+			<OnHide inherit="prepend">
+				self.ItemTooltip:Hide();
+				self:SetPadding(0, 0);
+			</OnHide>
+			<OnSizeChanged inherit="prepend">
+				self.recalculatePadding = true;
+			</OnSizeChanged>
+		</Scripts>
+	</GameTooltip>
+
+	<Frame name="ContributionBuffTooltip" parent="UIParent" frameStrata="TOOLTIP" clampedToScreen="true" hidden="true" inherits="TooltipBorderedFrameTemplate">
+		<Size x="1" y="1"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon">
+					<Size x="36" y="36"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="10" y="-10"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Border" atlas="Legionfall_GrayFrame_Buffs" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Name" inherits="GameFontHighlight" justifyH="LEFT">
+					<Size x="0" y="0"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="6"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Description" inherits="GameFontNormal" justifyH="LEFT" wordwrap="true">
+					<Size x="200" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Footer" inherits="GameFontNormal" justifyH="LEFT" hidden="true">
+					<Size x="0" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Description" relativePoint="BOTTOMLEFT" x="0" y="-15"/>
+					</Anchors>
+				</FontString>
+
+			</Layer>
+		</Layers>
+	</Frame>
+</Ui>

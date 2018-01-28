@@ -36,11 +36,11 @@ function TaxiFrame_OnLoad(self)
 end
 
 function TaxiFrame_ShouldShowOldStyle()
-	return GetTaxiMapID() ~= 1007; -- Broken Isles
+	return GetTaxiMapID() ~= 1007 and GetTaxiMapID() ~= 1184; -- Broken Isles/Argus
 end
 
 function TaxiFrame_OnShow(self)
-	PlaySound("igMainMenuOpen");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
 
 	self.TitleText:SetText(FLIGHT_MAP);
 

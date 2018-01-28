@@ -1,35 +1,55 @@
 # Do not delete the following line!
-## Interface: 70000
+## Interface: 70300
 
 ## add C namespace augmentations here
 ..\SharedXML\C_TimerAugment.lua
 
 ## add snippets independent of modules here
 ..\SharedXML\Util.lua
+..\SharedXML\Pools.lua
+..\SharedXML\LoopingSoundEffect.lua
+..\SharedXML\CircularBuffer.lua
+..\SharedXML\FontableFrameMixin.lua
+..\SharedXML\Vector2D.lua
+..\SharedXML\Vector3D.lua
+..\SharedXML\Spline.lua
+..\SharedXML\LayoutFrame.xml
+..\SharedXML\ManagedLayoutFrame.xml
+..\SharedXML\BulletPoint.xml
 MixinUtil.lua
+
+## intrinsics
+..\SharedXML\ScrollingMessageFrame.xml
+
+..\SharedXML\ModelSceneTemplates.xml
+..\SharedXML\ModelSceneMixin.xml
+..\SharedXML\ModelSceneActorMixin.xml
+..\SharedXML\FrameStack.lua
+
 AnimatedStatusBar.xml
 FlowContainer.lua
 FrameLocks.lua
 
 
+..\SharedXML\SoundKitConstants.lua
 Constants.lua
 Localization.xml
 Fonts.xml
 FontStyles.xml
 
-## This needs to be loaded after Fonts.xml
-..\SharedXML\IME.xml
 
 ## add new modules below here
-
-BasicControls.xml
 WorldFrame.xml
 UIParent.xml
+QuestUtils.lua
+## IME.xml needs to be loaded after UIParent.xml
+..\SharedXML\IME.xml
 MoneyFrame.lua
 MoneyFrame.xml
 MoneyInputFrame.lua
 MoneyInputFrame.xml
 ..\SharedXML\SharedUIPanelTemplates.xml
+..\SharedXML\SharedBasicControls.xml
 GameTooltip.xml
 UIMenu.xml
 UIDropDownMenu.xml
@@ -116,17 +136,22 @@ ItemTextFrame.xml
 TaxiFrame.xml
 BankFrame.xml
 ScrollOfResurrection.xml
+RoleSelectionTemplate.xml
+ItemRef.xml
+SocialQueue.xml
+QuickJoinToast.xml
 FriendsFrame.xml
+QuickJoin.xml
 RaidFrame.xml
 ChannelFrame.xml
 PetActionBarFrame.xml
 MultiCastActionBarFrame.xml
 MainMenuBarBagButtons.xml
+UnitPositionFrameTemplates.xml
 WorldMapFrame.xml
 QuestMapFrame.xml
 RaidWarning.xml
 CinematicFrame.xml
-ItemRef.xml
 ComboFrame.xml
 TabardFrame.xml
 GuildRegistrarFrame.xml
@@ -146,14 +171,12 @@ LFRFrame.xml
 RaidFinder.xml
 ScenarioFinder.xml
 LFGList.xml
-MovieRecordingProgress.xml
 RatingMenuFrame.xml
 TalentFrameBase.lua
 TalentFrameTemplates.xml
 ClassPowerBar.xml
 RuneFrame.xml
 ShardBar.xml
-EclipseBarFrame.xml
 ComboFramePlayer.xml
 InsanityBar.xml
 EasyMenu.lua
@@ -197,7 +220,7 @@ ZoneAbility.xml
 ArtifactToasts.xml
 ..\SharedXML\ModelPreviewFrame.xml
 SplashFrame.xml
-..\SharedXML\LayoutFrame.xml
+QuestChoiceFrameMixin.lua
 
 #Save off whatever we need available unmodified.
 SecureCapsule.lua

@@ -84,7 +84,7 @@ end
 function ClassTrainerFrame_OnShow(self)
 	SetPortraitTexture(ClassTrainerFramePortrait, "npc");
 	ClassTrainerFrameTitleText:SetText(UnitName("npc"));
-	PlaySound("igCharacterInfoOpen");
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 	ClassTrainerTrainButton:Disable();
 
 	ClassTrainerFrame.selectedService = nil;

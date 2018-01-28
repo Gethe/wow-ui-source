@@ -8,27 +8,52 @@ GLUE_SCREENS = {
 };
 
 GLUE_SECONDARY_SCREENS = {
-	["cinematics"] =	{ frame = "CinematicsFrame", 	playMusic = true,	playAmbience = false,	fullScreen = false,	showSound = "gsTitleOptions" },
-	["credits"] = 		{ frame = "CreditsFrame", 		playMusic = false,	playAmbience = false,	fullScreen = true,	showSound = "gsTitleCredits" },
-	["movie"] = 		{ frame = "MovieFrame", 		playMusic = false,	playAmbience = false,	fullScreen = true,	showSound = "gsTitleOptionOK" },
-	["options"] = 		{ frame = "VideoOptionsFrame",	playMusic = true,	playAmbience = false,	fullScreen = false,	showSound = "gsTitleOptions" },
+	["cinematics"] =	{ frame = "CinematicsFrame", 	playMusic = true,	playAmbience = false,	fullScreen = false,	showSound = SOUNDKIT.GS_TITLE_OPTIONS },
+	["credits"] = 		{ frame = "CreditsFrame", 		playMusic = false,	playAmbience = false,	fullScreen = true,	showSound = SOUNDKIT.GS_TITLE_CREDITS },
+	-- Bug 477070 We have some rare race condition crash in the sound engine that happens when the MovieFrame's "showSound" sound plays at the same time the movie audio is starting.
+	-- Removing the showSound from the MovieFrame in attempt to avoid the crash, until we can actually find and fix the bug in the sound engine.
+	["movie"] = 		{ frame = "MovieFrame", 		playMusic = false,	playAmbience = false,	fullScreen = true },
+	["options"] = 		{ frame = "VideoOptionsFrame",	playMusic = true,	playAmbience = false,	fullScreen = false,	showSound = SOUNDKIT.GS_TITLE_OPTIONS },
 };
 
-SEX_NONE = 1;
-SEX_MALE = 2;
-SEX_FEMALE = 3;
+ACCOUNT_SUSPENDED_ERROR_CODE = 53;
 
-function GlueParent_OnLoad(self)
-   	local width = GetScreenWidth();
+-- Mirror of the same variables in Blizzard_StoreUISecure.lua and UIParent.lua
+local WOW_GAMES_CATEGORY_ID = 33; 
+WOW_GAME_TIME_CATEGORY_ID = 37;
+
+local function OnDisplaySizeChanged(self)
+	local width = GetScreenWidth();
 	local height = GetScreenHeight();
 
-	if ( width / height > 16 / 9) then
-		local maxWidth = height * 16 / 9;
+	local MIN_ASPECT = 5 / 4;
+	local MAX_ASPECT = 16 / 9;
+	local currentAspect = width / height;
+
+	self:ClearAllPoints();
+
+	if ( currentAspect > MAX_ASPECT ) then
+		local maxWidth = height * MAX_ASPECT;
 		local barWidth = ( width - maxWidth ) / 2;
-		self:ClearAllPoints();
+		self:SetScale(1);
 		self:SetPoint("TOPLEFT", barWidth, 0);
 		self:SetPoint("BOTTOMRIGHT", -barWidth, 0);
+	elseif ( currentAspect < MIN_ASPECT ) then
+		local maxHeight = width / MIN_ASPECT;
+		local scale = currentAspect / MIN_ASPECT;
+		local barHeight = ( height - maxHeight ) / (2 * scale);
+		self:SetScale(maxHeight/height);
+		self:SetPoint("TOPLEFT", 0, -barHeight);
+		self:SetPoint("BOTTOMRIGHT", 0, barHeight);
+	else
+		self:SetScale(1);
+		self:SetAllPoints();
 	end
+end
+
+function GlueParent_OnLoad(self)
+	-- alias GlueParent to UIParent
+	UIParent = self;
 
 	self:RegisterEvent("FRAMES_LOADED");
 	self:RegisterEvent("ACCOUNT_MESSAGES_BODY_LOADED");
@@ -36,6 +61,12 @@ function GlueParent_OnLoad(self)
 	self:RegisterEvent("LOGIN_FAILED");
 	self:RegisterEvent("OPEN_STATUS_DIALOG");
 	self:RegisterEvent("REALM_LIST_UPDATED");
+	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
+	self:RegisterEvent("LUA_WARNING");
+	self:RegisterEvent("CONFIGURATION_WARNING");
+	self:RegisterEvent("SUBSCRIPTION_CHANGED_KICK_IMMINENT");
+
+	OnDisplaySizeChanged(self);
 end
 
 function GlueParent_OnEvent(self, event, ...)
@@ -55,6 +86,14 @@ function GlueParent_OnEvent(self, event, ...)
 		GlueDialog_Show(dialog, text);
 	elseif ( event == "REALM_LIST_UPDATED" ) then
 		RealmList_Update();
+	elseif ( event == "DISPLAY_SIZE_CHANGED" ) then
+		OnDisplaySizeChanged(self);
+	elseif ( event == "LUA_WARNING" ) then
+		HandleLuaWarning(...);
+	elseif ( event == "SUBSCRIPTION_CHANGED_KICK_IMMINENT" ) then
+		if not StoreFrame_IsShown() then
+			GlueDialog_Show("SUBSCRIPTION_CHANGED_KICK_WARNING");
+		end
 	end
 end
 
@@ -117,63 +156,78 @@ function GlueParent_UpdateDialogs()
 			GlueDialog_Show("CANCEL", LOGIN_STATE_CONNECTING);
 		end
 	elseif ( auroraState == LE_AURORA_STATE_NONE and C_Login.GetLastError() ) then
-		local errorCategory, errorID, localizedString, debugString, errorCodeString = C_Login.GetLastError();
+		if ( not CHARACTER_SELECT_KICKED_FROM_CONVERT ) then
+			local errorCategory, errorID, localizedString, debugString, errorCodeString = C_Login.GetLastError();
 
-		local isHTML = false;
-		local hasURL = false;
-		local useGenericURL = false;
+			local isHTML = false;
+			local hasURL = false;
+			local useGenericURL = false;
 
-		--If we didn't get a string from C, look one up in GlueStrings as HTML
-		if ( not localizedString ) then
-			local tag = string.format("%s_ERROR_%d_HTML", errorCategory, errorID);
-			localizedString = _G[tag];
-			if ( localizedString ) then
-				isHTML = true;
+			--If we didn't get a string from C, look one up in GlueStrings as HTML
+			if ( not localizedString ) then
+				local tag = string.format("%s_ERROR_%d_HTML", errorCategory, errorID);
+				localizedString = _G[tag];
+				if ( localizedString ) then
+					isHTML = true;
+				end
+			end
+
+			--If we didn't get a string from C, look one up in GlueStrings
+			if ( not localizedString ) then
+				local tag = string.format("%s_ERROR_%d", errorCategory, errorID);
+				localizedString = _G[tag];
+			end
+
+			--If we still don't have one, just display a generic error with the ID
+			if ( not localizedString ) then
+				localizedString = _G[errorCategory.."_ERROR_OTHER"];
+				useGenericURL = true;
+			end
+
+			--If we got a debug message, stick it on the end of the errorCodeString
+			if ( debugString ) then
+				errorCodeString = errorCodeString.." [[DBG "..debugString.."]]";
+			end
+
+			--See if we want a custom URL
+			local urlTag = string.format("%s_ERROR_%d_URL", errorCategory, errorID);
+			if ( _G[urlTag] ) then
+				hasURL = true;
+			end
+
+			if ( errorCategory == "BNET" and errorID == ACCOUNT_SUSPENDED_ERROR_CODE ) then
+				local remaining = C_Login.GetAccountSuspensionRemainingTime();
+				if (remaining) then
+					local days = floor(remaining / 86400);
+					local hours = floor((remaining / 3600) - (days * 24));
+					local minutes = floor((remaining / 60) - (days * 1440) - (hours * 60));
+					localizedString = localizedString:format(" "..ACCOUNT_SUSPENSION_EXPIRATION:format(days, hours, minutes));
+				else
+					localizedString = localizedString:format("");
+				end
+			end
+
+			--Append the errorCodeString
+			if ( isHTML ) then
+				--Pretty hacky...
+				local endOfHTML = "</p></body></html>";
+				localizedString = string.gsub(localizedString, endOfHTML, string.format(" (%s)%s", errorCodeString, endOfHTML));
+			else
+				localizedString = string.format("%s (%s)", localizedString, errorCodeString);
+			end
+
+			if ( isHTML ) then
+				GlueDialog_Show("OKAY_HTML", localizedString);
+			elseif ( hasURL ) then
+				GlueDialog_Show("OKAY_WITH_URL", localizedString, urlTag);
+			elseif ( useGenericURL ) then
+				GlueDialog_Show("OKAY_WITH_GENERIC_URL", localizedString);
+			else
+				GlueDialog_Show("OKAY", localizedString);
 			end
 		end
 
-		--If we didn't get a string from C, look one up in GlueStrings
-		if ( not localizedString ) then
-			local tag = string.format("%s_ERROR_%d", errorCategory, errorID);
-			localizedString = _G[tag];
-		end
-
-		--If we still don't have one, just display a generic error with the ID
-		if ( not localizedString ) then
-			localizedString = _G[errorCategory.."_ERROR_OTHER"];
-			useGenericURL = true;
-		end
-
-		--If we got a debug message, stick it on the end of the errorCodeString
-		if ( debugString ) then
-			errorCodeString = errorCodeString.." [[DBG "..debugString.."]]";
-		end
-
-		--See if we want a custom URL
-		local urlTag = string.format("%s_ERROR_%d_URL", errorCategory, errorID);
-		if ( _G[urlTag] ) then
-			hasURL = true;
-		end
-
-		--Append the errorCodeString
-		if ( isHTML ) then
-			--Pretty hacky...
-			local endOfHTML = "</p></body></html>";
-			localizedString = string.gsub(localizedString, endOfHTML, string.format(" (%s)%s", errorCodeString, endOfHTML));
-		else
-			localizedString = string.format("%s (%s)", localizedString, errorCodeString);
-		end
-
-		if ( isHTML ) then
-			GlueDialog_Show("OKAY_HTML", localizedString);
-		elseif ( hasURL ) then
-			GlueDialog_Show("OKAY_WITH_URL", localizedString, urlTag);
-		elseif ( useGenericURL ) then
-			GlueDialog_Show("OKAY_WITH_GENERIC_URL", localizedString);
-		else
-			GlueDialog_Show("OKAY", localizedString);
-		end
-
+		CHARACTER_SELECT_KICKED_FROM_CONVERT = false;
 		C_Login.ClearLastError();
 	elseif (  waitingForRealmList ) then
 		GlueDialog_Show("REALM_LIST_IN_PROGRESS");
@@ -209,7 +263,7 @@ function GlueParent_EnsureValidScreen()
 			"changingFrom", currentScreen,
 			"changingTo", bestScreen);
 
-		GlueParent_SetScreen(GlueParent_GetBestScreen());
+		GlueParent_SetScreen(bestScreen);
 	end
 end
 
@@ -412,6 +466,10 @@ local glueScreenTags =
 		["BLOODELF"] = true,
 		["GOBLIN"] = true,
 		["WORGEN"] = true,
+		["VOIDELF"] = true,
+		["LIGHTFORGEDDRAENEI"] = true,
+		["NIGHTBORNE"] = true,
+		["HIGHMOUNTAINTAUREN"] = true,
 	},
 };
 
@@ -442,18 +500,20 @@ end
 local function UpdateGlueTag()
 	local currentScreen = GlueParent_GetCurrentScreen();
 
-	local _, race, class, faction, currentTag;
+	local race, class, faction, currentTag;
 
 	-- Determine which API to use to get character information
 	if ( currentScreen == "charselect") then
-		class = select(4, GetCharacterInfo(GetCharacterSelection()));
+		class = select(5, GetCharacterInfo(GetCharacterSelection()));
 		race = select(2, GetCharacterRace(GetCharacterSelection()));
 		faction = ""; -- Don't need faction for character selection, its currently irrelevant
 
 	elseif ( currentScreen == "charcreate" ) then
-		_, class = GetSelectedClass();
-		_, race = GetNameForRace();
-		_, faction = GetFactionForRace(GetSelectedRace());
+		local classInfo = C_CharacterCreation.GetSelectedClass();
+		class = classInfo.fileName;
+		local raceID = C_CharacterCreation.GetSelectedRace();
+		race = C_CharacterCreation.GetNameForRace(raceID);
+		faction = C_CharacterCreation.GetFactionForRace(raceID);
 	end
 
 	-- Once valid information is available, determine the current tag
@@ -547,7 +607,7 @@ end
 -- Function to set the background model for character select and create screens
 function SetBackgroundModel(model, path)
 	if ( model == CharacterCreate ) then
-		SetCharCustomizeBackground(path);
+		C_CharacterCreation.SetCharCustomizeBackground(path);
 	else
 		SetCharSelectBackground(path);
 	end
@@ -585,12 +645,38 @@ end
 -- Utils
 -- =============================================================
 
+function HideUIPanel(self)
+	-- Glue specific implementation of this function, doesn't need to leverage FrameXML data.
+	self:Hide();
+end
+
+function IsKioskGlueEnabled()
+	return IsKioskModeEnabled() and not IsCompetitiveModeEnabled();
+end
+
+function GetDisplayedExpansionLogo(expansionLevel)
+	local isTrial = expansionLevel == nil;
+	if isTrial then
+		return "Interface\\Glues\\Common\\Glues-WoW-StarterLogo";
+	elseif expansionLevel <= GetMinimumExpansionLevel() then
+		local expansionInfo = GetExpansionDisplayInfo(LE_EXPANSION_CLASSIC);
+		if expansionInfo then
+			return expansionInfo.logo;
+		end
+	else
+		local expansionInfo = GetExpansionDisplayInfo(expansionLevel);
+		if expansionInfo then
+			return expansionInfo.logo;
+		end
+	end
+	
+	return nil;
+end
+
 function SetExpansionLogo(texture, expansionLevel)
-	if ( EXPANSION_LOGOS[expansionLevel].texture ) then
-		texture:SetTexture(EXPANSION_LOGOS[expansionLevel].texture);
-		texture:Show();
-	elseif ( EXPANSION_LOGOS[expansionLevel].atlas ) then
-		texture:SetAtlas(EXPANSION_LOGOS[expansionLevel].atlas);
+	local logo = GetDisplayedExpansionLogo(expansionLevel);
+	if logo then
+		texture:SetTexture(logo);
 		texture:Show();
 	else
 		texture:Hide();
@@ -598,8 +684,14 @@ function SetExpansionLogo(texture, expansionLevel)
 end
 
 function UpgradeAccount()
-	PlaySound("gsLoginNewAccount");
-	LoadURLIndex(2);
+	local info = C_StoreSecure.GetProductGroupInfo(WOW_GAMES_CATEGORY_ID);
+	if info then
+		StoreFrame_SetGamesCategory();
+		ToggleStoreUI();
+	else
+		PlaySound(SOUNDKIT.GS_LOGIN_NEW_ACCOUNT);
+		LoadURLIndex(2);
+	end
 end
 
 function MinutesToTime(mins, hideDays)
@@ -627,55 +719,41 @@ function MinutesToTime(mins, hideDays)
 	return time;
 end
 
-function CheckSystemRequirements( previousCheck )
-	if ( not previousCheck  ) then
-		if ( not IsCPUSupported() ) then
-			GlueDialog_Show("SYSTEM_INCOMPATIBLE_SSE");
-			return;
+function CheckSystemRequirements(includeSeenWarnings)
+	local configWarnings = C_ConfigurationWarnings.GetConfigurationWarnings(includeSeenWarnings);
+	for i, warning in ipairs(configWarnings) do
+		local text = C_ConfigurationWarnings.GetConfigurationWarningString(warning);
+		if text then
+			GlueDialog_Queue("CONFIGURATION_WARNING", text, { configurationWarning = warning });
 		end
-		previousCheck = nil;
-	end
-
-	if ( not previousCheck or previousCheck == "SSE" ) then
-		if ( not IsShaderModelSupported() ) then
-			GlueDialog_Show("FIXEDFUNCTION_UNSUPPORTED");
-			return;
-		end
-		previousCheck = nil;
-	end
-
-	if ( not previousCheck or previousCheck == "SHADERMODEL" ) then
-		if ( VideoDeviceState() == 1 ) then
-			GlueDialog_Show("DEVICE_BLACKLISTED");
-			return;
-		end
-		previousCheck = nil;
-	end
-
-	if ( not previousCheck or previousCheck == "DEVICE" ) then
-		if ( VideoDriverState() == 2 ) then
-			GlueDialog_Show("DRIVER_OUTOFDATE");
-			return;
-		end
-		previousCheck = nil;
-	end
-
-	if ( not previousCheck or previousCheck == "DRIVER_OOD" ) then
-		if ( VideoDriverState() == 1 ) then
-			GlueDialog_Show("DRIVER_BLACKLISTED");
-			return;
-		end
-		previousCheck = nil;
-	end
-
-	if ( not previousCheck or previousCheck == "DRIVER" ) then
-		if ( not WillShaderModelBeSupported() ) then
-			GlueDialog_Show("SHADER_MODEL_TO_BE_UNSUPPORTED");
-			return;
-		end
-		previousCheck = nil;
 	end
 end
+
+function GetScaledCursorPosition()
+	local uiScale = GlueParent:GetEffectiveScale();
+	local x, y = GetCursorPosition();
+	return x / uiScale, y / uiScale;
+end
+
+function GetScaledCursorDelta()
+	local uiScale = GlueParent:GetEffectiveScale();
+	local x, y = GetCursorDelta();
+	return x / uiScale, y / uiScale;
+end
+
+function GMError(...)
+	if ( IsGMClient() ) then
+		error(...);
+	end
+end
+
+function OnExcessiveErrors()
+	-- Glue Implementation, no-op.
+end
+
+SecureMixin = Mixin;
+CreateFromSecureMixins = CreateFromMixins;
+
 -- =============================================================
 -- Backwards Compatibility
 -- =============================================================

@@ -30,12 +30,12 @@ function FlightMap_ZoneSummaryDataProvider:GatherWorldQuests()
 	for zoneIndex = 1, C_MapCanvas.GetNumZones(mapAreaID) do
 		local zoneMapID, zoneName, zoneDepth, left, right, top, bottom = C_MapCanvas.GetZoneInfo(mapAreaID, zoneIndex);
 		if zoneDepth <= 1 then -- Exclude subzones
-			local taskInfo = C_TaskQuest.GetQuestsForPlayerByMapID(zoneMapID, mapAreaID);
+			local taskInfo = C_TaskQuest.GetQuestsForPlayerByMapID(zoneMapID, mapAreaID, self:GetTransformFlags());
 
 			if taskInfo then
 				for i, info in ipairs(taskInfo) do
 					if HaveQuestData(info.questId) then
-						if QuestMapFrame_IsQuestWorldQuest(info.questId) and WorldMap_DoesWorldQuestInfoPassFilters(info) then
+						if QuestUtils_IsQuestWorldQuest(info.questId) and WorldMap_DoesWorldQuestInfoPassFilters(info) then
 							if not self.worldQuestsByZone[zoneMapID] then
 								self.worldQuestsByZone[zoneMapID] = {};
 							end
@@ -51,7 +51,7 @@ function FlightMap_ZoneSummaryDataProvider:GatherWorldQuests()
 end
 
 function FlightMap_ZoneSummaryDataProvider:CheckMouse()
-	if self:GetMap():IsZoomedOut() and self:GetMap():GetMapID() and self:GetMap():IsCanvasMouseFocus() then
+	if self:GetMap():IsZoomedOut() and self:GetMap():GetMapID() and self:GetMap():IsCanvasMouseFocus() and (not GameTooltip:GetOwner() or GameTooltip:GetOwner() == self:GetMap()) then
 		local mapAreaID = self:GetMap():GetMapID();
 		local mouseX, mouseY = self:GetMap():GetNormalizedCursorPosition();
 		local zoneMapID = C_MapCanvas.FindZoneAtPosition(mapAreaID, mouseX, mouseY);

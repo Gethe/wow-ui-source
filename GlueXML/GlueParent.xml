@@ -27,7 +27,6 @@
 		<Scripts>
 			<OnLoad function="GlueParent_OnLoad"/>
 			<OnEvent function="GlueParent_OnEvent"/>
-			<OnUpdate function="GlueFrameFadeUpdate"/>
 		</Scripts>
 	</Frame>
 </Ui>

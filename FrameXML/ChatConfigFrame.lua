@@ -140,61 +140,56 @@ CHAT_CONFIG_OTHER_COMBAT = {
 		func = function (self, checked) ToggleChatMessageGroup(checked, "COMBAT_XP_GAIN"); end;
 	},
 	[2] = {
-		type = "COMBAT_GUILD_XP_GAIN",
-		checked = function () return IsListeningForMessageType("COMBAT_GUILD_XP_GAIN"); end;
-		func = function (self, checked) ToggleChatMessageGroup(checked, "COMBAT_GUILD_XP_GAIN") end;
-	},
+ 		type = "COMBAT_HONOR_GAIN",
+ 		checked = function () return IsListeningForMessageType("COMBAT_HONOR_GAIN"); end;
+ 		func = function (self, checked) ToggleChatMessageGroup(checked, "COMBAT_HONOR_GAIN"); end;
+ 	},
 	[3] = {
-		type = "COMBAT_HONOR_GAIN",
-		checked = function () return IsListeningForMessageType("COMBAT_HONOR_GAIN"); end;
-		func = function (self, checked) ToggleChatMessageGroup(checked, "COMBAT_HONOR_GAIN"); end;
-	},
+ 		type = "COMBAT_FACTION_CHANGE",
+ 		checked = function () return IsListeningForMessageType("COMBAT_FACTION_CHANGE"); end;
+ 		func = function (self, checked) ToggleChatMessageGroup(checked, "COMBAT_FACTION_CHANGE"); end;
+ 	},
 	[4] = {
-		type = "COMBAT_FACTION_CHANGE",
-		checked = function () return IsListeningForMessageType("COMBAT_FACTION_CHANGE"); end;
-		func = function (self, checked) ToggleChatMessageGroup(checked, "COMBAT_FACTION_CHANGE"); end;
-	},
+ 		text = SKILLUPS,
+ 		type = "SKILL",
+ 		checked = function () return IsListeningForMessageType("SKILL"); end;
+ 		func = function (self, checked) ToggleChatMessageGroup(checked, "SKILL"); end;
+ 	},
 	[5] = {
-		text = SKILLUPS,
-		type = "SKILL",
-		checked = function () return IsListeningForMessageType("SKILL"); end;
-		func = function (self, checked) ToggleChatMessageGroup(checked, "SKILL"); end;
-	},
+ 		text = ITEM_LOOT,
+ 		type = "LOOT",
+ 		checked = function () return IsListeningForMessageType("LOOT"); end;
+ 		func = function (self, checked) ToggleChatMessageGroup(checked, "LOOT"); end;
+ 	},
 	[6] = {
-		text = ITEM_LOOT,
-		type = "LOOT",
-		checked = function () return IsListeningForMessageType("LOOT"); end;
-		func = function (self, checked) ToggleChatMessageGroup(checked, "LOOT"); end;
-	},
+ 		text = CURRENCY,
+ 		type = "CURRENCY",
+ 		checked = function () return IsListeningForMessageType("CURRENCY"); end;
+ 		func = function (self, checked) ToggleChatMessageGroup(checked, "CURRENCY"); end;
+ 	},
 	[7] = {
-		text = CURRENCY,
-		type = "CURRENCY",
-		checked = function () return IsListeningForMessageType("CURRENCY"); end;
-		func = function (self, checked) ToggleChatMessageGroup(checked, "CURRENCY"); end;
-	},
+ 		text = MONEY_LOOT,
+ 		type = "MONEY",
+ 		checked = function () return IsListeningForMessageType("MONEY"); end;
+ 		func = function (self, checked) ToggleChatMessageGroup(checked, "MONEY"); end;
+ 	},
 	[8] = {
-		text = MONEY_LOOT,
-		type = "MONEY",
-		checked = function () return IsListeningForMessageType("MONEY"); end;
-		func = function (self, checked) ToggleChatMessageGroup(checked, "MONEY"); end;
-	},
+ 		type = "TRADESKILLS",
+ 		checked = function () return IsListeningForMessageType("TRADESKILLS"); end;
+ 		func = function (self, checked) ToggleChatMessageGroup(checked, "TRADESKILLS"); end;
+ 	},
 	[9] = {
-		type = "TRADESKILLS",
-		checked = function () return IsListeningForMessageType("TRADESKILLS"); end;
-		func = function (self, checked) ToggleChatMessageGroup(checked, "TRADESKILLS"); end;
-	},
+ 		type = "OPENING",
+ 		checked = function () return IsListeningForMessageType("OPENING"); end;
+ 		func = function (self, checked) ToggleChatMessageGroup(checked, "OPENING"); end;
+ 	},
 	[10] = {
-		type = "OPENING",
-		checked = function () return IsListeningForMessageType("OPENING"); end;
-		func = function (self, checked) ToggleChatMessageGroup(checked, "OPENING"); end;
-	},
+ 		type = "PET_INFO",
+ 		checked = function () return IsListeningForMessageType("PET_INFO"); end;
+ 		func = function (self, checked) ToggleChatMessageGroup(checked, "PET_INFO"); end;
+ 	},
 	[11] = {
-		type = "PET_INFO",
-		checked = function () return IsListeningForMessageType("PET_INFO"); end;
-		func = function (self, checked) ToggleChatMessageGroup(checked, "PET_INFO"); end;
-	},
-	[12] = {
-		type = "COMBAT_MISC_INFO",
+ 		type = "COMBAT_MISC_INFO",
 		checked = function () return IsListeningForMessageType("COMBAT_MISC_INFO"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "COMBAT_MISC_INFO"); end;
 	},
@@ -501,9 +496,9 @@ COMBAT_CONFIG_MESSAGETYPES_LEFT = {
 			},
 			[4] = {
 				text = OTHER,
-				type = {"SPELL_PERIODIC_ENERGIZE", "SPELL_PERIODIC_DRAIN","SPELL_PERIODIC_LEECH"};
-				checked = function () return HasMessageType("SPELL_PERIODIC_ENERGIZE", "SPELL_PERIODIC_DRAIN", "SPELL_PERIODIC_LEECH"); end;
-				func = function (self, checked) ToggleMessageType(checked, "SPELL_PERIODIC_ENERGIZE", "SPELL_PERIODIC_DRAIN", "SPELL_PERIODIC_LEECH"); end;
+				type = {"SPELL_PERIODIC_DRAIN","SPELL_PERIODIC_LEECH"};
+				checked = function () return HasMessageType("SPELL_PERIODIC_DRAIN", "SPELL_PERIODIC_LEECH"); end;
+				func = function (self, checked) ToggleMessageType(checked, "SPELL_PERIODIC_DRAIN", "SPELL_PERIODIC_LEECH"); end;
 				tooltip = SPELL_PERIODIC_OTHER_COMBATLOG_TOOLTIP,
 			},
 		}
@@ -542,7 +537,7 @@ COMBAT_CONFIG_MESSAGETYPES_RIGHT = {
 				text = POWER_GAINS,
 				type = "SPELL_ENERGIZE",
 				checked = function () return HasMessageType("SPELL_ENERGIZE"); end;
-				func = function (self, checked) ToggleMessageType(checked, "SPELL_ENERGIZE"); end;
+				func = function (self, checked) ToggleMessageType(checked, "SPELL_ENERGIZE", "SPELL_PERIODIC_ENERGIZE"); end;
 				tooltip = POWER_GAINS_COMBATLOG_TOOLTIP,
 			},
 			[5] = {
@@ -1921,9 +1916,9 @@ end
 
 function ChatConfigFrame_PlayCheckboxSound (checked)
 	if ( checked ) then
-		PlaySound("igMainMenuOptionCheckBoxOn");
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	else
-		PlaySound("igMainMenuOptionCheckBoxOff");
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 	end
 end
 

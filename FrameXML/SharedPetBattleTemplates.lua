@@ -437,13 +437,13 @@ do
 		if ( finalMulti > 1 ) then 
 			output = GREEN_FONT_COLOR_CODE..math.floor(baseHeal * finalMulti)..FONT_COLOR_CODE_CLOSE;
 			if (ENABLE_COLORBLIND_MODE == "1") then
-				output = output.."|Tinterface\petbattles\battlebar-abilitybadge-strong-small:0|t";
+				output = output.."|Tinterface\\petbattles\\battlebar-abilitybadge-strong-small:0|t";
 			end
 			return output;
 		elseif( finalMulti < 1 ) then 
 			output = RED_FONT_COLOR_CODE..math.floor(baseHeal * finalMulti)..FONT_COLOR_CODE_CLOSE;
 			if (ENABLE_COLORBLIND_MODE == "1") then
-				output = output.."|Tinterface\petbattles\battlebar-abilitybadge-weak-small:0|t";
+				output = output.."|Tinterface\\petbattles\\battlebar-abilitybadge-weak-small:0|t";
 			end
 			return output;
 		end

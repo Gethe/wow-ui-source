@@ -123,7 +123,7 @@
 	<Frame name="GarrisonFollowerListButtonAbilityTemplate" virtual="true">
 		<Size x="234" y="20"/>
 		<KeyValues>
-			<Keyvalue key="followerTypeID" value="1" type="number"/>
+			<KeyValue key="followerTypeID" value="1" type="number"/>
 		</KeyValues>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -253,8 +253,8 @@
 	<Frame name="GarrisonFollowerPageAbilityTemplate" parentArray="Abilities" virtual="true">
 		<Size x="240" y="60"/>
 		<KeyValues>
-			<Keyvalue key="followerTypeID" value="1" type="number"/>
-			<Keyvalue key="hideCounters" value="false" type="boolean"/>
+			<KeyValue key="followerTypeID" value="1" type="number"/>
+			<KeyValue key="hideCounters" value="false" type="boolean"/>
 		</KeyValues>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -1390,7 +1390,7 @@
 			</Button>
 			<Button parentKey="Tab2" name="$parentTab2" inherits="GarrisonMissionListTabTemplate" id="2">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentTab1" relativePoint="Right" x="12"/>
+					<Anchor point="LEFT" relativeTo="$parentTab1" relativePoint="RIGHT" x="12"/>
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
@@ -2073,7 +2073,7 @@
 							</Frame>
 							<Frame parentKey="Follower1" parentArray="Followers" inherits="GarrisonMissionPageFollowerTemplate">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativePoint="$parent.FollowerAnchor" x="22" y="0"/>
+									<Anchor point="TOPLEFT" relativeKey="$parent.FollowerAnchor" x="22" y="0"/>
 								</Anchors>
 							</Frame>
 							<Frame parentKey="Follower2" parentArray="Followers" inherits="GarrisonMissionPageFollowerTemplate">

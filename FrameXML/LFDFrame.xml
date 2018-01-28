@@ -152,18 +152,12 @@
 						</FontString>
 					</Layer>
 				</Layers>
-				<Scripts>
-					<OnEnter function="LFDRoleCheckPopupDescription_OnEnter"/>
-					<OnLeave function="GameTooltip_Hide"/>
-				</Scripts>
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnShow>
-				PlaySound("ReadyCheck");
-				FlashClientIcon();
-				LFDRoleCheckPopup_Update();
-			</OnShow>
+			<OnShow function="LFDRoleCheckPopup_OnShow"/>
+			<OnHide function="LFDRoleCheckPopup_OnHide"/>
+			<OnEvent function="LFDRoleCheckPopup_OnEvent"/>
 		</Scripts>
 	</Frame>
 	<Frame name="LFDReadyCheckPopup" parent="UIParent" frameStrata="DIALOG" hidden="true">
@@ -197,7 +191,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						CompleteLFGReadyCheck(true);
 						LFDReadyCheckPopup:Hide();
 					</OnClick>
@@ -210,7 +204,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						CompleteLFGReadyCheck(false);
 						LFDReadyCheckPopup:Hide();
 					</OnClick>
@@ -219,7 +213,7 @@
 		</Frames>
 		<Scripts>
 			<OnShow>
-				PlaySound("ReadyCheck");
+				PlaySound(SOUNDKIT.READY_CHECK);
 				FlashClientIcon();
 			</OnShow>
 		</Scripts>
@@ -433,12 +427,12 @@
 										_G[myName.."ScrollBackground"]:SetParent(_G[myName.."ScrollBar"]);
 										_G[myName.."ScrollBackgroundTopLeft"]:SetParent(_G[myName.."ScrollBar"]);
 										_G[myName.."ScrollBackgroundBottomRight"]:SetParent(_G[myName.."ScrollBar"]);
-										
+
 										local scrollBar = _G[myName.."ScrollBar"];
 										scrollBar:ClearAllPoints();
 										scrollBar:SetPoint("BOTTOMLEFT", self, "BOTTOMRIGHT", 3, 7);
 										scrollBar:SetPoint("TOPLEFT", self, "TOPRIGHT", 3, -9);
-										
+
 										self.scrollBarHideable = true;
 										ScrollFrame_OnLoad(self);
 									</OnLoad>
@@ -781,7 +775,7 @@
 				</Frames>
 				<Scripts>
 					<OnShow>
-						PlaySound("igCharacterInfoOpen");
+						PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 						RequestLFDPlayerLockInfo();
 						RequestLFDPartyLockInfo();
 					</OnShow>
@@ -792,6 +786,7 @@
 			<OnLoad function="LFDFrame_OnLoad"/>
 			<OnEvent function="LFDFrame_OnEvent"/>
 			<OnShow function="LFDFrame_OnShow"/>
+			<OnHide function="LFDFrame_OnHide"/>
 		</Scripts>
 	</Frame>
 </Ui>

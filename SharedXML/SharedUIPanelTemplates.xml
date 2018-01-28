@@ -5,6 +5,36 @@
 	<Texture name="UIPanelButtonHighlightTexture" file="Interface\Buttons\UI-Panel-Button-Highlight" alphaMode="ADD" virtual="true">
 		<TexCoords left="0" right="0.625" top="0" bottom="0.6875"/>
 	</Texture>
+	
+<!-- Paper overlay texture pieces -->
+<Texture name="UI-PaperOverlay-AbilityTextBG" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+	<Size x="256" y="80"/>
+	<TexCoords left="0.00195313" right="0.50195313" top="0.02246094" bottom="0.10058594"/>
+</Texture>
+<Texture name="UI-PaperOverlay-Bullet" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true">
+	<Size x="13" y="13"/>
+	<TexCoords left="0.974609375" right="1.0" top="0.7509765625" bottom="0.763671875"/>
+</Texture>
+<Texture name="UI-PaperOverlay-Check" file="Interface\AchievementFrame\UI-Achievement-Criteria-Check" virtual="true">
+	<Size x="13" y="13"/>
+	<TexCoords left="0" right="0.65625" top="0" bottom="1"/>
+</Texture>
+<Texture name="UI-PaperOverlay-PaperHeader-SelectUp-Mid" file="Interface\EncounterJournal\UI-EncounterJournalTextures_Tile" virtual="true" horizTile="true" >
+	<Size x="64" y="29"/>
+	<TexCoords left="0.00000000" right="1.00000000" top="0.22265625" bottom="0.27929688"/>
+</Texture>
+<Texture name="UI-PaperOverlay-AbilityTextBottomBorder" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+	<Size x="243" y="9"/>
+	<TexCoords left="0.04492188" right="0.51953125" top="0.00097656" bottom="0.00976563"/>
+</Texture>
+<Texture name="UI-PaperOverlay-PaperHeader-SelectUp-Left" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+	<Size x="64" y="29"/>
+	<TexCoords left="0.81445313" right="0.93945313" top="0.39453125" bottom="0.42285156"/>
+</Texture>
+<Texture name="UI-PaperOverlay-PaperHeader-SelectUp-Right" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+	<Size x="64" y="29"/>
+	<TexCoords left="0.34570313" right="0.47070313" top="0.49316406" bottom="0.52148438"/>
+</Texture>
 
 <!-- Vertically tiling pieces -->
 	<Texture name="!UI-Frame-RightTile" file="Interface\FrameGeneral\!UI-Frame" virtual="true" vertTile="true" >
@@ -428,7 +458,7 @@
 						<Anchor point="BOTTOMRIGHT" x="-2" y="2"/>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentTitleBg" inherits="_UI-Frame-TitleTileBG">
+				<Texture name="$parentTitleBg" inherits="_UI-Frame-TitleTileBg">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="2" y="-3"/>
 						<Anchor point="TOPRIGHT" x="-25" y="-3"/>
@@ -967,7 +997,7 @@
 						local parent = self:GetParent();
 						local scrollStep = self:GetParent().scrollStep or (parent:GetHeight() / 2);
 						parent:SetValue(parent:GetValue() - scrollStep);
-						PlaySound("UChatScrollButton");
+						PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -980,7 +1010,7 @@
 						local parent = self:GetParent();
 						local scrollStep = self:GetParent().scrollStep or (parent:GetHeight() / 2);
 						parent:SetValue(parent:GetValue() + scrollStep);
-						PlaySound("UChatScrollButton");
+						PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -1078,7 +1108,7 @@
 						local parent = self:GetParent();
 						local scrollStep = self:GetParent().scrollStep or (parent:GetHeight() / 2);
 						parent:SetValue(parent:GetValue() - scrollStep);
-						PlaySound("UChatScrollButton");
+						PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -1091,7 +1121,7 @@
 						local parent = self:GetParent();
 						local scrollStep = self:GetParent().scrollStep or (parent:GetHeight() / 2);
 						parent:SetValue(parent:GetValue() + scrollStep);
-						PlaySound("UChatScrollButton");
+						PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -1117,7 +1147,7 @@
 					<OnClick>
 						local parent = self:GetParent();
 						parent:SetValue(parent:GetValue() - (parent:GetHeight() / 2));
-						PlaySound("UChatScrollButton");
+						PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -1129,7 +1159,7 @@
 					<OnClick>
 						local parent = self:GetParent();
 						parent:SetValue(parent:GetValue() + (parent:GetHeight() / 2));
-						PlaySound("UChatScrollButton");
+						PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -1192,7 +1222,7 @@
 						local parent = self:GetParent();
 						local scrollStep = self:GetParent().scrollStep or (parent:GetHeight() / 2);
 						parent:SetValue(parent:GetValue() - scrollStep);
-						PlaySound("UChatScrollButton");
+						PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -1205,7 +1235,7 @@
 						local parent = self:GetParent();
 						local scrollStep = self:GetParent().scrollStep or (parent:GetHeight() / 2);
 						parent:SetValue(parent:GetValue() + scrollStep);
-						PlaySound("UChatScrollButton");
+						PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -1216,6 +1246,126 @@
 			</OnValueChanged>
 		</Scripts>
 		<ThumbTexture name="$parentThumbTexture" inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-Knob">
+			<Size x="18" y="24"/>
+			<TexCoords left="0.20" right="0.80" top="0.125" bottom="0.875"/>
+		</ThumbTexture>
+	</Slider>
+	<Slider name="MinimalScrollBarWithBorderTemplate" virtual="true">
+		<Size x="22" y="0"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Track">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="17"/>
+						<Anchor point="BOTTOMRIGHT" x="0" y="-17"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" a="1"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="ScrollUpButton" inherits="UIPanelScrollUpButtonTemplate">
+				<Anchors>
+					<Anchor point="TOP" x="0" y="15"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						local parent = self:GetParent();
+						local scrollStep = self:GetParent().scrollStep or (parent:GetHeight() / 2);
+						parent:SetValue(parent:GetValue() - scrollStep);
+						PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button parentKey="ScrollDownButton" inherits="UIPanelScrollDownButtonTemplate">
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="-15"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						local parent = self:GetParent();
+						local scrollStep = self:GetParent().scrollStep or (parent:GetHeight() / 2);
+						parent:SetValue(parent:GetValue() + scrollStep);
+						PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Frame parentKey="ScrollUpBorder">
+				<Size x="24" y="0"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollUpButton" x="-5" y="5"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ScrollUpButton" x="5" y="-3"/>
+				</Anchors>
+				<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+					<EdgeSize>
+						<AbsValue val="12"/>
+					</EdgeSize>
+					<TileSize>
+						<AbsValue val="16"/>
+					</TileSize>
+					<BackgroundInsets>
+						<AbsInset left="0" right="0" top="5" bottom="5"/>
+					</BackgroundInsets>
+				</Backdrop>
+				<Scripts>
+					<OnLoad>
+						self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b, 0.5);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame parentKey="ScrollDownBorder">
+				<Size x="24" y="0"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollDownButton" x="-5" y="5"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ScrollDownButton" x="5" y="-3"/>
+				</Anchors>
+				<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+					<EdgeSize>
+						<AbsValue val="12"/>
+					</EdgeSize>
+					<TileSize>
+						<AbsValue val="16"/>
+					</TileSize>
+					<BackgroundInsets>
+						<AbsInset left="0" right="0" top="5" bottom="5"/>
+					</BackgroundInsets>
+				</Backdrop>
+				<Scripts>
+					<OnLoad>
+						self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b, 0.5);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame parentKey="Border">
+				<Size x="24" y="0"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollUpButton" x="-5" y="5"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ScrollDownButton" x="5" y="-3"/>
+				</Anchors>
+				<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+					<EdgeSize>
+						<AbsValue val="12"/>
+					</EdgeSize>
+					<TileSize>
+						<AbsValue val="16"/>
+					</TileSize>
+					<BackgroundInsets>
+						<AbsInset left="0" right="0" top="5" bottom="5"/>
+					</BackgroundInsets>
+				</Backdrop>
+				<Scripts>
+					<OnLoad>
+						self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b, 0.5);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnValueChanged>
+				self:GetParent():SetVerticalScroll(value);
+			</OnValueChanged>
+		</Scripts>
+		<ThumbTexture parentKey="ThumbTexture" inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-Knob">
 			<Size x="18" y="24"/>
 			<TexCoords left="0.20" right="0.80" top="0.125" bottom="0.875"/>
 		</ThumbTexture>
@@ -1349,19 +1499,21 @@
 	<ScrollFrame name="ListScrollFrameTemplate" inherits="FauxScrollFrameTemplate" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar">
-					<Size x="30" y="120"/>
+				<Texture name="$parentTop" atlas="macropopup-scrollbar-top" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-3" y="2"/>
+						<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-2" y="5"/>
 					</Anchors>
-					<TexCoords left="0" right="0.46875" top="0.0234375" bottom="0.9609375"/>
 				</Texture>
-				<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar">
-					<Size x="30" y="123"/>
+				<Texture name="$parentBottom" atlas="macropopup-scrollbar-bottom" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-3" y="-2"/>
+						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-2" y="-2"/>
 					</Anchors>
-					<TexCoords left="0.53125" right="1.0" top="0.03125" bottom="1.0"/>
+				</Texture>
+				<Texture name="$parentMiddle" atlas="!macropopup-scrollbar-middle" vertTile="true" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parentTop" relativePoint="BOTTOM"/>
+						<Anchor point="BOTTOM" relativeTo="$parentBottom" relativePoint="TOP"/>
+					</Anchors>
 				</Texture>
 			</Layer>
 		</Layers>
@@ -1501,6 +1653,11 @@
 		<FontString inherits="ChatFontNormal"/>
 	</EditBox>
 	<EditBox name="InputBoxInstructionsTemplate" inherits="InputBoxTemplate" virtual="true">
+		<!--KeyValues>
+			Optional
+			<KeyValue key="disabledColor" value="GRAY_FONT_COLOR" type="global"/>
+			<KeyValue key="enabledColor" value="HIGHLIGHT_FONT_COLOR" type="global"/>
+		</KeyValues-->
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="Instructions" justifyH="LEFT" justifyV="MIDDLE" inherits="GameFontDisableSmall" setAllPoints="true">
@@ -1510,6 +1667,8 @@
 		</Layers>
 		<Scripts>
 			<OnTextChanged function="InputBoxInstructions_OnTextChanged"/>
+			<OnDisable function="InputBoxInstructions_OnDisable"/>
+			<OnEnable function="InputBoxInstructions_OnEnable"/>
 		</Scripts>
 		<FontString inherits="GameFontHighlightSmall"/>
 	</EditBox>
@@ -1582,8 +1741,7 @@
         </Layers>
 		<Scripts>
 			<OnLoad>
-				PanelTemplates_TabResize(self, 0);
-				self.HighlightTexture:SetWidth(self:GetTextWidth() + 31);
+				PanelTemplates_TabResize(self, 0, nil, self.minWidth);
 			</OnLoad>
 		</Scripts>
 		<ButtonText name="$parentText" parentKey="Text">
@@ -1648,5 +1806,36 @@
 				<Rotation childKey="AnimFrame" order="1" duration="1" degrees="-360"/>
 			</AnimationGroup>
 		</Animations>
+	</Frame>
+	
+	<Frame name="MaximizeMinimizeButtonFrameTemplate" parentKey="MaxMinButtonFrame" mixin="MaximizeMinimizeButtonFrameMixin" virtual="true">
+		<Size x="32" y="32"/>
+		<Frames>
+			<Button parentKey="MaximizeButton" setAllPoints="true" hidden="true">
+				<HitRectInsets left="5" right="5" top="5" bottom="5"/>
+				<Scripts>
+					<OnClick>
+						self:GetParent():Maximize();
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-Panel-BiggerButton-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-Panel-BiggerButton-Down"/>
+				<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
+			</Button>
+			<Button parentKey="MinimizeButton" setAllPoints="true">
+				<HitRectInsets left="5" right="5" top="5" bottom="5"/>
+				<Scripts>
+					<OnClick>
+						self:GetParent():Minimize();
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-Panel-SmallerButton-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-Panel-SmallerButton-Down"/>
+				<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnShow method="OnShow"/>
+		</Scripts>
 	</Frame>
 </Ui>

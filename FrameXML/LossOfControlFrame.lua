@@ -15,6 +15,7 @@ local timeLeftTimings = {
 local TEXT_OVERRIDE = {
 	[33786] = LOSS_OF_CONTROL_DISPLAY_CYCLONE,
 	[113506] = LOSS_OF_CONTROL_DISPLAY_CYCLONE,
+	[209753] = LOSS_OF_CONTROL_DISPLAY_CYCLONE,
 }
 
 local TIME_LEFT_FRAME_WIDTH = 200;
@@ -144,7 +145,7 @@ function LossOfControlFrame_SetUpDisplay(self, animate, locType, spellID, text, 
 			self.TimeLeft.SecondsText.scrollTime = 0;
 			self.Cooldown:Hide();
 			self.Anim:Play();
-			PlaySoundKitID(34468);
+			PlaySound(SOUNDKIT.UI_LOSS_OF_CONTROL_START);
 		end
 		self.priority = priority;
 		self.spellID = spellID;

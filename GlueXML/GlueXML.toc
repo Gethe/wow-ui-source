@@ -1,30 +1,45 @@
 ##DebugHook.lua
+..\SharedXML\C_TimerAugment.lua
+..\SharedXML\Util.lua
+..\SharedXML\SoundKitConstants.lua
+..\SharedXML\Pools.lua
+..\SharedXML\CircularBuffer.lua
+..\SharedXML\FontableFrameMixin.lua
+## intrinsics
+..\SharedXML\ScrollingMessageFrame.xml
 Constants.lua
 GlueFonts.xml
 GlueFontStyles.xml
 GlueLocalization.xml
 ..\SharedXML\SharedUIPanelTemplates.xml
+..\SharedXML\SharedBasicControls.xml
 GlueTemplates.xml
 ## add new files after here
 GlueButtons.xml
-GlueBasicControls.xml
-GlueDropDownMenuTemplates.xml
-GlueDropDownMenu.xml 
+GlueDropDownMenu.xml
+GlueContextMenu.xml
 
-## add C namespace augmentations here
-..\SharedXML\C_TimerAugment.lua
-
-..\SharedXML\Util.lua
 ..\SharedXML\LayoutFrame.xml
 ..\SharedXML\HybridScrollFrame.lua
 ..\SharedXML\HybridScrollFrame.xml
-..\SharedXML\ModelFrames.xml
-..\SharedXML\ModelPreviewFrame.xml
-## IME.xml needs to be loaded after GlueFonts.xml
-..\SharedXML\IME.xml
+..\SharedXML\Vector2D.lua
+..\SharedXML\Vector3D.lua
+..\SharedXML\Spline.lua
+..\SharedXML\ModelSceneTemplates.xml
+..\SharedXML\ModelSceneMixin.xml
+..\SharedXML\ModelSceneActorMixin.xml
+..\SharedXML\ManagedLayoutFrame.xml
+..\SharedXML\BulletPoint.xml
+..\SharedXML\GameTooltipTemplate.xml
+..\SharedXML\FrameStack.lua
 
 ##New stuff!!!
+GlueAddons.lua
 GlueParent.xml
+## These SharedXML files need to be loaded after GlueParent.xml
+..\SharedXML\IME.xml
+..\SharedXML\ModelFrames.xml
+..\SharedXML\ModelPreviewFrame.xml
 GlueDialog.xml
 GlueTooltip.xml
 ..\SharedXML\AddonList.xml

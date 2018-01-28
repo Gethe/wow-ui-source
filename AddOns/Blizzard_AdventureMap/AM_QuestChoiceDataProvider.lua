@@ -74,7 +74,6 @@ function AdventureMap_QuestChoiceDataProviderMixin:AddChoicePin(questID, name, z
 	pin.zoneDescription = zoneDescription;
 	pin:SetPosition(normalizedX, normalizedY);
 	pin.owner = self;
-	pin:Show();
 
 	self.pinsByQuestID[questID] = pin;
 
@@ -117,7 +116,6 @@ end
 function AdventureMap_QuestChoiceDataProviderMixin:AddFogPin(questID, normalizedX, normalizedY)
 	local pin = self:GetMap():AcquirePin("AdventureMap_FogPinTemplate", self.playRevealAnims);
 	pin:SetPosition(normalizedX, normalizedY);
-	pin:Show();
 	return pin;
 end
 		
@@ -138,7 +136,7 @@ end
 AdventureMap_QuestChoicePinMixin = CreateFromMixins(MapCanvasPinMixin);
 
 function AdventureMap_QuestChoicePinMixin:OnLoad()
-	self:SetScalingLimits(1.25, 3.0, 1.5);
+	self:SetScalingLimits(1.25, 0.825, 1.275);
 end
 
 function AdventureMap_QuestChoicePinMixin:OnAcquired(playAnim)
@@ -153,7 +151,7 @@ end
 
 function AdventureMap_QuestChoicePinMixin:OnClick(button)
 	if button == "LeftButton" then
-		PlaySound("UI_Mission_Map_Zoom");
+		PlaySound(SOUNDKIT.UI_MISSION_MAP_ZOOM);
 		self.owner:SelectQuestID(self.questID);
 	end
 end

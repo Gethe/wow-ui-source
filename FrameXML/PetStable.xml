@@ -81,7 +81,7 @@
 					PetStableFrame.selectedPet = self.petSlot;
 					PetStable_Update(true);
 				end
-				PlaySound("igMainMenuOptionCheckBoxOn");
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 			</OnClick>
 			<OnDragStart>
 				PickupStablePet(self.petSlot);
@@ -93,7 +93,7 @@
 						SetPetSlot(petSlot, self.petSlot);
 						ClearCursor();
 					end
-					PlaySound("igMainMenuOptionCheckBoxOn");
+					PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 				end
 			</OnReceiveDrag>
 		</Scripts>
@@ -410,11 +410,11 @@
 		<Scripts>
 			<OnLoad function="PetStable_OnLoad"/>
 			<OnShow>
-				PlaySound("igCharacterInfoOpen");
+				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 			</OnShow>
 			<OnHide>
 				ClosePetStables();
-				PlaySound("igCharacterInfoClose");
+				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 				local cursorType, _ = GetCursorInfo();
 				if (cursorType == "pet") then
 					ClearCursor();

@@ -270,7 +270,7 @@ end
 function KeyBindingFrame_OnHide(self)
 	ShowUIPanel(GameMenuFrame);
 	KeyBindingFrame.outputText:SetText("");
-	PlaySound("gsTitleOptionExit");
+	PlaySound(SOUNDKIT.GS_TITLE_OPTION_EXIT);
 	UpdateMicroButtons();
 end
 
@@ -487,7 +487,7 @@ function KeyBindingFrame_OnMouseWheel(self, delta)
 end
 
 function KeyBindingButton_OnClick(self, button)
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	if ( KeyBindingFrame.selected ) then
 		-- Code to be able to deselect or select another key to bind
 		if ( button == "LeftButton" or button == "RightButton" ) then
@@ -520,7 +520,7 @@ function KeyBindingButton_OnClick(self, button)
 end
 
 function KeybindingsCategoryListButton_OnClick(self, button)
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	OptionsList_ClearSelection(KeyBindingFrame.categoryList, KeyBindingFrame.categoryList.buttons);
 	OptionsList_SelectButton(self:GetParent(), self);
 	
@@ -537,9 +537,9 @@ end
 
 function CharacterSpecificButton_OnClick(self)
 	if (self.enabled) then
-		PlaySound("igMainMenuOptionCheckBoxOn");
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	else
-		PlaySound("igMainMenuOptionCheckBoxOff");
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 	end
 	if ( KeyBindingFrame.bindingsChanged ) then
 		StaticPopup_Show("CONFIRM_LOSE_BINDING_CHANGES");
@@ -558,7 +558,7 @@ function CharacterSpecificButton_OnHide(self)
 end
 
 function UnbindButton_OnClick(self)
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	local key1, key2 = GetBindingKey(KeyBindingFrame.selected, KeyBindingFrame.mode);
 	if ( key1 ) then
 		SetBinding(key1, nil, KeyBindingFrame.mode);
@@ -617,7 +617,7 @@ function DefaultsButton_OnClick(self)
 end
 
 function KeyBindingFrame_ResetBindingsToDefault()
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	LoadBindings(DEFAULT_BINDINGS);
 	KeyBindingFrame.outputText:SetText("");
 	KeyBindingFrame_SetSelected(nil);

@@ -117,13 +117,7 @@ function BattlePetTooltipTemplate_SetBattlePet(tooltipFrame, data)
 end
 
 function BattlePetTooltipJournalClick_OnClick(self)
-	if (not CollectionsJournal) then
-		CollectionsJournal_LoadUI();
-	end
-	if (not CollectionsJournal:IsShown()) then
-		ShowUIPanel(CollectionsJournal);
-	end
-	CollectionsJournal_SetTab(CollectionsJournal, 2);
+	SetCollectionsJournalShown(true, COLLECTIONS_JOURNAL_TAB_INDEX_PETS);
 	local battlePetID = self:GetParent().battlePetID;
 	if ( battlePetID ) then
 		local speciesID = C_PetJournal.GetPetInfoByPetID(battlePetID);
