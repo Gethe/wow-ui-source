@@ -2568,8 +2568,8 @@ function GarrisonMissionButton_AddThreatsToTooltip(missionID, followerTypeID, no
 			
 			if (GarrisonFollowerOptions[followerTypeID].displayCounterAbilityInPlaceOfMechanic) then
 				local ability = abilityCountersForMechanicTypes[mechanicID];
-				threatFrame.Border:SetShown(ShouldShowFollowerAbilityBorder(followerTypeID, ability));
-				threatFrame.Icon:SetTexture(ability.icon);
+				threatFrame.Border:SetShown(ability and ShouldShowFollowerAbilityBorder(followerTypeID, ability));
+				threatFrame.Icon:SetTexture(ability and ability.icon);
 			else
 				if ( mechanic.factor <= GARRISON_HIGH_THREAT_VALUE and followerTypeID == LE_FOLLOWER_TYPE_SHIPYARD_6_2 ) then
 					threatFrame.Border:SetAtlas("GarrMission_WeakEncounterAbilityBorder");

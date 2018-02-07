@@ -125,6 +125,20 @@ local MountJournal =
 			},
 		},
 		{
+			Name = "GetMountFromSpell",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "mountID", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "GetMountIDs",
 			Type = "Function",
 

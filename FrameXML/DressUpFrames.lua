@@ -1,8 +1,10 @@
 function DressUpItemLink(link)
-	if ( not link or not IsDressableItem(link) ) then
-		return false;
+	if( link ) then 
+		if ( IsDressableItem(link) ) then
+			return DressUpVisual(link);
+		end
 	end
-	return DressUpVisual(link);
+	return false;
 end
 
 function DressUpTransmogLink(link)
@@ -32,22 +34,39 @@ function DressUpVisual(...)
 	return true;
 end
 
+function DressUpBattlePetLink(link)
+	if( link ) then 
+		
+		local _, _, _, linkType, speciesIDString, _, _, _, _, _, battlePetID = strsplit(":|H", link);
+		if ( linkType == "battlepet" ) then
+			local speciesID, _, _, _, _, displayID, _, _, _, _, creatureID = C_PetJournal.GetPetInfoByPetID(battlePetID);
+			if ( speciesID == tonumber(speciesIDString)) then
+				return DressUpBattlePet(creatureID, displayID);
+			else
+				local _, _, _, creatureID, _, _, _, _, _, _, _, displayID = C_PetJournal.GetPetInfoBySpeciesID(tonumber(speciesIDString));
+				return DressUpBattlePet(creatureID, displayID);
+			end
+		end
+	end
+	return false
+end
+
 function DressUpBattlePet(creatureID, displayID)
 	if ( not displayID and not creatureID ) then
 		return false;
 	end
 
 	--Figure out which frame we're going to use
-	local frame, model;
+	local frame, model, fileName, atlasPostfix;
 	if ( SideDressUpFrame.parentFrame and SideDressUpFrame.parentFrame:IsShown() ) then
-		frame, model = SideDressUpFrame, SideDressUpModel;
+		frame, model, fileName = SideDressUpFrame, SideDressUpModel, "Pet";
 	else
-		frame, model = DressUpFrame, DressUpModel;
+		frame, model, atlasPostfix = DressUpFrame, DressUpModel, "warrior"; --default to warrior BG when viewing full Pet/Mounts for now
 	end
 
 	--Show the frame
 	if ( not frame:IsShown() or frame.mode ~= "battlepet" ) then
-		SetDressUpBackground(frame, "Pet");
+		SetDressUpBackground(frame, fileName, atlasPostfix);
 		ShowUIPanel(frame);
 	end
 
@@ -62,6 +81,46 @@ function DressUpBattlePet(creatureID, displayID)
 	return true;
 end
 
+function DressUpMountLink(link)
+	if( link ) then 
+		local _, _, _, linkType, spellID = strsplit(":|H", link);
+		if linkType == "spell" then
+			local mountID = C_MountJournal.GetMountFromSpell(tonumber(spellID));
+			if ( mountID ) then
+				local creatureDisplayID = C_MountJournal.GetMountInfoExtraByID(mountID);
+				return DressUpMount(creatureDisplayID);
+			end
+		end
+	end
+	return false
+end
+
+function DressUpMount(creatureDisplayID)
+	if ( not creatureDisplayID or creatureDisplayID == 0 ) then
+		return false;
+	end
+
+	--Figure out which frame we're going to use
+	local frame, model, fileName, atlasPostfix;
+	if ( SideDressUpFrame.parentFrame and SideDressUpFrame.parentFrame:IsShown() ) then
+		frame, model, fileName = SideDressUpFrame, SideDressUpModel, "Pet";
+	else
+		frame, model, atlasPostfix = DressUpFrame, DressUpModel, "warrior"; --default to warrior BG when viewing full Pet/Mounts for now
+	end
+
+	--Show the frame
+	if ( not frame:IsShown() or frame.mode ~= "mount" ) then
+		SetDressUpBackground(frame, fileName, atlasPostfix);
+		ShowUIPanel(frame);
+	end
+
+	--Set up the model on the frame
+	frame.mode = "mount";
+	frame.ResetButton:Hide();
+	model:SetDisplayInfo(creatureDisplayID);
+
+	return true;
+end
 
 function DressUpTexturePath(raceFileName)
 	-- HACK

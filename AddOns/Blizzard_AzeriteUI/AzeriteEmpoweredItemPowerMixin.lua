@@ -1,6 +1,8 @@
 AzeriteEmpoweredItemPowerMixin = {};
 
 function AzeriteEmpoweredItemPowerMixin:Setup(empoweredItemLocation, azeritePowerInfo)
+	self:CancelItemLoadCallback();
+
 	self.empoweredItemLocation = empoweredItemLocation;
 	self.azeritePowerInfo = azeritePowerInfo;
 
@@ -69,11 +71,30 @@ function AzeriteEmpoweredItemPowerMixin:SetCanBeSelected(canBeSelected)
 	self:UpdateStyle();
 end
 
-function AzeriteEmpoweredItemPowerMixin:OnEnter()
-	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip:SetSpellByID(self:GetSpellID());
+function AzeriteEmpoweredItemPowerMixin:CancelItemLoadCallback()
+	if self.itemDataLoadedCancelFunc then
+		self.itemDataLoadedCancelFunc();
+		self.itemDataLoadedCancelFunc = nil;
+	end
+end
 
-	self.UpdateTooltip = self.OnEnter;
+function AzeriteEmpoweredItemPowerMixin:OnEnter()
+	self:CancelItemLoadCallback();
+	local item = Item:CreateFromItemLocation(self.empoweredItemLocation);
+
+	self.itemDataLoadedCancelFunc = item:ContinueWithCancelOnItemLoad(function()
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		local itemID = item:GetItemID();
+		local itemLevel = item:GetCurrentItemLevel();
+		GameTooltip:SetAzeritePowerBySpellID(itemID, itemLevel, self:GetSpellID());
+		self.UpdateTooltip = self.OnEnter;
+	end);
+end
+
+function AzeriteEmpoweredItemPowerMixin:OnLeave()
+	self:CancelItemLoadCallback();
+
+	GameTooltip:Hide();
 end
 
 function AzeriteEmpoweredItemPowerMixin:OnClick()
@@ -83,7 +104,7 @@ function AzeriteEmpoweredItemPowerMixin:OnClick()
 	end
 
 	if not C_Item.IsBound(self.empoweredItemLocation) then
-		StaticPopup_Show("CONFIRM_AZERITE_EMPOWERED_BIND", nil, nil, {empoweredItemLocation = self.empoweredItemLocation, azeritePowerID =  self:GetAzeritePowerID()});
+		StaticPopup_Show("CONFIRM_AZERITE_EMPOWERED_BIND", nil, nil, {empoweredItemLocation = self.empoweredItemLocation, azeritePowerID = self:GetAzeritePowerID()});
 		return;
 	end
 

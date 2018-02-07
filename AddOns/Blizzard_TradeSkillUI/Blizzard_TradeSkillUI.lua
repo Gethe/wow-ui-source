@@ -109,7 +109,11 @@ function TradeSkillUIMixin:RefreshRetrievingDataFrame()
 end
 
 function TradeSkillUIMixin:RefreshTitle()
-	local tradeSkillID, skillLineName, skillLineRank, skillLineMaxRank, skillLineModifier =  C_TradeSkillUI.GetTradeSkillLine();
+	local tradeSkillID, skillLineName, skillLineRank, skillLineMaxRank, skillLineModifier, parentSkillLineName =  C_TradeSkillUI.GetTradeSkillLine();
+
+	if (parentSkillLineName) then
+		skillLineName = parentSkillLineName;
+	end
 
 	self.LinkNameButton:Hide();
 
@@ -201,12 +205,12 @@ function TradeSkillUIMixin:SetSlotFilter(inventorySlotIndex, categoryID, subCate
 	end
 end
 
-local function GenerateRankText(skillLineRank, skillLineMaxRank, skillLineModifier)
+local function GenerateRankText(skillLineName, skillLineRank, skillLineMaxRank, skillLineModifier)
 	local rankText;
 	if skillLineModifier > 0  then
-		rankText = TRADESKILL_RANK_WITH_MODIFIER:format(skillLineRank, skillLineModifier, skillLineMaxRank);
+		rankText = TRADESKILL_NAME_RANK_WITH_MODIFIER:format(skillLineName, skillLineRank, skillLineModifier, skillLineMaxRank);
 	else
-		rankText = TRADESKILL_RANK:format(skillLineRank, skillLineMaxRank);
+		rankText = TRADESKILL_NAME_RANK:format(skillLineName, skillLineRank, skillLineMaxRank);
 	end
 		
 	if GameLimitedMode_IsActive() then
@@ -229,7 +233,7 @@ function TradeSkillUIMixin:RefreshSkillRank()
 			self.RankFrame:SetMinMaxValues(0, skillLineMaxRank);
 			self.RankFrame:SetValue(skillLineRank);
 
-			local rankText = GenerateRankText(skillLineRank, skillLineMaxRank, skillLineModifier);
+			local rankText = GenerateRankText(skillLineName, skillLineRank, skillLineMaxRank, skillLineModifier);
 			self.RankFrame.RankText:SetText(rankText);
 
 			self.RankFrame:Show();

@@ -20,7 +20,7 @@
 		</Animations>
 		<Frames>
 			<Frame name="MicroButtonAndBagsBar">
-				<Size x="274" y="73"/>
+				<Size x="298" y="88"/>
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" relativeTo="UIParent" x="0"/>
 				</Anchors>
@@ -91,9 +91,9 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnShow function="MainMenuBar_OnShow"/>
-			<OnLoad function="MainMenuBar_OnLoad"/>
-			<OnEvent function="MainMenuBar_OnEvent"/>
+			<OnShow method="OnShow"/>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
 		</Scripts>
 	</Frame>
 </Ui>

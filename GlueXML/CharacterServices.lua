@@ -865,7 +865,7 @@ function CharacterUpgradeCharacterSelectBlock:Initialize(results)
 	self:ResetStepOptionFrames();
 
 	local hasEligibleBoostCharacter = (numEligible > 0);
-	local canCreateCharacter = numDisplayedCharacters < MAX_CHARACTERS_DISPLAYED_BASE;
+	local canCreateCharacter = CanCreateCharacter();
 	local canShowCreateNewCharacterButton = canCreateCharacter and IsUsingValidProductForCreateNewCharacterBoost();
 	local canCreateTrialBoostCharacter = canCreateCharacter and (C_CharacterServices.IsTrialBoostEnabled() and IsUsingValidProductForTrialBoost(CharacterUpgradeFlow.data));
 

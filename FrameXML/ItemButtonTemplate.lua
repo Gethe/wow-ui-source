@@ -139,7 +139,7 @@ function HandleModifiedItemClick(link)
 		end
 	end
 	if ( IsModifiedClick("DRESSUP") ) then
-		return DressUpItemLink(link);
+		return DressUpItemLink(link) or DressUpBattlePetLink(link) or DressUpMountLink(link)
 	end
 	return false;
 end

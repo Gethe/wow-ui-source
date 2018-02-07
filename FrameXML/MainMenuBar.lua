@@ -4,33 +4,36 @@ local MAINMENU_XPOS = 0;
 
 MainMenuBarMixin = { };
 function MainMenuBarMixin:OnStatusBarsUpdated()
-	MainMenuBar_SetPositionForStatusBars(); 
+	self:SetPositionForStatusBars(); 
 end
 
-function MainMenuBar_OnLoad(self)
+function MainMenuBarMixin:OnLoad()
 	self:RegisterEvent("ACTIONBAR_PAGE_CHANGED");
 	self:RegisterEvent("CURRENCY_DISPLAY_UPDATE");
 	self:RegisterEvent("UNIT_LEVEL");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("TRIAL_STATUS_UPDATE");
+	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
+	self:RegisterEvent("UI_SCALE_CHANGED");
 
 	CreateFrame("FRAME", "StatusTrackingBarManager", self, "StatusTrackingBarManagerTemplate");
 	
 	MAX_PLAYER_LEVEL = MAX_PLAYER_LEVEL_TABLE[GetExpansionLevel()];
 
-	MainMenuBar.state = "player";
+	self.state = "player";
 	MainMenuBarArtFrame.PageNumber:SetText(GetActionBarPage());
+	MicroButtonAndBagsBar:SetFrameLevel(self:GetFrameLevel()+2);
 end
 
-function MainMenuBar_OnShow(self)
+function MainMenuBarMixin:OnShow()
 	UpdateMicroButtonsParent(MainMenuBarArtFrame);
-	MoveMicroButtons("BOTTOMLEFT", MicroButtonAndBagsBar, "BOTTOMLEFT", 5, 3, false);
+	MoveMicroButtons("BOTTOMLEFT", MicroButtonAndBagsBar, "BOTTOMLEFT", 6, 3, false);
 end
 
-function MainMenuBar_SetPositionForStatusBars()
+function MainMenuBarMixin:SetPositionForStatusBars()
 	if ( StatusTrackingBarManager:GetNumberVisibleBars() >= 1 ) then 
 		MainMenuBarArtFrameBackground:ClearAllPoints();
-		MainMenuBarArtFrameBackground:SetPoint("BOTTOM", MainMenuBar, "BOTTOM", 0, 11);
+		MainMenuBarArtFrameBackground:SetPoint("BOTTOM", MainMenuBar, "BOTTOM", 0, 14);
 	else 
 		MainMenuBarArtFrameBackground:ClearAllPoints();
 		MainMenuBarArtFrameBackground:SetPoint("BOTTOM", MainMenuBar, "BOTTOM", 0, 0);
@@ -38,7 +41,7 @@ function MainMenuBar_SetPositionForStatusBars()
 end
 
 local firstEnteringWorld = true;
-function MainMenuBar_OnEvent(self, event, ...)
+function MainMenuBarMixin:OnEvent(event, ...)
 	if ( event == "ACTIONBAR_PAGE_CHANGED" ) then
 		MainMenuBarArtFrame.PageNumber:SetText(GetActionBarPage());
 	elseif ( event == "CURRENCY_DISPLAY_UPDATE" ) then
@@ -89,8 +92,11 @@ function MainMenuBar_OnEvent(self, event, ...)
 		end
 	elseif ( event == "TRIAL_STATUS_UPDATE" ) then
 		UpdateMicroButtons();
+	elseif ( event == "DISPLAY_SIZE_CHANGED" or event == "UI_SCALE_CHANGED" ) then
+		self:ChangeMenuBarSizeAndPosition(SHOW_MULTI_ACTIONBAR_2 and IsNormalActionBarState());
 	end
-	MainMenuBar_SetPositionForStatusBars();
+
+	self:SetPositionForStatusBars();
 end
  
 function MainMenuBarVehicleLeaveButton_OnLoad(self)
@@ -141,11 +147,6 @@ function MainMenuBarVehicleLeaveButton_Update()
 	end
 
 	UIParent_ManageFramePositions();
-end
-
-function MainMenuBar_HideActionBarEndCaps()
-	MainMenuBarArtFrame.RightEndCap:Hide(); 
-	MainMenuBarArtFrame.LeftEndCap:Hide(); 
 end
 
 function MainMenuBarVehicleLeaveButton_OnClicked(self)
@@ -334,25 +335,43 @@ function MainMenuBarPerformanceBarFrame_OnEnter(self)
 	GameTooltip:Show();
 end
 
-function MainMenuBar_ChangeMenuBarSizeAndPosition(rightMultiBarShowing)
+function MainMenuBarMixin:ChangeMenuBarSizeAndPosition(rightMultiBarShowing)
+	local _, width, height;
 	if( rightMultiBarShowing ) then 
-		local _, width, height = GetAtlasInfo("hud-MainMenuBar-large");
-		MainMenuBar:SetSize(width,height); 
+		_, width, height = GetAtlasInfo("hud-MainMenuBar-large");
+		self:SetSize(width,height); 
 		MainMenuBarArtFrame:SetSize(width,height); 
 		MainMenuBarArtFrameBackground:SetSize(width, height); 
 		MainMenuBarArtFrameBackground.BackgroundLarge:Show();
-		MainMenuBarArtFrameBackground.BackgroundSmall:Hide(); 
+		MainMenuBarArtFrameBackground.BackgroundSmall:Hide();
 		MainMenuBarArtFrame.PageNumber:ClearAllPoints();
 		MainMenuBarArtFrame.PageNumber:SetPoint("CENTER", MainMenuBarArtFrameBackground, "CENTER", 138, -3);
 	else 
-		local _, width, height = GetAtlasInfo("hud-MainMenuBar-small");
-		MainMenuBar:SetSize(width,height); 
+		_, width, height = GetAtlasInfo("hud-MainMenuBar-small");
+		self:SetSize(width,height); 
 		MainMenuBarArtFrame:SetSize(width,height); 
 		MainMenuBarArtFrameBackground:SetSize(width, height); 
 		MainMenuBarArtFrameBackground.BackgroundLarge:Hide();
 		MainMenuBarArtFrameBackground.BackgroundSmall:Show(); 
 		MainMenuBarArtFrame.PageNumber:ClearAllPoints();
 		MainMenuBarArtFrame.PageNumber:SetPoint("RIGHT", MainMenuBarArtFrameBackground, "RIGHT", -6, -3);
+	end
+	self:SetScale(1);
+	self:SetPoint("BOTTOM");
+	local barRight = MainMenuBarArtFrame:GetRight();
+	local xOffset = 0;
+	if (barRight > MicroButtonAndBagsBar:GetLeft()) then
+		xOffset = barRight - MicroButtonAndBagsBar:GetLeft();
+		local newLeft = MainMenuBarArtFrame:GetLeft() - xOffset;
+		local scale = 1;
+		if (newLeft < 0) then
+			xOffset = xOffset + newLeft + 16;
+			local availableSpace = MicroButtonAndBagsBar:GetLeft() - 4;
+			scale = availableSpace / width;
+		end
+		self:SetScale(scale);
+		self:SetPoint("BOTTOM", UIParent, "BOTTOM", -xOffset, 0);
+		barRight = self:GetRight();
 	end
 	StatusTrackingBarManager:SetBarSize(rightMultiBarShowing);
 end

@@ -422,7 +422,7 @@ function TradeSkillRecipeListMixin:RefreshDisplay()
 		end
 	end
 
-	HybridScrollFrame_Update(self, #self.dataList * ROW_HEIGHT, 405);
+	HybridScrollFrame_Update(self, #self.dataList * ROW_HEIGHT, 389);
 end
 
 function TradeSkillRecipeListMixin:FindRecipeIndexInCurrentList(recipeID)

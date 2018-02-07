@@ -21,6 +21,20 @@ local Item =
 			},
 		},
 		{
+			Name = "GetCurrentItemLevel",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemLocation", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "currentItemLevel", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "GetItemName",
 			Type = "Function",
 

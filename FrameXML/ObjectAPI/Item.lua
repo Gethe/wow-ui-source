@@ -108,6 +108,13 @@ function ItemMixin:GetItemQuality()
 	return nil;
 end
 
+function ItemMixin:GetCurrentItemLevel()
+	if not self:IsItemEmpty() then
+		return C_Item.GetCurrentItemLevel(self:GetItemLocation());
+	end
+	return nil;
+end
+
 function ItemMixin:GetItemQualityColor()
 	local itemQuality = self:GetItemQuality();
 	return ITEM_QUALITY_COLORS[itemQuality]; -- may be nil if item data isn't loaded

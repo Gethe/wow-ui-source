@@ -6,6 +6,20 @@ local TradeSkillUI =
 
 	Functions =
 	{
+		{
+			Name = "GetTradeSkillLine",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "skillLineID", Type = "number", Nilable = false },
+				{ Name = "skillLineDisplayName", Type = "string", Nilable = false },
+				{ Name = "skillLineRank", Type = "number", Nilable = false },
+				{ Name = "skillLineMaxRank", Type = "number", Nilable = false },
+				{ Name = "skillLineModifier", Type = "number", Nilable = false },
+				{ Name = "parentSkillLineDisplayName", Type = "string", Nilable = true },
+			},
+		},
 	},
 
 	Events =

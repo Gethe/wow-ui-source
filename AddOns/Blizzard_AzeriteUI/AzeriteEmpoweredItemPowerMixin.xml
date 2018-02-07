@@ -43,7 +43,7 @@
 		</Animations>
 		<Scripts>
 			<OnEnter method="OnEnter"/>
-			<OnLeave function="GameTooltip_Hide" />
+			<OnLeave method="OnLeave"/>
 			<OnClick method="OnClick" />
 		</Scripts>
 	</Button>

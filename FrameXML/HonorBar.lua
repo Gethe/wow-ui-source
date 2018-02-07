@@ -58,7 +58,7 @@ function HonorBarMixin:OnLoad()
 	self:RegisterEvent("CVAR_UPDATE");
 	self:RegisterEvent("ZONE_CHANGED");
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
-	self.StatusBar:SetOnAnimatedValueChangedCallback(MainMenuBar_HonorUpdateOverlayFrameText);
+	self.StatusBar:SetOnAnimatedValueChangedCallback(function() self:UpdateOverlayFrameText() end);
 	self.StatusBar.OnFinishedCallback = function(...)
 		self.StatusBar:OnAnimFinished(...);
 		HonorExhaustionTick_Update(self.ExhaustionTick);

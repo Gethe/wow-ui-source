@@ -192,8 +192,6 @@ function OrderHallMission:OnShowMainFrame()
 	GarrisonFollowerMission.OnShowMainFrame(self);
 	AdventureMapMixin.OnShow(self.MapTab);
 
-	self.abilityCountersForMechanicTypes = C_Garrison.GetFollowerAbilityCountersForMechanicTypes(self.followerTypeID);
-
 	self:RegisterEvent("ADVENTURE_MAP_CLOSE");
 	self:SetupTabs();
 end

@@ -204,7 +204,7 @@ function ExhaustionTickMixin:UpdateTickPosition()
 			self:GetParent().ExhaustionLevelFillBar:Hide();
 		else
 			self:Show();
-			self:SetPoint("CENTER", self:GetParent(), "LEFT", exhaustionTickSet, 0);
+			self:SetPoint("CENTER", self:GetParent(), "LEFT", exhaustionTickSet, 2);
 			self:GetParent().ExhaustionLevelFillBar:Show();
 			self:GetParent().ExhaustionLevelFillBar:SetPoint("TOPRIGHT", self:GetParent(), "TOPLEFT", exhaustionTickSet, 0);
 		end

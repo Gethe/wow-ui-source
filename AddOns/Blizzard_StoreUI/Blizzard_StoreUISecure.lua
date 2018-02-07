@@ -1825,6 +1825,10 @@ end
 
 function StoreFrame_IsProductGroupDisabled(groupID)
 	local productGroupInfo = C_StoreSecure.GetProductGroupInfo(groupID);
+	if not productGroupInfo then
+		return true;
+	end
+
 	local displayAsDisabled = productGroupInfo.disabledTooltip ~= nil and not StoreFrame_DoesProductGroupHavePurchasableItems(groupID);
 	local enabledForTrial = bit.band(productGroupInfo.flags, Enum.BattlepayProductGroupFlag.EnabledForTrial) == Enum.BattlepayProductGroupFlag.EnabledForTrial;
 	local trialRestricted = IsTrialAccount() and not enabledForTrial;
@@ -1990,11 +1994,12 @@ local JustFinishedOrdering = false;
 
 function StoreFrame_GetDefaultCategory()
 	local productGroups = C_StoreSecure.GetProductGroups();
+	local needsNewCategory = not selectedCategoryID or StoreFrame_IsProductGroupDisabled(selectedCategoryID);
 	local isTrial = IsTrialAccount();
 	for i = 1, #productGroups do
 		local groupID = productGroups[i];
 		if not StoreFrame_IsProductGroupDisabled(groupID) then
-			if isTrial or groupID == selectedCategoryID then
+			if needsNewCategory or isTrial or groupID == selectedCategoryID then
 				return groupID;
 			end
 		end
@@ -3707,7 +3712,7 @@ function StoreProductCard_ShowDiscount(card, discountText)
 		local normalWidth = card.NormalPrice:GetStringWidth();
 		local totalWidth = normalWidth + card.SalePrice:GetStringWidth();
 		card.NormalPrice:ClearAllPoints();
-		card.NormalPrice:SetPoint("TOP", card.ProductName, "BOTTOM", (normalWidth - totalWidth) / 2, -18);
+		card.NormalPrice:SetPoint("TOP", card.ProductName, "BOTTOM", (normalWidth - totalWidth) / 2, -12);
 	elseif (card ~= StoreFrame.SplashSingle and card ~= StoreFrame.SplashPrimary) then
 		local width = card.NormalPrice:GetStringWidth() + card.SalePrice:GetStringWidth();
 

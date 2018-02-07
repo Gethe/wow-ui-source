@@ -40,6 +40,11 @@ local System =
 			},
 		},
 		{
+			Name = "InitialHotfixesApplied",
+			Type = "Event",
+			LiteralName = "INITIAL_HOTFIXES_APPLIED",
+		},
+		{
 			Name = "LocResult",
 			Type = "Event",
 			LiteralName = "LOC_RESULT",

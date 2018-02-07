@@ -32,6 +32,9 @@
 		</Scripts>
 	</CheckButton>
 	<CheckButton name="MultiBar2ButtonNoBackgroundTemplate" virtual="true" inherits="ActionBarButtonTemplate">
+		<KeyValues>
+			<KeyValue key="noGrid" value="true" type="boolean"/>
+		</KeyValues>
 		<Scripts>
 			<OnLoad>
 				self.buttonType = "MULTIACTIONBAR2BUTTON"
@@ -131,62 +134,62 @@
 			<Attribute name="actionpage" type="number" value="5"/>
 		</Attributes>
 		<Frames>
-			<CheckButton name="$parentButton1" inherits="MultiBar2ButtonTemplate" id="1">
+			<CheckButton name="$parentButton1" inherits="MultiBar2ButtonNoBackgroundTemplate" id="1">
 				<Anchors>
 					<Anchor point="BOTTOMLEFT"/>
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="$parentButton2" inherits="MultiBar2ButtonTemplate" id="2">
+			<CheckButton name="$parentButton2" inherits="MultiBar2ButtonNoBackgroundTemplate" id="2">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentButton1" relativePoint="RIGHT" x="6" y="0"/>
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="$parentButton3" inherits="MultiBar2ButtonTemplate" id="3">
+			<CheckButton name="$parentButton3" inherits="MultiBar2ButtonNoBackgroundTemplate" id="3">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentButton2" relativePoint="RIGHT" x="6" y="0"/>
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="$parentButton4" inherits="MultiBar2ButtonTemplate" id="4">
+			<CheckButton name="$parentButton4" inherits="MultiBar2ButtonNoBackgroundTemplate" id="4">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentButton3" relativePoint="RIGHT" x="6" y="0"/>
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="$parentButton5" inherits="MultiBar2ButtonTemplate" id="5">
+			<CheckButton name="$parentButton5" inherits="MultiBar2ButtonNoBackgroundTemplate" id="5">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentButton4" relativePoint="RIGHT" x="6" y="0"/>
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="$parentButton6" inherits="MultiBar2ButtonTemplate" id="6">
+			<CheckButton name="$parentButton6" inherits="MultiBar2ButtonNoBackgroundTemplate" id="6">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentButton5" relativePoint="RIGHT" x="6" y="0"/>
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="$parentButton7" inherits="MultiBar2ButtonNoBackgroundTemplate" id="7">
+			<CheckButton name="$parentButton7" inherits="MultiBar2ButtonTemplate" id="7">
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" relativeTo="$parentButton1" relativePoint="TOPLEFT" x="0" y="13"/>
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="$parentButton8" inherits="MultiBar2ButtonNoBackgroundTemplate" id="8">
+			<CheckButton name="$parentButton8" inherits="MultiBar2ButtonTemplate" id="8">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentButton7" relativePoint="RIGHT" x="6" y="0"/>
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="$parentButton9" inherits="MultiBar2ButtonNoBackgroundTemplate" id="9">
+			<CheckButton name="$parentButton9" inherits="MultiBar2ButtonTemplate" id="9">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentButton8" relativePoint="RIGHT" x="6" y="0"/>
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="$parentButton10" inherits="MultiBar2ButtonNoBackgroundTemplate" id="10">
+			<CheckButton name="$parentButton10" inherits="MultiBar2ButtonTemplate" id="10">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentButton9" relativePoint="RIGHT" x="6" y="0"/>
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="$parentButton11" inherits="MultiBar2ButtonNoBackgroundTemplate" id="11">
+			<CheckButton name="$parentButton11" inherits="MultiBar2ButtonTemplate" id="11">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentButton10" relativePoint="RIGHT" x="6" y="0"/>
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="$parentButton12" inherits="MultiBar2ButtonNoBackgroundTemplate" id="12">
+			<CheckButton name="$parentButton12" inherits="MultiBar2ButtonTemplate" id="12">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentButton11" relativePoint="RIGHT" x="6" y="0"/>
 				</Anchors>
@@ -331,7 +334,7 @@
 	</Frame>
 	<Frame name="MultiBarBottomLeft" inherits="HorizontalMultiBar1" parent="MainMenuBarArtFrame">
 		<Anchors>
-			<Anchor point="TOP" relativeTo="MainMenuBarArtFrame" relativePoint="TOP" y="3"/>
+			<Anchor point="TOP" relativeTo="MainMenuBarArtFrame" relativePoint="TOP" y="16"/>
 		</Anchors>
 	</Frame>
 	<Frame name="MultiBarBottomRight" inherits="HorizontalMultiBar2" parent="MainMenuBarArtFrame">

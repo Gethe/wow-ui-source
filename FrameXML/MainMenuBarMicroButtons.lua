@@ -419,12 +419,12 @@ end
 function MainMenuMicroButton_PositionAlert(alert)
 	if ( alert.MicroButton:GetRight() + (alert:GetWidth() / 2) > UIParent:GetRight() ) then
 		alert:ClearAllPoints();
-		alert:SetPoint("BOTTOMRIGHT", alert.MicroButton, "TOPRIGHT", 18, 20);
+		alert:SetPoint("BOTTOMRIGHT", alert.MicroButton, "TOPRIGHT", 16, 20);
 		alert.Arrow:ClearAllPoints();
 		alert.Arrow:SetPoint("TOPRIGHT", alert, "BOTTOMRIGHT", -4, 4);
 	else
 		alert:ClearAllPoints();
-		alert:SetPoint("BOTTOM", alert.MicroButton, "TOP", 2, 20);
+		alert:SetPoint("BOTTOM", alert.MicroButton, "TOP", 0, 20);
 		alert.Arrow:ClearAllPoints();
 		alert.Arrow:SetPoint("TOP", alert, "BOTTOM", 0, 4);
 	end

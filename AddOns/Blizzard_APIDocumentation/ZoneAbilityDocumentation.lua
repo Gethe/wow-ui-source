@@ -16,14 +16,15 @@ local ZoneAbility =
 		{
 			Name = "ZoneAbilityType",
 			Type = "Enumeration",
-			NumValues = 3,
+			NumValues = 4,
 			MinValue = 0,
-			MaxValue = 2,
+			MaxValue = 3,
 			Fields =
 			{
 				{ Name = "Garrison", Type = "ZoneAbilityType", EnumValue = 0 },
 				{ Name = "OrderHall", Type = "ZoneAbilityType", EnumValue = 1 },
 				{ Name = "Argus", Type = "ZoneAbilityType", EnumValue = 2 },
+				{ Name = "WarEffort", Type = "ZoneAbilityType", EnumValue = 3 },
 			},
 		},
 	},

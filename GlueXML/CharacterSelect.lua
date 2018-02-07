@@ -6,8 +6,6 @@ CHARACTER_ROTATION_CONSTANT = 0.6;
 MAX_CHARACTERS_DISPLAYED = 12;
 MAX_CHARACTERS_DISPLAYED_BASE = MAX_CHARACTERS_DISPLAYED;
 
-MAX_CHARACTERS_PER_REALM = 200; -- controled by the server now, so lets set it up high
-
 CHARACTER_LIST_OFFSET = 0;
 
 CHARACTER_SELECT_BACK_FROM_CREATE = false;
@@ -140,6 +138,7 @@ function CharacterSelect_OnLoad(self)
     self:RegisterEvent("CHARACTER_UPGRADE_UNREVOKE_RESULT");
 	self:RegisterEvent("MIN_EXPANSION_LEVEL_UPDATED");
 	self:RegisterEvent("MAX_EXPANSION_LEVEL_UPDATED");
+	self:RegisterEvent("INITIAL_HOTFIXES_APPLIED");
 
     SetCharSelectModelFrame("CharacterSelectModel");
 
@@ -151,9 +150,6 @@ function CharacterSelect_OnLoad(self)
     CHARACTER_SELECT_BACK_FROM_CREATE = false;
 
     CHARACTER_LIST_OFFSET = 0;
-    if (not IsGMClient()) then
-        MAX_CHARACTERS_PER_REALM = 12;
-    end
 end
 
 function CharacterSelect_OnShow(self)
@@ -161,7 +157,7 @@ function CharacterSelect_OnShow(self)
     InitializeCharacterScreenData();
     SetInCharacterSelect(true);
     CHARACTER_LIST_OFFSET = 0;
-    CHARACTER_SELECT_KICKED_FROM_CONVERT = false;
+	CHARACTER_SELECT_KICKED_FROM_CONVERT = false;
     CharacterSelect_ResetVeteranStatus();
     CharacterTemplateConfirmDialog:Hide();
 
@@ -564,9 +560,10 @@ function CharacterSelect_OnEvent(self, event, ...)
         else
             CharSelectUndeleteCharacterButton.tooltip = UNDELETE_TOOLTIP;
         end
-    elseif ( event == "CLIENT_FEATURE_STATUS_CHANGED" ) then
+	elseif ( event == "CLIENT_FEATURE_STATUS_CHANGED" ) then
         AccountUpgradePanel_Update(CharSelectAccountUpgradeButton.isExpanded);
 		CopyCharacterButton_UpdateButtonState();
+		UpdateCharacterList();
 	elseif ( event == "CHARACTER_COPY_STATUS_CHANGED" ) then
 		CopyCharacterButton_UpdateButtonState();
     elseif ( event == "CHARACTER_UNDELETE_FINISHED" ) then
@@ -655,7 +652,7 @@ function CharacterSelect_OnEvent(self, event, ...)
 	elseif ( event == "TRIAL_STATUS_UPDATE" ) then
 		AccountUpgradePanel_Update(CharSelectAccountUpgradeButton.isExpanded);
 		UpdateCharacterList();
-	elseif ( event == "UPDATE_EXPANSION_LEVEL" or event == "MIN_EXPANSION_LEVEL_UPDATED" or event == "MAX_EXPANSION_LEVEL_UPDATED" ) then
+	elseif ( event == "UPDATE_EXPANSION_LEVEL" or event == "MIN_EXPANSION_LEVEL_UPDATED" or event == "MAX_EXPANSION_LEVEL_UPDATED" or event == "INITIAL_HOTFIXES_APPLIED" ) then
 		AccountUpgradePanel_Update(CharSelectAccountUpgradeButton.isExpanded);
 	end
 end
@@ -750,12 +747,8 @@ function UpdateCharacterList(skipSelect)
         CharacterSelect.undeleteChanged = false;
     end
 
-    if ( numChars < MAX_CHARACTERS_PER_REALM or
-        ( (CharacterSelect.undeleting and numChars >= MAX_CHARACTERS_DISPLAYED_BASE) or
-        numChars > MAX_CHARACTERS_DISPLAYED_BASE) ) then
-        if (MAX_CHARACTERS_DISPLAYED == MAX_CHARACTERS_DISPLAYED_BASE) then
-            MAX_CHARACTERS_DISPLAYED = MAX_CHARACTERS_DISPLAYED_BASE - 1;
-        end
+    if ( (CanCreateCharacter() or CharacterSelect.undeleting) and numChars >= MAX_CHARACTERS_DISPLAYED_BASE ) then
+		MAX_CHARACTERS_DISPLAYED = MAX_CHARACTERS_DISPLAYED_BASE - 1;
     else
         MAX_CHARACTERS_DISPLAYED = MAX_CHARACTERS_DISPLAYED_BASE;
     end
@@ -1031,7 +1024,7 @@ function UpdateCharacterList(skipSelect)
     CharSelectUndeleteCharacterButton:Hide();
 
     local connected = IsConnectedToServer();
-    if (numChars < MAX_CHARACTERS_PER_REALM and not CharacterSelect.undeleting) then
+    if (CanCreateCharacter() and not CharacterSelect.undeleting) then
         CharacterSelect.createIndex = numChars + 1;
         if ( connected ) then
             --If can create characters position and show the create button

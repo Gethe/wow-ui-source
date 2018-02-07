@@ -2,13 +2,12 @@
 ..\FrameXML\UI.xsd">
 	<Script file="MainMenuBarMicroButtons.lua"/>
 	<Button name="MainMenuBarMicroButton" motionScriptsWhileDisabled="true" virtual="true">
-		<Size x="26" y="30"/>
+		<Size x="28" y="36"/>
 		<Layers>
 			<Layer level="OVERLAY">
-				<Texture name="$parentFlash" file="Interface\Buttons\Micro-Highlight" alphaMode="ADD" parentKey="Flash" hidden="true">
-					<Size x="50" y="50"/>
+				<Texture name="$parentFlash" atlas="hud-microbutton-highlightalert" useAtlasSize="true" alphaMode="ADD" parentKey="Flash" hidden="true">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="0" y="2"/>
+						<Anchor point="TOPLEFT" x="-2" y="2"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -76,9 +75,9 @@
 		<Layers>
 			<Layer level="OVERLAY">
 				<Texture name="MicroButtonPortrait">
-					<Size x="16" y="20"/>
+					<Size x="16" y="22"/>
 					<Anchors>
-						<Anchor point="TOP" x="2" y="-5"/>
+						<Anchor point="TOP" x="0" y="-8"/>
 					</Anchors>
 					<TexCoords left="0.2" right="0.8" top="0.0666" bottom="0.9"/>
 				</Texture>

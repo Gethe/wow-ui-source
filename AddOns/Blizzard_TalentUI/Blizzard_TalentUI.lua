@@ -342,6 +342,8 @@ function PlayerTalentFrameSpec_OnLoad(self)
 		self.specButton4:Show();
 	end
 
+	self.learnButton:SetShown(not self.isPet);
+	
 	for i = 1, numSpecs do
 		local button = self["specButton"..i];
 		local _, name, description, icon = GetSpecializationInfo(i, false, self.isPet, nil, sex);
@@ -1359,13 +1361,8 @@ function PlayerTalentFrame_UpdateSpecFrame(self, spec)
 	end
 
 	-- disable Learn button
-	local disableLearnButton = ( playerTalentSpec and shownSpec == playerTalentSpec ) or petNotActive;
-	if ( self.isPet and disableLearnButton ) then
-		self.learnButton:Disable();
-		self.learnButton.Flash:Hide();
-		self.learnButton.FlashAnim:Stop();
-	--elseif ( playerTalentSpec or disable or UnitLevel("player") < SHOW_SPEC_LEVEL ) then
-    elseif(disableLearnButton or UnitLevel("player") < SHOW_SPEC_LEVEL) then
+	local disableLearnButton = not self.isPet and ( playerTalentSpec and shownSpec == playerTalentSpec );
+    if(disableLearnButton or UnitLevel("player") < SHOW_SPEC_LEVEL) then
 		self.learnButton:Disable();
 		self.learnButton.Flash:Hide();
 		self.learnButton.FlashAnim:Stop();
@@ -1394,13 +1391,13 @@ function PlayerTalentFrame_UpdateSpecFrame(self, spec)
 			if not frame then
 				frame = PlayerTalentFrame_CreateSpecSpellButton(self, index);
 			end
-			if ( mod(index, 2) == 0 ) then
-				frame:SetPoint("LEFT", scrollChild["abilityButton"..(index-1)], "RIGHT", 110, 0);
-			else
-				if ((#bonuses/2) > 4 ) then
-					frame:SetPoint("TOP", scrollChild["abilityButton"..(index-2)], "BOTTOM", 0, 0);
+
+			-- First ability already has anchor set
+			if (index > 1) then
+				if ( mod(index, 2) == 0 ) then
+					frame:SetPoint("LEFT", scrollChild["abilityButton"..(index-1)], "RIGHT", 110, 0);
 				else
-					frame:SetPoint("TOP", scrollChild["abilityButton"..(index-2)], "BOTTOM", 0, -20);
+					frame:SetPoint("TOP", scrollChild["abilityButton"..(index-2)], "BOTTOM", 0, 0);
 				end
 			end
 

@@ -3,9 +3,9 @@
 	<Script file="Blizzard_TradeSkillRecipeList.lua"/>
 
 	<ScrollFrame name="TradeSkillRecipeListTemplate" inherits="HybridScrollFrameTemplate" mixin="TradeSkillRecipeListMixin" virtual="true">
-		<Size x="300" y="405"/>
+		<Size x="300" y="389"/>
 		<Anchors>
-			<Anchor point="TOPLEFT" x="7" y="-83"/>
+			<Anchor point="TOPLEFT" x="7" y="-99"/>
 		</Anchors>
 
 		<Frames>

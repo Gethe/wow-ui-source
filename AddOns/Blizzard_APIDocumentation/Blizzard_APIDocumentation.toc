@@ -13,7 +13,6 @@ EventsAPIMixin.lua
 Blizzard_APIDocumentation.lua
 
 # Start documentation files here
-SharedTypes.lua
 AchievementInfoDocumentation.lua
 ActionBarFrameDocumentation.lua
 AddOnsDocumentation.lua

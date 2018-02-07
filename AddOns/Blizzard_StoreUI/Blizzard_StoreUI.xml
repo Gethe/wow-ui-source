@@ -965,10 +965,10 @@
 					<Texture parentKey="Card" inherits="store-card-splash1" setAllPoints="true" />
 				</Layer>
 				<Layer level="ARTWORK">
-					<FontString parentKey="ProductName" inherits="GameFontNormalLarge" justifyH="CENTER" justifyV="TOP">
-						<Size x="250" y="10" />
+					<FontString parentKey="ProductName" inherits="GameFontNormalLarge" justifyH="CENTER" justifyV="BOTTOM">
+						<Size x="250" y="30" />
 						<Anchors>
-							<Anchor point="CENTER" y="-10" />
+							<Anchor point="BOTTOM" relativePoint="CENTER" y="-22"/>
 						</Anchors>
 						<Shadow>
 							<Offset>
@@ -987,7 +987,7 @@
 					</FontString>
 					<FontString parentKey="CurrentPrice" inherits="GameFontNormalLarge2" >
 						<Anchors>
-							<Anchor point="TOP" relativeKey="$parent.ProductName" relativePoint="BOTTOM" x="0" y="-16" />
+							<Anchor point="TOP" relativeKey="$parent.ProductName" relativePoint="BOTTOM" x="0" y="-8" />
 						</Anchors>
 						<Color r="1.0" g="0.82" b="0" />
 					</FontString>
