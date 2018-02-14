@@ -1769,6 +1769,9 @@ function WorldMapPOI_AddContributionsToTooltip(tooltip, ...)
 end
 
 function WorldMapPOI_AddPOITimeLeftText(anchor, areaPoiID, name, description)
+	if WarfrontTooltipController:HandleTooltip(WorldMapTooltip, anchor, areaPoiID, name, description) then
+		return;
+	end
 	if name and #name > 0 and description and #description > 0 and C_WorldMap.IsAreaPOITimed(areaPoiID) then
 		WorldMapTooltip:SetOwner(anchor, "ANCHOR_RIGHT");
 		WorldMapTooltip:SetText(HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(name));

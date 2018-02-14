@@ -857,3 +857,7 @@ function CallbackRegistryBaseMixin:TriggerEvent(event, ...)
 		end
 	end
 end
+
+--[[static]] function CallbackRegistryBaseMixin:GenerateCallbackEvents(events)
+	self.Event = tInvert(events);
+end

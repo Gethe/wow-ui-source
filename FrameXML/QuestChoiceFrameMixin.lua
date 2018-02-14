@@ -260,7 +260,10 @@ function QuestChoiceOptionButtonMixin:OnClick()
 			StaticPopup_Show("CONFIRM_PLAYER_CHOICE", parent.confirmationText, nil, { response = parent.optID, owner = parent:GetParent() });
 		else
 			SendQuestChoiceResponse(parent.optID);
-			HideUIPanel(parent:GetParent());
+			local keepOpenAfterChoice = select(6, GetQuestChoiceInfo());
+			if ( not keepOpenAfterChoice ) then
+				HideUIPanel(parent:GetParent());
+			end
 		end
 	end
 end

@@ -1,6 +1,7 @@
 ##DebugHook.lua
 ..\SharedXML\C_TimerAugment.lua
 ..\SharedXML\Util.lua
+..\SharedXML\FrameUtil.lua
 ..\SharedXML\SoundKitConstants.lua
 ..\SharedXML\Pools.lua
 ..\SharedXML\CircularBuffer.lua

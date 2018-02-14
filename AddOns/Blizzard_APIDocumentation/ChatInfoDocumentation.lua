@@ -6,6 +6,80 @@ local ChatInfo =
 
 	Functions =
 	{
+		{
+			Name = "GetRegisteredAddonMessagePrefixes",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "registeredPrefixes", Type = "table", InnerType = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "IsAddonMessagePrefixRegistered",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "prefix", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isRegistered", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "RegisterAddonMessagePrefix",
+			Type = "Function",
+			Documentation = { "Registers interest in addon messages with this prefix, cannot be an empty string." },
+
+			Arguments =
+			{
+				{ Name = "prefix", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "successfulRequest", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SendAddonMessage",
+			Type = "Function",
+			Documentation = { "Sends a text payload to other clients specified by chatChannel and target which are registered to listen for prefix." },
+
+			Arguments =
+			{
+				{ Name = "prefix", Type = "string", Nilable = false },
+				{ Name = "message", Type = "string", Nilable = false },
+				{ Name = "chatType", Type = "string", Nilable = true, Documentation = { "ChatType, defaults to SLASH_CMD_PARTY." } },
+				{ Name = "target", Type = "string", Nilable = true, Documentation = { "Only applies for targeted channels" } },
+			},
+
+			Returns =
+			{
+				{ Name = "success", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SendAddonMessageLogged",
+			Type = "Function",
+			Documentation = { "Sends a text payload to other clients specified by chatChannel and target which are registered to listen for prefix. Intended for plain text payloads; logged and throttled." },
+
+			Arguments =
+			{
+				{ Name = "prefix", Type = "string", Nilable = false },
+				{ Name = "message", Type = "string", Nilable = false },
+				{ Name = "chatType", Type = "string", Nilable = true, Documentation = { "ChatType, defaults to SLASH_CMD_PARTY." } },
+				{ Name = "target", Type = "string", Nilable = true, Documentation = { "Only applies for targeted channels" } },
+			},
+
+			Returns =
+			{
+				{ Name = "success", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Events =

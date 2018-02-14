@@ -6,6 +6,15 @@ local PaperDollInfo =
 
 	Functions =
 	{
+		{
+			Name = "GetMinItemLevel",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "minItemLevel", Type = "number", Nilable = true },
+			},
+		},
 	},
 
 	Events =

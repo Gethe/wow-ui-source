@@ -33,7 +33,7 @@
 		</Layers>
 	</Frame>
 	
-	<Frame name="DeveloperConsole" flattenRenderLayers="true" enableMouseClicks="true" frameStrata="FULLSCREEN_DIALOG" frameLevel="9000" hidden="true" mixin="DeveloperConsoleMixin">
+	<Frame name="DeveloperConsole" flattenRenderLayers="true" enableMouse="true" frameStrata="FULLSCREEN_DIALOG" frameLevel="9000" hidden="true" mixin="DeveloperConsoleMixin">
 		<Anchors>
 			<Anchor point="TOPLEFT" />
 			<Anchor point="TOPRIGHT" />

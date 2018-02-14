@@ -128,7 +128,7 @@ SPEC_SPELLS_DISPLAY[252] = { 85948,10,	55090,10,	77575,10,	47541,10,	43265,10,	4
 
 SPEC_SPELLS_DISPLAY[253] = { 193455,10,	217200,10,	34026,10,	2643,10,	19574,10,	193530,10	}; --Beastmaster
 SPEC_SPELLS_DISPLAY[254] = { 185358,10,	19434,10,	185901,10,	2643,10,	186387,10,	185987,10	}; --Marksmanship
-SPEC_SPELLS_DISPLAY[255] = { 190928,10, 202800,10,	185855,10,	186270,10,	187708,10,	191433,10	}; --Survival
+SPEC_SPELLS_DISPLAY[255] = { 186270,10, 259489,10,	259495,10,	259491,10,	190925,10,	260217,10	}; --Survival
 
 SPEC_SPELLS_DISPLAY[256] = { 17,10,		186263,10,	81749,10,	47540,10,	585,10,		589,10		}; --Discipline
 SPEC_SPELLS_DISPLAY[257] = { 2061,10,	2060,10,	139,10,		2050,10,	63733,10,	596,10		}; --Holy
@@ -1394,9 +1394,9 @@ function PlayerTalentFrame_UpdateSpecFrame(self, spec)
 
 			-- First ability already has anchor set
 			if (index > 1) then
-				if ( mod(index, 2) == 0 ) then
-					frame:SetPoint("LEFT", scrollChild["abilityButton"..(index-1)], "RIGHT", 110, 0);
-				else
+			if ( mod(index, 2) == 0 ) then
+				frame:SetPoint("LEFT", scrollChild["abilityButton"..(index-1)], "RIGHT", 110, 0);
+			else
 					frame:SetPoint("TOP", scrollChild["abilityButton"..(index-2)], "BOTTOM", 0, 0);
 				end
 			end

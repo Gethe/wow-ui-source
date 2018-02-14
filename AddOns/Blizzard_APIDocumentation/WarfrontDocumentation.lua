@@ -7,6 +7,21 @@ local Warfront =
 	Functions =
 	{
 		{
+			Name = "GetPlayerConditionInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "id", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isValid", Type = "bool", Nilable = false },
+				{ Name = "failureText", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "GetResourceInfo",
 			Type = "Function",
 
@@ -18,6 +33,20 @@ local Warfront =
 			Returns =
 			{
 				{ Name = "resourceInfo", Type = "ResourceInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetWorldStateValue",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "id", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "value", Type = "number", Nilable = false },
 			},
 		},
 		{
