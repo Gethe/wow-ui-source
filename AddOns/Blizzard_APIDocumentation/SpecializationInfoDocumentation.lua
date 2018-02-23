@@ -6,6 +6,29 @@ local SpecializationInfo =
 
 	Functions =
 	{
+		{
+			Name = "GetAllSelectedPvpTalentIDs",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "selectedPvpTalentIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetPvpTalentSlotInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "slotIndex", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "slotInfo", Type = "PvpTalentSlotInfo", Nilable = true },
+			},
+		},
 	},
 
 	Events =
@@ -77,6 +100,16 @@ local SpecializationInfo =
 
 	Tables =
 	{
+		{
+			Name = "PvpTalentSlotInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "enabled", Type = "bool", Nilable = false },
+				{ Name = "selectedTalentID", Type = "number", Nilable = false },
+				{ Name = "availableTalentIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
 	},
 };
 

@@ -13,15 +13,6 @@ function CinematicFrame_OnDisplaySizeChanged(self)
   
 	  UpperBlackBar:SetHeight( blackBarHeight );
 	  LowerBlackBar:SetHeight( blackBarHeight );
-  
-	  CinematicFrame.Subtitle1:ClearAllPoints();
-	  CinematicFrame.Subtitle1:SetPoint("LEFT", CinematicFrame.LowerBlackBar, "LEFT", 5, 0);
-	  CinematicFrame.Subtitle1:SetPoint("RIGHT", CinematicFrame.LowerBlackBar, "RIGHT", -5, 0);
-	  if (CinematicFrame.Subtitle1:GetBottom() < 0) then
-		  CinematicFrame.Subtitle1:ClearAllPoints();
-		  CinematicFrame.Subtitle1:SetPoint("BOTTOMLEFT", CinematicFrame.LowerBlackBar, "TOPLEFT", 5, 5);
-		  CinematicFrame.Subtitle1:SetPoint("BOTTOMRIGHT", CinematicFrame.LowerBlackBar, "TOPRIGHT", -5, 5);
-	  end
 	end
 end
 
@@ -35,6 +26,9 @@ function CinematicFrame_OnLoad(self)
 	self:RegisterEvent("CHAT_MSG_YELL");
 	self:RegisterEvent("CHAT_MSG_MONSTER_YELL");
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
+	
+	CinematicFrame.Subtitle1:SetFontObjectsToTry("GameFontHighlightLarge", "GameFontHighlightMedium", "GameFontHighlight", "GameFontHighlightSmall"); 
+	
 end
 
 function CinematicFrame_OnShow(self)
@@ -97,13 +91,8 @@ function CinematicFrame_AddSubtitle(chatType, body)
 		end
 		fontString = CinematicFrame.Subtitles[#CinematicFrame.Subtitles];
 	end
-
+	
 	fontString:SetText(body);
-	if (CinematicFrame.Subtitle1:GetBottom() < 0) then
-		CinematicFrame.Subtitle1:ClearAllPoints();
-		CinematicFrame.Subtitle1:SetPoint("BOTTOMLEFT", CinematicFrame.LowerBlackBar, "TOPLEFT", 5, 5);
-		CinematicFrame.Subtitle1:SetPoint("BOTTOMRIGHT", CinematicFrame.LowerBlackBar, "TOPRIGHT", -5, 5);
-	end
 	fontString:Show();
 end
 

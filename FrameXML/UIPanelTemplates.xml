@@ -2513,4 +2513,19 @@
 			<OnHyperlinkClick function="InlineHyperlinkFrame_OnClick"/>
 		</Scripts>
 	</Frame>
+
+	<Button name="UIExpandingButtonTemplate" mixin="UIExpandingButtonMixin" inherits="UIPanelSquareButton" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Label" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="RIGHT" relativeTo="$parent" relativePoint="LEFT" x="-2" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</Button>
 </Ui>

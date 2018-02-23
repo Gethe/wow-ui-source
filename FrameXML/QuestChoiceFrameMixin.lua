@@ -76,6 +76,12 @@ function QuestChoiceFrameMixin:TryShow()
 	end
 end
 
+function QuestChoiceFrameMixin:SetButtonsEnabled(enabled)
+	for i, option in ipairs(self.Options) do
+		option.OptionButton:SetEnabled(enabled);
+	end
+end
+
 function QuestChoiceFrameMixin:Update()
 	self.hasPendingUpdate = false;
 
@@ -86,6 +92,8 @@ function QuestChoiceFrameMixin:Update()
 	end
 	self.choiceID = choiceID;
 	self.QuestionText:SetText(questionText);
+
+	self:SetButtonsEnabled(true);
 
 	for i=1, numOptions do
 		local optID, buttonText, description, header, artFile, confirmationText = GetQuestChoiceOptionInfo(i);

@@ -102,7 +102,7 @@ end
 function InspectPvPTalentFrameTalent_OnEnter(self)
 	local classDisplayName, class, classID = UnitClass(INSPECTED_UNIT);
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");	
-	GameTooltip:SetPvpTalent(self.pvpTalentID ,true, self.talentGroup, INSPECTED_UNIT, classID);
+	GameTooltip:SetPvpTalent(self.pvpTalentID, true, self.talentGroup);
 end
 
 function InspectPvPTalentFrameTalent_OnClick(self)

@@ -29,22 +29,23 @@
 					<Anchor point="LEFT"/>
 				</Anchors>
 			</Frame>
-			<Frame parentKey="Cost2" parentArray="Costs" inherits="WarfrontTooltipBasicCostTemplate">
-				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.Cost1" relativePoint="RIGHT" x="10" y="0"/>
-				</Anchors>
-			</Frame>
 		</Frames>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString parentKey="Label" inherits="GameTooltipText">
+				<FontString parentKey="IndividualCostSeparator" inherits="GameTooltipText" text="">
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.Cost1"/>
+						<Anchor point="LEFT" relativeKey="$parent.Cost1.Text" relativePoint="RIGHT" x="10" y="0"/>
 					</Anchors>
-					<Color r="1" g="0.82" b="0"/>
 				</FontString>
 			</Layer>
 		</Layers>
+		<Frames>
+			<Frame parentKey="Cost2" parentArray="Costs" inherits="WarfrontTooltipBasicCostTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.IndividualCostSeparator" relativePoint="RIGHT" x="0" y="0"/>
+				</Anchors>
+			</Frame>
+		</Frames>
 	</Frame>
 
 	<Frame name="WarfrontTooltipAssetTemplate" mixin="WarfrontTooltipAssetMixin" virtual="true">
@@ -81,6 +82,12 @@
 						<Anchor point="TOP" relativeKey="$parent.CostFrame" relativePoint="BOTTOM" x="0" y="-4"/>
 					</Anchors>
 					<Color r="1" g="0.1" b="0"/>
+				</FontString>
+				<FontString parentKey="Description" inherits="GameTooltipText">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.CostFrame"/>
+					</Anchors>
+					<Color r="1" g="0.82" b="0"/>
 				</FontString>
 			</Layer>
 		</Layers>
@@ -162,6 +169,24 @@
 			<OnEvent method="OnEvent"/>
 			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="WarfrontPlayerChoiceHook" mixin="WarfrontPlayerChoiceHookMixin" hidden="true">
+		<Size x="10" y="10"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Percentage" inherits="GameFontNormalLarge">
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnUpdate method="OnUpdate"/>
 		</Scripts>
 	</Frame>
 </Ui>

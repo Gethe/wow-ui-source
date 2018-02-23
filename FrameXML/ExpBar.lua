@@ -185,10 +185,9 @@ function ExhaustionTickMixin:UpdateTickPosition()
 	local playerCurrXP = UnitXP("player");
 	local playerMaxXP = UnitXPMax("player");
 	local exhaustionThreshold = GetXPExhaustion();
-	local exhaustionStateID, exhaustionStateName, exhaustionStateMultiplier;
-	exhaustionStateID, exhaustionStateName, exhaustionStateMultiplier = GetRestState();
-	
-	if ( exhaustionStateID >= 3 ) then
+	local exhaustionStateID, exhaustionStateName, exhaustionStateMultiplier = GetRestState();
+		
+	if ( exhaustionStateID and exhaustionStateID >= 3 ) then
 		self:SetPoint("CENTER", self:GetParent() , "RIGHT", 0, 0);
 	end
 

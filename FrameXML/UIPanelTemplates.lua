@@ -392,3 +392,60 @@ function CurrencyTemplateMixin:SetCurrencyFromID(currencyID, amount, formatStrin
 		self:SetText(currencyString);
 	end
 end
+
+UIExpandingButtonMixin = {};
+
+function UIExpandingButtonMixin:SetUp(expanded, expansionDirection)
+	self.expansionDirection = expansionDirection;
+	self.currentlyExpanded = expanded;
+	self:Update();
+end
+
+function UIExpandingButtonMixin:SetLabel(label)
+	self.Label:SetText(label);
+end
+
+local function GetOppositeDirection(direction)
+	if (direction == "RIGHT") then
+		return "LEFT";
+	else
+		return "RIGHT";
+	end
+end
+
+function UIExpandingButtonMixin:SetExpanded(expanded)
+	self.currentlyExpanded = expanded;
+	self:Update();
+end
+
+function UIExpandingButtonMixin:IsCurrentlyExpanded()
+	return self.currentlyExpanded;
+end
+
+function UIExpandingButtonMixin:Update(override)
+	if (self.currentlyExpanded == nil or not self.expansionDirection) then
+		error("The button must be set up before update.");
+		return;
+	end
+
+	if (override ~= nil) then
+		self.currentlyExpanded = override;
+	end
+	
+	local direction = self.currentlyExpanded and GetOppositeDirection(self.expansionDirection) or self.expansionDirection;
+
+	SquareButton_SetIcon(self, direction);
+
+	if (self.callback) then
+		self.callback(self, self.currentlyExpanded);
+	end
+end
+
+function UIExpandingButtonMixin:RegisterCallback(callback)
+	self.callback = callback;
+end
+
+function UIExpandingButtonMixin:OnClick(button, down)
+	self.currentlyExpanded = not self.currentlyExpanded;
+	self:Update();
+end

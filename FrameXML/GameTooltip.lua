@@ -253,7 +253,7 @@ end
 
 function GameTooltip_InsertFrame(tooltipFrame, frame)
 	local textSpacing = 2;
-	local textHeight = _G[tooltipFrame:GetName().."TextLeft2"]:GetHeight();
+	local textHeight = _G[tooltipFrame:GetName().."TextLeft2"]:GetLineHeight();
 	local numLinesNeeded = math.ceil(frame:GetHeight() / (textHeight + textSpacing));
 	local currentLine = tooltipFrame:NumLines();
 	for i = 1, numLinesNeeded do

@@ -158,7 +158,6 @@ function ButtonFrameTemplate_HidePortrait(self)
 	self.LeftBorder:SetPoint("TOPLEFT", self.TopLeftCorner, "BOTTOMLEFT",  0, 0);
 end
 
-
 function ButtonFrameTemplate_ShowPortrait(self)
 	self.portrait:Show();
 	self.PortraitFrame:Show();

@@ -777,6 +777,7 @@ function QuestInfo_ShowRewards()
 				currencyID = GetQuestCurrencyID(questItem.type, i);
 			end
 			if (name and texture and numItems) then
+				name, texture, numItems, quality = CurrencyContainerUtil.GetCurrencyContainerInfo(currencyID, numItems, name, texture, nil); 
 				questItem:SetID(i)
 				questItem:Show();
 				-- For the tooltip

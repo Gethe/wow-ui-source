@@ -388,6 +388,11 @@ function WorldMapFrame_OnShow(self)
 	UpdateMicroButtons();
 	if (not WorldMapFrame.toggling) then
 		SetMapToCurrentZone();
+		if ( GetCurrentMapAreaID() == 1214 ) then
+			WorldMapScrollFrame_OnMouseWheel(WorldMapScrollFrame, 1);
+			WorldMapScrollFrame:SetHorizontalScroll(213);
+			WorldMapScrollFrame:SetVerticalScroll(104);
+		end
 	else
 		WorldMapFrame.toggling = false;
 	end
@@ -1163,7 +1168,7 @@ function WorldMap_ShouldShowLandmark(landmarkType)
 end
 
 function WorldMapPOI_ShouldShowAreaLabel(poi)
-	if poi.landmarkType == LE_MAP_LANDMARK_TYPE_CONTRIBUTION or poi.landmarkType == LE_MAP_LANDMARK_TYPE_INVASION then
+	if poi.landmarkType == LE_MAP_LANDMARK_TYPE_CONTRIBUTION or poi.landmarkType == LE_MAP_LANDMARK_TYPE_INVASION or poi.useMouseOverTooltip then
 		return false;
 	end
 	if poi.poiID and C_WorldMap.IsAreaPOITimed(poi.poiID) then
@@ -1223,7 +1228,7 @@ function WorldMap_UpdateLandmarks()
 		local worldMapPOIName = "WorldMapFramePOI"..i;
 		local worldMapPOI = _G[worldMapPOIName];
 		if ( i <= numPOIs ) then
-			local landmarkType, name, description, textureIndex, x, y, mapLinkID, inBattleMap, graveyardID, areaID, poiID, isObjectIcon, atlasIcon, displayAsBanner, mapFloor, textureKitPrefix = C_WorldMap.GetMapLandmarkInfo(i);
+			local landmarkType, name, description, textureIndex, x, y, mapLinkID, inBattleMap, graveyardID, areaID, poiID, isObjectIcon, atlasIcon, displayAsBanner, mapFloor, textureKitPrefix, useMouseOverTooltip = C_WorldMap.GetMapLandmarkInfo(i);
 			if( not WorldMap_ShouldShowLandmark(landmarkType) or (mapID ~= WORLDMAP_WINTERGRASP_ID and areaID == WORLDMAP_WINTERGRASP_POI_AREAID) or displayAsBanner ) then
 				worldMapPOI:Hide();
 			else
@@ -1254,6 +1259,7 @@ function WorldMap_UpdateLandmarks()
 					worldMapPOI.poiID = poiID;
 					worldMapPOI.landmarkType = landmarkType;
 					worldMapPOI.textureKitPrefix = textureKitPrefix;
+					worldMapPOI.useMouseOverTooltip = useMouseOverTooltip;
 					if ( graveyardID and graveyardID > 0 ) then
 						worldMapPOI.graveyard = graveyardID;
 						numGraveyards = numGraveyards + 1;
@@ -1838,6 +1844,13 @@ function WorldMapPOI_OnEnter(self)
 
 			WorldMapPOI_AddContributionsToTooltip(WorldMapTooltip, C_ContributionCollector.GetManagedContributionsForCreatureID(self.mapLinkID));
 
+			WorldMapTooltip:Show();
+		elseif self.landmarkType == LE_MAP_LANDMARK_TYPE_VIGNETTE and self.useMouseOverTooltip then
+			WorldMapTooltip:SetOwner(self, "ANCHOR_RIGHT");
+			WorldMapTooltip:SetText(HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(self.name));
+			if ( self.description ) then
+				WorldMapTooltip:AddLine(NORMAL_FONT_COLOR:WrapTextInColorCode(self.description));
+			end
 			WorldMapTooltip:Show();
 		else
 			WorldMapPOI_AddPOITimeLeftText(self, self.poiID, self.name, self.description);
@@ -3371,6 +3384,11 @@ function WorldMapPOIFrame_AnchorPOI(poiButton, posX, posY, frameLevelOffset)
 			posX = QUEST_POI_FRAME_WIDTH - 12;
 		end
 		poiButton:SetPoint("CENTER", WorldMapPOIFrame, "TOPLEFT", posX, -posY);
+
+		if ( WarfrontTooltipController:IsRelatedPOI(poiButton.poiID) ) then
+			frameLevelOffset = frameLevelOffset + 1;
+		end
+
 		poiButton:SetFrameLevel(poiButton:GetParent():GetFrameLevel() + frameLevelOffset);
 	end
 end

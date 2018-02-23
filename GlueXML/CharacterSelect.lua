@@ -1629,7 +1629,7 @@ function AccountUpgradePanel_Update(isExpanded)
 	SetExpansionLogo(CharacterSelectLogo, currentExpansionLevel);
     if ( shouldShowBanner ) then
 		CharSelectAccountUpgradeButton:SetText(upgradeButtonText);
-        CharacterSelectServerAlertFrame:SetPoint("TOP", CharSelectAccountUpgradeMiniPanel, "BOTTOM", 0, -25);
+        CharacterSelectServerAlertFrame:SetPoint("TOP", CharSelectAccountUpgradeMiniPanel, "BOTTOM", 0, -35);
         CharSelectAccountUpgradeButton:Show();
         if ( isExpanded ) then
             CharSelectAccountUpgradePanel:Show();

@@ -136,6 +136,7 @@ function QuestUtils_AddQuestCurrencyRewardsToTooltip(questID, tooltip)
 	for i = 1, numQuestCurrencies do
 		local name, texture, numItems, currencyID = GetQuestLogRewardCurrencyInfo(i, questID);
 		local rarity = select(8, GetCurrencyInfo(currencyID));
+		name, texture, numItems, rarity = CurrencyContainerUtil.GetCurrencyContainerInfo(currencyID, numItems, name, texture, rarity);
 		local currencyInfo = { name = name, texture = texture, numItems = numItems, currencyID = currencyID, rarity = rarity };
 		tinsert(currencies, currencyInfo);
 	end

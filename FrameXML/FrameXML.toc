@@ -50,6 +50,7 @@ ObjectAPI\Item.lua
 WorldFrame.xml
 UIParent.xml
 QuestUtils.lua
+CurrencyContainer.lua
 ## IME.xml needs to be loaded after UIParent.xml
 ..\SharedXML\IME.xml
 MoneyFrame.lua

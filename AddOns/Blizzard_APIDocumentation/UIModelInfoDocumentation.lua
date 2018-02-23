@@ -137,9 +137,9 @@ local UIModelInfo =
 		{
 			Name = "ModelSceneType",
 			Type = "Enumeration",
-			NumValues = 10,
+			NumValues = 12,
 			MinValue = 0,
-			MaxValue = 9,
+			MaxValue = 11,
 			Fields =
 			{
 				{ Name = "MountJournal", Type = "ModelSceneType", EnumValue = 0 },
@@ -152,6 +152,8 @@ local UIModelInfo =
 				{ Name = "ArtifactTier2SlamEffect", Type = "ModelSceneType", EnumValue = 7 },
 				{ Name = "CommentatorVictoryFanfare", Type = "ModelSceneType", EnumValue = 8 },
 				{ Name = "ArtifactRelicTalentEffect", Type = "ModelSceneType", EnumValue = 9 },
+				{ Name = "PvpWarModeOrb", Type = "ModelSceneType", EnumValue = 10 },
+				{ Name = "PvpWarModeFire", Type = "ModelSceneType", EnumValue = 11 },
 			},
 		},
 		{

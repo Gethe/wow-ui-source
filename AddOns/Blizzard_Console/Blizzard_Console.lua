@@ -46,7 +46,7 @@ function DeveloperConsoleMixin:RestoreMessageHistory()
 
 		local numElements = math.min(MAX_NUM_MESSAGE_HISTORY, #messageHistory);
 
-		for i = (#messageHistory - numElements) + 1, numElements do
+		for i = (#messageHistory - numElements) + 1, #messageHistory do
 			local message, colorType = unpack(messageHistory[i]);
 			local color = C_Console.GetColorFromType(colorType);
 			local r, g, b = color:GetRGB();
@@ -71,7 +71,7 @@ function DeveloperConsoleMixin:RestoreCommandHistory()
 
 		local numElements = math.min(MAX_NUM_COMMAND_HISTORY, #commandHistory);
 
-		for i = (#commandHistory - numElements) + 1, numElements do
+		for i = (#commandHistory - numElements) + 1, #commandHistory do
 			self.commandCircularBuffer:PushFront(commandHistory[i]);
 			table.insert(self.savedVars.commandHistory, commandHistory[i]);
 		end

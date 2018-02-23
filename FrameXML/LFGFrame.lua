@@ -1340,6 +1340,9 @@ function LFGRewardsFrame_UpdateFrame(parentFrame, dungeonID, background)
 	local itemButtonIndex = 1;
 	for i=1, numRewards do
 		local name, texture, numItems, isBonusReward, rewardType, rewardID = GetLFGDungeonRewardInfo(dungeonID, i);
+		if(rewardType == "currency") then	
+			name, texture, numItems = CurrencyContainerUtil.GetCurrencyContainerInfo(rewardID, numItems, name, texture, nil); 
+		end
 		if ( not isBonusReward ) then
 			lastFrame = LFGRewardsFrame_SetItemButton(parentFrame, dungeonID, itemButtonIndex, i, name, texture, numItems, rewardType, rewardID);
 			itemButtonIndex = itemButtonIndex + 1;
@@ -1352,6 +1355,9 @@ function LFGRewardsFrame_UpdateFrame(parentFrame, dungeonID, background)
 			if ( eligible and ((tankChecked and forTank) or (healerChecked and forHealer) or (damageChecked and forDamage)) ) then
 				for rewardIndex=1, itemCount do
 					local name, texture, numItems, _, rewardType, rewardID = GetLFGDungeonShortageRewardInfo(dungeonID, shortageIndex, rewardIndex);
+					if(rewardType == "currency") then	
+						name, texture, numItems = CurrencyContainerUtil.GetCurrencyContainerInfo(rewardID, numItems, name, texture, nil); 
+					end
 					lastFrame = LFGRewardsFrame_SetItemButton(parentFrame, dungeonID, itemButtonIndex, rewardIndex, name, texture, numItems, rewardType, rewardID, shortageIndex, forTank, forHealer, forDamage);
 					itemButtonIndex = itemButtonIndex + 1;
 				end

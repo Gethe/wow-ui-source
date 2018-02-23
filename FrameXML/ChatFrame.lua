@@ -2150,10 +2150,6 @@ SlashCmdList["MACRO"] = function(msg)
 	ShowMacroFrame();
 end
 
-SlashCmdList["PVP"] = function(msg)
-	TogglePVP();
-end
-
 SlashCmdList["RAID_INFO"] = function(msg)
 	RaidFrame.slashCommand = 1;
 	if ( ( GetNumSavedInstances() + GetNumSavedWorldBosses() > 0 ) and not RaidInfoFrame:IsVisible() ) then
@@ -2879,7 +2875,7 @@ function ChatFrame_SystemEventHandler(self, event, ...)
 		ChatFrame_DisplayTimePlayed(self, arg1, arg2);
 		return true;
 	elseif ( event == "PLAYER_LEVEL_UP" ) then
-		local level, arg2, arg3, arg4, arg5, arg6, arg7, arg8 = ...;
+		local level, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9 = ...;
 		LevelUpDisplay_ChatPrint(self, level, LEVEL_UP_TYPE_CHARACTER)
 		return true;
 	elseif ( event == "QUEST_TURNED_IN" ) then

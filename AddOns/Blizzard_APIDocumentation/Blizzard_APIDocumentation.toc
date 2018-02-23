@@ -83,7 +83,6 @@ PaperDollInfoDocumentation.lua
 PartyInfoDocumentation.lua
 PetInfoDocumentation.lua
 PetJournalInfoDocumentation.lua
-PvpInfoDocumentation.lua
 QuestChoiceDocumentation.lua
 QuestLogDocumentation.lua
 QuestOfferDocumentation.lua

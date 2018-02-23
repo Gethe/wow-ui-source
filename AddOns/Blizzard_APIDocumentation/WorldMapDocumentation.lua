@@ -78,6 +78,7 @@ local WorldMap =
 				{ Name = "displayAsBanner", Type = "bool", Nilable = true },
 				{ Name = "mapFloor", Type = "number", Nilable = true },
 				{ Name = "textureKitPrefix", Type = "string", Nilable = true },
+				{ Name = "useMouseOverTooltip", Type = "bool", Nilable = true },
 			},
 		},
 		{
@@ -158,6 +159,7 @@ local WorldMap =
 				{ Name = "displayAsBanner", Type = "bool", Nilable = true },
 				{ Name = "mapFloor", Type = "number", Nilable = true },
 				{ Name = "textureKitPrefix", Type = "string", Nilable = true },
+				{ Name = "useMouseOverTooltip", Type = "bool", Nilable = true },
 			},
 		},
 	},

@@ -162,12 +162,11 @@ function LootFrame_UpdateButton(index)
 	if ( numLootItems > LOOTFRAME_NUMBUTTONS ) then
 		numLootToShow = numLootToShow - 1; -- make space for the page buttons
 	end
-
 	local button = _G["LootButton"..index];
 	local slot = (numLootToShow * (LootFrame.page - 1)) + index;
 	if ( slot <= numLootItems ) then
 		if ( (LootSlotHasItem(slot)  or (self.AutoLootTable and self.AutoLootTable[slot]) )and index <= numLootToShow) then
-			local texture, item, quantity, quality, locked, isQuestItem, questId, isActive;
+			local texture, item, quantity, currencyID, quality, locked, isQuestItem, questId, isActive;
 			if(self.AutoLootTable)then
 				local entry = self.AutoLootTable[slot];
 				if( entry.hide ) then
@@ -184,8 +183,13 @@ function LootFrame_UpdateButton(index)
 					isActive = entry.isActive;
 				end
 			else
-				texture, item, quantity, quality, locked, isQuestItem, questId, isActive = GetLootSlotInfo(slot);
+				texture, item, quantity, currencyID, quality, locked, isQuestItem, questId, isActive = GetLootSlotInfo(slot);
 			end
+
+			if ( currencyID ) then 
+				item, texture, quantity, quality = CurrencyContainerUtil.GetCurrencyContainerInfo(currencyID, quantity, item, texture, quality);
+			end
+			
 			local text = _G["LootButton"..index.."Text"];
 			if ( texture ) then
 				local color = ITEM_QUALITY_COLORS[quality];

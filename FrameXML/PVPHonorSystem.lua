@@ -48,19 +48,6 @@ function PVPHonorRewardInfoMixin:SetUpFrame(frame)
     end
 end
 
-PVPHonorRewardTalentMixin = Mixin({}, PVPHonorRewardInfoMixin);
-
-function PVPHonorRewardTalentMixin:Set(...)
-	local id = ...;
-	self.id = id;
-	self.icon = select(3, GetPvpTalentInfoByID(id, GetActiveSpecGroup));
-end
-
-function PVPHonorRewardTalentMixin:SetTooltip()
-	GameTooltip:SetPvpTalent(self.id);
-    return true;
-end
-
 PVPHonorRewardArtifactPowerMixin = Mixin({}, PVPHonorRewardInfoMixin);
 
 function PVPHonorRewardArtifactPowerMixin:Set(...)
@@ -296,12 +283,7 @@ end
 function PVPHonorSystem_GetNextReward()
 	local rewardInfo;
 			
-	local talentID = GetPvpTalentUnlock();	
-	if (talentID) then
-		 rewardInfo = CreateFromMixins(PVPHonorRewardTalentMixin);
-		 rewardInfo:Set(talentID);
-	-- TODO:  Remove this when we can figure this out in a better way
-	elseif (UnitPrestige("player") == 1 and UnitHonorLevel("player") == 49) then
+	if (UnitPrestige("player") == 1 and UnitHonorLevel("player") == 49) then
 		rewardInfo = CreateHackRewardInfo();
 	else
 		local rewardPackID = GetHonorLevelRewardPack();
