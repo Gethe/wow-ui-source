@@ -1989,11 +1989,12 @@ local JustFinishedOrdering = false;
 
 function StoreFrame_GetDefaultCategory()
 	local productGroups = C_StoreSecure.GetProductGroups();
+	local needsNewCategory = not selectedCategoryID or StoreFrame_IsProductGroupDisabled(selectedCategoryID);
 	local isTrial = IsTrialAccount();
 	for i = 1, #productGroups do
 		local groupID = productGroups[i];
 		if not StoreFrame_IsProductGroupDisabled(groupID) then
-			if isTrial or groupID == selectedCategoryID then
+			if needsNewCategory or isTrial or groupID == selectedCategoryID then
 				return groupID;
 			end
 		end
@@ -2556,6 +2557,17 @@ function StoreFrameBuyButton_OnLeave(self)
 		StoreSplashPairCard_OnLeave(parent);
 	end
 end
+
+function SplashSingleBuyButton_OnEnter(self)
+	local parent = self:GetParent();
+	StoreSplashSingleCard_OnEnter(parent);
+end
+
+function SplashSingleBuyButton_OnLeave(self)
+	local parent = self:GetParent();
+	StoreProductCard_OnLeave(parent);
+end
+
 
 function StoreFrame_BeginPurchase(entryID)
 	local entryInfo = C_StoreSecure.GetEntryInfo(entryID);
@@ -3351,6 +3363,19 @@ function StoreProductCard_UpdateAllStates()
 	StoreProductCard_UpdateState(StoreFrame.SplashSecondary2);
 end
 
+function StoreSplashSingleCard_OnEnter(self)
+	if self.productTooltipTitle then
+		StoreTooltip:ClearAllPoints();
+		if self.anchorRight then
+			StoreTooltip:SetPoint("BOTTOMLEFT", self, "TOPRIGHT", -7, -6);
+		else
+			StoreTooltip:SetPoint("BOTTOMRIGHT", self, "TOPLEFT", 7, -6);
+		end
+
+		StoreTooltip_Show(self.productTooltipTitle, self.productTooltipDescription);
+	end
+end
+
 function StoreProductCard_OnEnter(self)
 	local entryInfo = C_StoreSecure.GetEntryInfo(self:GetID());
 	if (entryInfo.sharedData.productDecorator ~= Enum.BattlepayProductDecorator.VasService or IsOnGlueScreen()) then
@@ -3682,7 +3707,7 @@ function StoreProductCard_ShowDiscount(card, discountText)
 		local normalWidth = card.NormalPrice:GetStringWidth();
 		local totalWidth = normalWidth + card.SalePrice:GetStringWidth();
 		card.NormalPrice:ClearAllPoints();
-		card.NormalPrice:SetPoint("TOP", card.ProductName, "BOTTOM", (normalWidth - totalWidth) / 2, -18);
+		card.NormalPrice:SetPoint("TOP", card.ProductName, "BOTTOM", (normalWidth - totalWidth) / 2, -12);
 	elseif (card ~= StoreFrame.SplashSingle and card ~= StoreFrame.SplashPrimary) then
 		local width = card.NormalPrice:GetStringWidth() + card.SalePrice:GetStringWidth();
 

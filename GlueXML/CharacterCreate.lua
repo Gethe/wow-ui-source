@@ -1183,6 +1183,10 @@ function CharacterCreate_Forward()
 		CharacterCreate_UpdateClassTrialCustomizationFrames();
 
 		CharCreate_PrepPreviewModels();
+
+		--You just went to customization mode - show the boring start gear
+		C_CharacterCreation.SetSelectedPreviewGearType(Enum.PreviewGearType.Starting);
+
 		if ( CharacterCreateFrame.customizationType ) then
 			CharCreate_ResetFeaturesDisplay();
 		else
@@ -1194,9 +1198,6 @@ function CharacterCreate_Forward()
 		if ( ALLOW_RANDOM_NAME_BUTTON and not CharacterCreate_IsAlliedRacePreview() ) then
 			CharacterCreateRandomName:Show();
 		end
-
-		--You just went to customization mode - show the boring start gear
-		C_CharacterCreation.SetSelectedPreviewGearType(Enum.PreviewGearType.Starting);
 
 		-- set cam
 		if (CharacterCreateFrame.customizationType and CharacterCreateFrame.customizationType > 1) then

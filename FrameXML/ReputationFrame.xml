@@ -854,7 +854,13 @@
 					MainMenuBar_UpdateExperienceBars();
 				elseif( event == "PLAYER_LEVEL_UP" or event == "ENABLE_XP_GAIN" or event == "DISABLE_XP_GAIN" or event == "UPDATE_EXPANSION_LEVEL" ) then
 					ReputationWatchBar_UpdateMaxLevel();
-					MainMenuBar_UpdateExperienceBars(arg1);
+					
+					if event == "PLAYER_LEVEL_UP" then
+						MainMenuBar_UpdateExperienceBars(arg1);
+					else
+						MainMenuBar_UpdateExperienceBars();
+					end
+					
 					UIParent_ManageFramePositions();
 				elseif( event == "CVAR_UPDATE" and arg1 == "XP_BAR_TEXT" ) then
 					if( arg2 == "1" ) then
