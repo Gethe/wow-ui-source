@@ -382,7 +382,6 @@
 							</Anchors>
 							<MaskedTextures>
 								<MaskedTexture childKey="Icon"/>
-								<MaskedTexture childKey="Rune"/>
 							</MaskedTextures>
 						</MaskTexture>
 					</Layer>

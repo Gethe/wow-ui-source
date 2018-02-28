@@ -81,7 +81,7 @@ end
 
 function ArtifactBarMixin:OnLeave()
 	self:HideText();
-	self.Tick:OnLeave(); 
+	self.Tick:OnLeave();
 end
 
 function ArtifactBarMixin:UpdateTick()

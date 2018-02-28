@@ -65,6 +65,20 @@ local AzeriteEmpoweredItem =
 			},
 		},
 		{
+			Name = "IsAzeriteEmpoweredItemByID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isAzeriteEmpoweredItem", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "SelectPower",
 			Type = "Function",
 
@@ -122,6 +136,7 @@ local AzeriteEmpoweredItem =
 			Type = "Structure",
 			Fields =
 			{
+				{ Name = "tierIndex", Type = "number", Nilable = false },
 				{ Name = "azeritePowerIDs", Type = "table", InnerType = "number", Nilable = false },
 				{ Name = "unlockLevel", Type = "number", Nilable = false },
 			},

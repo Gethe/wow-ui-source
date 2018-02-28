@@ -1323,7 +1323,7 @@
 						</Texture>
 					</Layer>
 					<Layer level="OVERLAY" textureSubLevel="5">
-						<Texture parentKey="MissionType" atlas="ShipMission_MissionIcon-Combat" useAtlasSize="true">
+						<Texture parentKey="MissionType" atlas="ShipMissionIcon-Combat-Mission" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="TOPLEFT" x="12" y="-2"/>
 							</Anchors>
@@ -1377,7 +1377,7 @@
 			</Layer>
 
 			<Layer level="ARTWORK">
-				<Texture parentKey="HighlightAnimTexture" hidden="false" alpha="0.01" alphaMode="BLEND" atlas="NavalMap-OpenWatersHighlight" useAtlasSize="true">
+				<Texture parentKey="HighlightAnimTexture" hidden="false" alpha="0.01" alphaMode="BLEND" atlas="NavalMap-OpenWaters-Highlight" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="CENTER" relativeKey="$parent.None"/>
 					</Anchors>

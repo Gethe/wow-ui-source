@@ -184,17 +184,12 @@
 							</OnClick>
 						</Scripts>
 					</Button>
-					<Frame name="LootJournalLegendariesClassDropDown" parentKey="ClassDropDown" inherits="UIDropDownMenuTemplate" hidden="true">
-						<Scripts>
-							<OnLoad function="LootJournalLegendariesClassDropDown_OnLoad"/>
-						</Scripts>
-					</Frame>
+					<Frame name="LootJournalLegendariesClassDropDown" parentKey="ClassDropDown" inherits="UIDropDownMenuTemplate" hidden="true"/>
 				</Frames>
 				<Scripts>
 					<OnLoad method="OnLoad"/>
 					<OnShow method="OnShow"/>
 					<OnHide method="OnHide"/>
-					<OnEvent method="OnEvent"/>
 				</Scripts>
 			</ScrollFrame>
 			<ScrollFrame parentKey="ItemSetsFrame" inherits="MinimalHybridScrollFrameTemplate" hidden="true" mixin="LootJournalListMixin, LootJournalItemSetsMixin">

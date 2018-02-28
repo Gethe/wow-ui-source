@@ -89,7 +89,7 @@
 			</Frame>
 			<Frame parentKey="BuffsFrame" inherits="GarrisonMissionPartyBuffsFrameTemplate" hidden="true">
 				<Anchors>
-					<Anchor point="BOTTOM" relativeKey="BuffsFrameAnchor" x="0" y="0"/>
+					<Anchor point="BOTTOM" relativeKey="$parent.BuffsFrameAnchor" x="0" y="0"/>
 				</Anchors>
 			</Frame>
 			<Button inherits="StartMissionButtonTemplate">

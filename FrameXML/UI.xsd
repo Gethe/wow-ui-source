@@ -131,6 +131,17 @@
 			<xs:enumeration value="russian"/>
 		</xs:restriction>
 	</xs:simpleType>
+    
+    <xs:simpleType name="WRAPMODE">
+		<xs:restriction base="xs:NMTOKEN">
+			<xs:enumeration value="CLAMP"/>
+			<xs:enumeration value="REPEAT"/>
+			<xs:enumeration value="CLAMPTOBLACK"/>
+			<xs:enumeration value="CLAMPTOBLACKADDITIVE"/>
+			<xs:enumeration value="CLAMPTOWHITE"/>
+            <xs:enumeration value="MIRROR"/>
+		</xs:restriction>
+	</xs:simpleType>
 
 	<xs:element name="AbsValue">
 		<xs:complexType>
@@ -505,7 +516,11 @@
 				<xs:attribute name="mask" type="xs:string"/>
 				<xs:attribute name="alphaMode" type="ALPHAMODE" default="BLEND"/>
 				<xs:attribute name="alpha" type="xs:float" default="1.0"/>
-				<xs:attribute name="ignoreParentAlpha" type="xs:boolean" default="false"/>
+                <xs:attribute name="scale" type="xs:float" default="1.0"/>
+                <xs:attribute name="rotation" type="xs:float" default="0.0"/>
+                <xs:attribute name="hWrapMode" type="WRAPMODE" default="CLAMP"/>
+                <xs:attribute name="vWrapMode" type="WRAPMODE" default="CLAMP"/>
+                <xs:attribute name="ignoreParentAlpha" type="xs:boolean" default="false"/>
 				<xs:attribute name="ignoreParentScale" type="xs:boolean" default="false"/>
 				<xs:attribute name="nonBlocking" type="xs:boolean" default="false"/>
 				<xs:attribute name="horizTile" type="xs:boolean" default="false"/>
@@ -668,6 +683,7 @@
 					</xs:choice>
 				</xs:sequence>
 				<xs:attribute name="alpha" type="xs:float" default="1.0"/>
+                <xs:attribute name="scale" type="xs:float" default="1.0"/>
 				<xs:attribute name="parent" type="xs:string"/>
 				<xs:attribute name="toplevel" type="xs:boolean" default="false"/>
 				<xs:attribute name="flattenRenderLayers" type="xs:boolean" default="false"/>

@@ -43,6 +43,20 @@ local AzeriteItem =
 				{ Name = "isAzeriteItem", Type = "bool", Nilable = false },
 			},
 		},
+		{
+			Name = "IsAzeriteItemByID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isAzeriteItem", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Events =

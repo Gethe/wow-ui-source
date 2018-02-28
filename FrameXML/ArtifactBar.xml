@@ -9,7 +9,7 @@
 				<Size x="32" y="32"/>
 				<Scripts>
 					<OnEnter method="OnEnter"/>
-					<OnLeave function="OnLeave"/>
+					<OnLeave method="OnLeave"/>
 				</Scripts>
 				<NormalTexture parentKey="Normal" file="Interface\MainMenuBar\UI-ExhaustionTickNormal"/>
 				<HighlightTexture parentKey="Highlight" file="Interface\MainMenuBar\UI-ExhaustionTickHighlight" alphaMode="ADD"/>

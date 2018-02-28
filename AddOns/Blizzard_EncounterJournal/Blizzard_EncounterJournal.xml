@@ -47,11 +47,6 @@
 		<Size x="64" y="36"/>
 		<TexCoords left="0.00000000" right="1.00000000" top="0.67382813" bottom="0.74414063"/>
 	</Texture>
-	<Texture name="_SearchBarLg" file="Interface\EncounterJournal\UI-EncounterJournalTextures_Tile" virtual="true" horizTile="true" >
-		<Size x="64" y="49"/>
-		<TexCoords left="0.00000000" right="1.00000000" top="0.74804688" bottom="0.84375000"/>
-	</Texture>
-
 
 	<!--size=512,1024-->
 	<Texture name="UI-EJ-AbilityIconBorder" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
@@ -869,7 +864,6 @@
 							<Size x="5" y="10"/>
 							<Anchors>
 								<Anchor point="LEFT" relativeTo="$parentAbilityIcon" relativePoint="RIGHT" x="5" y="-1"/>
-								<Anchor point="RIGHT" relativeTo="$parentIcon4" relativePoint="LEFT" x="-5" y="0"/>
 							</Anchors>
 						</FontString>
 					</Layer>

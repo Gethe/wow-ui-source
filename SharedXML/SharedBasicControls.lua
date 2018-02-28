@@ -1,4 +1,4 @@
-DEBUGLOCALS_LEVEL = 5;
+DEBUGLOCALS_LEVEL = 6;
 
 local ERROR_FORMAT = [[|cffffd200Message:|r|cffffffff %s|r
 |cffffd200Time:|r|cffffffff %s|r

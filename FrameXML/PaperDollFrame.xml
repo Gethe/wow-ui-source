@@ -12,8 +12,8 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="3">
-				<Texture parentKey="AzeriteTexture" atlas="AzeriteArmor-CharacterInfo-Border" useAtlasSize="true">
+			<Layer level="BORDER" textureSubLevel="-1">
+				<Texture parentKey="AzeriteTexture">
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
@@ -24,20 +24,21 @@
 			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate"/>
 			<Button name="$parentPopoutButton" parentKey="popoutButton" inherits="EquipmentFlyoutPopoutButtonTemplate"/>
 			<Frame parentKey="RankFrame">
-				<Size x="28" y="24" />
+				<Size x="31" y="21" />
 				<Anchors>
-					<Anchor point="CENTER" relativePoint="BOTTOM" y="6"/>
+					<Anchor point="CENTER" relativePoint="BOTTOM" y="5"/>
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY" textureSubLevel="4">
-						<Texture parentKey="Texture" atlas="Artifacts-PointsBox" useAtlasSize="true">
+						<Texture parentKey="Texture" atlas="AzeriteArmor-CharacterInfo-NeckLevelBorder">
+							<Size x="31" y="21" />
 							<Anchors>
 								<Anchor point="CENTER"/>
 							</Anchors>
 						</Texture>
 						<FontString parentKey="Label" inherits="GameFontNormal">
 							<Anchors>
-								<Anchor point="CENTER" relativeKey="$parent.RankTexture"/>
+								<Anchor point="CENTER" relativeKey="$parent.RankTexture" y="1"/>
 							</Anchors>
 						</FontString>
 					</Layer>

@@ -304,6 +304,20 @@ function GarrisonFollowerListButton:GetFollowerList()
 	return self:GetParent():GetParent():GetParent();
 end
 
+function GarrisonFollowerListButton_OnDragStart(self, button)
+	local mainFrame = self:GetFollowerList():GetParent();
+	if (mainFrame.OnDragStartFollowerButton) then
+		mainFrame:OnDragStartFollowerButton(GarrisonFollowerPlacer, self, 24);
+	end
+end
+
+function GarrisonFollowerListButton_OnDragStop(self)
+	local mainFrame = self:GetFollowerList():GetParent();
+	if (mainFrame.OnDragStopFollowerButton) then
+		mainFrame:OnDragStopFollowerButton(GarrisonFollowerPlacer);
+	end
+end
+
 GarrisonMissionFollowerOrCategoryListButtonMixin = { }
 
 function GarrisonMissionFollowerOrCategoryListButtonMixin:GetFollowerList()

@@ -943,11 +943,6 @@
 				</Frames>
 			</Frame>
 		</ScrollChild>
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-			<OnMouseDown method="OnMouseDown"/>
-			<OnMouseUp method="OnMouseUp"/>
-		</Scripts>
 		<Frames>
 			<Frame parentKey="UpgradeFrame" inherits="GarrisonFollowerModelUpgradeTemplate">
 				<Anchors>
@@ -1511,7 +1506,7 @@
 		</Scripts>
 	</Button>
 
-	<Frame name="GarrisonMissionMechanicTooltip" inherits="GameTooltipTemplate" frameStrata="TOOLTIP">
+	<GameTooltip name="GarrisonMissionMechanicTooltip" inherits="GameTooltipTemplate" frameStrata="TOOLTIP">
 		<Size x="280" y="200"/>
 		<Anchors>
 			<Anchor point="CENTER"/>
@@ -1544,9 +1539,9 @@
 				</FontString>
 			</Layer>
 		</Layers>
-	</Frame>
+	</GameTooltip>
 
-	<Frame name="GarrisonMissionMechanicFollowerCounterTooltip" inherits="GameTooltipTemplate" parent="UIParent" frameStrata="TOOLTIP">
+	<GameTooltip name="GarrisonMissionMechanicFollowerCounterTooltip" inherits="GameTooltipTemplate" parent="UIParent" frameStrata="TOOLTIP">
 		<Size x="280" y="250"/>
 		<Anchors>
 			<Anchor point="CENTER"/>
@@ -1601,6 +1596,6 @@
 				</FontString>
 			</Layer>
 		</Layers>
-	</Frame>
+	</GameTooltip>
 
 </Ui>

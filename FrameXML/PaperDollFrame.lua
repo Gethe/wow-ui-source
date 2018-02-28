@@ -725,7 +725,13 @@ function PaperDollFrame_SetBlock(statFrame, unit)
 	local chance = GetBlockChance();
 	PaperDollFrame_SetLabelAndText(statFrame, STAT_BLOCK, chance, true, chance);
 	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, BLOCK_CHANCE).." "..string.format("%.2F", chance).."%"..FONT_COLOR_CODE_CLOSE;
-	statFrame.tooltip2 = format(CR_BLOCK_TOOLTIP, GetShieldBlock());
+
+	local baselineArmor, effectiveArmor, armor, posBuff, negBuff = UnitArmor(unit);
+	local armorReduction = PaperDollFrame_GetArmorReduction(effectiveArmor, UnitEffectiveLevel(unit));
+	local shieldBlockArmor = GetShieldBlock();
+	local armorAndBlockArmorReduction = PaperDollFrame_GetArmorReduction(effectiveArmor + shieldBlockArmor, UnitEffectiveLevel(unit));
+	local relativeBlockArmorReduction = 100 - ((100 - armorAndBlockArmorReduction) / (100 - armorReduction) * 100);
+	statFrame.tooltip2 = CR_BLOCK_TOOLTIP:format(BreakUpLargeNumbers(shieldBlockArmor), relativeBlockArmorReduction);
 	statFrame:Show();
 end
 
@@ -1598,7 +1604,8 @@ function PaperDollItemSlotButton_Update(self)
 	end
 
 	local quality = GetInventoryItemQuality("player", self:GetID());
-	SetItemButtonQuality(self, quality, GetInventoryItemID("player", self:GetID()));
+	local SUPPRESS_OVERLAYS = true;
+	SetItemButtonQuality(self, quality, GetInventoryItemID("player", self:GetID()), SUPPRESS_OVERLAYS);
 
 	if (not PaperDollEquipmentManagerPane:IsShown()) then
 		self.ignored = nil;
@@ -1614,6 +1621,15 @@ function PaperDollItemSlotButton_Update(self)
 
 	if self.AzeriteTexture then
 		self.AzeriteTexture:SetShown(isAzeriteItem or isAzeriteEmpoweredItem);
+		if isAzeriteItem then
+			self.AzeriteTexture:SetAtlas("AzeriteArmor-CharacterInfo-Neck", true);
+			self.AzeriteTexture:SetSize(50, 44);
+			self.AzeriteTexture:SetDrawLayer("OVERLAY", 1);
+		elseif isAzeriteEmpoweredItem then
+			self.AzeriteTexture:SetAtlas("AzeriteArmor-CharacterInfo-Border", true);
+			self.AzeriteTexture:SetSize(57, 46);
+			self.AzeriteTexture:SetDrawLayer("BORDER", -1);
+		end
 	end
 
 	if self.RankFrame then

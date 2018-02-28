@@ -101,11 +101,27 @@ function SetItemButtonSlotVertexColor(button, r, g, b)
 	_G[button:GetName().."SlotTexture"]:SetVertexColor(r, g, b);
 end
 
-function SetItemButtonQuality(button, quality, itemIDOrLink)
-	if itemIDOrLink and IsArtifactRelicItem(itemIDOrLink) then
-		button.IconBorder:SetTexture([[Interface\Artifacts\RelicIconFrame]]);
+function SetItemButtonQuality(button, quality, itemIDOrLink, suppressOverlays)
+	if itemIDOrLink then
+		if IsArtifactRelicItem(itemIDOrLink) then
+			button.IconBorder:SetTexture([[Interface\Artifacts\RelicIconFrame]]);
+		else
+			button.IconBorder:SetTexture([[Interface\Common\WhiteIconFrame]]);
+		end
+		
+		if button.IconOverlay then
+			if not suppressOverlays and C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItemByID(itemIDOrLink) then
+				button.IconOverlay:SetAtlas([[AzeriteIconFrame]]);
+				button.IconOverlay:Show();
+			else
+				button.IconOverlay:Hide();
+			end
+		end
 	else
 		button.IconBorder:SetTexture([[Interface\Common\WhiteIconFrame]]);
+		if button.IconOverlay then
+			button.IconOverlay:Hide();
+		end
 	end
 
 	if quality then

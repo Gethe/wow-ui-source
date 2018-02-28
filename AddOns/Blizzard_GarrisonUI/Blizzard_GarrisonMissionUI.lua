@@ -1370,20 +1370,6 @@ end
 ---------------------------------------------------------------------------------
 --- Mission Page: Placing Followers/Starting Mission                          ---
 ---------------------------------------------------------------------------------
-function GarrisonFollowerListButton_OnDragStart(self, button)
-	local mainFrame = self:GetFollowerList():GetParent();
-	if (mainFrame.OnDragStartFollowerButton) then
-		mainFrame:OnDragStartFollowerButton(GarrisonFollowerPlacer, self, 24);
-	end
-end
-
-function GarrisonFollowerListButton_OnDragStop(self)
-	local mainFrame = self:GetFollowerList():GetParent();
-	if (mainFrame.OnDragStopFollowerButton) then
-		mainFrame:OnDragStopFollowerButton(GarrisonFollowerPlacer);
-	end
-end
-
 function GarrisonMissionPageFollowerFrame_OnDragStart(self)
 	local mainFrame = self:GetParent():GetParent():GetParent();
 	mainFrame:OnDragStartMissionFollower(GarrisonFollowerPlacer, self, 24);

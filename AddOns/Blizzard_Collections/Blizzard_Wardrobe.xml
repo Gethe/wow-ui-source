@@ -1132,7 +1132,6 @@
 					<OnShow method="OnShow"/>
 					<OnHide method="OnHide"/>
 					<OnEvent method="OnEvent"/>
-					<OnMouseWheel method="OnMouseWheel"/>
 				</Scripts>
 			</Frame>
 			<Frame parentKey="SetsTransmogFrame" parentArray="ContentFrames" inherits="CollectionsBackgroundTemplate" mixin="WardrobeSetsTransmogMixin" hidden="true">

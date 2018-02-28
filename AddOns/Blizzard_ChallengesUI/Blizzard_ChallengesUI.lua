@@ -393,14 +393,19 @@ function ChallengesKeystoneFrameMixin:OnKeystoneSlotted()
 	self.PowerLevel:Show();
 	
 	local dmgPct, healthPct = C_ChallengeMode.GetPowerLevelDamageHealthMod(powerLevel);
+	local highLevelKeyDamageHealthModifier = 0;
 	
-	self:CreateAndPositionAffixes(2 + #affixes);
-	
-	self.Affixes[1]:SetUp({key = "dmg", pct = dmgPct});
-	self.Affixes[2]:SetUp({key = "health", pct = healthPct});
+	if (powerLevel >= 3) then
+		highLevelKeyDamageHealthModifier = 2; 
+		self:CreateAndPositionAffixes(highLevelKeyDamageHealthModifier + #affixes);
+		self.Affixes[1]:SetUp({key = "dmg", pct = dmgPct});
+		self.Affixes[2]:SetUp({key = "health", pct = healthPct});
+	else 
+		self:CreateAndPositionAffixes(highLevelKeyDamageHealthModifier + #affixes);
+	end 
 	
 	for i = 1, #affixes do
-		self.Affixes[i+2]:SetUp(affixes[i]);
+		self.Affixes[i+highLevelKeyDamageHealthModifier]:SetUp(affixes[i]);
 	end
 end
 
