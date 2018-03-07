@@ -856,36 +856,7 @@
 		</Frames>
 	</Frame>
 
-	<Button name="PvpTalentSlotTemplate" virtual="true" mixin="PvpTalentSlotMixin">
-		<Size x="58" y="58"/>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture parentKey="Texture" hidden="true">
-					<Size x="46" y="46"/>
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="BORDER">
-				<Texture parentKey="Arrow" atlas="pvptalents-selectedarrow" useAtlasSize="true" hidden="true">
-					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.Border" relativePoint="RIGHT" x="-16" y="0"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="ARTWORK">
-				<Texture parentKey="Border" atlas="pvptalents-talentborder" setAllPoints="true"/>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnEnter method="OnEnter"/>
-			<OnLeave function="GameTooltip_Hide"/>
-			<OnClick method="OnClick"/>
-		</Scripts>
-	</Button>
-
-	<Button name="PvpTalentButtonTemplate" mixin="PvpTalentButtonMixin" virtual="true">
+	<Button name="PvpTalentButtonTemplate" mixin="PvpTalentButtonMixin" virtual="true" motionScriptsWhileDisabled="true">
 		<Size x="147" y="40"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -915,6 +886,23 @@
 				<Texture parentKey="SelectedOtherCheck" atlas="pvptalents-list-checkmark" useAtlasSize="true" hidden="true">
 					<Anchors>
 						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<FontString parentKey="New" inherits="GameFontHighlight" maxLines="1" justifyH="CENTER" text="NEW_CAPS" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" x="-16" y="4" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+					<Shadow>
+						<Color r="0.32" g="0.5" b="1.0"/>
+					</Shadow>
+				</FontString>
+
+				<Texture parentKey="NewGlow" atlas="collections-newglow" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.New" x="-20" y="10"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.New" x="20" y="-10"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -989,7 +977,7 @@
 			<Layer level="ARTWORK">
 				<FontString inherits="GameFontNormal" parentKey="unspentText">
 					<Anchors>
-						<Anchor point="TOPRIGHT" relativeKey="$parent.PvpTalentButton.Label" relativePoint="TOPLEFT" x="-4" y="0"/>
+						<Anchor point="BOTTOM" relativeKey="$parent.tier1" relativePoint="TOP" x="0" y="10"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -1040,7 +1028,7 @@
 					<Anchor point="TOPLEFT" relativeTo="$parentTalentRow6" relativePoint="BOTTOMLEFT" x="0" y="-9"/>
 				</Anchors>
 			</Frame>
-			<Frame parentKey="PvpTalentFrame" mixin="PvpTalentFrameMixin">
+			<Frame name="$parentPvpTalentFrame" parentKey="PvpTalentFrame" mixin="PvpTalentFrameMixin">
 				<Size x="131" y="379"/>
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT" x="-135" y="0"/>
@@ -1206,18 +1194,28 @@
 							<OnLoad method="OnLoad"/>
 						</Scripts>
 					</Frame>
-					<ModelScene parentKey="OrbModelScene" inherits="ModelSceneMixinTemplate" enableMouse="false">
+					<ModelScene parentKey="OrbModelScene" inherits="ModelSceneMixinTemplate" enableMouse="false" useParentLevel="true">
 						<Size x="16" y="16"/>
 						<Anchors>
 							<Anchor point="CENTER" relativePoint="BOTTOM" x="0" y="24"/>
 						</Anchors>
+						<Scripts>
+							<OnLoad inherit="prepend">
+								self:EnableMouse(false);
+							</OnLoad>
+						</Scripts>
 					</ModelScene>
-					<!--<ModelScene parentKey="FireModelScene" inherits="ModelSceneMixinTemplate" enableMouse="false" frameLevel="300">
-						<Size x="131" y="160"/>
+					<ModelScene parentKey="FireModelScene" inherits="ModelSceneMixinTemplate" enableMouse="false" useParentLevel="true">
+						<Size x="56" y="100"/>
 						<Anchors>
-							<Anchor point="BOTTOM" x="0" y="36"/>
+							<Anchor point="BOTTOM" x="0" y="26"/>
 						</Anchors>
-					</ModelScene>-->
+						<Scripts>
+							<OnLoad inherit="prepend">
+								self:EnableMouse(false);
+							</OnLoad>
+						</Scripts>
+					</ModelScene>
 				</Frames>
 				<Scripts>
 					<OnLoad method="OnLoad"/>

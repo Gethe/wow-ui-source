@@ -552,6 +552,12 @@ function LootWonAlertFrame_SetUp(self, itemLink, quantity, rollType, roll, specI
 	end
 	self.IconBorder:SetAtlas(atlas);
 	self.IconBorder:SetDesaturated(desaturate);
+	if not windowInfo.noIconBorder and not isCurrency and C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItemByID(itemHyperLink) then
+		self.IconOverlay:SetAtlas("AzeriteIconFrame");
+		self.IconOverlay:Show();
+	else
+		self.IconOverlay:Hide();
+	end
 	if ( specID and specID > 0 and not isCurrency ) then
 		local id, name, description, texture, role, class = GetSpecializationInfoByID(specID);
 		self.SpecIcon:SetTexture(texture);

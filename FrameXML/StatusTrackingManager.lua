@@ -96,7 +96,8 @@ end
 -- Sets the bar size depending on whether the bottom right multi-bar is shown. 
 -- If the multi-bar is shown, a different texture needs to be displayed that is smaller. 
 function StatusTrackingManagerMixin:SetDoubleBarSize(bar, width)
-	local statusBarWidth, statusBarHeight = self.DoubleBarLarge:GetSize();
+	local barWidth, barHeight = self.DoubleBarLarge:GetSize();
+	local statusBarHeight = barHeight - 4;
 
 	width = width - self:GetEndCapWidth() * 4;
 	local smallBarSeparatorWidth, largeBarSeparatorWidth = self:GetSeparatorWidth();
@@ -110,12 +111,13 @@ function StatusTrackingManagerMixin:SetDoubleBarSize(bar, width)
 
 	local oneBarWidth = width / 2; -- Since we need two bars to be displayed. 
 	bar.StatusBar:SetSize(oneBarWidth, statusBarHeight);  
-	bar:SetSize(oneBarWidth, statusBarHeight);
+	bar:SetSize(oneBarWidth, barHeight);
 end
 
 --Same functionality as previous function except shows the single bar texture instead of the double. 
 function StatusTrackingManagerMixin:SetSingleBarSize(bar, width) 
-	local statusBarWidth, statusBarHeight = self.DoubleBarLarge:GetSize();
+	local barWidth, barHeight = self.DoubleBarLarge:GetSize();
+	local statusBarHeight = barHeight - 4;
 
 	width = width - self:GetEndCapWidth() * 2;
 	if( self.largeSize ) then 
@@ -125,7 +127,7 @@ function StatusTrackingManagerMixin:SetSingleBarSize(bar, width)
 	end
 
 	bar.StatusBar:SetSize(width, statusBarHeight);  
-	bar:SetSize(width, statusBarHeight);
+	bar:SetSize(width, barHeight);
 end
 
 function StatusTrackingManagerMixin:LayoutBar(bar, barWidth, leftSide, isDouble)

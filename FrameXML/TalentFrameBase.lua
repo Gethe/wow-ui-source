@@ -183,3 +183,85 @@ function TalentFrame_UpdateSpecInfoCache(cache, inspect, pet, talentGroup)
 		end
 	end
 end
+
+PvpTalentSlotMixin = {};
+
+function PvpTalentSlotMixin:OnLoad()
+	self:RegisterForDrag("LeftButton");
+end
+
+function PvpTalentSlotMixin:SetUp(slotIndex)
+	self.slotIndex = slotIndex;
+	self:Update();
+end
+
+function PvpTalentSlotMixin:Update()
+	if (not self.slotIndex) then
+		error("Slot must be setup with a slot index first.");
+	end
+
+	local slotInfo = C_SpecializationInfo.GetPvpTalentSlotInfo(self.slotIndex);
+
+	if (slotInfo.selectedTalentID) then
+		SetPortraitToTexture(self.Texture, select(3, GetPvpTalentInfoByID(slotInfo.selectedTalentID)));
+		self.Texture:Show();
+	else
+		self.Texture:Hide();
+	end
+
+	if (slotInfo.enabled) then
+		self.Border:SetAtlas("pvptalents-talentborder");
+		self:Enable();
+		self.New:SetShown(self.slotWasDisabled);
+		self.NewGlow:SetShown(self.slotWasDisabled);
+	else
+		self.Border:SetAtlas("pvptalents-talentborder-locked");
+		self:Disable();
+		self.slotWasDisabled = true;
+	end
+end
+
+function PvpTalentSlotMixin:OnEnter()
+	local slotInfo = C_SpecializationInfo.GetPvpTalentSlotInfo(self.slotIndex);
+	if (self.slotWasDisabled and slotInfo.enabled) then
+		self.slotWasDisabled = nil;
+		self.New:Hide();
+		self.NewGlow:Hide();
+	end
+
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	if (slotInfo.selectedTalentID) then
+		GameTooltip:SetPvpTalent(slotInfo.selectedTalentID, false, GetActiveSpecGroup(true), self.slotIndex);
+	else
+		GameTooltip:SetText(PVP_TALENT_SLOT);
+		if (not slotInfo.enabled) then
+			GameTooltip:AddLine(PVP_TALENT_SLOT_LOCKED:format(C_SpecializationInfo.GetPvpTalentSlotUnlockLevel(self.slotIndex)), RED_FONT_COLOR:GetRGB());
+		else
+			GameTooltip:AddLine(PVP_TALENT_SLOT_EMPTY, GREEN_FONT_COLOR:GetRGB());
+		end
+	end
+
+	GameTooltip:Show();
+end
+
+function PvpTalentSlotMixin:OnClick()
+	local slotInfo = C_SpecializationInfo.GetPvpTalentSlotInfo(self.slotIndex);
+
+	if (IsModifiedClick("CHATLINK") and slotInfo.selectedTalentID) then
+		local _, name = GetPvpTalentInfoByID(slotInfo.selectedTalentID);
+		local link = GetPvpTalentLink(slotInfo.selectedTalentID);
+		HandleGeneralTalentFrameChatLink(self, name, link);
+		return;
+	end
+	self:GetParent():SelectSlot(self);
+end
+
+function PvpTalentSlotMixin:OnDragStart()
+	if (not self.isInspect) then
+		local slotInfo = C_SpecializationInfo.GetPvpTalentSlotInfo(self.slotIndex);
+
+		if (slotInfo.selectedTalentID) then
+			PickupPvpTalent(slotInfo.selectedTalentID);
+		end
+	end
+end

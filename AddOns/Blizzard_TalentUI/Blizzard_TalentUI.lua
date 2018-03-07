@@ -285,6 +285,9 @@ function PlayerTalentFrame_OnLoad(self)
 	self.hasBeenShown = false;
 	self.selectedPlayerSpec = DEFAULT_TALENT_SPEC;
 	self.onCloseCallback = PlayerTalentFrame_OnClickClose;
+	self.basePanelWidth = 666;
+	self.expandedPanelWidth = 797;
+	self.superExpandedPanelWidth = 987;
 
 	local _, playerClass = UnitClass("player");
 	if (playerClass == "HUNTER") then
@@ -482,12 +485,15 @@ function PlayerTalentFrame_SetExpanded(expanded)
 		PlayerTalentFrameTalentsTRCorner:SetPoint("TOPRIGHT", -134, -2);
 		PlayerTalentFrameTalentsBRCorner:SetPoint("BOTTOMRIGHT", -134, 2);
 		PlayerTalentFrameTalents.PvpTalentFrame:Show();
+		SetUIPanelAttribute(PlayerTalentFrame, "width", PlayerTalentFrame.expandedPanelWidth);
 	else
 		PlayerTalentFrame:SetWidth(TALENT_FRAME_BASE_WIDTH);
 		PlayerTalentFrameTalentsTRCorner:SetPoint("TOPRIGHT", -3, -2);
 		PlayerTalentFrameTalentsBRCorner:SetPoint("BOTTOMRIGHT", -3, 2);
 		PlayerTalentFrameTalents.PvpTalentFrame:Hide();
+		SetUIPanelAttribute(PlayerTalentFrame, "width", PlayerTalentFrame.basePanelWidth);
 	end
+	UpdateUIPanelPositions(PlayerTalentFrame);
 end
 
 function PlayerTalentFrame_Refresh()
@@ -573,7 +579,6 @@ function PlayerTalentFrame_UpdateActiveSpec(activeTalentGroup)
 end
 
 function PlayerTalentFrame_UpdateTitleText(numTalentGroups)
-
 	local spec = selectedSpec and specs[selectedSpec];
 	local hasMultipleTalentGroups = numTalentGroups > 1;
 	local isActiveSpec = (selectedSpec == activeSpec);
@@ -588,29 +593,6 @@ function PlayerTalentFrame_UpdateTitleText(numTalentGroups)
 			end
 		else
 			PlayerTalentFrameTitleText:SetText(SPECIALIZATION);
-		end
-	elseif ( selectedTab == PVP_TALENTS_TAB ) then
-		local prestigeLevel = UnitPrestige("player");
-		if (prestigeLevel > 0) then
-			local text = PVP_TALENTS_PRESTIGE_RANK_TITLE:format(select(2, GetPrestigeInfo(prestigeLevel)));
-			if ( spec and hasMultipleTalentGroups ) then
-				if (isActiveSpec and spec.nameActive) then
-					text = text .. " " .. spec.nameActive;
-				else
-					text = text .. " " .. spec.name;
-				end
-			end
-			PlayerTalentFrameTitleText:SetText(text);
-		else
-			if ( spec and hasMultipleTalentGroups ) then
-				if (isActiveSpec and spec.nameActive) then
-					PlayerTalentFrameTitleText:SetText(spec.nameActive);
-				else
-					PlayerTalentFrameTitleText:SetText(spec.name);
-				end
-			else
-				PlayerTalentFrameTitleText:SetText(PVP_TALENTS);
-			end
 		end
 	else
 		if ( spec and hasMultipleTalentGroups ) then
@@ -717,12 +699,6 @@ end
 local function HandleTalentFrameChatLink(self)
 	local _, name = GetTalentInfoByID(self:GetID(), specs[selectedSpec].talentGroup, false);
 	local link = GetTalentLink(self:GetID());
-	HandleGeneralTalentFrameChatLink(self, name, link);
-end
-
-local function HandlePVPTalentFrameChatLink(self)
-	local _, name = GetPvpTalentInfoByID(self.pvpTalentID, specs[selectedSpec].talentGroup);
-	local link = GetPvpTalentLink(self.pvpTalentID);
 	HandleGeneralTalentFrameChatLink(self, name, link);
 end
 
@@ -1557,10 +1533,12 @@ function PvpTalentFrameMixin:OnLoad()
 	for i, slot in ipairs(self.Slots) do
 		slot:SetUp(i);
 	end
+
 	self:RegisterEvent("PLAYER_PVP_TALENT_UPDATE");
-	self:RegisterEvent("PLAYER_LEARN_PVP_TALENT_FAILED");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("PLAYER_FLAGS_CHANGED");
+	self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED");
+	self:RegisterEvent("PLAYER_LEVEL_UP");
 	self:RegisterEvent("WAR_MODE_STATUS_UPDATE");
 
 	self.TalentList.ScrollFrame.update = function() self.TalentList:Update() end;
@@ -1587,15 +1565,14 @@ function PvpTalentFrameMixin:UpdateModelScene(scene, sceneID, spellVisualKitID)
 	if (effect) then
 		effect:SetModelByCreatureDisplayID(11686);
 		effect:ApplySpellVisualKit(spellVisualKitID);
+		effect:SetAnimation(158, 0, 0.3);
 	end
 end
 
 function PvpTalentFrameMixin:Update()
-	if (not C_PvP.IsWarModeEnabled()) then
+	if (not C_PvP.IsWarModeEnabled() or UnitLevel("player") < SHOW_PVP_TALENT_LEVEL) then
 		self:Hide();
 		PlayerTalentFrameTalentsPvpTalentButton:Hide();
-		PlayerTalentFrameTalents.unspentText:ClearAllPoints();
-		PlayerTalentFrameTalents.unspentText:SetPoint("TOPRIGHT", -16, 22)
 		PlayerTalentFrame_SetExpanded(false);
 		self.currentWarModeState = "hidden";
 		return;
@@ -1603,8 +1580,6 @@ function PvpTalentFrameMixin:Update()
 		if (self.currentWarModeState == "hidden" or not self.currentWarModeState) then
 			PlayerTalentFrame_SetExpanded(true);
 			PlayerTalentFrameTalentsPvpTalentButton:Show();
-			PlayerTalentFrameTalents.unspentText:ClearAllPoints();
-			PlayerTalentFrameTalents.unspentText:SetPoint("RIGHT", PlayerTalentFrameTalentsPvpTalentButton.Label, "LEFT", -14, 0);
 		end
 		self.currentWarModeState = "shown";
 	end
@@ -1613,15 +1588,14 @@ function PvpTalentFrameMixin:Update()
 		self:UpdateSlot(slot);
 	end
 	
-	self.TalentList.predictedSelection = nil;
 	self.TalentList:Update();
 
 	if (C_PvP.IsWarModeDesired() and self:IsVisible()) then
 		self:UpdateModelScene(self.OrbModelScene, 108, 93458);
-		--self:UpdateModelScene(self.FireModelScene, 109, 26799);
+		self:UpdateModelScene(self.FireModelScene, 109, 26799);
 	else
 		self.OrbModelScene:Hide();
-		--self.FireModelScene:Hide();
+		self.FireModelScene:Hide();
 	end
 
 	self.InvisibleWarmodeButton:Update();
@@ -1635,6 +1609,8 @@ function PvpTalentFrameMixin:SelectSlot(slot)
 			return;
 		end
 	end
+	SetUIPanelAttribute(PlayerTalentFrame, "width", PlayerTalentFrame.superExpandedPanelWidth);
+	UpdateUIPanelPositions(PlayerTalentFrame);
 	self.selectedSlotIndex = slot.slotIndex;
 	slot.Arrow:Show();
 	HybridScrollFrame_SetOffset(self.TalentList.ScrollFrame, 0);
@@ -1652,6 +1628,8 @@ function PvpTalentFrameMixin:UnselectSlot()
 	slot.Arrow:Hide();
 	self.TalentList:Hide();
 	self.selectedSlotIndex = nil;
+	SetUIPanelAttribute(PlayerTalentFrame, "width", PlayerTalentFrame.expandedPanelWidth);
+	UpdateUIPanelPositions(PlayerTalentFrame);
 end
 
 function PvpTalentFrameMixin:SelectTalentForSlot(talentID, slotIndex)
@@ -1662,130 +1640,57 @@ function PvpTalentFrameMixin:SelectTalentForSlot(talentID, slotIndex)
 	end
 
 	LearnPvpTalent(talentID, slotIndex);
-	self.TalentList.predictedSelection = talentID;
-	self.TalentList:Update();
-end
-
-PvpTalentListMixin = {};
-
-function PvpTalentListMixin:OnLoad()
-	ButtonFrameTemplate_HideAttic(self);
-	ButtonFrameTemplate_HidePortrait(self);
-	self.TopTileStreaks:Hide();
-	_G[self:GetName().."TitleBg"]:Hide();
-	_G[self:GetName().."TopBorder"]:Hide();
-	_G[self:GetName().."TopLeftCorner"]:Hide();
-	_G[self:GetName().."TopRightCorner"]:Hide();
-	self.CloseButton:Hide();
-	self.RightBorder:SetPoint("TOPRIGHT", self.MyTopRightCorner, "BOTTOMRIGHT", 0, 1);
-	self:SetFrameLevel(self:GetParent():GetFrameLevel()-2);
-end
-
-function PvpTalentListMixin:Update()
-	local slotIndex = self:GetParent().selectedSlotIndex;
-	
-	if (slotIndex) then
-		local scrollFrame = self.ScrollFrame;
-		local offset = HybridScrollFrame_GetOffset(scrollFrame);
-		local buttons = scrollFrame.buttons;
-		local numButtons = #buttons;
-		local slotInfo = C_SpecializationInfo.GetPvpTalentSlotInfo(slotIndex);
-		local numTalents = #slotInfo.availableTalentIDs;
-		local selectedPvpTalents = C_SpecializationInfo.GetAllSelectedPvpTalentIDs();
-		local availableTalentIDs = slotInfo.availableTalentIDs;
-		
-		table.sort(availableTalentIDs, function(a, b)
-			local selectedOtherA = tContains(selectedPvpTalents, a) and slotInfo.selectedTalentID ~= a;
-			local selectedOtherB = tContains(selectedPvpTalents, b) and slotInfo.selectedTalentID ~= b;
-
-			if (selectedOtherA ~= selectedOtherB) then
-				return selectedOtherB;
-			end
-
-			return a < b;
-		end);
-		local selectedTalentID = slotInfo.selectedTalentID;
-
-		for i = 1, numButtons do
-			local button = buttons[i];
-			local index = offset + i;
-			if (index <= numTalents) then
-				local talentID = availableTalentIDs[index];
-				local _, name, icon, selected, available = GetPvpTalentInfoByID(talentID);
-				button:SetHeight(PVP_TALENT_LIST_BUTTON_HEIGHT);
-				button.Name:SetText(name);
-				button.Icon:SetTexture(icon);
-				button.talentID = talentID;
-				local oldSelectedHere = selectedTalentID == talentID;
-				local selectedHere = self.predictedSelection == talentID or (not self.predictedSelection and selectedTalentID == talentID);
-				local selectedOther = tContains(selectedPvpTalents, talentID) and not (selectedHere or oldSelectedHere);
-				button.Selected:SetShown(selectedHere);
-				button.SelectedOtherCheck:SetShown(selectedOther);
-				button.SelectedOtherOverlay:SetShown(selectedOther);
-				button:SetEnabled(not selectedOther);
-				button:SetOwningFrame(self:GetParent());
-				button:Show();
-			else
-				button:Hide();
-			end
-		end
-
-		local totalHeight = numTalents * PVP_TALENT_LIST_BUTTON_HEIGHT;
-		HybridScrollFrame_Update(scrollFrame, totalHeight + 10, 338);
-	end
-end
-
-PvpTalentSlotMixin = {};
-
-function PvpTalentSlotMixin:SetUp(slotIndex)
-	self.slotIndex = slotIndex;
-	self:Update();
-end
-
-function PvpTalentSlotMixin:Update()
-	if (not self.slotIndex) then
-		error("Slot must be setup with a slot index first.");
-	end
-
-	local slotInfo = C_SpecializationInfo.GetPvpTalentSlotInfo(self.slotIndex);
-
-	if (slotInfo.selectedTalentID) then
-		SetPortraitToTexture(self.Texture, select(3, GetPvpTalentInfoByID(slotInfo.selectedTalentID)));
-		self.Texture:Show();
-	else
-		self.Texture:Hide();
-	end
-
-	if (slotInfo.enabled) then
-		self.Border:SetAtlas("pvptalents-talentborder");
-		self:Enable();
-	else
-		self.Border:SetAtlas("pvptalents-talentborder-locked");
-		self:Disable();
-	end
-end
-
-function PvpTalentSlotMixin:OnEnter()
-	local slotInfo = C_SpecializationInfo.GetPvpTalentSlotInfo(self.slotIndex);
-
-	if (slotInfo.selectedTalentID) then
-		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		GameTooltip:SetPvpTalent(slotInfo.selectedTalentID, false, GetActiveSpecGroup(true), self.slotIndex);
-		GameTooltip:Show();
-	end
-end
-
-function PvpTalentSlotMixin:OnClick()
-	self:GetParent():SelectSlot(self);
+	self:UnselectSlot();
 end
 
 PvpTalentButtonMixin = {};
+
+function PvpTalentButtonMixin:SetPvpTalent(talentID)
+	self.talentID = talentID;
+end
+
+function PvpTalentButtonMixin:Update(selectedHere, selectedOther)
+	local talentID, name, icon, selected, available, spellID, unlocked = GetPvpTalentInfoByID(self.talentID);
+
+	self.New:Hide();
+	self.NewGlow:Hide();
+
+	if (not unlocked) then
+		self.Name:SetTextColor(DISABLED_FONT_COLOR:GetRGB());
+		self.Icon:SetDesaturated(true);
+		self.Selected:Hide();
+		self.SelectedOtherCheck:Hide();
+		self.SelectedOtherOverlay:Hide();
+		self:Disable();
+	else
+		if (C_SpecializationInfo.IsPvpTalentLocked(self.talentID)) then
+			self.New:Show();
+			self.NewGlow:Show();
+		end
+		self.Name:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
+		self.Icon:SetDesaturated(false);
+		self.Selected:SetShown(selectedHere);
+		self.SelectedOtherCheck:SetShown(selectedOther);
+		self.SelectedOtherOverlay:SetShown(selectedOther);
+		self:SetEnabled(not selectedOther);
+	end
+
+	self.Name:SetText(name);
+	self.Icon:SetTexture(icon);
+end
 
 function PvpTalentButtonMixin:SetOwningFrame(frame)
 	self.owner = frame;
 end
 
 function PvpTalentButtonMixin:OnClick()
+	if (IsModifiedClick("CHATLINK")) then
+		local _, name = GetPvpTalentInfoByID(self.talentID);
+		local link = GetPvpTalentLink(self.talentID);
+		HandleGeneralTalentFrameChatLink(self, name, link);
+		return;
+	end
+
 	if (not self.owner) then
 		return;
 	end
@@ -1794,6 +1699,12 @@ function PvpTalentButtonMixin:OnClick()
 end
 
 function PvpTalentButtonMixin:OnEnter()
+	if (C_SpecializationInfo.IsPvpTalentLocked(self.talentID) and select(7,GetPvpTalentInfoByID(self.talentID))) then
+		C_SpecializationInfo.SetPvpTalentLocked(self.talentID, false);
+		self.New:Hide();
+		self.NewGlow:Hide();
+	end
+
 	if (not self.owner) then
 		return;
 	end
@@ -1829,4 +1740,82 @@ function PvpTalentWarmodeButtonMixin:OnEnter()
 		GameTooltip:AddLine(text, RED_FONT_COLOR:GetRGB());
 	end
 	GameTooltip:Show();
+end
+
+PvpTalentListMixin = {};
+
+function PvpTalentListMixin:OnLoad()
+	ButtonFrameTemplate_HideAttic(self);
+	ButtonFrameTemplate_HidePortrait(self);
+	self.TopTileStreaks:Hide();
+	_G[self:GetName().."TitleBg"]:Hide();
+	_G[self:GetName().."TopBorder"]:Hide();
+	_G[self:GetName().."TopLeftCorner"]:Hide();
+	_G[self:GetName().."TopRightCorner"]:Hide();
+	self.CloseButton:Hide();
+	self.RightBorder:SetPoint("TOPRIGHT", self.MyTopRightCorner, "BOTTOMRIGHT", 0, 1);
+	self:SetFrameLevel(self:GetParent():GetFrameLevel()-2);
+end
+
+function PvpTalentListMixin:Update()
+	local slotIndex = self:GetParent().selectedSlotIndex;
+	
+	if (slotIndex) then
+		local scrollFrame = self.ScrollFrame;
+		local offset = HybridScrollFrame_GetOffset(scrollFrame);
+		local buttons = scrollFrame.buttons;
+		local numButtons = #buttons;
+		local slotInfo = C_SpecializationInfo.GetPvpTalentSlotInfo(slotIndex);
+		local numTalents = #slotInfo.availableTalentIDs;
+		local selectedPvpTalents = C_SpecializationInfo.GetAllSelectedPvpTalentIDs();
+		local availableTalentIDs = slotInfo.availableTalentIDs;
+		
+		table.sort(availableTalentIDs, function(a, b)
+			local unlockedA = select(7,GetPvpTalentInfoByID(a));
+			local unlockedB = select(7,GetPvpTalentInfoByID(b));
+
+			if (unlockedA ~= unlockedB) then
+				return unlockedA;
+			end
+
+			if (not unlockedA) then
+				local reqLevelA = C_SpecializationInfo.GetPvpTalentUnlockLevel(a);
+				local reqLevelB = C_SpecializationInfo.GetPvpTalentUnlockLevel(b);
+
+				if (reqLevelA ~= reqLevelB) then
+					return reqLevelA < reqLevelB;
+				end
+			end
+
+			local selectedOtherA = tContains(selectedPvpTalents, a) and slotInfo.selectedTalentID ~= a;
+			local selectedOtherB = tContains(selectedPvpTalents, b) and slotInfo.selectedTalentID ~= b;
+
+			if (selectedOtherA ~= selectedOtherB) then
+				return selectedOtherB;
+			end
+
+			return a < b;
+		end);
+		local selectedTalentID = slotInfo.selectedTalentID;
+
+		for i = 1, numButtons do
+			local button = buttons[i];
+			local index = offset + i;
+			if (index <= numTalents) then
+				local talentID = availableTalentIDs[index];
+				local selectedHere = selectedTalentID == talentID;
+				local selectedOther = tContains(selectedPvpTalents, talentID) and not selectedHere;
+				button:SetHeight(PVP_TALENT_LIST_BUTTON_HEIGHT);
+				button:SetOwningFrame(self:GetParent());
+				button:SetPvpTalent(talentID);
+				button:Update(selectedHere, selectedOther);
+				button:Show();
+			else
+				button:Hide();
+			end
+		end
+
+		local totalHeight = numTalents * PVP_TALENT_LIST_BUTTON_HEIGHT;
+		HybridScrollFrame_Update(scrollFrame, totalHeight + 10, 338);
+	end
 end

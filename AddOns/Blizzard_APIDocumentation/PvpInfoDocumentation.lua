@@ -1,6 +1,6 @@
-local BattlefieldInfo =
+local PvpInfo =
 {
-	Name = "BattlefieldInfo",
+	Name = "PvpInfo",
 	Type = "System",
 	Namespace = "C_PvP",
 
@@ -454,4 +454,4 @@ local BattlefieldInfo =
 	},
 };
 
-APIDocumentation:AddDocumentationTable(BattlefieldInfo);
+APIDocumentation:AddDocumentationTable(PvpInfo);

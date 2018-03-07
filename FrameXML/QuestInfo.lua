@@ -771,13 +771,13 @@ function QuestInfo_ShowRewards()
 			questItem.objectType = "currency";
 			local currencyID;
 			if ( QuestInfoFrame.questLog ) then
-				name, texture, numItems, currencyID = GetQuestLogRewardCurrencyInfo(i);
+				name, texture, numItems, currencyID, quality = GetQuestLogRewardCurrencyInfo(i);
 			else
-				name, texture, numItems = GetQuestCurrencyInfo(questItem.type, i);
+				name, texture, numItems, quality = GetQuestCurrencyInfo(questItem.type, i);
 				currencyID = GetQuestCurrencyID(questItem.type, i);
 			end
 			if (name and texture and numItems) then
-				name, texture, numItems, quality = CurrencyContainerUtil.GetCurrencyContainerInfo(currencyID, numItems, name, texture, nil); 
+				name, texture, numItems, quality = CurrencyContainerUtil.GetCurrencyContainerInfo(currencyID, numItems, name, texture, quality); 
 				questItem:SetID(i)
 				questItem:Show();
 				-- For the tooltip
@@ -788,7 +788,7 @@ function QuestInfo_ShowRewards()
 				SetItemButtonTexture(questItem, texture);
 				SetItemButtonTextureVertexColor(questItem, 1.0, 1.0, 1.0);
 				SetItemButtonNameFrameVertexColor(questItem, 1.0, 1.0, 1.0);
-				SetItemButtonQuality(questItem);
+				SetItemButtonQuality(questItem, quality, currencyID);
 
 				if ( buttonIndex > 1 ) then
 					if ( mod(buttonIndex,2) == 1 ) then

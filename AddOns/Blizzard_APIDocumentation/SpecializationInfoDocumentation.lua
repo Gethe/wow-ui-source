@@ -16,17 +16,94 @@ local SpecializationInfo =
 			},
 		},
 		{
+			Name = "GetInspectSelectedPvpTalent",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "inspectedUnit", Type = "string", Nilable = false },
+				{ Name = "talentIndex", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "selectedTalentID", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "GetPvpTalentAlertStatus",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "hasUnspentSlot", Type = "bool", Nilable = false },
+				{ Name = "hasNewTalent", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "GetPvpTalentSlotInfo",
 			Type = "Function",
 
 			Arguments =
 			{
-				{ Name = "slotIndex", Type = "number", Nilable = false },
+				{ Name = "talentIndex", Type = "number", Nilable = false },
 			},
 
 			Returns =
 			{
 				{ Name = "slotInfo", Type = "PvpTalentSlotInfo", Nilable = true },
+			},
+		},
+		{
+			Name = "GetPvpTalentSlotUnlockLevel",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "talentIndex", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "requiredLevel", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "GetPvpTalentUnlockLevel",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "talentID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "requiredLevel", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "IsPvpTalentLocked",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "talentID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "locked", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SetPvpTalentLocked",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "talentID", Type = "number", Nilable = false },
+				{ Name = "locked", Type = "bool", Nilable = false },
 			},
 		},
 	},
@@ -106,7 +183,7 @@ local SpecializationInfo =
 			Fields =
 			{
 				{ Name = "enabled", Type = "bool", Nilable = false },
-				{ Name = "selectedTalentID", Type = "number", Nilable = false },
+				{ Name = "selectedTalentID", Type = "number", Nilable = true },
 				{ Name = "availableTalentIDs", Type = "table", InnerType = "number", Nilable = false },
 			},
 		},

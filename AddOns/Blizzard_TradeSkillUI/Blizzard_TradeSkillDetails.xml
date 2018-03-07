@@ -301,13 +301,21 @@
 								<Texture parentKey="IconBorder">
 									<Size x="47" y="47"/>
 									<Anchors>
-										<Anchor point="CENTER" x="0"/>
+										<Anchor point="CENTER"/>
 									</Anchors>
 								</Texture>
 								<Texture parentKey="ResultBorder" atlas="tradeskills-iconborder">
 									<Size x="51" y="51"/>
 									<Anchors>
-										<Anchor point="CENTER" x="0"/>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="OVERLAY" textureSubLevel="1">
+								<Texture parentKey="IconOverlay" hidden="true">
+									<Size x="47" y="47"/>
+									<Anchors>
+										<Anchor point="CENTER"/>
 									</Anchors>
 								</Texture>
 							</Layer>

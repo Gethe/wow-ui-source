@@ -67,4 +67,51 @@
 			</OnLeave>
 		</Scripts>
 	</Button>
+	<Button name="PvpTalentSlotTemplate" virtual="true" mixin="PvpTalentSlotMixin" motionScriptsWhileDisabled="true">
+		<Size x="58" y="58"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Texture" hidden="true">
+					<Size x="46" y="46"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="Arrow" atlas="pvptalents-selectedarrow" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Border" relativePoint="RIGHT" x="-16" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Border" atlas="pvptalents-talentborder" setAllPoints="true"/>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString parentKey="New" inherits="GameFontHighlight" maxLines="1" justifyH="CENTER" text="NEW_CAPS" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" x="-8" y="8" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+					<Shadow>
+						<Color r="0.32" g="0.5" b="1.0"/>
+					</Shadow>
+				</FontString>
+
+				<Texture parentKey="NewGlow" atlas="collections-newglow" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.New" x="-20" y="10"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.New" x="20" y="-10"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave function="GameTooltip_Hide"/>
+			<OnDragStart method="OnDragStart"/>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</Button>
 </Ui>

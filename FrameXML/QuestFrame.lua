@@ -443,7 +443,7 @@ function QuestFrame_UpdatePortraitText(text)
 	end
 end
 
-function QuestFrame_ShowQuestPortrait(parentFrame, portrait, text, name, x, y)
+function QuestFrame_ShowQuestPortrait(parentFrame, portraitDisplayID, mountPortraitDisplayID, text, name, x, y)
 	QuestNPCModel:SetParent(parentFrame);
 	QuestNPCModel:ClearAllPoints();
 	QuestNPCModel:SetPoint("TOPLEFT", parentFrame, "TOPRIGHT", x, y);
@@ -461,10 +461,10 @@ function QuestFrame_ShowQuestPortrait(parentFrame, portrait, text, name, x, y)
 		QuestNPCModelNameText:Hide();
 	end
 
-	if (portrait == -1) then
+	if (portraitDisplayID == -1) then
 		QuestNPCModel:SetUnit("player");
 	else
-		QuestNPCModel:SetDisplayInfo(portrait);
+		QuestNPCModel:SetDisplayInfo(portraitDisplayID, mountPortraitDisplayID);
 	end
 end
 
@@ -491,9 +491,9 @@ function QuestFrameDetailPanel_OnShow()
 	QuestFrame_SetMaterial(QuestFrameDetailPanel, material);
 	QuestInfo_Display(QUEST_TEMPLATE_DETAIL, QuestDetailScrollChildFrame, QuestFrameAcceptButton, material);
 	QuestDetailScrollFrameScrollBar:SetValue(0);
-	local questPortrait, questPortraitText, questPortraitName = GetQuestPortraitGiver();
+	local questPortrait, questPortraitText, questPortraitName, questPortraitMount = GetQuestPortraitGiver();
 	if (questPortrait ~= 0) then
-		QuestFrame_ShowQuestPortrait(QuestFrame, questPortrait, questPortraitText, questPortraitName, -3, -42);
+		QuestFrame_ShowQuestPortrait(QuestFrame, questPortrait, questPortraitMount, questPortraitText, questPortraitName, -3, -42);
 	else
 		QuestFrame_HideQuestPortrait();
 	end

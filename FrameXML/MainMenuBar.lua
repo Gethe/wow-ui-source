@@ -51,7 +51,7 @@ function MainMenuBarMixin:OnEvent(event, ...)
 			local hasNormalTokens;
 			for index=1, GetCurrencyListSize() do
 				name, isHeader, isExpanded, isUnused, isWatched, count, icon = GetCurrencyListInfo(index);
-				if ( (not isHeader) and (count>0) ) then
+				if ( (not isHeader) and count and (count > 0) ) then
 					hasNormalTokens = true;
 				end
 			end
@@ -356,17 +356,28 @@ function MainMenuBarMixin:ChangeMenuBarSizeAndPosition(rightMultiBarShowing)
 		MainMenuBarArtFrame.PageNumber:ClearAllPoints();
 		MainMenuBarArtFrame.PageNumber:SetPoint("RIGHT", MainMenuBarArtFrameBackground, "RIGHT", -6, -3);
 	end
-	self:SetScale(1);
+	local scale = 1;
+	self:SetScale(scale);
 	self:SetPoint("BOTTOM");
-	local barRight = MainMenuBarArtFrame:GetRight();
+	local rightGryphon = MainMenuBarArtFrame.RightEndCap:GetRight();
 	local xOffset = 0;
-	if (barRight > MicroButtonAndBagsBar:GetLeft()) then
-		xOffset = barRight - MicroButtonAndBagsBar:GetLeft();
+	if (rightGryphon > MicroButtonAndBagsBar:GetLeft()) then
+		xOffset = rightGryphon - MicroButtonAndBagsBar:GetLeft();
 		local newLeft = MainMenuBarArtFrame:GetLeft() - xOffset;
-		local scale = 1;
 		if (newLeft < 0) then
-			xOffset = xOffset + newLeft + 16;
-			local availableSpace = MicroButtonAndBagsBar:GetLeft() - 4;
+			local barRight = MainMenuBarArtFrame:GetRight();
+			if (barRight > MicroButtonAndBagsBar:GetLeft()) then
+				xOffset = barRight - MicroButtonAndBagsBar:GetLeft();
+				newLeft = MainMenuBarArtFrame:GetLeft() - xOffset;
+			end
+		end
+		if (newLeft < 0) then
+			local xOffsetAdjustment = 8;
+			if (UIParent:GetScale() > 1) then
+				xOffsetAdjustment = xOffsetAdjustment + (20*UIParent:GetScale());
+			end				
+			xOffset = xOffset + newLeft + xOffsetAdjustment;
+			local availableSpace = MicroButtonAndBagsBar:GetLeft() - 16;
 			scale = availableSpace / width;
 		end
 		self:SetScale(scale);

@@ -436,12 +436,14 @@ function TalentMicroButtonMixin:HasTalentAlertToShow()
 	return not AreTalentsLocked() and GetNumUnspentTalents() > 0;
 end
 
-function TalentMicroButtonMixin:HasHonorTalentAlertToShow()
-	-- NOTE: I am disabling this alert for now because the Honor Talent system is being re-worked and this notifcation shows way more than it should currently as a result.
-	-- TODO: Re-enable this once the new Honor Talent UI is complete...and probably change so it only shows when the player enters a situation where the honor talents are active.
-	-- achurchill 01/22/18
+function TalentMicroButtonMixin:HasPvpTalentAlertToShow()
+	local hasEmptySlot, hasNewTalent = C_SpecializationInfo.GetPvpTalentAlertStatus();
+	if (hasEmptySlot) then
+		return true, TALENT_MICRO_BUTTON_UNSPENT_PVP_TALENT_SLOT;
+	elseif (hasNewTalent) then
+		return true, TALENT_MICRO_BUTTON_NEW_PVP_TALENT;
+	end
 
-	--return not AreTalentsLocked() and GetNumUnspentPvpTalents() > 0;
 	return false;
 end
 
@@ -453,12 +455,14 @@ function TalentMicroButtonMixin:EvaluateAlertVisibility()
 			return;
 		end
 	end
-	if self:HasHonorTalentAlertToShow() and (not PlayerTalentFrame or not PlayerTalentFrame:IsShown()) then
-        if (MainMenuMicroButton_ShowAlert(TalentMicroButtonAlert, TALENT_MICRO_BUTTON_UNSPENT_HONOR_TALENTS)) then
-            TalentMicroButton.suggestedTab = 3;
+	local hasAlert, text = self:HasPvpTalentAlertToShow();
+	if hasAlert and (not PlayerTalentFrame or not PlayerTalentFrame:IsShown()) then
+        if (MainMenuMicroButton_ShowAlert(TalentMicroButtonAlert, text)) then
+            TalentMicroButton.suggestedTab = 2;
             return;
         end
-    end
+	end
+
     TalentMicroButton.suggestedTab = nil;
 end
 
@@ -486,7 +490,7 @@ function TalentMicroButton_OnEvent(self, event, ...)
 		-- Small hack: GetNumSpecializations should return 0 if talents haven't been initialized yet
 		if (not self.receivedUpdate and GetNumSpecializations(false) > 0) then
 			self.receivedUpdate = true;
-			local shouldPulseForTalents = self:HasTalentAlertToShow() or self:HasHonorTalentAlertToShow();
+			local shouldPulseForTalents = self:HasTalentAlertToShow() or self:HasPvpTalentAlertToShow();
 			if (UnitLevel("player") >= SHOW_SPEC_LEVEL and (not GetSpecialization() or shouldPulseForTalents)) then
 				MicroButtonPulse(self);		
 			end

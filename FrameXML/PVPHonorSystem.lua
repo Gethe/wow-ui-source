@@ -205,7 +205,7 @@ function PVPHonorXPBar_Update(self)
 end
 
 function PVPHonorXPBar_CheckLockState(self)
-    if (UnitLevel("player") < MAX_PLAYER_LEVEL_TABLE[LE_EXPANSION_LEVEL_CURRENT]) then
+    if (UnitLevel("player") < SHOW_PVP_TALENT_LEVEL) then
         PVPHonorXPBar_Lock(self);
     else
         PVPHonorXPBar_Unlock(self);
@@ -400,10 +400,12 @@ function PVPHonorXPBar_SetPrestige(self)
 	self.Icon:SetTexture(icon or 0);
 
 	local canPrestigeHere = self:GetParent().canPrestigeHere;
-	self.Accept:SetShown(canPrestigeHere);
+	self.Accept:SetShown(canPrestigeHere and not self:GetParent().isSmall);
 
 	if (not canPrestigeHere) then
 		self.tooltip = PVP_HONOR_XP_BAR_CANNOT_PRESTIGE_HERE;
+	elseif (self.GetParent().isSmall) then
+		self.tooltip = PVP_HONOR_XP_BAR_CLICK_HERE_TO_PRESTIGE:format(name);
 	else
 		self.tooltip = name;
 	end
@@ -441,9 +443,7 @@ function PVPHonorXPBarPrestige_OnClick(self)
         frame.BottomDivider:Hide();
         frame:SetHeight(440);
     end
-    
-    SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_HONOR_TALENT_PRESTIGE, true);
-    PlayerTalentFramePVPTalents.TutorialBox:Hide();
+
 	PlaySound(SOUNDKIT.UI_PVP_HONOR_PRESTIGE_OPEN_WINDOW);                          
     frame:Show();
 end

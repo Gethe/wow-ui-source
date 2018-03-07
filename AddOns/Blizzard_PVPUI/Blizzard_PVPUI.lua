@@ -274,6 +274,8 @@ function PVPQueueFrame_OnLoad(self)
 	self:RegisterEvent("BATTLEFIELDS_SHOW");
 	self:RegisterEvent("VARIABLES_LOADED");
 	self:RegisterEvent("ARENA_SEASON_WORLD_STATE");
+	self:RegisterEvent("HONOR_PRESTIGE_UPDATE");
+	self:RegisterEvent("PRESTIGE_AND_HONOR_INVOLUNTARILY_CHANGED");
 end
 
 function PVPQueueFrame_OnEvent(self, event, ...)
@@ -301,6 +303,8 @@ function PVPQueueFrame_OnEvent(self, event, ...)
 		if self:IsVisible() then
 			PVPQueueFrame_UpdateTitle();
 		end
+	elseif ( event == "HONOR_PRESTIGE_UPDATE" or event == "PRESTIGE_AND_HONOR_INVOLUNTARILY_CHANGED" ) then
+		PVPQueueFrame_SetPrestige(self);
 	end
 end
 
@@ -332,19 +336,54 @@ function PVPQueueFrame_OnShow(self)
 		SetPortraitToTexture(PVEFrame.portrait, "Interface\\Icons\\INV_BannerPVP_02");
 	end
 
+	PVPQueueFrame_SetPrestige(self);
 	PVPQueueFrame_UpdateTitle();
 	
 	PVEFrame.TopTileStreaks:Show()
 end
 
 function PVPQueueFrame_UpdateTitle()
+	local prestigeLevel = UnitPrestige("player");
 	local currentSeason = GetCurrentArenaSeason();
+	local prestigeText;
+	if (prestigeLevel > 0) then
+		prestigeText = PVP_TALENTS_PRESTIGE_RANK_TITLE:format(select(2, GetPrestigeInfo(prestigeLevel)));
+	end
+
 	if currentSeason == NO_ARENA_SEASON then
-		PVEFrame.TitleText:SetText(PLAYER_V_PLAYER);
+		if (prestigeLevel > 0) then
+			PVEFrame.TitleText:SetText(PLAYER_V_PLAYER_PRESTIGE:format(prestigeText));
+		else
+			PVEFrame.TitleText:SetText(PLAYER_V_PLAYER);
+		end
 	else
 		local LEGION_START_SEASON = 19; -- if you're changing this you probably want to update the global string PLAYER_V_PLAYER_SEASON also
-		PVEFrame.TitleText:SetFormattedText(PLAYER_V_PLAYER_SEASON, currentSeason - LEGION_START_SEASON + 1);
+		if (prestigeLevel > 0) then
+			PVEFrame.TitleText:SetText(PLAYER_V_PLAYER_SEASON_PRESTIGE:format(currentSeason - LEGION_START_SEASON + 1, prestigeText));
+		else
+			PVEFrame.TitleText:SetText(PLAYER_V_PLAYER_SEASON:format(currentSeason - LEGION_START_SEASON + 1));
+		end
 	end
+end
+
+function PVPQueueFrame_SetPrestige(self)
+	local parent = self:GetParent():GetParent();
+	local factionGroup = UnitFactionGroup("player");
+	local prestigeLevel = UnitPrestige("player");
+	local frame = self.PrestigePortrait;
+	if (prestigeLevel > 0) then
+		frame.PortraitBackground:SetAtlas("honorsystem-prestige-laurel-bg-"..factionGroup, false);
+		frame.PortraitBackground:Show();
+		parent.portrait:SetSize(57,57);
+		parent.portrait:ClearAllPoints();
+		parent.portrait:SetPoint("CENTER", frame.PortraitBackground, "CENTER", 0, 0);
+		parent.portrait:SetTexture(GetPrestigeInfo(UnitPrestige("player")));
+		parent.portrait:SetTexCoord(0, 1, 0, 1);
+	else
+		frame.PortraitBackground:Hide();
+	end
+	frame.SmallWreath:SetShown(prestigeLevel > 0);
+	PVPQueueFrame_UpdateTitle();
 end
 
 --WARNING - You probably want to call PVEFrame_ShowFrame("PVPUIFrame", "frameName") instead
@@ -359,6 +398,7 @@ function PVPQueueFrame_ShowFrame(frame)
 			pvpFrame:Hide();
 		end
 	end
+	
 	frame:Show();
 	PVPQueueFrame.selection = frame;
 end
@@ -391,6 +431,62 @@ function PVPQueueFrame_CheckXPBarLockState(frame)
     else
         xpBar:SetPoint("TOPLEFT", frame, "TOPLEFT", 1, -7);
     end
+end
+
+function PVPQueueFramePrestigeMouseOverFrame_OnEnter(self)
+	local prestige = UnitPrestige("player");
+	if (prestige > 0) then
+		GameTooltip:ClearAllPoints();
+		GameTooltip:SetPoint("LEFT", self, "RIGHT", 4, 0);
+		GameTooltip:SetOwner(self, "ANCHOR_PRESERVE");
+		GameTooltip:SetText(select(2, GetPrestigeInfo(prestige)), 1, 1, 1, nil, true);
+		GameTooltip:AddLine(" ");
+		for i = 1, GetMaxPrestigeLevel() do
+			local color;
+			if (prestige == i) then
+				color = GREEN_FONT_COLOR;
+			else
+				color = NORMAL_FONT_COLOR;
+			end
+            local texture, name = GetPrestigeInfo(i);
+			GameTooltip:AddLine(PRESTIGE_RANK_TOOLTIP_LINE:format(texture, name), color.r, color.g, color.b);
+		end
+		GameTooltip:Show();
+	end
+end
+
+local function InitializeHonorXPBarDropDown(self, level)
+	local info = UIDropDownMenu_CreateInfo();
+	info.isNotRadio = true;
+	info.text = SHOW_FACTION_ON_MAINSCREEN;
+	info.checked = IsWatchingHonorAsXP();
+	info.func = function(_, _, _, value)
+		if ( value ) then
+			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
+			SetWatchingHonorAsXP(false);
+		else
+			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+			SetWatchingHonorAsXP(true);
+			SetWatchedFactionIndex(0);
+		end
+
+		StatusTrackingBarManager:UpdateBarsShown();
+	end
+
+	UIDropDownMenu_AddButton(info, level);
+
+	info.notCheckable = true;
+	info.checked = false;
+	info.text = CANCEL;
+
+	UIDropDownMenu_AddButton(info, level);
+end
+
+function PVPQueueHonorXPBar_OnClick(self, button)
+	if (button == "RightButton") then
+		UIDropDownMenu_Initialize(self.DropDown, InitializeHonorXPBarDropDown, "MENU");
+		ToggleDropDownMenu(1, nil, self.DropDown, self, 310, 12);
+	end
 end
 
 ---------------------------------------------------------------

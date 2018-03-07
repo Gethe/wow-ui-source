@@ -53,7 +53,7 @@
 				<Scripts>
 					<OnEnter>
 						if ( self.tooltip ) then
-							GameTooltip:SetOwner(self, ANCHOR_BOTTOMLEFT);
+							GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT");
 							GameTooltip:SetText(self.tooltip);
 						end
 					</OnEnter>
@@ -90,7 +90,7 @@
 		<Scripts>
 			<OnEnter>
 				if ( self.tooltip ) then
-					GameTooltip:SetOwner(self, ANCHOR_BOTTOMLEFT);
+					GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT");
 					GameTooltip:SetText(self.tooltip);
 				end
 			</OnEnter>

@@ -1068,6 +1068,14 @@
 					<TexCoords left="0.56347656" right="0.73046875" top="0.57421875" bottom="0.86718750"/>
 				</Texture>
 			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="IconOverlay" hidden="true">
+					<Size x="60" y="60"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 		</Layers>
 		<Scripts>
 			<OnLoad inherit="prepend">
@@ -2548,6 +2556,14 @@
 						</AnimationGroup>
 					</Animations>
 					<TexCoords left="0.56347656" right="0.73046875" top="0.57421875" bottom="0.86718750"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="IconOverlay" hidden="true">
+					<Size x="60" y="60"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
 				</Texture>
 			</Layer>
 		</Layers>

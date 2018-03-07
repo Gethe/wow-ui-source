@@ -852,7 +852,7 @@
 					<xs:element name="FogColor" type="ColorType"/>
 				</xs:sequence>
 				<xs:attribute name="file" type="xs:string"/>
-				<xs:attribute name="scale" type="xs:float" default="1.0"/>
+				<xs:attribute name="modelScale" type="xs:float" default="1.0"/>
 				<xs:attribute name="fogNear" default="0.0">
 					<xs:simpleType>
 						<xs:restriction base="xs:float"/>

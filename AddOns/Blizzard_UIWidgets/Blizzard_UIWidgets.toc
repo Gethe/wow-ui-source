@@ -1,0 +1,14 @@
+## Interface: 70300
+## Title: Blizzard UI Widgets
+## Secure: 1
+## LoadOnDemand: 0
+Blizzard_UIWidgetManager.lua
+Blizzard_UIWidgetManager.xml
+Blizzard_UIWidgetTemplateIconAndText.lua
+Blizzard_UIWidgetTemplateIconAndText.xml
+Blizzard_UIWidgetTemplateCaptureBar.lua
+Blizzard_UIWidgetTemplateCaptureBar.xml
+Blizzard_UIWidgetTopCenterFrame.lua
+Blizzard_UIWidgetTopCenterFrame.xml
+Blizzard_UIWidgetBelowMinimapFrame.lua
+Blizzard_UIWidgetBelowMinimapFrame.xml

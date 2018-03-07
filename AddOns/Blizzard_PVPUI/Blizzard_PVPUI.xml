@@ -600,10 +600,212 @@
 		<Anchors>
 			<Anchor point="TOPLEFT" x="0" y="0"/>
 		</Anchors>
-
 		<Frames>
 			<Frame name="PVPQueueFrame" useParentLevel="true" setAllPoints="true">
 				<Frames>
+					<Frame parentKey="PrestigePortrait">
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture parentKey="PortraitBackground">
+									<Size x="60" y="60"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeTo="PVEFrame" relativePoint="TOPLEFT" x="-6" y="7" />
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="OVERLAY" textureSubLevel="1">
+								<Texture parentKey="SmallWreath" atlas="honorsystem-prestige-smallwreath" useAtlasSize="false" hidden="true">
+									<Size x="73" y="43"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeTo="PVEFrame" relativePoint="TOPLEFT" x="-12" y="-19" />
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad>
+								self:SetFrameLevel(self:GetParent():GetFrameLevel()-1);
+							</OnLoad>
+						</Scripts>
+					</Frame>
+					<Frame name="PVPTalentPrestigeLevelDialog" parentKey="PrestigeLevelDialog" inherits="PortraitFrameTemplateNoCloseButton" enableMouse="true" frameStrata="DIALOG" hidden="true">
+						<Size x="325" y="500"/>
+						<Anchors>
+							<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER" x="0" y="100"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString parentKey="Label" inherits="GameFontNormal" text="PVP_PRESTIGE_RANK_UP_HONOR_TRADE">
+									<Size x="300" y="0"/>
+									<Anchors>
+										<Anchor point="TOP" x="0" y="-40"/>
+									</Anchors>
+								</FontString>
+								<Texture parentKey="Laurel" atlas="honorsystem-prestige-laurel" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="TOP" relativeKey="$parent.Label" relativePoint="BOTTOM" x="0" y="10"/>
+									</Anchors>
+								</Texture>
+								<FontString parentKey="NextRank" inherits="GameFontNormalLarge" text="5">
+									<Anchors>
+										<Anchor point="CENTER" relativeKey="$parent.Laurel" relativePoint="BOTTOM" x="0" y="46"/>
+									</Anchors>
+								</FontString>
+								<FontString parentKey="NextRankLabel" inherits="QuestFont_Super_Huge" text="Legionnaire">
+									<Size x="300" y="0"/>
+									<Anchors>
+										<Anchor point="TOP" relativeKey="$parent.Laurel" relativePoint="BOTTOM" x="0" y="20"/>
+									</Anchors>
+									<Color r="1" g="1" b="1"/>
+								</FontString>
+								<Texture parentKey="TopDivider" atlas="honorsystem-prestige-rewardline" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="TOP" relativeKey="$parent.NextRankLabel" x="0" y="-50"/>
+									</Anchors>
+								</Texture>
+								<FontString parentKey="NextMaxLevelReward" inherits="GameFontNormal">
+									<Size x="240" y="0"/>
+									<Anchors>
+										<Anchor point="TOP" relativeKey="$parent.TopDivider" relativePoint="BOTTOM" x="0" y="-6"/>
+									</Anchors>
+								</FontString>
+								<Texture parentKey="BottomDivider" atlas="honorsystem-prestige-rewardline" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="TOP" relativeKey="$parent.TopDivider" relativePoint="BOTTOM" x="0" y="-78"/>
+									</Anchors>
+								</Texture>
+								<FontString parentKey="Warning" inherits="GameFontNormal" text="PVP_PRESTIGE_RANK_UP_WARNING">
+									<Size x="300" y="0"/>
+									<Anchors>
+										<Anchor point="BOTTOM" x="0" y="60"/>
+									</Anchors>
+									<Color r="1.0" g="1.0" b="0.0"/>
+								</FontString>
+							</Layer>
+							<Layer level="BACKGROUND">
+								<Texture parentKey="LaurelBackground" atlas="honorsystem-prestige-laurel-bg-horde" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER" relativeKey="$parent.Laurel"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="OVERLAY">
+								<Texture parentKey="PrestigeIcon" atlas="honorsystem-icon-prestige-5">
+									<Size x="105" y="105"/>
+									<Anchors>
+										<Anchor point="CENTER" relativeKey="$parent.Laurel" y="3"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Frame parentKey="MaxLevelReward" inherits="PVPHonorRewardCodeTemplate">
+								<Size x="48" y="48"/>
+								<Anchors>
+									<Anchor point="TOP" relativeKey="$parent.NextMaxLevelReward" relativePoint="BOTTOM" x="0" y="-8"/>
+								</Anchors>
+								<KeyValues>
+									<KeyValue key="formatString" value="HONOR_REWARD_TITLE" type="global"/>
+								</KeyValues>
+								<Layers>
+									<Layer level="ARTWORK">
+										<Texture parentKey="Icon">
+											<Size x="47" y="47"/>
+											<Anchors>
+												<Anchor point="CENTER"/>
+											</Anchors>
+										</Texture>
+									</Layer>
+									<Layer level="ARTWORK" textureSubLevel="1">
+										<FontString parentKey="Quantity" inherits="NumberFontNormal">
+											<Anchors>
+												<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
+											</Anchors>
+										</FontString>
+										<FontString parentKey="Text" inherits="GameFontHighlight" hidden="true">
+											<Anchors>
+												<Anchor point="CENTER" x="0" y="4"/>
+											</Anchors>
+										</FontString>
+									</Layer>
+									<Layer level="OVERLAY">
+										<Texture parentKey="Frame" file="Interface\Buttons\UI-Quickslot2">
+											<Anchors>
+												<Anchor point="TOPLEFT" x="-15" y="15"/>
+												<Anchor point="BOTTOMRIGHT" x="15" y="-15"/>
+											</Anchors>
+										</Texture>
+									</Layer>
+								</Layers>
+								<Scripts>
+									<OnEnter>
+										if (self.rewardInfo) then
+											GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+											if (self.rewardInfo:SetTooltip()) then
+												GameTooltip:Show();
+											end
+										end
+									</OnEnter>
+									<OnLeave function="GameTooltip_Hide"/>
+								</Scripts>
+							</Frame>
+							<Button name="$parentCloseButton" inherits="UIPanelCloseButton" parentKey="CloseButton">
+								<Anchors>
+									<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT">
+										<Offset x="4" y="5"/>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnClick>
+										PlaySound(SOUNDKIT.UI_PVP_HONOR_PRESTIGE_WINDOW_CLOSE);
+										self:GetParent():Hide();
+									</OnClick>
+								</Scripts>
+							</Button>
+							<Button parentKey="Accept" inherits="UIPanelButtonTemplate" text="PVP_PRESTIGE_RANK_UP_ACCEPT">
+								<Size x="126" y="22"/>
+								<Anchors>
+									<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM" x="-4" y="20"/>
+								</Anchors>
+								<Scripts>
+									<OnClick>
+										PlaySound(SOUNDKIT.UI_PVP_HONOR_PRESTIGE_RANK_UP);
+										HideUIPanel(PlayerTalentFrame);
+										self:GetParent():Hide();
+										Prestige();
+									</OnClick>
+								</Scripts>
+							</Button>
+							<Button parentKey="Cancel" inherits="UIPanelButtonTemplate" text="CANCEL">
+								<Size x="126" y="22"/>
+								<Anchors>
+									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOM" x="4" y="20"/>
+								</Anchors>
+								<Scripts>
+									<OnClick>
+										PlaySound(SOUNDKIT.UI_PVP_HONOR_PRESTIGE_WINDOW_CLOSE);
+										self:GetParent():Hide();
+									</OnClick>
+								</Scripts>
+							</Button>
+						</Frames>
+						<Scripts>
+							<OnLoad>
+								self.Bg:SetTexture("Interface\\FrameGeneral\\UI-Background-Marble", true, true);
+								ButtonFrameTemplate_HidePortrait(self);
+							</OnLoad>
+						</Scripts>
+					</Frame>
+					<Frame parentKey="PortraitMouseOverFrame">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="PVEFramePortraitFrame" relativePoint="TOPLEFT"/>
+							<Anchor point="BOTTOMRIGHT" relativeTo="PVEFramePortraitFrame" relativePoint="BOTTOMRIGHT"/>
+						</Anchors>
+						<Scripts>
+							<OnEnter function="PVPQueueFramePrestigeMouseOverFrame_OnEnter"/>
+							<OnLeave function="GameTooltip_Hide"/>
+						</Scripts>
+					</Frame>
 					<Button name="$parentCategoryButton1" inherits="PVPQueueFrameButtonTemplate" parentKey="CategoryButton1" id="1">
 						<Anchors>
 							<Anchor point="TOPLEFT" x="10" y="-70" />
@@ -686,6 +888,23 @@
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT" x="1" y="-7"/>
 								</Anchors>
+								<Frames>
+									<Frame name="HonorXPBarDropDown" parentKey="DropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true">
+										<Size x="10" y="10"/>
+										<Anchors>
+											<Anchor point="TOP" x="0" y="-10"/>
+										</Anchors>
+									</Frame>
+								</Frames>
+								<Scripts>
+									<OnMouseUp function="PVPQueueHonorXPBar_OnClick"/>
+									<OnEnter>
+										PVPHonorXPBar_OnEnter(self.Bar);
+									</OnEnter>
+									<OnLeave>
+										PVPHonorXPBar_OnLeave(self.Bar);
+									</OnLeave>
+								</Scripts>
 							</Frame>
 							<Frame parentKey="RoleInset" useParentLevel="true" inherits="InsetFrameTemplate">
 								<Anchors>

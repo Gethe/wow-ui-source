@@ -1813,7 +1813,7 @@
 							</OnShow>
 						</Scripts>
 					</Frame>
-					<DressUpModel parentKey="Model" enableMouse="true" scale="2.0" inherits="ModelWithControlsTemplate">
+					<DressUpModel parentKey="Model" enableMouse="true" modelScale="2.0" inherits="ModelWithControlsTemplate">
 						<Size x="294" y="488"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" x="2" y="-4"/>

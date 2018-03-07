@@ -361,10 +361,6 @@ function CharacterCreate_OnShow()
 	C_CharacterCreation.SetCurrentRaceMode(Enum.CharacterCreateRaceMode.Normal);
 	if (PAID_SERVICE_TYPE) then
 		local raceID = C_PaidServices.GetCurrentRaceID();
-		-- Fix up pandaren raceIDs
-		if (IsPandarenRace(raceID)) then
-			raceID = PANDAREN_RACE_ID;
-		end
 		local raceData = C_CharacterCreation.GetRaceDataByID(raceID);
 		if (raceData.isAlliedRace) then
 			CharCreateRaceButtonsFrame.ClassicBanners:Hide();
@@ -938,7 +934,7 @@ function SetCharacterRace(id)
 	CharacterCreate_SetAlliedRacePreview(alliedRacePreview);
 	CharCreate_EnableNextButton(canProceed);
 
-	if ( CharacterCreate.selectedRace ~= PANDAREN_RACE_ID or not PAID_SERVICE_TYPE ) then
+	if ( CharacterCreate.selectedRace ~= PANDAREN_ALLIANCE_RACE_ID and CharacterCreate.selectedRace ~= PANDAREN_HORDE_RACE_ID or not PAID_SERVICE_TYPE) then
 		PandarenFactionButtons_ClearSelection();
 	end
 	
@@ -1734,7 +1730,7 @@ function CharCreate_DisplayPreviewModels(selectionIndex)
 			end
 			-- load model if needed, may have been cleared by different race/gender selection
 			if ( previewFrame.race ~= race or previewFrame.gender ~= gender or previewFrame.currentCamera ~= config) then
-				C_CharacterCreation.SetPreviewFrameModel(index);
+				C_CharacterCreation.UpdatePreviewFrameModel(index);
 				previewFrame.race = race;
 				previewFrame.gender = gender;
 				previewFrame.currentCamera = config;
@@ -1748,10 +1744,8 @@ function CharCreate_DisplayPreviewModels(selectionIndex)
 				model:SetCameraPosition(cx, cy, config.cz * scale);
 				model:SetLight(true, false, 0, 0, 0, config.light, 1.0, 1.0, 1.0);
 			end
-			-- need to reset the model if it was last used to preview a different feature
 			if ( previewFrame.featureType ~= currentFeatureType ) then
-				C_CharacterCreation.ResetPreviewFrameModel(index);
-				C_CharacterCreation.ShowPreviewFrameVariation(index);
+				C_CharacterCreation.UpdatePreviewFrameModel(index);
 				previewFrame.featureType = currentFeatureType;
 			end
 			previewFrame:Show();
@@ -1941,23 +1935,40 @@ function PandarenFactionButtons_Show()
 	local frame = CharCreatePandarenFactionFrame;
 	-- set the name
 	local raceName = C_CharacterCreation.GetNameForRace(PANDAREN_RACE_ID);
+	
+	--Set up the alliance button for faction change specific change. 
 	local allianceButton = CharCreateRaceButtonsFrame.AllianceRaces.Pandaren;
-	local hordeButton = CharCreateRaceButtonsFrame.HordeRaces.Pandaren;
+	allianceButton.raceID = PANDAREN_ALLIANCE_RACE_ID;
 	allianceButton.nameFrame.text:SetText(raceName);
 	allianceButton.tooltip = raceName;
-	hordeButton.nameFrame.text:SetText(raceName);
-	hordeButton.tooltip = raceName;
 	allianceButton:Enable();
 	SetButtonDesaturated(allianceButton, false);
 	allianceButton:Show();
+	
+	--Set up the horde button for faction change specific change. 
+	local hordeButton = CharCreateRaceButtonsFrame.HordeRaces.Pandaren;
+	hordeButton.nameFrame.text:SetText(raceName);
+	hordeButton.tooltip = raceName;
 	hordeButton:Enable();
 	SetButtonDesaturated(hordeButton, false);
+	hordeButton.raceID = PANDAREN_HORDE_RACE_ID;
 	hordeButton:Show();
+	
 	-- set the texture
 	PandarenFactionButtons_SetTextures();
 	-- set selected button
 	local _, faction = C_PaidServices.GetCurrentFaction();
+	
+	if (faction == "Alliance") then
+		allianceButton:Disable();
+		SetButtonDesaturated(allianceButton, true);
+	else
+		hordeButton:Disable();
+		SetButtonDesaturated(hordeButton, true);
+	end
+
 	local raceID = C_PaidServices.GetCurrentRaceID();
+	
 	if (not IsPandarenRace(raceID)) then
 		if (faction == "Alliance") then
 			allianceButton:Disable();
@@ -2037,10 +2048,8 @@ end
 ---------------------------------------------
 function CharCreateRaceButton_OnEnter(self)
 	local raceData = C_CharacterCreation.GetRaceDataByID(self.raceID);
-
 	CharacterCreateTooltip:SetOwner(self, "ANCHOR_RIGHT", 8, -5);
 	CharacterCreateTooltip:SetText(raceData.name, 1, 1, 1, 1, true);
-
 	if (raceData.isAlliedRace) then
 		local hasExpansion, hasAchievement = C_CharacterCreation.GetAlliedRaceCreationRequirements(self.raceID);
 		if (not hasExpansion) then

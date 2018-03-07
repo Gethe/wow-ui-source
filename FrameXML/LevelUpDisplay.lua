@@ -15,7 +15,7 @@ LEVEL_UP_EVENTS = {
 --  Level  = {unlock}
 	[10] = {"SpecializationUnlocked", "BGsUnlocked"},
 	[15] = {"TalentsUnlocked","LFDUnlocked"},
-	[110]= {"HonorTalentsUnlocked"},
+	[20]= {"PvpTalentsUnlocked"},
 }
 
 SUBICON_TEXCOOR_BOOK 	= {0.64257813, 0.72070313, 0.03710938, 0.11132813};
@@ -140,7 +140,7 @@ LEVEL_UP_TYPES = {
 										link=LEVEL_UP_FEATURE2..LEVEL_UP_LFD_LINK
 									},
 									
-	["HonorTalentsUnlocked"] 	= 	{	icon="Interface\\Icons\\Ability_DualWield",
+	["PvpTalentsUnlocked"] 		= 	{	icon="Interface\\Icons\\Ability_DualWield",
 										subIcon=SUBICON_TEXCOOR_LOCK,
 										text=PVP_TALENTS,
 										subText=LEVEL_UP_FEATURE,

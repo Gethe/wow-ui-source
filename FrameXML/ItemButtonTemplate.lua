@@ -109,19 +109,15 @@ function SetItemButtonQuality(button, quality, itemIDOrLink, suppressOverlays)
 			button.IconBorder:SetTexture([[Interface\Common\WhiteIconFrame]]);
 		end
 		
-		if button.IconOverlay then
-			if not suppressOverlays and C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItemByID(itemIDOrLink) then
-				button.IconOverlay:SetAtlas([[AzeriteIconFrame]]);
-				button.IconOverlay:Show();
-			else
-				button.IconOverlay:Hide();
-			end
+		if not suppressOverlays and C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItemByID(itemIDOrLink) then
+			button.IconOverlay:SetAtlas([[AzeriteIconFrame]]);
+			button.IconOverlay:Show();
+		else
+			button.IconOverlay:Hide();
 		end
 	else
 		button.IconBorder:SetTexture([[Interface\Common\WhiteIconFrame]]);
-		if button.IconOverlay then
-			button.IconOverlay:Hide();
-		end
+		button.IconOverlay:Hide();
 	end
 
 	if quality then

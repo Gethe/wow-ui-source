@@ -4,9 +4,9 @@
 		<Size x="804" y="11"/>
 		<Frames>
 			<StatusBar parentKey="StatusBar" frameStrata="LOW" drawLayer="BORDER" inherits="AnimatedStatusBarTemplate">
-				<Size x="804" y="11"/>
+				<Size x="804" y="8"/>
 				<Anchors>
-					<Anchor point="RIGHT"/>
+					<Anchor point="RIGHT" x="0" y="3"/>
 				</Anchors>
 				<BarTexture parentKey="BarTexture" file="Interface\TargetingFrame\UI-StatusBar"/>
 				<BarColor r="0.58" g="0.0" b="0.55"/>

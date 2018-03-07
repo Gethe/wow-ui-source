@@ -36,65 +36,13 @@
 		</Layers>
 	</Frame>
 	
-	<Button name="InspectPvPTalentButtonTemplate" virtual="true">
-		<Size x="26" y="26"/>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture name="$parentIconTexture" parentKey="Icon">
-					<Size x="26" y="26"/>
-					<Anchors>
-						<Anchor point="CENTER" x="-1" y="2"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="ARTWORK" textureSubLevel="1">
-				<Texture name="$parentSlot" inherits="Talent-SingleBorder" parentKey="Slot">
-					<Size x="26" y="26"/>
-					<Anchors>
-						<Anchor point="CENTER" x="-1" y="2"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="OVERLAY">
-				<Texture name="$parentBorder" parentKey="border" atlas="inspect-talent-selected" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="CENTER" x="-1" y="2"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnEnter>
-				InspectPvPTalentFrameTalent_OnEnter(self);
-			</OnEnter> 
-			<OnLeave>
-				GameTooltip_Hide();
-			</OnLeave>
-			<OnClick function="InspectPvPTalentFrameTalent_OnClick" />
-		</Scripts>
+	<Button name="InspectPvpTalentSlotTemplate" virtual="true" inherits="PvpTalentSlotTemplate" mixin="InspectPvpTalentSlotMixin" motionScriptsWhileDisabled="true">
+		<Size x="46" y="46"/>
+		<KeyValues>
+			<KeyValue key="isInspect" value="true" type="boolean"/>
+		</KeyValues>
 	</Button>
 	
-	<Frame name="InspectPvPTalentRowTemplate" virtual="true">
-		<Size x="110" y="26"/>
-		<Frames>
-			<Button name="$parentTalent1" inherits="InspectPvPTalentButtonTemplate" parentKey="Talent1">
-				<Anchors>
-					<Anchor point="LEFT" x="0" y="0"/>
-				</Anchors>
-			</Button>
-			<Button name="$parentTalent2" inherits="InspectPvPTalentButtonTemplate" parentKey="Talent2">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentTalent1" relativePoint="RIGHT" x="16"/>
-				</Anchors>
-			</Button>
-			<Button name="$parentTalent3" inherits="InspectPvPTalentButtonTemplate" parentKey="Talent3">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentTalent2" relativePoint="RIGHT" x="16"/>
-				</Anchors>
-			</Button>
-		</Frames>
-	</Frame>
-
 	<Frame name="InspectPVPFrame" enableMouse="true" parent="InspectFrame" hidden="true" useParentLevel="true" setAllPoints="true" id="2">
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -164,44 +112,26 @@
 					</OnLoad>
 				</Scripts>
 			</Frame>
-			<Frame parentKey="Talents">
-				<Size x="300" y="300"/>
+			<Button parentKey="TrinketSlot" parentArray="Slots" inherits="InspectPvpTalentSlotTemplate">
 				<Anchors>
-					<Anchor point="TOP" x="0" y="0"/>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.BG" x="-36" y="-60"/>
 				</Anchors>
-				<Frames>
-					<Frame name="$parentTalentRow1" inherits="InspectPvPTalentRowTemplate" parentKey="Tier1" id="1">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.$parent.RatedBG" relativePoint="TOPRIGHT" x="32" y="0"/>
-						</Anchors>				
-					</Frame>
-					<Frame name="$parentTalentRow2" inherits="InspectPvPTalentRowTemplate" parentKey="Tier2" id="2">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentTalentRow1" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
-						</Anchors>				
-					</Frame>
-					<Frame name="$parentTalentRow3" inherits="InspectPvPTalentRowTemplate" parentKey="Tier3" id="3">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentTalentRow2" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
-						</Anchors>				
-					</Frame>
-					<Frame name="$parentTalentRow4" inherits="InspectPvPTalentRowTemplate" parentKey="Tier4" id="4">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentTalentRow3" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
-						</Anchors>				
-					</Frame>
-					<Frame name="$parentTalentRow5" inherits="InspectPvPTalentRowTemplate" parentKey="Tier5" id="5">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentTalentRow4" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
-						</Anchors>				
-					</Frame>
-					<Frame name="$parentTalentRow6" inherits="InspectPvPTalentRowTemplate" parentKey="Tier6" id="6">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentTalentRow5" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
-						</Anchors>				
-					</Frame>
-				</Frames>
-			</Frame>
+			</Button>
+			<Button parentKey="TalentSlot1" parentArray="Slots" inherits="InspectPvpTalentSlotTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.TrinketSlot" relativePoint="BOTTOM" x="0" y="-8"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="TalentSlot2" parentArray="Slots" inherits="InspectPvpTalentSlotTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.TalentSlot1" relativePoint="BOTTOM" x="0" y="2"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="TalentSlot3" parentArray="Slots" inherits="InspectPvpTalentSlotTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.TalentSlot2" relativePoint="BOTTOM" x="0" y="2"/>
+				</Anchors>
+			</Button>	
 			<Frame parentKey="PortraitMouseOverFrame">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="InspectFramePortraitFrame" relativePoint="TOPLEFT"/>

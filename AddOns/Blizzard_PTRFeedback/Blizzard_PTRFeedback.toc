@@ -1,0 +1,7 @@
+## Interface: 70300
+## Title: PTR Feedback
+## Notes: Tool for gathering feedback from PTR
+## OnlyBetaAndPTR: 1
+Blizzard_FramePainter.lua
+Blizzard_Diagnostics.lua
+Blizzard_PTRFeedback.lua

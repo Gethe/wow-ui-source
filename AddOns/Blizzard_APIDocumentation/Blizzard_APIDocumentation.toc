@@ -27,7 +27,6 @@ AzeriteItemDocumentation.lua
 BankDocumentation.lua
 BarberShopDocumentation.lua
 BattlePetDocumentation.lua
-BattlefieldInfoDocumentation.lua
 BlackMarketInfoDocumentation.lua
 BrowserDocumentation.lua
 CalendarDocumentation.lua
@@ -83,6 +82,7 @@ PaperDollInfoDocumentation.lua
 PartyInfoDocumentation.lua
 PetInfoDocumentation.lua
 PetJournalInfoDocumentation.lua
+PvpInfoDocumentation.lua
 QuestChoiceDocumentation.lua
 QuestLogDocumentation.lua
 QuestOfferDocumentation.lua
@@ -117,6 +117,7 @@ TutorialDocumentation.lua
 UIMacrosDocumentation.lua
 UIManagerDocumentation.lua
 UIModelInfoDocumentation.lua
+UIWidgetManagerDocumentation.lua
 UnitDocumentation.lua
 VehicleDocumentation.lua
 VideoDocumentation.lua

@@ -442,6 +442,11 @@
 					</Button>
 				</Frames>
 				<Scripts>
+					<OnMouseUp>
+						if (self:GetParent().isSmall) then
+							PVPHonorXPBarPrestige_OnClick(self);
+						end
+					</OnMouseUp>
 					<OnEnter>
 						if (self.tooltip) then
 							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
@@ -455,6 +460,7 @@
 		</Frames>
 		<KeyValues>
 			<KeyValue type="boolean" key="isSmall" value="true"/>
+			<KeyValue type="boolean" key="canPrestigeHere" value="true"/>
 		</KeyValues>
 		<Scripts>
 			<OnLoad function="PVPHonorXPBar_OnLoad"/>
