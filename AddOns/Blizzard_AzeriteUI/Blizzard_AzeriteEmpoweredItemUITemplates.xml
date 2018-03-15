@@ -1,24 +1,72 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\FrameXML\UI.xsd">
-	<Frame name="AzeriteEmpoweredItemUITemplate" mixin="AzeriteEmpoweredItemUIMixin" inherits="PortraitFrameTemplate" toplevel="true" parent="UIParent" enableMouse="true" hidden="true" virtual="true">
-		<Size x="338" y="365"/>
-		<Layers>
-			<Layer level="BACKGROUND" textureSubLevel="-5">
-				<Texture parentKey="Bg" file="Interface\FrameGeneral\UI-Background-Marble" horizTile="true" vertTile="true" >
-					<Anchors>
-						<Anchor point="TOPLEFT" x="4" y="-20" />
-						<Anchor point="BOTTOMRIGHT" x="-6" y="0" />
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="ARTWORK">
-				<FontString parentKey="Temp" inherits="GameFontRed" text="Temporary User Interface">
-					<Anchors>
-						<Anchor point="BOTTOM" y="10" />
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
+	<Texture name="AzeriteUITexture" virtual="true" scale=".5855" />
+
+	<Texture name="AzeriteRingBackgroundTexture" parentArray="RingBackgrounds" inherits="AzeriteUITexture" virtual="true">
+		<Anchors>
+			<Anchor point="CENTER" />
+		</Anchors>
+	</Texture>
+
+	<Texture name="AzeriteRingGlowTexture" parentArray="RingGlows" inherits="AzeriteUITexture" alpha="0.0" alphaMode="ADD" virtual="true">
+		<Anchors>
+			<Anchor point="CENTER" />
+		</Anchors>
+	</Texture>
+
+	<Texture name="AzeriteRingBorderTexture" parentArray="RingBorders" inherits="AzeriteUITexture" virtual="true">
+		<Anchors>
+			<Anchor point="CENTER" />
+		</Anchors>
+	</Texture>
+	
+	<Frame name="AzeriteEmpoweredItemUITemplate" frameStrata="LOW" mixin="AzeriteEmpoweredItemUIMixin" inherits="PortraitFrameTemplate" toplevel="true" parent="UIParent" enableMouse="true" hidden="true" virtual="true">
+		<Size x="615" y="628"/>
+		<Frames>
+			<Frame parentKey="BackgroundFrame" useParentLevel="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="4" y="-16" />
+					<Anchor point="BOTTOMRIGHT" x="-6" y="4" />
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND" textureSubLevel="-5">
+						<Texture parentKey="Bg" atlas="Azerite-Background" useAtlasSize="true" scale=".5955">
+							<Anchors>
+								<Anchor point="CENTER" y="-4" />
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER" textureSubLevel="1">
+						<Texture parentKey="Rank4RingBg" atlas="Azerite-TitanBG-Rank4" useAtlasSize="true" inherits="AzeriteRingBackgroundTexture" />
+						<Texture parentKey="Rank3RingBg" atlas="Azerite-TitanBG-Rank3" useAtlasSize="true" inherits="AzeriteRingBackgroundTexture" />
+						<Texture parentKey="Rank2RingBg" atlas="Azerite-TitanBG-Rank2" useAtlasSize="true" inherits="AzeriteRingBackgroundTexture" />
+					</Layer>
+					<Layer level="BORDER" textureSubLevel="2">
+						<Texture parentKey="Rank4RingBgGlow" atlas="Azerite-TitanBG-Glow-Rank4" useAtlasSize="true" inherits="AzeriteRingGlowTexture" />
+						<Texture parentKey="Rank3RingBgGlow" atlas="Azerite-TitanBG-Glow-Rank3" useAtlasSize="true" inherits="AzeriteRingGlowTexture" />
+						<Texture parentKey="Rank2RingBgGlow" atlas="Azerite-TitanBG-Glow-Rank2" useAtlasSize="true" inherits="AzeriteRingGlowTexture" />
+					</Layer>
+					<Layer level="BORDER" textureSubLevel="3">
+						<Texture parentKey="Rank4Ring" atlas="Azerite-GoldRing-Rank4" useAtlasSize="true" inherits="AzeriteRingBorderTexture" />
+						<Texture parentKey="Rank3Ring" atlas="Azerite-GoldRing-Rank3" useAtlasSize="true" inherits="AzeriteRingBorderTexture" />
+						<Texture parentKey="Rank2Ring" atlas="Azerite-GoldRing-Rank2" useAtlasSize="true" inherits="AzeriteRingBorderTexture" />
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame parentKey="KeyOverlay" useParentLevel="true" frameStrata="HIGH" setAllPoints="true">
+						<Layers>
+							<Layer level="OVERLAY" textureSubLevel="6">
+								<Texture parentKey="Texture" atlas="Azerite-CenterBG-4Ranks" useAtlasSize="true" inherits="AzeriteUITexture">
+									<Anchors>
+										<Anchor point="CENTER" x="0" y="182" />
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
+				</Frames>
+			</Frame>
+		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad" />
 			<OnUpdate method="OnUpdate" />
@@ -26,5 +74,28 @@
 			<OnShow method="OnShow" />
 			<OnHide method="OnHide" />
 		</Scripts>
+		<Animations>
+			<AnimationGroup parentKey="SelectRank2Anim" setToFinalAlpha="true" looping="repeat">
+				<Alpha childKey="BackgroundFrame.Rank2RingBgGlow" duration="1.4" order="1" smoothing="IN_OUT" fromAlpha=".5" toAlpha="1"/>
+				<Alpha childKey="BackgroundFrame.Rank2RingBgGlow" startDelay="1.8" smoothing="IN_OUT" duration="1.4" order="1" fromAlpha="1" toAlpha=".5"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="FadeRank2Anim" setToFinalAlpha="true">
+				<Alpha parentKey="Alpha" childKey="BackgroundFrame.Rank2RingBgGlow" smoothing="IN_OUT" duration="1.4" order="1" fromAlpha="1" toAlpha="0"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="SelectRank3Anim" setToFinalAlpha="true" looping="repeat">
+				<Alpha childKey="BackgroundFrame.Rank3RingBgGlow" duration="1.4" order="1" smoothing="IN_OUT" fromAlpha=".5" toAlpha="1"/>
+				<Alpha childKey="BackgroundFrame.Rank3RingBgGlow" startDelay="1.8" smoothing="IN_OUT" duration="1.4" order="1" fromAlpha="1" toAlpha=".5"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="FadeRank3Anim" setToFinalAlpha="true">
+				<Alpha parentKey="Alpha" childKey="BackgroundFrame.Rank3RingBgGlow" smoothing="IN_OUT" duration="1.4" order="1" fromAlpha="1" toAlpha="0"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="SelectRank4Anim" setToFinalAlpha="true" looping="repeat">
+				<Alpha childKey="BackgroundFrame.Rank4RingBgGlow" duration="1.4" order="1" smoothing="IN_OUT" fromAlpha=".5" toAlpha="1"/>
+				<Alpha childKey="BackgroundFrame.Rank4RingBgGlow" startDelay="1.8" smoothing="IN_OUT" duration="1.4" order="1" fromAlpha="1" toAlpha=".5"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="FadeRank4Anim" setToFinalAlpha="true">
+				<Alpha parentKey="Alpha" childKey="BackgroundFrame.Rank4RingBgGlow" smoothing="IN_OUT" duration="1.4" order="1" fromAlpha="1" toAlpha="0"/>
+			</AnimationGroup>
+		</Animations>
 	</Frame>
 </Ui>

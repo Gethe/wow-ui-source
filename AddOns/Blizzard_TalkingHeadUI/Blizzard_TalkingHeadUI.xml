@@ -131,7 +131,6 @@
 								end
 							</OnEvent>
 							<OnModelLoaded function="TalkingHeadFrame_OnModelLoaded"/>
-							<OnAnimFinished function="TalkingHeadFrame_OnAnimFinished"/>
 						</Scripts>
 					</PlayerModel>
 					<Frame parentKey="Overlay">

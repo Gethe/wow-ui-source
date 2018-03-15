@@ -238,6 +238,16 @@ function TradeSkillRecipeListMixin:RebuildDataList()
 			end
 		end
 	end
+
+	if (not C_TradeSkillUI.GetOnlyShowUnlearnedRecipes()) then
+		local categories = {C_TradeSkillUI.GetCategories()};
+		for i, categoryID in ipairs(categories) do
+			if (C_TradeSkillUI.IsEmptySkillLineCategory(categoryID)) then
+				local categoryData = C_TradeSkillUI.GetCategoryInfo(categoryID);
+				table.insert(self.dataList, categoryData);
+			end
+		end
+	end
 end
 
 function TradeSkillRecipeListMixin:VerifySelection()

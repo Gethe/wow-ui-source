@@ -82,6 +82,6 @@ function UIWidgetTemplateCaptureBarMixin:Setup(widgetInfo)
 	self.oldValue = position;
 	self.Indicator:SetPoint("CENTER", self, "LEFT", position, 0);
 
-	self:SetShown(true);
+	self:Show();
 	self.orderIndex = widgetInfo.orderIndex;
 end

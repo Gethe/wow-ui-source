@@ -7,7 +7,7 @@
 				<Texture parentKey="Icon">
 					<Size x="42" y="42"/>
 					<Anchors>
-						<Anchor point="LEFT" x="-6" y="0"/>
+						<Anchor point="TOPLEFT" x="-60" y="0"/>
 					</Anchors>
 				</Texture>
 				<FontString parentKey="Text" inherits="GameFontNormalSmall">

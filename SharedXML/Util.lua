@@ -818,13 +818,23 @@ end
 
 function SetupTextureKits(textureKitID, frame, regions)
 	local textureKit = GetUITextureKitInfo(textureKitID);
+	if textureKit then
+		SetupTextureKitOnRegions(textureKit, frame, regions);
+	end
+end
+
+function SetupTextureKitOnRegions(textureKit, frame, regions)
 	if (not textureKit) then
 		return;
 	end
 
 	for region, fmt in pairs(regions) do
 		if (frame[region]) then
-			frame[region]:SetAtlas(fmt:format(textureKit));
+			if frame[region]:GetObjectType() == "StatusBar" then
+				frame[region]:SetStatusBarAtlas(fmt:format(textureKit));
+			else
+				frame[region]:SetAtlas(fmt:format(textureKit));
+			end
 		end
 	end
 end
@@ -860,4 +870,8 @@ end
 
 --[[static]] function CallbackRegistryBaseMixin:GenerateCallbackEvents(events)
 	self.Event = tInvert(events);
+end
+
+function CallErrorHandler(...)
+	return geterrorhandler()(...);
 end

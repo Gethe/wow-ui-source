@@ -44,6 +44,20 @@ local UIWidgetManager =
 			},
 		},
 		{
+			Name = "GetDoubleStatusBarWidgetVisualizationInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "widgetID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "widgetInfo", Type = "DoubleStatusBarWidgetVisualizationInfo", Nilable = true },
+			},
+		},
+		{
 			Name = "GetIconAndTextWidgetVisualizationInfo",
 			Type = "Function",
 
@@ -136,6 +150,22 @@ local UIWidgetManager =
 				{ Name = "state", Type = "CaptureBarWidgetState", Nilable = false },
 				{ Name = "barPercent", Type = "number", Nilable = false },
 				{ Name = "neutralPercent", Type = "number", Nilable = false },
+				{ Name = "orderIndex", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "DoubleStatusBarWidgetVisualizationInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "leftBarMin", Type = "number", Nilable = false },
+				{ Name = "leftBarMax", Type = "number", Nilable = false },
+				{ Name = "leftBarValue", Type = "number", Nilable = false },
+				{ Name = "rightBarMin", Type = "number", Nilable = false },
+				{ Name = "rightBarMax", Type = "number", Nilable = false },
+				{ Name = "rightBarValue", Type = "number", Nilable = false },
+				{ Name = "text", Type = "string", Nilable = false },
+				{ Name = "textureKitID", Type = "number", Nilable = false },
 				{ Name = "orderIndex", Type = "number", Nilable = false },
 			},
 		},

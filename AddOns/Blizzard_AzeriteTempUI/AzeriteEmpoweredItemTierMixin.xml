@@ -8,6 +8,13 @@
 					<Color r="0.95" g="0.95" b="1"/>
 				</Texture>
 			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="TierLabel" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="CENTER" relativePoint="LEFT" x="30" />
+					</Anchors>
+				</FontString>
+			</Layer>
 		</Layers>
 	</Frame>
 </Ui>

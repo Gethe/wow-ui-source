@@ -1,6 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\FrameXML\UI.xsd">
-	<Button name="AzeriteEmpoweredItemPowerTemplate" useParentLevel="true" mixin="AzeriteEmpoweredItemPowerMixin" virtual="true">
+	<Button name="AzeriteEmpoweredItemPowerTemplate" mixin="AzeriteEmpoweredItemPowerMixin" virtual="true">
 		<Size x="37" y="37" />
 		<Layers>
 			<Layer level="OVERLAY" textureSubLevel="2">
@@ -28,26 +28,17 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="5">
-				<Texture parentKey="CanSelectGlow" alpha="0" alphaMode="ADD" atlas="Azerite-Trait-RingGlow" useAtlasSize="true">
+				<Texture parentKey="CanSelectGlow" alpha="0" alphaMode="ADD" atlas="Artifacts-PerkRing-MainProc-Glow" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="CENTER"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="Arrow" atlas="Azerite-PointingArrow" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="BOTTOM" relativePoint="TOP" y="10"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 		</Layers>
 		<Animations>
-			<AnimationGroup parentKey="CanSelectGlowAnim" setToFinalAlpha="true" looping="repeat">
-				<Alpha childKey="CanSelectGlow" duration="1.4" order="1" smoothing="IN_OUT" fromAlpha=".1" toAlpha=".5"/>
-				<Alpha childKey="CanSelectGlow" startDelay="1.8" smoothing="IN_OUT" duration="1.4" order="1" fromAlpha=".5" toAlpha=".1"/>
-			</AnimationGroup>
-			<AnimationGroup parentKey="CanSelectArrowAnim" setToFinalAlpha="true" looping="repeat">
-				<Translation childKey="Arrow" duration=".6" order="1" smoothing="IN_OUT" offsetY="10"/>
-				<Translation childKey="Arrow" startDelay=".6" duration=".6" order="1" smoothing="IN_OUT" offsetY="-10"/>
+			<AnimationGroup parentKey="CanSelectAnim" setToFinalAlpha="true" looping="repeat">
+				<Alpha childKey="CanSelectGlow" duration="1.8" order="1" smoothing="IN_OUT" fromAlpha=".1" toAlpha=".5"/>
+				<Alpha childKey="CanSelectGlow" startDelay="1.8" smoothing="IN_OUT" duration=".8" order="1" fromAlpha=".5" toAlpha=".1"/>
 			</AnimationGroup>
 		</Animations>
 		<Scripts>

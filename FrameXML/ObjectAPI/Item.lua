@@ -187,24 +187,18 @@ function ItemEventListener:AddCancelableCallback(itemID, callbackFunction)
 	end;
 end
 
-do
-	local function CallErrorHandler(...)
-		return geterrorhandler()(...);
-	end
-
-	function ItemEventListener:FireCallbacks(itemID)
-		local callbacks = self:GetCallbacks(itemID);
-		if callbacks then
-			self:ClearCallbacks(itemID);
-			for i, callback in ipairs(callbacks) do
-				if callback ~= CANCELED_SENTINEL then
-					xpcall(callback, CallErrorHandler);
-				end
+function ItemEventListener:FireCallbacks(itemID)
+	local callbacks = self:GetCallbacks(itemID);
+	if callbacks then
+		self:ClearCallbacks(itemID);
+		for i, callback in ipairs(callbacks) do
+			if callback ~= CANCELED_SENTINEL then
+				xpcall(callback, CallErrorHandler);
 			end
+		end
 
-			for i = #callbacks, 1, -1 do
-				callbacks[i] = nil;
-			end
+		for i = #callbacks, 1, -1 do
+			callbacks[i] = nil;
 		end
 	end
 end

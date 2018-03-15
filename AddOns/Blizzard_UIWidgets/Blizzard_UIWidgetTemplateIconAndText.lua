@@ -10,7 +10,7 @@ UIWidgetManager:RegisterWidgetVisTypeTemplate(Enum.UIWidgetVisualizationType.Ico
 UIWidgetTemplateIconAndTextMixin = {}
 
 function UIWidgetTemplateIconAndTextMixin:Setup(widgetInfo)
-	self:SetShown(true);
+	self:Show();
 	self.Text:SetText(widgetInfo.text);
 	self.Icon:SetTexture(widgetInfo.icon);
 	self.DynamicIconButton.Icon:SetTexture(widgetInfo.dynamicIcon);

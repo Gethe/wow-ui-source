@@ -656,9 +656,6 @@
 				</Texture>
 			</Layer>
 		</Layers>
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-		</Scripts>
 	</Frame>
 	<Frame name="PortraitFrameTemplate-HiRes" inherits="PortraitFrameTemplateNoCloseButton-HiRes" virtual="true">
 		<Frames>

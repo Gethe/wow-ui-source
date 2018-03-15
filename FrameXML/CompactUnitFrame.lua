@@ -1165,7 +1165,7 @@ function CompactUnitFrame_UtilSetBuff(buffFrame, unit, index, filter)
 	buffFrame.icon:SetTexture(icon);
 	if ( count > 1 ) then
 		local countText = count;
-		if ( count >= 10 ) then
+		if ( count >= 100 ) then
 			countText = BUFF_STACKS_OVERFLOW;
 		end
 		buffFrame.count:Show();
@@ -1245,7 +1245,7 @@ function CompactUnitFrame_UtilSetDebuff(debuffFrame, unit, index, filter, isBoss
 	debuffFrame.icon:SetTexture(icon);
 	if ( count > 1 ) then
 		local countText = count;
-		if ( count >= 10 ) then
+		if ( count >= 100 ) then
 			countText = BUFF_STACKS_OVERFLOW;
 		end
 		debuffFrame.count:Show();

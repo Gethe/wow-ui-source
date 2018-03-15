@@ -20,6 +20,20 @@ local TradeSkillUI =
 				{ Name = "parentSkillLineDisplayName", Type = "string", Nilable = true },
 			},
 		},
+		{
+			Name = "IsEmptySkillLineCategory",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "categoryID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "effectivelyKnown", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Events =

@@ -119,7 +119,7 @@ function CreateObjectPool(creationFunc, resetterFunc)
 	return objectPool;
 end
 
-FramePoolMixin = Mixin({}, ObjectPoolMixin);
+FramePoolMixin = CreateFromMixins(ObjectPoolMixin);
 
 local function FramePoolFactory(framePool)
 	return CreateFrame(framePool.frameType, nil, framePool.parent, framePool.frameTemplate);
@@ -151,7 +151,7 @@ function CreateFramePool(frameType, parent, frameTemplate, resetterFunc)
 	return framePool;
 end
 
-TexturePoolMixin = Mixin({}, ObjectPoolMixin);
+TexturePoolMixin = CreateFromMixins(ObjectPoolMixin);
 
 local function TexturePoolFactory(texturePool)
 	return texturePool.parent:CreateTexture(nil, texturePool.layer, texturePool.textureTemplate, texturePool.subLayer);
@@ -174,7 +174,7 @@ function CreateTexturePool(parent, layer, subLayer, textureTemplate, resetterFun
 	return texturePool;
 end
 
-FontStringPoolMixin = Mixin({}, ObjectPoolMixin);
+FontStringPoolMixin = CreateFromMixins(ObjectPoolMixin);
 
 local function FontStringPoolFactory(fontStringPool)
 	return fontStringPool.parent:CreateFontString(nil, fontStringPool.layer, fontStringPool.fontStringTemplate, fontStringPool.subLayer);
@@ -197,7 +197,7 @@ function CreateFontStringPool(parent, layer, subLayer, fontStringTemplate, reset
 	return fontStringPool;
 end
 
-ActorPoolMixin = Mixin({}, ObjectPoolMixin);
+ActorPoolMixin = CreateFromMixins(ObjectPoolMixin);
 
 local function ActorPoolFactory(actorPool)
 	return actorPool.parent:CreateActor(nil, actorPool.actorTemplate);

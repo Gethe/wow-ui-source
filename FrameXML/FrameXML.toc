@@ -17,6 +17,7 @@
 ..\SharedXML\LayoutFrame.xml
 ..\SharedXML\ManagedLayoutFrame.xml
 ..\SharedXML\BulletPoint.xml
+..\SharedXML\TransformTree\TransformTree.xml
 MixinUtil.lua
 
 ## intrinsics

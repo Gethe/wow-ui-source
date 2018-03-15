@@ -968,10 +968,17 @@ function InspectUnit(unit)
 	end
 end
 
-function OpenAzeriteEmpoweredItemUI(itemLocation)
-	UIParentLoadAddOn("Blizzard_AzeriteUI");
-	AzeriteEmpoweredItemUI:SetToItemAtLocation(itemLocation);
-	ShowUIPanel(AzeriteEmpoweredItemUI);
+do
+	local isGmClient = IsGMClient();
+	function OpenAzeriteEmpoweredItemUI(itemLocation)
+		if isGmClient and GetCVarBool("useWIPAzeriteUI") and not IsAddOnLoaded("Blizzard_AzeriteTempUI") then
+			UIParentLoadAddOn("Blizzard_AzeriteUI");
+		else
+			UIParentLoadAddOn("Blizzard_AzeriteTempUI");
+		end
+		AzeriteEmpoweredItemUI:SetToItemAtLocation(itemLocation);
+		ShowUIPanel(AzeriteEmpoweredItemUI);
+	end
 end
 
 local function PlayBattlefieldBanner(self)
