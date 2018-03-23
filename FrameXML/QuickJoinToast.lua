@@ -17,7 +17,9 @@ function QuickJoinToastMixin:OnLoad()
 		self.throttle:Init();
 	end
 
-	self:SetPoint("BOTTOMLEFT", DEFAULT_CHAT_FRAME.buttonFrame, "TOPLEFT", -1, 27);
+	local alertSystem = ChatAlertFrame:AddAutoAnchoredSubSystem(self);
+	ChatAlertFrame:SetSubSystemAnchorPriority(alertSystem, 0);
+
 	self.FriendCount:SetShadowOffset(1, 1);
 
 	self:UpdateDisplayedFriendCount();
@@ -56,7 +58,7 @@ function QuickJoinToastMixin:OnEvent(event, ...)
 		local index, guid = ...;
 		self:ProcessOrQueueUpdate(guid);
 	elseif ( event == "GROUP_LEFT" ) then
-		local guid = ...;
+		local index, guid = ...;
 		self:ProcessOrQueueUpdate(guid);
 		self:CheckShowToast();
 	elseif ( event == "PVP_BRAWL_INFO_UPDATED") then
@@ -301,7 +303,7 @@ function QuickJoinToastMixin:OnClick(button)
 		QuickJoinFrame:SelectGroup(self.displayedToast.guid);
 		QuickJoinFrame:ScrollToGroup(self.displayedToast.guid);
 	else
-		ToggleFriendsFrame(1);
+		ToggleFriendsFrame(FRIEND_TAB_FRIENDS);
 	end
 end
 

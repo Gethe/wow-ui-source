@@ -308,76 +308,8 @@
 		</HighlightTexture>
 	</Button>
 
-	<Button name="UIPanelButtonTemplate" virtual="true">
-		<Size x="40" y="22"/>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture parentKey="Left" file="Interface\Buttons\UI-Panel-Button-Up">
-					<Size x="12" y="22"/>
-					<Anchors>
-						<Anchor point="TOPLEFT"/>
-						<Anchor point="BOTTOMLEFT"/>
-					</Anchors>
-					<TexCoords left="0" right="0.09375" top="0" bottom="0.6875"/>
-				</Texture>
-				<Texture parentKey="Right" file="Interface\Buttons\UI-Panel-Button-Up">
-					<Size x="12" y="22"/>
-					<Anchors>
-						<Anchor point="TOPRIGHT"/>
-						<Anchor point="BOTTOMRIGHT"/>
-					</Anchors>
-					<TexCoords left="0.53125" right="0.625" top="0" bottom="0.6875"/>
-				</Texture>
-				<Texture parentKey="Middle" file="Interface\Buttons\UI-Panel-Button-Up">
-					<Size x="12" y="22"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Left" relativePoint="TOPRIGHT"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Right" relativePoint="BOTTOMLEFT"/>
-					</Anchors>
-					<TexCoords left="0.09375" right="0.53125" top="0" bottom="0.6875"/>
-				</Texture>
-			</Layer>
-		</Layers>
+	<Button name="UIPanelButtonTemplate" inherits="UIPanelButtonNoTooltipTemplate" virtual="true">
 		<Scripts>
-			<OnLoad>
-				if ( not self:IsEnabled() ) then
-					self.Left:SetTexture("Interface\\Buttons\\UI-Panel-Button-Disabled");
-					self.Middle:SetTexture("Interface\\Buttons\\UI-Panel-Button-Disabled");
-					self.Right:SetTexture("Interface\\Buttons\\UI-Panel-Button-Disabled");
-				end
-			</OnLoad>
-			<OnMouseDown>
-				if ( self:IsEnabled() ) then
-					self.Left:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down");
-					self.Middle:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down");
-					self.Right:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down");
-				end
-			</OnMouseDown>
-			<OnMouseUp>
-				if ( self:IsEnabled() ) then
-					self.Left:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
-					self.Middle:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
-					self.Right:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
-				end
-			</OnMouseUp>
-			<OnShow>
-				if ( self:IsEnabled() ) then
-					-- we need to reset our textures just in case we were hidden before a mouse up fired
-					self.Left:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
-					self.Middle:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
-					self.Right:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
-				end
-			</OnShow>
-			<OnDisable>
-				self.Left:SetTexture("Interface\\Buttons\\UI-Panel-Button-Disabled");
-				self.Middle:SetTexture("Interface\\Buttons\\UI-Panel-Button-Disabled");
-				self.Right:SetTexture("Interface\\Buttons\\UI-Panel-Button-Disabled");
-			</OnDisable>
-			<OnEnable>
-				self.Left:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
-				self.Middle:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
-				self.Right:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
-			</OnEnable>
 			<OnEnter>
 				if(self.tooltipText ~= nil) then
 					GameTooltip_AddNewbieTip(self, self.tooltipText, 1.0, 1.0, 1.0, self.newbieText);
@@ -389,11 +321,6 @@
 				end
 			</OnLeave>
 		</Scripts>
-		<ButtonText name="$parentText" parentKey="Text"/>
-		<NormalFont style="GameFontNormal"/>
-		<HighlightFont style="GameFontHighlight"/>
-		<DisabledFont style="GameFontDisable"/>
-		<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
 	</Button>
 	<CheckButton name="UIRadioButtonTemplate" virtual="true">
 		<Size>
@@ -1118,23 +1045,6 @@
 		<DisabledTexture inherits="UIPanelButtonDisabledTexture"/>
 		<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
 	</Button>
-	<Texture name="UIPanelScrollBarButton" virtual="true">
-		<TexCoords left="0.20" right="0.80" top="0.25" bottom="0.75"/>
-	</Texture>
-	<Button name="UIPanelScrollUpButtonTemplate" virtual="true">
-		<Size x="18" y="16"/>
-		<NormalTexture parentKey="Normal" inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-ScrollUpButton-Up"/>
-		<PushedTexture parentKey="Pushed" inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-ScrollUpButton-Down"/>
-		<DisabledTexture parentKey="Disabled" inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-ScrollUpButton-Disabled"/>
-		<HighlightTexture parentKey="Highlight" inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-ScrollUpButton-Highlight" alphaMode="ADD"/>
-	</Button>
-	<Button name="UIPanelScrollDownButtonTemplate" virtual="true">
-		<Size x="18" y="16"/>
-		<NormalTexture parentKey="Normal" inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-ScrollDownButton-Up"/>
-		<PushedTexture parentKey="Pushed" inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-ScrollDownButton-Down"/>
-		<DisabledTexture parentKey="Disabled" inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-ScrollDownButton-Disabled"/>
-		<HighlightTexture parentKey="Highlight" inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-ScrollDownButton-Highlight" alphaMode="ADD"/>
-	</Button>
 
 	<Slider name="HorizontalSliderTemplate" orientation="HORIZONTAL" enableMouse="true" virtual="true">
 		<HitRectInsets>
@@ -1156,46 +1066,6 @@
 		</ThumbTexture>
 	</Slider>
 
-	<Slider name="UIPanelScrollBarTemplate" virtual="true">
-		<Size x="16" y="0"/>
-		<Frames>
-			<Button name="$parentScrollUpButton" parentKey="ScrollUpButton" inherits="UIPanelScrollUpButtonTemplate">
-				<Anchors>
-					<Anchor point="BOTTOM" relativePoint="TOP"/>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						local parent = self:GetParent();
-						local scrollStep = self:GetParent().scrollStep or (parent:GetHeight() / 2);
-						parent:SetValue(parent:GetValue() - scrollStep);
-						PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
-					</OnClick>
-				</Scripts>
-			</Button>
-			<Button name="$parentScrollDownButton" parentKey="ScrollDownButton" inherits="UIPanelScrollDownButtonTemplate">
-				<Anchors>
-					<Anchor point="TOP" relativePoint="BOTTOM"/>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						local parent = self:GetParent();
-						local scrollStep = self:GetParent().scrollStep or (parent:GetHeight() / 2);
-						parent:SetValue(parent:GetValue() + scrollStep);
-						PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
-					</OnClick>
-				</Scripts>
-			</Button>
-		</Frames>
-		<Scripts>
-			<OnValueChanged>
-				self:GetParent():SetVerticalScroll(value);
-			</OnValueChanged>
-		</Scripts>
-		<ThumbTexture name="$parentThumbTexture" parentKey="ThumbTexture" inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-Knob">
-			<Size x="18" y="24"/>
-			<TexCoords left="0.20" right="0.80" top="0.125" bottom="0.875"/>
-		</ThumbTexture>
-	</Slider>
 	<Slider name="UIPanelStretchableArtScrollBarTemplate" inherits="UIPanelScrollBarTemplate" virtual="true">
 		<Size x="20" y="0" />
 		<Anchors>
@@ -1541,38 +1411,6 @@
 			<TexCoords left="0.20" right="0.80" top="0.125" bottom="0.875"/>
 		</ThumbTexture>
 	</Slider>
-	<ScrollFrame name="UIPanelScrollFrameCodeTemplate" virtual="true">
-		<Scripts>
-			<OnLoad>
-				ScrollFrame_OnLoad(self);
-			</OnLoad>
-			<OnScrollRangeChanged>
-				ScrollFrame_OnScrollRangeChanged(self, xrange, yrange);
-			</OnScrollRangeChanged>
-			<!--  The code to disable the ScrollDownButton is pretty hacked, but it works -->
-			<OnVerticalScroll>
-				local scrollbar = self.ScrollBar or _G[self:GetName().."ScrollBar"];
-				scrollbar:SetValue(offset);
-
-				local min, max = scrollbar:GetMinMaxValues();
-				(scrollbar.ScrollUpButton or _G[scrollbar:GetName().."ScrollUpButton"]):SetEnabled(offset ~= 0);
-				(scrollbar.ScrollDownButton or _G[scrollbar:GetName().."ScrollDownButton"]):SetEnabled((scrollbar:GetValue() - max) ~= 0);
-			</OnVerticalScroll>
-			<OnMouseWheel>
-				ScrollFrameTemplate_OnMouseWheel(self, delta);
-			</OnMouseWheel>
-		</Scripts>
-	</ScrollFrame>
-	<ScrollFrame name="UIPanelScrollFrameTemplate" virtual="true" inherits="UIPanelScrollFrameCodeTemplate">
-		<Frames>
-			<Slider name="$parentScrollBar" inherits="UIPanelScrollBarTemplate" parentKey="ScrollBar">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="6" y="-16"/>
-					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="6" y="16"/>
-				</Anchors>
-			</Slider>
-		</Frames>
-	</ScrollFrame>
 	<ScrollFrame name="UIPanelScrollFrameTemplate2" inherits="UIPanelScrollFrameTemplate" virtual="true">
 		<Layers>
 			<Layer level="ARTWORK">
@@ -1614,7 +1452,7 @@
 			<OnScrollRangeChanged function=""/>
 		</Scripts>
 		<ScrollChild>
-			<Frame name="$parentScrollChildFrame">
+			<Frame name="$parentScrollChildFrame" parentKey="ScrollChildFrame">
 				<Size x="300" y="334"/>
 			</Frame>
 		</ScrollChild>
@@ -1682,40 +1520,6 @@
 		</Layers>
 	</ScrollFrame>
 
-	<EditBox name="InputBoxTemplate" enableMouse="true" virtual="true">
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture parentKey="Left" file="Interface\Common\Common-Input-Border">
-					<Size x="8" y="20"/>
-					<Anchors>
-						<Anchor point="LEFT" x="-5" y="0"/>
-					</Anchors>
-					<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
-				</Texture>
-				<Texture parentKey="Right" file="Interface\Common\Common-Input-Border">
-					<Size x="8" y="20"/>
-					<Anchors>
-						<Anchor point="RIGHT" x="0" y="0"/>
-					</Anchors>
-					<TexCoords left="0.9375" right="1.0" top="0" bottom="0.625"/>
-				</Texture>
-				<Texture parentKey="Middle" file="Interface\Common\Common-Input-Border">
-					<Size x="10" y="20"/>
-					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.Left" relativePoint="RIGHT"/>
-						<Anchor point="RIGHT" relativeKey="$parent.Right" relativePoint="LEFT"/>
-					</Anchors>
-					<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625"/>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnEscapePressed function="EditBox_ClearFocus"/>
-			<OnEditFocusLost function="EditBox_ClearHighlight"/>
-			<OnEditFocusGained function="EditBox_HighlightText"/>
-		</Scripts>
-		<FontString inherits="ChatFontNormal"/>
-	</EditBox>
 	<EditBox name="NumericInputSpinnerTemplate" letters="3" numeric="true" autoFocus="false" inherits="InputBoxTemplate" mixin="NumericInputSpinnerMixin" virtual="true">
 		<Size x="31" y="20"/>
 		<Layers>
@@ -1834,6 +1638,64 @@
 			<OnEnable function="InputBoxInstructions_OnEnable"/>
 		</Scripts>
 		<FontString inherits="GameFontHighlightSmall"/>
+	</EditBox>
+
+	<EditBox name="SearchBoxTemplate" inherits="InputBoxInstructionsTemplate" autoFocus="false" virtual="true">
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture name="$parentSearchIcon" file="Interface\Common\UI-Searchbox-Icon" parentKey="searchIcon">
+					<Size x="14" y="14"/>
+					<Anchors>
+						<Anchor point="LEFT" x="0" y="-2"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentClearButton" parentKey="clearButton" hidden="true">
+				<Size x="17" y="17"/>
+				<Anchors>
+					<Anchor point="RIGHT" x="-3" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture file="Interface\FriendsFrame\ClearBroadcastIcon" alpha="0.5" parentKey="texture">
+							<Size>
+								<AbsDimension x="17" y="17"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						self.texture:SetAlpha(1.0);
+					</OnEnter>
+					<OnLeave>
+						self.texture:SetAlpha(0.5);
+					</OnLeave>
+					<OnMouseDown>
+						if self:IsEnabled() then
+							self.texture:SetPoint("TOPLEFT", self, "TOPLEFT", 1, -1);
+						end
+					</OnMouseDown>
+					<OnMouseUp>
+						self.texture:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 0);
+					</OnMouseUp>
+					<OnClick function="SearchBoxTemplateClearButton_OnClick"/>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad function="SearchBoxTemplate_OnLoad"/>
+			<OnEscapePressed function="EditBox_ClearFocus"/>
+			<OnEnterPressed function="EditBox_ClearFocus"/>
+			<OnEditFocusLost function="SearchBoxTemplate_OnEditFocusLost"/>
+			<OnEditFocusGained function="SearchBoxTemplate_OnEditFocusGained"/>
+			<OnTextChanged function="SearchBoxTemplate_OnTextChanged"/>
+		</Scripts>
 	</EditBox>
 
 	<Button name="TabButtonTemplate" virtual="true">
@@ -1999,6 +1861,29 @@
 		</Frames>
 		<Scripts>
 			<OnShow method="OnShow"/>
+		</Scripts>
+	</Frame>
+
+<!--
+*******************************************************************************
+	TruncatedButtonTemplate
+	This button template will truncate any text that goes out of the button. If text is truncated,
+	the button will have a tooltip with the full text.
+*******************************************************************************
+-->
+	<Button name="TruncatedButtonTemplate" motionScriptsWhileDisabled="true" virtual="true">
+		<ButtonText name="$parentText" parentKey="Text"/>
+		<Scripts>
+			<OnSizeChanged function="TruncatedButton_OnSizeChanged"/>
+			<OnEnter function="TruncatedButton_OnEnter"/>
+			<OnLeave function="TruncatedButton_OnLeave"/>
+		</Scripts>
+	</Button>
+	
+	<Frame name="TruncatedTooltipScriptTemplate" virtual="true">
+		<Scripts>
+			<OnEnter function="TruncatedTooltipScript_OnEnter"/>
+			<OnLeave function="TruncatedTooltipScript_OnLeave"/>
 		</Scripts>
 	</Frame>
 </Ui>

@@ -196,15 +196,6 @@
 							</Layer>
 						</Layers>
 					</Frame>
-					<Button name="PlayerSpeakerFrame" inherits="VoiceChatSpeakerTemplate" hidden="true">
-						<Size x="20" y="20"/>
-						<Anchors>
-							<Anchor point="LEFT" relativePoint="RIGHT" x="0" y="-3"/>
-						</Anchors>
-						<Scripts>
-							<OnUpdate function="VoiceChat_OnUpdate"/>
-						</Scripts>
-					</Button>
 					<Frame name="PlayerFrameReadyCheck" inherits="ReadyCheckStatusTemplate" hidden="true">
 						<Size x="40" y="40"/>
 						<Anchors>

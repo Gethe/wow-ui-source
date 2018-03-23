@@ -3543,7 +3543,7 @@ function EncounterJournal_AddMapButtons()
 				local _, _, _, displayInfo = EJ_GetCreatureInfo(1, encounterID);
 				bossButton.displayInfo = displayInfo;
 				if ( displayInfo ) then
-					SetPortraitTexture(bossButton.bgImage, displayInfo);
+					SetPortraitTextureFromCreatureDisplayID(bossButton.bgImage, displayInfo);
 				else
 					bossButton.bgImage:SetTexture("DoesNotExist");
 				end
@@ -3570,7 +3570,7 @@ function EncounterJournal_UpdateMapButtonPortraits()
 		local index = 1;
 		local bossButton = _G["EJMapButton"..index];
 		while ( bossButton and bossButton:IsShown() ) do
-			SetPortraitTexture(bossButton.bgImage, bossButton.displayInfo);
+			SetPortraitTextureFromCreatureDisplayID(bossButton.bgImage, bossButton.displayInfo);
 			index = index + 1;
 			bossButton = _G["EJMapButton"..index];
 		end

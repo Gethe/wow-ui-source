@@ -1,0 +1,47 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="VoiceActivityNotification.lua"/>
+
+	<ContainedAlertFrame name="VoiceActivityNotificationBaseTemplate" mixin="VoiceActivityNotificationBaseMixin" hidden="true" virtual="true">
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnClick method="OnClick"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</ContainedAlertFrame>
+
+	<ContainedAlertFrame name="VoiceActivityNotificationTemplate" inherits="VoiceActivityNotificationBaseTemplate" mixin="VoiceActivityNotificationMixin" virtual="true">
+		<Size x="120" y="28"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Portrait">
+					<Size x="28" y="28"/>
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="VoiceSpeaker" file="Interface\Common\VoiceChat-Speaker">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Portrait" relativePoint="RIGHT" x="-2"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="VoiceSound" file="Interface\Common\VoiceChat-On">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.VoiceSpeaker" relativePoint="RIGHT"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Name" justifyH="LEFT" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.VoiceSound" relativePoint="RIGHT" x="5"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</ContainedAlertFrame>
+</Ui>

@@ -6,9 +6,24 @@ function PropertyBindingMixin:RegisterStateUpdateEvent(event, optionalCallback)
 	self:RegisterEvent(event); -- NOTE: Depends on this being mixed into a frame
 end
 
+function PropertyBindingMixin:UnregisterStateUpdateEvent(event)
+	local events = self.stateUpdateEvents;
+	if events then
+		events[event] = nil;
+		self:UnregisterEvent(event); -- NOTE: Depends on this being mixed into a frame
+	end
+end
+
 function PropertyBindingMixin:RegisterPropertyChangeHandler(event, optionalCallback)
 	self.propertyChangeEvents = self.propertyChangeEvents or {};
 	self.propertyChangeEvents[event] = optionalCallback or self.UpdateVisibleState;
+end
+
+function PropertyBindingMixin:UnregisterPropertyChangeHandler(event)
+	local events = self.propertyChangeEvents;
+	if events then
+		self.propertyChangeEvents[event] = nil;
+	end
 end
 
 do

@@ -302,6 +302,10 @@ function Chat_GetChatCategory(chatType)
 	return CHAT_INVERTED_CATEGORY_LIST[chatType] or chatType;
 end
 
+function Chat_GetChannelColor(chatInfo)
+	return chatInfo.r, chatInfo.g, chatInfo.b;
+end
+
 -- list of text emotes that we want to show on the Emote submenu (these have anims)
 EmoteList = {
 	"WAVE",
@@ -703,6 +707,15 @@ GROUP_LANGUAGE_INDEPENDENT_STRINGS =
 	"g7",
 	"g8",
 };
+
+function ChatFrame_TruncateToMaxLength(text, maxLength)
+	local length = strlenutf8(text);
+	if ( length > maxLength ) then
+		return text:sub(1, maxLength - 2).."...";
+	end
+	
+	return text;
+end
 
 --
 -- CastSequence support
@@ -3455,35 +3468,7 @@ function ChatFrame_GetMessageEventFilters (event)
 end
 
 function ChatFrame_OnUpdate(self, elapsedSec)
-	local flash = _G[self:GetName().."ButtonFrameBottomButtonFlash"];
-
-	if ( not flash ) then
-		return;
-	end
-
-	if ( self:AtBottom() ) then
-		if ( flash:IsShown() ) then
-			flash:Hide();
-		end
-		return;
-	end
-
-	local flashTimer = self.flashTimer + elapsedSec;
-	if ( flashTimer < CHAT_BUTTON_FLASH_TIME ) then
-		self.flashTimer = flashTimer;
-		return;
-	end
-
-	while ( flashTimer >= CHAT_BUTTON_FLASH_TIME ) do
-		flashTimer = flashTimer - CHAT_BUTTON_FLASH_TIME;
-	end
-	self.flashTimer = flashTimer;
-
-	if ( flash:IsShown() ) then
-		flash:Hide();
-	else
-		flash:Show();
-	end
+	-- TODO: No longer updating scroll to bottom flash, remains as a hookable function
 end
 
 function ChatFrame_OnHyperlinkShow(self, link, text, button)
@@ -3552,8 +3537,8 @@ function MessageFrameScrollButton_OnUpdate(self, elapsed)
 	end
 end
 
-function ChatFrame_OpenMenu()
-	ChatMenu:Show();
+function ChatFrame_ToggleMenu()
+	ChatMenu:SetShown(not ChatMenu:IsShown());
 end
 
 function ChatFrameMenu_UpdateAnchorPoint()
@@ -4015,6 +4000,9 @@ function ChatEdit_InsertLink(text)
 			return true;
 		end
 	end
+	if ( CommunitiesFrame and CommunitiesFrame.ChatEditBox:HasFocus() ) then
+		CommunitiesFrame.ChatEditBox:Insert(text);
+	end
 	return false;
 end
 
@@ -4154,7 +4142,7 @@ function ChatEdit_UpdateHeader(editBox)
 	end
 
 	local headerWidth = (header:GetRight() or 0) - (header:GetLeft() or 0);
-	local editBoxWidth = editBox:GetRight() - editBox:GetLeft();
+	local editBoxWidth = (editBox:GetRight() or 0) - (editBox:GetLeft() or 0);
 
 	if ( headerWidth > editBoxWidth / 2 ) then
 		header:SetWidth(editBoxWidth / 2);
@@ -4378,7 +4366,7 @@ function ChatEdit_OnChar(self)
 	end
 	if (command and target and self.autoCompleteParams) then --if they typed a command with a autocompletable target
 		local utf8Position = self:GetUTF8CursorPosition();
-		local nameToShow = GetAutoCompleteResults(target, self.autoCompleteParams.include, self.autoCompleteParams.exclude, 1, utf8Position)[1];
+		local nameToShow = GetAutoCompleteResults(target, 1, utf8Position, self.autoCompleteParams.include, self.autoCompleteParams.exclude)[1];
 		if (nameToShow and nameToShow.name) then
 			local name = Ambiguate(nameToShow.name, "all");
 			--We're going to be setting the text programatically which will clear the userInput flag on the editBox.
@@ -4587,7 +4575,7 @@ function ChatEdit_ExtractTellTarget(editBox, msg, chatType)
 		return false;
 	end
 
-	if ( #GetAutoCompleteResults(target, tellTargetExtractionAutoComplete.include, tellTargetExtractionAutoComplete.exclude, 1, nil, true) > 0 ) then
+	if ( #GetAutoCompleteResults(target, 1, 0, tellTargetExtractionAutoComplete.include, tellTargetExtractionAutoComplete.exclude, true) > 0 ) then
 		--Even if there's a space, we still want to let the person keep typing -- they may be trying to type whatever is in AutoComplete.
 		return false;
 	end
@@ -4603,7 +4591,7 @@ function ChatEdit_ExtractTellTarget(editBox, msg, chatType)
 		while ( strfind(target, "%s") ) do
 			--Pull off everything after the last space.
 			target = strmatch(target, "(.+)%s+[^%s]*");
-			if ( #GetAutoCompleteResults(target, tellTargetExtractionAutoComplete.include, tellTargetExtractionAutoComplete.exclude, 1, nil, true) > 0 ) then
+			if ( #GetAutoCompleteResults(target, 1, 0, tellTargetExtractionAutoComplete.include, tellTargetExtractionAutoComplete.exclude, true) > 0 ) then
 				break;
 			end
 		end

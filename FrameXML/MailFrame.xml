@@ -619,7 +619,7 @@
 						</Layers>
 						<Scripts>
 							<OnLoad>
-								self.autoCompleteParams = AUTOCOMPLETE_LIST.MAIL;
+								AutoCompleteEditBox_SetAutoCompleteSource(self, GetAutoCompleteResults, AUTOCOMPLETE_LIST.MAIL.include, AUTOCOMPLETE_LIST.MAIL.exclude);
 								self.addHighlightedText = true;
 								self.autoCompleteContext = "mail";
 							</OnLoad>

@@ -1255,9 +1255,9 @@
 								if ( userInput ) then
 									local isGuildEvent = CalendarEventGetCalendarType() == "GUILD_EVENT";
 									if ( isGuildEvent ) then
-										self.autoCompleteParams = AUTOCOMPLETE_LIST.CALENDARGUILDEVENT;
+										AutoCompleteEditBox_SetAutoCompleteSource(self, GetAutoCompleteResults, AUTOCOMPLETE_LIST.CALENDARGUILDEVENT.include, AUTOCOMPLETE_LIST.CALENDARGUILDEVENT.exclude);
 									else
-										self.autoCompleteParams = AUTOCOMPLETE_LIST.CALENDAREVENT;
+										AutoCompleteEditBox_SetAutoCompleteSource(self, GetAutoCompleteResults, AUTOCOMPLETE_LIST.CALENDAREVENT.include, AUTOCOMPLETE_LIST.CALENDAREVENT.exclude);
 									end
 									AutoCompleteEditBox_OnTextChanged(self, userInput);
 								end

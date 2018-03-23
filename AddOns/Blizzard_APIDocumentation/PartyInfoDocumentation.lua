@@ -7,6 +7,15 @@ local PartyInfo =
 	Functions =
 	{
 		{
+			Name = "GetActiveCategories",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "categories", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetInviteConfirmationInvalidQueues",
 			Type = "Function",
 
@@ -30,6 +39,16 @@ local PartyInfo =
 			LiteralName = "ENTERED_DIFFERENT_INSTANCE_FROM_PARTY",
 		},
 		{
+			Name = "GroupFormed",
+			Type = "Event",
+			LiteralName = "GROUP_FORMED",
+			Payload =
+			{
+				{ Name = "category", Type = "number", Nilable = false },
+				{ Name = "partyGUID", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "GroupInviteConfirmation",
 			Type = "Event",
 			LiteralName = "GROUP_INVITE_CONFIRMATION",
@@ -50,6 +69,7 @@ local PartyInfo =
 			LiteralName = "GROUP_LEFT",
 			Payload =
 			{
+				{ Name = "category", Type = "number", Nilable = false },
 				{ Name = "partyGUID", Type = "string", Nilable = false },
 			},
 		},

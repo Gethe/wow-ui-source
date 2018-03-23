@@ -378,7 +378,7 @@ function EquipmentFlyout_DisplayButton(button, paperDollItemSlot)
 		return;
 	end
 
-	local id, name, textureName, count, durability, maxDurability, invType, locked, start, duration, enable, setTooltip, quality, isUpgrade = EquipmentManager_GetItemInfoByLocation(location);
+	local itemID, name, textureName, count, durability, maxDurability, invType, locked, start, duration, enable, setTooltip, quality, isUpgrade = EquipmentManager_GetItemInfoByLocation(location);
 	button.UpgradeIcon:SetShown(isUpgrade);
 	local broken = ( maxDurability and durability == 0 );
 	if ( textureName ) then
@@ -392,7 +392,7 @@ function EquipmentFlyout_DisplayButton(button, paperDollItemSlot)
 			SetItemButtonNormalTextureVertexColor(button, 1.0, 1.0, 1.0);
 		end
 
-		SetItemButtonQuality(button, quality);
+		SetItemButtonQuality(button, quality, itemID);
 
 		CooldownFrame_Set(button.cooldown, start, duration, enable);
 		

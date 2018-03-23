@@ -1,6 +1,13 @@
-AzeriteEmpoweredItemUIMixin = {};
+AzeriteEmpoweredItemUIMixin = CreateFromMixins(CallbackRegistryBaseMixin);
+
+AzeriteEmpoweredItemUIMixin:GenerateCallbackEvents(
+{
+    "OnShow",
+});
 
 function AzeriteEmpoweredItemUIMixin:OnLoad()
+	CallbackRegistryBaseMixin.OnLoad(self);
+
 	UIPanelWindows[self:GetName()] = { area = "left", pushable = 0, showFailedFunc = function() self:OnShowFailed(); end, };
 
 	self.tierPool = CreateFramePool("FRAME", self, "AzeriteEmpoweredItemTierTemplate");
@@ -16,6 +23,7 @@ end
 
 function AzeriteEmpoweredItemUIMixin:OnShow()
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
+	self:TriggerEvent(AzeriteEmpoweredItemUIMixin.Event.OnShow);
 end
 
 function AzeriteEmpoweredItemUIMixin:OnHide()

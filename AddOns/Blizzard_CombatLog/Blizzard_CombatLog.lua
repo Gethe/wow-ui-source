@@ -3326,34 +3326,22 @@ function Blizzard_CombatLog_QuickButtonFrame_OnEvent(self, event, ...)
 	end
 end
 
-
--- BUG: Since we're futzing with the frame height, the combat log tab fades out on hover while other tabs remain faded in. This bug is in the stock version, as well.
-
 local function Blizzard_CombatLog_AdjustCombatLogHeight()
-	-- This prevents improper positioning of the frame due to the scale not yet being set.
-	-- This whole method of resizing the frame and extending the background to preserve visual continuity really screws with repositioning after
-	-- a reload. I'm not sure it's going to work well in the long run.
-	local uiScale = tonumber(GetCVar("uiScale"));
-	--if UIParent:GetScale() ~= uiScale then return end
-
 	local quickButtonHeight = CombatLogQuickButtonFrame:GetHeight();
 
 	if ( COMBATLOG.isDocked ) then
-		local oldPoint,relativeTo,relativePoint,xOfs,yOfs;
+		local oldPoint, relativeTo, relativePoint, x, y;
 		for i=1, COMBATLOG:GetNumPoints() do
-			oldPoint,relativeTo,relativePoint,xOfs,yOfs = COMBATLOG:GetPoint(i);
+			oldPoint, relativeTo, relativePoint, x, y = COMBATLOG:GetPoint(i);
 			if ( oldPoint == "TOPLEFT" ) then
 				break;
 			end
 		end
-		COMBATLOG:SetPoint("TOPLEFT", relativeTo, relativePoint, xOfs/uiScale, -quickButtonHeight);
+		COMBATLOG:SetPoint("TOPLEFT", relativeTo, relativePoint, x, -quickButtonHeight);
 	end
 
-	local yOffset = (3 + quickButtonHeight*uiScale) / uiScale;
-	local xOffset = 2 / uiScale;
-	local combatLogBackground = _G[COMBATLOG:GetName().."Background"];
-	combatLogBackground:SetPoint("TOPLEFT", COMBATLOG, "TOPLEFT", -xOffset, yOffset);
-	combatLogBackground:SetPoint("TOPRIGHT", COMBATLOG, "TOPRIGHT", xOffset, yOffset);
+	FloatingChatFrame_UpdateBackgroundAnchors(COMBATLOG);
+	FCF_UpdateButtonSide(COMBATLOG);
 end
 
 -- On Load
@@ -3363,6 +3351,7 @@ function Blizzard_CombatLog_QuickButtonFrame_OnLoad(self)
 	-- We're using the _Custom suffix to get around the show/hide bug in FloatingChatFrame.lua.
 	-- Once the fading is removed from FloatingChatFrame.lua these can do back to the non-custom values, and the dummy frame creation should be removed.
 	CombatLogQuickButtonFrame = _G.CombatLogQuickButtonFrame_Custom
+	COMBATLOG.CombatLogQuickButtonFrame = CombatLogQuickButtonFrame;
 	CombatLogQuickButtonFrameProgressBar = _G.CombatLogQuickButtonFrame_CustomProgressBar
 	CombatLogQuickButtonFrameTexture = _G.CombatLogQuickButtonFrame_CustomTexture
 
@@ -3370,7 +3359,13 @@ function Blizzard_CombatLog_QuickButtonFrame_OnLoad(self)
 	CombatLogQuickButtonFrame:SetParent(COMBATLOG:GetName() .. "Tab");
 	CombatLogQuickButtonFrame:ClearAllPoints();
 	CombatLogQuickButtonFrame:SetPoint("BOTTOMLEFT", COMBATLOG, "TOPLEFT");
-	CombatLogQuickButtonFrame:SetPoint("BOTTOMRIGHT", COMBATLOG, "TOPRIGHT");
+
+	if COMBATLOG.ScrollBar then
+		CombatLogQuickButtonFrame:SetPoint("BOTTOMRIGHT", COMBATLOG, "TOPRIGHT", COMBATLOG.ScrollBar:GetWidth(), 0);
+	else
+		CombatLogQuickButtonFrame:SetPoint("BOTTOMRIGHT", COMBATLOG, "TOPRIGHT");
+	end
+
 	CombatLogQuickButtonFrameProgressBar:Hide();
 
 	-- Hook the frame's hide/show events so we can hide/show the quick buttons as appropriate.

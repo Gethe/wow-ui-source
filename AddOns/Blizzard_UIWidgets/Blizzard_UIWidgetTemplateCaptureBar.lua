@@ -9,10 +9,19 @@ UIWidgetManager:RegisterWidgetVisTypeTemplate(Enum.UIWidgetVisualizationType.Cap
 
 UIWidgetTemplateCaptureBarMixin = {}
 
-local CAPTURE_BAR_STYLE = {
-	["PVP"] = { BarBackground = "worldstate-capturebar-frame-factions", LeftBar = "worldstate-capturebar-blue", RightBar = "worldstate-capturebar-red", Middle="worldstate-capturebar-spark-yellow" },
-	["LFD_BATTLEFIELD"] = { BarBackground = "worldstate-capturebar-frame", LeftBar = "worldstate-capturebar-yellow", RightBar = "worldstate-capturebar-purple", Middle="worldstate-capturebar-spark-green" },
-};
+local PVPTextureKitRegions = {
+	["BarBackground"] = "%s-frame-factions",
+	["LeftBar"] = "%s-blue",
+	["RightBar"] = "%s-red",
+	["Middle"] = "%s-spark-yellow",
+}
+
+local LFDTextureKitRegions = {
+	["BarBackground"] = "%s-frame",
+	["LeftBar"] = "%s-yellow",
+	["RightBar"] = "%s-purple",
+	["Middle"] = "%s-spark-green",
+}
 
 local LEFT_BAR_OFFSET = 25;
 local FULL_BAR_SIZE = 124;
@@ -26,20 +35,14 @@ function UIWidgetTemplateCaptureBarMixin:Setup(widgetInfo)
 		self.oldValue = position;
 	end
 
-	-- style
-	local style = "PVP";
-	if ( IsInLFDBattlefield() ) then
-		style = "LFD_BATTLEFIELD"
-	end
-	if ( self.style ~= style ) then
-		self.style = style;
-		for key, atlas in pairs(CAPTURE_BAR_STYLE[style]) do
-			if ( self[key] ) then
-				self[key]:SetAtlas(atlas);
-			else
-				self.Indicator[key]:SetAtlas(atlas);
-			end
-		end
+	local useLFDBattlefieldTextures = IsInLFDBattlefield();
+	if ( self.useLFDBattlefieldTextures ~= useLFDBattlefieldTextures ) then
+		self.useLFDBattlefieldTextures = useLFDBattlefieldTextures;
+
+		local regions = useLFDBattlefieldTextures and LFDTextureKitRegions or PVPTextureKitRegions;
+
+		SetupTextureKits(widgetInfo.textureKitID, self, regions);
+		SetupTextureKits(widgetInfo.textureKitID, self.Indicator, regions);
 	end
 
 	-- Left/Right indicators

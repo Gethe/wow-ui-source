@@ -12,6 +12,7 @@ Constants.lua
 GlueFonts.xml
 GlueFontStyles.xml
 GlueLocalization.xml
+..\SharedXML\SecureUIPanelTemplates.xml
 ..\SharedXML\SharedUIPanelTemplates.xml
 ..\SharedXML\SharedBasicControls.xml
 GlueTemplates.xml

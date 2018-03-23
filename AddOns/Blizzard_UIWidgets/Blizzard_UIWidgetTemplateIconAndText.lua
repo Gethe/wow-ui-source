@@ -9,12 +9,18 @@ UIWidgetManager:RegisterWidgetVisTypeTemplate(Enum.UIWidgetVisualizationType.Ico
 
 UIWidgetTemplateIconAndTextMixin = {}
 
+local textureKitRegions = {
+	["Icon"] = "%s-icon",
+	["DynamicIconTexture"] = "%s-dynamicIcon",
+	["FlashTexture"] = "%s-flash",
+}
+
 function UIWidgetTemplateIconAndTextMixin:Setup(widgetInfo)
 	self:Show();
+
+	SetupTextureKits(widgetInfo.textureKitID, self, textureKitRegions, true);
+
 	self.Text:SetText(widgetInfo.text);
-	self.Icon:SetTexture(widgetInfo.icon);
-	self.DynamicIconButton.Icon:SetTexture(widgetInfo.dynamicIcon);
-	self.Flash.Texture:SetTexture(widgetInfo.dynamicIconFlash);
 	self.tooltip = widgetInfo.tooltip;
 	self.DynamicIconButton.tooltip = widgetInfo.dynamicTooltip;
 	self.hasTimer = widgetInfo.hasTimer;

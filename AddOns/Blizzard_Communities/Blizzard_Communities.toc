@@ -1,0 +1,15 @@
+## Interface: 70300
+## Title: Blizzard_Communities
+## Secure: 1
+## LoadOnDemand: 0
+
+..\..\SharedXML\SecureUIPanelTemplates.lua
+CommunitiesList.xml
+CommunitiesMemberList.xml
+CommunitiesChatFrame.xml
+CommunitiesInvitationFrame.xml
+CommunitiesGuildFinderFrame.xml
+CommunitiesStreams.xml
+CommunitiesCreateDialogInsecure.xml
+CommunitiesCreateFrame.xml
+CommunitiesFrame.xml

@@ -6,6 +6,26 @@ local Unit =
 	Functions =
 	{
 		{
+			Name = "SetPortraitTexture",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "textureObject", Type = "table", Nilable = false },
+				{ Name = "unitToken", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "SetPortraitTextureFromCreatureDisplayID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "textureObject", Type = "table", Nilable = false },
+				{ Name = "creatureDisplayID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "UnitAlliedRaceInfo",
 			Type = "Function",
 
@@ -18,6 +38,51 @@ local Unit =
 			{
 				{ Name = "isAlliedRace", Type = "bool", Nilable = false },
 				{ Name = "hasHeritageArmorUnlocked", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitClass",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "className", Type = "string", Nilable = false },
+				{ Name = "classFilename", Type = "string", Nilable = false },
+				{ Name = "classID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitClassBase",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "classFilename", Type = "string", Nilable = false },
+				{ Name = "classID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitIsConnected",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isConnected", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -79,6 +144,20 @@ local Unit =
 			Returns =
 			{
 				{ Name = "maxPower", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitSex",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "sex", Type = "number", Nilable = true },
 			},
 		},
 	},
@@ -389,6 +468,7 @@ local Unit =
 				{ Name = "message", Type = "string", Nilable = false },
 				{ Name = "duration", Type = "number", Nilable = false },
 				{ Name = "currencyTypesID", Type = "number", Nilable = false },
+				{ Name = "currencyCost", Type = "number", Nilable = false },
 				{ Name = "currentDifficulty", Type = "number", Nilable = false },
 			},
 		},

@@ -1,0 +1,73 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="RosterButton.lua"/>
+
+	<Button name="RosterVoiceToggleButtonTemplate" inherits="VoiceToggleButtonTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="fixedWidth" value="14" type="number"/>
+			<KeyValue key="fixedHeight" value="14" type="number"/>
+
+			<KeyValue key="iconKey" value="Icon" type="string"/>
+			<KeyValue key="fixedIconWidth" value="14" type="number"/>
+			<KeyValue key="fixedIconHeight" value="14" type="number"/>
+			<KeyValue key="iconPushedOffsetX" value="1" type="number"/>
+			<KeyValue key="iconPushedOffsetY" value="-1" type="number"/>
+			<KeyValue key="iconPushedAlpha" value="1" type="number"/>
+			<KeyValue key="iconNormalAlpha" value="1" type="number"/>
+
+			<KeyValue key="normalAtlas" value="" type="string"/>
+			<KeyValue key="pushedAtlas" value="" type="string"/>
+			<KeyValue key="highlightAtlas" value="" type="string"/>
+
+			<KeyValue key="tooltipFrame" value="GameTooltip" type="global"/>
+			<KeyValue key="tooltipPoint" value="ANCHOR_RIGHT" type="string"/>
+		</KeyValues>
+	</Button>
+
+	<Button name="RosterDeafenButtonTemplate" mixin="RosterDeafenButtonMixin" inherits="RosterVoiceToggleButtonTemplate" virtual="true"/>
+	<Button name="RosterMuteButtonTemplate" mixin="RosterMuteButtonMixin" inherits="RosterVoiceToggleButtonTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="customToggleFunctionName" value="ToggleMuteState" type="string"/>
+		</KeyValues>
+	</Button>
+
+	<Button name="ChannelRosterButtonTemplate" mixin="ChannelRosterButtonMixin" hidden="true" virtual="true">
+		<Size x="160" y="22"/>
+		<Layers>
+			<Layer level="BORDER">
+				<FontString parentKey="Name" justifyH="LEFT" inherits="GameFontHighlightSmall">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="8" y="0" />
+						<Anchor point="BOTTOMRIGHT" x="-14"/> <!-- leave space for  the rank icon after the name -->
+					</Anchors>
+				</FontString>
+				<Texture parentKey="Rank">
+					<Size x="12" y="12"/>
+					<Anchors>
+						<Anchor point="LEFT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="MuteButton" inherits="RosterMuteButtonTemplate">
+				<Anchors>
+					<Anchor point="RIGHT"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="DeafenButton" inherits="RosterDeafenButtonTemplate">
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.MuteButton" relativePoint="LEFT" x="-5" y="0"/>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnClick method="OnClick"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+		<NormalTexture parentKey="NormalTexture" atlas="voicechat-channellist-row-background"/>
+		<HighlightTexture parentKey="HighlightTexture" atlas="voicechat-channellist-row-highlight" alphaMode="ADD"/>
+	</Button>
+</Ui>

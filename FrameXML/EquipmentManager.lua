@@ -279,13 +279,13 @@ function EquipmentManager_GetItemInfoByLocation (location)
 		return;
 	end
 
-	local id, name, textureName, count, durability, maxDurability, invType, locked, start, duration, enable, setTooltip, quality, isUpgrade, _;
+	local itemID, name, textureName, count, durability, maxDurability, invType, locked, start, duration, enable, setTooltip, quality, isUpgrade, _;
 	if ( voidStorage ) then
-		id, textureName, _, _, _, quality = GetVoidItemInfo(tab, voidSlot);
+		itemID, textureName, _, _, _, quality = GetVoidItemInfo(tab, voidSlot);
 		setTooltip = function () GameTooltip:SetVoidItem(tab, voidSlot) end;
 	elseif ( not bags ) then -- and (player or bank) 
-		id = GetInventoryItemID("player", slot);
-		name, _, _, _, _, _, _, _, invType, textureName = GetItemInfo(id);
+		itemID = GetInventoryItemID("player", slot);
+		name, _, _, _, _, _, _, _, invType, textureName = GetItemInfo(itemID);
 		if ( textureName ) then
 			count = GetInventoryItemCount("player", slot);
 			durability, maxDurability = GetInventoryItemDurability(slot);
@@ -297,8 +297,8 @@ function EquipmentManager_GetItemInfoByLocation (location)
 		
 		setTooltip = function () GameTooltip:SetInventoryItem("player", slot) end;
 	else -- bags
-		id = GetContainerItemID(bag, slot);
-		name, _, _, _, _, _, _, _, invType = GetItemInfo(id);
+		itemID = GetContainerItemID(bag, slot);
+		name, _, _, _, _, _, _, _, invType = GetItemInfo(itemID);
 		textureName, count, locked, quality = GetContainerItemInfo(bag, slot);
 		start, duration, enable = GetContainerItemCooldown(bag, slot);
 		
@@ -308,7 +308,7 @@ function EquipmentManager_GetItemInfoByLocation (location)
 		setTooltip = function () GameTooltip:SetBagItem(bag, slot); end;
 	end
 	
-	return id, name, textureName, count, durability, maxDurability, invType, locked, start, duration, enable, setTooltip, quality, isUpgrade;
+	return itemID, name, textureName, count, durability, maxDurability, invType, locked, start, duration, enable, setTooltip, quality, isUpgrade;
 end
 
 function EquipmentManager_EquipSet (setID)

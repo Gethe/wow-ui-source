@@ -177,12 +177,18 @@ function PortraitFrameCloseButton_OnClick(self)
 	end
 end
 
-
--- Function to handle the update of manually calculated scrollframes.  Used mostly for listings with an indeterminate number of items
-function FauxScrollFrame_Update(frame, numItems, numToDisplay, buttonHeight, button, smallWidth, bigWidth, highlightFrame, smallHighlightWidth, bigHighlightWidth, alwaysShowScrollBar )
-	-- If more than one screen full of skills then show the scrollbar
+function FauxScrollFrame_GetChildFrames(frame)
 	local frameName = frame:GetName();
-	local scrollBar = _G[ frameName.."ScrollBar" ];
+	if frameName then
+		return _G[ frameName.."ScrollBar" ], _G[ frameName.."ScrollChildFrame" ], _G[ frameName.."ScrollBarScrollUpButton" ], _G[ frameName.."ScrollBarScrollDownButton" ];
+	else
+		return frame.ScrollBar, frame.ScrollChildFrame, frame.ScrollBar.ScrollUpButton, frame.ScrollBar.ScrollDownButton;
+	end
+end
+
+function FauxScrollFrame_Update(frame, numItems, numToDisplay, buttonHeight, button, smallWidth, bigWidth, highlightFrame, smallHighlightWidth, bigHighlightWidth, alwaysShowScrollBar)
+	local scrollBar, scrollChildFrame, scrollUpButton, scrollDownButton = FauxScrollFrame_GetChildFrames(frame);
+	-- If more than one screen full of skills then show the scrollbar
 	local showScrollBar;
 	if ( numItems > numToDisplay or alwaysShowScrollBar ) then
 		frame:Show();
@@ -192,9 +198,6 @@ function FauxScrollFrame_Update(frame, numItems, numToDisplay, buttonHeight, but
 		frame:Hide();
 	end
 	if ( frame:IsShown() ) then
-		local scrollChildFrame = _G[ frameName.."ScrollChildFrame" ];
-		local scrollUpButton = _G[ frameName.."ScrollBarScrollUpButton" ];
-		local scrollDownButton = _G[ frameName.."ScrollBarScrollDownButton" ];
 		local scrollFrameHeight = 0;
 		local scrollChildHeight = 0;
 
@@ -253,7 +256,7 @@ function FauxScrollFrame_Update(frame, numItems, numToDisplay, buttonHeight, but
 end
 
 function FauxScrollFrame_OnVerticalScroll(self, value, itemHeight, updateFunction)
-	local scrollbar = _G[self:GetName().."ScrollBar"];
+	local scrollbar = FauxScrollFrame_GetChildFrames(self);
 	scrollbar:SetValue(value);
 	self.offset = floor((value / itemHeight) + 0.5);
 	if ( updateFunction ) then
@@ -262,7 +265,7 @@ function FauxScrollFrame_OnVerticalScroll(self, value, itemHeight, updateFunctio
 end
 
 function FauxScrollFrame_GetOffset(frame)
-	return frame.offset;
+	return frame.offset or 0;
 end
 
 function FauxScrollFrame_SetOffset(frame, offset)
@@ -426,20 +429,8 @@ function EditBox_HandleTabbing(self, tabList)
 	_G[target]:SetFocus();
 end
 
-function EditBox_ClearFocus (self)
-	self:ClearFocus();
-end
-
 function EditBox_SetFocus (self)
 	self:SetFocus();
-end
-
-function EditBox_HighlightText (self)
-	self:HighlightText();
-end
-
-function EditBox_ClearHighlight (self)
-	self:HighlightText(0, 0);
 end
 
 function InputBoxInstructions_OnTextChanged(self)
@@ -458,6 +449,45 @@ end
 
 function InputBoxInstructions_OnEnable(self)
 	InputBoxInstructions_UpdateColorForEnabledState(self, self.enabledColor);
+end
+
+function SearchBoxTemplate_OnLoad(self)
+	self.searchIcon:SetVertexColor(0.6, 0.6, 0.6);
+	self:SetTextInsets(16, 20, 0, 0);
+	self.Instructions:SetText(SEARCH);
+	self.Instructions:ClearAllPoints();
+	self.Instructions:SetPoint("TOPLEFT", self, "TOPLEFT", 16, 0);
+	self.Instructions:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -20, 0);
+end
+
+function SearchBoxTemplate_OnEditFocusLost(self)
+	if ( self:GetText() == "" ) then
+		self.searchIcon:SetVertexColor(0.6, 0.6, 0.6);
+		self.clearButton:Hide();
+	end
+end
+
+function SearchBoxTemplate_OnEditFocusGained(self)
+	self.searchIcon:SetVertexColor(1.0, 1.0, 1.0);
+	self.clearButton:Show();
+end
+
+function SearchBoxTemplate_OnTextChanged(self)
+	if ( not self:HasFocus() and self:GetText() == "" ) then
+		self.searchIcon:SetVertexColor(0.6, 0.6, 0.6);
+		self.clearButton:Hide();
+	else
+		self.searchIcon:SetVertexColor(1.0, 1.0, 1.0);
+		self.clearButton:Show();
+	end
+	InputBoxInstructions_OnTextChanged(self);
+end
+
+function SearchBoxTemplateClearButton_OnClick(self)
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+	local editBox = self:GetParent();
+	editBox:SetText("");
+	editBox:ClearFocus();
 end
 
 -- functions to manage tab interfaces where only one tab of a group may be selected
@@ -668,8 +698,9 @@ function PanelTemplates_SelectTab(tab)
 	middleDisabled:Show();
 	rightDisabled:Show();
 
-	if ( GameTooltip and GameTooltip:IsOwned(tab) ) then
-		GameTooltip:Hide();
+	local tooltip = GetAppropriateTooltip();
+	if tooltip:IsOwned(tab) then
+		tooltip:Hide();
 	end
 end
 
@@ -929,4 +960,61 @@ function PortraitFrameTemplateMixin:OnLoad()
 		self.LeftBorder:SetAtlas("!UI-Frame-LeftTile2x");
 		self.RightBorder:SetAtlas("!UI-Frame-RightTile2x");
 	end
+end
+
+-- Truncated Button code
+
+function TruncatedButton_OnSizeChanged(self, width, height)
+	self.Text:SetWidth(width - 5);
+	self.Text:SetHeight(height);
+end
+
+function TruncatedButton_OnEnter(self)
+	if self.Text:IsTruncated() then
+		local tooltip = GetAppropriateTooltip();
+		tooltip:SetOwner(self, "ANCHOR_RIGHT");
+		tooltip:SetText(self.Text:GetText());
+		tooltip:Show();
+	end
+end
+
+function TruncatedButton_OnLeave(self)
+	local tooltip = GetAppropriateTooltip();
+	if tooltip:GetOwner() == self then
+		tooltip:Hide();
+	end
+end
+
+-- Truncated Tooltip Script code
+
+function TruncatedTooltipScript_OnEnter(self)
+	local text = self.truncatedTooltipScriptText or self.Text;
+	if text:IsTruncated() then
+		local tooltip = GetAppropriateTooltip();
+		tooltip:SetOwner(self, "ANCHOR_RIGHT");
+		tooltip:SetText(text:GetText());
+		tooltip:Show();
+	end
+end
+
+function TruncatedTooltipScript_OnLeave(self)
+	local tooltip = GetAppropriateTooltip();
+	if tooltip:GetOwner() == self then
+		tooltip:Hide();
+	end
+end
+
+function GetAppropriateTopLevelParent()
+	return UIParent or GlueParent;
+end
+
+function SetAppropriateTopLevelParent(frame)
+	local parent = GetAppropriateTopLevelParent();
+	if parent then
+		frame:SetParent(parent);
+	end
+end
+
+function GetAppropriateTooltip()
+	return UIParent and GameTooltip or GlueTooltip;
 end

@@ -43,6 +43,7 @@ LFG_LIST_PER_EXPANSION_TEXTURES = {
 	[4] = "mists",
 	[5] = "warlords",
 	[6] = "legion",
+	[7] = "legion",
 }
 
 LFG_LIST_GROUP_DATA_ATLASES = {
@@ -2761,6 +2762,8 @@ function LFGListUtil_GetDecoratedCategoryName(categoryName, filter, useColors)
 		colorEnd = "|r";
 	end
 
+	print(filter)
+	
 	local extraName = "";
 	if ( filter == LE_LFG_LIST_FILTER_NOT_RECOMMENDED ) then
 		extraName = LFG_LIST_LEGACY;

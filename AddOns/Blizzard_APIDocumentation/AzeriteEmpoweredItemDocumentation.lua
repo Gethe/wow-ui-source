@@ -51,6 +51,20 @@ local AzeriteEmpoweredItem =
 			},
 		},
 		{
+			Name = "HasAnyUnselectedPowers",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "azeriteEmpoweredItemLocation", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "hasAnyUnselectedPowers", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsAzeriteEmpoweredItem",
 			Type = "Function",
 
@@ -97,16 +111,6 @@ local AzeriteEmpoweredItem =
 
 	Events =
 	{
-		{
-			Name = "AzeriteEmpoweredItemNewTierAvailable",
-			Type = "Event",
-			LiteralName = "AZERITE_EMPOWERED_ITEM_NEW_TIER_AVAILABLE",
-			Payload =
-			{
-				{ Name = "azeriteEmpoweredItemLocation", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
-				{ Name = "tierIndex", Type = "number", Nilable = false },
-			},
-		},
 		{
 			Name = "AzeriteEmpoweredItemSelectionUpdated",
 			Type = "Event",

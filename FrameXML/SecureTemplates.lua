@@ -220,7 +220,7 @@ local InitializeSecureMenu = function(self)
 		menu = "OTHERBATTLEPET";
 	elseif( UnitIsOtherPlayersPet(unit) ) then
 		menu = "OTHERPET";
-	-- Last ditch checks 
+	-- Last ditch checks
 	elseif( UnitIsPlayer(unit) ) then
 		if( UnitInRaid(unit) ) then
 			menu = "RAID_PLAYER";
@@ -292,7 +292,6 @@ SECURE_ACTIONS.togglemenu = function(self, unit, button)
 		secureDropdown = CreateFrame("Frame", "SecureTemplatesDropdown", nil, "UIDropDownMenuTemplate");
 		secureDropdown:SetID(1);
 
-		table.insert(UnitPopupFrames, secureDropdown:GetName());
 		UIDropDownMenu_Initialize(secureDropdown, InitializeSecureMenu, "MENU");
 	end
 
@@ -383,7 +382,7 @@ SECURE_ACTIONS.spell =
             CastSpellByName(spell, unit);
         end
     end;
-	
+
 SECURE_ACTIONS.toy =
 	function (self, unit, button)
 		local toy = SecureButton_GetModifiedAttribute(self, "toy", button);
@@ -458,7 +457,7 @@ SECURE_ACTIONS.cancelaura =
         end
     end;
 
-SECURE_ACTIONS.destroytotem = 
+SECURE_ACTIONS.destroytotem =
 	function(self, unit, button)
 		DestroyTotem(SecureButton_GetModifiedAttribute(self, "totem-slot", button));
 	end;
@@ -563,7 +562,7 @@ SECURE_ACTIONS.worldmarker =
 			end
 		end
 	end;
-	
+
 function SecureActionButton_OnClick(self, button, down)
     -- TODO check with Tom etc if this is kosher
     if (down) then

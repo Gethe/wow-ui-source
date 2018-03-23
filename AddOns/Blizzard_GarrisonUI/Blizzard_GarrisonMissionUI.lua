@@ -1584,6 +1584,7 @@ local ANIMATION_CONTROL = {
 		[14] = { duration = 0,		onStartFunc = GarrisonMissionComplete.AnimSkipNext },				-- click Next button if we're in skip mode
 	}
 };
+ANIMATION_CONTROL[LE_FOLLOWER_TYPE_GARRISON_8_0] = ANIMATION_CONTROL[LE_FOLLOWER_TYPE_GARRISON_7_0];
 
 function GarrisonFollowerMissionComplete:SetAnimationControl()
 	self.animationControl = ANIMATION_CONTROL[self:GetParent().followerTypeID];

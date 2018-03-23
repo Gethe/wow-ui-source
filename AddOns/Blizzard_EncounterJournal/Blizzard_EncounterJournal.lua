@@ -90,7 +90,7 @@ function GetEJTierData(tier)
 	if tier <= #EJ_TIER_DATA then
 		return EJ_TIER_DATA[tier];
 	end
-	
+
 	return EJ_TIER_DATA[1];
 end
 
@@ -109,7 +109,7 @@ function GetEJTierDataTableID(expansion)
 	if data then
 		return data;
 	end
-	
+
 	return ExpansionEnumToEJTierDataTableId[LE_EXPANSION_CLASSIC];
 end
 
@@ -140,7 +140,7 @@ function EncounterJournal_OnLoad(self)
 	SetPortraitToTexture(EncounterJournalPortrait,"Interface\\EncounterJournal\\UI-EJ-PortraitIcon");
 	self:RegisterEvent("EJ_LOOT_DATA_RECIEVED");
 	self:RegisterEvent("EJ_DIFFICULTY_UPDATE");
-	self:RegisterEvent("PORTRAITS_UPDATED");
+	self:RegisterEvent("UNIT_PORTRAIT_UPDATE");
 	self:RegisterEvent("SEARCH_DB_LOADED");
 	self:RegisterEvent("UI_MODEL_SCENE_INFO_UPDATED");
 
@@ -295,13 +295,13 @@ function EncounterJournal_OnShow(self)
 	instanceSelect.bg:SetTexture(tierData.backgroundTexture);
 	instanceSelect.raidsTab.selectedGlow:SetVertexColor(tierData.r, tierData.g, tierData.b);
 	instanceSelect.dungeonsTab.selectedGlow:SetVertexColor(tierData.r, tierData.g, tierData.b);
-	EncounterJournal_CheckLevelAndDisplayLootTab(); 
+	EncounterJournal_CheckLevelAndDisplayLootTab();
 end
 
 function EncounterJournal_CheckLevelAndDisplayLootTab()
 
 	local instanceSelect = EncounterJournal.instanceSelect;
-	
+
 	if(UnitLevel("player") < 100) then
 		PanelTemplates_HideTab(instanceSelect, instanceSelect.LootJournalTab.id)
 	else
@@ -335,8 +335,11 @@ function EncounterJournal_OnEvent(self, event, ...)
 	elseif event == "EJ_DIFFICULTY_UPDATE" then
 		--fix the difficulty buttons
 		EncounterJournal_UpdateDifficulty(...);
-	elseif event == "PORTRAITS_UPDATED" then
-		EncounterJournal_UpdatePortraits();
+	elseif event == "UNIT_PORTRAIT_UPDATE" then
+		local unit = ...;
+		if not unit then
+			EncounterJournal_UpdatePortraits();
+		end
 	elseif event == "SEARCH_DB_LOADED" then
 		EncounterJournal_RestartSearchTracking();
 	elseif event == "PLAYER_LEVEL_UP" and EncounterJournal:IsShown() then
@@ -392,7 +395,7 @@ function EncounterJournal_UpdatePortraits()
 		for i = 1, #creatures do
 			local button = creatures[i];
 			if ( button and button:IsShown() ) then
-				SetPortraitTexture(button.creature, button.displayInfo);
+				SetPortraitTextureFromCreatureDisplayID(button.creature, button.displayInfo);
 			else
 				break;
 			end
@@ -400,7 +403,7 @@ function EncounterJournal_UpdatePortraits()
 		local usedHeaders = EncounterJournal.encounter.usedHeaders;
 		for _, header in pairs(usedHeaders) do
 			if ( header.button.portrait.displayInfo ) then
-				SetPortraitTexture(header.button.portrait.icon, header.button.portrait.displayInfo);
+				SetPortraitTextureFromCreatureDisplayID(header.button.portrait.icon, header.button.portrait.displayInfo);
 			end
 		end
 	else
@@ -788,7 +791,7 @@ function EncounterJournal_DisplayEncounter(encounterID, noButton)
 
 		if id then
 			local button = EncounterJournal_GetCreatureButton(i);
-			SetPortraitTexture(button.creature, displayInfo);
+			SetPortraitTextureFromCreatureDisplayID(button.creature, displayInfo);
 			button.name = name;
 			button.id = id;
 			button.description = description;
@@ -1305,7 +1308,7 @@ function EncounterJournal_ToggleHeaders(self, doNotShift)
 
 					--Show Creature Portrait
 					if sectionInfo.creatureDisplayID ~= 0 then
-						SetPortraitTexture(infoHeader.button.portrait.icon, sectionInfo.creatureDisplayID);
+						SetPortraitTextureFromCreatureDisplayID(infoHeader.button.portrait.icon, sectionInfo.creatureDisplayID);
 						infoHeader.button.portrait.name = sectionInfo.title;
 						infoHeader.button.portrait.displayInfo = sectionInfo.creatureDisplayID;
 						infoHeader.button.portrait.uiModelSceneID = sectionInfo.uiModelSceneID;
@@ -1863,7 +1866,7 @@ function EncounterJournal_SearchUpdate()
 			result.icon:SetTexture(icon);
 			result.link = itemLink;
 			if displayInfo and displayInfo > 0 then
-				SetPortraitTexture(result.icon, displayInfo);
+				SetPortraitTextureFromCreatureDisplayID(result.icon, displayInfo);
 			end
 			result:SetID(index);
 			result:Show();
@@ -2014,7 +2017,7 @@ function EncounterJournal_UpdateSearchPreview()
 			button.icon:SetTexture(icon);
 			button.link = itemLink;
 			if displayInfo and displayInfo > 0 then
-				SetPortraitTexture(button.icon, displayInfo);
+				SetPortraitTextureFromCreatureDisplayID(button.icon, displayInfo);
 			end
 			button:SetID(index);
 			button:Show();
@@ -2228,19 +2231,17 @@ function EncounterJournal_OpenJournal(difficultyID, instanceID, encounterID, sec
 					end
 				end
 			end
-
 			EncounterJournal_DisplayEncounter(encounterID);
-			if sectionID then
-				if (EncounterJournal_CheckForOverview(sectionID) or not EncounterJournal_SearchForOverview(instanceID)) then
-					EncounterJournal.encounter.info.overviewTab:Click();
-				else
-					EncounterJournal.encounter.info.bossTab:Click();
-				end
-				EncounterJournal_FocusSection(sectionID);
-			elseif itemID then
-				EncounterJournal.encounter.info.lootTab:Click();
+		end
+		if sectionID then
+			if (EncounterJournal_CheckForOverview(sectionID) or not EncounterJournal_SearchForOverview(instanceID)) then
+				EncounterJournal.encounter.info.overviewTab:Click();
+			else
+				EncounterJournal.encounter.info.bossTab:Click();
 			end
-
+			EncounterJournal_FocusSection(sectionID);
+		elseif itemID then
+			EncounterJournal.encounter.info.lootTab:Click();
 		end
 	elseif tierIndex then
 		EncounterJournal_TierDropDown_Select(EncounterJournal, tierIndex+1);
@@ -2612,7 +2613,7 @@ function EJSuggestFrame_OnLoad(self)
 
 	self:RegisterEvent("AJ_REWARD_DATA_RECEIVED");
 	self:RegisterEvent("AJ_REFRESH_DISPLAY");
-	self:RegisterEvent("PLAYER_LEVEL_UP"); 
+	self:RegisterEvent("PLAYER_LEVEL_UP");
 end
 
 function EJSuggestFrame_OnEvent(self, event, ...)

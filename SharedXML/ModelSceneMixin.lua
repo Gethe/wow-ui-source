@@ -220,10 +220,21 @@ function ModelSceneMixin:IsRightMouseButtonDown()
 	return self.isRightButtonDown;
 end
 
+function ModelSceneMixin:Transform3DPointTo2D(x, y, z)
+	self:SynchronizeActiveCamera();
+	return -- TODO: Your transform code here
+end
+
 -- "private" functions
 function ModelSceneMixin:OnUpdate(elapsed)
 	if self.activeCamera then
 		self.activeCamera:OnUpdate(elapsed);
+	end
+end
+
+function ModelSceneMixin:SynchronizeActiveCamera()
+	if self.activeCamera then
+		self.activeCamera:SynchronizeCamera();
 	end
 end
 

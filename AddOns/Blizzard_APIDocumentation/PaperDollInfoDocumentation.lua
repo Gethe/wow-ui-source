@@ -7,12 +7,59 @@ local PaperDollInfo =
 	Functions =
 	{
 		{
+			Name = "GetArmorEffectiveness",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "armor", Type = "number", Nilable = false },
+				{ Name = "attackerLevel", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "effectiveness", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetArmorEffectivenessAgainstTarget",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "armor", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "effectiveness", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "GetMinItemLevel",
 			Type = "Function",
 
 			Returns =
 			{
 				{ Name = "minItemLevel", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "OffhandHasShield",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "offhandHasShield", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "OffhandHasWeapon",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "offhandHasWeapon", Type = "bool", Nilable = false },
 			},
 		},
 	},

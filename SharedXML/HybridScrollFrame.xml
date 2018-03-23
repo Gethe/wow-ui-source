@@ -4,7 +4,7 @@
 		<TexCoords left="0.25" right="0.75" top="0.25" bottom="0.75"/>
 	</Texture>
 	
-	<Slider name="HybridScrollBarTemplate" parentKey="scrollBar" virtual="true">
+	<Slider name="HybridScrollBarBackgroundTemplate" parentKey="scrollBar" virtual="true">
 		<Size x="20" y="0"/>
 		<Anchors>
 			<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="-18"/>
@@ -38,8 +38,15 @@
 					</Anchors>
 					<TexCoords left="0" right="0.484375" top="0.1640625" bottom="1"/>
 				</Texture>
-			</Layer>	
+			</Layer>
 		</Layers>
+		<ThumbTexture name="$parentThumbTexture" file="Interface\Buttons\UI-ScrollBar-Knob" parentKey="thumbTexture">
+			<Size x="18" y="24"/>
+			<TexCoords left="0.20" right="0.80" top="0.125" bottom="0.875"/>
+		</ThumbTexture>
+	</Slider>
+	
+	<Slider name="HybridScrollBarTemplate" inherits="HybridScrollBarBackgroundTemplate" virtual="true">
 		<Frames>
 			<Button name="$parentScrollUpButton" inherits="UIPanelScrollUpButtonTemplate">
 				<Anchors>
@@ -63,10 +70,6 @@
 		<Scripts>
 			<OnValueChanged function="HybridScrollFrame_OnValueChanged"/>
 		</Scripts>
-		<ThumbTexture name="$parentThumbTexture" inherits="HybridScrollBarButton" file="Interface\Buttons\UI-ScrollBar-Knob" parentKey="thumbTexture">
-			<Size x="18" y="24"/>
-			<TexCoords left="0.20" right="0.80" top="0.125" bottom="0.875"/>
-		</ThumbTexture>		
 	</Slider>
 
 	<Slider name="HybridScrollBarTrimTemplate" parentKey="scrollBar" virtual="true">

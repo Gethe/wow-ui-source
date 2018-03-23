@@ -2,6 +2,7 @@
 ..\FrameXML\UI.xsd">
 	<!-- if you change something here you probably want to change the glue version too -->
 
+	<Script file="OptionsPanelTemplates.lua"/>
 	<Button name="OptionsButtonTemplate" inherits="UIPanelButtonTemplate" virtual="true">
 		<Size>
 			<AbsDimension x="90" y="21"/>
@@ -74,6 +75,9 @@
 		</Layers>
 	</CheckButton>
 	<Slider name="OptionsSliderTemplate" inherits="HorizontalSliderTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="type" value="CONTROLTYPE_SLIDER" type="global"/>
+		</KeyValues>
 		<Size x="144" y="17"/>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -120,6 +124,11 @@
 			</OnLeave>
 		</Scripts>
 	</Slider>
+	<Frame name="OptionsDropdownTemplate" inherits="UIDropDownMenuTemplate" enableMouse="true" virtual="true">
+		<KeyValues>
+			<KeyValue key="type" value="CONTROLTYPE_DROPDOWN" type="global"/>
+		</KeyValues>
+	</Frame>
 	<Frame name="OptionsBoxTemplate" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND">

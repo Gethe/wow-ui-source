@@ -97,8 +97,8 @@ function TradeSkillUIMixin:OnDataSourceChanged()
 	self:RefreshTitle();
 
 	self.LinkToButton:SetShown(C_TradeSkillUI.CanTradeSkillListLink());
-	
-	self:ClearSlotFilter();	
+
+	self:ClearSlotFilter();
 
 	CloseDropDownMenus();
 	self.SearchBox:SetText("");
@@ -161,7 +161,7 @@ end
 
 function TradeSkillUIMixin:OnSearchTextChanged(searchBox)
 	local text = searchBox:GetText();
-	
+
 	local minLevel, maxLevel;
 	local approxLevel = text:match("^~(%d+)");
 	if approxLevel then
@@ -212,7 +212,7 @@ local function GenerateRankText(skillLineName, skillLineRank, skillLineMaxRank, 
 	else
 		rankText = TRADESKILL_NAME_RANK:format(skillLineName, skillLineRank, skillLineMaxRank);
 	end
-		
+
 	if GameLimitedMode_IsActive() then
 		local _, _, profCap = GetRestrictedAccountData();
 		if skillLineRank >= profCap then
@@ -246,54 +246,54 @@ function TradeSkillUIMixin:InitFilterMenu(dropdown, level)
 	if level == 1 then
 		--[[ Only show makeable recipes ]]--
 		info.text = CRAFT_IS_MAKEABLE;
-		info.func = function() 
+		info.func = function()
 			C_TradeSkillUI.SetOnlyShowMakeableRecipes(not C_TradeSkillUI.GetOnlyShowMakeableRecipes());
-		end 
+		end
 
 		info.keepShownOnClick = true;
 		info.checked = C_TradeSkillUI.GetOnlyShowMakeableRecipes();
 		info.isNotRadio = true;
 		UIDropDownMenu_AddButton(info, level)
-		
+
 		--[[ Only show recipes that provide skill ups ]]--
 		local tradeSkillID, name, rank, skillLineMaxRank = C_TradeSkillUI.GetTradeSkillLine();
 		local isNPCCrafting = C_TradeSkillUI.IsNPCCrafting() and skillLineMaxRank == 0;
-		
+
 		if not C_TradeSkillUI.IsTradeSkillGuild() and not isNPCCrafting then
 			info.text = TRADESKILL_FILTER_HAS_SKILL_UP;
-			info.func = function() 
+			info.func = function()
 				C_TradeSkillUI.SetOnlyShowSkillUpRecipes(not C_TradeSkillUI.GetOnlyShowSkillUpRecipes());
-			end 
+			end
 			info.keepShownOnClick = true;
 			info.checked = C_TradeSkillUI.GetOnlyShowSkillUpRecipes();
 			info.isNotRadio = true;
 			UIDropDownMenu_AddButton(info, level);
 		end
-		
+
 		info.checked = 	nil;
 		info.isNotRadio = nil;
 		info.func = nil;
 		info.notCheckable = true;
 		info.keepShownOnClick = true;
-		info.hasArrow = true;	
-		
-		--[[ Filter recipes by inventory slot ]]--	
+		info.hasArrow = true;
+
+		--[[ Filter recipes by inventory slot ]]--
 		info.text = TRADESKILL_FILTER_SLOTS;
 		info.value = 1;
 		UIDropDownMenu_AddButton(info, level);
-				
-		--[[ Filter recipes by parent category ]]--	
+
+		--[[ Filter recipes by parent category ]]--
 		info.text = TRADESKILL_FILTER_CATEGORY;
 		info.value = 2;
 		UIDropDownMenu_AddButton(info, level);
 
-		--[[ Filter recipes by source ]]--	
+		--[[ Filter recipes by source ]]--
 		info.text = SOURCES;
 		info.value = 3;
 		UIDropDownMenu_AddButton(info, level);
-	
+
 	elseif level == 2 then
-		--[[ Inventory slots ]]--	
+		--[[ Inventory slots ]]--
 		if UIDROPDOWNMENU_MENU_VALUE == 1 then
 			local inventorySlots = { C_TradeSkillUI.GetAllFilterableInventorySlots() };
 			for i, inventorySlot in ipairs(inventorySlots) do
@@ -305,7 +305,7 @@ function TradeSkillUIMixin:InitFilterMenu(dropdown, level)
 				UIDropDownMenu_AddButton(info, level);
 			end
 		elseif UIDROPDOWNMENU_MENU_VALUE == 2 then
-			--[[ Parent categories ]]--	
+			--[[ Parent categories ]]--
 			local categories = { C_TradeSkillUI.GetCategories() };
 
 			for i, categoryID in ipairs(categories) do
@@ -323,21 +323,21 @@ function TradeSkillUIMixin:InitFilterMenu(dropdown, level)
 			info.isNotRadio = true;
 			info.notCheckable = true;
 			info.keepShownOnClick = true;
-				
+
 			info.text = CHECK_ALL;
 			info.func = function()
 							TradeSkillFrame_SetAllSourcesFiltered(false);
 							UIDropDownMenu_Refresh(self.FilterDropDown, 3, 2);
 						end;
 			UIDropDownMenu_AddButton(info, level);
-			
+
 			info.text = UNCHECK_ALL;
 			info.func = function()
 							TradeSkillFrame_SetAllSourcesFiltered(true);
 							UIDropDownMenu_Refresh(self.FilterDropDown, 3, 2);
 						end;
 			UIDropDownMenu_AddButton(info, level);
-		
+
 			info.notCheckable = false;
 
 			local numSources = C_PetJournal.GetNumPetSources();
@@ -353,7 +353,7 @@ function TradeSkillUIMixin:InitFilterMenu(dropdown, level)
 			end
 		end
 	elseif level == 3 then
-		--[[ Subcategories ]]--	
+		--[[ Subcategories ]]--
 		local categoryID = UIDROPDOWNMENU_MENU_VALUE;
 		local categoryData = C_TradeSkillUI.GetCategoryInfo(categoryID);
 		local subCategories = { C_TradeSkillUI.GetSubCategories(categoryID) };
@@ -377,7 +377,7 @@ function TradeSkillUIMixin:OnLinkToButtonClicked()
 		if strlenutf8(text) <= MacroFrameText:GetNumLetters() then
 			MacroFrameText:Insert(link);
 		end
-	else 
+	else
 		local activeEditBox = ChatEdit_GetActiveWindow();
 		if activeEditBox then
 			local link = C_TradeSkillUI.GetTradeSkillListLink();
@@ -391,8 +391,8 @@ function TradeSkillUIMixin:OnLinkToButtonClicked()
 end
 
 function TradeSkillUIMixin:InitLinkToMenu(dropdown, level)
-	local info = UIDropDownMenu_CreateInfo();	
-	info.notCheckable = true;	
+	local info = UIDropDownMenu_CreateInfo();
+	info.notCheckable = true;
 	info.text = TRADESKILL_POST;
 	info.isTitle = true;
 	UIDropDownMenu_AddButton(info);
@@ -401,36 +401,34 @@ function TradeSkillUIMixin:InitLinkToMenu(dropdown, level)
 	info.notCheckable = true;
 	info.func = function(_, channel)
 		local link = C_TradeSkillUI.GetTradeSkillListLink();
-		if link then 
+		if link then
 			ChatFrame_OpenChat(channel.." "..link, DEFAULT_CHAT_FRAME);
 		end
 	end;
-	
+
 	info.text = GUILD;
 	info.arg1 = SLASH_GUILD1;
 	info.disabled = not IsInGuild();
 	UIDropDownMenu_AddButton(info);
-	
+
 	info.text = PARTY;
 	info.arg1 = SLASH_PARTY1;
 	info.disabled = GetNumSubgroupMembers() == 0;
 	UIDropDownMenu_AddButton(info);
-	
+
 	info.text = RAID;
 	info.disabled = not IsInRaid();
 	info.arg1 = SLASH_RAID1;
 	UIDropDownMenu_AddButton(info);
-	
+
 	info.disabled = false
 
 	local channels = { GetChannelList() };
 	local channelCount = #channels / 2;
-	for i=1, MAX_CHANNEL_BUTTONS do
-		if i <= channelCount then
-			info.text = channels[i * 2];
-			info.arg1 = "/"..channels[(i - 1) * 2 + 1];
-			UIDropDownMenu_AddButton(info);
-		end
+	for i = 1, channelCount do
+		info.text = channels[i * 2];
+		info.arg1 = "/"..channels[(i - 1) * 2 + 1];
+		UIDropDownMenu_AddButton(info);
 	end
 end
 

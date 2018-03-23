@@ -1,14 +1,19 @@
 ItemLocation = {};
 ItemLocationMixin = {};
 
---[[static]] function ItemLocation:CreateFromBagAndSlot(bagID, slotIndex)
+--[[static]] function ItemLocation:CreateEmpty()
 	local itemLocation = CreateFromMixins(ItemLocationMixin);
+	return itemLocation;
+end
+
+--[[static]] function ItemLocation:CreateFromBagAndSlot(bagID, slotIndex)
+	local itemLocation = ItemLocation:CreateEmpty();
 	itemLocation:SetBagAndSlot(bagID, slotIndex);
 	return itemLocation;
 end
 
 --[[static]] function ItemLocation:CreateFromEquipmentSlot(equipmentSlotIndex)
-	local itemLocation = CreateFromMixins(ItemLocationMixin);
+	local itemLocation = ItemLocation:CreateEmpty();
 	itemLocation:SetEquipmentSlot(equipmentSlotIndex);
 	return itemLocation;
 end

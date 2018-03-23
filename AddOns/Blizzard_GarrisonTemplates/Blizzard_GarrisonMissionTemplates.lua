@@ -1223,8 +1223,9 @@ local ENDINGS = {
 	    },
 	}
 };
+ENDINGS[LE_FOLLOWER_TYPE_GARRISON_8_0] = ENDINGS[LE_FOLLOWER_TYPE_GARRISON_7_0];
 
-local positionData = {
+local POSITION_DATA = {
 	[LE_FOLLOWER_TYPE_GARRISON_6_0] = {
 	    [1] = {
 		    [1] = { scale=1.0,		facing=0,		x=0,	y=0		}
@@ -1258,6 +1259,7 @@ local positionData = {
 	    }
 	}
 };
+POSITION_DATA[LE_FOLLOWER_TYPE_GARRISON_8_0] = POSITION_DATA[LE_FOLLOWER_TYPE_GARRISON_7_0];
 
 function GarrisonMissionComplete:SetupEnding(numFollowers, hideExhaustedTroopModels)
 	self.Stage.ModelRight:SetFacingLeft(false);
@@ -1271,7 +1273,7 @@ function GarrisonMissionComplete:SetupEnding(numFollowers, hideExhaustedTroopMod
 			if (hideExhaustedTroopModels and followerInfo.isTroop and followerInfo.durability and followerInfo.durability <= 0) then
 				modelClusterFrame:SetAlpha(0);
 			end
-			local pos = positionData[followerType][#followerInfo.displayIDs];
+			local pos = POSITION_DATA[followerType][#followerInfo.displayIDs];
 			for i = 1, #followerInfo.displayIDs do
 				local modelFrame = modelClusterFrame.Model[i];
 				modelFrame:SetAlpha(1);

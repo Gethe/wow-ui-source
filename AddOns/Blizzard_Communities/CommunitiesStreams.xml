@@ -1,0 +1,127 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="CommunitiesStreams.lua"/>
+	
+	<Frame name="CommunitiesEditStreamDialogTemplate" frameStrata="DIALOG" mixin="CommunitiesEditStreamDialogMixin" virtual="true">
+		<Size x="320" y="260"/>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets left="11" right="12" top="12" bottom="11"/>
+			<TileSize val="32"/>
+			<EdgeSize val="32"/>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="TitleLabel" inherits="GameFontHighlight">
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-20"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="NameLabel" inherits="GameFontNormal" text="COMMUNITIES_CHANNEL_NAME_LABEL">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="30" y="-50"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="SubjectLabel" inherits="GameFontNormal" text="COMMUNITIES_CHANNEL_SUBJECT_LABEL">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.NameLabel" x="0" y="-50"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<EditBox parentKey="NameEdit" inherits="InputBoxTemplate" >
+				<Size x="260" y="30"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeKey="$parent.NameLabel" x="0" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnTabPressed>
+						self:GetParent().Subject.EditBox:SetFocus();
+					</OnTabPressed>
+				</Scripts>
+			</EditBox>
+			<ScrollFrame parentKey="Subject" inherits="InputScrollFrameTemplate">
+				<Size x="260" y="40"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeKey="$parent.SubjectLabel" x="0" y="-10"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="instructions" value="Optional" type="global"/>
+					<KeyValue key="hideCharCount" value="true" type="boolean"/>
+				</KeyValues>
+			</ScrollFrame>
+			<Frame parentKey="PermisionsDropDownMenu" inherits="UIDropDownMenuTemplate" mixin="CommunitiesChatPermissionsDropDownMenuMixin">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeKey="$parent.Subject" x="0" y="-15"/>
+					<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" relativeKey="$parent.Subject" x="0" y="-15"/>
+				</Anchors>
+			</Frame>
+			<Button parentKey="Accept" inherits="UIPanelButtonTemplate" text="ACCEPT">
+				<Size x="80" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOM" x="-45" y="20"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="Cancel" inherits="UIPanelButtonTemplate" text="CANCEL">
+				<Size x="80" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOM" x="45" y="20"/>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+	
+	<Button name="AddToChatButtonTemplate" inherits="UIPanelButtonTemplate" text="COMMUNITIES_ADD_TO_CHAT" mixin="CommunitiesAddToChatMixin" virtual="true">
+		<Size x="180" y="0"/>
+		<Frames>
+			<Button parentKey="CommunitiesAddStreamHighlightTab" hidden="true">
+				<Size x="97" y="34"/>
+				<Layers>
+					<Layer level="BORDER">
+						<Texture atlas="communities-chat-addtab" useA="true"/>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture atlas="communities-chat-icon-plus-tab">
+							<Size x="10" y="10"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="-7"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnClick function="CommunitiesAddStreamHighlightTab_OnClick"/>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnClick method="OnClick"/>
+			<OnEvent method="OnEvent"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Button>
+	
+	<Button name="CommunitiesAddStreamHighlightFrameTemplate" mixin="CommunitiesAddStreamHighlightFrameMixin" virtual="true">
+		<Layers>
+			<Layer level="BORDER">
+				<Texture atlas="communities-chat-body-add" setAllPoints="true"/>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture atlas="communities-chat-icon-plus">
+					<Size x="64" y="65"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</Button>
+</Ui>

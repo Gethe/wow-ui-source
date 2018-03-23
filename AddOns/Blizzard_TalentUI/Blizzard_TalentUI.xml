@@ -1096,7 +1096,7 @@
 					<Layer level="ARTWORK" textureSubLevel="2">
 						<Texture parentKey="Ring" atlas="pvptalents-warmode-ring" useAtlasSize="true">
 							<Anchors>
-								<Anchor point="BOTTOM" x="0" y="6"/>
+								<Anchor point="LEFT" x="25" y="-142"/>
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -1194,10 +1194,10 @@
 							<OnLoad method="OnLoad"/>
 						</Scripts>
 					</Frame>
-					<ModelScene parentKey="OrbModelScene" inherits="ModelSceneMixinTemplate" enableMouse="false" useParentLevel="true">
-						<Size x="16" y="16"/>
+					<ModelScene parentKey="OrbModelScene" inherits="ModelSceneMixinTemplate" drawLayer="OVERLAY" enableMouse="false">
+						<Size x="56" y="56"/>
 						<Anchors>
-							<Anchor point="CENTER" relativePoint="BOTTOM" x="0" y="24"/>
+							<Anchor point="CENTER" relativePoint="BOTTOM" x="0" y="23"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad inherit="prepend">
@@ -1205,10 +1205,10 @@
 							</OnLoad>
 						</Scripts>
 					</ModelScene>
-					<ModelScene parentKey="FireModelScene" inherits="ModelSceneMixinTemplate" enableMouse="false" useParentLevel="true">
-						<Size x="56" y="100"/>
+					<ModelScene parentKey="FireModelScene" inherits="ModelSceneMixinTemplate" drawLayer="ARTWORK" enableMouse="false">
+						<Size x="200" y="200"/>
 						<Anchors>
-							<Anchor point="BOTTOM" x="0" y="26"/>
+							<Anchor point="BOTTOM" x="0" y="0"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad inherit="prepend">
@@ -1219,8 +1219,8 @@
 				</Frames>
 				<Scripts>
 					<OnLoad method="OnLoad"/>
-					<OnEvent method="Update"/>
-					<OnShow method="Update"/>
+					<OnEvent method="OnEvent"/>
+					<OnShow method="OnShow"/>
 					<OnHide method="OnHide"/>
 				</Scripts>
 			</Frame>

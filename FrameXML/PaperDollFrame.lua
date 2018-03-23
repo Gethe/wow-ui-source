@@ -215,6 +215,7 @@ PAPERDOLL_STATINFO = {
 -- primary: only show the 1 for the player's current spec
 -- roles: only show if the player's current spec is one of the roles
 -- hideAt: only show if it's not this value
+-- showFunc: only show if this function returns true (Note: make sure whatever your function is dependent on also triggers an update when it changes)
 
 PAPERDOLL_STATCATEGORIES= {
 	[1] = {
@@ -240,7 +241,7 @@ PAPERDOLL_STATCATEGORIES= {
 			{ stat = "SPEED", hideAt = 0 },
 			{ stat = "DODGE", roles =  { "TANK" } },
 			{ stat = "PARRY", hideAt = 0, roles =  { "TANK" } },
-			{ stat = "BLOCK" , hideAt = 0, roles =  { "TANK" } },
+			{ stat = "BLOCK" , hideAt = 0, showFunc = C_PaperDollInfo.OffhandHasShield },
 		},
 	},
 };
@@ -311,6 +312,7 @@ function PaperDollFrame_OnLoad(self)
 	self:RegisterEvent("SPELL_POWER_CHANGED");
 	self:RegisterEvent("CHARACTER_ITEM_FIXUP_NOTIFICATION");
 	self:RegisterEvent("TRIAL_STATUS_UPDATE");
+	self:RegisterEvent("PLAYER_TARGET_CHANGED");
 	-- flyout settings
 	PaperDollItemsFrame.flyoutSettings = {
 		onClickFunc = PaperDollFrameItemFlyoutButton_OnClick,
@@ -403,7 +405,8 @@ function PaperDollFrame_OnEvent(self, event, ...)
 			event == "BAG_UPDATE" or
 			event == "PLAYER_EQUIPMENT_CHANGED" or
 			event == "PLAYER_AVG_ITEM_LEVEL_UPDATE" or
-			event == "PLAYER_DAMAGE_DONE_MODS") then
+			event == "PLAYER_DAMAGE_DONE_MODS" or
+			event == "PLAYER_TARGET_CHANGED") then
 		self:SetScript("OnUpdate", PaperDollFrame_QueuedUpdate);
 	elseif (event == "PLAYER_TALENT_UPDATE") then
 		PaperDollFrame_SetLevel();
@@ -694,12 +697,18 @@ function PaperDollFrame_SetStat(statFrame, unit, statIndex)
 end
 
 function PaperDollFrame_SetArmor(statFrame, unit)
-	local baselineArmor, effectiveArmor, armor, posBuff, negBuff = UnitArmor(unit);
+	local baselineArmor, effectiveArmor, armor, bonusArmor = UnitArmor(unit);
 	PaperDollFrame_SetLabelAndText(statFrame, STAT_ARMOR, BreakUpLargeNumbers(effectiveArmor), false, effectiveArmor);
     local armorReduction = PaperDollFrame_GetArmorReduction(effectiveArmor, UnitEffectiveLevel(unit));
+	local armorReductionAgainstTarget = PaperDollFrame_GetArmorReductionAgainstTarget(effectiveArmor);
 
 	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, ARMOR).." "..BreakUpLargeNumbers(effectiveArmor)..FONT_COLOR_CODE_CLOSE;
 	statFrame.tooltip2 = format(STAT_ARMOR_TOOLTIP, armorReduction);
+	if (armorReductionAgainstTarget) then
+		statFrame.tooltip3 = format(STAT_ARMOR_TARGET_TOOLTIP, armorReductionAgainstTarget);
+	else
+		statFrame.tooltip3 = nil;
+	end
 	statFrame:Show();
 end
 
@@ -726,7 +735,7 @@ function PaperDollFrame_SetBlock(statFrame, unit)
 	PaperDollFrame_SetLabelAndText(statFrame, STAT_BLOCK, chance, true, chance);
 	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, BLOCK_CHANCE).." "..string.format("%.2F", chance).."%"..FONT_COLOR_CODE_CLOSE;
 
-	local baselineArmor, effectiveArmor, armor, posBuff, negBuff = UnitArmor(unit);
+	local baselineArmor, effectiveArmor, armor, bonusArmor = UnitArmor(unit);
 	local armorReduction = PaperDollFrame_GetArmorReduction(effectiveArmor, UnitEffectiveLevel(unit));
 	local shieldBlockArmor = GetShieldBlock();
 	local armorAndBlockArmorReduction = PaperDollFrame_GetArmorReduction(effectiveArmor + shieldBlockArmor, UnitEffectiveLevel(unit));
@@ -1480,14 +1489,20 @@ function PaperDollItemSlotButton_OnLoad(self)
 	end
 end
 
+local PAPERDOLL_FRAME_EVENTS = {
+	"PLAYER_EQUIPMENT_CHANGED",
+	"MERCHANT_UPDATE",
+	"PLAYERBANKSLOTS_CHANGED",
+	"ITEM_LOCK_CHANGED",
+	"CURSOR_UPDATE",
+	"UPDATE_INVENTORY_ALERTS",
+	"AZERITE_ITEM_POWER_LEVEL_CHANGED",
+	"AZERITE_EMPOWERED_ITEM_SELECTION_UPDATED",
+};
+
 function PaperDollItemSlotButton_OnShow(self, isBag)
-	self:RegisterEvent("PLAYER_EQUIPMENT_CHANGED");
-	self:RegisterEvent("MERCHANT_UPDATE");
-	self:RegisterEvent("PLAYERBANKSLOTS_CHANGED");
-	self:RegisterEvent("ITEM_LOCK_CHANGED");
-	self:RegisterEvent("CURSOR_UPDATE");
-	self:RegisterEvent("UPDATE_INVENTORY_ALERTS");
-	self:RegisterEvent("AZERITE_ITEM_POWER_LEVEL_CHANGED");
+	FrameUtil.RegisterFrameForEvents(self, PAPERDOLL_FRAME_EVENTS);
+
 	if ( not isBag ) then
 		self:RegisterEvent("BAG_UPDATE_COOLDOWN");
 	end
@@ -1495,14 +1510,9 @@ function PaperDollItemSlotButton_OnShow(self, isBag)
 end
 
 function PaperDollItemSlotButton_OnHide(self)
-	self:UnregisterEvent("PLAYER_EQUIPMENT_CHANGED");
-	self:UnregisterEvent("MERCHANT_UPDATE");
-	self:UnregisterEvent("PLAYERBANKSLOTS_CHANGED");
-	self:UnregisterEvent("ITEM_LOCK_CHANGED");
-	self:UnregisterEvent("CURSOR_UPDATE");
+	FrameUtil.UnregisterFrameForEvents(self, PAPERDOLL_FRAME_EVENTS);
+
 	self:UnregisterEvent("BAG_UPDATE_COOLDOWN");
-	self:UnregisterEvent("UPDATE_INVENTORY_ALERTS");
-	self:UnregisterEvent("AZERITE_ITEM_POWER_LEVEL_CHANGED");
 end
 
 function PaperDollItemSlotButton_OnEvent(self, event, ...)
@@ -1535,6 +1545,9 @@ function PaperDollItemSlotButton_OnEvent(self, event, ...)
 		if azeriteItemLocation:IsEqualToEquipmentSlot(self:GetID()) then
 			PaperDollItemSlotButton_Update(self);
 		end
+	elseif event == "AZERITE_EMPOWERED_ITEM_SELECTION_UPDATED" then
+		local item = ...;
+		PaperDollItemSlotButton_Update(self);
 	end
 end
 
@@ -1604,8 +1617,8 @@ function PaperDollItemSlotButton_Update(self)
 	end
 
 	local quality = GetInventoryItemQuality("player", self:GetID());
-	local SUPPRESS_OVERLAYS = true;
-	SetItemButtonQuality(self, quality, GetInventoryItemID("player", self:GetID()), SUPPRESS_OVERLAYS);
+	local suppressOverlays = self.HasPaperDollAzeriteItemOverlay;
+	SetItemButtonQuality(self, quality, GetInventoryItemID("player", self:GetID()), suppressOverlays);
 
 	if (not PaperDollEquipmentManagerPane:IsShown()) then
 		self.ignored = nil;
@@ -1615,30 +1628,8 @@ function PaperDollItemSlotButton_Update(self)
 		self.ignoreTexture:SetShown(self.ignored);
 	end
 
-	local itemLocation = ItemLocation:CreateFromEquipmentSlot(self:GetID());
-	local isAzeriteItem = self.hasItem and C_AzeriteItem.IsAzeriteItem(itemLocation);
-	local isAzeriteEmpoweredItem = self.hasItem and C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItem(itemLocation);
-
-	if self.AzeriteTexture then
-		self.AzeriteTexture:SetShown(isAzeriteItem or isAzeriteEmpoweredItem);
-		if isAzeriteItem then
-			self.AzeriteTexture:SetAtlas("AzeriteArmor-CharacterInfo-Neck", true);
-			self.AzeriteTexture:SetSize(50, 44);
-			self.AzeriteTexture:SetDrawLayer("OVERLAY", 1);
-		elseif isAzeriteEmpoweredItem then
-			self.AzeriteTexture:SetAtlas("AzeriteArmor-CharacterInfo-Border", true);
-			self.AzeriteTexture:SetSize(57, 46);
-			self.AzeriteTexture:SetDrawLayer("BORDER", -1);
-		end
-	end
-
-	if self.RankFrame then
-		if isAzeriteItem then
-			self.RankFrame:Show();
-			PaperDollItemSlotButton_UpdateAzeriteRank(self);
-		else
-			self.RankFrame:Hide();
-		end
+	if self.HasPaperDollAzeriteItemOverlay then
+		self:SetAzeriteItem(self.hasItem and ItemLocation:CreateFromEquipmentSlot(self:GetID()) or nil);
 	end
 
 	PaperDollItemSlotButton_UpdateLock(self);
@@ -1650,12 +1641,6 @@ end
 
 function PaperDollItemSlotButton_UpdateLock(self)
 	SetItemButtonDesaturated(self, IsInventoryItemLocked(self:GetID()));
-end
-
-function PaperDollItemSlotButton_UpdateAzeriteRank(self)
-	local itemLocation = ItemLocation:CreateFromEquipmentSlot(self:GetID());
-	local powerLevel = C_AzeriteItem.GetPowerLevel(itemLocation);
-	self.RankFrame.Label:SetText(powerLevel);
 end
 
 function PaperDollItemSlotButton_OnEnter(self)
@@ -1695,6 +1680,9 @@ function PaperDollStatTooltip(self)
 	GameTooltip:SetText(self.tooltip);
 	if ( self.tooltip2 ) then
 		GameTooltip:AddLine(self.tooltip2, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
+	end
+	if ( self.tooltip3 ) then
+		GameTooltip:AddLine(self.tooltip3, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
 	end
 	GameTooltip:Show();
 end
@@ -1786,7 +1774,14 @@ function CharacterDamageFrame_OnEnter(self)
 end
 
 function PaperDollFrame_GetArmorReduction(armor, attackerLevel)
-	return GetArmorEffectiveness(armor, attackerLevel) * 100;
+	return C_PaperDollInfo.GetArmorEffectiveness(armor, attackerLevel) * 100;
+end
+
+function PaperDollFrame_GetArmorReductionAgainstTarget(armor)
+	local armorEffectiveness = C_PaperDollInfo.GetArmorEffectivenessAgainstTarget(armor);
+	if ( armorEffectiveness ) then
+		return armorEffectiveness * 100;
+	end
 end
 
 function PaperDollFrame_UpdateStats()
@@ -1841,6 +1836,9 @@ function PaperDollFrame_UpdateStats()
 					end
 				end
 				showStat = foundRole;
+			end
+			if ( showStat and stat.showFunc ) then
+				showStat = stat.showFunc();
 			end
 			if ( showStat ) then
 				statFrame.onEnterFunc = nil;
@@ -2819,4 +2817,150 @@ function PaperDollFrame_HideInventoryFixupComplete(self)
 	end
 
 	MicroButtonPulseStop(CharacterMicroButton);
+end
+
+PaperDollItemsMixin = {};
+
+function PaperDollItemsMixin:OnLoad()
+	self.isDirty = false;
+	self.onAzeriteUIShownCallback = function() self:OnAzeriteUIShown() end;
+end
+
+function PaperDollItemsMixin:MarkDirty()
+	self.isDirty = true;
+end
+
+function PaperDollItemsMixin:OnUpdate()
+	if self.isDirty then
+		self.isDirty = false;
+		self:EvaluateHelpTip();
+	end
+end
+
+local PAPERDOLL_ITEMS_FRAME_EVENTS = {
+	"PLAYER_EQUIPMENT_CHANGED",
+	"AZERITE_ITEM_POWER_LEVEL_CHANGED",
+	"AZERITE_EMPOWERED_ITEM_SELECTION_UPDATED",
+};
+
+function PaperDollItemsMixin:OnShow()
+	self:MarkDirty();
+
+	FrameUtil.RegisterFrameForEvents(self, PAPERDOLL_ITEMS_FRAME_EVENTS);
+
+	if AzeriteEmpoweredItemUI then
+		AzeriteEmpoweredItemUI:RegisterCallback(AzeriteEmpoweredItemUIMixin.Event.OnShow, self.onAzeriteUIShownCallback);
+	else
+		self:RegisterEvent("ADDON_LOADED");
+	end
+end
+
+function PaperDollItemsMixin:OnHide()
+	self:ResetHelpTipFlags();
+
+	FrameUtil.UnregisterFrameForEvents(self, PAPERDOLL_ITEMS_FRAME_EVENTS);
+
+	if AzeriteEmpoweredItemUI then
+		AzeriteEmpoweredItemUI:UnregisterCallback(AzeriteEmpoweredItemUIMixin.Event.OnShow, self.onAzeriteUIShownCallback);
+	end
+	self:UnregisterEvent("ADDON_LOADED");
+end
+
+function PaperDollItemsMixin:OnEvent(event, ...)
+	if event == "AZERITE_ITEM_POWER_LEVEL_CHANGED" then
+		local azeriteItemLocation, oldPowerLevel, newPowerLevel = ...;
+		self:MarkDirty();
+	elseif event == "AZERITE_EMPOWERED_ITEM_SELECTION_UPDATED" then
+		local item = ...;
+		self:MarkDirty();
+	elseif event == "PLAYER_EQUIPMENT_CHANGED" then
+		local equipmentSlot, hasCurrent = ...;
+		self:ResetHelpTipFlags();
+		self:MarkDirty();
+	elseif event == "ADDON_LOADED" then
+		local addOnName = ...;
+		if addOnName == "Blizzard_AzeriteUI" or addOnName == "Blizzard_AzeriteTempUI" then
+			self.wasAzeriteUIShown = true;
+			self:MarkDirty();
+			AzeriteEmpoweredItemUI:RegisterCallback(AzeriteEmpoweredItemUIMixin.Event.OnShow, self.onAzeriteUIShownCallback);
+		end
+	end
+end
+
+function PaperDollItemsMixin:OnAzeriteUIShown()
+	self.wasAzeriteUIShown = true;
+	self:MarkDirty();
+end
+
+function PaperDollItemsMixin:ResetHelpTipFlags()
+	self.wasHelpTipManuallyClosed = nil;
+	self.wasAzeriteUIShown = nil;
+end
+
+function PaperDollItemsMixin:ShouldShowHelpTip()
+	if self.wasHelpTipManuallyClosed then
+		return false;
+	end
+
+	if self.wasAzeriteUIShown then
+		return false;
+	end
+
+	if AzeriteEmpoweredItemUI and AzeriteEmpoweredItemUI:IsShown() then
+		return false;
+	end
+
+	return true;
+end
+
+function PaperDollItemsMixin:OnHelpTipManuallyClosed()
+	self.wasHelpTipManuallyClosed = true;
+end
+
+function PaperDollItemsMixin:EvaluateHelpTip()
+	if not self:ShouldShowHelpTip() then
+		self.UnspentAzeriteHelpBox:Hide();
+		return;
+	end
+
+	local bestHelpTipButton = self:FindBestHelpTipButton();
+	if bestHelpTipButton then
+		self.UnspentAzeriteHelpBox.Arrow:ClearAllPoints();
+		self.UnspentAzeriteHelpBox:ClearAllPoints();
+		self.UnspentAzeriteHelpBox.Arrow.Glow:ClearAllPoints();
+		self.UnspentAzeriteHelpBox:ClearAllPoints();
+
+		if bestHelpTipButton.IsLeftSide then
+			self.UnspentAzeriteHelpBox.Arrow.Arrow:SetRotation(-math.pi / 2);
+			self.UnspentAzeriteHelpBox.Arrow.Glow:SetRotation(-math.pi / 2);
+
+			self.UnspentAzeriteHelpBox.Arrow:SetPoint("RIGHT", self.UnspentAzeriteHelpBox, "LEFT", 17, 0);
+			self.UnspentAzeriteHelpBox.Arrow.Glow:SetPoint("CENTER", self.UnspentAzeriteHelpBox.Arrow.Arrow, "CENTER", -3, 0);
+			self.UnspentAzeriteHelpBox.CloseButton:SetPoint("TOPRIGHT", self.UnspentAzeriteHelpBox, "TOPRIGHT", 6, 6);
+			self.UnspentAzeriteHelpBox:SetPoint("LEFT", bestHelpTipButton, "RIGHT", 30, 0);
+		else
+			self.UnspentAzeriteHelpBox.Arrow.Arrow:SetRotation(math.pi / 2);
+			self.UnspentAzeriteHelpBox.Arrow.Glow:SetRotation(math.pi / 2);
+
+			self.UnspentAzeriteHelpBox.Arrow:SetPoint("LEFT", self.UnspentAzeriteHelpBox, "RIGHT", -17, 0);
+			self.UnspentAzeriteHelpBox.Arrow.Glow:SetPoint("CENTER", self.UnspentAzeriteHelpBox.Arrow.Arrow, "CENTER", 4, 0);
+			self.UnspentAzeriteHelpBox.CloseButton:SetPoint("TOPRIGHT", self.UnspentAzeriteHelpBox, "TOPRIGHT", 4, 6);
+			self.UnspentAzeriteHelpBox:SetPoint("RIGHT", bestHelpTipButton, "LEFT", -30, 0);
+		end
+
+		self.UnspentAzeriteHelpBox:Show();
+	else
+		self.UnspentAzeriteHelpBox:Hide();
+	end
+end
+
+function PaperDollItemsMixin:FindBestHelpTipButton()
+	for equipSlotIndex, itemLocation in AzeriteUtil.EnumerateEquipedAzeriteEmpoweredItems() do
+		if C_AzeriteEmpoweredItem.HasAnyUnselectedPowers(itemLocation) then
+			-- Right now we're just going to try pointing at the lowest slot index
+			return self.EquipmentSlots[equipSlotIndex];
+		end
+	end
+
+	return nil;
 end

@@ -26,10 +26,10 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button name="$parentHideButton" hidden="true" parentKey="HideButton">
-				<Size x="16" y="8"/>
+			<Button name="$parentHideButton" hidden="true" parentKey="HideButton" inherits="UIPanelCloseButtonNoScripts">
+				<Size x="20" y="20"/>
 				<Anchors>
-					<Anchor point="LEFT"/>
+					<Anchor point="LEFT" x="-4"/>
 				</Anchors>
 				<Scripts>
 					<OnClick function="EventTraceFrameEventHideButton_OnClick"/>
@@ -37,11 +37,6 @@
 						EventTraceFrameEvent_OnLeave(self:GetParent());
 					</OnLeave>
 				</Scripts>
-				<ButtonText text="X" inherits="GameFontRedSmall">
-					<Anchors>
-						<Anchor point="LEFT"/>
-					</Anchors>
-				</ButtonText>
 			</Button>
 		</Frames>
 		<Scripts>

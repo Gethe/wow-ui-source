@@ -120,11 +120,22 @@ function ItemMixin:GetItemQualityColor()
 	return ITEM_QUALITY_COLORS[itemQuality]; -- may be nil if item data isn't loaded
 end
 
+function ItemMixin:GetInventoryTypeName()
+	if not self:IsItemEmpty() then
+		return select(4, GetItemInfoInstant(self:GetItemID()));
+	end
+end
+
 function ItemMixin:IsItemDataCached()
 	if not self:IsItemEmpty() then
 		return C_Item.IsItemDataCached(self:GetItemLocation());
 	end
 	return true; 
+end
+
+function ItemMixin:IsDataEvictable()
+	-- Item data could be evicted from the cache
+	return true;
 end
 
 -- Add a callback to be executed when item data is loaded, if the item data is already loaded then execute it immediately
@@ -193,7 +204,7 @@ function ItemEventListener:FireCallbacks(itemID)
 		self:ClearCallbacks(itemID);
 		for i, callback in ipairs(callbacks) do
 			if callback ~= CANCELED_SENTINEL then
-				xpcall(callback, CallErrorHandler);
+				securecall(xpcall, callback, CallErrorHandler);
 			end
 		end
 

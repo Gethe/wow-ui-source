@@ -1,4 +1,3 @@
-
 --
 -- New constants should be added to this file and other constants
 -- deprecated and moved to this file.
@@ -56,7 +55,7 @@ LIGHTBLUE_FONT_COLOR		= CreateColor(0.53, 0.67, 1.0);
 LIGHTGRAY_FONT_COLOR		= CreateColor(0.6, 0.6, 0.6);
 PAPER_FRAME_EXPANDED_COLOR	= CreateColor(0.929, 0.788, 0.620);
 PAPER_FRAME_COLLAPSED_COLOR = CreateColor(0.827, 0.659, 0.463);
-ARTIFACT_BAR_COLOR 			= CreateColor(0.901, 0.8, 0.601); 
+ARTIFACT_BAR_COLOR 			= CreateColor(0.901, 0.8, 0.601);
 
 CHAT_FONT_HEIGHTS = {
 	[1] = 12,
@@ -84,12 +83,12 @@ MATERIAL_TITLETEXT_COLOR_TABLE = {
 	["ParchmentLarge"] = {.208, 0, 0}
 };
 
-FRIENDS_BNET_NAME_COLOR = {r=0.510, g=0.773, b=1.0};
-FRIENDS_BNET_BACKGROUND_COLOR = {r=0, g=0.694, b=0.941, a=0.05};
-FRIENDS_WOW_NAME_COLOR = {r=0.996, g=0.882, b=0.361};
-FRIENDS_WOW_BACKGROUND_COLOR = {r=1.0, g=0.824, b=0.0, a=0.05};
-FRIENDS_GRAY_COLOR = {r=0.486, g=0.518, b=0.541};
-FRIENDS_OFFLINE_BACKGROUND_COLOR = {r=0.588, g=0.588, b=0.588, a=0.05};
+FRIENDS_BNET_NAME_COLOR = CreateColor(0.510, 0.773, 1.0);
+FRIENDS_BNET_BACKGROUND_COLOR = CreateColor(0, 0.694, 0.941, 0.05);
+FRIENDS_WOW_NAME_COLOR = CreateColor(0.996, 0.882, 0.361);
+FRIENDS_WOW_BACKGROUND_COLOR = CreateColor(1.0, 0.824, 0.0, 0.05);
+FRIENDS_GRAY_COLOR = CreateColor(0.486, 0.518, 0.541);
+FRIENDS_OFFLINE_BACKGROUND_COLOR = CreateColor(0.588, 0.588, 0.588, 0.05);
 FRIENDS_BNET_NAME_COLOR_CODE = "|cff82c5ff";
 FRIENDS_BROADCAST_TIME_COLOR_CODE = "|cff4381a8"
 FRIENDS_WOW_NAME_COLOR_CODE = "|cfffde05c";
@@ -964,3 +963,13 @@ RELIC_TALENT_LINK_STYLE_POTENTIAL = 2;
 RELIC_TALENT_LINK_STYLE_ACTIVE = 3;
 RELIC_TALENT_LINK_STYLE_UPCOMING = 4;
 RELIC_TALENT_LINK_STYLE_AVAILABLE = 5;
+
+-- TODO: Need to be able to expose this from client...
+Enum.ChatChannelType = {
+	None = 0,
+	Custom = 1,
+	Party = 2,
+	Raid = 3,
+	Instance = 4,
+	Battleground = 5,
+};

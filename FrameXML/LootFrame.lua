@@ -382,8 +382,8 @@ function GroupLootContainer_OnLoad(self)
 	self.reservedSize = 100;
 	GroupLootContainer_CalcMaxIndex(self);
 
-	local alertFrameGroupLootContainerSubSystem = AlertFrame:AddJustAnchorFrameSubSystem(self);
-	AlertFrame:SetSubSustemAnchorPriority(alertFrameGroupLootContainerSubSystem, 30);
+	local alertSystem = AlertFrame:AddExternallyAnchoredSubSystem(self);
+	AlertFrame:SetSubSystemAnchorPriority(alertSystem, 30);
 end
 
 function GroupLootContainer_CalcMaxIndex(self)
@@ -576,7 +576,7 @@ function GroupLootFrame_OnUpdate(self, elapsed)
 	self:SetValue(left);
 end
 
-function BonusRollFrame_StartBonusRoll(spellID, text, duration, currencyID, difficultyID)
+function BonusRollFrame_StartBonusRoll(spellID, text, duration, currencyID, currencyCost, difficultyID)
 	local frame = BonusRollFrame;
 
 	-- No valid currency data--use the fall back.
@@ -598,12 +598,12 @@ function BonusRollFrame_StartBonusRoll(spellID, text, duration, currencyID, diff
 	frame.remaining = duration;
 	frame.currencyID = currencyID;
 	frame.difficultyID = difficultyID;
-	
+
 	local instanceID, encounterID = GetJournalInfoForSpellConfirmation(spellID);
 	frame.instanceID = instanceID;
 	frame.encounterID = encounterID;
 
-	local numRequired = 1;
+	local numRequired = currencyCost;
 	frame.PromptFrame.InfoFrame.Cost:SetFormattedText(BONUS_ROLL_COST, numRequired, icon);
 	frame.CurrentCountFrame.Text:SetFormattedText(BONUS_ROLL_CURRENT_COUNT, count, icon);
 	frame.PromptFrame.Timer:SetMinMaxValues(0, duration);
@@ -748,12 +748,12 @@ function GetBonusRollEncounterJournalLinkDifficulty()
 			return instanceDifficulty;
 		end
 	end
-	
+
 	return BonusRollFrame.difficultyID;
 end
 
 function EncounterJournalLinkButton_IsLinkDataAvailable()
-	return BonusRollFrame.instanceID and BonusRollFrame.encounterID and GetBonusRollEncounterJournalLinkDifficulty();
+	return (BonusRollFrame.instanceID or BonusRollFrame.encounterID) and GetBonusRollEncounterJournalLinkDifficulty();
 end
 
 function EncounterJournalLinkButton_OnShow(self)
@@ -767,25 +767,25 @@ function EncounterJournalLinkButton_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip:SetText(BONUS_ROLL_TOOLTIP_TITLE, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 	GameTooltip:AddLine(BONUS_ROLL_TOOLTIP_TEXT, nil, nil, nil, true);
-	
+
 	if ( EncounterJournalLinkButton_IsLinkDataAvailable() ) then
 		GameTooltip:AddLine(BONUS_ROLL_TOOLTIP_ENCOUNTER_JOURNAL_LINK, GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b, true);
 	end
-	
+
 	GameTooltip:Show();
 end
 
 function OpenBonusRollEncounterJournalLink()
 	local difficultyID = GetBonusRollEncounterJournalLinkDifficulty();
-	if ( not difficultyID or not BonusRollFrame.instanceID or not BonusRollFrame.encounterID) then
+	if ( not EncounterJournalLinkButton_IsLinkDataAvailable()) then
 		return;
 	end
-	
+
 	SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_BONUS_ROLL_ENCOUNTER_JOURNAL_LINK, true);
 	BonusRollFrame.PromptFrame.EncounterJournalLinkButtonHelp:Hide();
-	
+
 	EncounterJournal_LoadUI();
-	
+
 	local specialization = GetLootSpecialization();
 	if ( specialization == 0 ) then
 		specialization = GetSpecializationInfo(GetSpecialization());
@@ -835,6 +835,14 @@ function BonusRollFrame_FinishedFading(self)
 	else
 		GroupLootContainer_RemoveFrame(GroupLootContainer, self);
 	end
+end
+
+function BonusRollLootWonFrame_OnLoad(self)
+	self:SetAlertContainer(AlertFrame);
+end
+
+function BonusRollMoneyWonFrame_OnLoad(self)
+	self:SetAlertContainer(AlertFrame);
 end
 
 -------------------------------------------------------------------

@@ -62,7 +62,7 @@ function KeyBindingFrame_OnLoad(self)
 	KeyBindingFrame_SetSelected(nil);
 	KeyBindingFrame_LoadCategories(self);
 	KeyBindingFrame_LoadKeyBindingButtons(self);
-	
+
 	self:RegisterEvent("ADDON_LOADED");
 end
 
@@ -89,31 +89,31 @@ function KeyBindingFrame_LoadCategories(self)
 	local keyBindingCategories = {};
 	local otherCategory = nil;
 	OptionsList_ClearSelection(KeyBindingFrame.categoryList, KeyBindingFrame.categoryList.buttons);
-	
+
 	for i = 1, GetNumBindings() do
 		local commandName, category, binding1, binding2 = GetBinding(i, self.mode);
-		
+
 		if ( not category ) then
 			--If there is no category name for the category of this keyBinding, put this
 			--keyBinding into the default "Other" category.
 			category = BINDING_HEADER_OTHER;
-			
+
 			otherCategory = otherCategory or {};
-			
+
 			tinsert(otherCategory, i);
 		else
 			--Check for global string values for category names.
 			category = _G[category] or category;
-			
+
 			keyBindingCategories[category] = keyBindingCategories[category] or {};
-			
+
 			tinsert(keyBindingCategories[category], i);
 		end
 	end
-	
+
 	local categoryButtons = self.categoryList.buttons;
 	local nextCategory = 1;
-	
+
 	for i = 1, #defaultCategories do
 		local categoryName = defaultCategories[i];
 		if ( keyBindingCategories[categoryName] ~= nil ) then
@@ -123,7 +123,7 @@ function KeyBindingFrame_LoadCategories(self)
 			nextCategory = nextCategory + 1;
 		end
 	end
-	
+
 	for key, value in pairs(keyBindingCategories) do
 		if ( nextCategory < #categoryButtons ) then
 			local element = { ["name"] = key, ["category"] = keyBindingCategories[key] };
@@ -131,17 +131,17 @@ function KeyBindingFrame_LoadCategories(self)
 			nextCategory = nextCategory + 1;
 		end
 	end
-	
+
 	if ( otherCategory ) then
 		local element = { ["name"] = BINDING_HEADER_OTHER, ["category"] = otherCategory };
 		OptionsList_DisplayButton(categoryButtons[nextCategory], element);
 		nextCategory = nextCategory + 1;
 	end
-	
+
 	for i = nextCategory, #categoryButtons do
 		OptionsList_HideButton(categoryButtons[i]);
 	end
-	
+
 	local defaultButton = categoryButtons[1];
 	self.cntCategory = defaultButton.element.category;
 	OptionsList_SelectButton(defaultButton:GetParent(), defaultButton);
@@ -155,7 +155,7 @@ function KeyBindingFrame_LoadKeyBindingButtons(self)
 	previousRow.key2Button.buttonIndex = 2;
 	previousRow.key2Button.rowIndex = 1;
 	self.keyBindingRows = { previousRow };
-	
+
 	for i = 2, KEY_BINDINGS_DISPLAYED do
 		local newRow = CreateFrame("FRAME", KEY_BINDING_ROW_NAME..i, KeyBindingFrame, "KeyBindingFrameBindingTemplate");
 		newRow:SetPoint("TOP", previousRow, "BOTTOM", 0, 2);
@@ -164,7 +164,7 @@ function KeyBindingFrame_LoadKeyBindingButtons(self)
 		newRow.key2Button.buttonIndex = 2;
 		newRow.key2Button.rowIndex = i;
 		self.keyBindingRows[i] = newRow;
-		
+
 		previousRow = newRow;
 	end
 end
@@ -172,15 +172,15 @@ end
 function KeyBindingFrame_OnShow(self)
 	KeyBindingFrame.mode = 1;
 	KeyBindingFrame_Update();
-	
+
 	-- Update character button
 	KeyBindingFrame.characterSpecificButton:SetChecked(GetCurrentBindingSet() == 2);
-	
+
 	KeyBindingFrame_UpdateHeaderText();
-	
+
 	-- Reset bindingsChanged
 	KeyBindingFrame.bindingsChanged = nil;
-	
+
 	Disable_BagButtons();
 	UpdateMicroButtons();
 end
@@ -190,7 +190,7 @@ function KeyBindingFrame_Update()
 	local cntCategory = self.cntCategory;
 	local numBindings = #cntCategory;
 	local keyOffset = FauxScrollFrame_GetOffset(KeyBindingFrameScrollFrame);
-	
+
 	if ( self.selected ) then
 		local offsetDifference = self.scrollOffset - keyOffset;
 		if ( offsetDifference ~= 0 ) then
@@ -208,9 +208,9 @@ function KeyBindingFrame_Update()
 			end
 		end
 	end
-	
+
 	self.scrollOffset = keyOffset;
-	
+
 	for i=1, KEY_BINDINGS_DISPLAYED, 1 do
 		keyOffset = keyOffset + 1;
 		local keyBindingRow = self.keyBindingRows[i];
@@ -220,7 +220,7 @@ function KeyBindingFrame_Update()
 			local keyBindingDescription = keyBindingRow.description;
 			-- Set binding text
 			local commandName, category, binding1, binding2 = GetBinding(cntCategory[keyOffset], self.mode);
-			
+
 			-- Handle header
 			local headerText = keyBindingRow.header;
 			if ( strsub(commandName, 1, 6) == "HEADER" ) then
@@ -252,14 +252,14 @@ function KeyBindingFrame_Update()
 				end
 				-- Set description
 				keyBindingDescription:SetText(GetBindingName(commandName));
-				
+
 				keyBindingRow:Show();
 			end
 		else
 			keyBindingRow:Hide();
 		end
 	end
-	
+
 	-- Scroll frame stuff
 	FauxScrollFrame_Update(KeyBindingFrameScrollFrame, numBindings, KEY_BINDINGS_DISPLAYED, KEY_BINDING_HEIGHT );
 
@@ -274,161 +274,174 @@ function KeyBindingFrame_OnHide(self)
 	UpdateMicroButtons();
 end
 
-function KeyBindingFrame_UnbindKey(keyPressed)
-	local oldAction = GetBindingAction(keyPressed, KeyBindingFrame.mode);
-	if ( oldAction ~= "" and oldAction ~= KeyBindingFrame.selected ) then
-		local key1, key2 = GetBindingKey(oldAction, KeyBindingFrame.mode);
-		if ( (not key1 or key1 == keyPressed) and (not key2 or key2 == keyPressed) ) then
-			--Error message
-			KeyBindingFrame.outputText:SetFormattedText(KEY_UNBOUND_ERROR, GetBindingName(oldAction));
+function KeyBindingFrame_UnbindKey(keyPressed, selectedAction, bindingMode)
+	local keyBindMessage;
+	local oldAction = GetBindingAction(keyPressed, bindingMode);
+	if oldAction ~= "" and oldAction ~= selectedAction then
+		local key1, key2 = GetBindingKey(oldAction, bindingMode);
+		if (not key1 or key1 == keyPressed) and (not key2 or key2 == keyPressed) then
+			--Notification message
+			keyBindMessage = KEY_UNBOUND_ERROR:format(GetBindingName(oldAction))
+			KeyBindingFrame.outputText:SetText(keyBindMessage);
 		end
 	end
-	SetBinding(keyPressed, nil, KeyBindingFrame.mode);
+	SetBinding(keyPressed, nil, bindingMode);
+
+	return keyBindMessage;
+end
+
+local mouseButtonNameConversion =
+{
+	LeftButton = "BUTTON1",
+	RightButton = "BUTTON2",
+	MiddleButton = "BUTTON3",
+	Button4 = "BUTTON4",
+	Button5 = "BUTTON5",
+	Button6 = "BUTTON6",
+	Button7 = "BUTTON7",
+	Button8 = "BUTTON8",
+	Button9 = "BUTTON9",
+	Button10 = "BUTTON10",
+	Button11 = "BUTTON11",
+	Button12 = "BUTTON12",
+	Button13 = "BUTTON13",
+	Button14 = "BUTTON14",
+	Button15 = "BUTTON15",
+	Button16 = "BUTTON16",
+	Button17 = "BUTTON17",
+	Button18 = "BUTTON18",
+	Button19 = "BUTTON19",
+	Button20 = "BUTTON20",
+	Button21 = "BUTTON21",
+	Button22 = "BUTTON22",
+	Button23 = "BUTTON23",
+	Button24 = "BUTTON24",
+	Button25 = "BUTTON25",
+	Button26 = "BUTTON26",
+	Button27 = "BUTTON27",
+	Button28 = "BUTTON28",
+	Button29 = "BUTTON29",
+	Button30 = "BUTTON30",
+	Button31 = "BUTTON31",
+};
+
+local ignoredKeys =
+{
+	UNKNOWN = true,
+	BUTTON1 = true,
+	BUTTON2 = true,
+	LSHIFT = true,
+	RSHIFT = true,
+	LCTRL = true,
+	RCTRL = true,
+	LALT = true,
+	RALT = true,
+};
+
+local function IsKeyPressIgnoredForBinding(key)
+	return ignoredKeys[key] == true;
+end
+
+local function ClearBindingsForKeys(bindingMode, ...)
+	for i = 1, select("#", ...) do
+		local key = select(i, ...);
+		if key then
+			SetBinding(key, nil, bindingMode);
+		end
+	end
+end
+
+local function RebindKeysInOrder(keyPressed, keybindButtonID, selectedAction, bindingMode, ...)
+	local keyBindMessage;
+
+	for i = 1, select("#", ...) do
+		local currentKey = select(i, ...);
+		local keyToBind = (i == keybindButtonID) and keyPressed or currentKey;
+
+		if keyToBind then
+			keyBindMessage = KeyBindingFrame_SetBinding(keyToBind, selectedAction, bindingMode, currentKey) or keyBindMessage;
+		end
+	end
+
+	return keyBindMessage;
+end
+
+local function CreateKeyChordString(key)
+	local shift = IsShiftKeyDown() and "SHIFT-" or "";
+	local ctrl = IsControlKeyDown() and "CTRL-" or "";
+	local alt = IsAltKeyDown() and "ALT-" or "";
+
+	return ("%s%s%s%s"):format(alt, ctrl, shift, key);
+end
+
+-- NOTE: preventKeybindingFrameBehavior being true indicates that all the code specific to the keybind frame shouldn't be run.
+-- The default behavior is to be called from the keybinding frame.
+-- This function returns true if it tried to bind something, and false otherwise.  Its secondary return is a feedback/status message.
+function KeyBindingFrame_AttemptKeybind(self, keyOrButton, selectedAction, bindingMode, keybindButtonID, preventKeybindingFrameBehavior)
+	local keyBindFeedbackMessage;
+	local wasSomethingBound = false;
+
+	if GetBindingFromClick(keyOrButton) == "SCREENSHOT" then
+		RunBinding("SCREENSHOT");
+	elseif selectedAction then
+		local keyPressed = mouseButtonNameConversion[keyOrButton] or keyOrButton;
+
+		if not IsKeyPressIgnoredForBinding(keyPressed) then
+			keyPressed = CreateKeyChordString(keyPressed);
+
+			-- Unbind the current action
+			local key1, key2 = GetBindingKey(selectedAction, bindingMode)
+			ClearBindingsForKeys(bindingMode, key1, key2);
+
+			-- Unbind the current key and rebind current action
+			if not preventKeybindingFrameBehavior then
+				keyBindFeedbackMessage = KEY_BOUND;
+				KeyBindingFrame.outputText:SetText(KEY_BOUND);
+			end
+
+			keyBindFeedbackMessage = KeyBindingFrame_UnbindKey(keyPressed, selectedAction, bindingMode) or keyBindFeedbackMessage;
+			local rebindingMessage = RebindKeysInOrder(keyPressed, keybindButtonID, selectedAction, bindingMode, key1, key2);
+			if not keyBindFeedbackMessage then
+				keyBindFeedbackMessage = rebindingMessage;
+			end
+
+			if not preventKeybindingFrameBehavior then
+				KeyBindingFrame_Update();
+				-- Button highlighting stuff
+				KeyBindingFrame_SetSelected(nil);
+				KeyBindingFrame.buttonPressed:UnlockHighlight();
+				KeyBindingFrame.bindingsChanged = 1;
+
+				KeyBindingFrame_UpdateUnbindKey();
+			end
+
+			wasSomethingBound = true;
+		end
+	elseif (not preventKeybindingFrameBehavior) and GetBindingFromClick(keyOrButton) == "TOGGLEGAMEMENU" then
+		KeyBindingFrame_CancelBinding(self);
+	end
+
+	return wasSomethingBound, keyBindFeedbackMessage;
 end
 
 function KeyBindingFrame_OnKeyDown(self, keyOrButton)
-	if ( GetBindingFromClick(keyOrButton) == "SCREENSHOT" ) then
-		RunBinding("SCREENSHOT");
-	elseif ( KeyBindingFrame.selected ) then
-		local keyPressed = keyOrButton;
-
-		if ( keyPressed == "UNKNOWN" ) then
-			return;
-		end
-
-		-- Convert the mouse button names
-		if ( keyPressed == "LeftButton" ) then
-			keyPressed = "BUTTON1";
-		elseif ( keyPressed == "RightButton" ) then
-			keyPressed = "BUTTON2";
-		elseif ( keyPressed == "MiddleButton" ) then
-			keyPressed = "BUTTON3";
-		elseif ( keyPressed == "Button4" ) then
-			keyPressed = "BUTTON4"
-		elseif ( keyOrButton == "Button5" ) then
-			keyPressed = "BUTTON5"
-		elseif ( keyPressed == "Button6" ) then
-			keyPressed = "BUTTON6"
-		elseif ( keyOrButton == "Button7" ) then
-			keyPressed = "BUTTON7"
-		elseif ( keyPressed == "Button8" ) then
-			keyPressed = "BUTTON8"
-		elseif ( keyOrButton == "Button9" ) then
-			keyPressed = "BUTTON9"
-		elseif ( keyPressed == "Button10" ) then
-			keyPressed = "BUTTON10"
-		elseif ( keyOrButton == "Button11" ) then
-			keyPressed = "BUTTON11"
-		elseif ( keyPressed == "Button12" ) then
-			keyPressed = "BUTTON12"
-		elseif ( keyOrButton == "Button13" ) then
-			keyPressed = "BUTTON13"
-		elseif ( keyPressed == "Button14" ) then
-			keyPressed = "BUTTON14"
-		elseif ( keyOrButton == "Button15" ) then
-			keyPressed = "BUTTON15"
-		elseif ( keyPressed == "Button16" ) then
-			keyPressed = "BUTTON16"
-		elseif ( keyOrButton == "Button17" ) then
-			keyPressed = "BUTTON17"
-		elseif ( keyPressed == "Button18" ) then
-			keyPressed = "BUTTON18"
-		elseif ( keyOrButton == "Button19" ) then
-			keyPressed = "BUTTON19"
-		elseif ( keyPressed == "Button20" ) then
-			keyPressed = "BUTTON20"
-		elseif ( keyOrButton == "Button21" ) then
-			keyPressed = "BUTTON21"
-		elseif ( keyPressed == "Button22" ) then
-			keyPressed = "BUTTON22"
-		elseif ( keyOrButton == "Button23" ) then
-			keyPressed = "BUTTON23"
-		elseif ( keyPressed == "Button24" ) then
-			keyPressed = "BUTTON24"
-		elseif ( keyOrButton == "Button25" ) then
-			keyPressed = "BUTTON25"
-		elseif ( keyPressed == "Button26" ) then
-			keyPressed = "BUTTON26"
-		elseif ( keyOrButton == "Button27" ) then
-			keyPressed = "BUTTON27"
-		elseif ( keyPressed == "Button28" ) then
-			keyPressed = "BUTTON28"
-		elseif ( keyOrButton == "Button29" ) then
-			keyPressed = "BUTTON29"
-		elseif ( keyPressed == "Button30" ) then
-			keyPressed = "BUTTON30"
-		elseif ( keyOrButton == "Button31" ) then
-			keyPressed = "BUTTON31"
-		end
-		if ( keyPressed == "BUTTON1" or keyPressed == "BUTTON2" ) then
-			return;
-		end
-
-		if ( keyPressed == "LSHIFT" or
-		     keyPressed == "RSHIFT" or
-		     keyPressed == "LCTRL" or
-		     keyPressed == "RCTRL" or
-		     keyPressed == "LALT" or
-		     keyPressed == "RALT" ) then
-			return;
-		end
-		if ( IsShiftKeyDown() ) then
-			keyPressed = "SHIFT-"..keyPressed;
-		end
-		if ( IsControlKeyDown() ) then
-			keyPressed = "CTRL-"..keyPressed;
-		end
-		if ( IsAltKeyDown() ) then
-			keyPressed = "ALT-"..keyPressed;
-		end
-
-		-- Unbind the current action
-		local key1, key2 = GetBindingKey(KeyBindingFrame.selected, KeyBindingFrame.mode);
-		if ( key1 ) then
-			SetBinding(key1, nil, KeyBindingFrame.mode);
-		end
-		if ( key2 ) then
-			SetBinding(key2, nil, KeyBindingFrame.mode);
-		end
-		-- Unbind the current key and rebind current action
-		KeyBindingFrame.outputText:SetText(KEY_BOUND);
-		KeyBindingFrame_UnbindKey(keyPressed);
-		if ( KeyBindingFrame.keyID == 1 ) then
-			KeyBindingFrame_SetBinding(keyPressed, KeyBindingFrame.selected, key1);
-			if ( key2 ) then
-				SetBinding(key2, KeyBindingFrame.selected, KeyBindingFrame.mode);
-			end
-		else
-			if ( key1 ) then
-				KeyBindingFrame_SetBinding(key1, KeyBindingFrame.selected);
-			end
-			KeyBindingFrame_SetBinding(keyPressed, KeyBindingFrame.selected, key2);
-		end
-		KeyBindingFrame_Update();
-		-- Button highlighting stuff
-		KeyBindingFrame_SetSelected(nil);
-		KeyBindingFrame.buttonPressed:UnlockHighlight();
-		KeyBindingFrame.bindingsChanged = 1;
-		
-		KeyBindingFrame_UpdateUnbindKey();
-	elseif ( GetBindingFromClick(keyOrButton) == "TOGGLEGAMEMENU" ) then
-		LoadBindings(GetCurrentBindingSet());
-		KeyBindingFrame.outputText:SetText("");
-		KeyBindingFrame_SetSelected(nil);
-		HideUIPanel(self);
-	end
+	return KeyBindingFrame_AttemptKeybind(self, keyOrButton, KeyBindingFrame.selected, KeyBindingFrame.mode, KeyBindingFrame.keyID);
 end
 
-function KeyBindingFrame_SetBinding(key, selectedBinding, oldKey)
-	if ( SetBinding(key, selectedBinding, KeyBindingFrame.mode) ) then
-		return;
-	else
-		if ( oldKey ) then
-			SetBinding(oldKey, selectedBinding, KeyBindingFrame.mode);
+function KeyBindingFrame_SetBinding(key, selectedAction, bindingMode, oldKey)
+	local keyBindMessage;
+
+	if not SetBinding(key, selectedAction, bindingMode) then
+		if oldKey then
+			SetBinding(oldKey, selectedAction, bindingMode);
 		end
+
 		--Error message
-		KeyBindingFrame.outputText:SetText(KEYBINDINGFRAME_MOUSEWHEEL_ERROR);
+		keyBindMessage = KEYBINDINGFRAME_MOUSEWHEEL_ERROR;
+		KeyBindingFrame.outputText:SetText(keyBindMessage);
 	end
+
+	return keyBindMessage;
 end
 
 function KeyBindingFrame_UpdateUnbindKey()
@@ -460,17 +473,41 @@ function KeyBindingFrame_ChangeBindingProfile()
 	KeyBindingFrame_Update();
 end
 
-function KeyBindingFrame_SetSelected(value, keyBindingButton)
-	KeyBindingFrame.selected = value;
-	if ( KeyBindingFrame.selectedButton ) then
-		local oldSelectedButton = KeyBindingFrame.selectedButton;
-		oldSelectedButton.selectedHighlight:Hide();
-		oldSelectedButton:GetHighlightTexture():SetAlpha(1);
-	end
-	if ( keyBindingButton ) then
-		KeyBindingFrame.selectedButton = keyBindingButton;
-		keyBindingButton.selectedHighlight:Show();
+function BindingButtonTemplate_SetSelected(keyBindingButton, isSelected)
+	keyBindingButton.selectedHighlight:SetShown(isSelected);
+	keyBindingButton.isSelected = isSelected;
+
+	if isSelected then
 		keyBindingButton:GetHighlightTexture():SetAlpha(0);
+	else
+		keyBindingButton:GetHighlightTexture():SetAlpha(1);
+	end
+
+	return isSelected;
+end
+
+function BindingButtonTemplate_ToggleSelected(keyBindingButton)
+	return BindingButtonTemplate_SetSelected(keyBindingButton, not keyBindingButton.isSelected);
+end
+
+function BindingButtonTemplate_IsSelected(keyBindingButton)
+	return keyBindingButton.isSelected;
+end
+
+function KeyBindingFrame_SetSelected(value, keyBindingButton)
+	local previousButton = KeyBindingFrame.selectedButton;
+
+	KeyBindingFrame.selectedButton = nil;
+	KeyBindingFrame.selected = value;
+
+	if previousButton then
+		BindingButtonTemplate_SetSelected(previousButton, false);
+	end
+
+	if keyBindingButton then
+		BindingButtonTemplate_SetSelected(keyBindingButton, true);
+
+		KeyBindingFrame.selectedButton = keyBindingButton;
 		KeyBindingFrame.selectedButtonIndex = keyBindingButton.buttonIndex;
 		KeyBindingFrame.selectedRowIndex = keyBindingButton.rowIndex;
 	end
@@ -523,7 +560,7 @@ function KeybindingsCategoryListButton_OnClick(self, button)
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	OptionsList_ClearSelection(KeyBindingFrame.categoryList, KeyBindingFrame.categoryList.buttons);
 	OptionsList_SelectButton(self:GetParent(), self);
-	
+
 	KeyBindingFrame.cntCategory = self.element.category;
 	KeyBindingFrame_SetSelected(nil);
 	KeyBindingFrame.outputText:SetText("");
@@ -567,16 +604,16 @@ function UnbindButton_OnClick(self)
 		SetBinding(key2, nil, KeyBindingFrame.mode);
 	end
 	if ( key1 and KeyBindingFrame.keyID == 1 ) then
-		KeyBindingFrame_SetBinding(key1, nil, key1);
+		KeyBindingFrame_SetBinding(key1, nil, KeyBindingFrame.mode, key1);
 		if ( key2 ) then
-			SetBinding(key2, KeyBindingFrame.selected, KeyBindingFrame.mode);
+			KeyBindingFrame_SetBinding(key2, KeyBindingFrame.selected, KeyBindingFrame.mode, key2);
 		end
 	else
 		if ( key1 ) then
-			KeyBindingFrame_SetBinding(key1, KeyBindingFrame.selected);
+			KeyBindingFrame_SetBinding(key1, KeyBindingFrame.selected, KeyBindingFrame.mode);
 		end
 		if ( key2 ) then
-			KeyBindingFrame_SetBinding(key2, nil, key2);
+			KeyBindingFrame_SetBinding(key2, nil, KeyBindingFrame.mode, key2);
 		end
 	end
 	KeyBindingFrame_Update();
@@ -584,7 +621,7 @@ function UnbindButton_OnClick(self)
 	KeyBindingFrame_SetSelected(nil);
 	KeyBindingFrame.buttonPressed:UnlockHighlight();
 	KeyBindingFrame_UpdateUnbindKey();
-	KeyBindingFrame.outputText:SetText();
+	KeyBindingFrame.outputText:SetText("");
 end
 
 function OkayButton_OnClick(self)
@@ -606,14 +643,18 @@ function OkayButton_OnClick(self)
 end
 
 function CancelButton_OnClick(self)
-	LoadBindings(GetCurrentBindingSet());
-	KeyBindingFrame.outputText:SetText("");
-	KeyBindingFrame_SetSelected(nil);
-	HideUIPanel(KeyBindingFrame);
+	KeyBindingFrame_CancelBinding(self);
 end
 
 function DefaultsButton_OnClick(self)
 	StaticPopup_Show("CONFIRM_RESET_TO_DEFAULT_KEYBINDINGS");
+end
+
+function KeyBindingFrame_CancelBinding(self)
+	LoadBindings(GetCurrentBindingSet());
+	KeyBindingFrame.outputText:SetText("");
+	KeyBindingFrame_SetSelected(nil);
+	HideUIPanel(KeyBindingFrame);
 end
 
 function KeyBindingFrame_ResetBindingsToDefault()
@@ -629,6 +670,6 @@ function GetBindingName(binding)
 	if ( bindingName ) then
 		return bindingName;
 	end
-	
+
 	return binding;
 end

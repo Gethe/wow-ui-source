@@ -25,6 +25,11 @@ local Cinematic =
 			LiteralName = "CINEMATIC_STOP",
 		},
 		{
+			Name = "HideSubtitle",
+			Type = "Event",
+			LiteralName = "HIDE_SUBTITLE",
+		},
+		{
 			Name = "PlayMovie",
 			Type = "Event",
 			LiteralName = "PLAY_MOVIE",

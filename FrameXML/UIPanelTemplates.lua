@@ -1,43 +1,4 @@
 
-function SearchBoxTemplate_OnLoad(self)
-	self.searchIcon:SetVertexColor(0.6, 0.6, 0.6);
-	self:SetTextInsets(16, 20, 0, 0);
-	self.Instructions:SetText(SEARCH);
-	self.Instructions:ClearAllPoints();
-	self.Instructions:SetPoint("TOPLEFT", self, "TOPLEFT", 16, 0);
-	self.Instructions:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -20, 0);
-end
-
-function SearchBoxTemplate_OnEditFocusLost(self)
-	if ( self:GetText() == "" ) then
-		self.searchIcon:SetVertexColor(0.6, 0.6, 0.6);
-		self.clearButton:Hide();
-	end
-end
-
-function SearchBoxTemplate_OnEditFocusGained(self)
-	self.searchIcon:SetVertexColor(1.0, 1.0, 1.0);
-	self.clearButton:Show();
-end
-
-function SearchBoxTemplate_OnTextChanged(self)
-	if ( not self:HasFocus() and self:GetText() == "" ) then
-		self.searchIcon:SetVertexColor(0.6, 0.6, 0.6);
-		self.clearButton:Hide();
-	else
-		self.searchIcon:SetVertexColor(1.0, 1.0, 1.0);
-		self.clearButton:Show();
-	end
-	InputBoxInstructions_OnTextChanged(self);
-end
-
-function SearchBoxTemplateClearButton_OnClick(self)
-	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-	local editBox = self:GetParent();
-	editBox:SetText("");
-	editBox:ClearFocus();
-end
-
 ITEM_SEARCHBAR_LIST = {
 	"BagItemSearchBox",
 	"GuildItemSearchBox",
@@ -146,40 +107,6 @@ function UIFrameCache:ReleaseFrame (frame)
 	end
 end
 
--- Truncated Button code
-
-function TruncatedButton_OnEnter(self)
-	local text = _G[self:GetName().."Text"];
-	if ( text:IsTruncated() ) then
-		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		GameTooltip:SetText(text:GetText());
-		GameTooltip:Show();
-	end
-end
-
-function TruncatedButton_OnLeave(self)
-	if ( GameTooltip:GetOwner() == self ) then
-		GameTooltip:Hide();
-	end
-end
-
--- Truncated Tooltip Script code
-
-function TruncatedTooltipScript_OnEnter(self)
-	local text = self.truncatedTooltipScriptText or self.Text;
-	if text:IsTruncated() then
-		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		GameTooltip:SetText(text:GetText());
-		GameTooltip:Show();
-	end
-end
-
-function TruncatedTooltipScript_OnLeave(self)
-	if GameTooltip:GetOwner() == self then
-		GameTooltip:Hide();
-	end
-end
-
 -- SquareButton template code
 SQUARE_BUTTON_TEXCOORDS = {
 	["UP"] = {     0.45312500,    0.64062500,     0.01562500,     0.20312500};
@@ -276,41 +203,6 @@ function CapProgressBar_Update(capBar, cap1Quantity, cap1Limit, cap2Quantity, ca
 	else
 		capBar.cap2:Hide();
 		capBar.cap2Marker:Hide();
-	end
-end
-
-function InputScrollFrame_OnLoad(self)
-	local scrollBar = self.ScrollBar;
-	scrollBar:ClearAllPoints();
-	scrollBar:SetPoint("TOPLEFT", self, "TOPRIGHT", -13, -11);
-	scrollBar:SetPoint("BOTTOMLEFT", self, "BOTTOMRIGHT", -13, 9);
-	-- reposition the up and down buttons
-	self.ScrollBar.ScrollDownButton:SetPoint("TOP", scrollBar, "BOTTOM", 0, 4);
-	self.ScrollBar.ScrollUpButton:SetPoint("BOTTOM", scrollBar, "TOP", 0, -4);
-	-- make the scroll bar hideable and force it to start off hidden so positioning calculations can be done
-	-- as soon as it needs to be shown
-	self.scrollBarHideable = 1;
-	scrollBar:Hide();
-	self.EditBox:SetWidth(self:GetWidth() - 18);
-	self.EditBox:SetMaxLetters(self.maxLetters);
-	self.EditBox.Instructions:SetText(self.instructions);
-	self.EditBox.Instructions:SetWidth(self:GetWidth());
-	self.CharCount:SetShown(not self.hideCharCount);
-end
-
-function InputScrollFrame_OnTextChanged(self)
-	local scrollFrame = self:GetParent();
-	ScrollingEdit_OnTextChanged(self, scrollFrame);
-	if ( self:GetText() ~= "" ) then
-		self.Instructions:Hide();
-	else
-		self.Instructions:Show();
-	end
-	scrollFrame.CharCount:SetText(self:GetMaxLetters() - self:GetNumLetters());
-	if ( scrollFrame.ScrollBar:IsShown() ) then
-		scrollFrame.CharCount:SetPoint("BOTTOMRIGHT", -17, 0);
-	else
-		scrollFrame.CharCount:SetPoint("BOTTOMRIGHT", 0, 0);
 	end
 end
 

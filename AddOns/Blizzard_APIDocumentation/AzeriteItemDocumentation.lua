@@ -81,12 +81,22 @@ local AzeriteItem =
 				{ Name = "azeriteItemLocation", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
 				{ Name = "oldPowerLevel", Type = "number", Nilable = false },
 				{ Name = "newPowerLevel", Type = "number", Nilable = false },
+				{ Name = "unlockedEmpoweredItemsInfo", Type = "table", InnerType = "UnlockedAzeriteEmpoweredItems", Nilable = false },
 			},
 		},
 	},
 
 	Tables =
 	{
+		{
+			Name = "UnlockedAzeriteEmpoweredItems",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "unlockedItem", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "tierIndex", Type = "number", Nilable = false },
+			},
+		},
 	},
 };
 

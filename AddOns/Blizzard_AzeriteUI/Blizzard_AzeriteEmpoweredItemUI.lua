@@ -1,6 +1,13 @@
-AzeriteEmpoweredItemUIMixin = {};
+AzeriteEmpoweredItemUIMixin = CreateFromMixins(CallbackRegistryBaseMixin);
+
+AzeriteEmpoweredItemUIMixin:GenerateCallbackEvents(
+{
+    "OnShow",
+});
 
 function AzeriteEmpoweredItemUIMixin:OnLoad()
+	CallbackRegistryBaseMixin.OnLoad(self);
+
 	UIPanelWindows[self:GetName()] = { area = "left", pushable = 0, xoffset = 35, yoffset = -9, bottomClampOverride = 100, showFailedFunc = function() self:OnShowFailed(); end, };
 
 	self.transformTree = CreateFromMixins(TransformTreeMixin);
@@ -42,6 +49,8 @@ function AzeriteEmpoweredItemUIMixin:OnShow()
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 
 	self.transformTree:GetRoot():SetLocalPosition(CreateVector2D(self.BackgroundFrame:GetWidth() * .5, self.BackgroundFrame:GetHeight() * .5));
+
+	self:TriggerEvent(AzeriteEmpoweredItemUIMixin.Event.OnShow);
 end
 
 function AzeriteEmpoweredItemUIMixin:OnHide()

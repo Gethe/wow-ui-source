@@ -94,6 +94,14 @@ function ScrollingMessageFrameMixin:ScrollToBottom()
 	self:ResetAllFadeTimes();
 end
 
+function ScrollingMessageFrameMixin:SetOnDisplayRefreshedCallback(callback)
+	self.onDisplayRefreshedCallback = callback;
+end
+
+function ScrollingMessageFrameMixin:GetOnDisplayRefreshedCallback()
+	return self.onDisplayRefreshedCallback;
+end
+
 function ScrollingMessageFrameMixin:SetOnScrollChangedCallback(onScrollChangedCallback)
 	self.onScrollChangedCallback = onScrollChangedCallback;
 end
@@ -491,6 +499,7 @@ end
 function ScrollingMessageFrameMixin:RefreshDisplay()
 	self.isDisplayDirty = false;
 	if self:GetNumVisibleLines() == 0 then
+		self:CallOnDisplayRefreshed();
 		return;
 	end
 
@@ -517,6 +526,16 @@ function ScrollingMessageFrameMixin:RefreshDisplay()
 			visibleLine.messageInfo = nil;
 			visibleLine:Hide();
 		end
+	end
+
+	self:CallOnDisplayRefreshed();
+end
+
+function ScrollingMessageFrameMixin:CallOnDisplayRefreshed()
+	local callback = self:GetOnDisplayRefreshedCallback();
+
+	if callback then
+		callback(self);
 	end
 end
 

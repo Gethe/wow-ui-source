@@ -18,12 +18,6 @@ function SetItemRef(link, text, button, chatFrame)
 					_G[staticPopup.."EditBox"]:SetText(name);
 					return;
 				end
-				staticPopup = StaticPopup_Visible("ADD_MUTE");
-				if ( staticPopup ) then
-					-- If add ignore dialog is up then enter the name into the editbox
-					_G[staticPopup.."EditBox"]:SetText(name);
-					return;
-				end
 				staticPopup = StaticPopup_Visible("ADD_FRIEND");
 				if ( staticPopup ) then
 					-- If add ignore dialog is up then enter the name into the editbox
@@ -76,12 +70,6 @@ function SetItemRef(link, text, button, chatFrame)
 					_G[staticPopup.."EditBox"]:SetText(name);
 					return;
 				end
-				staticPopup = StaticPopup_Visible("ADD_MUTE");
-				if ( staticPopup ) then
-					-- If add ignore dialog is up then enter the name into the editbox
-					_G[staticPopup.."EditBox"]:SetText(name);
-					return;
-				end
 				staticPopup = StaticPopup_Visible("ADD_FRIEND");
 				if ( staticPopup ) then
 					-- If add ignore dialog is up then enter the name into the editbox
@@ -124,7 +112,7 @@ function SetItemRef(link, text, button, chatFrame)
 		if ( IsModifiedClick("CHATLINK") ) then
 			local chanLink = strsub(link, 9);
 			local chatType, chatTarget = strsplit(":", chanLink);
-			ToggleFriendsFrame(3);
+			ChannelFrame:Toggle();
 		elseif ( button == "LeftButton" ) then
 			local chanLink = strsub(link, 9);
 			local chatType, chatTarget = strsplit(":", chanLink);

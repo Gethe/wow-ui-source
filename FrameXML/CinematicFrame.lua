@@ -19,6 +19,7 @@ end
 function CinematicFrame_OnLoad(self)
 	self:RegisterEvent("CINEMATIC_START");
 	self:RegisterEvent("CINEMATIC_STOP");
+	self:RegisterEvent("HIDE_SUBTITLE");
 
 	--For subtitles. We only support say/yell right now.
 	self:RegisterEvent("CHAT_MSG_SAY");
@@ -72,6 +73,8 @@ function CinematicFrame_OnEvent(self, event, ...)
 		end
 	elseif ( event == "DISPLAY_SIZE_CHANGED") then
 		CinematicFrame_OnDisplaySizeChanged(self);
+	elseif ( event == "HIDE_SUBTITLE") then
+		CinematicFrame_HideSubtitle(self)
 	end
 end
 
@@ -94,6 +97,13 @@ function CinematicFrame_AddSubtitle(chatType, body)
 	
 	fontString:SetText(body);
 	fontString:Show();
+end
+
+function CinematicFrame_HideSubtitle(self)
+	for i=1, #self.Subtitles do
+		self.Subtitles[i]:SetText("");
+		self.Subtitles[i]:Hide();
+	end
 end
 
 function CinematicFrame_OnKeyDown(self, key)

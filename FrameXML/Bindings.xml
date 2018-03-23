@@ -929,9 +929,7 @@
 		TargetUnit("mouseover");
 	</Binding>
 	<Binding name="TARGETTALKER" category="BINDING_HEADER_TARGETING">
-		if ( #VOICECHAT_TALKERS > 0 ) then
-			VoiceChatTalkers.buttons[#VOICECHAT_TALKERS].button:Click();
-		end
+		nop();
 	</Binding>
 
 	<!-- UI Panels header="INTERFACE" -->
@@ -1014,26 +1012,26 @@
 	<Binding name="TOGGLEGUILDTAB" header="BLANK12" category="BINDING_HEADER_INTERFACE">
 		ToggleGuildFrame();
 	</Binding>
+	<Binding name="TOGGLECOMMUNITIES" category="BINDING_HEADER_INTERFACE">
+		ToggleCommunitiesFrame()
+	</Binding>
 	<Binding name="TOGGLESOCIAL" category="BINDING_HEADER_INTERFACE">
 		ToggleFriendsFrame();
 	</Binding>
 	<Binding name="TOGGLEFRIENDSTAB" category="BINDING_HEADER_INTERFACE">
-		ToggleFriendsFrame(1);
+		ToggleFriendsFrame(FRIEND_TAB_FRIENDS);
 	</Binding>
 	<Binding name="TOGGLEQUICKJOINTAB" category="BINDING_HEADER_INTERFACE">
 		ToggleQuickJoinPanel();
 	</Binding>
 	<Binding name="TOGGLEWHOTAB" category="BINDING_HEADER_INTERFACE">
-		ToggleFriendsFrame(2);
+		ToggleFriendsFrame(FRIEND_TAB_WHO);
 	</Binding>
 	<Binding name="TOGGLECHATTAB" category="BINDING_HEADER_INTERFACE">
-		ToggleFriendsFrame(3);
+		ChannelFrame:Toggle();
 	</Binding>
 	<Binding name="TOGGLERAIDTAB" category="BINDING_HEADER_INTERFACE">
 		ToggleRaidFrame();
-	</Binding>
-	<Binding name="TOGGLECHANNELPULLOUT" category="BINDING_HEADER_INTERFACE">
-		ChannelPullout_ToggleDisplay();
 	</Binding>
 
 	<Binding name="TOGGLEGROUPFINDER" header="BLANK13" category="BINDING_HEADER_INTERFACE">
@@ -1109,6 +1107,13 @@
 			SetCVar("VoiceChatSelfMute", 1);
 		else
 			SetCVar("VoiceChatSelfMute", 0);
+		end
+	</Binding>
+	<Binding name="TOGGLE_VOICE_PUSH_TO_TALK" runOnUp="true" category="BINDING_HEADER_MISC">
+		if ( keystate == "down" ) then
+			C_VoiceChat.BeginTransmission();
+		else
+			C_VoiceChat.EndTransmission();
 		end
 	</Binding>
 	<Binding name="TOGGLEUI" category="BINDING_HEADER_MISC">

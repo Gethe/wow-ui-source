@@ -4,22 +4,20 @@ function TalkingHeadFrame_OnLoad(self)
 	self:RegisterEvent("SOUNDKIT_FINISHED");
 	self:RegisterEvent("LOADING_SCREEN_ENABLED");
 	self:RegisterForClicks("RightButtonUp");
-	
+
 	self.NameFrame.Name:SetPoint("TOPLEFT", self.PortraitFrame.Portrait, "TOPRIGHT", 2, -19);
 	self.TextFrame.Text:SetFontObjectsToTry(SystemFont_Shadow_Large, SystemFont_Shadow_Med2, SystemFont_Shadow_Med1);
 
-	local anchorFrameSubSystem = AlertFrame:AddJustAnchorFrameSubSystem(self);
-	AlertFrame:SetSubSustemAnchorPriority(anchorFrameSubSystem, 0);
+	local alertSystem = AlertFrame:AddExternallyAnchoredSubSystem(self);
+	AlertFrame:SetSubSystemAnchorPriority(alertSystem, 0);
 end
 
 function TalkingHeadFrame_OnShow(self)
 	UIParent_ManageFramePositions();
-	AlertFrame:UpdateAnchors();
 end
 
 function TalkingHeadFrame_OnHide(self)
 	UIParent_ManageFramePositions();
-	AlertFrame:UpdateAnchors();
 end
 
 function TalkingHeadFrame_OnEvent(self, event, ...)
@@ -58,7 +56,7 @@ function TalkingHeadFrame_OnClick(self, button)
 		TalkingHeadFrame_CloseImmediately();
 		return true;
 	end
-	
+
 	return false;
 end
 
@@ -92,14 +90,14 @@ function TalkingHeadFrame_Reset(frame, text, name)
 	frame.TextFrame.Text:SetAlpha(0.01);
 	frame.MainFrame.Sheen:SetAlpha(0.01);
 	frame.MainFrame.TextSheen:SetAlpha(0.01);
-	
+
 	frame.MainFrame.Model:SetAlpha(0.01);
 	frame.MainFrame.Model.PortraitBg:SetAlpha(0.01);
 	frame.PortraitFrame.Portrait:SetAlpha(0.01);
 	frame.MainFrame.Overlay.Glow_LeftBar:SetAlpha(0.01);
 	frame.MainFrame.Overlay.Glow_RightBar:SetAlpha(0.01);
 	frame.MainFrame.CloseButton:SetAlpha(0.01);
-	
+
 	frame.MainFrame:SetAlpha(1);
 	frame.NameFrame.Name:SetText(name);
 	frame.TextFrame.Text:SetText(text);
@@ -108,7 +106,7 @@ end
 function TalkingHeadFrame_PlayCurrent()
 	local frame = TalkingHeadFrame;
 	local model = frame.MainFrame.Model;
-	
+
 	if( frame.finishTimer ) then
 		frame.finishTimer:Cancel();
 		frame.finishTimer = nil;
@@ -117,7 +115,7 @@ function TalkingHeadFrame_PlayCurrent()
 		StopSound(frame.voHandle);
 		frame.voHandle = nil;
 	end
-	
+
 	local currentDisplayInfo = model:GetDisplayInfo();
 	local displayInfo, cameraID, vo, duration, lineNumber, numLines, name, text, isNewTalkingHead = C_TalkingHead.GetCurrentLineInfo();
 	local textFormatted = string.format(text);
@@ -133,7 +131,7 @@ function TalkingHeadFrame_PlayCurrent()
 			end
 			TalkingHeadFrame_SetupAnimations(model);
 		end
-		
+
 		if ( isNewTalkingHead ) then
 			TalkingHeadFrame_Reset(frame, textFormatted, name);
 			TalkingHeadFrame_FadeinFrames();
@@ -147,7 +145,7 @@ function TalkingHeadFrame_PlayCurrent()
 				C_Timer.After(0.5, function()
 					frame.NameFrame.Fadein:Play();
 				end);
-				
+
 				frame.MainFrame.TalkingHeadsInAnim:Play();
 			end
 
@@ -162,8 +160,8 @@ function TalkingHeadFrame_PlayCurrent()
 				end);
 			end
 		end
-		
-		
+
+
 		local success, voHandle = PlaySound(vo, "Talking Head", true, true);
 		if ( success ) then
 			frame.voHandle = voHandle;
@@ -190,7 +188,7 @@ function TalkingHeadFrame_Close()
 		TalkingHeadFrame_FadeoutFrames();
 		frame.finishTimer = nil;
 	end
-	
+
 	frame.voHandle = nil;
 end
 
@@ -199,7 +197,7 @@ function TalkingHeadFrame_OnModelLoaded(self)
 	if self.uiCameraID then
 		Model_ApplyUICamera(self, self.uiCameraID);
 	end
-	
+
 	TalkingHeadFrame_SetupAnimations(self);
 end
 
@@ -211,7 +209,7 @@ function TalkingHeadFrame_SetupAnimations(self)
 	if( animKit ~= self.animKit ) then
 		self:StopAnimKit();
 	end
-	
+
 	if ( animKit > 0 ) then
 		self.animKit = animKit;
 	-- If intro is 0 (stand) we are assuming that is no-op and skipping to loop.
@@ -221,7 +219,7 @@ function TalkingHeadFrame_SetupAnimations(self)
 	else
 		self.animLoop = animLoop;
 	end
-	
+
 	if (self.animKit) then
 		self:PlayAnimKit(self.animKit, true);
 		self:SetScript("OnAnimFinished", nil);

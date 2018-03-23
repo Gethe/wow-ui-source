@@ -1,0 +1,200 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="CommunitiesMemberList.lua"/>
+
+	<Button name="CommunitiesMemberListEntryTemplate" registerForClicks="RightButtonUp" virtual="true" mixin="CommunitiesMemberListEntryMixin">
+		<Size x="140" y="20"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="PresenceIcon">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="LEFT" x="4" y="0"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Name" inherits="GameFontHighlightSmall" justifyH="LEFT" wordwrap="false">
+					<Size x="140" y="0"/>
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT" relativeKey="$parent.PresenceIcon"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Rank" inherits="GameFontHighlightSmall" justifyH="LEFT" wordwrap="false" hidden="false">
+					<Size x="80" y="0"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Name" relativePoint="RIGHT" x="4" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Note" inherits="GameFontHighlightSmall" justifyH="LEFT" wordwrap="false" hidden="false">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Rank" relativePoint="RIGHT" x="4" y="0"/>
+						<Anchor point="RIGHT" relativeKey="$parent" relativePoint="RIGHT" x="-4" y="0"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="VoiceChatStatusIcon">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT" relativeKey="$parent.Name"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="RankIcon">
+					<Size x="12" y="12"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Name" relativePoint="RIGHT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+			<OnClick method="OnClick"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+		<NormalTexture>
+			<Color r="0.1" g="0.1" b="0.1" a="1"/>
+		</NormalTexture>
+		<HighlightTexture>
+			<Color r="0.2" g="0.1" b="0.4" a="0.4"/>
+		</HighlightTexture>
+		<PushedTexture>
+			<Color r="0.3" g="0.3" b="0.3" a="1"/>
+		</PushedTexture>
+	</Button>
+
+	<Frame name="CommunitiesMemberListFrameTemplate" mixin="CommunitiesMemberListMixin" virtual="true">
+		<Frames>
+			<Frame parentKey="ColumnDisplay" mixin="CommunitiesMemberListColumnDisplayMixin" useParentLevel="true" hidden="true">
+				<Size x="0" y="60"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="-3" y="60"/>
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="22" y="60"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Background" file="Interface\FrameGeneral\UI-Background-Rock" horizTile="true" vertTile="true"/>
+					</Layer>
+					<Layer level="BORDER">
+						<Texture parentKey="InsetBorderTopLeft" inherits="UI-Frame-InnerTopLeft">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="BOTTOMLEFT" x="0" y="3"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="InsetBorderTopRight" inherits="UI-Frame-InnerTopRight">
+							<Anchors>
+								<Anchor point="TOPRIGHT" relativeKey="$parent.Background" relativePoint="BOTTOMRIGHT" x="0" y="3"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="InsetBorderBottomLeft" inherits="UI-Frame-InnerBotLeftCorner">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativeKey="$parent.$parent" x="-3" y="-3"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="InsetBorderTop" inherits="_UI-Frame-InnerTopTile">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.InsetBorderTopLeft" relativePoint="TOPRIGHT"/>
+								<Anchor point="TOPRIGHT" relativeKey="$parent.InsetBorderTopRight" relativePoint="TOPLEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="InsetBorderLeft" inherits="!UI-Frame-InnerLeftTile">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.InsetBorderTopLeft" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+								<Anchor point="BOTTOMLEFT" relativeKey="$parent.InsetBorderBottomLeft" relativePoint="TOPLEFT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture parentKey="TopTileStreaks" inherits="_UI-Frame-TopTileStreaks">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="0" y="0"/>
+								<Anchor point="TOPRIGHT" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+				</Scripts>
+			</Frame>
+			<ScrollFrame parentKey="ListScrollFrame" inherits="HybridScrollFrameTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT"/>
+				</Anchors>
+				<Frames>
+					<Slider parentKey="scrollBar" inherits="HybridScrollBarTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="-15"/>
+							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="11"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture parentKey="Background" file="Interface\FrameGeneral\UI-Background-Marble" horizTile="true" vertTile="true" setAllPoints="true"/>
+							</Layer>
+						</Layers>
+					</Slider>
+				</Frames>
+			</ScrollFrame>
+			<Frame parentKey="DropDown" inherits="UIDropDownMenuTemplate">
+				<Scripts>
+					<OnLoad function="CommunitiesMemberListDropDown_OnLoad"/>
+					<OnHide function="CommunitiesMemberListDropDown_OnHide"/>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnEvent method="OnEvent"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+	
+	<Button name="CommunitiesMemberListColumnButtonTemplate" virtual="true">
+		<Size x="10" y="24"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Left" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+					<Size x="5" y="24"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+					<TexCoords left="0" right="0.078125" top="0" bottom="0.75"/>
+				</Texture>
+				<Texture parentKey="Right" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+					<Size x="4" y="24"/>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+					<TexCoords left="0.90625" right="0.96875" top="0" bottom="0.75"/>
+				</Texture>
+				<Texture parentKey="Middle" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+					<Size x="0" y="24"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Left" relativePoint="RIGHT"/>
+						<Anchor point="RIGHT" relativeKey="$parent.Right" relativePoint="LEFT"/>
+					</Anchors>
+					<TexCoords left="0.078125" right="0.90625" top="0" bottom="0.75"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick function="CommunitiesMemberListColumnButton_OnClick"/>
+		</Scripts>
+		<ButtonText>
+			<Anchors>
+				<Anchor point="LEFT" x="8" y="0"/>
+			</Anchors>
+		</ButtonText>
+		<NormalFont style="GameFontHighlightSmall"/>
+		<HighlightTexture file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeKey="$parent.Left" x="0" y="5"/>
+				<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Right" x="0" y="-7"/>
+			</Anchors>
+		</HighlightTexture>
+	</Button>
+</Ui>

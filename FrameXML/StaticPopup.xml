@@ -77,6 +77,12 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
+				<FontString parentKey="SubText" inherits="GameFontNormalSmall">
+					<Size x="290" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.text" relativePoint="BOTTOM" x="0" y="-6"/>
+					</Anchors>
+				</FontString>
 				<Texture name="$parentAlertIcon">
 					<Size>
 						<AbsDimension x="36" y="36"/>
@@ -185,11 +191,7 @@
 			</EditBox>
 			<Frame name="$parentMoneyFrame" inherits="SmallMoneyFrameTemplate" hidden="true">
 				<Anchors>
-					<Anchor point="TOP" relativeTo="$parentText" relativePoint="BOTTOM">
-						<Offset>
-							<AbsDimension x="0" y="-5"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOP" relativeTo="$parentText" relativePoint="BOTTOM" x="0" y="-5"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
@@ -201,11 +203,7 @@
 			</Frame>
 			<Frame name="$parentMoneyInputFrame" inherits="MoneyInputFrameTemplate">
 				<Anchors>
-					<Anchor point="TOP" relativeTo="$parentText" relativePoint="BOTTOM">
-						<Offset>
-							<AbsDimension x="0" y="-5"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOP" relativeTo="$parentText" relativePoint="BOTTOM" x="0" y="-5"/>
 				</Anchors>
 			</Frame>
 			<Button parentKey="ItemFrame" name="$parentItemFrame" inherits="ItemButtonTemplate" hidden="true">
@@ -281,16 +279,7 @@
 			<OnHide>
 				StaticPopup_OnHide(self);
 			</OnHide>
-			<OnLoad>
-				local name = self:GetName();
-				self.button1 = _G[name .. "Button1"];
-				self.button2 = _G[name .. "Button2"];
-				self.button3 = _G[name .. "Button3"];
-				self.text = _G[name .. "Text"];
-				self.icon = _G[name .. "AlertIcon"];
-				self.moneyInputFrame = _G[name .. "MoneyInputFrame"];
-				self:RegisterEvent("DISPLAY_SIZE_CHANGED");
-			</OnLoad>
+			<OnLoad function="StaticPopup_OnLoad"/>
 			<OnHyperlinkClick function="StaticPopup_OnHyperlinkClick"/>
 			<OnHyperlinkEnter function="StaticPopup_OnHyperlinkEnter"/>
 			<OnHyperlinkLeave function="StaticPopup_OnHyperlinkLeave"/>

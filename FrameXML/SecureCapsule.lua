@@ -137,6 +137,7 @@ retain("ConvertPixelsToUI");
 retain("IsTrialAccount");
 retain("IsVeteranTrialAccount");
 retain("C_StorePublic");
+retain("C_Club");
 
 --For auth challenge
 take("C_AuthChallenge");
@@ -435,6 +436,13 @@ take("SEND_ITEMS_TO_STRANGER_WARNING");
 take("SEND_MONEY_TO_STRANGER_WARNING");
 take("TRADE_ACCEPT_CONFIRMATION");
 
+retain("COMMUNITIES_CREATE_COMMUNITY");
+take("CREATE_COMMUNITY_DIALOG_DESCRIPTION_INSTRUCTIONS");
+take("CREATE_COMMUNITY_DIALOG_TYPE_LABEL");
+take("CREATE_COMMUNITY_DIALOG_NAME_LABEL");
+take("CREATE_COMMUNITY_DIALOG_DESCRIPTION_LABEL");
+take("CREATE_COMMUNITY_DIALOG_ICON_LABEL");
+
 --Lua enums
 retain("LE_TOKEN_RESULT_SUCCESS");
 retain("LE_TOKEN_RESULT_ERROR_OTHER");
@@ -456,6 +464,7 @@ takeenum("BattlepaySpecialProducts");
 takeenum("BattlepayProductGroupFlag");
 takeenum("BattlepayGroupDisplayType");
 retainenum("ModelSceneSetting");
+retainenum("ClubType");
 
 -- Secure Mixins
 -- where ... are the mixins to mixin

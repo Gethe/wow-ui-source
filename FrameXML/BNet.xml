@@ -1,96 +1,43 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="BNet.lua"/>
-	<Frame name="BNetEventFrame">
-		<Scripts>
-			<OnLoad function="BNet_OnLoad"/>
-			<OnEvent function="BNet_OnEvent"/>
-		</Scripts>
-	</Frame>
 
-	<Frame name="BNToastFrame" parent="UIParent" hidden="true" frameStrata="LOW" toplevel="true">
-		<Animations>
-			<AnimationGroup name="$parentAnimIn" parentKey="animIn">
-				<Alpha fromAlpha="1" toAlpha="0" duration="0" order="1"/>
-				<Alpha fromAlpha="0" toAlpha="1" duration="0.2" order="2"/>
-			</AnimationGroup>
-			<AnimationGroup name="$parentWaitAndAnimOut" parentKey="waitAndAnimOut">
-				<Alpha startDelay="4.05" fromAlpha="1" toAlpha="0" duration="1.5" parentKey="animOut">
-					<Scripts>
-						<OnFinished>
-							BNToastFrame_Close();
-						</OnFinished>
-					</Scripts>
-				</Alpha>
-			</AnimationGroup>
-		</Animations>
-		<Size>
-			<AbsDimension x="250" y="50"/>
-		</Size>
+	<ContainedAlertFrame name="BNToastFrame" inherits="SocialToastTemplate" frameStrata="LOW" mixin="BNToastMixin">
 		<Anchors>
 			<Anchor point="CENTER" x="0" y="50"/>
 		</Anchors>
-		<Backdrop bgFile="Interface\FriendsFrame\UI-Toast-Background" edgeFile="Interface\FriendsFrame\UI-Toast-Border" tile="true">
-			<BackgroundInsets>
-				<AbsInset left="5" right="5" top="5" bottom="5"/>
-			</BackgroundInsets>
-			<TileSize>
-				<AbsValue val="12"/>
-			</TileSize>
-			<EdgeSize>
-				<AbsValue val="12"/>
-			</EdgeSize>
-		</Backdrop>
 		<Layers>
 			<Layer level="BORDER">
-				<Texture name="$parentIconTexture" file="Interface\FriendsFrame\UI-Toast-ToastIcons">
-					<Size>
-						<AbsDimension x="40" y="40"/>
-					</Size>
+				<Texture name="$parentIconTexture" parentKey="IconTexture" file="Interface\FriendsFrame\UI-Toast-ToastIcons">
+					<Size x="40" y="40"/>
 					<Anchors>
 						<Anchor point="LEFT" x="4" y="0"/>
 					</Anchors>
 					<TexCoords left="0" right="0.25" top="0" bottom="0.5"/>
 				</Texture>
-				<FontString name="$parentTopLine" inherits="FriendsFont_Normal" justifyH="LEFT" justifyV="MIDDLE">
+				<FontString name="$parentTopLine" parentKey="TopLine" inherits="FriendsFont_Normal" justifyH="LEFT" justifyV="MIDDLE">
 					<Size x="0" y="10"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="44" y="-10"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="44" y="-10"/>
 						<Anchor point="RIGHT" x="-20" y="0"/>
 					</Anchors>
 					<Color r="0.510" g="0.773" b="1"/>
 				</FontString>
-				<FontString name="$parentMiddleLine" inherits="FriendsFont_Normal" justifyH="LEFT" justifyV="MIDDLE">
-					<Size>
-						<AbsDimension x="0" y="10"/>
-					</Size>
+				<FontString name="$parentMiddleLine" parentKey="MiddleLine" inherits="FriendsFont_Normal" justifyH="LEFT" justifyV="MIDDLE">
+					<Size x="0" y="10"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentTopLine" relativePoint="BOTTOMLEFT">
-							<Offset>
-								<AbsDimension x="0" y="-4"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" relativeKey="$parent.TopLine" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
 					</Anchors>
 					<Color r="0.486" g="0.518" b="0.541" />
 				</FontString>
-				<FontString name="$parentBottomLine" inherits="FriendsFont_Normal" justifyH="LEFT" justifyV="MIDDLE">
-					<Size>
-						<AbsDimension x="196" y="10"/>
-					</Size>
+				<FontString name="$parentBottomLine" parentKey="BottomLine" inherits="FriendsFont_Normal" justifyH="LEFT" justifyV="MIDDLE">
+					<Size x="196" y="10"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentMiddleLine" relativePoint="BOTTOMLEFT">
-							<Offset>
-								<AbsDimension x="0" y="-4"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" relativeKey="$parent.MiddleLine" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
 					</Anchors>
 					<Color r="0.486" g="0.518" b="0.541" />
 				</FontString>
-				<FontString name="$parentDoubleLine" inherits="FriendsFont_Normal" justifyH="LEFT" justifyV="MIDDLE">
+				<FontString name="$parentDoubleLine" parentKey="DoubleLine" inherits="FriendsFont_Normal" justifyH="LEFT" justifyV="MIDDLE">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="44" y="0"/>
 						<Anchor point="BOTTOMRIGHT" x="-20" y="0"/>
@@ -100,63 +47,6 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button name="$parentClickFrame" setAllPoints="true">
-				<Scripts>
-					<OnEnter function="BNToastFrame_OnEnter"/>
-					<OnLeave function="BNToastFrame_OnLeave"/>
-					<OnClick function="BNToastFrame_OnClick"/>
-				</Scripts>
-			</Button>
-			<Frame name="$parentGlowFrame" setAllPoints="true">
-				<Layers>
-					<Layer level="OVERLAY">
-						<Texture name="$parentGlow" file="Interface\FriendsFrame\UI-Toast-Flair" alphaMode="ADD" hidden="true" parentKey="glow">
-							<Size>
-								<AbsDimension x="252" y="56"/>
-							</Size>
-							<Anchors>
-								<Anchor point="TOPLEFT">
-									<Offset x="-1" y="3"/>
-								</Anchor>
-								<Anchor point="BOTTOMRIGHT">
-									<Offset x="1" y="-3"/>
-								</Anchor>
-							</Anchors>
-							<Animations>
-								<AnimationGroup name="$parentAnimIn" parentKey="animIn">
-									<Alpha fromAlpha="0" toAlpha="1" duration="0.2" order="1"/>
-									<Alpha fromAlpha="1" toAlpha="0" duration="0.5" order="2"/>
-									<Scripts>
-										<OnFinished>
-											self:GetParent():Hide();
-										</OnFinished>
-									</Scripts>
-								</AnimationGroup>
-							</Animations>
-						</Texture>
-					</Layer>
-				</Layers>
-			</Frame>
-			<Button name="$parentCloseButton">
-				<Size>
-					<AbsDimension x="18" y="18"/>
-				</Size>
-				<Anchors>
-					<Anchor point="TOPRIGHT" x="-4" y="-3"/>
-				</Anchors>
-				<Scripts>
-					<OnEnter>
-						AlertFrame_StopOutAnimation(BNToastFrame);
-					</OnEnter>
-					<OnLeave>
-						AlertFrame_ResumeOutAnimation(BNToastFrame);
-					</OnLeave>
-					<OnClick function="BNToastFrame_Close"/>
-				</Scripts>
-				<NormalTexture file="Interface\FriendsFrame\UI-Toast-CloseButton-Up"/>
-				<PushedTexture file="Interface\FriendsFrame\UI-Toast-CloseButton-Down"/>
-				<HighlightTexture file="Interface\FriendsFrame\UI-Toast-CloseButton-Highlight" alphaMode="ADD"/>
-			</Button>
 			<Frame parentKey="TooltipFrame" frameStrata="TOOLTIP" clampedToScreen="true" hidden="true">
 				<Size x="250" y="60"/>
 				<Anchors>
@@ -197,20 +87,39 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				BNToastFrameDoubleLine:SetSpacing(3);
-				local frameLevel = BNToastFrameClickFrame:GetFrameLevel();
-				BNToastFrameCloseButton:SetFrameLevel(frameLevel + 1);
-				BNToastFrameGlowFrame:SetFrameLevel(frameLevel + 2);
-				self:RegisterEvent("VARIABLES_LOADED");
-			</OnLoad>
-			<OnEvent function="BNToastFrame_OnEvent"/>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnHide method="OnHide"/>
+
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnClick method="OnClick"/>
 		</Scripts>
-	</Frame>
+	</ContainedAlertFrame>
+
+	<ContainedAlertFrame name="TimeAlertFrame" inherits="SocialToastTemplate" mixin="BNetTimeAlertMixin">
+		<Size x="250" y="50"/>
+		<Layers>
+			<Layer level="BORDER">
+				<FontString name="$parentText" parentKey="Text" inherits="FriendsFont_Normal" justifyH="LEFT">
+					<Size x="230" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="10" y="-10"/>
+						<Anchor point="RIGHT" x="-10" y="0"/>
+					</Anchors>
+					<Color r="0.510" g="0.773" b="1"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnUpdate method="OnUpdate"/>
+		</Scripts>
+	</ContainedAlertFrame>
+
 	<Frame name="BNetReportFrame" parent="UIParent" hidden="true" frameStrata="DIALOG">
-		<Size>
-			<AbsDimension x="344" y="224"/>
-		</Size>
+		<Size x="344" y="224"/>
 		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
 			<BackgroundInsets>
 				<AbsInset left="11" right="12" top="12" bottom="11"/>
@@ -242,30 +151,20 @@
 			<Frame name="$parentComment">
 				<Size x="286" y="80"/>
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset x="30" y="-75"/>
-					</Anchor>
+					<Anchor point="TOPLEFT" x="30" y="-75"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
 						<Texture name="$parentTopLeft" file="Interface\Common\Common-Input-Border-TL">
-							<Size>
-								<AbsDimension x="8" y="8"/>
-							</Size>
+							<Size x="8" y="8"/>
 							<Anchors>
-								<Anchor point="TOPLEFT">
-									<Offset x="0" y="0"/>
-								</Anchor>
+								<Anchor point="TOPLEFT" x="0" y="0"/>
 							</Anchors>
 						</Texture>
 						<Texture name="$parentTopRight" file="Interface\Common\Common-Input-Border-TR">
-							<Size>
-								<AbsDimension x="8" y="8"/>
-							</Size>
+							<Size x="8" y="8"/>
 							<Anchors>
-								<Anchor point="TOPRIGHT">
-									<Offset x="0" y="0"/>
-								</Anchor>
+								<Anchor point="TOPRIGHT" x="0" y="0"/>
 							</Anchors>
 						</Texture>
 						<Texture name="$parentTop" file="Interface\Common\Common-Input-Border-T">
@@ -275,23 +174,15 @@
 							</Anchors>
 						</Texture>
 						<Texture name="$parentBottomLeft" file="Interface\Common\Common-Input-Border-BL">
-							<Size>
-								<AbsDimension x="8" y="8"/>
-							</Size>
+							<Size x="8" y="8"/>
 							<Anchors>
-								<Anchor point="BOTTOMLEFT">
-									<Offset x="0" y="0"/>
-								</Anchor>
+								<Anchor point="BOTTOMLEFT" x="0" y="0"/>
 							</Anchors>
 						</Texture>
 						<Texture name="$parentBottomRight" file="Interface\Common\Common-Input-Border-BR">
-							<Size>
-								<AbsDimension x="8" y="8"/>
-							</Size>
+							<Size x="8" y="8"/>
 							<Anchors>
-								<Anchor point="BOTTOMRIGHT">
-									<Offset x="0" y="0"/>
-								</Anchor>
+								<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
 							</Anchors>
 						</Texture>
 						<Texture name="$parentBottom" file="Interface\Common\Common-Input-Border-B">
@@ -352,11 +243,7 @@
 										<FontString name="$parentFill" inherits="ChatFontNormal" justifyH="LEFT" justifyV="TOP" text="BNET_REPORT_ABUSE_PROMPT">
 											<Size x="258" y="0"/>
 											<Anchors>
-												<Anchor point="TOPLEFT">
-													<Offset>
-														<AbsDimension x="3" y="-1"/>
-													</Offset>
-												</Anchor>
+												<Anchor point="TOPLEFT" x="3" y="-1"/>
 											</Anchors>
 											<Color r="0.35" g="0.35" b="0.35"/>
 										</FontString>
@@ -386,30 +273,18 @@
 				</Frames>
 			</Frame>
 			<Button name="$parentReportButton" inherits="UIPanelButtonTemplate" text="BNET_REPORT_ABUSE_BUTTON_SHORT">
-				<Size>
-					<AbsDimension x="128" y="22"/>
-				</Size>
+				<Size x="128" y="22"/>
 				<Anchors>
-					<Anchor point="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="30" y="24"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="BOTTOMLEFT" x="30" y="24"/>
 				</Anchors>
 				<Scripts>
 					<OnClick function="BNet_ConfirmReport"/>
 				</Scripts>
 			</Button>
 			<Button name="$parentCancelButton" inherits="UIPanelButtonTemplate" text="CANCEL">
-				<Size>
-					<AbsDimension x="128" y="22"/>
-				</Size>
+				<Size x="128" y="22"/>
 				<Anchors>
-					<Anchor point="BOTTOMRIGHT">
-						<Offset>
-							<AbsDimension x="-30" y="24"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="BOTTOMRIGHT" x="-30" y="24"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>
@@ -429,97 +304,6 @@
 			<OnHide>
 				PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
 			</OnHide>
-		</Scripts>
-	</Frame>
-
-	<Frame name="TimeAlertFrame" parent="UIParent" hidden="true" frameStrata="DIALOG">
-		<Animations>
-			<AnimationGroup name="$parentAnimIn" parentKey="animIn">
-				<Alpha fromAlpha="1" toAlpha="0" duration="0" order="1"/>
-				<Alpha fromAlpha="0" toAlpha="1" duration="0.2" order="2"/>
-			</AnimationGroup>
-			<AnimationGroup name="$parentWaitAndAnimOut" parentKey="animOut">
-				<Alpha startDelay="4.05" fromAlpha="1" toAlpha="0" duration="1.5" parentKey="animOut">
-					<Scripts>
-						<OnFinished>
-							TimeAlert_Close();
-						</OnFinished>
-					</Scripts>
-				</Alpha>
-			</AnimationGroup>
-		</Animations>
-		<Size x="250" y="50"/>
-		<Layers>
-			<Layer level="BORDER">
-				<FontString name="$parentText" inherits="FriendsFont_Normal" justifyH="LEFT">
-					<Size x="230" y="0"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="10" y="-10"/>
-						<Anchor point="RIGHT" x="-10" y="0"/>
-					</Anchors>
-					<Color r="0.510" g="0.773" b="1"/>
-				</FontString>
-			</Layer>
-		</Layers>
-		<Frames>
-			<Frame name="$parentBG" useParentLevel="true">
-				<Size x="250" y="50"/>
-				<Anchors>
-					<Anchor point="TOPLEFT" x="0" y="0"/>
-					<Anchor point="BOTTOM" relativeTo="$parentText" x="0" y="-10"/>
-				</Anchors>
-				<Backdrop bgFile="Interface\FriendsFrame\UI-Toast-Background" edgeFile="Interface\FriendsFrame\UI-Toast-Border" tile="true">
-					<BackgroundInsets>
-						<AbsInset left="5" right="5" top="5" bottom="5"/>
-					</BackgroundInsets>
-					<TileSize>
-						<AbsValue val="12"/>
-					</TileSize>
-					<EdgeSize>
-						<AbsValue val="12"/>
-					</EdgeSize>
-				</Backdrop>
-			</Frame>
-			<Frame name="$parentGlowFrame">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentText" x="-5" y="5"/>
-					<Anchor point="BOTTOMRIGHT" relativeTo="$parentText" x="5" y="-5"/>
-				</Anchors>
-				<Layers>
-					<Layer level="OVERLAY">
-						<Texture name="$parentGlow" file="Interface\FriendsFrame\UI-Toast-Flair" alphaMode="ADD" hidden="true" parentKey="glow">
-							<Size>
-								<AbsDimension x="252" y="56"/>
-							</Size>
-							<Anchors>
-								<Anchor point="TOPLEFT">
-									<Offset x="-1" y="3"/>
-								</Anchor>
-								<Anchor point="BOTTOMRIGHT">
-									<Offset x="1" y="-3"/>
-								</Anchor>
-							</Anchors>
-							<Animations>
-								<AnimationGroup name="$parentAnimIn" parentKey="animIn">
-									<Alpha fromAlpha="0" toAlpha="1" duration="0.2" order="1"/>
-									<Alpha fromAlpha="1" toAlpha="0" duration="0.5" order="2"/>
-									<Scripts>
-										<OnFinished>
-											self:GetParent():Hide();
-										</OnFinished>
-									</Scripts>
-								</AnimationGroup>
-							</Animations>
-						</Texture>
-					</Layer>
-				</Layers>
-			</Frame>
-		</Frames>
-		<Scripts>
-			<OnLoad>
-				self:RegisterEvent("SESSION_TIME_ALERT");
-			</OnLoad>
-			<OnEvent function="TimeAlert_OnEvent"/>
 		</Scripts>
 	</Frame>
 </Ui>

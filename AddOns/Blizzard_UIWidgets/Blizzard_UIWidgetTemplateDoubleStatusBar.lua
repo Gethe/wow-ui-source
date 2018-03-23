@@ -35,6 +35,8 @@ function UIWidgetTemplateDoubleStatusBarMixin:Setup(widgetInfo)
 	SetupTextureKitOnRegions(textureKit, self.RightBar, rightBarTextureKitRegions);
 	SetupTextureKitOnRegions(textureKit, self, textureKitStatusBars);
 
+	self.LeftBar.Spark:SetShown(widgetInfo.leftBarValue > widgetInfo.leftBarMin and widgetInfo.leftBarValue < widgetInfo.leftBarMax);
+
 	local leftBarPercent = PercentageBetween(widgetInfo.leftBarValue, widgetInfo.leftBarMin, widgetInfo.leftBarMax);
 	local sparkXOffset = BAR_WIDTH * leftBarPercent;
 	self.LeftBar:SetMinMaxValues(widgetInfo.leftBarMin, widgetInfo.leftBarMax);
@@ -44,6 +46,8 @@ function UIWidgetTemplateDoubleStatusBarMixin:Setup(widgetInfo)
 	self.LeftBar.Spark:SetPoint("CENTER", self.LeftBar, "LEFT", sparkXOffset, 0);
 	self.LeftBar.Icon:ClearAllPoints();
 	self.LeftBar.Icon:SetPoint("CENTER", self.LeftBar, "LEFT", -ICON_OFFSET, 0);
+
+	self.RightBar.Spark:SetShown(widgetInfo.rightBarValue > widgetInfo.rightBarMin and widgetInfo.rightBarValue < widgetInfo.rightBarMax);
 
 	local rightBarPercent = PercentageBetween(widgetInfo.rightBarValue, widgetInfo.rightBarMin, widgetInfo.rightBarMax);
 	sparkXOffset = -BAR_WIDTH * rightBarPercent;

@@ -44,6 +44,7 @@ FontStyles.xml
 ..\SharedXML\PropertyFontString.xml
 ..\SharedXML\PropertySlider.xml
 
+ObjectAPI\ContinuableContainer.lua
 ObjectAPI\ItemLocation.lua
 ObjectAPI\Item.lua
 
@@ -51,6 +52,7 @@ ObjectAPI\Item.lua
 WorldFrame.xml
 UIParent.xml
 QuestUtils.lua
+AzeriteUtil.lua
 CurrencyContainer.lua
 ## IME.xml needs to be loaded after UIParent.xml
 ..\SharedXML\IME.xml
@@ -58,6 +60,7 @@ MoneyFrame.lua
 MoneyFrame.xml
 MoneyInputFrame.lua
 MoneyInputFrame.xml
+..\SharedXML\SecureUIPanelTemplates.xml
 ..\SharedXML\SharedUIPanelTemplates.xml
 ..\SharedXML\SharedBasicControls.xml
 GameTooltip.xml
@@ -96,8 +99,10 @@ InterfaceOptionsFrame.xml
 InterfaceOptionsPanels.xml
 ..\SharedXML\AddonList.xml
 GarrisonBaseUtils.xml
+AlertFrameIntrinsic.xml
 AlertFrames.xml
 AlertFrameSystems.xml
+SocialToast.xml
 MirrorTimer.xml
 CoinPickupFrame.xml
 StackSplitFrame.xml
@@ -118,12 +123,14 @@ LowHealthFrame.xml
 CombatFeedback.xml
 UnitPowerBarAlt.xml
 CastingBarFrame.xml
+VoiceToggleButton.xml
+UnitPopupSlider.xml
+UnitPopupCustomControls.xml
 UnitPopup.xml
-BNet.xml
 HistoryKeeper.lua
 ChatFrame.xml
 FloatingChatFrame.xml
-VoiceChat.xml
+BNet.xml
 ReadyCheck.xml
 PlayerFrame.xml
 PartyFrame.xml
@@ -153,7 +160,6 @@ QuickJoinToast.xml
 FriendsFrame.xml
 QuickJoin.xml
 RaidFrame.xml
-ChannelFrame.xml
 PetActionBarFrame.xml
 MultiCastActionBarFrame.xml
 MainMenuBarBagButtons.xml

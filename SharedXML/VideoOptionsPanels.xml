@@ -142,11 +142,6 @@
 				VideoOptionsTooltip:Hide();
 			</OnLeave>
 			<OnClick>
-				if ( self:GetChecked() ) then
-					PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-				else
-					PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
-				end
 				BlizzardOptionsPanel_CheckButton_OnClick(self);
 				Graphics_EnableApply(self);
 			</OnClick>
@@ -1394,10 +1389,8 @@
 						local parent = (self:GetParent()):GetName();
 						local slider = _G[parent.."UIScaleSlider"];
 						if ( self:GetChecked() ) then
-							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 							VideoOptions_Enable(slider);
 						else
-							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 							VideoOptions_Disable(slider);
 						end
 						BlizzardOptionsPanel_CheckButton_OnClick(self);
@@ -1463,12 +1456,10 @@
 						local parent = (self:GetParent()):GetName();
 						local slider = _G[parent .. "MaxFPSSlider"];
 						if ( self:GetChecked() ) then
-							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 							VideoOptions_Enable(slider);
 							slider.newValue = 8;
 							slider:SetDisplayValue(8);
 						else
-							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 							VideoOptions_Disable(slider);
 							slider.newValue = 0;
 							slider:SetDisplayValue(0);

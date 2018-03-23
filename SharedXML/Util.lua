@@ -1,3 +1,15 @@
+function CanAccessObject(obj)
+	return issecure() or not obj:IsForbidden();
+end
+
+function GetTextureInfo(obj)
+	if obj:GetObjectType() == "Texture" then
+		local assetName = obj:GetAtlas() or obj:GetTextureFilePath() or obj:GetTextureFileID() or "UnknownAsset";
+		local ulX, ulY, blX, blY, urX, urY, brX, brY = obj:GetTexCoord();
+		return assetName, ulX, ulY, blX, blY, urX, urY, brX, brY;
+	end
+end
+
 RAID_CLASS_COLORS = {
 	["HUNTER"] = { r = 0.67, g = 0.83, b = 0.45, colorStr = "ffabd473" },
 	["WARLOCK"] = { r = 0.53, g = 0.53, b = 0.93, colorStr = "ff8788ee" },
@@ -132,26 +144,27 @@ function ReloadUI()
 	C_UI.Reload();
 end
 
-function tDeleteItem(table, item)
+function tDeleteItem(tbl, item)
 	local index = 1;
-	while table[index] do
-		if ( item == table[index] ) then
-			tremove(table, index);
+	while tbl[index] do
+		if ( item == tbl[index] ) then
+			tremove(tbl, index);
 		else
 			index = index + 1;
 		end
 	end
 end
 
-function tContains(table, item)
-	local index = 1;
-	while table[index] do
-		if ( item == table[index] ) then
-			return 1;
+function tIndexOf(tbl, item)
+	for i, v in ipairs(tbl) do
+		if item == v then
+			return i;
 		end
-		index = index + 1;
 	end
-	return nil;
+end
+
+function tContains(tbl, item)
+	return tIndexOf(tbl, item) ~= nil;
 end
 
 function tInvert(tbl)
@@ -310,6 +323,10 @@ end
 
 function Saturate(value)
 	return Clamp(value, 0.0, 1.0);
+end
+
+function Wrap(value, max)
+	return (value - 1) % max + 1;
 end
 
 function PercentageBetween(value, startValue, endValue)
@@ -816,24 +833,28 @@ function CreateAtlasMarkup(atlasName, height, width, offsetX, offsetY)
 	);
 end
 
-function SetupTextureKits(textureKitID, frame, regions)
+function SetupTextureKits(textureKitID, frame, regions, setVisibilityOfRegions)
 	local textureKit = GetUITextureKitInfo(textureKitID);
-	if textureKit then
-		SetupTextureKitOnRegions(textureKit, frame, regions);
-	end
+	SetupTextureKitOnRegions(textureKit, frame, regions, setVisibilityOfRegions);
 end
 
-function SetupTextureKitOnRegions(textureKit, frame, regions)
-	if (not textureKit) then
+function SetupTextureKitOnRegions(textureKit, frame, regions, setVisibilityOfRegions)
+	if not textureKit and not setVisibilityOfRegions then
 		return;
 	end
 
 	for region, fmt in pairs(regions) do
-		if (frame[region]) then
-			if frame[region]:GetObjectType() == "StatusBar" then
-				frame[region]:SetStatusBarAtlas(fmt:format(textureKit));
-			else
-				frame[region]:SetAtlas(fmt:format(textureKit));
+		if frame[region] then
+			if setVisibilityOfRegions then
+				frame[region]:SetShown(textureKit ~= nil);
+			end
+
+			if textureKit then
+				if frame[region]:GetObjectType() == "StatusBar" then
+					frame[region]:SetStatusBarAtlas(fmt:format(textureKit));
+				else
+					frame[region]:SetAtlas(fmt:format(textureKit));
+				end
 			end
 		end
 	end
@@ -872,6 +893,257 @@ end
 	self.Event = tInvert(events);
 end
 
+EventRegistrationHelper = {};
+
+function EventRegistrationHelper:AddEvent(event)
+	self.containedEvents = self.containedEvents or {};
+	self.containedEvents[event] = true;
+end
+
+function EventRegistrationHelper:AddEvents(...)
+	self.containedEvents = self.containedEvents or {};
+	for i = 1, select("#", ...) do
+		self.containedEvents[select(i, ...)] = true;
+	end
+end
+
+function EventRegistrationHelper:RemoveEvent(event)
+	if self.containedEvents then
+		self.containedEvents[event] = nil;
+	end
+end
+
+function EventRegistrationHelper:ClearEvents()
+	self.containedEvents = nil;
+end
+
+function EventRegistrationHelper:SetEventsRegistered(registered)
+	local events = self.containedEvents;
+	if events then
+		local func = registered and self.RegisterEvent or self.UnregisterEvent;
+		for event in pairs(self.containedEvents) do
+			func(self, event);
+		end
+	end
+end
+
+TabGroupMixin = {};
+
+function TabGroupMixin:OnLoad(...)
+	self.frames = { ... };
+end
+
+function TabGroupMixin:AddFrame(frame)
+	table.insert(self.frames, frame);
+end
+
+function TabGroupMixin:OnTabPressed()
+	for focusIndex, frame in ipairs(self.frames) do
+		if frame:HasFocus() then
+			local nextFocusIndex = IsShiftKeyDown() and (focusIndex - 1) or (focusIndex + 1);
+
+			if nextFocusIndex == 0 then
+				nextFocusIndex = #self.frames;
+			elseif nextFocusIndex > #self.frames then
+				nextFocusIndex = 1;
+			end
+
+			self.frames[nextFocusIndex]:SetFocus();
+			return;
+		end
+	end
+end
+
+function CreateTabGroup(...)
+	local tabGroup = CreateFromMixins(TabGroupMixin);
+	tabGroup:OnLoad(...);
+	return tabGroup;
+end
+
+function ExecuteFrameScript(frame, scriptName, ...)
+	local script = frame:GetScript(scriptName);
+	if script then
+		securecall(script, frame, ...);
+	end
+end
+
+function Flags_CreateMask(...)
+	local mask = 0;
+	for i = 1, select("#", ...) do
+		mask = bit.bor(mask, select(i, ...));
+	end
+
+	return mask;
+end
+
+function Flags_CreateMaskFromTable(flagsTable)
+	local mask = 0;
+	for flagName, flagValue in pairs(flagsTable) do
+		mask = bit.bor(mask, flagValue);
+	end
+
+	return mask;
+end
+
+FlagsMixin = {};
+
+function FlagsMixin:OnLoad()
+	self:ClearAll();
+end
+
+function FlagsMixin:AddNamedFlagsFromTable(flagsTable)
+	assert(flagsTable.flags == nil);
+	Mixin(self, flagsTable);
+end
+
+function FlagsMixin:AddNamedMask(flagName, mask)
+	assert(self[flagName] == nil);
+	self[flagName] = mask;
+end
+
+function FlagsMixin:Set(flag)
+	self.flags = bit.bor(self.flags, flag);
+end
+
+function FlagsMixin:Clear(flag)
+	self.flags = bit.band(self.flags, bit.bnot(flag));
+end
+
+function FlagsMixin:SetOrClear(flag, isSet)
+	if isSet then
+		self:Set(flag);
+	else
+		self:Clear(flag);
+	end
+end
+
+function FlagsMixin:ClearAll()
+	self.flags = 0;
+end
+
+function FlagsMixin:IsAnySet()
+	return self.flags ~= 0;
+end
+
+function FlagsMixin:IsSet(flagOrMask)
+	return bit.band(self.flags, flagOrMask) == flagOrMask;
+end
+
+DirtyFlagsMixin = CreateFromMixins(FlagsMixin);
+
+function DirtyFlagsMixin:OnLoad()
+	FlagsMixin.OnLoad(self);
+	self.isDirty = false;
+end
+
+function DirtyFlagsMixin:MarkDirty(flag)
+	if flag ~= nil then
+		self:Set(flag);
+	end
+
+	self.isDirty = true;
+end
+
+function DirtyFlagsMixin:MarkClean()
+	self:ClearAll();
+	self.isDirty = false;
+end
+
+function DirtyFlagsMixin:IsDirty(flag)
+	if flag ~= nil then
+		return self:IsSet(flag);
+	else
+		return self.isDirty;
+	end
+end
+
 function CallErrorHandler(...)
 	return geterrorhandler()(...);
 end
+
+TabGroupMixin = {};
+
+function TabGroupMixin:OnLoad(...)
+	self.isTabGroup = true;
+	self.frames = { ... };
+end
+
+function TabGroupMixin:AddFrame(frame)
+	table.insert(self.frames, frame);
+end
+
+function TabGroupMixin:HasFocus()
+	return self:GetFocusIndex() ~= nil;
+end
+
+function TabGroupMixin:SetFocus()
+	-- focusing the first frame/subgroup for now...actually depends on whether or not we were going backwards or forwards through the groups
+	local frame = self.frames[1];
+	if frame then
+		frame:SetFocus();
+	end
+end
+
+function TabGroupMixin:GetFocusIndex()
+	return self.focusIndex or self:DiscoverFocusIndex();
+end
+
+function TabGroupMixin:DiscoverFocusIndex()
+	self.focusIndex = nil;
+
+	for focusIndex, frame in ipairs(self.frames) do
+		if frame:HasFocus() then
+			self.focusIndex = focusIndex;
+			return focusIndex;
+		end
+	end
+end
+
+function TabGroupMixin:IsValidFocusIndex(focusIndex)
+	return focusIndex > 0 and focusIndex <= #self.frames;
+end
+
+function TabGroupMixin:WrapFocusIndex(focusIndex)
+	if focusIndex == 0 then
+		return #self.frames;
+	elseif focusIndex > #self.frames then
+		return 1;
+	end
+
+	return focusIndex;
+end
+
+function TabGroupMixin:OnTabPressed(preventFocusWrap)
+	local focusIndex = self:GetFocusIndex();
+
+	local frameAtIndex = self.frames[focusIndex];
+	if frameAtIndex.isTabGroup then
+		if frameAtIndex:OnTabPressed(true) then
+			return true;
+		end
+	end
+
+	local nextFocusIndex = IsShiftKeyDown() and (focusIndex - 1) or (focusIndex + 1);
+
+	if preventFocusWrap and not self:IsValidFocusIndex(nextFocusIndex) then
+		return false;
+	end
+
+	nextFocusIndex = Wrap(nextFocusIndex, #self.frames);
+	self.focusIndex = nextFocusIndex;
+	self.frames[nextFocusIndex]:SetFocus();
+end
+
+function CreateTabGroup(...)
+	local tabGroup = CreateFromMixins(TabGroupMixin);
+	tabGroup:OnLoad(...);
+	return tabGroup;
+end
+
+function ExecuteFrameScript(frame, scriptName, ...)
+	local script = frame:GetScript(scriptName);
+	if script then
+		securecall(xpcall, script, CallErrorHandler, frame, ...);
+	end
+end
+

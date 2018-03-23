@@ -1529,24 +1529,54 @@ PvpTalentFrameMixin = {};
 PVP_TALENT_LIST_BUTTON_HEIGHT = 40;
 PVP_TALENT_LIST_BUTTON_OFFSET = 1;
 
+local PvpTalentFrameEvents = {
+	"PLAYER_PVP_TALENT_UPDATE",
+	"PLAYER_ENTERING_WORLD",
+	"PLAYER_FLAGS_CHANGED",
+	"PLAYER_SPECIALIZATION_CHANGED",
+	"PLAYER_LEVEL_UP",
+	"WAR_MODE_STATUS_UPDATE",
+	"UI_MODEL_SCENE_INFO_UPDATED",
+};
+
 function PvpTalentFrameMixin:OnLoad()
 	for i, slot in ipairs(self.Slots) do
 		slot:SetUp(i);
 	end
-
-	self:RegisterEvent("PLAYER_PVP_TALENT_UPDATE");
-	self:RegisterEvent("PLAYER_ENTERING_WORLD");
-	self:RegisterEvent("PLAYER_FLAGS_CHANGED");
-	self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED");
-	self:RegisterEvent("PLAYER_LEVEL_UP");
-	self:RegisterEvent("WAR_MODE_STATUS_UPDATE");
 
 	self.TalentList.ScrollFrame.update = function() self.TalentList:Update() end;
 	self.TalentList.ScrollFrame.ScrollBar.doNotHide = true;
 	HybridScrollFrame_CreateButtons(self.TalentList.ScrollFrame, "PvpTalentButtonTemplate", 0, -1, "TOPLEFT", "TOPLEFT", 0, -PVP_TALENT_LIST_BUTTON_OFFSET, "TOP", "BOTTOM");
 end
 
+function PvpTalentFrameMixin:OnEvent(event, ...)
+	if event == "PLAYER_PVP_TALENT_UPDATE" then
+		self:Update();
+	elseif event == "PLAYER_ENTERING_WORLD" then
+		self:Update();
+	elseif event == "PLAYER_FLAGS_CHANGED" then
+		self:Update();
+	elseif event == "PLAYER_SPECIALIZATION_CHANGED" then
+		self:Update();
+	elseif event == "PLAYER_LEVEL_UP" then
+		self:Update();
+	elseif event == "WAR_MODE_STATUS_UPDATE" then
+		self:Update();
+	elseif event == "UI_MODEL_SCENE_INFO_UPDATED" then
+		local forceUpdate = true;
+		self:UpdateModelScenes(forceUpdate);
+	end
+end
+
+function PvpTalentFrameMixin:OnShow()
+	FrameUtil.RegisterFrameForEvents(self, PvpTalentFrameEvents);
+
+	self:Update();
+end
+
 function PvpTalentFrameMixin:OnHide()
+	FrameUtil.UnregisterFrameForEvents(self, PvpTalentFrameEvents);
+
 	self:UnselectSlot();
 end
 
@@ -1554,18 +1584,16 @@ function PvpTalentFrameMixin:UpdateSlot(slot)
 	slot:Update();
 end
 
-function PvpTalentFrameMixin:UpdateModelScene(scene, sceneID, spellVisualKitID)
+function PvpTalentFrameMixin:UpdateModelScene(scene, sceneID, fileID, forceUpdate)
 	if (not scene) then
 		return;
 	end
 
 	scene:Show();
-	scene:SetFromModelSceneID(sceneID, true);
+	scene:SetFromModelSceneID(sceneID, forceUpdate);
 	local effect = scene:GetActorByTag("effect");
 	if (effect) then
-		effect:SetModelByCreatureDisplayID(11686);
-		effect:ApplySpellVisualKit(spellVisualKitID);
-		effect:SetAnimation(158, 0, 0.3);
+		effect:SetModelByFileID(fileID);
 	end
 end
 
@@ -1590,15 +1618,19 @@ function PvpTalentFrameMixin:Update()
 	
 	self.TalentList:Update();
 
-	if (C_PvP.IsWarModeDesired() and self:IsVisible()) then
-		self:UpdateModelScene(self.OrbModelScene, 108, 93458);
-		self:UpdateModelScene(self.FireModelScene, 109, 26799);
+	self:UpdateModelScenes();
+
+	self.InvisibleWarmodeButton:Update();
+end
+
+function PvpTalentFrameMixin:UpdateModelScenes(forceUpdate)
+	if (C_PvP.IsWarModeDesired()) then
+		self:UpdateModelScene(self.OrbModelScene, 108, 1102774, forceUpdate); -- 6AK_Arakkoa_Lamp_Orb_Fel.m2
+		self:UpdateModelScene(self.FireModelScene, 109, 517202, forceUpdate); -- Firelands_Fire_2d.m2
 	else
 		self.OrbModelScene:Hide();
 		self.FireModelScene:Hide();
 	end
-
-	self.InvisibleWarmodeButton:Update();
 end
 
 function PvpTalentFrameMixin:SelectSlot(slot)

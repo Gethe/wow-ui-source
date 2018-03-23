@@ -98,7 +98,7 @@ function StandardRewardAlertFrame_AdjustRewardAnchors(frame)
 end
 
 function StandardRewardAlertFrame_OnEnter(self)
-	AlertFrame_StopOutAnimation(self:GetParent());
+	AlertFrame_PauseOutAnimation(self:GetParent());
 
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	if self.itemLink then
@@ -196,7 +196,7 @@ function DungeonCompletionAlertFrameReward_OnEnter(self)
 	local parent = self:GetParent();
 	local rewardData = parent.rewardData;
 
-	AlertFrame_StopOutAnimation(parent);
+	AlertFrame_PauseOutAnimation(parent);
 
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 
@@ -847,7 +847,7 @@ function GarrisonShipFollowerAlertFrame_SetUp(frame, followerID, name, class, te
 end
 
 function GarrisonFollowerAlertFrame_OnEnter(self)
-	AlertFrame_StopOutAnimation(self);
+	AlertFrame_PauseOutAnimation(self);
 
 	local link = C_Garrison.GetFollowerLink(self.followerID);
 	if ( link ) then
@@ -1031,7 +1031,7 @@ function LegendaryItemAlertFrame_OnClick(self, button, down)
 end
 
 function LegendaryItemAlertFrame_OnEnter(self)
-	AlertFrame_StopOutAnimation(self);
+	AlertFrame_PauseOutAnimation(self);
 
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip:SetHyperlink(self.hyperlink);
@@ -1065,7 +1065,7 @@ NewPetAlertFrameMixin = CreateFromMixins(ItemAlertFrameMixin);
 
 function NewPetAlertFrameMixin:SetUp(petID)
 	self.petID = petID;
-	
+
 	local speciesID, customName, level, xp, maxXp, displayID, isFavorite, name, icon = C_PetJournal.GetPetInfoByPetID(petID);
 	local health, maxHealth, attack, speed, rarity = C_PetJournal.GetPetStats(petID);
 	local itemQuality = rarity - 1;
@@ -1076,7 +1076,7 @@ function NewPetAlertFrameMixin:OnClick(button, down)
 	if AlertFrame_OnClick(self, button, down) then
 		return;
 	end
-	
+
 	SetCollectionsJournalShown(true, COLLECTIONS_JOURNAL_TAB_INDEX_PETS);
 	PetJournal_SelectPet(PetJournal, self.petID);
 end
@@ -1091,7 +1091,7 @@ NewMountAlertFrameMixin = CreateFromMixins(ItemAlertFrameMixin);
 
 function NewMountAlertFrameMixin:SetUp(mountID)
 	self.mountID = mountID;
-	
+
 	local creatureName, spellID, icon, active, isUsable, sourceType = C_MountJournal.GetMountInfoByID(mountID);
 	local itemQuality = LE_ITEM_QUALITY_EPIC; -- Mounts don't have an inherent concept of quality so we always use epic (for now).
 	self:SetUpDisplay(icon, itemQuality, creatureName, YOU_EARNED_LABEL);
@@ -1101,7 +1101,7 @@ function NewMountAlertFrameMixin:OnClick(button, down)
 	if AlertFrame_OnClick(self, button, down) then
 		return;
 	end
-	
+
 	SetCollectionsJournalShown(true, COLLECTIONS_JOURNAL_TAB_INDEX_MOUNTS);
 	MountJournal_SelectByMountID(self.mountID);
 end

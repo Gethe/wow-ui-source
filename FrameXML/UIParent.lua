@@ -58,7 +58,8 @@ UIPanelWindows["RaidParentFrame"] =				{ area = "left",			pushable = 1,	whileDea
 UIPanelWindows["RaidBrowserFrame"] =			{ area = "left",			pushable = 1,	};
 UIPanelWindows["DeathRecapFrame"] =				{ area = "center",			pushable = 0,	whileDead = 1, allowOtherPanels = 1};
 UIPanelWindows["WardrobeFrame"] =				{ area = "left",			pushable = 0,	width = 965 };
-UIPanelWindows["AlliedRacesFrame"] =			{ area = "left",			pushable = 1,	whileDead = 1};
+UIPanelWindows["AlliedRacesFrame"] =			{ area = "left",			pushable = 1,	whileDead = 1 };
+UIPanelWindows["CommunitiesFrame"] =			{ area = "left",			pushable = 1,	whileDead = 1 };
 
 -- Frames NOT using the new Templates
 UIPanelWindows["WorldMapFrame"] =				{ area = "full",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
@@ -77,6 +78,7 @@ UIPanelWindows["GarrisonRecruitSelectFrame"] =	{ area = "center",			pushable = 0
 UIPanelWindows["OrderHallMissionFrame"] =		{ area = "center",			pushable = 0,		whileDead = 1, 		checkFit = 1,	allowOtherPanels = 1, extraWidth = 20,	extraHeight = 100 };
 UIPanelWindows["OrderHallTalentFrame"] =		{ area = "left",			pushable = 0};
 UIPanelWindows["ChallengesKeystoneFrame"] =		{ area = "center",			pushable = 0};
+UIPanelWindows["BFAMissionFrame"] =				{ area = "center",			pushable = 0,		whileDead = 1, 		checkFit = 1,	allowOtherPanels = 1, extraWidth = 20,	extraHeight = 100 };
 
 local function GetUIPanelWindowInfo(frame, name)
 	if ( not frame:GetAttribute("UIPanelLayout-defined") ) then
@@ -398,9 +400,9 @@ function UIParent_OnLoad(self)
 	-- Event(s) for PVP
 	self:RegisterEvent("UPDATE_BATTLEFIELD_STATUS");
 	self:RegisterEvent("PVP_BRAWL_INFO_UPDATED");
-	
+
 	-- Event(s) for Allied Races
-	self:RegisterEvent("ALLIED_RACE_OPEN"); 	
+	self:RegisterEvent("ALLIED_RACE_OPEN");
 end
 
 function UIParent_OnShow(self)
@@ -817,7 +819,7 @@ function ToggleRaidFrame()
 		return;
 	end
 
-	ToggleFriendsFrame(4);
+	ToggleFriendsFrame(FRIEND_TAB_RAID);
 end
 
 function ToggleRaidBrowser()
@@ -860,6 +862,13 @@ function ToggleEncounterJournal()
 	return false;
 end
 
+function ToggleCommunitiesFrame()
+	if (CommunitiesFrame:IsShown()) then
+		HideUIPanel(CommunitiesFrame);
+	else
+		ShowUIPanel(CommunitiesFrame);
+	end
+end
 
 COLLECTIONS_JOURNAL_TAB_INDEX_MOUNTS = 1;
 COLLECTIONS_JOURNAL_TAB_INDEX_PETS = COLLECTIONS_JOURNAL_TAB_INDEX_MOUNTS + 1;
@@ -1282,8 +1291,6 @@ function UIParent_OnEvent(self, event, ...)
 		-- Close any windows that were previously open
 		CloseAllWindows(1);
 
-		VoiceChat_Toggle();
-
 		UpdateMicroButtons();
 
 		-- Fix for Bug 124392
@@ -1297,7 +1304,7 @@ function UIParent_OnEvent(self, event, ...)
 		if ( C_Commentator.IsSpectating() ) then
 			Commentator_LoadUI();
 		end
-		
+
 		if ( UnitIsGhost("player") ) then
 			GhostFrame:Show();
 		else
@@ -1322,7 +1329,7 @@ function UIParent_OnEvent(self, event, ...)
 				elseif spellConfirmation.confirmType == LE_SPELL_CONFIRMATION_PROMPT_TYPE_SIMPLE_WARNING then
 					StaticPopup_Show("SPELL_CONFIRMATION_WARNING", spellConfirmation.text, nil, spellConfirmation.spellID);
 				elseif spellConfirmation.confirmType == LE_SPELL_CONFIRMATION_PROMPT_TYPE_BONUS_ROLL then
-					BonusRollFrame_StartBonusRoll(spellConfirmation.spellID, spellConfirmation.text, spellConfirmation.duration, spellConfirmation.currencyID);
+					BonusRollFrame_StartBonusRoll(spellConfirmation.spellID, spellConfirmation.text, spellConfirmation.duration, spellConfirmation.currencyID, spellConfirmation.currencyCost);
 				end
 			end
 		end
@@ -1481,13 +1488,13 @@ function UIParent_OnEvent(self, event, ...)
 			dialog.data2 = arg2;
 		end
 	elseif ( event == "SPELL_CONFIRMATION_PROMPT" ) then
-		local spellID, confirmType, text, duration, currencyID, difficultyID = ...;
+		local spellID, confirmType, text, duration, currencyID, currencyCost, difficultyID = ...;
 		if ( confirmType == LE_SPELL_CONFIRMATION_PROMPT_TYPE_STATIC_TEXT ) then
 			StaticPopup_Show("SPELL_CONFIRMATION_PROMPT", text, duration, spellID);
 		elseif ( confirmType == LE_SPELL_CONFIRMATION_PROMPT_TYPE_SIMPLE_WARNING ) then
 			StaticPopup_Show("SPELL_CONFIRMATION_WARNING", text, nil, spellID);
 		elseif ( confirmType == LE_SPELL_CONFIRMATION_PROMPT_TYPE_BONUS_ROLL ) then
-			BonusRollFrame_StartBonusRoll(spellID, text, duration, currencyID, difficultyID);
+			BonusRollFrame_StartBonusRoll(spellID, text, duration, currencyID, currencyCost, difficultyID);
 		end
 	elseif ( event == "SPELL_CONFIRMATION_TIMEOUT" ) then
 		local spellID, confirmType = ...;
@@ -1641,7 +1648,7 @@ function UIParent_OnEvent(self, event, ...)
 		ShowUIPanel(ArtifactRelicForgeFrame);
 
 	elseif ( event == "ADVENTURE_MAP_OPEN" ) then
-		OrderHall_LoadUI();
+		Garrison_LoadUI();
 		ShowUIPanel(OrderHallMissionFrame);
 
 	-- Event for BarberShop handling
@@ -1880,15 +1887,20 @@ function UIParent_OnEvent(self, event, ...)
 	elseif ( event == "GARRISON_MISSION_NPC_OPENED") then
 		local followerType = ...;
 		if followerType ~= LE_FOLLOWER_TYPE_GARRISON_7_0 then
-			if (not GarrisonMissionFrame) then
+			local frameName = GarrisonFollowerOptions[followerType].missionFrame;
+			if (not _G[frameName]) then
 				Garrison_LoadUI();
 			end
-			GarrisonMissionFrame.followerTypeID = ...;
-			ShowUIPanel(GarrisonMissionFrame);
+			local frame = _G[frameName];
+			frame.followerTypeID = followerType;
+			ShowUIPanel(frame);
 		end
 	elseif ( event == "GARRISON_MISSION_NPC_CLOSED" ) then
 		if ( GarrisonMissionFrame ) then
 			HideUIPanel(GarrisonMissionFrame);
+		end
+		if ( BFAMissionFrame ) then
+			HideUIPanel(BFAMissionFrame);
 		end
 	elseif ( event == "GARRISON_SHIPYARD_NPC_OPENED") then
 		if (not GarrisonShipyardFrame) then
@@ -1980,8 +1992,8 @@ function UIParent_OnEvent(self, event, ...)
 			ContributionCollectionUI_Hide();
 		end
 	elseif (event == "ALLIED_RACE_OPEN" ) then
-		AlliedRaces_LoadUI(); 
-		local raceID = ...; 
+		AlliedRaces_LoadUI();
+		local raceID = ...;
 		AlliedRacesFrame:LoadRaceData(raceID);
 		ShowUIPanel(AlliedRacesFrame);
 	end
@@ -2065,7 +2077,6 @@ UIPARENT_MANAGED_FRAME_POSITIONS = {
 	--"yOffset" gets added to the value of "baseY", which is used for values based on menuBarTop.
 	["MultiBarBottomLeft"] = {baseY = 15, watchBar = 1, maxLevel = 1, anchorTo = "ActionButton1", point = "BOTTOMLEFT", rpoint = "TOPLEFT"};
 	["MultiBarBottomRight"] = {baseY = 4, watchBar = 1, maxLevel = 1, anchorTo = "ActionButton12", point = "TOPLEFT", rpoint = "TOPRIGHT", xOffset = 45};
-	["VoiceChatTalkers"] = {baseY = true, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, watchBar = 1};
 	["GroupLootContainer"] = {baseY = true, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1};
 	["TutorialFrameAlertButton"] = {baseY = true, yOffset = -10, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, watchBar = 1};
 	["FramerateLabel"] = {baseY = true, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, playerPowerBarAlt = 1, extraActionBarFrame = 1};
@@ -3013,6 +3024,16 @@ function HideUIPanel(frame, skipSetPoint)
 	FramePositionDelegate:SetAttribute("panel-hide", true);
 end
 
+function ShowOptionsPanel(optionsFrame, lastFrame, categoryToSelect)
+	-- NOTE: Toggle isn't currently necessary because showing an options panel hides everything else.
+	ShowUIPanel(optionsFrame);
+	optionsFrame.lastFrame = lastFrame;
+
+	if categoryToSelect then
+		OptionsFrame_OpenToCategory(optionsFrame, categoryToSelect);
+	end
+end
+
 function GetUIPanel(key)
 	return FramePositionDelegate:GetUIPanel(key);
 end
@@ -3783,6 +3804,10 @@ function OrderHallTalentFrame_EscapePressed()
 	return OrderHallTalentFrame and OrderHallTalentFrame.EscapePressed and OrderHallTalentFrame:EscapePressed();
 end
 
+function BFAMissionFrame_EscapePressed()
+	return BFAMissionFrame and BFAMissionFrame.EscapePressed and BFAMissionFrame:EscapePressed();
+end
+
 -- Function that handles the escape key functions
 function ToggleGameMenu()
 	if ( not UIParent:IsShown() ) then
@@ -3828,6 +3853,7 @@ function ToggleGameMenu()
 		GarrisonShipyardFrame.MissionTab.MissionPage.CloseButton:Click();
 	elseif ( securecall("OrderHallMissionFrame_EscapePressed") ) then
 	elseif ( securecall("OrderHallTalentFrame_EscapePressed") ) then
+	elseif ( securecall("BFAMissionFrame_EscapePressed") ) then
 	elseif ( SpellStopCasting() ) then
 	elseif ( SpellStopTargeting() ) then
 	elseif ( securecall("CloseAllWindows") ) then

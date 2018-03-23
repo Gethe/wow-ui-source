@@ -72,6 +72,10 @@
 			<OnLeave>
 				GameTooltip:Hide();
 			</OnLeave>
+			<OnLoad>
+				self.DynamicIconTexture = self.DynamicIconButton.Icon;
+				self.FlashTexture = self.Flash.Texture;
+			</OnLoad>
 		</Scripts>
 	</Frame>
 </Ui>

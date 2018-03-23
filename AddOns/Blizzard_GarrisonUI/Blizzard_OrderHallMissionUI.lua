@@ -27,16 +27,18 @@ function OrderHallMission:OnLoadMainFrame()
 end
 
 function OrderHallMission:UpdateTextures()
-	local primaryCurrency, _ = C_Garrison.GetCurrencyTypes(LE_GARRISON_TYPE_7_0);
+	local primaryCurrency, _ = C_Garrison.GetCurrencyTypes(GarrisonFollowerOptions[self.followerTypeID].garrisonType);
 	local _, _, currencyTexture = GetCurrencyInfo(primaryCurrency);
 
 	self.MissionTab.MissionPage.CostFrame.CostIcon:SetTexture(currencyTexture);
 	self.MissionTab.MissionPage.CostFrame.CostIcon:SetSize(18, 18);
 	self.MissionTab.MissionPage.CostFrame.Cost:SetPoint("RIGHT", self.MissionTab.MissionPage.CostFrame.CostIcon, "LEFT", -8, -1);
 
-	self.MissionTab.ZoneSupportMissionPage.CostFrame.CostIcon:SetTexture(currencyTexture);
-	self.MissionTab.ZoneSupportMissionPage.CostFrame.CostIcon:SetSize(18, 18);
-	self.MissionTab.ZoneSupportMissionPage.CostFrame.Cost:SetPoint("RIGHT", self.MissionTab.ZoneSupportMissionPage.CostFrame.CostIcon, "LEFT", -8, -1);
+	if (self.MissionTab.ZoneSupportMissionPage) then
+		self.MissionTab.ZoneSupportMissionPage.CostFrame.CostIcon:SetTexture(currencyTexture);
+		self.MissionTab.ZoneSupportMissionPage.CostFrame.CostIcon:SetSize(18, 18);
+		self.MissionTab.ZoneSupportMissionPage.CostFrame.Cost:SetPoint("RIGHT", self.MissionTab.ZoneSupportMissionPage.CostFrame.CostIcon, "LEFT", -8, -1);
+	end
 
 	SetupMaterialFrame(self.FollowerList.MaterialFrame, primaryCurrency, currencyTexture);
 	SetupMaterialFrame(self.MissionTab.MissionList.MaterialFrame, primaryCurrency, currencyTexture);
@@ -106,10 +108,10 @@ function OrderHallMission:UpdateTextures()
 
 	self.BackgroundTile:SetAtlas("ClassHall_InfoBoxMission-BackgroundTile");
 
-	local _, className = UnitClass("player");
-
-	self.ClassHallIcon.Icon:SetAtlas("classhall-circle-"..className);
-
+	if (self.ClassHallIcon) then
+		local _, className = UnitClass("player");
+		self.ClassHallIcon.Icon:SetAtlas("classhall-circle-"..className);
+	end
 end
 
 function OrderHallMission:OnEventMainFrame(event, ...)
@@ -623,12 +625,14 @@ OrderHallMissionListMixin = { }
 function OrderHallMissionListMixin:UpdateCombatAllyMission()
 	GarrisonMissionListMixin.UpdateCombatAllyMission(self);
 
-	if (self.combatAllyMission) then
-		self:SetHeight(440);
-	else
-		self:SetHeight(565);
+	if (self.CombatAllyUI) then
+		if (self.combatAllyMission) then
+			self:SetHeight(440);
+		else
+			self:SetHeight(565);
+		end
+		self.CombatAllyUI:SetMission(self.combatAllyMission);
 	end
-	self.CombatAllyUI:SetMission(self.combatAllyMission);
 end
 
 OrderHallCombatAllyMixin = { }

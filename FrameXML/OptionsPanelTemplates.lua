@@ -25,19 +25,33 @@ local gsub = gsub;
 -- [[ Slider functions ]] --
 
 function BlizzardOptionsPanel_Slider_Disable (slider)
-	local name = slider:GetName();
 	getmetatable(slider).__index.Disable(slider);
-	_G[name.."Text"]:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
-	_G[name.."Low"]:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
-	_G[name.."High"]:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+	slider.Text:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+	slider.Low:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+	slider.High:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+
+	if ( slider.Label ) then
+		slider.Label:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+	end
 end
 
 function BlizzardOptionsPanel_Slider_Enable (slider)
-	local name = slider:GetName();
 	getmetatable(slider).__index.Enable(slider);
-	_G[name.."Text"]:SetVertexColor(NORMAL_FONT_COLOR.r , NORMAL_FONT_COLOR.g , NORMAL_FONT_COLOR.b);
-	_G[name.."Low"]:SetVertexColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-	_G[name.."High"]:SetVertexColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+	slider.Text:SetVertexColor(NORMAL_FONT_COLOR.r , NORMAL_FONT_COLOR.g , NORMAL_FONT_COLOR.b);
+	slider.Low:SetVertexColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+	slider.High:SetVertexColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+
+	if ( slider.Label ) then
+		slider.Label:SetVertexColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+	end
+end
+
+function BlizzardOptionsPanel_Slider_SetEnabled (slider, enabled)
+	if ( enabled ) then
+		BlizzardOptionsPanel_Slider_Enable(slider);
+	else
+		BlizzardOptionsPanel_Slider_Disable(slider);
+	end
 end
 
 function BlizzardOptionsPanel_Slider_Refresh (slider)
@@ -91,17 +105,32 @@ function BlizzardOptionsPanel_CheckButton_Enable(checkBox, isWhite)
 	end
 end
 
-function BlizzardOptionsPanel_CheckButton_OnClick (checkButton)
-	BlizzardOptionsPanel_CheckButton_SetNewValue(checkButton);
+function BlizzardOptionsPanel_CheckButton_SetEnabled (checkBox, enabled)
+	if ( enabled ) then
+		BlizzardOptionsPanel_CheckButton_Enable(checkBox);
+	else
+		BlizzardOptionsPanel_CheckButton_Disable(checkBox);
+	end
+end
 
-	local setting = "0";
+function BlizzardOptionsPanel_CheckButton_GetSetting (checkButton)
 	if ( checkButton:GetChecked() ) then
 		if ( not checkButton.invert ) then
-			setting = "1";
+			return "1";
 		end
 	elseif ( checkButton.invert ) then
-		setting = "1";
+		return "1";
 	end
+
+	return "0";
+end
+
+function BlizzardOptionsPanel_CheckButton_OnClick (checkButton)
+	PlaySound(checkButton:GetChecked() and SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON or SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
+
+	BlizzardOptionsPanel_CheckButton_SetNewValue(checkButton);
+
+	local setting = BlizzardOptionsPanel_CheckButton_GetSetting(checkButton);
 
 	if ( checkButton.setFunc ) then
 		checkButton.setFunc(setting);
@@ -109,14 +138,9 @@ function BlizzardOptionsPanel_CheckButton_OnClick (checkButton)
 end
 
 function BlizzardOptionsPanel_CheckButton_SetNewValue (checkButton)
-	local setting = "0";
-	if ( checkButton:GetChecked() ) then
-		if ( not checkButton.invert ) then
-			setting = "1";
-		end
-	elseif ( checkButton.invert ) then
-		setting = "1";
-	end
+	local isChecked = checkButton:GetChecked();
+
+	local setting = BlizzardOptionsPanel_CheckButton_GetSetting(checkButton);
 
 	if ( setting == checkButton.value ) then
 		checkButton.newValue = nil;
@@ -124,17 +148,9 @@ function BlizzardOptionsPanel_CheckButton_SetNewValue (checkButton)
 		checkButton.newValue = setting;
 	end
 
-	if ( checkButton.dependentControls ) then
-		if ( checkButton:GetChecked() ) then
-			for _, control in SecureNext, checkButton.dependentControls do
-				control:Enable();
-			end
-		else
-			for _, control in SecureNext, checkButton.dependentControls do
-				control:Disable();
-			end
-		end
-	end
+	checkButton:SetValue(setting);
+
+	BlizzardOptionsPanel_SetDependentControlsEnabled(checkButton, isChecked);
 end
 
 function BlizzardOptionsPanel_CheckButton_Refresh (checkButton)
@@ -153,17 +169,7 @@ function BlizzardOptionsPanel_CheckButton_Refresh (checkButton)
 			checkButton:SetChecked(value == (checkButton.checkedValue or "1"));
 		end
 
-		if ( checkButton.dependentControls ) then
-			if ( checkButton:GetChecked() ) then
-				for _, depControl in SecureNext, checkButton.dependentControls do
-					depControl:Enable();
-				end
-			else
-				for _, depControl in SecureNext, checkButton.dependentControls do
-					depControl:Disable();
-				end
-			end
-		end
+		BlizzardOptionsPanel_SetDependentControlsEnabled(checkButton, checkButton:GetChecked());
 
 		checkButton.value = value;
 	end
@@ -174,6 +180,13 @@ end
 function BlizzardOptionsPanel_DropDown_Refresh (dropDown)
 end
 
+function BlizzardOptionsPanel_DropDown_SetEnabled (dropDown, enabled)
+	if ( enabled ) then
+		UIDropDownMenu_EnableDropDown(dropDown);
+	else
+		UIDropDownMenu_DisableDropDown(dropDown);
+	end
+end
 
 -- [[ BlizzardOptionsPanel functions ]] --
 
@@ -209,46 +222,52 @@ function BlizzardOptionsPanel_GetCVarDefaultSafe (cvar)
 	return value;
 end
 
-function BlizzardOptionsPanel_OkayControl (control)
+function BlizzardOptionsPanel_OkayControl (control, panel, perControlCallback)
 	if ( control.newValue ) then
 		if ( control.value ~= control.newValue ) then
 			control:SetValue(control.newValue);
 			control.value = control.newValue;
 			control.newValue = nil;
+			perControlCallback(panel, control);
 		end
 	elseif ( control.value ) then
 		if ( control:GetValue() ~= control.value ) then
 			control:SetValue(control.value);
+			perControlCallback(panel, control);
 		end
 	end
 end
 
-function BlizzardOptionsPanel_CancelControl (control)
+function BlizzardOptionsPanel_CancelControl (control, panel, perControlCallback)
 	if ( control.newValue ) then
 		if ( control.value and control.value ~= control.newValue ) then
 			-- we need to force-set the value here just in case the control was doing dynamic updating
 			control:SetValue(control.value);
 			control.newValue = nil;
+			perControlCallback(panel, control);
 		end
 	elseif ( control.value ) then
 		if ( control:GetValue() ~= control.value ) then
 			control:SetValue(control.value);
+			perControlCallback(panel, control);
 		end
 	end
 end
 
-function BlizzardOptionsPanel_DefaultControl (control)
+function BlizzardOptionsPanel_DefaultControl (control, panel, perControlCallback)
 	if ( control.defaultValue and control.value ~= control.defaultValue ) then
 		control:SetValue(control.defaultValue);
 		control.value = control.defaultValue;
 		control.newValue = nil;
+		perControlCallback(panel, control);
 	end
 end
 
-function BlizzardOptionsPanel_RefreshControl (control)
+function BlizzardOptionsPanel_RefreshControl (control, panel, perControlCallback)
 	if ( control.RefreshValue ) then
 		control:RefreshValue();
 	end
+
 	if ( control.type == CONTROLTYPE_CHECKBOX ) then
 		BlizzardOptionsPanel_CheckButton_Refresh(control);
 	elseif ( control.type == CONTROLTYPE_DROPDOWN ) then
@@ -256,30 +275,62 @@ function BlizzardOptionsPanel_RefreshControl (control)
 	elseif ( control.type == CONTROLTYPE_SLIDER ) then
 		BlizzardOptionsPanel_Slider_Refresh(control);
 	end
+
+	perControlCallback(panel, control);
 end
 
-function BlizzardOptionsPanel_Okay (self)
-	for _, control in SecureNext, self.controls do
-		securecall(BlizzardOptionsPanel_OkayControl, control);
+function BlizzardOptionsPanel_RefreshControlSingle(control)
+	BlizzardOptionsPanel_RefreshControl(control, nil, nop);
+end
+
+function BlizzardOptionsPanel_SetControlEnabled (control, enabled)
+	if control.type == CONTROLTYPE_CHECKBOX then
+		BlizzardOptionsPanel_CheckButton_SetEnabled(control, enabled);
+	elseif control.type == CONTROLTYPE_DROPDOWN then
+		BlizzardOptionsPanel_DropDown_SetEnabled(control, enabled);
+	elseif control.type == CONTROLTYPE_SLIDER then
+		BlizzardOptionsPanel_Slider_SetEnabled(control, enabled);
 	end
 end
 
-function BlizzardOptionsPanel_Cancel (self)
-	for _, control in SecureNext, self.controls do
-		securecall(BlizzardOptionsPanel_CancelControl, control);
+local function SetControlsEnabledInternal (controls, enabled)
+	if controls then
+		for _, control in SecureNext, controls do
+			securecall(BlizzardOptionsPanel_SetControlEnabled, control, enabled);
+		end
 	end
 end
 
-function BlizzardOptionsPanel_Default (self)
+function BlizzardOptionsPanel_SetDependentControlsEnabled (self, enabled)
+	SetControlsEnabledInternal(self.dependentControls, enabled);
+end
+
+function BlizzardOptionsPanel_SetControlsEnabled (self, enabled)
+	SetControlsEnabledInternal(self.controls, enabled);
+end
+
+local function RunControlsCallbacks(self, internalCallback, perControlCallback)
+	perControlCallback = perControlCallback or nop;
+
 	for _, control in SecureNext, self.controls do
-		securecall(BlizzardOptionsPanel_DefaultControl, control);
+		securecall(internalCallback, control, self, perControlCallback);
 	end
 end
 
-function BlizzardOptionsPanel_Refresh (self)
-	for _, control in SecureNext, self.controls do
-		securecall(BlizzardOptionsPanel_RefreshControl, control);
-	end
+function BlizzardOptionsPanel_Okay (self, perControlCallback)
+	RunControlsCallbacks(self, BlizzardOptionsPanel_OkayControl, perControlCallback);
+end
+
+function BlizzardOptionsPanel_Cancel (self, perControlCallback)
+	RunControlsCallbacks(self, BlizzardOptionsPanel_CancelControl, perControlCallback);
+end
+
+function BlizzardOptionsPanel_Default (self, perControlCallback)
+	RunControlsCallbacks(self, BlizzardOptionsPanel_DefaultControl, perControlCallback);
+end
+
+function BlizzardOptionsPanel_Refresh (self, perControlCallback)
+	RunControlsCallbacks(self, BlizzardOptionsPanel_RefreshControl, perControlCallback);
 end
 
 function BlizzardOptionsPanel_OnLoad (frame, okay, cancel, default, refresh)
@@ -363,7 +414,7 @@ function BlizzardOptionsPanel_RegisterControl (control, parentFrame)
 end
 
 function BlizzardOptionsPanel_SetupControl (control)
-	if ( control.type == CONTROLTYPE_CHECKBOX ) then			
+	if ( control.type == CONTROLTYPE_CHECKBOX ) then
 		if ( control.cvar ) then
 			local value = GetCVar(control.cvar);
 			control.value = value;

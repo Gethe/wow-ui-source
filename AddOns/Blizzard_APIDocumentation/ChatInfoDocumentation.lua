@@ -7,6 +7,24 @@ local ChatInfo =
 	Functions =
 	{
 		{
+			Name = "GetChannelRosterInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "channelIndex", Type = "number", Nilable = false },
+				{ Name = "rosterIndex", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "owner", Type = "bool", Nilable = false },
+				{ Name = "moderator", Type = "bool", Nilable = false },
+				{ Name = "guid", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "GetRegisteredAddonMessagePrefixes",
 			Type = "Function",
 
@@ -27,6 +45,20 @@ local ChatInfo =
 			Returns =
 			{
 				{ Name = "isRegistered", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsPartyChannelType",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "channelType", Type = "ChatChannelType", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isPartyChannelType", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -131,6 +163,16 @@ local ChatInfo =
 			},
 		},
 		{
+			Name = "ChannelLeft",
+			Type = "Event",
+			LiteralName = "CHANNEL_LEFT",
+			Payload =
+			{
+				{ Name = "chatChannelID", Type = "number", Nilable = false },
+				{ Name = "name", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "ChannelPasswordRequest",
 			Type = "Event",
 			LiteralName = "CHANNEL_PASSWORD_REQUEST",
@@ -153,17 +195,6 @@ local ChatInfo =
 			Name = "ChannelUiUpdate",
 			Type = "Event",
 			LiteralName = "CHANNEL_UI_UPDATE",
-		},
-		{
-			Name = "ChannelVoiceUpdate",
-			Type = "Event",
-			LiteralName = "CHANNEL_VOICE_UPDATE",
-			Payload =
-			{
-				{ Name = "displayIndex", Type = "number", Nilable = false },
-				{ Name = "voiceEnabled", Type = "number", Nilable = true },
-				{ Name = "voiceActive", Type = "number", Nilable = true },
-			},
 		},
 		{
 			Name = "ChatCombatMsgArenaPointsGain",

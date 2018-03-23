@@ -6,6 +6,30 @@ local Cursor =
 
 	Functions =
 	{
+		{
+			Name = "DropCursorCommunitiesStream",
+			Type = "Function",
+		},
+		{
+			Name = "GetCursorCommunitiesStream",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "clubId", Type = "string", Nilable = false },
+				{ Name = "streamId", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "SetCursorCommunitiesStream",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "clubId", Type = "string", Nilable = false },
+				{ Name = "streamId", Type = "string", Nilable = false },
+			},
+		},
 	},
 
 	Events =
@@ -14,6 +38,11 @@ local Cursor =
 			Name = "BattlePetCursorClear",
 			Type = "Event",
 			LiteralName = "BATTLE_PET_CURSOR_CLEAR",
+		},
+		{
+			Name = "CommunitiesStreamCursorClear",
+			Type = "Event",
+			LiteralName = "COMMUNITIES_STREAM_CURSOR_CLEAR",
 		},
 		{
 			Name = "CursorUpdate",

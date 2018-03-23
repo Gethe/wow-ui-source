@@ -3,7 +3,7 @@
 	<Frame name="UIWidgetTopCenterContainerFrame" toplevel="true" parent="UIParent" secureMixin="UIWidgetTopCenterContainerMixin">
 		<Size x="10" y="10"/>
 		<Anchors>
-			<Anchor point="TOP" x="-28" y="-15"/>
+			<Anchor point="TOP" x="0" y="-15"/>
 		</Anchors>
 		<Scripts>
 			<OnLoad method="OnLoad"/>

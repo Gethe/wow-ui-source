@@ -306,15 +306,14 @@ function GuildMicroButton_UpdateTabard(forceUpdate)
 end
 
 function CharacterMicroButton_OnLoad(self)
-	self:SetNormalAtlas("hud-microbutton-Character-Up", true);
-	self:SetPushedAtlas("hud-microbutton-Character-Down", true);
-	self:SetHighlightTexture("Interface\\Buttons\\UI-MicroButton-Hilight");
 	self:RegisterEvent("UNIT_PORTRAIT_UPDATE");
 	self:RegisterEvent("PORTRAITS_UPDATED");
-	self:RegisterEvent("UPDATE_BINDINGS");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+	self:RegisterEvent("AZERITE_EMPOWERED_ITEM_SELECTION_UPDATED");
+	self:RegisterEvent("AZERITE_ITEM_POWER_LEVEL_CHANGED");
 	self.tooltipText = MicroButtonTooltipText(CHARACTER_BUTTON, "TOGGLECHARACTER0");
 	self.newbieText = NEWBIE_TOOLTIP_CHARACTER;
+	LoadMicroButtonTextures(self, "Character");	
 end
 
 function CharacterMicroButton_OnEvent(self, event, ...)
@@ -327,8 +326,19 @@ function CharacterMicroButton_OnEvent(self, event, ...)
 		SetPortraitTexture(MicroButtonPortrait, "player");
 	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
 		SetPortraitTexture(MicroButtonPortrait, "player");
-	elseif ( event == "UPDATE_BINDINGS" ) then
-		self.tooltipText = MicroButtonTooltipText(CHARACTER_BUTTON, "TOGGLECHARACTER0");
+		CharacterMicroButton_UpdatePulsing(self);
+	elseif ( event == "AZERITE_EMPOWERED_ITEM_SELECTION_UPDATED" ) then
+		CharacterMicroButton_UpdatePulsing(self);
+	elseif ( event == "AZERITE_ITEM_POWER_LEVEL_CHANGED" ) then
+		CharacterMicroButton_UpdatePulsing(self);
+	end
+end
+
+function CharacterMicroButton_UpdatePulsing(self)
+	if IsPlayerInWorld() and AzeriteUtil.DoEquippedItemsHaveUnselectedPowers() then
+		MicroButtonPulse(self);
+	else
+		MicroButtonPulseStop(self);
 	end
 end
 
@@ -340,6 +350,7 @@ end
 function CharacterMicroButton_SetNormal()
 	MicroButtonPortrait:SetTexCoord(0.2, 0.8, 0.0666, 0.9);
 	MicroButtonPortrait:SetAlpha(1.0);
+	CharacterMicroButton_UpdatePulsing(CharacterMicroButton);
 end
 
 function MainMenuMicroButton_SetPushed()

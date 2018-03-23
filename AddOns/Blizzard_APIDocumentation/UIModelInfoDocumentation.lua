@@ -137,9 +137,9 @@ local UIModelInfo =
 		{
 			Name = "ModelSceneType",
 			Type = "Enumeration",
-			NumValues = 12,
+			NumValues = 14,
 			MinValue = 0,
-			MaxValue = 11,
+			MaxValue = 13,
 			Fields =
 			{
 				{ Name = "MountJournal", Type = "ModelSceneType", EnumValue = 0 },
@@ -154,6 +154,8 @@ local UIModelInfo =
 				{ Name = "ArtifactRelicTalentEffect", Type = "ModelSceneType", EnumValue = 9 },
 				{ Name = "PvpWarModeOrb", Type = "ModelSceneType", EnumValue = 10 },
 				{ Name = "PvpWarModeFire", Type = "ModelSceneType", EnumValue = 11 },
+				{ Name = "PartyPose", Type = "ModelSceneType", EnumValue = 12 },
+				{ Name = "AzeriteItemLevelUpToast", Type = "ModelSceneType", EnumValue = 13 },
 			},
 		},
 		{

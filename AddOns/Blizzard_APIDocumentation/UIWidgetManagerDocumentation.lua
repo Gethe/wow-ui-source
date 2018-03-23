@@ -117,15 +117,16 @@ local UIWidgetManager =
 		{
 			Name = "UIWidgetVisualizationType",
 			Type = "Enumeration",
-			NumValues = 4,
+			NumValues = 5,
 			MinValue = 0,
-			MaxValue = 3,
+			MaxValue = 4,
 			Fields =
 			{
 				{ Name = "IconAndText", Type = "UIWidgetVisualizationType", EnumValue = 0 },
 				{ Name = "CaptureBar", Type = "UIWidgetVisualizationType", EnumValue = 1 },
 				{ Name = "StatusBar", Type = "UIWidgetVisualizationType", EnumValue = 2 },
 				{ Name = "DoubleStatusBar", Type = "UIWidgetVisualizationType", EnumValue = 3 },
+				{ Name = "IconTextAndBackground", Type = "UIWidgetVisualizationType", EnumValue = 4 },
 			},
 		},
 		{
@@ -150,6 +151,7 @@ local UIWidgetManager =
 				{ Name = "state", Type = "CaptureBarWidgetState", Nilable = false },
 				{ Name = "barPercent", Type = "number", Nilable = false },
 				{ Name = "neutralPercent", Type = "number", Nilable = false },
+				{ Name = "textureKitID", Type = "number", Nilable = false },
 				{ Name = "orderIndex", Type = "number", Nilable = false },
 			},
 		},
@@ -188,9 +190,7 @@ local UIWidgetManager =
 				{ Name = "text", Type = "string", Nilable = false },
 				{ Name = "tooltip", Type = "string", Nilable = false },
 				{ Name = "dynamicTooltip", Type = "string", Nilable = false },
-				{ Name = "icon", Type = "string", Nilable = false },
-				{ Name = "dynamicIcon", Type = "number", Nilable = false },
-				{ Name = "dynamicIconFlash", Type = "number", Nilable = false },
+				{ Name = "textureKitID", Type = "number", Nilable = false },
 				{ Name = "hasTimer", Type = "bool", Nilable = false },
 				{ Name = "orderIndex", Type = "number", Nilable = false },
 			},

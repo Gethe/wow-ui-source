@@ -16,11 +16,11 @@ local function SetupLockOnDeclineButtonAndEscape(self, declineTimeLeft)
 			self.ticker:Cancel();
 			self.button2:SetButtonState("NORMAL", false);
 			return;
-		else 
+		else
 			self.button2:SetButtonState("NORMAL", true);
 		end
 	end);
-	self.hideOnEscape = false; 
+	self.hideOnEscape = false;
 end
 
 local function GetSelfResurrectDialogOptions()
@@ -1093,7 +1093,8 @@ StaticPopupDialogs["CHANNEL_INVITE"] = {
 	button1 = ACCEPT_ALT,
 	button2 = CANCEL,
 	hasEditBox = 1,
-	autoCompleteParams = AUTOCOMPLETE_LIST.CHANINVITE,
+	autoCompleteSource = GetAutoCompleteResults,
+	autoCompleteArgs = { AUTOCOMPLETE_LIST.CHANINVITE.include, AUTOCOMPLETE_LIST.CHANINVITE.exclude },
 	maxLetters = 31,
 	whileDead = 1,
 	OnHide = function(self)
@@ -1511,8 +1512,8 @@ StaticPopupDialogs["RESURRECT_NO_TIMER"] = {
 		local resOptions = C_DeathInfo.GetSelfResurrectOptions();
 		if ( resOptions and #resOptions > 0 ) then
 			declineTimeLeft = 1;
-		else 
-			declineTimeLeft = 5; 
+		else
+			declineTimeLeft = 5;
 		end
 		SetupLockOnDeclineButtonAndEscape(self, declineTimeLeft);
 	end,
@@ -2214,7 +2215,8 @@ StaticPopupDialogs["ADD_FRIEND"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	hasEditBox = 1,
-	autoCompleteParams = AUTOCOMPLETE_LIST.ADDFRIEND,
+	autoCompleteSource = GetAutoCompleteResults,
+	autoCompleteArgs = { AUTOCOMPLETE_LIST.ADDFRIEND.include, AUTOCOMPLETE_LIST.ADDFRIEND.exclude },
 	maxLetters = 12 + 1 + 64,
 	OnAccept = function(self)
 		AddFriend(self.editBox:GetText());
@@ -2309,12 +2311,73 @@ StaticPopupDialogs["SET_BNFRIENDNOTE"] = {
 	whileDead = 1,
 	hideOnEscape = 1
 };
+
+StaticPopupDialogs["SET_COMMUNITY_MEMBER_NOTE"] = {
+	text = SET_FRIENDNOTE_LABEL,
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	hasEditBox = 1,
+	maxLetters = 127,
+	countInvisibleLetters = true,
+	editBoxWidth = 350,
+	OnAccept = function(self, data)
+		C_Club.SetClubMemberNote(data.clubId, data.memberId, self.editBox:GetText());
+	end,
+	OnShow = function(self, data)
+		local memberInfo = C_Club.GetMemberInfo(data.clubId, data.memberId);
+		if ( memberInfo and memberInfo.memberNote ) then
+			self.editBox:SetText(memberInfo.memberNote);
+		end
+		self.editBox:SetFocus();
+	end,
+	OnHide = function(self)
+		ChatEdit_FocusActiveWindow();
+		self.editBox:SetText("");
+	end,
+	EditBoxOnEnterPressed = function(self, data)
+		local parent = self:GetParent();
+		C_Club.SetClubMemberNote(data.clubId, data.memberId, parent.editBox:GetText());
+		parent:Hide();
+	end,
+	EditBoxOnEscapePressed = function(self)
+		self:GetParent():Hide();
+	end,
+	timeout = 0,
+	exclusive = 1,
+	whileDead = 1,
+	hideOnEscape = 1,
+};
+
+StaticPopupDialogs["CONFIRM_LEAVE_AND_DESTROY_COMMUNITY"] = {
+	text = CONFIRM_LEAVE_AND_DESTROY_COMMUNITY,
+	subText = CONFIRM_LEAVE_AND_DESTROY_COMMUNITY_SUBTEXT,
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	OnShow = function(self, clubInfo)
+		if clubInfo.clubType == Enum.ClubType.Character then
+			self.text:SetText(CONFIRM_LEAVE_AND_DESTROY_CHARACTER_COMMUNITY);
+			self.SubText:SetText(CONFIRM_LEAVE_AND_DESTROY_CHARACTER_COMMUNITY_SUBTEXT);
+		else
+			self.text:SetText(CONFIRM_LEAVE_AND_DESTROY_COMMUNITY);
+			self.SubText:SetText(CONFIRM_LEAVE_AND_DESTROY_COMMUNITY_SUBTEXT);
+		end
+	end,
+	OnAccept = function(self, clubInfo)
+		C_Club.DestroyClub(clubInfo.clubId);
+	end,
+	timeout = 0,
+	exclusive = 1,
+	whileDead = 1,
+	hideOnEscape = 1,
+};
+
 StaticPopupDialogs["ADD_IGNORE"] = {
 	text = ADD_IGNORE_LABEL,
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	hasEditBox = 1,
-	autoCompleteParams = AUTOCOMPLETE_LIST.IGNORE,
+	autoCompleteSource = GetAutoCompleteResults,
+	autoCompleteArgs = { AUTOCOMPLETE_LIST.IGNORE.include, AUTOCOMPLETE_LIST.IGNORE.exclude },
 	maxLetters = 12 + 1 + 64, --name space realm (77 max)
 	OnAccept = function(self)
 		AddIgnore(self.editBox:GetText());
@@ -2339,41 +2402,13 @@ StaticPopupDialogs["ADD_IGNORE"] = {
 	whileDead = 1,
 	hideOnEscape = 1
 };
-StaticPopupDialogs["ADD_MUTE"] = {
-	text = ADD_MUTE_LABEL,
-	button1 = ACCEPT,
-	button2 = CANCEL,
-	hasEditBox = 1,
-	maxLetters = 77,
-	OnAccept = function(self)
-		AddMute(self.editBox:GetText());
-	end,
-	OnShow = function(self)
-		self.editBox:SetFocus();
-	end,
-	OnHide = function(self)
-		ChatEdit_FocusActiveWindow();
-		self.editBox:SetText("");
-	end,
-	EditBoxOnEnterPressed = function(self)
-		local parent = self:GetParent();
-		AddMute(parent.editBox:GetText());
-		parent:Hide();
-	end,
-	EditBoxOnEscapePressed = function(self)
-		self:GetParent():Hide();
-	end,
-	timeout = 0,
-	exclusive = 1,
-	whileDead = 1,
-	hideOnEscape = 1
-};
 StaticPopupDialogs["ADD_GUILDMEMBER"] = {
 	text = ADD_GUILDMEMBER_LABEL,
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	hasEditBox = 1,
-	autoCompleteParams = AUTOCOMPLETE_LIST.GUILD_INVITE,
+	autoCompleteSource = GetAutoCompleteResults,
+	autoCompleteArgs = { AUTOCOMPLETE_LIST.GUILD_INVITE.include, AUTOCOMPLETE_LIST.GUILD_INVITE.exclude },
 	maxLetters = 77,
 	OnAccept = function(self)
 		GuildInvite(self.editBox:GetText());
@@ -2403,7 +2438,8 @@ StaticPopupDialogs["ADD_RAIDMEMBER"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	hasEditBox = 1,
-	autoCompleteParams = AUTOCOMPLETE_LIST.INVITE,
+	autoCompleteSource = GetAutoCompleteResults,
+	autoCompleteArgs = { AUTOCOMPLETE_LIST.INVITE.include, AUTOCOMPLETE_LIST.INVITE.exclude },
 	maxLetters = 77,
 	OnAccept = function(self)
 		InviteToGroup(self.editBox:GetText());
@@ -3909,6 +3945,60 @@ StaticPopupDialogs["CLIENT_INVENTORY_FULL_OVERFLOW"] = {
 	showAlert = 1,
 }
 
+local function InviteToClub(clubId, text)
+	local clubInfo = C_Club.GetClubInfo(clubId);
+	local isBattleNetClub = clubInfo.clubType == Enum.ClubType.BattleNet;
+	if isBattleNetClub then
+		local invitationCandidates = C_Club.GetInvitationCandidates(nil, nil, nil, clubId);
+		for i, candidate in ipairs(invitationCandidates) do
+			if candidate.name == text then
+				C_Club.SendInvitation(clubId, candidate.memberId);
+				return;
+			end
+		end
+	else
+		C_Club.SendCharacterInvitation(clubId, text);
+	end
+end
+
+StaticPopupDialogs["INVITE_COMMUNITY_MEMBER"] = {
+	text = INVITE_COMMUNITY_MEMBER_POPUP_INVITE_TEXT,
+	subText = INVITE_COMMUNITY_MEMBER_POPUP_INVITE_SUB_TEXT_BTAG,
+	button1 = INVITE_COMMUNITY_MEMBER_POPUP_SEND_INVITE,
+	button2 = CANCEL,
+	OnAccept = function(self, clubId)
+		InviteToClub(clubId, self.editBox:GetText());
+	end,
+	timeout = 0,
+	whileDead = 1,
+	exclusive = 1,
+	hideOnEscape = 1,
+	hasEditBox = 1,
+	maxLetters = 32,
+	autoCompleteSource = C_Club.GetInvitationCandidates,
+	autoCompleteArgs = {}, -- set dynamically below.
+	OnShow = function(self, clubId)
+		AutoCompleteEditBox_SetAutoCompleteSource(self.editBox, C_Club.GetInvitationCandidates, clubId);
+		self.editBox:SetFocus();
+		
+		local clubInfo = C_Club.GetClubInfo(clubId);
+		local isBattleNetClub = clubInfo.clubType == Enum.ClubType.BattleNet;
+		local instructions = isBattleNetClub and INVITE_COMMUNITY_MEMBER_POPUP_INVITE_SUB_TEXT_BTAG or INVITE_COMMUNITY_MEMBER_POPUP_INVITE_SUB_TEXT_CHARACTER;
+		self.SubText:SetText(instructions);
+	end,
+	OnHide = function(self)
+		ChatEdit_FocusActiveWindow();
+		self.editBox:SetText("");
+	end,
+	EditBoxOnEnterPressed = function(self)
+		self:GetParent().button1:Click();
+	end,
+	EditBoxOnEscapePressed = function(self)
+		self:GetParent():Hide();
+		ClearCursor();
+	end
+};
+
 do
 	local warningSeenBefore = false;
 	StaticPopupDialogs["RAF_GRANT_LEVEL_ALLIED_RACE"] = {
@@ -4018,6 +4108,9 @@ function StaticPopup_Resize(dialog, which)
 	if ( info.hasItemFrame ) then
 		height = height + 64;
 	end
+	if ( dialog.SubText:IsShown() ) then
+		height = height + dialog.SubText:GetHeight() + 8;
+	end
 
 	if ( info.verticalButtonLayout ) then
 		height = height + 16 + (26 * (dialog.numButtons - 1));
@@ -4042,7 +4135,7 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 	if ( info.OnCancel and info.OnButton2 ) then
 		error("Dialog "..which.. " cannot have both OnCancel and OnButton2");
 	end
- 
+
 	if ( UnitIsDeadOrGhost("player") and not info.whileDead ) then
 		if ( info.OnCancel ) then
 			info.OnCancel();
@@ -4261,13 +4354,30 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 	dialog.exclusive = info.exclusive;
 	dialog.enterClicksFirstButton = info.enterClicksFirstButton;
 	dialog.insertedFrame = insertedFrame;
+	if ( info.subText ) then
+		dialog.SubText:SetText(info.subText);
+		dialog.SubText:Show();
+	else
+		dialog.SubText:Hide();
+	end
+		
 	if ( insertedFrame ) then
 		insertedFrame:SetParent(dialog);
 		insertedFrame:ClearAllPoints();
-		insertedFrame:SetPoint("TOP", text, "BOTTOM");
+		if ( dialog.SubText:IsShown() ) then
+			insertedFrame:SetPoint("TOP", dialog.SubText, "BOTTOM");
+		else
+			insertedFrame:SetPoint("TOP", text, "BOTTOM");
+		end
 		insertedFrame:Show();
 		_G[dialog:GetName().."MoneyFrame"]:SetPoint("TOP", insertedFrame, "BOTTOM");
 		_G[dialog:GetName().."MoneyInputFrame"]:SetPoint("TOP", insertedFrame, "BOTTOM");
+	elseif ( dialog.SubText:IsShown() ) then
+		_G[dialog:GetName().."MoneyFrame"]:SetPoint("TOP", dialog.SubText, "BOTTOM", 0, -5);
+		_G[dialog:GetName().."MoneyInputFrame"]:SetPoint("TOP", dialog.SubText, "BOTTOM", 0, -5);
+	else
+		_G[dialog:GetName().."MoneyFrame"]:SetPoint("TOP", dialog.text, "BOTTOM", 0, -5);
+		_G[dialog:GetName().."MoneyInputFrame"]:SetPoint("TOP", dialog.text, "BOTTOM", 0, -5);
 	end
 	-- Clear out data
 	dialog.data = data;
@@ -4380,9 +4490,10 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 		button1:Enable();
 	end
 
-	editBox.autoCompleteParams = info.autoCompleteParams;
-
-	editBox.addHighlightedText = true;
+	editBox.hasAutoComplete = info.autoCompleteSource ~= nil;
+	if ( editBox.hasAutoComplete ) then
+		AutoCompleteEditBox_SetAutoCompleteSource(editBox, info.autoCompleteSource, unpack(info.autoCompleteArgs));
+	end
 
 	-- Finally size and show the dialog
 	StaticPopup_SetUpPosition(dialog);
@@ -4524,7 +4635,7 @@ function StaticPopup_EditBoxOnEnterPressed(self)
 		which = parent:GetParent().which;
 		dialog = parent:GetParent();
 	end
-	if ( not self.autoCompleteParams or not AutoCompleteEditBox_OnEnterPressed(self) ) then
+	if ( not self.hasAutoComplete or not AutoCompleteEditBox_OnEnterPressed(self) ) then
 		EditBoxOnEnterPressed = StaticPopupDialogs[which].EditBoxOnEnterPressed;
 		if ( EditBoxOnEnterPressed ) then
 			EditBoxOnEnterPressed(self, dialog.data);
@@ -4540,12 +4651,23 @@ function StaticPopup_EditBoxOnEscapePressed(self)
 end
 
 function StaticPopup_EditBoxOnTextChanged(self, userInput)
-	if ( not self.autoCompleteParams or not AutoCompleteEditBox_OnTextChanged(self, userInput) ) then
+	if ( not self.hasAutoComplete or not AutoCompleteEditBox_OnTextChanged(self, userInput) ) then
 		local EditBoxOnTextChanged = StaticPopupDialogs[self:GetParent().which].EditBoxOnTextChanged;
 		if ( EditBoxOnTextChanged ) then
 			EditBoxOnTextChanged(self, self:GetParent().data);
 		end
 	end
+end
+
+function StaticPopup_OnLoad(self)
+	local name = self:GetName();
+	self.button1 = _G[name .. "Button1"];
+	self.button2 = _G[name .. "Button2"];
+	self.button3 = _G[name .. "Button3"];
+	self.text = _G[name .. "Text"];
+	self.icon = _G[name .. "AlertIcon"];
+	self.moneyInputFrame = _G[name .. "MoneyInputFrame"];
+	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
 end
 
 function StaticPopup_OnShow(self)
@@ -4624,7 +4746,7 @@ function StaticPopup_OnClick(dialog, index)
 	end
 
 	if ( which == "DEATH" or which == "CLASS_TRIAL_CHOOSE_BOOST_TYPE" ) then
-		local func;	
+		local func;
 		if ( index == 1 ) then
 			func = info.OnAccept or info.OnButton1;
 		elseif ( index == 2 ) then
@@ -4634,7 +4756,7 @@ function StaticPopup_OnClick(dialog, index)
 		elseif ( index == 4 ) then
 			func = info.OnButton4;
 		end
-		
+
 		if ( func ) then
 			local keepOpen = func(dialog, dialog.data, "clicked");
 			if ( not keepOpen and which == dialog.which ) then
@@ -4769,6 +4891,14 @@ function StaticPopupSpecial_Hide(frame)
 	StaticPopup_CollapseTable();
 end
 
+function StaticPopupSpecial_Toggle(frame)
+	if frame:IsShown() then
+		StaticPopupSpecial_Hide(frame);
+	else
+		StaticPopupSpecial_Show(frame);
+	end
+end
+
 --Note that things will look sub-fantastic if toActivate is bigger than toReplace
 function StaticPopupSpecial_Replace(toActivate, toReplace)
 	local idx = nil;
@@ -4859,12 +4989,12 @@ function StaticPopupItemFrame_DisplayInfo(self, link, name, color, texture, coun
 	local nameText = _G[self:GetName().."Text"];
 	nameText:SetTextColor(unpack(color or {1, 1, 1, 1}));
 	nameText:SetText(name);
-	
+
 	if link then
 		local quality = select(3, GetItemInfo(link));
 		SetItemButtonQuality(self, quality, link);
 	end
-	
+
 	if ( count and count > 1 ) then
 		_G[self:GetName().."Count"]:SetText(count);
 		_G[self:GetName().."Count"]:Show();

@@ -2,7 +2,7 @@
 ..\FrameXML\UI.xsd">
 	<Script file="Blizzard_TalkingHeadUI.lua"/>
 
-	<Button name="TalkingHeadFrame" toplevel="true" parent="UIParent" hidden="true" frameStrata="HIGH" frameLevel="1">
+	<ContainedAlertFrame name="TalkingHeadFrame" toplevel="true" parent="UIParent" hidden="true" frameStrata="HIGH" frameLevel="1">
 		<Size x="570" y="155"/>
 		<Anchors>
 			<Anchor point="BOTTOM" x="0" y="96"/>
@@ -226,5 +226,5 @@
 			<OnEvent function="TalkingHeadFrame_OnEvent"/>
 			<OnClick function="TalkingHeadFrame_OnClick"/>
 		</Scripts>
-	</Button>
+	</ContainedAlertFrame>
 </Ui>

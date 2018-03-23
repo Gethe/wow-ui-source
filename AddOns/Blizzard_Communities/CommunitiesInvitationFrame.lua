@@ -1,0 +1,50 @@
+
+CommunitiesInvitationFrameMixin = {};
+
+function CommunitiesInvitationFrameMixin:GetCommunitiesFrame()
+	return self:GetParent();
+end
+
+function CommunitiesInvitationFrameMixin:DisplayInvitation(invitationInfo)
+	self.invitationId = invitationInfo.invitationId;
+	
+	local clubInfo = invitationInfo.club;
+	local inviterInfo = invitationInfo.inviter;
+	self.clubId = clubInfo.clubId;
+	self.InvitationText:SetText(COMMUNITY_INVITATION_FRAME_INVITATION_TEXT:format(inviterInfo.name));
+
+	local isCharacterClub = clubInfo.clubType == Enum.ClubType.Character;
+	local clubTypeText = isCharacterClub and COMMUNITIES_INVITATION_FRAME_TYPE_CHARACTER or COMMUNITIES_INVITATION_FRAME_TYPE;
+	self.Type:SetText(clubTypeText);
+	C_Club.SetAvatarTexture(self.Icon, clubInfo.avatarId, clubInfo.clubType);
+	self.Name:SetText(clubInfo.name);
+	
+	if clubInfo.description ~= "" then
+		self.Description:SetText(COMMUNITIES_INVIVATION_FRAME_DESCRIPTION_FORMAT:format(clubInfo.description));
+	else
+		self.Description:SetText("");
+	end
+	
+	-- TODO:: Discuss if we want this and add proper accessors if we do.
+	self.MemberCount:SetText(COMMUNITIES_INVITATION_FRAME_MEMBER_COUNT:format(clubInfo.memberCount or 1));
+	self.Leader:SetText(COMMUNITIES_INVIVATION_FRAME_LEADER_FORMAT:format(clubInfo.leader or "Leaderguy"));
+end
+
+function CommunitiesInvitationFrameMixin:AcceptInvitation()
+	C_Club.AcceptInvitation(self.clubId);
+	local communitiesFrame = self:GetCommunitiesFrame();
+	communitiesFrame:SelectClub(nil);
+	communitiesFrame:TriggerEvent(CommunitiesFrameMixin.Event.InviteAccepted, self.invitationId, self.clubId);
+	self:Hide();
+end
+
+function CommunitiesInvitationFrameMixin:DeclineInvitation()
+	C_Club.DeclineInvitation(self.clubId);
+	self:GetCommunitiesFrame():TriggerEvent(CommunitiesFrameMixin.Event.InviteDeclined, self.invitationId, self.clubId);
+	self:Hide();
+end
+
+function CommunitiesInviteButton_OnClick(self)
+	local communitiesFrame = self:GetParent();
+	StaticPopup_Show("INVITE_COMMUNITY_MEMBER", nil, nil, communitiesFrame:GetSelectedClubId());
+end

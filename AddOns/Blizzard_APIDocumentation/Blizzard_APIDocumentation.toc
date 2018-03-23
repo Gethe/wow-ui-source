@@ -50,7 +50,6 @@ EncounterInfoDocumentation.lua
 EncounterJournalDocumentation.lua
 EquipmentManagerDocumentation.lua
 ExpansionDocumentation.lua
-FriendsDocumentation.lua
 GMTicketInfoDocumentation.lua
 GarrisonInfoDocumentation.lua
 GlyphInfoDocumentation.lua
@@ -122,10 +121,13 @@ UnitDocumentation.lua
 VehicleDocumentation.lua
 VideoDocumentation.lua
 VignetteInfoDocumentation.lua
+VoiceChatDocumentation.lua
 VoidStorageInfoDocumentation.lua
 WarfrontDocumentation.lua
 WorldMapDocumentation.lua
 WorldStateInfoDocumentation.lua
 WowTokenUIDocumentation.lua
 ZoneAbilityDocumentation.lua
+ClubDocumentation.lua
+FriendsDocumentation.lua
 # End documentation files here

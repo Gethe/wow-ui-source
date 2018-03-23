@@ -84,14 +84,7 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad>
-				self:RegisterEvent("UNIT_PORTRAIT_UPDATE");
-				self:RegisterEvent("UPDATE_BINDINGS");
-				self:RegisterEvent("PLAYER_ENTERING_WORLD");
-				self.tooltipText = MicroButtonTooltipText(CHARACTER_BUTTON, "TOGGLECHARACTER0");
-				self.newbieText = NEWBIE_TOOLTIP_CHARACTER;	
-				LoadMicroButtonTextures(self, "Character");	
-			</OnLoad>
+			<OnLoad function="CharacterMicroButton_OnLoad" />
 			<OnMouseDown>
 				if ( self.down ) then
 					self.down = nil;

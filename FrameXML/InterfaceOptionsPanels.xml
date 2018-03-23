@@ -909,7 +909,7 @@
 					<OnLoad>
 						self.type = CONTROLTYPE_CHECKBOX;
 						self.cvar = "showToastOnline";
-						self.setFunc = function (value) BNet_UpdateToastEvent(self.cvar, value); end;
+						self.setFunc = function (value) BNToastFrame:UpdateToastEvent(self.cvar, value); end;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
@@ -926,7 +926,7 @@
 					<OnLoad>
 						self.type = CONTROLTYPE_CHECKBOX;
 						self.cvar = "showToastOffline";
-						self.setFunc = function (value) BNet_UpdateToastEvent(self.cvar, value); end;
+						self.setFunc = function (value) BNToastFrame:UpdateToastEvent(self.cvar, value); end;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
@@ -943,7 +943,7 @@
 					<OnLoad>
 						self.type = CONTROLTYPE_CHECKBOX;
 						self.cvar = "showToastBroadcast";
-						self.setFunc = function (value) BNet_UpdateToastEvent(self.cvar, value); end;
+						self.setFunc = function (value) BNToastFrame:UpdateToastEvent(self.cvar, value); end;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
@@ -976,7 +976,7 @@
 					<OnLoad>
 						self.type = CONTROLTYPE_CHECKBOX;
 						self.cvar = "showToastFriendRequest";
-						self.setFunc = function (value) BNet_UpdateToastEvent(self.cvar, value); end;
+						self.setFunc = function (value) BNToastFrame:UpdateToastEvent(self.cvar, value); end;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
@@ -993,7 +993,7 @@
 					<OnLoad>
 						self.type = CONTROLTYPE_CHECKBOX;
 						self.cvar = "showToastWindow";
-						self.setFunc = function(value) if ( value == "1" ) then BNet_EnableToasts(); else BNet_DisableToasts(); end; end
+						self.setFunc = function(value) BNToastFrame:SetToastsEnabled(value == "1"); end
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>

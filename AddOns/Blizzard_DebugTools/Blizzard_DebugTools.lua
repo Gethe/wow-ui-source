@@ -517,8 +517,83 @@ function FrameStackTooltip_OnEvent(self, event, ...)
 	end
 end
 
+local function AreTextureCoordinatesValid(...)
+	local coordCount = select("#", ...);
+	for i = 1, coordCount do
+		if type(select(i, ...)) ~= "number" then
+			return false;
+		end
+	end
+
+	return coordCount == 8;
+end
+
+local function AreTextureCoordinatesEntireImage(...)
+	local ulX, ulY, blX, blY, urX, urY, brX, brY = ...;
+	return	ulX == 0 and ulY == 0 and 
+			blX == 0 and blY == 1 and 
+			urX == 1 and urY == 0 and 
+			brX == 1 and brY == 1;
+end
+
+local function FormatTextureCoordinates(...)
+	if AreTextureCoordinatesValid(...) then
+		if not AreTextureCoordinatesEntireImage(...) then
+			return ("UL:(%.2f, %.2f), BL:(%.2f, %.2f), UR:(%.2f, %.2f), BR:(%.2f, %.2f)"):format(...);
+		end
+
+		return "";
+	end
+	
+	return "invalid coordinates";
+end
+
+local function FormatTextureAssetName(assetName)
+	return ("Asset: %s"):format(tostring(assetName));
+end
+
+local function FormatTextureInfo(region, ...)
+	if ... ~= nil then
+		return ("%s : %s %s"):format(region:GetDebugName(), FormatTextureAssetName(...), FormatTextureCoordinates(select(2, ...)));
+	end
+end
+
+local function CheckGetRegionsTextureInfo(...)
+	local info = {};
+	for i = 1, select("#", ...) do
+		local region = select(i, ...);
+		if CanAccessObject(region) and region:IsMouseOver() then
+			local textureInfo = FormatTextureInfo(region, GetTextureInfo(region))
+			if textureInfo then
+				table.insert(info, textureInfo);
+			end
+		end
+	end
+
+	if #info > 0 then
+		return table.concat(info, "\n");
+	end
+end
+
+local function CheckFormatTextureInfo(obj)
+	if IsShiftKeyDown() and CanAccessObject(obj) then
+		if obj.GetRegions then
+			return CheckGetRegionsTextureInfo(obj:GetRegions());			
+		else
+			return CheckGetRegionsTextureInfo(obj);
+		end
+	end
+end
+
 local shouldSetFSObj = false;
 function FrameStackTooltip_OnTooltipSetFrameStack(self, highlightFrame)
+	if highlightFrame then
+		local textureInfo = CheckFormatTextureInfo(highlightFrame);
+		if textureInfo then
+			self:AddLine(textureInfo);
+		end
+	end
+
 	if shouldSetFSObj then
 		fsobj = highlightFrame;
 		shouldSetFSObj = false;
