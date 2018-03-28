@@ -6,6 +6,29 @@ local QuestLog =
 
 	Functions =
 	{
+		{
+			Name = "GetMaxNumQuests",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "maxNumQuests", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetQuestsOnMap",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "uiMapID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "quests", Type = "table", InnerType = "QuestOnMapInfo", Nilable = false },
+			},
+		},
 	},
 
 	Events =
@@ -137,6 +160,16 @@ local QuestLog =
 
 	Tables =
 	{
+		{
+			Name = "QuestOnMapInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+				{ Name = "x", Type = "number", Nilable = false },
+				{ Name = "y", Type = "number", Nilable = false },
+			},
+		},
 	},
 };
 

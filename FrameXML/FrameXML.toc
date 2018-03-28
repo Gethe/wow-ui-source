@@ -52,7 +52,9 @@ ObjectAPI\Item.lua
 WorldFrame.xml
 UIParent.xml
 QuestUtils.lua
+MapUtil.lua
 AzeriteUtil.lua
+VehicleUtil.lua
 CurrencyContainer.lua
 ## IME.xml needs to be loaded after UIParent.xml
 ..\SharedXML\IME.xml
@@ -179,6 +181,7 @@ MailFrame.xml
 PetStable.xml
 VehicleSeatIndicator.xml
 DurabilityFrame.xml
+BattlegroundChatFilters.xml
 WorldStateFrame.xml
 PVEFrame.xml
 LFGFrame.xml

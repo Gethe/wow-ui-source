@@ -328,6 +328,11 @@ local PvpInfo =
 			},
 		},
 		{
+			Name = "PvpVehicleInfoUpdated",
+			Type = "Event",
+			LiteralName = "PVP_VEHICLE_INFO_UPDATED",
+		},
+		{
 			Name = "PvpWorldstateUpdate",
 			Type = "Event",
 			LiteralName = "PVP_WORLDSTATE_UPDATE",

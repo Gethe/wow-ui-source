@@ -1,5 +1,9 @@
 AreaPOIDataProviderMixin = CreateFromMixins(MapCanvasDataProviderMixin);
 
+function AreaPOIDataProviderMixin:GetPinTemplate()
+	return "AreaPOIPinTemplate";
+end
+
 function AreaPOIDataProviderMixin:OnShow()
 	self:RegisterEvent("WORLD_MAP_UPDATE");
 end
@@ -15,17 +19,17 @@ function AreaPOIDataProviderMixin:OnEvent(event, ...)
 end
 
 function AreaPOIDataProviderMixin:RemoveAllData()
-	self:GetMap():RemoveAllPinsByTemplate("AreaPOIPinTemplate");
+	self:GetMap():RemoveAllPinsByTemplate(self:GetPinTemplate());
 end
 
 function AreaPOIDataProviderMixin:RefreshAllData(fromOnShow)
 	self:RemoveAllData();
 
 	local mapAreaID = self:GetMap():GetMapID();
-	local areaPOIs = C_WorldMap.GetAreaPOIForMap(mapAreaID, self:GetTransformFlags());
+	local areaPOIs = C_WorldMap.GetAreaPOIForMap(mapAreaID);
 	if areaPOIs then
 		for i, areaPoiID in ipairs(areaPOIs) do
-			local poiInfo = C_WorldMap.GetAreaPOIInfo(mapAreaID, areaPoiID, self:GetTransformFlags());
+			local poiInfo = C_WorldMap.GetAreaPOIInfo(mapAreaID, areaPoiID);
 			if poiInfo then
 				self:AddAreaPOI(poiInfo);
 			end
@@ -34,9 +38,8 @@ function AreaPOIDataProviderMixin:RefreshAllData(fromOnShow)
 end
 
 function AreaPOIDataProviderMixin:AddAreaPOI(poiInfo)
-	local pin = self:GetMap():AcquirePin("AreaPOIPinTemplate");
+	local pin = self:GetMap():AcquirePin(self:GetPinTemplate());
 	pin.poiID = poiInfo.poiID;
-
 	if poiInfo.atlasName then
 		local atlasName = poiInfo.textureKitPrefix and ("%s-%s"):format(poiInfo.textureKitPrefix, poiInfo.atlasName) or poiInfo.atlasName;
 		local _, width, height = GetAtlasInfo(atlasName);
@@ -53,27 +56,22 @@ function AreaPOIDataProviderMixin:AddAreaPOI(poiInfo)
 		pin.Highlight:SetTexCoord(x1, x2, y1, y2);
 		pin.Highlight:SetSize(40, 40);
 	end
-
 	pin:SetPosition(poiInfo.x, poiInfo.y);
 end
 
 --[[ Area POI Pin ]]--
 AreaPOIPinMixin = CreateFromMixins(MapCanvasPinMixin);
 
-function AreaPOIPinMixin:OnLoad()
-	self:SetAlphaLimits(2.0, 0.0, 1.0);
+function AreaPOIPinMixin:OnLoad()	
 	self:SetScalingLimits(1, 0.4125, 0.425);
 
 	self.UpdateTooltip = self.OnMouseEnter;
 
-	-- Flight points can nudge area poi pins.
-	self:SetNudgeTargetFactor(0.015);
-	self:SetNudgeZoomedOutFactor(1.0);
-	self:SetNudgeZoomedInFactor(0.25);
+	self:UseFrameLevelType("PIN_FRAME_LEVEL_AREA_POI");
 end
 
 function AreaPOIPinMixin:OnMouseEnter()
-	local poiInfo = C_WorldMap.GetAreaPOIInfo(self:GetMap():GetMapID(), self.poiID, self:GetMap():GetTransformFlags());
+	local poiInfo = C_WorldMap.GetAreaPOIInfo(self:GetMap():GetMapID(), self.poiID);
 	if poiInfo then
 		WorldMap_HijackTooltip(self:GetMap());
 

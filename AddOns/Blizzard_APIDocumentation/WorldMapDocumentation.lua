@@ -13,7 +13,6 @@ local WorldMap =
 			Arguments =
 			{
 				{ Name = "mapAreaID", Type = "number", Nilable = false },
-				{ Name = "mapTransformFlags", Type = "number", Nilable = true },
 			},
 
 			Returns =
@@ -29,7 +28,6 @@ local WorldMap =
 			{
 				{ Name = "mapAreaID", Type = "number", Nilable = false },
 				{ Name = "areaPOIID", Type = "number", Nilable = false },
-				{ Name = "mapTransformFlags", Type = "number", Nilable = true },
 			},
 
 			Returns =
@@ -76,7 +74,6 @@ local WorldMap =
 				{ Name = "isObjectIcon", Type = "bool", Nilable = true },
 				{ Name = "atlasName", Type = "string", Nilable = true },
 				{ Name = "displayAsBanner", Type = "bool", Nilable = true },
-				{ Name = "mapFloor", Type = "number", Nilable = true },
 				{ Name = "textureKitPrefix", Type = "string", Nilable = true },
 				{ Name = "useMouseOverTooltip", Type = "bool", Nilable = true },
 			},
@@ -157,7 +154,6 @@ local WorldMap =
 				{ Name = "isObjectIcon", Type = "bool", Nilable = true },
 				{ Name = "atlasName", Type = "string", Nilable = true },
 				{ Name = "displayAsBanner", Type = "bool", Nilable = true },
-				{ Name = "mapFloor", Type = "number", Nilable = true },
 				{ Name = "textureKitPrefix", Type = "string", Nilable = true },
 				{ Name = "useMouseOverTooltip", Type = "bool", Nilable = true },
 			},

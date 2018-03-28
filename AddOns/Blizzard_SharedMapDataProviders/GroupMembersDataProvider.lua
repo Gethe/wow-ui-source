@@ -5,10 +5,10 @@ function GroupMembersDataProviderMixin:OnAdded(mapCanvas)
 	self:GetMap():SetPinTemplateType("GroupMembersPinTemplate", "UnitPositionFrame");
 	-- a single permanent pin
 	local pin = self:GetMap():AcquirePin("GroupMembersPinTemplate");
-	pin:SetTransformFlags(self:GetTransformFlags());
+	pin.dataProvider = self;
 	pin:SetPosition(0.5, 0.5);
-	pin:SetNeedsPeriodicUpdate(false);
-	pin:SetShouldShowUnits("player", false);
+	pin:SetNeedsPeriodicUpdate(true);
+	pin:UpdateShownUnits();
 	self.pin = pin;
 end
 
@@ -17,52 +17,43 @@ function GroupMembersDataProviderMixin:OnRemoved(mapCanvas)
 	self:GetMap():RemoveAllPinsByTemplate("GroupMembersPinTemplate");
 end
 
-function GroupMembersDataProviderMixin:OnShow()
-	assert(self.ticker == nil);
-	self.ticker = C_Timer.NewTicker(0, function() self:RefreshAllData() end);
-end
-
-function GroupMembersDataProviderMixin:OnHide()
-	self.ticker:Cancel();
-	self.ticker = nil;
-end
-
 function GroupMembersDataProviderMixin:OnMapChanged()
-	local mapAreaID = self:GetMap():GetMapID();
-	self.pin:SetOverrideMapID(mapAreaID);
+	self.pin:OnMapChanged();
 end
 
 function GroupMembersDataProviderMixin:RefreshAllData(fromOnShow)
-	self.pin:SetSize(self:GetMap():DenormalizeHorizontalSize(1.0), self:GetMap():DenormalizeVerticalSize(1.0));
-	local pinSize = 13 / FlightMapFrame.ScrollContainer:GetCanvasScale();
-	if self.pinSize ~= pinSize then
-		self.pin:SetPinSize("party", pinSize);
-		self.pin:SetPinSize("raid", pinSize);
-		self.pinSize = pinSize;
-	end
-
-	self.pin:UpdatePlayerPins();
-	self.pin:UpdateTooltips(GameTooltip);
+	self.pin:Refresh(fromOnShow);
 end
 
-function GroupMembersDataProviderMixin:SetDynamicFrameStratas(zoomedOut, zoomedIn, threshold)
-	self.zoomedOutStrata = zoomedOut;
-	self.zoomedInStrata = zoomedIn;
-	self.frameStrataThreshold = threshold or 0.5;
-end
-
-function GroupMembersDataProviderMixin:OnCanvasScaleChanged()
-	-- We change the frame strata so that players will show above other flight map icons while zoomed in
-	-- but not while zoomed out
-	if self.frameStrataThreshold then
-		if self:GetMap():GetCanvasZoomPercent() >= self.frameStrataThreshold then
-			self.pin:SetFrameStrata(self.zoomedInStrata);
-		else
-			self.pin:SetFrameStrata(self.zoomedOutStrata);
+function GroupMembersDataProviderMixin:SetUnitPinSize(unit, size)
+	local unitPinSizes = self:GetUnitPinSizesTable();
+	if unitPinSizes[unit] then
+		unitPinSizes[unit] = size;
+		if self.pin then
+			self.pin:UpdateShownUnits();
 		end
 	end
-	
-	self.pin:ApplyCurrentPosition();
+end
+
+function GroupMembersDataProviderMixin:EnumerateUnitPinSizes()
+	local unitPinSizes = self:GetUnitPinSizesTable();
+	return next, unitPinSizes;
+end
+
+function GroupMembersDataProviderMixin:ShouldShowUnit(unit)
+	local unitPinSizes = self:GetUnitPinSizesTable();
+	return unitPinSizes[unit] > 0;
+end
+
+function GroupMembersDataProviderMixin:GetUnitPinSizesTable()
+	if not self.unitPinSizes then
+		self.unitPinSizes = {
+			player = 27,
+			party = 11,
+			raid = 11 * 0.75;
+		};
+	end
+	return self.unitPinSizes;
 end
 
 --[[ Group Members Pin ]]--
@@ -71,4 +62,63 @@ GroupMembersPinMixin = CreateFromMixins(MapCanvasPinMixin);
 function GroupMembersPinMixin:OnLoad()
 	UnitPositionFrameMixin.OnLoad(self);
 	self:SetAlphaLimits(1.0, 1.0, 1.0);
+	self:UseFrameLevelType("PIN_FRAME_LEVEL_GROUP_MEMBER");
+
+	self:SetPlayerPingTexture(1, "Interface\\minimap\\UI-Minimap-Ping-Center", 32, 32);
+	self:SetPlayerPingTexture(2, "Interface\\minimap\\UI-Minimap-Ping-Expand", 32, 32);
+	self:SetPlayerPingTexture(3, "Interface\\minimap\\UI-Minimap-Ping-Rotate", 70, 70);
+
+	self:SetMouseOverUnitExcluded("player", true);
+	self:SetPinTexture("player", "Interface\\WorldMap\\WorldMapArrow");
+end
+
+function GroupMembersPinMixin:OnShow()
+	UnitPositionFrameMixin.OnShow(self);
+end
+
+function GroupMembersPinMixin:OnHide()
+	UnitPositionFrameMixin.OnHide(self);
+	if self.dataProvider:ShouldShowUnit("player") then
+		self:StopPlayerPing();
+	end
+end
+
+function GroupMembersPinMixin:OnUpdate()
+	self:Refresh();
+end
+
+function GroupMembersPinMixin:Refresh(fromOnShow)
+	self:UpdatePlayerPins();
+	-- TODO: Fix this for fullscreen map
+	self:UpdateTooltips(GameTooltip);
+end
+
+function GroupMembersPinMixin:OnMapChanged()
+	local mapID = self:GetMap():GetMapID();
+	local hideMapIcons = C_Map.GetMapDisplayInfo(mapID);
+	if hideMapIcons then
+		self:Hide();
+	else
+		self:SetOverrideMapID(mapID);
+		self:Show();
+		if self.dataProvider:ShouldShowUnit("player") then
+			self:StartPlayerPing(2, .25);
+		end
+	end	
+end
+
+function GroupMembersPinMixin:UpdateShownUnits()
+	for unit, size in self.dataProvider:EnumerateUnitPinSizes() do
+		self:SetShouldShowUnits(unit, size > 0);
+	end
+end
+
+function GroupMembersPinMixin:OnCanvasScaleChanged()
+	self:SetSize(self:GetMap():DenormalizeHorizontalSize(1.0), self:GetMap():DenormalizeVerticalSize(1.0));
+	local scale = self:GetMap():GetCanvasScale();
+	for unit, size in self.dataProvider:EnumerateUnitPinSizes() do
+		if self.dataProvider:ShouldShowUnit(unit) then
+			self:SetPinSize(unit, size / scale);
+		end
+	end
 end

@@ -1,0 +1,11 @@
+## Interface: 70300
+## Title: Blizzard_PartyPoseUI
+## Notes: Every time I'm here it's a party! :3
+## Author: Blizzard Entertainment
+## Version: 1.0
+## LoadOnDemand: 1
+
+Blizzard_PartyPoseUI.lua
+Blizzard_PartyPoseUI.xml 
+Blizzard_IslandsPartyPoseUI.lua
+Blizzard_IslandsPartyPoseUI.xml

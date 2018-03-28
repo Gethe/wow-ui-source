@@ -21,20 +21,6 @@ local MapCanvas =
 			},
 		},
 		{
-			Name = "GetPreferredHelpTextPosition",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "mapAreaID", Type = "number", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "position", Type = "MapCanvasPosition", Nilable = false },
-			},
-		},
-		{
 			Name = "GetScaleExtentsForMap",
 			Type = "Function",
 
@@ -57,20 +43,6 @@ local MapCanvas =
 
 	Tables =
 	{
-		{
-			Name = "MapCanvasPosition",
-			Type = "Enumeration",
-			NumValues = 4,
-			MinValue = 0,
-			MaxValue = 3,
-			Fields =
-			{
-				{ Name = "BottomLeft", Type = "MapCanvasPosition", EnumValue = 0 },
-				{ Name = "BottomRight", Type = "MapCanvasPosition", EnumValue = 1 },
-				{ Name = "TopLeft", Type = "MapCanvasPosition", EnumValue = 2 },
-				{ Name = "TopRight", Type = "MapCanvasPosition", EnumValue = 3 },
-			},
-		},
 	},
 };
 

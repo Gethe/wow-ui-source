@@ -16,13 +16,10 @@ function FlightMapMixin:OnLoad()
 
 	self:RegisterEvent("TAXIMAP_CLOSED");
 
-	self:SetMaxZoomMultiplier(0.85 / 0.75);
-
 	self:SetupTitle();
 
 	self:SetShouldZoomInOnClick(true);
 	self:SetShouldPanOnClick(false);
-	self:SetTransformFlag(Enum.MapTransform.IsForFlightMap, true);
 
 	self:AddStandardDataProviders();
 end
@@ -33,6 +30,20 @@ function FlightMapMixin:SetMapID(mapID)
 		self:AddSubZoneDataProviders();
 	else
 		self:RemoveSubZoneDataProviders();
+	end
+end
+
+function FlightMapMixin:OnCanvasScaleChanged()
+	MapCanvasMixin.OnCanvasScaleChanged(self);
+	local changed = false;
+	local scale = self:GetCanvasZoomPercent();
+	if ( scale < 0.5 ) then
+		changed = self:GetPinFrameLevelsManager():ClearOverride("PIN_FRAME_LEVEL_GROUP_MEMBER");
+	else
+		changed = self:GetPinFrameLevelsManager():SetOverride("PIN_FRAME_LEVEL_GROUP_MEMBER", "PIN_FRAME_LEVEL_GROUP_MEMBER_ABOVE_FLIGHT");
+	end
+	if changed then
+		self:ReapplyPinFrameLevels("PIN_FRAME_LEVEL_GROUP_MEMBER");
 	end
 end
 
@@ -52,29 +63,41 @@ end
 
 function FlightMapMixin:AddStandardDataProviders()
 	self:AddDataProvider(CreateFromMixins(FlightMap_FlightPathDataProviderMixin));
-	self:AddDataProvider(CreateFromMixins(ActiveQuestDataProviderMixin));
-	self:AddDataProvider(CreateFromMixins(ClickToZoomDataProviderMixin));
-	self:AddDataProvider(CreateFromMixins(ZoneLabelDataProviderMixin));
+	self:AddDataProvider(CreateFromMixins(FlightMap_QuestDataProviderMixin));
+	self:AddDataProvider(CreateFromMixins(ClickToZoomDataProviderMixin));	-- no pins
+	self:AddDataProvider(CreateFromMixins(ZoneLabelDataProviderMixin));	-- no pins
 	self:AddDataProvider(CreateFromMixins(AreaPOIDataProviderMixin));
-	
-	local groupMemberDataProvider = CreateFromMixins(GroupMembersDataProviderMixin);
-	groupMemberDataProvider:SetDynamicFrameStratas("HIGH", "DIALOG");
-	self:AddDataProvider(groupMemberDataProvider);
 
-	local worldQuestDataProvider = CreateFromMixins(WorldQuestDataProviderMixin);
+	local groupMembersDataProvider = CreateFromMixins(GroupMembersDataProviderMixin);
+	groupMembersDataProvider:SetUnitPinSize("player", 0);
+	groupMembersDataProvider:SetUnitPinSize("party", 13);
+	groupMembersDataProvider:SetUnitPinSize("raid", 13);
+	self:AddDataProvider(groupMembersDataProvider);
+
+	local worldQuestDataProvider = CreateFromMixins(FlightMap_WorldQuestDataProviderMixin);
 	worldQuestDataProvider:SetMatchWorldMapFilters(true);
 	self:AddDataProvider(worldQuestDataProvider);
+
+	local pinFrameLevelsManager = self:GetPinFrameLevelsManager();
+	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_WORLD_QUEST", 500);
+	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_AREA_POI");
+	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_GROUP_MEMBER");
+	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_ACTIVE_QUEST");
+	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_SUPER_TRACKED_QUEST");
+	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_FLIGHT_POINT");
+	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_GROUP_MEMBER_ABOVE_FLIGHT");
 end
 
 function FlightMapMixin:OnShow()
-	local continentID = GetTaxiMapID();
+	local mapID = GetTaxiMapID();
+
 	-- This is 'temporarily' hardcoded for Argus. There's a maintenance task in that should include fixing this.
-	self:SetShouldShowSubzones(continentID ~= 1184);
-	self:SetMapID(continentID);
+	self:SetShouldShowSubzones(mapID ~= 1184);
+	self:SetMapID(mapID);
 
 	MapCanvasMixin.OnShow(self);
 	
-	self:ZoomOut();
+	self:ResetZoom();
 	
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
 end

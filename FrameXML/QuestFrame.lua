@@ -1,4 +1,3 @@
-MAX_NUM_QUESTS = 32;
 MAX_NUM_ITEMS = 10;
 MAX_REQUIRED_ITEMS = 6;
 QUEST_DESCRIPTION_GRADIENT_LENGTH = 30;
@@ -373,7 +372,7 @@ function QuestFrameGreetingPanel_OnShow()
 			end
 		end
 	end
-	for i=(numActiveQuests + numAvailableQuests + 1), MAX_NUM_QUESTS, 1 do
+	for i=(numActiveQuests + numAvailableQuests + 1), C_QuestLog.GetMaxNumQuests(), 1 do
 		_G["QuestTitleButton"..i]:Hide();
 	end
 end

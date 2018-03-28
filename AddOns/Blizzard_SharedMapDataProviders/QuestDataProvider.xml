@@ -1,8 +1,8 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
-	<Script file="ActiveQuestDataProvider.lua"/>
+	<Script file="QuestDataProvider.lua"/>
 
-	<Frame name="ActiveQuestPinTemplate" hidden="true" flattenRenderLayers="true" frameStrata="HIGH" enableMouse="true" mixin="ActiveQuestPinMixin" virtual="true">
+	<Frame name="QuestPinTemplate" hidden="true" flattenRenderLayers="true" enableMouse="true" mixin="QuestPinMixin" virtual="true">
 		<Size x="50" y="50"/>
 
 		<Layers>

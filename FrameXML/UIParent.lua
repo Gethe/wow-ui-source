@@ -437,6 +437,10 @@ function UIParentLoadAddOn(name)
 	return loaded;
 end
 
+function IslandsPartyPose_LoadUI()
+	UIParentLoadAddOn("Blizzard_PartyPoseUI"); 
+end
+
 function AlliedRaces_LoadUI()
 	UIParentLoadAddOn("Blizzard_AlliedRacesUI");
 end
@@ -1096,7 +1100,7 @@ function UIParent_OnEvent(self, event, ...)
 		UIParent.variablesLoaded = true;
 
 		LocalizeFrames();
-		if ( WorldStateFrame_CanShowBattlefieldMinimap() ) then
+		if ( WorldStateScoreFrame_CanShowBattlefieldMinimap() ) then
 			if ( not BattlefieldMinimap ) then
 				BattlefieldMinimap_LoadUI();
 			end
@@ -1970,7 +1974,8 @@ function UIParent_OnEvent(self, event, ...)
 	elseif (event == "UNIT_AURA") then
 		OrderHall_CheckCommandBar();
 	elseif (event == "TAXIMAP_OPENED") then
-		if (TaxiFrame_ShouldShowOldStyle()) then
+		local uiMapSystem = ...;
+		if (uiMapSystem == Enum.UIMapSystem.Taxi) then
 			ShowUIPanel(TaxiFrame);
 		else
 			if (not FlightMapFrame) then
@@ -1996,6 +2001,11 @@ function UIParent_OnEvent(self, event, ...)
 		local raceID = ...;
 		AlliedRacesFrame:LoadRaceData(raceID);
 		ShowUIPanel(AlliedRacesFrame);
+	elseif (event == "ISLAND_COMPLETED") then 
+		IslandsPartyPose_LoadUI(); 
+		local mapID, questID, winner = ...; 
+		IslandsPartyPoseFrame:LoadScreenData(mapID, questID, winner); 
+		ShowUIPanel(IslandsPartyPoseFrame); 
 	end
 end
 
@@ -2890,21 +2900,16 @@ function FramePositionDelegate:UIParentManageFramePositions()
 		end
 	end
 
-	-- Capture bars - need to move below buffs/debuffs if at least 1 right action bar is showing
-	if ( NUM_EXTENDED_UI_FRAMES ) then
-		local captureBar;
-		local numCaptureBars = 0;
-		for i=1, NUM_EXTENDED_UI_FRAMES do
-			captureBar = _G["WorldStateCaptureBar"..i];
-			if ( captureBar and captureBar:IsShown() ) then
-				numCaptureBars = numCaptureBars + 1
-				if ( numCaptureBars == 1 and rightActionBars > 0 ) then
-					anchorY = min(anchorY, buffsAnchorY);
-				end
-				captureBar:SetPoint("TOPRIGHT", MinimapCluster, "BOTTOMRIGHT", -CONTAINER_OFFSET_X, anchorY);
-				anchorY = anchorY - captureBar:GetHeight() - 4;
-			end
+	-- BelowMinimap Widgets - need to move below buffs/debuffs if at least 1 right action bar is showing
+	if UIWidgetBelowMinimapContainerFrame and UIWidgetBelowMinimapContainerFrame:GetHeight() > 0 then
+		if rightActionBars > 0 then
+			anchorY = min(anchorY, buffsAnchorY);
 		end
+
+		UIWidgetBelowMinimapContainerFrame:ClearAllPoints();
+		UIWidgetBelowMinimapContainerFrame:SetPoint("TOPRIGHT", MinimapCluster, "BOTTOMRIGHT", -CONTAINER_OFFSET_X, anchorY);
+
+		anchorY = anchorY - UIWidgetBelowMinimapContainerFrame:GetHeight() - 4;
 	end
 
 	--Setup Vehicle seat indicator offset - needs to move below buffs/debuffs if both right action bars are showing

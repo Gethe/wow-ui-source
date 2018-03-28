@@ -1,5 +1,3 @@
-MAP_CANVAS_TILE_WIDTH = 256;
-MAP_CANVAS_TILE_HEIGHT = 256;
 
 MapCanvasDetailLayerMixin = {};
 
@@ -23,17 +21,20 @@ end
 function MapCanvasDetailLayerMixin:RefreshDetailTiles()
 	self.detailTilePool:ReleaseAll();
 
-	local numDetailTilesCols, numDetailTilesRows = C_MapCanvas.GetNumDetailTiles(self.mapID, self.layerIndex);
+	local layers = C_Map.GetMapArtLayers(self.mapID);
+	local layerInfo = layers[self.layerIndex];
+	local numDetailTilesRows = math.ceil(layerInfo.layerHeight / layerInfo.tileHeight);
+	local numDetailTilesCols = math.ceil(layerInfo.layerWidth / layerInfo.tileWidth);
+	local textures = C_Map.GetMapArtLayerTextures(self.mapID, self.layerIndex);
 
 	for tileCol = 1, numDetailTilesCols do
 		for tileRow = 1, numDetailTilesRows do
-			local texturePath = C_MapCanvas.GetDetailTileInfo(self.mapID, self.layerIndex, tileCol, tileRow);
-
 			local detailTile = self.detailTilePool:Acquire();
-			detailTile:SetTexture(texturePath);
+			local textureIndex = (tileRow - 1) * numDetailTilesCols + tileCol;
+			detailTile:SetTexture(textures[textureIndex]);
 
-			local offsetX = math.floor(MAP_CANVAS_TILE_WIDTH * (tileCol - 1));
-			local offsetY = math.floor(MAP_CANVAS_TILE_HEIGHT * (tileRow - 1));
+			local offsetX = math.floor(layerInfo.tileWidth * (tileCol - 1));
+			local offsetY = math.floor(layerInfo.tileHeight * (tileRow - 1));
 
 			detailTile:ClearAllPoints();
 			detailTile:SetPoint("TOPLEFT", self, "TOPLEFT", offsetX, -offsetY);
@@ -41,12 +42,4 @@ function MapCanvasDetailLayerMixin:RefreshDetailTiles()
 			detailTile:Show();
 		end
 	end
-end
-
-function MapCanvasDetailLayer_CalculateTotalLayerSize(numDetailTilesCols, numDetailTilesRows)
-	-- The last tiles aren't fully used, we have to adjust the size slightly :(
-	local WIDTH_INSET = 175;
-	local HEIGHT_INSET = 120;
-
-	return MAP_CANVAS_TILE_WIDTH * numDetailTilesCols - WIDTH_INSET, MAP_CANVAS_TILE_HEIGHT * numDetailTilesRows - HEIGHT_INSET;
 end

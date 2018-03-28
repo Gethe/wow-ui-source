@@ -689,7 +689,7 @@ function EncounterJournal_DisplayInstance(instanceID, noButton)
 			id = instanceID,
 			name = iname,
 			OnClick = EJNAV_RefreshInstance,
-			listFunc = EJNAV_ListInstance,
+			listFunc = EJNAV_GetInstanceList,
 		}
 		NavBar_AddButton(EncounterJournal.navBar, buttonData);
 	end
@@ -823,7 +823,7 @@ function EncounterJournal_DisplayEncounter(encounterID, noButton)
 			id = encounterID,
 			name = ename,
 			OnClick = EJNAV_RefreshEncounter,
-			listFunc = EJNAV_ListEncounter,
+			listFunc = EJNAV_GetEncounterList,
 		}
 		NavBar_AddButton(EncounterJournal.navBar, buttonData);
 	end
@@ -2219,7 +2219,11 @@ function EncounterJournal_OpenJournal(difficultyID, instanceID, encounterID, sec
 	if instanceID then
 		NavBar_Reset(EncounterJournal.navBar);
 		EncounterJournal_DisplayInstance(instanceID);
-		EJ_SetDifficulty(difficultyID);
+		
+		if difficultyID then
+			EJ_SetDifficulty(difficultyID);
+		end
+		
 		if encounterID then
 			if sectionID then
 				if (EncounterJournal_CheckForOverview(sectionID)) then
@@ -2584,10 +2588,15 @@ function EJNAV_SelectInstance(self, index, navBar)
 	EncounterJournal_DisplayInstance(instanceID);
 end
 
-function EJNAV_ListInstance(self, index)
-	--local navBar = self:GetParent();
-	local _, name = EJ_GetInstanceByIndex(index, EJ_InstanceIsRaid());
-	return name, EJNAV_SelectInstance;
+function EJNAV_GetInstanceList(self)
+	local list = { };
+	local _, name = EJ_GetInstanceByIndex(1, EJ_InstanceIsRaid());
+	while name do
+		local entry = { text = name, id = #list + 1, func = EJNAV_SelectInstance };
+		tinsert(list, entry);
+		_, name = EJ_GetInstanceByIndex(#list + 1, EJ_InstanceIsRaid());
+	end
+	return list;
 end
 
 function EJNAV_RefreshEncounter()
@@ -2599,10 +2608,15 @@ function EJNAV_SelectEncounter(self, index, navBar)
 	EncounterJournal_DisplayEncounter(bossID);
 end
 
-function EJNAV_ListEncounter(self, index)
-	--local navBar = self:GetParent();
-	local name = EJ_GetEncounterInfoByIndex(index);
-	return name, EJNAV_SelectEncounter;
+function EJNAV_GetEncounterList(self)
+	local list = { };
+	local name = EJ_GetEncounterInfoByIndex(1);
+	while name do
+		local entry = { text = name, id = #list + 1, func = EJNAV_SelectEncounter };
+		tinsert(list, entry);
+		name = EJ_GetEncounterInfoByIndex(#list + 1);
+	end
+	return list;
 end
 
 -------------------------------------------------

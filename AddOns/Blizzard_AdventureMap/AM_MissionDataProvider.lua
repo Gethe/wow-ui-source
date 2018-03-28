@@ -240,7 +240,7 @@ function AdventureMap_MissionPinMixin:SetupMission(missionInfo)
 		self.StatusBackground:Hide();
 	end
 
-	if self:GetMap():IsZoomedIn() then
+	if not self:GetMap():IsAtMinZoom() then
 		if self.missionInfo.newMission then
 			self.OnNewAnim:Play();
 		elseif self.missionInfo.justCompleted then

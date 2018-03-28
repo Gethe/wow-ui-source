@@ -328,7 +328,7 @@
 												</Anchors>
 												<Scripts>
 													<OnLoad>
-														self.continent = 3;
+														self.uiMapID = WORLDMAP_OUTLAND_ID;
 													</OnLoad>
 													<OnEnter>
 														self:GetParent().OutlandHighlight:Show();
@@ -345,7 +345,7 @@
 												</Anchors>
 												<Scripts>
 													<OnLoad>
-														self.continent = 0;
+														self.uiMapID = WORLDMAP_AZEROTH_ID;
 													</OnLoad>
 													<OnEnter>
 														self:GetParent().AzerothHighlight:Show();
@@ -362,7 +362,7 @@
 												</Anchors>
 												<Scripts>
 													<OnLoad>
-														self.continent = 7;
+														self.uiMapID = WORLDMAP_DRAENOR_ID;
 														self:SetFrameLevel(OutlandButton:GetFrameLevel()+1);
 													</OnLoad>
 													<OnEnter>
@@ -372,63 +372,14 @@
 														self:GetParent().DraenorHighlight:Hide();
 													</OnLeave>
 												</Scripts>
-											</Button>
-											<Button name="TheMaelstromButton" inherits="WorldMapMaelstromButtonTemplate" text="TheMaelstrom">
-												<Size x="120" y="120"/>
-												<Anchors>
-													<Anchor point="TOPLEFT" x="305" y="-140"/>
-												</Anchors>
-												<HighlightTexture name="$parentHighlight" file="Interface\WorldMap\TheMaelstrom\TheMaelstromHighlight" alphaMode="ADD">
-													<Size x="128" y="128"/>
-													<Anchors>
-														<Anchor point="CENTER" x="0" y="-2"/>
-													</Anchors>
-												</HighlightTexture>
-											</Button>
-											<Button name="DeepholmButton" inherits="WorldMapMaelstromButtonTemplate" text="Deepholm">
-												<Size x="120" y="120"/>
-												<Anchors>
-													<Anchor point="TOPLEFT" x="450" y="-130"/>
-												</Anchors>
-												<HighlightTexture name="$parentHighlight" file="Interface\WorldMap\Deepholm\DeepholmHighlight" alphaMode="ADD">
-													<Size x="160" y="160"/>
-													<Anchors>
-														<Anchor point="CENTER" x="5" y="-20"/>
-													</Anchors>
-												</HighlightTexture>
-											</Button>
-											<Button name="KezanButton" inherits="WorldMapMaelstromButtonTemplate" text="Kezan">
-												<Size x="254" y="240"/>
-												<Anchors>
-													<Anchor point="TOPLEFT" x="236" y="-380"/>
-												</Anchors>
-												<HighlightTexture name="$parentHighlight" file="Interface\WorldMap\Kezan\KezanHighlight" alphaMode="ADD">
-													<Size x="360" y="360"/>
-													<Anchors>
-														<Anchor point="CENTER" x="-5" y="-65"/>
-													</Anchors>
-												</HighlightTexture>
-											</Button>
-											<Button name="LostIslesButton" inherits="WorldMapMaelstromButtonTemplate" text="TheLostIsles">
-												<Size x="152" y="180"/>
-												<Anchors>
-													<Anchor point="TOPLEFT" x="75" y="-266"/>
-												</Anchors>
-												<HighlightTexture name="$parentHighlight" file="Interface\WorldMap\TheLostIsles\TheLostIslesHighlight" alphaMode="ADD">
-													<Size x="250" y="250"/>
-													<Anchors>
-														<Anchor point="CENTER" x="5" y="-40"/>
-													</Anchors>
-												</HighlightTexture>
-											</Button>
-											
+											</Button>									
 											<Button name="KrokuunButton" inherits="WorldMapFakeButtonTemplate">
 												<Size x="270" y="160"/>
 												<Anchors>
 													<Anchor point="BOTTOMRIGHT" x="-270" y="140"/>
 												</Anchors>
 												<KeyValues>
-													<KeyValue key="zoneID" value="1135" type="number"/>
+													<KeyValue key="uiMapID" value="830" type="number"/>
 												</KeyValues>
 												<Scripts>
 													<OnLoad>
@@ -447,7 +398,7 @@
 													<Anchor point="TOPRIGHT" x="-280" y="-120"/>
 												</Anchors>
 												<KeyValues>
-													<KeyValue key="zoneID" value="1170" type="number"/>
+													<KeyValue key="uiMapID" value="882" type="number"/>
 												</KeyValues>
 												<Scripts>
 													<OnLoad>
@@ -466,7 +417,7 @@
 													<Anchor point="BOTTOMLEFT" x="220" y="190"/>
 												</Anchors>
 												<KeyValues>
-													<KeyValue key="zoneID" value="1171" type="number"/>
+													<KeyValue key="uiMapID" value="885" type="number"/>
 												</KeyValues>
 												<Scripts>
 													<OnLoad>
@@ -486,7 +437,7 @@
 													<Anchor point="TOPRIGHT" x="0" y="0"/>
 												</Anchors>
 												<KeyValues>
-													<KeyValue key="continent" value="9" type="number"/>
+													<KeyValue key="uiMapID" value="905" type="number"/>
 												</KeyValues>
 												<Scripts>
 													<OnLoad>

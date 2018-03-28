@@ -35,10 +35,6 @@ function TaxiFrame_OnLoad(self)
 	self.InsetBg:SetVertTile(false);
 end
 
-function TaxiFrame_ShouldShowOldStyle()
-	return GetTaxiMapID() ~= 1007 and GetTaxiMapID() ~= 1184; -- Broken Isles/Argus
-end
-
 function TaxiFrame_OnShow(self)
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
 
@@ -68,7 +64,7 @@ function TaxiFrame_OnShow(self)
 			numValidFlightNodes = numValidFlightNodes + 1;
 			local x, y = TaxiNodePosition(button:GetID());
 			local currX = x*TAXI_MAP_WIDTH;
-			local currY = y*TAXI_MAP_HEIGHT;
+			local currY = (1.0-y)*TAXI_MAP_HEIGHT;
 			taxiNodePositions[index].x = currX;
 			taxiNodePositions[index].y = currY;
 			-- check if we are obscuring a previous placement (eg: Ebon Hold and Light's Hope Chapel)

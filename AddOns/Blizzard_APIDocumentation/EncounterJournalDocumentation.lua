@@ -7,12 +7,12 @@ local EncounterJournal =
 	Functions =
 	{
 		{
-			Name = "GetCurrentMapEncounters",
+			Name = "GetEncountersOnMap",
 			Type = "Function",
 
 			Arguments =
 			{
-				{ Name = "fromJournal", Type = "bool", Nilable = false, Default = false },
+				{ Name = "uiMapID", Type = "number", Nilable = false },
 			},
 
 			Returns =

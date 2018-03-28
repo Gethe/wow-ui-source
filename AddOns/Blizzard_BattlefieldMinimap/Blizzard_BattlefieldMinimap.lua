@@ -114,40 +114,11 @@ end
 
 function BattlefieldMinimap_Update()
 	-- Fill in map tiles
-	local mapFileName, textureHeight, _, isMicroDungeon, microDungeonMapName = GetMapInfo();
-	if (isMicroDungeon and (not microDungeonMapName or microDungeonMapName == "")) then
-		return;
-	end
+	local mapID = C_Map.GetCurrentMapID();
 
-	if ( not mapFileName ) then
-		if ( GetCurrentMapContinent() == WORLDMAP_COSMIC_ID ) then
-			mapFileName = "Cosmic";
-		else
-			-- Temporary Hack (copy of a "temporary" 6 year hack)
-			mapFileName = "World";
-		end
-	end
-	local texName;
-	local dungeonLevel = GetCurrentMapDungeonLevel();
-	if (DungeonUsesTerrainMap()) then
-		dungeonLevel = dungeonLevel - 1;
-	end
-
-	local path;
-	if (not isMicroDungeon) then
-		path = "Interface\\WorldMap\\"..mapFileName.."\\"..mapFileName;
-	else
-		path = "Interface\\WorldMap\\MicroDungeon\\"..mapFileName.."\\"..microDungeonMapName.."\\"..microDungeonMapName;
-	end
-
-	if ( dungeonLevel > 0 ) then
-		path = path..dungeonLevel.."_";
-	end
-
-	local numDetailTiles = GetNumberOfDetailTiles();
-	for i=1, numDetailTiles do
-		texName = path..i;
-		_G["BattlefieldMinimap"..i]:SetTexture(texName);
+	local textures = C_Map.GetMapArtLayerTextures(mapID, 1);
+	for i, texture in ipairs(textures) do
+		_G["BattlefieldMinimap"..i]:SetTexture(texture);
 	end
 
 	-- Setup the POI's
@@ -187,8 +158,8 @@ function BattlefieldMinimap_Update()
 	-- Use this value to scale the texture sizes and offsets
 	local battlefieldMinimapScale = BattlefieldMinimap1:GetWidth()/256;
 	for i=1, numOverlays do
-		local textureName, textureWidth, textureHeight, offsetX, offsetY, isShownByMouseOver = GetMapOverlayInfo(i);
-		if (textureName ~= "" or textureWidth == 0 or textureHeight == 0) then
+		local textureWidth, textureHeight, offsetX, offsetY, isShownByMouseOver, textureInfo = GetMapOverlayInfo(i);
+		if (textureInfo) then
 			local numTexturesWide = ceil(textureWidth/256);
 			local numTexturesTall = ceil(textureHeight/256);
 			local neededTextures = textureCount + (numTexturesWide * numTexturesTall);
@@ -234,7 +205,7 @@ function BattlefieldMinimap_Update()
 					texture:SetHeight(texturePixelHeight*battlefieldMinimapScale);
 					texture:SetTexCoord(0, texturePixelWidth/textureFileWidth, 0, texturePixelHeight/textureFileHeight);
 					texture:SetPoint("TOPLEFT", "BattlefieldMinimap", "TOPLEFT", (offsetX + (256 * (k-1)))*battlefieldMinimapScale, -((offsetY + (256 * (j - 1)))*battlefieldMinimapScale));
-					texture:SetTexture(textureName..(((j - 1) * numTexturesWide) + k));
+					texture:SetTexture(textureInfo[((j - 1) * numTexturesWide) + k]);
 					texture:SetAlpha(1 - ( BattlefieldMinimapOptions.opacity or 0 ));
 
 					if isShownByMouseOver == true then
@@ -365,7 +336,7 @@ function BattlefieldMinimap_OnUpdate(self, elapsed)
 				BG_VEHICLES[i].texture:SetTexture(WorldMap_GetVehicleTexture(vehicleType, isPossessed));
 				BG_VEHICLES[i].texture:SetRotation( orientation );
 				BG_VEHICLES[i]:SetPoint("CENTER", "BattlefieldMinimap", "TOPLEFT", vehicleX, vehicleY);
-				if ( VEHICLE_TEXTURES[vehicleType] and VEHICLE_TEXTURES[vehicleType].belowPlayerBlips ) then
+				if ( VehicleUtil.IsValidVehicleType(vehicleType) and VehicleUtil.GetVehicleInfo(vehicleType):ShouldDrawBelowPlayerBlips() ) then
 					BG_VEHICLES[i]:SetFrameLevel(playerBlipFrameLevel - 1);
 				else
 					BG_VEHICLES[i]:SetFrameLevel(playerBlipFrameLevel + 1);

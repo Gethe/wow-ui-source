@@ -470,11 +470,15 @@ LOOTWONALERTFRAME_VALUES={
 function LootWonAlertFrame_SetUp(self, itemLink, quantity, rollType, roll, specID, isCurrency, showFactionBG, lootSource, lessAwesome, isUpgraded, wonRoll, showRatedBG)
 	local itemName, itemHyperLink, itemRarity, itemTexture, _;
 	if (isCurrency) then
+		local currencyID = C_CurrencyInfo.GetCurrencyIDFromLink(itemLink); 
 		itemName, _, itemTexture, _, _, _, _, itemRarity = GetCurrencyInfo(itemLink);
+		itemName, itemTexture, quantity, itemRarity = CurrencyContainerUtil.GetCurrencyContainerInfo(currencyID, quantity, itemName, itemTexture, itemRarity); 
 		if ( lootSource == LOOT_SOURCE_GARRISON_CACHE ) then
 			itemName = format(GARRISON_RESOURCES_LOOT, quantity);
 		else
-			itemName = format(CURRENCY_QUANTITY_TEMPLATE, quantity, itemName);
+			if (quantity > 1) then 
+				itemName = format(CURRENCY_QUANTITY_TEMPLATE, quantity, itemName);
+			end
 		end
 		itemHyperLink = itemLink;
 	else

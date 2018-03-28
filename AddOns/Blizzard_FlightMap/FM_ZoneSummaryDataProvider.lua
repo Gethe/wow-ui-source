@@ -26,24 +26,18 @@ end
 function FlightMap_ZoneSummaryDataProvider:GatherWorldQuests()
 	self.worldQuestsByZone = {};
 
-	local mapAreaID = self:GetMap():GetMapID();
-	for zoneIndex = 1, C_MapCanvas.GetNumZones(mapAreaID) do
-		local zoneMapID, zoneName, zoneDepth, left, right, top, bottom = C_MapCanvas.GetZoneInfo(mapAreaID, zoneIndex);
-		if zoneDepth <= 1 then -- Exclude subzones
-			local taskInfo = C_TaskQuest.GetQuestsForPlayerByMapID(zoneMapID, mapAreaID, self:GetTransformFlags());
-
-			if taskInfo then
-				for i, info in ipairs(taskInfo) do
-					if HaveQuestData(info.questId) then
-						if QuestUtils_IsQuestWorldQuest(info.questId) and WorldMap_DoesWorldQuestInfoPassFilters(info) then
-							if not self.worldQuestsByZone[zoneMapID] then
-								self.worldQuestsByZone[zoneMapID] = {};
-							end
-							table.insert(self.worldQuestsByZone[zoneMapID], info);
-
-							C_TaskQuest.RequestPreloadRewardData(info.questId);
-						end
+	local mapID = self:GetMap():GetMapID();
+	local taskInfo = C_TaskQuest.GetQuestsForPlayerByMapID(mapID);
+	if taskInfo then
+		for i, info in ipairs(taskInfo) do
+			if HaveQuestData(info.questId) then
+				if QuestUtils_IsQuestWorldQuest(info.questId) and WorldMap_DoesWorldQuestInfoPassFilters(info) then
+					if not self.worldQuestsByZone[info.mapID] then
+						self.worldQuestsByZone[info.mapID] = {};
 					end
+					table.insert(self.worldQuestsByZone[info.mapID], info);
+
+					C_TaskQuest.RequestPreloadRewardData(info.questId);
 				end
 			end
 		end
@@ -51,19 +45,16 @@ function FlightMap_ZoneSummaryDataProvider:GatherWorldQuests()
 end
 
 function FlightMap_ZoneSummaryDataProvider:CheckMouse()
-	if self:GetMap():IsZoomedOut() and self:GetMap():GetMapID() and self:GetMap():IsCanvasMouseFocus() and (not GameTooltip:GetOwner() or GameTooltip:GetOwner() == self:GetMap()) then
-		local mapAreaID = self:GetMap():GetMapID();
+	if not self:GetMap():IsAtMaxZoom() and self:GetMap():GetMapID() and self:GetMap():IsCanvasMouseFocus() and (not GameTooltip:GetOwner() or GameTooltip:GetOwner() == self:GetMap()) then
+		local mapID = self:GetMap():GetMapID();
 		local mouseX, mouseY = self:GetMap():GetNormalizedCursorPosition();
-		local zoneMapID = C_MapCanvas.FindZoneAtPosition(mapAreaID, mouseX, mouseY);
+		local mapInfo = C_Map.GetMapInfoAtPosition(mapID, mouseX, mouseY);
 
-		if zoneMapID then
-			local zoneName, zoneDepth, left, right, top, bottom = C_MapCanvas.GetZoneInfoByID(mapAreaID, zoneMapID);
-
+		if mapInfo and mapInfo.mapID ~= mapID then
 			GameTooltip:SetOwner(self:GetMap(), "ANCHOR_CURSOR_RIGHT", 30);
+			GameTooltip:SetText(mapInfo.name);
 
-			GameTooltip:SetText(zoneName);
-
-			local worldQuests = self.worldQuestsByZone[zoneMapID];
+			local worldQuests = self.worldQuestsByZone[mapInfo.mapID];
 			if worldQuests then
 				GameTooltip:AddLine(FLIGHT_MAP_WORLD_QUESTS:format(#worldQuests), HIGHLIGHT_FONT_COLOR:GetRGB());
 				GameTooltip:AddLine(" ");

@@ -486,11 +486,11 @@ function BonusObjectiveTracker_ShowRewardsTooltip(block)
 
 			local mapID, zoneMapID = C_TaskQuest.GetQuestZoneID(questID)
 			if (mapID and zoneMapID) then
-				local name = C_MapCanvas.GetZoneInfoByID(mapID, zoneMapID);
+				local mapInfo = C_Map.GetMapInfo(zoneMapID);
 
-				if (name) then
+				if (mapInfo) then
 					GameTooltipTextLeft1:SetFontObject(GameTooltipText);
-					GameTooltip:SetText(name, 0.4, 0.733, 1.0);
+					GameTooltip:SetText(mapInfo.name, 0.4, 0.733, 1.0);
 					needsSpacer = true;
 					headerLine = headerLine + 1;
 

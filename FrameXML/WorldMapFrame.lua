@@ -7,14 +7,24 @@ NUM_WORLDMAP_GRAVEYARDS = 0;
 NUM_WORLDMAP_OVERLAYS = 0;
 NUM_WORLDMAP_DEBUG_ZONEMAP = 0;
 NUM_WORLDMAP_DEBUG_OBJECTS = 0;
-WORLDMAP_COSMIC_ID = -1;
-WORLDMAP_COSMIC_MAP_AREA_ID = -1;
-WORLDMAP_AZEROTH_ID = 0;
-WORLDMAP_OUTLAND_ID = 3;
-WORLDMAP_MAELSTROM_ID = 5;
-WORLDMAP_DRAENOR_ID = 7;
-WORLDMAP_BROKEN_ISLES_ID = 8;
-WORLDMAP_ARGUS_ID = 9;
+
+-- MAPREFACTORTODO - define this enum in the new best practice way.. for now copied from statconstants.h, +1 for lua
+UI_MAP_TYPE_COSMIC    = 1;
+UI_MAP_TYPE_WORLD     = 2;
+UI_MAP_TYPE_CONTINENT = 3;
+UI_MAP_TYPE_ZONE      = 4;
+UI_MAP_TYPE_DUNGEON   = 5;
+UI_MAP_TYPE_MICRO     = 6;
+UI_MAP_TYPE_ORPHAN    = 7;
+NUM_UI_MAP_TYPES      = 8;
+
+WORLDMAP_COSMIC_ID = 946;
+WORLDMAP_AZEROTH_ID = 947;
+WORLDMAP_OUTLAND_ID = 101;
+WORLDMAP_DRAENOR_ID = 572;
+WORLDMAP_BROKEN_ISLES_ID = 619;
+WORLDMAP_ARGUS_ID = 905;
+
 MAELSTROM_ZONES_ID = { TheMaelstrom = 737, Deepholm = 640, Kezan = 605, TheLostIsles = 544 };
 MAELSTROM_ZONES_LEVELS = {
 				TheMaelstrom = {minLevel = 0, maxLevel = 0},
@@ -57,132 +67,6 @@ BAD_BOY_COUNT = 0;
 local STORYLINE_FRAMES = { };
 
 MAP_VEHICLES = {};
-VEHICLE_TEXTURES = {};
-VEHICLE_TEXTURES["Drive"] = {
-	"Interface\\Minimap\\Vehicle-Ground-Unoccupied",
-	"Interface\\Minimap\\Vehicle-Ground-Occupied",
-	width=45,
-	height=45,
-};
-VEHICLE_TEXTURES["Fly"] = {
-	"Interface\\Minimap\\Vehicle-Air-Unoccupied",
-	"Interface\\Minimap\\Vehicle-Air-Occupied",
-	width=45,
-	height=45,
-};
-VEHICLE_TEXTURES["Airship Horde"] = {
-	"Interface\\Minimap\\Vehicle-Air-Horde",
-	"Interface\\Minimap\\Vehicle-Air-Horde",
-	width=64,
-	height=64,
-};
-VEHICLE_TEXTURES["Airship Alliance"] = {
-	"Interface\\Minimap\\Vehicle-Air-Alliance",
-	"Interface\\Minimap\\Vehicle-Air-Alliance",
-	width=64,
-	height=64,
-};
-VEHICLE_TEXTURES["Carriage"] = {
-	"Interface\\Minimap\\Vehicle-Carriage",
-	"Interface\\Minimap\\Vehicle-Carriage",
-	width=64,
-	height=64,
-};
-VEHICLE_TEXTURES["Mogu"] = {
-	"Interface\\Minimap\\Vehicle-Mogu",
-	"Interface\\Minimap\\Vehicle-Mogu",
-	width=64,
-	height=64,
-};
-VEHICLE_TEXTURES["Grummle Convoy"] = {
-	"Interface\\Minimap\\Vehicle-GrummleConvoy",
-	"Interface\\Minimap\\Vehicle-GrummleConvoy",
-	width=64,
-	height=64,
-};
-VEHICLE_TEXTURES["Minecart"] = {
-	"Interface\\Minimap\\Vehicle-SilvershardMines-MineCart",
-	"Interface\\Minimap\\Vehicle-SilvershardMines-MineCart",
-	width=64,
-	height=64,
-	belowPlayerBlips = true,
-};
-VEHICLE_TEXTURES["Minecart Red"] = {
-	"Interface\\Minimap\\Vehicle-SilvershardMines-MineCartRed",
-	"Interface\\Minimap\\Vehicle-SilvershardMines-MineCartRed",
-	width=64,
-	height=64,
-	belowPlayerBlips = true,
-};
-VEHICLE_TEXTURES["Minecart Blue"] = {
-	"Interface\\Minimap\\Vehicle-SilvershardMines-MineCartBlue",
-	"Interface\\Minimap\\Vehicle-SilvershardMines-MineCartBlue",
-	width=64,
-	height=64,
-	belowPlayerBlips = true,
-};
-VEHICLE_TEXTURES["Arrow"] = {
-	"Interface\\Minimap\\Vehicle-SilvershardMines-Arrow",
-	"Interface\\Minimap\\Vehicle-SilvershardMines-Arrow",
-	width=64,
-	height=64,
-};
-VEHICLE_TEXTURES["Trap Gold"] = {
-	"Interface\\Minimap\\Vehicle-Trap-Gold",
-	"Interface\\Minimap\\Vehicle-Trap-Gold",
-	width=32,
-	height=32,
-};
-VEHICLE_TEXTURES["Trap Grey"] = {
-	"Interface\\Minimap\\Vehicle-Trap-Grey",
-	"Interface\\Minimap\\Vehicle-Trap-Grey",
-	width=32,
-	height=32,
-};
-VEHICLE_TEXTURES["Trap Red"] = {
-	"Interface\\Minimap\\Vehicle-Trap-Red",
-	"Interface\\Minimap\\Vehicle-Trap-Red",
-	width=32,
-	height=32,
-};
-VEHICLE_TEXTURES["Hammer Gold 0"] = {
-	"Interface\\Minimap\\Vehicle-HammerGold",
-	"Interface\\Minimap\\Vehicle-HammerGold",
-	width=32,
-	height=32,
-};
-VEHICLE_TEXTURES["Hammer Gold 1"] = {
-	"Interface\\Minimap\\Vehicle-HammerGold-1",
-	"Interface\\Minimap\\Vehicle-HammerGold-1",
-	width=32,
-	height=32,
-};
-VEHICLE_TEXTURES["Hammer Gold 2"] = {
-	"Interface\\Minimap\\Vehicle-HammerGold-2",
-	"Interface\\Minimap\\Vehicle-HammerGold-2",
-	width=32,
-	height=32,
-};
-VEHICLE_TEXTURES["Hammer Gold 3"] = {
-	"Interface\\Minimap\\Vehicle-HammerGold-3",
-	"Interface\\Minimap\\Vehicle-HammerGold-3",
-	width=32,
-	height=32,
-};
-VEHICLE_TEXTURES["Cart Horde"] = {
-	"Interface\\Minimap\\Vehicle-HordeCart",
-	"Interface\\Minimap\\Vehicle-HordeCart",
-	width=32,
-	height=32,
-	belowPlayerBlips = true,
-};
-VEHICLE_TEXTURES["Cart Alliance"] = {
-	"Interface\\Minimap\\Vehicle-AllianceCart",
-	"Interface\\Minimap\\Vehicle-AllianceCart",
-	width=32,
-	height=32,
-	belowPlayerBlips = true,
-};
 
 WORLDMAP_DEBUG_ICON_INFO = {};
 WORLDMAP_DEBUG_ICON_INFO[1] = { size =  6, r = 0.0, g = 1.0, b = 0.0 };
@@ -306,7 +190,7 @@ function WorldMapFrame_OnLoad(self)
 	self.areaName = nil;
 
 	-- RE: Bug ID: 345647 - Texture errors occur after entering the Nexus and relogging.
-	-- The correct GetMapInfo() data is not yet available here, so don't try preloading incorrect map textures.
+	-- The correct GetUIMapInfo() data is not yet available here, so don't try preloading incorrect map textures.
 	--WorldMapFrame_Update();
 
 	--[[ Hide the world behind the map when we're in widescreen mode
@@ -327,10 +211,8 @@ function WorldMapFrame_OnLoad(self)
 
 	local homeData = {
 		name = WORLD,
-		OnClick = WorldMapNavBar_OnButtonSelect,
-		listFunc = WorldMapNavBar_GetSibling,
+		OnClick = WorldMapNavBar_OnButtonClick,
 		id = WORLDMAP_COSMIC_ID,
-		isContinent = true,
 	}
 	NavBar_Initialize(self.NavBar, "NavButtonTemplate", homeData, self.navBar.home, self.navBar.overflow);
 
@@ -424,13 +306,11 @@ function WorldMapFrame_OnHide(self)
 	end
 	-- forces WatchFrame event via the WORLD_MAP_UPDATE event, needed to restore the POIs in the tracker to the current zone
 	if (not WorldMapFrame.toggling) then
-		WorldMapFrame.fromJournal = false;
 		WorldMapFrame.hasBosses = false;
 		SetMapToCurrentZone();
 	end
 	CancelEmote();
 	self.mapID = nil;
-	self.continentID = nil;
 	self.dungeonLevel = nil;
 
 	self.AnimAlphaOut:Stop();
@@ -453,29 +333,15 @@ function WorldMapFrame_OnEvent(self, event, ...)
 			HideUIPanel(WorldMapFrame);
 		end
 	elseif ( event == "WORLD_MAP_UPDATE" or event == "REQUEST_CEMETERY_LIST_RESPONSE" or event == "QUESTLINE_UPDATE" or event == "MINIMAP_UPDATE_TRACKING" ) then
-		local mapID = GetCurrentMapAreaID();
-		local continentID = GetCurrentMapContinent();
-		local dungeonLevel = GetCurrentMapDungeonLevel();
+		local mapID = C_Map.GetCurrentMapID();
+
+		WorldMapBlobFrame:SetMapID(mapID);
+		ScenarioPOIFrame:SetMapID(mapID);
 
 		if ( not self.blockWorldMapUpdate and self:IsShown() ) then
 			-- if we are exiting a micro dungeon we should update the world map
-			if (event == "REQUEST_CEMETERY_LIST_RESPONSE") then
-				local _, _, _, isMicroDungeon = GetMapInfo();
-				if (isMicroDungeon) then
-					SetMapToCurrentZone();
-				end
-			end
-
-			local continentMatch = self.continentID == continentID;
-			local mapMatch = self.mapID == mapID;
-			local dungeonLevelMatch = self.dungeonLevel == dungeonLevel;
-			local skipDropDownUpdate = continentMatch and mapMatch and dungeonLevelMatch;
-
-			WorldMapFrame_UpdateMap(skipDropDownUpdate);
+			WorldMapFrame_UpdateMap(mapID == self.mapID);
 		end
-
-		self.continentID = continentID;
-
 		if ( event == "WORLD_MAP_UPDATE" ) then
 			if ( self:IsShown() ) then
 				if ( mapID ~= self.mapID) then
@@ -488,15 +354,14 @@ function WorldMapFrame_OnEvent(self, event, ...)
 						WorldMapUnitPositionFrame:StartPlayerPing(2, .25);
 					end
 				end
-				self.dungeonLevel = dungeonLevel;
 			end
-			if ( QuestMapFrame.DetailsFrame.questMapID and QuestMapFrame.DetailsFrame.questMapID ~= GetCurrentMapAreaID() ) then
+			if ( QuestMapFrame.DetailsFrame.questMapID and QuestMapFrame.DetailsFrame.questMapID ~= mapID ) then
 				QuestMapFrame_CloseQuestDetails(self);
 			else
 				QuestMapFrame_UpdateAll();
 			end
 			if ( WorldMapScrollFrame.zoomedIn ) then
-				if ( WorldMapScrollFrame.continent ~= GetCurrentMapContinent() or WorldMapScrollFrame.mapID ~= GetCurrentMapAreaID() ) then
+				if ( WorldMapScrollFrame.continent ~= GetCurrentMapContinent() or WorldMapScrollFrame.mapID ~= mapID ) then
 					WorldMapScrollFrame_ResetZoom();
 				end
 			end
@@ -553,12 +418,9 @@ end
 
 function WorldMapFrame_OnUserChangedSuperTrackedQuest(questID)
 	if ( WorldMapFrame:IsShown() ) then
-		local mapID, floorNumber = GetQuestWorldMapAreaID(questID);
+		local mapID = GetQuestUiMapID(questID);
 		if ( mapID ~= 0 ) then
 			SetMapByID(mapID);
-			if ( floorNumber ~= 0 ) then
-				SetDungeonMapLevel(floorNumber);
-			end
 		end
 	end
 end
@@ -969,6 +831,14 @@ function WorldMap_GetActiveTaskPOIForQuestID(questID)
 	end
 end
 
+function WorldMap_ShouldShowTask(mapID, info)
+	if (mapID == info.mapID) then
+		return true;
+	else
+		return false;
+	end
+end
+
 function WorldMap_UpdateQuestBonusObjectives()
 	local showOnlyInvasionWorldQuests = false;
 	if ( QuestMapFrame.DetailsFrame.questID ) then
@@ -984,26 +854,18 @@ function WorldMap_UpdateQuestBonusObjectives()
 		end
 	end
 
-	local mapAreaID = GetCurrentMapAreaID();
-	local taskInfo = C_TaskQuest.GetQuestsForPlayerByMapID(mapAreaID);
+	local mapID = C_Map.GetCurrentMapID();
+	local taskInfo = C_TaskQuest.GetQuestsForPlayerByMapID(mapID, mapID);
 	local numTaskPOIs = 0;
 	if(taskInfo ~= nil) then
 		numTaskPOIs = #taskInfo;
-	end
-
-	--Ensure the button pool is big enough for all the world effect POI's
-	if ( NUM_WORLDMAP_TASK_POIS < numTaskPOIs ) then
-		for i=NUM_WORLDMAP_TASK_POIS+1, numTaskPOIs do
-			WorldMap_GetOrCreateTaskPOI(i);
-		end
-		NUM_WORLDMAP_TASK_POIS = numTaskPOIs;
 	end
 
 	local taskIconIndex = 1;
 	local worldQuestPOIs = {};
 	if ( numTaskPOIs > 0 ) then
 		for i, info  in ipairs(taskInfo) do
-			if ( HaveQuestData(info.questId) ) then
+			if ( WorldMap_ShouldShowTask(mapID, info) and HaveQuestData(info.questId) ) then
 				local taskPOI;
 				local isWorldQuest = QuestUtils_IsQuestWorldQuest(info.questId);
 				if ( isWorldQuest ) then
@@ -1066,45 +928,13 @@ function WorldMap_DrawWorldEffects()
 	-----------------------------------------------------------------
 	-- Draw quest POI world effects
 	-----------------------------------------------------------------
-	-- local numPOIWorldEffects = GetNumQuestPOIWorldEffects();
-
-	-- --Ensure the button pool is big enough for all the world effect POI's
-	-- if ( NUM_WORLDMAP_WORLDEFFECT_POIS < numPOIWorldEffects ) then
-		-- for i=NUM_WORLDMAP_WORLDEFFECT_POIS+1, numPOIWorldEffects do
-			-- WorldMap_CreateWorldEffectPOI(i);
-		-- end
-		-- NUM_WORLDMAP_WORLDEFFECT_POIS = numPOIWorldEffects;
-	-- end
-
-	-- -- Process every button in the world event POI pool
-	-- for i=1,NUM_WORLDMAP_WORLDEFFECT_POIS do
-
-		-- local worldEventPOIName = "WorldMapFrameWorldEffectPOI"..i;
-		-- local worldEventPOI = _G[worldEventPOIName];
-
-		-- -- Draw if used
-		-- if ( (i <= numPOIWorldEffects) and (WatchFrame.showObjectives == true)) then
-			-- local name, textureIndex, x, y  = GetQuestPOIWorldEffectInfo(i);
-			-- if (textureIndex) then -- could be outside this map
-				-- local x1, x2, y1, y2 = GetObjectIconTextureCoords(textureIndex);
-				-- _G[worldEventPOIName.."Texture"]:SetTexCoord(x1, x2, y1, y2);
-				-- WorldMapPOIFrame_AnchorPOI(worldEventPOI, x, y);
-				-- worldEventPOI.name = worldEventPOIName;
-				-- worldEventPOI:Show();
-				-- WorldEffectPOITooltips[worldEventPOIName] = name;
-			-- else
-				-- worldEventPOI:Hide();
-			-- end
-		-- else
-			-- -- Hide if unused
-			-- worldEventPOI:Hide();
-		-- end
-	-- end
+	-- Removed by DWilliams 11/9/2017 - disabled since 6/7/2012 see rev 370983 for last version
 
 	-----------------------------------------------------------------
 	-- Draw scenario POIs
 	-----------------------------------------------------------------
-	local scenarioIconInfo = C_Scenario.GetScenarioIconInfo();
+	local mapID = C_Map.GetCurrentMapID();
+	local scenarioIconInfo = C_Scenario.GetScenarioIconInfo(mapID);
 	local numScenarioPOIs = 0;
 	if(scenarioIconInfo ~= nil) then
 		numScenarioPOIs = #scenarioIconInfo;
@@ -1192,7 +1022,7 @@ function WorldMap_GetFrameLevelForLandmark(landmarkType)
 end
 
 function WorldMap_DoesCurrentMapHideMapIcons(mapID)
-	local isArgusContinent = GetCurrentMapAreaID() == 1184;
+	local isArgusContinent = C_Map.GetCurrentMapID() == 1184;
 	return isArgusContinent;
 end
 
@@ -1216,11 +1046,11 @@ function WorldMap_UpdateLandmarks()
 	end
 	local numGraveyards = 0;
 	local currentGraveyard = GetCemeteryPreference();
-	local mapID = GetCurrentMapAreaID();
+	local mapID = C_Map.GetCurrentMapID();
 	WorldMapFrame_ClearAreaLabel(WORLDMAP_AREA_LABEL_TYPE.AREA_POI_BANNER);
 	WorldMapAreaPOIBannerOverlay:Hide();
 
-	if WorldMapFrame.mapLinkPingInfo and GetCurrentMapAreaID() ~= WorldMapFrame.mapLinkPingInfo.mapID then
+	if WorldMapFrame.mapLinkPingInfo and mapID ~= WorldMapFrame.mapLinkPingInfo.mapID then
 		WorldMapFrame.mapLinkPingInfo = nil;
 	end
 
@@ -1228,7 +1058,7 @@ function WorldMap_UpdateLandmarks()
 		local worldMapPOIName = "WorldMapFramePOI"..i;
 		local worldMapPOI = _G[worldMapPOIName];
 		if ( i <= numPOIs ) then
-			local landmarkType, name, description, textureIndex, x, y, mapLinkID, inBattleMap, graveyardID, areaID, poiID, isObjectIcon, atlasIcon, displayAsBanner, mapFloor, textureKitPrefix, useMouseOverTooltip = C_WorldMap.GetMapLandmarkInfo(i);
+			local landmarkType, name, description, textureIndex, x, y, mapLinkID, inBattleMap, graveyardID, areaID, poiID, isObjectIcon, atlasIcon, displayAsBanner, textureKitPrefix, useMouseOverTooltip = C_WorldMap.GetMapLandmarkInfo(i);
 			if( not WorldMap_ShouldShowLandmark(landmarkType) or (mapID ~= WORLDMAP_WINTERGRASP_ID and areaID == WORLDMAP_WINTERGRASP_POI_AREAID) or displayAsBanner ) then
 				worldMapPOI:Hide();
 			else
@@ -1255,7 +1085,6 @@ function WorldMap_UpdateLandmarks()
 					worldMapPOI.name = name;
 					worldMapPOI.description = description;
 					worldMapPOI.mapLinkID = mapLinkID;
-					worldMapPOI.mapFloor = mapFloor;
 					worldMapPOI.poiID = poiID;
 					worldMapPOI.landmarkType = landmarkType;
 					worldMapPOI.textureKitPrefix = textureKitPrefix;
@@ -1279,7 +1108,7 @@ function WorldMap_UpdateLandmarks()
 					worldMapPOI:Show();
 
 					local pingInfo = WorldMapFrame.mapLinkPingInfo;
-					if pingInfo and landmarkType == LE_MAP_LANDMARK_TYPE_MAP_LINK and mapFloor == pingInfo.floorIndex then
+					if pingInfo and landmarkType == LE_MAP_LANDMARK_TYPE_MAP_LINK then
 						WorldMapPing_StartPingPOI(worldMapPOI);
 					end
 				end
@@ -1332,53 +1161,18 @@ function WorldMap_UpdateLandmarks()
 end
 
 function WorldMapFrame_Update()
-	local mapName, textureHeight, _, isMicroDungeon, microDungeonMapName = GetMapInfo();
-	if (isMicroDungeon and (not microDungeonMapName or microDungeonMapName == "")) then
-		return;
-	end
-
-	if ( not mapName ) then
-		if ( GetCurrentMapContinent() == WORLDMAP_COSMIC_ID ) then
-			mapName = "Cosmic";
-		else
-			-- Temporary Hack (Temporary meaning 14 yrs, haha)
-			mapName = "World";
-		end
-	end
+	local mapID = C_Map.GetCurrentMapID();
+	local mapInfo = C_Map.GetMapInfo(mapID);
 
 	WorldMapFrame_UpdateCosmicButtons();
-
-	local dungeonLevel = GetCurrentMapDungeonLevel();
-	if (DungeonUsesTerrainMap()) then
-		dungeonLevel = dungeonLevel - 1;
-	end
 
 	local mapWidth = WorldMapDetailFrame:GetWidth();
 	local mapHeight = WorldMapDetailFrame:GetHeight();
 
-	local mapID, isContinent = GetCurrentMapAreaID();
-
-	local fileName;
-
-	local path;
-	if (not isMicroDungeon) then
-		path = "Interface\\WorldMap\\"..mapName.."\\";
-		fileName = mapName;
-	else
-		path = "Interface\\WorldMap\\MicroDungeon\\"..mapName.."\\"..microDungeonMapName.."\\";
-		fileName = microDungeonMapName;
+	local textures = C_Map.GetMapArtLayerTextures(mapID, 1);
+	for i, texture in ipairs(textures) do
+		_G["WorldMapDetailTile"..i]:SetTexture(texture);
 	end
-
-	if ( dungeonLevel > 0 ) then
-		fileName = fileName..dungeonLevel.."_";
-	end
-
-	local numOfDetailTiles = GetNumberOfDetailTiles();
-	for i=1, numOfDetailTiles do
-		local texName = path..fileName..i;
-		_G["WorldMapDetailTile"..i]:SetTexture(texName);
-	end
-	--WorldMapHighlight:Hide();
 
 	WorldMap_UpdateLandmarks();
 	WorldMap_DrawWorldEffects();
@@ -1392,8 +1186,8 @@ function WorldMapFrame_Update()
 	WorldMapOverlayHighlights = {};
 
 	for i=1, GetNumMapOverlays() do
-		local textureName, textureWidth, textureHeight, offsetX, offsetY, isShownByMouseOver = GetMapOverlayInfo(i);
-		if ( textureName and textureName ~= "" ) then
+		local textureWidth, textureHeight, offsetX, offsetY, isShownByMouseOver, textureInfo = GetMapOverlayInfo(i);
+		if ( textureInfo ) then
 			local numTexturesWide = ceil(textureWidth/256);
 			local numTexturesTall = ceil(textureHeight/256);
 			local neededTextures = textureCount + (numTexturesWide * numTexturesTall);
@@ -1438,7 +1232,7 @@ function WorldMapFrame_Update()
 					texture:SetHeight(texturePixelHeight);
 					texture:SetTexCoord(0, texturePixelWidth/textureFileWidth, 0, texturePixelHeight/textureFileHeight);
 					texture:SetPoint("TOPLEFT", offsetX + (256 * (k-1)), -(offsetY + (256 * (j - 1))));
-					texture:SetTexture(textureName..(((j - 1) * numTexturesWide) + k));
+					texture:SetTexture(textureInfo[((j - 1) * numTexturesWide) + k]);
 
 					if isShownByMouseOver == true then
 						-- keep track of the textures to show by mouseover
@@ -1461,43 +1255,6 @@ function WorldMapFrame_Update()
 		_G["WorldMapOverlay"..i]:Hide();
 	end
 
-	-- Show debug zone map if available
-	local numDebugZoneMapTextures = 0;
-	if ( HasDebugZoneMap() ) then
-		local ZONEMAP_SIZE = 1024;
-		for y=1, ZONEMAP_SIZE do
-			for x=1, ZONEMAP_SIZE do
-				local id, minX, minY, maxX, maxY, r, g, b, a = GetDebugZoneMap(x, y);
-				if ( id ) then
-					if ( not WorldMapDetailFrame.zoneMap ) then
-						WorldMapDetailFrame.zoneMap = {};
-					end
-
-					numDebugZoneMapTextures = numDebugZoneMapTextures + 1;
-					local texture = WorldMapDetailFrame.zoneMap[numDebugZoneMapTextures];
-					if ( not texture ) then
-						texture = WorldMapDetailFrame:CreateTexture(nil, "OVERLAY");
-						texture:SetColorTexture(1, 1, 1);
-						WorldMapDetailFrame.zoneMap[numDebugZoneMapTextures] = texture;
-					end
-
-					texture:SetVertexColor(r, g, b, a);
-					minX = minX * mapWidth;
-					minY = -minY * mapHeight;
-					texture:SetPoint("TOPLEFT", "WorldMapDetailFrame", "TOPLEFT", minX, minY);
-					maxX = maxX * mapWidth;
-					maxY = -maxY * mapHeight;
-					texture:SetPoint("BOTTOMRIGHT", "WorldMapDetailFrame", "TOPLEFT", maxX, maxY);
-					texture:Show();
-				end
-			end
-		end
-	end
-	for i=numDebugZoneMapTextures+1, NUM_WORLDMAP_DEBUG_ZONEMAP do
-		WorldMapDetailFrame.zoneMap[i]:Hide();
-	end
-	NUM_WORLDMAP_DEBUG_ZONEMAP = numDebugZoneMapTextures;
-
 	-- Setup any debug objects
 	local baseLevel = WorldMapButton:GetFrameLevel() + 1;
 	local numDebugObjects = GetNumMapDebugObjects();
@@ -1508,16 +1265,17 @@ function WorldMapFrame_Update()
 		NUM_WORLDMAP_DEBUG_OBJECTS = numDebugObjects;
 	end
 	textureCount = 0;
+	local mapID = C_Map.GetCurrentMapID();
 	for i=1, numDebugObjects do
 		local name, size, x, y = GetMapDebugObjectInfo(i);
-		if ( (x ~= 0 or y ~= 0) and (size > 1 or GetCurrentMapZone() ~= WORLDMAP_AZEROTH_ID) ) then
+		if ( (x ~= 0 or y ~= 0) and (size > 1 or mapID ~= WORLDMAP_AZEROTH_ID) ) then
 			textureCount = textureCount + 1;
 			local frame = _G["WorldMapDebugObject"..textureCount];
 			frame.index = i;
 			frame.name = name;
 
 			local info = WORLDMAP_DEBUG_ICON_INFO[size];
-			if ( GetCurrentMapZone() == WORLDMAP_AZEROTH_ID ) then
+			if ( mapID == WORLDMAP_AZEROTH_ID ) then
 				frame:SetWidth(info.size / 2);
 				frame:SetHeight(info.size / 2);
 			else
@@ -1541,32 +1299,28 @@ function WorldMapFrame_Update()
 
 	-- position storyline quests, but not on continent or "world" maps
 	local numUsedStoryLineFrames = 0;
-	if ( not isContinent and mapID > 0 ) then
-		for i = 1, C_Questline.GetNumAvailableQuestlines() do
-			local questLineName, questName, x, y, isHidden, floorLocation, isLegendary = C_Questline.GetQuestlineInfoByIndex(i);
-			local showQuest = questLineName and x > 0 and y > 0;
-			if ( showQuest and isHidden ) then
-				showQuest = IsTrackingHiddenQuests();
-			end
-			if ( showQuest ) then
+	if (mapInfo.mapType ~= Enum.UIMapType.Continent) and (mapInfo.mapType ~= Enum.UIMapType.World) and (mapInfo.mapType ~= Enum.UIMapType.Cosmic) then
+		for _, questLineInfo in pairs(C_QuestLine.GetAvailableQuestLines(mapID)) do
+			if ( not questLineInfo.isHidden or IsTrackingHiddenQuests() ) then
 				numUsedStoryLineFrames = numUsedStoryLineFrames + 1;
 				local frame = STORYLINE_FRAMES[numUsedStoryLineFrames];
 				if ( not frame ) then
 					frame = CreateFrame("FRAME", "WorldMapStoryLine"..numUsedStoryLineFrames, WorldMapPOIFrame, "WorldMapStoryLineTemplate");
 					STORYLINE_FRAMES[numUsedStoryLineFrames] = frame;
 				end
-				frame.index = i;
-				WorldMapPOIFrame_AnchorPOI(frame, x, y, WORLD_MAP_POI_FRAME_LEVEL_OFFSETS.STORY_LINE);
-				if ( isLegendary ) then
+				frame.questID = questLineInfo.questID;
+				frame.mapID = mapID;
+				WorldMapPOIFrame_AnchorPOI(frame, questLineInfo.x, questLineInfo.y, WORLD_MAP_POI_FRAME_LEVEL_OFFSETS.STORY_LINE);
+				if ( questLineInfo.isLegendary ) then
 					frame.Texture:SetAtlas("QuestLegendary", true);
-				elseif ( isHidden ) then
+				elseif ( questLineInfo.isHidden ) then
 					frame.Texture:SetAtlas("TrivialQuests", true);
 				else
 					frame.Texture:SetAtlas("QuestNormal", true);
 				end
-				frame.Below:SetShown(floorLocation == LE_QUESTLINE_FLOOR_LOCATION_BELOW);
-				frame.Above:SetShown(floorLocation == LE_QUESTLINE_FLOOR_LOCATION_ABOVE);
-				frame.Texture:SetDesaturated(floorLocation ~= LE_QUESTLINE_FLOOR_LOCATION_SAME);
+				frame.Below:SetShown(questLineInfo.floorLocation == Enum.QuestLineFloorLocation.Below);
+				frame.Above:SetShown(questLineInfo.floorLocation == Enum.QuestLineFloorLocation.Above);
+				frame.Texture:SetDesaturated(questLineInfo.floorLocation ~= Enum.QuestLineFloorLocation.Same);
 				frame:Show();
 			end
 		end
@@ -1626,10 +1380,10 @@ function WorldMapFrame_OnInvasionLabelVisibilityChanged(visible)
 end
 
 function WorldMapFrame_UpdateInvasion()
-	local mapID, isContinent = GetCurrentMapAreaID();
+	local mapID = C_Map.GetCurrentMapID();
 	local name, timeLeftMinutes, rewardQuestID;
-	if not isContinent then
-		name, timeLeftMinutes, rewardQuestID = GetInvasionInfoByMapAreaID(mapID);
+	if MapUtil.IsMapTypeZone(mapID) then
+		name, timeLeftMinutes, rewardQuestID = GetInvasionInfoByUiMapID(mapID);
 	end
 
 	if name then
@@ -1984,8 +1738,8 @@ function WorldMap_IsWorldQuestSuppressed(questID)
 end
 
 function WorldMap_OnWorldQuestCompletedBySpell(questID)
-	local mapAreaID = GetCurrentMapAreaID();
-	local x, y = C_TaskQuest.GetQuestLocation(questID, mapAreaID);
+	local mapID = C_Map.GetCurrentMapID();
+	local x, y = C_TaskQuest.GetQuestLocation(questID, mapID);
 	if x and y then
 		WorldMap_AddWorldQuestSuppression(questID);
 		local spellID, spellVisualKitID = GetWorldMapActionButtonSpellInfo();
@@ -2133,20 +1887,11 @@ end
 function WorldMapPOI_OnClick(self, button)
 	if self.landmarkType == LE_MAP_LANDMARK_TYPE_MAP_LINK then
 		-- We need to cache this data in advance because it can change when we change map IDs.
-		local currentMapID = GetCurrentMapAreaID();
-		local currentFloorIndex = GetCurrentMapDungeonLevel();
+		local currentMapID = C_Map.GetCurrentMapID();
 		local mapID = self.mapLinkID;
-		local floorIndex = self.mapFloor;
-		if floorIndex and mapID then
-			SetMapByID(mapID);
-			WorldMapFrame.mapLinkPingInfo = { mapID = currentMapID, floorIndex = currentFloorIndex };
-			SetDungeonMapLevel(floorIndex);
-		elseif mapID then
+		if mapID then
 			WorldMapFrame.mapLinkPingInfo = { mapID = currentMapID, floorIndex = currentFloorIndex };
 			SetMapByID(mapID);
-		elseif floorIndex then
-			WorldMapFrame.mapLinkPingInfo = { mapID = currentMapID, floorIndex = currentFloorIndex };
-			SetDungeonMapLevel(floorIndex);
 		end
 
 		PlaySound(SOUNDKIT.IG_QUEST_LOG_OPEN);
@@ -2264,6 +2009,10 @@ function WorldMap_GetOrCreateTaskPOI(index)
 		return existingButton;
 	end
 
+	if (NUM_WORLDMAP_TASK_POIS < index) then
+		NUM_WORLDMAP_TASK_POIS = index;
+	end
+
 	local button = CreateFrame("Button", "WorldMapFrameTaskPOI"..index, WorldMapPOIFrame);
 	button:SetFlattensRenderLayers(true);
 	button:RegisterForClicks("LeftButtonUp", "RightButtonUp");
@@ -2355,20 +2104,16 @@ function WorldMapLevelDropDown_Update()
 	UIDropDownMenu_Initialize(WorldMapLevelDropDown, WorldMapLevelDropDown_Initialize);
 	UIDropDownMenu_SetWidth(WorldMapLevelDropDown, 130);
 
-	local dungeonLevels = { GetNumDungeonMapLevels() };
-	if ( #dungeonLevels <= 1 ) then
+	local currentUiMapID = C_Map.GetCurrentMapID();
+	local mapGroupMembers = GetMapGroupSiblings(currentUiMapID);
+	if ( #mapGroupMembers <= 1 ) then
 		UIDropDownMenu_ClearAll(WorldMapLevelDropDown);
 		WorldMapLevelDropDown:Hide();
 	else
-		local level = GetCurrentMapDungeonLevel();
-		if (DungeonUsesTerrainMap()) then
-			level = level - 1;
-		end
-
 		-- find the current floor in the list of levels, that's its ID in the dropdown
 		local levelID = 1;
-		for id, floorNum in ipairs(dungeonLevels) do
-			if (floorNum == level) then
+		for id, uiMapID in ipairs(mapGroupMembers) do
+			if (currentUiMapID == uiMapID) then
 				levelID = id;
 			end
 		end
@@ -2380,20 +2125,14 @@ end
 
 function WorldMapLevelDropDown_Initialize()
 	local info = UIDropDownMenu_CreateInfo();
-	local level = GetCurrentMapDungeonLevel();
-	if (DungeonUsesTerrainMap()) then
-		level = level - 1;
-	end
+	local currentUiMapID = C_Map.GetCurrentMapID();
+	local mapGroupMembers = GetMapGroupSiblings(currentUiMapID);
 
-	local mapname = strupper(GetMapInfo() or "");
-	local dungeonLevels = { GetNumDungeonMapLevels() };
-
-	for i, floorNum in ipairs(dungeonLevels) do
-		local floornameToken = "DUNGEON_FLOOR_" .. mapname .. floorNum;
-		local floorname =_G[floornameToken];
+	for i, uiMapID in ipairs(mapGroupMembers) do
+		local _, dungeonUiMapID, _, _, floorname = GetMapGroupInfo(uiMapID)
 		info.text = floorname or string.format(FLOOR_NUMBER, i);
 		info.func = WorldMapLevelButton_OnClick;
-		info.checked = (floorNum == level);
+		info.checked = (dungeonUiMapID == currentUiMapID);
 		UIDropDownMenu_AddButton(info);
 	end
 end
@@ -2402,14 +2141,12 @@ function WorldMapLevelButton_OnClick(self)
 	local dropDownID = self:GetID();
 	UIDropDownMenu_SetSelectedID(WorldMapLevelDropDown, dropDownID);
 
-	local dungeonLevels = { GetNumDungeonMapLevels() };
-	if (dropDownID <= #dungeonLevels) then
-		local level = dungeonLevels[dropDownID];
-		if (DungeonUsesTerrainMap()) then
-			level = level + 1;
-		end
-		SetDungeonMapLevel(level);
-		WorldMapScrollFrame_ResetZoom()
+	local currentUiMapID = C_Map.GetCurrentMapID();
+	local mapGroupMembers = GetMapGroupSiblings(currentUiMapID);
+	if (dropDownID <= #mapGroupMembers) then
+		local uiMapID = mapGroupMembers[dropDownID];
+		SetMapByID(uiMapID);
+		WorldMapScrollFrame_ResetZoom();
 	end
 end
 
@@ -2418,15 +2155,7 @@ function WorldMapZoomOutButton_OnClick()
 	WorldMapTooltip:Hide();
 
 	-- check if code needs to zoom out before going to the continent map
-	if ( ZoomOut() ~= nil ) then
-		return;
-	elseif ( GetCurrentMapContinent() == WORLDMAP_AZEROTH_ID ) then
-		SetMapZoom(WORLDMAP_COSMIC_ID);
-	elseif ( GetCurrentMapContinent() == WORLDMAP_OUTLAND_ID or GetCurrentMapContinent() == WORLDMAP_DRAENOR_ID ) then
-		SetMapZoom(WORLDMAP_COSMIC_ID);
-	else
-		SetMapZoom(WORLDMAP_AZEROTH_ID);
-	end
+	ZoomOut()
 end
 
 function WorldMapButton_OnClick(button, mouseButton)
@@ -2463,11 +2192,7 @@ function WorldMapFakeButton_OnClick(button, mouseButton)
 		return;
 	end
 	if ( mouseButton == "LeftButton" ) then
-		if ( button.zoneID ) then
-			SetMapByID(button.zoneID);
-		elseif ( button.continent ) then
-			SetMapZoom(button.continent);
-		end
+		SetMapByID(button.uiMapID);
 	else
 		WorldMapZoomOutButton_OnClick();
 	end
@@ -2487,9 +2212,9 @@ function WorldMapButton_OnUpdate(self, elapsed)
 	local adjustedY = (centerY + (height/2) - y ) / height;
 	local adjustedX = (x - (centerX - (width/2))) / width;
 
-	local name, fileName, texPercentageX, texPercentageY, textureX, textureY, scrollChildX, scrollChildY, minLevel, maxLevel, petMinLevel, petMaxLevel
+	local name, fileDataID, texPercentageX, texPercentageY, textureX, textureY, scrollChildX, scrollChildY, minLevel, maxLevel, petMinLevel, petMaxLevel
 	if ( WorldMapScrollFrame:IsMouseOver() ) then
-		name, fileName, texPercentageX, texPercentageY, textureX, textureY, scrollChildX, scrollChildY, minLevel, maxLevel, petMinLevel, petMaxLevel = UpdateMapHighlight( adjustedX, adjustedY );
+		name, fileDataID, texPercentageX, texPercentageY, textureX, textureY, scrollChildX, scrollChildY, minLevel, maxLevel, petMinLevel, petMaxLevel = GetMapHighlight( adjustedX, adjustedY );
 
 		for index,textures in pairs(WorldMapOverlayHighlights) do
 			local isHighlighted = IsMapOverlayHighlighted(index, adjustedX, adjustedY);
@@ -2569,9 +2294,9 @@ function WorldMapButton_OnUpdate(self, elapsed)
 			end
 		end
 	end
-	if ( fileName ) then
+	if ( fileDataID and (fileDataID > 0) ) then
 		WorldMapHighlight:SetTexCoord(0, texPercentageX, 0, texPercentageY);
-		WorldMapHighlight:SetTexture("Interface\\WorldMap\\"..fileName.."\\"..fileName.."Highlight");
+		WorldMapHighlight:SetTexture(fileDataID);
 		textureX = textureX * width;
 		textureY = textureY * height;
 		scrollChildX = scrollChildX * width;
@@ -2650,12 +2375,13 @@ function WorldMapButton_OnUpdate(self, elapsed)
 
 	-- position vehicles
 	local numVehicles;
-	if ( GetCurrentMapContinent() == WORLDMAP_AZEROTH_ID or (GetCurrentMapContinent() ~= -1 and GetCurrentMapZone() == 0) ) then
-		-- Hide vehicles on the worldmap and continent maps
-		numVehicles = 0;
-	else
+	if ( MapUtil.IsMapTypeZone(C_Map.GetCurrentMapID()) ) then
+		-- only show vehicles on zone maps
 		numVehicles = GetNumBattlefieldVehicles();
+	else
+		numVehicles = 0;
 	end
+
 	local totalVehicles = #MAP_VEHICLES;
 	local playerBlipFrameLevel = WorldMapUnitPositionFrame:GetFrameLevel();
 	local index = 0;
@@ -2665,18 +2391,19 @@ function WorldMapButton_OnUpdate(self, elapsed)
 			MAP_VEHICLES[i] = CreateFrame("FRAME", vehicleName, WorldMapPOIFrame, "WorldMapVehicleTemplate");
 			MAP_VEHICLES[i].texture = _G[vehicleName.."Texture"];
 		end
-		local vehicleX, vehicleY, unitName, isPossessed, vehicleType, orientation, isPlayer, isAlive = GetBattlefieldVehicleInfo(i);
-		if ( vehicleX and isAlive and not isPlayer and VEHICLE_TEXTURES[vehicleType]) then
+		local vehicleX, vehicleY, unitName, isPossessed, vehicleType, orientation, isPlayer, isAlive = GetBattlefieldVehicleInfo(i, C_Map.GetCurrentMapID());
+		if ( vehicleX and isAlive and not isPlayer and VehicleUtil.IsValidVehicleType(vehicleType) ) then
+			local vehicleInfo = VehicleUtil.GetVehicleInfo(vehicleType);
 			local mapVehicleFrame = MAP_VEHICLES[i];
 			vehicleX = vehicleX * WorldMapDetailFrame:GetWidth() * WorldMapDetailFrame:GetScale();
 			vehicleY = -vehicleY * WorldMapDetailFrame:GetHeight() * WorldMapDetailFrame:GetScale();
 			mapVehicleFrame.texture:SetRotation(orientation);
 			mapVehicleFrame.texture:SetTexture(WorldMap_GetVehicleTexture(vehicleType, isPossessed));
 			mapVehicleFrame:SetPoint("CENTER", "WorldMapDetailFrame", "TOPLEFT", vehicleX, vehicleY);
-			mapVehicleFrame:SetWidth(VEHICLE_TEXTURES[vehicleType].width);
-			mapVehicleFrame:SetHeight(VEHICLE_TEXTURES[vehicleType].height);
+			mapVehicleFrame:SetWidth(vehicleInfo:GetWidth());
+			mapVehicleFrame:SetHeight(vehicleInfo:GetHeight());
 			mapVehicleFrame.name = unitName;
-			if ( VEHICLE_TEXTURES[vehicleType].belowPlayerBlips ) then
+			if ( vehicleInfo:ShouldDrawBelowPlayerBlips() ) then
 				mapVehicleFrame:SetFrameLevel(playerBlipFrameLevel - 1);
 			else
 				mapVehicleFrame:SetFrameLevel(playerBlipFrameLevel + 1);
@@ -2721,10 +2448,10 @@ function WorldMap_GetVehicleTexture(vehicleType, isPossessed)
 	else
 		isPossessed = 2;
 	end
-	if ( not VEHICLE_TEXTURES[vehicleType]) then
-		return;
+	if ( not VehicleUtil.IsValidVehicleType(vehicleType) ) then
+		return nil;
 	end
-	return VEHICLE_TEXTURES[vehicleType][isPossessed];
+	return VehicleUtil.GetVehicleInfo(vehicleType):GetTexture(isPossessed);
 end
 
 function WorldMapUnit_OnEnter(self, motion)
@@ -3280,7 +3007,7 @@ function WorldMapScrollFrame_OnMouseWheelAtPosition(self, delta, frameX, frameY)
 	scrollFrame.maxY = QUEST_POI_FRAME_HEIGHT - 668 * WORLDMAP_SETTINGS.size;
 	scrollFrame.zoomedIn = abs(WorldMapDetailFrame:GetScale() - WORLDMAP_SETTINGS.size) > 0.05;
 	scrollFrame.continent = GetCurrentMapContinent();
-	scrollFrame.mapID = GetCurrentMapAreaID();
+	scrollFrame.mapID = C_Map.GetCurrentMapID();
 
 	-- figure out new scroll values
 	local scaleChange = newScale / oldScale;
@@ -3525,30 +3252,28 @@ function EncounterJournal_AddMapButtons()
 		local width = WorldMapDetailFrame:GetWidth();
 		local height = WorldMapDetailFrame:GetHeight();
 
-		local mapEncounters = C_EncounterJournal.GetCurrentMapEncounters(WorldMapFrame.fromJournal);
-		if ( mapEncounters ) then
-			numEncounters = #mapEncounters;
-			for index, mapEncounterInfo in ipairs(mapEncounters) do
-				local bossButton = _G["EJMapButton"..index];
-				if not bossButton then
-					bossButton = CreateFrame("Button", "EJMapButton"..index, WorldMapBossButtonFrame, "EncounterMapButtonTemplate");
-				end
-
-				local name, description, encounterID, rootSectionID, link, instanceID = EJ_GetEncounterInfo(mapEncounterInfo.encounterID);
-				bossButton.instanceID = instanceID;
-				bossButton.encounterID = encounterID;
-				bossButton.tooltipTitle = name;
-				bossButton.tooltipText = description;
-				bossButton:SetPoint("CENTER", WorldMapBossButtonFrame, "BOTTOMLEFT", mapEncounterInfo.mapX*width, mapEncounterInfo.mapY*height);
-				local _, _, _, displayInfo = EJ_GetCreatureInfo(1, encounterID);
-				bossButton.displayInfo = displayInfo;
-				if ( displayInfo ) then
-					SetPortraitTextureFromCreatureDisplayID(bossButton.bgImage, displayInfo);
-				else
-					bossButton.bgImage:SetTexture("DoesNotExist");
-				end
-				bossButton:Show();
+		local mapEncounters = C_EncounterJournal.GetEncountersOnMap(C_Map.GetCurrentMapID());
+		numEncounters = #mapEncounters;
+		for index, mapEncounterInfo in ipairs(mapEncounters) do
+			local bossButton = _G["EJMapButton"..index];
+			if not bossButton then
+				bossButton = CreateFrame("Button", "EJMapButton"..index, WorldMapBossButtonFrame, "EncounterMapButtonTemplate");
 			end
+
+			local name, description, encounterID, rootSectionID, link, instanceID = EJ_GetEncounterInfo(mapEncounterInfo.encounterID);
+			bossButton.instanceID = instanceID;
+			bossButton.encounterID = encounterID;
+			bossButton.tooltipTitle = name;
+			bossButton.tooltipText = description;
+			bossButton:SetPoint("CENTER", WorldMapBossButtonFrame, "BOTTOMLEFT", mapEncounterInfo.mapX*width, (1.0 - mapEncounterInfo.mapY)*height);
+			local _, _, _, displayInfo = EJ_GetCreatureInfo(1, encounterID);
+			bossButton.displayInfo = displayInfo;
+			if ( displayInfo ) then
+				SetPortraitTextureFromCreatureDisplayID(bossButton.bgImage, displayInfo);
+			else
+				bossButton.bgImage:SetTexture("DoesNotExist");
+			end
+			bossButton:Show();
 		end
 	end
 
@@ -3750,159 +3475,54 @@ end
 -- ***** NAV BAR
 -- *****************************************************************************************************
 
-local SIBLING_MENU_DATA = { };
-local SIBLING_MENU_PARENT_ID;
-local SIBLING_MENU_PARENT_IS_CONTINENT;
-
-local BROKEN_ISLES_ID = 8;
-
-function IsMapAllowedInKioskMode(id)
-	return true;
+function WorldMapNavBar_OnButtonClick(self, button)
+	C_Map.SetMap(self.data.id);
 end
 
-function WorldMapNavBar_LoadSiblings(parentID, isContinent, doSort, ...)
-	if ( parentID == SIBLING_MENU_PARENT_ID ) then
-		-- we already have this loaded
-		return;
-	end
-
-	wipe(SIBLING_MENU_DATA);
-	local count = select("#", ...);
-	for i = 1, count, 2 do
-		local id = select(i, ...);
-		local name = select(i+1, ...);
-		local allowed = true;
-		if (IsKioskModeEnabled()) then
-			allowed = IsMapAllowedInKioskMode(id);
-		end
-		if ( name and allowed ) then
-			local t = { id = id, name = name };
-			tinsert(SIBLING_MENU_DATA, t);
-		end
-	end
-	if ( doSort ) then
-		table.sort(SIBLING_MENU_DATA, WorldMapNavBar_SortSiblings);
-	end
-	SIBLING_MENU_PARENT_ID = parentID;
-	SIBLING_MENU_PARENT_IS_CONTINENT = isContinent;
+function WorldMapNavBar_OnDropDownEntryClick(self, mapID, navBar)
+	C_Map.SetMap(mapID);
 end
 
-function WorldMapNavBar_SortSiblings(map1, map2)
-	return map1.name < map2.name;
+local function IsMapValidForDropDown(mapInfo)
+	return mapInfo.mapType == Enum.UIMapType.World or mapInfo.mapType == Enum.UIMapType.Continent or mapInfo.mapType == Enum.UIMapType.Zone;
 end
 
-function WorldMapNavBar_OnButtonSelect(self, button)
-	if ( self.data.isContinent ) then
-		SetMapZoom(self.data.id);
-	else
-		SetMapByID(self.data.id);
-	end
-end
-
-function WorldMapNavBar_SelectSibling(self, index, navBar)
-	if ( SIBLING_MENU_PARENT_IS_CONTINENT ) then
-		SetMapZoom(SIBLING_MENU_DATA[index].id);
-	else
-		SetMapByID(SIBLING_MENU_DATA[index].id);
-	end
-end
-
-function WorldMapNavBar_GetSibling(self, index)
-	if ( self.data.isContinent ) then
-		if ( self.data.id ~= WORLDMAP_COSMIC_ID ) then
-			-- storing continent index as a negative ID to prevent collision with map ID
-			-- this is only used for SIBLING_MENU_PARENT_ID comparisons
-			local continentID = -self.data.id;
-			-- for Azeroth or Outland, add them both
-			if ( self.data.id == WORLDMAP_OUTLAND_ID or self.data.id == WORLDMAP_AZEROTH_ID or self.data.id == WORLDMAP_DRAENOR_ID ) then
-				WorldMapNavBar_LoadSiblings(continentID, true, true, WORLDMAP_OUTLAND_ID, GetContinentName(WORLDMAP_OUTLAND_ID), WORLDMAP_AZEROTH_ID, AZEROTH, WORLDMAP_DRAENOR_ID, GetContinentName(WORLDMAP_DRAENOR_ID));
-			else
-				local continentData = { GetMapContinents() };		-- mapID1, mapName1, mapID2, mapName2, ...
-				-- SetMap needs index for continent so replace the IDs
-				local index = 0;
-				for i = 1, #continentData, 2 do
-					index = index + 1;
-					continentData[i] = index;
-					-- this list is meant for continents on Azeroth so remove Outland
-					if ( index == WORLDMAP_OUTLAND_ID or index == WORLDMAP_DRAENOR_ID ) then
-						continentData[i + 1] = nil;
-					end
+function WorldMapNavBar_GetDropDownList(self)
+	local list = { };
+	local mapInfo = C_Map.GetMapInfo(self.data.id);
+	if ( mapInfo ) then
+		local children = C_Map.GetMapChildrenInfo(mapInfo.parentMapID);
+		if ( children ) then
+			for i, childInfo in ipairs(children) do
+				if ( IsMapValidForDropDown(childInfo) ) then
+					local entry = { text = childInfo.name, id = childInfo.mapID, func = WorldMapNavBar_OnDropDownEntryClick };
+					tinsert(list, entry);
 				end
-				WorldMapNavBar_LoadSiblings(continentID, true, true, unpack(continentData));
 			end
-		end
-	else
-		local parentData = self.navParent.data;
-		-- if this button is right after a continent button then it's a regular zone
-		if ( parentData.isContinent ) then
-			-- this zone data is already sorted
-			WorldMapNavBar_LoadSiblings(parentData.id, false, false, GetMapZones(parentData.id));
-		else
-			-- this is a "subzone", like Northshire
-			WorldMapNavBar_LoadSiblings(parentData.id, false, true, GetMapSubzones(parentData.id));
+			table.sort(list, function(entry1, entry2) return entry1.text < entry2.text; end);
 		end
 	end
-	if ( SIBLING_MENU_DATA[index] ) then
-		return SIBLING_MENU_DATA[index].name, WorldMapNavBar_SelectSibling;
-	end
+	return list;
 end
 
 function WorldMapNavBar_Update()
-	local parentData = GetMapHierarchy();
-	local currentContinent = GetCurrentMapContinent();
-	-- if the last parent is not a continent and we're not on the cosmic view we need to add the current continent
-	local haveParentContinent = parentData[#parentData] and parentData[#parentData].isContinent;
-	if ( not haveParentContinent and currentContinent ~= WORLDMAP_COSMIC_ID ) then
-		local continentData = { };
-		if ( currentContinent == WORLDMAP_AZEROTH_ID ) then
-			continentData.name = AZEROTH;
-		else
-			continentData.name = GetContinentName(currentContinent);
+	local hierarchy = { };
+	local mapInfo = C_Map.GetMapInfo(C_Map.GetCurrentMapID());
+	while mapInfo and mapInfo.parentMapID > 0 do
+		local buttonData = {
+			name = mapInfo.name,
+			id = mapInfo.mapID,
+			OnClick = WorldMapNavBar_OnButtonClick,
+		};
+		if ( IsMapValidForDropDown(mapInfo) ) then
+			buttonData.listFunc = WorldMapNavBar_GetDropDownList;
 		end
-		continentData.id = currentContinent;
-		continentData.isContinent = true;
-		tinsert(parentData, continentData);
-	elseif ( haveParentContinent ) then
-		currentContinent = parentData[#parentData] and parentData[#parentData].id;
-	end
-	-- most continents have Azeroth as a parent
-	if ( currentContinent ~= WORLDMAP_COSMIC_ID and currentContinent ~= WORLDMAP_AZEROTH_ID and currentContinent ~= WORLDMAP_OUTLAND_ID and currentContinent ~= WORLDMAP_DRAENOR_ID ) then
-		local continentData = { };
-		continentData.name = AZEROTH;
-		continentData.id = WORLDMAP_AZEROTH_ID;
-		continentData.isContinent = true;
-		tinsert(parentData, continentData);
+		tinsert(hierarchy, 1, buttonData);
+		mapInfo = C_Map.GetMapInfo(mapInfo.parentMapID);
 	end
 
-	local mapID, isContinent = GetCurrentMapAreaID();
-	-- time to add the buttons
 	NavBar_Reset(WorldMapFrame.NavBar);
-	for i = #parentData, 1, -1 do
-		local id = parentData[i].id;
-		-- might get self back as part of hierarchy in the case of dungeon maps - see Dalaran floor The Underbelly
-		if ( id and id ~= mapID ) then
-			local buttonData = {
-				name = parentData[i].name,
-				id = parentData[i].id,
-				isContinent = parentData[i].isContinent,
-				OnClick = WorldMapNavBar_OnButtonSelect,
-				listFunc = WorldMapNavBar_GetSibling,
-			}
-			NavBar_AddButton(WorldMapFrame.NavBar, buttonData);
-		end
-	end
-	-- add the current map unless it's a continent
-	if ( mapID and mapID ~= -1 and not isContinent ) then
-		local buttonData = {
-			name = GetMapNameByID(mapID),
-			id = mapID,
-			isContinent = false,
-			OnClick = WorldMapNavBar_OnButtonSelect,
-		}
-		-- only do a dropdown menu if its parent is not a continent
-		if ( parentData[1] and parentData[1].isContinent ) then
-			buttonData.listFunc = WorldMapNavBar_GetSibling;
-		end
+	for i, buttonData in ipairs(hierarchy) do
 		NavBar_AddButton(WorldMapFrame.NavBar, buttonData);
 	end
 end

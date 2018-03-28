@@ -5,9 +5,19 @@
 ## Version: 1.0
 ## LoadOnDemand: 1
 
-ActiveQuestDataProvider.xml
+QuestDataProvider.xml
 GroupMembersDataProvider.xml
 WorldQuestDataProvider.xml
 ZoneLabelDataProvider.xml
 ClickToZoomDataProvider.xml
 AreaPOIDataProvider.xml
+MapOverlaysDataProvider.xml
+MapHighlightDataProvider.xml
+AreaLabelDataProvider.xml
+BattlefieldFlagDataProvider.xml
+BonusObjectiveDataProvider.xml
+VehicleDataProvider.xml
+StorylineQuestDataProvider.xml
+EncounterJournalDataProvider.xml
+DeathMapDataProvider.xml
+QuestBlobDataProvider.xml

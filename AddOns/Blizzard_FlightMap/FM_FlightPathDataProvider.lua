@@ -153,6 +153,8 @@ function FlightMap_FlightPointPinMixin:OnLoad()
 
 	-- Flight points nudge other pins away.
 	self:SetNudgeSourceRadius(1);
+
+	self:UseFrameLevelType("PIN_FRAME_LEVEL_FLIGHT_POINT");
 end
 
 function FlightMap_FlightPointPinMixin:OnAcquired()

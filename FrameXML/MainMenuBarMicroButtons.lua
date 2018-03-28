@@ -10,6 +10,7 @@ MICRO_BUTTONS = {
 	"EJMicroButton",
 	"CollectionsMicroButton",
 	"MainMenuMicroButton",
+	"HelpMicroButton",
 	"StoreMicroButton",
 	}
 
@@ -207,6 +208,8 @@ function UpdateMicroButtons()
 		StoreMicroButton:SetButtonState("NORMAL");
 	end
 	
+	StoreMicroButton:Show();
+	HelpMicroButton:Hide();
 	if ( IsVeteranTrialAccount() ) then
 		StoreMicroButton.disabledTooltip = ERR_RESTRICTED_ACCOUNT_TRIAL;
 		StoreMicroButton:Disable();
@@ -220,8 +223,13 @@ function UpdateMicroButtons()
 		StoreMicroButton.disabledTooltip = ERR_SYSTEM_DISABLED;
 		StoreMicroButton:Disable();
 	elseif ( not C_StorePublic.IsEnabled() ) then
-		StoreMicroButton.disabledTooltip = BLIZZARD_STORE_ERROR_UNAVAILABLE;
-		StoreMicroButton:Disable();
+		if ( GetCurrentRegionName() == "CN" ) then
+			HelpMicroButton:Show();
+			StoreMicroButton:Hide();
+		else
+			StoreMicroButton.disabledTooltip = BLIZZARD_STORE_ERROR_UNAVAILABLE;
+			StoreMicroButton:Disable();
+		end
 	else
 		StoreMicroButton.disabledTooltip = nil;
 		StoreMicroButton:Enable();

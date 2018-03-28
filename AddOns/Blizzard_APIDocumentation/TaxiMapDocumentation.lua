@@ -19,6 +19,10 @@ local TaxiMap =
 			Name = "TaximapOpened",
 			Type = "Event",
 			LiteralName = "TAXIMAP_OPENED",
+			Payload =
+			{
+				{ Name = "system", Type = "number", Nilable = false },
+			},
 		},
 	},
 

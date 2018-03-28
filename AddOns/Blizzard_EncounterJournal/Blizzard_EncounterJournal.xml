@@ -2081,7 +2081,6 @@
 									<OnClick>
 										local _, _, _, _, _, _, dungeonAreaMapID = EJ_GetInstanceInfo();
 										if dungeonAreaMapID and dungeonAreaMapID > 0 then
-											WorldMapFrame.fromJournal = true;
 											ShowUIPanel(WorldMapFrame);
 											SetMapByID(dungeonAreaMapID);
 										end

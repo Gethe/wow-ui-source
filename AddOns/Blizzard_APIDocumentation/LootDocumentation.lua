@@ -37,6 +37,7 @@ local Loot =
 				{ Name = "specID", Type = "number", Nilable = false },
 				{ Name = "sex", Type = "number", Nilable = false },
 				{ Name = "personalLootToast", Type = "bool", Nilable = false },
+				{ Name = "currencyID", Type = "number", Nilable = true },
 			},
 		},
 		{

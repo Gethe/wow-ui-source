@@ -203,7 +203,7 @@ function AdventureMap_FogPinMixin:OnLoad()
 end
 
 function AdventureMap_FogPinMixin:OnAcquired(playAnim)
-	if playAnim and self:GetMap():IsZoomedIn() then
+	if playAnim and not self:GetMap():IsAtMinZoom() then
 		self.OnAddAnim:Play();
 	end
 end

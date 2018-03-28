@@ -7,6 +7,15 @@ local CurrencyInfo =
 	Functions =
 	{
 		{
+			Name = "GetAzeriteCurrencyID",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "azeriteCurrencyID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetBasicCurrencyInfo",
 			Type = "Function",
 
@@ -34,6 +43,20 @@ local CurrencyInfo =
 			Returns =
 			{
 				{ Name = "info", Type = "CurrencyDisplayInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetCurrencyIDFromLink",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "currencyLink", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "currencyID", Type = "number", Nilable = false },
 			},
 		},
 	},

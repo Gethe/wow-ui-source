@@ -390,11 +390,10 @@ end
 function WorldMapBountyBoardMixin:OnTabClick(tab)
 	if not tab.isEmpty then
 		if self:GetSelectedBountyIndex() ~= tab.bountyIndex then
-			self.bestMapIndex = nil;
 			self:InvalidateMapCache();
 		end
 		self:SetSelectedBountyIndex(tab.bountyIndex);
-		self:FindBestMapForSelectedBounty();
+		self:SetNextMapForSelectedBounty();
 	end
 end
 
@@ -421,86 +420,42 @@ function WorldMapBountyBoardMixin:CacheMapsForSelectionBounty()
 	end
 
 	self.cachedMapInfo = {};
-
-	local continents = { GetMapContinents() };
-	for continentElementIndex = 1, #continents, 2 do
-		local continentIndex = (continentElementIndex + 1) / 2;
-
-		local zones = { GetMapZones(continentIndex) };
-		for zoneElementIndex = 1, #zones, 2 do
-			local zoneAreaMapID = zones[zoneElementIndex];
-			local numQuests = self:CalculateNumActiveWorldQuestsForSelectedBountyByMap(zoneAreaMapID, zoneAreaMapID);
+	local mapID = C_Map.GetCurrentMapID();
+	local TOPMOST = true;
+	local topMostContinent = MapUtil.GetMapParentInfo(mapID, Enum.UIMapType.Continent, TOPMOST);
+	if topMostContinent then
+		local ALL_DESCENDANTS = true;
+		local childZones = C_Map.GetMapChildrenInfo(topMostContinent.mapID, Enum.UIMapType.Zone, ALL_DESCENDANTS);
+		for i, zone in ipairs(childZones) do
+			local numQuests = self:CalculateNumActiveWorldQuestsForSelectedBountyByMap(zone.mapID);
 			if numQuests > 0 then
-				table.insert(self.cachedMapInfo, { zoneAreaMapID = zoneAreaMapID, count = numQuests });
+				table.insert(self.cachedMapInfo, { mapID = zone.mapID, count = numQuests });
 			end
 		end
+		table.sort(self.cachedMapInfo, function(left, right) return right.count < left.count end);
 	end
-
-	table.sort(self.cachedMapInfo, function(left, right) return right.count < left.count end);
 end
 
-function WorldMapBountyBoardMixin:FindCachedZoneMapIndexFromZoneAreaID(zoneMapAreaID)
-	assert(self.cachedMapInfo);
-
-	for i, mapInfo in ipairs(self.cachedMapInfo) do
-		if mapInfo.zoneAreaMapID == zoneMapAreaID then
-			return i;
-		end
-	end
-	return nil;
-end
-
-function WorldMapBountyBoardMixin:FindCachedZoneIndexFromContinentAreaID(continentMapAreaID)
-	local continents = { GetMapContinents() };
-	for continentElementIndex = 1, #continents, 2 do
-		local continentIndex = (continentElementIndex + 1) / 2;
-		local currentContinentAreaMapID = continents[continentElementIndex];
-
-		if currentContinentAreaMapID == continentAreaMapID then
-			local bestMapIndex = nil;
-			local zones = { GetMapZones(continentIndex) };
-			for zoneElementIndex = 1, #zones, 2 do
-				local zoneAreaMapID = zones[zoneElementIndex];
-				local mapIndex = self:FindCachedZoneMapIndexFromZoneAreaID(zoneAreaMapID);
-				if mapIndex and (not bestMapIndex or mapIndex < bestMapIndex) then
-					bestMapIndex = mapIndex;
-				end
-			end
-
-			return bestMapIndex;
-		end
-	end
-
-	return nil;
-end
-
-function WorldMapBountyBoardMixin:FindCachedZoneIndexFromCurrentMapAreaID()
-	local areaMapID, isContinent = GetCurrentMapAreaID();
-	if isContinent then
-		return self:FindCachedZoneIndexFromContinentAreaID(areaMapID);
-	end
-	return self:FindCachedZoneMapIndexFromZoneAreaID(areaMapID);
-end
-
-function WorldMapBountyBoardMixin:FindNextBestMapIndex(currentIndex)
-	assert(self.cachedMapInfo);
-
-	if currentIndex then
-		return currentIndex % #self.cachedMapInfo + 1;
-	end
-
-	return self:FindCachedZoneIndexFromCurrentMapAreaID() or 1;
-end
-
-function WorldMapBountyBoardMixin:FindBestMapForSelectedBounty()
+function WorldMapBountyBoardMixin:SetNextMapForSelectedBounty()
 	self:CacheMapsForSelectionBounty();
 
 	if #self.cachedMapInfo == 0 then
 		return;
 	end
 
-	self.bestMapIndex = self:FindNextBestMapIndex(self.bestMapIndex);
-	SetMapByID(self.cachedMapInfo[self.bestMapIndex].zoneAreaMapID);
+	local mapIndex = 1;
+	local mapID = C_Map.GetCurrentMapID();
+	for i, cachedMapInfo in ipairs(self.cachedMapInfo) do
+		if mapID == cachedMapInfo.mapID then
+			-- we want the next map after the current one
+			mapIndex = i + 1;
+			break;
+		end
+	end
+	if mapIndex > #self.cachedMapInfo then
+		mapIndex = 1;
+	end
+	C_Map.SetMap(self.cachedMapInfo[mapIndex].mapID);
 end
 
 function WorldMapBountyBoardMixin:TryShowingIntroTutorial()

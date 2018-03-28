@@ -486,6 +486,38 @@
 			</OnLeave>
 		</Scripts>
 	</Button>
+	<Button name="HelpMicroButton" inherits="MainMenuBarMicroButton" hidden="true">
+		<Anchors>
+			<Anchor point="BOTTOMLEFT" relativeTo="EJMicroButton" relativePoint="BOTTOMRIGHT" x="-2" y="0"/>
+		</Anchors>
+		<KeyValues>
+			<KeyValue key="MicroButton" value="HelpMicroButton" type="global"/>
+		</KeyValues>
+		<Scripts>
+			<OnLoad>
+				LoadMicroButtonTextures(self, "MainMenu");
+				self.tooltipText = HELP_BUTTON;
+				self.newbieText = NEWBIE_TOOLTIP_HELP;
+			</OnLoad>
+			<OnClick function="ToggleHelpFrame"/>
+		</Scripts>
+	</Button>
+	<Button name="HelpMicroButton" inherits="MainMenuBarMicroButton" hidden="true">
+		<Anchors>
+			<Anchor point="BOTTOMLEFT" relativeTo="EJMicroButton" relativePoint="BOTTOMRIGHT" x="-2" y="0"/>
+		</Anchors>
+		<KeyValues>
+			<KeyValue key="MicroButton" value="HelpMicroButton" type="global"/>
+		</KeyValues>
+		<Scripts>
+			<OnLoad>
+				LoadMicroButtonTextures(self, "MainMenu");
+				self.tooltipText = HELP_BUTTON;
+				self.newbieText = NEWBIE_TOOLTIP_HELP;
+			</OnLoad>
+			<OnClick function="ToggleHelpFrame"/>
+		</Scripts>
+	</Button>
 	<Frame name="TalentMicroButtonAlert" inherits="MicroButtonAlertTemplate">
 		<KeyValues>
 			<KeyValue key="MicroButton" value="TalentMicroButton" type="global"/>

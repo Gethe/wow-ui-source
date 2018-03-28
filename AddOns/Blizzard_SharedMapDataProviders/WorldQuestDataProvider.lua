@@ -27,7 +27,7 @@ end
 
 function WorldQuestDataProviderMixin:RemoveAllData()
 	wipe(self.activePins);
-	self:GetMap():RemoveAllPinsByTemplate("WorldQuestPinTemplate");
+	self:GetMap():RemoveAllPinsByTemplate(self:GetPinTemplate());
 end
 
 function WorldQuestDataProviderMixin:OnShow()
@@ -51,25 +51,24 @@ function WorldQuestDataProviderMixin:RefreshAllData(fromOnShow)
 		pinsToRemove[questId] = true;
 	end
 
-	local mapAreaID = self:GetMap():GetMapID();
-	for zoneIndex = 1, C_MapCanvas.GetNumZones(mapAreaID) do
-		local zoneMapID, zoneName, zoneDepth, left, right, top, bottom = C_MapCanvas.GetZoneInfo(mapAreaID, zoneIndex);
-		if zoneDepth <= 1 then -- Exclude subzones
-			local taskInfo = C_TaskQuest.GetQuestsForPlayerByMapID(zoneMapID, mapAreaID, self:GetTransformFlags());
+	local taskInfo;
 
-			if taskInfo then
-				for i, info in ipairs(taskInfo) do
-					if HaveQuestData(info.questId) then
-						if QuestUtils_IsQuestWorldQuest(info.questId) then
-							if self:DoesWorldQuestInfoPassFilters(info) then
-								pinsToRemove[info.questId] = nil;
-								local pin = self.activePins[info.questId];
-								if pin then
-									pin:RefreshVisuals();
-								else
-									self.activePins[info.questId] = self:AddWorldQuest(info);
-								end
-							end
+	local mapID = self:GetMap():GetMapID();
+	if (mapID) then
+		taskInfo = C_TaskQuest.GetQuestsForPlayerByMapID(mapID);
+	end
+
+	if taskInfo then
+		for i, info in ipairs(taskInfo) do
+			if self:ShouldShowQuest(info) and HaveQuestData(info.questId) then
+				if QuestUtils_IsQuestWorldQuest(info.questId) then
+					if self:DoesWorldQuestInfoPassFilters(info) then
+						pinsToRemove[info.questId] = nil;
+						local pin = self.activePins[info.questId];
+						if pin then
+							pin:RefreshVisuals();
+						else
+							self.activePins[info.questId] = self:AddWorldQuest(info);
 						end
 					end
 				end
@@ -83,13 +82,21 @@ function WorldQuestDataProviderMixin:RefreshAllData(fromOnShow)
 	end
 end
 
+function WorldQuestDataProviderMixin:ShouldShowQuest(info)
+	return true;
+end
+
+function WorldQuestDataProviderMixin:GetPinTemplate()
+	return "WorldQuestPinTemplate";
+end
+
 function WorldQuestDataProviderMixin:AddWorldQuest(info)
-	local pin = self:GetMap():AcquirePin("WorldQuestPinTemplate");
+	local pin = self:GetMap():AcquirePin(self:GetPinTemplate());
 	pin.questID = info.questId;
 
 	pin.worldQuest = true;
 	pin.numObjectives = info.numObjectives;
-	pin:SetFrameLevel(1000 + self:GetMap():GetNumActivePinsByTemplate("WorldQuestPinTemplate"));
+	pin:UseFrameLevelType("PIN_FRAME_LEVEL_WORLD_QUEST", self:GetMap():GetNumActivePinsByTemplate(self:GetPinTemplate()));
 
 	local tagID, tagName, worldQuestType, rarity, isElite, tradeskillLineIndex, displayTimeLeft = GetQuestTagInfo(info.questId);
 	local tradeskillLineID = tradeskillLineIndex and select(7, GetProfessionInfo(tradeskillLineIndex));
@@ -178,15 +185,7 @@ end
 WorldQuestPinMixin = CreateFromMixins(MapCanvasPinMixin);
 
 function WorldQuestPinMixin:OnLoad()
-	self:SetAlphaLimits(2.0, 0.0, 1.0);
-	self:SetScalingLimits(1, 0.4125, 0.425);
-
 	self.UpdateTooltip = self.OnMouseEnter;
-
-	-- Flight points can nudge world quests.
-	self:SetNudgeTargetFactor(0.015);
-	self:SetNudgeZoomedOutFactor(1.0);
-	self:SetNudgeZoomedInFactor(0.25);
 end
 
 function WorldQuestPinMixin:RefreshVisuals()
@@ -201,13 +200,6 @@ function WorldQuestPinMixin:RefreshVisuals()
 		else
 			self.Background:SetTexCoord(0.875, 1, 0.375, 0.5);
 		end
-	end
-	
-	if IsWorldQuestWatched(self.questID) then
-		self:SetAlphaLimits(nil, 0.0, 1.0);
-		self:SetAlpha(1);
-	else
-		self:SetAlphaLimits(2.0, 0.0, 1.0);
 	end
 end
 

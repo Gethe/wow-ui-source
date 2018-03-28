@@ -72,6 +72,20 @@ local UIWidgetManager =
 			},
 		},
 		{
+			Name = "GetIconTextAndBackgroundWidgetVisualizationInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "widgetID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "widgetInfo", Type = "IconTextAndBackgroundWidgetVisualizationInfo", Nilable = true },
+			},
+		},
+		{
 			Name = "GetTopCenterWidgetSetID",
 			Type = "Function",
 
@@ -192,6 +206,16 @@ local UIWidgetManager =
 				{ Name = "dynamicTooltip", Type = "string", Nilable = false },
 				{ Name = "textureKitID", Type = "number", Nilable = false },
 				{ Name = "hasTimer", Type = "bool", Nilable = false },
+				{ Name = "orderIndex", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "IconTextAndBackgroundWidgetVisualizationInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "value", Type = "number", Nilable = false },
+				{ Name = "textureKitID", Type = "number", Nilable = false },
 				{ Name = "orderIndex", Type = "number", Nilable = false },
 			},
 		},

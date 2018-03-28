@@ -7,14 +7,10 @@
 				<Texture parentKey="Icon">
 					<Size x="42" y="42"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="-60" y="0"/>
+						<Anchor point="TOPLEFT"/>
 					</Anchors>
 				</Texture>
-				<FontString parentKey="Text" inherits="GameFontNormalSmall">
-					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="-12" y="10"/>
-					</Anchors>
-				</FontString>
+				<FontString parentKey="Text" inherits="GameFontNormalSmall" justifyH="LEFT"/>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -63,19 +59,9 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnEnter>
-				if ( self.tooltip ) then
-					GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT");
-					GameTooltip:SetText(self.tooltip);
-				end
-			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
-			<OnLoad>
-				self.DynamicIconTexture = self.DynamicIconButton.Icon;
-				self.FlashTexture = self.Flash.Texture;
-			</OnLoad>
+			<OnLoad method="OnLoad"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
 		</Scripts>
 	</Frame>
 </Ui>

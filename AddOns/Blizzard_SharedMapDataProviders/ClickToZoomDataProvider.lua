@@ -53,7 +53,7 @@ function ClickToZoomDataProviderMixin:RemoveAllData()
 end
 
 function ClickToZoomDataProviderMixin:RefreshAllData(fromOnShow)
-	if self:GetMap():IsZoomedOut() then
+	if not self:GetMap():IsAtMaxZoom() then
 		if not self.MapLabel.FadeInAnim:IsPlaying() then
 			self.MapLabel:SetAlpha(1);
 		end
@@ -66,11 +66,13 @@ end
 
 function ClickToZoomDataProviderMixin:UpdateStyle()
 	local style = ClickToZoomStyles[self:GetClickToZoomStyle()];
-	self.MapLabel:ClearAllPoints();
-	self.MapLabel:SetPoint(style.point, style.x, style.y);
-	local text = self.MapLabel.Text;
-	text:ClearAllPoints();
-	text:SetPoint(style.textPoint);
+	if style then
+		self.MapLabel:ClearAllPoints();
+		self.MapLabel:SetPoint(style.point, style.x, style.y);
+		local text = self.MapLabel.Text;
+		text:ClearAllPoints();
+		text:SetPoint(style.textPoint);
+	end
 end
 
 function ClickToZoomDataProviderMixin:OnMapChanged()
@@ -80,10 +82,7 @@ end
 function ClickToZoomDataProviderMixin:GetClickToZoomStyle()
 	local mapID = self:GetMap():GetMapID();
 	if mapID then
-		local preferredStyle = C_MapCanvas.GetPreferredHelpTextPosition(mapID);
-		if preferredStyle then
-			return preferredStyle;
-		end
+		return C_Map.GetMapArtHelpTextPosition(mapID);
 	end
 	
 	return Enum.MapCanvasPosition.BottomRight;

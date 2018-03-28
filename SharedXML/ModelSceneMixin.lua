@@ -50,6 +50,10 @@ function ModelSceneMixin:ClearScene()
 	C_ModelInfo.ClearActiveModelScene(self);
 end
 
+function ModelSceneMixin:GetModelSceneID()
+	return self.modelSceneID; 
+end
+
 -- Adjusts this scene to mirror a model scene from static data without transition
 function ModelSceneMixin:SetFromModelSceneID(modelSceneID, forceEvenIfSame)
 	local modelSceneType, cameraIDs, actorIDs = C_ModelInfo.GetModelSceneInfoByID(modelSceneID);
@@ -222,7 +226,7 @@ end
 
 function ModelSceneMixin:Transform3DPointTo2D(x, y, z)
 	self:SynchronizeActiveCamera();
-	return -- TODO: Your transform code here
+	return self:Project3DPointTo2D(x, y, z);
 end
 
 -- "private" functions

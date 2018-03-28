@@ -64,14 +64,14 @@
 		</Layers>
 		<Scripts>
 			<OnEnter>
-				local questLineName, questName, _, _, _, floorLocation, isLegendary = C_Questline.GetQuestlineInfoByIndex(self.index);
-				if ( questName ) then
+				local questInfo = C_QuestLine.GetQuestLineInfo(self.questID, self.mapID);
+				if ( questInfo ) then
 					WorldMapTooltip:SetOwner(self, "ANCHOR_LEFT");
-					WorldMapTooltip:SetText(questName);
+					WorldMapTooltip:SetText(questInfo.questName);
 					WorldMapTooltip:AddLine(AVAILABLE_QUEST, 1, 1, 1, true);
-					if (floorLocation == LE_QUESTLINE_FLOOR_LOCATION_BELOW) then
+					if (questInfo.floorLocation == Enum.QuestLineFloorLocation.Below) then
 						WorldMapTooltip:AddLine(QUESTLINE_LOCATED_BELOW, 0.5, 0.5, 0.5, true);
-					elseif (floorLocation == LE_QUESTLINE_FLOOR_LOCATION_ABOVE) then
+					elseif (questInfo.floorLocation == Enum.QuestLineFloorLocation.Above) then
 						WorldMapTooltip:AddLine(QUESTLINE_LOCATED_ABOVE, 0.5, 0.5, 0.5, true);
 					end
 					WorldMapTooltip:Show();

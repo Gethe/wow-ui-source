@@ -578,7 +578,6 @@ end
 
 function BonusRollFrame_StartBonusRoll(spellID, text, duration, currencyID, currencyCost, difficultyID)
 	local frame = BonusRollFrame;
-
 	-- No valid currency data--use the fall back.
 	if ( currencyID == 0 ) then
 		currencyID = BONUS_ROLL_REQUIRED_CURRENCY;
@@ -668,12 +667,13 @@ function BonusRollFrame_OnEvent(self, event, ...)
 		self.RollingFrame.LootSpinnerFinal:Hide();
 		self.StartRollAnim:Play();
 	elseif ( event == "BONUS_ROLL_RESULT" ) then
-		local rewardType, rewardLink, rewardQuantity, rewardSpecID = ...;
+		local rewardType, rewardLink, rewardQuantity, rewardSpecID,_,_, currencyID = ...;
 		self.state = "slowing";
 		self.rewardType = rewardType;
 		self.rewardLink = rewardLink;
 		self.rewardQuantity = rewardQuantity;
 		self.rewardSpecID = rewardSpecID;
+		self.currencyID = currencyID; 
 		self.StartRollAnim:Finish();
 	elseif ( event == "PLAYER_LOOT_SPEC_UPDATED" ) then
 		local specID = GetLootSpecialization();
@@ -730,7 +730,11 @@ function BonusRollFrame_OnUpdate(self, elapsed)
 			self.RollingFrame.LootSpinner:Hide();
 			self.RollingFrame.LootSpinnerFinal:Show();
 			self.RollingFrame.LootSpinnerFinal:SetTexCoord(unpack(finalTextureTexCoords[self.rewardType]));
-			self.RollingFrame.LootSpinnerFinalText:SetText(_G["BONUS_ROLL_REWARD_"..string.upper(self.rewardType)]);
+			if( self.currencyID == C_CurrencyInfo.GetAzeriteCurrencyID() ) then
+				self.RollingFrame.LootSpinnerFinalText:SetText(BONUS_ROLL_REWARD_ARTIFACT_POWER);
+			else
+				self.RollingFrame.LootSpinnerFinalText:SetText(_G["BONUS_ROLL_REWARD_"..string.upper(self.rewardType)]);
+			end
 			self.FinishRollAnim:Play();
 		elseif ( self.animTime > 0.1 ) then --Slow it down
 			BonusRollFrame_AdvanceLootSpinnerAnim(self);
@@ -832,6 +836,10 @@ function BonusRollFrame_FinishedFading(self)
 		MoneyWonAlertFrame_SetUp(BonusRollMoneyWonFrame, self.rewardQuantity);
 		LootMoneyNotify(self.rewardQuantity, true);
 		AlertFrame:AddAlertFrame(BonusRollMoneyWonFrame);
+	elseif ( self.rewardType == "currency" ) then 
+		GroupLootContainer_ReplaceFrame(GroupLootContainer, self, BonusRollLootWonFrame);
+		LootWonAlertFrame_SetUp(BonusRollLootWonFrame, self.rewardLink, self.rewardQuantity, nil, nil, self.rewardSpecID, true, nil, nil, nil, nil, true);
+		AlertFrame:AddAlertFrame(BonusRollLootWonFrame);
 	else
 		GroupLootContainer_RemoveFrame(GroupLootContainer, self);
 	end

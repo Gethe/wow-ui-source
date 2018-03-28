@@ -133,7 +133,7 @@ function GameTooltip_AddQuestRewardsToTooltip(tooltip, questID, style)
 		end
 
 		-- items
-		local numQuestRewards = GetNumQuestLogRewards(questID);
+		local numQuestRewards = GetNumQuestLogRewards(questID); 
 		if numQuestRewards > 0 then
 			if ( hasAnySingleLineRewards ) then
 				tooltip:AddLine(" ");

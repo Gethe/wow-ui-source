@@ -717,7 +717,7 @@ end
 local Class_Intro_MapHighlights = class("Intro_MapHighlights", Class_TutorialBase);
 
 function Class_Intro_MapHighlights:OnBegin()
-	self.MapAreaID = GetCurrentMapAreaID();
+	self.MapID = C_Map.GetCurrentMapID();
 
 	self.Prompt = NPE_MAPCALLOUTBASE;
 	local hasBlob = false;
@@ -754,7 +754,7 @@ function Class_Intro_MapHighlights:Display()
 end
 
 function Class_Intro_MapHighlights:WORLD_MAP_UPDATE()
-	if (GetCurrentMapAreaID() ~= self.MapAreaID) then
+	if (C_Map.GetCurrentMapID() ~= self.MapID) then
 		self:Suppress();
 	else
 		self:Unsuppress();
@@ -1787,7 +1787,7 @@ local Class_ShowMapQuestTurnIn = class("ShowMapQuestTurnIn", Class_TutorialBase)
 
 -- @param questData: Class QuestData (QuestManager.lua)
 function Class_ShowMapQuestTurnIn:OnBegin(questData)
-	self.MapAreaID = GetCurrentMapAreaID();
+	self.MapID = C_Map.GetCurrentMapID();
 
 	-- This should no longer ever happen, but it's a good safety check anyway.
 	if (not questData) then
@@ -1803,10 +1803,10 @@ function Class_ShowMapQuestTurnIn:OnBegin(questData)
 end
 
 function Class_ShowMapQuestTurnIn:WORLD_MAP_UPDATE()
-	local newArea = GetCurrentMapAreaID();
-	if (newArea ~= self.MapAreaID) then
+	local newMapID = C_Map.GetCurrentMapID();
+	if (newMapID ~= self.MapID) then
 		self:Display();
-		self.MapAreaID = newArea;
+		self.MapID = newMapID;
 	end
 end
 
@@ -2487,10 +2487,11 @@ function Class_Taxi:OnBegin()
 end
 
 function Class_Taxi:TAXIMAP_OPENED()
-	if TaxiFrame_ShouldShowOldStyle() then
+-- MAPREFACTORTODO - query the taxi map type
+--	if TaxiFrame_ShouldShowOldStyle() then
 		self:ShowPointerTutorial(str(NPE_TAXICALLOUT), "LEFT", TaxiRouteMap, -10, 0);
 		Dispatcher:RegisterScript(TaxiFrame, "OnHide", function() self:Complete() end);
-	end
+--	end
 end
 
 -- ------------------------------------------------------------------------------------------------------------

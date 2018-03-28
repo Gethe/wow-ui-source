@@ -2761,8 +2761,6 @@ function LFGListUtil_GetDecoratedCategoryName(categoryName, filter, useColors)
 		colorStart = "|cffffffff";
 		colorEnd = "|r";
 	end
-
-	print(filter)
 	
 	local extraName = "";
 	if ( filter == LE_LFG_LIST_FILTER_NOT_RECOMMENDED ) then

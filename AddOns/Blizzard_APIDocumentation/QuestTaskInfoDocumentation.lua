@@ -43,7 +43,7 @@ local QuestTaskInfo =
 			Arguments =
 			{
 				{ Name = "mapID", Type = "number", Nilable = false },
-				{ Name = "parentMapID", Type = "number", Nilable = true },
+				{ Name = "parentUiMapID", Type = "number", Nilable = true },
 			},
 
 			Returns =
@@ -91,8 +91,7 @@ local QuestTaskInfo =
 
 			Returns =
 			{
-				{ Name = "mapID", Type = "number", Nilable = false },
-				{ Name = "zoneMapID", Type = "number", Nilable = false },
+				{ Name = "uiMapID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -101,9 +100,8 @@ local QuestTaskInfo =
 
 			Arguments =
 			{
-				{ Name = "mapID", Type = "number", Nilable = false },
-				{ Name = "parentMapID", Type = "number", Nilable = true },
-				{ Name = "transformFlags", Type = "MapTransform", Nilable = true },
+				{ Name = "uiMapID", Type = "number", Nilable = false },
+				{ Name = "parentUiMapID", Type = "number", Nilable = true },
 			},
 
 			Returns =
@@ -143,17 +141,6 @@ local QuestTaskInfo =
 	Tables =
 	{
 		{
-			Name = "MapTransform",
-			Type = "Enumeration",
-			NumValues = 1,
-			MinValue = 1,
-			MaxValue = 1,
-			Fields =
-			{
-				{ Name = "IsForFlightMap", Type = "MapTransform", EnumValue = 0 },
-			},
-		},
-		{
 			Name = "TaskPOIData",
 			Type = "Structure",
 			Fields =
@@ -161,9 +148,9 @@ local QuestTaskInfo =
 				{ Name = "questId", Type = "number", Nilable = false },
 				{ Name = "x", Type = "number", Nilable = false },
 				{ Name = "y", Type = "number", Nilable = false },
-				{ Name = "floor", Type = "number", Nilable = false },
 				{ Name = "inProgress", Type = "bool", Nilable = false },
 				{ Name = "numObjectives", Type = "number", Nilable = false },
+				{ Name = "mapID", Type = "number", Nilable = false },
 			},
 		},
 	},

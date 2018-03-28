@@ -164,6 +164,7 @@ function UIWidgetManagerMixin:ProcessWidget(widgetID, widgetSetID, widgetType)
 		local widgetAlreadyExisted = (widgetFrame ~= nil);
 
 		local oldOrderIndex;
+		local isNewWidget = false;
 
 		local widgetInfo = self.widgetVisTypeInfo[widgetType].visInfoDataFunction(widgetID);
 
@@ -192,6 +193,8 @@ function UIWidgetManagerMixin:ProcessWidget(widgetID, widgetSetID, widgetType)
 				if self.registeredWidgetSetContainers[widgetSetID].initFunc then
 					self.registeredWidgetSetContainers[widgetSetID].initFunc(widgetFrame);
 				end
+
+				isNewWidget = true;
 			else
 				-- Widget should not be shown. It didn't already exist so there is nothing to do. Return false (indicating that the set does NOT need to have the layout function run)
 				return false;
@@ -202,6 +205,10 @@ function UIWidgetManagerMixin:ProcessWidget(widgetID, widgetSetID, widgetType)
 
 		-- Run the Setup function on the widget (could change the orderIndex)
 		widgetFrame:Setup(widgetInfo);
+
+		if isNewWidget and widgetFrame.OnAcquired then
+			widgetFrame:OnAcquired(widgetInfo)
+		end
 
 		-- Determine if the order index changed
 		if oldOrderIndex ~= widgetFrame.orderIndex then

@@ -701,7 +701,7 @@ function KnowledgeBase_OnLoad(self)
 	local homeData = {
 		name = HOME,
 		OnClick = KnowledgeBase_DisplayCategories,
-		listFunc = KnowledgeBase_ListCategory,
+		listFunc = KnowledgeBase_GetCategoryList,
 	}
 	self.navBar.textMaxWidth = 117;
 	self.navBar.oldStyle = true;
@@ -872,7 +872,9 @@ function KnowledgeBase_SendArticleRequest(categoryIndex, subcategoryIndex)
 	KnowledgeBase_Clearlist();
 	local buttonText = ALL;
 	if subcategoryIndex ~= 0 then
-		buttonText = KnowledgeBase_ListSubCategory(nil, subcategoryIndex+1, categoryIndex);
+		local list = KnowledgeBase_GetSubCategoryList(self, categoryIndex);
+		local entry = list and list[subcategoryIndex+1];
+		buttonText = entry and entry.text;
 	end
 	
 	local buttonData = {
@@ -927,20 +929,22 @@ function KnowledgeBase_SelectSubCategory(self, index, navBar) -- Index could als
 end
 
 
-function KnowledgeBase_ListCategory(self, index)
-	local navBar = self:GetParent();
-	local _, text, func;
+function KnowledgeBase_GetCategoryList(self)
+	local list = { };
 	local numCata = KBSetup_GetCategoryCount()+2;
-	
-	if index == 1  then
+	for index = 1, numCata do
+		local _, text;
+		if ( index == 1 ) then
 			text = ALL;
-	elseif index == 2  then
-		text = KBASE_TOP_ISSUES;
-	elseif index <= numCata  then
-		_, text = KBSetup_GetCategoryData(index-2);
+		elseif index == 2  then
+			text = KBASE_TOP_ISSUES;
+		else
+			_, text = KBSetup_GetCategoryData(index-2);
+		end
+		local entry = { text = text, id = index, func = KnowledgeBase_SelectCategory };
+		tinsert(list, entry);
 	end
-	
-	return text, KnowledgeBase_SelectCategory;
+	return list;
 end
 
 
@@ -971,12 +975,13 @@ function KnowledgeBase_DisplayCategories()
 		showButton = false;
 		local button = buttons[i];
 		local index = offset + i;
-		local text, func = KnowledgeBase_ListCategory(self, index);
-		if text then
+		local list = KnowledgeBase_GetCategoryList(self);
+		local entry = list and list[index];
+		if entry then
 			button.number:SetText("");
 			button.title:SetPoint("LEFT", 10, 0);
-			button.title:SetText(text);
-			button:SetScript("OnClick",	func);
+			button.title:SetText(entry.text);
+			button:SetScript("OnClick",	entry.func);
 			button.index = index;
 			showButton = true;
 		end
@@ -994,17 +999,21 @@ function KnowledgeBase_DisplayCategories()
 end
 
 
-function KnowledgeBase_ListSubCategory(self, index, category)
+function KnowledgeBase_GetSubCategoryList(self, category)
 	category = category or self.data.category;
-	local _, text, func;
+	local list = { };
 	local numSubCata = KBSetup_GetSubCategoryCount(category)+1;
-	
-	if index == 1  then
+	for index = 1, numSubCata do
+		local _, text;
+		if ( index == 1 ) then
 			text = ALL;
-	elseif index <= numSubCata  then
-		_, text = KBSetup_GetSubCategoryData(category, index-1);
+		else
+			_, text = KBSetup_GetSubCategoryData(category, index-1);
+		end
+		local entry = { text = text, id = index, func = KnowledgeBase_SelectSubCategory };
+		tinsert(list, entry);
 	end
-	return text, KnowledgeBase_SelectSubCategory;
+	return list;
 end
 
 
@@ -1016,7 +1025,7 @@ function KnowledgeBase_DisplaySubCategories(category)
 		local buttonData = {
 			name = cat_name,
 			OnClick = KnowledgeBase_DisplaySubCategories,
-			listFunc = KnowledgeBase_ListSubCategory,
+			listFunc = KnowledgeBase_GetSubCategoryList,
 			category = category,
 		}
 		NavBar_AddButton(HelpFrame.kbase.navBar, buttonData);
@@ -1041,12 +1050,13 @@ function KnowledgeBase_DisplaySubCategories(category)
 		showButton = false;
 		local button = buttons[i];
 		local index = offset + i;
-		local text, func = KnowledgeBase_ListSubCategory(self, index, category);
-		if text then
+		local list = KnowledgeBase_GetSubCategoryList(self, category);
+		local entry = list and list[index];
+		if entry then
 			button.number:SetText("");
 			button.title:SetPoint("LEFT", 10, 0);
-			button.title:SetText(text);
-			button:SetScript("OnClick",	func);
+			button.title:SetText(entry.text);
+			button:SetScript("OnClick",	entry.func);
 			button.index = index;
 			showButton = true;
 		end

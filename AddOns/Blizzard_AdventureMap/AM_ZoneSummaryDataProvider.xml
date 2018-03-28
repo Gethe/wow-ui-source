@@ -45,7 +45,7 @@
 		</Animations>
 	</Frame>
 
-	<Frame name="AdventureMap_ZoneSummaryInsetPinTemplate" hidden="true" frameStrata="HIGH" enableMouse="false" mixin="AdventureMap_ZoneSummaryInsetPinMixin" virtual="true">
+	<Frame name="AdventureMap_ZoneSummaryInsetPinTemplate" hidden="true" enableMouse="false" mixin="AdventureMap_ZoneSummaryInsetPinMixin" virtual="true">
 		<Size x="96" y="98"/>
 
 		<Layers>

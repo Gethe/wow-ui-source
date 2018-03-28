@@ -15,6 +15,20 @@ local textureKitRegions = {
 	["FlashTexture"] = "%s-flash",
 }
 
+function UIWidgetTemplateIconAndTextMixin:OnAcquired(widgetInfo)
+	self.Text:ClearAllPoints();
+
+	if self.Icon:IsShown() then
+		self.alignWidth = self.Icon:GetWidth()- 12 + self.Text:GetStringWidth();
+		self.Text:SetPoint("TOPLEFT", self.Icon, "TOPRIGHT", -12, -6);
+	else
+		self.alignWidth = self.Text:GetStringWidth();
+		self.Text:SetPoint("TOPLEFT", self.Icon, "TOPLEFT", 0, -6);
+	end
+
+	self:SetWidth(self.alignWidth);
+end
+
 function UIWidgetTemplateIconAndTextMixin:Setup(widgetInfo)
 	self:Show();
 
@@ -35,5 +49,23 @@ function UIWidgetTemplateIconAndTextMixin:Setup(widgetInfo)
 	else
 		UIFrameFlashStop(self.Flash);
 		self.DynamicIconButton:Hide();
+	end
+end
+
+function UIWidgetTemplateIconAndTextMixin:OnLoad()
+	self.DynamicIconTexture = self.DynamicIconButton.Icon;
+	self.FlashTexture = self.Flash.Texture;
+end
+
+function UIWidgetTemplateIconAndTextMixin:OnEnter()
+	if ( self.tooltip ) then
+		GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT");
+		GameTooltip:SetText(self.tooltip);
+	end
+end
+
+function UIWidgetTemplateIconAndTextMixin:OnLeave()
+	if ( self.tooltip ) then
+		GameTooltip:Hide();
 	end
 end

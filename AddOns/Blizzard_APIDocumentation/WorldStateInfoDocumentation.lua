@@ -22,11 +22,6 @@ local WorldStateInfo =
 			},
 		},
 		{
-			Name = "UpdateWorldStates",
-			Type = "Event",
-			LiteralName = "UPDATE_WORLD_STATES",
-		},
-		{
 			Name = "WorldStateTimerStart",
 			Type = "Event",
 			LiteralName = "WORLD_STATE_TIMER_START",
@@ -43,11 +38,6 @@ local WorldStateInfo =
 			{
 				{ Name = "timerID", Type = "number", Nilable = false },
 			},
-		},
-		{
-			Name = "WorldStateUiTimerUpdate",
-			Type = "Event",
-			LiteralName = "WORLD_STATE_UI_TIMER_UPDATE",
 		},
 	},
 

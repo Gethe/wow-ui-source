@@ -1,0 +1,46 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Frame name="IslandsPartyPoseFrame" topLevel="true" parent="UIParent" inherits="PartyPoseFrameTemplate" mixin="IslandsPartyPoseMixin">
+		<Anchors>
+			<Anchor point="CENTER" x="5" y="5"/>
+		</Anchors>
+		<Frames>
+			<ModelScene parentKey="ModelScene" enableMouse="false" useParentLevel="true" inherits="PartyPoseModelFrameTemplate">
+				<Anchors>
+					<Anchor point="CENTER"/> 
+				</Anchors>
+			</ModelScene>
+			<Frame parentKey="Score">
+				<Size x="100" y="40"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ModelScene" x="-20" y="-50"/>
+				</Anchors>
+			</Frame>
+			<Button parentKey="LeaveButton" inherits="UIPanelButtonNoTooltipTemplate">
+				<Size x="164" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ModelScene" x="-20" y="-45"/> 
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						LeaveInstanceParty(); 
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.TopRightCorner" x="-3" y="-4"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent():Hide();
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

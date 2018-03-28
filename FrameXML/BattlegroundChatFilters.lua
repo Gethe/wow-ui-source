@@ -1,28 +1,77 @@
-WORLDSTATEALWAYSUPFRAME_TIMESINCELAST = -25;
-WORLDSTATEALWAYSUPFRAME_TIMESINCESTART = 0;
-WORLDSTATEALWAYSUPFRAME_TIMETORUN = 60;
-WORLDSTATEALWAYSUPFRAME_DEFAULTINTERVAL = 5;
-
-local inBattleground = false;
+local BG_CHAT_FILTERS_TIME_SINCE_LAST = -25;
+local BG_CHAT_FILTERS_TIME_SINCE_START = 0;
+local BG_CHAT_FILTERS_TIME_TO_RUN = 60;
+local BG_CHAT_FILTERS_DEFAULT_INTERVAL = 5;
 
 --
-FILTERED_BG_CHAT_ADD_GLOBALS = { "ERR_RAID_MEMBER_ADDED_S", "ERR_BG_PLAYER_JOINED_SS" };
-FILTERED_BG_CHAT_SUBTRACT_GLOBALS = { "ERR_RAID_MEMBER_REMOVED_S", "ERR_BG_PLAYER_LEFT_S" };
+local FILTERED_BG_CHAT_ADD_GLOBALS = { "ERR_RAID_MEMBER_ADDED_S", "ERR_BG_PLAYER_JOINED_SS" };
+local FILTERED_BG_CHAT_SUBTRACT_GLOBALS = { "ERR_RAID_MEMBER_REMOVED_S", "ERR_BG_PLAYER_LEFT_S" };
 
 --Filtered at the end of BGs only
-FILTERED_BG_CHAT_END_GLOBALS = { "LOOT_ITEM", "LOOT_ITEM_MULTIPLE", "CREATED_ITEM", "CREATED_ITEM_MULTIPLE", "ERR_RAID_MEMBER_REMOVED_S", "ERR_BG_PLAYER_LEFT_S" };
+local FILTERED_BG_CHAT_END_GLOBALS = { "LOOT_ITEM", "LOOT_ITEM_MULTIPLE", "CREATED_ITEM", "CREATED_ITEM_MULTIPLE", "ERR_RAID_MEMBER_REMOVED_S", "ERR_BG_PLAYER_LEFT_S" };
 
-FILTERED_BG_CHAT_ADD = {};
-FILTERED_BG_CHAT_SUBTRACT = {};
-FILTERED_BG_CHAT_END = {};
+local FILTERED_BG_CHAT_ADD = {};
+local FILTERED_BG_CHAT_SUBTRACT = {};
+local FILTERED_BG_CHAT_END = {};
 
-ADDED_PLAYERS = {};
-SUBTRACTED_PLAYERS = {};
+local ADDED_PLAYERS = {};
+local SUBTRACTED_PLAYERS = {};
 
-function WorldStateAlwaysUpFrame_OnUpdate(self, elapsed)
-	WORLDSTATEALWAYSUPFRAME_TIMESINCELAST = WORLDSTATEALWAYSUPFRAME_TIMESINCELAST + elapsed;
-	WORLDSTATEALWAYSUPFRAME_TIMESINCESTART = WORLDSTATEALWAYSUPFRAME_TIMESINCESTART + elapsed;
-	if ( WORLDSTATEALWAYSUPFRAME_TIMESINCELAST >= WORLDSTATEALWAYSUPFRAME_DEFAULTINTERVAL ) then		
+BattlegroundChatFiltersMixin = {}
+
+function BattlegroundChatFiltersMixin:OnLoad()
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+	self:RegisterEvent("PLAYER_ENTERING_BATTLEGROUND");
+
+	FILTERED_BG_CHAT_ADD = {};
+	FILTERED_BG_CHAT_SUBTRACT = {};
+	FILTERED_BG_CHAT_END = {};
+	
+	local chatString;
+	for _, str in next, FILTERED_BG_CHAT_ADD_GLOBALS do	
+		chatString = _G[str];
+		if ( chatString ) then
+			chatString = string.gsub(chatString, "%[", "%%[");
+			chatString = string.gsub(chatString, "%]", "%%]");
+			chatString = string.gsub(chatString, "%%s", "(.-)")
+			tinsert(FILTERED_BG_CHAT_ADD, chatString);
+		end
+	end	
+	
+	local chatString;
+	for _, str in next, FILTERED_BG_CHAT_SUBTRACT_GLOBALS do	
+		chatString = _G[str];
+		if ( chatString ) then
+			chatString = string.gsub(chatString, "%[", "%%[");
+			chatString = string.gsub(chatString, "%]", "%%]");
+			chatString = string.gsub(chatString, "%%s", "(.-)")
+			tinsert(FILTERED_BG_CHAT_SUBTRACT, chatString);
+		end
+	end
+	
+	for _, str in next, FILTERED_BG_CHAT_END_GLOBALS do
+		chatString = _G[str];
+		if ( chatString ) then
+			chatString = string.gsub(chatString, "%[", "%%[");
+			chatString = string.gsub(chatString, "%]", "%%]");
+			chatString = string.gsub(chatString, "%%s", "(.-)");
+			tinsert(FILTERED_BG_CHAT_END, chatString);
+		end
+	end
+end
+
+function BattlegroundChatFiltersMixin:OnEvent(event, ...)
+	if ( event == "PLAYER_ENTERING_WORLD" ) then
+		self:StopBGChatFilter();
+	elseif ( event == "PLAYER_ENTERING_BATTLEGROUND" ) then
+		self:StartBGChatFilter();
+	end
+end
+
+function BattlegroundChatFiltersMixin:OnUpdate(elapsed)
+	BG_CHAT_FILTERS_TIME_SINCE_LAST = BG_CHAT_FILTERS_TIME_SINCE_LAST + elapsed;
+	BG_CHAT_FILTERS_TIME_SINCE_START = BG_CHAT_FILTERS_TIME_SINCE_START + elapsed;
+	if ( BG_CHAT_FILTERS_TIME_SINCE_LAST >= BG_CHAT_FILTERS_DEFAULT_INTERVAL ) then		
 		local subtractedPlayers, playerString = 0;
 		
 		for i in next, SUBTRACTED_PLAYERS do 
@@ -85,30 +134,26 @@ function WorldStateAlwaysUpFrame_OnUpdate(self, elapsed)
 			end
 		end
 		
-		WORLDSTATEALWAYSUPFRAME_TIMESINCELAST = 0;
-	elseif ( WORLDSTATEALWAYSUPFRAME_TIMESINCESTART >= WORLDSTATEALWAYSUPFRAME_TIMETORUN ) then
-		WORLDSTATEALWAYSUPFRAME_TIMESINCELAST = WORLDSTATEALWAYSUPFRAME_DEFAULTINTERVAL;
-		WorldStateAlwaysUpFrame_OnUpdate(self, 0);
+		BG_CHAT_FILTERS_TIME_SINCE_LAST = 0;
+	elseif ( BG_CHAT_FILTERS_TIME_SINCE_START >= BG_CHAT_FILTERS_TIME_TO_RUN ) then
+		BG_CHAT_FILTERS_TIME_SINCE_LAST = BG_CHAT_FILTERS_DEFAULT_INTERVAL;
+		self:OnUpdate(0);
 		self:SetScript("OnUpdate", nil);
 	end
 end
 
-function WorldStateAlwaysUpFrame_StartBGChatFilter (self)
-	inBattleground = true;
-	
+function BattlegroundChatFiltersMixin:StartBGChatFilter()
 	-- Reset the OnUpdate timer variables
-	WORLDSTATEALWAYSUPFRAME_TIMESINCELAST = -25;
-	WORLDSTATEALWAYSUPFRAME_TIMESINCESTART = 0;
+	BG_CHAT_FILTERS_TIME_SINCE_LAST = -25;
+	BG_CHAT_FILTERS_TIME_SINCE_START = 0;
 	
-	ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", WorldStateAlwaysUpFrame_FilterChatMsgSystem);
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", self.FilterChatMsgSystem);
 	
-	self:SetScript("OnUpdate", WorldStateAlwaysUpFrame_OnUpdate);
+	self:SetScript("OnUpdate", self.OnUpdate);
 end
 
-function WorldStateAlwaysUpFrame_StopBGChatFilter (self)
-	inBattleground = false;
-	
-	ChatFrame_RemoveMessageEventFilter("CHAT_MSG_SYSTEM", WorldStateAlwaysUpFrame_FilterChatMsgSystem);
+function BattlegroundChatFiltersMixin:StopBGChatFilter()
+	ChatFrame_RemoveMessageEventFilter("CHAT_MSG_SYSTEM", self.FilterChatMsgSystem);
 	
 	for i in next, ADDED_PLAYERS do
 		ADDED_PLAYERS[i] = nil;
@@ -121,7 +166,7 @@ function WorldStateAlwaysUpFrame_StopBGChatFilter (self)
 	self:SetScript("OnUpdate", nil);
 end
 
-function WorldStateAlwaysUpFrame_FilterChatMsgSystem (self, event, ...)
+function BattlegroundChatFiltersMixin:FilterChatMsgSystem (event, ...)
 	local playerName;
 	
 	local message = ...;
@@ -134,7 +179,7 @@ function WorldStateAlwaysUpFrame_FilterChatMsgSystem (self, event, ...)
 				return true;
 			end
 		end
-	elseif ( WORLDSTATEALWAYSUPFRAME_TIMESINCESTART < WORLDSTATEALWAYSUPFRAME_TIMETORUN ) then
+	elseif ( BG_CHAT_FILTERS_TIME_SINCE_START < BG_CHAT_FILTERS_TIME_TO_RUN ) then
 		-- Filter out leaving and joining messages when the battleground starts.
 		for i, str in next, FILTERED_BG_CHAT_ADD do
 			playerName = string.match(message, str);

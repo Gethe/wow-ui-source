@@ -1,15 +1,25 @@
-ActiveQuestDataProviderMixin = CreateFromMixins(MapCanvasDataProviderMixin);
+QuestDataProviderMixin = CreateFromMixins(MapCanvasDataProviderMixin);
 
-function ActiveQuestDataProviderMixin:OnAdded(mapCanvas)
+function QuestDataProviderMixin:GetPinTemplate()
+	return "QuestPinTemplate";
+end
+
+function QuestDataProviderMixin:OnAdded(mapCanvas)
 	MapCanvasDataProviderMixin.OnAdded(self, mapCanvas);
 
 	self:RegisterEvent("QUEST_LOG_UPDATE");
 	self:RegisterEvent("QUEST_WATCH_LIST_CHANGED");
 	self:RegisterEvent("QUEST_POI_UPDATE");
 	self:RegisterEvent("SUPER_TRACKED_QUEST_CHANGED");
+
+	if not self.poiQuantizer then
+		self.poiQuantizer = CreateFromMixins(WorldMapPOIQuantizerMixin);
+		self.poiQuantizer.size = 75;
+		self.poiQuantizer:OnLoad(self.poiQuantizer.size, self.poiQuantizer.size);
+	end
 end
 
-function ActiveQuestDataProviderMixin:OnEvent(event, ...)
+function QuestDataProviderMixin:OnEvent(event, ...)
 	if event == "QUEST_LOG_UPDATE" then
 		self:RefreshAllData();
 	elseif event == "QUEST_WATCH_LIST_CHANGED" then
@@ -21,38 +31,55 @@ function ActiveQuestDataProviderMixin:OnEvent(event, ...)
 	end
 end
 
-function ActiveQuestDataProviderMixin:RemoveAllData()
-	self:GetMap():RemoveAllPinsByTemplate("ActiveQuestPinTemplate");
+function QuestDataProviderMixin:RemoveAllData()
+	self:GetMap():RemoveAllPinsByTemplate(self:GetPinTemplate());
 end
 
-function ActiveQuestDataProviderMixin:RefreshAllData(fromOnShow)
+function QuestDataProviderMixin:RefreshAllData(fromOnShow)
 	self:RemoveAllData();
+
+	local mapID = self:GetMap():GetMapID();
+	if not mapID then
+		return;
+	end
 
 	self.usedQuestNumbers = self.usedQuestNumbers or {};
 	self.pinsMissingNumbers = self.pinsMissingNumbers or {};
 
-	local mapAreaID = self:GetMap():GetMapID();
-	for zoneIndex = 1, C_MapCanvas.GetNumZones(mapAreaID) do
-		local zoneMapID, zoneName, zoneDepth, left, right, top, bottom = C_MapCanvas.GetZoneInfo(mapAreaID, zoneIndex);
-		if zoneDepth <= 1 then -- Exclude subzones
-			local activeQuestInfo = GetQuestsForPlayerByMapID(zoneMapID, mapAreaID, self:GetTransformFlags());
-
-			if activeQuestInfo then
-				for i, info in ipairs(activeQuestInfo) do
-					if not QuestUtils_IsQuestWorldQuest(info.questID) then
-						self:AddActiveQuest(info.questID, info.x, info.y);
-					end
-				end
+	local pinsToQuantize = { };
+	
+	local mapInfo = C_Map.GetMapInfo(mapID);
+	local QuestInfo = C_QuestLog.GetQuestsOnMap(mapID);
+	if QuestInfo then
+		for i, info in ipairs(QuestInfo) do
+			if not QuestUtils_IsQuestWorldQuest(info.questID) and self:ShouldShowQuest(info.questID, mapInfo.mapType) then
+				local pin = self:AddQuest(info.questID, info.x, info.y, i);
+				tinsert(pinsToQuantize, pin);
 			end
 		end
 	end
 
 	self:AssignMissingNumbersToPins();
+
+	self.poiQuantizer:Clear();
+	self.poiQuantizer:Quantize(pinsToQuantize);
+
+	for i, pin in pairs(pinsToQuantize) do
+		pin:SetPosition(pin.quantizedX or pin.normalizedX, pin.quantizedY or pin.normalizedY);
+	end
 end
 
-function ActiveQuestDataProviderMixin:AssignMissingNumbersToPins()
+function QuestDataProviderMixin:ShouldShowQuest(questID, mapType)
+	return MapUtil.ShouldMapTypeShowQuests(mapType);
+end
+
+function QuestDataProviderMixin:OnMapChanged()
+	self:RefreshAllData();
+end
+
+function QuestDataProviderMixin:AssignMissingNumbersToPins()
 	if #self.pinsMissingNumbers > 0 then
-		for questNumber = 1, MAX_NUM_QUESTS do
+		for questNumber = 1, C_QuestLog.GetMaxNumQuests() do
 			if not self.usedQuestNumbers[questNumber] then
 				local pin = table.remove(self.pinsMissingNumbers);
 				pin:AssignQuestNumber(questNumber);
@@ -68,8 +95,13 @@ function ActiveQuestDataProviderMixin:AssignMissingNumbersToPins()
 	wipe(self.usedQuestNumbers);
 end
 
-function ActiveQuestDataProviderMixin:AddActiveQuest(questID, x, y)
-	local pin = self:GetMap():AcquirePin("ActiveQuestPinTemplate");
+function QuestDataProviderMixin:OnCanvasSizeChanged()
+	local ratio = self:GetMap():DenormalizeHorizontalSize(1.0) / self:GetMap():DenormalizeVerticalSize(1.0);
+	self.poiQuantizer:Resize(math.ceil(self.poiQuantizer.size * ratio), self.poiQuantizer.size);
+end
+
+function QuestDataProviderMixin:AddQuest(questID, x, y, frameLevelOffset)
+	local pin = self:GetMap():AcquirePin(self:GetPinTemplate());
 	pin.questID = questID;
 
 	local isSuperTracked = questID == GetSuperTrackedQuestID();
@@ -78,22 +110,16 @@ function ActiveQuestDataProviderMixin:AddActiveQuest(questID, x, y)
 	pin.isSuperTracked = isSuperTracked;
 
 	if ( isSuperTracked ) then
-		pin:SetFrameLevel(100);
+		pin:UseFrameLevelType("PIN_FRAME_LEVEL_SUPER_TRACKED_QUEST");
 	else
-		pin:SetFrameLevel(50);
+		pin:UseFrameLevelType("PIN_FRAME_LEVEL_ACTIVE_QUEST", frameLevelOffset);
 	end
 
 	pin.Number:ClearAllPoints();
 	pin.Number:SetPoint("CENTER");
 
-	if isSuperTracked or isComplete then
-		pin:SetAlphaLimits(nil, 0.0, 1.0);
-		pin:SetAlpha(1);
-	else
-		pin:SetAlphaLimits(2.0, 0.0, 1.0);
-	end
-
 	if isComplete then
+		pin.style = "normal";
 		-- If the quest is super tracked we want to show the selected circle behind it.
 		if ( isSuperTracked ) then
 			pin.Texture:SetSize(89, 90);
@@ -150,39 +176,34 @@ function ActiveQuestDataProviderMixin:AddActiveQuest(questID, x, y)
 	end
 
 	pin:SetPosition(x, y);
+	return pin;
 end
 
---[[ Active Quest Pin ]]--
-ActiveQuestPinMixin = CreateFromMixins(MapCanvasPinMixin);
+--[[ Quest Pin ]]--
+QuestPinMixin = CreateFromMixins(MapCanvasPinMixin);
 
-function ActiveQuestPinMixin:OnLoad()
-	self:SetAlphaLimits(2.0, 0.0, 1.0);
-	self:SetScalingLimits(1, 0.4125, 0.425);
+function QuestPinMixin:OnLoad()
+	self:SetScalingLimits(1, 0.4125, 0.4125);
 
 	self.UpdateTooltip = self.OnMouseEnter;
-
-	-- Flight points can nudge quest pins.
-	self:SetNudgeTargetFactor(0.015);
-	self:SetNudgeZoomedOutFactor(1.0);
-	self:SetNudgeZoomedInFactor(0.25);
 end
 
-function ActiveQuestPinMixin:OnMouseEnter()
+function QuestPinMixin:OnMouseEnter()
 	WorldMap_HijackTooltip(self:GetMap());
 
 	WorldMapQuestPOI_SetTooltip(self, GetQuestLogIndexByID(self.questID));
 end
 
-function ActiveQuestPinMixin:OnMouseLeave()
+function QuestPinMixin:OnMouseLeave()
 	WorldMapPOIButton_OnLeave(self);
 
 	WorldMap_RestoreTooltip();
 end
 
-function ActiveQuestPinMixin:OnClick(button)
+function QuestPinMixin:OnClick(button)
 	QuestPOIButton_OnClick(self, button);
 end
 
-function ActiveQuestPinMixin:AssignQuestNumber(questNumber)
+function QuestPinMixin:AssignQuestNumber(questNumber)
 	self.Number:SetTexCoord(QuestPOI_CalculateNumericTexCoords(questNumber, self.isSuperTracked and QUEST_POI_COLOR_BLACK or QUEST_POI_COLOR_YELLOW));
 end

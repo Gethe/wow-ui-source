@@ -112,14 +112,11 @@ function QuestMapFrame_OnEvent(self, event, ...)
 	elseif ( event == "AJ_QUEST_LOG_OPEN" ) then
 		ShowQuestLog();
 		local questIndex = GetQuestLogIndexByID(arg1)
-		local mapID, floorNumber = GetQuestWorldMapAreaID(arg1);
+		local mapID = GetQuestUiMapID(arg1);
 		if ( questIndex > 0 ) then
 			QuestMapFrame_OpenToQuestDetails(arg1);
 		elseif ( mapID ~= 0 ) then
 			SetMapByID(mapID);
-			if ( floorNumber ~= 0 ) then
-				SetDungeonMapLevel(floorNumber);
-			end
 		elseif ( arg2 and arg2 > 0) then
 			SetMapByID(arg2);
 		end
@@ -268,21 +265,15 @@ function QuestMapFrame_ShowQuestDetails(questID)
 
 	-- save current view
 	QuestMapFrame.DetailsFrame.continent = GetCurrentMapContinent();
-	QuestMapFrame.DetailsFrame.questMapID = nil;	-- doing it now because GetQuestWorldMapAreaID will do a SetMap to current zone
-	QuestMapFrame.DetailsFrame.dungeonFloor = GetCurrentMapDungeonLevel();
-
-	local mapID, floorNumber = GetQuestWorldMapAreaID(questID);
+	QuestMapFrame.DetailsFrame.questMapID = nil;
+	local mapID = GetQuestUiMapID(questID);
 	if ( mapID ~= 0 ) then
 		SetMapByID(mapID);
-		if ( floorNumber ~= 0 ) then
-			SetDungeonMapLevel(floorNumber);
-			QuestMapFrame.DetailsFrame.dungeonFloor = floorNumber;
-		end
 		QuestMapFrame.DetailsFrame.mapID = mapID;
 	end
 
 	QuestMapFrame_UpdateQuestDetailsButtons();
-	QuestMapFrame.DetailsFrame.questMapID = GetCurrentMapAreaID();
+	QuestMapFrame.DetailsFrame.questMapID = C_Map.GetCurrentMapID();
 
 	if ( IsQuestComplete(questID) and GetQuestLogIsAutoComplete(questLogIndex) ) then
 		QuestMapFrame.DetailsFrame.CompleteQuestFrame:Show();
@@ -337,13 +328,8 @@ function QuestMapFrame_UpdateQuestDetailsButtons()
 end
 
 function QuestMapFrame_ReturnFromQuestDetails()
-	if ( QuestMapFrame.DetailsFrame.mapID == -1 ) then
-		SetMapZoom(QuestMapFrame.DetailsFrame.continent);
-	elseif ( QuestMapFrame.DetailsFrame.mapID ) then
+	if ( QuestMapFrame.DetailsFrame.mapID ) then
 		SetMapByID(QuestMapFrame.DetailsFrame.mapID);
-		if ( QuestMapFrame.DetailsFrame.dungeonFloor ~= 0 ) then
-			SetDungeonMapLevel(QuestMapFrame.DetailsFrame.dungeonFloor);
-		end
 	end
 	QuestMapFrame_CloseQuestDetails();
 end
@@ -642,7 +628,7 @@ function QuestLogQuests_Update(poiTable)
 	objectiveFramePool:ReleaseAll();
 	headerFramePool:ReleaseAll();
 
-	local mapID, isContinent = GetCurrentMapAreaID();
+	local mapID = C_Map.GetCurrentMapID();
 
 	local button, prevButton;
 
@@ -955,7 +941,7 @@ function QuestMapLog_ShowStoryTooltip(self)
 	local maxWidth = 0;
 	local totalHeight = 0;
 
-	tooltip.Title:SetText(GetMapNameByID(GetCurrentMapAreaID()));
+	tooltip.Title:SetText(GetMapNameByID(C_Map.GetCurrentMapID()));
 	totalHeight = totalHeight + tooltip.Title:GetHeight();
 	maxWidth = tooltip.Title:GetWidth();
 

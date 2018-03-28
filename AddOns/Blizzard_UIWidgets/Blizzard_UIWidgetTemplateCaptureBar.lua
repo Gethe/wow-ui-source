@@ -41,8 +41,10 @@ function UIWidgetTemplateCaptureBarMixin:Setup(widgetInfo)
 
 		local regions = useLFDBattlefieldTextures and LFDTextureKitRegions or PVPTextureKitRegions;
 
-		SetupTextureKits(widgetInfo.textureKitID, self, regions);
-		SetupTextureKits(widgetInfo.textureKitID, self.Indicator, regions);
+		local textureKit = GetUITextureKitInfo(widgetInfo.textureKitID);
+
+		SetupTextureKitOnRegions(textureKit, self, regions);
+		SetupTextureKitOnRegions(textureKit, self.Indicator, regions);
 	end
 
 	-- Left/Right indicators

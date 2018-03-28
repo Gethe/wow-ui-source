@@ -1,0 +1,22 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="DeathMapDataProvider.lua"/>
+
+	<Frame name="CorpsePinTemplate" mixin="CorpsePinMixin" enableMouse="true" hidden="true" virtual="true">
+		<Size x="16" y="16"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture file="Interface\Minimap\POIIcons" setAllPoints="true">
+					<TexCoords left="0.56640625" right="0.6328125" top="0.001953125" bottom="0.03515625"/>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="DeathReleasePinTemplate" mixin="DeathReleasePinMixin" inherits="CorpsePinTemplate" virtual="true">
+		<Size x="24" y="24"/>
+	</Frame>
+</Ui>
