@@ -98,11 +98,11 @@ local function nameCheckPredicate(button, name)
 end
 
 local function voiceChannelCheckPredicate(button, channelID)
-	return button:IsVoiceChannel() and button:GetVoiceChannelID() == channelID;
+	return button:ChannelSupportsVoice() and button:GetVoiceChannelID() == channelID;
 end
 
 local function textChannelCheckPredicate(button, channelID)
-	return not button:IsVoiceChannel() and button:GetChannelID() == channelID;
+	return not button:ChannelSupportsVoice() and button:GetChannelID() == channelID;
 end
 
 local function channelIDCheckPredicate(button, channelID)
@@ -110,7 +110,7 @@ local function channelIDCheckPredicate(button, channelID)
 end
 
 local function activeVoiceChannelPredicate(button)
-	return button:IsVoiceChannel() and button:IsVoiceActive();
+	return button:ChannelSupportsVoice() and button:IsVoiceActive();
 end
 
 local function matchingChannelTypePredicate(button, channelType)
@@ -192,7 +192,7 @@ end
 -- TODO: Radio button group?
 function ChannelListMixin:SetSelectedChannel(channelButton)
 	if channelButton ~= self.selectedChannelButton then
-		if channelButton and channelButton:IsTextChannel() then
+		if channelButton and channelButton:ChannelSupportsText() then
 			SetSelectedDisplayChannel(channelButton:GetChannelID());
 		end
 
@@ -205,11 +205,11 @@ function ChannelListMixin:SetSelectedChannel(channelButton)
 
 		if channelButton then
 			self.selectedChannelID = channelButton:GetChannelID();
-			self.selectedChannelIsText = channelButton:IsTextChannel();
+			self.selectedChannelSupportsText = channelButton:ChannelSupportsText();
 			channelButton:SetIsSelectedChannel(true);
 		else
 			self.selectedChannelID = nil;
-			self.selectedChannelIsText = nil;
+			self.selectedChannelSupportsText = nil;
 		end
 
 		self:GetChannelFrame():OnUserSelectedChannel();
@@ -220,8 +220,8 @@ function ChannelListMixin:GetSelectedChannelButton()
 	return self.selectedChannelButton;
 end
 
-function ChannelListMixin:GetSelectedChannelIDAndIsText()
-	return self.selectedChannelID, self.selectedChannelIsText;
+function ChannelListMixin:GetSelectedChannelIDAndSupportsText()
+	return self.selectedChannelID, self.selectedChannelSupportsText;
 end
 
 do
@@ -292,7 +292,7 @@ local function ChannelListDropDown_Initialize(dropdown)
 	local channelName = channel:GetChannelName();
 	local category = channel:GetCategory();
 
-	if channel:IsTextChannel() then
+	if channel:ChannelSupportsText() then
 		if channelFrame:IsCategoryCustom(category) then
 			-- SET PASSWORD if it is a custom Channel and is owner
 			if IsDisplayChannelOwner() then
@@ -344,7 +344,7 @@ local function ChannelListDropDown_Initialize(dropdown)
 
 	-- Voice only channels are a total hack and being removed at some point...still discussing whether or not we want to
 	-- add a voice component to text chat channels
-	if channel:IsVoiceChannel() and channel:IsUserCreatedChannel() then
+	if channel:ChannelSupportsVoice() and channel:IsUserCreatedChannel() then
 		-- also allow leaving voice-only channels while they still exist...
 		info = UIDropDownMenu_CreateInfo();
 		info.text = CHAT_LEAVE;
@@ -372,7 +372,7 @@ function ChannelListMixin:ShowDropdown(channel)
 		local dropdown = self:GetChannelFrame():GetDropdown();
 		dropdown.channelFrame = self:GetChannelFrame();
 		dropdown.channelID = channel:GetChannelID();
-		dropdown.voiceChannelID = channel:IsVoiceChannel() and channel:GetVoiceChannelID() or nil;
+		dropdown.voiceChannelID = channel:ChannelSupportsVoice() and channel:GetVoiceChannelID() or nil;
 		dropdown.channel = channel;
 
 		dropdown.initialize = ChannelListDropDown_Initialize;

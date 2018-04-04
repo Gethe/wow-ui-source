@@ -325,21 +325,30 @@ local mouseButtonNameConversion =
 	Button31 = "BUTTON31",
 };
 
+local metaKeys =
+{
+	LSHIFT = 1,
+	RSHIFT = 2,
+	LCTRL = 3,
+	RCTRL = 4,
+	LALT = 5,
+	RALT = 6,
+};
+
 local ignoredKeys =
 {
 	UNKNOWN = true,
 	BUTTON1 = true,
 	BUTTON2 = true,
-	LSHIFT = true,
-	RSHIFT = true,
-	LCTRL = true,
-	RCTRL = true,
-	LALT = true,
-	RALT = true,
+	-- And metakeys
 };
 
+local function IsMetaKey(key)
+	return metaKeys[key] ~= nil;
+end
+
 local function IsKeyPressIgnoredForBinding(key)
-	return ignoredKeys[key] == true;
+	return IsMetaKey(key) or ignoredKeys[key] == true;
 end
 
 local function ClearBindingsForKeys(bindingMode, ...)
@@ -366,12 +375,44 @@ local function RebindKeysInOrder(keyPressed, keybindButtonID, selectedAction, bi
 	return keyBindMessage;
 end
 
-local function CreateKeyChordString(key)
-	local shift = IsShiftKeyDown() and "SHIFT-" or "";
-	local ctrl = IsControlKeyDown() and "CTRL-" or "";
-	local alt = IsAltKeyDown() and "ALT-" or "";
+local function KeyComparator(key1, key2)
+	local key1Priority = metaKeys[key1];
+	local key2Priority = metaKeys[key2];
+	if key1Priority and key2Priority then
+		return key1Priority < key2Priority;
+	end
 
-	return ("%s%s%s%s"):format(alt, ctrl, shift, key);
+	return key1Priority ~= nil;
+end
+
+local function CreateKeyChordStringFromTable(keys, preventSort)
+	if not preventSort then
+		table.sort(keys, KeyComparator);
+	end
+
+	return table.concat(keys, "-");
+end
+
+local function CreateKeyChordString(key)
+	local chord = {};
+	if IsShiftKeyDown() then
+		table.insert(chord, "SHIFT");
+	end
+
+	if IsControlKeyDown() then
+		table.insert(chord, "CTRL");
+	end
+
+	if IsAltKeyDown() then
+		table.insert(chord, "ALT");
+	end
+
+	if not IsMetaKey(key) then
+		table.insert(chord, key);
+	end
+
+	local preventSort = true;
+	return CreateKeyChordStringFromTable(chord, preventSort);
 end
 
 -- NOTE: preventKeybindingFrameBehavior being true indicates that all the code specific to the keybind frame shouldn't be run.
@@ -672,4 +713,107 @@ function GetBindingName(binding)
 	end
 
 	return binding;
+end
+
+CustomBindingButtonMixin = {};
+
+function CustomBindingButtonMixin:OnLoad()
+	self:SetBindingModeActive(false);
+	self:EnableKeyboard(false);
+end
+
+function CustomBindingButtonMixin:OnClick(button, isDown)
+	if self:IsBindingModeActive() then
+		self:OnInput(button, isDown);
+		self.eatNextLeftClick = button == "LeftButton";
+	elseif not isDown then
+		if button == "LeftButton" and not self.eatNextLeftClick then
+			self:SetBindingModeActive(true);
+		end
+
+		self.eatNextLeftClick = nil;
+	end
+end
+
+function CustomBindingButtonMixin:OnKeyDown(key)
+	self:OnInput(key, true);
+end
+
+function CustomBindingButtonMixin:OnKeyUp(key)
+	self:OnInput(key, false);
+end
+
+function CustomBindingButtonMixin:OnInput(key, isDown)
+	if not self:IsBindingModeActive() then return end
+	key = mouseButtonNameConversion[key] or key;
+
+	if GetBindingFromClick(key) == "TOGGLEGAMEMENU" then
+		self:NotifyBindingCompleted(false);
+		self:EnableKeyboard(false);
+		return;
+	end
+
+	if isDown then
+		if not IsMetaKey(key) then
+			self.receivedNonMetaKeyInput = true;
+		end
+
+		table.insert(self.keys, key);
+	end
+
+	self:SetText(GetBindingText(CreateKeyChordStringFromTable(self.keys)));
+
+	if self.receivedNonMetaKeyInput or not isDown then
+		self:NotifyBindingCompleted(true);
+	end
+
+	-- Receiving an up event after bindings are disabled should disable bind-handling
+	if not self:IsBindingModeActive() and not isDown then
+		self:EnableKeyboard(false);
+	end
+end
+
+function CustomBindingButtonMixin:SetBindingModeActive(isActive)
+	self.isBindingModeActive = isActive;
+	self.receivedNonMetaKeyInput = false;
+	self.keys = {};
+
+	if isActive then
+		self:RegisterForClicks("AnyDown", "AnyUp");
+		self:EnableKeyboard(isActive); -- Only enable here, disable later
+	else
+		self:RegisterForClicks("LeftButtonUp");
+	end
+
+	if self.bindingModeActiveCallback then
+		self.bindingModeActiveCallback(self, isActive);
+	end
+end
+
+function CustomBindingButtonMixin:IsBindingModeActive()
+	return self.isBindingModeActive;
+end
+
+function CustomBindingButtonMixin:SetBindingModeActiveCallback(callback)
+	self.bindingModeActiveCallback = callback;
+end
+
+function CustomBindingButtonMixin:SetBindingCompletedCallback(callback)
+	self.bindingCompletedCallback = callback;
+end
+
+function CustomBindingButtonMixin:NotifyBindingCompleted(completedSuccessfully)
+	if self.bindingCompletedCallback then
+		self.bindingCompletedCallback(self, completedSuccessfully);
+	end
+
+	self:SetBindingModeActive(false);
+end
+
+function CustomBindingButtonMixin:GetBindingText()
+	return self:GetText();
+end
+
+function CustomBindingButtonMixin:GetKeys()
+	return self.keys;
 end

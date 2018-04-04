@@ -5,9 +5,6 @@ MAX_BLACKLIST_BATTLEGROUNDS = 2;
 WARGAME_HEADER_HEIGHT = 16;
 BATTLEGROUND_BUTTON_HEIGHT = 40;
 
-ASHRAN_MAP_ID = 978;
-ASHRAN_QUEUE_ID = 1127;
-
 local MAX_SHOWN_BATTLEGROUNDS = 8;
 local NUM_BLACKLIST_INFO_LINES = 2;
 local NO_ARENA_SEASON = 0;
@@ -503,8 +500,7 @@ function HonorFrame_OnLoad(self)
 	HybridScrollFrame_CreateButtons(self.SpecificFrame, "PVPSpecificBattlegroundButtonTemplate", -2, -1);
 
 	-- min level for bonus frame
-	local _;
-	_, _, _, _, _, _, _, MIN_BONUS_HONOR_LEVEL = GetRandomBGInfo();
+	MIN_BONUS_HONOR_LEVEL = (C_PvP.GetRandomBGInfo()).minLevel;
 
 	UIDropDownMenu_SetWidth(HonorFrameTypeDropDown, 160);
 	UIDropDownMenu_Initialize(HonorFrameTypeDropDown, HonorFrameTypeDropDown_Initialize);
@@ -917,8 +913,8 @@ BONUS_BUTTON_TOOLTIPS = {
 	Skirmish = {
 		tooltipKey = "SKIRMISH",
 	},
-	Ashran = {
-		tooltipKey = "ASHRAN",
+	LargeBattleground = {
+		tooltipKey = "RANDOM_LARGE_BG",
 	},
 	Brawl = {
 		func = function(self)
@@ -997,9 +993,9 @@ function HonorFrameBonusFrame_Update()
 	-- random bg
 	do
 		local button = HonorFrame.BonusFrame.RandomBGButton;
-		local canQueue, battleGroundID, hasWon, winHonorAmount, winConquestAmount, lossHonorAmount, lossConquestAmount, minLevel, maxLevel = GetRandomBGInfo();
-		HonorFrameBonusFrame_SetButtonState(button, canQueue, minLevel);
-		if ( canQueue ) then
+		local randomBGInfo = C_PvP.GetRandomBGInfo();
+		HonorFrameBonusFrame_SetButtonState(button, randomBGInfo.canQueue, randomBGInfo.minLevel);
+		if ( randomBGInfo.canQueue ) then
 			HonorFrame.BonusFrame.DiceButton:Show();
 			if ( not selectButton ) then
 				selectButton = button;
@@ -1008,8 +1004,8 @@ function HonorFrameBonusFrame_Update()
 			HonorFrame.BonusFrame.DiceButton:Hide();
 		end
 		HonorFrameBonusFrame_UpdateExcludedBattlegrounds();
-		button.canQueue = canQueue;
-		button.bgID = battleGroundID;
+		button.canQueue = randomBGInfo.canQueue;
+		button.bgID = randomBGInfo.bgID;
 
 		local honor, experience, rewards = C_PvP.GetRandomBGRewards();
 
@@ -1054,11 +1050,14 @@ function HonorFrameBonusFrame_Update()
 		end
 	end
 
-	-- ashran
+	-- large battleground
 	do
-		local button = HonorFrame.BonusFrame.AshranButton;
-		button.Contents.Title:SetText(GetMapNameByID(ASHRAN_MAP_ID));
-		button.canQueue = IsLFGDungeonJoinable(ASHRAN_QUEUE_ID);
+		local button = HonorFrame.BonusFrame.LargeBattlegroundButton;
+		local randomBGInfo = C_PvP.GetRandomLargeBGInfo();
+		HonorFrameBonusFrame_SetButtonState(button, randomBGInfo.canQueue, randomBGInfo.minLevel);
+		button.canQueue = randomBGInfo.canQueue;
+		button.bgID = randomBGInfo.bgID;
+		button.Contents.Title:SetText(RANDOM_LARGE_BATTLEGROUND);
 	end
 
 	do

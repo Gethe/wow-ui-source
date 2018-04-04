@@ -56,6 +56,7 @@ LIGHTGRAY_FONT_COLOR		= CreateColor(0.6, 0.6, 0.6);
 PAPER_FRAME_EXPANDED_COLOR	= CreateColor(0.929, 0.788, 0.620);
 PAPER_FRAME_COLLAPSED_COLOR = CreateColor(0.827, 0.659, 0.463);
 ARTIFACT_BAR_COLOR 			= CreateColor(0.901, 0.8, 0.601);
+WARBOARD_OPTION_TEXT_COLOR	= CreateColor(0.28, 0.02, 0.02);
 
 CHAT_FONT_HEIGHTS = {
 	[1] = 12,
@@ -968,8 +969,6 @@ RELIC_TALENT_LINK_STYLE_AVAILABLE = 5;
 Enum.ChatChannelType = {
 	None = 0,
 	Custom = 1,
-	Party = 2,
-	Raid = 3,
-	Instance = 4,
-	Battleground = 5,
+	Private_Party = 2,
+	Public_Party = 3,
 };

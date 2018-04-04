@@ -20,6 +20,12 @@ function WorldMapMixin:OnLoad()
 	self:SetShouldZoomInstantly(true);
 
 	self:AddStandardDataProviders();
+
+	self:AddOverlayFrame("WorldMapFloorNavigationFrameTemplate", "FRAME", "TOPLEFT", 20, -20);
+	self:AddOverlayFrame("WorldMapTrackingOptionsButtonTemplate", "BUTTON", "TOPRIGHT", -4, -20);
+	self:AddOverlayFrame("WorldMapBountyBoardTemplate", "FRAME");
+	self:AddOverlayFrame("WorldMapActionButtonTemplate", "FRAME");
+	self:AddOverlayFrame("WorldMapNavBarTemplate", "FRAME", "TOPLEFT", 0, 40);
 end
 
 function WorldMapMixin:AddStandardDataProviders()
@@ -27,14 +33,16 @@ function WorldMapMixin:AddStandardDataProviders()
 	self:AddDataProvider(CreateFromMixins(MapHighlightDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(WorldMap_InvasionDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(StorylineQuestDataProviderMixin));
-	self:AddDataProvider(CreateFromMixins(WorldMap_AreaPOIDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(BattlefieldFlagDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(BonusObjectiveDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(VehicleDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(EncounterJournalDataProviderMixin));
+	self:AddDataProvider(CreateFromMixins(FogOfWarDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(DeathMapDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(QuestBlobDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(WorldMap_DebugDataProviderMixin));
+	self:AddDataProvider(CreateFromMixins(ScenarioDataProviderMixin));
+	self:AddDataProvider(CreateFromMixins(LandmarkDataProviderMixin));
 
 	local areaLabelDataProvider = CreateFromMixins(AreaLabelDataProviderMixin);	-- no pins
 	areaLabelDataProvider:SetContentsScale(0.695);
@@ -51,10 +59,13 @@ function WorldMapMixin:AddStandardDataProviders()
 	local pinFrameLevelsManager = self:GetPinFrameLevelsManager();
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_MAP_OVERLAY");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_QUEST_BLOB");
+	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_SCENARIO_BLOB");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_MAP_HIGHLIGHT");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_DEBUG", 4);
+	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_LANDMARK");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_ENCOUNTER");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_STORY_LINE");
+	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_SCENARIO");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_WORLD_QUEST", 500);
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_ACTIVE_QUEST");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_SUPER_TRACKED_QUEST");	
@@ -65,6 +76,13 @@ function WorldMapMixin:AddStandardDataProviders()
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_GROUP_MEMBER");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_VEHICLE_ABOVE_GROUP_MEMBER");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_CORPSE");
+	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_AREA_POI_BANNER");
+	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_FOG_OF_WAR");
+end
+
+function WorldMapMixin:OnMapChanged()
+	MapCanvasMixin.OnMapChanged(self);
+	self:RefreshOverlayFrames();
 end
 
 function WorldMapMixin:OnShow()
@@ -76,4 +94,40 @@ end
 
 function WorldMapMixin:OnHide()
 	MapCanvasMixin.OnHide(self);
+end
+
+function WorldMapMixin:RefreshOverlayFrames()
+	if self.overlayFrames then
+		for i, frame in ipairs(self.overlayFrames) do
+			frame:Refresh();
+		end
+	end
+end
+
+function WorldMapMixin:AddOverlayFrame(templateName, templateType, anchorPoint, offsetX, offsetY)
+	local frame = CreateFrame(templateType, nil, self, templateName);
+	frame:SetFrameStrata("HIGH");
+	if anchorPoint then
+		frame:SetPoint(anchorPoint, offsetX, offsetY);
+	end
+
+	if not self.overlayFrames then
+		self.overlayFrames = { };
+	end
+	tinsert(self.overlayFrames, frame);
+
+	return frame;
+end
+
+function WorldMapMixin:SetOverlayFrameLocation(frame, location)
+	frame:ClearAllPoints();
+	if location == LE_MAP_OVERLAY_DISPLAY_LOCATION_BOTTOM_LEFT then
+		frame:SetPoint("BOTTOMLEFT", 15, 15);
+	elseif location == LE_MAP_OVERLAY_DISPLAY_LOCATION_TOP_LEFT then
+		frame:SetPoint("TOPLEFT", 15, -15);
+	elseif location == LE_MAP_OVERLAY_DISPLAY_LOCATION_BOTTOM_RIGHT then
+		frame:SetPoint("BOTTOMRIGHT", -18, 15);
+	elseif location == LE_MAP_OVERLAY_DISPLAY_LOCATION_TOP_RIGHT then
+		frame:SetPoint("TOPRIGHT", -15, -15);
+	end
 end

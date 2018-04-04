@@ -1109,12 +1109,8 @@
 			SetCVar("VoiceChatSelfMute", 0);
 		end
 	</Binding>
-	<Binding name="TOGGLE_VOICE_PUSH_TO_TALK" runOnUp="true" category="BINDING_HEADER_MISC">
-		if ( keystate == "down" ) then
-			C_VoiceChat.BeginTransmission();
-		else
-			C_VoiceChat.EndTransmission();
-		end
+	<Binding name="TOGGLE_VOICE_PUSH_TO_TALK" runOnUp="true" category="BINDING_HEADER_MISC" isCustom="true">
+		nop(); -- Action handler is custom
 	</Binding>
 	<Binding name="TOGGLEUI" category="BINDING_HEADER_MISC">
 		if ( UIParent:IsShown() ) then

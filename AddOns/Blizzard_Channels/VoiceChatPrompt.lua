@@ -1,25 +1,35 @@
-local channelTypeToActivatePrompt =
+local partyChannelTypeToActivatePrompt =
 {
-	[Enum.ChatChannelType.Party] = VOICE_CHAT_PROMPT_CHANNEL_ACTIVATE_PARTY,
-	[Enum.ChatChannelType.Raid] = VOICE_CHAT_PROMPT_CHANNEL_ACTIVATE_RAID,
-	[Enum.ChatChannelType.Instance] = VOICE_CHAT_PROMPT_CHANNEL_ACTIVATE_INSTANCE,
-	[Enum.ChatChannelType.Battleground] = VOICE_CHAT_PROMPT_CHANNEL_ACTIVATE_BATTLEGROUND,
+	[Enum.ChatChannelType.Private_Party] = VOICE_CHAT_PROMPT_CHANNEL_ACTIVATE_PARTY,
+	[Enum.ChatChannelType.Public_Party] = VOICE_CHAT_PROMPT_CHANNEL_ACTIVATE_INSTANCE,
 };
 
-local channelTypeToActivatedNotification =
+local raidChannelTypeToActivatePrompt =
 {
-	[Enum.ChatChannelType.Party] = VOICE_CHAT_NOTIFICATION_CHANNEL_ACTIVATED_PARTY,
-	[Enum.ChatChannelType.Raid] = VOICE_CHAT_NOTIFICATION_CHANNEL_ACTIVATED_RAID,
-	[Enum.ChatChannelType.Instance] = VOICE_CHAT_NOTIFICATION_CHANNEL_ACTIVATED_INSTANCE,
-	[Enum.ChatChannelType.Battleground] = VOICE_CHAT_NOTIFICATION_CHANNEL_ACTIVATED_BATTLEGROUND,
+	[Enum.ChatChannelType.Private_Party] = VOICE_CHAT_PROMPT_CHANNEL_ACTIVATE_RAID,
+	[Enum.ChatChannelType.Public_Party] = VOICE_CHAT_PROMPT_CHANNEL_ACTIVATE_BATTLEGROUND,
 };
 
-function Voice_GetChannelActivatePrompt(channelType)
-	return channelTypeToActivatePrompt[channelType];
+local partyChannelTypeToActivatedNotification =
+{
+	[Enum.ChatChannelType.Private_Party] = VOICE_CHAT_NOTIFICATION_CHANNEL_ACTIVATED_PARTY,
+	[Enum.ChatChannelType.Public_Party] = VOICE_CHAT_NOTIFICATION_CHANNEL_ACTIVATED_INSTANCE,
+};
+
+local raidChannelTypeToActivatedNotification =
+{
+	[Enum.ChatChannelType.Private_Party] = VOICE_CHAT_NOTIFICATION_CHANNEL_ACTIVATED_RAID,
+	[Enum.ChatChannelType.Public_Party] = VOICE_CHAT_NOTIFICATION_CHANNEL_ACTIVATED_BATTLEGROUND,
+};
+
+function Voice_GetChannelActivatePrompt(channel)
+	local isRaid = IsChatChannelRaid(channel.channelType);
+	return isRaid and raidChannelTypeToActivatePrompt[channel.channelType] or partyChannelTypeToActivatePrompt[channel.channelType];
 end
 
-function Voice_GetChannelActivatedNotification(channelType)
-	return channelTypeToActivatedNotification[channelType];
+function Voice_GetChannelActivatedNotification(channel)
+	local isRaid = IsChatChannelRaid(channel.channelType);
+	return isRaid and raidChannelTypeToActivatedNotification[channel.channelType] or partyChannelTypeToActivatedNotification[channel.channelType];
 end
 
 function Voice_FormatChannelNotification(channel, notification)
@@ -53,7 +63,7 @@ function VoiceChatActivateChannelPromptMixin:Setup(channel)
 	self.Icon:SetAtlas("voicechat-icon-headphone-pending");
 
 	self.Text:SetTextColor(FRIENDS_GRAY_COLOR:GetRGBA());
-	self.Text:SetText(Voice_FormatChannelNotification(channel, Voice_GetChannelActivatePrompt(channel.channelType)));
+	self.Text:SetText(Voice_FormatChannelNotification(channel, Voice_GetChannelActivatePrompt(channel)));
 
 	self.channel = channel;
 end
@@ -101,7 +111,7 @@ function VoiceChatChannelActivatedNotificationMixin:Setup()
 	self.Icon:SetAtlas("voicechat-icon-headphone-on");
 
 	self.Text:SetTextColor(FRIENDS_GRAY_COLOR:GetRGBA());
-	self.Text:SetText(Voice_FormatChannelNotification(self.channel, Voice_GetChannelActivatedNotification(self.channel.channelType)));
+	self.Text:SetText(Voice_FormatChannelNotification(self.channel, Voice_GetChannelActivatedNotification(self.channel)));
 
 	self.Text2:SetTextColor(FRIENDS_GRAY_COLOR:GetRGBA());
 	self.Text2:SetText(Voice_GetCommunicationModeNotification());

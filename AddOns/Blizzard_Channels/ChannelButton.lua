@@ -38,11 +38,11 @@ function ChannelButtonBaseMixin:IsHeader()
 	return false;
 end
 
-function ChannelButtonBaseMixin:IsVoiceChannel()
+function ChannelButtonBaseMixin:ChannelSupportsVoice()
 	return false;
 end
 
-function ChannelButtonBaseMixin:IsTextChannel()
+function ChannelButtonBaseMixin:ChannelSupportsText()
 	return false;
 end
 
@@ -82,7 +82,7 @@ end
 function ChannelButtonBaseMixin:SetChannelType(channelType)
 	self.channelType = channelType;
 
-	if self:IsTextChannel() then
+	if self:ChannelSupportsText() then
 		self.linkedVoiceChannel = C_VoiceChat.GetChannelForChannelType(channelType);
 
 		if self.linkedVoiceChannel then
@@ -96,7 +96,7 @@ function ChannelButtonBaseMixin:GetChannelType()
 end
 
 function ChannelButtonBaseMixin:ToggleActivateChannel()
-	if self:IsVoiceChannel() then
+	if self:ChannelSupportsVoice() then
 		local voiceChannelID = self:GetVoiceChannelID();
 		local isActive = C_VoiceChat.GetActiveChannelID() == voiceChannelID;
 		if isActive then
@@ -230,13 +230,13 @@ end
 function ChannelButtonMixin:Update()
 	ChannelButtonBaseMixin.Update(self);
 
-	local selectedChannelID, selectedChannelIsText = self:GetChannelList():GetSelectedChannelIDAndIsText();
-	self:SetIsSelectedChannel(self:GetChannelID() == selectedChannelID and self:IsTextChannel() == selectedChannelIsText);
+	local selectedChannelID, selectedChannelSupportsText = self:GetChannelList():GetSelectedChannelIDAndSupportsText();
+	self:SetIsSelectedChannel(self:GetChannelID() == selectedChannelID and self:ChannelSupportsText() == selectedChannelSupportsText);
 
 	self.NormalTexture:SetAlpha(0.5);
 
-	local hasVoice = self:IsVoiceChannel();
-	local hasText = self:IsTextChannel();
+	local hasVoice = self:ChannelSupportsVoice();
+	local hasText = self:ChannelSupportsText();
 
 	-- setup name label anchoring
 	self.Text:ClearAllPoints();
@@ -278,11 +278,11 @@ end
 -- Text channel button
 ChannelButtonTextMixin = CreateFromMixins(ChannelButtonMixin);
 
-function ChannelButtonTextMixin:IsTextChannel()
+function ChannelButtonTextMixin:ChannelSupportsText()
 	return true;
 end
 
-function ChannelButtonTextMixin:IsVoiceChannel()
+function ChannelButtonTextMixin:ChannelSupportsVoice()
 	return self:GetVoiceChannel() ~= nil;
 end
 
@@ -299,7 +299,7 @@ function ChannelButtonVoiceMixin:Setup(channelID, category)
 	ChannelButtonMixin.Setup(self, channelID, ChannelFrame_GetIdealChannelName(channel), header, channelNumber, #channel.members, channel.isActive, category, channel.channelType);
 end
 
-function ChannelButtonVoiceMixin:IsVoiceChannel()
+function ChannelButtonVoiceMixin:ChannelSupportsVoice()
 	return true;
 end
 

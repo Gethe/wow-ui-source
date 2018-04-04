@@ -8,19 +8,24 @@ function NavBar_Initialize(self, template, homeData, homeButton, overflowButton)
 	self.navList = {};
 	self.widthBuffer = NAVBAR_WIDTHBUFFER;
 	
+	local name = self:GetName();
+
 	if not self.dropDown then
-		self.dropDown = CreateFrame("Frame", self:GetName().."DropDown", self, "UIDropDownMenuTemplate");
+		local dropDownName = name and name.."DropDown" or nil;
+		self.dropDown = CreateFrame("Frame", dropDownName, self, "UIDropDownMenuTemplate");
 		UIDropDownMenu_Initialize(self.dropDown, NavBar_DropDown_Initialize, "MENU");
 	end
 	
 	if not homeButton then
-		homeButton = CreateFrame("BUTTON", self:GetName().."HomeButton", self, self.template);
+		local homeButtonName = name and name.."HomeButton" or nil;
+		homeButton = CreateFrame("BUTTON", homeButtonName, self, self.template);
 		homeButton:SetWidth(homeButton.text:GetStringWidth()+30);
 	end
 	homeButton:SetText(homeData.name or HOME);
 
 	if not overflowButton then
-		overflowButton = CreateFrame("BUTTON", self:GetName().."OverflowButton", self, self.template);
+		local overflowButtonName = name and name.."OverflowButton" or nil;
+		overflowButton = CreateFrame("BUTTON", overflowButtonName, self, self.template);
 		overflowButton:SetWidth(30);
 		
 		-- LOOK AT CLICK
@@ -83,7 +88,9 @@ function NavBar_AddButton(self, buttonData)
 	end
 	
 	if not navButton then
-		navButton = CreateFrame("BUTTON", self:GetName().."Button"..(#self.navList+1), self, self.template);
+		local name = self:GetName();
+		local buttonName = name and name.."Button"..(#self.navList+1);
+		navButton = CreateFrame("BUTTON", buttonName, self, self.template);
 		navButton.oldClick = navButton:GetScript("OnClick");
 		navButton:SetScript("OnClick", NavBar_ButtonOnClick);
 		if ( self.oldStyle ) then
@@ -286,7 +293,7 @@ function NavBar_ToggleMenu(self)
 		CloseDropDownMenus();
 	end
 	self:GetParent().dropDown.buttonOwner = self;
-	ToggleDropDownMenu(nil, nil, self:GetParent().dropDown, self:GetName(), 20, 3);
+	ToggleDropDownMenu(nil, nil, self:GetParent().dropDown, self, 20, 3);
 end
 
 

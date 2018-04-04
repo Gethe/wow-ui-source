@@ -1,17 +1,5 @@
 PartyPoseMixin = { };
 
--- Anchors the widget container to the left bottom corner on the frame. 
-function SetupScoreWidgetAnchoring(widgetContainer, sortedWidgets)
-	for index, widgetFrame in ipairs(sortedWidgets) do
-		if ( index == 1 ) then
-			widgetFrame:SetPoint("TOP");
-		else
-			local relative = sortedWidgets[index - 1];
-			widgetFrame:SetPoint("TOP", relative, "BOTTOM");
-		end
-	end
-end
-
 -- Moves the shadow to underneath the model actor in the model scene. 
 function PartyPoseMixin:SetupShadow(actor)
 	local shadowTexture = self.ModelScene.shadowPool:Acquire(); 

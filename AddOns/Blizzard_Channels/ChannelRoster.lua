@@ -40,14 +40,14 @@ end
 
 function ChannelRosterMixin:OnVoiceChannelMemberAdded(voiceMemberID, memberName, channelID)
 	local channel = self:GetChannelFrame():GetList():GetSelectedChannelButton();
-	if channel and channel:IsVoiceChannel() then
+	if channel and channel:ChannelSupportsVoice() then
 		self:Update();
 	end
 end
 
 function ChannelRosterMixin:OnVoiceChannelMemberStateUpdate(methodName, voiceMemberID, channelID, newStateValue)
 	local channel = self:GetChannelFrame():GetList():GetSelectedChannelButton();
-	if channel and channel:GetChannelID() == channelID and channel:IsVoiceChannel() then
+	if channel and channel:GetChannelID() == channelID and channel:ChannelSupportsVoice() then
 		local rosterButton = self:GetRosterButtonForVoiceMemberID(voiceMemberID);
 		if rosterButton then
 			rosterButton[methodName](rosterButton, newStateValue);
@@ -85,10 +85,10 @@ end
 function ChannelRosterMixin:Update()
 	local channel = self:GetChannelFrame():GetList():GetSelectedChannelButton();
 	if channel then
-		if channel:IsTextChannel() then
+		if channel:ChannelSupportsText() then
 			self:UpdateFromTextChannelID(channel:GetChannelID());
 		else
-			self:UpdateFromVoiceChannelID(channel:GetChannelID());
+			self:UpdateFromVoiceChannelID(channel:GetVoiceChannelID());
 		end
 	end
 end

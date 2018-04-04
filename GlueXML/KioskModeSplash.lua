@@ -33,8 +33,8 @@ local kioskModeData = {
 		["alliedRaces"] = { 
 			["LIGHTFORGEDDRAENEI"] = true,
 			["HIGHMOUNTAINTAUREN"] = true,
-			["NIGHTBORNE"] = false,
-			["VOIDELF"] = false,
+			["NIGHTBORNE"] = true,
+			["VOIDELF"] = true,
 		},
 		["template"] = { ["enabled"] = true, ["index"] = 1, ["ignoreClasses"] = { } },
 	},

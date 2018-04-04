@@ -52,8 +52,9 @@ function WorldQuestDataProviderMixin:RefreshAllData(fromOnShow)
 	end
 
 	local taskInfo;
-
-	local mapID = self:GetMap():GetMapID();
+	local mapCanvas = self:GetMap();
+	
+	local mapID = mapCanvas:GetMapID();
 	if (mapID) then
 		taskInfo = C_TaskQuest.GetQuestsForPlayerByMapID(mapID);
 	end
@@ -77,9 +78,11 @@ function WorldQuestDataProviderMixin:RefreshAllData(fromOnShow)
 	end
 
 	for questId in pairs(pinsToRemove) do
-		self:GetMap():RemovePin(self.activePins[questId]);
+		mapCanvas:RemovePin(self.activePins[questId]);
 		self.activePins[questId] = nil;
 	end
+
+	mapCanvas:TriggerEvent("WorldQuestsUpdate", mapCanvas:GetNumActivePinsByTemplate(self:GetPinTemplate()));
 end
 
 function WorldQuestDataProviderMixin:ShouldShowQuest(info)

@@ -12,11 +12,11 @@ function SpellFlyoutButton_OnClick(self)
 				ChatEdit_InsertLink(self.spellName);
 			end
 		else
-			local spellLink, tradeSkillLink = GetSpellLink(self.spellID);
-			if ( tradeSkillLink ) then
+			local tradeSkillLink, tradeSkillSpellID = GetSpellTradeSkillLink(self.spellID);
+			if ( tradeSkillSpellID ) then
 				ChatEdit_InsertLink(tradeSkillLink);
-			elseif ( spellLink ) then
-				ChatEdit_InsertLink(spellLink);
+			else
+				ChatEdit_InsertLink(GetSpellLink(self.spellID));
 			end
 		end
 		SpellFlyoutButton_UpdateState(self);

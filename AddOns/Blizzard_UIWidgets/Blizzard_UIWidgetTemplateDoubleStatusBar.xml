@@ -53,7 +53,7 @@
 		</Layers>
 	</StatusBar>
 	
-	<Frame name="UIWidgetTemplateDoubleStatusBar" virtual="true" hidden="true" enableMouse="true" secureMixin="UIWidgetTemplateDoubleStatusBarMixin">
+	<Frame name="UIWidgetTemplateDoubleStatusBar" inherits="UIWidgetBaseTemplate" virtual="true" secureMixin="UIWidgetTemplateDoubleStatusBarMixin">
 		<Size x="232" y="55"/>
 		<Frames>
 			<StatusBar parentKey="LeftBar" inherits="UIWidgetTemplateDoubleStatusBar_StatusBarTemplate">

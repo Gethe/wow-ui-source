@@ -249,7 +249,7 @@ end
 
 function PetJournalHealPetButton_OnLoad(self)
 	self.spellID = HEAL_PET_SPELL;
-	local spellName, spellSubname, spellIcon = GetSpellInfo(self.spellID);
+	local spellName, _, spellIcon = GetSpellInfo(self.spellID);
 	self.texture:SetTexture(spellIcon);
 	self.spellname:SetText(spellName);
 end
@@ -339,7 +339,7 @@ end
 function PetJournalSummonRandomFavoritePetButton_OnLoad(self)
 	self.spellID = SUMMON_RANDOM_FAVORITE_PET_SPELL;
 	self.petID = C_PetJournal.GetSummonRandomFavoritePetGUID();
-	local spellName, spellSubname, spellIcon = GetSpellInfo(self.spellID);
+	local spellName, _, spellIcon = GetSpellInfo(self.spellID);
 	self.texture:SetTexture(spellIcon);
 	self.spellname:SetText(PET_JOURNAL_SUMMON_RANDOM_FAVORITE_PET);
 end

@@ -82,10 +82,13 @@
 				<Scripts>
 					<OnSizeChanged>self:GetParent():GetParent():SetPendingUpdate();</OnSizeChanged>
 				</Scripts>
-				<FontString inherits="Game12Font" justifyH="CENTER" justifyV="TOP">
-					<Color r="0.28" g="0.02" b="0.02" />
-				</FontString>
+				<FontString inherits="Game12Font" justifyH="CENTER" justifyV="TOP"/>
 			</SimpleHTML>
+			<Frame parentKey="WidgetContainer" hidden="true">
+				<Anchors>
+					<Anchor point="BOTTOM" relativeKey="$parent.OptionButton" relativePoint="TOP" y="5"/>
+				</Anchors>
+			</Frame>
 		</Frames>
 	</Button>
 	<Frame name="WarboardQuestChoiceFrame" frameStrata="HIGH" mixin="WarboardQuestChoiceFrameMixin" hidden="true" enableMouse="true" parent="UIParent" toplevel="true" inherits="HorizontalLayoutFrame">
@@ -101,6 +104,7 @@
 			<KeyValue key="leftPadding" value="58" type="number"/>
 			<KeyValue key="rightPadding" value="58" type="number"/>
 			<KeyValue key="spacing" value="30" type="number"/>
+			<KeyValue key="optionTextColor" value="WARBOARD_OPTION_TEXT_COLOR" type="global"/>
 		</KeyValues>
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="1">

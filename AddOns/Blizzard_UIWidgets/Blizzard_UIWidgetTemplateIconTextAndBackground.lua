@@ -8,9 +8,6 @@ local textureKitRegions = {
 };
 
 function UIWidgetTemplateIconTextAndBackgroundMixin:Setup(widgetInfo)
-	self:Show();
 	SetupTextureKits(widgetInfo.textureKitID, self, textureKitRegions, true);
-
 	self.Text:SetText(widgetInfo.value);
-	self.orderIndex = widgetInfo.orderIndex;
 end

@@ -484,6 +484,7 @@
 										</Scripts>
 									</CinematicModel>
 									<Frame parentKey="POIPing" inherits="WorldMapPingTemplate"/>
+									<FogOfWarFrame parentKey="FogOfWar" frameLevel="7000" frameStrata="DIALOG" setAllPoints="true" inherits="FogOfWarFrameTemplate" />
 								</Frames>
 							</Frame>
 							<UnitPositionFrame name="WorldMapUnitPositionFrame" frameLevel="1500" inherits="UnitPositionFrameTemplate">

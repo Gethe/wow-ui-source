@@ -115,7 +115,7 @@ end
 
 function AuraButton_Update(buttonName, index, filter)
 	local unit = PlayerFrame.unit;
-	local name, rank, texture, count, debuffType, duration, expirationTime, _, _, _, spellId, _, _, _, _, timeMod = UnitAura(unit, index, filter);
+	local name, texture, count, debuffType, duration, expirationTime, _, _, _, spellId, _, _, _, _, timeMod = UnitAura(unit, index, filter);
 	local buffName = buttonName..index;
 	local buff = _G[buffName];
 	

@@ -71,6 +71,15 @@ local SpellBook =
 			},
 		},
 		{
+			Name = "SpellTextUpdate",
+			Type = "Event",
+			LiteralName = "SPELL_TEXT_UPDATE",
+			Payload =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "SpellUpdateCharges",
 			Type = "Event",
 			LiteralName = "SPELL_UPDATE_CHARGES",
@@ -112,10 +121,8 @@ local SpellBook =
 			Payload =
 			{
 				{ Name = "unit", Type = "string", Nilable = false },
-				{ Name = "spellName", Type = "string", Nilable = false },
-				{ Name = "spellSubText", Type = "string", Nilable = false },
-				{ Name = "target", Type = "string", Nilable = false },
 				{ Name = "guidString", Type = "string", Nilable = false },
+				{ Name = "spellID", Type = "number", Nilable = false },
 			},
 		},
 		{

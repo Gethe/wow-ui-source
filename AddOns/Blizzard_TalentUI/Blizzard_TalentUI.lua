@@ -683,12 +683,15 @@ end
 
 local function HandleGeneralTalentFrameChatLink(self, talentName, talentLink)
 	if ( MacroFrameText and MacroFrameText:HasFocus() ) then
-		local spellName, subSpellName = GetSpellInfo(talentName);
+		local spellName = GetSpellInfo(talentName);
 		if ( spellName and not IsPassiveSpell(spellName) ) then
-			if ( subSpellName and (strlen(subSpellName) > 0) ) then
-				ChatEdit_InsertLink(spellName.."("..subSpellName..")");
-			else
-				ChatEdit_InsertLink(spellName);
+			local subSpellName = GetSpellSubtext(talentName);
+			if ( subSpellName ) then
+				if ( subSpellName ~= "" ) then
+					ChatEdit_InsertLink(spellName.."("..subSpellName..")");
+				else
+					ChatEdit_InsertLink(spellName);
+				end
 			end
 		end
 	elseif ( talentLink ) then
@@ -1164,7 +1167,13 @@ function PlayerSpecSpellTemplate_OnEnter(self)
 			GameTooltip:AddLine(self.extraTooltip);
 		end
 	end
+	self.UpdateTooltip = self.OnEnter;
 	GameTooltip:Show();
+end
+
+function PlayerSpecSpellTemplate_OnLeave(self)
+	self.UpdateTooltip = nil;
+	GameTooltip:Hide();
 end
 
 function PlayerTalentFrame_CreateSpecSpellButton(self, index)
@@ -1351,17 +1360,16 @@ function PlayerTalentFrame_UpdateSpecFrame(self, spec)
 
 			-- First ability already has anchor set
 			if (index > 1) then
-			if ( mod(index, 2) == 0 ) then
-				frame:SetPoint("LEFT", scrollChild["abilityButton"..(index-1)], "RIGHT", 110, 0);
-			else
+				if ( mod(index, 2) == 0 ) then
+					frame:SetPoint("LEFT", scrollChild["abilityButton"..(index-1)], "RIGHT", 110, 0);
+				else
 					frame:SetPoint("TOP", scrollChild["abilityButton"..(index-2)], "BOTTOM", 0, 0);
 				end
 			end
 
-			local name, subname = GetSpellInfo(bonuses[i]);
 			local _, icon = GetSpellTexture(bonuses[i]);
 			SetPortraitToTexture(frame.icon, icon);
-			frame.name:SetText(name);
+			frame.name:SetText(GetSpellInfo(bonuses[i]));
 			frame.spellID = bonuses[i];
 			frame.extraTooltip = nil;
 			frame.isPet = self.isPet;
@@ -1532,7 +1540,6 @@ PVP_TALENT_LIST_BUTTON_OFFSET = 1;
 local PvpTalentFrameEvents = {
 	"PLAYER_PVP_TALENT_UPDATE",
 	"PLAYER_ENTERING_WORLD",
-	"PLAYER_FLAGS_CHANGED",
 	"PLAYER_SPECIALIZATION_CHANGED",
 	"PLAYER_LEVEL_UP",
 	"WAR_MODE_STATUS_UPDATE",
@@ -1544,6 +1551,8 @@ function PvpTalentFrameMixin:OnLoad()
 		slot:SetUp(i);
 	end
 
+	self.InvisibleWarmodeButton:SetUp();
+
 	self.TalentList.ScrollFrame.update = function() self.TalentList:Update() end;
 	self.TalentList.ScrollFrame.ScrollBar.doNotHide = true;
 	HybridScrollFrame_CreateButtons(self.TalentList.ScrollFrame, "PvpTalentButtonTemplate", 0, -1, "TOPLEFT", "TOPLEFT", 0, -PVP_TALENT_LIST_BUTTON_OFFSET, "TOP", "BOTTOM");
@@ -1553,8 +1562,6 @@ function PvpTalentFrameMixin:OnEvent(event, ...)
 	if event == "PLAYER_PVP_TALENT_UPDATE" then
 		self:Update();
 	elseif event == "PLAYER_ENTERING_WORLD" then
-		self:Update();
-	elseif event == "PLAYER_FLAGS_CHANGED" then
 		self:Update();
 	elseif event == "PLAYER_SPECIALIZATION_CHANGED" then
 		self:Update();
@@ -1624,7 +1631,7 @@ function PvpTalentFrameMixin:Update()
 end
 
 function PvpTalentFrameMixin:UpdateModelScenes(forceUpdate)
-	if (C_PvP.IsWarModeDesired()) then
+	if (self.InvisibleWarmodeButton:GetWarModeDesired()) then
 		self:UpdateModelScene(self.OrbModelScene, 108, 1102774, forceUpdate); -- 6AK_Arakkoa_Lamp_Orb_Fel.m2
 		self:UpdateModelScene(self.FireModelScene, 109, 517202, forceUpdate); -- Firelands_Fire_2d.m2
 	else
@@ -1665,13 +1672,13 @@ function PvpTalentFrameMixin:UnselectSlot()
 end
 
 function PvpTalentFrameMixin:SelectTalentForSlot(talentID, slotIndex)
-	local slotInfo = C_SpecializationInfo.GetPvpTalentSlotInfo(slotIndex);
+	local slot = self.Slots[slotIndex];
 
-	if (not slotInfo or slotInfo.selectedTalentID == talentID) then
+	if (not slot or slot:GetSelectedTalent() == talentID) then
 		return;
 	end
 
-	LearnPvpTalent(talentID, slotIndex);
+	slot:SetSelectedTalent(talentID);	
 	self:UnselectSlot();
 end
 
@@ -1748,10 +1755,47 @@ end
 
 PvpTalentWarmodeButtonMixin = {};
 
+function PvpTalentWarmodeButtonMixin:OnShow()
+	self:RegisterEvent("PLAYER_FLAGS_CHANGED");
+	self:Update();
+end
+
+function PvpTalentWarmodeButtonMixin:OnHide()
+	self:UnregisterEvent("PLAYER_FLAGS_CHANGED");
+end
+
+function PvpTalentWarmodeButtonMixin:OnEvent(event, ...)
+	if (event == "PLAYER_FLAGS_CHANGED") then
+		local previousValue = self.predictedToggle:Get();
+		self.predictedToggle:UpdateCurrentValue();
+		self.predictedToggle:Clear();
+		if (C_PvP.IsWarModeDesired() ~= previousValue) then
+			self:Update();
+		end
+	end
+end
+
+function PvpTalentWarmodeButtonMixin:SetUp()
+	self.predictedToggle = CreatePredictedToggle(
+		{
+			["toggleFunction"] = function()
+				C_PvP.ToggleWarMode();
+			end,
+			["getFunction"] = function()
+				return C_PvP.IsWarModeDesired();
+			end,
+		}
+	);
+end
+
+function PvpTalentWarmodeButtonMixin:GetWarModeDesired()
+	return self.predictedToggle:Get();
+end
+
 function PvpTalentWarmodeButtonMixin:Update()
 	self:SetEnabled(C_PvP.CanToggleWarMode());
 	local frame = self:GetParent();
-	local isPvp = C_PvP.IsWarModeDesired();
+	local isPvp = self.predictedToggle:Get();
 	local disabledAdd = isPvp and "" or "-disabled";
 	local swordsAtlas = "pvptalents-warmode-swords"..disabledAdd;
 	local ringAtlas = "pvptalents-warmode-ring"..disabledAdd;
@@ -1760,16 +1804,20 @@ function PvpTalentWarmodeButtonMixin:Update()
 end
 
 function PvpTalentWarmodeButtonMixin:OnClick()
-	C_PvP.ToggleWarMode();
+	self.predictedToggle:Toggle();
+	self:Update();
+	self:GetParent():UpdateModelScenes();
 end
 
 function PvpTalentWarmodeButtonMixin:OnEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip:SetText(PVP_LABEL_WAR_MODE);
-	GameTooltip:AddLine(PVP_WAR_MODE_DESCRIPTION);
+	GameTooltip:SetText(PVP_LABEL_WAR_MODE, 1, 1, 1);
+	local wrap = true;
+	GameTooltip:AddLine(PVP_WAR_MODE_DESCRIPTION, nil, nil, nil, wrap);
 	if (not C_PvP.CanToggleWarMode()) then
 		local text = UnitFactionGroup("player") == PLAYER_FACTION_GROUP[0] and PVP_WAR_MODE_NOT_NOW_HORDE or PVP_WAR_MODE_NOT_NOW_ALLIANCE;
-		GameTooltip:AddLine(text, RED_FONT_COLOR:GetRGB());
+		local r, g, b = RED_FONT_COLOR:GetRGB();
+		GameTooltip:AddLine(text, r, g, b, wrap);
 	end
 	GameTooltip:Show();
 end

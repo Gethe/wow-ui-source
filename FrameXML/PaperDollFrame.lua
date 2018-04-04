@@ -1174,6 +1174,7 @@ function Mastery_OnEnter(statFrame)
 		GameTooltip:AddLine(" ");
 		GameTooltip:AddLine(STAT_MASTERY_TOOLTIP_NO_TALENT_SPEC, GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b, true);
 	end
+	statFrame.UpdateTooltip = statFrame.onEnterFunc;
 	GameTooltip:Show();
 end
 
@@ -1842,6 +1843,7 @@ function PaperDollFrame_UpdateStats()
 			end
 			if ( showStat ) then
 				statFrame.onEnterFunc = nil;
+				statFrame.UpdateTooltip = nil;
 				PAPERDOLL_STATINFO[stat.stat].updateFunc(statFrame, "player");
 				if ( not stat.hideAt or stat.hideAt ~= statFrame.numericValue ) then
 					if ( numStatInCat == 0 ) then

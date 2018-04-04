@@ -171,14 +171,15 @@
 						<Alpha childKey="StarTopRight"		startDelay="2.25" duration="1.5" order="1" fromAlpha="0" toAlpha="1"/>
 						<Alpha childKey="StarBottomLeft"	startDelay="3.00" duration="1.5" order="1" fromAlpha="0" toAlpha="1"/>
 						<Alpha childKey="StarBottomRight"	startDelay="4.50" duration="1.5" order="1" fromAlpha="0" toAlpha="1"/>
+					</AnimationGroup>
+					<AnimationGroup parentKey="AvailableAnimGlow" looping="REPEAT">
+						<Alpha childKey="BorderGlow" smoothing="IN_OUT" startDelay="0.00" duration=".75" order="1" fromAlpha=".0" toAlpha="1"/>
+						<Alpha childKey="BorderGlow" smoothing="IN_OUT" startDelay="1.25" duration=".5" order="1" fromAlpha="1" toAlpha=".0"/>
+						<Alpha childKey="BorderGlow" smoothing="IN_OUT" startDelay="1.75" duration=".25" order="1" fromAlpha="0" toAlpha="0"/>
 
-						<Alpha childKey="BorderGlow"		smoothing="IN_OUT" startDelay="0.00" duration=".75" order="1" fromAlpha=".5" toAlpha="1"/>
-						<Alpha childKey="BorderGlow"		smoothing="IN_OUT" startDelay="0.75" duration=".75" order="1" fromAlpha="1" toAlpha=".5"/>
-						<Alpha childKey="BorderGlow"		smoothing="IN_OUT" startDelay="1.50" duration=".75" order="1" fromAlpha=".5" toAlpha="1"/>
-						<Alpha childKey="BorderGlow"		smoothing="IN_OUT" startDelay="2.25" duration=".75" order="1" fromAlpha="1" toAlpha=".5"/>
-
-						<Alpha childKey="ItemGlow"		smoothing="IN_OUT" duration="1.5" order="1" fromAlpha=".5" toAlpha="1"/>
-						<Alpha childKey="ItemGlow"		smoothing="IN_OUT" startDelay="1.5" duration="1.5" order="1" fromAlpha="1" toAlpha=".5"/>
+						<Alpha childKey="ItemGlow" smoothing="IN_OUT" startDelay="0.00" duration=".75" order="1" fromAlpha=".5" toAlpha="1"/>
+						<Alpha childKey="ItemGlow" smoothing="IN_OUT" startDelay="1.25" duration=".5" order="1" fromAlpha="1" toAlpha=".5"/>
+						<Alpha childKey="ItemGlow" smoothing="IN_OUT" startDelay="1.75" duration=".25" order="1" fromAlpha=".5" toAlpha=".5"/>
 					</AnimationGroup>
 				</Animations>
 			</Frame>

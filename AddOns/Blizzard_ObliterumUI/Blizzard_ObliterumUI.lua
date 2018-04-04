@@ -14,7 +14,7 @@ function ObliterumForgeMixin:OnEvent(event, ...)
 	if event == "OBLITERUM_FORGE_PENDING_ITEM_CHANGED" then
 		self:UpdateObliterateButtonState();
 	elseif event == "UNIT_SPELLCAST_START" then
-		local unitTag, spellName, rank, lineID, spellID = ...;
+		local unitTag, lineID, spellID = ...;
 		if spellID == C_TradeSkillUI.GetObliterateSpellID() then
 			self.obliterateCastLineID = lineID;
 		end
@@ -24,7 +24,7 @@ function ObliterumForgeMixin:OnEvent(event, ...)
 			self.obliterateCastLineID = nil;
 		end
 	elseif event == "UNIT_SPELLCAST_STOP" then
-		local unitTag, spellName, rank, lineID, spellID = ...;
+		local unitTag, lineID, spellID = ...;
 		if self.obliterateCastLineID and self.obliterateCastLineID == lineID then
 			C_TradeSkillUI.ClearPendingObliterateItem();
 		end

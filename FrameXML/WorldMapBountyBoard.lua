@@ -26,10 +26,26 @@ function WorldMapBountyBoardMixin:OnShow()
 	end
 end
 
-function WorldMapBountyBoardMixin:SetMapAreaID(mapAreaID)
-	if self.mapAreaID ~= mapAreaID then
-		self.mapAreaID = mapAreaID;
+function WorldMapBountyBoardMixin:SetMapAreaID(mapID)
+	if self.mapID ~= mapID then
+		self.mapID = mapID;
 		self:Refresh();
+	end
+end
+
+function WorldMapBountyBoardMixin:GetMapID()
+	if self:GetParent().GetMapID then
+		return self:GetParent():GetMapID();
+	else
+		return self.mapID;
+	end
+end
+
+function WorldMapBountyBoardMixin:NavigateToMap(mapID)
+	if self:GetParent().NavigateToMap then
+		self:GetParent():NavigateToMap(mapID);
+	else
+		C_Map.SetMap(mapID);
 	end
 end
 
@@ -70,13 +86,14 @@ function WorldMapBountyBoardMixin:Refresh()
 	self.bountyTabPool:ReleaseAll();
 	self.bountyObjectivePool:ReleaseAll();
 
-	if not self.mapAreaID then
+	local mapID = self:GetMapID();
+	if not mapID then
 		self:Clear();
 		self.isRefreshing = false;
 		return;
 	end
 
-	self.bounties, self.displayLocation, self.lockedQuestID = GetQuestBountyInfoForMapID(self.mapAreaID, self.bounties);
+	self.bounties, self.displayLocation, self.lockedQuestID = GetQuestBountyInfoForMapID(mapID, self.bounties);
 
 	if not self.displayLocation then
 		self:Clear();
@@ -98,6 +115,14 @@ function WorldMapBountyBoardMixin:Refresh()
 
 		self:RefreshBountyTabs();
 		self:RefreshSelectedBounty();
+	end
+
+	-- TEMP
+	if self:GetParent().SetOverlayFrameLocation then
+		local bountyBoardLocation = self:GetDisplayLocation();
+		if bountyBoardLocation then
+			self:GetParent():SetOverlayFrameLocation(self, bountyBoardLocation);
+		end
 	end
 
 	self:Show();
@@ -420,7 +445,7 @@ function WorldMapBountyBoardMixin:CacheMapsForSelectionBounty()
 	end
 
 	self.cachedMapInfo = {};
-	local mapID = C_Map.GetCurrentMapID();
+	local mapID = self:GetMapID();
 	local TOPMOST = true;
 	local topMostContinent = MapUtil.GetMapParentInfo(mapID, Enum.UIMapType.Continent, TOPMOST);
 	if topMostContinent then
@@ -444,7 +469,7 @@ function WorldMapBountyBoardMixin:SetNextMapForSelectedBounty()
 	end
 
 	local mapIndex = 1;
-	local mapID = C_Map.GetCurrentMapID();
+	local mapID = self:GetMapID();
 	for i, cachedMapInfo in ipairs(self.cachedMapInfo) do
 		if mapID == cachedMapInfo.mapID then
 			-- we want the next map after the current one
@@ -455,7 +480,7 @@ function WorldMapBountyBoardMixin:SetNextMapForSelectedBounty()
 	if mapIndex > #self.cachedMapInfo then
 		mapIndex = 1;
 	end
-	C_Map.SetMap(self.cachedMapInfo[mapIndex].mapID);
+	self:NavigateToMap(self.cachedMapInfo[mapIndex].mapID);
 end
 
 function WorldMapBountyBoardMixin:TryShowingIntroTutorial()

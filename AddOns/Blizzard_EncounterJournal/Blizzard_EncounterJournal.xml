@@ -1056,21 +1056,8 @@
 						}
 						self.tex = self.textures.collapsed;
 					</OnLoad>
-					<OnShow>
-						EncounterJournal_UpdateButtonState(self);
-					</OnShow>
-					<OnClick>
-						if IsModifiedClick("CHATLINK") and ChatEdit_GetActiveWindow() then
-							if self.link then
-								ChatEdit_InsertLink(self.link);
-							end
-							return;
-						end
-
-						EncounterJournal_ToggleHeaders(self:GetParent())
-						self:GetScript("OnShow")(self);
-						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-					</OnClick>
+					<OnShow function="EncounterJournal_UpdateButtonState"/>
+					<OnClick function="EncounterJournal_OnClick"/>
 					<OnMouseDown>
 						self.tex.up[1]:Hide();
 						self.tex.up[2]:Hide();
@@ -3020,6 +3007,7 @@
 								self:SetBackdrop(nil);
 								self.shoppingTooltips = { ShoppingTooltip1, ShoppingTooltip2 };
 							</OnLoad>
+							<OnUpdate function="GameTooltip_OnUpdate"/>
 						</Scripts>
 					</GameTooltip>
 				</Frames>

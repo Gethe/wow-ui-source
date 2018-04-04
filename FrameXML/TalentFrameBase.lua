@@ -188,10 +188,54 @@ PvpTalentSlotMixin = {};
 
 function PvpTalentSlotMixin:OnLoad()
 	self:RegisterForDrag("LeftButton");
+	if (self.isTrinket) then
+		self.Arrow:SetSize(43, 44);
+		self.Arrow:SetPoint("LEFT", self.Border, "RIGHT", -16, 0);
+	end
+end
+
+function PvpTalentSlotMixin:OnShow()
+	self:RegisterEvent("PLAYER_PVP_TALENT_UPDATE");
+end
+
+function PvpTalentSlotMixin:OnHide()
+	self:UnregisterEvent("PLAYER_PVP_TALENT_UPDATE");
+end
+
+function PvpTalentSlotMixin:OnEvent(event)
+	if (event == "PLAYER_PVP_TALENT_UPDATE") then
+		self.predictedSetting:Clear();
+		self:Update();
+	end
+end
+
+function PvpTalentSlotMixin:GetSelectedTalent()
+	return self.predictedSetting:Get();
+end
+
+function PvpTalentSlotMixin:SetSelectedTalent(talentID)
+	local selectedTalentID = self.predictedSetting:Get();
+	if (selectedTalentID and selectedTalentID == talentID) then
+		return;
+	end
+	self.predictedSetting:Set(talentID);
+	self:Update();
 end
 
 function PvpTalentSlotMixin:SetUp(slotIndex)
 	self.slotIndex = slotIndex;
+	self.predictedSetting = CreatePredictedSetting(
+		{
+			["setFunction"] = function(value)
+				LearnPvpTalent(value, slotIndex) 
+			end, 
+			["getFunction"] = function()
+				local slotInfo = C_SpecializationInfo.GetPvpTalentSlotInfo(slotIndex);
+				return slotInfo.selectedTalentID;
+			end, 
+		}
+	);
+	
 	self:Update();
 end
 
@@ -202,11 +246,16 @@ function PvpTalentSlotMixin:Update()
 
 	local slotInfo = C_SpecializationInfo.GetPvpTalentSlotInfo(self.slotIndex);
 
-	if (slotInfo.selectedTalentID) then
-		SetPortraitToTexture(self.Texture, select(3, GetPvpTalentInfoByID(slotInfo.selectedTalentID)));
+	local selectedTalentID = self.predictedSetting:Get();
+	if (selectedTalentID) then
+		local _, name, texture = GetPvpTalentInfoByID(selectedTalentID);
+		SetPortraitToTexture(self.Texture, texture);
+		self.TalentName:SetText(name);
 		self.Texture:Show();
+		self.TalentName:Show();
 	else
 		self.Texture:Hide();
+		self.TalentName:Hide();
 	end
 
 	if (slotInfo.enabled) then
@@ -230,8 +279,9 @@ function PvpTalentSlotMixin:OnEnter()
 	end
 
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	if (slotInfo.selectedTalentID) then
-		GameTooltip:SetPvpTalent(slotInfo.selectedTalentID, false, GetActiveSpecGroup(true), self.slotIndex);
+	local selectedTalentID = self.predictedSetting:Get();
+	if (selectedTalentID) then
+		GameTooltip:SetPvpTalent(selectedTalentID, false, GetActiveSpecGroup(true), self.slotIndex);
 	else
 		GameTooltip:SetText(PVP_TALENT_SLOT);
 		if (not slotInfo.enabled) then
@@ -247,9 +297,10 @@ end
 function PvpTalentSlotMixin:OnClick()
 	local slotInfo = C_SpecializationInfo.GetPvpTalentSlotInfo(self.slotIndex);
 
-	if (IsModifiedClick("CHATLINK") and slotInfo.selectedTalentID) then
-		local _, name = GetPvpTalentInfoByID(slotInfo.selectedTalentID);
-		local link = GetPvpTalentLink(slotInfo.selectedTalentID);
+	local selectedTalentID = self.predictedSetting:Get();
+	if (IsModifiedClick("CHATLINK") and selectedTalentID) then
+		local _, name = GetPvpTalentInfoByID(selectedTalentID);
+		local link = GetPvpTalentLink(selectedTalentID);
 		HandleGeneralTalentFrameChatLink(self, name, link);
 		return;
 	end
@@ -260,7 +311,8 @@ function PvpTalentSlotMixin:OnDragStart()
 	if (not self.isInspect) then
 		local slotInfo = C_SpecializationInfo.GetPvpTalentSlotInfo(self.slotIndex);
 
-		if (slotInfo.selectedTalentID) then
+		local predictedTalentID = self.predictedSetting:Get();
+		if (not predictedTalentID or predictedTalentID == slotInfo.selectedTalentID) then
 			PickupPvpTalent(slotInfo.selectedTalentID);
 		end
 	end

@@ -2909,13 +2909,13 @@ function AchievementFrameComparison_OnEvent (self, event, ...)
 		AchievementFrameComparisonHeaderPoints:SetText(GetComparisonAchievementPoints());
 		AchievementFrameComparison_UpdateStatusBars(achievementFunctions.selectedCategory)
 	elseif event == "DISPLAY_SIZE_CHANGED" then
-		SetAchievementComparisonPortrait(AchievementFrameComparisonHeaderPortrait);
+		C_AchievementInfo.SetPortraitTexture(AchievementFrameComparisonHeaderPortrait);
 	elseif event == "PORTRAITS_UPDATED" then
-		SetAchievementComparisonPortrait(AchievementFrameComparisonHeaderPortrait);
+		C_AchievementInfo.SetPortraitTexture(AchievementFrameComparisonHeaderPortrait);
 	elseif event == "UNIT_PORTRAIT_UPDATE" then
 		local updateUnit = ...;
 		if UnitName(updateUnit) == AchievementFrameComparisonHeaderName:GetText() then
-			C_AchievementUI.SetPortraitTexture(AchievementFrameComparisonHeaderPortrait);
+			C_AchievementInfo.SetPortraitTexture(AchievementFrameComparisonHeaderPortrait);
 		end
 	end
 
@@ -2928,7 +2928,7 @@ function AchievementFrameComparison_SetUnit (unit)
 
 	AchievementFrameComparisonHeaderPoints:SetText(GetComparisonAchievementPoints());
 	AchievementFrameComparisonHeaderName:SetText(GetUnitName(unit));
-	C_AchievementUI.SetPortraitTexture(AchievementFrameComparisonHeaderPortrait);
+	C_AchievementInfo.SetPortraitTexture(AchievementFrameComparisonHeaderPortrait);
 	AchievementFrameComparisonHeaderPortrait.unit = unit;
 	AchievementFrameComparisonHeaderPortrait.race = UnitRace(unit);
 	AchievementFrameComparisonHeaderPortrait.sex = UnitSex(unit);

@@ -474,7 +474,7 @@
 					<OnClick>
 						local parent = self:GetParent():GetParent();
 						if ( parent.specializationIndex >= 0 ) then
-							local spellName, subSpellName = GetSpellBookItemName( (parent.spellOffset + parent.specializationOffset), SpellBookFrame.bookType);
+							local spellName = GetSpellBookItemName( (parent.spellOffset + parent.specializationOffset), SpellBookFrame.bookType);
 							StaticPopup_Show("UNLEARN_SPECIALIZATION", spellName, nil, parent.specializationIndex);
 						end
 					</OnClick>

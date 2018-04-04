@@ -1178,6 +1178,7 @@ function WorldMapFrame_Update()
 	WorldMap_DrawWorldEffects();
 	WorldMapFrame.UIElementsFrame.BountyBoard:SetMapAreaID(mapID);
 	WorldMapFrame.UIElementsFrame.ActionButton:SetMapAreaID(mapID);
+	WorldMapPOIFrame.FogOfWar:SetUiMapID(mapID);
 	WorldMapFrame_UpdateOverlayLocations();
 	WorldMap_UpdateQuestBonusObjectives();
 

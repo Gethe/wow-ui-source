@@ -1,6 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\FrameXML\UI.xsd">
-	<Frame name="UIWidgetTemplateIconAndText" virtual="true" hidden="true" enableMouse="true" secureMixin="UIWidgetTemplateIconAndTextMixin">
+	<Frame name="UIWidgetTemplateIconAndText" inherits="UIWidgetBaseTemplate" virtual="true" secureMixin="UIWidgetTemplateIconAndTextMixin">
 		<Size x="45" y="24"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -14,7 +14,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="DynamicIconButton" enableMouse="true">
+			<Frame parentKey="DynamicIconButton" inherits="UIWidgetTemplateTooltipFrame">
 				<Size x="32" y="32"/>
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.Text" relativePoint="RIGHT" />
@@ -29,17 +29,6 @@
 						</Texture>
 					</Layer>
 				</Layers>
-				<Scripts>
-					<OnEnter>
-						if ( self.tooltip ) then
-							GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT");
-							GameTooltip:SetText(self.tooltip);
-						end
-					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
-				</Scripts>
 			</Frame>
 			<Frame parentKey="Flash">
 				<Size x="32" y="32"/>

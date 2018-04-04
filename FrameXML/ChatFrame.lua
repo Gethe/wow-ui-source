@@ -728,6 +728,7 @@ local CastSequenceFreeList = {};
 local function CreateCanonicalActions(entry, ...)
 	entry.spells = {};
 	entry.spellNames = {};
+	entry.spellID = {};
 	entry.items = {};
 	local count = 0;
 	for i=1, select("#", ...) do
@@ -735,9 +736,11 @@ local function CreateCanonicalActions(entry, ...)
 		if ( action and action ~="" ) then
 			count = count + 1;
 			if ( GetItemInfo(action) or select(3, SecureCmdItemParse(action)) ) then
+				local spellName, spellID = GetItemSpell(action);
 				entry.items[count] = action;
-				entry.spells[count] = strlower(GetItemSpell(action) or "");
+				entry.spells[count] = strlower(spellName or "");
 				entry.spellNames[count] = entry.spells[count];
+				entry.spellID[count] = spellID;
 			else
 				entry.spells[count] = action;
 				entry.spellNames[count] = gsub(action, "!*(.*)", "%1");
@@ -781,27 +784,14 @@ local function CastSequenceManager_OnEvent(self, event, ...)
 	     event == "UNIT_SPELLCAST_INTERRUPTED" or
 	     event == "UNIT_SPELLCAST_FAILED" or
 	     event == "UNIT_SPELLCAST_FAILED_QUIET" ) then
-		local unit, name, rank, castID, _;
-		if ( event == "UNIT_SPELLCAST_SENT" ) then
-			unit, name, rank, _, castID = ...;
-		else
-			unit, name, rank, castID = ...;
-		end
-
-		if ( not name ) then
-			-- This was a server-side only spell affecting the player somehow, don't do anything with cast sequencing, just bail.
-			return;
-		end
+		local unit, castID, spellID = ...;
 
 		if ( unit == "player" or unit == "pet" ) then
-			name, rank = strlower(name), strlower(rank);
-			local nameplus = name.."()";
-			local fullname = name.."("..rank..")";
-			local overrideName = strlower(FindSpellOverrideNameByName(name));
-			local baseName = strlower(FindBaseSpellNameByName(name));
+			local overrideSpellID = FindSpellOverrideByID(spellID);
+			local baseSpellID     = FindBaseSpellByID(spellID);
 			for sequence, entry in pairs(CastSequenceTable) do
-				local entryName = entry.spellNames[entry.index];
-				if ( entryName == name or entryName == nameplus or entryName == fullname or entryName == overrideName or entryName == baseName ) then
+				local entrySpellID = entry.spellID[entry.index];
+				if ( entrySpellID == overrideSpellID or entrySpellID == baseSpellID ) then
 					if ( event == "UNIT_SPELLCAST_SENT" ) then
 						entry.pending = castID;
 					elseif ( entry.pending == castID ) then
@@ -903,12 +893,16 @@ local function ExecuteCastSequence(sequence, target)
 	if ( item ) then
 		local name, bag, slot = SecureCmdItemParse(item);
 		if ( slot ) then
+			local spellID;
 			if ( name ) then
-				spell = strlower(GetItemSpell(name) or "");
+				local spellName;
+				spellName, spellID = GetItemSpell(name);
+				spell = strlower(spellName or "");
 			else
 				spell = "";
 			end
 			entry.spellNames[entry.index] = spell;
+			entry.spellID[entry.index] = spellID;
 		end
 		if ( IsEquippableItem(name) and not IsEquippedItem(name) ) then
 			EquipItemByName(name);
@@ -1120,9 +1114,9 @@ end
 SecureCmdList["CAST"] = function(msg)
     local action, target = SecureCmdOptionParse(msg);
     if ( action ) then
-    	local spell = GetSpellInfo(action)
+    	local spellExists = DoesSpellExist(action)
 		local name, bag, slot = SecureCmdItemParse(action);
-		if ( spell ) then
+		if ( spellExists ) then
 			CastSpellByName(action, target);
 		elseif ( slot or GetItemInfo(name) ) then
 			SecureCmdUseItem(name, bag, slot, target);

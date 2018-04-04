@@ -47,6 +47,7 @@ FontStyles.xml
 ObjectAPI\ContinuableContainer.lua
 ObjectAPI\ItemLocation.lua
 ObjectAPI\Item.lua
+ObjectAPI\Spell.lua
 
 ## add new modules below here
 WorldFrame.xml
@@ -166,6 +167,7 @@ PetActionBarFrame.xml
 MultiCastActionBarFrame.xml
 MainMenuBarBagButtons.xml
 UnitPositionFrameTemplates.xml
+FogOfWarFrameTemplates.xml
 WorldMapFrame.xml
 QuestMapFrame.xml
 RaidWarning.xml

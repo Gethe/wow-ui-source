@@ -21,6 +21,11 @@ local Trainer =
 			LiteralName = "TRAINER_DESCRIPTION_UPDATE",
 		},
 		{
+			Name = "TrainerServiceInfoNameUpdate",
+			Type = "Event",
+			LiteralName = "TRAINER_SERVICE_INFO_NAME_UPDATE",
+		},
+		{
 			Name = "TrainerShow",
 			Type = "Event",
 			LiteralName = "TRAINER_SHOW",

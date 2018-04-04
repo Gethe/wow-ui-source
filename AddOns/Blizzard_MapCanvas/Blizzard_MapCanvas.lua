@@ -28,10 +28,7 @@ function MapCanvasMixin:SetMapID(mapID)
 		self.mapID = mapID; 
 		self.expandedMapInsetsByMapID = {};
 		self.ScrollContainer:SetMapID(mapID);
-
-		for dataProvider in pairs(self.dataProviders) do
-			dataProvider:OnMapChanged();
-		end
+		self:OnMapChanged();
 	end
 end
 
@@ -486,6 +483,12 @@ end
 
 function MapCanvasMixin:OnMapInsetMouseLeave(mapInsetIndex)
 	self:CallMethodOnPinsAndDataProviders("OnMapInsetMouseLeave", mapInsetIndex);
+end
+
+function MapCanvasMixin:OnMapChanged()
+	for dataProvider in pairs(self.dataProviders) do
+		dataProvider:OnMapChanged();
+	end
 end
 
 function MapCanvasMixin:OnCanvasScaleChanged()

@@ -46,6 +46,12 @@ function QuestChoiceFrameMixin:OnLoad()
 	self.defaultRightPadding = self.rightPadding;
 	self.defaultSpacing = self.spacing;
 
+	if self.optionTextColor then
+		for _, option in ipairs(self.Options) do
+			option.OptionText:SetTextColor(self.optionTextColor:GetRGBA());
+		end
+	end
+
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("PLAYER_DEAD");
 	self:RegisterEvent("QUEST_CHOICE_CLOSE");
@@ -82,6 +88,85 @@ function QuestChoiceFrameMixin:SetButtonsEnabled(enabled)
 	end
 end
 
+function QuestChoiceFrameMixin:WidgetLayout(widgetContainer, sortedWidgets)
+	DefaultWidgetLayout(widgetContainer, sortedWidgets);
+	self:UpdateHeight();
+end
+
+function QuestChoiceFrameMixin:WidgetInit(widgetFrame)
+	if self.optionTextColor and widgetFrame.GatherColorableFontStrings then
+		local fontStrings = widgetFrame:GatherColorableFontStrings();
+		for _, fontString in ipairs(fontStrings) do
+			fontString:SetTextColor(self.optionTextColor:GetRGBA());
+		end
+	end
+end
+
+
+function QuestChoiceFrameMixin:UpdateOptionWidgetRegistration(option, widgetSetID)
+	if option.widgetSetID and option.widgetSetID ~= widgetSetID then
+		UIWidgetManager:UnregisterWidgetSetContainer(option.widgetSetID, option.WidgetContainer);
+		option.WidgetContainer:Hide();
+	end
+
+	if widgetSetID then
+		UIWidgetManager:RegisterWidgetSetContainer(widgetSetID, option.WidgetContainer, function(...) self:WidgetLayout(...) end, function(...) self:WidgetInit(...) end);
+		option.WidgetContainer:Show();
+	end
+
+	option.widgetSetID = widgetSetID;
+end
+
+function QuestChoiceFrameMixin:UpdateHeight()
+	--make window taller if there is too much stuff
+	local initOptionHeight = self.initOptionHeight or INIT_OPTION_HEIGHT;
+	local optionStaticHeight = self.optionStaticHeight or OPTION_STATIC_HEIGHT;
+	local maxHeight = initOptionHeight;
+	for i=1, self.numOptions do
+		local option = self.Options[i];
+		local currHeight = optionStaticHeight;
+
+		currHeight = currHeight + option.OptionText:GetContentHeight();
+		if (option.Rewards) then
+			currHeight = currHeight + option.Rewards:GetHeight() + 25;
+		end
+		if option.WidgetContainer and option.WidgetContainer:IsShown() then
+			currHeight = currHeight + option.WidgetContainer:GetHeight() + 5;
+		end
+		maxHeight = math.max(currHeight, maxHeight);
+	end
+	for i=1, self.numOptions do
+		local option = self.Options[i];
+		option:SetHeight(maxHeight);
+	end
+	local heightDiff = maxHeight - initOptionHeight;
+	heightDiff = max(heightDiff, 0);
+	local initWindowHeight = self.initWindowHeight or INIT_WINDOW_HEIGHT;
+	self:SetHeight(initWindowHeight + heightDiff);
+	if (self.OnHeightChanged) then
+		self:OnHeightChanged(heightDiff);
+	end
+	
+	for i = 1, #self.Options do
+		self.Options[i]:SetShown(i <= self.numOptions);
+	end
+	if self.numOptions == 1 then
+		self.leftPadding = (self.fixedWidth - self.Option1:GetWidth()) / 2;
+		self.rightPadding = 0;
+		self.spacing = 0;
+	elseif self.numOptions == 4 then
+		self.leftPadding = 50;
+		self.rightPadding = 50;
+		self.spacing = 20;
+	else
+		self.leftPadding = self.defaultLeftPadding;
+		self.rightPadding = self.defaultRightPadding;
+		self.spacing = self.defaultSpacing;
+	end
+
+	self:Layout();
+end
+
 function QuestChoiceFrameMixin:Update()
 	self.hasPendingUpdate = false;
 
@@ -90,13 +175,19 @@ function QuestChoiceFrameMixin:Update()
 		self:Hide();
 		return;
 	end
+	self.numOptions = numOptions;
 	self.choiceID = choiceID;
 	self.QuestionText:SetText(questionText);
 
 	self:SetButtonsEnabled(true);
 
 	for i=1, numOptions do
-		local optID, buttonText, description, header, artFile, confirmationText = GetQuestChoiceOptionInfo(i);
+		local optID, buttonText, description, header, artFile, confirmationText, widgetSetID = GetQuestChoiceOptionInfo(i);
+
+		--if not widgetSetID and (optID == 1061 or optID == 764) then
+		--	widgetSetID = 4;
+		--end
+
 		local option = self.Options[i];
 		option.optID = optID;
 		option.OptionButton:SetText(buttonText);
@@ -110,58 +201,24 @@ function QuestChoiceFrameMixin:Update()
 		end
 		option.Artwork:SetTexture(artFile);
 		option.confirmationText = confirmationText;
+
+		self:UpdateOptionWidgetRegistration(option, widgetSetID);
 	end
 
-	self:ShowRewards(numOptions)
-
-	--make window taller if there is too much stuff
-	local initOptionHeight = self.initOptionHeight or INIT_OPTION_HEIGHT;
-	local optionStaticHeight = self.optionStaticHeight or OPTION_STATIC_HEIGHT;
-	local maxHeight = initOptionHeight;
-	for i=1, numOptions do
-		local option = self.Options[i];
-		local currHeight = optionStaticHeight;
-
-		currHeight = currHeight + option.OptionText:GetContentHeight();
-		if (option.Rewards) then
-			currHeight = currHeight + option.Rewards:GetHeight() + 25;
+	if numOptions < #self.Options then
+		for i = numOptions + 1, #self.Options do
+			local option = self.Options[i];
+			self:UpdateOptionWidgetRegistration(option, nil);
 		end
-		maxHeight = math.max(currHeight, maxHeight);
-	end
-	for i=1, numOptions do
-		local option = self.Options[i];
-		option:SetHeight(maxHeight);
-	end
-	local heightDiff = maxHeight - initOptionHeight;
-	heightDiff = max(heightDiff, 0);
-	local initWindowHeight = self.initWindowHeight or INIT_WINDOW_HEIGHT;
-	self:SetHeight(initWindowHeight + heightDiff);
-	if (self.OnHeightChanged) then
-		self:OnHeightChanged(heightDiff);
-	end
-	
-	for i = 1, #self.Options do
-		self.Options[i]:SetShown(i <= numOptions);
-	end
-	if numOptions == 1 then
-		self.leftPadding = (self.fixedWidth - self.Option1:GetWidth()) / 2;
-		self.rightPadding = 0;
-		self.spacing = 0;
-	elseif numOptions == 4 then
-		self.leftPadding = 50;
-		self.rightPadding = 50;
-		self.spacing = 20;
-	else
-		self.leftPadding = self.defaultLeftPadding;
-		self.rightPadding = self.defaultRightPadding;
-		self.spacing = self.defaultSpacing;
 	end
 
-	self:Layout();
+	self:ShowRewards()
+
+	self:UpdateHeight();
 end
 
-function QuestChoiceFrameMixin:ShowRewards(numOptions)
-	for i=1, numOptions do
+function QuestChoiceFrameMixin:ShowRewards()
+	for i=1, self.numOptions do
 		local rewardFrame = self["Option"..i].Rewards;
 		local height = INIT_REWARDS_HEIGHT;
 		local title, skillID, skillPoints, money, xp, numItems, numCurrencies, numChoices, numReps = GetQuestChoiceRewardInfo(i);

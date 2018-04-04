@@ -496,7 +496,7 @@ function TargetFrame_UpdateAuras (self)
 	local canAssist = UnitCanAssist("player", self.unit);
 	
 	for i = 1, MAX_TARGET_BUFFS do
-        local buffName, rank, icon, count, debuffType, duration, expirationTime, caster, canStealOrPurge, _ , spellId, _, _, casterIsPlayer, nameplateShowAll = UnitBuff(self.unit, i, nil);
+        local buffName, icon, count, debuffType, duration, expirationTime, caster, canStealOrPurge, _ , spellId, _, _, casterIsPlayer, nameplateShowAll = UnitBuff(self.unit, i, nil);
         if (buffName) then 
             frameName = selfName.."Buff"..(i);
             frame = _G[frameName];
@@ -568,7 +568,7 @@ function TargetFrame_UpdateAuras (self)
 	
 	local maxDebuffs = self.maxDebuffs or MAX_TARGET_DEBUFFS;
 	while ( frameNum <= maxDebuffs and index <= maxDebuffs ) do
-	    local debuffName, rank, icon, count, debuffType, duration, expirationTime, caster, _, _, _, _, _, casterIsPlayer, nameplateShowAll = UnitDebuff(self.unit, index, "INCLUDE_NAME_PLATE_ONLY");
+	    local debuffName, icon, count, debuffType, duration, expirationTime, caster, _, _, _, _, _, casterIsPlayer, nameplateShowAll = UnitDebuff(self.unit, index, "INCLUDE_NAME_PLATE_ONLY");
 		if ( debuffName ) then
 			if ( TargetFrame_ShouldShowDebuffs(self.unit, caster, nameplateShowAll, casterIsPlayer) ) then
 				frameName = selfName.."Debuff"..frameNum;

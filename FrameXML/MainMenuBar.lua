@@ -31,12 +31,18 @@ function MainMenuBarMixin:OnShow()
 end
 
 function MainMenuBarMixin:SetPositionForStatusBars()
-	if ( StatusTrackingBarManager:GetNumberVisibleBars() >= 1 ) then 
-		MainMenuBarArtFrameBackground:ClearAllPoints();
-		MainMenuBarArtFrameBackground:SetPoint("BOTTOM", MainMenuBar, "BOTTOM", 0, 14);
+
+	MainMenuBarArtFrameBackground:ClearAllPoints();
+	
+	if ( StatusTrackingBarManager:GetNumberVisibleBars() == 2 ) then 
+		MainMenuBarArtFrameBackground:SetPoint("BOTTOM", MainMenuBar, "BOTTOM", 0, 17);
+	elseif ( StatusTrackingBarManager:GetNumberVisibleBars() == 1 ) then
+		MainMenuBarArtFrameBackground:SetPoint("BOTTOM", MainMenuBar, "BOTTOM", 0, 13);
 	else 
-		MainMenuBarArtFrameBackground:ClearAllPoints();
 		MainMenuBarArtFrameBackground:SetPoint("BOTTOM", MainMenuBar, "BOTTOM", 0, 0);
+	end
+	if ( IsPlayerInWorld() ) then
+		UIParent_ManageFramePositions();
 	end
 end
 
@@ -89,6 +95,7 @@ function MainMenuBarMixin:OnEvent(event, ...)
 			StatusTrackingBarManager:AddBarFromTemplate("FRAME", "HonorStatusBarTemplate");
 			StatusTrackingBarManager:AddBarFromTemplate("FRAME", "ArtifactStatusBarTemplate");
 			StatusTrackingBarManager:AddBarFromTemplate("FRAME", "ExpStatusBarTemplate");
+			UIParent_ManageFramePositions();
 		end
 	elseif ( event == "TRIAL_STATUS_UPDATE" ) then
 		UpdateMicroButtons();

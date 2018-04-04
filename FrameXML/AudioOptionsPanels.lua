@@ -283,13 +283,12 @@ local AudioOptionsVoicePanelFrameMicrophoneList =
 
 function AudioOptionsVoicePanel_OnDismiss(self, shouldApply)
 	if self.setPushToTalkBinding then
-		self.setPushToTalkBinding = nil;
-
 		if shouldApply then
-			SaveBindings(self.bindingMode);
-		else
-			LoadBindings(GetCurrentBindingSet());
+			C_VoiceChat.SetPushToTalkBinding(self.setPushToTalkBinding);
 		end
+
+		self.setPushToTalkBinding = nil;
+		self.setPushToTalkBindingText = nil;
 	end
 end
 
@@ -350,54 +349,36 @@ function AudioOptionsVoicePanel_InitializeCommunicationModeUI(self)
 	if not self.PushToTalkKeybindButton then
 		KeyBindingFrame_LoadUI();
 
-		self.PushToTalkKeybindButton = CreateFrame("BUTTON", nil, self, "KeyBindingFrameBindingButtonTemplateWithLabel");
+		self.PushToTalkKeybindButton = CreateFrame("BUTTON", nil, self, "CustomBindingButtonTemplateWithLabel");
 		self.PushToTalkKeybindButton.KeyLabel:SetText(VOICE_CHAT_MODE_KEY);
 		local actionName = "TOGGLE_VOICE_PUSH_TO_TALK";
-		local bindingMode = 1;
-		local bindingButtonID = 1;
-		local preventKeybindingFrameBehavior = true;
 
 		self.PushToTalkKeybindButton.actionName = actionName;
 		self.PushToTalkKeybindButton.bindingMode = bindingMode;
 		self.bindingMode = bindingMode;
 
-		local function KeyDownHandlerFn(optionsPanel, keyOrButton)
-			if BindingButtonTemplate_IsSelected(optionsPanel.PushToTalkKeybindButton) then
-				local bindingSet, msg = KeyBindingFrame_AttemptKeybind(optionsPanel.PushToTalkKeybindButton, keyOrButton, actionName, bindingMode, bindingButtonID, preventKeybindingFrameBehavior);
-				optionsPanel.ChatModeDropdown.PushToTalkNotification:SetText(msg);
-
-				if bindingSet then
-					BindingButtonTemplate_SetSelected(optionsPanel.PushToTalkKeybindButton, false);
-					self:EnableKeyboard(false);
-					optionsPanel.setPushToTalkBinding = true;
-					AudioOptionsVoicePanel_UpdateCommunicationModeUI(optionsPanel);
-				end
-			end
-		end
-
-		self.PushToTalkKeybindButton:SetScript("OnClick", function(bindingButton, button)
-			if button == "LeftButton" or button == "RightButton" then
-				local isSelected = BindingButtonTemplate_ToggleSelected(bindingButton);
-				self:EnableKeyboard(isSelected);
-
-				if isSelected then
-					self.ChatModeDropdown.PushToTalkNotification:SetFormattedText(BIND_KEY_TO_COMMAND, GetBindingName(actionName));
-				else
-					self.ChatModeDropdown.PushToTalkNotification:SetText("");
-				end
-			else
-				KeyDownHandlerFn(self, button);
+		self.PushToTalkKeybindButton:SetBindingModeActiveCallback(function(pttButton, isActive)
+			if isActive then
+				self.ChatModeDropdown.PushToTalkNotification:SetFormattedText(BIND_KEY_TO_COMMAND, GetBindingName(actionName));
 			end
 		end);
 
-		self:SetScript("OnKeyDown", KeyDownHandlerFn);
-		self:EnableKeyboard(false); -- setting this script enables keyboard automatically.
+
+		self.PushToTalkKeybindButton:SetBindingCompletedCallback(function(pttButton, completedSuccessfully)
+			self.ChatModeDropdown.PushToTalkNotification:SetText("");
+
+			if completedSuccessfully then
+				self.setPushToTalkBindingText = pttButton:GetBindingText();
+				self.setPushToTalkBinding = pttButton:GetKeys();
+				AudioOptionsVoicePanel_UpdateCommunicationModeUI(self);
+			end
+		end);
 
 		self.PushToTalkKeybindButton:SetPoint("BOTTOMLEFT", self.ChatModeDropdown, "BOTTOMRIGHT", 10, 5);
 		self.PushToTalkKeybindButton:SetWidth(140);
 		self.PushToTalkKeybindButton.selectedHighlight:SetWidth(140);
 
-		AudioOptionsVoicePanel_KeyBindButton_SetEnabled(self.PushToTalkKeybindButton, not self.ChatModeDropdown.isDisabled)
+		AudioOptionsVoicePanel_KeyBindButton_SetEnabled(self.PushToTalkKeybindButton, not self.ChatModeDropdown.isDisabled);
 		BlizzardOptionsPanel_RegisterControl(self.PushToTalkKeybindButton, self);
 	end
 
@@ -420,7 +401,7 @@ end
 function AudioOptionsVoicePanel_UpdateCommunicationModeUI(self)
 	local button = self.PushToTalkKeybindButton;
 	if button then
-		local key = GetPreferredBindingKey(button.actionName, button.bindingMode);
+		local key = self.setPushToTalkBindingText or GetBindingText(table.concat(C_VoiceChat.GetPushToTalkBinding(), "-"));
 		if key then
 			button:SetText(key);
 			button:SetAlpha(1);
@@ -511,6 +492,14 @@ end
 
 function AudioOptionsPanelVoiceChatMicVolumeSlider_OnValueChanged(self, value)
 	AudioOptionsPanelVoiceChatSlider_BaseOnValueChanged(self, value, C_VoiceChat.SetInputVolume);
+end
+
+function AudioOptionsPanelVoiceChatMicSensitivitySlider_OnLoad(self)
+	AudioOptionsPanelVoiceChatSlider_BaseOnLoad(self, "VoiceVADSensitivity", C_VoiceChat.GetVADSensitivity);
+end
+
+function AudioOptionsPanelVoiceChatMicSensitivitySlider_OnValueChanged(self, value)
+	AudioOptionsPanelVoiceChatSlider_BaseOnValueChanged(self, value, C_VoiceChat.SetVADSensitivity);
 end
 
 -- Voice Chat Input/Output devices
@@ -762,6 +751,15 @@ end
 local function UpdateVUMeter(self, isSpeaking, energy)
 	energy = self.isTesting and energy or 0;
 	self.VUMeter.Status:SetValue(energy);
+
+	if self.VUMeter.isSpeaking ~= isSpeaking then
+		self.VUMeter.isSpeaking = isSpeaking;
+		if isSpeaking then
+			self.VUMeter.Status:SetStatusBarColor(0, 1, 0, 1);
+		else
+			self.VUMeter.Status:SetStatusBarColor(1, 1, 1, 1);
+		end
+	end
 end
 
 local function ToggleTesting(self)

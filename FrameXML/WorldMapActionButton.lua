@@ -1,5 +1,11 @@
 WorldMapActionButtonMixin = {};
 
+function WorldMapActionButtonMixin:OnLoad()
+	if self:GetParent().RegisterCallback then
+		self:GetParent():RegisterCallback("WorldQuestsUpdate", function(event, ...) self:OnWorldQuestsUpdate(...); end);
+	end
+end
+
 function WorldMapActionButtonMixin:OnEvent(event, ...)
 	if event == "SPELL_UPDATE_COOLDOWN" then
 		self:UpdateCooldown();
@@ -11,6 +17,10 @@ function WorldMapActionButtonMixin:OnEvent(event, ...)
 			PlaySound(SOUNDKIT.UI_ORDERHALL_TALENT_NUKE_FROM_ORBIT);
 		end
 	end
+end
+
+function WorldMapActionButtonMixin:OnWorldQuestsUpdate(numWorldQuests)
+	self:SetHasWorldQuests(numWorldQuests > 0);
 end
 
 function WorldMapActionButtonMixin:SetMapAreaID(mapAreaID)
@@ -28,7 +38,17 @@ function WorldMapActionButtonMixin:SetHasWorldQuests(hasWorldQuests)
 end
 
 function WorldMapActionButtonMixin:GetDisplayLocation(useAlternateLocation)
-	return useAlternateLocation and LE_MAP_OVERLAY_DISPLAY_LOCATION_BOTTOM_LEFT or LE_MAP_OVERLAY_DISPLAY_LOCATION_BOTTOM_RIGHT;
+	if self:GetParent().GetMapID then
+		local mapID = self:GetParent():GetMapID();
+		local bounties, displayLocation, lockedQuestID = GetQuestBountyInfoForMapID(mapID);
+		if displayLocation and displayLocation == LE_MAP_OVERLAY_DISPLAY_LOCATION_BOTTOM_RIGHT then
+			return LE_MAP_OVERLAY_DISPLAY_LOCATION_BOTTOM_LEFT;
+		else
+			return LE_MAP_OVERLAY_DISPLAY_LOCATION_BOTTOM_RIGHT;
+		end
+	else
+		return useAlternateLocation and LE_MAP_OVERLAY_DISPLAY_LOCATION_BOTTOM_LEFT or LE_MAP_OVERLAY_DISPLAY_LOCATION_BOTTOM_RIGHT;
+	end
 end
 
 function WorldMapActionButtonMixin:SetOnCastChangedCallback(onCastChangedCallback)
@@ -63,7 +83,7 @@ function WorldMapActionButtonMixin:Clear()
 end
 
 function WorldMapActionButtonMixin:Refresh()
-	if not self.mapAreaID or not self.hasWorldQuests then
+	if not self.hasWorldQuests then
 		self:Clear();
 		return;
 	end
@@ -85,6 +105,11 @@ function WorldMapActionButtonMixin:Refresh()
 	self.SpellButton:SetPushedTexture(spellIcon);
 
 	self:UpdateCooldown();
+
+	-- TEMP
+	if self:GetParent().SetOverlayFrameLocation then
+		self:GetParent():SetOverlayFrameLocation(self, self:GetDisplayLocation());
+	end
 
 	self:Show();
 end

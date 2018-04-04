@@ -538,7 +538,7 @@ local function IsUsingValidProductForCreateNewCharacterBoost()
 end
 
 local function IsBoostFlowValidForCharacter(flowData, class, level, boostInProgress, isTrialBoost, revokedCharacterUpgrade, vasServiceInProgress)
-	if (boostInProgress or vasServiceInProgress or class == "DEMONHUNTER") then
+	if (boostInProgress or vasServiceInProgress) then
 		return false;
 	end
 

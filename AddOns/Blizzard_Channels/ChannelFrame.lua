@@ -164,7 +164,7 @@ function ChannelFrameMixin:OnVoiceChannelJoined(statusCode, channelID)
 end
 
 local function GetChannelTypeFromPartyCategory(partyCategory)
-	return (partyCategory == LE_PARTY_CATEGORY_HOME) and Enum.ChatChannelType.Party or Enum.ChatChannelType.Instance;
+	return (partyCategory == LE_PARTY_CATEGORY_HOME) and Enum.ChatChannelType.Private_Party or Enum.ChatChannelType.Public_Party;
 end
 
 function ChannelFrameMixin:CheckActivateChannel(channelID)
@@ -252,14 +252,14 @@ end
 
 function ChannelFrameMixin:UpdateChannelIfSelected(channelID)
 	local channel = self:GetList():GetSelectedChannelButton();
-	if channel and channel:IsTextChannel() and channel:GetChannelID() == channelID then
+	if channel and channel:ChannelSupportsText() and channel:GetChannelID() == channelID then
 		self.DirtyFlags:MarkDirty(self.DirtyFlags.UpdateRoster);
 	end
 end
 
 function ChannelFrameMixin:UpdateChannelByNameIfSelected(channelName)
 	local channel = self:GetList():GetSelectedChannelButton();
-	if channel and channel:IsTextChannel() and channel:GetChannelName() == channelName then
+	if channel and channel:ChannelSupportsText() and channel:GetChannelName() == channelName then
 		self.DirtyFlags:MarkDirty(self.DirtyFlags.UpdateRoster);
 	end
 end
@@ -429,10 +429,8 @@ end
 
 local channelTypeToNameLookup =
 {
-	[Enum.ChatChannelType.Party] = VOICE_CHANNEL_NAME_PARTY,
-	[Enum.ChatChannelType.Instance] = VOICE_CHANNEL_NAME_INSTANCE,
-	[Enum.ChatChannelType.Raid] = VOICE_CHANNEL_NAME_RAID,
-	[Enum.ChatChannelType.Battleground] = VOICE_CHANNEL_NAME_RAID,
+	[Enum.ChatChannelType.Private_Party] = VOICE_CHANNEL_NAME_PARTY,
+	[Enum.ChatChannelType.Public_Party] = VOICE_CHANNEL_NAME_INSTANCE,
 };
 
 function ChannelFrame_GetIdealChannelName(channel)

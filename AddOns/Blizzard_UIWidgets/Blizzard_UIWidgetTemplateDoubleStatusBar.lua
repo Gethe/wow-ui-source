@@ -60,7 +60,4 @@ function UIWidgetTemplateDoubleStatusBarMixin:Setup(widgetInfo)
 	self.RightBar.Icon:SetPoint("CENTER", self.RightBar, "RIGHT", ICON_OFFSET, 0);
 
 	self.Label:SetText(widgetInfo.text);
-
-	self:Show();
-	self.orderIndex = widgetInfo.orderIndex;
 end

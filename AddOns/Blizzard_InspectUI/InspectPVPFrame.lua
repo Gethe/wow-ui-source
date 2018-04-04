@@ -156,9 +156,6 @@ end
 
 function InspectPvPTalentFrameTalent_OnClick(self)
 	if ( IsModifiedClick("CHATLINK") ) then
-		local link = GetPvpTalentLink(self.pvpTalentID);
-		if ( link ) then
-			ChatEdit_InsertLink(link);
-		end
+		ChatEdit_InsertLink(GetPvpTalentLink(self.pvpTalentID));
 	end
 end

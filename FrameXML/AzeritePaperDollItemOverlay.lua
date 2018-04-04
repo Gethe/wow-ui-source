@@ -52,9 +52,11 @@ function AzeritePaperDollItemOverlayMixin:DisplayAsAzeriteEmpoweredItem(itemLoca
 	if C_AzeriteEmpoweredItem.HasAnyUnselectedPowers(itemLocation) then
 		self.AvailableTraitFrame:Show();
 		self.AvailableTraitFrame.AvailableAnim:Play();
+		self.AvailableTraitFrame.AvailableAnimGlow:Play();
 	else
 		self.AvailableTraitFrame:Hide();
 		self.AvailableTraitFrame.AvailableAnim:Finish();
+		self.AvailableTraitFrame.AvailableAnimGlow:Finish();
 	end
 end
 

@@ -233,10 +233,10 @@ end
 function CommunitiesMemberListEntryMixin:SetMember(clubId, memberId)
 	self.memberId = memberId;
 	if memberId then
-		local member = C_Club.GetMemberInfo(clubId, memberId);
-		self.Name:SetText(member.name);
-		self:UpdateRank(member.role);
-		self:UpdatePresence(member.presence);
+		local memberInfo = C_Club.GetMemberInfo(clubId, memberId);
+		self.Name:SetText(memberInfo.name);
+		self:UpdateRank(memberInfo.role);
+		self:UpdatePresence(memberInfo.presence);
 		self:RefreshExpandedColumns();
 	else
 		self.Name:SetText(nil);
@@ -265,6 +265,18 @@ function CommunitiesMemberListEntryMixin:OnEnter()
 		local memberRoleId = member.role;
 		if memberRoleId then
 			GameTooltip:AddLine(COMMUNITY_MEMBER_ROLE_NAMES[memberRoleId], HIGHLIGHT_FONT_COLOR:GetRGB());
+		end
+		
+		if member.level and member.race and member.classID then
+			local raceInfo = C_CreatureInfo.GetRaceInfo(member.race);
+			local classInfo = C_CreatureInfo.GetClassInfo(member.classID);
+			if raceInfo and classInfo then
+				GameTooltip:AddLine(COMMUNITY_MEMBER_CHARACTER_INFO_FORMAT:format(member.level, raceInfo.raceName, classInfo.className), HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, true);
+			end
+		end
+		
+		if member.zone then
+			GameTooltip:AddLine(member.zone, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, true);
 		end
 		
 		if member.memberNote then
@@ -320,7 +332,7 @@ function CommunitiesMemberListDropDown_OnHide(self)
 end
 
 local function CanKickMember(clubPrivileges, memberInfo)
-	return clubPrivileges.canKickMember and tContains(clubPrivileges.kickableRoleIds, memberInfo.role);
+	return tContains(clubPrivileges.kickableRoleIds, memberInfo.role);
 end
 
 function CommunitiesMemberListDropdown_Initialize(self, level)

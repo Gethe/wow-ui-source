@@ -93,6 +93,25 @@ do
 	end
 end
 
+function LootJournalItemButtonTemplate_OnEnter(self)
+	local listFrame = self:GetParent();
+	while ( listFrame and not listFrame.ShowItemTooltip ) do
+		listFrame = listFrame:GetParent();
+	end
+	if ( listFrame ) then
+		listFrame:ShowItemTooltip(self);
+		self:SetScript("OnUpdate", LootJournalItemButton_OnUpdate);
+		self.UpdateTooltip = LootJournalItemButtonTemplate_OnEnter;
+	end
+end
+
+function LootJournalItemButtonTemplate_OnLeave(self)
+	self.UpdateTooltip = nil;
+	GameTooltip:Hide();
+	self:SetScript("OnUpdate", nil);
+	ResetCursor();
+end
+
 --=================================================================================================================================== 
 LootJournalListMixin = { };
 
@@ -118,9 +137,13 @@ function LootJournalListMixin:UpdateClassButtonText()
 	if classFilter == NO_CLASS_FILTER then
 		text = ALL_CLASSES;
 	else
-		local className, classTag = GetClassInfoByID(classFilter);
 		if specFilter == NO_SPEC_FILTER then
-			text = className;
+			local classInfo = C_CreatureInfo.GetClassInfo(classFilter);
+			if not classInfo then
+				return;
+			end
+
+			text = classInfo.className;
 		else
 			text = GetSpecializationNameForSpecID(specFilter);
 		end
@@ -232,7 +255,13 @@ do
 
 			local classDisplayName, classTag, classID;
 			if filterClassID ~= NO_CLASS_FILTER then
-				classDisplayName, classTag, classID = GetClassInfoByID(filterClassID);
+				classID = filterClassID;
+				
+				local classInfo = C_CreatureInfo.GetClassInfo(filterClassID);
+				if classInfo then
+					classDisplayName = classInfo.className;
+					classTag = classInfo.classFile;
+				end
 			else
 				classDisplayName, classTag, classID = UnitClass("player");
 			end

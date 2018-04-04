@@ -53,11 +53,6 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="1">
-				<Texture parentKey="BgBurst" hidden="false" alpha="0" alphaMode="ADD" atlas="ChallengeMode-Runes-ARTWORKBurst" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.RuneBG"/>
-					</Anchors>
-				</Texture>
 				<Texture parentKey="BgBurst2" hidden="false" alpha="0" alphaMode="ADD" atlas="ChallengeMode-Runes-BackgroundBurst" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="CENTER" x="0" y="61"/>
@@ -66,13 +61,6 @@
 				<Texture parentKey="Divider" atlas="ChallengeMode-ThinDivider" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="BOTTOM" relativeKey="$parent.InstructionBackground" relativePoint="TOP"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="ARTWORK" textureSubLevel="2">
-				<Texture parentKey="RuneCoverGlow" hidden="false" alpha="0" alphaMode="BLEND" atlas="ChallengeMode-Runes-ARTWORKCoverGlow" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.RuneBG"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -290,12 +278,6 @@
 		</Frames>
 		<Animations>
 			<AnimationGroup parentKey="InsertedAnim" setToFinalAlpha="true">
-				<Alpha childKey="RuneCoverGlow" startDelay="0.2" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
-				<Alpha childKey="RuneCoverGlow" startDelay="1.5" duration="1" order="1" fromAlpha="1" toAlpha="0.55"/>
-				<Alpha childKey="BgBurst" startDelay="0.3" smoothing="OUT" duration="0.3" order="1" fromAlpha="0" toAlpha="1"/>
-				<Scale childKey="BgBurst" startDelay="0.3" smoothing="OUT" duration="0.2" order="1" fromScaleX="0.8" fromScaleY="0.8" toScaleX="1.1" toScaleY="1.1"/>
-				<Alpha childKey="BgBurst" startDelay="1.25" smoothing="IN" duration="0.75" order="1" fromAlpha="1" toAlpha="0"/>
-				<Scale childKey="BgBurst" startDelay="0.7" smoothing="OUT" duration="1.5" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.8" toScaleY="0.8"/>
 				<Alpha childKey="KeystoneSlotGlow" duration="0.15" order="1" fromAlpha="0" toAlpha="1"/>
 				<Alpha childKey="PentagonLines" startDelay="0.15" smoothing="IN" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
 				<Alpha childKey="PentagonLines" startDelay="0.55" smoothing="IN_OUT" duration="1" order="1" fromAlpha="1" toAlpha="0.55"/>
@@ -557,7 +539,6 @@
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnEvent method="OnEvent"/>
-			<OnUpdate method="OnUpdate"/>
 		</Scripts>
 	</Frame>
     

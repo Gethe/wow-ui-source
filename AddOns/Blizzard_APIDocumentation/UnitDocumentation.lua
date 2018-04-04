@@ -711,8 +711,6 @@ local Unit =
 			LiteralName = "UNIT_SPELLCAST_CHANNEL_START",
 			Payload =
 			{
-				{ Name = "spellName", Type = "string", Nilable = false },
-				{ Name = "nameSubtext", Type = "string", Nilable = false },
 				{ Name = "castGUID", Type = "string", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
 			},
@@ -723,8 +721,6 @@ local Unit =
 			LiteralName = "UNIT_SPELLCAST_CHANNEL_STOP",
 			Payload =
 			{
-				{ Name = "spellName", Type = "string", Nilable = false },
-				{ Name = "nameSubtext", Type = "string", Nilable = false },
 				{ Name = "castGUID", Type = "string", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
 			},
@@ -735,8 +731,6 @@ local Unit =
 			LiteralName = "UNIT_SPELLCAST_CHANNEL_UPDATE",
 			Payload =
 			{
-				{ Name = "spellName", Type = "string", Nilable = false },
-				{ Name = "nameSubtext", Type = "string", Nilable = false },
 				{ Name = "castGUID", Type = "string", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
 			},
@@ -747,8 +741,6 @@ local Unit =
 			LiteralName = "UNIT_SPELLCAST_DELAYED",
 			Payload =
 			{
-				{ Name = "spellName", Type = "string", Nilable = false },
-				{ Name = "nameSubtext", Type = "string", Nilable = false },
 				{ Name = "castGUID", Type = "string", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
 			},
@@ -759,8 +751,6 @@ local Unit =
 			LiteralName = "UNIT_SPELLCAST_FAILED",
 			Payload =
 			{
-				{ Name = "spellName", Type = "string", Nilable = false },
-				{ Name = "nameSubtext", Type = "string", Nilable = false },
 				{ Name = "castGUID", Type = "string", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
 			},
@@ -771,8 +761,6 @@ local Unit =
 			LiteralName = "UNIT_SPELLCAST_FAILED_QUIET",
 			Payload =
 			{
-				{ Name = "spellName", Type = "string", Nilable = false },
-				{ Name = "nameSubtext", Type = "string", Nilable = false },
 				{ Name = "castGUID", Type = "string", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
 			},
@@ -783,8 +771,6 @@ local Unit =
 			LiteralName = "UNIT_SPELLCAST_INTERRUPTED",
 			Payload =
 			{
-				{ Name = "spellName", Type = "string", Nilable = false },
-				{ Name = "nameSubtext", Type = "string", Nilable = false },
 				{ Name = "castGUID", Type = "string", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
 			},
@@ -805,8 +791,6 @@ local Unit =
 			LiteralName = "UNIT_SPELLCAST_START",
 			Payload =
 			{
-				{ Name = "spellName", Type = "string", Nilable = false },
-				{ Name = "nameSubtext", Type = "string", Nilable = false },
 				{ Name = "castGUID", Type = "string", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
 			},
@@ -817,8 +801,6 @@ local Unit =
 			LiteralName = "UNIT_SPELLCAST_STOP",
 			Payload =
 			{
-				{ Name = "spellName", Type = "string", Nilable = false },
-				{ Name = "nameSubtext", Type = "string", Nilable = false },
 				{ Name = "castGUID", Type = "string", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
 			},
@@ -829,8 +811,6 @@ local Unit =
 			LiteralName = "UNIT_SPELLCAST_SUCCEEDED",
 			Payload =
 			{
-				{ Name = "spellName", Type = "string", Nilable = false },
-				{ Name = "nameSubtext", Type = "string", Nilable = false },
 				{ Name = "castGUID", Type = "string", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
 			},

@@ -1,13 +1,18 @@
-Voice_ChannelTypeToChatInfoType =
+Voice_PartyChannelTypeToChatInfoType =
 {
-	[Enum.ChatChannelType.Party] = "PARTY",
-	[Enum.ChatChannelType.Raid] = "RAID",
-	[Enum.ChatChannelType.Instance] = "INSTANCE_CHAT",
-	[Enum.ChatChannelType.Battleground] = "INSTANCE_CHAT",
+	[Enum.ChatChannelType.Private_Party] = "PARTY",
+	[Enum.ChatChannelType.Public_Party] = "INSTANCE_CHAT",
 };
 
-function Voice_GetChatInfoForChannelType(channelType)
-	local chatType = Voice_ChannelTypeToChatInfoType[channelType];
+Voice_RaidChannelTypeToChatInfoType =
+{
+	[Enum.ChatChannelType.Private_Party] = "RAID",
+	[Enum.ChatChannelType.Public_Party] = "INSTANCE_CHAT",
+};
+
+function Voice_GetChatInfoForChannelType(channel)
+	local isRaid = IsChatChannelRaid(channel.channelType);
+	local chatType = isRaid and Voice_RaidChannelTypeToChatInfoType[channel.channelType] or Voice_PartyChannelTypeToChatInfoType[channel.channelType];
 	if chatType then
 		return ChatTypeInfo[chatType];
 	end
@@ -16,7 +21,7 @@ end
 function Voice_GetVoiceChannelNotificationColor(channelID)
 	local channel = C_VoiceChat.GetChannel(channelID);
 	if channel then
-		local chatInfo = Voice_GetChatInfoForChannelType(channel.channelType);
+		local chatInfo = Voice_GetChatInfoForChannelType(channel);
 		if chatInfo then
 			return Chat_GetChannelColor(chatInfo);
 		end

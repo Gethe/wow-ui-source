@@ -434,7 +434,7 @@ function PartyMemberFrame_RefreshPetDebuffs (self, id)
 end
 
 function PartyMemberBuffTooltip_Update (self)
-	local name, rank, icon;
+	local name, icon;
 	local numBuffs = 0;
 	local numDebuffs = 0;
 	local index = 1;
@@ -448,7 +448,7 @@ function PartyMemberBuffTooltip_Update (self)
 		filter = nil;
 	end
 	for i=1, MAX_PARTY_TOOLTIP_BUFFS do
-		name, rank, icon = UnitBuff(self.unit, i, filter);
+		name, icon = UnitBuff(self.unit, i, filter);
 		if ( icon ) then
 			_G["PartyMemberBuffTooltipBuff"..index.."Icon"]:SetTexture(icon);
 			_G["PartyMemberBuffTooltipBuff"..index]:Show();
@@ -479,7 +479,7 @@ function PartyMemberBuffTooltip_Update (self)
 	for i=1, MAX_PARTY_TOOLTIP_DEBUFFS do
 		local debuffBorder = _G["PartyMemberBuffTooltipDebuff"..index.."Border"]
 		local partyDebuff = _G["PartyMemberBuffTooltipDebuff"..index.."Icon"];
-		name, rank, icon, debuffStack, debuffType = UnitDebuff(self.unit, i, filter);
+		name, icon, debuffStack, debuffType = UnitDebuff(self.unit, i, filter);
 		if ( icon ) then
 			partyDebuff:SetTexture(icon);
 			if ( debuffType ) then

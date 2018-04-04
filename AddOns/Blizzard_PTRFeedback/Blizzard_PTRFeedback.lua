@@ -1,5 +1,6 @@
 function SetupPTRFeedbackFrames()
     --------------------------------------------------ALWAYS DISPLAYED BUTTONS--------------------------------------------------
+    local IgnoreLocations = {1813, 1814, 1879, 1882, 1883, 1892,  1893, 1897, 1898, 1907}
     local PTR_Feedback = CreateFrame("Frame", nil, UIParent)
     PTR_Feedback.Body = CreateFrame("Frame", nil, PTR_Feedback)
     PTR_Feedback.Data = {
@@ -398,6 +399,15 @@ function SetupPTRFeedbackFrames()
             table.insert(PTR_Feedback.AlertFrame.Queue, {name = name, id = creatureId, difficulty = difficultyName})
         end
     end
+    
+    function PTR_Feedback.CheckValidLocation(searchedArray, currentLocation)
+        for index, value in ipairs(searchedArray) do
+            if value == currentLocation then
+                return false
+            end
+        end
+        return true
+    end
 
     do
         PTR_Feedback.AlertFrame.CheckButtons[1] = FramePainter.NewCheckBox("CENTER", PTR_Feedback.AlertFrame, "BOTTOMLEFT", "Yes", PTR_Feedback.AlertFrame:GetWidth()*(1/3), 80)
@@ -459,7 +469,7 @@ function SetupPTRFeedbackFrames()
                 if (PTR_Feedback.AlertFrame.Classification[difficultyName][creatureName]) then
                     if (not PTR_Feedback.AlertFrame.Defeated[difficultyName][creatureName]) then
                         if (PTR_Feedback.AlertFrame.ClassByID[id]) and (PTR_Feedback.AlertFrame.ClassByID[id] == "rare" or PTR_Feedback.AlertFrame.ClassByID[id] == "worldboss" or PTR_Feedback.AlertFrame.ClassByID[id] == "rareelite") then
-                            if(select(8,GetInstanceInfo()) ~= 1813) then
+                            if (PTR_Feedback.CheckValidLocation(IgnoreLocations, select(8,GetInstanceInfo()))) then
                                 PTR_Feedback.AddBoss(creatureName, id, difficultyName)
                             end
                         end

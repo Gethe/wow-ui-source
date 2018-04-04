@@ -37,12 +37,8 @@
 					<OnLoad>
 						self:RegisterForDrag("LeftButton");
 					</OnLoad>
-					<OnClick>
-						CastSpellByName(self.spellName);
-					</OnClick>
-					<OnDragStart>
-						PickupSpell(self.spellID);
-					</OnDragStart>
+					<OnClick function="ZoneAbilityFrame_OnClick"/>
+					<OnDragStart function="ZoneAbilityFrame_OnDragStart"/>
 					<OnEnter>
 						GameTooltip:SetOwner(self);
 						GameTooltip:SetSpellByID(self.currentSpellID);

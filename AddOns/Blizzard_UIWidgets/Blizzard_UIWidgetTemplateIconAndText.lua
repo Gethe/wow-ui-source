@@ -30,15 +30,12 @@ function UIWidgetTemplateIconAndTextMixin:OnAcquired(widgetInfo)
 end
 
 function UIWidgetTemplateIconAndTextMixin:Setup(widgetInfo)
-	self:Show();
-
 	SetupTextureKits(widgetInfo.textureKitID, self, textureKitRegions, true);
 
 	self.Text:SetText(widgetInfo.text);
-	self.tooltip = widgetInfo.tooltip;
-	self.DynamicIconButton.tooltip = widgetInfo.dynamicTooltip;
+	self:SetTooltip(widgetInfo.tooltip);
+	self.DynamicIconButton:SetTooltip(widgetInfo.dynamicTooltip);
 	self.hasTimer = widgetInfo.hasTimer;
-	self.orderIndex = widgetInfo.orderIndex;
 
 	if ( widgetInfo.state == Enum.IconAndTextWidgetState.ShownWithDynamicIconFlashing ) then
 		UIFrameFlash(self.Flash, 0.5, 0.5, -1);
@@ -55,17 +52,4 @@ end
 function UIWidgetTemplateIconAndTextMixin:OnLoad()
 	self.DynamicIconTexture = self.DynamicIconButton.Icon;
 	self.FlashTexture = self.Flash.Texture;
-end
-
-function UIWidgetTemplateIconAndTextMixin:OnEnter()
-	if ( self.tooltip ) then
-		GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT");
-		GameTooltip:SetText(self.tooltip);
-	end
-end
-
-function UIWidgetTemplateIconAndTextMixin:OnLeave()
-	if ( self.tooltip ) then
-		GameTooltip:Hide();
-	end
 end

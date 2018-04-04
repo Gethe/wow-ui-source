@@ -20,7 +20,7 @@ end
 
 function IslandsPartyPoseMixin:LoadScreenData(mapID, questID, winner) 
 	local partyPoseInfo = C_PartyPose.GetPartyPoseInfoByMapID(mapID); 
-	UIWidgetManager:RegisterWidgetSetContainer(partyPoseInfo.widgetSetID, self.Score, SetupScoreWidgetAnchoring);
+	UIWidgetManager:RegisterWidgetSetContainer(partyPoseInfo.widgetSetID, self.Score);
 	self:SetModelScene(partyPoseInfo.modelSceneID);
 	self:SetLeaveButtonText(); 
 	self:SetTopBannerAndBackgroundFromWinner(winner); 

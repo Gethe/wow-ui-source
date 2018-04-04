@@ -44,6 +44,20 @@ local UIWidgetManager =
 			},
 		},
 		{
+			Name = "GetDoubleIconAndTextWidgetVisualizationInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "widgetID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "widgetInfo", Type = "DoubleIconAndTextWidgetVisualizationInfo", Nilable = true },
+			},
+		},
+		{
 			Name = "GetDoubleStatusBarWidgetVisualizationInfo",
 			Type = "Function",
 
@@ -83,6 +97,20 @@ local UIWidgetManager =
 			Returns =
 			{
 				{ Name = "widgetInfo", Type = "IconTextAndBackgroundWidgetVisualizationInfo", Nilable = true },
+			},
+		},
+		{
+			Name = "GetStatusBarWidgetVisualizationInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "widgetID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "widgetInfo", Type = "StatusBarWidgetVisualizationInfo", Nilable = true },
 			},
 		},
 		{
@@ -131,9 +159,9 @@ local UIWidgetManager =
 		{
 			Name = "UIWidgetVisualizationType",
 			Type = "Enumeration",
-			NumValues = 5,
+			NumValues = 6,
 			MinValue = 0,
-			MaxValue = 4,
+			MaxValue = 5,
 			Fields =
 			{
 				{ Name = "IconAndText", Type = "UIWidgetVisualizationType", EnumValue = 0 },
@@ -141,6 +169,7 @@ local UIWidgetManager =
 				{ Name = "StatusBar", Type = "UIWidgetVisualizationType", EnumValue = 2 },
 				{ Name = "DoubleStatusBar", Type = "UIWidgetVisualizationType", EnumValue = 3 },
 				{ Name = "IconTextAndBackground", Type = "UIWidgetVisualizationType", EnumValue = 4 },
+				{ Name = "DoubleIconAndText", Type = "UIWidgetVisualizationType", EnumValue = 5 },
 			},
 		},
 		{
@@ -165,6 +194,20 @@ local UIWidgetManager =
 				{ Name = "state", Type = "CaptureBarWidgetState", Nilable = false },
 				{ Name = "barPercent", Type = "number", Nilable = false },
 				{ Name = "neutralPercent", Type = "number", Nilable = false },
+				{ Name = "textureKitID", Type = "number", Nilable = false },
+				{ Name = "orderIndex", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "DoubleIconAndTextWidgetVisualizationInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "label", Type = "string", Nilable = false },
+				{ Name = "leftText", Type = "string", Nilable = false },
+				{ Name = "leftTooltip", Type = "string", Nilable = false },
+				{ Name = "rightText", Type = "string", Nilable = false },
+				{ Name = "rightTooltip", Type = "string", Nilable = false },
 				{ Name = "textureKitID", Type = "number", Nilable = false },
 				{ Name = "orderIndex", Type = "number", Nilable = false },
 			},
@@ -215,6 +258,19 @@ local UIWidgetManager =
 			Fields =
 			{
 				{ Name = "value", Type = "number", Nilable = false },
+				{ Name = "textureKitID", Type = "number", Nilable = false },
+				{ Name = "orderIndex", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "StatusBarWidgetVisualizationInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "barMin", Type = "number", Nilable = false },
+				{ Name = "barMax", Type = "number", Nilable = false },
+				{ Name = "barValue", Type = "number", Nilable = false },
+				{ Name = "text", Type = "string", Nilable = false },
 				{ Name = "textureKitID", Type = "number", Nilable = false },
 				{ Name = "orderIndex", Type = "number", Nilable = false },
 			},

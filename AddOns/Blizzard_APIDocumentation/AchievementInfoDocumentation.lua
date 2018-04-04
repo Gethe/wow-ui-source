@@ -6,6 +6,15 @@ local AchievementInfo =
 
 	Functions =
 	{
+		{
+			Name = "SetPortraitTexture",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "textureObject", Type = "table", Nilable = false },
+			},
+		},
 	},
 
 	Events =

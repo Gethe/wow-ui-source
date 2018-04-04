@@ -90,8 +90,9 @@ local EncounterJournal =
 			Type = "Structure",
 			Fields =
 			{
+				{ Name = "spellID", Type = "number", Nilable = false },
 				{ Name = "title", Type = "string", Nilable = false },
-				{ Name = "description", Type = "string", Nilable = false },
+				{ Name = "description", Type = "string", Nilable = true },
 				{ Name = "headerType", Type = "number", Nilable = false },
 				{ Name = "abilityIcon", Type = "number", Nilable = false },
 				{ Name = "creatureDisplayID", Type = "number", Nilable = false },

@@ -203,8 +203,8 @@
 			<OnLoad function="PetActionBar_OnLoad"/>
 			<OnEvent function="PetActionBar_OnEvent"/>
 			<OnUpdate function="PetActionBarFrame_OnUpdate"/>
-			<OnShow function="UIParent_ManageFramePositions"/>
-			<OnHide function="UIParent_ManageFramePositions"/>
+			<OnShow function="PetActionBar_OnShow"/>
+			<OnHide function="PetActionBar_OnHide"/>
 		</Scripts>
 	</Frame>
 </Ui>

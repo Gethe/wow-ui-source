@@ -98,6 +98,11 @@ local WorldMap =
 	Events =
 	{
 		{
+			Name = "CemeteryPreferenceUpdated",
+			Type = "Event",
+			LiteralName = "CEMETERY_PREFERENCE_UPDATED",
+		},
+		{
 			Name = "CloseWorldMap",
 			Type = "Event",
 			LiteralName = "CLOSE_WORLD_MAP",

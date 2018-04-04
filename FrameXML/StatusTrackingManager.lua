@@ -84,61 +84,68 @@ function StatusTrackingManagerMixin:UpdateBarsShown()
 end
 
 function StatusTrackingManagerMixin:HideStatusBars()
-	self.DoubleBarSmall:Hide(); 
+	self.SingleBarSmall:Hide(); 
 	self.SingleBarLarge:Hide();
-	self.SingleBarSmall:Hide();
-	self.DoubleBarLarge:Hide();
+	self.SingleBarSmallUpper:Hide();
+	self.SingleBarLargeUpper:Hide();
 	for i, bar in ipairs(self.bars) do
 		bar:Hide(); 
 	end
 end
 
+function StatusTrackingManagerMixin:SetInitialBarSize()
+	self.barHeight = self.SingleBarLarge:GetHeight();
+end 
+
+function StatusTrackingManagerMixin:GetInitialBarHeight()
+	return self.barHeight; 
+end
+
 -- Sets the bar size depending on whether the bottom right multi-bar is shown. 
 -- If the multi-bar is shown, a different texture needs to be displayed that is smaller. 
 function StatusTrackingManagerMixin:SetDoubleBarSize(bar, width)
-	local barWidth, barHeight = self.DoubleBarLarge:GetSize();
-	local statusBarHeight = barHeight - 4;
-
-	width = width - self:GetEndCapWidth() * 4;
-	local smallBarSeparatorWidth, largeBarSeparatorWidth = self:GetSeparatorWidth();
+	local textureHeight = self:GetInitialBarHeight(); 
+	local statusBarHeight = textureHeight - 5; 
 	if( self.largeSize ) then 
-		self.DoubleBarLarge:Show();
-		width = width - largeBarSeparatorWidth;
-	else
-		self.DoubleBarSmall:Show(); 
-		width = width - smallBarSeparatorWidth;
-	end
-
-	local oneBarWidth = width / 2; -- Since we need two bars to be displayed. 
-	bar.StatusBar:SetSize(oneBarWidth, statusBarHeight);  
-	bar:SetSize(oneBarWidth, barHeight);
-end
-
---Same functionality as previous function except shows the single bar texture instead of the double. 
-function StatusTrackingManagerMixin:SetSingleBarSize(bar, width) 
-	local barWidth, barHeight = self.DoubleBarLarge:GetSize();
-	local statusBarHeight = barHeight - 4;
-
-	width = width - self:GetEndCapWidth() * 2;
-	if( self.largeSize ) then 
+		self.SingleBarLargeUpper:SetSize(width, statusBarHeight); 
+		self.SingleBarLarge:SetSize(width, statusBarHeight); 
+		self.SingleBarLargeUpper:Show();
 		self.SingleBarLarge:Show(); 
 	else
+		self.SingleBarSmallUpper:SetSize(width, statusBarHeight); 
+		self.SingleBarSmall:SetSize(width, statusBarHeight); 
+		self.SingleBarSmallUpper:Show(); 
 		self.SingleBarSmall:Show(); 
 	end
 
 	bar.StatusBar:SetSize(width, statusBarHeight);  
-	bar:SetSize(width, barHeight);
+	bar:SetSize(width, statusBarHeight);
 end
 
-function StatusTrackingManagerMixin:LayoutBar(bar, barWidth, leftSide, isDouble)
+--Same functionality as previous function except shows only one bar. 
+function StatusTrackingManagerMixin:SetSingleBarSize(bar, width) 
+	local textureHeight = self:GetInitialBarHeight();
+	if( self.largeSize ) then 
+		self.SingleBarLarge:Show(); 
+		self.SingleBarLarge:SetSize(width, textureHeight); 
+	else
+		self.SingleBarSmall:Show(); 
+		self.SingleBarSmall:SetSize(width, textureHeight); 
+	end
+
+	bar.StatusBar:SetSize(width, textureHeight);  
+	bar:SetSize(width, textureHeight);
+end
+
+function StatusTrackingManagerMixin:LayoutBar(bar, barWidth, isTopBar, isDouble)
 	bar:Update(); 
 	bar:Show(); 
 		
 	bar:ClearAllPoints();
-	if ( leftSide ) then
-		bar:SetPoint("LEFT", self:GetParent(), "LEFT", self:GetEndCapWidth(), -20);
+	if ( isTopBar ) then
+		bar:SetPoint("LEFT", self:GetParent(), "LEFT", 0, -14);
 	else
-		bar:SetPoint("RIGHT", self:GetParent(), "RIGHT", -self:GetEndCapWidth(), -20);
+		bar:SetPoint("RIGHT", self:GetParent(), "RIGHT", 0, -22);
 	end
 	if ( isDouble ) then
 		self:SetDoubleBarSize(bar, barWidth);
@@ -151,33 +158,16 @@ function StatusTrackingManagerMixin:LayoutBars(visBars)
 	local width = self:GetParent():GetSize();
 	self:HideStatusBars();
 
-	local LEFT_SIDE = true;
+	local TOP_BAR = true;
 	local IS_DOUBLE = true;
 	if ( #visBars > 1 ) then
-		self:LayoutBar(visBars[1], width, LEFT_SIDE, IS_DOUBLE);
-		self:LayoutBar(visBars[2], width, not LEFT_SIDE, IS_DOUBLE);
+		self:LayoutBar(visBars[1], width, not TOP_BAR, IS_DOUBLE);
+		self:LayoutBar(visBars[2], width, TOP_BAR, IS_DOUBLE);
 	elseif( #visBars == 1 ) then 
-		self:LayoutBar(visBars[1], width, LEFT_SIDE, not IS_DOUBLE);
+		self:LayoutBar(visBars[1], width, not TOP_BAR, not IS_DOUBLE);
 	end 
 	self:GetParent():OnStatusBarsUpdated();
 	self:UpdateBarTicks();
-end
-
-function StatusTrackingManagerMixin:SetEndCapWidth(Width)
-	self.endCapWidth = Width;
-end
-
-function StatusTrackingManagerMixin:GetEndCapWidth()
-	return self.endCapWidth;
-end
-
-function StatusTrackingManagerMixin:SetSeparatorWidth(smallBarSeparatorWidth, largeBarSeparatorWidth)
-	self.smallBarSeparatorWidth = smallBarSeparatorWidth;
-	self.largeBarSeparatorWidth = largeBarSeparatorWidth;
-end
-
-function StatusTrackingManagerMixin:GetSeparatorWidth()
-	return self.smallBarSeparatorWidth, self.largeBarSeparatorWidth;
 end
 
 function StatusTrackingManagerMixin:OnLoad()
@@ -195,6 +185,7 @@ function StatusTrackingManagerMixin:OnLoad()
 	self:RegisterEvent("UNIT_INVENTORY_CHANGED");
 	self:RegisterEvent("ARTIFACT_XP_UPDATE");
 	self:RegisterUnitEvent("UNIT_LEVEL", "player")
+	self:SetInitialBarSize();
 	self:UpdateBarsShown(); 
 end
 

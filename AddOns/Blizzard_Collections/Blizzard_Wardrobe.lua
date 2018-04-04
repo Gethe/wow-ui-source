@@ -534,6 +534,7 @@ function WardrobeTransmogButton_OnEnter(self)
 		end
 	end
 	WardrobeTransmogFrame.Model.controlFrame:Show();
+	self.UpdateTooltip = self.OnEnter;
 end
 
 function WardrobeTransmogButton_OnLeave(self)
@@ -542,6 +543,7 @@ function WardrobeTransmogButton_OnLeave(self)
 	end
 	WardrobeTransmogFrame.Model.controlFrame:Hide();
 	GameTooltip:Hide();
+	self.UpdateTooltip = nil;
 end
 
 function WardrobeTransmogButton_Select(button, fromOnClick)

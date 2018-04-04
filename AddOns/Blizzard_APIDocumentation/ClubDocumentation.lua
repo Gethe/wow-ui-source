@@ -88,8 +88,8 @@ local Club =
 			Arguments =
 			{
 				{ Name = "clubId", Type = "string", Nilable = false },
-				{ Name = "allowedRedeemCount", Type = "number", Nilable = false, Documentation = { "Number of uses. 0 means unlimited" } },
-				{ Name = "duration", Type = "number", Nilable = false, Documentation = { "Duration in seconds. 0 never expires" } },
+				{ Name = "allowedRedeemCount", Type = "number", Nilable = true, Documentation = { "Number of uses. nil means unlimited" } },
+				{ Name = "duration", Type = "number", Nilable = true, Documentation = { "Duration in seconds. nil never expires" } },
 			},
 		},
 		{
@@ -496,7 +496,7 @@ local Club =
 		{
 			Name = "KickMember",
 			Type = "Function",
-			Documentation = { "Check canKickMember privilege." },
+			Documentation = { "Check kickableRoleIds privilege." },
 
 			Arguments =
 			{
@@ -963,6 +963,7 @@ local Club =
 				{ Name = "classID", Type = "number", Nilable = true },
 				{ Name = "race", Type = "number", Nilable = true },
 				{ Name = "level", Type = "number", Nilable = true },
+				{ Name = "zone", Type = "string", Nilable = true },
 			},
 		},
 		{
@@ -1037,7 +1038,6 @@ local Club =
 				{ Name = "canSetAvatar", Type = "bool", Nilable = false },
 				{ Name = "canSetBroadcast", Type = "bool", Nilable = false },
 				{ Name = "canSetPrivacyLevel", Type = "bool", Nilable = false },
-				{ Name = "canKickMember", Type = "bool", Nilable = false },
 				{ Name = "canSetOwnMemberAttribute", Type = "bool", Nilable = false },
 				{ Name = "canSetOtherMemberAttribute", Type = "bool", Nilable = false },
 				{ Name = "canSetOwnVoiceState", Type = "bool", Nilable = false },

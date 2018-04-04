@@ -106,6 +106,15 @@ local ASSETS = {
 		texture = "Interface\\Icons\\inv_hand_1h_trollshaman_c_01",
 		enabledCondition = { WSID = 14151, value = 2},
 	},
+	["AXE_THROWER"] = {
+		name = "Axe Throwers",
+		costs = {
+			[1] = { costResourceType = Enum.WarfrontResourceType.Iron, costWSID = 15466, checkPersonal = true },
+		},		
+		--recruitPCID = 57058,
+		texture = "Interface\\Icons\\achievement_character_troll_male",
+		--enabledCondition = { WSID = 14498, value = 2 },
+	},
 	["SHAMAN"] = {
 		name = "Shaman",
 		costs = {
@@ -118,7 +127,7 @@ local ASSETS = {
 	["WOLF_RAIDER"] = {
 		name = "Wolf Raiders",
 		costs = {
-			[1] = { costResourceType = Enum.WarfrontResourceType.Lumber, costWSID = 15004, checkPersonal = true },
+			[1] = { costResourceType = Enum.WarfrontResourceType.Iron, costWSID = 15004, checkPersonal = true },
 		},		
 		recruitPCID = 56393,
 		texture = "Interface\\Icons\\achievement_boss_korkrondarkshaman",
@@ -313,7 +322,7 @@ local ASSETS = {
 			[1] = { WSID = 14028, lessThanValue = 2 },
 		},
 		enabledCondition = { WSID = 14028, value = 1, failureText = RED_FONT_COLOR_CODE.."Capture And Rebuild!" },
-		list = { "Required to build other buildings", "Allows hiring of peons" },
+		list = { "Required to construct other buildings" },
 	},
 	["STRONGHOLD"] = {
 		name = "Stronghold               Level 2",
@@ -330,7 +339,7 @@ local ASSETS = {
 			[1] = { WSID = 14028, lessThanValue = 3 },
 		},
 		builtCondition = { WSID = 14028, value = 2 },
-		list = { "Increases benefits from buildings", "Increases max troops and peon caps", "More spikes on buildings" },
+		list = { "Increases number of peons collecting Iron", "Increases rate of unit production from Barracks", "Unlocks commander specific unit from Barracks" },
 	},
 	["FORTRESS"] = {
 		name = "Fortress                     Level 3",
@@ -344,7 +353,7 @@ local ASSETS = {
 		makeProgressBarFromCosts = true,
 		enabledCondition = { WSID = 14506, value = 2 },	
 		builtCondition = { WSID = 14028, value = 3 },
-		list = { "Increases benefits from buildings even more", "Increases max troops and peon caps even more", "Spikes on spikes!" },
+		list = { "Increases number of peons collecting Iron", "Increases rate of unit production from Barracks", "Increases damage dealt by Demolishers", "Commanders can now use special ability" },
 	},
 };
 
@@ -366,7 +375,7 @@ local LOCATIONS = {
 			[1] = { costResourceType = Enum.WarfrontResourceType.Iron, costWSID = 14500, progressWSID = 14499 },
 			[2] = { costResourceType = Enum.WarfrontResourceType.Lumber, costWSID = 14593, progressWSID = 14590 },
 		},
-		assets = { "GRUNT", "SHAMAN", "WITCH_DOCTOR", "WOLF_RAIDER"},
+		assets = { "GRUNT", "AXE_THROWER", "SHAMAN", "WOLF_RAIDER"},
 		assetsLabel = { 
 			[1] = { text = "Train:" },
 		},
@@ -428,7 +437,7 @@ local LOCATIONS = {
 				text = "Train:",
 			},
 		},
-		assets = { "SHAMAN", "WITCH_DOCTOR", "ELEMENTAL_SPIRIT" },
+		assets = { "SHAMAN", "ELEMENTAL_SPIRIT" },
 		showProgressBar = false,
 		checkRecruitCondition = false,
 		addBreakAfterTopSection = true,
@@ -476,7 +485,7 @@ local LOCATIONS = {
 			[1] = { costResourceType = Enum.WarfrontResourceType.Iron, costWSID = 14514, progressWSID = 14512 },
 			[2] = { costResourceType = Enum.WarfrontResourceType.Lumber, costWSID = 14595, progressWSID = 14592 },
 		},
-		assets = {"SAPPER", "WAR_TRIKE", "DEMOLISHER"},
+		assets = {"DEMOLISHER"},
 		assetsLabel = { 
 			[1] = { text = "Train:" },
 		},

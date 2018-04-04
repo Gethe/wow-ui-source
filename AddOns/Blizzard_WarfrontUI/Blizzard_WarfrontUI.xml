@@ -155,14 +155,6 @@
 					<Anchor point="LEFT" relativeKey="$parent.LumberResource" relativePoint="RIGHT" x="5" y="0"/>					
 				</Anchors>
 			</Frame>			
-			<Frame parentKey="FoodResource" inherits="WarfrontResourceTemplate">
-				<KeyValues>
-					<KeyValue key="resourceType" value="Enum.WarfrontResourceType.Food" type="global"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.EssenceResource" relativePoint="RIGHT" x="5" y="0"/>
-				</Anchors>
-			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>

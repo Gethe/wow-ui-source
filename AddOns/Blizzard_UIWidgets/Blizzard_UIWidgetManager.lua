@@ -106,6 +106,20 @@ function UIWidgetManagerMixin:CreateWidget(widgetID, widgetSetID, widgetType)
 	end
 end
 
+function UIWidgetManagerMixin:RemoveAllWidgetsInWidgetSet(widgetSetID)
+
+	for widgetID, widgetFrame in pairs(self.widgetSetFrames[widgetSetID]) do
+		if widgetFrame.hasTimer then
+			self:UpdateTimerList(widgetID, nil);
+		end
+
+		self.widgetPools:Release(widgetFrame);
+		self.widgetIdToFrame[widgetID] = nil;
+	end
+
+	self.widgetSetFrames[widgetSetID] = {};
+end
+
 function UIWidgetManagerMixin:RemoveWidget(widgetID, widgetSetID)
 	local widgetFrame = self.widgetIdToFrame[widgetID];
 	if not widgetFrame then
@@ -139,16 +153,14 @@ local function SortWidgets(a, b)
 end
 
 function UIWidgetManagerMixin:UpdateWidgetSetContainerLayout(widgetSetID)
-	if self.registeredWidgetSetContainers[widgetSetID].layoutFunc then
-		local sortedWidgets = {};
-		for _, widget in pairs(self.widgetSetFrames[widgetSetID]) do
-			table.insert(sortedWidgets, widget);
-		end
-
-		table.sort(sortedWidgets, SortWidgets);
-
-		self.registeredWidgetSetContainers[widgetSetID].layoutFunc(self.registeredWidgetSetContainers[widgetSetID].widgetContainer, sortedWidgets);
+	local sortedWidgets = {};
+	for _, widget in pairs(self.widgetSetFrames[widgetSetID]) do
+		table.insert(sortedWidgets, widget);
 	end
+
+	table.sort(sortedWidgets, SortWidgets);
+
+	self.registeredWidgetSetContainers[widgetSetID].layoutFunc(self.registeredWidgetSetContainers[widgetSetID].widgetContainer, sortedWidgets);
 end
 
 function UIWidgetManagerMixin:ScheduleUpdateWidgetSetLayout(widgetSetID)
@@ -204,6 +216,7 @@ function UIWidgetManagerMixin:ProcessWidget(widgetID, widgetSetID, widgetType)
 		-- Ok we are now SURE that this widget should be shown and we have a frame for it
 
 		-- Run the Setup function on the widget (could change the orderIndex)
+		widgetFrame:BaseSetup(widgetInfo);
 		widgetFrame:Setup(widgetInfo);
 
 		if isNewWidget and widgetFrame.OnAcquired then
@@ -250,9 +263,33 @@ function UIWidgetManagerMixin:UpdateAllWidgets()
 	end
 end
 
+function DefaultWidgetLayout(widgetContainer, sortedWidgets)
+	local widgetsHeight = 0;
+	local maxWidgetWidth = 0;
+
+	for index, widgetFrame in ipairs(sortedWidgets) do
+		if ( index == 1 ) then
+			widgetFrame:SetPoint("TOP");
+		else
+			local relative = sortedWidgets[index - 1];
+			widgetFrame:SetPoint("TOP", relative, "BOTTOM");
+		end
+
+		widgetsHeight = widgetsHeight + widgetFrame:GetHeight();
+
+		local widgetWidth = widgetFrame:GetWidth();
+		if widgetWidth > maxWidgetWidth then
+			maxWidgetWidth = widgetWidth;
+		end
+	end
+
+	widgetContainer:SetHeight(widgetsHeight);
+	widgetContainer:SetWidth(maxWidgetWidth);
+end
+
 -- widgetContainer will be used as the parent for all widgets created within that system. It can be nil if you want, and parenting can be done in widgetInitFunction or widgetLayoutFunction instead 
 -- widgetLayoutFunction should take 2 arguments (the widget container passed in above and a sequence containing all widgetFrames belonging to that widgetSet, sorted by orderIndex). It can update the layout of the widgets & widgetContainer as it sees fit. 
---		IMPORTANT: widgetLayoutFunction is called every time any widget in this container is shown, hidden or re-ordered
+--		IMPORTANT: widgetLayoutFunction is called every time any widget in this container is shown, hidden or re-ordered. If nil is passed DefaultWidgetLayout is used
 -- widgetInitFunction should take 1 argument (the widgetFrame). It should do anything needed for initialization of widgets by the registering system. It is called only once, when a widget is initialized (when entering a new map/area/subarea/phase)
 -- widgetResetFunction should take 2 arguments (the framePool and the widgetFrame). It should do anything needed for resetting the widgets when they get hidden. If nil is passed, FramePool_HideAndClearAnchors is used
 -- Any or all of them can be nil if your system doesn't need that functionaility (although at the very least widgetLayoutFunction should be set in almost all circumstances)
@@ -262,10 +299,17 @@ function UIWidgetManagerMixin:RegisterWidgetSetContainer(widgetSetID, widgetCont
 		return;
 	end
 
-	self.registeredWidgetSetContainers[widgetSetID] = { widgetContainer = widgetContainer, layoutFunc = widgetLayoutFunction, initFunc = widgetInitFunction, resetFunc = widgetResetFunction };
+	self.registeredWidgetSetContainers[widgetSetID] = { widgetContainer = widgetContainer, layoutFunc = widgetLayoutFunction or DefaultWidgetLayout, initFunc = widgetInitFunction, resetFunc = widgetResetFunction };
 	self.widgetSetFrames[widgetSetID] = {};
 
 	self:ProcessWidgetSet(widgetSetID);
+end
+
+function UIWidgetManagerMixin:UnregisterWidgetSetContainer(widgetSetID, widgetContainer)
+	if self.registeredWidgetSetContainers[widgetSetID] and self.registeredWidgetSetContainers[widgetSetID].widgetContainer == widgetContainer then
+		self:RemoveAllWidgetsInWidgetSet(widgetSetID);
+		self.registeredWidgetSetContainers[widgetSetID] = nil;
+	end
 end
 
 -- templateInfo should be a table that contains 2 entries (frameType and frameTemplate)

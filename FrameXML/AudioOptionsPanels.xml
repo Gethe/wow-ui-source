@@ -788,10 +788,30 @@
 				</Scripts>
 			</Slider>
 
+			<Slider name="$parentVoiceChatMicSensitivity" parentKey="VoiceChatMicSensitivity" inherits="OptionsSliderTemplate">
+				<Size x="185" y="16" />
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.VoiceChatMicVolume" relativePoint="BOTTOMLEFT" x="0" y="-20" />
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentLabel" parentKey="Label" inherits="GameFontNormalSmall" text="VOICE_CHAT_MIC_SENSITIVITY">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT" x="-20" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad function="AudioOptionsPanelVoiceChatMicSensitivitySlider_OnLoad"/>
+					<OnValueChanged function="AudioOptionsPanelVoiceChatMicSensitivitySlider_OnValueChanged"/>
+				</Scripts>
+			</Slider>
+
 			<Frame name="$parentMicDeviceDropdown" parentKey="MicDeviceDropdown" inherits="OptionsDropdownTemplate">
 				<Size x="160" y="32" />
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.VoiceChatMicVolume" relativePoint="BOTTOMLEFT" x="-17" y="-16" />
+					<Anchor point="TOPLEFT" relativeKey="$parent.VoiceChatMicSensitivity" relativePoint="BOTTOMLEFT" x="-17" y="-16" />
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
@@ -905,7 +925,7 @@
 						</FontString>
 						<FontString name="$parentPushToTalkNotification" parentKey="PushToTalkNotification" inherits="GameFontWhite">
 							<Anchors>
-								<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="0" y="-10" />
+								<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="20" y="-10" />
 							</Anchors>
 						</FontString>
 					</Layer>

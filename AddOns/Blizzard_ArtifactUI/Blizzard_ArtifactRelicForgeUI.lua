@@ -565,6 +565,7 @@ function ArtifactRelicTalentButtonMixin:OnEnter()
 		end
 	end
 	GameTooltip:Show();
+	self.UpdateTooltip = self.OnEnter;
 	self:HighlightLinks();
 end
 
@@ -589,8 +590,9 @@ end
 
 function ArtifactRelicTalentButtonMixin:OnLeave()
 	self:GetParent().mousedOverTalent = nil;
-	GameTooltip_Hide();
+	GameTooltip:Hide();
 	self:GetParent():RefreshTalents();
+	self.UpdateTooltip = nil;
 end
 
 function ArtifactRelicTalentButtonMixin:GetPowerID()

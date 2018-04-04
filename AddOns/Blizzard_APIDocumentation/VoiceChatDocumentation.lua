@@ -25,10 +25,6 @@ local VoiceChat =
 			},
 		},
 		{
-			Name = "BeginTransmission",
-			Type = "Function",
-		},
-		{
 			Name = "CreateChannel",
 			Type = "Function",
 
@@ -53,10 +49,6 @@ local VoiceChat =
 		},
 		{
 			Name = "EndLocalCapture",
-			Type = "Function",
-		},
-		{
-			Name = "EndTransmission",
 			Type = "Function",
 		},
 		{
@@ -226,6 +218,24 @@ local VoiceChat =
 			Returns =
 			{
 				{ Name = "processes", Type = "table", InnerType = "VoiceChatProcess", Nilable = false },
+			},
+		},
+		{
+			Name = "GetPushToTalkBinding",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "keys", Type = "table", InnerType = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "GetVADSensitivity",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "sensitivity", Type = "number", Nilable = true },
 			},
 		},
 		{
@@ -449,6 +459,24 @@ local VoiceChat =
 				{ Name = "textureObject", Type = "table", Nilable = false },
 				{ Name = "memberID", Type = "number", Nilable = false },
 				{ Name = "channelID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SetPushToTalkBinding",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "keys", Type = "table", InnerType = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "SetVADSensitivity",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "sensitivity", Type = "number", Nilable = false },
 			},
 		},
 		{

@@ -320,7 +320,7 @@ function MiniMapTrackingDropDown_Initialize(self, level)
 	end
 
 	for id=1, count do
-		name, texture, active, category, nested  = GetTrackingInfo(id);
+		name, texture, active, category, nested = GetTrackingInfo(id);
 		info = UIDropDownMenu_CreateInfo();
 		info.text = name;
 		info.checked = MiniMapTrackingDropDownButton_IsActive;
@@ -349,7 +349,7 @@ function MiniMapTrackingDropDown_Initialize(self, level)
 			UIDropDownMenu_AddButton(info, level);
 		end
 	end
-	
+
 end
 
 function MiniMapTrackingShineFadeIn()

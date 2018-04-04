@@ -21,6 +21,7 @@ end
 
 function WorldMap_WorldQuestDataProviderMixin:OnMapChanged()
 	self:RemoveAllData();
+	self:RefreshAllData();
 end
 
 function WorldMap_WorldQuestDataProviderMixin:RefreshAllData(fromOnShow)

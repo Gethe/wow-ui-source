@@ -19,5 +19,8 @@ BonusObjectiveDataProvider.xml
 VehicleDataProvider.xml
 StorylineQuestDataProvider.xml
 EncounterJournalDataProvider.xml
+FogOfWarDataProvider.xml
 DeathMapDataProvider.xml
 QuestBlobDataProvider.xml
+ScenarioDataProvider.xml
+LandmarkDataProvider.xml

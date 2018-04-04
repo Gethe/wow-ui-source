@@ -90,7 +90,7 @@ function DeathRecapFrame_OpenRecap( recapID )
 			entry.SpellInfo.Caster:SetText(dmgInfo.caster);
 		end
 		entry.SpellInfo.Name:SetText(spellName);
-		entry.SpellInfo.Icon:SetTexture(texture);		
+		entry.SpellInfo.Icon:SetTexture(texture);
 
 		entry.SpellInfo.spellId = spellId;
 	end

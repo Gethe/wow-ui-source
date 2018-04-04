@@ -53,6 +53,7 @@ end
 function ClassTrainerFrame_OnLoad(self)
 	self:RegisterEvent("TRAINER_UPDATE");
 	self:RegisterEvent("TRAINER_DESCRIPTION_UPDATE");
+	self:RegisterEvent("TRAINER_SERVICE_INFO_NAME_UPDATE");
 	MoneyFrame_SetMaxDisplayWidth(ClassTrainerFrameMoneyFrame, 152);
 
 
@@ -102,6 +103,10 @@ function ClassTrainerFrame_OnEvent(self, event, ...)
 		ClassTrainerFrame_Update();
 	elseif ( event == "TRAINER_DESCRIPTION_UPDATE" ) then
 		ClassTrainer_SetSelection(GetTrainerSelectionIndex());
+	elseif ( event == "TRAINER_SERVICE_INFO_NAME_UPDATE" ) then
+		-- It would be really cool if I could uniquely identify the button associated
+		-- with a particular spell here, and only update the name on that button.
+		ClassTrainerFrame_Update();
 	end
 end
 
@@ -154,7 +159,7 @@ function ClassTrainerFrame_Update()
 	-- Fill in the skill buttons
 	for i=1, numButtons do
 		local skillIndex = i + offset;
-		local skillButton = buttons[i]; 
+		local skillButton = buttons[i];
 		if ( skillIndex <= numTrainerServices) then	
 			ClassTrainerFrame_SetServiceButton( skillButton, skillIndex, playerMoney, selected, isTradeSkill );
 		else
@@ -171,7 +176,7 @@ end
 function ClassTrainerFrame_SetServiceButton( skillButton, skillIndex, playerMoney, selected, isTradeSkill )
 
 	local unavailable = false;
-	local serviceName, serviceSubText, serviceType, texture, reqLevel = GetTrainerServiceInfo(skillIndex);
+	local serviceName, serviceType, texture, reqLevel = GetTrainerServiceInfo(skillIndex);
 	if ( not serviceName ) then
 		serviceName = UNKNOWN;
 	end
@@ -294,7 +299,7 @@ function ClassTrainer_SelectNearestLearnableSkill()
 	if not startIndex or  startIndex> numServices then
 		 startIndex = 1;
 	else 
-		local _, _, serviceType = GetTrainerServiceInfo(startIndex);
+		local _, serviceType = GetTrainerServiceInfo(startIndex);
 		if ( serviceType == "unavailable" ) then
 			startIndex = 1;
 		end
@@ -302,7 +307,7 @@ function ClassTrainer_SelectNearestLearnableSkill()
 	local tradeSkillStepIndex = GetTrainerServiceStepIndex();
 	if ( numServices > 0 ) then
 		for i=startIndex, numServices do 
-			local _, _, serviceType = GetTrainerServiceInfo(i);
+			local _, serviceType = GetTrainerServiceInfo(i);
 			if ( serviceType == "available" and i ~= tradeSkillStepIndex ) then
 				ClassTrainerFrame.selectedService = i;
 				break;

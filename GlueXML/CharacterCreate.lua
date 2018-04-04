@@ -85,6 +85,12 @@ RACE_ICON_TCOORDS = {
 	["LIGHTFORGEDDRAENEI_MALE"]	= {0.5, 0.625, 0, 0.25},
 	["LIGHTFORGEDDRAENEI_FEMALE"]	= {0.5, 0.625, 0.5, 0.75},
 
+	["DARKIRONDWARF_MALE"]		= {0.125, 0.25, 0, 0.25},
+	["DARKIRONDWARF_FEMALE"]	= {0.125, 0.25, 0.5, 0.75},
+
+	["MAGHARORC_MALE"]			= {0.375, 0.5, 0.25, 0.5},
+	["MAGHARORC_FEMALE"]		= {0.375, 0.5, 0.75, 1.0},
+
 	["ZANDALARITROLL_MALE"]		= {0.25, 0.375, 0.25, 0.5},
 	["ZANDALARITROLL_FEMALE"]	= {0.25, 0.375, 0.75, 1.0},
 };
@@ -208,6 +214,8 @@ MODEL_CAMERA_CONFIG = {
 		["LightforgedDraenei6"] = { tx = 0, ty = 0, tz = 1.642, cz = 1.792, distance = 2.692, light =  0.80 },
 		["HighmountainTauren6"] = { tx = -0.216, ty = -0.203, tz = 1.654, cz = 1.647, distance = 3.566, light =  0.80 },
 		["ZandalariTroll"] = { tx = 0.402, ty = 0.016, tz = 2.076, cz = 1.980, distance = 0.943, light =  0.75 },
+		["DarkIronDwarf"] = { tx = 0.037, ty = 0.009, tz = 1.298, cz = 1.265, distance = 0.839, light =  0.85 },
+		["MagharOrc"] = { tx = 0.346, ty = -0.001, tz = 1.878, cz = 1.793, distance = 1.074, light =  0.80 },
 	},
 	[1] = {
 		["Draenei"] = { tx = 0.155, ty = 0.009, tz = 2.177, cz = 1.971, distance = 0.734, light =  0.75 },
@@ -238,6 +246,8 @@ MODEL_CAMERA_CONFIG = {
 		["LightforgedDraenei6"] = { tx = -0.271, ty = 0, tz = 1.642, cz = 1.971, distance = 1.492, light =  0.80 },
 		["HighmountainTauren6"] = { tx = 0.137, ty = -0.008, tz = 1.918, cz = 1.855, distance = 1.591, light =  0.75 },
 		["ZandalariTroll"] = { tx = 0.031, ty = -0.082, tz = 2.226, cz = 2.248, distance = 0.674, light =  0.75 },
+		["DarkIronDwarf"] = { tx = -0.060, ty = -0.010, tz = 1.326, cz = 1.343, distance = 0.720, light =  0.80 },
+		["MagharOrc"] = { tx = -0.069, ty = -0.007, tz = 1.863, cz = 1.718, distance = 0.585, light =  0.75 },
 	}
 };
 
@@ -369,7 +379,7 @@ function CharacterCreate_OnShow()
 		end
 	end
 
-	CharacterCreateEnumerateRaces();
+	CharacterCreateEnumerateRaces(true);
 
 	SetCharacterRace(C_CharacterCreation.GetSelectedRace());
 
@@ -464,7 +474,7 @@ function CharacterCreate_OnEvent(self, event, ...)
 	elseif ( event == "UPDATE_EXPANSION_LEVEL" ) then
 		-- Expansion level changed while online, so enable buttons as needed
 		if ( CharacterCreateFrame:IsShown() ) then
-			CharacterCreateEnumerateRaces();
+			CharacterCreateEnumerateRaces(true);
 			CharacterCreateEnumerateClasses();
 		end
 	elseif ( event == "CHARACTER_CREATION_RESULT" ) then

@@ -18,21 +18,21 @@
 						<Anchor point="BOTTOM"/>
 					</Anchors>
 				</Texture>
+				<Texture parentKey="SingleBarLargeUpper" atlas="hud-MainMenuBar-experiencebar-large-single" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.SingleBarLarge" y="9"/>
+					</Anchors>
+				</Texture>
 				<Texture parentKey="SingleBarSmall" atlas="hud-MainMenuBar-experiencebar-small-single" useAtlasSize="true" hidden="true">
 					<Anchors>
 						<Anchor point="BOTTOM"/>
 					</Anchors>
-				</Texture>
-				<Texture parentKey="DoubleBarLarge" atlas="hud-MainMenuBar-experiencebar-large-double" useAtlasSize="true" hidden="true">
+				</Texture> 
+				<Texture parentKey="SingleBarSmallUpper" atlas="hud-MainMenuBar-experiencebar-small-single" useAtlasSize="true" hidden="true">
 					<Anchors>
-						<Anchor point="BOTTOM"/>
+						<Anchor point="TOP" relativeKey="$parent.SingleBarSmall" y="9"/>
 					</Anchors>
-				</Texture>
-				<Texture parentKey="DoubleBarSmall" atlas="hud-MainMenuBar-experiencebar-small-double" useAtlasSize="true" hidden="true">
-					<Anchors>
-						<Anchor point="BOTTOM"/>
-					</Anchors>
-				</Texture>
+				</Texture> 
 			</Layer>
 		</Layers>
 		<Scripts>

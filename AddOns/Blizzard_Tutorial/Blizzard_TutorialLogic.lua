@@ -152,7 +152,7 @@ function TutorialHelper:GetActionButtonBySpellID(spellID)
 	-- backup for stance bars
 	for i = 1, 10 do
 		local btn = _G["StanceButton" .. i];
-		local icon, name, isActive, isCastable, sID = GetShapeshiftFormInfo(btn:GetID());
+		local icon, isActive, isCastable, sID = GetShapeshiftFormInfo(btn:GetID());
 
 		if (sID == spellID) then
 			return btn;

@@ -11,6 +11,10 @@ function TradeSkillDetailsMixin:OnLoad()
 	self:RegisterEvent("PLAYTIME_CHANGED");
 end
 
+function TradeSkillDetailsMixin:OnHide()
+	self:CancelSpellLoadCallback();
+end
+
 function TradeSkillDetailsMixin:OnUpdate()
 	if self.pendingRefresh then
 		self:RefreshDisplay();
@@ -33,8 +37,16 @@ function TradeSkillDetailsMixin:OnDataSourceChanged()
 	self.GuildFrame:Clear();
 end
 
+function TradeSkillDetailsMixin:CancelSpellLoadCallback()
+	if self.spellDataLoadedCancelFunc then
+		self.spellDataLoadedCancelFunc();
+		self.spellDataLoadedCancelFunc = nil;
+	end
+end
+
 function TradeSkillDetailsMixin:SetSelectedRecipeID(recipeID)
 	if self.selectedRecipeID ~= recipeID then
+		self:CancelSpellLoadCallback();
 		self.selectedRecipeID = recipeID;
 		self.craftable = false;
 		self.hasReagentDataByIndex = {};
@@ -98,7 +110,7 @@ function TradeSkillDetailsMixin:RefreshDisplay()
 		else
 			self.Contents.RecipeName:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 		end
-		
+
 		SetItemButtonQuality(self.Contents.ResultIcon, recipeInfo.productQuality, recipeLink);
 		self:AddContentWidget(self.Contents.RecipeName);
 
@@ -127,20 +139,32 @@ function TradeSkillDetailsMixin:RefreshDisplay()
 			self.Contents.StarsFrame:Show();
 			for i, starFrame in ipairs(self.Contents.StarsFrame.Stars) do
 				starFrame.EarnedStar:SetShown(i <= currentRank);
+				if (i > currentRank and not self.flashingStar and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRADESKILL_RANK_STAR)) then
+					starFrame.FlashStar:Show();
+					starFrame.Pulse:Play();
+					self.flashingStar = starFrame;
+				elseif (i == #self.Contents.StarsFrame.Stars and self.flashingStar) then
+					self.flashingStar.FlashStar:Hide();
+					self.flashingStar.Pulse:Stop();
+					self.flashingStar = nil;
+				end
 			end
 			self:AddContentWidget(self.Contents.StarsFrame);
 		else
 			self.Contents.StarsFrame:Hide();
 		end
 
-		local recipeDescription = C_TradeSkillUI.GetRecipeDescription(self.selectedRecipeID);
-		if recipeDescription and #recipeDescription > 0 then
-			self.Contents.Description:SetText(recipeDescription);
-			self.Contents.RequirementLabel:SetPoint("TOPLEFT", self.Contents.Description, "BOTTOMLEFT", 0, -18);
-		else
-			self.Contents.Description:SetText("");
-			self.Contents.RequirementLabel:SetPoint("TOPLEFT", self.Contents.Description, "BOTTOMLEFT", 0, 0);
-		end
+		self.Contents.Description:SetText("");
+		self.Contents.RequirementLabel:SetPoint("TOPLEFT", self.Contents.Description, "BOTTOMLEFT", 0, 0);
+		local spell = Spell:CreateFromSpellID(self.selectedRecipeID);
+		self.spellDataLoadedCancelFunc = spell:ContinueWithCancelOnSpellLoad(function()
+			local recipeDescription = C_TradeSkillUI.GetRecipeDescription(spell:GetSpellID());
+			if recipeDescription and #recipeDescription > 0 then
+				self.Contents.Description:SetText(recipeDescription);
+				self.Contents.RequirementLabel:SetPoint("TOPLEFT", self.Contents.Description, "BOTTOMLEFT", 0, -18);
+			end
+			self.spellDataLoadedCancelFunc = nil;
+		end);
 		self:AddContentWidget(self.Contents.Description);
 
 		local craftable = recipeInfo.learned and recipeInfo.craftable;
@@ -398,6 +422,11 @@ function TradeSkillDetailsMixin:OnReagentClicked(reagentButton)
 end
 
 function TradeSkillDetailsMixin:OnStarsMouseEnter(starsFrame)
+	if (self.flashingStar) then
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRADESKILL_RANK_STAR, true);
+		self.flashingStar.FlashStar:Hide();
+		self.flashingStar.Pulse:Stop();
+	end
 	GameTooltip:SetOwner(starsFrame, "ANCHOR_TOPLEFT");
 	GameTooltip:SetRecipeRankInfo(self.selectedRecipeID, self.currentRank);
 end

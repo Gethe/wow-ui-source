@@ -100,6 +100,15 @@ local PvpInfo =
 			},
 		},
 		{
+			Name = "GetRandomBGInfo",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "info", Type = "RandomBGInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "GetRandomBGRewards",
 			Type = "Function",
 
@@ -108,6 +117,15 @@ local PvpInfo =
 				{ Name = "honor", Type = "number", Nilable = false },
 				{ Name = "experience", Type = "number", Nilable = false },
 				{ Name = "rewards", Type = "table", InnerType = "BattlefieldReward", Nilable = true },
+			},
+		},
+		{
+			Name = "GetRandomLargeBGInfo",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "info", Type = "RandomBGInfo", Nilable = false },
 			},
 		},
 		{
@@ -454,6 +472,18 @@ local PvpInfo =
 				{ Name = "specializationID", Type = "number", Nilable = false },
 				{ Name = "name", Type = "string", Nilable = false },
 				{ Name = "value", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "RandomBGInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "canQueue", Type = "bool", Nilable = false },
+				{ Name = "bgID", Type = "number", Nilable = false },
+				{ Name = "hasRandomWinToday", Type = "bool", Nilable = false },
+				{ Name = "minLevel", Type = "number", Nilable = false },
+				{ Name = "maxLevel", Type = "number", Nilable = false },
 			},
 		},
 	},

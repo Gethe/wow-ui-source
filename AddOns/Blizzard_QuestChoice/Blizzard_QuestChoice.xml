@@ -18,7 +18,7 @@
 		<TexCoords left="0.82617188" right="0.89062500" top="0.30468750" bottom="0.48046875"/>
 	</Texture>
 
-	<Button name="QuestChoiceItemTemplate" mixin="QuestChoiceItemMixin" virtual="true">
+	<Button name="QuestChoiceItemTemplate" mixin="QuestChoiceItemButtonMixin" virtual="true">
 		<Size x="167" y="41"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -255,6 +255,11 @@
 				</Scripts>
 				<FontString inherits="GameFontBlack" justifyH="LEFT" justifyV="TOP"/>
 			</SimpleHTML>
+			<Frame parentKey="WidgetContainer" hidden="true">
+				<Anchors>
+					<Anchor point="BOTTOM" relativeKey="$parent.OptionButton" relativePoint="TOP" y="5"/>
+				</Anchors>
+			</Frame>
 		</Frames>
 	</Button>
 

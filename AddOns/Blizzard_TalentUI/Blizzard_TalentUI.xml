@@ -52,9 +52,7 @@
 				end
 			</OnReceiveDrag>
 			<OnEnter function="PlayerSpecSpellTemplate_OnEnter"/>
-			<OnLeave>
-				GameTooltip_Hide();
-			</OnLeave>
+			<OnLeave function="PlayerSpecSpellTemplate_OnLeave"/>
 		</Scripts>
 	</Button>
 
@@ -1108,31 +1106,32 @@
 							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Ring" relativePoint="BOTTOMRIGHT"/>
 						</Anchors>
 						<Scripts>
-							<OnShow method="Update"/>
-							<OnEvent method="Update"/>
+							<OnShow method="OnShow"/>
+							<OnHide method="OnHide"/>
+							<OnEvent method="OnEvent"/>
 							<OnEnter method="OnEnter"/>
 							<OnLeave function="GameTooltip_Hide"/>
 							<OnClick method="OnClick"/>
 						</Scripts>
 					</Button>
-					<Button parentKey="TrinketSlot" parentArray="Slots" inherits="PvpTalentSlotTemplate">
+					<Button parentKey="TrinketSlot" parentArray="Slots" inherits="PvpTalentTrinketSlotTemplate">
 						<Anchors>
 							<Anchor point="TOP" x="0" y="-16"/>
 						</Anchors>
 					</Button>
 					<Button parentKey="TalentSlot1" parentArray="Slots" inherits="PvpTalentSlotTemplate">
 						<Anchors>
-							<Anchor point="TOP" relativeKey="$parent.TrinketSlot" relativePoint="BOTTOM" x="0" y="-8"/>
+							<Anchor point="TOP" relativeKey="$parent.TrinketSlot" relativePoint="BOTTOM" x="0" y="-16"/>
 						</Anchors>
 					</Button>
 					<Button parentKey="TalentSlot2" parentArray="Slots" inherits="PvpTalentSlotTemplate">
 						<Anchors>
-							<Anchor point="TOP" relativeKey="$parent.TalentSlot1" relativePoint="BOTTOM" x="0" y="2"/>
+							<Anchor point="TOP" relativeKey="$parent.TalentSlot1" relativePoint="BOTTOM" x="0" y="-10"/>
 						</Anchors>
 					</Button>
 					<Button parentKey="TalentSlot3" parentArray="Slots" inherits="PvpTalentSlotTemplate">
 						<Anchors>
-							<Anchor point="TOP" relativeKey="$parent.TalentSlot2" relativePoint="BOTTOM" x="0" y="2"/>
+							<Anchor point="TOP" relativeKey="$parent.TalentSlot2" relativePoint="BOTTOM" x="0" y="-10"/>
 						</Anchors>
 					</Button>
 					<Frame name="$parentTalentList" parentKey="TalentList" mixin="PvpTalentListMixin" inherits="ButtonFrameTemplate" hidden="true">

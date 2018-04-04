@@ -1,0 +1,34 @@
+UIWidgetManager:RegisterWidgetVisTypeTemplate(Enum.UIWidgetVisualizationType.DoubleIconAndText, {frameType = "FRAME", frameTemplate = "UIWidgetTemplateDoubleIconAndText"}, C_UIWidgetManager.GetDoubleIconAndTextWidgetVisualizationInfo);
+
+UIWidgetTemplateDoubleIconAndTextMixin = {}
+
+local textureKitRegions = {
+	["LeftIcon"] = "%s-leftIcon",
+	["RightIcon"] = "%s-rightIcon",
+}
+
+function UIWidgetTemplateDoubleIconAndTextMixin:Setup(widgetInfo)
+	SetupTextureKits(widgetInfo.textureKitID, self, textureKitRegions, true);
+
+	self.Label:SetText(widgetInfo.label);
+
+	self.Left.Text:SetText(widgetInfo.leftText);
+	self.Left:SetTooltip(widgetInfo.leftTooltip);
+	self.Left:SetWidth(self.Left.Icon:GetWidth() + self.Left.Text:GetWidth() + 5)
+
+	self.Right.Text:SetText(widgetInfo.rightText);
+	self.Right:SetTooltip(widgetInfo.rightTooltip);
+	self.Right:SetWidth(self.Right.Icon:GetWidth() + self.Right.Text:GetWidth() + 5)
+
+	local totalWidth = self.Label:GetWidth() + 15 + self.Left:GetWidth() + 25 + self.Right:GetWidth();
+	self:SetWidth(totalWidth);
+end
+
+function UIWidgetTemplateDoubleIconAndTextMixin:OnLoad()
+	self.LeftIcon = self.Left.Icon;
+	self.RightIcon = self.Right.Icon;
+end
+
+function UIWidgetTemplateDoubleIconAndTextMixin:GatherColorableFontStrings()
+	return {self.Label, self.Left.Text, self.Right.Text};
+end

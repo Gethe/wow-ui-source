@@ -25,6 +25,12 @@ end
 function MapUtil.ShouldMapTypeShowQuests(mapType)
 	return mapType ~= Enum.UIMapType.World and mapType ~= Enum.UIMapType.Continent and mapType ~= Enum.UIMapType.Cosmic;
 end
+
 function MapUtil.ShouldShowTask(mapID, info)
 	return (mapID == info.mapID) and HaveQuestData(info.questId);
+end
+
+function MapUtil.MapHasUnlockedBounties(mapID)
+	local bounties, displayLocation, lockedQuestID = GetQuestBountyInfoForMapID(mapID);
+	return displayLocation and not lockedQuestID and #bounties > 0;
 end
