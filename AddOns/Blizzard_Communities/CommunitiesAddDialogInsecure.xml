@@ -1,0 +1,11 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="CommunitiesAddDialogInsecure.lua"/>
+	
+	<Button name="CommunitiesAddButtonTemplate" inherits="UIPanelButtonTemplate" text="COMMUNITIES_ADD_COMMUNITY" virtual="true">
+		<Scripts>
+			<OnClick function="CommunitiesAddButton_OnClick"/>
+			<OnHide function="CommunitiesAddButton_OnHide"/>
+		</Scripts>
+	</Button>
+</Ui>

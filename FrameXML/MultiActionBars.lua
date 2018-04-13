@@ -32,8 +32,14 @@ function IsNormalActionBarState()
 end
 
 local function UpdateMultiActionBar(frame, var, pageVar, cb)
-	frame:SetShown(var and IsNormalActionBarState());
-	VIEWABLE_ACTION_BAR_PAGES[pageVar] = var and 1 or nil;
+	if (var and IsNormalActionBarState()) then 
+		frame:SetShown(true); 
+		VIEWABLE_ACTION_BAR_PAGES[pageVar] = nil; 
+	else 
+		frame:SetShown(false); 
+		VIEWABLE_ACTION_BAR_PAGES[pageVar] = 1; 
+	end
+	
 	if (cb) then
 		cb(var);
 	end
@@ -47,6 +53,7 @@ end
 function MultiActionBar_Update ()
 	local showLeft = false;
 	local showRight = false;
+	
 	UpdateMultiActionBar(MultiBarBottomLeft, SHOW_MULTI_ACTIONBAR_1, BOTTOMLEFT_ACTIONBAR_PAGE);
 	UpdateMultiActionBar(MultiBarBottomRight, SHOW_MULTI_ACTIONBAR_2, BOTTOMRIGHT_ACTIONBAR_PAGE, UpdateMainMenuBar);
 	UpdateMultiActionBar(MultiBarRight, SHOW_MULTI_ACTIONBAR_3, RIGHT_ACTIONBAR_PAGE, function(var) showRight = var; end);

@@ -2,10 +2,21 @@
 ..\FrameXML\UI.xsd">
 	<Script file="Blizzard_WorldMap.lua"/>
 
-	<Frame name="WorldMapFrameTemplate" inherits="MapCanvasFrameTemplate" mixin="WorldMapMixin" virtual="true">
-		<Size x="700" y="488"/>
+	<Frame name="WorldMapFrameTemplate" inherits="MapCanvasFrameTemplate" mixin="QuestLogOwnerMixin, WorldMapMixin" virtual="true">
 		<Frames>
-			<ScrollFrame parentKey="ScrollContainer" inherits="MapCanvasFrameScrollContainerTemplate" />
+			<Frame parentKey="TitleCanvasSpacerFrame">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="2" y="0"/>
+					<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="-3" y="-67"/>
+				</Anchors>
+			</Frame>
+			<ScrollFrame parentKey="ScrollContainer" inherits="MapCanvasFrameScrollContainerTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.TitleCanvasSpacerFrame" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+					<Anchor point="BOTTOMLEFT" x="0" y="2"/>
+					<Anchor point="RIGHT" relativeKey="$parent.TitleCanvasSpacerFrame"/>
+				</Anchors>
+			</ScrollFrame>
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
@@ -14,12 +25,8 @@
 			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>
-
+	
 	<Frame name="TestWorldMapFrame" inherits="WorldMapFrameTemplate" parent="UIParent">
-		<Size x="700" y="488"/>
-		<Anchors>
-			<Anchor point="BOTTOMRIGHT"/>
-		</Anchors>
 		<Frames>
 			<Frame parentKey="BorderFrame" inherits="PortraitFrameTemplate" frameStrata="HIGH" setAllPoints="true">
 				<Layers>
@@ -28,16 +35,37 @@
 							<Color r="0" g="0" b="0" a=".5"/>
 						</Texture>
 					</Layer>
-
-					<Layer level="BORDER" textureSubLevel="-1">
-						<Texture parentKey="TopBorder" atlas="AdventureMap_TopBorder">
+					<Layer level="OVERLAY" textureSubLevel="1">
+						<Texture parentKey="ButtonFrameEdge" atlas="UI-OuterBorderButtonPatch" useAtlasSize="true">
 							<Anchors>
-								<Anchor point="TOPLEFT" x="2" y="-22"/>
-								<Anchor point="BOTTOMRIGHT" x="-3" y="2"/>
+								<Anchor point="TOPRIGHT" x="-36" y="0"/>
 							</Anchors>
 						</Texture>
 					</Layer>
+					<Layer level="BACKGROUND" textureSubLevel="-5">
+						<Texture name="WW" inherits="_UI-Frame-InnerTopTile" parentKey="InsetBorderTop">
+							<Size x="698" y="3"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="2" y="-63"/>
+							</Anchors>
+						</Texture>
+					</Layer>					
 				</Layers>
+				<Frames>
+					<Frame parentKey="MaximizeMinimizeFrame" inherits="MaximizeMinimizeButtonFrameTemplate">
+						<Anchors>
+							<Anchor point="RIGHT" relativeKey="$parent.CloseButton" relativePoint="LEFT" x="10" y="0"/>
+						</Anchors>
+					</Frame>
+				<!--
+					<Frame parentKey="Inset" inherits="InsetFrameTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="0" y="-63" />
+							<Anchor point="BOTTOMRIGHT" x="-2" y="1" />
+						</Anchors>
+					</Frame>
+					-->
+				</Frames>
 				<Scripts>
 					<OnLoad>
 						self.onCloseCallback = function() HideParentPanel(self) end;

@@ -37,8 +37,18 @@ function PropertyButtonMixin:AddStateAtlas(stateValue, atlas)
 	self.stateAtlases[stateValue] = atlas;
 end
 
+function PropertyButtonMixin:AddStateAtlasFallback(atlas)
+	self.stateAtlasFallback = atlas;
+end
+
 function PropertyButtonMixin:GetStateAtlas(stateValue)
-	return self.stateAtlases and self.stateAtlases[stateValue] or "";
+	if self.stateAtlases and self.stateAtlases[stateValue] then
+		return self.stateAtlases[stateValue];
+	elseif self.stateAtlasFallback then
+		return self.stateAtlasFallback;
+	else
+		return "";
+	end
 end
 
 function PropertyButtonMixin:SetIconToState(state)

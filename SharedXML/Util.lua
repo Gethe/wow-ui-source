@@ -4,9 +4,27 @@ end
 
 function GetTextureInfo(obj)
 	if obj:GetObjectType() == "Texture" then
-		local assetName = obj:GetAtlas() or obj:GetTextureFilePath() or obj:GetTextureFileID() or "UnknownAsset";
+		local assetName = obj:GetAtlas();
+		local assetType = "Atlas";
+
+		if not assetName then
+			assetName = obj:GetTextureFilePath();
+			assetType = "File";
+		end
+
+		if not assetName then
+			assetName = obj:GetTextureFileID();
+			assetType = "FileID";
+		end
+
+
+		if not assetName then
+			assetName = "UnknownAsset";
+			assetType = "Unknown";
+		end
+
 		local ulX, ulY, blX, blY, urX, urY, brX, brY = obj:GetTexCoord();
-		return assetName, ulX, ulY, blX, blY, urX, urY, brX, brY;
+		return assetName, assetType, ulX, ulY, blX, blY, urX, urY, brX, brY;
 	end
 end
 
@@ -833,31 +851,62 @@ function CreateAtlasMarkup(atlasName, height, width, offsetX, offsetY)
 	);
 end
 
-function SetupTextureKits(textureKitID, frame, regions, setVisibilityOfRegions)
+function SetupTextureKitOnFrameByID(textureKitID, frame, fmt, setVisibilityOfRegions, useAtlasSize)
 	local textureKit = GetUITextureKitInfo(textureKitID);
-	SetupTextureKitOnRegions(textureKit, frame, regions, setVisibilityOfRegions);
+	SetupTextureKitOnFrame(textureKit, frame, fmt, setVisibilityOfRegions, useAtlasSize);
 end
 
-function SetupTextureKitOnRegions(textureKit, frame, regions, setVisibilityOfRegions)
+function SetupTextureKitOnFrame(textureKit, frame, fmt, setVisibilityOfRegions, useAtlasSize)
+	if not frame then
+		return;
+	end
+
+	if setVisibilityOfRegions then
+		frame:SetShown(textureKit ~= nil);
+	end
+
+	if textureKit then
+		if frame:GetObjectType() == "StatusBar" then
+			frame:SetStatusBarAtlas(fmt:format(textureKit));
+		elseif frame.SetAtlas then
+			frame:SetAtlas(fmt:format(textureKit), useAtlasSize);
+		end
+	end
+end
+
+function SetupTextureKitOnFrames(textureKit, frames, setVisibilityOfRegions, useAtlasSize)
 	if not textureKit and not setVisibilityOfRegions then
 		return;
 	end
 
+	for frame, fmt in pairs(frames) do
+		SetupTextureKitOnFrame(textureKit, frame, fmt, setVisibilityOfRegions, useAtlasSize);
+	end
+end
+
+function SetupTextureKitsOnFrames(textureKitID, frames, setVisibilityOfRegions, useAtlasSize)
+	local textureKit = GetUITextureKitInfo(textureKitID);
+	SetupTextureKitOnFrames(textureKit, frames, setVisibilityOfRegions, useAtlasSize);
+end
+
+function SetupTextureKitOnRegions(textureKit, frame, regions, setVisibilityOfRegions, useAtlasSize)
+	if not textureKit and not setVisibilityOfRegions then
+		return;
+	end
+
+	local frames = {};
 	for region, fmt in pairs(regions) do
 		if frame[region] then
-			if setVisibilityOfRegions then
-				frame[region]:SetShown(textureKit ~= nil);
-			end
-
-			if textureKit then
-				if frame[region]:GetObjectType() == "StatusBar" then
-					frame[region]:SetStatusBarAtlas(fmt:format(textureKit));
-				else
-					frame[region]:SetAtlas(fmt:format(textureKit));
-				end
-			end
+			frames[frame[region]] = fmt;
 		end
 	end
+	
+	return SetupTextureKitOnFrames(textureKit, frames, setVisibilityOfRegions, useAtlasSize);
+end
+
+function SetupTextureKits(textureKitID, frame, regions, setVisibilityOfRegions, useAtlasSize)
+	local textureKit = GetUITextureKitInfo(textureKitID);
+	SetupTextureKitOnRegions(textureKit, frame, regions, setVisibilityOfRegions, useAtlasSize);
 end
 
 CallbackRegistryBaseMixin = {};

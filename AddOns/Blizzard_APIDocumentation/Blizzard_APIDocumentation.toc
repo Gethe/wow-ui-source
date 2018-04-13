@@ -19,6 +19,7 @@ AddOnsDocumentation.lua
 AdventureJournalDocumentation.lua
 AdventureMapDocumentation.lua
 AlliedRacesFrameDocumentation.lua
+AreaPoiInfoDocumentation.lua
 ArtifactRelicForgeUIDocumentation.lua
 ArtifactUIDocumentation.lua
 AuctionHouseDocumentation.lua
@@ -60,6 +61,7 @@ GuildBankDocumentation.lua
 GuildInfoDocumentation.lua
 HeirloomInfoDocumentation.lua
 InstanceEncounterDocumentation.lua
+InvasionInfoDocumentation.lua
 ItemDocumentation.lua
 ItemSocketInfoDocumentation.lua
 ItemTextDocumentation.lua

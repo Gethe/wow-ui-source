@@ -16,6 +16,21 @@ local AzeriteItem =
 			},
 		},
 		{
+			Name = "GetAzeriteItemXPInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "azeriteItemLocation", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "xp", Type = "number", Nilable = false },
+				{ Name = "totalLevelXP", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetPowerLevel",
 			Type = "Function",
 

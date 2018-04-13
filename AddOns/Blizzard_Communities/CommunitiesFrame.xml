@@ -126,7 +126,7 @@
 					</OnClick>
 				</Scripts>
 			</CheckButton>
-			<Frame parentKey="StreamDropDownMenu" inherits="UIDropDownMenuTemplate" mixin="CommunitiesStreamDropDownMixin">
+			<Frame parentKey="StreamDropDownMenu" inherits="StreamDropDownMenuTemplate">
 				<Size x="40" y="28"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="188" y="-32"/>
@@ -181,7 +181,7 @@
 					<Anchor point="BOTTOM" x="0" y="5"/>
 				</Anchors>
 			</Button>
-			<Button parentKey="CommunitiesCreateButton" inherits="CommunitiesCreateButtonTemplate">
+			<Button parentKey="CommunitiesAddButton" inherits="CommunitiesAddButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.CommunitiesList" relativePoint="BOTTOMLEFT" x="1" y="-3"/>
 					<Anchor point="TOPRIGHT" relativeKey="$parent.CommunitiesList" relativePoint="BOTTOMRIGHT" x="0" y="-3"/>

@@ -2,7 +2,7 @@ TOOLTIP_UPDATE_TIME = 0.2;
 BOSS_FRAME_CASTBAR_HEIGHT = 16;
 
 -- Mirror of the same Variable in StoreSecureUI.lua and GlueParent.lua
-WOW_GAMES_CATEGORY_ID = 33; 
+WOW_GAMES_CATEGORY_ID = 33;
 
 -- Alpha animation stuff
 FADEFRAMES = {};
@@ -438,7 +438,7 @@ function UIParentLoadAddOn(name)
 end
 
 function IslandsPartyPose_LoadUI()
-	UIParentLoadAddOn("Blizzard_PartyPoseUI"); 
+	UIParentLoadAddOn("Blizzard_PartyPoseUI");
 end
 
 function AlliedRaces_LoadUI()
@@ -1337,7 +1337,7 @@ function UIParent_OnEvent(self, event, ...)
 				end
 			end
 		end
-		
+
 		local resurrectOfferer = ResurrectGetOfferer();
 		if resurrectOfferer then
 			ShowResurrectRequest(resurrectOfferer);
@@ -1741,7 +1741,7 @@ function UIParent_OnEvent(self, event, ...)
 		StaticPopup_Show("EXPERIMENTAL_CVAR_WARNING");
 	elseif ( event == "BAG_OVERFLOW_WITH_FULL_INVENTORY") then
 		StaticPopup_Show("CLIENT_INVENTORY_FULL_OVERFLOW");
-		
+
 	-- Events for Archaeology
 	elseif ( event == "ARCHAEOLOGY_TOGGLE" ) then
 		ArchaeologyFrame_LoadUI();
@@ -2001,11 +2001,6 @@ function UIParent_OnEvent(self, event, ...)
 		local raceID = ...;
 		AlliedRacesFrame:LoadRaceData(raceID);
 		ShowUIPanel(AlliedRacesFrame);
-	elseif (event == "ISLAND_COMPLETED") then 
-		IslandsPartyPose_LoadUI(); 
-		local mapID, questID, winner = ...; 
-		IslandsPartyPoseFrame:LoadScreenData(mapID, questID, winner); 
-		ShowUIPanel(IslandsPartyPoseFrame); 
 	end
 end
 
@@ -2098,9 +2093,9 @@ UIPARENT_MANAGED_FRAME_POSITIONS = {
 	["ZoneAbilityFrame"] = {baseY = true, yOffset = 100, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, tutorialAlert = 1, extraActionBarFrame = 1};
 	["ChatFrame1"] = {baseY = true, yOffset = 40, bottomLeft = actionBarOffset-8, justBottomRightAndStance = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, maxLevel = 1, point = "BOTTOMLEFT", rpoint = "BOTTOMLEFT", xOffset = 32};
 	["ChatFrame2"] = {baseY = true, yOffset = 40, bottomRight = actionBarOffset-8, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, rightLeft = -2*actionBarOffset, rightRight = -actionBarOffset, watchBar = 1, maxLevel = 1, point = "BOTTOMRIGHT", rpoint = "BOTTOMRIGHT", xOffset = -32};
-	["StanceBarFrame"] = {baseY = 8, bottomLeft = actionBarOffset, watchBar = 1, maxLevel = 1, anchorTo = "ActionButton1", point = "BOTTOMLEFT", rpoint = "TOPLEFT", xOffset = 30};
-	["PossessBarFrame"] = {baseY = 8, bottomLeft = actionBarOffset, watchBar = 1, maxLevel = 1, anchorTo = "ActionButton1", point = "BOTTOMLEFT", rpoint = "TOPLEFT", xOffset = 30};
-	["MultiCastActionBarFrame"] = {baseY = 8, bottomLeft = actionBarOffset, watchBar = 1, maxLevel = 1, anchorTo = "ActionButton1", point = "BOTTOMLEFT", rpoint = "TOPLEFT", xOffset = 30};
+	["StanceBarFrame"] = {baseY = 2, bottomLeft = actionBarOffset, watchBar = 1, maxLevel = 1, anchorTo = "MainMenuBar", point = "BOTTOMLEFT", rpoint = "TOPLEFT", xOffset = 30};
+	["PossessBarFrame"] = {baseY = 2, bottomLeft = actionBarOffset, watchBar = 1, maxLevel = 1, anchorTo = "MainMenuBar", point = "BOTTOMLEFT", rpoint = "TOPLEFT", xOffset = 30};
+	["MultiCastActionBarFrame"] = {baseY = 8, bottomLeft = actionBarOffset, watchBar = 1, maxLevel = 1, anchorTo = "MainMenuBar", point = "BOTTOMLEFT", rpoint = "TOPLEFT", xOffset = 30};
 	["AuctionProgressFrame"] = {baseY = true, yOffset = 18, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, tutorialAlert = 1};
 	["TalkingHeadFrame"] = {baseY = true, yOffset = 0, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, tutorialAlert = 1, playerPowerBarAlt = 1, extraActionBarFrame = 1, ZoneAbilityFrame = 1, classResourceOverlayFrame = 1};
 
@@ -2112,7 +2107,7 @@ UIPARENT_MANAGED_FRAME_POSITIONS = {
 	["CONTAINER_OFFSET_Y"] = {baseY = true, yOffset = 10, bottomEither = actionBarOffset, watchBar = 1, isVar = "yAxis"};
 	["BATTLEFIELD_TAB_OFFSET_Y"] = {baseY = 210, bottomRight = actionBarOffset, watchBar = 1, isVar = "yAxis"};
 	["PETACTIONBAR_YPOS"] = {baseY = 89, bottomLeft = actionBarOffset + 3, justBottomRightAndStance = actionBarOffset, watchBar = 1, maxLevel = 1, isVar = "yAxis"};
-	["MULTICASTACTIONBAR_YPOS"] = {baseY = 2, bottomLeft = actionBarOffset, watchBar = 1, maxLevel = 1, isVar = "yAxis"};
+	["MULTICASTACTIONBAR_YPOS"] = {baseY = 0, bottomLeft = actionBarOffset, watchBar = 1, maxLevel = 1, isVar = "yAxis"};
 	["OBJTRACKER_OFFSET_X"] = {baseX = 12, rightActionBarsX = "variable", isVar = "xAxis"};
 };
 
@@ -2619,7 +2614,8 @@ function FramePositionDelegate:UpdateUIPanelPositions(currentFrame)
 		local xOff = GetUIPanelWindowInfo(frame,"xoffset") or 0;
 		local yOff = GetUIPanelWindowInfo(frame,"yoffset") or 0;
 		local bottomClampOverride = GetUIPanelWindowInfo(frame,"bottomClampOverride");
-		local yPos = ClampUIPanelY(frame, yOff + topOffset, bottomClampOverride);
+		local minYOffset = GetUIPanelWindowInfo(frame,"minYOffset");
+		local yPos = ClampUIPanelY(frame, yOff + topOffset, minYOffset, bottomClampOverride);
 		frame:ClearAllPoints();
 		frame:SetPoint("TOPLEFT", "UIParent", "TOPLEFT", leftOffset + xOff, yPos);
 		centerOffset = leftOffset + GetUIPanelWidth(frame) + xOff;
@@ -2631,7 +2627,8 @@ function FramePositionDelegate:UpdateUIPanelPositions(currentFrame)
 			local xOff = GetUIPanelWindowInfo(frame,"xoffset") or 0;
 			local yOff = GetUIPanelWindowInfo(frame,"yoffset") or 0;
 			local bottomClampOverride = GetUIPanelWindowInfo(frame,"bottomClampOverride");
-			local yPos = ClampUIPanelY(frame, yOff + topOffset, bottomClampOverride);
+			local minYOffset = GetUIPanelWindowInfo(frame,"minYOffset");
+			local yPos = ClampUIPanelY(frame, yOff + topOffset, minYOffset, bottomClampOverride);
 			frame:ClearAllPoints();
 			frame:SetPoint("TOPLEFT", "UIParent", "TOPLEFT", leftOffset + xOff, yPos);
 			rightOffset = leftOffset + GetUIPanelWidth(frame) + xOff;
@@ -2647,7 +2644,8 @@ function FramePositionDelegate:UpdateUIPanelPositions(currentFrame)
 			local xOff = GetUIPanelWindowInfo(frame,"xoffset") or 0;
 			local yOff = GetUIPanelWindowInfo(frame,"yoffset") or 0;
 			local bottomClampOverride = GetUIPanelWindowInfo(frame,"bottomClampOverride");
-			local yPos = ClampUIPanelY(frame, yOff + topOffset, bottomClampOverride);
+			local minYOffset = GetUIPanelWindowInfo(frame,"minYOffset");
+			local yPos = ClampUIPanelY(frame, yOff + topOffset, minYOffset, bottomClampOverride);
 			if ( area ~= "center" ) then
 				frame:ClearAllPoints();
 				xOff = xOff + xSpacing; -- add sperating space
@@ -2683,7 +2681,8 @@ function FramePositionDelegate:UpdateUIPanelPositions(currentFrame)
 			local xOff = GetUIPanelWindowInfo(frame,"xoffset") or 0;
 			local yOff = GetUIPanelWindowInfo(frame,"yoffset") or 0;
 			local bottomClampOverride = GetUIPanelWindowInfo(frame,"bottomClampOverride");
-			local yPos = ClampUIPanelY(frame, yOff + topOffset, bottomClampOverride);
+			local minYOffset = GetUIPanelWindowInfo(frame,"minYOffset");
+			local yPos = ClampUIPanelY(frame, yOff + topOffset, minYOffset, bottomClampOverride);
 			xOff = xOff + xSpacing; -- add sperating space
 			frame:ClearAllPoints();
 			frame:SetPoint("TOPLEFT", "UIParent", "TOPLEFT", rightOffset  + xOff, yPos);
@@ -2734,20 +2733,20 @@ function FramePositionDelegate:UIParentManageFramePositions()
 	elseif ( PetBattleFrame and PetBattleFrame:IsShown() ) then
 		tinsert(yOffsetFrames, "petBattleFrame");
 	else
-		if ( MultiBarBottomLeft:IsShown() or MultiBarBottomRight:IsShown() ) then	 	 
-			tinsert(yOffsetFrames, "bottomEither");	 	 
-		end	 	 
-		if ( MultiBarBottomRight:IsShown() ) then	 	 
-			tinsert(yOffsetFrames, "bottomRight");	 	 
-			hasBottomRight = 1;	 	 
-		end	 	 
-		if ( MultiBarBottomLeft:IsShown() ) then	 	 
-			tinsert(yOffsetFrames, "bottomLeft");	 	 
-			hasBottomLeft = 1;	 	 
-		end	 	 
+		if ( MultiBarBottomLeft:IsShown() or MultiBarBottomRight:IsShown() ) then
+			tinsert(yOffsetFrames, "bottomEither");
+		end
+		if ( MultiBarBottomRight:IsShown() ) then
+			tinsert(yOffsetFrames, "bottomRight");
+			hasBottomRight = 1;
+		end
+		if ( MultiBarBottomLeft:IsShown() ) then
+			tinsert(yOffsetFrames, "bottomLeft");
+			hasBottomLeft = 1;
+		end
 		-- TODO: Leaving this here for now since ChatFrame2 references it. Do we still need ChatFrame2 to be managed?
 		if ( MultiBarRight:IsShown() ) then
-			tinsert(xOffsetFrames, "rightRight");	 	 
+			tinsert(xOffsetFrames, "rightRight");
 		end
 		if ( MultiBarRight:IsShown() ) then
 			tinsert(xOffsetFrames, "rightActionBarsX");
@@ -2761,7 +2760,7 @@ function FramePositionDelegate:UIParentManageFramePositions()
 			tinsert(yOffsetFrames, "pet");
 			hasPetBar = 1;
 		end
-		
+
 		if ( TutorialFrameAlertButton:IsShown() ) then
 			tinsert(yOffsetFrames, "tutorialAlert");
 		end
@@ -2878,7 +2877,7 @@ function FramePositionDelegate:UIParentManageFramePositions()
 	-- If petactionbar is already shown, set its point in addition to changing its y target
 	if ( PetActionBarFrame:IsShown() ) then
 		PetActionBar_UpdatePositionValues();
-		PetActionBarFrame:SetPoint("TOPLEFT", ActionButton1, "BOTTOMLEFT", PETACTIONBAR_XPOS, PETACTIONBAR_YPOS);
+		PetActionBarFrame:SetPoint("TOPLEFT", MainMenuBar, "BOTTOMLEFT", PETACTIONBAR_XPOS, PETACTIONBAR_YPOS);
 	end
 
 	-- Set battlefield minimap position
@@ -3067,14 +3066,14 @@ function GetMaxUIPanelsWidth()
 	return UIParent:GetRight() - UIParent:GetAttribute("RIGHT_OFFSET_BUFFER");
 end
 
-function ClampUIPanelY(frame, yOffset, bottomClampOverride)
+function ClampUIPanelY(frame, yOffset, minYOffset, bottomClampOverride)
 	local bottomPos = UIParent:GetTop() + yOffset - GetUIPanelHeight(frame);
 	local bottomClamp = bottomClampOverride or 140;
 	if (bottomPos < bottomClamp) then
 		yOffset = yOffset + (bottomClamp - bottomPos);
 	end
 	if (yOffset > -10) then
-		yOffset = -10;
+		yOffset = minYOffset or -10;
 	end
 	return yOffset;
 end
@@ -3529,7 +3528,7 @@ function UIFrameFlash(frame, fadeInTime, fadeOutTime, flashDuration, showWhenDon
 		frame.fadeInTime = fadeInTime;
 		-- Time it takes to fade out a flashing frame
 		frame.fadeOutTime = fadeOutTime;
-		-- How long to keep the frame flashing
+		-- How long to keep the frame flashing, -1 means forever
 		frame.flashDuration = flashDuration;
 		-- Show the flashing frame when the fadeOutTime has passed
 		frame.showWhenDone = showWhenDone;
@@ -4304,7 +4303,7 @@ function GetQuestDifficultyColor(level, isScaling)
 	if (isScaling) then
 		return GetScalingQuestDifficultyColor(level);
 	end
-	
+
 	return GetRelativeDifficultyColor(UnitLevel("player"), level);
 end
 

@@ -17,6 +17,33 @@ function WorldQuestDataProviderMixin:OnAdded(mapCanvas)
 	MapCanvasDataProviderMixin.OnAdded(self, mapCanvas);
 
 	self:RegisterEvent("SUPER_TRACKED_QUEST_CHANGED");
+
+	if not self.setFocusedQuestIDCallback then
+		self.setFocusedQuestIDCallback = function(event, ...) self:SetFocusedQuestID(...); end;
+	end
+	if not self.clearFocusedQuestIDCallback then
+		self.clearFocusedQuestIDCallback = function(event, ...) self:ClearFocusedQuestID(...); end;
+	end
+	
+	self:GetMap():RegisterCallback("SetFocusedQuestID", self.setFocusedQuestIDCallback);
+	self:GetMap():RegisterCallback("ClearFocusedQuestID", self.clearFocusedQuestIDCallback);
+end
+
+function WorldQuestDataProviderMixin:OnRemoved(mapCanvas)
+	MapCanvasDataProviderMixin.OnRemoved(self, mapCanvas);
+
+	self:GetMap():UnregisterCallback("SetFocusedQuestID", self.setFocusedQuestIDCallback);
+	self:GetMap():UnregisterCallback("ClearFocusedQuestID", self.clearFocusedQuestIDCallback);
+end
+
+function WorldQuestDataProviderMixin:SetFocusedQuestID(questID)
+	self.focusedQuestID = questID;
+	self:RefreshAllData();
+end
+
+function WorldQuestDataProviderMixin:ClearFocusedQuestID(questID)
+	self.focusedQuestID = nil;
+	self:RefreshAllData();
 end
 
 function WorldQuestDataProviderMixin:OnEvent(event, ...)
@@ -86,7 +113,7 @@ function WorldQuestDataProviderMixin:RefreshAllData(fromOnShow)
 end
 
 function WorldQuestDataProviderMixin:ShouldShowQuest(info)
-	return true;
+	return not self.focusedQuestID;
 end
 
 function WorldQuestDataProviderMixin:GetPinTemplate()

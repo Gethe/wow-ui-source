@@ -347,6 +347,16 @@ local Unit =
 			LiteralName = "PLAYER_LEAVE_COMBAT",
 		},
 		{
+			Name = "PlayerLevelChanged",
+			Type = "Event",
+			LiteralName = "PLAYER_LEVEL_CHANGED",
+			Payload =
+			{
+				{ Name = "oldLevel", Type = "number", Nilable = false },
+				{ Name = "newLevel", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "PlayerLevelUp",
 			Type = "Event",
 			LiteralName = "PLAYER_LEVEL_UP",

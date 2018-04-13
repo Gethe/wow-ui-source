@@ -16,7 +16,7 @@ function WorldMap_InvasionDataProviderMixin:RefreshAllData(fromOnShow)
 	local map = self:GetMap();
 	local mapID = map:GetMapID();
 	local mapInfo = C_Map.GetMapInfo(mapID);
-	local show = mapInfo and mapInfo.mapType ~= Enum.UIMapType.Continent and GetInvasionInfoByUiMapID(mapID) ~= nil;
+	local show = mapInfo and mapInfo.mapType ~= Enum.UIMapType.Continent and C_InvasionInfo.GetInvasionForUiMapID(mapID) ~= nil;
 	if (show) then
 		self:ShowOverlay();
 	else
@@ -36,9 +36,4 @@ end
 function WorldMap_InvasionDataProviderMixin:OnRemoved(owningMap)
 	MapCanvasDataProviderMixin.OnRemoved(self, owningMap);
 	self.InvasionOverlay:SetParent(nil);
-	self:RemoveAllData();
-end
-
-function WorldMap_InvasionDataProviderMixin:OnMapChanged()
-	self:RefreshAllData();
 end

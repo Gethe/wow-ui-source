@@ -7,6 +7,14 @@ local titleFramePool;
 local objectiveFramePool;
 local headerFramePool;
 
+QuestLogMixin = { };
+
+function QuestLogMixin:Refresh()
+	SortQuestSortTypes();
+	SortQuests();
+	QuestMapFrame_ResetFilters();
+	QuestMapFrame_UpdateAll();
+end
 
 function QuestMapFrame_OnLoad(self)
 	self:RegisterEvent("QUEST_LOG_UPDATE");
@@ -23,6 +31,7 @@ function QuestMapFrame_OnLoad(self)
 	self:RegisterEvent("AJ_QUEST_LOG_OPEN");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("WORLD_MAP_UPDATE");
+	self:RegisterEvent("VARIABLES_LOADED");
 
 	self.completedCriteria = {};
 	QuestPOI_Initialize(QuestScrollFrame.Contents);
@@ -91,6 +100,7 @@ function QuestMapFrame_OnEvent(self, event, ...)
 		QuestMapFrame_UpdateQuestDetailsButtons();
 		QuestMapFrame_UpdateAll();
 	elseif ( event == "SUPER_TRACKED_QUEST_CHANGED" ) then
+		QuestMapFrame_CloseQuestDetails(self:GetParent());
 		local questID = ...;
 		QuestPOI_SelectButtonByQuestID(QuestScrollFrame.Contents, questID);
 	elseif ( event == "GROUP_ROSTER_UPDATE" ) then
@@ -110,21 +120,25 @@ function QuestMapFrame_OnEvent(self, event, ...)
 	elseif ( event == "QUEST_ACCEPTED" ) then
 		TUTORIAL_QUEST_ACCEPTED = arg2;
 	elseif ( event == "AJ_QUEST_LOG_OPEN" ) then
-		ShowQuestLog();
+		OpenQuestLog();
 		local questIndex = GetQuestLogIndexByID(arg1)
 		local mapID = GetQuestUiMapID(arg1);
 		if ( questIndex > 0 ) then
 			QuestMapFrame_OpenToQuestDetails(arg1);
 		elseif ( mapID ~= 0 ) then
-			SetMapByID(mapID);
+			QuestMapFrame:GetParent():NavigateToMap(mapID);
 		elseif ( arg2 and arg2 > 0) then
-			SetMapByID(arg2);
+			QuestMapFrame:GetParent():NavigateToMap(arg2);
 		end
 	elseif ( event == "PLAYER_ENTERING_WORLD" or event == "WORLD_MAP_UPDATE" ) then
 		SortQuestSortTypes();
 		SortQuests();
 		QuestMapFrame_ResetFilters();
 		QuestMapFrame_UpdateAll();
+	elseif ( event == "VARIABLES_LOADED" ) then
+		if ( GetCVarBool("questLogOpen") ) then
+			QuestMapFrame_Show();
+		end
 	end
 end
 
@@ -135,7 +149,7 @@ function QuestMapFrame_Open(userAction)
 	if ( userAction ) then
 		SetCVar("questLogOpen", 1);
 	end
-	if ( WorldMapFrame_InWindowedMode() ) then
+	if ( QuestMapFrame:GetParent():CanDisplayQuestLog() ) then
 		QuestMapFrame_Show();
 	end
 end
@@ -149,33 +163,18 @@ end
 
 function QuestMapFrame_Show()
 	if ( not QuestMapFrame:IsShown() ) then
-		WorldMapFrame:SetWidth(992);
-		WorldMapFrame.BorderFrame:SetWidth(992);
-
 		QuestMapFrame_UpdateAll();
-
 		QuestMapFrame:Show();
-
-		WorldMapFrame.UIElementsFrame.OpenQuestPanelButton:Hide();
-		WorldMapFrame.UIElementsFrame.CloseQuestPanelButton:Show();
-
-		if ( TutorialFrame.id == 1 or TutorialFrame.id == 55 or TutorialFrame.id == 57 ) then
-			TutorialFrame_Hide();
-		end
+		QuestMapFrame:GetParent():OnQuestLogShow();
 	end
 end
 
 function QuestMapFrame_Hide()
 	if ( QuestMapFrame:IsShown() ) then
-		WorldMapFrame:SetWidth(702);
-		WorldMapFrame.BorderFrame:SetWidth(702);
 		QuestMapFrame:Hide();
 		QuestMapFrame_UpdateAll();
-
-		WorldMapFrame.UIElementsFrame.OpenQuestPanelButton:Show();
-		WorldMapFrame.UIElementsFrame.CloseQuestPanelButton:Hide();
-
 		QuestMapFrame_CheckTutorials();
+		QuestMapFrame:GetParent():OnQuestLogHide();
 	end
 end
 
@@ -199,7 +198,7 @@ function QuestMapFrame_UpdateAll()
 	QuestPOIUpdateIcons();
 	QuestObjectiveTracker_UpdatePOIs();
 
-	if ( WorldMapFrame:IsShown() ) then
+	if ( QuestMapFrame:GetParent():IsShown() ) then
 		local poiTable = { };
 		if ( numPOIs > 0 and GetCVarBool("questPOI") ) then
 			GetQuestPOIs(poiTable);
@@ -212,7 +211,7 @@ function QuestMapFrame_UpdateAll()
 		else
 			QuestLogQuests_Update(poiTable);
 		end
-		WorldMapPOIFrame_Update(poiTable);
+		QuestMapFrame:GetParent():OnQuestLogUpdate();
 	end
 end
 
@@ -237,14 +236,16 @@ function QuestMapFrame_ShowQuestDetails(questID)
 	local questLogIndex = GetQuestLogIndexByID(questID);
 	SelectQuestLogEntry(questLogIndex);
 	QuestMapFrame.DetailsFrame.questID = questID;
+	QuestMapFrame:GetParent():SetFocusedQuestID(questID);
 	QuestInfo_Display(QUEST_TEMPLATE_MAP_DETAILS, QuestMapFrame.DetailsFrame.ScrollFrame.Contents);
 	QuestInfo_Display(QUEST_TEMPLATE_MAP_REWARDS, QuestMapFrame.DetailsFrame.RewardsFrame, nil, nil, true);
 	QuestMapFrame.DetailsFrame.ScrollFrame.ScrollBar:SetValue(0);
 
+	local mapFrame = QuestMapFrame:GetParent();
 	local questPortrait, questPortraitText, questPortraitName, questPortraitMount = GetQuestLogPortraitGiver();
-	if (questPortrait and questPortrait ~= 0 and QuestLogShouldShowPortrait() and (UIParent:GetRight() - WorldMapFrame:GetRight() > QuestNPCModel:GetWidth() + 6)) then
-		QuestFrame_ShowQuestPortrait(WorldMapFrame, questPortrait, questPortraitMount, questPortraitText, questPortraitName, -2, -43);
-		QuestNPCModel:SetFrameLevel(WorldMapFrame:GetFrameLevel() + 2);
+	if (questPortrait and questPortrait ~= 0 and QuestLogShouldShowPortrait() and (UIParent:GetRight() - mapFrame:GetRight() > QuestNPCModel:GetWidth() + 6)) then
+		QuestFrame_ShowQuestPortrait(mapFrame, questPortrait, questPortraitMount, questPortraitText, questPortraitName, -2, -43);
+		QuestNPCModel:SetFrameLevel(mapFrame:GetFrameLevel() + 2);
 	else
 		QuestFrame_HideQuestPortrait();
 	end
@@ -265,15 +266,13 @@ function QuestMapFrame_ShowQuestDetails(questID)
 
 	-- save current view
 	QuestMapFrame.DetailsFrame.continent = GetCurrentMapContinent();
-	QuestMapFrame.DetailsFrame.questMapID = nil;
+	QuestMapFrame.DetailsFrame.mapID = QuestMapFrame:GetParent():GetMapID();
 	local mapID = GetQuestUiMapID(questID);
 	if ( mapID ~= 0 ) then
-		SetMapByID(mapID);
-		QuestMapFrame.DetailsFrame.mapID = mapID;
+		QuestMapFrame:GetParent():NavigateToMap(mapID);
 	end
 
 	QuestMapFrame_UpdateQuestDetailsButtons();
-	QuestMapFrame.DetailsFrame.questMapID = C_Map.GetCurrentMapID();
 
 	if ( IsQuestComplete(questID) and GetQuestLogIsAutoComplete(questLogIndex) ) then
 		QuestMapFrame.DetailsFrame.CompleteQuestFrame:Show();
@@ -291,7 +290,8 @@ function QuestMapFrame_CloseQuestDetails(optPortraitOwnerCheckFrame)
 	QuestMapFrame.QuestsFrame:Show();
 	QuestMapFrame.DetailsFrame:Hide();
 	QuestMapFrame.DetailsFrame.questID = nil;
-	QuestMapFrame.DetailsFrame.questMapID = nil;
+	QuestMapFrame:GetParent():ClearFocusedQuestID();
+	QuestMapFrame.DetailsFrame.mapID = nil;
 	QuestMapFrame_UpdateAll();
 	QuestFrame_HideQuestPortrait(optPortraitOwnerCheckFrame);
 
@@ -329,13 +329,13 @@ end
 
 function QuestMapFrame_ReturnFromQuestDetails()
 	if ( QuestMapFrame.DetailsFrame.mapID ) then
-		SetMapByID(QuestMapFrame.DetailsFrame.mapID);
+		QuestMapFrame:GetParent():NavigateToMap(QuestMapFrame.DetailsFrame.mapID);
 	end
 	QuestMapFrame_CloseQuestDetails();
 end
 
 function QuestMapFrame_OpenToQuestDetails(questID)
-	ShowQuestLog();
+	OpenQuestLog();
 	QuestMapFrame_ShowQuestDetails(questID);
 end
 
@@ -628,7 +628,7 @@ function QuestLogQuests_Update(poiTable)
 	objectiveFramePool:ReleaseAll();
 	headerFramePool:ReleaseAll();
 
-	local mapID = C_Map.GetCurrentMapID();
+	local mapID = QuestMapFrame:GetParent():GetMapID();
 
 	local button, prevButton;
 
@@ -637,7 +637,8 @@ function QuestLogQuests_Update(poiTable)
 	local storyID, storyMapID = GetZoneStoryID();
 	if ( storyID ) then
 		QuestScrollFrame.Contents.StoryHeader:Show();
-		QuestScrollFrame.Contents.StoryHeader.Text:SetText(GetMapNameByID(storyMapID));
+		local mapInfo = C_Map.GetMapInfo(storyMapID);
+		QuestScrollFrame.Contents.StoryHeader.Text:SetText(mapInfo and mapInfo.name or nil);
 		local numCriteria = GetAchievementNumCriteria(storyID);
 		local completedCriteria = 0;
 		for i = 1, numCriteria do
@@ -719,19 +720,20 @@ end
 
 function ToggleQuestLog()
 	if ( QuestMapFrame:IsShown() and QuestMapFrame:IsVisible() ) then
-		HideUIPanel(WorldMapFrame);
+		HideUIPanel(QuestMapFrame:GetParent());
 	else
-		ShowQuestLog();
+		OpenQuestLog();
 	end
 end
 
-function ShowQuestLog()
-	WorldMapFrame.questLogMode = true;
-	ShowUIPanel(WorldMapFrame);
-	if ( not WorldMapFrame_InWindowedMode() ) then
-		WorldMapFrame_ToggleWindowSize();
-	end
+function OpenQuestLog(mapID)
+	QuestMapFrame:GetParent():OnQuestLogOpen();
+	ShowUIPanel(QuestMapFrame:GetParent());
 	QuestMapFrame_Open();
+
+	if mapID then
+		SetMapByID(mapID);
+	end
 end
 
 function QuestMapLogHeaderButton_OnClick(self, button)
@@ -743,8 +745,6 @@ function QuestMapLogHeaderButton_OnClick(self, button)
 		else
 			CollapseQuestHeader(self.questLogIndex);
 		end
-	else
-		WorldMapZoomOutButton_OnClick();
 	end
 end
 
@@ -766,16 +766,14 @@ function QuestMapLogTitleButton_OnEnter(self)
 		end
 	end
 
-	if ( not IsQuestComplete(self.questID) ) then
-		WorldMapBlobFrame:DrawBlob(self.questID, true);
-	end
+	QuestMapFrame:GetParent():SetHighlightedQuestID(self.questID);
 	
 	GameTooltip:ClearAllPoints();
 	GameTooltip:SetPoint("TOPLEFT", self, "TOPRIGHT", 34, 0);
 	GameTooltip:SetOwner(self, "ANCHOR_PRESERVE");
 	GameTooltip:SetText(title);
 	local tooltipWidth = 20 + max(231, GameTooltipTextLeft1:GetStringWidth());
-	if ( tooltipWidth > UIParent:GetRight() - WorldMapFrame:GetRight() ) then
+	if ( tooltipWidth > UIParent:GetRight() - QuestMapFrame:GetParent():GetRight() ) then
 		GameTooltip:ClearAllPoints();
 		GameTooltip:SetPoint("TOPRIGHT", self, "TOPLEFT", -5, 0);
 		GameTooltip:SetOwner(self, "ANCHOR_PRESERVE");
@@ -892,9 +890,7 @@ function QuestMapLogTitleButton_OnLeave(self)
 		end
 	end
 
-	if ( GetSuperTrackedQuestID() ~= self.questID and not IsQuestComplete(self.questID) ) then
-		WorldMapBlobFrame:DrawBlob(self.questID, false);
-	end
+	QuestMapFrame:GetParent():ClearHighlightedQuestID();
 	GameTooltip:Hide();
 	tooltipButton = nil;
 end
@@ -941,7 +937,8 @@ function QuestMapLog_ShowStoryTooltip(self)
 	local maxWidth = 0;
 	local totalHeight = 0;
 
-	tooltip.Title:SetText(GetMapNameByID(C_Map.GetCurrentMapID()));
+	local mapInfo = C_Map.GetMapInfo(QuestMapFrame:GetParent():GetMapID());
+	tooltip.Title:SetText(mapInfo.name);
 	totalHeight = totalHeight + tooltip.Title:GetHeight();
 	maxWidth = tooltip.Title:GetWidth();
 
@@ -994,7 +991,7 @@ function QuestMapLog_ShowStoryTooltip(self)
 
 	tooltip:ClearAllPoints();
 	local tooltipWidth = max(MIN_STORY_TOOLTIP_WIDTH, maxWidth + 20);
-	if ( tooltipWidth > UIParent:GetRight() - WorldMapFrame:GetRight() ) then
+	if ( tooltipWidth > UIParent:GetRight() - QuestMapFrame:GetParent():GetRight() ) then
 		tooltip:SetPoint("TOPRIGHT", self:GetParent().StoryHeader, "TOPLEFT", -5, 0);
 	else
 		tooltip:SetPoint("TOPLEFT", self:GetParent().StoryHeader, "TOPRIGHT", 27, 0);

@@ -24,3 +24,5 @@ DeathMapDataProvider.xml
 QuestBlobDataProvider.xml
 ScenarioDataProvider.xml
 LandmarkDataProvider.xml
+VignetteDataProvider.xml
+InvasionDataProvider.xml

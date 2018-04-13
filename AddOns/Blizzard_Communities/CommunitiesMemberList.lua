@@ -183,6 +183,7 @@ function CommunitiesMemberListEntryMixin:OnEvent(event, ...)
 		local thisMemberId = self:GetMemberId();
 		if clubId == thisClubId and memberId == thisMemberId then
 			self:UpdateRank(roleId);
+			self:UpdateNameFrame();
 		end
 	elseif event == "CLUB_MEMBER_PRESENCE_UPDATED" then
 		local clubId, memberId, presence = ...;
@@ -190,6 +191,7 @@ function CommunitiesMemberListEntryMixin:OnEvent(event, ...)
 		local thisMemberId = self:GetMemberId();
 		if clubId == thisClubId and memberId == thisMemberId then
 			self:UpdatePresence(presence);
+			self:UpdateNameFrame();
 			self:GetMemberList():Update();
 		end
 	end
@@ -200,32 +202,40 @@ function CommunitiesMemberListEntryMixin:GetMemberList()
 end
 
 function CommunitiesMemberListEntryMixin:UpdateRank(roleId)
-	self.RankIcon:SetPoint("LEFT", self.Name, "RIGHT", self.Name:GetStringWidth() - self.Name:GetWidth(), 0);
-	self.RankIcon:Show();
+	self.NameFrame.RankIcon:Show();
 
 	if roleId == Enum.ClubRoleIdentifier.Owner or roleId == Enum.ClubRoleIdentifier.Leader then
-		self.RankIcon:SetTexture("Interface\\GroupFrame\\UI-Group-LeaderIcon");
+		self.NameFrame.RankIcon:SetTexture("Interface\\GroupFrame\\UI-Group-LeaderIcon");
 	elseif roleId == Enum.ClubRoleIdentifier.Moderator then
-		self.RankIcon:SetTexture("Interface\\GroupFrame\\UI-Group-AssistantIcon");
+		self.NameFrame.RankIcon:SetTexture("Interface\\GroupFrame\\UI-Group-AssistantIcon");
 	else
-		self.RankIcon:Hide();
+		self.NameFrame.RankIcon:Hide();
 	end
 end
 
 function CommunitiesMemberListEntryMixin:UpdatePresence(presence)
-	self.PresenceIcon:Show();
-	self.Name:SetPoint("LEFT", self.PresenceIcon, "RIGHT");
-	self.Name:SetTextColor(BATTLENET_FONT_COLOR:GetRGB());
+	self.NameFrame.PresenceIcon:Show();
+	
+	if self.memberId then
+		local clubId = self:GetMemberList():GetSelectedClubId();
+		local memberInfo = C_Club.GetMemberInfo(clubId, self.memberId);
+		if memberInfo.classID then
+			local classInfo = C_CreatureInfo.GetClassInfo(memberInfo.classID);
+			local color = (classInfo and RAID_CLASS_COLORS[classInfo.classFile]) or NORMAL_FONT_COLOR;
+			self.NameFrame.Name:SetTextColor(color.r, color.g, color.b);
+		else
+			self.NameFrame.Name:SetTextColor(BATTLENET_FONT_COLOR:GetRGB());
+		end
+	end
+	
 	if presence == Enum.ClubMemberPresence.Away then
-		self.PresenceIcon:SetTexture(FRIENDS_TEXTURE_AFK);
+		self.NameFrame.PresenceIcon:SetTexture(FRIENDS_TEXTURE_AFK);
 	elseif presence == Enum.ClubMemberPresence.Busy then
-		self.PresenceIcon:SetTexture(FRIENDS_TEXTURE_DND);
+		self.NameFrame.PresenceIcon:SetTexture(FRIENDS_TEXTURE_DND);
 	else
-		self.PresenceIcon:Hide();
-		self.Name:SetPoint("LEFT", 4, 0);
-		
+		self.NameFrame.PresenceIcon:Hide();
 		if presence == Enum.ClubMemberPresence.Offline then
-			self.Name:SetTextColor(DISABLED_FONT_COLOR:GetRGB());
+			self.NameFrame.Name:SetTextColor(DISABLED_FONT_COLOR:GetRGB());
 		end
 	end
 end
@@ -234,13 +244,15 @@ function CommunitiesMemberListEntryMixin:SetMember(clubId, memberId)
 	self.memberId = memberId;
 	if memberId then
 		local memberInfo = C_Club.GetMemberInfo(clubId, memberId);
-		self.Name:SetText(memberInfo.name);
+		self.NameFrame.Name:SetText(memberInfo.name);
 		self:UpdateRank(memberInfo.role);
 		self:UpdatePresence(memberInfo.presence);
 		self:RefreshExpandedColumns();
+		self:UpdateNameFrame();
 	else
-		self.Name:SetText(nil);
+		self.NameFrame.Name:SetText(nil);
 		self:UpdatePresence(Enum.ClubMemberPresence.Offline);
+		self:UpdateNameFrame();
 	end
 end
 
@@ -250,7 +262,7 @@ end
 
 function CommunitiesMemberListEntryMixin:OnEnter()
 	if self.expanded then
-		if not self.Name:IsTruncated() and not self.Rank:IsTruncated() and not self.Note:IsTruncated() then
+		if not self.NameFrame.Name:IsTruncated() and not self.Rank:IsTruncated() and not self.Note:IsTruncated() and not self.Zone:IsTruncated() then
 			return;
 		end
 	end
@@ -303,7 +315,47 @@ function CommunitiesMemberListEntryMixin:RefreshExpandedColumns()
 	local memberId = self:GetMemberId();
 	if memberId then
 		local clubId = self:GetMemberList():GetSelectedClubId();
+		local clubInfo = C_Club.GetClubInfo(clubId);
 		local memberInfo = C_Club.GetMemberInfo(clubId, memberId);
+		if not clubInfo or not memberInfo then
+			return;
+		end
+		
+		if clubInfo.clubType == Enum.ClubType.BattleNet then
+			self.Level:Hide();
+			self.Class:Hide();
+			self.Zone:Hide();
+			
+			self.Rank:SetSize(75, 0);
+			self.Rank:ClearAllPoints();
+			self.Rank:SetPoint("LEFT", self.NameFrame.Name, "RIGHT", 9, 0);
+		else
+			if memberInfo.level then
+				self.Level:SetText(memberInfo.level);
+			else
+				self.Level:SetText("");
+			end
+			
+			self.Class:Hide();
+			if memberInfo.classID then
+				local classInfo = C_CreatureInfo.GetClassInfo(memberInfo.classID);
+				if classInfo then
+					self.Class:SetTexCoord(unpack(CLASS_ICON_TCOORDS[classInfo.classFile]));
+					self.Class:Show();
+				end
+			end
+			
+			if memberInfo.zone then
+				self.Zone:SetText(memberInfo.zone);
+			else
+				self.Zone:SetText("");
+			end
+			
+			self.Rank:SetSize(75, 0);
+			self.Rank:ClearAllPoints();
+			self.Rank:SetPoint("LEFT", self.Zone, "RIGHT", 10, 0);
+		end
+		
 		local memberRoleId = memberInfo.role;
 		if memberRoleId then
 			self.Rank:SetText(COMMUNITY_MEMBER_ROLE_NAMES[memberRoleId]);
@@ -317,9 +369,34 @@ end
 function CommunitiesMemberListEntryMixin:SetExpanded(expanded)
 	self.expanded = expanded;
 	self:SetWidth(self:GetMemberList():GetWidth());
+	self.Level:SetShown(expanded);
+	self.Class:SetShown(expanded);
+	self.Zone:SetShown(expanded);
 	self.Rank:SetShown(expanded);
 	self.Note:SetShown(expanded);
 	self:RefreshExpandedColumns();
+	self:UpdateNameFrame();
+end
+
+function CommunitiesMemberListEntryMixin:UpdateNameFrame()
+	local nameFrame = self.NameFrame;
+	nameFrame:SetSize(136, 20);
+	nameFrame:ClearAllPoints();
+	if self.Class:IsShown() then -- Character community roster view
+		nameFrame:SetSize(90, 20);
+		nameFrame:SetPoint("LEFT", self.Class, "RIGHT", 12, 0);
+	else
+		nameFrame:SetPoint("LEFT", 4, 0);
+	end
+	
+	if nameFrame.PresenceIcon:IsShown() then
+		nameFrame.Name:SetPoint("LEFT", nameFrame.PresenceIcon, "RIGHT");
+	else
+		nameFrame.Name:SetPoint("LEFT");
+	end
+
+	nameFrame.RankIcon:ClearAllPoints();
+	nameFrame.RankIcon:SetPoint("LEFT", nameFrame.Name, "RIGHT", nameFrame.Name:GetStringWidth() - nameFrame.Name:GetWidth(), 0);
 end
 
 function CommunitiesMemberListDropDown_OnLoad(self)
@@ -427,14 +504,61 @@ local BNET_COLUMN_INFO = {
 	},
 };
 
+local CHARACTER_COLUMN_INFO = {
+	[1] = {
+		title = COMMUNITIES_ROSTER_COLUMN_TITLE_LEVEL,
+		width = 40,
+	},
+	
+	[2] = {
+		title = COMMUNITIES_ROSTER_COLUMN_TITLE_CLASS,
+		width = 30,
+	},
+	
+	[3] = {
+		title = COMMUNITIES_ROSTER_COLUMN_TITLE_NAME,
+		width = 100,
+	},
+	
+	[4] = {
+		title = COMMUNITIES_ROSTER_COLUMN_TITLE_ZONE,
+		width = 100,
+	},
+	
+	[5] = {
+		title = COMMUNITIES_ROSTER_COLUMN_TITLE_RANK,
+		width = 85,
+	},
+	
+	[6] = {
+		title = COMMUNITIES_ROSTER_COLUMN_TITLE_NOTE,
+		width = 0,
+	},
+};
+
 CommunitiesMemberListColumnDisplayMixin = {};
 
 function CommunitiesMemberListColumnDisplayMixin:OnLoad()
 	self.columnHeaders = CreateFramePool("BUTTON", self, "CommunitiesMemberListColumnButtonTemplate");
-	self:LayoutColumns(BNET_COLUMN_INFO);
+end
+
+function CommunitiesMemberListColumnDisplayMixin:OnShow()
+	local communitiesFrame = self:GetParent():GetCommunitiesFrame();
+	local clubId = communitiesFrame:GetSelectedClubId();
+	if clubId then
+		local clubInfo = C_Club.GetClubInfo(clubId);
+		if clubInfo then
+			if clubInfo.clubType == Enum.ClubType.BattleNet then
+				self:LayoutColumns(BNET_COLUMN_INFO);
+			else
+				self:LayoutColumns(CHARACTER_COLUMN_INFO);
+			end
+		end
+	end
 end
 
 function CommunitiesMemberListColumnDisplayMixin:LayoutColumns(columnInfo)
+	self.columnHeaders:ReleaseAll();
 	local previousHeader = nil;
 	for i, info in ipairs(columnInfo) do
 		local header = self.columnHeaders:Acquire();

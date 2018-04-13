@@ -31,3 +31,13 @@ function AzeriteUtil.DoEquippedItemsHaveUnselectedPowers()
 	end
 	return false;
 end
+
+function AzeriteUtil.GetEquippedItemsUnselectedPowersCount()
+	local count = 0; 
+	for equipSlotIndex, itemLocation in AzeriteUtil.EnumerateEquipedAzeriteEmpoweredItems() do
+		if C_AzeriteEmpoweredItem.HasAnyUnselectedPowers(itemLocation) then
+			count = count + 1; 
+		end
+	end
+	return count;
+end

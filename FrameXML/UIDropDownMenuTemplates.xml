@@ -211,7 +211,7 @@
 			<Frame name="$parentBackdrop" setAllPoints="true">
 				<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background-Dark" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
 					<BackgroundInsets>
-						<AbsInset left="11" right="12" top="12" bottom="9"/>
+						<AbsInset left="11" right="11" top="11" bottom="9"/>
 					</BackgroundInsets>
 					<TileSize>
 						<AbsValue val="32"/>
@@ -230,7 +230,7 @@
 						<AbsValue val="16"/>
 					</TileSize>
 					<BackgroundInsets>
-						<AbsInset left="5" right="5" top="5" bottom="4"/>
+						<AbsInset left="5" right="4" top="4" bottom="4"/>
 					</BackgroundInsets>
 				</Backdrop>
 				<Scripts>

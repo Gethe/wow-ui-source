@@ -24,7 +24,7 @@
 
 	<Button name="ChannelButtonBaseTemplate" registerForClicks="LeftButtonUp,RightButtonUp" mixin="ChannelButtonBaseMixin" virtual="true">
 		<Size x="175" y="27"/>
-		<NormalTexture parentKey="NormalTexture" atlas="voicechat-channellist-row-background"/>
+		<NormalTexture parentKey="NormalTexture" atlas="voicechat-channellist-row-background" alphaMode="ADD"/>
 		<HighlightTexture parentKey="HighlightTexture" atlas="voicechat-channellist-row-highlight" alphaMode="ADD"/>
 		<ButtonText parentKey="Text">
 			<Size x="135" y="8"/>
@@ -47,10 +47,9 @@
 		<HighlightTexture parentKey="HighlightTexture" file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD"/>
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture parentKey="Collapsed" atlas="voicechat-channellist-category-minus" hidden="true">
-					<Size x="7" y="7"/>
+				<Texture parentKey="Collapsed" atlas="voicechat-channellist-category-minus" hidden="true" useatlassize="true">
 					<Anchors>
-						<Anchor point="RIGHT" x="-5" y="0"/>
+						<Anchor point="TOPRIGHT" x="-8" y="-6"/>
 					</Anchors>
 				</Texture>
 			</Layer>

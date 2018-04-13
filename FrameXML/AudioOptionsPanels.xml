@@ -721,7 +721,7 @@
 	<Frame name="AudioOptionsVoicePanel" hidden="true" parent="VideoOptionsFramePanelContainer">
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString name="$parentDisplayHeader" text="VOICE_LABEL" inherits="OptionsFontHighlight" justifyH="LEFT" justifyV="TOP">
+				<FontString name="$parentDisplayHeader" text="VOICE_CHAT" inherits="OptionsFontHighlight" justifyH="LEFT" justifyV="TOP">
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
@@ -740,24 +740,43 @@
 					</Anchors>
 				</Texture>
 				<FontString parentKey="ErrorStateMessage" inherits="GameFontRedLarge" text="ERR_VOICE_CHAT_GENERIC_UNABLE_TO_CONNECT" hidden="true">
-					<Size x="600" y="200" />
+					<Size x="600" y="100" />
 					<Anchors>
-						<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="20" y="300" />
+						<Anchor point="BOTTOM" relativePoint="BOTTOM" x="0" y="0" />
 					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame name="$parentOutputDeviceDropdown" parentKey="OutputDeviceDropdown" inherits="OptionsDropdownTemplate">
+				<Size x="160" y="32" />
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.DisplayHeaderUnderline" x="170" y="-26" />
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="GameFontNormalSmall" text="VOICE_CHAT_OUTPUT_DEVICE">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT" x="0" y="3" />
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad function="AudioOptionsVoicePanelOutputDeviceDropDown_OnLoad"/>
+				</Scripts>
+			</Frame>
+
 			<Slider name="$parentVoiceChatVolume" parentKey="VoiceChatVolume" inherits="OptionsSliderTemplate">
 				<Size x="185" y="16" />
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.DisplayHeaderUnderline" x="170" y="-26" />
+					<Anchor point="TOPLEFT" relativeKey="$parent.OutputDeviceDropdown" relativePoint="BOTTOMLEFT" x="18" y="-10" />
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
 						<FontString name="$parentLabel" parentKey="Label" inherits="GameFontNormalSmall" text="VOICE_CHAT_VOLUME">
 							<Anchors>
-								<Anchor point="RIGHT" relativePoint="LEFT" x="-20" y="0"/>
+								<Anchor point="RIGHT" relativePoint="LEFT" x="-17" y="0"/>
 							</Anchors>
 						</FontString>
 					</Layer>
@@ -766,18 +785,37 @@
 					<OnLoad function="AudioOptionsPanelVoiceChatVolumeSlider_OnLoad"/>
 					<OnValueChanged function="AudioOptionsPanelVoiceChatVolumeSlider_OnValueChanged"/>
 				</Scripts>
-			</Slider>
-
+			</Slider>			
+			
+			<Frame name="$parentMicDeviceDropdown" parentKey="MicDeviceDropdown" inherits="OptionsDropdownTemplate">
+				<Size x="160" y="32" />
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.VoiceChatVolume" relativePoint="BOTTOMLEFT" x="-17" y="-60" />
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="GameFontNormalSmall" text="VOICE_CHAT_MIC_DEVICE">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT" x="0" y="3" />
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad function="AudioOptionsVoicePanelMicDeviceDropDown_OnLoad"/>
+				</Scripts>
+			</Frame>
+			
 			<Slider name="$parentVoiceChatMicVolume" parentKey="VoiceChatMicVolume" inherits="OptionsSliderTemplate">
 				<Size x="185" y="16" />
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.VoiceChatVolume" relativePoint="BOTTOMLEFT" x="0" y="-20" />
+					<Anchor point="TOPLEFT" relativeKey="$parent.MicDeviceDropdown" relativePoint="BOTTOMLEFT" x="17" y="-10" />
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
 						<FontString name="$parentLabel" parentKey="Label" inherits="GameFontNormalSmall" text="VOICE_CHAT_MIC_VOLUME">
 							<Anchors>
-								<Anchor point="RIGHT" relativePoint="LEFT" x="-20" y="0"/>
+								<Anchor point="RIGHT" relativePoint="LEFT" x="-17" y="0"/>
 							</Anchors>
 						</FontString>
 					</Layer>
@@ -797,7 +835,7 @@
 					<Layer level="ARTWORK">
 						<FontString name="$parentLabel" parentKey="Label" inherits="GameFontNormalSmall" text="VOICE_CHAT_MIC_SENSITIVITY">
 							<Anchors>
-								<Anchor point="RIGHT" relativePoint="LEFT" x="-20" y="0"/>
+								<Anchor point="RIGHT" relativePoint="LEFT" x="-17" y="0"/>
 							</Anchors>
 						</FontString>
 					</Layer>
@@ -808,54 +846,16 @@
 				</Scripts>
 			</Slider>
 
-			<Frame name="$parentMicDeviceDropdown" parentKey="MicDeviceDropdown" inherits="OptionsDropdownTemplate">
-				<Size x="160" y="32" />
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.VoiceChatMicSensitivity" relativePoint="BOTTOMLEFT" x="-17" y="-16" />
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<FontString name="$parentLabel" inherits="GameFontNormalSmall" text="VOICE_CHAT_MIC_DEVICE">
-							<Anchors>
-								<Anchor point="RIGHT" relativePoint="LEFT" x="-2" y="2" />
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnLoad function="AudioOptionsVoicePanelMicDeviceDropDown_OnLoad"/>
-				</Scripts>
-			</Frame>
-
-			<Frame name="$parentOutputDeviceDropdown" parentKey="OutputDeviceDropdown" inherits="OptionsDropdownTemplate">
-				<Size x="160" y="32" />
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.MicDeviceDropdown" relativePoint="BOTTOMLEFT" x="0" y="-10" />
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<FontString name="$parentLabel" inherits="GameFontNormalSmall" text="VOICE_CHAT_OUTPUT_DEVICE">
-							<Anchors>
-								<Anchor point="RIGHT" relativePoint="LEFT" x="-20" y="0" />
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnLoad function="AudioOptionsVoicePanelOutputDeviceDropDown_OnLoad"/>
-				</Scripts>
-			</Frame>
-
 			<Frame name="$parentTestInputDevice" parentKey="TestInputDevice">
 				<Size x="160" y="32" />
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.OutputDeviceDropdown" relativePoint="BOTTOMLEFT" x="18.0" y="-2.0" />
+					<Anchor point="TOPLEFT" relativeKey="$parent.VoiceChatMicSensitivity" relativePoint="BOTTOMLEFT" x="0" y="-16" />
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
 						<FontString parentKey="Label" inherits="GameFontNormalSmall" text="VOICE_CHAT_TEST_MIC_DEVICE">
 							<Anchors>
-								<Anchor point="RIGHT" relativePoint="LEFT" x="-2" y="2" />
+								<Anchor point="RIGHT" relativePoint="LEFT" x="-17" y="2" />
 							</Anchors>
 						</FontString>
 					</Layer>
@@ -914,7 +914,7 @@
 			<Frame name="$parentChatModeDropdown" parentKey="ChatModeDropdown" inherits="OptionsDropdownTemplate">
 				<Size x="160" y="32" />
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.TestInputDevice" relativePoint="BOTTOMLEFT" x="-143.0" y="-40.0" />
+					<Anchor point="TOPLEFT" relativeKey="$parent.TestInputDevice" relativePoint="BOTTOMLEFT" x="-149" y="-40" />
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
@@ -934,7 +934,7 @@
 					<OnLoad function="AudioOptionsVoicePanelChatModeDropdown_OnLoad"/>
 					<OnEnter>
 						if ( UIDropDownMenu_IsEnabled(self) and self.tooltip ) then
-							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+							GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -17,0);
 							GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
 							GameTooltip:Show();
 						end

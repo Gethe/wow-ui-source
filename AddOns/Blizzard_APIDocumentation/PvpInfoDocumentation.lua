@@ -100,6 +100,20 @@ local PvpInfo =
 			},
 		},
 		{
+			Name = "GetOutdoorPvPWaitTime",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "uiMapID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "pvpWaitTime", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetRandomBGInfo",
 			Type = "Function",
 

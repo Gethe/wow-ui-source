@@ -93,74 +93,10 @@
 		</Layers>
 	</Frame>
 
-	<Frame name="WarfrontResourceTemplate" parentArray="Resources" mixin="WarfrontResourceMixin" virtual="true">
-		<Size x="81" y="19"/>
-		<Layers>
-			<Layer level="ARTWORK">
-				<Texture parentKey="Icon">
-					<Anchors>
-						<Anchor point="CENTER" relativePoint="LEFT" x="9" y="0"/>
-					</Anchors>
-				</Texture>
-				<FontString parentKey="Quantity" inherits="GameFontNormal">
-					<Anchors>
-						<Anchor point="RIGHT" x="-5" y="0"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-			<OnEnter method="OnEnter"/>
-			<OnLeave function="GameTooltip_Hide"/>
-		</Scripts>
-	</Frame>
-
-	<Frame name="WarfrontCommandBar" toplevel="true" parent="UIParent" mixin="WarfrontCommandBarMixin" hidden="true" frameStrata="MEDIUM">
-		<Size x="455" y="51"/>
-		<Anchors>
-			<Anchor point="TOP"/>
-		</Anchors>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture parentKey="Background" atlas="Warfront-Alliance-HUD" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="TOP" x="-1" y="0"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Frames>
-			<Frame parentKey="IronResource" inherits="WarfrontResourceTemplate">
-				<KeyValues>
-					<KeyValue key="resourceType" value="Enum.WarfrontResourceType.Iron" type="global"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="TOPLEFT" x="58" y="-2"/>
-				</Anchors>
-			</Frame>
-			<Frame parentKey="LumberResource" inherits="WarfrontResourceTemplate">
-				<KeyValues>
-					<KeyValue key="resourceType" value="Enum.WarfrontResourceType.Lumber" type="global"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.IronResource" relativePoint="RIGHT" x="5" y="0"/>
-				</Anchors>
-			</Frame>
-			<Frame parentKey="EssenceResource" inherits="WarfrontResourceTemplate">
-				<KeyValues>
-					<KeyValue key="resourceType" value="Enum.WarfrontResourceType.Essence" type="global"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.LumberResource" relativePoint="RIGHT" x="5" y="0"/>					
-				</Anchors>
-			</Frame>			
-		</Frames>
+	<Frame name="WarfrontEventRegister" toplevel="true" secureMixin="WarfrontEventRegisterMixin">
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnEvent method="OnEvent"/>
-			<OnShow method="OnShow"/>
-			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>
 

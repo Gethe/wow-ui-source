@@ -1,6 +1,6 @@
 
 function CommunitiesStreamDropDownMenu_Initialize(self)
-	if (self.streams ~= nil) then
+	if self.streams ~= nil and self:GetCommunitiesFrame():GetSelectedClubId() ~= nil then
 		local info = UIDropDownMenu_CreateInfo();
 		for i, stream in ipairs(self.streams) do
 			info.text = stream.name;
@@ -25,6 +25,11 @@ function CommunitiesStreamDropDownMenu_Initialize(self)
 end
 
 CommunitiesStreamDropDownMixin = {}
+
+function CommunitiesStreamDropDownMixin:OnLoad()
+	UIDropDownMenu_SetWidth(self, 115);
+	self.Text:SetJustifyH("LEFT");
+end
 
 function CommunitiesStreamDropDownMixin:GetCommunitiesFrame()
 	return self:GetParent();
@@ -140,8 +145,12 @@ end
 function CommunitiesAddStreamHighlightFrameMixin:OnClick()
 	local clubId, streamId = C_Cursor.GetCursorCommunitiesStream();
 	if clubId then
-		C_Club.AddClubStreamToChatWindow(clubId, streamId, self.chatFrameIndex);
-		self:GetParent():Reset();
+		local chatFrame = Chat_GetChatFrame(self.chatFrameIndex);
+		if chatFrame then
+			C_Club.AddClubStreamToChatWindow(clubId, streamId, self.chatFrameIndex);
+			ChatFrame_AddChannel(chatFrame, Chat_GetCommunitiesChannelName(clubId, streamId));
+			self:GetParent():Reset();
+		end
 	end
 end
 
@@ -163,6 +172,7 @@ function CommunitiesAddStreamHighlightTab_OnClick(self)
 				local chatFrameName = COMMUNITIES_NAME_AND_STREAM_NAME:format(communityPart, streamPart);
 				local frame, chatFrameIndex = FCF_OpenNewWindow(chatFrameName);
 				C_Club.AddClubStreamToChatWindow(clubId, streamId, chatFrameIndex);
+				ChatFrame_AddChannel(frame, Chat_GetCommunitiesChannelName(clubId, streamId));
 				self:GetParent():Reset();
 			end
 		end

@@ -6,6 +6,7 @@
 
 ## add snippets independent of modules here
 ..\SharedXML\Util.lua
+..\SharedXML\BindingUtil.lua
 ..\SharedXML\FrameUtil.lua
 ..\SharedXML\Pools.lua
 ..\SharedXML\LoopingSoundEffect.lua
@@ -18,6 +19,7 @@
 ..\SharedXML\ManagedLayoutFrame.xml
 ..\SharedXML\BulletPoint.xml
 ..\SharedXML\TransformTree\TransformTree.xml
+..\SharedXML\KeyCommand.lua
 MixinUtil.lua
 
 ## intrinsics
@@ -31,7 +33,7 @@ MixinUtil.lua
 AnimatedStatusBar.xml
 FlowContainer.lua
 FrameLocks.lua
-
+PlayerMovementFrameFader.lua
 
 ..\SharedXML\SoundKitConstants.lua
 Constants.lua
@@ -43,11 +45,13 @@ FontStyles.xml
 ..\SharedXML\PropertyButton.xml
 ..\SharedXML\PropertyFontString.xml
 ..\SharedXML\PropertySlider.xml
+QuestLogOwnerMixin.lua
 
 ObjectAPI\ContinuableContainer.lua
 ObjectAPI\ItemLocation.lua
 ObjectAPI\Item.lua
 ObjectAPI\Spell.lua
+ObjectAPI\PlayerLocation.lua
 
 ## add new modules below here
 WorldFrame.xml

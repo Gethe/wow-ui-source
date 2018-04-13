@@ -1,5 +1,5 @@
 PETACTIONBAR_SLIDETIME = 0.09;
-PETACTIONBAR_YPOS = 98;
+PETACTIONBAR_YPOS = 89;
 PETACTIONBAR_XPOS = 36;
 NUM_PET_ACTION_SLOTS = 10;
 
@@ -114,23 +114,19 @@ function PetActionBarFrame_OnUpdate(self, elapsed)
 		if ( self.mode == "show" ) then
 			yPos = (self.slideTimer/self.timeToSlide) * PETACTIONBAR_YPOS;
 			self:SetPoint("TOPLEFT", self:GetParent(), "BOTTOMLEFT", PETACTIONBAR_XPOS, yPos);
-			self.state = "showing";
 			self:Show();
 		elseif ( self.mode == "hide" ) then
 			yPos = (1 - (self.slideTimer/self.timeToSlide)) * PETACTIONBAR_YPOS;
 			self:SetPoint("TOPLEFT", self:GetParent(), "BOTTOMLEFT", PETACTIONBAR_XPOS, yPos);
-			self.state = "hiding";
 		end
 		self.slideTimer = self.slideTimer + elapsed;
 	else
 		self.completed = 1;
 		if ( self.mode == "show" ) then
 			self:SetPoint("TOPLEFT", self:GetParent(), "BOTTOMLEFT", PETACTIONBAR_XPOS, PETACTIONBAR_YPOS);
-			self.state = "top";
 			--Move the chat frame and edit box up a bit
 		elseif ( self.mode == "hide" ) then
 			self:SetPoint("TOPLEFT", self:GetParent(), "BOTTOMLEFT", PETACTIONBAR_XPOS, 0);
-			self.state = "bottom";
 			self:Hide();
 			--Move the chat frame and edit box back down to original position
 		end

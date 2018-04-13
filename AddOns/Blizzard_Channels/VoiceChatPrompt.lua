@@ -7,7 +7,7 @@ local partyChannelTypeToActivatePrompt =
 local raidChannelTypeToActivatePrompt =
 {
 	[Enum.ChatChannelType.Private_Party] = VOICE_CHAT_PROMPT_CHANNEL_ACTIVATE_RAID,
-	[Enum.ChatChannelType.Public_Party] = VOICE_CHAT_PROMPT_CHANNEL_ACTIVATE_BATTLEGROUND,
+	[Enum.ChatChannelType.Public_Party] = VOICE_CHAT_PROMPT_CHANNEL_ACTIVATE_INSTANCE,
 };
 
 local partyChannelTypeToActivatedNotification =
@@ -19,7 +19,7 @@ local partyChannelTypeToActivatedNotification =
 local raidChannelTypeToActivatedNotification =
 {
 	[Enum.ChatChannelType.Private_Party] = VOICE_CHAT_NOTIFICATION_CHANNEL_ACTIVATED_RAID,
-	[Enum.ChatChannelType.Public_Party] = VOICE_CHAT_NOTIFICATION_CHANNEL_ACTIVATED_BATTLEGROUND,
+	[Enum.ChatChannelType.Public_Party] = VOICE_CHAT_NOTIFICATION_CHANNEL_ACTIVATED_INSTANCE,
 };
 
 function Voice_GetChannelActivatePrompt(channel)
@@ -44,9 +44,9 @@ end
 function Voice_GetCommunicationModeNotification(channel)
 	local commsMode = C_VoiceChat.GetCommunicationMode();
 	if commsMode == Enum.CommunicationMode.PushToTalk then
-		local bindingKey = GetBindingKey("TOGGLE_VOICE_PUSH_TO_TALK", 1);
-		if bindingKey then
-			return VOICE_CHAT_NOTIFICATION_COMMS_MODE_PTT:format(bindingKey);
+		local bindingKeys = C_VoiceChat.GetPushToTalkBinding();
+		if bindingKeys then
+			return VOICE_CHAT_NOTIFICATION_COMMS_MODE_PTT:format(GetBindingText(CreateKeyChordStringFromTable(bindingKeys)));
 		else
 			return VOICE_CHAT_NOTIFICATION_COMMS_MODE_PTT_UNBOUND;
 		end
@@ -115,4 +115,7 @@ function VoiceChatChannelActivatedNotificationMixin:Setup()
 
 	self.Text2:SetTextColor(FRIENDS_GRAY_COLOR:GetRGBA());
 	self.Text2:SetText(Voice_GetCommunicationModeNotification());
+
+	local heightDiff = self.Text2:GetHeight() - 12;
+	self:SetHeight(52 + heightDiff);
 end

@@ -579,7 +579,8 @@ function PlayerFrame_UpdateGroupIndicator()
 end
 
 function PlayerFrameDropDown_OnLoad (self)
-	UIDropDownMenu_Initialize(self, PlayerFrameDropDown_Initialize, "MENU");
+	UIDropDownMenu_SetInitializeFunction(self, PlayerFrameDropDown_Initialize);
+	UIDropDownMenu_SetDisplayMode(self, "MENU");
 end
 
 function PlayerFrameDropDown_Initialize ()

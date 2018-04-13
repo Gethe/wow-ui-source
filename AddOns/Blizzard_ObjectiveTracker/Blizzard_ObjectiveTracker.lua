@@ -720,13 +720,13 @@ function ObjectiveTracker_OnEvent(self, event, ...)
 		ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_SUPER_TRACK_CHANGED, questID);
 		QuestPOI_SelectButtonByQuestID(self.BlocksFrame, questID);
 	elseif ( event == "ZONE_CHANGED" ) then
-		local inMicroDungeon = IsPlayerInMicroDungeon();
-		if ( inMicroDungeon ~= self.inMicroDungeon ) then
+		local lastMapID = C_Map.GetBestMapForUnit("player");
+		if ( lastMapID ~= self.lastMapID ) then
 			if ( not WorldMapFrame:IsShown() and GetCVarBool("questPOI") ) then
 				SetMapToCurrentZone();			-- update the zone to get the right POI numbers for the tracker
 			end
 			SortQuestWatches();
-			self.inMicroDungeon = inMicroDungeon;
+			self.lastMapID = lastMapID;
 		end
 	elseif ( event == "QUEST_AUTOCOMPLETE" ) then
 		local questId = ...;
@@ -756,7 +756,7 @@ function ObjectiveTracker_OnEvent(self, event, ...)
 		end
 		ObjectiveTracker_Update();
 		QuestSuperTracking_ChooseClosestQuest();
-		self.inMicroDungeon = IsPlayerInMicroDungeon();
+		self.lastMapID = C_Map.GetBestMapForUnit("player");
 	elseif ( event == "VARIABLES_LOADED" ) then
 		ObjectiveTracker_Update();
 	end

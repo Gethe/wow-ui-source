@@ -7,7 +7,7 @@
 			<KeyValue key="fixedHeight" value="26" type="number"/>
 
 			<KeyValue key="iconKey" value="Icon" type="string"/>
-			<KeyValue key="fixedIconWidth" value="14" type="number"/>
+			<KeyValue key="fixedIconWidth" value="15" type="number"/>
 			<KeyValue key="fixedIconHeight" value="15" type="number"/>
 			<KeyValue key="iconPushedOffsetX" value="-1" type="number"/>
 			<KeyValue key="iconPushedOffsetY" value="-2" type="number"/>

@@ -1,6 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="Blizzard_MapCanvasDetailLayer.lua"/>
+	<Script file="MapCanvas_ScrollContainerMixin.lua"/>
 	<Script file="Blizzard_MapCanvas.lua"/>
 
 	<Frame name="MapCanvasDetailLayerTemplate" useParentLevel="true" virtual="true" mixin="MapCanvasDetailLayerMixin">

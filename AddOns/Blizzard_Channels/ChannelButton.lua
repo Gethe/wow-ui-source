@@ -7,7 +7,7 @@ end
 function VoiceChatHeadsetMixin:Update(hasVoice, isActive)
 	self:SetShown(hasVoice);
 	if hasVoice then
-		local atlas = isActive and "voicechat-icon-headphone-on" or "voicechat-icon-headphone-off";
+		local atlas = isActive and "voicechat-channellist-icon-headphone-on" or "voicechat-channellist-icon-headphone-off";
 		self:SetNormalAtlas(atlas);
 		self:SetHighlightAtlas(atlas);
 	end
@@ -233,7 +233,7 @@ function ChannelButtonMixin:Update()
 	local selectedChannelID, selectedChannelSupportsText = self:GetChannelList():GetSelectedChannelIDAndSupportsText();
 	self:SetIsSelectedChannel(self:GetChannelID() == selectedChannelID and self:ChannelSupportsText() == selectedChannelSupportsText);
 
-	self.NormalTexture:SetAlpha(0.5);
+	self.NormalTexture:SetAlpha(1);
 
 	local hasVoice = self:ChannelSupportsVoice();
 	local hasText = self:ChannelSupportsText();

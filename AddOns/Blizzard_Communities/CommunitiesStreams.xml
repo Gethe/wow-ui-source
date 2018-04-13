@@ -29,7 +29,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<EditBox parentKey="NameEdit" inherits="InputBoxTemplate" >
+			<EditBox parentKey="NameEdit" inherits="InputBoxTemplate" letters="30">
 				<Size x="260" y="30"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeKey="$parent.NameLabel" x="0" y="0"/>
@@ -49,6 +49,11 @@
 					<KeyValue key="instructions" value="Optional" type="global"/>
 					<KeyValue key="hideCharCount" value="true" type="boolean"/>
 				</KeyValues>
+				<Scripts>
+					<OnLoad>
+						self.EditBox:SetMaxLetters(250);
+					</OnLoad>
+				</Scripts>
 			</ScrollFrame>
 			<Frame parentKey="PermisionsDropDownMenu" inherits="UIDropDownMenuTemplate" mixin="CommunitiesChatPermissionsDropDownMenuMixin">
 				<Anchors>
@@ -124,4 +129,11 @@
 			<OnClick method="OnClick"/>
 		</Scripts>
 	</Button>
+	
+	<Frame name="StreamDropDownMenuTemplate" inherits="UIDropDownMenuTemplate" mixin="CommunitiesStreamDropDownMixin" virtual="true">
+		<Size x="40" y="28"/>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
 </Ui>

@@ -1268,7 +1268,7 @@ function FormatProfession(frame, index)
 		frame.missingHeader:Hide();
 		frame.missingText:Hide();
 		
-		local name, texture, rank, maxRank, numSpells, spelloffset, skillLine, rankModifier, specializationIndex, specializationOffset = GetProfessionInfo(index);
+		local name, texture, rank, maxRank, numSpells, spelloffset, skillLine, rankModifier, specializationIndex, specializationOffset, skillLineName = GetProfessionInfo(index);
 		frame.skillName = name;
 		frame.spellOffset = spelloffset;
 		frame.skillLine = skillLine;
@@ -1279,10 +1279,14 @@ function FormatProfession(frame, index)
 		frame.statusBar:SetValue(rank);
 		
 		local prof_title = "";
-		for i=1,#PROFESSION_RANKS do
-		    local value,title = PROFESSION_RANKS[i][1], PROFESSION_RANKS[i][2]; 
-			if maxRank < value then break end
-			prof_title = title;
+		if (skillLineName) then
+			prof_title = skillLineName;
+		else
+			for i=1,#PROFESSION_RANKS do
+				local value,title = PROFESSION_RANKS[i][1], PROFESSION_RANKS[i][2]; 
+				if maxRank < value then break end
+				prof_title = title;
+			end
 		end
 		frame.rank:SetText(prof_title);
 		
@@ -1361,13 +1365,12 @@ end
 
 
 function SpellBook_UpdateProfTab()
-	local prof1, prof2, arch, fish, cook, firstAid = GetProfessions();
+	local prof1, prof2, arch, fish, cook = GetProfessions();
 	FormatProfession(PrimaryProfession1, prof1);
 	FormatProfession(PrimaryProfession2, prof2);
-	FormatProfession(SecondaryProfession1, arch);
+	FormatProfession(SecondaryProfession1, cook);
 	FormatProfession(SecondaryProfession2, fish);
-	FormatProfession(SecondaryProfession3, cook);
-	FormatProfession(SecondaryProfession4, firstAid);
+	FormatProfession(SecondaryProfession3, arch);
 	SpellBookPage1:SetDesaturated(false);
 	SpellBookPage2:SetDesaturated(false);	
 end

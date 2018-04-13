@@ -17,10 +17,6 @@ function FogOfWarDataProviderMixin:OnRemoved(mapCanvas)
 	self:GetMap():RemoveAllPinsByTemplate("FogOfWarPinTemplate");
 end
 
-function FogOfWarDataProviderMixin:OnMapChanged()
-	self.pin:OnMapChanged();
-end
-
 function FogOfWarDataProviderMixin:RefreshAllData(fromOnShow)
 	self.pin:OnMapChanged();
 end

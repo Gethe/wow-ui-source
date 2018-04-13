@@ -1,38 +1,103 @@
 local VignetteInfo =
 {
-	Name = "VignetteInfo",
+	Name = "Vignette",
 	Type = "System",
 	Namespace = "C_VignetteInfo",
 
 	Functions =
 	{
+		{
+			Name = "FindBestUniqueVignette",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "vignetteGUIDs", Type = "table", InnerType = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "bestUniqueVignetteIndex", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "GetVignetteInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "vignetteGUID", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "vignetteInfo", Type = "VignetteInfo", Nilable = true },
+			},
+		},
+		{
+			Name = "GetVignettePosition",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "vignetteGUID", Type = "string", Nilable = false },
+				{ Name = "uiMapID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "vignettePosition", Type = "table", Mixin = "Vector2DMixin", Nilable = true },
+			},
+		},
+		{
+			Name = "GetVignettes",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "vignetteGUIDs", Type = "table", InnerType = "string", Nilable = false },
+			},
+		},
 	},
 
 	Events =
 	{
 		{
-			Name = "VignetteAdded",
+			Name = "VignetteMinimapUpdated",
 			Type = "Event",
-			LiteralName = "VIGNETTE_ADDED",
+			LiteralName = "VIGNETTE_MINIMAP_UPDATED",
 			Payload =
 			{
-				{ Name = "instanceGUID", Type = "string", Nilable = false },
-				{ Name = "showToast", Type = "bool", Nilable = false },
+				{ Name = "vignetteGUID", Type = "string", Nilable = false },
+				{ Name = "onMinimap", Type = "bool", Nilable = false },
 			},
 		},
 		{
-			Name = "VignetteRemoved",
+			Name = "VignettesUpdated",
 			Type = "Event",
-			LiteralName = "VIGNETTE_REMOVED",
-			Payload =
-			{
-				{ Name = "instanceGUID", Type = "string", Nilable = false },
-			},
+			LiteralName = "VIGNETTES_UPDATED",
 		},
 	},
 
 	Tables =
 	{
+		{
+			Name = "VignetteInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "vignetteGUID", Type = "string", Nilable = false },
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "isDead", Type = "bool", Nilable = false },
+				{ Name = "onWorldMap", Type = "bool", Nilable = false },
+				{ Name = "onMinimap", Type = "bool", Nilable = false },
+				{ Name = "isUnique", Type = "bool", Nilable = false },
+				{ Name = "inFogOfWar", Type = "bool", Nilable = false },
+				{ Name = "atlasName", Type = "string", Nilable = false },
+				{ Name = "hasTooltip", Type = "bool", Nilable = false },
+				{ Name = "vignetteID", Type = "number", Nilable = false },
+			},
+		},
 	},
 };
 

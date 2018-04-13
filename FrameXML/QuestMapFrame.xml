@@ -275,7 +275,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="QuestMapFrame" parent="WorldMapFrame" enableMouse="true" hidden="true">
+	<Frame name="QuestMapFrame" parent="WorldMapFrame" enableMouse="true" mixin="QuestLogMixin" hidden="true">
 		<Size x="287" y="464"/>
 		<Anchors>
 			<Anchor point="TOPLEFT" relativeTo="WorldMapScrollFrame" relativePoint="TOPRIGHT" x="1" y="0"/>

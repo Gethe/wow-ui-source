@@ -4,6 +4,7 @@
 	<Include file="StatusTrackingBarTemplate.xml"/>
 	<Include file="ExpBar.xml"/>
 	<Include file="ReputationBar.xml"/> 
+	<Include file="AzeriteBar.xml"/>
 	<Include file="ArtifactBar.xml"/>
 	<Include file="HonorBar.xml"/>
 	<Include file="StatusTrackingBar.xml"/>

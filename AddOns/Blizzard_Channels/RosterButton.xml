@@ -52,12 +52,12 @@
 		<Frames>
 			<Button parentKey="MuteButton" inherits="RosterMuteButtonTemplate">
 				<Anchors>
-					<Anchor point="RIGHT"/>
+					<Anchor point="RIGHT" x="-12"/>
 				</Anchors>
 			</Button>
 			<Button parentKey="DeafenButton" inherits="RosterDeafenButtonTemplate">
 				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.MuteButton" relativePoint="LEFT" x="-5" y="0"/>
+					<Anchor point="RIGHT" relativeKey="$parent.MuteButton" relativePoint="LEFT" x="-8" y="0"/>
 				</Anchors>
 			</Button>
 		</Frames>
@@ -67,7 +67,7 @@
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
 		</Scripts>
-		<NormalTexture parentKey="NormalTexture" atlas="voicechat-channellist-row-background"/>
+		<NormalTexture parentKey="NormalTexture" atlas="voicechat-channellist-row-background" alphaMode="ADD"/>
 		<HighlightTexture parentKey="HighlightTexture" atlas="voicechat-channellist-row-highlight" alphaMode="ADD"/>
 	</Button>
 </Ui>

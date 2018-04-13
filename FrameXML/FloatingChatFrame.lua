@@ -1020,7 +1020,9 @@ function FCF_UpdateScrollbarAnchors(chatFrame)
 		chatFrame.ScrollBar:ClearAllPoints();
 		chatFrame.ScrollBar:SetPoint("TOPLEFT", chatFrame, "TOPRIGHT", 0, 0);
 
-		if chatFrame.ResizeButton:IsShown() then
+		if chatFrame.ScrollToBottomButton:IsShown() then
+			chatFrame.ScrollBar:SetPoint("BOTTOM", chatFrame.ScrollToBottomButton, "TOP", 0, 0);
+		elseif chatFrame.ResizeButton:IsShown() then
 			chatFrame.ScrollBar:SetPoint("BOTTOM", chatFrame.ResizeButton, "TOP", 0, 0);
 		else
 			chatFrame.ScrollBar:SetPoint("BOTTOMLEFT", chatFrame, "BOTTOMRIGHT", 0, 0);
@@ -1073,12 +1075,25 @@ end
 function FCF_FadeInScrollbar(chatFrame)
 	if chatFrame.ScrollBar and chatFrame.ScrollBar:IsShown() then
 		UIFrameFadeIn(chatFrame.ScrollBar, CHAT_FRAME_FADE_TIME, chatFrame.ScrollBar:GetAlpha(), .6);
+
+		if chatFrame.ScrollToBottomButton then
+			UIFrameFadeIn(chatFrame.ScrollToBottomButton, .1, chatFrame.ScrollToBottomButton:GetAlpha(), 1);
+		end
 	end
 end
 
 function FCF_FadeOutScrollbar(chatFrame)
 	if chatFrame.ScrollBar and chatFrame.ScrollBar:IsShown() then
 		UIFrameFadeOut(chatFrame.ScrollBar, CHAT_FRAME_FADE_OUT_TIME, chatFrame.ScrollBar:GetAlpha(), 0);
+
+		if chatFrame.ScrollToBottomButton then
+			if UIFrameIsFlashing(chatFrame.ScrollToBottomButton.Flash) then
+				UIFrameFadeRemoveFrame(chatFrame.ScrollToBottomButton);
+				chatFrame.ScrollToBottomButton:SetAlpha(1);
+			else
+				UIFrameFadeOut(chatFrame.ScrollToBottomButton, CHAT_FRAME_FADE_OUT_TIME, chatFrame.ScrollToBottomButton:GetAlpha(), 0);
+			end
+		end
 	end
 end
 
@@ -1168,6 +1183,7 @@ function FCF_OnUpdate(elapsed)
 			elseif (chatFrame:IsMouseOver(topOffset, -2, -2, 2) or	--This should be slightly larger than the hit rect insets to give us some wiggle room.
 				(chatFrame.isDocked and QuickJoinToastButton:IsMouseOver()) or
 				(chatFrame.ScrollBar and (chatFrame.ScrollBar:IsDraggingThumb() or chatFrame.ScrollBar:IsMouseOver())) or
+				(chatFrame.ScrollToBottomButton and chatFrame.ScrollToBottomButton:IsMouseOver()) or
 				(chatFrame.buttonFrame:IsMouseOver())) then
 				chatFrame.mouseOutTime = 0;
 				if ( cursorX == LAST_CURSOR_X and cursorY == LAST_CURSOR_Y and not chatFrame.hasBeenFaded ) then

@@ -1,9 +1,5 @@
 MapHighlightDataProviderMixin = CreateFromMixins(MapCanvasDataProviderMixin);
 
-function MapHighlightDataProviderMixin:OnMapChanged()
-	self:RefreshAllData();
-end
-
 function MapHighlightDataProviderMixin:RefreshAllData(fromOnShow)
 	self.pin:Refresh();
 end

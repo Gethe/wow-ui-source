@@ -33,11 +33,12 @@ function StorylineQuestDataProviderMixin:OnEvent(event, ...)
 	end
 end
 
-function StorylineQuestDataProviderMixin:OnMapChanged()
-	self:RefreshAllData();
-end
-
 StorylineQuestPinMixin = CreateFromMixins(MapCanvasPinMixin);
+
+function StorylineQuestPinMixin:OnLoad()
+	self:SetScalingLimits(1, 1.0, 1.2);
+	self:UseFrameLevelType("PIN_FRAME_LEVEL_STORY_LINE");
+end
 
 function StorylineQuestPinMixin:OnAcquired(questID)
 	self.questID = questID;
@@ -53,7 +54,6 @@ function StorylineQuestPinMixin:OnAcquired(questID)
 	self.Below:SetShown(questLineInfo.floorLocation == Enum.QuestLineFloorLocation.Below);
 	self.Above:SetShown(questLineInfo.floorLocation == Enum.QuestLineFloorLocation.Above);
 	self.Texture:SetDesaturated(questLineInfo.floorLocation ~= Enum.QuestLineFloorLocation.Same);
-	self:UseFrameLevelType("PIN_FRAME_LEVEL_STORY_LINE");
 end
 
 function StorylineQuestPinMixin:OnMouseEnter()

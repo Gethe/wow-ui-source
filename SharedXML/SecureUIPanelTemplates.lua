@@ -233,6 +233,101 @@ function ScrollingEdit_OnUpdate(self, elapsed, scrollFrame)
 	end
 end
 
+function FauxScrollFrame_GetChildFrames(frame)
+	local frameName = frame:GetName();
+	if frameName then
+		return _G[ frameName.."ScrollBar" ], _G[ frameName.."ScrollChildFrame" ], _G[ frameName.."ScrollBarScrollUpButton" ], _G[ frameName.."ScrollBarScrollDownButton" ];
+	else
+		return frame.ScrollBar, frame.ScrollChildFrame, frame.ScrollBar.ScrollUpButton, frame.ScrollBar.ScrollDownButton;
+	end
+end
+
+function FauxScrollFrame_Update(frame, numItems, numToDisplay, buttonHeight, button, smallWidth, bigWidth, highlightFrame, smallHighlightWidth, bigHighlightWidth, alwaysShowScrollBar)
+	local scrollBar, scrollChildFrame, scrollUpButton, scrollDownButton = FauxScrollFrame_GetChildFrames(frame);
+	-- If more than one screen full of items then show the scrollbar
+	local showScrollBar;
+	if ( numItems > numToDisplay or alwaysShowScrollBar ) then
+		frame:Show();
+		showScrollBar = 1;
+	else
+		scrollBar:SetValue(0);
+		frame:Hide();
+	end
+	if ( frame:IsShown() ) then
+		local scrollFrameHeight = 0;
+		local scrollChildHeight = 0;
+
+		if ( numItems > 0 ) then
+			scrollFrameHeight = (numItems - numToDisplay) * buttonHeight;
+			scrollChildHeight = numItems * buttonHeight;
+			if ( scrollFrameHeight < 0 ) then
+				scrollFrameHeight = 0;
+			end
+			scrollChildFrame:Show();
+		else
+			scrollChildFrame:Hide();
+		end
+		local maxRange = (numItems - numToDisplay) * buttonHeight;
+		if (maxRange < 0) then
+			maxRange = 0;
+		end
+		scrollBar:SetMinMaxValues(0, maxRange);
+		scrollBar:SetValueStep(buttonHeight);
+		scrollBar:SetStepsPerPage(numToDisplay-1);
+		scrollChildFrame:SetHeight(scrollChildHeight);
+
+		-- Arrow button handling
+		if ( scrollBar:GetValue() == 0 ) then
+			scrollUpButton:Disable();
+		else
+			scrollUpButton:Enable();
+		end
+		if ((scrollBar:GetValue() - scrollFrameHeight) == 0) then
+			scrollDownButton:Disable();
+		else
+			scrollDownButton:Enable();
+		end
+
+		-- Shrink because scrollbar is shown
+		if ( highlightFrame ) then
+			highlightFrame:SetWidth(smallHighlightWidth);
+		end
+		if ( button ) then
+			for i=1, numToDisplay do
+				_G[button..i]:SetWidth(smallWidth);
+			end
+		end
+	else
+		-- Widen because scrollbar is hidden
+		if ( highlightFrame ) then
+			highlightFrame:SetWidth(bigHighlightWidth);
+		end
+		if ( button ) then
+			for i=1, numToDisplay do
+				_G[button..i]:SetWidth(bigWidth);
+			end
+		end
+	end
+	return showScrollBar;
+end
+
+function FauxScrollFrame_OnVerticalScroll(self, value, itemHeight, updateFunction)
+	local scrollbar = FauxScrollFrame_GetChildFrames(self);
+	scrollbar:SetValue(value);
+	self.offset = math.floor((value / itemHeight) + 0.5);
+	if ( updateFunction ) then
+		updateFunction(self);
+	end
+end
+
+function FauxScrollFrame_GetOffset(frame)
+	return frame.offset or 0;
+end
+
+function FauxScrollFrame_SetOffset(frame, offset)
+	frame.offset = offset;
+end
+
 function InputScrollFrame_OnLoad(self)
 	local scrollBar = self.ScrollBar;
 	scrollBar:ClearAllPoints();
@@ -329,4 +424,20 @@ function UIPanelButton_OnEnable(self)
 	self.Left:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
 	self.Middle:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
 	self.Right:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
+end
+
+function SelectionFrameCancelButton_OnClick(self, ...)
+	PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK);
+	local cancelFunction = self:GetParent().OnCancel;
+	if cancelFunction then
+		cancelFunction(self, ...);
+	end
+end
+
+function SelectionFrameOkayButton_OnClick(self, ...)
+	PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK);
+	local okayFunction = self:GetParent().OnOkay;
+	if okayFunction then
+		okayFunction(self, ...);
+	end
 end

@@ -226,7 +226,7 @@ local VoiceChat =
 
 			Returns =
 			{
-				{ Name = "keys", Type = "table", InnerType = "string", Nilable = false },
+				{ Name = "keys", Type = "table", InnerType = "string", Nilable = true },
 			},
 		},
 		{
@@ -488,6 +488,14 @@ local VoiceChat =
 			{
 				{ Name = "shouldDiscoverChannels", Type = "bool", Nilable = false },
 			},
+		},
+		{
+			Name = "ToggleDeafened",
+			Type = "Function",
+		},
+		{
+			Name = "ToggleMuted",
+			Type = "Function",
 		},
 	},
 

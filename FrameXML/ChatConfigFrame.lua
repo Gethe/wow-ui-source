@@ -761,6 +761,7 @@ function ChatConfig_CreateCheckboxes(frame, checkBoxTable, checkBoxTemplate, tit
 		checkBox.type = value.type;
 		checkBoxFontString = _G[checkBoxName.."CheckText"];
 		checkBoxFontString:SetText(text);
+		checkBoxFontString:SetMaxLines(1);
 		check = _G[checkBoxName.."Check"];
 		check.func = value.func;
 		check:SetID(index);
@@ -1553,7 +1554,7 @@ function CreateChatChannelList(self, ...)
 			end
 		end
 		CHAT_CONFIG_CHANNEL_LIST[count] = {};
-		CHAT_CONFIG_CHANNEL_LIST[count].text = channelID.."."..channel;
+		CHAT_CONFIG_CHANNEL_LIST[count].text = channelID.."."..ChatFrame_ResolveChannelName(channel);
 		CHAT_CONFIG_CHANNEL_LIST[count].channelName = channel;
 		CHAT_CONFIG_CHANNEL_LIST[count].type = tag;
 		CHAT_CONFIG_CHANNEL_LIST[count].maxWidth = CHATCONFIG_CHANNELS_MAXWIDTH;

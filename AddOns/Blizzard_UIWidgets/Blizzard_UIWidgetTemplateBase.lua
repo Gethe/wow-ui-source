@@ -28,5 +28,6 @@ UIWidgetBaseTemplateMixin = {}
 
 function UIWidgetBaseTemplateMixin:BaseSetup(widgetInfo)
 	self.orderIndex = widgetInfo.orderIndex;
+	self.widgetTag = widgetInfo.widgetTag;
 	self:Show();
 end

@@ -49,11 +49,13 @@ VoiceActivityNotificationMixin = CreateFromMixins(VoiceActivityNotificationBaseM
 
 function VoiceActivityNotificationMixin:OnLoad()
 	VoiceActivityNotificationBaseMixin.OnLoad(self);
+	self.alertSystem = ChatAlertFrame:AddAutoAnchoredSubSystem(self);
+end
 
-	local alertSystem = ChatAlertFrame:AddAutoAnchoredSubSystem(self);
-
-	-- TODO: Figure out how to make this stable as notifications are recycled...they will probably get reordered and look strange
-	ChatAlertFrame:SetSubSystemAnchorPriority(alertSystem, 20);
+function VoiceActivityNotificationMixin:SetSpeakingEnergy(speakingEnergy)
+	self.VoiceLoudness1:SetShown(speakingEnergy > 0);
+	self.VoiceLoudness2:SetShown(speakingEnergy > 0.5);
+	self.VoiceLoudness3:SetShown(speakingEnergy > 0.8);
 end
 
 function VoiceActivityNotificationMixin:SetPortrait(memberID, channelID)
@@ -69,6 +71,8 @@ function VoiceActivityNotificationMixin:Setup(memberID, channelID)
 	local r, g, b = Voice_GetVoiceChannelNotificationColor(channelID);
 	self.Name:SetText(VOICE_CHAT_CHAT_NOTIFICATION:format(member.name));
 	self.Name:SetVertexColor(r, g, b, 1);
+
+	self:SetSpeakingEnergy(0);
 end
 
 function VoiceActivityNotificationMixin:UpdateSize()

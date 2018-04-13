@@ -4,6 +4,13 @@ function VoiceToggleButtonMixin:OnLoad()
 	PropertyButtonMixin.OnLoad(self);
 end
 
+VoiceToggleButtonAlwaysVisibileMixin = CreateFromMixins(VoiceToggleButtonMixin);
+
+function VoiceToggleButtonAlwaysVisibileMixin:OnLoad()
+	VoiceToggleButtonMixin.OnLoad(self);
+	self:SetVisibilityQueryFunction(function() return true; end);
+end
+
 VoiceToggleButtonOnlyVisibleWhenLoggedInMixin = CreateFromMixins(VoiceToggleButtonMixin);
 
 function VoiceToggleButtonOnlyVisibleWhenLoggedInMixin:OnLoad()
@@ -13,28 +20,30 @@ function VoiceToggleButtonOnlyVisibleWhenLoggedInMixin:OnLoad()
 	self:SetVisibilityQueryFunction(function() return C_VoiceChat.IsLoggedIn(); end);
 end
 
-VoiceToggleMuteMixin = CreateFromMixins(VoiceToggleButtonOnlyVisibleWhenLoggedInMixin);
+VoiceToggleMuteMixin = CreateFromMixins(VoiceToggleButtonAlwaysVisibileMixin);
 
 function VoiceToggleMuteMixin:OnLoad()
-	VoiceToggleButtonOnlyVisibleWhenLoggedInMixin.OnLoad(self);
+	VoiceToggleButtonAlwaysVisibileMixin.OnLoad(self);
 	self:SetAccessorFunction(C_VoiceChat.IsMuted);
 	self:SetMutatorFunction(C_VoiceChat.SetMuted);
-	self:AddStateAtlas(false, "voicechat-icon-mic");
-	self:AddStateAtlas(true, "voicechat-icon-mic-mute");
+	self:AddStateAtlas(false, "chatframe-button-icon-mic-on");
+	self:AddStateAtlas(true, "chatframe-button-icon-mic-off");
+	self:AddStateAtlasFallback("chatframe-button-icon-mic-on");
 	self:AddStateTooltipString(false, VOICE_TOOLTIP_MUTE_MIC);
 	self:AddStateTooltipString(true, VOICE_TOOLTIP_UNMUTE_MIC);
 	self:RegisterStateUpdateEvent("VOICE_CHAT_MUTED_CHANGED");
 	self:UpdateVisibleState();
 end
 
-VoiceToggleDeafenMixin = CreateFromMixins(VoiceToggleButtonOnlyVisibleWhenLoggedInMixin);
+VoiceToggleDeafenMixin = CreateFromMixins(VoiceToggleButtonAlwaysVisibileMixin);
 
 function VoiceToggleDeafenMixin:OnLoad()
-	VoiceToggleButtonOnlyVisibleWhenLoggedInMixin.OnLoad(self);
+	VoiceToggleButtonAlwaysVisibileMixin.OnLoad(self);
 	self:SetAccessorFunction(C_VoiceChat.IsDeafened);
 	self:SetMutatorFunction(C_VoiceChat.SetDeafened);
-	self:AddStateAtlas(false, "voicechat-icon-speaker");
-	self:AddStateAtlas(true, "voicechat-icon-speaker-mute");
+	self:AddStateAtlas(false, "chatframe-button-icon-speaker-on");
+	self:AddStateAtlas(true, "chatframe-button-icon-speaker-off");
+	self:AddStateAtlasFallback("chatframe-button-icon-speaker-on");
 	self:AddStateTooltipString(false, VOICE_TOOLTIP_DEAFEN);
 	self:AddStateTooltipString(true, VOICE_TOOLTIP_UNDEAFEN);
 	self:RegisterStateUpdateEvent("VOICE_CHAT_DEAFENED_CHANGED");

@@ -308,7 +308,7 @@ function AudioOptionsVoicePanel_Refresh(self)
 end
 
 function AudioOptionsVoicePanel_OnLoad(self)
-	self.name = VOICE_LABEL;
+	self.name = VOICE_CHAT;
 	self.options = VoicePanelOptions;
 	self:SetScript("OnEvent", AudioOptionsVoicePanel_OnEvent);
 	BlizzardOptionsPanel_OnLoad(self, AudioOptionsVoicePanel_Okay, AudioOptionsVoicePanel_Cancel, nil, AudioOptionsVoicePanel_Refresh);
@@ -374,7 +374,7 @@ function AudioOptionsVoicePanel_InitializeCommunicationModeUI(self)
 			end
 		end);
 
-		self.PushToTalkKeybindButton:SetPoint("BOTTOMLEFT", self.ChatModeDropdown, "BOTTOMRIGHT", 10, 5);
+		self.PushToTalkKeybindButton:SetPoint("BOTTOMLEFT", self.ChatModeDropdown, "BOTTOMRIGHT", 0, 5);
 		self.PushToTalkKeybindButton:SetWidth(140);
 		self.PushToTalkKeybindButton.selectedHighlight:SetWidth(140);
 
@@ -453,7 +453,7 @@ local function AudioOptionsPanelVoiceChatSlider_BaseOnLoad(self, cvar, getCurren
 	self.Low:Hide();
 	self.High:Hide();
 	self.Text:ClearAllPoints();
-	self.Text:SetPoint("LEFT", self, "RIGHT", 6, 0);
+	self.Text:SetPoint("LEFT", self, "RIGHT", 6, 1);
 
 	local current, defaultValue = GetCVarInfo(cvar);
 	self.defaultValue = defaultValue;
@@ -660,7 +660,7 @@ do
 		local chatModeToText =
 		{
 			[Enum.CommunicationMode.PushToTalk] = PUSH_TO_TALK,
-			[Enum.CommunicationMode.OpenMic] = VOICE_ACTIVATED,
+			[Enum.CommunicationMode.OpenMic] = OPEN_MIC,
 		};
 
 		self.setValueFn = C_VoiceChat.SetCommunicationMode;
@@ -692,14 +692,14 @@ function AudioOptionsVoicePanelChatModeDropdown_Initialize(self)
 	info.tooltipText = OPTION_TOOLTIP_VOICE_TYPE1;
 	UIDropDownMenu_AddButton(info);
 
-	info.text = VOICE_ACTIVATED;
+	info.text = OPEN_MIC;
 	info.value = Enum.CommunicationMode.OpenMic;
 	if info.value == selectedValue then
 		info.checked = 1;
 	else
 		info.checked = nil;
 	end
-	info.tooltipTitle = VOICE_ACTIVATED;
+	info.tooltipTitle = OPEN_MIC
 	info.tooltipText  = OPTION_TOOLTIP_VOICE_TYPE2;
 	UIDropDownMenu_AddButton(info);
 end

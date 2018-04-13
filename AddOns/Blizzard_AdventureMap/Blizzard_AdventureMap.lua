@@ -39,8 +39,8 @@ end
 
 -- Override
 function AdventureMapMixin:OnShow()
-	local continentID = C_AdventureMap.GetContinentInfo();
-	self:SetMapID(continentID);
+	local mapID = C_AdventureMap.GetMapID();
+	self:SetMapID(mapID);
 	self:ClearAreaTableIDAvailableForInsets();
 	MapCanvasMixin.OnShow(self);
 end

@@ -485,7 +485,11 @@ function PlayerTalentFrame_SetExpanded(expanded)
 		PlayerTalentFrameTalentsTRCorner:SetPoint("TOPRIGHT", -134, -2);
 		PlayerTalentFrameTalentsBRCorner:SetPoint("BOTTOMRIGHT", -134, 2);
 		PlayerTalentFrameTalents.PvpTalentFrame:Show();
-		SetUIPanelAttribute(PlayerTalentFrame, "width", PlayerTalentFrame.expandedPanelWidth);
+		if (PlayerTalentFrameTalents.PvpTalentFrame.TalentList:IsShown()) then
+			SetUIPanelAttribute(PlayerTalentFrame, "width", PlayerTalentFrame.superExpandedPanelWidth);
+		else
+			SetUIPanelAttribute(PlayerTalentFrame, "width", PlayerTalentFrame.expandedPanelWidth);
+		end
 	else
 		PlayerTalentFrame:SetWidth(TALENT_FRAME_BASE_WIDTH);
 		PlayerTalentFrameTalentsTRCorner:SetPoint("TOPRIGHT", -3, -2);
@@ -1151,9 +1155,10 @@ function PlayerSpecSpellTemplate_OnEnter(self)
 	local isPet = specFrame.isPet;
 	local sex = isPet and UnitSex("pet") or UnitSex("player");
 	local id = GetSpecializationInfo(shownSpec, nil, isPet, nil, sex);
-    if (not id or not self.spellID) then
+    if (not id or not self.spellID or not GetSpellInfo(self.spellID)) then
 		return;
 	end
+	
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 
 	if (id and SPEC_CORE_ABILITY_TEXT[id]) then
@@ -1167,6 +1172,7 @@ function PlayerSpecSpellTemplate_OnEnter(self)
 			GameTooltip:AddLine(self.extraTooltip);
 		end
 	end
+	
 	self.UpdateTooltip = self.OnEnter;
 	GameTooltip:Show();
 end
@@ -1541,12 +1547,12 @@ local PvpTalentFrameEvents = {
 	"PLAYER_PVP_TALENT_UPDATE",
 	"PLAYER_ENTERING_WORLD",
 	"PLAYER_SPECIALIZATION_CHANGED",
-	"PLAYER_LEVEL_UP",
 	"WAR_MODE_STATUS_UPDATE",
 	"UI_MODEL_SCENE_INFO_UPDATED",
 };
 
 function PvpTalentFrameMixin:OnLoad()
+	self:RegisterEvent("PLAYER_LEVEL_CHANGED");
 	for i, slot in ipairs(self.Slots) do
 		slot:SetUp(i);
 	end
@@ -1565,13 +1571,13 @@ function PvpTalentFrameMixin:OnEvent(event, ...)
 		self:Update();
 	elseif event == "PLAYER_SPECIALIZATION_CHANGED" then
 		self:Update();
-	elseif event == "PLAYER_LEVEL_UP" then
-		self:Update();
 	elseif event == "WAR_MODE_STATUS_UPDATE" then
 		self:Update();
 	elseif event == "UI_MODEL_SCENE_INFO_UPDATED" then
 		local forceUpdate = true;
 		self:UpdateModelScenes(forceUpdate);
+	elseif event == "PLAYER_LEVEL_CHANGED" then
+		self:Update();
 	end
 end
 
@@ -1631,6 +1637,10 @@ function PvpTalentFrameMixin:Update()
 end
 
 function PvpTalentFrameMixin:UpdateModelScenes(forceUpdate)
+	if (self.InvisibleWarmodeButton:GetWarModeDesired() == self.lastKnownDesiredState) then
+		return;
+	end
+
 	if (self.InvisibleWarmodeButton:GetWarModeDesired()) then
 		self:UpdateModelScene(self.OrbModelScene, 108, 1102774, forceUpdate); -- 6AK_Arakkoa_Lamp_Orb_Fel.m2
 		self:UpdateModelScene(self.FireModelScene, 109, 517202, forceUpdate); -- Firelands_Fire_2d.m2
@@ -1638,6 +1648,7 @@ function PvpTalentFrameMixin:UpdateModelScenes(forceUpdate)
 		self.OrbModelScene:Hide();
 		self.FireModelScene:Hide();
 	end
+	self.lastKnownDesiredState = self.InvisibleWarmodeButton:GetWarModeDesired();
 end
 
 function PvpTalentFrameMixin:SelectSlot(slot)

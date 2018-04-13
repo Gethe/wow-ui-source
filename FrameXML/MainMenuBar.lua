@@ -31,15 +31,21 @@ function MainMenuBarMixin:OnShow()
 end
 
 function MainMenuBarMixin:SetPositionForStatusBars()
-
-	MainMenuBarArtFrameBackground:ClearAllPoints();
-	
+	MainMenuBar:ClearAllPoints(); 
+	MainMenuBarArtFrame.LeftEndCap:ClearAllPoints(); 
+	MainMenuBarArtFrame.RightEndCap:ClearAllPoints(); 
 	if ( StatusTrackingBarManager:GetNumberVisibleBars() == 2 ) then 
-		MainMenuBarArtFrameBackground:SetPoint("BOTTOM", MainMenuBar, "BOTTOM", 0, 17);
+		MainMenuBar:SetPoint("BOTTOM", MainMenuBar:GetParent(), 0, 17);
+		MainMenuBarArtFrame.LeftEndCap:SetPoint("BOTTOMLEFT", MainMenuBar, -98, -17); 
+		MainMenuBarArtFrame.RightEndCap:SetPoint("BOTTOMRIGHT", MainMenuBar, 98, -17); 
 	elseif ( StatusTrackingBarManager:GetNumberVisibleBars() == 1 ) then
-		MainMenuBarArtFrameBackground:SetPoint("BOTTOM", MainMenuBar, "BOTTOM", 0, 13);
+		MainMenuBar:SetPoint("BOTTOM", MainMenuBar:GetParent(), 0, 14);
+		MainMenuBarArtFrame.LeftEndCap:SetPoint("BOTTOMLEFT", MainMenuBar, -98, -14); 
+		MainMenuBarArtFrame.RightEndCap:SetPoint("BOTTOMRIGHT", MainMenuBar, 98, -14); 
 	else 
-		MainMenuBarArtFrameBackground:SetPoint("BOTTOM", MainMenuBar, "BOTTOM", 0, 0);
+		MainMenuBar:SetPoint("BOTTOM", MainMenuBar:GetParent(), 0, 0);
+		MainMenuBarArtFrame.LeftEndCap:SetPoint("BOTTOMLEFT", MainMenuBar, -98, 0); 
+		MainMenuBarArtFrame.RightEndCap:SetPoint("BOTTOMRIGHT", MainMenuBar, 98, 0); 
 	end
 	if ( IsPlayerInWorld() ) then
 		UIParent_ManageFramePositions();
@@ -95,6 +101,7 @@ function MainMenuBarMixin:OnEvent(event, ...)
 			StatusTrackingBarManager:AddBarFromTemplate("FRAME", "HonorStatusBarTemplate");
 			StatusTrackingBarManager:AddBarFromTemplate("FRAME", "ArtifactStatusBarTemplate");
 			StatusTrackingBarManager:AddBarFromTemplate("FRAME", "ExpStatusBarTemplate");
+			StatusTrackingBarManager:AddBarFromTemplate("FRAME", "AzeriteBarTemplate"); 
 			UIParent_ManageFramePositions();
 		end
 	elseif ( event == "TRIAL_STATUS_UPDATE" ) then

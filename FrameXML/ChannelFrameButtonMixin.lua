@@ -15,7 +15,7 @@ function ChannelFrameButtonMixin:OnLoad()
 	self:SetAccessorFunction(HasActiveChannel);
 	self:SetMutatorFunction(ToggleChannelFrame);
 	self:AddStateAtlas(false, "chatframe-button-icon-voicechat");
-	self:AddStateAtlas(true, "voicechat-icon-headphone-on");
+	self:AddStateAtlas(true, "chatframe-button-icon-headset");
 	self:RegisterStateUpdateEvent("VOICE_CHAT_CHANNEL_ACTIVATED");
 	self:RegisterStateUpdateEvent("VOICE_CHAT_CHANNEL_DEACTIVATED");
 	self:UpdateVisibleState();

@@ -1,13 +1,5 @@
 MapOverlaysDataProviderMixin = CreateFromMixins(MapCanvasDataProviderMixin);
 
-function MapOverlaysDataProviderMixin:OnMapChanged()
-	self:RefreshAllData();
-end
-
-function MapOverlaysDataProviderMixin:RefreshAllData(fromOnShow)
-	self.pin:RefreshOverlays();
-end
-
 function MapOverlaysDataProviderMixin:OnAdded(mapCanvas)
 	MapCanvasDataProviderMixin.OnAdded(self, mapCanvas);
 	-- a single permanent pin
@@ -21,12 +13,38 @@ function MapOverlaysDataProviderMixin:OnRemoved(mapCanvas)
 	self:GetMap():RemoveAllPinsByTemplate("MapOverlaysPinTemplate");
 end
 
+function MapOverlaysDataProviderMixin:OnShow()
+	self:RegisterEvent("MAP_OVERLAYS_UPDATED");
+end
+
+function MapOverlaysDataProviderMixin:OnHide()
+	self:UnregisterEvent("MAP_OVERLAYS_UPDATED");
+end
+
+function MapOverlaysDataProviderMixin:OnEvent(event, ...)
+	if event == "MAP_OVERLAYS_UPDATED" then
+		self:RefreshAllData();
+	end
+end
+
+function MapOverlaysDataProviderMixin:RemoveAllData()
+	self.pin:RemoveAllData();
+end
+
+function MapOverlaysDataProviderMixin:RefreshAllData(fromOnShow)
+	self.pin:RefreshOverlays();
+end
+
 --[[ THE Pin ]]--
 MapOverlaysPinMixin = CreateFromMixins(MapCanvasPinMixin);
 
 function MapOverlaysPinMixin:OnLoad()
 	self:UseFrameLevelType("PIN_FRAME_LEVEL_MAP_OVERLAY");
 	self.overlayTexturePool = CreateTexturePool(self, "ARTWORK", 0);
+end
+
+function MapOverlaysPinMixin:RemoveAllData()
+	self.overlayTexturePool:ReleaseAll();
 end
 
 function MapOverlaysPinMixin:OnUpdate(elapsed)
@@ -36,13 +54,13 @@ function MapOverlaysPinMixin:OnUpdate(elapsed)
 end
 
 function MapOverlaysPinMixin:RefreshOverlays()
-	self.overlayTexturePool:ReleaseAll();
+	self:RemoveAllData();
 	self.mouseOverHighlights = { };
 
 	local TILE_SIZE = 256;
 
 	for i = 1, GetNumMapOverlays() do
-		local textureWidth, textureHeight, offsetX, offsetY, isShownByMouseOver, textureInfo  = GetMapOverlayInfo(i);
+		local textureWidth, textureHeight, offsetX, offsetY, isShownByMouseOver, textureInfo = GetMapOverlayInfo(i);
 		if ( textureInfo ) then
 			local numTexturesWide = ceil(textureWidth/TILE_SIZE);
 			local numTexturesTall = ceil(textureHeight/TILE_SIZE);

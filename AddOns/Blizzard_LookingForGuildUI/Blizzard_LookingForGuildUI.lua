@@ -338,6 +338,13 @@ end
 
 function LookingForGuildGuild_ShowTooltip(self)
 	local name = GetRecruitingGuildInfo(self.index);
+	if not name then
+		-- We haven't loaded recruitment data yet, just skip the tooltip.
+		-- This only happens if you open the guild finder, go to the browse frame, join a guild, quit the guild, and then
+		-- open the guild finder frame again with your mouse over where a recruitment button is.
+		return;
+	end
+	
 	local bQuest, bDungeon, bRaid, bPvP, bRP, bWeekdays, bWeekends, bTank, bHealer, bDamage = GetRecruitingGuildSettings(self.index);
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip:SetText(name);

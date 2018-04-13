@@ -204,7 +204,38 @@
 			</EditBox>
 		</ScrollChild>
 	</ScrollFrame>
-	
+	<ScrollFrame name="FauxScrollFrameTemplate" inherits="UIPanelScrollFrameTemplate" virtual="true">
+		<Scripts>
+			<OnScrollRangeChanged function=""/>
+		</Scripts>
+		<ScrollChild>
+			<Frame name="$parentScrollChildFrame" parentKey="ScrollChildFrame">
+				<Size x="300" y="334"/>
+			</Frame>
+		</ScrollChild>
+	</ScrollFrame>
+	<ScrollFrame name="ListScrollFrameTemplate" inherits="FauxScrollFrameTemplate" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="ScrollBarTop" name="$parentTop" atlas="macropopup-scrollbar-top" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-2" y="5"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="ScrollBarBottom" name="$parentBottom" atlas="macropopup-scrollbar-bottom" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-2" y="-2"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentMiddle" atlas="!macropopup-scrollbar-middle" vertTile="true" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parentTop" relativePoint="BOTTOM"/>
+						<Anchor point="BOTTOM" relativeTo="$parentBottom" relativePoint="TOP"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</ScrollFrame>
 	<Button name="UIPanelButtonNoTooltipTemplate" virtual="true">
 		<Size x="40" y="22"/>
 		<Layers>
@@ -249,4 +280,80 @@
 		<DisabledFont style="GameFontDisable"/>
 		<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
 	</Button>
+	<Frame name="SelectionFrameTemplate" virtual="true">
+		<KeyValues>
+			<!--
+			<KeyValue key="OnOkay" value="FooFrame_OnOkay" type="global"/>
+			<KeyValue key="OnCancel" value="FooFrame_OnCancel" type="global"/>
+			-->
+		</KeyValues>
+		<Layers>
+			<Layer level="BORDER">
+				<Texture parentKey="TopLeft" atlas="macropopup-topleft" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="TopRight" atlas="macropopup-topright" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture atlas="_macropopup-top" horizTile="true" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.TopLeft" relativePoint="TOPRIGHT" x="0" y="0"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.TopRight" relativePoint="TOPLEFT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BottomLeft" atlas="macropopup-bottomleft" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BottomRight" atlas="macropopup-bottomright" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture atlas="_macropopup-bottom" horizTile="true" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.BottomLeft" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomRight" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture atlas="!macropopup-left" vertTile="true" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.TopLeft" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.BottomLeft" relativePoint="TOPLEFT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture atlas="!macropopup-right" vertTile="true" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.TopRight" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomRight" relativePoint="TOPRIGHT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="CancelButton" inherits="UIPanelButtonNoTooltipTemplate" text="CANCEL">
+				<Size x="78" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-11" y="13"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="SelectionFrameCancelButton_OnClick"/>
+				</Scripts>
+			</Button>
+			<Button parentKey="OkayButton" inherits="UIPanelButtonNoTooltipTemplate" text="OKAY">
+				<Size x="78" y="22"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.CancelButton" relativePoint="LEFT" x="-2" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="SelectionFrameOkayButton_OnClick"/>
+				</Scripts>
+			</Button>
+		</Frames>
+	</Frame>
 </Ui>

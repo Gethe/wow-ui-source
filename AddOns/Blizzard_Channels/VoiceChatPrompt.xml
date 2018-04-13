@@ -13,10 +13,9 @@
 					</Anchors>
 				</Texture>
 				<FontString parentKey="Text" inherits="FriendsFont_Normal" justifyH="LEFT" justifyV="MIDDLE">
-					<Size x="0" y="0"/>
+					<Size x="180"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="6" y="5"/>
-						<Anchor point="RIGHT" x="-25" y="0"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -42,14 +41,13 @@
 	</ContainedAlertFrame>
 
 	<ContainedAlertFrame name="VoiceChatChannelActivatedNotification" mixin="VoiceChatChannelActivatedNotificationMixin" inherits="VoiceChatPromptTemplate">
-		<Size x="250" y="48"/>
+		<Size x="250" y="52"/>
 		<Layers>
 			<Layer level="BORDER">
 				<FontString parentKey="Text2" inherits="FriendsFont_Normal" justifyH="LEFT" justifyV="MIDDLE">
-					<Size x="0" y="0"/>
+					<Size x="180"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Text" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
-						<Anchor point="TOPRIGHT" relativeKey="$parent.Text" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Text" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
 					</Anchors>
 				</FontString>
 			</Layer>

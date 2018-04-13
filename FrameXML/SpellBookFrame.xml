@@ -1262,18 +1262,18 @@
 					</Frame>
 					<Frame name="SecondaryProfession1" inherits="SecondaryProfessionTemplate">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="PrimaryProfession2" relativePoint="BOTTOMLEFT" x="0" y="-22"/>
+							<Anchor point="TOPLEFT" relativeTo="PrimaryProfession2" relativePoint="BOTTOMLEFT" x="0" y="-40"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								self.missingHeader:SetText(PROFESSIONS_ARCHAEOLOGY);
-								self.missingText:SetText(PROFESSIONS_ARCHAEOLOGY_MISSING);
+								self.missingHeader:SetText(PROFESSIONS_COOKING);
+								self.missingText:SetText(PROFESSIONS_COOKING_MISSING);
 							</OnLoad>
 						</Scripts>
 					</Frame>
 					<Frame name="SecondaryProfession2" inherits="SecondaryProfessionTemplate">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="SecondaryProfession1" relativePoint="BOTTOMLEFT" x="0" y="-11"/>
+							<Anchor point="TOPLEFT" relativeTo="SecondaryProfession1" relativePoint="BOTTOMLEFT" x="0" y="-30"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
@@ -1284,23 +1284,12 @@
 					</Frame>
 					<Frame name="SecondaryProfession3" inherits="SecondaryProfessionTemplate">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="SecondaryProfession2" relativePoint="BOTTOMLEFT" x="0" y="-11"/>
+							<Anchor point="TOPLEFT" relativeTo="SecondaryProfession2" relativePoint="BOTTOMLEFT" x="0" y="-30"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								self.missingHeader:SetText(PROFESSIONS_COOKING);
-								self.missingText:SetText(PROFESSIONS_COOKING_MISSING);
-							</OnLoad>
-						</Scripts>
-					</Frame>
-					<Frame name="SecondaryProfession4" inherits="SecondaryProfessionTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="SecondaryProfession3" relativePoint="BOTTOMLEFT" x="0" y="-11"/>
-						</Anchors>
-						<Scripts>
-							<OnLoad>
-								self.missingHeader:SetText(PROFESSIONS_FIRST_AID);
-								self.missingText:SetText(PROFESSIONS_FIRST_AID_MISSING);
+								self.missingHeader:SetText(PROFESSIONS_ARCHAEOLOGY);
+								self.missingText:SetText(PROFESSIONS_ARCHAEOLOGY_MISSING);
 							</OnLoad>
 						</Scripts>
 					</Frame>

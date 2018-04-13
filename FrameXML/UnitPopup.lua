@@ -80,6 +80,7 @@ UnitPopupButtons = {
 	["REPORT_PLAYER"] = { text = REPORT_PLAYER_FOR, dist = 0, nested = 1 },
 	["REPORT_SPAM"]	= { text = REPORT_SPAMMING, dist = 0 },
 	["REPORT_BAD_LANGUAGE"] = { text = REPORT_BAD_LANGUAGE, dist = 0},
+	["REPORT_BAD_LANGUAGE_VOICE"] = { text = REPORT_BAD_LANGUAGE_VOICE, dist = 0},
 	["REPORT_BAD_NAME"] = { text = REPORT_BAD_NAME, dist = 0 },
 	["REPORT_BAD_GUILD_NAME"] = { text = REPORT_BAD_GUILD_NAME, dist = 0 },
 	["REPORT_CHEATING"] = { text = REPORT_CHEATING, dist = 0 },
@@ -197,7 +198,7 @@ UnitPopupButtons = {
 	["VOICE_CHAT_MICROPHONE_VOLUME"] = { customFrame = UnitPopupVoiceMicrophoneVolume, dist = 0, },
 	["VOICE_CHAT_SPEAKER_VOLUME"] = { customFrame = UnitPopupVoiceSpeakerVolume, dist = 0, },
 	["VOICE_CHAT_USER_VOLUME"] = { customFrame = UnitPopupVoiceUserVolume, dist = 0, },
-	["VOICE_CHAT_COMMUNICATIONS_MODE_OPEN_MIC"] = { text = VOICE_ACTIVATED, dist = 0, checkable = 1, },
+	["VOICE_CHAT_COMMUNICATIONS_MODE_OPEN_MIC"] = { text = OPEN_MIC, dist = 0, checkable = 1, },
 	["VOICE_CHAT_COMMUNICATIONS_MODE_PUSH_TO_TALK"] = { text = PUSH_TO_TALK, dist = 0, checkable = 1, },
 	["VOICE_CHAT_SETTINGS"] = { text = VOICE_CHAT_SETTINGS, dist = 0, },
 };
@@ -221,7 +222,7 @@ UnitPopupMenus = {
 	["GUILD_OFFLINE"] = { "GUILD_BATTLETAG_FRIEND", "INTERACT_SUBSECTION_TITLE", "GUILD_PROMOTE", "OTHER_SUBSECTION_TITLE", "IGNORE", "GUILD_LEAVE", "CANCEL" },
 	["RAID_TARGET_ICON"] = { "RAID_TARGET_8", "RAID_TARGET_7", "RAID_TARGET_6", "RAID_TARGET_5", "RAID_TARGET_4", "RAID_TARGET_3", "RAID_TARGET_2", "RAID_TARGET_1", "RAID_TARGET_NONE" },
 	["SELECT_ROLE"] = { "SET_ROLE_TANK", "SET_ROLE_HEALER", "SET_ROLE_DAMAGER", "SET_ROLE_NONE" },
-	["CHAT_ROSTER"] = { "VOICE_CHAT_MICROPHONE_VOLUME", "VOICE_CHAT_SPEAKER_VOLUME", "VOICE_CHAT_USER_VOLUME", "SUBSECTION_SEPARATOR", "VOICE_CHAT_COMMUNICATIONS_MODE_OPEN_MIC", "VOICE_CHAT_COMMUNICATIONS_MODE_PUSH_TO_TALK", "SUBSECTION_SEPARATOR", "INTERACT_SUBSECTION_TITLE", "TARGET", "WHISPER", "CHAT_OWNER", "CHAT_PROMOTE", "CHAT_DEMOTE", "SUBSECTION_SEPARATOR", "VOICE_CHAT_SETTINGS", "CLOSE" },
+	["CHAT_ROSTER"] = { "VOICE_CHAT_MICROPHONE_VOLUME", "VOICE_CHAT_SPEAKER_VOLUME", "VOICE_CHAT_USER_VOLUME", "SUBSECTION_SEPARATOR", "VOICE_CHAT_COMMUNICATIONS_MODE_OPEN_MIC", "VOICE_CHAT_COMMUNICATIONS_MODE_PUSH_TO_TALK", "SUBSECTION_SEPARATOR", "INTERACT_SUBSECTION_TITLE", "TARGET", "WHISPER", "CHAT_OWNER", "CHAT_PROMOTE", "CHAT_DEMOTE", "SUBSECTION_SEPARATOR", "OTHER_SUBSECTION_TITLE", "REPORT_PLAYER", "VOICE_CHAT_SETTINGS", "CLOSE" },
 	["VEHICLE"] = { "RAID_TARGET_ICON", "SET_FOCUS", "OTHER_SUBSECTION_TITLE", "VEHICLE_LEAVE", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "CANCEL" },
 	["TARGET"] = { "RAID_TARGET_ICON", "SET_FOCUS", "ADD_FRIEND", "ADD_FRIEND_MENU", "OTHER_SUBSECTION_TITLE", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "CANCEL" },
 	["ARENAENEMY"] = { "SET_FOCUS", "OTHER_SUBSECTION_TITLE", "CANCEL" },
@@ -236,7 +237,7 @@ UnitPopupMenus = {
 	["LOOT_THRESHOLD"] = { "ITEM_QUALITY2_DESC", "ITEM_QUALITY3_DESC", "ITEM_QUALITY4_DESC", "CANCEL" },
 	["SELECT_LOOT_SPECIALIZATION"] = { "LOOT_SPECIALIZATION_DEFAULT","LOOT_SPECIALIZATION_SPEC1", "LOOT_SPECIALIZATION_SPEC2", "LOOT_SPECIALIZATION_SPEC3", "LOOT_SPECIALIZATION_SPEC4"},
 	["OPT_OUT_LOOT_TITLE"] = { "OPT_OUT_LOOT_ENABLE", "OPT_OUT_LOOT_DISABLE"},
-	["REPORT_PLAYER"] = { "REPORT_SPAM", "REPORT_BAD_LANGUAGE", "REPORT_BAD_NAME", "REPORT_BAD_GUILD_NAME", "REPORT_CHEATING" },
+	["REPORT_PLAYER"] = { "REPORT_SPAM", "REPORT_BAD_LANGUAGE", "REPORT_BAD_LANGUAGE_VOICE", "REPORT_BAD_NAME", "REPORT_BAD_GUILD_NAME", "REPORT_CHEATING" },
 	["DUNGEON_DIFFICULTY"] = { "DUNGEON_DIFFICULTY1", "DUNGEON_DIFFICULTY2", "DUNGEON_DIFFICULTY3" },
 	["RAID_DIFFICULTY"] = { "RAID_DIFFICULTY1", "RAID_DIFFICULTY2", "RAID_DIFFICULTY3", "LEGACY_RAID_SUBSECTION_TITLE", "LEGACY_RAID_DIFFICULTY1", "LEGACY_RAID_DIFFICULTY2" },
 	["BN_REPORT"] = { "BN_REPORT_NAME" },
@@ -739,6 +740,43 @@ function UnitPopup_AddDropDownButton (info, dropdownMenu, cntButton, buttonIndex
 	UIDropDownMenu_AddButton(info, level);
 end
 
+local function UnitPopup_GetGUID(menu)
+	if menu.unit then
+		return UnitGUID(menu.unit);
+	elseif type(menu.userData) == "table" and menu.userData.guid then
+		return menu.userData.guid;
+	end
+end
+
+local function UnitPopup_TryCreatePlayerLocation(menu, guid)
+	if menu.battlefieldScoreIndex then
+		return PlayerLocation:CreateFromBattlefieldScoreIndex(menu.battlefieldScoreIndex);
+	elseif menu.lineID then
+		return PlayerLocation:CreateFromChatLineID(menu.lineID);
+	elseif menu.unit then
+		return PlayerLocation:CreateFromUnit(menu.unit);
+	elseif guid then
+		return PlayerLocation:CreateFromGUID(guid);
+	end
+
+	return nil;
+end
+
+local function UnitPopup_HasBattleTag()
+	if BNFeaturesEnabledAndConnected() then
+		local _, battleTag = BNGetInfo();
+		if battleTag then
+			return true;
+		end
+	end
+end
+
+local function UnitPopup_GetLFGCategoryForLFGSlot(lfgSlot)
+	if lfgSlot then
+		return GetLFGCategoryForID(lfgSlot);
+	end
+end
+
 function UnitPopup_HideButtons ()
 	local dropdownMenu = UIDROPDOWNMENU_INIT_MENU;
 	local inInstance, instanceType = IsInInstance();
@@ -752,24 +790,12 @@ function UnitPopup_HideButtons ()
 	local isPlayer = dropdownMenu.unit and UnitIsPlayer(dropdownMenu.unit);
 	local isLocalPlayer = dropdownMenu.isLocalPlayer;
 	local partyLFGSlot = GetPartyLFGID();
-	local guid;
-	if ( dropdownMenu.unit ) then
-		guid = UnitGUID(dropdownMenu.unit);
-	elseif ( type(dropdownMenu.userData) == "table" and dropdownMenu.userData.guid ) then
-		guid = dropdownMenu.userData.guid;
-	end
-	local partyLFGCategory = nil;
-	if ( partyLFGSlot ) then
-		partyLFGCategory = GetLFGCategoryForID(partyLFGSlot);
-	end
+	local partyLFGCategory = UnitPopup_GetLFGCategoryForLFGSlot(partyLFGSlot);
+	local guid = UnitPopup_GetGUID(dropdownMenu);
+	local playerLocation = UnitPopup_TryCreatePlayerLocation(dropdownMenu, guid);
+	local haveBattleTag = UnitPopup_HasBattleTag();
 
-	local haveBattleTag;
-	if ( BNFeaturesEnabledAndConnected() ) then
-		local _, battleTag = BNGetInfo();
-		if ( battleTag ) then
-			haveBattleTag = true;
-		end
-	end
+	dropdownMenu.playerLocation = playerLocation;
 
 	for index, value in ipairs(UnitPopupMenus[UIDROPDOWNMENU_MENU_VALUE] or UnitPopupMenus[dropdownMenu.which]) do
 		UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 1;
@@ -901,16 +927,19 @@ function UnitPopup_HideButtons ()
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "REPORT_PLAYER" ) then
-			if ( (not isPlayer) and (not dropdownMenu.battlefieldScoreIndex) and
-				(not dropdownMenu.lineID or not CanComplainChat(dropdownMenu.lineID)) ) then
+			if not playerLocation or not C_ChatInfo.CanReportPlayer(playerLocation) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "REPORT_SPAM" ) then
-			if ( not dropdownMenu.lineID or not CanComplainChat(dropdownMenu.lineID) ) then
+			if not playerLocation or not playerLocation:IsChatLineID() then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "REPORT_BAD_LANGUAGE" ) then
-			if ( not dropdownMenu.lineID or not CanComplainChat(dropdownMenu.lineID) ) then
+			if not playerLocation or not playerLocation:IsChatLineID() then
+				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
+			end
+		elseif ( value == "REPORT_BAD_LANGUAGE_VOICE" ) then
+			if not playerLocation then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "POP_OUT_CHAT" ) then
@@ -1518,37 +1547,14 @@ function UnitPopup_OnClick (self)
 	elseif ( button == "IGNORE" ) then
 		AddOrDelIgnore(fullname);
 	elseif ( button == "REPORT_SPAM" ) then
-		local dialog = StaticPopup_Show("CONFIRM_REPORT_SPAM_CHAT", fullname);
-		if ( dialog ) then
-			dialog.data = dropdownFrame.unit or tonumber(dropdownFrame.lineID);
-		end
+		StaticPopup_Show("CONFIRM_REPORT_SPAM_CHAT", fullname, nil, dropdownFrame.playerLocation);
 	elseif ( button == "REPORT_BAD_LANGUAGE" ) then
-		local dialog = StaticPopup_Show("CONFIRM_REPORT_BAD_LANGUAGE_CHAT", fullname);
-		if ( dialog ) then
-			dialog.data = dropdownFrame.unit or tonumber(dropdownFrame.lineID);
-		end
+		StaticPopup_Show("CONFIRM_REPORT_BAD_LANGUAGE_CHAT", fullname, nil, dropdownFrame.playerLocation);
+	elseif ( button == "REPORT_BAD_LANGUAGE_VOICE" ) then
+		StaticPopup_Show("CONFIRM_REPORT_BAD_LANGUAGE_VOICE", fullname, nil, dropdownFrame.playerLocation);
 	elseif ( button == "REPORT_BAD_NAME" or button == "REPORT_BAD_GUILD_NAME" ) then
-		if ( GMEuropaComplaintsEnabled() and not GMQuickTicketSystemThrottled() ) then
-			local target = "pending";
-			if (dropdownFrame.unit) then
-				SetPendingReportTarget(dropdownFrame.unit);
-			elseif (tonumber(dropdownFrame.lineID)) then
-				target = tonumber(dropdownFrame.lineID);
-			elseif (dropdownFrame.battlefieldScoreIndex) then
-				BattlefieldSetPendingReportTarget(dropdownFrame.battlefieldScoreIndex);
-			end
-
-			local reportType = button == "REPORT_BAD_NAME" and PLAYER_REPORT_TYPE_BAD_PLAYER_NAME or PLAYER_REPORT_TYPE_BAD_GUILD_NAME;
-			ReportPlayer(reportType, target);
-		else
-			UIErrorsFrame:AddMessage(ERR_REPORT_SUBMISSION_FAILED , 1.0, 0.1, 0.1, 1.0);
-			local info = ChatTypeInfo["SYSTEM"];
-			if ( dropdownFrame.chatFrame ) then
-				dropdownFrame.chatFrame:AddMessage(ERR_REPORT_SUBMISSION_FAILED, info.r, info.g, info.b);
-			else
-				DEFAULT_CHAT_FRAME:AddMessage(ERR_REPORT_SUBMISSION_FAILED, info.r, info.g, info.b);
-			end
-		end
+		local reportType = button == "REPORT_BAD_NAME" and PLAYER_REPORT_TYPE_BAD_PLAYER_NAME or PLAYER_REPORT_TYPE_BAD_GUILD_NAME;
+		C_ChatInfo.ReportPlayer(reportType, dropdownFrame.playerLocation);
 	elseif ( button == "REPORT_PET" ) then
 		SetPendingReportPetTarget(unit);
 		StaticPopup_Show("CONFIRM_REPORT_PET_NAME", fullname);
@@ -1556,25 +1562,7 @@ function UnitPopup_OnClick (self)
 		C_PetBattles.SetPendingReportTargetFromUnit(unit);
 		StaticPopup_Show("CONFIRM_REPORT_BATTLEPET_NAME", fullname);
 	elseif ( button == "REPORT_CHEATING" ) then
-		if ( GMEuropaComplaintsEnabled() and not GMQuickTicketSystemThrottled() ) then
-			if (dropdownFrame.unit) then
-				HelpFrame_SetReportPlayerByUnitTag(ReportCheatingDialog, dropdownFrame.unit);
-			elseif (tonumber(dropdownFrame.lineID)) then
-				HelpFrame_SetReportPlayerByLineID(ReportCheatingDialog, tonumber(dropdownFrame.lineID));
-			elseif (dropdownFrame.battlefieldScoreIndex) then
-				HelpFrame_SetReportPlayerByBattlefieldScoreIndex(ReportCheatingDialog, dropdownFrame.battlefieldScoreIndex);
-			end
-
-			HelpFrame_ShowReportCheatingDialog();
-		else
-			UIErrorsFrame:AddMessage(ERR_REPORT_SUBMISSION_FAILED , 1.0, 0.1, 0.1, 1.0);
-			local info = ChatTypeInfo["SYSTEM"];
-			if ( dropdownFrame.chatFrame ) then
-				dropdownFrame.chatFrame:AddMessage(ERR_REPORT_SUBMISSION_FAILED, info.r, info.g, info.b);
-			else
-				DEFAULT_CHAT_FRAME:AddMessage(ERR_REPORT_SUBMISSION_FAILED, info.r, info.g, info.b);
-			end
-		end
+		HelpFrame_ShowReportCheatingDialog(dropdownFrame.playerLocation);
 	elseif ( button == "POP_OUT_CHAT" ) then
 		FCF_OpenTemporaryWindow(dropdownFrame.chatType, dropdownFrame.chatTarget, dropdownFrame.chatFrame, true);
 	elseif ( button == "DUEL" ) then

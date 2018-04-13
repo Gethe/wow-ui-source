@@ -9,6 +9,8 @@ function UIWidgetManagerMixin:OnLoad()
 	self.registeredWidgetSetContainers = {};
 
 	self.widgetIdToFrame = {};
+	self.widgetTagToFrames = {};
+	self.widgetTagToNumFrames = {};
 	self.widgetSetFrames = {};
 	self.timerWidgets = {};
 
@@ -89,6 +91,40 @@ function UIWidgetManagerMixin:UpdateTimerList(widgetID, widgetFrame)
 	end
 end
 
+function UIWidgetManagerMixin:AddWidgetToWidgetTagList(widgetTag, widgetID, widgetFrame)
+	if not self.widgetTagToFrames[widgetTag] then
+		-- Adding a widget with a new widgetTag
+		self.widgetTagToFrames[widgetTag] = {};
+		self.widgetTagToNumFrames[widgetTag] = 0;
+	end
+
+	if not self.widgetTagToFrames[widgetTag][widgetID] then
+		-- This widget isn't already in the table...add it
+		self.widgetTagToFrames[widgetTag][widgetID] = widgetFrame;
+		self.widgetTagToNumFrames[widgetTag] = self.widgetTagToNumFrames[widgetTag] + 1;
+	end
+end
+
+function UIWidgetManagerMixin:RemoveWidgetFromWidgetTagList(widgetTag, widgetID)
+	if self.widgetTagToFrames[widgetTag] then
+		-- Removing a widget with a known widgetTag
+			
+		if self.widgetTagToFrames[widgetTag][widgetID] then
+			-- This widget is in the table...remove it
+
+			if self.widgetTagToNumFrames[widgetTag] == 1 then
+				-- This is the last widget that has this widgetTag...remove the table
+				self.widgetTagToFrames[widgetTag] = nil;
+				self.widgetTagToNumFrames[widgetTag] = nil;
+			else
+				-- There are more widgets with this widgetTag...leave the table around but remove this widget
+				self.widgetTagToFrames[widgetTag][widgetID] = nil;
+				self.widgetTagToNumFrames[widgetTag] = self.widgetTagToNumFrames[widgetTag] - 1;
+			end
+		end
+	end
+end
+
 function UIWidgetManagerMixin:CreateWidget(widgetID, widgetSetID, widgetType)
 	if self.widgetVisTypeInfo[widgetType] then
 		local widgetFrame = self:GetWidgetFromPools(self.widgetVisTypeInfo[widgetType].templateInfo, self.registeredWidgetSetContainers[widgetSetID].widgetContainer, self.registeredWidgetSetContainers[widgetSetID].resetFunc);
@@ -98,6 +134,7 @@ function UIWidgetManagerMixin:CreateWidget(widgetID, widgetSetID, widgetType)
 		widgetFrame.widgetType = widgetType;
 		widgetFrame.hasTimer = false;
 		widgetFrame.orderIndex = nil;
+		widgetFrame.widgetTag = nil;
 
 		self.widgetIdToFrame[widgetID] = widgetFrame;
 		self.widgetSetFrames[widgetSetID][widgetID] = widgetFrame;
@@ -111,6 +148,10 @@ function UIWidgetManagerMixin:RemoveAllWidgetsInWidgetSet(widgetSetID)
 	for widgetID, widgetFrame in pairs(self.widgetSetFrames[widgetSetID]) do
 		if widgetFrame.hasTimer then
 			self:UpdateTimerList(widgetID, nil);
+		end
+
+		if widgetFrame.widgetTag then
+			self:RemoveWidgetFromWidgetTagList(widgetFrame.widgetTag, widgetID);
 		end
 
 		self.widgetPools:Release(widgetFrame);
@@ -129,6 +170,10 @@ function UIWidgetManagerMixin:RemoveWidget(widgetID, widgetSetID)
 
 	if widgetFrame.hasTimer then
 		self:UpdateTimerList(widgetID, nil);
+	end
+
+	if widgetFrame.widgetTag then
+		self:RemoveWidgetFromWidgetTagList(widgetFrame.widgetTag, widgetID);
 	end
 
 	self.widgetPools:Release(widgetFrame);
@@ -201,6 +246,10 @@ function UIWidgetManagerMixin:ProcessWidget(widgetID, widgetSetID, widgetType)
 					self:UpdateTimerList(widgetID, widgetFrame);
 				end
 
+				if widgetInfo.widgetTag then
+					self:AddWidgetToWidgetTagList(widgetInfo.widgetTag, widgetID, widgetFrame);
+				end
+
 				-- If there is an init function, run it
 				if self.registeredWidgetSetContainers[widgetSetID].initFunc then
 					self.registeredWidgetSetContainers[widgetSetID].initFunc(widgetFrame);
@@ -252,6 +301,8 @@ end
 
 function UIWidgetManagerMixin:UpdateAllWidgets()
 	self.widgetIdToFrame = {};
+	self.widgetTagToFrames = {};
+	self.widgetTagToNumFrames = {};
 	self.timerWidgets = {};
 
 	self:ReleaseAllWidgets();
@@ -327,3 +378,17 @@ function UIWidgetManagerMixin:RegisterWidgetVisTypeTemplate(visType, templateInf
 
 	self.widgetVisTypeInfo[visType] = { templateInfo = templateInfo, visInfoDataFunction = visInfoDataFunction };
 end
+
+-- This function will return an enumerator for all currently-visible widgets that are flagged with the passed widgetTag.
+-- Example use:
+-- for widgetID, widgetFrame in UIWidgetManager:EnumerateWidgetsByWidgetTag("myTag") do
+--    -- YOUR CODE
+-- end
+function UIWidgetManagerMixin:EnumerateWidgetsByWidgetTag(widgetTag)
+	if self.widgetTagToFrames[widgetTag] then
+		return pairs(self.widgetTagToFrames[widgetTag]);
+	end
+
+	return nop;
+end
+

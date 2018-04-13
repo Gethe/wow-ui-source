@@ -157,7 +157,8 @@
 				self.petMaxLevel = MAELSTROM_ZONES_LEVELS[zoneName].petMaxLevel;
 			</OnLoad>
 			<OnEnter>
-				WorldMapFrame.maelstromZoneText = GetMapNameByID(self.zoneID);
+				local mapInfo = C_Map.GetMapInfo(self.zoneID);
+				WorldMapFrame.maelstromZoneText = mapInfo and mapInfo.name or nil;
 				WorldMapFrame.minLevel = self.minLevel;
 				WorldMapFrame.maxLevel = self.maxLevel;
 				WorldMapFrame.petMinLevel = self.petMinLevel;
@@ -293,7 +294,7 @@
 		</Layers>
 	</Frame>
 
-	<Frame name="WorldMapBountyBoardTemplate" mixin="WorldMapBountyBoardMixin" enableMouse="true" virtual="true">
+	<Frame name="WorldMapBountyBoardTemplate" frameStrata="HIGH" mixin="WorldMapBountyBoardMixin" enableMouse="true" virtual="true">
 		<Size x="244" y="103" />
 		<HitRectInsets left="35" right="35" top="40" bottom="5" />
 		<Layers>
@@ -377,7 +378,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="WorldMapActionButtonTemplate" mixin="WorldMapActionButtonMixin" virtual="true">
+	<Frame name="WorldMapActionButtonTemplate" frameStrata="HIGH" mixin="WorldMapActionButtonMixin" virtual="true">
 		<Size x="101" y="86" />
 		<Layers>
 			<Layer level="ARTWORK" textureSubLevel="1">

@@ -11,10 +11,6 @@ function ScenarioDataProviderMixin:OnAdded(mapCanvas)
 	self.blobPin = blobPin;
 end
 
-function ScenarioDataProviderMixin:OnMapChanged()
-	self:RefreshAllData();
-end
-
 function ScenarioDataProviderMixin:RemoveAllData()
 	self:GetMap():RemoveAllPinsByTemplate("ScenarioPinTemplate");
 	self:GetMap():RemoveAllPinsByTemplate("ScenarioBlobPinTemplate");

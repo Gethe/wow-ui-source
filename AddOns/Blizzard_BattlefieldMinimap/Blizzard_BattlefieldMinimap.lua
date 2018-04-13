@@ -118,7 +118,10 @@ function BattlefieldMinimap_Update()
 
 	local textures = C_Map.GetMapArtLayerTextures(mapID, 1);
 	for i, texture in ipairs(textures) do
-		_G["BattlefieldMinimap"..i]:SetTexture(texture);
+		local tile = _G["BattlefieldMinimap"..i];
+		if (tile) then
+			tile:SetTexture(texture);
+		end
 	end
 
 	-- Setup the POI's
@@ -134,13 +137,13 @@ function BattlefieldMinimap_Update()
 		local battlefieldPOIName = "BattlefieldMinimapPOI"..i;
 		local battlefieldPOI = _G[battlefieldPOIName];
 		if ( i <= numPOIs ) then
-			local landmarkType, name, description, textureIndex, x, y, maplinkID, showInBattleMap = C_WorldMap.GetMapLandmarkInfo(i);
-			if ( WorldMap_ShouldShowLandmark(landmarkType) and showInBattleMap ) then
-				local x1, x2, y1, y2 = GetPOITextureCoords(textureIndex);
+			local landmarkInfo = C_WorldMap.GetMapLandmarkInfo(i);
+			if ( landmarkInfo and WorldMap_ShouldShowLandmark(landmarkInfo.landmarkType) and landmarkInfo.inBattleMap ) then
+				local x1, x2, y1, y2 = GetPOITextureCoords(landmarkInfo.textureIndex);
 				_G[battlefieldPOIName.."Texture"]:SetTexCoord(x1, x2, y1, y2);
-				x = x * BattlefieldMinimap:GetWidth();
-				y = -y * BattlefieldMinimap:GetHeight();
-				battlefieldPOI:SetPoint("CENTER", "BattlefieldMinimap", "TOPLEFT", x, y );
+				local x = landmarkInfo.x * BattlefieldMinimap:GetWidth();
+				local y = -landmarkInfo.y * BattlefieldMinimap:GetHeight();
+				battlefieldPOI:SetPoint("CENTER", "BattlefieldMinimap", "TOPLEFT", x, y);
 				battlefieldPOI:SetWidth(iconSize);
 				battlefieldPOI:SetHeight(iconSize);
 				battlefieldPOI:Show();
@@ -279,13 +282,13 @@ function BattlefieldMinimap_OnUpdate(self, elapsed)
 			local battlefieldPOIName = "BattlefieldMinimapPOI"..i;
 			local battlefieldPOI = _G[battlefieldPOIName];
 			if ( i <= numPOIs ) then
-				local landmarkType, name, description, textureIndex, x, y, maplinkID, showInBattleMap = C_WorldMap.GetMapLandmarkInfo(i);
-				if ( WorldMap_ShouldShowLandmark(landmarkType) and showInBattleMap ) then
-					local x1, x2, y1, y2 = GetPOITextureCoords(textureIndex);
+				local landmarkInfo = C_WorldMap.GetMapLandmarkInfo(i);
+				if ( landmarkInfo and WorldMap_ShouldShowLandmark(landmarkInfo.landmarkType) and landmarkInfo.inBattleMap ) then
+					local x1, x2, y1, y2 = GetPOITextureCoords(landmarkInfo.textureIndex);
 					_G[battlefieldPOIName.."Texture"]:SetTexCoord(x1, x2, y1, y2);
-					x = x * BattlefieldMinimap:GetWidth();
-					y = -y * BattlefieldMinimap:GetHeight();
-					battlefieldPOI:SetPoint("CENTER", "BattlefieldMinimap", "TOPLEFT", x, y );
+					local x = landmarkInfo.x * BattlefieldMinimap:GetWidth();
+					local y = -landmarkInfo.y * BattlefieldMinimap:GetHeight();
+					battlefieldPOI:SetPoint("CENTER", "BattlefieldMinimap", "TOPLEFT", x, y);
 					battlefieldPOI:Show();
 				else
 					battlefieldPOI:Hide();

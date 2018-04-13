@@ -15,22 +15,22 @@
 			<Layer level="OVERLAY">
 				<Texture parentKey="SingleBarLarge" atlas="hud-MainMenuBar-experiencebar-large-single" useAtlasSize="true" hidden="true">
 					<Anchors>
-						<Anchor point="BOTTOM"/>
+						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="SingleBarLargeUpper" atlas="hud-MainMenuBar-experiencebar-large-single" useAtlasSize="true" hidden="true">
 					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent.SingleBarLarge" y="9"/>
+						<Anchor point="TOP" relativeKey="$parent.SingleBarLarge" y="8"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="SingleBarSmall" atlas="hud-MainMenuBar-experiencebar-small-single" useAtlasSize="true" hidden="true">
 					<Anchors>
-						<Anchor point="BOTTOM"/>
+						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture> 
 				<Texture parentKey="SingleBarSmallUpper" atlas="hud-MainMenuBar-experiencebar-small-single" useAtlasSize="true" hidden="true">
 					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent.SingleBarSmall" y="9"/>
+						<Anchor point="TOP" relativeKey="$parent.SingleBarSmall" y="8"/>
 					</Anchors>
 				</Texture> 
 			</Layer>

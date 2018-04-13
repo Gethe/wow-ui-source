@@ -1,5 +1,9 @@
 StatusTrackingBarMixin = { } 
 
+function StatusTrackingBarMixin:GetPriority()
+	return self.priority; 
+end
+
 --Override this in your bar.lua function 
 function StatusTrackingBarMixin:Update()
 	error("Implement an update function on your bar");

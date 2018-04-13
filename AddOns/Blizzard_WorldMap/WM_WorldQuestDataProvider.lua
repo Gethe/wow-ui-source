@@ -5,6 +5,9 @@ function WorldMap_WorldQuestDataProviderMixin:GetPinTemplate()
 end
 
 function WorldMap_WorldQuestDataProviderMixin:ShouldShowQuest(info)
+	if self.focusedQuestID then
+		return false;
+	end
 	local mapID = self:GetMap():GetMapID();
 	return mapID == info.mapID;
 end
@@ -16,12 +19,7 @@ function WorldMap_WorldQuestDataProviderMixin:OnAdded(canvas)
 		self.poiQuantizer = CreateFromMixins(WorldMapPOIQuantizerMixin);
 		self.poiQuantizer.size = 75;
 		self.poiQuantizer:OnLoad(self.poiQuantizer.size, self.poiQuantizer.size);
-	end	
-end
-
-function WorldMap_WorldQuestDataProviderMixin:OnMapChanged()
-	self:RemoveAllData();
-	self:RefreshAllData();
+	end
 end
 
 function WorldMap_WorldQuestDataProviderMixin:RefreshAllData(fromOnShow)

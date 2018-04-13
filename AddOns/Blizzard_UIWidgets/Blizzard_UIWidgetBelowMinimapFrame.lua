@@ -2,6 +2,7 @@ UIWidgetBelowMinimapContainerMixin = {}
 
 local function WidgetsLayout(widgetContainer, sortedWidgets)
 	local widgetsHeight = 0;
+	local maxWidgetWidth = 0;
 
 	for index, widgetFrame in ipairs(sortedWidgets) do
 		if ( index == 1 ) then
@@ -12,9 +13,15 @@ local function WidgetsLayout(widgetContainer, sortedWidgets)
 		end
 
 		widgetsHeight = widgetsHeight + widgetFrame:GetHeight();
+
+		local widgetWidth = widgetFrame:GetWidth();
+		if widgetWidth > maxWidgetWidth then
+			maxWidgetWidth = widgetWidth;
+		end
 	end
 
 	widgetContainer:SetHeight(widgetsHeight);
+	widgetContainer:SetWidth(maxWidgetWidth);
 	UIParent_ManageFramePositions();
 end
 

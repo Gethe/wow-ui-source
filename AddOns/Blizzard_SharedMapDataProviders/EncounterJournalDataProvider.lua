@@ -36,10 +36,6 @@ function EncounterJournalDataProviderMixin:RefreshAllData(fromOnShow)
 	end
 end
 
-function EncounterJournalDataProviderMixin:OnMapChanged()
-	self:RefreshAllData();
-end
-
 --[[ Pin ]]--
 EncounterJournalPinMixin = CreateFromMixins(MapCanvasPinMixin);
 

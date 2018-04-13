@@ -302,7 +302,7 @@ function ChannelFrameMixin:ToggleCreateChannel()
 end
 
 function ChannelFrameMixin:ToggleVoiceSettings()
-	ShowOptionsPanel(VideoOptionsFrame, self, VOICE_LABEL);
+	ShowOptionsPanel(VideoOptionsFrame, self, VOICE_CHAT);
 end
 
 -- Channel remains, but appears disabled
@@ -333,12 +333,18 @@ function ChannelFrameMixin:OnVoiceChatError(platformCode, statusCode)
 		if errorString then
 			UIErrorsFrame:TryDisplayMessage(errorCode, errorString, RED_FONT_COLOR:GetRGB());
 			ChatFrame_DisplayUsageError(errorString);
+			self.lastError = statusCode;
 		end
 	end
 end
 
 function ChannelFrameMixin:OnVoiceChatConnectionSuccess()
 	self:CheckDiscoverChannels();
+
+	if self.lastError then
+		ChatFrame_DisplayUsageError(VOICE_CHAT_SERVICE_CONNECTION_RESTORED);
+		self.lastError = nil;
+	end
 end
 
 function ChannelFrameMixin:CheckDiscoverChannels()

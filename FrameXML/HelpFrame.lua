@@ -11,7 +11,7 @@ StaticPopupDialogs["EXTERNAL_LINK"] = {
 		data.browser:CopyExternalLink();
 	end,
 	OnShow = function(self)
-		
+
 	end,
 	showAlert = 1,
 	timeout = 0,
@@ -23,32 +23,32 @@ HelpFrameWindows = {}
 
 -- Side Navigation Table
 HelpFrameNavTbl = {}
-HelpFrameNavTbl[1] = {	text = KNOWLEDGE_BASE, 
+HelpFrameNavTbl[1] = {	text = KNOWLEDGE_BASE,
 						icon ="Interface\\HelpFrame\\HelpIcon-KnowledgeBase",
 						frame = "kbase"
 					};
-HelpFrameNavTbl[2] = {	text = HELPFRAME_ACCOUNTSECURITY_TITLE, 
+HelpFrameNavTbl[2] = {	text = HELPFRAME_ACCOUNTSECURITY_TITLE,
 						icon ="Interface\\HelpFrame\\HelpIcon-AccountSecurity",
 						frame = "asec"
 					};
-HelpFrameNavTbl[3] = {	text = HELPFRAME_STUCK_TITLE, 
+HelpFrameNavTbl[3] = {	text = HELPFRAME_STUCK_TITLE,
 						icon ="Interface\\HelpFrame\\HelpIcon-CharacterStuck",
 						frame = "stuck"
 					};
-HelpFrameNavTbl[4] = {	text = HELPFRAME_REPORT_BUG_TITLE, 
+HelpFrameNavTbl[4] = {	text = HELPFRAME_REPORT_BUG_TITLE,
 						icon="Interface\\HelpFrame\\HelpIcon-Bug",
 						frame = "bug"
 					};
-HelpFrameNavTbl[5] = {	text = HELPFRAME_REPORT_PLAYER_TITLE, 
+HelpFrameNavTbl[5] = {	text = HELPFRAME_REPORT_PLAYER_TITLE,
 						icon="Interface\\HelpFrame\\HelpIcon-ReportAbuse",
 						frame = "report"
 					};
-HelpFrameNavTbl[6] = {	text = HELP_TICKET_OPEN, 
+HelpFrameNavTbl[6] = {	text = HELP_TICKET_OPEN,
 						icon ="Interface\\HelpFrame\\HelpIcon-OpenTicket",
 						frame = "ticketHelp"
-					};					
+					};
 
---LAG REPORITNG BUTTONS					
+--LAG REPORITNG BUTTONS
 HelpFrameNavTbl[7] = {	icon ="Interface\\HelpFrame\\ReportLagIcon-Loot",
 						tooltipTex = BUTTON_LAG_LOOT_TOOLTIP,
 						newbieText = BUTTON_LAG_LOOT_NEWBIE
@@ -74,7 +74,7 @@ HelpFrameNavTbl[12] = {	icon ="Interface\\HelpFrame\\ReportLagIcon-Spells",
 						newbieText = BUTTON_LAG_SPELL_NEWBIE
 					};
 -- Open Ticket Buttons
-HelpFrameNavTbl[13] = {	text = KBASE_TOP_ISSUES, 
+HelpFrameNavTbl[13] = {	text = KBASE_TOP_ISSUES,
 						icon ="Interface\\HelpFrame\\HelpIcon-HotIssues",
 						frame = "kbase",
 						func = "KnowledgeBase_GotoTopIssues",
@@ -83,17 +83,17 @@ HelpFrameNavTbl[14] = {	text = HELP_TICKET_OPEN, -- HELP_TICKET_EDIT
 						icon ="Interface\\HelpFrame\\HelpIcon-OpenTicket",
 						frame = "ticketHelp"
 					};
-					
+
 --THis needs implementing - CHaz
-HelpFrameNavTbl[15] = {	text = HELP_TICKET_OPEN, 
+HelpFrameNavTbl[15] = {	text = HELP_TICKET_OPEN,
 						icon ="Interface\\HelpFrame\\HelpIcon-OpenTicket",
 						frame = "GM_response"
 					};
 
-HelpFrameNavTbl[16] = {	text = HELPFRAME_SUBMIT_SUGGESTION_TITLE, 
+HelpFrameNavTbl[16] = {	text = HELPFRAME_SUBMIT_SUGGESTION_TITLE,
 						icon ="Interface\\HelpFrame\\HelpIcon-Suggestion",
 						frame = "suggestion"
-					};					
+					};
 HelpFrameNavTbl[17]	= { text = HELPFRAME_ITEM_RESTORATION,
 						icon ="Interface\\HelpFrame\\HelpIcon-ItemRestoration",
 						func = function() StaticPopup_Show("CONFIRM_LAUNCH_URL", nil, nil, {index=3}) end,
@@ -109,7 +109,7 @@ KBASE_NUM_ARTICLES_PER_PAGE = 100; -- Obsolete
 GMTICKET_CHECK_INTERVAL = 600;		-- 10 Minutes
 
 HELPFRAME_START_PAGE			= 1; -- KNOWLEDGE_BASE;
-HELPFRAME_KNOWLEDGE_BASE		= 1; 
+HELPFRAME_KNOWLEDGE_BASE		= 1;
 HELPFRAME_ACCOUNT_SECURITY		= 2;
 HELPFRAME_CARACTER_STUCK		= 3;
 HELPFRAME_SUBMIT_BUG			= 4;
@@ -149,13 +149,13 @@ function HelpFrame_OnLoad(self)
 	self:RegisterEvent("SIMPLE_BROWSER_WEB_PROXY_FAILED");
 	self:RegisterEvent("SIMPLE_BROWSER_WEB_ERROR");
 
-	
+
 	self.leftInset.Bg:SetTexture("Interface\\HelpFrame\\Tileable-Parchment", true, true);
-	
+
 	self.header.Bg:SetTexture("Interface\\FrameGeneral\\UI-Background-Rock", true, true);
 	self.header.Bg:SetHorizTile(true);
 	self.header.Bg:SetVertTile(true);
-	
+
 	self.Bg:SetTexture("Interface\\FrameGeneral\\UI-Background-Rock", true, true);
 	self.Bg:SetHorizTile(true);
 	self.Bg:SetVertTile(true);
@@ -173,7 +173,7 @@ function HelpFrame_OnShow(self)
 	button:RegisterEvent("BAG_UPDATE");
 	button:RegisterEvent("SPELL_UPDATE_USABLE");
 	button:RegisterEvent("SPELL_UPDATE_COOLDOWN");
-	button:RegisterEvent("CURRENT_SPELL_CAST_CHANGED");	
+	button:RegisterEvent("CURRENT_SPELL_CAST_CHANGED");
 	HelpFrame_UpdateQuickTicketSystemStatus();
 end
 
@@ -338,22 +338,9 @@ function HelpFrame_SetButtonEnabled(button, enabled)
 	end
 end
 
-function HelpFrame_SetReportPlayerByUnitTag(frame, unitTag)
-	SetPendingReportTarget(unitTag);
-	frame.target = "pending";
-end
-
-function HelpFrame_SetReportPlayerByLineID(frame, lineID)
-	frame.target = "pending";
-end
-
-function HelpFrame_SetReportPlayerByBattlefieldScoreIndex(frame, battlefieldScoreIndex)
-	BattlefieldSetPendingReportTarget(battlefieldScoreIndex);
-	frame.target = "pending";
-end
-
-function HelpFrame_ShowReportCheatingDialog()
+function HelpFrame_ShowReportCheatingDialog(playerLocation)
 	local frame = ReportCheatingDialog;
+	frame.target = playerLocation;
 	frame.CommentFrame.EditBox:SetText("");
 	frame.CommentFrame.EditBox.InformationText:Show();
 	StaticPopupSpecial_Show(frame);
@@ -388,7 +375,7 @@ function HelpFrameStuckHearthstone_Update(self)
 		self.IconTexture:SetDesaturated(true);
 		self.IconTexture:SetTexture("Interface\\Icons\\inv_misc_rune_01");
 	end
-	
+
 	if (GameTooltip:GetOwner() == self) then
 		self:UpdateTooltip();
 	end
@@ -413,7 +400,7 @@ end
 
 --
 -- HelpFrameSubmitBug
--- 
+--
 
 function HelpFrameReportBugSubmit_OnClick()
 	local bugText = HelpFrameReportBugEditBox:GetText();
@@ -424,7 +411,7 @@ end
 
 --
 -- HelpFrameSubmitSuggestion
--- 
+--
 function HelpFrameSubmitSuggestionSubmit_OnClick()
 	local suggestionText = HelpFrameSubmitSuggestionEditBox:GetText();
 	GMSubmitSuggestion(suggestionText);
@@ -476,20 +463,20 @@ function HelpOpenTicketButton_OnUpdate(self, elapsed)
 				GetGMTicket();
 			end
 		end
-		
+
 		local timeText;
 		if ( self.ticketTimer ) then
 			self.ticketTimer = self.ticketTimer - elapsed;
 			timeText.format(GM_TICKET_WAIT_TIME, SecondsToTime(self.ticketTimer, 1));
 		end
-		
+
 		GameTooltip:SetOwner(self, "ANCHOR_TOP");
 		GameTooltip:AddLine(self.titleText, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, true);
 		GameTooltip:AddLine(self.statusText);
 		if (timeText) then
 			GameTooltip:AddLine(timeText);
 		end
-		
+
 		GameTooltip:AddLine(" ");
 		GameTooltip:AddLine(HELPFRAME_TICKET_CLICK_HELP, GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b, true);
 		GameTooltip:Show();
@@ -711,9 +698,9 @@ function KnowledgeBase_OnLoad(self)
 	self.scrollFrame.update = KnowledgeBase_UpdateArticles;
 	self.scrollFrame.scrollBar.doNotHide = true;
 	HybridScrollFrame_CreateButtons(self.scrollFrame, "KnowledgeBaseArticleTemplate", 8, -3, "TOPLEFT", "TOPLEFT", 0, -3);
-	
+
 	--Scroll Frame 2
-	self.scrollFrame2.child:SetWidth(self.scrollFrame2:GetWidth());	
+	self.scrollFrame2.child:SetWidth(self.scrollFrame2:GetWidth());
 	local childWidth = self.scrollFrame2.child:GetWidth();
 	self.articleTitle:SetWidth(childWidth - 40);
 	self.articleText:SetWidth(childWidth - 30);
@@ -724,7 +711,7 @@ function KnowledgeBase_OnShow(self)
 	if ( not kbsetupLoaded ) then
 		KnowledgeBase_GotoTopIssues();
 	end
-	
+
 	if (HelpBrowser:HasConnection()) then
 		HelpBrowser:Show();
 		HelpBrowser:NavigateHome("KnowledgeBase");
@@ -783,7 +770,7 @@ function KnowledgeBase_OnEvent(self, event, ...)
 		self.articleText:SetText(text);
 		self.articleId:SetFormattedText(KBASE_ARTICLE_ID, id);
 		self.scrollFrame2.ScrollBar:SetValue(0);
-		
+
 		self.scrollFrame:Hide();
 		self.scrollFrame2:Show();
 	elseif ( event == "KNOWLEDGE_BASE_ARTICLE_LOAD_FAILURE" ) then
@@ -797,13 +784,13 @@ function KnowledgeBase_Clearlist()
 	local scrollFrame = self.scrollFrame;
 	local buttons = scrollFrame.buttons;
 	local numButtons = #buttons;
-	
+
 	for i = 1, numButtons do
 		local button = buttons[i];
 		button:Hide();
 		button:SetScript("OnClick", nil);
 	end
-	
+
 	scrollFrame.ScrollBar:SetValue(0);
 	scrollFrame.update = KnowledgeBase_Clearlist;
 end
@@ -815,10 +802,10 @@ function KnowledgeBase_UpdateArticles()
 	local offset = HybridScrollFrame_GetOffset(scrollFrame);
 	local buttons = scrollFrame.buttons;
 	local numButtons = #buttons;
-	
+
 	self.scrollFrame2:Hide();
 	self.scrollFrame:Show();
-	
+
 	for i = 1, numButtons do
 		local button = buttons[i];
 		local index = offset + i;
@@ -826,10 +813,10 @@ function KnowledgeBase_UpdateArticles()
 			local articleId, articleHeader, isArticleHot, isArticleUpdated = self.dataFunc(index);
 			button.number:SetText(index .. ".");
 			button.title:SetPoint("LEFT", button.number, "RIGHT", 5, 0);
-			
+
 			button.articleId = articleId;
 			button.articleHeader = articleHeader;
-			
+
 			local titleText = articleHeader
 			if ( isArticleUpdated ) then
 				titleText = "|TInterface\\GossipFrame\\AvailableQuestIcon:0:0:0:0|t "..titleText
@@ -839,14 +826,14 @@ function KnowledgeBase_UpdateArticles()
 			end
 			button.title:SetText(titleText);
 			button:SetScript("OnClick", KnowledgeBase_ArticleOnClick);
-			
+
 			button:Show();
 		else
 			button:Hide();
 			button:SetScript("OnClick", nil);
 		end
 	end
-	
+
 	scrollFrame.update = KnowledgeBase_UpdateArticles;
 	HybridScrollFrame_Update(scrollFrame, KBASE_BUTTON_HEIGHT*self.totalArticleCount, scrollFrame:GetHeight());
 end
@@ -860,10 +847,10 @@ function KnowledgeBase_ResendArticleRequest(self)
 		self.data.subcategory,
 		KBASE_NUM_ARTICLES_PER_PAGE,
 		0);
-		
+
 	HelpFrame.kbase.category = self.data.category;
 	HelpFrame.kbase.subcategory = self.data.subcategory;
-	
+
 	KnowledgeBase_ClearSearch(HelpFrame.kbase.searchBox);
 end
 
@@ -876,7 +863,7 @@ function KnowledgeBase_SendArticleRequest(categoryIndex, subcategoryIndex)
 		local entry = list and list[subcategoryIndex+1];
 		buttonText = entry and entry.text;
 	end
-	
+
 	local buttonData = {
 		name = buttonText,
 		OnClick = KnowledgeBase_ResendArticleRequest,
@@ -884,16 +871,16 @@ function KnowledgeBase_SendArticleRequest(categoryIndex, subcategoryIndex)
 		subcategory = subcategoryIndex,
 	}
 	NavBar_AddButton(HelpFrame.kbase.navBar, buttonData);
-	
+
 	KBQuery_BeginLoading("",
 		categoryIndex,
 		subcategoryIndex,
 		KBASE_NUM_ARTICLES_PER_PAGE,
 		0);
-		
+
 	HelpFrame.kbase.category = categoryIndex;
 	HelpFrame.kbase.subcategory = subcategoryIndex;
-	
+
 	KnowledgeBase_ClearSearch(HelpFrame.kbase.searchBox);
 end
 
@@ -903,7 +890,7 @@ function KnowledgeBase_SelectCategory(self, index, navBar) -- Index could also b
 		index = self.index;
 	end
 	HelpFrame.kbase.category = nil;
-	
+
 	if index == 1  then
 		KnowledgeBase_SendArticleRequest(0,0);
 		HelpFrame.kbase.category = 0
@@ -913,7 +900,7 @@ function KnowledgeBase_SelectCategory(self, index, navBar) -- Index could also b
 		KnowledgeBase_DisplaySubCategories(index-2);
 		HelpFrame.kbase.category = index-2;
 	end
-	
+
 	KnowledgeBase_ClearSearch(HelpFrame.kbase.searchBox);
 end
 
@@ -924,7 +911,7 @@ function KnowledgeBase_SelectSubCategory(self, index, navBar) -- Index could als
 	end
 	HelpFrame.kbase.subcategory = index-1;
 	KnowledgeBase_SendArticleRequest(HelpFrame.kbase.category, index-1);
-	
+
 	KnowledgeBase_ClearSearch(HelpFrame.kbase.searchBox);
 end
 
@@ -951,7 +938,7 @@ end
 function KnowledgeBase_DisplayCategories()
 	if( not kbsetupLoaded ) then
 		--never loaded the setup so load setup and go to top issues.
-		KnowledgeBase_GotoTopIssues(); 
+		KnowledgeBase_GotoTopIssues();
 		return;
 	end
 
@@ -962,14 +949,14 @@ function KnowledgeBase_DisplayCategories()
 	local numButtons = #buttons;
 	local numCata = KBSetup_GetCategoryCount()+2;
 	KnowledgeBase_ClearSearch(HelpFrame.kbase.searchBox);
-	
-	
+
+
 	HelpFrame.kbase.category = nil;
 	HelpFrame.kbase.subcategory = nil;
-	
+
 	self.scrollFrame2:Hide();
 	self.scrollFrame:Show();
-	
+
 	local showButton = false;
 	for i = 1, numButtons do
 		showButton = false;
@@ -985,7 +972,7 @@ function KnowledgeBase_DisplayCategories()
 			button.index = index;
 			showButton = true;
 		end
-		
+
 		if showButton then
 			button:Show();
 		else
@@ -993,7 +980,7 @@ function KnowledgeBase_DisplayCategories()
 			button:SetScript("OnClick",	nil);
 		end
 	end
-	
+
 	scrollFrame.update = KnowledgeBase_DisplayCategories;
 	HybridScrollFrame_Update(scrollFrame, KBASE_BUTTON_HEIGHT*(numCata), scrollFrame:GetHeight());
 end
@@ -1019,7 +1006,7 @@ end
 
 function KnowledgeBase_DisplaySubCategories(category)
 	HelpFrame.kbase.subcategory = nil;
-	
+
 	if category and type(category) == "number" then
 		local _, cat_name = KBSetup_GetCategoryData(category);
 		local buttonData = {
@@ -1030,7 +1017,7 @@ function KnowledgeBase_DisplaySubCategories(category)
 		}
 		NavBar_AddButton(HelpFrame.kbase.navBar, buttonData);
 		HelpFrame.kbase.category = category;
-	else 
+	else
 		--Updating because of Scrolling
 		category = HelpFrame.kbase.category;
 	end
@@ -1041,10 +1028,10 @@ function KnowledgeBase_DisplaySubCategories(category)
 	local buttons = scrollFrame.buttons;
 	local numButtons = #buttons;
 	local numSubCata = KBSetup_GetSubCategoryCount(category)+1;
-	
+
 	self.scrollFrame2:Hide();
 	self.scrollFrame:Show();
-	
+
 	local showButton = false;
 	for i = 1, numButtons do
 		showButton = false;
@@ -1060,7 +1047,7 @@ function KnowledgeBase_DisplaySubCategories(category)
 			button.index = index;
 			showButton = true;
 		end
-		
+
 		if showButton then
 			button:Show();
 		else
@@ -1068,7 +1055,7 @@ function KnowledgeBase_DisplaySubCategories(category)
 			button:SetScript("OnClick",	nil);
 		end
 	end
-	
+
 	scrollFrame.update = KnowledgeBase_DisplaySubCategories;
 	HybridScrollFrame_Update(scrollFrame, KBASE_BUTTON_HEIGHT*(numSubCata), scrollFrame:GetHeight());
 end
@@ -1126,7 +1113,7 @@ function KnowledgeBase_ArticleOnClick(self)
 		name = self.articleHeader,
 	}
 	NavBar_AddButton(HelpFrame.kbase.navBar, buttonData);
-	
+
 	local searchType = 1;
 	KBArticle_BeginLoading(self.articleId, searchType);
 	KnowledgeBase_Clearlist();
@@ -1138,7 +1125,7 @@ function KnowledgeBase_Search()
 	if ( not KBSetup_IsLoaded() ) then
 		return;
 	end
-	
+
 	HelpFrame.kbase.category = 0;
 	HelpFrame.kbase.subcategory = 0;
 
@@ -1146,20 +1133,20 @@ function KnowledgeBase_Search()
 	if HelpFrame.kbase.searchBox.inactive then
 		searchText = "";
 	end
-	
+
 	NavBar_Reset(HelpFrame.kbase.navBar);
 	local buttonData = {
 		name = KBASE_SEARCH_RESULTS,
 		OnClick = KnowledgeBase_Search,
 	}
 	NavBar_AddButton(HelpFrame.kbase.navBar, buttonData);
-	
+
 	KBQuery_BeginLoading(searchText,
 		0,
 		0,
 		KBASE_NUM_ARTICLES_PER_PAGE,
 		0);
-		
+
 	HelpFrame.kbase.hasSearch = true;
 end
 
@@ -1187,12 +1174,12 @@ function HelpBrowser_ToggleTooltip(button, browser)
 		BrowserSettingsTooltip:Show();
 		BrowserSettingsTooltip.browser = browser;
 	end
-	
+
 	--resize the tooltip for different languages. Make sure buttons are the same width so they don't look weird
 	if (not hasResized) then
 		local tooltip = BrowserSettingsTooltip;
 		local maxWidth = tooltip.Title:GetWidth()
-		local buttonWidth = max(tooltip.CacheButton:GetTextWidth(), tooltip.CookiesButton:GetTextWidth()); 
+		local buttonWidth = max(tooltip.CacheButton:GetTextWidth(), tooltip.CookiesButton:GetTextWidth());
 		buttonWidth = buttonWidth + 20; --add button padding
 		buttonWidth = max(buttonWidth, BROWSER_TOOLTIP_BUTTON_WIDTH);
 		maxWidth = max(buttonWidth, maxWidth);
@@ -1205,7 +1192,7 @@ function HelpBrowser_ToggleTooltip(button, browser)
 end
 
 --for race conditions with the spinner
-local loading = nil; 
+local loading = nil;
 local logging = nil;
 function Browser_UpdateButtons(self, action)
 	if (action == "enableback") then
@@ -1229,7 +1216,7 @@ function Browser_UpdateButtons(self, action)
 	elseif (action == "notloggingin") then
 		logging = nil;
 	end
-	
+
 	if (loading or logging) then
 		self.loading:Show();
 		self.loading.Loop:Play();

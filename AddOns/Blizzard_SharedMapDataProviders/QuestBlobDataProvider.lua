@@ -10,6 +10,33 @@ function QuestBlobDataProviderMixin:OnAdded(mapCanvas)
 	pin.dataProvider = self;
 	pin:SetPosition(0.5, 0.5);
 	self.pin = pin;
+
+	if not self.setHighlightedQuestIDCallback then
+		self.setHighlightedQuestIDCallback = function(event, ...) self.pin:SetHighlightedQuestID(...); end;
+	end
+	if not self.clearHighlightedQuestIDCallback then
+		self.clearHighlightedQuestIDCallback = function(event, ...) self.pin:ClearHighlightedQuestID(...); end;
+	end
+	if not self.setFocusedQuestIDCallback then
+		self.setFocusedQuestIDCallback = function(event, ...) self.pin:SetFocusedQuestID(...); end;
+	end
+	if not self.clearFocusedQuestIDCallback then
+		self.clearFocusedQuestIDCallback = function(event, ...) self.pin:ClearFocusedQuestID(...); end;
+	end
+	
+	self:GetMap():RegisterCallback("SetHighlightedQuestID", self.setHighlightedQuestIDCallback);
+	self:GetMap():RegisterCallback("ClearHighlightedQuestID", self.clearHighlightedQuestIDCallback);
+	self:GetMap():RegisterCallback("SetFocusedQuestID", self.setFocusedQuestIDCallback);
+	self:GetMap():RegisterCallback("ClearFocusedQuestID", self.clearFocusedQuestIDCallback);
+end
+
+function QuestBlobDataProviderMixin:OnRemoved(mapCanvas)
+	MapCanvasDataProviderMixin.OnRemoved(self, mapCanvas);
+
+	self:GetMap():UnregisterCallback("SetHighlightedQuestID", self.setHighlightedQuestIDCallback);
+	self:GetMap():UnregisterCallback("ClearHighlightedQuestID", self.clearHighlightedQuestIDCallback);
+	self:GetMap():UnregisterCallback("SetFocusedQuestID", self.setFocusedQuestIDCallback);
+	self:GetMap():UnregisterCallback("ClearFocusedQuestID", self.clearFocusedQuestIDCallback);
 end
 
 function QuestBlobDataProviderMixin:OnMapChanged()
@@ -76,6 +103,12 @@ function QuestBlobPinMixin:Refresh()
 	if self.mapAllowsBlobs and self.questID > 0 and not IsQuestComplete(self.questID) then
 		self:DrawBlob(self.questID, true);
 	end
+	if self.highlightedQuestID then
+		self:DrawBlob(self.highlightedQuestID, true);
+	end
+	if self.focusedQuestID then
+		self:DrawBlob(self.focusedQuestID, true);
+	end
 end
 
 function QuestBlobPinMixin:OnMapChanged()
@@ -83,5 +116,25 @@ function QuestBlobPinMixin:OnMapChanged()
 	local mapInfo = C_Map.GetMapInfo(mapID);
 	self.mapAllowsBlobs = MapUtil.ShouldMapTypeShowQuests(mapInfo.mapType);
 	self:SetMapID(mapID);
+	self:Refresh();
+end
+
+function QuestBlobPinMixin:SetHighlightedQuestID(questID)
+	self.highlightedQuestID = questID;
+	self:Refresh();
+end
+
+function QuestBlobPinMixin:ClearHighlightedQuestID()
+	self.highlightedQuestID = nil;
+	self:Refresh();
+end
+
+function QuestBlobPinMixin:SetFocusedQuestID(questID)
+	self.focusedQuestID = questID;
+	self:Refresh();
+end
+
+function QuestBlobPinMixin:ClearFocusedQuestID()
+	self.focusedQuestID = nil;
 	self:Refresh();
 end

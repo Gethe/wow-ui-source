@@ -417,8 +417,8 @@
 				</Texture>
 				<Texture name="$parentTopBorder" parentKey="TopBorder" inherits="_UI-Frame-TitleTile">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentPortraitFrame" relativePoint="TOPRIGHT" x="0" y="-10" />
-						<Anchor point="TOPRIGHT" relativeTo="$parentTopRightCorner" relativePoint="TOPLEFT"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.PortraitFrame" relativePoint="TOPRIGHT" x="0" y="-10" />
+						<Anchor point="TOPRIGHT" relativeKey="$parent.TopRightCorner" relativePoint="TOPLEFT"/>
 					</Anchors>
 				</Texture>
 				<FontString name="$parentTitleText" inherits="GameFontNormal" text="" parentKey="TitleText" wordwrap="false">
@@ -448,20 +448,20 @@
 				</Texture>
 				<Texture name="$parentBottomBorder" parentKey="BottomBorder" inherits="_UI-Frame-Bot">
 					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeTo="$parentBotLeftCorner" relativePoint="BOTTOMRIGHT" y="0"/>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBotRightCorner" relativePoint="BOTTOMLEFT" y="0"/>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.BotLeftCorner" relativePoint="BOTTOMRIGHT" y="0"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BotRightCorner" relativePoint="BOTTOMLEFT" y="0"/>
 					</Anchors>
 				</Texture>
 				<Texture name="$parentLeftBorder" parentKey="LeftBorder" inherits="!UI-Frame-LeftTile">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentPortraitFrame" relativePoint="BOTTOMLEFT" x="8" y="0" />
-						<Anchor point="BOTTOMLEFT" relativeTo="$parentBotLeftCorner" relativePoint="TOPLEFT"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.PortraitFrame" relativePoint="BOTTOMLEFT" x="8" y="0" />
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.BotLeftCorner" relativePoint="TOPLEFT"/>
 					</Anchors>
 				</Texture>
 				<Texture name="$parentRightBorder" parentKey="RightBorder" inherits="!UI-Frame-RightTile">
 					<Anchors>
-						<Anchor point="TOPRIGHT" relativeTo="$parentTopRightCorner" relativePoint="BOTTOMRIGHT" x="1"/>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBotRightCorner" relativePoint="TOPRIGHT"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.TopRightCorner" relativePoint="BOTTOMRIGHT" x="1"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BotRightCorner" relativePoint="TOPRIGHT"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -1447,16 +1447,7 @@
 			</Slider>
 		</Frames>
 	</ScrollFrame>
-	<ScrollFrame name="FauxScrollFrameTemplate" inherits="UIPanelScrollFrameTemplate" virtual="true">
-		<Scripts>
-			<OnScrollRangeChanged function=""/>
-		</Scripts>
-		<ScrollChild>
-			<Frame name="$parentScrollChildFrame" parentKey="ScrollChildFrame">
-				<Size x="300" y="334"/>
-			</Frame>
-		</ScrollChild>
-	</ScrollFrame>
+
 	<ScrollFrame name="FauxScrollFrameTemplateLight" virtual="true">
 		<Frames>
 			<Slider name="$parentScrollBar" inherits="UIPanelScrollBarTemplateLightBorder">
@@ -1496,28 +1487,6 @@
 				<Size x="300" y="334"/>
 			</Frame>
 		</ScrollChild>
-	</ScrollFrame>
-	<ScrollFrame name="ListScrollFrameTemplate" inherits="FauxScrollFrameTemplate" virtual="true">
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture name="$parentTop" atlas="macropopup-scrollbar-top" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-2" y="5"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentBottom" atlas="macropopup-scrollbar-bottom" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-2" y="-2"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentMiddle" atlas="!macropopup-scrollbar-middle" vertTile="true" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="TOP" relativeTo="$parentTop" relativePoint="BOTTOM"/>
-						<Anchor point="BOTTOM" relativeTo="$parentBottom" relativePoint="TOP"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
 	</ScrollFrame>
 
 	<EditBox name="NumericInputSpinnerTemplate" letters="3" numeric="true" autoFocus="false" inherits="InputBoxTemplate" mixin="NumericInputSpinnerMixin" virtual="true">

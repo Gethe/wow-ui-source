@@ -108,13 +108,19 @@ function StatusTrackingManagerMixin:SetDoubleBarSize(bar, width)
 	local statusBarHeight = textureHeight - 5; 
 	if( self.largeSize ) then 
 		self.SingleBarLargeUpper:SetSize(width, statusBarHeight); 
-		self.SingleBarLarge:SetSize(width, statusBarHeight); 
+		self.SingleBarLargeUpper:SetPoint("CENTER", bar, 0, 4);
 		self.SingleBarLargeUpper:Show();
+		
+		self.SingleBarLarge:SetSize(width, statusBarHeight); 
+		self.SingleBarLarge:SetPoint("CENTER", bar, 0, -5);
 		self.SingleBarLarge:Show(); 
-	else
+	else		
 		self.SingleBarSmallUpper:SetSize(width, statusBarHeight); 
-		self.SingleBarSmall:SetSize(width, statusBarHeight); 
+		self.SingleBarSmallUpper:SetPoint("CENTER", bar, 0, 4);
 		self.SingleBarSmallUpper:Show(); 
+		
+		self.SingleBarSmall:SetSize(width, statusBarHeight); 
+		self.SingleBarSmall:SetPoint("CENTER", bar, 0, -5);
 		self.SingleBarSmall:Show(); 
 	end
 
@@ -125,14 +131,15 @@ end
 --Same functionality as previous function except shows only one bar. 
 function StatusTrackingManagerMixin:SetSingleBarSize(bar, width) 
 	local textureHeight = self:GetInitialBarHeight();
-	if( self.largeSize ) then 
-		self.SingleBarLarge:Show(); 
+	if( self.largeSize ) then  
 		self.SingleBarLarge:SetSize(width, textureHeight); 
+		self.SingleBarLarge:SetPoint("CENTER", bar, 0, 4);
+		self.SingleBarLarge:Show(); 
 	else
-		self.SingleBarSmall:Show(); 
 		self.SingleBarSmall:SetSize(width, textureHeight); 
+		self.SingleBarSmall:SetPoint("CENTER", bar, 0, 4);
+		self.SingleBarSmall:Show(); 
 	end
-
 	bar.StatusBar:SetSize(width, textureHeight);  
 	bar:SetSize(width, textureHeight);
 end
@@ -142,14 +149,16 @@ function StatusTrackingManagerMixin:LayoutBar(bar, barWidth, isTopBar, isDouble)
 	bar:Show(); 
 		
 	bar:ClearAllPoints();
-	if ( isTopBar ) then
-		bar:SetPoint("LEFT", self:GetParent(), "LEFT", 0, -14);
-	else
-		bar:SetPoint("RIGHT", self:GetParent(), "RIGHT", 0, -22);
-	end
+	
 	if ( isDouble ) then
+		if ( isTopBar ) then
+			bar:SetPoint("BOTTOM", self:GetParent(), 0, -11);
+		else		
+			bar:SetPoint("BOTTOM", self:GetParent(), 0, -20);
+		end
 		self:SetDoubleBarSize(bar, barWidth);
-	else
+	else 
+		bar:SetPoint("BOTTOM", self:GetParent(), 0, -17);
 		self:SetSingleBarSize(bar, barWidth);
 	end
 end
@@ -164,7 +173,7 @@ function StatusTrackingManagerMixin:LayoutBars(visBars)
 		self:LayoutBar(visBars[1], width, not TOP_BAR, IS_DOUBLE);
 		self:LayoutBar(visBars[2], width, TOP_BAR, IS_DOUBLE);
 	elseif( #visBars == 1 ) then 
-		self:LayoutBar(visBars[1], width, not TOP_BAR, not IS_DOUBLE);
+		self:LayoutBar(visBars[1], width, TOP_BAR, not IS_DOUBLE);
 	end 
 	self:GetParent():OnStatusBarsUpdated();
 	self:UpdateBarTicks();

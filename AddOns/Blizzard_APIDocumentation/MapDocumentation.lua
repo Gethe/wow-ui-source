@@ -7,6 +7,21 @@ local Map =
 	Functions =
 	{
 		{
+			Name = "GetBestMapForUnit",
+			Type = "Function",
+			Documentation = { "Only works for the player and party members." },
+
+			Arguments =
+			{
+				{ Name = "unitToken", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "uiMapID", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "GetCurrentMapID",
 			Type = "Function",
 
@@ -16,7 +31,7 @@ local Map =
 			},
 		},
 		{
-			Name = "GetMapArtBackgroundTexture",
+			Name = "GetMapArtBackgroundAtlas",
 			Type = "Function",
 
 			Arguments =
@@ -26,7 +41,7 @@ local Map =
 
 			Returns =
 			{
-				{ Name = "texture", Type = "number", Nilable = false },
+				{ Name = "atlasName", Type = "string", Nilable = false },
 			},
 		},
 		{
@@ -245,6 +260,11 @@ local Map =
 
 	Events =
 	{
+		{
+			Name = "MapOverlaysUpdated",
+			Type = "Event",
+			LiteralName = "MAP_OVERLAYS_UPDATED",
+		},
 	},
 
 	Tables =

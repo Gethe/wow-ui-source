@@ -10,6 +10,7 @@ CommunitiesChatFrame.xml
 CommunitiesInvitationFrame.xml
 CommunitiesGuildFinderFrame.xml
 CommunitiesStreams.xml
-CommunitiesCreateDialogInsecure.xml
-CommunitiesCreateFrame.xml
+CommunitiesAddDialogInsecure.xml
+CommunitiesAddDialog.xml
+CommunitiesAddDialogOutbound.lua
 CommunitiesFrame.xml

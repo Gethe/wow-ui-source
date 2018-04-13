@@ -7,6 +7,34 @@ local DeathInfo =
 	Functions =
 	{
 		{
+			Name = "GetCorpseMapPosition",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "uiMapID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "position", Type = "table", Mixin = "Vector2DMixin", Nilable = true },
+			},
+		},
+		{
+			Name = "GetDeathReleasePosition",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "uiMapID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "position", Type = "table", Mixin = "Vector2DMixin", Nilable = true },
+			},
+		},
+		{
 			Name = "GetSelfResurrectOptions",
 			Type = "Function",
 

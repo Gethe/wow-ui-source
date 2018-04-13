@@ -4,29 +4,66 @@
 
 	<Button name="CommunitiesMemberListEntryTemplate" registerForClicks="RightButtonUp" virtual="true" mixin="CommunitiesMemberListEntryMixin">
 		<Size x="140" y="20"/>
+		<Frames>
+			<Frame parentKey="NameFrame">
+				<Size x="136" y="20"/>
+				<Anchors>
+					<Anchor point="LEFT" x="4" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="PresenceIcon">
+							<Size x="16" y="16"/>
+							<Anchors>
+								<Anchor point="LEFT"/>
+							</Anchors>
+						</Texture>
+						<FontString parentKey="Name" inherits="GameFontHighlightSmall" justifyH="LEFT" wordwrap="false">
+							<Size x="136" y="0"/>
+							<Anchors>
+								<Anchor point="LEFT"/>
+								<Anchor point="RIGHT"/>
+							</Anchors>
+						</FontString>
+						<Texture parentKey="RankIcon">
+							<Size x="12" y="12"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.Name" relativePoint="RIGHT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
 		<Layers>
-			<Layer level="ARTWORK">
-				<Texture parentKey="PresenceIcon">
-					<Size x="16" y="16"/>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Level" inherits="GameFontHighlightSmall" justifyH="LEFT" wordwrap="false">
+					<Size x="40" y="0"/>
 					<Anchors>
 						<Anchor point="LEFT" x="4" y="0"/>
 					</Anchors>
+				</FontString>
+				<Texture parentKey="Class" file="Interface\Glues\CharacterCreate\UI-CharacterCreate-Classes">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Level" relativePoint="RIGHT" x="2" y="0"/>
+					</Anchors>
 				</Texture>
-				<FontString parentKey="Name" inherits="GameFontHighlightSmall" justifyH="LEFT" wordwrap="false">
-					<Size x="140" y="0"/>
+				<FontString parentKey="Zone" inherits="GameFontHighlightSmall" justifyH="LEFT" wordwrap="false">
+					<Size x="90" y="0"/>
 					<Anchors>
-						<Anchor point="LEFT" relativePoint="RIGHT" relativeKey="$parent.PresenceIcon"/>
+						<Anchor point="LEFT" relativeKey="$parent.NameFrame" relativePoint="RIGHT" x="10" y="0"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="Rank" inherits="GameFontHighlightSmall" justifyH="LEFT" wordwrap="false" hidden="false">
-					<Size x="80" y="0"/>
+				<FontString parentKey="Rank" inherits="GameFontHighlightSmall" justifyH="LEFT" wordwrap="false">
+					<Size x="75" y="0"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.Name" relativePoint="RIGHT" x="4" y="0"/>
+						<Anchor point="LEFT" relativeKey="$parent.NameFrame" relativePoint="RIGHT" x="4" y="0"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="Note" inherits="GameFontHighlightSmall" justifyH="LEFT" wordwrap="false" hidden="false">
+				<FontString parentKey="Note" inherits="GameFontHighlightSmall" justifyH="LEFT" wordwrap="false">
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.Rank" relativePoint="RIGHT" x="4" y="0"/>
+						<Anchor point="LEFT" relativeKey="$parent.Rank" relativePoint="RIGHT" x="9" y="0"/>
 						<Anchor point="RIGHT" relativeKey="$parent" relativePoint="RIGHT" x="-4" y="0"/>
 					</Anchors>
 				</FontString>
@@ -34,14 +71,6 @@
 					<Size x="16" y="16"/>
 					<Anchors>
 						<Anchor point="LEFT" relativePoint="RIGHT" relativeKey="$parent.Name"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="OVERLAY">
-				<Texture parentKey="RankIcon">
-					<Size x="12" y="12"/>
-					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.Name" relativePoint="RIGHT" x="0" y="0"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -117,6 +146,7 @@
 				</Layers>
 				<Scripts>
 					<OnLoad method="OnLoad"/>
+					<OnShow method="OnShow"/>
 				</Scripts>
 			</Frame>
 			<ScrollFrame parentKey="ListScrollFrame" inherits="HybridScrollFrameTemplate">

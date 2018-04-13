@@ -654,6 +654,15 @@ local Club =
 			},
 		},
 		{
+			Name = "SetCommunityID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "communityID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "SetFavorite",
 			Type = "Function",
 
@@ -865,6 +874,26 @@ local Club =
 			{
 				{ Name = "clubId", Type = "string", Nilable = false },
 				{ Name = "streamId", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "ClubStreamsLoaded",
+			Type = "Event",
+			LiteralName = "CLUB_STREAMS_LOADED",
+			Payload =
+			{
+				{ Name = "clubId", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "ClubTicketReceived",
+			Type = "Event",
+			LiteralName = "CLUB_TICKET_RECEIVED",
+			Payload =
+			{
+				{ Name = "succeeded", Type = "bool", Nilable = false },
+				{ Name = "ticket", Type = "string", Nilable = false },
+				{ Name = "info", Type = "ClubInfo", Nilable = true },
 			},
 		},
 		{

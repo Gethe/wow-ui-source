@@ -2,7 +2,7 @@
 ..\FrameXML\UI.xsd">
 	<Script file="AreaLabelDataProvider.lua"/>
 
-	<Frame name="AreaLabelFrameTemplate" mixin="AreaLabelFrameMixin" virtual="true">
+	<Frame name="AreaLabelFrameTemplate" mixin="AreaLabelFrameMixin" scale="0.695" virtual="true">
 		<Size x="400" y="128"/>
 		<Layers>
 			<Layer level="OVERLAY">

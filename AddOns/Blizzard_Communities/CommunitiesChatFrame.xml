@@ -77,7 +77,7 @@
 		</Scripts>
 	</Frame>
 
-	<EditBox name="CommunitiesChatEditBoxTemplate" autoFocus="false" virtual="true">
+	<EditBox name="CommunitiesChatEditBoxTemplate" autoFocus="false" virtual="true" letters="1000">
 		<Size x="130" y="32"/>
 		<Layers>
 			<Layer level="BACKGROUND">

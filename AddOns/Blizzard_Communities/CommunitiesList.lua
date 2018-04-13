@@ -44,6 +44,17 @@ function CommunitiesListMixin:GetPotentialClubs()
 	return potentialClubs;
 end
 
+function CommunitiesListMixin:GetFirstMatchingClubEntry(predicate)
+	local buttons = self.ListScrollFrame.buttons;
+	for i, button in ipairs(buttons) do
+		if predicate(button) then
+			return button;
+		end
+	end
+	
+	return nil;
+end
+
 function CommunitiesListMixin:Update()
 	local scrollFrame = self.ListScrollFrame;
 	local offset = HybridScrollFrame_GetOffset(scrollFrame);
@@ -165,6 +176,27 @@ function CommunitiesListMixin:OnShow()
 	self.ListScrollFrame.ScrollBar:SetValueStep(1);
 	self:Update();
 	
+	if self:GetCommunitiesFrame():GetSelectedClubId() == nil then
+		-- TODO:: We should prioritize selecting guild communities once those exist.
+
+		local lastSelectedClubId = tonumber(GetCVar("lastSelectedClubId")) or 0;
+		local matchingClubEntry = self:GetFirstMatchingClubEntry(function (clubEntry)
+			return clubEntry:GetClubId() == lastSelectedClubId;
+		end);
+		
+		if matchingClubEntry ~= nil then
+			self:GetCommunitiesFrame():SelectClub(lastSelectedClubId);
+		else
+			local firstClubEntry = self:GetFirstMatchingClubEntry(function (clubEntry)
+				return clubEntry:GetClubId() ~= nil and not clubEntry:IsInvitation();
+			end);
+			
+			if firstClubEntry ~= nil then
+				self:GetCommunitiesFrame():SelectClub(firstClubEntry:GetClubId());
+			end
+		end
+	end
+	
 	if not self.hasRegisteredEventCallbacks then
 		self:RegisterEventCallbacks();
 	end
@@ -229,6 +261,7 @@ function CommunitiesListEntryMixin:SetClubInfo(clubInfo, isInvitation)
 	if clubInfo then
 		self.Name:SetText(clubInfo.name);
 		self.clubId = clubInfo.clubId;
+		self.isInvitation = isInvitation;
 		self.Selection:SetShown(clubInfo.clubId == self:GetCommunitiesFrame():GetSelectedClubId());
 		
 		self.InvitationIcon:SetShown(isInvitation);
@@ -271,12 +304,24 @@ function CommunitiesListEntryMixin:GetClubId()
 	return self.clubId;
 end
 
+function CommunitiesListEntryMixin:IsInvitation()
+	return self.isInvitation;
+end
+
 function CommunitiesListEntryMixin:GetCommuntiesList()
 	return self:GetParent():GetParent():GetParent();
 end
 
 function CommunitiesListEntryMixin:GetCommunitiesFrame()
 	return self:GetCommuntiesList():GetCommunitiesFrame();
+end
+
+function CommunitiesListEntryMixin:OnEnter()
+	if self.Name:IsTruncated() then
+		GameTooltip:SetOwner(self);
+		GameTooltip:AddLine(self.Name:GetText());
+		GameTooltip:Show();
+	end
 end
 
 function CommunitiesListEntryMixin:OnClick(button)
@@ -372,6 +417,10 @@ function CommunitiesListEntryDropDown_OnHide(self)
 end
 
 CommunitiesListDropDownMenuMixin = {};
+
+function CommunitiesListDropDownMenuMixin:OnLoad()
+	UIDropDownMenu_SetWidth(self, 115);
+end
 
 function CommunitiesListDropDownMenuMixin:OnShow()
 	UIDropDownMenu_Initialize(self, CommunitiesListDropDownMenu_Initialize);

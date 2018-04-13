@@ -10,16 +10,17 @@ function DeathMapDataProviderMixin:RefreshAllData(fromOnShow)
 	if (WorldMap_DoesCurrentMapHideMapIcons()) then
 		return;
 	end
-	local corpseX, corpseY = GetCorpseMapPosition();
-	if (corpseX ~= 0 and corpseY ~= 0) then
+	local mapID = self:GetMap():GetMapID();
+	local corpsePosition = C_DeathInfo.GetCorpseMapPosition(mapID);
+	if corpsePosition then
 		local corpsePin = self:GetMap():AcquirePin("CorpsePinTemplate");
-		corpsePin:SetPosition(corpseX, corpseY);
+		corpsePin:SetPosition(corpsePosition:GetXY());
 		corpsePin:Show();
 	end
-	local deathReleaseX, deathReleaseY = GetDeathReleasePosition();
-	if (deathReleaseX ~= 0 and deathReleaseY ~= 0) then
+	local deathReleasePosition = C_DeathInfo.GetDeathReleasePosition(mapID);
+	if deathReleasePosition then
 		local deathReleasePin = self:GetMap():AcquirePin("DeathReleasePinTemplate");
-		deathReleasePin:SetPosition(deathReleaseX, deathReleaseY);
+		deathReleasePin:SetPosition(deathReleasePosition:GetXY());
 		deathReleasePin:Show();
 	end	
 end

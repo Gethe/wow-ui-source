@@ -45,6 +45,8 @@
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="10" y="0"/>
 						<Anchor point="RIGHT" x="-20" y="0"/>
+						<Anchor point="TOP" x="0" y="-6"/>
+						<Anchor point="BOTTOM" x="0" y="6"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -89,6 +91,8 @@
 			</Anchors>
 		</HighlightTexture>
 		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave function="GameTooltip_Hide"/>
 			<OnClick method="OnClick"/>
 		</Scripts>
 	</Button>
@@ -226,6 +230,7 @@
 	<Frame name="CommunitiesListDropDownMenuTemplate" inherits="UIDropDownMenuTemplate" mixin="CommunitiesListDropDownMenuMixin" virtual="true">
 		<Size x="40" y="28"/>
 		<Scripts>
+			<OnLoad method="OnLoad"/>
 			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
 		</Scripts>

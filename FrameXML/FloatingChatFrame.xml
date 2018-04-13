@@ -465,33 +465,6 @@
 				<HighlightTexture file="Interface\ChatFrame\UI-ChatIM-SizeGrabber-Highlight"/>
 				<PushedTexture file="Interface\ChatFrame\UI-ChatIM-SizeGrabber-Down"/>
 			</Button>
-
-			<Slider parentKey="ScrollBar" obeyStepOnDrag="true" valueStep="1" minValue="0" maxValue="1" alpha="0">
-				<Size x="22" y="0"/>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture parentKey="Background">
-							<Anchors>
-								<Anchor point="TOPLEFT" x="1" y="1" />
-								<Anchor point="BOTTOMRIGHT" x="0" y="0" />
-							</Anchors>
-							<Color r=".1" g=".1" b=".1" a=".5"/>
-						</Texture>
-					</Layer>
-				</Layers>
-				<ThumbTexture name="$parentThumbTexture" parentKey="ThumbTexture" inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-Knob">
-					<Size x="20" y="20"/>
-				</ThumbTexture>
-				<Scripts>
-					<OnValueChanged>
-						if userInput then
-							local min, max = self:GetMinMaxValues();
-							self:GetParent():SetScrollOffset(max - value);
-						end
-					</OnValueChanged>
-				</Scripts>
-			</Slider>
-
 			<Frame name="$parentButtonFrame" inherits="FloatingBorderedFrame" parentKey="buttonFrame" alpha="0.2">
 				<Size x="29" y="0"/>
 				<Frames>
@@ -512,6 +485,39 @@
 					</Button>
 				</Frames>
 			</Frame>
+			<Button parentKey="ScrollToBottomButton" alpha="0">
+				<Size x="24" y="24"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ResizeButton" relativePoint="TOPRIGHT" x="0" y="-2"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Flash" file="Interface\ChatFrame\UI-ChatIcon-BlinkHilight" hidden="true"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnClick>
+						PlaySound(SOUNDKIT.IG_CHAT_BOTTOM);
+						self:GetParent():ScrollToBottom();
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollEnd-Up"/>
+				<PushedTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollEnd-Down"/>
+				<DisabledTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollEnd-Disabled"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+			</Button>
+			<Slider parentKey="ScrollBar" obeyStepOnDrag="true" valueStep="1" minValue="0" maxValue="1" alpha="0">
+				<Size x="22" y="0"/>
+				<ThumbTexture name="$parentThumbTexture" parentKey="ThumbTexture" atlas="chatframe-scrollbar-knob" useAtlasSize="true"/>
+				<Scripts>
+					<OnValueChanged>
+						if userInput then
+							local min, max = self:GetMinMaxValues();
+							self:GetParent():SetScrollOffset(max - value);
+						end
+					</OnValueChanged>
+				</Scripts>
+			</Slider>
 			<EditBox name="$parentEditBox" inherits="ChatFrameEditBoxTemplate" parentKey="editBox">
 				<Size x="5" y="32"/>
 				<Anchors>

@@ -13,7 +13,7 @@
 	</ContainedAlertFrame>
 
 	<ContainedAlertFrame name="VoiceActivityNotificationTemplate" inherits="VoiceActivityNotificationBaseTemplate" mixin="VoiceActivityNotificationMixin" virtual="true">
-		<Size x="120" y="28"/>
+		<Size x="120" y="35"/>
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture parentKey="Portrait">
@@ -24,21 +24,39 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture parentKey="VoiceSpeaker" file="Interface\Common\VoiceChat-Speaker">
-					<Size x="16" y="16"/>
+				<Texture parentKey="PortraitFrame" atlas="voicechat-portrait-ring">
+					<Size x="38" y="38"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.Portrait" relativePoint="RIGHT" x="-2"/>
+						<Anchor point="CENTER" relativeKey="$parent.Portrait"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="VoiceSound" file="Interface\Common\VoiceChat-On">
+				<Texture parentKey="VoiceSpeaker" atlas="voicechat-icon-speaker">
 					<Size x="16" y="16"/>
 					<Anchors>
-						<Anchor point="RIGHT" relativeKey="$parent.VoiceSpeaker" relativePoint="RIGHT"/>
+						<Anchor point="LEFT" relativeKey="$parent.Portrait" relativePoint="RIGHT" x="2"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="VoiceLoudness1" atlas="voicechat-icon-loudnessbar-1">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.VoiceSpeaker" relativePoint="RIGHT" x="-5"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="VoiceLoudness2" atlas="voicechat-icon-loudnessbar-2">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.VoiceLoudness1"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="VoiceLoudness3" atlas="voicechat-icon-loudnessbar-3">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.VoiceLoudness2"/>
 					</Anchors>
 				</Texture>
 				<FontString parentKey="Name" justifyH="LEFT" inherits="GameFontNormal">
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.VoiceSound" relativePoint="RIGHT" x="5"/>
+						<Anchor point="LEFT" relativeKey="$parent.VoiceLoudness1" relativePoint="RIGHT" x="2"/>
 					</Anchors>
 				</FontString>
 			</Layer>

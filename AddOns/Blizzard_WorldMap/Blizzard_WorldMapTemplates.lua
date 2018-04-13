@@ -35,11 +35,11 @@ function WorldMapFloorNavigationFrameMixin:InitializeDropDown()
 	end
 
 	local info = UIDropDownMenu_CreateInfo();
-	for i, info in ipairs(mapGroupMembersInfo) do
-		info.text = info.name;
-		info.value = info.mapID;
+	for i, mapGroupMemberInfo in ipairs(mapGroupMembersInfo) do
+		info.text = mapGroupMemberInfo.name;
+		info.value = mapGroupMemberInfo.mapID;
 		info.func = NavigateToMap;
-		info.checked = (mapID == info.mapID);
+		info.checked = (mapID == mapGroupMemberInfo.mapID);
 		UIDropDownMenu_AddButton(info);
 	end
 end
@@ -265,4 +265,21 @@ end
 
 function WorldMapNavBarButtonMixin:OnClick()
 	self:GetParent():NavigateToMap(self.data.id)
+end
+
+WorldMapSidePanelToggleMixin = { };
+
+function WorldMapSidePanelToggleMixin:OnClick()
+	self:GetParent():HandleUserActionToggleSidePanel();
+	self:Refresh();
+end
+
+function WorldMapSidePanelToggleMixin:Refresh()
+	if self:GetParent():IsSidePanelShown() then
+		self.OpenButton:Hide();
+		self.CloseButton:Show();
+	else
+		self.OpenButton:Show();
+		self.CloseButton:Hide();
+	end
 end

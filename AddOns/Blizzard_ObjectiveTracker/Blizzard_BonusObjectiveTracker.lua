@@ -187,8 +187,7 @@ function BonusObjectiveTracker_OnBlockClick(self, button)
 				else
 					local _, mapID = C_TaskQuest.GetQuestZoneID(self.TrackedQuest.questID);
 					if mapID then
-						ShowQuestLog();
-						SetMapByID(mapID);
+						OpenQuestLog(mapID);
 						WorldMapPing_StartPingQuest(self.TrackedQuest.questID);
 					end
 				end

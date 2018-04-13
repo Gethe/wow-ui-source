@@ -17,6 +17,33 @@ function QuestDataProviderMixin:OnAdded(mapCanvas)
 		self.poiQuantizer.size = 75;
 		self.poiQuantizer:OnLoad(self.poiQuantizer.size, self.poiQuantizer.size);
 	end
+
+	if not self.setFocusedQuestIDCallback then
+		self.setFocusedQuestIDCallback = function(event, ...) self:SetFocusedQuestID(...); end;
+	end
+	if not self.clearFocusedQuestIDCallback then
+		self.clearFocusedQuestIDCallback = function(event, ...) self:ClearFocusedQuestID(...); end;
+	end
+	
+	self:GetMap():RegisterCallback("SetFocusedQuestID", self.setFocusedQuestIDCallback);
+	self:GetMap():RegisterCallback("ClearFocusedQuestID", self.clearFocusedQuestIDCallback);
+end
+
+function QuestDataProviderMixin:OnRemoved(mapCanvas)
+	MapCanvasDataProviderMixin.OnRemoved(self, mapCanvas);
+
+	self:GetMap():UnregisterCallback("SetFocusedQuestID", self.setFocusedQuestIDCallback);
+	self:GetMap():UnregisterCallback("ClearFocusedQuestID", self.clearFocusedQuestIDCallback);
+end
+
+function QuestDataProviderMixin:SetFocusedQuestID(questID)
+	self.focusedQuestID = questID;
+	self:RefreshAllData();
+end
+
+function QuestDataProviderMixin:ClearFocusedQuestID(questID)
+	self.focusedQuestID = nil;
+	self:RefreshAllData();
 end
 
 function QuestDataProviderMixin:OnEvent(event, ...)
@@ -70,11 +97,10 @@ function QuestDataProviderMixin:RefreshAllData(fromOnShow)
 end
 
 function QuestDataProviderMixin:ShouldShowQuest(questID, mapType)
+	if self.focusedQuestID and self.focusedQuestID ~= questID then
+		return false;
+	end
 	return MapUtil.ShouldMapTypeShowQuests(mapType);
-end
-
-function QuestDataProviderMixin:OnMapChanged()
-	self:RefreshAllData();
 end
 
 function QuestDataProviderMixin:AssignMissingNumbersToPins()

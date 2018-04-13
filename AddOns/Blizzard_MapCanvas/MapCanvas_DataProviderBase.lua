@@ -69,6 +69,7 @@ end
 
 function MapCanvasDataProviderMixin:OnMapChanged()
 	--  Optionally override in your mixin, called when map ID changes
+	self:RefreshAllData();
 end
 
 function MapCanvasDataProviderMixin:RegisterEvent(event)

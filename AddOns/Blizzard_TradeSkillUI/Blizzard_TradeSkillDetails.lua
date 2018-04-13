@@ -139,14 +139,20 @@ function TradeSkillDetailsMixin:RefreshDisplay()
 			self.Contents.StarsFrame:Show();
 			for i, starFrame in ipairs(self.Contents.StarsFrame.Stars) do
 				starFrame.EarnedStar:SetShown(i <= currentRank);
-				if (i > currentRank and not self.flashingStar and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRADESKILL_RANK_STAR)) then
+				if (i > currentRank and (not self.flashingStar or self.flashingStarRecipeID ~= self.selectedRecipeID) and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRADESKILL_RANK_STAR)) then
+					if (self.flashingStar) then
+						self.flashingStar.FlashStar:Hide();
+						self.flashingStar.Pulse:Stop();
+					end
 					starFrame.FlashStar:Show();
 					starFrame.Pulse:Play();
 					self.flashingStar = starFrame;
-				elseif (i == #self.Contents.StarsFrame.Stars and self.flashingStar) then
+					self.flashingStarRecipeID = self.selectedRecipeID;
+				elseif (i == #self.Contents.StarsFrame.Stars and currentRank == #self.Contents.StarsFrame.Stars and self.flashingStar) then
 					self.flashingStar.FlashStar:Hide();
 					self.flashingStar.Pulse:Stop();
 					self.flashingStar = nil;
+					self.flashingStarRecipeID = nil;
 				end
 			end
 			self:AddContentWidget(self.Contents.StarsFrame);

@@ -82,11 +82,20 @@ function UIDropDownMenu_Initialize(frame, initFunction, displayMode, level, menu
 		level = 1;
 	end
 
-	local dropDownList = _G["DropDownList"..level]
+	local dropDownList = _G["DropDownList"..level];
 	dropDownList.dropdown = frame;
 	dropDownList.shouldRefresh = true;
 
+	UIDropDownMenu_SetDisplayMode(frame, displayMode);
+end
+
+function UIDropDownMenu_SetInitializeFunction(frame, initFunction)
+	frame.initialize = initFunction;
+end
+
+function UIDropDownMenu_SetDisplayMode(frame, displayMode)
 	-- Change appearance based on the displayMode
+	-- Note: this is a one time change based on previous behavior.
 	if ( displayMode == "MENU" ) then
 		local name = frame:GetName();
 		GetChild(frame, name, "Left"):Hide();
@@ -105,11 +114,6 @@ function UIDropDownMenu_Initialize(frame, initFunction, displayMode, level, menu
 		button:SetPoint("RIGHT", text, "RIGHT", 6, 0);
 		frame.displayMode = "MENU";
 	end
-
-end
-
-function UIDropDownMenu_SetInitializeFunction(frame, initFunction)
-	frame.initialize = initFunction;
 end
 
 function UIDropDownMenu_RefreshDropDownSize(self)

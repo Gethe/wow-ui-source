@@ -5,7 +5,7 @@ CHAT_TELL_ALERT_TIME = 300;
 NUM_CHAT_WINDOWS = 10;
 DEFAULT_CHAT_FRAME = ChatFrame1;
 NUM_REMEMBERED_TELLS = 10;
-MAX_WOW_CHAT_CHANNELS = 10;
+MAX_WOW_CHAT_CHANNELS = 20;
 
 CHAT_TIMESTAMP_FORMAT = nil;		-- gets set from Interface Options
 CHAT_SHOW_IME = false;
@@ -93,6 +93,16 @@ ChatTypeInfo["CHANNEL7"]								= { sticky = 1, flashTab = false, flashTabOnGene
 ChatTypeInfo["CHANNEL8"]								= { sticky = 1, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["CHANNEL9"]								= { sticky = 1, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["CHANNEL10"]								= { sticky = 1, flashTab = false, flashTabOnGeneral = false };
+ChatTypeInfo["CHANNEL11"]								= { sticky = 1, flashTab = false, flashTabOnGeneral = false };
+ChatTypeInfo["CHANNEL12"]								= { sticky = 1, flashTab = false, flashTabOnGeneral = false };
+ChatTypeInfo["CHANNEL13"]								= { sticky = 1, flashTab = false, flashTabOnGeneral = false };
+ChatTypeInfo["CHANNEL14"]								= { sticky = 1, flashTab = false, flashTabOnGeneral = false };
+ChatTypeInfo["CHANNEL15"]								= { sticky = 1, flashTab = false, flashTabOnGeneral = false };
+ChatTypeInfo["CHANNEL16"]								= { sticky = 1, flashTab = false, flashTabOnGeneral = false };
+ChatTypeInfo["CHANNEL17"]								= { sticky = 1, flashTab = false, flashTabOnGeneral = false };
+ChatTypeInfo["CHANNEL18"]								= { sticky = 1, flashTab = false, flashTabOnGeneral = false };
+ChatTypeInfo["CHANNEL19"]								= { sticky = 1, flashTab = false, flashTabOnGeneral = false };
+ChatTypeInfo["CHANNEL20"]								= { sticky = 1, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["ACHIEVEMENT"]								= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["GUILD_ACHIEVEMENT"]						= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["PARTY_LEADER"]							= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
@@ -108,6 +118,7 @@ ChatTypeInfo["BN_WHISPER_PLAYER_OFFLINE"] 				= { sticky = 0, flashTab = false, 
 ChatTypeInfo["PET_BATTLE_COMBAT_LOG"]					= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["PET_BATTLE_INFO"]							= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["GUILD_ITEM_LOOTED"]						= ChatTypeInfo["GUILD_ACHIEVEMENT"];
+ChatTypeInfo["COMMUNITIES_CHANNEL"]						= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 
 --NEW_CHAT_TYPE -Add the info here.
 
@@ -253,6 +264,9 @@ ChatTypeGroup["CHANNEL"] = {
 	"CHAT_MSG_CHANNEL_NOTICE_USER",
 	"CHAT_MSG_CHANNEL_LIST",
 };
+ChatTypeGroup["COMMUNITIES_CHANNEL"] = {
+	"CHAT_MSG_COMMUNITIES_CHANNEL",
+}
 ChatTypeGroup["TARGETICONS"] = {
 	"CHAT_MSG_TARGETICONS"
 };
@@ -298,12 +312,44 @@ for category, sublist in pairs(CHAT_CATEGORY_LIST) do
 	end
 end
 
+function Chat_GetChatFrame(chatFrameIndex)
+	return _G["ChatFrame"..chatFrameIndex];
+end
+
 function Chat_GetChatCategory(chatType)
 	return CHAT_INVERTED_CATEGORY_LIST[chatType] or chatType;
 end
 
 function Chat_GetChannelColor(chatInfo)
 	return chatInfo.r, chatInfo.g, chatInfo.b;
+end
+
+function Chat_GetCommunitiesChannelName(clubId, streamId)
+	return clubId..":"..streamId;
+end
+
+local function Chat_GetCommunitiesChannel(clubId, streamId)
+	local communitiesChannelName = Chat_GetCommunitiesChannelName(clubId, streamId);
+	for i = 1, MAX_WOW_CHAT_CHANNELS do
+		local channelID, channelName = GetChannelName(i);
+		if channelName and channelName == communitiesChannelName then
+			return "CHANNEL"..i;
+		end
+	end
+
+	return nil;
+end
+
+function Chat_GetCommunitiesChannelColor(clubId, streamId)
+	local channel = Chat_GetCommunitiesChannel(clubId, streamId);
+	if channel then
+		local chatInfo = ChatTypeInfo[channel];
+		if chatInfo then
+			return Chat_GetChannelColor(chatInfo);
+		end
+	end
+
+	return DEFAULT_CHAT_CHANNEL_COLOR:GetRGB();
 end
 
 -- list of text emotes that we want to show on the Emote submenu (these have anims)
@@ -708,13 +754,32 @@ GROUP_LANGUAGE_INDEPENDENT_STRINGS =
 	"g8",
 };
 
+local MAX_COMMUNITY_NAME_LENGTH = 12;
 function ChatFrame_TruncateToMaxLength(text, maxLength)
 	local length = strlenutf8(text);
 	if ( length > maxLength ) then
 		return text:sub(1, maxLength - 2).."...";
 	end
-	
+
 	return text;
+end
+
+function ChatFrame_ResolvePrefixedChannelName(communityChannel)
+	local prefix, communityChannel = communityChannel:match("(%d+. )(.*)");
+	return prefix..ChatFrame_ResolveChannelName(communityChannel);
+end
+
+function ChatFrame_ResolveChannelName(communityChannel)
+	local communityId, streamId = communityChannel:match("(%d+)%:(%d+)");
+	if not communityId or not streamId then
+		return communityChannel;
+	end
+
+	local clubInfo = C_Club.GetClubInfo(communityId);
+	local streamInfo = C_Club.GetStreamInfo(communityId, streamId);
+	local communityName = clubInfo and ChatFrame_TruncateToMaxLength(clubInfo.name, MAX_COMMUNITY_NAME_LENGTH) or "";
+	local streamName = streamInfo and ChatFrame_TruncateToMaxLength(streamInfo.name, MAX_COMMUNITY_NAME_LENGTH)  or "";
+	return communityName.." - "..streamName;
 end
 
 --
@@ -1836,36 +1901,6 @@ SlashCmdList["CHAT_UNMODERATOR"] =
 		end
 	end
 
-SlashCmdList["CHAT_MUTE"] =
-	function(msg)
-		local channel, player = strmatch(msg, "%s*([^%s]+)%s*(.*)");
-		if ( not channel or not player ) then
-			return;
-		end
-		if ( strlen(player) > MAX_CHARACTER_NAME_BYTES ) then
-			ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
-			return;
-		end
-		if ( channel and player ) then
-			ChannelMute(channel, player);
-		end
-	end
-
-SlashCmdList["CHAT_UNMUTE"] =
-	function(msg)
-		local channel, player = strmatch(msg, "%s*([^%s]+)%s*(.*)");
-		if ( not channel or not player ) then
-			return;
-		end
-		if ( strlen(player) > MAX_CHARACTER_NAME_BYTES ) then
-			ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
-			return;
-		end
-		if ( channel and player ) then
-			ChannelUnmute(channel, player);
-		end
-	end
-
 SlashCmdList["CHAT_CINVITE"] =
 	function(msg)
 		local channel, player = strmatch(msg, "%s*([^%s]+)%s*(.*)");
@@ -2592,11 +2627,11 @@ function ChatFrame_OnLoad(self)
 	self:SetIndentedWordWrap(true);
 	self:SetJustifyH("LEFT");
 
-	self.flashTimer = 0;
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("UPDATE_CHAT_COLOR");
 	self:RegisterEvent("UPDATE_CHAT_WINDOWS");
 	self:RegisterEvent("CHAT_MSG_CHANNEL");
+	self:RegisterEvent("CHAT_MSG_COMMUNITIES_CHANNEL");
 	self:RegisterEvent("UPDATE_INSTANCE_INFO");
 	self:RegisterEvent("UPDATE_CHAT_COLOR_NAME_BY_CLASS");
 	self:RegisterEvent("VARIABLES_LOADED");
@@ -3069,7 +3104,7 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 
 		local channelLength = strlen(arg4);
 		local infoType = type;
-		if ( (strsub(type, 1, 7) == "CHANNEL") and (type ~= "CHANNEL_LIST") and ((arg1 ~= "INVITE") or (type ~= "CHANNEL_NOTICE_USER")) ) then
+		if ( (type == "COMMUNITIES_CHANNEL") or ((strsub(type, 1, 7) == "CHANNEL") and (type ~= "CHANNEL_LIST") and ((arg1 ~= "INVITE") or (type ~= "CHANNEL_NOTICE_USER"))) ) then
 			if ( arg1 == "WRONG_PASSWORD" ) then
 				local staticPopup = _G[StaticPopup_Visible("CHAT_CHANNEL_PASSWORD") or ""];
 				if ( staticPopup and strupper(staticPopup.data) == strupper(arg9) ) then
@@ -3224,7 +3259,7 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 			end
 		elseif (type == "CHANNEL_NOTICE") then
 			local globalstring;
-			if( arg1 == "TRIAL_RESTRICTED" ) then
+			if ( arg1 == "TRIAL_RESTRICTED" ) then
 				globalstring = CHAT_TRIAL_RESTRICTED_NOTICE_TRIAL;
 			else
 				globalstring = _G["CHAT_"..arg1.."_NOTICE_BN"];
@@ -3238,7 +3273,7 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 			end
 			local accessID = ChatHistory_GetAccessID(Chat_GetChatCategory(type), arg8);
 			local typeID = ChatHistory_GetAccessID(infoType, arg8, arg12);
-			self:AddMessage(format(globalstring, arg8, arg4), info.r, info.g, info.b, info.id, accessID, typeID);
+			self:AddMessage(format(globalstring, arg8, ChatFrame_ResolvePrefixedChannelName(arg4)), info.r, info.g, info.b, info.id, accessID, typeID);
 		elseif ( type == "BN_INLINE_TOAST_ALERT" ) then
 			local globalstring = _G["BN_INLINE_TOAST_"..arg1];
 			if not globalstring then
@@ -3382,9 +3417,8 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 			end
 
 			-- Add Channel
-			arg4 = gsub(arg4, "%s%-%s.*", "");
-			if(channelLength > 0) then
-				body = "|Hchannel:channel:"..arg8.."|h["..arg4.."]|h "..body;
+			if (channelLength > 0) then
+				body = "|Hchannel:channel:"..arg8.."|h["..ChatFrame_ResolvePrefixedChannelName(arg4).."]|h "..body;
 			end
 
 			--Add Timestamps
@@ -3462,7 +3496,19 @@ function ChatFrame_GetMessageEventFilters (event)
 end
 
 function ChatFrame_OnUpdate(self, elapsedSec)
-	-- TODO: No longer updating scroll to bottom flash, remains as a hookable function
+	local flash = self.ScrollToBottomButton.Flash;
+	if flash then
+		local shouldFlash = not self:AtBottom();
+
+		if shouldFlash ~= UIFrameIsFlashing(flash) then
+			if shouldFlash then
+				UIFrameFlash(flash, .1, .1, -1, false, CHAT_BUTTON_FLASH_TIME, CHAT_BUTTON_FLASH_TIME);
+				FCF_FadeInScrollbar(self);
+			else
+				UIFrameFlashStop(flash);
+			end
+		end
+	end
 end
 
 function ChatFrame_OnHyperlinkShow(self, link, text, button)
@@ -4101,9 +4147,11 @@ function ChatEdit_UpdateHeader(editBox)
 	elseif ( type == "EMOTE" ) then
 		header:SetFormattedText(CHAT_EMOTE_SEND, UnitName("player"));
 	elseif ( type == "CHANNEL" ) then
-		local channel, channelName, instanceID = GetChannelName(editBox:GetAttribute("channelTarget"));
+		local channel, channelName, instanceID, isCommunitiesChannel = GetChannelName(editBox:GetAttribute("channelTarget"));
 		if ( channelName ) then
-			if ( instanceID > 0 ) then
+			if ( isCommunitiesChannel ) then
+				channelName = ChatFrame_ResolveChannelName(channelName);
+			elseif ( instanceID > 0 ) then
 				channelName = channelName.." "..instanceID;
 			end
 			info = ChatTypeInfo["CHANNEL"..channel];

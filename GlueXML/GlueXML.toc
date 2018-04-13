@@ -1,6 +1,7 @@
 ##DebugHook.lua
 ..\SharedXML\C_TimerAugment.lua
 ..\SharedXML\Util.lua
+..\SharedXML\BindingUtil.lua
 ..\SharedXML\FrameUtil.lua
 ..\SharedXML\SoundKitConstants.lua
 ..\SharedXML\Pools.lua
@@ -15,6 +16,7 @@ GlueLocalization.xml
 ..\SharedXML\SecureUIPanelTemplates.xml
 ..\SharedXML\SharedUIPanelTemplates.xml
 ..\SharedXML\SharedBasicControls.xml
+..\SharedXML\KeyCommand.lua
 GlueTemplates.xml
 ## add new files after here
 GlueButtons.xml

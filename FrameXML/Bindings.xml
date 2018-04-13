@@ -1102,12 +1102,11 @@
 	<Binding name="MASTERVOLUMEDOWN" category="BINDING_HEADER_MISC">
 		Sound_MasterVolumeDown();
 	</Binding>
-	<Binding name="TOGGLESELFMUTE" category="BINDING_HEADER_MISC">
-		if ( GetCVar("VoiceChatSelfMute") == "0" ) then
-			SetCVar("VoiceChatSelfMute", 1);
-		else
-			SetCVar("VoiceChatSelfMute", 0);
-		end
+	<Binding name="TOGGLE_VOICE_SELF_MUTE" category="BINDING_HEADER_MISC">
+		C_VoiceChat.ToggleMuted();
+	</Binding>
+	<Binding name="TOGGLE_VOICE_SELF_DEAFEN" category="BINDING_HEADER_MISC">
+		C_VoiceChat.ToggleDeafened();
 	</Binding>
 	<Binding name="TOGGLE_VOICE_PUSH_TO_TALK" runOnUp="true" category="BINDING_HEADER_MISC" isCustom="true">
 		nop(); -- Action handler is custom

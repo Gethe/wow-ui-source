@@ -126,10 +126,13 @@ function WorldMapActionButtonMixin:OnClick()
 end
 
 function WorldMapActionButtonMixin:OnEnter()
+	WorldMap_HijackTooltip(self:GetParent());
+
 	WorldMapTooltip:SetOwner(self, "ANCHOR_RIGHT", 0, -60);
 	WorldMapTooltip:SetSpellByID(self.spellID);
 end
 
 function WorldMapActionButtonMixin:OnLeave()
 	WorldMapTooltip:Hide();
+	WorldMap_RestoreTooltip();
 end

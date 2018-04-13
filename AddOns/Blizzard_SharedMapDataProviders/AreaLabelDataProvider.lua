@@ -5,28 +5,33 @@ function AreaLabelDataProviderMixin:OnAdded(mapCanvas)
 	MapCanvasDataProviderMixin.OnAdded(self, mapCanvas);
 
 	if not self.Label then
-		self.Label = CreateFrame("FRAME", nil, self:GetMap(), "AreaLabelFrameTemplate");
-		self.Label:SetPoint("TOP", self:GetMap(), 0, self:GetOffsetY());
-		self.Label:SetScale(self:GetContentsScale());
-		self.Label:SetFrameStrata("HIGH");
-		self.Label.dataProvider = self;
+		self.Label = CreateFrame("FRAME", nil, self:GetMap():GetCanvasContainer(), "AreaLabelFrameTemplate");
 
-		self:GetMap():RegisterCallback("SetAreaLabel", function(event, ...) self.Label:SetLabel(...); end);
-		self:GetMap():RegisterCallback("ClearAreaLabel", function(event, ...) self.Label:ClearLabel(...); end);		
+		self.setAreaLabelCallback = function(event, ...) self.Label:SetLabel(...); end;
+		self.clearAreaLabelCallback = function(event, ...) self.Label:ClearLabel(...); end;
+	else
+		self.Label:SetParent(self:GetMap():GetCanvasContainer());
 	end
+
+	self.Label:SetPoint("TOP", self:GetMap():GetCanvasContainer(), 0, self:GetOffsetY());
+	self.Label:SetFrameStrata("HIGH");
+	self.Label.dataProvider = self;
+
+	self:GetMap():RegisterCallback("SetAreaLabel", self.setAreaLabelCallback);
+	self:GetMap():RegisterCallback("ClearAreaLabel", self.clearAreaLabelCallback);		
 
 	self.Label:Show();
 end
 
-function AreaLabelDataProviderMixin:GetContentsScale()
-	return self.scale or 1;
-end
+function AreaLabelDataProviderMixin:OnRemoved(mapCanvas)
+	MapCanvasDataProviderMixin.OnAdded(self, mapCanvas);
 
-function AreaLabelDataProviderMixin:SetContentsScale(scale)
-	self.scale = scale;
-	if self.Label then
-		self.Label:SetScale(scale);
-	end
+	self:GetMap():UnregisterCallback("SetAreaLabel", self.setAreaLabelCallback);
+	self:GetMap():UnregisterCallback("ClearAreaLabel", self.clearAreaLabelCallback);	
+	
+	self.Label.dataProvider = nil;
+	self.Label:ClearAllPoints();
+	self.Label:Hide();
 end
 
 function AreaLabelDataProviderMixin:GetOffsetY()
@@ -56,7 +61,6 @@ AreaLabelFrameMixin = { };
 
 function AreaLabelFrameMixin:OnLoad()
 	self.labelInfoByType = { };
-	self:SetScale(0.695);
 end
 
 function AreaLabelFrameMixin:OnUpdate()

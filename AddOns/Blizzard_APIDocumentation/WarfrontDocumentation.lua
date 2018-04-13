@@ -74,15 +74,14 @@ local Warfront =
 		{
 			Name = "WarfrontResourceType",
 			Type = "Enumeration",
-			NumValues = 4,
+			NumValues = 3,
 			MinValue = 0,
-			MaxValue = 3,
+			MaxValue = 2,
 			Fields =
 			{
-				{ Name = "Food", Type = "WarfrontResourceType", EnumValue = 0 },
-				{ Name = "Iron", Type = "WarfrontResourceType", EnumValue = 1 },
-				{ Name = "Lumber", Type = "WarfrontResourceType", EnumValue = 2 },
-				{ Name = "Essence", Type = "WarfrontResourceType", EnumValue = 3 },
+				{ Name = "Iron", Type = "WarfrontResourceType", EnumValue = 0 },
+				{ Name = "Lumber", Type = "WarfrontResourceType", EnumValue = 1 },
+				{ Name = "Essence", Type = "WarfrontResourceType", EnumValue = 2 },
 			},
 		},
 		{

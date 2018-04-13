@@ -995,9 +995,8 @@ StaticPopupDialogs["CONFIRM_REPORT_SPAM_CHAT"] = {
 	text = REPORT_SPAM_CONFIRMATION,
 	button1 = ACCEPT,
 	button2 = CANCEL,
-	OnAccept = function(self, lineID)
-		ReportPlayer(PLAYER_REPORT_TYPE_SPAM, lineID);
-		--ComplainChat(lineID);
+	OnAccept = function(self, playerLocation)
+		C_ChatInfo.ReportPlayer(PLAYER_REPORT_TYPE_SPAM, playerLocation);
 	end,
 	timeout = 0,
 	whileDead = 1,
@@ -1010,7 +1009,7 @@ StaticPopupDialogs["CONFIRM_REPORT_BATTLEPET_NAME"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnAccept = function(self)
-		ReportPlayer(PLAYER_REPORT_TYPE_BAD_BATTLEPET_NAME, "pending");
+		C_ChatInfo.ReportPlayer(PLAYER_REPORT_TYPE_BAD_BATTLEPET_NAME);
 	end,
 	timeout = 0,
 	whileDead = 1,
@@ -1023,7 +1022,7 @@ StaticPopupDialogs["CONFIRM_REPORT_PET_NAME"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnAccept = function(self)
-		ReportPlayer(PLAYER_REPORT_TYPE_BAD_PET_NAME, "pending");
+		C_ChatInfo.ReportPlayer(PLAYER_REPORT_TYPE_BAD_PET_NAME);
 	end,
 	timeout = 0,
 	whileDead = 1,
@@ -1035,8 +1034,21 @@ StaticPopupDialogs["CONFIRM_REPORT_BAD_LANGUAGE_CHAT"] = {
 	text = REPORT_BAD_LANGUAGE_CONFIRMATION,
 	button1 = ACCEPT,
 	button2 = CANCEL,
-	OnAccept = function(self, lineID)
-		ReportPlayer(PLAYER_REPORT_TYPE_LANGUAGE, lineID);
+	OnAccept = function(self, playerLocation)
+		C_ChatInfo.ReportPlayer(PLAYER_REPORT_TYPE_LANGUAGE, playerLocation);
+	end,
+	timeout = 0,
+	whileDead = 1,
+	exclusive = 1,
+	hideOnEscape = 1
+};
+
+StaticPopupDialogs["CONFIRM_REPORT_BAD_LANGUAGE_VOICE"] = {
+	text = REPORT_BAD_LANGUAGE_VOICE_CONFIRMATION,
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	OnAccept = function(self, playerLocation)
+		C_ChatInfo.ReportPlayer(PLAYER_REPORT_TYPE_LANGUAGE_VOICE, playerLocation);
 	end,
 	timeout = 0,
 	whileDead = 1,
@@ -2317,7 +2329,7 @@ StaticPopupDialogs["SET_COMMUNITY_MEMBER_NOTE"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	hasEditBox = 1,
-	maxLetters = 127,
+	maxLetters = 200,
 	countInvisibleLetters = true,
 	editBoxWidth = 350,
 	OnAccept = function(self, data)
@@ -3978,13 +3990,16 @@ StaticPopupDialogs["INVITE_COMMUNITY_MEMBER"] = {
 	autoCompleteSource = C_Club.GetInvitationCandidates,
 	autoCompleteArgs = {}, -- set dynamically below.
 	OnShow = function(self, clubId)
-		AutoCompleteEditBox_SetAutoCompleteSource(self.editBox, C_Club.GetInvitationCandidates, clubId);
 		self.editBox:SetFocus();
-		
+
 		local clubInfo = C_Club.GetClubInfo(clubId);
-		local isBattleNetClub = clubInfo.clubType == Enum.ClubType.BattleNet;
-		local instructions = isBattleNetClub and INVITE_COMMUNITY_MEMBER_POPUP_INVITE_SUB_TEXT_BTAG or INVITE_COMMUNITY_MEMBER_POPUP_INVITE_SUB_TEXT_CHARACTER;
-		self.SubText:SetText(instructions);
+		if clubInfo.clubType == Enum.ClubType.BattleNet then
+			AutoCompleteEditBox_SetAutoCompleteSource(self.editBox, C_Club.GetInvitationCandidates, clubId);
+			self.SubText:SetText(INVITE_COMMUNITY_MEMBER_POPUP_INVITE_SUB_TEXT_BTAG);
+		else
+			AutoCompleteEditBox_SetAutoCompleteSource(self.editBox, GetAutoCompleteResults, AUTOCOMPLETE_LIST.COMMUNITY.include, AUTOCOMPLETE_LIST.COMMUNITY.exclude);
+			self.SubText:SetText(INVITE_COMMUNITY_MEMBER_POPUP_INVITE_SUB_TEXT_CHARACTER);
+		end
 	end,
 	OnHide = function(self)
 		ChatEdit_FocusActiveWindow();
@@ -4115,7 +4130,7 @@ function StaticPopup_Resize(dialog, which)
 	if ( info.verticalButtonLayout ) then
 		height = height + 16 + (26 * (dialog.numButtons - 1));
 	end
-	
+
 	if ( height > maxHeightSoFar ) then
 		dialog:SetHeight(height);
 		dialog.maxHeightSoFar = height;
@@ -4153,7 +4168,7 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 	if ( info.exclusive ) then
 		StaticPopup_HideExclusive();
 	end
-	
+
 	if ( info.cancels ) then
 		for index = 1, STATICPOPUP_NUMDIALOGS, 1 do
 			local frame = _G["StaticPopup"..index];
@@ -4360,7 +4375,7 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 	else
 		dialog.SubText:Hide();
 	end
-		
+
 	if ( insertedFrame ) then
 		insertedFrame:SetParent(dialog);
 		insertedFrame:ClearAllPoints();

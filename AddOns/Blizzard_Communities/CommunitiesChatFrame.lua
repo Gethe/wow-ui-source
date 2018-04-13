@@ -48,14 +48,16 @@ function CommunitiesChatMixin:OnShow()
 
 	self.streamSelectedCallback = StreamSelectedCallback;
 	self:GetCommunitiesFrame():RegisterCallback(CommunitiesFrameMixin.Event.StreamSelected, self.streamSelectedCallback);
+	
+	self:UpdateChatColor();
 end
 
 function CommunitiesChatMixin:OnEvent(event, ...)
 	if event == "CLUB_MESSAGE_ADDED" then
 		local clubId, streamId, messageId = ...;
-		if clubId == self:GetCommunitiesFrame():GetSelectedClubId() and self:GetCommunitiesFrame():GetSelectedStreamId() then
+		if clubId == self:GetCommunitiesFrame():GetSelectedClubId() and streamId == self:GetCommunitiesFrame():GetSelectedStreamId() then
 			local message = C_Club.GetMessageInfo(clubId, streamId, messageId);
-			self.MessageFrame:AddMessage(COMMUNITIES_CHAT_MESSAGE_FORMAT:format(message.author.name, message.content), BATTLENET_FONT_COLOR:GetRGB());
+			self:AddMessage(message);
 		end
 	elseif event == "CLUB_MESSAGE_HISTORY_RECEIVED" then
 		local clubId, streamId, downloadedRange, contiguousRange = ...;
@@ -80,7 +82,9 @@ end
 function CommunitiesChatMixin:SendMessage(text)
 	local clubId = self:GetCommunitiesFrame():GetSelectedClubId();
 	local streamId = self:GetCommunitiesFrame():GetSelectedStreamId();
-	C_Club.SendMessage(clubId, streamId, text);
+	if (clubId ~= nil and streamId ~= nil and C_Club.IsSubscribedToStream(clubId, streamId)) then
+		C_Club.SendMessage(clubId, streamId, text);
+	end
 end
 
 function CommunitiesChatMixin:GetMessagesToDisplay()
@@ -115,8 +119,7 @@ function CommunitiesChatMixin:BackfillMessages(newOldestMessage)
 	local messages = C_Club.GetMessagesInRange(clubId, streamId, newOldestMessage, self.messageRangeOldest);
 	for index = #messages - 1, 1, -1 do
 		local message = messages[index];
-		local formattedMessage = COMMUNITIES_CHAT_MESSAGE_FORMAT:format(message.author.name, message.content);
-		self.MessageFrame:BackFillMessage(formattedMessage, BATTLENET_FONT_COLOR:GetRGB());
+		self:BackFillMessage(message);
 	end
 	
 	self.messageRangeOldest = newOldestMessage;
@@ -149,8 +152,7 @@ function CommunitiesChatMixin:DisplayChat()
 			streamViewMarker = nil;
 		end
 		
-		local formattedMessage = COMMUNITIES_CHAT_MESSAGE_FORMAT:format(message.author.name, message.content);
-		self.MessageFrame:AddMessage(formattedMessage, BATTLENET_FONT_COLOR:GetRGB());
+		self:AddMessage(message);
 	end
 	
 	C_Club.AdvanceStreamViewMarker(clubId, streamId);
@@ -162,6 +164,71 @@ function CommunitiesChatMixin:UpdateScrollbar()
 	local maxValue = math.max(numMessages, 1);
 	self.MessageFrame.ScrollBar:SetMinMaxValues(1, maxValue);
 	self.MessageFrame.ScrollBar:SetValue(maxValue - self.MessageFrame:GetScrollOffset());
+end
+
+function CommunitiesChatMixin:UpdateChatColor()
+	local r, g, b = self:GetChatColor();
+	if not r then
+		return;
+	end
+	
+	local function TransformColor()
+		return true, r, g, b;
+	end
+	self.MessageFrame:AdjustMessageColors(TransformColor);
+end
+
+function CommunitiesChatMixin:GetChatColor()
+	local clubId = self:GetCommunitiesFrame():GetSelectedClubId();
+	if not clubId then
+		return nil;
+	end
+	
+	local clubInfo = C_Club.GetClubInfo(clubId);
+	if not clubInfo then
+		return nil;
+	end
+	
+	if clubInfo.clubType == Enum.ClubType.BattleNet then
+		return BATTLENET_FONT_COLOR:GetRGB();
+	else
+		local streamId = self:GetCommunitiesFrame():GetSelectedStreamId();
+		if not streamId then
+			return nil;
+		end
+		
+		return Chat_GetCommunitiesChannelColor(clubId, streamId);
+	end
+end
+
+function CommunitiesChatMixin:FormatMessage(message)
+	if message.author.classID then
+		local classInfo = C_CreatureInfo.GetClassInfo(message.author.classID);
+		if classInfo then
+			local classColorInfo = RAID_CLASS_COLORS[classInfo.classFile];
+			return COMMUNITIES_CHAT_MESSAGE_FORMAT_CHARACTER:format(classColorInfo.colorStr, message.author.name, message.content);
+		end
+	end
+	
+	return COMMUNITIES_CHAT_MESSAGE_FORMAT:format(message.author.name, message.content);
+end
+
+function CommunitiesChatMixin:BackfillMessage(message)
+	local r, g, b = self:GetChatColor();
+	if not r then
+		r, g, b = DEFAULT_CHAT_CHANNEL_COLOR:GetRGB();
+	end
+	
+	self.MessageFrame:BackFillMessage(self:FormatMessage(message), r, g, b);
+end
+
+function CommunitiesChatMixin:AddMessage(message)
+	local r, g, b = self:GetChatColor();
+	if not r then
+		r, g, b = DEFAULT_CHAT_CHANNEL_COLOR:GetRGB();
+	end
+
+	self.MessageFrame:AddMessage(self:FormatMessage(message), r, g, b);
 end
 
 function CommunitiesChatMixin:GetCommunitiesFrame()
@@ -177,53 +244,6 @@ function CommunitiesChatEditBox_OnEnterPressed(self)
 		-- If you hit enter on a blank line, deselect this edit box.
 		self:ClearFocus();
 	end
-end
-
-CommunitiesEditStreamDialogMixin = {}
-
-function CommunitiesEditStreamDialogMixin:OnLoad()
-	self.Subject.EditBox:SetScript("OnTabPressed", 
-		function() 
-			self.NameEdit:SetFocus() 
-		end);
-	self.Cancel:SetScript("OnClick", function() self:Hide(); end);
-	self.NameEdit:SetScript("OnTextChanged", function() self:UpdateAcceptButton(); end);
-end
-
-function CommunitiesEditStreamDialogMixin:ShowCreateDialog(clubId)
-	self.clubId = clubId;
-	self.TitleLabel:SetText(COMMUNITIES_CREATE_CHANNEL);
-	self.NameEdit:SetText("");
-	self.Subject.EditBox:SetText("");
-	self.NameEdit:SetFocus();
-	self.Accept:SetScript("OnClick", function(self)
-		local editStreamDialog = self:GetParent();
-		-- TODO: add an access drop down menu with options for "All Members", and "Moderators and Leaders Only";
-		local moderatorsAndLeadersOnly = editStreamDialog.PermisionsDropDownMenu:GetValue();
-		C_Club.CreateStream(editStreamDialog.clubId, editStreamDialog.NameEdit:GetText(), editStreamDialog.Subject.EditBox:GetText(), moderatorsAndLeadersOnly);
-		editStreamDialog:Hide();
-	end);
-	self:Show();
-end
-
-function CommunitiesEditStreamDialogMixin:ShowEditDialog(clubId, stream)
-	self.create = false;
-	self.TitleLabel:SetText(COMMUNITIES_EDIT_CHANNEL);
-	self.TitleEdit:SetText(stream.name);
-	self.NameEdit:SetText(stream.name);
-	self.NameEdit:SetFocus();
-	self.Subject.EditBox:SetText(stream.subject);
-	self.Accept:SetScript("OnClick", function() 
-		-- TODO: add an access drop down menu with options for "All Members", and "Moderators and Leaders Only";
-		local moderatorsAndLeadersOnly = false;
-		C_Club.EditStream(self.clubId, stream.streamId, self.NameEdit:GetText(), self.Subject.EditBox:GetText())
-		self:Hide();
-	end);
-	self:Show();
-end
-
-function CommunitiesEditStreamDialogMixin:UpdateAcceptButton()
-	self.Accept:SetEnabled(self.NameEdit:GetText() ~= "");
 end
 
 CommunitiesChatPermissionsDropDownMenuMixin = {};

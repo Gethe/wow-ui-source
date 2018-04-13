@@ -1,9 +1,33 @@
 local RESOURCE_ATLAS = {
-	[Enum.WarfrontResourceType.Iron] = "Warfront-HUD-Iron",
-	[Enum.WarfrontResourceType.Lumber] = "Warfront-HUD-Lumber",
-	[Enum.WarfrontResourceType.Essence] = "Warfront-HUD-EssenceOfTheStorms",
-	[Enum.WarfrontResourceType.Food] = "Warfront-HUD-Food",
+	[Enum.WarfrontResourceType.Iron] = "warfront_hud-icon1",
+	[Enum.WarfrontResourceType.Lumber] = "warfront_hud-icon2",
+	[Enum.WarfrontResourceType.Essence] = "warfront_hud-icon3",
 };
+
+WarfrontEventRegisterMixin = {};
+
+function WarfrontEventRegisterMixin:OnLoad()
+	self:RegisterEvent("SCENARIO_UPDATE");
+	self:RegisterEvent("SCENARIO_COMPLETED");
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+end
+
+function WarfrontEventRegisterMixin:OnEvent(event)
+	if ( event == "SCENARIO_UPDATE" or event == "PLAYER_ENTERING_WORLD" ) then
+		-- temp
+		local name = C_Scenario.GetInfo();
+		self.inWarfrontScenario = (name == "The Battle for Stromgarde");
+	elseif ( event == "SCENARIO_COMPLETED" and self.inWarfrontScenario ) then
+		self:OnScenarioCompleted();
+	end
+end
+
+function WarfrontEventRegisterMixin:OnScenarioCompleted()
+	-- temp
+	UIParentLoadAddOn("Blizzard_PVPUI");
+	PlaySound(SOUNDKIT.PVP_THROUGH_QUEUE);
+	TopBannerManager_Show(self, { name="The Battle for Stromgarde", description="Horde wins!" });
+end
 
 WarfrontResourceMixin = { };
 
@@ -19,69 +43,6 @@ function WarfrontResourceMixin:OnEnter()
 	GameTooltip:SetText(resourceInfo.name);
 	GameTooltip:AddLine(resourceInfo.description, 1, 1, 1, 1);
 	GameTooltip:Show();
-end
-
-WarfrontCommandBarMixin = { };
-
-function WarfrontCommandBarMixin:OnLoad()
-	local factionGroup = UnitFactionGroup("player");
-	if ( factionGroup == "Horde" ) then
-		self.Background:SetAtlas("Warfront-Horde-HUD", true);
-	end
-
-	self:RegisterEvent("WARFRONT_UPDATE");
-	self:RegisterEvent("SCENARIO_UPDATE");
-	self:RegisterEvent("SCENARIO_COMPLETED");
-	self:RegisterEvent("PLAYER_ENTERING_WORLD");
-	self:RegisterUnitEvent("UNIT_AURA", "player");
-	self:Update();
-end
-
-function WarfrontCommandBarMixin:OnEvent(event)
-	if ( event == "WARFRONT_UPDATE" or event == "UNIT_AURA" )  then
-		self:Update();
-	elseif ( event == "SCENARIO_UPDATE" or event == "PLAYER_ENTERING_WORLD" ) then
-		-- temp
-		local name = C_Scenario.GetInfo();
-		self.inWarfrontScenario = (name == "The Battle for Stromgarde");
-	elseif ( event == "SCENARIO_COMPLETED" and self.inWarfrontScenario ) then
-		self:OnScenarioCompleted();
-	end
-end
-
-function WarfrontCommandBarMixin:OnShow()
-	UIParent_UpdateTopFramePositions();
-end
-
-function WarfrontCommandBarMixin:OnHide()
-	UIParent_UpdateTopFramePositions();
-end
-
-function WarfrontCommandBarMixin:Update()
-	if ( C_Warfront.InWarfront() ) then
-		self:Show();
-		for i, resourceFrame in ipairs(self.Resources) do
-			local resourceInfo = C_Warfront.GetResourceInfo(resourceFrame.resourceType);
-			resourceFrame.Quantity:SetText(resourceInfo.quantity.."/"..resourceInfo.maxQuantity);
-		end
-	else
-		self:Hide();
-	end
-end
-
-function WarfrontCommandBarMixin:OnScenarioCompleted()
-	-- temp
-	UIParentLoadAddOn("Blizzard_PVPUI");
-	PlaySound(SOUNDKIT.PVP_THROUGH_QUEUE);
-	TopBannerManager_Show(self, { name="The Battle for Stromgarde", description="Horde wins!" });
-end
-
-function WarfrontCommandBarMixin:PlayBanner(...)
-	PvPObjectiveBannerFrame_PlayBanner(PvPObjectiveBannerFrame, ...);
-end
-
-function WarfrontCommandBarMixin:StopBanner(...)
-	PvPObjectiveBannerFrame_StopBanner(PvPObjectiveBannerFrame, ...);
 end
 
 -- only units that appear in both buildable and capturable locations need enabledCondition

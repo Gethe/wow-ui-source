@@ -52,7 +52,7 @@ function ArtifactBarMixin:OnLoad()
 	self:RegisterEvent("UPDATE_EXTRA_ACTIONBAR");
 	self:RegisterEvent("CVAR_UPDATE");
 	self:SetBarColor(ARTIFACT_BAR_COLOR:GetRGB());
-	self.priority = 3; 
+	self.priority = 4; 
 	self.StatusBar:SetOnAnimatedValueChangedCallback(self:AnimatedValueChangedCallback());
 end
 
@@ -124,4 +124,3 @@ end
 function ArtifactTickMixin:OnLeave()
 	GameTooltip_Hide();
 end
-

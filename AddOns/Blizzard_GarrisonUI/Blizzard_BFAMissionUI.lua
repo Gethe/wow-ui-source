@@ -80,11 +80,11 @@ function BFAMission:SelectTab(id)
 	end
 	GarrisonFollowerMission.SelectTab(self, id);
 	if (id == 1) then
-		self.TitleText:SetText(ORDER_HALL_MISSIONS);
+		self.TitleText:SetText(WAR_MISSIONS);
 		self.FollowerList:Hide();
 		self.BackgroundTile:Show()
 	elseif (id == 2) then
-		self.TitleText:SetText(ORDER_HALL_FOLLOWERS);
+		self.TitleText:SetText(WAR_FOLLOWERS);
 		self.BackgroundTile:Show()
 	end
 end

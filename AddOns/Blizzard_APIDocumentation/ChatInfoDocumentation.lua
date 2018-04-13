@@ -7,6 +7,20 @@ local ChatInfo =
 	Functions =
 	{
 		{
+			Name = "CanReportPlayer",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "playerLocation", Type = "table", Mixin = "PlayerLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "canReport", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "GetChannelRosterInfo",
 			Type = "Function",
 
@@ -74,6 +88,17 @@ local ChatInfo =
 			Returns =
 			{
 				{ Name = "successfulRequest", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ReportPlayer",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "complaintType", Type = "string", Nilable = false },
+				{ Name = "playerLocation", Type = "table", Mixin = "PlayerLocationMixin", Nilable = true },
+				{ Name = "comment", Type = "string", Nilable = true },
 			},
 		},
 		{
@@ -792,6 +817,31 @@ local ChatInfo =
 			Name = "ChatMsgCombatXpGain",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_COMBAT_XP_GAIN",
+			Payload =
+			{
+				{ Name = "text", Type = "string", Nilable = false },
+				{ Name = "playerName", Type = "string", Nilable = false },
+				{ Name = "languageName", Type = "string", Nilable = false },
+				{ Name = "channelName", Type = "string", Nilable = false },
+				{ Name = "playerName2", Type = "string", Nilable = false },
+				{ Name = "specialFlags", Type = "string", Nilable = false },
+				{ Name = "zoneChannelID", Type = "number", Nilable = false },
+				{ Name = "channelIndex", Type = "number", Nilable = false },
+				{ Name = "channelBaseName", Type = "string", Nilable = false },
+				{ Name = "unused", Type = "number", Nilable = false },
+				{ Name = "lineID", Type = "number", Nilable = false },
+				{ Name = "guid", Type = "string", Nilable = false },
+				{ Name = "bnSenderID", Type = "number", Nilable = false },
+				{ Name = "isMobile", Type = "bool", Nilable = false },
+				{ Name = "isSubtitle", Type = "bool", Nilable = false },
+				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false },
+				{ Name = "supressRaidIcons", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ChatMsgCommunitiesChannel",
+			Type = "Event",
+			LiteralName = "CHAT_MSG_COMMUNITIES_CHANNEL",
 			Payload =
 			{
 				{ Name = "text", Type = "string", Nilable = false },

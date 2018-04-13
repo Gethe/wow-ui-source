@@ -15,14 +15,12 @@ local function DoesLandMarkTypeShowHighlights(landmarkType, textureKitPrefix)
 		or landmarkType == LE_MAP_LANDMARK_TYPE_TAMER
 		or landmarkType == LE_MAP_LANDMARK_TYPE_GOSSIP
 		or landmarkType == LE_MAP_LANDMARK_TYPE_TAXINODE
-		or landmarkType == LE_MAP_LANDMARK_TYPE_VIGNETTE
-		or landmarkType == LE_MAP_LANDMARK_TYPE_INVASION
 		or landmarkType == LE_MAP_LANDMARK_TYPE_CONTRIBUTION
 		or landmarkType == LE_MAP_LANDMARK_TYPE_MAP_LINK;
 end
 
 local function ShouldShowAreaLabel(poi)
-	if poi.landmarkType == LE_MAP_LANDMARK_TYPE_CONTRIBUTION or poi.landmarkType == LE_MAP_LANDMARK_TYPE_INVASION or poi.useMouseOverTooltip then
+	if poi.landmarkType == LE_MAP_LANDMARK_TYPE_CONTRIBUTION or poi.useMouseOverTooltip then
 		return false;
 	end
 	if poi.poiID and C_WorldMap.IsAreaPOITimed(poi.poiID) then
@@ -34,6 +32,20 @@ end
 
 LandmarkDataProviderMixin = CreateFromMixins(MapCanvasDataProviderMixin);
 
+function LandmarkDataProviderMixin:OnShow()
+	self:RegisterEvent("WORLD_MAP_UPDATE");
+end
+
+function LandmarkDataProviderMixin:OnHide()
+	self:UnregisterEvent("WORLD_MAP_UPDATE");
+end
+
+function LandmarkDataProviderMixin:OnEvent(event, ...)
+	if event == "WORLD_MAP_UPDATE" then
+		self:RefreshAllData();
+	end
+end
+
 function LandmarkDataProviderMixin:RemoveAllData()
 	self:GetMap():RemoveAllPinsByTemplate("LandmarkPinTemplate");
 	self:GetMap():RemoveAllPinsByTemplate("MapLinkPinTemplate");
@@ -43,48 +55,55 @@ function LandmarkDataProviderMixin:RemoveAllData()
 	self:GetMap():TriggerEvent("ClearAreaLabel", MAP_AREA_LABEL_TYPE.AREA_POI_BANNER);
 end
 
+local function IsAllowedLandMarkType(landmarkType)
+	return landmarkType ~= LE_MAP_LANDMARK_TYPE_VIGNETTE
+	   and landmarkType ~= LE_MAP_LANDMARK_TYPE_INVASION;
+end
+
 function LandmarkDataProviderMixin:RefreshAllData(fromOnShow)
 	self:RemoveAllData();
 	
 	local mapID = self:GetMap():GetMapID();
-	for i = 1, GetNumMapLandmarks() do
-		local landmarkType, name, description, textureIndex, x, y, mapLinkID, inBattleMap, graveyardID, areaID, poiID, isObjectIcon, atlasIcon, displayAsBanner, textureKitPrefix, useMouseOverTooltip = C_WorldMap.GetMapLandmarkInfo(i);
-		if displayAsBanner then
-			local timeLeftMinutes = C_WorldMap.GetAreaPOITimeLeft(poiID);
-			local descriptionLabel = nil;
-			if timeLeftMinutes then
-				local hoursLeft = math.floor(timeLeftMinutes / 60);
-				local minutesLeft = timeLeftMinutes % 60;
-				descriptionLabel = INVASION_TIME_FORMAT:format(hoursLeft, minutesLeft)
-			end
-
-			local atlas, width, height = GetAtlasInfo(atlasIcon);
-			local areaPOIBannerLabelTextureInfo = {};
-			areaPOIBannerLabelTextureInfo.atlas = atlasIcon;
-			areaPOIBannerLabelTextureInfo.width = width;
-			areaPOIBannerLabelTextureInfo.height = height;
-			self:GetMap():TriggerEvent("SetAreaLabel", MAP_AREA_LABEL_TYPE.AREA_POI_BANNER, name, descriptionLabel, INVASION_FONT_COLOR, INVASION_DESCRIPTION_FONT_COLOR, areaPOIBannerLabelTextureInfo);
-		elseif WorldMap_ShouldShowLandmark(landmarkType) and (mapID ~= WINTERGRASP_UI_MAP_ID or areaID == WINTERGRASP_POI_AREAID) then
-			local poiPin;
-			local isGraveyard = graveyardID and graveyardID > 0;
-			if isGraveyard then
-				poiPin = self:GetMap():AcquirePin("GraveyardPinTemplate", i);
-				poiPin.graveyardID = graveyardID;
-			elseif landmarkType == LE_MAP_LANDMARK_TYPE_MAP_LINK then
-				poiPin = self:GetMap():AcquirePin("MapLinkPinTemplate", i);
-			elseif landmarkType == LE_MAP_LANDMARK_TYPE_DUNGEON_ENTRANCE then
-				poiPin = self:GetMap():AcquirePin("DungeonEntrancePinTemplate", i);
-			else
-				poiPin = self:GetMap():AcquirePin("LandmarkPinTemplate", i);
-			end
-			
-			poiPin:SetPosition(x, y);
+	for landmarkIndex = 1, GetNumMapLandmarks() do
+		local landmarkInfo = C_WorldMap.GetMapLandmarkInfo(landmarkIndex);
+		if landmarkInfo and IsAllowedLandMarkType(landmarkInfo.landmarkType) then
+			self:AddLandmark(landmarkIndex, landmarkInfo);
 		end
 	end
 end
 
-function LandmarkDataProviderMixin:OnMapChanged()
-	self:RefreshAllData();
+function LandmarkDataProviderMixin:AddLandmark(landmarkIndex, landmarkInfo)
+	if landmarkInfo.displayAsBanner then
+		local timeLeftMinutes = C_WorldMap.GetAreaPOITimeLeft(landmarkInfo.poiID);
+		local descriptionLabel = nil;
+		if timeLeftMinutes then
+			local hoursLeft = math.floor(timeLeftMinutes / 60);
+			local minutesLeft = timeLeftMinutes % 60;
+			descriptionLabel = INVASION_TIME_FORMAT:format(hoursLeft, minutesLeft)
+		end
+
+		local atlas, width, height = GetAtlasInfo(landmarkInfo.atlasName);
+		local areaPOIBannerLabelTextureInfo = {};
+		areaPOIBannerLabelTextureInfo.atlas = landmarkInfo.atlasName;
+		areaPOIBannerLabelTextureInfo.width = width;
+		areaPOIBannerLabelTextureInfo.height = height;
+		self:GetMap():TriggerEvent("SetAreaLabel", MAP_AREA_LABEL_TYPE.AREA_POI_BANNER, landmarkInfo.name, descriptionLabel, INVASION_FONT_COLOR, INVASION_DESCRIPTION_FONT_COLOR, areaPOIBannerLabelTextureInfo);
+	elseif WorldMap_ShouldShowLandmark(landmarkInfo.landmarkType) and (landmarkInfo.mapID ~= WINTERGRASP_UI_MAP_ID or landmarkInfo.areaID == WINTERGRASP_POI_AREAID) then
+		local poiPin;
+		local isGraveyard = landmarkInfo.graveyardID and landmarkInfo.graveyardID > 0;
+		if isGraveyard then
+			poiPin = self:GetMap():AcquirePin("GraveyardPinTemplate", landmarkIndex);
+			poiPin.graveyardID = landmarkInfo.graveyardID;
+		elseif landmarkInfo.landmarkType == LE_MAP_LANDMARK_TYPE_MAP_LINK then
+			poiPin = self:GetMap():AcquirePin("MapLinkPinTemplate", landmarkIndex);
+		elseif landmarkInfo.landmarkType == LE_MAP_LANDMARK_TYPE_DUNGEON_ENTRANCE then
+			poiPin = self:GetMap():AcquirePin("DungeonEntrancePinTemplate", landmarkIndex);
+		else
+			poiPin = self:GetMap():AcquirePin("LandmarkPinTemplate", landmarkIndex);
+		end
+			
+		poiPin:SetPosition(landmarkInfo.x, landmarkInfo.y);
+	end
 end
 
 --[[ Pin ]]--
@@ -102,20 +121,20 @@ function LandmarkPinMixin:OnAcquired(landmarkIndex)
 end
 
 function LandmarkPinMixin:Refresh()
-	local landmarkType, name, description, textureIndex, x, y, mapLinkID, inBattleMap, graveyardID, areaID, poiID, isObjectIcon, atlasIcon, displayAsBanner, textureKitPrefix, useMouseOverTooltip = C_WorldMap.GetMapLandmarkInfo(self.landmarkIndex);
-	self.name = name;
-	self.description = description;
-	self.mapLinkID = mapLinkID;
-	self.poiID = poiID;
-	self.landmarkType = landmarkType;
-	self.textureKitPrefix = textureKitPrefix;
-	self.useMouseOverTooltip = useMouseOverTooltip;
+	local landmarkInfo = C_WorldMap.GetMapLandmarkInfo(self.landmarkIndex);
+	self.name = landmarkInfo.name;
+	self.description = landmarkInfo.description;
+	self.mapLinkID = landmarkInfo.mapLinkID;
+	self.poiID = landmarkInfo.poiID;
+	self.landmarkType = landmarkInfo.landmarkType;
+	self.textureKitPrefix = landmarkInfo.textureKitPrefix;
+	self.useMouseOverTooltip = landmarkInfo.useMouseOverTooltip;
 	
-	self:SetTexture(atlasIcon, textureKitPrefix, isObjectIcon, textureIndex);
+	self:SetTexture(landmarkInfo.atlasName, landmarkInfo.textureKitPrefix, landmarkInfo.textureIndex);
 end
 
 local ATLAS_WITH_TEXTURE_KIT_PREFIX = "%s-%s";
-function LandmarkPinMixin:SetTexture(atlasIcon, textureKitPrefix, isObjectIcon, textureIndex)
+function LandmarkPinMixin:SetTexture(atlasIcon, textureKitPrefix, textureIndex)
 	if atlasIcon then
 		if textureKitPrefix then
 			atlasIcon = ATLAS_WITH_TEXTURE_KIT_PREFIX:format(textureKitPrefix, atlasIcon);
@@ -135,18 +154,6 @@ function LandmarkPinMixin:SetTexture(atlasIcon, textureKitPrefix, isObjectIcon, 
 		
 		self.Texture:SetTexCoord(0, 1, 0, 1);
 		self.HighlightTexture:SetTexCoord(0, 1, 0, 1);
-	elseif isObjectIcon then
-		self:SetSize(32, 32);
-		self:SetWidth(32);
-		self:SetHeight(32);
-		self.Texture:SetWidth(28);
-		self.Texture:SetHeight(28);
-		self.Texture:SetTexture("Interface\\Minimap\\ObjectIconsAtlas");
-		self.HighlightTexture:SetTexture("Interface\\Minimap\\ObjectIconsAtlas");
-		
-		local x1, x2, y1, y2 = GetObjectIconTextureCoords(textureIndex);
-		self.Texture:SetTexCoord(x1, x2, y1, y2);
-		self.HighlightTexture:SetTexCoord(x1, x2, y1, y2);
 	else
 		self:SetSize(32, 32);
 		self:SetWidth(32);
@@ -170,27 +177,7 @@ function LandmarkPinMixin:OnMouseEnter()
 		self:GetMap():TriggerEvent("SetAreaLabel", MAP_AREA_LABEL_TYPE.POI, self.name, self.description);
 	end
 
-	if self.landmarkType == LE_MAP_LANDMARK_TYPE_INVASION then
-		local name, timeLeftMinutes, rewardQuestID = GetInvasionInfo(self.poiID);
-
-		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		GameTooltip:SetText(name, HIGHLIGHT_FONT_COLOR:GetRGB());
-
-		if timeLeftMinutes and timeLeftMinutes > 0 then
-			local timeString = SecondsToTime(timeLeftMinutes * 60);
-			GameTooltip:AddLine(BONUS_OBJECTIVE_TIME_LEFT:format(timeString), NORMAL_FONT_COLOR:GetRGB());
-		end
-
-		if rewardQuestID then
-			if not HaveQuestData(rewardQuestID) then
-				GameTooltip:AddLine(RETRIEVING_DATA, RED_FONT_COLOR:GetRGB());
-			else
-				GameTooltip_AddQuestRewardsToTooltip(GameTooltip, rewardQuestID);
-			end
-		end
-
-		GameTooltip:Show();
-	elseif self.landmarkType == LE_MAP_LANDMARK_TYPE_CONTRIBUTION then
+	if self.landmarkType == LE_MAP_LANDMARK_TYPE_CONTRIBUTION then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 		GameTooltip:SetText(self.name, HIGHLIGHT_FONT_COLOR:GetRGB());
 		GameTooltip:AddLine(" ");
@@ -198,13 +185,6 @@ function LandmarkPinMixin:OnMouseEnter()
 		-- TODO:: Stop relying on world map poi tooltip helpers.
 		WorldMapPOI_AddContributionsToTooltip(GameTooltip, C_ContributionCollector.GetManagedContributionsForCreatureID(self.mapLinkID));
 
-		GameTooltip:Show();
-	elseif self.landmarkType == LE_MAP_LANDMARK_TYPE_VIGNETTE and self.useMouseOverTooltip then
-		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		GameTooltip:SetText(HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(self.name));
-		if self.description then
-			GameTooltip:AddLine(NORMAL_FONT_COLOR:WrapTextInColorCode(self.description));
-		end
 		GameTooltip:Show();
 	else
 		if WarfrontTooltipController:HandleTooltip(GameTooltip, self, self.poiID, self.name, self.description) then
