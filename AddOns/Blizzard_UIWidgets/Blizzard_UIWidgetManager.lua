@@ -49,10 +49,14 @@ function UIWidgetManagerMixin:ReleaseAllWidgets()
 	self.widgetPools:ReleaseAll();
 end
 
-function UIWidgetManagerMixin:GetWidgetFromPools(templateInfo, parent, resetFunc)
+local function ResetWidget(pool, widgetFrame)
+	widgetFrame:OnReset();
+end
+
+function UIWidgetManagerMixin:GetWidgetFromPools(templateInfo, parent)
 	if templateInfo then
 		if not self.widgetPools:GetPool(templateInfo.frameTemplate) then
-			self.widgetPools:CreatePool(templateInfo.frameType, parent, templateInfo.frameTemplate, resetFunc);
+			self.widgetPools:CreatePool(templateInfo.frameType, parent, templateInfo.frameTemplate, ResetWidget);
 		end
 
 		return self.widgetPools:Acquire(templateInfo.frameTemplate);
@@ -127,7 +131,7 @@ end
 
 function UIWidgetManagerMixin:CreateWidget(widgetID, widgetSetID, widgetType)
 	if self.widgetVisTypeInfo[widgetType] then
-		local widgetFrame = self:GetWidgetFromPools(self.widgetVisTypeInfo[widgetType].templateInfo, self.registeredWidgetSetContainers[widgetSetID].widgetContainer, self.registeredWidgetSetContainers[widgetSetID].resetFunc);
+		local widgetFrame = self:GetWidgetFromPools(self.widgetVisTypeInfo[widgetType].templateInfo, self.registeredWidgetSetContainers[widgetSetID].widgetContainer);
 
 		widgetFrame.widgetID = widgetID;
 		widgetFrame.widgetSetID = widgetSetID;
@@ -265,7 +269,6 @@ function UIWidgetManagerMixin:ProcessWidget(widgetID, widgetSetID, widgetType)
 		-- Ok we are now SURE that this widget should be shown and we have a frame for it
 
 		-- Run the Setup function on the widget (could change the orderIndex)
-		widgetFrame:BaseSetup(widgetInfo);
 		widgetFrame:Setup(widgetInfo);
 
 		if isNewWidget and widgetFrame.OnAcquired then
@@ -342,15 +345,14 @@ end
 -- widgetLayoutFunction should take 2 arguments (the widget container passed in above and a sequence containing all widgetFrames belonging to that widgetSet, sorted by orderIndex). It can update the layout of the widgets & widgetContainer as it sees fit. 
 --		IMPORTANT: widgetLayoutFunction is called every time any widget in this container is shown, hidden or re-ordered. If nil is passed DefaultWidgetLayout is used
 -- widgetInitFunction should take 1 argument (the widgetFrame). It should do anything needed for initialization of widgets by the registering system. It is called only once, when a widget is initialized (when entering a new map/area/subarea/phase)
--- widgetResetFunction should take 2 arguments (the framePool and the widgetFrame). It should do anything needed for resetting the widgets when they get hidden. If nil is passed, FramePool_HideAndClearAnchors is used
 -- Any or all of them can be nil if your system doesn't need that functionaility (although at the very least widgetLayoutFunction should be set in almost all circumstances)
-function UIWidgetManagerMixin:RegisterWidgetSetContainer(widgetSetID, widgetContainer, widgetLayoutFunction, widgetInitFunction, widgetResetFunction)
+function UIWidgetManagerMixin:RegisterWidgetSetContainer(widgetSetID, widgetContainer, widgetLayoutFunction, widgetInitFunction)
 	if self.registeredWidgetSetContainers[widgetSetID] then
 		-- Someone already registered for this set, so do nothing
 		return;
 	end
 
-	self.registeredWidgetSetContainers[widgetSetID] = { widgetContainer = widgetContainer, layoutFunc = widgetLayoutFunction or DefaultWidgetLayout, initFunc = widgetInitFunction, resetFunc = widgetResetFunction };
+	self.registeredWidgetSetContainers[widgetSetID] = { widgetContainer = widgetContainer, layoutFunc = widgetLayoutFunction or DefaultWidgetLayout, initFunc = widgetInitFunction };
 	self.widgetSetFrames[widgetSetID] = {};
 
 	self:ProcessWidgetSet(widgetSetID);

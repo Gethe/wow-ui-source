@@ -99,8 +99,8 @@
 	<Texture name="UI-Frame-InnerTopRight" atlas="UI-Frame-InnerTopRight" virtual="true">
 		<Size x="6" y="6"/>
 	</Texture>
-	<Texture name="UI-Frame-TopLeftCorner" atlas="UI-Frame-TopLeftCorner" virtual="true">
-		<Size x="32" y="32"/>
+	<Texture name="UI-Frame-TopLeftCorner" atlas="UI-Frame-TopLeftCornerNoPortrait" virtual="true">
+		<Size x="33" y="33"/>
 	</Texture>
 	<Texture name="UI-Frame-InnerTopLeft" atlas="UI-Frame-InnerTopLeft" virtual="true">
 		<Size x="6" y="6"/>

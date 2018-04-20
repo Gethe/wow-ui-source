@@ -7,6 +7,7 @@
 	<Frame name="MapCanvasDetailLayerTemplate" useParentLevel="true" virtual="true" mixin="MapCanvasDetailLayerMixin">
 		<Scripts>
 			<OnLoad method="OnLoad" />
+			<OnUpdate method="OnUpdate" />
 		</Scripts>
 	</Frame>
 

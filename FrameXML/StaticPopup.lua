@@ -2360,6 +2360,26 @@ StaticPopupDialogs["SET_COMMUNITY_MEMBER_NOTE"] = {
 	hideOnEscape = 1,
 };
 
+StaticPopupDialogs["CONFIRM_REMOVE_COMMUNITY_MEMBER"] = {
+	text = CONFIRM_REMOVE_COMMUNITY_MEMBER_LABEL,
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function(self, data)
+		C_Club.KickMember(data.clubId, data.memberId);
+	end,
+	OnShow = function(self, data)
+		if data.clubType == Enum.ClubType.Character then
+			self.text:SetText(CONFIRM_REMOVE_CHARACTER_COMMUNITY_MEMBER_LABEL:format(data.name));
+		else
+			self.text:SetText(CONFIRM_REMOVE_COMMUNITY_MEMBER_LABEL:format(data.name));
+		end
+	end,
+	timeout = 0,
+	exclusive = 1,
+	whileDead = 1,
+	hideOnEscape = 1
+};
+
 StaticPopupDialogs["CONFIRM_LEAVE_AND_DESTROY_COMMUNITY"] = {
 	text = CONFIRM_LEAVE_AND_DESTROY_COMMUNITY,
 	subText = CONFIRM_LEAVE_AND_DESTROY_COMMUNITY_SUBTEXT,
@@ -4272,7 +4292,8 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 		 (which == "CONFIRM_SUMMON_SCENARIO") or
 		 (which == "CONFIRM_SUMMON_STARTING_AREA") or
 		 (which == "BFMGR_INVITED_TO_ENTER") or
-		 (which == "AREA_SPIRIT_HEAL") ) then
+		 (which == "AREA_SPIRIT_HEAL") or
+		 (which == "CONFIRM_REMOVE_COMMUNITY_MEMBER") ) then
 		text:SetText(" ");	-- The text will be filled in later.
 		text.text_arg1 = text_arg1;
 		text.text_arg2 = text_arg2;

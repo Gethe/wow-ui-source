@@ -32,6 +32,12 @@ do
 		self:RegisterEvent("VOICE_CHAT_ERROR");
 		self:RegisterEvent("GROUP_FORMED");
 		self:RegisterEvent("GROUP_LEFT");
+		self:RegisterEvent("VOICE_CHAT_CHANNEL_MEMBER_ACTIVE_STATE_CHANGED");
+		self:RegisterEvent("VOICE_CHAT_CHANNEL_TRANSMIT_CHANGED");
+		self:RegisterEvent("VOICE_CHAT_MUTED_CHANGED");
+		self:RegisterEvent("VOICE_CHAT_DEAFENED_CHANGED");
+		self:RegisterEvent("VOICE_CHAT_CHANNEL_MEMBER_MUTE_FOR_ME_CHANGED");
+
 
 		self:AddEvents("PARTY_LEADER_CHANGED", "GROUP_ROSTER_UPDATE", "CHANNEL_UI_UPDATE", "CHANNEL_LEFT", "CHAT_MSG_CHANNEL_NOTICE_USER");
 
@@ -99,49 +105,21 @@ function ChannelFrameMixin:OnEvent(event, ...)
 		self:OnGroupFormed(...);
 	elseif event == "GROUP_LEFT" then
 		self:OnGroupLeft(...);
+	elseif event == "VOICE_CHAT_CHANNEL_MEMBER_ACTIVE_STATE_CHANGED" then
+		self:OnMemberActiveStateChanged(...);
+	elseif event == "VOICE_CHAT_CHANNEL_TRANSMIT_CHANGED" then
+		self:OnChatChannelTransmitChanged(...);
+	elseif event == "VOICE_CHAT_MUTED_CHANGED" then
+		self:OnMutedChanged(...);
+	elseif event == "VOICE_CHAT_DEAFENED_CHANGED" then
+		self:OnDeafenedChanged(...);
+	elseif event == "VOICE_CHAT_CHANNEL_MEMBER_MUTE_FOR_ME_CHANGED" then
+		self:OnMemberMuted(...);
 	end
-
-	self:LogEvent(event, ...);
 end
 
 function ChannelFrameMixin:OnUpdate()
 	self:Update();
-end
-
-function ChannelFrameMixin:SetLogEnabled(enabled)
-	self.logEnabled = enabled;
-
-	if enabled and not self.logEvents then
-		-- Debug log events...these will find alternate homes soon, just want to get notifications going since I have no other way besides
-		-- client breakpoints to see what voice is doing.
-		self.logEvents = {
-			VOICE_CHAT_CHANNEL_MEMBER_SPEAKING_STATE_CHANGED = true, -- VOICE_CHAT_CHANNEL_MEMBER_ENERGY_CHANGED = true,  <--- too spammy
-			VOICE_CHAT_CHANNEL_MEMBER_MUTE_FOR_ME_CHANGED = true,
-			VOICE_CHAT_CHANNEL_MEMBER_MUTE_FOR_ALL_CHANGED = true,
-			VOICE_CHAT_CHANNEL_MEMBER_VOLUME_CHANGED = true,
-		};
-	end
-
-	if self.logEvents then
-		local registrationFn = enabled and self.RegisterEvent or self.UnregisterEvent;
-
-		for k, v in pairs(self.logEvents) do
-			registrationFn(self, k);
-		end
-	end
-end
-
-function ChannelFrameMixin:Log(message)
-	if self.logEnabled then
-		ConsolePrint(message);
-	end
-end
-
-function ChannelFrameMixin:LogEvent(event, ...)
-	if self.logEvents and self.logEvents[event] then
-		local eventArgStrings = table.concat({ tostringall(...) }, ", ");
-		self:Log(("%s : %s"):format(event, eventArgStrings));
-	end
 end
 
 function ChannelFrameMixin:GetList()
@@ -160,6 +138,7 @@ function ChannelFrameMixin:OnVoiceChannelJoined(statusCode, channelID)
 	if statusCode == Enum.VoiceChatStatusCode.Success then
 		self.DirtyFlags:MarkDirty(self.DirtyFlags.UpdateAll);
 		self:CheckActivateChannel(channelID);
+		self:CheckChannelAnnounceState(channelID, "joined");
 	end
 end
 
@@ -264,6 +243,13 @@ function ChannelFrameMixin:UpdateChannelByNameIfSelected(channelName)
 	end
 end
 
+function ChannelFrameMixin:UpdateVoiceChannelIfSelected(voiceChannelID)
+	local channel = self:GetList():GetSelectedChannelButton();
+	if channel and channel:ChannelSupportsVoice() and channel:GetVoiceChannelID() == voiceChannelID then
+		self.DirtyFlags:MarkDirty(self.DirtyFlags.UpdateRoster);
+	end
+end
+
 function ChannelFrameMixin:UpdatePartyChannelIfSelected()
 	local channel = self:GetList():GetSelectedChannelButton();
 	if channel and C_ChatInfo.IsPartyChannelType(channel:GetChannelType()) then
@@ -360,21 +346,62 @@ function ChannelFrameMixin:CheckDiscoverChannels()
 	end
 end
 
-function ChannelFrameMixin:OnVoiceChannelActivated(channelID)
-	self:SetVoiceChannelActiveState(channelID, true);
+function ChannelFrameMixin:CheckChannelAnnounceState(channelID, state)
+	if not self.channelStates then
+		self.channelStates = {};
+	end
+
+	local previousState = self.channelStates[channelID];
+	if (previousState and previousState == "joined") and state == "active" then
+		self:ShowChannelAnnounce(channelID);
+	end
+
+	self.channelStates[channelID] = state;
 end
 
-function ChannelFrameMixin:OnVoiceChannelDeactivated(channelID)
-	self:SetVoiceChannelActiveState(channelID, false);
+local function CountActiveChannelMembers(channel)
+	local count = 0;
+	for index, member in pairs(channel.members) do
+		if member.isActive then
+			count = count + 1;
+		end
+	end
+
+	return count;
 end
 
-function ChannelFrameMixin:SetVoiceChannelActiveState(channelID, isActive)
-	local channelButton = self:GetList():GetButtonForVoiceChannelID(channelID);
+function ChannelFrameMixin:ShowChannelAnnounce(channelID)
+	local channel = C_VoiceChat.GetChannel(channelID);
+	if channel then
+		local atlas = CreateAtlasMarkup("voicechat-icon-headphone-on");
+		local announce = Voice_FormatChannelNotification(channel, Voice_GetChannelActivatedNotification(channel))
+		local communicationMode = Voice_GetCommunicationModeNotification(channel);
+		local memberCountMessage = VOICE_CHAT_CHANNEL_MEMBER_COUNT_ACTIVE:format(CountActiveChannelMembers(channel));
+		ChatFrame_DisplaySystemMessageInPrimary(VOICE_CHAT_CHANNEL_ANNOUNCE:format(atlas..announce, communicationMode, memberCountMessage));
+	end
+end
+
+function ChannelFrameMixin:OnVoiceChannelActivated(voiceChannelID)
+	self:SetVoiceChannelActiveState(voiceChannelID, true);
+	self:CheckChannelAnnounceState(voiceChannelID, "active");
+	PlaySound(SOUNDKIT.UI_VOICECHAT_JOINCHANNEL);
+end
+
+function ChannelFrameMixin:OnVoiceChannelDeactivated(voiceChannelID)
+	self:SetVoiceChannelActiveState(voiceChannelID, false);
+	self:CheckChannelAnnounceState(voiceChannelID, "inactive");
+	PlaySound(SOUNDKIT.UI_VOICECHAT_LEAVECHANNEL);
+end
+
+function ChannelFrameMixin:SetVoiceChannelActiveState(voiceChannelID, isActive)
+	local channelButton = self:GetList():GetButtonForVoiceChannelID(voiceChannelID);
 
 	if channelButton then
 		channelButton:SetVoiceActive(isActive);
 		channelButton:Update();
 	end
+
+	self:UpdateVoiceChannelIfSelected(voiceChannelID);
 end
 
 function ChannelFrameMixin:OnCountUpdate(id, count)
@@ -402,6 +429,48 @@ function ChannelFrameMixin:OnGroupLeft(partyCategory, partyGUID)
 	VoiceChatChannelActivatedNotification:Hide();
 
 	-- TODO: Channel removal now happens as a matter of course on the server. Verify that the channel is being removed properly.
+end
+
+function ChannelFrameMixin:OnMemberActiveStateChanged(memberID, channelID, isActive)
+	if not C_VoiceChat.IsMemberLocalPlayer(memberID, channelID) then
+		if isActive then
+			PlaySound(SOUNDKIT.UI_VOICECHAT_MEMBERJOINCHANNEL);
+		else
+			PlaySound(SOUNDKIT.UI_VOICECHAT_MEMBERLEAVECHANNEL);
+		end
+	end
+end
+
+function ChannelFrameMixin:OnMutedChanged(isMuted)
+	if isMuted then
+		PlaySound(SOUNDKIT.UI_VOICECHAT_MUTEON);
+	else
+		PlaySound(SOUNDKIT.UI_VOICECHAT_MUTEOFF);
+	end
+end
+
+function ChannelFrameMixin:OnDeafenedChanged(isDeafened)
+	if isDeafened then
+		PlaySound(SOUNDKIT.UI_VOICECHAT_DEAFENON);
+	else
+		PlaySound(SOUNDKIT.UI_VOICECHAT_DEAFENOFF);
+	end
+end
+
+function ChannelFrameMixin:OnMemberMuted(memberID, channelID, isMuted)
+	if isMuted then
+		PlaySound(SOUNDKIT.UI_VOICECHAT_MUTEOTHERON);
+	else
+		PlaySound(SOUNDKIT.UI_VOICECHAT_MUTEOTHEROFF);
+	end
+end
+
+function ChannelFrameMixin:OnChatChannelTransmitChanged(channelID, isTransmitting)
+	if isTransmitting then
+		PlaySound(SOUNDKIT.UI_VOICECHAT_TALKSTART);
+	else
+		PlaySound(SOUNDKIT.UI_VOICECHAT_STOPTALK);
+	end
 end
 
 function ChannelFrameMixin:UpdateScrolling()

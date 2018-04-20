@@ -7,6 +7,20 @@ local Map =
 	Functions =
 	{
 		{
+			Name = "GetAreaInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "areaID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "name", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "GetBestMapForUnit",
 			Type = "Function",
 			Documentation = { "Only works for the player and party members." },
@@ -215,21 +229,6 @@ local Map =
 			},
 		},
 		{
-			Name = "GetMapOverlayNameAtPosition",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "x", Type = "number", Nilable = false },
-				{ Name = "y", Type = "number", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "name", Type = "string", Nilable = false },
-			},
-		},
-		{
 			Name = "GetMapRectOnMap",
 			Type = "Function",
 
@@ -248,6 +247,15 @@ local Map =
 			},
 		},
 		{
+			Name = "RequestPreloadMap",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "uiMapID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "SetMap",
 			Type = "Function",
 
@@ -260,11 +268,6 @@ local Map =
 
 	Events =
 	{
-		{
-			Name = "MapOverlaysUpdated",
-			Type = "Event",
-			LiteralName = "MAP_OVERLAYS_UPDATED",
-		},
 	},
 
 	Tables =

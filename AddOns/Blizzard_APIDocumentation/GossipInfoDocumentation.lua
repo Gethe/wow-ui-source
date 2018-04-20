@@ -6,10 +6,44 @@ local GossipInfo =
 
 	Functions =
 	{
+		{
+			Name = "GetGossipPoiForUiMapID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "uiMapID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "gossipPoiID", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "GetGossipPoiInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "uiMapID", Type = "number", Nilable = false },
+				{ Name = "gossipPoiID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "gossipPoiInfo", Type = "GossipPoiInfo", Nilable = true },
+			},
+		},
 	},
 
 	Events =
 	{
+		{
+			Name = "DynamicGossipPoiUpdated",
+			Type = "Event",
+			LiteralName = "DYNAMIC_GOSSIP_POI_UPDATED",
+		},
 		{
 			Name = "GossipClosed",
 			Type = "Event",
@@ -49,6 +83,17 @@ local GossipInfo =
 
 	Tables =
 	{
+		{
+			Name = "GossipPoiInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "textureIndex", Type = "number", Nilable = false },
+				{ Name = "position", Type = "table", Mixin = "Vector2DMixin", Nilable = false },
+				{ Name = "inBattleMap", Type = "bool", Nilable = false },
+			},
+		},
 	},
 };
 

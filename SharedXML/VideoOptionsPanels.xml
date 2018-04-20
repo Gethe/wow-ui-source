@@ -253,21 +253,6 @@
 						</Layers>
 					</Frame>
 
-					<Frame name="$parentRefreshDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="2">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentResolutionDropDown" relativePoint="BOTTOMLEFT"/>
-						</Anchors>
-						<Layers>
-							<Layer level="BACKGROUND">
-								<FontString name="$parentLabel" inherits="OptionsFontSmall" text="REFRESH_RATE">
-									<Anchors>
-										<Anchor point="RIGHT" relativePoint="LEFT"/>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
-					</Frame>
-
 
 					<!-- Column B -->
 					<Frame name="$parentPrimaryMonitorDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="10" >
@@ -1192,27 +1177,9 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<Frame name="$parentHardwareCursorDropDown" inherits="AdvancedVideoOptionsDropDownMenuTemplate" id="15">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentLagDropDown" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="0" y="-8"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="HARDWARE_CURSOR" >
-							<Anchors>
-								<Anchor point="RIGHT" relativePoint="LEFT"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-			</Frame>
 			<Frame name="$parentMultisampleAntiAliasingDropDown" inherits="AdvancedVideoOptionsDropDownMenuTemplate" id="15">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentHardwareCursorDropDown" relativePoint="BOTTOMLEFT">
+					<Anchor point="TOPLEFT" relativeTo="$parentLagDropDown" relativePoint="BOTTOMLEFT">
 						<Offset>
 							<AbsDimension x="0" y="-8"/>
 						</Offset>
@@ -1645,9 +1612,8 @@
 						end
 
 						local name = self:GetName();
-						self.cvar = "gxStereoEnabled";
 						self.SetValue = function (self, value)
-								BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
+								--BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
 							end
 						self.restart = true;
 						_G[name.."Text"]:SetText(ENABLE_STEREO_VIDEO);
@@ -1668,11 +1634,10 @@
 						self.type = CONTROLTYPE_SLIDER;
 						self.tooltip = OPTION_STEREO_CONVERGENCE;
 						self.name = DEPTH_CONVERGENCE;
-						self.cvar = "gxStereoConvergence";
 						self.SetDisplayValue = self.SetValue;
 						self.SetValue = function (self, value)
 							self:SetDisplayValue(value);
-							BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
+							--BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
 						end
 						_G[name.."Text"]:SetFontObject("OptionsFontSmall");
 						_G[name.."Text"]:SetText(DEPTH_CONVERGENCE);
@@ -1701,7 +1666,6 @@
 					<OnLoad>
 						local name = self:GetName();
 						self.type = CONTROLTYPE_SLIDER;
-						self.cvar = "gxStereoSeparation";
 						self.tooltip = OPTION_STEREO_SEPARATION;
 						self.name = EYE_SEPARATION;
 						self.SetDisplayValue = self.SetValue;
@@ -1720,7 +1684,7 @@
 					<OnValueChanged>
 						if(userInput) then
 							Graphics_EnableApply(self);
-							BlizzardOptionsPanel_SetCVarSafe(self.cvar, self:GetValue());
+							--BlizzardOptionsPanel_SetCVarSafe(self.cvar, self:GetValue());
 							self.newValue = self:GetValue();
 						end
 					</OnValueChanged>

@@ -1,0 +1,67 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="WarCampaignTemplates.lua"/>
+	
+	<Frame name="WarCampaignTooltipTemplate" mixin="WarCampaignTooltipMixin" frameStrata="TOOLTIP" clampedToScreen="true" hidden="true" virtual="true" toplevel="true">
+		<Size x="10" y="10"/>
+		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="16"/>
+			</TileSize>
+			<BackgroundInsets>
+				<AbsInset left="5" right="5" top="5" bottom="5"/>
+			</BackgroundInsets>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Title" text="WAR_CAMPAIGN" inherits="GameFontHighlightMedium" justifyH="LEFT">
+					<Size x="250" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="10" y="-10"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="ChapterTitle" inherits="GameFontNormal" justifyH="LEFT" text="STORY_PROGRESS">
+					<Size x="250" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" x="0" y="-12"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Description" justifyH="LEFT" inherits="GameFontHighlight">
+					<Size x="250" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.ChapterTitle" relativePoint="BOTTOM" x="0" y="-12"/>
+						<Anchor point="LEFT" x="10" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="CompleteRewardText" inherits="GameFontNormal" justifyH="LEFT" text="WAR_CAMPAIGN_CHAPTER_REWARD_TEXT">
+					<Size x="250" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Description" relativePoint="BOTTOM" x="0" y="-12"/>
+						<Anchor point="LEFT" x="10" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="ItemTooltip" inherits="EmbeddedItemTooltip">
+				<Size x="100" y="100"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.CompleteRewardText" relativePoint="BOTTOMLEFT" x="6" y="-14"/>
+				</Anchors>
+				<Scripts>
+					<OnSizeChanged inherit="prepend">
+						self:GetParent():UpdateSize();
+					</OnSizeChanged>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+</Ui>

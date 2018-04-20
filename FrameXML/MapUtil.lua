@@ -34,3 +34,16 @@ function MapUtil.MapHasUnlockedBounties(mapID)
 	local bounties, displayLocation, lockedQuestID = GetQuestBountyInfoForMapID(mapID);
 	return displayLocation and not lockedQuestID and #bounties > 0;
 end
+
+function MapUtil.FindBestAreaNameAtMouse(mapID, normalizedCursorX, normalizedCursorY)
+	local exploredAreaIDs = C_MapExplorationInfo.GetExploredAreaIDsAtPosition(mapID, CreateVector2D(normalizedCursorX, normalizedCursorY));
+	if exploredAreaIDs then
+		for i, areaID in ipairs(exploredAreaIDs) do
+			local name = C_Map.GetAreaInfo(areaID);
+			if name then
+				return name;
+			end
+		end
+	end
+	return nil;
+end

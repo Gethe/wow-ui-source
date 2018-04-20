@@ -23,6 +23,7 @@ function AdventureMapMixin:OnLoad()
 	self:SetupTitle();
 
 	self:AddStandardDataProviders();
+	self:ClearAreaTableIDAvailableForInsets();
 end
 
 function AdventureMapMixin:AddStandardDataProviders()
@@ -40,8 +41,8 @@ end
 -- Override
 function AdventureMapMixin:OnShow()
 	local mapID = C_AdventureMap.GetMapID();
-	self:SetMapID(mapID);
 	self:ClearAreaTableIDAvailableForInsets();
+	self:SetMapID(mapID);
 	MapCanvasMixin.OnShow(self);
 end
 

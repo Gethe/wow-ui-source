@@ -2379,7 +2379,7 @@ end
 function FCFDockOverflowList_Update(list, dock)
 	local dockedFrames = FCFDock_GetChatFrames(dock);
 
-	list:SetHeight(#dockedFrames *15 + 35);
+	local totalHeight = 25;
 
 	list.numTabs:SetFormattedText(CHAT_WINDOWS_COUNT, #dockedFrames);
 
@@ -2398,8 +2398,12 @@ function FCFDockOverflowList_Update(list, dock)
 		end
 
 		FCFDockOverflowListButton_SetValue(button, dockedFrames[i]);
+		
+		totalHeight = totalHeight + button:GetHeight() + 3;
 	end
 
+	list:SetHeight(totalHeight);
+	
 	for i = #dockedFrames + 1, #list.buttons do
 		list.buttons[i]:Hide();
 	end
@@ -2409,6 +2413,7 @@ function FCFDockOverflowListButton_SetValue(button, chatFrame)
 	local chatTab = _G[chatFrame:GetName().."Tab"];
 	button.chatFrame = chatFrame;
 	button:SetText(chatFrame.name);
+	button:SetHeight(button:GetTextHeight());
 
 	local colorTable = chatTab.selectedColorTable or DEFAULT_TAB_SELECTED_COLOR_TABLE;
 

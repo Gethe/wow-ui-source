@@ -375,6 +375,11 @@
 					</Scripts>
 				</ScrollFrame>
 			</Frames>
+			<Scripts>
+				<OnShow method="OnShow"/>
+				<OnHide method="OnHide"/>
+				<OnAttributeChanged method="OnAttributeChanged"/>
+			</Scripts>
 		</Frame>
 	</ScopedModifier>
 </Ui>

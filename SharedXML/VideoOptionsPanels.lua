@@ -266,7 +266,6 @@ local function FinishChanges(self)
 
 		Display_ResolutionDropDown.tablerefresh = true;
 		Display_PrimaryMonitorDropDown.tablerefresh = true;
-		Display_RefreshDropDown.tablerefresh = true;
 		Graphics_Refresh(self)
 	end
 
@@ -443,14 +442,6 @@ function Graphics_NotifyTarget(self, masterIndex, isRaid)
 	return;
 end
 
--------------------------------------------------------------------------------------------------------
--- try to keep the same selection when a table has been changed
-function VideoOptionsDropDownMenu_dependtarget_refreshtable(self)
-	local saveValue = self.table[self:GetValue()];				-- get previous string correponding to current value
-	self.tablerefresh = true;									-- say our table is dirty
-	VideoOptionsDropDownMenu_Initialize(self, self.initialize);	-- regenerate our table
-	VideoOptionsValueChanged(self,self:lookup(saveValue),1);
-end
 ---------------------------------------------------
 function Graphics_TableLookup(self, val)
 	if(self.table ~= nil) then
@@ -938,19 +929,13 @@ function Advanced_OnLoad (self)
 	BlizzardOptionsPanel_OnLoad(self, VideoOptionsPanel_Okay, VideoOptionsPanel_Cancel, Advanced_Default, VideoOptionsPanel_Refresh);
 	OptionsFrame_AddCategory(VideoOptionsFrame, self);
 
-	if(not IsStereoVideoAvailable()) then
+	if(true) then
 		local name = self:GetName();
 		_G[name .. "StereoEnabled"]:Hide();
 		_G[name .. "Convergence"]:Hide();
 		_G[name .. "EyeSeparation"]:Hide();
 		_G[name .. "StereoHeader"]:Hide();
 		_G[name .. "StereoHeaderUnderline"]:Hide();
-	end
-	if ( IsMacClient() ) then
-		Advanced_BufferingDropDown:Hide();
-		Advanced_LagDropDown:Hide();
-		Advanced_HardwareCursorDropDown:Hide();
-		Advanced_MultisampleAntiAliasingDropDown:SetPoint("TOPLEFT", Advanced_DisplayHeaderUnderline, "BOTTOMLEFT", 120, -4);
 	end
 end
 

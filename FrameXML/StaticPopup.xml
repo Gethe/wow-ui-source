@@ -185,6 +185,7 @@
 					</OnTextChanged>
 					<OnLoad>
 						self:GetParent().editBox = self;
+						self.addHighlightedText = true;
 					</OnLoad>
 				</Scripts>
 				<FontString inherits="ChatFontNormal"/>

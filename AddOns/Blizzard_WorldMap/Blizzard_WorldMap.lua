@@ -63,7 +63,7 @@ function WorldMapMixin:IsMaximized()
 end
 
 function WorldMapMixin:OnLoad()
-	UIPanelWindows[self:GetName()] = { area = "left", pushable = 0, xoffset = 0, yoffset = -45, whileDead = 1, minYOffset = 0 };
+	UIPanelWindows[self:GetName()] = { area = "left", pushable = 0, xoffset = 0, yoffset = 0, whileDead = 1, minYOffset = 0 };
 
 	MapCanvasMixin.OnLoad(self);
 
@@ -80,6 +80,8 @@ function WorldMapMixin:OnLoad()
 	
 	self:RegisterEvent("VARIABLES_LOADED");
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
+
+	self:Switch();
 end
 
 function WorldMapMixin:OnEvent(event, ...)
@@ -99,7 +101,7 @@ function WorldMapMixin:OnEvent(event, ...)
 end
 
 function WorldMapMixin:AddStandardDataProviders()
-	self:AddDataProvider(CreateFromMixins(MapOverlaysDataProviderMixin));
+	self:AddDataProvider(CreateFromMixins(MapExplorationDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(MapHighlightDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(WorldMap_InvasionDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(StorylineQuestDataProviderMixin));
@@ -115,6 +117,7 @@ function WorldMapMixin:AddStandardDataProviders()
 	self:AddDataProvider(CreateFromMixins(VignetteDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(QuestDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(InvasionDataProviderMixin));
+	self:AddDataProvider(CreateFromMixins(GossipDataProviderMixin));
 
 	if IsGMClient() then
 		self:AddDataProvider(CreateFromMixins(WorldMap_DebugDataProviderMixin));
@@ -132,14 +135,16 @@ function WorldMapMixin:AddStandardDataProviders()
 	self:AddDataProvider(worldQuestDataProvider);
 
 	local pinFrameLevelsManager = self:GetPinFrameLevelsManager();
-	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_MAP_OVERLAY");
+	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_MAP_EXPLORATION");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_QUEST_BLOB");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_SCENARIO_BLOB");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_MAP_HIGHLIGHT");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_DEBUG", 4);
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_LANDMARK");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_INVASION");
+	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_GOSSIP");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_VIGNETTE", 100);
+	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_DEBUG");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_ENCOUNTER");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_STORY_LINE");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_SCENARIO");
@@ -166,19 +171,20 @@ function WorldMapMixin:AddOverlayFrames()
 
 	self:AddOverlayFrame("WorldMapFloorNavigationFrameTemplate", "FRAME", "TOPLEFT", self:GetCanvasContainer(), "TOPLEFT", -15, 2);
 	self:AddOverlayFrame("WorldMapTrackingOptionsButtonTemplate", "BUTTON", "TOPRIGHT", self:GetCanvasContainer(), "TOPRIGHT", -4, -2);
-	self:AddOverlayFrame("WorldMapBountyBoardTemplate", "FRAME");
-	self:AddOverlayFrame("WorldMapActionButtonTemplate", "FRAME");
+	self:AddOverlayFrame("WorldMapBountyBoardTemplate", "FRAME", nil, self:GetCanvasContainer());
+	self:AddOverlayFrame("WorldMapActionButtonTemplate", "FRAME", nil, self:GetCanvasContainer());
+	self:AddOverlayFrame("WorldMapZoneTimerTemplate", "FRAME", "BOTTOM", self:GetCanvasContainer(), "BOTTOM", 0, 20);
 	self.SidePanelToggle = self:AddOverlayFrame("WorldMapSidePanelToggleTemplate", "BUTTON", "BOTTOMRIGHT", self:GetCanvasContainer(), "BOTTOMRIGHT", -2, 1);
 end
 
 function WorldMapMixin:OnMapChanged()
 	MapCanvasMixin.OnMapChanged(self);
 	self:RefreshOverlayFrames();
+	self:RefreshQuestLog();
 end
 
 function WorldMapMixin:OnShow()
 	local mapID = C_Map.GetBestMapForUnit("player");
-	C_Map.SetMap(mapID);
 	self:SetMapID(mapID);
 	MapCanvasMixin.OnShow(self);
 	self:ResetZoom();
@@ -196,6 +202,8 @@ function WorldMapMixin:OnHide()
 	PlaySound(SOUNDKIT.IG_QUEST_LOG_CLOSE);
 
 	PlayerMovementFrameFader.RemoveFrame(self);
+
+	self:OnUIClose();
 end
 
 function WorldMapMixin:RefreshOverlayFrames()
@@ -211,6 +219,7 @@ function WorldMapMixin:AddOverlayFrame(templateName, templateType, anchorPoint, 
 	if anchorPoint then
 		frame:SetPoint(anchorPoint, relativeTo, relativePoint, offsetX, offsetY);
 	end
+	frame.relativeTo = relativeTo or self;
 	if not self.overlayFrames then
 		self.overlayFrames = { };
 	end
@@ -222,13 +231,13 @@ end
 function WorldMapMixin:SetOverlayFrameLocation(frame, location)
 	frame:ClearAllPoints();
 	if location == LE_MAP_OVERLAY_DISPLAY_LOCATION_BOTTOM_LEFT then
-		frame:SetPoint("BOTTOMLEFT", 15, 15);
+		frame:SetPoint("BOTTOMLEFT", frame.relativeTo, 15, 15);
 	elseif location == LE_MAP_OVERLAY_DISPLAY_LOCATION_TOP_LEFT then
-		frame:SetPoint("TOPLEFT", 15, -15);
+		frame:SetPoint("TOPLEFT", frame.relativeTo, 15, -15);
 	elseif location == LE_MAP_OVERLAY_DISPLAY_LOCATION_BOTTOM_RIGHT then
-		frame:SetPoint("BOTTOMRIGHT", -18, 15);
+		frame:SetPoint("BOTTOMRIGHT", frame.relativeTo, -18, 15);
 	elseif location == LE_MAP_OVERLAY_DISPLAY_LOCATION_TOP_RIGHT then
-		frame:SetPoint("TOPRIGHT", -15, -15);
+		frame:SetPoint("TOPRIGHT", frame.relativeTo, -15, -15);
 	end
 end
 
@@ -269,7 +278,7 @@ function WorldMapMixin:Switch()
 	QuestMapFrame:SetParent(self);
 	QuestMapFrame:SetFrameStrata("HIGH");
 	QuestMapFrame:ClearAllPoints();
-	QuestMapFrame:SetPoint("TOPRIGHT", -6, -66);
+	QuestMapFrame:SetPoint("TOPRIGHT", -6, -20);
 	QuestMapFrame:Hide();
 	self.QuestLog = QuestMapFrame;
 	

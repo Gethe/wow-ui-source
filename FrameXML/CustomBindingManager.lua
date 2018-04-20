@@ -1,0 +1,110 @@
+CustomBindingManager = {};
+
+--[[public]] function CustomBindingManager:RegisterHandlerAndCreateButton(handler, template, parent)
+	if not self.handlers then
+		self.handlers = {};
+	end
+
+	local customBindingType = handler:GetCustomBindingType();
+	if not self.handlers[customBindingType] then
+		self.handlers[customBindingType] = {};
+	end
+
+	local frame = CreateFrame("BUTTON", nil, parent, template);
+	frame:SetCustomBindingType(customBindingType);
+	self.handlers[customBindingType][handler] = frame;
+	return frame;
+end
+
+
+--[[private]] function CustomBindingManager:OnBindingModeActive(frame, isActive)
+	for handler in self:EnumerateHandlers(frame:GetCustomBindingType()) do
+		handler:CallOnBindingModeActivatedCallback(isActive);
+	end
+end
+
+--[[private]] function CustomBindingManager:OnBindingCompleted(frame, completedSuccessfully)
+	for handler, frame in self:EnumerateHandlers(frame:GetCustomBindingType()) do
+		handler:CallOnBindingCompletedCallback(completedSuccessfully);
+	end
+end
+
+--[[private]] function CustomBindingManager:SetPendingBind(customBindingType, keys)
+	if not self.pendingBinds then
+		self.pendingBinds = {};
+	end
+
+	local text = GetBindingText(CreateKeyChordStringFromTable(keys));
+	self.pendingBinds[customBindingType] = { keys = keys, text = text };
+
+	for handler, button in self:EnumerateHandlers(customBindingType) do
+		button:OnBindingTextChanged(text);
+	end
+end
+
+--[[private]] function CustomBindingManager:GetPendingBind(customBindingType)
+	if self.pendingBinds then
+		return self.pendingBinds[customBindingType];
+	end
+end
+
+--[[private]] function CustomBindingManager:ClearPendingBind(customBindingType)
+	if self.pendingBinds then
+		self.pendingBinds[customBindingType] = nil;
+	end
+end
+
+--[[private]] function CustomBindingManager:EnumerateHandlers(customBindingType)
+	return pairs(self.handlers[customBindingType]);
+end
+
+--[[private]] function CustomBindingManager:AddSystem(customBindingType, accessor, mutator)
+	if not self.systems then
+		self.systems = {};
+	end
+
+	self.systems[customBindingType] = { accessor = accessor, mutator = mutator };
+end
+
+--[[private]] function CustomBindingManager:QueryAccessor(customBindingType)
+	return self.systems[customBindingType].accessor();
+end
+
+--[[private]] function CustomBindingManager:MutateValue(customBindingType, value)
+	return self.systems[customBindingType].mutator(value);
+end
+
+local function GetConvertedBindingText(text)
+	return text ~= "" and text;
+end
+
+--[[public]] function CustomBindingManager:GetBindingText(customBindingType)
+	local pendingBind = self:GetPendingBind(customBindingType);
+	if pendingBind then
+		return GetConvertedBindingText(pendingBind.text);
+	end
+
+	local keys = self:QueryAccessor(customBindingType);
+	if keys then
+		return GetConvertedBindingText(GetBindingText(table.concat(keys, "-")));
+	end
+end
+
+--[[public]] function CustomBindingManager:OnDismissed(customBindingType, shouldApply)
+	if shouldApply then
+		local pendingBind = self:GetPendingBind(customBindingType);
+		if pendingBind then
+			self:MutateValue(customBindingType, pendingBind.keys);
+		end
+	end
+
+	self:ClearPendingBind(customBindingType);
+end
+
+--[[public]] function CustomBindingManager:Unbind(customBindingType)
+	self:SetPendingBind(customBindingType, {});
+end
+
+-- Initialize all known custom binding systems...both accessors and mutators operate on tables of key names
+--[[private]]
+CustomBindingManager:AddSystem(Enum.CustomBindingType.VoicePushToTalk, C_VoiceChat.GetPushToTalkBinding, C_VoiceChat.SetPushToTalkBinding);

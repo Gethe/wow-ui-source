@@ -130,15 +130,9 @@
 			</Layer>
 		</Layers>
 		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-			<EdgeSize>
-				<AbsValue val="16"/>
-			</EdgeSize>
-			<TileSize>
-				<AbsValue val="16"/>
-			</TileSize>
-			<BackgroundInsets>
-				<AbsInset left="5" right="5" top="5" bottom="5"/>
-			</BackgroundInsets>
+			<EdgeSize val="16"/>
+			<TileSize val="16"/>
+			<BackgroundInsets left="4" right="5" top="5" bottom="4"/>
 		</Backdrop>
 		<Scripts>
 			<OnLoad>

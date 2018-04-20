@@ -116,21 +116,6 @@ local VoiceChat =
 			},
 		},
 		{
-			Name = "GetCharacterInfo",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "memberID", Type = "number", Nilable = false },
-				{ Name = "channelID", Type = "number", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "characterInfo", Type = "VoiceChatCharacterInfo", Nilable = true },
-			},
-		},
-		{
 			Name = "GetCommunicationMode",
 			Type = "Function",
 
@@ -155,6 +140,35 @@ local VoiceChat =
 			Returns =
 			{
 				{ Name = "volume", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "GetLocalPlayerMemberID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "channelID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "memberID", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "GetMemberGUID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "memberID", Type = "number", Nilable = false },
+				{ Name = "channelID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "memberGUID", Type = "string", Nilable = false },
 			},
 		},
 		{
@@ -855,17 +869,6 @@ local VoiceChat =
 				{ Name = "isTransmitting", Type = "bool", Nilable = false },
 				{ Name = "isLocalProcess", Type = "bool", Nilable = false },
 				{ Name = "members", Type = "table", InnerType = "VoiceChatMember", Nilable = false },
-			},
-		},
-		{
-			Name = "VoiceChatCharacterInfo",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "className", Type = "string", Nilable = false },
-				{ Name = "classFilename", Type = "string", Nilable = false },
-				{ Name = "classID", Type = "number", Nilable = false },
-				{ Name = "sex", Type = "number", Nilable = false },
 			},
 		},
 		{

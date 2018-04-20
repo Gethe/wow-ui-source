@@ -282,13 +282,8 @@ local AudioOptionsVoicePanelFrameMicrophoneList =
 };
 
 function AudioOptionsVoicePanel_OnDismiss(self, shouldApply)
-	if self.setPushToTalkBinding then
-		if shouldApply then
-			C_VoiceChat.SetPushToTalkBinding(self.setPushToTalkBinding);
-		end
-
-		self.setPushToTalkBinding = nil;
-		self.setPushToTalkBindingText = nil;
+	if self.PushToTalkKeybindButton then
+		CustomBindingManager:OnDismissed(self.PushToTalkKeybindButton:GetCustomBindingType(), shouldApply);
 	end
 end
 
@@ -325,8 +320,8 @@ end
 function AudioOptionsVoicePanel_OnHide(self)
 	if self.PushToTalkKeybindButton then
 		self.ChatModeDropdown.PushToTalkNotification:SetText("");
+		CustomBindingManager:OnDismissed(self.PushToTalkKeybindButton:GetCustomBindingType(), false);
 		BindingButtonTemplate_SetSelected(self.PushToTalkKeybindButton, false);
-		self:EnableKeyboard(false);
 	end
 
 	self:UnregisterEvent("VOICE_CHAT_CONNECTION_SUCCESS");
@@ -347,38 +342,27 @@ end
 
 function AudioOptionsVoicePanel_InitializeCommunicationModeUI(self)
 	if not self.PushToTalkKeybindButton then
-		KeyBindingFrame_LoadUI();
+		local handler = CustomBindingHandler:CreateHandler(Enum.CustomBindingType.VoicePushToTalk);
 
-		self.PushToTalkKeybindButton = CreateFrame("BUTTON", nil, self, "CustomBindingButtonTemplateWithLabel");
-		self.PushToTalkKeybindButton.KeyLabel:SetText(VOICE_CHAT_MODE_KEY);
-		local actionName = "TOGGLE_VOICE_PUSH_TO_TALK";
-
-		self.PushToTalkKeybindButton.actionName = actionName;
-		self.PushToTalkKeybindButton.bindingMode = bindingMode;
-		self.bindingMode = bindingMode;
-
-		self.PushToTalkKeybindButton:SetBindingModeActiveCallback(function(pttButton, isActive)
+		handler:SetOnBindingModeActivatedCallback(function(isActive)
 			if isActive then
-				self.ChatModeDropdown.PushToTalkNotification:SetFormattedText(BIND_KEY_TO_COMMAND, GetBindingName(actionName));
+				self.ChatModeDropdown.PushToTalkNotification:SetFormattedText(BIND_KEY_TO_COMMAND, GetBindingName("TOGGLE_VOICE_PUSH_TO_TALK"));
 			end
 		end);
 
-
-		self.PushToTalkKeybindButton:SetBindingCompletedCallback(function(pttButton, completedSuccessfully)
+		handler:SetOnBindingCompletedCallback(function(completedSuccessfully)
 			self.ChatModeDropdown.PushToTalkNotification:SetText("");
-
-			if completedSuccessfully then
-				self.setPushToTalkBindingText = pttButton:GetBindingText();
-				self.setPushToTalkBinding = pttButton:GetKeys();
-				AudioOptionsVoicePanel_UpdateCommunicationModeUI(self);
-			end
+			BindingButtonTemplate_SetSelected(self.PushToTalkKeybindButton, false);
+			AudioOptionsVoicePanel_UpdateCommunicationModeUI(self);
 		end);
 
+		self.PushToTalkKeybindButton = CustomBindingManager:RegisterHandlerAndCreateButton(handler, "CustomBindingButtonTemplateWithLabel", self);
+		self.PushToTalkKeybindButton.KeyLabel:SetText(VOICE_CHAT_MODE_KEY);
 		self.PushToTalkKeybindButton:SetPoint("BOTTOMLEFT", self.ChatModeDropdown, "BOTTOMRIGHT", 0, 5);
-		self.PushToTalkKeybindButton:SetWidth(140);
+		self.PushToTalkKeybindButton:SetWidth(140); -- TODO: Needs to dynamically size
 		self.PushToTalkKeybindButton.selectedHighlight:SetWidth(140);
 
-		AudioOptionsVoicePanel_KeyBindButton_SetEnabled(self.PushToTalkKeybindButton, not self.ChatModeDropdown.isDisabled);
+		AudioOptionsVoicePanel_KeyBindButton_SetEnabled(self.PushToTalkKeybindButton, not self.ChatModeDropdown.isDisabled); -- TODO: Hide binding ui if openMic is selected?
 		BlizzardOptionsPanel_RegisterControl(self.PushToTalkKeybindButton, self);
 	end
 
@@ -399,16 +383,8 @@ local function GetPreferredBindingKey(action, mode)
 end
 
 function AudioOptionsVoicePanel_UpdateCommunicationModeUI(self)
-	local button = self.PushToTalkKeybindButton;
-	if button then
-		local key = self.setPushToTalkBindingText or GetBindingText(table.concat(C_VoiceChat.GetPushToTalkBinding(), "-"));
-		if key then
-			button:SetText(key);
-			button:SetAlpha(1);
-		else
-			button:SetText(GRAY_FONT_COLOR:WrapTextInColorCode(NOT_BOUND));
-			button:SetAlpha(0.8);
-		end
+	if self.PushToTalkKeybindButton then
+		BindingButtonTemplate_SetupBindingButton(nil, self.PushToTalkKeybindButton);
 	end
 end
 

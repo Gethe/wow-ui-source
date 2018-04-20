@@ -75,7 +75,7 @@ function UnitPositionFrameMixin:UpdateAppearanceData()
 end
 
 function UnitPositionFrameMixin:ResetCurrentMouseOverUnits()
-	self.currentMouseOverUnits = {}
+	self.currentMouseOverUnits = {};
 	self.currentMouseOverUnitCount = 0;
 end
 

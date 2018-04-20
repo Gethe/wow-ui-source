@@ -261,6 +261,7 @@ function WorldMapFrame_OnLoad(self)
 	self:RegisterEvent("QUEST_LOG_UPDATE");
 	self:RegisterEvent("WORLD_QUEST_COMPLETED_BY_SPELL");
 	self:RegisterEvent("MINIMAP_UPDATE_TRACKING");
+	self:RegisterEvent("DYNAMIC_GOSSIP_POI_UPDATED");
 
 	self:SetClampRectInsets(0, 0, 0, -60);				-- don't overlap the xp/rep bars
 	self.poiHighlight = nil;
@@ -347,11 +348,6 @@ function WorldMapFrame_OnShow(self)
 	UpdateMicroButtons();
 	if (not WorldMapFrame.toggling) then
 		SetMapToCurrentZone();
-		if ( GetCurrentMapAreaID() == 1214 ) then
-			WorldMapScrollFrame_OnMouseWheel(WorldMapScrollFrame, 1);
-			WorldMapScrollFrame:SetHorizontalScroll(213);
-			WorldMapScrollFrame:SetVerticalScroll(104);
-		end
 	else
 		WorldMapFrame.toggling = false;
 	end
@@ -409,7 +405,7 @@ function WorldMapFrame_OnEvent(self, event, ...)
 		if ( self:IsShown() ) then
 			HideUIPanel(WorldMapFrame);
 		end
-	elseif ( event == "WORLD_MAP_UPDATE" or event == "REQUEST_CEMETERY_LIST_RESPONSE" or event == "QUESTLINE_UPDATE" or event == "MINIMAP_UPDATE_TRACKING" ) then
+	elseif ( event == "WORLD_MAP_UPDATE" or event == "REQUEST_CEMETERY_LIST_RESPONSE" or event == "QUESTLINE_UPDATE" or event == "MINIMAP_UPDATE_TRACKING" or event == "DYNAMIC_GOSSIP_POI_UPDATED" ) then
 		local mapID = C_Map.GetCurrentMapID();
 
 		WorldMapBlobFrame:SetMapID(mapID);
@@ -433,7 +429,7 @@ function WorldMapFrame_OnEvent(self, event, ...)
 				end
 			end
 			if ( WorldMapScrollFrame.zoomedIn ) then
-				if ( WorldMapScrollFrame.continent ~= GetCurrentMapContinent() or WorldMapScrollFrame.mapID ~= mapID ) then
+				if ( WorldMapScrollFrame.mapID ~= mapID ) then
 					WorldMapScrollFrame_ResetZoom();
 				end
 			end
@@ -921,7 +917,7 @@ function WorldMap_UpdateQuestBonusObjectives()
 	end
 
 	local mapID = C_Map.GetCurrentMapID();
-	local taskInfo = C_TaskQuest.GetQuestsForPlayerByMapID(mapID, mapID);
+	local taskInfo = C_TaskQuest.GetQuestsForPlayerByMapID(mapID);
 	local numTaskPOIs = 0;
 	if(taskInfo ~= nil) then
 		numTaskPOIs = #taskInfo;
@@ -1067,7 +1063,7 @@ function WorldMapPOI_ShouldShowAreaLabel(poi)
 	if poi.landmarkType == LE_MAP_LANDMARK_TYPE_CONTRIBUTION or poi.landmarkType == LE_MAP_LANDMARK_TYPE_INVASION or poi.useMouseOverTooltip then
 		return false;
 	end
-	if poi.poiID and C_WorldMap.IsAreaPOITimed(poi.poiID) then
+	if poi.poiID and C_AreaPoiInfo.IsAreaPOITimed(poi.poiID) then
 		return false;
 	end
 
@@ -1129,9 +1125,6 @@ function WorldMap_UpdateLandmarks()
 				worldMapPOI:Hide();
 			else
 				WorldMapPOIFrame_AnchorPOI(worldMapPOI, landmarkInfo.x, landmarkInfo.y, WorldMap_GetFrameLevelForLandmark(landmarkInfo.landmarkType));
-				if ( landmarkInfo.landmarkType == LE_MAP_LANDMARK_TYPE_NORMAL and WorldMap_IsSpecialPOI(landmarkInfo.poiID) ) then	--We have special handling for Isle of the Thunder King
-					WorldMap_HandleSpecialPOI(worldMapPOI, landmarkInfo.poiID);
-				else
 					WorldMap_ResetPOI(worldMapPOI, false, landmarkInfo.atlasName, landmarkInfo.textureKitPrefix);
 
 					if (not landmarkInfo.atlasName) then
@@ -1172,11 +1165,10 @@ function WorldMap_UpdateLandmarks()
 					if pingInfo and landmarkInfo.landmarkType == LE_MAP_LANDMARK_TYPE_MAP_LINK then
 						WorldMapPing_StartPingPOI(worldMapPOI);
 					end
-				end
 			end
 
 			if (landmarkInfo and landmarkInfo.displayAsBanner) then
-				local timeLeftMinutes = C_WorldMap.GetAreaPOITimeLeft(landmarkInfo.poiID);
+				local timeLeftMinutes = C_AreaPoiInfo.GetAreaPOITimeLeft(landmarkInfo.poiID);
 				local descriptionLabel = nil;
 				if (timeLeftMinutes) then
 					local hoursLeft = math.floor(timeLeftMinutes / 60);
@@ -1244,7 +1236,7 @@ function WorldMapFrame_Update()
 	local textureCount = 0;
 	WorldMapOverlayHighlights = {};
 
-	for i=1, GetNumMapOverlays() do
+	for i=1, 0 do
 		local textureWidth, textureHeight, offsetX, offsetY, isShownByMouseOver, textureInfo = GetMapOverlayInfo(i);
 		if ( textureInfo ) then
 			local numTexturesWide = ceil(textureWidth/256);
@@ -1589,11 +1581,11 @@ function WorldMapPOI_AddPOITimeLeftText(anchor, areaPoiID, name, description)
 	if WarfrontTooltipController:HandleTooltip(WorldMapTooltip, anchor, areaPoiID, name, description) then
 		return;
 	end
-	if name and #name > 0 and description and #description > 0 and C_WorldMap.IsAreaPOITimed(areaPoiID) then
+	if name and #name > 0 and description and #description > 0 and C_AreaPoiInfo.IsAreaPOITimed(areaPoiID) then
 		WorldMapTooltip:SetOwner(anchor, "ANCHOR_RIGHT");
 		WorldMapTooltip:SetText(HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(name));
 		WorldMapTooltip:AddLine(NORMAL_FONT_COLOR:WrapTextInColorCode(description));
-		local timeLeftMinutes = C_WorldMap.GetAreaPOITimeLeft(areaPoiID);
+		local timeLeftMinutes = C_AreaPoiInfo.GetAreaPOITimeLeft(areaPoiID);
 		if timeLeftMinutes then
 			local timeString = SecondsToTime(timeLeftMinutes * 60);
 			WorldMapTooltip:AddLine(BONUS_OBJECTIVE_TIME_LEFT:format(timeString), NORMAL_FONT_COLOR:GetRGB());
@@ -1680,89 +1672,6 @@ function WorldMapPOI_OnLeave(self)
 	end
 
 	self.HighlightTexture:Hide();
-end
-
-function WorldMap_ThunderIslePOI_OnEnter(self, poiInfo)
-	WorldMapTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	local tag = "THUNDER_ISLE";
-	local phase = poiInfo.phase;
-
-	local title = MapBarFrame_GetString("TITLE", tag, phase);
-	if ( poiInfo.active ) then
-		local tooltipText = MapBarFrame_GetString("TOOLTIP", tag, phase);
-		local percentage = math.floor(100 * C_MapBar.GetCurrentValue() / C_MapBar.GetMaxValue());
-		WorldMapTooltip:SetText(format(MAP_BAR_TOOLTIP_TITLE, title, percentage), 1, 1, 1);
-		WorldMapTooltip:AddLine(tooltipText, nil, nil, nil, true);
-		WorldMapTooltip:Show();
-	else
-		local disabledText = MapBarFrame_GetString("LOCKED", tag, phase);
-		WorldMapTooltip:SetText(title, 1, 1, 1);
-		WorldMapTooltip:AddLine(disabledText, nil, nil, nil, true);
-		WorldMapTooltip:Show();
-	end
-end
-
-function WorldMap_ThunderIslePOI_OnLeave(self, poiInfo)
-	WorldMapTooltip:Hide();
-end
-
-function WorldMap_HandleThunderIslePOI(poiFrame, poiInfo)
-	poiFrame:SetSize(64, 64);
-	poiFrame.Texture:SetSize(64, 64);
-
-	poiFrame.Texture:SetTexCoord(0, 1, 0, 1);
-	if ( poiInfo.active ) then
-		poiFrame.Texture:SetTexture("Interface\\WorldMap\\MapProgress\\mappoi-mogu-on");
-	else
-		poiFrame.Texture:SetTexture("Interface\\WorldMap\\MapProgress\\mappoi-mogu-off");
-	end
-end
-
-SPECIAL_POI_INFO = {
-	[2943] = { phase = 0, active = true },
-	[2944] = { phase = 0, active = true },
-	[2925] = { phase = 1, active = true },
-	[2927] = { phase = 1, active = false },
-	[2945] = { phase = 1, active = true },
-	[2949] = { phase = 1, active = false },
-	[2937] = { phase = 2, active = true },
-	[2938] = { phase = 2, active = false },
-	[2946] = { phase = 2, active = true },
-	[2950] = { phase = 2, active = false },
-	[2939] = { phase = 3, active = true },
-	[2940] = { phase = 3, active = false },
-	[2947] = { phase = 3, active = true },
-	[2951] = { phase = 3, active = false },
-	[2941] = { phase = 4, active = true },
-	[2942] = { phase = 4, active = false },
-	[2948] = { phase = 4, active = true },
-	[2952] = { phase = 4, active = false },
-	--If you add another special POI, make sure to change the setup below
-};
-
-for k, v in pairs(SPECIAL_POI_INFO) do
-	v.handleFunc = WorldMap_HandleThunderIslePOI;
-	v.onEnter = WorldMap_ThunderIslePOI_OnEnter;
-	v.onLeave = WorldMap_ThunderIslePOI_OnLeave;
-end
-
-function WorldMap_IsSpecialPOI(poiID)
-	if ( SPECIAL_POI_INFO[poiID] ) then
-		return true;
-	else
-		return false;
-	end
-end
-
-function WorldMap_HandleSpecialPOI(poiFrame, poiID)
-	local poiInfo = SPECIAL_POI_INFO[poiID];
-	poiFrame.specialPOIInfo = poiInfo;
-	if ( poiInfo and poiInfo.handleFunc ) then
-		poiInfo.handleFunc(poiFrame, poiInfo)
-		poiFrame:Show();
-	else
-		poiFrame:Hide();
-	end
 end
 
 function WorldEffectPOI_OnEnter(self)
@@ -2284,18 +2193,7 @@ function WorldMapButton_OnUpdate(self, elapsed)
 
 	local name, fileDataID, texPercentageX, texPercentageY, textureX, textureY, scrollChildX, scrollChildY, minLevel, maxLevel, petMinLevel, petMaxLevel
 	if ( WorldMapScrollFrame:IsMouseOver() ) then
-		name, fileDataID, texPercentageX, texPercentageY, textureX, textureY, scrollChildX, scrollChildY, minLevel, maxLevel, petMinLevel, petMaxLevel = GetMapHighlight( adjustedX, adjustedY );
 
-		for index,textures in pairs(WorldMapOverlayHighlights) do
-			local isHighlighted = IsMapOverlayHighlighted(index, adjustedX, adjustedY);
-			for _,texture in pairs(textures) do
-				if (isHighlighted == true) then
-					texture:Show();
-				else
-					texture:Hide();
-				end
-			end
-		end
 	end
 
 	WorldMapFrameAreaPetLevels:SetText(""); --make sure pet level is cleared
@@ -2721,7 +2619,6 @@ function WorldMap_ToggleSizeUp()
 	WorldMapUnitPositionFrame:SetPinSize("raid", RAID_MEMBER_SIZE_FULL);
 	WorldMap_UpdateBattlefieldFlagSizes(BATTLEFIELD_ICON_SIZE_FULL);
 	WorldMap_UpdateBattlefieldFlagScales();
-	MapBarFrame_UpdateLayout(MapBarFrame);
 end
 
 function WorldMap_ToggleSizeDown()
@@ -2776,7 +2673,6 @@ function WorldMap_ToggleSizeDown()
 	WorldMapUnitPositionFrame:SetPinSize("raid", RAID_MEMBER_SIZE_WINDOW);
 	WorldMap_UpdateBattlefieldFlagSizes(BATTLEFIELD_ICON_SIZE_WINDOW);
 	WorldMap_UpdateBattlefieldFlagScales();
-	MapBarFrame_UpdateLayout(MapBarFrame);
 end
 
 function WorldMapFrame_UpdateMap(skipDropDownUpdate)
@@ -3076,7 +2972,6 @@ function WorldMapScrollFrame_OnMouseWheelAtPosition(self, delta, frameX, frameY)
 	scrollFrame.maxX = QUEST_POI_FRAME_WIDTH - 1002 * WORLDMAP_SETTINGS.size;
 	scrollFrame.maxY = QUEST_POI_FRAME_HEIGHT - 668 * WORLDMAP_SETTINGS.size;
 	scrollFrame.zoomedIn = abs(WorldMapDetailFrame:GetScale() - WORLDMAP_SETTINGS.size) > 0.05;
-	scrollFrame.continent = GetCurrentMapContinent();
 	scrollFrame.mapID = C_Map.GetCurrentMapID();
 
 	-- figure out new scroll values

@@ -1,6 +1,6 @@
 UIWidgetManager:RegisterWidgetVisTypeTemplate(Enum.UIWidgetVisualizationType.DoubleStatusBar, {frameType = "FRAME", frameTemplate = "UIWidgetTemplateDoubleStatusBar"}, C_UIWidgetManager.GetDoubleStatusBarWidgetVisualizationInfo);
 
-UIWidgetTemplateDoubleStatusBarMixin = {}
+UIWidgetTemplateDoubleStatusBarMixin = CreateFromMixins(UIWidgetBaseTemplateMixin);
 
 local leftBarTextureKitRegions = {
 	["BG"] = "%s-bar-background",
@@ -29,6 +29,7 @@ local BAR_WIDTH = 92;
 local ICON_OFFSET = 12;
 
 function UIWidgetTemplateDoubleStatusBarMixin:Setup(widgetInfo)
+	UIWidgetBaseTemplateMixin.Setup(self, widgetInfo);
 	local textureKit = GetUITextureKitInfo(widgetInfo.textureKitID);
 
 	SetupTextureKitOnRegions(textureKit, self.LeftBar, leftBarTextureKitRegions);

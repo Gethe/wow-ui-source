@@ -1201,6 +1201,7 @@ PredictedSettingBaseMixin = {};
 -- The wrapTable here should have functions to specific keys based on which type of setting you are wrapping.
 -- All tables must have a getFunction key that returns the "real" value.
 -- The PredictedSetting wrapTable should have a setFunction key with a function that takes a value and sets the real value to this value.
+--   This function can return a true/false value noting if the set succeeded or not.
 -- The PredictedToggle wrapTable should have a toggleFunction key that is the function to call to toggle the real value.
 function PredictedSettingBaseMixin:SetUp(wrapTable)
 	self.wrapTable = wrapTable;
@@ -1220,8 +1221,10 @@ end
 PredictedSettingMixin = CreateFromMixins(PredictedSettingBaseMixin);
 
 function PredictedSettingMixin:Set(value)
-	self.predictedValue = value;
-	self.wrapTable.setFunction(value);
+	local validated = self.wrapTable.setFunction(value);
+	if (validated ~= false) then	
+		self.predictedValue = value;
+	end
 end
 
 function CreatePredictedSetting(wrapTable)
@@ -1250,4 +1253,35 @@ function CreatePredictedToggle(wrapTable)
 	local predictedToggle = CreateFromMixins(PredictedToggleMixin);
 	predictedToggle:SetUp(wrapTable);
 	return predictedToggle;
+end
+
+LayoutIndexManagerMixin = {}
+
+function LayoutIndexManagerMixin:AddManagedLayoutIndex(key, startingIndex)
+	if (not self.managedLayoutIndexes) then
+		self.managedLayoutIndexes = {};
+		self.startingLayoutIndexes = {};
+	end
+	self.managedLayoutIndexes[key] = startingIndex;
+	self.startingLayoutIndexes[key] = startingIndex;
+end
+
+function LayoutIndexManagerMixin:GetManagedLayoutIndex(key)
+	if (not self.managedLayoutIndexes or not self.managedLayoutIndexes[key]) then
+		return 0;
+	end
+
+	local layoutIndex = self.managedLayoutIndexes[key];
+	self.managedLayoutIndexes[key] = self.managedLayoutIndexes[key] + 1;
+	return layoutIndex;
+end
+
+function LayoutIndexManagerMixin:Reset()
+	for k, _ in pairs(self.managedLayoutIndexes) do
+		self.managedLayoutIndexes[k] = self.startingLayoutIndexes[k];
+	end
+end
+
+function CreateLayoutIndexManager()
+	return CreateFromMixins(LayoutIndexManagerMixin);
 end

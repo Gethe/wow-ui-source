@@ -122,9 +122,7 @@ function QuestLogOwnerMixin:SetDisplayState(displayState)
 		self.SidePanelToggle:Refresh();
 	end
 
-	if self.QuestLog:IsShown() then
-		self.QuestLog:Refresh();
-	end
+	self:RefreshQuestLog();
 	self:UpdateSpacerFrameAnchoring();
 end
 
@@ -137,6 +135,18 @@ function QuestLogOwnerMixin:SetQuestLogPanelShown(shown)
 			self:SetWidth(self.minimizedWidth);
 			self.QuestLog:Hide();
 		end
+	end
+end
+
+function QuestLogOwnerMixin:RefreshQuestLog()
+	if self.QuestLog and self.QuestLog:IsShown() then
+		self.QuestLog:Refresh();
+	end
+end
+
+function QuestLogOwnerMixin:OnUIClose()
+	if self.QuestLog then
+		self.QuestLog:UpdatePOIs();
 	end
 end
 

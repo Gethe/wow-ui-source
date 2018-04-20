@@ -29,7 +29,7 @@
 				<Texture parentKey="Icon">
 					<Size x="42" y="42"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="10" y="-10"/>
+						<Anchor point="TOPLEFT" x="8" y="-15"/>
 					</Anchors>
 				</Texture>
 				<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
@@ -63,15 +63,15 @@
 			</Layer>
 			<Layer level="OVERLAY">
 				<Texture parentKey="InvitationIcon" atlas="Mailbox">
-					<Size x="50" y="50"/>
+					<Size x="52" y="52"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="8" y="-8"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="IconRing" atlas="bluemenu-Ring">
-					<Size x="63" y="63"/>
+				<Texture parentKey="IconRing" atlas="communities-ring-gold">
+					<Size x="52" y="52"/>
 					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+						<Anchor point="CENTER" relativeKey="$parent.Icon" x="0" y="-2"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="UnreadNotificationIcon" atlas="communities-icon-notification" hidden="true">

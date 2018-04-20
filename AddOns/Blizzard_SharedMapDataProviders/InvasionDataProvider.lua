@@ -1,5 +1,19 @@
 InvasionDataProviderMixin = CreateFromMixins(MapCanvasDataProviderMixin);
 
+function InvasionDataProviderMixin:OnShow()
+	self:RegisterEvent("QUEST_LOG_UPDATE");
+end
+
+function InvasionDataProviderMixin:OnHide()
+	self:UnregisterEvent("QUEST_LOG_UPDATE");
+end
+
+function InvasionDataProviderMixin:OnEvent(event, ...)
+	if event == "QUEST_LOG_UPDATE" then
+		self:RefreshAllData();
+	end
+end
+
 function InvasionDataProviderMixin:RemoveAllData()
 	self:GetMap():RemoveAllPinsByTemplate("InvasionPinTemplate");
 end
@@ -18,38 +32,13 @@ function InvasionDataProviderMixin:RefreshAllData(fromOnShow)
 	end
 end
 
-function InvasionDataProviderMixin:OnShow()
-	self:RegisterEvent("QUEST_LOG_UPDATE");
-end
-
-function InvasionDataProviderMixin:OnHide()
-	self:UnregisterEvent("QUEST_LOG_UPDATE");
-end
-
-function InvasionDataProviderMixin:OnEvent(event, ...)
-	if event == "QUEST_LOG_UPDATE" then
-		self:RefreshAllData();
-	end
-end
-
 --[[ Pin ]]--
-InvasionPinMixin = CreateFromMixins(MapCanvasPinMixin);
-
-function InvasionPinMixin:OnLoad()
-	self:SetScalingLimits(1, 1.0, 1.2);
-	self:UseFrameLevelType("PIN_FRAME_LEVEL_INVASION");
-end
+InvasionPinMixin = BaseMapPoiPinMixin:CreateSubPin("PIN_FRAME_LEVEL_INVASION");
 
 function InvasionPinMixin:OnAcquired(invasionInfo)
+	BaseMapPoiPinMixin.OnAcquired(self, invasionInfo);
+
 	self.invasionID = invasionInfo.invasionID;
-
-	self.Texture:SetAtlas(invasionInfo.atlasName, true);
-	self.HighlightTexture:SetAtlas(invasionInfo.atlasName, true);
-
-	local sizeX, sizeY = self.Texture:GetSize();
-	self.HighlightTexture:SetSize(sizeX, sizeY);
-
-	self:SetSize(sizeX, sizeY);
 end
 
 function InvasionPinMixin:OnMouseEnter()

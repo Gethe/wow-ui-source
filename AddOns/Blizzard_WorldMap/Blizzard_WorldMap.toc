@@ -1,10 +1,11 @@
-## Interface: 70300
+## Interface: 80000
 ## Title: Blizzard World Map UI
 ## Secure: 1
 ## Author: Blizzard Entertainment
 ## RequiredDep: Blizzard_MapCanvas, Blizzard_SharedMapDataProviders
 ## LoadOnDemand: 0
 
+MapTexturePreloader.lua
 WM_AreaPOIDataProvider.xml
 WM_WorldQuestDataProvider.xml
 WM_InvasionDataProvider.xml

@@ -7,6 +7,15 @@ local QuestLog =
 	Functions =
 	{
 		{
+			Name = "GetMapForQuestPOIs",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "uiMapID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetMaxNumQuests",
 			Type = "Function",
 
@@ -27,6 +36,30 @@ local QuestLog =
 			Returns =
 			{
 				{ Name = "quests", Type = "table", InnerType = "QuestOnMapInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetZoneStoryInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "uiMapID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "achievementID", Type = "number", Nilable = false },
+				{ Name = "storyMapID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SetMapForQuestPOIs",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "uiMapID", Type = "number", Nilable = false },
 			},
 		},
 	},

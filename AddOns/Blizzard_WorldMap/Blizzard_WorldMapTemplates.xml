@@ -172,4 +172,20 @@
 			</Button>
 		</Frames>
 	</Frame>
+
+	<Frame name="WorldMapZoneTimerTemplate" frameStrata="HIGH" mixin="WorldMapZoneTimerMixin" virtual="true">
+		<Size x="101" y="86" />
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="TimeLabel" inherits="SystemFont_OutlineThick_Huge2" justifyH="CENTER" hidden="true">
+					<Anchors>
+						<Anchor point="BOTTOM" relativePoint="BOTTOM" x="0" y="20"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnUpdate method="OnUpdate" />
+		</Scripts>
+	</Frame>
 </Ui>

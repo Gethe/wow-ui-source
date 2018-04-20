@@ -26,34 +26,53 @@ local DEBUG_ICON_INFO = {
 
 function WorldMap_DebugDataProviderMixin:OnShow()
 	self:RegisterEvent("DEBUG_MAP_OBJECTS_UPDATED");
+	self:RegisterEvent("DEBUG_PORT_LOCS_UPDATED");
 end
 
 function WorldMap_DebugDataProviderMixin:OnHide()
 	self:UnregisterEvent("DEBUG_MAP_OBJECTS_UPDATED");
+	self:UnregisterEvent("DEBUG_PORT_LOCS_UPDATED");
 end
 
 function WorldMap_DebugDataProviderMixin:OnEvent(event, ...)
 	if event == "DEBUG_MAP_OBJECTS_UPDATED" then
+		self:RefreshAllData();
+	elseif event == "DEBUG_PORT_LOCS_UPDATED" then
 		self:RefreshAllData();
 	end
 end
 
 function WorldMap_DebugDataProviderMixin:RemoveAllData()
 	self:GetMap():RemoveAllPinsByTemplate("WorldMap_DebugObjectPinTemplate");
+	self:GetMap():RemoveAllPinsByTemplate("WorldMap_DebugPortLocPinTemplate");
 end
 
 function WorldMap_DebugDataProviderMixin:RefreshAllData(fromOnShow)
 	self:RemoveAllData();
 
 	local mapID = self:GetMap():GetMapID();
-	local mapInfo = C_Map.GetMapInfo(mapID);
-	for index = 1, C_Debug.GetNumMapDebugObjects() do
-		local debugObjectInfo = C_Debug.GetMapDebugObjectInfo(index);
-		if ( debugObjectInfo ) then
-			local pin = self:GetMap():AcquirePin("WorldMap_DebugObjectPinTemplate", index, debugObjectInfo);
+
+	self:RefreshDebugObjects(mapID);
+	self:RefreshPortLocs(mapID);
+end
+
+function WorldMap_DebugDataProviderMixin:RefreshDebugObjects(mapID)
+	local debugObjects = C_Debug.GetMapDebugObjects(mapID);
+	if debugObjects then
+		for i, debugObjectInfo in ipairs(debugObjects) do
+			local pin = self:GetMap():AcquirePin("WorldMap_DebugObjectPinTemplate", debugObjectInfo);
 			pin:SetPosition(debugObjectInfo.position:GetXY());
 			pin:UseFrameLevelType("PIN_FRAME_LEVEL_DEBUG", (#DEBUG_ICON_INFO - debugObjectInfo.size) + 1);
 			pin:Show();
+		end
+	end
+end
+
+function WorldMap_DebugDataProviderMixin:RefreshPortLocs(mapID)
+	local portLocs = C_Debug.GetAllPortLocsForMap(mapID);
+	if portLocs then
+		for i, portLocInfo in ipairs(portLocs) do
+			self:GetMap():AcquirePin("WorldMap_DebugPortLocPinTemplate", portLocInfo);
 		end
 	end
 end
@@ -67,16 +86,11 @@ end
 
 WorldMap_DebugObjectPinMixin = CreateFromMixins(MapCanvasPinMixin);
 
-function WorldMap_DebugObjectPinMixin:OnAcquired(index, debugObjectInfo)
-	self.index = index;
+function WorldMap_DebugObjectPinMixin:OnAcquired(debugObjectInfo)
+	self.index = debugObjectInfo.index;
 	local info = DEBUG_ICON_INFO[debugObjectInfo.size];
-	if ( mapID == WORLDMAP_AZEROTH_ID ) then
-		self:SetWidth(info.size / 2);
-		self:SetHeight(info.size / 2);
-	else
-		self:SetWidth(info.size);
-		self:SetHeight(info.size);
-	end
+	self:SetWidth(info.size);
+	self:SetHeight(info.size);
 	self.Texture:SetVertexColor(info.r, info.g, info.b, 0.5);
 end
 
@@ -87,21 +101,17 @@ end
 function WorldMap_DebugObjectPinMixin:OnMouseEnter(motion)
 	WorldMap_HijackTooltip(self:GetMap());
 
-	local tooltipText = "";
+	local tooltipText = {};
 	for pin in self:GetMap():EnumeratePinsByTemplate("WorldMap_DebugObjectPinTemplate") do
-		if (pin:IsVisible() and pin:IsMouseOver()) then
-			local name, size, x, y = GetMapDebugObjectInfo(pin:GetDebugObjectIndex());
-			if (name) then
-				if (toolipText == "") then
-					tooltipText = name;
-				else
-					tooltipText = tooltipText.."|n"..name;
-				end
+		if pin:IsMouseOver() then
+			local debugObjectInfo = C_Debug.GetMapDebugObjectInfo(pin:GetDebugObjectIndex());
+			if debugObjectInfo then
+				table.insert(tooltipText, debugObjectInfo.name);
 			end
 		end
 	end
 	WorldMapTooltip:SetOwner(self);
-	WorldMapTooltip:SetText(tooltipText);
+	WorldMapTooltip:SetText(table.concat(tooltipText, "|n"));
 	WorldMapTooltip:Show();
 end
 
@@ -112,7 +122,9 @@ function WorldMap_DebugObjectPinMixin:OnMouseLeave(motion)
 end
 
 function WorldMap_DebugObjectPinMixin:OnClick()
-	if ( IsModifierKeyDown("CTRL") ) then
+	if IsModifierKeyDown("CTRL") then
 		C_Debug.TeleportToMapDebugObject(self.index);
 	end
 end
+
+WorldMap_DebugPortLocPinMixin = BaseMapPoiPinMixin:CreateSubPin("PIN_FRAME_LEVEL_DEBUG");

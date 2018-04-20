@@ -717,7 +717,7 @@ end
 local Class_Intro_MapHighlights = class("Intro_MapHighlights", Class_TutorialBase);
 
 function Class_Intro_MapHighlights:OnBegin()
-	self.MapID = C_Map.GetCurrentMapID();
+	self.MapID = WorldMapFrame:GetMapID();
 
 	self.Prompt = NPE_MAPCALLOUTBASE;
 	local hasBlob = false;
@@ -754,7 +754,8 @@ function Class_Intro_MapHighlights:Display()
 end
 
 function Class_Intro_MapHighlights:WORLD_MAP_UPDATE()
-	if (C_Map.GetCurrentMapID() ~= self.MapID) then
+	local mapID = WorldMapFrame:GetMapID();
+	if (mapID ~= self.MapID) then
 		self:Suppress();
 	else
 		self:Unsuppress();
@@ -1787,7 +1788,7 @@ local Class_ShowMapQuestTurnIn = class("ShowMapQuestTurnIn", Class_TutorialBase)
 
 -- @param questData: Class QuestData (QuestManager.lua)
 function Class_ShowMapQuestTurnIn:OnBegin(questData)
-	self.MapID = C_Map.GetCurrentMapID();
+	self.MapID = WorldMapFrame:GetMapID();
 
 	-- This should no longer ever happen, but it's a good safety check anyway.
 	if (not questData) then
@@ -1802,12 +1803,13 @@ function Class_ShowMapQuestTurnIn:OnBegin(questData)
 	Dispatcher:RegisterScript(WorldMapFrame, "OnHide", function() self:Complete(); end, true);
 end
 
+-- MAPREFACTORTODO: Replace this somehow? Event is going away
 function Class_ShowMapQuestTurnIn:WORLD_MAP_UPDATE()
-	local newMapID = C_Map.GetCurrentMapID();
-	if (newMapID ~= self.MapID) then
-		self:Display();
-		self.MapID = newMapID;
-	end
+	--local newMapID = C_Map.GetCurrentMapID();
+	--if (newMapID ~= self.MapID) then
+	--	self:Display();
+	--	self.MapID = newMapID;
+	--end
 end
 
 function Class_ShowMapQuestTurnIn:Display()

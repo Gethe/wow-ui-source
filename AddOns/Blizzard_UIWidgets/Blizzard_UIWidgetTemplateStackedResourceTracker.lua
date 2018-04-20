@@ -1,12 +1,13 @@
 UIWidgetManager:RegisterWidgetVisTypeTemplate(Enum.UIWidgetVisualizationType.StackedResourceTracker, {frameType = "FRAME", frameTemplate = "UIWidgetTemplateStackedResourceTracker"}, C_UIWidgetManager.GetStackedResourceTrackerWidgetVisualizationInfo);
 
-UIWidgetTemplateStackedResourceTrackerMixin = {}
+UIWidgetTemplateStackedResourceTrackerMixin = CreateFromMixins(UIWidgetBaseTemplateMixin);
 
 local frameTextureKitRegions = {
 	["Frame"] = "%s-frame",
 }
 
 function UIWidgetTemplateStackedResourceTrackerMixin:Setup(widgetInfo)
+	UIWidgetBaseTemplateMixin.Setup(self, widgetInfo);
 	self.resourcePool:ReleaseAll();
 	self.FontStrings = {};
 
@@ -46,7 +47,8 @@ function UIWidgetTemplateStackedResourceTrackerMixin:OnLoad()
 	self.resourcePool = CreateFramePool("FRAME", self, "UIWidgetTemplateStackedResourceTracker_ResourceFrame");
 end
 
-function UIWidgetTemplateStackedResourceTrackerMixin:OnHide()
+function UIWidgetTemplateStackedResourceTrackerMixin:OnReset()
+	UIWidgetBaseTemplateMixin.OnReset(self);
 	self.resourcePool:ReleaseAll();
 	self.FontStrings = {};
 end

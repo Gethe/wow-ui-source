@@ -185,6 +185,60 @@ function KeyBindingFrame_OnShow(self)
 	UpdateMicroButtons();
 end
 
+local function CreatePushToTalkBindingButton()
+	local button;
+	local handler = CustomBindingHandler:CreateHandler(Enum.CustomBindingType.VoicePushToTalk);
+
+	handler:SetOnBindingModeActivatedCallback(function(isActive)
+		if isActive then
+			KeyBindingFrame.buttonPressed = button;
+			KeyBindingFrame_SetSelected("TOGGLE_VOICE_PUSH_TO_TALK", button);
+			KeyBindingFrame_UpdateUnbindKey();
+			KeyBindingFrame.outputText:SetFormattedText(BIND_KEY_TO_COMMAND, GetBindingName("TOGGLE_VOICE_PUSH_TO_TALK"));
+		end
+	end);
+
+	handler:SetOnBindingCompletedCallback(function(completedSuccessfully)
+		KeyBindingFrame_SetSelected(nil);
+
+		if completedSuccessfully then
+			KeyBindingFrame.outputText:SetText(KEY_BOUND);
+		else
+			KeyBindingFrame.outputText:SetText("");
+		end
+	end);
+
+	button = CustomBindingManager:RegisterHandlerAndCreateButton(handler, "CustomBindingButtonTemplate", KeyBindingFrame);
+	return button;
+end
+
+local customKeybindings = {};
+
+local function GetOrCreateCustomKeybindingButton(customBindingType)
+	local button = customKeybindings[customBindingType]
+	if not button then
+		if customBindingType == Enum.CustomBindingType.VoicePushToTalk then
+			button = CreatePushToTalkBindingButton();
+		end
+
+		customKeybindings[customBindingType] = button;
+	end
+
+	return button;
+end
+
+local function HideAllCustomButtons()
+	for customBindingType, button in pairs(customKeybindings) do
+		button:Hide();
+	end
+end
+
+local function HandleCustomKeybindingsDismissed(shouldSave)
+	for customBindingType in pairs(customKeybindings) do
+		CustomBindingManager:OnDismissed(customBindingType, shouldSave);
+	end
+end
+
 function KeyBindingFrame_Update()
 	local self = KeyBindingFrame;
 	local cntCategory = self.cntCategory;
@@ -209,6 +263,8 @@ function KeyBindingFrame_Update()
 		end
 	end
 
+	HideAllCustomButtons();
+
 	self.scrollOffset = keyOffset;
 
 	for i=1, KEY_BINDINGS_DISPLAYED, 1 do
@@ -220,40 +276,40 @@ function KeyBindingFrame_Update()
 			local keyBindingDescription = keyBindingRow.description;
 			-- Set binding text
 			local commandName, category, binding1, binding2 = GetBinding(cntCategory[keyOffset], self.mode);
-
-			-- Handle header
+			local customBindingType = C_KeyBindings.GetCustomBindingType(cntCategory[keyOffset]);
+			local customButton = customBindingType and GetOrCreateCustomKeybindingButton(customBindingType);
 			local headerText = keyBindingRow.header;
-			if ( strsub(commandName, 1, 6) == "HEADER" ) then
-				headerText:SetText(_G["BINDING_"..commandName]);
-				headerText:Show();
-				keyBindingButton1:Hide();
-				keyBindingButton2:Hide();
-				keyBindingDescription:Hide();
-			else
-				headerText:Hide();
-				keyBindingButton1:Show();
-				keyBindingButton2:Show();
-				keyBindingDescription:Show();
-				keyBindingButton1.commandName = commandName;
-				keyBindingButton2.commandName = commandName;
-				if ( binding1 ) then
-					keyBindingButton1:SetText(GetBindingText(binding1));
-					keyBindingButton1:SetAlpha(1);
-				else
-					keyBindingButton1:SetText(GRAY_FONT_COLOR_CODE..NOT_BOUND..FONT_COLOR_CODE_CLOSE);
-					keyBindingButton1:SetAlpha(0.8);
-				end
-				if ( binding2 ) then
-					keyBindingButton2:SetText(GetBindingText(binding2));
-					keyBindingButton2:SetAlpha(1);
-				else
-					keyBindingButton2:SetText(GRAY_FONT_COLOR_CODE..NOT_BOUND..FONT_COLOR_CODE_CLOSE);
-					keyBindingButton2:SetAlpha(0.8);
-				end
-				-- Set description
-				keyBindingDescription:SetText(GetBindingName(commandName));
+			local isHeader = strsub(commandName, 1, 6) == "HEADER";
 
+			headerText:SetShown(isHeader);
+			keyBindingButton1:SetShown(not isHeader and not customButton);
+			keyBindingButton2:SetShown(not isHeader);
+			keyBindingButton2:SetEnabled(not customButton);
+			keyBindingDescription:SetShown(not isHeader);
+
+			keyBindingButton1.commandName = commandName;
+			keyBindingButton2.commandName = commandName;
+
+			if ( isHeader ) then
+				headerText:SetText(_G["BINDING_"..commandName]);
+			else
+				if customBindingType ~= nil then
+					binding1, binding2 = nil, nil;
+				end
+
+				BindingButtonTemplate_SetupBindingButton(binding1, keyBindingButton1);
+				BindingButtonTemplate_SetupBindingButton(binding2, keyBindingButton2);
+
+				keyBindingDescription:SetText(GetBindingName(commandName));
 				keyBindingRow:Show();
+
+				if customButton then
+					BindingButtonTemplate_SetupBindingButton(nil, customButton);
+
+					customButton:ClearAllPoints();
+					customButton:SetAllPoints(keyBindingButton1);
+					customButton:Show();
+				end
 			end
 		else
 			keyBindingRow:Hide();
@@ -413,27 +469,6 @@ function KeyBindingFrame_ChangeBindingProfile()
 	KeyBindingFrame_Update();
 end
 
-function BindingButtonTemplate_SetSelected(keyBindingButton, isSelected)
-	keyBindingButton.selectedHighlight:SetShown(isSelected);
-	keyBindingButton.isSelected = isSelected;
-
-	if isSelected then
-		keyBindingButton:GetHighlightTexture():SetAlpha(0);
-	else
-		keyBindingButton:GetHighlightTexture():SetAlpha(1);
-	end
-
-	return isSelected;
-end
-
-function BindingButtonTemplate_ToggleSelected(keyBindingButton)
-	return BindingButtonTemplate_SetSelected(keyBindingButton, not keyBindingButton.isSelected);
-end
-
-function BindingButtonTemplate_IsSelected(keyBindingButton)
-	return keyBindingButton.isSelected;
-end
-
 function KeyBindingFrame_SetSelected(value, keyBindingButton)
 	local previousButton = KeyBindingFrame.selectedButton;
 
@@ -442,6 +477,10 @@ function KeyBindingFrame_SetSelected(value, keyBindingButton)
 
 	if previousButton then
 		BindingButtonTemplate_SetSelected(previousButton, false);
+
+		if previousButton.GetCustomBindingType and previousButton:GetCustomBindingType() ~= nil then
+			previousButton:CancelBinding();
+		end
 	end
 
 	if keyBindingButton then
@@ -536,26 +575,35 @@ end
 
 function UnbindButton_OnClick(self)
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-	local key1, key2 = GetBindingKey(KeyBindingFrame.selected, KeyBindingFrame.mode);
-	if ( key1 ) then
-		SetBinding(key1, nil, KeyBindingFrame.mode);
-	end
-	if ( key2 ) then
-		SetBinding(key2, nil, KeyBindingFrame.mode);
-	end
-	if ( key1 and KeyBindingFrame.keyID == 1 ) then
-		KeyBindingFrame_SetBinding(key1, nil, KeyBindingFrame.mode, key1);
-		if ( key2 ) then
-			KeyBindingFrame_SetBinding(key2, KeyBindingFrame.selected, KeyBindingFrame.mode, key2);
-		end
+
+	local button = KeyBindingFrame.selectedButton;
+	local customBindingType = button.GetCustomBindingType and button:GetCustomBindingType();
+	if customBindingType ~= nil then
+		CustomBindingManager:Unbind(customBindingType);
+		BindingButtonTemplate_SetupBindingButton(nil, button);
 	else
+		local key1, key2 = GetBindingKey(KeyBindingFrame.selected, KeyBindingFrame.mode);
 		if ( key1 ) then
-			KeyBindingFrame_SetBinding(key1, KeyBindingFrame.selected, KeyBindingFrame.mode);
+			SetBinding(key1, nil, KeyBindingFrame.mode);
 		end
 		if ( key2 ) then
-			KeyBindingFrame_SetBinding(key2, nil, KeyBindingFrame.mode, key2);
+			SetBinding(key2, nil, KeyBindingFrame.mode);
+		end
+		if ( key1 and KeyBindingFrame.keyID == 1 ) then
+			KeyBindingFrame_SetBinding(key1, nil, KeyBindingFrame.mode, key1);
+			if ( key2 ) then
+				KeyBindingFrame_SetBinding(key2, KeyBindingFrame.selected, KeyBindingFrame.mode, key2);
+			end
+		else
+			if ( key1 ) then
+				KeyBindingFrame_SetBinding(key1, KeyBindingFrame.selected, KeyBindingFrame.mode);
+			end
+			if ( key2 ) then
+				KeyBindingFrame_SetBinding(key2, nil, KeyBindingFrame.mode, key2);
+			end
 		end
 	end
+
 	KeyBindingFrame_Update();
 	-- Button highlighting stuff
 	KeyBindingFrame_SetSelected(nil);
@@ -580,10 +628,16 @@ function OkayButton_OnClick(self)
 	KeyBindingFrame.outputText:SetText("");
 	KeyBindingFrame_SetSelected(nil);
 	HideUIPanel(KeyBindingFrame);
+
+	local shouldSave = true;
+	HandleCustomKeybindingsDismissed(shouldSave);
 end
 
 function CancelButton_OnClick(self)
 	KeyBindingFrame_CancelBinding(self);
+
+	local shouldSave = false;
+	HandleCustomKeybindingsDismissed(shouldSave);
 end
 
 function DefaultsButton_OnClick(self)
@@ -603,116 +657,4 @@ function KeyBindingFrame_ResetBindingsToDefault()
 	KeyBindingFrame.outputText:SetText("");
 	KeyBindingFrame_SetSelected(nil);
 	KeyBindingFrame_Update();
-end
-
-function GetBindingName(binding)
-	local bindingName = _G["BINDING_NAME_"..binding];
-	if ( bindingName ) then
-		return bindingName;
-	end
-
-	return binding;
-end
-
-CustomBindingButtonMixin = {};
-
-function CustomBindingButtonMixin:OnLoad()
-	self:SetBindingModeActive(false);
-	self:EnableKeyboard(false);
-end
-
-function CustomBindingButtonMixin:OnClick(button, isDown)
-	if self:IsBindingModeActive() then
-		self:OnInput(button, isDown);
-		self.eatNextLeftClick = button == "LeftButton";
-	elseif not isDown then
-		if button == "LeftButton" and not self.eatNextLeftClick then
-			self:SetBindingModeActive(true);
-		end
-
-		self.eatNextLeftClick = nil;
-	end
-end
-
-function CustomBindingButtonMixin:OnKeyDown(key)
-	self:OnInput(key, true);
-end
-
-function CustomBindingButtonMixin:OnKeyUp(key)
-	self:OnInput(key, false);
-end
-
-function CustomBindingButtonMixin:OnInput(key, isDown)
-	if not self:IsBindingModeActive() then return end
-	key = GetConvertedKeyOrButton(key);
-
-	if GetBindingFromClick(key) == "TOGGLEGAMEMENU" then
-		self:NotifyBindingCompleted(false);
-		self:EnableKeyboard(false);
-		return;
-	end
-
-	if isDown then
-		if not IsMetaKey(key) then
-			self.receivedNonMetaKeyInput = true;
-		end
-
-		table.insert(self.keys, key);
-	end
-
-	self:SetText(GetBindingText(CreateKeyChordStringFromTable(self.keys)));
-
-	if self.receivedNonMetaKeyInput or not isDown then
-		self:NotifyBindingCompleted(true);
-	end
-
-	-- Receiving an up event after bindings are disabled should disable bind-handling
-	if not self:IsBindingModeActive() and not isDown then
-		self:EnableKeyboard(false);
-	end
-end
-
-function CustomBindingButtonMixin:SetBindingModeActive(isActive)
-	self.isBindingModeActive = isActive;
-	self.receivedNonMetaKeyInput = false;
-	self.keys = {};
-
-	if isActive then
-		self:RegisterForClicks("AnyDown", "AnyUp");
-		self:EnableKeyboard(isActive); -- Only enable here, disable later
-	else
-		self:RegisterForClicks("LeftButtonUp");
-	end
-
-	if self.bindingModeActiveCallback then
-		self.bindingModeActiveCallback(self, isActive);
-	end
-end
-
-function CustomBindingButtonMixin:IsBindingModeActive()
-	return self.isBindingModeActive;
-end
-
-function CustomBindingButtonMixin:SetBindingModeActiveCallback(callback)
-	self.bindingModeActiveCallback = callback;
-end
-
-function CustomBindingButtonMixin:SetBindingCompletedCallback(callback)
-	self.bindingCompletedCallback = callback;
-end
-
-function CustomBindingButtonMixin:NotifyBindingCompleted(completedSuccessfully)
-	if self.bindingCompletedCallback then
-		self.bindingCompletedCallback(self, completedSuccessfully);
-	end
-
-	self:SetBindingModeActive(false);
-end
-
-function CustomBindingButtonMixin:GetBindingText()
-	return self:GetText();
-end
-
-function CustomBindingButtonMixin:GetKeys()
-	return self.keys;
 end

@@ -1,11 +1,11 @@
 local metaKeys =
 {
-	LSHIFT = 1,
-	RSHIFT = 2,
+	LALT = 1,
+	RALT = 2,
 	LCTRL = 3,
 	RCTRL = 4,
-	LALT = 5,
-	RALT = 6,
+	LSHIFT = 5,
+	RSHIFT = 6,
 };
 
 local ignoredKeys =
@@ -21,6 +21,9 @@ local mouseButtonNameConversion =
 	LeftButton = "BUTTON1",
 	RightButton = "BUTTON2",
 	MiddleButton = "BUTTON3",
+	Button1 = "BUTTON1",
+	Button2 = "BUTTON2",
+	Button3 = "BUTTON3",
 	Button4 = "BUTTON4",
 	Button5 = "BUTTON5",
 	Button6 = "BUTTON6",
@@ -55,6 +58,22 @@ function GetConvertedKeyOrButton(keyOrButton)
 	return mouseButtonNameConversion[keyOrButton] or keyOrButton;
 end
 
+function IsMouseButton(button)
+	return mouseButtonNameConversion[button] ~= nil;
+end
+
+function IsLeftMouseButton(button)
+	return mouseButtonNameConversion[button] == "BUTTON1";
+end
+
+function IsRightMouseButton(button)
+	return mouseButtonNameConversion[button] == "BUTTON2";
+end
+
+function IsMiddleMouseButton(button)
+	return mouseButtonNameConversion[button] == "BUTTON3";
+end
+
 function IsMetaKey(key)
 	return metaKeys[key] ~= nil;
 end
@@ -83,16 +102,16 @@ end
 
 function CreateKeyChordString(key)
 	local chord = {};
-	if IsShiftKeyDown() then
-		table.insert(chord, "SHIFT");
+	if IsAltKeyDown() then
+		table.insert(chord, "ALT");
 	end
 
 	if IsControlKeyDown() then
 		table.insert(chord, "CTRL");
 	end
 
-	if IsAltKeyDown() then
-		table.insert(chord, "ALT");
+	if IsShiftKeyDown() then
+		table.insert(chord, "SHIFT");
 	end
 
 	if not IsMetaKey(key) then
@@ -101,4 +120,52 @@ function CreateKeyChordString(key)
 
 	local preventSort = true;
 	return CreateKeyChordStringFromTable(chord, preventSort);
+end
+
+function GetBindingName(binding)
+	local bindingName = _G["BINDING_NAME_"..binding];
+	if ( bindingName ) then
+		return bindingName;
+	end
+
+	return binding;
+end
+
+function BindingButtonTemplate_SetSelected(keyBindingButton, isSelected)
+	keyBindingButton.selectedHighlight:SetShown(isSelected);
+	keyBindingButton.isSelected = isSelected;
+
+	if isSelected then
+		keyBindingButton:GetHighlightTexture():SetAlpha(0);
+	else
+		keyBindingButton:GetHighlightTexture():SetAlpha(1);
+	end
+
+	return isSelected;
+end
+
+function BindingButtonTemplate_ToggleSelected(keyBindingButton)
+	return BindingButtonTemplate_SetSelected(keyBindingButton, not keyBindingButton.isSelected);
+end
+
+function BindingButtonTemplate_IsSelected(keyBindingButton)
+	return keyBindingButton.isSelected;
+end
+
+function BindingButtonTemplate_SetupBindingButton(binding, button)
+	local bindingText;
+
+	if button.GetCustomBindingType and button:GetCustomBindingType() ~= nil then
+		bindingText = CustomBindingManager:GetBindingText(button:GetCustomBindingType());
+	elseif binding then
+		bindingText = GetBindingText(binding);
+	end
+
+	if bindingText then
+		button:SetText(bindingText);
+		button:SetAlpha(1);
+	else
+		button:SetText(GRAY_FONT_COLOR:WrapTextInColorCode(NOT_BOUND));
+		button:SetAlpha(0.8);
+	end
 end

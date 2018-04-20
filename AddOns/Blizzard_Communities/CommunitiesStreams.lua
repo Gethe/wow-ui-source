@@ -2,8 +2,14 @@
 function CommunitiesStreamDropDownMenu_Initialize(self)
 	if self.streams ~= nil and self:GetCommunitiesFrame():GetSelectedClubId() ~= nil then
 		local info = UIDropDownMenu_CreateInfo();
+		info.minWidth = 170;
 		for i, stream in ipairs(self.streams) do
-			info.text = stream.name;
+			if stream.leadersAndModeratorsOnly then
+				info.text = COMMUNITIES_STREAM_FORMAT_LEADERS_AND_MODERATORS_ONLY:format(stream.name);
+			else
+				info.text = stream.name;
+			end
+			
 			info.value = stream.streamId;
 			info.checked = stream.streamId == UIDropDownMenu_GetSelectedValue(self);
 			info.func = function(button)
@@ -38,7 +44,7 @@ end
 CommunitiesEditStreamDialogMixin = {}
 
 function CommunitiesEditStreamDialogMixin:OnLoad()
-	self.Subject.EditBox:SetScript("OnTabPressed", 
+	self.Description.EditBox:SetScript("OnTabPressed", 
 		function() 
 			self.NameEdit:SetFocus() 
 		end);
@@ -50,13 +56,11 @@ function CommunitiesEditStreamDialogMixin:ShowCreateDialog(clubId)
 	self.clubId = clubId;
 	self.TitleLabel:SetText(COMMUNITIES_CREATE_CHANNEL);
 	self.NameEdit:SetText("");
-	self.Subject.EditBox:SetText("");
-	self.NameEdit:SetFocus();
+	self.Description.EditBox:SetText("");
 	self.Accept:SetScript("OnClick", function(self)
 		local editStreamDialog = self:GetParent();
-		-- TODO: add an access drop down menu with options for "All Members", and "Moderators and Leaders Only";
-		local moderatorsAndLeadersOnly = editStreamDialog.PermisionsDropDownMenu:GetValue();
-		C_Club.CreateStream(editStreamDialog.clubId, editStreamDialog.NameEdit:GetText(), editStreamDialog.Subject.EditBox:GetText(), moderatorsAndLeadersOnly);
+		local moderatorsAndLeadersOnly = editStreamDialog.TypeCheckBox:GetChecked();
+		C_Club.CreateStream(editStreamDialog.clubId, editStreamDialog.NameEdit:GetText(), editStreamDialog.Description.EditBox:GetText(), moderatorsAndLeadersOnly);
 		editStreamDialog:Hide();
 	end);
 	self:Show();
@@ -68,11 +72,11 @@ function CommunitiesEditStreamDialogMixin:ShowEditDialog(clubId, stream)
 	self.TitleEdit:SetText(stream.name);
 	self.NameEdit:SetText(stream.name);
 	self.NameEdit:SetFocus();
-	self.Subject.EditBox:SetText(stream.subject);
+	self.Description.EditBox:SetText(stream.subject);
 	self.Accept:SetScript("OnClick", function() 
 		-- TODO: add an access drop down menu with options for "All Members", and "Moderators and Leaders Only";
 		local moderatorsAndLeadersOnly = false;
-		C_Club.EditStream(self.clubId, stream.streamId, self.NameEdit:GetText(), self.Subject.EditBox:GetText())
+		C_Club.EditStream(self.clubId, stream.streamId, self.NameEdit:GetText(), self.Description.EditBox:GetText())
 		self:Hide();
 	end);
 	self:Show();
@@ -134,6 +138,7 @@ end
 
 function CommunitiesAddToChatMixin:OnHide()
 	self:UnregisterEvent("COMMUNITIES_STREAM_CURSOR_CLEAR");
+	self:Reset();
 end
 
 CommunitiesAddStreamHighlightFrameMixin = {};

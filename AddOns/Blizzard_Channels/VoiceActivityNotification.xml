@@ -2,7 +2,33 @@
 ..\FrameXML\UI.xsd">
 	<Script file="VoiceActivityNotification.lua"/>
 
-	<ContainedAlertFrame name="VoiceActivityNotificationBaseTemplate" mixin="VoiceActivityNotificationBaseMixin" hidden="true" virtual="true">
+	<Frame name="VoiceActivityVolumeTemplate" mixin="VoiceActivityVolumeMixin" virtual="true">
+		<Size x="16" y="16"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Level1" atlas="voicechat-icon-loudnessbar-1">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Level2" atlas="voicechat-icon-loudnessbar-2">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Level3" atlas="voicechat-icon-loudnessbar-3">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+	
+	<Button name="VoiceActivityNotificationBaseTemplate" mixin="VoiceActivityNotificationBaseMixin" hidden="true" virtual="true">
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnEvent method="OnEvent"/>
@@ -10,7 +36,7 @@
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
 		</Scripts>
-	</ContainedAlertFrame>
+	</Button>
 
 	<ContainedAlertFrame name="VoiceActivityNotificationTemplate" inherits="VoiceActivityNotificationBaseTemplate" mixin="VoiceActivityNotificationMixin" virtual="true">
 		<Size x="120" y="35"/>
@@ -19,7 +45,7 @@
 				<Texture parentKey="Portrait">
 					<Size x="28" y="28"/>
 					<Anchors>
-						<Anchor point="LEFT"/>
+						<Anchor point="LEFT" x="3" y="3"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -30,36 +56,25 @@
 						<Anchor point="CENTER" relativeKey="$parent.Portrait"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="VoiceSpeaker" atlas="voicechat-icon-speaker">
+				<FontString parentKey="Name" justifyH="LEFT" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Portrait" relativePoint="RIGHT" x="30"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="Speaker" atlas="voicechat-icon-speaker">
 					<Size x="16" y="16"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.Portrait" relativePoint="RIGHT" x="2"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="VoiceLoudness1" atlas="voicechat-icon-loudnessbar-1">
-					<Size x="16" y="16"/>
-					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.VoiceSpeaker" relativePoint="RIGHT" x="-5"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="VoiceLoudness2" atlas="voicechat-icon-loudnessbar-2">
-					<Size x="16" y="16"/>
-					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.VoiceLoudness1"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="VoiceLoudness3" atlas="voicechat-icon-loudnessbar-3">
-					<Size x="16" y="16"/>
-					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.VoiceLoudness2"/>
-					</Anchors>
-				</Texture>
-				<FontString parentKey="Name" justifyH="LEFT" inherits="GameFontNormal">
-					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.VoiceLoudness1" relativePoint="RIGHT" x="2"/>
-					</Anchors>
-				</FontString>
 			</Layer>
 		</Layers>
+		<Frames>
+			<Frame parentKey="Volume" inherits="VoiceActivityVolumeTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Speaker" relativePoint="RIGHT" x="-5"/>
+				</Anchors>
+			</Frame>
+		</Frames>
 	</ContainedAlertFrame>
 </Ui>

@@ -1,17 +1,18 @@
-## Interface: 70300
+## Interface: 80000
 ## Title: Blizzard Shared Map Data Providers
 ## Secure: 1
 ## Author: Blizzard Entertainment
 ## Version: 1.0
 ## LoadOnDemand: 1
 
+SharedMapPoiTemplates.xml
 QuestDataProvider.xml
 GroupMembersDataProvider.xml
 WorldQuestDataProvider.xml
 ZoneLabelDataProvider.xml
 ClickToZoomDataProvider.xml
 AreaPOIDataProvider.xml
-MapOverlaysDataProvider.xml
+MapExplorationDataProvider.xml
 MapHighlightDataProvider.xml
 AreaLabelDataProvider.xml
 BattlefieldFlagDataProvider.xml
@@ -26,3 +27,4 @@ ScenarioDataProvider.xml
 LandmarkDataProvider.xml
 VignetteDataProvider.xml
 InvasionDataProvider.xml
+GossipDataProvider.xml

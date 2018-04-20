@@ -1028,7 +1028,7 @@
 		ToggleFriendsFrame(FRIEND_TAB_WHO);
 	</Binding>
 	<Binding name="TOGGLECHATTAB" category="BINDING_HEADER_INTERFACE">
-		ChannelFrame:Toggle();
+		ToggleChannelFrame();
 	</Binding>
 	<Binding name="TOGGLERAIDTAB" category="BINDING_HEADER_INTERFACE">
 		ToggleRaidFrame();
@@ -1072,8 +1072,6 @@
 		end
 	</Binding>
 
-
-
   <!-- Misc header="MISC" -->
 	<Binding name="STOPCASTING" category="BINDING_HEADER_MISC">
 		SpellStopCasting();
@@ -1108,7 +1106,7 @@
 	<Binding name="TOGGLE_VOICE_SELF_DEAFEN" category="BINDING_HEADER_MISC">
 		C_VoiceChat.ToggleDeafened();
 	</Binding>
-	<Binding name="TOGGLE_VOICE_PUSH_TO_TALK" runOnUp="true" category="BINDING_HEADER_MISC" isCustom="true">
+	<Binding name="TOGGLE_VOICE_PUSH_TO_TALK" runOnUp="true" category="BINDING_HEADER_MISC" customBindingID="VoicePushToTalk">
 		nop(); -- Action handler is custom
 	</Binding>
 	<Binding name="TOGGLEUI" category="BINDING_HEADER_MISC">

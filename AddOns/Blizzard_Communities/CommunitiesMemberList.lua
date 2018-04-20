@@ -144,9 +144,13 @@ function CommunitiesMemberListMixin:RemoveSelectedEntryFromCommunity()
 	local selectedEntry = self:GetSelectedEntry();
 	if selectedEntry then
 		local clubId = self:GetSelectedClubId();
-		local memberId = selectedEntry:GetMemberId()
+		local memberId = selectedEntry:GetMemberId();
 		if clubId and memberId then
-			C_Club.KickMember(clubId, memberId);
+			local clubInfo = C_Club.GetClubInfo(clubId);
+			local memberInfo = C_Club.GetMemberInfo(clubId, memberId);
+			if clubInfo and memberInfo then
+				StaticPopup_Show("CONFIRM_REMOVE_COMMUNITY_MEMBER", nil, nil, { clubType = clubInfo.clubType, name = memberInfo.name, clubId = clubId, memberId = memberId });
+			end
 		end
 	end
 end
@@ -445,7 +449,7 @@ function CommunitiesMemberListDropdown_Initialize(self, level)
 				end
 			end
 			
-			if clubPrivileges.canSetOtherMemberAttribute then
+			if (memberInfo.isSelf and clubPrivileges.canSetOwnMemberNote) or (not memberInfo.isSelf and clubPrivileges.canSetOtherMemberNote) then
 				local info = UIDropDownMenu_CreateInfo();
 				info.text = COMMUNITY_MEMBER_LIST_DROP_DOWN_SET_NOTE;
 				info.func = function()

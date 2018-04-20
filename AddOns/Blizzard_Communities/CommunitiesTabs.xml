@@ -1,0 +1,86 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="CommunitiesTabs.lua"/>
+
+	<CheckButton name="CommunitiesFrameTabTemplate" virtual="true">
+		<Size x="32" y="32"/>
+		<Layers>
+			<Layer level="BORDER">
+				<Texture file="Interface\SpellBook\SpellBook-SkillLineTab">
+					<Size x="64" y="64"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-3" y="11"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon" setAllPoints="true" file="INTERFACE\HELPFRAME\REPORTLAGICON-CHAT">
+					<Size x="32" y="32"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick>
+				self:SetChecked(true);
+			</OnClick>
+			<OnEnter function="CommunitiesFrameTab_OnEnter"/>
+			<OnLeave function="CommunitiesFrameTab_OnLeave"/>
+		</Scripts>
+		<NormalTexture/>
+		<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
+		<CheckedTexture file="Interface\Buttons\CheckButtonHilight" alphaMode="ADD"/>
+	</CheckButton>
+	
+	<CheckButton name="CommunitiesChatTabTemplate" hidden="true" inherits="CommunitiesFrameTabTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="tooltip" value="COMMUNITIES_CHAT_TAB_TOOLTIP" type="global"/>
+		</KeyValues>
+		<Scripts>
+			<OnLoad>
+				self.Icon:SetTexture("Interface\\Icons\\ability_warrior_battleshout");
+			</OnLoad>
+			<OnClick inherit="append">
+				self:GetParent():SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.CHAT);
+			</OnClick>
+		</Scripts>
+	</CheckButton>
+	<CheckButton name="CommunitiesRosterTabTemplate" hidden="true" inherits="CommunitiesFrameTabTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="tooltip" value="COMMUNITIES_ROSTER_TAB_TOOLTIP" type="global"/>
+		</KeyValues>
+		<Scripts>
+			<OnLoad>
+				self.Icon:SetTexture("Interface\\Icons\\Garrison_building_barracks");
+			</OnLoad>
+			<OnClick inherit="append">
+				self:GetParent():SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.ROSTER);
+			</OnClick>
+		</Scripts>
+	</CheckButton>
+	<CheckButton name="CommunitiesGuildBenefitsTabTemplate" hidden="true" inherits="CommunitiesFrameTabTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="tooltip" value="COMMUNITIES_GUILD_BENEFITS_TAB_TOOLTIP" type="global"/>
+		</KeyValues>
+		<Scripts>
+			<OnLoad>
+				self.Icon:SetTexture("Interface\\Icons\\inv_misc_gift_05");
+			</OnLoad>
+			<OnClick inherit="append">
+				self:GetParent():SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_BENEFITS);
+			</OnClick>
+		</Scripts>
+	</CheckButton>
+	<CheckButton name="CommunitiesGuildInfoTabTemplate" hidden="true" inherits="CommunitiesFrameTabTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="tooltip" value="COMMUNITIES_GUILD_INFO_TAB_TOOLTIP" type="global"/>
+		</KeyValues>
+		<Scripts>
+			<OnLoad>
+				self.Icon:SetTexture("Interface\\Icons\\inv_misc_notepicture1c");
+			</OnLoad>
+			<OnClick inherit="append">
+				self:GetParent():SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_INFO);
+			</OnClick>
+		</Scripts>
+	</CheckButton>
+</Ui>

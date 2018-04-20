@@ -299,3 +299,37 @@ function DoublyLinkedListMixin:Remove(node)
 	return node;
 end
 
+TextureLoadingGroupMixin = {};
+
+function TextureLoadingGroupMixin:AddTexture(texture)
+	self.textures = self.textures or {};
+	self.textures[texture] = true;
+end
+
+function TextureLoadingGroupMixin:RemoveTexture()
+	if self.textures then
+		self.textures[texture] = nil;
+	end
+end
+
+function TextureLoadingGroupMixin:Reset()
+	self.textures = nil;
+end
+
+function TextureLoadingGroupMixin:EnumerateTextures()
+	if self.textures then
+		return pairs(self.textures);
+	end
+	return nop;
+end
+
+function TextureLoadingGroupMixin:IsFullyLoaded()
+	if self.textures then
+		for texture in pairs(self.textures) do
+			if not texture:IsObjectLoaded() then
+				return false;
+			end
+		end
+	end
+	return true;
+end

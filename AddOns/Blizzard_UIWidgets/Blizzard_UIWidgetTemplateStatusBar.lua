@@ -1,8 +1,9 @@
 UIWidgetManager:RegisterWidgetVisTypeTemplate(Enum.UIWidgetVisualizationType.StatusBar, {frameType = "FRAME", frameTemplate = "UIWidgetTemplateStatusBar"}, C_UIWidgetManager.GetStatusBarWidgetVisualizationInfo);
 
-UIWidgetTemplateStatusBarMixin = {}
+UIWidgetTemplateStatusBarMixin = CreateFromMixins(UIWidgetBaseTemplateMixin);
 
 function UIWidgetTemplateStatusBarMixin:Setup(widgetInfo)
+	UIWidgetBaseTemplateMixin.Setup(self, widgetInfo);
 	self.Bar:SetMinMaxValues(widgetInfo.barMin, widgetInfo.barMax);
 	self.Bar:SetValue(widgetInfo.barValue);
 

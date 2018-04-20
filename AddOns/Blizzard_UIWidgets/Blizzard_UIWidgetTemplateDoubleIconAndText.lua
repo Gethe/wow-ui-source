@@ -1,6 +1,6 @@
 UIWidgetManager:RegisterWidgetVisTypeTemplate(Enum.UIWidgetVisualizationType.DoubleIconAndText, {frameType = "FRAME", frameTemplate = "UIWidgetTemplateDoubleIconAndText"}, C_UIWidgetManager.GetDoubleIconAndTextWidgetVisualizationInfo);
 
-UIWidgetTemplateDoubleIconAndTextMixin = {}
+UIWidgetTemplateDoubleIconAndTextMixin = CreateFromMixins(UIWidgetBaseTemplateMixin);
 
 local textureKitRegions = {
 	["LeftIcon"] = "%s-leftIcon",
@@ -8,6 +8,7 @@ local textureKitRegions = {
 }
 
 function UIWidgetTemplateDoubleIconAndTextMixin:Setup(widgetInfo)
+	UIWidgetBaseTemplateMixin.Setup(self, widgetInfo);
 	SetupTextureKits(widgetInfo.textureKitID, self, textureKitRegions, true);
 
 	self.Label:SetText(widgetInfo.label);

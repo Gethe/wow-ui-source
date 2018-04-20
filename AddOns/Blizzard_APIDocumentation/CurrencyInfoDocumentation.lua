@@ -59,6 +59,21 @@ local CurrencyInfo =
 				{ Name = "currencyID", Type = "number", Nilable = false },
 			},
 		},
+		{
+			Name = "IsCurrencyContainer",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "currencyID", Type = "number", Nilable = false },
+				{ Name = "quantity", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isCurrencyContainer", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Events =

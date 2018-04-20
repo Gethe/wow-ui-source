@@ -433,3 +433,14 @@ function ReputationParagonFrame_OnUpdate(self)
 		self.Glow:SetAlpha(alpha);
 	end
 end
+
+function ReputationDetailMainScreenCheckBox_OnClick(self)
+	if ( self:GetChecked() ) then
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+		SetWatchedFactionIndex(GetSelectedFaction());
+	else
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
+		SetWatchedFactionIndex(0);
+	end
+	StatusTrackingBarManager:UpdateBarsShown();
+end

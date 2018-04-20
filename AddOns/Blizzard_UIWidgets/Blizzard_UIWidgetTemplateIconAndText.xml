@@ -47,10 +47,5 @@
 				</Layers>
 			</Frame>
 		</Frames>
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-			<OnEnter method="OnEnter"/>
-			<OnLeave method="OnLeave"/>
-		</Scripts>
 	</Frame>
 </Ui>

@@ -1,3 +1,11 @@
+VoiceActivityVolumeMixin = {};
+
+function VoiceActivityVolumeMixin:SetVolume(volume)
+	self.Level1:SetShown(volume > 0);
+	self.Level2:SetShown(volume > 0.5);
+	self.Level3:SetShown(volume > 0.8);
+end
+
 VoiceActivityNotificationBaseMixin = {};
 
 function VoiceActivityNotificationBaseMixin:OnLoad()
@@ -20,13 +28,37 @@ function VoiceActivityNotificationBaseMixin:OnLeave()
 
 end
 
-function VoiceActivityNotificationBaseMixin:Setup(memberID, channelID)
+function VoiceActivityNotificationBaseMixin:IsAnAlert()
+	return (self.alertSystem ~= nil);
+end
+
+function VoiceActivityNotificationBaseMixin:GetAlertSystem()
+	return self.alertSystem;
+end
+
+function VoiceActivityNotificationBaseMixin:SetSpeakingEnergy(speakingEnergy)
+	if self.Volume then
+		self.Volume:SetVolume(speakingEnergy);
+	end
+end
+
+function VoiceActivityNotificationBaseMixin:Setup(memberID, channelID, isLocalPlayer)
 	self:SetMemberID(memberID);
 	self:SetChannelID(channelID);
+	self:SetIsLocalPlayer(isLocalPlayer);
+	self:SetSpeakingEnergy(0);
 end
 
 function VoiceActivityNotificationBaseMixin:MatchesUser(memberID, channelID)
 	return (self:GetChannelID() == channelID) and (memberID == "*" or self:GetMemberID() == memberID);
+end
+
+function VoiceActivityNotificationBaseMixin:GetIsLocalPlayer()
+	return self.isLocalPlayer;
+end
+
+function VoiceActivityNotificationBaseMixin:SetIsLocalPlayer(isLocalPlayer)
+	self.isLocalPlayer = isLocalPlayer;
 end
 
 function VoiceActivityNotificationBaseMixin:GetMemberID()
@@ -45,25 +77,17 @@ function VoiceActivityNotificationBaseMixin:SetChannelID(channelID)
 	self.channelID = channelID;
 end
 
+-- Chat Frame notification
 VoiceActivityNotificationMixin = CreateFromMixins(VoiceActivityNotificationBaseMixin);
 
 function VoiceActivityNotificationMixin:OnLoad()
 	VoiceActivityNotificationBaseMixin.OnLoad(self);
+	self:EnableMouse(false);
 	self.alertSystem = ChatAlertFrame:AddAutoAnchoredSubSystem(self);
 end
 
-function VoiceActivityNotificationMixin:SetSpeakingEnergy(speakingEnergy)
-	self.VoiceLoudness1:SetShown(speakingEnergy > 0);
-	self.VoiceLoudness2:SetShown(speakingEnergy > 0.5);
-	self.VoiceLoudness3:SetShown(speakingEnergy > 0.8);
-end
-
-function VoiceActivityNotificationMixin:SetPortrait(memberID, channelID)
-
-end
-
-function VoiceActivityNotificationMixin:Setup(memberID, channelID)
-	VoiceActivityNotificationBaseMixin.Setup(self, memberID, channelID);
+function VoiceActivityNotificationMixin:Setup(memberID, channelID, isLocalPlayer)
+	VoiceActivityNotificationBaseMixin.Setup(self, memberID, channelID, isLocalPlayer);
 
 	C_VoiceChat.SetPortraitTexture(self.Portrait, memberID, channelID);
 
@@ -71,8 +95,6 @@ function VoiceActivityNotificationMixin:Setup(memberID, channelID)
 	local r, g, b = Voice_GetVoiceChannelNotificationColor(channelID);
 	self.Name:SetText(VOICE_CHAT_CHAT_NOTIFICATION:format(member.name));
 	self.Name:SetVertexColor(r, g, b, 1);
-
-	self:SetSpeakingEnergy(0);
 end
 
 function VoiceActivityNotificationMixin:UpdateSize()

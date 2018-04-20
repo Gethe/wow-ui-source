@@ -736,11 +736,9 @@ function PaperDollFrame_SetBlock(statFrame, unit)
 	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, BLOCK_CHANCE).." "..string.format("%.2F", chance).."%"..FONT_COLOR_CODE_CLOSE;
 
 	local baselineArmor, effectiveArmor, armor, bonusArmor = UnitArmor(unit);
-	local armorReduction = PaperDollFrame_GetArmorReduction(effectiveArmor, UnitEffectiveLevel(unit));
 	local shieldBlockArmor = GetShieldBlock();
 	local armorAndBlockArmorReduction = PaperDollFrame_GetArmorReduction(effectiveArmor + shieldBlockArmor, UnitEffectiveLevel(unit));
-	local relativeBlockArmorReduction = 100 - ((100 - armorAndBlockArmorReduction) / (100 - armorReduction) * 100);
-	statFrame.tooltip2 = CR_BLOCK_TOOLTIP:format(BreakUpLargeNumbers(shieldBlockArmor), relativeBlockArmorReduction);
+	statFrame.tooltip2 = CR_BLOCK_TOOLTIP:format(BreakUpLargeNumbers(shieldBlockArmor), armorAndBlockArmorReduction);
 	statFrame:Show();
 end
 

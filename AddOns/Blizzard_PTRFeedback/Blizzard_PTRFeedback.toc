@@ -1,4 +1,4 @@
-## Interface: 70300
+## Interface: 80000
 ## Title: PTR Feedback
 ## Notes: Tool for gathering feedback from PTR
 ## OnlyBetaAndPTR: 1

@@ -3,7 +3,7 @@
 	<Script file="CommunitiesStreams.lua"/>
 	
 	<Frame name="CommunitiesEditStreamDialogTemplate" frameStrata="DIALOG" mixin="CommunitiesEditStreamDialogMixin" virtual="true">
-		<Size x="320" y="260"/>
+		<Size x="350" y="320"/>
 		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
 			<BackgroundInsets left="11" right="12" top="12" bottom="11"/>
 			<TileSize val="32"/>
@@ -13,64 +13,68 @@
 			<Layer level="ARTWORK">
 				<FontString parentKey="TitleLabel" inherits="GameFontHighlight">
 					<Anchors>
-						<Anchor point="TOP" x="0" y="-20"/>
+						<Anchor point="TOP" x="0" y="-16"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="NameLabel" inherits="GameFontNormal" text="COMMUNITIES_CHANNEL_NAME_LABEL">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="30" y="-50"/>
+						<Anchor point="TOPLEFT" x="30" y="-48"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="SubjectLabel" inherits="GameFontNormal" text="COMMUNITIES_CHANNEL_SUBJECT_LABEL">
+				<FontString parentKey="DescriptionLabel" inherits="GameFontNormal" text="COMMUNITIES_CHANNEL_SUBJECT_LABEL">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.NameLabel" x="0" y="-50"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="TypeLabel" inherits="GameFontHighlightSmall" text="COMMUNITIES_CHANNEL_TYPE_LABEL">
+					<Anchors>
+						<Anchor point="BOTTOM" x="10" y="60"/>
 					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
-			<EditBox parentKey="NameEdit" inherits="InputBoxTemplate" letters="30">
-				<Size x="260" y="30"/>
+			<EditBox parentKey="NameEdit" inherits="InputBoxTemplate" autoFocus="false" letters="30">
+				<Size x="250" y="30"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeKey="$parent.NameLabel" x="0" y="0"/>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeKey="$parent.NameLabel" x="10" y="0"/>
 				</Anchors>
 				<Scripts>
+					<OnShow>
+						self:SetFocus();
+					</OnShow>
 					<OnTabPressed>
-						self:GetParent().Subject.EditBox:SetFocus();
+						self:GetParent().Description.EditBox:SetFocus();
 					</OnTabPressed>
 				</Scripts>
 			</EditBox>
-			<ScrollFrame parentKey="Subject" inherits="InputScrollFrameTemplate">
-				<Size x="260" y="40"/>
+			<ScrollFrame parentKey="Description" inherits="InputScrollFrameTemplate">
+				<Size x="250" y="50"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeKey="$parent.SubjectLabel" x="0" y="-10"/>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeKey="$parent.DescriptionLabel" x="8" y="-10"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="instructions" value="Optional" type="global"/>
+					<KeyValue key="maxLetters" value="250" type="number"/>
+					<KeyValue key="instructions" value="COMMUNITIES_CHANNEL_DESCRIPTION_INSTRUCTIONS" type="global"/>
 					<KeyValue key="hideCharCount" value="true" type="boolean"/>
 				</KeyValues>
-				<Scripts>
-					<OnLoad>
-						self.EditBox:SetMaxLetters(250);
-					</OnLoad>
-				</Scripts>
 			</ScrollFrame>
-			<Frame parentKey="PermisionsDropDownMenu" inherits="UIDropDownMenuTemplate" mixin="CommunitiesChatPermissionsDropDownMenuMixin">
+			<CheckButton parentKey="TypeCheckBox" inherits="UICheckButtonTemplate">
+				<Size x="20" y="20"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeKey="$parent.Subject" x="0" y="-15"/>
-					<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" relativeKey="$parent.Subject" x="0" y="-15"/>
+					<Anchor point="RIGHT" relativeKey="$parent.TypeLabel" relativePoint="LEFT" x="-3" y="0"/>
 				</Anchors>
-			</Frame>
+			</CheckButton>
 			<Button parentKey="Accept" inherits="UIPanelButtonTemplate" text="ACCEPT">
-				<Size x="80" y="22"/>
+				<Size x="100" y="20"/>
 				<Anchors>
-					<Anchor point="BOTTOM" x="-45" y="20"/>
+					<Anchor point="BOTTOM" x="-56" y="20"/>
 				</Anchors>
 			</Button>
 			<Button parentKey="Cancel" inherits="UIPanelButtonTemplate" text="CANCEL">
-				<Size x="80" y="22"/>
+				<Size x="100" y="20"/>
 				<Anchors>
-					<Anchor point="BOTTOM" x="45" y="20"/>
+					<Anchor point="BOTTOM" x="56" y="20"/>
 				</Anchors>
 			</Button>
 		</Frames>
@@ -80,7 +84,6 @@
 	</Frame>
 	
 	<Button name="AddToChatButtonTemplate" inherits="UIPanelButtonTemplate" text="COMMUNITIES_ADD_TO_CHAT" mixin="CommunitiesAddToChatMixin" virtual="true">
-		<Size x="180" y="0"/>
 		<Frames>
 			<Button parentKey="CommunitiesAddStreamHighlightTab" hidden="true">
 				<Size x="97" y="34"/>

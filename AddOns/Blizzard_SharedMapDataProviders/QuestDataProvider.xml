@@ -12,6 +12,11 @@
 						<Anchor point="CENTER" />
 					</Anchors>
 				</Texture>
+				<Texture parentKey="PushedTexture" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" />
+					</Anchors>
+				</Texture>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="1">
 				<Texture parentKey="Number" file="Interface\WorldMap\UI-QuestPoi-NumberIcons">

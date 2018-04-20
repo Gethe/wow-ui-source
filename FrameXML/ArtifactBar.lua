@@ -5,14 +5,11 @@ function ArtifactBarMixin:GetPriority()
 end
 
 function ArtifactBarMixin:ShouldBeVisible()
-	return HasArtifactEquipped() and (UnitLevel("player") >= MAX_PLAYER_LEVEL or GetCVarBool("showArtifactXPBar")) and not C_ArtifactUI.IsEquippedArtifactMaxed();
+	return HasArtifactEquipped() and not C_ArtifactUI.IsEquippedArtifactMaxed();
 end
 
 function ArtifactBarMixin:Update()
 	local artifactItemID, _, _, _, artifactTotalXP, artifactPointsSpent, _, _, _, _, _, _, artifactTier = C_ArtifactUI.GetEquippedArtifactInfo();
-	if ( UnitLevel("player") < MAX_PLAYER_LEVEL ) then
-		SetWatchedFactionIndex(0);
-	end
 	local numPointsAvailableToSpend, xp, xpForNextPoint = ArtifactBarGetNumArtifactTraitsPurchasableFromXP(artifactPointsSpent, artifactTotalXP, artifactTier);
 
 	self:SetBarValues(xp, 0, xpForNextPoint, numPointsAvailableToSpend + artifactPointsSpent);

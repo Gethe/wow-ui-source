@@ -227,7 +227,7 @@ function PvpTalentSlotMixin:SetUp(slotIndex)
 	self.predictedSetting = CreatePredictedSetting(
 		{
 			["setFunction"] = function(value)
-				LearnPvpTalent(value, slotIndex) 
+				return LearnPvpTalent(value, slotIndex);
 			end, 
 			["getFunction"] = function()
 				local slotInfo = C_SpecializationInfo.GetPvpTalentSlotInfo(slotIndex);

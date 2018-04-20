@@ -21,7 +21,7 @@
 			</OnLoad>
 		</Scripts>
 		<NormalFont style="GameFontHighlightSmall"/>
-		<DisabledFont style="GameFontDisable"/>
+		<DisabledFont style="GameFontDisableSmall"/>
 		<HighlightFont style="GameFontHighlightSmall"/>
 	</Button>
 	<Button name="KeyBindingFrameBindingButtonTemplateWithLabel" inherits="KeyBindingFrameBindingButtonTemplate" virtual="true">
@@ -67,40 +67,6 @@
 			</Button>
 		</Frames>
 	</Frame>
-
-	<Button name="CustomBindingButtonTemplate" inherits="UIMenuButtonStretchTemplate" mixin="CustomBindingButtonMixin" virtual="true" debugID="1">
-		<Layers>
-			<Layer level="OVERLAY">
-				<Texture parentKey="selectedHighlight" file="Interface\Buttons\UI-Silver-Button-Select" alphaMode="ADD" hidden="true">
-					<Size x="180" y="20"/>
-					<Anchors>
-						<Anchor point="CENTER" x="0" y="-3"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-			<OnClick method="OnClick"/>
-			<OnKeyDown method="OnKeyDown"/>
-			<OnKeyUp method="OnKeyUp"/>
-		</Scripts>
-		<NormalFont style="GameFontHighlightSmall"/>
-		<DisabledFont style="GameFontDisable"/>
-		<HighlightFont style="GameFontHighlightSmall"/>
-	</Button>
-	<Button name="CustomBindingButtonTemplateWithLabel" inherits="CustomBindingButtonTemplate" virtual="true">
-		<Layers>
-			<Layer level="BACKGROUND">
-				<FontString parentKey="KeyLabel" inherits="GameFontNormalSmall">
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="4" y="5" />
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-	</Button>
-
 	<Button name="KeybindingsCategoryListButtonTemplate" inherits="OptionsListButtonTemplate" virtual="true">
 		<Scripts>
 			<OnLoad>

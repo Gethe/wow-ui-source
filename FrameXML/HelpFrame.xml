@@ -1165,11 +1165,6 @@
 						<Anchors>
 							<Anchor point="BOTTOM" relativeTo="$parent" relativePoint="BOTTOM" x="0" y="10"/>
 						</Anchors>
-						<Scripts>
-							<OnClick>
-								StaticPopup_Show("CONFIRM_LAUNCH_URL", nil, nil, {index = 6});
-							</OnClick>
-						</Scripts>
 					</Button>
 					<Button name="GMChatOpenLog" inherits="GameMenuButtonTemplate" text="GM_CHAT_OPEN">
 						<Size x="250" y="22"/>

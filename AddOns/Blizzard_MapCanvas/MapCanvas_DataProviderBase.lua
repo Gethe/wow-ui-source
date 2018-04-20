@@ -123,6 +123,14 @@ function MapCanvasPinMixin:OnMouseLeave()
 	-- Override in your mixin, called when the mouse leaves this pin
 end
 
+function MapCanvasPinMixin:OnMouseDown()
+	-- Override in your mixin, called when the mouse is pressed on this pin
+end
+
+function MapCanvasPinMixin:OnMouseUp()
+	-- Override in your mixin, called when the mouse is released
+end
+
 function MapCanvasPinMixin:OnMapInsetSizeChanged(mapInsetIndex, expanded)
 	-- Optionally override in your mixin, called when a map inset changes sizes
 end

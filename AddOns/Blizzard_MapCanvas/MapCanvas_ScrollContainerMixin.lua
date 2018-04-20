@@ -427,6 +427,12 @@ function MapCanvasScrollControllerMixin:GetZoomLevelIndexForScale(scale)
 	return bestIndex;
 end
 
+function MapCanvasScrollControllerMixin:GetCurrentLayerIndex()
+	local canvasScale = self:GetCanvasScale();
+	local currentZoomLevelIndex = self:GetZoomLevelIndexForScale(canvasScale);
+	return self.zoomLevels[currentZoomLevelIndex].layerIndex;
+end
+
 function MapCanvasScrollControllerMixin:AdjustDetailLayerAlpha(detailLayerPool)
 	local canvasScale = self:GetCanvasScale();
 	local currentZoomLevelIndex = self:GetZoomLevelIndexForScale(canvasScale);
@@ -453,11 +459,11 @@ function MapCanvasScrollControllerMixin:AdjustDetailLayerAlpha(detailLayerPool)
 	for layer in detailLayerPool:EnumerateActive() do
 		local layerIndex = layer:GetLayerIndex();
 		if layerIndex == currentLayerIndex then
-			layer:SetAlpha(1);
+			layer:SetLayerAlpha(1);
 		elseif layerIndex == alphaLayerIndex then
-			layer:SetAlpha(zoomPercent);
+			layer:SetLayerAlpha(zoomPercent);
 		else
-			layer:SetAlpha(0);
+			layer:SetLayerAlpha(0);
 		end
 	end
 end

@@ -685,7 +685,7 @@ function PlayerTalentFrameRow_OnLeave(self)
 	TalentFrame_UpdateRowGlow(self);
 end
 
-local function HandleGeneralTalentFrameChatLink(self, talentName, talentLink)
+function HandleGeneralTalentFrameChatLink(self, talentName, talentLink)
 	if ( MacroFrameText and MacroFrameText:HasFocus() ) then
 		local spellName = GetSpellInfo(talentName);
 		if ( spellName and not IsPassiveSpell(spellName) ) then

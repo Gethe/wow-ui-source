@@ -112,6 +112,7 @@ end
 
 function CommunitiesCreateDialogMixin:SetClubType(clubType)
 	self.clubType = clubType;
+	self.IconPreviewRing:SetAtlas(clubType == Enum.ClubType.BattleNet and "communities-ring-blue" or "communities-ring-gold");
 	local avatarIdList = C_Club.GetAvatarIdList(clubType);
 	if avatarIdList then
 		self:SetAvatarId(avatarIdList[math.random(1, #avatarIdList)]);
@@ -152,6 +153,20 @@ function CommunitiesCreateDialogMixin:CreateCommunity()
 end
 
 CommunitiesAvatarPickerDialogMixin = {};
+
+function CommunitiesAvatarPickerDialogMixin:OnShow()
+	self:SetAttribute("shown", true);
+end
+
+function CommunitiesAvatarPickerDialogMixin:OnHide()
+	self:SetAttribute("shown", false);
+end
+
+function CommunitiesAvatarPickerDialogMixin:OnAttributeChanged(name, value)
+	if name == "hide" then
+		self:Hide();
+	end
+end
 
 function CommunitiesAvatarPickerDialogMixin:SetAvatarId(avatarId)
 	self.avatarId = avatarId;

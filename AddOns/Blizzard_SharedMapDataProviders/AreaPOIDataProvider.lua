@@ -26,10 +26,10 @@ function AreaPOIDataProviderMixin:RefreshAllData(fromOnShow)
 	self:RemoveAllData();
 
 	local mapAreaID = self:GetMap():GetMapID();
-	local areaPOIs = C_WorldMap.GetAreaPOIForMap(mapAreaID);
+	local areaPOIs = C_AreaPoiInfo.GetAreaPOIForMap(mapAreaID);
 	if areaPOIs then
 		for i, areaPoiID in ipairs(areaPOIs) do
-			local poiInfo = C_WorldMap.GetAreaPOIInfo(mapAreaID, areaPoiID);
+			local poiInfo = C_AreaPoiInfo.GetAreaPOIInfo(mapAreaID, areaPoiID);
 			if poiInfo then
 				self:AddAreaPOI(poiInfo);
 			end
@@ -71,7 +71,7 @@ function AreaPOIPinMixin:OnLoad()
 end
 
 function AreaPOIPinMixin:OnMouseEnter()
-	local poiInfo = C_WorldMap.GetAreaPOIInfo(self:GetMap():GetMapID(), self.poiID);
+	local poiInfo = C_AreaPoiInfo.GetAreaPOIInfo(self:GetMap():GetMapID(), self.poiID);
 	if poiInfo then
 		WorldMap_HijackTooltip(self:GetMap());
 

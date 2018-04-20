@@ -93,8 +93,20 @@ function CommunitiesListMixin:Update()
 	if not isInGuild then
 		totalNumClubs = totalNumClubs + 1;
 	end
-	
+
 	local height = buttons[1]:GetHeight();
+	
+	-- TODO:: Determine if this player is at the maximum number of allowed clubs or not.
+	-- We probably need to change the create flow as well, since it's possible you are
+	-- allowed to create more bnet groups, but not more wow communities or vice versa.
+	local shouldAddJoinCommunityEntry = true; 
+	
+	-- We need 1 for the blank entry at the top of the list.
+	local clubsHeight = height * (totalNumClubs + 1);
+	if shouldAddJoinCommunityEntry then
+		clubsHeight = clubsHeight + height;
+	end
+	
 	local usedHeight = height;
 	for i=1, #buttons do
 		local button = buttons[i];
@@ -129,6 +141,11 @@ function CommunitiesListMixin:Update()
 				button:SetClubInfo(clubInfo, isInvitation);
 				button:Show();
 				usedHeight = usedHeight + height;
+			elseif shouldAddJoinCommunityEntry then
+				button:SetAddCommunity();
+				button:Show();
+				usedHeight = usedHeight + height;
+				shouldAddJoinCommunityEntry = false;
 			else
 				button:SetClubInfo(nil);
 				button:Hide();
@@ -136,8 +153,6 @@ function CommunitiesListMixin:Update()
 		end
 	end
 	
-	-- We need + 1 for the blank entry at the top of the list.
-	local clubsHeight = height * (totalNumClubs + 1);
 	local totalHeight = clubsHeight + COMMUNITIES_LIST_INITLAL_TOP_BORDER_OFFSET + COMMUNITIES_LIST_INITLAL_BOTTOM_BORDER_OFFSET;
 	HybridScrollFrame_Update(scrollFrame, totalHeight, usedHeight);
 end
@@ -175,27 +190,6 @@ function CommunitiesListMixin:OnShow()
 	HybridScrollFrame_CreateButtons(self.ListScrollFrame, "CommunitiesListEntryTemplate", 0, -COMMUNITIES_LIST_INITLAL_TOP_BORDER_OFFSET);
 	self.ListScrollFrame.ScrollBar:SetValueStep(1);
 	self:Update();
-	
-	if self:GetCommunitiesFrame():GetSelectedClubId() == nil then
-		-- TODO:: We should prioritize selecting guild communities once those exist.
-
-		local lastSelectedClubId = tonumber(GetCVar("lastSelectedClubId")) or 0;
-		local matchingClubEntry = self:GetFirstMatchingClubEntry(function (clubEntry)
-			return clubEntry:GetClubId() == lastSelectedClubId;
-		end);
-		
-		if matchingClubEntry ~= nil then
-			self:GetCommunitiesFrame():SelectClub(lastSelectedClubId);
-		else
-			local firstClubEntry = self:GetFirstMatchingClubEntry(function (clubEntry)
-				return clubEntry:GetClubId() ~= nil and not clubEntry:IsInvitation();
-			end);
-			
-			if firstClubEntry ~= nil then
-				self:GetCommunitiesFrame():SelectClub(firstClubEntry:GetClubId());
-			end
-		end
-	end
 	
 	if not self.hasRegisteredEventCallbacks then
 		self:RegisterEventCallbacks();
@@ -257,17 +251,23 @@ end
 CommunitiesListEntryMixin = {};
 
 function CommunitiesListEntryMixin:SetClubInfo(clubInfo, isInvitation)
+	self.overrideOnClick = nil;
 	self.TabardBackground:Hide();
 	if clubInfo then
 		self.Name:SetText(clubInfo.name);
+		local fontColor = clubInfo.clubType == Enum.ClubType.BattleNet and BATTLENET_FONT_COLOR or NORMAL_FONT_COLOR;
+		self.Name:SetTextColor(fontColor:GetRGB());
 		self.clubId = clubInfo.clubId;
 		self.isInvitation = isInvitation;
 		self.Selection:SetShown(clubInfo.clubId == self:GetCommunitiesFrame():GetSelectedClubId());
 		
 		self.InvitationIcon:SetShown(isInvitation);
 		self.Icon:SetShown(not isInvitation);
+		self.Icon:SetSize(42, 42);
+		self.Icon:SetPoint("TOPLEFT", 8, -15);
 		self.CircleMask:SetShown(not isInvitation);
 		self.IconRing:SetShown(not isInvitation);
+		self.IconRing:SetAtlas(clubInfo.clubType == Enum.ClubType.BattleNet and "communities-ring-blue" or "communities-ring-gold");
 		C_Club.SetAvatarTexture(self.Icon, clubInfo.avatarId, clubInfo.clubType);
 		
 		self.UnreadNotificationIcon:SetShown(not isInvitation and DoesCommunityHaveUnreadMessages(clubInfo.clubId));
@@ -281,13 +281,40 @@ function CommunitiesListEntryMixin:SetClubInfo(clubInfo, isInvitation)
 	end
 end
 
+function CommunitiesListEntryMixin:SetAddCommunity()
+	self.overrideOnClick = AddCommunitiesFlow_Toggle;
+	
+	self.clubId = nil;
+	self.Name:SetText(COMMUNITIES_JOIN_COMMUNITY);
+	self.Name:SetTextColor(GREEN_FONT_COLOR:GetRGB());
+	self.Selection:Hide();
+	
+	self.InvitationIcon:Hide();
+	self.Icon:Show();
+	self.CircleMask:Hide();
+	self.IconRing:Hide();
+	self.TabardBackground:Hide();
+
+	self.Icon:SetAtlas("communities-icon-addgroupplus");
+	self.Icon:SetSize(32, 32);
+	self.Icon:SetPoint("TOPLEFT", 11, -18);
+end
+
 function CommunitiesListEntryMixin:SetGuildFinder()
+	self.overrideOnClick = function ()
+		self:GetCommunitiesFrame():SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_FINDER);
+		self:GetCommunitiesFrame():SelectClub(nil);
+	end;
+	
 	self.clubId = nil;
 	self.Name:SetText(COMMUNITIES_GUILD_FINDER);
+	self.Name:SetTextColor(NORMAL_FONT_COLOR:GetRGB());
 	self.Selection:SetShown(self:GetCommunitiesFrame():GetDisplayMode() == COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_FINDER);
 	
 	self.InvitationIcon:Hide();
 	self.Icon:Show();
+	self.Icon:SetSize(42, 42);
+	self.Icon:SetPoint("TOPLEFT", 8, -15);
 	self.CircleMask:Show();
 	self.IconRing:Hide();
 	self.TabardBackground:Show();
@@ -325,13 +352,13 @@ function CommunitiesListEntryMixin:OnEnter()
 end
 
 function CommunitiesListEntryMixin:OnClick(button)
+	if self.overrideOnClick then
+		self.overrideOnClick(self, button);
+		return;
+	end
+	
 	if button == "LeftButton" then
-		if self.clubId == nil then
-			self:GetCommunitiesFrame():SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_FINDER);
-			self:GetCommunitiesFrame():SelectClub(nil);
-		else
-			self:GetCommunitiesFrame():SelectClub(self.clubId);
-		end
+		self:GetCommunitiesFrame():SelectClub(self.clubId);
 	elseif button == "RightButton" then
 		local communitiesList = self:GetParent():GetParent():GetParent();
 		communitiesList:SetSelectedEntryForDropDown(self);
@@ -426,7 +453,7 @@ function CommunitiesListDropDownMenuMixin:OnShow()
 	UIDropDownMenu_Initialize(self, CommunitiesListDropDownMenu_Initialize);
 	local communitiesFrame = self:GetCommunitiesFrame();
 	UIDropDownMenu_SetSelectedValue(self, communitiesFrame:GetSelectedClubId());
-	
+
 	local function CommunitiesClubSelectedCallback(event, clubId)
 		if clubId and self:IsVisible() then
 			UIDropDownMenu_SetSelectedValue(self, clubId);

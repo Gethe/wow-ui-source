@@ -580,21 +580,7 @@
 							<OnLoad>
 								_G[self:GetName().."Text"]:SetText(SHOW_FACTION_ON_MAINSCREEN);
 							</OnLoad>
-							<OnClick>
-								if ( self:GetChecked() ) then
-									PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-									SetWatchedFactionIndex(GetSelectedFaction());
-									SetWatchingHonorAsXP(false);
-									if (C_ArtifactUI.GetEquippedArtifactInfo()) then
-										SetCVar("showArtifactXPBar", false);
-									end
-								else
-									PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
-									SetWatchedFactionIndex(0);
-									SetCVar("showArtifactXPBar", true);
-								end
-								StatusTrackingBarManager:UpdateBarsShown();
-							</OnClick>
+							<OnClick function="ReputationDetailMainScreenCheckBox_OnClick"/> 
 							<OnEnter>
 								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 								GameTooltip:SetText(REPUTATION_SHOW_AS_XP, nil, nil, nil, nil, true);

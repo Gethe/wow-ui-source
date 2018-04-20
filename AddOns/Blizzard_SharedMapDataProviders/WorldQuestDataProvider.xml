@@ -28,6 +28,11 @@
 						<Anchor point="CENTER" />
 					</Anchors>
 				</Texture>
+				<Texture parentKey="PushedBackground" textureSubLevel="-1" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" />
+					</Anchors>
+				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
 				<Texture parentKey="Texture">

@@ -263,7 +263,8 @@ function EncounterJournal_OnShow(self)
 	local instanceSelect = EncounterJournal.instanceSelect;
 
 	--automatically navigate to the current dungeon if you are in one;
-	local instanceID = EJ_GetCurrentInstance();
+	local mapID = C_Map.GetBestMapForUnit("player");
+	local instanceID = EJ_GetInstanceForMap(mapID);
 	local _, instanceType, difficultyID = GetInstanceInfo();
 	if ( EncounterJournal_HasChangedContext(instanceID, instanceType, difficultyID) ) then
 		EncounterJournal_ResetDisplay(instanceID, instanceType, difficultyID);
@@ -989,7 +990,7 @@ function EncounterJournal_OnHyperlinkEnter(self, link, text, fontString, left, b
 	self.tooltipFrame:SetOwner(self, "ANCHOR_PRESERVE");
 	self.tooltipFrame:ClearAllPoints();
 	self.tooltipFrame:SetPoint("BOTTOMLEFT", fontString, "TOPLEFT", left + width, bottom);
-	self.tooltipFrame:SetHyperlink(link, EJ_GetDifficulty());
+	self.tooltipFrame:SetHyperlink(link, EJ_GetDifficulty(), EJ_GetContentTuningID());
 end
 
 function EncounterJournal_CleanBullets(self, start, keep)
@@ -1859,6 +1860,9 @@ function EncounterJournal_GetSearchDisplay(index)
 			icon = "Interface\\EncounterJournal\\UI-EJ-GenericSearchCreature";
 		else
 			typeText = ENCOUNTER_JOURNAL_ABILITY;
+			if (sectionInfo) then 
+				icon = sectionInfo.abilityIcon;
+			end
 		end
 		path = EJ_GetInstanceInfo(instanceID).." > "..EJ_GetEncounterInfo(encounterID);
 	elseif stype == EJ_STYPE_ITEM then

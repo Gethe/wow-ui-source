@@ -1,4 +1,5 @@
 StatusTrackingManagerMixin = { };
+local MAX_BARS_VISIBLE = 2;
 
 function StatusTrackingManagerMixin:SetTextLocked(isLocked)
 	if ( self.textLocked ~= isLocked ) then
@@ -10,11 +11,11 @@ end
 function StatusTrackingManagerMixin:GetNumberVisibleBars()
 	local numVisBars = 0; 
 	for i, bar in ipairs(self.bars) do
-		if(bar:ShouldBeVisible()) then
+		if (bar:ShouldBeVisible()) then
 			numVisBars = numVisBars + 1; 
 		end
 	end	
-	return numVisBars; 
+	return math.min(MAX_BARS_VISIBLE, numVisBars); 
 end
 
 function StatusTrackingManagerMixin:IsTextLocked()

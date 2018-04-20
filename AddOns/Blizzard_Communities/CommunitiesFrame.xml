@@ -1,33 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\FrameXML\UI.xsd">
 	<Script file="CommunitiesFrame.lua"/>
-
-	<CheckButton name="CommunitiesFrameTabTemplate" virtual="true">
-		<Size x="32" y="32"/>
-		<Layers>
-			<Layer level="BORDER">
-				<Texture file="Interface\SpellBook\SpellBook-SkillLineTab">
-					<Size x="64" y="64"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="-3" y="11"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="ARTWORK">
-				<Texture parentKey="Icon" setAllPoints="true" file="INTERFACE\HELPFRAME\REPORTLAGICON-CHAT">
-					<Size x="32" y="32"/>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnClick>
-				self:SetChecked(true);
-			</OnClick>
-		</Scripts>
-		<NormalTexture/>
-		<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
-		<CheckedTexture file="Interface\Buttons\CheckButtonHilight" alphaMode="ADD"/>
-	</CheckButton>
 	
 	<Frame name="CommunitiesFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true" inherits="ButtonFrameTemplate" mixin="CommunitiesFrameMixin">
 		<Size x="814" y="426"/>
@@ -98,33 +71,25 @@
 					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" x="170" y="29"/>
 				</Anchors>
 			</Frame>
-			<CheckButton parentKey="ChatTab" hidden="true" inherits="CommunitiesFrameTabTemplate">
+			<CheckButton parentKey="ChatTab" hidden="true" inherits="CommunitiesChatTabTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="-36"/>
 				</Anchors>
-				<Scripts>
-					<OnLoad>
-						-- TODO:: replace the temp icon.
-						self.Icon:SetTexture("INTERFACE\\HELPFRAME\\REPORTLAGICON-CHAT");
-					</OnLoad>
-					<OnClick inherits="append">
-						self:GetParent():SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.CHAT);
-					</OnClick>
-				</Scripts>
 			</CheckButton>
-			<CheckButton parentKey="RosterTab" hidden="true" inherits="CommunitiesFrameTabTemplate">
+			<CheckButton parentKey="RosterTab" hidden="true" inherits="CommunitiesRosterTabTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.ChatTab" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
 				</Anchors>
-				<Scripts>
-					<OnLoad>
-						-- TODO:: replace the temp icon.
-						self.Icon:SetTexture("INTERFACE\\FRIENDSFRAME\\UI-TOAST-CHATINVITEICON");
-					</OnLoad>
-					<OnClick inherits="append">
-						self:GetParent():SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.ROSTER);
-					</OnClick>
-				</Scripts>
+			</CheckButton>
+			<CheckButton parentKey="GuildBenefitsTab" hidden="true" inherits="CommunitiesGuildBenefitsTabTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.RosterTab" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton parentKey="GuildInfoTab" hidden="true" inherits="CommunitiesGuildInfoTabTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.PerksTab" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
+				</Anchors>
 			</CheckButton>
 			<Frame parentKey="StreamDropDownMenu" inherits="StreamDropDownMenuTemplate">
 				<Size x="40" y="28"/>
@@ -152,10 +117,7 @@
 			</Frame>
 			<EditBox parentKey="ChatEditBox" frameLevel="1200" inherits="CommunitiesChatEditBoxTemplate">
 				<Size x="0" y="32"/>
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.Chat" relativePoint="BOTTOMLEFT" x="-4" y="-6"/>
-					<Anchor point="TOPRIGHT" relativeKey="$parent.Chat" relativePoint="BOTTOMRIGHT" x="-8" y="-6"/>
-				</Anchors>
+				<!-- Anchored in code -->
 			</EditBox>
 			<Frame parentKey="InvitationFrame" inherits="CommunitiesInvitationFrameTemplate" hidden="true">
 				<Anchors>
@@ -176,15 +138,9 @@
 				</Anchors>
 			</Frame>
 			<Button parentKey="AddToChatButton" inherits="AddToChatButtonTemplate">
+				<Size x="180" y="20"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativeKey="$parent.ChatEditBox" relativePoint="BOTTOMRIGHT" x="10" y="5"/>
-					<Anchor point="BOTTOM" x="0" y="5"/>
-				</Anchors>
-			</Button>
-			<Button parentKey="CommunitiesAddButton" inherits="CommunitiesAddButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.CommunitiesList" relativePoint="BOTTOMLEFT" x="1" y="-3"/>
-					<Anchor point="TOPRIGHT" relativeKey="$parent.CommunitiesList" relativePoint="BOTTOMRIGHT" x="0" y="-3"/>
+					<Anchor point="RIGHT" relativeKey="$parent.ChatEditBox" relativePoint="RIGHT" x="5" y="0"/>
 					<Anchor point="BOTTOM" x="0" y="5"/>
 				</Anchors>
 			</Button>

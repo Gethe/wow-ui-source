@@ -54,7 +54,7 @@
 						<Anchor point="TOP" relativeKey="$parent.Icon" relativePoint="BOTTOM" x="0" y="-15"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="Type" inherits="GameFontNormal" text="World of Warcraft Community">
+				<FontString parentKey="Type" inherits="GameFontNormal">
 					<Anchors>
 						<Anchor point="TOP" relativeKey="$parent.Name" relativePoint="BOTTOM" x="0" y="-6"/>
 					</Anchors>
@@ -64,9 +64,11 @@
 						<Anchor point="TOP" relativeKey="$parent.Type" relativePoint="BOTTOM" x="0" y="0"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="Leader" inherits="GameFontNormal" text="Leader: Kalithumos">
+				<FontString parentKey="Leader" inherits="GameFontNormal" wordwrap="false">
 					<Anchors>
 						<Anchor point="TOP" relativeKey="$parent.MemberCount" relativePoint="BOTTOM" x="0" y="0"/>
+						<Anchor point="LEFT" x="10" y="0"/>
+						<Anchor point="RIGHT" x="-10" y="0"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="Description" justifyV="TOP" inherits="GameFontDisable">
@@ -87,11 +89,17 @@
 				</Texture>
 			</Layer>
 		</Layers>
+		<Scripts>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
 	</Frame>
 	
 	<Button name="CommunitiesInviteButtonTemplate" inherits="UIPanelButtonTemplate" text="COMMUNITIES_INVITE_MEMBERS" virtual="true">
 		<Scripts>
 			<OnClick function="CommunitiesInviteButton_OnClick"/>
+			<OnHide function="CommunitiesInvitebutton_OnHide"/>
 		</Scripts>
 	</Button>
 </Ui>

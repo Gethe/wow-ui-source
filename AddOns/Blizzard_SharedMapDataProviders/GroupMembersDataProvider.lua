@@ -4,8 +4,7 @@ function GroupMembersDataProviderMixin:OnAdded(mapCanvas)
 	MapCanvasDataProviderMixin.OnAdded(self, mapCanvas);
 	self:GetMap():SetPinTemplateType("GroupMembersPinTemplate", "UnitPositionFrame");
 	-- a single permanent pin
-	local pin = self:GetMap():AcquirePin("GroupMembersPinTemplate");
-	pin.dataProvider = self;
+	local pin = self:GetMap():AcquirePin("GroupMembersPinTemplate", self);
 	pin:SetPosition(0.5, 0.5);
 	pin:SetNeedsPeriodicUpdate(true);
 	pin:UpdateShownUnits();
@@ -72,6 +71,11 @@ function GroupMembersPinMixin:OnLoad()
 	self:SetPinTexture("player", "Interface\\WorldMap\\WorldMapArrow");
 end
 
+function GroupMembersPinMixin:OnAcquired(dataProvider)
+	self.dataProvider = dataProvider;
+	self:SynchronizePinSizes();
+end
+
 function GroupMembersPinMixin:OnShow()
 	UnitPositionFrameMixin.OnShow(self);
 end
@@ -89,7 +93,7 @@ end
 
 function GroupMembersPinMixin:Refresh(fromOnShow)
 	self:UpdatePlayerPins();
-	-- TODO: Fix this for fullscreen map
+
 	self:UpdateTooltips(GameTooltip);
 end
 
@@ -99,12 +103,12 @@ function GroupMembersPinMixin:OnMapChanged()
 	if hideMapIcons then
 		self:Hide();
 	else
-		self:SetOverrideMapID(mapID);
+		self:SetUiMapID(mapID);
 		self:Show();
 		if self.dataProvider:ShouldShowUnit("player") then
 			self:StartPlayerPing(2, .25);
 		end
-	end	
+	end
 end
 
 function GroupMembersPinMixin:UpdateShownUnits()
@@ -113,12 +117,20 @@ function GroupMembersPinMixin:UpdateShownUnits()
 	end
 end
 
-function GroupMembersPinMixin:OnCanvasScaleChanged()
-	self:SetSize(self:GetMap():DenormalizeHorizontalSize(1.0), self:GetMap():DenormalizeVerticalSize(1.0));
+function GroupMembersPinMixin:SynchronizePinSizes()
 	local scale = self:GetMap():GetCanvasScale();
 	for unit, size in self.dataProvider:EnumerateUnitPinSizes() do
 		if self.dataProvider:ShouldShowUnit(unit) then
 			self:SetPinSize(unit, size / scale);
 		end
 	end
+end
+
+function GroupMembersPinMixin:OnCanvasSizeChanged()
+	self:SetSize(self:GetMap():DenormalizeHorizontalSize(1.0), self:GetMap():DenormalizeVerticalSize(1.0));
+	self:SynchronizePinSizes();
+end
+
+function GroupMembersPinMixin:OnCanvasScaleChanged()
+	self:SynchronizePinSizes();
 end

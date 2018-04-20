@@ -133,28 +133,34 @@ function WorldQuestDataProviderMixin:AddWorldQuest(info)
 
 	if rarity ~= LE_WORLD_QUEST_QUALITY_COMMON then
 		pin.Background:SetTexCoord(0, 1, 0, 1);
+		pin.PushedBackground:SetTexCoord(0, 1, 0, 1);
 		pin.Highlight:SetTexCoord(0, 1, 0, 1);
 
 		pin.Background:SetSize(45, 45);
+		pin.PushedBackground:SetSize(45, 45);
 		pin.Highlight:SetSize(45, 45);
 		pin.SelectedGlow:SetSize(45, 45);
 
 		if rarity == LE_WORLD_QUEST_QUALITY_RARE then
 			pin.Background:SetAtlas("worldquest-questmarker-rare");
+			pin.PushedBackground:SetAtlas("worldquest-questmarker-rare-down");
 			pin.Highlight:SetAtlas("worldquest-questmarker-rare");
 			pin.SelectedGlow:SetAtlas("worldquest-questmarker-rare");
 		elseif rarity == LE_WORLD_QUEST_QUALITY_EPIC then
 			pin.Background:SetAtlas("worldquest-questmarker-epic");
+			pin.PushedBackground:SetAtlas("worldquest-questmarker-epic-down");
 			pin.Highlight:SetAtlas("worldquest-questmarker-epic");
 			pin.SelectedGlow:SetAtlas("worldquest-questmarker-epic");
 		end
 	else
 		pin.Background:SetSize(75, 75);
+		pin.PushedBackground:SetSize(75, 75);
 		pin.Highlight:SetSize(75, 75);
 
 		-- We are setting the texture without updating the tex coords.  Refresh visuals will handle
 		-- updating the tex coords based on whether this pin is selected or not.
 		pin.Background:SetTexture("Interface/WorldMap/UI-QuestPoi-NumberIcons");
+		pin.PushedBackground:SetTexture("Interface/WorldMap/UI-QuestPoi-NumberIcons");
 		pin.Highlight:SetTexture("Interface/WorldMap/UI-QuestPoi-NumberIcons");
 
 		pin.Highlight:SetTexCoord(0.625, 0.750, 0.875, 1);
@@ -227,8 +233,10 @@ function WorldQuestPinMixin:RefreshVisuals()
 	if rarity == LE_WORLD_QUEST_QUALITY_COMMON then
 		if selected then
 			self.Background:SetTexCoord(0.500, 0.625, 0.375, 0.5);
+			self.PushedBackground:SetTexCoord(0.375, 0.500, 0.375, 0.5);
 		else
 			self.Background:SetTexCoord(0.875, 1, 0.375, 0.5);
+			self.PushedBackground:SetTexCoord(0.750, 0.875, 0.375, 0.5);
 		end
 	end
 end
@@ -247,4 +255,16 @@ end
 
 function WorldQuestPinMixin:OnClick(button)
 	TaskPOI_OnClick(self, button);
+end
+
+function WorldQuestPinMixin:OnMouseDown()
+	self.Background:Hide();
+	self.PushedBackground:Show();
+	self.Texture:SetPoint("CENTER", 2, -2);
+end
+
+function WorldQuestPinMixin:OnMouseUp()
+	self.Background:Show();
+	self.PushedBackground:Hide();
+	self.Texture:SetPoint("CENTER", 0, 0);
 end

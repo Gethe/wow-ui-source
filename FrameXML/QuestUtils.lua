@@ -130,13 +130,12 @@ function QuestUtils_CanUseAutoGroupFinder(questID, isDropdownRequest)
 	return false;
 end
 
-function QuestUtils_AddQuestCurrencyRewardsToTooltip(questID, tooltip)
+function QuestUtils_AddQuestCurrencyRewardsToTooltip(questID, tooltip, currencyContainerTooltip)
 	local numQuestCurrencies = GetNumQuestLogRewardCurrencies(questID);
 	local currencies = { };
 	for i = 1, numQuestCurrencies do
 		local name, texture, numItems, currencyID = GetQuestLogRewardCurrencyInfo(i, questID);
 		local rarity = select(8, GetCurrencyInfo(currencyID));
-		name, texture, numItems, rarity = CurrencyContainerUtil.GetCurrencyContainerInfo(currencyID, numItems, name, texture, rarity);
 		local currencyInfo = { name = name, texture = texture, numItems = numItems, currencyID = currencyID, rarity = rarity };
 		tinsert(currencies, currencyInfo);
 	end
@@ -149,11 +148,37 @@ function QuestUtils_AddQuestCurrencyRewardsToTooltip(questID, tooltip)
 			return currency1.currencyID > currency2.currencyID;
 		end
 	);
-
+	local alreadyHasCurrencyContainer = false; --In the case of multiple currency containers needing to displayed, we only display the first. 
 	for i, currencyInfo in ipairs(currencies) do
-		local text = BONUS_OBJECTIVE_REWARD_WITH_COUNT_FORMAT:format(currencyInfo.texture, currencyInfo.numItems, currencyInfo.name);
-		local currencyColor = GetColorForCurrencyReward(currencyInfo.currencyID, currencyInfo.numItems);
-		tooltip:AddLine(text, currencyColor:GetRGB());
+		if ( currencyContainerTooltip and C_CurrencyInfo.IsCurrencyContainer(currencyInfo.currencyID, currencyInfo.numItems) and not alreadyHasCurrencyContainer ) then 
+			local name, texture, numItems, rarity = CurrencyContainerUtil.GetCurrencyContainerInfo(currencyInfo.currencyID,
+			currencyInfo.numItems, currencyInfo.name, currencyInfo.texture, currencyInfo.rarity);
+			
+			currencyContainerTooltip:Show(); 
+			currencyContainerTooltip.Tooltip:SetOwner(currencyContainerTooltip, "ANCHOR_NONE");
+			currencyContainerTooltip.Tooltip:SetCurrencyByID(currencyInfo.currencyID, currencyInfo.numItems); 
+			
+			SetItemButtonQuality(currencyContainerTooltip, rarity, currencyInfo.currencyID); 
+					
+			currencyContainerTooltip.Icon:SetTexture(texture); 
+			currencyContainerTooltip.itemTextureSet = (itemTexture ~= nil);
+
+			currencyContainerTooltip.Tooltip:SetPoint("TOPLEFT", currencyContainerTooltip.Icon, "TOPRIGHT", 0, 10);
+			currencyContainerTooltip.Tooltip:Show();
+			
+			if (numItems > 1) then 
+				SetItemButtonCount(currencyContainerTooltip, numItems); 
+			end
+
+			if ( not tooltip ) then
+				break;
+			end
+			alreadyHasCurrencyContainer = true; 
+		elseif ( tooltip ) then
+			local text = BONUS_OBJECTIVE_REWARD_WITH_COUNT_FORMAT:format(currencyInfo.texture, currencyInfo.numItems, currencyInfo.name);
+			local currencyColor = GetColorForCurrencyReward(currencyInfo.currencyID, currencyInfo.numItems);
+			tooltip:AddLine(text, currencyColor:GetRGB());
+		end
 	end
 	return numQuestCurrencies;
 end

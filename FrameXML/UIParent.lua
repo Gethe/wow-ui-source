@@ -1653,7 +1653,7 @@ function UIParent_OnEvent(self, event, ...)
 
 	elseif ( event == "ADVENTURE_MAP_OPEN" ) then
 		Garrison_LoadUI();
-		ShowUIPanel(OrderHallMissionFrame);
+		ShowUIPanel(BFAMissionFrame);
 
 	-- Event for BarberShop handling
 	elseif ( event == "BARBER_SHOP_OPEN" ) then

@@ -557,6 +557,15 @@ local Club =
 			},
 		},
 		{
+			Name = "RequestTicket",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "ticketId", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "RequestTickets",
 			Type = "Function",
 			Documentation = { "Request tickets from server. Check canGetTicket privilege." },
@@ -634,7 +643,7 @@ local Club =
 		{
 			Name = "SetClubMemberNote",
 			Type = "Function",
-			Documentation = { "Check the canSetOtherMemberAttribute privilege." },
+			Documentation = { "Check the canSetOwnMemberNote and canSetOtherMemberNote privileges." },
 
 			Arguments =
 			{
@@ -827,6 +836,16 @@ local Club =
 			},
 		},
 		{
+			Name = "ClubSelfMemberRoleUpdated",
+			Type = "Event",
+			LiteralName = "CLUB_SELF_MEMBER_ROLE_UPDATED",
+			Payload =
+			{
+				{ Name = "clubId", Type = "string", Nilable = false },
+				{ Name = "roleId", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "ClubStreamAdded",
 			Type = "Event",
 			LiteralName = "CLUB_STREAM_ADDED",
@@ -984,6 +1003,7 @@ local Club =
 			Type = "Structure",
 			Fields =
 			{
+				{ Name = "isSelf", Type = "bool", Nilable = false },
 				{ Name = "memberId", Type = "number", Nilable = false },
 				{ Name = "name", Type = "string", Nilable = false, Documentation = { "name may be encoded as a Kstring" } },
 				{ Name = "role", Type = "ClubRoleIdentifier", Nilable = true },
@@ -1003,6 +1023,7 @@ local Club =
 				{ Name = "invitationId", Type = "string", Nilable = false },
 				{ Name = "club", Type = "ClubInfo", Nilable = false },
 				{ Name = "inviter", Type = "ClubMemberInfo", Nilable = false },
+				{ Name = "leaders", Type = "table", InnerType = "ClubMemberInfo", Nilable = false },
 			},
 		},
 		{
@@ -1069,6 +1090,8 @@ local Club =
 				{ Name = "canSetPrivacyLevel", Type = "bool", Nilable = false },
 				{ Name = "canSetOwnMemberAttribute", Type = "bool", Nilable = false },
 				{ Name = "canSetOtherMemberAttribute", Type = "bool", Nilable = false },
+				{ Name = "canSetOwnMemberNote", Type = "bool", Nilable = false },
+				{ Name = "canSetOtherMemberNote", Type = "bool", Nilable = false },
 				{ Name = "canSetOwnVoiceState", Type = "bool", Nilable = false },
 				{ Name = "canSetOwnPresenceLevel", Type = "bool", Nilable = false },
 				{ Name = "canUseVoice", Type = "bool", Nilable = false },
@@ -1078,6 +1101,7 @@ local Club =
 				{ Name = "canSendGuestInvitation", Type = "bool", Nilable = false },
 				{ Name = "canRevokeOwnInvitation", Type = "bool", Nilable = false },
 				{ Name = "canRevokeOtherInvitation", Type = "bool", Nilable = false },
+				{ Name = "canGetBan", Type = "bool", Nilable = false },
 				{ Name = "canGetSuggestion", Type = "bool", Nilable = false },
 				{ Name = "canSuggestMember", Type = "bool", Nilable = false },
 				{ Name = "canGetTicket", Type = "bool", Nilable = false },

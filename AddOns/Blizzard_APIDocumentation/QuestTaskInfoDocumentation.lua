@@ -42,8 +42,8 @@ local QuestTaskInfo =
 
 			Arguments =
 			{
-				{ Name = "mapID", Type = "number", Nilable = false },
-				{ Name = "parentUiMapID", Type = "number", Nilable = true },
+				{ Name = "questID", Type = "number", Nilable = false },
+				{ Name = "uiMapID", Type = "number", Nilable = false },
 			},
 
 			Returns =
@@ -101,7 +101,6 @@ local QuestTaskInfo =
 			Arguments =
 			{
 				{ Name = "uiMapID", Type = "number", Nilable = false },
-				{ Name = "parentUiMapID", Type = "number", Nilable = true },
 			},
 
 			Returns =

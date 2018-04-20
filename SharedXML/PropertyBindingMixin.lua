@@ -60,6 +60,14 @@ function PropertyBindingMixin:GetStateTooltipString(stateValue)
 	return self.tooltipStrings and self.tooltipStrings[stateValue] or "";
 end
 
+function PropertyBindingMixin:SetTooltipFunction(tooltipFunction)
+	self.tooltipFunction = tooltipFunction;
+end
+
+function PropertyBindingMixin:GetTooltipFunction()
+	return self.tooltipFunction;
+end
+
 function PropertyBindingMixin:SetAccessorFunction(accessor)
 	self.shouldPassSelfToAccessor = false;
 	self.accessor = accessor;
@@ -118,7 +126,11 @@ end
 function PropertyBindingMixin:SetTooltip(state)
 	self.tooltipFrame:ClearLines();
 	self.tooltipFrame:SetOwner(self, self.tooltipPoint or "ANCHOR_RIGHT");
-	self.tooltipFrame:SetText(self:GetStateTooltipString(state));
+
+	local tooltipFunction = self:GetTooltipFunction();
+	local tooltipText = tooltipFunction and tooltipFunction(state) or self:GetStateTooltipString(state);
+
+	self.tooltipFrame:SetText(tooltipText);
 	self.tooltipFrame:Show();
 end
 

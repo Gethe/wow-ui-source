@@ -22,7 +22,7 @@ end
 function BFAMission:OnLoadMainFrame()
 	self:UpdateTextures();
 
-	PanelTemplates_SetNumTabs(self, 2);
+	PanelTemplates_SetNumTabs(self, 3);
 	self:SelectTab(self:DefaultTab());
 end
 
@@ -33,16 +33,22 @@ function BFAMission:UpdateTextures()
 --]]
 
 function BFAMission:OnEventMainFrame(event, ...)
-	GarrisonFollowerMission.OnEventMainFrame(self, event, ...);
+	if (event == "ADVENTURE_MAP_CLOSE") then
+		self.CloseButton:Click();
+	else
+		GarrisonFollowerMission.OnEventMainFrame(self, event, ...);
+	end
 end
 
 function BFAMission:DefaultTab()
+	do return 3 end -- scouting map for beta end
 	return 1;	-- Missions
 end
 
 function BFAMission:SetupTabs()
 	self.Tab1:Show();
 	self.Tab2:Show();
+	self.Tab3:Show();
 end
 
 function BFAMission:SetupMissionList()
@@ -55,14 +61,20 @@ end
 
 function BFAMission:OnShowMainFrame()
 	GarrisonFollowerMission.OnShowMainFrame(self);
+	AdventureMapMixin.OnShow(self.MapTab);
+
+	self:RegisterEvent("ADVENTURE_MAP_CLOSE");
 
 	self:SetupTabs();
 end
 
 function BFAMission:OnHideMainFrame()
 	GarrisonFollowerMission.OnHideMainFrame(self);
+	AdventureMapMixin.OnHide(self.MapTab);
 
 	self.abilityCountersForMechanicTypes = nil;
+
+	self:UnregisterEvent("ADVENTURE_MAP_CLOSE");
 end
 
 function BFAMission:EscapePressed()
@@ -83,9 +95,16 @@ function BFAMission:SelectTab(id)
 		self.TitleText:SetText(WAR_MISSIONS);
 		self.FollowerList:Hide();
 		self.BackgroundTile:Show()
+		self.MapTab:Hide();
 	elseif (id == 2) then
 		self.TitleText:SetText(WAR_FOLLOWERS);
 		self.BackgroundTile:Show()
+		self.MapTab:Hide();
+	else
+		self.TitleText:SetText(ADVENTURE_MAP_TITLE);
+		self.FollowerList:Hide();
+		self.MapTab:Show();
+		self.BackgroundTile:Hide()
 	end
 end
 

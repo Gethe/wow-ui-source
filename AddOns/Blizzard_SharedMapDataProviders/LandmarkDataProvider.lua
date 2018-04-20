@@ -13,7 +13,6 @@ local function DoesLandMarkTypeShowHighlights(landmarkType, textureKitPrefix)
 
 	return landmarkType == LE_MAP_LANDMARK_TYPE_NORMAL
 		or landmarkType == LE_MAP_LANDMARK_TYPE_TAMER
-		or landmarkType == LE_MAP_LANDMARK_TYPE_GOSSIP
 		or landmarkType == LE_MAP_LANDMARK_TYPE_TAXINODE
 		or landmarkType == LE_MAP_LANDMARK_TYPE_CONTRIBUTION
 		or landmarkType == LE_MAP_LANDMARK_TYPE_MAP_LINK;
@@ -23,7 +22,7 @@ local function ShouldShowAreaLabel(poi)
 	if poi.landmarkType == LE_MAP_LANDMARK_TYPE_CONTRIBUTION or poi.useMouseOverTooltip then
 		return false;
 	end
-	if poi.poiID and C_WorldMap.IsAreaPOITimed(poi.poiID) then
+	if poi.poiID and C_AreaPoiInfo.IsAreaPOITimed(poi.poiID) then
 		return false;
 	end
 
@@ -55,18 +54,13 @@ function LandmarkDataProviderMixin:RemoveAllData()
 	self:GetMap():TriggerEvent("ClearAreaLabel", MAP_AREA_LABEL_TYPE.AREA_POI_BANNER);
 end
 
-local function IsAllowedLandMarkType(landmarkType)
-	return landmarkType ~= LE_MAP_LANDMARK_TYPE_VIGNETTE
-	   and landmarkType ~= LE_MAP_LANDMARK_TYPE_INVASION;
-end
-
 function LandmarkDataProviderMixin:RefreshAllData(fromOnShow)
 	self:RemoveAllData();
 	
 	local mapID = self:GetMap():GetMapID();
 	for landmarkIndex = 1, GetNumMapLandmarks() do
 		local landmarkInfo = C_WorldMap.GetMapLandmarkInfo(landmarkIndex);
-		if landmarkInfo and IsAllowedLandMarkType(landmarkInfo.landmarkType) then
+		if landmarkInfo then
 			self:AddLandmark(landmarkIndex, landmarkInfo);
 		end
 	end
@@ -74,7 +68,7 @@ end
 
 function LandmarkDataProviderMixin:AddLandmark(landmarkIndex, landmarkInfo)
 	if landmarkInfo.displayAsBanner then
-		local timeLeftMinutes = C_WorldMap.GetAreaPOITimeLeft(landmarkInfo.poiID);
+		local timeLeftMinutes = C_AreaPoiInfo.GetAreaPOITimeLeft(landmarkInfo.poiID);
 		local descriptionLabel = nil;
 		if timeLeftMinutes then
 			local hoursLeft = math.floor(timeLeftMinutes / 60);
@@ -156,12 +150,9 @@ function LandmarkPinMixin:SetTexture(atlasIcon, textureKitPrefix, textureIndex)
 		self.HighlightTexture:SetTexCoord(0, 1, 0, 1);
 	else
 		self:SetSize(32, 32);
-		self:SetWidth(32);
-		self:SetHeight(32);
-		self.Texture:SetWidth(16);
-		self.Texture:SetHeight(16);
-		self.Texture:SetTexture("Interface\\Minimap\\POIIcons");
-		self.HighlightTexture:SetTexture("Interface\\Minimap\\POIIcons");
+		self.Texture:SetSize(16, 16);
+		self.Texture:SetTexture("Interface/Minimap/POIIcons");
+		self.HighlightTexture:SetTexture("Interface/Minimap/POIIcons");
 		
 		local x1, x2, y1, y2 = GetPOITextureCoords(textureIndex);
 		self.Texture:SetTexCoord(x1, x2, y1, y2);
@@ -193,11 +184,11 @@ function LandmarkPinMixin:OnMouseEnter()
 		
 		local name = self.name;
 		local description = self.description;
-		if name and #name > 0 and description and #description > 0 and C_WorldMap.IsAreaPOITimed(self.poiID) then
+		if name and #name > 0 and description and #description > 0 and C_AreaPoiInfo.IsAreaPOITimed(self.poiID) then
 			GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 			GameTooltip:SetText(HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(name));
 			GameTooltip:AddLine(NORMAL_FONT_COLOR:WrapTextInColorCode(description));
-			local timeLeftMinutes = C_WorldMap.GetAreaPOITimeLeft(self.poiID);
+			local timeLeftMinutes = C_AreaPoiInfo.GetAreaPOITimeLeft(self.poiID);
 			if timeLeftMinutes then
 				local timeString = SecondsToTime(timeLeftMinutes * 60);
 				GameTooltip:AddLine(BONUS_OBJECTIVE_TIME_LEFT:format(timeString), NORMAL_FONT_COLOR:GetRGB());

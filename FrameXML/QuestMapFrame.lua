@@ -7,6 +7,15 @@ local titleFramePool;
 local objectiveFramePool;
 local headerFramePool;
 
+local WarCampaignTextureKitInfo = {
+	Background = "Campaign_%s"
+};
+
+QUEST_LOG_WAR_CAMPAIGN_LAYOUT_INDEX = 2;
+QUEST_LOG_WAR_CAMPAIGN_NEXT_OBJECTIVE_LAYOUT_INDEX = 3;
+QUEST_LOG_SEPARATOR_LAYOUT_INDEX = 12;
+QUEST_LOG_STORY_LAYOUT_INDEX = 13;
+
 QuestLogMixin = { };
 
 function QuestLogMixin:Refresh()
@@ -14,6 +23,35 @@ function QuestLogMixin:Refresh()
 	SortQuests();
 	QuestMapFrame_ResetFilters();
 	QuestMapFrame_UpdateAll();
+end
+
+function QuestLogMixin:UpdatePOIs()
+	local mapID;
+	if self:GetParent():IsShown() then
+		mapID = self:GetParent():GetMapID();
+	else
+		mapID = C_Map.GetBestMapForUnit("player");
+	end
+	if mapID then
+		C_QuestLog.SetMapForQuestPOIs(mapID);
+		QuestMapUpdateAllQuests();
+		QuestPOIUpdateIcons();
+		QuestObjectiveTracker_UpdatePOIs();
+	end
+end
+
+function QuestLogMixin:InitLayoutIndexManager()
+	self.layoutIndexManager = CreateLayoutIndexManager();
+	self.layoutIndexManager:AddManagedLayoutIndex("Campaign", QUEST_LOG_WAR_CAMPAIGN_LAYOUT_INDEX + 1);
+	self.layoutIndexManager:AddManagedLayoutIndex("Other", QUEST_LOG_STORY_LAYOUT_INDEX + 1);
+end
+
+function QuestLogMixin:GetManagedLayoutIndex(key)
+	return self.layoutIndexManager:GetManagedLayoutIndex(key);
+end
+
+function QuestLogMixin:ResetLayoutIndexManager()
+	self.layoutIndexManager:Reset();
 end
 
 function QuestMapFrame_OnLoad(self)
@@ -31,8 +69,10 @@ function QuestMapFrame_OnLoad(self)
 	self:RegisterEvent("AJ_QUEST_LOG_OPEN");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("WORLD_MAP_UPDATE");
-	self:RegisterEvent("VARIABLES_LOADED");
+	self:RegisterEvent("CVAR_UPDATE");
 
+	self:InitLayoutIndexManager();
+	
 	self.completedCriteria = {};
 	QuestPOI_Initialize(QuestScrollFrame.Contents);
 	QuestMapQuestOptionsDropDown.questID = 0;		-- for QuestMapQuestOptionsDropDown_Initialize
@@ -130,14 +170,12 @@ function QuestMapFrame_OnEvent(self, event, ...)
 		elseif ( arg2 and arg2 > 0) then
 			QuestMapFrame:GetParent():NavigateToMap(arg2);
 		end
-	elseif ( event == "PLAYER_ENTERING_WORLD" or event == "WORLD_MAP_UPDATE" ) then
-		SortQuestSortTypes();
-		SortQuests();
-		QuestMapFrame_ResetFilters();
-		QuestMapFrame_UpdateAll();
-	elseif ( event == "VARIABLES_LOADED" ) then
-		if ( GetCVarBool("questLogOpen") ) then
-			QuestMapFrame_Show();
+	elseif ( event == "PLAYER_ENTERING_WORLD" or event == "WORLD_MAP_UPDATE" ) then	
+		self:Refresh();
+	elseif ( event == "CVAR_UPDATE" ) then
+		local arg1 =...;
+		if ( arg1 == "QUEST_POI" ) then
+			QuestMapFrame_UpdateAll();
 		end
 	end
 end
@@ -194,9 +232,9 @@ function QuestMapFrame_CheckTutorials()
 end
 
 function QuestMapFrame_UpdateAll()
+	QuestMapFrame:UpdatePOIs();
+
 	local numPOIs = QuestMapUpdateAllQuests();
-	QuestPOIUpdateIcons();
-	QuestObjectiveTracker_UpdatePOIs();
 
 	if ( QuestMapFrame:GetParent():IsShown() ) then
 		local poiTable = { };
@@ -265,8 +303,7 @@ function QuestMapFrame_ShowQuestDetails(questID)
 	QuestMapFrame.DetailsFrame:Show();
 
 	-- save current view
-	QuestMapFrame.DetailsFrame.continent = GetCurrentMapContinent();
-	QuestMapFrame.DetailsFrame.mapID = QuestMapFrame:GetParent():GetMapID();
+	QuestMapFrame.DetailsFrame.returnMapID = QuestMapFrame:GetParent():GetMapID();
 	local mapID = GetQuestUiMapID(questID);
 	if ( mapID ~= 0 ) then
 		QuestMapFrame:GetParent():NavigateToMap(mapID);
@@ -291,7 +328,7 @@ function QuestMapFrame_CloseQuestDetails(optPortraitOwnerCheckFrame)
 	QuestMapFrame.DetailsFrame:Hide();
 	QuestMapFrame.DetailsFrame.questID = nil;
 	QuestMapFrame:GetParent():ClearFocusedQuestID();
-	QuestMapFrame.DetailsFrame.mapID = nil;
+	QuestMapFrame.DetailsFrame.returnMapID = nil;
 	QuestMapFrame_UpdateAll();
 	QuestFrame_HideQuestPortrait(optPortraitOwnerCheckFrame);
 
@@ -328,8 +365,8 @@ function QuestMapFrame_UpdateQuestDetailsButtons()
 end
 
 function QuestMapFrame_ReturnFromQuestDetails()
-	if ( QuestMapFrame.DetailsFrame.mapID ) then
-		QuestMapFrame:GetParent():NavigateToMap(QuestMapFrame.DetailsFrame.mapID);
+	if ( QuestMapFrame.DetailsFrame.returnMapID ) then
+		QuestMapFrame:GetParent():NavigateToMap(QuestMapFrame.DetailsFrame.returnMapID);
 	end
 	QuestMapFrame_CloseQuestDetails();
 end
@@ -448,7 +485,7 @@ end
 -- ***** QUEST LIST
 -- *****************************************************************************************************
 
-function QuestLogQuests_AddQuestButton(prevButton, questLogIndex, poiTable, title, level, suggestedGroup, isHeader, isCollapsed, isComplete, frequency, questID, startEvent, displayQuestID, isOnMap, hasLocalPOI, isTask, isBounty, isStory, isHidden, isScaling)
+function QuestLogQuests_AddQuestButton(prevButton, questLogIndex, poiTable, title, level, suggestedGroup, isHeader, isCollapsed, isComplete, frequency, questID, startEvent, displayQuestID, isOnMap, hasLocalPOI, isTask, isBounty, isStory, isHidden, isScaling, layoutIndex)
 	local totalHeight = 8;
 	button = titleFramePool:Acquire();
 	button.questID = questID;
@@ -615,6 +652,7 @@ function QuestLogQuests_AddQuestButton(prevButton, questLogIndex, poiTable, titl
 	else
 		button:SetPoint("TOPLEFT", 1, -6);
 	end
+	button.layoutIndex = layoutIndex;
 	button:Show();
 	prevButton = button;
 
@@ -634,31 +672,74 @@ function QuestLogQuests_Update(poiTable)
 
 	QuestPOI_ResetUsage(QuestScrollFrame.Contents);
 
-	local storyID, storyMapID = GetZoneStoryID();
-	if ( storyID ) then
+	local storyAchievementID, storyMapID = C_QuestLog.GetZoneStoryInfo(mapID);
+	local warCampaignID = C_CampaignInfo.GetCurrentCampaignID();
+	local warCampaignShown = false;
+
+	if ( warCampaignID ) then
+		local warCampaignInfo = C_CampaignInfo.GetCampaignInfo(warCampaignID);
+		if (warCampaignInfo and warCampaignInfo.visibilityConditionMatched) then
+			local campaignHeader = QuestScrollFrame.Contents.WarCampaignHeader;
+			local campaignNextObj = QuestScrollFrame.Contents.WarCampaignNextObjective;
+			SetupTextureKits(warCampaignInfo.uiTextureKitID, campaignHeader, WarCampaignTextureKitInfo);
+			local campaignChapterID = C_CampaignInfo.GetCurrentCampaignChapterID();
+			if (campaignChapterID) then
+				local campaignChapterInfo = C_CampaignInfo.GetCampaignChapterInfo(campaignChapterID);		
+				if (campaignChapterInfo) then
+					campaignHeader.Progress:SetText(campaignChapterInfo.name);
+					campaignHeader.Progress:SetTextColor(NORMAL_FONT_COLOR:GetRGB());
+				else
+					campaignHeader.Progress:SetText("");
+				end
+				campaignNextObj:Hide();
+			else
+				campaignNextObj.Text:SetText(warCampaignInfo.playerConditionFailedReason);
+				campaignNextObj:Show();
+				campaignNextObj:SetHeight(campaignNextObj.Text:GetHeight() + 12);
+				campaignHeader.Progress:SetText("");
+			end
+			campaignHeader:Show();
+			warCampaignShown = true;
+		end
+	end
+
+	if (warCampaignShown) then
+		local separator = QuestScrollFrame.Contents.Separator;
+		if (storyAchievementID) then
+			separator.Divider:SetAtlas("ZoneStory_Divider", true);
+		else
+			separator.Divider:SetAtlas("QuestLog_Divider", true);
+		end
+		separator:Show();
+	else
+		QuestScrollFrame.Contents.WarCampaignHeader:Hide();
+		QuestScrollFrame.Contents.WarCampaignNextObjective:Hide();
+		QuestScrollFrame.Contents.Separator:Hide();
+	end
+
+	if ( storyAchievementID ) then
 		QuestScrollFrame.Contents.StoryHeader:Show();
 		local mapInfo = C_Map.GetMapInfo(storyMapID);
 		QuestScrollFrame.Contents.StoryHeader.Text:SetText(mapInfo and mapInfo.name or nil);
-		local numCriteria = GetAchievementNumCriteria(storyID);
+		local numCriteria = GetAchievementNumCriteria(storyAchievementID);
 		local completedCriteria = 0;
 		for i = 1, numCriteria do
-			local _, _, completed = GetAchievementCriteriaInfo(storyID, i);
+			local _, _, completed = GetAchievementCriteriaInfo(storyAchievementID, i);
 			if ( completed ) then
 				completedCriteria = completedCriteria + 1;
 			end
 		end
-		local numPoints = select(3, GetAchievementInfo(storyID));
-		QuestScrollFrame.Contents.StoryHeader.Points:SetText(numPoints);
 		QuestScrollFrame.Contents.StoryHeader.Progress:SetFormattedText(QUEST_STORY_STATUS, completedCriteria, numCriteria);
 		prevButton = QuestScrollFrame.Contents.StoryHeader;
 	else
 		QuestScrollFrame.Contents.StoryHeader:Hide();
 	end
 
-	local headerIndex = 0;
 	local headerCollapsed = false;
 	local headerTitle, headerOnMap, headerShown, headerLogIndex, mapHeaderButtonIndex;
 	local noHeaders = true;
+
+	QuestMapFrame:ResetLayoutIndexManager();
 
 	for questLogIndex = 1, numEntries do
 		local title, level, suggestedGroup, isHeader, isCollapsed, isComplete, frequency, questID, startEvent, displayQuestID, isOnMap, hasLocalPOI, isTask, isBounty, isStory, isHidden, isScaling = GetQuestLogTitle(questLogIndex);
@@ -670,10 +751,9 @@ function QuestLogQuests_Update(poiTable)
 			headerCollapsed = isCollapsed;
 		elseif ( not isTask and not isHidden and (not isBounty or IsQuestComplete(questID))) then
 			-- we have at least one valid entry, show the header for it
-			if ( not headerShown ) then
+			if ( not headerShown and not C_CampaignInfo.IsCampaignQuest(questID) ) then
 				headerShown = true;
 				noHeaders = false;
-				headerIndex = headerIndex + 1;
 				button = headerFramePool:Acquire();
 				if (headerCollapsed) then
 					button:SetNormalTexture("Interface\\Buttons\\UI-PlusButton-Up");
@@ -694,13 +774,18 @@ function QuestLogQuests_Update(poiTable)
 				else
 					button:SetPoint("TOPLEFT", 1, -6);
 				end
+				button.layoutIndex = QuestMapFrame:GetManagedLayoutIndex("Other");
 				button:Show();
 				button.questLogIndex = headerLogIndex;
 				prevButton = button;
 			end
 
-			if (not headerCollapsed) then
-				prevButton = QuestLogQuests_AddQuestButton(prevButton, questLogIndex, poiTable, title, level, suggestedGroup, isHeader, isCollapsed, isComplete, frequency, questID, startEvent, displayQuestID, isOnMap, hasLocalPOI, isTask, isBounty, isStory, isHidden, isScaling);
+			if (not headerCollapsed or C_CampaignInfo.IsCampaignQuest(questID)) then
+				local layoutKey = "Other";
+				if (C_CampaignInfo.IsCampaignQuest(questID)) then
+					layoutKey = "Campaign";
+				end
+				prevButton = QuestLogQuests_AddQuestButton(prevButton, questLogIndex, poiTable, title, level, suggestedGroup, isHeader, isCollapsed, isComplete, frequency, questID, startEvent, displayQuestID, isOnMap, hasLocalPOI, isTask, isBounty, isStory, isHidden, isScaling, QuestMapFrame:GetManagedLayoutIndex(layoutKey));
 			end
 		end
 	end
@@ -716,6 +801,8 @@ function QuestLogQuests_Update(poiTable)
 
 	-- clean up
 	QuestPOI_HideUnusedButtons(QuestScrollFrame.Contents);
+
+	QuestScrollFrame.Contents:Layout();
 end
 
 function ToggleQuestLog()
@@ -732,7 +819,7 @@ function OpenQuestLog(mapID)
 	QuestMapFrame_Open();
 
 	if mapID then
-		SetMapByID(mapID);
+		QuestMapFrame:GetParent():NavigateToMap(mapID);
 	end
 end
 
@@ -933,7 +1020,8 @@ end
 
 function QuestMapLog_ShowStoryTooltip(self)
 	local tooltip = QuestScrollFrame.StoryTooltip;
-	local storyID = GetZoneStoryID();
+	local mapID = QuestMapFrame:GetParent():GetMapID();
+	local storyAchievementID, storyMapID = C_QuestLog.GetZoneStoryInfo(mapID);
 	local maxWidth = 0;
 	local totalHeight = 0;
 
@@ -950,10 +1038,10 @@ function QuestMapLog_ShowStoryTooltip(self)
 		checkMark:Hide();
 	end
 
-	local numCriteria = GetAchievementNumCriteria(storyID);
+	local numCriteria = GetAchievementNumCriteria(storyAchievementID);
 	local completedCriteria = 0;
 	for i = 1, numCriteria do
-		local title, _, completed = GetAchievementCriteriaInfo(storyID, i);
+		local title, _, completed = GetAchievementCriteriaInfo(storyAchievementID, i);
 		if ( completed ) then
 			completedCriteria = completedCriteria + 1;
 		end
@@ -1002,6 +1090,25 @@ end
 
 function QuestMapLog_HideStoryTooltip(self)
 	QuestScrollFrame.StoryTooltip:Hide();
+end
+
+function QuestMapLog_ShowWarCampaignTooltip(self)
+	local tooltip = QuestScrollFrame.WarCampaignTooltip;
+	
+	local warCampaignQuestID = C_CampaignInfo.GetCurrentCampaignID();
+
+	tooltip:SetWarCampaign(warCampaignQuestID);
+	tooltip:ClearAllPoints();
+	if (tooltip:GetWidth() > UIParent:GetRight() - WorldMapFrame:GetRight()) then
+		tooltip:SetPoint("TOPRIGHT", self:GetParent().WarCampaignHeader, "TOPLEFT", -5, 0);
+	else
+		tooltip:SetPoint("TOPLEFT", self:GetParent().WarCampaignHeader, "TOPRIGHT", 27, 0);
+	end
+	tooltip:Show();
+end
+
+function QuestMapLog_HideWarCampaignTooltip(self)
+	QuestScrollFrame.WarCampaignTooltip:Hide();
 end
 
 -- *****************************************************************************************************

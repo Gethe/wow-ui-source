@@ -556,6 +556,8 @@ function UIDropDownMenu_AddButton(info, level)
 
 	button:SetShown(button.customFrame == nil);
 
+	button.minWidth = info.minWidth;
+
 	width = max(UIDropDownMenu_GetButtonWidth(button), info.minWidth or 0);
 	--Set maximum button width
 	if ( width > listFrame.maxWidth ) then
@@ -597,8 +599,9 @@ function UIDropDownMenu_GetMaxButtonWidth(self)
 end
 
 function UIDropDownMenu_GetButtonWidth(button)
+	local minWidth = button.minWidth or 0;
 	if button.customFrame and button.customFrame:IsShown() then
-		return button.customFrame:GetPreferredEntryWidth();
+		return math.max(minWidth, button.customFrame:GetPreferredEntryWidth());
 	end
 
 	if not button:IsShown() then
@@ -620,7 +623,7 @@ function UIDropDownMenu_GetButtonWidth(button)
 			width = width + 10;
 		end
 	else
-		return 0;
+		return minWidth;
 	end
 
 	-- Add padding if has and expand arrow or color swatch
@@ -634,7 +637,7 @@ function UIDropDownMenu_GetButtonWidth(button)
 		width = width + button.padding;
 	end
 
-	return width;
+	return math.max(minWidth, width);
 end
 
 function UIDropDownMenu_Refresh(frame, useValue, dropdownLevel)

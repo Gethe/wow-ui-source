@@ -6,5 +6,9 @@
 			<OnLeave method="OnLeave"/>
 		</Scripts>
 	</Frame>
-	<Frame name="UIWidgetBaseTemplate" inherits="UIWidgetTemplateTooltipFrame" virtual="true" hidden="true" secureMixin="UIWidgetBaseTemplateMixin" />
+	<Frame name="UIWidgetBaseTemplate" inherits="UIWidgetTemplateTooltipFrame" virtual="true" hidden="true" secureMixin="UIWidgetBaseTemplateMixin">
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
 </Ui>

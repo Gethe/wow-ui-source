@@ -1,5 +1,5 @@
 # Do not delete the following line!
-## Interface: 70300
+## Interface: 80000
 
 ## add C namespace augmentations here
 ..\SharedXML\C_TimerAugment.lua
@@ -20,6 +20,7 @@
 ..\SharedXML\BulletPoint.xml
 ..\SharedXML\TransformTree\TransformTree.xml
 ..\SharedXML\KeyCommand.lua
+..\SharedXML\CustomBindingButtonMixin.lua
 MixinUtil.lua
 
 ## intrinsics
@@ -70,6 +71,9 @@ MoneyInputFrame.xml
 ..\SharedXML\SecureUIPanelTemplates.xml
 ..\SharedXML\SharedUIPanelTemplates.xml
 ..\SharedXML\SharedBasicControls.xml
+..\SharedXML\CustomBindingButtonTemplate.xml
+CustomBindingManager.lua
+CustomBindingHandler.lua
 GameTooltip.xml
 UIMenu.xml
 UIDropDownMenu.xml
@@ -173,6 +177,7 @@ MainMenuBarBagButtons.xml
 UnitPositionFrameTemplates.xml
 FogOfWarFrameTemplates.xml
 WorldMapFrame.xml
+WarCampaignTemplates.xml
 QuestMapFrame.xml
 RaidWarning.xml
 CinematicFrame.xml
@@ -239,7 +244,6 @@ GarrisonFollowerTooltip.xml
 StaticPopupSpecial.xml
 LossOfControlFrame.xml
 PVPHelper.xml
-MapBar.xml
 ProductChoice.xml
 ZoneAbility.xml
 ArtifactToasts.xml

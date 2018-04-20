@@ -128,6 +128,13 @@ function PartyMemberFrame_OnLoad (self)
 	PartyMemberFrame_UpdateArt(self);
 end
 
+function PartyMemberFrame_VoiceActivityNotificationCreatedCallback(self, notification)
+	notification:SetParent(self);
+	notification:ClearAllPoints();
+	notification:SetPoint("TOPLEFT", self, "TOPRIGHT", 0, -12);
+	notification:Show();
+end
+
 function PartyMemberFrame_UpdateMember (self)
 	if ( GetDisplayedAllyFrames() ~= "party" ) then
 		self:Hide();
@@ -135,8 +142,14 @@ function PartyMemberFrame_UpdateMember (self)
 		return;
 	end
 	local id = self:GetID();
-	if ( UnitExists("party"..id) ) then
+	local unit = "party"..id;
+	if ( UnitExists(unit) ) then
 		self:Show();
+
+		if VoiceActivityManager then
+			local guid = UnitGUID(unit);
+			VoiceActivityManager:RegisterFrameForVoiceActivityNotifications(self, guid, nil, "VoiceActivityNotificationPartyTemplate", "Button", PartyMemberFrame_VoiceActivityNotificationCreatedCallback);
+		end
 
 		UnitFrame_Update(self, true);
 
@@ -150,6 +163,9 @@ function PartyMemberFrame_UpdateMember (self)
 			masterIcon:Hide();
 		end
 	else
+		if VoiceActivityManager then
+			VoiceActivityManager:UnregisterFrameForVoiceActivityNotifications(self);
+		end
 		self:Hide();
 	end
 	PartyMemberFrame_UpdatePet(self);

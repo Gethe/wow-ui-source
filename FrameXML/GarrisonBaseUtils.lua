@@ -250,17 +250,14 @@ function ShowGarrisonLandingPage(garrTypeID)
 	if (GarrisonLandingPage and GarrisonLandingPage:IsShown() and GarrisonLandingPage.garrTypeID == garrTypeID) then
 		return;
 	end
+	if (not GarrisonMissionFrame) then
+		Garrison_LoadUI();
+	end
 	if (garrTypeID == LE_GARRISON_TYPE_6_0) then
-		if (not GarrisonMissionFrame) then
-			Garrison_LoadUI();
-		end
 		GarrisonLandingPage.Report.Title:SetText(GARRISON_LANDING_PAGE_TITLE);
 		GarrisonLandingPage.FollowerList:Initialize(LE_FOLLOWER_TYPE_GARRISON_6_0);
 		GarrisonLandingPage.ShipFollowerList:Initialize(LE_FOLLOWER_TYPE_SHIPYARD_6_2);
 	elseif (garrTypeID == LE_GARRISON_TYPE_7_0) then
-		if (not OrderHallMissionFrame) then
-			OrderHall_LoadUI();
-		end
 		GarrisonLandingPage.Report.Title:SetText(ORDER_HALL_LANDING_PAGE_TITLE);
 		GarrisonLandingPage.FollowerList:Initialize(LE_FOLLOWER_TYPE_GARRISON_7_0);
 	else

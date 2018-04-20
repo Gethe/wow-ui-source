@@ -14,25 +14,6 @@ function GetCommunitiesChatPermissionOptions()
 	};
 end
 
-function CommunitiesChatPermissionsDropDownMenu_Initialize(self)
-	local info = UIDropDownMenu_CreateInfo();
-	info.func = function(button, value, text)
-		self:SetValue(value, text);
-	end
-	
-	for _, permission in ipairs(GetCommunitiesChatPermissionOptions()) do
-		info.text = permission.text;
-		info.arg1 = permission.value;
-		info.arg2 = permission.text;
-		info.checked = self:GetValue() == permission.value;
-		if info.checked then
-			UIDropDownMenu_SetText(self, permission.text);
-		end
-		
-		UIDropDownMenu_AddButton(info);
-	end
-end
-
 CommunitiesChatMixin = {}
 
 function CommunitiesChatMixin:OnLoad()
@@ -49,6 +30,13 @@ function CommunitiesChatMixin:OnShow()
 	self.streamSelectedCallback = StreamSelectedCallback;
 	self:GetCommunitiesFrame():RegisterCallback(CommunitiesFrameMixin.Event.StreamSelected, self.streamSelectedCallback);
 	
+	local function CommunitiesClubSelectedCallback(event, clubId)
+		self.MessageFrame:Clear();
+	end
+	
+	self.clubSelectedCallback = CommunitiesClubSelectedCallback;
+	self:GetCommunitiesFrame():RegisterCallback(CommunitiesFrameMixin.Event.ClubSelected, self.clubSelectedCallback);
+
 	self:UpdateChatColor();
 end
 
@@ -76,6 +64,11 @@ function CommunitiesChatMixin:OnHide()
 	if self.streamSelectedCallback then
 		self:GetCommunitiesFrame():UnregisterCallback(CommunitiesFrameMixin.Event.StreamSelected, self.streamSelectedCallback);
 		self.streamSelectedCallback = nil;
+	end
+	
+	if self.clubSelectedCallback then
+		self:GetCommunitiesFrame():UnregisterCallback(CommunitiesFrameMixin.Event.ClubSelected, self.clubSelectedCallback);
+		self.clubSelectedCallback = nil;
 	end
 end
 
@@ -189,15 +182,18 @@ function CommunitiesChatMixin:GetChatColor()
 		return nil;
 	end
 	
-	if clubInfo.clubType == Enum.ClubType.BattleNet then
+	local streamId = self:GetCommunitiesFrame():GetSelectedStreamId();
+	if not streamId then
+		return nil;
+	end
+	
+	local r, g, b = Chat_GetCommunitiesChannelColor(clubId, streamId);
+	if r ~= nil then
+		return r, g, b;
+	elseif clubInfo.clubType == Enum.ClubType.BattleNet then
 		return BATTLENET_FONT_COLOR:GetRGB();
 	else
-		local streamId = self:GetCommunitiesFrame():GetSelectedStreamId();
-		if not streamId then
-			return nil;
-		end
-		
-		return Chat_GetCommunitiesChannelColor(clubId, streamId);
+		return DEFAULT_CHAT_CHANNEL_COLOR:GetRGB();
 	end
 end
 
@@ -244,17 +240,6 @@ function CommunitiesChatEditBox_OnEnterPressed(self)
 		-- If you hit enter on a blank line, deselect this edit box.
 		self:ClearFocus();
 	end
-end
-
-CommunitiesChatPermissionsDropDownMenuMixin = {};
-
-function CommunitiesChatPermissionsDropDownMenuMixin:SetValue(newValue, newText)
-	self.value = newValue;
-	UIDropDownMenu_SetText(self, newText);
-end
-
-function CommunitiesChatPermissionsDropDownMenuMixin:GetValue()
-	return self.value;
 end
 
 function CommunitiesChatFrameScrollBar_OnValueChanged(self, value, userInput)

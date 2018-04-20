@@ -9,4 +9,6 @@
 			</Layer>
 		</Layers>
 	</Frame>
+
+	<Frame name="WorldMap_DebugPortLocPinTemplate" inherits="BaseMapPoiPinTemplate" mixin="WorldMap_DebugPortLocPinMixin" virtual="true" />
 </Ui>

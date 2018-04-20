@@ -28,6 +28,8 @@ function MapCanvasMixin:SetMapID(mapID)
 		self.areDetailLayersDirty = true;
 		self.mapID = mapID; 
 		self.expandedMapInsetsByMapID = {};
+		-- MAPREFACTORTODO: Please kill me
+		SetMapByID(mapID)
 		self.ScrollContainer:SetMapID(mapID);
 		self:OnMapChanged();
 	end
@@ -111,6 +113,7 @@ do
 	end
 
 	local function OnPinMouseUp(pin, button, upInside)
+		pin:OnMouseUp(button);
 		if upInside then
 			pin:OnClick(button);
 		end
@@ -126,6 +129,7 @@ do
 
 		if pin:IsMouseClickEnabled() then
 			pin:SetScript("OnMouseUp", OnPinMouseUp);
+			pin:SetScript("OnMouseDown", pin.OnMouseDown);
 		end
 
 		if pin:IsMouseMotionEnabled() then
@@ -382,6 +386,15 @@ function MapCanvasMixin:RefreshDetailLayers()
 	self:AdjustDetailLayerAlpha();
 
 	self.areDetailLayersDirty = false;
+end
+
+function MapCanvasMixin:AreDetailLayersLoaded()
+	for detailLayer in self.detailLayerPool:EnumerateActive() do
+		if not detailLayer:IsFullyLoaded() then
+			return false;
+		end
+	end
+	return true;
 end
 
 function MapCanvasMixin:AdjustDetailLayerAlpha()
@@ -699,7 +712,6 @@ function MapCanvasMixin:ReapplyPinFrameLevels(pinFrameLevelType)
 end
 
 function MapCanvasMixin:NavigateToMap(mapID)
-	C_Map.SetMap(mapID);
 	self:SetMapID(mapID);
 	self:RefreshDetailLayers();
 end

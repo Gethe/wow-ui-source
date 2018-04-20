@@ -42,11 +42,7 @@ function WorldMapBountyBoardMixin:GetMapID()
 end
 
 function WorldMapBountyBoardMixin:NavigateToMap(mapID)
-	if self:GetParent().NavigateToMap then
-		self:GetParent():NavigateToMap(mapID);
-	else
-		C_Map.SetMap(mapID);
-	end
+	self:GetParent():NavigateToMap(mapID);
 end
 
 function WorldMapBountyBoardMixin:GetDisplayLocation()
@@ -429,9 +425,9 @@ function WorldMapBountyBoardMixin:InvalidateMapCache()
 	self.cachedMapInfo = nil;
 end
 
-function WorldMapBountyBoardMixin:CalculateNumActiveWorldQuestsForSelectedBountyByMap(areaMapID, parentAreaMapID)
+function WorldMapBountyBoardMixin:CalculateNumActiveWorldQuestsForSelectedBountyByMap(mapID)
 	local numQuests = 0;
-	local taskInfo = C_TaskQuest.GetQuestsForPlayerByMapID(areaMapID, parentAreaMapID);
+	local taskInfo = C_TaskQuest.GetQuestsForPlayerByMapID(mapID);
 	for i, info  in ipairs(taskInfo) do
 		if QuestUtils_IsQuestWorldQuest(info.questId) then
 			if self:IsWorldQuestCriteriaForSelectedBounty(info.questId) then

@@ -100,6 +100,10 @@ end
 
 function QuestBlobPinMixin:Refresh()
 	self:DrawNone();
+	if not GetCVarBool("questPOI") then
+		return;
+	end
+
 	if self.mapAllowsBlobs and self.questID > 0 and not IsQuestComplete(self.questID) then
 		self:DrawBlob(self.questID, true);
 	end

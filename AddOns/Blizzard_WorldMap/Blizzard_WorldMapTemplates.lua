@@ -85,7 +85,7 @@ function WorldMapTrackingOptionsButtonMixin:OnSelection(value, checked)
 	end
 
 	if (value == "quests") then
-		SetCVar("questPOI", checked and "1" or "0");
+		SetCVar("questPOI", checked and "1" or "0", "QUEST_POI");
 	elseif (value == "digsites") then
 		SetCVar("digSites", checked and "1" or "0");
 	elseif (value == "tamers") then
@@ -282,4 +282,23 @@ function WorldMapSidePanelToggleMixin:Refresh()
 		self.OpenButton:Show();
 		self.CloseButton:Hide();
 	end
+end
+
+WorldMapZoneTimerMixin = {};
+
+function WorldMapZoneTimerMixin:OnUpdate(elapsed)
+	local nextBattleTime = C_PvP.GetOutdoorPvPWaitTime(self:GetParent():GetMapID());
+	if nextBattleTime and not IsInInstance() then
+		local battleSec = nextBattleTime % 60;
+		local battleMin = math.floor(nextBattleTime / 60) % 60;
+		local battleHour = math.floor(nextBattleTime / 3600);
+		self.TimeLabel:SetFormattedText(NEXT_BATTLE, battleHour, battleMin, battleSec);
+		self.TimeLabel:Show();
+	else
+		self.TimeLabel:Hide();
+	end
+end
+
+function WorldMapZoneTimerMixin:Refresh()
+	-- nothing to do here
 end

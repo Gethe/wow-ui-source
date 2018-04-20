@@ -7,7 +7,7 @@ end
 
 UIWidgetManager:RegisterWidgetVisTypeTemplate(Enum.UIWidgetVisualizationType.IconAndText, {frameType = "FRAME", frameTemplate = "UIWidgetTemplateIconAndText"}, GetIconAndTextVisInfoData);
 
-UIWidgetTemplateIconAndTextMixin = {}
+UIWidgetTemplateIconAndTextMixin = CreateFromMixins(UIWidgetBaseTemplateMixin);
 
 local textureKitRegions = {
 	["Icon"] = "%s-icon",
@@ -30,6 +30,7 @@ function UIWidgetTemplateIconAndTextMixin:OnAcquired(widgetInfo)
 end
 
 function UIWidgetTemplateIconAndTextMixin:Setup(widgetInfo)
+	UIWidgetBaseTemplateMixin.Setup(self, widgetInfo);
 	SetupTextureKits(widgetInfo.textureKitID, self, textureKitRegions, true);
 
 	self.Text:SetText(widgetInfo.text);

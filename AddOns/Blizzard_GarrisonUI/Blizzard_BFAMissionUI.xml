@@ -28,6 +28,11 @@
 					<Anchor point="LEFT" relativeTo="$parentTab1" relativePoint="RIGHT" x="-16" y="0"/>
 				</Anchors>
 			</Button>
+			<Button parentKey="Tab3" name="$parentTab3" inherits="OrderHallFrameTabButtonTemplate" id="3" text="ADVENTURE_MAP_TITLE">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentTab2" relativePoint="RIGHT" x="-16" y="0"/>
+				</Anchors>
+			</Button>
 			<Frame parentKey="FollowerList" inherits="GarrisonListTemplateHeader" name="$parentFollowers" hidden="true" mixin="GarrisonFollowerList" frameStrata="HIGH">
 				<Size x="305" y="535"/>
 				<KeyValues>
@@ -66,6 +71,57 @@
 					<OnHide method="OnHide"/>
 					<OnEvent method="OnEvent"/>
 				</Scripts>
+			</Frame>
+			<Frame parentKey="MapTab" mixin="MapCanvasMixin, AdventureMapMixin, OrderHallMissionAdventureMapMixin" setAllPoints="true" useParentLevel="true">
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnUpdate method="OnUpdate"/>
+					<OnShow method="OnShow"/>
+					<OnEvent method="OnEvent"/>
+					<OnHide method="OnHide"/>
+					<OnMouseWheel function="nop" />
+				</Scripts>
+				<Frames>
+					<ScrollFrame parentKey="ScrollContainer" enableMouse="true" mixin="MapCanvasScrollControllerMixin" useParentLevel="true">
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.$parent.Left" relativePoint="RIGHT" x="-6" y="0"/>
+							<Anchor point="RIGHT" relativeKey="$parent.$parent.Right" relativePoint="LEFT" x="6" y="0"/>
+							<Anchor point="TOP" relativeKey="$parent.$parent.Top" relativePoint="BOTTOM" x="0" y="6"/>
+							<Anchor point="BOTTOM" relativeKey="$parent.$parent.Bottom" relativePoint="TOP" x="0" y="-7"/>
+						</Anchors>
+						<ScrollChild>
+							<Frame parentKey="Child" useParentLevel="true">
+								<Anchors>
+									<Anchor point="TOPLEFT"/>
+								</Anchors>
+								<Layers>
+									<Layer level="BACKGROUND" textureSubLevel="-8">
+										<Texture parentKey="TiledBackground" atlas="AdventureMap_TileBg" horizTile="true" vertTile="true">
+											<Anchors>
+												<Anchor point="CENTER"/>
+											</Anchors>
+										</Texture>
+									</Layer>
+									<Layer level="BACKGROUND" textureSubLevel="0">
+										<!-- For debugging -->
+										<Texture parentKey="ZoneArea" hidden="true">
+											<Size x="0" y="0"/>
+											<Color a="0.25" r="0" g="0" b="1"/>
+											<Anchors>
+												<Anchor point="TOPLEFT"/>
+											</Anchors>
+										</Texture>
+									</Layer>
+								</Layers>
+							</Frame>
+						</ScrollChild>
+						<Scripts>
+							<OnLoad method="OnLoad"/>
+							<OnHide method="OnHide"/>
+							<OnUpdate method="OnUpdate"/>
+						</Scripts>
+					</ScrollFrame>
+				</Frames>
 			</Frame>
 			<Frame parentKey="MissionTab" setAllPoints="true" useParentLevel="true">
 				<Frames>

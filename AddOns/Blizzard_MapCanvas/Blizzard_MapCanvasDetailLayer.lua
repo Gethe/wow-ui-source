@@ -3,6 +3,7 @@ MapCanvasDetailLayerMixin = {};
 
 function MapCanvasDetailLayerMixin:OnLoad()
 	self.detailTilePool = CreateTexturePool(self, "BACKGROUND", -7, "MapCanvasDetailTileTemplate");
+	self.textureLoadGroup = CreateFromMixins(TextureLoadingGroupMixin);
 end
 
 function MapCanvasDetailLayerMixin:SetMapAndLayer(mapID, layerIndex)
@@ -18,8 +19,26 @@ function MapCanvasDetailLayerMixin:GetLayerIndex()
 	return self.layerIndex;
 end
 
+function MapCanvasDetailLayerMixin:IsFullyLoaded()
+	return not self.isWaitingForLoad;
+end
+
+function MapCanvasDetailLayerMixin:SetLayerAlpha(layerAlpha)
+	self.layerAlpha = layerAlpha;
+	if self:IsFullyLoaded() then
+		self:SetAlpha(self:GetLayerAlpha());
+	end
+end
+
+function MapCanvasDetailLayerMixin:GetLayerAlpha()
+	return self.layerAlpha or 1;
+end
+
 function MapCanvasDetailLayerMixin:RefreshDetailTiles()
 	self.detailTilePool:ReleaseAll();
+	self.textureLoadGroup:Reset();
+	self:SetAlpha(0);
+	self.isWaitingForLoad = true;
 
 	local layers = C_Map.GetMapArtLayers(self.mapID);
 	local layerInfo = layers[self.layerIndex];
@@ -30,6 +49,7 @@ function MapCanvasDetailLayerMixin:RefreshDetailTiles()
 	for tileCol = 1, numDetailTilesCols do
 		for tileRow = 1, numDetailTilesRows do
 			local detailTile = self.detailTilePool:Acquire();
+			self.textureLoadGroup:AddTexture(detailTile);
 			local textureIndex = (tileRow - 1) * numDetailTilesCols + tileCol;
 			detailTile:SetTexture(textures[textureIndex]);
 
@@ -41,5 +61,13 @@ function MapCanvasDetailLayerMixin:RefreshDetailTiles()
 			detailTile:SetDrawLayer("BACKGROUND", -8 + self.layerIndex);
 			detailTile:Show();
 		end
+	end
+end
+
+function MapCanvasDetailLayerMixin:OnUpdate()
+	if self.isWaitingForLoad and self.textureLoadGroup:IsFullyLoaded() then
+		self:SetAlpha(self:GetLayerAlpha());
+		self.isWaitingForLoad = nil;
+		self.textureLoadGroup:Reset();
 	end
 end

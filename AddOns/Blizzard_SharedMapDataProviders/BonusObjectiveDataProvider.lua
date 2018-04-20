@@ -27,7 +27,7 @@ function BonusObjectiveDataProviderMixin:RefreshAllData(fromOnShow)
 	end
 
 	local mapID = self:GetMap():GetMapID();
-	local taskInfo = C_TaskQuest.GetQuestsForPlayerByMapID(mapID, mapID);
+	local taskInfo = C_TaskQuest.GetQuestsForPlayerByMapID(mapID);
 
 	if taskInfo and #taskInfo > 0 then
 		for i, info in ipairs(taskInfo) do

@@ -7,7 +7,7 @@ end
 
 UIWidgetManager:RegisterWidgetVisTypeTemplate(Enum.UIWidgetVisualizationType.CaptureBar, {frameType = "FRAME", frameTemplate = "UIWidgetTemplateCaptureBar"}, GetCaptureBarVisInfoData);
 
-UIWidgetTemplateCaptureBarMixin = {}
+UIWidgetTemplateCaptureBarMixin = CreateFromMixins(UIWidgetBaseTemplateMixin);
 
 local PVPTextureKitRegions = {
 	["BarBackground"] = "%s-frame-factions",
@@ -28,6 +28,7 @@ local FULL_BAR_SIZE = 124;
 local MIDDLE_BAR_SIZE = 121;
 
 function UIWidgetTemplateCaptureBarMixin:Setup(widgetInfo)
+	UIWidgetBaseTemplateMixin.Setup(self, widgetInfo);
 	local halfNeutralPercent = widgetInfo.neutralPercent / 2;
 
 	local position = LEFT_BAR_OFFSET + FULL_BAR_SIZE * (1 - widgetInfo.barPercent);

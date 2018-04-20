@@ -121,7 +121,7 @@ function AreaLabelFrameMixin:OnUpdate()
 				end
 			end
 		else
-			name = C_Map.GetMapOverlayNameAtPosition(normalizedCursorX, normalizedCursorY);
+			name = MapUtil.FindBestAreaNameAtMouse(mapID, normalizedCursorX, normalizedCursorY);
 		end
 		if name then
 			self:SetLabel(MAP_AREA_LABEL_TYPE.AREA_NAME, name, description);

@@ -1,5 +1,27 @@
 
+local COMMUNITIES_INVITATION_FRAME_EVENTS = {
+	"CLUB_MEMBER_UPDATED",
+};
+
 CommunitiesInvitationFrameMixin = {};
+
+function CommunitiesInvitationFrameMixin:OnShow()
+	FrameUtil.RegisterFrameForEvents(self, COMMUNITIES_INVITATION_FRAME_EVENTS);
+end
+
+function CommunitiesInvitationFrameMixin:OnHide()
+	FrameUtil.UnregisterFrameForEvents(self, COMMUNITIES_INVITATION_FRAME_EVENTS);
+end
+
+function CommunitiesInvitationFrameMixin:OnEvent(event, ...)
+	if event == "CLUB_MEMBER_UPDATED" then
+		local clubId, memberId = ...;
+		if clubId == self.clubId then
+			local invitationInfo = C_Club.GetInvitationInfo(self.clubId);
+			self:DisplayInvitation(invitationInfo);
+		end
+	end
+end
 
 function CommunitiesInvitationFrameMixin:GetCommunitiesFrame()
 	return self:GetParent();
@@ -25,9 +47,18 @@ function CommunitiesInvitationFrameMixin:DisplayInvitation(invitationInfo)
 		self.Description:SetText("");
 	end
 	
+	local leadersText = "";
+	for i, leader in ipairs(invitationInfo.leaders) do
+		leadersText = leadersText..leader.name;
+		if i ~= #invitationInfo.leaders then
+			leadersText = leadersText..PLAYER_LIST_DELIMITER;
+		end
+	end
+
+	self.Leader:SetText(COMMUNITIES_INVIVATION_FRAME_LEADER_FORMAT:format(leadersText));
+	
 	-- TODO:: Discuss if we want this and add proper accessors if we do.
 	self.MemberCount:SetText(COMMUNITIES_INVITATION_FRAME_MEMBER_COUNT:format(clubInfo.memberCount or 1));
-	self.Leader:SetText(COMMUNITIES_INVIVATION_FRAME_LEADER_FORMAT:format(clubInfo.leader or "Leaderguy"));
 end
 
 function CommunitiesInvitationFrameMixin:AcceptInvitation()
@@ -47,4 +78,10 @@ end
 function CommunitiesInviteButton_OnClick(self)
 	local communitiesFrame = self:GetParent();
 	StaticPopup_Show("INVITE_COMMUNITY_MEMBER", nil, nil, communitiesFrame:GetSelectedClubId());
+end
+
+function CommunitiesInvitebutton_OnHide(self)
+	if StaticPopup_Visible("INVITE_COMMUNITY_MEMBER") then
+		StaticPopup_Hide("INVITE_COMMUNITY_MEMBER");
+	end
 end

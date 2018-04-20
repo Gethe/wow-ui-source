@@ -54,6 +54,9 @@
 							messageFrame.ScrollBar:SetValue(messageFrame:GetNumMessages() - offset);
 						end);
 					</OnLoad>
+					<OnHyperlinkClick>
+						SetItemRef(link, text, button, self);
+					</OnHyperlinkClick>
 					<OnMouseWheel>
 						self:ScrollByAmount(delta);
 					</OnMouseWheel>

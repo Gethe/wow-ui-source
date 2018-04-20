@@ -122,7 +122,7 @@ function GameTooltip_AddQuestRewardsToTooltip(tooltip, questID, style)
 			hasAnySingleLineRewards = true;
 		end
 		-- currency
-		local numAddedQuestCurrencies = QuestUtils_AddQuestCurrencyRewardsToTooltip(questID, tooltip);
+		local numAddedQuestCurrencies = QuestUtils_AddQuestCurrencyRewardsToTooltip(questID, tooltip, tooltip.ItemTooltip);
 		if ( numAddedQuestCurrencies > 0 ) then
 			hasAnySingleLineRewards = true;
 		end

@@ -6,6 +6,20 @@ local KeyBindings =
 
 	Functions =
 	{
+		{
+			Name = "GetCustomBindingType",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "bindingIndex", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "customBindingType", Type = "CustomBindingType", Nilable = true },
+			},
+		},
 	},
 
 	Events =
@@ -29,6 +43,17 @@ local KeyBindings =
 
 	Tables =
 	{
+		{
+			Name = "CustomBindingType",
+			Type = "Enumeration",
+			NumValues = 1,
+			MinValue = 0,
+			MaxValue = 0,
+			Fields =
+			{
+				{ Name = "VoicePushToTalk", Type = "CustomBindingType", EnumValue = 0 },
+			},
+		},
 	},
 };
 

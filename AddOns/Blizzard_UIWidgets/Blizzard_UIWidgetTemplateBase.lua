@@ -26,8 +26,17 @@ end
 
 UIWidgetBaseTemplateMixin = {}
 
-function UIWidgetBaseTemplateMixin:BaseSetup(widgetInfo)
+function UIWidgetBaseTemplateMixin:OnLoad()
+end
+
+function UIWidgetBaseTemplateMixin:Setup(widgetInfo)
 	self.orderIndex = widgetInfo.orderIndex;
 	self.widgetTag = widgetInfo.widgetTag;
 	self:Show();
+end
+
+-- Override with any custom behaviour that you need to perform when this widget is destroyed (e.g. release pools)
+function UIWidgetBaseTemplateMixin:OnReset()
+	self:Hide();
+	self:ClearAllPoints();
 end

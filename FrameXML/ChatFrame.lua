@@ -349,7 +349,7 @@ function Chat_GetCommunitiesChannelColor(clubId, streamId)
 		end
 	end
 
-	return DEFAULT_CHAT_CHANNEL_COLOR:GetRGB();
+	return nil;
 end
 
 -- list of text emotes that we want to show on the Emote submenu (these have anims)
@@ -4042,6 +4042,7 @@ function ChatEdit_InsertLink(text)
 	end
 	if ( CommunitiesFrame and CommunitiesFrame.ChatEditBox:HasFocus() ) then
 		CommunitiesFrame.ChatEditBox:Insert(text);
+		return true;
 	end
 	return false;
 end

@@ -72,6 +72,22 @@ local Unit =
 			},
 		},
 		{
+			Name = "UnitClassByPlayerLocation",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "playerLocation", Type = "table", Mixin = "PlayerLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "className", Type = "string", Nilable = false },
+				{ Name = "classFilename", Type = "string", Nilable = false },
+				{ Name = "classID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "UnitIsConnected",
 			Type = "Function",
 
