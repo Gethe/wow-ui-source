@@ -73,9 +73,11 @@ function FramePainter.AddBackground(frame, texturePath)
     end
 end
 
-function FramePainter.NewCheckBox(anchor1, parent, anchor2, contents, left, up, r, g, b)
+function FramePainter.NewCheckBox(anchor1, parent, anchor2, contents, left, up, r, g, b, isFree)
     local newCheckBox = CreateFrame("CheckButton", nil, parent, "UICheckButtonTemplate")
-    newCheckBox:SetPoint(anchor1, parent, anchor2, left or 0, (up or 0) - 12)
+    if (not isFree) then
+        newCheckBox:SetPoint(anchor1, parent, anchor2, left or 0, (up or 0) - 12)
+    end
     newCheckBox.text = newCheckBox:CreateFontString(nil, "OVERLAY", "GameTooltipText")
     newCheckBox.text:SetPoint("BOTTOM", newCheckBox, "TOP", 0, 0)
     newCheckBox.text:SetJustifyH("CENTER")
