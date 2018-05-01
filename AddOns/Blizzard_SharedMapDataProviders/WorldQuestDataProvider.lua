@@ -12,9 +12,86 @@ function WorldQuestDataProviderMixin:IsMatchingWorldMapFilters()
 	return not not self.matchWorldMapFilters;
 end
 
+function WorldQuestDataProviderMixin:SetUsesSpellEffect(usesSpellEffect)
+	local usedSpellEffect = self:IsUsingSpellEffect();
+	self.usesSpellEffect = usesSpellEffect;
+	if usedSpellEffect ~= usesSpellEffect then
+		self:EvaluateSpellEffectPin();
+	end
+end
+
+function WorldQuestDataProviderMixin:IsUsingSpellEffect()
+	return not not self.usesSpellEffect;
+end
+
+function WorldQuestDataProviderMixin:EvaluateSpellEffectPin()
+	if not self:GetMap() then
+		return;
+	end
+
+	if self:IsUsingSpellEffect() then
+		if not self.spellEffectPin then
+			-- a single permanent pin because we don't know the lifetime of the visual
+			self.spellEffectPin = self:GetMap():AcquirePin("WorldQuestSpellEffectPinTemplate");
+			self.spellEffectPin.dataProvider = self;
+		end
+	else
+		if self.spellEffectPin then
+			self:GetMap():RemoveAllPinsByTemplate("WorldQuestSpellEffectPinTemplate");
+			self.spellEffectPin = nil;
+		end
+	end
+end
+
+function WorldQuestDataProviderMixin:HandleClick(pin)
+	return self.spellEffectPin and self.spellEffectPin:TryCastSpell(pin.questID);
+end
+
+function WorldQuestDataProviderMixin:SetCheckBounties(checkBounties)
+	local checkedBounties = self:IsCheckingBounties();
+	self.checkBounties = checkBounties;
+	if checkedBounties ~= checkBounties then
+		self:EvaluateCheckBounties();
+		self:SetBountyQuestID(nil);
+	end
+end
+
+function WorldQuestDataProviderMixin:IsCheckingBounties()
+	return not not self.checkBounties;
+end
+
+function WorldQuestDataProviderMixin:EvaluateCheckBounties()
+	if not self:GetMap() then
+		return;
+	end
+
+	if self:IsCheckingBounties() then
+		if not self.setBountyQuestIDCallback then
+			self.setBountyQuestIDCallback = function(event, ...) self:SetBountyQuestID(...); end;
+		end
+		self:GetMap():RegisterCallback("SetBountyQuestID", self.setBountyQuestIDCallback);
+	else
+		self:GetMap():UnregisterCallback("SetBountyQuestID", self.setBountyQuestIDCallback);
+	end
+end
+
+function WorldQuestDataProviderMixin:SetMarkActiveQuests(markActiveQuests)
+	self.markActiveQuests = markActiveQuests;
+	if self:GetMap() then
+		self:RefreshAllData();
+	end
+end
+
+function WorldQuestDataProviderMixin:IsMarkingActiveQuests()
+	return not not self.markActiveQuests;
+end
+
 function WorldQuestDataProviderMixin:OnAdded(mapCanvas)
 	self.activePins = {};
+	self.suppressedQuests = {};
 	MapCanvasDataProviderMixin.OnAdded(self, mapCanvas);
+
+	self:GetMap():SetPinTemplateType("WorldQuestSpellEffectPinTemplate", "CinematicModel");
 
 	self:RegisterEvent("SUPER_TRACKED_QUEST_CHANGED");
 
@@ -24,9 +101,16 @@ function WorldQuestDataProviderMixin:OnAdded(mapCanvas)
 	if not self.clearFocusedQuestIDCallback then
 		self.clearFocusedQuestIDCallback = function(event, ...) self:ClearFocusedQuestID(...); end;
 	end
-	
+	if not self.setBountyQuestIDCallback then
+		self.setBountyQuestIDCallback = function(event, ...) self:SetBountyQuestID(...); end;
+	end
+
 	self:GetMap():RegisterCallback("SetFocusedQuestID", self.setFocusedQuestIDCallback);
 	self:GetMap():RegisterCallback("ClearFocusedQuestID", self.clearFocusedQuestIDCallback);
+	self:GetMap():RegisterCallback("SetBountyQuestID", self.setBountyQuestIDCallback);
+
+	self:EvaluateSpellEffectPin();
+	self:EvaluateCheckBounties();
 end
 
 function WorldQuestDataProviderMixin:OnRemoved(mapCanvas)
@@ -34,6 +118,7 @@ function WorldQuestDataProviderMixin:OnRemoved(mapCanvas)
 
 	self:GetMap():UnregisterCallback("SetFocusedQuestID", self.setFocusedQuestIDCallback);
 	self:GetMap():UnregisterCallback("ClearFocusedQuestID", self.clearFocusedQuestIDCallback);
+	self:GetMap():UnregisterCallback("SetBountyQuestID", self.setBountyQuestIDCallback);
 end
 
 function WorldQuestDataProviderMixin:SetFocusedQuestID(questID)
@@ -46,8 +131,22 @@ function WorldQuestDataProviderMixin:ClearFocusedQuestID(questID)
 	self:RefreshAllData();
 end
 
+function WorldQuestDataProviderMixin:SetBountyQuestID(questID)
+	local changed = self.bountyQuestID ~= questID;
+	if changed then
+		self.bountyQuestID = questID;
+		if self:GetMap() then
+			self:RefreshAllData();
+		end
+	end
+end
+
+function WorldQuestDataProviderMixin:GetBountyQuestID()
+	return self.bountyQuestID;
+end
+
 function WorldQuestDataProviderMixin:OnEvent(event, ...)
-	if event == "SUPER_TRACKED_QUEST_CHANGED" then
+	if event == "SUPER_TRACKED_QUEST_CHANGED" or event == "QUEST_LOG_UPDATE" then
 		self:RefreshAllData();
 	end
 end
@@ -60,11 +159,13 @@ end
 function WorldQuestDataProviderMixin:OnShow()
 	assert(self.ticker == nil);
 	self.ticker = C_Timer.NewTicker(0.5, function() self:RefreshAllData() end);
+	self:RegisterEvent("QUEST_LOG_UPDATE");
 end
 
 function WorldQuestDataProviderMixin:OnHide()
 	self.ticker:Cancel();
 	self.ticker = nil;
+	self:UnregisterEvent("QUEST_LOG_UPDATE");
 end
 
 function WorldQuestDataProviderMixin:DoesWorldQuestInfoPassFilters(info)
@@ -113,7 +214,7 @@ function WorldQuestDataProviderMixin:RefreshAllData(fromOnShow)
 end
 
 function WorldQuestDataProviderMixin:ShouldShowQuest(info)
-	return not self.focusedQuestID;
+	return not self.focusedQuestID and not self:IsQuestSuppressed(info.questId);
 end
 
 function WorldQuestDataProviderMixin:GetPinTemplate()
@@ -123,6 +224,7 @@ end
 function WorldQuestDataProviderMixin:AddWorldQuest(info)
 	local pin = self:GetMap():AcquirePin(self:GetPinTemplate());
 	pin.questID = info.questId;
+	pin.dataProvider = self;
 
 	pin.worldQuest = true;
 	pin.numObjectives = info.numObjectives;
@@ -130,6 +232,8 @@ function WorldQuestDataProviderMixin:AddWorldQuest(info)
 
 	local tagID, tagName, worldQuestType, rarity, isElite, tradeskillLineIndex, displayTimeLeft = GetQuestTagInfo(info.questId);
 	local tradeskillLineID = tradeskillLineIndex and select(7, GetProfessionInfo(tradeskillLineIndex));
+
+	pin.worldQuestType = worldQuestType;
 
 	if rarity ~= LE_WORLD_QUEST_QUALITY_COMMON then
 		pin.Background:SetTexCoord(0, 1, 0, 1);
@@ -175,34 +279,6 @@ function WorldQuestDataProviderMixin:AddWorldQuest(info)
 		pin.Underlay:Hide();
 	end
 
-	if worldQuestType == LE_QUEST_TAG_TYPE_PVP then
-		local _, width, height = GetAtlasInfo("worldquest-icon-pvp-ffa");
-		pin.Texture:SetAtlas("worldquest-icon-pvp-ffa");
-		pin.Texture:SetSize(width * 2, height * 2);
-	elseif worldQuestType == LE_QUEST_TAG_TYPE_PET_BATTLE then
-		pin.Texture:SetAtlas("worldquest-icon-petbattle");
-		pin.Texture:SetSize(26, 22);
-	elseif worldQuestType == LE_QUEST_TAG_TYPE_PROFESSION and WORLD_QUEST_ICONS_BY_PROFESSION[tradeskillLineID] then
-		local _, width, height = GetAtlasInfo(WORLD_QUEST_ICONS_BY_PROFESSION[tradeskillLineID]);
-		pin.Texture:SetAtlas(WORLD_QUEST_ICONS_BY_PROFESSION[tradeskillLineID]);
-		pin.Texture:SetSize(width * 2, height * 2);
-	elseif worldQuestType == LE_QUEST_TAG_TYPE_DUNGEON then
-		local _, width, height = GetAtlasInfo("worldquest-icon-dungeon");
-		pin.Texture:SetAtlas("worldquest-icon-dungeon");
-		pin.Texture:SetSize(width * 2, height * 2);
-	elseif worldQuestType == LE_QUEST_TAG_TYPE_RAID then
-		local _, width, height = GetAtlasInfo("worldquest-icon-raid");
-		pin.Texture:SetAtlas("worldquest-icon-raid");
-		pin.Texture:SetSize(width * 2, height * 2);
-	elseif worldQuestType == LE_QUEST_TAG_TYPE_INVASION then
-		local _, width, height = GetAtlasInfo("worldquest-icon-burninglegion");
-		pin.Texture:SetAtlas("worldquest-icon-burninglegion");
-		pin.Texture:SetSize(width * 2, height * 2);
-	else
-		pin.Texture:SetAtlas("worldquest-questmarker-questbang");
-		pin.Texture:SetSize(12, 30);
-	end
-
 	local timeLeftMinutes = C_TaskQuest.GetQuestTimeLeftMinutes(info.questId);
 	if timeLeftMinutes and timeLeftMinutes <= WORLD_QUESTS_TIME_LOW_MINUTES then
 		pin.TimeLowFrame:Show();
@@ -215,6 +291,24 @@ function WorldQuestDataProviderMixin:AddWorldQuest(info)
 	C_TaskQuest.RequestPreloadRewardData(info.questId);
 
 	return pin;
+end
+
+function WorldQuestDataProviderMixin:SuppressQuest(questID)
+	self.suppressedQuests[questID] = GetTime();
+	self:RefreshAllData();
+end
+
+local WORLD_QUEST_SUPPRESSION_TIME_SECS = 60.0;
+
+function WorldQuestDataProviderMixin:IsQuestSuppressed(questID)
+	local lastSuppressedTime = self.suppressedQuests[questID];
+	if lastSuppressedTime then
+		if GetTime() - lastSuppressedTime < WORLD_QUEST_SUPPRESSION_TIME_SECS then
+			return true;
+		end
+		self.suppressedQuests[questID] = nil;
+	end
+	return false;
 end
 
 --[[ World Quest Pin ]]--
@@ -239,6 +333,40 @@ function WorldQuestPinMixin:RefreshVisuals()
 			self.PushedBackground:SetTexCoord(0.750, 0.875, 0.375, 0.5);
 		end
 	end
+
+	local bountyQuestID = self.dataProvider:GetBountyQuestID();
+	self.BountyRing:SetShown(bountyQuestID and IsQuestCriteriaForBounty(self.questID, bountyQuestID));
+
+	if self.dataProvider:IsMarkingActiveQuests() and C_QuestLog.IsOnQuest(self.questID) then
+		self.Texture:SetAtlas("worldquest-questmarker-questionmark");
+		self.Texture:SetSize(20, 30);
+	elseif self.worldQuestType == LE_QUEST_TAG_TYPE_PVP then
+		local _, width, height = GetAtlasInfo("worldquest-icon-pvp-ffa");
+		self.Texture:SetAtlas("worldquest-icon-pvp-ffa");
+		self.Texture:SetSize(width * 2, height * 2);
+	elseif self.worldQuestType == LE_QUEST_TAG_TYPE_PET_BATTLE then
+		self.Texture:SetAtlas("worldquest-icon-petbattle");
+		self.Texture:SetSize(26, 22);
+	elseif self.worldQuestType == LE_QUEST_TAG_TYPE_PROFESSION and WORLD_QUEST_ICONS_BY_PROFESSION[tradeskillLineID] then
+		local _, width, height = GetAtlasInfo(WORLD_QUEST_ICONS_BY_PROFESSION[tradeskillLineID]);
+		self.Texture:SetAtlas(WORLD_QUEST_ICONS_BY_PROFESSION[tradeskillLineID]);
+		self.Texture:SetSize(width * 2, height * 2);
+	elseif self.worldQuestType == LE_QUEST_TAG_TYPE_DUNGEON then
+		local _, width, height = GetAtlasInfo("worldquest-icon-dungeon");
+		self.Texture:SetAtlas("worldquest-icon-dungeon");
+		self.Texture:SetSize(width * 2, height * 2);
+	elseif self.worldQuestType == LE_QUEST_TAG_TYPE_RAID then
+		local _, width, height = GetAtlasInfo("worldquest-icon-raid");
+		self.Texture:SetAtlas("worldquest-icon-raid");
+		self.Texture:SetSize(width * 2, height * 2);
+	elseif self.worldQuestType == LE_QUEST_TAG_TYPE_INVASION then
+		local _, width, height = GetAtlasInfo("worldquest-icon-burninglegion");
+		self.Texture:SetAtlas("worldquest-icon-burninglegion");
+		self.Texture:SetSize(width * 2, height * 2);
+	else
+		self.Texture:SetAtlas("worldquest-questmarker-questbang");
+		self.Texture:SetSize(12, 30);
+	end	
 end
 
 function WorldQuestPinMixin:OnMouseEnter()
@@ -254,7 +382,25 @@ function WorldQuestPinMixin:OnMouseLeave()
 end
 
 function WorldQuestPinMixin:OnClick(button)
-	TaskPOI_OnClick(self, button);
+	if not self.dataProvider:HandleClick(self) then
+		if ( not ChatEdit_TryInsertQuestLinkForQuestID(self.questID) ) then
+			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+
+			if IsShiftKeyDown() then
+				if IsWorldQuestHardWatched(self.questID) or (IsWorldQuestWatched(self.questID) and GetSuperTrackedQuestID() == self.questID) then
+					BonusObjectiveTracker_UntrackWorldQuest(self.questID);
+				else
+					BonusObjectiveTracker_TrackWorldQuest(self.questID, true);
+				end
+			else
+				if IsWorldQuestHardWatched(self.questID) then
+					SetSuperTrackedQuestID(self.questID);
+				else
+					BonusObjectiveTracker_TrackWorldQuest(self.questID);
+				end
+			end
+		end
+	end
 end
 
 function WorldQuestPinMixin:OnMouseDown()
@@ -267,4 +413,41 @@ function WorldQuestPinMixin:OnMouseUp()
 	self.Background:Show();
 	self.PushedBackground:Hide();
 	self.Texture:SetPoint("CENTER", 0, 0);
+end
+
+--[[ World Quest Spell Effect Pin ]]--
+WorldQuestSpellEffectPinMixin = CreateFromMixins(MapCanvasPinMixin);
+
+function WorldQuestSpellEffectPinMixin:OnLoad()
+	self:SetDisplayInfo(11686); 	-- 11686 is invisible stalker
+	self:UseFrameLevelType("PIN_FRAME_LEVEL_TOPMOST");
+end
+
+function WorldQuestSpellEffectPinMixin:TryCastSpell(questID)
+	if SpellCanTargetQuest() then
+		if IsQuestIDValidSpellTarget(questID) then
+			self:CastSpell(questID);
+		else
+			UIErrorsFrame:AddMessage(WORLD_QUEST_CANT_COMPLETE_BY_SPELL, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
+		end
+		return true;
+	end
+	return false;
+end
+
+function WorldQuestSpellEffectPinMixin:CastSpell(questID)
+	UseWorldMapActionButtonSpellOnQuest(questID);
+	-- Assume success for responsiveness
+	local mapID = self:GetMap():GetMapID();
+	local x, y = C_TaskQuest.GetQuestLocation(questID, mapID);
+	if x and y then
+		self.dataProvider:SuppressQuest(questID);
+		local spellID, spellVisualKitID = GetWorldMapActionButtonSpellInfo();
+		if spellVisualKitID then
+			self:SetPosition(x, y);
+			self:SetCameraTarget(0, 0, 0);
+			self:SetCameraPosition(0, 0, 25);
+			self:SetSpellVisualKit(spellVisualKitID);
+		end
+	end	
 end

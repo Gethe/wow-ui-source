@@ -174,6 +174,17 @@
 					<OnHide function="CommunitiesMemberListDropDown_OnHide"/>
 				</Scripts>
 			</Frame>
+			<Frame parentKey="InsetFrame" frameLevel="100" inherits="InsetFrameTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="-2" y="3"/>
+					<Anchor point="BOTTOMRIGHT" x="-2" y="-3"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.Bg:Hide();
+					</OnLoad>
+				</Scripts>
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>

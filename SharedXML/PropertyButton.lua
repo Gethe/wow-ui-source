@@ -27,9 +27,7 @@ function PropertyButtonMixin:OnLoad()
 		self:SetPushedAtlas(self.pushedAtlas);
 	end
 
-	if self.highlightAtlas then
-		self:SetHighlightAtlas(self.highlightAtlas, "ADD");
-	end
+	self:UpdateHighlight();
 end
 
 function PropertyButtonMixin:AddStateAtlas(stateValue, atlas)
@@ -55,10 +53,63 @@ function PropertyButtonMixin:SetIconToState(state)
 	if self.Icon then
 		self.Icon:SetAtlas(self:GetStateAtlas(state));
 	end
+
+	self:UpdateHighlight(state);
+end
+
+function PropertyButtonMixin:UpdateHighlight(state)
+	-- If this wasn't already using a fixed highlight, potentially set up highlight from this icon
+	if self:HasHighlightAtlas() then
+		self:SetHighlight(self.highlightAtlas);
+	else
+		if self:IsUsingIconAsHighlight() then
+			self:SetHighlight(self:GetStateAtlas(state));
+			self:GetHighlightTexture():SetAlpha(.7); -- TODO: Drive from property on frame?  All icon highlights currently at 70%
+		else
+			self:ClearHighlight();
+		end
+	end
+
+	-- Highlight may not exist, see if this is actually required
+	if self.needsHighlightAnchorUpdate then
+		self.needsHighlightAnchorUpdate = nil;
+		local highlightTexture = self:GetHighlightTexture();
+		if highlightTexture then
+			highlightTexture:ClearAllPoints();
+			highlightTexture:SetAllPoints(self:IsUsingIconAsHighlight() and self.Icon or self);
+		end
+	end
+end
+
+function PropertyButtonMixin:SetHighlight(highlight)
+	if highlight then
+		self:SetHighlightAtlas(highlight, "ADD");
+	else
+		self:ClearHighlight();
+	end
+end
+
+function PropertyButtonMixin:ClearHighlight()
+	self:SetHighlightTexture(nil); -- TODO: Add consistent API for clearing a highlight
 end
 
 function PropertyButtonMixin:SetIconStateQueryFunction(iconStateQuery)
 	self.iconStateQuery = iconStateQuery;
+end
+
+function PropertyButtonMixin:SetUseIconAsHighlight(useIconAsHighlight)
+	if self.useIconAsHighlight ~= useIconAsHighlight then
+		self.useIconAsHighlight = useIconAsHighlight;
+		self.needsHighlightAnchorUpdate = true;
+	end
+end
+
+function PropertyButtonMixin:IsUsingIconAsHighlight()
+	return self.useIconAsHighlight;
+end
+
+function PropertyButtonMixin:HasHighlightAtlas()
+	return self.highlightAtlas ~= nil and self.highlightAtlas ~= "";
 end
 
 function PropertyButtonMixin:OnClick()

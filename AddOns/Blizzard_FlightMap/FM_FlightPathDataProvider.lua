@@ -17,8 +17,7 @@ function FlightMap_FlightPathDataProviderMixin:RefreshAllData(fromOnShow)
 
 	self:CalculateLineThickness();
 
-	local isForFlightMap = true;
-	local taxiNodes = GetAllTaxiNodes(nil, isForFlightMap);
+	local taxiNodes = C_TaxiMap.GetAllTaxiNodes();
 	for i, taxiNodeData in ipairs(taxiNodes) do
 		self:AddFlightNode(taxiNodeData);
 	end
@@ -65,7 +64,7 @@ function FlightMap_FlightPathDataProviderMixin:ShowBackgroundRoutesFromCurrent()
 	end
 
 	for slotIndex, pin in pairs(self.slotIndexToPin) do
-		if pin.taxiNodeData.type == LE_FLIGHT_PATH_TYPE_REACHABLE then
+		if pin.taxiNodeData.state == Enum.FlightPathState.Reachable then
 			for routeIndex = 1, 1 do
 				local sourceSlotIndex = TaxiGetNodeSlot(slotIndex, routeIndex, true);
 				local destinationSlotIndex = TaxiGetNodeSlot(slotIndex, routeIndex, false);
@@ -115,14 +114,14 @@ function FlightMap_FlightPathDataProviderMixin:AddFlightNode(taxiNodeData)
 	local pin = self:GetMap():AcquirePin("FlightMap_FlightPointPinTemplate");
 	self.slotIndexToPin[taxiNodeData.slotIndex] = pin;
 
-	pin:SetPosition(taxiNodeData.x, taxiNodeData.y);
+	pin:SetPosition(taxiNodeData.position:GetXY());
 	pin.taxiNodeData = taxiNodeData;
 	pin.owner = self;
 	pin.linkedPins = {};
-	pin:SetFlightPathStyle(taxiNodeData.textureKitPrefix, taxiNodeData.type);
+	pin:SetFlightPathStyle(taxiNodeData.textureKitPrefix, taxiNodeData.state);
 	
-	pin:UpdatePinSize(taxiNodeData.type);
-	pin:SetShown(taxiNodeData.type ~= LE_FLIGHT_PATH_TYPE_UNREACHABLE); -- Only show if part of a route, handled in the route building functions
+	pin:UpdatePinSize(taxiNodeData.state);
+	pin:SetShown(taxiNodeData.state ~= Enum.FlightPathState.Unreachable); -- Only show if part of a route, handled in the route building functions
 end
 
 function FlightMap_FlightPathDataProviderMixin:CalculateLineThickness()
@@ -174,9 +173,9 @@ function FlightMap_FlightPointPinMixin:OnMouseEnter()
 
 	GameTooltip:AddLine(self.taxiNodeData.name, nil, nil, nil, true);
 
-	if self.taxiNodeData.type == LE_FLIGHT_PATH_TYPE_CURRENT then
+	if self.taxiNodeData.state == Enum.FlightPathState.Current then
 		GameTooltip:AddLine(TAXINODEYOUAREHERE, 1.0, 1.0, 1.0, true);
-	elseif self.taxiNodeData.type == LE_FLIGHT_PATH_TYPE_REACHABLE then
+	elseif self.taxiNodeData.state == Enum.FlightPathState.Reachable then
 		local cost = TaxiNodeCost(self.taxiNodeData.slotIndex);
 		if cost > 0 then
 			SetTooltipMoney(GameTooltip, cost);
@@ -186,7 +185,7 @@ function FlightMap_FlightPointPinMixin:OnMouseEnter()
 		self.owner:RemoveRoute();
 		
 		self.owner:HighlightRouteToPin(self);
-	elseif self.taxiNodeData.type == LE_FLIGHT_PATH_TYPE_UNREACHABLE then
+	elseif self.taxiNodeData.state == Enum.FlightPathState.Unreachable then
 		GameTooltip:AddLine(TAXI_PATH_UNREACHABLE, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
 	end
 
@@ -194,7 +193,7 @@ function FlightMap_FlightPointPinMixin:OnMouseEnter()
 end
 
 function FlightMap_FlightPointPinMixin:OnMouseLeave()
-	if self.taxiNodeData.type == LE_FLIGHT_PATH_TYPE_REACHABLE then
+	if self.taxiNodeData.state == Enum.FlightPathState.Reachable then
 		self.Icon:SetAtlas(self.atlasFormat:format("Taxi_Frame_Gray"));
 	end
 	GameTooltip_Hide();
@@ -205,11 +204,11 @@ function FlightMap_FlightPointPinMixin:UpdatePinSize(pinType)
 		self:SetSize(39, 42);
 	elseif self.textureKitPrefix == "FlightMaster_Argus" then
 		self:SetSize(34, 28);
-	elseif pinType == LE_FLIGHT_PATH_TYPE_CURRENT then
+	elseif pinType == Enum.FlightPathState.Current then
 		self:SetSize(28, 28);
-	elseif pinType == LE_FLIGHT_PATH_TYPE_REACHABLE then
+	elseif pinType == Enum.FlightPathState.Reachable then
 		self:SetSize(20, 20);
-	elseif pinType == LE_FLIGHT_PATH_TYPE_UNREACHABLE then
+	elseif pinType == Enum.FlightPathState.Unreachable then
 		self:SetSize(14, 14);
 	end
 end
@@ -232,13 +231,13 @@ function FlightMap_FlightPointPinMixin:SetFlightPathStyle(textureKitPrefix, taxi
 		self.atlasFormat = "%s";
 	end
 
-	if taxiNodeType == LE_FLIGHT_PATH_TYPE_CURRENT then
+	if taxiNodeType == Enum.FlightPathState.Current then
 		self.Icon:SetAtlas(self.atlasFormat:format("Taxi_Frame_Green"));
 		self.IconHighlight:SetAtlas(self.atlasFormat:format("Taxi_Frame_Gray"));
-	elseif taxiNodeType == LE_FLIGHT_PATH_TYPE_REACHABLE then
+	elseif taxiNodeType == Enum.FlightPathState.Reachable then
 		self.Icon:SetAtlas(self.atlasFormat:format("Taxi_Frame_Gray"));
 		self.IconHighlight:SetAtlas(self.atlasFormat:format("Taxi_Frame_Gray"));
-	elseif taxiNodeType == LE_FLIGHT_PATH_TYPE_UNREACHABLE then
+	elseif taxiNodeType == Enum.FlightPathState.Unreachable then
 		self.Icon:SetAtlas(self.atlasFormat:format("UI-Taxi-Icon-Nub"));
 		self.IconHighlight:SetAtlas(self.atlasFormat:format("UI-Taxi-Icon-Nub"));
 	end

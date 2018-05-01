@@ -124,7 +124,7 @@ function AzeriteEmpoweredItemPowerMixin:OnEnter()
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 		local itemID = item:GetItemID();
 		local itemLevel = item:GetCurrentItemLevel();
-		GameTooltip:SetAzeritePowerBySpellID(itemID, itemLevel, self:GetSpellID());
+		GameTooltip:SetAzeritePower(itemID, itemLevel, self:GetAzeritePowerID());
 		self.UpdateTooltip = self.OnEnter;
 	end);
 end

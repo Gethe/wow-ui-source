@@ -272,6 +272,20 @@ local Club =
 			},
 		},
 		{
+			Name = "GetClubStreamNotificationSettings",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "clubId", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "settings", Type = "table", InnerType = "ClubStreamNotificationSetting", Nilable = false },
+			},
+		},
+		{
 			Name = "GetInvitationCandidates",
 			Type = "Function",
 			Documentation = { "Returns a list of players that you can send a request to a Battle.net club. Returns an empty list for Character based clubs" },
@@ -437,7 +451,7 @@ local Club =
 
 			Returns =
 			{
-				{ Name = "lastReadTime", Type = "number", Nilable = true, Documentation = { "nil is returned if stream view is at current" } },
+				{ Name = "lastReadTime", Type = "number", Nilable = true, Documentation = { "nil if stream view is at current" } },
 			},
 		},
 		{
@@ -660,6 +674,16 @@ local Club =
 			Arguments =
 			{
 				{ Name = "clubId", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "SetClubStreamNotificationSettings",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "clubId", Type = "string", Nilable = false },
+				{ Name = "settings", Type = "table", InnerType = "ClubStreamNotificationSetting", Nilable = false },
 			},
 		},
 		{
@@ -924,6 +948,17 @@ local Club =
 				{ Name = "clubId", Type = "string", Nilable = false },
 			},
 		},
+		{
+			Name = "StreamViewMarkerUpdated",
+			Type = "Event",
+			LiteralName = "STREAM_VIEW_MARKER_UPDATED",
+			Payload =
+			{
+				{ Name = "clubId", Type = "string", Nilable = false },
+				{ Name = "streamId", Type = "string", Nilable = false },
+				{ Name = "lastReadTime", Type = "number", Nilable = true, Documentation = { "nil if stream view is at current" } },
+			},
+		},
 	},
 
 	Tables =
@@ -984,6 +1019,19 @@ local Club =
 			},
 		},
 		{
+			Name = "ClubStreamNotificationFilter",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "None", Type = "ClubStreamNotificationFilter", EnumValue = 0 },
+				{ Name = "Mention", Type = "ClubStreamNotificationFilter", EnumValue = 1 },
+				{ Name = "All", Type = "ClubStreamNotificationFilter", EnumValue = 2 },
+			},
+		},
+		{
 			Name = "ClubInfo",
 			Type = "Structure",
 			Fields =
@@ -1005,7 +1053,7 @@ local Club =
 			{
 				{ Name = "isSelf", Type = "bool", Nilable = false },
 				{ Name = "memberId", Type = "number", Nilable = false },
-				{ Name = "name", Type = "string", Nilable = false, Documentation = { "name may be encoded as a Kstring" } },
+				{ Name = "name", Type = "string", Nilable = true, Documentation = { "name may be encoded as a Kstring" } },
 				{ Name = "role", Type = "ClubRoleIdentifier", Nilable = true },
 				{ Name = "presence", Type = "ClubMemberPresence", Nilable = false },
 				{ Name = "memberNote", Type = "string", Nilable = true },
@@ -1135,6 +1183,15 @@ local Club =
 				{ Name = "subject", Type = "string", Nilable = false },
 				{ Name = "leadersAndModeratorsOnly", Type = "bool", Nilable = false },
 				{ Name = "creationTime", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "ClubStreamNotificationSetting",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "streamId", Type = "string", Nilable = false },
+				{ Name = "filter", Type = "ClubStreamNotificationFilter", Nilable = false },
 			},
 		},
 		{

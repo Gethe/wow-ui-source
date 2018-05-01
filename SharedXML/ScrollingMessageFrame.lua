@@ -63,6 +63,36 @@ function ScrollingMessageFrameMixin:AdjustMessageColors(transformFunction)
 	end
 end
 
+-- Accepts a predicate that should return true if the entry should be transformed by the transformFunction
+--[[
+Example predicate:
+	local function ShouldChangeToDeleted(message, r, g, b, ...)
+		if #message > 30 then
+			return true;
+		end
+	end
+	
+Example transformFunction:
+	local function ChangeToDeleted(message, r, g, b, ...)
+		return "This message has been deleted.", r, g, b, ...;
+	end
+
+	scrollingMessageFrame:TransformMessages(ShouldChangeToDeleted, ChangeToDeleted);
+]]--
+function ScrollingMessageFrameMixin:TransformMessages(predicate, transformFunction)
+	local function Unpackage(entry)
+		return self:UnpackageEntry(entry);
+	end
+	
+	local function TransformEntry(...)
+		return self:PackageEntry(transformFunction(...));
+	end
+	
+	if self.historyBuffer:TransformIf(predicate, TransformEntry, Unpackage) then
+		self:MarkDisplayDirty();
+	end
+end
+
 function ScrollingMessageFrameMixin:ScrollByAmount(amount)
 	self:SetScrollOffset(self:GetScrollOffset() + amount);
 	self:ResetAllFadeTimes();

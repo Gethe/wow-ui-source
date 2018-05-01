@@ -443,7 +443,7 @@ SECURE_ACTIONS.cancelaura =
     function (self, unit, button)
         local spell = SecureButton_GetModifiedAttribute(self, "spell", button);
         if ( spell ) then
-            CancelUnitBuff(unit, spell, SecureButton_GetModifiedAttribute(self, "rank", button));
+            CancelSpellByName(spell);
         else
             local slot = tonumber(SecureButton_GetModifiedAttribute(self, "target-slot", button));
             if ( slot and CANCELABLE_ITEMS[slot] ) then
@@ -456,6 +456,11 @@ SECURE_ACTIONS.cancelaura =
             end
         end
     end;
+
+SECURE_ACTIONS.leavevehicle =
+	function (self, unit, button)
+		VehicleExit();
+	end;
 
 SECURE_ACTIONS.destroytotem =
 	function(self, unit, button)

@@ -133,6 +133,15 @@
 	<Binding name="COMBATLOGBOTTOM" category="BINDING_HEADER_CHAT">
 		ChatFrame2:ScrollToBottom();
 	</Binding>
+	<Binding name="TOGGLE_VOICE_SELF_MUTE" category="BINDING_HEADER_CHAT">
+		C_VoiceChat.ToggleMuted();
+	</Binding>
+	<Binding name="TOGGLE_VOICE_SELF_DEAFEN" category="BINDING_HEADER_CHAT">
+		C_VoiceChat.ToggleDeafened();
+	</Binding>
+	<Binding name="TOGGLE_VOICE_PUSH_TO_TALK" category="BINDING_HEADER_CHAT" customBindingID="VoicePushToTalk">
+		nop(); -- Action handler is custom
+	</Binding>
 	<!-- Action bar bindings header="ACTIONBAR" -->
 	<Binding name="ACTIONBUTTON1" runOnUp="true" category="BINDING_HEADER_ACTIONBAR">
 		if ( keystate == "down" ) then
@@ -1099,15 +1108,6 @@
 	</Binding>
 	<Binding name="MASTERVOLUMEDOWN" category="BINDING_HEADER_MISC">
 		Sound_MasterVolumeDown();
-	</Binding>
-	<Binding name="TOGGLE_VOICE_SELF_MUTE" category="BINDING_HEADER_MISC">
-		C_VoiceChat.ToggleMuted();
-	</Binding>
-	<Binding name="TOGGLE_VOICE_SELF_DEAFEN" category="BINDING_HEADER_MISC">
-		C_VoiceChat.ToggleDeafened();
-	</Binding>
-	<Binding name="TOGGLE_VOICE_PUSH_TO_TALK" runOnUp="true" category="BINDING_HEADER_MISC" customBindingID="VoicePushToTalk">
-		nop(); -- Action handler is custom
 	</Binding>
 	<Binding name="TOGGLEUI" category="BINDING_HEADER_MISC">
 		if ( UIParent:IsShown() ) then

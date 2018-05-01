@@ -1,0 +1,467 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="GuildInfo.lua"/>
+
+<!--
+*******************************************************************************
+	Templates
+*******************************************************************************
+-->	
+	<Frame name="GuildChallengeTemplate" enableMouse="true" virtual="true">
+		<Size x="270" y="21"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString inherits="GameFontHighlight" parentKey="label">
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parent" x="18" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString inherits="GameFontNormal" parentKey="count">
+					<Anchors>
+						<Anchor point="RIGHT" relativeTo="$parent" x="-12" y="0"/>
+					</Anchors>
+				</FontString>
+				<Texture file="Interface\GuildFrame\GuildChallenges" hidden="true" parentKey="check">
+					<Size x="28" y="24"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativeTo="$parent" x="-8" y="0"/>
+					</Anchors>	
+					<TexCoords left="0.00195313" right="0.05664063" top="0.00390625" bottom="0.09765625"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				self.label:SetText(_G["GUILD_CHALLENGE_TYPE"..self:GetID()]);
+			</OnLoad>
+			<OnEnter>
+				local index, current, max, gold, maxGold = GetGuildChallengeInfo(self.orderIndex);
+				if ( index ) then
+					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+					GameTooltip:SetText(_G["GUILD_CHALLENGE_LABEL"..index]);
+					GameTooltip:AddLine(" ")
+					GameTooltip:AddLine(_G["GUILD_CHALLENGE_TOOLTIP"..index], 1, 1, 1, true);
+					GameTooltip:AddLine(" ")
+					local goldString = GetMoneyString(maxGold * COPPER_PER_SILVER * SILVER_PER_GOLD);
+					GameTooltip:AddLine(string.format(GUILD_CHALLENGE_REWARD_GOLD, goldString), 1, 1, 1, true);
+					GameTooltip:Show();
+				end
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Frame>
+<!--
+*******************************************************************************
+	Info panel
+*******************************************************************************
+-->	
+	<Frame name="GuildInfoFrameTemplate" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="TitleText" inherits="GameFontNormalMed1" justifyH="LEFT" text="GUILD_INFO_TITLE">
+					<Size x="232" y="38"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="5" y="35"/>
+					</Anchors>
+				</FontString>
+				<Texture name="$parentBar1Left" file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
+					<Size x="256" y="16"/>
+					<Anchors>
+						<Anchor point="LEFT" x="-6" y="0"/>
+						<Anchor point="RIGHT" x="-51" y="0"/>
+						<Anchor point="BOTTOM" relativeTo="$parent" relativePoint="TOP" x="0" y="-146"/>
+					</Anchors>
+					<TexCoords left="0" right="1.0" top="0" bottom="0.25"/>
+				</Texture>
+				<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
+					<Size x="70" y="16"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentBar1Left" relativePoint="RIGHT"/>
+					</Anchors>
+					<TexCoords left="0" right="0.29296875" top="0.25" bottom="0.5"/>
+				</Texture>
+				<Texture name="$parentBar2Left" file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
+					<Size x="256" y="16"/>
+					<Anchors>
+						<Anchor point="LEFT" x="-6" y="0"/>
+						<Anchor point="RIGHT" x="-51" y="0"/>
+						<Anchor point="TOP" relativeTo="$parent" relativePoint="BOTTOM" x="0" y="128"/>
+					</Anchors>
+					<TexCoords left="0" right="1.0" top="0" bottom="0.25"/>
+				</Texture>
+				<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
+					<Size x="70" y="16"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentBar2Left" relativePoint="RIGHT"/>
+					</Anchors>
+					<TexCoords left="0" right="0.29296875" top="0.25" bottom="0.5"/>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture file="Interface\GuildFrame\GuildFrame">
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT" x="15" y="-4"/>
+						<Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT" x="0" y="3"/>
+					</Anchors>
+					<TexCoords left="0.00097656" right="0.31445313" top="0.00195313" bottom="0.59765625"/>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture parentKey="Header1" file="Interface\GuildFrame\GuildFrame">
+					<Size x="280" y="22"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT" x="4" y="-3"/>
+					</Anchors>
+					<TexCoords left="0.00097656" right="0.31445313" top="0.93164063" bottom="0.97460938"/>
+				</Texture>
+				<Texture name="$parentHeader2" file="Interface\GuildFrame\GuildFrame">
+					<Size x="280" y="22"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentBar1Left" relativePoint="TOPLEFT" x="7" y="-11"/>
+					</Anchors>
+					<TexCoords left="0.00097656" right="0.31445313" top="0.93164063" bottom="0.97460938"/>
+				</Texture>
+				<Texture name="$parentHeader3" file="Interface\GuildFrame\GuildFrame">
+					<Size x="280" y="22"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentBar2Left" relativePoint="TOPLEFT" x="7" y="-11"/>
+					</Anchors>
+					<TexCoords left="0.00097656" right="0.31445313" top="0.93164063" bottom="0.97460938"/>
+				</Texture>
+				<Texture file="Interface\GuildFrame\GuildChallenges">	<!-- challenges BG -->
+					<Size x="280" y="109"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Header1" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0.13671875" right="0.75976563" top="0.27343750" bottom="0.69921875"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString	name="$parentHeader1Label" inherits="GameFontNormal" text="GUILD_FRAME_CHALLENGES">
+					<Size x="0" y="0"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Header1" x="10" y="0"/>
+					</Anchors>
+				</FontString>	
+				<FontString	inherits="GameFontNormal" text="GUILD_MOTD_LABEL">
+					<Size x="0" y="0"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentHeader2" x="10" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString	inherits="GameFontNormal" text="GUILD_INFORMATION">
+					<Size x="0" y="0"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentHeader3" x="10" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<ScrollFrame name="$parentMOTDScrollFrame" parentKey="MOTDScrollFrame" inherits="MinimalScrollFrameTemplate">
+				<Size x="254" y="42"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentHeader2" relativePoint="BOTTOMLEFT" x="14" y="-2"/>
+				</Anchors>
+				<ScrollChild>
+					<SimpleHTML parentKey="MOTD" disallowFormatting="true">
+						<Size x="254" y="42"/>
+						<Scripts>
+							<OnHyperlinkClick>
+								SetItemRef(link, text, button, self);
+							</OnHyperlinkClick>
+						</Scripts>
+						<FontString inherits="GameFontNormalSmall" justifyH="LEFT" justifyV="TOP" spacing="2">
+							<Color r="1" g="1" b="1"/>
+						</FontString>
+					</SimpleHTML>
+				</ScrollChild>
+				<Scripts>
+					<OnLoad>
+						self.scrollBarHideable = true;
+						self.noScrollThumb = true;
+						ScrollBar_AdjustAnchors(self.ScrollBar, 2, -2);
+						self.ScrollBar:Hide();
+						ScrollFrame_OnLoad(self);
+					</OnLoad>
+				</Scripts>
+			</ScrollFrame>
+			<!-- id is what controls the challenge type. buttons not necessarily in order by id. -->
+			<Frame name="$parentChallenge1" parentArray="Challenges" inherits="GuildChallengeTemplate" id="1">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Header1" relativePoint="BOTTOMLEFT" x="0" y="-1"/>
+				</Anchors>
+			</Frame>
+			<Frame name="$parentChallenge2" parentArray="Challenges" inherits="GuildChallengeTemplate" id="5">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentChallenge1" relativePoint="BOTTOM" x="0" y="-7"/>
+				</Anchors>
+			</Frame>
+			<Frame name="$parentChallenge3" parentArray="Challenges" inherits="GuildChallengeTemplate" id="2">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentChallenge2" relativePoint="BOTTOM" x="0" y="-7"/>
+				</Anchors>
+			</Frame>
+			<Frame name="$parentChallenge4" parentArray="Challenges" inherits="GuildChallengeTemplate" id="3">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentChallenge3" relativePoint="BOTTOM" x="0" y="-7"/>
+				</Anchors>
+			</Frame>
+			<Button parentKey="EditMOTDButton" text="GUILD_EDIT_TEXT_LINK" hidden="true">
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="$parentHeader2" x="-8" y="0"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="editType" value="motd" type="String"/>
+				</KeyValues>
+				<Scripts>
+					<OnClick function="TextEditButton_OnClick"/>
+				</Scripts>
+				<ButtonText>
+					<Anchors>
+						<Anchor point="RIGHT" x="-2" y="0"/>
+					</Anchors>
+					<Color r="0.973" g="0.937" b="0.580"/>
+				</ButtonText>
+				<NormalFont style="GameFontNormalSmall"/>
+			</Button>
+			<Button parentKey="EditDetailsButton" text="GUILD_EDIT_TEXT_LINK" hidden="true">
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="$parentHeader3" x="-8" y="0"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="editType" value="info" type="String"/>
+				</KeyValues>
+				<Scripts>
+					<OnClick function="TextEditButton_OnClick"/>
+				</Scripts>
+				<ButtonText>
+					<Anchors>
+						<Anchor point="RIGHT" x="-2" y="0"/>
+					</Anchors>
+					<Color r="0.973" g="0.937" b="0.580"/>
+				</ButtonText>
+				<NormalFont style="GameFontNormalSmall"/>
+			</Button>
+			<ScrollFrame parentKey="DetailsFrame" inherits="MinimalScrollFrameTemplate">
+				<Size x="246" y="93"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentHeader3" relativePoint="BOTTOMLEFT" x="14" y="-1"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.scrollBarHideable = true;
+						ScrollBar_AdjustAnchors(self.ScrollBar, 1, -2);
+						self.ScrollBar:Hide();
+					</OnLoad>
+				</Scripts>
+				<ScrollChild>
+					<Frame>
+						<Size x="246" y="60"/>
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString parentKey="Details" inherits="GameFontNormalSmall" nonspacewrap="true" justifyH="LEFT" justifyV="TOP" spacing="2">
+									<Size x="246" y="0"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" x="0" y="-4"/>
+									</Anchors>
+									<Color r="1" g="1" b="1"/>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+				</ScrollChild>
+			</ScrollFrame>
+		</Frames>
+		<Scripts>
+			<OnLoad function="GuildInfoFrame_OnLoad"/>
+			<OnEvent function="GuildInfoFrame_OnEvent"/>
+			<OnShow function="GuildInfoFrame_OnShow"/>
+		</Scripts>
+	</Frame>
+<!--
+*******************************************************************************
+	Popups
+*******************************************************************************
+-->	
+	<Frame name="GuildTextEditFrame" toplevel="true" frameStrata="DIALOG" movable="true" hidden="true" parent="UIParent" inherits="TranslucentFrameTemplate">
+		<Size x="295" y="312"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentTitle" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="24" y="-18"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-4" y="-4"/>
+				</Anchors>
+			</Button>
+			<Frame name="GuildTextEditContainer">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="22" y="-36"/>
+					<Anchor point="TOPRIGHT" x="-22" y="-36"/>
+					<Anchor point="BOTTOM" x="0" y="42"/>
+				</Anchors>
+				<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+					<EdgeSize val="12"/>
+					<TileSize val="8"/>
+					<BackgroundInsets left="1" right="1" top="1" bottom="1"/>
+				</Backdrop>
+				<Frames>
+					<ScrollFrame name="GuildTextEditScrollFrame" inherits="MinimalScrollFrameTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="4" y="-4"/>
+							<Anchor point="BOTTOMRIGHT" x="-26" y="4"/>
+						</Anchors>
+						<ScrollChild>
+							<EditBox name="GuildTextEditBox" multiLine="true" letters="500" autoFocus="false">
+								<Size x="218" y="1"/>
+								<Anchors>
+									<Anchor point="TOPLEFT"/>
+								</Anchors>
+								<Scripts>
+									<OnTextChanged>
+										ScrollingEdit_OnTextChanged(self, self:GetParent());
+									</OnTextChanged> 
+									<OnCursorChanged function="ScrollingEdit_OnCursorChanged"/>
+									<OnUpdate>
+										ScrollingEdit_OnUpdate(self, elapsed, self:GetParent());
+									</OnUpdate>
+									<OnEscapePressed function="EditBox_ClearFocus"/>
+									<OnEditFocusLost>
+										self:HighlightText(0, 0);
+									</OnEditFocusLost>
+								</Scripts>
+								<FontString inherits="GameFontHighlight"/>
+							</EditBox>
+						</ScrollChild>
+					</ScrollFrame>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
+						self:SetBackdropColor(0.0, 0.0, 0.0, 0.9);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Button name="$parentAcceptButton" inherits="UIPanelButtonTemplate" text="ACCEPT">
+				<Size x="90" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="24" y="16"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="GuildTextEditFrame_OnAccept"/>
+				</Scripts>
+			</Button>
+			<Button name="$parentCloseButton" inherits="UIPanelButtonTemplate" text="CLOSE">
+				<Size x="90" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-24" y="16"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						HideUIPanel(self:GetParent());
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad function="GuildTextEditFrame_OnLoad"/>
+			<OnHide>
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
+			</OnHide>
+		</Scripts>
+	</Frame>
+	<Frame name="GuildLogFrame" toplevel="true" frameStrata="DIALOG" enableMouse="true" hidden="true" parent="UIParent" inherits="TranslucentFrameTemplate">
+		<Size x="384" y="432"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentTitle" inherits="GameFontNormal" text="GUILD_EVENT_LOG">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="24" y="-18"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-4" y="-4"/>
+				</Anchors>
+			</Button>
+			<Frame name="GuildLogContainer">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="22" y="-36"/>
+					<Anchor point="TOPRIGHT" x="-22" y="-36"/>
+					<Anchor point="BOTTOM" x="0" y="42"/>
+				</Anchors>
+				<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+					<EdgeSize val="12"/>
+					<TileSize val="8"/>
+					<BackgroundInsets left="1" right="1" top="1" bottom="1"/>
+				</Backdrop>
+				<Frames>
+					<ScrollFrame name="GuildLogScrollFrame" inherits="MinimalScrollFrameTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="8" y="-4"/>
+							<Anchor point="TOPRIGHT" x="-25" y="-4"/>
+							<Anchor point="BOTTOM" x="0" y="5"/>
+						</Anchors>
+						<ScrollChild>
+							<Frame>
+								<Size x="10" y="10"/>
+								<Frames>
+									<SimpleHTML name="GuildLogHTMLFrame">
+										<Size x="304" y="10"/>
+										<Anchors>
+											<Anchor point="TOPLEFT" x="0" y="-4"/>
+										</Anchors>
+										<FontString inherits="GameFontHighlight" justifyH="LEFT"/>
+									</SimpleHTML>
+								</Frames>
+							</Frame>
+						</ScrollChild>
+					</ScrollFrame>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
+						self:SetBackdropColor(0.0, 0.0, 0.0, 0.9);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Button name="$parentCloseButton" inherits="UIPanelButtonTemplate" text="CLOSE">
+				<Size x="90" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-24" y="16"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						HideUIPanel(self:GetParent());
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad function="GuildLogFrame_OnLoad"/>
+			<OnEvent function="GuildLogFrame_Update"/>
+			<OnShow>
+				QueryGuildEventLog();
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+			</OnShow>
+			<OnHide>
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
+			</OnHide>
+		</Scripts>
+	</Frame>
+</Ui>

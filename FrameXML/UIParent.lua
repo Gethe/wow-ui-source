@@ -60,6 +60,11 @@ UIPanelWindows["DeathRecapFrame"] =				{ area = "center",			pushable = 0,	whileD
 UIPanelWindows["WardrobeFrame"] =				{ area = "left",			pushable = 0,	width = 965 };
 UIPanelWindows["AlliedRacesFrame"] =			{ area = "left",			pushable = 1,	whileDead = 1 };
 UIPanelWindows["CommunitiesFrame"] =			{ area = "left",			pushable = 1,	whileDead = 1 };
+UIPanelWindows["GuildLogFrame"] =				{ area = "left",			pushable = 1,	whileDead = 1, 		yoffset = 4, };
+UIPanelWindows["GuildControlUI"] =				{ area = "left",			pushable = 1,	whileDead = 1,		yoffset = 4, };
+UIPanelWindows["GuildTextEditFrame"] =			{ area = "left",			pushable = 1,	whileDead = 1 };
+UIPanelWindows["GuildRecruitmentFrame"] =		{ area = "left",			pushable = 1,	whileDead = 1 };
+UIPanelWindows["GuildNewsFiltersFrame"] =		{ area = "left",			pushable = 1,	whileDead = 1 };
 
 -- Frames NOT using the new Templates
 UIPanelWindows["WorldMapFrame"] =				{ area = "full",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
@@ -113,7 +118,6 @@ end
 -- These are windows that rely on a parent frame to be open.  If the parent closes or a pushable frame overlaps them they must be hidden.
 UIChildWindows = {
 	"OpenMailFrame",
-	"GuildControlUI",
 	"GuildMemberDetailFrame",
 	"TokenFramePopup",
 	"GuildBankPopupFrame",
@@ -148,12 +152,9 @@ UIMenus = {
 
 ITEM_QUALITY_COLORS = { };
 for i = 0, NUM_LE_ITEM_QUALITYS - 1 do
-	ITEM_QUALITY_COLORS[i] = { };
-	ITEM_QUALITY_COLORS[i].r,
-	ITEM_QUALITY_COLORS[i].g,
-	ITEM_QUALITY_COLORS[i].b,
-	ITEM_QUALITY_COLORS[i].hex = GetItemQualityColor(i);
-	ITEM_QUALITY_COLORS[i].hex = "|c"..ITEM_QUALITY_COLORS[i].hex;
+	local r, g, b = GetItemQualityColor(i);
+	local color = CreateColor(r, g, b, 1);
+	ITEM_QUALITY_COLORS[i] = { r = r, g = g, b = b, hex = color:GenerateHexColorMarkup(), color = color };
 end
 
 WORLD_QUEST_QUALITY_COLORS = {
@@ -717,10 +718,7 @@ function ToggleTalentFrame(suggestedTab)
 end
 
 function ToggleBattlefieldMinimap()
-	BattlefieldMinimap_LoadUI();
-	if ( BattlefieldMinimap_Toggle ) then
-		BattlefieldMinimap_Toggle();
-	end
+	-- TODO: ?
 end
 
 function ToggleTimeManager()
@@ -1100,12 +1098,6 @@ function UIParent_OnEvent(self, event, ...)
 		UIParent.variablesLoaded = true;
 
 		LocalizeFrames();
-		if ( WorldStateScoreFrame_CanShowBattlefieldMinimap() ) then
-			if ( not BattlefieldMinimap ) then
-				BattlefieldMinimap_LoadUI();
-			end
-			BattlefieldMinimap:Show();
-		end
 		if ( not TimeManagerFrame and GetCVar("timeMgrAlarmEnabled") == "1" ) then
 			-- We have to load the time manager here if the alarm is enabled because the alarm can go off
 			-- even if the clock is not shown. WorldFrame_OnUpdate handles alarm checking while the clock
@@ -1628,10 +1620,8 @@ function UIParent_OnEvent(self, event, ...)
 		ShowUIPanel(ItemSocketingFrame);
 
 	elseif ( event == "ARTIFACT_UPDATE" ) then
-		if ( not C_ArtifactRelicForgeUI.IsAtForge() ) then
-			ArtifactFrame_LoadUI();
-			ShowUIPanel(ArtifactFrame);
-		end
+		ArtifactFrame_LoadUI();
+		ShowUIPanel(ArtifactFrame);
 	elseif ( event == "ARTIFACT_RESPEC_PROMPT" ) then
 		ArtifactFrame_LoadUI();
 		ShowUIPanel(ArtifactFrame);
@@ -2105,7 +2095,6 @@ UIPARENT_MANAGED_FRAME_POSITIONS = {
 	-- variable so that other modules can use the most up-to-date value of FOO without having knowledge of the UIPARENT_MANAGED_FRAME_POSITIONS table.
 	["CONTAINER_OFFSET_X"] = {baseX = 0, rightActionBarsX = "variable", isVar = "xAxis"};
 	["CONTAINER_OFFSET_Y"] = {baseY = true, yOffset = 10, bottomEither = actionBarOffset, watchBar = 1, isVar = "yAxis"};
-	["BATTLEFIELD_TAB_OFFSET_Y"] = {baseY = 210, bottomRight = actionBarOffset, watchBar = 1, isVar = "yAxis"};
 	["PETACTIONBAR_YPOS"] = {baseY = 89, bottomLeft = actionBarOffset + 3, justBottomRightAndStance = actionBarOffset, watchBar = 1, maxLevel = 1, isVar = "yAxis"};
 	["MULTICASTACTIONBAR_YPOS"] = {baseY = 0, bottomLeft = actionBarOffset, watchBar = 1, maxLevel = 1, isVar = "yAxis"};
 	["OBJTRACKER_OFFSET_X"] = {baseX = 12, rightActionBarsX = "variable", isVar = "xAxis"};
@@ -2117,7 +2106,6 @@ local UIPARENT_VARIABLE_OFFSETS = {
 
 -- If any Var entries in UIPARENT_MANAGED_FRAME_POSITIONS are used exclusively by addons, they should be declared here and not in one of the addon's files.
 -- The reason why is that it is possible for UIParent_ManageFramePosition to be run before the addon loads.
-BATTLEFIELD_TAB_OFFSET_Y = 0;
 OBJTRACKER_OFFSET_X = 0;
 
 
@@ -2878,11 +2866,6 @@ function FramePositionDelegate:UIParentManageFramePositions()
 	if ( PetActionBarFrame:IsShown() ) then
 		PetActionBar_UpdatePositionValues();
 		PetActionBarFrame:SetPoint("TOPLEFT", MainMenuBar, "BOTTOMLEFT", PETACTIONBAR_XPOS, PETACTIONBAR_YPOS);
-	end
-
-	-- Set battlefield minimap position
-	if ( BattlefieldMinimapTab and not BattlefieldMinimapTab:IsUserPlaced() ) then
-		BattlefieldMinimapTab:SetPoint("BOTTOMLEFT", "UIParent", "BOTTOMRIGHT", -225-CONTAINER_OFFSET_X, BATTLEFIELD_TAB_OFFSET_Y);
 	end
 
 	-- Setup y anchors
@@ -5060,4 +5043,14 @@ function GetSortedSelfResurrectOptions()
 		return a.priority < b.priority end
 	);
 	return options;
+end
+
+function OpenAchievementFrameToAchievement(achievementID)
+	if ( not AchievementFrame ) then
+		AchievementFrame_LoadUI();
+	end
+	if ( not AchievementFrame:IsShown() ) then
+		AchievementFrame_ToggleAchievementFrame();
+	end
+	AchievementFrame_SelectAchievement(achievementID);
 end

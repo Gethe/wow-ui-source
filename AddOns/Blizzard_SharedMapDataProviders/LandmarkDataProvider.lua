@@ -12,7 +12,6 @@ local function DoesLandMarkTypeShowHighlights(landmarkType, textureKitPrefix)
 	end
 
 	return landmarkType == LE_MAP_LANDMARK_TYPE_NORMAL
-		or landmarkType == LE_MAP_LANDMARK_TYPE_TAMER
 		or landmarkType == LE_MAP_LANDMARK_TYPE_TAXINODE
 		or landmarkType == LE_MAP_LANDMARK_TYPE_CONTRIBUTION
 		or landmarkType == LE_MAP_LANDMARK_TYPE_MAP_LINK;

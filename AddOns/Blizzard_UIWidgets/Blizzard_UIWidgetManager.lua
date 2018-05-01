@@ -96,6 +96,10 @@ function UIWidgetManagerMixin:UpdateTimerList(widgetID, widgetFrame)
 end
 
 function UIWidgetManagerMixin:AddWidgetToWidgetTagList(widgetTag, widgetID, widgetFrame)
+	if not widgetTag or widgetTag == "" then
+		return;
+	end
+
 	if not self.widgetTagToFrames[widgetTag] then
 		-- Adding a widget with a new widgetTag
 		self.widgetTagToFrames[widgetTag] = {};
@@ -110,6 +114,10 @@ function UIWidgetManagerMixin:AddWidgetToWidgetTagList(widgetTag, widgetID, widg
 end
 
 function UIWidgetManagerMixin:RemoveWidgetFromWidgetTagList(widgetTag, widgetID)
+	if not widgetTag or widgetTag == "" then
+		return;
+	end
+
 	if self.widgetTagToFrames[widgetTag] then
 		-- Removing a widget with a known widgetTag
 			
@@ -154,9 +162,7 @@ function UIWidgetManagerMixin:RemoveAllWidgetsInWidgetSet(widgetSetID)
 			self:UpdateTimerList(widgetID, nil);
 		end
 
-		if widgetFrame.widgetTag then
-			self:RemoveWidgetFromWidgetTagList(widgetFrame.widgetTag, widgetID);
-		end
+		self:RemoveWidgetFromWidgetTagList(widgetFrame.widgetTag, widgetID);
 
 		self.widgetPools:Release(widgetFrame);
 		self.widgetIdToFrame[widgetID] = nil;
@@ -176,9 +182,7 @@ function UIWidgetManagerMixin:RemoveWidget(widgetID, widgetSetID)
 		self:UpdateTimerList(widgetID, nil);
 	end
 
-	if widgetFrame.widgetTag then
-		self:RemoveWidgetFromWidgetTagList(widgetFrame.widgetTag, widgetID);
-	end
+	self:RemoveWidgetFromWidgetTagList(widgetFrame.widgetTag, widgetID);
 
 	self.widgetPools:Release(widgetFrame);
 	self.widgetIdToFrame[widgetID] = nil;
@@ -250,9 +254,7 @@ function UIWidgetManagerMixin:ProcessWidget(widgetID, widgetSetID, widgetType)
 					self:UpdateTimerList(widgetID, widgetFrame);
 				end
 
-				if widgetInfo.widgetTag then
-					self:AddWidgetToWidgetTagList(widgetInfo.widgetTag, widgetID, widgetFrame);
-				end
+				self:AddWidgetToWidgetTagList(widgetInfo.widgetTag, widgetID, widgetFrame);
 
 				-- If there is an init function, run it
 				if self.registeredWidgetSetContainers[widgetSetID].initFunc then

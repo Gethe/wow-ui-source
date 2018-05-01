@@ -3,6 +3,9 @@
 	<Script file="GroupMembersDataProvider.lua"/>
 
 	<UnitPositionFrame name="GroupMembersPinTemplate" mixin="GroupMembersPinMixin" inherits="UnitPositionFrameTemplate" virtual="true">
+		<Frames>
+			<Frame parentKey="ReportDropDown" inherits="UIDropDownMenuTemplate" hidden="true"/>
+		</Frames>
 		<Scripts>
 			<OnUpdate method="OnUpdate"/>
 		</Scripts>

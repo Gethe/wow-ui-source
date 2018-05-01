@@ -11,4 +11,44 @@
 			<OnLoad method="OnLoad"/>
 		</Scripts>
 	</Frame>
+	<Frame name="UIWidgetBaseResourceTemplate" inherits="UIWidgetTemplateTooltipFrame" secureMixin="UIWidgetBaseResourceTemplateMixin" virtual="true">
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Icon">
+					<Anchors>
+						<Anchor point="LEFT" />
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Text" inherits="GameFontNormal" justifyH="CENTER">
+					<Size x="67"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="-2" />
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+	
+	<Frame name="UIWidgetBaseCurrencyTemplate" inherits="UIWidgetTemplateTooltipFrame" secureMixin="UIWidgetBaseCurrencyTemplateMixin" virtual="true">
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString parentKey="LeadingText" inherits="GameFontNormal" text="">
+					<Anchors>
+						<Anchor point="TOPLEFT" />
+					</Anchors>
+				</FontString>
+				<Texture parentKey="Icon">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" />
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Text" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="5" />
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
 </Ui>

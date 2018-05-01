@@ -143,6 +143,15 @@ local VoiceChat =
 			},
 		},
 		{
+			Name = "GetLocalPlayerActiveChannelMemberInfo",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "memberInfo", Type = "VoiceChatMember", Nilable = true },
+			},
+		},
+		{
 			Name = "GetLocalPlayerMemberID",
 			Type = "Function",
 
@@ -207,8 +216,7 @@ local VoiceChat =
 
 			Arguments =
 			{
-				{ Name = "memberID", Type = "number", Nilable = false },
-				{ Name = "channelID", Type = "number", Nilable = false },
+				{ Name = "playerLocation", Type = "table", Mixin = "PlayerLocationMixin", Nilable = false },
 			},
 
 			Returns =
@@ -223,6 +231,15 @@ local VoiceChat =
 			Returns =
 			{
 				{ Name = "volume", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "GetPTTButtonPressedState",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isPressed", Type = "bool", Nilable = true },
 			},
 		},
 		{
@@ -315,13 +332,27 @@ local VoiceChat =
 
 			Arguments =
 			{
+				{ Name = "playerLocation", Type = "table", Mixin = "PlayerLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "mutedForMe", Type = "bool", Nilable = true },
+			},
+		},
+		{
+			Name = "IsMemberMutedForAll",
+			Type = "Function",
+
+			Arguments =
+			{
 				{ Name = "memberID", Type = "number", Nilable = false },
 				{ Name = "channelID", Type = "number", Nilable = false },
 			},
 
 			Returns =
 			{
-				{ Name = "volume", Type = "bool", Nilable = true },
+				{ Name = "mutedForAll", Type = "bool", Nilable = true },
 			},
 		},
 		{
@@ -331,6 +362,20 @@ local VoiceChat =
 			Returns =
 			{
 				{ Name = "isMuted", Type = "bool", Nilable = true },
+			},
+		},
+		{
+			Name = "IsPlayerUsingVoice",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "playerLocation", Type = "table", Mixin = "PlayerLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isUsingVoice", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -421,19 +466,18 @@ local VoiceChat =
 
 			Arguments =
 			{
-				{ Name = "memberID", Type = "number", Nilable = false },
-				{ Name = "channelID", Type = "number", Nilable = false },
+				{ Name = "playerLocation", Type = "table", Mixin = "PlayerLocationMixin", Nilable = false },
 				{ Name = "muted", Type = "bool", Nilable = false },
 			},
 		},
 		{
 			Name = "SetMemberVolume",
 			Type = "Function",
+			Documentation = { "Adjusts member volume across all channels" },
 
 			Arguments =
 			{
-				{ Name = "memberID", Type = "number", Nilable = false },
-				{ Name = "channelID", Type = "number", Nilable = false },
+				{ Name = "playerLocation", Type = "table", Mixin = "PlayerLocationMixin", Nilable = false },
 				{ Name = "volume", Type = "number", Nilable = false },
 			},
 		},
@@ -723,6 +767,15 @@ local VoiceChat =
 			},
 		},
 		{
+			Name = "VoiceChatCommunicationModeChanged",
+			Type = "Event",
+			LiteralName = "VOICE_CHAT_COMMUNICATION_MODE_CHANGED",
+			Payload =
+			{
+				{ Name = "communicationMode", Type = "CommunicationMode", Nilable = false },
+			},
+		},
+		{
 			Name = "VoiceChatConnectionSuccess",
 			Type = "Event",
 			LiteralName = "VOICE_CHAT_CONNECTION_SUCCESS",
@@ -782,6 +835,15 @@ local VoiceChat =
 			Name = "VoiceChatOutputDevicesUpdated",
 			Type = "Event",
 			LiteralName = "VOICE_CHAT_OUTPUT_DEVICES_UPDATED",
+		},
+		{
+			Name = "VoiceChatPttButtonPressedStateChanged",
+			Type = "Event",
+			LiteralName = "VOICE_CHAT_PTT_BUTTON_PRESSED_STATE_CHANGED",
+			Payload =
+			{
+				{ Name = "isPressed", Type = "bool", Nilable = false },
+			},
 		},
 	},
 
@@ -848,10 +910,8 @@ local VoiceChat =
 				{ Name = "name", Type = "string", Nilable = false },
 				{ Name = "energy", Type = "number", Nilable = false },
 				{ Name = "memberID", Type = "number", Nilable = false },
-				{ Name = "volume", Type = "number", Nilable = false },
 				{ Name = "isActive", Type = "bool", Nilable = false },
 				{ Name = "isSpeaking", Type = "bool", Nilable = false },
-				{ Name = "isMutedForMe", Type = "bool", Nilable = false },
 				{ Name = "isMutedForAll", Type = "bool", Nilable = false },
 			},
 		},

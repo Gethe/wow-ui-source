@@ -1,0 +1,28 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Frame name="UIWidgetTemplateIconTextAndCurrencies" inherits="UIWidgetBaseTemplate" virtual="true" secureMixin="UIWidgetTemplateIconTextAndCurrenciesMixin">
+		<Size x="237" y="32"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon">
+					<Size x="32" y="32"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Text" secureMixin="UIWidgetBaseColoredTextMixin" inherits="GameTooltipHeaderText">
+					<Size x="178"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPRIGHT" x="10" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Description" secureMixin="UIWidgetBaseColoredTextMixin" inherits="GameTooltipText">
+					<Size x="178"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Text" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+</Ui>

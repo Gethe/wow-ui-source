@@ -121,7 +121,8 @@ local SpellBook =
 			Payload =
 			{
 				{ Name = "unit", Type = "string", Nilable = false },
-				{ Name = "guidString", Type = "string", Nilable = false },
+				{ Name = "target", Type = "string", Nilable = false },
+				{ Name = "castGUID", Type = "string", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
 			},
 		},

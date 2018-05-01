@@ -146,23 +146,6 @@
 					</OnEnter>
 				</Scripts>
 			</Button>
-			<Button name="$parentLoot" inherits="RaidRoleIconTemplate">
-				<Size x="11" y="11"/>
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentRole" relativePoint="RIGHT" x="0" y="0"/>
-				</Anchors>
-				<Scripts>
-					<OnEnter>
-						-- Sets the Master Looter Tooltip
-						if ( self:GetParent().loot ) then
-							GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-							GameTooltip:SetText(MASTER_LOOTER, nil, nil, nil, nil, true);
-						else
-							GameTooltip:Hide();
-						end
-					</OnEnter>
-				</Scripts>
-			</Button>
 			<Frame name="$parentReadyCheck" inherits="ReadyCheckStatusTemplate" hidden="true">
 				<Size x="11" y="11"/>
 				<Anchors>

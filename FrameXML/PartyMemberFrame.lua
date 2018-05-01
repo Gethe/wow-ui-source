@@ -35,7 +35,6 @@ function PartyMemberFrame_ToPlayerArt(self)
 	_G[prefix.."Texture"]:Show();
 	_G[prefix.."Portrait"]:SetPoint("TOPLEFT", 7, -6);
 	_G[prefix.."LeaderIcon"]:SetPoint("TOPLEFT", 0, 0);
-	_G[prefix.."MasterIcon"]:SetPoint("TOPLEFT", 32, 0);
 	_G[prefix.."PVPIcon"]:SetPoint("TOPLEFT", -9, -15);
 	_G[prefix.."Disconnect"]:SetPoint("LEFT", -7, -1);
 
@@ -60,7 +59,6 @@ function PartyMemberFrame_ToVehicleArt(self, vehicleType)
 	_G[prefix.."VehicleTexture"]:Show();
 	_G[prefix.."Portrait"]:SetPoint("TOPLEFT", 4, -9);
 	_G[prefix.."LeaderIcon"]:SetPoint("TOPLEFT", -3, 0);
-	_G[prefix.."MasterIcon"]:SetPoint("TOPLEFT", 29, 0);
 	_G[prefix.."PVPIcon"]:SetPoint("TOPLEFT", -12, -15);
 	_G[prefix.."Disconnect"]:SetPoint("LEFT", -10, -1);
 
@@ -152,16 +150,6 @@ function PartyMemberFrame_UpdateMember (self)
 		end
 
 		UnitFrame_Update(self, true);
-
-		local masterIcon = _G[self:GetName().."MasterIcon"];
-		local lootMethod;
-		local lootMaster;
-		lootMethod, lootMaster = GetLootMethod();
-		if ( id == lootMaster ) then
-			masterIcon:Show();
-		else
-			masterIcon:Hide();
-		end
 	else
 		if VoiceActivityManager then
 			VoiceActivityManager:UnregisterFrameForVoiceActivityNotifications(self);
@@ -355,15 +343,6 @@ function PartyMemberFrame_OnEvent(self, event, ...)
 		return;
 	elseif ( event == "PARTY_LEADER_CHANGED" ) then
 		PartyMemberFrame_UpdateLeader(self);
-	elseif ( event == "PARTY_LOOT_METHOD_CHANGED" ) then
-		local lootMethod;
-		local lootMaster;
-		lootMethod, lootMaster = GetLootMethod();
-		if ( selfID == lootMaster ) then
-			_G[self:GetName().."MasterIcon"]:Show();
-		else
-			_G[self:GetName().."MasterIcon"]:Hide();
-		end
 	elseif ( event == "MUTELIST_UPDATE" or event == "IGNORELIST_UPDATE" ) then
 		PartyMemberFrame_UpdateVoiceStatus(self);
 	elseif ( event == "UNIT_FACTION" ) then

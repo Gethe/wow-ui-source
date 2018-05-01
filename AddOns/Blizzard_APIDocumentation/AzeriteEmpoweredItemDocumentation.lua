@@ -93,6 +93,21 @@ local AzeriteEmpoweredItem =
 			},
 		},
 		{
+			Name = "IsPowerAvailableForSpec",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "powerID", Type = "number", Nilable = false },
+				{ Name = "specID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isPowerAvailableForSpec", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "SelectPower",
 			Type = "Function",
 

@@ -6,4 +6,3 @@ Blizzard_ArtifactPowerButton.xml
 Blizzard_ArtifactPerks.xml
 Blizzard_ArtifactAppearances.xml
 Blizzard_ArtifactUI.xml
-Blizzard_ArtifactRelicForgeUI.xml

@@ -1,0 +1,758 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="GuildRecruitment.lua"/>
+
+<!--
+*******************************************************************************
+	Templates
+*******************************************************************************
+-->	
+	<Button name="GuildRecruitmentButtonTemplate" inherits="UIPanelButtonTemplate" text="GUILD_RECRUITMENT" virtual="true">
+		<Size x="98" y="22"/>
+		<Scripts>
+			<OnClick>
+				ToggleFrame(GuildRecruitmentFrame);
+			</OnClick>
+		</Scripts>
+	</Button>
+	<CheckButton name="GuildRecruitmentCheckButtonTemplate" virtual="true">
+		<Scripts>
+			<OnClick>
+				if ( self:GetChecked() ) then
+					PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+				else
+					PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
+				end
+				SetGuildRecruitmentSettings(self:GetID(), self:GetChecked());
+				GuildRecruitmentFrameRecruitment_UpdateListGuildButton(self:GetParent():GetParent());
+			</OnClick>
+			<OnEnter function="GuildRecruitmentCheckButton_OnEnter"/>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+		<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+		<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+		<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+		<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+		<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
+	</CheckButton>
+	<Frame name="GuildRecruitmentSectionTemplate" virtual="true">
+		<Size x="312" y="74"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentBg" >
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+					</Anchors>
+					<Color r="0.95" g="0.95" b="1" a="0.09"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Text" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="8" y="-5"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+	<Button name="GuildRecruitmentRoleTemplate" virtual="true" motionScriptsWhileDisabled="true">
+		<Size x="40" y="40"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Text" inherits="GameFontHighlightSmall">
+					<Anchors>
+						<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture file="Interface\LFGFrame\UI-LFG-ICON-ROLES" setAllPoints="true" parentKey="cover" alpha="0.5" hidden="true">
+					<TexCoords left="0" right="0.2617" top="0.5234" bottom="0.7851"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<CheckButton parentKey="checkButton">
+				<Size x="20" y="20"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="-8" y="-1"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="GuildRecruitmentRoleButton_OnClick"/>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+				<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+				<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+				<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>	
+			</CheckButton>
+		</Frames>
+		<Scripts>
+			<OnEnter>
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+				GameTooltip:SetText(_G["GUILDRECRUITMENT_ROLE"..self:GetID()], nil, nil, nil, nil, true);
+				GameTooltip:Show();
+				LFGFrameRoleCheckButton_OnEnter(self);
+			</OnEnter>
+			<OnClick>
+				if ( self.checkButton:IsEnabled()) then
+					self.checkButton:Click();
+				end
+			</OnClick>
+			<OnLeave>
+				GameTooltip:Hide();
+				self.checkButton:UnlockHighlight();
+			</OnLeave>
+		</Scripts>
+		<NormalTexture file="Interface\LFGFrame\UI-LFG-ICON-ROLES"/>
+	</Button>
+	<Button name="GuildRecruitmentApplicantTemplate" virtual="true">
+		<Size x="320" y="84"/>
+		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<EdgeSize val="12"/>
+			<TileSize val="12"/>
+			<BackgroundInsets left="4" right="4" top="4" bottom="4"/>
+		</Backdrop>
+		<Layers>
+			<Layer level="BORDER" textureSubLevel="-1">
+				<Texture parentKey="selectedTex" file="Interface\ClassTrainerFrame\TrainerTextures" hidden="true" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="1" y="-1"/>
+						<Anchor point="BOTTOMRIGHT" x="-1" y="1"/>
+					</Anchors>
+					<TexCoords left="0.00195313" right="0.57421875" top="0.84960938" bottom="0.94140625"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture name="$parentClass" file="Interface\TargetingFrame\UI-Classes-Circles" parentKey="class">
+					<Size x="39" y="39"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="13" y="-11"/>
+					</Anchors>
+				</Texture>
+				<FontString name="$parentName" inherits="GameFontNormal" justifyH="LEFT" parentKey="name">
+					<Size x="170" y="12"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="66" y="-10"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentTimeLeft" inherits="GameFontNormalSmall" justifyH="RIGHT" parentKey="timeLeft">
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentName" relativePoint="RIGHT" x="8" y="0"/>
+						<Anchor point="RIGHT" x="-8" y="0"/>
+					</Anchors>
+					<Color r="1.0" g="1.0" b="0.45"/>
+				</FontString>
+				<FontString name="$parentComment" inherits="GameFontHighlightSmall" justifyH="LEFT" justifyV="TOP" parentKey="comment" spacing="2">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentName" relativePoint="BOTTOMLEFT" x="4" y="-4"/>
+						<Anchor point="BOTTOMRIGHT" x="-8" y="8"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentFullComment" inherits="GameFontHighlightSmall" justifyH="LEFT" justifyV="TOP" parentKey="fullComment" spacing="2" hidden="true">
+					<Size x="10" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentComment" relativePoint="TOPLEFT"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture name="$parentRing" inherits="Talent-Ring" parentKey="ring">
+					<Size x="48" y="48"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="8" y="-8"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentTankTexture" file="Interface\LFGFrame\UI-LFG-ICON-PORTRAITROLES" parentKey="tankTex">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentRing" relativePoint="BOTTOMLEFT" x="-1" y="1"/>
+					</Anchors>
+					<Size x="18" y="18"/>
+					<TexCoords left="0" right="0.296875" top="0.34375" bottom="0.640625"/>					
+				</Texture>
+				<Texture name="$parentHealerTexture" file="Interface\LFGFrame\UI-LFG-ICON-PORTRAITROLES" parentKey="healerTex">
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentTankTexture" relativePoint="RIGHT" x="2" y="0"/>
+					</Anchors>
+					<Size x="18" y="18"/>
+					<TexCoords left="0.3125" right="0.609375" top="0.015625" bottom="0.3125"/>					
+				</Texture>
+				<Texture name="$parentDamageTexture" file="Interface\LFGFrame\UI-LFG-ICON-PORTRAITROLES" parentKey="damageTex">
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentHealerTexture" relativePoint="RIGHT" x="2" y="0"/>
+					</Anchors>
+					<Size x="18" y="18"/>
+					<TexCoords left="0.3125" right="0.609375" top="0.34375" bottom="0.640625"/>					
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="2">
+				<Texture name="$parentLevelRing" atlas="guild-levelring" useAtlasSize="true" parentKey="PointsSpentBgGold">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentRing" relativePoint="BOTTOMRIGHT" x="6" y="3"/>
+					</Anchors>
+				</Texture>
+				<FontString name="$parentLevelText" inherits="GameNormalNumberFont" parentKey="level">
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="$parentLevelRing" x="0" y="0"/>
+					</Anchors>
+					<Color r="1.0" g="0.82" b="0.0"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				self:SetBackdropColor(1, 1, 1, 0.3);
+				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				
+				if ( GUILD_APPLICANT_LEVEL_TEXT_Y_OVERRIDE ) then
+					self.level:SetPoint("CENTER", "$parentLevelRing", "CENTER", select(4, self.level:GetPoint("CENTER")), GUILD_APPLICANT_LEVEL_TEXT_Y_OVERRIDE);
+				end
+			</OnLoad>
+			<OnClick function="GuildRecruitmentApplicant_OnClick"/>
+			<OnEnter function="GuildRecruitmentApplicant_ShowTooltip"/>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+		<HighlightTexture name="$parentHighlight" file="Interface\ClassTrainerFrame\TrainerTextures" alphaMode="ADD">
+			<Anchors>
+				<Anchor point="TOPLEFT" x="1" y="-1"/>
+				<Anchor point="BOTTOMRIGHT" x="-1" y="1"/>
+			</Anchors>
+			<TexCoords left="0.00195313" right="0.57421875" top="0.75390625" bottom="0.84570313"/>
+		</HighlightTexture>
+	</Button>
+<!--
+*******************************************************************************
+	GuildRecruitmentFrameRecruitment
+*******************************************************************************
+-->
+	<Frame name="GuildRecruitmentFrameRecruitmentTemplate" virtual="true">
+		<Frames>
+			<Frame parentKey="InterestFrame" inherits="GuildRecruitmentSectionTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="8" y="-10"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="QuestText" inherits="GameFontHighlightSmall" text="GUILD_INTEREST_QUEST">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="31" y="-26"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="RaidText" inherits="GameFontHighlightSmall" text="GUILD_INTEREST_RAID">
+							<Anchors>
+								<Anchor point="TOPRIGHT" x="-12" y="-26"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<CheckButton parentKey="QuestButton" inherits="GuildRecruitmentCheckButtonTemplate" id="1">
+						<Size x="20" y="20"/>
+						<Anchors>
+							<Anchor point="RIGHT" relativeKey="$parent.QuestText" relativePoint="LEFT" x="-3" y="0"/>
+						</Anchors>
+					</CheckButton>
+					<CheckButton parentKey="RaidButton" inherits="GuildRecruitmentCheckButtonTemplate" id="3">
+						<Size x="20" y="20"/>
+						<Anchors>
+							<Anchor point="RIGHT" relativeKey="$parent.RaidText" relativePoint="LEFT" x="-3" y="0"/>
+						</Anchors>
+					</CheckButton>
+					<Frame parentKey="DungeonFramePlacer">
+						<Size x="0" y="30"/>
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.QuestText" relativePoint="RIGHT" x="0" y="0"/>
+							<Anchor point="RIGHT" relativeKey="$parent.RaidButton" relativePoint="LEFT" x="0" y="0"/>									
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString parentKey="DungeonText" inherits="GameFontHighlightSmall" text="GUILD_INTEREST_DUNGEON">
+									<Anchors>
+										<Anchor point="CENTER" x="11" y="0"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					<CheckButton parentKey="DungeonButton" inherits="GuildRecruitmentCheckButtonTemplate" id="2">
+						<Size x="20" y="20"/>
+						<Anchors>
+							<Anchor point="RIGHT" relativeKey="$parent.DungeonFramePlacer.DungeonText" relativePoint="LEFT" x="-3" y="0"/>
+						</Anchors>
+					</CheckButton>
+					<CheckButton parentKey="PvPButton" inherits="GuildRecruitmentCheckButtonTemplate" id="4">
+						<Size x="20" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.QuestButton" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString parentKey="Text" inherits="GameFontHighlightSmall" text="GUILD_INTEREST_PVP">
+									<Anchors>
+										<Anchor point="LEFT" relativePoint="RIGHT" x="3" y="0"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</CheckButton>
+					<CheckButton parentKey="RPButton" inherits="GuildRecruitmentCheckButtonTemplate" id="5">
+						<Size x="20" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.DungeonButton" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString parentKey="Text" inherits="GameFontHighlightSmall" text="GUILD_INTEREST_RP">
+									<Anchors>
+										<Anchor point="LEFT" relativePoint="RIGHT" x="3" y="0"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</CheckButton>
+				</Frames>
+			</Frame>
+			<Frame parentKey="AvailabilityFrame" inherits="GuildRecruitmentSectionTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.InterestFrame" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
+				</Anchors>
+				<Frames>
+					<CheckButton parentKey="WeekdaysButton" inherits="GuildRecruitmentCheckButtonTemplate" id="6">
+						<Size x="20" y="20"/>
+						<Anchors>
+							<Anchor point="TOP" x="0" y="-21"/>
+							<Anchor point="LEFT" relativeKey="$parent.$parent.InterestFrame.QuestButton" relativePoint="LEFT"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString parentKey="Text" inherits="GameFontHighlightSmall" text="GUILD_AVAILABILITY_WEEKDAYS">
+									<Anchors>
+										<Anchor point="LEFT" relativePoint="RIGHT" x="3" y="0"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</CheckButton>
+					<CheckButton parentKey="WeekendsButton" inherits="GuildRecruitmentCheckButtonTemplate" id="7">
+						<Size x="20" y="20"/>
+						<Anchors>
+							<Anchor point="TOP" x="0" y="-21"/>
+							<Anchor point="LEFT" relativeKey="$parent.$parent.InterestFrame.DungeonButton" relativePoint="LEFT"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString parentKey="Text" inherits="GameFontHighlightSmall" text="GUILD_AVAILABILITY_WEEKENDS">
+									<Anchors>
+										<Anchor point="LEFT" relativePoint="RIGHT" x="3" y="0"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</CheckButton>
+				</Frames>
+			</Frame>
+			<Frame parentKey="RolesFrame" inherits="GuildRecruitmentSectionTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.AvailabilityFrame" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
+				</Anchors>
+				<Frames>
+					<Button parentKey="TankButton" inherits="GuildRecruitmentRoleTemplate" id="2">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="30" y="-24"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("TANK"));
+								self.param = LFGUILD_PARAM_TANK;
+								self.Text:SetText(TANK);
+							</OnLoad>
+						</Scripts>
+					</Button>
+					<Button parentKey="HealerButton" inherits="GuildRecruitmentRoleTemplate" id="3">
+						<Anchors>
+							<Anchor point="TOP" x="1" y="-24"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("HEALER"));
+								self.param = LFGUILD_PARAM_HEALER;
+								self.Text:SetText(HEALER);
+							</OnLoad>
+						</Scripts>
+					</Button>
+					<Button parentKey="DamagerButton" inherits="GuildRecruitmentRoleTemplate" id="1">
+						<Anchors>
+							<Anchor point="TOPRIGHT" x="-30" y="-24"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("DAMAGER"));
+								self.param = LFGUILD_PARAM_DAMAGE;
+								self.Text:SetText(DAMAGER);
+							</OnLoad>
+						</Scripts>
+					</Button>
+				</Frames>
+			</Frame>
+			<Frame parentKey="LevelFrame" inherits="GuildRecruitmentSectionTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.RolesFrame" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="LevelAnyText" inherits="GameFontHighlightSmall" text="GUILD_RECRUITMENT_ANYLEVEL">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="31" y="-26"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="LevelMaxText" inherits="GameFontHighlightSmall" text="GUILD_RECRUITMENT_MAXLEVEL">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="TOP" x="-8" y="-26"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<CheckButton parentKey="LevelAnyButton" inherits="UIRadioButtonTemplate">
+						<Anchors>
+							<Anchor point="RIGHT" relativeKey="$parent.LevelAnyText" relativePoint="LEFT" x="-3" y="0"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								GuildRecruitmentLevelFrame_SelectLevelButton(self:GetParent(), 1, true);
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+					<CheckButton parentKey="LevelMaxButton" inherits="UIRadioButtonTemplate">
+						<Anchors>
+							<Anchor point="RIGHT" relativeKey="$parent.LevelMaxText" relativePoint="LEFT" x="-3" y="0"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								GuildRecruitmentLevelFrame_SelectLevelButton(self:GetParent(), 2, true);
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+				</Frames>
+			</Frame>
+			<Frame parentKey="CommentFrame" inherits="GuildRecruitmentSectionTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.LevelFrame" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
+				</Anchors>
+				<Frames>
+					<Frame parentKey="CommentInputFrame">
+						<Size x="286" y="62"/>
+						<Anchors>
+							<Anchor point="TOP" x="0" y="-5"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture name="$parentTopLeft" file="Interface\Common\Common-Input-Border-TL">
+									<Size x="8" y="8"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" x="0" y="0"/>
+									</Anchors>
+								</Texture>
+								<Texture name="$parentTopRight" file="Interface\Common\Common-Input-Border-TR">
+									<Size x="8" y="8"/>
+									<Anchors>
+										<Anchor point="TOPRIGHT" x="0" y="0"/>
+									</Anchors>
+								</Texture>
+								<Texture name="$parentTop" file="Interface\Common\Common-Input-Border-T">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeTo="$parentTopLeft" relativePoint="TOPRIGHT"/>
+										<Anchor point="BOTTOMRIGHT" relativeTo="$parentTopRight" relativePoint="BOTTOMLEFT"/>
+									</Anchors>
+								</Texture>
+								<Texture name="$parentBottomLeft" file="Interface\Common\Common-Input-Border-BL">
+									<Size x="8" y="8"/>
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" x="0" y="0"/>
+									</Anchors>
+								</Texture>
+								<Texture name="$parentBottomRight" file="Interface\Common\Common-Input-Border-BR">
+									<Size x="8" y="8"/>
+									<Anchors>
+										<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+									</Anchors>
+								</Texture>
+								<Texture name="$parentBottom" file="Interface\Common\Common-Input-Border-B">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeTo="$parentBottomLeft" relativePoint="TOPRIGHT"/>
+										<Anchor point="BOTTOMRIGHT" relativeTo="$parentBottomRight" relativePoint="BOTTOMLEFT"/>
+									</Anchors>
+								</Texture>
+								<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border-L">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeTo="$parentTopLeft" relativePoint="BOTTOMLEFT"/>
+										<Anchor point="BOTTOMRIGHT" relativeTo="$parentBottomLeft" relativePoint="TOPRIGHT"/>
+									</Anchors>
+								</Texture>
+								<Texture name="$parentRight" file="Interface\Common\Common-Input-Border-R">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeTo="$parentTopRight" relativePoint="BOTTOMLEFT"/>
+										<Anchor point="BOTTOMRIGHT" relativeTo="$parentBottomRight" relativePoint="TOPRIGHT"/>
+									</Anchors>
+								</Texture>
+								<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border-M">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeTo="$parentLeft" relativePoint="TOPRIGHT"/>
+										<Anchor point="BOTTOMRIGHT" relativeTo="$parentRight" relativePoint="BOTTOMLEFT"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Frames>
+							<ScrollFrame name="$parentScrollFrame" parentKey="ScrollFrame" inherits="UIPanelScrollFrameTemplate">
+								<Anchors>
+									<Anchor point="TOPLEFT" x="6" y="-6"/>
+									<Anchor point="BOTTOMRIGHT" x="0" y="6"/>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										local scrollBar = _G[self:GetName().."ScrollBar"];
+										scrollBar:ClearAllPoints();
+										scrollBar:SetPoint("TOPLEFT", self, "TOPRIGHT", -18, -10);
+										scrollBar:SetPoint("BOTTOMLEFT", self, "BOTTOMRIGHT", -18, 8);
+										-- reposition the up and down buttons
+										_G[self:GetName().."ScrollBarScrollDownButton"]:SetPoint("TOP", scrollBar, "BOTTOM", 0, 4);
+										_G[self:GetName().."ScrollBarScrollUpButton"]:SetPoint("BOTTOM", scrollBar, "TOP", 0, -4);
+										-- make the scroll bar hideable and force it to start off hidden so positioning calculations can be done
+										-- as soon as it needs to be shown
+										self.scrollBarHideable = 1;
+										scrollBar:Hide();
+									</OnLoad>
+									<OnMouseDown>
+										self.CommentEditBox:SetFocus();
+									</OnMouseDown>
+								</Scripts>
+								<ScrollChild>
+									<EditBox parentKey="CommentEditBox" multiLine="true" letters="255" countInvisibleLetters="true" autoFocus="false">
+										<Size x="258" y="1"/>
+										<Layers>
+											<Layer level="BORDER">
+												<FontString parentKey="Fill" inherits="GameFontHighlightSmall" justifyH="LEFT" justifyV="MIDDLE" text="CLICK_TO_ENTER_COMMENT">
+													<Anchors>
+														<Anchor point="LEFT" x="3" y="0"/>
+													</Anchors>
+													<Color r="0.35" g="0.35" b="0.35"/>
+												</FontString>
+											</Layer>
+										</Layers>
+										<Scripts>
+											<OnTabPressed>
+												self:SetFocus();
+											</OnTabPressed>
+											<OnEditFocusLost function="GuildRecruitmentComment_SaveText"/>
+											<OnTextChanged>
+												ScrollingEdit_OnTextChanged(self, self:GetParent());
+												if ( self:GetText() ~= "" ) then
+													self.Fill:Hide();
+												else
+													self.Fill:Show();
+												end
+											</OnTextChanged> 
+											<OnCursorChanged function="ScrollingEdit_OnCursorChanged"/>
+											<OnUpdate>
+												ScrollingEdit_OnUpdate(self, elapsed, self:GetParent());
+											</OnUpdate>
+											<OnEscapePressed>
+												self:ClearFocus();
+											</OnEscapePressed>
+											<OnEnterPressed>
+												self:ClearFocus();
+											</OnEnterPressed>
+										</Scripts>
+										<FontString inherits="GameFontHighlightSmall"/>
+									</EditBox>
+								</ScrollChild>
+							</ScrollFrame>
+						</Frames>
+					</Frame>
+				</Frames>
+			</Frame>
+			<Button parentKey="ListGuildButton" inherits="MagicButtonTemplate" text="GUILD_OPEN_RECRUITMENT">
+				<Size x="136" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="0" y="-22"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="GuildRecruitmentListGuildButton_OnClick"/>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad function="GuildRecruitmentFrameRecruitment_OnLoad"/>
+		</Scripts>
+	</Frame>
+<!--
+*******************************************************************************
+	GuildRecruitmentFrameApplicants
+*******************************************************************************
+-->
+	<Frame name="GuildRecruitmentFrameApplicantsTemplate" virtual="true">
+		<Frames>
+			<ScrollFrame name="$parentContainer" parentKey="Container" inherits="HybridScrollFrameTemplate" hidden="false">
+				<Size x="304" y="332"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="4" y="-4"/>
+				</Anchors>
+				<Frames>
+					<Slider parentKey="ScrollBar" inherits="HybridScrollBarTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="-12"/>
+							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="13"/>
+						</Anchors>
+					</Slider>
+				</Frames>
+			</ScrollFrame>
+			<Button parentKey="InviteButton" inherits="MagicButtonTemplate" text="INVITE">
+				<Size x="92" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="0" y="-22"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+						local name = GetGuildApplicantInfo(GetGuildApplicantSelection());
+						if ( name ) then
+							GuildInvite(name);
+						end
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button parentKey="DeclineButton" inherits="MagicButtonTemplate" text="DECLINE">
+				<Size x="92" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="0" y="-22"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+						DeclineGuildApplicant(GetGuildApplicantSelection());
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button parentKey="MessageButton" inherits="MagicButtonTemplate" text="SEND_MESSAGE">
+				<Size x="0" y="22"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.InviteButton" relativePoint="RIGHT"/>
+					<Anchor point="RIGHT" relativeKey="$parent.DeclineButton" relativePoint="LEFT"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+						local name = GetGuildApplicantInfo(GetGuildApplicantSelection());
+						if ( name ) then
+							ChatFrame_SendTell(name);
+						end
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Frame parentKey="DropDown" inherits="UIDropDownMenuTemplate" hidden="true">
+				<Size x="10" y="10"/>
+				<Scripts>
+					<OnLoad function="GuildRecruitmentDropDown_OnLoad"/>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad function="GuildRecruitmentFrameApplicants_OnLoad"/>
+			<OnShow function="GuildRecruitmentFrameApplicants_OnShow"/>
+		</Scripts>
+	</Frame>
+<!--
+*******************************************************************************
+	RecruitmentFrame
+*******************************************************************************
+-->	
+	<Frame name="GuildRecruitmentFrame" movable="true" parent="UIParent" topLevel="true" inherits="ButtonFrameTemplate" hidden="true">
+		<Size x="338" y="424"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="TabardBackground" file="Interface\GuildFrame\GuildFrame">
+					<Size x="56" y="56"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-4" y="4"/>
+					</Anchors>
+					<TexCoords left="0.63183594" right="0.69238281" top="0.61914063" bottom="0.74023438"/>
+					<Color r="0.5" b="0.5" g="0.5"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture parentKey="TabardEmblem" file="Interface\FriendsFrame\PlusManz-Horde" hidden="false">
+					<Size x="47" y="47"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.TabardBackground" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="2">
+				<Texture parentKey="TabardBorder" file="Interface\GuildFrame\GuildFrame">
+					<Size x="56" y="56"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.TabardBackground" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0.63183594" right="0.69238281" top="0.74414063" bottom="0.86523438"/>
+					<Color r="0.25" b="0.25" g="0.25"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentTab1" parentKey="Tab1" inherits="TabButtonTemplate" text="GUILDINFOTAB_INFO" id="1">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeTo="$parentInset" relativePoint="TOPLEFT" x="60" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						PanelTemplates_TabResize(self, 0);
+						_G[self:GetName().."HighlightTexture"]:SetWidth(self:GetTextWidth() + 31);
+					</OnLoad>
+					<OnClick>
+						local guildRecruitmentFrame = self:GetParent();
+						PanelTemplates_Tab_OnClick(self, guildRecruitmentFrame);
+						GuildRecruitmentFrame_Update(guildRecruitmentFrame);
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentTab2" parentKey="Tab2" inherits="TabButtonTemplate" text="GUILDINFOTAB_RECRUITMENT" id="2">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Tab1" relativePoint="RIGHT"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						local guildRecruitmentFrame = self:GetParent();
+						PanelTemplates_Tab_OnClick(self, guildRecruitmentFrame);
+						GuildRecruitmentFrame_Update(guildRecruitmentFrame);
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Frame parentKey="Recruitment" name="$parentRecruitment" inherits="GuildRecruitmentFrameRecruitmentTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentInset" relativePoint="TOPLEFT" x="0" y="0"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parentInset" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="Applicants" name="$parentApplicants" inherits="GuildRecruitmentFrameApplicantsTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentInset" relativePoint="TOPLEFT" x="0" y="0"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parentInset" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad function="GuildRecruitmentFrame_OnLoad"/>
+			<OnEvent function="GuildRecruitmentFrame_OnEvent"/>
+			<OnShow function="GuildRecruitmentFrame_OnShow"/>
+		</Scripts>
+	</Frame>
+</Ui>

@@ -50,8 +50,6 @@ function WorldStateScoreFrame_OnEvent(self, event, ...)
 		self.firstOpen = false;
 		self.leaving = nil;
 		BATTLEFIELD_SHUTDOWN_TIMER = 0;
-	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
-		WorldStateScoreFrame_ToggleBattlefieldMinimap();
 	elseif ( event == "PLAYER_ENTERING_BATTLEGROUND" ) then
 		WorldStateScoreFrameQueueButton:Enable();
 	elseif ( event == "LFG_ROLE_CHECK_DECLINED" or event == "LFG_READY_CHECK_DECLINED" ) then
@@ -65,37 +63,6 @@ function WorldStateScoreFrame_OnShow(self)
 	WorldStateScoreFrame_Resize();
 	WorldStateScoreFrame_Update();
 	WorldStateScoreFrameTab_OnClick(WorldStateScoreFrameTab1);
-end
-
-function WorldStateScoreFrame_ToggleBattlefieldMinimap()
-	local _, instanceType = IsInInstance();
-	if ( instanceType ~= "pvp" and instanceType ~= "none" ) then
-		if ( BattlefieldMinimap and BattlefieldMinimap:IsShown() ) then
-			BattlefieldMinimap:Hide();
-		end
-		return;
-	end
-
-	if ( WorldStateScoreFrame_CanShowBattlefieldMinimap() ) then
-		if ( not BattlefieldMinimap ) then
-			BattlefieldMinimap_LoadUI();
-		end
-		BattlefieldMinimap:Show();
-	end
-end
-
-function WorldStateScoreFrame_CanShowBattlefieldMinimap()
-	local _, instanceType = IsInInstance();
-
-	if ( instanceType == "pvp" ) then
-		return GetCVar("showBattlefieldMinimap") == "1";
-	end
-
-	if ( instanceType == "none" ) then
-		return GetCVar("showBattlefieldMinimap") == "2";
-	end
-
-	return false;
 end
 
 function WorldStateButtonDropDown_Initialize()

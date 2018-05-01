@@ -140,32 +140,6 @@ function CommunitiesMemberListMixin:OnDropDownClosed()
 	self.selectedEntry = nil;
 end
 
-function CommunitiesMemberListMixin:RemoveSelectedEntryFromCommunity()
-	local selectedEntry = self:GetSelectedEntry();
-	if selectedEntry then
-		local clubId = self:GetSelectedClubId();
-		local memberId = selectedEntry:GetMemberId();
-		if clubId and memberId then
-			local clubInfo = C_Club.GetClubInfo(clubId);
-			local memberInfo = C_Club.GetMemberInfo(clubId, memberId);
-			if clubInfo and memberInfo then
-				StaticPopup_Show("CONFIRM_REMOVE_COMMUNITY_MEMBER", nil, nil, { clubType = clubInfo.clubType, name = memberInfo.name, clubId = clubId, memberId = memberId });
-			end
-		end
-	end
-end
-
-function CommunitiesMemberListMixin:AssignRoleToSelectedEntry(roleId)
-	local selectedEntry = self:GetSelectedEntry();
-	if selectedEntry then
-		local clubId = self:GetSelectedClubId();
-		local memberId = selectedEntry:GetMemberId()
-		if clubId and memberId then
-			C_Club.AssignMemberRole(clubId, memberId, roleId);
-		end
-	end
-end
-
 function CommunitiesMemberListMixin:GetSelectedClubId()
 	return self:GetCommunitiesFrame():GetSelectedClubId();
 end
@@ -248,7 +222,7 @@ function CommunitiesMemberListEntryMixin:SetMember(clubId, memberId)
 	self.memberId = memberId;
 	if memberId then
 		local memberInfo = C_Club.GetMemberInfo(clubId, memberId);
-		self.NameFrame.Name:SetText(memberInfo.name);
+		self.NameFrame.Name:SetText(memberInfo.name or "");
 		self:UpdateRank(memberInfo.role);
 		self:UpdatePresence(memberInfo.presence);
 		self:RefreshExpandedColumns();
@@ -275,6 +249,10 @@ function CommunitiesMemberListEntryMixin:OnEnter()
 	local memberId = self:GetMemberId();
 	if clubId and memberId then
 		local member = C_Club.GetMemberInfo(clubId, memberId);
+		if not member.name then
+			return;
+		end
+		
 		GameTooltip:SetOwner(self);
 		GameTooltip:AddLine(member.name);
 		
@@ -412,9 +390,11 @@ function CommunitiesMemberListDropDown_OnHide(self)
 	CommunitiesMemberList:OnDropDownClosed();
 end
 
-local function CanKickMember(clubPrivileges, memberInfo)
-	return tContains(clubPrivileges.kickableRoleIds, memberInfo.role);
-end
+local clubTypeToUnitPopup = {
+	[Enum.ClubType.BattleNet] = "COMMUNITIES_MEMBER",
+	[Enum.ClubType.Character] = "COMMUNITIES_WOW_MEMBER",
+	[Enum.ClubType.Guild] = "COMMUNITIES_WOW_MEMBER",
+};
 
 function CommunitiesMemberListDropdown_Initialize(self, level)
 	local CommunitiesMemberList = self:GetParent();
@@ -427,67 +407,14 @@ function CommunitiesMemberListDropdown_Initialize(self, level)
 	local memberId = SelectedCommunitiesMemberListEntry:GetMemberId();
 	local memberInfo = C_Club.GetMemberInfo(clubId, memberId);
 	local clubPrivileges = C_Club.GetClubPrivileges(clubId);
-	local myMemberInfo = C_Club.GetMemberInfoForSelf(clubId);
-	if memberInfo then
-		if level == 1 then
-			if myMemberInfo and myMemberInfo.memberId == memberInfo.memberId then
-				info = CommunitiesDropDown_GetLeaveCommunityButtonInfo(clubId);
-				if info then
-					UIDropDownMenu_AddButton(info, level);
-				end
-			else
-				if CanKickMember(clubPrivileges, memberInfo) then
-					local info = UIDropDownMenu_CreateInfo();
-					info.text = COMMUNITY_MEMBER_LIST_DROP_DOWN_REMOVE;
-					info.func = function()
-						CommunitiesMemberList:RemoveSelectedEntryFromCommunity();
-					end 
-					
-					info.isNotRadio = true;
-					info.notCheckable = true;
-					UIDropDownMenu_AddButton(info, level);
-				end
-			end
-			
-			if (memberInfo.isSelf and clubPrivileges.canSetOwnMemberNote) or (not memberInfo.isSelf and clubPrivileges.canSetOtherMemberNote) then
-				local info = UIDropDownMenu_CreateInfo();
-				info.text = COMMUNITY_MEMBER_LIST_DROP_DOWN_SET_NOTE;
-				info.func = function()
-					StaticPopup_Show("SET_COMMUNITY_MEMBER_NOTE", memberInfo.name, nil, { clubId = clubId, memberId = memberId });
-				end 
-				
-				info.isNotRadio = true;
-				info.notCheckable = true;
-				UIDropDownMenu_AddButton(info, level);
-			end
-			
-			local assignableRoles = C_Club.GetAssignableRoles(clubId, memberId);
-			if assignableRoles and #assignableRoles > 0 then
-				local info = UIDropDownMenu_CreateInfo();
-				info.hasArrow = true;
-				info.notCheckable = true;
-				info.text = COMMUNITY_MEMBER_LIST_DROP_DOWN_ROLES;
-				UIDropDownMenu_AddButton(info, level);
-			end
-		elseif level == 2 then
-			local assignableRoles = C_Club.GetAssignableRoles(clubId, memberId);
-			if assignableRoles and #assignableRoles > 0 then
-				local function AssignRole(button, roleId)
-					CommunitiesMemberList:AssignRoleToSelectedEntry(roleId);
-					CloseDropDownMenus();
-				end
-				
-				local info = UIDropDownMenu_CreateInfo();
-				info.func = AssignRole;
-				info.isNotRadio = true;
-				info.notCheckable = true;
-				for i, roleId in ipairs(assignableRoles) do
-					info.text = COMMUNITY_MEMBER_ROLE_NAMES[roleId];
-					info.arg1 = roleId;
-					UIDropDownMenu_AddButton(info, level);
-				end
-			end
-		end
+	local clubInfo = C_Club.GetClubInfo(clubId);
+
+	if memberInfo and clubInfo then
+		self.clubMemberInfo = memberInfo;
+		self.clubInfo = clubInfo;
+		self.clubPrivileges = clubPrivileges;
+		self.clubAssignableRoles = C_Club.GetAssignableRoles(clubId, memberId);
+		UnitPopup_ShowMenu(self, clubTypeToUnitPopup[clubInfo.clubType], nil, memberInfo.name);
 	end
 end
 

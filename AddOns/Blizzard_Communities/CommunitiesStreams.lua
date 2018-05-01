@@ -105,6 +105,11 @@ end
 function CommunitiesAddToChatMixin:OnClick()
 	self:Reset();
 	
+	local communitiesFrame = self:GetCommunitiesFrame();
+	local clubId = communitiesFrame:GetSelectedClubId();
+	local streamId = communitiesFrame:GetSelectedStreamId();
+	local channelName = Chat_GetCommunitiesChannelName(clubId, streamId);
+	
 	for i = 1, NUM_CHAT_WINDOWS do
 		local chatWindow = _G["ChatFrame"..i];
 		if chatWindow:IsVisible() and chatWindow ~= COMBATLOG then
@@ -113,6 +118,7 @@ function CommunitiesAddToChatMixin:OnClick()
 			highlightFrame:SetPoint("TOPLEFT", chatWindow, "TOPLEFT", -2, 3);
 			highlightFrame:SetPoint("BOTTOMRIGHT", chatWindow, "BOTTOMRIGHT", 2, -7);
 			highlightFrame:SetChatFrameIndex(i);
+			highlightFrame:SetStyle(not ChatFrame_ContainsChannel(chatWindow, channelName));
 			highlightFrame:Show();
 		end
 	end
@@ -124,8 +130,7 @@ function CommunitiesAddToChatMixin:OnClick()
 		self.CommunitiesAddStreamHighlightTab:SetPoint("BOTTOMLEFT", lastDockedFrame, "BOTTOMRIGHT", -7, 0);
 	end
 	
-	local communitiesFrame = self:GetCommunitiesFrame();
-	C_Cursor.SetCursorCommunitiesStream(communitiesFrame:GetSelectedClubId(), communitiesFrame:GetSelectedStreamId());
+	C_Cursor.SetCursorCommunitiesStream(clubId, streamId);
 end
 
 function CommunitiesAddToChatMixin:Reset()
@@ -147,14 +152,36 @@ function CommunitiesAddStreamHighlightFrameMixin:SetChatFrameIndex(index)
 	self.chatFrameIndex = index;
 end
 
+function CommunitiesAddStreamHighlightFrameMixin:GetStyle()
+	return self.add;
+end
+
+function CommunitiesAddStreamHighlightFrameMixin:SetStyle(add)
+	self.add = add;
+	if add then
+		self.Body:SetAtlas("communities-chat-body-add");
+		self.Icon:SetAtlas("communities-chat-icon-plus");
+	else
+		self.Body:SetAtlas("communities-chat-body-remove");
+		self.Icon:SetAtlas("communities-chat-icon-minus");
+	end
+end
+
 function CommunitiesAddStreamHighlightFrameMixin:OnClick()
 	local clubId, streamId = C_Cursor.GetCursorCommunitiesStream();
 	if clubId then
 		local chatFrame = Chat_GetChatFrame(self.chatFrameIndex);
 		if chatFrame then
-			C_Club.AddClubStreamToChatWindow(clubId, streamId, self.chatFrameIndex);
-			ChatFrame_AddChannel(chatFrame, Chat_GetCommunitiesChannelName(clubId, streamId));
-			self:GetParent():Reset();
+			local channelName = Chat_GetCommunitiesChannelName(clubId, streamId);
+			local add = self:GetStyle();
+			if add then
+				C_Club.AddClubStreamToChatWindow(clubId, streamId, self.chatFrameIndex);
+				ChatFrame_AddChannel(chatFrame, channelName);
+				self:GetParent():Reset();
+			else
+				ChatFrame_RemoveChannel(chatFrame, channelName);
+				self:GetParent():Reset();
+			end
 		end
 	end
 end

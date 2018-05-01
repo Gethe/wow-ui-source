@@ -9,11 +9,14 @@ function GroupMembersDataProviderMixin:OnAdded(mapCanvas)
 	pin:SetNeedsPeriodicUpdate(true);
 	pin:UpdateShownUnits();
 	self.pin = pin;
+	self.onClickHandler = self.onClickHandler or function(mapCanvas, button, cursorX, cursorY) return self.pin:OnCanvasClicked(button, cursorX, cursorY) end;
+	mapCanvas:AddCanvasClickHandler(self.onClickHandler);
 end
 
 function GroupMembersDataProviderMixin:OnRemoved(mapCanvas)
 	MapCanvasDataProviderMixin.OnRemoved(self, mapCanvas);
 	self:GetMap():RemoveAllPinsByTemplate("GroupMembersPinTemplate");
+	mapCanvas:RemoveCanvasClickHandler(self.onClickHandler);
 end
 
 function GroupMembersDataProviderMixin:OnMapChanged()
@@ -133,4 +136,68 @@ end
 
 function GroupMembersPinMixin:OnCanvasScaleChanged()
 	self:SynchronizePinSizes();
+end
+
+function GroupMembersPinMixin:OnCanvasClicked(button, cursorX, cursorY)
+	self.reportableUnits = { };
+	if GetCVarBool("enablePVPNotifyAFK") and button == "RightButton" then
+		local _, instanceType = IsInInstance();
+		if instanceType == "pvp" or IsInActiveWorldPVP() then
+			local timeNowSeconds = GetTime();
+			local mouseOverUnits = self:GetCurrentMouseOverUnits();
+			for unit in pairs(mouseOverUnits) do
+				if unit ~= "player" and not GetIsPVPInactive(unit, timeNowSeconds) then
+					tinsert(self.reportableUnits, unit);
+				end
+			end
+		end
+
+		if #self.reportableUnits > 0 then
+			local function InitializeReportDropDown(self)
+				self:GetParent():InitializeReportDropDown();
+			end
+			UIDropDownMenu_Initialize(self.ReportDropDown, InitializeReportDropDown, "MENU");
+			ToggleDropDownMenu(1, nil, self.ReportDropDown, "cursor", 0, -5);
+			return true;
+		end
+	end
+
+	return false;
+end
+
+function GroupMembersPinMixin:InitializeReportDropDown()
+	local info = UIDropDownMenu_CreateInfo();
+	info.text = PVP_REPORT_AFK;
+	info.notClickable = 1;
+	info.isTitle = 1;
+	info.notCheckable = true;
+	UIDropDownMenu_AddButton(info);
+
+	for i, unit in ipairs(self.reportableUnits) do
+		info = UIDropDownMenu_CreateInfo();
+		info.func = function(self, unit)
+			ReportPlayerIsPVPAFK(unit);
+		end;
+		info.arg1 = unit;
+		info.text = UnitName(unit);
+		info.notCheckable = true;
+		UIDropDownMenu_AddButton(info);
+	end
+
+	if #self.reportableUnits > 1 then
+		info = UIDropDownMenu_CreateInfo();
+		info.func = function()
+			for i, unit in ipairs(self.reportableUnits) do
+				ReportPlayerIsPVPAFK(unit);
+			end
+		end;
+		info.text = PVP_REPORT_AFK_ALL;
+		info.notCheckable = true;
+		UIDropDownMenu_AddButton(info);
+	end
+
+	info = UIDropDownMenu_CreateInfo();
+	info.text = CANCEL;
+	info.notCheckable = true;
+	UIDropDownMenu_AddButton(info);
 end

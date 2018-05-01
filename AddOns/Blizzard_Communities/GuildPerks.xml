@@ -1,0 +1,160 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="GuildPerks.lua"/>
+	<Button name="GuildPerksButtonTemplate" virtual="true">
+		<Size x="270" y="44"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Left" file="Interface\GuildFrame\GuildFrame">
+					<Size x="16" y="40"/>
+					<Anchors>
+						<Anchor point="LEFT" x="44" y="0"/>
+					</Anchors>
+					<TexCoords left="0.48144531" right="0.49707031" top="0.88281250" bottom="0.96093750"/>
+				</Texture>
+				<Texture parentKey="Right" file="Interface\GuildFrame\GuildFrame">
+					<Size x="16" y="40"/>
+					<Anchors>
+						<Anchor point="RIGHT" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0.44628906" right="0.46191406" top="0.88281250" bottom="0.96093750"/>
+				</Texture>
+				<Texture file="Interface\GuildFrame\GuildFrame">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Left" relativePoint="TOPRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Right" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+					<TexCoords left="0.46386719" right="0.47949219" top="0.88281250" bottom="0.96093750"/>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture file="Interface\GuildFrame\GuildFrame" setAllPoints="true">
+					<TexCoords left="0.49902344" right="0.51464844" top="0.88281250" bottom="0.96093750"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon">
+					<Size x="39" y="39"/>
+					<Anchors>
+						<Anchor point="LEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Name" inherits="GameFontHighlight" justifyH="LEFT">
+					<Size x="0" y="36"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Left" x="6" y="0"/>
+						<Anchor point="RIGHT" x="-12" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="NormalBorder" setAllPoints="true" hidden="true">
+				<Layers>
+					<Layer level="BORDER">
+						<Texture parentKey="Left" file="Interface\GuildFrame\GuildFrame">
+							<Size x="16" y="40"/>
+							<Anchors>
+								<Anchor point="LEFT" x="44" y="0"/>
+							</Anchors>
+							<TexCoords left="0.48144531" right="0.49707031" top="0.88281250" bottom="0.96093750"/>
+						</Texture>
+						<Texture parentKey="Right" file="Interface\GuildFrame\GuildFrame">
+							<Size x="16" y="40"/>
+							<Anchors>
+								<Anchor point="RIGHT" x="-20" y="0"/>
+							</Anchors>
+							<TexCoords left="0.44628906" right="0.46191406" top="0.88281250" bottom="0.96093750"/>
+						</Texture>
+						<Texture file="Interface\GuildFrame\GuildFrame">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Left" relativePoint="TOPRIGHT"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Right" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+							<TexCoords left="0.46386719" right="0.47949219" top="0.88281250" bottom="0.96093750"/>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="DisabledBorder" setAllPoints="true" hidden="true">
+				<Layers>
+					<Layer level="BORDER">
+						<Texture parentKey="Left" file="Interface\GuildFrame\GuildFrame">
+							<Size x="16" y="40"/>
+							<Anchors>
+								<Anchor point="LEFT" x="44" y="0"/>
+							</Anchors>
+							<TexCoords left="0.42871094" right="0.44433594" top="0.88281250" bottom="0.96093750"/>
+						</Texture>
+						<Texture parentKey="Right" file="Interface\GuildFrame\GuildFrame">
+							<Size x="16" y="40"/>
+							<Anchors>
+								<Anchor point="RIGHT" x="-20" y="0"/>
+							</Anchors>
+							<TexCoords left="0.39843750" right="0.41406250" top="0.88671875" bottom="0.96484375"/>
+						</Texture>
+						<Texture file="Interface\GuildFrame\GuildFrame">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Left" relativePoint="TOPRIGHT"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Right" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+							<TexCoords left="0.49902344" right="0.51464844" top="0.88281250" bottom="0.96093750"/>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnEnter function="GuildPerksButton_OnEnter"/>
+			<OnLeave function="GuildPerksButton_OnLeave"/>
+			<OnClick function="GuildPerksButton_OnClick"/>
+		</Scripts>
+	</Button>
+
+	<Frame name="GuildPerksFrameTemplate" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture file="Interface\GuildFrame\GuildFrame">
+					<Size x="285" y="335"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+					<TexCoords left="0.63183594" right="0.94531250" top="0.00195313" bottom="0.57226563"/>
+				</Texture>
+				<FontString parentKey="TitleText" inherits="GameFontNormalMed1" justifyH="LEFT" text="GUILD_PERKS_TITLE">
+					<Size x="232" y="38"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="10" y="35"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<ScrollFrame name="$parentContainer" parentKey="Container" inherits="MinimalHybridScrollFrameTemplate">
+				<Size x="260" y="326"/>
+				<KeyValues>
+					<KeyValue key="buttonWidth" value="260" type="number"/>
+					<KeyValue key="width" value="260" type="number"/>
+					<KeyValue key="height" value="326" type="number"/>
+					<KeyValue key="yOffset" value="-4" type="number"/>
+					<KeyValue key="buttonWidthNoScroll" value="270" type="number"/>
+					<KeyValue key="widthNoScroll" value="304" type="number"/>
+					<KeyValue key="heightNoScroll" value="310" type="number"/>
+					<KeyValue key="yOffsetNoScroll" value="-8" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="0" y="-4"/>
+				</Anchors>
+			</ScrollFrame>
+		</Frames>
+		<Scripts>
+			<OnLoad function="GuildPerksFrame_OnLoad"/>
+			<OnShow function="GuildPerksFrame_OnShow"/>
+			<OnEvent function="GuildPerksFrame_OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

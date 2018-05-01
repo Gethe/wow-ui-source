@@ -20,7 +20,6 @@ AdventureJournalDocumentation.lua
 AdventureMapDocumentation.lua
 AlliedRacesFrameDocumentation.lua
 AreaPoiInfoDocumentation.lua
-ArtifactRelicForgeUIDocumentation.lua
 ArtifactUIDocumentation.lua
 AuctionHouseDocumentation.lua
 AzeriteEmpoweredItemDocumentation.lua
@@ -62,6 +61,7 @@ GuildInfoDocumentation.lua
 HeirloomInfoDocumentation.lua
 InstanceEncounterDocumentation.lua
 InvasionInfoDocumentation.lua
+IslandsInfoDocumentation.lua
 ItemDocumentation.lua
 ItemSocketInfoDocumentation.lua
 ItemTextDocumentation.lua

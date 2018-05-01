@@ -6,7 +6,7 @@
 		<Size x="50" y="50"/>
 
 		<Layers>
-			<Layer level="BACKGROUND" textureSubLevel="-3">
+			<Layer level="BACKGROUND" textureSubLevel="-4">
 				<Texture parentKey="Glow" alphaMode="ADD" file="Interface/WorldMap/UI-QuestPoi-IconGlow">
 					<Size x="72" y="72" />
 					<Anchors>
@@ -14,11 +14,19 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="BACKGROUND" textureSubLevel="-2">
+			<Layer level="BACKGROUND" textureSubLevel="-3">
 				<Texture parentKey="Underlay">
-					<Size x="72" y="72" />
+					<Size x="80" y="80" />
 					<Anchors>
 						<Anchor point="CENTER" x="0" y="-3" />
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="-2">
+				<Texture parentKey="BountyRing" atlas="worldquest-emissary-ring" hidden="true">
+					<Size x="72" y="72" />
+					<Anchors>
+						<Anchor point="CENTER" />
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -76,4 +84,8 @@
 			</Frame>
 		</Frames>
 	</Frame>
+
+	<CinematicModel name="WorldQuestSpellEffectPinTemplate" hidden="true" mixin="WorldQuestSpellEffectPinMixin" virtual="true">
+		<Size x="400" y="400"/>
+	</CinematicModel>
 </Ui>

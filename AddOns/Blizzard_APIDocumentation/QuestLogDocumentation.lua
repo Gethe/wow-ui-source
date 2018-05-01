@@ -54,6 +54,20 @@ local QuestLog =
 			},
 		},
 		{
+			Name = "IsOnQuest",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isOnQuest", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "SetMapForQuestPOIs",
 			Type = "Function",
 

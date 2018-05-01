@@ -2,6 +2,9 @@
 	<Script file="PropertySlider.lua"/>
 
 	<Slider name="PropertySliderTemplate" inherits="HorizontalSliderTemplate" mixin="PropertyBindingMixin, PropertySliderMixin" virtual="true">
+		<HitRectInsets>
+			<AbsInset left="0" right="0" top="0" bottom="0"/>
+		</HitRectInsets>
 		<Scripts>
 			<OnValueChanged method="OnValueChanged"/>
 			<OnEvent method="OnEvent"/>

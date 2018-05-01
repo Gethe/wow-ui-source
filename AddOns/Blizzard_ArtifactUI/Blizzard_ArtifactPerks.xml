@@ -159,14 +159,6 @@
 		<NormalTexture parentKey="NormalTexture" />
 		<HighlightTexture parentKey="HighlightTexture" alphaMode="ADD" />
 
-		<Frames>
-			<Frame parentKey="Rank" inherits="ArtifactRelicRankTemplate">
-				<Anchors>
-					<Anchor point="BOTTOMLEFT" x="25" y="6"/>
-				</Anchors>
-			</Frame>
-		</Frames>
-
 		<Scripts>
 			<OnLoad>
 				self.UpdateTooltip = self:GetScript("OnEnter");
@@ -396,48 +388,6 @@
 					<OnHide method="OnHide" />
 					<OnEvent method="OnEvent" />
 					<OnUpdate method="OnUpdate" />
-				</Scripts>
-			</Frame>
-			<Frame parentKey="RelicTalentAlert" inherits="GlowBoxTemplate" frameStrata="DIALOG">
-				<Size x="220" y="100"/>
-				<Anchors>
-					<Anchor point="TOP" relativeKey="$parent.RelicSlot1" relativePoint="BOTTOM" x="0" y="-20"/>
-				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<FontString parentKey="Text" inherits="GameFontHighlight" text="ARTIFACT_RELIC_TALENT_AVAILABLE">
-							<Size x="188" y="0"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" x="16" y="-24"/>
-							</Anchors>
-						</FontString>
-						<Texture parentKey="ArrowUp" inherits="HelpPlateArrowUP">
-							<Size x="53" y="21"/>
-							<Anchors>
-								<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-1"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="BORDER">
-						<Texture parentKey="ArrowGlowUp" inherits="HelpPlateArrow-GlowUP" alphaMode="ADD" alpha="0.5">
-							<Size x="53" y="21"/>
-							<Anchors>
-								<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-1"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Frames>
-					<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
-						<Anchors>
-							<Anchor point="TOPRIGHT" x="6" y="6"/>
-						</Anchors>
-					</Button>
-				</Frames>
-				<Scripts>
-					<OnLoad>
-						self:SetHeight(self.Text:GetHeight() + 43);
-					</OnLoad>
 				</Scripts>
 			</Frame>
 			<ModelScene parentKey="Tier2ForgingScene" setAllPoints="true" inherits="ModelSceneMixinTemplate" frameLevel="300">

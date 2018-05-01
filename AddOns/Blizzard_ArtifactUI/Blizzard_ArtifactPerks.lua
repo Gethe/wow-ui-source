@@ -100,15 +100,6 @@ function ArtifactPerksMixin:OnEvent(event, ...)
 end
 
 function ArtifactPerksMixin:OnUIOpened()
-	self.RelicTalentAlert:Hide();
-	for i, relicSlot in ipairs(self.TitleContainer.RelicSlots) do
-		local currentRank, canAddTalent = C_ArtifactUI.GetRelicSlotRankInfo(i);
-		if ( canAddTalent ) then
-			self.RelicTalentAlert:SetPoint("TOP", relicSlot, "BOTTOM", 0, -20);
-			self.RelicTalentAlert:Show();
-			break;
-		end
-	end
 
 	self:Refresh(true);
 end
@@ -1619,14 +1610,6 @@ function ArtifactTitleTemplateMixin:OnRelicSlotMouseEnter(relicSlot)
 	elseif relicSlot.relicLink then
 		GameTooltip:SetOwner(relicSlot, "ANCHOR_BOTTOMRIGHT", 0, 10);
 		GameTooltip:SetSocketedRelic(relicSlot.relicSlotIndex);
-		local currentRank, canAddTalent, artifactLevelRequiredForNextRank = C_ArtifactUI.GetRelicSlotRankInfo(relicSlot.relicSlotIndex);
-		if ( canAddTalent ) then
-			GameTooltip:AddLine(" ");
-			GameTooltip:AddLine(ARTIFACT_RELIC_TALENT_AVAILABLE, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
-		elseif ( artifactLevelRequiredForNextRank ) then
-			GameTooltip:AddLine(" ");
-			GameTooltip:AddLine(ARTIFACT_RELIC_SLOT_NEXT_RANK:format(currentRank + 1, artifactLevelRequiredForNextRank), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
-		end
 		GameTooltip:Show();
 	elseif relicSlot.relicType then
 		GameTooltip:SetOwner(relicSlot, "ANCHOR_BOTTOMRIGHT", 0, 10);
@@ -1760,20 +1743,6 @@ function ArtifactTitleTemplateMixin:EvaluateRelics()
 				relicSlot.Glass:Hide();
 			end
 			relicSlot.relicLink = relicLink;
-
-			local currentRank, canAddTalent = C_ArtifactUI.GetRelicSlotRankInfo(i);
-			if currentRank then
-				relicSlot.Rank:Show();
-				relicSlot.Rank.Text:SetText(currentRank);
-				if ( canAddTalent ) then
-					relicSlot.Rank.GlowAnim:Play();
-				else
-					relicSlot.Rank.GlowAnim:Stop();
-					relicSlot.Rank.Glow:SetAlpha(0);
-				end
-			else
-				relicSlot.Rank:Hide();
-			end
 		end
 
 		

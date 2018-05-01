@@ -228,11 +228,6 @@ function ArtifactUIMixin:RefreshKnowledgeRanks()
 		self.ForgeBadgeFrame.ForgeLevelBackground:Show();
 		self.ForgeBadgeFrame.ForgeLevelBackgroundBlack:Show();
 		self.ForgeLevelFrame:Show();
-
-		local knowledgeLevel = C_ArtifactUI.GetArtifactKnowledgeLevel();
-		if knowledgeLevel and knowledgeLevel > 0 and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_ARTIFACT_KNOWLEDGE) then
-			self.KnowledgeLevelHelpBox:Show();
-		end
 	else
 		self.ForgeBadgeFrame.ForgeLevelLabel:Hide();
 		self.ForgeBadgeFrame.ForgeLevelBackground:Hide();
@@ -251,20 +246,6 @@ function ArtifactUIMixin:OnKnowledgeEnter(knowledgeFrame)
 	GameTooltip:AddLine(ARTIFACTS_NUM_PURCHASED_RANKS:format(C_ArtifactUI.GetTotalPurchasedRanks()), HIGHLIGHT_FONT_COLOR:GetRGB());
 
 	local addedAnyMetaPowers = MetaPowerTooltipHelper(C_ArtifactUI.GetMetaPowerInfo());
-
-	local knowledgeLevel = C_ArtifactUI.GetArtifactKnowledgeLevel();
-	if knowledgeLevel and knowledgeLevel > 0 then
-		local knowledgeMultiplier = C_ArtifactUI.GetArtifactKnowledgeMultiplier();
-		local percentIncrease = math.floor(((knowledgeMultiplier - 1.0) * 100) + .5);
-		if percentIncrease > 0.0 then
-			if addedAnyMetaPowers then
-				GameTooltip:AddLine(" ");
-			end
-
-			GameTooltip:AddLine(ARTIFACTS_KNOWLEDGE_TOOLTIP_LEVEL:format(knowledgeLevel), HIGHLIGHT_FONT_COLOR:GetRGB());
-			GameTooltip:AddLine(ARTIFACTS_KNOWLEDGE_TOOLTIP_DESC:format(BreakUpLargeNumbers(percentIncrease)), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
-		end
-	end
 	
 	knowledgeFrame.UpdateTooltip = function() self:OnKnowledgeEnter(knowledgeFrame); end;
 	GameTooltip:Show();

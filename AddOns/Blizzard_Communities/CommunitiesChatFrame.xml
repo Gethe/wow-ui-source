@@ -71,6 +71,17 @@
 					<OnClick function="CommunitiesJumpToUnreadButton_OnClick"/>
 				</Scripts>
 			</Button>
+			<Frame parentKey="InsetFrame" inherits="InsetFrameTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="-10" y="9"/>
+					<Anchor point="BOTTOMRIGHT" x="0" y="-28"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.Bg:Hide();
+					</OnLoad>
+				</Scripts>
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>

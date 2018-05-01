@@ -931,7 +931,7 @@ function SCENARIO_CONTENT_TRACKER_MODULE:Update()
 		ObjectiveTracker_AddBlock(BlocksFrame);
 		BlocksFrame:Show();
 		if ( OBJECTIVE_TRACKER_UPDATE_REASON == OBJECTIVE_TRACKER_UPDATE_SCENARIO_NEW_STAGE and not inChallengeMode ) then
-			if ( ObjectiveTrackerFrame:IsVisible() ) then
+			if ( ObjectiveTrackerFrame:IsShown() ) then
 				if ( currentStage == 1 ) then
 					ScenarioBlocksFrame_SlideIn();
 				else

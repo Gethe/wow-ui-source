@@ -4,6 +4,13 @@
 	
 	<Frame name="CommunitiesGuildFinderFrameTemplate" virtual="true">
 		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture atlas="communities-widebackground" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 			<Layer level="BORDER">
 				<FontString parentKey="Name" inherits="Game24Font" text="GUILD">
 					<Anchors>
@@ -29,6 +36,17 @@
 					<OnClick function="CommunitiesGuildFinderFrameFindAGuildButton_OnClick"/>
 				</Scripts>
 			</Button>
+			<Frame parentKey="InsetFrame" inherits="InsetFrameTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="-4" y="3"/>
+					<Anchor point="BOTTOMRIGHT" x="6" y="-3"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.Bg:Hide();
+					</OnLoad>
+				</Scripts>
+			</Frame>
 		</Frames>
 	</Frame>
 </Ui>

@@ -25,6 +25,12 @@ end
 	return playerLocation;
 end
 
+--[[static]] function PlayerLocation:CreateFromVoiceID(memberID, channelID)
+	local playerLocation = CreateFromMixins(PlayerLocationMixin);
+	playerLocation:SetVoiceID(memberID, channelID);
+	return playerLocation;
+end
+
 --[[public api]]
 function PlayerLocationMixin:SetGUID(guid)
 	self:ClearAndSetField("guid", guid);
@@ -74,12 +80,28 @@ function PlayerLocationMixin:GetBattlefieldScoreIndex()
 	return self.battlefieldScoreIndex;
 end
 
+function PlayerLocationMixin:SetVoiceID(memberID, channelID)
+	self:Clear();
+	self.voiceMemberID = memberID;
+	self.voiceChannelID = channelID;
+end
+
+function PlayerLocationMixin:IsVoiceID()
+	return self.voiceMemberID ~= nil and self.voiceChannelID ~= nil;
+end
+
+function PlayerLocationMixin:GetVoiceID()
+	return self.voiceMemberID, self.voiceChannelID;
+end
+
 --[[private api]]
 function PlayerLocationMixin:Clear()
 	self.guid = nil;
 	self.unit = nil;
 	self.chatLineID = nil;
 	self.battlefieldScoreIndex = nil;
+	self.voiceMemberID = nil;
+	self.voiceChannelID = nil;
 end
 
 function PlayerLocationMixin:ClearAndSetField(fieldName, field)

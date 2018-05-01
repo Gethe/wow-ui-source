@@ -2081,7 +2081,7 @@ function GarrisonFollowerTabMixin:ShowFollower(followerID, followerList)
 		local weaponItemID, weaponItemLevel, armorItemID, armorItemLevel = C_Garrison.GetFollowerItems(followerInfo.followerID);
 		GarrisonFollowerPage_SetItem(self.ItemWeapon, weaponItemID, weaponItemLevel);
 		GarrisonFollowerPage_SetItem(self.ItemArmor, armorItemID, armorItemLevel);
-		if ( followerInfo.isMaxLevel ) then
+		if ( ShouldShowILevelInFollowerList(followerInfo) ) then
 			self.ItemAverageLevel.Level:SetText(ITEM_LEVEL_ABBR .. " " .. followerInfo.iLevel);
 			self.ItemAverageLevel.Level:Show();
 		else

@@ -5,7 +5,7 @@ function WorldMap_WorldQuestDataProviderMixin:GetPinTemplate()
 end
 
 function WorldMap_WorldQuestDataProviderMixin:ShouldShowQuest(info)
-	if self.focusedQuestID then
+	if self.focusedQuestID or self:IsQuestSuppressed(info.questId) then
 		return false;
 	end
 	local mapID = self:GetMap():GetMapID();

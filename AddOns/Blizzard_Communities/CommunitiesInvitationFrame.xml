@@ -26,8 +26,26 @@
 					</OnClick>
 				</Scripts>
 			</Button>
+			<Frame parentKey="InsetFrame" inherits="InsetFrameTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="-4" y="3"/>
+					<Anchor point="BOTTOMRIGHT" x="6" y="-3"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.Bg:Hide();
+					</OnLoad>
+				</Scripts>
+			</Frame>
 		</Frames>
 		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture atlas="communities-widebackground" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 			<Layer level="BORDER">
 				<FontString parentKey="InvitationText" inherits="GameFontNormalLarge">
 					<Anchors>
@@ -52,6 +70,8 @@
 				<FontString parentKey="Name" inherits="Game30Font">
 					<Anchors>
 						<Anchor point="TOP" relativeKey="$parent.Icon" relativePoint="BOTTOM" x="0" y="-15"/>
+						<Anchor point="LEFT"/>
+						<Anchor point="RIGHT"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="Type" inherits="GameFontNormal">

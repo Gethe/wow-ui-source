@@ -25,6 +25,20 @@ local GarrisonInfo =
 			},
 		},
 		{
+			Name = "GetGarrisonPlotsInstancesForMap",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "uiMapID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "garrisonPlotInstances", Type = "table", InnerType = "GarrisonPlotInstanceMapInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "GetTalentTreeIDsByClassID",
 			Type = "Function",
 
@@ -528,6 +542,17 @@ local GarrisonInfo =
 			{
 				{ Name = "followerID", Type = "string", Nilable = false },
 				{ Name = "state", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GarrisonPlotInstanceMapInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "buildingPlotInstanceID", Type = "number", Nilable = false },
+				{ Name = "position", Type = "table", Mixin = "Vector2DMixin", Nilable = false },
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "atlasName", Type = "string", Nilable = false },
 			},
 		},
 	},

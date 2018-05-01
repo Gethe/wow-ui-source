@@ -334,11 +334,8 @@
 	
 	
 	
-	<Frame name="GuildControlUI" inherits="TranslucentFrameTemplate" parent="UIParent" movable="true" enableMouse="true" hidden="true">
+	<Frame name="GuildControlUI" inherits="TranslucentFrameTemplate" topLevel="true" frameStrata="DIALOG" parent="UIParent" movable="true" enableMouse="true" hidden="true">
 		<Size x="338" y="444"/>
-		<Anchors>
-			<Anchor point="TOPLEFT" relativeTo="GuildFrame" relativePoint="TOPRIGHT" x="20" y="0"/>
- 		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="1">
 				<Texture name="$parentTopBg" file="Interface\FrameGeneral\UI-Background-Rock" horizTile="true" vertTile="true">
@@ -752,12 +749,10 @@
 			<OnEvent function="GuildControlUI_OnEvent"/>
 			<OnShow>
 				self.numSkipUpdates = 0;
-				GuildControlButton:LockHighlight();
 				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 			</OnShow>
 			<OnHide>
 				StaticPopup_Hide("CONFIRM_RANK_AUTHENTICATOR_REMOVE");
-				GuildControlButton:UnlockHighlight();
 				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 			</OnHide>
 			<OnLoad function="GuildControlUI_OnLoad"/>

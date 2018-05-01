@@ -9,6 +9,7 @@ local leftBarTextureKitRegions = {
 	["BorderCenter"] = "%s-bar-border-middle",
 	["Spark"] = "%s-bar-spark-left",
 	["Icon"] = "%s-icon-left",
+	["IconGlow"] = "%s-icon-left",
 }
 
 local rightBarTextureKitRegions = {
@@ -18,6 +19,7 @@ local rightBarTextureKitRegions = {
 	["BorderCenter"] = "%s-bar-border-middle",
 	["Spark"] = "%s-bar-spark-right",
 	["Icon"] = "%s-icon-right",
+	["IconGlow"] = "%s-icon-right",
 }
 
 local textureKitStatusBars = {
@@ -43,10 +45,18 @@ function UIWidgetTemplateDoubleStatusBarMixin:Setup(widgetInfo)
 	self.LeftBar:SetMinMaxValues(widgetInfo.leftBarMin, widgetInfo.leftBarMax);
 	self.LeftBar:SetValue(widgetInfo.leftBarValue);
 	self.LeftBar.Text:SetText(widgetInfo.leftBarValue);
+	
 	self.LeftBar.Spark:ClearAllPoints();
 	self.LeftBar.Spark:SetPoint("CENTER", self.LeftBar, "LEFT", sparkXOffset, 0);
+	
 	self.LeftBar.Icon:ClearAllPoints();
 	self.LeftBar.Icon:SetPoint("CENTER", self.LeftBar, "LEFT", -ICON_OFFSET, 0);
+	
+	self.LeftBar.IconGlow:ClearAllPoints();
+	self.LeftBar.IconGlow:SetPoint("CENTER", self.LeftBar, "LEFT", -ICON_OFFSET, 0);
+	
+	self.LeftBar.SparkGlow:ClearAllPoints();
+	self.LeftBar.SparkGlow:SetPoint("LEFT", self.Spark, -4, 0);
 
 	self.RightBar.Spark:SetShown(widgetInfo.rightBarValue > widgetInfo.rightBarMin and widgetInfo.rightBarValue < widgetInfo.rightBarMax);
 
@@ -55,10 +65,26 @@ function UIWidgetTemplateDoubleStatusBarMixin:Setup(widgetInfo)
 	self.RightBar:SetMinMaxValues(widgetInfo.rightBarMin, widgetInfo.rightBarMax);
 	self.RightBar:SetValue(widgetInfo.rightBarValue);
 	self.RightBar.Text:SetText(widgetInfo.rightBarValue);
+	
 	self.RightBar.Spark:ClearAllPoints();
 	self.RightBar.Spark:SetPoint("CENTER", self.RightBar, "RIGHT", sparkXOffset, 0);
+	
 	self.RightBar.Icon:ClearAllPoints();
 	self.RightBar.Icon:SetPoint("CENTER", self.RightBar, "RIGHT", ICON_OFFSET, 0);
-
+	
+	self.RightBar.IconGlow:ClearAllPoints();
+	self.RightBar.IconGlow:SetPoint("CENTER", self.RightBar, "RIGHT", ICON_OFFSET, 0);
+	
+	self.LeftBar.SparkGlow:ClearAllPoints(); 
+	self.LeftBar.SparkGlow:SetPoint("RIGHT", self.Spark, -4, 0);
+	
 	self.Label:SetText(widgetInfo.text);
+end
+
+function UIWidgetTemplateDoubleStatusBarMixin:PlayBarGlow(playRightBarGlow)
+	if ( playRightBarGlow ) then 
+		self.RightBar.Flash:Play();
+	else
+		self.LeftBar.Flash:Play();
+	end
 end

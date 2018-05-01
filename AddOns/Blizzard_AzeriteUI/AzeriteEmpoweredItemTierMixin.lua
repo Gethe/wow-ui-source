@@ -119,8 +119,10 @@ function AzeriteEmpoweredItemTierMixin:UpdatePowerStates()
 	end
 
 	local isSelectionActive = not self:IsAnimating() and self:IsSelectionActive();
+	local specID = GetSpecializationInfo(GetSpecialization())
 	for powerIndex, azeritePowerButton in ipairs(self.azeritePowerButtons) do
-		azeritePowerButton:SetCanBeSelected(isSelectionActive);
+		local isSpecAllowed = C_AzeriteEmpoweredItem.IsPowerAvailableForSpec(azeritePowerButton:GetAzeritePowerID(), specID);
+		azeritePowerButton:SetCanBeSelected(isSelectionActive and isSpecAllowed);
 	end
 
 	if self.tierRingGlow then

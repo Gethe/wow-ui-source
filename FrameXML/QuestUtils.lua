@@ -10,10 +10,6 @@ WORLD_QUEST_TYPE_DUNGEON_TYPES = {
 	[LE_QUEST_TAG_TYPE_RAID] = true,
 }
 
-local QUEST_ICONS_FILE = "Interface\\QuestFrame\\QuestTypeIcons";
-local QUEST_ICONS_FILE_WIDTH = 128;
-local QUEST_ICONS_FILE_HEIGHT = 64;
-
 local function IsQuestWorldQuest_Internal(worldQuestType)
 	return worldQuestType ~= nil;
 end
@@ -130,6 +126,7 @@ function QuestUtils_CanUseAutoGroupFinder(questID, isDropdownRequest)
 	return false;
 end
 
+--currencyContainerTooltip should be an EmbeddedItemTooltip
 function QuestUtils_AddQuestCurrencyRewardsToTooltip(questID, tooltip, currencyContainerTooltip)
 	local numQuestCurrencies = GetNumQuestLogRewardCurrencies(questID);
 	local currencies = { };
@@ -154,6 +151,7 @@ function QuestUtils_AddQuestCurrencyRewardsToTooltip(questID, tooltip, currencyC
 			local name, texture, numItems, rarity = CurrencyContainerUtil.GetCurrencyContainerInfo(currencyInfo.currencyID,
 			currencyInfo.numItems, currencyInfo.name, currencyInfo.texture, currencyInfo.rarity);
 			
+			EmbeddedItemTooltip_PrepareForItem(currencyContainerTooltip);
 			currencyContainerTooltip:Show(); 
 			currencyContainerTooltip.Tooltip:SetOwner(currencyContainerTooltip, "ANCHOR_NONE");
 			currencyContainerTooltip.Tooltip:SetCurrencyByID(currencyInfo.currencyID, currencyInfo.numItems); 
@@ -164,7 +162,6 @@ function QuestUtils_AddQuestCurrencyRewardsToTooltip(questID, tooltip, currencyC
 			currencyContainerTooltip.itemTextureSet = (itemTexture ~= nil);
 
 			currencyContainerTooltip.Tooltip:SetPoint("TOPLEFT", currencyContainerTooltip.Icon, "TOPRIGHT", 0, 10);
-			currencyContainerTooltip.Tooltip:Show();
 			
 			if (numItems > 1) then 
 				SetItemButtonCount(currencyContainerTooltip, numItems); 

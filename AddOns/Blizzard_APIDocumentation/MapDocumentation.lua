@@ -247,6 +247,22 @@ local Map =
 			},
 		},
 		{
+			Name = "GetPlayerMapPosition",
+			Type = "Function",
+			Documentation = { "Only works for the player and party members." },
+
+			Arguments =
+			{
+				{ Name = "uiMapID", Type = "number", Nilable = false },
+				{ Name = "unitToken", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "position", Type = "table", Mixin = "Vector2DMixin", Nilable = true },
+			},
+		},
+		{
 			Name = "RequestPreloadMap",
 			Type = "Function",
 

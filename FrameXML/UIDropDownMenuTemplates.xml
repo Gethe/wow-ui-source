@@ -91,7 +91,7 @@
 				</Scripts>
 				<NormalTexture name="$parentNormalTexture" file="Interface\ChatFrame\ChatFrameColorSwatch"/>
 			</Button>
-			<Button name="$parentExpandArrow" hidden="true">
+			<Button name="$parentExpandArrow" hidden="true" motionScriptsWhileDisabled="true">
 				<Size>
 					<AbsDimension x="16" y="16"/>
 				</Size>
@@ -108,10 +108,16 @@
 					</OnClick>
 					<OnEnter>
 						local level =  self:GetParent():GetParent():GetID() + 1;
-						local listFrame = _G["DropDownList"..level];
-						if ( not listFrame or not listFrame:IsShown() or select(2, listFrame:GetPoint()) ~= self ) then
-							ToggleDropDownMenu(level, self:GetParent().value, nil, nil, nil, nil, self:GetParent().menuList, self);
+
+						CloseDropDownMenus(level);
+
+						if self:IsEnabled() then
+							local listFrame = _G["DropDownList"..level];
+							if ( not listFrame or not listFrame:IsShown() or select(2, listFrame:GetPoint()) ~= self ) then
+								ToggleDropDownMenu(level, self:GetParent().value, nil, nil, nil, nil, self:GetParent().menuList, self);
+							end
 						end
+
 						UIDropDownMenu_StopCounting(self:GetParent():GetParent());
 					</OnEnter>
 					<OnLeave>

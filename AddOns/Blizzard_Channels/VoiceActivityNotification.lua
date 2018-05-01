@@ -89,6 +89,8 @@ end
 function VoiceActivityNotificationMixin:Setup(memberID, channelID, isLocalPlayer)
 	VoiceActivityNotificationBaseMixin.Setup(self, memberID, channelID, isLocalPlayer);
 
+	self:ClearCushions();
+
 	C_VoiceChat.SetPortraitTexture(self.Portrait, memberID, channelID);
 
 	local member = C_VoiceChat.GetMemberInfo(memberID, channelID);
@@ -101,9 +103,21 @@ function VoiceActivityNotificationMixin:UpdateSize()
 	local right = self.Name:GetRight();
 	local left = self:GetLeft();
 	local width = (right and left) and (right - left) or 120;
-	self:SetWidth(width);
+	self:SetWidth(width + self.cushionX);
+
+	local height = 29;
+	self:SetHeight(height + self.cushionY);
 end
 
 function VoiceActivityNotificationMixin:OnAlertAnchorUpdated()
 	self:UpdateSize();
+end
+
+function VoiceActivityNotificationMixin:SetCushions(cushionX, cushionY)
+	self.cushionX = cushionX;
+	self.cushionY = cushionY;
+end
+
+function VoiceActivityNotificationMixin:ClearCushions()
+	self:SetCushions(0, 0);
 end

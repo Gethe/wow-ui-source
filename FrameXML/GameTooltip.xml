@@ -137,8 +137,7 @@
 						self:SetBackdrop(nil);
 					</OnLoad>
 					<OnSizeChanged>
-						local itemTooltipExtraBorderHeight = 22;
-						self:GetParent():SetSize(self:GetWidth() + self:GetParent().Icon:GetWidth(), self:GetHeight() - itemTooltipExtraBorderHeight);
+						EmbeddedItemTooltip_UpdateSize(self:GetParent());
 					</OnSizeChanged>
 					<OnTooltipSetItem>
 						local embeddedItemTooltip = self:GetParent();
@@ -146,6 +145,11 @@
 					</OnTooltipSetItem>
 				</Scripts>
 			</GameTooltip>
+			<Frame name="$parentGarrisonFollowerTooltip" parentKey="FollowerTooltip" inherits="GarrisonFollowerTooltipContentsTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="0" y="0"/>
+				</Anchors>
+			</Frame>
 		</Frames>
 	</Frame>
 </Ui>

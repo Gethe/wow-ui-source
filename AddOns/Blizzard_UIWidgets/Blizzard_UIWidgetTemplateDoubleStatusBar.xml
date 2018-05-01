@@ -43,6 +43,21 @@
 					<Size x="34" y="41"/>
 				</Texture>
 			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="3">
+				<Texture parentKey="IconGlow" alpha="0" alphaMode="ADD">
+					<Size x="34" y="41"/>
+				</Texture>
+				<Texture parentKey="SparkGlow" alpha="0" alphaMode="ADD" atlas="OBJFX_LineGlow">
+					<Size x="25" y="32"/>
+				</Texture>
+				<Texture parentKey="BorderGlow" alpha="0" alphaMode="ADD" atlas="Legionfall_BarFrame-Glow">
+					<Size x="95" y="32"/>
+					<Anchors>
+						<Anchor point="CENTER"/> 
+					</Anchors>
+					<Color r="1" g="1" b="1"/> 
+				</Texture>
+			</Layer>
 			<Layer level="OVERLAY">
 				<FontString parentKey="Text" inherits="GameFontHighlight">
 					<Anchors>
@@ -51,6 +66,16 @@
 				</FontString>
 			</Layer>
 		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="Flash" setToFinalAlpha="true">
+				<Alpha childKey="BorderGlow"	duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="BorderGlow" startDelay="0.5" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="SparkGlow"	duration="0.5" order="1" fromAlpha="0" toAlpha=".15"/>
+				<Alpha childKey="SparkGlow" startDelay="0.5" duration="0.5" order="1" fromAlpha=".15" toAlpha="0"/>
+				<Alpha childKey="IconGlow"	duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="IconGlow" startDelay="0.5" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+			</AnimationGroup>
+		</Animations>
 	</StatusBar>
 	
 	<Frame name="UIWidgetTemplateDoubleStatusBar" inherits="UIWidgetBaseTemplate" virtual="true" secureMixin="UIWidgetTemplateDoubleStatusBarMixin">

@@ -167,12 +167,6 @@
 									</Anchors>
 									<TexCoords left="0" right="0.296875" top="0.015625" bottom="0.3125"/>
 								</Texture>
-								<Texture name="PlayerMasterIcon" file="Interface\GroupFrame\UI-Group-MasterLooter" hidden="true">
-									<Size x="16" y="16"/>
-									<Anchors>
-										<Anchor point="TOPLEFT" x="80" y="-10"/>
-									</Anchors>
-								</Texture>
 								<Texture name="PlayerRestIcon" file="Interface\CharacterFrame\UI-StateIcon" hidden="false">
 									<Size x="31" y="31"/>
 									<Anchors>

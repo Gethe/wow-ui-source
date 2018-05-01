@@ -18,8 +18,7 @@ function Voice_GetChatInfoForChannelType(channel)
 	end
 end
 
-function Voice_GetVoiceChannelNotificationColor(channelID)
-	local channel = C_VoiceChat.GetChannel(channelID);
+local function GetVoiceChannelNotificationColor(channel)
 	if channel then
 		local chatInfo = Voice_GetChatInfoForChannelType(channel);
 		if chatInfo then
@@ -29,6 +28,19 @@ function Voice_GetVoiceChannelNotificationColor(channelID)
 
 	-- Default fallback for voice chat notifications
 	return NORMAL_FONT_COLOR:GetRGB();
+end
+
+function Voice_GetVoiceChannelNotificationColor(channelID)
+	return GetVoiceChannelNotificationColor(C_VoiceChat.GetChannel(channelID));
+end
+
+function Voice_FormatTextForChannel(channel, text)
+	local r, g, b = GetVoiceChannelNotificationColor(channel);
+	return WrapTextInColorCode(text, CreateColor(r, g, b, 1):GenerateHexColor());
+end
+
+function Voice_FormatTextForChannelID(channelID, text)
+	return Voice_FormatTextForChannel(C_VoiceChat.GetChannel(channelID), text);
 end
 
 local SUPPRESS_ERROR_MESSAGE = true;

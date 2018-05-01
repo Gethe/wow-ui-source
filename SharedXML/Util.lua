@@ -657,6 +657,10 @@ function ColorMixin:GenerateHexColor()
 	return ("ff%.2x%.2x%.2x"):format(self:GetRGBAsBytes());
 end
 
+function ColorMixin:GenerateHexColorMarkup()
+	return "|c"..self:GenerateHexColor();
+end
+
 function ColorMixin:WrapTextInColorCode(text)
 	return WrapTextInColorCode(text, self:GenerateHexColor());
 end
@@ -827,11 +831,13 @@ function FormatPercentage(percentage, roundToNearestInteger)
 	return PERCENTAGE_STRING:format(percentage);
 end
 
-function CreateTextureMarkup(file, fileWidth, fileHeight, width, height, left, right, top, bottom)
-	return ("|T%s:%d:%d:0:0:%d:%d:%d:%d:%d:%d|t"):format(
+function CreateTextureMarkup(file, fileWidth, fileHeight, width, height, left, right, top, bottom, xOffset, yOffset)
+	return ("|T%s:%d:%d:%d:%d:%d:%d:%d:%d:%d:%d|t"):format(
 		  file
 		, height
 		, width
+		, xOffset or 0
+		, yOffset or 0
 		, fileWidth
 		, fileHeight
 		, left * fileWidth
@@ -900,7 +906,7 @@ function SetupTextureKitOnRegions(textureKit, frame, regions, setVisibilityOfReg
 			frames[frame[region]] = fmt;
 		end
 	end
-	
+
 	return SetupTextureKitOnFrames(textureKit, frames, setVisibilityOfRegions, useAtlasSize);
 end
 
@@ -1222,7 +1228,7 @@ PredictedSettingMixin = CreateFromMixins(PredictedSettingBaseMixin);
 
 function PredictedSettingMixin:Set(value)
 	local validated = self.wrapTable.setFunction(value);
-	if (validated ~= false) then	
+	if (validated ~= false) then
 		self.predictedValue = value;
 	end
 end
@@ -1284,4 +1290,18 @@ end
 
 function CreateLayoutIndexManager()
 	return CreateFromMixins(LayoutIndexManagerMixin);
+end
+
+function CallMethodOnNearestAncestor(self, methodName, ...)
+	local ancestor = self:GetParent();
+	while ancestor and not ancestor[methodName] do
+		ancestor = ancestor:GetParent();
+	end
+	
+	if ancestor then
+		ancestor[methodName](ancestor, ...);
+		return true;
+	end
+	
+	return false;
 end

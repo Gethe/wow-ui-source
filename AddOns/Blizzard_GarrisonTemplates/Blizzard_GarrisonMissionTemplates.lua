@@ -138,7 +138,7 @@ function GarrisonMission:ShowMission(missionInfo)
 	end
 
 	-- max level
-	if ( missionPage.missionInfo.level == self.followerMaxLevel and missionPage.missionInfo.iLevel > 0 ) then
+	if ( GarrisonFollowerOptions[self.followerTypeID].showILevelOnMission and missionPage.missionInfo.level == self.followerMaxLevel and missionPage.missionInfo.iLevel > 0 ) then
 		missionPage.showItemLevel = true;
 		missionPage.Stage.Level:SetPoint("CENTER", missionPage.Stage.Header, "TOPLEFT", 30, -28);
 		missionPage.Stage.ItemLevel:Show();

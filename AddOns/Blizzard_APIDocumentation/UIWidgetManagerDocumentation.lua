@@ -30,6 +30,20 @@ local UIWidgetManager =
 			},
 		},
 		{
+			Name = "GetBulletTextListWidgetVisualizationInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "widgetID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "widgetInfo", Type = "BulletTextListWidgetVisualizationInfo", Nilable = true },
+			},
+		},
+		{
 			Name = "GetCaptureBarWidgetVisualizationInfo",
 			Type = "Function",
 
@@ -72,6 +86,20 @@ local UIWidgetManager =
 			},
 		},
 		{
+			Name = "GetHorizontalCurrenciesWidgetVisualizationInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "widgetID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "widgetInfo", Type = "HorizontalCurrenciesWidgetVisualizationInfo", Nilable = true },
+			},
+		},
+		{
 			Name = "GetIconAndTextWidgetVisualizationInfo",
 			Type = "Function",
 
@@ -100,6 +128,20 @@ local UIWidgetManager =
 			},
 		},
 		{
+			Name = "GetIconTextAndCurrenciesWidgetVisualizationInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "widgetID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "widgetInfo", Type = "IconTextAndCurrenciesWidgetVisualizationInfo", Nilable = true },
+			},
+		},
+		{
 			Name = "GetStackedResourceTrackerWidgetVisualizationInfo",
 			Type = "Function",
 
@@ -125,6 +167,20 @@ local UIWidgetManager =
 			Returns =
 			{
 				{ Name = "widgetInfo", Type = "StatusBarWidgetVisualizationInfo", Nilable = true },
+			},
+		},
+		{
+			Name = "GetTextWithStateWidgetVisualizationInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "widgetID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "widgetInfo", Type = "TextWithStateWidgetVisualizationInfo", Nilable = true },
 			},
 		},
 		{
@@ -159,6 +215,32 @@ local UIWidgetManager =
 	Tables =
 	{
 		{
+			Name = "WidgetShownState",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "Shown", Type = "WidgetShownState", EnumValue = 0 },
+				{ Name = "Hidden", Type = "WidgetShownState", EnumValue = 1 },
+			},
+		},
+		{
+			Name = "TextColorState",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 0,
+			MaxValue = 3,
+			Fields =
+			{
+				{ Name = "Enabled", Type = "TextColorState", EnumValue = 0 },
+				{ Name = "Disabled", Type = "TextColorState", EnumValue = 1 },
+				{ Name = "Red", Type = "TextColorState", EnumValue = 2 },
+				{ Name = "Highlight", Type = "TextColorState", EnumValue = 3 },
+			},
+		},
+		{
 			Name = "CaptureBarWidgetState",
 			Type = "Enumeration",
 			NumValues = 2,
@@ -173,9 +255,9 @@ local UIWidgetManager =
 		{
 			Name = "UIWidgetVisualizationType",
 			Type = "Enumeration",
-			NumValues = 7,
+			NumValues = 11,
 			MinValue = 0,
-			MaxValue = 6,
+			MaxValue = 10,
 			Fields =
 			{
 				{ Name = "IconAndText", Type = "UIWidgetVisualizationType", EnumValue = 0 },
@@ -185,6 +267,10 @@ local UIWidgetManager =
 				{ Name = "IconTextAndBackground", Type = "UIWidgetVisualizationType", EnumValue = 4 },
 				{ Name = "DoubleIconAndText", Type = "UIWidgetVisualizationType", EnumValue = 5 },
 				{ Name = "StackedResourceTracker", Type = "UIWidgetVisualizationType", EnumValue = 6 },
+				{ Name = "IconTextAndCurrencies", Type = "UIWidgetVisualizationType", EnumValue = 7 },
+				{ Name = "TextWithState", Type = "UIWidgetVisualizationType", EnumValue = 8 },
+				{ Name = "HorizontalCurrencies", Type = "UIWidgetVisualizationType", EnumValue = 9 },
+				{ Name = "BulletTextList", Type = "UIWidgetVisualizationType", EnumValue = 10 },
 			},
 		},
 		{
@@ -199,6 +285,18 @@ local UIWidgetManager =
 				{ Name = "Shown", Type = "IconAndTextWidgetState", EnumValue = 1 },
 				{ Name = "ShownWithDynamicIconFlashing", Type = "IconAndTextWidgetState", EnumValue = 2 },
 				{ Name = "ShownWithDynamicIconNotFlashing", Type = "IconAndTextWidgetState", EnumValue = 3 },
+			},
+		},
+		{
+			Name = "BulletTextListWidgetVisualizationInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "shownState", Type = "WidgetShownState", Nilable = false },
+				{ Name = "colorState", Type = "TextColorState", Nilable = false },
+				{ Name = "lines", Type = "table", InnerType = "string", Nilable = false },
+				{ Name = "orderIndex", Type = "number", Nilable = false },
+				{ Name = "widgetTag", Type = "string", Nilable = false },
 			},
 		},
 		{
@@ -257,6 +355,28 @@ local UIWidgetManager =
 			},
 		},
 		{
+			Name = "UIWidgetCurrencyInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "iconFileID", Type = "number", Nilable = false },
+				{ Name = "leadingText", Type = "string", Nilable = false },
+				{ Name = "text", Type = "string", Nilable = false },
+				{ Name = "tooltip", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "HorizontalCurrenciesWidgetVisualizationInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "shownState", Type = "WidgetShownState", Nilable = false },
+				{ Name = "currencies", Type = "table", InnerType = "UIWidgetCurrencyInfo", Nilable = false },
+				{ Name = "orderIndex", Type = "number", Nilable = false },
+				{ Name = "widgetTag", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "IconAndTextWidgetVisualizationInfo",
 			Type = "Structure",
 			Fields =
@@ -277,6 +397,23 @@ local UIWidgetManager =
 			Fields =
 			{
 				{ Name = "value", Type = "number", Nilable = false },
+				{ Name = "textureKitID", Type = "number", Nilable = false },
+				{ Name = "orderIndex", Type = "number", Nilable = false },
+				{ Name = "widgetTag", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "IconTextAndCurrenciesWidgetVisualizationInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "shownState", Type = "WidgetShownState", Nilable = false },
+				{ Name = "enabledState", Type = "TextColorState", Nilable = false },
+				{ Name = "descriptionShownState", Type = "WidgetShownState", Nilable = false },
+				{ Name = "descriptionColorState", Type = "TextColorState", Nilable = false },
+				{ Name = "text", Type = "string", Nilable = false },
+				{ Name = "description", Type = "string", Nilable = false },
+				{ Name = "currencies", Type = "table", InnerType = "UIWidgetCurrencyInfo", Nilable = false },
 				{ Name = "textureKitID", Type = "number", Nilable = false },
 				{ Name = "orderIndex", Type = "number", Nilable = false },
 				{ Name = "widgetTag", Type = "string", Nilable = false },
@@ -308,11 +445,24 @@ local UIWidgetManager =
 			Type = "Structure",
 			Fields =
 			{
+				{ Name = "shownState", Type = "WidgetShownState", Nilable = false },
 				{ Name = "barMin", Type = "number", Nilable = false },
 				{ Name = "barMax", Type = "number", Nilable = false },
 				{ Name = "barValue", Type = "number", Nilable = false },
 				{ Name = "text", Type = "string", Nilable = false },
 				{ Name = "textureKitID", Type = "number", Nilable = false },
+				{ Name = "orderIndex", Type = "number", Nilable = false },
+				{ Name = "widgetTag", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "TextWithStateWidgetVisualizationInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "shownState", Type = "WidgetShownState", Nilable = false },
+				{ Name = "colorState", Type = "TextColorState", Nilable = false },
+				{ Name = "text", Type = "string", Nilable = false },
 				{ Name = "orderIndex", Type = "number", Nilable = false },
 				{ Name = "widgetTag", Type = "string", Nilable = false },
 			},

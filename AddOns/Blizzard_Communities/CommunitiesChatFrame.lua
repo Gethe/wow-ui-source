@@ -18,6 +18,7 @@ CommunitiesChatMixin = {}
 
 function CommunitiesChatMixin:OnLoad()
 	self.MessageFrame:SetMaxLines(MAX_NUM_CHAT_LINES);
+	self.pendingMemberInfo = {};
 end
 
 function CommunitiesChatMixin:OnShow()
@@ -30,13 +31,6 @@ function CommunitiesChatMixin:OnShow()
 	self.streamSelectedCallback = StreamSelectedCallback;
 	self:GetCommunitiesFrame():RegisterCallback(CommunitiesFrameMixin.Event.StreamSelected, self.streamSelectedCallback);
 	
-	local function CommunitiesClubSelectedCallback(event, clubId)
-		self.MessageFrame:Clear();
-	end
-	
-	self.clubSelectedCallback = CommunitiesClubSelectedCallback;
-	self:GetCommunitiesFrame():RegisterCallback(CommunitiesFrameMixin.Event.ClubSelected, self.clubSelectedCallback);
-
 	self:UpdateChatColor();
 end
 
@@ -45,7 +39,7 @@ function CommunitiesChatMixin:OnEvent(event, ...)
 		local clubId, streamId, messageId = ...;
 		if clubId == self:GetCommunitiesFrame():GetSelectedClubId() and streamId == self:GetCommunitiesFrame():GetSelectedStreamId() then
 			local message = C_Club.GetMessageInfo(clubId, streamId, messageId);
-			self:AddMessage(message);
+			self:AddMessage(clubId, streamId, message);
 		end
 	elseif event == "CLUB_MESSAGE_HISTORY_RECEIVED" then
 		local clubId, streamId, downloadedRange, contiguousRange = ...;
@@ -56,6 +50,30 @@ function CommunitiesChatMixin:OnEvent(event, ...)
 				self:DisplayChat();
 			end
 		end
+	elseif event == "CLUB_MEMBER_UPDATED" then
+		local clubId, memberId = ...;
+		if self.pendingMemberInfo[clubId] and tContains(self.pendingMemberInfo[clubId], memberId) then
+			local function IsMessageFromMember(message, r, g, b, messageClubId, messageStreamId, messageId, messageMemberId, ...)
+				return messageClubId == clubId and messageMemberId == memberId;
+			end
+			
+			self:RefreshMessages(IsMessageFromMember);
+			tDeleteItem(self.pendingMemberInfo[clubId], memberId);
+
+			if #self.pendingMemberInfo[clubId] == 0 then
+				self.pendingMemberInfo[clubId] = nil;
+				
+				local allEmpty = true;
+				for clubId, memberIds in pairs(self.pendingMemberInfo) do
+					allEmpty = false;
+					break;
+				end
+				
+				if allEmpty then
+					self:UnregisterEvent("CLUB_MEMBER_UPDATED");
+				end
+			end
+		end
 	end
 end
 
@@ -64,11 +82,6 @@ function CommunitiesChatMixin:OnHide()
 	if self.streamSelectedCallback then
 		self:GetCommunitiesFrame():UnregisterCallback(CommunitiesFrameMixin.Event.StreamSelected, self.streamSelectedCallback);
 		self.streamSelectedCallback = nil;
-	end
-	
-	if self.clubSelectedCallback then
-		self:GetCommunitiesFrame():UnregisterCallback(CommunitiesFrameMixin.Event.ClubSelected, self.clubSelectedCallback);
-		self.clubSelectedCallback = nil;
 	end
 end
 
@@ -112,7 +125,7 @@ function CommunitiesChatMixin:BackfillMessages(newOldestMessage)
 	local messages = C_Club.GetMessagesInRange(clubId, streamId, newOldestMessage, self.messageRangeOldest);
 	for index = #messages - 1, 1, -1 do
 		local message = messages[index];
-		self:BackFillMessage(message);
+		self:AddMessage(clubId, streamId, message, true);
 	end
 	
 	self.messageRangeOldest = newOldestMessage;
@@ -141,11 +154,11 @@ function CommunitiesChatMixin:DisplayChat()
 	for index, message in ipairs(messages) do
 		if streamViewMarker and message.messageId.epoch > streamViewMarker then
 			-- TODO:: This is temporary. Jeff is going to mock up a better display.
-			self.MessageFrame:AddMessage("--------------- Unread ---------------");
+			self.MessageFrame:AddMessage(clubId, streamId, "--------------- Unread ---------------");
 			streamViewMarker = nil;
 		end
 		
-		self:AddMessage(message);
+		self:AddMessage(clubId, streamId, message);
 	end
 	
 	C_Club.AdvanceStreamViewMarker(clubId, streamId);
@@ -202,33 +215,54 @@ function CommunitiesChatMixin:FormatMessage(message)
 		local classInfo = C_CreatureInfo.GetClassInfo(message.author.classID);
 		if classInfo then
 			local classColorInfo = RAID_CLASS_COLORS[classInfo.classFile];
-			return COMMUNITIES_CHAT_MESSAGE_FORMAT_CHARACTER:format(classColorInfo.colorStr, message.author.name, message.content);
+			return COMMUNITIES_CHAT_MESSAGE_FORMAT_CHARACTER:format(classColorInfo.colorStr, message.author.name or "", message.content);
 		end
 	end
 	
-	return COMMUNITIES_CHAT_MESSAGE_FORMAT:format(message.author.name, message.content);
+	return COMMUNITIES_CHAT_MESSAGE_FORMAT:format(message.author.name or "", message.content);
 end
 
-function CommunitiesChatMixin:BackfillMessage(message)
+function CommunitiesChatMixin:AddMessage(clubId, streamId, message, backfill)
 	local r, g, b = self:GetChatColor();
 	if not r then
 		r, g, b = DEFAULT_CHAT_CHANNEL_COLOR:GetRGB();
 	end
 	
-	self.MessageFrame:BackFillMessage(self:FormatMessage(message), r, g, b);
+	if not message.author.name then
+		self:RegisterForMemberUpdate(clubId, message.author.memberId);
+	end
+	
+	if backfill then
+		self.MessageFrame:BackFillMessage(self:FormatMessage(message), r, g, b, clubId, streamId, message.messageId, message.author.memberId);
+	else
+		self.MessageFrame:AddMessage(self:FormatMessage(message), r, g, b, clubId, streamId, message.messageId, message.author.memberId);
+	end
 end
 
-function CommunitiesChatMixin:AddMessage(message)
-	local r, g, b = self:GetChatColor();
-	if not r then
-		r, g, b = DEFAULT_CHAT_CHANNEL_COLOR:GetRGB();
+function CommunitiesChatMixin:RegisterForMemberUpdate(clubId, memberId)
+	if self.pendingMemberInfo[clubId] ~= nil and tContains(self.pendingMemberInfo[clubId], memberId) then
+		return;
 	end
-
-	self.MessageFrame:AddMessage(self:FormatMessage(message), r, g, b);
+	
+	if not self:IsEventRegistered("CLUB_MEMBER_UPDATED") then
+		self:RegisterEvent("CLUB_MEMBER_UPDATED");
+	end
+	
+	self.pendingMemberInfo[clubId] = self.pendingMemberInfo[clubId] or {};
+	table.insert(self.pendingMemberInfo[clubId], memberId);
 end
 
 function CommunitiesChatMixin:GetCommunitiesFrame()
 	return self:GetParent();
+end
+
+function CommunitiesChatMixin:RefreshMessages(predicate)
+	local function RefreshMessage(message, r, g, b, messageClubId, messageStreamId, messageId, messageMemberId, ...)
+		local messageInfo = C_Club.GetMessageInfo(messageClubId, messageStreamId, messageId);
+		return self:FormatMessage(messageInfo), r, g, b, messageClubId, messageStreamId, messageId, messageMemberId, ...;
+	end
+
+	self.MessageFrame:TransformMessages(predicate, RefreshMessage);
 end
 
 function CommunitiesChatEditBox_OnEnterPressed(self)

@@ -28,3 +28,7 @@ LandmarkDataProvider.xml
 VignetteDataProvider.xml
 InvasionDataProvider.xml
 GossipDataProvider.xml
+FlightPointDataProvider.xml
+PetTamerDataProvider.xml
+DigSiteDataProvider.xml
+GarrisonPlotDataProvider.xml

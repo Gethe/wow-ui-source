@@ -33,6 +33,8 @@ end
 function CommunitiesFrameMixin:OnLoad()
 	CallbackRegistryBaseMixin.OnLoad(self);
 	
+	self.PortraitFrame:Hide();
+	
 	self.TitleText:SetText(COMMUNITIES_FRAME_TITLE);
 	
 	UIDropDownMenu_Initialize(self.StreamDropDownMenu, CommunitiesStreamDropDownMenu_Initialize);
@@ -107,6 +109,20 @@ function CommunitiesFrameMixin:OnEvent(event, ...)
 	end
 end
 
+function CommunitiesFrameMixin:ToggleSubPanel(subPanel)
+	if subPanel:IsShown() then
+		self.activeSubPanel = nil;
+		HideUIPanel(subPanel);
+	else
+		if self.activeSubPanel and self.activeSubPanel:IsShown() then
+			HideUIPanel(self.activeSubPanel);
+		end
+		
+		self.activeSubPanel = subPanel;
+		ShowUIPanel(subPanel);
+	end
+end
+
 function CommunitiesFrameMixin:UpdateClubSelection()
 	-- TODO:: We should prioritize selecting guild communities once those exist.
 
@@ -126,8 +142,8 @@ function CommunitiesFrameMixin:UpdateClubSelection()
 	end
 	
 	if not IsInGuild() then
-		self:GetCommunitiesFrame():SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_FINDER);
-		self:GetCommunitiesFrame():SelectClub(nil);
+		self:SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_FINDER);
+		self:SelectClub(nil);
 	end
 end
 
@@ -148,15 +164,12 @@ COMMUNITIES_FRAME_DISPLAY_MODES = {
 		"ChatEditBox",
 		"AddToChatButton",
 		"InviteButton",
-		"ChatTab",
-		"RosterTab",
 	},
-	
+		
 	ROSTER = {
 		"CommunitiesList",
 		"MemberList",
-		"ChatTab",
-		"RosterTab",
+		"CommunitiesControlFrame",
 	},
 	
 	INVITATION = {
@@ -167,6 +180,19 @@ COMMUNITIES_FRAME_DISPLAY_MODES = {
 	GUILD_FINDER = {
 		"CommunitiesList",
 		"GuildFinderFrame",
+	},
+	
+	GUILD_BENEFITS = {
+		"CommunitiesList",
+		"GuildBenefitsFrame",
+		"CommunitiesControlFrame",
+	},
+	
+	GUILD_INFO = {
+		"CommunitiesList",
+		"GuildDetailsFrame",
+		"GuildLogButton",
+		"CommunitiesControlFrame",
 	},
 	
 	MINIMIZED = {
@@ -196,19 +222,52 @@ function CommunitiesFrameMixin:SetDisplayMode(displayMode)
 		self[subframe]:Show();
 	end
 	
-	if displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.CHAT then
-		self.ChatTab:SetChecked(true);
-		self.RosterTab:SetChecked(false);
-	elseif displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.ROSTER then
-		self.ChatTab:SetChecked(false);
-		self.RosterTab:SetChecked(true);
-	end
+	self:UpdateCommunitiesTabs();
 	
 	self:TriggerEvent(CommunitiesFrameMixin.Event.DisplayModeChanged, displayMode);
 end
 
 function CommunitiesFrameMixin:GetDisplayMode()
 	return self.displayMode;
+end
+
+function CommunitiesFrameMixin:UpdateCommunitiesTabs()
+	local displayMode = self:GetDisplayMode();
+	
+	self.ChatTab:Hide();
+	self.RosterTab:Hide();
+	self.GuildBenefitsTab:Hide();
+	self.GuildInfoTab:Hide();
+	if displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.CHAT or 
+			displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.ROSTER or
+			displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_BENEFITS or
+			displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_INFO then
+		self.ChatTab:Show();
+		self.RosterTab:Show();
+		local clubId = self:GetSelectedClubId();
+		if clubId then
+			local clubInfo = C_Club.GetClubInfo(clubId);
+			if clubInfo then
+				self.GuildBenefitsTab:SetShown(clubInfo.clubType == Enum.ClubType.Guild);
+				self.GuildInfoTab:SetShown(clubInfo.clubType == Enum.ClubType.Guild);
+			end
+		end
+	end
+	
+	
+	self.ChatTab:SetChecked(false);
+	self.RosterTab:SetChecked(false);
+	self.GuildBenefitsTab:SetChecked(false);
+	self.GuildInfoTab:SetChecked(false);
+	if displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.CHAT then
+		self.ChatTab:SetChecked(true);
+	elseif displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.ROSTER then
+		self.RosterTab:SetChecked(true);
+	elseif displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_BENEFITS then
+		self.GuildBenefitsTab:SetChecked(true);
+	elseif displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_INFO then
+		self.GuildInfoTab:SetChecked(true);
+	end
 end
 
 function CommunitiesFrameMixin:OnClubSelected(clubId)
@@ -264,6 +323,7 @@ function CommunitiesFrameMixin:OnClubSelected(clubId)
 	end
 	
 	self:UpdateCommunitiesButtons();
+	self:UpdateCommunitiesTabs();
 	self:TriggerEvent(CommunitiesFrameMixin.Event.ClubSelected, clubId);
 	
 	self:UpdateStreamDropDown(); -- TODO:: Convert this to use the registry system of callbacks.
@@ -332,6 +392,7 @@ end
 function CommunitiesFrameMixin:SelectStream(clubId, streamId)
 	if streamId == nil then
 		self.selectedStreamForClub[clubId] = nil;
+		self:TriggerEvent(CommunitiesFrameMixin.Event.StreamSelected, streamId);
 		return;
 	end
 	
@@ -394,6 +455,7 @@ function CommunitiesFrameMaximizeMinimizeButton_OnLoad(self)
 		communitiesFrame.Chat:SetPoint("BOTTOMRIGHT", communitiesFrame.MemberList, "BOTTOMLEFT", -22, 28);
 		communitiesFrame.Chat.MessageFrame.ScrollBar:SetPoint("TOPLEFT", communitiesFrame.Chat.MessageFrame, "TOPRIGHT", 0, -9);
 		communitiesFrame.Chat.MessageFrame.ScrollBar:SetPoint("BOTTOMLEFT", communitiesFrame.Chat.MessageFrame, "BOTTOMRIGHT", 0, -17);
+		communitiesFrame.Chat.InsetFrame:Show();
 		communitiesFrame.ChatEditBox:ClearAllPoints();
 		communitiesFrame.ChatEditBox:SetPoint("TOPLEFT", communitiesFrame.Chat, "BOTTOMLEFT", -4, -3);
 		communitiesFrame.ChatEditBox:SetPoint("TOPRIGHT", communitiesFrame.Chat, "BOTTOMRIGHT", -8, -3);
@@ -401,7 +463,6 @@ function CommunitiesFrameMaximizeMinimizeButton_OnLoad(self)
 		communitiesFrame.StreamDropDownMenu:SetPoint("TOPLEFT", 188, -30);
 		UIDropDownMenu_SetWidth(communitiesFrame.StreamDropDownMenu, 160);
 		communitiesFrame.portrait:Show();
-		communitiesFrame.PortraitFrame:Show();
 		communitiesFrame.TopLeftCorner:Hide();
 		communitiesFrame.TopBorder:SetPoint("TOPLEFT", communitiesFrame.PortraitFrame, "TOPRIGHT",  0, -10);
 		communitiesFrame.LeftBorder:SetPoint("TOPLEFT", communitiesFrame.PortraitFrame, "BOTTOMLEFT",  8, 0);
@@ -419,6 +480,7 @@ function CommunitiesFrameMaximizeMinimizeButton_OnLoad(self)
 		communitiesFrame.Chat:SetPoint("BOTTOMRIGHT", communitiesFrame, "BOTTOMRIGHT", -32, 32);
 		communitiesFrame.Chat.MessageFrame.ScrollBar:SetPoint("TOPLEFT", communitiesFrame.Chat.MessageFrame, "TOPRIGHT", 5, -13);
 		communitiesFrame.Chat.MessageFrame.ScrollBar:SetPoint("BOTTOMLEFT", communitiesFrame.Chat.MessageFrame, "BOTTOMRIGHT", 5, 11);
+		communitiesFrame.Chat.InsetFrame:Hide();
 		communitiesFrame.ChatEditBox:ClearAllPoints();
 		communitiesFrame.ChatEditBox:SetPoint("BOTTOMLEFT", communitiesFrame, "BOTTOMLEFT", 10, 0);
 		communitiesFrame.ChatEditBox:SetPoint("BOTTOMRIGHT", communitiesFrame, "BOTTOMRIGHT", -12, 0);
@@ -426,7 +488,6 @@ function CommunitiesFrameMaximizeMinimizeButton_OnLoad(self)
 		communitiesFrame.StreamDropDownMenu:SetPoint("LEFT", communitiesFrame.CommunitiesListDropDownMenu, "RIGHT", -25, 0);
 		UIDropDownMenu_SetWidth(communitiesFrame.StreamDropDownMenu, 115);
 		communitiesFrame.portrait:Hide();
-		communitiesFrame.PortraitFrame:Hide();
 		communitiesFrame.TopLeftCorner:Show();
 		communitiesFrame.TopBorder:SetPoint("TOPLEFT", communitiesFrame.TopLeftCorner, "TOPRIGHT",  0, 0);
 		communitiesFrame.LeftBorder:SetPoint("TOPLEFT", communitiesFrame.TopLeftCorner, "BOTTOMLEFT",  0, 0);
@@ -439,14 +500,16 @@ function CommunitiesFrameMaximizeMinimizeButton_OnLoad(self)
 	self:SetMinimizedCVar("miniCommunitiesFrame");
 end
 
-function CommunitiesFrameTab_OnEnter(self)
-	if self.tooltip then
-		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		GameTooltip:SetText(self.tooltip);
-		GameTooltip:Show();
+function CommunitiesControlFrame_OnShow(self)
+	local communitiesFrame = self:GetParent();
+	local clubInfo = C_Club.GetClubInfo(communitiesFrame:GetSelectedClubId());
+	self.GuildRecruitmentButton:Hide();
+	self.GuildControlButton:Hide();
+	if clubInfo then
+		if clubInfo.clubType == Enum.ClubType.Guild then
+			self.GuildRecruitmentButton:Show();
+			self.GuildControlButton:Show();
+		else
+		end
 	end
-end
-
-function CommunitiesFrameTab_OnLeave(self)
-	GameTooltip:Hide();
 end

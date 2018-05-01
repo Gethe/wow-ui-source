@@ -10,6 +10,10 @@ end
 
 function PropertySliderMixin:UpdateVisibleState()
 	if PropertyBindingMixin.UpdateVisibleState(self) then
-		self:SetValue(self:CallAccessor());
+		local value = self:CallAccessor();
+		self:SetEnabled(value ~= nil);
+		if value ~= nil then
+			self:SetValue(value);
+		end
 	end
 end

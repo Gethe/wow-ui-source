@@ -2,7 +2,6 @@ WorldMapMixin = {};
 
 function WorldMapMixin:SetupTitle()
 	self.BorderFrame.TitleText:SetText(MAP_AND_QUEST_LOG);
-	self.BorderFrame.Bg:SetColorTexture(0, 0, 0, 1);
 	self.BorderFrame.Bg:SetParent(self);
 	self.BorderFrame.TopTileStreaks:Hide();
 
@@ -17,6 +16,8 @@ function WorldMapMixin:Minimize()
 	SetUIPanelAttribute(self, "bottomClampOverride", nil);
 
 	ButtonFrameTemplate_ShowPortrait(self.BorderFrame);
+	self.BorderFrame.Tutorial:Show();
+	self.NavBar:SetPoint("TOPLEFT", self.TitleCanvasSpacerFrame, "TOPLEFT", 64, -25);
 
 	UpdateUIPanelPositions(self);
 
@@ -30,6 +31,8 @@ function WorldMapMixin:Maximize()
 	self.isMaximized = true;
 
 	ButtonFrameTemplate_HidePortrait(self.BorderFrame);
+	self.BorderFrame.Tutorial:Hide();
+	self.NavBar:SetPoint("TOPLEFT", self.TitleCanvasSpacerFrame, "TOPLEFT", 8, -25);
 
 	self:UpdateMaximizedSize();
 
@@ -42,7 +45,7 @@ end
 function WorldMapMixin:SetupMinimizeMaximizeButton()
 	self.isMinimizedCvar = "miniWorldMap";
 	self.minimizedWidth = 702;
-	self.minimizedHeight = 536;
+	self.minimizedHeight = 534;
 	self.questLogWidth = 290;
 
 	local function OnMaximize()
@@ -118,6 +121,10 @@ function WorldMapMixin:AddStandardDataProviders()
 	self:AddDataProvider(CreateFromMixins(QuestDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(InvasionDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(GossipDataProviderMixin));
+	self:AddDataProvider(CreateFromMixins(FlightPointDataProviderMixin));
+	self:AddDataProvider(CreateFromMixins(PetTamerDataProviderMixin));
+	self:AddDataProvider(CreateFromMixins(DigSiteDataProviderMixin));
+	self:AddDataProvider(CreateFromMixins(GarrisonPlotDataProviderMixin));
 
 	if IsGMClient() then
 		self:AddDataProvider(CreateFromMixins(WorldMap_DebugDataProviderMixin));
@@ -132,16 +139,24 @@ function WorldMapMixin:AddStandardDataProviders()
 
 	local worldQuestDataProvider = CreateFromMixins(WorldMap_WorldQuestDataProviderMixin);
 	worldQuestDataProvider:SetMatchWorldMapFilters(true);
+	worldQuestDataProvider:SetUsesSpellEffect(true);
+	worldQuestDataProvider:SetCheckBounties(true);
+	worldQuestDataProvider:SetMarkActiveQuests(true);
 	self:AddDataProvider(worldQuestDataProvider);
 
 	local pinFrameLevelsManager = self:GetPinFrameLevelsManager();
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_MAP_EXPLORATION");
+	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_GARRISON_PLOT");
+	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_FOG_OF_WAR");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_QUEST_BLOB");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_SCENARIO_BLOB");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_MAP_HIGHLIGHT");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_DEBUG", 4);
+	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_DIG_SITE");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_LANDMARK");
+	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_FLIGHT_POINT");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_INVASION");
+	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_PET_TAMER");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_GOSSIP");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_VIGNETTE", 100);
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_DEBUG");
@@ -159,21 +174,19 @@ function WorldMapMixin:AddStandardDataProviders()
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_VEHICLE_ABOVE_GROUP_MEMBER");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_CORPSE");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_AREA_POI_BANNER");
-	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_FOG_OF_WAR");
 end
 
 function WorldMapMixin:AddOverlayFrames()
-	do
-		local navBar = self:AddOverlayFrame("WorldMapNavBarTemplate", "FRAME");
-		navBar:SetPoint("TOPLEFT", self.TitleCanvasSpacerFrame, "TOPLEFT", 64, -25);
-		navBar:SetPoint("BOTTOMRIGHT", self.TitleCanvasSpacerFrame, "BOTTOMRIGHT", -4, 9);
-	end
-
 	self:AddOverlayFrame("WorldMapFloorNavigationFrameTemplate", "FRAME", "TOPLEFT", self:GetCanvasContainer(), "TOPLEFT", -15, 2);
 	self:AddOverlayFrame("WorldMapTrackingOptionsButtonTemplate", "BUTTON", "TOPRIGHT", self:GetCanvasContainer(), "TOPRIGHT", -4, -2);
 	self:AddOverlayFrame("WorldMapBountyBoardTemplate", "FRAME", nil, self:GetCanvasContainer());
 	self:AddOverlayFrame("WorldMapActionButtonTemplate", "FRAME", nil, self:GetCanvasContainer());
 	self:AddOverlayFrame("WorldMapZoneTimerTemplate", "FRAME", "BOTTOM", self:GetCanvasContainer(), "BOTTOM", 0, 20);
+
+	self.NavBar = self:AddOverlayFrame("WorldMapNavBarTemplate", "FRAME");
+	self.NavBar:SetPoint("TOPLEFT", self.TitleCanvasSpacerFrame, "TOPLEFT", 64, -25);
+	self.NavBar:SetPoint("BOTTOMRIGHT", self.TitleCanvasSpacerFrame, "BOTTOMRIGHT", -4, 9);
+	
 	self.SidePanelToggle = self:AddOverlayFrame("WorldMapSidePanelToggleTemplate", "BUTTON", "BOTTOMRIGHT", self:GetCanvasContainer(), "BOTTOMRIGHT", -2, 1);
 end
 
@@ -193,6 +206,7 @@ function WorldMapMixin:OnShow()
 	PlaySound(SOUNDKIT.IG_QUEST_LOG_OPEN);
 
 	PlayerMovementFrameFader.AddDeferredFrame(self, .5, 1.0, .5, function() return GetCVarBool("mapFade") and not self:IsMouseOver() end);
+	self.BorderFrame.Tutorial:CheckAndShowTooltip();
 end
 
 function WorldMapMixin:OnHide()
@@ -202,6 +216,7 @@ function WorldMapMixin:OnHide()
 	PlaySound(SOUNDKIT.IG_QUEST_LOG_CLOSE);
 
 	PlayerMovementFrameFader.RemoveFrame(self);
+	self.BorderFrame.Tutorial:CheckAndHideHelpInfo();
 
 	self:OnUIClose();
 end
@@ -254,7 +269,7 @@ function WorldMapMixin:UpdateMaximizedSize()
 
 	local unclampedHeight = parentHeight;
 	local clampHeight = ((parentHeight - spacerFrameHeight) * (clampedWidth / unclampedWidth)) + spacerFrameHeight;
-	self:SetSize(clampedWidth, clampHeight);
+	self:SetSize(math.floor(clampedWidth), math.floor(clampHeight));
 
 	SetUIPanelAttribute(self, "bottomClampOverride", (unclampedHeight - clampHeight) / 2);
 
@@ -270,6 +285,53 @@ function WorldMapMixin:UpdateSpacerFrameAnchoring()
 		self.TitleCanvasSpacerFrame:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", -3, -67);
 	end
 	self:OnFrameSizeChanged();
+end
+
+--[[ Help Plate ]] --
+WorldMapTutorialMixin = { }
+
+function WorldMapTutorialMixin:OnLoad()
+	self.helpInfo = {
+		FramePos = { x = 4,	y = -40 },
+		FrameSize = { width = 985, height = 500	},
+		[1] = { ButtonPos = { x = 350,	y = -180 }, HighLightBox = { x = 0, y = -30, width = 695, height = 464 }, ToolTipDir = "DOWN", ToolTipText = WORLD_MAP_TUTORIAL1 },
+		[2] = { ButtonPos = { x = 350,	y = 16 }, HighLightBox = { x = 50, y = 16, width = 645, height = 44 }, ToolTipDir = "DOWN", ToolTipText = WORLD_MAP_TUTORIAL4 },
+	};
+end
+
+function WorldMapTutorialMixin:OnHide()
+	self:CheckAndHideHelpInfo();
+end
+
+function WorldMapTutorialMixin:CheckAndShowTooltip()
+	if (not NewPlayerExperience or not NewPlayerExperience.IsActive) and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_WORLD_MAP_FRAME) then
+		if not HelpPlate_IsShowing(self.helpInfo) then
+			HelpPlate_ShowTutorialPrompt(self.helpInfo, self);
+			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_WORLD_MAP_FRAME, true);
+		end
+	end
+end
+
+function WorldMapTutorialMixin:CheckAndHideHelpInfo()
+	if HelpPlate_IsShowing(self.helpInfo) then
+		HelpPlate_Hide();
+	end
+end
+
+function WorldMapTutorialMixin:ToggleHelpInfo()
+	local mapFrame = self:GetParent():GetParent();
+	if ( mapFrame.QuestLog:IsShown() ) then
+		self.helpInfo[3] = { ButtonPos = { x = 810,	y = -180 }, HighLightBox = { x = 700, y = 16, width = 285, height = 510 },	ToolTipDir = "DOWN", ToolTipText = WORLD_MAP_TUTORIAL2 };
+	else
+		self.helpInfo[3] = nil;
+	end
+
+	if ( not HelpPlate_IsShowing(self.helpInfo) and mapFrame:IsShown()) then
+		HelpPlate_Show(self.helpInfo, mapFrame, self, true);
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_WORLD_MAP_FRAME, true);
+	else
+		HelpPlate_Hide(true);
+	end
 end
 
 -- ============================================ QUEST LOG ===============================================================================

@@ -18,27 +18,15 @@
 			<KeyValue key="normalAtlas" value="" type="string"/>
 			<KeyValue key="pushedAtlas" value="" type="string"/>
 			<KeyValue key="highlightAtlas" value="" type="string"/>
-			
+
 			<KeyValue key="tooltipFrame" value="GameTooltip" type="global"/>
 			<KeyValue key="tooltipPoint" value="ANCHOR_RIGHT" type="string"/>
 		</KeyValues>
 	</Button>
 
-	<Button name="RosterSelfDeafenButtonTemplate" mixin="RosterSelfDeafenButtonMixin" inherits="RosterVoiceToggleButtonTemplate" virtual="true">
-		<KeyValues>
-			<KeyValue key="highlightAtlas" value="voicechat-icon-speaker" type="string"/>
-		</KeyValues>
-	</Button>
-	<Button name="RosterSelfMuteButtonTemplate" mixin="RosterSelfMuteButtonMixin" inherits="RosterVoiceToggleButtonTemplate" virtual="true">
-		<KeyValues>
-			<KeyValue key="highlightAtlas" value="voicechat-icon-mic" type="string"/>
-		</KeyValues>
-	</Button>
-	<Button name="RosterMemberMuteButtonTemplate" mixin="RosterMemberMuteButtonMixin" inherits="RosterVoiceToggleButtonTemplate" virtual="true">
-		<KeyValues>
-			<KeyValue key="highlightAtlas" value="voicechat-icon-speaker" type="string"/>
-		</KeyValues>
-	</Button>
+	<Button name="RosterSelfDeafenButtonTemplate" mixin="RosterSelfDeafenButtonMixin" inherits="RosterVoiceToggleButtonTemplate" virtual="true"/>
+	<Button name="RosterSelfMuteButtonTemplate" mixin="RosterSelfMuteButtonMixin" inherits="RosterVoiceToggleButtonTemplate" virtual="true"/>
+	<Button name="RosterMemberMuteButtonTemplate" mixin="RosterMemberMuteButtonMixin" inherits="RosterVoiceToggleButtonTemplate" virtual="true"/>
 
 	<Button name="ChannelRosterButtonTemplate" mixin="ChannelRosterButtonMixin" hidden="true" virtual="true">
 		<Size x="160" y="22"/>

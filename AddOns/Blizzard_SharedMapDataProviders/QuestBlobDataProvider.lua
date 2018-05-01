@@ -1,6 +1,17 @@
 
 QuestBlobDataProviderMixin = CreateFromMixins(MapCanvasDataProviderMixin);
 
+function QuestBlobDataProviderMixin:SetShowWorldQuests(showWorldQuests)
+	self.showWorldQuests = showWorldQuests;
+	if self.pin then
+		self.pin:Refresh();
+	end
+end
+
+function QuestBlobDataProviderMixin:IsShowingWorldQuests()
+	return not not self.showWorldQuests;
+end
+
 function QuestBlobDataProviderMixin:OnAdded(mapCanvas)
 	MapCanvasDataProviderMixin.OnAdded(self, mapCanvas);
 	self:GetMap():SetPinTemplateType("QuestBlobPinTemplate", "QuestPOIFrame");
@@ -98,21 +109,21 @@ function QuestBlobPinMixin:OnUpdate()
 	self:Refresh();
 end
 
+function QuestBlobPinMixin:TryDrawQuest(questID)
+	if questID and questID > 0 and (self.dataProvider:IsShowingWorldQuests() or not QuestUtils_IsQuestWorldQuest(questID)) then
+		self:DrawBlob(questID, true);
+	end
+end
+
 function QuestBlobPinMixin:Refresh()
 	self:DrawNone();
-	if not GetCVarBool("questPOI") then
+	if not self.mapAllowsBlobs or not GetCVarBool("questPOI") then
 		return;
 	end
 
-	if self.mapAllowsBlobs and self.questID > 0 and not IsQuestComplete(self.questID) then
-		self:DrawBlob(self.questID, true);
-	end
-	if self.highlightedQuestID then
-		self:DrawBlob(self.highlightedQuestID, true);
-	end
-	if self.focusedQuestID then
-		self:DrawBlob(self.focusedQuestID, true);
-	end
+	self:TryDrawQuest(self.questID);
+	self:TryDrawQuest(self.highlightedQuestID);
+	self:TryDrawQuest(self.focusedQuestID);
 end
 
 function QuestBlobPinMixin:OnMapChanged()

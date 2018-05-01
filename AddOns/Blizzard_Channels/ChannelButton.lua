@@ -4,12 +4,39 @@ function VoiceChatHeadsetMixin:OnClick()
 	self:GetParent():ToggleActivateChannel();
 end
 
+function VoiceChatHeadsetMixin:OnEnter()
+	self:ShowTooltip();
+end
+
+function VoiceChatHeadsetMixin:OnLeave()
+	GameTooltip:Hide();
+end
+
+function VoiceChatHeadsetMixin:ShowTooltip()
+	local channelButton = self:GetParent();
+	local isActive = channelButton:IsVoiceActive();
+	local baseMessage = isActive and VOICE_CHAT_CHANNEL_ACTIVE_TOOLTIP or VOICE_CHAT_CHANNEL_INACTIVE_TOOLTIP;
+	local formattedChannelName = Voice_FormatTextForChannel(channelButton:GetVoiceChannel(), channelButton:GetChannelName());
+	local message = baseMessage:format(formattedChannelName);
+	local instructions = isActive and VOICE_CHAT_CHANNEL_ACTIVE_TOOLTIP_INSTRUCTIONS or VOICE_CHAT_CHANNEL_INACTIVE_TOOLTIP_INSTRUCTIONS;
+
+	local tooltip = GameTooltip;
+	tooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip_SetTitle(tooltip, message);
+	GameTooltip_AddInstructionLine(tooltip, instructions);
+	tooltip:Show();
+end
+
 function VoiceChatHeadsetMixin:Update(hasVoice, isActive)
 	self:SetShown(hasVoice);
 	if hasVoice then
 		local atlas = isActive and "voicechat-channellist-icon-headphone-on" or "voicechat-channellist-icon-headphone-off";
 		self:SetNormalAtlas(atlas);
 		self:SetHighlightAtlas(atlas);
+
+		if GameTooltip:GetOwner() == self then
+			self:ShowTooltip();
+		end
 	end
 end
 

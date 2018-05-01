@@ -43,28 +43,31 @@
 						</Texture>
 					</Layer>
 					<Layer level="BACKGROUND" textureSubLevel="-5">
-						<Texture name="WW" inherits="_UI-Frame-InnerTopTile" parentKey="InsetBorderTop">
-							<Size x="698" y="3"/>
+						<Texture inherits="_UI-Frame-InnerTopTile" parentKey="InsetBorderTop">
+							<Size x="0" y="3"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" x="2" y="-63"/>
+								<Anchor point="TOPRIGHT" x="-2" y="-63"/>
 							</Anchors>
 						</Texture>
 					</Layer>					
 				</Layers>
 				<Frames>
+					<Button parentKey="Tutorial" inherits="MainHelpPlateButton" mixin="WorldMapTutorialMixin">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="43" y="19"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad method="OnLoad"/>
+							<OnHide method="OnHide"/>
+							<OnClick method="ToggleHelpInfo"/>
+						</Scripts>
+					</Button>
 					<Frame parentKey="MaximizeMinimizeFrame" inherits="MaximizeMinimizeButtonFrameTemplate">
 						<Anchors>
 							<Anchor point="RIGHT" relativeKey="$parent.CloseButton" relativePoint="LEFT" x="10" y="0"/>
 						</Anchors>
 					</Frame>
-				<!--
-					<Frame parentKey="Inset" inherits="InsetFrameTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT" x="0" y="-63" />
-							<Anchor point="BOTTOMRIGHT" x="-2" y="1" />
-						</Anchors>
-					</Frame>
-					-->
 				</Frames>
 				<Scripts>
 					<OnLoad>

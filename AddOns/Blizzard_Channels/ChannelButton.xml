@@ -19,6 +19,8 @@
 		<HighlightTexture parentKey="HighlightTexture" alphaMode="ADD" alpha="0.3"/>
 		<Scripts>
 			<OnClick method="OnClick"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
 		</Scripts>
 	</Button>
 

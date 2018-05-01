@@ -251,7 +251,7 @@ function DecodeResolution(valueString)
 end
 
 VideoData["Display_ResolutionDropDown"]={
-	name = RESOLUTION;
+	name = WINDOW_SIZE;
 	description = OPTION_TOOLTIP_RESOLUTION,	
 	
 	tablefunction = 
@@ -265,23 +265,24 @@ VideoData["Display_ResolutionDropDown"]={
 	readfilter =
 		function(self, value)
 			local width, height = DecodeResolution(value);
-			if ( width/height > 4/3 ) then
-				value = value.." ".. WIDESCREEN_TAG;
-			end
 			return value;
 		end,
 	SetValue =
 		function (self, value)
 			local width, height = DecodeResolution(self.table[value]);
-			SetScreenResolution(width, height);
+			SetScreenResolution(width, height, Display_DisplayModeDropDown:fullscreenmode());
 		end,
 	doGetValue = 
 		function(self)
-			return GetCurrentResolution(Display_PrimaryMonitorDropDown:GetValue());
+			return GetCurrentResolution(Display_PrimaryMonitorDropDown:GetValue(), Display_DisplayModeDropDown:fullscreenmode());
 		end,
 	onrefresh =
 	function(self)
-		VideoOptions_Enable(self);
+		if(Display_DisplayModeDropDown:fullscreenmode()) then
+			VideoOptions_Disable(self);
+		else
+			VideoOptions_Enable(self);
+		end
 	end,
 	lookup = Graphics_TableLookupSafe,
 	restart = true,
@@ -589,22 +590,26 @@ VideoData["Graphics_ShadowsDropDown"]={
 	graphicsCVar =	"graphicsShadowQuality",
 	data = {
 		[1] = {
+			text = VIDEO_OPTIONS_LOW,
+			tooltip = VIDEO_OPTIONS_SHADOW_QUALITY_LOW;
+		},
+		[2] = {
 			text = VIDEO_OPTIONS_FAIR,
 			tooltip = VIDEO_OPTIONS_SHADOW_QUALITY_FAIR;
 		},
-		[2] = {
+		[3] = {
 			text = VIDEO_OPTIONS_MEDIUM,
 			tooltip = VIDEO_OPTIONS_SHADOW_QUALITY_MEDIUM;
 		},
-		[3] = {
+		[4] = {
 			text = VIDEO_OPTIONS_HIGH,
 			tooltip = VIDEO_OPTIONS_SHADOW_QUALITY_HIGH;
 		},
-		[4] = {
+		[5] = {
 			text = VIDEO_OPTIONS_ULTRA,
 			tooltip = VIDEO_OPTIONS_SHADOW_QUALITY_ULTRA;
 		},
-		[5] = {
+		[6] = {
 			text = VIDEO_OPTIONS_ULTRA_HIGH,
 			tooltip = VIDEO_OPTIONS_SHADOW_QUALITY_ULTRA_HIGH;
 		},
@@ -620,22 +625,26 @@ VideoData["RaidGraphics_ShadowsDropDown"]={
 	graphicsCVar =	"raidGraphicsShadowQuality",
 	data = {
 		[1] = {
+			text = VIDEO_OPTIONS_LOW,
+			tooltip = VIDEO_OPTIONS_SHADOW_QUALITY_LOW;
+		},
+		[2] = {
 			text = VIDEO_OPTIONS_FAIR,
 			tooltip = VIDEO_OPTIONS_SHADOW_QUALITY_FAIR;
 		},
-		[2] = {
+		[3] = {
 			text = VIDEO_OPTIONS_MEDIUM,
 			tooltip = VIDEO_OPTIONS_SHADOW_QUALITY_MEDIUM;
 		},
-		[3] = {
+		[4] = {
 			text = VIDEO_OPTIONS_HIGH,
 			tooltip = VIDEO_OPTIONS_SHADOW_QUALITY_HIGH;
 		},
-		[4] = {
+		[5] = {
 			text = VIDEO_OPTIONS_ULTRA,
 			tooltip = VIDEO_OPTIONS_SHADOW_QUALITY_ULTRA;
 		},
-		[5] = {
+		[6] = {
 			text = VIDEO_OPTIONS_ULTRA_HIGH,
 			tooltip = VIDEO_OPTIONS_SHADOW_QUALITY_ULTRA_HIGH;
 		},
@@ -1209,7 +1218,7 @@ VideoData["Advanced_MultisampleAlphaTest"]={
 	},
 }
 
-VideoData["Advanced_RenderScaleSlider"]={
+VideoData["Display_RenderScaleSlider"]={
 	name = RENDER_SCALE;
 	tooltip = OPTION_TOOLTIP_RENDER_SCALE,
 }

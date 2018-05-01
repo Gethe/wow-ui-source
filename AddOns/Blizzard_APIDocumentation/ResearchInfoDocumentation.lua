@@ -6,6 +6,20 @@ local ResearchInfo =
 
 	Functions =
 	{
+		{
+			Name = "GetDigSitesForMap",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "uiMapID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "digSites", Type = "table", InnerType = "DigSiteMapInfo", Nilable = false },
+			},
+		},
 	},
 
 	Events =
@@ -80,6 +94,17 @@ local ResearchInfo =
 
 	Tables =
 	{
+		{
+			Name = "DigSiteMapInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "researchSiteID", Type = "number", Nilable = false },
+				{ Name = "position", Type = "table", Mixin = "Vector2DMixin", Nilable = false },
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "textureIndex", Type = "number", Nilable = false },
+			},
+		},
 	},
 };
 

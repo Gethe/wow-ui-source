@@ -28,11 +28,11 @@ function MapCanvasMixin:SetMapID(mapID)
 		self.areDetailLayersDirty = true;
 		self.mapID = mapID; 
 		self.expandedMapInsetsByMapID = {};
-		-- MAPREFACTORTODO: Please kill me
-		SetMapByID(mapID)
 		self.ScrollContainer:SetMapID(mapID);
 		self:OnMapChanged();
 	end
+	-- MAPREFACTORTODO: Please kill me
+	SetMapByID(mapID)
 end
 
 function MapCanvasMixin:OnFrameSizeChanged()
@@ -127,19 +127,27 @@ do
 
 		local pin, newPin = self.pinPools[pinTemplate]:Acquire();
 
-		if pin:IsMouseClickEnabled() then
-			pin:SetScript("OnMouseUp", OnPinMouseUp);
-			pin:SetScript("OnMouseDown", pin.OnMouseDown);
-		end
+		if newPin then
+			local isMouseClickEnabled = pin:IsMouseClickEnabled();
+			local isMouseMotionEnabled = pin:IsMouseMotionEnabled();
 
-		if pin:IsMouseMotionEnabled() then
-			if newPin then
-				-- These will never be called, just define a OnMouseEnter and OnMouseLeave on the pin mixin and it'll be called when appropriate
-				assert(pin:GetScript("OnEnter") == nil);
-				assert(pin:GetScript("OnLeave") == nil);
+			if isMouseClickEnabled then
+				pin:SetScript("OnMouseUp", OnPinMouseUp);
+				pin:SetScript("OnMouseDown", pin.OnMouseDown);
 			end
-			pin:SetScript("OnEnter", pin.OnMouseEnter);
-			pin:SetScript("OnLeave", pin.OnMouseLeave);
+
+			if isMouseMotionEnabled then
+				if newPin then
+					-- These will never be called, just define a OnMouseEnter and OnMouseLeave on the pin mixin and it'll be called when appropriate
+					assert(pin:GetScript("OnEnter") == nil);
+					assert(pin:GetScript("OnLeave") == nil);
+				end
+				pin:SetScript("OnEnter", pin.OnMouseEnter);
+				pin:SetScript("OnLeave", pin.OnMouseLeave);
+			end
+
+			pin:SetMouseClickEnabled(isMouseClickEnabled);
+			pin:SetMouseMotionEnabled(isMouseMotionEnabled);
 		end
 
 		pin.pinTemplate = pinTemplate;

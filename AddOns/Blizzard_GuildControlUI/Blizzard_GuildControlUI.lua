@@ -5,7 +5,6 @@ NUM_RANK_FLAGS = 20;
 MAX_GUILDRANKS = 10;
 
 function GuildControlUI_OnLoad(self)
-	GuildFrame_RegisterPopup(self);
 	self:RegisterEvent("GUILD_RANKS_UPDATE");
 
 	UIDropDownMenu_SetWidth(self.dropdown, 120);

@@ -2096,13 +2096,13 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture name="$parentBigIPulse" file="Interface\common\help-i" alphaMode="ADD" hidden="true">
+				<Texture parentKey="BigIPulse" file="Interface\common\help-i" alphaMode="ADD" hidden="true">
 					<Size x="46" y="46"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentRingPulse" file="Interface\TutorialFrame\minimap-glow" alphaMode="ADD" hidden="true">
+				<Texture parentKey="RingPulse" file="Interface\TutorialFrame\minimap-glow" alphaMode="ADD" hidden="true">
 					<Size x="52" y="52"/>
 					<Anchors>
 						<Anchor point="CENTER" x="0" y="0"/>
@@ -2130,8 +2130,8 @@
 		</HighlightTexture>
 		<Animations>
 			<AnimationGroup parentKey="Pulse" looping="BOUNCE">
-				<Alpha target="$parentBigIPulse" fromAlpha="0.75" toAlpha="0" duration="1.0" smoothing="IN_OUT" order="1"/>
-				<Alpha target="$parentRingPulse" fromAlpha="0.5" toAlpha="0" duration="1.0" smoothing="IN_OUT" order="1"/>
+				<Alpha childKey="BigIPulse" fromAlpha="0.75" toAlpha="0" duration="1.0" smoothing="IN_OUT" order="1"/>
+				<Alpha childKey="RingPulse" fromAlpha="0.5" toAlpha="0" duration="1.0" smoothing="IN_OUT" order="1"/>
 			</AnimationGroup>
 		</Animations>
 	</Button>

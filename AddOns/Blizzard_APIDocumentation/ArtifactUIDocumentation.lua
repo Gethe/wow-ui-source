@@ -218,24 +218,6 @@ local ArtifactUI =
 			},
 		},
 		{
-			Name = "GetArtifactKnowledgeLevel",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "knowledgeLevel", Type = "number", Nilable = false },
-			},
-		},
-		{
-			Name = "GetArtifactKnowledgeMultiplier",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "knowledgeMultiplier", Type = "number", Nilable = false },
-			},
-		},
-		{
 			Name = "GetArtifactTier",
 			Type = "Function",
 
@@ -319,21 +301,6 @@ local ArtifactUI =
 			},
 		},
 		{
-			Name = "GetEquippedArtifactRelicAttuneInfo",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "relicSlotIndex", Type = "number", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "isAttuned", Type = "bool", Nilable = false },
-				{ Name = "canAttune", Type = "bool", Nilable = false },
-			},
-		},
-		{
 			Name = "GetEquippedArtifactRelicInfo",
 			Type = "Function",
 
@@ -387,15 +354,6 @@ local ArtifactUI =
 			Returns =
 			{
 				{ Name = "itemIevelIncrease", Type = "number", Nilable = false },
-			},
-		},
-		{
-			Name = "GetMaxArtifactKnowledgeLevel",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "maxArtifactKnowledge", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -539,21 +497,6 @@ local ArtifactUI =
 			},
 		},
 		{
-			Name = "GetRelicAttuneInfo",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "relicSlotIndex", Type = "number", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "isAttuned", Type = "bool", Nilable = false },
-				{ Name = "canAttune", Type = "bool", Nilable = false },
-			},
-		},
-		{
 			Name = "GetRelicInfo",
 			Type = "Function",
 
@@ -599,22 +542,6 @@ local ArtifactUI =
 			Returns =
 			{
 				{ Name = "lockedReason", Type = "string", Nilable = true },
-			},
-		},
-		{
-			Name = "GetRelicSlotRankInfo",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "relicSlotIndex", Type = "number", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "currentRank", Type = "number", Nilable = false },
-				{ Name = "canAddTalent", Type = "bool", Nilable = false },
-				{ Name = "artifactLevelRequiredForNextRank", Type = "number", Nilable = true },
 			},
 		},
 		{

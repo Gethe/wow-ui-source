@@ -117,10 +117,10 @@
 	<Button name="CommunitiesAddStreamHighlightFrameTemplate" mixin="CommunitiesAddStreamHighlightFrameMixin" virtual="true">
 		<Layers>
 			<Layer level="BORDER">
-				<Texture atlas="communities-chat-body-add" setAllPoints="true"/>
+				<Texture parentKey="Body" atlas="communities-chat-body-add" setAllPoints="true"/>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture atlas="communities-chat-icon-plus">
+				<Texture parentKey="Icon" atlas="communities-chat-icon-plus">
 					<Size x="64" y="65"/>
 					<Anchors>
 						<Anchor point="CENTER"/>

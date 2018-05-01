@@ -315,10 +315,8 @@ function RaidGroupFrame_Update()
 					subframes.level = _G["RaidGroupButton"..i.."Level"];
 					subframes.rank = _G["RaidGroupButton"..i.."Rank"];
 					subframes.role = _G["RaidGroupButton"..i.."Role"];
-					subframes.loot = _G["RaidGroupButton"..i.."Loot"];
 					subframes.rankTexture = _G["RaidGroupButton"..i.."RankTexture"];
 					subframes.roleTexture = _G["RaidGroupButton"..i.."RoleTexture"];
-					subframes.lootTexture = _G["RaidGroupButton"..i.."LootTexture"];
 					subframes.readyCheck = _G["RaidGroupButton"..i.."ReadyCheck"];
 					button.subframes = subframes;
 				end
@@ -400,21 +398,12 @@ function RaidGroupFrame_Update()
 					subframes.roleTexture:SetTexture("");
 				end
 
-				-- Sets the Master Looter Icon
-				if ( loot ) then
-					subframes.lootTexture:SetTexture("Interface\\GroupFrame\\UI-Group-MasterLooter");
-				else
-					subframes.lootTexture:SetTexture("");
-				end
-
 				-- Resizes if there are all 3 visible
-				if ( ( rank > 0 ) and role and loot ) then
+				if ( ( rank > 0 ) and role ) then
 					subframes.rank:SetWidth(10);
 					subframes.rank:SetHeight(10);
 					subframes.role:SetWidth(10);
 					subframes.role:SetHeight(10);
-					subframes.loot:SetWidth(9);
-					subframes.loot:SetHeight(9);
 					subframes.readyCheck:SetWidth(10);
 					subframes.readyCheck:SetHeight(10);
 				else
@@ -422,8 +411,6 @@ function RaidGroupFrame_Update()
 					subframes.rank:SetHeight(11);
 					subframes.role:SetWidth(11);
 					subframes.role:SetHeight(11);
-					subframes.loot:SetWidth(11);
-					subframes.loot:SetHeight(11);
 					subframes.readyCheck:SetWidth(11);
 					subframes.readyCheck:SetHeight(11);
 				end
@@ -448,13 +435,6 @@ function RaidGroupFrame_Update()
 					buttonCount = buttonCount + 1;
 				else
 					subframes.role:Hide();
-				end
-
-				if ( loot ) then
-					tinsert(button.jobs, subframes.loot);
-					buttonCount = buttonCount + 1;
-				else
-					subframes.loot:Hide();
 				end
 
 				for i=1, buttonCount, 1 do
@@ -499,7 +479,6 @@ function RaidGroupFrame_Update()
 				raidGroup.nextIndex = raidGroup.nextIndex + 1;
 				button.rank = rank;
 				button.role = role;
-				button.loot = loot;
 				button:SetID(i);
 				button:Show();
 			end

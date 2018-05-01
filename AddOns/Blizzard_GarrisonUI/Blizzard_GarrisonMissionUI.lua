@@ -463,7 +463,7 @@ function GarrisonFollowerMission:MissionCompleteInitialize(missionList, index)
 	stage.MissionInfo.Location:SetText(mission.location);
 
 	-- max level
-	if ( mission.level == self.followerMaxLevel and mission.iLevel > 0 ) then
+	if ( GarrisonFollowerOptions[mission.followerTypeID].showILevelOnMission and mission.level == self.followerMaxLevel and mission.iLevel > 0 ) then
 		stage.MissionInfo.Level:SetPoint("CENTER", stage.MissionInfo, "TOPLEFT", 30, -28);
 		stage.MissionInfo.ItemLevel:Show();
 		stage.MissionInfo.ItemLevel:SetFormattedText(NUMBER_IN_PARENTHESES, mission.iLevel);
@@ -943,7 +943,7 @@ function GarrisonMissionListMixin:Update()
 				button.IconBG:SetVertexColor(0, 0, 0, 0.4)
 			end
 			local showingItemLevel = false;
-			if ( mission.isMaxLevel and mission.iLevel > 0 ) then
+			if ( GarrisonFollowerOptions[followerTypeID].showILevelOnMission and mission.isMaxLevel and mission.iLevel > 0 ) then
 				button.ItemLevel:SetFormattedText(NUMBER_IN_PARENTHESES, mission.iLevel);
 				button.ItemLevel:Show();
 				showingItemLevel = true;
@@ -1131,7 +1131,7 @@ end
 function GarrisonMissionButton_SetInProgressTooltip(missionInfo, showRewards)
 	GameTooltip:SetText(missionInfo.name);
 	-- level
-	if ( missionInfo.isMaxLevel and missionInfo.iLevel > 0 ) then
+	if ( GarrisonFollowerOptions[missionInfo.followerTypeID].showILevelOnMission and  missionInfo.isMaxLevel and missionInfo.iLevel > 0 ) then
 		GameTooltip:AddLine(format(GARRISON_MISSION_LEVEL_ITEMLEVEL_TOOLTIP, missionInfo.level, missionInfo.iLevel), 1, 1, 1);
 	else
 		GameTooltip:AddLine(format(GARRISON_MISSION_LEVEL_TOOLTIP, missionInfo.level), 1, 1, 1);

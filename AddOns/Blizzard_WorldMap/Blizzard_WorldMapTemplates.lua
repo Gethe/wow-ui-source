@@ -87,9 +87,9 @@ function WorldMapTrackingOptionsButtonMixin:OnSelection(value, checked)
 	if (value == "quests") then
 		SetCVar("questPOI", checked and "1" or "0", "QUEST_POI");
 	elseif (value == "digsites") then
-		SetCVar("digSites", checked and "1" or "0");
+		SetCVar("digSites", checked and "1" or "0", "SHOW_DIG_SITES");
 	elseif (value == "tamers") then
-		SetCVar("showTamers", checked and "1" or "0");
+		SetCVar("showTamers", checked and "1" or "0", "SHOW_TAMERS");
 	elseif (value == "primaryProfessionsFilter" or value == "secondaryProfessionsFilter") then
 		SetCVar(value, checked and "1" or "0");
 	elseif (value == "worldQuestFilterOrderResources" or value == "worldQuestFilterArtifactPower" or

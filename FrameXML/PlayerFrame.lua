@@ -28,7 +28,6 @@ function PlayerFrame_OnLoad(self)
 	self:RegisterEvent("PLAYER_REGEN_ENABLED");
 	self:RegisterEvent("PLAYER_UPDATE_RESTING");
 	self:RegisterEvent("PARTY_LEADER_CHANGED");
-	self:RegisterEvent("PARTY_LOOT_METHOD_CHANGED");
 	self:RegisterEvent("GROUP_ROSTER_UPDATE");
 	self:RegisterEvent("READY_CHECK");
 	self:RegisterEvent("READY_CHECK_CONFIRM");
@@ -99,15 +98,6 @@ function PlayerFrame_UpdatePartyLeader()
 	else
 		PlayerLeaderIcon:Hide();
 		PlayerGuideIcon:Hide();
-	end
-
-	local lootMethod;
-	local lootMaster;
-	lootMethod, lootMaster = GetLootMethod();
-	if ( lootMaster == 0 and IsInGroup() ) then
-		PlayerMasterIcon:Show();
-	else
-		PlayerMasterIcon:Hide();
 	end
 end
 
@@ -245,15 +235,6 @@ function PlayerFrame_OnEvent(self, event, ...)
 		PlayerFrame_UpdateGroupIndicator();
 		PlayerFrame_UpdatePartyLeader();
 		PlayerFrame_UpdateReadyCheck();
-	elseif ( event == "PARTY_LOOT_METHOD_CHANGED" ) then
-		local lootMethod;
-		local lootMaster;
-		lootMethod, lootMaster = GetLootMethod();
-		if ( lootMaster == 0 and IsInGroup() ) then
-			PlayerMasterIcon:Show();
-		else
-			PlayerMasterIcon:Hide();
-		end
 	elseif ( event == "PLAYTIME_CHANGED" ) then
 		PlayerFrame_UpdatePlaytime();
 	elseif ( event == "READY_CHECK" or event == "READY_CHECK_CONFIRM" ) then
@@ -421,7 +402,6 @@ function PlayerFrame_ToVehicleArt(self, vehicleType)
 
 	PlayerName:SetPoint("CENTER",50,23);
 	PlayerLeaderIcon:SetPoint("TOPLEFT",40,-12);
-	PlayerMasterIcon:SetPoint("TOPLEFT",86,0);
 	PlayerFrameGroupIndicator:SetPoint("BOTTOMLEFT", PlayerFrame, "TOPLEFT", 97, -13);
 
 	PlayerFrameBackground:SetWidth(114);
@@ -444,7 +424,6 @@ function PlayerFrame_ToPlayerArt(self)
 	PlayerFrame_HideVehicleTexture();
 	PlayerName:SetPoint("CENTER",50,19);
 	PlayerLeaderIcon:SetPoint("TOPLEFT",40,-12);
-	PlayerMasterIcon:SetPoint("TOPLEFT",80,-10);
 	PlayerFrameGroupIndicator:SetPoint("BOTTOMLEFT", PlayerFrame, "TOPLEFT", 97, -20);
 	PlayerFrameHealthBar:SetWidth(119);
 	PlayerFrameHealthBar:SetPoint("TOPLEFT",106,-41);

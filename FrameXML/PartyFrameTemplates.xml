@@ -313,12 +313,6 @@
 									</Anchors>
 									<TexCoords left="0" right="0.296875" top="0.015625" bottom="0.3125"/>
 								</Texture>
-								<Texture name="$parentMasterIcon" file="Interface\GroupFrame\UI-Group-MasterLooter" hidden="true">
-									<Size x="16" y="16"/>
-									<Anchors>
-										<Anchor point="TOPLEFT" x="32" y="0"/>
-									</Anchors>
-								</Texture>
 								<Texture name="$parentPVPIcon" hidden="true">
 									<Size x="32" y="32"/>
 									<Anchors>

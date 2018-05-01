@@ -303,7 +303,6 @@ function WorldMapFrame_OnLoad(self)
 	QUEST_POI_FRAME_HEIGHT = WorldMapDetailFrame:GetHeight() * WORLDMAP_FULLMAP_SIZE;
 	QuestPOI_Initialize(WorldMapPOIFrame, WorldMapPOIButton_Init);
 
-	WorldMapFrame.UIElementsFrame.BountyBoard:SetSelectedBountyChangedCallback(WorldMapFrame_SetBonusObjectivesDirty);
 	WorldMapFrame.UIElementsFrame.ActionButton:SetOnCastChangedCallback(WorldMapFrame_SetBonusObjectivesDirty);
 
 	WorldMapUnitPositionFrame:SetPlayerPingTexture(1, "Interface\\minimap\\UI-Minimap-Ping-Center", 32, 32);
@@ -440,8 +439,6 @@ function WorldMapFrame_OnEvent(self, event, ...)
 		end
 	elseif ( event == "VARIABLES_LOADED" ) then
 		WORLD_MAP_MIN_ALPHA = tonumber(GetCVar("mapAnimMinAlpha"));
-		WORLDMAP_SETTINGS.locked = GetCVarBool("lockedWorldMap");
-		WORLDMAP_SETTINGS.opacity = (tonumber(GetCVar("worldMapOpacity")));
 		if ( GetCVarBool("miniWorldMap") ) then
 			WorldMap_ToggleSizeDown();
 		else
@@ -1226,7 +1223,6 @@ function WorldMapFrame_Update()
 
 	WorldMap_UpdateLandmarks();
 	WorldMap_DrawWorldEffects();
-	WorldMapFrame.UIElementsFrame.BountyBoard:SetMapAreaID(mapID);
 	WorldMapFrame.UIElementsFrame.ActionButton:SetMapAreaID(mapID);
 	WorldMapPOIFrame.FogOfWar:SetUiMapID(mapID);
 	WorldMapFrame_UpdateOverlayLocations();

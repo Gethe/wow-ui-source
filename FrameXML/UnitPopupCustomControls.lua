@@ -1,27 +1,26 @@
 UnitPopupVoiceMemberInfoMixin = {};
 
-function UnitPopupVoiceMemberInfoMixin:GetVoiceChannelAndMemberID()
-	local context = self:GetParent():GetContextData();
-	return context.voiceMemberID, context.voiceChannelID;
+function UnitPopupVoiceMemberInfoMixin:GetPlayerLocation()
+	return self:GetParent():GetContextData().playerLocation;
 end
 
 function UnitPopupVoiceMemberInfoMixin:CallAccessor(...)
-	local memberID, channelID = self:GetVoiceChannelAndMemberID();
-	return self.accessor(memberID, channelID, ...);
+	return self.accessor(self:GetPlayerLocation(), ...);
 end
 
 function UnitPopupVoiceMemberInfoMixin:CallMutator(...)
-	local memberID, channelID = self:GetVoiceChannelAndMemberID();
-	return self.mutator(memberID, channelID, ...);
+	return self.mutator(self:GetPlayerLocation(), ...);
 end
 
 UnitPopupVoiceToggleButtonMixin = {};
 
 function UnitPopupVoiceToggleButtonMixin:OnEnter()
+	PropertyBindingMixin.OnEnter(self);
 	ExecuteFrameScript(self:GetParent():GetParent(), "OnEnter");
 end
 
 function UnitPopupVoiceToggleButtonMixin:OnLeave()
+	PropertyBindingMixin.OnLeave(self);
 	ExecuteFrameScript(self:GetParent():GetParent(), "OnLeave");
 end
 
@@ -57,6 +56,9 @@ function UnitPopupToggleMuteMixin:OnLoad()
 	self:SetMutatorFunction(C_VoiceChat.SetMuted);
 	self:AddStateAtlas(false, "voicechat-icon-mic");
 	self:AddStateAtlas(true, "voicechat-icon-mic-mute");
+	self:AddStateTooltipString(false, VOICE_TOOLTIP_MUTE_MIC);
+	self:AddStateTooltipString(true, VOICE_TOOLTIP_UNMUTE_MIC);
+	self:SetUseIconAsHighlight(true);
 end
 
 function UnitPopupToggleMuteMixin:RegisterEvents()
@@ -83,6 +85,9 @@ function UnitPopupToggleDeafenMixin:OnLoad()
 	self:SetMutatorFunction(C_VoiceChat.SetDeafened);
 	self:AddStateAtlas(false, "voicechat-icon-speaker");
 	self:AddStateAtlas(true, "voicechat-icon-speaker-mute");
+	self:AddStateTooltipString(false, VOICE_TOOLTIP_DEAFEN);
+   	self:AddStateTooltipString(true, VOICE_TOOLTIP_UNDEAFEN);
+	self:SetUseIconAsHighlight(true);
 end
 
 function UnitPopupToggleDeafenMixin:RegisterEvents()
@@ -109,6 +114,9 @@ function UnitPopupToggleUserMuteMixin:OnLoad()
 	self:SetMutatorFunction(C_VoiceChat.SetMemberMuted);
 	self:AddStateAtlas(false, "voicechat-icon-speaker");
 	self:AddStateAtlas(true, "voicechat-icon-speaker-mute");
+	self:AddStateTooltipString(false, MUTE);
+	self:AddStateTooltipString(true, UNMUTE);
+	self:SetUseIconAsHighlight(true);
 end
 
 function UnitPopupToggleUserMuteMixin:RegisterEvents()

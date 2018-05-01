@@ -74,6 +74,9 @@ MoneyInputFrame.xml
 ..\SharedXML\CustomBindingButtonTemplate.xml
 CustomBindingManager.lua
 CustomBindingHandler.lua
+GarrisonBaseUtils.xml
+FloatingGarrisonFollowerTooltip.xml
+GarrisonFollowerTooltip.xml
 GameTooltip.xml
 UIMenu.xml
 UIDropDownMenu.xml
@@ -109,7 +112,6 @@ AudioOptionsPanels.xml
 InterfaceOptionsFrame.xml
 InterfaceOptionsPanels.xml
 ..\SharedXML\AddonList.xml
-GarrisonBaseUtils.xml
 AlertFrameIntrinsic.xml
 AlertFrames.xml
 AlertFrameSystems.xml
@@ -239,8 +241,6 @@ LootHistory.xml
 FloatingPetBattleTooltip.xml
 QueueStatusFrame.xml
 BattlePetTooltip.xml
-FloatingGarrisonFollowerTooltip.xml
-GarrisonFollowerTooltip.xml
 StaticPopupSpecial.xml
 LossOfControlFrame.xml
 PVPHelper.xml
@@ -248,6 +248,7 @@ ProductChoice.xml
 ZoneAbility.xml
 ArtifactToasts.xml
 AzeriteItemToasts.xml
+AzeriteIslandsToast.xml
 ..\SharedXML\ModelPreviewFrame.xml
 SplashFrame.xml
 QuestChoiceFrameMixin.lua

@@ -75,17 +75,7 @@ function CommunitiesListMixin:Update()
 		
 	self:PredictFavorites(clubs);
 	
-	table.sort(clubs, function(lhsClub, rhsClub)
-		if lhsClub.favoriteTimeStamp ~= nil and rhsClub.favoriteTimeStamp ~= nil then
-			return lhsClub.favoriteTimeStamp < rhsClub.favoriteTimeStamp;
-		elseif lhsClub.favoriteTimeStamp ~= nil or rhsClub.favoriteTimeStamp ~= nil then
-			return lhsClub.favoriteTimeStamp ~= nil;
-		elseif lhsClub.joinTime ~= nil and rhsClub.joinTime ~= nil then
-			return lhsClub.joinTime > rhsClub.joinTime;
-		else
-			return lhsClub.joinTime ~= nil;
-		end
-	end);
+	CommunitiesUtil.SortClubs(clubs);
 	
 	local isInGuild = IsInGuild();
 	local potentialClubs = self:GetPotentialClubs();
@@ -248,29 +238,42 @@ local function DoesCommunityHaveUnreadMessages(clubId)
 	end
 end
 
+local COMMUNITIES_LIST_ENTRY_EVENTS = {
+	"STREAM_VIEW_MARKER_UPDATED"
+}
+
 CommunitiesListEntryMixin = {};
 
 function CommunitiesListEntryMixin:SetClubInfo(clubInfo, isInvitation)
 	self.overrideOnClick = nil;
-	self.TabardBackground:Hide();
 	if clubInfo then
+		local isGuild = clubInfo.clubType == Enum.ClubType.Guild;
 		self.Name:SetText(clubInfo.name);
-		local fontColor = clubInfo.clubType == Enum.ClubType.BattleNet and BATTLENET_FONT_COLOR or NORMAL_FONT_COLOR;
+		local fontColor = NORMAL_FONT_COLOR;
+		if clubInfo.clubType == Enum.ClubType.BattleNet then
+			fontColor = BATTLENET_FONT_COLOR;
+		elseif isGuild then
+			fontColor = GREEN_FONT_COLOR;
+		end
+		
 		self.Name:SetTextColor(fontColor:GetRGB());
 		self.clubId = clubInfo.clubId;
 		self.isInvitation = isInvitation;
 		self.Selection:SetShown(clubInfo.clubId == self:GetCommunitiesFrame():GetSelectedClubId());
-		
 		self.InvitationIcon:SetShown(isInvitation);
-		self.Icon:SetShown(not isInvitation);
+		SetLargeGuildTabardTextures("player", self.GuildTabardEmblem, self.GuildTabardBackground, self.GuildTabardBorder);
+		self.GuildTabardEmblem:SetShown(isGuild);
+		self.GuildTabardBackground:SetShown(isGuild);
+		self.GuildTabardBorder:SetShown(isGuild);
+		self.Icon:SetShown(not isInvitation and not isGuild);
 		self.Icon:SetSize(42, 42);
 		self.Icon:SetPoint("TOPLEFT", 8, -15);
-		self.CircleMask:SetShown(not isInvitation);
-		self.IconRing:SetShown(not isInvitation);
+		self.CircleMask:SetShown(not isInvitation and not isGuild);
+		self.IconRing:SetShown(not isInvitation and not isGuild);
 		self.IconRing:SetAtlas(clubInfo.clubType == Enum.ClubType.BattleNet and "communities-ring-blue" or "communities-ring-gold");
+		self.GuildFinderBackground:Hide();
 		C_Club.SetAvatarTexture(self.Icon, clubInfo.avatarId, clubInfo.clubType);
-		
-		self.UnreadNotificationIcon:SetShown(not isInvitation and DoesCommunityHaveUnreadMessages(clubInfo.clubId));
+		self:UpdateUnreadNotification();
 	else
 		self.Name:SetText(nil);
 		self.clubId = nil;
@@ -279,6 +282,10 @@ function CommunitiesListEntryMixin:SetClubInfo(clubInfo, isInvitation)
 		self.UnreadNotificationIcon:Hide();
 		self:Hide();
 	end
+end
+
+function CommunitiesListEntryMixin:UpdateUnreadNotification()
+	self.UnreadNotificationIcon:SetShown(not self.isInvitation and self.clubId and DoesCommunityHaveUnreadMessages(self.clubId));
 end
 
 function CommunitiesListEntryMixin:SetAddCommunity()
@@ -293,7 +300,11 @@ function CommunitiesListEntryMixin:SetAddCommunity()
 	self.Icon:Show();
 	self.CircleMask:Hide();
 	self.IconRing:Hide();
-	self.TabardBackground:Hide();
+	self.GuildFinderBackground:Hide();
+	self.GuildTabardEmblem:Hide();
+	self.GuildTabardBackground:Hide();
+	self.GuildTabardBorder:Hide();
+	self.UnreadNotificationIcon:Hide();
 
 	self.Icon:SetAtlas("communities-icon-addgroupplus");
 	self.Icon:SetSize(32, 32);
@@ -317,7 +328,11 @@ function CommunitiesListEntryMixin:SetGuildFinder()
 	self.Icon:SetPoint("TOPLEFT", 8, -15);
 	self.CircleMask:Show();
 	self.IconRing:Hide();
-	self.TabardBackground:Show();
+	self.GuildFinderBackground:Show();
+	self.GuildTabardEmblem:Hide();
+	self.GuildTabardBackground:Hide();
+	self.GuildTabardBorder:Hide();
+	self.UnreadNotificationIcon:Hide();
 
 	local factionGroup = UnitFactionGroup("player");
 	if factionGroup == "Alliance" then
@@ -341,6 +356,23 @@ end
 
 function CommunitiesListEntryMixin:GetCommunitiesFrame()
 	return self:GetCommuntiesList():GetCommunitiesFrame();
+end
+
+function CommunitiesListEntryMixin:OnShow()
+	FrameUtil.RegisterFrameForEvents(self, COMMUNITIES_LIST_ENTRY_EVENTS);
+end
+
+function CommunitiesListEntryMixin:OnHide()
+	FrameUtil.UnregisterFrameForEvents(self, COMMUNITIES_LIST_ENTRY_EVENTS);
+end
+
+function CommunitiesListEntryMixin:OnEvent(event, ...)
+	if event == "STREAM_VIEW_MARKER_UPDATED" then
+		local clubId, streamId, lastUnreadTime = ...;
+		if clubId == self.clubId then
+			self:UpdateUnreadNotification();
+		end
+	end
 end
 
 function CommunitiesListEntryMixin:OnEnter()

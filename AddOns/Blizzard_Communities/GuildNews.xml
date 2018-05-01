@@ -1,0 +1,449 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="GuildNews.lua"/>
+<!--
+*******************************************************************************
+	Templates
+*******************************************************************************
+-->
+	<CheckButton name="GuildNewsCheckButtonTemplate" virtual="true">
+		<Size x="24" y="24"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Text" inherits="GameFontHighlight">
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT" x="1" y="1"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick function="GuildNewsFilter_OnClick"/>
+		</Scripts>
+		<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+		<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+		<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+		<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+		<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
+	</CheckButton>
+	
+	<Button name="GuildNewsButtonTemplate" virtual="true">
+		<Size x="300" y="18"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="header" file="Interface\GuildFrame\GuildFrame" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" x="3" y="0"/>
+					</Anchors>
+					<TexCoords left="0.63183594" right="0.94531250" top="0.57617188" bottom="0.61523438"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="text" inherits="GameFontHighlightSmall" justifyH="LEFT" wordwrap="false">
+					<Anchors>
+						<Anchor point="LEFT" x="24" y="0"/>
+						<Anchor point="RIGHT" x="-8" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="dash" inherits="GameFontHighlightSmall" text="QUEST_DASH" justifyH="RIGHT" hidden="true">
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.text" relativePoint="LEFT" x="0" y="0"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="icon" file="Interface\GuildFrame\GuildFrame">
+					<Size x="13" y="11"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.text" relativePoint="LEFT" x="-4" y="0"/>
+					</Anchors>
+					<TexCoords left="0.41406250" right="0.42675781" top="0.96875000" bottom="0.99023438"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+			</OnLoad>
+			<OnEnter>
+				if ( not self.isEvent ) then
+					GuildNewsButton_OnEnter(self);
+				end
+			</OnEnter>
+			<OnClick>
+				if ( self.isEvent ) then
+					GuildEventButton_OnClick(self, button);
+				else
+					GuildNewsButton_OnClick(self, button);
+				end
+			</OnClick>
+			<OnLeave>
+				if ( not self.isEvent ) then
+					GuildNewsButton_OnLeave(self);
+				end
+			</OnLeave>
+		</Scripts>
+		<HighlightTexture file="Interface\FriendsFrame\UI-FriendsFrame-HighlightBar-Blue" setAllPoints="true" alphaMode="ADD"/>
+	</Button>
+	
+	<PlayerModel name="GuildNewsBossModelTemplate" enableMouse="true" hidden="true" clampedToScreen="true" frameStrata="DIALOG" virtual="true">
+		<Size x="198" y="230"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Bg" inherits="QuestPortrait-MrBrownstone">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="-1">
+				<Texture parentKey="ShadowOverlay" file="Interface\TalentFrame\PetTalent-ShadowOverlay" setAllPoints="true">
+					<TexCoords left="0.00000000" right="0.537109375" top="0" bottom="0.791015625"/>
+				</Texture>
+				<Texture parentKey="TopBg" inherits="QuestPortrait-StoneSwirls-Top">
+					<Anchors>
+						<Anchor point="TOPLEFT" y="16"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="BorderBottomLeft" inherits="UI-Frame-BotCornerLeft">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="-5" y="-5"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BorderBottomRight" inherits="UI-Frame-BotCornerRight">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="2" y="-5"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BorderTop" inherits="_UI-Frame-TitleTile">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-1" y="20"/>
+						<Anchor point="TOPRIGHT" x="1" y="20"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BorderBottom" inherits="_UI-Frame-Bot">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.BorderBottomLeft" relativePoint="BOTTOMRIGHT" y="0"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BorderBottomRight" relativePoint="BOTTOMLEFT" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BorderLeft" inherits="!UI-Frame-LeftTile">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-5"/>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.BorderBottomLeft" relativePoint="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BorderRight" inherits="!UI-Frame-RightTile">
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="3"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BorderBottomRight" relativePoint="TOPRIGHT" x="1"/>
+					</Anchors>
+				</Texture>	
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="Nameplate" inherits="QuestPortrait-Nameplate">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="0" y="12"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="BossName" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Nameplate" x="22" y="-12"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Nameplate" x="-22" y="12"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<Texture parentKey="CornerTopLeft" inherits="QuestPortrait-Corner_UL">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-6" y="24"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="CornerTopRight" inherits="QuestPortrait-Corner_UR">
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="7" y="24"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="CornerBottomLeft" inherits="QuestPortrait-Corner_BL">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="-6" y="-26"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="CornerBottomRight" inherits="QuestPortrait-Corner_BR">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="7" y="-26"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="TextFrame" hidden="false" useParentLevel="true">
+				<Size x="198" y="44"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Nameplate" relativePoint="BOTTOMLEFT" y="12"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="TextFrameBg" inherits="QuestPortrait-MrBrownstone">
+							<Size x="197" y="64"/>	
+							<TexCoords left="0.00390625" right="0.77343750" top="0.00195313" bottom="0.126953125"/>	
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="BorderBottomLeft" inherits="UI-Frame-BotCornerLeft">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" x="-5" y="-5"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="BorderBottomRight" inherits="UI-Frame-BotCornerRight">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" x="-4" y="-5"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="BorderBottom" inherits="_UI-Frame-Bot">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativeKey="$parent.BorderBottomLeft" relativePoint="BOTTOMRIGHT" y="0"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BorderBottomRight" relativePoint="BOTTOMLEFT" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="BorderLeft" inherits="!UI-Frame-LeftTile">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-5"/>
+								<Anchor point="BOTTOMLEFT" relativeKey="$parent.BorderBottomLeft" relativePoint="TOPLEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="BorderRight" inherits="!UI-Frame-RightTile">
+							<Anchors>
+								<Anchor point="TOPRIGHT" x="3"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BorderBottomRight" relativePoint="TOPRIGHT" x="1"/>
+							</Anchors>
+						</Texture>
+						<FontString parentKey="BossLocationText" inherits="GameFontHighlight">
+							<Size x="178" y="0"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="10" y="0"/>
+								<Anchor point="BOTTOMRIGHT" x="-10" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self.BorderBottomLeft:SetPoint("BOTTOMLEFT", self, -5, -6);
+						self.BorderBottomRight:SetPoint("BOTTOMRIGHT", self, 2, -6);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				Model_OnLoad(self);
+				self:SetPortraitZoom(0.6);
+				self:SetRotation(0);
+				self:SetClampRectInsets(0, 0, 24, 0);
+			</OnLoad>
+			<OnEvent function="Model_OnEvent"/>
+		</Scripts>
+	</PlayerModel>
+
+<!--
+*******************************************************************************
+	News panel
+*******************************************************************************
+-->
+	<Frame name="GuildNewsFrameTemplate" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture file="Interface\GuildFrame\GuildFrame">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="3" y="-3"/>
+						<Anchor point="BOTTOMRIGHT" x="-9" y="-2"/>
+					</Anchors>
+					<TexCoords left="0.00097656" right="0.31445313" top="0.00195313" bottom="0.59765625"/>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture parentKey="Header" file="Interface\GuildFrame\GuildFrame">
+					<Size x="300" y="22"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="4" y="-3"/>
+					</Anchors>
+					<TexCoords left="0.00097656" right="0.31445313" top="0.93164063" bottom="0.97460938"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="TitleText" inherits="GameFontNormalMed1" justifyH="LEFT" text="GUILD_NEWS_TITLE">
+					<Size x="232" y="38"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="5" y="35"/>
+					</Anchors>
+				</FontString>
+				<FontString	inherits="GameFontNormal" text="GUILD_NEWS">
+					<Size x="0" y="0"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Header" x="10" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="NoNews" inherits="GameFontDisable" text="GUILD_NO_GUILD_NEWS" hidden="true">
+					<Size x="0" y="0"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="-11"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="SetFiltersButton" text="GUILD_SET_FILTERS_LINK">
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.Header" x="-8" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						local toggled = CallMethodOnNearestAncestor(self, "ToggleSubPanel", GuildNewsFiltersFrame);
+						if not toggled then
+							ToggleFrame(GuildNewsFiltersFrame);
+						end
+					</OnClick>
+				</Scripts>
+				<ButtonText>
+					<Anchors>
+						<Anchor point="RIGHT" x="-2" y="0"/>
+					</Anchors>
+					<Color r="0.973" g="0.937" b="0.580"/>
+				</ButtonText>
+				<NormalFont style="GameFontNormalSmall"/>
+			</Button>
+			<Button parentKey="GMImpeachButton" hidden="true">
+				<Size x="300" y="18"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Header" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="LockTexture">
+							<Color r="0.2" g="0.0" b="0.0"/>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString parentKey="Text" inherits="GameFontHighlightSmall" justifyH="LEFT" wordwrap="false" text="GUILD_IMPEACH_BUTTON_TEXT">
+							<Anchors>
+								<Anchor point="LEFT" x="24" y="-1"/>
+								<Anchor point="RIGHT" x="-8" y="-1"/>
+							</Anchors>
+						</FontString>
+						<Texture parentKey="Alert" file="Interface\DialogFrame\UI-Dialog-Icon-AlertNew">
+							<Size x="14" y="14"/>
+							<Anchors>
+								<Anchor point="LEFT" x="3" y="-1"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnClick>
+						StaticPopup_Show("GUILD_IMPEACH");
+					</OnClick>
+				</Scripts>
+				<HighlightTexture file="Interface\FriendsFrame\UI-FriendsFrame-HighlightBar-Blue" setAllPoints="true" alphaMode="ADD"/>
+			</Button>
+			<ScrollFrame name="$parentContainer" parentKey="Container" inherits="HybridScrollFrameTemplate">
+				<Size x="301" y="305"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="4" y="-25"/>
+				</Anchors>
+				<Frames>
+					<Slider parentKey="ScrollBar" inherits="HybridScrollBarTemplate">
+						<KeyValues>
+							<KeyValue key="doNotHide" value="true" type="boolean"/>
+						</KeyValues>
+						<!-- Anchored in code based on whether the GMImpeachButton is shown or not -->
+					</Slider>
+				</Frames>
+			</ScrollFrame>
+			<Frame parentKey="DropDown" inherits="UIDropDownMenuTemplate" hidden="true">
+				<Size x="10" y="10"/>
+				<Scripts>
+					<OnLoad function="GuildNewsDropDown_OnLoad"/>
+				</Scripts>
+			</Frame>
+			<PlayerModel parentKey="BossModel" inherits="GuildNewsBossModelTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-8" y="-20"/>
+				</Anchors>
+			</PlayerModel>
+		</Frames>
+		<Scripts>
+			<OnLoad function="GuildNewsFrame_OnLoad"/>
+			<OnShow function="GuildNewsFrame_OnShow"/>
+			<OnEvent function="GuildNewsFrame_OnEvent"/>
+			<OnHide function="GuildNewsFrame_OnHide"/>
+		</Scripts>
+	</Frame>
+<!--
+*******************************************************************************
+	Popup
+*******************************************************************************
+-->	
+	<Frame name="GuildNewsFiltersFrame" toplevel="true" hidden="true" movable="true" enableMouse="true" parent="UIParent" inherits="TranslucentFrameTemplate">
+		<Size x="264" y="230"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Title" inherits="GameFontNormal" text="GUILD_NEWS_FILTERS">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="24" y="-18"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-4" y="-4"/>
+				</Anchors>
+			</Button>
+			<CheckButton parentKey="GuildAchievement" parentArray="GuildNewsFilterButtons" inherits="GuildNewsCheckButtonTemplate" id="1">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="24" y="-40"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton parentKey="Achievement" parentArray="GuildNewsFilterButtons" inherits="GuildNewsCheckButtonTemplate" id="2">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.GuildAchievement" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton parentKey="DungeonEncounter" parentArray="GuildNewsFilterButtons" inherits="GuildNewsCheckButtonTemplate" id="3">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Achievement" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton parentKey="EpicItemLooted" parentArray="GuildNewsFilterButtons" inherits="GuildNewsCheckButtonTemplate" id="4">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.DungeonEncounter" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton parentKey="EpicItemPurchased" parentArray="GuildNewsFilterButtons" inherits="GuildNewsCheckButtonTemplate" id="5">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.EpicItemLooted" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton parentKey="EpicItemCrafted" parentArray="GuildNewsFilterButtons" inherits="GuildNewsCheckButtonTemplate" id="6">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.EpicItemPurchased" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton parentKey="LegendaryItemLooted" parentArray="GuildNewsFilterButtons" inherits="GuildNewsCheckButtonTemplate" id="9">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.EpicItemCrafted" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+				</Anchors>
+			</CheckButton>
+		</Frames>
+		<Scripts>
+			<OnLoad function="GuildNewsFiltersFrame_OnLoad"/>
+			<OnShow function="GuildNewsFiltersFrame_OnShow"/>
+			<OnHide>
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
+			</OnHide>
+		</Scripts>
+	</Frame>
+</Ui>

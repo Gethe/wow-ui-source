@@ -14,7 +14,7 @@ function PTR_IssueReporter.Init()
         throttleSubmitTime = 5, --seconds since last sending a feedback update
         AlertQueueSize = 3,
         QuestHistorySize = 5,
-        npcAlertQuestion = "Did you experience any bugs or problems\nwith this enemy?",
+        npcAlertQuestion = "Did you experience any bugs with this enemy?",
         watermark = "Interface\\Addons\\Blizzard_PTRFeedback\\Assets\\Textures\\watermark",
         textureFile = "Interface\\Addons\\Blizzard_PTRFeedback\\Assets\\Textures\\UI-Background-Marble",
         textureFile2 = "Interface\\Addons\\Blizzard_PTRFeedback\\Assets\\Textures\\UI-Background-Marble",
@@ -26,7 +26,7 @@ function PTR_IssueReporter.Init()
         lastSubmitTime,
         unitToken = "player",
         targetToken = "target",
-        alertFrameText = "Did you have any bugs or other problems\nwith this creature?",
+        alertFrameText = "Did you experience any bugs with this creature?",
         SELF_REPORTED_CONFUSED = 1,
         SELF_REPORTED_BUG = 2,
         BOSS_KILL = 3,
@@ -38,8 +38,8 @@ function PTR_IssueReporter.Init()
         SubmitText = "Submit Bug",
     }
     PTR_IssueReporter.TriggerEvents = {
-        [5] = {enabled = false, label = "Island Expedition", question = "Did you experience any bugs or problems with this Island Expedition?", checkboxes = {"Yes", "No"}},
-        [6] = {enabled = false, label = "Warfront", question = "Did you experience any bugs or problems with this Warfront?", checkboxes = {"Yes", "No"}},
+        [5] = {enabled = false, label = "Island Expedition", question = "Did you experience any bugs with this Island Expedition?", checkboxes = {"Yes", "No"}},
+        [6] = {enabled = false, label = "Warfront", question = "Did you experience any bugs with this Warfront?", checkboxes = {"Yes", "No"}},
     }
 
     function PTR_IssueReporter.Reminder(enable, ...)
@@ -164,8 +164,8 @@ function PTR_IssueReporter.Init()
     --information button
     FramePainter.AddInfoButton(PTR_IssueReporter)
     FramePainter.AddTooltip(PTR_IssueReporter.InfoButton,
-        "Bug examples",
-        "This enemy could not be hit.\nI fell through the ground.\nMy spell isn't doing what it says it should do.\nThere are missing graphics here.")
+        "How Can I Help?",
+        "|cffFFFFFFPlease Provide:|r\n-What you were doing\n-What you observed\n\n|cffFFFFFFAutomatically Collected:|r\n-Your world location\n-Your character information")
 
     --create buttons
     local Confused = PTR_IssueReporter.CreateIssueButton("Confused",
@@ -298,7 +298,7 @@ function PTR_IssueReporter.Init()
     PTR_IssueReporter.AlertFrame.TitleBox.text:SetWidth(PTR_IssueReporter.AlertFrame.TitleBox:GetWidth())
     PTR_IssueReporter.AlertFrame.TitleBox.text:SetHeight(PTR_IssueReporter.AlertFrame.TitleBox:GetHeight())
     PTR_IssueReporter.AlertFrame.TitleBox.text:SetPoint("CENTER", PTR_IssueReporter.AlertFrame.TitleBox, "CENTER", 0, 0)
-    PTR_IssueReporter.AlertFrame.TitleBox.text:SetText("Public Bug Reporter")
+    PTR_IssueReporter.AlertFrame.TitleBox.text:SetText("Bug Reporter")
 
     PTR_IssueReporter.AlertFrame.TitleBox:SetSize(PTR_IssueReporter.AlertFrame.TitleBox.text:GetWidth()*1.5, PTR_IssueReporter.AlertFrame.TitleBox.text:GetHeight()*2)
     FramePainter.AddBackground(PTR_IssueReporter.AlertFrame.TitleBox, PTR_IssueReporter.Data.textureFile2)
@@ -566,7 +566,7 @@ function PTR_IssueReporter.Init()
     --question
     PTR_IssueReporter.QuestSubmit.text = PTR_IssueReporter.QuestSubmit:CreateFontString("CheckListText", "OVERLAY", PTR_IssueReporter.Data.fontString)
 
-    PTR_IssueReporter.QuestSubmit.text:SetText("|cffFFFFFFPublic Bug Reporter|r\nDid you experience any bugs or problems\nwith this quest?")
+    PTR_IssueReporter.QuestSubmit.text:SetText("|cffFFFFFFBug Reporter|r\nDid you experience any bugs with this quest?")
 
     PTR_IssueReporter.QuestSubmit.text:SetSize(PTR_IssueReporter.QuestSubmit:GetWidth(), PTR_IssueReporter.QuestSubmit.text:GetHeight())
     PTR_IssueReporter.QuestSubmit.text:SetPoint("TOP", PTR_IssueReporter.QuestSubmit, "TOP", 0, -8)

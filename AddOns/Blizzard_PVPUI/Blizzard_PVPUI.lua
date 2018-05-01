@@ -1246,7 +1246,7 @@ function ConquestFrame_Update(self)
 		for i = 1, RATED_BG_ID do
 			local button = CONQUEST_BUTTONS[i];
 			local bracketIndex = CONQUEST_BRACKET_INDEXES[i];
-			local rating, seasonBest, weeklyBest, seasonPlayed, seasonWon, weeklyPlayed, weeklyWon, lastWeeksBest, hasWon = GetPersonalRatedInfo(bracketIndex);
+			local rating, seasonBest, weeklyBest, seasonPlayed, seasonWon, weeklyPlayed, weeklyWon, lastWeeksBest, hasWon, pvpTier = GetPersonalRatedInfo(bracketIndex);
 			button.Wins:SetText(seasonWon);
 			button.CurrentRating:SetText(rating);
 			button.bracketIndex = bracketIndex;
@@ -1427,7 +1427,7 @@ local CONQUEST_TOOLTIP_PADDING = 30 --counts both sides
 function ConquestFrameButton_OnEnter(self)
 	local tooltip = ConquestTooltip;
 	
-	local rating, seasonBest, weeklyBest, seasonPlayed, seasonWon, weeklyPlayed, weeklyWon, lastWeeksBest = GetPersonalRatedInfo(self.bracketIndex);
+	local rating, seasonBest, weeklyBest, seasonPlayed, seasonWon, weeklyPlayed, weeklyWon, lastWeeksBest, pvpTier = GetPersonalRatedInfo(self.bracketIndex);
 	
 	tooltip.Title:SetText(self.toolTipTitle);
 	
@@ -1476,7 +1476,7 @@ function PVPRewardWeeklyBonus_OnEnter(self)
 	ConquestFrame.activeWeeklyBonus = self;
 	local completed, itemLevel, numWins, numWinsReq = GetWeeklyPVPRewardInfo(self.bracketIndex);
 	if (not completed and itemLevel) then
-		local rating, seasonBest, weeklyBest, seasonPlayed, seasonWon, weeklyPlayed, weeklyWon, lastWeeksBest = GetPersonalRatedInfo(self.bracketIndex);
+		local rating, seasonBest, weeklyBest, seasonPlayed, seasonWon, weeklyPlayed, weeklyWon, lastWeeksBest, pvpTier = GetPersonalRatedInfo(self.bracketIndex);
 
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 		GameTooltip:SetText(PVP_WEEKLY_BONUS:format(CONQUEST_SIZE_STRINGS[self.index]));

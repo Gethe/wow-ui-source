@@ -208,6 +208,7 @@ function TalkingHeadFrame_SetupAnimations(self)
 	end
 	if( animKit ~= self.animKit ) then
 		self:StopAnimKit();
+		self.animKit = nil;
 	end
 
 	if ( animKit > 0 ) then

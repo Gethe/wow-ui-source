@@ -4,10 +4,12 @@ function VoiceActivityManagerMixin:OnLoad()
 	self:RegisterEvent("VOICE_CHAT_CHANNEL_MEMBER_SPEAKING_STATE_CHANGED");
 	self:RegisterEvent("VOICE_CHAT_CHANNEL_MEMBER_ENERGY_CHANGED");
 	self:RegisterEvent("VOICE_CHAT_CHANNEL_TRANSMIT_CHANGED");
+	self:RegisterEvent("VOICE_CHAT_COMMUNICATION_MODE_CHANGED");
 	self:RegisterEvent("VOICE_CHAT_CHANNEL_MEMBER_REMOVED");
 	self:RegisterEvent("VOICE_CHAT_CHANNEL_REMOVED");
 
 	self.releaseTimers = {};
+	self.notificationMembers = {};
 	self.alertNotificationList = CreateFromMixins(DoublyLinkedListMixin);
 
 	self.guidToExternalNotificationInfo = {};
@@ -29,6 +31,8 @@ function VoiceActivityManagerMixin:OnEvent(event, ...)
 		self:OnVoiceChatChannelMemberEnergyChanged(...);
 	elseif event == "VOICE_CHAT_CHANNEL_TRANSMIT_CHANGED" then
 		self:OnVoiceChatChannelTransmitChanged(...);
+	elseif event == "VOICE_CHAT_COMMUNICATION_MODE_CHANGED" then
+		self:OnVoiceChatCommunicationModeChanged(...);
 	elseif event == "VOICE_CHAT_CHANNEL_MEMBER_REMOVED" then
 		self:OnMemberRemoved(...);
 	elseif event == "VOICE_CHAT_CHANNEL_REMOVED" then
@@ -37,12 +41,11 @@ function VoiceActivityManagerMixin:OnEvent(event, ...)
 end
 
 function VoiceActivityManagerMixin:OnVoiceChannelMemberSpeakingStateChanged(memberID, channelID, isSpeaking)
-	if C_VoiceChat.IsMemberLocalPlayer(memberID, channelID) and self.localPlayerTransmitting then
-		-- Do nothing...the player is already marked as transmitting
-		return;
+	if isSpeaking then
+		self:ShowNotifications(memberID, channelID);
 	else
-		if isSpeaking then
-			self:ShowNotifications(memberID, channelID);
+		if C_VoiceChat.IsMemberLocalPlayer(memberID, channelID) and (C_VoiceChat.GetCommunicationMode() == Enum.CommunicationMode.PushToTalk) and self.localPlayerTransmittingInfo then
+			-- The player is in PTT mode and marked as transmitting, so do nothing
 		else
 			self:StartReleaseTimer(memberID, channelID);
 		end
@@ -59,16 +62,40 @@ end
 
 function VoiceActivityManagerMixin:OnVoiceChatChannelTransmitChanged(channelID, isTransmitting)
 	local localPlayerMemberID = C_VoiceChat.GetLocalPlayerMemberID(channelID);
-
 	if localPlayerMemberID then
-		if isTransmitting then
-			self:ShowNotifications(localPlayerMemberID, channelID);
-		else
-			-- Don't wait for a timer...player wants immediate feedback that they stopped transmitting
-			self:ReleaseNotifications(localPlayerMemberID, channelID)
+		if C_VoiceChat.GetCommunicationMode() == Enum.CommunicationMode.PushToTalk then
+			if isTransmitting then
+				self:ShowNotifications(localPlayerMemberID, channelID);
+			else
+				-- Don't wait for a timer...player wants immediate feedback that they stopped transmitting
+				self:ReleaseNotifications(localPlayerMemberID, channelID)
+			end
 		end
 
-		self.localPlayerTransmitting = isTransmitting;
+		self.localPlayerTransmittingInfo = isTransmitting and {memberID = localPlayerMemberID, channelID = channelID} or nil;
+	end
+end
+
+function VoiceActivityManagerMixin:OnVoiceChatCommunicationModeChanged(communicationMode)
+	if self.localPlayerTransmittingInfo then
+		if communicationMode == Enum.CommunicationMode.OpenMic then
+			-- Going from PTT to OpenMic and the player was holding the PTT button when they switched to OpenMic, so check if they are currently talking
+			local localPlayerActiverMemberInfo = C_VoiceChat.GetLocalPlayerActiveChannelMemberInfo();
+			if localPlayerActiverMemberInfo and not localPlayerActiverMemberInfo.isSpeaking then
+				-- The player was not talking when they switched, so release
+				self:ReleaseNotifications(self.localPlayerTransmittingInfo.memberID, self.localPlayerTransmittingInfo.channelID);
+			end
+		else
+			-- Going from OpenMic to PTT. Check if the PTT button is pushed currently
+			local isPTTButtonPressed = C_VoiceChat.GetPTTButtonPressedState();
+			if isPTTButtonPressed then
+				-- The button is pushed, so show the notification because we won't get a transmitting state update
+				self:ShowNotifications(self.localPlayerTransmittingInfo.memberID, self.localPlayerTransmittingInfo.channelID);
+			else
+				-- The button is not pushed, so hide the notification
+				self:ReleaseNotifications(self.localPlayerTransmittingInfo.memberID, self.localPlayerTransmittingInfo.channelID);
+			end
+		end
 	end
 end
 
@@ -109,8 +136,9 @@ function VoiceActivityManagerMixin:CheckForAlertOnRemove(notification)
 end
 
 function VoiceActivityManagerMixin:ShowNotifications(memberID, channelID)
-	if self:ClearReleaseTimer(memberID, channelID) then
-		-- We already have a notification for this showing, just had to clear the release timer on it
+	if self:MemberHasExistingNotification(memberID, channelID) then
+		-- We already have a notification for this showing, just clear the release timer on it if there is one
+		self:ClearReleaseTimer(memberID, channelID);
 		return;
 	end
 
@@ -122,6 +150,8 @@ function VoiceActivityManagerMixin:ShowNotifications(memberID, channelID)
 	if addedInternalAlert or addedExternalAlert then
 		self:UpdateAlertNotificationVisibility();
 	end
+
+	self:SetMemberHasExistingNotification(memberID, channelID);
 end
 
 function VoiceActivityManagerMixin:ShowInternalNotifications(memberID, channelID, isLocalPlayer)
@@ -163,7 +193,10 @@ function VoiceActivityManagerMixin:ShowExternalNotifications(memberID, channelID
 end
 
 function VoiceActivityManagerMixin:ReleaseNotifications(memberID, channelID)
-	local removedAlert = false;
+	if not self:MemberHasExistingNotification(memberID, channelID) then
+		-- We aren't showing a notification for this member. Nothing to do
+		return;
+	end
 
 	for notification in self.notificationPools:EnumerateActive() do
 		if notification:MatchesUser(memberID, channelID) then
@@ -180,11 +213,44 @@ function VoiceActivityManagerMixin:ReleaseNotifications(memberID, channelID)
 	if removedAlert then
 		self:UpdateAlertNotificationVisibility();
 	end
+
+	if memberID == "*" then 
+		self:ClearChannelExistingNotifications(channelID);
+	else
+		self:ClearMemberHasExistingNotification(memberID, channelID);
+	end
+end
+
+function VoiceActivityManagerMixin:MemberHasExistingNotification(memberID, channelID)
+	return self.notificationMembers[channelID] and self.notificationMembers[channelID][memberID];
+end
+
+function VoiceActivityManagerMixin:SetMemberHasExistingNotification(memberID, channelID)
+	if not self.notificationMembers[channelID] then
+		self.notificationMembers[channelID] = {};
+	end
+
+	self.notificationMembers[channelID][memberID] = true;
+end
+
+function VoiceActivityManagerMixin:ClearMemberHasExistingNotification(memberID, channelID)
+	if self.notificationMembers[channelID] then
+		self.notificationMembers[channelID][memberID] = nil;
+	end
+end
+
+function VoiceActivityManagerMixin:ClearChannelExistingNotifications(channelID)
+	self.notificationMembers[channelID] = nil;
 end
 
 local RELEASE_TIMER_SECONDS = 1;
 
 function VoiceActivityManagerMixin:StartReleaseTimer(memberID, channelID)
+	if not self:MemberHasExistingNotification(memberID, channelID) then
+		-- We aren't showing a notification for this member. Nothing to do
+		return;
+	end
+
 	if not self.releaseTimers[channelID] then
 		self.releaseTimers[channelID] = {};
 	else
@@ -212,6 +278,10 @@ local STARTING_PRIORITY= 19;
 
 function VoiceActivityManagerMixin:UpdateAlertNotificationVisibility()
 	for index, notification in self.alertNotificationList:EnumerateNodes() do
+		if index == 1 then
+			notification:SetCushions(0, 14);
+		end
+
 		ChatAlertFrame:SetSubSystemAnchorPriority(notification:GetAlertSystem(), STARTING_PRIORITY + index);
 		notification:SetShown(index <= MAX_VISIBLE_NOTIFICATIONS);
 	end

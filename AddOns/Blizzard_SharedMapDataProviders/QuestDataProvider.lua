@@ -192,6 +192,7 @@ function QuestDataProviderMixin:AddQuest(questID, x, y, frameLevelOffset)
 		pin.Texture:SetTexture("Interface/WorldMap/UI-QuestPoi-NumberIcons");
 		pin.PushedTexture:SetTexture("Interface/WorldMap/UI-QuestPoi-NumberIcons");
 		pin.Highlight:SetTexture("Interface/WorldMap/UI-QuestPoi-NumberIcons");
+		pin.Number:SetTexture("Interface/WorldMap/UI-QuestPoi-NumberIcons");
 
 		if isSuperTracked then
 			pin.Texture:SetTexCoord(0.500, 0.625, 0.375, 0.5);

@@ -434,12 +434,10 @@ function UIDropDownMenu_AddButton(info, level)
 		button.value = nil;
 	end
 
-	-- Show the expand arrow if it has one
-	if ( info.hasArrow ) then
-		_G[listFrameName.."Button"..index.."ExpandArrow"]:Show();
-	else
-		_G[listFrameName.."Button"..index.."ExpandArrow"]:Hide();
-	end
+	local expandArrow = _G[listFrameName.."Button"..index.."ExpandArrow"];
+	expandArrow:SetShown(info.hasArrow);
+	expandArrow:SetEnabled(not info.disabled);
+
 	button.hasArrow = info.hasArrow;
 
 	-- If not checkable move everything over to the left to fill in the gap where the check would be

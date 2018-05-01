@@ -2,6 +2,150 @@
 ..\..\FrameXML\UI.xsd">
 	<Script file="CommunitiesFrame.lua"/>
 	
+	<Frame name="GuildBenefitsFrameTemplate" virtual="true">
+		<Frames>
+			<Frame parentKey="Perks" inherits="GuildPerksFrameTemplate">
+				<Size x="270" y="0"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="0" y="0"/>
+					<Anchor point="BOTTOMLEFT" x="0" y="0"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="Rewards" inherits="GuildRewardsFrameTemplate">
+				<Size x="302" y="0"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="0" y="0"/>
+					<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="InsetBorderTopLeft" inherits="UI-Frame-InnerTopLeft">
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.Rewards" relativePoint="TOPLEFT" x="-12" y="3"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="InsetBorderTopRight" inherits="UI-Frame-InnerTopRight">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Perks" relativePoint="TOPRIGHT"  x="12" y="3"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="InsetBorderBottomLeft" inherits="UI-Frame-InnerBotLeftCorner">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Rewards" relativePoint="BOTTOMLEFT" x="-12" y="-5"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="InsetBorderBottomRight" inherits="UI-Frame-InnerBotRight">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.Perks" relativePoint="BOTTOMRIGHT"  x="12" y="-5"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="InsetBorderLeft" inherits="!UI-Frame-InnerLeftTile">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.InsetBorderTopLeft" relativePoint="BOTTOMLEFT"/>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.InsetBorderBottomLeft" relativePoint="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="InsetBorderRight" inherits="!UI-Frame-InnerRightTile">
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.InsetBorderTopRight" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.InsetBorderBottomRight" relativePoint="TOPRIGHT" />
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+	
+	<Frame name="GuildDetailsFrameTemplate" virtual="true">
+		<Frames>
+			<Frame parentKey="Info" name="$parentInfo" inherits="GuildInfoFrameTemplate">
+				<Size x="270" y="0"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="0" y="0"/>
+					<Anchor point="BOTTOMLEFT" x="0" y="0"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="News" name="$parentNews" inherits="GuildNewsFrameTemplate">
+				<Size x="316" y="0"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-4" y="0"/>
+					<Anchor point="BOTTOMRIGHT" x="-4" y="0"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="InsetBorderTopLeft" inherits="UI-Frame-InnerTopLeft">
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.News" relativePoint="TOPLEFT" x="6" y="3"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="InsetBorderTopRight" inherits="UI-Frame-InnerTopRight">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Info" relativePoint="TOPRIGHT"  x="12" y="3"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="InsetBorderBottomLeft" inherits="UI-Frame-InnerBotLeftCorner">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.News" relativePoint="BOTTOMLEFT" x="6" y="-5"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="InsetBorderBottomRight" inherits="UI-Frame-InnerBotRight">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.Info" relativePoint="BOTTOMRIGHT"  x="12" y="-5"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="InsetBorderLeft" inherits="!UI-Frame-InnerLeftTile">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.InsetBorderTopLeft" relativePoint="BOTTOMLEFT"/>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.InsetBorderBottomLeft" relativePoint="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="InsetBorderRight" inherits="!UI-Frame-InnerRightTile">
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.InsetBorderTopRight" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.InsetBorderBottomRight" relativePoint="TOPRIGHT" />
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+	
+	<Button name="CommunitiesSubPanelButtonScriptTemplate" virtual="true">
+		<Scripts>
+			<OnClick>
+				CallMethodOnNearestAncestor(self, "ToggleSubPanel", self.frame);
+			</OnClick>
+		</Scripts>
+	</Button>
+	
+	<Frame name="CommunitiesControlFrameTemplate" virtual="true">
+		<Frames>
+			<Button parentKey="GuildRecruitmentButton" inherits="UIPanelButtonTemplate, CommunitiesSubPanelButtonScriptTemplate" text="GUILD_RECRUITMENT">
+				<Size x="130" y="20"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="frame" value="GuildRecruitmentFrame" type="Global"/>
+				</KeyValues>
+			</Button>
+			<Button parentKey="GuildControlButton" inherits="UIPanelButtonTemplate, CommunitiesSubPanelButtonScriptTemplate" text="GUILD_CONTROL_BUTTON_TEXT">
+				<Size x="130" y="20"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.GuildRecruitmentButton" relativePoint="LEFT" x="-2" y="0"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="frame" value="GuildControlUI" type="Global"/>
+				</KeyValues>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnShow function="CommunitiesControlFrame_OnShow"/>
+		</Scripts>
+	</Frame>
+		
 	<Frame name="CommunitiesFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true" inherits="ButtonFrameTemplate" mixin="CommunitiesFrameMixin">
 		<Size x="814" y="426"/>
 		<Layers>
@@ -18,7 +162,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="PortraitOverlay" setAllPoints="true">
+			<Frame parentKey="PortraitOverlay" setAllPoints="true" frameLevel="500">
 				<Layers>
 					<Layer level="OVERLAY" textureSubLevel="-1">
 						<Texture parentKey="Portrait">
@@ -65,9 +209,9 @@
 					<OnLoad function="CommunitiesFrameMaximizeMinimizeButton_OnLoad"/>
 				</Scripts>
 			</Frame>
-			<Frame parentKey="CommunitiesList" inherits="CommunitiesListFrameTemplate">
+			<Frame name="$parentCommunitiesList" parentKey="CommunitiesList" useParentLevel="true" inherits="CommunitiesListFrameTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" x="0" y="-23"/>
+					<Anchor point="TOPLEFT" x="-1" y="-23"/>
 					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" x="170" y="29"/>
 				</Anchors>
 			</Frame>
@@ -88,7 +232,7 @@
 			</CheckButton>
 			<CheckButton parentKey="GuildInfoTab" hidden="true" inherits="CommunitiesGuildInfoTabTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.PerksTab" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.GuildBenefitsTab" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
 				</Anchors>
 			</CheckButton>
 			<Frame parentKey="StreamDropDownMenu" inherits="StreamDropDownMenuTemplate">
@@ -131,6 +275,18 @@
 					<Anchor point="BOTTOMRIGHT" x="-12" y="30"/>
 				</Anchors>
 			</Frame>
+			<Frame parentKey="GuildBenefitsFrame" inherits="GuildBenefitsFrameTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.CommunitiesList" relativePoint="TOPRIGHT" x="24" y="-40"/>
+					<Anchor point="BOTTOMRIGHT" x="-12" y="30"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="GuildDetailsFrame" name="$parentGuildDetailsFrame" inherits="GuildDetailsFrameTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.CommunitiesList" relativePoint="TOPRIGHT" x="24" y="-40"/>
+					<Anchor point="BOTTOMRIGHT" x="-12" y="30"/>
+				</Anchors>
+			</Frame>
 			<Frame parentKey="EditStreamDialog" frameStrata="DIALOG" inherits="CommunitiesEditStreamDialogTemplate" hidden="true">
 				<Size x="320" y="260"/>
 				<Anchors>
@@ -149,6 +305,21 @@
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" x="-5" y="5"/>
 				</Anchors>
+			</Button>
+			<Frame parentKey="CommunitiesControlFrame" inherits="CommunitiesControlFrameTemplate">
+				<Size x="500" y="20"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-5" y="5"/>
+				</Anchors>
+			</Frame>
+			<Button parentKey="GuildLogButton" inherits="UIPanelButtonTemplate, CommunitiesSubPanelButtonScriptTemplate" text="GUILD_VIEW_LOG" >
+				<Size x="130" y="20"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="190" y="5"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="frame" value="GuildLogFrame" type="Global"/>
+				</KeyValues>
 			</Button>
 		</Frames>
 		<Scripts>

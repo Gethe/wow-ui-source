@@ -25,8 +25,10 @@ function AzeriteEmpoweredItemTierMixin:Setup(empoweredItemLocation, tierInfo, az
 	end
 	
 	local isSelectionActive = self:IsSelectionActive();
+	local specID = GetSpecializationInfo(GetSpecialization())
 	for i, azeritePowerButton in ipairs(self.azeritePowerButtons) do
-		azeritePowerButton:SetCanBeSelected(isSelectionActive);
+		local isSpecAllowed = C_AzeriteEmpoweredItem.IsPowerAvailableForSpec(azeritePowerButton:GetAzeritePowerID(), specID);
+		azeritePowerButton:SetCanBeSelected(isSelectionActive and isSpecAllowed);
 	end
 
 	self.Bg:SetAlpha(isSelectionActive and .25 or .1);

@@ -809,6 +809,7 @@ local function CreateCanonicalActions(entry, ...)
 			else
 				entry.spells[count] = action;
 				entry.spellNames[count] = gsub(action, "!*(.*)", "%1");
+				entry.spellID[count] = select(7, GetSpellInfo(action));
 			end
 		end
 	end
@@ -849,7 +850,14 @@ local function CastSequenceManager_OnEvent(self, event, ...)
 	     event == "UNIT_SPELLCAST_INTERRUPTED" or
 	     event == "UNIT_SPELLCAST_FAILED" or
 	     event == "UNIT_SPELLCAST_FAILED_QUIET" ) then
-		local unit, castID, spellID = ...;
+		local unit, castID, spellID;
+
+		if event == "UNIT_SPELLCAST_SENT" then
+			local target;
+			unit, target, castID, spellID = ...;
+		else
+			unit, castID, spellID = ...;
+		end
 
 		if ( unit == "player" or unit == "pet" ) then
 			local overrideSpellID = FindSpellOverrideByID(spellID);
@@ -1237,11 +1245,7 @@ end
 SecureCmdList["CANCELAURA"] = function(msg)
 	local spell = SecureCmdOptionParse(msg);
 	if ( spell ) then
-		local name, rank = strmatch(spell, "([^(]+)[(]([^)]+)[)]");
-		if ( not name ) then
-			name = spell;
-		end
-		CancelUnitBuff("player", name, rank);
+		CancelSpellByName(spell);
 	end
 end
 
@@ -2121,53 +2125,6 @@ SlashCmdList["SCRIPT"] = function(msg)
 	end
 end
 
-SlashCmdList["LOOT_FFA"] = function(msg)
-	SetLootMethod("freeforall");
-end
-
-SlashCmdList["LOOT_MASTER"] = function(msg)
-	SetLootMethod("master", msg, 1);
-end
-
-SlashCmdList["LOOT_GROUP"] = function(msg)
-	SetLootMethod("group");
-end
-
-SlashCmdList["LOOT_SETTHRESHOLD"] = function(msg)
-	if ( not msg ) then
-		local info = ChatTypeInfo["SYSTEM"];
-		DEFAULT_CHAT_FRAME:AddMessage(format(ERROR_SLASH_LOOT_SETTHRESHOLD, MIN_LOOT_THRESHOLD, MAX_LOOT_THRESHOLD), info.r, info.g, info.b, info.id);
-		return;
-	end
-
-	local MIN_LOOT_THRESHOLD = 2;	-- "good" item quality
-	local MAX_LOOT_THRESHOLD = 6;	-- "artifact" item quality
-
-	local threshold = strmatch(msg, "(%d+)");
-	threshold = tonumber(threshold);
-	if ( threshold and threshold >= MIN_LOOT_THRESHOLD and threshold <= MAX_LOOT_THRESHOLD ) then
-		-- try to match a threshold number first
-		SetLootThreshold(threshold);
-	else
-		msg = strupper(msg);
-		if ( msg == strupper(ITEM_QUALITY2_DESC) ) then
-			SetLootThreshold(2);
-		elseif ( msg == strupper(ITEM_QUALITY3_DESC) ) then
-			SetLootThreshold(3);
-		elseif ( msg == strupper(ITEM_QUALITY4_DESC) ) then
-			SetLootThreshold(4);
-		elseif ( msg == strupper(ITEM_QUALITY5_DESC) ) then
-			SetLootThreshold(5);
-		elseif ( msg == strupper(ITEM_QUALITY6_DESC) ) then
-			SetLootThreshold(6);
-		else
-			-- no matches found
-			local info = ChatTypeInfo["SYSTEM"];
-			DEFAULT_CHAT_FRAME:AddMessage(format(ERROR_SLASH_LOOT_SETTHRESHOLD, MIN_LOOT_THRESHOLD, MAX_LOOT_THRESHOLD), info.r, info.g, info.b, info.id);
-		end
-	end
-end
-
 SlashCmdList["RANDOM"] = function(msg)
 	local num1 = gsub(msg, "(%s*)(%d+)(.*)", "%2", 1);
 	local rest = gsub(msg, "(%s*)(%d+)(.*)", "%3", 1);
@@ -2725,6 +2682,16 @@ function ChatFrame_RemoveAllMessageGroups(chatFrame)
 	end
 
 	chatFrame.messageTypeList = {};
+end
+
+function ChatFrame_ContainsChannel(chatFrame, channel)
+	for i, channelName in ipairs(chatFrame.channelList) do
+		if channel == channelName then
+			return true;
+		end
+	end
+	
+	return false;
 end
 
 function ChatFrame_AddChannel(chatFrame, channel)
@@ -3983,6 +3950,19 @@ function ChatEdit_FocusActiveWindow()
 	local active = ChatEdit_GetActiveWindow()
 	if ( active ) then
 		ChatEdit_ActivateChat(active);
+	end
+end
+
+function ChatEdit_LinkItem(itemID, itemLink)
+	if ( not itemLink ) then
+		itemLink = select(2, GetItemInfo(itemID));
+	end
+	if ( itemLink ) then
+		if ( ChatEdit_GetActiveWindow() ) then
+			ChatEdit_InsertLink(itemLink);
+		else
+			ChatFrame_OpenChat(itemLink);
+		end
 	end
 end
 

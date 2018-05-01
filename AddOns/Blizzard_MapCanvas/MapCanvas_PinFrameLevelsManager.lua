@@ -7,6 +7,7 @@ local MIN_FRAME_LEVEL = 0;
 function MapCanvasPinFrameLevelsManagerMixin:Initialize()
 	if not self.definitions then
 		self.definitions = { ["PIN_FRAME_LEVEL_DEFAULT"] = { startLevel = MAP_CANVAS_PIN_FRAME_LEVEL_DEFAULT, range = 1 } };
+		self.topMostDefinition = self.definitions["PIN_FRAME_LEVEL_DEFAULT"];
 		self.minLevel = MAP_CANVAS_PIN_FRAME_LEVEL_DEFAULT;
 		self.maxLevel = MAP_CANVAS_PIN_FRAME_LEVEL_DEFAULT;
 	end
@@ -55,11 +56,14 @@ function MapCanvasPinFrameLevelsManagerMixin:AddDefinition(frameLevelType, range
 		self.minLevel = self.minLevel - range;
 	end
 	self.definitions[frameLevelType] = { startLevel = targetLevel, range = range };
+	if self.topMostDefinition.startLevel < targetLevel then
+		self.topMostDefinition = self.definitions[frameLevelType];
+	end
 	return true;
 end
 
 function MapCanvasPinFrameLevelsManagerMixin:AddFrameLevel(frameLevelType, optionalRange)
-	if self.definitions[frameLevelType] then
+	if self.definitions[frameLevelType] or frameLevelType == "PIN_FRAME_LEVEL_TOPMOST" then
 		return false;
 	end
 
@@ -71,7 +75,7 @@ end
 
 function MapCanvasPinFrameLevelsManagerMixin:InsertFrameLevelAbove(frameLevelType, relativeFrameLevelType, optionalRange)
 	local relativeDefinition = self.definitions[relativeFrameLevelType];
-	if not relativeDefinition or self.definitions[frameLevelType] then
+	if not relativeDefinition or self.definitions[frameLevelType] or frameLevelType == "PIN_FRAME_LEVEL_TOPMOST" then
 		return false;
 	end
 
@@ -89,7 +93,7 @@ end
 
 function MapCanvasPinFrameLevelsManagerMixin:InsertFrameLevelBelow(frameLevelType, relativeFrameLevelType, optionalRange)
 	local relativeDefinition = self.definitions[relativeFrameLevelType];
-	if not relativeDefinition or self.definitions[frameLevelType] then
+	if not relativeDefinition or self.definitions[frameLevelType] or frameLevelType == "PIN_FRAME_LEVEL_TOPMOST" then
 		return false;
 	end
 
@@ -132,9 +136,14 @@ function MapCanvasPinFrameLevelsManagerMixin:GetFrameLevelStart(frameLevelType)
 end
 
 function MapCanvasPinFrameLevelsManagerMixin:GetValidFrameLevel(frameLevelType, optionalIndex)
-	local definition = self.definitions[frameLevelType] or self.definitions["PIN_FRAME_LEVEL_DEFAULT"];
-	if definition.overrideType then
-		definition = self.definitions[definition.overrideType];
+	local definition;
+	if frameLevelType == "PIN_FRAME_LEVEL_TOPMOST" then
+		definition = self.topMostDefinition;
+	else
+		definition = self.definitions[frameLevelType] or self.definitions["PIN_FRAME_LEVEL_DEFAULT"];
+		if definition.overrideType then
+			definition = self.definitions[definition.overrideType];
+		end
 	end
 	local offset = Clamp(optionalIndex or 1, 1, definition.range) - 1;
 	return definition.startLevel + offset;

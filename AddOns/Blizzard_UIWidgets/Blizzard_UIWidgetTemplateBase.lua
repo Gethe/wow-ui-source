@@ -40,3 +40,63 @@ function UIWidgetBaseTemplateMixin:OnReset()
 	self:Hide();
 	self:ClearAllPoints();
 end
+
+UIWidgetBaseResourceTemplateMixin = {}
+
+function UIWidgetBaseResourceTemplateMixin:Setup(resourceInfo, textureKitID, atlasName)
+	self.Text:SetText(resourceInfo.text);
+	self:SetTooltip(resourceInfo.tooltip);
+
+	SetupTextureKitOnFrameByID(textureKitID, self.Icon, atlasName, true, true);
+
+	self:SetWidth(self.Icon:GetWidth() + self.Text:GetWidth() + 2);
+	self:SetHeight(self.Icon:GetHeight());
+end
+
+UIWidgetBaseCurrencyTemplateMixin = {}
+
+function UIWidgetBaseCurrencyTemplateMixin:Setup(currencyInfo, disabled)
+	self.Text:SetText(currencyInfo.text);
+	self:SetTooltip(currencyInfo.tooltip);
+	self.Icon:SetTexture(currencyInfo.iconFileID);
+	self.Icon:SetDesaturated(disabled);
+
+	if disabled then
+		self.Text:SetTextColor(DISABLED_FONT_COLOR:GetRGB());
+		self.LeadingText:SetTextColor(DISABLED_FONT_COLOR:GetRGB());
+	else
+		self.Text:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
+		self.LeadingText:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
+	end
+
+	local totalWidth = self.Icon:GetWidth() + self.Text:GetWidth() + 2;
+
+	self.Icon:ClearAllPoints();
+	if currencyInfo.leadingText ~= "" then
+		self.LeadingText:SetText(currencyInfo.leadingText);
+		self.LeadingText:Show();
+		self.Icon:SetPoint("TOPLEFT", self, "TOPLEFT", self.LeadingText:GetWidth() + 5, 0);
+		totalWidth = totalWidth + self.LeadingText:GetWidth() + 5;
+	else
+		self.LeadingText:Hide();
+		self.Icon:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 0);
+	end
+
+	self:SetWidth(totalWidth);
+	self:SetHeight(self.Icon:GetHeight());
+end
+
+UIWidgetBaseColoredTextMixin = {}
+
+function UIWidgetBaseColoredTextMixin:SetColorState(colorState)
+	if colorState == Enum.TextColorState.Disabled then
+		self:SetTextColor(DISABLED_FONT_COLOR:GetRGB());
+	elseif colorState == Enum.TextColorState.Red then
+		self:SetTextColor(RED_FONT_COLOR:GetRGB());
+	elseif colorState == Enum.TextColorState.Highlight then
+		self:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
+	else
+		self:SetTextColor(NORMAL_FONT_COLOR:GetRGB());
+	end
+end
+

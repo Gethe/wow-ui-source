@@ -267,6 +267,24 @@
 		</Member>
 	</FontFamily>
 
+	<FontFamily name="NumberFont_Small" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\ARIALN.TTF" height="12"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="11"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\FRIZQT__.TTF" height="11"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\bHEI01B.TTF" height="11"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\ARIALN.TTF" height="12"/>
+		</Member>
+	</FontFamily>
+
 	<FontFamily name="NumberFont_Normal_Med" virtual="true">
 		<Member alphabet="roman">
 			<Font font="Fonts\ARIALN.TTF" height="14"/>

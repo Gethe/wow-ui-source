@@ -244,7 +244,7 @@
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
-								<FontString name="$parentLabel" inherits="OptionsFontSmall" text="RESOLUTION" justifyH="RIGHT">
+								<FontString name="$parentLabel" inherits="OptionsFontSmall" text="WINDOW_SIZE" justifyH="RIGHT">
 									<Anchors>
 										<Anchor point="RIGHT" relativePoint="LEFT"/>
 									</Anchors>
@@ -252,6 +252,71 @@
 							</Layer>
 						</Layers>
 					</Frame>
+
+					<Slider name="$parentRenderScaleSlider" inherits="VideoOptionsSliderTemplate" valueStep=".05" obeyStepOnDrag="true">
+						<Size x="120" y="17"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentResolutionDropDown" relativePoint="BOTTOMLEFT">
+								<Offset x="21" y="-6"/>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString name="$parentLabel" inherits="OptionsFontSmall" text="RENDER_SCALE" justifyH="RIGHT">
+									<Anchors>
+										<Anchor point="RIGHT" relativePoint="LEFT">
+											<Offset x="-20" y="0"/>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad>
+								self:SetMinMaxValues(.5, GetMaxRenderScale());
+								
+								local name = self:GetName();
+								self.type = CONTROLTYPE_SLIDER;
+								self.cvar = "RenderScale";
+								
+								self.tooltip = OPTION_TOOLTIP_RENDER_SCALE;
+								self.name = RENDER_SCALE;
+								
+								self.SetDisplayValue = self.SetValue;
+								
+								self.SetValue = function(self, value)
+								self:SetDisplayValue(value);
+								
+								if self:IsVisible() then
+								BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
+								end
+								end
+								
+								self.GetCurrentValue = function(self)
+								return BlizzardOptionsPanel_GetCVarSafe(self.cvar);
+								end;
+								
+								--_G[name.."Text"]:SetFontObject("OptionsFontSmall");
+								--_G[name.."Text"]:SetText(RENDER_SCALE);
+								_G[name.."High"]:Hide();
+								
+								self.Label = _G[name.."Low"];
+								self.Label:ClearAllPoints();
+								self.Label:SetPoint("LEFT", self, "RIGHT", 3, 2);
+								VideoOptionsSlider_OnLoad(self);
+							</OnLoad>
+							<OnValueChanged>
+								if(userInput) then
+								Graphics_EnableApply(self);
+								self.newValue = value;
+								end
+								self.Label:SetFormattedText(PERCENTAGE_STRING, math.floor((value * 100) + .5));
+							</OnValueChanged>
+							<OnShow>
+								self:SetDisplayValue(self:GetCurrentValue());
+							</OnShow>
+						</Scripts>
+					</Slider>
 
 
 					<!-- Column B -->
@@ -1517,59 +1582,6 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
-			<Slider name="$parentRenderScaleSlider" inherits="VideoOptionsSliderTemplate" valueStep=".05" obeyStepOnDrag="true">
-				<Size x="180" y="17"/>
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentShowHDModels" relativePoint="BOTTOMLEFT">
-						<Offset x="25" y="-25"/>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self:SetMinMaxValues(.5, GetMaxRenderScale());
-
-						local name = self:GetName();
-						self.type = CONTROLTYPE_SLIDER;
-						self.cvar = "RenderScale";
-
-						self.tooltip = OPTION_TOOLTIP_RENDER_SCALE;
-						self.name = RENDER_SCALE;
-
-						self.SetDisplayValue = self.SetValue;
-
-						self.SetValue = function(self, value)
-							self:SetDisplayValue(value);
-
-							if self:IsVisible() then
-								BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
-							end
-						end
-
-						self.GetCurrentValue = function(self)
-							return BlizzardOptionsPanel_GetCVarSafe(self.cvar);
-						end;
-
-						_G[name.."Text"]:SetFontObject("OptionsFontSmall");
-						_G[name.."Text"]:SetText(RENDER_SCALE);
-						_G[name.."High"]:Hide();
-
-						self.Label = _G[name.."Low"];
-						self.Label:ClearAllPoints();
-						self.Label:SetPoint("LEFT", self, "RIGHT", 3, 2);
-						VideoOptionsSlider_OnLoad(self);
-					</OnLoad>
-					<OnValueChanged>
-						if(userInput) then
-							Graphics_EnableApply(self);
-							self.newValue = value;
-						end
-						self.Label:SetFormattedText(PERCENTAGE_STRING, math.floor((value * 100) + .5));
-					</OnValueChanged>
-					<OnShow>
-						self:SetDisplayValue(self:GetCurrentValue());
-					</OnShow>
-				</Scripts>
-			</Slider>
 		</Frames>
 
 		<!-- stereo -->

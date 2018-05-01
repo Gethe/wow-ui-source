@@ -30,69 +30,40 @@ function WarCampaignTooltipMixin:SetWarCampaign(warCampaignID)
 		if (campaignChapterInfo) then
 			self.ChapterTitle:SetText(campaignChapterInfo.name);
 			self.Description:SetText(campaignChapterInfo.description);
-			self.Description:SetTextColor(NORMAL_FONT_COLOR:GetRGB());
+			self.Description:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
 			if ( GetNumQuestLogRewards(campaignChapterInfo.rewardQuestID) > 0 ) then
 				if (not EmbeddedItemTooltip_SetItemByQuestReward(self.ItemTooltip, 1, campaignChapterInfo.rewardQuestID)) then
+					self.ItemTooltip:Hide();
+				end
+			elseif ( GetNumQuestLogRewardSpells(campaignChapterInfo.rewardQuestID) > 0 ) then
+				if (not EmbeddedItemTooltip_SetSpellByQuestReward(self.ItemTooltip, 1, campaignChapterInfo.rewardQuestID)) then
 					self.ItemTooltip:Hide();
 				end
 			else
 				if (QuestUtils_AddQuestCurrencyRewardsToTooltip(campaignChapterInfo.rewardQuestID, nil, self.ItemTooltip) == 0 ) then
 					self.ItemTooltip:Hide();
 				end
+				EmbeddedItemTooltip_UpdateSize(self.ItemTooltip);
 			end
 		else
 			self.ChapterTitle:SetText(warCampaignInfo.name);
 			self.Description:SetText(warCampaignInfo.playerConditionFailedReason);
 			self.ItemTooltip:Hide();
-			self.Description:SetTextColor(DISABLED_FONT_COLOR:GetRGB());
+			self.Description:SetTextColor(NORMAL_FONT_COLOR:GetRGB());
 		end	
 	else
 		self.ChapterTitle:SetText(nil);
 		self.Description:SetText(warCampaignInfo.playerConditionFailedReason);
 		self.ItemTooltip:Hide();
-		self.Description:SetTextColor(DISABLED_FONT_COLOR:GetRGB());
+		self.Description:SetTextColor(NORMAL_FONT_COLOR:GetRGB());
 	end
 
-	self:UpdateSize();
-	self:Show();
-end
-
-function WarCampaignTooltipMixin:UpdateSize()
-	local tooltipWidth = 0;
-	local tooltipHeight = 20;
-	local spacing = 12;
-	local naturalTextWrapWidth = 250;
-
-	local stringRegions = {
-		"Title",
-		"ChapterTitle",
-		"Description",
-	};
-
 	if (self.ItemTooltip:IsShown()) then
-		stringRegions[#stringRegions + 1] = "CompleteRewardText";
 		self.CompleteRewardText:Show();
 	else
 		self.CompleteRewardText:Hide();
 	end
 
-	for i, region in ipairs(stringRegions) do
-		region = self[region];
-		if (region:IsShown() and region:GetText()) then
-			local textWidth = region:GetStringWidth();
-			local currStringWidth = min(region:GetWidth(), region:GetStringWidth());
-			tooltipWidth = max(tooltipWidth, currStringWidth);
-			tooltipHeight = tooltipHeight + region:GetHeight() + spacing;
-		end
-	end
-
-	--Add some spacing
-	tooltipWidth = tooltipWidth + 20;
-	if (self.ItemTooltip:IsShown()) then
-		tooltipWidth = max(tooltipWidth, self.ItemTooltip.Tooltip:GetWidth() + 54);
-		tooltipHeight = tooltipHeight + self.ItemTooltip:GetHeight() + spacing + 2;
-	end
-
-	self:SetSize(tooltipWidth, tooltipHeight);
+	self:Layout();
+	self:Show();
 end
-	

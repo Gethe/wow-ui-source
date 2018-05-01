@@ -78,7 +78,6 @@ end
 
 function LayoutMixin:Layout()
 	self.dirty = false;
-	local leftPadding, rightPadding, topPadding, bottomPadding = self:GetPadding(self);
 	
 	local children = {};
 	self:AddLayoutChildren(children, self:GetChildren());

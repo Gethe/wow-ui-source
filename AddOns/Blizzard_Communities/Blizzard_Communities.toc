@@ -1,6 +1,7 @@
 ## Interface: 80000
 ## Title: Blizzard_Communities
 ## Secure: 1
+## RequiredDep: Blizzard_GuildRecruitmentUI, Blizzard_GuildControlUI
 ## LoadOnDemand: 0
 
 ..\..\SharedXML\SecureUIPanelTemplates.lua
@@ -15,4 +16,8 @@ CommunitiesAddDialogInsecure.xml
 CommunitiesAddDialog.xml
 CommunitiesAddDialogOutbound.lua
 CommunitiesTabs.xml
+GuildRewards.xml
+GuildPerks.xml
+GuildInfo.xml
+GuildNews.xml
 CommunitiesFrame.xml

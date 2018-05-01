@@ -1,4 +1,11 @@
-UIWidgetManager:RegisterWidgetVisTypeTemplate(Enum.UIWidgetVisualizationType.StatusBar, {frameType = "FRAME", frameTemplate = "UIWidgetTemplateStatusBar"}, C_UIWidgetManager.GetStatusBarWidgetVisualizationInfo);
+local function GetStatusBarVisInfoData(widgetID)
+	local widgetInfo = C_UIWidgetManager.GetStatusBarWidgetVisualizationInfo(widgetID);
+	if widgetInfo and widgetInfo.shownState ~= Enum.WidgetShownState.Hidden then
+		return widgetInfo;
+	end
+end
+
+UIWidgetManager:RegisterWidgetVisTypeTemplate(Enum.UIWidgetVisualizationType.StatusBar, {frameType = "FRAME", frameTemplate = "UIWidgetTemplateStatusBar"}, GetStatusBarVisInfoData);
 
 UIWidgetTemplateStatusBarMixin = CreateFromMixins(UIWidgetBaseTemplateMixin);
 

@@ -15,16 +15,10 @@ function UIWidgetTemplateStackedResourceTrackerMixin:Setup(widgetInfo)
 
 	for index, resource in ipairs(widgetInfo.resources) do
 		local resourceFrame = self.resourcePool:Acquire();
-		
 		resourceFrame:Show();
-		resourceFrame.Text:SetText(resource.text);
-		resourceFrame:SetTooltip(resource.tooltip);
 
 		local atlasName = "%s-icon"..index;
-		SetupTextureKitOnFrameByID(widgetInfo.textureKitID, resourceFrame.Icon, atlasName, true, true);
-
-		resourceFrame:SetWidth(resourceFrame.Icon:GetWidth() + resourceFrame.Text:GetWidth() + 2);
-		resourceFrame:SetHeight(resourceFrame.Icon:GetHeight());
+		resourceFrame:Setup(resource, widgetInfo.textureKitID, atlasName);
 
 		if previousResourceFrame then
 			resourceFrame:SetPoint("TOPLEFT", previousResourceFrame, "BOTTOMLEFT", 0, -6);
@@ -44,7 +38,7 @@ function UIWidgetTemplateStackedResourceTrackerMixin:Setup(widgetInfo)
 end
 
 function UIWidgetTemplateStackedResourceTrackerMixin:OnLoad()
-	self.resourcePool = CreateFramePool("FRAME", self, "UIWidgetTemplateStackedResourceTracker_ResourceFrame");
+	self.resourcePool = CreateFramePool("FRAME", self, "UIWidgetBaseResourceTemplate");
 end
 
 function UIWidgetTemplateStackedResourceTrackerMixin:OnReset()

@@ -1527,7 +1527,7 @@ function WardrobeItemsCollectionMixin:UpdateItems()
 
 			if ( visualInfo ~= model.visualInfo or changeModel ) then
 				if ( isArmor ) then
-					local sourceID = self:GetAnAppearanceSourceFromVisual(visualInfo.visualID);
+					local sourceID = self:GetAnAppearanceSourceFromVisual(visualInfo.visualID, nil);
 					model:TryOn(sourceID);
 				elseif ( appearanceVisualID ) then
 					-- appearanceVisualID is only set when looking at enchants
@@ -1694,8 +1694,8 @@ function WardrobeCollectionFrame_SortSources(sources, primaryVisualID, primarySo
 	return sources;
 end
 
-function WardrobeCollectionFrame_GetSortedAppearanceSources(visualID)
-	local sources = C_TransmogCollection.GetAppearanceSources(visualID);
+function WardrobeCollectionFrame_GetSortedAppearanceSources(visualID, optionalSlotID)
+	local sources = C_TransmogCollection.GetAppearanceSources(visualID, optionalSlotID);
 	return WardrobeCollectionFrame_SortSources(sources);
 end
 
@@ -1714,10 +1714,10 @@ function WardrobeItemsCollectionMixin:GetFilteredVisualsList()
 	return self.filteredVisualsList;
 end
 
-function WardrobeItemsCollectionMixin:GetAnAppearanceSourceFromVisual(visualID, mustBeUsable)
+function WardrobeItemsCollectionMixin:GetAnAppearanceSourceFromVisual(visualID, mustBeUsable, optionalSlotID)
 	local sourceID = self:GetChosenVisualSource(visualID);
 	if ( sourceID == NO_TRANSMOG_SOURCE_ID ) then
-		local sources = WardrobeCollectionFrame_GetSortedAppearanceSources(visualID);
+		local sources = WardrobeCollectionFrame_GetSortedAppearanceSources(visualID, optionalSlotID);
 		for i = 1, #sources do
 			-- first 1 if it doesn't have to be usable
 			if ( not mustBeUsable or not sources[i].useError ) then
@@ -1734,9 +1734,10 @@ function WardrobeItemsCollectionMixin:SelectVisual(visualID)
 		return;
 	end
 
+	local slotID = GetInventorySlotInfo(self.activeSlot);
 	local sourceID;
 	if ( self.transmogType == LE_TRANSMOG_TYPE_APPEARANCE ) then
-		sourceID = self:GetAnAppearanceSourceFromVisual(visualID, true);
+		sourceID = self:GetAnAppearanceSourceFromVisual(visualID, true, slotID);
 	else
 		local visualsList = self:GetFilteredVisualsList();
 		for i = 1, #visualsList do
@@ -1746,7 +1747,6 @@ function WardrobeItemsCollectionMixin:SelectVisual(visualID)
 			end
 		end
 	end
-	local slotID = GetInventorySlotInfo(self.activeSlot);
 	C_Transmog.SetPending(slotID, self.transmogType, sourceID);
 	PlaySound(SOUNDKIT.UI_TRANSMOG_ITEM_CLICK);
 end
@@ -1798,7 +1798,7 @@ function WardrobeItemsCollectionMixin:RefreshAppearanceTooltip()
 	if ( not self.tooltipVisualID ) then
 		return;
 	end
-	local sources = WardrobeCollectionFrame_GetSortedAppearanceSources(self.tooltipVisualID);
+	local sources = WardrobeCollectionFrame_GetSortedAppearanceSources(self.tooltipVisualID, nil);
 	local chosenSourceID = self:GetChosenVisualSource(self.tooltipVisualID);
 	WardrobeCollectionFrame_SetAppearanceTooltip(self, sources, chosenSourceID);
 end
@@ -1855,7 +1855,7 @@ function WardrobeItemsModelMixin:OnMouseDown(button)
 		if ( transmogType == LE_TRANSMOG_TYPE_ILLUSION ) then
 			link = select(3, C_TransmogCollection.GetIllusionSourceInfo(self.visualInfo.sourceID));
 		else
-			local sources = WardrobeCollectionFrame_GetSortedAppearanceSources(self.visualInfo.visualID);
+			local sources = WardrobeCollectionFrame_GetSortedAppearanceSources(self.visualInfo.visualID, nil);
 			if ( WardrobeCollectionFrame.tooltipSourceIndex ) then
 				local index = WardrobeUtils_GetValidIndexForNumSources(WardrobeCollectionFrame.tooltipSourceIndex, #sources);
 				link = select(6, C_TransmogCollection.GetAppearanceSourceInfo(sources[index].sourceID));
@@ -1868,7 +1868,7 @@ function WardrobeItemsModelMixin:OnMouseDown(button)
 	elseif ( IsModifiedClick("DRESSUP") ) then
 		local slot = self:GetParent():GetActiveSlot();
 		if ( transmogType == LE_TRANSMOG_TYPE_APPEARANCE ) then
-			local sourceID = self:GetParent():GetAnAppearanceSourceFromVisual(self.visualInfo.visualID);
+			local sourceID = self:GetParent():GetAnAppearanceSourceFromVisual(self.visualInfo.visualID, slot);
 			-- don't specify a slot for ranged weapons
 			if ( WardrobeUtils_IsCategoryRanged(self:GetParent():GetActiveCategory()) ) then
 				slot = nil;
@@ -2296,7 +2296,7 @@ function WardrobeItemsCollectionMixin:ValidateChosenVisualSources()
 	for visualID, sourceID in pairs(self.chosenVisualSources) do
 		if ( sourceID ~= NO_TRANSMOG_SOURCE_ID ) then
 			local keep = false;
-			local sources = C_TransmogCollection.GetAppearanceSources(visualID);
+			local sources = C_TransmogCollection.GetAppearanceSources(visualID, nil);
 			if ( sources ) then
 				for i = 1, #sources do
 					if ( sources[i].sourceID == sourceID ) then
@@ -2344,7 +2344,7 @@ function WardrobeCollectionFrameRightClickDropDown_Init(self)
 	UIDropDownMenu_AddButton(info);
 
 	local headerInserted = false;
-	local sources = WardrobeCollectionFrame_GetSortedAppearanceSources(appearanceID);
+	local sources = WardrobeCollectionFrame_GetSortedAppearanceSources(appearanceID, nil);
 	local chosenSourceID = WardrobeCollectionFrame.ItemsCollectionFrame:GetChosenVisualSource(appearanceID);
 	info.func = WardrobeCollectionFrameModelDropDown_SetSource;
 	for i = 1, #sources do
@@ -2393,7 +2393,7 @@ function WardrobeCollectionFrameModelDropDown_SetFavorite(visualID, value, confi
 	local set = (value == 1);
 	if ( set and not confirmed ) then
 		local allSourcesConditional = true;
-		local sources = C_TransmogCollection.GetAppearanceSources(visualID);
+		local sources = C_TransmogCollection.GetAppearanceSources(visualID, nil);
 		for i, sourceInfo in ipairs(sources) do
 			local info = C_TransmogCollection.GetAppearanceInfoBySource(sourceInfo.sourceID);
 			if ( info.sourceIsCollectedPermanent ) then

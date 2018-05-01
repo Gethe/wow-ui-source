@@ -279,7 +279,7 @@
 	</Frame>
 
 	<Frame name="QuestMapFrame" parent="WorldMapFrame" enableMouse="true" mixin="QuestLogMixin" hidden="true">
-		<Size x="287" y="464"/>
+		<Size x="287" y="462"/>
 		<Anchors>
 			<Anchor point="TOPLEFT" relativeTo="WorldMapScrollFrame" relativePoint="TOPRIGHT" x="1" y="46"/>
 		</Anchors>
@@ -296,22 +296,15 @@
 		<Frames>
 			<Frame name="QuestMapQuestOptionsDropDown" inherits="UIDropDownMenuTemplate" hidden="true"/>
 			<ScrollFrame parentKey="QuestsFrame" name="QuestScrollFrame" inherits="UIPanelScrollFrameCodeTemplate">
-				<Size x="259" y="508"/>
+				<Size x="259" y="502"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="-26" y="-1"/>
+					<Anchor point="TOPRIGHT" x="-26" y="-6"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
 						<Texture parentKey="Background" atlas="QuestLogBackground" useAtlasSize="true">
 							<Anchors>
-								<Anchor point="TOPLEFT"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="ARTWORK">
-						<Texture parentKey="BottomDetail" atlas="QuestLog_BottomDetail" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="BOTTOM"/>
+								<Anchor point="TOPLEFT" x="0" y="5"/>
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -323,20 +316,11 @@
 							<Anchor point="TOPLEFT"/>
 						</Anchors>
 						<Frames>
-							<Frame parentKey="TopDetail">
+							<Frame parentKey="EmptySpacer">
 								<KeyValues>
 									<KeyValue key="layoutIndex" value="1" type="number"/>
 								</KeyValues>
-								<Size x="260" y="24"/>
-								<Layers>
-									<Layer level="OVERLAY">
-										<Texture atlas="QuestLog_TopDetail" useAtlasSize="true">
-											<Anchors>
-												<Anchor point="TOP"/>
-											</Anchors>
-										</Texture>
-									</Layer>
-								</Layers>
+								<Size x="260" y="18"/>
 							</Frame>
 							<Frame parentKey="WarCampaignHeader" hidden="true">
 								<KeyValues>
@@ -388,7 +372,7 @@
 								<Size x="262" y="59"/>
 								<Layers>
 									<Layer level="ARTWORK">
-										<FontString parentKey="Text" inherits="GameFontDisable" justifyH="LEFT">
+										<FontString parentKey="Text" inherits="GameFontNormal" justifyH="LEFT">
 											<Size x="220" y="0"/>
 											<Anchors>
 												<Anchor point="TOPLEFT" x="18" y="-12"/>
@@ -466,6 +450,22 @@
 					</Frame>
 				</ScrollChild>
 				<Frames>
+					<Frame parentKey="DetailFrame" setAllPoints="true">
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture parentKey="BottomDetail" atlas="QuestLog_BottomDetail" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="BOTTOM" x="0" y="-3"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="TopDetail" atlas="QuestLog_TopDetail" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="TOP" x="0" y="10"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
 					<Slider name="$parentScrollBar" inherits="UIPanelScrollBarTemplate" parentKey="ScrollBar">
 						<Layers>
 							<Layer level="ARTWORK">
@@ -499,12 +499,12 @@
 						<Anchors>
 							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
 								<Offset>
-									<AbsDimension x="6" y="-22"/>
+									<AbsDimension x="6" y="-18"/>
 								</Offset>
 							</Anchor>
 							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
 								<Offset>
-									<AbsDimension x="6" y="16"/>
+									<AbsDimension x="6" y="14"/>
 								</Offset>
 							</Anchor>
 						</Anchors>

@@ -39,32 +39,32 @@
 	</Button>
 
 	<ContainedAlertFrame name="VoiceActivityNotificationTemplate" inherits="VoiceActivityNotificationBaseTemplate" mixin="VoiceActivityNotificationMixin" virtual="true">
-		<Size x="120" y="35"/>
+		<Size x="120" y="29"/>
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture parentKey="Portrait">
-					<Size x="28" y="28"/>
+					<Size x="22" y="22"/>
 					<Anchors>
-						<Anchor point="LEFT" x="3" y="3"/>
+						<Anchor point="TOPLEFT" x="11" y="-3"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
 				<Texture parentKey="PortraitFrame" atlas="voicechat-portrait-ring">
-					<Size x="38" y="38"/>
+					<Size x="31" y="31"/>
 					<Anchors>
 						<Anchor point="CENTER" relativeKey="$parent.Portrait"/>
 					</Anchors>
 				</Texture>
 				<FontString parentKey="Name" justifyH="LEFT" inherits="GameFontNormal">
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.Portrait" relativePoint="RIGHT" x="30"/>
+						<Anchor point="LEFT" relativeKey="$parent.Portrait" relativePoint="RIGHT" x="24"/>
 					</Anchors>
 				</FontString>
 				<Texture parentKey="Speaker" atlas="voicechat-icon-speaker">
 					<Size x="16" y="16"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.Portrait" relativePoint="RIGHT" x="2"/>
+						<Anchor point="LEFT" relativeKey="$parent.Portrait" relativePoint="RIGHT" x="-4"/>
 					</Anchors>
 				</Texture>
 			</Layer>
