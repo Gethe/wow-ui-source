@@ -44,6 +44,7 @@ function ScriptErrorsFrameMixin:OnShow()
 end
 
 function ScriptErrorsFrameMixin:DisplayMessageInternal(msg, warnType, keepHidden, locals, msgKey)
+	addframetext("Lua Error: "..msgKey);
 	local index = self.seen[msgKey];
 	if ( index ) then
 		self.count[index] = self.count[index] + 1;
