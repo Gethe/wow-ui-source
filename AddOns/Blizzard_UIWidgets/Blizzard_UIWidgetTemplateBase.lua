@@ -43,11 +43,10 @@ end
 
 UIWidgetBaseResourceTemplateMixin = {}
 
-function UIWidgetBaseResourceTemplateMixin:Setup(resourceInfo, textureKitID, atlasName)
+function UIWidgetBaseResourceTemplateMixin:Setup(resourceInfo)
 	self.Text:SetText(resourceInfo.text);
 	self:SetTooltip(resourceInfo.tooltip);
-
-	SetupTextureKitOnFrameByID(textureKitID, self.Icon, atlasName, true, true);
+	self.Icon:SetTexture(resourceInfo.iconFileID);
 
 	self:SetWidth(self.Icon:GetWidth() + self.Text:GetWidth() + 2);
 	self:SetHeight(self.Icon:GetHeight());

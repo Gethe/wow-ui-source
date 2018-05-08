@@ -1,4 +1,11 @@
-UIWidgetManager:RegisterWidgetVisTypeTemplate(Enum.UIWidgetVisualizationType.StackedResourceTracker, {frameType = "FRAME", frameTemplate = "UIWidgetTemplateStackedResourceTracker"}, C_UIWidgetManager.GetStackedResourceTrackerWidgetVisualizationInfo);
+local function GetStackedResourceTrackerVisInfoData(widgetID)
+	local widgetInfo = C_UIWidgetManager.GetStackedResourceTrackerWidgetVisualizationInfo(widgetID);
+	if widgetInfo and widgetInfo.shownState ~= Enum.WidgetShownState.Hidden then
+		return widgetInfo;
+	end
+end
+
+UIWidgetManager:RegisterWidgetVisTypeTemplate(Enum.UIWidgetVisualizationType.StackedResourceTracker, {frameType = "FRAME", frameTemplate = "UIWidgetTemplateStackedResourceTracker"}, GetStackedResourceTrackerVisInfoData);
 
 UIWidgetTemplateStackedResourceTrackerMixin = CreateFromMixins(UIWidgetBaseTemplateMixin);
 
@@ -13,12 +20,11 @@ function UIWidgetTemplateStackedResourceTrackerMixin:Setup(widgetInfo)
 
 	local previousResourceFrame;
 
-	for index, resource in ipairs(widgetInfo.resources) do
+	for index, resourceInfo in ipairs(widgetInfo.resources) do
 		local resourceFrame = self.resourcePool:Acquire();
 		resourceFrame:Show();
 
-		local atlasName = "%s-icon"..index;
-		resourceFrame:Setup(resource, widgetInfo.textureKitID, atlasName);
+		resourceFrame:Setup(resourceInfo);
 
 		if previousResourceFrame then
 			resourceFrame:SetPoint("TOPLEFT", previousResourceFrame, "BOTTOMLEFT", 0, -6);

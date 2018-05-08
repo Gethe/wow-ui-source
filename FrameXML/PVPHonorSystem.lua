@@ -252,13 +252,7 @@ function PVPHonorXPBar_OnEnter(self)
 	local level = UnitHonorLevel("player");
 	local levelmax = GetMaxPlayerHonorLevel();
 
-	if (CanPrestige()) then
-		self.OverlayFrame.Text:SetText(PVP_HONOR_PRESTIGE_AVAILABLE);
-	elseif (level == levelmax) then
-		self.OverlayFrame.Text:SetText(MAX_HONOR_LEVEL);
-	else
-		self.OverlayFrame.Text:SetText(HONOR_BAR:format(current, max));
-	end
+	self.OverlayFrame.Text:SetText(HONOR_BAR:format(current, max));
 	self.OverlayFrame.Text:Show();
 end
 
@@ -283,102 +277,50 @@ end
 function PVPHonorSystem_GetNextReward()
 	local rewardInfo;
 			
-	if (UnitPrestige("player") == 1 and UnitHonorLevel("player") == 49) then
-		rewardInfo = CreateHackRewardInfo();
-	else
-		local rewardPackID = GetHonorLevelRewardPack();
-		if (rewardPackID) then
-			local items = GetRewardPackItems(rewardPackID);
-			local currencies = GetRewardPackCurrencies(rewardPackID);
-			local money = GetRewardPackMoney(rewardPackID);
-			local artifactPower = GetRewardPackArtifactPower(rewardPackID);
-			local title = GetRewardPackTitle(rewardPackID);
-			if (items and #items > 0) then
-				rewardInfo = CreateFromMixins(PVPHonorRewardItemMixin);
-				rewardInfo:Set(items[1]);
-			elseif (artifactPower and artifactPower > 0) then
-				rewardInfo = CreateFromMixins(PVPHonorRewardArtifactPowerMixin);
-				rewardInfo:Set(artifactPower);
-			elseif (currencies and #currencies > 0) then
-				rewardInfo = CreateFromMixins(PVPHonorRewardCurrencyMixin);
-				rewardInfo:Set(currencies[1].currencyType, currencies[1].quantity);
-			elseif (money and money > 0) then
-				rewardInfo = CreateFromMixins(PVPHonorRewardMoneyMixin);
-				rewardInfo:Set(money);
-            elseif (title and title > 0) then
-            	rewardInfo = CreateFromMixins(PVPHonorRewardTitleMixin);
-            	rewardInfo:Set(title);
-        	end
-		end
+	local rewardPackID = GetHonorLevelRewardPack();
+	if (rewardPackID) then
+		local items = GetRewardPackItems(rewardPackID);
+		local currencies = GetRewardPackCurrencies(rewardPackID);
+		local money = GetRewardPackMoney(rewardPackID);
+		local artifactPower = GetRewardPackArtifactPower(rewardPackID);
+		local title = GetRewardPackTitle(rewardPackID);
+		if (items and #items > 0) then
+			rewardInfo = CreateFromMixins(PVPHonorRewardItemMixin);
+			rewardInfo:Set(items[1]);
+		elseif (artifactPower and artifactPower > 0) then
+			rewardInfo = CreateFromMixins(PVPHonorRewardArtifactPowerMixin);
+			rewardInfo:Set(artifactPower);
+		elseif (currencies and #currencies > 0) then
+			rewardInfo = CreateFromMixins(PVPHonorRewardCurrencyMixin);
+			rewardInfo:Set(currencies[1].currencyType, currencies[1].quantity);
+		elseif (money and money > 0) then
+			rewardInfo = CreateFromMixins(PVPHonorRewardMoneyMixin);
+			rewardInfo:Set(money);
+        elseif (title and title > 0) then
+            rewardInfo = CreateFromMixins(PVPHonorRewardTitleMixin);
+            rewardInfo:Set(title);
+        end
 	end
 
 	return rewardInfo;
 end
 
-function PVPHonorSystem_GetMaxPVPLevelReward(prestige)
-    if (not prestige) then
-        prestige = UnitPrestige("player");
-    end
-    
-    local rewardInfo;
-	
-	-- TODO:  Remove this when we can figure this out in a better way
-	if (UnitPrestige("player") == 0) then
-		rewardInfo = CreateHackRewardInfo();
-	else
-		local rewardPackID = GetHonorLevelRewardPack(GetMaxPlayerHonorLevel(), prestige);
-		if (rewardPackID) then
-			local items = GetRewardPackItems(rewardPackID);
-			local currencies = GetRewardPackCurrencies(rewardPackID);
-			local money = GetRewardPackMoney(rewardPackID);
-			local artifactPower = GetRewardPackArtifactPower(rewardPackID);
-			local title = GetRewardPackTitle(rewardPackID);
-			if (items and #items > 0) then
-				rewardInfo = CreateFromMixins(PVPHonorRewardItemMixin);
-				rewardInfo:Set(items[1]);
-			elseif (artifactPower and artifactPower > 0) then
-				rewardInfo = CreateFromMixins(PVPHonorRewardArtifactPowerMixin);
-				rewardInfo:Set(artifactPower);
-			elseif (currencies and #currencies > 0) then
-				rewardInfo = CreateFromMixins(PVPHonorRewardCurrencyMixin);
-				rewardInfo:Set(currencies[1].currencyType, currencies[1].quantity);
-			elseif (money and money > 0) then
-				rewardInfo = CreateFromMixins(PVPHonorRewardMoneyMixin);
-				rewardInfo:Set(money);
-			elseif (title and title > 0) then
-				rewardInfo = CreateFromMixins(PVPHonorRewardTitleMixin);
-				rewardInfo:Set(title);
-			end
-		end
-	end
-
-    return rewardInfo;
-end
-
 function PVPHonorXPBar_SetNextAvailable(self)
 	local showNext = false;
-	local showPrestige = false;
 
-	if (CanPrestige()) then
-		showPrestige = true;
-		PVPHonorXPBar_SetPrestige(self.PrestigeReward);
-		self.PrestigeReward.PrestigeSpinAnimation:Play();
-		self.PrestigeReward.PrestigePulseAnimation:Play();
-	else
-		showPrestige = false;
-		self.PrestigeReward.PrestigeSpinAnimation:Stop();
-		self.PrestigeReward.PrestigePulseAnimation:Stop();
+	self.PrestigeReward.PrestigeSpinAnimation:Stop();
+	self.PrestigeReward.PrestigePulseAnimation:Stop();
 	
-		self.rewardInfo = PVPHonorSystem_GetNextReward();
+	self.rewardInfo = PVPHonorSystem_GetNextReward();
 
-		if (self.rewardInfo) then
-			self.rewardInfo:SetUpFrame(self.NextAvailable);
-			showNext = true;	
-		end
+	if (self.rewardInfo) then
+		self.rewardInfo:SetUpFrame(self.NextAvailable);
+		showNext = true;	
 	end
+	
 
 	self.NextAvailable:SetShown(showNext);
-	self.PrestigeReward:SetShown(showPrestige);
+	self.PrestigeReward:SetShown(false);
 end
 
 function PVPHonorSystemXPBarNextAvailable_OnEnter(self)
@@ -392,9 +334,7 @@ function PVPHonorSystemXPBarNextAvailable_OnEnter(self)
 end	
 
 function PVPHonorXPBar_SetPrestige(self)
-	local newPrestigeLevel = UnitPrestige("player") + 1;
-
-	local icon, name = GetPrestigeInfo(newPrestigeLevel);
+	local icon, name = GetPrestigeInfo(0);
 
 	self.PortraitBg:SetAtlas("honorsystem-prestige-laurel-bg-"..UnitFactionGroup("player"), false);
 	self.Icon:SetTexture(icon or 0);
@@ -411,41 +351,6 @@ function PVPHonorXPBar_SetPrestige(self)
 	end
     
 	self:Show();
-end
-
-function PVPHonorXPBarPrestige_OnClick(self)
-	local frame = PVPTalentPrestigeLevelDialog;
-
-	local newPrestigeLevel = UnitPrestige("player") + 1;
-
-	frame.NextRank:SetText(newPrestigeLevel);
-    local texture, name = GetPrestigeInfo(newPrestigeLevel);
-	frame.NextRankLabel:SetText(name);
-	frame.PrestigeIcon:SetTexture(texture);
-	frame.LaurelBackground:SetAtlas("honorsystem-prestige-laurel-bg-"..UnitFactionGroup("player"), false);
-    
-    local rewardFrame = frame.MaxLevelReward;
-    
-    rewardFrame.rewardInfo = PVPHonorSystem_GetMaxPVPLevelReward(newPrestigeLevel);
-    
-    if (rewardFrame.rewardInfo) then
-        rewardFrame.rewardInfo:SetUpFrame(rewardFrame);
-        rewardFrame:Show();
-        frame.TopDivider:Show();
-		frame.NextMaxLevelReward:SetFormattedText(PVP_PRESTIGE_RANK_UP_NEXT_MAX_LEVEL_REWARD, GetMaxPlayerHonorLevel());
-        frame.NextMaxLevelReward:Show();
-        frame.BottomDivider:Show();
-        frame:SetHeight(500);
-    else
-        rewardFrame:Hide();
-        frame.TopDivider:Hide();
-        frame.NextMaxLevelReward:Hide();
-        frame.BottomDivider:Hide();
-        frame:SetHeight(440);
-    end
-
-	PlaySound(SOUNDKIT.UI_PVP_HONOR_PRESTIGE_OPEN_WINDOW);                          
-    frame:Show();
 end
 
 function HonorExhaustionTick_OnLoad(self)
@@ -570,11 +475,11 @@ end
 
 function PrestigeLevelUpBanner_OnEvent(self, event, ...)
 	if (event == "HONOR_PRESTIGE_UPDATE") then
-		local prestige = UnitPrestige("player");
+		local honorlevel = UnitHonor("player");
 		local factionGroup = UnitFactionGroup("player");
-		local texture, name = GetPrestigeInfo(prestige);
+		local texture, name = GetPrestigeInfo(0);
 		self.Text:SetText(name);
-		self.Level:SetText(prestige);
+		self.Level:SetText(honorlevel);
 		self.IconPlate:SetAtlas("titleprestige-prestigeiconplate-"..factionGroup);
 		self.IconPlate2:SetAtlas("titleprestige-prestigeiconplate-"..factionGroup);
 		self.IconPlate3:SetAtlas("titleprestige-prestigeiconplate-"..factionGroup);

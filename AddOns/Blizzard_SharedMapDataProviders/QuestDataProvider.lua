@@ -232,15 +232,33 @@ function QuestPinMixin:OnLoad()
 end
 
 function QuestPinMixin:OnMouseEnter()
-	WorldMap_HijackTooltip(self:GetMap());
+	local questLogIndex = GetQuestLogIndexByID(self.questID);
+	local title = GetQuestLogTitle(questLogIndex);
+	WorldMapTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT", 5, 2);
+	WorldMapTooltip:SetText(title);
+	QuestUtils_AddQuestTypeToTooltip(WorldMapTooltip, self.questID, NORMAL_FONT_COLOR);
 
-	WorldMapQuestPOI_SetTooltip(self, GetQuestLogIndexByID(self.questID));
+	if poiButton and poiButton.style ~= "numeric" then
+		local completionText = GetQuestLogCompletionText(questLogIndex) or QUEST_WATCH_QUEST_READY;
+		WorldMapTooltip:AddLine(QUEST_DASH..completionText, 1, 1, 1, true);
+	else
+		local numItemDropTooltips = GetNumQuestItemDrops(questLogIndex);
+		if numItemDropTooltips > 0 then
+			for i = 1, numItemDropTooltips do
+				local text, objectiveType, finished = GetQuestLogItemDrop(i, questLogIndex);
+				if ( text and not finished ) then
+					WorldMapTooltip:AddLine(QUEST_DASH..text, 1, 1, 1, true);
+				end
+			end
+		else
+
+		end
+	end
+	WorldMapTooltip:Show();
 end
 
 function QuestPinMixin:OnMouseLeave()
-	WorldMapPOIButton_OnLeave(self);
-
-	WorldMap_RestoreTooltip();
+	WorldMapTooltip:Hide();
 end
 
 function QuestPinMixin:OnClick(button)

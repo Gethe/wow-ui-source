@@ -192,7 +192,7 @@ function TransformTreeBaseNodeMixin:ResolveTransform()
 		self.globalPosition:Add(parentTransform:GetGlobalPosition());
 	end
 
-	securecall(xpcall, self.OnTransformResolved, CallErrorHandler, self);
+	xpcall(self.OnTransformResolved, CallErrorHandler, self);
 
 	self.isResolving = false;
 end

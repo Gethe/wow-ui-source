@@ -35,6 +35,20 @@ local DeathInfo =
 			},
 		},
 		{
+			Name = "GetGraveyardsForMap",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "uiMapID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "graveyards", Type = "table", InnerType = "GraveyardMapInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "GetSelfResurrectOptions",
 			Type = "Function",
 
@@ -66,6 +80,11 @@ local DeathInfo =
 			Name = "AreaSpiritHealerOutOfRange",
 			Type = "Event",
 			LiteralName = "AREA_SPIRIT_HEALER_OUT_OF_RANGE",
+		},
+		{
+			Name = "CemeteryPreferenceUpdated",
+			Type = "Event",
+			LiteralName = "CEMETERY_PREFERENCE_UPDATED",
 		},
 		{
 			Name = "ConfirmXpLoss",
@@ -148,6 +167,19 @@ local DeathInfo =
 			{
 				{ Name = "Spell", Type = "SelfResurrectOptionType", EnumValue = 0 },
 				{ Name = "Item", Type = "SelfResurrectOptionType", EnumValue = 1 },
+			},
+		},
+		{
+			Name = "GraveyardMapInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "areaPoiID", Type = "number", Nilable = false },
+				{ Name = "position", Type = "table", Mixin = "Vector2DMixin", Nilable = false },
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "textureIndex", Type = "number", Nilable = false },
+				{ Name = "graveyardID", Type = "number", Nilable = false },
+				{ Name = "isGraveyardSelectable", Type = "bool", Nilable = false },
 			},
 		},
 		{

@@ -57,8 +57,6 @@ function StorylineQuestPinMixin:OnAcquired(questID)
 end
 
 function StorylineQuestPinMixin:OnMouseEnter()
-	WorldMap_HijackTooltip(self:GetMap());
-
 	local questLineInfo = C_QuestLine.GetQuestLineInfo(self.questID, self.mapID);
 	if (questLineInfo) then
 		WorldMapTooltip:SetOwner(self, "ANCHOR_LEFT");
@@ -75,6 +73,4 @@ end
 
 function StorylineQuestPinMixin:OnMouseLeave()
 	WorldMapTooltip:Hide();
-
-	WorldMap_RestoreTooltip();
 end

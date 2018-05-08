@@ -27,6 +27,14 @@ function CommunitiesStreamDropDownMenu_Initialize(self)
 			end
 			UIDropDownMenu_AddButton(info);
 		end
+		
+		info.text = CreateTextureMarkup("Interface\\WorldMap\\GEAR_64GREY", 64, 64, 16, 16, 0, 1, 0, 1).." "..COMMUNITIES_NOTIFICATION_SETTINGS;
+		info.value = nil;
+		info.notCheckable = 1;
+		info.func = function(button)
+			self:GetCommunitiesFrame():ShowNotificationSettingsDialog();
+		end
+		UIDropDownMenu_AddButton(info);
 	end
 end
 
@@ -84,6 +92,124 @@ end
 
 function CommunitiesEditStreamDialogMixin:UpdateAcceptButton()
 	self.Accept:SetEnabled(self.NameEdit:GetText() ~= "");
+end
+
+CommunitiesNotificationSettingsStreamEntryMixin = {};
+
+function CommunitiesNotificationSettingsStreamEntryMixin:SetStream(clubId, streamId)
+	self.clubId = clubId;
+	self.streamId = streamId;
+end
+
+function CommunitiesNotificationSettingsStreamEntryMixin:GetStreamId()
+	return self.streamId;
+end
+
+function CommunitiesNotificationSettingsStreamEntryMixin:SetFilter(filter)
+	if not self.clubId or not self.streamId then
+		return;
+	end
+	
+	self.filter = filter;
+	self.ShowNotificationsButton:SetChecked(filter == Enum.ClubStreamNotificationFilter.All);
+	self.HideNotificationsButton:SetChecked(filter == Enum.ClubStreamNotificationFilter.None);
+end
+
+function CommunitiesNotificationSettingsStreamEntryMixin:GetFilter()
+	return self.filter;
+end
+
+CommunitiesNotificationSettingsDialogMixin = {};
+
+function CommunitiesNotificationSettingsDialogMixin:OnLoad()
+	self.buttonPool = CreateFramePool("BUTTON", self.ScrollFrame.Child, "CommunitiesNotificationSettingsStreamEntryTemplate");
+end
+
+function CommunitiesNotificationSettingsDialogMixin:OnShow()
+	self:SelectClub(self:GetCommunitiesFrame():GetSelectedClubId());
+end
+
+function CommunitiesNotificationSettingsDialogMixin:Refresh()
+	self.buttonPool:ReleaseAll();
+	
+	local clubId = self:GetSelectedClubId();
+	if clubId then
+		local notificationSettings = C_Club.GetClubStreamNotificationSettings(clubId);
+		local notificationSettingsLookup = {};
+		for i, setting in ipairs(notificationSettings) do
+			notificationSettingsLookup[setting.streamId] = setting.filter;
+		end
+		
+		local scrollHeight = 105;
+		local streams = C_Club.GetStreams(clubId);
+		local previousEntry = nil;
+		for i, stream in ipairs(streams) do
+			local button = self.buttonPool:Acquire();
+			button:SetStream(clubId, stream.streamId);
+			button.StreamName:SetText(stream.name);
+			if i == 1 then
+				button:SetPoint("TOPLEFT", self.ScrollFrame.Child.Separator, "BOTTOMLEFT");
+			else
+				button:SetPoint("TOPLEFT", previousEntry, "BOTTOMLEFT");
+			end
+			
+			button:SetFilter(notificationSettingsLookup[stream.streamId]);
+			button:Show();
+			scrollHeight = scrollHeight + button:GetHeight();
+			previousEntry = button;
+		end
+		
+		self.ScrollFrame.Child:SetHeight(scrollHeight);
+	end
+end
+
+function CommunitiesNotificationSettingsDialogMixin:SaveSettings()
+	local clubId = self:GetSelectedClubId();
+	if clubId then
+		local notificationSettings = {};
+		for button in self.buttonPool:EnumerateActive() do
+			table.insert(notificationSettings, { streamId = button:GetStreamId(), filter = button:GetFilter(), });
+		end
+		
+		C_Club.SetClubStreamNotificationSettings(clubId, notificationSettings);
+	end
+end
+
+function CommunitiesNotificationSettingsDialogMixin:SetAll(filter)
+	for button in self.buttonPool:EnumerateActive() do
+		button:SetFilter(filter);
+	end
+end
+
+function CommunitiesNotificationSettingsDialogMixin:Cancel()
+	self:Hide();
+end
+
+function CommunitiesNotificationSettingsDialogMixin:SelectClub(clubId)
+	self.clubId = clubId;
+	self.CommunitiesListDropDownMenu:OnClubSelected();
+	self:Refresh();
+end
+
+function CommunitiesNotificationSettingsDialogMixin:GetSelectedClubId()
+	return self.clubId;
+end
+
+function CommunitiesNotificationSettingsDialogMixin:GetCommunitiesFrame()
+	return self:GetParent();
+end
+
+function CommunitiesMassNotificationsSettingsButton_OnClick(self)
+	self:GetParent():GetParent():GetParent():SetAll(self.filter);
+end
+
+function CommunitiesNotificationSettingsDialogOkayButton_OnClick(self)
+	self:GetParent():SaveSettings();
+	self:GetParent():Hide();
+end
+
+function CommunitiesNotificationSettingsDialogCancelButton_OnClick(self)
+	self:GetParent():Cancel();
 end
 
 CommunitiesAddToChatMixin = {};

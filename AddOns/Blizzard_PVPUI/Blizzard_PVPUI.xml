@@ -801,10 +801,6 @@
 							<Anchor point="TOPLEFT" relativeTo="PVEFramePortraitFrame" relativePoint="TOPLEFT"/>
 							<Anchor point="BOTTOMRIGHT" relativeTo="PVEFramePortraitFrame" relativePoint="BOTTOMRIGHT"/>
 						</Anchors>
-						<Scripts>
-							<OnEnter function="PVPQueueFramePrestigeMouseOverFrame_OnEnter"/>
-							<OnLeave function="GameTooltip_Hide"/>
-						</Scripts>
 					</Frame>
 					<Button name="$parentCategoryButton1" inherits="PVPQueueFrameButtonTemplate" parentKey="CategoryButton1" id="1">
 						<Anchors>

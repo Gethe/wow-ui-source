@@ -1,6 +1,7 @@
 local COMMUNITIES_LIST_EVENTS = {
 	"CLUB_ADDED",
 	"CLUB_REMOVED",
+	"CLUB_UPDATED",
 	"CLUB_INVITATION_ADDED_FOR_SELF",
 	"CLUB_INVITATION_REMOVED_FOR_SELF",
 };
@@ -19,6 +20,12 @@ function CommunitiesListMixin:OnEvent(event, ...)
 		self:Update();
 	elseif event == "CLUB_REMOVED" then
 		self:Update();
+	elseif event == "CLUB_UPDATED" then
+		local clubId = ...;
+		local clubInfo = C_Club.GetClubInfo(clubId);
+		if clubInfo then
+			self:UpdateClub(clubInfo);
+		end
 	elseif event == "CLUB_INVITATION_ADDED_FOR_SELF" then
 		self:Update();
 	elseif event == "CLUB_INVITATION_REMOVED_FOR_SELF" then
@@ -145,6 +152,20 @@ function CommunitiesListMixin:Update()
 	
 	local totalHeight = clubsHeight + COMMUNITIES_LIST_INITLAL_TOP_BORDER_OFFSET + COMMUNITIES_LIST_INITLAL_BOTTOM_BORDER_OFFSET;
 	HybridScrollFrame_Update(scrollFrame, totalHeight, usedHeight);
+end
+
+function CommunitiesListMixin:UpdateClub(clubInfo)
+	local scrollFrame = self.ListScrollFrame;
+	local offset = HybridScrollFrame_GetOffset(scrollFrame);
+	local buttons = scrollFrame.buttons;
+
+	for i, button in ipairs(buttons) do
+		if button:GetClubId() == clubInfo.clubId then
+			local isInvitation = false;
+			button:SetClubInfo(clubInfo, isInvitation);
+			return;
+		end
+	end
 end
 
 function CommunitiesListMixin:OnLoad()
@@ -398,38 +419,6 @@ function CommunitiesListEntryMixin:OnClick(button)
 	end
 end
 
-function CommunitiesDropDown_GetLeaveCommunityButtonInfo(clubId)
-	local clubInfo = C_Club.GetClubInfo(clubId);
-	if clubInfo then
-		local info = UIDropDownMenu_CreateInfo();
-		info.text = COMMUNITIES_LIST_DROP_DOWN_LEAVE_COMMUNITY;
-		if clubInfo.clubType == Enum.ClubType.Character then
-			info.text = COMMUNITIES_LIST_DROP_DOWN_LEAVE_CHARACTER_COMMUNITY;
-		end
-		
-		local memberInfoForSelf = C_Club.GetMemberInfoForSelf(clubInfo.clubId);
-		if #C_Club.GetClubMembers(clubInfo.clubId) == 1 then
-			info.func = function()
-				StaticPopup_Show("CONFIRM_LEAVE_AND_DESTROY_COMMUNITY", nil, nil, clubInfo);
-			end
-		elseif memberInfoForSelf and memberInfoForSelf.role == Enum.ClubRoleIdentifier.Owner then
-			info.func = function()
-				UIErrorsFrame:AddMessage(COMMUNITIES_LIST_TRANSFER_OWNERSHIP_FIRST, RED_FONT_COLOR:GetRGBA());
-			end
-		else
-			info.func = function()
-				C_Club.LeaveClub(clubInfo.clubId);
-			end
-		end
-		
-		info.isNotRadio = true;
-		info.notCheckable = true;
-		return info;
-	end
-	
-	return nil;
-end
-
 function CommunitiesListEntryDropDown_Initialize(self, level)
 	local communitiesList = self:GetParent();
 	local selectedCommunitiesListEntry = communitiesList:GetSelectedEntryForDropDown();
@@ -440,28 +429,12 @@ function CommunitiesListEntryDropDown_Initialize(self, level)
 	local clubId = selectedCommunitiesListEntry:GetClubId();
 	if clubId then
 		local clubInfo = C_Club.GetClubInfo(clubId);
-		if clubInfo then
-			local info = UIDropDownMenu_CreateInfo();
-			info.text = COMMUNITIES_LIST_DROP_DOWN_FAVORITE;
-			info.func = function()
-				communitiesList:SetFavorite(clubInfo.clubId, true);
-			end;
-			
-			if clubInfo.favoriteTimeStamp then
-				info.text = COMMUNITIES_LIST_DROP_DOWN_UNFAVORITE;
-				info.func = function()
-					communitiesList:SetFavorite(clubInfo.clubId, false);
-				end;
-			end
-			
-			info.isNotRadio = true;
-			info.notCheckable = true;
-			UIDropDownMenu_AddButton(info, level);
-			
-			info = CommunitiesDropDown_GetLeaveCommunityButtonInfo(clubInfo.clubId);
-			if info then
-				UIDropDownMenu_AddButton(info, level);
-			end
+		local memberInfo = C_Club.GetMemberInfoForSelf(clubId);
+		if clubInfo and memberInfo then
+
+			self.clubMemberInfo = memberInfo;
+			self.clubInfo = clubInfo;
+			UnitPopup_ShowMenu(self, "COMMUNITIES_COMMUNITY", nil, clubInfo.name);
 		end
 	end
 end
@@ -473,35 +446,44 @@ end
 function CommunitiesListEntryDropDown_OnHide(self)
 	local communitiesList = self:GetParent();
 	communitiesList:SetSelectedEntryForDropDown(nil);
+	self.clubMemberInfo = nil;
+	self.clubInfo = nil;
 end
 
 CommunitiesListDropDownMenuMixin = {};
 
 function CommunitiesListDropDownMenuMixin:OnLoad()
-	UIDropDownMenu_SetWidth(self, 115);
+	UIDropDownMenu_SetWidth(self, self.width or 115);
+	self.Text:SetJustifyH("LEFT");
 end
 
 function CommunitiesListDropDownMenuMixin:OnShow()
 	UIDropDownMenu_Initialize(self, CommunitiesListDropDownMenu_Initialize);
-	local communitiesFrame = self:GetCommunitiesFrame();
-	UIDropDownMenu_SetSelectedValue(self, communitiesFrame:GetSelectedClubId());
+	local parent = self:GetParent();
+	UIDropDownMenu_SetSelectedValue(self, parent:GetSelectedClubId());
 
-	local function CommunitiesClubSelectedCallback(event, clubId)
-		if clubId and self:IsVisible() then
-			UIDropDownMenu_SetSelectedValue(self, clubId);
+	if parent.RegisterCallback then
+		local function CommunitiesClubSelectedCallback(event, clubId)
+			if clubId and self:IsVisible() then
+				UIDropDownMenu_SetSelectedValue(self, clubId);
+			end
 		end
+		
+		self.clubSelectedCallback = CommunitiesClubSelectedCallback;
+		parent:RegisterCallback(CommunitiesFrameMixin.Event.ClubSelected, self.clubSelectedCallback);
 	end
-	
-	self.clubSelectedCallback = CommunitiesClubSelectedCallback;
-	self:GetCommunitiesFrame():RegisterCallback(CommunitiesFrameMixin.Event.ClubSelected, self.clubSelectedCallback);
 end
 
 function CommunitiesListDropDownMenuMixin:OnHide()
-	self:GetCommunitiesFrame():UnregisterCallback(CommunitiesFrameMixin.Event.ClubSelected, self.clubSelectedCallback);
+	local parent = self:GetParent();
+	if parent.RegisterCallback then
+		parent:UnregisterCallback(CommunitiesFrameMixin.Event.ClubSelected, self.clubSelectedCallback);
+	end
 end
 
-function CommunitiesListDropDownMenuMixin:GetCommunitiesFrame()
-	return self:GetParent();
+function CommunitiesListDropDownMenuMixin:OnClubSelected()
+	local parent = self:GetParent();
+	UIDropDownMenu_SetSelectedValue(self, parent:GetSelectedClubId());
 end
 
 function CommunitiesListScrollFrame_OnVerticalScroll(self)
@@ -515,16 +497,16 @@ function CommunitiesListDropDownMenu_Initialize(self)
 	local clubs = C_Club.GetSubscribedClubs();
 	if clubs ~= nil then
 		local info = UIDropDownMenu_CreateInfo();
-		local communitiesFrame = self:GetCommunitiesFrame();
+		local parent = self:GetParent();
 		for i, clubInfo in ipairs(clubs) do
 			info.text = clubInfo.name;
 			info.value = clubInfo.clubId;
 			info.func = function(button)
-				communitiesFrame:SelectClub(button.value);
+				parent:SelectClub(button.value);
 			end
 			UIDropDownMenu_AddButton(info);
 		end
 		
-		UIDropDownMenu_SetSelectedValue(self, communitiesFrame:GetSelectedClubId());
+		UIDropDownMenu_SetSelectedValue(self, parent:GetSelectedClubId());
 	end
 end

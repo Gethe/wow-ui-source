@@ -278,11 +278,8 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="QuestMapFrame" parent="WorldMapFrame" enableMouse="true" mixin="QuestLogMixin" hidden="true">
+	<Frame name="QuestMapFrame" enableMouse="true" mixin="QuestLogMixin" hidden="true">
 		<Size x="287" y="462"/>
-		<Anchors>
-			<Anchor point="TOPLEFT" relativeTo="WorldMapScrollFrame" relativePoint="TOPRIGHT" x="1" y="46"/>
-		</Anchors>
 		<Layers>
 			<Layer level="OVERLAY">
 				<Texture parentKey="VerticalSeparator" inherits="!UI-Frame-InnerRightTile">
@@ -320,12 +317,12 @@
 								<KeyValues>
 									<KeyValue key="layoutIndex" value="1" type="number"/>
 								</KeyValues>
-								<Size x="260" y="18"/>
+								<Size x="260" y="10"/>
 							</Frame>
 							<Frame parentKey="WarCampaignHeader" hidden="true">
 								<KeyValues>
 									<KeyValue key="layoutIndex" value="QUEST_LOG_WAR_CAMPAIGN_LAYOUT_INDEX" type="global"/>
-									<KeyValue key="topPadding" value="-18" type="number"/>
+									<KeyValue key="topPadding" value="-10" type="number"/>
 								</KeyValues>
 								<Size x="262" y="59"/>
 								<Anchors>
@@ -353,9 +350,9 @@
 									</Layer>
 									<Layer level="HIGHLIGHT">
 										<Texture parentKey="HighlightTexture" file="Interface\QuestFrame\UI-QuestLogTitleHighlight" alphaMode="ADD">
-											<Size x="248" y="50"/>
+											<Size x="248" y="56"/>
 											<Anchors>
-												<Anchor point="TOPLEFT"/>
+												<Anchor point="CENTER" x="0" y="7"/>
 											</Anchors>
 										</Texture>
 									</Layer>
@@ -400,6 +397,7 @@
 								<KeyValues>
 									<KeyValue key="layoutIndex" value="QUEST_LOG_STORY_LAYOUT_INDEX" type="global"/>
 									<KeyValue key="topPadding" value="-18" type="number"/>
+									<KeyValue key="bottomPadding" value="7" type="number"/>
 								</KeyValues>
 								<Size x="262" y="59"/>
 								<Anchors>
@@ -409,14 +407,14 @@
 									<Layer level="BACKGROUND">
 										<Texture parentKey="Background" atlas="StoryHeader-BG" useAtlasSize="true">
 											<Anchors>
-												<Anchor point="TOP" x="-2" y="0"/>
+												<Anchor point="TOP" x="-2" y="-7"/>
 											</Anchors>
 										</Texture>
 									</Layer>
 									<Layer level="ARTWORK">
 										<FontString parentKey="Text" inherits="GameFontHighlightMedium">
 											<Anchors>
-												<Anchor point="TOPLEFT" x="18" y="-12"/>
+												<Anchor point="TOPLEFT" x="18" y="-19"/>
 											</Anchors>
 										</FontString>
 										<FontString parentKey="Progress" inherits="GameFontHighlightSmall">
@@ -425,18 +423,11 @@
 											</Anchors>
 										</FontString>
 									</Layer>
-									<Layer level="OVERLAY">
-										<Texture parentKey="Shadow" atlas="StoryHeader-Shadow" useAtlasSize="true">
-											<Anchors>
-												<Anchor point="TOP" x="-2" y="0"/>
-											</Anchors>
-										</Texture>
-									</Layer>
 									<Layer level="HIGHLIGHT">
 										<Texture parentKey="HighlightTexture" file="Interface\QuestFrame\UI-QuestLogTitleHighlight" alphaMode="ADD">
-											<Size x="248" y="50"/>
+											<Size x="248" y="46"/>
 											<Anchors>
-												<Anchor point="TOPLEFT"/>
+												<Anchor point="CENTER" x="0" y="-1"/>
 											</Anchors>
 										</Texture>
 									</Layer>
@@ -806,11 +797,6 @@
 		<Scripts>
 			<OnLoad function="QuestMapFrame_OnLoad"/>
 			<OnEvent function="QuestMapFrame_OnEvent"/>
-			<OnMouseUp>
-				if ( button == "RightButton" ) then
-					WorldMapZoomOutButton_OnClick();
-				end
-			</OnMouseUp>
 		</Scripts>
 	</Frame>
 </Ui>

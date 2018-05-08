@@ -7,6 +7,20 @@ local EncounterJournal =
 	Functions =
 	{
 		{
+			Name = "GetDungeonEntrancesForMap",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "uiMapID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "dungeonEntrances", Type = "table", InnerType = "DungeonEntranceMapInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "GetEncountersOnMap",
 			Type = "Function",
 
@@ -75,6 +89,19 @@ local EncounterJournal =
 
 	Tables =
 	{
+		{
+			Name = "DungeonEntranceMapInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "areaPoiID", Type = "number", Nilable = false },
+				{ Name = "position", Type = "table", Mixin = "Vector2DMixin", Nilable = false },
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "description", Type = "string", Nilable = false },
+				{ Name = "atlasName", Type = "string", Nilable = false },
+				{ Name = "journalInstanceID", Type = "number", Nilable = false },
+			},
+		},
 		{
 			Name = "EncounterJournalMapEncounterInfo",
 			Type = "Structure",

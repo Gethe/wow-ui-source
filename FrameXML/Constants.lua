@@ -59,6 +59,29 @@ ARTIFACT_BAR_COLOR 			= CreateColor(0.901, 0.8, 0.601);
 WARBOARD_OPTION_TEXT_COLOR	= CreateColor(0.28, 0.02, 0.02);
 DEFAULT_CHAT_CHANNEL_COLOR	= CreateColor(1.0, 0.753, 0.753);
 
+AREA_NAME_FONT_COLOR = CreateColor(1.0, 0.9294, 0.7607);
+AREA_DESCRIPTION_FONT_COLOR = HIGHLIGHT_FONT_COLOR;
+INVASION_FONT_COLOR = CreateColor(0.78, 1, 0);
+INVASION_DESCRIPTION_FONT_COLOR = CreateColor(1, 0.973, 0.035);
+
+WORLD_QUEST_ICONS_BY_PROFESSION = {
+	[129] = "worldquest-icon-firstaid",
+	[164] = "worldquest-icon-blacksmithing",
+	[165] = "worldquest-icon-leatherworking",
+	[171] = "worldquest-icon-alchemy",
+	[182] = "worldquest-icon-herbalism",
+	[186] = "worldquest-icon-mining",
+	[202] = "worldquest-icon-engineering",
+	[333] = "worldquest-icon-enchanting",
+	[755] = "worldquest-icon-jewelcrafting",
+	[773] = "worldquest-icon-inscription",
+	[794] = "worldquest-icon-archaeology",
+	[356] = "worldquest-icon-fishing",
+	[185] = "worldquest-icon-cooking",
+	[197] = "worldquest-icon-tailoring",
+	[393] = "worldquest-icon-skinning",
+};
+
 CHAT_FONT_HEIGHTS = {
 	[1] = 12,
 	[2] = 14,
@@ -781,17 +804,6 @@ SCENARIO_FLAG_DEPRECATED3			= 0x00000008;
 LUA_WARNING_TREAT_AS_ERROR = 0;
 
 -- Quest Tags
-QUEST_TAG_GROUP = 1;
-QUEST_TAG_PVP = 41;
-QUEST_TAG_RAID = 62;
-QUEST_TAG_DUNGEON = 81;
-QUEST_TAG_LEGENDARY = 83;
-QUEST_TAG_HEROIC = 85;
-QUEST_TAG_RAID10 = 88;
-QUEST_TAG_RAID25 = 89;
-QUEST_TAG_SCENARIO = 98;
-QUEST_TAG_ACCOUNT = 102;
-
 QUEST_ICONS_FILE = "Interface\\QuestFrame\\QuestTypeIcons";
 QUEST_ICONS_FILE_WIDTH = 128;
 QUEST_ICONS_FILE_HEIGHT = 64;
@@ -804,17 +816,17 @@ QUEST_TAG_TCOORDS = {
 	["STORY"] = { 0.703125, 0.84375, 0.28125, 0.5625 },
 	["ALLIANCE"] = { 0.421875, 0.5625, 0.28125, 0.5625 },
 	["HORDE"] = { 0.5625, 0.703125, 0.28125, 0.5625 },
-	[QUEST_TAG_DUNGEON] = { 0.421875, 0.5625, 0, 0.28125 },
-	[QUEST_TAG_SCENARIO] = { 0.5625, 0.703125, 0, 0.28125 },
-	[QUEST_TAG_ACCOUNT] = { 0.84375, 0.984375, 0, 0.28125 },
-	[QUEST_TAG_LEGENDARY] = { 0, 0.140625, 0.28125, 0.5625 },
-	[QUEST_TAG_GROUP] = { 0.140625, 0.28125, 0.28125, 0.5625 },
-	[QUEST_TAG_PVP] = { 0.28125, 0.421875, 0.28125, 0.5625 },
-	[QUEST_TAG_HEROIC] = { 0, 0.140625, 0.5625, 0.84375 },
+	[Enum.QuestTag.Dungeon] = { 0.421875, 0.5625, 0, 0.28125 },
+	[Enum.QuestTag.Scenario] = { 0.5625, 0.703125, 0, 0.28125 },
+	[Enum.QuestTag.Account] = { 0.84375, 0.984375, 0, 0.28125 },
+	[Enum.QuestTag.Legendary] = { 0, 0.140625, 0.28125, 0.5625 },
+	[Enum.QuestTag.Group] = { 0.140625, 0.28125, 0.28125, 0.5625 },
+	[Enum.QuestTag.Pvp] = { 0.28125, 0.421875, 0.28125, 0.5625 },
+	[Enum.QuestTag.Heroic] = { 0, 0.140625, 0.5625, 0.84375 },
 	-- same texture for all raids
-	[QUEST_TAG_RAID] = { 0.703125, 0.84375, 0, 0.28125 },
-	[QUEST_TAG_RAID10] = { 0.703125, 0.84375, 0, 0.28125 },
-	[QUEST_TAG_RAID25] = { 0.703125, 0.84375, 0, 0.28125 },
+	[Enum.QuestTag.Raid] = { 0.703125, 0.84375, 0, 0.28125 },
+	[Enum.QuestTag.Raid10] = { 0.703125, 0.84375, 0, 0.28125 },
+	[Enum.QuestTag.Raid25] = { 0.703125, 0.84375, 0, 0.28125 },
 };
 
 WORLD_QUEST_TYPE_TCOORDS = {

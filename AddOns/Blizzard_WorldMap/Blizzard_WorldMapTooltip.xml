@@ -1,0 +1,55 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<GameTooltip name="WorldMapCompareTooltip1" clampedToScreen="true" frameStrata="TOOLTIP" hidden="true" parent="WorldMapFrame" inherits="ShoppingTooltipTemplate"/>
+	<GameTooltip name="WorldMapCompareTooltip2" clampedToScreen="true" frameStrata="TOOLTIP" hidden="true" parent="WorldMapFrame" inherits="ShoppingTooltipTemplate"/>
+	<GameTooltip name="WorldMapTooltip" frameStrata="TOOLTIP" hidden="true" parent="WorldMapFrame" inherits="GameTooltipTemplate">
+		<Frames>
+			<Frame parentKey="ItemTooltip" inherits="EmbeddedItemTooltip" hidden="true">
+				<Size x="100" y="100"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" x="10" y="13"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="yspacing" value="13" type="number"/>
+				</KeyValues>
+				<Scripts>
+					<OnLoad inherit="prepend">
+						self.Tooltip.shoppingTooltips = { WorldMapCompareTooltip1, WorldMapCompareTooltip2 };
+					</OnLoad>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
+				self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
+				self.shoppingTooltips = { WorldMapCompareTooltip1, WorldMapCompareTooltip2 };
+			</OnLoad>
+			<OnUpdate>
+				if ( self.recalculatePadding ) then
+					self.recalculatePadding = nil;
+					GameTooltip_CalculatePadding(self);
+				end
+				self.updateTooltip = (self.updateTooltip or TOOLTIP_UPDATE_TIME) - elapsed;
+				if ( self.updateTooltip > 0 ) then
+					return;
+				end
+				self.updateTooltip = TOOLTIP_UPDATE_TIME;
+
+				local owner = self:GetOwner();
+				if ( owner and owner.UpdateTooltip ) then
+					owner:UpdateTooltip();
+				end
+			</OnUpdate>
+			<OnHide inherit="prepend">
+				WorldMapTooltip.ItemTooltip:Hide();
+				self:SetPadding(0, 0);
+			</OnHide>
+			<OnSizeChanged inherit="prepend">
+				self.recalculatePadding = true;
+			</OnSizeChanged>
+		</Scripts>
+	</GameTooltip>
+	
+	<Frame name="WorldMapTaskTooltipStatusBar" inherits="TooltipProgressBarTemplate"/>
+</Ui>

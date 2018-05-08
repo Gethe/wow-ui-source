@@ -1,0 +1,222 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="IslandsQueueFrame.lua"/> 
+	<Button name="IslandsQueueFrameDifficultyButtonTemplate" virtual="true">
+		<Size x="39" y="39"/> 
+		<HighlightTexture parentKey="Highlight" atlas="bags-roundhighlight" alphaMode="ADD" hidden="true">
+			<Size x="35" y=" 35"/>
+			<Anchors>
+				<Anchor point="CENTER" x="0" y="1"/>
+			</Anchors>
+		</HighlightTexture>
+		<NormalTexture parentKey="NormalTexture" >
+			<Size x="39" y=" 39"/>
+		</NormalTexture>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="SelectedTexture" atlas="transmog-nav-slot-selected" hidden="true">
+					<Size x="39" y=" 39"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick>
+				self:GetParent():SetActiveDifficulty(self); 
+			</OnClick>
+		</Scripts>
+	</Button>
+	<Frame name="IslandsQueueScreenDifficultySelector" mixin="IslandsQueueFrameDifficultyMixin" virtual="true">
+		<Size x="433" y="123"/> 
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Background" atlas="islands-queue-difficultyselector-backboard" useAtlasSize="true"/> 
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="QueueButton" inherits="UIPanelButtonNoTooltipTemplate" text="FIND_A_GROUP">
+				<Size x="164" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOM" y="28"/> 
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/> 
+		</Scripts>
+	</Frame> 
+	<Frame name="IslandsQueueFrameIslandCardTemplate" virtual="true">
+		<Frames>
+			<Frame parentKey="TitleScroll">
+				<Size x="198" y="58"/> 
+				<Anchors>
+					<Anchor point="TOPLEFT" x="20" y="-22"/> 
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Parchment" atlas="islands-queue-card-namescroll" useAtlasSize="true"/>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString parentKey="IslandName" inherits="GameFontNormalLarge" justifyH="CENTER" justifyV="MIDDLE"/>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+	</Frame>	
+	<Frame name="IslandsQueueFrameCardFrameTemplate" virtual="true">
+		<Size x="950" y="642"/> 
+		<Frames>
+			<Frame parentKey="CenterCard" frameLevel="100" parentArray="IslandCards" inherits="IslandsQueueFrameIslandCardTemplate">
+				<Size x="451" y="301"/> 
+				<Anchors>
+					<Anchor point="CENTER" x="0" y="-80"/> 
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Background" atlas="islands-queue-card2" useAtlasSize="true"/>
+					</Layer> 
+					<Layer level="ARTWORK"> 
+						<Texture parentKey="CardArt" atlas="islands-queue-card-island1" useAtlasSize="true">
+							<Anchors> 
+								<Anchor point="CENTER"  relativeKey="$parent.Background"/> 
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="LeftCard" parentArray="IslandCards" inherits="IslandsQueueFrameIslandCardTemplate">
+				<Size x="457" y="322"/> 
+				<Anchors>
+					<Anchor point="TOPLEFT" x="20" y="-20"/> 
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Background" atlas="islands-queue-card1" useAtlasSize="true"/>
+					</Layer> 
+					<Layer level="ARTWORK"> 
+						<Texture parentKey="CardArt" rotation="-4.91" atlas="islands-queue-card-island1" useAtlasSize="true">
+							<Anchors> 
+								<Anchor point="CENTER" relativeKey="$parent.Background"/> 
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="RightCard" parentArray="IslandCards" inherits="IslandsQueueFrameIslandCardTemplate">
+				<Size x="438" y="302"/> 
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-20" y="-20"/> 
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Background" atlas="islands-queue-card3" useAtlasSize="true"/>
+					</Layer> 
+					<Layer level="ARTWORK"> 
+						<Texture parentKey="CardArt" rotation="1.15" atlas="islands-queue-card-island1" useAtlasSize="true">
+							<Anchors> 
+								<Anchor point="CENTER" relativeKey="$parent.Background"/> 
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+	</Frame>
+	<Frame name="IslandsQueueFrame" parent="UIParent" hidden="true" inherits="PortraitFrameTemplate" mixin="IslandsQueueFrameMixin">
+		<Size x="962" y="662"/> 
+		<Anchors>
+			<Anchor point="CENTER"/> 
+		</Anchors>
+		<Layers>
+			<Layer level="BORDER" textureSubLevel="-2">
+				<Texture parentKey="TopWoodBorder" file="Interface\BlackMarket\_WoodFrame-TileHorizontal" horizTile="true">
+					<Size x="256" y="28"/>	
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
+						<Anchor point="TOPRIGHT" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0.00000000" right="1.00000000" top="0.01562500" bottom="0.45312500"/>
+				</Texture>
+				<Texture parentKey="BottomWoodBorder" file="Interface\BlackMarket\_WoodFrame-TileHorizontal" horizTile="true">
+					<Size x="256" y="28"/>	
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0.00000000" right="1.00000000" top="0.48437500" bottom="0.92187500"/>	
+				</Texture>
+				<Texture parentKey="LeftWoodBorder" file="Interface\BlackMarket\!WoodFrame-TileVertical" vertTile="true">
+					<Size x="28" y="256"/>	
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
+						<Anchor point="BOTTOMLEFT" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0.01562500" right="0.45312500" top="0.00000000" bottom="1.00000000"/>	
+				</Texture>
+				<Texture parentKey="RightWoodBorder" file="Interface\BlackMarket\!WoodFrame-TileVertical" vertTile="true">
+					<Size x="28" y="256"/>	
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0.48437500" right="0.92187500" top="0.00000000" bottom="1.00000000"/>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture atlas="islands-queue-background" useAtlasSize="true"/> 
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="RightProp" atlas="islands-queue-prop-coins">
+					<Size x="182" y="122"/>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="15" y="-25"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="LeftProp" atlas="islands-queue-prop-compass">
+					<Size x="186" y="189"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="-30" y="-22"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="TitleBanner">
+				<Size x="200" y="40"/> 
+				<Anchors>
+					<Anchor point="TOP" x="0" y="20"/> 
+				</Anchors> 
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Banner" file="Interface\BlackMarket\BlackMarketSign">
+							<Anchors>
+								<Anchor point="TOP"/>
+							</Anchors>
+						</Texture>
+						<FontString parentKey="TitleText" inherits="GameFontNormalLarge" justifyH="CENTER" justifyV="MIDDLE" text="ISLANDS_HEADER">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.Banner" x="0" y="20"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="IslandCardsFrame" inherits="IslandsQueueFrameCardFrameTemplate">
+				<Anchors>
+					<Anchor point="BOTTOM"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="DifficultySelectorFrame" frameLevel="100" inherits="IslandsQueueScreenDifficultySelector">
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="10"/> 
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/> 
+			<OnShow method="OnShow"/> 
+		</Scripts>
+	</Frame>
+</Ui>

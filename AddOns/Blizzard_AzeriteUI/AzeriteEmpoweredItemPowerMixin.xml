@@ -1,13 +1,22 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\FrameXML\UI.xsd">
 	<Button name="AzeriteEmpoweredItemPowerTemplate" useParentLevel="true" mixin="AzeriteEmpoweredItemPowerMixin" virtual="true">
-		<Size x="37" y="37" />
+		<Size x="52" y="52" />
 		<Layers>
 			<Layer level="OVERLAY" textureSubLevel="2">
 				<Texture parentKey="Icon">
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="3">
+				<Texture parentKey="IconNotSelectableOverlay">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
+					</Anchors>
+					<Color r=".102" g=".0863" b=".0667" a=".70" />
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="1">
@@ -17,6 +26,7 @@
 					</Anchors>
 					<MaskedTextures>
 						<MaskedTexture childKey="Icon"/>
+						<MaskedTexture childKey="IconNotSelectableOverlay"/>
 					</MaskedTextures>
 				</MaskTexture>
 			</Layer>

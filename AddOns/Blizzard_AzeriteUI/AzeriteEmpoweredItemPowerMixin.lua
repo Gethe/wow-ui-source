@@ -39,36 +39,38 @@ function AzeriteEmpoweredItemPowerMixin:UpdateStyle()
 
 	if self:IsFinalPower() then
 		self:SetSize(120, 120);
-		self.Icon:SetSize(120, 120);
+		self.Icon:SetSize(130, 130);
+		self.IconNotSelectableOverlay:SetSize(130, 130);
 		self.CircleMask:SetSize(120, 120);
 	else
-		self:SetSize(70, 70);
-		self.Icon:SetSize(80, 80);
-		self.CircleMask:SetSize(70, 70);
+		self:SetSize(80, 80);
+		self.Icon:SetSize(100, 100);
+		self.IconNotSelectableOverlay:SetSize(100, 100);
+		self.CircleMask:SetSize(100, 100);
 	end
 
+	self.IconBorder:Show();
+	self.Icon:SetVertexColor(1, 1, 1);
+	self.IconNotSelectableOverlay:Hide();
+
 	if self:IsSelected() then
-		self.Icon:SetAlpha(1);
 		self.Icon:SetDesaturation(0);
 		if self:IsFinalPower() then
 			self.IconBorder:SetAtlas("Azerite-CenterTrait-Ring", true);
 		else
-			self.IconBorder:SetAtlas("Azerite-TraitSelected-Ring", true);
+			self.IconBorder:Hide();
 		end
-		self.IconBorder:SetDesaturation(0);
 	elseif self:CanBeSelected() then
-		self.Icon:SetAlpha(1);
 		self.Icon:SetDesaturation(0);
 		if self:IsFinalPower() then
 			self.IconBorder:SetAtlas("Azerite-CenterTrait-Ring", true);
 		else
 			self.IconBorder:SetAtlas("Azerite-Trait-Ring-Open", true);
 		end
-		self.IconBorder:SetDesaturation(0);
 	else
 		self.Icon:SetDesaturation(1);
-		self.Icon:SetAlpha(.5);
-		self.IconBorder:SetDesaturation(1);
+		self.Icon:SetVertexColor(.85, .85, .85);
+		self.IconNotSelectableOverlay:Show();
 
 		if self:IsFinalPower() then
 			self.IconBorder:SetAtlas("Azerite-CenterTrait-Ring", true);

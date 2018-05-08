@@ -68,7 +68,6 @@ function QuestMapFrame_OnLoad(self)
 	self:RegisterEvent("UNIT_QUEST_LOG_CHANGED");
 	self:RegisterEvent("AJ_QUEST_LOG_OPEN");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
-	self:RegisterEvent("WORLD_MAP_UPDATE");
 	self:RegisterEvent("CVAR_UPDATE");
 
 	self:InitLayoutIndexManager();
@@ -170,7 +169,7 @@ function QuestMapFrame_OnEvent(self, event, ...)
 		elseif ( arg2 and arg2 > 0) then
 			QuestMapFrame:GetParent():NavigateToMap(arg2);
 		end
-	elseif ( event == "PLAYER_ENTERING_WORLD" or event == "WORLD_MAP_UPDATE" ) then	
+	elseif ( event == "PLAYER_ENTERING_WORLD" ) then	
 		self:Refresh();
 	elseif ( event == "CVAR_UPDATE" ) then
 		local arg1 =...;
@@ -407,6 +406,7 @@ end
 function QuestsFrame_OnLoad(self)
 	ScrollFrame_OnLoad(self);
 	self.Contents.StoryHeader.HighlightTexture:SetVertexColor(0.243, 0.570, 1);
+	self.Contents.WarCampaignHeader.HighlightTexture:SetVertexColor(0.243, 0.570, 1);
 	self.StoryTooltip:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
 	self.StoryTooltip:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
 
@@ -487,7 +487,7 @@ end
 
 function QuestLogQuests_AddQuestButton(prevButton, questLogIndex, poiTable, title, level, suggestedGroup, isHeader, isCollapsed, isComplete, frequency, questID, startEvent, displayQuestID, isOnMap, hasLocalPOI, isTask, isBounty, isStory, isHidden, isScaling, layoutIndex)
 	local totalHeight = 8;
-	button = titleFramePool:Acquire();
+	local button = titleFramePool:Acquire();
 	button.questID = questID;
 	local difficultyColor = GetQuestDifficultyColor(level, isScaling);
 
@@ -660,7 +660,7 @@ function QuestLogQuests_AddQuestButton(prevButton, questLogIndex, poiTable, titl
 end
 
 function QuestLogQuests_Update(poiTable)
-    local numEntries, numQuests = GetNumQuestLogEntries();
+	local numEntries, numQuests = GetNumQuestLogEntries();
 
 	titleFramePool:ReleaseAll();
 	objectiveFramePool:ReleaseAll();

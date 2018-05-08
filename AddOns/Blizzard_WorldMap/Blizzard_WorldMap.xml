@@ -26,7 +26,7 @@
 		</Scripts>
 	</Frame>
 	
-	<Frame name="TestWorldMapFrame" inherits="WorldMapFrameTemplate" parent="UIParent">
+	<Frame name="WorldMapFrame" inherits="WorldMapFrameTemplate" parent="UIParent">
 		<Frames>
 			<Frame parentKey="BorderFrame" inherits="PortraitFrameTemplate" frameStrata="HIGH" setAllPoints="true">
 				<Layers>

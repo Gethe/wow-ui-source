@@ -137,10 +137,6 @@
 					<Anchor point="TOPLEFT" relativeTo="InspectFramePortraitFrame" relativePoint="TOPLEFT"/>
 					<Anchor point="BOTTOMRIGHT" relativeTo="InspectFramePortraitFrame" relativePoint="BOTTOMRIGHT"/>
 				</Anchors>
-				<Scripts>
-					<OnEnter function="InspectPVPFramePortraitMouseOverFrame_OnEnter"/>
-					<OnLeave function="GameTooltip_Hide"/>
-				</Scripts>
 			</Frame>
 		</Frames>
 		<Scripts>

@@ -264,7 +264,7 @@ function EncounterJournal_OnShow(self)
 
 	--automatically navigate to the current dungeon if you are in one;
 	local mapID = C_Map.GetBestMapForUnit("player");
-	local instanceID = EJ_GetInstanceForMap(mapID);
+	local instanceID = mapID and EJ_GetInstanceForMap(mapID) or 0;
 	local _, instanceType, difficultyID = GetInstanceInfo();
 	if ( EncounterJournal_HasChangedContext(instanceID, instanceType, difficultyID) ) then
 		EncounterJournal_ResetDisplay(instanceID, instanceType, difficultyID);

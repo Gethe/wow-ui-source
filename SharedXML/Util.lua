@@ -1198,7 +1198,7 @@ end
 function ExecuteFrameScript(frame, scriptName, ...)
 	local script = frame:GetScript(scriptName);
 	if script then
-		securecall(xpcall, script, CallErrorHandler, frame, ...);
+		xpcall(script, CallErrorHandler, frame, ...);
 	end
 end
 

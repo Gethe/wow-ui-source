@@ -45,6 +45,21 @@ local PaperDollInfo =
 			},
 		},
 		{
+			Name = "GetStaggerPercentage",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "stagger", Type = "number", Nilable = false },
+				{ Name = "staggerAgainstTarget", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "OffhandHasShield",
 			Type = "Function",
 

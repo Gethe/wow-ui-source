@@ -5,15 +5,15 @@ function AreaPOIDataProviderMixin:GetPinTemplate()
 end
 
 function AreaPOIDataProviderMixin:OnShow()
-	self:RegisterEvent("WORLD_MAP_UPDATE");
+	self:RegisterEvent("AREA_POIS_UPDATED");
 end
 
 function AreaPOIDataProviderMixin:OnHide()
-	self:UnregisterEvent("WORLD_MAP_UPDATE");
+	self:UnregisterEvent("AREA_POIS_UPDATED");
 end
 
 function AreaPOIDataProviderMixin:OnEvent(event, ...)
-	if event == "WORLD_MAP_UPDATE" then
+	if event == "AREA_POIS_UPDATED" then
 		self:RefreshAllData();
 	end
 end
@@ -25,60 +25,75 @@ end
 function AreaPOIDataProviderMixin:RefreshAllData(fromOnShow)
 	self:RemoveAllData();
 
-	local mapAreaID = self:GetMap():GetMapID();
-	local areaPOIs = C_AreaPoiInfo.GetAreaPOIForMap(mapAreaID);
-	if areaPOIs then
-		for i, areaPoiID in ipairs(areaPOIs) do
-			local poiInfo = C_AreaPoiInfo.GetAreaPOIInfo(mapAreaID, areaPoiID);
-			if poiInfo then
-				self:AddAreaPOI(poiInfo);
-			end
+	local mapID = self:GetMap():GetMapID();
+	local areaPOIs = C_AreaPoiInfo.GetAreaPOIForMap(mapID);
+	for i, areaPoiID in ipairs(areaPOIs) do
+		local poiInfo = C_AreaPoiInfo.GetAreaPOIInfo(mapID, areaPoiID);
+		if poiInfo then
+			self:GetMap():AcquirePin(self:GetPinTemplate(), poiInfo);
 		end
 	end
 end
 
-function AreaPOIDataProviderMixin:AddAreaPOI(poiInfo)
-	local pin = self:GetMap():AcquirePin(self:GetPinTemplate());
-	pin.poiID = poiInfo.poiID;
-	if poiInfo.atlasName then
-		local atlasName = poiInfo.textureKitPrefix and ("%s-%s"):format(poiInfo.textureKitPrefix, poiInfo.atlasName) or poiInfo.atlasName;
-		local _, width, height = GetAtlasInfo(atlasName);
-		pin.Texture:SetAtlas(atlasName);
-		pin.Texture:SetSize(width * 2, height * 2);
-		pin.Highlight:SetAtlas(atlasName);
-		pin.Highlight:SetSize(width * 2, height * 2);
-	else
-		local x1, x2, y1, y2 = GetPOITextureCoords(poiInfo.textureIndex);
-		pin.Texture:SetTexture("Interface/Minimap/POIIcons");
-		pin.Texture:SetSize(40, 40);
-		pin.Texture:SetTexCoord(x1, x2, y1, y2);
-		pin.Highlight:SetTexture("Interface/Minimap/POIIcons");
-		pin.Highlight:SetTexCoord(x1, x2, y1, y2);
-		pin.Highlight:SetSize(40, 40);
-	end
-	pin:SetPosition(poiInfo.x, poiInfo.y);
-end
-
 --[[ Area POI Pin ]]--
-AreaPOIPinMixin = CreateFromMixins(MapCanvasPinMixin);
+AreaPOIPinMixin = BaseMapPoiPinMixin:CreateSubPin("PIN_FRAME_LEVEL_AREA_POI");
 
-function AreaPOIPinMixin:OnLoad()	
-	self:SetScalingLimits(1, 0.4125, 0.425);
+function AreaPOIPinMixin:OnAcquired(poiInfo) -- override
+	BaseMapPoiPinMixin.OnAcquired(self, poiInfo);
 
-	self.UpdateTooltip = self.OnMouseEnter;
-
-	self:UseFrameLevelType("PIN_FRAME_LEVEL_AREA_POI");
+	self.areaPoiID = poiInfo.areaPoiID;
 end
 
 function AreaPOIPinMixin:OnMouseEnter()
-	local poiInfo = C_AreaPoiInfo.GetAreaPOIInfo(self:GetMap():GetMapID(), self.poiID);
-	if poiInfo then
-		WorldMap_HijackTooltip(self:GetMap());
+	if not self.name or #self.name == 0 then
+		return;
+	end
 
-		WorldMapPOI_AddPOITimeLeftText(self, self.poiID, poiInfo.name, poiInfo.description)
+	self.UpdateTooltip = function() self:OnMouseEnter(); end;
+
+	if not self:TryShowTooltip() then
+		self:GetMap():TriggerEvent("SetAreaLabel", MAP_AREA_LABEL_TYPE.POI, self.name, self.description);
 	end
 end
 
+function AreaPOIPinMixin:TryShowTooltip()
+	local description = self.description;
+	local hasDescription = description and #description > 0;
+	local isTimed = C_AreaPoiInfo.IsAreaPOITimed(self.areaPoiID);
+	local hasWidgetSet = self.widgetSetID ~= nil;
+
+	local hasTooltip = hasDescription or isTimed or hasWidgetSet;
+
+	if hasTooltip then
+		GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT");
+		GameTooltip_SetTitle(GameTooltip, self.name, HIGHLIGHT_FONT_COLOR);
+
+		if hasDescription then
+			GameTooltip_AddNormalLine(GameTooltip, description);
+		end
+
+		if isTimed then
+			local timeLeftMinutes = C_AreaPoiInfo.GetAreaPOITimeLeft(self.areaPoiID);
+			if timeLeftMinutes then
+				local timeString = SecondsToTime(timeLeftMinutes * 60);
+				GameTooltip_AddNormalLine(GameTooltip, BONUS_OBJECTIVE_TIME_LEFT:format(timeString));
+			end
+		end
+
+		if hasWidgetSet then
+			GameTooltip_AddBlankLinesToTooltip(GameTooltip, 1);
+			GameTooltip_AddWidgetSet(GameTooltip, self.widgetSetID);
+		end
+
+		GameTooltip:Show();
+		return true;
+	end
+
+	return false;
+end
+
 function AreaPOIPinMixin:OnMouseLeave()
-	WorldMap_RestoreTooltip();
+	self:GetMap():TriggerEvent("ClearAreaLabel", MAP_AREA_LABEL_TYPE.POI);
+
+	GameTooltip:Hide();
 end

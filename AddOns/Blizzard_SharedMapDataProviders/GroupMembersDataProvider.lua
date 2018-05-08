@@ -64,6 +64,7 @@ GroupMembersPinMixin = CreateFromMixins(MapCanvasPinMixin);
 function GroupMembersPinMixin:OnLoad()
 	UnitPositionFrameMixin.OnLoad(self);
 	self:SetAlphaLimits(1.0, 1.0, 1.0);
+	self:SetIgnoreGlobalPinScale(true);
 	self:UseFrameLevelType("PIN_FRAME_LEVEL_GROUP_MEMBER");
 
 	self:SetPlayerPingTexture(1, "Interface\\minimap\\UI-Minimap-Ping-Center", 32, 32);

@@ -1200,12 +1200,12 @@ function AchievementButton_OnClick (self, button, down, ignoreModifiers)
 		local handled = nil;
 		if ( IsModifiedClick("CHATLINK") ) then
 			local achievementLink = GetAchievementLink(self.id);
-			if ( ChatEdit_GetActiveWindow() and achievementLink ) then
-				ChatEdit_InsertLink(achievementLink);
-				handled = true;
-			elseif ( SocialPostFrame and Social_IsShown() and achievementLink ) then
-				Social_InsertLink(achievementLink);
-				handled = true;
+			if ( achievementLink ) then
+				handled = ChatEdit_InsertLink(achievementLink);
+				if ( not handled and SocialPostFrame and Social_IsShown() ) then
+					Social_InsertLink(achievementLink);
+					handled = true;
+				end
 			end
 		end
 		if ( not handled and IsModifiedClick("QUESTWATCHTOGGLE") ) then
@@ -2440,12 +2440,13 @@ end
 function AchievementFrameSummaryAchievement_OnClick(self)
 	if ( IsModifiedClick("CHATLINK") ) then
 		local achievementLink = GetAchievementLink(self.id);
-		if ( ChatEdit_GetActiveWindow() and achievementLink ) then
-			ChatEdit_InsertLink(achievementLink);
-			return;
-		elseif ( SocialPostFrame and Social_IsShown() and achievementLink ) then
-			Social_InsertLink(achievementLink);
-			return;
+		if ( achievementLink ) then
+			if ( ChatEdit_InsertLink(achievementLink) ) then
+				return;
+			elseif ( SocialPostFrame and Social_IsShown() ) then
+				Social_InsertLink(achievementLink);
+				return;
+			end
 		end
 	end
 

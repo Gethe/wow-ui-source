@@ -66,7 +66,7 @@ function FlightMapMixin:AddStandardDataProviders()
 	self:AddDataProvider(CreateFromMixins(FlightMap_QuestDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(ClickToZoomDataProviderMixin));	-- no pins
 	self:AddDataProvider(CreateFromMixins(ZoneLabelDataProviderMixin));	-- no pins
-	self:AddDataProvider(CreateFromMixins(AreaPOIDataProviderMixin));
+	self:AddDataProvider(CreateFromMixins(FlightMap_AreaPOIProviderMixin));
 
 	local groupMembersDataProvider = CreateFromMixins(GroupMembersDataProviderMixin);
 	groupMembersDataProvider:SetUnitPinSize("player", 0);

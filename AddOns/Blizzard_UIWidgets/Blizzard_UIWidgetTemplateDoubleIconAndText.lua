@@ -1,4 +1,11 @@
-UIWidgetManager:RegisterWidgetVisTypeTemplate(Enum.UIWidgetVisualizationType.DoubleIconAndText, {frameType = "FRAME", frameTemplate = "UIWidgetTemplateDoubleIconAndText"}, C_UIWidgetManager.GetDoubleIconAndTextWidgetVisualizationInfo);
+local function GetDoubleIconAndTextVisInfoData(widgetID)
+	local widgetInfo = C_UIWidgetManager.GetDoubleIconAndTextWidgetVisualizationInfo(widgetID);
+	if widgetInfo and widgetInfo.shownState ~= Enum.WidgetShownState.Hidden then
+		return widgetInfo;
+	end
+end
+
+UIWidgetManager:RegisterWidgetVisTypeTemplate(Enum.UIWidgetVisualizationType.DoubleIconAndText, {frameType = "FRAME", frameTemplate = "UIWidgetTemplateDoubleIconAndText"}, GetDoubleIconAndTextVisInfoData);
 
 UIWidgetTemplateDoubleIconAndTextMixin = CreateFromMixins(UIWidgetBaseTemplateMixin);
 

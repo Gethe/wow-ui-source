@@ -2,25 +2,6 @@
 ..\..\FrameXML\UI.xsd">
 	<Script file="CommunitiesAddDialog.lua"/>
 	
-	<Button name="AvatarButtonTemplate" virtual="true">
-		<Size x="64" y="64"/>
-		<Layers>
-			<Layer level="ARTWORK">
-				<Texture parentKey="Selected" atlas="communities-create-avatar-border-selected" hidden="true"/>
-			</Layer>
-			<Layer level="BORDER">
-				<Texture parentKey="Icon"/>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnClick>
-				self:GetParent():GetParent():SetAvatarId(self.avatarId);
-				self:GetParent():Refresh();
-			</OnClick>
-		</Scripts>
-		<HighlightTexture atlas="communities-create-avatar-border-hover" alphaMode="ADD"/>
-	</Button>
-
 	<ScopedModifier forbidden="true" scriptsUseGivenEnv="true">
 		<Frame name="CommunitiesAddDialog" parent="UIParent" enableMouse="true" frameStrata="DIALOG" mixin="CommunitiesAddDialogMixin" hidden="true">
 			<Size x="514" y="420"/>
@@ -37,7 +18,7 @@
 					<FontString parentKey="DialogLabel" text="COMMUNITIES_ADD_DIALOG_LABEL" inherits="GameFontHighlight">
 						<Size x="300" y="0"/>
 						<Anchors>
-							<Anchor point="TOP" x="0" y="-15"/>
+							<Anchor point="TOP" x="0" y="-18"/>
 						</Anchors>
 					</FontString>
 					<FontString parentKey="CreateWoWCommunityLabel" text="COMMUNITIES_ADD_DIALOG_CREATE_WOW_LABEL" justifyH="LEFT" inherits="GameFontHighlightMedium">
@@ -192,7 +173,7 @@
 		<Frame name="CommunitiesCreateDialog" parent="UIParent" enableMouse="true" frameStrata="DIALOG" mixin="CommunitiesCreateDialogMixin" hidden="true">
 			<Size x="412" y="330"/>
 			<Anchors>
-				<Anchor point="CENTER" relativeTo="UIParent" y="100"/>
+				<Anchor point="TOP" relativeTo="UIParent" y="-200"/>
 			</Anchors>
 			<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
 				<BackgroundInsets left="11" right="12" top="12" bottom="11"/>
@@ -204,7 +185,7 @@
 					<Texture parentKey="IconPreviewRing" atlas="communities-ring-gold">
 						<Size x="80" y="80"/>
 						<Anchors>
-							<Anchor point="CENTER" x="-50" y="-62"/>
+							<Anchor point="CENTER" x="-48" y="-62"/>
 						</Anchors>
 					</Texture>
 				</Layer>
@@ -227,14 +208,14 @@
 					<FontString parentKey="DialogLabel" text="COMMUNITIES_ADD_DIALOG_BATTLE_NET_LABEL" inherits="GameFontHighlight">
 						<Size x="300" y="0"/>
 						<Anchors>
-							<Anchor point="TOP" x="0" y="-15"/>
+							<Anchor point="TOP" x="0" y="-18"/>
 						</Anchors>
 					</FontString>
 					<FontString parentKey="NameLabel" text="COMMUNITIES_CREATE_DIALOG_NAME_LABEL" justifyH="LEFT" inherits="GameFontNormal">
 						<Size x="0" y="0"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" x="40" y="-40"/>
-							<Anchor point="TOPRIGHT" x="-40" y="-40"/>
+							<Anchor point="TOPLEFT" x="30" y="-52"/>
+							<Anchor point="TOPRIGHT" x="-30" y="-52"/>
 						</Anchors>
 					</FontString>
 					<FontString parentKey="DescriptionLabel" text="COMMUNITIES_CREATE_DIALOG_DESCRIPTION_LABEL" justifyH="LEFT" inherits="GameFontNormal">
@@ -279,7 +260,7 @@
 					</Scripts>
 				</EditBox>
 				<ScrollFrame parentKey="DescriptionFrame" inherits="InputScrollFrameTemplate">
-					<Size x="0" y="60"/>
+					<Size x="0" y="50"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.DescriptionLabel" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
 						<Anchor point="TOPRIGHT" relativeKey="$parent.DescriptionLabel" relativePoint="BOTTOMRIGHT" x="0" y="-8"/>
@@ -300,7 +281,7 @@
 					</Scripts>
 				</ScrollFrame>
 				<Button parentKey="ChangeAvatarButton" inherits="UIPanelButtonNoTooltipTemplate" text="COMMUNITIES_CREATE_DIALOG_ICON_SELECTION_BUTTON">
-					<Size x="85" y="22"/>
+					<Size x="100" y="24"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.IconPreviewRing" relativePoint="RIGHT" x="6" y="0"/>
 					</Anchors>
@@ -309,18 +290,18 @@
 					</Scripts>
 				</Button>
 				<Button parentKey="CreateButton" inherits="UIPanelButtonNoTooltipTemplate" text="COMMUNITIES_CREATE_COMMUNITY">
-					<Size x="165" y="22"/>
+					<Size x="165" y="24"/>
 					<Anchors>
-						<Anchor point="BOTTOM" x="-65" y="30"/>
+						<Anchor point="BOTTOM" x="-65" y="32"/>
 					</Anchors>
 					<Scripts>
 						<OnClick function="CommunitiesCreateDialogCreateButton_OnClick"/>
 					</Scripts>
 				</Button>
 				<Button parentKey="CancelButton" inherits="UIPanelButtonNoTooltipTemplate" text="CANCEL">
-					<Size x="105" y="22"/>
+					<Size x="105" y="24"/>
 					<Anchors>
-						<Anchor point="BOTTOM" x="80" y="30"/>
+						<Anchor point="BOTTOM" x="80" y="32"/>
 					</Anchors>
 					<Scripts>
 						<OnClick function="CommunitiesCreateDialogCancelButton_OnClick"/>
@@ -331,54 +312,6 @@
 				<OnShow method="OnShow"/>
 				<OnAttributeChanged method="OnAttributeChanged"/>
 				<OnHide method="OnHide"/>
-			</Scripts>
-		</Frame>
-		<Frame name="CommunitiesAvatarPickerDialog" parent="UIParent" inherits="SelectionFrameTemplate" enableMouse="true" frameStrata="DIALOG" mixin="CommunitiesAvatarPickerDialogMixin" hidden="true">
-			<Size x="510" y="480"/>
-			<Anchors>
-				<Anchor point="CENTER" relativeTo="UIParent" y="100"/>
-			</Anchors>
-			<KeyValues>
-				<KeyValue key="OnOkay" value="CommunitiesAvatarPickerDialogOkayButton_OnClick" type="global"/>
-				<KeyValue key="OnCancel" value="CommunitiesAvatarPickerDialogCancelButton_OnClick" type="global"/>
-			</KeyValues>
-			<Layers>
-				<Layer level="BACKGROUND">
-					<Texture>
-						<Anchors>
-							<Anchor point="TOPLEFT" x="7" y="-7"/>
-							<Anchor point="BOTTOMRIGHT" x="-7" y="7"/>
-						</Anchors>
-						<Color r="0" g="0" b="0" a="0.8"/>
-					</Texture>
-				</Layer>
-				<Layer level="ARTWORK">
-					<FontString inherits="GameFontHighlightSmall" text="COMMUNITIES_CREATE_DIALOG_AVATAR_PICKER_INSTRUCTIONS">
-						<Anchors>
-							<Anchor point="TOP" x="0" y="-30"/>
-						</Anchors>
-					</FontString>
-				</Layer>
-			</Layers>
-			<Frames>
-				<ScrollFrame parentKey="ScrollFrame" inherits="ListScrollFrameTemplate" mixin="CommunitiesAvatarPickerDialogScrollFrameMixin">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="27" y="-84"/>
-						<Anchor point="BOTTOMRIGHT" x="-40" y="38"/>
-					</Anchors>
-					<Scripts>
-						<OnLoad method="OnLoad"/>
-						<OnShow method="OnShow"/>
-						<OnHide method="OnHide"/>
-						<OnEvent method="OnEvent"/>
-						<OnVerticalScroll method="OnVerticalScroll"/>
-					</Scripts>
-				</ScrollFrame>
-			</Frames>
-			<Scripts>
-				<OnShow method="OnShow"/>
-				<OnHide method="OnHide"/>
-				<OnAttributeChanged method="OnAttributeChanged"/>
 			</Scripts>
 		</Frame>
 	</ScopedModifier>

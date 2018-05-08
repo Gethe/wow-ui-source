@@ -1,19 +1,5 @@
 BonusObjectiveDataProviderMixin = CreateFromMixins(MapCanvasDataProviderMixin);
 
-function BonusObjectiveDataProviderMixin:OnShow()
-	self:RegisterEvent("WORLD_MAP_UPDATE");
-end
-
-function BonusObjectiveDataProviderMixin:OnHide()
-	self:UnregisterEvent("WORLD_MAP_UPDATE");
-end
-
-function BonusObjectiveDataProviderMixin:OnEvent(event, ...)
-	if event == "WORLD_MAP_UPDATE" then
-		self:RefreshAllData();
-	end
-end
-
 function BonusObjectiveDataProviderMixin:RemoveAllData()
 	self:GetMap():RemoveAllPinsByTemplate("BonusObjectivePinTemplate");
 end
@@ -53,13 +39,9 @@ function BonusObjectivePinMixin:OnAcquired(taskInfo)
 end
 
 function BonusObjectivePinMixin:OnMouseEnter()
-	WorldMap_HijackTooltip(self:GetMap());
-
 	TaskPOI_OnEnter(self);
 end
 
 function BonusObjectivePinMixin:OnMouseLeave()
 	TaskPOI_OnLeave(self);
-
-	WorldMap_RestoreTooltip();
 end

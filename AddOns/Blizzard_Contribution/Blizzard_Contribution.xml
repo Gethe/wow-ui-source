@@ -283,7 +283,7 @@
 	<GameTooltip name="ContributionTooltip" parent="UIParent" inherits="GameTooltipTemplate">
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString parentKey="Currency" font="GameFontNormal" justifyH="LEFT" justifyV="TOP">
+				<FontString parentKey="RequiredContribution" font="GameFontNormal" justifyH="LEFT" justifyV="TOP">
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" x="10" y="10"/>
 					</Anchors>
@@ -294,7 +294,7 @@
 			<Frame parentKey="ItemTooltip" inherits="EmbeddedItemTooltip" hidden="true">
 				<Size x="100" y="100"/>
 				<Anchors>
-					<Anchor point="BOTTOMLEFT" relativeKey="$parent.Currency" relativePoint="TOPLEFT" x="0" y="10"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.RequiredContribution" relativePoint="TOPLEFT" x="0" y="10"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad inherit="prepend">

@@ -1,4 +1,3 @@
-
 WorldMapFloorNavigationFrameMixin = { }
 
 function WorldMapFloorNavigationFrameMixin:OnLoad()
@@ -211,8 +210,13 @@ end
 function WorldMapNavBarMixin:OnLoad()
 	local homeData = {
 		name = WORLD,
-		OnClick = function(button) self:NavigateToMap(button.data.id); end,
-		id = WORLDMAP_COSMIC_ID,
+		OnClick = function(button)
+			local TOPMOST = true;
+			local cosmicMapInfo = MapUtil.GetMapParentInfo(self:GetParent():GetMapID(), Enum.UIMapType.Cosmic, TOPMOST);
+			if cosmicMapInfo then
+				self:NavigateToMap(cosmicMapInfo.mapID)
+			end
+		end,
 	}
 	NavBar_Initialize(self, "NavButtonTemplate", homeData, self.home, self.overflow);
 end

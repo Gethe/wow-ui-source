@@ -208,6 +208,26 @@ local QuestLog =
 	Tables =
 	{
 		{
+			Name = "QuestTag",
+			Type = "Enumeration",
+			NumValues = 10,
+			MinValue = 0,
+			MaxValue = 102,
+			Fields =
+			{
+				{ Name = "Group", Type = "QuestTag", EnumValue = 1 },
+				{ Name = "Pvp", Type = "QuestTag", EnumValue = 41 },
+				{ Name = "Raid", Type = "QuestTag", EnumValue = 62 },
+				{ Name = "Dungeon", Type = "QuestTag", EnumValue = 81 },
+				{ Name = "Legendary", Type = "QuestTag", EnumValue = 83 },
+				{ Name = "Heroic", Type = "QuestTag", EnumValue = 85 },
+				{ Name = "Raid10", Type = "QuestTag", EnumValue = 88 },
+				{ Name = "Raid25", Type = "QuestTag", EnumValue = 89 },
+				{ Name = "Scenario", Type = "QuestTag", EnumValue = 98 },
+				{ Name = "Account", Type = "QuestTag", EnumValue = 102 },
+			},
+		},
+		{
 			Name = "QuestOnMapInfo",
 			Type = "Structure",
 			Fields =

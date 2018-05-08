@@ -2403,6 +2403,80 @@ StaticPopupDialogs["CONFIRM_LEAVE_AND_DESTROY_COMMUNITY"] = {
 	hideOnEscape = 1,
 };
 
+StaticPopupDialogs["CONFIRM_LEAVE_COMMUNITY"] = {
+	text = CONFIRM_LEAVE_COMMUNITY,
+	subText = CONFIRM_LEAVE_COMMUNITY_SUBTEXT,
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	OnShow = function(self, clubInfo)
+		if clubInfo.clubType == Enum.ClubType.Character then
+			self.text:SetText(CONFIRM_LEAVE_CHARACTER_COMMUNITY);
+			self.SubText:SetFormattedText(CONFIRM_LEAVE_CHARACTER_COMMUNITY_SUBTEXT, clubInfo.name);
+		else
+			self.text:SetText(CONFIRM_LEAVE_COMMUNITY);
+			self.SubText:SetFormattedText(CONFIRM_LEAVE_COMMUNITY_SUBTEXT, clubInfo.name);
+		end
+	end,
+	OnAccept = function(self, clubInfo)
+		C_Club.LeaveClub(clubInfo.clubId);
+	end,
+	timeout = 0,
+	exclusive = 1,
+	whileDead = 1,
+	hideOnEscape = 1,
+};
+
+StaticPopupDialogs["CONFIRM_DESTROY_COMMUNITY"] = {
+	text = "",
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	OnAccept = function(self, clubInfo)
+		C_Club.DestroyClub(clubInfo.clubId);
+		CloseCommunitiesSettingsDialog();
+	end,
+	timeout = 0,
+	exclusive = 1,
+	whileDead = 1,
+	hideOnEscape = 1,
+	hasEditBox = 1,
+	maxLetters = 32,
+	OnShow = function(self, clubInfo)
+		if clubInfo.clubType == Enum.ClubType.BattleNet then
+			self.text:SetText(CONFIRM_DESTROY_COMMUNITY:format(clubInfo.name));
+		else
+			self.text:SetText(CONFIRM_DESTROY_CHARACTER_COMMUNITY:format(clubInfo.name));
+		end
+
+		self.button1:Disable();
+		self.button2:Enable();
+		self.editBox:SetFocus();
+	end,
+	OnHide = function(self)
+		ChatEdit_FocusActiveWindow();
+		self.editBox:SetText("");
+		MerchantFrame_ResetRefundItem();
+	end,
+	EditBoxOnEnterPressed = function(self)
+		if ( self:GetParent().button1:IsEnabled() ) then
+			self:GetParent().button1:Click();
+			self:GetParent():Hide();
+		end
+	end,
+	EditBoxOnTextChanged = function (self)
+		local parent = self:GetParent();
+		if ( strupper(parent.editBox:GetText()) ==  DELETE_ITEM_CONFIRM_STRING ) then
+			parent.button1:Enable();
+		else
+			parent.button1:Disable();
+		end
+	end,
+	EditBoxOnEscapePressed = function(self)
+		self:GetParent():Hide();
+		ClearCursor();
+	end
+};
+
+
 StaticPopupDialogs["ADD_IGNORE"] = {
 	text = ADD_IGNORE_LABEL,
 	button1 = ACCEPT,
@@ -2836,7 +2910,7 @@ StaticPopupDialogs["AREA_SPIRIT_HEAL"] = {
 		self.timeleft = GetAreaSpiritHealerTime();
 	end,
 	OnAccept = function(self)
-		ShowUIPanel(WorldMapFrame);
+		OpenWorldMap();
 		return true;	--Don't close this popup.
 	end,
 	OnCancel = function(self)

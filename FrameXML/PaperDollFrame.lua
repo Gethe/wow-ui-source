@@ -210,6 +210,9 @@ PAPERDOLL_STATINFO = {
 	["BLOCK"] = {
 		updateFunc = function(statFrame, unit) PaperDollFrame_SetBlock(statFrame, unit); end
 	},
+	["STAGGER"] = {
+		updateFunc = function(statFrame, unit) PaperDollFrame_SetStagger(statFrame, unit); end
+	},
 };
 
 -- primary: only show the 1 for the player's current spec
@@ -226,7 +229,8 @@ PAPERDOLL_STATCATEGORIES= {
 			[3] = { stat = "INTELLECT", primary = LE_UNIT_STAT_INTELLECT },
 			[4] = { stat = "STAMINA" },
 			[5] = { stat = "ARMOR" },
-			[6] = { stat = "MANAREGEN", roles =  { "HEALER" } },
+			[6] = { stat = "STAGGER", hideAt = 0, roles = { "TANK" }},
+			[7] = { stat = "MANAREGEN", roles =  { "HEALER" } },
 		},
 	},
 	[2] = {
@@ -241,7 +245,7 @@ PAPERDOLL_STATCATEGORIES= {
 			{ stat = "SPEED", hideAt = 0 },
 			{ stat = "DODGE", roles =  { "TANK" } },
 			{ stat = "PARRY", hideAt = 0, roles =  { "TANK" } },
-			{ stat = "BLOCK" , hideAt = 0, showFunc = C_PaperDollInfo.OffhandHasShield },
+			{ stat = "BLOCK", hideAt = 0, showFunc = C_PaperDollInfo.OffhandHasShield },
 		},
 	},
 };
@@ -709,6 +713,21 @@ function PaperDollFrame_SetArmor(statFrame, unit)
 	else
 		statFrame.tooltip3 = nil;
 	end
+	statFrame:Show();
+end
+
+function PaperDollFrame_SetStagger(statFrame, unit)
+	local stagger, staggerAgainstTarget = C_PaperDollInfo.GetStaggerPercentage(unit);
+	PaperDollFrame_SetLabelAndText(statFrame, STAT_STAGGER, BreakUpLargeNumbers(stagger), true, stagger);
+
+	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, STAGGER).." "..string.format("%.2F%%",stagger)..FONT_COLOR_CODE_CLOSE;
+	statFrame.tooltip2 = format(STAT_STAGGER_TOOLTIP, stagger);
+	if (staggerAgainstTarget) then
+		statFrame.tooltip3 = format(STAT_STAGGER_TARGET_TOOLTIP, staggerAgainstTarget);
+	else
+		statFrame.tooltip3 = nil;
+	end
+
 	statFrame:Show();
 end
 

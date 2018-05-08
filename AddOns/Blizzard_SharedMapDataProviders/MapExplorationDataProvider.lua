@@ -40,10 +40,17 @@ function MapExplorationDataProviderMixin:RefreshAllData(fromOnShow)
 	self.pin:RefreshOverlays(fromOnShow);
 end
 
+function MapExplorationDataProviderMixin:OnGlobalAlphaChanged()
+	if not self.isWaitingForLoad then
+		self.pin:RefreshAlpha();
+	end
+end
+
 --[[ THE Pin ]]--
 MapExplorationPinMixin = CreateFromMixins(MapCanvasPinMixin);
 
 function MapExplorationPinMixin:OnLoad()
+	self:SetIgnoreGlobalPinScale(true);
 	self:UseFrameLevelType("PIN_FRAME_LEVEL_MAP_EXPLORATION");
 	self.overlayTexturePool = CreateTexturePool(self, "ARTWORK", 0);
 	self.highlightRectPool = CreateTexturePool(self, "ARTWORK", 0);		-- could be frames, but textures are lighter
@@ -57,9 +64,13 @@ function MapExplorationPinMixin:RemoveAllData()
 	self.isWaitingForLoad = nil;
 end
 
+function MapExplorationPinMixin:RefreshAlpha()
+	self:SetAlpha(self:GetMap():GetGlobalAlpha());
+end
+
 function MapExplorationPinMixin:OnUpdate(elapsed)
 	if self.isWaitingForLoad and self:GetMap():AreDetailLayersLoaded() and self.textureLoadGroup:IsFullyLoaded() then
-		self:SetAlpha(1);
+		self:RefreshAlpha();
 		self.isWaitingForLoad = nil;
 		self.textureLoadGroup:Reset();
 	end

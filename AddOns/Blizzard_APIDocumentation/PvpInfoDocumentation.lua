@@ -100,6 +100,34 @@ local PvpInfo =
 			},
 		},
 		{
+			Name = "GetHonorRewardInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "honorLevel", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "info", Type = "HonorRewardInfo", Nilable = true },
+			},
+		},
+		{
+			Name = "GetNextHonorLevelForReward",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "honorLevel", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "nextHonorLevelWithReward", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "GetOutdoorPvPWaitTime",
 			Type = "Function",
 
@@ -111,6 +139,20 @@ local PvpInfo =
 			Returns =
 			{
 				{ Name = "pvpWaitTime", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetPvpTierInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "tierID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "pvpTierInfo", Type = "PvpTierInfo", Nilable = true },
 			},
 		},
 		{
@@ -205,7 +247,7 @@ local PvpInfo =
 			},
 		},
 		{
-			Name = "IsWarModeEnabled",
+			Name = "IsWarModeFeatureEnabled",
 			Type = "Function",
 
 			Returns =
@@ -486,6 +528,30 @@ local PvpInfo =
 				{ Name = "specializationID", Type = "number", Nilable = false },
 				{ Name = "name", Type = "string", Nilable = false },
 				{ Name = "value", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "HonorRewardInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "honorLevelName", Type = "string", Nilable = false },
+				{ Name = "badgeFileDataID", Type = "number", Nilable = false },
+				{ Name = "achievementRewardedID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "PvpTierInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "descendRating", Type = "number", Nilable = false },
+				{ Name = "ascendRating", Type = "number", Nilable = false },
+				{ Name = "descendTier", Type = "number", Nilable = false },
+				{ Name = "ascendTier", Type = "number", Nilable = false },
+				{ Name = "pvpTierEnum", Type = "number", Nilable = false },
+				{ Name = "tierIconID", Type = "number", Nilable = false },
 			},
 		},
 		{

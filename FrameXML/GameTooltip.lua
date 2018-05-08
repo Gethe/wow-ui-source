@@ -134,6 +134,9 @@ function GameTooltip_AddQuestRewardsToTooltip(tooltip, questID, style)
 		local xp = GetQuestLogRewardXP(questID);
 		if ( xp > 0 ) then
 			GameTooltip_AddColoredLine(tooltip, BONUS_OBJECTIVE_EXPERIENCE_FORMAT:format(xp), HIGHLIGHT_FONT_COLOR);
+			if (C_PvP.IsWarModeDesired()) then 
+				tooltip:AddLine(WAR_MODE_BONUS_PERCENTAGE_XP);
+			end
 			hasAnySingleLineRewards = true;
 		end
 		local artifactXP = GetQuestLogRewardArtifactXP(questID);
@@ -156,6 +159,9 @@ function GameTooltip_AddQuestRewardsToTooltip(tooltip, questID, style)
 		local money = GetQuestLogRewardMoney(questID);
 		if ( money > 0 ) then
 			SetTooltipMoney(tooltip, money, nil);
+			if (C_PvP.IsWarModeDesired() and QuestUtils_IsQuestWorldQuest(questID)) then 
+				tooltip:AddLine(WAR_MODE_BONUS_PERCENTAGE);
+			end
 			hasAnySingleLineRewards = true;
 		end
 
@@ -333,6 +339,7 @@ function GameTooltip_OnHide(self)
 	self.overrideComparisonAnchorSide = nil;
 	GameTooltip_ClearMoney(self);
 	GameTooltip_ClearStatusBars(self);
+	GameTooltip_ClearWidgetSet(self);
 	if ( self.shoppingTooltips ) then
 		for _, frame in pairs(self.shoppingTooltips) do
 			frame:Hide();
@@ -526,6 +533,57 @@ function GameTooltip_ShowStatusBar(self, min, max, value, text)
 	statusBar:Show();
 	self.shownStatusBars = index;
 	self:SetMinimumWidth(140);
+end
+
+local function WidgetLayout(widgetContainer, sortedWidgets)
+	local widgetsHeight = 0;
+	local maxWidgetWidth = 0;
+
+	for index, widgetFrame in ipairs(sortedWidgets) do
+		if ( index == 1 ) then
+			widgetFrame:SetPoint("TOP");
+			widgetsHeight = widgetsHeight + widgetFrame:GetHeight();
+		else
+			local relative = sortedWidgets[index - 1];
+			widgetFrame:SetPoint("TOP", relative, "BOTTOM", 0, -10);
+			widgetsHeight = widgetsHeight + widgetFrame:GetHeight() + 10;
+		end
+
+		local widgetWidth = widgetFrame:GetWidth();
+		if widgetWidth > maxWidgetWidth then
+			maxWidgetWidth = widgetWidth;
+		end
+	end
+
+	widgetContainer:SetHeight(widgetsHeight);
+	widgetContainer:SetWidth(maxWidgetWidth);
+end
+
+function GameTooltip_AddWidgetSet(self, widgetSetID)
+	if self.widgetSetID == widgetSetID then
+		GameTooltip_InsertFrame(self, self.widgetContainer);
+		return;
+	end
+
+	GameTooltip_ClearWidgetSet(self);
+
+	if widgetSetID then
+		if not self.widgetContainer then
+			self.widgetContainer = CreateFrame("FRAME");
+		end
+
+		UIWidgetManager:RegisterWidgetSetContainer(widgetSetID, self.widgetContainer, WidgetLayout);
+		GameTooltip_InsertFrame(self, self.widgetContainer);
+	end
+
+	self.widgetSetID = widgetSetID;
+end
+
+function GameTooltip_ClearWidgetSet(self)
+	if self.widgetSetID then
+		UIWidgetManager:UnregisterWidgetSetContainer(self.widgetSetID, self.widgetContainer);
+		self.widgetSetID = nil;
+	end
 end
 
 function GameTooltip_Hide()

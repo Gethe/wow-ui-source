@@ -159,7 +159,6 @@ function BonusObjectiveTracker_TrackWorldQuest(questID, hardWatch)
 	if not hardWatch or GetSuperTrackedQuestID() == 0 then
 		SetSuperTrackedQuestID(questID);
 	end
-	WorldMapFrame_UpdateMap();
 	ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_QUEST);
 end
 
@@ -172,7 +171,6 @@ function BonusObjectiveTracker_UntrackWorldQuest(questID)
 			QuestSuperTracking_ChooseClosestQuest();
 		end
 	end
-	WorldMapFrame_UpdateMap();
 	ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_QUEST);
 end
 
@@ -201,11 +199,10 @@ end
 function BonusObjectiveTracker_OnOpenDropDown(self)
 	local block = self.activeFrame;
 	local questID = block.TrackedQuest.questID;
-	local addFindGroup = ObjectiveTracker_Util_ShouldAddDropdownEntryForQuestGroupSearch(questID);
 	local addStopTracking = IsWorldQuestWatched(questID);
 
 	-- Ensure at least one option will appear before showing the dropdown.
-	if not (addFindGroup or addStopTracking) then
+	if not addStopTracking then
 		return;
 	end
 
@@ -215,9 +212,6 @@ function BonusObjectiveTracker_OnOpenDropDown(self)
 	info.isTitle = 1;
 	info.notCheckable = 1;
 	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
-
-	-- Add "find group"
-	ObjectiveTracker_Util_AddDropdownEntryForQuestGroupSearch(questID);
 
 	-- Add "stop tracking"
 	if IsWorldQuestWatched(questID) then

@@ -104,111 +104,6 @@ end
 TALENT_HEADER_DEFAULT_Y = -36;
 TALENT_HEADER_CHOOSE_SPEC_Y = -28;
 
--- Hardcoded spell id's for spec display
-SPEC_SPELLS_DISPLAY = {}
-SPEC_SPELLS_DISPLAY[62] = { 30451,10,	5143,10,	44425,10,	1449,10,	12051,10,	12042,10	}; --Arcane
-SPEC_SPELLS_DISPLAY[63] = { 133,10,		11366,10,	195283,10,	108853,10,	190319,10,	2948,10		}; --Fire
-SPEC_SPELLS_DISPLAY[64] = { 116,10,		31687,10,	30455,10,	112965,10,	44614,10,	190447,10	}; --Frost
-
-SPEC_SPELLS_DISPLAY[65] = { 19750,10,	82326,10,	20473,10,	183998,10,	53563,10,	85222,10	}; --Holy
-SPEC_SPELLS_DISPLAY[66] = { 31935,10,	53595,10,	53600,10,	184092,10,	26573,10,	31850,10	}; --Protection
-SPEC_SPELLS_DISPLAY[70] = { 35395,10,	184575,10,	20271,10,	85256,10,	53385,10,	19750,10	}; --Retribution
-
-SPEC_SPELLS_DISPLAY[71] = { 12294,10,	167105,10,	1464,10,	163201,10,	1680,10,	184783,10	}; --Arms
-SPEC_SPELLS_DISPLAY[72] = { 23881,10,	184367,10,	85288,10,	100130,10,	190411,10,	184361,10	}; --Fury
-SPEC_SPELLS_DISPLAY[73] = { 23922,10,	20243,10,	2565,10,	23920,10,	6572,10,	6343,10		}; --Protection
-
-
-SPEC_SPELLS_DISPLAY[102] = { 190984,10,	194153,10,	78674,10,	8921,10,	93402,10,	191034,10	}; --Balance
-SPEC_SPELLS_DISPLAY[103] = { 5221,10,	1822,10,	1079,10,	22568,10,	106832,10,	213764,10	}; --Feral
-SPEC_SPELLS_DISPLAY[104] = { 33917,10,	213764,10,	192081,10,	22842,10,	106832,10,	22812,10	}; --Guardian
-SPEC_SPELLS_DISPLAY[105] = { 774,10,	5185,10,	8936,10,	33763,10,	48438,10,	740,10		}; --Restoration
-
-SPEC_SPELLS_DISPLAY[250] = { 206930,10,	49998,10,	195182,10,	43265,10,	50842,10,	49576,10	}; --Blood
-SPEC_SPELLS_DISPLAY[251] = { 49020,10,	49143,10,	49184,10,	196770,10,	51128,10,	59057,10	}; --Frost
-SPEC_SPELLS_DISPLAY[252] = { 85948,10,	55090,10,	77575,10,	47541,10,	43265,10,	46584,10	}; --Unholy
-
-SPEC_SPELLS_DISPLAY[253] = { 193455,10,	217200,10,	34026,10,	2643,10,	19574,10,	193530,10	}; --Beastmaster
-SPEC_SPELLS_DISPLAY[254] = { 185358,10,	19434,10,	185901,10,	2643,10,	186387,10,	185987,10	}; --Marksmanship
-SPEC_SPELLS_DISPLAY[255] = { 186270,10, 259489,10,	259495,10,	259491,10,	190925,10,	260217,10	}; --Survival
-
-SPEC_SPELLS_DISPLAY[256] = { 17,10,		186263,10,	81749,10,	47540,10,	585,10,		589,10		}; --Discipline
-SPEC_SPELLS_DISPLAY[257] = { 2061,10,	2060,10,	139,10,		2050,10,	63733,10,	596,10		}; --Holy
-SPEC_SPELLS_DISPLAY[258] = { 8092,10,	15407,10,	34914,10,	589,10,		228260,10,	228264,10	}; --Shadow
-
-SPEC_SPELLS_DISPLAY[259] = { 703,10,	1329,10,	1943,10,	32645,10,	2823,10,	79134,10	}; --Assassination
-SPEC_SPELLS_DISPLAY[260] = { 193315,10,	185763,10,	193316,10,	2098,10,	199804,10,	79096,10	}; --Outlaw
-SPEC_SPELLS_DISPLAY[261] = { 185438,10,	53,10,		195452,10,	196819,10,	185313,10,	185314,10	}; --Subtlety
-
-SPEC_SPELLS_DISPLAY[262] = { 188389,10,	51505,10,	188196,10,	8042,10,	188443,10,	77756,10	}; --Elemental
-SPEC_SPELLS_DISPLAY[263] = { 193786,10,	193796,10,	17364,10,	60103,10,	201845,10,	187880,10	}; --Enhancement
-SPEC_SPELLS_DISPLAY[264] = { 8004,10,	77472,10,	61295,10,	1064,10,	73920,10,	51564,10	}; --Restoration
-
-SPEC_SPELLS_DISPLAY[265] = { 172,10,	980,10,		30108,10,	198590,10,		27243,10,	691,10		}; --Affliction
-SPEC_SPELLS_DISPLAY[266] = { 686,10,	603,10,		105174,10,	104316,10,	193396,10,	30146,10	}; --Demonology
-SPEC_SPELLS_DISPLAY[267] = { 348,10,	17962,10,	116858,10,	29722,10,	80240,10,	688,10		}; --Destruction
-
-SPEC_SPELLS_DISPLAY[268] = { 100780,10,	121253,10,	115181,10,	115069,10,	119582,10,	115308,10	}; --Brewmaster
-SPEC_SPELLS_DISPLAY[269] = { 100780,10,	107428,10,	100784,10,	113656,10,	109132,10,	137639,10	}; --Windwalker
-SPEC_SPELLS_DISPLAY[270] = { 116694,10,	115151,10,	124682,10,	116670,10,	191837,10,	193884,10	}; --Mistweaver
-
-SPEC_SPELLS_DISPLAY[577] = { 162243,10,	162794,10,	198013,10,	188499,10,	195072,10,	191427,10	}; --Havoc
-SPEC_SPELLS_DISPLAY[581] = { 203782,10,	228477,10,	203720,10,	204021,10,	178740,10,	187827,10	}; --Vengeance
-
--- Core Abilities text prefix for spec page
-SPEC_CORE_ABILITY_TEXT = {}
-SPEC_CORE_ABILITY_TEXT[250] = "DK_BLOOD";
-SPEC_CORE_ABILITY_TEXT[251] = "DK_FROST";
-SPEC_CORE_ABILITY_TEXT[252] = "DK_UNHOLY";
-
-SPEC_CORE_ABILITY_TEXT[102] = "DRUID_BALANCE";
-SPEC_CORE_ABILITY_TEXT[103] = "DRUID_FERAL";
-SPEC_CORE_ABILITY_TEXT[104] = "DRUID_GUARDIAN";
-SPEC_CORE_ABILITY_TEXT[105] = "DRUID_RESTO";
-
-SPEC_CORE_ABILITY_TEXT[253] = "HUNTER_BM";
-SPEC_CORE_ABILITY_TEXT[254] = "HUNTER_MM";
-SPEC_CORE_ABILITY_TEXT[255] = "HUNTER_SV";
-
-SPEC_CORE_ABILITY_TEXT[74] = "HUNTER_PET_FEROCITY";
-SPEC_CORE_ABILITY_TEXT[79] = "HUNTER_PET_CUNNING";
-SPEC_CORE_ABILITY_TEXT[81] = "HUNTER_PET_TENACITY";
-
-SPEC_CORE_ABILITY_TEXT[62] = "MAGE_ARCANE";
-SPEC_CORE_ABILITY_TEXT[63] = "MAGE_FIRE";
-SPEC_CORE_ABILITY_TEXT[64] = "MAGE_FROST";
-
-SPEC_CORE_ABILITY_TEXT[268] = "MONK_BREW";
-SPEC_CORE_ABILITY_TEXT[270] = "MONK_MIST";
-SPEC_CORE_ABILITY_TEXT[269] = "MONK_WIND";
-
-SPEC_CORE_ABILITY_TEXT[65] = "PALADIN_HOLY";
-SPEC_CORE_ABILITY_TEXT[66] = "PALADIN_PROT";
-SPEC_CORE_ABILITY_TEXT[70] = "PALADIN_RET";
-
-SPEC_CORE_ABILITY_TEXT[256] = "PRIEST_DISC";
-SPEC_CORE_ABILITY_TEXT[257] = "PRIEST_HOLY";
-SPEC_CORE_ABILITY_TEXT[258] = "PRIEST_SHADOW";
-
-SPEC_CORE_ABILITY_TEXT[259] = "ROGUE_ASS";
-SPEC_CORE_ABILITY_TEXT[260] = "ROGUE_COMBAT";
-SPEC_CORE_ABILITY_TEXT[261] = "ROGUE_SUB";
-
-SPEC_CORE_ABILITY_TEXT[262] = "SHAMAN_ELE";
-SPEC_CORE_ABILITY_TEXT[263] = "SHAMAN_ENHANCE";
-SPEC_CORE_ABILITY_TEXT[264] = "SHAMAN_RESTO";
-
-SPEC_CORE_ABILITY_TEXT[265] = "WARLOCK_AFFLICTION";
-SPEC_CORE_ABILITY_TEXT[266] = "WARLOCK_DEMO";
-SPEC_CORE_ABILITY_TEXT[267] = "WARLOCK_DESTRO";
-
-SPEC_CORE_ABILITY_TEXT[71] = "WARRIOR_ARMS";
-SPEC_CORE_ABILITY_TEXT[72] = "WARRIOR_FURY";
-SPEC_CORE_ABILITY_TEXT[73] = "WARRIOR_PROT";
-
-SPEC_CORE_ABILITY_TEXT[577] = "DH_HAVOC";
-SPEC_CORE_ABILITY_TEXT[581] = "DH_VENGEANCE";
-
 -- Bonus stat to string
 SPEC_STAT_STRINGS = {
 	[LE_UNIT_STAT_STRENGTH] = SPEC_FRAME_PRIMARY_STAT_STRENGTH,
@@ -1160,19 +1055,10 @@ function PlayerSpecSpellTemplate_OnEnter(self)
 	end
 	
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-
-	if (id and SPEC_CORE_ABILITY_TEXT[id]) then
-		local spellName = GetSpellInfo(self.spellID);
-		GameTooltip:SetText(spellName, HIGHLIGHT_FONT_COLOR:GetRGB());
-		local r, g, b = NORMAL_FONT_COLOR:GetRGB();
-        GameTooltip:AddLine(_G[SPEC_CORE_ABILITY_TEXT[id].."_CORE_ABILITY_"..self.index], r, g, b, true);
-	else
-		GameTooltip:SetSpellByID(self.spellID, false, false, true);
-		if ( self.extraTooltip ) then
-			GameTooltip:AddLine(self.extraTooltip);
-		end
+	GameTooltip:SetSpellByID(self.spellID, isPet, false, true);
+	if ( self.extraTooltip ) then
+		GameTooltip:AddLine(self.extraTooltip);
 	end
-	
 	self.UpdateTooltip = self.OnEnter;
 	GameTooltip:Show();
 end
@@ -1351,14 +1237,17 @@ function PlayerTalentFrame_UpdateSpecFrame(self, spec)
 
 	-- set up spells
 	local index = 1;
-	local bonuses
+	local bonuses;
+	local bonusesIncrement = 1;
 	if ( self.isPet ) then
 		bonuses = {GetSpecializationSpells(shownSpec, nil, self.isPet, true)};
+		-- GetSpecializationSpells adds a spell level after each spell ID, but we only care about the spell ID
+		bonusesIncrement = 2;
 	else
-		bonuses = SPEC_SPELLS_DISPLAY[id];
+		bonuses = C_SpecializationInfo.GetSpellsDisplay(id);
 	end
 	if ( bonuses ) then
-		for i=1,#bonuses,2 do
+		for i=1,#bonuses,bonusesIncrement do
 			local frame = scrollChild["abilityButton"..index];
 			if not frame then
 				frame = PlayerTalentFrame_CreateSpecSpellButton(self, index);
@@ -1611,7 +1500,7 @@ function PvpTalentFrameMixin:UpdateModelScene(scene, sceneID, fileID, forceUpdat
 end
 
 function PvpTalentFrameMixin:Update()
-	if (not C_PvP.IsWarModeEnabled() or UnitLevel("player") < SHOW_PVP_TALENT_LEVEL) then
+	if (not C_PvP.IsWarModeFeatureEnabled() or UnitLevel("player") < SHOW_PVP_TALENT_LEVEL) then
 		self:Hide();
 		PlayerTalentFrameTalentsPvpTalentButton:Hide();
 		PlayerTalentFrame_SetExpanded(false);
@@ -1652,6 +1541,7 @@ function PvpTalentFrameMixin:UpdateModelScenes(forceUpdate)
 end
 
 function PvpTalentFrameMixin:SelectSlot(slot)
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	if (self.selectedSlotIndex) then
 		local sameSelected = self.selectedSlotIndex == slot.slotIndex;
 		self:UnselectSlot();
@@ -1689,6 +1579,7 @@ function PvpTalentFrameMixin:SelectTalentForSlot(talentID, slotIndex)
 		return;
 	end
 
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	slot:SetSelectedTalent(talentID);	
 	self:UnselectSlot();
 end
@@ -1815,9 +1706,12 @@ function PvpTalentWarmodeButtonMixin:Update()
 end
 
 function PvpTalentWarmodeButtonMixin:OnClick()
-	self.predictedToggle:Toggle();
-	self:Update();
-	self:GetParent():UpdateModelScenes();
+	if (C_PvP.CanToggleWarMode()) then
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+		self.predictedToggle:Toggle();
+		self:Update();
+		self:GetParent():UpdateModelScenes();
+	end
 end
 
 function PvpTalentWarmodeButtonMixin:OnEnter()

@@ -199,6 +199,7 @@ AdventureMap_FogPinMixin = CreateFromMixins(MapCanvasPinMixin);
 
 function AdventureMap_FogPinMixin:OnLoad()
 	self:SetAlphaStyle(AM_PIN_ALPHA_STYLE_VISIBLE_WHEN_ZOOMED_IN);
+	self:SetIgnoreGlobalPinScale(true);
 	self:SetScale(2.5);
 end
 

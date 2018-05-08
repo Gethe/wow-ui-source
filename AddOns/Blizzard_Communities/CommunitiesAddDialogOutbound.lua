@@ -11,3 +11,26 @@ end
 function Outbound.HideGameTooltip()
 	securecall("GameTooltip_Hide");
 end
+
+local function CommunitiesAvatarPicker_OnOkay(self)
+	local communitiesAvatarPickerDialog = self:GetParent();
+	communitiesAvatarPickerDialog:Hide();
+	CommunitiesCreateDialog_SetAvatarId(communitiesAvatarPickerDialog:GetAvatarId());
+	CommunitiesCreateDialog_SetShown(true);
+	PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK);
+end
+
+local function CommunitiesAvatarPicker_OnCancel(self)
+	local communitiesAvatarPickerDialog = self:GetParent();
+	communitiesAvatarPickerDialog:Hide();
+	CommunitiesCreateDialog_SetShown(true);
+	PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK);
+end
+
+function Outbound.ShowAvatarPicker(clubType, avatarId)
+	securecall("CommunitiesAvatarPicker_OpenDialog", clubType, avatarId, CommunitiesAvatarPicker_OnOkay, CommunitiesAvatarPicker_OnCancel);
+end
+
+function Outbound.HideAvatarPicker()
+	securecall("CommunitiesAvatarPicker_CloseDialog");
+end

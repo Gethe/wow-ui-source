@@ -154,7 +154,7 @@ function CommunitiesChatMixin:DisplayChat()
 	for index, message in ipairs(messages) do
 		if streamViewMarker and message.messageId.epoch > streamViewMarker then
 			-- TODO:: This is temporary. Jeff is going to mock up a better display.
-			self.MessageFrame:AddMessage(clubId, streamId, "--------------- Unread ---------------");
+			self.MessageFrame:AddMessage("--------------- Unread ---------------");
 			streamViewMarker = nil;
 		end
 		

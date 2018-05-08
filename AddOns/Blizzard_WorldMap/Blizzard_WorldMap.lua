@@ -43,7 +43,6 @@ function WorldMapMixin:Maximize()
 end
 
 function WorldMapMixin:SetupMinimizeMaximizeButton()
-	self.isMinimizedCvar = "miniWorldMap";
 	self.minimizedWidth = 702;
 	self.minimizedHeight = 534;
 	self.questLogWidth = 290;
@@ -84,7 +83,7 @@ function WorldMapMixin:OnLoad()
 	self:RegisterEvent("VARIABLES_LOADED");
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
 
-	self:Switch();
+	self:AttachQuestLog();
 end
 
 function WorldMapMixin:OnEvent(event, ...)
@@ -116,7 +115,6 @@ function WorldMapMixin:AddStandardDataProviders()
 	self:AddDataProvider(CreateFromMixins(DeathMapDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(QuestBlobDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(ScenarioDataProviderMixin));
-	self:AddDataProvider(CreateFromMixins(LandmarkDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(VignetteDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(QuestDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(InvasionDataProviderMixin));
@@ -125,6 +123,12 @@ function WorldMapMixin:AddStandardDataProviders()
 	self:AddDataProvider(CreateFromMixins(PetTamerDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(DigSiteDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(GarrisonPlotDataProviderMixin));
+	self:AddDataProvider(CreateFromMixins(DungeonEntranceDataProviderMixin));
+	self:AddDataProvider(CreateFromMixins(BannerDataProvider));
+	self:AddDataProvider(CreateFromMixins(ContributionCollectorDataProviderMixin));
+	self:AddDataProvider(CreateFromMixins(MapLinkDataProviderMixin));
+	self:AddDataProvider(CreateFromMixins(SelectableGraveyardDataProviderMixin));
+	self:AddDataProvider(CreateFromMixins(AreaPOIDataProviderMixin));
 
 	if IsGMClient() then
 		self:AddDataProvider(CreateFromMixins(WorldMap_DebugDataProviderMixin));
@@ -153,20 +157,23 @@ function WorldMapMixin:AddStandardDataProviders()
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_MAP_HIGHLIGHT");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_DEBUG", 4);
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_DIG_SITE");
-	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_LANDMARK");
+	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_DUNGEON_ENTRANCE");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_FLIGHT_POINT");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_INVASION");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_PET_TAMER");
+	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_SELECTABLE_GRAVEYARD");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_GOSSIP");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_VIGNETTE", 100);
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_DEBUG");
+	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_MAP_LINK");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_ENCOUNTER");
+	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_CONTRIBUTION_COLLECTOR");
+	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_AREA_POI");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_STORY_LINE");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_SCENARIO");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_WORLD_QUEST", 500);
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_ACTIVE_QUEST", C_QuestLog.GetMaxNumQuests());
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_SUPER_TRACKED_QUEST");	
-	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_AREA_POI");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_VEHICLE_BELOW_GROUP_MEMBER");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_BONUS_OBJECTIVE");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_BATTLEFIELD_FLAG");
@@ -194,6 +201,10 @@ function WorldMapMixin:OnMapChanged()
 	MapCanvasMixin.OnMapChanged(self);
 	self:RefreshOverlayFrames();
 	self:RefreshQuestLog();
+
+	if C_MapInternal then 
+		C_MapInternal.SetDebugMap(self:GetMapID());
+	end
 end
 
 function WorldMapMixin:OnShow()
@@ -336,29 +347,13 @@ end
 
 -- ============================================ QUEST LOG ===============================================================================
 
-function WorldMapMixin:Switch()
+function WorldMapMixin:AttachQuestLog()
 	QuestMapFrame:SetParent(self);
 	QuestMapFrame:SetFrameStrata("HIGH");
 	QuestMapFrame:ClearAllPoints();
 	QuestMapFrame:SetPoint("TOPRIGHT", -6, -20);
 	QuestMapFrame:Hide();
 	self.QuestLog = QuestMapFrame;
-	
-	ToggleQuestLog = function()
-		self:HandleUserActionToggleQuestLog();
-	end
-	
-	ToggleWorldMap = function()
-		self:HandleUserActionToggleSelf();
-	end
-	
-	OpenWorldMap = function(mapID)
-		self:HandleUserActionOpenSelf(mapID);
-	end
-	
-	OpenQuestLog = function(mapID)
-		self:HandleUserActionOpenQuestLog(mapID);
-	end	
 end
 
 function WorldMapMixin:SetHighlightedQuestID(questID)
@@ -375,4 +370,21 @@ end
 
 function WorldMapMixin:ClearFocusedQuestID()
 	self:TriggerEvent("ClearFocusedQuestID");
+end
+
+-- ============================================ GLOBAL API ===============================================================================
+function ToggleQuestLog()
+	WorldMapFrame:HandleUserActionToggleQuestLog();
+end
+	
+function ToggleWorldMap()
+	WorldMapFrame:HandleUserActionToggleSelf();
+end
+	
+function OpenWorldMap(mapID)
+	WorldMapFrame:HandleUserActionOpenSelf(mapID);
+end
+	
+function OpenQuestLog(mapID)
+	WorldMapFrame:HandleUserActionOpenQuestLog(mapID);
 end

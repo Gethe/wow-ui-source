@@ -1,4 +1,11 @@
-UIWidgetManager:RegisterWidgetVisTypeTemplate(Enum.UIWidgetVisualizationType.IconTextAndBackground, {frameType = "FRAME", frameTemplate = "UIWidgetTemplateIconTextAndBackground"}, C_UIWidgetManager.GetIconTextAndBackgroundWidgetVisualizationInfo);
+local function GetIconTextAndBackgroundVisInfoData(widgetID)
+	local widgetInfo = C_UIWidgetManager.GetIconTextAndBackgroundWidgetVisualizationInfo(widgetID);
+	if widgetInfo and widgetInfo.shownState ~= Enum.WidgetShownState.Hidden then
+		return widgetInfo;
+	end
+end
+
+UIWidgetManager:RegisterWidgetVisTypeTemplate(Enum.UIWidgetVisualizationType.IconTextAndBackground, {frameType = "FRAME", frameTemplate = "UIWidgetTemplateIconTextAndBackground"}, GetIconTextAndBackgroundVisInfoData);
 
 UIWidgetTemplateIconTextAndBackgroundMixin = CreateFromMixins(UIWidgetBaseTemplateMixin);
 

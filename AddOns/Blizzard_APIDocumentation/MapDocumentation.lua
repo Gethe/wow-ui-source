@@ -36,15 +36,6 @@ local Map =
 			},
 		},
 		{
-			Name = "GetCurrentMapID",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "uiMapID", Type = "number", Nilable = false },
-			},
-		},
-		{
 			Name = "GetMapArtBackgroundAtlas",
 			Type = "Function",
 
@@ -99,6 +90,20 @@ local Map =
 			Returns =
 			{
 				{ Name = "layerInfo", Type = "table", InnerType = "UiMapLayerInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetMapBannersForMap",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "uiMapID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "mapBanners", Type = "table", InnerType = "MapBannerInfo", Nilable = false },
 			},
 		},
 		{
@@ -229,6 +234,37 @@ local Map =
 			},
 		},
 		{
+			Name = "GetMapLinksForMap",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "uiMapID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "mapLinks", Type = "table", InnerType = "MapLinkInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetMapPosFromWorldPos",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "continentID", Type = "number", Nilable = false },
+				{ Name = "worldPosition", Type = "table", Mixin = "Vector2DMixin", Nilable = false },
+				{ Name = "overrideUiMapID", Type = "number", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "uiMapID", Type = "number", Nilable = false },
+				{ Name = "mapPosition", Type = "table", Mixin = "Vector2DMixin", Nilable = false },
+			},
+		},
+		{
 			Name = "GetMapRectOnMap",
 			Type = "Function",
 
@@ -263,16 +299,23 @@ local Map =
 			},
 		},
 		{
-			Name = "RequestPreloadMap",
+			Name = "GetWorldPosFromMapPos",
 			Type = "Function",
 
 			Arguments =
 			{
 				{ Name = "uiMapID", Type = "number", Nilable = false },
+				{ Name = "mapPosition", Type = "table", Mixin = "Vector2DMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "continentID", Type = "number", Nilable = false },
+				{ Name = "worldPosition", Type = "table", Mixin = "Vector2DMixin", Nilable = false },
 			},
 		},
 		{
-			Name = "SetMap",
+			Name = "RequestPreloadMap",
 			Type = "Function",
 
 			Arguments =
@@ -284,6 +327,26 @@ local Map =
 
 	Events =
 	{
+		{
+			Name = "NewWmoChunk",
+			Type = "Event",
+			LiteralName = "NEW_WMO_CHUNK",
+		},
+		{
+			Name = "ZoneChanged",
+			Type = "Event",
+			LiteralName = "ZONE_CHANGED",
+		},
+		{
+			Name = "ZoneChangedIndoors",
+			Type = "Event",
+			LiteralName = "ZONE_CHANGED_INDOORS",
+		},
+		{
+			Name = "ZoneChangedNewArea",
+			Type = "Event",
+			LiteralName = "ZONE_CHANGED_NEW_AREA",
+		},
 	},
 
 	Tables =
@@ -348,6 +411,16 @@ local Map =
 			},
 		},
 		{
+			Name = "MapBannerInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "areaPoiID", Type = "number", Nilable = false },
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "atlasName", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "UiMapDetails",
 			Type = "Structure",
 			Fields =
@@ -366,6 +439,18 @@ local Map =
 				{ Name = "mapID", Type = "number", Nilable = false },
 				{ Name = "relativeHeightIndex", Type = "number", Nilable = false },
 				{ Name = "name", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "MapLinkInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "areaPoiID", Type = "number", Nilable = false },
+				{ Name = "position", Type = "table", Mixin = "Vector2DMixin", Nilable = false },
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "atlasName", Type = "string", Nilable = false },
+				{ Name = "linkedUiMapID", Type = "number", Nilable = false },
 			},
 		},
 	},

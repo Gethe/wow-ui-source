@@ -58,7 +58,7 @@
 							<Layer level="OVERLAY" textureSubLevel="6">
 								<Texture parentKey="Texture" atlas="Azerite-CenterBG-4Ranks" useAtlasSize="true" inherits="AzeriteUITexture">
 									<Anchors>
-										<Anchor point="CENTER" x="0" y="182" />
+										<Anchor point="CENTER" x="0" y="187" />
 									</Anchors>
 								</Texture>
 							</Layer>

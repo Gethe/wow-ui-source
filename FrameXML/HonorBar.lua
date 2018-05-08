@@ -42,14 +42,7 @@ function HonorBarMixin:UpdateOverlayFrameText()
 
 	local level = UnitHonorLevel("player");
 	local levelmax = GetMaxPlayerHonorLevel();
-
-	if ( CanPrestige() ) then
-		self:SetBarText(PVP_HONOR_PRESTIGE_AVAILABLE);
-	elseif ( level == levelmax ) then
-		self:SetBarText(MAX_HONOR_LEVEL);
-	else
-		self:SetBarText(HONOR_BAR:format(current, maxHonor));
-	end
+	self:SetBarText(HONOR_BAR:format(current, maxHonor));
 end
 
 function HonorBarMixin:OnLoad() 

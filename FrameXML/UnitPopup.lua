@@ -210,6 +210,9 @@ UnitPopupButtons = {
 	["COMMUNITIES_ROLE_MODERATOR"] = { text = COMMUNITY_MEMBER_ROLE_NAME_MODERATOR, checkable = 1 },
 	["COMMUNITIES_ROLE_LEADER"] = { text = COMMUNITY_MEMBER_ROLE_NAME_LEADER, checkable = 1 },
 	["COMMUNITIES_ROLE_OWNER"] = { text = COMMUNITY_MEMBER_ROLE_NAME_OWNER, checkable = 1 },
+	["COMMUNITIES_FAVORITE"] = { text = function(dropdownMenu)
+			return dropdownMenu.clubInfo.favoriteTimeStamp and COMMUNITIES_LIST_DROP_DOWN_UNFAVORITE or COMMUNITIES_LIST_DROP_DOWN_FAVORITE;
+		end },
 };
 
 -- First level menus
@@ -240,6 +243,7 @@ UnitPopupMenus = {
 	["WORLD_STATE_SCORE"] = { "REPORT_PLAYER", "PVP_REPORT_AFK", "CANCEL" },
 	["COMMUNITIES_WOW_MEMBER"] = { "INVITE", "SUGGEST_INVITE", "REQUEST_INVITE", "WHISPER", "IGNORE", "COMMUNITIES_LEAVE", "COMMUNITIES_KICK", "COMMUNITIES_MEMBER_NOTE", "COMMUNITIES_ROLE" },
 	["COMMUNITIES_MEMBER"] = { "COMMUNITIES_LEAVE", "COMMUNITIES_KICK", "COMMUNITIES_MEMBER_NOTE", "COMMUNITIES_ROLE" },
+	["COMMUNITIES_COMMUNITY"] = { "COMMUNITIES_FAVORITE", "COMMUNITIES_LEAVE" },
 
 	-- Second level menus
 	["ADD_FRIEND_MENU"] = { "BATTLETAG_FRIEND", "CHARACTER_FRIEND" },
@@ -1797,12 +1801,14 @@ function UnitPopup_OnClick (self)
 		elseif (clubMemberInfo.isSelf and clubMemberInfo.role == Enum.ClubRoleIdentifier.Owner) then
 			UIErrorsFrame:AddMessage(COMMUNITIES_LIST_TRANSFER_OWNERSHIP_FIRST, RED_FONT_COLOR:GetRGBA());
 		else
-			C_Club.LeaveClub(clubInfo.clubId);
+			StaticPopup_Show("CONFIRM_LEAVE_COMMUNITY", nil, nil, clubInfo);
 		end
 	elseif ( button == "COMMUNITIES_KICK" ) then
 		StaticPopup_Show("CONFIRM_REMOVE_COMMUNITY_MEMBER", nil, nil, { clubType = clubInfo.clubType, name = clubMemberInfo.name, clubId = clubInfo.clubId, memberId = clubMemberInfo.memberId });
 	elseif ( button == "COMMUNITIES_MEMBER_NOTE" ) then
 		StaticPopup_Show("SET_COMMUNITY_MEMBER_NOTE", clubMemberInfo.name, nil, { clubId = clubInfo.clubId, memberId = clubMemberInfo.memberId });
+	elseif ( button == "COMMUNITIES_FAVORITE" ) then
+		CommunitiesFrame.CommunitiesList:SetFavorite(clubInfo.clubId, clubInfo.favoriteTimeStamp == nil);
 	elseif ( commandToRoleId[button] ~= nil ) then
 		C_Club.AssignMemberRole(clubInfo.clubId, clubMemberInfo.memberId, commandToRoleId[button]);
 	end

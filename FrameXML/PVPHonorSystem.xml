@@ -197,12 +197,6 @@
 						<Anchors>
 							<Anchor point="TOP" relativeKey="$parent.Border" relativePoint="BOTTOM" x="0" y="16"/>
 						</Anchors>
-						<Scripts>
-							<OnClick function="PVPHonorXPBarPrestige_OnClick"/>
-							<OnShow>
-								self:SetWidth(self:GetTextWidth()+40);
-							</OnShow>
-						</Scripts>
 					</Button>
 				</Frames>
 				<Scripts>
@@ -434,7 +428,6 @@
 							<Anchor point="TOP" relativeKey="$parent.Border" relativePoint="BOTTOM" x="0" y="16"/>
 						</Anchors>
 						<Scripts>
-							<OnClick function="PVPHonorXPBarPrestige_OnClick"/>
 							<OnShow>
 								self:SetWidth(self:GetTextWidth()+40);
 							</OnShow>
@@ -442,11 +435,6 @@
 					</Button>
 				</Frames>
 				<Scripts>
-					<OnMouseUp>
-						if (self:GetParent().isSmall) then
-							PVPHonorXPBarPrestige_OnClick(self);
-						end
-					</OnMouseUp>
 					<OnEnter>
 						if (self.tooltip) then
 							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");

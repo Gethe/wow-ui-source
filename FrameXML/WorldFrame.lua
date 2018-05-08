@@ -12,18 +12,7 @@ function ToggleFramerate(benchmark)
 		FramerateLabel:Show();
 		FramerateText:Show();
 	end
-	ToggleMapFramerate();
 	WorldFrame.fpsTime = 0;
-end
-
-function ToggleMapFramerate()
-	if ( FramerateText:IsShown() and WORLDMAP_SETTINGS.size ~= WORLDMAP_WINDOWED_SIZE ) then
-		MapFramerateLabel:Show();
-		MapFramerateText:Show();	
-	else
-		MapFramerateLabel:Hide();
-		MapFramerateText:Hide();	
-	end
 end
 
 function WorldFrame_OnLoad(self)
@@ -39,7 +28,6 @@ function WorldFrame_OnUpdate(self, elapsed)
 			self.fpsTime = FRAMERATE_FREQUENCY;
 			local framerate = GetFramerate();
 			FramerateText:SetFormattedText("%.1f", framerate);
-			MapFramerateText:SetFormattedText("%.1f", framerate);
 		else
 			self.fpsTime = timeLeft;
 		end

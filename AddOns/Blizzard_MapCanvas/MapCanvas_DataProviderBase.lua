@@ -63,6 +63,10 @@ function MapCanvasDataProviderMixin:OnEvent(event, ...)
 	-- Override in your mixin to accept events register via RegisterEvent
 end
 
+function MapCanvasDataProviderMixin:OnGlobalAlphaChanged()
+	-- Optionally override in your mixin if your data provider obeys global alpha, called when the global alpha changes
+end
+
 function MapCanvasDataProviderMixin:GetMap()
 	return self.owningMap;
 end
@@ -103,7 +107,7 @@ function MapCanvasPinMixin:OnLoad()
 	-- Override in your mixin, called when this pin is created
 end
 
-function MapCanvasPinMixin:OnAcquired()
+function MapCanvasPinMixin:OnAcquired(...) -- the arguments here are anything that are passed into AcquirePin after the pinTemplate
 	-- Override in your mixin, called when this pin is being acquired by a data provider but before its added to the map
 end
 
@@ -253,12 +257,6 @@ function MapCanvasPinMixin:GetGlobalPosition()
 	return self.normalizedX, self.normalizedY;
 end
 
--- Adjusts the pin's scale so that at max zoom it is this scale
-function MapCanvasPinMixin:SetMaxZoomScale(scale)
-	local scaleForMaxZoom = self:GetMap():GetScaleForMaxZoom();
-	self:SetScale(scale / scaleForMaxZoom);
-end
-
 function MapCanvasPinMixin:PanTo(normalizedXOffset, normalizedYOffset)
 	local normalizedX, normalizedY = self:GetGlobalPosition();
 	self:GetMap():PanTo(normalizedX + (normalizedXOffset or 0), (normalizedY or 0));
@@ -282,6 +280,14 @@ function MapCanvasPinMixin:OnCanvasSizeChanged()
 	-- Optionally override in your mixin, called when the canvas size changes
 end
 
+function MapCanvasPinMixin:SetIgnoreGlobalPinScale(ignore)
+	self.ignoreGlobalPinScale = ignore;
+end
+
+function MapCanvasPinMixin:IsIgnoringGlobalPinScale()
+	return not not self.ignoreGlobalPinScale;
+end
+
 function MapCanvasPinMixin:SetScalingLimits(scaleFactor, startScale, endScale)
 	self.scaleFactor = scaleFactor;
 	self.startScale = startScale and math.max(startScale, .01) or nil;
@@ -299,7 +305,11 @@ function MapCanvasPinMixin:SetScaleStyle(scaleStyle)
 		self:SetScalingLimits(1.5, 0.825, 0.0);
 	elseif scaleStyle == AM_PIN_SCALE_STYLE_WITH_TERRAIN then
 		self:SetScalingLimits(nil, nil, nil);
-		self:SetScale(1.0);
+		if self:IsIgnoringGlobalPinScale() then
+			self:SetScale(1.0);
+		else
+			self:SetScale(self:GetGlobalPinScale());
+		end
 	end
 end
 
@@ -328,9 +338,18 @@ function MapCanvasPinMixin:ApplyCurrentPosition()
 end
 
 function MapCanvasPinMixin:ApplyCurrentScale()
+	local scale;
 	if self.startScale and self.startScale and self.endScale then
 		local parentScaleFactor = 1.0 / self:GetMap():GetCanvasScale();
-		self:SetScale(parentScaleFactor * Lerp(self.startScale, self.endScale, Saturate(self.scaleFactor * self:GetMap():GetCanvasZoomPercent())));
+		scale = parentScaleFactor * Lerp(self.startScale, self.endScale, Saturate(self.scaleFactor * self:GetMap():GetCanvasZoomPercent()));
+	elseif not self:IsIgnoringGlobalPinScale() then
+		scale = 1;
+	end
+	if scale then
+		if not self:IsIgnoringGlobalPinScale() then
+			scale = scale * self:GetMap():GetGlobalPinScale();
+		end
+		self:SetScale(scale);
 		self:ApplyCurrentPosition();
 	end
 end

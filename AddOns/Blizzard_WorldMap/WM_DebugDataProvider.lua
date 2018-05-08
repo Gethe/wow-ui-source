@@ -99,8 +99,6 @@ function WorldMap_DebugObjectPinMixin:GetDebugObjectIndex()
 end
 
 function WorldMap_DebugObjectPinMixin:OnMouseEnter(motion)
-	WorldMap_HijackTooltip(self:GetMap());
-
 	local tooltipText = {};
 	for pin in self:GetMap():EnumeratePinsByTemplate("WorldMap_DebugObjectPinTemplate") do
 		if pin:IsMouseOver() then
@@ -117,8 +115,6 @@ end
 
 function WorldMap_DebugObjectPinMixin:OnMouseLeave(motion)
 	WorldMapTooltip:Hide();
-
-	WorldMap_RestoreTooltip();
 end
 
 function WorldMap_DebugObjectPinMixin:OnClick()

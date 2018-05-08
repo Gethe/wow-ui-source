@@ -35,28 +35,28 @@ local BASE_ROTATION_OFFSET = math.pi / 2;
 
 local LAYOUT_TIER_INFO = {
 	{ 
-		radius = 0, 
+		radius = -2, 
 		startRadians = 
 		{
 			default = 0.0,
 		},
 	},
 	{ 
-		radius = 103, 
+		radius = 105, 
 		startRadians = 
 		{
 			default = math.pi / 2,
 		},
 	},
 	{ 
-		radius = 176, 
+		radius = 178, 
 		startRadians = 
 		{
 			default = math.pi / 2.5,
 		},
 	},
 	{ 
-		radius = 250,
+		radius = 251,
 		startRadians = 
 		{
 			default = math.pi / 4,
@@ -76,13 +76,6 @@ local function CalculatePowerOffset(powerIndex, numPowers, tierIndex)
 end
 
 function AzeriteEmpoweredItemTierMixin:CreatePowers(empoweredItemLocation, powerPool)
-	if self.tierInfo.tierIndex == 3 then -- fix data
-		--table.insert(self.tierInfo.azeritePowerIDs, 30);
-	end
-	if self.tierInfo.tierIndex == 4 then -- fake druid
-		--table.insert(self.tierInfo.azeritePowerIDs, 30);
-	end
-
 	local numPowers = #self.tierInfo.azeritePowerIDs;
 	for powerIndex, azeritePowerID in ipairs(self.tierInfo.azeritePowerIDs) do
 		local localNodePosition, angleRads = CalculatePowerOffset(powerIndex, numPowers, self.tierInfo.tierIndex);

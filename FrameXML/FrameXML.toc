@@ -249,6 +249,7 @@ ZoneAbility.xml
 ArtifactToasts.xml
 AzeriteItemToasts.xml
 AzeriteIslandsToast.xml
+IslandsQueueFrame.xml
 ..\SharedXML\ModelPreviewFrame.xml
 SplashFrame.xml
 QuestChoiceFrameMixin.lua

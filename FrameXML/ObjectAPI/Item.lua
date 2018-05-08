@@ -204,7 +204,7 @@ function ItemEventListener:FireCallbacks(itemID)
 		self:ClearCallbacks(itemID);
 		for i, callback in ipairs(callbacks) do
 			if callback ~= CANCELED_SENTINEL then
-				securecall(xpcall, callback, CallErrorHandler);
+				xpcall(callback, CallErrorHandler);
 			end
 		end
 

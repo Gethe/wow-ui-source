@@ -1001,9 +1001,7 @@
 		ToggleWorldMap();
 	</Binding>
 	<Binding name="TOGGLEWORLDMAPSIZE" category="BINDING_HEADER_INTERFACE">
-		if ( WorldMapFrame:IsShown() ) then
-			WorldMapFrame_ToggleWindowSize();
-		end
+		-- MAPREFACTORTODO: Reimplement bind
 	</Binding>
 	<Binding name="TOGGLEMINIMAP" category="BINDING_HEADER_INTERFACE">
 		ToggleMinimap();
@@ -1012,7 +1010,7 @@
 		ToggleMiniMapRotation();
 	</Binding>
 	<Binding name="TOGGLEBATTLEFIELDMINIMAP" category="BINDING_HEADER_INTERFACE">
-		ToggleBattlefieldMinimap();
+		ToggleBattlefieldMap();
 	</Binding>
 	<Binding name="TOGGLEWORLDSTATESCORES" category="BINDING_HEADER_INTERFACE">
 		ToggleWorldStateScoreFrame();

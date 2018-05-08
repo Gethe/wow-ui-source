@@ -7,9 +7,7 @@ end
 
 function DeathMapDataProviderMixin:RefreshAllData(fromOnShow)
 	self:RemoveAllData();
-	if (WorldMap_DoesCurrentMapHideMapIcons()) then
-		return;
-	end
+
 	local mapID = self:GetMap():GetMapID();
 	local corpsePosition = C_DeathInfo.GetCorpseMapPosition(mapID);
 	if corpsePosition then
@@ -32,8 +30,6 @@ function CorpsePinMixin:OnAcquired()
 end
 
 function CorpsePinMixin:OnMouseEnter()
-	WorldMap_HijackTooltip(self:GetMap());
-
 	local x, y = self:GetCenter();
 	local parentX, parentY = self:GetParent():GetCenter();
 	if ( x > parentX ) then
@@ -47,15 +43,11 @@ end
 
 function CorpsePinMixin:OnMouseLeave()
 	WorldMapTooltip:Hide();
-
-	WorldMap_RestoreTooltip();
 end
 
 DeathReleasePinMixin = CreateFromMixins(CorpsePinMixin);
 
 function DeathReleasePinMixin:OnMouseEnter()
-	WorldMap_HijackTooltip(self:GetMap());
-
 	local x, y = self:GetCenter();
 	local parentX, parentY = self:GetParent():GetCenter();
 	if ( x > parentX ) then

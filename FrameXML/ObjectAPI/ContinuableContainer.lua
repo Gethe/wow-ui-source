@@ -73,7 +73,7 @@ function ContinuableContainer:CheckIfSatisifed()
 		self.continuables = nil;
 		self.evictableObjects = nil;
 
-		securecall(xpcall, callbackFunction, CallErrorHandler);
+		xpcall(callbackFunction, CallErrorHandler);
 	end
 end
 

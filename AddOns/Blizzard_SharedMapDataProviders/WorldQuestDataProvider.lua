@@ -370,15 +370,11 @@ function WorldQuestPinMixin:RefreshVisuals()
 end
 
 function WorldQuestPinMixin:OnMouseEnter()
-	WorldMap_HijackTooltip(self:GetMap());
-
 	TaskPOI_OnEnter(self);
 end
 
 function WorldQuestPinMixin:OnMouseLeave()
 	TaskPOI_OnLeave(self);
-
-	WorldMap_RestoreTooltip();
 end
 
 function WorldQuestPinMixin:OnClick(button)

@@ -12,10 +12,12 @@ CommunitiesChatFrame.xml
 CommunitiesInvitationFrame.xml
 CommunitiesGuildFinderFrame.xml
 CommunitiesStreams.xml
+CommunitiesAvatarPickerDialog.xml
 CommunitiesAddDialogInsecure.xml
 CommunitiesAddDialog.xml
 CommunitiesAddDialogOutbound.lua
 CommunitiesTabs.xml
+CommunitiesSettings.xml
 GuildRewards.xml
 GuildPerks.xml
 GuildInfo.xml

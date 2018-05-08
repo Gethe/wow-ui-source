@@ -1721,7 +1721,7 @@
 							<OnLoad function="LFGListEntryCreationActivityFinder_OnLoad"/>
 						</Scripts>
 					</Frame>
-					<EditBox parentKey="Name" inherits="LFGListEditBoxTemplate" letters="31">
+					<EditBox parentKey="Name" secureReferenceKey="LFGListCreationName" securityDisableSetText="true" securityDisablePaste="true" inherits="LFGListEditBoxTemplate" letters="31">
 						<Size x="288" y="22"/>
 						<KeyValues>
 							<KeyValue key="tabCategory" value="ENTRY_CREATION" type="string"/>
@@ -1761,7 +1761,7 @@
 							<Anchor point="TOPRIGHT" relativeKey="$parent.CategoryDropDown" relativePoint="BOTTOMRIGHT" x="0" y="3"/>
 						</Anchors>
 					</Frame>
-					<ScrollFrame parentKey="Description" name="LFGListEntryCreationDescription" inherits="InputScrollFrameTemplate">
+					<ScrollFrame parentKey="Description" name="LFGListCreationDescription" inherits="InputScrollFrameTemplate">
 						<Size x="283" y="46"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.Inset" relativePoint="TOPLEFT" x="26" y="-193"/>
@@ -1773,6 +1773,9 @@
 						</KeyValues>
 						<Scripts>
 							<OnLoad>
+								StoreSecureReference("LFGListCreationDescription", self.EditBox);
+								self.EditBox:SetSecurityDisableSetText();
+								self.EditBox:SetSecurityDisablePaste();
 								LFGListEditBox_AddToTabCategory(self.EditBox, "ENTRY_CREATION");
 								self.EditBox:SetScript("OnTabPressed", LFGListEditBox_OnTabPressed);
 								InputScrollFrame_OnLoad(self);
@@ -1929,6 +1932,14 @@
 					<KeyValue key="instructions" value="LFG_LIST_NOTE_TO_LEADER" type="global"/>
 					<KeyValue key="hideCharCount" value="true" type="boolean"/>
 				</KeyValues>
+				<Scripts>
+					<OnLoad>
+						StoreSecureReference("LFGListApplicationDescription", self.EditBox);
+						self.EditBox:SetSecurityDisableSetText();
+						self.EditBox:SetSecurityDisablePaste();
+						InputScrollFrame_OnLoad(self);
+					</OnLoad>
+				</Scripts>
 			</ScrollFrame>
 			<Button parentKey="SignUpButton" inherits="UIPanelButtonTemplate" text="SIGN_UP" motionScriptsWhileDisabled="true">
 				<Size x="100" y="22"/>
@@ -1936,12 +1947,7 @@
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOM" x="-5" y="15"/>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						local dialog = self:GetParent();
-						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-						C_LFGList.ApplyToGroup(dialog.resultID, dialog.Description.EditBox:GetText(), dialog.TankButton:IsShown() and dialog.TankButton.CheckButton:GetChecked(), dialog.HealerButton:IsShown() and dialog.HealerButton.CheckButton:GetChecked(), dialog.DamagerButton:IsShown() and dialog.DamagerButton.CheckButton:GetChecked());
-						StaticPopupSpecial_Hide(dialog);
-					</OnClick>
+					<OnClick function="LFGListApplicationDialogSignUpButton_OnClick"/>
 					<OnEnter>
 						if ( self.errorText ) then
 							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");

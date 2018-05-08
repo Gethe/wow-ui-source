@@ -58,6 +58,7 @@ function BaseMapPoiPinMixin:OnAcquired(poiInfo)
 
 	self.name = poiInfo.name;
 	self.description = poiInfo.description;
+	self.widgetSetID = poiInfo.widgetSetID;
 
 	self:SetPosition(poiInfo.position:GetXY());
 end

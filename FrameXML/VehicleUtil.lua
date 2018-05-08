@@ -159,3 +159,10 @@ end
 function VehicleUtil.IsValidVehicleType(vehicleType)
 	return VehicleUtil.GetVehicleInfo(vehicleType) ~= nil;
 end
+
+function VehicleUtil.GetVehicleTexture(vehicleType, isOccupied)
+	if not VehicleUtil.IsValidVehicleType(vehicleType) then
+		return nil;
+	end
+	return VehicleUtil.GetVehicleInfo(vehicleType):GetTexture(isOccupied);
+end

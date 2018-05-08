@@ -1,9 +1,7 @@
 WorldMapActionButtonMixin = {};
 
 function WorldMapActionButtonMixin:OnLoad()
-	if self:GetParent().RegisterCallback then
-		self:GetParent():RegisterCallback("WorldQuestsUpdate", function(event, ...) self:OnWorldQuestsUpdate(...); end);
-	end
+	self:GetParent():RegisterCallback("WorldQuestsUpdate", function(event, ...) self:OnWorldQuestsUpdate(...); end);
 end
 
 function WorldMapActionButtonMixin:OnEvent(event, ...)
@@ -37,17 +35,13 @@ function WorldMapActionButtonMixin:SetHasWorldQuests(hasWorldQuests)
 	end
 end
 
-function WorldMapActionButtonMixin:GetDisplayLocation(useAlternateLocation)
-	if self:GetParent().GetMapID then
-		local mapID = self:GetParent():GetMapID();
-		local bounties, displayLocation, lockedQuestID = GetQuestBountyInfoForMapID(mapID);
-		if displayLocation and displayLocation == LE_MAP_OVERLAY_DISPLAY_LOCATION_BOTTOM_RIGHT then
-			return LE_MAP_OVERLAY_DISPLAY_LOCATION_BOTTOM_LEFT;
-		else
-			return LE_MAP_OVERLAY_DISPLAY_LOCATION_BOTTOM_RIGHT;
-		end
+function WorldMapActionButtonMixin:GetDisplayLocation()
+	local mapID = self:GetParent():GetMapID();
+	local bounties, displayLocation, lockedQuestID = GetQuestBountyInfoForMapID(mapID);
+	if displayLocation and displayLocation == LE_MAP_OVERLAY_DISPLAY_LOCATION_BOTTOM_RIGHT then
+		return LE_MAP_OVERLAY_DISPLAY_LOCATION_BOTTOM_LEFT;
 	else
-		return useAlternateLocation and LE_MAP_OVERLAY_DISPLAY_LOCATION_BOTTOM_LEFT or LE_MAP_OVERLAY_DISPLAY_LOCATION_BOTTOM_RIGHT;
+		return LE_MAP_OVERLAY_DISPLAY_LOCATION_BOTTOM_RIGHT;
 	end
 end
 
@@ -106,10 +100,7 @@ function WorldMapActionButtonMixin:Refresh()
 
 	self:UpdateCooldown();
 
-	-- TEMP
-	if self:GetParent().SetOverlayFrameLocation then
-		self:GetParent():SetOverlayFrameLocation(self, self:GetDisplayLocation());
-	end
+	self:GetParent():SetOverlayFrameLocation(self, self:GetDisplayLocation());
 
 	self:Show();
 end
@@ -126,13 +117,10 @@ function WorldMapActionButtonMixin:OnClick()
 end
 
 function WorldMapActionButtonMixin:OnEnter()
-	WorldMap_HijackTooltip(self:GetParent());
-
 	WorldMapTooltip:SetOwner(self, "ANCHOR_RIGHT", 0, -60);
 	WorldMapTooltip:SetSpellByID(self.spellID);
 end
 
 function WorldMapActionButtonMixin:OnLeave()
 	WorldMapTooltip:Hide();
-	WorldMap_RestoreTooltip();
 end

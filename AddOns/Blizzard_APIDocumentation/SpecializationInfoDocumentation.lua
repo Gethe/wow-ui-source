@@ -83,6 +83,20 @@ local SpecializationInfo =
 			},
 		},
 		{
+			Name = "GetSpellsDisplay",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "specializationID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "spellID", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "IsPvpTalentLocked",
 			Type = "Function",
 

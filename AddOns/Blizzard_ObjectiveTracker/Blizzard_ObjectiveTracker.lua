@@ -723,9 +723,6 @@ function ObjectiveTracker_OnEvent(self, event, ...)
 	elseif ( event == "ZONE_CHANGED" ) then
 		local lastMapID = C_Map.GetBestMapForUnit("player");
 		if ( lastMapID ~= self.lastMapID ) then
-			if ( not WorldMapFrame:IsShown() and GetCVarBool("questPOI") ) then
-				WorldMapFrame:RefreshQuestLog();		-- update the zone to get the right POI numbers for the tracker
-			end
 			SortQuestWatches();
 			self.lastMapID = lastMapID;
 		end
@@ -740,9 +737,6 @@ function ObjectiveTracker_OnEvent(self, event, ...)
 			ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_SCENARIO);
 		end
 	elseif ( event == "ZONE_CHANGED_NEW_AREA" ) then
-		if ( not WorldMapFrame:IsShown() and GetCVarBool("questPOI") ) then
-			WorldMapFrame:RefreshQuestLog();			-- update the zone to get the right POI numbers for the tracker
-		end
 		SortQuestWatches();
 	elseif ( event == "QUEST_TURNED_IN" ) then
 		local questID, xp, money = ...;
@@ -1158,18 +1152,3 @@ function ObjectiveTracker_ReorderModules()
 	end
 end
 
-function ObjectiveTracker_Util_ShouldAddDropdownEntryForQuestGroupSearch(questID)
-	return QuestUtils_CanUseAutoGroupFinder(questID, true) and LFGListUtil_CanSearchForGroup();
-end
-
-function ObjectiveTracker_Util_AddDropdownEntryForQuestGroupSearch(questID)
-	if ObjectiveTracker_Util_ShouldAddDropdownEntryForQuestGroupSearch(questID) then
-		local info = UIDropDownMenu_CreateInfo();
-		info.notCheckable = true;
-		info.text = OBJECTIVES_FIND_GROUP;
-		info.func = function()
-			LFGListUtil_FindQuestGroup(questID);
-		end
-		UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
-	end
-end

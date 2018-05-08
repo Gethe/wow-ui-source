@@ -83,7 +83,6 @@ end
 function InspectPVPFrame_Update()
 	local parent = InspectPVPFrame:GetParent();
 	local factionGroup = UnitFactionGroup(INSPECTED_UNIT);
-	local prestigeLevel = UnitPrestige(INSPECTED_UNIT);
 	local _, _, _, _, lifetimeHKs, _ = GetInspectHonorData();
 	local level = UnitLevel(INSPECTED_UNIT);
 
@@ -97,16 +96,7 @@ function InspectPVPFrame_Update()
 			arenaFrames[i]:Hide();
 		end
 	else
-		if (prestigeLevel > 0) then
-			InspectPVPFrame.PortraitBackground:SetAtlas("honorsystem-prestige-laurel-bg-"..factionGroup, false);
-			InspectPVPFrame.PortraitBackground:Show();
-			parent.portrait:SetSize(57,57);
-			parent.portrait:ClearAllPoints();
-			parent.portrait:SetPoint("CENTER", InspectPVPFrame.PortraitBackground, "CENTER", 0, 0);
-			parent.portrait:SetTexture(GetPrestigeInfo(UnitPrestige(INSPECTED_UNIT)));
-		end
-		InspectPVPFrame.SmallWreath:SetShown(prestigeLevel > 0);
-
+		InspectPVPFrame.SmallWreath:SetShown(false);
 		InspectPVPFrame.HonorLevel:SetFormattedText(HONOR_LEVEL_LABEL, UnitHonorLevel(INSPECTED_UNIT));
 		InspectPVPFrame.HonorLevel:Show();
 		local rating, played, won = GetInspectRatedBGData();
@@ -124,27 +114,6 @@ function InspectPVPFrame_Update()
 		for i, slot in ipairs(InspectPVPFrame.Slots) do
 			slot:Update();
 		end
-	end
-end
-
-function InspectPVPFramePortraitMouseOverFrame_OnEnter(self)
-	local prestige = UnitPrestige(INSPECTED_UNIT);
-	if (prestige > 0) then
-		GameTooltip:ClearAllPoints();
-		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		GameTooltip:SetText(select(2, GetPrestigeInfo(prestige)), 1, 1, 1, nil, true);
-		GameTooltip:AddLine(" ");
-		for i = 1, GetMaxPrestigeLevel() do
-			local color;
-			if (prestige == i) then
-				color = GREEN_FONT_COLOR;
-			else
-				color = NORMAL_FONT_COLOR;
-			end
-            local texture, name = GetPrestigeInfo(i);
-			GameTooltip:AddLine(PRESTIGE_RANK_TOOLTIP_LINE:format(texture, name), color.r, color.g, color.b);
-		end
-		GameTooltip:Show();
 	end
 end
 

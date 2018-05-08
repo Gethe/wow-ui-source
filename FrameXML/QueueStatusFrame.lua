@@ -907,7 +907,7 @@ function QueueStatusDropDown_AddBattlefieldButtons(info, idx)
 		
 		if ( not inArena ) then
 			info.text = TOGGLE_BATTLEFIELD_MAP;
-			info.func = wrapFunc(ToggleBattlefieldMinimap);
+			info.func = wrapFunc(ToggleBattlefieldMap);
 			info.arg1 = nil;
 			info.arg2 = nil;
 			UIDropDownMenu_AddButton(info);

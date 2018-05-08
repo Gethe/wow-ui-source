@@ -107,19 +107,11 @@ function PlayerFrame_UpdatePvPStatus()
 		if ( not PlayerPVPIcon:IsShown() ) then
 			PlaySound(SOUNDKIT.IG_PVP_UPDATE);
 		end
-		local prestige = UnitPrestige("player");
-		if (prestige > 0) then
-			PlayerPrestigePortrait:SetAtlas("honorsystem-portrait-neutral", false);
-			PlayerPrestigeBadge:SetTexture(GetPrestigeInfo(prestige));
-			PlayerPrestigePortrait:Show();
-			PlayerPrestigeBadge:Show();
-			PlayerPVPIcon:Hide();
-		else
-			PlayerPrestigePortrait:Hide();
-			PlayerPrestigeBadge:Hide();
-			PlayerPVPIcon:SetTexture("Interface\\TargetingFrame\\UI-PVP-FFA");
-			PlayerPVPIcon:Show();
-		end
+		PlayerPrestigePortrait:Hide();
+		PlayerPrestigeBadge:Hide();
+		PlayerPVPIcon:SetTexture("Interface\\TargetingFrame\\UI-PVP-FFA");
+		PlayerPVPIcon:Show();
+		
 
 		-- Setup newbie tooltip
 		PlayerPVPIconHitArea.tooltipTitle = PVPFFA;
@@ -133,34 +125,17 @@ function PlayerFrame_UpdatePvPStatus()
 			PlaySound(SOUNDKIT.IG_PVP_UPDATE);
 		end
 
-		local prestige = UnitPrestige("player");
-		if (prestige > 0) then
-			-- ugly special case handling for mercenary mode
-			if ( UnitIsMercenary("player") ) then
-				if ( factionGroup == "Horde" ) then
-					factionGroup = "Alliance";
-				elseif ( factionGroup == "Alliance" ) then
-					factionGroup = "Horde";
-				end
-			end
+		
+		PlayerPrestigePortrait:Hide();
+		PlayerPrestigeBadge:Hide();
+		PlayerPVPIcon:SetTexture("Interface\\TargetingFrame\\UI-PVP-"..factionGroup);
 
-			PlayerPrestigePortrait:SetAtlas("honorsystem-portrait-"..factionGroup, false);
-			PlayerPrestigeBadge:SetTexture(GetPrestigeInfo(prestige));
-			PlayerPrestigePortrait:Show();
-			PlayerPrestigeBadge:Show();
-			PlayerPVPIcon:Hide();
-		else
-			PlayerPrestigePortrait:Hide();
-			PlayerPrestigeBadge:Hide();
-			PlayerPVPIcon:SetTexture("Interface\\TargetingFrame\\UI-PVP-"..factionGroup);
-
-			-- ugly special case handling for mercenary mode
-			if ( UnitIsMercenary("player") ) then
-				if ( factionGroup == "Horde" ) then
-					PlayerPVPIcon:SetTexture("Interface\\TargetingFrame\\UI-PVP-Alliance");
-				elseif ( factionGroup == "Alliance" ) then
-					PlayerPVPIcon:SetTexture("Interface\\TargetingFrame\\UI-PVP-Horde");
-				end
+		-- ugly special case handling for mercenary mode
+		if ( UnitIsMercenary("player") ) then
+			if ( factionGroup == "Horde" ) then
+				PlayerPVPIcon:SetTexture("Interface\\TargetingFrame\\UI-PVP-Alliance");
+			elseif ( factionGroup == "Alliance" ) then
+				PlayerPVPIcon:SetTexture("Interface\\TargetingFrame\\UI-PVP-Horde");
 			end
 		end
 

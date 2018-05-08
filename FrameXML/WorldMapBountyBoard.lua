@@ -338,8 +338,6 @@ function WorldMapBountyBoardMixin:ShowBountyTooltip(bountyIndex)
 end
 
 function WorldMapBountyBoardMixin:SetTooltipOwner()
-	WorldMap_HijackTooltip(self:GetParent());
-
 	local x = self:GetRight();
 	if x >= GetScreenWidth() / 2 then
 		WorldMapTooltip:SetOwner(self, "ANCHOR_LEFT", -100, -50);
@@ -394,7 +392,6 @@ end
 
 function WorldMapBountyBoardMixin:OnLeave()
 	WorldMapTooltip:Hide();
-	WorldMap_RestoreTooltip();
 end
 
 function WorldMapBountyBoardMixin:OnTabEnter(tab)

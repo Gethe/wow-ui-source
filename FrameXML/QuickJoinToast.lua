@@ -588,7 +588,7 @@ function QuickJoinToast_GetPriorityFromQueue(queue)
 			return math.max(1, QUICK_JOIN_CONFIG.THROTTLE_RF_PRIORITY_ABOVE - ilvldiff);
 		elseif ( subtypeID == LFG_SUBTYPEID_WORLDPVP ) then
 			--If the player is below honor level 10, assume they aren't interested in PvP
-			if ( UnitHonorLevel("player") < QUICK_JOIN_CONFIG.THROTTLE_PVP_HONOR_THRESHOLD and UnitPrestige("player") <= 0 ) then
+			if ( UnitHonorLevel("player") < QUICK_JOIN_CONFIG.THROTTLE_PVP_HONOR_THRESHOLD) then
 				return QUICK_JOIN_CONFIG.THROTTLE_PVP_PRIORITY_LOW;
 			else
 				return QUICK_JOIN_CONFIG.THROTTLE_PVP_PRIORITY_NORMAL;
@@ -599,7 +599,7 @@ function QuickJoinToast_GetPriorityFromQueue(queue)
 		end
 	elseif ( queueData.queueType == "pvp" ) then
 		--If the player is below honor level 10, assume they aren't interested in PvP
-		if ( UnitHonorLevel("player") < QUICK_JOIN_CONFIG.THROTTLE_PVP_HONOR_THRESHOLD and UnitPrestige("player") <= 0 ) then
+		if ( UnitHonorLevel("player") < QUICK_JOIN_CONFIG.THROTTLE_PVP_HONOR_THRESHOLD) then
 			return QUICK_JOIN_CONFIG.THROTTLE_PVP_PRIORITY_LOW;
 		else
 			return QUICK_JOIN_CONFIG.THROTTLE_PVP_PRIORITY_NORMAL;

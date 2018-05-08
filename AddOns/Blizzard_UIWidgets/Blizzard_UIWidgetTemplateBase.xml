@@ -15,6 +15,7 @@
 		<Layers>
 			<Layer level="OVERLAY">
 				<Texture parentKey="Icon">
+					<Size x="26" y="26"/>
 					<Anchors>
 						<Anchor point="LEFT" />
 					</Anchors>

@@ -161,6 +161,8 @@ function ContributeButtonMixin:OnEvent(event, ...)
 		if currencyID == self.requiredCurrencyID then
 			self:Update();
 		end
+	elseif event == "BAG_UPDATE_DELAYED" then
+		self:Update();
 	end
 end
 
@@ -181,17 +183,34 @@ function ContributeButtonMixin:OnEnter()
 			ContributionTooltip:SetText(CONTRIBUTION_REWARD_TOOLTIP_TITLE, HIGHLIGHT_FONT_COLOR:GetRGBA());
 			GameTooltip_AddQuestRewardsToTooltip(ContributionTooltip, self.questID, TOOLTIP_QUEST_REWARDS_STYLE_CONTRIBUTION);
 
-			local currencyID, requiredCurrency = C_ContributionCollector.GetRequiredContributionAmount(self.contributionID);
-			local currencyName, ownedCurrency = GetCurrencyInfo(currencyID);
-			local currencyLineColor = (ownedCurrency >= requiredCurrency) and NORMAL_FONT_COLOR or DISABLED_FONT_COLOR;
-			local currencyLine = CONTRIBUTION_TOOLTIP_PLAYER_CURRENCY_AMOUNT:format(BreakUpLargeNumbers(ownedCurrency), BreakUpLargeNumbers(requiredCurrency), currencyName);
-
-			ContributionTooltip.Currency:Show();
-			ContributionTooltip.Currency:SetVertexColor(currencyLineColor:GetRGBA());
-			ContributionTooltip.Currency:SetText(currencyLine);
+			local rcName, rcAvailable, rcFormatString;
+			local currencyID, currencyAmount = C_ContributionCollector.GetRequiredContributionCurrency(self.contributionID);
+			local itemID, itemCount = C_ContributionCollector.GetRequiredContributionItem(self.contributionID);
+			if currencyID then
+				rcName, rcAvailable = GetCurrencyInfo(currencyID);
+				rcAmount = currencyAmount;
+				rcFormatString = CONTRIBUTION_TOOLTIP_PLAYER_CURRENCY_AMOUNT;
+			elseif itemID then
+				rcName = GetItemInfo(itemID);
+				rcAmount = itemCount;
+				local INCLUDE_BANK = true;
+				local IGNORE_USABLE = true;
+				local INCLUDE_REAGENT_BANK = true;
+				rcAvailable = GetItemCount(itemID, INCLUDE_BANK, IGNORE_USABLE, INCLUDE_REAGENT_BANK);
+				rcFormatString = CONTRIBUTION_TOOLTIP_PLAYER_ITEM_AMOUNT;
+			end
+			if rcName then
+				local lineColor = (rcAvailable >= rcAmount) and NORMAL_FONT_COLOR or DISABLED_FONT_COLOR;
+				local text = rcFormatString:format(BreakUpLargeNumbers(rcAvailable), BreakUpLargeNumbers(rcAmount), rcName);
+				ContributionTooltip.RequiredContribution:Show();
+				ContributionTooltip.RequiredContribution:SetVertexColor(lineColor:GetRGBA());
+				ContributionTooltip.RequiredContribution:SetText(text);
+			else
+				ContributionTooltip.RequiredContribution:Hide();
+			end
 		elseif self.contributionResult == Enum.ContributionResult.IncorrectState then
 			ContributionTooltip:SetText(CONTRIBUTION_BUTTON_ONLY_WHEN_UNDER_CONSTRUCTION_TOOLTIP, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, 1, true);
-			ContributionTooltip.Currency:Hide();
+			ContributionTooltip.RequiredContribution:Hide();
 		end
 
 		ContributionTooltip:Show();
@@ -199,20 +218,20 @@ function ContributeButtonMixin:OnEnter()
 end
 
 function ContributionTooltip_CalculatePadding(tooltip)
-	local itemWidth, itemHeight, currencyWidth, currencyHeight = 0, 0, 0, 0;
+	local itemWidth, itemHeight, requiredContributionWidth, requiredContributionHeight = 0, 0, 0, 0;
 
 	if tooltip.ItemTooltip:IsShown() then
 		itemWidth, itemHeight = tooltip.ItemTooltip:GetSize();
 		itemWidth = itemWidth + 9; -- extra padding for this line
 	end
 
-	if tooltip.Currency:IsShown() then
-		currencyWidth, currencyHeight = tooltip.Currency:GetSize();
-		currencyWidth = currencyWidth + 20; -- extra width padding for this line
+	if tooltip.RequiredContribution:IsShown() then
+		requiredContributionWidth, requiredContributionHeight = tooltip.RequiredContribution:GetSize();
+		requiredContributionWidth = requiredContributionWidth + 20; -- extra width padding for this line
 	end
 
-	local extraWidth = math.max(itemWidth, currencyWidth);
-	local extraHeight = itemHeight + currencyHeight;
+	local extraWidth = math.max(itemWidth, requiredContributionWidth);
+	local extraHeight = itemHeight + requiredContributionHeight;
 
 	local oldPaddingWidth, oldPaddingHeight = tooltip:GetPadding();
 	local actualTooltipWidth = tooltip:GetWidth() - oldPaddingWidth;
@@ -230,7 +249,27 @@ end
 
 function ContributeButtonMixin:SetContributionID(contributionID)
 	self.contributionID = contributionID;
-	self.requiredCurrencyID = C_ContributionCollector.GetRequiredContributionAmount(contributionID);
+	-- try currency first
+	local currencyID, currencyAmount = C_ContributionCollector.GetRequiredContributionCurrency(contributionID);
+	if currencyID then
+		self.requiredCurrencyID = currencyID;
+		self:RegisterEvent("CURRENCY_DISPLAY_UPDATE");
+		self:UnregisterEvent("BAG_UPDATE_DELAYED");
+		return;
+	end
+	-- then item
+	local itemID, itemCount = C_ContributionCollector.GetRequiredContributionItem(contributionID);
+	if itemID then
+		self:RegisterEvent("BAG_UPDATE_DELAYED");
+		self.requiredCurrencyID = nil;
+		self:UnregisterEvent("CURRENCY_DISPLAY_UPDATE");
+		return;
+	end
+	
+	-- failed to find anything
+	self.requiredCurrencyID = nil;
+	self:UnregisterEvent("CURRENCY_DISPLAY_UPDATE");
+	self:UnregisterEvent("BAG_UPDATE_DELAYED");
 end
 
 function ContributeButtonMixin:Update()
@@ -243,9 +282,16 @@ function ContributeButtonMixin:Update()
 	self.questID = C_ContributionCollector.GetRewardQuestID(self.contributionID);
 
 	if canContribute or (result == Enum.ContributionResult.FailedConditionCheck) then
-		local currencyID, currencyAmount = C_ContributionCollector.GetRequiredContributionAmount(self.contributionID);
-		local currencyColorCode = canContribute and HIGHLIGHT_FONT_COLOR_CODE or DISABLED_FONT_COLOR_CODE;
-		self:SetCurrencyFromID(currencyID, currencyAmount, CONTIBUTION_REQUIRED_CURRENCY, currencyColorCode);
+		local colorCode = canContribute and HIGHLIGHT_FONT_COLOR_CODE or DISABLED_FONT_COLOR_CODE;	
+		local currencyID, currencyAmount = C_ContributionCollector.GetRequiredContributionCurrency(self.contributionID);
+		local itemID, itemCount = C_ContributionCollector.GetRequiredContributionItem(self.contributionID);
+		if currencyID then
+			self:SetCurrencyFromID(currencyID, currencyAmount, CONTIBUTION_REQUIRED_CURRENCY, colorCode);
+		elseif itemID then
+			local markup = CreateTextureMarkup(GetItemIcon(itemID), 64, 64, 16, 16, 0, 1, 0, 1);
+			local itemString = ("%s%s %s|r"):format(colorCode, BreakUpLargeNumbers(itemCount), markup);
+			self:SetText(CONTIBUTION_REQUIRED_ITEM:format(itemString));
+		end
 	else
 		self:SetText(CONTRIBUTION_DISABLED);
 	end

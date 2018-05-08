@@ -1,5 +1,10 @@
 FlightMap_FlightPathDataProviderMixin = CreateFromMixins(MapCanvasDataProviderMixin);
 
+local function IsVindicaarTextureKit(textureKitPrefix)
+	-- TODO: remove
+	return textureKitPrefix == "FlightMaster_VindicaarArgus" or textureKitPrefix == "FlightMaster_VindicaarStygianWake" or textureKitPrefix == "FlightMaster_VindicaarMacAree";
+end
+
 function FlightMap_FlightPathDataProviderMixin:RemoveAllData()
 	self:GetMap():RemoveAllPinsByTemplate("FlightMap_FlightPointPinTemplate");
 	if self.highlightLinePool then
@@ -200,7 +205,7 @@ function FlightMap_FlightPointPinMixin:OnMouseLeave()
 end
 
 function FlightMap_FlightPointPinMixin:UpdatePinSize(pinType)
-	if WorldMapFrame_IsVindicaarTextureKit(self.textureKitPrefix) then
+	if IsVindicaarTextureKit(self.textureKitPrefix) then
 		self:SetSize(39, 42);
 	elseif self.textureKitPrefix == "FlightMaster_Argus" then
 		self:SetSize(34, 28);
@@ -220,7 +225,7 @@ function FlightMap_FlightPointPinMixin:SetFlightPathStyle(textureKitPrefix, taxi
 	if textureKitPrefix then
 		self.atlasFormat = textureKitPrefix.."-%s";
 		
-		if WorldMapFrame_IsVindicaarTextureKit(self.textureKitPrefix) then
+		if IsVindicaarTextureKit(self.textureKitPrefix) then
 			self:SetNudgeSourceRadius(2);
 			self:SetNudgeSourceMagnitude(1.5, 3.65);
 		elseif self.textureKitPrefix == "FlightMaster_Argus" then
@@ -244,6 +249,6 @@ function FlightMap_FlightPointPinMixin:SetFlightPathStyle(textureKitPrefix, taxi
 end
 
 function FlightMap_FlightPointPinMixin:ShouldShowOutgoingFlightPathPreviews()
-	local isArgus = WorldMapFrame_IsVindicaarTextureKit(self.textureKitPrefix) or self.textureKitPrefix == "FlightMaster_Argus";
+	local isArgus = IsVindicaarTextureKit(self.textureKitPrefix) or self.textureKitPrefix == "FlightMaster_Argus";
 	return not isArgus;
 end

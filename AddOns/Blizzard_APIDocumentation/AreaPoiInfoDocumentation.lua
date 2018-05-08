@@ -68,6 +68,11 @@ local AreaPoiInfo =
 
 	Events =
 	{
+		{
+			Name = "AreaPoisUpdated",
+			Type = "Event",
+			LiteralName = "AREA_POIS_UPDATED",
+		},
 	},
 
 	Tables =
@@ -77,20 +82,13 @@ local AreaPoiInfo =
 			Type = "Structure",
 			Fields =
 			{
+				{ Name = "areaPoiID", Type = "number", Nilable = false },
+				{ Name = "position", Type = "table", Mixin = "Vector2DMixin", Nilable = false },
 				{ Name = "name", Type = "string", Nilable = false },
 				{ Name = "description", Type = "string", Nilable = true },
 				{ Name = "textureIndex", Type = "number", Nilable = true },
-				{ Name = "x", Type = "number", Nilable = false },
-				{ Name = "y", Type = "number", Nilable = false },
-				{ Name = "mapLinkID", Type = "number", Nilable = true },
-				{ Name = "inBattleMap", Type = "bool", Nilable = true },
-				{ Name = "graveyardID", Type = "number", Nilable = true },
-				{ Name = "areaID", Type = "number", Nilable = true },
-				{ Name = "poiID", Type = "number", Nilable = true },
+				{ Name = "widgetSetID", Type = "number", Nilable = true },
 				{ Name = "atlasName", Type = "string", Nilable = true },
-				{ Name = "displayAsBanner", Type = "bool", Nilable = true },
-				{ Name = "textureKitPrefix", Type = "string", Nilable = true },
-				{ Name = "useMouseOverTooltip", Type = "bool", Nilable = true },
 			},
 		},
 	},

@@ -62,6 +62,7 @@ HeirloomInfoDocumentation.lua
 InstanceEncounterDocumentation.lua
 InvasionInfoDocumentation.lua
 IslandsInfoDocumentation.lua
+IslandsQueueUIDocumentation.lua
 ItemDocumentation.lua
 ItemSocketInfoDocumentation.lua
 ItemTextDocumentation.lua
@@ -133,7 +134,6 @@ VoiceChatDocumentation.lua
 VoidStorageInfoDocumentation.lua
 WarCampaignDocumentation.lua
 WarfrontDocumentation.lua
-WorldMapDocumentation.lua
 WorldStateInfoDocumentation.lua
 WowTokenUIDocumentation.lua
 ZoneAbilityDocumentation.lua

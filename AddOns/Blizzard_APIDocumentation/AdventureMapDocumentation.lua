@@ -19,6 +19,10 @@ local AdventureMap =
 			Name = "AdventureMapOpen",
 			Type = "Event",
 			LiteralName = "ADVENTURE_MAP_OPEN",
+			Payload =
+			{
+				{ Name = "followerTypeID", Type = "number", Nilable = false },
+			},
 		},
 		{
 			Name = "AdventureMapQuestUpdate",

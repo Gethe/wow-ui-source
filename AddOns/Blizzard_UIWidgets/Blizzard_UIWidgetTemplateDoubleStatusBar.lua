@@ -1,4 +1,11 @@
-UIWidgetManager:RegisterWidgetVisTypeTemplate(Enum.UIWidgetVisualizationType.DoubleStatusBar, {frameType = "FRAME", frameTemplate = "UIWidgetTemplateDoubleStatusBar"}, C_UIWidgetManager.GetDoubleStatusBarWidgetVisualizationInfo);
+local function GetDoubleStatusBarVisInfoData(widgetID)
+	local widgetInfo = C_UIWidgetManager.GetDoubleStatusBarWidgetVisualizationInfo(widgetID);
+	if widgetInfo and widgetInfo.shownState ~= Enum.WidgetShownState.Hidden then
+		return widgetInfo;
+	end
+end
+
+UIWidgetManager:RegisterWidgetVisTypeTemplate(Enum.UIWidgetVisualizationType.DoubleStatusBar, {frameType = "FRAME", frameTemplate = "UIWidgetTemplateDoubleStatusBar"}, GetDoubleStatusBarVisInfoData);
 
 UIWidgetTemplateDoubleStatusBarMixin = CreateFromMixins(UIWidgetBaseTemplateMixin);
 

@@ -54,6 +54,7 @@ function ScenarioBlobPinMixin:OnLoad()
 	self:SetFillAlpha(128);
 	self:SetBorderAlpha(192);
 	self:SetBorderScalar(1.0);
+	self:SetIgnoreGlobalPinScale(true);
 	self:UseFrameLevelType("PIN_FRAME_LEVEL_SCENARIO_BLOB");
 	self.questID = 0;
 end

@@ -24,7 +24,6 @@ FogOfWarDataProvider.xml
 DeathMapDataProvider.xml
 QuestBlobDataProvider.xml
 ScenarioDataProvider.xml
-LandmarkDataProvider.xml
 VignetteDataProvider.xml
 InvasionDataProvider.xml
 GossipDataProvider.xml
@@ -32,3 +31,8 @@ FlightPointDataProvider.xml
 PetTamerDataProvider.xml
 DigSiteDataProvider.xml
 GarrisonPlotDataProvider.xml
+DungeonEntranceDataProvider.xml
+BannerDataProvider.xml
+ContributionCollectorDataProvider.xml
+MapLinkDataProvider.xml
+SelectableGraveyardDataProvider.xml

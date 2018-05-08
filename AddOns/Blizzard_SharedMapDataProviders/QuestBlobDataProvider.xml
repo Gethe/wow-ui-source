@@ -7,6 +7,7 @@
 			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
 			<OnEvent method="OnEvent"/>
+			<OnUpdate method="OnUpdate"/>
 		</Scripts>
 	</QuestPOIFrame>
 </Ui>

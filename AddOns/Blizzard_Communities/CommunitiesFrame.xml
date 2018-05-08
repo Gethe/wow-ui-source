@@ -120,12 +120,18 @@
 		</Scripts>
 	</Button>
 	
-	<Frame name="CommunitiesControlFrameTemplate" virtual="true">
+	<Frame name="CommunitiesControlFrameTemplate" mixin="CommunitiesControlFrameMixin" virtual="true">
 		<Frames>
+			<Button parentKey="CommunitiesSettingsButton" inherits="CommunitiesSettingsButtonTemplate">
+				<Size x="165" y="20"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT"/>
+				</Anchors>
+			</Button>
 			<Button parentKey="GuildRecruitmentButton" inherits="UIPanelButtonTemplate, CommunitiesSubPanelButtonScriptTemplate" text="GUILD_RECRUITMENT">
 				<Size x="130" y="20"/>
 				<Anchors>
-					<Anchor point="BOTTOMRIGHT"/>
+					<Anchor point="RIGHT" relativeKey="$parent.CommunitiesSettingsButton" relativePoint="LEFT" x="-2" y="0"/>
 				</Anchors>
 				<KeyValues>
 					<KeyValue key="frame" value="GuildRecruitmentFrame" type="Global"/>
@@ -142,7 +148,7 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnShow function="CommunitiesControlFrame_OnShow"/>
+			<OnShow method="OnShow"/>
 		</Scripts>
 	</Frame>
 		
@@ -289,6 +295,12 @@
 			</Frame>
 			<Frame parentKey="EditStreamDialog" frameStrata="DIALOG" inherits="CommunitiesEditStreamDialogTemplate" hidden="true">
 				<Size x="320" y="260"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="UIParent"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="NotificationSettingsDialog" frameStrata="DIALOG" inherits="CommunitiesNotificationSettingsDialogTemplate" hidden="true">
+				<Size x="638" y="508"/>
 				<Anchors>
 					<Anchor point="CENTER" relativeTo="UIParent"/>
 				</Anchors>

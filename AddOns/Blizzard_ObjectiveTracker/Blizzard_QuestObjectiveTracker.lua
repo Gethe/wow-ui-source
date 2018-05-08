@@ -137,8 +137,6 @@ function QuestObjectiveTracker_OnOpenDropDown(self)
 	info.notCheckable = 1;
 	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
 
-	ObjectiveTracker_Util_AddDropdownEntryForQuestGroupSearch(block.id);
-
 	info = UIDropDownMenu_CreateInfo();
 	info.notCheckable = 1;
 

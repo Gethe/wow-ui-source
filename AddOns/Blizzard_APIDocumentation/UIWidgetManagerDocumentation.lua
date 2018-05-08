@@ -317,6 +317,7 @@ local UIWidgetManager =
 			Type = "Structure",
 			Fields =
 			{
+				{ Name = "shownState", Type = "WidgetShownState", Nilable = false },
 				{ Name = "label", Type = "string", Nilable = false },
 				{ Name = "leftText", Type = "string", Nilable = false },
 				{ Name = "leftTooltip", Type = "string", Nilable = false },
@@ -332,6 +333,7 @@ local UIWidgetManager =
 			Type = "Structure",
 			Fields =
 			{
+				{ Name = "shownState", Type = "WidgetShownState", Nilable = false },
 				{ Name = "leftBarMin", Type = "number", Nilable = false },
 				{ Name = "leftBarMax", Type = "number", Nilable = false },
 				{ Name = "leftBarValue", Type = "number", Nilable = false },
@@ -396,6 +398,7 @@ local UIWidgetManager =
 			Type = "Structure",
 			Fields =
 			{
+				{ Name = "shownState", Type = "WidgetShownState", Nilable = false },
 				{ Name = "value", Type = "number", Nilable = false },
 				{ Name = "textureKitID", Type = "number", Nilable = false },
 				{ Name = "orderIndex", Type = "number", Nilable = false },
@@ -420,21 +423,12 @@ local UIWidgetManager =
 			},
 		},
 		{
-			Name = "UIWidgetTextTooltipPair",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "text", Type = "string", Nilable = false },
-				{ Name = "tooltip", Type = "string", Nilable = false },
-			},
-		},
-		{
 			Name = "StackedResourceTrackerWidgetVisualizationInfo",
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "resources", Type = "table", InnerType = "UIWidgetTextTooltipPair", Nilable = false },
-				{ Name = "textureKitID", Type = "number", Nilable = false },
+				{ Name = "shownState", Type = "WidgetShownState", Nilable = false },
+				{ Name = "resources", Type = "table", InnerType = "UIWidgetCurrencyInfo", Nilable = false },
 				{ Name = "frameTextureKitID", Type = "number", Nilable = false },
 				{ Name = "orderIndex", Type = "number", Nilable = false },
 				{ Name = "widgetTag", Type = "string", Nilable = false },

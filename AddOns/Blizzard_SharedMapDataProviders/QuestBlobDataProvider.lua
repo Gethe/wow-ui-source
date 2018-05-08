@@ -63,6 +63,7 @@ function QuestBlobPinMixin:OnLoad()
 	self:SetFillAlpha(128);
 	self:SetBorderAlpha(192);
 	self:SetBorderScalar(1.0);
+	self:SetIgnoreGlobalPinScale(true);
 	self:UseFrameLevelType("PIN_FRAME_LEVEL_QUEST_BLOB");
 	self.questID = 0;
 end
@@ -92,10 +93,7 @@ function QuestBlobPinMixin:OnCanvasScaleChanged()
 end
 
 function QuestBlobPinMixin:MarkDirty()
-	if not self.dirty then
-		self.dirty = true;
-		self:SetScript("OnUpdate", self.OnUpdate);
-	end
+	self.dirty = true;
 end
 
 function QuestBlobPinMixin:SetQuestID(questID)
@@ -104,9 +102,12 @@ function QuestBlobPinMixin:SetQuestID(questID)
 end
 
 function QuestBlobPinMixin:OnUpdate()
-	self.dirty = nil;
-	self:SetScript("OnUpdate", nil);
-	self:Refresh();
+	if self.dirty then
+		self.dirty = nil;
+		self:Refresh();
+	end
+
+	self:UpdateTooltip();
 end
 
 function QuestBlobPinMixin:TryDrawQuest(questID)
@@ -152,4 +153,44 @@ end
 function QuestBlobPinMixin:ClearFocusedQuestID()
 	self.focusedQuestID = nil;
 	self:Refresh();
+end
+
+function QuestBlobPinMixin:UpdateTooltip()
+	local mouseX, mouseY = self:GetMap():GetNormalizedCursorPosition();
+	local questLogIndex, numPOITooltips = self:UpdateMouseOverTooltip(mouseX, mouseY);
+	if not questLogIndex then
+		self:OnMouseLeave();
+		return;
+	end
+
+	local title, _, _, _, _, _, _, questID = GetQuestLogTitle(questLogIndex);
+	WorldMapTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT", 5, 2);
+	WorldMapTooltip:SetText(title);
+	QuestUtils_AddQuestTypeToTooltip(WorldMapTooltip, questID, NORMAL_FONT_COLOR);
+
+	local numObjectives = GetNumQuestLeaderBoards(questLogIndex);
+	for i = 1, numObjectives do
+		local text, objectiveType, finished;
+
+		if numPOITooltips == numObjectives then
+			local questPOIIndex = self:GetTooltipIndex(i);
+			text, objectiveType, finished = GetQuestPOILeaderBoard(questPOIIndex, questLogIndex);
+		else
+			text, objectiveType, finished = GetQuestLogLeaderBoard(i, questLogIndex);
+		end
+
+		if text and not finished then
+			WorldMapTooltip:AddLine(QUEST_DASH..text, 1, 1, 1, true);
+		end
+	end
+end
+
+function QuestBlobPinMixin:OnMouseEnter()
+	self:UpdateTooltip();
+end
+
+function QuestBlobPinMixin:OnMouseLeave()
+	if WorldMapTooltip:GetOwner() == self then
+		WorldMapTooltip:Hide();
+	end
 end

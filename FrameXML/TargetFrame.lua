@@ -328,33 +328,15 @@ function TargetFrame_CheckFaction (self)
 	if ( self.showPVP ) then
 		local factionGroup = UnitFactionGroup(self.unit);
 		if ( UnitIsPVPFreeForAll(self.unit) ) then
-			local prestige = UnitPrestige(self.unit);
-			if (prestige > 0) then
-				self.prestigePortrait:SetAtlas("honorsystem-portrait-neutral", false);
-				self.prestigeBadge:SetTexture(GetPrestigeInfo(prestige));
-				self.prestigePortrait:Show();
-				self.prestigeBadge:Show();
-				self.pvpIcon:Hide();
-			else
-				self.prestigePortrait:Hide();
-				self.prestigeBadge:Hide();
-				self.pvpIcon:SetTexture("Interface\\TargetingFrame\\UI-PVP-FFA");
-				self.pvpIcon:Show();
-			end
+			self.prestigePortrait:Hide();
+			self.prestigeBadge:Hide();
+			self.pvpIcon:SetTexture("Interface\\TargetingFrame\\UI-PVP-FFA");
+			self.pvpIcon:Show();
 		elseif ( factionGroup and factionGroup ~= "Neutral" and UnitIsPVP(self.unit) ) then
-			local prestige = UnitPrestige(self.unit);
-			if (prestige > 0) then
-				self.prestigePortrait:SetAtlas("honorsystem-portrait-"..factionGroup, false);
-				self.prestigeBadge:SetTexture(GetPrestigeInfo(prestige));
-				self.prestigePortrait:Show();
-				self.prestigeBadge:Show();
-				self.pvpIcon:Hide();
-			else
-				self.prestigePortrait:Hide();
-				self.prestigeBadge:Hide();
-				self.pvpIcon:SetTexture("Interface\\TargetingFrame\\UI-PVP-"..factionGroup);
-				self.pvpIcon:Show();
-			end
+			self.prestigePortrait:Hide();
+			self.prestigeBadge:Hide();
+			self.pvpIcon:SetTexture("Interface\\TargetingFrame\\UI-PVP-"..factionGroup);
+			self.pvpIcon:Show();
 		else
 			self.prestigePortrait:Hide();
 			self.prestigeBadge:Hide();

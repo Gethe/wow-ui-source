@@ -1,0 +1,158 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="Blizzard_BattlefieldMap.lua"/>
+
+	<Button name="BattlefieldMapTab" hidden="false" frameStrata="LOW" parent="UIParent" movable="true" mixin="BattlefieldMapTabMixin">
+		<Size x="64" y="32"/>
+		<Anchors>
+			<Anchor point="BOTTOMRIGHT" x="-200" y="200"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Left" file="Interface\ChatFrame\ChatFrameTab">
+					<Size x="16" y="32"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+					<TexCoords left="0.0" right="0.25" top="0.0" bottom="1.0"/>
+				</Texture>
+				<Texture parentKey="Middle" file="Interface\ChatFrame\ChatFrameTab">
+					<Size x="44" y="32"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Left" relativePoint="RIGHT"/>
+					</Anchors>
+					<TexCoords left="0.25" right="0.75" top="0.0" bottom="1.0"/>
+				</Texture>
+				<Texture parentKey="Right" file="Interface\ChatFrame\ChatFrameTab">
+					<Size x="16" y="32"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Middle" relativePoint="RIGHT"/>
+					</Anchors>
+					<TexCoords left="0.75" right="1.0" top="0.0" bottom="1.0"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="OptionsDropDown" inherits="UIDropDownMenuTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOP" x="-80" y="-35"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow"/>
+			<OnClick method="OnClick"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave function="GameTooltip_Hide"/>
+			<OnDragStart method="OnDragStart"/>
+			<OnDragStop method="OnDragStop"/>
+		</Scripts>
+		<ButtonText parentKey="Text" text="BATTLEFIELD_MINIMAP">
+			<Size x="0" y="8"/>
+			<Anchors>
+				<Anchor point="LEFT" relativeKey="$parent.Left" relativePoint="RIGHT" x="0" y="-5"/>
+			</Anchors>
+		</ButtonText>
+		<NormalFont style="GameFontNormalSmall"/>
+		<HighlightTexture file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD">
+			<Anchors>
+				<Anchor point="LEFT" relativeKey="$parent.Left" x="0" y="-7"/>
+				<Anchor point="RIGHT" relativeKey="$parent.Right" x="0" y="-7"/>
+			</Anchors>
+		</HighlightTexture>
+	</Button>
+	
+	<Frame name="BattlefieldMapFrame" parent="UIParent" inherits="MapCanvasFrameTemplate" mixin="BattlefieldMapMixin">
+		<Size x="300" y="200"/>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="BattlefieldMapTab" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+		</Anchors>
+		<Frames>
+			<ScrollFrame parentKey="ScrollContainer" inherits="MapCanvasFrameScrollContainerTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="0" y="2"/>
+					<Anchor point="BOTTOMRIGHT" x="-2" y="3"/>
+				</Anchors>
+			</ScrollFrame>
+			<Frame parentKey="BorderFrame" frameStrata="HIGH" setAllPoints="true">
+				<Layers>
+					<Layer level="BORDER">
+						<Texture parentKey="CloseButtonBorder" file="Interface\DialogFrame\UI-DialogBox-Corner">
+							<Size x="32" y="32"/>
+							<Anchors>
+								<Anchor point="TOPRIGHT" x="1" y="5"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture parentKey="TopLeft" atlas="battlefieldminimap-border-topleft" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-11" y="13"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="TopRight" atlas="battlefieldminimap-border-topright" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPRIGHT" x="7" y="13"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="BottomLeft" atlas="battlefieldminimap-border-bottomleft" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" x="-11" y="-7"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="BottomRight" atlas="battlefieldminimap-border-bottomright" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" x="7" y="-7"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Top" atlas="battlefieldminimap-border-top">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.TopLeft" relativePoint="TOPRIGHT"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.TopRight" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Bottom" atlas="battlefieldminimap-border-bottom">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.BottomLeft" relativePoint="TOPRIGHT"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomRight" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Left" atlas="battlefieldminimap-border-left">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.TopLeft" relativePoint="BOTTOMLEFT"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomLeft" relativePoint="TOPRIGHT"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Right" atlas="battlefieldminimap-border-right">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.TopRight" relativePoint="BOTTOMLEFT"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomRight" relativePoint="TOPRIGHT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
+						<Anchors>
+							<Anchor point="TOPRIGHT" x="5" y="9"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								HideUIPanel(self:GetParent():GetParent());
+							</OnClick>
+						</Scripts>
+					</Button>
+				</Frames>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+			<OnUpdate method="OnUpdate"/>
+		</Scripts>
+	</Frame>
+</Ui>

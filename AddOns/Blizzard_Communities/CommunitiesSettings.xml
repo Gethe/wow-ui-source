@@ -1,0 +1,181 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="CommunitiesSettings.lua"/>
+	
+	<Frame name="CommunitiesSettingsDialog" frameStrata="DIALOG" parent="UIParent" mixin="CommunitiesSettingsDialogMixin" topLevel="true" hidden="true">
+		<Size x="412" y="470"/>
+		<Anchors>
+			<Anchor point="TOP" x="0" y="-200"/>
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets left="11" right="12" top="12" bottom="11"/>
+			<TileSize val="32"/>
+			<EdgeSize val="32"/>
+		</Backdrop>
+		<Layers>
+			<Layer level="BORDER">
+				<FontString parentKey="DialogLabel" inherits="GameFontHighlight" text="COMMUNITIES_SETTINGS_LABEL">
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-18"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="NameLabel" inherits="GameFontNormal" justifyH="LEFT" text="COMMUNITIES_SETTINGS_NAME_LABEL">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="30" y="-52"/>
+						<Anchor point="TOPRIGHT" x="-30" y="-52"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="DescriptionLabel" inherits="GameFontNormal" justifyH="LEFT" text="COMMUNITIES_SETTINGS_DESCRIPTION_LABEL">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.NameLabel" relativePoint="BOTTOMLEFT" x="0" y="-34"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.NameLabel" relativePoint="BOTTOMRIGHT" x="0" y="-34"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="Separator">
+					<Size x="360" y="1"/>
+					<Anchors>
+						<Anchor point="LEFT" x="30" y="0"/>
+						<Anchor point="RIGHT" x="-30" y="0"/>
+						<Anchor point="TOP" x="0" y="-290"/>
+					</Anchors>
+					<Color r="1" g="1" b="1" a="0.2"/>
+				</Texture>
+				<FontString parentKey="MessageOfTheDayLabel" inherits="GameFontNormal" justifyH="LEFT" text="COMMUNITIES_SETTINGS_MOTD_LABEL">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Separator" x="0" y="-36"/>
+						<Anchor point="LEFT" relativeKey="$parent.NameLabel" relativePoint="LEFT"/>
+						<Anchor point="RIGHT" relativeKey="$parent.NameLabel" relativePoint="RIGHT"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="IconPreviewRing" atlas="communities-ring-gold">
+					<Size x="80" y="80"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Separator" x="-48" y="58"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="IconPreview">
+					<Size x="64" y="64"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.IconPreviewRing" x="0" y="3"/>
+					</Anchors>
+				</Texture>
+				<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.IconPreview" x="2" y="-2"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.IconPreview" x="-2" y="2"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="IconPreview"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<EditBox parentKey="NameEdit" inherits="InputBoxTemplate" autoFocus="false" letters="50">
+				<Size x="0" y="22"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.NameLabel" relativePoint="BOTTOMLEFT" x="5" y="-2"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.NameLabel" relativePoint="BOTTOMRIGHT" x="0" y="-2"/>
+					</Anchors>
+				<Scripts>
+					<OnShow>
+						self:SetFocus();
+					</OnShow>
+					<OnTabPressed>
+						self:GetParent().Description.EditBox:SetFocus();
+					</OnTabPressed>
+					<OnTextChanged>
+						self:GetParent().Accept:SetEnabled(strlenutf8(self:GetText()) >= 2);
+					</OnTextChanged>
+				</Scripts>
+			</EditBox>
+			<Button parentKey="ChangeAvatarButton" inherits="UIPanelButtonNoTooltipTemplate" text="COMMUNITIES_CREATE_DIALOG_ICON_SELECTION_BUTTON">
+				<Size x="100" y="24"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.IconPreviewRing" relativePoint="RIGHT" x="6" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="CommunitiesSettingsDialogChangeAvatarButton_OnClick"/>
+				</Scripts>
+			</Button>
+			<ScrollFrame parentKey="MessageOfTheDay" inherits="InputScrollFrameTemplate">
+				<Size x="0" y="50"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.MessageOfTheDayLabel" relativePoint="BOTTOMLEFT" x="5" y="-10"/>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.MessageOfTheDayLabel" relativePoint="BOTTOMRIGHT" x="-5" y="-10"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="maxLetters" value="250" type="number"/>
+					<KeyValue key="instructions" value="COMMUNITIES_SETTINGS_DIALOG_MOTD_INSTRUCTIONS" type="global"/>
+					<KeyValue key="hideCharCount" value="true" type="boolean"/>
+					<KeyValue key="cursorOffset" value="0" type="number"/>
+				</KeyValues>
+				<Scripts>
+					<OnLoad>
+						InputScrollFrame_OnLoad(self);
+						self.EditBox.nextEditBox = self:GetParent().NameEdit;
+					</OnLoad>
+				</Scripts>
+			</ScrollFrame>
+			<ScrollFrame parentKey="Description" inherits="InputScrollFrameTemplate">
+				<Size x="0" y="50"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.DescriptionLabel" relativePoint="BOTTOMLEFT" x="5" y="-10"/>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.DescriptionLabel" relativePoint="BOTTOMRIGHT" x="-5" y="-10"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="maxLetters" value="250" type="number"/>
+					<KeyValue key="instructions" value="COMMUNITIES_CREATE_DIALOG_DESCRIPTION_INSTRUCTIONS" type="global"/>
+					<KeyValue key="hideCharCount" value="true" type="boolean"/>
+				</KeyValues>
+				<Scripts>
+					<OnLoad>
+						InputScrollFrame_OnLoad(self);
+						self.EditBox.nextEditBox = self:GetParent().MessageOfTheDay.EditBox;
+					</OnLoad>
+				</Scripts>
+			</ScrollFrame>
+			<Button parentKey="Delete" inherits="UIPanelButtonTemplate" text="DELETE">
+				<Size x="100" y="24"/>
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="22"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="CommunitiesSettingsDialogDeleteButton_OnClick"/>
+				</Scripts>
+			</Button>
+			<Button parentKey="Accept" inherits="UIPanelButtonTemplate" text="ACCEPT">
+				<Size x="100" y="24"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.Delete" relativePoint="LEFT" x="-10" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="CommunitiesSettingsDialogAcceptButton_OnClick"/>
+				</Scripts>
+			</Button>
+			<Button parentKey="Cancel" inherits="UIPanelButtonTemplate" text="CANCEL">
+				<Size x="100" y="24"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Delete" relativePoint="RIGHT" x="10" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="CommunitiesSettingsDialogCancelButton_OnClick"/>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+		</Scripts>
+	</Frame>
+	
+	<Button name="CommunitiesSettingsButtonTemplate" inherits="UIPanelButtonTemplate" text="COMMUNITIES_SETTINGS_BUTTON_LABEL" virtual="true">
+		<Scripts>
+			<OnClick function="CommunitiesSettingsButton_OnClick"/>
+		</Scripts>
+	</Button>
+</Ui>

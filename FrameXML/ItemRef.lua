@@ -157,7 +157,7 @@ function SetItemRef(link, text, button, chatFrame)
 		ToggleTalentFrame(PVP_TALENTS_TAB);
 		return;
 	elseif ( strsub(link, 1, 10) == "worldquest" ) then
-		ShowUIPanel(WorldMapFrame);
+		OpenWorldMap();
 		return;
 	elseif ( strsub(link, 1, 7) == "journal" ) then
 		if ( not HandleModifiedItemClick(GetFixedLink(text)) ) then

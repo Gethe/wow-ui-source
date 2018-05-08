@@ -31,8 +31,6 @@ function MapCanvasMixin:SetMapID(mapID)
 		self.ScrollContainer:SetMapID(mapID);
 		self:OnMapChanged();
 	end
-	-- MAPREFACTORTODO: Please kill me
-	SetMapByID(mapID)
 end
 
 function MapCanvasMixin:OnFrameSizeChanged()
@@ -388,6 +386,7 @@ function MapCanvasMixin:RefreshDetailLayers()
 		local detailLayer = self.detailLayerPool:Acquire();
 		detailLayer:SetAllPoints(self:GetCanvas());
 		detailLayer:SetMapAndLayer(self.mapID, layerIndex);
+		detailLayer:SetGlobalAlpha(self:GetGlobalAlpha());
 		detailLayer:Show();
 	end
 
@@ -689,13 +688,15 @@ function MapCanvasMixin:EvaluateLockReasons()
 	if next(self.lockReasons) then
 		self.BorderFrame:EnableMouse(true);
 		self.BorderFrame:EnableMouseWheel(true);
-		
-		self.BorderFrame.Underlay:Show();
+		if self.BorderFrame.Underlay then
+			self.BorderFrame.Underlay:Show();
+		end
 	else
 		self.BorderFrame:EnableMouse(false);
 		self.BorderFrame:EnableMouseWheel(false);
-
-		self.BorderFrame.Underlay:Hide();
+		if self.BorderFrame.Underlay then
+			self.BorderFrame.Underlay:Hide();
+		end
 	end
 end
 
@@ -763,10 +764,39 @@ end
 
 function MapCanvasMixin:ProcessCanvasClickHandlers(button, cursorX, cursorY)
 	for i, handlerInfo in ipairs(self.mouseClickHandlers) do
-		local success, stopChecking = securecall(xpcall, handlerInfo.handler, CallErrorHandler, self, button, cursorX, cursorY);
+		local success, stopChecking = xpcall(handlerInfo.handler, CallErrorHandler, self, button, cursorX, cursorY);
 		if success and stopChecking then
 			return true;
 		end
 	end
 	return false;
+end
+
+function MapCanvasMixin:GetGlobalPinScale()
+	return self.globalPinScale or 1;
+end
+
+function MapCanvasMixin:SetGlobalPinScale(scale)
+	if self.globalPinScale ~= scale then
+		self.globalPinScale = scale;
+		for pin in self:EnumerateAllPins() do
+			pin:ApplyCurrentScale();
+		end
+	end
+end
+
+function MapCanvasMixin:GetGlobalAlpha()
+	return self.globalAlpha or 1;
+end
+
+function MapCanvasMixin:SetGlobalAlpha(globalAlpha)
+	if self.globalAlpha ~= globalAlpha then
+		self.globalAlpha = globalAlpha;
+		for detailLayer in self.detailLayerPool:EnumerateActive() do
+			detailLayer:SetGlobalAlpha(globalAlpha);
+		end
+		for dataProvider in pairs(self.dataProviders) do
+			dataProvider:OnGlobalAlphaChanged();
+		end
+	end
 end

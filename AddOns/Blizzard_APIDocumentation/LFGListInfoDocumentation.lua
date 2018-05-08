@@ -7,6 +7,32 @@ local LFGListInfo =
 	Functions =
 	{
 		{
+			Name = "CanCreateQuestGroup",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "canCreate", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ClearApplicationTextFields",
+			Type = "Function",
+		},
+		{
+			Name = "ClearCreationTextFields",
+			Type = "Function",
+		},
+		{
+			Name = "CopyActiveEntryInfoToCreationFields",
+			Type = "Function",
+		},
+		{
 			Name = "Search",
 			Type = "Function",
 

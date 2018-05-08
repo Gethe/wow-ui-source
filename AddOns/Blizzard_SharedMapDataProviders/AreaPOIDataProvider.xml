@@ -2,24 +2,5 @@
 ..\FrameXML\UI.xsd">
 	<Script file="AreaPOIDataProvider.lua"/>
 
-	<Frame name="AreaPOIPinTemplate" hidden="true" flattenRenderLayers="true" enableMouse="true" mixin="AreaPOIPinMixin" virtual="true">
-		<Size x="50" y="50"/>
-
-		<Layers>
-			<Layer level="ARTWORK">
-				<Texture parentKey="Texture">
-					<Anchors>
-						<Anchor point="CENTER" />
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="HIGHLIGHT">
-				<Texture parentKey="Highlight" alphaMode="ADD">
-					<Anchors>
-						<Anchor point="CENTER" />
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-	</Frame>
+	<Frame name="AreaPOIPinTemplate" inherits="BaseHighlightableMapPoiPinTemplate" mixin="AreaPOIPinMixin" virtual="true" />
 </Ui>

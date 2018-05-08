@@ -57,6 +57,20 @@ local ContributionCollector =
 			},
 		},
 		{
+			Name = "GetContributionCollectorsForMap",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "uiMapID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "contributionCollectors", Type = "table", InnerType = "ContributionMapInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "GetContributionResult",
 			Type = "Function",
 
@@ -127,7 +141,7 @@ local ContributionCollector =
 			},
 		},
 		{
-			Name = "GetRequiredContributionAmount",
+			Name = "GetRequiredContributionCurrency",
 			Type = "Function",
 
 			Arguments =
@@ -139,6 +153,21 @@ local ContributionCollector =
 			{
 				{ Name = "currencyID", Type = "number", Nilable = false, Default = 0 },
 				{ Name = "currencyAmount", Type = "number", Nilable = false, Default = 0 },
+			},
+		},
+		{
+			Name = "GetRequiredContributionItem",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "contributionID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "itemID", Type = "number", Nilable = false, Default = 0 },
+				{ Name = "itemCount", Type = "number", Nilable = false, Default = 0 },
 			},
 		},
 		{
@@ -285,6 +314,18 @@ local ContributionCollector =
 				{ Name = "FailedConditionCheck", Type = "ContributionResult", EnumValue = 5 },
 				{ Name = "UnableToCompleteTurnIn", Type = "ContributionResult", EnumValue = 6 },
 				{ Name = "InternalError", Type = "ContributionResult", EnumValue = 7 },
+			},
+		},
+		{
+			Name = "ContributionMapInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "areaPoiID", Type = "number", Nilable = false },
+				{ Name = "position", Type = "table", Mixin = "Vector2DMixin", Nilable = false },
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "atlasName", Type = "string", Nilable = false },
+				{ Name = "collectorCreatureID", Type = "number", Nilable = false },
 			},
 		},
 	},

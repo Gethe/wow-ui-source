@@ -26,6 +26,7 @@ FogOfWarPinMixin = CreateFromMixins(MapCanvasPinMixin);
 function FogOfWarPinMixin:OnLoad()
 	FogOfWarFrameMixin.OnLoad(self);
 	self:SetAlphaLimits(1.0, 1.0, 1.0);
+	self:SetIgnoreGlobalPinScale(true);
 	self:UseFrameLevelType("PIN_FRAME_LEVEL_FOG_OF_WAR");
 end
 

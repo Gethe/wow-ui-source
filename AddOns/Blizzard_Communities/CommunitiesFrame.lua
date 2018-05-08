@@ -374,6 +374,8 @@ function CommunitiesFrameMixin:UpdateCommunitiesButtons()
 			addToChatButton:SetEnabled(true);
 		end
 	end
+	
+	self.CommunitiesControlFrame:Update();
 end
 
 function CommunitiesFrameMixin:SetFocusedStream(clubId, streamId)
@@ -435,7 +437,7 @@ function CommunitiesFrameMixin:OnHide()
 end
 
 function CommunitiesFrameMixin:ShowCreateChannelDialog()
-	self.EditStreamDialog:ShowCreateDialog(self:GetSelectedClubId())
+	self.EditStreamDialog:ShowCreateDialog(self:GetSelectedClubId());
 end
 
 function CommunitiesFrameMixin:ShowEditStreamDialog()
@@ -444,6 +446,10 @@ function CommunitiesFrameMixin:ShowEditStreamDialog()
 	if stream then
 		self.EditStreamDialog:ShowEditDialog(clubId, self.selectedStreamForClub[clubId]);
 	end
+end
+
+function CommunitiesFrameMixin:ShowNotificationSettingsDialog()
+	self.NotificationSettingsDialog:Show();
 end
 
 function CommunitiesFrameMaximizeMinimizeButton_OnLoad(self)
@@ -500,16 +506,48 @@ function CommunitiesFrameMaximizeMinimizeButton_OnLoad(self)
 	self:SetMinimizedCVar("miniCommunitiesFrame");
 end
 
-function CommunitiesControlFrame_OnShow(self)
-	local communitiesFrame = self:GetParent();
-	local clubInfo = C_Club.GetClubInfo(communitiesFrame:GetSelectedClubId());
+CommunitiesControlFrameMixin = {};
+
+function CommunitiesControlFrameMixin:OnShow()
+	self:Update();
+end
+
+function CommunitiesControlFrameMixin:Update()
+	if not self:IsShown() then
+		return;
+	end
+	
+	self.CommunitiesSettingsButton:Hide();
 	self.GuildRecruitmentButton:Hide();
 	self.GuildControlButton:Hide();
-	if clubInfo then
-		if clubInfo.clubType == Enum.ClubType.Guild then
-			self.GuildRecruitmentButton:Show();
-			self.GuildControlButton:Show();
-		else
+	
+	local communitiesFrame = self:GetCommunitiesFrame();
+	local clubId = communitiesFrame:GetSelectedClubId();
+	if clubId then
+		local clubInfo = C_Club.GetClubInfo(clubId);
+		if clubInfo then
+			local privileges = C_Club.GetClubPrivileges(clubId);
+			if privileges.canSetName or privileges.canSetDescription or privileges.canSetAvatar or privileges.canSetBroadcast then
+				self.CommunitiesSettingsButton:Show();
+				self.CommunitiesSettingsButton:SetText(clubInfo.clubType == Enum.ClubType.BattleNet and COMMUNITIES_SETTINGS_BUTTON_LABEL or COMMUNITIES_SETTINGS_BUTTON_CHARACTER_LABEL);
+			end
+		
+			if clubInfo.clubType == Enum.ClubType.Guild then
+				-- TODO:: Check guild permissions
+				self.GuildRecruitmentButton:Show();
+				self.GuildRecruitmentButton:ClearAllPoints();
+				if self.CommunitiesSettingsButton:IsShown() then
+					self.GuildRecruitmentButton:SetPoint("RIGHT", self.CommunitiesSettingsButton, "LEFT", -2, 0);
+				else
+					self.GuildRecruitmentButton:SetPoint("BOTTOMRIGHT");
+				end
+				
+				self.GuildControlButton:Show();
+			end
 		end
 	end
+end
+
+function CommunitiesControlFrameMixin:GetCommunitiesFrame()
+	return self:GetParent();
 end

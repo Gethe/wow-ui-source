@@ -340,46 +340,22 @@ function PVPQueueFrame_OnShow(self)
 end
 
 function PVPQueueFrame_UpdateTitle()
-	local prestigeLevel = UnitPrestige("player");
 	local currentSeason = GetCurrentArenaSeason();
-	local prestigeText;
-	if (prestigeLevel > 0) then
-		prestigeText = PVP_TALENTS_PRESTIGE_RANK_TITLE:format(select(2, GetPrestigeInfo(prestigeLevel)));
-	end
 
 	if currentSeason == NO_ARENA_SEASON then
-		if (prestigeLevel > 0) then
-			PVEFrame.TitleText:SetText(PLAYER_V_PLAYER_PRESTIGE:format(prestigeText));
-		else
-			PVEFrame.TitleText:SetText(PLAYER_V_PLAYER);
-		end
+		PVEFrame.TitleText:SetText(PLAYER_V_PLAYER);
 	else
 		local LEGION_START_SEASON = 19; -- if you're changing this you probably want to update the global string PLAYER_V_PLAYER_SEASON also
-		if (prestigeLevel > 0) then
-			PVEFrame.TitleText:SetText(PLAYER_V_PLAYER_SEASON_PRESTIGE:format(currentSeason - LEGION_START_SEASON + 1, prestigeText));
-		else
-			PVEFrame.TitleText:SetText(PLAYER_V_PLAYER_SEASON:format(currentSeason - LEGION_START_SEASON + 1));
-		end
+		PVEFrame.TitleText:SetText(PLAYER_V_PLAYER_SEASON:format(currentSeason - LEGION_START_SEASON + 1));
 	end
 end
 
 function PVPQueueFrame_SetPrestige(self)
 	local parent = self:GetParent():GetParent();
 	local factionGroup = UnitFactionGroup("player");
-	local prestigeLevel = UnitPrestige("player");
 	local frame = self.PrestigePortrait;
-	if (prestigeLevel > 0) then
-		frame.PortraitBackground:SetAtlas("honorsystem-prestige-laurel-bg-"..factionGroup, false);
-		frame.PortraitBackground:Show();
-		parent.portrait:SetSize(57,57);
-		parent.portrait:ClearAllPoints();
-		parent.portrait:SetPoint("CENTER", frame.PortraitBackground, "CENTER", 0, 0);
-		parent.portrait:SetTexture(GetPrestigeInfo(UnitPrestige("player")));
-		parent.portrait:SetTexCoord(0, 1, 0, 1);
-	else
-		frame.PortraitBackground:Hide();
-	end
-	frame.SmallWreath:SetShown(prestigeLevel > 0);
+	frame.PortraitBackground:Hide();
+	frame.SmallWreath:SetShown(false);
 	PVPQueueFrame_UpdateTitle();
 end
 
@@ -428,28 +404,6 @@ function PVPQueueFrame_CheckXPBarLockState(frame)
     else
         xpBar:SetPoint("TOPLEFT", frame, "TOPLEFT", 1, -7);
     end
-end
-
-function PVPQueueFramePrestigeMouseOverFrame_OnEnter(self)
-	local prestige = UnitPrestige("player");
-	if (prestige > 0) then
-		GameTooltip:ClearAllPoints();
-		GameTooltip:SetPoint("LEFT", self, "RIGHT", 4, 0);
-		GameTooltip:SetOwner(self, "ANCHOR_PRESERVE");
-		GameTooltip:SetText(select(2, GetPrestigeInfo(prestige)), 1, 1, 1, nil, true);
-		GameTooltip:AddLine(" ");
-		for i = 1, GetMaxPrestigeLevel() do
-			local color;
-			if (prestige == i) then
-				color = GREEN_FONT_COLOR;
-			else
-				color = NORMAL_FONT_COLOR;
-			end
-            local texture, name = GetPrestigeInfo(i);
-			GameTooltip:AddLine(PRESTIGE_RANK_TOOLTIP_LINE:format(texture, name), color.r, color.g, color.b);
-		end
-		GameTooltip:Show();
-	end
 end
 
 local function InitializeHonorXPBarDropDown(self, level)

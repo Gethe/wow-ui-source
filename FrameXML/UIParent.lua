@@ -450,8 +450,8 @@ function AuctionFrame_LoadUI()
 	UIParentLoadAddOn("Blizzard_AuctionUI");
 end
 
-function BattlefieldMinimap_LoadUI()
-	UIParentLoadAddOn("Blizzard_BattlefieldMinimap");
+function BattlefieldMap_LoadUI()
+	UIParentLoadAddOn("Blizzard_BattlefieldMap");
 end
 
 function ClassTrainerFrame_LoadUI()
@@ -717,8 +717,11 @@ function ToggleTalentFrame(suggestedTab)
 	end
 end
 
-function ToggleBattlefieldMinimap()
-	-- TODO: ?
+function ToggleBattlefieldMap()
+	BattlefieldMap_LoadUI();
+	if ( BattlefieldMapFrame ) then
+		BattlefieldMapFrame:Toggle();
+	end
 end
 
 function ToggleTimeManager()
@@ -1104,6 +1107,11 @@ function UIParent_OnEvent(self, event, ...)
 			-- is hidden.
 			TimeManager_LoadUI();
 		end
+
+		if ( not BattlefieldMapFrame and GetCVar("showBattlefieldMinimap") == "1" ) then
+			BattlefieldMap_LoadUI();
+		end
+
 		local lastTalkedToGM = GetCVar("lastTalkedToGM");
 		if ( lastTalkedToGM ~= "" ) then
 			GMChatFrame_LoadUI();
@@ -1643,7 +1651,12 @@ function UIParent_OnEvent(self, event, ...)
 
 	elseif ( event == "ADVENTURE_MAP_OPEN" ) then
 		Garrison_LoadUI();
-		ShowUIPanel(BFAMissionFrame);
+		local followerTypeID = ...;
+		if ( followerTypeID == LE_FOLLOWER_TYPE_GARRISON_7_0 ) then
+			ShowUIPanel(OrderHallMissionFrame);
+		else
+			ShowUIPanel(BFAMissionFrame);
+		end
 
 	-- Event for BarberShop handling
 	elseif ( event == "BARBER_SHOP_OPEN" ) then
@@ -2098,6 +2111,7 @@ UIPARENT_MANAGED_FRAME_POSITIONS = {
 	["PETACTIONBAR_YPOS"] = {baseY = 89, bottomLeft = actionBarOffset + 3, justBottomRightAndStance = actionBarOffset, watchBar = 1, maxLevel = 1, isVar = "yAxis"};
 	["MULTICASTACTIONBAR_YPOS"] = {baseY = 0, bottomLeft = actionBarOffset, watchBar = 1, maxLevel = 1, isVar = "yAxis"};
 	["OBJTRACKER_OFFSET_X"] = {baseX = 12, rightActionBarsX = "variable", isVar = "xAxis"};
+	["BATTLEFIELD_TAB_OFFSET_Y"] = {baseY = 260, bottomRight = actionBarOffset, watchBar = 1, isVar = "yAxis"};
 };
 
 local UIPARENT_VARIABLE_OFFSETS = {
@@ -2107,7 +2121,7 @@ local UIPARENT_VARIABLE_OFFSETS = {
 -- If any Var entries in UIPARENT_MANAGED_FRAME_POSITIONS are used exclusively by addons, they should be declared here and not in one of the addon's files.
 -- The reason why is that it is possible for UIParent_ManageFramePosition to be run before the addon loads.
 OBJTRACKER_OFFSET_X = 0;
-
+BATTLEFIELD_TAB_OFFSET_Y = 0;
 
 -- constant offsets
 for _, data in pairs(UIPARENT_MANAGED_FRAME_POSITIONS) do
@@ -2866,6 +2880,11 @@ function FramePositionDelegate:UIParentManageFramePositions()
 	if ( PetActionBarFrame:IsShown() ) then
 		PetActionBar_UpdatePositionValues();
 		PetActionBarFrame:SetPoint("TOPLEFT", MainMenuBar, "BOTTOMLEFT", PETACTIONBAR_XPOS, PETACTIONBAR_YPOS);
+	end
+
+	-- Set battlefield minimap position
+	if ( BattlefieldMapTab and not BattlefieldMapTab:IsUserPlaced() ) then
+		BattlefieldMapTab:SetPoint("BOTTOMLEFT", "UIParent", "BOTTOMRIGHT", -BATTLEFIELD_MAP_WIDTH-CONTAINER_OFFSET_X, BATTLEFIELD_TAB_OFFSET_Y);
 	end
 
 	-- Setup y anchors

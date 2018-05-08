@@ -9,10 +9,18 @@ end
 
 function AddCommunitiesFlow_Hide()
 	CommunitiesAddDialog:SetAttribute("setshown", false);
-	CommunitiesCreateDialog:SetAttribute("hide", true);
-	CommunitiesAvatarPickerDialog:SetAttribute("hide", true);
+	CommunitiesCreateDialog:SetAttribute("setshown", false);
+	CommunitiesAvatarPicker_CloseDialog();
 end
 
 function AddCommunitiesFlow_IsShown()
-	return CommunitiesAddDialog:GetAttribute("shown") or CommunitiesCreateDialog:GetAttribute("shown") or CommunitiesAvatarPickerDialog:GetAttribute("shown");
+	return CommunitiesAddDialog:GetAttribute("shown") or CommunitiesCreateDialog:GetAttribute("shown") or CommunitiesAvatarPicker_IsShown();
+end
+
+function CommunitiesCreateDialog_SetAvatarId(avatarId)
+	CommunitiesCreateDialog:SetAttribute("setavatarid", avatarId);
+end
+
+function CommunitiesCreateDialog_SetShown(shown)
+	CommunitiesCreateDialog:SetAttribute("setshown", shown);
 end

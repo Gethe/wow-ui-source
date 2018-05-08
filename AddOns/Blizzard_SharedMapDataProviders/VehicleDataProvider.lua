@@ -24,7 +24,7 @@ function VehicleDataProviderMixin:RefreshAllData(fromOnShow)
 	local mapID = self:GetMap():GetMapID();
 	local numVehicles = GetNumBattlefieldVehicles();
 	for i = 1, numVehicles do
-		local vehicleX, vehicleY, unitName, isPossessed, vehicleType, orientation, isPlayer, isAlive = GetBattlefieldVehicleInfo(i, mapID);
+		local vehicleX, vehicleY, unitName, isOccupied, vehicleType, orientation, isPlayer, isAlive = GetBattlefieldVehicleInfo(i, mapID);
 		if vehicleX and isAlive and not isPlayer and VehicleUtil.IsValidVehicleType(vehicleType) then
 			self:GetMap():AcquirePin("VehiclePinTemplate", i);
 		end
@@ -48,10 +48,10 @@ function VehiclePinMixin:OnAcquired(vehicleIndex)
 end
 
 function VehiclePinMixin:Refresh()
-	local vehicleX, vehicleY, unitName, isPossessed, vehicleType, orientation, isPlayer, isAlive = GetBattlefieldVehicleInfo(self.vehicleIndex, self:GetMap():GetMapID());
+	local vehicleX, vehicleY, unitName, isOccupied, vehicleType, orientation, isPlayer, isAlive = GetBattlefieldVehicleInfo(self.vehicleIndex, self:GetMap():GetMapID());
 	local vehicleInfo = VehicleUtil.GetVehicleInfo(vehicleType);
 	self.Texture:SetRotation(orientation);
-	self.Texture:SetTexture(WorldMap_GetVehicleTexture(vehicleType, isPossessed));
+	self.Texture:SetTexture(VehicleUtil.GetVehicleTexture(vehicleType, isOccupied));
 	self:SetWidth(vehicleInfo:GetWidth());
 	self:SetHeight(vehicleInfo:GetHeight());
 	self.name = unitName;
@@ -65,7 +65,7 @@ function VehiclePinMixin:Refresh()
 end
 
 function VehiclePinMixin:OnUpdate()
-	local vehicleX, vehicleY, unitName, isPossessed, vehicleType, orientation, isPlayer, isAlive = GetBattlefieldVehicleInfo(self.vehicleIndex, self:GetMap():GetMapID());
+	local vehicleX, vehicleY, unitName, isOccupied, vehicleType, orientation, isPlayer, isAlive = GetBattlefieldVehicleInfo(self.vehicleIndex, self:GetMap():GetMapID());
 	if vehicleX and isAlive and not isPlayer then
 		self:SetPosition(vehicleX, vehicleY);
 		self.Texture:SetRotation(orientation);
@@ -78,7 +78,7 @@ function VehiclePinMixin:OnMouseEnter(motion)
 	local tooltipText = "";
 	for pin in self:GetMap():EnumeratePinsByTemplate("VehiclePinTemplate") do
 		if pin:IsVisible() and pin:IsMouseOver() then
-			local vehicleX, vehicleY, unitName, isPossessed, vehicleType, orientation, isPlayer, isAlive = GetBattlefieldVehicleInfo(pin:GetVehicleIndex(), self:GetMap():GetMapID());
+			local vehicleX, vehicleY, unitName, isOccupied, vehicleType, orientation, isPlayer, isAlive = GetBattlefieldVehicleInfo(pin:GetVehicleIndex(), self:GetMap():GetMapID());
 			if unitName then
 				if tooltipText == "" then
 					tooltipText = unitName;

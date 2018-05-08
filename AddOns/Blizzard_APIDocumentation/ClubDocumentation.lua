@@ -155,6 +155,7 @@ local Club =
 				{ Name = "name", Type = "string", Nilable = true },
 				{ Name = "description", Type = "string", Nilable = true },
 				{ Name = "avatarId", Type = "number", Nilable = true },
+				{ Name = "broadcast", Type = "string", Nilable = true },
 			},
 		},
 		{

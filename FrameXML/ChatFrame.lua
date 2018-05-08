@@ -4028,9 +4028,8 @@ function ChatEdit_InsertLink(text)
 end
 
 function ChatEdit_TryInsertChatLink(link)
-	if ( IsModifiedClick("CHATLINK") and ChatEdit_GetActiveWindow() and link ) then
-		ChatEdit_InsertLink(link);
-		return true;
+	if ( IsModifiedClick("CHATLINK") and link ) then
+		return ChatEdit_InsertLink(link);
 	end
 end
 
