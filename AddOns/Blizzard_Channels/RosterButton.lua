@@ -293,9 +293,24 @@ function ChannelRosterButtonMixin:Update()
 	local showRank = self:IsMemberLeadership();
 	self.Rank:SetShown(showRank);
 
+	self.SelfDeafenButton:UpdateVisibleState();
+	self.SelfMuteButton:UpdateVisibleState();
+	self.MemberMuteButton:UpdateVisibleState();
+
+	-- Adjust the name to be smaller to make room for the voice buttons
+	if self.SelfMuteButton:IsShown() then
+		self.Name:SetWidth(showRank and 90 or 110);
+	elseif self.MemberMuteButton:IsShown() then
+		self.Name:SetWidth(showRank and 110 or 125);
+	else
+		self.Name:SetWidth(140);
+	end
+
 	if showRank then
 		local nameOffset = self.Name:GetLeft() - self:GetLeft();
-		local rankOffset = self.Name:GetStringWidth() + nameOffset + 2; -- add some padding after the name
+		local nameWidth = self.Name:GetWidth();
+		local nameStringWidth = self.Name:GetStringWidth();
+		local rankOffset = (self.Name:IsTruncated() and nameWidth or (nameStringWidth + 4)) + nameOffset;
 		self.Rank:SetPoint("LEFT", self, "LEFT", rankOffset, 0);
 	end
 
@@ -304,10 +319,6 @@ function ChannelRosterButtonMixin:Update()
 	elseif self:IsMemberModerator() then
 		self.Rank:SetTexture("Interface\\GroupFrame\\UI-Group-AssistantIcon");
 	end
-
-	self.SelfDeafenButton:UpdateVisibleState();
-	self.SelfMuteButton:UpdateVisibleState();
-	self.MemberMuteButton:UpdateVisibleState();
 
 	self:UpdateVoiceActivityNotification();
 
@@ -323,7 +334,7 @@ do
 	end
 
 	function ChannelRosterButtonMixin:UpdateVoiceActivityNotification()
-		if self:IsVoiceEnabled() then
+		if self:IsVoiceEnabled() and self:IsChannelActive() then
 			local guid = self.playerLocation and self.playerLocation:GetGUID();
 			if guid ~= self.registeredGuid then
 				if self.registeredGuid then

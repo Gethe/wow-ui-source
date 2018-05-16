@@ -32,12 +32,19 @@ do
 		self:RegisterEvent("VOICE_CHAT_ERROR");
 		self:RegisterEvent("GROUP_FORMED");
 		self:RegisterEvent("GROUP_LEFT");
+		self:RegisterEvent("CLUB_ADDED");
+		self:RegisterEvent("CLUB_REMOVED");
+		self:RegisterEvent("CLUB_STREAMS_LOADED");
+		self:RegisterEvent("CLUB_STREAM_ADDED");
+		self:RegisterEvent("CLUB_STREAM_REMOVED");
+		self:RegisterEvent("CLUB_MEMBER_UPDATED");
+		self:RegisterEvent("CLUB_MEMBER_PRESENCE_UPDATED");
+		self:RegisterEvent("CLUB_MEMBER_ROLE_UPDATED");
 		self:RegisterEvent("VOICE_CHAT_CHANNEL_MEMBER_ACTIVE_STATE_CHANGED");
 		self:RegisterEvent("VOICE_CHAT_CHANNEL_TRANSMIT_CHANGED");
 		self:RegisterEvent("VOICE_CHAT_MUTED_CHANGED");
 		self:RegisterEvent("VOICE_CHAT_DEAFENED_CHANGED");
 		self:RegisterEvent("VOICE_CHAT_CHANNEL_MEMBER_MUTE_FOR_ME_CHANGED");
-
 
 		self:AddEvents("PARTY_LEADER_CHANGED", "GROUP_ROSTER_UPDATE", "CHANNEL_UI_UPDATE", "CHANNEL_LEFT", "CHAT_MSG_CHANNEL_NOTICE_USER");
 
@@ -105,6 +112,22 @@ function ChannelFrameMixin:OnEvent(event, ...)
 		self:OnGroupFormed(...);
 	elseif event == "GROUP_LEFT" then
 		self:OnGroupLeft(...);
+	elseif event == "CLUB_ADDED" then
+		self:OnClubAdded(...);
+	elseif event == "CLUB_REMOVED" then
+		self:OnClubRemoved(...);
+	elseif event == "CLUB_STREAMS_LOADED" then
+		self:OnClubStreamsLoaded(...);
+	elseif event == "CLUB_STREAM_ADDED" then
+		self:OnClubStreamAdded(...);
+	elseif event == "CLUB_STREAM_REMOVED" then
+		self:OnClubStreamRemoved(...);
+	elseif event == "CLUB_MEMBER_UPDATED" then
+		self:UpdateCommunityChannelIfSelected(...);
+	elseif event == "CLUB_MEMBER_PRESENCE_UPDATED" then
+		self:UpdateCommunityChannelIfSelected(...);
+	elseif event == "CLUB_MEMBER_ROLE_UPDATED" then
+		self:UpdateCommunityChannelIfSelected(...);
 	elseif event == "VOICE_CHAT_CHANNEL_MEMBER_ACTIVE_STATE_CHANGED" then
 		self:OnMemberActiveStateChanged(...);
 	elseif event == "VOICE_CHAT_CHANNEL_TRANSMIT_CHANGED" then
@@ -134,11 +157,20 @@ function ChannelFrameMixin:GetDropdown()
 	return self.Dropdown;
 end
 
-function ChannelFrameMixin:OnVoiceChannelJoined(statusCode, channelID)
+function ChannelFrameMixin:OnVoiceChannelJoined(statusCode, channelID, clubId, streamId)
 	if statusCode == Enum.VoiceChatStatusCode.Success then
-		self.DirtyFlags:MarkDirty(self.DirtyFlags.UpdateAll);
-		self:CheckActivateChannel(channelID);
-		self:CheckChannelAnnounceState(channelID, "joined");
+		if clubId and clubId > 0 and streamId and streamId > 0 then
+			-- This is a community channel, so it should already be in the list
+			local channelButton = self:GetList():GetButtonForCommunityStream(clubId, streamId);
+			if channelButton then
+				-- Found it...set it up with the voice channel and activate it
+				channelButton:OnVoiceChannelJoined(channelID);
+			end
+		else
+			self.DirtyFlags:MarkDirty(self.DirtyFlags.UpdateAll);
+			self:CheckActivateChannel(channelID);
+			self:CheckChannelAnnounceState(channelID, "joined");
+		end
 	end
 end
 
@@ -167,7 +199,13 @@ end
 
 function ChannelFrameMixin:TryJoinVoiceChannelByType(channelType)
 	self:TryExecuteCommand(function()
-		C_VoiceChat.RequestChannelInfo(channelType);
+		C_VoiceChat.RequestJoinChannelByChannelType(channelType);
+	end);
+end
+
+function ChannelFrameMixin:TryJoinCommunityStreamChannel(clubId, streamId)
+	self:TryExecuteCommand(function()
+		C_VoiceChat.RequestJoinAndActivateCommunityStreamChannel(clubId, streamId);
 	end);
 end
 
@@ -257,6 +295,13 @@ function ChannelFrameMixin:UpdatePartyChannelIfSelected()
 	end
 end
 
+function ChannelFrameMixin:UpdateCommunityChannelIfSelected(clubId, memberId)
+	local channel = self:GetList():GetSelectedChannelButton();
+	if channel and channel:ChannelIsCommunity() and channel.clubId == clubId then
+		self.DirtyFlags:MarkDirty(self.DirtyFlags.UpdateRoster);
+	end
+end
+
 function ChannelFrameMixin:OnChannelLeft(channelID, channelName)
 	self:GetList():OnChannelLeft(channelID, channelName);
 end
@@ -296,9 +341,14 @@ function ChannelFrameMixin:OnVoiceChannelRemoved(statusCode, channelID)
 	if statusCode == Enum.VoiceChatStatusCode.Success then
 		local button = self:GetList():GetButtonForVoiceChannelID(channelID);
 		if button then
-			button:SetActive(false);
-			button:SetRemoved(true);
-			button:Update();
+			if button:ChannelIsCommunity() then
+				-- This is a community stream, so just remove the attached voice channel...we will try to re-join when they activate next
+				button:OnVoiceChannelRemoved();
+			else
+				button:SetActive(false);
+				button:SetRemoved(true);
+				button:Update();
+			end
 		end
 	end
 end
@@ -373,11 +423,14 @@ end
 function ChannelFrameMixin:ShowChannelAnnounce(channelID)
 	local channel = C_VoiceChat.GetChannel(channelID);
 	if channel then
-		local atlas = CreateAtlasMarkup("voicechat-icon-headphone-on");
-		local announce = Voice_FormatChannelNotification(channel, Voice_GetChannelActivatedNotification(channel))
-		local communicationMode = Voice_GetCommunicationModeNotification(channel);
-		local memberCountMessage = VOICE_CHAT_CHANNEL_MEMBER_COUNT_ACTIVE:format(CountActiveChannelMembers(channel));
-		ChatFrame_DisplaySystemMessageInPrimary(VOICE_CHAT_CHANNEL_ANNOUNCE:format(atlas..announce, communicationMode, memberCountMessage));
+		local notification = Voice_GetChannelActivatedNotification(channel);
+		if notification then
+			local atlas = CreateAtlasMarkup("voicechat-icon-headphone-on");
+			local announce = Voice_FormatChannelNotification(channel, notification)
+			local communicationMode = Voice_GetCommunicationModeNotification(channel);
+			local memberCountMessage = VOICE_CHAT_CHANNEL_MEMBER_COUNT_ACTIVE:format(CountActiveChannelMembers(channel));
+			ChatFrame_DisplaySystemMessageInPrimary(VOICE_CHAT_CHANNEL_ANNOUNCE:format(atlas..announce, communicationMode, memberCountMessage));
+		end
 	end
 end
 
@@ -429,6 +482,30 @@ function ChannelFrameMixin:OnGroupLeft(partyCategory, partyGUID)
 	VoiceChatChannelActivatedNotification:Hide();
 
 	-- TODO: Channel removal now happens as a matter of course on the server. Verify that the channel is being removed properly.
+end
+
+function ChannelFrameMixin:OnClubAdded(clubId)
+	self.DirtyFlags:MarkDirty(self.DirtyFlags.UpdateChannelList);
+end
+
+function ChannelFrameMixin:OnClubRemoved(clubId)
+	self.DirtyFlags:MarkDirty(self.DirtyFlags.UpdateChannelList);
+end
+
+function ChannelFrameMixin:OnClubStreamsLoaded(clubId)
+	self.DirtyFlags:MarkDirty(self.DirtyFlags.UpdateChannelList);
+end
+
+function ChannelFrameMixin:OnClubStreamAdded(clubId, streamId)
+	self.DirtyFlags:MarkDirty(self.DirtyFlags.UpdateChannelList);
+end
+
+function ChannelFrameMixin:OnClubStreamRemoved(clubId, streamId)
+	self.DirtyFlags:MarkDirty(self.DirtyFlags.UpdateChannelList);
+end
+
+function ChannelFrameMixin:OnCommunityFavoriteChanged(clubId)
+	self.DirtyFlags:MarkDirty(self.DirtyFlags.UpdateChannelList);
 end
 
 function ChannelFrameMixin:OnMemberActiveStateChanged(memberID, channelID, isActive)

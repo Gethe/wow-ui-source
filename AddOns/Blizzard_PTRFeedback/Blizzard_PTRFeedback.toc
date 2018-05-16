@@ -1,6 +1,6 @@
 ## Interface: 80000
-## Title: PTR Feedback
-## Notes: Tool for gathering feedback from PTR
+## Title: PTR Bug Reporter
+## Notes: Tool for gathering bugs from PTR
 ## OnlyBetaAndPTR: 1
 ## SavedVariables: Blizzard_PTRIssueReporter_Saved
 Blizzard_FramePainter.lua

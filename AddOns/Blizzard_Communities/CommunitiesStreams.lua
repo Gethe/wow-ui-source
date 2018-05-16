@@ -215,101 +215,114 @@ end
 CommunitiesAddToChatMixin = {};
 
 function CommunitiesAddToChatMixin:OnLoad()
-	self.highlightFramePool = CreateFramePool("BUTTON", self, "CommunitiesAddStreamHighlightFrameTemplate");
+	SquareButton_SetIcon(self, "DOWN");
 end
 
-function CommunitiesAddToChatMixin:OnShow()
-	self:RegisterEvent("COMMUNITIES_STREAM_CURSOR_CLEAR");
+function CommunitiesAddToChatMixin:SetClubId(clubId)
+	self.clubId = clubId;
 end
 
-function CommunitiesAddToChatMixin:OnEvent(event)
-	if event == "COMMUNITIES_STREAM_CURSOR_CLEAR" then
-		self:Reset();
-	end
+function CommunitiesAddToChatMixin:GetClubId()
+	return self.clubId;
+end
+
+function CommunitiesAddToChatMixin:SetStreamId(streamId)
+	self.streamId = streamId;
+end
+
+function CommunitiesAddToChatMixin:GetStreamId()
+	return self.streamId;
 end
 
 function CommunitiesAddToChatMixin:OnClick()
-	self:Reset();
+	local clubId = self:GetParent():GetSelectedClubId();
+	local streamId = self:GetParent():GetSelectedStreamId();
+	if clubId and streamId then
+		self:SetClubId(clubId);
+		self:SetStreamId(streamId);
+		ToggleDropDownMenu(nil, nil, self.DropDown, self, 0, 0);
+	end
+end
+
+function CommunitiesAddToChatDropDown_Initialize(self, level)
+	local clubId = self:GetParent():GetClubId();
+	local streamId = self:GetParent():GetStreamId();
+	if not clubId or not streamId then
+		return;
+	end
 	
-	local communitiesFrame = self:GetCommunitiesFrame();
-	local clubId = communitiesFrame:GetSelectedClubId();
-	local streamId = communitiesFrame:GetSelectedStreamId();
+	local info = UIDropDownMenu_CreateInfo();
+	info.text = COMMUNITIES_ADD_TO_CHAT_DROP_DOWN_TITLE;
+	info.isTitle = true;
+	info.notCheckable = true;
+	UIDropDownMenu_AddButton(info, level);
+	
 	local channelName = Chat_GetCommunitiesChannelName(clubId, streamId);
-	
-	for i = 1, NUM_CHAT_WINDOWS do
+	for i = 1, FCF_GetNumActiveChatFrames() do
 		local chatWindow = _G["ChatFrame"..i];
-		if chatWindow:IsVisible() and chatWindow ~= COMBATLOG then
-			-- TODO:: Check if this frame already has this stream attached to it.
-			local highlightFrame = self.highlightFramePool:Acquire();
-			highlightFrame:SetPoint("TOPLEFT", chatWindow, "TOPLEFT", -2, 3);
-			highlightFrame:SetPoint("BOTTOMRIGHT", chatWindow, "BOTTOMRIGHT", 2, -7);
-			highlightFrame:SetChatFrameIndex(i);
-			highlightFrame:SetStyle(not ChatFrame_ContainsChannel(chatWindow, channelName));
-			highlightFrame:Show();
+		if chatWindow ~= COMBATLOG then
+			local info = UIDropDownMenu_CreateInfo();
+			local chatTab = _G["ChatFrame"..i.."Tab"];
+			info.text = chatTab.Text:GetText();
+			info.value = i;
+			info.func = function(button)
+				if button.checked then
+					ChatFrame_RemoveCommunitiesChannel(chatWindow, clubId, streamId);
+				else
+					C_Club.AddClubStreamToChatWindow(clubId, streamId, button.value);
+					ChatFrame_AddCommunitiesChannel(chatWindow, clubId, streamId);
+				end
+				
+				chatTab:Click();
+			end;
+			
+			info.isNotRadio = true;
+			info.checked = ChatFrame_ContainsChannel(chatWindow, channelName);
+			UIDropDownMenu_AddButton(info, level);
 		end
-	end
-	
+	end	
+
 	local canCreateChatWindow = FCF_GetNumActiveChatFrames() ~= NUM_CHAT_WINDOWS;
-	self.CommunitiesAddStreamHighlightTab:SetShown(canCreateChatWindow);
 	if canCreateChatWindow then
-		local lastDockedFrame = FCFDock_GetNewTabAnchor(GENERAL_CHAT_DOCK);
-		self.CommunitiesAddStreamHighlightTab:SetPoint("BOTTOMLEFT", lastDockedFrame, "BOTTOMRIGHT", -7, 0);
-	end
-	
-	C_Cursor.SetCursorCommunitiesStream(clubId, streamId);
-end
-
-function CommunitiesAddToChatMixin:Reset()
-	self.highlightFramePool:ReleaseAll();
-	self.CommunitiesAddStreamHighlightTab:Hide();
-	if C_Cursor.GetCursorCommunitiesStream() then
-		C_Cursor.DropCursorCommunitiesStream();
-	end
-end
-
-function CommunitiesAddToChatMixin:OnHide()
-	self:UnregisterEvent("COMMUNITIES_STREAM_CURSOR_CLEAR");
-	self:Reset();
-end
-
-CommunitiesAddStreamHighlightFrameMixin = {};
-
-function CommunitiesAddStreamHighlightFrameMixin:SetChatFrameIndex(index)
-	self.chatFrameIndex = index;
-end
-
-function CommunitiesAddStreamHighlightFrameMixin:GetStyle()
-	return self.add;
-end
-
-function CommunitiesAddStreamHighlightFrameMixin:SetStyle(add)
-	self.add = add;
-	if add then
-		self.Body:SetAtlas("communities-chat-body-add");
-		self.Icon:SetAtlas("communities-chat-icon-plus");
-	else
-		self.Body:SetAtlas("communities-chat-body-remove");
-		self.Icon:SetAtlas("communities-chat-icon-minus");
-	end
-end
-
-function CommunitiesAddStreamHighlightFrameMixin:OnClick()
-	local clubId, streamId = C_Cursor.GetCursorCommunitiesStream();
-	if clubId then
-		local chatFrame = Chat_GetChatFrame(self.chatFrameIndex);
-		if chatFrame then
-			local channelName = Chat_GetCommunitiesChannelName(clubId, streamId);
-			local add = self:GetStyle();
-			if add then
-				C_Club.AddClubStreamToChatWindow(clubId, streamId, self.chatFrameIndex);
-				ChatFrame_AddChannel(chatFrame, channelName);
-				self:GetParent():Reset();
-			else
-				ChatFrame_RemoveChannel(chatFrame, channelName);
-				self:GetParent():Reset();
+		local info = UIDropDownMenu_CreateInfo();
+		info.text = COMMUNITIES_ADD_TO_CHAT_DROP_DOWN_NEW_CHAT_WINDOW;
+		info.func = function(button)
+			local clubInfo = C_Club.GetClubInfo(clubId);
+			local streamInfo = C_Club.GetStreamInfo(clubId, streamId);
+			if clubInfo and streamInfo then
+				local MAX_COMMUNITY_NAME_LENGTH = 12;
+				local MAX_CHAT_TAB_STREAM_NAME_LENGTH = 50; -- Arbitrarily large, since for now we don't want to truncate the stream part.
+				local communityPart = ChatFrame_TruncateToMaxLength(clubInfo.name, MAX_COMMUNITY_NAME_LENGTH);
+				local streamPart = ChatFrame_TruncateToMaxLength(streamInfo.name, MAX_CHAT_TAB_STREAM_NAME_LENGTH);
+				local chatFrameName = COMMUNITIES_NAME_AND_STREAM_NAME:format(communityPart, streamPart);
+				local frame, chatFrameIndex = FCF_OpenNewWindow(chatFrameName);
+				C_Club.AddClubStreamToChatWindow(clubId, streamId, chatFrameIndex);
+				ChatFrame_AddCommunitiesChannel(frame, clubId, streamId);
 			end
-		end
+		end;
+
+		info.isNotRadio = true;
+		info.notCheckable = true;
+		UIDropDownMenu_AddButton(info, level);
 	end
+
+	UIDropDownMenu_AddSeparator();
+	
+	local info = UIDropDownMenu_CreateInfo();
+	info.text = COMMUNITIES_ADD_TO_CHAT_DROP_DOWN_CHAT_SETTINGS;
+	info.func = function()
+		CURRENT_CHAT_FRAME_ID = SELECTED_CHAT_FRAME:GetID();
+		ShowUIPanel(ChatConfigFrame);
+		ChatConfigCategory_OnClick(ChatConfigCategoryFrameButton3);
+	end;
+		
+	info.isNotRadio = true;
+	info.notCheckable = true;
+	UIDropDownMenu_AddButton(info, level);
+end
+
+function CommunitiesAddToChatDropDown_OnLoad(self)
+	UIDropDownMenu_Initialize(self, CommunitiesAddToChatDropDown_Initialize, "MENU");
 end
 
 function CommunitiesAddToChatMixin:GetCommunitiesFrame()

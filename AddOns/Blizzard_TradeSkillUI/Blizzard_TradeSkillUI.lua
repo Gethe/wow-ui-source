@@ -109,7 +109,7 @@ function TradeSkillUIMixin:RefreshRetrievingDataFrame()
 end
 
 function TradeSkillUIMixin:RefreshTitle()
-	local tradeSkillID, skillLineName, skillLineRank, skillLineMaxRank, skillLineModifier, parentSkillLineName =  C_TradeSkillUI.GetTradeSkillLine();
+	local tradeSkillID, skillLineName, skillLineRank, skillLineMaxRank, skillLineModifier, parentSkillLineID, parentSkillLineName =  C_TradeSkillUI.GetTradeSkillLine();
 
 	if (parentSkillLineName) then
 		skillLineName = parentSkillLineName;

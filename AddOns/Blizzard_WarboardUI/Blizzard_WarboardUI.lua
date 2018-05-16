@@ -13,7 +13,7 @@ local titleTextureKitRegions = {
 function WarboardQuestChoiceFrameMixin:OnLoad()
 	self.QuestionText = self.Title.Text;
 	self.initOptionHeight = 337;
-	self.optionStaticHeight = 275;
+	self.optionStaticHeight = 253;
 	self.initWindowHeight = 549;
 	self.initOptionBackgroundHeight = 337;
 	self.initOptionHeaderTextHeight = 20;
@@ -56,9 +56,7 @@ end
 function WarboardQuestChoiceFrameMixin:Update()
 	QuestChoiceFrameMixin.Update(self);
 
-	local _, _, numOptions = GetQuestChoiceInfo();
-
-	if (numOptions == 1) then
+	if (self.numActiveOptionFrames == 1) then
 		local textWidth = self.Title.Text:GetWidth();
 		local neededWidth = math.max(120, (textWidth/2)-40);
 
@@ -70,7 +68,7 @@ function WarboardQuestChoiceFrameMixin:Update()
 	else
 		self.fixedWidth = 600;
 		self.Title:SetPoint("LEFT", self.Option1, "LEFT", -3, 0);
-		self.Title:SetPoint("RIGHT", self.Options[numOptions], "RIGHT", 3, 0);
+		self.Title:SetPoint("RIGHT", self.Options[self.numActiveOptionFrames], "RIGHT", 3, 0);
 	end
 	self:Layout();
 end

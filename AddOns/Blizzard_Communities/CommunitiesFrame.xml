@@ -4,14 +4,14 @@
 	
 	<Frame name="GuildBenefitsFrameTemplate" virtual="true">
 		<Frames>
-			<Frame parentKey="Perks" inherits="GuildPerksFrameTemplate">
+			<Frame parentKey="Perks" inherits="CommunitiesGuildPerksFrameTemplate">
 				<Size x="270" y="0"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="0" y="0"/>
 					<Anchor point="BOTTOMLEFT" x="0" y="0"/>
 				</Anchors>
 			</Frame>
-			<Frame parentKey="Rewards" inherits="GuildRewardsFrameTemplate">
+			<Frame parentKey="Rewards" inherits="CommunitiesGuildRewardsFrameTemplate">
 				<Size x="302" y="0"/>
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="0" y="0"/>
@@ -59,14 +59,14 @@
 	
 	<Frame name="GuildDetailsFrameTemplate" virtual="true">
 		<Frames>
-			<Frame parentKey="Info" name="$parentInfo" inherits="GuildInfoFrameTemplate">
+			<Frame parentKey="Info" name="$parentInfo" inherits="CommunitiesGuildInfoFrameTemplate">
 				<Size x="270" y="0"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="0" y="0"/>
 					<Anchor point="BOTTOMLEFT" x="0" y="0"/>
 				</Anchors>
 			</Frame>
-			<Frame parentKey="News" name="$parentNews" inherits="GuildNewsFrameTemplate">
+			<Frame parentKey="News" name="$parentNews" inherits="CommunitiesGuildNewsFrameTemplate">
 				<Size x="316" y="0"/>
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="-4" y="0"/>
@@ -134,7 +134,7 @@
 					<Anchor point="RIGHT" relativeKey="$parent.CommunitiesSettingsButton" relativePoint="LEFT" x="-2" y="0"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="frame" value="GuildRecruitmentFrame" type="Global"/>
+					<KeyValue key="frame" value="CommunitiesGuildRecruitmentFrame" type="Global"/>
 				</KeyValues>
 			</Button>
 			<Button parentKey="GuildControlButton" inherits="UIPanelButtonTemplate, CommunitiesSubPanelButtonScriptTemplate" text="GUILD_CONTROL_BUTTON_TEXT">
@@ -154,6 +154,9 @@
 		
 	<Frame name="CommunitiesFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true" inherits="ButtonFrameTemplate" mixin="CommunitiesFrameMixin">
 		<Size x="814" y="426"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
 		<Layers>
 			<Layer level="ARTWORK">
 				<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
@@ -212,7 +215,7 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnLoad function="CommunitiesFrameMaximizeMinimizeButton_OnLoad"/>
+					<OnLoad function="CommunitiesFrameMaximizeMinimizeButton_OnLoad" inherit="append"/>
 				</Scripts>
 			</Frame>
 			<Frame name="$parentCommunitiesList" parentKey="CommunitiesList" useParentLevel="true" inherits="CommunitiesListFrameTemplate">
@@ -245,6 +248,12 @@
 				<Size x="40" y="28"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="188" y="-32"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="GuildMemberListDropDownMenu" inherits="GuildMemberListDropDownMenuTemplate">
+				<Size x="40" y="28"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-10" y="-26"/>
 				</Anchors>
 			</Frame>
 			<Frame parentKey="CommunitiesListDropDownMenu" inherits="CommunitiesListDropDownMenuTemplate">
@@ -306,10 +315,10 @@
 				</Anchors>
 			</Frame>
 			<Button parentKey="AddToChatButton" inherits="AddToChatButtonTemplate">
-				<Size x="180" y="20"/>
+				<Size x="24" y="24"/>
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.ChatEditBox" relativePoint="RIGHT" x="5" y="0"/>
-					<Anchor point="BOTTOM" x="0" y="5"/>
+					<Anchor point="BOTTOM" x="0" y="3"/>
 				</Anchors>
 			</Button>
 			<Button parentKey="InviteButton" inherits="CommunitiesInviteButtonTemplate">
@@ -330,7 +339,7 @@
 					<Anchor point="BOTTOMLEFT" x="190" y="5"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="frame" value="GuildLogFrame" type="Global"/>
+					<KeyValue key="frame" value="CommunitiesGuildLogFrame" type="Global"/>
 				</KeyValues>
 			</Button>
 		</Frames>

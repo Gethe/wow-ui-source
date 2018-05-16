@@ -161,6 +161,24 @@ local ActionBarFrame =
 			},
 		},
 		{
+			Name = "ShouldOverrideBarShowHealthBar",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "showHealthBar", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ShouldOverrideBarShowManaBar",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "showManaBar", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "ToggleAutoCastPetAction",
 			Type = "Function",
 

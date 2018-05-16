@@ -989,4 +989,5 @@ Enum.ChatChannelType = {
 	Custom = 1,
 	Private_Party = 2,
 	Public_Party = 3,
+	Communities = 4,
 };

@@ -62,6 +62,7 @@ local Club =
 			Arguments =
 			{
 				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "shortName", Type = "string", Nilable = true },
 				{ Name = "description", Type = "string", Nilable = false },
 				{ Name = "clubType", Type = "ClubType", Nilable = false, Documentation = { "Valid types are BattleNet or Character" } },
 				{ Name = "avatarId", Type = "number", Nilable = false },
@@ -90,6 +91,7 @@ local Club =
 				{ Name = "clubId", Type = "string", Nilable = false },
 				{ Name = "allowedRedeemCount", Type = "number", Nilable = true, Documentation = { "Number of uses. nil means unlimited" } },
 				{ Name = "duration", Type = "number", Nilable = true, Documentation = { "Duration in seconds. nil never expires" } },
+				{ Name = "defaultStreamId", Type = "string", Nilable = true },
 			},
 		},
 		{
@@ -153,6 +155,7 @@ local Club =
 			{
 				{ Name = "clubId", Type = "string", Nilable = false },
 				{ Name = "name", Type = "string", Nilable = true },
+				{ Name = "shortName", Type = "string", Nilable = true },
 				{ Name = "description", Type = "string", Nilable = true },
 				{ Name = "avatarId", Type = "number", Nilable = true },
 				{ Name = "broadcast", Type = "string", Nilable = true },
@@ -250,6 +253,7 @@ local Club =
 			Arguments =
 			{
 				{ Name = "clubId", Type = "string", Nilable = false },
+				{ Name = "streamId", Type = "string", Nilable = true },
 			},
 
 			Returns =
@@ -494,6 +498,15 @@ local Club =
 			},
 		},
 		{
+			Name = "IsEnabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "clubsEnabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsSubscribedToStream",
 			Type = "Function",
 
@@ -716,6 +729,22 @@ local Club =
 				{ Name = "streamId", Type = "string", Nilable = false },
 			},
 		},
+		{
+			Name = "ValidateText",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "clubType", Type = "ClubType", Nilable = false },
+				{ Name = "text", Type = "string", Nilable = false },
+				{ Name = "clubFieldType", Type = "ClubFieldType", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "ClubValidateTextResult", Nilable = false },
+			},
+		},
 	},
 
 	Events =
@@ -930,6 +959,16 @@ local Club =
 			},
 		},
 		{
+			Name = "ClubTicketCreated",
+			Type = "Event",
+			LiteralName = "CLUB_TICKET_CREATED",
+			Payload =
+			{
+				{ Name = "clubId", Type = "string", Nilable = false },
+				{ Name = "ticketInfo", Type = "ClubTicketInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "ClubTicketReceived",
 			Type = "Event",
 			LiteralName = "CLUB_TICKET_RECEIVED",
@@ -938,6 +977,15 @@ local Club =
 				{ Name = "succeeded", Type = "bool", Nilable = false },
 				{ Name = "ticket", Type = "string", Nilable = false },
 				{ Name = "info", Type = "ClubInfo", Nilable = true },
+			},
+		},
+		{
+			Name = "ClubTicketsReceived",
+			Type = "Event",
+			LiteralName = "CLUB_TICKETS_RECEIVED",
+			Payload =
+			{
+				{ Name = "clubId", Type = "string", Nilable = false },
 			},
 		},
 		{
@@ -992,6 +1040,23 @@ local Club =
 			},
 		},
 		{
+			Name = "ClubFieldType",
+			Type = "Enumeration",
+			NumValues = 7,
+			MinValue = 0,
+			MaxValue = 6,
+			Fields =
+			{
+				{ Name = "ClubName", Type = "ClubFieldType", EnumValue = 0 },
+				{ Name = "ClubShortName", Type = "ClubFieldType", EnumValue = 1 },
+				{ Name = "ClubDescription", Type = "ClubFieldType", EnumValue = 2 },
+				{ Name = "ClubBroadcast", Type = "ClubFieldType", EnumValue = 3 },
+				{ Name = "ClubStreamName", Type = "ClubFieldType", EnumValue = 4 },
+				{ Name = "ClubStreamSubject", Type = "ClubFieldType", EnumValue = 5 },
+				{ Name = "NumTypes", Type = "ClubFieldType", EnumValue = 6 },
+			},
+		},
+		{
 			Name = "ClubMemberPresence",
 			Type = "Enumeration",
 			NumValues = 5,
@@ -1033,12 +1098,27 @@ local Club =
 			},
 		},
 		{
+			Name = "ClubValidateTextResult",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 0,
+			MaxValue = 3,
+			Fields =
+			{
+				{ Name = "Success", Type = "ClubValidateTextResult", EnumValue = 0 },
+				{ Name = "FailProfanity", Type = "ClubValidateTextResult", EnumValue = 1 },
+				{ Name = "FailTooShort", Type = "ClubValidateTextResult", EnumValue = 2 },
+				{ Name = "FailTooLong", Type = "ClubValidateTextResult", EnumValue = 3 },
+			},
+		},
+		{
 			Name = "ClubInfo",
 			Type = "Structure",
 			Fields =
 			{
 				{ Name = "clubId", Type = "string", Nilable = false },
 				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "shortName", Type = "string", Nilable = true },
 				{ Name = "description", Type = "string", Nilable = false },
 				{ Name = "broadcast", Type = "string", Nilable = false },
 				{ Name = "clubType", Type = "ClubType", Nilable = false },
@@ -1057,11 +1137,24 @@ local Club =
 				{ Name = "name", Type = "string", Nilable = true, Documentation = { "name may be encoded as a Kstring" } },
 				{ Name = "role", Type = "ClubRoleIdentifier", Nilable = true },
 				{ Name = "presence", Type = "ClubMemberPresence", Nilable = false },
+				{ Name = "guid", Type = "string", Nilable = true },
 				{ Name = "memberNote", Type = "string", Nilable = true },
+				{ Name = "officerNote", Type = "string", Nilable = true },
 				{ Name = "classID", Type = "number", Nilable = true },
 				{ Name = "race", Type = "number", Nilable = true },
 				{ Name = "level", Type = "number", Nilable = true },
 				{ Name = "zone", Type = "string", Nilable = true },
+				{ Name = "achievementPoints", Type = "number", Nilable = true },
+				{ Name = "profession1ID", Type = "number", Nilable = true },
+				{ Name = "profession1Rank", Type = "number", Nilable = true },
+				{ Name = "profession1Name", Type = "string", Nilable = true },
+				{ Name = "profession2ID", Type = "number", Nilable = true },
+				{ Name = "profession2Rank", Type = "number", Nilable = true },
+				{ Name = "profession2Name", Type = "string", Nilable = true },
+				{ Name = "lastOnlineYear", Type = "number", Nilable = true },
+				{ Name = "lastOnlineMonth", Type = "number", Nilable = true },
+				{ Name = "lastOnlineDay", Type = "number", Nilable = true },
+				{ Name = "lastOnlineHour", Type = "number", Nilable = true },
 			},
 		},
 		{
@@ -1201,11 +1294,12 @@ local Club =
 			Fields =
 			{
 				{ Name = "ticketId", Type = "string", Nilable = false },
-				{ Name = "isMyTicket", Type = "bool", Nilable = false },
 				{ Name = "allowedRedeemCount", Type = "number", Nilable = false },
 				{ Name = "currentRedeemCount", Type = "number", Nilable = false },
 				{ Name = "creationTime", Type = "number", Nilable = false, Documentation = { "Creation time in microseconds since the UNIX epoch." } },
 				{ Name = "expirationTime", Type = "number", Nilable = false, Documentation = { "Expiration time in microseconds since the UNIX epoch." } },
+				{ Name = "defaultStreamId", Type = "string", Nilable = true },
+				{ Name = "creator", Type = "ClubMemberInfo", Nilable = false },
 			},
 		},
 	},

@@ -59,12 +59,12 @@ UIPanelWindows["RaidBrowserFrame"] =			{ area = "left",			pushable = 1,	};
 UIPanelWindows["DeathRecapFrame"] =				{ area = "center",			pushable = 0,	whileDead = 1, allowOtherPanels = 1};
 UIPanelWindows["WardrobeFrame"] =				{ area = "left",			pushable = 0,	width = 965 };
 UIPanelWindows["AlliedRacesFrame"] =			{ area = "left",			pushable = 1,	whileDead = 1 };
-UIPanelWindows["CommunitiesFrame"] =			{ area = "left",			pushable = 1,	whileDead = 1 };
-UIPanelWindows["GuildLogFrame"] =				{ area = "left",			pushable = 1,	whileDead = 1, 		yoffset = 4, };
 UIPanelWindows["GuildControlUI"] =				{ area = "left",			pushable = 1,	whileDead = 1,		yoffset = 4, };
-UIPanelWindows["GuildTextEditFrame"] =			{ area = "left",			pushable = 1,	whileDead = 1 };
-UIPanelWindows["GuildRecruitmentFrame"] =		{ area = "left",			pushable = 1,	whileDead = 1 };
-UIPanelWindows["GuildNewsFiltersFrame"] =		{ area = "left",			pushable = 1,	whileDead = 1 };
+UIPanelWindows["CommunitiesFrame"] =			{ area = "left",			pushable = 1,	whileDead = 1 };
+UIPanelWindows["CommunitiesGuildLogFrame"] =	{ area = "left",			pushable = 1,	whileDead = 1, 		yoffset = 4, };
+UIPanelWindows["CommunitiesGuildTextEditFrame"] = 			{ area = "left",			pushable = 1,	whileDead = 1 };
+UIPanelWindows["CommunitiesGuildRecruitmentFrame"] =		{ area = "left",			pushable = 1,	whileDead = 1 };
+UIPanelWindows["CommunitiesGuildNewsFiltersFrame"] =		{ area = "left",			pushable = 1,	whileDead = 1 };
 
 -- Frames NOT using the new Templates
 UIPanelWindows["WorldMapFrame"] =				{ area = "full",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
@@ -506,6 +506,10 @@ function ObliterumForgeFrame_LoadUI()
 	UIParentLoadAddOn("Blizzard_ObliterumUI");
 end
 
+function ScrappingMachineFrame_LoadUI()
+	UIParentLoadAddOn("Blizzard_ScrappingMachineUI"); 
+end
+
 function GMSurveyFrame_LoadUI()
 	UIParentLoadAddOn("Blizzard_GMSurveyUI");
 end
@@ -653,6 +657,10 @@ function DeathRecap_LoadUI()
 	UIParentLoadAddOn("Blizzard_DeathRecap");
 end
 
+function Communities_LoadUI()
+	UIParentLoadAddOn("Blizzard_Communities");
+end
+
 local playerEnteredWorld = false;
 local varsLoaded = false;
 function NPETutorial_AttemptToBegin(event)
@@ -756,7 +764,10 @@ function ToggleGuildFrame()
 		UIErrorsFrame:AddMessage(ERR_RESTRICTED_ACCOUNT_TRIAL, 1.0, 0.1, 0.1, 1.0);
 		return;
 	end
-	if ( IsInGuild() ) then
+	
+	if ( CommunitiesFrame_IsEnabled() ) then
+		ToggleCommunitiesFrame();
+	elseif ( IsInGuild() ) then
 		GuildFrame_LoadUI();
 		if ( GuildFrame_Toggle ) then
 			GuildFrame_Toggle();
@@ -868,11 +879,17 @@ function ToggleEncounterJournal()
 end
 
 function ToggleCommunitiesFrame()
-	if (CommunitiesFrame:IsShown()) then
-		HideUIPanel(CommunitiesFrame);
-	else
-		ShowUIPanel(CommunitiesFrame);
-	end
+	Communities_LoadUI();
+	ToggleFrame(CommunitiesFrame);
+end
+
+function ToggleCommunitiesFrame()
+	Communities_LoadUI();
+	ToggleFrame(CommunitiesFrame);
+end
+
+function CommunitiesFrame_IsEnabled()
+	return C_Club.IsEnabled();
 end
 
 COLLECTIONS_JOURNAL_TAB_INDEX_MOUNTS = 1;

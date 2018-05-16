@@ -683,6 +683,7 @@ end
 function EmbeddedItemTooltip_SetSpellByQuestReward(self, rewardIndex, questID)
 	local texture, name, isTradeskillSpell, isSpellLearned, hideSpellLearnText, isBoostSpell, garrFollowerID, genericUnlock, spellID = GetQuestLogRewardSpell(rewardIndex, questID);
 	if garrFollowerID then
+		self:Show();
 		EmbeddedItemTooltip_PrepareForFollower(self);
 		local data = GarrisonFollowerTooltipTemplate_BuildDefaultDataForID(garrFollowerID);
 		GarrisonFollowerTooltipTemplate_SetGarrisonFollower(self.FollowerTooltip, data);

@@ -207,11 +207,26 @@ function OverrideActionBar_Setup(skin, barIndex)
 		end
 	end
 	
+	local shouldShowHealthBar;
+	local shouldShowManaBar;
+	--vehicles always show both bars, override bars check their flags
 	if HasVehicleActionBar() then
+		shouldShowHealthBar = true;
+		shouldShowManaBar = true;
+	else
+		shouldShowHealthBar = C_ActionBar.ShouldOverrideBarShowHealthBar();
+		shouldShowManaBar = C_ActionBar.ShouldOverrideBarShowManaBar();
+	end
+
+	if shouldShowHealthBar then
 		OverrideActionBarHealthBar:Show();
-		OverrideActionBarPowerBar:Show();
 	else
 		OverrideActionBarHealthBar:Hide();
+	end
+
+	if shouldShowManaBar then
+		OverrideActionBarPowerBar:Show();
+	else
 		OverrideActionBarPowerBar:Hide();
 	end
 

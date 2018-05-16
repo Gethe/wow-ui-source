@@ -70,6 +70,6 @@
 	</Button>
 
 	<Button name="ChannelButtonTextTemplate" mixin="ChannelButtonTextMixin" inherits="ChannelButtonTemplate" virtual="true"/>
-
 	<Button name="ChannelButtonVoiceTemplate" mixin="ChannelButtonVoiceMixin" inherits="ChannelButtonTemplate" virtual="true"/>
+	<Button name="ChannelButtonCommunityTemplate" mixin="ChannelButtonCommunityMixin" inherits="ChannelButtonTemplate" virtual="true"/>
 </Ui>

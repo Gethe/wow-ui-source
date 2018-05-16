@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\FrameXML\UI.xsd">
 	<Script file="GuildPerks.lua"/>
-	<Button name="GuildPerksButtonTemplate" virtual="true">
+	<Button name="CommunitiesGuildPerksButtonTemplate" virtual="true">
 		<Size x="270" y="44"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -109,13 +109,13 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnEnter function="GuildPerksButton_OnEnter"/>
-			<OnLeave function="GuildPerksButton_OnLeave"/>
-			<OnClick function="GuildPerksButton_OnClick"/>
+			<OnEnter function="CommunitiesGuildPerksButton_OnEnter"/>
+			<OnLeave function="CommunitiesGuildPerksButton_OnLeave"/>
+			<OnClick function="CommunitiesGuildPerksButton_OnClick"/>
 		</Scripts>
 	</Button>
 
-	<Frame name="GuildPerksFrameTemplate" virtual="true">
+	<Frame name="CommunitiesGuildPerksFrameTemplate" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture file="Interface\GuildFrame\GuildFrame">
@@ -152,9 +152,9 @@
 			</ScrollFrame>
 		</Frames>
 		<Scripts>
-			<OnLoad function="GuildPerksFrame_OnLoad"/>
-			<OnShow function="GuildPerksFrame_OnShow"/>
-			<OnEvent function="GuildPerksFrame_OnEvent"/>
+			<OnLoad function="CommunitiesGuildPerksFrame_OnLoad"/>
+			<OnShow function="CommunitiesGuildPerksFrame_OnShow"/>
+			<OnEvent function="CommunitiesGuildPerksFrame_OnEvent"/>
 		</Scripts>
 	</Frame>
 </Ui>

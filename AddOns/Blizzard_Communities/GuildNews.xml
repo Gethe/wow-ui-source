@@ -6,7 +6,7 @@
 	Templates
 *******************************************************************************
 -->
-	<CheckButton name="GuildNewsCheckButtonTemplate" virtual="true">
+	<CheckButton name="CommunitiesGuildNewsCheckButtonTemplate" virtual="true">
 		<Size x="24" y="24"/>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -18,7 +18,7 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnClick function="GuildNewsFilter_OnClick"/>
+			<OnClick function="CommunitiesGuildNewsFilter_OnClick"/>
 		</Scripts>
 		<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
 		<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
@@ -27,7 +27,7 @@
 		<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
 	</CheckButton>
 	
-	<Button name="GuildNewsButtonTemplate" virtual="true">
+	<Button name="CommunitiesGuildNewsButtonTemplate" virtual="true">
 		<Size x="300" y="18"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -66,26 +66,26 @@
 			</OnLoad>
 			<OnEnter>
 				if ( not self.isEvent ) then
-					GuildNewsButton_OnEnter(self);
+					CommunitiesGuildNewsButton_OnEnter(self);
 				end
 			</OnEnter>
 			<OnClick>
 				if ( self.isEvent ) then
-					GuildEventButton_OnClick(self, button);
+					CommunitiesGuildEventButton_OnClick(self, button);
 				else
-					GuildNewsButton_OnClick(self, button);
+					CommunitiesGuildNewsButton_OnClick(self, button);
 				end
 			</OnClick>
 			<OnLeave>
 				if ( not self.isEvent ) then
-					GuildNewsButton_OnLeave(self);
+					CommunitiesGuildNewsButton_OnLeave(self);
 				end
 			</OnLeave>
 		</Scripts>
 		<HighlightTexture file="Interface\FriendsFrame\UI-FriendsFrame-HighlightBar-Blue" setAllPoints="true" alphaMode="ADD"/>
 	</Button>
 	
-	<PlayerModel name="GuildNewsBossModelTemplate" enableMouse="true" hidden="true" clampedToScreen="true" frameStrata="DIALOG" virtual="true">
+	<PlayerModel name="CommunitiesGuildNewsBossModelTemplate" enableMouse="true" hidden="true" clampedToScreen="true" frameStrata="DIALOG" virtual="true">
 		<Size x="198" y="230"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -252,7 +252,7 @@
 	News panel
 *******************************************************************************
 -->
-	<Frame name="GuildNewsFrameTemplate" virtual="true">
+	<Frame name="CommunitiesGuildNewsFrameTemplate" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture file="Interface\GuildFrame\GuildFrame">
@@ -300,9 +300,9 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						local toggled = CallMethodOnNearestAncestor(self, "ToggleSubPanel", GuildNewsFiltersFrame);
+						local toggled = CallMethodOnNearestAncestor(self, "ToggleSubPanel", CommunitiesGuildNewsFiltersFrame);
 						if not toggled then
-							ToggleFrame(GuildNewsFiltersFrame);
+							ToggleFrame(CommunitiesGuildNewsFiltersFrame);
 						end
 					</OnClick>
 				</Scripts>
@@ -364,20 +364,20 @@
 			<Frame parentKey="DropDown" inherits="UIDropDownMenuTemplate" hidden="true">
 				<Size x="10" y="10"/>
 				<Scripts>
-					<OnLoad function="GuildNewsDropDown_OnLoad"/>
+					<OnLoad function="CommunitiesGuildNewsDropDown_OnLoad"/>
 				</Scripts>
 			</Frame>
-			<PlayerModel parentKey="BossModel" inherits="GuildNewsBossModelTemplate">
+			<PlayerModel parentKey="BossModel" inherits="CommunitiesGuildNewsBossModelTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-8" y="-20"/>
 				</Anchors>
 			</PlayerModel>
 		</Frames>
 		<Scripts>
-			<OnLoad function="GuildNewsFrame_OnLoad"/>
-			<OnShow function="GuildNewsFrame_OnShow"/>
-			<OnEvent function="GuildNewsFrame_OnEvent"/>
-			<OnHide function="GuildNewsFrame_OnHide"/>
+			<OnLoad function="CommunitiesGuildNewsFrame_OnLoad"/>
+			<OnShow function="CommunitiesGuildNewsFrame_OnShow"/>
+			<OnEvent function="CommunitiesGuildNewsFrame_OnEvent"/>
+			<OnHide function="CommunitiesGuildNewsFrame_OnHide"/>
 		</Scripts>
 	</Frame>
 <!--
@@ -385,7 +385,7 @@
 	Popup
 *******************************************************************************
 -->	
-	<Frame name="GuildNewsFiltersFrame" toplevel="true" hidden="true" movable="true" enableMouse="true" parent="UIParent" inherits="TranslucentFrameTemplate">
+	<Frame name="CommunitiesGuildNewsFiltersFrame" toplevel="true" hidden="true" movable="true" enableMouse="true" parent="UIParent" inherits="TranslucentFrameTemplate">
 		<Size x="264" y="230"/>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -402,45 +402,45 @@
 					<Anchor point="TOPRIGHT" x="-4" y="-4"/>
 				</Anchors>
 			</Button>
-			<CheckButton parentKey="GuildAchievement" parentArray="GuildNewsFilterButtons" inherits="GuildNewsCheckButtonTemplate" id="1">
+			<CheckButton parentKey="GuildAchievement" parentArray="GuildNewsFilterButtons" inherits="CommunitiesGuildNewsCheckButtonTemplate" id="1">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="24" y="-40"/>
 				</Anchors>
 			</CheckButton>
-			<CheckButton parentKey="Achievement" parentArray="GuildNewsFilterButtons" inherits="GuildNewsCheckButtonTemplate" id="2">
+			<CheckButton parentKey="Achievement" parentArray="GuildNewsFilterButtons" inherits="CommunitiesGuildNewsCheckButtonTemplate" id="2">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.GuildAchievement" relativePoint="BOTTOMLEFT" x="0" y="0"/>
 				</Anchors>
 			</CheckButton>
-			<CheckButton parentKey="DungeonEncounter" parentArray="GuildNewsFilterButtons" inherits="GuildNewsCheckButtonTemplate" id="3">
+			<CheckButton parentKey="DungeonEncounter" parentArray="GuildNewsFilterButtons" inherits="CommunitiesGuildNewsCheckButtonTemplate" id="3">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.Achievement" relativePoint="BOTTOMLEFT" x="0" y="0"/>
 				</Anchors>
 			</CheckButton>
-			<CheckButton parentKey="EpicItemLooted" parentArray="GuildNewsFilterButtons" inherits="GuildNewsCheckButtonTemplate" id="4">
+			<CheckButton parentKey="EpicItemLooted" parentArray="GuildNewsFilterButtons" inherits="CommunitiesGuildNewsCheckButtonTemplate" id="4">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.DungeonEncounter" relativePoint="BOTTOMLEFT" x="0" y="0"/>
 				</Anchors>
 			</CheckButton>
-			<CheckButton parentKey="EpicItemPurchased" parentArray="GuildNewsFilterButtons" inherits="GuildNewsCheckButtonTemplate" id="5">
+			<CheckButton parentKey="EpicItemPurchased" parentArray="GuildNewsFilterButtons" inherits="CommunitiesGuildNewsCheckButtonTemplate" id="5">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.EpicItemLooted" relativePoint="BOTTOMLEFT" x="0" y="0"/>
 				</Anchors>
 			</CheckButton>
-			<CheckButton parentKey="EpicItemCrafted" parentArray="GuildNewsFilterButtons" inherits="GuildNewsCheckButtonTemplate" id="6">
+			<CheckButton parentKey="EpicItemCrafted" parentArray="GuildNewsFilterButtons" inherits="CommunitiesGuildNewsCheckButtonTemplate" id="6">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.EpicItemPurchased" relativePoint="BOTTOMLEFT" x="0" y="0"/>
 				</Anchors>
 			</CheckButton>
-			<CheckButton parentKey="LegendaryItemLooted" parentArray="GuildNewsFilterButtons" inherits="GuildNewsCheckButtonTemplate" id="9">
+			<CheckButton parentKey="LegendaryItemLooted" parentArray="GuildNewsFilterButtons" inherits="CommunitiesGuildNewsCheckButtonTemplate" id="9">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.EpicItemCrafted" relativePoint="BOTTOMLEFT" x="0" y="0"/>
 				</Anchors>
 			</CheckButton>
 		</Frames>
 		<Scripts>
-			<OnLoad function="GuildNewsFiltersFrame_OnLoad"/>
-			<OnShow function="GuildNewsFiltersFrame_OnShow"/>
+			<OnLoad function="CommunitiesGuildNewsFiltersFrame_OnLoad"/>
+			<OnShow function="CommunitiesGuildNewsFiltersFrame_OnShow"/>
 			<OnHide>
 				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 			</OnHide>

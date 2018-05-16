@@ -35,6 +35,20 @@ local Item =
 			},
 		},
 		{
+			Name = "GetItemLink",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemLocation", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "itemLink", Type = "string", Nilable = true },
+			},
+		},
+		{
 			Name = "GetItemName",
 			Type = "Function",
 

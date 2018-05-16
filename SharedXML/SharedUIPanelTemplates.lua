@@ -923,3 +923,74 @@ end
 function GetAppropriateTooltip()
 	return UIParent and GameTooltip or GlueTooltip;
 end
+
+ColumnDisplayMixin = {};
+
+function ColumnDisplayMixin:OnLoad()
+	self.columnHeaders = CreateFramePool("BUTTON", self, "ColumnDisplayButtonTemplate");
+end
+
+--[[
+The layout of your column display might look something like:
+local FOO_COLUMN_INFO = {
+	[1] = {
+		title = FOO_COLUMN_xxx_TITLE,
+		width = 60,
+	},
+	
+	...
+	
+	[5] = {
+		title = FOO_COLUMN_xxxxx_TITLE,
+		width = 0,
+	},
+};
+--]]
+
+function ColumnDisplayMixin:LayoutColumns(columnInfo, extraColumnInfo)
+	self.columnHeaders:ReleaseAll();
+	
+	local extraHeader = nil;
+	if extraColumnInfo then
+		extraHeader = self.columnHeaders:Acquire();
+		extraHeader:SetText(extraColumnInfo.title);
+		extraHeader:SetWidth(extraColumnInfo.width);
+		extraHeader:SetPoint("BOTTOMRIGHT", -28, 1);
+		extraHeader:Show();
+	end
+	
+	local previousHeader = nil;
+	for i, info in ipairs(columnInfo) do
+		local header = self.columnHeaders:Acquire();
+		header:SetText(info.title);
+		header:SetWidth(info.width);
+		header:SetID(i);
+		if i == 1 then
+			header:SetPoint("BOTTOMLEFT", 2, 1);
+			if #columnInfo == 1 then
+				header:SetPoint("BOTTOMRIGHT");
+			end
+		else
+			header:SetPoint("BOTTOMLEFT", previousHeader, "BOTTOMRIGHT", -2, 0);
+			
+			if i == #columnInfo and info.width == 0 then
+				if extraHeader then
+					header:SetPoint("BOTTOMRIGHT", extraHeader, "BOTTOMLEFT", 2, 0);
+				else
+					header:SetPoint("BOTTOMRIGHT", -28, 1);
+				end
+			end
+		end
+		
+		header:Show();
+		previousHeader = header;
+	end
+end
+
+function ColumnDisplayMixin:OnClick(columnIndex)
+	-- Implement in your mixin to support column clicks (e.g. sorting).
+end
+
+function ColumnDisplayButton_OnClick(self)
+	self:GetParent():Sort(self:GetID());
+end

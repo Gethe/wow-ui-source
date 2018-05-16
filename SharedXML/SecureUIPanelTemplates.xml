@@ -1,7 +1,15 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="SecureUIPanelTemplates.lua"/>
-	<EditBox name="InputBoxTemplate" enableMouse="true" virtual="true">
+	
+	<EditBox name="InputBoxScriptTemplate" enableMouse="true" virtual="true">
+		<Scripts>
+			<OnEscapePressed function="EditBox_ClearFocus"/>
+			<OnEditFocusLost function="EditBox_ClearHighlight"/>
+			<OnEditFocusGained function="EditBox_HighlightText"/>
+		</Scripts>
+	</EditBox>
+	<EditBox name="InputBoxTemplate" inherits="InputBoxScriptTemplate" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="Left" file="Interface\Common\Common-Input-Border">
@@ -28,11 +36,6 @@
 				</Texture>
 			</Layer>
 		</Layers>
-		<Scripts>
-			<OnEscapePressed function="EditBox_ClearFocus"/>
-			<OnEditFocusLost function="EditBox_ClearHighlight"/>
-			<OnEditFocusGained function="EditBox_HighlightText"/>
-		</Scripts>
 		<FontString inherits="ChatFontNormal"/>
 	</EditBox>
 	

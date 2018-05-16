@@ -3,9 +3,9 @@ local TutorialData = addonTable.TutorialData;
 
 
 
--- ------------------------------------------------------------------------------------------------------------
+-- ============================================================================================================
 -- Helper Functions
--- ------------------------------------------------------------------------------------------------------------
+-- ============================================================================================================
 local TutorialHelper = {};
 
 -- ------------------------------------------------------------------------------------------------------------
@@ -243,10 +243,26 @@ end
 
 
 
+-- ============================================================================================================
+-- Map Bridge
+-- ============================================================================================================
+local MapBridgeDataProviderMixin = CreateFromMixins(MapCanvasDataProviderMixin);
 
+function MapBridgeDataProviderMixin:OnMapChanged(...) -- override
+	if self.mapChangedCallback then
+		self.mapChangedCallback(...);
+	end
+end
 
+function MapBridgeDataProviderMixin:SetOnMapChangedCallback(mapChangedCallback)
+	self.mapChangedCallback = mapChangedCallback;
+end
 
-
+function MapBridgeDataProviderMixin:New()
+	local t = CreateFromMixins(MapBridgeDataProviderMixin);
+	WorldMapFrame:AddDataProvider(t);
+	return t;
+end
 
 
 
@@ -754,31 +770,27 @@ function Class_Intro_MapHighlights:OnBegin()
 	self:Display();
 
 	self.Timer = C_Timer.NewTimer(8, function()
-			-- MAPREFACTORTODO: Replace this tutorial
-			-- if (WorldMapFrame_InWindowedMode()) then
-			-- 	self:AddPointerTutorial(formatStr(NPE_CLOSEWORLDMAP), "LEFT", WorldMapFrameCloseButton, -15);
-			-- else
-			-- 	self:AddPointerTutorial(formatStr(NPE_CLOSEWORLDMAP), "UP", WorldMapFrameCloseButton, 0, 15);
-			-- end
+			self:AddPointerTutorial(formatStr(NPE_CLOSEWORLDMAP), "UP", WorldMapFrameCloseButton, 0, 15);
 		end);
 
 	Dispatcher:RegisterScript(WorldMapFrame, "OnHide", function() self:Complete(); end, true);
 
-	-- MAPREFACTORTODO: Replace this tutorial
-	--Dispatcher:RegisterEvent("WORLD_MAP_UPDATE", self);
+	self.MapProvider = MapBridgeDataProviderMixin:New()
+	self.MapProvider:SetOnMapChangedCallback(function()
+			local mapID = self.MapProvider:GetMap():GetMapID();
+			if (mapID ~= self.MapID) then
+				self:Suppress();
+			else
+				self:Unsuppress();
+			end
+		end);
 end
 
 function Class_Intro_MapHighlights:Display()
-	-- MAPREFACTORTODO: Replace this tutorial
-	-- self.MapPointerTutorialID = self:AddPointerTutorial(str(self.Prompt), "UP", WorldMapScrollFrame, 0, 100, nil, "LEFT");
-end
-
-function Class_Intro_MapHighlights:WORLD_MAP_UPDATE()
-	local mapID = WorldMapFrame:GetMapID();
-	if (mapID ~= self.MapID) then
-		self:Suppress();
+	if (WorldMapFrame.isMaximized) then
+		self.MapPointerTutorialID = self:AddPointerTutorial(formatStr(self.Prompt), "LEFT", WorldMapFrame.ScrollContainer, -200, 0, nil);
 	else
-		self:Unsuppress();
+		self.MapPointerTutorialID = self:AddPointerTutorial(formatStr(self.Prompt), "UP", WorldMapFrame.ScrollContainer, 0, 100, nil);
 	end
 end
 
@@ -1812,8 +1824,6 @@ local Class_ShowMapQuestTurnIn = class("ShowMapQuestTurnIn", Class_TutorialBase)
 
 -- @param questData: Class QuestData (QuestManager.lua)
 function Class_ShowMapQuestTurnIn:OnBegin(questData)
-	self.MapID = WorldMapFrame:GetMapID();
-
 	-- This should no longer ever happen, but it's a good safety check anyway.
 	if (not questData) then
 		self:Interrupt(self);
@@ -1821,46 +1831,44 @@ function Class_ShowMapQuestTurnIn:OnBegin(questData)
 	end
 
 	self.QuestData = questData;
+	self.MapProvider = MapBridgeDataProviderMixin:New();
+
+	self.MapProvider:SetOnMapChangedCallback(function()
+			self:Display();
+		end);
 
 	self:Display();
-	-- MAPREFACTORTODO: Replace this tutorial
-	-- Dispatcher:RegisterEvent("WORLD_MAP_UPDATE", self);
 	Dispatcher:RegisterScript(WorldMapFrame, "OnHide", function() self:Complete(); end, true);
 end
 
--- MAPREFACTORTODO: Replace this somehow? Event is going away
-function Class_ShowMapQuestTurnIn:WORLD_MAP_UPDATE()
-	--local newMapID = C_Map.GetCurrentMapID();
-	--if (newMapID ~= self.MapID) then
-	--	self:Display();
-	--	self.MapID = newMapID;
-	--end
-end
-
 function Class_ShowMapQuestTurnIn:Display()
-	local direction = "LEFT";
-	local _, posX, posY = QuestPOIGetIconInfo(self.QuestData.QuestID);
-	if (posX and (posX > 0.5)) then -- sometimes QuestPOIGetIconInfo returns nil;
-		direction = "RIGHT";
-	end
+	-- Make sure we're on the correct map
+	local currentMap = self.MapProvider:GetMap():GetMapID();
+	local desiredMap = self.QuestData:GetTurnInMapID();
 
-	-- MAPREFACTORTODO: WorldMapPOIFrame, replace with map canvas
-	--[[
-	local poiButton = WorldMapPOIFrame.poiSelectedButton;
-	if (poiButton) then
-		self:ShowPointerTutorial(formatStr(NPE_QUESTCOMPELTELOCATION), direction, poiButton);
-		Tutorials.SelectQuestDifferentZone:Complete();
-	else
-		local logIndex = GetQuestLogIndexByID(self.QuestData.QuestID)
-		if (logIndex ~= 0) then -- make sure it's in the log
-			if (select(11, GetQuestLogTitle(logIndex))) then -- 11: isOnMap
-				Tutorials.SelectQuestDifferentZone:Begin();
-			else
-				Tutorials.SelectQuestDifferentZone:Interrupt();
+	local poiButton;
+	
+	-- Get the PoI Pin from the map map
+	if (currentMap == desiredMap) then
+		for pin in self.MapProvider:GetMap():EnumeratePinsByTemplate("QuestPinTemplate") do
+			if (pin.questID == self.QuestData.QuestID) then
+				poiButton = pin;
 			end
 		end
 	end
-	]]
+
+	if (poiButton) then
+		local direction = "LEFT";
+		local _, posX, posY = QuestPOIGetIconInfo(self.QuestData.QuestID);
+		if (posX and (posX > 0.5)) then -- sometimes QuestPOIGetIconInfo returns nil;
+			direction = "RIGHT";
+		end
+
+		self:ShowPointerTutorial(formatStr(NPE_QUESTCOMPELTELOCATION), direction, poiButton);
+		Tutorials.SelectQuestDifferentZone:Complete();
+	else
+		Tutorials.SelectQuestDifferentZone:ForceBegin(self.QuestData);
+	end
 end
 
 -- ------------------------------------------------------------------------------------------------------------
@@ -1869,10 +1877,35 @@ end
 -- prompt the player to click on the quest to select the correct map.
 -- ------------------------------------------------------------------------------------------------------------
 local Class_SelectQuestDifferentZone = class("SelectQuestDifferentZone", Class_TutorialBase);
+function Class_SelectQuestDifferentZone:OnBegin(questData)
+	self.QuestData = questData;
 
-function Class_SelectQuestDifferentZone:OnBegin()
-	self:ShowPointerTutorial(formatStr(NPE_TURNINNOTONMAP), "LEFT", QuestScrollFrame, 0, -20, "TOPRIGHT");
+	-- Have to delay by one frame because the quest log doesn't update before this code runs which causes the frame pool to be out of sync
+	C_Timer.After(0, function() self:Display(); end); 
+end
+
+function Class_SelectQuestDifferentZone:Display()
 	Dispatcher:RegisterScript(WorldMapFrame, "OnHide", function() self:Complete(); end, true);
+
+	if (QuestMapFrame.DetailsFrame:IsVisible()) then
+		return;
+	end
+
+	local found;
+	if (self.QuestData) then
+		-- Find the correct quest to point at
+		for frame, v in QuestScrollFrame.titleFramePool:EnumerateActive() do
+			if (frame.questID == self.QuestData.QuestID) then
+				found = true;
+				self:ShowPointerTutorial(formatStr(NPE_TURNINNOTONMAP), "LEFT", frame, 0, 0, "RIGHT");
+				break;
+			end
+		end
+	end
+
+	if (not found) then
+		self:ShowPointerTutorial(formatStr(NPE_TURNINNOTONMAP_QUESTFRAMENOTFOUND), "LEFT", QuestScrollFrame, -20, 0, "RIGHT");	
+	end
 end
 
 -- ------------------------------------------------------------------------------------------------------------
@@ -2517,11 +2550,8 @@ function Class_Taxi:OnBegin()
 end
 
 function Class_Taxi:TAXIMAP_OPENED()
--- MAPREFACTORTODO - query the taxi map type
---	if TaxiFrame_ShouldShowOldStyle() then
-		self:ShowPointerTutorial(formatStr(NPE_TAXICALLOUT), "LEFT", TaxiRouteMap, -10, 0);
-		Dispatcher:RegisterScript(TaxiFrame, "OnHide", function() self:Complete() end);
---	end
+	self:ShowPointerTutorial(formatStr(NPE_TAXICALLOUT), "LEFT", TaxiRouteMap, -10, 0);
+	Dispatcher:RegisterScript(TaxiFrame, "OnHide", function() self:Complete() end);
 end
 
 -- ------------------------------------------------------------------------------------------------------------

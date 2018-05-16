@@ -49,6 +49,7 @@ function CommunitiesFrameMixin:OnShow()
 	self.PortraitOverlay.Portrait:SetTexture(132621); -- TODO:: Replace this hardcoded icon.
 	FrameUtil.RegisterFrameForEvents(self, COMMUNITIES_FRAME_EVENTS);
 	self:UpdateClubSelection();
+	UpdateMicroButtons();
 end
 
 function CommunitiesFrameMixin:OnEvent(event, ...)
@@ -165,11 +166,12 @@ COMMUNITIES_FRAME_DISPLAY_MODES = {
 		"AddToChatButton",
 		"InviteButton",
 	},
-		
+	
 	ROSTER = {
 		"CommunitiesList",
 		"MemberList",
 		"CommunitiesControlFrame",
+		"GuildMemberListDropDownMenu",
 	},
 	
 	INVITATION = {
@@ -222,6 +224,22 @@ function CommunitiesFrameMixin:SetDisplayMode(displayMode)
 		self[subframe]:Show();
 	end
 	
+	-- If we run into more cases where we need more specific controls on what
+	-- is displayed in a displayMode then we should add support for conditional
+	-- frames in displayMode based on clubType or perhaps a predicate function.
+	if displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.ROSTER then
+		local isGuildCommunitySelected = false;
+		local clubId = self:GetSelectedClubId();
+		if clubId then
+			local clubInfo = C_Club.GetClubInfo(clubId);
+			if clubInfo then
+				isGuildCommunitySelected = clubInfo.clubType == Enum.ClubType.Guild;
+			end
+		end
+		
+		self.GuildMemberListDropDownMenu:SetShown(isGuildCommunitySelected);
+	end
+	
 	self:UpdateCommunitiesTabs();
 	
 	self:TriggerEvent(CommunitiesFrameMixin.Event.DisplayModeChanged, displayMode);
@@ -254,7 +272,6 @@ function CommunitiesFrameMixin:UpdateCommunitiesTabs()
 		end
 	end
 	
-	
 	self.ChatTab:SetChecked(false);
 	self.RosterTab:SetChecked(false);
 	self.GuildBenefitsTab:SetChecked(false);
@@ -273,6 +290,10 @@ end
 function CommunitiesFrameMixin:OnClubSelected(clubId)
 	if StaticPopup_Visible("INVITE_COMMUNITY_MEMBER") then
 		StaticPopup_Hide("INVITE_COMMUNITY_MEMBER");
+	end
+	
+	if StaticPopup_Visible("INVITE_COMMUNITY_MEMBER_WITH_INVITE_LINK") then
+		StaticPopup_Hide("INVITE_COMMUNITY_MEMBER_WITH_INVITE_LINK");
 	end
 	
 	self.ChatEditBox:SetEnabled(clubId ~= nil);
@@ -398,6 +419,8 @@ function CommunitiesFrameMixin:SelectStream(clubId, streamId)
 		return;
 	end
 	
+	CommunitiesTicketManagerDialog_OnStreamChanged(clubId, streamId);
+	
 	local streams = C_Club.GetStreams(clubId);
 	for i, stream in ipairs(streams) do
 		if stream.streamId == streamId then
@@ -434,6 +457,7 @@ end
 function CommunitiesFrameMixin:OnHide()
 	C_Club.ClearClubPresenceSubscription();
 	FrameUtil.UnregisterFrameForEvents(self, COMMUNITIES_FRAME_EVENTS);
+	UpdateMicroButtons();
 end
 
 function CommunitiesFrameMixin:ShowCreateChannelDialog()

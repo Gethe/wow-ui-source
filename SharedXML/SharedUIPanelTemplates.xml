@@ -1855,4 +1855,80 @@
 			<OnLeave function="TruncatedTooltipScript_OnLeave"/>
 		</Scripts>
 	</Frame>
+	
+	<!--
+*******************************************************************************
+	ColumnDisplayTemplate
+	This template will handle the column headers for a list. Currently, any 
+	adjoining scroll frame or list needs to be spaced manually to line up with
+	the columns. It might be cool to support an API for displaying data with
+	default behavior. That would lose us some flexibility though, and is
+	outside the current scope (when this comment was written).
+*******************************************************************************
+-->
+
+	<Frame name="ColumnDisplayTemplate" mixin="ColumnDisplayMixin" virtual="true">
+		<Size x="0" y="60"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" file="Interface\FrameGeneral\UI-Background-Rock" horizTile="true" vertTile="true"/>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="TopTileStreaks" inherits="_UI-Frame-TopTileStreaks">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
+						<Anchor point="TOPRIGHT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+	
+	<Button name="ColumnDisplayButtonTemplate" virtual="true">
+		<Size x="10" y="24"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Left" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+					<Size x="5" y="24"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+					<TexCoords left="0" right="0.078125" top="0" bottom="0.75"/>
+				</Texture>
+				<Texture parentKey="Right" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+					<Size x="4" y="24"/>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+					<TexCoords left="0.90625" right="0.96875" top="0" bottom="0.75"/>
+				</Texture>
+				<Texture parentKey="Middle" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+					<Size x="0" y="24"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Left" relativePoint="RIGHT"/>
+						<Anchor point="RIGHT" relativeKey="$parent.Right" relativePoint="LEFT"/>
+					</Anchors>
+					<TexCoords left="0.078125" right="0.90625" top="0" bottom="0.75"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick function="ColumnDisplayButton_OnClick"/>
+		</Scripts>
+		<ButtonText>
+			<Anchors>
+				<Anchor point="LEFT" x="8" y="0"/>
+			</Anchors>
+		</ButtonText>
+		<NormalFont style="GameFontHighlightSmall"/>
+		<HighlightTexture file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeKey="$parent.Left" x="0" y="5"/>
+				<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Right" x="0" y="-7"/>
+			</Anchors>
+		</HighlightTexture>
+	</Button>
 </Ui>

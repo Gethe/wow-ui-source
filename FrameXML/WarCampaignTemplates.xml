@@ -25,7 +25,7 @@
 		</Backdrop>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString parentKey="Title" text="WAR_CAMPAIGN" inherits="GameFontHighlightMedium" justifyH="LEFT">
+				<FontString parentKey="Title" inherits="GameFontHighlightMedium" justifyH="LEFT">
 					<KeyValues>
 						<KeyValue key="layoutIndex" value="1" type="number"/>
 						<KeyValue key="expand" value="true" type="boolean"/>

@@ -34,8 +34,7 @@
 			<Layer level="BORDER">
 				<FontString parentKey="Name" justifyH="LEFT" inherits="GameFontHighlightSmall">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="8" y="0" />
-						<Anchor point="BOTTOMRIGHT" x="-14"/> <!-- leave space for  the rank icon after the name -->
+						<Anchor point="LEFT" x="8" y="0" />
 					</Anchors>
 				</FontString>
 				<Texture parentKey="Rank">
@@ -54,7 +53,7 @@
 			</Button>
 			<Button parentKey="SelfMuteButton" inherits="RosterSelfMuteButtonTemplate">
 				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.SelfDeafenButton" relativePoint="LEFT" x="-8" y="0"/>
+					<Anchor point="RIGHT" relativeKey="$parent.SelfDeafenButton" relativePoint="LEFT" x="-6" y="0"/>
 				</Anchors>
 			</Button>
 			<Button parentKey="MemberMuteButton" inherits="RosterMemberMuteButtonTemplate">

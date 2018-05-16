@@ -804,7 +804,7 @@
 					</Frame>
 					<Button name="$parentCategoryButton1" inherits="PVPQueueFrameButtonTemplate" parentKey="CategoryButton1" id="1">
 						<Anchors>
-							<Anchor point="TOPLEFT" x="10" y="-70" />
+							<Anchor point="TOPLEFT" x="10" y="-101" />
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
@@ -819,7 +819,7 @@
 					</Button>
 					<Button name="$parentCategoryButton2" inherits="PVPQueueFrameButtonTemplate" parentKey="CategoryButton2" id="2">
 						<Anchors>
-							<Anchor point="TOP" relativeTo="$parentCategoryButton1" relativePoint="BOTTOM" x="0" y="-23" />
+							<Anchor point="TOP" relativeTo="$parentCategoryButton1" relativePoint="BOTTOM" x="0" y="-30" />
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
@@ -834,22 +834,7 @@
 					</Button>
 					<Button name="$parentCategoryButton3" inherits="PVPQueueFrameButtonTemplate" parentKey="CategoryButton3" id="3">
 						<Anchors>
-							<Anchor point="TOP" relativeTo="$parentCategoryButton2" relativePoint="BOTTOM" x="0" y="-23" />
-						</Anchors>
-						<Layers>
-							<Layer level="ARTWORK">
-								<FontString parentKey="Name" inherits="GameFontNormalLarge" spacing="2" justifyH="LEFT">
-									<Size x="106" y="0"/>
-									<Anchors>
-										<Anchor point="LEFT" relativeKey="$parent.Ring" relativePoint="RIGHT" x="0" y="0" />
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
-					</Button>
-					<Button name="$parentCategoryButton4" inherits="PVPQueueFrameButtonTemplate" parentKey="CategoryButton4" id="4">
-						<Anchors>
-							<Anchor point="TOP" relativeTo="$parentCategoryButton3" relativePoint="BOTTOM" x="0" y="-23" />
+							<Anchor point="TOP" relativeTo="$parentCategoryButton2" relativePoint="BOTTOM" x="0" y="-30" />
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
@@ -862,7 +847,7 @@
 							</Layer>
 						</Layers>
 						<Frames>
-							<Frame name="PremadeGroupsPvPTutorialAlert" inherits="MicroButtonAlertTemplate" parent="PVPQueueFrameCategoryButton4">
+							<Frame name="PremadeGroupsPvPTutorialAlert" inherits="MicroButtonAlertTemplate" parent="PVPQueueFrameCategoryButton3">
 								<KeyValues>
 									<KeyValue key="label" value="LFG_LIST_TUTORIAL_ALERT" type="global"/>
 									<KeyValue key="tutorialIndex" value="LE_FRAME_TUTORIAL_LFG_LIST" type="global"/>
@@ -1481,191 +1466,6 @@
 							<OnLoad function="ConquestFrame_OnLoad" />
 							<OnEvent function="ConquestFrame_OnEvent"/>
 							<OnShow function="ConquestFrame_OnShow" />
-						</Scripts>
-					</Frame>
-					<!-- War Games-->
-					<Frame name="WarGamesFrame" enableMouse="true" hidden="true" >
-						<Size x="339" y="402"/>
-						<Anchors>
-							<Anchor point="TOPLEFT" x="220" y="-22"/>
-						</Anchors>
-						<Layers>
-							<Layer level="BACKGROUND">
-								<Texture parentKey="InfoBG">
-									<Size x="304" y="121"/>
-									<Anchors>
-										<Anchor point="BOTTOMLEFT" x="8" y="19"/>
-									</Anchors>
-									<Color r="0.078125" g="0.12109375" b="0.21484375" a="0.4"/>
-								</Texture>
-							</Layer>
-						</Layers>
-						<Frames>
-							<Frame parentKey="RightInset" useParentLevel="true" inherits="InsetFrameTemplate">
-								<Size x="332" y="379"/>
-								<Anchors>
-									<Anchor point="TOPLEFT" x="5" y="-2"/>
-								</Anchors>
-							</Frame>
-							<ScrollFrame name="$parentScrollFrame" inherits="HybridScrollFrameTemplate" parentKey="scrollFrame">
-								<Size x="308" y="248"/>
-								<Anchors>
-									<Anchor point="TOPLEFT" x="7" y="-6"/>
-								</Anchors>
-								<Frames>
-									<Slider name="$parentScrollBar" inherits="HybridScrollBarTemplate">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="-12"/>
-											<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="11"/>
-										</Anchors>
-									</Slider>
-								</Frames>
-							</ScrollFrame>
-							<ScrollFrame name="$parentInfoScrollFrame" inherits="UIPanelScrollFrameTemplate">
-								<Size x="303" y="114"/>
-								<Anchors>
-									<Anchor point="BOTTOMLEFT" x="9" y="25"/>
-								</Anchors>
-								<Layers>
-									<Layer level="BACKGROUND">
-										<Texture parentKey="scrollBarBackground">
-											<Size x="25" y="84"/>
-											<Anchors>
-												<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="5"/>
-												<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="-2"/>
-											</Anchors>
-											<Color r="0" g="0" b="0" a="0.7"/>
-										</Texture>
-									</Layer>
-									<Layer level="ARTWORK">
-										<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar" parentKey="scrollBarArtTop">
-											<Size x="30" y="120"/>
-											<Anchors>
-												<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-3" y="3"/>
-											</Anchors>
-											<TexCoords left="0" right="0.46875" top="0.0" bottom="0.9375"/>
-										</Texture>
-										<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar" parentKey="scrollBarArtBottom">
-											<Size x="30" y="128"/>
-											<Anchors>
-												<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-3" y="-3"/>
-											</Anchors>
-											<TexCoords left="0.53125" right="1.0" top="0.0" bottom="1.0"/>
-										</Texture>
-									</Layer>
-								</Layers>
-								<Scripts>
-									<OnLoad>
-										self.scrollBarHideable = true;
-										ScrollFrame_OnLoad(self);
-										ScrollFrame_OnScrollRangeChanged(self);
-										local scrollBar = _G[self:GetName().."ScrollBar"];
-										self.scrollBarBackground:SetParent(scrollBar);
-										self.scrollBarArtTop:SetParent(scrollBar);
-										self.scrollBarArtBottom:SetParent(scrollBar);
-										scrollBar:SetPoint("TOPLEFT", self, "TOPRIGHT", 6, -18);
-										scrollBar:SetPoint("BOTTOMLEFT", self, "BOTTOMRIGHT", 6, 15);
-										self.defaultWidth = self:GetWidth();
-										local resizeFunc = function(scrollBar)
-											if ( scrollBar:IsShown() ) then
-												self:SetWidth(self.defaultWidth);
-											else
-												self:SetWidth(self.defaultWidth + scrollBar:GetWidth() + 7);
-											end
-										end
-
-										scrollBar:SetScript("OnHide", resizeFunc);
-										scrollBar:SetScript("OnShow", resizeFunc);
-
-										resizeFunc(scrollBar);
-									</OnLoad>
-								</Scripts>
-								<ScrollChild>
-									<Frame name="$parentChildFrame">
-										<Size x="1" y="1"/>
-										<Anchors>
-											<Anchor point="TOPLEFT"/>
-										</Anchors>
-										<Layers>
-											<Layer level="ARTWORK">
-												<FontString name="WarGamesFrameDescription" inherits="GameFontBlackMedium" justifyH="LEFT" justifyV="TOP" text="WARGAME_TOOLTIP">
-													<Size x="275" y="0"/>
-													<Anchors>
-														<Anchor point="TOPLEFT" x="15" y="-15"/>
-													</Anchors>
-													<Color r="0.6" g="0.6" b="0.6"/>
-												</FontString>
-												<Texture name="$parentSpacer">
-													<Size x="15" y="15"/>
-													<Anchors>
-														<Anchor point="TOP" relativeTo="WarGamesFrameDescription" relativePoint="BOTTOM" x="0" y="0"/>
-													</Anchors>
-												</Texture>
-											</Layer>
-										</Layers>
-									</Frame>
-								</ScrollChild>
-							</ScrollFrame>
-							<Frame parentKey="HorizontalBar">
-								<Size x="331" y="16"/>
-								<Anchors>
-									<Anchor point="BOTTOMLEFT" x="3" y="135"/>
-								</Anchors>
-								<Layers>
-									<Layer level="ARTWORK">
-										<Texture parentKey="LeftBar" file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
-											<Size x="256" y="16"/>
-											<Anchors>
-												<Anchor point="LEFT"/>
-											</Anchors>
-											<TexCoords left="0" right="1.0" top="0" bottom="0.25"/>
-										</Texture>
-										<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
-											<Size x="75" y="16"/>
-											<Anchors>
-												<Anchor point="LEFT" relativeKey="$parent.LeftBar" relativePoint="RIGHT"/>
-											</Anchors>
-											<TexCoords left="0" right="0.29296875" top="0.25" bottom="0.5"/>
-										</Texture>
-									</Layer>
-								</Layers>
-							</Frame>
-							<Button name="WarGameStartButton" inherits="MagicButtonTemplate" text="START_WARGAME" motionScriptsWhileDisabled="true">
-								<Size x="130" y="22"/>
-								<Anchors>
-									<Anchor point="BOTTOMRIGHT" x="0" y="-1"/>
-								</Anchors>
-								<Scripts>
-									<OnClick function="WarGameStartButton_OnClick"/>
-									<OnEnter function="WarGameStartButton_OnEnter"/>
-									<OnLeave function="GameTooltip_Hide"/>
-								</Scripts>
-							</Button>
-							<CheckButton name="WarGameTournamentModeCheckButton" inherits="UICheckButtonTemplate">
-								<Size x="24" y="24"/>
-								<Anchors>
-									<Anchor point="BOTTOMLEFT" x="6" y="-3"/>
-								</Anchors>
-								<Scripts>
-									<OnLoad>
-										self.text:SetText(TOURNAMENT_RULES);
-										self.text:SetFontObject(GameFontHighlightSmall);
-									</OnLoad>
-									<OnClick>
-										PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-									</OnClick>
-									<OnEnter>
-										GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-										GameTooltip:SetText(TOURNAMENT_RULES_TOOLTIP, nil, nil, nil, nil, true);
-									</OnEnter>
-									<OnLeave function="GameTooltip_Hide"/>
-								</Scripts>
-							</CheckButton>
-						</Frames>
-						<Scripts>
-							<OnLoad  function="WarGamesFrame_OnLoad"/>
-							<OnEvent function="WarGamesFrame_OnEvent"/>
-							<OnShow  function="WarGamesFrame_OnShow"/>
 						</Scripts>
 					</Frame>
 					<Frame name="LFGListPVPStub" hidden="true">

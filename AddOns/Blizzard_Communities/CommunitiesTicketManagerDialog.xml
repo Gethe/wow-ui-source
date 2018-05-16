@@ -1,0 +1,418 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="CommunitiesTicketManagerDialog.lua"/>
+	
+	<Button name="CommunitiesTicketEntryTemplate" mixin="CommunitiesTicketEntryMixin" virtual="true">
+		<Size x="585" y="20"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Stripe" setAllPoints="true" file="Interface\GuildFrame\GuildFrame">
+					<TexCoords left="0.36230469" right="0.38183594" top="0.95898438" bottom="0.99804688"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Channel" inherits="GameFontHighlightSmall" justifyH="LEFT" wordwrap="false">
+					<Size x="50" y="0"/>
+					<Anchors>
+						<Anchor point="LEFT" x="9" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Creator" inherits="GameFontHighlightSmall" justifyH="LEFT" wordwrap="false">
+					<Size x="55" y="0"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Channel" relativePoint="RIGHT" x="8" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Link" inherits="GameFontHighlightSmall" justifyH="LEFT" wordwrap="false">
+					<Size x="245" y="0"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Creator" relativePoint="RIGHT" x="8" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Expires" inherits="GameFontHighlightSmall" justifyH="LEFT" wordwrap="false">
+					<Size x="65" y="0"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Link" relativePoint="RIGHT" x="8" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Uses" inherits="GameFontHighlightSmall" justifyH="LEFT" wordwrap="false">
+					<Size x="65" y="0"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Expires" relativePoint="RIGHT" x="8" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="CopyLinkButton" inherits="UIMenuButtonStretchTemplate" text="COMMUNITIES_INVITE_MANAGER_COPY_LINK_BUTTON" hidden="true">
+				<Size x="130" y="20"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.Link"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND" textureSubLevel="-100">
+						<Texture parentKey="Background">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="3" y="-2"/>
+								<Anchor point="BOTTOMRIGHT" x="-3" y="2"/>
+							</Anchors>
+							<Color r="0" g="0" b="0" a="0.8"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						self:GetParent():LockHighlight();
+					</OnEnter>
+					<OnClick>
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+						CopyToClipboard(self:GetParent().Link:GetText());
+					</OnClick>
+					<OnLeave>
+						self:GetParent():UnlockHighlight();
+						self:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
+			<Button parentKey="RevokeButton" inherits="UIMenuButtonStretchTemplate" motionScriptsWhileDisabled="true">
+				<Size x="22" y="22"/>
+				<Anchors>
+					<Anchor point="RIGHT" x="-4" y="-1"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Icon" atlas="groupfinder-icon-redx" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnClick>
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+						self:GetParent():RevokeTicket();
+					</OnClick>
+				</Scripts>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+		<HighlightTexture file="Interface\FriendsFrame\UI-FriendsFrame-HighlightBar" alphaMode="ADD" setAllPoints="true"/>
+	</Button>
+
+	<Frame name="CommunitiesTicketManagerScrollFrameTemplate" mixin="CommunitiesTicketManagerScrollFrameMixin" virtual="true">
+		<Frames>
+			<Frame parentKey="ArtOverlay" frameLevel="300" setAllPoints="true">
+				<Layers>
+					<Layer level="OVERLAY" textureSubLevel="100">
+						<Texture parentKey="TopLeft" atlas="macropopup-intersect-left" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="TopRight" atlas="macropopup-intersect-right" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPRIGHT" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture atlas="_macropopup-top2" horizTile="true" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.TopLeft" relativePoint="TOPRIGHT" x="0" y="1"/>
+								<Anchor point="TOPRIGHT" relativeKey="$parent.TopRight" relativePoint="TOPLEFT" x="0" y="1"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<ScrollFrame parentKey="ListScrollFrame">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="13" y="-41"/>
+					<Anchor point="BOTTOMRIGHT" x="-36" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND" textureSubLevel="-100">
+						<Texture parentKey="Background" file="Interface\FrameGeneral\UI-Background-Marble" horizTile="true" vertTile="true"/>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Slider parentKey="scrollBar" inherits="HybridScrollBarTemplate" frameLevel="200">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="1" y="12"/>
+							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="1" y="14"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BORDER">
+								<Texture parentKey="Background" file="Interface\FrameGeneral\UI-Background-Marble" horizTile="true" vertTile="true" setAllPoints="true"/>
+							</Layer>
+						</Layers>
+					</Slider>
+				</Frames>
+				<Scripts>
+					<OnLoad function="HybridScrollFrame_OnLoad"/>
+					<OnMouseWheel function="HybridScrollFrame_OnMouseWheel"/>
+				</Scripts>
+				<ScrollChild>
+					<Frame name="$parentScrollChild" parentKey="ScrollChild">
+						<Scripts>
+							<OnLoad function="HybridScrollFrameScrollChild_OnLoad"/>
+						</Scripts>
+					</Frame>
+				</ScrollChild>
+			</ScrollFrame>
+			<Frame parentKey="ColumnDisplay" inherits="ColumnDisplayTemplate" frameLevel="100">
+				<Size x="0" y="34"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="12" y="-6"/>
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-12" y="-6"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BORDER">
+						<Texture parentKey="InsetBorderTopLeft" inherits="UI-Frame-InnerTopLeft">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="BOTTOMLEFT" x="0" y="3"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="InsetBorderTopRight" inherits="UI-Frame-InnerTopRight">
+							<Anchors>
+								<Anchor point="TOPRIGHT" relativeKey="$parent.Background" relativePoint="BOTTOMRIGHT" x="0" y="3"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="InsetBorderBottomLeft" inherits="UI-Frame-InnerBotLeftCorner">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativeKey="$parent.$parent" x="12" y="-2"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="InsetBorderTop" inherits="_UI-Frame-InnerTopTile">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.InsetBorderTopLeft" relativePoint="TOPRIGHT"/>
+								<Anchor point="TOPRIGHT" relativeKey="$parent.InsetBorderTopRight" relativePoint="TOPLEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="InsetBorderLeft" inherits="!UI-Frame-InnerLeftTile">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.InsetBorderTopLeft" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+								<Anchor point="BOTTOMLEFT" relativeKey="$parent.InsetBorderBottomLeft" relativePoint="TOPLEFT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+	
+	<Frame name="CommunitiesTicketManagerDialog" frameStrata="DIALOG" parent="UIParent" mixin="CommunitiesTicketManagerDialogMixin" topLevel="true" hidden="true">
+		<Size x="633" y="484"/>
+		<Anchors>
+			<Anchor point="TOP" x="0" y="-200"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="DialogLabel" inherits="GameFontHighlight" text="COMMUNITIES_INVITE_MANAGER_LABEL">
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-18"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="LinkLabel" inherits="GameFontNormal" justifyH="LEFT" text="COMMUNITIES_INVITE_MANAGER_LINK_LABEL">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="30" y="-50"/>
+						<Anchor point="TOPRIGHT" x="-30" y="-50"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="ExpiresLabel" inherits="GameFontNormal" justifyH="LEFT" text="COMMUNITIES_INVITE_MANAGER_EXPIRES_LABEL">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.LinkLabel" relativePoint="BOTTOMLEFT" x="0" y="-34"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="ExpiresText" inherits="GameFontHighlight" justifyH="LEFT" text="00:06:41">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.ExpiresLabel" relativePoint="RIGHT" x="3" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="UsesLabel" inherits="GameFontNormal" justifyH="LEFT" text="COMMUNITIES_INVITE_MANAGER_USES_LABEL">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.ExpiresLabel" relativePoint="RIGHT" x="120" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="UsesText" inherits="GameFontHighlight" justifyH="LEFT" text="50">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.UsesLabel" relativePoint="RIGHT" x="3" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="ExpandLabel" inherits="GameFontNormal" justifyH="LEFT" text="COMMUNITIES_INVITE_MANAGER_EXPAND_LABEL">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.ExpiresLabel" relativePoint="LEFT" x="29" y="0"/>
+						<Anchor point="BOTTOM" x="0" y="50"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="Separator">
+					<Size x="0" y="1"/>
+					<Anchors>
+						<Anchor point="LEFT" x="30" y="0"/>
+						<Anchor point="RIGHT" x="-30" y="0"/>
+						<Anchor point="TOP" x="0" y="-140"/>
+					</Anchors>
+					<Color r="1" g="1" b="1" a="0.2"/>
+				</Texture>
+				<FontString parentKey="NewLinkLabel" inherits="GameFontHighlight" justifyH="LEFT" text="COMMUNITIES_INVITE_MANAGER_CREATE_NEW_LINK">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.ExpiresLabel"/>
+						<Anchor point="TOP" relativeKey="$parent.Separator" relativePoint="BOTTOM" x="0" y="-30"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="ExpiresDropDownLabel" inherits="GameFontNormalSmall" justifyH="LEFT" text="COMMUNITIES_INVITE_MANAGER_EXPIRES_LABEL">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.NewLinkLabel" relativePoint="BOTTOM" x="0" y="-12"/>
+						<Anchor point="LEFT" relativeKey="$parent.ExpiresLabel" relativePoint="LEFT" x="5" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="UsesDropDownLabel" inherits="GameFontNormalSmall" justifyH="LEFT" text="COMMUNITIES_INVITE_MANAGER_USES_LABEL">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.NewLinkLabel" relativePoint="BOTTOM" x="0" y="-12"/>
+						<Anchor point="LEFT" relativeKey="$parent.UsesLabel" relativePoint="LEFT" x="5" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="TopLeft" atlas="macropopup-topleft2" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="TopRight" atlas="macropopup-topright2" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture atlas="_macropopup-top2" horizTile="true" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.TopLeft" relativePoint="TOPRIGHT" x="0" y="0"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.TopRight" relativePoint="TOPLEFT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BottomLeft" atlas="macropopup-bottomleft" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BottomRight" atlas="macropopup-bottomright-nobuttons" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture atlas="_macropopup-bottom" horizTile="true" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.BottomLeft" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomRight" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture atlas="!macropopup-left" vertTile="true" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.TopLeft" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.BottomLeft" relativePoint="TOPLEFT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture atlas="!macropopup-right" vertTile="true" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.TopRight" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomRight" relativePoint="TOPRIGHT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="6" y="-8"/>
+						<Anchor point="BOTTOMRIGHT" x="-6" y="8"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" a="0.8"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<EditBox parentKey="LinkBox" inherits="InputBoxTemplate" autoFocus="false" letters="150">
+				<Size x="470" y="22"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.LinkLabel" relativePoint="BOTTOMLEFT" x="5" y="-6"/>
+				</Anchors>
+			</EditBox>
+			<Button parentKey="Copy" inherits="UIPanelButtonTemplate" text="COMMUNITIES_INVITE_MANAGER_COPY">
+				<Size x="110" y="22"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.LinkBox" relativePoint="RIGHT" x="2" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+						CopyToClipboard(self:GetParent().LinkBox:GetText());
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Frame parentKey="ExpiresDropDownMenu" inherits="UIDropDownMenuTemplate">
+				<Size x="40" y="30"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ExpiresDropDownLabel" relativePoint="BOTTOMLEFT" x="-21" y="-5"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="UsesDropDownMenu" inherits="UIDropDownMenuTemplate">
+				<Size x="40" y="30"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.UsesDropDownLabel" relativePoint="BOTTOMLEFT" x="-21" y="-5"/>
+				</Anchors>
+			</Frame>
+			<Button parentKey="GenerateLinkButton" inherits="UIPanelButtonTemplate" text="COMMUNITIES_INVITE_MANAGER_GENERATE">
+				<Size x="190" y="22"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.UsesDropDownMenu" relativePoint="RIGHT" x="0" y="3"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent():GenerateLink();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button parentKey="MaximizeButton" inherits="UIPanelSquareButton">
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.ExpandLabel" relativePoint="LEFT" x="-4" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						SquareButton_SetIcon(self, "DOWN");
+					</OnLoad>
+					<OnClick>
+						self:GetParent():SetExpanded(true);
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Frame parentKey="InviteManager" inherits="CommunitiesTicketManagerScrollFrameTemplate">
+				<Size x="633" y="185"/>
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="36"/>
+				</Anchors>
+			</Frame>
+			<Button parentKey="Close" inherits="UIPanelButtonTemplate" text="CLOSE">
+				<Size x="80" y="20"/>
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="14"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent():Hide();
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

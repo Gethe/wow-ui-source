@@ -52,18 +52,24 @@
 				<FontString parentKey="Zone" inherits="GameFontHighlightSmall" justifyH="LEFT" wordwrap="false">
 					<Size x="90" y="0"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.NameFrame" relativePoint="RIGHT" x="10" y="0"/>
+						<Anchor point="LEFT" relativeKey="$parent.NameFrame" relativePoint="RIGHT" x="8" y="0"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="Rank" inherits="GameFontHighlightSmall" justifyH="LEFT" wordwrap="false">
-					<Size x="75" y="0"/>
+					<Size x="70" y="0"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.NameFrame" relativePoint="RIGHT" x="4" y="0"/>
+						<Anchor point="LEFT" relativeKey="$parent.NameFrame" relativePoint="RIGHT" x="8" y="0"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="Note" inherits="GameFontHighlightSmall" justifyH="LEFT" wordwrap="false">
+					<Size x="93" y="0"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.Rank" relativePoint="RIGHT" x="9" y="0"/>
+						<Anchor point="LEFT" relativeKey="$parent.Rank" relativePoint="RIGHT" x="8" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="GuildInfo" inherits="GameFontHighlightSmall" justifyH="LEFT" wordwrap="false">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Note" relativePoint="RIGHT" x="20" y="0"/>
 						<Anchor point="RIGHT" relativeKey="$parent" relativePoint="RIGHT" x="-4" y="0"/>
 					</Anchors>
 				</FontString>
@@ -96,16 +102,12 @@
 
 	<Frame name="CommunitiesMemberListFrameTemplate" mixin="CommunitiesMemberListMixin" virtual="true">
 		<Frames>
-			<Frame parentKey="ColumnDisplay" mixin="CommunitiesMemberListColumnDisplayMixin" useParentLevel="true" hidden="true">
-				<Size x="0" y="60"/>
+			<Frame parentKey="ColumnDisplay" useParentLevel="true" inherits="ColumnDisplayTemplate" hidden="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="-3" y="60"/>
 					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="22" y="60"/>
 				</Anchors>
 				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture parentKey="Background" file="Interface\FrameGeneral\UI-Background-Rock" horizTile="true" vertTile="true"/>
-					</Layer>
 					<Layer level="BORDER">
 						<Texture parentKey="InsetBorderTopLeft" inherits="UI-Frame-InnerTopLeft">
 							<Anchors>
@@ -135,19 +137,7 @@
 							</Anchors>
 						</Texture>
 					</Layer>
-					<Layer level="ARTWORK">
-						<Texture parentKey="TopTileStreaks" inherits="_UI-Frame-TopTileStreaks">
-							<Anchors>
-								<Anchor point="TOPLEFT" x="0" y="0"/>
-								<Anchor point="TOPRIGHT" x="0" y="0"/>
-							</Anchors>
-						</Texture>
-					</Layer>
 				</Layers>
-				<Scripts>
-					<OnLoad method="OnLoad"/>
-					<OnShow method="OnShow"/>
-				</Scripts>
 			</Frame>
 			<ScrollFrame parentKey="ListScrollFrame" inherits="HybridScrollFrameTemplate">
 				<Anchors>
@@ -193,49 +183,13 @@
 			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>
-	
-	<Button name="CommunitiesMemberListColumnButtonTemplate" virtual="true">
-		<Size x="10" y="24"/>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture parentKey="Left" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
-					<Size x="5" y="24"/>
-					<Anchors>
-						<Anchor point="TOPLEFT"/>
-					</Anchors>
-					<TexCoords left="0" right="0.078125" top="0" bottom="0.75"/>
-				</Texture>
-				<Texture parentKey="Right" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
-					<Size x="4" y="24"/>
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT"/>
-					</Anchors>
-					<TexCoords left="0.90625" right="0.96875" top="0" bottom="0.75"/>
-				</Texture>
-				<Texture parentKey="Middle" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
-					<Size x="0" y="24"/>
-					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.Left" relativePoint="RIGHT"/>
-						<Anchor point="RIGHT" relativeKey="$parent.Right" relativePoint="LEFT"/>
-					</Anchors>
-					<TexCoords left="0.078125" right="0.90625" top="0" bottom="0.75"/>
-				</Texture>
-			</Layer>
-		</Layers>
+
+	<Frame name="GuildMemberListDropDownMenuTemplate" inherits="UIDropDownMenuTemplate" mixin="GuildMemberListDropDownMenuMixin" virtual="true">
+		<Size x="40" y="28"/>
 		<Scripts>
-			<OnClick function="CommunitiesMemberListColumnButton_OnClick"/>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
 		</Scripts>
-		<ButtonText>
-			<Anchors>
-				<Anchor point="LEFT" x="8" y="0"/>
-			</Anchors>
-		</ButtonText>
-		<NormalFont style="GameFontHighlightSmall"/>
-		<HighlightTexture file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD">
-			<Anchors>
-				<Anchor point="TOPLEFT" relativeKey="$parent.Left" x="0" y="5"/>
-				<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Right" x="0" y="-7"/>
-			</Anchors>
-		</HighlightTexture>
-	</Button>
+	</Frame>
 </Ui>

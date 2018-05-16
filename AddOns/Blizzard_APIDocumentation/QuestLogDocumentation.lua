@@ -25,6 +25,20 @@ local QuestLog =
 			},
 		},
 		{
+			Name = "GetQuestInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "title", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "GetQuestsOnMap",
 			Type = "Function",
 

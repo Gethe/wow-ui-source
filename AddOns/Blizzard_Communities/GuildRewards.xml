@@ -6,7 +6,7 @@
 	Templates
 *******************************************************************************
 -->
-	<Button name="GuildRewardsButtonTemplate" virtual="true">
+	<Button name="CommunitiesGuildRewardsButtonTemplate" virtual="true">
 		<Size x="289" y="47"/>
 		<Frames>
 			<Frame name="$parentMoneyFrame" parentKey="Money" inherits="SmallMoneyFrameTemplate">
@@ -72,9 +72,9 @@
 			<OnLoad>
 				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 			</OnLoad>
-			<OnEnter function="GuildRewardsButton_OnEnter"/>
-			<OnLeave function="GuildRewardsButton_OnLeave"/>
-			<OnClick function="GuildRewardsButton_OnClick"/> 
+			<OnEnter function="CommunitiesGuildRewardsButton_OnEnter"/>
+			<OnLeave function="CommunitiesGuildRewardsButton_OnLeave"/>
+			<OnClick function="CommunitiesGuildRewardsButton_OnClick"/> 
 		</Scripts>
 	</Button>
 <!--
@@ -82,7 +82,7 @@
 	Rewards panel
 *******************************************************************************
 -->
-	<Frame name="GuildRewardsFrameTemplate" virtual="true">
+	<Frame name="CommunitiesGuildRewardsFrameTemplate" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="Bg" file="Interface\ClassTrainerFrame\TrainerTextures">
@@ -119,15 +119,15 @@
 			<Frame parentKey="DropDown" inherits="UIDropDownMenuTemplate" hidden="true">
 				<Size x="10" y="10"/>
 				<Scripts>
-					<OnLoad function="GuildRewardsDropDown_OnLoad"/>
+					<OnLoad function="CommunitiesGuildRewardsDropDown_OnLoad"/>
 				</Scripts>
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad function="GuildRewardsFrame_OnLoad"/>
-			<OnShow function="GuildRewardsFrame_OnShow"/>
-			<OnEvent function="GuildRewardsFrame_OnEvent"/>
-			<OnHide function="GuildRewardsFrame_OnHide"/>
+			<OnLoad function="CommunitiesGuildRewardsFrame_OnLoad"/>
+			<OnShow function="CommunitiesGuildRewardsFrame_OnShow"/>
+			<OnEvent function="CommunitiesGuildRewardsFrame_OnEvent"/>
+			<OnHide function="CommunitiesGuildRewardsFrame_OnHide"/>
 		</Scripts>
 	</Frame>
 </Ui>

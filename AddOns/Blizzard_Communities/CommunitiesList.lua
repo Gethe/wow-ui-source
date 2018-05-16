@@ -17,8 +17,10 @@ end
 
 function CommunitiesListMixin:OnEvent(event, ...)
 	if event == "CLUB_ADDED" then
+		self:UpdateCommunitiesList();
 		self:Update();
 	elseif event == "CLUB_REMOVED" then
+		self:UpdateCommunitiesList();
 		self:Update();
 	elseif event == "CLUB_UPDATED" then
 		local clubId = ...;
@@ -27,28 +29,32 @@ function CommunitiesListMixin:OnEvent(event, ...)
 			self:UpdateClub(clubInfo);
 		end
 	elseif event == "CLUB_INVITATION_ADDED_FOR_SELF" then
+		self:UpdateInvitations();
 		self:Update();
 	elseif event == "CLUB_INVITATION_REMOVED_FOR_SELF" then
 		local invitationId = ...;
 		tDeleteItem(self.declinedInvitationIds, invitationId);
+		self:UpdateInvitations();
 		self:Update();
 	end
 end
 
-function CommunitiesListMixin:GetPotentialClubs()
-	local potentialClubs = C_Club.GetInvitationsForSelf();
+function CommunitiesListMixin:UpdateInvitations()
+	self.invitations = C_Club.GetInvitationsForSelf();
 	
 	-- Remove all invites that have been declined.
 	for i, declinedInvitationId in ipairs(self.declinedInvitationIds) do
-		for j, inviteInfo in ipairs(potentialClubs) do
+		for j, inviteInfo in ipairs(self.invitations) do
 			if declinedInvitationId == inviteInfo.invitationId then
-				table.remove(potentialClubs, j);
+				table.remove(self.invitations, j);
 				break;
 			end
 		end
 	end
-	
-	return potentialClubs;
+end
+
+function CommunitiesListMixin:GetInvitations()
+	return self.invitations;
 end
 
 function CommunitiesListMixin:GetFirstMatchingClubEntry(predicate)
@@ -62,12 +68,27 @@ function CommunitiesListMixin:GetFirstMatchingClubEntry(predicate)
 	return nil;
 end
 
+function CommunitiesListMixin:SortCommunitiesList()
+	CommunitiesUtil.SortClubs(self:GetCommunitiesList());
+end
+
+function CommunitiesListMixin:UpdateCommunitiesList()
+	local clubs = C_Club.GetSubscribedClubs();
+	self.communitiesList = clubs;
+	self:PredictFavorites(clubs);
+	self:SortCommunitiesList();
+end
+
+function CommunitiesListMixin:GetCommunitiesList()
+	return self.communitiesList;
+end
+
 function CommunitiesListMixin:Update()
 	local scrollFrame = self.ListScrollFrame;
 	local offset = HybridScrollFrame_GetOffset(scrollFrame);
 	local buttons = scrollFrame.buttons;
 		
-	local clubs = C_Club.GetSubscribedClubs();
+	local clubs = self:GetCommunitiesList();
 	if not self:GetCommunitiesFrame():GetSelectedClubId() and self.mostRecentAcceptedInvite then
 		for i, clubInfo in ipairs(clubs) do
 			if clubInfo.clubId == self.mostRecentAcceptedInvite then
@@ -80,13 +101,9 @@ function CommunitiesListMixin:Update()
 		end
 	end
 		
-	self:PredictFavorites(clubs);
-	
-	CommunitiesUtil.SortClubs(clubs);
-	
 	local isInGuild = IsInGuild();
-	local potentialClubs = self:GetPotentialClubs();
-	local totalNumClubs = #potentialClubs + #clubs;
+	local invitations = self:GetInvitations();
+	local totalNumClubs = #invitations + #clubs;
 	if not isInGuild then
 		totalNumClubs = totalNumClubs + 1;
 	end
@@ -116,11 +133,11 @@ function CommunitiesListMixin:Update()
 		else
 			displayIndex = displayIndex - 1;
 			local clubInfo = nil;
-			local isInvitation = displayIndex <= #potentialClubs;
+			local isInvitation = displayIndex <= #invitations;
 			if isInvitation then
-				clubInfo = potentialClubs[displayIndex].club;
+				clubInfo = invitations[displayIndex].club;
 			else
-				displayIndex = displayIndex - #potentialClubs;
+				displayIndex = displayIndex - #invitations;
 				if not isInGuild then
 					displayIndex = displayIndex - 1;
 				end
@@ -186,6 +203,7 @@ function CommunitiesListMixin:RegisterEventCallbacks()
 
 	local function CommunityInviteDeclinedCallback(event, invitationId, clubId)
 		self.declinedInvitationIds[#self.declinedInvitationIds + 1] = invitationId;
+		self:UpdateInvitations();
 		self:Update();
 	end
 
@@ -200,6 +218,8 @@ function CommunitiesListMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, COMMUNITIES_LIST_EVENTS);
 	HybridScrollFrame_CreateButtons(self.ListScrollFrame, "CommunitiesListEntryTemplate", 0, -COMMUNITIES_LIST_INITLAL_TOP_BORDER_OFFSET);
 	self.ListScrollFrame.ScrollBar:SetValueStep(1);
+	self:UpdateCommunitiesList();
+	self:UpdateInvitations();
 	self:Update();
 	
 	if not self.hasRegisteredEventCallbacks then
@@ -232,7 +252,9 @@ function CommunitiesListMixin:SetFavorite(clubId, isFavorite)
 	else
 		self.pendingFavorites[clubId] = 0;
 	end
+	self:SortCommunitiesList();
 	self:Update();
+	ChannelFrame:OnCommunityFavoriteChanged(clubId);
 end
 
 function CommunitiesListMixin:PredictFavorites(clubs)
@@ -431,7 +453,6 @@ function CommunitiesListEntryDropDown_Initialize(self, level)
 		local clubInfo = C_Club.GetClubInfo(clubId);
 		local memberInfo = C_Club.GetMemberInfoForSelf(clubId);
 		if clubInfo and memberInfo then
-
 			self.clubMemberInfo = memberInfo;
 			self.clubInfo = clubInfo;
 			UnitPopup_ShowMenu(self, "COMMUNITIES_COMMUNITY", nil, clubInfo.name);

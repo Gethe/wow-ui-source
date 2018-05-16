@@ -101,6 +101,13 @@ function ItemMixin:GetItemName()
 	return nil;
 end
 
+function ItemMixin:GetItemLink()
+	if not self:IsItemEmpty() then
+		return C_Item.GetItemLink(self:GetItemLocation());
+	end
+	return nil;
+end
+
 function ItemMixin:GetItemQuality()
 	if not self:IsItemEmpty() then
 		return C_Item.GetItemQuality(self:GetItemLocation());

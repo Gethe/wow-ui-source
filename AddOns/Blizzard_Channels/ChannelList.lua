@@ -8,6 +8,7 @@ function ChannelListMixin:OnLoad()
 	self.headerButtonPool = CreateFramePool("Button", self.Child, "ChannelButtonHeaderTemplate", ResetChannelButton);
 	self.textChannelButtonPool = CreateFramePool("Button", self.Child, "ChannelButtonTextTemplate", ResetChannelButton);
 	self.voiceChannelButtonPool = CreateFramePool("Button", self.Child, "ChannelButtonVoiceTemplate", ResetChannelButton);
+	self.communityChannelButtonPool = CreateFramePool("Button", self.Child, "ChannelButtonCommunityTemplate", ResetChannelButton);
 	self.collapsedStates = {};
 
 	self.ScrollBar.Background:Hide();
@@ -69,23 +70,70 @@ function ChannelListMixin:AddVoiceChannelButton(channel, category)
 	end
 end
 
+function ChannelListMixin:AddCommunityChannelButton(channelID, clubId, streamInfo)
+	if not self:IsCollapsed(clubId) then
+		self:AddChannelButtonInternal(self.communityChannelButtonPool:Acquire(), channelID, clubId, streamInfo);
+	end
+end
+
 function ChannelListMixin:Update()
-	local previouslySelectedChannelName = self:GetSelectedChannelButton() and self:GetSelectedChannelButton():GetChannelName();
+	local previouslySelectedChannelID = self:GetSelectedChannelButton() and self:GetSelectedChannelButton():GetChannelID();
 	self:SetSelectedChannel(nil);
 
 	self.textChannelButtonPool:ReleaseAll();
 	self.voiceChannelButtonPool:ReleaseAll();
+	self.communityChannelButtonPool:ReleaseAll();
 	self.headerButtonPool:ReleaseAll();
 	self:ResetChannelButtonAnchors();
 
-	for i = 1, GetNumDisplayChannels() do
+	local numTotalChatChannels = GetNumDisplayChannels();
+	local numGroupChatChannels = GetNumGroupChannels();
+
+	-- Add just the group channels
+	for i = 1, numGroupChatChannels do
 		self:AddChatSystemButton(i);
+	end
+
+
+	-- Then add community streams
+	local clubs = C_Club.GetSubscribedClubs();
+
+	Communities_LoadUI();
+	CommunitiesFrame.CommunitiesList:PredictFavorites(clubs);
+	CommunitiesUtil.SortClubs(clubs);
+
+	local currentStreamChannelID = numTotalChatChannels + 1;
+	for _, clubInfo in ipairs(clubs) do
+		local streams = C_Club.GetStreams(clubInfo.clubId);
+		
+		if #streams > 0 then
+			local isHeader = true;
+			local channelNumber = nil;
+			local count = #streams;
+			local isActive = true;
+			local category = clubInfo.clubId;	-- use the clubId as the category so that all club streams are grouped under this header
+
+			self:AddHeaderButton(currentStreamChannelID, clubInfo.name, isHeader, channelNumber, count, isActive, category);
+			currentStreamChannelID = currentStreamChannelID + 1;
+
+			for _, streamInfo in ipairs(streams) do
+				self:AddCommunityChannelButton(currentStreamChannelID, clubInfo.clubId, streamInfo);
+				currentStreamChannelID = currentStreamChannelID + 1;
+			end
+		end
+	end
+
+	-- And finally add the rest of the channels
+	if numTotalChatChannels > numGroupChatChannels then
+		for i = numGroupChatChannels + 1, numTotalChatChannels do
+			self:AddChatSystemButton(i);
+		end
 	end
 
 	self:UpdateScrollBar();
 
-	if previouslySelectedChannelName then
-		self:SelectChannelByName(previouslySelectedChannelName);
+	if previouslySelectedChannelID then
+		self:SelectChannelByID(previouslySelectedChannelID);
 	end
 
 	if not self:GetSelectedChannelButton() then
@@ -117,6 +165,10 @@ local function matchingChannelTypePredicate(button, channelType)
 	return button:GetChannelType() == channelType;
 end
 
+local function matchingCommunityStreamPredicate(button, clubId, streamId)
+	return button:ChannelIsCommunity() and (button.clubId == clubId) and (button.streamId == streamId);
+end
+
 function ChannelListMixin:GetButtonForPredicate(predicate, ...)
 	for button in self.textChannelButtonPool:EnumerateActive() do
 		if predicate(button, ...) then
@@ -125,6 +177,12 @@ function ChannelListMixin:GetButtonForPredicate(predicate, ...)
 	end
 
 	for button in self.voiceChannelButtonPool:EnumerateActive() do
+		if predicate(button, ...) then
+			return button;
+		end
+	end
+
+	for button in self.communityChannelButtonPool:EnumerateActive() do
 		if predicate(button, ...) then
 			return button;
 		end
@@ -153,6 +211,10 @@ end
 
 function ChannelListMixin:GetButtonForChannelType(channelType)
 	return self:GetButtonForPredicate(matchingChannelTypePredicate, channelType);
+end
+
+function ChannelListMixin:GetButtonForCommunityStream(clubId, streamId)
+	return self:GetButtonForPredicate(matchingCommunityStreamPredicate, clubId, streamId);
 end
 
 function ChannelListMixin:HasChannel(name)
@@ -227,7 +289,7 @@ end
 do
 	local function IsSelectableChannelButton(channelButton, optionalChannelToExclude)
 		assert(channelButton);
-		return not channelButton:IsHeader() and (not optionalChannelToExclude or channelButton:GetChannelID() ~= optionalChannelToExclude);
+		return not channelButton:IsHeader() and channelButton:IsEnabled() and (not optionalChannelToExclude or channelButton:GetChannelID() ~= optionalChannelToExclude);
 	end
 
 	local function GetNeighborForIndex(container, index, step, predicate, ...)

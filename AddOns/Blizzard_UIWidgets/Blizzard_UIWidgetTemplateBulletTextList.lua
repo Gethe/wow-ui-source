@@ -20,7 +20,7 @@ function UIWidgetTemplateBulletTextListMixin:Setup(widgetInfo)
 		lineFrame:Show();
 
 		lineFrame.Text:SetText(line);
-		lineFrame:SetColorState(widgetInfo.colorState)
+		lineFrame:SetEnabledState(widgetInfo.enabledState)
 		lineFrame:SetHeight(lineFrame.Text:GetHeight());
 
 		lineFrame:ClearAllPoints();
@@ -49,7 +49,7 @@ end
 
 UIWidgetTemplateBulletTextListLineMixin = {};
 
-function UIWidgetTemplateBulletTextListLineMixin:SetColorState(colorState)
-	self.Bullet:SetColorState(colorState);
-	self.Text:SetColorState(colorState);
+function UIWidgetTemplateBulletTextListLineMixin:SetEnabledState(enabledState)
+	self.Bullet:SetEnabledState(enabledState);
+	self.Text:SetEnabledState(enabledState);
 end

@@ -7,16 +7,12 @@ end
 function ChannelRosterMixin:OnShow()
 	self:RegisterEvent("VOICE_CHAT_CHANNEL_MEMBER_ACTIVE_STATE_CHANGED");
 	self:RegisterEvent("VOICE_CHAT_CHANNEL_MEMBER_ADDED");
-	self:RegisterEvent("VOICE_CHAT_CHANNEL_MEMBER_ENERGY_CHANGED");
-	self:RegisterEvent("VOICE_CHAT_CHANNEL_MEMBER_SPEAKING_STATE_CHANGED");
 	self:RegisterEvent("UNIT_CONNECTION");
 end
 
 function ChannelRosterMixin:OnHide()
 	self:UnregisterEvent("VOICE_CHAT_CHANNEL_MEMBER_ACTIVE_STATE_CHANGED");
 	self:UnregisterEvent("VOICE_CHAT_CHANNEL_MEMBER_ADDED");
-	self:UnregisterEvent("VOICE_CHAT_CHANNEL_MEMBER_ENERGY_CHANGED");
-	self:UnregisterEvent("VOICE_CHAT_CHANNEL_MEMBER_SPEAKING_STATE_CHANGED");
 	self:UnregisterEvent("UNIT_CONNECTION");
 end
 
@@ -73,7 +69,9 @@ end
 function ChannelRosterMixin:Update()
 	local channel = self:GetChannelFrame():GetList():GetSelectedChannelButton();
 	if channel then
-		if channel:ChannelSupportsText() then
+		if channel:ChannelIsCommunity() then
+			self:UpdateFromCommunityStream(channel);
+		elseif channel:ChannelSupportsText() then
 			self:UpdateFromTextChannelID(channel:GetChannelID());
 		else
 			self:UpdateFromVoiceChannelID(channel:GetVoiceChannelID());
@@ -186,7 +184,7 @@ do
 		rosterEntry:SetVoiceEnabled(false);
 
 		if voiceChannelID then
-			voiceMemberID = C_VoiceChat.GetMemberID(voiceChannelID, guid);
+			local voiceMemberID = C_VoiceChat.GetMemberID(voiceChannelID, guid);
 			local voiceMemberInfo = voiceMemberID and C_VoiceChat.GetMemberInfo(voiceMemberID, voiceChannelID);
 			
 			if voiceMemberInfo then
@@ -253,5 +251,62 @@ do
 		self.voiceChannelID = channelID;
 
 		return self:UpdateFromOpaqueChannel(C_VoiceChat.GetChannel(channelID), GetVoiceChannelInfo, UpdateVoiceChannelRosterEntry);
+	end
+end
+
+-- Community channels
+do
+	local function UpdateCommunityStreamChannelRosterEntry(communityStreamInfo, rosterIndex, voiceChannelID, rosterEntry)
+		local memberInfo = communityStreamInfo.members[rosterIndex];
+
+		rosterEntry:SetMemberID(rosterIndex);
+		rosterEntry:SetMemberPlayerLocationFromGuid(memberInfo.guid);
+		rosterEntry:SetMemberName(memberInfo.name);
+		rosterEntry:SetMemberIsOwner(memberInfo.role == Enum.ClubRoleIdentifier.Owner or memberInfo.role == Enum.ClubRoleIdentifier.Leader);
+		rosterEntry:SetMemberIsModerator(memberInfo.role == Enum.ClubRoleIdentifier.Moderator);
+		rosterEntry:SetVoiceEnabled(false);
+		rosterEntry:SetIsConnected(true);
+
+		if voiceChannelID and memberInfo.guid then
+			local voiceMemberID = C_VoiceChat.GetMemberID(voiceChannelID, memberInfo.guid);
+			local voiceMemberInfo = voiceMemberID and C_VoiceChat.GetMemberInfo(voiceMemberID, voiceChannelID);
+			
+			if voiceMemberInfo then
+				rosterEntry:SetVoiceEnabled(true);
+				rosterEntry:SetVoiceChannelID(voiceChannelID);
+				rosterEntry:SetVoiceMemberID(voiceMemberID);
+				rosterEntry:SetVoiceActive(voiceMemberInfo.isActive);
+				rosterEntry:SetVoiceMuted(voiceMemberInfo.isMutedForMe);
+			end
+		else
+			rosterEntry:SetVoiceChannelID(nil);
+			rosterEntry:SetVoiceMemberID(nil);
+			rosterEntry:SetVoiceActive(nil);
+			rosterEntry:SetVoiceMuted(nil);
+		end
+
+		rosterEntry:Update();
+	end
+
+	local function GetCommunityStreamRosterInfo(communityStreamInfo)
+		if communityStreamInfo then
+			local isHeader = false;
+			local isCollapsed = false;
+			local isEnabled = true;
+			local channelNumber = 0;
+
+			return communityStreamInfo.name, isHeader, isCollapsed, channelNumber, #communityStreamInfo.members, isEnabled, "CHANNEL_CATEGORY_CUSTOM";
+		end
+	end
+
+	function ChannelRosterMixin:UpdateFromCommunityStream(channelButton)
+		-- Link the voice channel id if there is one
+		local voiceChannel = C_VoiceChat.GetChannelForCommunityStream(channelButton.clubId, channelButton.streamId);
+		self.voiceChannelID = voiceChannel and voiceChannel.channelID or nil;
+
+		local communityStreamInfo = {clubId = channelButton.clubId, streamId = channelButton.streamId, name = channelButton.streamInfo.name};
+		communityStreamInfo.members = CommunitiesUtil.GetAndSortMemberInfo(channelButton.clubId, channelButton.streamId);
+
+		return self:UpdateFromOpaqueChannel(communityStreamInfo, GetCommunityStreamRosterInfo, UpdateCommunityStreamChannelRosterEntry);
 	end
 end

@@ -7,7 +7,7 @@
 	Templates
 *******************************************************************************
 -->	
-	<Frame name="GuildChallengeTemplate" enableMouse="true" virtual="true">
+	<Frame name="CommunitiesGuildChallengeTemplate" enableMouse="true" virtual="true">
 		<Size x="270" y="21"/>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -57,7 +57,7 @@
 	Info panel
 *******************************************************************************
 -->	
-	<Frame name="GuildInfoFrameTemplate" virtual="true">
+	<Frame name="CommunitiesGuildInfoFrameTemplate" virtual="true">
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="TitleText" inherits="GameFontNormalMed1" justifyH="LEFT" text="GUILD_INFO_TITLE">
@@ -189,22 +189,22 @@
 				</Scripts>
 			</ScrollFrame>
 			<!-- id is what controls the challenge type. buttons not necessarily in order by id. -->
-			<Frame name="$parentChallenge1" parentArray="Challenges" inherits="GuildChallengeTemplate" id="1">
+			<Frame name="$parentChallenge1" parentArray="Challenges" inherits="CommunitiesGuildChallengeTemplate" id="1">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.Header1" relativePoint="BOTTOMLEFT" x="0" y="-1"/>
 				</Anchors>
 			</Frame>
-			<Frame name="$parentChallenge2" parentArray="Challenges" inherits="GuildChallengeTemplate" id="5">
+			<Frame name="$parentChallenge2" parentArray="Challenges" inherits="CommunitiesGuildChallengeTemplate" id="5">
 				<Anchors>
 					<Anchor point="TOP" relativeTo="$parentChallenge1" relativePoint="BOTTOM" x="0" y="-7"/>
 				</Anchors>
 			</Frame>
-			<Frame name="$parentChallenge3" parentArray="Challenges" inherits="GuildChallengeTemplate" id="2">
+			<Frame name="$parentChallenge3" parentArray="Challenges" inherits="CommunitiesGuildChallengeTemplate" id="2">
 				<Anchors>
 					<Anchor point="TOP" relativeTo="$parentChallenge2" relativePoint="BOTTOM" x="0" y="-7"/>
 				</Anchors>
 			</Frame>
-			<Frame name="$parentChallenge4" parentArray="Challenges" inherits="GuildChallengeTemplate" id="3">
+			<Frame name="$parentChallenge4" parentArray="Challenges" inherits="CommunitiesGuildChallengeTemplate" id="3">
 				<Anchors>
 					<Anchor point="TOP" relativeTo="$parentChallenge3" relativePoint="BOTTOM" x="0" y="-7"/>
 				</Anchors>
@@ -279,9 +279,9 @@
 			</ScrollFrame>
 		</Frames>
 		<Scripts>
-			<OnLoad function="GuildInfoFrame_OnLoad"/>
-			<OnEvent function="GuildInfoFrame_OnEvent"/>
-			<OnShow function="GuildInfoFrame_OnShow"/>
+			<OnLoad function="CommunitiesGuildInfoFrame_OnLoad"/>
+			<OnEvent function="CommunitiesGuildInfoFrame_OnEvent"/>
+			<OnShow function="CommunitiesGuildInfoFrame_OnShow"/>
 		</Scripts>
 	</Frame>
 <!--
@@ -289,11 +289,11 @@
 	Popups
 *******************************************************************************
 -->	
-	<Frame name="GuildTextEditFrame" toplevel="true" frameStrata="DIALOG" movable="true" hidden="true" parent="UIParent" inherits="TranslucentFrameTemplate">
+	<Frame name="CommunitiesGuildTextEditFrame" toplevel="true" frameStrata="DIALOG" movable="true" hidden="true" parent="UIParent" inherits="TranslucentFrameTemplate">
 		<Size x="295" y="312"/>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString name="$parentTitle" inherits="GameFontNormal">
+				<FontString parentKey="Title" inherits="GameFontNormal">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="24" y="-18"/>
 					</Anchors>
@@ -306,7 +306,7 @@
 					<Anchor point="TOPRIGHT" x="-4" y="-4"/>
 				</Anchors>
 			</Button>
-			<Frame name="GuildTextEditContainer">
+			<Frame parentKey="Container">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="22" y="-36"/>
 					<Anchor point="TOPRIGHT" x="-22" y="-36"/>
@@ -318,18 +318,22 @@
 					<BackgroundInsets left="1" right="1" top="1" bottom="1"/>
 				</Backdrop>
 				<Frames>
-					<ScrollFrame name="GuildTextEditScrollFrame" inherits="MinimalScrollFrameTemplate">
+					<ScrollFrame parentKey="ScrollFrame" inherits="MinimalScrollFrameTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" x="4" y="-4"/>
 							<Anchor point="BOTTOMRIGHT" x="-26" y="4"/>
 						</Anchors>
 						<ScrollChild>
-							<EditBox name="GuildTextEditBox" multiLine="true" letters="500" autoFocus="false">
+							<EditBox parentKey="EditBox" multiLine="true" letters="500" autoFocus="false">
 								<Size x="218" y="1"/>
 								<Anchors>
 									<Anchor point="TOPLEFT"/>
 								</Anchors>
 								<Scripts>
+									<OnLoad function="ScrollingEdit_OnLoad"/>
+									<OnShow>
+										self:SetFocus();
+									</OnShow>
 									<OnTextChanged>
 										ScrollingEdit_OnTextChanged(self, self:GetParent());
 									</OnTextChanged> 
@@ -360,7 +364,7 @@
 					<Anchor point="BOTTOMLEFT" x="24" y="16"/>
 				</Anchors>
 				<Scripts>
-					<OnClick function="GuildTextEditFrame_OnAccept"/>
+					<OnClick function="CommunitiesGuildTextEditFrame_OnAccept"/>
 				</Scripts>
 			</Button>
 			<Button name="$parentCloseButton" inherits="UIPanelButtonTemplate" text="CLOSE">
@@ -376,13 +380,13 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad function="GuildTextEditFrame_OnLoad"/>
+			<OnLoad function="CommunitiesGuildTextEditFrame_OnLoad"/>
 			<OnHide>
 				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 			</OnHide>
 		</Scripts>
 	</Frame>
-	<Frame name="GuildLogFrame" toplevel="true" frameStrata="DIALOG" enableMouse="true" hidden="true" parent="UIParent" inherits="TranslucentFrameTemplate">
+	<Frame name="CommunitiesGuildLogFrame" toplevel="true" frameStrata="DIALOG" enableMouse="true" hidden="true" parent="UIParent" inherits="TranslucentFrameTemplate">
 		<Size x="384" y="432"/>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -399,7 +403,7 @@
 					<Anchor point="TOPRIGHT" x="-4" y="-4"/>
 				</Anchors>
 			</Button>
-			<Frame name="GuildLogContainer">
+			<Frame parentKey="Container">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="22" y="-36"/>
 					<Anchor point="TOPRIGHT" x="-22" y="-36"/>
@@ -411,17 +415,17 @@
 					<BackgroundInsets left="1" right="1" top="1" bottom="1"/>
 				</Backdrop>
 				<Frames>
-					<ScrollFrame name="GuildLogScrollFrame" inherits="MinimalScrollFrameTemplate">
+					<ScrollFrame parentKey="ScrollFrame" inherits="MinimalScrollFrameTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" x="8" y="-4"/>
 							<Anchor point="TOPRIGHT" x="-25" y="-4"/>
 							<Anchor point="BOTTOM" x="0" y="5"/>
 						</Anchors>
 						<ScrollChild>
-							<Frame>
+							<Frame parentKey="Child">
 								<Size x="10" y="10"/>
 								<Frames>
-									<SimpleHTML name="GuildLogHTMLFrame">
+									<SimpleHTML parentKey="HTMLFrame">
 										<Size x="304" y="10"/>
 										<Anchors>
 											<Anchor point="TOPLEFT" x="0" y="-4"/>
@@ -453,8 +457,8 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad function="GuildLogFrame_OnLoad"/>
-			<OnEvent function="GuildLogFrame_Update"/>
+			<OnLoad function="CommunitiesGuildLogFrame_OnLoad"/>
+			<OnEvent function="CommunitiesGuildLogFrame_Update"/>
 			<OnShow>
 				QueryGuildEventLog();
 				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);

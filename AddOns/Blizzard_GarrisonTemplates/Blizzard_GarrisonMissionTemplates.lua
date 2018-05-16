@@ -2021,22 +2021,29 @@ function GarrisonMissionPage_SetReward(frame, reward, missionComplete)
 				frame.tooltip = GetMoneyString(reward.quantity);
 				frame.currencyID = 0;
 				frame.currencyQuantity = reward.quantity;
-				if (frame.Name) then
-					frame.Name:SetText(frame.tooltip);
-				end
+				frame.Name:SetText(frame.tooltip);
 			else
-				local currencyName, _, currencyTexture = GetCurrencyInfo(reward.currencyID);
+				local currencyName, currencyQuantity, currencyTexture, _, _, _, _, currencyQuality = GetCurrencyInfo(reward.currencyID);
+				currencyName, currencyTexture, currencyQuantity, currencyQuality = CurrencyContainerUtil.GetCurrencyContainerInfo(reward.currencyID, reward.quantity, currencyName, currencyTexture, currencyQuality);
+				
 				frame.currencyID = reward.currencyID;
 				frame.currencyQuantity = reward.quantity;
-				if (frame.Name) then
-					frame.Name:SetText(currencyName);
+				
+				frame.Name:SetText(currencyName);
+				local currencyColor = GetColorForCurrencyReward(frame.currencyID, currencyQuantity)
+				frame.Name:SetTextColor(currencyColor:GetRGB());
+				frame.Icon:SetTexture(currencyTexture);
+
+				if (currencyQuality) then 
+					SetItemButtonQuality(frame, currencyQuality, frame.currencyID);
 				end
-				frame.Quantity:SetText(reward.quantity);
-				if ( not missionComplete ) then
-					local currencyColor = GetColorForCurrencyReward(reward.currencyID, reward.quantity);
+				
+				if ( not missionComplete and currencyQuantity > 1 ) then 
+					local currencyColor = GetColorForCurrencyReward(frame.currencyID, currencyQuantity)
 					frame.Quantity:SetTextColor(currencyColor:GetRGB());
+					frame.Quantity:SetText(currencyQuantity);
+					frame.Quantity:Show();
 				end
-				frame.Quantity:Show();
 			end
 		elseif (reward.bonusAbilityID) then
 			frame.bonusAbilityID = reward.bonusAbilityID;
@@ -2081,7 +2088,7 @@ function GarrisonMissionPage_RewardOnEnter(self)
 			return;
 		end
 		if (self.currencyID and self.currencyID ~= 0) then
-			GameTooltip:SetCurrencyByID(self.currencyID);
+			GameTooltip:SetCurrencyByID(self.currencyID, self.currencyQuantity);
 			return;
 		end
 		if (self.title) then

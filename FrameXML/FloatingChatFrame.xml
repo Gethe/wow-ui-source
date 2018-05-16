@@ -212,11 +212,8 @@
 	<Texture name="ChatTabConversationIconTemplate" file="Interface\ChatFrame\UI-ChatConversationIcon" virtual="true">
 		<Size x="16" y="16"/>
 	</Texture>
-	<Button name="ChatTabTemplate" frameStrata="LOW" parent="UIParent" virtual="true" alpha="0.4">
+	<Button name="ChatTabArtTemplate" virtual="true" alpha="0.4">
 		<Size x="64" y="32"/>
-		<Anchors>
-			<Anchor point="BOTTOMLEFT" x="0" y="2"/>
-		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentLeft" file="Interface\ChatFrame\ChatFrameTab-BGLeft" parentKey="leftTexture">
@@ -228,13 +225,13 @@
 				<Texture name="$parentMiddle" file="Interface\ChatFrame\ChatFrameTab-BGMid" horizTile="true" parentKey="middleTexture">
 					<Size x="44" y="32"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
+						<Anchor point="LEFT" relativeKey="$parent.leftTexture" relativePoint="RIGHT"/>
 					</Anchors>
 				</Texture>
 				<Texture name="$parentRight" file="Interface\ChatFrame\ChatFrameTab-BGRight" parentKey="rightTexture">
 					<Size x="16" y="32"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentMiddle" relativePoint="RIGHT"/>
+						<Anchor point="LEFT" relativeKey="$parent.middleTexture" relativePoint="RIGHT"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -242,22 +239,22 @@
 				<Texture name="$parentSelectedLeft" file="Interface\ChatFrame\ChatFrameTab-SelectedLeft" alphaMode="ADD" parentKey="leftSelectedTexture">
 					<Size x="16" y="32"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentLeft" relativePoint="TOPLEFT"/>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentLeft" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.leftTexture" relativePoint="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.leftTexture" relativePoint="BOTTOMRIGHT"/>
 					</Anchors>
 				</Texture>
 				<Texture name="$parentSelectedMiddle" file="Interface\ChatFrame\ChatFrameTab-SelectedMid" horizTile="true" alphaMode="ADD" parentKey="middleSelectedTexture">
 					<Size x="44" y="32"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentMiddle" relativePoint="TOPLEFT"/>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentMiddle" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.middleTexture" relativePoint="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.middleTexture" relativePoint="BOTTOMRIGHT"/>
 					</Anchors>
 				</Texture>
 				<Texture name="$parentSelectedRight" file="Interface\ChatFrame\ChatFrameTab-SelectedRight" alphaMode="ADD" parentKey="rightSelectedTexture">
 					<Size x="16" y="32"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentRight" relativePoint="TOPLEFT"/>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentRight" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.rightTexture" relativePoint="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.rightTexture" relativePoint="BOTTOMRIGHT"/>
 					</Anchors>
 				</Texture>
 				<Texture name="$parentGlow" file="Interface\ChatFrame\ChatFrameTab-NewMessage" parentKey="glow" alphaMode="ADD" hidden="true">
@@ -271,26 +268,31 @@
 				<Texture name="$parentHighlightLeft" file="Interface\ChatFrame\ChatFrameTab-HighlightLeft" alphaMode="ADD" parentKey="leftHighlightTexture">
 					<Size x="16" y="32"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentLeft" relativePoint="TOPLEFT"/>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentLeft" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.leftTexture" relativePoint="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.leftTexture" relativePoint="BOTTOMRIGHT"/>
 					</Anchors>
 				</Texture>
 				<Texture name="$parentHighlightMiddle" file="Interface\ChatFrame\ChatFrameTab-HighlightMid" horizTile="true" alphaMode="ADD" parentKey="middleHighlightTexture">
 					<Size x="44" y="32"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentMiddle" relativePoint="TOPLEFT"/>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentMiddle" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.middleTexture" relativePoint="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.middleTexture" relativePoint="BOTTOMRIGHT"/>
 					</Anchors>
 				</Texture>
 				<Texture name="$parentHighlightRight" file="Interface\ChatFrame\ChatFrameTab-HighlightRight" alphaMode="ADD" parentKey="rightHighlightTexture">
 					<Size x="16" y="32"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentRight" relativePoint="TOPLEFT"/>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentRight" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.rightTexture" relativePoint="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.rightTexture" relativePoint="BOTTOMRIGHT"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 		</Layers>
+	</Button>
+	<Button name="ChatTabTemplate" frameStrata="LOW" parent="UIParent" virtual="true" inherits="ChatTabArtTemplate">
+		<Anchors>
+			<Anchor point="BOTTOMLEFT" x="0" y="2"/>
+		</Anchors>
 		<Frames>
 			<Frame name="$parentFlash" hidden="true">
 				<Size x="5" y="32"/>
@@ -382,7 +384,7 @@
 				FCF_StopDragging(_G["ChatFrame"..self:GetID()]);
 			</OnDragStop-->
 		</Scripts>
-		<ButtonText name="$parentText">
+		<ButtonText name="$parentText" parentKey="Text">
 			<Size x="50" y="8"/>
 			<Anchors>
 				<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT" x="0" y="-5"/>

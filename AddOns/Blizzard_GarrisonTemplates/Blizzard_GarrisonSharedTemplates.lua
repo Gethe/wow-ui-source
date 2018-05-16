@@ -381,7 +381,7 @@ function GarrisonFollowerList:UpdateFollowers()
 		end
 	end
 
-	if ( self.followerTab ) then
+	if ( self.followerTab and GarrisonFollowerOptions[self.followerType].showNumFollowers) then
 		local maxFollowers = C_Garrison.GetFollowerSoftCap(self.followerType);
 		local numActiveFollowers = C_Garrison.GetNumActiveFollowers(self.followerType) or 0;
 		if ( self.isLandingPage ) then

@@ -564,7 +564,7 @@ local function CanBoostCharacter(class, level, boostInProgress, isTrialBoost, re
 end
 
 local function IsCharacterEligibleForVeteranBonus(level, isTrialBoost, revokedCharacterUpgrade)
-	return level >= UPGRADE_BONUS_LEVEL and not isTrialBoost and not revokedCharacterUpgrade;
+	return false;
 end
 
 local function SetCharacterButtonEnabled(button, enabled)

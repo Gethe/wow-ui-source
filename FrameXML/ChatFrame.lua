@@ -325,7 +325,7 @@ function Chat_GetChannelColor(chatInfo)
 end
 
 function Chat_GetCommunitiesChannelName(clubId, streamId)
-	return clubId..":"..streamId;
+	return "Community:"..clubId..":"..streamId;
 end
 
 local function Chat_GetCommunitiesChannel(clubId, streamId)
@@ -659,9 +659,10 @@ EMOTE454_TOKEN = "FORTHEALLIANCE"
 EMOTE455_TOKEN = "FORTHEHORDE"
 EMOTE517_TOKEN = "WHOA"
 EMOTE518_TOKEN = "OOPS"
+EMOTE521_TOKEN = "MEOW"
 
--- NOTE: This indices used to iterate the tokens may not be contiguous, keep that in mind when updating this value.
-local MAXEMOTEINDEX = 518;
+-- NOTE: The indices used to iterate the tokens may not be contiguous, keep that in mind when updating this value.
+local MAXEMOTEINDEX = 521;
 
 
 ICON_LIST = {
@@ -2694,7 +2695,14 @@ function ChatFrame_ContainsChannel(chatFrame, channel)
 	return false;
 end
 
+function ChatFrame_AddCommunitiesChannel(chatFrame, clubId, streamId)
+	local channelName = Chat_GetCommunitiesChannelName(clubId, streamId);
+	local channelIndex = ChatFrame_AddChannel(chatFrame, channelName);
+	chatFrame:AddMessage(COMMUNITIES_CHANNEL_ADDED_TO_CHAT_WINDOW:format(channelIndex, ChatFrame_ResolveChannelName(channelName)), DEFAULT_CHAT_CHANNEL_COLOR:GetRGB());
+end
+
 function ChatFrame_AddChannel(chatFrame, channel)
+	local channelIndex = nil;
 	local zoneChannel = AddChatWindowChannel(chatFrame:GetID(), channel);
 	if ( zoneChannel ) then
 		local i = 1;
@@ -2703,17 +2711,30 @@ function ChatFrame_AddChannel(chatFrame, channel)
 		end
 		chatFrame.channelList[i] = channel;
 		chatFrame.zoneChannelList[i] = zoneChannel;
+		channelIndex = i;
 	end
+	
+	return channelIndex;
+end
+
+function ChatFrame_RemoveCommunitiesChannel(chatFrame, clubId, streamId)
+	local channelName = Chat_GetCommunitiesChannelName(clubId, streamId);
+	local channelIndex = ChatFrame_RemoveChannel(chatFrame, channelName);
+	chatFrame:AddMessage(COMMUNITIES_CHANNEL_REMOVED_FROM_CHAT_WINDOW:format(channelIndex, ChatFrame_ResolveChannelName(channelName)), DEFAULT_CHAT_CHANNEL_COLOR:GetRGB());
 end
 
 function ChatFrame_RemoveChannel(chatFrame, channel)
+	local channelIndex = nil;
 	for index, value in pairs(chatFrame.channelList) do
 		if ( strupper(channel) == strupper(value) ) then
 			chatFrame.channelList[index] = nil;
 			chatFrame.zoneChannelList[index] = nil;
+			channelIndex = index;
 		end
 	end
+	
 	RemoveChatWindowChannel(chatFrame:GetID(), channel);
+	return channelIndex;
 end
 
 function ChatFrame_RemoveAllChannels(chatFrame)

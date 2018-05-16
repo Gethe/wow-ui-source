@@ -142,7 +142,8 @@ end
 function CommunitiesCreateDialogMixin:CreateCommunity()
 	local name = self.NameBox:GetText();
 	local description = self.DescriptionFrame.EditBox:GetText();
-	C_Club.CreateClub(name, description, self:GetClubType(), self:GetAvatarId());
+	-- TODO: Add short name field for Character clubs
+	C_Club.CreateClub(name, "club", description, self:GetClubType(), self:GetAvatarId());
 end
 
 function CommunitiesAddDialogWoWButton_OnEnter(self)

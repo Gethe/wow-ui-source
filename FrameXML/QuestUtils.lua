@@ -98,6 +98,8 @@ function QuestUtils_GetQuestName(questID)
 		local questIndex = GetQuestLogIndexByID(questID);
 		if questIndex and questIndex > 0 then
 			questName = GetQuestLogTitle(questIndex);
+		else
+			questName = C_QuestLog.GetQuestInfoByID(questID);
 		end
 	end
 

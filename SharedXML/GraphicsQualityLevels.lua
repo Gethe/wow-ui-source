@@ -1188,6 +1188,45 @@ VideoData["Advanced_UseUIScale"]={
 	name = USE_UISCALE;
 	tooltip = OPTION_TOOLTIP_USE_UISCALE,
 }
+VideoData["Advanced_AdapterDropDown"]={
+	name = GRAPHICS_CARD,
+	description = OPTION_TOOLTIP_GRAPHICS_CARD,
+	tablefunction = 
+		function(self)
+			self.adapters = C_VideoOptions.GetGxAdapterInfo();
+			local adapterNames = {};
+			for idx, val in ipairs(self.adapters) do
+				if ( val.isExternal ) then
+					adapterNames[idx] = string.format(GX_ADAPTER_EXTERNAL, val.name);
+				elseif ( val.isLowPower ) then
+					adapterNames[idx] = string.format(GX_ADAPTER_LOW_POWER, val.name);
+				else
+					adapterNames[idx] = val.name;
+				end
+			end
+			return GX_ADAPTER_AUTO_DETECT, unpack(adapterNames);
+		end,
+	SetValue =
+		function (self, value)
+			if ( value == 1 ) then
+				SetCVar("gxAdapter", "");
+			else
+				SetCVar("gxAdapter", self.adapters[value - 1].name);
+			end
+		end,
+	doGetValue = 
+		function(self)
+			local adapter = GetCVar("gxAdapter");
+			if ( adapter == "" ) then
+				return 1;
+			end
+			for i = 1, #self.adapters do
+				if (string.lower(self.adapters[i].name) == string.lower(adapter)) then
+					return i + 1;
+				end
+			end
+		end,
+}
 VideoData["Advanced_StereoEnabled"]={
 	name = ENABLE_STEREO_VIDEO;
 	tooltip = OPTION_TOOLTIP_ENABLE_STEREO_VIDEO,

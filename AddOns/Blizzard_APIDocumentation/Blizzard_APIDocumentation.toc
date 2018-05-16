@@ -29,7 +29,6 @@ BarberShopDocumentation.lua
 BattlePetDocumentation.lua
 BlackMarketInfoDocumentation.lua
 BrowserDocumentation.lua
-CalendarDocumentation.lua
 ChallengeModeInfoDocumentation.lua
 ChatBubblesDocumentation.lua
 ChatInfoDocumentation.lua
@@ -99,6 +98,7 @@ ReputationInfoDocumentation.lua
 ResearchInfoDocumentation.lua
 RestrictedActionsDocumentation.lua
 ScenarioInfoDocumentation.lua
+ScrappingMachineUIDocumentation.lua
 ScriptWarningsDocumentation.lua
 SecureTransferDocumentation.lua
 SkillInfoDocumentation.lua
@@ -137,6 +137,7 @@ WarfrontDocumentation.lua
 WorldStateInfoDocumentation.lua
 WowTokenUIDocumentation.lua
 ZoneAbilityDocumentation.lua
+CalendarDocumentation.lua
 ClubDocumentation.lua
 FriendsDocumentation.lua
 # End documentation files here

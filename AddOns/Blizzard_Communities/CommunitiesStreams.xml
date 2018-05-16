@@ -271,56 +271,30 @@
 		</Scripts>
 	</Frame>
 	
-	<Button name="AddToChatButtonTemplate" inherits="UIPanelButtonTemplate" text="COMMUNITIES_ADD_TO_CHAT" mixin="CommunitiesAddToChatMixin" virtual="true">
+	<Button name="AddToChatButtonTemplate" inherits="UIPanelSquareButton" mixin="CommunitiesAddToChatMixin" virtual="true">
+		<Layers>
+			<Layer>
+				<FontString parentKey="Label" inherits="GameFontNormal" text="COMMUNITIES_ADD_TO_CHAT">
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent" relativePoint="LEFT" x="-4" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
 		<Frames>
-			<Button parentKey="CommunitiesAddStreamHighlightTab" hidden="true">
-				<Size x="97" y="34"/>
-				<Layers>
-					<Layer level="BORDER">
-						<Texture atlas="communities-chat-addtab" useA="true"/>
-					</Layer>
-					<Layer level="ARTWORK">
-						<Texture atlas="communities-chat-icon-plus-tab">
-							<Size x="10" y="10"/>
-							<Anchors>
-								<Anchor point="CENTER" x="0" y="-7"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
+			<Frame parentKey="DropDown" inherits="UIDropDownMenuTemplate">
+				<Size x="10" y="10"/>
 				<Scripts>
-					<OnClick function="CommunitiesAddStreamHighlightTab_OnClick"/>
+					<OnLoad function="CommunitiesAddToChatDropDown_OnLoad"/>
 				</Scripts>
-			</Button>
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
-			<OnShow method="OnShow"/>
-			<OnClick method="OnClick"/>
-			<OnEvent method="OnEvent"/>
-			<OnHide method="OnHide"/>
-		</Scripts>
-	</Button>
-	
-	<Button name="CommunitiesAddStreamHighlightFrameTemplate" mixin="CommunitiesAddStreamHighlightFrameMixin" virtual="true">
-		<Layers>
-			<Layer level="BORDER">
-				<Texture parentKey="Body" atlas="communities-chat-body-add" setAllPoints="true"/>
-			</Layer>
-			<Layer level="ARTWORK">
-				<Texture parentKey="Icon" atlas="communities-chat-icon-plus">
-					<Size x="64" y="65"/>
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Scripts>
 			<OnClick method="OnClick"/>
 		</Scripts>
 	</Button>
-	
+		
 	<Frame name="StreamDropDownMenuTemplate" inherits="UIDropDownMenuTemplate" mixin="CommunitiesStreamDropDownMixin" virtual="true">
 		<Size x="40" y="28"/>
 		<Scripts>

@@ -14,6 +14,8 @@ function VoiceActivityManagerMixin:OnLoad()
 
 	self.guidToExternalNotificationInfo = {};
 	self.externalNotificationOwnerToGuid = {};
+	self.parentFrameNotificationFrames = {};
+	self.notificationFrameToParentFrame = {};
 
 	self.notificationTemplates = { "VoiceActivityNotificationTemplate" };
 	self.externalNotificationTemplates = {};
@@ -107,10 +109,17 @@ function VoiceActivityManagerMixin:OnChannelRemoved(statusCode, channelID)
 	self:ReleaseNotifications("*", channelID);
 end
 
-function VoiceActivityManagerMixin:CreateNotification(memberID, channelID, frameTemplate, isLocalPlayer)
+-- First return value is the created notification
+-- Second return value is true if the notification is an alert
+function VoiceActivityManagerMixin:CreateNotification(memberID, channelID, frameTemplate, isLocalPlayer, parentFrame)
+	local guid = C_VoiceChat.GetMemberGUID(memberID, channelID);
+
 	local notification = self.notificationPools:Acquire(frameTemplate);
 	notification:Setup(memberID, channelID, isLocalPlayer);
-	return notification;
+
+	self:LinkFrameNotificationAndGuid(parentFrame, notification, guid);
+
+	return notification, self:CheckForAlertOnAdd(notification);
 end
 
 function VoiceActivityManagerMixin:CheckForAlertOnAdd(notification)
@@ -154,13 +163,35 @@ function VoiceActivityManagerMixin:ShowNotifications(memberID, channelID)
 	self:SetMemberHasExistingNotification(memberID, channelID);
 end
 
+function VoiceActivityManagerMixin:LinkFrameNotificationAndGuid(frame, notification, guid)
+	self.notificationFrameToParentFrame[notification] = frame;
+
+	if not self.parentFrameNotificationFrames[frame] then
+		self.parentFrameNotificationFrames[frame] = {};
+	end
+
+	self.parentFrameNotificationFrames[frame][notification] = guid;
+end
+
+function VoiceActivityManagerMixin:GetShowingInternalNotificationForGuid(guid)
+	if self.parentFrameNotificationFrames[self] then
+		for notification, showingGuid in pairs(self.parentFrameNotificationFrames[self]) do
+			if showingGuid == guid then
+				return notification;
+			end
+		end
+	end
+
+	return nil;
+end
+
 function VoiceActivityManagerMixin:ShowInternalNotifications(memberID, channelID, isLocalPlayer)
 	local addedAlert = false;
 
 	for _, frameTemplate in pairs(self.notificationTemplates) do
-		local notification = self:CreateNotification(memberID, channelID, frameTemplate, isLocalPlayer);
+		local notification, isAlert = self:CreateNotification(memberID, channelID, frameTemplate, isLocalPlayer, self);
 
-		if self:CheckForAlertOnAdd(notification) then
+		if isAlert then
 			addedAlert = true;
 		end
 	end
@@ -179,10 +210,10 @@ function VoiceActivityManagerMixin:ShowExternalNotifications(memberID, channelID
 		for frame, externalNotificationInfo in pairs(externalNotificationList) do
 			if not externalNotificationInfo.channelID or externalNotificationInfo.channelID == channelID then
 				-- either they registered for all channels or the channel matches, so show the notification
-				local notification = self:CreateNotification(memberID, channelID, externalNotificationInfo.template, isLocalPlayer);
+				local notification, isAlert = self:CreateNotification(memberID, channelID, externalNotificationInfo.template, isLocalPlayer, frame);
 				externalNotificationInfo.callback(frame, notification);
 
-				if self:CheckForAlertOnAdd(notification) then
+				if isAlert then
 					addedAlert = true;
 				end
 			end
@@ -190,6 +221,16 @@ function VoiceActivityManagerMixin:ShowExternalNotifications(memberID, channelID
 	end
 
 	return addedAlert;
+end
+
+function VoiceActivityManagerMixin:ReleaseNotification(notification)
+	local parentFrame = self.notificationFrameToParentFrame[notification];
+	if parentFrame then
+		self.parentFrameNotificationFrames[parentFrame][notification] = nil;
+		self.notificationFrameToParentFrame[notification] = nil;
+	end
+
+	self.notificationPools:Release(notification);
 end
 
 function VoiceActivityManagerMixin:ReleaseNotifications(memberID, channelID)
@@ -206,7 +247,7 @@ function VoiceActivityManagerMixin:ReleaseNotifications(memberID, channelID)
 				removedAlert = true;
 			end
 
-			self.notificationPools:Release(notification);
+			self:ReleaseNotification(notification);
 		end
 	end
 
@@ -309,6 +350,13 @@ function VoiceActivityManagerMixin:RegisterFrameForVoiceActivityNotifications(fr
 
 			self.guidToExternalNotificationInfo[guid][frame] = {channelID = voiceChannelID, template = notificationTemplate, callback = notificationCreatedCallback};
 			self.externalNotificationOwnerToGuid[frame] = guid;
+
+			local internalNotification = self:GetShowingInternalNotificationForGuid(guid);
+			if internalNotification then
+				-- This player is talking right now...add a notofication for them
+				local notification = self:CreateNotification(internalNotification:GetMemberID(), internalNotification:GetChannelID(), notificationTemplate, internalNotification:GetIsLocalPlayer(), frame);
+				notificationCreatedCallback(frame, notification);
+			end
 		end
 	end
 end
@@ -317,6 +365,15 @@ function VoiceActivityManagerMixin:UnregisterFrameForVoiceActivityNotifications(
 	if frame then
 		local guid = self.externalNotificationOwnerToGuid[frame];
 		if guid then
+			if self.parentFrameNotificationFrames[frame] then
+				-- Release the notifications attached to this frame
+				for notification in pairs(self.parentFrameNotificationFrames[frame]) do
+					self:ReleaseNotification(notification);
+				end
+
+				self.parentFrameNotificationFrames[frame] = nil;
+			end
+
 			self.guidToExternalNotificationInfo[guid][frame] = nil;
 
 			if not next(self.guidToExternalNotificationInfo[guid]) then

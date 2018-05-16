@@ -17,6 +17,7 @@ local TradeSkillUI =
 				{ Name = "skillLineRank", Type = "number", Nilable = false },
 				{ Name = "skillLineMaxRank", Type = "number", Nilable = false },
 				{ Name = "skillLineModifier", Type = "number", Nilable = false },
+				{ Name = "parentSkillLineID", Type = "number", Nilable = true },
 				{ Name = "parentSkillLineDisplayName", Type = "string", Nilable = true },
 			},
 		},

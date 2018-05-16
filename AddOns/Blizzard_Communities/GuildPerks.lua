@@ -1,40 +1,40 @@
 
-function GuildPerksFrame_OnLoad(self)
+function CommunitiesGuildPerksFrame_OnLoad(self)
 	self.Container.update = function ()
-		GuildPerks_Update(self);
+		CommunitiesGuildPerks_Update(self);
 	end;
 	
-	HybridScrollFrame_CreateButtons(self.Container, "GuildPerksButtonTemplate", 8, 0, "TOPLEFT", "TOPLEFT", 0, 0, "TOP", "BOTTOM");
+	HybridScrollFrame_CreateButtons(self.Container, "CommunitiesGuildPerksButtonTemplate", 8, 0, "TOPLEFT", "TOPLEFT", 0, 0, "TOP", "BOTTOM");
 end
 
-function GuildPerksFrame_OnShow(self)
-	GuildPerks_Update(self);
+function CommunitiesGuildPerksFrame_OnShow(self)
+	CommunitiesGuildPerks_Update(self);
 end
 
-function GuildPerksFrame_OnEvent(self, event, ...)
+function CommunitiesGuildPerksFrame_OnEvent(self, event, ...)
 	if ( not self:IsShown() ) then
 		return;
 	end
 end
 
-function GuildPerksButton_OnEnter(self)
+function CommunitiesGuildPerksButton_OnEnter(self)
 	self:GetParent().activeButton = self;
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 36, 0);
 	GameTooltip:SetHyperlink(GetSpellLink(self.spellID));
 end
 
-function GuildPerksButton_OnLeave(self)
+function CommunitiesGuildPerksButton_OnLeave(self)
 	self:GetParent().activeButton = nil;
 	GameTooltip:Hide();
 end
 
-function GuildPerksButton_OnClick(self)
+function CommunitiesGuildPerksButton_OnClick(self)
 	if ( IsModifiedClick("CHATLINK") ) then
 		ChatEdit_LinkItem(nil, GetSpellLink(self.spellID));
 	end
 end
 
-function GuildPerks_Update(self)
+function CommunitiesGuildPerks_Update(self)
 	local scrollFrame = self.Container;
 	local offset = HybridScrollFrame_GetOffset(scrollFrame);
 	local buttons = scrollFrame.buttons;
@@ -73,6 +73,6 @@ function GuildPerks_Update(self)
 
 	-- update tooltip
 	if ( scrollFrame.activeButton ) then
-		GuildPerksButton_OnEnter(scrollFrame.activeButton);
+		CommunitiesGuildPerksButton_OnEnter(scrollFrame.activeButton);
 	end
 end

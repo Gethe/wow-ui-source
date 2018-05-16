@@ -13,7 +13,7 @@ function UIWidgetTemplateTextWithStateMixin:Setup(widgetInfo)
 	UIWidgetBaseTemplateMixin.Setup(self, widgetInfo);
 
 	self.Text:SetText(widgetInfo.text);
-	self.Text:SetColorState(widgetInfo.colorState);
+	self.Text:SetEnabledState(widgetInfo.enabledState);
 
 	self:SetHeight(self.Text:GetHeight());
 end

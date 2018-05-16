@@ -19,13 +19,13 @@ function UIWidgetTemplateIconTextAndCurrenciesMixin:Setup(widgetInfo)
 
 	SetupTextureKits(widgetInfo.textureKitID, self, textureKitRegions);
 	self.Text:SetText(widgetInfo.text);
-	local textColor = widgetInfo.enabledState;
-	if widgetInfo.enabledState == Enum.TextColorState.Enabled then
-		textColor = Enum.TextColorState.Highlight;
+	local enabledState = widgetInfo.enabledState;
+	if widgetInfo.enabledState == Enum.WidgetEnabledState.Enabled then
+		enabledState = Enum.WidgetEnabledState.Highlight;
 	end
-	self.Text:SetColorState(textColor);
+	self.Text:SetEnabledState(enabledState);
 
-	local disabled = (widgetInfo.enabledState == Enum.TextColorState.Disabled);
+	local disabled = (widgetInfo.enabledState == Enum.WidgetEnabledState.Disabled);
 	self.Icon:SetDesaturated(disabled);
 
 	local previousCurrencyFrame;
@@ -52,7 +52,7 @@ function UIWidgetTemplateIconTextAndCurrenciesMixin:Setup(widgetInfo)
 	local showDescription = (widgetInfo.descriptionShownState == Enum.WidgetShownState.Shown) and widgetInfo.description;
 	if showDescription then
 		self.Description:SetText(widgetInfo.description);
-		self.Description:SetColorState(widgetInfo.descriptionColorState);
+		self.Description:SetEnabledState(widgetInfo.descriptionEnabledState);
 		self.Description:Show();
 
 		self.Description:ClearAllPoints();

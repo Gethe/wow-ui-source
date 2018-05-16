@@ -25,9 +25,7 @@ end
 
 function MapCanvasDetailLayerMixin:SetLayerAlpha(layerAlpha)
 	self.layerAlpha = layerAlpha;
-	if self:IsFullyLoaded() then
-		self:RefreshAlpha();
-	end
+	self:RefreshAlpha();
 end
 
 function MapCanvasDetailLayerMixin:GetLayerAlpha()
@@ -46,7 +44,6 @@ end
 function MapCanvasDetailLayerMixin:RefreshDetailTiles()
 	self.detailTilePool:ReleaseAll();
 	self.textureLoadGroup:Reset();
-	self:SetAlpha(0);
 	self.isWaitingForLoad = true;
 
 	local layers = C_Map.GetMapArtLayers(self.mapID);
@@ -71,16 +68,22 @@ function MapCanvasDetailLayerMixin:RefreshDetailTiles()
 			detailTile:Show();
 		end
 	end
+
+	self:RefreshAlpha();
 end
 
 function MapCanvasDetailLayerMixin:OnUpdate()
 	if self.isWaitingForLoad and self.textureLoadGroup:IsFullyLoaded() then
-		self:RefreshAlpha();
 		self.isWaitingForLoad = nil;
+		self:RefreshAlpha();
 		self.textureLoadGroup:Reset();
 	end
 end
 
 function MapCanvasDetailLayerMixin:RefreshAlpha()
-	self:SetAlpha(self:GetLayerAlpha() * self:GetGlobalAlpha());
+	if self:IsFullyLoaded() then
+		self:SetAlpha(self:GetLayerAlpha() * self:GetGlobalAlpha());
+	else
+		self:SetAlpha(0.0);
+	end
 end

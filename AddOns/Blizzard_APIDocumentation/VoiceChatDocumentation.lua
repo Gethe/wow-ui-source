@@ -116,6 +116,21 @@ local VoiceChat =
 			},
 		},
 		{
+			Name = "GetChannelForCommunityStream",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "clubId", Type = "string", Nilable = false },
+				{ Name = "streamId", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "channel", Type = "VoiceChatChannel", Nilable = true },
+			},
+		},
+		{
 			Name = "GetCommunicationMode",
 			Type = "Function",
 
@@ -411,7 +426,22 @@ local VoiceChat =
 			Documentation = { "Once the UI has enumerated all channels, use this to reset the channel discovery state, it will be updated again if appropriate" },
 		},
 		{
-			Name = "RequestChannelInfo",
+			Name = "RequestJoinAndActivateCommunityStreamChannel",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "clubId", Type = "string", Nilable = false },
+				{ Name = "streamId", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "status", Type = "VoiceChatStatusCode", Nilable = false },
+			},
+		},
+		{
+			Name = "RequestJoinChannelByChannelType",
 			Type = "Function",
 
 			Arguments =
@@ -627,6 +657,8 @@ local VoiceChat =
 			{
 				{ Name = "status", Type = "VoiceChatStatusCode", Nilable = false },
 				{ Name = "channelID", Type = "number", Nilable = false },
+				{ Name = "clubId", Type = "string", Nilable = false },
+				{ Name = "streamId", Type = "string", Nilable = false },
 			},
 		},
 		{
@@ -864,9 +896,9 @@ local VoiceChat =
 		{
 			Name = "VoiceChatStatusCode",
 			Type = "Enumeration",
-			NumValues = 19,
+			NumValues = 21,
 			MinValue = 0,
-			MaxValue = 18,
+			MaxValue = 20,
 			Fields =
 			{
 				{ Name = "Success", Type = "VoiceChatStatusCode", EnumValue = 0 },
@@ -888,6 +920,8 @@ local VoiceChat =
 				{ Name = "ProxyConnectionUnableToConnect", Type = "VoiceChatStatusCode", EnumValue = 16 },
 				{ Name = "ProxyConnectionUnexpectedDisconnect", Type = "VoiceChatStatusCode", EnumValue = 17 },
 				{ Name = "Disabled", Type = "VoiceChatStatusCode", EnumValue = 18 },
+				{ Name = "UnsupportedChatChannelType", Type = "VoiceChatStatusCode", EnumValue = 19 },
+				{ Name = "InvalidCommunityStream", Type = "VoiceChatStatusCode", EnumValue = 20 },
 			},
 		},
 		{
@@ -923,6 +957,8 @@ local VoiceChat =
 				{ Name = "name", Type = "string", Nilable = false },
 				{ Name = "channelID", Type = "number", Nilable = false },
 				{ Name = "channelType", Type = "ChatChannelType", Nilable = false },
+				{ Name = "clubId", Type = "string", Nilable = false },
+				{ Name = "streamId", Type = "string", Nilable = false },
 				{ Name = "volume", Type = "number", Nilable = false },
 				{ Name = "isActive", Type = "bool", Nilable = false },
 				{ Name = "isMuted", Type = "bool", Nilable = false },

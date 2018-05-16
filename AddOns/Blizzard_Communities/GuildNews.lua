@@ -18,7 +18,7 @@ local GUILD_EVENT_TEXTURES = {
 	[CALENDAR_EVENTTYPE_OTHER]		= "Interface\\Calendar\\UI-Calendar-Event-Other",
 };
 
-function GuildNewsFrame_OnLoad(self)
+function CommunitiesGuildNewsFrame_OnLoad(self)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("GUILD_NEWS_UPDATE");
 	self:RegisterEvent("GUILD_MOTD");
@@ -26,8 +26,8 @@ function GuildNewsFrame_OnLoad(self)
 	local fontString = self.SetFiltersButton:GetFontString();
 	self.SetFiltersButton:SetHeight(fontString:GetHeight() + 4);
 	self.SetFiltersButton:SetWidth(fontString:GetWidth() + 4);
-	self.Container.update = function () GuildNews_Update(self); end;
-	HybridScrollFrame_CreateButtons(self.Container, "GuildNewsButtonTemplate", 0, 0);
+	self.Container.update = function () CommunitiesGuildNews_Update(self); end;
+	HybridScrollFrame_CreateButtons(self.Container, "CommunitiesGuildNewsButtonTemplate", 0, 0);
 	
 	if ( GetGuildFactionGroup() == 0 ) then  -- horde
 		GUILD_EVENT_TEXTURES[CALENDAR_EVENTTYPE_PVP] = "Interface\\Calendar\\UI-Calendar-Event-PVP01";
@@ -36,25 +36,25 @@ function GuildNewsFrame_OnLoad(self)
 	end
 end
 
-function GuildNewsFrame_OnShow(self)
+function CommunitiesGuildNewsFrame_OnShow(self)
 	GuildNewsSort(0);	-- normal sort, taking into account filters and stickies
 end
 
-function GuildNewsFrame_OnHide(self)
+function CommunitiesGuildNewsFrame_OnHide(self)
 	if ( self.DropDown.newsIndex ) then
 		CloseDropDownMenus();
 	end
 end
 
-function GuildNewsFrame_OnEvent(self, event)
+function CommunitiesGuildNewsFrame_OnEvent(self, event)
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
 		QueryGuildNews();
 	elseif ( self:IsShown() ) then
-		GuildNews_Update(self);
+		CommunitiesGuildNews_Update(self);
 	end
 end
 
-function GuildNews_Update(self)
+function CommunitiesGuildNews_Update(self)
 	-- check to display impeach frame
 	if ( CanReplaceGuildMaster() ) then
 		self.GMImpeachButton:Show();
@@ -76,7 +76,7 @@ function GuildNews_Update(self)
 	local buttons = scrollFrame.buttons;
 	local button, index;
 	
-	local numEvents = math.min(7, CalendarGetNumGuildEvents());
+	local numEvents = math.min(7, C_Calendar.GetNumGuildEvents());
 	local numNews = GetNumGuildNews();
 	local offset = HybridScrollFrame_GetOffset(scrollFrame);
 	local numButtons = #buttons;
@@ -89,11 +89,11 @@ function GuildNews_Update(self)
 		button:Enable();
 		index = offset + i;
 		if( index == haveMOTD ) then
-			GuildNewsButton_SetMOTD(button, motd);
+			CommunitiesGuildNewsButton_SetMOTD(button, motd);
 		elseif( index <= numEvents + haveMOTD ) then
-			GuildNewsButton_SetEvent(button, index - haveMOTD);
+			CommunitiesGuildNewsButton_SetEvent(button, index - haveMOTD);
 		elseif( index <= numEvents + haveMOTD + numNews  ) then
-			GuildNewsButton_SetNews( button, index - haveMOTD - numEvents  );
+			CommunitiesGuildNewsButton_SetNews( button, index - haveMOTD - numEvents  );
 		else
 			button:Hide();
 		end
@@ -101,7 +101,7 @@ function GuildNews_Update(self)
 	
 	-- update tooltip
 	if ( self.activeButton ) then
-		GuildNewsButton_OnEnter(self.activeButton);
+		CommunitiesGuildNewsButton_OnEnter(self.activeButton);
 	end
 	
 	-- hide dropdown menu
@@ -119,7 +119,7 @@ function GuildNews_Update(self)
 	HybridScrollFrame_Update(scrollFrame, totalHeight, displayedHeight);
 end
 
-function GuildNewsButton_SetText( button, text_color, text, ...)
+function CommunitiesGuildNewsButton_SetText( button, text_color, text, ...)
 	button.text:SetFormattedText(text, ...);
 	button.text:SetTextColor(text_color.r, text_color.g, text_color.b);
 end
@@ -132,7 +132,7 @@ local icon_table = {
 	event = { width = 14, height = 14, texcoords={0, 1, 0, 1}},
 	news = { width = 13, height = 11, texture = "Interface\\GuildFrame\\GuildFrame", texcoords={0.41406250, 0.42675781, 0.96875000, 0.99023438}},
 }
-function GuildNewsButton_SetIcon( button, icon_type, override_texture )
+function CommunitiesGuildNewsButton_SetIcon( button, icon_type, override_texture )
 	if ( button.icon.type ~= icon_type ) then
 		button.icon.type = icon_type;
 		local icon = icon_table[icon_type]
@@ -145,18 +145,18 @@ function GuildNewsButton_SetIcon( button, icon_type, override_texture )
 	button.icon:Show();
 end
 
-function GuildNewsButton_SetMOTD( button, text )
+function CommunitiesGuildNewsButton_SetMOTD( button, text )
 	button.text:SetPoint("LEFT", 24, 0);
-	GuildNewsButton_SetIcon(button,"motd");
-	GuildNewsButton_SetText(button, HIGHLIGHT_FONT_COLOR, GUILD_NEWS_MOTD, text);
+	CommunitiesGuildNewsButton_SetIcon(button,"motd");
+	CommunitiesGuildNewsButton_SetText(button, HIGHLIGHT_FONT_COLOR, GUILD_NEWS_MOTD, text);
 	button.index = nil;
 	button.newsType = NEWS_MOTD;
 end
 
 local SIX_DAYS = 6 * 24 * 60 * 60		-- time in seconds
-function GuildNewsButton_SetEvent( button, event_id )
+function CommunitiesGuildNewsButton_SetEvent( button, event_id )
 	local today = date("*t");
-	local month, day, weekday, hour, minute, eventType, title, calendarType, texture = CalendarGetGuildEventInfo(event_id);
+	local month, day, weekday, hour, minute, eventType, title, calendarType, texture = C_Calendar.GetGuildEventInfo(event_id);
 	local displayTime = GameTime_GetFormattedTime(hour, minute, true);
 	local displayDay;
 	
@@ -176,27 +176,27 @@ function GuildNewsButton_SetEvent( button, event_id )
 			displayDay = string.format(GUILD_NEWS_DATE, CALENDAR_WEEKDAY_NAMES[weekday], day, month);
 		end
 	end
-	GuildNewsButton_SetText(button, HIGHLIGHT_FONT_COLOR, GUILD_EVENT_FORMAT, displayDay, displayTime, title);
+	CommunitiesGuildNewsButton_SetText(button, HIGHLIGHT_FONT_COLOR, GUILD_EVENT_FORMAT, displayDay, displayTime, title);
 	
 	button.text:SetPoint("LEFT", 24, 0);
-	GuildNewsButton_SetIcon( button, texture);	
+	CommunitiesGuildNewsButton_SetIcon( button, texture);	
 	button.index = event_id;
 	button.newsType = NEWS_GUILD_EVENT;
 
 	button.isEvent = true;
 end
 
-function GuildNewsButton_SetNews( button, news_id )
+function CommunitiesGuildNewsButton_SetNews( button, news_id )
 	local isSticky, isHeader, newsType, text1, text2, id, data, data2, weekday, day, month, year = GetGuildNewsInfo(news_id);
 	if ( isHeader ) then
 		button.text:SetPoint("LEFT", 14, 0);
-		GuildNewsButton_SetText( button, NORMAL_FONT_COLOR, GUILD_NEWS_DATE, CALENDAR_WEEKDAY_NAMES[weekday + 1], day + 1, month + 1);
+		CommunitiesGuildNewsButton_SetText( button, NORMAL_FONT_COLOR, GUILD_NEWS_DATE, CALENDAR_WEEKDAY_NAMES[weekday + 1], day + 1, month + 1);
 		button.header:Show();
 		button:Disable();
 	else
 		button.text:SetPoint("LEFT", 24, 0);
 		if ( isSticky ) then
-			GuildNewsButton_SetIcon(button, "news");
+			CommunitiesGuildNewsButton_SetIcon(button, "news");
 		else
 			button.dash:Show();
 		end
@@ -227,13 +227,13 @@ function GuildNewsButton_SetNews( button, news_id )
 		end
 		
 		if ( newsType ) then
-			GuildNewsButton_SetText( button, HIGHLIGHT_FONT_COLOR, _G["GUILD_NEWS_FORMAT"..newsType], text1, text2);
+			CommunitiesGuildNewsButton_SetText( button, HIGHLIGHT_FONT_COLOR, _G["GUILD_NEWS_FORMAT"..newsType], text1, text2);
 		end
 	end
 	button.isEvent = nil;
 end
 
-function GuildNewsButton_OnEnter(self)
+function CommunitiesGuildNewsButton_OnEnter(self)
 	local guildNewsFrame = self:GetParent():GetParent():GetParent();
 	local bossModel = guildNewsFrame.BossModel;
 	self.activeButton = self;
@@ -242,14 +242,14 @@ function GuildNewsButton_OnEnter(self)
 	local newsType = self.newsType;
 	self.UpdateTooltip = nil;
 	if ( newsType == NEWS_ITEM_LOOTED or newsType == NEWS_ITEM_CRAFTED or newsType == NEWS_ITEM_PURCHASED or newsType == NEWS_LEGENDARY_LOOTED ) then
-		GuildNewsButton_AnchorTooltip(self);
+		CommunitiesGuildNewsButton_AnchorTooltip(self);
 		local _, _, _, _, text2, _, _, _ = GetGuildNewsInfo(self.index);
 		GameTooltip:SetHyperlink(text2);
-		self.UpdateTooltip = GuildNewsButton_OnEnter;
+		self.UpdateTooltip = CommunitiesGuildNewsButton_OnEnter;
 	elseif ( newsType == NEWS_PLAYER_ACHIEVEMENT or newsType == NEWS_GUILD_ACHIEVEMENT ) then
 		local achievementId = self.id;
 		local _, name, _, _, _, _, _, description = GetAchievementInfo(achievementId);
-		GuildNewsButton_AnchorTooltip(self);
+		CommunitiesGuildNewsButton_AnchorTooltip(self);
 		GameTooltip:SetText(ACHIEVEMENT_COLOR_CODE..name..FONT_COLOR_CODE_CLOSE);
 		GameTooltip:AddLine(description, 1, 1, 1, true);
 		local firstCriteria = true;
@@ -287,14 +287,14 @@ function GuildNewsButton_OnEnter(self)
 			bossModel.BossName:SetText(text2);
 			bossModel.TextFrame.BossLocationText:SetText(zone);
 		else
-			GuildNewsButton_AnchorTooltip(self);
+			CommunitiesGuildNewsButton_AnchorTooltip(self);
 			GameTooltip:SetText(text2);
 			GameTooltip:AddLine(zone, 1, 1, 1);
 			GameTooltip:Show();
 		end
 	elseif ( newsType == NEWS_MOTD ) then
 		if ( self.text:IsTruncated() ) then
-			GuildNewsButton_AnchorTooltip(self);
+			CommunitiesGuildNewsButton_AnchorTooltip(self);
 			GameTooltip:SetText(GUILD_MOTD_LABEL);
 			GameTooltip:AddLine(GetGuildRosterMOTD(), 1, 1, 1, true);
 			GameTooltip:Show();
@@ -302,13 +302,13 @@ function GuildNewsButton_OnEnter(self)
 	end
 end
 
-function GuildNewsButton_AnchorTooltip(self)
+function CommunitiesGuildNewsButton_AnchorTooltip(self)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 end
 
-function GuildNewsButton_OnClick(self, button)
+function CommunitiesGuildNewsButton_OnClick(self, button)
 	if ( button == "RightButton" ) then
-		local dropDown = GuildNewsDropDown;
+		local dropDown = self:GetParent():GetParent():GetParent().DropDown;
 		if ( dropDown.newsIndex ~= self.index ) then
 			CloseDropDownMenus();
 		end
@@ -318,7 +318,7 @@ function GuildNewsButton_OnClick(self, button)
 	end
 end
 
-function GuildNewsButton_OnLeave(self)
+function CommunitiesGuildNewsButton_OnLeave(self)
 	self.activeButton = nil;
 	GameTooltip:Hide();
 	
@@ -328,11 +328,11 @@ end
 
 --****** Dropdown **************************************************************
 
-function GuildNewsDropDown_OnLoad(self)
-	UIDropDownMenu_Initialize(self, GuildNewsDropDown_Initialize, "MENU");
+function CommunitiesGuildNewsDropDown_OnLoad(self)
+	UIDropDownMenu_Initialize(self, CommunitiesGuildNewsDropDown_Initialize, "MENU");
 end
 
-function GuildNewsDropDown_Initialize(self)
+function CommunitiesGuildNewsDropDown_Initialize(self)
 	if ( not self.newsIndex ) then
 		return;
 	end
@@ -376,28 +376,28 @@ function GuildNewsDropDown_Initialize(self)
 			info.text = GUILD_NEWS_MAKE_STICKY;
 			info.arg2 = 1;
 		end
-		info.func = GuildNewsDropDown_SetSticky;
+		info.func = CommunitiesGuildNewsDropDown_SetSticky;
 		UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
 	end
 end
 
-function GuildNewsDropDown_OnHide(self)
+function CommunitiesGuildNewsDropDown_OnHide(self)
 	self.newsIndex = nil;
 end
 
-function GuildNewsDropDown_SetSticky(button, newsIndex, value)
+function CommunitiesGuildNewsDropDown_SetSticky(button, newsIndex, value)
 	GuildNewsSetSticky(newsIndex, value);
 end
 
 --****** Popup *****************************************************************
 
-function GuildNewsFiltersFrame_OnLoad(self)
+function CommunitiesGuildNewsFiltersFrame_OnLoad(self)
 	for _, filterButton in ipairs(self.GuildNewsFilterButtons) do
 		filterButton.Text:SetText(_G["GUILD_NEWS_FILTER"..filterButton:GetID()]);
 	end
 end
 
-function GuildNewsFiltersFrame_OnShow(self)
+function CommunitiesGuildNewsFiltersFrame_OnShow(self)
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	local filters = { GetGuildNewsFilters() };
 	for i, checkbox in ipairs(self.GuildNewsFilterButtons) do
@@ -409,7 +409,7 @@ function GuildNewsFiltersFrame_OnShow(self)
 	end
 end
 
-function GuildNewsFilter_OnClick(self)
+function CommunitiesGuildNewsFilter_OnClick(self)
 	local setting;
 	if ( self:GetChecked() ) then
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);

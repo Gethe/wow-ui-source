@@ -87,12 +87,12 @@ end
 
 UIWidgetBaseColoredTextMixin = {}
 
-function UIWidgetBaseColoredTextMixin:SetColorState(colorState)
-	if colorState == Enum.TextColorState.Disabled then
+function UIWidgetBaseColoredTextMixin:SetEnabledState(enabledState)
+	if enabledState == Enum.WidgetEnabledState.Disabled then
 		self:SetTextColor(DISABLED_FONT_COLOR:GetRGB());
-	elseif colorState == Enum.TextColorState.Red then
+	elseif enabledState == Enum.WidgetEnabledState.Red then
 		self:SetTextColor(RED_FONT_COLOR:GetRGB());
-	elseif colorState == Enum.TextColorState.Highlight then
+	elseif enabledState == Enum.WidgetEnabledState.Highlight then
 		self:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
 	else
 		self:SetTextColor(NORMAL_FONT_COLOR:GetRGB());

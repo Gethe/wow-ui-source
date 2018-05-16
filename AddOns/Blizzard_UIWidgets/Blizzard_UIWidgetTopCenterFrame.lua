@@ -1,7 +1,7 @@
 UIWidgetTopCenterContainerMixin = {}
 
 local function WidgetsLayout(widgetContainer, sortedWidgets)
-	local widgetsHeight = 0;
+	local widgetsHeight = 1; --Need to keep this at least height 1 because other frames anchor to it and trying to anchor to a frame of height 0 is undefined
 
 	local maxIconWidgetWidth = 0;
 	local iconAndTextWidgets = {};

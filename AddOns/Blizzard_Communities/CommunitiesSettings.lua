@@ -88,7 +88,8 @@ end
 function CommunitiesSettingsDialogAcceptButton_OnClick(self)
 	local communitiesSettingsDialog = self:GetParent();
 	communitiesSettingsDialog:Hide();
-	C_Club.EditClub(communitiesSettingsDialog:GetClubId(), communitiesSettingsDialog:GetName(), communitiesSettingsDialog:GetDescription(), communitiesSettingsDialog:GetAvatarId(), communitiesSettingsDialog:GetMessageOfTheDay());
+	-- TODO: Short name edit box for Character clubs
+	C_Club.EditClub(communitiesSettingsDialog:GetClubId(), communitiesSettingsDialog:GetName(), nil, communitiesSettingsDialog:GetDescription(), communitiesSettingsDialog:GetAvatarId(), communitiesSettingsDialog:GetMessageOfTheDay());
 end
 
 function CommunitiesSettingsDialogDeleteButton_OnClick(self)

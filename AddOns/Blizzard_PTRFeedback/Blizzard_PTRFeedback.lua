@@ -38,6 +38,8 @@ function PTR_IssueReporter.Init()
         SubmitText = "Submit Bug",
     }
     PTR_IssueReporter.TriggerEvents = {
+        [1] = {enabled = true, label = "Confused Report", question = "", checkboxes = {}},
+        [2] = {enabled = true, label = "Bug Report", question = "", checkboxes = {}},
         [5] = {enabled = false, label = "Island Expedition", question = "Did you experience any bugs with this Island Expedition?", checkboxes = {"Yes", "No"}},
         [6] = {enabled = false, label = "Warfront", question = "Did you experience any bugs with this Warfront?", checkboxes = {"Yes", "No"}},
     }
@@ -110,7 +112,11 @@ function PTR_IssueReporter.Init()
         elseif (PTR_IssueReporter.TriggerEvents[reportType]) then
             local choice, instanceID, comments = ...
             comments = comments:gsub(","," ")
-            finalMessage = string.format('%s,%s,%s,%s', finalMessage, choice, instanceID, comments)
+            if (reportType == PTR_IssueReporter.Data.SELF_REPORTED_CONFUSED) or (reportType == PTR_IssueReporter.Data.SELF_REPORTED_BUG) then
+                finalMessage = string.format('%s,%s', finalMessage, comments)
+            else
+                finalMessage = string.format('%s,%s,%s,%s', finalMessage, choice, instanceID, comments)
+            end
         else
             local comments = ...
             comments = comments:gsub(","," ")
@@ -133,7 +139,6 @@ function PTR_IssueReporter.Init()
         else
             PTR_IssueReporter:SetPoint("BOTTOM", UIParent, "BOTTOM", 0, UIParent:GetHeight()*0.25)
         end
-        PTR_IssueReporter:SetClampRectInsets(0, 0, 0, -PTR_IssueReporter.Body.Texture:GetHeight())
     end)
     PTR_IssueReporter:SetFrameStrata("HIGH")
     PTR_IssueReporter.text = PTR_IssueReporter:CreateFontString("CheckListText", "OVERLAY", PTR_IssueReporter.Data.fontString)
@@ -173,86 +178,14 @@ function PTR_IssueReporter.Init()
         "I'm not sure what I should do\nand/or where I should go.")
     local ReportBug = PTR_IssueReporter.CreateIssueButton("Bug",
         PTR_IssueReporter.Data.bugreport,
-        "I have encountered a bug or other technical problem.")
-    ReportBug.InputBox = CreateFrame("Frame", "ReportBugInputBox", ReportBug)
-    ReportBug.InputBox:SetPoint("CENTER", UIParent, "CENTER")
-    ReportBug.InputBox:SetSize(200, 200)
-    FramePainter.AddBackground(ReportBug.InputBox, PTR_IssueReporter.Data.watermark);
-    FramePainter.AddBorder(ReportBug.InputBox)
-    ReportBug.InputBox.InputField = FramePainter.NewEditBox("ReportBugExtraInfo", "BOTTOM", ReportBug.InputBox, "BOTTOM", "", ReportBug.InputBox:GetWidth(), 40)
-    ReportBug.InputBox.text = ReportBug.InputBox:CreateFontString("CheckListText", "OVERLAY", PTR_IssueReporter.Data.fontString)
-    ReportBug.InputBox.text:SetPoint("TOPLEFT", ReportBug.InputBox, "TOPLEFT", 8, -8)
-    ReportBug.InputBox.text:SetPoint("BOTTOMRIGHT", ReportBug.InputBox.InputField, "TOPRIGHT", -8, 8)
-    ReportBug.InputBox.text:SetJustifyH("LEFT")
-    ReportBug.InputBox.text:SetJustifyV("TOP")
-    ReportBug.InputBox.text:SetWordWrap(true)
-    ReportBug.InputBox.text:SetNonSpaceWrap(true)
-    FramePainter.AddBackground(ReportBug.InputBox.InputField, PTR_IssueReporter.Data.textureFile)
-    ReportBug.InputBox.InputField:SetScript("OnTextChanged", function(self, userInput)
-        local body = self:GetText()
-        ReportBug.InputBox.text:SetText(body)
-    end)
-    ReportBug.InputBox.SubmitButton = CreateFrame("Button", nil, ReportBug.InputBox, "UIPanelButtonTemplate")
-    ReportBug.InputBox.SubmitButton:SetPoint("TOP", ReportBug.InputBox, "BOTTOM", 0, 0)
-    ReportBug.InputBox.SubmitButton:SetText(PTR_IssueReporter.Data.SubmitText)
-    ReportBug.InputBox.SubmitButton:SetSize(ReportBug.InputBox.SubmitButton:GetTextWidth()*1.5, 32)
-    ReportBug.InputBox.SubmitButton:SetScript("OnClick", function(self, button, down)
-        local comments = ReportBug.InputBox.text:GetText() or ""
-        if (ReportBug.InputBox.Reason == PTR_IssueReporter.Data.SELF_REPORTED_BUG) then
-            PTR_IssueReporter.SendResults(PTR_IssueReporter.Data.SELF_REPORTED_BUG, comments)
-        else
-            PTR_IssueReporter.SendResults(PTR_IssueReporter.Data.SELF_REPORTED_CONFUSED, comments)
-        end
-        UIErrorsFrame:AddMessage(PTR_IssueReporter.Data.Thanks)
-        ReportBug.InputBox:Hide()
-        PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON)
-    end)
-    ReportBug.InputBox.Reason = SELF_REPORTED_BUG
-    ReportBug.InputBox.Title = CreateFrame("Button", nil, ReportBug.InputBox, "UIPanelButtonTemplate")
-    ReportBug.InputBox.Title:SetButtonState("NORMAL", true)
-    ReportBug.InputBox.Title:SetNormalTexture(PTR_IssueReporter.Data.textureFile2)
-    ReportBug.InputBox.Title:EnableMouse(false)
-    ReportBug.InputBox.Title:SetPoint("BOTTOM", ReportBug.InputBox, "TOP", 0, 2)
-    ReportBug.InputBox.Title:SetSize(ReportBug.InputBox:GetWidth(), 32)
-    FramePainter.AddBorder(ReportBug.InputBox.Title)
-    table.insert(UISpecialFrames, ReportBug.InputBox:GetName())
-    ReportBug.InputBox:Hide()
-    ReportBug.InputBox:SetScript("OnShow", function(self)
-        ReportBug.InputBox.InputField:SetText("")
-    end)
+        "I have encountered a bug.")
     ReportBug:SetScript("OnClick", function(self, button, down)
-        if (self.InputBox:IsShown()) then
-
-            if (self.InputBox.Reason == PTR_IssueReporter.Data.SELF_REPORTED_CONFUSED) then
-                ReportBug.InputBox.Reason = PTR_IssueReporter.Data.SELF_REPORTED_BUG
-                self.InputBox.Title:SetText("Bug Report")
-            else
-                self.InputBox:Hide()
-            end
-        else
-            self.InputBox.Reason = PTR_IssueReporter.Data.SELF_REPORTED_BUG
-            self.InputBox.Title:SetText("Bug Report")
-            self.InputBox:Show()
-            self.InputBox.InputField:SetFocus()
-        end
+        PTR_IssueReporter.PopEvent(PTR_IssueReporter.Data.SELF_REPORTED_BUG)
         PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON)
     end)
 
     Confused:SetScript("OnClick", function(self, button, down)
-        if (ReportBug.InputBox:IsShown()) then
-            if (ReportBug.InputBox.Reason == PTR_IssueReporter.Data.SELF_REPORTED_BUG) then
-
-                ReportBug.InputBox.Reason = PTR_IssueReporter.Data.SELF_REPORTED_CONFUSED
-                ReportBug.InputBox.Title:SetText("Confused Report")
-            else
-                ReportBug.InputBox:Hide()
-            end
-        else
-            ReportBug.InputBox.Reason = PTR_IssueReporter.Data.SELF_REPORTED_CONFUSED
-            ReportBug.InputBox.Title:SetText("Confused Report")
-            ReportBug.InputBox:Show()
-            ReportBug.InputBox.InputField:SetFocus()
-        end
+        PTR_IssueReporter.PopEvent(PTR_IssueReporter.Data.SELF_REPORTED_CONFUSED)
         PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON)
     end)
 
@@ -388,7 +321,10 @@ function PTR_IssueReporter.Init()
         end
         if (#PTR_IssueReporter.AlertFrame.Queue <= 0) then
             --no bosses to push
-            PTR_IssueReporter.AlertFrame:Hide()
+            if (PTR_IssueReporter.AlertFrame:IsShown()) then
+                PTR_IssueReporter.AlertFrame.hideFromCombat = true
+                PTR_IssueReporter.AlertFrame:Hide()
+            end
         else
             --take the first boss and set it if not flagged
             PTR_IssueReporter.SetBossInfo(PTR_IssueReporter.AlertFrame.Queue[#PTR_IssueReporter.AlertFrame.Queue].name,
@@ -486,6 +422,17 @@ function PTR_IssueReporter.Init()
         PlaySound(620)
     end)
 
+    PTR_IssueReporter.AlertFrame:SetScript("OnHide", function(self)
+        --init data
+        if (not PTR_IssueReporter.AlertFrame.hideFromCombat) then
+            --clear bosses
+            PTR_IssueReporter.FlagDefeated()
+            PTR_IssueReporter.ClearNextBoss()
+            PTR_IssueReporter.PushNextBoss()
+        end
+        PTR_IssueReporter.AlertFrame.hideFromCombat = false
+    end)
+
     PTR_IssueReporter.AlertFrame:SetScript("OnEvent", function(self, event, ...)
         if (event == "COMBAT_LOG_EVENT_UNFILTERED") then
             local eventArgs = {...}
@@ -538,7 +485,10 @@ function PTR_IssueReporter.Init()
             PTR_IssueReporter.PushNextBoss()
         elseif (event == "PLAYER_REGEN_DISABLED") then
             --combat began
-            PTR_IssueReporter.AlertFrame:Hide()
+            if (PTR_IssueReporter.AlertFrame:IsShown()) then
+                PTR_IssueReporter.AlertFrame.hideFromCombat = true
+                PTR_IssueReporter.AlertFrame:Hide()
+            end
         end
     end)
     PTR_IssueReporter.AlertFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
@@ -672,10 +622,16 @@ function PTR_IssueReporter.Init()
 
 ---------------------------------------------------IMPORTANT QUEST PROMPT---------------------------------------------------
 --========================================================================================================================--
-    PTR_IssueReporter.EventPopup = CreateFrame("Frame", nil, UIParent)
+    PTR_IssueReporter.EventPopup = CreateFrame("Frame", "PTRIssueReporterEventPopup", UIParent)
+    PTR_IssueReporter.EventPopup:SetFrameStrata("HIGH")
+    table.insert(UISpecialFrames, PTR_IssueReporter.EventPopup:GetName())
     PTR_IssueReporter.EventPopup.Reason = 0
-    PTR_IssueReporter.EventPopup:SetSize(400, 30)
-    PTR_IssueReporter.EventPopup:SetPoint("LEFT", UIParent, "LEFT", 50, UIParent:GetHeight()*0.33)
+    PTR_IssueReporter.EventPopup:SetSize(300, 30)
+    if (Blizzard_PTRIssueReporter_Saved.PopupX and Blizzard_PTRIssueReporter_Saved.PopupY) then
+        PTR_IssueReporter.EventPopup:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", Blizzard_PTRIssueReporter_Saved.PopupX, Blizzard_PTRIssueReporter_Saved.PopupY)
+    else
+        PTR_IssueReporter.EventPopup:SetPoint("CENTER", UIParent, "CENTER")
+    end
     FramePainter.AddBackground(PTR_IssueReporter.EventPopup, PTR_IssueReporter.Data.textureFile2)
     FramePainter.AddBorder(PTR_IssueReporter.EventPopup)
     PTR_IssueReporter.EventPopup:SetMovable(true)
@@ -688,18 +644,28 @@ function PTR_IssueReporter.Init()
     end)
     PTR_IssueReporter.EventPopup:SetScript("OnDragStop", function(self)
         self:StopMovingOrSizing()
+        local left, bottom, width, height = self:GetRect()
+        Blizzard_PTRIssueReporter_Saved.PopupX = left
+        Blizzard_PTRIssueReporter_Saved.PopupY = bottom
     end)
 
     PTR_IssueReporter.EventPopup.Label = PTR_IssueReporter.EventPopup:CreateFontString(nil, "OVERLAY")
     PTR_IssueReporter.EventPopup.Label:SetFont("Fonts\\FRIZQT__.TTF", PTR_IssueReporter.EventPopup:GetHeight()*0.5, "OUTLINE, THICK")
     PTR_IssueReporter.EventPopup.Label:SetPoint("LEFT", PTR_IssueReporter.EventPopup, "LEFT", 8, 0)
     PTR_IssueReporter.EventPopup.Label:SetJustifyH("LEFT")
-    PTR_IssueReporter.EventPopup.Label:SetTextColor(1, 1, 1, 1)
-    PTR_IssueReporter.EventPopup.TopLabel = PTR_IssueReporter.EventPopup:CreateFontString(nil, "OVERLAY")
+    PTR_IssueReporter.EventPopup.Label:SetTextColor(1, 0.8, 0.2, 1)
+    PTR_IssueReporter.EventPopup.TopLabel = PTR_IssueReporter.EventPopup.Border:CreateFontString(nil, "OVERLAY")
     PTR_IssueReporter.EventPopup.TopLabel:SetFont("Fonts\\FRIZQT__.TTF", PTR_IssueReporter.EventPopup:GetHeight()*0.8, "OUTLINE, THICK")
-    PTR_IssueReporter.EventPopup.TopLabel:SetText("Bug Reporter")
+    PTR_IssueReporter.EventPopup.TopLabel:SetText("")
     PTR_IssueReporter.EventPopup.TopLabel:SetTextColor(1, 0.8, 0.2, 1)
     PTR_IssueReporter.EventPopup.TopLabel:SetPoint("BOTTOM", PTR_IssueReporter.EventPopup, "TOP")
+
+    PTR_IssueReporter.EventPopup:SetScript("OnEnter", function(self)
+        SetCursor("Interface\\CURSOR\\UI-Cursor-Move.blp")
+    end)
+    PTR_IssueReporter.EventPopup:SetScript("OnLeave", function(self)
+        ResetCursor()
+    end)
 
     PTR_IssueReporter.EventPopup.CloseButton = CreateFrame("Button", nil, PTR_IssueReporter.EventPopup, "UIPanelCloseButtonNoScripts")
     PTR_IssueReporter.EventPopup.CloseButton:SetPoint("RIGHT", PTR_IssueReporter.EventPopup, "RIGHT")
@@ -715,17 +681,16 @@ function PTR_IssueReporter.Init()
     PTR_IssueReporter.EventPopup.CheckBoxes:SetPoint("TOPRIGHT", PTR_IssueReporter.EventPopup, "BOTTOMRIGHT")
     FramePainter.AddBackground(PTR_IssueReporter.EventPopup.CheckBoxes, PTR_IssueReporter.Data.textureFile2)
     FramePainter.AddBorder(PTR_IssueReporter.EventPopup.CheckBoxes)
-    PTR_IssueReporter.EventPopup.CheckBoxes:SetHeight(100)
     PTR_IssueReporter.EventPopup.CheckBoxes.Question = PTR_IssueReporter.EventPopup.CheckBoxes:CreateFontString(nil, "OVERLAY")
     PTR_IssueReporter.EventPopup.CheckBoxes.Question:SetFont("Fonts\\FRIZQT__.TTF", 14, "OUTLINE, THICK")
     PTR_IssueReporter.EventPopup.CheckBoxes.Question:SetPoint("TOPLEFT", PTR_IssueReporter.EventPopup.CheckBoxes, "TOPLEFT", 8, -8)
     PTR_IssueReporter.EventPopup.CheckBoxes.Question:SetPoint("TOPRIGHT", PTR_IssueReporter.EventPopup.CheckBoxes, "TOPRIGHT", -8, -8)
     PTR_IssueReporter.EventPopup.CheckBoxes.Question:SetJustifyV("TOP")
     PTR_IssueReporter.EventPopup.CheckBoxes.Question:SetJustifyH("LEFT")
-    PTR_IssueReporter.EventPopup.CheckBoxes.Question:SetTextColor(1, 0.8, 0.2, 1)
-    PTR_IssueReporter.EventPopup.CheckBoxes:SetHeight(PTR_IssueReporter.EventPopup.CheckBoxes.Question:GetHeight() + 15)
+    PTR_IssueReporter.EventPopup.CheckBoxes.Question:SetTextColor(1, 1, 1, 1)
+    PTR_IssueReporter.EventPopup.CheckBoxes:SetHeight(100)
 
-    PTR_IssueReporter.EventPopup.Body = CreateFrame("Frame", nil, PTR_IssueReporter.EventPopup)
+    PTR_IssueReporter.EventPopup.Body = CreateFrame("Frame", nil, PTR_IssueReporter.EventPopup.CheckBoxes)
     PTR_IssueReporter.EventPopup.Body:SetHeight(200)
     PTR_IssueReporter.EventPopup.Body:EnableMouse(true)
     PTR_IssueReporter.EventPopup.Body:SetPoint("TOPLEFT", PTR_IssueReporter.EventPopup.CheckBoxes, "BOTTOMLEFT")
@@ -739,7 +704,7 @@ function PTR_IssueReporter.Init()
     PTR_IssueReporter.EventPopup.Body.EditBox = CreateFrame("EditBox", nil, PTR_IssueReporter.EventPopup.Body)
     PTR_IssueReporter.EventPopup.Body.EditBox.MaxLetters = 255
     PTR_IssueReporter.EventPopup.Body.EditBox:SetAllPoints(PTR_IssueReporter.EventPopup.Body)
-    PTR_IssueReporter.EventPopup.Body.EditBox:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE, THICK")
+    PTR_IssueReporter.EventPopup.Body.EditBox:SetFont("Fonts\\FRIZQT__.TTF", 12, "OUTLINE, THICK")
     PTR_IssueReporter.EventPopup.Body.EditBox:SetAutoFocus(false)
     PTR_IssueReporter.EventPopup.Body.EditBox:SetTextInsets(12, 12, 8, -8)
     PTR_IssueReporter.EventPopup.Body.EditBox:SetJustifyV("TOP")
@@ -747,9 +712,9 @@ function PTR_IssueReporter.Init()
     PTR_IssueReporter.EventPopup.Body.EditBox:SetMultiLine(true)
     PTR_IssueReporter.EventPopup.Body.EditBox:SetMaxLetters(PTR_IssueReporter.EventPopup.Body.EditBox.MaxLetters)
     PTR_IssueReporter.EventPopup.Body.EditBox.Preface = PTR_IssueReporter.EventPopup.Body.EditBox:CreateFontString(nil, "OVERLAY")
-    PTR_IssueReporter.EventPopup.Body.EditBox.Preface:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE, THICK")
-    PTR_IssueReporter.EventPopup.Body.EditBox.Preface:SetPoint("TOPLEFT", PTR_IssueReporter.EventPopup.Body, "TOPLEFT", 12, -8)
-    PTR_IssueReporter.EventPopup.Body.EditBox.Preface:SetText("Additional Comments?")
+    PTR_IssueReporter.EventPopup.Body.EditBox.Preface:SetFont("Fonts\\FRIZQT__.TTF", 12, "OUTLINE, THICK")
+    PTR_IssueReporter.EventPopup.Body.EditBox.Preface:SetPoint("TOPLEFT", PTR_IssueReporter.EventPopup.Body, "TOPLEFT", 14, -8)
+    PTR_IssueReporter.EventPopup.Body.EditBox.Preface:SetText("Comments...")
     PTR_IssueReporter.EventPopup.Body.EditBox.Preface:SetTextColor(1, 1, 1, 0.5)
     PTR_IssueReporter.EventPopup.Body.EditBox:SetScript("OnEnterPressed", function(self)
         self:ClearFocus()
@@ -768,7 +733,7 @@ function PTR_IssueReporter.Init()
         PTR_IssueReporter.EventPopup.Body.Counter:SetText(count)
     end)
 
-    PTR_IssueReporter.EventPopup.Footer = CreateFrame("Frame", nil, PTR_IssueReporter.EventPopup)
+    PTR_IssueReporter.EventPopup.Footer = CreateFrame("Frame", nil, PTR_IssueReporter.EventPopup.Body)
     PTR_IssueReporter.EventPopup.Footer:SetHeight(35)
     PTR_IssueReporter.EventPopup.Footer:SetPoint("TOPLEFT", PTR_IssueReporter.EventPopup.Body, "BOTTOMLEFT", 0, 0)
     PTR_IssueReporter.EventPopup.Footer:SetPoint("TOPRIGHT", PTR_IssueReporter.EventPopup.Body, "BOTTOMRIGHT", 0, 0)
@@ -783,7 +748,7 @@ function PTR_IssueReporter.Init()
             PTR_IssueReporter.EventPopup:Hide()
 
             local choice, reason, comments, refID = PTR_IssueReporter.GetEventInfo()
-            if (choice > 0) and (comments) and (#comments > 0) then
+            if (comments) and (#comments > 0) then
                 PTR_IssueReporter.SendResults(reason, choice, refID, comments)
             end
             PTR_IssueReporter.EventPopup.Reason = 0
@@ -809,33 +774,6 @@ function PTR_IssueReporter.Init()
             PTR_IssueReporter.ExclusiveCheckButton(PTR_IssueReporter.EventPopup.Pool, self.index)
         end)
         return onDemandCheckBox
-    end
-
-    function PTR_IssueReporter.SetCheckBoxes(reason)
-        local eventPackage = PTR_IssueReporter.TriggerEvents[reason]
-        if (not eventPackage.enabled) then
-            return
-        end
-        local options = eventPackage.checkboxes
-        local boxes = {}
-        PTR_IssueReporter.ExclusiveCheckButton(PTR_IssueReporter.EventPopup.Pool, 0)
-        for k,v in pairs(PTR_IssueReporter.EventPopup.Pool) do
-            v.isAvailable = true
-            v:Hide()
-        end
-
-        local spacing = PTR_IssueReporter.EventPopup.CheckBoxes:GetWidth() / (#options + 1)
-        for k,v in ipairs(options) do
-            local Box = PTR_IssueReporter.GetCheckBoxFromPool()
-            Box:ClearAllPoints()
-            Box.text:SetText(v)
-            table.insert(boxes, Box)
-            Box:SetPoint("BOTTOM", PTR_IssueReporter.EventPopup.CheckBoxes, "BOTTOMLEFT", k*spacing, 0)
-            Box:Show()
-        end
-
-        PTR_IssueReporter.EventPopup.CheckBoxes:SetHeight(PTR_IssueReporter.EventPopup.CheckBoxes.Question:GetHeight() + 15 + ((#boxes > 0) and 50 or 0))
-        PTR_IssueReporter.EventPopup:SetClampRectInsets(0, 0, 0, -(PTR_IssueReporter.EventPopup.Body:GetHeight() + PTR_IssueReporter.EventPopup.Footer:GetHeight() + PTR_IssueReporter.EventPopup.CheckBoxes:GetHeight()))
     end
 
     function PTR_IssueReporter.GetEventInfo()
@@ -872,6 +810,7 @@ function PTR_IssueReporter.Init()
     end
 
     function PTR_IssueReporter.PopEvent(reason)
+        PTR_IssueReporter.EventPopup.Body.EditBox:ClearFocus()
         PTR_IssueReporter.EventPopup.Reason = reason
         local eventPackage = PTR_IssueReporter.TriggerEvents[reason]
         if (not eventPackage.enabled) then
@@ -882,10 +821,34 @@ function PTR_IssueReporter.Init()
             title = string.format("%s - %s", title, PTR_IssueReporter.EventPopup.MapInfo.name)
         end
         PTR_IssueReporter.EventPopup.Label:SetText(title)
-        PTR_IssueReporter.EventPopup.CheckBoxes.Question:SetText(description)
         PTR_IssueReporter.EventPopup.Body.EditBox:SetText("")
+        local options = eventPackage.checkboxes
+        local boxes = {}
+        PTR_IssueReporter.ExclusiveCheckButton(PTR_IssueReporter.EventPopup.Pool, 0)
+        for k,v in pairs(PTR_IssueReporter.EventPopup.Pool) do
+            v.isAvailable = true
+            v:Hide()
+        end
+
+        local spacing = PTR_IssueReporter.EventPopup.CheckBoxes:GetWidth() / (#options + 1)
+        for k,v in ipairs(options) do
+            local Box = PTR_IssueReporter.GetCheckBoxFromPool()
+            Box:ClearAllPoints()
+            Box.text:SetText(v)
+            table.insert(boxes, Box)
+            Box:SetPoint("BOTTOM", PTR_IssueReporter.EventPopup.CheckBoxes, "BOTTOMLEFT", k*spacing, 0)
+            Box:Show()
+        end
         PTR_IssueReporter.EventPopup:Show()
-        PlaySound(SOUNDKIT.IG_QUEST_LIST_OPEN)
+        PTR_IssueReporter.EventPopup.CheckBoxes.Question:SetText(description)
+        PTR_IssueReporter.EventPopup.CheckBoxes:SetHeight(PTR_IssueReporter.EventPopup.CheckBoxes.Question:GetHeight() + 15 + ((#boxes > 0) and 50 or 0))
+        if (#description == 0) then
+            PTR_IssueReporter.EventPopup.CheckBoxes:SetHeight(1)
+            PTR_IssueReporter.EventPopup.CheckBoxes.Border:Hide()
+        else
+            PTR_IssueReporter.EventPopup.CheckBoxes.Border:Show()
+        end
+        PTR_IssueReporter.EventPopup:SetClampRectInsets(0, 0, 0, -(PTR_IssueReporter.EventPopup.Body:GetHeight() + PTR_IssueReporter.EventPopup.Footer:GetHeight() + PTR_IssueReporter.EventPopup.CheckBoxes:GetHeight()))
     end
 
     PTR_IssueReporter.EventPopup:RegisterEvent("PLAYER_ENTERING_WORLD")
@@ -897,12 +860,12 @@ function PTR_IssueReporter.Init()
         if (PTR_IssueReporter.EventPopup.LastMap > 0) and (PTR_IssueReporter.EventPopup.NewMap == 0) then
             C_Timer.After(3, function()
                 PTR_IssueReporter.PopEvent(PTR_IssueReporter.EventPopup.LastMap)
-                PTR_IssueReporter.SetCheckBoxes(PTR_IssueReporter.EventPopup.LastMap)
             end)
         end
     end)
     PTR_IssueReporter.EventPopup:Hide()
     PTR_IssueReporter:Show()
+    PTR_IssueReporter:SetClampRectInsets(0, 0, 0, -ReportBug:GetHeight())
 end
 
 --========================================================================================================================--

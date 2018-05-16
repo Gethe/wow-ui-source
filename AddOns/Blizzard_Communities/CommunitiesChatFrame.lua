@@ -4,6 +4,7 @@ local REQUEST_MORE_MESSAGES_THRESHOLD = 30;
 
 local COMMUNITIES_CHAT_FRAME_EVENTS = {
 	"CLUB_MESSAGE_ADDED",
+	"CLUB_MESSAGE_UPDATED",
 	"CLUB_MESSAGE_HISTORY_RECEIVED",
 };
 
@@ -50,6 +51,13 @@ function CommunitiesChatMixin:OnEvent(event, ...)
 				self:DisplayChat();
 			end
 		end
+	elseif event == "CLUB_MESSAGE_UPDATED" then
+		local clubId, streamId, messageIdToUpdate = ...;
+		local function DoesMessageMatch(message, r, g, b, messageClubId, messageStreamId, messageId, messageMemberId, ...)
+			return messageClubId == clubId and messageStreamId == streamId and messageId == messageIdToUpdate;
+		end
+		
+		self:RefreshMessages(DoesMessageMatchId);
 	elseif event == "CLUB_MEMBER_UPDATED" then
 		local clubId, memberId = ...;
 		if self.pendingMemberInfo[clubId] and tContains(self.pendingMemberInfo[clubId], memberId) then

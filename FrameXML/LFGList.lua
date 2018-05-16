@@ -629,7 +629,7 @@ function LFGListEntryCreation_Clear(self)
 	self.HonorLevel.CheckButton:SetChecked(false);
 	self.HonorLevel.EditBox:SetText("");
 	self.VoiceChat.CheckButton:SetChecked(false);
-	self.VoiceChat.EditBox:SetText("");
+	--self.VoiceChat.EditBox:SetText(""); --Cleared in ClearCreationTextFields
 	self.PrivateGroup.CheckButton:SetChecked(false);
 
 	self.ActivityFinder:Hide();
@@ -876,14 +876,14 @@ function LFGListEntryCreation_GetSanitizedName(self)
 	return string.match(self.Name:GetText(), "^%s*(.-)%s*$");
 end
 
-function LFGListEntryCreation_ListGroupInternal(self, activityID, itemLevel, honorLevel, voiceChatInfo, autoAccept, privateGroup, questID)
+function LFGListEntryCreation_ListGroupInternal(self, activityID, itemLevel, honorLevel, autoAccept, privateGroup, questID)
 	if ( LFGListEntryCreation_IsEditMode(self) ) then
 		local _;
 		autoAccept, _, questID = select(9, C_LFGList.GetActiveEntryInfo());
-		C_LFGList.UpdateListing(activityID, itemLevel, honorLevel, voiceChatInfo, autoAccept, privateGroup, questID);
+		C_LFGList.UpdateListing(activityID, itemLevel, honorLevel, autoAccept, privateGroup, questID);
 		LFGListFrame_SetActivePanel(self:GetParent(), self:GetParent().ApplicationViewer);
 	else
-		if(C_LFGList.CreateListing(activityID, itemLevel, honorLevel, voiceChatInfo, autoAccept, privateGroup, questID)) then
+		if(C_LFGList.CreateListing(activityID, itemLevel, honorLevel, autoAccept, privateGroup, questID)) then
 			self.WorkingCover:Show();
 			LFGListEntryCreation_ClearFocus(self);
 		end
@@ -893,11 +893,10 @@ end
 function LFGListEntryCreation_ListGroup(self)
 	local itemLevel = tonumber(self.ItemLevel.EditBox:GetText()) or 0;
 	local honorLevel = tonumber(self.HonorLevel.EditBox:GetText()) or 0;
-	local voiceChatInfo = self.VoiceChat.EditBox:GetText();
 	local autoAccept = false;
 	local privateGroup = self.PrivateGroup.CheckButton:GetChecked();
 
-	LFGListEntryCreation_ListGroupInternal(self, self.selectedActivity, itemLevel, honorLevel, voiceChatInfo, autoAccept, privateGroup);
+	LFGListEntryCreation_ListGroupInternal(self, self.selectedActivity, itemLevel, honorLevel, autoAccept, privateGroup);
 end
 
 function LFGListEntryCreation_SetAutoCreateDataInternal(self, activityType, activityID, contextID)
@@ -923,11 +922,10 @@ function LFGListEntryCreation_GetAutoCreateDataQuest(self)
 
 	local itemLevel = 0;
 	local honorLevel = 0;
-	local voiceChatInfo = "";
 	local autoAccept = true;
 	local privateGroup = false;
 
-	return activityID, itemLevel, honorLevel, voiceChatInfo, autoAccept, privateGroup, questID;
+	return activityID, itemLevel, honorLevel, autoAccept, privateGroup, questID;
 end
 
 function LFGListEntryCreation_GetAutoCreateData(self)
@@ -938,6 +936,7 @@ end
 
 function LFGListEntryCreation_CheckAutoCreate(self)
 	if LFGListEntryCreation_IsAutoCreateMode(self) then
+		C_LFGList.ClearCreationTextFields();
 		LFGListEntryCreation_ListGroupInternal(self, LFGListEntryCreation_GetAutoCreateData(self));
 		LFGListEntryCreation_ClearAutoCreateMode(self);
 	end
@@ -987,10 +986,8 @@ function LFGListEntryCreation_SetEditMode(self, editMode)
 		else
 			self.Description.EditBox.Instructions:SetText(DESCRIPTION_OF_YOUR_GROUP);
 		end
-		--self.Name:SetText(name);
 		self.ItemLevel.EditBox:SetText(ilvl ~= 0 and ilvl or "");
 		self.HonorLevel.EditBox:SetText(honorLevel ~= 0 and honorLevel or "")
-		self.VoiceChat.EditBox:SetText(voiceChat);
 		self.PrivateGroup.CheckButton:SetChecked(privateGroup);
 
 		self.ListGroupButton:SetText(DONE_EDITING);
@@ -3169,7 +3166,7 @@ function LFGListUtil_SetAutoAccept(autoAccept)
 	local active, activityID, iLevel, honorLevel, name, comment, voiceChat, expiration, oldAutoAccept, privateGroup, questID = C_LFGList.GetActiveEntryInfo();
 	if active then
 		C_LFGList.CopyActiveEntryInfoToCreationFields();
-		C_LFGList.UpdateListing(activityID, iLevel, honorLevel, voiceChat, autoAccept, privateGroup, questID);
+		C_LFGList.UpdateListing(activityID, iLevel, honorLevel, autoAccept, privateGroup, questID);
 	end
 end
 

@@ -245,9 +245,7 @@
 			</OnLoad>
 			<OnShow function="MicroButton_KioskModeDisable"/>
 			<OnEvent function="GuildMicroButton_OnEvent"/>
-			<OnClick>
-				ToggleGuildFrame();
-			</OnClick>
+			<OnClick function="ToggleGuildFrame"/>
 		</Scripts>
 	</Button>
 	<Button name="LFDMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">

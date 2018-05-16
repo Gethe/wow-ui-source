@@ -337,7 +337,7 @@
 										</Texture>
 									</Layer>
 									<Layer level="ARTWORK">
-										<FontString parentKey="Text" inherits="GameFontHighlightMedium" text="WAR_CAMPAIGN">
+										<FontString parentKey="Text" inherits="GameFontHighlightMedium">
 											<Anchors>
 												<Anchor point="TOPLEFT" x="18" y="-12"/>
 											</Anchors>

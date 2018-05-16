@@ -73,6 +73,10 @@ function ChannelButtonBaseMixin:ChannelSupportsText()
 	return false;
 end
 
+function ChannelButtonBaseMixin:ChannelIsCommunity()
+	return self.clubId and self.streamId;
+end
+
 function ChannelButtonBaseMixin:FuzzyIsMatchingChannel(channelID, channelName)
 	return self:GetChannelID() == channelID or self:GetChannelName() == channelName;
 end
@@ -125,11 +129,13 @@ end
 function ChannelButtonBaseMixin:ToggleActivateChannel()
 	if self:ChannelSupportsVoice() then
 		local voiceChannelID = self:GetVoiceChannelID();
-		local isActive = C_VoiceChat.GetActiveChannelID() == voiceChannelID;
-		if isActive then
-			C_VoiceChat.DeactivateChannel(voiceChannelID);
-		else
-			C_VoiceChat.ActivateChannel(voiceChannelID);
+		if voiceChannelID then
+			local isActive = C_VoiceChat.GetActiveChannelID() == voiceChannelID;
+			if isActive then
+				C_VoiceChat.DeactivateChannel(voiceChannelID);
+			else
+				C_VoiceChat.ActivateChannel(voiceChannelID);
+			end
 		end
 	end
 end
@@ -289,6 +295,10 @@ function ChannelButtonMixin:Update()
 		local color = isAvailable and HIGHLIGHT_FONT_COLOR or DISABLED_FONT_COLOR;
 		self.Text:SetText(color:WrapTextInColorCode(self:GetChannelName()));
 		self:SetEnabled(isAvailable);
+	else
+		local color = DISABLED_FONT_COLOR;
+		self.Text:SetText(color:WrapTextInColorCode(self:GetChannelName()));
+		self:SetEnabled(false);
 	end
 end
 
@@ -332,6 +342,62 @@ end
 
 function ChannelButtonVoiceMixin:IsUserCreatedChannel()
 	return self:GetChannelType() == Enum.ChatChannelType.Custom;
+end
+
+-- Community channel button
+ChannelButtonCommunityMixin = CreateFromMixins(ChannelButtonMixin);
+
+function ChannelButtonCommunityMixin:Setup(channelID, clubId, streamInfo)
+	local isHeader = false;
+	local channelNumber = nil;
+	local count = 0;
+	local isActive = true;
+	local category = clubId;	-- use the clubId as the category since this will allow all of a club's streams to be under the same header
+
+	self:SetCommunityInfo(clubId, streamInfo);
+
+	ChannelButtonMixin.Setup(self, channelID, streamInfo.name, isHeader, channelNumber, count, isActive, category, Enum.ChatChannelType.Communities);
+end
+
+function ChannelButtonBaseMixin:SetCommunityInfo(clubId, streamInfo)
+	self.clubId = clubId;
+	self.streamId = streamInfo.streamId;
+
+	self.streamInfo = streamInfo;
+
+	self.linkedVoiceChannel = C_VoiceChat.GetChannelForCommunityStream(clubId, streamInfo.streamId);
+	if self.linkedVoiceChannel then
+		self:SetVoiceActive(self.linkedVoiceChannel.isActive);
+	else
+		self:SetVoiceActive(false);
+	end
+end
+
+-- Always return true because all community channels support voice (the channel isn't actually joined until the player clicks the activate button)
+function ChannelButtonCommunityMixin:ChannelSupportsVoice()
+	return true;
+end
+
+function ChannelButtonCommunityMixin:ToggleActivateChannel()
+	local voiceChannel = self:GetVoiceChannel();
+	if voiceChannel then
+		local isActive = C_VoiceChat.GetActiveChannelID() == voiceChannel.channelID;
+		if isActive then
+			C_VoiceChat.DeactivateChannel(voiceChannel.channelID);
+		else
+			C_VoiceChat.ActivateChannel(voiceChannel.channelID);
+		end
+	else
+		ChannelFrame:TryJoinCommunityStreamChannel(self.clubId, self.streamId);
+	end
+end
+
+function ChannelButtonCommunityMixin:OnVoiceChannelJoined(voiceChannelID)
+	self.linkedVoiceChannel = C_VoiceChat.GetChannel(voiceChannelID);
+end
+
+function ChannelButtonCommunityMixin:OnVoiceChannelRemoved(voiceChannelID)
+	self.linkedVoiceChannel = nil;
 end
 
 -- Headers

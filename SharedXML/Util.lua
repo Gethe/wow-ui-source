@@ -559,9 +559,10 @@ local function ProcessSmoothStatusBars()
 
 		if IsCloseEnough(bar, newValue, effectiveTargetValue) then
 			g_updatingBars[bar] = nil;
+			bar:SetValue(effectiveTargetValue);
+		else
+			bar:SetValue(newValue);
 		end
-
-		bar:SetValue(newValue);
 	end
 end
 

@@ -305,7 +305,7 @@ function WarfrontPlayerChoiceHookMixin:UpdateProgressBars()
 		progressBar.Bar:SetValue(currentValue);
 		progressBar.Bar.Label:SetText(FormatPercentage(currentValue / maxValue, true));
 		if currentValue == maxValue then
-			progressBar:GetParent().OptionButton:SetEnabled(false);
+			progressBar:GetParent().OptionButtonsContainer.OptionButton1:SetEnabled(false);
 		end
 	end
 

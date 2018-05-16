@@ -94,6 +94,7 @@ local WarCampaign =
 				{ Name = "uiTextureKitID", Type = "number", Nilable = false },
 				{ Name = "visibilityConditionMatched", Type = "bool", Nilable = false },
 				{ Name = "playerConditionFailedReason", Type = "string", Nilable = true },
+				{ Name = "complete", Type = "bool", Nilable = false },
 			},
 		},
 	},

@@ -7,7 +7,7 @@
 	Templates
 *******************************************************************************
 -->	
-	<Button name="GuildRecruitmentButtonTemplate" inherits="UIPanelButtonTemplate" text="GUILD_RECRUITMENT" virtual="true">
+	<Button name="CommunitiesGuildRecruitmentButtonTemplate" inherits="UIPanelButtonTemplate" text="GUILD_RECRUITMENT" virtual="true">
 		<Size x="98" y="22"/>
 		<Scripts>
 			<OnClick>
@@ -15,7 +15,7 @@
 			</OnClick>
 		</Scripts>
 	</Button>
-	<CheckButton name="GuildRecruitmentCheckButtonTemplate" virtual="true">
+	<CheckButton name="CommunitiesGuildRecruitmentCheckButtonTemplate" virtual="true">
 		<Scripts>
 			<OnClick>
 				if ( self:GetChecked() ) then
@@ -26,7 +26,7 @@
 				SetGuildRecruitmentSettings(self:GetID(), self:GetChecked());
 				GuildRecruitmentFrameRecruitment_UpdateListGuildButton(self:GetParent():GetParent());
 			</OnClick>
-			<OnEnter function="GuildRecruitmentCheckButton_OnEnter"/>
+			<OnEnter function="CommunitiesGuildRecruitmentCheckButton_OnEnter"/>
 			<OnLeave>
 				GameTooltip:Hide();
 			</OnLeave>
@@ -37,7 +37,7 @@
 		<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
 		<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
 	</CheckButton>
-	<Frame name="GuildRecruitmentSectionTemplate" virtual="true">
+	<Frame name="CommunitiesGuildRecruitmentSectionTemplate" virtual="true">
 		<Size x="312" y="74"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -58,7 +58,7 @@
 			</Layer>
 		</Layers>
 	</Frame>
-	<Button name="GuildRecruitmentRoleTemplate" virtual="true" motionScriptsWhileDisabled="true">
+	<Button name="CommunitiesGuildRecruitmentRoleTemplate" virtual="true" motionScriptsWhileDisabled="true">
 		<Size x="40" y="40"/>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -81,7 +81,7 @@
 					<Anchor point="BOTTOMLEFT" x="-8" y="-1"/>
 				</Anchors>
 				<Scripts>
-					<OnClick function="GuildRecruitmentRoleButton_OnClick"/>
+					<OnClick function="CommunitiesGuildRecruitmentRoleButton_OnClick"/>
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 				<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
@@ -110,7 +110,7 @@
 		</Scripts>
 		<NormalTexture file="Interface\LFGFrame\UI-LFG-ICON-ROLES"/>
 	</Button>
-	<Button name="GuildRecruitmentApplicantTemplate" virtual="true">
+	<Button name="CommunitiesGuildRecruitmentApplicantTemplate" virtual="true">
 		<Size x="320" y="84"/>
 		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
 			<EdgeSize val="12"/>
@@ -212,8 +212,8 @@
 					self.level:SetPoint("CENTER", "$parentLevelRing", "CENTER", select(4, self.level:GetPoint("CENTER")), GUILD_APPLICANT_LEVEL_TEXT_Y_OVERRIDE);
 				end
 			</OnLoad>
-			<OnClick function="GuildRecruitmentApplicant_OnClick"/>
-			<OnEnter function="GuildRecruitmentApplicant_ShowTooltip"/>
+			<OnClick function="CommunitiesGuildRecruitmentApplicant_OnClick"/>
+			<OnEnter function="CommunitiesGuildRecruitmentApplicant_ShowTooltip"/>
 			<OnLeave>
 				GameTooltip:Hide();
 			</OnLeave>
@@ -231,9 +231,9 @@
 	GuildRecruitmentFrameRecruitment
 *******************************************************************************
 -->
-	<Frame name="GuildRecruitmentFrameRecruitmentTemplate" virtual="true">
+	<Frame name="CommunitiesGuildRecruitmentFrameRecruitmentTemplate" virtual="true">
 		<Frames>
-			<Frame parentKey="InterestFrame" inherits="GuildRecruitmentSectionTemplate">
+			<Frame parentKey="InterestFrame" inherits="CommunitiesGuildRecruitmentSectionTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="8" y="-10"/>
 				</Anchors>
@@ -252,13 +252,13 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<CheckButton parentKey="QuestButton" inherits="GuildRecruitmentCheckButtonTemplate" id="1">
+					<CheckButton parentKey="QuestButton" inherits="CommunitiesGuildRecruitmentCheckButtonTemplate" id="1">
 						<Size x="20" y="20"/>
 						<Anchors>
 							<Anchor point="RIGHT" relativeKey="$parent.QuestText" relativePoint="LEFT" x="-3" y="0"/>
 						</Anchors>
 					</CheckButton>
-					<CheckButton parentKey="RaidButton" inherits="GuildRecruitmentCheckButtonTemplate" id="3">
+					<CheckButton parentKey="RaidButton" inherits="CommunitiesGuildRecruitmentCheckButtonTemplate" id="3">
 						<Size x="20" y="20"/>
 						<Anchors>
 							<Anchor point="RIGHT" relativeKey="$parent.RaidText" relativePoint="LEFT" x="-3" y="0"/>
@@ -280,13 +280,13 @@
 							</Layer>
 						</Layers>
 					</Frame>
-					<CheckButton parentKey="DungeonButton" inherits="GuildRecruitmentCheckButtonTemplate" id="2">
+					<CheckButton parentKey="DungeonButton" inherits="CommunitiesGuildRecruitmentCheckButtonTemplate" id="2">
 						<Size x="20" y="20"/>
 						<Anchors>
 							<Anchor point="RIGHT" relativeKey="$parent.DungeonFramePlacer.DungeonText" relativePoint="LEFT" x="-3" y="0"/>
 						</Anchors>
 					</CheckButton>
-					<CheckButton parentKey="PvPButton" inherits="GuildRecruitmentCheckButtonTemplate" id="4">
+					<CheckButton parentKey="PvPButton" inherits="CommunitiesGuildRecruitmentCheckButtonTemplate" id="4">
 						<Size x="20" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.QuestButton" relativePoint="BOTTOMLEFT" x="0" y="0"/>
@@ -301,7 +301,7 @@
 							</Layer>
 						</Layers>
 					</CheckButton>
-					<CheckButton parentKey="RPButton" inherits="GuildRecruitmentCheckButtonTemplate" id="5">
+					<CheckButton parentKey="RPButton" inherits="CommunitiesGuildRecruitmentCheckButtonTemplate" id="5">
 						<Size x="20" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.DungeonButton" relativePoint="BOTTOMLEFT" x="0" y="0"/>
@@ -318,12 +318,12 @@
 					</CheckButton>
 				</Frames>
 			</Frame>
-			<Frame parentKey="AvailabilityFrame" inherits="GuildRecruitmentSectionTemplate">
+			<Frame parentKey="AvailabilityFrame" inherits="CommunitiesGuildRecruitmentSectionTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.InterestFrame" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
 				</Anchors>
 				<Frames>
-					<CheckButton parentKey="WeekdaysButton" inherits="GuildRecruitmentCheckButtonTemplate" id="6">
+					<CheckButton parentKey="WeekdaysButton" inherits="CommunitiesGuildRecruitmentCheckButtonTemplate" id="6">
 						<Size x="20" y="20"/>
 						<Anchors>
 							<Anchor point="TOP" x="0" y="-21"/>
@@ -339,7 +339,7 @@
 							</Layer>
 						</Layers>
 					</CheckButton>
-					<CheckButton parentKey="WeekendsButton" inherits="GuildRecruitmentCheckButtonTemplate" id="7">
+					<CheckButton parentKey="WeekendsButton" inherits="CommunitiesGuildRecruitmentCheckButtonTemplate" id="7">
 						<Size x="20" y="20"/>
 						<Anchors>
 							<Anchor point="TOP" x="0" y="-21"/>
@@ -357,12 +357,12 @@
 					</CheckButton>
 				</Frames>
 			</Frame>
-			<Frame parentKey="RolesFrame" inherits="GuildRecruitmentSectionTemplate">
+			<Frame parentKey="RolesFrame" inherits="CommunitiesGuildRecruitmentSectionTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.AvailabilityFrame" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
 				</Anchors>
 				<Frames>
-					<Button parentKey="TankButton" inherits="GuildRecruitmentRoleTemplate" id="2">
+					<Button parentKey="TankButton" inherits="CommunitiesGuildRecruitmentRoleTemplate" id="2">
 						<Anchors>
 							<Anchor point="TOPLEFT" x="30" y="-24"/>
 						</Anchors>
@@ -374,7 +374,7 @@
 							</OnLoad>
 						</Scripts>
 					</Button>
-					<Button parentKey="HealerButton" inherits="GuildRecruitmentRoleTemplate" id="3">
+					<Button parentKey="HealerButton" inherits="CommunitiesGuildRecruitmentRoleTemplate" id="3">
 						<Anchors>
 							<Anchor point="TOP" x="1" y="-24"/>
 						</Anchors>
@@ -386,7 +386,7 @@
 							</OnLoad>
 						</Scripts>
 					</Button>
-					<Button parentKey="DamagerButton" inherits="GuildRecruitmentRoleTemplate" id="1">
+					<Button parentKey="DamagerButton" inherits="CommunitiesGuildRecruitmentRoleTemplate" id="1">
 						<Anchors>
 							<Anchor point="TOPRIGHT" x="-30" y="-24"/>
 						</Anchors>
@@ -400,7 +400,7 @@
 					</Button>
 				</Frames>
 			</Frame>
-			<Frame parentKey="LevelFrame" inherits="GuildRecruitmentSectionTemplate">
+			<Frame parentKey="LevelFrame" inherits="CommunitiesGuildRecruitmentSectionTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.RolesFrame" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
 				</Anchors>
@@ -441,7 +441,7 @@
 					</CheckButton>
 				</Frames>
 			</Frame>
-			<Frame parentKey="CommentFrame" inherits="GuildRecruitmentSectionTemplate">
+			<Frame parentKey="CommentFrame" inherits="CommunitiesGuildRecruitmentSectionTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.LevelFrame" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
 				</Anchors>
@@ -550,7 +550,7 @@
 											<OnTabPressed>
 												self:SetFocus();
 											</OnTabPressed>
-											<OnEditFocusLost function="GuildRecruitmentComment_SaveText"/>
+											<OnEditFocusLost function="CommunitiesGuildRecruitmentComment_SaveText"/>
 											<OnTextChanged>
 												ScrollingEdit_OnTextChanged(self, self:GetParent());
 												if ( self:GetText() ~= "" ) then
@@ -584,12 +584,12 @@
 					<Anchor point="BOTTOMRIGHT" x="0" y="-22"/>
 				</Anchors>
 				<Scripts>
-					<OnClick function="GuildRecruitmentListGuildButton_OnClick"/>
+					<OnClick function="CommunitiesGuildRecruitmentListGuildButton_OnClick"/>
 				</Scripts>
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad function="GuildRecruitmentFrameRecruitment_OnLoad"/>
+			<OnLoad function="CommunitiesGuildRecruitmentFrameRecruitment_OnLoad"/>
 		</Scripts>
 	</Frame>
 <!--
@@ -597,7 +597,7 @@
 	GuildRecruitmentFrameApplicants
 *******************************************************************************
 -->
-	<Frame name="GuildRecruitmentFrameApplicantsTemplate" virtual="true">
+	<Frame name="CommunitiesGuildRecruitmentFrameApplicantsTemplate" virtual="true">
 		<Frames>
 			<ScrollFrame name="$parentContainer" parentKey="Container" inherits="HybridScrollFrameTemplate" hidden="false">
 				<Size x="304" y="332"/>
@@ -659,13 +659,13 @@
 			<Frame parentKey="DropDown" inherits="UIDropDownMenuTemplate" hidden="true">
 				<Size x="10" y="10"/>
 				<Scripts>
-					<OnLoad function="GuildRecruitmentDropDown_OnLoad"/>
+					<OnLoad function="CommunitiesGuildRecruitmentDropDown_OnLoad"/>
 				</Scripts>
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad function="GuildRecruitmentFrameApplicants_OnLoad"/>
-			<OnShow function="GuildRecruitmentFrameApplicants_OnShow"/>
+			<OnLoad function="CommunitiesGuildRecruitmentFrameApplicants_OnLoad"/>
+			<OnShow function="CommunitiesGuildRecruitmentFrameApplicants_OnShow"/>
 		</Scripts>
 	</Frame>
 <!--
@@ -673,7 +673,7 @@
 	RecruitmentFrame
 *******************************************************************************
 -->	
-	<Frame name="GuildRecruitmentFrame" movable="true" parent="UIParent" topLevel="true" inherits="ButtonFrameTemplate" hidden="true">
+	<Frame name="CommunitiesGuildRecruitmentFrame" movable="true" parent="UIParent" topLevel="true" inherits="ButtonFrameTemplate" hidden="true">
 		<Size x="338" y="424"/>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -736,13 +736,13 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Frame parentKey="Recruitment" name="$parentRecruitment" inherits="GuildRecruitmentFrameRecruitmentTemplate">
+			<Frame parentKey="Recruitment" name="$parentRecruitment" inherits="CommunitiesGuildRecruitmentFrameRecruitmentTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentInset" relativePoint="TOPLEFT" x="0" y="0"/>
 					<Anchor point="BOTTOMRIGHT" relativeTo="$parentInset" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
 				</Anchors>
 			</Frame>
-			<Frame parentKey="Applicants" name="$parentApplicants" inherits="GuildRecruitmentFrameApplicantsTemplate">
+			<Frame parentKey="Applicants" name="$parentApplicants" inherits="CommunitiesGuildRecruitmentFrameApplicantsTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentInset" relativePoint="TOPLEFT" x="0" y="0"/>
 					<Anchor point="BOTTOMRIGHT" relativeTo="$parentInset" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
@@ -750,9 +750,9 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad function="GuildRecruitmentFrame_OnLoad"/>
-			<OnEvent function="GuildRecruitmentFrame_OnEvent"/>
-			<OnShow function="GuildRecruitmentFrame_OnShow"/>
+			<OnLoad function="CommunitiesGuildRecruitmentFrame_OnLoad"/>
+			<OnEvent function="CommunitiesGuildRecruitmentFrame_OnEvent"/>
+			<OnShow function="CommunitiesGuildRecruitmentFrame_OnShow"/>
 		</Scripts>
 	</Frame>
 </Ui>

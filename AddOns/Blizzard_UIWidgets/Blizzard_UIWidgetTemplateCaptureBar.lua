@@ -1,6 +1,6 @@
 local function GetCaptureBarVisInfoData(widgetID)
 	local widgetInfo = C_UIWidgetManager.GetCaptureBarWidgetVisualizationInfo(widgetID);
-	if widgetInfo and widgetInfo.state > Enum.CaptureBarWidgetState.Hidden then
+	if widgetInfo and widgetInfo.shownState ~= Enum.WidgetShownState.Hidden then
 		return widgetInfo;
 	end
 end

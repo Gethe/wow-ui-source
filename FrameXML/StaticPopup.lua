@@ -4083,12 +4083,12 @@ StaticPopupDialogs["INVITE_COMMUNITY_MEMBER"] = {
 	maxLetters = 32,
 	autoCompleteSource = C_Club.GetInvitationCandidates,
 	autoCompleteArgs = {}, -- set dynamically below.
-	OnShow = function(self, clubId)
+	OnShow = function(self, data)
 		self.editBox:SetFocus();
 
-		local clubInfo = C_Club.GetClubInfo(clubId);
+		local clubInfo = C_Club.GetClubInfo(data.clubId);
 		if clubInfo.clubType == Enum.ClubType.BattleNet then
-			AutoCompleteEditBox_SetAutoCompleteSource(self.editBox, C_Club.GetInvitationCandidates, clubId);
+			AutoCompleteEditBox_SetAutoCompleteSource(self.editBox, C_Club.GetInvitationCandidates, data.clubId);
 			self.SubText:SetText(INVITE_COMMUNITY_MEMBER_POPUP_INVITE_SUB_TEXT_BTAG);
 		else
 			AutoCompleteEditBox_SetAutoCompleteSource(self.editBox, GetAutoCompleteResults, AUTOCOMPLETE_LIST.COMMUNITY.include, AUTOCOMPLETE_LIST.COMMUNITY.exclude);
@@ -4107,6 +4107,13 @@ StaticPopupDialogs["INVITE_COMMUNITY_MEMBER"] = {
 		ClearCursor();
 	end
 };
+
+StaticPopupDialogs["INVITE_COMMUNITY_MEMBER_WITH_INVITE_LINK"] = Mixin({
+	extraButton = INVITE_COMMUNITY_MEMBER_POPUP_OPEN_INVITE_MANAGER,
+	OnExtraButton = function(self, data)
+		CommunitiesTicketManagerDialog_Open(data.clubId, data.streamId);
+	end,
+}, StaticPopupDialogs["INVITE_COMMUNITY_MEMBER"]);
 
 do
 	local warningSeenBefore = false;
@@ -4170,6 +4177,7 @@ function StaticPopup_Resize(dialog, which)
 	local text = _G[dialog:GetName().."Text"];
 	local editBox = _G[dialog:GetName().."EditBox"];
 	local button1 = _G[dialog:GetName().."Button1"];
+	local extraButton = dialog.extraButton;
 
 	local maxHeightSoFar, maxWidthSoFar = (dialog.maxHeightSoFar or 0), (dialog.maxWidthSoFar or 0);
 	local width = 320;
@@ -4201,7 +4209,10 @@ function StaticPopup_Resize(dialog, which)
 	end
 
 	local height = 32 + text:GetHeight() + 2;
-	if (not info.nobuttons) then
+	if ( info.extraButton ) then
+		height = height + 40 + extraButton:GetHeight();
+	end
+	if ( not info.nobuttons ) then
 		height = height + 6 + button1:GetHeight();
 	end
 	if ( info.hasEditBox ) then
@@ -4350,6 +4361,8 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 	dialog.CoverFrame:SetShown(info.fullScreenCover);
 
 	dialog.maxHeightSoFar, dialog.maxWidthSoFar = 0, 0;
+	local bottomSpace = info.extraButton ~= nil and (dialog.extraButton:GetHeight() + 60) or 16;
+	
 	-- Set the text of the dialog
 	local text = _G[dialog:GetName().."Text"];
 	if ( (which == "DEATH") or
@@ -4416,6 +4429,9 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 		else
 			editBox:SetWidth(130);
 		end
+		
+		editBox:ClearAllPoints();
+		editBox:SetPoint("BOTTOM", 0, 29 + bottomSpace);
 	else
 		editBox:Hide();
 	end
@@ -4528,13 +4544,13 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 				tempButtonLocs[1]:SetPoint("TOP", dialog.text, "BOTTOM", 0, -16);
 			else
 				if ( numButtons == 4 ) then
-					tempButtonLocs[1]:SetPoint("BOTTOMRIGHT", dialog, "BOTTOM", -139, 16);
+					tempButtonLocs[1]:SetPoint("BOTTOMRIGHT", dialog, "BOTTOM", -139, bottomSpace);
 				elseif ( numButtons == 3 ) then
-					tempButtonLocs[1]:SetPoint("BOTTOMRIGHT", dialog, "BOTTOM", -72, 16);
+					tempButtonLocs[1]:SetPoint("BOTTOMRIGHT", dialog, "BOTTOM", -72, bottomSpace);
 				elseif ( numButtons == 2 ) then
-					tempButtonLocs[1]:SetPoint("BOTTOMRIGHT", dialog, "BOTTOM", -6, 16);
+					tempButtonLocs[1]:SetPoint("BOTTOMRIGHT", dialog, "BOTTOM", -6, bottomSpace);
 				elseif ( numButtons == 1 ) then
-					tempButtonLocs[1]:SetPoint("BOTTOM", dialog, "BOTTOM", 0, 16);
+					tempButtonLocs[1]:SetPoint("BOTTOM", dialog, "BOTTOM", 0, bottomSpace);
 				end
 			end
 		end
@@ -4563,6 +4579,17 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 		end
 
 		table.wipe(tempButtonLocs);
+	end
+	
+	if info.extraButton then
+		local extraButton = dialog.extraButton;
+		extraButton:Show();
+		extraButton:SetPoint("BOTTOM", dialog, "BOTTOM", 0, 22);
+		extraButton:SetText(info.extraButton);
+		dialog.Separator:Show();
+	else
+		dialog.extraButton:Hide();
+		dialog.Separator:Hide();
 	end
 
 	-- Show or hide the alert icon
@@ -4865,6 +4892,8 @@ function StaticPopup_OnClick(dialog, index)
 			func = info.OnButton3;
 		elseif ( index == 4 ) then
 			func = info.OnButton4;
+		elseif ( index == 5 ) then
+			func = info.OnExtraButton;
 		end
 
 		if ( func ) then
@@ -4885,6 +4914,11 @@ function StaticPopup_OnClick(dialog, index)
 			local OnAlt = info.OnAlt;
 			if ( OnAlt ) then
 				OnAlt(dialog, dialog.data, "clicked");
+			end
+		elseif ( index == 5 ) then
+			local OnExtraButton = info.OnExtraButton;
+			if ( OnExtraButton ) then
+				OnExtraButton(dialog, dialog.data, dialog.data2);
 			end
 		else
 			local OnCancel = info.OnCancel;

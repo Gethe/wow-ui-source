@@ -1,32 +1,32 @@
-GUILD_REWARDS_BUTTON_OFFSET = 0;
-GUILD_REWARDS_BUTTON_HEIGHT = 47;
-GUILD_REWARDS_ACHIEVEMENT_ICON = " |TInterface\\AchievementFrame\\UI-Achievement-Guild:18:16:0:1:512:512:324:344:67:85|t ";
+COMMUNITIES_GUILD_REWARDS_BUTTON_OFFSET = 0;
+COMMUNITIES_GUILD_REWARDS_BUTTON_HEIGHT = 47;
+COMMUNITIES_GUILD_REWARDS_ACHIEVEMENT_ICON = " |TInterface\\AchievementFrame\\UI-Achievement-Guild:18:16:0:1:512:512:324:344:67:85|t ";
 
-function GuildRewardsFrame_OnLoad(self)
+function CommunitiesGuildRewardsFrame_OnLoad(self)
 	self.RewardsContainer.update = function ()
-		GuildRewards_Update(self);
+		CommunitiesGuildRewards_Update(self);
 	end;
 	
-	HybridScrollFrame_CreateButtons(self.RewardsContainer, "GuildRewardsButtonTemplate", 1, 0);
+	HybridScrollFrame_CreateButtons(self.RewardsContainer, "CommunitiesGuildRewardsButtonTemplate", 1, 0);
 	self.RewardsContainer.scrollBar.doNotHide = true;
 	self:RegisterEvent("GUILD_REWARDS_LIST");
 end
 
-function GuildRewardsFrame_OnShow(self)
+function CommunitiesGuildRewardsFrame_OnShow(self)
 	RequestGuildRewards();
 end
 
-function GuildRewardsFrame_OnHide(self)
+function CommunitiesGuildRewardsFrame_OnHide(self)
 	if ( self.DropDown.rewardIndex ) then
 		CloseDropDownMenus();
 	end
 end
 
-function GuildRewardsFrame_OnEvent(self, event)
-	GuildRewards_Update(self);
+function CommunitiesGuildRewardsFrame_OnEvent(self, event)
+	CommunitiesGuildRewards_Update(self);
 end
 
-function GuildRewards_Update(self)
+function CommunitiesGuildRewards_Update(self)
 	local scrollFrame = self.RewardsContainer;
 	local offset = HybridScrollFrame_GetOffset(scrollFrame);
 	local buttons = scrollFrame.buttons;
@@ -59,7 +59,7 @@ function GuildRewards_Update(self)
 			if ( achievementID and achievementID > 0 ) then
 				local id, name = GetAchievementInfo(achievementID)
 				button.achievementID = achievementID;
-				button.SubText:SetText(REQUIRES_LABEL..GUILD_REWARDS_ACHIEVEMENT_ICON..YELLOW_FONT_COLOR_CODE..name..FONT_COLOR_CODE_CLOSE);
+				button.SubText:SetText(REQUIRES_LABEL..COMMUNITIES_GUILD_REWARDS_ACHIEVEMENT_ICON..YELLOW_FONT_COLOR_CODE..name..FONT_COLOR_CODE_CLOSE);
 				button.SubText:Show();
 				button.DisabledBG:Show();
 				button.Icon:SetVertexColor(1, 1, 1);
@@ -87,8 +87,8 @@ function GuildRewards_Update(self)
 			button:Hide();
 		end
 	end
-	local totalHeight = numRewards * (GUILD_REWARDS_BUTTON_HEIGHT + GUILD_REWARDS_BUTTON_OFFSET);
-	local displayedHeight = numButtons * (GUILD_REWARDS_BUTTON_HEIGHT + GUILD_REWARDS_BUTTON_OFFSET);
+	local totalHeight = numRewards * (COMMUNITIES_GUILD_REWARDS_BUTTON_HEIGHT + COMMUNITIES_GUILD_REWARDS_BUTTON_OFFSET);
+	local displayedHeight = numButtons * (COMMUNITIES_GUILD_REWARDS_BUTTON_HEIGHT + COMMUNITIES_GUILD_REWARDS_BUTTON_OFFSET);
 	HybridScrollFrame_Update(scrollFrame, totalHeight, displayedHeight);
 	
 	-- hide dropdown menu
@@ -97,11 +97,11 @@ function GuildRewards_Update(self)
 	end
 	-- update tooltip
 	if ( self.activeButton ) then
-		GuildRewardsButton_OnEnter(self.activeButton);
+		CommunitiesGuildRewardsButton_OnEnter(self.activeButton);
 	end	
 end
 
-function GuildRewardsButton_OnEnter(self)
+function CommunitiesGuildRewardsButton_OnEnter(self)
 	self:GetParent():GetParent():GetParent().activeButton = self;
 	local achievementID, itemID, itemName, iconTexture, repLevel, moneyCost = GetGuildRewardInfo(self.index);
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 28, 0);
@@ -120,17 +120,17 @@ function GuildRewardsButton_OnEnter(self)
 		GameTooltip:AddLine(" ", 1, 0, 0, true);
 		GameTooltip:AddLine(string.format(REQUIRES_GUILD_FACTION_TOOLTIP, factionStandingtext), 1, 0, 0, true);
 	end
-	self.UpdateTooltip = GuildRewardsButton_OnEnter;
+	self.UpdateTooltip = CommunitiesGuildRewardsButton_OnEnter;
 	GameTooltip:Show();
 end
 
-function GuildRewardsButton_OnLeave(self)
+function CommunitiesGuildRewardsButton_OnLeave(self)
 	GameTooltip:Hide();
 	self:GetParent():GetParent():GetParent().activeButton = nil;
 	self.UpdateTooltip = nil;
 end
 
-function GuildRewardsButton_OnClick(self, button)
+function CommunitiesGuildRewardsButton_OnClick(self, button)
 	if ( IsModifiedClick("CHATLINK") ) then
 		local achievementID, itemID, itemName, iconTexture, repLevel, moneyCost = GetGuildRewardInfo(self.index);
 		ChatEdit_LinkItem(itemID);
@@ -141,7 +141,7 @@ function GuildRewardsButton_OnClick(self, button)
 		end
 		dropDown.rewardIndex = self.index;
 		dropDown.onHide = function ()
-			GuildRewardsDropDown_OnHide(dropDown);
+			CommunitiesGuildRewardsDropDown_OnHide(dropDown);
 		end;
 		ToggleDropDownMenu(1, nil, dropDown, "cursor", 3, -3);
 	end
@@ -149,11 +149,11 @@ end
 
 --****** Dropdown **************************************************************
 
-function GuildRewardsDropDown_OnLoad(self)
-	UIDropDownMenu_Initialize(self, GuildRewardsDropDown_Initialize, "MENU");
+function CommunitiesGuildRewardsDropDown_OnLoad(self)
+	UIDropDownMenu_Initialize(self, CommunitiesGuildRewardsDropDown_Initialize, "MENU");
 end
 
-function GuildRewardsDropDown_Initialize(self)
+function CommunitiesGuildRewardsDropDown_Initialize(self)
 	if ( not self.rewardIndex ) then
 		return;
 	end
@@ -181,6 +181,6 @@ function GuildRewardsDropDown_Initialize(self)
 	end
 end
 
-function GuildRewardsDropDown_OnHide(self)
+function CommunitiesGuildRewardsDropDown_OnHide(self)
 	self.rewardIndex = nil;
 end

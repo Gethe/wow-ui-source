@@ -23,6 +23,7 @@ function WarCampaignTooltipMixin:SetWarCampaign(warCampaignID)
 	local warCampaignInfo = C_CampaignInfo.GetCampaignInfo(warCampaignID);
 	
 	assert(warCampaignInfo);
+	self.Title:SetText(warCampaignInfo.name);
 	local campaignChapterID = C_CampaignInfo.GetCurrentCampaignChapterID();
 
 	if (campaignChapterID) then
@@ -52,8 +53,12 @@ function WarCampaignTooltipMixin:SetWarCampaign(warCampaignID)
 			self.Description:SetTextColor(NORMAL_FONT_COLOR:GetRGB());
 		end	
 	else
+		if ( warCampaignInfo.complete ) then
+			self.Description:SetText(WAR_CAMPAIGN_DONE_DESCRIPTION);
+		else
+			self.Description:SetText(warCampaignInfo.playerConditionFailedReason);
+		end
 		self.ChapterTitle:SetText(nil);
-		self.Description:SetText(warCampaignInfo.playerConditionFailedReason);
 		self.ItemTooltip:Hide();
 		self.Description:SetTextColor(NORMAL_FONT_COLOR:GetRGB());
 	end

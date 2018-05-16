@@ -4,7 +4,7 @@ local GUILD_COMMENT_BORDER = 10;
 
 local INTEREST_TYPES = {"QUEST", "DUNGEON", "RAID", "PVP", "RP"};
 
-function GuildInfoFrame_OnLoad(self)
+function CommunitiesGuildInfoFrame_OnLoad(self)
 	local fontString = self.EditMOTDButton:GetFontString();
 	self.EditMOTDButton:SetHeight(fontString:GetHeight() + 4);
 	self.EditMOTDButton:SetWidth(fontString:GetWidth() + 4);
@@ -21,28 +21,28 @@ function GuildInfoFrame_OnLoad(self)
 	RequestGuildChallengeInfo();
 end
 
-function GuildInfoFrame_OnEvent(self, event, arg1)
+function CommunitiesGuildInfoFrame_OnEvent(self, event, arg1)
 	if ( event == "GUILD_MOTD" ) then
 		self.MOTDScrollFrame.MOTD:SetText(arg1, true);	--Ignores markup.
 	elseif ( event == "GUILD_ROSTER_UPDATE" ) then
-		GuildInfoFrame_UpdatePermissions(self);
-		GuildInfoFrame_UpdateText(self);
+		CommunitiesGuildInfoFrame_UpdatePermissions(self);
+		CommunitiesGuildInfoFrame_UpdateText(self);
 	elseif ( event == "GUILD_RANKS_UPDATE" ) then
-		GuildInfoFrame_UpdatePermissions(self);
+		CommunitiesGuildInfoFrame_UpdatePermissions(self);
 	elseif ( event == "PLAYER_GUILD_UPDATE" ) then
-		GuildInfoFrame_UpdatePermissions(self);
+		CommunitiesGuildInfoFrame_UpdatePermissions(self);
 	elseif ( event == "GUILD_CHALLENGE_UPDATED" ) then
-		GuildInfoFrame_UpdateChallenges(self);
+		CommunitiesGuildInfoFrame_UpdateChallenges(self);
 	end
 end
 
-function GuildInfoFrame_OnShow(self)
-	GuildInfoFrame_UpdatePermissions(self);	
-	GuildInfoFrame_UpdateText(self);
+function CommunitiesGuildInfoFrame_OnShow(self)
+	CommunitiesGuildInfoFrame_UpdatePermissions(self);	
+	CommunitiesGuildInfoFrame_UpdateText(self);
 	RequestGuildChallengeInfo();
 end
 
-function GuildInfoFrame_UpdatePermissions(self)
+function CommunitiesGuildInfoFrame_UpdatePermissions(self)
 	if ( CanEditMOTD() ) then
 		self.EditMOTDButton:Show();
 	else
@@ -55,7 +55,7 @@ function GuildInfoFrame_UpdatePermissions(self)
 	end
 end
 
-function GuildInfoFrame_UpdateText(self, infoText)
+function CommunitiesGuildInfoFrame_UpdateText(self, infoText)
 	self.MOTDScrollFrame.MOTD:SetText(GetGuildRosterMOTD(), true); --Extra argument ignores markup.
 	self.DetailsFrame:GetScrollChild().Details:SetText(infoText or GetGuildInfoText());
 	self.DetailsFrame:SetVerticalScroll(0);
@@ -63,7 +63,7 @@ function GuildInfoFrame_UpdateText(self, infoText)
 end
 
 local CHALLENGE_ORDER = { 1, 4, 2, 3, };
-function GuildInfoFrame_UpdateChallenges(self)
+function CommunitiesGuildInfoFrame_UpdateChallenges(self)
 	local numChallenges = GetNumGuildChallenges();
 	for i = 1, numChallenges do
 		local orderIndex = CHALLENGE_ORDER[i];
@@ -86,10 +86,12 @@ function GuildInfoFrame_UpdateChallenges(self)
 end
 
 function TextEditButton_OnClick(self)
-	GuildTextEditFrame_SetType(self.editType);
-	local toggled = CallMethodOnNearestAncestor(self, "ToggleSubPanel", GuildTextEditFrame);
-	if not toggled then
-		ToggleFrame(GuildTextEditFrame);
+	CommunitiesGuildTextEditFrame_SetType(CommunitiesGuildTextEditFrame, self.editType);
+	if not CommunitiesGuildTextEditFrame:IsShown() then
+		local toggled = CallMethodOnNearestAncestor(self, "ToggleSubPanel", CommunitiesGuildTextEditFrame);
+		if not toggled then
+			ToggleFrame(CommunitiesGuildTextEditFrame);
+		end
 	end
 end
 
@@ -97,48 +99,48 @@ end
 --   Popups
 --*******************************************************************************
 
-function GuildTextEditFrame_OnLoad(self)
-	GuildTextEditBox:SetTextInsets(4, 0, 4, 4);
-	GuildTextEditBox:SetSpacing(2);
+function CommunitiesGuildTextEditFrame_OnLoad(self)
+	self.Container.ScrollFrame.EditBox:SetTextInsets(4, 0, 4, 4);
+	self.Container.ScrollFrame.EditBox:SetSpacing(2);
 end
 
-function GuildTextEditFrame_SetType(editType)
+function CommunitiesGuildTextEditFrame_SetType(self, editType)
 	if ( editType == "motd" ) then
-		GuildTextEditFrame:SetHeight(162);
-		GuildTextEditBox:SetMaxLetters(128);
-		GuildTextEditBox:SetText(GetGuildRosterMOTD());
-		GuildTextEditFrameTitle:SetText(GUILD_MOTD_EDITLABEL);
-		GuildTextEditBox:SetScript("OnEnterPressed", GuildTextEditFrame_OnAccept);
+		self:SetHeight(162);
+		self.Container.ScrollFrame.EditBox:SetMaxLetters(128);
+		self.Container.ScrollFrame.EditBox:SetText(GetGuildRosterMOTD());
+		self.Title:SetText(GUILD_MOTD_EDITLABEL);
+		self.Container.ScrollFrame.EditBox:SetScript("OnEnterPressed", CommunitiesGuildTextEditFrame_OnAccept);
 	elseif ( editType == "info" ) then
-		GuildTextEditFrame:SetHeight(295);
-		GuildTextEditBox:SetMaxLetters(500);
-		GuildTextEditBox:SetText(GetGuildInfoText());
-		GuildTextEditFrameTitle:SetText(GUILD_INFO_EDITLABEL);
-		GuildTextEditBox:SetScript("OnEnterPressed", nil);
+		self:SetHeight(295);
+		self.Container.ScrollFrame.EditBox:SetMaxLetters(500);
+		self.Container.ScrollFrame.EditBox:SetText(GetGuildInfoText());
+		self.Title:SetText(GUILD_INFO_EDITLABEL);
+		self.Container.ScrollFrame.EditBox:SetScript("OnEnterPressed", nil);
 	end
-	GuildTextEditFrame.type = editType;
-	GuildTextEditBox:SetCursorPosition(0);
-	GuildTextEditBox:SetFocus();
+	self.type = editType;
+	self.Container.ScrollFrame.EditBox:SetCursorPosition(0);
+	self.Container.ScrollFrame.EditBox:SetFocus();
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 end
 
-function GuildTextEditFrame_OnAccept(self)
-	if ( GuildTextEditFrame.type == "motd" ) then
-		GuildSetMOTD(GuildTextEditBox:GetText());
-	elseif ( GuildTextEditFrame.type == "info" ) then
-		local infoText = GuildTextEditBox:GetText();
+function CommunitiesGuildTextEditFrame_OnAccept(self)
+	if ( CommunitiesGuildTextEditFrame.type == "motd" ) then
+		GuildSetMOTD(CommunitiesGuildTextEditFrame.Container.ScrollFrame.EditBox:GetText());
+	elseif ( CommunitiesGuildTextEditFrame.type == "info" ) then
+		local infoText = CommunitiesGuildTextEditFrame.Container.ScrollFrame.EditBox:GetText();
 		SetGuildInfoText(infoText);
 	end
-	HideUIPanel(GuildTextEditFrame);
+	HideUIPanel(CommunitiesGuildTextEditFrame);
 end
 
-function GuildLogFrame_OnLoad(self)
-	GuildLogHTMLFrame:SetSpacing(2);
-	ScrollBar_AdjustAnchors(GuildLogScrollFrameScrollBar, 0, -2);
+function CommunitiesGuildLogFrame_OnLoad(self)
+	self.Container.ScrollFrame.Child.HTMLFrame:SetSpacing(2);
+	ScrollBar_AdjustAnchors(self.Container.ScrollFrame.ScrollBar, 0, -2);
 	self:RegisterEvent("GUILD_EVENT_LOG_UPDATE");
 end
 
-function GuildLogFrame_Update()
+function CommunitiesGuildLogFrame_Update(self)
 	local numEvents = GetNumGuildEvents();
 	local type, player1, player2, rank, year, month, day, hour;
 	local msg;
@@ -168,5 +170,5 @@ function GuildLogFrame_Update()
 			buffer = buffer..msg.."|cff009999   "..format(GUILD_BANK_LOG_TIME, RecentTimeDate(year, month, day, hour)).."|r|n";
 		end
 	end
-	GuildLogHTMLFrame:SetText(buffer);
+	self.Container.ScrollFrame.Child.HTMLFrame:SetText(buffer);
 end

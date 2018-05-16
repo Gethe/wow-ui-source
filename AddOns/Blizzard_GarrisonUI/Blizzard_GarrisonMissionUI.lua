@@ -1018,6 +1018,25 @@ function GarrisonMissionList_UpdateMouseOverTooltip(self)
 	end
 end
 
+function GarrisonMissionButtonRewards_OnEnter(self)
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	if (self.itemID) then
+		GameTooltip:SetItemByID(self.itemID);
+		return;
+	end
+	if (self.currencyID and self.currencyID ~= 0 and self.currencyQuantity) then
+		GameTooltip:SetCurrencyByID(self.currencyID, self.currencyQuantity);
+		return;
+	end
+	if (self.title) then
+		GameTooltip:SetText(self.title);
+	end
+	if (self.tooltip) then
+		GameTooltip:AddLine(self.tooltip, 1, 1, 1, true);
+	end
+	GameTooltip:Show();
+end
+
 function GarrisonMissionButton_SetRewards(self, rewards)
 	if (#rewards > 0) then
 		local currencyMultipliers = nil;
@@ -1065,10 +1084,24 @@ function GarrisonMissionButton_SetRewards(self, rewards)
 							quantity = quantity * currencyMultipliers[reward.currencyID];
 						end
 						Reward.currencyID = reward.currencyID;
-						Reward.Quantity:SetText(quantity);
-						local currencyColor = GetColorForCurrencyReward(reward.currencyID, quantity);
-						Reward.Quantity:SetTextColor(currencyColor:GetRGB());
-						Reward.Quantity:Show();
+						
+						local currencyName, currencyTexture, currencyQuantity, currencyQuality = CurrencyContainerUtil.GetCurrencyContainerInfo(reward.currencyID, reward.quantity, reward.title, reward.icon, nil);
+						if (currencyTexture) then 
+							Reward.Icon:SetTexture(currencyTexture);
+						end
+						
+						Reward.currencyQuantity = quantity; 
+						
+						if (currencyQuality) then
+							SetItemButtonQuality(Reward, currencyQuality, reward.currencyID); 
+						end
+						
+						if (currencyQuantity > 1) then 
+							Reward.Quantity:SetText(currencyQuantity);
+							local currencyColor = GetColorForCurrencyReward(reward.currencyID, quantity);
+							Reward.Quantity:SetTextColor(currencyColor:GetRGB());
+							Reward.Quantity:Show();
+						end
 					end
 				else
 					Reward.tooltip = reward.tooltip;

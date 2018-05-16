@@ -195,26 +195,48 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button parentKey="OptionButton" mixin="QuestChoiceOptionButtonMixin" inherits="UIPanelButtonTemplate">
+			<Frame parentKey="OptionButtonsContainer">
 				<Size x="175" y="22"/>
 				<Anchors>
 					<Anchor point="BOTTOM"/>
 				</Anchors>
-				<ButtonText name="$parentText" parentKey="Text">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="4" y="0"/>
-						<Anchor point="BOTTOMRIGHT" x="-4" y="0"/>
-					</Anchors>
-				</ButtonText>
-				<Scripts>
-					<OnClick method="OnClick"/>
-					<OnEnter method="OnEnter"/>
-					<OnLeave method="OnLeave"/>
-				</Scripts>
-			</Button>
+				<Frames>
+					<Button parentKey="OptionButton1" parentArray="Buttons" mixin="QuestChoiceOptionButtonMixin" inherits="UIPanelButtonTemplate">
+						<Size x="175" y="22"/>
+						<Anchors>
+							<Anchor point="TOPRIGHT"/>
+						</Anchors>
+						<ButtonText name="$parentText" parentKey="Text">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="4" y="0"/>
+								<Anchor point="BOTTOMRIGHT" x="-4" y="0"/>
+							</Anchors>
+						</ButtonText>
+						<Scripts>
+							<OnClick method="OnClick"/>
+							<OnEnter method="OnEnter"/>
+							<OnLeave method="OnLeave"/>
+						</Scripts>
+					</Button>
+					<Button parentKey="OptionButton2" parentArray="Buttons" mixin="QuestChoiceOptionButtonMixin" inherits="UIPanelButtonTemplate">
+						<Size x="175" y="22"/>
+						<ButtonText name="$parentText" parentKey="Text">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="4" y="0"/>
+								<Anchor point="BOTTOMRIGHT" x="-4" y="0"/>
+							</Anchors>
+						</ButtonText>
+						<Scripts>
+							<OnClick method="OnClick"/>
+							<OnEnter method="OnEnter"/>
+							<OnLeave method="OnLeave"/>
+						</Scripts>
+					</Button>
+				</Frames>
+			</Frame>
 			<Frame parentKey="Rewards" inherits="QuestChoiceRewardsTemplate">
 				<Anchors>
-					<Anchor point="BOTTOM" relativeKey="$parent.OptionButton" relativePoint="TOP" y="5"/>
+					<Anchor point="BOTTOM" relativeKey="$parent.OptionButtonsContainer" relativePoint="TOP" y="5"/>
 				</Anchors>
 			</Frame>
 			<Frame parentKey="Header">
@@ -257,7 +279,7 @@
 			</SimpleHTML>
 			<Frame parentKey="WidgetContainer" hidden="true">
 				<Anchors>
-					<Anchor point="BOTTOM" relativeKey="$parent.OptionButton" relativePoint="TOP" y="5"/>
+					<Anchor point="BOTTOM" relativeKey="$parent.OptionButtonsContainer" relativePoint="TOP" y="5"/>
 				</Anchors>
 			</Frame>
 		</Frames>

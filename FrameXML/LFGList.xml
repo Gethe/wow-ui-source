@@ -590,6 +590,7 @@
 			<KeyValue key="numeric" value="false" type="boolean"/>
 			<KeyValue key="maxLetters" value="255" type="number"/>
 			<KeyValue key="tabCategory" value="tabCategoryLabel" type="string"/>
+			<KeyValue key="secureReferenceStr" value="NameOfSecureReferenceTag" type="string"/>
 		</KeyValues-->
 		<Layers>
 			<Layer level="ARTWORK">
@@ -682,6 +683,11 @@
 				end
 				if ( self.tabCategory ) then
 					LFGListEditBox_AddToTabCategory(self.EditBox, self.tabCategory);
+				end
+				if ( self.secureReferenceStr ) then
+					StoreSecureReference(self.secureReferenceStr, self.EditBox);
+					self.EditBox:SetSecurityDisableSetText();
+					self.EditBox:SetSecurityDisablePaste();
 				end
 			</OnLoad>
 		</Scripts>
@@ -1809,6 +1815,7 @@
 					<Frame parentKey="VoiceChat" inherits="LFGListRequirementTemplate">
 						<KeyValues>
 							<KeyValue key="maxLetters" value="31" type="number"/>
+							<KeyValue key="secureReferenceStr" value="LFGListCreationVoiceChat" type="string"/>
 						</KeyValues>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.HonorLevel" relativePoint="BOTTOMLEFT" x="0" y="-3"/>

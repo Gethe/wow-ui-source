@@ -16,7 +16,7 @@ function GuildFrame_OnLoad(self)
 	RequestGuildRewards();
 --	QueryGuildXP();
 	QueryGuildNews();
-	OpenCalendar();		-- to get event data
+	C_Calendar.OpenCalendar();		-- to get event data
 	GuildFrame_UpdateTabard();
 	GuildFrame_UpdateFaction();
 	local guildName, _, _, realm = GetGuildInfo("player");
@@ -452,15 +452,19 @@ function GuildEventButton_OnClick(self, button)
 	if ( button == "LeftButton" ) then
 		if ( CalendarFrame and CalendarFrame:IsShown() ) then
 			-- if the calendar is already open we need to do some work that's normally happening in CalendarFrame_OnShow
-			local weekday, month, day, year = CalendarGetDate();
-			CalendarSetAbsMonth(month, year);
+			local date = C_Calendar.GetDate();
+			C_Calendar.SetAbsMonth(date.month, date.year);
 		else
 			ToggleCalendar();
 		end
-		local monthOffset, day, eventIndex = CalendarGetGuildEventSelectionInfo(self.index);
-		CalendarSetMonth(monthOffset);
+		local info = C_Calendar.GetGuildEventSelectionInfo(self.index);
+		local monthOffset = info.offsetMonth;
+		local day = info.monthDay;
+		local eventIndex = info.eventIndex;
+		C_Calendar.SetMonth(monthOffset);
 		-- need to highlight the proper day/event in calendar
-		local _, _, _, firstDay = CalendarGetMonth();
+		local monthInfo = C_Calendar.GetMonthInfo();
+		local firstDay = monthInfo.firstWeekday;
 		local buttonIndex = day + firstDay - CALENDAR_FIRST_WEEKDAY;
 		if ( firstDay < CALENDAR_FIRST_WEEKDAY ) then
 			buttonIndex = buttonIndex + 7;
@@ -472,7 +476,7 @@ function GuildEventButton_OnClick(self, button)
 			CalendarDayEventButton_Click(eventButton, true);	-- true to open the event
 		else
 			CalendarFrame_SetSelectedEvent();	-- clears any event highlights
-			CalendarOpenEvent(0, day, eventIndex);
+			C_Calendar.OpenEvent(0, day, eventIndex);
 		end
 	end
 end

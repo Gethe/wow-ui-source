@@ -77,11 +77,28 @@ end
 
 function CommunitiesInviteButton_OnClick(self)
 	local communitiesFrame = self:GetParent();
-	StaticPopup_Show("INVITE_COMMUNITY_MEMBER", nil, nil, communitiesFrame:GetSelectedClubId());
+	local clubId = communitiesFrame:GetSelectedClubId();
+	local privileges = C_Club.GetClubPrivileges(clubId);
+	local clubInfo = C_Club.GetClubInfo(clubId);
+	if not clubInfo then
+		return;
+	end
+	
+	if clubInfo.clubType == Enum.ClubType.Guild then
+		StaticPopup_Show("ADD_GUILDMEMBER");
+	elseif privileges.canCreateTicket then
+		StaticPopup_Show("INVITE_COMMUNITY_MEMBER_WITH_INVITE_LINK", nil, nil, { clubId = clubId, streamId = communitiesFrame:GetSelectedStreamId(), });
+	else
+		StaticPopup_Show("INVITE_COMMUNITY_MEMBER", nil, nil, { clubId = clubId, streamId = communitiesFrame:GetSelectedStreamId(), });
+	end
 end
 
 function CommunitiesInvitebutton_OnHide(self)
 	if StaticPopup_Visible("INVITE_COMMUNITY_MEMBER") then
 		StaticPopup_Hide("INVITE_COMMUNITY_MEMBER");
+	end
+	
+	if StaticPopup_Visible("INVITE_COMMUNITY_MEMBER_WITH_INVITE_LINK") then
+		StaticPopup_Hide("INVITE_COMMUNITY_MEMBER_WITH_INVITE_LINK");
 	end
 end

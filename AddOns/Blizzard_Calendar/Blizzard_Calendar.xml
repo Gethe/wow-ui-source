@@ -1129,7 +1129,7 @@
 									</OnTabPressed>
 									<OnTextChanged>
 										ScrollingEdit_OnTextChanged(self, self:GetParent());
-										CalendarEventSetDescription(self:GetText());
+										C_Calendar.EventSetDescription(self:GetText());
 										CalendarCreateEventCreateButton_Update();
 									</OnTextChanged> 
 									<OnCursorChanged function="ScrollingEdit_OnCursorChanged"/>
@@ -1253,7 +1253,7 @@
 							<OnEditFocusGained function="EditBox_HighlightText"/>
 							<OnTextChanged>
 								if ( userInput ) then
-									local isGuildEvent = CalendarEventGetCalendarType() == "GUILD_EVENT";
+									local isGuildEvent = C_Calendar.EventGetCalendarType() == "GUILD_EVENT";
 									if ( isGuildEvent ) then
 										AutoCompleteEditBox_SetAutoCompleteSource(self, GetAutoCompleteResults, AUTOCOMPLETE_LIST.CALENDARGUILDEVENT.include, AUTOCOMPLETE_LIST.CALENDARGUILDEVENT.exclude);
 									else

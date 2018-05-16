@@ -2,10 +2,19 @@ local Video =
 {
 	Name = "Video",
 	Type = "System",
-	Namespace = "C_Video",
+	Namespace = "C_VideoOptions",
 
 	Functions =
 	{
+		{
+			Name = "GetGxAdapterInfo",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "adapters", Type = "table", InnerType = "GxAdapterInfoDetails", Nilable = false },
+			},
+		},
 	},
 
 	Events =
@@ -39,6 +48,16 @@ local Video =
 
 	Tables =
 	{
+		{
+			Name = "GxAdapterInfoDetails",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "isLowPower", Type = "bool", Nilable = false },
+				{ Name = "isExternal", Type = "bool", Nilable = false },
+			},
+		},
 	},
 };
 

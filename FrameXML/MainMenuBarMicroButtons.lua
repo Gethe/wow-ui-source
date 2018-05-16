@@ -84,6 +84,10 @@ function SetKioskTooltip(frame)
 	end
 end
 
+local function GuildFrameIsOpen()
+	return ( CommunitiesFrame and CommunitiesFrame:IsShown() ) or ( GuildFrame and GuildFrame:IsShown() ) or ( LookingForGuildFrame and LookingForGuildFrame:IsShown() );
+end
+
 function UpdateMicroButtons()
 	local playerLevel = UnitLevel("player");
 	local factionGroup = UnitFactionGroup("player");
@@ -145,7 +149,7 @@ function UpdateMicroButtons()
 		if (IsKioskModeEnabled()) then
 			SetKioskTooltip(GuildMicroButton);
 		end
-	elseif ( ( GuildFrame and GuildFrame:IsShown() ) or ( LookingForGuildFrame and LookingForGuildFrame:IsShown() ) ) then
+	elseif ( GuildFrameIsOpen() ) then
 		GuildMicroButton:Enable();
 		GuildMicroButton:SetButtonState("PUSHED", true);
 		GuildMicroButtonTabard:SetPoint("TOPLEFT", -1, -1);
@@ -155,7 +159,10 @@ function UpdateMicroButtons()
 		GuildMicroButton:SetButtonState("NORMAL");
 		GuildMicroButtonTabard:SetPoint("TOPLEFT", 0, 0);
 		GuildMicroButtonTabard:SetAlpha(1);
-		if ( IsInGuild() ) then
+		if ( CommunitiesFrame_IsEnabled() ) then
+			GuildMicroButton.tooltipText = MicroButtonTooltipText(GUILD_AND_COMMUNITIES, "TOGGLEGUILDTAB");
+			GuildMicroButton.newbieText = NEWBIE_TOOLTIP_COMMUNITIESTAB;
+		elseif ( IsInGuild() ) then
 			GuildMicroButton.tooltipText = MicroButtonTooltipText(GUILD, "TOGGLEGUILDTAB");
 			GuildMicroButton.newbieText = NEWBIE_TOOLTIP_GUILDTAB;
 		else
@@ -274,7 +281,9 @@ function GuildMicroButton_OnEvent(self, event, ...)
 	end
 
 	if ( event == "UPDATE_BINDINGS" ) then
-		if ( IsInGuild() ) then
+		if ( CommunitiesFrame_IsEnabled() ) then
+			GuildMicroButton.tooltipText = MicroButtonTooltipText(GUILD_AND_COMMUNITIES, "TOGGLEGUILDTAB");
+		elseif ( IsInGuild() ) then
 			GuildMicroButton.tooltipText = MicroButtonTooltipText(GUILD, "TOGGLEGUILDTAB");
 		else
 			GuildMicroButton.tooltipText = MicroButtonTooltipText(LOOKINGFORGUILD, "TOGGLEGUILDTAB");

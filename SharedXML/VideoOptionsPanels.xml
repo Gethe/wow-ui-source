@@ -1342,9 +1342,24 @@
 					</Layer>
 				</Layers>
 			</Frame>
+			<Frame name="$parentAdapterDropDown" inherits="VideoOptionsDropDownMenuTemplate" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentPhysicsInteractionDropDown" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="GRAPHICS_CARD" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+
 			<Slider name="$parentUIScaleSlider" inherits="VideoOptionsSliderTemplate" minValue="0.65" maxValue="1.15" valueStep=".05" obeyStepOnDrag="true">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentPhysicsInteractionDropDown" relativePoint="BOTTOMLEFT">
+					<Anchor point="TOPLEFT" relativeTo="$parentAdapterDropDown" relativePoint="BOTTOMLEFT">
 						<Offset x="-90" y="-20"/>
 					</Anchor>
 				</Anchors>
