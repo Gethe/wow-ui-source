@@ -15,6 +15,7 @@ local COMMUNITIES_FRAME_EVENTS = {
 	"CLUB_STREAM_ADDED",
 	"CLUB_STREAM_REMOVED",
 	"CLUB_STREAM_SUBSCRIBED",
+	"CLUB_ADDED",
 	"CLUB_REMOVED",
 	"CLUB_SELF_MEMBER_ROLE_UPDATED",
 };
@@ -41,12 +42,23 @@ function CommunitiesFrameMixin:OnLoad()
 		
 	self.selectedStreamForClub = {};
 	self.privilegesForClub = {};
+	self.newClubIds = {};
 
 	self:UpdateCommunitiesButtons();
 end
 
 function CommunitiesFrameMixin:OnShow()
-	self.PortraitOverlay.Portrait:SetTexture(132621); -- TODO:: Replace this hardcoded icon.
+	-- Don't allow ChannelFrame and CommunitiesFrame to show at the same time, because they share one presence subscription
+	if ChannelFrame and ChannelFrame:IsShown() then
+		HideUIPanel(ChannelFrame);
+	end
+
+	local clubId = self:GetSelectedClubId();
+	if clubId  then
+		C_Club.SetClubPresenceSubscription(clubId);
+	end
+
+	SetPortraitToTexture(self.PortraitOverlay.Portrait, "Interface\\Icons\\Achievement_General_StayClassy");
 	FrameUtil.RegisterFrameForEvents(self, COMMUNITIES_FRAME_EVENTS);
 	self:UpdateClubSelection();
 	UpdateMicroButtons();
@@ -55,9 +67,10 @@ end
 function CommunitiesFrameMixin:OnEvent(event, ...)
 	if event == "CLUB_STREAMS_LOADED" then
 		local clubId = ...;
+		self:StreamsLoadedForClub(clubId);
 		if clubId == self:GetSelectedClubId() then
 			local streams = C_Club.GetStreams(clubId);
-			if not self.selectedStreamForClub[clubId] then
+			if not self:GetSelectedStreamForClub(clubId) then
 				self:SelectStream(clubId, streams[1].streamId);
 			end
 			
@@ -66,8 +79,7 @@ function CommunitiesFrameMixin:OnEvent(event, ...)
 	elseif event == "CLUB_STREAM_ADDED" then
 		local clubId, streamId = ...;
 		if clubId == self:GetSelectedClubId() then
-			self.streams = C_Club.GetStreams(clubId);
-			if not self.selectedStreamForClub[clubId] then
+			if not self:GetSelectedStreamForClub(clubId) then
 				self:SelectStream(clubId, streamId);
 			end
 			
@@ -75,7 +87,7 @@ function CommunitiesFrameMixin:OnEvent(event, ...)
 		end
 	elseif event == "CLUB_STREAM_REMOVED" then
 		local clubId, streamId = ...;
-		local selectedStream = self.selectedStreamForClub[clubId];
+		local selectedStream = self:GetSelectedStreamForClub(clubId);
 		local isSelectedClub = clubId == self:GetSelectedClubId();
 		local isSelectedStream = selectedStream and selectedStream.streamId == streamId;
 		if isSelectedClub or isSelectedStream then
@@ -85,7 +97,6 @@ function CommunitiesFrameMixin:OnEvent(event, ...)
 			end
 			
 			if isSelectedClub then
-				self.streams = streams;
 				self:UpdateStreamDropDown();
 			end
 		end
@@ -94,6 +105,9 @@ function CommunitiesFrameMixin:OnEvent(event, ...)
 		if clubId == self:GetSelectedClubId() and streamId == self:GetSelectedStreamId() then
 			RequestInitialMessages(clubId, streamId);
 		end
+	elseif event == "CLUB_ADDED" then
+		local clubId = ...;
+		self:AddNewClubId(clubId);
 	elseif event == "CLUB_REMOVED" then
 		local clubId = ...;
 		if clubId == self:GetSelectedClubId() then
@@ -102,11 +116,32 @@ function CommunitiesFrameMixin:OnEvent(event, ...)
 	elseif event == "CLUB_SELF_MEMBER_ROLE_UPDATED" then
 		local clubId, roleId = ...;
 		if clubId == self:GetSelectedClubId() then
-			self.privilegesForClub[clubId] = C_Club.GetClubPrivileges(clubId);
+			self:SetPrivilegesForClub(clubId, C_Club.GetClubPrivileges(clubId));
 		else
-			self.privilegesForClub[clubId] = nil;
+			self:SetPrivilegesForClub(clubId, nil);
 		end
 		self:UpdateCommunitiesButtons();
+	end
+end
+
+function CommunitiesFrameMixin:AddNewClubId(clubId)
+	self.newClubIds[#self.newClubIds + 1] = clubId;
+end
+
+function CommunitiesFrameMixin:StreamsLoadedForClub(clubId)
+	-- TODO:: Check for the maximum number of channels (20).
+	-- When you add a new club we want to add the general stream to your chat window.
+	for i, newClubId in ipairs(self.newClubIds) do
+		if newClubId == clubId then
+			local streams = C_Club.GetStreams(clubId);
+			if streams and #streams >= 1 then
+				local streamId = streams[1].streamId;
+				C_Club.AddClubStreamToChatWindow(clubId, streamId, 1);
+				ChatFrame_AddCommunitiesChannel(DEFAULT_CHAT_FRAME, clubId, streamId);
+				table.remove(self.newClubIds, i);
+				break;
+			end
+		end
 	end
 end
 
@@ -125,8 +160,6 @@ function CommunitiesFrameMixin:ToggleSubPanel(subPanel)
 end
 
 function CommunitiesFrameMixin:UpdateClubSelection()
-	-- TODO:: We should prioritize selecting guild communities once those exist.
-
 	local lastSelectedClubId = tonumber(GetCVar("lastSelectedClubId")) or 0;
 	local clubs = C_Club.GetSubscribedClubs();
 	for i, club in ipairs(clubs) do
@@ -165,6 +198,7 @@ COMMUNITIES_FRAME_DISPLAY_MODES = {
 		"ChatEditBox",
 		"AddToChatButton",
 		"InviteButton",
+		"VoiceChatHeadset",
 	},
 	
 	ROSTER = {
@@ -202,6 +236,7 @@ COMMUNITIES_FRAME_DISPLAY_MODES = {
 		"Chat",
 		"ChatEditBox",
 		"StreamDropDownMenu",
+		"VoiceChatHeadset",
 	},
 };
 
@@ -211,6 +246,7 @@ function CommunitiesFrameMixin:SetDisplayMode(displayMode)
 	end
 	
 	self.displayMode = displayMode;
+	self:TriggerEvent(CommunitiesFrameMixin.Event.DisplayModeChanged, displayMode);
 
 	for i, mode in pairs(COMMUNITIES_FRAME_DISPLAY_MODES) do
 		if mode ~= displayMode then
@@ -241,8 +277,6 @@ function CommunitiesFrameMixin:SetDisplayMode(displayMode)
 	end
 	
 	self:UpdateCommunitiesTabs();
-	
-	self:TriggerEvent(CommunitiesFrameMixin.Event.DisplayModeChanged, displayMode);
 end
 
 function CommunitiesFrameMixin:GetDisplayMode()
@@ -304,43 +338,36 @@ function CommunitiesFrameMixin:OnClubSelected(clubId)
 		
 		local clubInfo = C_Club.GetClubInfo(clubId);
 		if clubInfo then
-			self.streams = C_Club.GetStreams(clubId);
-			if (not self.selectedStreamForClub[clubId]) then
-				self.selectedStreamForClub[clubId] = {};
-			end
-
-			-- TODO:: Update a new club after it's been added and we've
-			-- retrieved stream info and so forth for it.
-			if self.streams[1] then
-				self:SelectStream(clubId, self.streams[1].streamId);
+			C_Club.SetAvatarTexture(self.PortraitOverlay.Portrait, clubInfo.avatarId, clubInfo.clubType);
+			local selectedStream = self:GetSelectedStreamForClub(clubId);
+			if selectedStream ~= nil then
+				self:SelectStream(clubId, selectedStream.streamId);
 			else
-				self:SelectStream(clubId, nil);
+				local streams = C_Club.GetStreams(clubId);
+				if #streams >= 1 then
+					self:SelectStream(clubId, streams[1].streamId);
+				else
+					self:SelectStream(clubId, nil);
+				end
 			end
 			
-			if not self.privilegesForClub[clubId] then
-				self.privilegesForClub[clubId] = C_Club.GetClubPrivileges(clubId);
+			if not self:HasPrivilegesForClub(clubId) then
+				self:SetPrivilegesForClub(clubId, C_Club.GetClubPrivileges(clubId));
 			end
 			
 			if self:GetDisplayMode() ~= COMMUNITIES_FRAME_DISPLAY_MODES.MINIMIZED then
 				self:SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.CHAT);
 			end
-			
-			C_Club.SetClubPresenceSubscription(clubId);
 		else
+			SetPortraitToTexture(self.PortraitOverlay.Portrait, "Interface\\Icons\\Achievement_General_StayClassy");
 			local invitationInfo = C_Club.GetInvitationInfo(clubId);
 			if invitationInfo then
-				self.streams = {};
-				if (not self.selectedStreamForClub[clubId]) then
-					self.selectedStreamForClub[clubId] = {};
-				end
-				if (not self.privilegesForClub[clubId]) then
-					self.privilegesForClub[clubId] = {};
-				end
-				
 				self.InvitationFrame:DisplayInvitation(invitationInfo);
 				self:SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.INVITATION);
 			end
 		end
+	else
+		SetPortraitToTexture(self.PortraitOverlay.Portrait, "Interface\\Icons\\Achievement_General_StayClassy");
 	end
 	
 	self:UpdateCommunitiesButtons();
@@ -384,7 +411,7 @@ function CommunitiesFrameMixin:UpdateCommunitiesButtons()
 	addToChatButton:SetEnabled(false);
 	
 	if clubId ~= nil then
-		local privileges = self.privilegesForClub[clubId];
+		local privileges = self:GetPrivilegesForClub(clubId);
 		if privileges.canSendInvitation or privileges.canSendGuestInvitation then
 			inviteButton:SetEnabled(true);
 		-- There are currently no plans to allow suggesting members.
@@ -416,41 +443,53 @@ function CommunitiesFrameMixin:SelectStream(clubId, streamId)
 	if streamId == nil then
 		self.selectedStreamForClub[clubId] = nil;
 		self:TriggerEvent(CommunitiesFrameMixin.Event.StreamSelected, streamId);
-		return;
-	end
-	
-	CommunitiesTicketManagerDialog_OnStreamChanged(clubId, streamId);
-	
-	local streams = C_Club.GetStreams(clubId);
-	for i, stream in ipairs(streams) do
-		if stream.streamId == streamId then
-			self.selectedStreamForClub[clubId] = stream;
-			
-			if clubId == self:GetSelectedClubId() then
-				self:SetFocusedStream(clubId, streamId);
-				C_Club.SetAutoAdvanceStreamViewMarker(clubId, streamId);
-				if C_Club.IsSubscribedToStream(clubId, streamId) then
-					RequestInitialMessages(clubId, streamId);
-				end
+	else
+		CommunitiesTicketManagerDialog_OnStreamChanged(clubId, streamId);
+		
+		local streams = C_Club.GetStreams(clubId);
+		for i, stream in ipairs(streams) do
+			if stream.streamId == streamId then
+				self.selectedStreamForClub[clubId] = stream;
 				
-				self:TriggerEvent(CommunitiesFrameMixin.Event.StreamSelected, streamId);
-				self:UpdateStreamDropDown();
+				if clubId == self:GetSelectedClubId() then
+					self:SetFocusedStream(clubId, streamId);
+					C_Club.SetAutoAdvanceStreamViewMarker(clubId, streamId);
+					if C_Club.IsSubscribedToStream(clubId, streamId) then
+						RequestInitialMessages(clubId, streamId);
+					end
+					
+					self:TriggerEvent(CommunitiesFrameMixin.Event.StreamSelected, streamId);
+					self:UpdateStreamDropDown();
+
+					self.VoiceChatHeadset.Button:SetCommunityInfo(clubId, stream);
+				end
 			end
 		end
 	end
+	
+	self:UpdateCommunitiesButtons();
 end
 
 function CommunitiesFrameMixin:GetSelectedStreamForClub(clubId)
 	return self.selectedStreamForClub[clubId];
 end
 
+function CommunitiesFrameMixin:SetPrivilegesForClub(clubId, privileges)
+	self.privilegesForClub[clubId] = privileges;
+end
+
+function CommunitiesFrameMixin:GetPrivilegesForClub(clubId)
+	return self.privilegesForClub[clubId] or {};
+end
+
+function CommunitiesFrameMixin:HasPrivilegesForClub(clubId)
+	return self.privilegesForClub[clubId] ~= nil;
+end
+
 function CommunitiesFrameMixin:UpdateStreamDropDown()
 	local clubId = self:GetSelectedClubId();
-	local selectedStream = self.selectedStreamForClub[clubId];
-	self.StreamDropDownMenu.streams = self.streams;
-	self.StreamDropDownMenu.privileges = self.privilegesForClub[clubId];
+	local selectedStream = self:GetSelectedStreamForClub(clubId);
 	UIDropDownMenu_SetSelectedValue(self.StreamDropDownMenu, selectedStream and selectedStream.streamId or nil, true);
-
 	UIDropDownMenu_SetText(self.StreamDropDownMenu, selectedStream and selectedStream.name or "");
 end
 
@@ -464,11 +503,10 @@ function CommunitiesFrameMixin:ShowCreateChannelDialog()
 	self.EditStreamDialog:ShowCreateDialog(self:GetSelectedClubId());
 end
 
-function CommunitiesFrameMixin:ShowEditStreamDialog()
-	local clubId = self:GetSelectedClubId();
-	local stream = self.selectedStreamForClub[clubId];
+function CommunitiesFrameMixin:ShowEditStreamDialog(clubId, streamId)
+	local stream = C_Club.GetStreamInfo(clubId, streamId);
 	if stream then
-		self.EditStreamDialog:ShowEditDialog(clubId, self.selectedStreamForClub[clubId]);
+		self.EditStreamDialog:ShowEditDialog(clubId, stream);
 	end
 end
 
@@ -550,22 +588,17 @@ function CommunitiesControlFrameMixin:Update()
 	if clubId then
 		local clubInfo = C_Club.GetClubInfo(clubId);
 		if clubInfo then
-			local privileges = C_Club.GetClubPrivileges(clubId);
-			if privileges.canSetName or privileges.canSetDescription or privileges.canSetAvatar or privileges.canSetBroadcast then
+			local privileges = communitiesFrame:GetPrivilegesForClub(clubId);
+			local isGuild = clubInfo.clubType == Enum.ClubType.Guild;
+			local hasCommunitySettingsPrivilege = privileges.canSetName or privileges.canSetDescription or privileges.canSetAvatar or privileges.canSetBroadcast;
+			if not isGuild and hasCommunitySettingsPrivilege then
 				self.CommunitiesSettingsButton:Show();
 				self.CommunitiesSettingsButton:SetText(clubInfo.clubType == Enum.ClubType.BattleNet and COMMUNITIES_SETTINGS_BUTTON_LABEL or COMMUNITIES_SETTINGS_BUTTON_CHARACTER_LABEL);
 			end
 		
-			if clubInfo.clubType == Enum.ClubType.Guild then
+			if isGuild then
 				-- TODO:: Check guild permissions
 				self.GuildRecruitmentButton:Show();
-				self.GuildRecruitmentButton:ClearAllPoints();
-				if self.CommunitiesSettingsButton:IsShown() then
-					self.GuildRecruitmentButton:SetPoint("RIGHT", self.CommunitiesSettingsButton, "LEFT", -2, 0);
-				else
-					self.GuildRecruitmentButton:SetPoint("BOTTOMRIGHT");
-				end
-				
 				self.GuildControlButton:Show();
 			end
 		end

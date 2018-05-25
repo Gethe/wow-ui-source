@@ -59,7 +59,9 @@ function UIWidgetManagerMixin:GetWidgetFromPools(templateInfo, parent)
 			self.widgetPools:CreatePool(templateInfo.frameType, parent, templateInfo.frameTemplate, ResetWidget);
 		end
 
-		return self.widgetPools:Acquire(templateInfo.frameTemplate);
+		local widgetFrame = self.widgetPools:Acquire(templateInfo.frameTemplate);
+		widgetFrame:SetParent(parent);
+		return widgetFrame;
 	end
 end
 
@@ -325,10 +327,10 @@ function DefaultWidgetLayout(widgetContainer, sortedWidgets)
 
 	for index, widgetFrame in ipairs(sortedWidgets) do
 		if ( index == 1 ) then
-			widgetFrame:SetPoint("TOP");
+			widgetFrame:SetPoint("TOP", widgetContainer, "TOP", 0, 0);
 		else
 			local relative = sortedWidgets[index - 1];
-			widgetFrame:SetPoint("TOP", relative, "BOTTOM");
+			widgetFrame:SetPoint("TOP", relative, "BOTTOM", 0, 0);
 		end
 
 		widgetsHeight = widgetsHeight + widgetFrame:GetHeight();

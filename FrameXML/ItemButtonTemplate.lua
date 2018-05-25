@@ -153,5 +153,11 @@ function HandleModifiedItemClick(link)
 	if ( IsModifiedClick("DRESSUP") ) then
 		return DressUpItemLink(link) or DressUpBattlePetLink(link) or DressUpMountLink(link)
 	end
+	if ( IsModifiedClick("EXPANDITEM") ) then
+		if C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItemByID(link) and C_AzeriteEmpoweredItem.IsAzeritePreviewSourceDisplayable(link) then
+			OpenAzeriteEmpoweredItemUIFromLink(link);
+			return true;
+		end
+	end
 	return false;
 end

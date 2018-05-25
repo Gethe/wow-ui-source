@@ -434,11 +434,6 @@ local VoiceChat =
 				{ Name = "clubId", Type = "string", Nilable = false },
 				{ Name = "streamId", Type = "string", Nilable = false },
 			},
-
-			Returns =
-			{
-				{ Name = "status", Type = "VoiceChatStatusCode", Nilable = false },
-			},
 		},
 		{
 			Name = "RequestJoinChannelByChannelType",
@@ -447,11 +442,6 @@ local VoiceChat =
 			Arguments =
 			{
 				{ Name = "channelType", Type = "ChatChannelType", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "status", Type = "VoiceChatStatusCode", Nilable = false },
 			},
 		},
 		{
@@ -657,8 +647,9 @@ local VoiceChat =
 			{
 				{ Name = "status", Type = "VoiceChatStatusCode", Nilable = false },
 				{ Name = "channelID", Type = "number", Nilable = false },
-				{ Name = "clubId", Type = "string", Nilable = false },
-				{ Name = "streamId", Type = "string", Nilable = false },
+				{ Name = "channelType", Type = "ChatChannelType", Nilable = false },
+				{ Name = "clubId", Type = "string", Nilable = true },
+				{ Name = "streamId", Type = "string", Nilable = true },
 			},
 		},
 		{
@@ -867,6 +858,18 @@ local VoiceChat =
 			Name = "VoiceChatOutputDevicesUpdated",
 			Type = "Event",
 			LiteralName = "VOICE_CHAT_OUTPUT_DEVICES_UPDATED",
+		},
+		{
+			Name = "VoiceChatPendingChannelJoinState",
+			Type = "Event",
+			LiteralName = "VOICE_CHAT_PENDING_CHANNEL_JOIN_STATE",
+			Payload =
+			{
+				{ Name = "channelType", Type = "ChatChannelType", Nilable = false },
+				{ Name = "clubId", Type = "string", Nilable = false },
+				{ Name = "streamId", Type = "string", Nilable = false },
+				{ Name = "pendingJoin", Type = "bool", Nilable = false },
+			},
 		},
 		{
 			Name = "VoiceChatPttButtonPressedStateChanged",

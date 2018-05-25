@@ -57,6 +57,9 @@ function QuestInfo_Display(template, parentFrame, acceptButton, material, mapVie
 			if sealQuestInfo.text or sealQuestInfo.sealAtlas then
 				QuestInfoSealFrame.sealInfo = sealQuestInfo;
 			end
+		elseif ( C_CampaignInfo.IsCampaignQuest(questID) ) then
+			sealMaterialBG:SetAtlas( "QuestBG-"..UnitFactionGroup("player"));
+			sealMaterialBG:Show();
 		end
 	end
 

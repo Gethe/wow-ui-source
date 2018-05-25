@@ -136,6 +136,7 @@ LowHealthFrame.xml
 CombatFeedback.xml
 UnitPowerBarAlt.xml
 CastingBarFrame.xml
+VoiceChatHeadsetButton.xml
 VoiceToggleButton.xml
 UnitPopupSlider.xml
 UnitPopupCustomControls.xml
@@ -249,7 +250,6 @@ ZoneAbility.xml
 ArtifactToasts.xml
 AzeriteItemToasts.xml
 AzeriteIslandsToast.xml
-IslandsQueueFrame.xml
 ..\SharedXML\ModelPreviewFrame.xml
 SplashFrame.xml
 QuestChoiceFrameMixin.lua

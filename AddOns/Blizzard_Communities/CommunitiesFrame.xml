@@ -131,7 +131,7 @@
 			<Button parentKey="GuildRecruitmentButton" inherits="UIPanelButtonTemplate, CommunitiesSubPanelButtonScriptTemplate" text="GUILD_RECRUITMENT">
 				<Size x="130" y="20"/>
 				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.CommunitiesSettingsButton" relativePoint="LEFT" x="-2" y="0"/>
+					<Anchor point="BOTTOMRIGHT"/>
 				</Anchors>
 				<KeyValues>
 					<KeyValue key="frame" value="CommunitiesGuildRecruitmentFrame" type="Global"/>
@@ -260,6 +260,12 @@
 				<Size x="40" y="28"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="-12" y="-28"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="VoiceChatHeadset" inherits="VoiceChatHeadsetTemplate">
+				<Size x="27" y="27"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-15" y="-30"/>
 				</Anchors>
 			</Frame>
 			<Frame parentKey="MemberList" inherits="CommunitiesMemberListFrameTemplate">

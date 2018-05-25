@@ -2,18 +2,31 @@ UIWidgetTemplateTooltipFrameMixin = {}
 
 function UIWidgetTemplateTooltipFrameMixin:SetTooltip(tooltip)
 	self.tooltip = tooltip;
+	self.tooltipContainsHyperLink = false;
+	self.preString = nil;
+	self.hyperLinkString = nil;
+	self.postString = nil;
 
 	if tooltip then
-		self.tooltipContainsHyperLink = (tooltip:find("|H", 1, true) ~= nil);
+		self.tooltipContainsHyperLink, self.preString, self.hyperLinkString, self.postString = ExtractHyperlinkString(tooltip);
 	end
 end
 
-function UIWidgetTemplateTooltipFrameMixin:OnEnter()
+function UIWidgetTemplateTooltipFrameMixin:SetTooltipOwner()
 	GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT");
+end
+
+function UIWidgetTemplateTooltipFrameMixin:OnEnter()
+	self:SetTooltipOwner();
 
 	if self.tooltip then
 		if self.tooltipContainsHyperLink then
-			GameTooltip:SetHyperlink(self.tooltip);
+			-- prestring is thrown out because calling SetHyperlink clears the tooltip
+			GameTooltip:SetHyperlink(self.hyperLinkString);
+			if self.postString and self.postString:len() > 0 then
+				GameTooltip_AddColoredLine(GameTooltip, self.postString, HIGHLIGHT_FONT_COLOR, true);
+				GameTooltip:Show();
+			end
 		else
 			GameTooltip:SetText(self.tooltip);
 		end
@@ -52,21 +65,28 @@ function UIWidgetBaseResourceTemplateMixin:Setup(resourceInfo)
 	self:SetHeight(self.Icon:GetHeight());
 end
 
+local function SetTextColorForEnabledState(fontString, enabledState)
+	if enabledState == Enum.WidgetEnabledState.Disabled then
+		fontString:SetTextColor(DISABLED_FONT_COLOR:GetRGB());
+	elseif enabledState == Enum.WidgetEnabledState.Red then
+		fontString:SetTextColor(RED_FONT_COLOR:GetRGB());
+	elseif enabledState == Enum.WidgetEnabledState.Highlight then
+		fontString:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
+	else
+		fontString:SetTextColor(NORMAL_FONT_COLOR:GetRGB());
+	end
+end
+
 UIWidgetBaseCurrencyTemplateMixin = {}
 
-function UIWidgetBaseCurrencyTemplateMixin:Setup(currencyInfo, disabled)
+function UIWidgetBaseCurrencyTemplateMixin:Setup(currencyInfo, enabledState)
 	self.Text:SetText(currencyInfo.text);
 	self:SetTooltip(currencyInfo.tooltip);
 	self.Icon:SetTexture(currencyInfo.iconFileID);
 	self.Icon:SetDesaturated(disabled);
 
-	if disabled then
-		self.Text:SetTextColor(DISABLED_FONT_COLOR:GetRGB());
-		self.LeadingText:SetTextColor(DISABLED_FONT_COLOR:GetRGB());
-	else
-		self.Text:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
-		self.LeadingText:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
-	end
+	SetTextColorForEnabledState(self.Text, enabledState);
+	SetTextColorForEnabledState(self.LeadingText, enabledState);
 
 	local totalWidth = self.Icon:GetWidth() + self.Text:GetWidth() + 2;
 
@@ -88,14 +108,5 @@ end
 UIWidgetBaseColoredTextMixin = {}
 
 function UIWidgetBaseColoredTextMixin:SetEnabledState(enabledState)
-	if enabledState == Enum.WidgetEnabledState.Disabled then
-		self:SetTextColor(DISABLED_FONT_COLOR:GetRGB());
-	elseif enabledState == Enum.WidgetEnabledState.Red then
-		self:SetTextColor(RED_FONT_COLOR:GetRGB());
-	elseif enabledState == Enum.WidgetEnabledState.Highlight then
-		self:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
-	else
-		self:SetTextColor(NORMAL_FONT_COLOR:GetRGB());
-	end
+	SetTextColorForEnabledState(self, enabledState);
 end
-

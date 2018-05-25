@@ -111,29 +111,37 @@
 		</Layers>
 		<Frames>
 			<EditBox parentKey="NameEdit" inherits="InputBoxTemplate" autoFocus="false" letters="30">
-				<Size x="250" y="30"/>
+				<Size x="0" y="30"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeKey="$parent.NameLabel" x="10" y="0"/>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeKey="$parent.NameLabel" x="6" y="0"/>
+					<Anchor point="RIGHT" x="-30" y="0"/>
 				</Anchors>
 				<Scripts>
-					<OnShow>
-						self:SetFocus();
-					</OnShow>
 					<OnTabPressed>
 						self:GetParent().Description.EditBox:SetFocus();
 					</OnTabPressed>
+					<OnEnterPressed>
+						self:GetParent().Description.EditBox:SetFocus();
+					</OnEnterPressed>
 				</Scripts>
 			</EditBox>
 			<ScrollFrame parentKey="Description" inherits="InputScrollFrameTemplate">
-				<Size x="250" y="50"/>
+				<Size x="350" y="50"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeKey="$parent.DescriptionLabel" x="8" y="-10"/>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeKey="$parent.DescriptionLabel" x="4" y="-10"/>
+					<Anchor point="RIGHT" x="-34" y="0"/>
 				</Anchors>
 				<KeyValues>
 					<KeyValue key="maxLetters" value="250" type="number"/>
 					<KeyValue key="instructions" value="COMMUNITIES_CHANNEL_DESCRIPTION_INSTRUCTIONS" type="global"/>
 					<KeyValue key="hideCharCount" value="true" type="boolean"/>
 				</KeyValues>
+				<Scripts>
+					<OnLoad>
+						InputScrollFrame_OnLoad(self);
+						self.EditBox.nextEditBox = self:GetParent().NameEdit;
+					</OnLoad>
+				</Scripts>
 			</ScrollFrame>
 			<CheckButton parentKey="TypeCheckBox" inherits="UICheckButtonTemplate">
 				<Size x="20" y="20"/>
@@ -145,6 +153,12 @@
 				<Size x="100" y="20"/>
 				<Anchors>
 					<Anchor point="BOTTOM" x="-56" y="20"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="Delete" inherits="UIPanelButtonTemplate" text="DELETE" hidden="true">
+				<Size x="100" y="20"/>
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="20"/>
 				</Anchors>
 			</Button>
 			<Button parentKey="Cancel" inherits="UIPanelButtonTemplate" text="CANCEL">

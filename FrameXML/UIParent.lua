@@ -36,7 +36,7 @@ UIPanelWindows["TaxiFrame"] =					{ area = "left",			pushable = 0, 	width = 605,
 UIPanelWindows["PVPUIFrame"] =					{ area = "left",			pushable = 0,	whileDead = 1, width = 563};
 UIPanelWindows["PVPBannerFrame"] =				{ area = "left",			pushable = 1};
 UIPanelWindows["PetStableFrame"] =				{ area = "left",			pushable = 0};
-UIPanelWindows["PVEFrame"] =					{ area = "left",			pushable = 1, 	whileDead = 1, width = 563};
+UIPanelWindows["PVEFrame"] =					{ area = "left",			pushable = 1, 	whileDead = 1 };
 UIPanelWindows["EncounterJournal"] =			{ area = "left",			pushable = 0, 	whileDead = 1, width = 830};
 UIPanelWindows["CollectionsJournal"] =			{ area = "left",			pushable = 0, 	whileDead = 1, width = 733};
 UIPanelWindows["TradeFrame"] =					{ area = "left",			pushable = 1};
@@ -273,6 +273,7 @@ function UIParent_OnLoad(self)
 	-- Events for trade skill UI handling
 	self:RegisterEvent("TRADE_SKILL_SHOW");
 	self:RegisterEvent("OBLITERUM_FORGE_SHOW");
+	self:RegisterEvent("SCRAPPING_MACHINE_SHOW"); 
 
 	-- Events for Item socketing UI
 	self:RegisterEvent("SOCKET_INFO_UPDATE");
@@ -404,6 +405,9 @@ function UIParent_OnLoad(self)
 
 	-- Event(s) for Allied Races
 	self:RegisterEvent("ALLIED_RACE_OPEN");
+	
+	-- Event(s) for Party Pose
+	self:RegisterEvent("ISLAND_COMPLETED"); 
 end
 
 function UIParent_OnShow(self)
@@ -438,8 +442,20 @@ function UIParentLoadAddOn(name)
 	return loaded;
 end
 
-function IslandsPartyPose_LoadUI()
+function IslandsQueue_LoadUI()
+	UIParentLoadAddOn("Blizzard_IslandsQueueUI"); 
+end
+
+function PartyPose_LoadUI()
 	UIParentLoadAddOn("Blizzard_PartyPoseUI");
+end
+
+function IslandsPartyPose_LoadUI()
+	UIParentLoadAddOn("Blizzard_IslandsPartyPoseUI");
+end 
+
+function WarfrontsPartyPose_LoadUI()
+	UIParentLoadAddOn("Blizzard_WarfrontsPartyPoseUI"); 
 end
 
 function AlliedRaces_LoadUI()
@@ -999,17 +1015,18 @@ function InspectUnit(unit)
 	end
 end
 
-do
-	local isGmClient = IsGMClient();
-	function OpenAzeriteEmpoweredItemUI(itemLocation)
-		if isGmClient and GetCVarBool("useWIPAzeriteUI") and not IsAddOnLoaded("Blizzard_AzeriteTempUI") then
-			UIParentLoadAddOn("Blizzard_AzeriteUI");
-		else
-			UIParentLoadAddOn("Blizzard_AzeriteTempUI");
-		end
-		AzeriteEmpoweredItemUI:SetToItemAtLocation(itemLocation);
-		ShowUIPanel(AzeriteEmpoweredItemUI);
-	end
+function OpenAzeriteEmpoweredItemUIFromItemLocation(itemLocation)
+	UIParentLoadAddOn("Blizzard_AzeriteUI");
+
+	ShowUIPanel(AzeriteEmpoweredItemUI);
+	AzeriteEmpoweredItemUI:SetToItemAtLocation(itemLocation);
+end
+
+function OpenAzeriteEmpoweredItemUIFromLink(itemLink)
+	UIParentLoadAddOn("Blizzard_AzeriteUI");
+
+	ShowUIPanel(AzeriteEmpoweredItemUI);
+	AzeriteEmpoweredItemUI:SetToItemLink(itemLink);
 end
 
 local function PlayBattlefieldBanner(self)
@@ -1638,6 +1655,9 @@ function UIParent_OnEvent(self, event, ...)
 	elseif ( event == "OBLITERUM_FORGE_SHOW" ) then
 		ObliterumForgeFrame_LoadUI();
 		ShowUIPanel(ObliterumForgeFrame);
+	elseif ( event == "SCRAPPING_MACHINE_SHOW" ) then
+		ScrappingMachineFrame_LoadUI();
+		ShowUIPanel(ScrappingMachineFrame);
 	-- Event for item socketing handling
 	elseif ( event == "SOCKET_INFO_UPDATE" ) then
 		ItemSocketingFrame_LoadUI();
@@ -2016,11 +2036,21 @@ function UIParent_OnEvent(self, event, ...)
 		if ( ContributionCollectionUI_Hide ) then
 			ContributionCollectionUI_Hide();
 		end
-	elseif (event == "ALLIED_RACE_OPEN" ) then
+	elseif (event == "ALLIED_RACE_OPEN") then
 		AlliedRaces_LoadUI();
 		local raceID = ...;
 		AlliedRacesFrame:LoadRaceData(raceID);
 		ShowUIPanel(AlliedRacesFrame);
+	elseif (event == "ISLAND_COMPLETED") then
+		IslandsPartyPose_LoadUI(); 
+		local mapID, winner = ...; 
+		IslandsPartyPoseFrame:LoadScreenData(mapID, winner);
+		ShowUIPanel(IslandsPartyPoseFrame);
+	elseif (event == "WARFRONT_COMPLETED") then
+		WarfrontsPartyPose_LoadUI(); 
+		local mapID, winner = ...; 
+		WarfrontsPartyPoseFrame:LoadScreenData(mapID, winner);
+		ShowUIPanel(WarfrontsPartyPoseFrame);
 	end
 end
 

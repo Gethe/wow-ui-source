@@ -1193,27 +1193,17 @@
 							<OnLoad method="OnLoad"/>
 						</Scripts>
 					</Frame>
-					<ModelScene parentKey="OrbModelScene" inherits="ModelSceneMixinTemplate" drawLayer="OVERLAY" enableMouse="false">
+					<ModelScene parentKey="OrbModelScene" inherits="NonInteractableModelSceneMixinTemplate" drawLayer="OVERLAY" enableMouse="false">
 						<Size x="56" y="56"/>
 						<Anchors>
 							<Anchor point="CENTER" relativePoint="BOTTOM" x="0" y="23"/>
 						</Anchors>
-						<Scripts>
-							<OnLoad inherit="prepend">
-								self:EnableMouse(false);
-							</OnLoad>
-						</Scripts>
 					</ModelScene>
-					<ModelScene parentKey="FireModelScene" inherits="ModelSceneMixinTemplate" drawLayer="ARTWORK" enableMouse="false">
+					<ModelScene parentKey="FireModelScene" inherits="NonInteractableModelSceneMixinTemplate" drawLayer="ARTWORK" enableMouse="false">
 						<Size x="200" y="200"/>
 						<Anchors>
 							<Anchor point="BOTTOM" x="0" y="0"/>
 						</Anchors>
-						<Scripts>
-							<OnLoad inherit="prepend">
-								self:EnableMouse(false);
-							</OnLoad>
-						</Scripts>
 					</ModelScene>
 				</Frames>
 				<Scripts>

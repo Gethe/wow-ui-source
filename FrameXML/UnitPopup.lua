@@ -250,7 +250,7 @@ UnitPopupMenus = {
 	["PVP_FLAG"] = { "PVP_ENABLE", "PVP_DISABLE"},
 	["SELECT_LOOT_SPECIALIZATION"] = { "LOOT_SPECIALIZATION_DEFAULT","LOOT_SPECIALIZATION_SPEC1", "LOOT_SPECIALIZATION_SPEC2", "LOOT_SPECIALIZATION_SPEC3", "LOOT_SPECIALIZATION_SPEC4"},
 	["OPT_OUT_LOOT_TITLE"] = { "OPT_OUT_LOOT_ENABLE", "OPT_OUT_LOOT_DISABLE"},
-	["REPORT_PLAYER"] = { "REPORT_SPAM", "REPORT_BAD_LANGUAGE", "REPORT_BAD_LANGUAGE_VOICE", "REPORT_BAD_NAME", "REPORT_BAD_GUILD_NAME", "REPORT_CHEATING" },
+	["REPORT_PLAYER"] = { "REPORT_SPAM", "REPORT_BAD_LANGUAGE", "REPORT_BAD_NAME", "REPORT_BAD_GUILD_NAME", "REPORT_CHEATING" },
 	["DUNGEON_DIFFICULTY"] = { "DUNGEON_DIFFICULTY1", "DUNGEON_DIFFICULTY2", "DUNGEON_DIFFICULTY3" },
 	["RAID_DIFFICULTY"] = { "RAID_DIFFICULTY1", "RAID_DIFFICULTY2", "RAID_DIFFICULTY3", "LEGACY_RAID_SUBSECTION_TITLE", "LEGACY_RAID_DIFFICULTY1", "LEGACY_RAID_DIFFICULTY2" },
 	["BN_REPORT"] = { "BN_REPORT_NAME" },
@@ -283,7 +283,7 @@ end
 local g_mostRecentPopupMenu;
 
 function UnitPopup_HasVisibleMenu()
-	return g_mostRecentPopupMenu and g_mostRecentPopupMenu:IsVisible();
+	return g_mostRecentPopupMenu == UIDROPDOWNMENU_OPEN_MENU;
 end
 
 function UnitPopup_ShowMenu (dropdownMenu, which, unit, name, userData)
@@ -752,6 +752,8 @@ end
 local function UnitPopup_TryCreatePlayerLocation(menu, guid)
 	if menu.battlefieldScoreIndex then
 		return PlayerLocation:CreateFromBattlefieldScoreIndex(menu.battlefieldScoreIndex);
+	elseif menu.communityClubID and menu.communityStreamID and menu.communityEpoch and menu.communityPosition then
+		return PlayerLocation:CreateFromCommunityData(menu.communityClubID, menu.communityStreamID, menu.communityEpoch, menu.communityPosition);
 	elseif menu.lineID then
 		return PlayerLocation:CreateFromChatLineID(menu.lineID);
 	elseif menu.unit then
@@ -912,7 +914,7 @@ function UnitPopup_HideButtons ()
 				whisperIsLocalPlayer = (dropdownMenu.name == playerName and dropdownMenu.server == playerServer);
 			end
 
-			if whisperIsLocalPlayer or isOffline or ( dropdownMenu.unit and (not canCoop or not isPlayer) ) then
+			if whisperIsLocalPlayer or isOffline or ( dropdownMenu.unit and (not canCoop or not isPlayer)) or (dropdownMenu.bnetIDAccount and not BNIsFriend(dropdownMenu.bnetIDAccount)) then
 				shown = false;
 			end
 		elseif ( value == "DUEL" ) then
@@ -953,16 +955,11 @@ function UnitPopup_HideButtons ()
 			end
 		elseif ( value == "BLOCK_COMMUNICATION" ) then
 			-- only show it for bnetIDAccounts that are not friends
-			if ( dropdownMenu.bnetIDAccount and BNFeaturesEnabledAndConnected()) then
-				local bnetIDAccount, accountName, battleTag, isBattleTag, characterName, bnetIDGameAccount, client, isOnline, lastOnline, isAFK, isDND, broadcastText, noteText, isFriend = BNGetFriendInfoByID(dropdownMenu.bnetIDAccount);
-				if ( isFriend ) then
-					shown = false;
-				end
-			else
+			if ( not dropdownMenu.bnetIDAccount or not BNFeaturesEnabledAndConnected() or BNIsFriend(dropdownMenu.bnetIDAccount) or BNIsSelf(dropdownMenu.bnetIDAccount) ) then
 				shown = false;
 			end
 		elseif ( value == "BN_REPORT" ) then
-			if ( not dropdownMenu.bnetIDAccount or not BNFeaturesEnabledAndConnected() ) then
+			if ( not dropdownMenu.bnetIDAccount or not BNFeaturesEnabledAndConnected() or BNIsSelf(dropdownMenu.bnetIDAccount) ) then
 				shown = false;
 			end
 		elseif ( value == "REPORT_PLAYER" ) then
@@ -974,7 +971,7 @@ function UnitPopup_HideButtons ()
 				shown = false;
 			end
 		elseif ( value == "REPORT_BAD_LANGUAGE" ) then
-			if not playerLocation or not playerLocation:IsChatLineID() then
+			if not playerLocation or (not playerLocation:IsChatLineID() and not playerLocation:IsCommunityData()) then
 				shown = false;
 			end
 		elseif ( value == "REPORT_BAD_LANGUAGE_VOICE" ) then
@@ -995,7 +992,7 @@ function UnitPopup_HideButtons ()
 			end
 		elseif ( value == "BN_TARGET" ) then
 			-- We don't want to show a menu option that will end up being blocked
-			if ( not dropdownMenu.bnetIDAccount or InCombatLockdown() or not issecure() ) then
+			if ( not dropdownMenu.bnetIDAccount or not BNIsFriend(dropdownMenu.bnetIDAccount) or InCombatLockdown() or not issecure() ) then
 				shown = false;
 			end
 		elseif ( value == "PROMOTE" ) then
@@ -1363,6 +1360,10 @@ function UnitPopup_OnUpdate (elapsed)
 						end
 					elseif ( value == "INSTANCE_LEAVE" ) then
 						if ( not inParty ) then
+							enable = false;
+						end
+					elseif ( value == "PVP_ENABLE" or value == "PVP_DISABLE") then
+						if ( C_PvP.IsWarModeDesired() ) then
 							enable = false;
 						end
 					elseif ( value == "UNINVITE" ) then

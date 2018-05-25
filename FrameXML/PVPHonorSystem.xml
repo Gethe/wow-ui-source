@@ -93,7 +93,6 @@
 							self:OnAnimFinished(...);
 							self:GetParent().Level:SetText(UnitHonorLevel("player"));
 							PVPHonorXPBar_SetNextAvailable(self:GetParent());
-							HonorExhaustionTick_Update(self.ExhaustionTick);
 						end
 					</OnLoad>
 					<OnEnter function="PVPHonorXPBar_OnEnter"/>
@@ -324,7 +323,6 @@
 							self:OnAnimFinished(...);
 							self:GetParent().Level:SetText(UnitHonorLevel("player"));
 							PVPHonorXPBar_SetNextAvailable(self:GetParent());
-							HonorExhaustionTick_Update(self.ExhaustionTick);
 						end
 					</OnLoad>
 					<OnEnter function="PVPHonorXPBar_OnEnter"/>
@@ -991,9 +989,5 @@
 				</Scripts>
 			</AnimationGroup>
 		</Animations>
-		<Scripts>
-			<OnLoad function="PrestigeLevelUpBanner_OnLoad"/>
-			<OnEvent function="PrestigeLevelUpBanner_OnEvent"/>
-		</Scripts>
 	</Frame>
 </Ui>

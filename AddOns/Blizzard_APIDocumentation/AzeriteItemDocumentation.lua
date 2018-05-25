@@ -45,6 +45,15 @@ local AzeriteItem =
 			},
 		},
 		{
+			Name = "HasActiveAzeriteItem",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "hasActiveAzeriteItem", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsAzeriteItem",
 			Type = "Function",
 

@@ -69,6 +69,21 @@ function QuestChoiceFrameMixin:OnEvent(event)
 	end
 end
 
+function QuestChoiceFrameMixin:OnShow()
+	PlaySound(SOUNDKIT.IG_QUEST_LIST_OPEN);
+end
+
+function QuestChoiceFrameMixin:OnHide()
+	PlaySound(SOUNDKIT.IG_QUEST_LIST_CLOSE);
+	CloseQuestChoice();
+	StaticPopup_Hide("CONFIRM_GORGROND_GARRISON_CHOICE");
+
+	for i = 1, #self.Options do
+		local option = self.Options[i];
+		self:UpdateOptionWidgetRegistration(option, nil);
+	end
+end
+
 function QuestChoiceFrameMixin:OnUpdate(elapsed)
 	if self.hasPendingUpdate then
 		self:Update();
@@ -99,7 +114,6 @@ function QuestChoiceFrameMixin:WidgetInit(widgetFrame)
 		end
 	end
 end
-
 
 function QuestChoiceFrameMixin:UpdateOptionWidgetRegistration(option, widgetSetID)
 	if option.widgetSetID and option.widgetSetID ~= widgetSetID then
@@ -193,10 +207,6 @@ function QuestChoiceFrameMixin:Update()
 	self.numActiveOptionFrames = 0;
 	for i=1, numOptions do
 		local optID, buttonText, description, header, artFile, confirmationText, widgetSetID, disabled, groupID = GetQuestChoiceOptionInfo(i);
-
-		--if not widgetSetID and (optID == 1061 or optID == 764) then
-		--	widgetSetID = 4;
-		--end
 
 		local existingOption = self:GetExistingOptionForGroup(groupID);
 		local button;

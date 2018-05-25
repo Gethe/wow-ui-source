@@ -171,7 +171,7 @@ function FriendsFrame_ClickSummonButton (self)
 	end
 end
 
-function FriendsFrame_ShowDropdown(name, connected, lineID, chatType, chatFrame, friendsList, isMobile)
+function FriendsFrame_ShowDropdown(name, connected, lineID, chatType, chatFrame, friendsList, isMobile, communityClubID, communityStreamID, communityEpoch, communityPosition)
 	HideDropDownMenu(1);
 	if ( connected or friendsList ) then
 		if ( connected ) then
@@ -184,6 +184,10 @@ function FriendsFrame_ShowDropdown(name, connected, lineID, chatType, chatFrame,
 		FriendsDropDown.name = name;
 		FriendsDropDown.friendsList = friendsList;
 		FriendsDropDown.lineID = lineID;
+		FriendsDropDown.communityClubID = communityClubID;
+		FriendsDropDown.communityStreamID = communityStreamID;
+		FriendsDropDown.communityEpoch = communityEpoch;
+		FriendsDropDown.communityPosition = communityPosition;
 		FriendsDropDown.chatType = chatType;
 		FriendsDropDown.chatTarget = name;
 		FriendsDropDown.chatFrame = chatFrame;
@@ -916,7 +920,7 @@ function FriendsFrameFriendButton_OnClick(self, button)
 		else
 			-- wow friend
 			local name, level, class, area, connected = GetFriendInfo(self.id);
-			FriendsFrame_ShowDropdown(name, connected, nil, nil, nil, 1);
+			FriendsFrame_ShowDropdown(name, connected, nil, nil, nil, 1, nil, nil, nil, nil);
 		end
 	end
 end

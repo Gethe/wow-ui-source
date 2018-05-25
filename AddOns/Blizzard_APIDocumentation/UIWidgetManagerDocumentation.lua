@@ -142,6 +142,20 @@ local UIWidgetManager =
 			},
 		},
 		{
+			Name = "GetScenarioHeaderCurrenciesAndBackgroundWidgetVisualizationInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "widgetID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "widgetInfo", Type = "ScenarioHeaderCurrenciesAndBackgroundWidgetVisualizationInfo", Nilable = true },
+			},
+		},
+		{
 			Name = "GetStackedResourceTrackerWidgetVisualizationInfo",
 			Type = "Function",
 
@@ -181,6 +195,20 @@ local UIWidgetManager =
 			Returns =
 			{
 				{ Name = "widgetInfo", Type = "TextWithStateWidgetVisualizationInfo", Nilable = true },
+			},
+		},
+		{
+			Name = "GetTextureWithStateVisualizationInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "widgetID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "widgetInfo", Type = "TextureWithStateVisualizationInfo", Nilable = true },
 			},
 		},
 		{
@@ -243,9 +271,9 @@ local UIWidgetManager =
 		{
 			Name = "UIWidgetVisualizationType",
 			Type = "Enumeration",
-			NumValues = 11,
+			NumValues = 13,
 			MinValue = 0,
-			MaxValue = 10,
+			MaxValue = 12,
 			Fields =
 			{
 				{ Name = "IconAndText", Type = "UIWidgetVisualizationType", EnumValue = 0 },
@@ -259,6 +287,8 @@ local UIWidgetManager =
 				{ Name = "TextWithState", Type = "UIWidgetVisualizationType", EnumValue = 8 },
 				{ Name = "HorizontalCurrencies", Type = "UIWidgetVisualizationType", EnumValue = 9 },
 				{ Name = "BulletTextList", Type = "UIWidgetVisualizationType", EnumValue = 10 },
+				{ Name = "ScenarioHeaderCurrenciesAndBackground", Type = "UIWidgetVisualizationType", EnumValue = 11 },
+				{ Name = "TextureWithState", Type = "UIWidgetVisualizationType", EnumValue = 12 },
 			},
 		},
 		{
@@ -353,6 +383,7 @@ local UIWidgetManager =
 				{ Name = "leadingText", Type = "string", Nilable = false },
 				{ Name = "text", Type = "string", Nilable = false },
 				{ Name = "tooltip", Type = "string", Nilable = false },
+				{ Name = "isCurrencyMaxed", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -411,6 +442,18 @@ local UIWidgetManager =
 			},
 		},
 		{
+			Name = "ScenarioHeaderCurrenciesAndBackgroundWidgetVisualizationInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "shownState", Type = "WidgetShownState", Nilable = false },
+				{ Name = "currencies", Type = "table", InnerType = "UIWidgetCurrencyInfo", Nilable = false },
+				{ Name = "frameTextureKitID", Type = "number", Nilable = false },
+				{ Name = "orderIndex", Type = "number", Nilable = false },
+				{ Name = "widgetTag", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "StackedResourceTrackerWidgetVisualizationInfo",
 			Type = "Structure",
 			Fields =
@@ -432,7 +475,9 @@ local UIWidgetManager =
 				{ Name = "barMax", Type = "number", Nilable = false },
 				{ Name = "barValue", Type = "number", Nilable = false },
 				{ Name = "text", Type = "string", Nilable = false },
-				{ Name = "textureKitID", Type = "number", Nilable = false },
+				{ Name = "barWidth", Type = "number", Nilable = false },
+				{ Name = "frameTextureKitID", Type = "number", Nilable = false },
+				{ Name = "fillTextureKitID", Type = "number", Nilable = false },
 				{ Name = "orderIndex", Type = "number", Nilable = false },
 				{ Name = "widgetTag", Type = "string", Nilable = false },
 			},
@@ -445,6 +490,20 @@ local UIWidgetManager =
 				{ Name = "shownState", Type = "WidgetShownState", Nilable = false },
 				{ Name = "enabledState", Type = "WidgetEnabledState", Nilable = false },
 				{ Name = "text", Type = "string", Nilable = false },
+				{ Name = "orderIndex", Type = "number", Nilable = false },
+				{ Name = "widgetTag", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "TextureWithStateVisualizationInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "shownState", Type = "WidgetShownState", Nilable = false },
+				{ Name = "tooltip", Type = "string", Nilable = false },
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "backgroundTextureKitID", Type = "number", Nilable = false },
+				{ Name = "portraitTextureKitID", Type = "number", Nilable = false },
 				{ Name = "orderIndex", Type = "number", Nilable = false },
 				{ Name = "widgetTag", Type = "string", Nilable = false },
 			},

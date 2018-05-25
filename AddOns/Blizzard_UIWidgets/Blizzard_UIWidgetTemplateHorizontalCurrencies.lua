@@ -20,7 +20,7 @@ function UIWidgetTemplateHorizontalCurrenciesMixin:Setup(widgetInfo)
 		local currencyFrame = self.currencyPool:Acquire();
 		currencyFrame:Show();
 
-		currencyFrame:Setup(currencyInfo, disabled);
+		currencyFrame:Setup(currencyInfo, Enum.WidgetEnabledState.Highlight);
 
 		if previousCurrencyFrame then
 			currencyFrame:SetPoint("TOPLEFT", previousCurrencyFrame, "TOPRIGHT", 10, 0);

@@ -142,6 +142,7 @@ local ArtifactUI =
 				{ Name = "swatchColorB", Type = "number", Nilable = false },
 				{ Name = "modelOpacity", Type = "number", Nilable = false },
 				{ Name = "modelSaturation", Type = "number", Nilable = false },
+				{ Name = "obtainable", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -168,6 +169,7 @@ local ArtifactUI =
 				{ Name = "swatchColorB", Type = "number", Nilable = false },
 				{ Name = "modelOpacity", Type = "number", Nilable = false },
 				{ Name = "modelSaturation", Type = "number", Nilable = false },
+				{ Name = "obtainable", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -620,15 +622,6 @@ local ArtifactUI =
 			Returns =
 			{
 				{ Name = "totalPurchasedRanks", Type = "number", Nilable = false },
-			},
-		},
-		{
-			Name = "IsArtifactInstabilityInEffect",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "inEffect", Type = "bool", Nilable = false },
 			},
 		},
 		{

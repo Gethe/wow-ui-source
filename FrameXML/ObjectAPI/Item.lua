@@ -4,26 +4,49 @@ ItemMixin = {};
 local ItemEventListener;
 
 --[[static]] function Item:CreateFromItemLocation(itemLocation)
+	if type(itemLocation) ~= "table" or type(itemLocation.HasAnyLocation) ~= "function" or not itemLocation:HasAnyLocation() then
+		error("Usage: Item:CreateFromItemLocation(notEmptyItemLocation)", 2);
+	end
 	local item = CreateFromMixins(ItemMixin);
 	item:SetItemLocation(itemLocation);
 	return item;
 end
 
 --[[static]] function Item:CreateFromBagAndSlot(bagID, slotIndex)
+	if type(bagID) ~= "number" or type(slotIndex) ~= "number" then
+		error("Usage: Item:CreateFromBagAndSlot(bagID, slotIndex)", 2);
+	end
 	local item = CreateFromMixins(ItemMixin);
 	item:SetItemLocation(ItemLocation:CreateFromBagAndSlot(bagID, slotIndex));
 	return item;
 end
 
 --[[static]] function Item:CreateFromEquipmentSlot(equipmentSlotIndex)
+	if type(equipmentSlotIndex) ~= "number" then
+		error("Usage: Item:CreateFromEquipmentSlot(equipmentSlotIndex)", 2);
+	end
 	local item = CreateFromMixins(ItemMixin);
 	item:SetItemLocation(ItemLocation:CreateFromEquipmentSlot(equipmentSlotIndex));
+	return item;
+end
+
+--[[static]] function Item:CreateFromItemLink(itemLink)
+	if type(itemLink) ~= "string" then
+		error("Usage: Item:CreateFromItemLink(itemLinkString)", 2);
+	end
+	local item = CreateFromMixins(ItemMixin);
+	item:SetItemLink(itemLink);
 	return item;
 end
 
 function ItemMixin:SetItemLocation(itemLocation)
 	self:Clear();
 	self.itemLocation = itemLocation;
+end
+
+function ItemMixin:SetItemLink(itemLink)
+	self:Clear();
+	self.itemLink = itemLink;
 end
 
 function ItemMixin:GetItemLocation()
@@ -36,95 +59,137 @@ end
 
 function ItemMixin:Clear()
 	self.itemLocation = nil;
+	self.itemLink = nil;
 end
 
 function ItemMixin:IsItemEmpty()
+	if self.itemLink then
+		return not C_Item.DoesItemExistByID(self.itemLink);
+	end
+
+	return not self:IsItemInPlayersControl();
+end
+
+function ItemMixin:IsItemInPlayersControl()
 	local itemLocation = self:GetItemLocation();
-	return not itemLocation or not C_Item.DoesItemExist(itemLocation);
+	return itemLocation and C_Item.DoesItemExist(itemLocation); 
 end
 
 -- Item API
-do
-	local CONTAINER_INDEX = 1;
-	local EQUIP_INDEX = 2;
-
-	local SimpleItemAPI = {
-		GetItemID = { GetContainerItemID, GetInventoryItemID, },
-		GetItemLink = { GetContainerItemLink, GetInventoryItemLink, },
-	};
-
-	for apiName, globalAPIs in pairs(SimpleItemAPI) do
-		assert(ItemMixin[apiName] == nil);
-
-		ItemMixin[apiName] = function(self, ...)
-			if not self:IsItemEmpty() then
-				local bagID, slotIndex = self:GetItemLocation():GetBagAndSlot();
-				if bagID and slotIndex then
-					return globalAPIs[CONTAINER_INDEX](bagID, slotIndex, ...);
-				end
-				return globalAPIs[EQUIP_INDEX]("player", self:GetItemLocation():GetEquipmentSlot(), ...); 
-			end
-		end
+function ItemMixin:GetItemID()
+	if self.itemLink then
+		return (GetItemInfoInstant(self.itemLink));
 	end
-end
 
-function ItemMixin:IsItemLocked()
-	return not self:IsItemEmpty() and C_Item.IsLocked(self:GetItemLocation());
-end
-
-function ItemMixin:LockItem()
 	if not self:IsItemEmpty() then
-		C_Item.LockItem(self:GetItemLocation());
-	end
-end
-
-function ItemMixin:UnlockItem()
-	if not self:IsItemEmpty() then
-		C_Item.UnlockItem(self:GetItemLocation());
-	end
-end
-
-function ItemMixin:GetItemIcon()
-	if not self:IsItemEmpty() then
-		local bagID, slotIndex = self:GetItemLocation():GetBagAndSlot();
-		if bagID and slotIndex then
-			return (GetContainerItemInfo(bagID, slotIndex));
-		end
-		return GetInventoryItemTexture("player", self:GetItemLocation():GetEquipmentSlot());
-	end
-end
-
-function ItemMixin:GetItemName()
-	if not self:IsItemEmpty() then
-		return C_Item.GetItemName(self:GetItemLocation());
+		return C_Item.GetItemID(self:GetItemLocation());
 	end
 	return nil;
 end
 
 function ItemMixin:GetItemLink()
+	if self.itemLink then
+		return self.itemLink;
+	end
+
 	if not self:IsItemEmpty() then
 		return C_Item.GetItemLink(self:GetItemLocation());
 	end
 	return nil;
 end
 
-function ItemMixin:GetItemQuality()
+function ItemMixin:IsItemLocked()
+	return self:IsItemInPlayersControl() and C_Item.IsLocked(self:GetItemLocation());
+end
+
+function ItemMixin:LockItem()
+	if self:IsItemInPlayersControl() then
+		C_Item.LockItem(self:GetItemLocation());
+	end
+end
+
+function ItemMixin:UnlockItem()
+	if self:IsItemInPlayersControl() then
+		C_Item.UnlockItem(self:GetItemLocation());
+	end
+end
+
+function ItemMixin:GetItemIcon() -- requires item data to be loaded
+	if self.itemLink then
+		return C_Item.GetItemIconByID(self.itemLink);
+	end
+
+	if not self:IsItemEmpty() then
+		return C_Item.GetItemIcon(self:GetItemLocation());
+	end
+end
+
+function ItemMixin:GetItemName() -- requires item data to be loaded
+	if self.itemLink then
+		return C_Item.GetItemNameByID(self.itemLink);
+	end
+
+	if not self:IsItemEmpty() then
+		return C_Item.GetItemName(self:GetItemLocation());
+	end
+	return nil;
+end
+
+function ItemMixin:GetItemLink() -- requires item data to be loaded
+	if self.itemLink then
+		return self.itemLink;
+	end
+
+	if not self:IsItemEmpty() then
+		return C_Item.GetItemLink(self:GetItemLocation());
+	end
+	return nil;
+end
+
+function ItemMixin:GetItemQuality() -- requires item data to be loaded
+	if self.itemLink then
+		return C_Item.GetItemQualityByID(self.itemLink);
+	end
+
 	if not self:IsItemEmpty() then
 		return C_Item.GetItemQuality(self:GetItemLocation());
 	end
 	return nil;
 end
 
-function ItemMixin:GetCurrentItemLevel()
+function ItemMixin:GetCurrentItemLevel() -- requires item data to be loaded
+	if self.itemLink then
+		return (GetDetailedItemLevelInfo(self.itemLink));
+	end
 	if not self:IsItemEmpty() then
 		return C_Item.GetCurrentItemLevel(self:GetItemLocation());
 	end
 	return nil;
 end
 
-function ItemMixin:GetItemQualityColor()
+function ItemMixin:GetItemQualityColor() -- requires item data to be loaded
 	local itemQuality = self:GetItemQuality();
 	return ITEM_QUALITY_COLORS[itemQuality]; -- may be nil if item data isn't loaded
+end
+
+function ItemMixin:GetInventoryType()
+	if self.itemLink then
+		return C_Item.GetItemInventoryTypeByID(self.itemLink);
+	end
+	if not self:IsItemEmpty() then
+		return C_Item.GetItemInventoryType(self:GetItemLocation());
+	end
+	return nil;
+end
+
+function ItemMixin:GetItemGUID()
+	if self.itemLink then
+		return nil;
+	end
+	if not self:IsItemEmpty() then
+		return C_Item.GetItemGUID(self:GetItemLocation());
+	end
+	return nil;
 end
 
 function ItemMixin:GetInventoryTypeName()
@@ -134,6 +199,9 @@ function ItemMixin:GetInventoryTypeName()
 end
 
 function ItemMixin:IsItemDataCached()
+	if self.itemLink then
+		return C_Item.IsItemDataCachedByID(self.itemLink);
+	end
 	if not self:IsItemEmpty() then
 		return C_Item.IsItemDataCached(self:GetItemLocation());
 	end

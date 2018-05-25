@@ -276,6 +276,11 @@
 							</Layer>
 						</Layers>
 						<Frames>
+							<Frame parentKey="WidgetContainer" hidden="true">
+								<Anchors>
+									<Anchor point="TOPLEFT"/>
+								</Anchors>
+							</Frame>
 							<Button parentKey="RewardButton" hidden="true">
 								<Size x="48" y="48"/>
 								<Anchors>

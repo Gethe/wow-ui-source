@@ -756,6 +756,7 @@ GROUP_LANGUAGE_INDEPENDENT_STRINGS =
 };
 
 local MAX_COMMUNITY_NAME_LENGTH = 12;
+local MAX_COMMUNITY_NAME_LENGTH_NO_CHANNEL = 24;
 function ChatFrame_TruncateToMaxLength(text, maxLength)
 	local length = strlenutf8(text);
 	if ( length > maxLength ) then
@@ -778,9 +779,17 @@ function ChatFrame_ResolveChannelName(communityChannel)
 
 	local clubInfo = C_Club.GetClubInfo(communityId);
 	local streamInfo = C_Club.GetStreamInfo(communityId, streamId);
-	local communityName = clubInfo and ChatFrame_TruncateToMaxLength(clubInfo.name, MAX_COMMUNITY_NAME_LENGTH) or "";
-	local streamName = streamInfo and ChatFrame_TruncateToMaxLength(streamInfo.name, MAX_COMMUNITY_NAME_LENGTH)  or "";
-	return communityName.." - "..streamName;
+	local streamName = streamInfo and ChatFrame_TruncateToMaxLength(streamInfo.name, MAX_COMMUNITY_NAME_LENGTH) or "";
+
+	-- TODO:: This doesn't really localize properly yet since you could be playing in a language different than
+	-- the club was created in.
+	if streamName == COMMUNITIES_DEFAULT_CHANNEL_NAME then
+		local communityName = clubInfo and ChatFrame_TruncateToMaxLength(clubInfo.name, MAX_COMMUNITY_NAME_LENGTH_NO_CHANNEL) or "";
+		return communityName;
+	else
+		local communityName = clubInfo and ChatFrame_TruncateToMaxLength(clubInfo.shortName or clubInfo.name, MAX_COMMUNITY_NAME_LENGTH) or "";
+		return communityName.." - "..streamName;
+	end	
 end
 
 --
@@ -2150,6 +2159,10 @@ SlashCmdList["MACRO"] = function(msg)
 	ShowMacroFrame();
 end
 
+SlashCmdList["PVP"] = function(msg)
+	TogglePVP();
+end
+
 SlashCmdList["RAID_INFO"] = function(msg)
 	RaidFrame.slashCommand = 1;
 	if ( ( GetNumSavedInstances() + GetNumSavedWorldBosses() > 0 ) and not RaidInfoFrame:IsVisible() ) then
@@ -2711,7 +2724,9 @@ function ChatFrame_AddChannel(chatFrame, channel)
 		end
 		chatFrame.channelList[i] = channel;
 		chatFrame.zoneChannelList[i] = zoneChannel;
-		channelIndex = i;
+		
+		local localId = GetChannelName(channel);
+		channelIndex = localId;
 	end
 	
 	return channelIndex;
@@ -2724,17 +2739,16 @@ function ChatFrame_RemoveCommunitiesChannel(chatFrame, clubId, streamId)
 end
 
 function ChatFrame_RemoveChannel(chatFrame, channel)
-	local channelIndex = nil;
 	for index, value in pairs(chatFrame.channelList) do
 		if ( strupper(channel) == strupper(value) ) then
 			chatFrame.channelList[index] = nil;
 			chatFrame.zoneChannelList[index] = nil;
-			channelIndex = index;
 		end
 	end
 	
+	local localId = GetChannelName(channel);
 	RemoveChatWindowChannel(chatFrame:GetID(), channel);
-	return channelIndex;
+	return localId;
 end
 
 function ChatFrame_RemoveAllChannels(chatFrame)
@@ -3366,10 +3380,23 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 				playerLinkDisplayText = ("[%s]"):format(coloredName);
 			end
 
-			if ( type ~= "BN_WHISPER" and type ~= "BN_WHISPER_INFORM" ) then
-				playerLink = GetPlayerLink(arg2, playerLinkDisplayText, arg11, chatGroup, chatTarget);
+			local isCommunityType = type == "COMMUNITIES_CHANNEL";
+			local playerName, lineID, bnetIDAccount = arg2, arg11, arg13;
+			if ( isCommunityType ) then
+				local isBattleNetCommunity = bnetIDAccount ~= nil and bnetIDAccount ~= 0;
+				local messageInfo, clubId, streamId, clubType = C_Club.GetInfoFromLastCommunityChatLine();
+
+				if ( isBattleNetCommunity ) then
+					playerLink = GetBNPlayerCommunityLink(playerName, playerLinkDisplayText, bnetIDAccount, clubId, streamId, messageInfo.messageId.epoch, messageInfo.messageId.position);
+				else
+					playerLink = GetPlayerCommunityLink(playerName, playerLinkDisplayText, clubId, streamId, messageInfo.messageId.epoch, messageInfo.messageId.position);
+				end
 			else
-				playerLink = GetBNPlayerLink(arg2, playerLinkDisplayText, arg13, arg11, chatGroup, chatTarget);
+				if ( type == "BN_WHISPER" or type == "BN_WHISPER_INFORM" ) then
+					playerLink = GetBNPlayerLink(playerName, playerLinkDisplayText, bnetIDAccount, lineID, chatGroup, chatTarget);
+				else
+					playerLink = GetPlayerLink(playerName, playerLinkDisplayText, lineID, chatGroup, chatTarget);
+				end
 			end
 
 			local message = arg1;

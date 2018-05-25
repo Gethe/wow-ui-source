@@ -844,12 +844,12 @@ local Calendar =
 			MaxValue = 5,
 			Fields =
 			{
-				{ Name = "CalendarEventTypeRaid", Type = "CalendarEventType", EnumValue = 0 },
-				{ Name = "CalendarEventTypeDungeon", Type = "CalendarEventType", EnumValue = 1 },
-				{ Name = "CalendarEventTypePvp", Type = "CalendarEventType", EnumValue = 2 },
-				{ Name = "CalendarEventTypeMeeting", Type = "CalendarEventType", EnumValue = 3 },
-				{ Name = "CalendarEventTypeOther", Type = "CalendarEventType", EnumValue = 4 },
-				{ Name = "CalendarEventTypeHeroicDungeonDeprecated", Type = "CalendarEventType", EnumValue = 5 },
+				{ Name = "Raid", Type = "CalendarEventType", EnumValue = 0 },
+				{ Name = "Dungeon", Type = "CalendarEventType", EnumValue = 1 },
+				{ Name = "Pvp", Type = "CalendarEventType", EnumValue = 2 },
+				{ Name = "Meeting", Type = "CalendarEventType", EnumValue = 3 },
+				{ Name = "Other", Type = "CalendarEventType", EnumValue = 4 },
+				{ Name = "HeroicDeprecated", Type = "CalendarEventType", EnumValue = 5 },
 			},
 		},
 		{
@@ -966,7 +966,7 @@ local Calendar =
 			Fields =
 			{
 				{ Name = "displayString", Type = "string", Nilable = false },
-				{ Name = "displayIndex", Type = "number", Nilable = false },
+				{ Name = "eventType", Type = "CalendarEventType", Nilable = false },
 			},
 		},
 		{

@@ -337,14 +337,8 @@
 			<OnLoad method="OnLoad"/>
 			<OnEvent method="OnEvent"/>
 			<OnUpdate method="OnUpdate"/>
-			<OnShow>
-				PlaySound(SOUNDKIT.IG_QUEST_LIST_OPEN);
-			</OnShow>
-			<OnHide>
-				PlaySound(SOUNDKIT.IG_QUEST_LIST_CLOSE);
-				CloseQuestChoice();
-				StaticPopup_Hide("CONFIRM_GORGROND_GARRISON_CHOICE");
-			</OnHide>
+			<OnShow method="OnShow" />
+			<OnHide method="OnHide" />
 		</Scripts>
 	</Frame>
 </Ui>

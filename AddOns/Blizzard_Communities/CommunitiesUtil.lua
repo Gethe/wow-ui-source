@@ -64,5 +64,16 @@ end
 
 -- Leave streamId as nil if you want all members in the club
 function CommunitiesUtil.GetAndSortMemberInfo(clubId, streamId)
-	return CommunitiesUtil.SortMemberInfo(CommunitiesUtil.GetMemberInfo(clubId, memberIds));
+	return CommunitiesUtil.SortMemberInfo(CommunitiesUtil.GetMemberInfo(clubId, streamId));
+end
+
+function CommunitiesUtil.SortMemberInfoWithOverride(memberInfoArray, overrideCompare)
+	table.sort(memberInfoArray, function (lhsMemberInfo, rhsMemberInfo)
+		local overrideCompareResult = overrideCompare(lhsMemberInfo, rhsMemberInfo);
+		if overrideCompareResult == nil then
+			return CompareMembers(lhsMemberInfo, rhsMemberInfo);
+		else
+			return overrideCompareResult;
+		end
+	end);
 end

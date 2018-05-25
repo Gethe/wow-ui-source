@@ -1,41 +1,58 @@
 
 function CommunitiesStreamDropDownMenu_Initialize(self)
-	if self.streams ~= nil and self:GetCommunitiesFrame():GetSelectedClubId() ~= nil then
-		local info = UIDropDownMenu_CreateInfo();
-		info.minWidth = 170;
-		for i, stream in ipairs(self.streams) do
-			if stream.leadersAndModeratorsOnly then
-				info.text = COMMUNITIES_STREAM_FORMAT_LEADERS_AND_MODERATORS_ONLY:format(stream.name);
+	local clubId = self:GetCommunitiesFrame():GetSelectedClubId();
+	if not clubId then
+		return;
+	end
+	
+	local streams = C_Club.GetStreams(clubId);
+	if not streams then
+		return;
+	end
+	
+	local canEditStream = self:GetCommunitiesFrame():GetPrivilegesForClub(clubId).canDestroyStream;
+	local info = UIDropDownMenu_CreateInfo();
+	info.minWidth = 170;
+	for i, stream in ipairs(streams) do
+		if stream.leadersAndModeratorsOnly then
+			info.text = COMMUNITIES_STREAM_FORMAT_LEADERS_AND_MODERATORS_ONLY:format(stream.name);
+		else
+			info.text = stream.name;
+		end
+		
+		info.icon = canEditStream and "Interface\\WorldMap\\GEAR_64GREY" or nil;
+		info.value = stream.streamId;
+		info.checked = stream.streamId == UIDropDownMenu_GetSelectedValue(self);
+		info.func = function(button)
+			local gearIcon = button.Icon;
+			if gearIcon:IsShown() and gearIcon:IsMouseOver() then
+				self:GetCommunitiesFrame():ShowEditStreamDialog(clubId, stream.streamId);
 			else
-				info.text = stream.name;
-			end
-			
-			info.value = stream.streamId;
-			info.checked = stream.streamId == UIDropDownMenu_GetSelectedValue(self);
-			info.func = function(button)
 				local communitiesFrame = self:GetCommunitiesFrame();
 				communitiesFrame:SelectStream(communitiesFrame:GetSelectedClubId(), button.value) 
 			end
-			UIDropDownMenu_AddButton(info);
-		end
-		if self.privileges.canCreateStream then
-			info.text = COMMUNITIES_CREATE_CHANNEL;
-			info.value = nil;
-			info.notCheckable = 1;
-			info.func = function(button)
-				self:GetCommunitiesFrame():ShowCreateChannelDialog();
-			end
-			UIDropDownMenu_AddButton(info);
-		end
-		
-		info.text = CreateTextureMarkup("Interface\\WorldMap\\GEAR_64GREY", 64, 64, 16, 16, 0, 1, 0, 1).." "..COMMUNITIES_NOTIFICATION_SETTINGS;
-		info.value = nil;
-		info.notCheckable = 1;
-		info.func = function(button)
-			self:GetCommunitiesFrame():ShowNotificationSettingsDialog();
 		end
 		UIDropDownMenu_AddButton(info);
 	end
+	
+	if self:GetCommunitiesFrame():GetPrivilegesForClub(clubId).canCreateStream then
+		info.text = COMMUNITIES_CREATE_CHANNEL;
+		info.icon = nil;
+		info.value = nil;
+		info.notCheckable = 1;
+		info.func = function(button)
+			self:GetCommunitiesFrame():ShowCreateChannelDialog();
+		end
+		UIDropDownMenu_AddButton(info);
+	end
+	
+	info.text = CreateTextureMarkup("Interface\\WorldMap\\GEAR_64GREY", 64, 64, 16, 16, 0, 1, 0, 1).." "..COMMUNITIES_NOTIFICATION_SETTINGS;
+	info.value = nil;
+	info.notCheckable = 1;
+	info.func = function(button)
+		self:GetCommunitiesFrame():ShowNotificationSettingsDialog();
+	end
+	UIDropDownMenu_AddButton(info);
 end
 
 CommunitiesStreamDropDownMixin = {}
@@ -61,31 +78,43 @@ function CommunitiesEditStreamDialogMixin:OnLoad()
 end
 
 function CommunitiesEditStreamDialogMixin:ShowCreateDialog(clubId)
-	self.clubId = clubId;
+	self:SetWidth(350);
+	self.Description.EditBox:SetWidth(283);
+	self.Delete:Hide();
+	self.Accept:SetPoint("BOTTOM", -56, 20);
+	self.Cancel:SetPoint("BOTTOM", 56, 20);
 	self.TitleLabel:SetText(COMMUNITIES_CREATE_CHANNEL);
 	self.NameEdit:SetText("");
 	self.Description.EditBox:SetText("");
 	self.Accept:SetScript("OnClick", function(self)
 		local editStreamDialog = self:GetParent();
-		local moderatorsAndLeadersOnly = editStreamDialog.TypeCheckBox:GetChecked();
-		C_Club.CreateStream(editStreamDialog.clubId, editStreamDialog.NameEdit:GetText(), editStreamDialog.Description.EditBox:GetText(), moderatorsAndLeadersOnly);
+		local leadersAndModeratorsOnly = editStreamDialog.TypeCheckBox:GetChecked();
+		C_Club.CreateStream(clubId, editStreamDialog.NameEdit:GetText(), editStreamDialog.Description.EditBox:GetText(), leadersAndModeratorsOnly);
 		editStreamDialog:Hide();
 	end);
 	self:Show();
+	self.NameEdit:SetFocus();
 end
 
 function CommunitiesEditStreamDialogMixin:ShowEditDialog(clubId, stream)
-	self.create = false;
+	self:SetWidth(400);
+	self.Description.EditBox:SetWidth(333);
+	self.Delete:Show();
+	self.Accept:SetPoint("BOTTOM", -111, 20);
+	self.Cancel:SetPoint("BOTTOM", 111, 20);
 	self.TitleLabel:SetText(COMMUNITIES_EDIT_CHANNEL);
-	self.TitleEdit:SetText(stream.name);
 	self.NameEdit:SetText(stream.name);
-	self.NameEdit:SetFocus();
 	self.Description.EditBox:SetText(stream.subject);
-	self.Accept:SetScript("OnClick", function() 
-		-- TODO: add an access drop down menu with options for "All Members", and "Moderators and Leaders Only";
-		local moderatorsAndLeadersOnly = false;
-		C_Club.EditStream(self.clubId, stream.streamId, self.NameEdit:GetText(), self.Description.EditBox:GetText())
-		self:Hide();
+	self.TypeCheckBox:SetChecked(stream.leadersAndModeratorsOnly);
+	self.Accept:SetScript("OnClick", function(self)
+		local editStreamDialog = self:GetParent();
+		local leadersAndModeratorsOnly = editStreamDialog.TypeCheckBox:GetChecked();
+		C_Club.EditStream(clubId, stream.streamId, editStreamDialog.NameEdit:GetText(), editStreamDialog.Description.EditBox:GetText(), leadersAndModeratorsOnly)
+		editStreamDialog:Hide();
+	end);
+	self.Delete:SetScript("OnClick", function(self)
+		StaticPopup_Show("CONFIRM_DESTROY_COMMUNITY_STREAM", nil, nil, { clubId = clubId, streamId = stream.streamId, });
+		self:GetParent():Hide();
 	end);
 	self:Show();
 end

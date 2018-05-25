@@ -160,6 +160,10 @@ local GuildInfo =
 			Name = "PlayerGuildUpdate",
 			Type = "Event",
 			LiteralName = "PLAYER_GUILD_UPDATE",
+			Payload =
+			{
+				{ Name = "unitTarget", Type = "string", Nilable = false },
+			},
 		},
 		{
 			Name = "RequiredGuildRenameResult",

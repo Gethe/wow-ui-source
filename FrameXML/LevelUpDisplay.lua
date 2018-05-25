@@ -235,7 +235,8 @@ function LevelUpDisplay_OnLoad(self)
 	self:RegisterEvent("PET_BATTLE_FINAL_ROUND"); -- display winner, start listening for additional results
 	self:RegisterEvent("PET_BATTLE_CLOSE");        -- stop listening for additional results
 	self:RegisterEvent("QUEST_BOSS_EMOTE");
-	self:RegisterEvent("CHALLENGE_MODE_NEW_RECORD");
+	self:RegisterEvent("MYTHIC_PLUS_NEW_WEEKLY_RECORD");
+	self:RegisterEvent("MYTHIC_PLUS_NEW_SEASON_RECORD");
 	self:RegisterEvent("PET_JOURNAL_TRAP_LEVEL_SET");
 	self:RegisterEvent("PET_BATTLE_LEVEL_CHANGED");
 	self:RegisterEvent("PET_BATTLE_CAPTURED");
@@ -306,7 +307,7 @@ function LevelUpDisplay_OnEvent(self, event, ...)
 		self.time = displayTime;
 		self.sound = warningSound;
 		LevelUpDisplay_Show(self);
-	elseif ( event == "CHALLENGE_MODE_NEW_RECORD" ) then
+	elseif ( event == "MYTHIC_PLUS_NEW_WEEKLY_RECORD" ) then
 		local mapID, recordTime, level = ...;
 		self.type = TOAST_CHALLENGE_MODE_RECORD;
 		self.mapID = mapID;
@@ -696,6 +697,16 @@ function LevelUpDisplay_Start(self, beginUnlockList)
 										,	LevelUpDisplay_IsExclusiveQueued);
 end
 
+local textureKitRegionFormatStrings = {
+	["BG1"] = "%s-TitleBG",
+	["BG2"] = "%s-TitleBG",
+}
+
+local defaultAtlases = {
+	["BG1"] = "legioninvasion-title-bg",
+	["BG2"] = "legioninvasion-title-bg",
+}
+
 function LevelUpDisplay_StartDisplay(self, beginUnlockList)
 	if ( self:IsShown() ) then
 		return;
@@ -719,8 +730,8 @@ function LevelUpDisplay_StartDisplay(self, beginUnlockList)
 			self.queuedItems = nil;
 		end
 		if ( self.type == LEVEL_UP_TYPE_SCENARIO ) then
-			local name, currentStage, numStages, flags, _;
-			name, currentStage, numStages, flags, _, _, _, _, _, scenarioType = C_Scenario.GetInfo();
+			local name, currentStage, numStages, flags, textureKitID, _;
+			name, currentStage, numStages, flags, _, _, _, _, _, scenarioType, _, textureKitID = C_Scenario.GetInfo();
 			if (not IsBoostTutorialScenario()) then
 				if ( currentStage > 0 and currentStage <= numStages ) then
 					local stageName, stageDescription = C_Scenario.GetStepInfo();
@@ -736,11 +747,20 @@ function LevelUpDisplay_StartDisplay(self, beginUnlockList)
 						end
 						self.scenarioFrame.name:SetText(stageName);
 					end
-					if (scenarioType == LE_SCENARIO_TYPE_LEGION_INVASION) then
-						playAnim = self.scenarioFrame.LegionInvasionNewStage;
+
+					if textureKitID then
+						playAnim = self.scenarioFrame.TextureKitNewStage;
+						SetupTextureKits(textureKitID, self.scenarioFrame, textureKitRegionFormatStrings, false, true);
 					else
-						playAnim = self.scenarioFrame.newStage;
+						if scenarioType == LE_SCENARIO_TYPE_LEGION_INVASION then
+							playAnim = self.scenarioFrame.LegionInvasionNewStage;
+						else
+							playAnim = self.scenarioFrame.newStage;
+						end
+
+						SetupAtlasesOnRegions(self.scenarioFrame, defaultAtlases, true);
 					end
+
 					self.scenarioFrame.description:SetText(stageDescription);
 					LevelUpDisplay:SetPoint("TOP", 0, -250);
 				end

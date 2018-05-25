@@ -24,6 +24,6 @@ function MapLinkPinMixin:OnAcquired(mapLink) -- override
 end
 
 function MapLinkPinMixin:OnClick()
-	self:GetMap():NavigateToMap(self.linkedUiMapID);
+	self:GetMap():SetMapID(self.linkedUiMapID);
 	PlaySound(SOUNDKIT.IG_QUEST_LOG_OPEN);
 end

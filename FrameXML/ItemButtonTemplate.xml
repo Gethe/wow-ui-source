@@ -1,7 +1,7 @@
  <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="ItemButtonTemplate.lua"/>
- 	<Button name="ItemButtonTemplate" virtual="true">
+ 	<Button name="ItemButtonTemplate" registerForClicks="LeftButtonUp, RightButtonUp" virtual="true">
 		<Size>
 			<AbsDimension x="37" y="37"/>
 		</Size>
@@ -118,7 +118,7 @@
 		<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
 		<CheckedTexture alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight"/>
 	</CheckButton>
-	<Button name="LargeItemButtonTemplate" virtual="true">
+	<Button name="LargeItemButtonTemplate" registerForClicks="LeftButtonUp, RightButtonUp" virtual="true">
 		<Size x="147" y="41" />
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -152,7 +152,7 @@
 			</Layer>
 		</Layers>
 	</Button>
-	<Button name="SmallItemButtonTemplate" virtual="true">
+	<Button name="SmallItemButtonTemplate" registerForClicks="LeftButtonUp, RightButtonUp" virtual="true">
 		<Size x="134" y="30"/>
 		<Layers>
 			<Layer level="BACKGROUND">

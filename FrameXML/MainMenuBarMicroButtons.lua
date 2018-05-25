@@ -509,8 +509,7 @@ function TalentMicroButton_OnEvent(self, event, ...)
 		end
 	elseif ( event == "PLAYER_SPECIALIZATION_CHANGED" ) then
 		self:EvaluateAlertVisibility();
-	elseif ( event == "PLAYER_TALENT_UPDATE" or event == "NEUTRAL_FACTION_SELECT_RESULT" or
-        event == "HONOR_LEVEL_UPDATE" or event == "HONOR_PRESTIGE_UPDATE" or event == "PLAYER_PVP_TALENT_UPDATE" ) then
+	elseif ( event == "PLAYER_TALENT_UPDATE" or event == "NEUTRAL_FACTION_SELECT_RESULT" or event == "HONOR_LEVEL_UPDATE" ) then
 		UpdateMicroButtons();
 		self:EvaluateAlertVisibility();
 

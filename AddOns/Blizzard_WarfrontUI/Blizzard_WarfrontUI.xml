@@ -8,22 +8,4 @@
 			<OnEvent method="OnEvent"/>
 		</Scripts>
 	</Frame>
-
-	<Frame name="WarfrontPlayerChoiceHook" mixin="WarfrontPlayerChoiceHookMixin" hidden="true">
-		<Size x="10" y="10"/>
-		<Layers>
-			<Layer level="ARTWORK">
-				<FontString parentKey="Percentage" inherits="GameFontNormalLarge">
-					<Anchors>
-						<Anchor point="LEFT"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-			<OnEvent method="OnEvent"/>
-			<OnUpdate method="OnUpdate"/>
-		</Scripts>
-	</Frame>
 </Ui>

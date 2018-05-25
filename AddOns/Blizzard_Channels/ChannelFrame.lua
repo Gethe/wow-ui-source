@@ -59,11 +59,23 @@ do
 end
 
 function ChannelFrameMixin:OnShow()
+	-- Don't allow ChannelFrame and CommunitiesFrame to show at the same time, because they share one presence subscription
+	if CommunitiesFrame and CommunitiesFrame:IsShown() then
+		HideUIPanel(CommunitiesFrame);
+	end
+
+	local channel = self:GetList():GetSelectedChannelButton();
+	if channel and channel:ChannelIsCommunity() then
+		C_Club.SetClubPresenceSubscription(channel.clubId);
+	end
+
 	self:SetEventsRegistered(true);
 	self.DirtyFlags:MarkDirty(self.DirtyFlags.UpdateAll);
 end
 
 function ChannelFrameMixin:OnHide()
+	C_Club.ClearClubPresenceSubscription();
+
 	self:SetEventsRegistered(false);
 	StaticPopupSpecial_Hide(CreateChannelPopup);
 end
@@ -157,19 +169,22 @@ function ChannelFrameMixin:GetDropdown()
 	return self.Dropdown;
 end
 
-function ChannelFrameMixin:OnVoiceChannelJoined(statusCode, channelID, clubId, streamId)
+function ChannelFrameMixin:OnVoiceChannelJoined(statusCode, voiceChannelID, channelType, clubId, streamId)
 	if statusCode == Enum.VoiceChatStatusCode.Success then
-		if clubId and clubId > 0 and streamId and streamId > 0 then
-			-- This is a community channel, so it should already be in the list
+		if channelType == Enum.ChatChannelType.Communities then
+			-- For community channels, just set the voice channel on the channel button
 			local channelButton = self:GetList():GetButtonForCommunityStream(clubId, streamId);
 			if channelButton then
-				-- Found it...set it up with the voice channel and activate it
-				channelButton:OnVoiceChannelJoined(channelID);
+				channelButton:SetVoiceChannel(C_VoiceChat.GetChannel(voiceChannelID));
 			end
 		else
-			self.DirtyFlags:MarkDirty(self.DirtyFlags.UpdateAll);
-			self:CheckActivateChannel(channelID);
-			self:CheckChannelAnnounceState(channelID, "joined");
+			-- For other channels, set the voice channel on the channel button and then check if we want to show the activate prompts, etc.
+			local channelButton = self:GetList():GetButtonForChannelType(channelType)
+			if channelButton then
+				channelButton:SetVoiceChannel(C_VoiceChat.GetChannel(voiceChannelID));
+			end
+			self:CheckActivateChannel(voiceChannelID);
+			self:CheckChannelAnnounceState(voiceChannelID, "joined");
 		end
 	end
 end
@@ -343,7 +358,7 @@ function ChannelFrameMixin:OnVoiceChannelRemoved(statusCode, channelID)
 		if button then
 			if button:ChannelIsCommunity() then
 				-- This is a community stream, so just remove the attached voice channel...we will try to re-join when they activate next
-				button:OnVoiceChannelRemoved();
+				button:ClearVoiceChannel();
 			else
 				button:SetActive(false);
 				button:SetRemoved(true);

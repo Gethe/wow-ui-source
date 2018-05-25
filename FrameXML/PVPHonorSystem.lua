@@ -165,7 +165,6 @@ function PVPHonorXPBar_OnLoad(self)
 	end
 	self:RegisterEvent("HONOR_XP_UPDATE");
 	self:RegisterEvent("HONOR_LEVEL_UPDATE");
-	self:RegisterEvent("HONOR_PRESTIGE_UPDATE");
 	
 	if (self.Lock) then
         PVPHonorXPBar_CheckLockState(self);
@@ -179,28 +178,16 @@ function PVPHonorXPBar_Update(self)
 	local max = UnitHonorMax("player");
 
 	local level = UnitHonorLevel("player");
-	local levelmax = GetMaxPlayerHonorLevel();
-    
-	if (level == levelmax) then
-		-- Force the bar to full for the max level
-		self.Bar:SetAnimatedValues(1, 0, 1, level);
-	else
-		self.Bar:SetAnimatedValues(current, 0, max, level);
-		self.Bar.Spark:SetShown(current > 0);
-	end
-    
-    local exhaustionStateID = GetHonorRestState();
-    if (exhaustionStateID == 1) then
-        self.Bar:SetStatusBarAtlas("_honorsystem-bar-fill-rested");
-    else
-        self.Bar:SetStatusBarAtlas("_honorsystem-bar-fill");
-    end
+
+	self.Bar:SetAnimatedValues(current, 0, max, level);
+	self.Bar.Spark:SetShown(current > 0);
+
+    self.Bar:SetStatusBarAtlas("_honorsystem-bar-fill");
     
     
     if (not self.locked) then
         self.Level:SetText(UnitHonorLevel("player"));
 	    PVPHonorXPBar_SetNextAvailable(self);
-	    HonorExhaustionTick_Update(self.Bar.ExhaustionTick);
     end
 end
 
@@ -249,9 +236,6 @@ function PVPHonorXPBar_OnEnter(self)
 		return;
 	end
 
-	local level = UnitHonorLevel("player");
-	local levelmax = GetMaxPlayerHonorLevel();
-
 	self.OverlayFrame.Text:SetText(HONOR_BAR:format(current, max));
 	self.OverlayFrame.Text:Show();
 end
@@ -277,7 +261,7 @@ end
 function PVPHonorSystem_GetNextReward()
 	local rewardInfo;
 			
-	local rewardPackID = GetHonorLevelRewardPack();
+	local rewardPackID = nil;
 	if (rewardPackID) then
 		local items = GetRewardPackItems(rewardPackID);
 		local currencies = GetRewardPackCurrencies(rewardPackID);
@@ -363,92 +347,8 @@ function HonorExhaustionTick_OnLoad(self)
 	self.fillBarAlpha = 0.15;
 end
 
-function HonorExhaustionTick_Update(self, isMainMenuBar)
-	local fillBar = self:GetParent().ExhaustionLevelFillBar;
-    local level = UnitHonorLevel("player");
-    local levelmax = GetMaxPlayerHonorLevel();
-	-- Hide exhaustion tick if player is max level
-	if ( level == levelmax ) then
-		self:Hide();
-		fillBar:Hide();
-		return;
-	end
-
-	local playerCurrXP = UnitHonor("player");
-	local playerMaxXP = UnitHonorMax("player");
-	local exhaustionThreshold = GetHonorExhaustion();
-	local exhaustionStateID, exhaustionStateName, exhaustionStateMultiplier, exhaustionTickSet;
-	exhaustionStateID, exhaustionStateName, exhaustionStateMultiplier = GetHonorRestState();
-	
-	if (not exhaustionThreshold or exhaustionThreshold == 0) then
-		self:Hide();
-		fillBar:Hide();
-		return;
-	else
-		exhaustionTickSet = max(((playerCurrXP + exhaustionThreshold) / playerMaxXP) * self:GetParent():GetWidth(), 0);
-		if (exhaustionTickSet > self:GetParent():GetWidth()) then
-			self:Hide();
-			fillBar:Hide();
-		else
-			fillBar:SetWidth(exhaustionTickSet);
-			fillBar:Show();
-			self:Show();
-		end
-	end
-
-	local exhaustionStateID = GetHonorRestState();
-	if (exhaustionStateID == 1) then
-        local r, g, b = 1.0, 0.50, 0.0;
-        if (isMainMenuBar) then
-            g = 0.71;
-        end
-		fillBar:SetVertexColor(r, g, b, self.fillBarAlpha);
-		self.Highlight:SetVertexColor(r, g, b, 1.0);
-	end
-end
-
 function HonorExhaustionToolTipText(self)
-	GameTooltip_SetDefaultAnchor(GameTooltip, UIParent);	
-	
-	local exhaustionStateID, exhaustionStateName, exhaustionStateMultiplier;
-	exhaustionStateID, exhaustionStateName, exhaustionStateMultiplier = GetHonorRestState();
-
-	local exhaustionCurrXP, exhaustionMaxXP;
-	local exhaustionThreshold = GetHonorExhaustion();
-
-	exhaustionStateMultiplier = exhaustionStateMultiplier * 100;
-	local exhaustionCountdown = nil;
-	if ( GetTimeToWellRested() ) then
-		exhaustionCountdown = GetTimeToWellRested() / 60;
-	end
-	
-	local currXP = UnitHonor("player");
-	local nextXP = UnitHonorMax("player");
-	local percentXP = math.ceil(currXP/nextXP*100);
-	local XPText = format( XP_TEXT, BreakUpLargeNumbers(currXP), BreakUpLargeNumbers(nextXP), percentXP );
-	local tooltipText = XPText..format(EXHAUST_HONOR_TOOLTIP1, exhaustionStateName, exhaustionStateMultiplier);
-	local append = nil;
-	if ( IsResting() ) then
-		if ( exhaustionThreshold and exhaustionCountdown ) then
-			append = format(EXHAUST_TOOLTIP4, exhaustionCountdown);
-		end
-	elseif ( (exhaustionStateID == 4) or (exhaustionStateID == 5) ) then
-		append = EXHAUST_TOOLTIP2;
-	end
-
-	if ( append ) then
-		tooltipText = tooltipText..append;
-	end
-
-	if ( SHOW_NEWBIE_TIPS ~= "1" ) then
-		GameTooltip:SetText(tooltipText);
-	else
-		if ( GameTooltip.canAddRestStateLine ) then
-			GameTooltip:AddLine("\n"..tooltipText);
-			GameTooltip:Show();
-			GameTooltip.canAddRestStateLine = nil;
-		end
-	end
+	return;
 end
 
 function HonorLevelUpBanner_OnLoad(self)
@@ -466,27 +366,5 @@ function HonorLevelUpBanner_OnEvent(self, event, ...)
 			self.Anim:Play();
 			self.currentLevel = level;
 		end
-	end
-end
-
-function PrestigeLevelUpBanner_OnLoad(self)
-	self:RegisterEvent("HONOR_PRESTIGE_UPDATE");
-end
-
-function PrestigeLevelUpBanner_OnEvent(self, event, ...)
-	if (event == "HONOR_PRESTIGE_UPDATE") then
-		local honorlevel = UnitHonor("player");
-		local factionGroup = UnitFactionGroup("player");
-		local texture, name = GetPrestigeInfo(0);
-		self.Text:SetText(name);
-		self.Level:SetText(honorlevel);
-		self.IconPlate:SetAtlas("titleprestige-prestigeiconplate-"..factionGroup);
-		self.IconPlate2:SetAtlas("titleprestige-prestigeiconplate-"..factionGroup);
-		self.IconPlate3:SetAtlas("titleprestige-prestigeiconplate-"..factionGroup);
-		self.Icon:SetTexture(texture);
-		self.Icon2:SetTexture(texture);
-		self.Icon3:SetTexture(texture);
-		self:Show();
-		self.Anim:Play();
 	end
 end

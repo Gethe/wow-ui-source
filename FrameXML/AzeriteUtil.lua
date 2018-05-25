@@ -41,3 +41,61 @@ function AzeriteUtil.GetEquippedItemsUnselectedPowersCount()
 	end
 	return count;
 end
+
+function AzeriteUtil.GenerateRequiredSpecTooltipLine(powerID)
+	local specs = C_AzeriteEmpoweredItem.GetSpecsForPower(powerID);
+	if not specs then
+		return nil;
+	end
+
+	local playerSex = UnitSex("player");
+	local _, _, playerClassID = UnitClass("player");
+	local playerSpecID = GetSpecializationInfo(GetSpecialization());
+
+	local validSpecs;
+	for i, specInfo in ipairs(specs) do
+		if specInfo.classID == playerClassID then
+			if specInfo.specID == playerSpecID then
+				return nil; -- Nothing to show, we match this spec
+			end
+			validSpecs = validSpecs or {};
+			local _, specName = GetSpecializationInfoByID(specInfo.specID, playerSex);
+			table.insert(validSpecs, specName);
+		end
+	end
+
+	if not validSpecs then
+		return nil;
+	end
+
+	if #validSpecs > 1 then
+		return REQUIRES_OR_SPECIALIZATIONS:format(table.concat(validSpecs, PLAYER_LIST_DELIMITER, 1, #validSpecs - 1), validSpecs[#validSpecs]);
+	end
+	return REQUIRES_SPECIALIZATION:format(table.concat(validSpecs, PLAYER_LIST_DELIMITER));
+end
+
+function AzeriteUtil.FindAzeritePowerTier(azeriteEmpoweredItemSource, powerID)
+	for tierIndex, tierInfo in ipairs(azeriteEmpoweredItemSource:GetAllTierInfo()) do
+		for powerIndex, azeritePowerID in ipairs(tierInfo.azeritePowerIDs) do
+			if powerID == azeritePowerID then
+				return tierIndex;
+			end
+		end
+	end
+
+	return nil;
+end
+
+function AzeriteUtil.GetSelectedAzeritePowerInTier(azeriteEmpoweredItemSource, tierIndex)
+	local allTierInfo = azeriteEmpoweredItemSource:GetAllTierInfo();
+	local tierInfo = allTierInfo[tierIndex];
+	if tierInfo then
+		for powerIndex, azeritePowerID in ipairs(tierInfo.azeritePowerIDs) do
+			if azeriteEmpoweredItemSource:IsPowerSelected(azeritePowerID) then
+				return azeritePowerID;
+			end
+		end
+	end
+
+	return nil;
+end

@@ -544,6 +544,9 @@ VideoData["Graphics_SSAODropDown"]={
 			text = VIDEO_OPTIONS_LOW,
 		},
 		{
+			text = VIDEO_OPTIONS_MEDIUM,
+		},
+		{
 			text = VIDEO_OPTIONS_HIGH,
 		},
 		{
@@ -568,6 +571,9 @@ VideoData["RaidGraphics_SSAODropDown"]={
 		},
 		{
 			text = VIDEO_OPTIONS_LOW,
+		},
+		{
+			text = VIDEO_OPTIONS_MEDIUM,
 		},
 		{
 			text = VIDEO_OPTIONS_HIGH,
@@ -1176,6 +1182,21 @@ VideoData["Advanced_MaxFPSBKSlider"]={
 		end,
 }
 
+VideoData["Advanced_ContrastSlider"]={
+	name = OPTION_CONTRAST;
+	tooltip = OPTION_TOOLTIP_CONTRAST,
+}
+
+VideoData["Advanced_BrightnessSlider"]={
+	name = OPTIONS_BRIGHTNESS;
+	tooltip = OPTION_TOOLTIP_BRIGHTNESS,
+}
+
+VideoData["Advanced_GammaSlider"]={
+	name = GAMMA;
+	tooltip = OPTION_TOOLTIP_GAMMA,
+}
+
 VideoData["Advanced_MaxFPSCheckBox"]={
 	name = MAXFPS_CHECK;
 	tooltip = OPTION_MAXFPS_CHECK,
@@ -1226,7 +1247,9 @@ VideoData["Advanced_AdapterDropDown"]={
 				end
 			end
 		end,
+	restart = true,
 }
+
 VideoData["Advanced_StereoEnabled"]={
 	name = ENABLE_STEREO_VIDEO;
 	tooltip = OPTION_TOOLTIP_ENABLE_STEREO_VIDEO,
@@ -1235,6 +1258,11 @@ VideoData["Advanced_StereoEnabled"]={
 VideoData["Advanced_ShowHDModels"]={
 	name = SHOW_HD_MODELS_TEXT;
 	tooltip = OPTION_TOOLTIP_SHOW_HD_MODELS,
+}
+
+VideoData["Advanced_LockCursorToScreen"]={
+	name = LOCK_CURSOR_TEXT;
+	tooltip = OPTION_TOOLTIP_LOCK_CURSOR,
 }
 
 VideoData["Advanced_MultisampleAlphaTest"]={

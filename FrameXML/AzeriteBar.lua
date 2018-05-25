@@ -6,7 +6,7 @@ local AZERITE_XP_BAR_EVENTS = {
 AzeriteBarMixin = CreateFromMixins(StatusTrackingBarMixin);
 
 function AzeriteBarMixin:ShouldBeVisible()
-	return C_AzeriteItem.FindActiveAzeriteItem(); 
+	return C_AzeriteItem.HasActiveAzeriteItem(); 
 end
 
 function AzeriteBarMixin:Update()

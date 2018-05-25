@@ -259,13 +259,13 @@ do
 	local function UpdateCommunityStreamChannelRosterEntry(communityStreamInfo, rosterIndex, voiceChannelID, rosterEntry)
 		local memberInfo = communityStreamInfo.members[rosterIndex];
 
-		rosterEntry:SetMemberID(rosterIndex);
+		rosterEntry:SetMemberID(memberInfo.memberId);
 		rosterEntry:SetMemberPlayerLocationFromGuid(memberInfo.guid);
 		rosterEntry:SetMemberName(memberInfo.name);
 		rosterEntry:SetMemberIsOwner(memberInfo.role == Enum.ClubRoleIdentifier.Owner or memberInfo.role == Enum.ClubRoleIdentifier.Leader);
 		rosterEntry:SetMemberIsModerator(memberInfo.role == Enum.ClubRoleIdentifier.Moderator);
 		rosterEntry:SetVoiceEnabled(false);
-		rosterEntry:SetIsConnected(true);
+		rosterEntry:SetIsConnected(memberInfo.presence ~= Enum.ClubMemberPresence.Offline);
 
 		if voiceChannelID and memberInfo.guid then
 			local voiceMemberID = C_VoiceChat.GetMemberID(voiceChannelID, memberInfo.guid);

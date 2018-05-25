@@ -4,8 +4,8 @@ local Outbound = {};
 tbl.Outbound = Outbound;
 tbl = nil;	--This file shouldn't be calling back into secure code.
 
-function Outbound.ShowGameTooltip(text, x, y)
-	securecall("GameTooltip_SetBasicTooltip", GameTooltip, text, x, y);
+function Outbound.ShowGameTooltip(text, x, y, wrap)
+	securecall("GameTooltip_SetBasicTooltip", GameTooltip, text, x, y, wrap);
 end
 
 function Outbound.HideGameTooltip()

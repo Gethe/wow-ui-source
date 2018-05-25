@@ -1,6 +1,9 @@
 ---------------------------------------------------------------
 -- PVE FRAME
 ---------------------------------------------------------------
+
+PVE_FRAME_BASE_WIDTH = 563;
+
 local panels = {
 	{ name = "GroupFinderFrame", addon = nil },
 	{ name = "PVPUIFrame", addon = "Blizzard_PVPUI" },
@@ -121,6 +124,8 @@ function PVEFrame_ShowFrame(sidePanelName, selection)
 	ShowUIPanel(self);
 	self.activeTabIndex = tabIndex;	
 	PanelTemplates_SetTab(self, tabIndex);
+	self:SetWidth(PVE_FRAME_BASE_WIDTH);
+	UpdateUIPanelPositions(PVEFrame);
 	for index, data in pairs(panels) do
 		local panel = _G[data.name];
 		if ( index == tabIndex ) then

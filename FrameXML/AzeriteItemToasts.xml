@@ -183,16 +183,11 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<ModelScene parentKey="IconEffect" useParentLevel="true" drawLayer="BACKGROUND" alpha="0" inherits="ModelSceneMixinTemplate">
+			<ModelScene parentKey="IconEffect" useParentLevel="true" drawLayer="BACKGROUND" alpha="0" inherits="NonInteractableModelSceneMixinTemplate">
 				<Size x="500" y="500" />
 				<Anchors>
 					<Anchor point="CENTER" relativeKey="$parent.Icon" />
 				</Anchors>
-				<Scripts>
-					<OnLoad inherit="append">
-						self:EnableMouse(false);
-					</OnLoad>
-				</Scripts>
 			</ModelScene>
 			<Frame parentKey="UnlockItemsFrame" inherits="HorizontalLayoutFrame">
 				<Anchors>

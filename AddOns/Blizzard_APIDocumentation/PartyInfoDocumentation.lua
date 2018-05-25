@@ -132,11 +132,19 @@ local PartyInfo =
 			Name = "PartyMemberDisable",
 			Type = "Event",
 			LiteralName = "PARTY_MEMBER_DISABLE",
+			Payload =
+			{
+				{ Name = "unitTarget", Type = "string", Nilable = false },
+			},
 		},
 		{
 			Name = "PartyMemberEnable",
 			Type = "Event",
 			LiteralName = "PARTY_MEMBER_ENABLE",
+			Payload =
+			{
+				{ Name = "unitTarget", Type = "string", Nilable = false },
+			},
 		},
 		{
 			Name = "PlayerDifficultyChanged",
@@ -169,6 +177,7 @@ local PartyInfo =
 			LiteralName = "READY_CHECK_CONFIRM",
 			Payload =
 			{
+				{ Name = "unitTarget", Type = "string", Nilable = false },
 				{ Name = "isReady", Type = "bool", Nilable = false },
 			},
 		},

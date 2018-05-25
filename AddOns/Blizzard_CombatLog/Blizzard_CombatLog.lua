@@ -3499,12 +3499,6 @@ function SetItemRef(link, text, button, chatFrame)
 			EasyMenu(Blizzard_CombatLog_CreateActionMenu(event), CombatLogDropDown, "cursor", nil, nil, "MENU");
 		end
 		return;
-	elseif ( strsub(link, 1, 4) == "item") then
-		if ( IsModifiedClick("CHATLINK") ) then
-			local name, link = GetItemInfo(text);
-			ChatEdit_InsertLink (link);
-			return;
-		end
 	elseif ( strsub(link, 1, 19) == "garrfollowerability") then
 		if ( IsModifiedClick("CHATLINK") ) then
 			local _, abilityID = strsplit(":", link);

@@ -815,7 +815,7 @@ local function _CalendarFrame_CacheEventTextures_Internal(eventType, textures)
 		end
 
 		local textureInfo = textures[textureIndex];
-		
+
 		local title = textureInfo.title;
 		local texture = textureInfo.iconTexture;
 		local expansionLevel = textureInfo.expansionLevel;
@@ -1204,7 +1204,7 @@ function CalendarFrame_OnMouseWheel(self, value)
 	else
 		if ( CalendarNextMonthButton:IsEnabled() ) then
 			CalendarNextMonthButton_OnClick();
-		end	
+		end
 	end
 end
 
@@ -3352,7 +3352,7 @@ function CalendarViewEventInviteListScrollFrame_Update()
 	CalendarViewEventFrame.myInviteIndex = nil;
 
 	local selectedInviteIndex = C_Calendar.EventGetSelectedInvite();
-	
+
 	if ( namesReady ) then
 		CalendarViewEventFrameRetrievingFrame:Hide();
 	else
@@ -3801,8 +3801,8 @@ end
 function CalendarCreateEventTypeDropDown_InitEventTypes(self, types)
 	local info = UIDropDownMenu_CreateInfo();
 	for i = 1, #types, 1 do
-		info.text = _G[types[i].displayString]; 
-		info.value = types[i].displayIndex;
+		info.text = _G[types[i].displayString];
+		info.value = types[i].eventType;
 		info.func = CalendarCreateEventTypeDropDown_OnClick;
 		if ( CalendarCreateEventFrame.selectedEventType == info.value ) then
 			info.checked = 1;
@@ -5206,8 +5206,8 @@ function CalendarClassButtonContainer_Update()
 		buttonIcon = button:GetNormalTexture();
 		-- set the count
 		classData = CalendarClassData[class];
-		count = classData.counts[CALENDAR_INVITESTATUS_CONFIRMED] + 
-			classData.counts[CALENDAR_INVITESTATUS_ACCEPTED] + 
+		count = classData.counts[CALENDAR_INVITESTATUS_CONFIRMED] +
+			classData.counts[CALENDAR_INVITESTATUS_ACCEPTED] +
 			classData.counts[CALENDAR_INVITESTATUS_SIGNEDUP];
 		buttonCount:SetText(count);
 		if ( count > 0 ) then

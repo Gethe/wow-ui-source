@@ -16,10 +16,10 @@ local function WidgetsLayout(widgetContainer, sortedWidgets)
 		end
 
 		if ( index == 1 ) then
-			widgetFrame:SetPoint("TOP");
+			widgetFrame:SetPoint("TOP", widgetContainer, "TOP", 0, 0);
 		else
 			local relative = sortedWidgets[index - 1];
-			widgetFrame:SetPoint("TOP", relative, "BOTTOM");
+			widgetFrame:SetPoint("TOP", relative, "BOTTOM", 0, 0);
 		end
 
 		widgetsHeight = widgetsHeight + widgetFrame:GetHeight();

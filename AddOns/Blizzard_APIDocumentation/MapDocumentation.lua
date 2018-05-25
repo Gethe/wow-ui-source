@@ -36,6 +36,15 @@ local Map =
 			},
 		},
 		{
+			Name = "GetFallbackWorldMapID",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "uiMapID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetMapArtBackgroundAtlas",
 			Type = "Function",
 
@@ -312,6 +321,20 @@ local Map =
 			{
 				{ Name = "continentID", Type = "number", Nilable = false },
 				{ Name = "worldPosition", Type = "table", Mixin = "Vector2DMixin", Nilable = false },
+			},
+		},
+		{
+			Name = "MapHasArt",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "uiMapID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "hasArt", Type = "bool", Nilable = false },
 			},
 		},
 		{

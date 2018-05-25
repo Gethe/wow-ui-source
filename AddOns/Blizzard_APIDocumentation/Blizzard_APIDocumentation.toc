@@ -81,6 +81,7 @@ MapExplorationDocumentation.lua
 MerchantFrameDocumentation.lua
 MinimapDocumentation.lua
 MountJournalDocumentation.lua
+MythicPlusInfoDocumentation.lua
 NamePlateManagerDocumentation.lua
 PaperDollInfoDocumentation.lua
 PartyInfoDocumentation.lua

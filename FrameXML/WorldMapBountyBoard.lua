@@ -41,8 +41,8 @@ function WorldMapBountyBoardMixin:GetMapID()
 	end
 end
 
-function WorldMapBountyBoardMixin:NavigateToMap(mapID)
-	self:GetParent():NavigateToMap(mapID);
+function WorldMapBountyBoardMixin:GoToMap(mapID)
+	self:GetParent():SetMapID(mapID);
 end
 
 function WorldMapBountyBoardMixin:GetDisplayLocation()
@@ -475,7 +475,7 @@ function WorldMapBountyBoardMixin:SetNextMapForSelectedBounty()
 	if mapIndex > #self.cachedMapInfo then
 		mapIndex = 1;
 	end
-	self:NavigateToMap(self.cachedMapInfo[mapIndex].mapID);
+	self:GoToMap(self.cachedMapInfo[mapIndex].mapID);
 end
 
 function WorldMapBountyBoardMixin:TryShowingIntroTutorial()

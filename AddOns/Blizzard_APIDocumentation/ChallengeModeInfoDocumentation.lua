@@ -83,7 +83,16 @@ local ChallengeModeInfo =
 			},
 		},
 		{
-			Name = "GetMapInfo",
+			Name = "GetMapTable",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "mapChallengeModeIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetMapUIInfo",
 			Type = "Function",
 
 			Arguments =
@@ -101,38 +110,6 @@ local ChallengeModeInfo =
 			},
 		},
 		{
-			Name = "GetMapPlayerStats",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "mapChallengeModeID", Type = "number", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "lastCompletionMilliseconds", Type = "number", Nilable = false },
-				{ Name = "bestCompletionMilliseconds", Type = "number", Nilable = false },
-				{ Name = "bestLevel", Type = "number", Nilable = false },
-				{ Name = "affixIDs", Type = "table", InnerType = "number", Nilable = false },
-				{ Name = "bestLevelYear", Type = "number", Nilable = false },
-				{ Name = "bestLevelMonth", Type = "number", Nilable = false },
-				{ Name = "bestLevelDay", Type = "number", Nilable = false },
-				{ Name = "bestLevelHour", Type = "number", Nilable = false },
-				{ Name = "bestLevelMinute", Type = "number", Nilable = false },
-				{ Name = "bestSpecIDs", Type = "number", Nilable = false, StrideIndex = 1 },
-			},
-		},
-		{
-			Name = "GetMapTable",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "mapChallengeModeIDs", Type = "table", InnerType = "number", Nilable = false },
-			},
-		},
-		{
 			Name = "GetPowerLevelDamageHealthMod",
 			Type = "Function",
 
@@ -145,21 +122,6 @@ local ChallengeModeInfo =
 			{
 				{ Name = "damageMod", Type = "number", Nilable = false },
 				{ Name = "healthMod", Type = "number", Nilable = false },
-			},
-		},
-		{
-			Name = "GetRecentBestForMap",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "mapChallengeModeID", Type = "number", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "bestCompletionTime", Type = "number", Nilable = false },
-				{ Name = "bestLevel", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -192,15 +154,6 @@ local ChallengeModeInfo =
 			},
 		},
 		{
-			Name = "IsWeeklyRewardAvailable",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "weeklyRewardAvailable", Type = "bool", Nilable = false },
-			},
-		},
-		{
 			Name = "RemoveKeystone",
 			Type = "Function",
 
@@ -217,14 +170,6 @@ local ChallengeModeInfo =
 			{
 				{ Name = "mapChallengeModeID", Type = "number", Nilable = false },
 			},
-		},
-		{
-			Name = "RequestMapInfo",
-			Type = "Function",
-		},
-		{
-			Name = "RequestRewards",
-			Type = "Function",
 		},
 		{
 			Name = "Reset",
@@ -284,17 +229,6 @@ local ChallengeModeInfo =
 			Name = "ChallengeModeMapsUpdate",
 			Type = "Event",
 			LiteralName = "CHALLENGE_MODE_MAPS_UPDATE",
-		},
-		{
-			Name = "ChallengeModeNewRecord",
-			Type = "Event",
-			LiteralName = "CHALLENGE_MODE_NEW_RECORD",
-			Payload =
-			{
-				{ Name = "mapID", Type = "number", Nilable = false },
-				{ Name = "completionMilliseconds", Type = "number", Nilable = false },
-				{ Name = "level", Type = "number", Nilable = false },
-			},
 		},
 		{
 			Name = "ChallengeModeReset",

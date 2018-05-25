@@ -1784,6 +1784,8 @@ function GarrisonMissionComplete:AnimFollowerCheerAndTroopDeath(followerID)
 					if (followerInfo.durability <= 0) then
 						shouldFadeOut = true;
 						shouldCheer = false;
+					else
+						self:SetFollowerLevel(followerFrame, followerInfo);
 					end
 					followerFrame.DurabilityFrame:SetDurability(followerInfo.durability, followerInfo.maxDurability);
 				end

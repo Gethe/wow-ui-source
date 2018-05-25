@@ -468,10 +468,14 @@ function AlertFrameMixin:OnEvent(event, ...)
 		if ( C_Scenario.IsInScenario() and not C_Scenario.TreatScenarioAsDungeon() ) then
 			local scenarioType = select(10, C_Scenario.GetInfo());
 			if scenarioType ~= LE_SCENARIO_TYPE_LEGION_INVASION then
-				ScenarioAlertSystem:AddAlert(self:BuildScenarioRewardData());
+				if (not self:ShouldSupressDungeonOrScenarioAlert()) then 
+					ScenarioAlertSystem:AddAlert(self:BuildScenarioRewardData());
+				end
 			end
 		else
-			DungeonCompletionAlertSystem:AddAlert(self:BuildLFGRewardData());
+			if (not self:ShouldSupressDungeonOrScenarioAlert()) then 
+				DungeonCompletionAlertSystem:AddAlert(self:BuildLFGRewardData());
+			end
 		end
 	elseif ( event == "SCENARIO_COMPLETED" ) then
 		local scenarioName, _, _, _, hasBonusStep, isBonusStepComplete, _, xp, money, scenarioType, areaName = C_Scenario.GetInfo();
@@ -667,6 +671,19 @@ function AlertFrameMixin:BuildQuestData(questID)
 	end
 
 	return questData;
+end
+
+function AlertFrameMixin:ShouldSupressDungeonOrScenarioAlert()
+	if	(IslandsPartyPoseFrame) then 
+		if (IslandsPartyPoseFrame:IsVisible()) then 
+			return true; 
+		end
+	elseif (WarfrontsPartyPoseFrame) then 
+		if(WarfrontsPartyPoseFrame:IsVisible()) then 
+			return true;
+		end
+	end
+	return false;
 end
 
 -- [[ AlertFrameTemplate functions ]] --

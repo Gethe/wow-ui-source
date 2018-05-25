@@ -36,6 +36,10 @@ Import("COMMUNITIES_CREATE_DIALOG_TYPE_LABEL");
 Import("COMMUNITIES_CREATE_DIALOG_NAME_LABEL");
 Import("COMMUNITIES_CREATE_DIALOG_DESCRIPTION_LABEL");
 Import("COMMUNITIES_CREATE_DIALOG_ICON_LABEL");
+Import("COMMUNITIES_CREATE_DIALOG_SHORT_NAME_LABEL");
+Import("COMMUNITIES_CREATE_DIALOG_SHORT_NAME_INSTRUCTIONS");
+Import("COMMUNITIES_CREATE_DIALOG_SHORT_NAME_INSTRUCTIONS_TOOLTIP");
+Import("COMMUNITIES_CREATE_DIALOG_SHORT_NAME_INSTRUCTIONS_CHARACTER");
 Import("CANCEL");
 Import("FEATURE_NOT_AVAILBLE_PANDAREN");
 Import("OKAY");
@@ -103,7 +107,9 @@ end
 
 function CommunitiesCreateDialogMixin:SetClubType(clubType)
 	self.clubType = clubType;
-	self.IconPreviewRing:SetAtlas(clubType == Enum.ClubType.BattleNet and "communities-ring-blue" or "communities-ring-gold");
+	local isBnet = clubType == Enum.ClubType.BattleNet;
+	self.IconPreviewRing:SetAtlas(isBnet and "communities-ring-blue" or "communities-ring-gold");
+	self.ShortNameBox.Instructions:SetText(isBnet and COMMUNITIES_CREATE_DIALOG_SHORT_NAME_INSTRUCTIONS or COMMUNITIES_CREATE_DIALOG_SHORT_NAME_INSTRUCTIONS_CHARACTER);
 	local avatarIdList = C_Club.GetAvatarIdList(clubType);
 	if avatarIdList then
 		self:SetAvatarId(avatarIdList[math.random(1, #avatarIdList)]);
@@ -141,9 +147,15 @@ end
 
 function CommunitiesCreateDialogMixin:CreateCommunity()
 	local name = self.NameBox:GetText();
+	local shortName = self.ShortNameBox:GetText();
 	local description = self.DescriptionFrame.EditBox:GetText();
-	-- TODO: Add short name field for Character clubs
-	C_Club.CreateClub(name, "club", description, self:GetClubType(), self:GetAvatarId());
+	C_Club.CreateClub(name, shortName, description, self:GetClubType(), self:GetAvatarId());
+end
+
+function CommunitiesCreateDialogMixin:UpdateCreateButton()
+	local validName = strlenutf8(self.NameBox:GetText()) >= 2;
+	local validShortName = strlenutf8(self.ShortNameBox:GetText()) >= 2;
+	self.CreateButton:SetEnabled(validName and validShortName);
 end
 
 function CommunitiesAddDialogWoWButton_OnEnter(self)

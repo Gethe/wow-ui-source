@@ -14,16 +14,6 @@
 		</Layers>
 	</Button>
 
-	<Button name="VoiceChatHeadsetTemplate" mixin="VoiceChatHeadsetMixin" registerForClicks="LeftButtonUp" hidden="true" virtual="true">
-		<NormalTexture parentKey="NormalTexture"/>
-		<HighlightTexture parentKey="HighlightTexture" alphaMode="ADD" alpha="0.3"/>
-		<Scripts>
-			<OnClick method="OnClick"/>
-			<OnEnter method="OnEnter"/>
-			<OnLeave method="OnLeave"/>
-		</Scripts>
-	</Button>
-
 	<Button name="ChannelButtonBaseTemplate" registerForClicks="LeftButtonUp,RightButtonUp" mixin="ChannelButtonBaseMixin" virtual="true">
 		<Size x="175" y="27"/>
 		<NormalTexture parentKey="NormalTexture" atlas="voicechat-channellist-row-background" alphaMode="ADD"/>
@@ -60,12 +50,12 @@
 
 	<Button name="ChannelButtonTemplate" mixin="ChannelButtonMixin" inherits="ChannelButtonBaseTemplate" virtual="true">
 		<Frames>
-			<Button parentKey="Speaker" hidden="false" inherits="VoiceChatHeadsetTemplate">
+			<Frame parentKey="Speaker" inherits="VoiceChatHeadsetTemplate">
 				<Size x="27" y="27"/>
 				<Anchors>
 					<Anchor point="RIGHT" x="-4"/>
 				</Anchors>
-			</Button>
+			</Frame>
 		</Frames>
 	</Button>
 

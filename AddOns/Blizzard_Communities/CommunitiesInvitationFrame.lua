@@ -78,7 +78,7 @@ end
 function CommunitiesInviteButton_OnClick(self)
 	local communitiesFrame = self:GetParent();
 	local clubId = communitiesFrame:GetSelectedClubId();
-	local privileges = C_Club.GetClubPrivileges(clubId);
+	local privileges = communitiesFrame:GetPrivilegesForClub(clubId);
 	local clubInfo = C_Club.GetClubInfo(clubId);
 	if not clubInfo then
 		return;

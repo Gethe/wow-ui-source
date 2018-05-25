@@ -137,9 +137,9 @@ local UIModelInfo =
 		{
 			Name = "ModelSceneType",
 			Type = "Enumeration",
-			NumValues = 14,
+			NumValues = 16,
 			MinValue = 0,
-			MaxValue = 13,
+			MaxValue = 15,
 			Fields =
 			{
 				{ Name = "MountJournal", Type = "ModelSceneType", EnumValue = 0 },
@@ -156,6 +156,8 @@ local UIModelInfo =
 				{ Name = "PvpWarModeFire", Type = "ModelSceneType", EnumValue = 11 },
 				{ Name = "PartyPose", Type = "ModelSceneType", EnumValue = 12 },
 				{ Name = "AzeriteItemLevelUpToast", Type = "ModelSceneType", EnumValue = 13 },
+				{ Name = "AzeritePowers", Type = "ModelSceneType", EnumValue = 14 },
+				{ Name = "AzeriteRewardGlow", Type = "ModelSceneType", EnumValue = 15 },
 			},
 		},
 		{

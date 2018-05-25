@@ -79,6 +79,7 @@ function ScrappingMachineMixin:OnHide()
 	self:UnregisterEvent("UNIT_SPELLCAST_INTERRUPTED");
 	self:UnregisterEvent("UNIT_SPELLCAST_STOP");
 	self.scrapCastLineID = nil;
+	C_ScrappingMachineUI.CloseScrappingMachine(); 
 end
 
 ScrappingMachineItemSlotMixin = {};

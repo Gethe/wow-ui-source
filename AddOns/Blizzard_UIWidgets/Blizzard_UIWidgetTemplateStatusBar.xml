@@ -1,6 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
-	<Frame name="UIWidgetTemplateStatusBar" inherits="UIWidgetBaseTemplate" virtual="true" secureMixin="UIWidgetTemplateStatusBarMixin">
+	<Frame name="UIWidgetTemplateStatusBar" inherits="UIWidgetBaseTemplate" virtual="true" mixin="UIWidgetTemplateStatusBarMixin">
 		<Frames>
 			<StatusBar parentKey="Bar" drawLayer="BACKGROUND" minValue="0" maxValue="100" defaultValue="0">
 				<Size x="215" y="15"/>
@@ -8,60 +8,52 @@
 					<Anchor point="BOTTOM" y="5"/>
 				</Anchors>
 				<Layers>
-					<Layer level="BORDER">
-						<Texture parentKey="BorderLeft" file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder">
-							<Size x="9" y="22"/>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="BGLeft" useAtlasSize="true">
 							<Anchors>
-								<Anchor point="LEFT" x="-3" y="0"/>
+								<Anchor point="LEFT" x="-2"/>
 							</Anchors>
-							<TexCoords left="0.007843" right="0.043137" top="0.193548" bottom="0.774193"/>
 						</Texture>
-						<Texture parentKey="BorderRight" file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder">
-							<Size x="9" y="22"/>
+						<Texture parentKey="BGRight" useAtlasSize="true">
 							<Anchors>
-								<Anchor point="RIGHT" x="3" y="0"/>
+								<Anchor point="RIGHT" x="2"/>
 							</Anchors>
-							<TexCoords left="0.043137" right="0.007843" top="0.193548" bottom="0.774193"/>
 						</Texture>
-						<Texture parentKey="BorderMid" file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder">
+						<Texture parentKey="BGCenter">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.BGLeft" relativePoint="TOPRIGHT"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BGRight" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Label" inherits="GameFontHighlightMedium" justifyH="LEFT">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="BorderLeft" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="LEFT" x="-8"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="BorderRight" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="RIGHT" x="8"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="BorderCenter">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.BorderLeft" relativePoint="TOPRIGHT"/>
 								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BorderRight" relativePoint="BOTTOMLEFT"/>
 							</Anchors>
-							<TexCoords left="0.113726" right="0.1490196" top="0.193548" bottom="0.774193"/>
 						</Texture>
-					</Layer>
-					<Layer level="ARTWORK">
-						<Texture parentKey="LeftDivider" file="Interface\GuildFrame\GuildFrame">
-							<Size x="7" y="14"/>
-							<Anchors>
-								<Anchor point="LEFT" x="66" y="0"/>
-							</Anchors>
-							<TexCoords left="0.41601563" right="0.42285156" top="0.91796875" bottom="0.94531250"/>
-						</Texture>
-						<Texture parentKey="RightDivider" file="Interface\GuildFrame\GuildFrame">
-							<Size x="7" y="14"/>
-							<Anchors>
-								<Anchor point="RIGHT" x="-66" y="0"/>
-							</Anchors>
-							<TexCoords left="0.41601563" right="0.42285156" top="0.91796875" bottom="0.94531250"/>
-						</Texture>
-					</Layer>
-					<Layer level="ARTWORK" textureSubLevel="1">
-						<FontString parentKey="Label" inherits="GameFontHighlightMedium" justifyH="LEFT">
-							<Anchors>
-								<Anchor point="CENTER" x="0" y="0"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-					<Layer level="BACKGROUND" textureSubLevel="-1">
-						<Texture>
-							<Color r="0.04" g="0.07" b="0.18"/>
-						</Texture>
+
+						<Texture parentKey="Spark" alphaMode="ADD" useAtlasSize="true"/>
 					</Layer>
 				</Layers>
-				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
-				<BarColor r="0.26" g="0.42" b="1"/>
 			</StatusBar>
 		</Frames>
 		<Layers>

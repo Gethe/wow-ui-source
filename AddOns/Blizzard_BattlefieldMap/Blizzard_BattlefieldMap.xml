@@ -140,6 +140,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
+								SetCVar("showBattlefieldMinimap", "0");
 								HideUIPanel(self:GetParent():GetParent());
 							</OnClick>
 						</Scripts>

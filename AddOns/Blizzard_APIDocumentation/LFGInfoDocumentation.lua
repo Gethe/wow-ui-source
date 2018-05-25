@@ -11,6 +11,16 @@ local LFGInfo =
 	Events =
 	{
 		{
+			Name = "IslandCompleted",
+			Type = "Event",
+			LiteralName = "ISLAND_COMPLETED",
+			Payload =
+			{
+				{ Name = "mapID", Type = "number", Nilable = false },
+				{ Name = "winner", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "LfgBonusFactionIdUpdated",
 			Type = "Event",
 			LiteralName = "LFG_BONUS_FACTION_ID_UPDATED",
@@ -183,6 +193,16 @@ local LFGInfo =
 			Name = "UpdateLfgList",
 			Type = "Event",
 			LiteralName = "UPDATE_LFG_LIST",
+		},
+		{
+			Name = "WarfrontCompleted",
+			Type = "Event",
+			LiteralName = "WARFRONT_COMPLETED",
+			Payload =
+			{
+				{ Name = "mapID", Type = "number", Nilable = false },
+				{ Name = "winner", Type = "number", Nilable = false },
+			},
 		},
 	},
 

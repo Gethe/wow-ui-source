@@ -208,7 +208,7 @@ function WorldMapMixin:OnMapChanged()
 end
 
 function WorldMapMixin:OnShow()
-	local mapID = C_Map.GetBestMapForUnit("player");
+	local mapID = MapUtil.GetDisplayableMapForPlayer();
 	self:SetMapID(mapID);
 	MapCanvasMixin.OnShow(self);
 	self:ResetZoom();

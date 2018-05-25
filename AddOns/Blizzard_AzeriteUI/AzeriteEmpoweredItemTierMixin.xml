@@ -4,10 +4,13 @@
 		<Size x="312" y="74"/>
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="-4">
-				<Texture parentKey="Bg" setAllPoints="true" >
-					<Color r="0.95" g="0.95" b="1"/>
+				<Texture parentKey="Bg" setAllPoints="true">
+					<Color r="0.95" g="0.95" b="1" />
 				</Texture>
 			</Layer>
 		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad" />
+		</Scripts>
 	</Frame>
 </Ui>

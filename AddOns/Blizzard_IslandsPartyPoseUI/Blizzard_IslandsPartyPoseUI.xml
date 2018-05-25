@@ -13,7 +13,7 @@
 			<Frame parentKey="Score">
 				<Size x="100" y="40"/>
 				<Anchors>
-					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ModelScene" x="-20" y="-50"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ModelScene" x="15" y="-55"/>
 				</Anchors>
 			</Frame>
 			<Button parentKey="LeaveButton" inherits="UIPanelButtonNoTooltipTemplate">
@@ -23,7 +23,8 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						LeaveInstanceParty(); 
+						ConfirmOrLeaveLFGParty(); 
+						HideUIPanel(self:GetParent());
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -31,16 +32,7 @@
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativeKey="$parent.TopRightCorner" x="-3" y="-4"/>
 				</Anchors>
-				<Scripts>
-					<OnClick>
-						self:GetParent():Hide();
-					</OnClick>
-				</Scripts>
 			</Button>
 		</Frames>
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-			<OnEvent method="OnEvent"/>
-		</Scripts>
 	</Frame>
 </Ui>

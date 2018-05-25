@@ -16,6 +16,7 @@ local Minimap =
 			LiteralName = "MINIMAP_PING",
 			Payload =
 			{
+				{ Name = "unitTarget", Type = "string", Nilable = false },
 				{ Name = "y", Type = "number", Nilable = false },
 				{ Name = "x", Type = "number", Nilable = false },
 			},

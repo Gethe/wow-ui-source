@@ -1426,12 +1426,12 @@ function FCF_SetButtonSide(chatFrame, buttonSide, forceUpdate)
 
 	if ( chatFrame == DEFAULT_CHAT_FRAME ) then
 		ChatFrameMenu_UpdateAnchorPoint();
-	end
 
-	ChatAlertFrame:SetChatButtonSide(buttonSide);
+		ChatAlertFrame:SetChatButtonSide(buttonSide);
 
-	if ( QuickJoinToastButton ) then
-		QuickJoinToastButton:SetToastDirection(buttonSide == "right");
+		if ( QuickJoinToastButton ) then
+			QuickJoinToastButton:SetToastDirection(buttonSide == "right");
+		end
 	end
 end
 
@@ -2398,12 +2398,12 @@ function FCFDockOverflowList_Update(list, dock)
 		end
 
 		FCFDockOverflowListButton_SetValue(button, dockedFrames[i]);
-		
+
 		totalHeight = totalHeight + button:GetHeight() + 3;
 	end
 
 	list:SetHeight(totalHeight);
-	
+
 	for i = #dockedFrames + 1, #list.buttons do
 		list.buttons[i]:Hide();
 	end

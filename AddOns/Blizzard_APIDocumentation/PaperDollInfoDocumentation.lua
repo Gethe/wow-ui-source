@@ -169,7 +169,7 @@ local PaperDollInfo =
 			Payload =
 			{
 				{ Name = "equipmentSlot", Type = "number", Nilable = false },
-				{ Name = "hasCurrent", Type = "number", Nilable = true },
+				{ Name = "hasCurrent", Type = "bool", Nilable = false },
 			},
 		},
 		{

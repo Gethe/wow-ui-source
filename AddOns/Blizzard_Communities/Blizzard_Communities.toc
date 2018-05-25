@@ -19,6 +19,7 @@ CommunitiesAddDialogOutbound.lua
 CommunitiesTabs.xml
 CommunitiesSettings.xml
 CommunitiesTicketManagerDialog.xml
+CommunitiesErrors.lua
 GuildRewards.xml
 GuildPerks.xml
 GuildInfo.xml

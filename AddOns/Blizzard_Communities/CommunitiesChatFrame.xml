@@ -55,7 +55,7 @@
 						end);
 					</OnLoad>
 					<OnHyperlinkClick>
-						SetItemRef(link, text, button, self);
+						SetItemRef(link, text, button, nil);
 					</OnHyperlinkClick>
 					<OnMouseWheel>
 						self:ScrollByAmount(delta);

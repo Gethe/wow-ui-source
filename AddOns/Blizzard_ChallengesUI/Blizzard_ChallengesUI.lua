@@ -79,8 +79,9 @@ function ChallengesFrame_OnShow(self)
 	PVEFrame.TitleText:SetText(CHALLENGES);
 	PVEFrame_HideLeftInset();
     
-	C_ChallengeMode.RequestMapInfo();
-    C_ChallengeMode.RequestRewards();
+	C_MythicPlus.RequestCurrentAffixes();
+	C_MythicPlus.RequestMapInfo();
+    C_MythicPlus.RequestRewards();
     for i = 1, #self.maps do
         C_ChallengeMode.RequestLeaders(self.maps[i]);
     end
@@ -95,13 +96,13 @@ function ChallengesFrame_Update(self)
     local sortedMaps = {};
     local hasWeeklyRun = false;
     for i = 1, #self.maps do
-        local _, _, level, affixes = C_ChallengeMode.GetMapPlayerStats(self.maps[i]);
+		local _, level, _, affixIDs, _ = C_MythicPlus.GetSeasonBestForMap(self.maps[i])
         if (not level) then
             level = 0;
         else
             hasWeeklyRun = true;
         end
-        tinsert(sortedMaps, { id = self.maps[i], level = level, affixes = affixes });
+        tinsert(sortedMaps, { id = self.maps[i], level = level, affixes = affixIDs });
     end
     
     table.sort(sortedMaps, function(a, b) return a.level > b.level end);
@@ -120,7 +121,7 @@ function ChallengesFrame_Update(self)
         frame:Show();
     end
     
-    local _, _, _, _, backgroundTexture = C_ChallengeMode.GetMapInfo(sortedMaps[1].id);
+    local _, _, _, _, backgroundTexture = C_ChallengeMode.GetMapUIInfo(sortedMaps[1].id);
     if (backgroundTexture ~= 0) then
         self.Background:SetTexture(backgroundTexture);
     end
@@ -137,7 +138,17 @@ function ChallengesFrame_Update(self)
         end
     end
     
-    self.WeeklyChest:SetShown(C_ChallengeMode.IsWeeklyRewardAvailable());
+    self.WeeklyChest:SetShown(C_MythicPlus.IsWeeklyRewardAvailable());
+	self.WeeklyChest.difficulty, self.WeeklyChest.rewardLevel, self.WeeklyChest.nextRewardLevel = C_MythicPlus.GetWeeklyChestRewardLevel();
+end
+
+ChallengeModeWeeklyChestMixin = {}; 
+
+function ChallengeModeWeeklyChestMixin:OnEnter()
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -20, -15);
+    GameTooltip:AddLine(CHALLENGE_MODE_WEEKLY_REWARD_AVAILABLE, nil, nil, nil, nil, true);
+	GameTooltip:AddLine(MYTHIC_PLUS_CURR_WEEK_REWARD:format(self.difficulty, self.rewardLevel, self.difficulty + 1, self.nextRewardLevel));
+    GameTooltip:Show();
 end
 
 ChallengesDungeonIconMixin = {};
@@ -145,7 +156,7 @@ ChallengesDungeonIconMixin = {};
 function ChallengesDungeonIconMixin:SetUp(mapInfo, isFirst)
     self.mapID = mapInfo.id;
     
-    local _, _, _, texture = C_ChallengeMode.GetMapInfo(mapInfo.id);
+    local _, _, _, texture = C_ChallengeMode.GetMapUIInfo(mapInfo.id);
     
     if (texture == 0) then
         texture = "Interface\\Icons\\achievement_bg_wineos_underxminutes";
@@ -167,26 +178,28 @@ function ChallengesDungeonIconMixin:SetUp(mapInfo, isFirst)
 end
 
 function ChallengesDungeonIconMixin:OnEnter()
-    local name = C_ChallengeMode.GetMapInfo(self.mapID);
+    local name = C_ChallengeMode.GetMapUIInfo(self.mapID);
     GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
     GameTooltip:SetText(name, 1, 1, 1);
-    local _, weeklyBestTime, weeklyBestLevel = C_ChallengeMode.GetMapPlayerStats(self.mapID);
+
+	local durationSec, level, _, _, _ = C_MythicPlus.GetWeeklyBestForMap(self.mapID);
     local addSpacer = false;
-    if (weeklyBestTime and weeklyBestLevel) then
-        GameTooltip:AddLine(CHALLENGE_MODE_THIS_WEEK);
-        GameTooltip:AddLine(CHALLENGE_MODE_POWER_LEVEL:format(weeklyBestLevel), 1, 1, 1);
-        GameTooltip:AddLine(GetTimeStringFromSeconds(weeklyBestTime / 1000), 1, 1, 1);
+    if (durationSec and level) then
+        GameTooltip:AddLine(MYTHIC_PLUS_THIS_WEEK);
+        GameTooltip:AddLine(MYTHIC_PLUS_POWER_LEVEL:format(level), 1, 1, 1);
+        GameTooltip:AddLine(GetTimeStringFromSeconds(durationSec), 1, 1, 1);
         addSpacer = true;
     end
-    
-    local recentBestTime, recentBestLevel = C_ChallengeMode.GetRecentBestForMap(self.mapID);
-    if (recentBestTime and recentBestLevel) then
+
+
+    local seasonBestDurationSec, seasonBestLevel = C_MythicPlus.GetSeasonBestForMap(self.mapID);
+    if (seasonBestDurationSec and seasonBestLevel) then
         if (addSpacer) then
             GameTooltip:AddLine(" ");
         end
-        GameTooltip:AddLine(CHALLENGE_MODE_RECENT_BEST);
-        GameTooltip:AddLine(CHALLENGE_MODE_POWER_LEVEL:format(recentBestLevel), 1, 1, 1);
-        GameTooltip:AddLine(GetTimeStringFromSeconds(recentBestTime / 1000), 1, 1, 1);
+        GameTooltip:AddLine(MYTHIC_PLUS_SEASON_BEST);
+        GameTooltip:AddLine(MYTHIC_PLUS_POWER_LEVEL:format(seasonBestLevel), 1, 1, 1);
+        GameTooltip:AddLine(GetTimeStringFromSeconds(seasonBestDurationSec), 1, 1, 1);
     end
     GameTooltip:Show();
 end
@@ -211,7 +224,7 @@ function ChallengesGuildBestMixin:OnEnter()
     local leaderInfo = self.leaderInfo;
     
     GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-    local name = C_ChallengeMode.GetMapInfo(leaderInfo.mapChallengeModeID);
+    local name = C_ChallengeMode.GetMapUIInfo(leaderInfo.mapChallengeModeID);
     GameTooltip:SetText(name, 1, 1, 1);
     GameTooltip:AddLine(CHALLENGE_MODE_POWER_LEVEL:format(leaderInfo.keystoneLevel));
     for i = 1, #leaderInfo.members do
@@ -250,7 +263,7 @@ function ChallengesFrameWeeklyBestMixin:SetUp(hasWeeklyRun, bestData)
             self.Child.Level:SetPoint("CENTER", self.Child.Star, 0, -5);
         end
         self.Child.Level:SetText(bestData.level);
-        local name = C_ChallengeMode.GetMapInfo(bestData.id);
+        local name = C_ChallengeMode.GetMapUIInfo(bestData.id);
         self.Child.DungeonName:SetText(name);
         self.Child.DungeonName:Show();
         local dmgPct, healthPct = C_ChallengeMode.GetPowerLevelDamageHealthMod(bestData.level);
@@ -382,7 +395,7 @@ function ChallengesKeystoneFrameMixin:OnKeystoneSlotted()
 	self.Instructions:Hide();
 	
 	local mapID, affixes, powerLevel, charged = C_ChallengeMode.GetSlottedKeystoneInfo();
-	local name, _, timeLimit = C_ChallengeMode.GetMapInfo(mapID);
+	local name, _, timeLimit = C_ChallengeMode.GetMapUIInfo(mapID);
 
     self.DungeonName:SetText(name);
     self.DungeonName:Show();
@@ -553,7 +566,7 @@ function ChallengeModeCompleteBannerMixin:OnEvent(event, ...)
 end
 
 function ChallengeModeCompleteBannerMixin:PlayBanner(data)
-    local name, _, timeLimit = C_ChallengeMode.GetMapInfo(data.mapID);
+    local name, _, timeLimit = C_ChallengeMode.GetMapUIInfo(data.mapID);
     
     self.Title:SetText(name);
     

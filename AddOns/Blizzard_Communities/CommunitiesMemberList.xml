@@ -19,21 +19,55 @@
 							</Anchors>
 						</Texture>
 						<FontString parentKey="Name" inherits="GameFontHighlightSmall" justifyH="LEFT" wordwrap="false">
-							<Size x="136" y="0"/>
+							<Size x="136" y="20"/>
 							<Anchors>
 								<Anchor point="LEFT"/>
-								<Anchor point="RIGHT"/>
 							</Anchors>
 						</FontString>
 						<Texture parentKey="RankIcon">
 							<Size x="12" y="12"/>
 							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.Name" relativePoint="RIGHT"/>
+								<Anchor point="LEFT" x="0" y="0"/>
 							</Anchors>
 						</Texture>
 					</Layer>
 				</Layers>
 			</Frame>
+			<Button parentKey="SelfDeafenButton" inherits="RosterSelfDeafenButtonTemplate">
+				<Anchors>
+					<Anchor point="RIGHT" x="-17"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="SelfMuteButton" inherits="RosterSelfMuteButtonTemplate">
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.SelfDeafenButton" relativePoint="LEFT" x="-2" y="0"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="MemberMuteButton" inherits="RosterMemberMuteButtonTemplate">
+				<Anchors>
+					<Anchor point="RIGHT" x="-17"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="CancelInvitationButton" inherits="UIPanelSquareButton">
+				<Size x="20" y="20"/>
+				<Anchors>
+					<Anchor point="RIGHT" x="-17"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(self);
+						GameTooltip:SetText(COMMUNITY_MEMBER_CANCEL_INVITATION_TOOLTIP);
+						GameTooltip:Show();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+						self:GetParent():CancelInvitation();
+					</OnClick>
+				</Scripts>
+			</Button>
 		</Frames>
 		<Layers>
 			<Layer level="OVERLAY">
@@ -107,6 +141,9 @@
 					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="-3" y="60"/>
 					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="22" y="60"/>
 				</Anchors>
+				<KeyValues>
+					<KeyValue key="sortingFunction" value="CommunitiesMemberListColumnDisplay_OnClick" type="global"/>
+				</KeyValues>
 				<Layers>
 					<Layer level="BORDER">
 						<Texture parentKey="InsetBorderTopLeft" inherits="UI-Frame-InnerTopLeft">

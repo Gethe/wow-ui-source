@@ -19,6 +19,12 @@ end
 	return playerLocation;
 end
 
+--[[static]] function PlayerLocation:CreateFromCommunityData(clubID, streamID, epoch, position)
+	local playerLocation = CreateFromMixins(PlayerLocationMixin);
+	playerLocation:SetCommunityData(clubID, streamID, epoch, position);
+	return playerLocation;
+end
+
 --[[static]] function PlayerLocation:CreateFromBattlefieldScoreIndex(battlefieldScoreIndex)
 	local playerLocation = CreateFromMixins(PlayerLocationMixin);
 	playerLocation:SetBattlefieldScoreIndex(battlefieldScoreIndex);
@@ -94,6 +100,18 @@ function PlayerLocationMixin:GetVoiceID()
 	return self.voiceMemberID, self.voiceChannelID;
 end
 
+function PlayerLocationMixin:SetCommunityData(clubID, streamID, epoch, position)
+	self:Clear();
+	self.communityClubID = clubID;
+	self.communityStreamID = streamID;
+	self.communityEpoch = epoch;
+	self.communityPosition = position;
+end
+
+function PlayerLocationMixin:IsCommunityData()
+	return self.communityClubID ~= nil and self.communityStreamID ~= nil and self.communityEpoch ~= nil and self.communityPosition ~= nil;
+end
+
 --[[private api]]
 function PlayerLocationMixin:Clear()
 	self.guid = nil;
@@ -102,6 +120,10 @@ function PlayerLocationMixin:Clear()
 	self.battlefieldScoreIndex = nil;
 	self.voiceMemberID = nil;
 	self.voiceChannelID = nil;
+	self.communityClubID = nil;
+	self.communityStreamID = nil;
+	self.communityEpoch = nil;
+	self.communityPosition = nil;
 end
 
 function PlayerLocationMixin:ClearAndSetField(fieldName, field)

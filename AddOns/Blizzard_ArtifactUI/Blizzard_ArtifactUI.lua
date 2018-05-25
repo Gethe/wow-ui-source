@@ -221,20 +221,11 @@ local function MetaPowerTooltipHelper(...)
 end
 
 function ArtifactUIMixin:RefreshKnowledgeRanks()
-	local totalRanks = C_ArtifactUI.GetTotalPurchasedRanks();
-	if totalRanks > 0 then
-		self.ForgeBadgeFrame.ForgeLevelLabel:SetText(totalRanks);
-		self.ForgeBadgeFrame.ForgeLevelLabel:Show();
-		self.ForgeBadgeFrame.ForgeLevelBackground:Show();
-		self.ForgeBadgeFrame.ForgeLevelBackgroundBlack:Show();
-		self.ForgeLevelFrame:Show();
-	else
-		self.ForgeBadgeFrame.ForgeLevelLabel:Hide();
-		self.ForgeBadgeFrame.ForgeLevelBackground:Hide();
-		self.ForgeBadgeFrame.ForgeLevelBackgroundBlack:Hide();
-		self.ForgeLevelFrame:Hide();
-		self.KnowledgeLevelHelpBox:Hide();
-	end
+	self.ForgeBadgeFrame.ForgeLevelLabel:Hide();
+	self.ForgeBadgeFrame.ForgeLevelBackground:Hide();
+	self.ForgeBadgeFrame.ForgeLevelBackgroundBlack:Hide();
+	self.ForgeLevelFrame:Hide();
+	self.KnowledgeLevelHelpBox:Hide();
 end
 
 function ArtifactUIMixin:OnKnowledgeEnter(knowledgeFrame)

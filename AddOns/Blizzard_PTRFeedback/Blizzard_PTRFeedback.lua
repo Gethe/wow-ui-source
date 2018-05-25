@@ -45,11 +45,16 @@ function PTR_IssueReporter.Init()
     }
 
     function PTR_IssueReporter.Reminder(enable, ...)
-        for k,v in pairs({...}) do
-            if (enable) then
-                ActionButton_ShowOverlayGlow(v)
-            else
-                ActionButton_HideOverlayGlow(v)
+        if (not Blizzard_PTRIssueReporter_Saved.sawHighlight) then
+            for k,v in pairs({...}) do
+                if (enable) then
+                    ActionButton_ShowOverlayGlow(v)
+                else
+                    ActionButton_HideOverlayGlow(v)
+                end
+            end
+            if (not enable) then
+                Blizzard_PTRIssueReporter_Saved.sawHighlight = true
             end
         end
     end
@@ -208,6 +213,7 @@ function PTR_IssueReporter.Init()
         local left, bottom, width, height = self:GetRect()
         Blizzard_PTRIssueReporter_Saved.x = left
         Blizzard_PTRIssueReporter_Saved.y = bottom
+        PTR_IssueReporter.Reminder(false, Confused, ReportBug)
     end)
     PTR_IssueReporter:SetScript("OnHide", function(self)
         self:Show()

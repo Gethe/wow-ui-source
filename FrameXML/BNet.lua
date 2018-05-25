@@ -3,6 +3,7 @@ local BN_TOAST_TYPE_OFFLINE = 2;
 local BN_TOAST_TYPE_BROADCAST = 3;
 local BN_TOAST_TYPE_PENDING_INVITES = 4;
 local BN_TOAST_TYPE_NEW_INVITE = 5;
+local BN_TOAST_TYPE_CLUB_INVITATION = 6;
 
 BNET_CLIENT_WOW = "WoW";
 BNET_CLIENT_SC2 = "S2";
@@ -39,6 +40,7 @@ function BNToastMixin:OnLoad()
 	self.BNToastEvents = {
 		showToastOnline = { "BN_FRIEND_ACCOUNT_ONLINE" },
 		showToastOffline = { "BN_FRIEND_ACCOUNT_OFFLINE" },
+		showToastClubInvitation = { "CLUB_INVITATION_ADDED_FOR_SELF" },
 		showToastBroadcast = { "BN_CUSTOM_MESSAGE_CHANGED" },
 		showToastFriendRequest = { "BN_FRIEND_INVITE_ADDED", "BN_FRIEND_INVITE_LIST_INITIALIZED" },
 	};
@@ -66,6 +68,8 @@ function BNToastMixin:OnEvent(event, ...)
 		self:OnCustomMessageChanged(...);
 	elseif ( event == "BN_FRIEND_INVITE_ADDED" ) then
 		self:AddToast(BN_TOAST_TYPE_NEW_INVITE);
+	elseif ( event == "CLUB_INVITATION_ADDED_FOR_SELF" ) then
+		self:AddToast(BN_TOAST_TYPE_CLUB_INVITATION, ...);
 	elseif ( event == "BN_FRIEND_INVITE_LIST_INITIALIZED" ) then
 		self:AddToast(BN_TOAST_TYPE_PENDING_INVITES, ...);
 	elseif( event == "VARIABLES_LOADED" ) then
@@ -112,6 +116,10 @@ function BNToastMixin:OnClick()
 		if accountName then --This player may have been removed from our friends list, so we may not have a name.
 			ChatFrame_SendSmartTell(accountName);
 		end
+	elseif toastType == BN_TOAST_TYPE_CLUB_INVITATION then
+		Communities_LoadUI();
+		ShowUIPanel(CommunitiesFrame);
+		CommunitiesFrame:SelectClub(toastData.club.clubId);
 	end
 end
 
@@ -205,6 +213,7 @@ function BNToastMixin:ShowToast()
 		self.IconTexture:SetTexCoord(0.75, 1, 0, 0.5);
 		doubleLine:Show();
 		doubleLine:SetText(BN_TOAST_NEW_INVITE);
+		doubleLine:SetMaxLines(0);
 	elseif ( toastType == BN_TOAST_TYPE_PENDING_INVITES ) then
 		self.IconTexture:SetTexCoord(0.75, 1, 0, 0.5);
 		doubleLine:Show();
@@ -257,6 +266,17 @@ function BNToastMixin:ShowToast()
 		bottomLine:SetTextColor(FRIENDS_GRAY_COLOR.r, FRIENDS_GRAY_COLOR.g, FRIENDS_GRAY_COLOR.b);
 		doubleLine:Hide();
 		middleLine:Hide();
+	elseif ( toastType == BN_TOAST_TYPE_CLUB_INVITATION ) then
+		self.IconTexture:SetTexCoord(0.5, 0.75, 0, 0.5);
+		doubleLine:Show();
+		local clubName = "";
+		if toastData.club.clubType == Enum.ClubType.BattleNet then
+			clubName = BATTLENET_FONT_COLOR:WrapTextInColorCode(toastData.club.name);
+		else
+			clubName = NORMAL_FONT_COLOR:WrapTextInColorCode(toastData.club.name);
+		end
+		doubleLine:SetText(BN_TOAST_NEW_CLUB_INVITATION:format(clubName));
+		doubleLine:SetMaxLines(2);
 	end
 
 	if (middleLine:IsShown() and bottomLine:IsShown()) then

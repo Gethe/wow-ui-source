@@ -16,6 +16,7 @@ local Vehicle =
 			LiteralName = "PLAYER_GAINS_VEHICLE_DATA",
 			Payload =
 			{
+				{ Name = "unitTarget", Type = "string", Nilable = false },
 				{ Name = "vehicleUIIndicatorID", Type = "number", Nilable = false },
 			},
 		},
@@ -23,6 +24,10 @@ local Vehicle =
 			Name = "PlayerLosesVehicleData",
 			Type = "Event",
 			LiteralName = "PLAYER_LOSES_VEHICLE_DATA",
+			Payload =
+			{
+				{ Name = "unitTarget", Type = "string", Nilable = false },
+			},
 		},
 		{
 			Name = "UnitEnteredVehicle",
@@ -30,6 +35,7 @@ local Vehicle =
 			LiteralName = "UNIT_ENTERED_VEHICLE",
 			Payload =
 			{
+				{ Name = "unitTarget", Type = "string", Nilable = false },
 				{ Name = "showVehicleFrame", Type = "bool", Nilable = false },
 				{ Name = "isControlSeat", Type = "bool", Nilable = false },
 				{ Name = "vehicleUIIndicatorID", Type = "number", Nilable = false },
@@ -44,6 +50,7 @@ local Vehicle =
 			LiteralName = "UNIT_ENTERING_VEHICLE",
 			Payload =
 			{
+				{ Name = "unitTarget", Type = "string", Nilable = false },
 				{ Name = "showVehicleFrame", Type = "bool", Nilable = false },
 				{ Name = "isControlSeat", Type = "bool", Nilable = false },
 				{ Name = "vehicleUIIndicatorID", Type = "number", Nilable = false },
@@ -56,11 +63,19 @@ local Vehicle =
 			Name = "UnitExitedVehicle",
 			Type = "Event",
 			LiteralName = "UNIT_EXITED_VEHICLE",
+			Payload =
+			{
+				{ Name = "unitTarget", Type = "string", Nilable = false },
+			},
 		},
 		{
 			Name = "UnitExitingVehicle",
 			Type = "Event",
 			LiteralName = "UNIT_EXITING_VEHICLE",
+			Payload =
+			{
+				{ Name = "unitTarget", Type = "string", Nilable = false },
+			},
 		},
 		{
 			Name = "VehicleAngleShow",

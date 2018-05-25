@@ -1,6 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
-	<Script file="IslandsQueueFrame.lua"/> 
 	<Button name="IslandsQueueFrameDifficultyButtonTemplate" virtual="true">
 		<Size x="39" y="39"/> 
 		<HighlightTexture parentKey="Highlight" atlas="bags-roundhighlight" alphaMode="ADD" hidden="true">
@@ -55,11 +54,8 @@
 					<Anchor point="TOPLEFT" x="20" y="-22"/> 
 				</Anchors>
 				<Layers>
-					<Layer level="BACKGROUND">
+					<Layer level="BACKGROUND" textureSubLevel="-5">
 						<Texture parentKey="Parchment" atlas="islands-queue-card-namescroll" useAtlasSize="true"/>
-					</Layer>
-					<Layer level="OVERLAY">
-						<FontString parentKey="IslandName" inherits="GameFontNormalLarge" justifyH="CENTER" justifyV="MIDDLE"/>
 					</Layer>
 				</Layers>
 			</Frame>
@@ -68,7 +64,7 @@
 	<Frame name="IslandsQueueFrameCardFrameTemplate" virtual="true">
 		<Size x="950" y="642"/> 
 		<Frames>
-			<Frame parentKey="CenterCard" frameLevel="100" parentArray="IslandCards" inherits="IslandsQueueFrameIslandCardTemplate">
+			<Frame parentKey="CenterCard" frameLevel="1000" parentArray="IslandCards" inherits="IslandsQueueFrameIslandCardTemplate">
 				<Size x="451" y="301"/> 
 				<Anchors>
 					<Anchor point="CENTER" x="0" y="-80"/> 
@@ -77,16 +73,9 @@
 					<Layer level="BACKGROUND">
 						<Texture parentKey="Background" atlas="islands-queue-card2" useAtlasSize="true"/>
 					</Layer> 
-					<Layer level="ARTWORK"> 
-						<Texture parentKey="CardArt" atlas="islands-queue-card-island1" useAtlasSize="true">
-							<Anchors> 
-								<Anchor point="CENTER"  relativeKey="$parent.Background"/> 
-							</Anchors>
-						</Texture>
-					</Layer>
 				</Layers>
 			</Frame>
-			<Frame parentKey="LeftCard" parentArray="IslandCards" inherits="IslandsQueueFrameIslandCardTemplate">
+			<Frame parentKey="LeftCard" frameLevel="500" parentArray="IslandCards" inherits="IslandsQueueFrameIslandCardTemplate">
 				<Size x="457" y="322"/> 
 				<Anchors>
 					<Anchor point="TOPLEFT" x="20" y="-20"/> 
@@ -95,16 +84,9 @@
 					<Layer level="BACKGROUND">
 						<Texture parentKey="Background" atlas="islands-queue-card1" useAtlasSize="true"/>
 					</Layer> 
-					<Layer level="ARTWORK"> 
-						<Texture parentKey="CardArt" rotation="-4.91" atlas="islands-queue-card-island1" useAtlasSize="true">
-							<Anchors> 
-								<Anchor point="CENTER" relativeKey="$parent.Background"/> 
-							</Anchors>
-						</Texture>
-					</Layer>
 				</Layers>
 			</Frame>
-			<Frame parentKey="RightCard" parentArray="IslandCards" inherits="IslandsQueueFrameIslandCardTemplate">
+			<Frame parentKey="RightCard" frameLevel="100" parentArray="IslandCards" inherits="IslandsQueueFrameIslandCardTemplate">
 				<Size x="438" y="302"/> 
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="-20" y="-20"/> 
@@ -113,13 +95,6 @@
 					<Layer level="BACKGROUND">
 						<Texture parentKey="Background" atlas="islands-queue-card3" useAtlasSize="true"/>
 					</Layer> 
-					<Layer level="ARTWORK"> 
-						<Texture parentKey="CardArt" rotation="1.15" atlas="islands-queue-card-island1" useAtlasSize="true">
-							<Anchors> 
-								<Anchor point="CENTER" relativeKey="$parent.Background"/> 
-							</Anchors>
-						</Texture>
-					</Layer>
 				</Layers>
 			</Frame>
 		</Frames>
@@ -203,12 +178,12 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<Frame parentKey="IslandCardsFrame" inherits="IslandsQueueFrameCardFrameTemplate">
+			<Frame parentKey="IslandCardsFrame" useParentLevel="true" inherits="IslandsQueueFrameCardFrameTemplate">
 				<Anchors>
-					<Anchor point="BOTTOM"/>
+					<Anchor point="BOTTOM" x="0" y="-20"/>
 				</Anchors>
 			</Frame>
-			<Frame parentKey="DifficultySelectorFrame" frameLevel="100" inherits="IslandsQueueScreenDifficultySelector">
+			<Frame parentKey="DifficultySelectorFrame" frameLevel="1100" inherits="IslandsQueueScreenDifficultySelector">
 				<Anchors>
 					<Anchor point="BOTTOM" x="0" y="10"/> 
 				</Anchors>

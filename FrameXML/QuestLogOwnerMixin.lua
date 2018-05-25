@@ -80,7 +80,7 @@ end
 function QuestLogOwnerMixin:HandleUserActionOpenQuestLog(mapID)
 	self:SetDisplayState(DISPLAY_STATE_OPEN_MINIMIZED_WITH_LOG);
 	if mapID then
-		self:NavigateToMap(mapID);
+		self:SetMapID(mapID);
 	end
 end
 
@@ -88,7 +88,7 @@ function QuestLogOwnerMixin:HandleUserActionOpenSelf(mapID)
 	-- any displayState is fine for this
 	ShowUIPanel(self);
 	if mapID then
-		self:NavigateToMap(mapID);
+		self:SetMapID(mapID);
 	end
 end
 

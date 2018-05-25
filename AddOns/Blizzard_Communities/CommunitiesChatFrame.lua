@@ -33,6 +33,7 @@ function CommunitiesChatMixin:OnShow()
 	self:GetCommunitiesFrame():RegisterCallback(CommunitiesFrameMixin.Event.StreamSelected, self.streamSelectedCallback);
 	
 	self:UpdateChatColor();
+	self:DisplayChat();
 end
 
 function CommunitiesChatMixin:OnEvent(event, ...)
@@ -211,6 +212,13 @@ function CommunitiesChatMixin:GetChatColor()
 	local r, g, b = Chat_GetCommunitiesChannelColor(clubId, streamId);
 	if r ~= nil then
 		return r, g, b;
+	elseif clubInfo.clubType == Enum.ClubType.Guild then
+		local streamInfo = C_Club.GetStreamInfo(clubId, streamId);
+		if streamInfo and streamInfo.leadersAndModeratorsOnly then
+			return DIM_GREEN_FONT_COLOR:GetRGB();
+		else
+			return GREEN_FONT_COLOR:GetRGB();
+		end
 	elseif clubInfo.clubType == Enum.ClubType.BattleNet then
 		return BATTLENET_FONT_COLOR:GetRGB();
 	else
@@ -218,16 +226,22 @@ function CommunitiesChatMixin:GetChatColor()
 	end
 end
 
-function CommunitiesChatMixin:FormatMessage(message)
-	if message.author.classID then
-		local classInfo = C_CreatureInfo.GetClassInfo(message.author.classID);
+function CommunitiesChatMixin:FormatMessage(clubId, streamId, message)
+	local name = message.author.name or "";
+	local link;
+	if message.author.clubType == Enum.ClubType.BattleNet then
+		link = GetBNPlayerCommunityLink(name, name, message.author.bnetAccountId, clubId, streamId, message.messageId.epoch, message.messageId.position);
+	elseif message.author.clubType == Enum.ClubType.Character or message.author.clubType == Enum.ClubType.Guild then
+		local classInfo = message.author.classID and C_CreatureInfo.GetClassInfo(message.author.classID);
 		if classInfo then
 			local classColorInfo = RAID_CLASS_COLORS[classInfo.classFile];
-			return COMMUNITIES_CHAT_MESSAGE_FORMAT_CHARACTER:format(classColorInfo.colorStr, message.author.name or "", message.content);
+			link = GetPlayerCommunityLink(name, WrapTextInColorCode(name, classColorInfo.colorStr), clubId, streamId, message.messageId.epoch, message.messageId.position);
+		else
+			link = GetPlayerCommunityLink(name, name, clubId, streamId, message.messageId.epoch, message.messageId.position);
 		end
 	end
 	
-	return COMMUNITIES_CHAT_MESSAGE_FORMAT:format(message.author.name or "", message.content);
+	return COMMUNITIES_CHAT_MESSAGE_FORMAT:format(link or name, message.content);
 end
 
 function CommunitiesChatMixin:AddMessage(clubId, streamId, message, backfill)
@@ -241,9 +255,9 @@ function CommunitiesChatMixin:AddMessage(clubId, streamId, message, backfill)
 	end
 	
 	if backfill then
-		self.MessageFrame:BackFillMessage(self:FormatMessage(message), r, g, b, clubId, streamId, message.messageId, message.author.memberId);
+		self.MessageFrame:BackFillMessage(self:FormatMessage(clubId, streamId, message), r, g, b, clubId, streamId, message.messageId, message.author.memberId);
 	else
-		self.MessageFrame:AddMessage(self:FormatMessage(message), r, g, b, clubId, streamId, message.messageId, message.author.memberId);
+		self.MessageFrame:AddMessage(self:FormatMessage(clubId, streamId, message), r, g, b, clubId, streamId, message.messageId, message.author.memberId);
 	end
 end
 
@@ -267,7 +281,7 @@ end
 function CommunitiesChatMixin:RefreshMessages(predicate)
 	local function RefreshMessage(message, r, g, b, messageClubId, messageStreamId, messageId, messageMemberId, ...)
 		local messageInfo = C_Club.GetMessageInfo(messageClubId, messageStreamId, messageId);
-		return self:FormatMessage(messageInfo), r, g, b, messageClubId, messageStreamId, messageId, messageMemberId, ...;
+		return self:FormatMessage(messageClubId, messageStreamId, messageInfo), r, g, b, messageClubId, messageStreamId, messageId, messageMemberId, ...;
 	end
 
 	self.MessageFrame:TransformMessages(predicate, RefreshMessage);

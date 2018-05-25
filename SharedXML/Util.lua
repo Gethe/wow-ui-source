@@ -237,6 +237,11 @@ function FindInTableIf(tbl, pred)
 	return nil;
 end
 
+function ExtractHyperlinkString(linkString)
+	local preString, hyperlinkString, postString = linkString:match("^(.*)|H(.+)|h(.*)$");
+	return preString ~= nil, preString, hyperlinkString, postString;
+end
+
 function GetItemInfoFromHyperlink(link)
 	local hyperlink = link:match("|Hitem:.-|h");
 	if (hyperlink) then
@@ -856,6 +861,18 @@ function CreateAtlasMarkup(atlasName, height, width, offsetX, offsetY)
 		, offsetX or 0
 		, offsetY or 0
 	);
+end
+
+function SetupAtlasesOnRegions(frame, regionsToAtlases, useAtlasSize)
+	for region, atlas in pairs(regionsToAtlases) do
+		if frame[region] then
+			if frame[region]:GetObjectType() == "StatusBar" then
+				frame[region]:SetStatusBarAtlas(atlas);
+			elseif frame[region].SetAtlas then
+				frame[region]:SetAtlas(atlas, useAtlasSize);
+			end
+		end
+	end
 end
 
 function SetupTextureKitOnFrameByID(textureKitID, frame, fmt, setVisibilityOfRegions, useAtlasSize)

@@ -86,11 +86,12 @@ function GameTooltip_SetDefaultAnchor(tooltip, parent)
 	tooltip.default = 1;
 end
 
-function GameTooltip_SetBasicTooltip(tooltip, text, x, y)
+function GameTooltip_SetBasicTooltip(tooltip, text, x, y, wrap)
 	tooltip:SetOwner(UIParent, "ANCHOR_NONE");
 	tooltip:ClearAllPoints();
 	tooltip:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", x, y);
-	tooltip:SetText(text, HIGHLIGHT_FONT_COLOR:GetRGB());
+	local r, g, b = HIGHLIGHT_FONT_COLOR:GetRGB();
+	tooltip:SetText(text, r, g, b, 1, wrap);
 end
 
 function GameTooltip_AddBlankLinesToTooltip(tooltip, numLines)
@@ -116,8 +117,8 @@ function GameTooltip_AddInstructionLine(tooltip, text, wrap)
 end
 
 function GameTooltip_AddColoredLine(tooltip, text, color, wrap)
-	local r, g, b, a = color:GetRGBA();
-	tooltip:AddLine(text, r, g, b, a, wrap);
+	local r, g, b = color:GetRGB();
+	tooltip:AddLine(text, r, g, b, wrap);
 end
 
 function GameTooltip_AddQuestRewardsToTooltip(tooltip, questID, style)
@@ -395,25 +396,60 @@ function GameTooltip_AddNewbieTip(frame, normalText, r, g, b, newbieText, noNorm
 	end
 end
 
-function GameTooltip_ShowCompareItem(self, anchorFrame)
-	if ( not self ) then
+function GameTooltip_HideBattlePetTooltip()
+	if BattlePetTooltip then
+		BattlePetTooltip:Hide();
+	end
+end
+
+function GameTooltip_HideShoppingTooltips(self)
+	local shoppingTooltip1, shoppingTooltip2 = unpack(self.shoppingTooltips);
+	shoppingTooltip1:Hide();
+	shoppingTooltip2:Hide()
+end
+
+function GameTooltip_OnTooltipSetUnit(self)
+	if self:IsUnit("mouseover") then
+		_G[self:GetName().."TextLeft1"]:SetTextColor(GameTooltip_UnitColor("mouseover"));
+	end
+	GameTooltip_HideBattlePetTooltip();
+end
+
+function GameTooltip_OnTooltipSetItem(self)
+	if IsModifiedClick("COMPAREITEMS") or (GetCVarBool("alwaysCompareItems") and not self:IsEquippedItem()) then
+		GameTooltip_ShowCompareItem(self);
+	else
+		GameTooltip_HideShoppingTooltips(self);
+	end
+	GameTooltip_HideBattlePetTooltip();
+end
+
+function GameTooltip_OnTooltipSetSpell(self)
+	if (not IsModifiedClick("COMPAREITEMS") and not GetCVarBool("alwaysCompareItems")) or not GameTooltip_ShowCompareSpell(self) then
+		GameTooltip_HideShoppingTooltips(self);
+	end
+	GameTooltip_HideBattlePetTooltip();
+end
+
+function GameTooltip_InitializeComparisonTooltips(self, anchorFrame)
+	if not self then
 		self = GameTooltip;
 	end
 
-	if( not anchorFrame ) then
+	if not anchorFrame then
 		anchorFrame = self.overrideComparisonAnchorFrame or self;
 	end
 
-	if ( self.needsReset ) then
+	if self.needsReset then
 		self:ResetSecondaryCompareItem();
 		GameTooltip_AdvanceSecondaryCompareItem(self);
 		self.needsReset = false;
 	end
 
-	local shoppingTooltip1, shoppingTooltip2 = unpack(self.shoppingTooltips);
+	return self, anchorFrame, unpack(self.shoppingTooltips);
+end
 
-	local primaryItemShown, secondaryItemShown = shoppingTooltip1:SetCompareItem(shoppingTooltip2, self);
-
+function GameTooltip_AnchorComparisonTooltips(self, anchorFrame, shoppingTooltip1, shoppingTooltip2, primaryItemShown, secondaryItemShown)
 	local leftPos = anchorFrame:GetLeft();
 	local rightPos = anchorFrame:GetRight();
 
@@ -489,9 +525,68 @@ function GameTooltip_ShowCompareItem(self, anchorFrame)
 
 		shoppingTooltip2:Hide();
 	end
+end
+
+function GameTooltip_ShowCompareSpell(self, anchorFrame)
+	local azeritePowerID, owningItemLink = self:GetAzeritePowerID();
+	if not azeritePowerID or not owningItemLink then
+		return false;
+	end
+
+	local owningItemSource = AzeriteEmpowedItemDataSource:CreateFromFromItemLink(owningItemLink);
+	local sourceItem = owningItemSource:GetItem();
+	if not sourceItem:IsItemDataCached() then
+		-- We'll try again later
+		return false;
+	end
+
+	local equippedItemLocation = ItemLocation:CreateFromEquipmentSlot(sourceItem:GetInventoryType());
+	if not C_Item.DoesItemExist(equippedItemLocation) or not C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItem(equippedItemLocation) then
+		return false;
+	end
+
+	local equippedItemSource = AzeriteEmpowedItemDataSource:CreateFromFromItemLocation(equippedItemLocation);
+	local equippedItem = equippedItemSource:GetItem(equippedItemLocation);
+	if not equippedItem:IsItemDataCached() then
+		-- We'll try again later
+		return false;
+	end
+
+	local powerTierIndex = AzeriteUtil.FindAzeritePowerTier(owningItemSource, azeritePowerID);
+	if not powerTierIndex then
+		return false;
+	end
+
+	local comparisonPowerID = AzeriteUtil.GetSelectedAzeritePowerInTier(equippedItemSource, powerTierIndex);
+	if not comparisonPowerID then
+		return false;
+	end
+
+	local tooltip, anchorFrame, shoppingTooltip1, shoppingTooltip2 = GameTooltip_InitializeComparisonTooltips(self, anchorFrame);
+
+	local itemID = equippedItem:GetItemID();
+	local itemLevel = equippedItem:GetCurrentItemLevel();
+	shoppingTooltip1:SetAzeritePower(itemID, itemLevel, comparisonPowerID);
+
+	local primaryItemShown = true;
+	local secondaryItemShown = false;
+	GameTooltip_AnchorComparisonTooltips(tooltip, anchorFrame, shoppingTooltip1, shoppingTooltip2, primaryItemShown, secondaryItemShown);
+
+	shoppingTooltip1:SetCompareAzeritePower(itemID, itemLevel, comparisonPowerID);
+	shoppingTooltip1:Show();
+
+	return true;
+end
+
+function GameTooltip_ShowCompareItem(self, anchorFrame)
+	local tooltip, anchorFrame, shoppingTooltip1, shoppingTooltip2 = GameTooltip_InitializeComparisonTooltips(self, anchorFrame);
+
+	local primaryItemShown, secondaryItemShown = shoppingTooltip1:SetCompareItem(shoppingTooltip2, tooltip);
+
+	GameTooltip_AnchorComparisonTooltips(tooltip, anchorFrame, shoppingTooltip1, shoppingTooltip2, primaryItemShown, secondaryItemShown);
 
 	-- We have to call this again because :SetOwner clears the tooltip.
-	shoppingTooltip1:SetCompareItem(shoppingTooltip2, self);
+	shoppingTooltip1:SetCompareItem(shoppingTooltip2, tooltip);
 	shoppingTooltip1:Show();
 end
 
@@ -541,7 +636,7 @@ local function WidgetLayout(widgetContainer, sortedWidgets)
 
 	for index, widgetFrame in ipairs(sortedWidgets) do
 		if ( index == 1 ) then
-			widgetFrame:SetPoint("TOP");
+			widgetFrame:SetPoint("TOP", widgetContainer, "TOP", 0, 0);
 			widgetsHeight = widgetsHeight + widgetFrame:GetHeight();
 		else
 			local relative = sortedWidgets[index - 1];
@@ -589,7 +684,7 @@ end
 function GameTooltip_Hide()
 	-- Used for XML OnLeave handlers
 	GameTooltip:Hide();
-	BattlePetTooltip:Hide();
+	GameTooltip_HideBattlePetTooltip();
 end
 
 function GameTooltip_HideResetCursor()

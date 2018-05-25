@@ -1583,9 +1583,141 @@
 					</OnClick>
 				</Scripts>
 			</CheckButton>
+			<Slider name="$parentContrastSlider" inherits="VideoOptionsSliderTemplate" minValue="0" maxValue="100" valueStep="1" obeyStepOnDrag="true">
+				<Size x="180" y="17"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentMaxFPSBKSlider" relativePoint="BOTTOMLEFT">
+						<Offset x="0" y="-25"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						local name = self:GetName();
+						self.type = CONTROLTYPE_SLIDER;
+						self.cvar = "Contrast";
+						self.tooltip = OPTION_TOOLTIP_CONTRAST;
+						self.name = OPTION_CONTRAST;
+						self.SetDisplayValue = self.SetValue;
+						self.SetValue = function (self, value)
+							self:SetDisplayValue(value);
+							BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
+						end
+						self.GetCurrentValue =
+							function (self)
+								return BlizzardOptionsPanel_GetCVarSafe(self.cvar);
+							end;
+						_G[name.."Text"]:SetFontObject("OptionsFontSmall");
+						_G[name.."Text"]:SetText(OPTION_CONTRAST);
+						_G[name.."High"]:Hide();
+
+						self.Label = _G[name.."Low"];
+						self.Label:ClearAllPoints();
+						self.Label:SetPoint("LEFT", self, "RIGHT", 3, 2);
+						self.Label:SetVertexColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+						VideoOptionsSlider_OnLoad(self);
+					</OnLoad>
+					<OnValueChanged>
+						if(userInput) then
+							Graphics_EnableApply(self);
+							self.newValue = value;
+							BlizzardOptionsPanel_SetCVarSafe(self.cvar, value)
+							VideoOptions_OnClick(self, value);
+						end
+						self.Label:SetFormattedText(CONTRAST_FORMAT, value);
+					</OnValueChanged>
+				</Scripts>
+			</Slider>
+			<Slider name="$parentBrightnessSlider" inherits="VideoOptionsSliderTemplate" minValue="0" maxValue="100" valueStep="1" obeyStepOnDrag="true">
+				<Size x="180" y="17"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentContrastSlider" relativePoint="BOTTOMLEFT">
+						<Offset x="0" y="-25"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						local name = self:GetName();
+						self.type = CONTROLTYPE_SLIDER;
+						self.cvar = "Brightness";
+						self.tooltip = OPTION_TOOLTIP_BRIGHTNESS;
+						self.name = OPTIONS_BRIGHTNESS;
+						self.SetDisplayValue = self.SetValue;
+						self.SetValue = function (self, value)
+							self:SetDisplayValue(value);
+							BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
+						end
+						self.GetCurrentValue =
+							function (self)
+								return BlizzardOptionsPanel_GetCVarSafe(self.cvar);
+							end;
+						_G[name.."Text"]:SetFontObject("OptionsFontSmall");
+						_G[name.."Text"]:SetText(OPTIONS_BRIGHTNESS);
+						_G[name.."High"]:Hide();
+
+						self.Label = _G[name.."Low"];
+						self.Label:ClearAllPoints();
+						self.Label:SetPoint("LEFT", self, "RIGHT", 3, 2);
+						self.Label:SetVertexColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+						VideoOptionsSlider_OnLoad(self);
+					</OnLoad>
+					<OnValueChanged>
+						if(userInput) then
+							Graphics_EnableApply(self);
+							self.newValue = value;
+							BlizzardOptionsPanel_SetCVarSafe(self.cvar, value)
+							VideoOptions_OnClick(self, value);
+						end
+						self.Label:SetFormattedText(BRIGHTNESS_FORMAT, value);
+					</OnValueChanged>
+				</Scripts>
+			</Slider>
+			<Slider name="$parentGammaSlider" inherits="VideoOptionsSliderTemplate" minValue="0.3" maxValue="2.8" valueStep=".1" obeyStepOnDrag="true">
+				<Size x="180" y="17"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentBrightnessSlider" relativePoint="BOTTOMLEFT">
+						<Offset x="0" y="-25"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						local name = self:GetName();
+						self.type = CONTROLTYPE_SLIDER;
+						self.cvar = "Gamma";
+						self.tooltip = OPTION_TOOLTIP_GAMMA;
+						self.name = GAMMA;
+						self.SetDisplayValue = self.SetValue;
+						self.SetValue = function (self, value)
+							self:SetDisplayValue(value);
+							BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
+						end
+						self.GetCurrentValue =
+							function (self)
+								return BlizzardOptionsPanel_GetCVarSafe(self.cvar);
+							end;
+						_G[name.."Text"]:SetFontObject("OptionsFontSmall");
+						_G[name.."Text"]:SetText(GAMMA);
+						_G[name.."High"]:Hide();
+
+						self.Label = _G[name.."Low"];
+						self.Label:ClearAllPoints();
+						self.Label:SetPoint("LEFT", self, "RIGHT", 3, 2);
+						self.Label:SetVertexColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+						VideoOptionsSlider_OnLoad(self);
+					</OnLoad>
+					<OnValueChanged>
+						if(userInput) then
+							Graphics_EnableApply(self);
+							self.newValue = value;
+							BlizzardOptionsPanel_SetCVarSafe(self.cvar, value)
+							VideoOptions_OnClick(self, value);
+						end
+						self.Label:SetFormattedText(GAMMA_FORMAT, value);
+					</OnValueChanged>
+				</Scripts>
+			</Slider>
 			<CheckButton name="$parentShowHDModels" inherits="VideoOptionsSmallCheckButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentMaxFPSBKSlider" relativePoint="BOTTOMLEFT" x="-25" y="-20"/>
+					<Anchor point="TOPLEFT" relativeTo="$parentGammaSlider" relativePoint="BOTTOMLEFT" x="-25" y="-20"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
@@ -1594,6 +1726,24 @@
 						self.name = SHOW_HD_MODELS_TEXT;
 						self.tooltip = OPTION_TOOLTIP_SHOW_HD_MODELS;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentLockCursorToScreen" inherits="VideoOptionsSmallCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentShowHDModels" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						if ( not IsWindowsClient() ) then
+							self:Hide();
+						else
+							self.type = CONTROLTYPE_CHECKBOX;
+							self.cvar = "ClipCursor";
+							self.name = LOCK_CURSOR_TEXT;
+							self.tooltip = OPTION_TOOLTIP_LOCK_CURSOR;
+							VideoOptionsCheckbox_OnLoad(self);
+						end
 					</OnLoad>
 				</Scripts>
 			</CheckButton>

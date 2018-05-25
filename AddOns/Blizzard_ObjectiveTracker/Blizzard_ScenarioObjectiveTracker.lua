@@ -261,7 +261,7 @@ function ScenarioTimer_CheckTimers(...)
 		if ( type == LE_WORLD_ELAPSED_TIMER_TYPE_CHALLENGE_MODE) then
 			local mapID = C_ChallengeMode.GetActiveChallengeMapID();
 			if ( mapID ) then
-				local _, _, timeLimit = C_ChallengeMode.GetMapInfo(mapID);
+				local _, _, timeLimit = C_ChallengeMode.GetMapUIInfo(mapID);
 				Scenario_ChallengeMode_ShowBlock(timerID, elapsedTime, timeLimit);
 				return;
 			end
@@ -806,20 +806,48 @@ function SCENARIO_CONTENT_TRACKER_MODULE:StaticReanchor()
 	end
 end
 
-function ScenarioStage_CustomizeBlock(stageBlock, scenarioType)
-	if (scenarioType == LE_SCENARIO_TYPE_LEGION_INVASION) then
-		stageBlock.Stage:SetTextColor(0.753, 1, 0);
-		stageBlock.NormalBG:SetAtlas("legioninvasion-ScenarioTrackerToast", true);
-		stageBlock.RewardButton:Hide();
-	else
+function ScenarioStage_UpdateOptionWidgetRegistration(stageBlock, widgetSetID)
+	if stageBlock.widgetSetID and stageBlock.widgetSetID ~= widgetSetID then
+		UIWidgetManager:UnregisterWidgetSetContainer(stageBlock.widgetSetID, stageBlock.WidgetContainer);
+		stageBlock.WidgetContainer:Hide();
+	end
+
+	if widgetSetID then
+		UIWidgetManager:RegisterWidgetSetContainer(widgetSetID, stageBlock.WidgetContainer);
+		stageBlock.WidgetContainer:Show();
+	end
+
+	stageBlock.widgetSetID = widgetSetID;
+end
+
+function ScenarioStage_CustomizeBlock(stageBlock, scenarioType, widgetSetID, textureKitID)
+	ScenarioStage_UpdateOptionWidgetRegistration(stageBlock, widgetSetID);
+	stageBlock.RewardButton:Hide();
+
+	if widgetSetID then
+		stageBlock.CompleteLabel:SetPoint("LEFT", stageBlock, "LEFT", 15, 17);
+		stageBlock.Stage:SetPoint("TOPLEFT", stageBlock, "TOPLEFT", 15, -8);
 		stageBlock.Stage:SetTextColor(1, 0.914, 0.682);
-		stageBlock.NormalBG:SetAtlas("ScenarioTrackerToast", true);
-		stageBlock.RewardButton:Hide();
+		stageBlock.NormalBG:Hide();
+	else
+		ScenarioStageBlock.CompleteLabel:SetPoint("LEFT", stageBlock, "LEFT", 15, 3);
+
+		if textureKitID then
+			local textureKit = GetUITextureKitInfo(textureKitID);
+			stageBlock.Stage:SetTextColor(1, 0.914, 0.682);
+			stageBlock.NormalBG:SetAtlas(textureKit.."-TrackerHeader", true);
+		elseif (scenarioType == LE_SCENARIO_TYPE_LEGION_INVASION) then
+			stageBlock.Stage:SetTextColor(0.753, 1, 0);
+			stageBlock.NormalBG:SetAtlas("legioninvasion-ScenarioTrackerToast", true);
+		else
+			stageBlock.Stage:SetTextColor(1, 0.914, 0.682);
+			stageBlock.NormalBG:SetAtlas("ScenarioTrackerToast", true);
+		end
 	end
 end
 
 function SCENARIO_CONTENT_TRACKER_MODULE:Update()
-	local scenarioName, currentStage, numStages, flags, _, _, _, xp, money, scenarioType = C_Scenario.GetInfo();
+	local scenarioName, currentStage, numStages, flags, _, _, _, xp, money, scenarioType, _, textureKitID = C_Scenario.GetInfo();
 	local rewardsFrame = ObjectiveTrackerScenarioRewardsFrame;
 	if ( numStages == 0 ) then
 		ScenarioBlocksFrame_Hide();
@@ -845,7 +873,7 @@ function SCENARIO_CONTENT_TRACKER_MODULE:Update()
 	BlocksFrame.contentsHeight = 0;
 	SCENARIO_TRACKER_MODULE.contentsHeight = 0;
 
-	local stageName, stageDescription, numCriteria, _, _, _, _, numSpells, spellInfo, weightedProgress = C_Scenario.GetStepInfo();
+	local stageName, stageDescription, numCriteria, _, _, _, _, numSpells, spellInfo, weightedProgress, _, widgetSetID = C_Scenario.GetStepInfo();
 	local inChallengeMode = (scenarioType == LE_SCENARIO_TYPE_CHALLENGE_MODE);
 	local inProvingGrounds = (scenarioType == LE_SCENARIO_TYPE_PROVING_GROUNDS);
 	local dungeonDisplay = (scenarioType == LE_SCENARIO_TYPE_USE_DUNGEON_DISPLAY);
@@ -897,7 +925,7 @@ function SCENARIO_CONTENT_TRACKER_MODULE:Update()
 				C_Timer.After(1, function() stageBlock.Stage:ApplyFontObjects(); end);
 				stageBlock.appliedAlready = true;
 			end
-			ScenarioStage_CustomizeBlock(stageBlock, scenarioType);
+			ScenarioStage_CustomizeBlock(stageBlock, scenarioType, widgetSetID, textureKitID);
 		end
 	end
 	BlocksFrame.scenarioName = scenarioName;

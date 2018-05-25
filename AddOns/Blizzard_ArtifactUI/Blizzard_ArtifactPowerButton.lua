@@ -41,12 +41,6 @@ function ArtifactPowerButtonMixin:GenerateRune()
 	return ("Rune-%02d-light"):format(runeIndex)
 end
 
-function ArtifactPowerButtonMixin:OnShow()
-	if ( self.inInstabilityMode ) then
-		self:SetNextInstabilityTime(GetTime());
-	end
-end
-
 function ArtifactPowerButtonMixin:OnEnter()
 	if self.style ~= ARTIFACT_POWER_STYLE_RUNE and not self.locked then
 		local _, cursorItemID = GetCursorInfo();
@@ -66,10 +60,6 @@ function ArtifactPowerButtonMixin:OnClick(button)
 	if self.style ~= ARTIFACT_POWER_STYLE_RUNE and not self.locked then
 		if ( IsModifiedClick("CHATLINK") ) then
 			ChatEdit_InsertLink(C_ArtifactUI.GetPowerHyperlink(self:GetPowerID()));
-			return;
-		end
-		if not C_ArtifactUI.IsAtForge() then
-			UIErrorsFrame:AddMessage(ARTIFACT_TRAITS_NO_FORGE_ERROR, RED_FONT_COLOR:GetRGBA());
 			return;
 		end
 		if button == "LeftButton" and C_ArtifactUI.AddPower(self:GetPowerID()) then
@@ -210,12 +200,6 @@ function ArtifactPowerButtonMixin:PlayRevealAnimation(onFinishedAnimation)
 	return false;
 end
 
-function ArtifactPowerButtonMixin:PlayInstabilityAnimation()
-	self.LightRune:Show();
-	self.InstabilityAnim:SetScript("OnFinished", OnRevealAnimFinished);
-	self.InstabilityAnim:Play();
-end
-
 function ArtifactPowerButtonMixin:UpdatePowerType()
 	self:SetSize(37, 37);
 	if self.isStart and self.tier == 1 then
@@ -244,25 +228,22 @@ end
 
 function ArtifactPowerButtonMixin:SetStyle(style)
 	self.style = style;
-	self.Icon:SetAlpha(1);
-	self.Icon:SetVertexColor(1, 1, 1);
+	self.Icon:SetAlpha(0);
 	self.IconDesaturated:SetAlpha(1);
 	self.IconDesaturated:SetVertexColor(1, 1, 1);
 	
-	self.IconBorder:SetAlpha(1);
-	self.IconBorder:SetVertexColor(1, 1, 1);
-	self.IconBorderDesaturated:SetAlpha(0);
+	self.IconBorder:Hide();
+	self.IconBorderDesaturated:SetAlpha(1);
 
 	self.Rank:SetAlpha(1);
+	self.Rank:SetTextColor(DISABLED_FONT_COLOR:GetRGB())
 	self.RankBorder:SetAlpha(1);
 
 	self.LightRune:Hide();
 
 	if style == ARTIFACT_POWER_STYLE_RUNE then
 		self.LightRune:Show();
-
-		self.Icon:SetAlpha(0);
-		self.IconBorder:SetAlpha(0);
+		self.LightRune:SetDesaturated(true);
 
 		self.Rank:SetAlpha(0);
 		self.RankBorder:SetAlpha(0);
@@ -270,43 +251,34 @@ function ArtifactPowerButtonMixin:SetStyle(style)
 		self.IconDesaturated:SetAlpha(0);
 	elseif style == ARTIFACT_POWER_STYLE_MAXED then
 		self.Rank:SetText(self.currentRank);
-		self.Rank:SetTextColor(1, 0.82, 0);
 		self.RankBorder:SetAtlas("Artifacts-PointsBox", true);
 		self.RankBorder:Show();		
 	elseif style == ARTIFACT_POWER_STYLE_CAN_UPGRADE then
 		self.Rank:SetText(self.currentRank);
-		self.Rank:SetTextColor(0.1, 1, 0.1);
 		self.RankBorder:SetAtlas("Artifacts-PointsBoxGreen", true);
 		self.RankBorder:Show();
 	elseif style == ARTIFACT_POWER_STYLE_PURCHASED or style == ARTIFACT_POWER_STYLE_PURCHASED_READ_ONLY then
 		self.Rank:SetText(self.currentRank);
-		self.Rank:SetTextColor(1, 0.82, 0);
 		self.RankBorder:SetAtlas("Artifacts-PointsBox", true);
 		self.RankBorder:Show();
 	elseif style == ARTIFACT_POWER_STYLE_UNPURCHASED then
-		self.Icon:SetVertexColor(.6, .6, .6);
 		self.IconBorder:SetVertexColor(.9, .9, .9);
 
 		self.Rank:SetText(self.currentRank);
-		self.Rank:SetTextColor(1, 0.82, 0);
 		self.RankBorder:SetAtlas("Artifacts-PointsBox", true);
 		self.RankBorder:Show();
 	elseif style == ARTIFACT_POWER_STYLE_UNPURCHASED_READ_ONLY or style == ARTIFACT_POWER_STYLE_UNPURCHASED_LOCKED then
 		if self.isGoldMedal or self.isStart then
-			self.Icon:SetVertexColor(.4, .4, .4);
 			self.IconBorder:SetVertexColor(.7, .7, .7);
 			self.IconDesaturated:SetVertexColor(.4, .4, .4);
 			self.RankBorder:Hide();
 			self.Rank:SetText(nil);
 			self.IconBorderDesaturated:SetAlpha(.5);
-			self.Icon:SetAlpha(.5);
 		else
-			self.Icon:SetVertexColor(.15, .15, .15);
             self.IconBorder:SetVertexColor(.4, .4, .4);
             self.IconDesaturated:SetVertexColor(.15, .15, .15);
             self.RankBorder:Hide();
             self.Rank:SetText(nil);
-			self.Icon:SetAlpha(.2);
 		end
 	end
 end
@@ -650,95 +622,4 @@ function ArtifactPowerButtonMixin:StopAllAnimations()
 	self.FinalPowerUnlockedAnim:Stop();
 	self.FirstPointWaitingAnimation:Stop();
 	self.Tier2FinalPowerSparks:Stop();
-	self.InstabilityAnim:Stop();
-	
-	if self.FloatingNumbers and self.FloatingNumbers[1] then
-		self.FloatingNumbers[1].InstabilityMoveAndFade:Stop();
-	end
-end
-
-function ArtifactPowerButtonMixin:SetNextInstabilityTime(baseTime)
-	local cooldown;
-	local instabilityLevel = self:GetParent():GetInstabilityLevel();
-	if ( instabilityLevel == ARTIFACT_INSTABILITY_LEVEL_HIGHEST ) then
-		cooldown = 3;
-	elseif ( instabilityLevel == ARTIFACT_INSTABILITY_LEVEL_HIGH ) then
-		cooldown = 10;
-	elseif ( instabilityLevel == ARTIFACT_INSTABILITY_LEVEL_MEDIUM ) then
-		cooldown = 20;
-	else
-		cooldown = 40;
-	end
-	self.nextInstabilityTime = baseTime + math.random() * cooldown;
-end
-
-function ArtifactPowerButtonMixin:EnterInstabilityMode()
-	self.inInstabilityMode = true;
-	self.LightRune:SetDrawLayer("OVERLAY", 3);
-	self:SetNextInstabilityTime(GetTime());
-	self:SetScript("OnUpdate", self.OnUpdate);
-end
-
-function ArtifactPowerButtonMixin:OnUpdate(elapsed)
-	local timeNow = GetTime();
-	if ( elapsed > 1 ) then
-		self:SetNextInstabilityTime(timeNow + max(0, 3 - elapsed));
-	elseif ( timeNow > self.nextInstabilityTime ) then
-		self:SetNextInstabilityTime(timeNow + 3);
-		self:TriggerInstability();
-	end
-end
-
-local function OnInstabilityLightHit(self)
-	local powerButton = self:GetParent():GetParent();
-	powerButton:PlayInstabilityAnimation();
-	local soundKit = powerButton:GetParent():GetInstabilityOrbImpactSoundKit();
-	if (soundKit) then
-		PlaySound(soundKit, "SFX", SOUNDKIT_ALLOW_DUPLICATES);
-	end
-end
-
-local function OnInstabilityPointsRemainingAnimFinished(self)
-	local label = self:GetParent();
-	local pool = label:GetParent().InstabilityPointsRemainingPool;
-	pool:Release(label);
-end
- 
-function ArtifactPowerButtonMixin:TriggerInstability()
-	local perksTab = self:GetParent();
-	local sourceX = perksTab:GetWidth() / 2;
-	local sourceY = perksTab.TitleContainer:GetHeight();
-
-	local point, parent, relativePoint, targetX, targetY = self:GetPoint();
-	targetY = -targetY;
-
-	local label = perksTab.TitleContainer.InstabilityPointsRemainingPool:Acquire();
-	label:SetParent(perksTab.TitleContainer);
-	label:SetPoint("CENTER", perksTab.TitleContainer.PointsRemainingLabel);
-	label:Show();
-	local deltaX = sourceX - targetX;
-	local deltaY = targetY - sourceY;
-	label.Anim.Move:SetOffset(deltaX * 0.3, deltaY * 0.3);
-	label:SetText(perksTab.TitleContainer.PointsRemainingLabel:GetText());
-	label.Anim:SetScript("OnFinished", OnInstabilityPointsRemainingAnimFinished);
-	label.Anim:Play();
-
-	local orbSoundKit = self:GetParent():GetInstabilityOrbSoundKit();
-	if (orbSoundKit) then
-		PlaySound(orbSoundKit, "SFX", SOUNDKIT_ALLOW_DUPLICATES);
-	end
-
-	if not self.FloatingNumbers or not self.FloatingNumbers[1] then
-		CreateFrame("Frame", nil, self, "ArtifactFloatingRankStringTemplate");
-	end
-	local animatedNumber = self.FloatingNumbers[1];
-	animatedNumber:SetPoint(point, parent, relativePoint, sourceX, -sourceY);
-	animatedNumber.Rune:SetAtlas(self:GenerateRune(), true);
-	animatedNumber.InstabilityMoveAndFade.Move:SetOffset(targetX - sourceX, sourceY - targetY);
-	animatedNumber.InstabilityMoveAndFade.Rotation:SetDegrees(math.random(-180, 180));
-	animatedNumber.InstabilityMoveAndFade.RuneMove:SetOffset(targetX - sourceX, sourceY - targetY);
-	animatedNumber.InstabilityMoveAndFade.RuneRotation:SetDegrees(math.random(-180, 180));
-	animatedNumber.InstabilityMoveAndFade:Play();
-	animatedNumber.InstabilityMoveAndFade:SetScript("OnFinished", OnInstabilityLightHit);
-	animatedNumber:Show();
 end

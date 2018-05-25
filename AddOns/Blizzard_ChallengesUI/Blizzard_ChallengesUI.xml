@@ -610,7 +610,7 @@
 				</Anchors>
 			</Frame>
             
-            <Frame parentKey="WeeklyChest" hidden="true">
+            <Frame parentKey="WeeklyChest" hidden="true" mixin="ChallengeModeWeeklyChestMixin">
                 <Size x="98" y="73"/>
                 <Anchors>
                     <Anchor point="TOPRIGHT" x="-10" y="-27"/>
@@ -634,11 +634,7 @@
                     </Layer>
                 </Layers>
                 <Scripts>
-                    <OnEnter>
-                        GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -20, -15);
-                        GameTooltip:SetText(CHALLENGE_MODE_WEEKLY_REWARD_AVAILABLE, nil, nil, nil, nil, true);
-                        GameTooltip:Show();
-                    </OnEnter>
+										<OnEnter method="OnEnter"/>
                     <OnLeave function="GameTooltip_Hide"/>
                 </Scripts>
             </Frame>

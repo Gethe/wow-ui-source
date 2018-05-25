@@ -7,5 +7,3 @@
 
 Blizzard_PartyPoseUI.lua
 Blizzard_PartyPoseUI.xml 
-Blizzard_IslandsPartyPoseUI.lua
-Blizzard_IslandsPartyPoseUI.xml

@@ -7,14 +7,6 @@
 	Templates
 *******************************************************************************
 -->	
-	<Button name="CommunitiesGuildRecruitmentButtonTemplate" inherits="UIPanelButtonTemplate" text="GUILD_RECRUITMENT" virtual="true">
-		<Size x="98" y="22"/>
-		<Scripts>
-			<OnClick>
-				ToggleFrame(GuildRecruitmentFrame);
-			</OnClick>
-		</Scripts>
-	</Button>
 	<CheckButton name="CommunitiesGuildRecruitmentCheckButtonTemplate" virtual="true">
 		<Scripts>
 			<OnClick>
@@ -24,7 +16,7 @@
 					PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 				end
 				SetGuildRecruitmentSettings(self:GetID(), self:GetChecked());
-				GuildRecruitmentFrameRecruitment_UpdateListGuildButton(self:GetParent():GetParent());
+				CommunitiesGuildRecruitmentFrameRecruitment_UpdateListGuildButton(self:GetParent():GetParent());
 			</OnClick>
 			<OnEnter function="CommunitiesGuildRecruitmentCheckButton_OnEnter"/>
 			<OnLeave>
@@ -425,7 +417,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								GuildRecruitmentLevelFrame_SelectLevelButton(self:GetParent(), 1, true);
+								CommunitiesGuildRecruitmentLevelFrame_SelectLevelButton(self:GetParent(), 1, true);
 							</OnClick>
 						</Scripts>
 					</CheckButton>
@@ -435,7 +427,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								GuildRecruitmentLevelFrame_SelectLevelButton(self:GetParent(), 2, true);
+								CommunitiesGuildRecruitmentLevelFrame_SelectLevelButton(self:GetParent(), 2, true);
 							</OnClick>
 						</Scripts>
 					</CheckButton>
@@ -718,7 +710,7 @@
 					<OnClick>
 						local guildRecruitmentFrame = self:GetParent();
 						PanelTemplates_Tab_OnClick(self, guildRecruitmentFrame);
-						GuildRecruitmentFrame_Update(guildRecruitmentFrame);
+						CommunitiesGuildRecruitmentFrame_Update(guildRecruitmentFrame);
 						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 					</OnClick>
 				</Scripts>
@@ -731,7 +723,7 @@
 					<OnClick>
 						local guildRecruitmentFrame = self:GetParent();
 						PanelTemplates_Tab_OnClick(self, guildRecruitmentFrame);
-						GuildRecruitmentFrame_Update(guildRecruitmentFrame);
+						CommunitiesGuildRecruitmentFrame_Update(guildRecruitmentFrame);
 						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 					</OnClick>
 				</Scripts>

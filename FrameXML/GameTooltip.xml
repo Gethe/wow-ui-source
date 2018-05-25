@@ -14,27 +14,9 @@
 					BattlePetTooltip:Hide();
 				end
 			</OnLoad>
-			<OnTooltipSetUnit>
-				if ( self:IsUnit("mouseover") ) then
-					_G[self:GetName().."TextLeft1"]:SetTextColor(GameTooltip_UnitColor("mouseover"));
-				end
-				if (BattlePetTooltip) then
-					BattlePetTooltip:Hide();
-				end
-			</OnTooltipSetUnit>
-			<OnTooltipSetItem>
-				if ( IsModifiedClick("COMPAREITEMS") or
-				     (GetCVarBool("alwaysCompareItems") and not self:IsEquippedItem()) ) then
-					GameTooltip_ShowCompareItem(self);
-				else
-					local shoppingTooltip1, shoppingTooltip2 = unpack(self.shoppingTooltips);
-					shoppingTooltip1:Hide();
-					shoppingTooltip2:Hide();
-				end
-				if (BattlePetTooltip) then
-					BattlePetTooltip:Hide();
-				end
-			</OnTooltipSetItem>
+			<OnTooltipSetUnit function="GameTooltip_OnTooltipSetUnit" />
+			<OnTooltipSetItem function="GameTooltip_OnTooltipSetItem" />
+			<OnTooltipSetSpell function="GameTooltip_OnTooltipSetSpell" />
 			<OnHide>
 				GameTooltip_OnHide(self);
 				ShoppingTooltip1:Hide();

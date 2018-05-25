@@ -1587,16 +1587,17 @@ function PaperDollItemSlotButton_OnClick(self, button)
 end
 
 function PaperDollItemSlotButton_OnModifiedClick(self, button)
-	if ( HandleModifiedItemClick(GetInventoryItemLink("player", self:GetID())) ) then
-		return;
-	end
 	if ( IsModifiedClick("EXPANDITEM") ) then
 		local itemLocation = ItemLocation:CreateFromEquipmentSlot(self:GetID());
 		if C_Item.DoesItemExist(itemLocation) and C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItem(itemLocation) then
-			OpenAzeriteEmpoweredItemUI(itemLocation);
+			OpenAzeriteEmpoweredItemUIFromItemLocation(itemLocation);
 		else
 			SocketInventoryItem(self:GetID());
 		end
+		return;
+	end
+	if ( HandleModifiedItemClick(GetInventoryItemLink("player", self:GetID())) ) then
+		return;
 	end
 end
 

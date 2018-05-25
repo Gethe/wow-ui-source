@@ -11,3 +11,9 @@ end
 function CooldownFrame_Clear(self)
 	self:Clear();
 end
+
+function CooldownFrame_SetDisplayAsPercentage(self, percentage)
+	local seconds = 100;	-- any number, really
+	self:Pause();
+	self:SetCooldown(GetTime() - seconds * percentage, seconds);
+end

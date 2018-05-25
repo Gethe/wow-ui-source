@@ -23,6 +23,10 @@ local RecruitAFriend =
 			Name = "PartyReferAFriendUpdated",
 			Type = "Event",
 			LiteralName = "PARTY_REFER_A_FRIEND_UPDATED",
+			Payload =
+			{
+				{ Name = "unitTarget", Type = "string", Nilable = false },
+			},
 		},
 		{
 			Name = "RecruitAFriendCanEmail",

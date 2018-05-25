@@ -1,114 +1,3 @@
-RosterToggleButtonMixin = CreateFromMixins(VoiceToggleButtonMixin);
-
-function RosterToggleButtonMixin:IsLocalPlayer()
-	return self:GetParent():IsLocalPlayer();
-end
-
-function RosterToggleButtonMixin:GetVoiceMemberID()
-	return self:GetParent():GetVoiceMemberID();
-end
-
-function RosterToggleButtonMixin:GetVoiceChannelID()
-	return self:GetParent():GetVoiceChannelID();
-end
-
-function RosterToggleButtonMixin:GetMemberPlayerLocation()
-	return self:GetParent():GetMemberPlayerLocation();
-end
-
-function RosterToggleButtonMixin:ShouldShowVoiceActiveOnly()
-	return self:GetParent():IsChannelActive() and self:GetParent():IsVoiceActive();
-end
-
-function RosterToggleButtonMixin:ShouldShow()
-	return self:ShouldShowVoiceActiveOnly() and self:GetVoiceMemberID() ~= nil and self:GetVoiceChannelID() ~= nil;
-end
-
-function RosterToggleButtonMixin:ShouldShowLocalPlayerOnly()
-	return self:ShouldShow() and self:IsLocalPlayer();
-end
-
-function RosterToggleButtonMixin:ShouldShowRemotePlayerOnly()
-	return self:ShouldShow() and not self:IsLocalPlayer();
-end
-
-RosterSelfDeafenButtonMixin = CreateFromMixins(RosterToggleButtonMixin);
-
-function RosterSelfDeafenButtonMixin:OnLoad()
-	RosterToggleButtonMixin.OnLoad(self);
-
-	self:SetVisibilityQueryFunction(self.ShouldShowLocalPlayerOnly);
-	self:SetAccessorFunction(C_VoiceChat.IsDeafened);
-	self:SetMutatorFunction(C_VoiceChat.SetDeafened);
-
-	self:AddStateAtlas(false, "voicechat-icon-speaker");
-	self:AddStateAtlas(true, "voicechat-icon-speaker-mute");
-	self:SetUseIconAsHighlight(true);
-
-	self:AddStateTooltipString(false, VOICE_TOOLTIP_DEAFEN);
-	self:AddStateTooltipString(true, VOICE_TOOLTIP_UNDEAFEN);
-
-	self:RegisterStateUpdateEvent("VOICE_CHAT_DEAFENED_CHANGED");
-	self:UpdateVisibleState();
-end
-
-function RosterSelfDeafenButtonMixin:IsDeafened()
-	return self:IsLocalPlayer() and C_VoiceChat.IsDeafened();
-end
-
-RosterSelfMuteButtonMixin = CreateFromMixins(RosterToggleButtonMixin);
-
-function RosterSelfMuteButtonMixin:OnLoad()
-	RosterToggleButtonMixin.OnLoad(self);
-
-	self:SetVisibilityQueryFunction(self.ShouldShowLocalPlayerOnly);
-	self:SetAccessorFunctionThroughSelf(self.IsMuted);
-	self:SetMutatorFunction(C_VoiceChat.SetMuted);
-
-	self:AddStateAtlas(true, "voicechat-icon-mic-mute");
-	self:AddStateAtlas(false, "voicechat-icon-mic");
-	self:SetUseIconAsHighlight(true);
-
-	self:AddStateTooltipString(true, VOICE_TOOLTIP_UNMUTE_MIC);
-	self:AddStateTooltipString(false, VOICE_TOOLTIP_MUTE_MIC);
-
-	self:RegisterStateUpdateEvent("VOICE_CHAT_MUTED_CHANGED");
-	self:UpdateVisibleState();
-end
-
-function RosterSelfMuteButtonMixin:IsMuted()
-	return self:IsLocalPlayer() and C_VoiceChat.IsMuted();
-end
-
-RosterMemberMuteButtonMixin = CreateFromMixins(RosterToggleButtonMixin);
-
-function RosterMemberMuteButtonMixin:OnLoad()
-	RosterToggleButtonMixin.OnLoad(self);
-
-	self:SetVisibilityQueryFunction(self.ShouldShowRemotePlayerOnly);
-	self:SetAccessorFunctionThroughSelf(self.IsMuted);
-	self:SetMutatorFunctionThroughSelf(self.SetMuted);
-
-	self:AddStateAtlas(true, "voicechat-icon-speaker-mute");
-	self:AddStateAtlas(false, "voicechat-icon-speaker");
-	self:SetUseIconAsHighlight(true);
-
-	self:AddStateTooltipString(true, UNMUTE);
-	self:AddStateTooltipString(false, MUTE);
-
-	self:RegisterStateUpdateEvent("VOICE_CHAT_CHANNEL_MEMBER_MUTE_FOR_ME_CHANGED");
-	self:RegisterStateUpdateEvent("VOICE_CHAT_CHANNEL_MEMBER_MUTE_FOR_ALL_CHANGED");
-	self:UpdateVisibleState();
-end
-
-function RosterMemberMuteButtonMixin:IsMuted()
-	return C_VoiceChat.IsMemberMuted(self:GetMemberPlayerLocation());
-end
-
-function RosterMemberMuteButtonMixin:SetMuted(mute)
-	return C_VoiceChat.SetMemberMuted(self:GetMemberPlayerLocation(), mute);
-end
-
 ChannelRosterButtonMixin = {};
 
 function ChannelRosterButtonMixin:OnLoad()
@@ -253,21 +142,28 @@ function ChannelRosterButtonMixin:OnClick(button)
 			return;
 		end
 
-		local channelName, isHeader, isCollapsed, channelNumber, count, active, category, channelType = GetChannelDisplayInfo(channel:GetChannelID());
-		local name, owner, moderator, guid = C_ChatInfo.GetChannelRosterInfo(channel:GetChannelID(), self:GetMemberID());
+		local guid;
+		local playerLocation = self:GetMemberPlayerLocation();
+		if playerLocation then
+			guid = playerLocation:GetGUID();
+		end
 
 		local dropdown = self:GetRoster():GetChannelFrame():GetDropdown();
 		UIDropDownMenu_SetInitializeFunction(dropdown, ChannelRosterDropdown_Initialize);
 		dropdown.displayMode = "MENU";
-		dropdown.name = name;
-		dropdown.owner = owner;
-		dropdown.moderator = moderator;
-		dropdown.channelName = channelName;
-		dropdown.category = category;
-		dropdown.channelType = channelType;
+		dropdown.name = self:GetMemberName();
+		dropdown.owner = self:IsMemberOwner();
+		dropdown.moderator = self:IsMemberModerator();
+		dropdown.channelName = channel:GetChannelName();
+		dropdown.category = channel:GetCategory();
+		dropdown.channelType = channel:GetChannelType();
 		dropdown.guid = guid;
 		dropdown.voiceChannelID = channel:GetVoiceChannelID();
-		dropdown.voiceMemberID = C_VoiceChat.GetMemberID(dropdown.voiceChannelID, guid);
+		if dropdown.voiceChannelID and guid then
+			dropdown.voiceMemberID = C_VoiceChat.GetMemberID(dropdown.voiceChannelID, guid);
+		else
+			dropdown.voiceMemberID = nil;
+		end
 
 		ToggleDropDownMenu(1, nil, dropdown, "cursor");
 	end
@@ -299,9 +195,9 @@ function ChannelRosterButtonMixin:Update()
 
 	-- Adjust the name to be smaller to make room for the voice buttons
 	if self.SelfMuteButton:IsShown() then
-		self.Name:SetWidth(showRank and 90 or 110);
+		self.Name:SetWidth(showRank and 98 or 113);
 	elseif self.MemberMuteButton:IsShown() then
-		self.Name:SetWidth(showRank and 110 or 125);
+		self.Name:SetWidth(showRank and 113 or 128);
 	else
 		self.Name:SetWidth(140);
 	end

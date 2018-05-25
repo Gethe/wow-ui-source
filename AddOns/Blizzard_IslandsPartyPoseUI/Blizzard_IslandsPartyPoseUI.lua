@@ -1,27 +1,33 @@
+local AZERITE_POWER_SPELL_VISUAL_KIT_ID = 96781; -- Heart of Azeroth Channel Spell. 
 IslandsPartyPoseMixin = CreateFromMixins(PartyPoseMixin);
 
---Set the text for the leave button. 
 function IslandsPartyPoseMixin:SetLeaveButtonText() 
 	self.LeaveButton.Text:SetText(ISLAND_LEAVE);
 end
 
---Sets the top banner to reflect the winner of the match. 
 function IslandsPartyPoseMixin:SetTopBannerAndBackgroundFromWinner(winner)
 	if (winner == "Horde") then
 		self.TitleText:SetText(VICTORY_TEXT0); 
 		self.TitleBg:SetAtlas("scoreboard-header-horde", true); 
-		self.ModelScene.Bg:SetAtlas("scoreboard-background-islands-horde"); 
+		self.ModelScene.Bg:SetAtlas("scoreboard-background-warfronts-horde"); 
 	elseif (winner == "Alliance") then
 		self.TitleText:SetText(VICTORY_TEXT1); 
 		self.TitleBg:SetAtlas("scoreboard-header-alliance", true); 
-		self.ModelScene.Bg:SetAtlas("scoreboard-background-islands-alliance"); 
+		self.ModelScene.Bg:SetAtlas("scoreboard-background-warfronts-alliance"); 
 	end
 end
 
-function IslandsPartyPoseMixin:LoadScreenData(mapID, questID, winner) 
+function IslandsPartyPoseMixin:LoadScreenData(mapID, winner) 
+	self.rewardPool:ReleaseAll(); 
 	local partyPoseInfo = C_PartyPose.GetPartyPoseInfoByMapID(mapID); 
 	UIWidgetManager:RegisterWidgetSetContainer(partyPoseInfo.widgetSetID, self.Score);
-	self:SetModelScene(partyPoseInfo.modelSceneID);
+	
+	self:PlayModelSceneAnimations(false);
+	self:SetRewards(); 
+	self:SetModelScene(partyPoseInfo.modelSceneID, LE_PARTY_CATEGORY_INSTANCE);
+	self:ApplyVisualKitToEachActor(AZERITE_POWER_SPELL_VISUAL_KIT_ID); 
 	self:SetLeaveButtonText(); 
-	self:SetTopBannerAndBackgroundFromWinner(winner); 
+	
+	local factionWinner = PLAYER_FACTION_GROUP[winner];
+	self:SetTopBannerAndBackgroundFromWinner(factionWinner); 
 end

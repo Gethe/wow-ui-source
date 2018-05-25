@@ -2380,6 +2380,25 @@ StaticPopupDialogs["CONFIRM_REMOVE_COMMUNITY_MEMBER"] = {
 	hideOnEscape = 1
 };
 
+StaticPopupDialogs["CONFIRM_DESTROY_COMMUNITY_STREAM"] = {
+	text = CONFIRM_DESTROY_COMMUNITY_STREAM_LABEL,
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function(self, data)
+		C_Club.DestroyStream(data.clubId, data.streamId);
+	end,
+	OnShow = function(self, data)
+		local streamInfo = C_Club.GetStreamInfo(data.clubId, data.streamId);
+		if streamInfo then
+			self.text:SetText(CONFIRM_DESTROY_COMMUNITY_STREAM_LABEL:format(streamInfo.name));
+		end
+	end,
+	timeout = 0,
+	exclusive = 1,
+	whileDead = 1,
+	hideOnEscape = 1
+};
+
 StaticPopupDialogs["CONFIRM_LEAVE_AND_DESTROY_COMMUNITY"] = {
 	text = CONFIRM_LEAVE_AND_DESTROY_COMMUNITY,
 	subText = CONFIRM_LEAVE_AND_DESTROY_COMMUNITY_SUBTEXT,
@@ -4062,6 +4081,8 @@ local function InviteToClub(clubId, text)
 				return;
 			end
 		end
+		local errorStr = ERROR_CLUB_ACTION_INVITE_MEMBER:format(ERROR_CLUB_MUST_BE_BNET_FRIEND);
+		UIErrorsFrame:AddMessage(errorStr, RED_FONT_COLOR:GetRGB());
 	else
 		C_Club.SendCharacterInvitation(clubId, text);
 	end
@@ -4072,8 +4093,8 @@ StaticPopupDialogs["INVITE_COMMUNITY_MEMBER"] = {
 	subText = INVITE_COMMUNITY_MEMBER_POPUP_INVITE_SUB_TEXT_BTAG,
 	button1 = INVITE_COMMUNITY_MEMBER_POPUP_SEND_INVITE,
 	button2 = CANCEL,
-	OnAccept = function(self, clubId)
-		InviteToClub(clubId, self.editBox:GetText());
+	OnAccept = function(self, data)
+		InviteToClub(data.clubId, self.editBox:GetText());
 	end,
 	timeout = 0,
 	whileDead = 1,
@@ -4089,7 +4110,7 @@ StaticPopupDialogs["INVITE_COMMUNITY_MEMBER"] = {
 		local clubInfo = C_Club.GetClubInfo(data.clubId);
 		if clubInfo.clubType == Enum.ClubType.BattleNet then
 			AutoCompleteEditBox_SetAutoCompleteSource(self.editBox, C_Club.GetInvitationCandidates, data.clubId);
-			self.SubText:SetText(INVITE_COMMUNITY_MEMBER_POPUP_INVITE_SUB_TEXT_BTAG);
+			self.SubText:SetText(INVITE_COMMUNITY_MEMBER_POPUP_INVITE_SUB_TEXT_BNET_FRIEND);
 		else
 			AutoCompleteEditBox_SetAutoCompleteSource(self.editBox, GetAutoCompleteResults, AUTOCOMPLETE_LIST.COMMUNITY.include, AUTOCOMPLETE_LIST.COMMUNITY.exclude);
 			self.SubText:SetText(INVITE_COMMUNITY_MEMBER_POPUP_INVITE_SUB_TEXT_CHARACTER);
@@ -4167,6 +4188,7 @@ function StaticPopup_FindVisible(which, data)
 	end
 	return nil;
 end
+
 
 function StaticPopup_Resize(dialog, which)
 	local info = StaticPopupDialogs[which];
@@ -4380,7 +4402,8 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 		 (which == "CONFIRM_SUMMON_STARTING_AREA") or
 		 (which == "BFMGR_INVITED_TO_ENTER") or
 		 (which == "AREA_SPIRIT_HEAL") or
-		 (which == "CONFIRM_REMOVE_COMMUNITY_MEMBER") ) then
+		 (which == "CONFIRM_REMOVE_COMMUNITY_MEMBER") or
+		 (which == "CONFIRM_DESTROY_COMMUNITY_STREAM") ) then
 		text:SetText(" ");	-- The text will be filled in later.
 		text.text_arg1 = text_arg1;
 		text.text_arg2 = text_arg2;

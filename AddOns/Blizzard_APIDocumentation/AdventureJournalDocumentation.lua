@@ -60,7 +60,7 @@ local AdventureJournal =
 			Payload =
 			{
 				{ Name = "questID", Type = "number", Nilable = false },
-				{ Name = "worldMapAreaID", Type = "number", Nilable = false },
+				{ Name = "uiMapID", Type = "number", Nilable = false },
 			},
 		},
 		{

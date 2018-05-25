@@ -238,6 +238,15 @@ local PvpInfo =
 			},
 		},
 		{
+			Name = "IsPVPMap",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isPVPMap", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsWarModeDesired",
 			Type = "Function",
 
@@ -364,11 +373,6 @@ local PvpInfo =
 			Name = "PlayerEnteringBattleground",
 			Type = "Event",
 			LiteralName = "PLAYER_ENTERING_BATTLEGROUND",
-		},
-		{
-			Name = "PrestigeAndHonorInvoluntarilyChanged",
-			Type = "Event",
-			LiteralName = "PRESTIGE_AND_HONOR_INVOLUNTARILY_CHANGED",
 		},
 		{
 			Name = "PvpBrawlInfoUpdated",

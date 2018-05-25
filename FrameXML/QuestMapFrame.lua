@@ -161,9 +161,9 @@ function QuestMapFrame_OnEvent(self, event, ...)
 		if ( questIndex > 0 ) then
 			QuestMapFrame_OpenToQuestDetails(arg1);
 		elseif ( mapID ~= 0 ) then
-			QuestMapFrame:GetParent():NavigateToMap(mapID);
+			QuestMapFrame:GetParent():SetMapID(mapID);
 		elseif ( arg2 and arg2 > 0) then
-			QuestMapFrame:GetParent():NavigateToMap(arg2);
+			QuestMapFrame:GetParent():SetMapID(arg2);
 		end
 	elseif ( event == "PLAYER_ENTERING_WORLD" ) then	
 		self:Refresh();
@@ -301,7 +301,7 @@ function QuestMapFrame_ShowQuestDetails(questID)
 	QuestMapFrame.DetailsFrame.returnMapID = QuestMapFrame:GetParent():GetMapID();
 	local mapID = GetQuestUiMapID(questID);
 	if ( mapID ~= 0 ) then
-		QuestMapFrame:GetParent():NavigateToMap(mapID);
+		QuestMapFrame:GetParent():SetMapID(mapID);
 	end
 
 	QuestMapFrame_UpdateQuestDetailsButtons();
@@ -361,7 +361,7 @@ end
 
 function QuestMapFrame_ReturnFromQuestDetails()
 	if ( QuestMapFrame.DetailsFrame.returnMapID ) then
-		QuestMapFrame:GetParent():NavigateToMap(QuestMapFrame.DetailsFrame.returnMapID);
+		QuestMapFrame:GetParent():SetMapID(QuestMapFrame.DetailsFrame.returnMapID);
 	end
 	QuestMapFrame_CloseQuestDetails();
 end
@@ -834,7 +834,7 @@ function OpenQuestLog(mapID)
 	QuestMapFrame_Open();
 
 	if mapID then
-		QuestMapFrame:GetParent():NavigateToMap(mapID);
+		QuestMapFrame:GetParent():SetMapID(mapID);
 	end
 end
 

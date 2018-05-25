@@ -25,7 +25,7 @@ function UIWidgetTemplateIconTextAndCurrenciesMixin:Setup(widgetInfo)
 	end
 	self.Text:SetEnabledState(enabledState);
 
-	local disabled = (widgetInfo.enabledState == Enum.WidgetEnabledState.Disabled);
+	local disabled = (enabledState == Enum.WidgetEnabledState.Disabled);
 	self.Icon:SetDesaturated(disabled);
 
 	local previousCurrencyFrame;
@@ -35,7 +35,7 @@ function UIWidgetTemplateIconTextAndCurrenciesMixin:Setup(widgetInfo)
 		local currencyFrame = self.currencyPool:Acquire();
 		currencyFrame:Show();
 
-		currencyFrame:Setup(currencyInfo, disabled);
+		currencyFrame:Setup(currencyInfo, enabledState);
 
 		if previousCurrencyFrame then
 			currencyFrame:SetPoint("TOPLEFT", previousCurrencyFrame, "TOPRIGHT", 10, 0);

@@ -29,15 +29,15 @@ function WorldMapFloorNavigationFrameMixin:InitializeDropDown()
 		return;
 	end
 	
-	local function NavigateToMap(button)
-		self:GetParent():NavigateToMap(button.value);
+	local function GoToMap(button)
+		self:GetParent():SetMapID(button.value);
 	end
 
 	local info = UIDropDownMenu_CreateInfo();
 	for i, mapGroupMemberInfo in ipairs(mapGroupMembersInfo) do
 		info.text = mapGroupMemberInfo.name;
 		info.value = mapGroupMemberInfo.mapID;
-		info.func = NavigateToMap;
+		info.func = GoToMap;
 		info.checked = (mapID == mapGroupMemberInfo.mapID);
 		UIDropDownMenu_AddButton(info);
 	end
@@ -214,15 +214,15 @@ function WorldMapNavBarMixin:OnLoad()
 			local TOPMOST = true;
 			local cosmicMapInfo = MapUtil.GetMapParentInfo(self:GetParent():GetMapID(), Enum.UIMapType.Cosmic, TOPMOST);
 			if cosmicMapInfo then
-				self:NavigateToMap(cosmicMapInfo.mapID)
+				self:GoToMap(cosmicMapInfo.mapID)
 			end
 		end,
 	}
 	NavBar_Initialize(self, "NavButtonTemplate", homeData, self.home, self.overflow);
 end
 
-function WorldMapNavBarMixin:NavigateToMap(mapID)
-	self:GetParent():NavigateToMap(mapID);
+function WorldMapNavBarMixin:GoToMap(mapID)
+	self:GetParent():SetMapID(mapID);
 end
 
 function WorldMapNavBarMixin:Refresh()
@@ -257,7 +257,7 @@ function WorldMapNavBarButtonMixin:GetDropDownList()
 		if ( children ) then
 			for i, childInfo in ipairs(children) do
 				if ( IsMapValidForNavBarDropDown(childInfo) ) then
-					local entry = { text = childInfo.name, id = childInfo.mapID, func = function(button, mapID) self:GetParent():NavigateToMap(mapID); end };
+					local entry = { text = childInfo.name, id = childInfo.mapID, func = function(button, mapID) self:GetParent():GoToMap(mapID); end };
 					tinsert(list, entry);
 				end
 			end
@@ -268,7 +268,7 @@ function WorldMapNavBarButtonMixin:GetDropDownList()
 end
 
 function WorldMapNavBarButtonMixin:OnClick()
-	self:GetParent():NavigateToMap(self.data.id)
+	self:GetParent():GoToMap(self.data.id)
 end
 
 WorldMapSidePanelToggleMixin = { };

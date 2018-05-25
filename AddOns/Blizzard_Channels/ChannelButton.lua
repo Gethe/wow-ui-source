@@ -1,45 +1,3 @@
-VoiceChatHeadsetMixin = {};
-
-function VoiceChatHeadsetMixin:OnClick()
-	self:GetParent():ToggleActivateChannel();
-end
-
-function VoiceChatHeadsetMixin:OnEnter()
-	self:ShowTooltip();
-end
-
-function VoiceChatHeadsetMixin:OnLeave()
-	GameTooltip:Hide();
-end
-
-function VoiceChatHeadsetMixin:ShowTooltip()
-	local channelButton = self:GetParent();
-	local isActive = channelButton:IsVoiceActive();
-	local baseMessage = isActive and VOICE_CHAT_CHANNEL_ACTIVE_TOOLTIP or VOICE_CHAT_CHANNEL_INACTIVE_TOOLTIP;
-	local formattedChannelName = Voice_FormatTextForChannel(channelButton:GetVoiceChannel(), channelButton:GetChannelName());
-	local message = baseMessage:format(formattedChannelName);
-	local instructions = isActive and VOICE_CHAT_CHANNEL_ACTIVE_TOOLTIP_INSTRUCTIONS or VOICE_CHAT_CHANNEL_INACTIVE_TOOLTIP_INSTRUCTIONS;
-
-	local tooltip = GameTooltip;
-	tooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip_SetTitle(tooltip, message);
-	GameTooltip_AddInstructionLine(tooltip, instructions);
-	tooltip:Show();
-end
-
-function VoiceChatHeadsetMixin:Update(hasVoice, isActive)
-	self:SetShown(hasVoice);
-	if hasVoice then
-		local atlas = isActive and "voicechat-channellist-icon-headphone-on" or "voicechat-channellist-icon-headphone-off";
-		self:SetNormalAtlas(atlas);
-		self:SetHighlightAtlas(atlas);
-
-		if GameTooltip:GetOwner() == self then
-			self:ShowTooltip();
-		end
-	end
-end
-
 -- Base
 ChannelButtonBaseMixin = {};
 
@@ -110,34 +68,34 @@ function ChannelButtonBaseMixin:GetCategory()
 	return self.category;
 end
 
+function ChannelButtonBaseMixin:SetVoiceChannel(voiceChannel)
+	self.linkedVoiceChannel = voiceChannel;
+
+	if self.linkedVoiceChannel then
+		self:SetVoiceActive(self.linkedVoiceChannel.isActive);
+	else
+		self:SetVoiceActive(false);
+	end
+end
+
+function ChannelButtonBaseMixin:ClearVoiceChannel()
+	self:SetVoiceChannel(nil);
+end
+
 function ChannelButtonBaseMixin:SetChannelType(channelType)
 	self.channelType = channelType;
 
 	if self:ChannelSupportsText() then
-		self.linkedVoiceChannel = C_VoiceChat.GetChannelForChannelType(channelType);
+		self:SetVoiceChannel(C_VoiceChat.GetChannelForChannelType(channelType));
+	end
 
-		if self.linkedVoiceChannel then
-			self:SetVoiceActive(self.linkedVoiceChannel.isActive);
-		end
+	if self.Speaker then
+		self.Speaker:SetChannelType(channelType);
 	end
 end
 
 function ChannelButtonBaseMixin:GetChannelType()
 	return self.channelType;
-end
-
-function ChannelButtonBaseMixin:ToggleActivateChannel()
-	if self:ChannelSupportsVoice() then
-		local voiceChannelID = self:GetVoiceChannelID();
-		if voiceChannelID then
-			local isActive = C_VoiceChat.GetActiveChannelID() == voiceChannelID;
-			if isActive then
-				C_VoiceChat.DeactivateChannel(voiceChannelID);
-			else
-				C_VoiceChat.ActivateChannel(voiceChannelID);
-			end
-		end
-	end
 end
 
 function ChannelButtonBaseMixin:SetChannelID(channelID)
@@ -154,7 +112,7 @@ function ChannelButtonBaseMixin:GetVoiceChannelID()
 		return voiceChannel.channelID;
 	end
 
-	return self:GetChannelID();
+	return nil;
 end
 
 function ChannelButtonBaseMixin:GetVoiceChannel()
@@ -215,6 +173,10 @@ end
 
 function ChannelButtonBaseMixin:SetChannelName(name)
 	self.name = name;
+
+	if self.Speaker then
+		self.Speaker:SetChannelName(name);
+	end
 end
 
 function ChannelButtonBaseMixin:GetMemberCount()
@@ -281,8 +243,6 @@ function ChannelButtonMixin:Update()
 		self.Text:SetPoint("RIGHT", self, "RIGHT", -6, 0);
 	end
 
-	self.Speaker:Update(hasVoice, self:IsVoiceActive());
-
 	-- Some text channels have voice, not all voice channels have text...channels with text have setup priority for appearance (also, they're backed by the chat system,
 	-- not the voice chat system)
 	if hasText then
@@ -347,6 +307,11 @@ end
 -- Community channel button
 ChannelButtonCommunityMixin = CreateFromMixins(ChannelButtonMixin);
 
+function ChannelButtonCommunityMixin:OnClick(button)
+	C_Club.SetClubPresenceSubscription(self.clubId);
+	ChannelButtonMixin.OnClick(self, button);
+end
+
 function ChannelButtonCommunityMixin:Setup(channelID, clubId, streamInfo)
 	local isHeader = false;
 	local channelNumber = nil;
@@ -359,45 +324,19 @@ function ChannelButtonCommunityMixin:Setup(channelID, clubId, streamInfo)
 	ChannelButtonMixin.Setup(self, channelID, streamInfo.name, isHeader, channelNumber, count, isActive, category, Enum.ChatChannelType.Communities);
 end
 
-function ChannelButtonBaseMixin:SetCommunityInfo(clubId, streamInfo)
+function ChannelButtonCommunityMixin:SetCommunityInfo(clubId, streamInfo)
 	self.clubId = clubId;
 	self.streamId = streamInfo.streamId;
-
 	self.streamInfo = streamInfo;
 
-	self.linkedVoiceChannel = C_VoiceChat.GetChannelForCommunityStream(clubId, streamInfo.streamId);
-	if self.linkedVoiceChannel then
-		self:SetVoiceActive(self.linkedVoiceChannel.isActive);
-	else
-		self:SetVoiceActive(false);
-	end
+	self.Speaker:SetCommunityInfo(clubId, streamInfo);
+
+	self:SetVoiceChannel(C_VoiceChat.GetChannelForCommunityStream(clubId, streamInfo.streamId));
 end
 
 -- Always return true because all community channels support voice (the channel isn't actually joined until the player clicks the activate button)
 function ChannelButtonCommunityMixin:ChannelSupportsVoice()
 	return true;
-end
-
-function ChannelButtonCommunityMixin:ToggleActivateChannel()
-	local voiceChannel = self:GetVoiceChannel();
-	if voiceChannel then
-		local isActive = C_VoiceChat.GetActiveChannelID() == voiceChannel.channelID;
-		if isActive then
-			C_VoiceChat.DeactivateChannel(voiceChannel.channelID);
-		else
-			C_VoiceChat.ActivateChannel(voiceChannel.channelID);
-		end
-	else
-		ChannelFrame:TryJoinCommunityStreamChannel(self.clubId, self.streamId);
-	end
-end
-
-function ChannelButtonCommunityMixin:OnVoiceChannelJoined(voiceChannelID)
-	self.linkedVoiceChannel = C_VoiceChat.GetChannel(voiceChannelID);
-end
-
-function ChannelButtonCommunityMixin:OnVoiceChannelRemoved(voiceChannelID)
-	self.linkedVoiceChannel = nil;
 end
 
 -- Headers

@@ -47,3 +47,17 @@ function MapUtil.FindBestAreaNameAtMouse(mapID, normalizedCursorX, normalizedCur
 	end
 	return nil;
 end
+
+function MapUtil.GetDisplayableMapForPlayer()
+	local mapID = C_Map.GetBestMapForUnit("player");
+	if mapID then
+		repeat
+			if C_Map.MapHasArt(mapID) then
+				return mapID;
+			end
+			local mapInfo = C_Map.GetMapInfo(mapID);
+			mapID = mapInfo and mapInfo.parentMapID or 0;
+		until mapID == 0;
+	end
+	return C_Map.GetFallbackWorldMapID();
+end

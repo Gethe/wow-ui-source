@@ -29,6 +29,7 @@ function CommunitiesSettingsDialogMixin:SetClubId(clubId)
 		self.IconPreviewRing:SetAtlas(self.clubType == Enum.ClubType.BattleNet and "communities-ring-blue" or "communities-ring-gold");
 		self:SetAvatarId(clubInfo.avatarId);
 		self.NameEdit:SetText(clubInfo.name);
+		self.ShortNameEdit:SetText(clubInfo.shortName or "");
 		self.Description.EditBox:SetText(clubInfo.description);
 		self.MessageOfTheDay.EditBox:SetText(clubInfo.broadcast);
 	end
@@ -55,12 +56,22 @@ function CommunitiesSettingsDialogMixin:GetName()
 	return self.NameEdit:GetText();
 end
 
+function CommunitiesSettingsDialogMixin:GetShortName()
+	return self.ShortNameEdit:GetText();
+end
+
 function CommunitiesSettingsDialogMixin:GetDescription()
 	return self.Description.EditBox:GetText();
 end
 
 function CommunitiesSettingsDialogMixin:GetMessageOfTheDay()
 	return self.MessageOfTheDay.EditBox:GetText();
+end
+
+function CommunitiesSettingsDialogMixin:UpdateCreateButton()
+	local nameValid = strlenutf8(self.NameEdit:GetText()) >= 2;
+	local shortNameValid = strlenutf8(self.ShortNameEdit:GetText()) >= 2;
+	self.Accept:SetEnabled(nameValid and shortNameValid);
 end
 
 local function CommunitiesAvatarPickerDialog_OnOkay(self)
@@ -88,8 +99,7 @@ end
 function CommunitiesSettingsDialogAcceptButton_OnClick(self)
 	local communitiesSettingsDialog = self:GetParent();
 	communitiesSettingsDialog:Hide();
-	-- TODO: Short name edit box for Character clubs
-	C_Club.EditClub(communitiesSettingsDialog:GetClubId(), communitiesSettingsDialog:GetName(), nil, communitiesSettingsDialog:GetDescription(), communitiesSettingsDialog:GetAvatarId(), communitiesSettingsDialog:GetMessageOfTheDay());
+	C_Club.EditClub(communitiesSettingsDialog:GetClubId(), communitiesSettingsDialog:GetName(), communitiesSettingsDialog:GetShortName(), communitiesSettingsDialog:GetDescription(), communitiesSettingsDialog:GetAvatarId(), communitiesSettingsDialog:GetMessageOfTheDay());
 end
 
 function CommunitiesSettingsDialogDeleteButton_OnClick(self)

@@ -29,6 +29,9 @@ function MapCanvasMixin:SetMapID(mapID)
 		self.mapID = mapID; 
 		self.expandedMapInsetsByMapID = {};
 		self.ScrollContainer:SetMapID(mapID);
+		if self:IsShown() then
+			self:RefreshDetailLayers();
+		end
 		self:OnMapChanged();
 	end
 end
@@ -720,15 +723,10 @@ function MapCanvasMixin:ReapplyPinFrameLevels(pinFrameLevelType)
 	end
 end
 
-function MapCanvasMixin:NavigateToMap(mapID)
-	self:SetMapID(mapID);
-	self:RefreshDetailLayers();
-end
-
 function MapCanvasMixin:NavigateToParentMap()
 	local mapInfo = C_Map.GetMapInfo(self:GetMapID());
 	if mapInfo.parentMapID > 0 then
-		self:NavigateToMap(mapInfo.parentMapID);
+		self:SetMapID(mapInfo.parentMapID);
 	end
 end
 
@@ -736,7 +734,7 @@ function MapCanvasMixin:NavigateToCursor()
 	local normalizedCursorX, normalizedCursorY = self:GetNormalizedCursorPosition();
 	local mapInfo = C_Map.GetMapInfoAtPosition(self:GetMapID(), normalizedCursorX, normalizedCursorY);
 	if mapInfo then
-		self:NavigateToMap(mapInfo.mapID);
+		self:SetMapID(mapInfo.mapID);
 	end
 end
 

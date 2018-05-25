@@ -159,7 +159,7 @@ function BattlefieldMapMixin:OnLoad()
 end
 
 function BattlefieldMapMixin:OnShow()
-	local mapID = C_Map.GetBestMapForUnit("player");
+	local mapID = MapUtil.GetDisplayableMapForPlayer();
 	self:SetMapID(mapID);
 	MapCanvasMixin.OnShow(self);
 	PlaySound(SOUNDKIT.IG_QUEST_LOG_OPEN);
@@ -196,7 +196,7 @@ function BattlefieldMapMixin:OnEvent(event, ...)
 		end
 	elseif event == "PLAYER_ENTERING_WORLD" or event == "ZONE_CHANGED_NEW_AREA" then
 		if GetCVar("showBattlefieldMinimap") == "1" then
-			local mapID = C_Map.GetBestMapForUnit("player");
+			local mapID = MapUtil.GetDisplayableMapForPlayer();
 			self:SetMapID(mapID);
 			self:Show();
 		end

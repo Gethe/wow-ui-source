@@ -7,6 +7,20 @@ local Transmog =
 	Functions =
 	{
 		{
+			Name = "GetCreatureDisplayIDForSource",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemModifiedAppearanceID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "creatureDisplayID", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "GetSlotForInventoryType",
 			Type = "Function",
 
