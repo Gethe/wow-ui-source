@@ -1581,28 +1581,28 @@
 	<Frame name="EtherealFrameTemplate" inherits="PortraitFrameTemplate" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="-2">
-				<Texture name="$parentCornerTL" file="Interface\Transmogrify\Textures.png">
+				<Texture name="$parentCornerTL" parentKey="CornerTL" file="Interface\Transmogrify\Textures.png">
 					<Size x="64" y="64"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="-2" y="-8"/>
 					</Anchors>
 					<TexCoords left="0.00781250" right="0.50781250" top="0.00195313" bottom="0.12695313"/>
 				</Texture>
-				<Texture name="$parentCornerTR" file="Interface\Transmogrify\Textures.png">
+				<Texture name="$parentCornerTR" parentKey="CornerTR" file="Interface\Transmogrify\Textures.png">
 					<Size x="64" y="64"/>
 					<Anchors>
 						<Anchor point="TOPRIGHT" x="0" y="-8"/>
 					</Anchors>
 					<TexCoords left="0.00781250" right="0.50781250" top="0.38476563" bottom="0.50781250"/>
 				</Texture>
-				<Texture name="$parentCornerBL" file="Interface\Transmogrify\Textures.png">
+				<Texture name="$parentCornerBL" parentKey="CornerBL" file="Interface\Transmogrify\Textures.png">
 					<Size x="64" y="64"/>
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" x="-2" y="16"/>
 					</Anchors>
 					<TexCoords left="0.00781250" right="0.50781250" top="0.25781250" bottom="0.38085938"/>
 				</Texture>
-				<Texture name="$parentCornerBR" file="Interface\Transmogrify\Textures.png">
+				<Texture name="$parentCornerBR" parentKey="CornerBR" file="Interface\Transmogrify\Textures.png">
 					<Size x="64" y="64"/>
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT" x="0" y="16"/>

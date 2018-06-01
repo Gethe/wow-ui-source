@@ -22,6 +22,19 @@ local AzeriteEmpoweredItem =
 			},
 		},
 		{
+			Name = "CloseAzeriteEmpoweredItemRespec",
+			Type = "Function",
+		},
+		{
+			Name = "ConfirmAzeriteEmpoweredItemRespec",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "azeriteEmpoweredItemLocation", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+		},
+		{
 			Name = "GetAllTierInfo",
 			Type = "Function",
 
@@ -48,6 +61,15 @@ local AzeriteEmpoweredItem =
 			Returns =
 			{
 				{ Name = "tierInfo", Type = "table", InnerType = "AzeriteEmpoweredItemTierInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetAzeriteEmpoweredItemRespecCost",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "cost", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -214,6 +236,16 @@ local AzeriteEmpoweredItem =
 			{
 				{ Name = "azeriteEmpoweredItemLocation", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
 			},
+		},
+		{
+			Name = "RespecAzeriteEmpoweredItemClosed",
+			Type = "Event",
+			LiteralName = "RESPEC_AZERITE_EMPOWERED_ITEM_CLOSED",
+		},
+		{
+			Name = "RespecAzeriteEmpoweredItemOpened",
+			Type = "Event",
+			LiteralName = "RESPEC_AZERITE_EMPOWERED_ITEM_OPENED",
 		},
 	},
 

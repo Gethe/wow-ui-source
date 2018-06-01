@@ -3,12 +3,6 @@
 	<Frame name="AzeriteEmpoweredItemSlotTemplate" parentArray="Slots" mixin="AzeriteEmpoweredItemSlotMixin" virtual="true">
 		<Size x="50" y="50" />
 		<Frames>
-			<ModelScene parentKey="LidEffect" drawLayer="OVERLAY" inherits="NonInteractableModelSceneMixinTemplate">
-				<Size x="500" y="500" />
-				<Anchors>
-					<Anchor point="CENTER" />
-				</Anchors>
-			</ModelScene>
 			<ModelScene parentKey="LockedInEffect" drawLayer="OVERLAY" inherits="NonInteractableModelSceneMixinTemplate">
 				<Size x="500" y="500" />
 				<Anchors>

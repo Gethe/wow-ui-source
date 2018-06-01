@@ -53,6 +53,7 @@ local errorStrings =
 	[Enum.ClubErrorType.ErrorCommunitiesWrongRegion] = "ERROR_COMMUNITIES_WRONG_REGION",
 	[Enum.ClubErrorType.ErrorCommunitiesUnknownTicket] = "ERROR_COMMUNITIES_UNKNOWN_TICKET",
 	[Enum.ClubErrorType.ErrorCommunitiesMissingShortName] = "ERROR_COMMUNITIES_MISSING_SHORT_NAME",
+	[Enum.ClubErrorType.ErrorCommunitiesProfanity] = "ERROR_COMMUNITIES_PROFANITY",
 	[Enum.ClubErrorType.ErrorClubFull] = "ERROR_CLUB_FULL",
 	[Enum.ClubErrorType.ErrorClubNoClub] = "ERROR_CLUB_NO_CLUB",
 	[Enum.ClubErrorType.ErrorClubNotMember] = "ERROR_CLUB_NOT_MEMBER",

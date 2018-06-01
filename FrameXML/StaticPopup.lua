@@ -2000,6 +2000,24 @@ StaticPopupDialogs["CONFIRM_AZERITE_EMPOWERED_BIND"] = {
 	hideOnEscape = 1
 };
 
+StaticPopupDialogs["CONFIRM_AZERITE_EMPOWERED_RESPEC"] = {
+	text = CONFIRM_AZERITE_EMPOWERED_ITEM_RESPEC,
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function(self, data)
+		C_AzeriteEmpoweredItem.ConfirmAzeriteEmpoweredItemRespec(data.empoweredItemLocation);
+	end,
+	OnShow = function(self, data)
+		MoneyFrame_Update(self.moneyFrame, data.respecCost);
+	end,
+	timeout = 0,
+	hideOnEscape = 1,
+	exclusive = 1,
+	showAlert = 1,
+	hasMoneyFrame = 1,
+};
+
+
 StaticPopupDialogs["DELETE_ITEM"] = {
 	text = DELETE_ITEM,
 	button1 = YES,

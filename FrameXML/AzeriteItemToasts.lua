@@ -109,7 +109,8 @@ function AzeriteItemLevelUpToastMixin:SetUpUnlockedEmpoweredItems(unlockedEmpowe
 		local itemButton = self.itemFramePool:Acquire();
 		local unlockedItem = Item:CreateFromItemLocation(unlockedEmpoweredItemInfo.unlockedItem);
 		SetItemButtonTexture(itemButton, unlockedItem:GetItemIcon());
-		SetItemButtonQuality(itemButton, unlockedItem:GetItemQuality(), unlockedItem:GetItemID());
+		local suppressOverlays = true;
+		SetItemButtonQuality(itemButton, unlockedItem:GetItemQuality(), unlockedItem:GetItemID(), suppressOverlays);
 		itemButton.layoutIndex = i;
 
 		itemButton:Show();

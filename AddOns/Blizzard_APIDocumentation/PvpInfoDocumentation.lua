@@ -247,6 +247,15 @@ local PvpInfo =
 			},
 		},
 		{
+			Name = "IsWarModeActive",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "warModeActive", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsWarModeDesired",
 			Type = "Function",
 

@@ -21,9 +21,6 @@ function AzeriteEmpoweredItemSlotMixin:SetPowerLevelInfo(azeritePowerLevel, unlo
 	self.unlockLevel = unlockLevel;
 	self.isPreviewSource = isPreviewSource;
 
-	self.LidEffect:SetShown(isSelectionActive);
-	self.LidEffect:SetAlpha(1);
-
 	self:EnableMouse(not hasSelectedPower); -- No tooltips if we have a selected power
 end
 
@@ -35,7 +32,6 @@ function AzeriteEmpoweredItemSlotMixin:PlayLockedInEffect()
 end
 
 function AzeriteEmpoweredItemSlotMixin:SetupModelScene(forceUpdate)
-	AzeriteModelInfo.SetupModelScene(self.LidEffect, AzeriteModelInfo.ModelSceneTypeLidUnlock, forceUpdate);
 	self.lockedInEffectActor = AzeriteModelInfo.SetupModelScene(self.LockedInEffect, AzeriteModelInfo.ModelSceneTypePowerLockedIn, forceUpdate);
 	if self.lockedInEffectActor then
 		self.lockedInEffectActor:SetAnimation(0, 0, 0, 0);

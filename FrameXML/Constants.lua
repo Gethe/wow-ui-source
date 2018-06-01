@@ -14,7 +14,7 @@ MAX_PLAYER_LEVEL_TABLE[LE_EXPANSION_CATACLYSM] = 85;
 MAX_PLAYER_LEVEL_TABLE[LE_EXPANSION_MISTS_OF_PANDARIA] = 90;
 MAX_PLAYER_LEVEL_TABLE[LE_EXPANSION_WARLORDS_OF_DRAENOR] = 100;
 MAX_PLAYER_LEVEL_TABLE[LE_EXPANSION_LEGION] = 110;
-MAX_PLAYER_LEVEL_TABLE[LE_EXPANSION_8_0] = 120;
+MAX_PLAYER_LEVEL_TABLE[LE_EXPANSION_BATTLE_FOR_AZEROTH] = 120;
 MAX_PLAYER_LEVEL_TABLE[LE_EXPANSION_9_0] = 120;
 MAX_PLAYER_LEVEL_TABLE[LE_EXPANSION_10_0] = 120;
 MAX_PLAYER_LEVEL_TABLE[LE_EXPANSION_11_0] = 120;
@@ -910,48 +910,6 @@ LFG_SUBTYPEID_RAID = 3;
 LFG_SUBTYPEID_SCENARIO = 4;
 LFG_SUBTYPEID_FLEXRAID = 5;
 LFG_SUBTYPEID_WORLDPVP = 6;
-
--- CONTRIBUTIONS
-CONTRIBUTION_APPEARANCE_DATA = {
-	[Enum.ContributionState.Building] = {
-		stateName = CONTRIBUTION_UNDER_CONSTRUCTION,
-		stateColor = NORMAL_FONT_COLOR,
-		tooltipLine = CONTRIBUTION_POI_TOOLTIP_PERCENTAGE_BUILT,
-		tooltipUseTimeRemaining = false,
-		statusBarAtlas = "_Legionfall_BarFill_UnderConstruction",
-		borderAtlas = "Legionfall_YellowFrame",
-		bannerAtlas = "Legionfall_Banner",
-	},
-
-	[Enum.ContributionState.Active] = {
-		stateName = CONTRIBUTION_ACTIVE,
-		stateColor = GREEN_FONT_COLOR,
-		tooltipLine = CONTRIBUTION_ACTIVE,
-		tooltipUseTimeRemaining = false,
-		statusBarAtlas = "_Legionfall_BarFill_Active",
-		borderAtlas = "Legionfall_GreenFrame",
-		bannerAtlas = "Legionfall_Banner",
-	},
-
-	[Enum.ContributionState.UnderAttack] = {
-		stateName = CONTRIBUTION_UNDER_ATTACK,
-		stateColor = RED_FONT_COLOR,
-		tooltipLine = CONTRIBUTION_POI_TOOLTIP_REMAINING_TIME,
-		tooltipUseTimeRemaining = true,
-		statusBarAtlas = "_Legionfall_BarFill_UnderAttack",
-		borderAtlas = "Legionfall_RedFrame",
-		bannerAtlas = "Legionfall_Banner",
-	},
-
-	[Enum.ContributionState.Destroyed] = {
-		stateName = CONTRIBUTION_DESTROYED,
-		stateColor = DISABLED_FONT_COLOR,
-		tooltipLine = CONTRIBUTION_DESTROYED,
-		statusBarAtlas = "_Legionfall_BarFill_Active",
-		borderAtlas = "Legionfall_GrayFrame",
-		bannerAtlas = "Legionfall_GrayBanner",
-	},
-}
 
 -- TEXTURES
 QUESTION_MARK_ICON = "INTERFACE\\ICONS\\INV_MISC_QUESTIONMARK.BLP";

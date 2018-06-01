@@ -20,6 +20,10 @@ function CommunitiesStreamDropDownMenu_Initialize(self)
 			info.text = stream.name;
 		end
 		
+		if CommunitiesUtil.DoesCommunityStreamHaveUnreadMessages(clubId, stream.streamId) then
+			info.text = info.text.." "..CreateAtlasMarkup("communities-icon-notification", 11, 12);
+		end
+		
 		info.icon = canEditStream and "Interface\\WorldMap\\GEAR_64GREY" or nil;
 		info.value = stream.streamId;
 		info.checked = stream.streamId == UIDropDownMenu_GetSelectedValue(self);
@@ -60,6 +64,16 @@ CommunitiesStreamDropDownMixin = {}
 function CommunitiesStreamDropDownMixin:OnLoad()
 	UIDropDownMenu_SetWidth(self, 115);
 	self.Text:SetJustifyH("LEFT");
+end
+
+function CommunitiesStreamDropDownMixin:UpdateUnreadNotification()
+	local clubId = self:GetCommunitiesFrame():GetSelectedClubId();
+	if clubId then
+		local ignoreStreamId = self:GetCommunitiesFrame():GetSelectedStreamId();
+		self.NotificationOverlay:SetShown(CommunitiesUtil.DoesCommunityHaveOtherUnreadMessages(clubId, ignoreStreamId));
+	else
+		self.NotificationOverlay:SetShown(false);
+	end
 end
 
 function CommunitiesStreamDropDownMixin:GetCommunitiesFrame()

@@ -26,37 +26,22 @@ function AzeriteEmpoweredItemUIMixin:OnLoad()
 
 	local root = self.transformTree:GetRoot();
 	root:SetLocalScale(.5855);
+
+	for i, rankFrame in ipairs(self.ClipFrame.BackgroundFrame.RankFrames) do
+		rankFrame.Gear.transformNode = root:CreateNodeFromTexture(rankFrame.Gear);
+		rankFrame.Gear.transformNode:SetLocalScale(1.05);
+
+		rankFrame.RingBg.transformNode = root:CreateNodeFromTexture(rankFrame.RingBg);
+		rankFrame.GearBg.transformNode = rankFrame.RingBg.transformNode:CreateNodeFromTexture(rankFrame.GearBg);
+		rankFrame.RingLights.transformNode = rankFrame.RingBg.transformNode:CreateNodeFromTexture(rankFrame.RingLights);
+	end
 	
-	self.BackgroundFrame.Rank2Gear.transformNode = root:CreateNodeFromTexture(self.BackgroundFrame.Rank2Gear);
-	self.BackgroundFrame.Rank3Gear.transformNode = root:CreateNodeFromTexture(self.BackgroundFrame.Rank3Gear);
-	self.BackgroundFrame.Rank4Gear.transformNode = root:CreateNodeFromTexture(self.BackgroundFrame.Rank4Gear);
-
-	self.BackgroundFrame.Rank2Gear.transformNode:SetLocalScale(1.05);
-	self.BackgroundFrame.Rank3Gear.transformNode:SetLocalScale(1.05);
-	self.BackgroundFrame.Rank4Gear.transformNode:SetLocalScale(1.05);
-
-	self.BackgroundFrame.Rank2RingBg.transformNode = root:CreateNodeFromTexture(self.BackgroundFrame.Rank2RingBg);
-	self.BackgroundFrame.Rank3RingBg.transformNode = root:CreateNodeFromTexture(self.BackgroundFrame.Rank3RingBg);
-	self.BackgroundFrame.Rank4RingBg.transformNode = root:CreateNodeFromTexture(self.BackgroundFrame.Rank4RingBg);
-
-	self.BackgroundFrame.Rank2GearBg.transformNode = self.BackgroundFrame.Rank2RingBg.transformNode:CreateNodeFromTexture(self.BackgroundFrame.Rank2GearBg);
-	self.BackgroundFrame.Rank3GearBg.transformNode = self.BackgroundFrame.Rank3RingBg.transformNode:CreateNodeFromTexture(self.BackgroundFrame.Rank3GearBg);
-	self.BackgroundFrame.Rank4GearBg.transformNode = self.BackgroundFrame.Rank4RingBg.transformNode:CreateNodeFromTexture(self.BackgroundFrame.Rank4GearBg);
-
-	self.BackgroundFrame.Rank2RingBgGlow.SelectedAnim = self.SelectRank2Anim;
-	self.BackgroundFrame.Rank3RingBgGlow.SelectedAnim = self.SelectRank3Anim;
-	self.BackgroundFrame.Rank4RingBgGlow.SelectedAnim = self.SelectRank4Anim;
-
-	self.BackgroundFrame.Rank2RingBgGlow.FadeAnim = self.FadeRank2Anim;
-	self.BackgroundFrame.Rank3RingBgGlow.FadeAnim = self.FadeRank3Anim;
-	self.BackgroundFrame.Rank4RingBgGlow.FadeAnim = self.FadeRank4Anim;
-
 	local function TierReset(framePool, frame)
 		FramePool_HideAndClearAnchors(framePool, frame);
 		frame:Reset();
 	end
 	self.tierPool = CreateFramePool("FRAME", self, "AzeriteEmpoweredItemTierTemplate", TierReset);
-	self.powerPool = CreateTransformFrameNodePool("BUTTON", self.BackgroundFrame, "AzeriteEmpoweredItemPowerTemplate");
+	self.powerPool = CreateTransformFrameNodePool("BUTTON", self.ClipFrame.PowerContainerFrame, "AzeriteEmpoweredItemPowerTemplate");
 	self.azeriteItemDataSource = AzeriteEmpowedItemDataSource:CreateEmpty();
 end
 
@@ -67,7 +52,7 @@ function AzeriteEmpoweredItemUIMixin:OnUpdate(elapsed)
 	end
 
 	for tierIndex, tierFrame in ipairs(self.tiersByIndex) do
-		tierFrame:PerformAnimations();
+		tierFrame:PerformAnimations(elapsed);
 	end
 
 	self.transformTree:ResolveTransforms();
@@ -105,7 +90,10 @@ function AzeriteEmpoweredItemUIMixin:OnShowFailed()
 	self:Clear();
 end
 
-function AzeriteEmpoweredItemUIMixin:OnTierAnimationStateChanged(tierFrame)
+function AzeriteEmpoweredItemUIMixin:OnTierAnimationStateChanged(tierFrame, animationBegin)
+	if animationBegin then
+		ShakeFrameRandom(self.ClipFrame.BackgroundFrame, 1, .7, .05);
+	end
 	self:MarkDirty();
 end
 
@@ -138,15 +126,9 @@ function AzeriteEmpoweredItemUIMixin:Clear()
 	self.tiersByIndex = {};
 	self.powerPool:ReleaseAll();
 
-	HideAll(self.BackgroundFrame.RingBackgrounds);
-	HideAll(self.BackgroundFrame.GearBackgrounds);
-	HideAll(self.BackgroundFrame.Gears);
-	HideAll(self.BackgroundFrame.RingBorders);
-	HideAll(self.BackgroundFrame.RingGlows);
-	HideAll(self.BackgroundFrame.PlugBackgrounds);
-
-	HideAll(self.BackgroundFrame.KeyOverlay.Slots);
-	HideAll(self.BackgroundFrame.KeyOverlay.Plugs);
+	HideAll(self.ClipFrame.BackgroundFrame.RankFrames);
+	HideAll(self.ClipFrame.BackgroundFrame.KeyOverlay.Slots);
+	HideAll(self.ClipFrame.BackgroundFrame.KeyOverlay.Plugs);
 
 	self:MarkDirty();
 
@@ -215,20 +197,20 @@ end
 
 function AzeriteEmpoweredItemUIMixin:AdjustSizeForTiers(numTiers)
 	if numTiers == 3 then
-		self.BackgroundFrame.KeyOverlay.Texture:SetAtlas("Azerite-CenterBG-3Ranks", true);
-		self.BackgroundFrame.KeyOverlay.Texture:SetPoint("CENTER", 3, 125);
-		self.BackgroundFrame.Bg:SetAtlas("Azerite-Background-3Ranks", true);
+		self.ClipFrame.BackgroundFrame.KeyOverlay.Texture:SetAtlas("Azerite-CenterBG-3Ranks", true);
+		self.ClipFrame.BackgroundFrame.KeyOverlay.Texture:SetPoint("CENTER", 3, 125);
+		self.ClipFrame.BackgroundFrame.Bg:SetAtlas("Azerite-Background-3Ranks", true);
 		
 		self:SetSize(474, 484);
 	else
-		self.BackgroundFrame.KeyOverlay.Texture:SetAtlas("Azerite-CenterBG-4Ranks", true);
-		self.BackgroundFrame.KeyOverlay.Texture:SetPoint("CENTER", 0, 187);
-		self.BackgroundFrame.Bg:SetAtlas("Azerite-Background", true);
+		self.ClipFrame.BackgroundFrame.KeyOverlay.Texture:SetAtlas("Azerite-CenterBG-4Ranks", true);
+		self.ClipFrame.BackgroundFrame.KeyOverlay.Texture:SetPoint("CENTER", 0, 187);
+		self.ClipFrame.BackgroundFrame.Bg:SetAtlas("Azerite-Background", true);
 		self:SetSize(615, 628);
 	end
 	UpdateUIPanelPositions(self);
 
-	self.transformTree:GetRoot():SetLocalPosition(CreateVector2D(self.BackgroundFrame:GetWidth() * .5, self.BackgroundFrame:GetHeight() * .5));
+	self.transformTree:GetRoot():SetLocalPosition(CreateVector2D(self.ClipFrame.BackgroundFrame:GetWidth() * .5, self.ClipFrame.BackgroundFrame:GetHeight() * .5));
 end
 
 function AzeriteEmpoweredItemUIMixin:RebuildTiers()
@@ -243,36 +225,16 @@ function AzeriteEmpoweredItemUIMixin:RebuildTiers()
 		table.insert(self.tiersByIndex, tierFrame);
 
 		local tierArtIndex = tierIndex + (AZERITE_EMPOWERED_ITEM_MAX_TIERS - numTiers);
-		local tierRingBackground = self.BackgroundFrame.RingBackgrounds[tierArtIndex];
-		local tierRingBackgroundNode = nil;
-		if tierRingBackground then
-			tierRingBackground:Show();
-			self.BackgroundFrame.GearBackgrounds[tierArtIndex]:Show();
-			tierRingBackgroundNode = tierRingBackground.transformNode;
-		end
+		local rankFrame = self.ClipFrame.BackgroundFrame.RankFrames[tierArtIndex];
 
-		local tierGear = self.BackgroundFrame.Gears[tierArtIndex];
-		local tierGearNode = nil;
-		if tierGear then
-			tierGear:Show();
-			tierGearNode = tierGear.transformNode;
-		end
-
-		local tierRingGlow = self.BackgroundFrame.RingGlows[tierArtIndex];
-		local tierPlug = self.BackgroundFrame.KeyOverlay.Plugs[tierArtIndex];
-		local tierPlugBackground = self.BackgroundFrame.PlugBackgrounds[tierArtIndex];
-		local tierSlot = self.BackgroundFrame.KeyOverlay.Slots[tierArtIndex];
+		local tierPlug = self.ClipFrame.BackgroundFrame.KeyOverlay.Plugs[tierArtIndex];
+		local tierSlot = self.ClipFrame.BackgroundFrame.KeyOverlay.Slots[tierArtIndex];
 
 		tierFrame:SetOwner(self, self.azeriteItemDataSource);
-		tierFrame:SetVisuals(tierSlot, tierRingGlow, tierPlug, tierPlugBackground, tierRingBackgroundNode or self.transformTree:GetRoot(), tierGearNode);
+		tierFrame:SetVisuals(tierSlot, rankFrame, tierPlug, self.transformTree:GetRoot());
 
 		local prereqTier = self.tiersByIndex[tierIndex - 1];
 		tierFrame:SetTierInfo(tierIndex, numTiers, tierInfo, prereqTier);
 		tierFrame:CreatePowers(self.powerPool);
-
-		local tierRingBorder = self.BackgroundFrame.RingBorders[tierArtIndex];
-		if tierRingBorder then
-			tierRingBorder:Show();
-		end
 	end
 end

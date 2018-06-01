@@ -311,6 +311,20 @@
 		
 	<Frame name="StreamDropDownMenuTemplate" inherits="UIDropDownMenuTemplate" mixin="CommunitiesStreamDropDownMixin" virtual="true">
 		<Size x="40" y="28"/>
+		<Frames>
+			<Frame parentKey="NotificationOverlay" frameLevel="100" setAllPoints="true" hidden="true">
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="UnreadNotificationIcon" atlas="communities-icon-notification">
+							<Size x="11" y="12"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent" relativePoint="TOPRIGHT" x="-19" y="-4"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 		</Scripts>

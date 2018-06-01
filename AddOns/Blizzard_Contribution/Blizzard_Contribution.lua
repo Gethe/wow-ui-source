@@ -88,7 +88,7 @@ end
 
 function ContributionStatusMixin:Update()
 	local state, stateAmount, timeOfNextStateChange = C_ContributionCollector.GetState(self.contributionID);
-	local appearance = CONTRIBUTION_APPEARANCE_DATA[state];
+	local appearance = C_ContributionCollector.GetContributionAppearance(self.contributionID, state);
 
 	self:SetValue(stateAmount);
 
@@ -331,7 +331,7 @@ function ContributionMixin:Update()
 	local contributionName = C_ContributionCollector.GetName(self.contributionID);
 	local contributionDescription = C_ContributionCollector.GetDescription(self.contributionID);
 	local state, stateAmount = C_ContributionCollector.GetState(self.contributionID);
-	local appearance = CONTRIBUTION_APPEARANCE_DATA[state];
+	local appearance = C_ContributionCollector.GetContributionAppearance(self.contributionID, state);
 
 	self.Header.Text:SetText(contributionName);
 	self.Description:SetText(contributionDescription);

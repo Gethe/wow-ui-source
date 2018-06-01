@@ -51,7 +51,7 @@
 				<FontString parentKey="Name" inherits="GameFontNormal" justifyH="LEFT">
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="10" y="0"/>
-						<Anchor point="RIGHT" x="-20" y="0"/>
+						<Anchor point="RIGHT" x="-24" y="0"/>
 						<Anchor point="TOP" x="0" y="-6"/>
 						<Anchor point="BOTTOM" x="0" y="6"/>
 					</Anchors>
@@ -97,7 +97,14 @@
 				<Texture parentKey="UnreadNotificationIcon" atlas="communities-icon-notification" hidden="true">
 					<Size x="11" y="12"/>
 					<Anchors>
-						<Anchor point="RIGHT" x="-10" y="0"/>
+						<Anchor point="RIGHT" x="-16" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="10">
+				<Texture parentKey="FavoriteIcon" atlas="collections-icon-favorites" useAtlasSize="true" scale="0.75">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="5" y="-9"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -284,6 +291,20 @@
 
 	<Frame name="CommunitiesListDropDownMenuTemplate" inherits="UIDropDownMenuTemplate" mixin="CommunitiesListDropDownMenuMixin" virtual="true">
 		<Size x="40" y="28"/>
+		<Frames>
+			<Frame parentKey="NotificationOverlay" frameLevel="100" setAllPoints="true" hidden="true">
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="UnreadNotificationIcon" atlas="communities-icon-notification">
+							<Size x="11" y="12"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent" relativePoint="TOPRIGHT" x="-19" y="-4"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnShow method="OnShow"/>

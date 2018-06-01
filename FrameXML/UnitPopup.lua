@@ -1363,7 +1363,7 @@ function UnitPopup_OnUpdate (elapsed)
 							enable = false;
 						end
 					elseif ( value == "PVP_ENABLE" or value == "PVP_DISABLE") then
-						if ( C_PvP.IsWarModeDesired() ) then
+						if ( C_PvP.IsWarModeActive() ) then
 							enable = false;
 						end
 					elseif ( value == "UNINVITE" ) then

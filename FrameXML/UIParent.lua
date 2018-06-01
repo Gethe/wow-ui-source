@@ -408,6 +408,9 @@ function UIParent_OnLoad(self)
 	
 	-- Event(s) for Party Pose
 	self:RegisterEvent("ISLAND_COMPLETED"); 
+
+	-- Event(s) for Azerite Empowered Items
+	self:RegisterEvent("RESPEC_AZERITE_EMPOWERED_ITEM_OPENED");
 end
 
 function UIParent_OnShow(self)
@@ -675,6 +678,10 @@ end
 
 function Communities_LoadUI()
 	UIParentLoadAddOn("Blizzard_Communities");
+end
+
+function AzeriteRespecFrame_LoadUI()
+	UIParentLoadAddOn("Blizzard_AzeriteRespecUI");
 end
 
 local playerEnteredWorld = false;
@@ -2051,6 +2058,10 @@ function UIParent_OnEvent(self, event, ...)
 		local mapID, winner = ...; 
 		WarfrontsPartyPoseFrame:LoadScreenData(mapID, winner);
 		ShowUIPanel(WarfrontsPartyPoseFrame);
+	-- Event(s) for Azerite Respec
+	elseif (event == "RESPEC_AZERITE_EMPOWERED_ITEM_OPENED") then
+		AzeriteRespecFrame_LoadUI();
+		ShowUIPanel(AzeriteRespecFrame);
 	end
 end
 
@@ -5052,7 +5063,7 @@ function ShakeFrameRandom(frame, magnitude, duration, frequency)
 
 	local shake = {};
 	for i = 1, math.ceil(duration / frequency) do
-		local xVariation, yVariation = math.random(-magnitude, magnitude), math.random(-magnitude, magnitude);
+		local xVariation, yVariation = Lerp(-magnitude, magnitude, math.random()), Lerp(-magnitude, magnitude, math.random());
 		shake[i] = { x = xVariation, y = yVariation };
 	end
 

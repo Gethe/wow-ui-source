@@ -44,7 +44,7 @@ function ContributionCollectorPinMixin:AddContributionsToTooltip(tooltip, ...)
 		local contributionID = select(i, ...);
 		local contributionName = C_ContributionCollector.GetName(contributionID);
 		local state, stateAmount, timeOfNextStateChange = C_ContributionCollector.GetState(contributionID);
-		local appearanceData = CONTRIBUTION_APPEARANCE_DATA[state];
+		local appearanceData = C_ContributionCollector.GetContributionAppearance(contributionID, state);
 
 		if i ~= 1 then
 			tooltip:AddLine(" ");

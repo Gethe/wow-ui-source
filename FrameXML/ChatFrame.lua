@@ -784,7 +784,7 @@ function ChatFrame_ResolveChannelName(communityChannel)
 	-- TODO:: This doesn't really localize properly yet since you could be playing in a language different than
 	-- the club was created in.
 	if streamName == COMMUNITIES_DEFAULT_CHANNEL_NAME then
-		local communityName = clubInfo and ChatFrame_TruncateToMaxLength(clubInfo.name, MAX_COMMUNITY_NAME_LENGTH_NO_CHANNEL) or "";
+		local communityName = clubInfo and ChatFrame_TruncateToMaxLength(clubInfo.shortName or clubInfo.name, MAX_COMMUNITY_NAME_LENGTH_NO_CHANNEL) or "";
 		return communityName;
 	else
 		local communityName = clubInfo and ChatFrame_TruncateToMaxLength(clubInfo.shortName or clubInfo.name, MAX_COMMUNITY_NAME_LENGTH) or "";
@@ -4926,7 +4926,7 @@ function ChatChannelDropDown_Initialize()
 
 	local info = UIDropDownMenu_CreateInfo();
 
-	info.text = frame.chatName;
+	info.text = ChatFrame_ResolveChannelName(frame.chatName);
 	info.notCheckable = true;
 	info.isTitle = true;
 	UIDropDownMenu_AddButton(info, 1);

@@ -87,14 +87,15 @@ local EXTRA_GUILD_COLUMN_ACHIEVEMENT = 1;
 local EXTRA_GUILD_COLUMN_PROFESSION = 2;
 local EXTRA_GUILD_COLUMNS = {
 	[EXTRA_GUILD_COLUMN_ACHIEVEMENT] = {
-		dropdownText = GUILLD_ROSTER_DROPDOWN_ACHIEVEMENT_POINTS or "Achievement Points",
-		title = COMMUNITIES_ROSTER_COLUMN_TITLE_ACHIEVEMENT or "Achievement Points",
+		dropdownText = GUILLD_ROSTER_DROPDOWN_ACHIEVEMENT_POINTS,
+		title = COMMUNITIES_ROSTER_COLUMN_TITLE_ACHIEVEMENT,
+		attribute = "achievementPoints",
 		width = 130,
 	};
 
 	[EXTRA_GUILD_COLUMN_PROFESSION] = {
-		dropdownText = GUILLD_ROSTER_DROPDOWN_PROFESSION or "Profession",
-		title = COMMUNITIES_ROSTER_COLUMN_TITLE_PROFESSION or "Skill",
+		dropdownText = GUILLD_ROSTER_DROPDOWN_PROFESSION,
+		title = COMMUNITIES_ROSTER_COLUMN_TITLE_PROFESSION,
 		width = 130,
 	};
 };
@@ -142,6 +143,7 @@ function CommunitiesMemberListMixin:RefreshListDisplay()
 	local height = buttons[1]:GetHeight();
 	local memberList = self.sortedMemberList;
 	local invitations = self.invitations;
+	local displayInvitations = self.expandedDisplay and #invitations > 0;
 	for i = 1, #buttons do
 		local displayIndex = i + offset;
 		local button = buttons[i];
@@ -151,16 +153,27 @@ function CommunitiesMemberListMixin:RefreshListDisplay()
 			button:Show();
 			usedHeight = usedHeight + height;
 		else
-			displayIndex = (displayIndex - #memberList) - 1;
-			if displayIndex == 0 then
-				-- Leave an extra space between the member list and invitations.
-				button:SetMember(nil);
-				button:Hide();
-				usedHeight = usedHeight + height;
-			elseif self.expandedDisplay and displayIndex <= #invitations then
-				button:SetMember(invitations[displayIndex].invitee, true);
-				button:Show();
-				usedHeight = usedHeight + height;
+			if displayInvitations  then
+				displayIndex = displayIndex - #memberList;
+				
+				-- Display an extra space and header first.
+				if displayIndex == 1 then
+					-- Leave an extra space between the member list and invitations.
+					button:SetMember(nil);
+					button:Hide();
+					usedHeight = usedHeight + height;
+				elseif displayInvitations and displayIndex == 2 then
+					button:SetHeader(COMMUNITIES_MEMBER_LIST_PENDING_INVITE_HEADER:format(#invitations));
+					button:Show();
+					usedHeight = usedHeight + height;
+				elseif displayInvitations and (displayIndex - 2) <= #invitations then
+					button:SetMember(invitations[(displayIndex - 2)].invitee, true);
+					button:Show();
+					usedHeight = usedHeight + height;
+				else
+					button:SetMember(nil);
+					button:Hide();
+				end
 			else
 				button:SetMember(nil);
 				button:Hide();
@@ -219,6 +232,13 @@ function CommunitiesMemberListMixin:OnShow()
 
 	self.streamSelectedCallback = StreamSelectedCallback;
 	self:GetCommunitiesFrame():RegisterCallback(CommunitiesFrameMixin.Event.StreamSelected, self.streamSelectedCallback);
+	
+	local function ClubSelectedCallback(event, clubId)
+		self:RefreshLayout();
+	end
+
+	self.clubSelectedCallback = ClubSelectedCallback;
+	self:GetCommunitiesFrame():RegisterCallback(CommunitiesFrameMixin.Event.ClubSelected, self.clubSelectedCallback);
 
 	local function CommunitiesDisplayModeChangedCallback(event, displayMode)
 		local expandedDisplay = displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.ROSTER;
@@ -318,6 +338,8 @@ end
 function CommunitiesMemberListMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, COMMUNITIES_MEMBER_LIST_EVENTS);
 	self:GetCommunitiesFrame():UnregisterCallback(CommunitiesFrameMixin.Event.DisplayModeChanged, self.displayModeChangedCallback);
+	self:GetCommunitiesFrame():UnregisterCallback(CommunitiesFrameMixin.Event.StreamSelected, self.streamSelectedCallback);
+	self:GetCommunitiesFrame():UnregisterCallback(CommunitiesFrameMixin.Event.ClubSelected, self.clubSelectedCallback);
 end
 
 function CommunitiesMemberListMixin:GetCommunitiesFrame()
@@ -473,8 +495,7 @@ end
 
 function CommunitiesMemberListEntryMixin:UpdateRank()
 	if self.isInvitation then
-		self.NameFrame.RankIcon:SetAtlas("communities-icon-invitemail", false);
-		self.NameFrame.RankIcon:Show();
+		self.NameFrame.RankIcon:Hide();
 		return;
 	end
 	
@@ -521,6 +542,11 @@ function CommunitiesMemberListEntryMixin:UpdatePresence()
 		self.NameFrame.PresenceIcon:Hide();
 		self.NameFrame.Name:SetTextColor(DISABLED_FONT_COLOR:GetRGB());
 	end
+end
+
+function CommunitiesMemberListEntryMixin:SetHeader(headerText)
+	self:SetMember(nil);
+	self.NameFrame.Name:SetText(headerText);
 end
 
 function CommunitiesMemberListEntryMixin:SetMember(memberInfo, isInvitation)
@@ -638,7 +664,9 @@ function CommunitiesMemberListEntryMixin:CancelInvitation()
 end
 
 function CommunitiesMemberListEntryMixin:OnClick(button)
-	self:GetMemberList():OnClubMemberButtonClicked(self, button);
+	if not self.isInvitation then
+		self:GetMemberList():OnClubMemberButtonClicked(self, button);
+	end
 end
 
 function CommunitiesMemberListEntryMixin:RefreshExpandedColumns()
@@ -647,65 +675,75 @@ function CommunitiesMemberListEntryMixin:RefreshExpandedColumns()
 	end
 
 	local memberInfo = self:GetMemberInfo();
-	if memberInfo then
-		local clubId = self:GetMemberList():GetSelectedClubId();
-		local clubInfo = C_Club.GetClubInfo(clubId);
-		if not clubInfo then
-			return;
+	if not memberInfo then
+		self.Level:Hide();
+		self.Class:Hide();
+		self.Zone:Hide();
+		self.Rank:Hide();
+		self.Note:Hide();
+		self.GuildInfo:Hide();
+		return;
+	end
+
+	local clubId = self:GetMemberList():GetSelectedClubId();
+	local clubInfo = C_Club.GetClubInfo(clubId);
+	if not clubInfo then
+		return;
+	end
+
+	if clubInfo.clubType == Enum.ClubType.BattleNet then
+		self.Level:Hide();
+		self.Class:Hide();
+		self.Zone:Hide();
+	
+		self.Rank:SetSize(75, 0);
+		self.Rank:ClearAllPoints();
+		self.Rank:SetPoint("LEFT", self.NameFrame, "RIGHT", 10, 0);
+	else
+		if memberInfo.level then
+			self.Level:SetText(memberInfo.level);
+		else
+			self.Level:SetText("");
 		end
 		
-		if clubInfo.clubType == Enum.ClubType.BattleNet then
-			self.Level:Hide();
-			self.Class:Hide();
-			self.Zone:Hide();
-			
-			self.Rank:SetSize(75, 0);
-			self.Rank:ClearAllPoints();
-			self.Rank:SetPoint("LEFT", self.NameFrame, "RIGHT", 10, 0);
+		self.Class:Hide();
+		if memberInfo.classID then
+			local classInfo = C_CreatureInfo.GetClassInfo(memberInfo.classID);
+			if classInfo then
+				self.Class:SetTexCoord(unpack(CLASS_ICON_TCOORDS[classInfo.classFile]));
+				self.Class:Show();
+			end
+		end
+	
+		if memberInfo.zone then
+			self.Zone:SetText(memberInfo.zone);
 		else
-			if memberInfo.level then
-				self.Level:SetText(memberInfo.level);
-			else
-				self.Level:SetText("");
-			end
-			
-			self.Class:Hide();
-			if memberInfo.classID then
-				local classInfo = C_CreatureInfo.GetClassInfo(memberInfo.classID);
-				if classInfo then
-					self.Class:SetTexCoord(unpack(CLASS_ICON_TCOORDS[classInfo.classFile]));
-					self.Class:Show();
-				end
-			end
-			
-			if memberInfo.zone then
-				self.Zone:SetText(memberInfo.zone);
-			else
-				self.Zone:SetText("");
-			end
-			
-			self.Rank:SetSize(75, 0);
-			self.Rank:ClearAllPoints();
-			self.Rank:SetPoint("LEFT", self.Zone, "RIGHT", 7, 0);
+			self.Zone:SetText("");
 		end
 		
-		local memberRoleId = memberInfo.role;
-		if self.isInvitation then
-			self.Rank:SetText(COMMUNITY_MEMBER_ROLE_NAME_INVITED);
-		elseif clubInfo.clubType == Enum.ClubType.Guild then
-			self.Rank:SetText(memberInfo.guildRank or "");
-		elseif memberRoleId then
-			self.Rank:SetText(COMMUNITY_MEMBER_ROLE_NAMES[memberRoleId]);
-		else
-			self.Rank:SetText("");
-		end
+		self.Rank:SetSize(75, 0);
+		self.Rank:ClearAllPoints();
+		self.Rank:SetPoint("LEFT", self.Zone, "RIGHT", 7, 0);
+	end
+	
+	local memberRoleId = memberInfo.role;
+	if clubInfo.clubType == Enum.ClubType.Guild then
+		self.Rank:SetText(memberInfo.guildRank or "");
+	elseif memberRoleId then
+		self.Rank:SetText(COMMUNITY_MEMBER_ROLE_NAMES[memberRoleId]);
+	else
+		self.Rank:SetText("");
+	end
 		self.Note:SetText(memberInfo.memberNote or "");
 		
-		-- TODO:: Replace these hardcoded strings with proper accessors.
-		if self.guildColumnIndex == EXTRA_GUILD_COLUMN_ACHIEVEMENT then
-			self.GuildInfo:SetText("PH achievement points");
-		elseif self.guildColumnIndex == EXTRA_GUILD_COLUMN_PROFESSION then
-			self.GuildInfo:SetText("PH profession skill");
+	-- TODO:: Replace these hardcoded strings with proper accessors.
+	if self.guildColumnIndex == EXTRA_GUILD_COLUMN_ACHIEVEMENT then
+		self.GuildInfo:SetText(memberInfo.achievementPoints or "");
+	elseif self.guildColumnIndex == EXTRA_GUILD_COLUMN_PROFESSION then
+		if memberInfo.profession1Rank then
+			self.GuildInfo:SetText(COMMUNITIES_MEMBER_LIST_PROFESSION_DISPLAY:format(memberInfo.profession1Rank));
+		else
+			self.GuildInfo:SetText("");
 		end
 	end
 end
@@ -743,64 +781,53 @@ end
 
 function CommunitiesMemberListEntryMixin:UpdateNameFrame()
 	local nameFrame = self.NameFrame;
+	if self.memberInfo == nil then
+		nameFrame:ClearAllPoints();
+		nameFrame:SetWidth(136);
+		nameFrame:SetPoint("LEFT", 4, 0);
+		nameFrame.Name:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
+		return;
+	end
 
-	local frameWidth;
-	local iconsWidth = 0;
-	local nameOffset = 0;
+	local nameWidth;
+	local rankShown = nameFrame.RankIcon:IsShown();
 
-	if self.expanded then
-		-- we are in the roster
+	if self.SelfMuteButton:IsShown() then
+		nameWidth = rankShown and 75 or 90;
+	elseif self.MemberMuteButton:IsShown() then
+		nameWidth = rankShown and 90 or 105;
+	else
+		-- class only shows in the community roster, which never shows voice buttons
 		if self.Class:IsShown() then
-			frameWidth = 95;
+			nameWidth = 80;
 		else
-			frameWidth = 140;
-		end
-	else
-		frameWidth = 130;
-		if self.SelfMuteButton:IsShown() then
-			iconsWidth = 40;
-		elseif self.MemberMuteButton:IsShown() then
-			iconsWidth = 20;
+			nameWidth = 115;
 		end
 	end
 
-	local voiceButtonShown = iconsWidth > 0;
-	local presenceShown = nameFrame.PresenceIcon:IsShown();
-
-	nameFrame.Name:ClearAllPoints();
-	if presenceShown then
-		iconsWidth = iconsWidth + 20;
-
-		nameFrame.Name:SetPoint("LEFT", nameFrame.PresenceIcon, "RIGHT");
-		nameOffset = nameFrame.PresenceIcon:GetWidth();
-	else
-		nameFrame.Name:SetPoint("LEFT", nameFrame, "LEFT", 0, 0);
-	end
-
-	if nameFrame.RankIcon:IsShown() then
-		if voiceButtonShown and presenceShown  then
-			iconsWidth = iconsWidth + 15;
-		elseif voiceButtonShown or presenceShown then
-			iconsWidth = iconsWidth + 20;
-		else
-			iconsWidth = iconsWidth + 25;
-		end
-	end
-
-	local nameWidth = frameWidth - iconsWidth;
 	nameFrame.Name:SetWidth(nameWidth);
 
 	nameFrame:ClearAllPoints();
-	if self.Class:IsShown() then
-		nameFrame:SetPoint("LEFT", self.Class, "RIGHT", 8, 0);
+	if self.Class:IsShown() then -- Character community roster view
+		nameFrame:SetWidth(90);
+		nameFrame:SetPoint("LEFT", self.Class, "RIGHT", 11, 0);
 	else
+		nameFrame:SetWidth(136);
 		nameFrame:SetPoint("LEFT", 4, 0);
 	end
-	nameFrame:SetWidth(frameWidth);
+	
+	local nameOffset;
+	if nameFrame.PresenceIcon:IsShown() then
+		nameFrame.Name:SetPoint("LEFT", nameFrame.PresenceIcon, "RIGHT");
+		nameOffset = nameFrame.PresenceIcon:GetWidth();
+	else
+		nameFrame.Name:SetPoint("LEFT");
+		nameOffset = 0;
+	end
 
+	local nameWidth = nameFrame.Name:GetWidth();
 	local nameStringWidth = nameFrame.Name:GetStringWidth();
-	local rankOffset = (nameFrame.Name:IsTruncated() and nameWidth or nameStringWidth) + nameOffset;
-	nameFrame.RankIcon:ClearAllPoints();
+	local rankOffset = (nameFrame.Name:IsTruncated() and nameWidth or (nameStringWidth + 4)) + nameOffset;
 	nameFrame.RankIcon:SetPoint("LEFT", nameFrame, "LEFT", rankOffset, 0);
 end
 

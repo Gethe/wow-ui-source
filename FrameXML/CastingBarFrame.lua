@@ -363,11 +363,8 @@ function CastingBarFrame_UpdateInterruptibleState(self, notInterruptible)
 			end
 		end
 
-		if ( self.Icon ) then
-			self.Icon:SetTexture(texture);
-			if ( self.iconWhenNoninterruptible ) then
-				self.Icon:SetShown(not notInterruptible);
-			end
+		if ( self.Icon and self.iconWhenNoninterruptible ) then
+			self.Icon:SetShown(not notInterruptible);
 		end
 	end
 end

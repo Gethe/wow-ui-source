@@ -252,9 +252,18 @@ function CommunitiesListMixin:SetFavorite(clubId, isFavorite)
 	else
 		self.pendingFavorites[clubId] = 0;
 	end
+	self:PredictFavorites(self.communitiesList);
 	self:SortCommunitiesList();
 	self:Update();
 	ChannelFrame:OnCommunityFavoriteChanged(clubId);
+end
+
+function CommunitiesListMixin:IsClubFavorite(clubInfo)
+	if self.pendingFavorites[clubInfo.clubId] then
+		return self.pendingFavorites[clubInfo.clubId] ~= 0;
+	else
+		return clubInfo.favoriteTimeStamp ~= nil;
+	end
 end
 
 function CommunitiesListMixin:PredictFavorites(clubs)
@@ -271,14 +280,6 @@ function CommunitiesListMixin:PredictFavorites(clubs)
 	end
 	
 	self.pendingFavorites = remainingPredictions;
-end
-
-local function DoesCommunityHaveUnreadMessages(clubId)
-	for i, stream in ipairs(C_Club.GetStreams(clubId)) do
-		if C_Club.GetStreamViewMarker(clubId, stream.streamId) ~= nil then
-			return true;
-		end
-	end
 end
 
 local COMMUNITIES_LIST_ENTRY_EVENTS = {
@@ -303,6 +304,7 @@ function CommunitiesListEntryMixin:SetClubInfo(clubInfo, isInvitation)
 		self.clubId = clubInfo.clubId;
 		self.isInvitation = isInvitation;
 		self.Selection:SetShown(clubInfo.clubId == self:GetCommunitiesFrame():GetSelectedClubId());
+		self.FavoriteIcon:SetShown(self:GetCommunitiesFrame().CommunitiesList:IsClubFavorite(clubInfo));
 		self.InvitationIcon:SetShown(isInvitation);
 		SetLargeGuildTabardTextures("player", self.GuildTabardEmblem, self.GuildTabardBackground, self.GuildTabardBorder);
 		self.GuildTabardEmblem:SetShown(isGuild);
@@ -328,7 +330,7 @@ function CommunitiesListEntryMixin:SetClubInfo(clubInfo, isInvitation)
 end
 
 function CommunitiesListEntryMixin:UpdateUnreadNotification()
-	self.UnreadNotificationIcon:SetShown(not self.isInvitation and self.clubId and DoesCommunityHaveUnreadMessages(self.clubId));
+	self.UnreadNotificationIcon:SetShown(not self.isInvitation and self.clubId and CommunitiesUtil.DoesCommunityHaveUnreadMessages(self.clubId));
 end
 
 function CommunitiesListEntryMixin:SetAddCommunity()
@@ -339,6 +341,7 @@ function CommunitiesListEntryMixin:SetAddCommunity()
 	self.Name:SetTextColor(GREEN_FONT_COLOR:GetRGB());
 	self.Selection:Hide();
 	
+	self.FavoriteIcon:Hide();
 	self.InvitationIcon:Hide();
 	self.Icon:Show();
 	self.CircleMask:Hide();
@@ -365,6 +368,7 @@ function CommunitiesListEntryMixin:SetGuildFinder()
 	self.Name:SetTextColor(NORMAL_FONT_COLOR:GetRGB());
 	self.Selection:SetShown(self:GetCommunitiesFrame():GetDisplayMode() == COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_FINDER);
 	
+	self.FavoriteIcon:Hide();
 	self.InvitationIcon:Hide();
 	self.Icon:Show();
 	self.Icon:SetSize(42, 42);
@@ -435,6 +439,11 @@ function CommunitiesListEntryMixin:OnClick(button)
 	if button == "LeftButton" then
 		self:GetCommunitiesFrame():SelectClub(self.clubId);
 	elseif button == "RightButton" then
+		local clubInfo = C_Club.GetClubInfo(self:GetClubId());
+		if not clubInfo or clubInfo.clubType == Enum.ClubType.Guild then
+			return;
+		end
+
 		local communitiesList = self:GetParent():GetParent():GetParent();
 		communitiesList:SetSelectedEntryForDropDown(self);
 		ToggleDropDownMenu(1, nil, communitiesList.EntryDropDown, self, 0, 0);
@@ -482,11 +491,12 @@ function CommunitiesListDropDownMenuMixin:OnShow()
 	UIDropDownMenu_Initialize(self, CommunitiesListDropDownMenu_Initialize);
 	local parent = self:GetParent();
 	UIDropDownMenu_SetSelectedValue(self, parent:GetSelectedClubId());
+	self:UpdateUnreadNotification();
 
 	if parent.RegisterCallback then
 		local function CommunitiesClubSelectedCallback(event, clubId)
 			if clubId and self:IsVisible() then
-				UIDropDownMenu_SetSelectedValue(self, clubId);
+				self:OnClubSelected();
 			end
 		end
 		
@@ -504,7 +514,25 @@ end
 
 function CommunitiesListDropDownMenuMixin:OnClubSelected()
 	local parent = self:GetParent();
-	UIDropDownMenu_SetSelectedValue(self, parent:GetSelectedClubId());
+	local clubId = parent:GetSelectedClubId();
+	UIDropDownMenu_SetSelectedValue(self, clubId);
+	
+	local clubInfo = C_Club.GetClubInfo(clubId);
+	UIDropDownMenu_SetText(self, clubInfo and clubInfo.name or "");
+	
+	self:UpdateUnreadNotification();
+end
+
+function CommunitiesListDropDownMenuMixin:UpdateUnreadNotification()
+	local parent = self:GetParent();
+	if parent.RegisterCallback then
+		local clubId = parent:GetSelectedClubId();
+		self.NotificationOverlay:SetShown(CommunitiesUtil.DoesOtherCommunityHaveUnreadMessages(clubId));
+	else
+		-- If our parent is not the communities frame we don't show unread notifications.
+		self.NotificationOverlay:SetShown(false);
+	end
+
 end
 
 function CommunitiesListScrollFrame_OnVerticalScroll(self)
@@ -521,6 +549,10 @@ function CommunitiesListDropDownMenu_Initialize(self)
 		local parent = self:GetParent();
 		for i, clubInfo in ipairs(clubs) do
 			info.text = clubInfo.name;
+			if CommunitiesUtil.DoesCommunityHaveUnreadMessages(clubInfo.clubId) then
+				info.text = info.text.." "..CreateAtlasMarkup("communities-icon-notification", 11, 12);
+			end
+			
 			info.value = clubInfo.clubId;
 			info.func = function(button)
 				parent:SelectClub(button.value);
@@ -528,6 +560,12 @@ function CommunitiesListDropDownMenu_Initialize(self)
 			UIDropDownMenu_AddButton(info);
 		end
 		
-		UIDropDownMenu_SetSelectedValue(self, parent:GetSelectedClubId());
+		local clubId = parent:GetSelectedClubId();
+		if clubId then
+			UIDropDownMenu_SetSelectedValue(self, clubId);
+			
+			local clubInfo = C_Club.GetClubInfo(clubId);
+			UIDropDownMenu_SetText(self, clubInfo and clubInfo.name or "");
+		end
 	end
 end

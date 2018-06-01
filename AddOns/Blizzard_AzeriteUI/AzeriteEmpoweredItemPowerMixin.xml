@@ -5,10 +5,18 @@
 	<Button name="AzeriteEmpoweredItemPowerTemplate" useParentLevel="true" mixin="AzeriteEmpoweredItemPowerMixin" virtual="true">
 		<Size x="52" y="52" />
 		<Layers>
-			<Layer level="OVERLAY" textureSubLevel="2">
+			<Layer level="OVERLAY" textureSubLevel="1">
 				<Texture parentKey="Icon">
 					<Anchors>
 						<Anchor point="CENTER" />
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<Texture parentKey="IconDesaturated" desaturated="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -28,6 +36,7 @@
 					</Anchors>
 					<MaskedTextures>
 						<MaskedTexture childKey="Icon" />
+						<MaskedTexture childKey="IconDesaturated" />
 						<MaskedTexture childKey="IconNotSelectableOverlay" />
 					</MaskedTextures>
 				</MaskTexture>
@@ -48,6 +57,11 @@
 				<Texture parentKey="Arrow" atlas="Azerite-PointingArrow" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="BOTTOM" relativePoint="TOP" y="10" />
+					</Anchors>
+				</Texture>
+				<Texture parentKey="IconBorderSelectable">
+					<Anchors>
+						<Anchor point="CENTER" />
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -99,14 +113,17 @@
 			</ModelScene>
 		</Frames>
 		<Animations>
-			<AnimationGroup parentKey="CanSelectGlowAnim" setToFinalAlpha="true" looping="repeat">
+			<AnimationGroup parentKey="CanSelectGlowAnim" setToFinalAlpha="true" looping="REPEAT">
 				<Alpha childKey="CanSelectGlow" duration="1.4" order="1" smoothing="IN_OUT" fromAlpha=".1" toAlpha=".5" />
 				<Alpha childKey="CanSelectGlow" startDelay="1.8" smoothing="IN_OUT" duration="1.4" order="1" fromAlpha=".5" toAlpha=".1" />
 			</AnimationGroup>
-			<AnimationGroup parentKey="CanSelectEffectAnim" setToFinalAlpha="true">
-				<Alpha childKey="CanSelectEffect" duration="1.4" order="1" smoothing="IN_OUT" fromAlpha="0" toAlpha="1" />
+			<AnimationGroup parentKey="TransitionAnimation" setToFinalAlpha="true">
+				<Alpha parentKey="Effect" childKey="CanSelectEffect" duration=".25" order="1" fromAlpha="0" toAlpha="1" />
+				<Alpha parentKey="Desaturation" childKey="IconDesaturated" duration=".25" order="1" fromAlpha="0" toAlpha="1" />
+				<Alpha parentKey="BorderSelectable" childKey="IconBorderSelectable" duration=".25" order="1" fromAlpha="0" toAlpha="1" />
+				<Alpha parentKey="IconNotSelectableOverlay" childKey="IconNotSelectableOverlay" duration=".25" order="1" fromAlpha="0" toAlpha="1" />
 			</AnimationGroup>
-			<AnimationGroup parentKey="CanSelectArrowAnim" setToFinalAlpha="true" looping="repeat">
+			<AnimationGroup parentKey="CanSelectArrowAnim" setToFinalAlpha="true" looping="REPEAT">
 				<Translation childKey="Arrow" duration=".6" order="1" smoothing="IN_OUT" offsetY="10"/>
 				<Translation childKey="Arrow" startDelay=".6" duration=".6" order="1" smoothing="IN_OUT" offsetY="-10" />
 			</AnimationGroup>

@@ -7,13 +7,11 @@ end
 
 AzeriteModelInfo = {};
 
-AzeriteModelInfo.ModelSceneTypeLidUnlock = 1;
-AzeriteModelInfo.ModelSceneTypePowerClick = 2;
-AzeriteModelInfo.ModelSceneTypePowerLockedIn = 3;
-AzeriteModelInfo.ModelSceneTypePowerReadyForSelection = 4;
+AzeriteModelInfo.ModelSceneTypePowerClick = 1;
+AzeriteModelInfo.ModelSceneTypePowerLockedIn = 2;
+AzeriteModelInfo.ModelSceneTypePowerReadyForSelection = 3;
 
 local MODEL_SCENE_INFO = {
-	[AzeriteModelInfo.ModelSceneTypeLidUnlock] = CreateModelSceneEntry(218, 1983980), -- 8FX_AZERITE_GENERIC_IMPACTLOW_CHEST
 	[AzeriteModelInfo.ModelSceneTypePowerClick] = CreateModelSceneEntry(219, 1983548), -- 8FX_AZERITE_GENERIC_NOVAHIGH_BASE
 	[AzeriteModelInfo.ModelSceneTypePowerLockedIn] = CreateModelSceneEntry(221, 2101307), -- 8FX_AZERITE_ABSORBCURRENCY_LARGE_IMPACTBASE
 	[AzeriteModelInfo.ModelSceneTypePowerReadyForSelection] = CreateModelSceneEntry(222, 1983980), -- 8FX_AZERITE_EMPOWER_STATECHEST

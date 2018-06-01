@@ -18,6 +18,7 @@ local COMMUNITIES_FRAME_EVENTS = {
 	"CLUB_ADDED",
 	"CLUB_REMOVED",
 	"CLUB_SELF_MEMBER_ROLE_UPDATED",
+	"STREAM_VIEW_MARKER_UPDATED",
 };
 
 local function RangeIsEmpty(range)
@@ -121,6 +122,14 @@ function CommunitiesFrameMixin:OnEvent(event, ...)
 			self:SetPrivilegesForClub(clubId, nil);
 		end
 		self:UpdateCommunitiesButtons();
+	elseif event == "STREAM_VIEW_MARKER_UPDATED" then
+		if self.StreamDropDownMenu:IsShown() then
+			self.StreamDropDownMenu:UpdateUnreadNotification();
+		end
+		
+		if self.CommunitiesListDropDownMenu:IsShown() then
+			self.CommunitiesListDropDownMenu:UpdateUnreadNotification();
+		end
 	end
 end
 
@@ -491,6 +500,7 @@ function CommunitiesFrameMixin:UpdateStreamDropDown()
 	local selectedStream = self:GetSelectedStreamForClub(clubId);
 	UIDropDownMenu_SetSelectedValue(self.StreamDropDownMenu, selectedStream and selectedStream.streamId or nil, true);
 	UIDropDownMenu_SetText(self.StreamDropDownMenu, selectedStream and selectedStream.name or "");
+	self.StreamDropDownMenu:UpdateUnreadNotification();
 end
 
 function CommunitiesFrameMixin:OnHide()

@@ -57,6 +57,21 @@ local ContributionCollector =
 			},
 		},
 		{
+			Name = "GetContributionAppearance",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "contributionID", Type = "number", Nilable = false },
+				{ Name = "contributionState", Type = "ContributionState", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "appearance", Type = "ContributionAppearance", Nilable = true },
+			},
+		},
+		{
 			Name = "GetContributionCollectorsForMap",
 			Type = "Function",
 
@@ -299,6 +314,17 @@ local ContributionCollector =
 			},
 		},
 		{
+			Name = "ContributionAppearanceFlags",
+			Type = "Enumeration",
+			NumValues = 1,
+			MinValue = 0,
+			MaxValue = 0,
+			Fields =
+			{
+				{ Name = "TooltipUseTimeRemaining", Type = "ContributionAppearanceFlags", EnumValue = 0 },
+			},
+		},
+		{
 			Name = "ContributionResult",
 			Type = "Enumeration",
 			NumValues = 8,
@@ -314,6 +340,20 @@ local ContributionCollector =
 				{ Name = "FailedConditionCheck", Type = "ContributionResult", EnumValue = 5 },
 				{ Name = "UnableToCompleteTurnIn", Type = "ContributionResult", EnumValue = 6 },
 				{ Name = "InternalError", Type = "ContributionResult", EnumValue = 7 },
+			},
+		},
+		{
+			Name = "ContributionAppearance",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "stateName", Type = "string", Nilable = false },
+				{ Name = "stateColor", Type = "table", Mixin = "ColorMixin", Nilable = false },
+				{ Name = "tooltipLine", Type = "string", Nilable = false },
+				{ Name = "tooltipUseTimeRemaining", Type = "bool", Nilable = false },
+				{ Name = "statusBarAtlas", Type = "string", Nilable = false },
+				{ Name = "borderAtlas", Type = "string", Nilable = false },
+				{ Name = "bannerAtlas", Type = "string", Nilable = false },
 			},
 		},
 		{

@@ -77,3 +77,36 @@ function CommunitiesUtil.SortMemberInfoWithOverride(memberInfoArray, overrideCom
 		end
 	end);
 end
+
+function CommunitiesUtil.DoesAnyCommunityHaveUnreadMessages()
+	return CommunitiesUtil.DoesOtherCommunityHaveUnreadMessages(nil);
+end
+
+function CommunitiesUtil.DoesOtherCommunityHaveUnreadMessages(ignoreClubId)
+	local clubs = C_Club.GetSubscribedClubs();
+	for i, club in ipairs(clubs) do
+		if club.clubId ~= ignoreClubId then
+			if CommunitiesUtil.DoesCommunityHaveUnreadMessages(club.clubId) then
+				return true;
+			end
+		end
+	end
+end
+
+function CommunitiesUtil.DoesCommunityHaveUnreadMessages(clubId)
+	return CommunitiesUtil.DoesCommunityHaveOtherUnreadMessages(clubId, nil);
+end
+
+function CommunitiesUtil.DoesCommunityHaveOtherUnreadMessages(clubId, ignoreStreamId)
+	for i, stream in ipairs(C_Club.GetStreams(clubId)) do
+		if stream.streamId ~= ignoreStreamId then
+			if CommunitiesUtil.DoesCommunityStreamHaveUnreadMessages(clubId, stream.streamId) then
+				return true;
+			end
+		end
+	end
+end
+
+function CommunitiesUtil.DoesCommunityStreamHaveUnreadMessages(clubId, streamId)
+	return C_Club.GetStreamViewMarker(clubId, streamId) ~= nil;
+end

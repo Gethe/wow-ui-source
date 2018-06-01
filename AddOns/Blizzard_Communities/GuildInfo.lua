@@ -37,6 +37,7 @@ function CommunitiesGuildInfoFrame_OnEvent(self, event, arg1)
 end
 
 function CommunitiesGuildInfoFrame_OnShow(self)
+	GuildRoster();
 	CommunitiesGuildInfoFrame_UpdatePermissions(self);	
 	CommunitiesGuildInfoFrame_UpdateText(self);
 	RequestGuildChallengeInfo();

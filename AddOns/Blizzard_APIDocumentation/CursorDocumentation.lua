@@ -21,6 +21,15 @@ local Cursor =
 			},
 		},
 		{
+			Name = "GetCursorItem",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "item", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+		},
+		{
 			Name = "SetCursorCommunitiesStream",
 			Type = "Function",
 

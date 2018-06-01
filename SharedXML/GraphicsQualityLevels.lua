@@ -1346,4 +1346,6 @@ VideoData["Advanced_PhysicsInteractionDropDown"]={
 			},
 		},
 	},
+	clientRestart = true,
+	gameRestart = true,
 }

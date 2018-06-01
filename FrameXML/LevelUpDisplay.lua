@@ -735,11 +735,15 @@ function LevelUpDisplay_StartDisplay(self, beginUnlockList)
 			if (not IsBoostTutorialScenario()) then
 				if ( currentStage > 0 and currentStage <= numStages ) then
 					local stageName, stageDescription = C_Scenario.GetStepInfo();
+
+					self.scenarioFrame.level:ClearAllPoints();
 					if( bit.band(flags, SCENARIO_FLAG_SUPRESS_STAGE_TEXT) == SCENARIO_FLAG_SUPRESS_STAGE_TEXT) then
 						-- Bypass the Stage name portion...
 						self.scenarioFrame.level:SetText(stageName);
 						self.scenarioFrame.name:SetText("");
+						self.scenarioFrame.level:SetPoint("TOP", self.scenarioFrame, "TOP", 0, -22);
 					else
+						self.scenarioFrame.level:SetPoint("TOP", self.scenarioFrame, "TOP", 0, -14);
 						if ( currentStage == numStages ) then
 							self.scenarioFrame.level:SetText(SCENARIO_STAGE_FINAL);
 						else

@@ -1,0 +1,6 @@
+## Interface: 80000
+## Title: Blizzard Azerite Respec UI
+## Secure: 1
+## LoadOnDemand: 1
+
+Blizzard_AzeriteRespecUI.xml
