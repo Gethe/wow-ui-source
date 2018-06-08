@@ -991,19 +991,6 @@ StaticPopupDialogs["DELETE_MONEY"] = {
 	hideOnEscape = 1
 };
 
-StaticPopupDialogs["CONFIRM_REPORT_SPAM_CHAT"] = {
-	text = REPORT_SPAM_CONFIRMATION,
-	button1 = ACCEPT,
-	button2 = CANCEL,
-	OnAccept = function(self, playerLocation)
-		C_ChatInfo.ReportPlayer(PLAYER_REPORT_TYPE_SPAM, playerLocation);
-	end,
-	timeout = 0,
-	whileDead = 1,
-	exclusive = 1,
-	hideOnEscape = 1
-};
-
 StaticPopupDialogs["CONFIRM_REPORT_BATTLEPET_NAME"] = {
 	text = REPORT_BATTLEPET_NAME_CONFIRMATION,
 	button1 = ACCEPT,
@@ -1023,32 +1010,6 @@ StaticPopupDialogs["CONFIRM_REPORT_PET_NAME"] = {
 	button2 = CANCEL,
 	OnAccept = function(self)
 		C_ChatInfo.ReportPlayer(PLAYER_REPORT_TYPE_BAD_PET_NAME);
-	end,
-	timeout = 0,
-	whileDead = 1,
-	exclusive = 1,
-	hideOnEscape = 1
-};
-
-StaticPopupDialogs["CONFIRM_REPORT_BAD_LANGUAGE_CHAT"] = {
-	text = REPORT_BAD_LANGUAGE_CONFIRMATION,
-	button1 = ACCEPT,
-	button2 = CANCEL,
-	OnAccept = function(self, playerLocation)
-		C_ChatInfo.ReportPlayer(PLAYER_REPORT_TYPE_LANGUAGE, playerLocation);
-	end,
-	timeout = 0,
-	whileDead = 1,
-	exclusive = 1,
-	hideOnEscape = 1
-};
-
-StaticPopupDialogs["CONFIRM_REPORT_BAD_LANGUAGE_VOICE"] = {
-	text = REPORT_BAD_LANGUAGE_VOICE_CONFIRMATION,
-	button1 = ACCEPT,
-	button2 = CANCEL,
-	OnAccept = function(self, playerLocation)
-		C_ChatInfo.ReportPlayer(PLAYER_REPORT_TYPE_LANGUAGE_VOICE, playerLocation);
 	end,
 	timeout = 0,
 	whileDead = 1,
@@ -2005,6 +1966,7 @@ StaticPopupDialogs["CONFIRM_AZERITE_EMPOWERED_RESPEC"] = {
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function(self, data)
+		PlaySound(SOUNDKIT.UI_80_AZERITEARMOR_REFORGE);
 		C_AzeriteEmpoweredItem.ConfirmAzeriteEmpoweredItemRespec(data.empoweredItemLocation);
 	end,
 	OnShow = function(self, data)
@@ -2552,7 +2514,7 @@ StaticPopupDialogs["ADD_GUILDMEMBER"] = {
 	hasEditBox = 1,
 	autoCompleteSource = GetAutoCompleteResults,
 	autoCompleteArgs = { AUTOCOMPLETE_LIST.GUILD_INVITE.include, AUTOCOMPLETE_LIST.GUILD_INVITE.exclude },
-	maxLetters = 77,
+	maxLetters = 48,
 	OnAccept = function(self)
 		GuildInvite(self.editBox:GetText());
 	end,
@@ -3613,19 +3575,6 @@ StaticPopupDialogs["WEB_ERROR"] = {
 	timeout = 0,
 	showAlertGear = 1,
 	hideOnEscape = 1
-};
-
-StaticPopupDialogs["CONFIRM_BNET_REPORT"] = {
-	text = "%s",
-	button1 = ACCEPT,
-	button2 = CANCEL,
-	OnAccept = function (self)
-		BNet_SendReport();
-	end,
-	hideOnEscape = 1,
-	timeout = 0,
-	exclusive = 1,
-	whileDead = 1,
 };
 
 StaticPopupDialogs["CONFIRM_REMOVE_FRIEND"] = {

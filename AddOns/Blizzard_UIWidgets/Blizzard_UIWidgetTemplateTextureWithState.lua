@@ -12,15 +12,15 @@ UIWidgetTemplateTextureWithStateMixin = CreateFromMixins(UIWidgetBaseTemplateMix
 function UIWidgetTemplateTextureWithStateMixin:Setup(widgetInfo)
 	UIWidgetBaseTemplateMixin.Setup(self, widgetInfo);
 	self.Text:SetText(widgetInfo.name); 
-	self:SetTooltip(widgetInfo.tooltip); 
 
 	local backgroundTexture = GetUITextureKitInfo(widgetInfo.backgroundTextureKitID);
 	local portraitTexture = GetUITextureKitInfo(widgetInfo.portraitTextureKitID);
 	
-	self.Portrait:SetAtlas(portraitTexture, false);
-	self.Background:SetAtlas(backgroundTexture, false); 
+	local shouldBeAtlasSize = true;
+	self.Portrait:SetAtlas(portraitTexture, shouldBeAtlasSize);
+	self.Background:SetAtlas(backgroundTexture, shouldBeAtlasSize); 
 end
 
 function UIWidgetTemplateTextureWithStateMixin:SetTooltipOwner()
-	GameTooltip:SetOwner(self.Portrait, "ANCHOR_TOPRIGHT");
+	GameTooltip:SetOwner(self.Portrait, "ANCHOR_TOPLEFT");
 end

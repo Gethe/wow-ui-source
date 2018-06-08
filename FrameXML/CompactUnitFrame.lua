@@ -35,6 +35,7 @@ function CompactUnitFrame_OnLoad(self)
 	self:RegisterEvent("UNIT_ABSORB_AMOUNT_CHANGED");
 	self:RegisterEvent("UNIT_HEAL_ABSORB_AMOUNT_CHANGED");
 	self:RegisterEvent("UNIT_PHASE");
+	self:RegisterEvent("UNIT_FLAGS");
 	self:RegisterEvent("GROUP_JOINED");
 	self:RegisterEvent("GROUP_LEFT");
 	-- also see CompactUnitFrame_UpdateUnitEvents for more events
@@ -126,7 +127,7 @@ function CompactUnitFrame_OnEvent(self, event, ...)
 			CompactUnitFrame_UpdateHealPrediction(self);
 		elseif ( event == "PLAYER_FLAGS_CHANGED" ) then
 			CompactUnitFrame_UpdateStatusText(self);
-		elseif ( event == "UNIT_PHASE" ) then
+		elseif ( event == "UNIT_PHASE" or event == "UNIT_FLAGS" ) then
 			CompactUnitFrame_UpdateCenterStatusIcon(self);
 		elseif ( event == "GROUP_JOINED" ) then
 			CompactUnitFrame_UpdateAggroFlash(self);
@@ -953,11 +954,14 @@ function CompactUnitFrame_UpdateCenterStatusIcon(frame)
 			frame.centerStatusIcon.border:Hide();
 			frame.centerStatusIcon.tooltip = nil;
 			frame.centerStatusIcon:Show();
-		elseif ( frame.optionTable.displayInOtherPhase and frame.inDistance and not UnitInPhase(frame.unit)) then
+		elseif ( frame.optionTable.displayInOtherPhase and frame.inDistance and (not UnitInPhase(frame.unit) or UnitIsWarModePhased(frame.unit)) ) then
 			frame.centerStatusIcon.texture:SetTexture("Interface\\TargetingFrame\\UI-PhasingIcon");
 			frame.centerStatusIcon.texture:SetTexCoord(0.15625, 0.84375, 0.15625, 0.84375);
 			frame.centerStatusIcon.border:Hide();
 			frame.centerStatusIcon.tooltip = PARTY_PHASED_MESSAGE;
+			if ( UnitIsWarModePhased(frame.unit) ) then
+				frame.centerStatusIcon.tooltip = PARTY_WARMODE_MESSAGE;
+			end
 			frame.centerStatusIcon:Show();
 		else
 			frame.centerStatusIcon:Hide();

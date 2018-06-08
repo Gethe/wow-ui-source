@@ -13,6 +13,7 @@ EventsAPIMixin.lua
 Blizzard_APIDocumentation.lua
 
 # Start documentation files here
+AccountInfoDocumentation.lua
 AchievementInfoDocumentation.lua
 ActionBarFrameDocumentation.lua
 AddOnsDocumentation.lua
@@ -26,6 +27,7 @@ AzeriteEmpoweredItemDocumentation.lua
 AzeriteItemDocumentation.lua
 BankDocumentation.lua
 BarberShopDocumentation.lua
+BattleNetDocumentation.lua
 BattlePetDocumentation.lua
 BlackMarketInfoDocumentation.lua
 BrowserDocumentation.lua
@@ -88,6 +90,7 @@ PartyInfoDocumentation.lua
 PartyPoseUIDocumentation.lua
 PetInfoDocumentation.lua
 PetJournalInfoDocumentation.lua
+PlayerLocationDocumentation.lua
 PvpInfoDocumentation.lua
 QuestChoiceDocumentation.lua
 QuestLineInfoDocumentation.lua
@@ -134,7 +137,6 @@ VignetteInfoDocumentation.lua
 VoiceChatDocumentation.lua
 VoidStorageInfoDocumentation.lua
 WarCampaignDocumentation.lua
-WarfrontDocumentation.lua
 WorldStateInfoDocumentation.lua
 WowTokenUIDocumentation.lua
 ZoneAbilityDocumentation.lua

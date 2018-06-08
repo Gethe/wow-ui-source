@@ -302,6 +302,8 @@ function CommunitiesTicketManagerDialogMixin:OnShow()
 		self:RemoveExpiredTickets();
 		self:Refresh();
 	end);
+	
+	CommunitiesFrame:RegisterDialogShown(self);
 end
 
 function CommunitiesTicketManagerDialogMixin:SortTickets()

@@ -334,7 +334,13 @@ function CommunitiesListEntryMixin:UpdateUnreadNotification()
 end
 
 function CommunitiesListEntryMixin:SetAddCommunity()
-	self.overrideOnClick = AddCommunitiesFlow_Toggle;
+	self.overrideOnClick = function()
+		if not AddCommunitiesFlow_IsShown() then
+			self:GetCommunitiesFrame():CloseActiveDialogs();
+		end
+		
+		AddCommunitiesFlow_Toggle();
+	end;
 	
 	self.clubId = nil;
 	self.Name:SetText(COMMUNITIES_JOIN_COMMUNITY);

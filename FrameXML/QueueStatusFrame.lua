@@ -374,6 +374,18 @@ local function GetDisplayNameFromCategory(category)
 		end
 	end
 
+	if (category == LE_LFG_CATEGORY_SCENARIO) then
+		local scenarioIDs = C_LFGInfo.GetAllEntriesForCategory(category)
+		for i, scenID in ipairs(scenarioIDs) do
+			if (not C_LFGInfo.HideNameFromUI(scenID)) then
+				local instanceName = GetLFGDungeonInfo(scenID);
+				if(instanceName) then
+					return instanceName;
+				end
+			end
+		end
+	end
+
 	return LFG_CATEGORY_NAMES[category];
 end
 

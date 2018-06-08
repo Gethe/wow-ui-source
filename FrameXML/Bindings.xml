@@ -1019,9 +1019,6 @@
 	<Binding name="TOGGLEGUILDTAB" header="BLANK12" category="BINDING_HEADER_INTERFACE">
 		ToggleGuildFrame();
 	</Binding>
-	<Binding name="TOGGLECOMMUNITIES" category="BINDING_HEADER_INTERFACE">
-		ToggleCommunitiesFrame()
-	</Binding>
 	<Binding name="TOGGLESOCIAL" category="BINDING_HEADER_INTERFACE">
 		ToggleFriendsFrame();
 	</Binding>

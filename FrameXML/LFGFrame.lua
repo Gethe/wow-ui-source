@@ -794,10 +794,6 @@ function LFGDungeonReadyPopup_Update()
 			LFGDungeonReadyPopup:SetHeight(223);
 			LFGDungeonReadyDialog.background:SetTexCoord(0, 1, 0, 1);
 			if ( subtypeID == LFG_SUBTYPEID_SCENARIO ) then
-				-- change name for random
-				if ( typeID == TYPEID_RANDOM_DUNGEON ) then
-					name = RANDOM_SCENARIO;
-				end
 				LFGDungeonReadyDialog.background:SetDrawLayer("BORDER");
 				LFGDungeonReadyDialog.background:SetWidth(290);
 				LFGDungeonReadyDialog.instanceInfo.underline:Hide();

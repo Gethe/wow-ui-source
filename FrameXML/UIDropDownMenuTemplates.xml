@@ -188,11 +188,24 @@
 						GameTooltip_AddNewbieTip(self, self.tooltipTitle, 1.0, 1.0, 1.0, self.tooltipText, 1);
 					end
 				end
+				
+				if ( self.mouseOverIcon ~= nil ) then
+					self.Icon:SetTexture(self.mouseOverIcon);
+					self.Icon:Show();
+				end
 			</OnEnter>
 			<OnLeave>
 				_G[self:GetName().."Highlight"]:Hide();
 				UIDropDownMenu_StartCounting(self:GetParent());
 				GameTooltip:Hide();
+				
+				if ( self.mouseOverIcon ~= nil ) then
+					if ( self.icon ~= nil ) then
+						self.Icon:SetTexture(self.icon);
+					else
+						self.Icon:Hide();
+					end
+				end
 			</OnLeave>
 			<OnEnable>
 				self.invisibleButton:Hide();

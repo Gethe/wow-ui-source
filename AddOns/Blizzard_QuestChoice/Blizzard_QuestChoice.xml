@@ -181,7 +181,7 @@
 			</Frame>
 		</Frames>
 	</Frame>
-	<Button name="QuestChoiceOptionTemplate" virtual="true">
+	<Button name="QuestChoiceOptionTemplate" mixin="QuestChoiceOptionFrameMixin" virtual="true">
 		<Size x="210" y="268"/>
 		<Layers>
 			<Layer level="OVERLAY">
@@ -298,6 +298,10 @@
 			<KeyValue key="leftPadding" value="66" type="number"/>
 			<KeyValue key="rightPadding" value="66" type="number"/>
 			<KeyValue key="spacing" value="47" type="number"/>
+			<KeyValue key="optionButtonWidth" value="175" type="number"/>
+			<KeyValue key="optionButtonHeight" value="22" type="number"/>
+			<KeyValue key="optionButtonVerticalSpacing" value="8" type="number"/>
+			<KeyValue key="optionButtonHorizontalSpacing" value="40" type="number"/>
 		</KeyValues>
 		<Layers>
 			<Layer level="BORDER">

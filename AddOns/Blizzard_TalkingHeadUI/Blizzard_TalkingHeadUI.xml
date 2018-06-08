@@ -73,7 +73,7 @@
 			<Frame parentKey="PortraitFrame" setAllPoints="true">
 				<Layers>
 					<Layer level="OVERLAY">
-						<Texture parentKey="Portrait" hidden="false" alpha="0.01" alphaMode="BLEND" atlas="TalkingHeads-PortraitFrame" useAtlasSize="true">
+						<Texture parentKey="Portrait" hidden="false" alpha="0.01" alphaMode="BLEND" atlas="TalkingHeads-Alliance-PortraitFrame" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="TOPLEFT" x="5" y="-6"/>
 							</Anchors>

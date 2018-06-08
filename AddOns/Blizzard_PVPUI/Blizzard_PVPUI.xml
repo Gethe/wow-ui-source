@@ -188,7 +188,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="ItemTooltip" inherits="EmbeddedItemTooltip">
+			<Frame parentKey="ItemTooltip" inherits="InternalEmbeddedItemTooltipTemplate">
 				<KeyValues>
 					<KeyValue key="layoutIndex" value="4" type="number"/>
 					<KeyValue key="topPadding" value="15" type="number"/>
@@ -299,6 +299,85 @@
 			</OnLeave>
 		</Scripts>
 	</Frame>
+
+	<StatusBar name="PVPConquestBarTemplate" drawLayer="BACKGROUND" minValue="0" maxValue="100" defaultValue="0" enableMouse="true" mixin="PVPConquestBarMixin" virtual="true">
+		<Size x="340" y="20"/>
+		<Layers>
+			<Layer level="BORDER">
+				<Texture parentKey="Border" atlas="pvpqueue-conquestbar-frame" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="LEFT" x="-9" y="-2"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="HIGHLIGHT">
+				<FontString parentKey="Label" inherits="GameFontHighlightSmall" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="-1">
+				<Texture atlas="pvpqueue-conquestbar-background">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Reward">
+				<Size x="36" y="36"/>
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="RIGHT" x="-8" y="-2"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Ring" atlas="honorsystem-bar-rewardborder-circle" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Icon">
+							<Size x="30" y="30"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+							<Color r="0" g="0" b="0"/>
+						</Texture>
+						<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+							<Size x="30" y="30"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+							<MaskedTextures>
+								<MaskedTexture childKey="Icon"/>
+							</MaskedTextures>
+						</MaskTexture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						if self.itemID then
+							GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT");
+							GameTooltip:SetItemByID(self.itemID);
+						end
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<BarTexture atlas="_pvpqueue-conquestbar-fill-yellow"/>
+		<BarColor r="1" g="1" b="1"/>
+		<Scripts>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</StatusBar>
 
 	<Button name="PVPCurrencyDisplayTemplate" virtual="true">
 		<Size x="36" y="36"/>
@@ -473,6 +552,34 @@
 		</Scripts>
 	</Button>
 	
+	<Frame name="PVPRatedTierTemplate" virtual="true">
+		<Size x="50" y="50"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Icon">
+					<Size x="50" y="50"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="RankingShadow" atlas="pvpqueue-rankglow" useAtlasSize="true" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="CENTER" x="1" y="-3"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Ranking" inherits="Number12Font_o1">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Shadow"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
 	<Button name="PVPRatedActivityButtonTemplate" virtual="true">
 		<Size x="365" y="91"/>
 		<Layers>
@@ -519,27 +626,10 @@
 					<Anchor point="RIGHT" relativeKey="$parent.Anchor" x="-16" y="-2"/>
 				</Anchors>
 			</Frame>
-			<Frame parentKey="Ranking">
+			<Frame parentKey="Tier" inherits="PVPRatedTierTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.TierIcon"/>
-					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.TierIcon"/>
+					<Anchor point="CENTER" relativeKey="$parent.Anchor" x="-4" y="-1"/>
 				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture parentKey="Shadow" atlas="pvpqueue-rankglow" useAtlasSize="true" alphaMode="ADD">
-							<Anchors>
-								<Anchor point="CENTER" x="1" y="-3"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="ARTWORK">
-						<FontString parentKey="Text" inherits="Number12Font_o1">
-							<Anchors>
-								<Anchor point="CENTER" relativeKey="$parent.Shadow"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
 			</Frame>
 		</Frames>
 		<Scripts>
@@ -834,28 +924,11 @@
 							<Anchor point="TOPLEFT" x="220" y="-22"/>
 						</Anchors>
 						<Frames>
-							<Frame parentKey="XPBar" useParentLevel="true" inherits="PVPHonorSystemSmallXPBar">
+							<StatusBar parentKey="ConquestBar" inherits="PVPConquestBarTemplate">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT" x="1" y="-7"/>
+									<Anchor point="TOPLEFT" x="16" y="-19"/>
 								</Anchors>
-								<Frames>
-									<Frame name="HonorXPBarDropDown" parentKey="DropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true">
-										<Size x="10" y="10"/>
-										<Anchors>
-											<Anchor point="TOP" x="0" y="-10"/>
-										</Anchors>
-									</Frame>
-								</Frames>
-								<Scripts>
-									<OnMouseUp function="PVPQueueHonorXPBar_OnClick"/>
-									<OnEnter>
-										PVPHonorXPBar_OnEnter(self.Bar);
-									</OnEnter>
-									<OnLeave>
-										PVPHonorXPBar_OnLeave(self.Bar);
-									</OnLeave>
-								</Scripts>
-							</Frame>
+							</StatusBar>
 							<Frame parentKey="Inset" useParentLevel="true" inherits="InsetFrameTemplate">
 								<Anchors>
 									<Anchor point="BOTTOMRIGHT" x="-5" y="22"/>
@@ -954,7 +1027,7 @@
 											<KeyValue key="tooltipTableKey" value="RandomBG" type="string"/>
 										</KeyValues>
 									</Button>
-									<Button parentKey="LargeBattlegroundButton" inherits="PVPCasualActivityButtonTemplate">
+									<Button parentKey="RandomEpicBGButton" inherits="PVPCasualActivityButtonTemplate">
 										<Anchors>
 											<Anchor point="TOP" relativeKey="$parent.RandomBGButton" relativePoint="BOTTOM" x="0" y="-1"/>
 										</Anchors>
@@ -964,7 +1037,7 @@
 									</Button>
 									<Button parentKey="Arena1Button" inherits="PVPCasualActivityButtonTemplate">
 										<Anchors>
-											<Anchor point="TOP" relativeKey="$parent.LargeBattlegroundButton" relativePoint="BOTTOM" x="0" y="-1"/>
+											<Anchor point="TOP" relativeKey="$parent.RandomEpicBGButton" relativePoint="BOTTOM" x="0" y="-1"/>
 										</Anchors>
 										<KeyValues>
 											<KeyValue key="canQueue" value="true" type="boolean"/>
@@ -1075,7 +1148,6 @@
 						</Frames>
 						<Scripts>
 							<OnLoad function="HonorFrame_OnLoad"/>
-                            <OnShow function="HonorFrame_OnShow"/>
 							<OnEvent function="HonorFrame_OnEvent"/>
 						</Scripts>
 					</Frame>
@@ -1095,11 +1167,11 @@
 							</Layer>
 						</Layers>
 						<Frames>
-							<Frame parentKey="XPBar" useParentLevel="true" inherits="PVPHonorSystemSmallXPBar">
+							<StatusBar parentKey="ConquestBar" inherits="PVPConquestBarTemplate">
 								<Anchors>
-									<Anchor point="TOP" relativeTo="$parent" relativePoint="TOP" x="1" y="-7"/>
+									<Anchor point="TOPLEFT" x="16" y="-19"/>
 								</Anchors>
-							</Frame>
+							</StatusBar>
 							<Frame parentKey="Inset" useParentLevel="true" inherits="InsetFrameTemplate">
 								<Anchors>
 									<Anchor point="BOTTOMRIGHT" x="-5" y="26"/>
@@ -1315,6 +1387,7 @@
 									</Layer>
 								</Layers>
 								<Frames>
+									<Frame parentKey="DropDown" inherits="UIDropDownMenuTemplate" hidden="true"/>
 									<Frame parentKey="NextRewardLevel">
 										<Size x="36" y="36"/>
 										<Anchors>
@@ -1380,6 +1453,7 @@
 									<OnShow method="OnShow"/>
 									<OnHide method="OnHide"/>
 									<OnEvent method="OnEvent"/>
+									<OnMouseUp method="OnMouseUp"/>
 								</Scripts>
 							</Cooldown>
 							<Frame parentKey="CasualPanel" hidden="true">
@@ -1412,6 +1486,92 @@
 									<Anchor point="TOP" relativeKey="$parent.HonorLevelDisplay" relativePoint="BOTTOM"/>
 									<Anchor point="BOTTOM"/>
 								</Anchors>
+								<Frames>
+									<Frame parentKey="Tier" inherits="PVPRatedTierTemplate">
+										<Anchors>
+											<Anchor point="TOP" x="0" y="-50"/>
+										</Anchors>
+										<Layers>
+											<Layer level="ARTWORK">
+												<FontString inherits="GameFontNormal" text="PVP_SEASON_HIGH">
+													<Anchors>
+														<Anchor point="BOTTOM" relativePoint="TOP" y="8"/>
+													</Anchors>
+												</FontString>
+											</Layer>
+										</Layers>
+										<Frames>
+											<Frame parentKey="NextTier">
+												<Size x="26" y="26"/>
+												<Anchors>
+													<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="16" y="-17"/>
+												</Anchors>
+												<Layers>
+													<Layer level="ARTWORK">
+														<Texture parentKey="Icon" setAllPoints="true"/>
+														<Texture atlas="pvpqueue-sidebar-nextarrow">
+															<Size x="16" y="25"/>
+															<Anchors>
+																<Anchor point="TOPLEFT" x="-13" y="-1"/>
+															</Anchors>
+														</Texture>
+													</Layer>
+												</Layers>
+											</Frame>
+										</Frames>
+									</Frame>
+									<Frame parentKey="SeasonRewardFrame" mixin="PVPUISeasonRewardFrameMixin">
+										<Size x="44" y="44"/>
+										<Anchors>
+											<Anchor point="BOTTOM" y="31"/>
+										</Anchors>
+										<Layers>
+											<Layer level="ARTWORK">
+												<Texture parentKey="Ring" atlas="pvpqueue-rewardring-large" useAtlasSize="true">
+													<Anchors>
+														<Anchor point="CENTER"/>
+													</Anchors>
+												</Texture>
+												<FontString inherits="GameFontNormal" text="PVP_SEASON_REWARD">
+													<Anchors>
+														<Anchor point="BOTTOM" relativePoint="TOP" y="10"/>
+													</Anchors>
+												</FontString>
+											</Layer>
+											<Layer level="BACKGROUND">
+												<Texture parentKey="Icon">
+													<Size x="40" y="40"/>
+													<Anchors>
+														<Anchor point="CENTER"/>
+													</Anchors>
+												</Texture>
+												<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+													<Size x="40" y="40"/>
+													<Anchors>
+														<Anchor point="CENTER"/>
+													</Anchors>
+													<MaskedTextures>
+														<MaskedTexture childKey="Icon"/>
+													</MaskedTextures>
+												</MaskTexture>
+											</Layer>
+											<Layer level="OVERLAY">
+												<Texture parentKey="CheckMark" atlas="pvpqueue-conquestbar-checkmark" useAtlasSize="true">
+													<Anchors>
+														<Anchor point="BOTTOMRIGHT" x="14" y="-4"/>
+													</Anchors>
+												</Texture>
+											</Layer>
+										</Layers>
+										<Scripts>
+											<OnShow method="OnShow"/>
+											<OnHide method="OnHide"/>
+											<OnEvent method="OnEvent"/>
+											<OnEnter method="UpdateTooltip"/>
+											<OnLeave method="OnLeave"/>
+										</Scripts>
+									</Frame>
+								</Frames>
 							</Frame>
 						</Frames>
 					</Frame>

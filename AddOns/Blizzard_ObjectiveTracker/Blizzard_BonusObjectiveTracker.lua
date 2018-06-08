@@ -81,6 +81,7 @@ end
 
 function BonusObjectiveTracker_OnHeaderLoad(self)
 	local module = CreateBonusObjectiveTrackerModule();
+    self.Text:SetFontObjectsToTry(GameFontNormalMed2, SystemFont_Shadow_Med1);
 
 	module.rewardsFrame = self.RewardsFrame;
 	module.ShowWorldQuests = self.ShowWorldQuests;

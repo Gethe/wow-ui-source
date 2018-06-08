@@ -1192,6 +1192,20 @@ local Club =
 			},
 		},
 		{
+			Name = "ClubStreamType",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 0,
+			MaxValue = 3,
+			Fields =
+			{
+				{ Name = "General", Type = "ClubStreamType", EnumValue = 0 },
+				{ Name = "Guild", Type = "ClubStreamType", EnumValue = 1 },
+				{ Name = "Officer", Type = "ClubStreamType", EnumValue = 2 },
+				{ Name = "Other", Type = "ClubStreamType", EnumValue = 3 },
+			},
+		},
+		{
 			Name = "ClubStreamNotificationFilter",
 			Type = "Enumeration",
 			NumValues = 3,
@@ -1325,7 +1339,9 @@ local Club =
 				{ Name = "messageId", Type = "ClubMessageIdentifier", Nilable = false },
 				{ Name = "content", Type = "string", Nilable = false },
 				{ Name = "author", Type = "ClubMemberInfo", Nilable = false },
-				{ Name = "destroyer", Type = "ClubMemberInfo", Nilable = true, Documentation = { "If destroyer is not nil, then the message has been destroyed" } },
+				{ Name = "destroyer", Type = "ClubMemberInfo", Nilable = true, Documentation = { "May be nil even if the message has been destroyed" } },
+				{ Name = "destroyed", Type = "bool", Nilable = false },
+				{ Name = "edited", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -1386,6 +1402,7 @@ local Club =
 				{ Name = "name", Type = "string", Nilable = false },
 				{ Name = "subject", Type = "string", Nilable = false },
 				{ Name = "leadersAndModeratorsOnly", Type = "bool", Nilable = false },
+				{ Name = "streamType", Type = "ClubStreamType", Nilable = false },
 				{ Name = "creationTime", Type = "number", Nilable = false },
 			},
 		},

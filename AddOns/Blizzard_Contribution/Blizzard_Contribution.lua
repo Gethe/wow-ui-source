@@ -172,16 +172,16 @@ function ContributeButtonMixin:OnClick(button)
 	self:GetParent():Contribute();
 end
 
-function ContributeButtonMixin:OnEnter()
+function ContributeButtonMixin:UpdateTooltip()
 	local isEnabled = self:IsEnabled();
 	local shouldShowTooltip = isEnabled or (self.contributionResult == Enum.ContributionResult.IncorrectState) or (self.contributionResult == Enum.ContributionResult.FailedConditionCheck);
 
 	if shouldShowTooltip then
-		ContributionTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		EmbeddedItemTooltip:SetOwner(self, "ANCHOR_RIGHT");
 
 		if isEnabled or (self.contributionResult == Enum.ContributionResult.FailedConditionCheck) then
-			ContributionTooltip:SetText(CONTRIBUTION_REWARD_TOOLTIP_TITLE, HIGHLIGHT_FONT_COLOR:GetRGBA());
-			GameTooltip_AddQuestRewardsToTooltip(ContributionTooltip, self.questID, TOOLTIP_QUEST_REWARDS_STYLE_CONTRIBUTION);
+			EmbeddedItemTooltip:SetText(CONTRIBUTION_REWARD_TOOLTIP_TITLE, HIGHLIGHT_FONT_COLOR:GetRGBA());
+			GameTooltip_AddQuestRewardsToTooltip(EmbeddedItemTooltip, self.questID, TOOLTIP_QUEST_REWARDS_STYLE_CONTRIBUTION);
 
 			local rcName, rcAvailable, rcFormatString;
 			local currencyID, currencyAmount = C_ContributionCollector.GetRequiredContributionCurrency(self.contributionID);
@@ -202,49 +202,17 @@ function ContributeButtonMixin:OnEnter()
 			if rcName then
 				local lineColor = (rcAvailable >= rcAmount) and NORMAL_FONT_COLOR or DISABLED_FONT_COLOR;
 				local text = rcFormatString:format(BreakUpLargeNumbers(rcAvailable), BreakUpLargeNumbers(rcAmount), rcName);
-				ContributionTooltip.RequiredContribution:Show();
-				ContributionTooltip.RequiredContribution:SetVertexColor(lineColor:GetRGBA());
-				ContributionTooltip.RequiredContribution:SetText(text);
-			else
-				ContributionTooltip.RequiredContribution:Hide();
+				GameTooltip_SetBottomText(EmbeddedItemTooltip, text, lineColor);
 			end
 		elseif self.contributionResult == Enum.ContributionResult.IncorrectState then
-			ContributionTooltip:SetText(CONTRIBUTION_BUTTON_ONLY_WHEN_UNDER_CONSTRUCTION_TOOLTIP, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, 1, true);
-			ContributionTooltip.RequiredContribution:Hide();
+			EmbeddedItemTooltip:SetText(CONTRIBUTION_BUTTON_ONLY_WHEN_UNDER_CONSTRUCTION_TOOLTIP, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, 1, true);
 		end
-
-		ContributionTooltip:Show();
-	end
-end
-
-function ContributionTooltip_CalculatePadding(tooltip)
-	local itemWidth, itemHeight, requiredContributionWidth, requiredContributionHeight = 0, 0, 0, 0;
-
-	if tooltip.ItemTooltip:IsShown() then
-		itemWidth, itemHeight = tooltip.ItemTooltip:GetSize();
-		itemWidth = itemWidth + 9; -- extra padding for this line
-	end
-
-	if tooltip.RequiredContribution:IsShown() then
-		requiredContributionWidth, requiredContributionHeight = tooltip.RequiredContribution:GetSize();
-		requiredContributionWidth = requiredContributionWidth + 20; -- extra width padding for this line
-	end
-
-	local extraWidth = math.max(itemWidth, requiredContributionWidth);
-	local extraHeight = itemHeight + requiredContributionHeight;
-
-	local oldPaddingWidth, oldPaddingHeight = tooltip:GetPadding();
-	local actualTooltipWidth = tooltip:GetWidth() - oldPaddingWidth;
-	local paddingWidth = (actualTooltipWidth <= extraWidth) and extraWidth - actualTooltipWidth or 0;
-	local paddingHeight = (extraHeight > 0) and extraHeight + 12 or 0;
-
-	if(math.abs(paddingWidth - oldPaddingWidth) > 0.5 or math.abs(paddingHeight - oldPaddingHeight) > 0.5) then
-		tooltip:SetPadding(paddingWidth, paddingHeight);
+		EmbeddedItemTooltip:Show();
 	end
 end
 
 function ContributeButtonMixin:OnLeave()
-	ContributionTooltip:Hide();
+	EmbeddedItemTooltip:Hide();
 end
 
 function ContributeButtonMixin:SetContributionID(contributionID)

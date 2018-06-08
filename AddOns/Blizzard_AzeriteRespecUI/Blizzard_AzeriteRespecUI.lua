@@ -30,6 +30,7 @@ function AzeriteRespecMixin:OnEvent(event, ...)
 end
 
 function AzeriteRespecMixin:OnShow()
+	PlaySound(SOUNDKIT.UI_80_AZERITEARMOR_REFORGE_ETHEREALWINDOW_OPEN)
 	if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_AZERITE_RESPEC) then
 		self.HelpBox:Show();
 	end
@@ -37,6 +38,7 @@ function AzeriteRespecMixin:OnShow()
 end
 
 function AzeriteRespecMixin:OnHide()
+	PlaySound(SOUNDKIT.UI_80_AZERITEARMOR_REFORGE_ETHEREALWINDOW_CLOSE)
 	StaticPopup_Hide("CONFIRM_AZERITE_EMPOWERED_RESPEC");
 	C_AzeriteEmpoweredItem.CloseAzeriteEmpoweredItemRespec();
 	self:SetRespecItem(nil);
@@ -132,6 +134,7 @@ function AzeriteRespecItemSlotMixin:OnClick(button)
 	else
 		self:GetParent():SetRespecItem(C_Cursor.GetCursorItem());
 	end
+	ClearCursor();
 end
 
 function AzeriteRespecItemSlotMixin:OnDragStart()

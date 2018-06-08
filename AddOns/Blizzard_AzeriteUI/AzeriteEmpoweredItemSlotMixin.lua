@@ -2,11 +2,11 @@ AzeriteEmpoweredItemSlotMixin = {};
 
 function AzeriteEmpoweredItemSlotMixin:OnShow()
 	self:RegisterEvent("UI_MODEL_SCENE_INFO_UPDATED");
-	self:SetupModelScene();
 end
 
 function AzeriteEmpoweredItemSlotMixin:OnHide()
 	self:UnregisterEvent("UI_MODEL_SCENE_INFO_UPDATED");
+	self.modelSceneType = nil;
 end
 
 function AzeriteEmpoweredItemSlotMixin:OnEvent(event, ...)
@@ -16,12 +16,15 @@ function AzeriteEmpoweredItemSlotMixin:OnEvent(event, ...)
 	end
 end
 
-function AzeriteEmpoweredItemSlotMixin:SetPowerLevelInfo(azeritePowerLevel, unlockLevel, hasSelectedPower, isSelectionActive, isPreviewSource)
+function AzeriteEmpoweredItemSlotMixin:SetPowerLevelInfo(azeritePowerLevel, unlockLevel, hasSelectedPower, isSelectionActive, isPreviewSource, isFinalTier)
 	self.azeritePowerLevel = azeritePowerLevel;
 	self.unlockLevel = unlockLevel;
 	self.isPreviewSource = isPreviewSource;
+	self.isFinalTier = isFinalTier;
 
-	self:EnableMouse(not hasSelectedPower); -- No tooltips if we have a selected power
+	self:EnableMouse(not isFinalTier and not hasSelectedPower); -- No tooltips if we have a selected power or are the final power
+
+	self:SetupModelScene();
 end
 
 function AzeriteEmpoweredItemSlotMixin:PlayLockedInEffect()
@@ -32,9 +35,14 @@ function AzeriteEmpoweredItemSlotMixin:PlayLockedInEffect()
 end
 
 function AzeriteEmpoweredItemSlotMixin:SetupModelScene(forceUpdate)
-	self.lockedInEffectActor = AzeriteModelInfo.SetupModelScene(self.LockedInEffect, AzeriteModelInfo.ModelSceneTypePowerLockedIn, forceUpdate);
-	if self.lockedInEffectActor then
-		self.lockedInEffectActor:SetAnimation(0, 0, 0, 0);
+	local modelSceneType = self.isFinalTier and AzeriteModelInfo.ModelSceneTypeFinalPowerLockedIn or AzeriteModelInfo.ModelSceneTypePowerLockedIn;
+	if forceUpdate or self.modelSceneType ~= modelSceneType then
+		self.modelSceneType = modelSceneType;
+
+		self.lockedInEffectActor = AzeriteModelInfo.SetupModelScene(self.LockedInEffect, modelSceneType, forceUpdate);
+		if self.lockedInEffectActor then
+			self.lockedInEffectActor:SetAnimation(0, 0, 0, 0);
+		end
 	end
 end
 

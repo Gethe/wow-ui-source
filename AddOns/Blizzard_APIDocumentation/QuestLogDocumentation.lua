@@ -39,6 +39,20 @@ local QuestLog =
 			},
 		},
 		{
+			Name = "GetQuestObjectives",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "objectives", Type = "table", InnerType = "QuestObjectiveInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "GetQuestsOnMap",
 			Type = "Function",
 
@@ -239,6 +253,18 @@ local QuestLog =
 				{ Name = "Raid25", Type = "QuestTag", EnumValue = 89 },
 				{ Name = "Scenario", Type = "QuestTag", EnumValue = 98 },
 				{ Name = "Account", Type = "QuestTag", EnumValue = 102 },
+			},
+		},
+		{
+			Name = "QuestObjectiveInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "text", Type = "string", Nilable = false },
+				{ Name = "type", Type = "string", Nilable = false },
+				{ Name = "finished", Type = "bool", Nilable = false },
+				{ Name = "numFulfilled", Type = "number", Nilable = false },
+				{ Name = "numRequired", Type = "number", Nilable = false },
 			},
 		},
 		{

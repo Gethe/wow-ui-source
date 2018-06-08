@@ -5,8 +5,8 @@
 	<!-- This represents one of the naval mission icons on the naval map -->
 	<Button name="GarrisonShipyardMapMissionTemplate" virtual="true">
 		<Size x="64" y="64"/>
-		<NormalTexture parentKey="Icon" atlas="BoatMissionIcon-Combat-Map" useAtlasSize="true"/>
-		<HighlightTexture parentKey="HighlightIcon" atlas="BoatMissionIcon-Combat-Map" useAtlasSize="true" alpha="0.3" alphaMode="ADD"/>
+		<NormalTexture parentKey="Icon" atlas="ShipMissionIcon-Combat-Map" useAtlasSize="true"/>
+		<HighlightTexture parentKey="HighlightIcon" atlas="ShipMissionIcon-Combat-Map" useAtlasSize="true" alpha="0.3" alphaMode="ADD"/>
 		<Layers>
 			<Layer level="OVERLAY" textureSubLevel="2">
 				<Texture parentKey="InProgressIcon" atlas="ShipMissionIcon-Combat-MapBadge" useAtlasSize="true" hidden="true">
@@ -14,7 +14,7 @@
 						<Anchor point="TOPLEFT" x="2" y="-45"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="FogHighlight" atlas="BoatMissionIcon-Combat-Map" useAtlasSize="true" alpha="0.3" alphaMode="ADD" hidden="true">
+				<Texture parentKey="FogHighlight" atlas="ShipMissionIcon-Combat-Map" useAtlasSize="true" alpha="0.3" alphaMode="ADD" hidden="true">
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
@@ -191,8 +191,8 @@
 
 	<Frame name="GarrisonShipyardBonusAreaFrameTemplate" virtual="true" hidden="true">
 		<Size x="132" y="132"/>
-		<NormalTexture parentKey="Icon" atlas="BoatMissionIcon-Combat-Map" useAtlasSize="true"/>
-		<HighlightTexture parentKey="HighlightIcon" atlas="BoatMissionIcon-Combat-Map" useAtlasSize="true" alpha="0.3" alphaMode="ADD"/>
+		<NormalTexture parentKey="Icon" atlas="ShipMissionIcon-Combat-Map" useAtlasSize="true"/>
+		<HighlightTexture parentKey="HighlightIcon" atlas="ShipMissionIcon-Combat-Map" useAtlasSize="true" alpha="0.3" alphaMode="ADD"/>
 		<Layers>
 			<Layer level="OVERLAY" textureSubLevel="0">
 				<Texture parentKey="CircleTexture" alpha="1" alphaMode="BLEND" atlas="NavalMap-SmallBonusCircle" useAtlasSize="true">
@@ -471,7 +471,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="ItemTooltip" inherits="EmbeddedItemTooltip">
+			<Frame parentKey="ItemTooltip" inherits="InternalEmbeddedItemTooltipTemplate">
 				<Size x="100" y="100"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.RewardString" relativePoint="BOTTOMLEFT" x="6" y="-8"/>

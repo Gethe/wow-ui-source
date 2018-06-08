@@ -523,6 +523,7 @@ end
 -- *****************************************************************************************************
 
 function ObjectiveTrackerBlockHeader_OnLoad(self)
+
 	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 end
 

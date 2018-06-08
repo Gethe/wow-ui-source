@@ -420,8 +420,10 @@ function AchievementFrameCategories_GetCategoryList (categories)
 	for i in next, categories do
 		categories[i] = nil;
 	end
-	-- Insert the fake Summary category
-	tinsert(categories, { ["id"] = "summary" });
+	if ( not achievementFunctions.noSummary ) then
+		-- Insert the fake Summary category
+		tinsert(categories, { ["id"] = "summary" });
+	end
 
 	for i, id in next, cats do
 		local _, parent = GetCategoryInfo(id);
@@ -3398,7 +3400,8 @@ STAT_FUNCTIONS = {
 	categoryAccessor = GetStatisticsCategoryList,
 	clearFunc = nil,
 	updateFunc = AchievementFrameStats_Update,
-	selectedCategory = "summary";
+	selectedCategory = 130;
+	noSummary = true;
 }
 
 COMPARISON_ACHIEVEMENT_FUNCTIONS = {

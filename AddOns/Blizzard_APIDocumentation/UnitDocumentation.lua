@@ -117,6 +117,48 @@ local Unit =
 			},
 		},
 		{
+			Name = "UnitIsWarModeActive",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "warModeActive", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitIsWarModeDesired",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "warModeDesired", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitIsWarModePhased",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "warModePhased", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "UnitPower",
 			Type = "Function",
 

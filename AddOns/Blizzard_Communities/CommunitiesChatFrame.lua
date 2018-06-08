@@ -54,8 +54,8 @@ function CommunitiesChatMixin:OnEvent(event, ...)
 		end
 	elseif event == "CLUB_MESSAGE_UPDATED" then
 		local clubId, streamId, messageIdToUpdate = ...;
-		local function DoesMessageMatch(message, r, g, b, messageClubId, messageStreamId, messageId, messageMemberId, ...)
-			return messageClubId == clubId and messageStreamId == streamId and messageId == messageIdToUpdate;
+		local function DoesMessageMatchId(message, r, g, b, messageClubId, messageStreamId, messageId, messageMemberId, ...)
+			return messageClubId == clubId and messageStreamId == streamId and messageId.epoch == messageIdToUpdate.epoch and messageId.position == messageIdToUpdate.position;
 		end
 		
 		self:RefreshMessages(DoesMessageMatchId);
@@ -113,15 +113,23 @@ function CommunitiesChatMixin:GetMessagesToDisplay()
 	if not ranges or #ranges == 0 then
 		return nil;
 	end
-
-	local newestMessageId = ranges[#ranges].newestMessageId;
-	self.messageRangeOldest = ranges[#ranges].oldestMessageId;
 	
-	return C_Club.GetMessagesInRange(clubId, streamId, self.messageRangeOldest, newestMessageId);
+	local currentRange = ranges[#ranges];
+	local oldestMessageId = currentRange.oldestMessageId;
+	local newestMessageId = currentRange.newestMessageId;
+	if newestMessageId.epoch < oldestMessageId.epoch then
+		return nil;
+	end
+	
+	self.messageRangeOldest = oldestMessageId;
+	
+	return C_Club.GetMessagesInRange(clubId, streamId, oldestMessageId, newestMessageId);
 end
 
 function CommunitiesChatMixin:BackfillMessages(newOldestMessage)
-	if newOldestMessage == self.messageRangeOldest then
+	if self.messageRangeOldest.epoch < newOldestMessage.epoch then
+		return;
+	elseif self.messageRangeOldest.epoch == newOldestMessage.epoch and self.messageRangeOldest.position <= newOldestMessage.position then
 		return;
 	end
 	
@@ -241,7 +249,19 @@ function CommunitiesChatMixin:FormatMessage(clubId, streamId, message)
 		end
 	end
 	
-	return COMMUNITIES_CHAT_MESSAGE_FORMAT:format(link or name, message.content);
+	local content;
+	if message.destroyed then
+		if message.destroyer and message.destroyer.name then
+			content = GRAY_FONT_COLOR:WrapTextInColorCode(COMMUNITIES_CHAT_MESSAGE_DESTROYED_BY:format(message.destroyer.name));
+		else
+			content = GRAY_FONT_COLOR:WrapTextInColorCode(COMMUNITIES_CHAT_MESSAGE_DESTROYED);
+		end
+	elseif message.edited then
+		content = COMMUNITIES_CHAT_MESSAGE_EDITED_FMT:format(message.content, GRAY_FONT_COLOR:WrapTextInColorCode(COMMUNITIES_CHAT_MESSAGE_EDITED));
+	else
+		content = message.content;
+	end
+	return COMMUNITIES_CHAT_MESSAGE_FORMAT:format(link or name, content);
 end
 
 function CommunitiesChatMixin:AddMessage(clubId, streamId, message, backfill)

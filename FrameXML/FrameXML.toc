@@ -6,6 +6,7 @@
 
 ## add snippets independent of modules here
 ..\SharedXML\Util.lua
+..\SharedXML\EasingUtil.lua
 ..\SharedXML\BindingUtil.lua
 ..\SharedXML\FrameUtil.lua
 ..\SharedXML\Pools.lua

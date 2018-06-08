@@ -108,6 +108,22 @@ function BFAMission:SelectTab(id)
 	end
 end
 
+function BFAMission:SetupCompleteDialog()
+	local completeDialog = self:GetCompleteDialog();
+	if (completeDialog) then
+
+		completeDialog.BorderFrame.Model.Title:SetText(BFA_MISSION_REPORT);
+
+		local factionGroup = UnitFactionGroup("player");
+		completeDialog.BorderFrame.Stage.LocBack:SetAtlas("BFA-mission-complete-background-"..factionGroup);
+		completeDialog.BorderFrame.Stage.LocBack:SetTexCoord(0, 1, 0, 1);
+		completeDialog.BorderFrame.Stage.LocMid:Hide();
+		completeDialog.BorderFrame.Stage.LocFore:Hide();
+
+		local neutralChestDisplayID = 71671;
+		self.MissionComplete.BonusRewards.ChestModel:SetDisplayInfo(neutralChestDisplayID);
+	end
+end
 
 function BFAMission:GetMissionPage()
 	return self.MissionTab.MissionPage;

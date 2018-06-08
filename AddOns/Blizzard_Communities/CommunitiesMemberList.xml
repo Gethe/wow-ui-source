@@ -2,7 +2,7 @@
 ..\..\FrameXML\UI.xsd">
 	<Script file="CommunitiesMemberList.lua"/>
 
-	<Button name="CommunitiesMemberListEntryTemplate" registerForClicks="RightButtonUp" virtual="true" mixin="CommunitiesMemberListEntryMixin">
+	<Button name="CommunitiesMemberListEntryTemplate" registerForClicks="LeftButtonUp, RightButtonUp" virtual="true" mixin="CommunitiesMemberListEntryMixin">
 		<Size x="140" y="20"/>
 		<Frames>
 			<Frame parentKey="NameFrame">
@@ -77,6 +77,97 @@
 					</OnClick>
 				</Scripts>
 				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+			</Button>
+			<Button parentKey="ProfessionHeader" setAllPoints="true" hidden="true">
+				<Layers>
+					<Layer level="BORDER">
+						<Texture parentKey="Left" file="Interface\Buttons\CollapsibleHeader">
+							<Size x="76" y="16"/>
+							<Anchors>
+								<Anchor point="LEFT" x="3" y="0"/>
+							</Anchors>
+							<TexCoords left="0.17578125" right="0.47265625" top="0.29687500" bottom="0.54687500"/>	
+						</Texture>
+						<Texture parentKey="Right" file="Interface\Buttons\CollapsibleHeader">
+							<Size x="76" y="16"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.Left" relativePoint="RIGHT" x="430" y="0"/>
+							</Anchors>
+							<TexCoords left="0.17578125" right="0.47265625" top="0.01562500" bottom="0.26562500"/>	
+						</Texture>
+					</Layer>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Middle" file="Interface\Buttons\CollapsibleHeader">
+							<Size x="0" y="16"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.Left" relativePoint="RIGHT" x="-20" y="0"/>
+								<Anchor point="RIGHT" relativeKey="$parent.Right" relativePoint="LEFT" x="20" y="0"/>
+							</Anchors>
+							<TexCoords left="0.48046875" right="0.98046875" top="0.01562500" bottom="0.26562500"/>	
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture parentKey="ExpandedIcon" inherits="Char-Stat-Minus">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.Left" x="10" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="CollapsedIcon" inherits="Char-Stat-Plus">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.Left" x="10" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Icon">
+							<Size x="14" y="14"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.Left" x="26" y="0"/>
+							</Anchors>
+							<TexCoords left="0.08" right="0.92" top="0.08" bottom="0.92"/>							
+						</Texture>
+						<FontString parentKey="Name" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.Left" x="46" y="1"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button parentKey="AllRecipes" text="GUILD_VIEW_ALL_RECIPES_LINK">
+						<Anchors>
+							<Anchor point="RIGHT" relativeKey="$parent.Right" x="-10" y="1"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								local fontString = self:GetFontString();
+								self:SetHeight(fontString:GetHeight() + 4);
+								self:SetWidth(fontString:GetWidth() + 4);
+							</OnLoad>
+							<OnClick>
+								ViewGuildRecipes(self:GetParent():GetParent():GetProfessionId());
+							</OnClick>
+						</Scripts>
+						<ButtonText>
+							<Anchors>
+								<Anchor point="RIGHT" x="-2" y="0"/>
+							</Anchors>
+							<Color r="0.973" g="0.937" b="0.580"/>
+						</ButtonText>
+						<NormalFont style="GameFontNormalSmall"/>
+					</Button>
+				</Frames>
+				<Scripts>
+					<OnClick>
+						self:GetParent():OnProfessionHeaderClicked();
+					</OnClick>
+					<OnMouseDown>
+						if self:IsEnabled() then
+							self.Left:SetPoint("LEFT", 4, -1);
+						end
+					</OnMouseDown>
+					<OnMouseUp>
+						self.Left:SetPoint("LEFT", 3, 0);
+					</OnMouseUp>
+				</Scripts>
 			</Button>
 		</Frames>
 		<Layers>

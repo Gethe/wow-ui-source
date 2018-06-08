@@ -106,7 +106,7 @@ function QuestUtils_GetQuestName(questID)
 	return questName or "";
 end
 
---currencyContainerTooltip should be an EmbeddedItemTooltip
+--currencyContainerTooltip should be an InternalEmbeddedItemTooltipTemplate
 function QuestUtils_AddQuestCurrencyRewardsToTooltip(questID, tooltip, currencyContainerTooltip)
 	local numQuestCurrencies = GetNumQuestLogRewardCurrencies(questID);
 	local currencies = { };

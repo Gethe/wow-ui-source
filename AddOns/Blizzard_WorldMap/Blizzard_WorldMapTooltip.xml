@@ -4,7 +4,7 @@
 	<GameTooltip name="WorldMapCompareTooltip2" clampedToScreen="true" frameStrata="TOOLTIP" hidden="true" parent="WorldMapFrame" inherits="ShoppingTooltipTemplate"/>
 	<GameTooltip name="WorldMapTooltip" frameStrata="TOOLTIP" hidden="true" parent="WorldMapFrame" inherits="GameTooltipTemplate">
 		<Frames>
-			<Frame parentKey="ItemTooltip" inherits="EmbeddedItemTooltip" hidden="true">
+			<Frame parentKey="ItemTooltip" inherits="InternalEmbeddedItemTooltipTemplate" hidden="true">
 				<Size x="100" y="100"/>
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" x="10" y="13"/>
@@ -50,6 +50,4 @@
 			</OnSizeChanged>
 		</Scripts>
 	</GameTooltip>
-	
-	<Frame name="WorldMapTaskTooltipStatusBar" inherits="TooltipProgressBarTemplate"/>
 </Ui>

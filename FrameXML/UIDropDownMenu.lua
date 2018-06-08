@@ -205,6 +205,8 @@ info.padding = [nil, NUMBER] -- Number of pixels to pad the text on the right si
 info.leftPadding = [nil, NUMBER] -- Number of pixels to pad the button on the left side
 info.minWidth = [nil, NUMBER] -- Minimum width for this line
 info.customFrame = frame -- Allows this button to be a completely custom frame, should inherit from UIDropDownCustomMenuEntryTemplate and override appropriate methods.
+info.icon = [TEXTURE] -- An icon for the button.
+info.mouseOverIcon = [TEXTURE] -- An override icon when a button is moused over.
 ]]
 
 local UIDropDownMenu_ButtonInfo = {};
@@ -356,7 +358,7 @@ function UIDropDownMenu_AddButton(info, level)
 		end
 
 		-- Set icon
-		if ( info.icon ) then
+		if ( info.icon or info.mouseOverIcon ) then
 			icon:SetSize(16,16);
 			icon:SetTexture(info.icon);
 			icon:ClearAllPoints();
@@ -425,6 +427,8 @@ function UIDropDownMenu_AddButton(info, level)
 	button.tooltipOnButton = info.tooltipOnButton;
 	button.noClickSound = info.noClickSound;
 	button.padding = info.padding;
+	button.icon = info.icon;
+	button.mouseOverIcon = info.mouseOverIcon;
 
 	if ( info.value ) then
 		button.value = info.value;

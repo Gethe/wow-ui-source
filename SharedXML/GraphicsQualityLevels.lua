@@ -502,6 +502,9 @@ VideoData["Graphics_ParticleDensityDropDown"]={
 		[4] = {
 			text = VIDEO_OPTIONS_HIGH,
 		},
+		[5] = {
+			text = VIDEO_OPTIONS_ULTRA,
+		},
 	},
 	dependent = {
 		"Graphics_Quality",
@@ -524,6 +527,9 @@ VideoData["RaidGraphics_ParticleDensityDropDown"]={
 		},
 		[4] = {
 			text = VIDEO_OPTIONS_HIGH,
+		},
+		[5] = {
+			text = VIDEO_OPTIONS_ULTRA,
 		},
 	},
 	dependent = {
@@ -1318,8 +1324,7 @@ VideoData["Advanced_GraphicsAPIDropDown"]={
 			end
 		end,
 	lookup = Graphics_TableLookupSafe,
-	clientRestart = true,
-	gameRestart = true,
+	restart = true;
 }
 
 VideoData["Advanced_PhysicsInteractionDropDown"]={

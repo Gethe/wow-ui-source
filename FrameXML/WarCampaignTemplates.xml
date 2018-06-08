@@ -59,7 +59,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="ItemTooltip" inherits="EmbeddedItemTooltip">
+			<Frame parentKey="ItemTooltip" inherits="InternalEmbeddedItemTooltipTemplate">
 				<KeyValues>
 					<KeyValue key="layoutIndex" value="5" type="number"/>
 					<KeyValue key="topPadding" value="14" type="number"/>

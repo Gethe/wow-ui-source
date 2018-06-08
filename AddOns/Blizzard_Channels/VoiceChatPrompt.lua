@@ -73,6 +73,18 @@ function VoiceChatActivateChannelPromptMixin:ShowPrompt(channel)
 	AlertFrame_ShowNewAlert(self);
 end
 
+function VoiceChatActivateChannelPromptMixin:CheckActivateChannel(channel)
+	if self:ShouldPromptForChannelActivate(channel) then
+		self:ShowPrompt(channel);
+	end
+end
+
+function VoiceChatActivateChannelPromptMixin:ShouldPromptForChannelActivate(channel)
+	-- Previous logic:
+	-- return C_ChatInfo.IsPartyChannelType(channel.channelType);
+	return false;
+end
+
 function VoiceChatActivateChannelPromptMixin:ActivateChannel()
 	VoiceChatChannelActivatedNotification:ListenForChannelActivation(self.channel);
 	C_VoiceChat.ActivateChannel(self.channel.channelID);

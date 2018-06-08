@@ -500,7 +500,6 @@ local UIWidgetManager =
 			Fields =
 			{
 				{ Name = "shownState", Type = "WidgetShownState", Nilable = false },
-				{ Name = "tooltip", Type = "string", Nilable = false },
 				{ Name = "name", Type = "string", Nilable = false },
 				{ Name = "backgroundTextureKitID", Type = "number", Nilable = false },
 				{ Name = "portraitTextureKitID", Type = "number", Nilable = false },

@@ -92,14 +92,13 @@ end
 function WarfrontsPartyPoseMixin:LoadScreenData(mapID, winner) 
 	local partyPoseInfo = C_PartyPose.GetPartyPoseInfoByMapID(mapID); 
 	
-	self:SetRewards(); 
 	self:SetModelScene(partyPoseInfo.modelSceneID, LE_PARTY_CATEGORY_HOME);
 	self:AddModelSceneActors();
 	
 	self:SetLeaveButtonText(); 
 	
 	local factionWinner = PLAYER_FACTION_GROUP[winner];
-	self:SetTopBannerAndBackgroundFromWinner("Horde"); 
+	self:SetTopBannerAndBackgroundFromWinner(factionWinner); 
 end
 
 function WarfrontsPartyPoseMixin:OnLoad()

@@ -6,6 +6,16 @@ local GuildInfo =
 
 	Functions =
 	{
+		{
+			Name = "QueryGuildMemberRecipes",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "guildMemberGUID", Type = "string", Nilable = false },
+				{ Name = "skillLineID", Type = "number", Nilable = false },
+			},
+		},
 	},
 
 	Events =

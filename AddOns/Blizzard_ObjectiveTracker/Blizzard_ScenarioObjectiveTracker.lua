@@ -131,6 +131,7 @@ end
 function ScenarioBlocksFrame_Hide()
 	SCENARIO_TRACKER_MODULE.BlocksFrame.currentStage = nil;
 	SCENARIO_TRACKER_MODULE.BlocksFrame.scenarioName = nil;
+	SCENARIO_TRACKER_MODULE.BlocksFrame.stageName = nil;
 	SCENARIO_TRACKER_MODULE.BlocksFrame:SetVerticalScroll(0);
 	SCENARIO_TRACKER_MODULE.BlocksFrame:Hide();
 end
@@ -896,7 +897,7 @@ function SCENARIO_CONTENT_TRACKER_MODULE:Update()
 		ObjectiveTracker_AddBlock(stageBlock);
 		stageBlock:Show();
 		-- update if stage changed
-		if ( BlocksFrame.currentStage ~= currentStage or BlocksFrame.scenarioName ~= scenarioName ) then
+		if ( BlocksFrame.currentStage ~= currentStage or BlocksFrame.scenarioName ~= scenarioName or BlocksFrame.stageName ~= stageName) then
 			SCENARIO_TRACKER_MODULE:FreeUnusedLines(objectiveBlock);
 			if ( bit.band(flags, SCENARIO_FLAG_SUPRESS_STAGE_TEXT) == SCENARIO_FLAG_SUPRESS_STAGE_TEXT ) then
 				stageBlock.Stage:SetText(stageName);
@@ -930,6 +931,7 @@ function SCENARIO_CONTENT_TRACKER_MODULE:Update()
 	end
 	BlocksFrame.scenarioName = scenarioName;
 	BlocksFrame.currentStage = currentStage;
+	BlocksFrame.stageName = stageName;
 
 	if ( not ScenarioProvingGroundsBlock.timerID and not scenariocompleted ) then
 		if (weightedProgress) then
@@ -985,7 +987,7 @@ function SCENARIO_CONTENT_TRACKER_MODULE:Update()
 		elseif( dungeonDisplay ) then
 			SCENARIO_CONTENT_TRACKER_MODULE.Header.Text:SetText(TRACKER_HEADER_DUNGEON);
 		else
-			SCENARIO_CONTENT_TRACKER_MODULE.Header.Text:SetText(TRACKER_HEADER_SCENARIO);
+			SCENARIO_CONTENT_TRACKER_MODULE.Header.Text:SetText(scenarioName);
 		end
 	else
 		ScenarioBlocksFrame_Hide();

@@ -13,9 +13,13 @@ function QuestLogOwnerMixin:HandleUserActionToggleSelf()
 			displayState = DISPLAY_STATE_CLOSED;
 		else
 			if self:ShouldShowQuestLogPanel() == self.QuestLog:IsShown() then
-				displayState = DISPLAY_STATE_CLOSED;
+				if self:ShouldBeMaximized() then
+					displayState = DISPLAY_STATE_OPEN_MAXIMIZED;
+				else
+					displayState = DISPLAY_STATE_CLOSED;
+				end
 			else
-				if not self:ShouldBeMinimized() then
+				if self:ShouldBeMaximized() then
 					displayState = DISPLAY_STATE_OPEN_MAXIMIZED;
 				else
 					displayState = DISPLAY_STATE_OPEN_MINIMIZED_NO_LOG;
@@ -97,19 +101,25 @@ function QuestLogOwnerMixin:SetDisplayState(displayState)
 		HideUIPanel(self);
 	else
 		ShowUIPanel(self);
+
+		local hasSynchronizedDisplayState = false;
+
 		if displayState == DISPLAY_STATE_OPEN_MAXIMIZED then
 			if not self:IsMaximized() then
 				self:SetQuestLogPanelShown(false);
 				self:Maximize();
+				hasSynchronizedDisplayState = true;
 			end
 		elseif displayState == DISPLAY_STATE_OPEN_MINIMIZED_NO_LOG then
 			if self:IsMaximized() then
 				self:Minimize();
+				hasSynchronizedDisplayState = true;
 			end
 			self:SetQuestLogPanelShown(false);
 		elseif displayState == DISPLAY_STATE_OPEN_MINIMIZED_WITH_LOG then
 			if self:IsMaximized() then
 				self:Minimize();
+				hasSynchronizedDisplayState = true;
 			end
 			self:SetQuestLogPanelShown(true);
 		end
@@ -124,10 +134,14 @@ function QuestLogOwnerMixin:SetDisplayState(displayState)
 
 	self:RefreshQuestLog();
 	self:UpdateSpacerFrameAnchoring();
+
+	if not hasSynchronizedDisplayState then
+		self:SynchronizeDisplayState();
+	end
 end
 
 function QuestLogOwnerMixin:SetQuestLogPanelShown(shown)
-	if self.QuestLog then
+	if self.QuestLog and shown ~= self.QuestLog:IsShown() then
 		if shown then
 			self:SetWidth(self.minimizedWidth + self.questLogWidth);
 			self.QuestLog:Show();
@@ -135,6 +149,8 @@ function QuestLogOwnerMixin:SetQuestLogPanelShown(shown)
 			self:SetWidth(self.minimizedWidth);
 			self.QuestLog:Hide();
 		end
+
+		UpdateUIPanelPositions(self);
 	end
 end
 
@@ -156,6 +172,10 @@ end
 
 function QuestLogOwnerMixin:ShouldBeMinimized()
 	return GetCVarBool("miniWorldMap");
+end
+
+function QuestLogOwnerMixin:ShouldBeMaximized()
+	return not self:ShouldBeMinimized();
 end
 
 function QuestLogOwnerMixin:IsSidePanelShown()

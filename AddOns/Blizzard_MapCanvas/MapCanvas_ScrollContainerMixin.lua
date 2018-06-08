@@ -143,7 +143,7 @@ function MapCanvasScrollControllerMixin:OnMouseWheel(delta)
 	end
 
 	if delta > 0 then
-		if not self:IsAtMaxZoom() or self.mouseWheelZoomMode == MAP_CANVAS_MOUSE_WHEEL_ZOOM_BEHAVIOR_SMOOTH then
+		if (not self:IsAtMaxZoom() or self.mouseWheelZoomMode == MAP_CANVAS_MOUSE_WHEEL_ZOOM_BEHAVIOR_SMOOTH) and not self:IsZoomingIn() then
 			local cursorX, cursorY = self:GetCursorPosition();
 			local normalizedCursorX = self:NormalizeHorizontalSize(cursorX / self:GetCanvasScale() - self.Child:GetLeft());
 			local normalizedCursorY = self:NormalizeVerticalSize(self.Child:GetTop() - cursorY / self:GetCanvasScale());

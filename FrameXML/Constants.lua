@@ -59,6 +59,7 @@ ARTIFACT_BAR_COLOR 			= CreateColor(0.901, 0.8, 0.601);
 WARBOARD_OPTION_TEXT_COLOR	= CreateColor(0.28, 0.02, 0.02);
 DEFAULT_CHAT_CHANNEL_COLOR	= CreateColor(1.0, 0.753, 0.753);
 DIM_GREEN_FONT_COLOR		= CreateColor(0.251, 0.753, 0.251); -- Used for officer chat in guilds.
+BLACK_FONT_COLOR			= CreateColor(0.0, 0.0, 0.0);
 
 AREA_NAME_FONT_COLOR = CreateColor(1.0, 0.9294, 0.7607);
 AREA_DESCRIPTION_FONT_COLOR = HIGHLIGHT_FONT_COLOR;
@@ -603,8 +604,8 @@ SHOW_SEARCH_BAR_NUM_FRIENDS = 12;
 MIN_CHARACTER_SEARCH = 3;
 
 -- faction
-PLAYER_FACTION_GROUP = { [0] = "Horde", [1] = "Alliance" };
-PLAYER_FACTION_COLORS = { [0] = {r=0.90, g=0.05, b=0.07}, [1]={r=0.29, g=0.33, b=0.91}}
+PLAYER_FACTION_GROUP = { [0] = "Horde", [1] = "Alliance", Horde = 0, Alliance = 1 };
+PLAYER_FACTION_COLORS = { [0] = CreateColor(0.90, 0.05, 0.07), [1] = CreateColor(0.29, 0.33, 0.91) }
 
 -- Panel default size
 PANEL_DEFAULT_WIDTH = 338;
@@ -738,7 +739,6 @@ CHALLENGE_MEDAL_TEXTURES_SMALL = {
 -- Player Reporting
 PLAYER_REPORT_TYPE_SPAM = "spam";
 PLAYER_REPORT_TYPE_LANGUAGE = "language";
-PLAYER_REPORT_TYPE_LANGUAGE_VOICE = "language_voice";
 PLAYER_REPORT_TYPE_BAD_PLAYER_NAME = "badplayername";
 PLAYER_REPORT_TYPE_BAD_GUILD_NAME = "badguildname";
 PLAYER_REPORT_TYPE_CHEATING = "cheater";

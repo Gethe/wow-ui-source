@@ -314,53 +314,6 @@ function BNToastMixin:RemoveToast(toastType, toastData)
 	end
 end
 
-function BNet_InitiateReport(bnetIDAccount, reportType)
-	local reportFrame = BNetReportFrame;
-	if ( reportFrame:IsShown() ) then
-		StaticPopupSpecial_Hide(reportFrame);
-	end
-	CloseDropDownMenus();
-	-- set up
-	local fullName;
-	if ( not bnetIDAccount ) then
-		-- invite
-		bnetIDAccount, fullName = BNGetFriendInviteInfo(UIDROPDOWNMENU_MENU_VALUE);
-	else
-		local _, accountName, battleTag, isBattleTag, characterName = BNGetFriendInfoByID(bnetIDAccount);
-		if ( accountName ) then
-			if ( characterName ) then
-				fullName = accountName.." ("..characterName..")";
-			else
-				fullName = accountName;
-			end
-		else
-			local _, characterName = BNGetGameAccountInfo(bnetIDAccount);
-			fullName = characterName;
-		end
-	end
-	reportFrame.bnetIDAccount = bnetIDAccount;
-	reportFrame.type = reportType;
-	reportFrame.name = fullName;
-	BNetReportFrameCommentBox:SetText("");
-
-	if ( reportType == "SPAM" or reportType == "NAME" ) then
-		StaticPopup_Show("CONFIRM_BNET_REPORT", format(_G["BNET_REPORT_CONFIRM_"..reportType], fullName));
-	elseif ( reportType == "ABUSE" ) then
-		BNetReportFrameName:SetText(fullName);
-		StaticPopupSpecial_Show(reportFrame);
-	end
-end
-
-function BNet_ConfirmReport()
-	StaticPopup_Show("CONFIRM_BNET_REPORT", format(_G["BNET_REPORT_CONFIRM_"..BNetReportFrame.type], BNetReportFrame.name));
-end
-
-function BNet_SendReport()
-	local reportFrame = BNetReportFrame;
-	local comments = BNetReportFrameCommentBox:GetText();
-	BNReportPlayer(reportFrame.bnetIDAccount, reportFrame.type, comments);
-end
-
 --This is used to track time played for an alert in Korea
 
 BNetTimeAlertMixin = {};

@@ -35,6 +35,20 @@ local QuestLineInfo =
 				{ Name = "questLineInfo", Type = "QuestLineInfo", Nilable = true },
 			},
 		},
+		{
+			Name = "GetQuestLineQuests",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questLineID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "questIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
 	},
 
 	Events =

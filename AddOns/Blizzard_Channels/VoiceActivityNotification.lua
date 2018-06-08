@@ -93,9 +93,9 @@ function VoiceActivityNotificationMixin:Setup(memberID, channelID, isLocalPlayer
 
 	C_VoiceChat.SetPortraitTexture(self.Portrait, memberID, channelID);
 
-	local member = C_VoiceChat.GetMemberInfo(memberID, channelID);
+	local memberName = C_VoiceChat.GetMemberName(memberID, channelID);
 	local r, g, b = Voice_GetVoiceChannelNotificationColor(channelID);
-	self.Name:SetText(VOICE_CHAT_CHAT_NOTIFICATION:format(member.name));
+	self.Name:SetText(VOICE_CHAT_CHAT_NOTIFICATION:format(memberName or ""));
 	self.Name:SetVertexColor(r, g, b, 1);
 end
 

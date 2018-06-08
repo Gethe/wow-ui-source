@@ -205,6 +205,8 @@ function GuildControlUI_RankPermissions_Update(self)
 		end
 	end
 	
+	self.OfficerCheckbox:SetChecked(flags[self.OfficerCheckbox:GetID()]);
+	
 	-- enable the gold/day editbox if at least one of Guild Bank Repair and Withdraw Gold are unchecked
 	if ( flags[15] or flags[16] ) then
 		self.goldBox.mask:Hide();
@@ -243,6 +245,23 @@ function GuildControlUI_RankPermissions_Update(self)
 	
 end
 
+GUILD_OFFICER_PERMISSION_STRINGS = {
+	GUILD_OFFICER_PERMISSION_ACCESS_CHANNELS,
+	GUILD_OFFICER_PERMISSION_REMOVE_FROM_VOICE,
+	GUILD_OFFICER_PERMISSION_DELETE_MESSAGES,
+	GUILD_OFFICER_PERMISSION_DELETE_EVENTS,
+	GUILD_OFFICER_PERMISSION_OFFICER_NOTES,
+	GUILD_OFFICER_PERMISSION_PUBLIC_NOTES,
+	GUILD_OFFICER_PERMISSION_GUILD_INFO,
+	GUILD_OFFICER_PERMISSION_MOTD,
+};
+
+function GuildControlRankSettings_OnLoad(self)
+	self.OfficerPermissions:SetText(table.concat(GUILD_OFFICER_PERMISSION_STRINGS, "|n"));
+	self.OfficerCheckbox.text:SetFontObject("GameFontHighlightSmall");
+	self.OfficerCheckbox.text:SetText(GUILD_CONTROL_RANK_PERMISSION_HAS_OFFICER_PRIVLEGES);
+	self.OfficerCheckbox:Enable();
+end
 
 
 function GuildControlUI_RankOrder_Update(self)	

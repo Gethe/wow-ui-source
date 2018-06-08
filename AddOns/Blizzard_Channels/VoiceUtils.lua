@@ -77,3 +77,19 @@ function Voice_GetGameErrorStringFromStatusCode(statusCode)
 		end
 	end
 end
+
+local partyCategoryToChannelType =
+{
+	[LE_PARTY_CATEGORY_HOME] = Enum.ChatChannelType.Private_Party;
+	[LE_PARTY_CATEGORY_INSTANCE] = Enum.ChatChannelType.Public_Party;
+};
+
+function GetChannelTypeFromPartyCategory(partyCategory)
+	return partyCategoryToChannelType[partyCategory];
+end
+
+local channelTypeToPartyCategory = tInvert(partyCategoryToChannelType);
+
+function GetPartyCategoryFromChannelType(channelType)
+	return channelTypeToPartyCategory[channelType];
+end

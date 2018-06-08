@@ -16,17 +16,12 @@ local IslandsQueueUI =
 			},
 		},
 		{
-			Name = "GetIslandInfoByDifficulty",
+			Name = "GetIslandsWeeklyQuestID",
 			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "difficulty", Type = "number", Nilable = false },
-			},
 
 			Returns =
 			{
-				{ Name = "info", Type = "table", InnerType = "IslandsQueueInfo", Nilable = false },
+				{ Name = "questID", Type = "number", Nilable = true },
 			},
 		},
 	},
@@ -37,15 +32,6 @@ local IslandsQueueUI =
 
 	Tables =
 	{
-		{
-			Name = "IslandsQueueInfo",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "cardArtAtlas", Type = "string", Nilable = false },
-			},
-		},
 	},
 };
 

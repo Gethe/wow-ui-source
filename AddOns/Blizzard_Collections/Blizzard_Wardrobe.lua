@@ -5,6 +5,7 @@
 -- new events: TRANSMOG_COLLECTION_SOURCE_ADDED and TRANSMOG_COLLECTION_SOURCE_REMOVED, parameter is sourceID, can be cross-class (wand unlocked from ensemble while on warrior)
 
 local REMOVE_TRANSMOG_ID = 0;
+TRANSMOG_SHAPESHIFT_MIN_ZOOM = -0.3;
 
 -- ************************************************************************************************************************************************************
 -- **** MAIN **********************************************************************************************************************************************
@@ -140,12 +141,18 @@ function WardrobeTransmogFrame_EvaluateModel(forceResetModel, resetSettings)
 	end
 
 	if forceResetModel or WardrobeTransmogFrame.Model.creatureDisplayID ~= creatureDisplayID then
-		WardrobeTransmogFrame.Model.creatureDisplayID = creatureDisplayID;
 		if creatureDisplayID then
+			WardrobeTransmogFrame.Model.minZoom = TRANSMOG_SHAPESHIFT_MIN_ZOOM;
 			WardrobeTransmogFrame.Model:SetDisplayInfo(creatureDisplayID);
+			-- always reset camera, the shapeshift models can vary
+			resetSettings = true;
 		else
+			WardrobeTransmogFrame.Model.minZoom = MODELFRAME_MIN_ZOOM;
 			WardrobeTransmogFrame.Model:SetUnit("player");
+			-- reset camera if it was shapeshift model previously
+			resetSettings = not not WardrobeTransmogFrame.Model.creatureDisplayID;
 		end
+		WardrobeTransmogFrame.Model.creatureDisplayID = creatureDisplayID;
 		if resetSettings then
 			Model_Reset(WardrobeTransmogFrame.Model);
 		end
@@ -690,6 +697,10 @@ local SET_MODEL_PAN_AND_ZOOM_LIMITS = {
 	["Nightborne2"] = { maxZoom = 2.9144732952118, panMaxLeft = -0.45042458176613, panMaxRight = 0.47114592790604, panMaxTop = -0.10513981431723, panMaxBottom = -2.4612309932709 },
 	["VoidElf3"] = { maxZoom = 3.1644730567932, panMaxLeft = -0.2654082775116, panMaxRight = 0.28886350989342, panMaxTop = -0.049619361758232, panMaxBottom = -1.9943760633469 },
 	["VoidElf2"] = { maxZoom = 3.1710524559021, panMaxLeft = -0.25901651382446, panMaxRight = 0.45525884628296, panMaxTop = -0.085230752825737, panMaxBottom = -2.0548067092895 },
+	["MagharOrc2"] = { maxZoom = 2.5526309013367, panMaxLeft = -0.64236557483673, panMaxRight = 0.77098786830902, panMaxTop = -0.075792260468006, panMaxBottom = -2.0818419456482 },
+	["MagharOrc3"] = { maxZoom = 3.2960524559021, panMaxLeft = -0.22763830423355, panMaxRight = 0.32022559642792, panMaxTop = -0.038521766662598, panMaxBottom = -2.0473554134369 },
+	["DarkIronDwarf2"] = { maxZoom = 2.9605259895325, panMaxLeft = -0.50352156162262, panMaxRight = 0.4159924685955, panMaxTop = -0.07211934030056, panMaxBottom = -1.4946432113648 },
+	["DarkIronDwarf3"] = { maxZoom = 2.8947370052338, panMaxLeft = -0.37057432532311, panMaxRight = 0.43383255600929, panMaxTop = -0.084960877895355, panMaxBottom = -1.7173190116882 },
 };
 
 function WardrobeCollectionFrame_SetContainer(parent)

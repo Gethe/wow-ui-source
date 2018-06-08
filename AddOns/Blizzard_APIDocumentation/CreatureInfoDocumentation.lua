@@ -21,6 +21,20 @@ local CreatureInfo =
 			},
 		},
 		{
+			Name = "GetFactionInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "raceID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "factionInfo", Type = "FactionInfo", Nilable = true },
+			},
+		},
+		{
 			Name = "GetRaceInfo",
 			Type = "Function",
 
@@ -50,6 +64,15 @@ local CreatureInfo =
 				{ Name = "className", Type = "string", Nilable = false },
 				{ Name = "classFile", Type = "string", Nilable = false },
 				{ Name = "classID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "FactionInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "groupTag", Type = "string", Nilable = false },
 			},
 		},
 		{

@@ -10,15 +10,9 @@
 			</Layer>
 			<Layer level="OVERLAY">
 				<FontString name="MovieFrameSubtitleString" inherits="MovieSubtitleFont" hidden="true">
-					<Size>
-						<AbsDimension x="800" y="138"/>
-					</Size>
+					<Size x="800" y="138"/>
 					<Anchors>
-						<Anchor point="TOP">
-							<Offset>
-								<AbsDimension x="0" y="-630"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="BOTTOM" x="0" y="0"/>
 					</Anchors>
 				</FontString>
 			</Layer>

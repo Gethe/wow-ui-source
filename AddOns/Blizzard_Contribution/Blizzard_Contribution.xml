@@ -213,7 +213,7 @@
 					<OnShow method="OnShow"/>
 					<OnHide method="OnHide"/>
 					<OnClick method="OnClick"/>
-					<OnEnter method="OnEnter"/>
+					<OnEnter method="UpdateTooltip"/>
 					<OnLeave method="OnLeave"/>
 					<OnEvent method="OnEvent"/>
 				</Scripts>
@@ -279,61 +279,6 @@
 			<OnEvent method="OnEvent"/>
 		</Scripts>
 	</Frame>
-
-	<GameTooltip name="ContributionTooltip" parent="UIParent" inherits="GameTooltipTemplate">
-		<Layers>
-			<Layer level="ARTWORK">
-				<FontString parentKey="RequiredContribution" font="GameFontNormal" justifyH="LEFT" justifyV="TOP">
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" x="10" y="10"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-		<Frames>
-			<Frame parentKey="ItemTooltip" inherits="EmbeddedItemTooltip" hidden="true">
-				<Size x="100" y="100"/>
-				<Anchors>
-					<Anchor point="BOTTOMLEFT" relativeKey="$parent.RequiredContribution" relativePoint="TOPLEFT" x="0" y="10"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad inherit="prepend">
-						self.Tooltip.shoppingTooltips = { ShoppingTooltip1, ShoppingTooltip2 };
-					</OnLoad>
-				</Scripts>
-			</Frame>
-		</Frames>
-		<Scripts>
-			<OnLoad>
-				self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
-				self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
-				self.shoppingTooltips = { ShoppingTooltip1, ShoppingTooltip2 };
-			</OnLoad>
-			<OnUpdate>
-				if ( self.recalculatePadding ) then
-					self.recalculatePadding = nil;
-					ContributionTooltip_CalculatePadding(self);
-				end
-
-				self.updateTooltip = (self.updateTooltip or TOOLTIP_UPDATE_TIME) - elapsed;
-				if ( self.updateTooltip > 0 ) then
-					return;
-				end
-				self.updateTooltip = TOOLTIP_UPDATE_TIME;
-
-				if self:GetOwner() then
-					self:GetOwner():OnEnter();
-				end
-			</OnUpdate>
-			<OnHide inherit="prepend">
-				self.ItemTooltip:Hide();
-				self:SetPadding(0, 0);
-			</OnHide>
-			<OnSizeChanged inherit="prepend">
-				self.recalculatePadding = true;
-			</OnSizeChanged>
-		</Scripts>
-	</GameTooltip>
 
 	<Frame name="ContributionBuffTooltip" parent="UIParent" frameStrata="TOOLTIP" clampedToScreen="true" hidden="true" inherits="TooltipBorderedFrameTemplate">
 		<Size x="1" y="1"/>

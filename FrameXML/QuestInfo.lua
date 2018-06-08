@@ -21,6 +21,13 @@ local SEAL_QUESTS = {
 	[53370] = { bgAtlas = "QuestBG-Alliance", text = "|cff042c54"..QUEST_KING_ANDUIN_WRYNN.."|r", sealAtlas = "Quest-Alliance-WaxSeal"},
 };
 
+local EXCEPTION_QUESTS = {
+	[53029] = true,
+	[53026] = true,
+	[51211] = true,
+	[52428] = true,
+};
+
 function QuestInfoTimerFrame_OnUpdate(self, elapsed)
 	if ( self.timeLeft ) then
 		self.timeLeft = max(self.timeLeft - elapsed, 0);
@@ -60,7 +67,7 @@ function QuestInfo_Display(template, parentFrame, acceptButton, material, mapVie
 			if sealQuestInfo.text or sealQuestInfo.sealAtlas then
 				QuestInfoSealFrame.sealInfo = sealQuestInfo;
 			end
-		elseif ( C_CampaignInfo.IsCampaignQuest(questID) ) then
+		elseif ( C_CampaignInfo.IsCampaignQuest(questID) and not EXCEPTION_QUESTS[questID] ) then
 			sealMaterialBG:SetAtlas( "QuestBG-"..UnitFactionGroup("player"));
 			sealMaterialBG:Show();
 		end

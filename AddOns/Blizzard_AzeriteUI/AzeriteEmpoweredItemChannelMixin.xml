@@ -1,0 +1,108 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Frame name="AzeriteEmpoweredItemChannelTemplate" mixin="AzeriteEmpoweredItemChannelMixin" virtual="true">
+		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="5">
+				<Texture parentKey="Fill" atlas="Azerite-CenterBG-ChannelGlowBar-Filling" useAtlasSize="true" inherits="AzeriteUITexture">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="217" />
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="6">
+				<Texture parentKey="Wispy1" atlas="Azerite-CenterBG-ChannelGlowBar-Effect" alphaMode="ADD" alpha=".5">
+					<Size x="128" y="400" />
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Fill" />
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Wispy2" atlas="Azerite-CenterBG-ChannelGlowBar-Effect" alphaMode="ADD" alpha=".5">
+					<Size x="128" y="400" />
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Fill" />
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="7">
+				<Texture parentKey="Sparkles1" atlas="Azerite-CenterBG-ChannelGlowBar-Particles" useAtlasSize="true" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Fill" />
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Sparkles2" atlas="Azerite-CenterBG-ChannelGlowBar-Particles" useAtlasSize="true" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Fill" />
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Gold" atlas="Azerite-CenterBG-ChannelGlowBar-Gold" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Fill" />
+					</Anchors>
+				</Texture>
+				<MaskTexture parentKey="FillMask" atlas="Azerite-CenterBG-ChannelGlowBar-Mask" useAtlasSize="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE" inherits="AzeriteUITexture">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Fill" />
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Wispy1" />
+						<MaskedTexture childKey="Wispy2" />
+						
+						<MaskedTexture childKey="Sparkles1" />
+						<MaskedTexture childKey="Sparkles2" />
+
+						<MaskedTexture childKey="Gold" />
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="4">
+				<Texture parentKey="FillShine" atlas="Azerite-CenterBG-ChannelGlowBar-Shinny" useAtlasSize="true" inherits="AzeriteUITexture">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Fill" x="0" y="-4" />
+					</Anchors>
+				</Texture>
+				<MaskTexture parentKey="RevealMask" atlas="Azerite-CenterBG-ChannelGlowBar-FillingMask" useAtlasSize="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Fill" />
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Wispy1" />
+						<MaskedTexture childKey="Wispy2" />
+
+						<MaskedTexture childKey="Sparkles1" />
+						<MaskedTexture childKey="Sparkles2" />
+
+						<MaskedTexture childKey="Fill" />
+						<MaskedTexture childKey="FillShine" />
+
+						<MaskedTexture childKey="Gold" />
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="SparkleAnim" setToFinalAlpha="true" looping="REPEAT">
+				<Alpha childKey="Sparkles1" duration="1.5" order="1" smoothing="IN_OUT" fromAlpha="0" toAlpha="1" />
+				<Alpha childKey="Sparkles2" duration="1.5" order="2" smoothing="IN_OUT" fromAlpha="0" toAlpha="1" />
+				
+				<Alpha childKey="Sparkles1" smoothing="IN_OUT" duration="1.5" order="2" fromAlpha="1" toAlpha="0" />
+				<Alpha childKey="Sparkles2" smoothing="IN_OUT" duration="1.5" order="1" fromAlpha="1" toAlpha="0" />
+			</AnimationGroup>
+
+			<AnimationGroup parentKey="GoldOverlayAnim" setToFinalAlpha="true" looping="REPEAT">
+				<Alpha childKey="Gold" duration="1.5" order="2" smoothing="IN_OUT" fromAlpha=".5" toAlpha="1" />
+				<Alpha childKey="Gold" smoothing="IN_OUT" duration="1.5" order="1" fromAlpha="1" toAlpha=".5" />
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnShow>
+				self.SparkleAnim:Play();
+				self.GoldOverlayAnim:Play();
+			</OnShow>
+			<OnHide>
+				self.SparkleAnim:Stop();
+				self.GoldOverlayAnim:Stop();
+			</OnHide>
+			<OnUpdate method="OnUpdate" />
+		</Scripts>
+	</Frame>
+</Ui>

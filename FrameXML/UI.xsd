@@ -480,6 +480,7 @@
 		<xs:attribute name="bgFile" type="xs:string"/>
 		<xs:attribute name="edgeFile" type="xs:string"/>
 		<xs:attribute name="tile" type="xs:boolean" default="false"/>
+        <xs:attribute name="tileEdge" type="xs:boolean" default="false"/>
 		<xs:attribute name="alphaMode" type="ALPHAMODE" default="BLEND"/>
 	</xs:complexType>
 

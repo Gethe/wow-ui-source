@@ -131,7 +131,7 @@
 										<Texture parentKey="Rank3Plug" atlas="Azerite-Center-TraitPlug-Rune2" useAtlasSize="true" inherits="AzeritePlugTexture" />
 										<Texture parentKey="Rank2Plug" atlas="Azerite-Center-TraitPlug-Rune3" useAtlasSize="true" inherits="AzeritePlugTexture" />
 									</Layer>
-									<Layer level="ARTWORK" textureSubLevel="2">
+									<Layer level="ARTWORK" textureSubLevel="6">
 										<Texture parentKey="Shadow" atlas="Azerite-TopShadow" useAtlasSize="true" inherits="AzeriteUITexture">
 											<Anchors>
 												<Anchor point="TOPLEFT" x="90" y="-8" />
@@ -141,9 +141,11 @@
 									</Layer>
 								</Layers>
 								<Frames>
+									<Frame parentKey="Channel" inherits="AzeriteEmpoweredItemChannelTemplate" setAllPoints="true" />
 									<Frame parentKey="Rank4Slot" inherits="AzeriteEmpoweredItemSlotTemplate" />
 									<Frame parentKey="Rank3Slot" inherits="AzeriteEmpoweredItemSlotTemplate" />
 									<Frame parentKey="Rank2Slot" inherits="AzeriteEmpoweredItemSlotTemplate" />
+									<Frame parentKey="Rank1Slot" frameStrata="DIALOG" inherits="AzeriteEmpoweredItemSlotTemplate" />
 								</Frames>
 							</Frame>
 

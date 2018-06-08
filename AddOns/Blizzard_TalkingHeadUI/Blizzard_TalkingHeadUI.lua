@@ -103,6 +103,16 @@ function TalkingHeadFrame_Reset(frame, text, name)
 	frame.TextFrame.Text:SetText(text);
 end
 
+local textureKitRegionFormatStrings = {
+	["TextBackground"] = "%s-TextBackground",
+	["Portrait"] = "%s-PortraitFrame",
+}
+local defaultAtlases = {
+	["TextBackground"] = "TalkingHeads-TextBackground",
+	["Portrait"] = "TalkingHeads-Alliance-PortraitFrame",
+}
+
+
 function TalkingHeadFrame_PlayCurrent()
 	local frame = TalkingHeadFrame;
 	local model = frame.MainFrame.Model;
@@ -117,9 +127,14 @@ function TalkingHeadFrame_PlayCurrent()
 	end
 
 	local currentDisplayInfo = model:GetDisplayInfo();
-	local displayInfo, cameraID, vo, duration, lineNumber, numLines, name, text, isNewTalkingHead = C_TalkingHead.GetCurrentLineInfo();
+	local displayInfo, cameraID, vo, duration, lineNumber, numLines, name, text, isNewTalkingHead, textureKitID = C_TalkingHead.GetCurrentLineInfo();
 	local textFormatted = string.format(text);
 	if ( displayInfo and displayInfo ~= 0 ) then
+		if ( textureKitID ~= 0 ) then
+			SetupTextureKits(textureKitID, frame, textureKitRegionFormatStrings, false, true);
+		else
+			SetupAtlasesOnRegions(frame, defaultAtlases, true);
+		end
 		frame:Show();
 		if ( currentDisplayInfo ~= displayInfo ) then
 			model.uiCameraID = cameraID;

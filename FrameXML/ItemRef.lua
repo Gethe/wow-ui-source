@@ -119,7 +119,7 @@ function SetItemRef(link, text, button, chatFrame)
 				]]
 			elseif ( button == "RightButton" ) then
 				if ( not BNIsSelf(bnetIDAccount) ) then
-					FriendsFrame_ShowBNDropdown(name, 1, nil, chatType, chatFrame, nil, BNet_GetBNetIDAccount(name));
+					FriendsFrame_ShowBNDropdown(name, 1, nil, chatType, chatFrame, nil, bnetIDAccount, communityClubID, communityStreamID, communityEpoch, communityPosition);
 				end
 			else
 				if ( BNIsFriend(bnetIDAccount)) then
@@ -408,11 +408,26 @@ function GetGMLink(gmName, linkDisplayText, lineID)
 	end
 end
 
+local function SanitizeCommunityData(clubId, streamId, epoch, position)
+	if type(clubId) == "number" then
+		clubId = ("%.f"):format(clubId);
+	end
+	if type(streamId) == "number" then
+		streamId = ("%.f"):format(streamId);
+	end
+	epoch = ("%.f"):format(epoch);
+	position = ("%.f"):format(position);
+
+	return clubId, streamId, epoch, position;
+end
+
 function GetBNPlayerCommunityLink(playerName, linkDisplayText, bnetIDAccount, clubId, streamId, epoch, position)
+	clubId, streamId, epoch, position = SanitizeCommunityData(clubId, streamId, epoch, position);
 	return FormatLink("BNplayerCommunity", linkDisplayText, playerName, bnetIDAccount, clubId, streamId, epoch, position);
 end
 
 function GetPlayerCommunityLink(playerName, linkDisplayText, clubId, streamId, epoch, position)
+	clubId, streamId, epoch, position = SanitizeCommunityData(clubId, streamId, epoch, position);
 	return FormatLink("playerCommunity", linkDisplayText, playerName, clubId, streamId, epoch, position);
 end
 

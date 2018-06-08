@@ -1,5 +1,130 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
+	<Frame name="IslandsQueueFrameWeeklyQuestFrameTemplate" enableMouse="true" virtual="true" mixin="IslandsQueueWeeklyQuestMixin">
+		<Size x="566" y="20"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Title" inherits="GameFontNormal" text="ISLANDS_QUEUE_WEEKLY_QUEST">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="58" y="25"/> 
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<StatusBar parentKey="StatusBar" drawLayer="BORDER">
+				<Size x="520" y="20"/>
+				<Anchors>
+					<Anchor point="RIGHT" x="13" y="5"/>
+				</Anchors>
+				<BarTexture parentKey="BarTexture" atlas="_islands-queue-progressbar-fill" useAtlasSize="true"/>
+			</StatusBar>
+			<Frame parentKey="OverlayFrame" setAllPoints="true">
+				<Layers>
+					<Layer level="BORDER" textureSubLevel="2">
+						<Texture parentKey="Bar" atlas="islands-queue-progressbar-frame" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.StatusBar" relativePoint="CENTER" x="50" y="5"/> 
+							</Anchors>
+						</Texture> 
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="3">
+						<Texture parentKey="Spark" hidden="true" atlas="islands-queue-progressbar-spark" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="RIGHT" relativeKey="$parent.StatusBar" relativePoint="RIGHT" x="3" y="0"/> 
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK" textureSubLevel="5">
+						<FontString parentKey="Text" inherits="TextStatusBarTextLarge" hidden="true">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent" x="38" y="6"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Button parentKey="QuestReward">
+				<Size x="39" y="40"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.OverlayFrame" relativePoint="RIGHT" x="45" y="6"/> 
+				</Anchors>
+				<Layers>
+					<Layer level="BORDER">
+						<Texture parentKey="Icon" atlas="honorsystem-prestige-laurel-bg-alliance">
+							<Size x="29" y="30"/>
+							<Anchors>
+								<Anchor point="CENTER"/> 
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame parentKey="Tooltip" inherits="VerticalLayoutFrame" frameStrata="TOOLTIP" clampedToScreen="true" hidden="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPLEFT" x="40" y="-20"/>
+						</Anchors>
+						<KeyValues>
+							<KeyValue key="fixedWidth" value="100" type="number"/>
+							<KeyValue key="expand" value="true" type="boolean"/>
+							<KeyValue key="topPadding" value="10" type="number"/>
+							<KeyValue key="bottomPadding" value="12" type="number"/>
+							<KeyValue key="leftPadding" value="5" type="number"/>
+							<KeyValue key="rightPadding" value="5" type="number"/>
+							<KeyValue key="spacing" value="8" type="number"/>
+						</KeyValues>
+						<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+							<EdgeSize val="16"/>
+							<TileSize val="16"/>
+							<BackgroundInsets left="5" right="5" top="5" bottom="5"/>
+						</Backdrop>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT"/>
+						</Anchors>
+						<Frames>
+							<Frame parentKey="ItemTooltip" inherits="InternalEmbeddedItemTooltipTemplate">
+								<KeyValues>
+									<KeyValue key="leftPadding" value="5" type="number"/>
+									<KeyValue key="layoutIndex" value="2" type="number"/>
+								</KeyValues>
+								<Size x="100" y="100"/>
+								<Scripts>
+									<OnSizeChanged inherit="prepend">
+										self:GetParent():Layout();
+									</OnSizeChanged>
+								</Scripts>
+							</Frame>
+						</Frames>
+						<Scripts>
+							<OnLoad>
+								self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
+								self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
+							</OnLoad>
+						</Scripts>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnEnter>
+						QuestUtils_AddQuestCurrencyRewardsToTooltip(self:GetParent().questID, self.Tooltip, self.Tooltip.ItemTooltip);
+						self.Tooltip:Show(); 
+					</OnEnter>
+					<OnLeave>
+						self.Tooltip:Hide(); 
+					</OnLeave>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow"/>
+			<OnEnter>
+				self.OverlayFrame.Text:Show(); 
+			</OnEnter>
+			<OnLeave>
+				self.OverlayFrame.Text:Hide(); 
+			</OnLeave>
+		</Scripts>
+	</Frame>
 	<Button name="IslandsQueueFrameDifficultyButtonTemplate" virtual="true">
 		<Size x="39" y="39"/> 
 		<HighlightTexture parentKey="Highlight" atlas="bags-roundhighlight" alphaMode="ADD" hidden="true">
@@ -25,6 +150,12 @@
 			<OnClick>
 				self:GetParent():SetActiveDifficulty(self); 
 			</OnClick>
+			<OnEnter>
+				if self.tooltipText then
+					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+					GameTooltip_SetTitle(GameTooltip, self.tooltipText, HIGHLIGHT_FONT_COLOR);
+				end
+			</OnEnter>
 		</Scripts>
 	</Button>
 	<Frame name="IslandsQueueScreenDifficultySelector" mixin="IslandsQueueFrameDifficultyMixin" virtual="true">
@@ -144,13 +275,13 @@
 			</Layer>
 			<Layer level="OVERLAY">
 				<Texture parentKey="RightProp" atlas="islands-queue-prop-coins">
-					<Size x="182" y="122"/>
+					<Size x="252" y="143"/>
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT" x="15" y="-25"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="LeftProp" atlas="islands-queue-prop-compass">
-					<Size x="186" y="189"/>
+					<Size x="188" y="186"/>
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" x="-30" y="-22"/>
 					</Anchors>
@@ -180,12 +311,17 @@
 			</Frame>
 			<Frame parentKey="IslandCardsFrame" useParentLevel="true" inherits="IslandsQueueFrameCardFrameTemplate">
 				<Anchors>
-					<Anchor point="BOTTOM" x="0" y="-20"/>
+					<Anchor point="BOTTOM" x="0" y="-30"/>
 				</Anchors>
 			</Frame>
 			<Frame parentKey="DifficultySelectorFrame" frameLevel="1100" inherits="IslandsQueueScreenDifficultySelector">
 				<Anchors>
 					<Anchor point="BOTTOM" x="0" y="10"/> 
+				</Anchors>
+			</Frame>
+			<Frame parentKey="WeeklyQuest" frameLevel="1100" inherits="IslandsQueueFrameWeeklyQuestFrameTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.IslandCardsFrame" x="-40" y="-20"/> 
 				</Anchors>
 			</Frame>
 		</Frames>

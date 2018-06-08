@@ -226,6 +226,21 @@ local VoiceChat =
 			},
 		},
 		{
+			Name = "GetMemberName",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "memberID", Type = "number", Nilable = false },
+				{ Name = "channelID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "memberName", Type = "string", Nilable = true },
+			},
+		},
+		{
 			Name = "GetMemberVolume",
 			Type = "Function",
 
@@ -616,7 +631,6 @@ local VoiceChat =
 			Payload =
 			{
 				{ Name = "channelID", Type = "number", Nilable = false },
-				{ Name = "status", Type = "VoiceChatStatusCode", Nilable = true },
 			},
 		},
 		{
@@ -626,7 +640,6 @@ local VoiceChat =
 			Payload =
 			{
 				{ Name = "channelID", Type = "number", Nilable = false },
-				{ Name = "status", Type = "VoiceChatStatusCode", Nilable = true },
 			},
 		},
 		{
@@ -670,7 +683,6 @@ local VoiceChat =
 			Payload =
 			{
 				{ Name = "memberID", Type = "number", Nilable = false },
-				{ Name = "displayName", Type = "string", Nilable = false },
 				{ Name = "channelID", Type = "number", Nilable = false },
 			},
 		},
@@ -944,7 +956,6 @@ local VoiceChat =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
 				{ Name = "energy", Type = "number", Nilable = false },
 				{ Name = "memberID", Type = "number", Nilable = false },
 				{ Name = "isActive", Type = "bool", Nilable = false },

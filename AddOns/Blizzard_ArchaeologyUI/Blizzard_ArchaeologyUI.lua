@@ -147,9 +147,9 @@ local function ArchaeologyFrame_CancelSpellLoadCallback(control)
 end
 
 function ArchaeologyFrame_OnHide(self)
-	ArchaeologyFrame_CancelSpellLoadCallback(self.historyScroll);
+	ArchaeologyFrame_CancelSpellLoadCallback(self.artifactPage.historyScroll);
 	for i=1,ARCHAEOLOGY_MAX_COMPLETED_SHOWN do
-		local projectButton = self["artifact"..i];
+		local projectButton = self.completedPage["artifact"..i];
 		ArchaeologyFrame_CancelSpellLoadCallback(projectButton);
 	end
 	CloseResearch();

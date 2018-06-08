@@ -30,7 +30,7 @@ function ChannelRosterMixin:GetChannelFrame()
 	return self:GetParent();
 end
 
-function ChannelRosterMixin:OnVoiceChannelMemberAdded(voiceMemberID, memberName, channelID)
+function ChannelRosterMixin:OnVoiceChannelMemberAdded(voiceMemberID, channelID)
 	local channel = self:GetChannelFrame():GetList():GetSelectedChannelButton();
 	if channel and channel:ChannelSupportsVoice() then
 		self:Update();

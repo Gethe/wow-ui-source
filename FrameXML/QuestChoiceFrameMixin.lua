@@ -6,10 +6,6 @@ INIT_REWARDS_HEIGHT = 18; --basically total vertical padding between rewards
 INIT_OPTION_HEIGHT = 278;
 INIT_WINDOW_HEIGHT = 480;
 OPTION_STATIC_HEIGHT = 114; --height of artwork and minimum padding
-local OPTION_BUTTON_WIDTH = 175;
-local OPTION_BUTTON_HEIGHT = 22;
-local OPTION_BUTTON_VERTICAL_SPACING = 8;
-local OPTION_BUTTON_HORIZONTAL_SPACING = 40;
 
 GORGROND_GARRISON_ALLIANCE_CHOICE = 55;
 GORGROND_GARRISON_HORDE_CHOICE = 56;
@@ -97,8 +93,9 @@ end
 function QuestChoiceFrameMixin:TryShow()
 	if (not self:IsShown()) then
 		ShowUIPanel(self)
-		self:Update();
 	end
+
+	self:Update();
 end
 
 function QuestChoiceFrameMixin:WidgetLayout(widgetContainer, sortedWidgets)
@@ -162,18 +159,20 @@ function QuestChoiceFrameMixin:UpdateHeight()
 	for i = 1, #self.Options do
 		self.Options[i]:SetShown(i <= self.numActiveOptionFrames);
 	end
-	if self.numActiveOptionFrames == 1 then
-		self.leftPadding = (self.fixedWidth - self.Option1:GetWidth()) / 2;
-		self.rightPadding = 0;
-		self.spacing = 0;
-	elseif self.numActiveOptionFrames == 4 then
-		self.leftPadding = 50;
-		self.rightPadding = 50;
-		self.spacing = 20;
-	else
-		self.leftPadding = self.defaultLeftPadding;
-		self.rightPadding = self.defaultRightPadding;
-		self.spacing = self.defaultSpacing;
+	if not self.fixedPaddingAndSpacing then
+		if self.numActiveOptionFrames == 1 then
+			self.leftPadding = (self.fixedWidth - self.Option1:GetWidth()) / 2;
+			self.rightPadding = 0;
+			self.spacing = 0;
+		elseif self.numActiveOptionFrames == 4 then
+			self.leftPadding = 50;
+			self.rightPadding = 50;
+			self.spacing = 20;
+		else
+			self.leftPadding = self.defaultLeftPadding;
+			self.rightPadding = self.defaultRightPadding;
+			self.spacing = self.defaultSpacing;
+		end
 	end
 
 	self:Layout();
@@ -188,6 +187,10 @@ function QuestChoiceFrameMixin:GetExistingOptionForGroup(groupID)
 		end
 	end
 	return nil;
+end
+
+function QuestChoiceFrameMixin:GetNumOptions()
+	return self.numActiveOptionFrames;
 end
 
 function QuestChoiceFrameMixin:Update()
@@ -214,25 +217,24 @@ function QuestChoiceFrameMixin:Update()
 			-- only supporting two grouped options
 			existingOption.hasMultipleButtons = true;
 			button = existingOption.OptionButtonsContainer.OptionButton2;
+			if not disabled then
+				existingOption.hasActiveButton = true;
+			end
 		else
 			self.numActiveOptionFrames = self.numActiveOptionFrames + 1;
 			local option = self.Options[self.numActiveOptionFrames];
 			option.hasMultipleButtons = false;
+			option.hasActiveButton = not disabled;
 			option.groupID = groupID;
 			option.optID = optID;
 			button = option.OptionButtonsContainer.OptionButton1;
 			option.OptionText:SetText(description);
-			if header and #header > 0 then
-				option.Header:Show();
-				option.Header.Text:SetText(header);
-			else
-				option.Header:Hide();
-			end
+			option:ConfigureHeader(header);
 			option.Artwork:SetTexture(artFile);
-			option.confirmationText = confirmationText;
 
 			self:UpdateOptionWidgetRegistration(option, widgetSetID);
 		end
+		button.confirmationText = confirmationText;
 		button:SetText(buttonText);
 		button.optID = optID;
 		button:SetEnabled(not disabled);
@@ -241,23 +243,7 @@ function QuestChoiceFrameMixin:Update()
 	-- buttons
 	for i = 1, self.numActiveOptionFrames do
 		local option = self.Options[i];
-		local secondButton = option.OptionButtonsContainer.OptionButton2;
-		if option.hasMultipleButtons then
-			secondButton:Show();
-			secondButton:ClearAllPoints();
-			local firstButton = option.OptionButtonsContainer.OptionButton1;
-			-- if there's only 1 option with grouped buttons we'll do a wide presentation with the buttons side by side
-			if self.numActiveOptionFrames == 1 then
-				option.OptionButtonsContainer:SetSize(OPTION_BUTTON_WIDTH * 2 + OPTION_BUTTON_HORIZONTAL_SPACING, OPTION_BUTTON_HEIGHT);
-				secondButton:SetPoint("LEFT", firstButton, "RIGHT", OPTION_BUTTON_HORIZONTAL_SPACING, 0);
-			else
-				option.OptionButtonsContainer:SetSize(OPTION_BUTTON_WIDTH, OPTION_BUTTON_HEIGHT * 2 + OPTION_BUTTON_VERTICAL_SPACING);
-				secondButton:SetPoint("TOP", firstButton, "BOTTOM", 0, -OPTION_BUTTON_VERTICAL_SPACING);
-			end
-		else
-			secondButton:Hide();
-			option.OptionButtonsContainer:SetSize(OPTION_BUTTON_WIDTH, OPTION_BUTTON_HEIGHT);
-		end
+		option:ConfigureButtons();
 	end
 
 	if self.numActiveOptionFrames < #self.Options then
@@ -373,11 +359,11 @@ QuestChoiceOptionButtonMixin = {};
 function QuestChoiceOptionButtonMixin:OnClick()
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	local parent = self:GetParent():GetParent();
-	if ( parent.optID ) then
+	if ( self.optID ) then
 		if ( IsInGroup() and (parent.choiceID == GORGROND_GARRISON_ALLIANCE_CHOICE or parent.choiceID == GORGROND_GARRISON_HORDE_CHOICE) ) then
-			StaticPopup_Show("CONFIRM_GORGROND_GARRISON_CHOICE", nil, nil, { response = parent.optID, owner = parent:GetParent() });
-		elseif ( parent.confirmationText ) then
-			StaticPopup_Show("CONFIRM_PLAYER_CHOICE", parent.confirmationText, nil, { response = parent.optID, owner = parent:GetParent() });
+			StaticPopup_Show("CONFIRM_GORGROND_GARRISON_CHOICE", nil, nil, { response = self.optID, owner = parent:GetParent() });
+		elseif ( self.confirmationText ) then
+			StaticPopup_Show("CONFIRM_PLAYER_CHOICE", self.confirmationText, nil, { response = self.optID, owner = parent:GetParent() });
 		else
 			SendQuestChoiceResponse(self.optID);
 			local keepOpenAfterChoice = select(6, GetQuestChoiceInfo());
@@ -425,5 +411,31 @@ function QuestChoiceItemButtonMixin:OnModifiedClick(button)
 	local modifiedClick = IsModifiedClick();
 	if ( modifiedClick ) then
 		HandleModifiedItemClick(self.itemLink);
+	end
+end
+
+QuestChoiceOptionFrameMixin = {};
+
+function QuestChoiceOptionFrameMixin:ConfigureButtons()
+	local parent = self:GetParent();
+	local secondButton = self.OptionButtonsContainer.OptionButton2;
+	if self.hasMultipleButtons then
+		secondButton:Show();
+		secondButton:ClearAllPoints();
+		local firstButton = self.OptionButtonsContainer.OptionButton1;
+		self.OptionButtonsContainer:SetSize(parent.optionButtonWidth, parent.optionButtonHeight * 2 + parent.optionButtonVerticalSpacing);
+		secondButton:SetPoint("TOP", firstButton, "BOTTOM", 0, -parent.optionButtonVerticalSpacing);
+	else
+		secondButton:Hide();
+		self.OptionButtonsContainer:SetSize(parent.optionButtonWidth, parent.optionButtonHeight);
+	end
+end
+
+function QuestChoiceOptionFrameMixin:ConfigureHeader(header)
+	if header and #header > 0 then
+		self.Header:Show();
+		self.Header.Text:SetText(header);
+	else
+		self.Header:Hide();
 	end
 end

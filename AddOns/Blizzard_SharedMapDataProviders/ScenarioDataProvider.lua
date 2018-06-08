@@ -22,8 +22,10 @@ function ScenarioDataProviderMixin:RefreshAllData(fromOnShow)
 	self:GetMap():RemoveAllPinsByTemplate("ScenarioPinTemplate");
 	if C_Scenario.IsInScenario() then
 		local scenarioIconInfo = C_Scenario.GetScenarioIconInfo(mapID);
-		for i, info in ipairs(scenarioIconInfo) do
-			self:GetMap():AcquirePin("ScenarioPinTemplate", info);
+		if scenarioIconInfo then
+			for i, info in ipairs(scenarioIconInfo) do
+				self:GetMap():AcquirePin("ScenarioPinTemplate", info);
+			end
 		end
 	end
 

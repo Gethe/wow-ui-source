@@ -1258,10 +1258,10 @@ function ContainerFrameItemButton_OnModifiedClick(self, button)
 		local itemLocation = ItemLocation:CreateFromBagAndSlot(self:GetParent():GetID(), self:GetID());
 		if C_Item.DoesItemExist(itemLocation) and C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItem(itemLocation) then
 			OpenAzeriteEmpoweredItemUIFromItemLocation(itemLocation);
-		else
-			SocketContainerItem(self:GetParent():GetID(), self:GetID());
+			return;
+		elseif SocketContainerItem(self:GetParent():GetID(), self:GetID()) then
+			return;
 		end
-		return;
 	end
 
 	if ( HandleModifiedItemClick(GetContainerItemLink(self:GetParent():GetID(), self:GetID())) ) then

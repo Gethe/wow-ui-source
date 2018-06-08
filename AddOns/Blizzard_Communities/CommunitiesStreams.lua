@@ -24,12 +24,12 @@ function CommunitiesStreamDropDownMenu_Initialize(self)
 			info.text = info.text.." "..CreateAtlasMarkup("communities-icon-notification", 11, 12);
 		end
 		
-		info.icon = canEditStream and "Interface\\WorldMap\\GEAR_64GREY" or nil;
+		info.mouseOverIcon = canEditStream and stream.streamType == Enum.ClubStreamType.Other and "Interface\\WorldMap\\GEAR_64GREY" or nil;
 		info.value = stream.streamId;
 		info.checked = stream.streamId == UIDropDownMenu_GetSelectedValue(self);
 		info.func = function(button)
 			local gearIcon = button.Icon;
-			if gearIcon:IsShown() and gearIcon:IsMouseOver() then
+			if button.mouseOverIcon ~= nil and gearIcon:IsMouseOver() then
 				self:GetCommunitiesFrame():ShowEditStreamDialog(clubId, stream.streamId);
 			else
 				local communitiesFrame = self:GetCommunitiesFrame();
@@ -39,9 +39,10 @@ function CommunitiesStreamDropDownMenu_Initialize(self)
 		UIDropDownMenu_AddButton(info);
 	end
 	
+	info.mouseOverIcon = nil;
+	
 	if self:GetCommunitiesFrame():GetPrivilegesForClub(clubId).canCreateStream then
 		info.text = COMMUNITIES_CREATE_CHANNEL;
-		info.icon = nil;
 		info.value = nil;
 		info.notCheckable = 1;
 		info.func = function(button)
@@ -91,6 +92,11 @@ function CommunitiesEditStreamDialogMixin:OnLoad()
 	self.NameEdit:SetScript("OnTextChanged", function() self:UpdateAcceptButton(); end);
 end
 
+function CommunitiesEditStreamDialogMixin:OnShow()
+	local communitiesFrame = self:GetCommunitiesFrame();
+	communitiesFrame:RegisterDialogShown(self);
+end
+
 function CommunitiesEditStreamDialogMixin:ShowCreateDialog(clubId)
 	self:SetWidth(350);
 	self.Description.EditBox:SetWidth(283);
@@ -137,6 +143,10 @@ function CommunitiesEditStreamDialogMixin:UpdateAcceptButton()
 	self.Accept:SetEnabled(self.NameEdit:GetText() ~= "");
 end
 
+function CommunitiesEditStreamDialogMixin:GetCommunitiesFrame()
+	return self:GetParent();
+end
+
 CommunitiesNotificationSettingsStreamEntryMixin = {};
 
 function CommunitiesNotificationSettingsStreamEntryMixin:SetStream(clubId, streamId)
@@ -169,7 +179,9 @@ function CommunitiesNotificationSettingsDialogMixin:OnLoad()
 end
 
 function CommunitiesNotificationSettingsDialogMixin:OnShow()
-	self:SelectClub(self:GetCommunitiesFrame():GetSelectedClubId());
+	local communitiesFrame = self:GetCommunitiesFrame();
+	self:SelectClub(communitiesFrame:GetSelectedClubId());
+	communitiesFrame:RegisterDialogShown(self);
 end
 
 function CommunitiesNotificationSettingsDialogMixin:Refresh()

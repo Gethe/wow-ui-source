@@ -189,18 +189,14 @@ function ChannelFrameMixin:OnVoiceChannelJoined(statusCode, voiceChannelID, chan
 	end
 end
 
-local function GetChannelTypeFromPartyCategory(partyCategory)
-	return (partyCategory == LE_PARTY_CATEGORY_HOME) and Enum.ChatChannelType.Private_Party or Enum.ChatChannelType.Public_Party;
-end
-
 function ChannelFrameMixin:CheckActivateChannel(channelID)
 	local channel = C_VoiceChat.GetChannel(channelID);
 	if channel then
 		if not channel.isActive then
 			if C_VoiceChat.GetActiveChannelType() == channel.channelType then
 				C_VoiceChat.ActivateChannel(channel.channelID);
-			elseif C_ChatInfo.IsPartyChannelType(channel.channelType) then
-				VoiceChatPromptActivateChannel:ShowPrompt(channel);
+			else
+				VoiceChatPromptActivateChannel:CheckActivateChannel(channel);
 			end
 		end
 	end
@@ -432,7 +428,13 @@ local function CountActiveChannelMembers(channel)
 		end
 	end
 
-	return count;
+	-- TODO FIX: bug work-around, member active status not updated for local player when channel is initially activated.
+	-- If the channel is marked active, then the local player must be active in it:
+	if channel.isActive then
+		return count + 1;
+	else
+		return count;
+	end
 end
 
 function ChannelFrameMixin:ShowChannelAnnounce(channelID)

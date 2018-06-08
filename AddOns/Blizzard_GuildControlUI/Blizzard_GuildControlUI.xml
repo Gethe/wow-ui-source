@@ -478,8 +478,8 @@
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture name="$parentChatBg" >
-							<Size x="290" y="60"/>
+						<Texture name="$parentOfficerBg" >
+							<Size x="290" y="160"/>
 							<Anchors>
 								<Anchor point="TOP" x="0" y="-58"/>
 							</Anchors>
@@ -488,39 +488,27 @@
 						<Texture name="$parentRosterBg" >
 							<Size x="290" y="60"/>
 							<Anchors>
-								<Anchor point="TOP" relativeTo="$parentChatBg" relativePoint="BOTTOM" x="0" y="-6"/>
-							</Anchors>
-							<Color r="0.95" g="0.95" b="1" a="0.09"/>
-						</Texture>
-						<Texture name="$parentInfoBg" >
-							<Size x="290" y="100"/>
-							<Anchors>
-								<Anchor point="TOP" relativeTo="$parentRosterBg" relativePoint="BOTTOM" x="0" y="-6"/>
+								<Anchor point="TOP" relativeTo="$parentOfficerBg" relativePoint="BOTTOM" x="0" y="-6"/>
 							</Anchors>
 							<Color r="0.95" g="0.95" b="1" a="0.09"/>
 						</Texture>
 						<Texture name="$parentBankBg" >
 							<Size x="290" y="64"/>
 							<Anchors>
-								<Anchor point="TOP" relativeTo="$parentInfoBg" relativePoint="BOTTOM" x="0" y="-6"/>
+								<Anchor point="TOP" relativeTo="$parentRosterBg" relativePoint="BOTTOM" x="0" y="-6"/>
 							</Anchors>
 							<Color r="0.95" g="0.95" b="1" a="0.09"/>
 						</Texture>
 					</Layer>
 					<Layer level="OVERLAY">
-						<FontString name="$parentChatLabel" inherits="GameFontNormal" text="GUILD_CHAT">
+						<FontString parentKey="OfficerPermissions" font="GameFontNormal" justifyH="LEFT">
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="$parentChatBg" x="7" y="-7"/>
+								<Anchor point="TOPLEFT" relativeTo="$parentOfficerBg" relativePoint="TOPLEFT" x="22" y="-20"/>
 							</Anchors>
 						</FontString>
 						<FontString name="$parentRosterLabel" inherits="GameFontNormal" text="GUILD_ROSTER">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="$parentRosterBg" x="7" y="-7"/>
-							</Anchors>
-						</FontString>
-						<FontString name="$parentInfoLabel" inherits="GameFontNormal" text="GUILD_INFORMATION">
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="$parentInfoBg" x="7" y="-7"/>
 							</Anchors>
 						</FontString>
 						<FontString name="$parentBankLabel" inherits="GameFontNormal" text="GUILD_BANK">
@@ -557,24 +545,9 @@
 						</Scripts>
 					</Frame>
 					
-					<CheckButton name="$parentCheckbox1" inherits="GuildPermissionCheckBoxTemplate" id="1">
+					<CheckButton parentKey="OfficerCheckbox" name="$parentOfficerCheckbox" inherits="GuildPermissionCheckBoxTemplate" id="21">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentChatLabel" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
-						</Anchors>
-					</CheckButton>
-					<CheckButton name="$parentCheckbox3" inherits="GuildPermissionCheckBoxTemplate" id="3">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentCheckbox1" relativePoint="BOTTOMLEFT" x="0" y="1"/>
-						</Anchors>
-					</CheckButton>
-					<CheckButton name="$parentCheckbox2" inherits="GuildPermissionCheckBoxTemplate" id="2">
-						<Anchors>
-							<Anchor point="LEFT" relativeTo="$parentCheckbox1" relativePoint="RIGHT" x="128" y="0"/>
-						</Anchors>
-					</CheckButton>
-					<CheckButton name="$parentCheckbox4" inherits="GuildPermissionCheckBoxTemplate" id="4">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentCheckbox2" relativePoint="BOTTOMLEFT" x="0" y="1"/>
+							<Anchor point="TOPLEFT" relativeTo="$parentOfficerBg" relativePoint="TOPLEFT" x="0" y="-3"/>
 						</Anchors>
 					</CheckButton>
 					
@@ -599,41 +572,6 @@
 						</Anchors>
 					</CheckButton>
 					
-					<CheckButton name="$parentCheckbox9" inherits="GuildPermissionCheckBoxTemplate" id="9">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentInfoLabel" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
-						</Anchors>
-					</CheckButton>
-					<CheckButton name="$parentCheckbox11" inherits="GuildPermissionCheckBoxTemplate" id="11">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentCheckbox9" relativePoint="BOTTOMLEFT" x="0" y="1"/>
-						</Anchors>
-					</CheckButton>
-					<CheckButton name="$parentCheckbox10" inherits="GuildPermissionCheckBoxTemplate" id="10">
-						<Anchors>
-							<Anchor point="LEFT" relativeTo="$parentCheckbox9" relativePoint="RIGHT" x="128" y="0"/>
-						</Anchors>
-					</CheckButton>
-					<CheckButton name="$parentCheckbox12" inherits="GuildPermissionCheckBoxTemplate" id="12">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentCheckbox10" relativePoint="BOTTOMLEFT" x="0" y="1"/>
-						</Anchors>
-					</CheckButton>
-					<CheckButton name="$parentCheckbox17" inherits="GuildPermissionCheckBoxTemplate" id="17">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentCheckbox11" relativePoint="BOTTOMLEFT" x="0" y="1"/>
-						</Anchors>
-					</CheckButton>
-					<CheckButton name="$parentCheckbox20" inherits="GuildPermissionCheckBoxTemplate" id="20">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentCheckbox12" relativePoint="BOTTOMLEFT" x="0" y="1"/>
-						</Anchors>
-					</CheckButton>
-					<CheckButton name="$parentCheckbox13" inherits="GuildPermissionCheckBoxTemplate" id="13">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentCheckbox17" relativePoint="BOTTOMLEFT" x="0" y="1"/>
-						</Anchors>
-					</CheckButton>
 					<CheckButton name="$parentCheckbox15" inherits="GuildPermissionCheckBoxTemplate" id="15">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentBankLabel" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
@@ -700,8 +638,7 @@
 					<!-- authenticator checkbox -->
 					<CheckButton name="$parentCheckbox18" inherits="GuildPermissionCheckBoxTemplate" id="18">
 						<Anchors>
-							<Anchor point="TOP" x="0" y="-37"/>
-							<Anchor point="LEFT" relativeTo="$parentCheckbox1"/>
+							<Anchor point="BOTTOMLEFT" relativeTo="$parentOfficerBg" relativePoint="TOPLEFT" x="0" y="3"/>
 						</Anchors>
 						<Scripts>
 							<OnClick>
@@ -743,6 +680,9 @@
 					</Frame>
 					<!-- authenticator checkbox -->
 				</Frames>
+				<Scripts>
+					<OnLoad function="GuildControlRankSettings_OnLoad"/>
+				</Scripts>
 			</Frame>
 		</Frames>  
 		<Scripts>

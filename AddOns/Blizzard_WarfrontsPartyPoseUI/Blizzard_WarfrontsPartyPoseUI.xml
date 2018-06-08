@@ -17,17 +17,8 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						LeaveInstanceParty(); 
-					</OnClick>
-				</Scripts>
-			</Button>
-			<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
-				<Anchors>
-					<Anchor point="TOPRIGHT" relativeKey="$parent.TopRightCorner" x="-3" y="-4"/>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						self:GetParent():Hide();
+						ConfirmOrLeaveLFGParty(); 
+						HideUIPanel(self:GetParent());
 					</OnClick>
 				</Scripts>
 			</Button>

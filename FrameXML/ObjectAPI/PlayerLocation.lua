@@ -46,6 +46,10 @@ function PlayerLocationMixin:IsGUID()
 	return self.guid ~= nil;
 end
 
+function PlayerLocationMixin:IsBattleNetGUID()
+	return self.guid and C_AccountInfo.IsGUIDBattleNetAccountType(self.guid);
+end
+
 function PlayerLocationMixin:GetGUID()
 	return self.guid;
 end

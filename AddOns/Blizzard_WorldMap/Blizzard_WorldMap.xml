@@ -25,9 +25,22 @@
 			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>
-	
+
 	<Frame name="WorldMapFrame" inherits="WorldMapFrameTemplate" parent="UIParent">
 		<Frames>
+			<Frame parentKey="BlackoutFrame" frameStrata="LOW" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="UIParent"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="UIParent"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Blackout" setAllPoints="true">
+							<Color r="0" g="0" b="0" a="1"/>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
 			<Frame parentKey="BorderFrame" inherits="PortraitFrameTemplate" frameStrata="HIGH" setAllPoints="true">
 				<Layers>
 					<Layer level="ARTWORK" textureSubLevel="5">
@@ -50,7 +63,7 @@
 								<Anchor point="TOPRIGHT" x="-2" y="-63"/>
 							</Anchors>
 						</Texture>
-					</Layer>					
+					</Layer>
 				</Layers>
 				<Frames>
 					<Button parentKey="Tutorial" inherits="MainHelpPlateButton" mixin="WorldMapTutorialMixin">

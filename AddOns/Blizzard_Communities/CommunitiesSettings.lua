@@ -19,6 +19,8 @@ function CommunitiesSettingsDialogMixin:OnShow()
 	else
 		self.DialogLabel:SetText(COMMUNITIES_SETTINGS_CHARACTER_LABEL);
 	end
+	
+	CommunitiesFrame:RegisterDialogShown(self);
 end
 
 function CommunitiesSettingsDialogMixin:SetClubId(clubId)

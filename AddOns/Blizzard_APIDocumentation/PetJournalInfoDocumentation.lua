@@ -2,10 +2,68 @@ local PetJournalInfo =
 {
 	Name = "PetJournalInfo",
 	Type = "System",
-	Namespace = "C_PetJournalInfo",
+	Namespace = "C_PetJournal",
 
 	Functions =
 	{
+		{
+			Name = "GetDisplayIDByIndex",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "speciesID", Type = "number", Nilable = false },
+				{ Name = "index", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "displayID", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "GetDisplayProbabilityByIndex",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "speciesID", Type = "number", Nilable = false },
+				{ Name = "index", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "displayProbability", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "GetNumDisplays",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "speciesID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "numDisplays", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "PetUsesRandomDisplay",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "speciesID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "usesRandomDisplay", Type = "bool", Nilable = true },
+			},
+		},
 	},
 
 	Events =

@@ -13,9 +13,8 @@
 			</Layer>
 			<Layer level="OVERLAY">
 				<Texture parentKey="Portrait" useAtlasSize="true">
-					<Size x="70" y="100"/>
 					<Anchors>
-						<Anchor point="RIGHT" relativeKey="$parent.Background" x="-20" y="0"/>
+						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
 				<FontString parentKey="Text" inherits="GameFontNormalLarge">

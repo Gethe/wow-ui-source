@@ -20,13 +20,20 @@ function AzeriteEmpoweredItemPowerMixin:Setup(owningTierFrame, azeriteItemDataSo
 	self:SetupModelScene();
 end
 
+function AzeriteEmpoweredItemPowerMixin:Reset()
+	self.CanSelectGlowAnim:Stop();
+	self.CanSelectArrowAnim:Stop();
+	self.TransitionAnimation:Stop();
+	self.SwirlContainer.Anim:Stop();
+	self.SwirlContainer:Hide();
+end
+
 function AzeriteEmpoweredItemPowerMixin:OnShow()
 	self:RegisterEvent("UI_MODEL_SCENE_INFO_UPDATED");
 end
 
 function AzeriteEmpoweredItemPowerMixin:OnHide()
 	self:UnregisterEvent("UI_MODEL_SCENE_INFO_UPDATED");
-	self.TransitionAnimation:Stop();
 end
 
 function AzeriteEmpoweredItemPowerMixin:OnEvent(event, ...)
@@ -61,8 +68,8 @@ function AzeriteEmpoweredItemPowerMixin:GetBaseAngle()
 end
 
 function AzeriteEmpoweredItemPowerMixin:UpdateStyle()
-	self.CanSelectGlow:SetShown(self:CanBeSelected() and not self:IsFinalPower());
-	self.Arrow:SetShown(self:CanBeSelected());
+	self.CanSelectGlow:SetShown(self:CanBeSelected());
+	self.Arrow:SetShown(false); -- Trying without
 
 	self:SetFrameStrata(self:IsFinalPower() and "HIGH" or "MEDIUM");
 	self.ClickEffect:SetFrameStrata(self:IsFinalPower() and "DIALOG" or "HIGH")
@@ -70,15 +77,19 @@ function AzeriteEmpoweredItemPowerMixin:UpdateStyle()
 	if self:IsFinalPower() then
 		self:SetSize(120, 120);
 		self.Icon:SetSize(135, 135);
-		self.CircleMask:SetSize(120, 120);
-		self.IconBorder:SetAtlas("Azerite-CenterTrait-Ring", true);
+		self.CircleMask:SetSize(115, 115);
+		self.IconBorder:SetAtlas("Azerite-CenterTrait-RingDisable", true);
 		self.IconBorderSelectable:SetAtlas("Azerite-CenterTrait-Ring", true);
+		self.CanSelectGlow:SetScale(1.35);
+		self.SwirlContainer:SetScale(1.35);
 	else
 		self:SetSize(80, 80);
 		self.Icon:SetSize(100, 100);
 		self.CircleMask:SetSize(100, 100);
 		self.IconBorder:SetAtlas("Azerite-Trait-Ring", true);
 		self.IconBorderSelectable:SetAtlas("Azerite-Trait-Ring-Open", true);
+		self.CanSelectGlow:SetScale(1.0);
+		self.SwirlContainer:SetScale(1.0);
 	end
 
 	self.IconBorder:SetShown(not self:IsSelected() or self:IsAnimatingAsSelection());
@@ -102,36 +113,82 @@ function AzeriteEmpoweredItemPowerMixin:UpdateStyle()
 end
 
 function AzeriteEmpoweredItemPowerMixin:PlayTransitionAnimation()
+	if self.SwirlContainer.Anim:IsPlaying() then
+		assert(not self.TransitionAnimation:IsPlaying());
+		return;
+	end
+
 	if not self.transitionStateInitialized then
 		self.transitionStateInitialized = true;
 		assert(not self.TransitionAnimation:IsPlaying());
 
 		self.CanSelectEffect:SetAlpha(0);
-		self.IconDesaturated:SetAlpha(self:IsSelected() and 0 or 1);
-		self.IconBorderSelectable:SetAlpha(0);
-		self.IconNotSelectableOverlay:SetAlpha(self:IsSelected() and 0 or 1);
+		self.IconDesaturated:SetAlpha(self:GetDesaturationValue());
+		self.IconBorderSelectable:SetAlpha(self:GetBorderSelectableAlphaValue());
+		self.IconBorder:SetAlpha(self:GetBorderAlphaValue());
+		self.IconNotSelectableOverlay:SetAlpha(self:GetIconNotSelectableOverlayAlphaValue());
 	end
 
-	local selectableAlpha = (self:IsAnimatingAsSelection() or self:CanBeSelected()) and 1 or 0;
-
 	self.TransitionAnimation.Effect:SetFromAlpha(self.CanSelectEffect:GetAlpha());
-	self.TransitionAnimation.Effect:SetToAlpha(selectableAlpha);
+	self.TransitionAnimation.Effect:SetToAlpha(self:GetCanSelectEffectAlphaValue());
 	
 	self.TransitionAnimation.Desaturation:SetFromAlpha(self.IconDesaturated:GetAlpha());
 	self.TransitionAnimation.Desaturation:SetToAlpha(self:GetDesaturationValue());
 
 	self.TransitionAnimation.BorderSelectable:SetFromAlpha(self.IconBorderSelectable:GetAlpha());
-	self.TransitionAnimation.BorderSelectable:SetToAlpha(self:IsFinalPower() and 1 or selectableAlpha);
+	self.TransitionAnimation.BorderSelectable:SetToAlpha(self:GetBorderSelectableAlphaValue());
+	
+	self.TransitionAnimation.IconBorder:SetFromAlpha(self.IconBorder:GetAlpha());
+	self.TransitionAnimation.IconBorder:SetToAlpha(self:GetBorderAlphaValue());
 
 	self.TransitionAnimation.IconNotSelectableOverlay:SetFromAlpha(self.IconNotSelectableOverlay:GetAlpha());
-	self.TransitionAnimation.IconNotSelectableOverlay:SetToAlpha(self:GetIconNotSelectableOverlayValue());
+	self.TransitionAnimation.IconNotSelectableOverlay:SetToAlpha(self:GetIconNotSelectableOverlayAlphaValue());
 
 	self.TransitionAnimation:Stop();
 
 	self.TransitionAnimation:Play();
 end
 
-function AzeriteEmpoweredItemPowerMixin:GetIconNotSelectableOverlayValue()
+function AzeriteEmpoweredItemPowerMixin:GetCanSelectEffectAlphaValue()
+	if self:IsAnimatingAsSelection() then
+		return 1;
+	end
+
+	if self:CanBeSelected() then
+		return 1;
+	end
+
+	return 0;
+end
+
+function AzeriteEmpoweredItemPowerMixin:GetBorderSelectableAlphaValue()
+	if self:IsSelected() then
+		if self:IsFinalPower() then
+			return 1;
+		end
+		return 0;
+	end
+
+	if self:IsAnimatingAsSelection() then
+		return 1;
+	end
+
+	if self:CanBeSelected() then
+		return 1;
+	end
+
+	if self:IsTierSelectionActive() and self:MeetsPowerLevelRequirement() and not self:IsSpecAllowed() then
+		return .75;
+	end
+
+	return 0;
+end
+
+function AzeriteEmpoweredItemPowerMixin:GetBorderAlphaValue()
+	return 1.0 - self:GetBorderSelectableAlphaValue();
+end
+
+function AzeriteEmpoweredItemPowerMixin:GetIconNotSelectableOverlayAlphaValue()
 	if self.azeriteItemDataSource:IsPreviewSource() then
 		if self:IsSpecAllowed() then
 			return 0;
@@ -149,10 +206,6 @@ end
 function AzeriteEmpoweredItemPowerMixin:GetDesaturationValue()
 	if self:IsSelected() then
 		return 0;
-	end
-
-	if not self:IsSpecAllowed() then
-		return 1;
 	end
 
 	if self.azeriteItemDataSource:IsPreviewSource() then
@@ -293,16 +346,12 @@ function AzeriteEmpoweredItemPowerMixin:OnClick()
 	end
 end
 
-function AzeriteEmpoweredItemPowerMixin:PlaySelectedAnimation(noClick)
+function AzeriteEmpoweredItemPowerMixin:PlaySelectedAnimation()
 	self.CanSelectGlowAnim:Stop();
 	self.CanSelectArrowAnim:Stop();
 
-	self.BigWhirls:Show();
-	self.SpinningGlows:Show();
-	self.SpinningGlows2:Show();
-	self.StarBurst:Show();
-	self.RingBurst:Show();
-	self.SelectedAnim:Play();
+	self.SwirlContainer:Show();
+	self.SwirlContainer.Anim:Play();
 end
 
 function AzeriteEmpoweredItemPowerMixin:PlayClickedAnimation()
@@ -313,9 +362,5 @@ function AzeriteEmpoweredItemPowerMixin:PlayClickedAnimation()
 end
 
 function AzeriteEmpoweredItemPowerMixin:OnSelectedAnimationFinished()
-	self.BigWhirls:Hide();
-	self.SpinningGlows:Hide();
-	self.SpinningGlows2:Hide();
-	self.StarBurst:Hide();
-	self.RingBurst:Hide();
+	self.SwirlContainer:Hide();
 end

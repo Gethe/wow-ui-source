@@ -41,8 +41,8 @@
 						<Anchor point="TOPLEFT" x="-29" y="14"/>
 					</Anchors>
 				</Texture>
-				<FontString parentKey="Text" inherits="GameFontNormalMed2" justifyH="LEFT">
-					<Size x="170" y="16"/>
+				<FontString parentKey="Text" inherits="GameFontNormalMed2" mixin="ShrinkUntilTruncateFontStringMixin" justifyH="LEFT">
+					<Size x="200" y="16"/>
 					<Anchors>
 						<Anchor point="LEFT" x="4" y="-1"/>
 					</Anchors>
@@ -99,8 +99,9 @@
 		</Animations>
 		<Scripts>
 			<OnLoad>
-				self.height = OBJECTIVE_TRACKER_HEADER_HEIGHT;
-			</OnLoad>
+        self.height = OBJECTIVE_TRACKER_HEADER_HEIGHT;
+        self.Text:SetFontObjectsToTry(GameFontNormalMed2, SystemFont_Shadow_Med1);
+      </OnLoad>
 		</Scripts>
 	</Frame>
 	

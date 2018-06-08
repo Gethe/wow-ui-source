@@ -89,6 +89,7 @@
 			<Layer level="ARTWORK">
 				<Texture parentKey="Border" atlas="pvptalents-talentborder" setAllPoints="true"/>
 				<FontString parentKey="TalentName" inherits="GameFontHighlightSmall" hidden="true">
+					<Size x="100" y="5"/>
 					<Anchors>
 						<Anchor point="TOP" relativeKey="$parent.Border" relativePoint="BOTTOM" x="0" y="2"/>
 					</Anchors>

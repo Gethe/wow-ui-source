@@ -28,11 +28,6 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
-				<Anchors>
-					<Anchor point="TOPRIGHT" relativeKey="$parent.TopRightCorner" x="-3" y="-4"/>
-				</Anchors>
-			</Button>
 		</Frames>
 	</Frame>
 </Ui>

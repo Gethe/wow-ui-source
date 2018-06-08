@@ -24,6 +24,7 @@ end
 
 function AzeriteEmpoweredItemTierMixin:Reset()
 	self.animState = self.ANIM_STATE_NONE;
+	self.animContextData = nil;
 
 	self.owningFrame = nil;
 	self.azeritePowerButtons = {};
@@ -79,9 +80,13 @@ function AzeriteEmpoweredItemTierMixin:SetVisuals(tierSlot, rankFrame, tierPlug,
 end
 
 function AzeriteEmpoweredItemTierMixin:SetupPlugs()
-	if self.tierPlug and self.tierPlugBackground and self.tierSlot then
-		self.tierPlugBackground:Show();
-		self.tierSlot:Show();
+	if self.tierPlug or self.tierPlugBackground or self.tierSlot then
+		if self.tierPlugBackground then
+			self.tierPlugBackground:Show();
+		end
+		if self.tierSlot then
+			self.tierSlot:Show();
+		end
 
 		local offset = AzeriteLayoutInfo.CalculatePlugOffset(self:GetTierIndex() + self.tierOffset);
 
@@ -90,9 +95,15 @@ function AzeriteEmpoweredItemTierMixin:SetupPlugs()
 			texture:SetPoint("CENTER", texture:GetParent(), "CENTER", offset.x / scale, offset.y / scale);
 		end
 
-		ApplyOffset(self.tierPlug, offset);
-		ApplyOffset(self.tierPlugBackground, offset);
-		ApplyOffset(self.tierSlot, offset);
+		if self.tierPlug then
+			ApplyOffset(self.tierPlug, offset);
+		end
+		if self.tierPlugBackground then
+			ApplyOffset(self.tierPlugBackground, offset);
+		end
+		if self.tierSlot then
+			ApplyOffset(self.tierSlot, offset);
+		end
 	end
 end
 
@@ -123,7 +134,7 @@ function AzeriteEmpoweredItemTierMixin:Update(azeriteItemPowerLevel)
 	self:UpdatePowerStates();
 
 	if self.tierSlot then
-		self.tierSlot:SetPowerLevelInfo(self.azeriteItemPowerLevel, self.tierInfo.unlockLevel, self:HasAnySelected(), self:IsSelectionActive(), self.azeriteItemDataSource:IsPreviewSource());
+		self.tierSlot:SetPowerLevelInfo(self.azeriteItemPowerLevel, self.tierInfo.unlockLevel, self:HasAnySelected(), self:IsSelectionActive(), self.azeriteItemDataSource:IsPreviewSource(), self:IsFinalTier());
 	end
 
 	self:SnapToSelection();
@@ -203,11 +214,19 @@ local function LockInEase(percent)
 end
 
 function AzeriteEmpoweredItemTierMixin:TryShaking(elapsed, magnitude, frequency)
+	if self:IsFinalTier() then
+		return;
+	end
+
 	self.animContextData.elapsed = (self.animContextData.elapsed or 0) + elapsed;
 	if self.animContextData.elapsed > frequency then
 		self.transformNode:SetLocalPosition(CreateVector2D(Lerp(-magnitude, magnitude, math.random()), Lerp(-magnitude, magnitude, math.random())));
 		self.animContextData.elapsed = self.animContextData.elapsed - frequency;
 	end
+end
+
+local function GetTotalProgressPercent(animState, localPercent)
+	return ClampedPercentageBetween(animState + localPercent, AzeriteEmpoweredItemTierMixin.ANIM_STATE_START_HOLD, AzeriteEmpoweredItemTierMixin.ANIM_STATE_END_HOLD + 1);
 end
 
 function AzeriteEmpoweredItemTierMixin:PerformAnimations(elapsed)
@@ -216,47 +235,67 @@ function AzeriteEmpoweredItemTierMixin:PerformAnimations(elapsed)
 		local now = GetTime();
 
 		if self.animState == self.ANIM_STATE_START_HOLD then
-			self:TryShaking(elapsed, ClampedPercentageBetween(now, animContextData.startTime, animContextData.endTime) * .8, .05);
+			local percent = ClampedPercentageBetween(now, animContextData.startTime, animContextData.endTime);
+			self.owningFrame:OnTierAnimationProgress(self, GetTotalProgressPercent(self.animState, percent));
+
+			self:TryShaking(elapsed, percent * .8, .05);
 			if now >= animContextData.endTime then
 				self:SetAnimState(self.ANIM_STATE_ROTATING);
 			end
 		elseif self.animState == self.ANIM_STATE_ROTATING then
-			local startAngle = animContextData.startAngle;
-			local angleDelta = animContextData.angleDelta;
-			local targetAngle = startAngle + angleDelta;
-
 			local startTime = animContextData.startTime;
 			local durationSec = animContextData.durationSec;
 			local endTime = startTime + durationSec;
 
 			local percent = ClampedPercentageBetween(now, startTime, endTime);
-			local newRotation = Lerp(startAngle, targetAngle, LockInEase(percent));
+			self.owningFrame:OnTierAnimationProgress(self, GetTotalProgressPercent(self.animState, percent));
 
-			local LERP_AMOUNT_PER_NORMALIZED_FRAME = .2;
-			local smoothedRotation = FrameDeltaLerp(self.transformNode:GetLocalRotation(), newRotation, LERP_AMOUNT_PER_NORMALIZED_FRAME);
+			if self:IsFinalTier() then
+				if percent > .5 and not animContextData.hasPlayedLockInEffect then
+					animContextData.hasPlayedLockInEffect = true;
+					PlaySound(SOUNDKIT.UI_80_AZERITEARMOR_ROTATIONENDS);
+					self:PlayLockedInEffect();
+				end
 
-			if percent > .85 and not animContextData.hasPlayedEndingClickSound then
-				animContextData.hasPlayedEndingClickSound = true;
-				self.loopingSoundEmitter:FinishLoopingSound();
-			end
-
-			if percent > .95 and not animContextData.hasPlayedLockInEffect then
-				animContextData.hasPlayedLockInEffect = true;
-				PlaySound(SOUNDKIT.UI_80_AZERITEARMOR_ROTATIONENDS);
-				self:PlayLockedInEffect();
-				self.animContextData.azeritePowerButton:PlaySelectedAnimation();
-			end
-
-			local CLOSE_ENOUGH_ANGLE_DIFF = math.pi * .0001;
-			if percent == 1.0 and math.abs(newRotation - smoothedRotation) < CLOSE_ENOUGH_ANGLE_DIFF then
-				self:SetNodeRotations(newRotation);
-				self.transformNode:SetLocalPosition(CreateVector2D(0, 0));
-				self:SetAnimState(self.ANIM_STATE_END_HOLD);
+				if percent == 1.0 then
+					self:SetAnimState(self.ANIM_STATE_END_HOLD);
+				end
 			else
-				self:SetNodeRotations(smoothedRotation);
+				local startAngle = animContextData.startAngle;
+				local angleDelta = animContextData.angleDelta;
+				local targetAngle = startAngle + angleDelta;
+
+				local newRotation = Lerp(startAngle, targetAngle, LockInEase(percent));
+
+				local LERP_AMOUNT_PER_NORMALIZED_FRAME = .2;
+				local smoothedRotation = FrameDeltaLerp(self.transformNode:GetLocalRotation(), newRotation, LERP_AMOUNT_PER_NORMALIZED_FRAME);
+
+				if percent > .85 and not animContextData.hasPlayedEndingClickSound then
+					animContextData.hasPlayedEndingClickSound = true;
+					self.loopingSoundEmitter:FinishLoopingSound();
+				end
+
+				if percent > .95 and not animContextData.hasPlayedLockInEffect then
+					animContextData.hasPlayedLockInEffect = true;
+					PlaySound(SOUNDKIT.UI_80_AZERITEARMOR_ROTATIONENDS);
+					self:PlayLockedInEffect();
+					self.animContextData.azeritePowerButton:PlaySelectedAnimation();
+				end
+
+				local CLOSE_ENOUGH_ANGLE_DIFF = math.pi * .0001;
+				if percent == 1.0 and math.abs(newRotation - smoothedRotation) < CLOSE_ENOUGH_ANGLE_DIFF then
+					self:SetNodeRotations(newRotation);
+					self.transformNode:SetLocalPosition(CreateVector2D(0, 0));
+					self:SetAnimState(self.ANIM_STATE_END_HOLD);
+				else
+					self:SetNodeRotations(smoothedRotation);
+				end
 			end
 		elseif self.animState == self.ANIM_STATE_END_HOLD then
-			self:TryShaking(elapsed, ClampedPercentageBetween(now, animContextData.endTime, animContextData.startTime) * .8, .05);
+			local percent = ClampedPercentageBetween(now, animContextData.startTime, animContextData.endTime);
+			self.owningFrame:OnTierAnimationProgress(self, GetTotalProgressPercent(self.animState, percent));
+
+			self:TryShaking(elapsed, (1.0 - percent) * .8, .05);
 			if now >= animContextData.endTime then
 				self:SetAnimState(self.ANIM_STATE_NONE);
 			end
@@ -272,7 +311,9 @@ function AzeriteEmpoweredItemTierMixin:SetAnimState(newAnimState, ...)
 		elseif newAnimState == self.ANIM_STATE_ROTATING then
 			return;
 		elseif newAnimState == self.ANIM_STATE_START_HOLD then
-			self.loopingSoundEmitter:StartLoopingSound();
+			if not self:IsFinalTier() then
+				self.loopingSoundEmitter:StartLoopingSound();
+			end
 			self:InitializeLockInAnimation(...);
 		elseif newAnimState == self.ANIM_STATE_END_HOLD then
 			local now = GetTime();
@@ -292,41 +333,71 @@ function AzeriteEmpoweredItemTierMixin:PlayLockedInEffect()
 end
 
 function AzeriteEmpoweredItemTierMixin:InitializeLockInAnimation(azeritePowerButton)
-	local startAngle = self.transformNode:GetLocalRotation();
-	local endAngle = azeritePowerButton:GetBaseAngle();
-	local angleDelta = math.atan2(math.sin(endAngle - startAngle), math.cos(endAngle - startAngle));
-
-	local DISTANCE_PER_SEC = math.pi * .35;
-
-	local LOCK_TIME = .5;
-	local HOLD_TIME = .5;
 	local now = GetTime();
 
-	self.animContextData = 
-	{
-		azeritePowerButton = azeritePowerButton,
+	if self:IsFinalTier() then
+		local START_HOLD_TIME = .35;
+		local LOCK_HOLD_TIME = .35;
 
-		[self.ANIM_STATE_START_HOLD] = 
+		self.animContextData = 
 		{
-			startTime = now,
-			endTime = now + LOCK_TIME,
-		},
+			azeritePowerButton = azeritePowerButton,
 
-		[self.ANIM_STATE_ROTATING] = 
-		{
-			startAngle = startAngle,
-			angleDelta = angleDelta,
-			startTime = now + LOCK_TIME,
-			durationSec = math.abs(angleDelta) / DISTANCE_PER_SEC,
-			hasPlayedLockInEffect = false,
-			hasPlayedEndingClickSound = false,
-		},
+			[self.ANIM_STATE_START_HOLD] = 
+			{
+				startTime = now,
+				endTime = now + START_HOLD_TIME,
+			},
 
-		[self.ANIM_STATE_END_HOLD] = 
+			[self.ANIM_STATE_ROTATING] = 
+			{
+				startTime = now + START_HOLD_TIME,
+				durationSec = 1.5,
+				hasPlayedLockInEffect = false,
+				hasPlayedEndingClickSound = false,
+			},
+
+			[self.ANIM_STATE_END_HOLD] = 
+			{
+				endDuration = LOCK_HOLD_TIME,
+			},
+		};
+	else
+		local START_HOLD_TIME = .5;
+		local LOCK_HOLD_TIME = .5;
+
+		local startAngle = self.transformNode:GetLocalRotation();
+		local endAngle = azeritePowerButton:GetBaseAngle();
+		local angleDelta = math.atan2(math.sin(endAngle - startAngle), math.cos(endAngle - startAngle));
+
+		local DISTANCE_PER_SEC = math.pi * .35;
+
+		self.animContextData = 
 		{
-			endDuration = HOLD_TIME,
-		},
-	};
+			azeritePowerButton = azeritePowerButton,
+
+			[self.ANIM_STATE_START_HOLD] = 
+			{
+				startTime = now,
+				endTime = now + START_HOLD_TIME,
+			},
+
+			[self.ANIM_STATE_ROTATING] = 
+			{
+				startAngle = startAngle,
+				angleDelta = angleDelta,
+				startTime = now + START_HOLD_TIME,
+				durationSec = math.abs(angleDelta) / DISTANCE_PER_SEC,
+				hasPlayedLockInEffect = false,
+				hasPlayedEndingClickSound = false,
+			},
+
+			[self.ANIM_STATE_END_HOLD] = 
+			{
+				endDuration = LOCK_HOLD_TIME,
+			},
+		};
+	end
 
 	if self.tierPlug then
 		self.tierPlug:Hide();
@@ -338,18 +409,13 @@ function AzeriteEmpoweredItemTierMixin:IsAnimating()
 end
 
 function AzeriteEmpoweredItemTierMixin:OnPowerSelected(azeritePowerButton)
-	if self:IsFinalTier() then
-		local animbegin = true;
-		self.owningFrame:OnTierAnimationStateChanged(self, animbegin);
-	else
-		self:TransitionBackgroundGlow(self.BACKGROUND_GLOW_STATE_SELECTED);
+	self:TransitionBackgroundGlow(self.BACKGROUND_GLOW_STATE_SELECTED);
 
-		if self.rankFrame then
-			self.rankFrame.SelectedAnim:Play();
-		end
-
-		self:SetAnimState(self.ANIM_STATE_START_HOLD, azeritePowerButton);
+	if self.rankFrame then
+		self.rankFrame.SelectedAnim:Play();
 	end
+
+	self:SetAnimState(self.ANIM_STATE_START_HOLD, azeritePowerButton);
 end
 
 function AzeriteEmpoweredItemTierMixin:SetNodeRotations(rotationRads)

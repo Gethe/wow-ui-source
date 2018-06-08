@@ -491,8 +491,6 @@ function DebugTooltip_OnLoad(self)
 	self:SetFrameLevel(self:GetFrameLevel() + 2);
 	self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
 	self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
-	self.statusBar2 = getglobal(self:GetName().."StatusBar2");
-	self.statusBar2Text = getglobal(self:GetName().."StatusBar2Text");
 end
 
 function FrameStackTooltip_OnDisplaySizeChanged(self)

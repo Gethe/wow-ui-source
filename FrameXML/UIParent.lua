@@ -18,6 +18,10 @@ SHINES_TO_ANIMATE = {};
 MAX_ACCOUNT_MACROS = 120;
 MAX_CHARACTER_MACROS = 18;
 
+-- UIPanel Management constants
+UIPANEL_SKIP_SET_POINT = true;
+UIPANEL_DO_SET_POINT = nil;
+UIPANEL_VALIDATE_CURRENT_FRAME = true;
 
 -- Per panel settings
 UIPanelWindows = {};
@@ -67,7 +71,6 @@ UIPanelWindows["CommunitiesGuildRecruitmentFrame"] =		{ area = "left",			pushabl
 UIPanelWindows["CommunitiesGuildNewsFiltersFrame"] =		{ area = "left",			pushable = 1,	whileDead = 1 };
 
 -- Frames NOT using the new Templates
-UIPanelWindows["WorldMapFrame"] =				{ area = "full",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
 UIPanelWindows["CinematicFrame"] =				{ area = "full",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
 UIPanelWindows["ChatConfigFrame"] =				{ area = "center",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
 UIPanelWindows["WorldStateScoreFrame"] =		{ area = "center",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
@@ -273,7 +276,7 @@ function UIParent_OnLoad(self)
 	-- Events for trade skill UI handling
 	self:RegisterEvent("TRADE_SKILL_SHOW");
 	self:RegisterEvent("OBLITERUM_FORGE_SHOW");
-	self:RegisterEvent("SCRAPPING_MACHINE_SHOW"); 
+	self:RegisterEvent("SCRAPPING_MACHINE_SHOW");
 
 	-- Events for Item socketing UI
 	self:RegisterEvent("SOCKET_INFO_UPDATE");
@@ -405,9 +408,12 @@ function UIParent_OnLoad(self)
 
 	-- Event(s) for Allied Races
 	self:RegisterEvent("ALLIED_RACE_OPEN");
-	
+
 	-- Event(s) for Party Pose
-	self:RegisterEvent("ISLAND_COMPLETED"); 
+	self:RegisterEvent("ISLAND_COMPLETED");
+
+	-- Event(s) for Warfronts
+	self:RegisterEvent("WARFRONT_COMPLETED");
 
 	-- Event(s) for Azerite Empowered Items
 	self:RegisterEvent("RESPEC_AZERITE_EMPOWERED_ITEM_OPENED");
@@ -446,7 +452,7 @@ function UIParentLoadAddOn(name)
 end
 
 function IslandsQueue_LoadUI()
-	UIParentLoadAddOn("Blizzard_IslandsQueueUI"); 
+	UIParentLoadAddOn("Blizzard_IslandsQueueUI");
 end
 
 function PartyPose_LoadUI()
@@ -455,10 +461,10 @@ end
 
 function IslandsPartyPose_LoadUI()
 	UIParentLoadAddOn("Blizzard_IslandsPartyPoseUI");
-end 
+end
 
 function WarfrontsPartyPose_LoadUI()
-	UIParentLoadAddOn("Blizzard_WarfrontsPartyPoseUI"); 
+	UIParentLoadAddOn("Blizzard_WarfrontsPartyPoseUI");
 end
 
 function AlliedRaces_LoadUI()
@@ -526,7 +532,7 @@ function ObliterumForgeFrame_LoadUI()
 end
 
 function ScrappingMachineFrame_LoadUI()
-	UIParentLoadAddOn("Blizzard_ScrappingMachineUI"); 
+	UIParentLoadAddOn("Blizzard_ScrappingMachineUI");
 end
 
 function GMSurveyFrame_LoadUI()
@@ -787,7 +793,7 @@ function ToggleGuildFrame()
 		UIErrorsFrame:AddMessage(ERR_RESTRICTED_ACCOUNT_TRIAL, 1.0, 0.1, 0.1, 1.0);
 		return;
 	end
-	
+
 	if ( CommunitiesFrame_IsEnabled() ) then
 		ToggleCommunitiesFrame();
 	elseif ( IsInGuild() ) then
@@ -2049,13 +2055,13 @@ function UIParent_OnEvent(self, event, ...)
 		AlliedRacesFrame:LoadRaceData(raceID);
 		ShowUIPanel(AlliedRacesFrame);
 	elseif (event == "ISLAND_COMPLETED") then
-		IslandsPartyPose_LoadUI(); 
-		local mapID, winner = ...; 
+		IslandsPartyPose_LoadUI();
+		local mapID, winner = ...;
 		IslandsPartyPoseFrame:LoadScreenData(mapID, winner);
 		ShowUIPanel(IslandsPartyPoseFrame);
 	elseif (event == "WARFRONT_COMPLETED") then
-		WarfrontsPartyPose_LoadUI(); 
-		local mapID, winner = ...; 
+		WarfrontsPartyPose_LoadUI();
+		local mapID, winner = ...;
 		WarfrontsPartyPoseFrame:LoadScreenData(mapID, winner);
 		ShowUIPanel(WarfrontsPartyPoseFrame);
 	-- Event(s) for Azerite Respec
@@ -2302,6 +2308,14 @@ local function FramePositionDelegate_OnAttributeChanged(self, attribute)
 		self:UpdateUIPanelPositions(frame);
 	elseif ( attribute == "uiparent-manage" ) then
 		self:UIParentManageFramePositions();
+	elseif ( attribute == "panel-maximize" ) then
+		local frame = self:GetAttribute("panel-frame");
+		self:MoveUIPanel(GetUIPanelWindowInfo(frame, "area"), "fullscreen", UIPANEL_DO_SET_POINT, UIPANEL_VALIDATE_CURRENT_FRAME);
+		frame:ClearAllPoints();
+		frame:SetPoint(GetUIPanelWindowInfo(frame, "maximizePoint"));
+	elseif ( attribute == "panel-restore" ) then
+		local frame = self:GetAttribute("panel-frame");
+		self:MoveUIPanel("fullscreen", GetUIPanelWindowInfo(frame, "area"), UIPANEL_DO_SET_POINT, UIPANEL_VALIDATE_CURRENT_FRAME);
 	end
 end
 
@@ -2395,9 +2409,9 @@ function FramePositionDelegate:ShowUIPanel(frame, force)
 			local leftPushable = GetUIPanelWindowInfo(leftFrame, "pushable") or 0;
 			if ( leftPushable > 0 and CanShowRightUIPanel(leftFrame) ) then
 				-- Push left to right
-				self:MoveUIPanel("left", "right", 1);
+				self:MoveUIPanel("left", "right", UIPANEL_SKIP_SET_POINT);
 			elseif ( centerFrame and CanShowRightUIPanel(centerFrame) ) then
-				self:MoveUIPanel("center", "right", 1);
+				self:MoveUIPanel("center", "right", UIPANEL_SKIP_SET_POINT);
 			end
 		end
 		self:SetUIPanel("doublewide", frame);
@@ -2442,7 +2456,7 @@ function FramePositionDelegate:ShowUIPanel(frame, force)
 			if ( centerArea == "center" ) then
 				if ( CanShowRightUIPanel(leftFrame) ) then
 					-- Skip center
-					self:MoveUIPanel("left", "right", 1);
+					self:MoveUIPanel("left", "right", UIPANEL_SKIP_SET_POINT);
 					self:SetUIPanel("left", frame);
 				else
 					-- Replace left
@@ -2451,8 +2465,8 @@ function FramePositionDelegate:ShowUIPanel(frame, force)
 			else
 				if ( CanShowUIPanels(frame, leftFrame, centerFrame) ) then
 					-- Shift both
-					self:MoveUIPanel("center", "right", 1);
-					self:MoveUIPanel("left", "center", 1);
+					self:MoveUIPanel("center", "right", UIPANEL_SKIP_SET_POINT);
+					self:MoveUIPanel("left", "center", UIPANEL_SKIP_SET_POINT);
 					self:SetUIPanel("left", frame);
 				else
 					-- Replace left
@@ -2461,7 +2475,7 @@ function FramePositionDelegate:ShowUIPanel(frame, force)
 			end
 		elseif ( framePushable <= centerPushable and centerArea ~= "center" and CanShowUIPanels(leftFrame, frame, centerFrame) ) then
 			-- Push center
-			self:MoveUIPanel("center", "right", 1);
+			self:MoveUIPanel("center", "right", UIPANEL_SKIP_SET_POINT);
 			self:SetUIPanel("center", frame);
 		elseif ( framePushable <= centerPushable and centerArea ~= "center" ) then
 			-- Replace left
@@ -2484,7 +2498,7 @@ function FramePositionDelegate:ShowUIPanel(frame, force)
 
 		-- Highest priority goes to center
 		if ( leftPushable > framePushable ) then
-			self:MoveUIPanel("left", "center", 1);
+			self:MoveUIPanel("left", "center", UIPANEL_SKIP_SET_POINT);
 			self:SetUIPanel("left", frame);
 		else
 			self:SetUIPanel("center", frame);
@@ -2498,16 +2512,16 @@ function FramePositionDelegate:ShowUIPanel(frame, force)
 	if ( framePushable > rightPushable ) then
 		-- This one is highest priority, slide the other two over
 		if ( CanShowUIPanels(centerFrame, rightFrame, frame) ) then
-			self:MoveUIPanel("center", "left", 1);
-			self:MoveUIPanel("right", "center", 1);
+			self:MoveUIPanel("center", "left", UIPANEL_SKIP_SET_POINT);
+			self:MoveUIPanel("right", "center", UIPANEL_SKIP_SET_POINT);
 			self:SetUIPanel("right", frame);
 		else
-			self:MoveUIPanel("right", "left", 1);
+			self:MoveUIPanel("right", "left", UIPANEL_SKIP_SET_POINT);
 			self:SetUIPanel("center", frame);
 		end
 	elseif ( framePushable > centerPushable ) then
 		-- This one is middle priority, so move the center frame to the left
-		self:MoveUIPanel("center", "left", 1);
+		self:MoveUIPanel("center", "left", UIPANEL_SKIP_SET_POINT);
 		self:SetUIPanel("center", frame);
 	else
 		self:SetUIPanel("left", frame);
@@ -2588,8 +2602,12 @@ function FramePositionDelegate:SetUIPanel(key, frame, skipSetPoint)
 	end
 end
 
-function FramePositionDelegate:MoveUIPanel(current, new, skipSetPoint)
+function FramePositionDelegate:MoveUIPanel(current, new, skipSetPoint, skipOperationUnlessCurrentIsValid)
 	if ( current ~= "left" and current ~= "center" and current ~= "right" and new ~= "left" and new ~= "center" and new ~= "right" ) then
+		return;
+	end
+
+	if skipOperationUnlessCurrentIsValid and not self[current] then
 		return;
 	end
 
@@ -2599,7 +2617,7 @@ function FramePositionDelegate:MoveUIPanel(current, new, skipSetPoint)
 		self[new] = self[current];
 		self[current] = nil;
 		if ( not skipSetPoint ) then
-			securecall("UpdateUIPanelPositions");
+			securecall("UpdateUIPanelPositions", self[new]);
 		end
 	end
 end
@@ -2636,7 +2654,7 @@ function FramePositionDelegate:HideUIPanel(frame, skipSetPoint)
 					return;
 				else
 					-- Slide everything left
-					self:MoveUIPanel("center", "left", 1);
+					self:MoveUIPanel("center", "left", UIPANEL_SKIP_SET_POINT);
 					self:MoveUIPanel("right", "center", skipSetPoint);
 					return;
 				end
@@ -2708,7 +2726,7 @@ function FramePositionDelegate:UpdateUIPanelPositions(currentFrame)
 			local yPos = ClampUIPanelY(frame, yOff + topOffset, minYOffset, bottomClampOverride);
 			if ( area ~= "center" ) then
 				frame:ClearAllPoints();
-				xOff = xOff + xSpacing; -- add sperating space
+				xOff = xOff + xSpacing; -- add separating space
 				frame:SetPoint("TOPLEFT", "UIParent", "TOPLEFT", centerOffset + xOff, yPos);
 			end
 			rightOffset = centerOffset + GetUIPanelWidth(frame) + xOff;
@@ -2743,7 +2761,7 @@ function FramePositionDelegate:UpdateUIPanelPositions(currentFrame)
 			local bottomClampOverride = GetUIPanelWindowInfo(frame,"bottomClampOverride");
 			local minYOffset = GetUIPanelWindowInfo(frame,"minYOffset");
 			local yPos = ClampUIPanelY(frame, yOff + topOffset, minYOffset, bottomClampOverride);
-			xOff = xOff + xSpacing; -- add sperating space
+			xOff = xOff + xSpacing; -- add separating space
 			frame:ClearAllPoints();
 			frame:SetPoint("TOPLEFT", "UIParent", "TOPLEFT", rightOffset  + xOff, yPos);
 		else
@@ -3139,31 +3157,15 @@ function ClampUIPanelY(frame, yOffset, minYOffset, bottomClampOverride)
 end
 
 function CanShowRightUIPanel(frame)
-	local width;
-	if ( frame ) then
-		width = GetUIPanelWidth(frame);
-	else
-		width = UIParent:GetAttribute("DEFAULT_FRAME_WIDTH");
-	end
-
+	local width = frame and GetUIPanelWidth(frame) or UIParent:GetAttribute("DEFAULT_FRAME_WIDTH");
 	local rightSide = UIParent:GetAttribute("RIGHT_OFFSET") + width;
-	if ( rightSide < GetMaxUIPanelsWidth() ) then
-		return 1;
-	end
+	return rightSide < GetMaxUIPanelsWidth();
 end
 
 function CanShowCenterUIPanel(frame)
-	local width;
-	if ( frame ) then
-		width = GetUIPanelWidth(frame);
-	else
-		width = UIParent:GetAttribute("DEFAULT_FRAME_WIDTH");
-	end
-
+	local width = frame and GetUIPanelWidth(frame) or UIParent:GetAttribute("DEFAULT_FRAME_WIDTH");
 	local rightSide = UIParent:GetAttribute("CENTER_OFFSET") + width;
-	if ( rightSide < GetMaxUIPanelsWidth() ) then
-		return 1;
-	end
+	return rightSide < GetMaxUIPanelsWidth();
 end
 
 function CanShowUIPanels(leftFrame, centerFrame, rightFrame)
@@ -3253,24 +3255,24 @@ function CloseWindows(ignoreCenter, frameToIgnore)
 	local found = leftFrame or centerFrame or rightFrame or doublewideFrame or fullScreenFrame;
 
 	if ( not frameToIgnore or frameToIgnore ~= leftFrame ) then
-		HideUIPanel(leftFrame, 1);
+		HideUIPanel(leftFrame, UIPANEL_SKIP_SET_POINT);
 	end
 
-	HideUIPanel(fullScreenFrame, 1);
-	HideUIPanel(doublewideFrame, 1);
+	HideUIPanel(fullScreenFrame, UIPANEL_SKIP_SET_POINT);
+	HideUIPanel(doublewideFrame, UIPANEL_SKIP_SET_POINT);
 
 	if ( not frameToIgnore or frameToIgnore ~= centerFrame ) then
 		if ( centerFrame ) then
 			local area = GetUIPanelWindowInfo(centerFrame, "area");
 			if ( area ~= "center" or not ignoreCenter ) then
-				HideUIPanel(centerFrame, 1);
+				HideUIPanel(centerFrame, UIPANEL_SKIP_SET_POINT);
 			end
 		end
 	end
 
 	if ( not frameToIgnore or frameToIgnore ~= rightFrame ) then
 		if ( rightFrame ) then
-			HideUIPanel(rightFrame, 1);
+			HideUIPanel(rightFrame, UIPANEL_SKIP_SET_POINT);
 		end
 	end
 
@@ -3324,6 +3326,16 @@ end
 function UpdateUIPanelPositions(currentFrame)
 	FramePositionDelegate:SetAttribute("panel-frame", currentFrame)
 	FramePositionDelegate:SetAttribute("panel-update", true);
+end
+
+function MaximizeUIPanel(currentFrame, maximizePoint)
+	FramePositionDelegate:SetAttribute("panel-frame", currentFrame)
+	FramePositionDelegate:SetAttribute("panel-maximize", true);
+end
+
+function RestoreUIPanelArea(currentFrame)
+	FramePositionDelegate:SetAttribute("panel-frame", currentFrame)
+	FramePositionDelegate:SetAttribute("panel-restore", true);
 end
 
 function IsOptionFrameOpen()

@@ -312,9 +312,7 @@ function TaskPOI_OnEnter(self)
 
 	local percent = C_TaskQuest.GetQuestProgressBarInfo(self.questID);
 	if ( percent ) then
-		GameTooltip_InsertFrame(WorldMapTooltip, WorldMapTaskTooltipStatusBar);
-		WorldMapTaskTooltipStatusBar.Bar:SetValue(percent);
-		WorldMapTaskTooltipStatusBar.Bar.Label:SetFormattedText(PERCENTAGE_STRING, percent);
+		GameTooltip_ShowProgressBar(WorldMapTooltip, 0, 100, percent, PERCENTAGE_STRING:format(percent));
 	end
 
 	GameTooltip_AddQuestRewardsToTooltip(WorldMapTooltip, self.questID);

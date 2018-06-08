@@ -951,9 +951,9 @@ function GarrisonMissionListMixin:Update()
 				button.ItemLevel:Hide();
 			end
 			if ( showingItemLevel and mission.isRare ) then
-				button.Level:SetPoint("CENTER", button, "TOPLEFT", 40, -22);
+				button.Level:SetPoint("CENTER", button, "TOPLEFT", 35, -22);
 			else
-				button.Level:SetPoint("CENTER", button, "TOPLEFT", 40, -36);
+				button.Level:SetPoint("CENTER", button, "TOPLEFT", 35, -36);
 			end
 
 			button:Enable();

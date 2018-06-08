@@ -197,7 +197,7 @@ function FriendsFrame_ShowDropdown(name, connected, lineID, chatType, chatFrame,
 	end
 end
 
-function FriendsFrame_ShowBNDropdown(name, connected, lineID, chatType, chatFrame, friendsList, bnetIDAccount)
+function FriendsFrame_ShowBNDropdown(name, connected, lineID, chatType, chatFrame, friendsList, bnetIDAccount, communityClubID, communityStreamID, communityEpoch, communityPosition)
 	if ( connected or friendsList ) then
 		if ( connected ) then
 			FriendsDropDown.initialize = FriendsFrameBNDropDown_Initialize;
@@ -208,6 +208,10 @@ function FriendsFrame_ShowBNDropdown(name, connected, lineID, chatType, chatFram
 		FriendsDropDown.name = name;
 		FriendsDropDown.friendsList = friendsList;
 		FriendsDropDown.lineID = lineID;
+		FriendsDropDown.communityClubID = communityClubID;
+		FriendsDropDown.communityStreamID = communityStreamID;
+		FriendsDropDown.communityEpoch = communityEpoch;
+		FriendsDropDown.communityPosition = communityPosition;
 		FriendsDropDown.chatType = chatType;
 		FriendsDropDown.chatTarget = name;
 		FriendsDropDown.chatFrame = chatFrame;
@@ -415,7 +419,7 @@ function FriendsList_InitializePendingInviteDropDown(self, level)
 					end
 		UIDropDownMenu_AddButton(info, level)
 
-		info.text = BNET_REPORT;
+		info.text = REPORT_PLAYER;
 		info.hasArrow = true;
 		info.func = nil;
 		UIDropDownMenu_AddButton(info, level)
@@ -432,24 +436,26 @@ function FriendsList_InitializePendingInviteDropDown(self, level)
 		UIDropDownMenu_AddButton(info, level)
 	else
 		if level == 2 then
-			info.text = BNET_REPORT_SPAM;
+			local bnetIDAccount, name = BNGetFriendInviteInfo(UIDROPDOWNMENU_MENU_VALUE);
+
+			info.text = REPORT_SPAMMING;
 			info.func = function()
 							UIDROPDOWNMENU_MENU_VALUE = self.inviteIndex;
-							BNet_InitiateReport(nil, "SPAM");
+							PlayerReportFrame:InitiateReport("SPAM", name);
 						end
 			UIDropDownMenu_AddButton(info, level)
 
-			info.text = BNET_REPORT_ABUSE;
+			info.text = REPORT_ABUSE;
 			info.func = function()
 							UIDROPDOWNMENU_MENU_VALUE = self.inviteIndex;
-							BNet_InitiateReport(nil, "ABUSE");
+							PlayerReportFrame:InitiateReport("ABUSE", name);
 						end
 			UIDropDownMenu_AddButton(info, level)
 
-			info.text = BNET_REPORT_NAME;
+			info.text = REPORT_BAD_NAME;
 			info.func = function()
 							UIDROPDOWNMENU_MENU_VALUE = self.inviteIndex;
-							BNet_InitiateReport(nil, "NAME");
+							PlayerReportFrame:InitiateReport("NAME", name);
 						end
 			UIDropDownMenu_AddButton(info, level)
 			info.notCheckable = false;
@@ -460,8 +466,7 @@ end
 function FriendsList_ClosePendingInviteDialogs()
 	CloseDropDownMenus();
 	StaticPopup_Hide("CONFIRM_BLOCK_INVITES");
-	StaticPopup_Hide("CONFIRM_BNET_REPORT");
-	StaticPopupSpecial_Hide(BNetReportFrame);
+	StaticPopupSpecial_Hide(PlayerReportFrame);
 end
 
 function FriendsList_GetScrollFrameTopButton(offset)
@@ -916,7 +921,7 @@ function FriendsFrameFriendButton_OnClick(self, button)
 		if ( self.buttonType == FRIENDS_BUTTON_TYPE_BNET ) then
 			-- bnet friend
 			local bnetIDAccount, accountName, battleTag, isBattleTag, characterName, bnetIDGameAccount, client, isOnline = BNGetFriendInfo(self.id);
-			FriendsFrame_ShowBNDropdown(accountName, isOnline, nil, nil, nil, 1, bnetIDAccount);
+			FriendsFrame_ShowBNDropdown(accountName, isOnline, nil, nil, nil, 1, bnetIDAccount, nil, nil, nil, nil);
 		else
 			-- wow friend
 			local name, level, class, area, connected = GetFriendInfo(self.id);

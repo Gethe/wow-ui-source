@@ -841,7 +841,7 @@
 								<FontString parentKey="Text" inherits="GameFontHighlightLeft" justifyV="TOP" text="AZERITE_EMPOWERED_UNSELECTED_TRAITS_HELPTIP">
 									<Size x="190" y="0"/>
 									<Anchors>
-										<Anchor point="TOPLEFT" x="16" y="-18"/>
+										<Anchor point="TOPLEFT" x="10" y="-18"/>
 									</Anchors>
 								</FontString>
 							</Layer>

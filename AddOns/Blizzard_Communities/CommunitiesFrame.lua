@@ -21,6 +21,17 @@ local COMMUNITIES_FRAME_EVENTS = {
 	"STREAM_VIEW_MARKER_UPDATED",
 };
 
+local COMMUNITIES_STATIC_POPUPS = {
+	"INVITE_COMMUNITY_MEMBER",
+	"INVITE_COMMUNITY_MEMBER_WITH_INVITE_LINK",
+	"CONFIRM_DESTROY_COMMUNITY",
+	"CONFIRM_REMOVE_COMMUNITY_MEMBER",
+	"SET_COMMUNITY_MEMBER_NOTE",
+	"CONFIRM_DESTROY_COMMUNITY_STREAM",
+	"CONFIRM_LEAVE_AND_DESTROY_COMMUNITY",
+	"CONFIRM_LEAVE_COMMUNITY",
+};
+
 local function RangeIsEmpty(range)
 	return range.newestMessageId.epoch < range.oldestMessageId.epoch or (range.newestMessageId.epoch == range.oldestMessageId.epoch and range.newestMessageId.position < range.oldestMessageId.position);
 end
@@ -168,6 +179,47 @@ function CommunitiesFrameMixin:ToggleSubPanel(subPanel)
 	end
 end
 
+function CommunitiesFrameMixin:CloseActiveSubPanel()
+	if self.activeSubPanel then
+		HideUIPanel(self.activeSubPanel);
+		self.activeSubPanel = nil;
+	end
+end
+
+function CommunitiesFrameMixin:RegisterDialogShown(dialog)
+	self:CloseActiveDialogs();
+	self.lastActiveDialog = dialog;
+end
+
+function CommunitiesFrameMixin:CloseStaticPopups()
+	for i, popup in ipairs(COMMUNITIES_STATIC_POPUPS) do
+		if StaticPopup_Visible(popup) then
+			StaticPopup_Hide(popup);
+		end
+	end
+end
+
+function CommunitiesFrameMixin:CloseActiveDialogs()
+	CloseDropDownMenus();
+
+	self:CloseStaticPopups();
+	
+	self:CloseActiveSubPanel();
+	
+	if AddCommunitiesFlow_IsShown() then
+		AddCommunitiesFlow_Hide();
+	end
+	
+	if CommunitiesAvatarPicker_IsShown() then
+		CommunitiesAvatarPicker_Hide();
+	end
+	
+	if self.lastActiveDialog ~= nil then
+		self.lastActiveDialog:Hide();
+		self.lastActiveDialog = nil;
+	end
+end
+
 function CommunitiesFrameMixin:UpdateClubSelection()
 	local lastSelectedClubId = tonumber(GetCVar("lastSelectedClubId")) or 0;
 	local clubs = C_Club.GetSubscribedClubs();
@@ -254,8 +306,9 @@ function CommunitiesFrameMixin:SetDisplayMode(displayMode)
 		return;
 	end
 	
+	self:CloseActiveDialogs();
+	
 	self.displayMode = displayMode;
-	self:TriggerEvent(CommunitiesFrameMixin.Event.DisplayModeChanged, displayMode);
 
 	for i, mode in pairs(COMMUNITIES_FRAME_DISPLAY_MODES) do
 		if mode ~= displayMode then
@@ -285,7 +338,28 @@ function CommunitiesFrameMixin:SetDisplayMode(displayMode)
 		self.GuildMemberListDropDownMenu:SetShown(isGuildCommunitySelected);
 	end
 	
+	self.MaximizeMinimizeFrame.MinimizeButton:SetEnabled(displayMode ~= COMMUNITIES_FRAME_DISPLAY_MODES.INVITATION and displayMode ~= COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_FINDER);
+	
+	self:TriggerEvent(CommunitiesFrameMixin.Event.DisplayModeChanged, displayMode);
+	
 	self:UpdateCommunitiesTabs();
+end
+
+function CommunitiesFrameMixin:ValidateDisplayMode()
+	local clubId = self:GetSelectedClubId();
+	if clubId then
+		local displayMode = self:GetDisplayMode();
+		local guildDisplay = displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_BENEFITS or displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_INFO;
+		local clubInfo = C_Club.GetClubInfo(clubId);
+		local isGuildCommunitySelected = clubInfo and clubInfo.clubType == Enum.ClubType.Guild;
+		if not isGuildCommunitySelected and guildDisplay then
+			self:SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.CHAT);
+		elseif displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_FINDER or displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.INVITATION then
+			self:SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.CHAT);
+		elseif displayMode == nil then
+			self:SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.CHAT);
+		end
+	end	
 end
 
 function CommunitiesFrameMixin:GetDisplayMode()
@@ -313,7 +387,13 @@ function CommunitiesFrameMixin:UpdateCommunitiesTabs()
 				self.GuildInfoTab:SetShown(clubInfo.clubType == Enum.ClubType.Guild);
 			end
 		end
+		
+		SetUIPanelAttribute(self, "extraWidth", 32);
+	else
+		SetUIPanelAttribute(self, "extraWidth", 0);
 	end
+	
+	UpdateUIPanelPositions(self);
 	
 	self.ChatTab:SetChecked(false);
 	self.RosterTab:SetChecked(false);
@@ -331,16 +411,10 @@ function CommunitiesFrameMixin:UpdateCommunitiesTabs()
 end
 
 function CommunitiesFrameMixin:OnClubSelected(clubId)
-	if StaticPopup_Visible("INVITE_COMMUNITY_MEMBER") then
-		StaticPopup_Hide("INVITE_COMMUNITY_MEMBER");
-	end
-	
-	if StaticPopup_Visible("INVITE_COMMUNITY_MEMBER_WITH_INVITE_LINK") then
-		StaticPopup_Hide("INVITE_COMMUNITY_MEMBER_WITH_INVITE_LINK");
-	end
-	
-	self.ChatEditBox:SetEnabled(clubId ~= nil);
-	if clubId then
+	local clubSelected = clubId ~= nil;
+	self:CloseActiveDialogs();
+	self.ChatEditBox:SetEnabled(clubSelected);
+	if clubSelected then
 		SetCVar("lastSelectedClubId", clubId)
 	
 		C_Club.SetClubPresenceSubscription(clubId);
@@ -364,9 +438,7 @@ function CommunitiesFrameMixin:OnClubSelected(clubId)
 				self:SetPrivilegesForClub(clubId, C_Club.GetClubPrivileges(clubId));
 			end
 			
-			if self:GetDisplayMode() ~= COMMUNITIES_FRAME_DISPLAY_MODES.MINIMIZED then
-				self:SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.CHAT);
-			end
+			self:ValidateDisplayMode();
 		else
 			SetPortraitToTexture(self.PortraitOverlay.Portrait, "Interface\\Icons\\Achievement_General_StayClassy");
 			local invitationInfo = C_Club.GetInvitationInfo(clubId);
@@ -504,6 +576,7 @@ function CommunitiesFrameMixin:UpdateStreamDropDown()
 end
 
 function CommunitiesFrameMixin:OnHide()
+	self:CloseActiveDialogs();
 	C_Club.ClearClubPresenceSubscription();
 	FrameUtil.UnregisterFrameForEvents(self, COMMUNITIES_FRAME_EVENTS);
 	UpdateMicroButtons();
@@ -527,7 +600,10 @@ end
 function CommunitiesFrameMaximizeMinimizeButton_OnLoad(self)
 	local function OnMaximize(frame)
 		local communitiesFrame = frame:GetParent();
-		communitiesFrame:SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.CHAT);
+		if communitiesFrame:GetDisplayMode() == COMMUNITIES_FRAME_DISPLAY_MODES.MINIMIZED then
+			communitiesFrame:SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.CHAT);
+		end
+		
 		communitiesFrame:SetSize(814, 426);
 		communitiesFrame.Chat:SetPoint("TOPLEFT", communitiesFrame.CommunitiesList, "TOPRIGHT", 30, -46);
 		communitiesFrame.Chat:SetPoint("BOTTOMRIGHT", communitiesFrame.MemberList, "BOTTOMLEFT", -22, 28);

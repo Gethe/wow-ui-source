@@ -1814,6 +1814,7 @@
 				</Scripts>
 				<NormalTexture file="Interface\Buttons\UI-Panel-BiggerButton-Up"/>
 				<PushedTexture file="Interface\Buttons\UI-Panel-BiggerButton-Down"/>
+				<DisabledTexture file="Interface\Buttons\UI-Panel-BiggerButton-Disabled"/>
 				<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
 			</Button>
 			<Button parentKey="MinimizeButton" setAllPoints="true">
@@ -1825,6 +1826,7 @@
 				</Scripts>
 				<NormalTexture file="Interface\Buttons\UI-Panel-SmallerButton-Up"/>
 				<PushedTexture file="Interface\Buttons\UI-Panel-SmallerButton-Down"/>
+				<DisabledTexture file="Interface\Buttons\UI-Panel-SmallerButton-Disabled"/>
 				<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
 			</Button>
 		</Frames>

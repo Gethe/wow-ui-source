@@ -41,7 +41,12 @@ function AzeriteEmpoweredItemUIMixin:OnLoad()
 		frame:Reset();
 	end
 	self.tierPool = CreateFramePool("FRAME", self, "AzeriteEmpoweredItemTierTemplate", TierReset);
-	self.powerPool = CreateTransformFrameNodePool("BUTTON", self.ClipFrame.PowerContainerFrame, "AzeriteEmpoweredItemPowerTemplate");
+
+	local function PowerReset(transformTreeFramePool, frame)
+		TransformTreeFrameNode_Reset(transformTreeFramePool, frame);
+		frame:Reset();
+	end
+	self.powerPool = CreateTransformFrameNodePool("BUTTON", self.ClipFrame.PowerContainerFrame, "AzeriteEmpoweredItemPowerTemplate", PowerReset);
 	self.azeriteItemDataSource = AzeriteEmpowedItemDataSource:CreateEmpty();
 end
 
@@ -93,8 +98,15 @@ end
 function AzeriteEmpoweredItemUIMixin:OnTierAnimationStateChanged(tierFrame, animationBegin)
 	if animationBegin then
 		ShakeFrameRandom(self.ClipFrame.BackgroundFrame, 1, .7, .05);
+	else
+		self.ClipFrame.BackgroundFrame.KeyOverlay.Channel:UpdateTierAnimationProgress(tierFrame:GetTierIndex(), nil);
 	end
+
 	self:MarkDirty();
+end
+
+function AzeriteEmpoweredItemUIMixin:OnTierAnimationProgress(tierFrame, percent)
+	self.ClipFrame.BackgroundFrame.KeyOverlay.Channel:UpdateTierAnimationProgress(tierFrame:GetTierIndex(), percent);
 end
 
 function AzeriteEmpoweredItemUIMixin:IsItemValid()
@@ -125,6 +137,7 @@ function AzeriteEmpoweredItemUIMixin:Clear()
 	self.tierPool:ReleaseAll();
 	self.tiersByIndex = {};
 	self.powerPool:ReleaseAll();
+	self.ClipFrame.BackgroundFrame.KeyOverlay.Channel:Reset();
 
 	HideAll(self.ClipFrame.BackgroundFrame.RankFrames);
 	HideAll(self.ClipFrame.BackgroundFrame.KeyOverlay.Slots);
@@ -193,6 +206,26 @@ function AzeriteEmpoweredItemUIMixin:UpdateTiers()
 	for tierIndex, tierFrame in ipairs(self.tiersByIndex) do
 		tierFrame:Update(azeriteItemPowerLevel);
 	end
+
+	self:UpdateChannelTier();
+end
+
+function AzeriteEmpoweredItemUIMixin:UpdateChannelTier()
+	local bestTierIndex = nil;
+	for tierIndex, tierFrame in ipairs(self.tiersByIndex) do
+		if tierFrame:IsAnimating() then
+			bestTierIndex = tierIndex;
+		elseif not tierFrame:HasAnySelected() and not bestTierIndex then
+			bestTierIndex = tierIndex - 1;
+		end
+	end
+
+	if bestTierIndex then
+		local selectedTierIndex = bestTierIndex > 0 and bestTierIndex or nil;
+		self.ClipFrame.BackgroundFrame.KeyOverlay.Channel:SetUnlockedTier(selectedTierIndex);
+	else
+		self.ClipFrame.BackgroundFrame.KeyOverlay.Channel:SetUnlockedTier(#self.tiersByIndex);
+	end
 end
 
 function AzeriteEmpoweredItemUIMixin:AdjustSizeForTiers(numTiers)
@@ -208,6 +241,7 @@ function AzeriteEmpoweredItemUIMixin:AdjustSizeForTiers(numTiers)
 		self.ClipFrame.BackgroundFrame.Bg:SetAtlas("Azerite-Background", true);
 		self:SetSize(615, 628);
 	end
+	self.ClipFrame.BackgroundFrame.KeyOverlay.Channel:AdjustSizeForTiers(numTiers);
 	UpdateUIPanelPositions(self);
 
 	self.transformTree:GetRoot():SetLocalPosition(CreateVector2D(self.ClipFrame.BackgroundFrame:GetWidth() * .5, self.ClipFrame.BackgroundFrame:GetHeight() * .5));

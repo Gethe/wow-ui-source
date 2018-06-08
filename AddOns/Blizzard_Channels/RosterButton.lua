@@ -54,11 +54,21 @@ function ChannelRosterButtonMixin:SetVoiceChannelID(channelID)
 end
 
 function ChannelRosterButtonMixin:IsLocalPlayer()
-	local voiceMemberID = self:GetVoiceMemberID();
-	local voiceChannelID = self:GetVoiceChannelID();
+	local guid;
+	local playerLocation = self:GetMemberPlayerLocation();
+	if playerLocation then
+		guid = playerLocation:GetGUID();
+	end
 
-	if voiceMemberID and voiceChannelID then
-		return C_VoiceChat.IsMemberLocalPlayer(voiceMemberID, voiceChannelID);
+	if guid then
+		return C_AccountInfo.IsGUIDRelatedToLocalAccount(guid);
+	else
+		local voiceMemberID = self:GetVoiceMemberID();
+		local voiceChannelID = self:GetVoiceChannelID();
+
+		if voiceMemberID and voiceChannelID then
+			return C_VoiceChat.IsMemberLocalPlayer(voiceMemberID, voiceChannelID);
+		end
 	end
 
 	-- Text-only channels don't support a way to know if the user is the local player,
@@ -130,7 +140,7 @@ function ChannelRosterButtonMixin:IsConnected()
 end
 
 local function ChannelRosterDropdown_Initialize(dropdown, level, menuList)
-	UnitPopup_ShowMenu(dropdown, "CHAT_ROSTER", nil, dropdown.name, { guid = dropdown.guid });
+	UnitPopup_ShowMenu(dropdown, "CHAT_ROSTER", nil, dropdown.name);
 end
 
 function ChannelRosterButtonMixin:OnClick(button)
@@ -158,12 +168,7 @@ function ChannelRosterButtonMixin:OnClick(button)
 		dropdown.category = channel:GetCategory();
 		dropdown.channelType = channel:GetChannelType();
 		dropdown.guid = guid;
-		dropdown.voiceChannelID = channel:GetVoiceChannelID();
-		if dropdown.voiceChannelID and guid then
-			dropdown.voiceMemberID = C_VoiceChat.GetMemberID(dropdown.voiceChannelID, guid);
-		else
-			dropdown.voiceMemberID = nil;
-		end
+		dropdown.isSelf = self:IsLocalPlayer();
 
 		ToggleDropDownMenu(1, nil, dropdown, "cursor");
 	end

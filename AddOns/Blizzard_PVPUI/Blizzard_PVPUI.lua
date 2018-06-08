@@ -14,6 +14,7 @@ local ARENA_3V3_REWARD = "arena3v3";
 local BG_BRAWL_REWARD = "bgbrawl";
 local ARENA_BRAWL_REWARD = "arenabrawl";
 local LFG_BRAWL_REWARD = "lfgbrawl";
+local RANDOM_EPIC_BG_REWARD = "epicrandombg";
 
 local REWARDS_AT_MAX_LEVEL = {
 	[RANDOM_BG_REWARD] = {
@@ -48,6 +49,11 @@ local REWARDS_AT_MAX_LEVEL = {
 		["FirstWin"] = 143713,
 		["NthWin"] = 138864,
 	},
+	[RANDOM_EPIC_BG_REWARD] = {
+	-- TODO
+		--["FirstWin"] = ,
+		--["NthWin"] = ,
+	},	
 }
 
 function GetMaxLevelReward(bracketType, hasFirstWin)
@@ -76,6 +82,8 @@ function GetMaxLevelReward(bracketType, hasFirstWin)
 		id = REWARDS_AT_MAX_LEVEL[ARENA_3V3_REWARD][key];
 	elseif (bracketType == RATED_BG_ID) then
 		id = REWARDS_AT_MAX_LEVEL[RATED_BG_REWARD][key];
+	elseif (bracketType == RANDOM_EPIC_BATTLEGROUNDS) then
+		id = REWARDS_AT_MAX_LEVEL[RANDOM_EPIC_BG_REWARD][key];
 	end
 
 	if (not id) then
@@ -386,18 +394,6 @@ function PVPQueueFrameButton_OnClick(self)
 	PVPQueueFrame_ShowFrame(_G[frameName]);
 end
 
-function PVPQueueFrame_CheckXPBarLockState(frame)
-    local xpBar = frame.XPBar;
-    
-    PVPHonorXPBar_CheckLockState(xpBar);
-    
-    if (xpBar.locked) then
-        xpBar:SetPoint("TOPLEFT", frame, "TOPLEFT", 13, -7);
-    else
-        xpBar:SetPoint("TOPLEFT", frame, "TOPLEFT", 1, -7);
-    end
-end
-
 local function InitializeHonorXPBarDropDown(self, level)
 	local info = UIDropDownMenu_CreateInfo();
 	info.isNotRadio = true;
@@ -423,13 +419,6 @@ local function InitializeHonorXPBarDropDown(self, level)
 	info.text = CANCEL;
 
 	UIDropDownMenu_AddButton(info, level);
-end
-
-function PVPQueueHonorXPBar_OnClick(self, button)
-	if (button == "RightButton") then
-		UIDropDownMenu_Initialize(self.DropDown, InitializeHonorXPBarDropDown, "MENU");
-		ToggleDropDownMenu(1, nil, self.DropDown, self, 310, 12);
-	end
 end
 
 ---------------------------------------------------------------
@@ -467,13 +456,8 @@ function HonorFrame_OnLoad(self)
 	self:RegisterEvent("PVP_WORLDSTATE_UPDATE");
 end
 
-function HonorFrame_OnShow(self)
-    PVPQueueFrame_CheckXPBarLockState(self);
-end
-
 function HonorFrame_OnEvent(self, event, ...)
 	if (event == "PLAYER_ENTERING_WORLD" or event == "PLAYER_LEVEL_UP") then
-        PVPQueueFrame_CheckXPBarLockState(self);
 		HonorFrameSpecificList_Update();
 		HonorFrameBonusFrame_Update();
 		PVP_UpdateStatus();
@@ -749,8 +733,8 @@ BONUS_BUTTON_TOOLTIPS = {
 	Skirmish = {
 		tooltipKey = "SKIRMISH",
 	},
-	LargeBattleground = {
-		tooltipKey = "RANDOM_LARGE_BG",
+	EpicBattleground = {
+		tooltipKey = "RANDOM_EPIC_BG",
 	},
 	Brawl = {
 		func = function(self)
@@ -843,7 +827,7 @@ function HonorFrameBonusFrame_Update()
 		local honor, experience, rewards = C_PvP.GetRandomBGRewards();
 
 		if (not rewards) then
-			rewards = GetMaxLevelReward(RANDOM_BATTLEGROUNDS, hasWon);
+			rewards = GetMaxLevelReward(RANDOM_BATTLEGROUNDS, randomBGInfo.hasRandomWinToday);
 		end
 
 		if (rewards and #rewards > 0) then
@@ -883,14 +867,31 @@ function HonorFrameBonusFrame_Update()
 		end
 	end
 
-	-- large battleground
+	-- epic battleground
 	do
-		local button = HonorFrame.BonusFrame.LargeBattlegroundButton;
-		local randomBGInfo = C_PvP.GetRandomLargeBGInfo();
+		local button = HonorFrame.BonusFrame.RandomEpicBGButton;
+		local randomBGInfo = C_PvP.GetRandomEpicBGInfo();
 		HonorFrameBonusFrame_SetButtonState(button, randomBGInfo.canQueue, randomBGInfo.minLevel);
 		button.canQueue = randomBGInfo.canQueue;
 		button.bgID = randomBGInfo.bgID;
-		button.Title:SetText(RANDOM_LARGE_BATTLEGROUND);
+		button.Title:SetText(RANDOM_EPIC_BATTLEGROUND);
+
+		local honor, experience, rewards = C_PvP.GetRandomEpicBGRewards();
+
+		if (not rewards) then
+			rewards = GetMaxLevelReward(RANDOM_EPIC_BATTLEGROUNDS, randomBGInfo.hasRandomWinToday);
+		end
+
+		if (rewards and #rewards > 0) then
+			local id, name, texture, quantity = GetRewardValues(rewards[1]);
+			SetPortraitToTexture(button.Reward.Icon, texture);
+			button.Reward.honor = honor;
+			button.Reward.experience = experience;
+			button.Reward.itemID = id;
+			button.Reward:Show();
+		else
+			button.Reward:Hide();
+		end
 	end
 
 	do
@@ -1035,8 +1036,23 @@ function ConquestFrame_OnShow(self)
 	ConquestFrame_Update(self);
 end
 
+function ConquestFrame_SetTierInfo(tierFrame, tierInfo, ranking)
+	if tierInfo then
+		tierFrame.Icon:SetTexture(tierInfo.tierIconID);
+		tierFrame:Show();
+		if ranking then
+			tierFrame.RankingShadow:Show();
+			tierFrame.Ranking:SetText(ranking);
+		else
+			tierFrame.RankingShadow:Hide();
+			tierFrame.Ranking:SetText();
+		end
+	else
+		tierFrame:Hide();
+	end
+end
+
 function ConquestFrame_Update(self)
-    PVPQueueFrame_CheckXPBarLockState(self);
 	if ( GetCurrentArenaSeason() == NO_ARENA_SEASON ) then
 		ConquestFrame.Disabled:Hide();
 		ConquestFrame.NoSeason:Show();
@@ -1057,20 +1073,11 @@ function ConquestFrame_Update(self)
 			if tierInfo then
 				button.CurrentRating:SetText(rating);
 				button.CurrentRating:Show();
-				button.TierIcon:SetTexture(tierInfo.tierIconID);
-				button.TierIcon:Show();
 			else
 				button.CurrentRating:Hide();
-				button.TierIcon:Hide();
 			end
+			ConquestFrame_SetTierInfo(button.Tier, tierInfo, ranking);
 			button.bracketIndex = bracketIndex;
-
-			if tierInfo and ranking then
-				button.Ranking:Show();
-				button.Ranking.Text:SetText(ranking);
-			else
-				button.Ranking:Hide();
-			end
 
 			local honor, experience, rewards;
 
@@ -1389,6 +1396,18 @@ function PVPUIHonorInsetMixin:DisplayRatedPanel()
 	local panel = self.RatedPanel;
 	panel:Show();
 	self.CasualPanel:Hide();
+
+	local tierID, ranking, nextTierID = C_PvP.GetSeasonBestInfo();
+	local tierInfo = C_PvP.GetPvpTierInfo(tierID);
+	ConquestFrame_SetTierInfo(panel.Tier, tierInfo, ranking);
+
+	local nextTierInfo = nextTierID and C_PvP.GetPvpTierInfo(nextTierID);	
+	if nextTierInfo then
+		panel.Tier.NextTier.Icon:SetTexture(nextTierInfo.tierIconID);
+		panel.Tier.NextTier:Show();
+	else
+		panel.Tier.NextTier:Hide();
+	end
 end
 
 PVPUIHonorLevelDisplayMixin = { };
@@ -1473,4 +1492,163 @@ function PVPUIHonorLevelDisplayMixin:ShowNextRewardTooltip()
 			GameTooltip:Show();
 		end
 	end
+end
+
+function PVPUIHonorLevelDisplayMixin:OnMouseUp(button)
+	if button == "RightButton" then
+		UIDropDownMenu_Initialize(self.DropDown, InitializeHonorXPBarDropDown, "MENU");
+		ToggleDropDownMenu(1, nil, self.DropDown, "cursor", 10, -10);
+	end
+end
+
+PVPUISeasonRewardFrameMixin = { };
+
+local REWARD_QUEST_ID = 53096;
+local SEASON_REWARD_ACHIEVEMENTS = {
+	[PLAYER_FACTION_GROUP[0]] = 13136,
+	[PLAYER_FACTION_GROUP[1]] = 13137,
+};
+
+function PVPUISeasonRewardFrameMixin:OnShow()
+	if self:IsRewardAvailable() then
+		self:Update();
+	else
+		self:RegisterEvent("QUEST_LOG_UPDATE");
+	end
+end
+
+function PVPUISeasonRewardFrameMixin:OnHide()
+	self:UnregisterEvent("QUEST_LOG_UPDATE");
+end
+
+function PVPUISeasonRewardFrameMixin:IsRewardAvailable()
+	return HaveQuestData(REWARD_QUEST_ID) and HaveQuestRewardData(REWARD_QUEST_ID);
+end
+
+function PVPUISeasonRewardFrameMixin:OnEvent(event, ...)
+	if event == "QUEST_LOG_UPDATE" then
+		if self:IsRewardAvailable() then
+			self:UnregisterEvent("QUEST_LOG_UPDATE");
+			self:Update();
+		end
+	end
+end
+
+function PVPUISeasonRewardFrameMixin:Update()
+	local itemIndex = 1;
+	local name, texture, count, quality, isUsable = GetQuestLogRewardInfo(itemIndex, REWARD_QUEST_ID);
+	if texture then
+		self.Icon:SetTexture(texture);
+		self.Icon:Show();
+		local completed = false;
+		local achievementID = SEASON_REWARD_ACHIEVEMENTS[UnitFactionGroup("player")];
+		if achievementID and GetAchievementNumCriteria(achievementID) > 0 then
+			completed = select(3, GetAchievementCriteriaInfo(achievementID, 1));
+		end
+		if completed then
+			self.Icon:SetDesaturated(false);
+			self.CheckMark:Show();
+		else
+			self.Icon:SetDesaturated(true);
+			self.CheckMark:Hide();
+		end
+	else
+		self.Icon:Hide();
+	end
+end
+
+function PVPUISeasonRewardFrameMixin:UpdateTooltip()
+	local achievementID = SEASON_REWARD_ACHIEVEMENTS[UnitFactionGroup("player")];
+	if not achievementID then
+		return;
+	end
+	if GetAchievementNumCriteria(achievementID) == 0 then
+		return;
+	end
+
+	EmbeddedItemTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip_SetTitle(EmbeddedItemTooltip, PVP_SEASON_REWARD);
+
+	local criteriaString, criteriaType, completed, quantity, reqQuantity, charName, flags, assetID, quantityString = GetAchievementCriteriaInfo(achievementID, 1);
+	if criteriaString then
+		if completed then
+			GameTooltip_AddColoredLine(EmbeddedItemTooltip, GOAL_COMPLETED, GREEN_FONT_COLOR);
+		else
+			local wordWrap = true;
+			GameTooltip_AddNormalLine(EmbeddedItemTooltip, criteriaString, wordWrap);
+			local roundToNearestInteger = true;
+			GameTooltip_ShowProgressBar(EmbeddedItemTooltip, 0, reqQuantity, quantity, FormatPercentage(quantity / reqQuantity, roundToNearestInteger));
+			EmbeddedItemTooltip:AddLine(" ");
+			GameTooltip_AddNormalLine(EmbeddedItemTooltip, REWARD, wordWrap);
+			EmbeddedItemTooltip_SetItemByQuestReward(EmbeddedItemTooltip.ItemTooltip, 1, REWARD_QUEST_ID);
+		end
+	end
+	EmbeddedItemTooltip:Show();
+end
+
+function PVPUISeasonRewardFrameMixin:OnLeave()
+	EmbeddedItemTooltip:Hide();
+end
+
+PVPConquestBarMixin = { };
+
+function PVPConquestBarMixin:OnShow()
+	self:RegisterEvent("QUEST_LOG_UPDATE");
+	self:Update();
+end
+
+function PVPConquestBarMixin:OnHide()
+	self:UnregisterEvent("QUEST_LOG_UPDATE");
+end
+
+function PVPConquestBarMixin:OnEvent(event, ...)
+	if event == "QUEST_LOG_UPDATE" then
+		self:Update();
+	end
+end
+
+function PVPConquestBarMixin:Update()
+	local current, max, rewardItemID = self:GetConquestLevelInfo();
+	if max == 0 then
+		self:SetValue(0);
+	else
+		self:SetValue(current / max * 100);
+	end
+	self.Label:SetFormattedText(CONQUEST_BAR, current, max);
+	if rewardItemID then
+		self.Reward.Icon:SetTexture(GetItemIcon(rewardItemID));
+		self.Reward.itemID = rewardItemID;
+	else
+		self.Reward.Icon:SetColorTexture(0, 0, 0);
+		self.Reward.itemID = nil;
+	end
+end
+
+function PVPConquestBarMixin:GetConquestLevelInfo()
+	local CONQUEST_QUESTLINE_ID = 782;
+	local quests = C_QuestLine.GetQuestLineQuests(CONQUEST_QUESTLINE_ID)
+	local currentQuestID = quests[1];
+	for i, questID in ipairs(quests) do
+		if not IsQuestFlaggedCompleted(questID) and not C_QuestLog.IsOnQuest(questID) then
+			break;
+		end
+		currentQuestID = questID;
+	end
+
+	if not HaveQuestData(currentQuestID) then
+		return 0, 0, nil;
+	end
+
+	local objectives = C_QuestLog.GetQuestObjectives(currentQuestID);
+	if not objectives or not objectives[1] then
+		return 0, 0, nil;
+	end
+
+	local rewardItemID;
+	if HaveQuestRewardData(currentQuestID) then
+		local itemIndex = 1;
+		rewardItemID = select(6, GetQuestLogRewardInfo(itemIndex, currentQuestID));
+	end
+
+	return objectives[1].numFulfilled, objectives[1].numRequired, rewardItemID;
 end

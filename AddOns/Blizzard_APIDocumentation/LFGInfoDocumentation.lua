@@ -6,6 +6,34 @@ local LFGInfo =
 
 	Functions =
 	{
+		{
+			Name = "GetAllEntriesForCategory",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "category", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "lfgDungeonIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "HideNameFromUI",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "dungeonID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "shouldHide", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Events =

@@ -687,7 +687,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="ItemTooltip" inherits="EmbeddedItemTooltip">
+			<Frame parentKey="ItemTooltip" inherits="InternalEmbeddedItemTooltipTemplate">
 				<KeyValues>
 					<KeyValue key="leftPadding" value="8" type="number"/>
 					<KeyValue key="layoutIndex" value="2" type="number"/>

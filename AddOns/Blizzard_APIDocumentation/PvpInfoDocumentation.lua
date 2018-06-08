@@ -176,12 +176,23 @@ local PvpInfo =
 			},
 		},
 		{
-			Name = "GetRandomLargeBGInfo",
+			Name = "GetRandomEpicBGInfo",
 			Type = "Function",
 
 			Returns =
 			{
 				{ Name = "info", Type = "RandomBGInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetRandomEpicBGRewards",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "honor", Type = "number", Nilable = false },
+				{ Name = "experience", Type = "number", Nilable = false },
+				{ Name = "rewards", Type = "table", InnerType = "BattlefieldReward", Nilable = true },
 			},
 		},
 		{
@@ -193,6 +204,17 @@ local PvpInfo =
 				{ Name = "honor", Type = "number", Nilable = false },
 				{ Name = "experience", Type = "number", Nilable = false },
 				{ Name = "rewards", Type = "table", InnerType = "BattlefieldReward", Nilable = true },
+			},
+		},
+		{
+			Name = "GetSeasonBestInfo",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "tierID", Type = "number", Nilable = false },
+				{ Name = "ranking", Type = "number", Nilable = true },
+				{ Name = "nextTierID", Type = "number", Nilable = true },
 			},
 		},
 		{

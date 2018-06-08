@@ -74,8 +74,10 @@ function DressUpBattlePet(creatureID, displayID)
 	frame.mode = "battlepet";
 	frame.ResetButton:Hide();
 	if ( displayID and displayID ~= 0 ) then
+		model:SetPosition(0,0,0);
 		model:SetDisplayInfo(displayID);
 	else
+		model:SetPosition(0,0,0);
 		model:SetCreature(creatureID);
 	end
 	return true;
@@ -117,6 +119,7 @@ function DressUpMount(creatureDisplayID)
 	--Set up the model on the frame
 	frame.mode = "mount";
 	frame.ResetButton:Hide();
+	model:SetPosition(0,0,0);
 	model:SetDisplayInfo(creatureDisplayID);
 
 	return true;
@@ -170,6 +173,7 @@ function DressUpFrame_Show()
 		SetDressUpBackground(DressUpFrame, nil, classFileName);
 
 		ShowUIPanel(DressUpFrame);
+		DressUpModel:SetPosition(0,0,0);
 		DressUpModel:SetUnit("player");
 	end
 end

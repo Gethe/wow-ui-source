@@ -114,6 +114,7 @@ function PartyMemberFrame_OnLoad (self)
 	self:RegisterEvent("PARTY_MEMBER_ENABLE");
 	self:RegisterEvent("PARTY_MEMBER_DISABLE");
 	self:RegisterEvent("UNIT_PHASE");
+	self:RegisterEvent("UNIT_FLAGS");
 	self:RegisterEvent("UNIT_OTHER_PARTY_CHANGED");
 	local id = self:GetID();
 	self:RegisterUnitEvent("UNIT_AURA", "party"..id, "partypet"..id);
@@ -300,6 +301,7 @@ function PartyMemberFrame_UpdateNotPresentIcon(self)
 	local partyID = "party"..id;
 
 	local inPhase = UnitInPhase(partyID);
+	local notInSameWarMode = UnitIsWarModePhased(partyID);
 
 	if ( UnitInOtherParty(partyID) ) then
 		self:SetAlpha(0.6);
@@ -308,12 +310,15 @@ function PartyMemberFrame_UpdateNotPresentIcon(self)
 		self.notPresentIcon.Border:Show();
 		self.notPresentIcon.tooltip = PARTY_IN_PUBLIC_GROUP_MESSAGE;
 		self.notPresentIcon:Show();
-	elseif ( not inPhase and UnitIsConnected(partyID) ) then
+	elseif ( (notInSameWarMode or not inPhase) and UnitIsConnected(partyID) ) then
 		self:SetAlpha(0.6);
 		self.notPresentIcon.texture:SetTexture("Interface\\TargetingFrame\\UI-PhasingIcon");
 		self.notPresentIcon.texture:SetTexCoord(0.15625, 0.84375, 0.15625, 0.84375);
 		self.notPresentIcon.Border:Hide();
 		self.notPresentIcon.tooltip = PARTY_PHASED_MESSAGE;
+		if ( notInSameWarMode ) then
+			self.notPresentIcon.tooltip = PARTY_WARMODE_MESSAGE;
+		end
 		self.notPresentIcon:Show();
 	else
 		self:SetAlpha(1);
@@ -396,7 +401,7 @@ function PartyMemberFrame_OnEvent(self, event, ...)
 	elseif ( event == "UNIT_CONNECTION" ) and ( arg1 == "party"..selfID ) then
 		PartyMemberFrame_UpdateArt(self);
 		PartyMemberFrame_UpdateOnlineStatus(self);
-	elseif ( event == "UNIT_PHASE" or event == "PARTY_MEMBER_ENABLE" or event == "PARTY_MEMBER_DISABLE" ) then
+	elseif ( event == "UNIT_PHASE" or event == "PARTY_MEMBER_ENABLE" or event == "PARTY_MEMBER_DISABLE" or event == "UNIT_FLAGS") then
 		if ( event ~= "UNIT_PHASE" or arg1 == unit ) then
 			PartyMemberFrame_UpdateNotPresentIcon(self);
 		end
