@@ -84,6 +84,7 @@ local EJ_TIER_DATA =
 	[5] = { backgroundTexture = "Interface\\EncounterJournal\\UI-EJ-MistsofPandaria", r = 0.0, g = 0.6, b = 0.2 },
 	[6] = { backgroundTexture = "Interface\\ENCOUNTERJOURNAL\\UI-EJ-WarlordsofDraenor", r = 0.82, g = 0.55, b = 0.1 },
 	[7] = { backgroundTexture = "Interface\\EncounterJournal\\UI-EJ-Legion", r = 1.0, g = 0.8, b = 0.0 },
+	[8] = { backgroundTexture = "Interface\\EncounterJournal\\UI-EJ-BattleforAzeroth", r = 1.0, g = 0.8, b = 0.0 },
 }
 
 function GetEJTierData(tier)
@@ -102,6 +103,7 @@ ExpansionEnumToEJTierDataTableId = {
 	[LE_EXPANSION_MISTS_OF_PANDARIA] = 5,
 	[LE_EXPANSION_WARLORDS_OF_DRAENOR] = 6,
 	[LE_EXPANSION_LEGION] = 7,
+	[LE_EXPANSION_BATTLE_FOR_AZEROTH] = 8,
 }
 
 function GetEJTierDataTableID(expansion)

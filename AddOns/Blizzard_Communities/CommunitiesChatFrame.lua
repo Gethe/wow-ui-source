@@ -170,8 +170,8 @@ function CommunitiesChatMixin:DisplayChat()
 	local streamViewMarker = C_Club.GetStreamViewMarker(clubId, streamId);
 	for index, message in ipairs(messages) do
 		if streamViewMarker and message.messageId.epoch > streamViewMarker then
-			-- TODO:: This is temporary. Jeff is going to mock up a better display.
-			self.MessageFrame:AddMessage("--------------- Unread ---------------");
+			-- TODO:: We also need to add this while backfilling messages.
+			self:AddUnreadNotification();
 			streamViewMarker = nil;
 		end
 		
@@ -261,7 +261,46 @@ function CommunitiesChatMixin:FormatMessage(clubId, streamId, message)
 	else
 		content = message.content;
 	end
-	return COMMUNITIES_CHAT_MESSAGE_FORMAT:format(link or name, content);
+
+	if CHAT_TIMESTAMP_FORMAT then
+		return BetterDate(CHAT_TIMESTAMP_FORMAT, message.messageId.epoch / 1000000)..COMMUNITIES_CHAT_MESSAGE_FORMAT:format(link or name, content);
+	else
+		return COMMUNITIES_CHAT_MESSAGE_FORMAT:format(link or name, content);
+	end
+end
+
+function CommunitiesChatMixin:AddDateNotification(date, backfill)
+	local notification = nil;
+	if AreFullDatesEqual(C_DateAndTime.GetTodaysDate(), date) then
+		notification = COMMUNITIES_CHAT_FRAME_TODAY_NOTIFICATION;
+	elseif AreFullDatesEqual(C_DateAndTime.GetYesterdaysDate(), date) then
+		notification = COMMUNITIES_CHAT_FRAME_YESTERDAY_NOTIFICATION;
+	else
+		notification = FormateFullDateWithoutYear(date);
+	end
+	
+	self:AddNotification(notification, "communities-chat-date-line", 0.4, 0.4, 0.4, backfill);
+end
+
+function CommunitiesChatMixin:AddUnreadNotification(backfill)
+	local r, g, b = ORANGE_FONT_COLOR:GetRGB();
+	self:AddNotification(COMMUNITIES_CHAT_FRAME_UNREAD_MESSAGES_NOTIFICATION, "communities-chat-date-line-orange", r, g, b, backfill);
+end
+
+local NOTIFICATION_LINE_TEXTURE_SIZE_Y = 8;
+function CommunitiesChatMixin:AddNotification(notification, atlas, r, g, b, backfill)
+	local textureMarkup = CreateAtlasMarkup(atlas, NOTIFICATION_LINE_TEXTURE_SIZE_Y, 256, 0, 3);
+	if backfill then
+		self.MessageFrame:BackFillMessage(textureMarkup, 1, 1, 1);
+		self.MessageFrame:BackFillMessage(notification, r, g, b);
+		self.MessageFrame:BackFillMessage(" ");
+		self.MessageFrame:BackFillMessage(" ");
+	else
+		self.MessageFrame:AddMessage(" ");
+		self.MessageFrame:AddMessage(" ");
+		self.MessageFrame:AddMessage(notification, r, g, b);
+		self.MessageFrame:AddMessage(textureMarkup, 1, 1, 1);
+	end
 end
 
 function CommunitiesChatMixin:AddMessage(clubId, streamId, message, backfill)
@@ -272,6 +311,13 @@ function CommunitiesChatMixin:AddMessage(clubId, streamId, message, backfill)
 	
 	if not message.author.name then
 		self:RegisterForMemberUpdate(clubId, message.author.memberId);
+	end
+	
+	local messageDate = C_DateAndTime.GetDateFromEpoch(message.messageId.epoch);
+	local previousMessageId = select(7, self.MessageFrame:GetMessageInfo(backfill and 1 or self.MessageFrame:GetNumMessages()));
+	local previousMessageDate = previousMessageId and C_DateAndTime.GetDateFromEpoch(previousMessageId.epoch);
+	if previousMessageDate and (messageDate.day ~= previousMessageDate.day or messageDate.month ~= previousMessageDate.month) then
+		self:AddDateNotification(backfill and previousMessageDate or messageDate, backfill);
 	end
 	
 	if backfill then

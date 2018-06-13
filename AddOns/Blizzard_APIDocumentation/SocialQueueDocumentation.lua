@@ -76,7 +76,7 @@ local SocialQueue =
 
 			Returns =
 			{
-				{ Name = "groupMembers", Type = "table", InnerType = "string", Nilable = false },
+				{ Name = "groupMembers", Type = "table", InnerType = "SocialQueuePlayerInfo", Nilable = false },
 			},
 		},
 		{
@@ -171,6 +171,15 @@ local SocialQueue =
 				{ Name = "THROTTLE_RF_ILVL_SCALING_ABOVE", Type = "number", Nilable = false },
 				{ Name = "THROTTLE_DF_MAX_ITEM_LEVEL", Type = "number", Nilable = false },
 				{ Name = "THROTTLE_DF_BEST_PRIORITY", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SocialQueuePlayerInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "guid", Type = "string", Nilable = false },
+				{ Name = "clubId", Type = "string", Nilable = true },
 			},
 		},
 		{

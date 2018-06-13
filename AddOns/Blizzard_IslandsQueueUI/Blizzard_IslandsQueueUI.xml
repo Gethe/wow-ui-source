@@ -171,6 +171,11 @@
 				<Anchors>
 					<Anchor point="BOTTOM" y="28"/> 
 				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent():OnQueueClick(); 
+					</OnClick>
+				</Scripts>
 			</Button>
 		</Frames>
 		<Scripts>
@@ -327,7 +332,9 @@
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/> 
+			<OnEvent method="OnEvent"/>
 			<OnShow method="OnShow"/> 
+			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>
 </Ui>

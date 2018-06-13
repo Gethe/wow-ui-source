@@ -2435,6 +2435,10 @@ end
 
 function WardrobeCollectionFrameModelDropDown_SetSource(self, visualID, sourceID)
 	WardrobeCollectionFrame.ItemsCollectionFrame:SetChosenVisualSource(visualID, sourceID);
+
+	if WardrobeFrame_IsAtTransmogrifier() then
+		WardrobeCollectionFrame.ItemsCollectionFrame:SelectVisual(visualID);
+	end
 end
 
 function WardrobeCollectionFrameModelDropDown_SetFavorite(visualID, value, confirmed)

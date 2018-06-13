@@ -43,34 +43,42 @@ function TableInspectorAttributeDataProviderMixin:SortAttributes()
 	end);
 end
 
+local function ShouldShowObject(object)
+	return not C_Widget.IsWidget(object) or CanAccessObject(object);
+end
+
 function TableInspectorAttributeDataProviderMixin:RefreshData(focusedTable)
 	TableInspectorDataProviderMixin.RefreshData(self, focusedTable);
 	wipe(self.attributes);
 	
 	local childFrameIsDisplayed = {};
 	for key, value in pairs(focusedTable) do
-		local displayValue;
-		local valueType = type(value);
-		if valueType == "number" or valueType == "string" or valueType == "boolean" then
-			displayValue = tostring(value);
-		elseif valueType == "table" and value.GetDebugName then
-			displayValue = value:GetDebugName();
-			valueType = "childFrame";
-			childFrameIsDisplayed[value] = true;
-		elseif valueType == "nil" then
-			displayValue = "nil";
-		else
-			displayValue = "N/A";
+		if ShouldShowObject(key) and ShouldShowObject(value) then
+			local displayValue;
+			local valueType = type(value);
+			if valueType == "number" or valueType == "string" or valueType == "boolean" then
+				displayValue = tostring(value);
+			elseif valueType == "table" and value.GetDebugName then
+				displayValue = value:GetDebugName();
+				valueType = "childFrame";
+				childFrameIsDisplayed[value] = true;
+			elseif valueType == "nil" then
+				displayValue = "nil";
+			else
+				displayValue = "N/A";
+			end
+			table.insert(self.attributes, { key = key, type = valueType, rawValue = value, displayValue = displayValue });
 		end
-		table.insert(self.attributes, { key = key, type = valueType, rawValue = value, displayValue = displayValue });
 	end
 	
 	if focusedTable.GetChildren then
 		local children = { focusedTable:GetChildren() };
 	    for _, child in ipairs(children) do
-			if not childFrameIsDisplayed[child] then
-				table.insert(self.attributes, { key = "N/A", type = "childFrame", rawValue = child, displayValue = child:GetDebugName() });
-				childFrameIsDisplayed[child] = true;
+			if ShouldShowObject(child) then
+				if not childFrameIsDisplayed[child] then
+					table.insert(self.attributes, { key = "N/A", type = "childFrame", rawValue = child, displayValue = child:GetDebugName() });
+					childFrameIsDisplayed[child] = true;
+				end
 			end
 		end
 	end
@@ -78,7 +86,9 @@ function TableInspectorAttributeDataProviderMixin:RefreshData(focusedTable)
 	if focusedTable.GetRegions then
 		local regions = { focusedTable:GetRegions() };
 	    for _, region in ipairs(regions) do
-			table.insert(self.attributes, { key = "N/A", type = "region", rawValue = region, displayValue = region:GetDebugName() });
+			if ShouldShowObject(region) then
+				table.insert(self.attributes, { key = "N/A", type = "region", rawValue = region, displayValue = region:GetDebugName() });
+			end
 		end
 	end
 	

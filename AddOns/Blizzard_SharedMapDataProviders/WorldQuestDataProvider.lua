@@ -196,6 +196,7 @@ function WorldQuestDataProviderMixin:RefreshAllData(fromOnShow)
 						local pin = self.activePins[info.questId];
 						if pin then
 							pin:RefreshVisuals();
+							pin:SetPosition(info.x, info.y); -- Fix for WOW8-48605 - WQ starting location may move based on player location and viewed map
 						else
 							self.activePins[info.questId] = self:AddWorldQuest(info);
 						end

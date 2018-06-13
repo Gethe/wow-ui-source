@@ -1243,7 +1243,7 @@
 		</Scripts>
 	</Frame>
 
-	<Button name="EncounterItemTemplate" virtual="true">
+	<Button name="EncounterItemTemplate" registerForClicks="LeftButtonUp, RightButtonUp" virtual="true">
 		<Size x="321" y="45"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -1929,7 +1929,7 @@
 							<OnClick function="EJ_ContentTab_OnClick"/>
 						</Scripts>
 					</Button>
-					<Button name="$parentLootJournalTab" inherits="EncounterTierTabTemplate" text="LOOT" parentKey="LootJournalTab">
+					<Button name="$parentLootJournalTab" inherits="EncounterTierTabTemplate" text="LOOT_JOURNAL_ITEM_SETS" parentKey="LootJournalTab">
 						<KeyValues>
  							<KeyValue key="id" value="4" type="number"/>
  						</KeyValues>

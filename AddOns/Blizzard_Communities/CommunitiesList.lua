@@ -335,6 +335,7 @@ end
 
 function CommunitiesListEntryMixin:SetAddCommunity()
 	self.overrideOnClick = function()
+		PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 		if not AddCommunitiesFlow_IsShown() then
 			self:GetCommunitiesFrame():CloseActiveDialogs();
 		end
@@ -365,6 +366,7 @@ end
 
 function CommunitiesListEntryMixin:SetGuildFinder()
 	self.overrideOnClick = function ()
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 		self:GetCommunitiesFrame():SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_FINDER);
 		self:GetCommunitiesFrame():SelectClub(nil);
 	end;
@@ -443,6 +445,7 @@ function CommunitiesListEntryMixin:OnClick(button)
 	end
 	
 	if button == "LeftButton" then
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 		self:GetCommunitiesFrame():SelectClub(self.clubId);
 	elseif button == "RightButton" then
 		local clubInfo = C_Club.GetClubInfo(self:GetClubId());

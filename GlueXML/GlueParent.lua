@@ -685,14 +685,8 @@ function SetExpansionLogo(texture, expansionLevel)
 end
 
 function UpgradeAccount()
-	local info = C_StoreSecure.GetProductGroupInfo(WOW_GAMES_CATEGORY_ID);
-	if info then
-		StoreFrame_SetGamesCategory();
-		ToggleStoreUI();
-	else
-		PlaySound(SOUNDKIT.GS_LOGIN_NEW_ACCOUNT);
-		LoadURLIndex(2);
-	end
+	PlaySound(SOUNDKIT.GS_LOGIN_NEW_ACCOUNT);
+	LoadURLIndex(2);
 end
 
 function MinutesToTime(mins, hideDays)

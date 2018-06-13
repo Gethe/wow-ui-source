@@ -13,6 +13,11 @@ function ChannelRosterButtonMixin:IsChannelActive()
 	return channel and channel:IsVoiceActive()
 end
 
+function ChannelRosterButtonMixin:IsChannelPublic()
+	local channel = self:GetRoster():GetChannelFrame():GetList():GetSelectedChannelButton();
+	return channel and IsPublicVoiceChannel(channel:GetVoiceChannel());
+end
+
 function ChannelRosterButtonMixin:GetMemberPlayerLocation()
 	return self.playerLocation;
 end
@@ -169,6 +174,13 @@ function ChannelRosterButtonMixin:OnClick(button)
 		dropdown.channelType = channel:GetChannelType();
 		dropdown.guid = guid;
 		dropdown.isSelf = self:IsLocalPlayer();
+		dropdown.voiceChannel = channel:GetVoiceChannel();
+		dropdown.voiceChannelID = channel:GetVoiceChannelID();
+		if dropdown.voiceChannelID and guid then
+			dropdown.voiceMemberID = C_VoiceChat.GetMemberID(dropdown.voiceChannelID, guid);
+		else
+			dropdown.voiceMemberID = nil;
+		end
 
 		ToggleDropDownMenu(1, nil, dropdown, "cursor");
 	end

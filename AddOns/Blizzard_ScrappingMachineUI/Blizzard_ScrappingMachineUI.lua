@@ -1,3 +1,4 @@
+UIPanelWindows["ScrappingMachineFrame"] = {area = "center", pushable = 3, showFailedFunc = C_ScrappingMachineUI.CloseScrappingMachine, };
 ScrappingMachineMixin = {};
 
 function ScrappingMachineMixin:SetupScrapButtonPool()
@@ -12,10 +13,18 @@ function ScrappingMachineMixin:SetupScrapButtonPool()
 			local button = self.ItemSlots.scrapButtons:Acquire();
 			button.SlotNumber = slotCount; 
 			slotCount = slotCount + 1; 
-			button:SetPoint("BOTTOMLEFT", self.ItemSlots, "BOTTOMLEFT", (i - 1) * (width - i) + 2, (j - 1) * (height - j) + 2);
+			button:SetPoint("TOPLEFT", self.ItemSlots, "TOPLEFT", ((j - 1) * (width - j) + 2), -((i - 1) * (height - i) + 2));
 			button:Show();
 		end
 	end
+end
+
+function ScrappingMachineMixin:ClearAllScrapButtons()
+	for button in self.ItemSlots.scrapButtons:EnumerateActive() do
+		if(button) then
+			button:ClearSlot();
+		end
+	end 
 end
 
 function ScrappingMachineMixin:ScrapItems()
@@ -30,25 +39,27 @@ function ScrappingMachineMixin:OnLoad()
 	self.ItemSlots.scrapButtons = CreateFramePool("BUTTON", self.ItemSlots, "ScrappingMachineItemSlot");
 	self:SetupScrapButtonPool(); 
 	
+	UIPanelWindows[self:GetName()] = {area = "left", pushable = 3, showFailedFunc = C_ScrappingMachineUI.CloseScrappingMachine, };
 	SetPortraitToTexture(self.portrait, "Interface\\Icons\\inv_gizmo_03");
-	self.TitleText:SetText(SCRAPPING_MACHINE_TITLE);	
-	
-	self:RegisterEvent("SCRAPPING_MACHINE_CLOSE");
-	self:RegisterEvent("SCRAPPING_MACHINE_PENDING_ITEM_CHANGED");
-	self:RegisterEvent("SCRAPPING_MACHINE_SCRAPPING_FINISHED");
-	
-	self:Show(); 
+	self.TitleText:SetText(SCRAPPING_MACHINE_TITLE);	 
 end
 
 function ScrappingMachineMixin:OnShow()
+	PlaySound(SOUNDKIT.UI_80_SCRAPPING_WINDOW_OPEN);
 	self:UpdateScrapButtonState();
+	self:RegisterEvent("BAG_UPDATE"); 
+	self:RegisterEvent("SCRAPPING_MACHINE_CLOSE");
+	self:RegisterEvent("SCRAPPING_MACHINE_PENDING_ITEM_CHANGED");
+	self:RegisterEvent("SCRAPPING_MACHINE_SCRAPPING_FINISHED");
 	self:RegisterUnitEvent("UNIT_SPELLCAST_START", "player");
 	self:RegisterUnitEvent("UNIT_SPELLCAST_INTERRUPTED", "player");
-	self:RegisterUnitEvent("UNIT_SPELLCAST_STOP", "player");
+	self:RegisterUnitEvent("UNIT_SPELLCAST_SUCCEEDED", "player"); 
 end
 
 function ScrappingMachineMixin:OnEvent(event, ...)
-	if (event == "SCRAPPING_MACHINE_PENDING_ITEM_CHANGED") then
+	if (event == "BAG_UPDATE") then
+		C_ScrappingMachineUI.ValidateScrappingList();
+	elseif (event == "SCRAPPING_MACHINE_PENDING_ITEM_CHANGED") then
 		self:UpdateScrapButtonState();
 	elseif (event == "UNIT_SPELLCAST_START") then
 		local unitTag, lineID, spellID = ...;
@@ -59,27 +70,36 @@ function ScrappingMachineMixin:OnEvent(event, ...)
 		local unitTag, lineID, spellID = ...;
 		if self.scrapCastLineID and self.scrapCastLineID == lineID then
 			self.scrapCastLineID = nil;
-		end
-	elseif (event == "UNIT_SPELLCAST_STOP") then
-		local unitTag, lineID, spellID = ...;
-		if self.scrapCastLineID and self.scrapCastLineID == lineID then
-			C_ScrappingMachineUI.RemoveCurrentScrappingItem();
+			C_ScrappingMachineUI.ValidateScrappingList();
 		end
 	elseif (event == "SCRAPPING_MACHINE_CLOSE") then
 		HideUIPanel(self);
 	elseif (event == "SCRAPPING_MACHINE_SCRAPPING_FINISHED") then 
 		C_ScrappingMachineUI.RemoveAllScrapItems();
+	elseif (event == "UNIT_SPELLCAST_SUCCEEDED") then
+		local unitTag, lineID, spellID = ...;
+		if self.scrapCastLineID and self.scrapCastLineID == lineID then
+			C_ScrappingMachineUI.RemoveCurrentScrappingItem();
+		end
 	end
 end
 
-function ScrappingMachineMixin:OnHide()
-	C_ScrappingMachineUI.RemoveAllScrapItems();
+function ScrappingMachineMixin:CloseScrappingMachine()
+	self.scrapCastLineID = nil;
+	self:ClearAllScrapButtons();
+	C_ScrappingMachineUI.CloseScrappingMachine(); 
+end
 
+function ScrappingMachineMixin:OnHide()
 	self:UnregisterEvent("UNIT_SPELLCAST_START");
 	self:UnregisterEvent("UNIT_SPELLCAST_INTERRUPTED");
-	self:UnregisterEvent("UNIT_SPELLCAST_STOP");
-	self.scrapCastLineID = nil;
-	C_ScrappingMachineUI.CloseScrappingMachine(); 
+	self:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED"); 
+	self:UnregisterEvent("BAG_UPDATE"); 
+	self:UnregisterEvent("SCRAPPING_MACHINE_CLOSE");
+	self:UnregisterEvent("SCRAPPING_MACHINE_PENDING_ITEM_CHANGED");
+	self:UnregisterEvent("SCRAPPING_MACHINE_SCRAPPING_FINISHED");
+	PlaySound(SOUNDKIT.UI_80_SCRAPPING_WINDOW_CLOSE);
+	self:CloseScrappingMachine();
 end
 
 ScrappingMachineItemSlotMixin = {};
@@ -134,6 +154,7 @@ function ScrappingMachineItemSlotMixin:OnLoad()
 	self:RegisterForClicks("LeftButtonDown");
 	self:RegisterForClicks("RightButtonDown");
 	self:RegisterForDrag("LeftButton");
+	self:RegisterForDrag("RightButton");
 	self:RegisterEvent("SCRAPPING_MACHINE_PENDING_ITEM_CHANGED");
 end
 

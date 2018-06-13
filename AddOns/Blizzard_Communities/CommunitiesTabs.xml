@@ -21,6 +21,7 @@
 		</Layers>
 		<Scripts>
 			<OnClick>
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 				self:SetChecked(true);
 			</OnClick>
 			<OnEnter function="CommunitiesFrameTab_OnEnter"/>
@@ -37,7 +38,7 @@
 		</KeyValues>
 		<Scripts>
 			<OnLoad>
-				self.Icon:SetTexture("Interface\\Icons\\ability_warrior_battleshout");
+				self.Icon:SetTexture("Interface\\Icons\\UI_Chat");
 			</OnLoad>
 			<OnClick inherit="append">
 				self:GetParent():SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.CHAT);

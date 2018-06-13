@@ -57,6 +57,7 @@ local voiceChatStatusToGameError =
 	[Enum.VoiceChatStatusCode.TargetNotFound] = LE_GAME_ERR_VOICE_CHAT_TARGET_NOT_FOUND,
 	[Enum.VoiceChatStatusCode.ProxyConnectionTimeOut] = LE_GAME_ERR_VOICE_CHAT_SERVICE_LOST,
 	[Enum.VoiceChatStatusCode.ProxyConnectionUnexpectedDisconnect] = LE_GAME_ERR_VOICE_CHAT_SERVICE_LOST,
+	[Enum.VoiceChatStatusCode.PlayerSilenced] = LE_GAME_ERR_VOICE_CHAT_PLAYER_SILENCED,
 };
 
 function Voice_GetGameErrorFromStatusCode(statusCode)
@@ -92,4 +93,8 @@ local channelTypeToPartyCategory = tInvert(partyCategoryToChannelType);
 
 function GetPartyCategoryFromChannelType(channelType)
 	return channelTypeToPartyCategory[channelType];
+end
+
+function IsPublicVoiceChannel(channel)
+	return channel and channel.channelType == Enum.ChatChannelType.Public_Party;
 end

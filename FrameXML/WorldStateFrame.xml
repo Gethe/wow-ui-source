@@ -432,7 +432,7 @@
 				</Layers>
 				<Scripts>
 					<OnLoad>
-						self.sortType = "prestige";
+						self.sortType = "honorLevel";
 					</OnLoad>
 				</Scripts>
 			</Button>

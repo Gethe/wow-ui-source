@@ -93,13 +93,28 @@ end
 function IslandsQueueFrameMixin:OnLoad()
 	SetPortraitToTexture(self.portrait, "Interface\\Icons\\icon_treasuremap");	
 	UIWidgetManager:RegisterWidgetSetContainer(ISLANDS_QUEUE_WIDGET_SET_ID, self.IslandCardsFrame, WidgetsLayout);
+	self:RegisterEvent("ISLANDS_QUEUE_CLOSE"); 
+end
+
+function IslandsQueueFrameMixin:OnEvent(event, ...) 
+	if (event == "ISLANDS_QUEUE_CLOSE") then
+		HideUIPanel(self);
+	end
 end
 
 function IslandsQueueFrameMixin:OnShow()
 	self.DifficultySelectorFrame:SetInitialDifficulty(); 
 end
 
+function IslandsQueueFrameMixin:OnHide()
+	C_IslandsQueue.CloseIslandsQueueScreen();
+end
+
 IslandsQueueFrameDifficultyMixin = { }; 
+
+function IslandsQueueFrameDifficultyMixin:OnQueueClick()
+	C_IslandsQueue.QueueForIsland(self:GetActiveDifficulty());
+end
 
 function IslandsQueueFrameDifficultyMixin:OnLoad()
 	self.difficultyPool = CreateFramePool("BUTTON", self, "IslandsQueueFrameDifficultyButtonTemplate");
@@ -141,4 +156,8 @@ function IslandsQueueFrameDifficultyMixin:SetActiveDifficulty(difficultyButton)
 			button.SelectedTexture:SetShown(false);
 		end
 	end
+end
+
+function IslandsQueueFrameDifficultyMixin:GetActiveDifficulty()
+	return self.activeDifficulty; 
 end

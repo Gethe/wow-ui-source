@@ -170,6 +170,10 @@ local Calendar =
 			},
 		},
 		{
+			Name = "CreateCommunitySignUpEvent",
+			Type = "Function",
+		},
+		{
 			Name = "CreateGuildAnnouncementEvent",
 			Type = "Function",
 		},
@@ -222,6 +226,15 @@ local Calendar =
 			Returns =
 			{
 				{ Name = "calendarType", Type = "string", Nilable = true },
+			},
+		},
+		{
+			Name = "EventGetClubID",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "info", Type = "string", Nilable = true },
 			},
 		},
 		{
@@ -365,6 +378,15 @@ local Calendar =
 		{
 			Name = "EventSetAutoApprove",
 			Type = "Function",
+		},
+		{
+			Name = "EventSetClubID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "clubID", Type = "string", Nilable = false },
+			},
 		},
 		{
 			Name = "EventSetDate",
@@ -675,6 +697,18 @@ local Calendar =
 			},
 		},
 		{
+			Name = "MassInviteCommunity",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "clubID", Type = "string", Nilable = false },
+				{ Name = "minLevel", Type = "number", Nilable = false },
+				{ Name = "maxLevel", Type = "number", Nilable = false },
+				{ Name = "maxRankOrder", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "MassInviteGuild",
 			Type = "Function",
 
@@ -920,6 +954,7 @@ local Calendar =
 				{ Name = "inviteStatus", Type = "number", Nilable = true },
 				{ Name = "inviteType", Type = "number", Nilable = true },
 				{ Name = "calendarType", Type = "string", Nilable = false },
+				{ Name = "communityName", Type = "string", Nilable = true },
 			},
 		},
 		{

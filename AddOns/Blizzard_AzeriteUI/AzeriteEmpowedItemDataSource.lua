@@ -24,9 +24,11 @@ function AzeriteEmpowedItemDataSourceMixin:SetSourceFromItemLocation(empoweredIt
 	self.itemGUID = self.item:GetItemGUID();
 end
 
-function AzeriteEmpowedItemDataSourceMixin:SetSourceFromItemLink(empoweredItemLink)
+function AzeriteEmpowedItemDataSourceMixin:SetSourceFromItemLink(empoweredItemLink, overrideClassID, overrideSelectedPowersList)
 	self:Clear();
 	self.empoweredItemLink = empoweredItemLink;
+	self.overrideClassID = overrideClassID;
+	self.overrideSelectedPowersList = overrideSelectedPowersList;
 	self.item = Item:CreateFromItemLink(self.empoweredItemLink);
 end
 
@@ -35,6 +37,8 @@ function AzeriteEmpowedItemDataSourceMixin:Clear()
 	self.empoweredItemLocation = nil;
 	self.item = nil;
 	self.itemGUID = nil;
+	self.overrideClassID = nil;
+	self.overrideSelectedPowersList = nil;
 end
 
 function AzeriteEmpowedItemDataSourceMixin:IsValid()
@@ -44,10 +48,10 @@ function AzeriteEmpowedItemDataSourceMixin:IsValid()
 	end
 
 	if self.empoweredItemLink then
-		return C_AzeriteEmpoweredItem.IsAzeritePreviewSourceDisplayable(self.empoweredItemLink);
+		return C_AzeriteEmpoweredItem.IsAzeritePreviewSourceDisplayable(self.empoweredItemLink, self.overrideClassID);
 	end
 
-	return true;
+	return #C_AzeriteEmpoweredItem.GetAllTierInfo(self.empoweredItemLocation) > 0;
 end
 
 function AzeriteEmpowedItemDataSourceMixin:IsPreviewSource()
@@ -62,11 +66,25 @@ function AzeriteEmpowedItemDataSourceMixin:GetItem()
 	return self.item;
 end
 
+function AzeriteEmpowedItemDataSourceMixin:HasBeenViewed()
+	if self:IsPreviewSource() then
+		return true;
+	end
+	return C_AzeriteEmpoweredItem.HasBeenViewed(self.empoweredItemLocation);
+end
+
+function AzeriteEmpowedItemDataSourceMixin:SetHasBeenViewed()
+	if self:IsPreviewSource() then
+		return;
+	end
+	return C_AzeriteEmpoweredItem.SetHasBeenViewed(self.empoweredItemLocation);
+end
+
 function AzeriteEmpowedItemDataSourceMixin:GetAllTierInfo()
 	if self.empoweredItemLocation then
 		return C_AzeriteEmpoweredItem.GetAllTierInfo(self.empoweredItemLocation);
 	elseif self.empoweredItemLink then
-		return C_AzeriteEmpoweredItem.GetAllTierInfoByItemID(self.empoweredItemLink);
+		return C_AzeriteEmpoweredItem.GetAllTierInfoByItemID(self.empoweredItemLink, self.overrideClassID);
 	end
 
 	return nil;
@@ -75,6 +93,15 @@ end
 function AzeriteEmpowedItemDataSourceMixin:IsPowerSelected(powerID)
 	if self.empoweredItemLocation then
 		return C_AzeriteEmpoweredItem.IsPowerSelected(self.empoweredItemLocation, powerID);
+	end
+
+	if self.overrideSelectedPowersList then
+		for tierIndex, overridePowerID in ipairs(self.overrideSelectedPowersList) do
+			if overridePowerID == powerID then
+				return true;
+			end
+		end
+		return false;
 	end
 
 	return nil;

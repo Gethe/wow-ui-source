@@ -16,6 +16,28 @@ function AzeriteEmpoweredItemSlotMixin:OnEvent(event, ...)
 	end
 end
 
+function AzeriteEmpoweredItemSlotMixin:Enable()
+	if not self.enabled then
+		self.enabled = true;
+		self:RefreshTooltip();
+	end
+end
+
+function AzeriteEmpoweredItemSlotMixin:RefreshTooltip()
+	if GetMouseFocus() == self then
+		self:OnEnter();
+	end
+end
+
+function AzeriteEmpoweredItemSlotMixin:Disable()
+	if self.enabled then
+		self.enabled = false;
+		if GameTooltip:GetOwner() == self then
+			self:OnLeave();
+		end
+	end
+end
+
 function AzeriteEmpoweredItemSlotMixin:SetPowerLevelInfo(azeritePowerLevel, unlockLevel, hasSelectedPower, isSelectionActive, isPreviewSource, isFinalTier)
 	self.azeritePowerLevel = azeritePowerLevel;
 	self.unlockLevel = unlockLevel;
@@ -25,6 +47,7 @@ function AzeriteEmpoweredItemSlotMixin:SetPowerLevelInfo(azeritePowerLevel, unlo
 	self:EnableMouse(not isFinalTier and not hasSelectedPower); -- No tooltips if we have a selected power or are the final power
 
 	self:SetupModelScene();
+	self:RefreshTooltip();
 end
 
 function AzeriteEmpoweredItemSlotMixin:PlayLockedInEffect()
@@ -47,6 +70,10 @@ function AzeriteEmpoweredItemSlotMixin:SetupModelScene(forceUpdate)
 end
 
 function AzeriteEmpoweredItemSlotMixin:OnEnter()
+	if not self.enabled then
+		return;
+	end
+
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	if self.azeritePowerLevel >= self.unlockLevel then
 		if self.isPreviewSource then

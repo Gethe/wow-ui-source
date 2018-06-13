@@ -115,7 +115,7 @@ local AzeriteEmpoweredItem =
 			},
 		},
 		{
-			Name = "HasBeenOpened",
+			Name = "HasBeenViewed",
 			Type = "Function",
 
 			Arguments =
@@ -125,7 +125,7 @@ local AzeriteEmpoweredItem =
 
 			Returns =
 			{
-				{ Name = "hasBeenOpened", Type = "bool", Nilable = false },
+				{ Name = "hasBeenViewed", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -163,20 +163,12 @@ local AzeriteEmpoweredItem =
 			Arguments =
 			{
 				{ Name = "itemInfo", Type = "string", Nilable = false },
+				{ Name = "classID", Type = "number", Nilable = true, Documentation = { "Specify a class ID to determine if its displayable for that class, otherwise uses the player's class if left nil" } },
 			},
 
 			Returns =
 			{
 				{ Name = "isAzeritePreviewSourceDisplayable", Type = "bool", Nilable = false },
-			},
-		},
-		{
-			Name = "IsOpenedForFirstTime",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "azeriteEmpoweredItemLocation", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
 			},
 		},
 		{
@@ -222,6 +214,15 @@ local AzeriteEmpoweredItem =
 			Returns =
 			{
 				{ Name = "success", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SetHasBeenViewed",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "azeriteEmpoweredItemLocation", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
 			},
 		},
 	},

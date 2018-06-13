@@ -228,7 +228,6 @@
 					</Button>
 				</Frames>
 				<Scripts>
-					<OnHide function="ModelControl_OnHide"/>
 					<OnMouseWheel>
 						Model_OnMouseWheel(self, delta);
 					</OnMouseWheel>

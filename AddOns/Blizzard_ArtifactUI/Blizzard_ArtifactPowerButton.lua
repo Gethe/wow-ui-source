@@ -62,6 +62,10 @@ function ArtifactPowerButtonMixin:OnClick(button)
 			ChatEdit_InsertLink(C_ArtifactUI.GetPowerHyperlink(self:GetPowerID()));
 			return;
 		end
+		if not C_ArtifactUI.IsArtifactDisabled() and not C_ArtifactUI.IsAtForge() then
+			UIErrorsFrame:AddMessage(ARTIFACT_TRAITS_NO_FORGE_ERROR, RED_FONT_COLOR:GetRGBA());
+			return;
+		end
 		if button == "LeftButton" and C_ArtifactUI.AddPower(self:GetPowerID()) then
 			self:PlayPurchaseAnimation();
 		elseif self.isStart then
@@ -227,23 +231,28 @@ function ArtifactPowerButtonMixin:UpdatePowerType()
 end
 
 function ArtifactPowerButtonMixin:SetStyle(style)
+	local rankTextColor = CreateColor(0, 0, 0);
+	local iconVertexColor = CreateColor(1, 1, 1);
+	local iconAlpha = 1;
+	local iconBorderAlpha = 1;
+	local iconBorderDesaturatedAlpha = 0;
+
 	self.style = style;
-	self.Icon:SetAlpha(0);
 	self.IconDesaturated:SetAlpha(1);
 	self.IconDesaturated:SetVertexColor(1, 1, 1);
-	
-	self.IconBorder:Hide();
-	self.IconBorderDesaturated:SetAlpha(1);
-
 	self.Rank:SetAlpha(1);
-	self.Rank:SetTextColor(DISABLED_FONT_COLOR:GetRGB())
 	self.RankBorder:SetAlpha(1);
-
+	self.IconBorder:SetVertexColor(1, 1, 1);
 	self.LightRune:Hide();
+
+	local artifactDisabled = C_ArtifactUI.IsArtifactDisabled();
 
 	if style == ARTIFACT_POWER_STYLE_RUNE then
 		self.LightRune:Show();
-		self.LightRune:SetDesaturated(true);
+		self.LightRune:SetDesaturated(artifactDisabled);
+
+		iconAlpha = 0;
+		iconBorderAlpha = 0;
 
 		self.Rank:SetAlpha(0);
 		self.RankBorder:SetAlpha(0);
@@ -251,36 +260,66 @@ function ArtifactPowerButtonMixin:SetStyle(style)
 		self.IconDesaturated:SetAlpha(0);
 	elseif style == ARTIFACT_POWER_STYLE_MAXED then
 		self.Rank:SetText(self.currentRank);
+		rankTextColor:SetRGB(1, 0.82, 0);
 		self.RankBorder:SetAtlas("Artifacts-PointsBox", true);
 		self.RankBorder:Show();		
 	elseif style == ARTIFACT_POWER_STYLE_CAN_UPGRADE then
 		self.Rank:SetText(self.currentRank);
-		self.RankBorder:SetAtlas("Artifacts-PointsBoxGreen", true);
+		rankTextColor:SetRGB(0.1, 1, 0.1);
+		if artifactDisabled then
+			self.RankBorder:SetAtlas("Artifacts-PointsBox", true);
+		else
+			self.RankBorder:SetAtlas("Artifacts-PointsBoxGreen", true);
+		end
 		self.RankBorder:Show();
 	elseif style == ARTIFACT_POWER_STYLE_PURCHASED or style == ARTIFACT_POWER_STYLE_PURCHASED_READ_ONLY then
 		self.Rank:SetText(self.currentRank);
+		rankTextColor:SetRGB(1, 0.82, 0);
 		self.RankBorder:SetAtlas("Artifacts-PointsBox", true);
 		self.RankBorder:Show();
 	elseif style == ARTIFACT_POWER_STYLE_UNPURCHASED then
 		self.IconBorder:SetVertexColor(.9, .9, .9);
+		iconVertexColor:SetRGB(.6, .6, .6);
 
 		self.Rank:SetText(self.currentRank);
+		rankTextColor:SetRGB(1, 0.82, 0);
 		self.RankBorder:SetAtlas("Artifacts-PointsBox", true);
 		self.RankBorder:Show();
 	elseif style == ARTIFACT_POWER_STYLE_UNPURCHASED_READ_ONLY or style == ARTIFACT_POWER_STYLE_UNPURCHASED_LOCKED then
 		if self.isGoldMedal or self.isStart then
+			iconVertexColor:SetRGB(.4, .4, .4);
 			self.IconBorder:SetVertexColor(.7, .7, .7);
 			self.IconDesaturated:SetVertexColor(.4, .4, .4);
 			self.RankBorder:Hide();
 			self.Rank:SetText(nil);
-			self.IconBorderDesaturated:SetAlpha(.5);
+			iconBorderDesaturatedAlpha = 0.5;
+			iconAlpha = .5;
 		else
+			iconVertexColor:SetRGB(.15, .15, .15);
             self.IconBorder:SetVertexColor(.4, .4, .4);
             self.IconDesaturated:SetVertexColor(.15, .15, .15);
             self.RankBorder:Hide();
             self.Rank:SetText(nil);
+			iconAlpha = .2;
 		end
 	end
+
+	if artifactDisabled then
+		rankTextColor = DISABLED_FONT_COLOR;
+		iconAlpha = 0;
+		if style ~= ARTIFACT_POWER_STYLE_RUNE then
+			iconBorderDesaturatedAlpha = 1;
+		end
+		self.IconBorder:Hide();
+	else
+		self.IconBorder:Show();
+	end
+
+	self.Rank:SetTextColor(rankTextColor:GetRGB());
+	self.Icon:SetVertexColor(iconVertexColor:GetRGB());
+	self.Icon:SetAlpha(iconAlpha);
+	self.IconBorder:SetAlpha(iconBorderAlpha);
+	self.IconBorderDesaturated:SetAlpha(iconBorderDesaturatedAlpha);
 end
 
 function ArtifactPowerButtonMixin:ApplyTemporaryRelicType(relicType, relicLink)
@@ -539,7 +578,7 @@ function ArtifactPowerButtonMixin:SetupButton(powerID, anchorRegion, textureKit)
 end
 
 function ArtifactPowerButtonMixin:ShouldGlow(totalPurchasedRanks, isAtForge)
-	if not isAtForge or not self.prereqsMet then
+	if not isAtForge or not self.prereqsMet or C_ArtifactUI.IsArtifactDisabled() then
 		return false;
 	end
 	
@@ -553,7 +592,7 @@ end
 function ArtifactPowerButtonMixin:EvaluateStyle()
 	if not ArtifactUI_HasPurchasedAnything() and not self.prereqsMet then
 		self:SetStyle(ARTIFACT_POWER_STYLE_RUNE);	
-	elseif C_ArtifactUI.IsAtForge() and C_ArtifactUI.IsViewedArtifactEquipped() then
+	elseif (C_ArtifactUI.IsAtForge() and C_ArtifactUI.IsViewedArtifactEquipped()) or C_ArtifactUI.IsArtifactDisabled() then
 		if self.isMaxRank then
 			self:SetStyle(ARTIFACT_POWER_STYLE_MAXED);			
 		elseif self.prereqsMet and C_ArtifactUI.GetPointsRemaining() >= self.cost then

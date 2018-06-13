@@ -133,7 +133,7 @@ function MapExplorationPinMixin:RefreshOverlays(fullUpdate)
 					texture:SetHeight(texturePixelHeight);
 					texture:SetTexCoord(0, texturePixelWidth/textureFileWidth, 0, texturePixelHeight/textureFileHeight);
 					texture:SetPoint("TOPLEFT", exploredTextureInfo.offsetX + (TILE_SIZE_WIDTH * (k-1)), -(exploredTextureInfo.offsetY + (TILE_SIZE_HEIGHT * (j - 1))));
-					texture:SetTexture(exploredTextureInfo.fileDataIDs[((j - 1) * numTexturesWide) + k]);
+					texture:SetTexture(exploredTextureInfo.fileDataIDs[((j - 1) * numTexturesWide) + k], nil, nil, "TRILINEAR");
 
 					if exploredTextureInfo.isShownByMouseOver then
 						-- keep track of the textures to show by mouseover

@@ -423,37 +423,40 @@ local function AddSpellToBucket(spellBuckets, type, rewardSpellIndex)
 end
 
 function QuestInfo_ShowRewards()
-	local numQuestRewards;
-	local numQuestChoices;
-	local numQuestCurrencies;
+	local numQuestRewards = 0;
+	local numQuestChoices = 0;
+	local numQuestCurrencies = 0;
 	local numQuestSpellRewards = 0;
-	local money;
+	local money = 0;
 	local skillName;
 	local skillPoints;
 	local skillIcon;
-	local xp;
-	local artifactXP;
+	local xp = 0;
+	local artifactXP = 0;
 	local artifactCategory;
-	local honor;
+	local honor = 0;
 	local playerTitle;
 	local totalHeight = 0;
-	local numSpellRewards;
+	local numSpellRewards = 0;
 	local rewardsFrame = QuestInfoFrame.rewardsFrame;
 
 	local spellGetter;
 	if ( QuestInfoFrame.questLog ) then
-		numQuestRewards = GetNumQuestLogRewards();
-		numQuestChoices = GetNumQuestLogChoices();
-		numQuestCurrencies = GetNumQuestLogRewardCurrencies();
-		money = GetQuestLogRewardMoney();
-		skillName, skillIcon, skillPoints = GetQuestLogRewardSkillPoints();
-		xp = GetQuestLogRewardXP();
-		artifactXP, artifactCategory = GetQuestLogRewardArtifactXP();
-		honor = GetQuestLogRewardHonor();
-		playerTitle = GetQuestLogRewardTitle();
-		ProcessQuestLogRewardFactions();
-		numSpellRewards = GetNumQuestLogRewardSpells();
-		spellGetter = GetQuestLogRewardSpell;
+		local questID = select(8, GetQuestLogTitle(GetQuestLogSelection()));
+		if C_QuestLog.ShouldShowQuestRewards(questID) then
+			numQuestRewards = GetNumQuestLogRewards();
+			numQuestChoices = GetNumQuestLogChoices();
+			numQuestCurrencies = GetNumQuestLogRewardCurrencies();
+			money = GetQuestLogRewardMoney();
+			skillName, skillIcon, skillPoints = GetQuestLogRewardSkillPoints();
+			xp = GetQuestLogRewardXP();
+			artifactXP, artifactCategory = GetQuestLogRewardArtifactXP();
+			honor = GetQuestLogRewardHonor();
+			playerTitle = GetQuestLogRewardTitle();
+			ProcessQuestLogRewardFactions();
+			numSpellRewards = GetNumQuestLogRewardSpells();
+			spellGetter = GetQuestLogRewardSpell;
+		end
 	else
 		numQuestRewards = GetNumQuestRewards();
 		numQuestChoices = GetNumQuestChoices();
@@ -946,3 +949,38 @@ QUEST_TEMPLATE_MAP_REWARDS = { questLog = true, chooseItems = nil, contentWidth 
 		QuestInfo_ShowRewards, 8, -42,
 	}
 }
+
+function QuestInfoRewardItemCodeTemplate_OnEnter(self)
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	if ( QuestInfoFrame.questLog ) then
+		if (self.objectType == "item") then
+			GameTooltip:SetQuestLogItem(self.type, self:GetID());
+			GameTooltip_ShowCompareItem(GameTooltip);
+		elseif (self.objectType == "currency") then
+			GameTooltip:SetQuestLogCurrency(self.type, self:GetID());
+		end
+	else
+		if (self.objectType == "item") then
+			GameTooltip:SetQuestItem(self.type, self:GetID());
+			GameTooltip_ShowCompareItem(GameTooltip);
+		elseif (self.objectType == "currency") then
+			GameTooltip:SetQuestCurrency(self.type, self:GetID());
+		end
+	end
+	CursorUpdate(self);
+	self.UpdateTooltip = QuestInfoRewardItemCodeTemplate_OnEnter;
+end
+
+function QuestInfoRewardItemCodeTemplate_OnClick(self, button)
+	if ( IsModifiedClick() and self.objectType == "item") then
+		if ( QuestInfoFrame.questLog ) then
+			HandleModifiedItemClick(GetQuestLogItemLink(self.type, self:GetID()));
+		else
+			HandleModifiedItemClick(GetQuestItemLink(self.type, self:GetID()));
+		end
+	else
+		if ( QuestInfoFrame.chooseItems ) then
+			QuestInfoItem_OnClick(self);
+		end
+	end
+end

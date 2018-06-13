@@ -16,6 +16,7 @@
 				self:GetParent():UnlockHighlight();
 			</OnLeave>
 			<OnClick>
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 				self:GetParent():SetFilter(self.filter);
 			</OnClick>
 		</Scripts>
@@ -256,9 +257,12 @@
 									<OnLoad>
 										self.text:SetText(COMMUNITIES_NOTIFICATION_SETTINGS_DIALOG_QUICK_JOIN_LABEL);
 									</OnLoad>
+									<OnClick>
+										PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+									</OnClick>
 								</Scripts>
 							</CheckButton>
-							<Button parentKey="NoneButton" inherits="CommunitiesMassNotificationsSettingsButtonTemplate" text="NONE">
+							<Button parentKey="NoneButton" inherits="CommunitiesMassNotificationsSettingsButtonTemplate" text="COMMUNITIES_NOTIFICATION_SETTINGS_NONE">
 								<Anchors>
 									<Anchor point="RIGHT" x="-13"/>
 									<Anchor point="TOP" relativeKey="$parent.SettingsLabel" relativePoint="TOP" x="0" y="4"/>
@@ -267,7 +271,7 @@
 									<KeyValue key="filter" value="Enum.ClubStreamNotificationFilter.None" type="global"/>
 								</KeyValues>
 							</Button>
-							<Button parentKey="AllButton" inherits="CommunitiesMassNotificationsSettingsButtonTemplate" text="ALL">
+							<Button parentKey="AllButton" inherits="CommunitiesMassNotificationsSettingsButtonTemplate" text="COMMUNITIES_NOTIFICATION_SETTINGS_ALL">
 								<Anchors>
 									<Anchor point="RIGHT" relativeKey="$parent.NoneButton" relativePoint="LEFT" x="-14" y="0"/>
 								</Anchors>

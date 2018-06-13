@@ -20,7 +20,7 @@ end
 LootJournalMixin = { };
 
 function LootJournalMixin:OnLoad()
-	self:SetView(LOOT_JOURNAL_LEGENDARIES);
+	self:SetView(LOOT_JOURNAL_ITEM_SETS);
 	self:RegisterEvent("LOOT_JOURNAL_LIST_UPDATE");
 	local _, _, classID = UnitClass("player");
 	local specID = GetSpecializationInfo(GetSpecialization());
@@ -39,58 +39,15 @@ function LootJournalMixin:SetView(view)
 	end
 
 	self.view = view;
-	if ( view == LOOT_JOURNAL_LEGENDARIES ) then
-		EncounterJournal.LootJournal.LegendariesFrame:Show();
-		EncounterJournal.LootJournal.ItemSetsFrame:Hide();
-	elseif ( view == LOOT_JOURNAL_ITEM_SETS ) then
-		EncounterJournal.LootJournal.LegendariesFrame:Hide();
-		EncounterJournal.LootJournal.ItemSetsFrame:Show();
-	end
-	UIDropDownMenu_SetText(self.ViewDropDown, view);
+	EncounterJournal.LootJournal.ItemSetsFrame:Show();
 end
 
 function LootJournalMixin:GetActiveList()
-	if ( self.view == LOOT_JOURNAL_LEGENDARIES ) then
-		return self.LegendariesFrame;
-	elseif ( self.view == LOOT_JOURNAL_ITEM_SETS ) then
-		return self.ItemSetsFrame;
-	end
+	return self.ItemSetsFrame;
 end
 
 function LootJournalMixin:Refresh()
 	self:GetActiveList():Refresh();
-end
-
-do
-	local function OpenViewDropDown(self)
-		self:GetParent():OpenViewDropDown();
-	end
-
-	function LootJournalViewDropDown_OnLoad(self)
-		UIDropDownMenu_JustifyText(self, "LEFT");
-		UIDropDownMenu_SetWidth(self, 115);
-		UIDropDownMenu_Initialize(self, OpenViewDropDown);
-	end
-
-	function LootJournalMixin:OpenViewDropDown()
-		local function SetView(_, view)
-			self:SetView(view);
-		end
-
-		local info = UIDropDownMenu_CreateInfo();
-
-		info.text = LOOT_JOURNAL_LEGENDARIES;
-		info.func = SetView;
-		info.checked = self.view == LOOT_JOURNAL_LEGENDARIES;
-		info.arg1 = LOOT_JOURNAL_LEGENDARIES;
-		UIDropDownMenu_AddButton(info, level);
-
-		info.text = LOOT_JOURNAL_ITEM_SETS;
-		info.func = SetView;
-		info.checked = self.view == LOOT_JOURNAL_ITEM_SETS;
-		info.arg1 = LOOT_JOURNAL_ITEM_SETS;
-		UIDropDownMenu_AddButton(info, level);
-	end
 end
 
 function LootJournalItemButtonTemplate_OnEnter(self)
@@ -293,173 +250,6 @@ do
 			info.arg2 = NO_SPEC_FILTER;
 			info.func = SetClassAndSpecFilters;
 			UIDropDownMenu_AddButton(info, level);
-		end
-	end
-end
-
---=================================================================================================================================== 
-LootJournalLegendariesMixin = {};
-
-local LJ_LEGENDARY_X_OFFSET = 35;
-local LJ_LEGENDARY_Y_OFFSET = 26;
-local LJ_LEGENDARY_BUTTON_SPACING = 12;
-local LJ_LEGENDARY_BOTTOM_BUFFER = 4;
-local LJ_LEGENDARY_NUM_COLS = 2;
-
-function LootJournalLegendariesMixin:OnLoad()
-	self.scrollBar.trackBG:Hide();
-	self.update = LootJournalLegendariesMixin.UpdateList;
-	HybridScrollFrame_CreateButtons(self, "LootJournalLegendaryButtonTemplate", LJ_LEGENDARY_X_OFFSET, -LJ_LEGENDARY_Y_OFFSET, "TOPLEFT", nil, nil, -LJ_LEGENDARY_BUTTON_SPACING);
-	self.rightSideButtons = { };
-	for i = 1, #self.buttons do
-		local button = CreateFrame("BUTTON", nil, self.scrollChild, "LootJournalLegendaryButtonTemplate");
-		button:SetPoint("LEFT", self.buttons[i], "RIGHT", 20, 0);
-		tinsert(self.rightSideButtons, button);
-	end
-end
-
-function LootJournalLegendariesMixin:OnShow()
-	self:Refresh();
-end
-
-function LootJournalLegendariesMixin:OnHide()
-	self.items = nil;
-end
-
-function LootJournalLegendariesMixin:ConfigureItemButton(button, itemInfo)
-	button.itemInfo = itemInfo;
-	button.ItemName:SetText(itemInfo.name);
-	button.ItemName:SetTextColor(GetItemQualityColor(itemInfo.quality));
-	
-	local text = _G[itemInfo.inventoryTypeName];
-	
-	local sourceText;
-	if itemInfo.transmogSource == Enum.TransmogSource.Profession then
-		sourceText = LOOT_JOURNAL_LEGENDARIES_SOURCE_CRAFTED_ITEM;
-	elseif itemInfo.transmogSource == Enum.TransmogSource.Quest then
-		sourceText = LOOT_JOURNAL_LEGENDARIES_SOURCE_QUEST;
-	elseif itemInfo.transmogSource == Enum.TransmogSource.Achievement then
-		sourceText = LOOT_JOURNAL_LEGENDARIES_SOURCE_ACHIEVEMENT;
-	end
-
-	if sourceText then
-		text = LOOT_JOURNAL_LEGENDARIES_ITEM_WITH_SOURCE:format(text, sourceText);
-	end
-	
-	button.ItemType:SetText(text);
-	button.Icon:SetTexture(itemInfo.icon);
-	self:CheckItemButtonTooltip(button);
-end
-
-function LootJournalLegendariesMixin:UpdateList()
-	if ( self.dirty ) then
-		self.items = C_LootJournal.GetFilteredLegendaries();
-		self.dirty = nil;
-	end
-
-	local leftSidebuttons = self.buttons;
-	local rightSidebuttons = self.rightSideButtons;
-	local offset = HybridScrollFrame_GetOffset(self);
-
-	for i = 1, #leftSidebuttons * LJ_LEGENDARY_NUM_COLS do
-		local row = math.ceil(i / LJ_LEGENDARY_NUM_COLS);
-		local button;
-		if ( mod(i, LJ_LEGENDARY_NUM_COLS) == 1 ) then
-			button = leftSidebuttons[row];
-		else
-			button = rightSidebuttons[row];
-		end
-		local index = offset * LJ_LEGENDARY_NUM_COLS + i;
-		if ( index <= #self.items ) then
-			button:Show();
-			self:ConfigureItemButton(button, self.items[index]);
-		else
-			button:Hide();
-			button.itemInfo = nil;
-		end
-	end
-
-	local numRows = math.ceil(#self.items / 2);
-	local totalHeight = numRows * leftSidebuttons[1]:GetHeight() + (numRows - 1) * LJ_LEGENDARY_BUTTON_SPACING + LJ_LEGENDARY_Y_OFFSET + LJ_LEGENDARY_BOTTOM_BUFFER;
-	HybridScrollFrame_Update(self, totalHeight, self:GetHeight());
-end
-
-function LootJournalLegendariesMixin:ShowItemTooltip(button)
-	GameTooltip:SetOwner(button, "ANCHOR_RIGHT");
-	local classID, specID = LootJournal_GetPreviewClassAndSpec();
-	GameTooltip:SetHyperlink(button.itemInfo.link, classID, specID);
-	self.tooltipItemID = button.itemInfo.itemID;
-	GameTooltip_ShowCompareItem();
-end
-
-function LootJournalLegendariesMixin:GetInvTypeFilter()
-	return C_LootJournal.GetLegendaryInventoryTypeFilter();
-end
-
-function LootJournalLegendariesMixin:SetInvTypeFilter(newInvType)
-	local invType = C_LootJournal.GetLegendaryInventoryTypeFilter();
-	if not self.invTypeFilterSet or invType ~= newInvType then
-		C_LootJournal.SetLegendaryInventoryTypeFilter(newInvType);
-		self:Refresh();
-	end
-
-	CloseDropDownMenus(1);
-	self.invTypeFilterSet = true;
-end
-
-function LootJournalLegendariesMixin:UpdateSlotButtonText()
-	local text = ALL_INVENTORY_SLOTS;
-	local invTypeFilter = self:GetInvTypeFilter();
-	if invTypeFilter ~= NO_INV_TYPE_FILTER then
-		local invTypes = C_LootJournal.GetLegendaryInventoryTypes();
-		for i = 1, #invTypes do
-			if ( invTypes[i].invType == invTypeFilter ) then
-				text = _G[invTypes[i].invTypeName];
-				break;
-			end
-		end
-	end
-	self.SlotButton:SetText(text);
-end
-
-do
-	local function SortLegendaryInventoryTypes(entry1, entry2)
-		local order1 = EJ_GetInvTypeSortOrder(entry1.invType);
-		local order2 = EJ_GetInvTypeSortOrder(entry2.invType);
-		return order1 < order2;
-	end
-
-	local function OpenSlotFilterDropDown(self)
-		self:GetParent():OpenSlotFilterDropDown();
-	end
-
-	function LootJournalLegendariesSlotDropDown_OnLoad(self)
-		UIDropDownMenu_Initialize(self, OpenSlotFilterDropDown, "MENU");
-	end
-	
-	function LootJournalLegendariesMixin:OpenSlotFilterDropDown()
-		local filterInvType = self:GetInvTypeFilter();
-
-		local function SetInvTypeFilter(_, invTypeFilter)
-			self:SetInvTypeFilter(invTypeFilter);
-		end
-
-		local info = UIDropDownMenu_CreateInfo();
-
-		info.text = ALL_INVENTORY_SLOTS;
-		info.checked = filterInvType == NO_INV_TYPE_FILTER;
-		info.arg1 = NO_INV_TYPE_FILTER;
-		info.func = SetInvTypeFilter;
-		UIDropDownMenu_AddButton(info);
-		
-		local invTypes = C_LootJournal.GetLegendaryInventoryTypes();
-		table.sort(invTypes, SortLegendaryInventoryTypes);
-		for i = 1, #invTypes do
-			info.text = _G[invTypes[i].invTypeName];
-			info.checked = filterInvType == invTypes[i].invType;
-			info.arg1 = invTypes[i].invType;
-			info.func = SetInvTypeFilter;
-			UIDropDownMenu_AddButton(info);
 		end
 	end
 end

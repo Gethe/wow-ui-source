@@ -156,7 +156,15 @@ end
 local SIX_DAYS = 6 * 24 * 60 * 60		-- time in seconds
 function CommunitiesGuildNewsButton_SetEvent( button, event_id )
 	local today = date("*t");
-	local month, day, weekday, hour, minute, eventType, title, calendarType, texture = C_Calendar.GetGuildEventInfo(event_id);
+	local guildEventInfo  = C_Calendar.GetGuildEventInfo(event_id);
+	local day = guildEventInfo.monthDay;
+	local month = guildEventInfo.month;
+	local weekday = guildEventInfo.weekday;
+	local hour = guildEventInfo.hour;
+	local minute = guildEventInfo.minute;
+	local title = guildEventInfo.title;
+	local texture = guildEventInfo.texture;
+	
 	local displayTime = GameTime_GetFormattedTime(hour, minute, true);
 	local displayDay;
 	

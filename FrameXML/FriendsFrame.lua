@@ -2250,14 +2250,14 @@ function TravelPassButton_OnEnter(self)
 			local members = C_SocialQueue.GetGroupMembers(group);
 			local numDisplayed = 0;
 			for i=1, #members do
-				if ( members[i] ~= guid ) then
+				if ( members[i].guid ~= guid ) then
 					if ( numDisplayed == 0 ) then
 						GameTooltip:AddLine(SOCIAL_QUEUE_ALSO_IN_GROUP);
 					elseif ( numDisplayed >= 7 ) then
 						GameTooltip:AddLine(SOCIAL_QUEUE_AND_MORE, GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b, 1);
 						break;
 					end
-					local name, color = SocialQueueUtil_GetNameAndColor(members[i]);
+					local name, color = SocialQueueUtil_GetRelationshipInfo(members[i].guid, nil, members[i].clubId);
 					GameTooltip:AddLine(color..name..FONT_COLOR_CODE_CLOSE);
 
 					numDisplayed = numDisplayed + 1;

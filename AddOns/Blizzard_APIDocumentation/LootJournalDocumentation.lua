@@ -6,15 +6,6 @@ local LootJournal =
 
 	Functions =
 	{
-		{
-			Name = "GetFilteredLegendaries",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "journalItems", Type = "table", InnerType = "LegendaryJournalItem", Nilable = false },
-			},
-		},
 	},
 
 	Events =
@@ -41,20 +32,6 @@ local LootJournal =
 				{ Name = "Achievement", Type = "TransmogSource", EnumValue = 7 },
 				{ Name = "Profession", Type = "TransmogSource", EnumValue = 8 },
 				{ Name = "NotValidForTransmog", Type = "TransmogSource", EnumValue = 9 },
-			},
-		},
-		{
-			Name = "LegendaryJournalItem",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "itemID", Type = "number", Nilable = false },
-				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "link", Type = "string", Nilable = false },
-				{ Name = "quality", Type = "number", Nilable = false },
-				{ Name = "inventoryTypeName", Type = "string", Nilable = false },
-				{ Name = "icon", Type = "number", Nilable = false },
-				{ Name = "transmogSource", Type = "TransmogSource", Nilable = false },
 			},
 		},
 	},

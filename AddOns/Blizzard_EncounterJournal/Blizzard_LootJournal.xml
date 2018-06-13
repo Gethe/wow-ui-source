@@ -12,45 +12,6 @@
 		</Scripts>
 	</Button>
 
-	<Button name="LootJournalLegendaryButtonTemplate" inherits="LootJournalItemButtonTemplate" virtual="true">
-		<Size x="326" y="62"/>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture parentKey="Icon">
-					<Size x="58" y="58"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="2" y="-2"/>
-					</Anchors>
-					<TexCoords left="0.046875" right="0.953125" top="0.046875" bottom="0.953125"/>
-				</Texture>
-			</Layer>
-			<Layer level="BORDER">
-				<Texture parentKey="Background" file="Interface\EncounterJournal\loottab-item-background">
-					<Size x="382" y="92"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="-15" y="15"/>
-					</Anchors>
-					<TexCoords left="0" right="0.74609375" top="0" bottom="0.71875"/>
-				</Texture>
-			</Layer>
-			<Layer level="ARTWORK">
-				<FontString parentKey="ItemName" inherits="GameFontNormalMed2" maxLines="2" justifyH="LEFT">
-					<Size x="250" y="0"/>
-					<Anchors>
-						<Anchor point="LEFT" x="69" y="7"/>
-					</Anchors>
-				</FontString>
-				<FontString parentKey="ItemType" inherits="GameFontNormal" text="Two Hand Axe" maxLines="1" justifyH="LEFT">
-					<Size x="250" y="0"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.ItemName" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
-					</Anchors>
-					<Color r="0.718" g="0.561" b="0.416"/>
-				</FontString>
-			</Layer>
-		</Layers>
-	</Button>
-
 	<Button name="LootJournalItemSetItemButtonTemplate" parentArray="ItemButtons" inherits="LootJournalItemButtonTemplate" virtual="true">
 		<Size x="32" y="32"/>
 		<Layers>
@@ -122,63 +83,11 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame name="LootJournalViewDropDown" parentKey="ViewDropDown" inherits="UIDropDownMenuTemplate">
-				<Size x="156" y="32"/>
-				<Anchors>
-					<Anchor point="TOPLEFT" x="15" y="-9"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad function="LootJournalViewDropDown_OnLoad"/>
-				</Scripts>
-			</Frame>
 			<Frame name="LootJournalClassDropDown" parentKey="ClassDropDown" inherits="UIDropDownMenuTemplate" hidden="true">
 				<Scripts>
 					<OnLoad function="LootJournalClassDropDown_OnLoad"/>
 				</Scripts>
 			</Frame>
-			<ScrollFrame parentKey="LegendariesFrame" inherits="MinimalHybridScrollFrameTemplate" hidden="true" mixin="LootJournalListMixin, LootJournalLegendariesMixin">
-				<Size x="762" y="332"/>
-				<Anchors>
-					<Anchor point="BOTTOMLEFT" x="0" y="3"/>
-				</Anchors>
-				<Frames>
-					<Button parentKey="SlotButton" inherits="EJButtonTemplate">
-						<Size x="114" y="26"/>
-						<Anchors>
-							<Anchor point="TOPRIGHT" x="-12" y="35"/>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								ToggleDropDownMenu(1, nil, self:GetParent().SlotDropDown, self, 5, 0);
-								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-							</OnClick>
-						</Scripts>
-					</Button>
-					<Frame name="LootJournalLegendariesSlotDropDown" parentKey="SlotDropDown" inherits="UIDropDownMenuTemplate" hidden="true">
-						<Scripts>
-							<OnLoad function="LootJournalLegendariesSlotDropDown_OnLoad"/>
-						</Scripts>
-					</Frame>
-					<Button parentKey="ClassButton" inherits="EJButtonTemplate">
-						<Size x="114" y="26"/>
-						<Anchors>
-							<Anchor point="RIGHT" relativeKey="$parent.SlotButton" relativePoint="LEFT" x="-35" y="0"/>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								ToggleDropDownMenu(1, nil, self:GetParent():GetParent().ClassDropDown, self, 5, 0);
-								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-							</OnClick>
-						</Scripts>
-					</Button>
-					<Frame name="LootJournalLegendariesClassDropDown" parentKey="ClassDropDown" inherits="UIDropDownMenuTemplate" hidden="true"/>
-				</Frames>
-				<Scripts>
-					<OnLoad method="OnLoad"/>
-					<OnShow method="OnShow"/>
-					<OnHide method="OnHide"/>
-				</Scripts>
-			</ScrollFrame>
 			<ScrollFrame parentKey="ItemSetsFrame" inherits="MinimalHybridScrollFrameTemplate" hidden="true" mixin="LootJournalListMixin, LootJournalItemSetsMixin">
 				<Size x="762" y="332"/>
 				<Anchors>

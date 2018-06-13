@@ -92,6 +92,7 @@ CommunitiesCreateDialogMixin = {};
 
 function CommunitiesCreateDialogMixin:ClearText()
 	self.NameBox:SetText("");
+	self.ShortNameBox:SetText("");
 	self.DescriptionFrame.EditBox:SetText("");
 end
 

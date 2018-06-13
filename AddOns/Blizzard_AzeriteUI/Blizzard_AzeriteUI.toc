@@ -16,6 +16,7 @@ AzeriteEmpoweredItemChannelMixin.xml
 AzeriteEmpoweredItemPowerMixin.lua
 AzeriteEmpoweredItemPowerMixin.xml
 
+AzeriteTierAnimationMixin.lua
 AzeriteEmpoweredItemTierMixin.xml
 AzeriteEmpoweredItemTierMixin.lua
 

@@ -151,9 +151,17 @@ function ArtifactsModelTemplate_OnModelLoaded(self)
 
 	self:SetAnimation(animationSequence, 0);
 
-	self:SetDesaturation(1);
-	self:SetParticlesEnabled(false);
-	self:SetPaused(true);
+	if C_ArtifactUI.IsArtifactDisabled() then
+		self:SetDesaturation(1);
+		self:SetParticlesEnabled(false);
+		self:SetPaused(true);
+	else	
+		if ( self.useShadowEffect ) then
+			self:SetShadowEffect(1);
+		else
+			self:SetDesaturation(self.desaturation or .5);
+		end
+	end
 end
 
 function ArtifactPerksMixin:RefreshBackground()
@@ -163,16 +171,17 @@ function ArtifactPerksMixin:RefreshBackground()
 
 		local bgAtlas = ("%s-BG"):format(artifactArtInfo.textureKit);
 		self.BackgroundBack:SetAtlas(bgAtlas);
-		self.BackgroundBack:SetDesaturated(true);
+		local artifactDisabled = C_ArtifactUI.IsArtifactDisabled();
+		self.BackgroundBack:SetDesaturated(artifactDisabled);
 		self.Model.BackgroundFront:SetAtlas(bgAtlas);
-		self.Model.BackgroundFront:SetDesaturated(true);
+		self.Model.BackgroundFront:SetDesaturated(artifactDisabled);
 		self.Tier2ForgingScene.BackgroundMiddle:SetAtlas(bgAtlas);
 		self.Tier2ForgingScene.BackgroundMiddle:Show();
 
 
 		local crestAtlas = ("%s-BG-Rune"):format(artifactArtInfo.textureKit);
 		self.CrestFrame.CrestRune1:SetAtlas(crestAtlas, true);
-		self.CrestFrame.CrestRune1:SetDesaturated(true);
+		self.CrestFrame.CrestRune1:SetDesaturated(artifactDisabled);
 	else
 		self.textureKit = nil;
 	end
@@ -375,6 +384,8 @@ function ArtifactPerksMixin:TryRefresh()
 		local finalTier2WasUnlocked = self.wasFinalPowerButtonUnlockedByTier[2];
 		self:RefreshPowers(self.newItem);
 
+		self.TitleContainer:SetPointsRemaining(C_ArtifactUI.GetPointsRemaining());
+
 		self.perksDirty = false;
 		self.newItem = nil;
 		self.isAppearanceChanging = nil;
@@ -531,13 +542,20 @@ function ArtifactLineMixin:PlayLineFadeAnim(lineAnimType)
 		self.FadeAnim.FillScroll2:SetFromAlpha(self.FillScroll2:GetAlpha());
 	end
 
-	self.FillScroll1:SetDesaturated(true);
-	if self.FillScroll2 then
-		self.FillScroll2:SetDesaturated(true);
+	local artifactDisabled = C_ArtifactUI.IsArtifactDisabled();
+	if artifactDisabled then
+		self.FillScroll1:SetDesaturated(true);
+		if self.FillScroll2 then
+			self.FillScroll2:SetDesaturated(true);
+		end
 	end
 
 	if lineAnimType == self.LINE_FADE_ANIM_TYPE_CONNECTED then
-		self.ScrollAnim:Stop();
+		if artifactDisabled then
+			self.ScrollAnim:Stop();
+		else
+			self.ScrollAnim:Play(false, self.scrollElapsedOffset);
+		end
 
 		self.FadeAnim.Background:SetToAlpha(0.0);
 		self.FadeAnim.Fill:SetToAlpha(1.0);
@@ -719,13 +737,19 @@ function ArtifactPerksMixin:GenerateCurvedLine(startButton, endButton, state, ar
 		spline:AddPoint(x, y);
 	end
 
+	local artifactDisabled = C_ArtifactUI.IsArtifactDisabled();
 	local previousEndPoint;
 	local previousLineContainer;
 	for i = 1, NUM_CURVED_LINE_SEGEMENTS do
 		self.numUsedCurvedLines = self.numUsedCurvedLines + 1;
 		local lineContainer = self:GetOrCreateCurvedDependencyLine(self.numUsedCurvedLines);
-		lineContainer:SetConnectedColor(DISABLED_FONT_COLOR);
-		lineContainer:SetDisconnectedColor(DISABLED_FONT_COLOR);
+		if artifactDisabled then
+			lineContainer:SetConnectedColor(DISABLED_FONT_COLOR);
+			lineContainer:SetDisconnectedColor(DISABLED_FONT_COLOR);
+		else
+			lineContainer:SetConnectedColor(artifactArtInfo.barConnectedColor);
+			lineContainer:SetDisconnectedColor(artifactArtInfo.barDisconnectedColor);
+		end
 		lineContainer:SetEndPoints(finalTier2Power);
 		lineContainer:SetScrollAnimationProgressOffset((i - 1) / NUM_CURVED_LINE_SEGEMENTS);
 		lineContainer:SetState(state);
@@ -777,6 +801,7 @@ function ArtifactPerksMixin:RefreshDependencies(powers)
 	self.numUsedCurvedLines = 0;
 
 	if ArtifactUI_CanViewArtifact() then
+		local artifactDisabled = C_ArtifactUI.IsArtifactDisabled();
 		local artifactArtInfo = C_ArtifactUI.GetArtifactArtInfo();
 		local lastTier2Power = nil;
 
@@ -813,9 +838,13 @@ function ArtifactPerksMixin:RefreshDependencies(powers)
 								else
 									self.numUsedLines = self.numUsedLines + 1;
 									local lineContainer = self:GetOrCreateDependencyLine(self.numUsedLines);
-									lineContainer:SetConnectedColor(DISABLED_FONT_COLOR);
-									lineContainer:SetDisconnectedColor(DISABLED_FONT_COLOR);
-
+									if artifactDisabled then
+										lineContainer:SetConnectedColor(DISABLED_FONT_COLOR);
+										lineContainer:SetDisconnectedColor(DISABLED_FONT_COLOR);
+									else
+										lineContainer:SetConnectedColor(artifactArtInfo.barConnectedColor);
+										lineContainer:SetDisconnectedColor(artifactArtInfo.barDisconnectedColor);
+									end
 									local fromCenter = CreateVector2D(fromButton:GetCenter());
 									fromCenter:ScaleBy(fromButton:GetEffectiveScale());
 
@@ -1293,19 +1322,41 @@ ArtifactTitleTemplateMixin = {}
 
 function ArtifactTitleTemplateMixin:RefreshTitle()
 	self.PointsRemainingLabel:SnapToTarget();
+	local disabledFrame = self:GetParent().DisabledFrame;
 
 	local artifactArtInfo = C_ArtifactUI.GetArtifactArtInfo();
-	local disabledFrame = self:GetParent().DisabledFrame;
-	disabledFrame.ArtifactName:SetText(artifactArtInfo.titleName);
-	disabledFrame.ArtifactName:SetVertexColor(0.588, 0.557, 0.463);
+	if C_ArtifactUI.IsArtifactDisabled() then
+		disabledFrame:Show();
+		disabledFrame.ArtifactName:SetText(artifactArtInfo.titleName);
+		disabledFrame.ArtifactName:SetVertexColor(0.588, 0.557, 0.463);
 
-	if artifactArtInfo.textureKit then
-		local headerAtlas = ("%s-Header"):format(artifactArtInfo.textureKit);
-		disabledFrame.Background:SetAtlas(headerAtlas, true);
-		disabledFrame.Background:SetDesaturated(true);
-		disabledFrame.Background:Show();
+		if artifactArtInfo.textureKit then
+			local headerAtlas = ("%s-Header"):format(artifactArtInfo.textureKit);
+			disabledFrame.Background:SetAtlas(headerAtlas, true);
+			disabledFrame.Background:SetDesaturated(true);
+			disabledFrame.Background:Show();
+		else
+			disabledFrame.Background:Hide();
+		end
+
+		self.ArtifactName:Hide();
+		self.ArtifactPower:Hide();
+		self.Background:Hide();
 	else
-		disabledFrame.Background:Hide();
+		self.ArtifactName:Show();
+		self.ArtifactName:SetText(artifactArtInfo.titleName);
+		self.ArtifactName:SetVertexColor(artifactArtInfo.titleColor:GetRGB());
+		self.ArtifactPower:Show();
+
+		if artifactArtInfo.textureKit then
+			local headerAtlas = ("%s-Header"):format(artifactArtInfo.textureKit);
+			self.Background:SetAtlas(headerAtlas, true);
+			self.Background:Show();
+		else
+			self.Background:Hide();
+		end
+		
+		disabledFrame:Hide();
 	end
 end
 
@@ -1315,6 +1366,14 @@ function ArtifactTitleTemplateMixin:OnShow()
 
 	self:RegisterEvent("ARTIFACT_UPDATE");
 	self:RegisterEvent("CURSOR_UPDATE");
+	
+	if C_ArtifactUI.IsArtifactDisabled() then
+		self:SetScript("OnUpdate", nil);
+		self.PointsRemainingLabel:Hide();
+	else
+		self:SetScript("OnUpdate", self.OnUpdate);
+		self.PointsRemainingLabel:Show();
+	end
 end
 
 function ArtifactTitleTemplateMixin:OnHide()
@@ -1496,7 +1555,6 @@ function ArtifactTitleTemplateMixin:EvaluateRelics()
 			relicSlot.Icon:SetAtlas("Relic-SlotBG", true);
 			relicSlot.Glass:Hide();
 			relicSlot.relicLink = nil;
-			relicSlot.Rank:Hide();
 		else
 			local relicName, relicIcon, relicType, relicLink = C_ArtifactUI.GetRelicInfo(i);
 
@@ -1541,6 +1599,16 @@ function ArtifactTitleTemplateMixin:EvaluateRelics()
 	for i = numRelicSlots + 1, #self.RelicSlots do
 		self.RelicSlots[i]:Hide();
 	end
+end
+
+function ArtifactTitleTemplateMixin:SetPointsRemaining(value)
+	if not C_ArtifactUI.IsArtifactDisabled() then
+		self.PointsRemainingLabel:SetAnimatedValue(value);
+	end
+end
+
+function ArtifactTitleTemplateMixin:OnUpdate(elapsed)
+	self.PointsRemainingLabel:UpdateAnimatedValue(elapsed);
 end
 
 function ArtifactTitleTemplateMixin:SetExpandedState(expanded)

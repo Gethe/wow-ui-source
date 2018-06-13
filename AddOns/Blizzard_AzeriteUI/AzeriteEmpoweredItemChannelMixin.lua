@@ -20,7 +20,7 @@ function AzeriteEmpoweredItemChannelMixin:Reset()
 	self.isTierAnimating = nil;
 	self.targetHeight = nil;
 	self.snapValue = true;
-	self.RevealMask:SetHeight(1);
+	self.RevealMask:SetHeight(-1);
 end
 
 function AzeriteEmpoweredItemChannelMixin:AdjustSizeForTiers(numTiers)
@@ -41,12 +41,11 @@ function AzeriteEmpoweredItemChannelMixin:SetUnlockedTier(tierIndex)
 end
 
 function AzeriteEmpoweredItemChannelMixin:GetHeightForTierIndex(tierIndex)
-	return self.revealSizes[tierIndex] or 1;
+	return self.revealSizes[tierIndex] or -1;
 end
 
 function AzeriteEmpoweredItemChannelMixin:UpdateTierAnimationProgress(tierIndex, progress)
-	assert(self.tierIndex);
-	if tierIndex ~= self.tierIndex then
+	if not self.tierIndex or tierIndex ~= self.tierIndex then
 		return;
 	end
 
@@ -56,7 +55,7 @@ function AzeriteEmpoweredItemChannelMixin:UpdateTierAnimationProgress(tierIndex,
 		local fromHeight = self:GetHeightForTierIndex(self.tierIndex - 1);
 		local toHeight = self:GetHeightForTierIndex(self.tierIndex);
 
-		self.targetHeight = Lerp(fromHeight, toHeight, progress ^ 3);
+		self.targetHeight = Lerp(fromHeight, toHeight, EasingUtil.InCubic(progress));
 	else
 		self.isTierAnimating = false;
 	end

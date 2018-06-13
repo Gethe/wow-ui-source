@@ -81,6 +81,10 @@ local ScrappingMachineUI =
 				{ Name = "gameObject", Type = "string", Nilable = false },
 			},
 		},
+		{
+			Name = "ValidateScrappingList",
+			Type = "Function",
+		},
 	},
 
 	Events =

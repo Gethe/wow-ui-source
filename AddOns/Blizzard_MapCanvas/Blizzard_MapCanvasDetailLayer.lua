@@ -57,7 +57,7 @@ function MapCanvasDetailLayerMixin:RefreshDetailTiles()
 			local detailTile = self.detailTilePool:Acquire();
 			self.textureLoadGroup:AddTexture(detailTile);
 			local textureIndex = (tileRow - 1) * numDetailTilesCols + tileCol;
-			detailTile:SetTexture(textures[textureIndex]);
+			detailTile:SetTexture(textures[textureIndex], nil, nil, "TRILINEAR");
 
 			local offsetX = math.floor(layerInfo.tileWidth * (tileCol - 1));
 			local offsetY = math.floor(layerInfo.tileHeight * (tileRow - 1));

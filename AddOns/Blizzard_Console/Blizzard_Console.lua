@@ -299,6 +299,7 @@ function DeveloperConsoleMixin:StopDragResizing()
 end
 
 function DeveloperConsoleMixin:ExecuteCommand(text)
+	forceinsecure();
 	ConsoleExec(text, true);
 	self:AddMessage(("> %s"):format(text:gsub("\n", " > ")), Enum.ConsoleColorType.InputColor);
 

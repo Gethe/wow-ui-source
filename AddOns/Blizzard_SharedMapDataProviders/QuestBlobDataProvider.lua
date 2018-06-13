@@ -183,6 +183,7 @@ function QuestBlobPinMixin:UpdateTooltip()
 			WorldMapTooltip:AddLine(QUEST_DASH..text, 1, 1, 1, true);
 		end
 	end
+	WorldMapTooltip:Show();
 end
 
 function QuestBlobPinMixin:OnMouseEnter()

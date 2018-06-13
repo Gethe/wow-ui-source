@@ -191,7 +191,7 @@
 		</Scripts>
 	</Frame>
 	
-	<Button name="CommunitiesSettingsButtonTemplate" inherits="UIPanelButtonTemplate" text="COMMUNITIES_SETTINGS_BUTTON_LABEL" virtual="true">
+	<Button name="CommunitiesSettingsButtonTemplate" inherits="UIPanelDynamicResizeButtonTemplate" text="COMMUNITIES_SETTINGS_BUTTON_LABEL" virtual="true">
 		<Scripts>
 			<OnClick function="CommunitiesSettingsButton_OnClick"/>
 		</Scripts>

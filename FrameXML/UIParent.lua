@@ -409,8 +409,9 @@ function UIParent_OnLoad(self)
 	-- Event(s) for Allied Races
 	self:RegisterEvent("ALLIED_RACE_OPEN");
 
-	-- Event(s) for Party Pose
+	-- Event(s) for Islands
 	self:RegisterEvent("ISLAND_COMPLETED");
+	self:RegisterEvent("ISLANDS_QUEUE_OPEN");
 
 	-- Event(s) for Warfronts
 	self:RegisterEvent("WARFRONT_COMPLETED");
@@ -1035,11 +1036,11 @@ function OpenAzeriteEmpoweredItemUIFromItemLocation(itemLocation)
 	AzeriteEmpoweredItemUI:SetToItemAtLocation(itemLocation);
 end
 
-function OpenAzeriteEmpoweredItemUIFromLink(itemLink)
+function OpenAzeriteEmpoweredItemUIFromLink(itemLink, overrideClassID, overrideSelectedPowersList)
 	UIParentLoadAddOn("Blizzard_AzeriteUI");
 
 	ShowUIPanel(AzeriteEmpoweredItemUI);
-	AzeriteEmpoweredItemUI:SetToItemLink(itemLink);
+	AzeriteEmpoweredItemUI:SetToItemLink(itemLink, overrideClassID, overrideSelectedPowersList);
 end
 
 local function PlayBattlefieldBanner(self)
@@ -1239,7 +1240,7 @@ function UIParent_OnEvent(self, event, ...)
 		local name, tank, healer, damage, isXRealm, allowMultipleRoles, inviterGuid = ...;
 
 		-- Color the name by our relationship
-		local modifiedName, color, selfRelationship = SocialQueueUtil_GetNameAndColor(inviterGuid);
+		local modifiedName, color, selfRelationship = SocialQueueUtil_GetRelationshipInfo(inviterGuid);
 		if ( selfRelationship ) then
 			name = color..name..FONT_COLOR_CODE_CLOSE;
 		end
@@ -2068,6 +2069,11 @@ function UIParent_OnEvent(self, event, ...)
 	elseif (event == "RESPEC_AZERITE_EMPOWERED_ITEM_OPENED") then
 		AzeriteRespecFrame_LoadUI();
 		ShowUIPanel(AzeriteRespecFrame);
+	elseif (event == "ISLANDS_QUEUE_OPEN") then
+		if (not IslandsQueueFrame) then 
+			IslandsQueue_LoadUI(); 
+		end
+		ShowUIPanel(IslandsQueueFrame); 
 	end
 end
 
@@ -4133,7 +4139,7 @@ function InviteToGroup(name)
 end
 
 function GetSocialColoredName(displayName, guid)
-	local _, color, relationship = SocialQueueUtil_GetNameAndColor(guid);
+	local _, color, relationship = SocialQueueUtil_GetRelationshipInfo(guid);
 	if ( relationship ) then
 		return color..displayName..FONT_COLOR_CODE_CLOSE;
 	end
@@ -4156,7 +4162,7 @@ function UpdateInviteConfirmationDialogs()
 		local suggesterGuid, suggesterName, relationship, isQuickJoin = GetInviteReferralInfo(firstInvite);
 
 		--If we ourselves have a relationship with this player, we'll just act as if they asked through us.
-		local _, color, selfRelationship, playerLink = SocialQueueUtil_GetNameAndColor(guid, name);
+		local _, color, selfRelationship, playerLink = SocialQueueUtil_GetRelationshipInfo(guid, name);
 		local safeLink = playerLink and "["..playerLink.."]" or name;
 
 		if ( isQuickJoin and selfRelationship and GetCVarBool("autoAcceptQuickJoinRequests") ) then
@@ -5075,7 +5081,7 @@ function ShakeFrameRandom(frame, magnitude, duration, frequency)
 
 	local shake = {};
 	for i = 1, math.ceil(duration / frequency) do
-		local xVariation, yVariation = Lerp(-magnitude, magnitude, math.random()), Lerp(-magnitude, magnitude, math.random());
+		local xVariation, yVariation = RandomFloatInRange(-magnitude, magnitude), RandomFloatInRange(-magnitude, magnitude);
 		shake[i] = { x = xVariation, y = yVariation };
 	end
 

@@ -303,6 +303,7 @@
 						if IsShiftKeyDown() then
 							self:GetParent():InsertLinkedCommand(command);
 						else
+							forceinsecure();
 							ConsoleExec(command, true);
 							if button == "RightButton" then
 								self:GetParent():AddToCommandHistory(command);

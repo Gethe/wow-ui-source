@@ -797,6 +797,7 @@
 		<Scripts>
 			<OnLoad function="QuestMapFrame_OnLoad"/>
 			<OnEvent function="QuestMapFrame_OnEvent"/>
+			<OnHide function="QuestMapFrame_OnHide"/>
 		</Scripts>
 	</Frame>
 </Ui>

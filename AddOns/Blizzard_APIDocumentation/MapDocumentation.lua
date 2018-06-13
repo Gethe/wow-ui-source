@@ -36,6 +36,20 @@ local Map =
 			},
 		},
 		{
+			Name = "GetBountySetIDForMap",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "uiMapID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "bountySetID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetFallbackWorldMapID",
 			Type = "Function",
 

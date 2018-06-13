@@ -267,7 +267,7 @@ function WorldStateScoreFrame_Update()
 	local numScores = GetNumBattlefieldScores();
 
 	local scoreButton, columnButtonIcon;
-	local name, kills, killingBlows, honorableKills, deaths, honorGained, faction, race, class, classToken, damageDone, healingDone, bgRating, ratingChange, preMatchMMR, mmrChange, talentSpec;
+	local name, kills, killingBlows, honorableKills, deaths, honorGained, faction, race, class, classToken, damageDone, healingDone, bgRating, ratingChange, preMatchMMR, mmrChange, talentSpec, honorLevel;
 	local teamName, teamRating, newTeamRating, teamMMR;
 	local index;
 	local columnData;
@@ -334,7 +334,7 @@ function WorldStateScoreFrame_Update()
 		end
 		if ( index <= numScores ) then
 			scoreButton.index = index;
-			name, killingBlows, honorableKills, deaths, honorGained, faction, race, class, classToken, damageDone, healingDone, bgRating, ratingChange, preMatchMMR, mmrChange, talentSpec, prestige = GetBattlefieldScore(index);
+			name, killingBlows, honorableKills, deaths, honorGained, faction, race, class, classToken, damageDone, healingDone, bgRating, ratingChange, preMatchMMR, mmrChange, talentSpec, honorLevel = GetBattlefieldScore(index);
 			
 			if ( classToken ) then
 				coords = CLASS_ICON_TCOORDS[classToken];
@@ -345,11 +345,15 @@ function WorldStateScoreFrame_Update()
 				scoreButton.class:Hide();
 			end
 			
-			if ( prestige > 0 ) then
-				local iconFileID, prestigeName = GetPrestigeInfo(prestige);
-				scoreButton.prestige.icon:SetTexture(iconFileID or 0);
-				scoreButton.prestige.tooltip = prestigeName; -- could be nil, that's ok.
-				scoreButton.prestige:Show();
+			if ( honorLevel > 0 ) then
+				local honorRewardInfo = C_PvP.GetHonorRewardInfo(honorLevel);
+				if ( honorRewardInfo ) then
+					scoreButton.prestige.icon:SetTexture(honorRewardInfo.badgeFileDataID or 0);
+					scoreButton.prestige.tooltip = HONOR_LEVEL_TOOLTIP:format(honorLevel);
+					scoreButton.prestige:Show();
+				else
+					scoreButton.prestige:Hide();
+				end
 			else
 				scoreButton.prestige:Hide();
 			end

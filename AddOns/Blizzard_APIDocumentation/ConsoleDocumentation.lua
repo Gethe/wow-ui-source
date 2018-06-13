@@ -149,9 +149,9 @@ local Console =
 		{
 			Name = "ConsoleColorType",
 			Type = "Enumeration",
-			NumValues = 11,
+			NumValues = 12,
 			MinValue = 0,
-			MaxValue = 10,
+			MaxValue = 11,
 			Fields =
 			{
 				{ Name = "DefaultColor", Type = "ConsoleColorType", EnumValue = 0 },
@@ -165,6 +165,7 @@ local Console =
 				{ Name = "BackgroundColor", Type = "ConsoleColorType", EnumValue = 8 },
 				{ Name = "ClickbufferColor", Type = "ConsoleColorType", EnumValue = 9 },
 				{ Name = "PrivateColor", Type = "ConsoleColorType", EnumValue = 10 },
+				{ Name = "DefaultGreen", Type = "ConsoleColorType", EnumValue = 11 },
 			},
 		},
 		{

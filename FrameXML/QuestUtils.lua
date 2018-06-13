@@ -99,7 +99,7 @@ function QuestUtils_GetQuestName(questID)
 		if questIndex and questIndex > 0 then
 			questName = GetQuestLogTitle(questIndex);
 		else
-			questName = C_QuestLog.GetQuestInfoByID(questID);
+			questName = C_QuestLog.GetQuestInfo(questID);
 		end
 	end
 
@@ -125,9 +125,9 @@ function QuestUtils_AddQuestCurrencyRewardsToTooltip(questID, tooltip, currencyC
 			return currency1.currencyID > currency2.currencyID;
 		end
 	);
-	local alreadyHasCurrencyContainer = false; --In the case of multiple currency containers needing to displayed, we only display the first. 
+	local alreadyUsedCurrencyContainerId = 0; --In the case of multiple currency containers needing to displayed, we only display the first. 
 	for i, currencyInfo in ipairs(currencies) do
-		if ( currencyContainerTooltip and C_CurrencyInfo.IsCurrencyContainer(currencyInfo.currencyID, currencyInfo.numItems) and not alreadyHasCurrencyContainer ) then 
+		if ( currencyContainerTooltip and C_CurrencyInfo.IsCurrencyContainer(currencyInfo.currencyID, currencyInfo.numItems) and (alreadyUsedCurrencyContainerId == 0) ) then 
 			local name, texture, numItems, rarity = CurrencyContainerUtil.GetCurrencyContainerInfo(currencyInfo.currencyID,
 			currencyInfo.numItems, currencyInfo.name, currencyInfo.texture, currencyInfo.rarity);
 			
@@ -154,13 +154,15 @@ function QuestUtils_AddQuestCurrencyRewardsToTooltip(questID, tooltip, currencyC
 			if ( not tooltip ) then
 				break;
 			end
-			alreadyHasCurrencyContainer = true; 
+			alreadyUsedCurrencyContainerId = currencyInfo.currencyID; 
 		elseif ( tooltip ) then
-			local text = BONUS_OBJECTIVE_REWARD_WITH_COUNT_FORMAT:format(currencyInfo.texture, currencyInfo.numItems, currencyInfo.name);
-			local currencyColor = GetColorForCurrencyReward(currencyInfo.currencyID, currencyInfo.numItems);
-			tooltip:AddLine(text, currencyColor:GetRGB());
-			if (C_PvP.IsWarModeDesired() and QuestUtils_IsQuestWorldQuest(questID)) then 
-				tooltip:AddLine(WAR_MODE_BONUS_PERCENTAGE);
+			if( alreadyUsedCurrencyContainerId ~= currencyInfo.currencyID ) then --if there's already a currency container of this same type skip it entirely
+				local text = BONUS_OBJECTIVE_REWARD_WITH_COUNT_FORMAT:format(currencyInfo.texture, currencyInfo.numItems, currencyInfo.name);
+				local currencyColor = GetColorForCurrencyReward(currencyInfo.currencyID, currencyInfo.numItems);
+				tooltip:AddLine(text, currencyColor:GetRGB());
+				if (C_PvP.IsWarModeDesired() and QuestUtils_IsQuestWorldQuest(questID)) then 
+					tooltip:AddLine(WAR_MODE_BONUS_PERCENTAGE);
+				end
 			end
 		end
 	end

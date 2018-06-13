@@ -49,24 +49,32 @@ end
 
 UnitPopupToggleMuteMixin = {};
 
+function UnitPopupToggleMuteMixin:IsForPublicChannel()
+	local contextData = self:GetParent():GetContextData();
+	return contextData and IsPublicVoiceChannel(contextData.voiceChannel);
+end
+
 function UnitPopupToggleMuteMixin:OnLoad()
 	VoiceToggleButtonMixin.OnLoad(self);
 
-	self:SetAccessorFunction(C_VoiceChat.IsMuted);
-	self:SetMutatorFunction(C_VoiceChat.SetMuted);
-	self:AddStateAtlas(false, "voicechat-icon-mic");
-	self:AddStateAtlas(true, "voicechat-icon-mic-mute");
-	self:AddStateTooltipString(false, VOICE_TOOLTIP_MUTE_MIC);
-	self:AddStateTooltipString(true, VOICE_TOOLTIP_UNMUTE_MIC);
+	VoiceToggleMuteMixin.SetupMuteButton(self);
+
+	self:AddStateAtlas(MUTE_SILENCE_STATE_NONE, "voicechat-icon-mic");
+	self:AddStateAtlas(MUTE_SILENCE_STATE_MUTE, "voicechat-icon-mic-mute");
+	self:AddStateAtlas(MUTE_SILENCE_STATE_SILENCE, "voicechat-icon-mic-silenced");
+	self:AddStateAtlas(MUTE_SILENCE_STATE_BOTH, "voicechat-icon-mic-mutesilenced");
+
 	self:SetUseIconAsHighlight(true);
 end
 
 function UnitPopupToggleMuteMixin:RegisterEvents()
 	self:RegisterStateUpdateEvent("VOICE_CHAT_MUTED_CHANGED");
+	self:RegisterStateUpdateEvent("VOICE_CHAT_SILENCED_CHANGED");
 end
 
 function UnitPopupToggleMuteMixin:UnregisterEvents()
 	self:UnregisterStateUpdateEvent("VOICE_CHAT_MUTED_CHANGED");
+	self:UnregisterStateUpdateEvent("VOICE_CHAT_SILENCED_CHANGED");
 end
 
 UnitPopupVoiceMicrophoneVolumeSliderMixin = {};
@@ -107,26 +115,52 @@ end
 
 UnitPopupToggleUserMuteMixin = {};
 
+function UnitPopupToggleUserMuteMixin:IsMuted()
+	local contextData = self:GetParent():GetContextData();
+	if contextData and contextData.playerLocation then
+		return C_VoiceChat.IsMemberMuted(contextData.playerLocation);
+	else
+		return false;
+	end
+end
+
+function UnitPopupToggleUserMuteMixin:IsSilenced()
+	local contextData = self:GetParent():GetContextData();
+	if contextData and contextData.voiceChannelID and contextData.voiceMemberID then
+		return C_VoiceChat.IsMemberSilenced(contextData.voiceChannelID, contextData.voiceMemberID);
+	else
+		return false;
+	end
+end
+
+function UnitPopupToggleUserMuteMixin:ToggleMuted()
+	local contextData = self:GetParent():GetContextData();
+	if contextData and contextData.playerLocation then
+		C_VoiceChat.ToggleMemberMuted(contextData.playerLocation);
+	end
+end
+
 function UnitPopupToggleUserMuteMixin:OnLoad()
 	VoiceToggleButtonMixin.OnLoad(self);
+	RosterMemberMuteButtonMixin.SetupMuteButton(self);
 
-	self:SetAccessorFunction(C_VoiceChat.IsMemberMuted);
-	self:SetMutatorFunction(C_VoiceChat.SetMemberMuted);
-	self:AddStateAtlas(false, "voicechat-icon-speaker");
-	self:AddStateAtlas(true, "voicechat-icon-speaker-mute");
-	self:AddStateTooltipString(false, MUTE);
-	self:AddStateTooltipString(true, UNMUTE);
+	self:AddStateAtlas(MUTE_SILENCE_STATE_NONE, "voicechat-icon-speaker");
+	self:AddStateAtlas(MUTE_SILENCE_STATE_MUTE, "voicechat-icon-speaker-mute");
+	self:AddStateAtlas(MUTE_SILENCE_STATE_SILENCE, "voicechat-icon-speaker-silenced");
+	self:AddStateAtlas(MUTE_SILENCE_STATE_BOTH, "voicechat-icon-speaker-mutesilenced");
 	self:SetUseIconAsHighlight(true);
 end
 
 function UnitPopupToggleUserMuteMixin:RegisterEvents()
 	self:RegisterStateUpdateEvent("VOICE_CHAT_CHANNEL_MEMBER_MUTE_FOR_ME_CHANGED");
 	self:RegisterStateUpdateEvent("VOICE_CHAT_CHANNEL_MEMBER_MUTE_FOR_ALL_CHANGED");
+	self:RegisterStateUpdateEvent("VOICE_CHAT_CHANNEL_MEMBER_SILENCED_CHANGED");
 end
 
 function UnitPopupToggleUserMuteMixin:UnregisterEvents()
 	self:UnregisterStateUpdateEvent("VOICE_CHAT_CHANNEL_MEMBER_MUTE_FOR_ME_CHANGED");
 	self:UnregisterStateUpdateEvent("VOICE_CHAT_CHANNEL_MEMBER_MUTE_FOR_ALL_CHANGED");
+	self:UnregisterStateUpdateEvent("VOICE_CHAT_CHANNEL_MEMBER_SILENCED_CHANGED");
 end
 
 UnitPopupVoiceUserVolumeSliderMixin = {};

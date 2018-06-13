@@ -1282,7 +1282,6 @@ function PlayerTalentFrame_UpdateSpecFrame(self, spec)
 				frame.icon:SetAlpha(1);
 				local level = GetSpellLevelLearned(bonuses[i]);
 				local futureSpell = level and level > UnitLevel("player");
-				local spellLocked = futureSpell or not FindSpellBookSlotBySpellID(bonuses[i], self.isPet);
 				if ( futureSpell ) then
 					frame.subText:SetFormattedText(SPELLBOOK_AVAILABLE_AT, level);
 				else
@@ -1295,8 +1294,8 @@ function PlayerTalentFrame_UpdateSpecFrame(self, spec)
 					frame.ring:SetDesaturated(true);
 					frame.subText:SetTextColor(0.75, 0.75, 0.75);
 				else
-					frame.disabled = spellLocked;
-					if ( spellLocked ) then
+					frame.disabled = futureSpell;
+					if ( futureSpell ) then
 						frame.icon:SetDesaturated(true);
 						frame.icon:SetAlpha(0.5);
 					else

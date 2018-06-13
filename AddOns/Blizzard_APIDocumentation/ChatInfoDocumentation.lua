@@ -39,6 +39,15 @@ local ChatInfo =
 			},
 		},
 		{
+			Name = "GetNumActiveChannels",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "numChannels", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetRegisteredAddonMessagePrefixes",
 			Type = "Function",
 

@@ -231,6 +231,7 @@ VideoData["Display_PrimaryMonitorDropDown"]={
 			local ratio = GetMonitorAspectRatio(self:GetValue());
 			return (ratio>=1.0);
 		end,
+	restart = true,
 }
 
 -------------------------------------------------------------------------------------------------------

@@ -1,6 +1,7 @@
 ##DebugHook.lua
 ..\SharedXML\C_TimerAugment.lua
 ..\SharedXML\Util.lua
+..\SharedXML\AnchorUtil.xml
 ..\SharedXML\BindingUtil.lua
 ..\SharedXML\FrameUtil.lua
 ..\SharedXML\SoundKitConstants.lua

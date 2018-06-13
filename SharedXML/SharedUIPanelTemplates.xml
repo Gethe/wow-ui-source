@@ -322,6 +322,15 @@
 			</OnLeave>
 		</Scripts>
 	</Button>
+
+	<!--A super simple standard button that will widen on load to fit its text if its 
+	localized version is bigger than its current size + 40 padding.  It will never reshrink.-->
+	<Button name="UIPanelDynamicResizeButtonTemplate" inherits="UIPanelButtonTemplate" virtual="true">
+		<Scripts>
+			<OnLoad function="DynamicResizeButton_Resize" inherit="append"/>
+		</Scripts>
+	</Button>
+	
 	<CheckButton name="UIRadioButtonTemplate" virtual="true">
 		<Size>
 			<AbsDimension x="16" y="16"/>

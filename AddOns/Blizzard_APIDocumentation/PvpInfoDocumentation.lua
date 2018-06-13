@@ -213,7 +213,6 @@ local PvpInfo =
 			Returns =
 			{
 				{ Name = "tierID", Type = "number", Nilable = false },
-				{ Name = "ranking", Type = "number", Nilable = true },
 				{ Name = "nextTierID", Type = "number", Nilable = true },
 			},
 		},

@@ -290,6 +290,13 @@
 							</Anchors>
 							<Color r="1" g="1" b="1"/>
 						</FontString>
+
+						<FontString parentKey="ArtifactPower" inherits="SystemFont_Shadow_Large" text="ARTIFACT_POWER">
+							<Anchors>
+								<Anchor point="BOTTOM" relativeKey="$parent.PointsRemainingLabel" relativePoint="TOP" />
+							</Anchors>
+							<Color r=".901" g=".8" b=".501" />
+						</FontString>
 					</Layer>
 				</Layers>
 				<Frames>

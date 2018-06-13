@@ -33,6 +33,7 @@ function PartyPoseRewardsMixin:PlayRewardAnimation()
 	self.AnimFadeOut:Play();
 	
 	if (self:IsAzeriteCurrency()) then
+		self.loopingSoundEmitter:StartLoopingSound();
 		self:GetParent():PlayModelSceneAnimations();
 		self:GetParent():AnchorModelScenesToRewards(self.Icon);
 	end
@@ -61,6 +62,7 @@ function PartyPoseRewardsMixin:OnEnter()
 	self.Shine:SetAlpha(0); 
 	
 	if (self:IsAzeriteCurrency()) then 
+		self.loopingSoundEmitter:CancelLoopingSound();
 		self:GetParent():HideAzeriteGlowModelScenes();
 	end	
 	
@@ -71,10 +73,15 @@ end
 function PartyPoseRewardsMixin:OnAnimationFinished()
 	if (self:IsAzeriteCurrency()) then 
 		self:GetParent():HideAzeriteGlowModelScenes();
+		self.loopingSoundEmitter:FinishLoopingSound();
 	end	
 	
 	self:Hide(); 
 	self:GetParent():PlayNextRewardAnimation(self);
+end
+
+function PartyPoseRewardsMixin:OnHide()
+	self.loopingSoundEmitter:CancelLoopingSound();
 end
 
 function PartyPoseRewardsMixin:OnLeave()
@@ -84,6 +91,16 @@ function PartyPoseRewardsMixin:OnLeave()
 	self:GetParent():PlayNextRewardAnimation(self); 
 end
 
+function PartyPoseRewardsMixin:OnLoad()
+	local startingSound = SOUNDKIT.UI_80_ISLANDS_AZERITECOLLECTION_START;
+	local loopingSound = SOUNDKIT.UI_80_ISLANDS_AZERITECOLLECTION_LOOP;
+	local endingSound = SOUNDKIT.UI_80_ISLANDS_AZERITECOLLECTION_STOP;
+
+	local loopStartDelay = 0;
+	local loopEndDelay = 0;
+	local loopFadeTime = 400; -- ms
+	self.loopingSoundEmitter = CreateLoopingSoundEffectEmitter(startingSound, loopingSound, endingSound, loopStartDelay, loopEndDelay, loopFadeTime);
+end
 
 PartyPoseMixin = { };
 

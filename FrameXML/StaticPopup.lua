@@ -1954,11 +1954,24 @@ StaticPopupDialogs["CONFIRM_AZERITE_EMPOWERED_BIND"] = {
 	button1 = OKAY,
 	button2 = CANCEL,
 	OnAccept = function(self, data)
-		C_AzeriteEmpoweredItem.SelectPower(data.empoweredItemLocation, data.azeritePowerID);
+		data.SelectPower();
 	end,
 	timeout = 0,
 	exclusive = 1,
-	hideOnEscape = 1
+	hideOnEscape = 1,
+	showAlert = 1,
+};
+
+StaticPopupDialogs["CONFIRM_AZERITE_EMPOWERED_SELECT_POWER"] = {
+	text = AZERITE_EMPOWERED_SELECT_POWER,
+	button1 = OKAY,
+	button2 = CANCEL,
+	OnAccept = function(self, data)
+		data.SelectPower();
+	end,
+	timeout = 0,
+	exclusive = 1,
+	hideOnEscape = 1,
 };
 
 StaticPopupDialogs["CONFIRM_AZERITE_EMPOWERED_RESPEC"] = {
@@ -4576,6 +4589,13 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 		extraButton:Show();
 		extraButton:SetPoint("BOTTOM", dialog, "BOTTOM", 0, 22);
 		extraButton:SetText(info.extraButton);
+		--widen if too small, but reset to 128 otherwise
+		local width = 128
+		local padding = 40;
+		local textWidth = extraButton:GetTextWidth() + padding;
+		width = math.max(width, textWidth)
+		extraButton:SetWidth(width)
+
 		dialog.Separator:Show();
 	else
 		dialog.extraButton:Hide();

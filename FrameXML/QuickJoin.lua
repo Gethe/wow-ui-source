@@ -393,8 +393,8 @@ function QuickJoinEntryMixin:UpdateAll()
 	SocialQueueUtil_SortGroupMembers(self.displayedMembers);
 end
 
-local function guidIDGetter(guid)
-	return guid; --Guids are unique identifying information as-is.
+local function guidIDGetter(playerInfo)
+	return playerInfo.guid; --Guids are unique identifying information as-is.
 end
 
 local function queueIDGetter(queue)
@@ -497,20 +497,14 @@ function QuickJoinEntryMixin:ApplyToTooltip(tooltip)
 		return;
 	end
 
-	local playerName, color = SocialQueueUtil_GetNameAndColor(members[1]);
-	if ( #members > 1 ) then
-		playerName = string.format(QUICK_JOIN_TOAST_EXTRA_PLAYERS, playerName, #members - 1);
-	end
-	playerName = color..playerName..FONT_COLOR_CODE_CLOSE;
-
-	SocialQueueUtil_SetTooltip(tooltip, playerName, self.displayedQueues, self:CanJoin(), self:HasLocalRelationshipWithLeader());
+	SocialQueueUtil_SetTooltip(tooltip, SocialQueueUtil_GetHeaderName(self.guid), self.displayedQueues, self:CanJoin(), self:HasLocalRelationshipWithLeader());
 end
 
 local MAX_NUM_DISPLAYED_QUEUES = 6;
 function QuickJoinEntryMixin:ApplyToFrame(frame)
 	--Names
 	for i=1, #self.displayedMembers do
-		local name, color, relationship, playerLink = SocialQueueUtil_GetNameAndColor(self.displayedMembers[i]);
+		local name, color, relationship, playerLink = SocialQueueUtil_GetRelationshipInfo(self.displayedMembers[i].guid, nil, self.displayedMembers[i].clubId);
 		local nameObj = frame.Members[i];
 		if ( not nameObj ) then
 			nameObj = frame:CreateFontString(nil, "ARTWORK", "QuickJoinButtonMemberTemplate");

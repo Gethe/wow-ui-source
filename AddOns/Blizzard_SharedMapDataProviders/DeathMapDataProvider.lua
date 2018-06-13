@@ -25,6 +25,11 @@ end
 
 CorpsePinMixin = CreateFromMixins(MapCanvasPinMixin);
 
+function CorpsePinMixin:OnLoad()
+	WorldQuestPinMixin.OnLoad(self);
+	self:SetScalingLimits(1, 0.8, 0.8);
+end
+
 function CorpsePinMixin:OnAcquired()
 	self:UseFrameLevelType("PIN_FRAME_LEVEL_CORPSE");
 end

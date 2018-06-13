@@ -3,7 +3,7 @@
 	<Script file="DeathMapDataProvider.lua"/>
 
 	<Frame name="CorpsePinTemplate" mixin="CorpsePinMixin" enableMouse="true" hidden="true" virtual="true">
-		<Size x="16" y="16"/>
+		<Size x="24" y="24"/>
 		<Anchors>
 			<Anchor point="CENTER"/>
 		</Anchors>

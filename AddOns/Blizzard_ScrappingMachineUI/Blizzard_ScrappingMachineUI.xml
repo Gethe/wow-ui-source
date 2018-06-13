@@ -42,7 +42,7 @@
 		<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
 	</Button>
 	
-	<Frame name="ScrappingMachineFrame" inherits="ButtonFrameTemplate" toplevel="true" parent="UIParent" enableMouse="true" mixin="ScrappingMachineMixin">
+	<Frame name="ScrappingMachineFrame" inherits="ButtonFrameTemplate" toplevel="true" hidden="true" parent="UIParent" enableMouse="true" mixin="ScrappingMachineMixin">
 		<Size x="333" y="278"/>
 		<Anchors>
 			<Anchor point="CENTER"/>

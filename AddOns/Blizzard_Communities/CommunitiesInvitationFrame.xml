@@ -11,6 +11,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
+						PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
 						self:GetParent():AcceptInvitation();
 					</OnClick>
 				</Scripts>
@@ -22,6 +23,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
+						PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
 						self:GetParent():DeclineInvitation();
 					</OnClick>
 				</Scripts>
@@ -116,7 +118,7 @@
 		</Scripts>
 	</Frame>
 	
-	<Button name="CommunitiesInviteButtonTemplate" inherits="UIPanelButtonTemplate" text="COMMUNITIES_INVITE_MEMBERS" virtual="true">
+	<Button name="CommunitiesInviteButtonTemplate" inherits="UIPanelDynamicResizeButtonTemplate" text="COMMUNITIES_INVITE_MEMBERS" virtual="true">
 		<Scripts>
 			<OnClick function="CommunitiesInviteButton_OnClick"/>
 			<OnHide function="CommunitiesInvitebutton_OnHide"/>

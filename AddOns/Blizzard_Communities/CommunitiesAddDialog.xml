@@ -155,6 +155,7 @@
 					</Anchors>
 					<Scripts>
 						<OnClick>
+							PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 							self:GetParent():Hide();
 						</OnClick>
 					</Scripts>

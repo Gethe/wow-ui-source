@@ -34,38 +34,8 @@
 
 	<Button name="QuestInfoRewardItemCodeTemplate" virtual="true">
 		<Scripts>
-			<OnEnter>
-				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-				if ( QuestInfoFrame.questLog ) then
-					if (self.objectType == "item") then
-						GameTooltip:SetQuestLogItem(self.type, self:GetID());
-						GameTooltip_ShowCompareItem(GameTooltip);
-					elseif (self.objectType == "currency") then
-						GameTooltip:SetQuestLogCurrency(self.type, self:GetID());
-					end
-				else
-					if (self.objectType == "item") then
-						GameTooltip:SetQuestItem(self.type, self:GetID());
-						GameTooltip_ShowCompareItem(GameTooltip);
-					elseif (self.objectType == "currency") then
-						GameTooltip:SetQuestCurrency(self.type, self:GetID());
-					end
-				end
-				CursorUpdate(self);
-			</OnEnter>
-			<OnClick>
-				if ( IsModifiedClick() and self.objectType == "item") then
-					if ( QuestInfoFrame.questLog ) then
-						HandleModifiedItemClick(GetQuestLogItemLink(self.type, self:GetID()));
-					else
-						HandleModifiedItemClick(GetQuestItemLink(self.type, self:GetID()));
-					end
-				else
-					if ( QuestInfoFrame.chooseItems ) then
-						QuestInfoItem_OnClick(self);
-					end
-				end
-			</OnClick>
+			<OnEnter function="QuestInfoRewardItemCodeTemplate_OnEnter" />
+			<OnClick function="QuestInfoRewardItemCodeTemplate_OnClick" />
 			<OnLeave>
 				GameTooltip:Hide();
 				ResetCursor();

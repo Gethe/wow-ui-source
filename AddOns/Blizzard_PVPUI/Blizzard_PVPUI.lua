@@ -1397,9 +1397,9 @@ function PVPUIHonorInsetMixin:DisplayRatedPanel()
 	panel:Show();
 	self.CasualPanel:Hide();
 
-	local tierID, ranking, nextTierID = C_PvP.GetSeasonBestInfo();
+	local tierID, nextTierID = C_PvP.GetSeasonBestInfo();
 	local tierInfo = C_PvP.GetPvpTierInfo(tierID);
-	ConquestFrame_SetTierInfo(panel.Tier, tierInfo, ranking);
+	ConquestFrame_SetTierInfo(panel.Tier, tierInfo);
 
 	local nextTierInfo = nextTierID and C_PvP.GetPvpTierInfo(nextTierID);	
 	if nextTierInfo then

@@ -386,6 +386,21 @@ local VoiceChat =
 			},
 		},
 		{
+			Name = "IsMemberSilenced",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "memberID", Type = "number", Nilable = false },
+				{ Name = "channelID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "silenced", Type = "bool", Nilable = true },
+			},
+		},
+		{
 			Name = "IsMuted",
 			Type = "Function",
 
@@ -406,6 +421,15 @@ local VoiceChat =
 			Returns =
 			{
 				{ Name = "isUsingVoice", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsSilenced",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isSilenced", Type = "bool", Nilable = true },
 			},
 		},
 		{
@@ -587,6 +611,15 @@ local VoiceChat =
 			Type = "Function",
 		},
 		{
+			Name = "ToggleMemberMuted",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "playerLocation", Type = "table", Mixin = "PlayerLocationMixin", Nilable = false },
+			},
+		},
+		{
 			Name = "ToggleMuted",
 			Type = "Function",
 		},
@@ -727,6 +760,17 @@ local VoiceChat =
 			{
 				{ Name = "memberID", Type = "number", Nilable = false },
 				{ Name = "channelID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "VoiceChatChannelMemberSilencedChanged",
+			Type = "Event",
+			LiteralName = "VOICE_CHAT_CHANNEL_MEMBER_SILENCED_CHANGED",
+			Payload =
+			{
+				{ Name = "memberID", Type = "number", Nilable = false },
+				{ Name = "channelID", Type = "number", Nilable = false },
+				{ Name = "isSilenced", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -892,6 +936,15 @@ local VoiceChat =
 				{ Name = "isPressed", Type = "bool", Nilable = false },
 			},
 		},
+		{
+			Name = "VoiceChatSilencedChanged",
+			Type = "Event",
+			LiteralName = "VOICE_CHAT_SILENCED_CHANGED",
+			Payload =
+			{
+				{ Name = "isSilenced", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Tables =
@@ -911,9 +964,9 @@ local VoiceChat =
 		{
 			Name = "VoiceChatStatusCode",
 			Type = "Enumeration",
-			NumValues = 21,
+			NumValues = 22,
 			MinValue = 0,
-			MaxValue = 20,
+			MaxValue = 21,
 			Fields =
 			{
 				{ Name = "Success", Type = "VoiceChatStatusCode", EnumValue = 0 },
@@ -937,6 +990,7 @@ local VoiceChat =
 				{ Name = "Disabled", Type = "VoiceChatStatusCode", EnumValue = 18 },
 				{ Name = "UnsupportedChatChannelType", Type = "VoiceChatStatusCode", EnumValue = 19 },
 				{ Name = "InvalidCommunityStream", Type = "VoiceChatStatusCode", EnumValue = 20 },
+				{ Name = "PlayerSilenced", Type = "VoiceChatStatusCode", EnumValue = 21 },
 			},
 		},
 		{
@@ -961,6 +1015,7 @@ local VoiceChat =
 				{ Name = "isActive", Type = "bool", Nilable = false },
 				{ Name = "isSpeaking", Type = "bool", Nilable = false },
 				{ Name = "isMutedForAll", Type = "bool", Nilable = false },
+				{ Name = "isSilenced", Type = "bool", Nilable = false },
 			},
 		},
 		{

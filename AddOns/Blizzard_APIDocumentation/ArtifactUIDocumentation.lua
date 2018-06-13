@@ -625,6 +625,15 @@ local ArtifactUI =
 			},
 		},
 		{
+			Name = "IsArtifactDisabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "artifactDisabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsAtForge",
 			Type = "Function",
 

@@ -344,6 +344,10 @@ function FrameDeltaLerp(startValue, endValue, amount)
 	return DeltaLerp(startValue, endValue, amount, GetTickTime());
 end
 
+function RandomFloatInRange(minValue, maxValue)
+	return Lerp(minValue, maxValue, math.random());
+end
+
 function GetNavigationButtonEnabledStates(count, index)
 	-- Returns indicate whether navigation for "previous" and "next" should be enabled, respectively.
 	if count > 1 then
@@ -1335,4 +1339,12 @@ function CallMethodOnNearestAncestor(self, methodName, ...)
 	end
 
 	return false;
+end
+
+function FormateFullDateWithoutYear(messageDate)
+	return FULLDATE_NO_YEAR:format(CALENDAR_WEEKDAY_NAMES[messageDate.weekDay], CALENDAR_FULLDATE_MONTH_NAMES[messageDate.month], messageDate.day);
+end
+
+function AreFullDatesEqual(firstDate, secondDate)
+	return firstDate.month == secondDate.month and firstDate.day == secondDate.day and firstDate.year == secondDate.year;
 end

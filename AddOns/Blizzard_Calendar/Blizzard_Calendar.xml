@@ -744,10 +744,18 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="CalendarViewEventTypeName" inherits="GameFontNormalSmall" justifyH="LEFT">
+				<FontString name="CalendarViewEventCommunityName" inherits="GameFontNormalSmall" justifyH="LEFT">
 					<Size x="220" y="12"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="CalendarViewEventTitle" relativePoint="BOTTOMLEFT">
+							<Offset x="0" y="0"/>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CalendarViewEventTypeName" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size x="220" y="12"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="CalendarViewEventCommunityName" relativePoint="BOTTOMLEFT">
 							<Offset x="0" y="0"/>
 						</Anchor>
 					</Anchors>
@@ -993,17 +1001,16 @@
 				</Texture>
 			</Layer>
 			<Layer level="BACKGROUND">
-				<FontString name="CalendarCreateEventDateLabel" inherits="GameFontHighlightSmall">
+				<FontString name="CalendarCreateEventCommunityName" inherits="GameFontNormalSmall" justifyH="LEFT" hidden="true">
+				<Size x="220" y="12"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="CalendarCreateEventIcon" relativePoint="TOPRIGHT">
-							<Offset x="2" y="0"/>
-						</Anchor>
+						<Anchor point="TOPLEFT" relativeTo="CalendarCreateEventIcon" relativePoint="TOPRIGHT" x="5" y="0"/>
 					</Anchors>
 				</FontString>
 				<FontString name="CalendarCreateEventTextureName" inherits="GameFontNormalSmall" justifyV="TOP" justifyH="LEFT" hidden="true">
 					<Size x="230" y="0"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="CalendarCreateEventDateLabel" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+						<Anchor point="TOPLEFT" relativeTo="CalendarCreateEventCommunityName" relativePoint="BOTTOMLEFT" x="0" y="0"/>
 					</Anchors>
 				</FontString>
 				<FontString name="CalendarCreateEventCreatorName" inherits="GameFontNormalSmall" justifyH="LEFT">
@@ -1012,6 +1019,11 @@
 						<Anchor point="TOPLEFT" relativeTo="CalendarCreateEventTextureName" relativePoint="BOTTOMLEFT">
 							<Offset x="0" y="0"/>
 						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CalendarCreateEventDateLabel" inherits="GameFontHighlightSmall">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="CalendarCreateEventCreatorName" relativePoint="BOTTOMLEFT" x="0" y="0"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -1089,6 +1101,11 @@
 					<Anchor point="TOPLEFT">
 						<Offset x="160" y="-114"/>
 					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="CalendarCreateEventCommunityDropDown" inherits="UIDropDownMenuTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="52" y="-50"/>
 				</Anchors>
 			</Frame>
 			<Frame name="CalendarCreateEventDescriptionContainer">
@@ -1420,7 +1437,7 @@
 	<!-- Mass Invite -->
 	<!-- This module lets you auto-invite more than one player at a time based on a filter. -->
 	<Frame name="CalendarMassInviteFrame" parent="CalendarFrame" inherits="CalendarModalDialogTemplate" hidden="true">
-		<Size x="320" y="250"/>
+		<Size x="320" y="210"/>
 		<Anchors>
 			<Anchor point="BOTTOMRIGHT" relativeTo="CalendarCreateEventMassInviteButton" relativePoint="TOPLEFT"/>
 		</Anchors>
@@ -1436,50 +1453,46 @@
 			</EdgeSize>
 		</Backdrop>
 		<Layers>
-			<Layer level="BORDER">
-				<Texture name="$parentDivider" file="Interface\DialogFrame\UI-DialogBox-Divider">
-					<Size x="303" y="16"/>
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset x="10" y="-140"/>
-						</Anchor>
-					</Anchors>
-					<TexCoords left="0.0" right="0.75390625" top="0.0" bottom="0.5"/>
-				</Texture>
-			</Layer>
 			<Layer level="BACKGROUND">
 				<FontString inherits="GameFontHighlightSmall" text="CALENDAR_MASSINVITE_GUILD_HELP" justifyH="CENTER">
 					<Size x="280" y="0"/>
 					<Anchors>
 						<Anchor point="TOP">
-							<Offset x="0" y="-26"/>
+							<Offset x="0" y="-76"/>
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="CalendarMassInviteGuildLevelText" inherits="GameFontNormalSmall" text="LEVEL">
+				<FontString name="CalendarMassInviteLevelText" inherits="GameFontNormalSmall" text="LEVEL">
 					<Anchors>
 						<Anchor point="TOPLEFT">
-							<Offset x="46" y="-53"/>
+							<Offset x="46" y="-103"/>
 						</Anchor>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentLevelDivider" inherits="GameFontNormalSmall" text="-">
 					<Anchors>
 						<Anchor point="TOPLEFT">
-							<Offset x="80" y="-79"/>
+							<Offset x="80" y="-127"/>
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="CalendarMassInviteGuildRankText" inherits="GameFontNormalSmall" text="CALENDAR_MASSINVITE_GUILD_MINRANK">
+				<FontString name="CalendarMassInviteRankText" inherits="GameFontNormalSmall" text="CALENDAR_MASSINVITE_GUILD_MINRANK">
 					<Anchors>
 						<Anchor point="TOPLEFT">
-							<Offset x="170" y="-53"/>
+							<Offset x="170" y="-103"/>
 						</Anchor>
 					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame name="CalendarMassInviteCommunityDropDown" inherits="UIDropDownMenuTemplate">
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset x="0" y="-30"/>
+					</Anchor>
+				</Anchors>
+			</Frame>
 			<Frame name="CalendarMassInviteTitleFrame" inherits="CalendarTitleFrameTemplate">
 				<Scripts>
 					<OnLoad>
@@ -1488,55 +1501,55 @@
 					</OnLoad>
 				</Scripts>
 			</Frame>
-			<EditBox name="CalendarMassInviteGuildMinLevelEdit" numeric="true" inherits="InputBoxTemplate" autoFocus="false">
+			<EditBox name="CalendarMassInviteMinLevelEdit" numeric="true" letters="3" inherits="InputBoxTemplate" autoFocus="false">
 				<Size x="25" y="20"/>
 				<Anchors>
 					<Anchor point="TOPLEFT">
-						<Offset x="50" y="-77"/>
+						<Offset x="50" y="-122"/>
 					</Anchor>
 				</Anchors>
 				<Scripts>
 					<OnEnterPressed function="EditBox_ClearFocus"/>
 					<OnEscapePressed function="EditBox_ClearFocus"/>
 					<OnEditFocusGained>
-						if ( not CanEditGuildEvent() ) then
+						if ( not CalendarMassInviteFrame.selectedClubId ) then
 							self:ClearFocus();
 						end
 					</OnEditFocusGained>
 				</Scripts>
 			</EditBox>
-			<EditBox name="CalendarMassInviteGuildMaxLevelEdit" numeric="true" inherits="InputBoxTemplate" autoFocus="false">
+			<EditBox name="CalendarMassInviteMaxLevelEdit" numeric="true" letters="3" inherits="InputBoxTemplate" autoFocus="false">
 				<Size x="25" y="20"/>
 				<Anchors>
 					<Anchor point="TOPLEFT">
-						<Offset x="97" y="-77"/>
+						<Offset x="97" y="-122"/>
 					</Anchor>
 				</Anchors>
 				<Scripts>
 					<OnEnterPressed function="EditBox_ClearFocus"/>
 					<OnEscapePressed function="EditBox_ClearFocus"/>
 					<OnEditFocusGained>
-						if ( not CanEditGuildEvent() ) then
+						if ( not CalendarMassInviteFrame.selectedClubId ) then
 							self:ClearFocus();
 						end
 					</OnEditFocusGained>
 				</Scripts>
 			</EditBox>
-			<Frame name="CalendarMassInviteGuildRankMenu" inherits="UIDropDownMenuTemplate" clampedToScreen="true">
+			<Frame name="CalendarMassInviteRankMenu" inherits="UIDropDownMenuTemplate" clampedToScreen="true">
 				<Anchors>
 					<Anchor point="TOPLEFT">
-						<Offset x="149" y="-73"/>
+						<Offset x="149" y="-118"/>
 					</Anchor>
 				</Anchors>
 			</Frame>
-			<Button name="CalendarMassInviteGuildAcceptButton" inherits="CalendarEventButtonTemplate" text="ACCEPT">
+			<Button name="CalendarMassInviteAcceptButton" inherits="CalendarEventButtonTemplate" text="ACCEPT">
 				<Anchors>
-					<Anchor point="TOPRIGHT">
-						<Offset x="-14" y="-115"/>
+					<Anchor point="TOP">
+						<Offset x="0" y="-160"/>
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnClick function="CalendarMassInviteGuildAcceptButton_OnClick"/>
+					<OnClick function="CalendarMassInviteAcceptButton_OnClick"/>
 				</Scripts>
 			</Button>
 			<Button name="CalendarMassInviteCloseButton" inherits="CalendarCloseButtonTemplate">

@@ -108,6 +108,13 @@ function MagicButton_OnLoad(self)
 	end
 end
 
+function DynamicResizeButton_Resize(self)
+	local padding = 40;
+	local width = self:GetWidth();
+	local textWidth = self:GetTextWidth() + padding;
+	self:SetWidth(math.max(width, textWidth));
+end
+
 -- ButtonFrameTemplate code
 function ButtonFrameTemplate_HideButtonBar(self)
 	if self.bottomInset then

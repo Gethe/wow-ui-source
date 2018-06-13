@@ -104,6 +104,20 @@ local QuestLog =
 				{ Name = "uiMapID", Type = "number", Nilable = false },
 			},
 		},
+		{
+			Name = "ShouldShowQuestRewards",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "shouldShow", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Events =

@@ -1086,6 +1086,10 @@ function CommunitiesMemberListEntryMixin:IsChannelActive()
 	end
 end
 
+function CommunitiesMemberListEntryMixin:IsChannelPublic()
+	return false;	-- community voice channels are never public
+end
+
 function CommunitiesMemberListEntryMixin:IsVoiceActive()
 	return self.voiceActive;
 end

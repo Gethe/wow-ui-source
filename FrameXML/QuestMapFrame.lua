@@ -175,6 +175,10 @@ function QuestMapFrame_OnEvent(self, event, ...)
 	end
 end
 
+function QuestMapFrame_OnHide(self)
+	QuestMapFrame_CloseQuestDetails(self:GetParent());
+end
+
 -- opening/closing the quest frame is different from showing/hiding because of fullscreen map mode
 -- opened indicates the quest frame should show in windowed map mode
 -- in fullscreen map mode the quest frame could be opened but hidden

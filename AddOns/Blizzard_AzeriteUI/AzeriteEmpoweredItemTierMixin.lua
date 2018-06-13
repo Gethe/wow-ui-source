@@ -1,30 +1,12 @@
 AzeriteEmpoweredItemTierMixin = {};
 
-AzeriteEmpoweredItemTierMixin.ANIM_STATE_NONE = nil;
-AzeriteEmpoweredItemTierMixin.ANIM_STATE_START_HOLD = 1;
-AzeriteEmpoweredItemTierMixin.ANIM_STATE_ROTATING = 2;
-AzeriteEmpoweredItemTierMixin.ANIM_STATE_END_HOLD = 3;
-
 AzeriteEmpoweredItemTierMixin.BACKGROUND_GLOW_STATE_NONE = nil;
 AzeriteEmpoweredItemTierMixin.BACKGROUND_GLOW_STATE_SELECTION_ACTIVE = 1;
 AzeriteEmpoweredItemTierMixin.BACKGROUND_GLOW_STATE_SELECTED = 2;
 
-local INNER_GEAR_ANIM_RATE = .25; -- percent
-
-function AzeriteEmpoweredItemTierMixin:OnLoad()
-	local startingSound = nil;
-	local loopingSound = SOUNDKIT.UI_80_AZERITEARMOR_ROTATION_LOOP;
-	local endingSound = SOUNDKIT.UI_80_AZERITEARMOR_ROTATIONENDCLICKS;
-
-	local loopStartDelay = .25;
-	local loopEndDelay = 0;
-	local loopFadeTime = 500; -- ms
-	self.loopingSoundEmitter = CreateLoopingSoundEffectEmitter(startingSound, loopingSound, endingSound, loopStartDelay, loopEndDelay, loopFadeTime);
-end
-
 function AzeriteEmpoweredItemTierMixin:Reset()
-	self.animState = self.ANIM_STATE_NONE;
-	self.animContextData = nil;
+	self.tierAnimation = nil;
+	self.animatingAzeritePowerButton = nil;
 
 	self.owningFrame = nil;
 	self.azeritePowerButtons = {};
@@ -42,8 +24,6 @@ function AzeriteEmpoweredItemTierMixin:Reset()
 
 	self.transformNode = nil;
 	self.animatedGearNode = nil;
-
-	self.loopingSoundEmitter:CancelLoopingSound();
 end
 
 function AzeriteEmpoweredItemTierMixin:SetOwner(owningFrame, azeriteItemDataSource)
@@ -122,12 +102,57 @@ function AzeriteEmpoweredItemTierMixin:CreatePowers(powerPool)
 	self:SetupPlugs();
 end
 
+function AzeriteEmpoweredItemTierMixin:PrepareForReveal()
+	for powerIndex, azeritePowerButton in ipairs(self.azeritePowerButtons) do
+		azeritePowerButton:PrepareForRevealAnimation();
+	end
+
+	if self:IsFinalTier() then
+		self:PlayPowerReveal(3.2);
+	else
+		self.tierAnimation = AzeriteTierRevealAnimationMixin:Create(self);
+
+		local animBegin = true;
+		self.owningFrame:OnTierAnimationStateChanged(self, animBegin);
+
+		self.tierAnimation:Play();
+	end
+end
+
+function AzeriteEmpoweredItemTierMixin:OnTierRevealRotationStarted()
+	local forceNoDuplicates = false;
+	PlaySound(SOUNDKIT.UI_80_AZERITEARMOR_ROTATIONSTARTCLICKS, nil, forceNoDuplicates);
+
+	self.owningFrame:OnTierRevealRotationStarted(self);
+end
+
+function AzeriteEmpoweredItemTierMixin:OnTierRevealRotationStopped()
+	self.owningFrame:OnTierRevealRotationStopped(self);
+end
+
+function AzeriteEmpoweredItemTierMixin:PlayRevealGlows()
+	self:TransitionBackgroundGlow(self.BACKGROUND_GLOW_STATE_SELECTED);
+
+	if self.rankFrame then
+		self.rankFrame.SelectedAnim:Play();
+	end
+end
+
+function AzeriteEmpoweredItemTierMixin:PlayPowerReveal(timeDelay)
+	for powerIndex, azeritePowerButton in ipairs(self.azeritePowerButtons) do
+		azeritePowerButton:PlayRevealAnimation(timeDelay);
+	end
+end
+
 function AzeriteEmpoweredItemTierMixin:Update(azeriteItemPowerLevel)
 	self.azeriteItemPowerLevel = azeriteItemPowerLevel;
 	self.meetsPowerLevelRequirement = azeriteItemPowerLevel >= self.tierInfo.unlockLevel;
 	self.selectedPowerID = nil;
 
 	if self:IsAnimating() then
+		if self.tierSlot then
+			self.tierSlot:Disable();
+		end
 		return;
 	end
 
@@ -135,6 +160,7 @@ function AzeriteEmpoweredItemTierMixin:Update(azeriteItemPowerLevel)
 
 	if self.tierSlot then
 		self.tierSlot:SetPowerLevelInfo(self.azeriteItemPowerLevel, self.tierInfo.unlockLevel, self:HasAnySelected(), self:IsSelectionActive(), self.azeriteItemDataSource:IsPreviewSource(), self:IsFinalTier());
+		self.tierSlot:Enable();
 	end
 
 	self:SnapToSelection();
@@ -149,20 +175,36 @@ function AzeriteEmpoweredItemTierMixin:UpdatePowerStates()
 		end
 	end
 
-	local isSelectionActive = not self:IsAnimating() and self:IsSelectionActive();
+	local isSelectionActive = not self:IsAnyTierRevealing() and not self:IsAnimating() and self:IsSelectionActive();
 	local specID = GetSpecializationInfo(GetSpecialization())
 	for powerIndex, azeritePowerButton in ipairs(self.azeritePowerButtons) do
 		local isSpecAllowed = C_AzeriteEmpoweredItem.IsPowerAvailableForSpec(azeritePowerButton:GetAzeritePowerID(), specID);
 		azeritePowerButton:SetCanBeSelectedDetails(isSelectionActive, self.meetsPowerLevelRequirement, self.tierInfo.unlockLevel, isSpecAllowed, self:HasAnySelected());
 	end
 
-	if not self:IsAnimating() then
+	if not self:IsAnyTierRevealing() then
 		self:TransitionBackgroundGlow(isSelectionActive and self.BACKGROUND_GLOW_STATE_SELECTION_ACTIVE or self.BACKGROUND_GLOW_STATE_NONE);
 	end
 
 	if self.tierPlug then
-		self.tierPlug:SetShown(not self:IsAnimating() and not self:HasAnySelected() and not isSelectionActive);
+		self.tierPlug:SetShown(self:ShouldShowTierPlug(isSelectionActive));
 	end
+end
+
+function AzeriteEmpoweredItemTierMixin:ShouldShowTierPlug(isSelectionActive)
+	if self:IsAnyTierRevealing() then
+		return true;
+	end
+
+	if self:IsAnimating() then
+		return false;
+	end
+
+	if self:HasAnySelected() then
+		return false;
+	end
+
+	return not isSelectionActive;
 end
 
 function AzeriteEmpoweredItemTierMixin:TransitionBackgroundGlow(glowState)
@@ -206,124 +248,28 @@ function AzeriteEmpoweredItemTierMixin:TransitionBackgroundGlow(glowState)
 	end
 end
 
-local function LockInEase(percent)
-	if percent < .5 then
-		return ((percent * 2) ^ 2) / 2;
-	end
-	return 1 - (((1 - percent) * 2) ^ 2) / 2;
-end
-
-function AzeriteEmpoweredItemTierMixin:TryShaking(elapsed, magnitude, frequency)
-	if self:IsFinalTier() then
-		return;
-	end
-
-	self.animContextData.elapsed = (self.animContextData.elapsed or 0) + elapsed;
-	if self.animContextData.elapsed > frequency then
-		self.transformNode:SetLocalPosition(CreateVector2D(Lerp(-magnitude, magnitude, math.random()), Lerp(-magnitude, magnitude, math.random())));
-		self.animContextData.elapsed = self.animContextData.elapsed - frequency;
-	end
-end
-
-local function GetTotalProgressPercent(animState, localPercent)
-	return ClampedPercentageBetween(animState + localPercent, AzeriteEmpoweredItemTierMixin.ANIM_STATE_START_HOLD, AzeriteEmpoweredItemTierMixin.ANIM_STATE_END_HOLD + 1);
-end
-
 function AzeriteEmpoweredItemTierMixin:PerformAnimations(elapsed)
 	if self:IsAnimating() then
-		local animContextData = self.animContextData[self.animState];
-		local now = GetTime();
+		self.tierAnimation:PerformAnimation(elapsed);
 
-		if self.animState == self.ANIM_STATE_START_HOLD then
-			local percent = ClampedPercentageBetween(now, animContextData.startTime, animContextData.endTime);
-			self.owningFrame:OnTierAnimationProgress(self, GetTotalProgressPercent(self.animState, percent));
+		if self.tierAnimation:IsFinished() then
+			self.tierAnimation = nil;
+			self.animatingAzeritePowerButton = nil;
 
-			self:TryShaking(elapsed, percent * .8, .05);
-			if now >= animContextData.endTime then
-				self:SetAnimState(self.ANIM_STATE_ROTATING);
-			end
-		elseif self.animState == self.ANIM_STATE_ROTATING then
-			local startTime = animContextData.startTime;
-			local durationSec = animContextData.durationSec;
-			local endTime = startTime + durationSec;
+			self:UpdatePowerStates();
 
-			local percent = ClampedPercentageBetween(now, startTime, endTime);
-			self.owningFrame:OnTierAnimationProgress(self, GetTotalProgressPercent(self.animState, percent));
-
-			if self:IsFinalTier() then
-				if percent > .5 and not animContextData.hasPlayedLockInEffect then
-					animContextData.hasPlayedLockInEffect = true;
-					PlaySound(SOUNDKIT.UI_80_AZERITEARMOR_ROTATIONENDS);
-					self:PlayLockedInEffect();
-				end
-
-				if percent == 1.0 then
-					self:SetAnimState(self.ANIM_STATE_END_HOLD);
-				end
-			else
-				local startAngle = animContextData.startAngle;
-				local angleDelta = animContextData.angleDelta;
-				local targetAngle = startAngle + angleDelta;
-
-				local newRotation = Lerp(startAngle, targetAngle, LockInEase(percent));
-
-				local LERP_AMOUNT_PER_NORMALIZED_FRAME = .2;
-				local smoothedRotation = FrameDeltaLerp(self.transformNode:GetLocalRotation(), newRotation, LERP_AMOUNT_PER_NORMALIZED_FRAME);
-
-				if percent > .85 and not animContextData.hasPlayedEndingClickSound then
-					animContextData.hasPlayedEndingClickSound = true;
-					self.loopingSoundEmitter:FinishLoopingSound();
-				end
-
-				if percent > .95 and not animContextData.hasPlayedLockInEffect then
-					animContextData.hasPlayedLockInEffect = true;
-					PlaySound(SOUNDKIT.UI_80_AZERITEARMOR_ROTATIONENDS);
-					self:PlayLockedInEffect();
-					self.animContextData.azeritePowerButton:PlaySelectedAnimation();
-				end
-
-				local CLOSE_ENOUGH_ANGLE_DIFF = math.pi * .0001;
-				if percent == 1.0 and math.abs(newRotation - smoothedRotation) < CLOSE_ENOUGH_ANGLE_DIFF then
-					self:SetNodeRotations(newRotation);
-					self.transformNode:SetLocalPosition(CreateVector2D(0, 0));
-					self:SetAnimState(self.ANIM_STATE_END_HOLD);
-				else
-					self:SetNodeRotations(smoothedRotation);
-				end
-			end
-		elseif self.animState == self.ANIM_STATE_END_HOLD then
-			local percent = ClampedPercentageBetween(now, animContextData.startTime, animContextData.endTime);
-			self.owningFrame:OnTierAnimationProgress(self, GetTotalProgressPercent(self.animState, percent));
-
-			self:TryShaking(elapsed, (1.0 - percent) * .8, .05);
-			if now >= animContextData.endTime then
-				self:SetAnimState(self.ANIM_STATE_NONE);
-			end
+			local animBegin = false;
+			self.owningFrame:OnTierAnimationStateChanged(self, animBegin);
 		end
 	end
 end
 
-function AzeriteEmpoweredItemTierMixin:SetAnimState(newAnimState, ...)
-	if newAnimState ~= self.animState then
-		self.animState = newAnimState;
-		if newAnimState == self.ANIM_STATE_NONE then
-			self.animContextData = nil;
-		elseif newAnimState == self.ANIM_STATE_ROTATING then
-			return;
-		elseif newAnimState == self.ANIM_STATE_START_HOLD then
-			if not self:IsFinalTier() then
-				self.loopingSoundEmitter:StartLoopingSound();
-			end
-			self:InitializeLockInAnimation(...);
-		elseif newAnimState == self.ANIM_STATE_END_HOLD then
-			local now = GetTime();
-			self.animContextData[newAnimState].startTime = now;
-			self.animContextData[newAnimState].endTime = now + self.animContextData[newAnimState].endDuration;
-		end
+function AzeriteEmpoweredItemTierMixin:OnTierAnimationProgress(progress)
+	self.owningFrame:OnTierAnimationProgress(self, progress);
+end
 
-		self.owningFrame:OnTierAnimationStateChanged(self, newAnimState == self.ANIM_STATE_START_HOLD);
-		self:UpdatePowerStates();
-	end
+function AzeriteEmpoweredItemTierMixin:ApplyShakeOffset(offset)
+	self.transformNode:SetLocalPosition(offset);
 end
 
 function AzeriteEmpoweredItemTierMixin:PlayLockedInEffect()
@@ -332,97 +278,57 @@ function AzeriteEmpoweredItemTierMixin:PlayLockedInEffect()
 	end
 end
 
-function AzeriteEmpoweredItemTierMixin:InitializeLockInAnimation(azeritePowerButton)
-	local now = GetTime();
-
-	if self:IsFinalTier() then
-		local START_HOLD_TIME = .35;
-		local LOCK_HOLD_TIME = .35;
-
-		self.animContextData = 
-		{
-			azeritePowerButton = azeritePowerButton,
-
-			[self.ANIM_STATE_START_HOLD] = 
-			{
-				startTime = now,
-				endTime = now + START_HOLD_TIME,
-			},
-
-			[self.ANIM_STATE_ROTATING] = 
-			{
-				startTime = now + START_HOLD_TIME,
-				durationSec = 1.5,
-				hasPlayedLockInEffect = false,
-				hasPlayedEndingClickSound = false,
-			},
-
-			[self.ANIM_STATE_END_HOLD] = 
-			{
-				endDuration = LOCK_HOLD_TIME,
-			},
-		};
-	else
-		local START_HOLD_TIME = .5;
-		local LOCK_HOLD_TIME = .5;
-
-		local startAngle = self.transformNode:GetLocalRotation();
-		local endAngle = azeritePowerButton:GetBaseAngle();
-		local angleDelta = math.atan2(math.sin(endAngle - startAngle), math.cos(endAngle - startAngle));
-
-		local DISTANCE_PER_SEC = math.pi * .35;
-
-		self.animContextData = 
-		{
-			azeritePowerButton = azeritePowerButton,
-
-			[self.ANIM_STATE_START_HOLD] = 
-			{
-				startTime = now,
-				endTime = now + START_HOLD_TIME,
-			},
-
-			[self.ANIM_STATE_ROTATING] = 
-			{
-				startAngle = startAngle,
-				angleDelta = angleDelta,
-				startTime = now + START_HOLD_TIME,
-				durationSec = math.abs(angleDelta) / DISTANCE_PER_SEC,
-				hasPlayedLockInEffect = false,
-				hasPlayedEndingClickSound = false,
-			},
-
-			[self.ANIM_STATE_END_HOLD] = 
-			{
-				endDuration = LOCK_HOLD_TIME,
-			},
-		};
-	end
-
-	if self.tierPlug then
-		self.tierPlug:Hide();
-	end
+function AzeriteEmpoweredItemTierMixin:IsAnimating()
+	return self.tierAnimation ~= nil;
 end
 
-function AzeriteEmpoweredItemTierMixin:IsAnimating()
-	return self.animState ~= self.ANIM_STATE_NONE;
+function AzeriteEmpoweredItemTierMixin:IsRevealing()
+	return self:IsAnimating() and self.tierAnimation:GetAnimType() == AzeriteTierRevealAnimationMixin;
+end
+
+function AzeriteEmpoweredItemTierMixin:IsAnyTierRevealing()
+	return self.owningFrame:IsAnyTierRevealing();
 end
 
 function AzeriteEmpoweredItemTierMixin:OnPowerSelected(azeritePowerButton)
+	self.animatingAzeritePowerButton = azeritePowerButton;
+
 	self:TransitionBackgroundGlow(self.BACKGROUND_GLOW_STATE_SELECTED);
 
 	if self.rankFrame then
 		self.rankFrame.SelectedAnim:Play();
 	end
 
-	self:SetAnimState(self.ANIM_STATE_START_HOLD, azeritePowerButton);
+	if self.tierPlug then
+		self.tierPlug:Hide();
+	end
+
+	if self:IsFinalTier() then
+		self.tierAnimation = AzeriteTierFinalPowerSelectedAnimationMixin:Create(self, self.owningFrame:GetLoopingSoundEmitter());
+	else
+		self.tierAnimation = AzeriteTierPowerSelectedAnimationMixin:Create(self, azeritePowerButton, self.transformNode:GetLocalRotation(), self.owningFrame:GetLoopingSoundEmitter());
+	end
+
+	local animBegin = true;
+	self.owningFrame:OnTierAnimationStateChanged(self, animBegin);
+
+	self.tierAnimation:Play();
+end
+
+function AzeriteEmpoweredItemTierMixin:CanSelectPowers()
+	return self.owningFrame:CanSelectPowers();
 end
 
 function AzeriteEmpoweredItemTierMixin:SetNodeRotations(rotationRads)
 	self.transformNode:SetLocalRotation(rotationRads);
 	if self.animatedGearNode then
+		local INNER_GEAR_ANIM_RATE = .25; -- percent
 		self.animatedGearNode:SetLocalRotation(-rotationRads * INNER_GEAR_ANIM_RATE);
 	end
+end
+
+function AzeriteEmpoweredItemTierMixin:GetNodeRotation()
+	return self.transformNode:GetLocalRotation();
 end
 
 function AzeriteEmpoweredItemTierMixin:SnapToSelection()
@@ -472,7 +378,7 @@ function AzeriteEmpoweredItemTierMixin:IsSelectionActive()
 end
 
 function AzeriteEmpoweredItemTierMixin:IsPowerButtonAnimatingSelection(azeritePowerButton)
-	return self.animContextData and self.animContextData.azeritePowerButton == azeritePowerButton or false;
+	return self.animatingAzeritePowerButton == azeritePowerButton;
 end
 
 function AzeriteEmpoweredItemTierMixin:GetAzeritePowerButtonByID(azeritePowerID)

@@ -441,19 +441,14 @@ function WorldMapBountyBoardMixin:CacheMapsForSelectionBounty()
 
 	self.cachedMapInfo = {};
 	local mapID = self:GetMapID();
-	local TOPMOST = true;
-	local topMostContinent = MapUtil.GetMapParentInfo(mapID, Enum.UIMapType.Continent, TOPMOST);
-	if topMostContinent then
-		local ALL_DESCENDANTS = true;
-		local childZones = C_Map.GetMapChildrenInfo(topMostContinent.mapID, Enum.UIMapType.Zone, ALL_DESCENDANTS);
-		for i, zone in ipairs(childZones) do
-			local numQuests = self:CalculateNumActiveWorldQuestsForSelectedBountyByMap(zone.mapID);
-			if numQuests > 0 then
-				table.insert(self.cachedMapInfo, { mapID = zone.mapID, count = numQuests });
-			end
+	local zones = MapUtil.GetRelatedBountyZoneMaps(mapID);
+	for i, zoneMapID in ipairs(zones) do
+		local numQuests = self:CalculateNumActiveWorldQuestsForSelectedBountyByMap(zoneMapID);
+		if numQuests > 0 then
+			table.insert(self.cachedMapInfo, { mapID = zoneMapID, count = numQuests });
 		end
-		table.sort(self.cachedMapInfo, function(left, right) return right.count < left.count end);
 	end
+	table.sort(self.cachedMapInfo, function(left, right) return right.count < left.count end);
 end
 
 function WorldMapBountyBoardMixin:SetNextMapForSelectedBounty()

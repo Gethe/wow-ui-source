@@ -46,6 +46,7 @@ ContributionCollectorDocumentation.lua
 CreatureInfoDocumentation.lua
 CurrencyInfoDocumentation.lua
 CursorDocumentation.lua
+DateAndTimeDocumentation.lua
 DeathInfoDocumentation.lua
 DuelInfoDocumentation.lua
 EncounterInfoDocumentation.lua

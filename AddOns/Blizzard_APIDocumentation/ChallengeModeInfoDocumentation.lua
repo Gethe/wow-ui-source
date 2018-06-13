@@ -231,6 +231,11 @@ local ChallengeModeInfo =
 			LiteralName = "CHALLENGE_MODE_MAPS_UPDATE",
 		},
 		{
+			Name = "ChallengeModeMemberInfoUpdated",
+			Type = "Event",
+			LiteralName = "CHALLENGE_MODE_MEMBER_INFO_UPDATED",
+		},
+		{
 			Name = "ChallengeModeReset",
 			Type = "Event",
 			LiteralName = "CHALLENGE_MODE_RESET",

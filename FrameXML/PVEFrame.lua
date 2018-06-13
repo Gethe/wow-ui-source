@@ -29,6 +29,11 @@ function PVEFrame_OnShow(self)
 			PanelTemplates_HideTab(self, index);
 		else
 			PanelTemplates_ShowTab(self, index);
+			if (panel.name == "ChallengesFrame" and not C_MythicPlus.IsMythicPlusActive()) then 
+				PanelTemplates_DisableTab(self, index);
+			else 
+				PanelTemplates_EnableTab(self, index);
+			end
 		end
 	end
 end

@@ -16,7 +16,7 @@ AZERITE_EMPOWERED_ITEM_MAX_TIERS = 4;
 function AzeriteEmpoweredItemUIMixin:OnLoad()
 	CallbackRegistryBaseMixin.OnLoad(self);
 
-	UIPanelWindows[self:GetName()] = { area = "left", pushable = 0, xoffset = 35, yoffset = -9, bottomClampOverride = 100, showFailedFunc = function() self:OnShowFailed(); end, };
+	UIPanelWindows[self:GetName()] = { area = "left", pushable = 1, xoffset = 35, yoffset = -9, bottomClampOverride = 100, showFailedFunc = function() self:OnShowFailed(); end, };
 
 	self.BorderFrame.Bg:SetParent(self);
 	self.BorderFrame.TopTileStreaks:Hide();
@@ -48,6 +48,15 @@ function AzeriteEmpoweredItemUIMixin:OnLoad()
 	end
 	self.powerPool = CreateTransformFrameNodePool("BUTTON", self.ClipFrame.PowerContainerFrame, "AzeriteEmpoweredItemPowerTemplate", PowerReset);
 	self.azeriteItemDataSource = AzeriteEmpowedItemDataSource:CreateEmpty();
+
+	local startingSound = nil;
+	local loopingSound = SOUNDKIT.UI_80_AZERITEARMOR_ROTATION_LOOP;
+	local endingSound = SOUNDKIT.UI_80_AZERITEARMOR_ROTATIONENDCLICKS;
+
+	local loopStartDelay = .25;
+	local loopEndDelay = 0;
+	local loopFadeTime = 500; -- ms
+	self.loopingSoundEmitter = CreateLoopingSoundEffectEmitter(startingSound, loopingSound, endingSound, loopStartDelay, loopEndDelay, loopFadeTime);
 end
 
 function AzeriteEmpoweredItemUIMixin:OnUpdate(elapsed)
@@ -99,7 +108,7 @@ function AzeriteEmpoweredItemUIMixin:OnTierAnimationStateChanged(tierFrame, anim
 	if animationBegin then
 		ShakeFrameRandom(self.ClipFrame.BackgroundFrame, 1, .7, .05);
 	else
-		self.ClipFrame.BackgroundFrame.KeyOverlay.Channel:UpdateTierAnimationProgress(tierFrame:GetTierIndex(), nil);
+		self:OnTierAnimationProgress(tierFrame, nil);
 	end
 
 	self:MarkDirty();
@@ -107,6 +116,39 @@ end
 
 function AzeriteEmpoweredItemUIMixin:OnTierAnimationProgress(tierFrame, percent)
 	self.ClipFrame.BackgroundFrame.KeyOverlay.Channel:UpdateTierAnimationProgress(tierFrame:GetTierIndex(), percent);
+end
+
+function AzeriteEmpoweredItemUIMixin:OnTierRevealRotationStarted(tierFrame)
+	self.numTiersRevealing = (self.numTiersRevealing or 0) + 1;
+	if self.numTiersRevealing == 1 then
+		self:GetLoopingSoundEmitter():StartLoopingSound();
+	end
+end
+
+function AzeriteEmpoweredItemUIMixin:OnTierRevealRotationStopped(tierFrame)
+	self.numTiersRevealing = self.numTiersRevealing - 1;
+	if self.numTiersRevealing == 0 then
+		self:GetLoopingSoundEmitter():FinishLoopingSound();
+		PlaySound(SOUNDKIT.UI_80_AZERITEARMOR_ROTATIONENDS);
+	end
+end
+
+function AzeriteEmpoweredItemUIMixin:CanSelectPowers()
+	for tierIndex, tierFrame in ipairs(self.tiersByIndex) do
+		if tierFrame:IsAnimating() then
+			return false;
+		end
+	end
+	return true;
+end
+
+function AzeriteEmpoweredItemUIMixin:IsAnyTierRevealing()
+	for tierIndex, tierFrame in ipairs(self.tiersByIndex) do
+		if tierFrame:IsRevealing() then
+			return true;
+		end
+	end
+	return false;
 end
 
 function AzeriteEmpoweredItemUIMixin:IsItemValid()
@@ -121,6 +163,7 @@ end
 
 function AzeriteEmpoweredItemUIMixin:Clear()
 	StaticPopup_Hide("CONFIRM_AZERITE_EMPOWERED_BIND");
+	StaticPopup_Hide("CONFIRM_AZERITE_EMPOWERED_SELECT_POWER");
 
 	local azeriteEmpoweredItem = self.azeriteItemDataSource:GetItem();
 	if azeriteEmpoweredItem then
@@ -138,6 +181,8 @@ function AzeriteEmpoweredItemUIMixin:Clear()
 	self.tiersByIndex = {};
 	self.powerPool:ReleaseAll();
 	self.ClipFrame.BackgroundFrame.KeyOverlay.Channel:Reset();
+	self:GetLoopingSoundEmitter():CancelLoopingSound();
+	self.numTiersRevealing = nil;
 
 	HideAll(self.ClipFrame.BackgroundFrame.RankFrames);
 	HideAll(self.ClipFrame.BackgroundFrame.KeyOverlay.Slots);
@@ -155,9 +200,9 @@ function AzeriteEmpoweredItemUIMixin:SetToItemAtLocation(itemLocation)
 	self:OnItemSet();
 end
 
-function AzeriteEmpoweredItemUIMixin:SetToItemLink(itemLink)
+function AzeriteEmpoweredItemUIMixin:SetToItemLink(itemLink, overrideClassID, overrideSelectedPowersList)
 	self:Clear();
-	self.azeriteItemDataSource:SetSourceFromItemLink(itemLink);
+	self.azeriteItemDataSource:SetSourceFromItemLink(itemLink, overrideClassID, overrideSelectedPowersList);
 	self:OnItemSet();
 end
 
@@ -181,7 +226,9 @@ function AzeriteEmpoweredItemUIMixin:OnItemSet()
 	FrameUtil.RegisterFrameForEvents(self, AZERITE_EMPOWERED_FRAME_EVENTS);
 	self:RegisterUnitEvent("PLAYER_SPECIALIZATION_CHANGED", "player");
 
-	self:RebuildTiers();
+	local needsReveal = not self.azeriteItemDataSource:HasBeenViewed();
+	self:RebuildTiers(needsReveal);
+	self.azeriteItemDataSource:SetHasBeenViewed();
 
 	self:MarkDirty();
 end
@@ -199,6 +246,10 @@ function AzeriteEmpoweredItemUIMixin:Refresh()
 	self:UpdateTiers();
 end
 
+function AzeriteEmpoweredItemUIMixin:GetLoopingSoundEmitter()
+	return self.loopingSoundEmitter;
+end
+
 function AzeriteEmpoweredItemUIMixin:UpdateTiers()
 	local azeriteItemLocation = C_AzeriteItem.FindActiveAzeriteItem();
 	local azeriteItemPowerLevel = azeriteItemLocation and C_AzeriteItem.GetPowerLevel(azeriteItemLocation) or 0;
@@ -213,7 +264,10 @@ end
 function AzeriteEmpoweredItemUIMixin:UpdateChannelTier()
 	local bestTierIndex = nil;
 	for tierIndex, tierFrame in ipairs(self.tiersByIndex) do
-		if tierFrame:IsAnimating() then
+		if tierFrame:IsRevealing() then
+			bestTierIndex = 0;
+			break;
+		elseif tierFrame:IsAnimating() then
 			bestTierIndex = tierIndex;
 		elseif not tierFrame:HasAnySelected() and not bestTierIndex then
 			bestTierIndex = tierIndex - 1;
@@ -247,7 +301,7 @@ function AzeriteEmpoweredItemUIMixin:AdjustSizeForTiers(numTiers)
 	self.transformTree:GetRoot():SetLocalPosition(CreateVector2D(self.ClipFrame.BackgroundFrame:GetWidth() * .5, self.ClipFrame.BackgroundFrame:GetHeight() * .5));
 end
 
-function AzeriteEmpoweredItemUIMixin:RebuildTiers()
+function AzeriteEmpoweredItemUIMixin:RebuildTiers(needsReveal)
 	-- This list goes from the first selectable tier to the last (outer to inner ring)
 	local allTierInfo = self.azeriteItemDataSource:GetAllTierInfo();
 	local numTiers = #allTierInfo;
@@ -270,5 +324,8 @@ function AzeriteEmpoweredItemUIMixin:RebuildTiers()
 		local prereqTier = self.tiersByIndex[tierIndex - 1];
 		tierFrame:SetTierInfo(tierIndex, numTiers, tierInfo, prereqTier);
 		tierFrame:CreatePowers(self.powerPool);
+		if needsReveal then
+			tierFrame:PrepareForReveal();
+		end
 	end
 end

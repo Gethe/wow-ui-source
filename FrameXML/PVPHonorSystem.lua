@@ -317,26 +317,6 @@ function PVPHonorSystemXPBarNextAvailable_OnEnter(self)
 	end
 end	
 
-function PVPHonorXPBar_SetPrestige(self)
-	local icon, name = GetPrestigeInfo(0);
-
-	self.PortraitBg:SetAtlas("honorsystem-prestige-laurel-bg-"..UnitFactionGroup("player"), false);
-	self.Icon:SetTexture(icon or 0);
-
-	local canPrestigeHere = self:GetParent().canPrestigeHere;
-	self.Accept:SetShown(canPrestigeHere and not self:GetParent().isSmall);
-
-	if (not canPrestigeHere) then
-		self.tooltip = PVP_HONOR_XP_BAR_CANNOT_PRESTIGE_HERE;
-	elseif (self.GetParent().isSmall) then
-		self.tooltip = PVP_HONOR_XP_BAR_CLICK_HERE_TO_PRESTIGE:format(name);
-	else
-		self.tooltip = name;
-	end
-    
-	self:Show();
-end
-
 function HonorExhaustionTick_OnLoad(self)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("HONOR_XP_UPDATE");
