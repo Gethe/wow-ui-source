@@ -21,8 +21,19 @@
 			</OnLoad>
 		</Scripts>
 		<NormalFont style="GameFontHighlightSmall"/>
-		<DisabledFont style="GameFontDisable"/>
+		<DisabledFont style="GameFontDisableSmall"/>
 		<HighlightFont style="GameFontHighlightSmall"/>
+	</Button>
+	<Button name="KeyBindingFrameBindingButtonTemplateWithLabel" inherits="KeyBindingFrameBindingButtonTemplate" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString parentKey="KeyLabel" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="4" y="5" />
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
 	</Button>
 	<Frame name="KeyBindingFrameBindingTemplate" virtual="true">
 		<Size x="560" y="25"/>
@@ -56,7 +67,6 @@
 			</Button>
 		</Frames>
 	</Frame>
-	
 	<Button name="KeybindingsCategoryListButtonTemplate" inherits="OptionsListButtonTemplate" virtual="true">
 		<Scripts>
 			<OnLoad>
@@ -65,7 +75,7 @@
 			<OnClick function="KeybindingsCategoryListButton_OnClick"/>
 		</Scripts>
 	</Button>
-	
+
 	<Button name="KeyBindingFrame" parent="UIParent" toplevel="true" frameStrata="DIALOG" movable="true" enableMouse="true" hidden="true" enableKeyboard="true">
 		<Size x="858" y="660"/>
 		<Anchors>

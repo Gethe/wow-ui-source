@@ -1,0 +1,9 @@
+## Interface: 80000
+## Title: Blizzard_IslandsQueueUI
+## Notes: All aboard for da' island! (Island Queue Screen) 
+## Author: Blizzard Entertainment
+## Version: 1.0
+## LoadOnDemand: 1
+
+Blizzard_IslandsQueueUI.lua
+Blizzard_IslandsQueueUI.xml

@@ -96,6 +96,9 @@ function TradeSkillRecipeListMixin:OnDataSourceChanged(tradeSkillChanged)
 
 	self.LearnedTab:SetShown(not isNPCCrafting);
 	self.UnlearnedTab:SetShown(not isNPCCrafting);
+	if (not isNPCCrafting and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRADESKILL_UNLEARNED_TAB)) then
+		SetButtonPulse(self.UnlearnedTab, 60, 1);
+	end
 
 	self:Refresh();
 end
@@ -140,6 +143,8 @@ function TradeSkillRecipeListMixin:OnUnlearnedTabClicked()
 	C_TradeSkillUI.SetOnlyShowLearnedRecipes(false);
 	C_TradeSkillUI.SetOnlyShowUnlearnedRecipes(true);
 
+	SetButtonPulse(self.UnlearnedTab, 0, 1);
+	SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRADESKILL_UNLEARNED_TAB, true);
 	self:Refresh();
 end
 
@@ -235,6 +240,16 @@ function TradeSkillRecipeListMixin:RebuildDataList()
 				if isCurrentCategoryEnabled and isCurrentParentCategoryEnabled and (not currentParentCategoryID or not self:IsCategoryCollapsed(currentParentCategoryID)) and not self:IsCategoryCollapsed(currentCategoryID) then
 					table.insert(self.dataList, recipeInfo);
 				end
+			end
+		end
+	end
+
+	if (not C_TradeSkillUI.GetOnlyShowUnlearnedRecipes()) then
+		local categories = {C_TradeSkillUI.GetCategories()};
+		for i, categoryID in ipairs(categories) do
+			if (C_TradeSkillUI.IsEmptySkillLineCategory(categoryID)) then
+				local categoryData = C_TradeSkillUI.GetCategoryInfo(categoryID);
+				table.insert(self.dataList, categoryData);
 			end
 		end
 	end
@@ -422,7 +437,7 @@ function TradeSkillRecipeListMixin:RefreshDisplay()
 		end
 	end
 
-	HybridScrollFrame_Update(self, #self.dataList * ROW_HEIGHT, 405);
+	HybridScrollFrame_Update(self, #self.dataList * ROW_HEIGHT, 389);
 end
 
 function TradeSkillRecipeListMixin:FindRecipeIndexInCurrentList(recipeID)

@@ -32,21 +32,19 @@ function AdventureMap_ZoneSummaryProviderMixin:RefreshAllData(fromOnShow)
 	self:GatherQuests();
 	self:GatherMissions();
 
-	local mapAreaID = self:GetMap():GetMapID();
-	for zoneIndex = 1, C_MapCanvas.GetNumZones(mapAreaID) do
-		local zoneMapID, zoneName, zoneDepth, left, right, top, bottom = C_MapCanvas.GetZoneInfo(mapAreaID, zoneIndex);
-		if zoneDepth <= 1 then -- Exclude subzones
-			if self.questsByZone[zoneMapID] or self.missionsByZone[zoneMapID] then
-				local centerX = left + (right - left) * .5;
-				local centerY = top + (bottom - top) * .35;
-
-				self:AddSummaryPin(zoneName, centerX, centerY, self.questsByZone[zoneMapID], self.missionsByZone[zoneMapID]);
-			end
+	local mapID = self:GetMap():GetMapID();
+	local mapChildren = C_Map.GetMapChildrenInfo(mapID, Enum.UIMapType.Zone);
+	for i, childMapInfo in ipairs(mapChildren) do
+		if self.questsByZone[childMapInfo.mapID] or self.missionsByZone[childMapInfo.mapID] then
+			local left, right, top, bottom = C_Map.GetMapRectOnMap(childMapInfo.mapID, mapID);		
+			local centerX = left + (right - left) * .5;
+			local centerY = top + (bottom - top) * .35;
+			self:AddSummaryPin(childMapInfo.name, centerX, centerY, self.questsByZone[childMapInfo.mapID], self.missionsByZone[childMapInfo.mapID]);
 		end
 	end
 
 	for insetIndex, quests in pairs(self.questsByInset) do
-		local mapID, title, description, collapsedIcon, areaTableID, numDetailTiles, normalizedX, normalizedY = C_AdventureMap.GetMapInsetInfo(insetIndex);
+		local adventureMapID, title, description, collapsedIcon, areaTableID, numDetailTiles, normalizedX, normalizedY = C_AdventureMap.GetMapInsetInfo(insetIndex);
 		self:AddInsetSummaryPin(insetIndex, title, description, normalizedX, normalizedY, quests, nil);
 	end
 
@@ -54,12 +52,12 @@ function AdventureMap_ZoneSummaryProviderMixin:RefreshAllData(fromOnShow)
 end
 
 local function TryAddItem(mapID, container, x, y, item)
-	local zoneMapID = C_MapCanvas.FindZoneAtPosition(mapID, x, y);
-	if zoneMapID and not AdventureMap_IsZoneIDBlockedByZoneChoice(mapID, zoneMapID) then
-		if not container[zoneMapID] then
-			container[zoneMapID] = {}
+	local positionMapInfo = C_Map.GetMapInfoAtPosition(mapID, x, y);
+	if positionMapInfo and not AdventureMap_IsZoneIDBlockedByZoneChoice(mapID, positionMapInfo.mapID) then
+		if not container[positionMapInfo.mapID] then
+			container[positionMapInfo.mapID] = {}
 		end
-		table.insert(container[zoneMapID], item);
+		table.insert(container[positionMapInfo.mapID], item);
 	end
 end
 
@@ -169,7 +167,7 @@ end
 AdventureMap_ZoneSummaryInsetPinMixin = CreateFromMixins(AdventureMap_ZoneSummaryPinMixin);
 
 function AdventureMap_ZoneSummaryInsetPinMixin:OnLoad()
-
+	self:UseFrameLevelType("PIN_FRAME_LEVEL_ZONE_SUMMARY_INSET");
 end
 
 function AdventureMap_ZoneSummaryInsetPinMixin:OnCanvasScaleChanged()

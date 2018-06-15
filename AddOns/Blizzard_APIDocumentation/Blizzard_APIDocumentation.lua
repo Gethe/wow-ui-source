@@ -41,7 +41,7 @@ function APIDocumentationMixin:HandleAPILink(link, command)
 	local _, type, name, parentName = (":"):split(link);
 	local apiInfo = self:FindAPIByName(type, name, parentName);
 	if apiInfo then
-		if command == self.Commands.CopyAPI and CopyToClipboard then -- CopyToClipboard could be implemented as an edit box the user could copy from
+		if command == self.Commands.CopyAPI then
 			self:HandleCopyAPI(apiInfo);
 		elseif command == self.Commands.OpenDump then
 			self:HandleOpenDump(apiInfo);

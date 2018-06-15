@@ -345,7 +345,7 @@
 						<Texture parentKey="BorderShield" atlas="nameplates-InterruptShield" hidden="true" ignoreParentAlpha="true">
 							<Size x="10" y="12" />
 							<Anchors>
-								<Anchor point="CENTER" relativeTo="LEFT" x="-2" y="-1"/>
+								<Anchor point="CENTER" x="-2" y="-1"/>
 							</Anchors>
 						</Texture>
 						<Texture parentKey="Icon" hidden="true" ignoreParentAlpha="true">

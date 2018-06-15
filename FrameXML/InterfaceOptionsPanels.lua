@@ -76,10 +76,8 @@ local function InterfaceOptionsPanel_DefaultControl (control)
 	end
 end
 
-local function InterfaceOptionsPanel_Okay (self)
-	for _, control in SecureNext, self.controls do
-		securecall(BlizzardOptionsPanel_OkayControl, control);
-	end
+local function InterfaceOptionsPanel_Okay (self, perControlCallback)
+	BlizzardOptionsPanel_Okay(self, perControlCallback);
 end
 
 function InterfaceOptionsPanel_Cancel (self)
@@ -105,14 +103,14 @@ function InterfaceOptionsPanel_Default (self)
 	end
 end
 
-function InterfaceOptionsPanel_Refresh (self)
-	for _, control in SecureNext, self.controls do
-		securecall(BlizzardOptionsPanel_RefreshControl, control);
-		-- record values so we can cancel back to this state
-		control.oldValue = control.value;
-	end
+local function RefreshCallback(panel, control)
+	-- record values so we can cancel back to this state
+	control.oldValue = control.value;
 end
 
+function InterfaceOptionsPanel_Refresh (self)
+	BlizzardOptionsPanel_Refresh(self, RefreshCallback);
+end
 
 function InterfaceOptionsPanel_OnLoad (self)
 	BlizzardOptionsPanel_OnLoad(self, nil, InterfaceOptionsPanel_Cancel, InterfaceOptionsPanel_Default, InterfaceOptionsPanel_Refresh);
@@ -1184,6 +1182,7 @@ function InterfaceOptions_UpdateMultiActionBars ()
 	SetActionBarToggles(not not SHOW_MULTI_ACTIONBAR_1, not not SHOW_MULTI_ACTIONBAR_2, not not SHOW_MULTI_ACTIONBAR_3, not not SHOW_MULTI_ACTIONBAR_4, not not ALWAYS_SHOW_MULTIBARS);
 	MultiActionBar_Update();
 	UIParent_ManageFramePositions();
+	StatusTrackingBarManager:UpdateBarTicks(); 
 end
 
 function InterfaceOptionsActionBarsPanelPickupActionKeyDropDown_OnEvent (self, event, ...)

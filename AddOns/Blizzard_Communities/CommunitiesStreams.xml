@@ -1,0 +1,337 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="CommunitiesStreams.lua"/>
+	
+	<CheckButton name="CommunitiesNotificationSettingsStreamEntryCheckButtonTemplate" inherits="UIRadioButtonTemplate" virtual="true">
+		<!-- Set the filter type with a KeyValue
+		<KeyValues>
+			<KeyValue key="filter" value="Enum.ClubStreamNotificationFilter.None" type="global"/>
+		</KeyValues>
+		-->
+		<Scripts>
+			<OnEnter>
+				self:GetParent():LockHighlight();
+			</OnEnter>
+			<OnLeave>
+				self:GetParent():UnlockHighlight();
+			</OnLeave>
+			<OnClick>
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+				self:GetParent():SetFilter(self.filter);
+			</OnClick>
+		</Scripts>
+	</CheckButton>
+	
+	<Button name="CommunitiesNotificationSettingsStreamEntryTemplate" mixin="CommunitiesNotificationSettingsStreamEntryMixin" virtual="true">
+		<Size x="560" y="42"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="StreamName" inherits="GameFontNormal" text="PH General">
+					<Anchors>
+						<Anchor point="LEFT" x="20" y="0"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="Separator">
+					<Size x="0" y="1"/>
+					<Anchors>
+						<Anchor point="BOTTOM"/>
+						<Anchor point="LEFT" x="0" y="0"/>
+						<Anchor point="RIGHT" x="0" y="0"/>
+					</Anchors>
+					<Color r="1" g="1" b="1" a="0.2"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<CheckButton parentKey="HideNotificationsButton" inherits="CommunitiesNotificationSettingsStreamEntryCheckButtonTemplate">
+				<KeyValues>
+					<KeyValue key="filter" value="Enum.ClubStreamNotificationFilter.None" type="global"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="RIGHT" x="-30" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton parentKey="ShowNotificationsButton" inherits="CommunitiesNotificationSettingsStreamEntryCheckButtonTemplate">
+				<KeyValues>
+					<KeyValue key="filter" value="Enum.ClubStreamNotificationFilter.All" type="global"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.HideNotificationsButton" relativePoint="LEFT" x="-48" y="0"/>
+				</Anchors>
+			</CheckButton>
+		</Frames>
+		<HighlightTexture setAllPoints="true" alphaMode="ADD">
+			<Color r="1" g="1" b="1" a="0.05"/>
+		</HighlightTexture>
+	</Button>
+	
+	<Button name="CommunitiesMassNotificationsSettingsButtonTemplate" inherits="UIMenuButtonStretchTemplate" virtual="true">
+		<Size x="50" y="22"/>
+		<!-- Set the filter type with a KeyValue
+		<KeyValues>
+			<KeyValue key="filter" value="Enum.ClubStreamNotificationFilter.None" type="global"/>
+		</KeyValues>
+		-->
+		<Scripts>
+			<OnClick function="CommunitiesMassNotificationsSettingsButton_OnClick"/>
+		</Scripts>
+		<NormalFont style="GameFontHighlightSmall"/>
+		<HighlightFont style="GameFontHighlightSmall"/>
+	</Button>
+	
+	<Frame name="CommunitiesEditStreamDialogTemplate" frameStrata="DIALOG" mixin="CommunitiesEditStreamDialogMixin" virtual="true">
+		<Size x="350" y="320"/>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets left="11" right="12" top="12" bottom="11"/>
+			<TileSize val="32"/>
+			<EdgeSize val="32"/>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="TitleLabel" inherits="GameFontHighlight">
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-16"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="NameLabel" inherits="GameFontNormal" text="COMMUNITIES_CHANNEL_NAME_LABEL">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="30" y="-48"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="DescriptionLabel" inherits="GameFontNormal" text="COMMUNITIES_CHANNEL_SUBJECT_LABEL">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.NameLabel" x="0" y="-50"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="TypeLabel" inherits="GameFontHighlightSmall" text="COMMUNITIES_CHANNEL_TYPE_LABEL">
+					<Anchors>
+						<Anchor point="BOTTOM" x="10" y="60"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<EditBox parentKey="NameEdit" inherits="InputBoxTemplate" autoFocus="false" letters="30">
+				<Size x="0" y="30"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeKey="$parent.NameLabel" x="6" y="0"/>
+					<Anchor point="RIGHT" x="-30" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnTabPressed>
+						self:GetParent().Description.EditBox:SetFocus();
+					</OnTabPressed>
+					<OnEnterPressed>
+						self:GetParent().Description.EditBox:SetFocus();
+					</OnEnterPressed>
+				</Scripts>
+			</EditBox>
+			<ScrollFrame parentKey="Description" inherits="InputScrollFrameTemplate">
+				<Size x="350" y="50"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeKey="$parent.DescriptionLabel" x="4" y="-10"/>
+					<Anchor point="RIGHT" x="-34" y="0"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="maxLetters" value="250" type="number"/>
+					<KeyValue key="instructions" value="COMMUNITIES_CHANNEL_DESCRIPTION_INSTRUCTIONS" type="global"/>
+					<KeyValue key="hideCharCount" value="true" type="boolean"/>
+				</KeyValues>
+				<Scripts>
+					<OnLoad>
+						InputScrollFrame_OnLoad(self);
+						self.EditBox.nextEditBox = self:GetParent().NameEdit;
+					</OnLoad>
+				</Scripts>
+			</ScrollFrame>
+			<CheckButton parentKey="TypeCheckBox" inherits="UICheckButtonTemplate">
+				<Size x="20" y="20"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.TypeLabel" relativePoint="LEFT" x="-3" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<Button parentKey="Accept" inherits="UIPanelButtonTemplate" text="ACCEPT">
+				<Size x="100" y="20"/>
+				<Anchors>
+					<Anchor point="BOTTOM" x="-56" y="20"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="Delete" inherits="UIPanelButtonTemplate" text="DELETE" hidden="true">
+				<Size x="100" y="20"/>
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="20"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="Cancel" inherits="UIPanelButtonTemplate" text="CANCEL">
+				<Size x="100" y="20"/>
+				<Anchors>
+					<Anchor point="BOTTOM" x="56" y="20"/>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+		</Scripts>
+	</Frame>
+	
+	<Frame name="CommunitiesNotificationSettingsDialogTemplate" frameStrata="DIALOG" mixin="CommunitiesNotificationSettingsDialogMixin" inherits="SelectionFrameTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="OnOkay" value="CommunitiesNotificationSettingsDialogOkayButton_OnClick" type="global"/>
+			<KeyValue key="OnCancel" value="CommunitiesNotificationSettingsDialogCancelButton_OnClick" type="global"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="TitleLabel" inherits="GameFontHighlight" text="COMMUNITIES_NOTIFICATION_SETTINGS_DIALOG_LABEL">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="38" y="-30"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="BG">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="7" y="-7"/>
+						<Anchor point="BOTTOMRIGHT" x="-7" y="7"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" a=".80"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="CommunitiesListDropDownMenu" inherits="CommunitiesListDropDownMenuTemplate">
+				<Size x="40" y="28"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-10" y="-22"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="width" value="160" type="number"/>
+				</KeyValues>
+			</Frame>
+			<ScrollFrame parentKey="ScrollFrame" inherits="UIPanelScrollFrameCodeTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="20" y="-67"/>
+					<Anchor point="BOTTOMRIGHT" x="-32" y="35"/>
+				</Anchors>
+				<Frames>
+					<Slider parentKey="ScrollBar" inherits="UIPanelStretchableArtScrollBarTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="-17"/>
+							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="16"/>
+						</Anchors>
+					</Slider>
+				</Frames>
+				<ScrollChild>
+					<Frame parentKey="Child">
+						<Size x="568" y="1500"/>
+						<Anchors>
+							<Anchor point="TOP" relativeKey="$parent.$parent" x="0" y="0"/>
+							<Anchor point="LEFT" relativeKey="$parent.$parent" x="0" y="0"/>
+							<Anchor point="RIGHT" relativeKey="$parent.$parent" x="0" y="0"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BORDER">
+								<FontString parentKey="SettingsLabel" inherits="GameFontHighlight" text="COMMUNITIES_NOTIFICATION_SETTINGS_DIALOG_SETTINGS_LABEL">
+									<Anchors>
+										<Anchor point="LEFT" x="18"/>
+										<Anchor point="TOP" x="0" y="-79"/>
+									</Anchors>
+								</FontString>
+								<Texture parentKey="Separator">
+									<Size x="0" y="1"/>
+									<Anchors>
+										<Anchor point="TOP" relativeKey="$parent.SettingsLabel" relativePoint="BOTTOM" x="0" y="-12"/>
+										<Anchor point="LEFT" x="8" y="0"/>
+										<Anchor point="RIGHT" x="0" y="0"/>
+									</Anchors>
+									<Color r="1" g="1" b="1" a="0.2"/>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Frames>
+							<CheckButton parentKey="QuickJoinButton" inherits="UICheckButtonTemplate">
+								<Anchors>
+									<Anchor point="BOTTOMLEFT" relativeKey="$parent.SettingsLabel" relativePoint="TOPLEFT" x="-5" y="22"/>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										self.text:SetText(COMMUNITIES_NOTIFICATION_SETTINGS_DIALOG_QUICK_JOIN_LABEL);
+									</OnLoad>
+									<OnClick>
+										PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+									</OnClick>
+								</Scripts>
+							</CheckButton>
+							<Button parentKey="NoneButton" inherits="CommunitiesMassNotificationsSettingsButtonTemplate" text="COMMUNITIES_NOTIFICATION_SETTINGS_NONE">
+								<Anchors>
+									<Anchor point="RIGHT" x="-13"/>
+									<Anchor point="TOP" relativeKey="$parent.SettingsLabel" relativePoint="TOP" x="0" y="4"/>
+								</Anchors>
+								<KeyValues>
+									<KeyValue key="filter" value="Enum.ClubStreamNotificationFilter.None" type="global"/>
+								</KeyValues>
+							</Button>
+							<Button parentKey="AllButton" inherits="CommunitiesMassNotificationsSettingsButtonTemplate" text="COMMUNITIES_NOTIFICATION_SETTINGS_ALL">
+								<Anchors>
+									<Anchor point="RIGHT" relativeKey="$parent.NoneButton" relativePoint="LEFT" x="-14" y="0"/>
+								</Anchors>
+								<KeyValues>
+									<KeyValue key="filter" value="Enum.ClubStreamNotificationFilter.All" type="global"/>
+								</KeyValues>
+							</Button>
+						</Frames>
+					</Frame>
+				</ScrollChild>
+			</ScrollFrame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+		</Scripts>
+	</Frame>
+	
+	<Button name="AddToChatButtonTemplate" inherits="UIPanelSquareButton" mixin="CommunitiesAddToChatMixin" virtual="true">
+		<Layers>
+			<Layer>
+				<FontString parentKey="Label" inherits="GameFontNormal" text="COMMUNITIES_ADD_TO_CHAT">
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent" relativePoint="LEFT" x="-4" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="DropDown" inherits="UIDropDownMenuTemplate">
+				<Size x="10" y="10"/>
+				<Scripts>
+					<OnLoad function="CommunitiesAddToChatDropDown_OnLoad"/>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</Button>
+		
+	<Frame name="StreamDropDownMenuTemplate" inherits="UIDropDownMenuTemplate" mixin="CommunitiesStreamDropDownMixin" virtual="true">
+		<Size x="40" y="28"/>
+		<Frames>
+			<Frame parentKey="NotificationOverlay" frameLevel="100" setAllPoints="true" hidden="true">
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="UnreadNotificationIcon" atlas="communities-icon-notification">
+							<Size x="11" y="12"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent" relativePoint="TOPRIGHT" x="-19" y="-4"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+</Ui>

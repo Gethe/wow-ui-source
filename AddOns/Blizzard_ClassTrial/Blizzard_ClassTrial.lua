@@ -149,8 +149,8 @@ end
 function ClassTrialDialogMixin:OnUpgradeComplete()
 	self:Hide();
 
-	self:UnregisterEvent("EVENT_CLASS_TRIAL_TIMER_START");
-	self:UnregisterEvent("EVENT_CLASS_TRIAL_UPGRADE_COMPLETE");
+	self:UnregisterEvent("CLASS_TRIAL_TIMER_START");
+	self:UnregisterEvent("CLASS_TRIAL_UPGRADE_COMPLETE");
 end
 
 function ClassTrialDialogMixin:UpdateDialogButtons(hasBoost)
@@ -170,9 +170,9 @@ function ClassTrialDialogMixin:UpdateDialogButtons(hasBoost)
 end
 
 function ClassTrialDialogMixin:OnEvent(event, ...)
-	if event == "EVENT_CLASS_TRIAL_TIMER_START" then
+	if event == "CLASS_TRIAL_TIMER_START" then
 		self:ShowThanks(SOUNDKIT.UI_70_BOOST_THANKSFORPLAYING);
-	elseif event == "EVENT_CLASS_TRIAL_UPGRADE_COMPLETE" then
+	elseif event == "CLASS_TRIAL_UPGRADE_COMPLETE" then
 		self:OnUpgradeComplete();
 	end
 end
@@ -185,8 +185,8 @@ end
 function ClassTrialDialogMixin:OnLoad()
 	ClassTrialSecureFrame:SetAttribute("updateboostpurchasebutton");
 
-	self:RegisterEvent("EVENT_CLASS_TRIAL_TIMER_START");
-	self:RegisterEvent("EVENT_CLASS_TRIAL_UPGRADE_COMPLETE");
+	self:RegisterEvent("CLASS_TRIAL_TIMER_START");
+	self:RegisterEvent("CLASS_TRIAL_UPGRADE_COMPLETE");
 end
 
 ClassTrialTimerDisplayMixin = {}
@@ -228,14 +228,14 @@ end
 function ClassTrialTimerDisplayMixin:OnUpgradeComplete()
 	self:Hide();
 
-	self:UnregisterEvent("EVENT_CLASS_TRIAL_TIMER_START");
-	self:UnregisterEvent("EVENT_CLASS_TRIAL_UPGRADE_COMPLETE");
+	self:UnregisterEvent("CLASS_TRIAL_TIMER_START");
+	self:UnregisterEvent("CLASS_TRIAL_UPGRADE_COMPLETE");
 end
 
 function ClassTrialTimerDisplayMixin:OnEvent(event, ...)
-	if event == "EVENT_CLASS_TRIAL_TIMER_START" then
+	if event == "CLASS_TRIAL_TIMER_START" then
 		self:Hide();
-	elseif event == "EVENT_CLASS_TRIAL_UPGRADE_COMPLETE" then
+	elseif event == "CLASS_TRIAL_UPGRADE_COMPLETE" then
 		self:OnUpgradeComplete();
 	end
 end
@@ -250,7 +250,7 @@ function ClassTrialTimerDisplayMixin:OnShow()
 end
 
 function ClassTrialTimerDisplayMixin:OnLoad()
-	self:RegisterEvent("EVENT_CLASS_TRIAL_TIMER_START");
-	self:RegisterEvent("EVENT_CLASS_TRIAL_UPGRADE_COMPLETE");
+	self:RegisterEvent("CLASS_TRIAL_TIMER_START");
+	self:RegisterEvent("CLASS_TRIAL_UPGRADE_COMPLETE");
 	self:CheckShowTimer();
 end

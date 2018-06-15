@@ -1,0 +1,297 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Texture name="ArtifactToAzeriteTexture" scale="1.7079419299744" virtual="true" />
+
+	<Button name="AzeriteEmpoweredItemPowerTemplate" mixin="AzeriteEmpoweredItemPowerMixin" virtual="true">
+		<Size x="52" y="52" />
+		<Frames>
+			<Frame parentKey="FinalEffectContainer" useParentLevel="true" setAllPoints="true" hidden="true">
+				<Layers>
+					<Layer level="OVERLAY" textureSubLevel="6">
+						<Texture parentKey="Wispy" atlas="Azerite-CenterBG-ChannelGlowBar-Effect" alphaMode="ADD" alpha=".25">
+							<Size x="128" y="400" />
+							<Anchors>
+								<Anchor point="TOP" />
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="7">
+						<Texture parentKey="Sparkles1" atlas="Azerite-CenterBG-ChannelGlowBar-Particles" useAtlasSize="true" alphaMode="ADD">
+							<Anchors>
+								<Anchor point="TOP" />
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Sparkles2" atlas="Azerite-CenterBG-ChannelGlowBar-Particles" useAtlasSize="true" alphaMode="ADD">
+							<Anchors>
+								<Anchor point="TOP" />
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Gold" atlas="Azerite-CenterBG-ChannelGlowBar-Gold" hidden="true">
+							<Size x="128" y="512" />
+							<Anchors>
+								<Anchor point="TOP" />
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="SparkleAnim" setToFinalAlpha="true" looping="REPEAT">
+						<Alpha parentKey="Sparkle1In" childKey="Sparkles1" duration="1.5" order="1" smoothing="IN_OUT" fromAlpha="0" toAlpha=".5" />
+						<Alpha parentKey="Sparkle2In" childKey="Sparkles2" duration="1.5" order="2" smoothing="IN_OUT" fromAlpha="0" toAlpha=".5" />
+
+						<Alpha parentKey="Sparkle1Out" childKey="Sparkles1" smoothing="IN_OUT" duration="1.5" order="2" fromAlpha=".5" toAlpha="0" />
+						<Alpha parentKey="Sparkle2Out" childKey="Sparkles2" smoothing="IN_OUT" duration="1.5" order="1" fromAlpha=".5" toAlpha="0" />
+					</AnimationGroup>
+
+					<AnimationGroup parentKey="GoldOverlayAnim" setToFinalAlpha="true" looping="REPEAT">
+						<Alpha childKey="Gold" duration="1.5" order="2" smoothing="IN_OUT" fromAlpha=".5" toAlpha=".8" />
+						<Alpha childKey="Gold" smoothing="IN_OUT" duration="1.5" order="1" fromAlpha=".8" toAlpha=".5" />
+					</AnimationGroup>
+				</Animations>
+				<Scripts>
+					<OnUpdate>
+						self:GetParent():OnFinalEffectUpdate(elapsed);
+					</OnUpdate>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Layers>
+			<Layer level="ARTWORK" textureSubLevel="-5">
+				<Texture parentKey="PlugBg" atlas="Azerite-Center-TraitBG" useAtlasSize="true" />
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="0">
+				<Texture parentKey="IconOn">
+					<Anchors>
+						<Anchor point="CENTER" />
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture parentKey="IconOff">
+					<Anchors>
+						<Anchor point="CENTER" />
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="2">
+				<Texture parentKey="IconDesaturated" desaturated="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.IconOn"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.IconOn"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="3">
+				<Texture parentKey="IconNotSelectableOverlay">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.IconOn"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.IconOn"/>
+					</Anchors>
+					<Color r=".102" g=".0863" b=".0667" a=".70" />
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<MaskTexture parentKey="CircleMask" file="Interface/CharacterFrame/TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="CENTER" />
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="IconOn" />
+						<MaskedTexture childKey="IconOff" />
+						<MaskedTexture childKey="IconDesaturated" />
+						<MaskedTexture childKey="IconNotSelectableOverlay" />
+
+						<MaskedTexture childKey="FinalEffectContainer.Wispy" />
+
+						<MaskedTexture childKey="FinalEffectContainer.Sparkles1" />
+						<MaskedTexture childKey="FinalEffectContainer.Sparkles2" />
+
+
+						<MaskedTexture childKey="FinalEffectContainer.Gold" />
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="4">
+				<Texture parentKey="IconBorder">
+					<Anchors>
+						<Anchor point="CENTER" />
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="5">
+				<Texture parentKey="CanSelectGlow" alpha="0" alphaMode="ADD" atlas="Azerite-Trait-RingGlow" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" />
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Arrow" atlas="Azerite-PointingArrow" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOM" relativePoint="TOP" y="10" />
+					</Anchors>
+				</Texture>
+				<Texture parentKey="IconBorderSelectable">
+					<Anchors>
+						<Anchor point="CENTER" />
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<ModelScene parentKey="ClickEffect" drawLayer="ARTWORK" inherits="NonInteractableModelSceneMixinTemplate">
+				<Size x="700" y="700" />
+				<Anchors>
+					<Anchor point="CENTER" />
+				</Anchors>
+			</ModelScene>
+			<ModelScene parentKey="CanSelectEffect" useParentLevel="true" drawLayer="BORDER" inherits="NonInteractableModelSceneMixinTemplate">
+				<Size x="700" y="700" />
+				<Anchors>
+					<Anchor point="CENTER" />
+				</Anchors>
+			</ModelScene>
+			<Frame parentKey="SwirlContainer" useParentLevel="true" setAllPoints="true" hidden="true">
+				<Layers>
+					<Layer level="ARTWORK" textureSubLevel="-2">
+						<Texture parentKey="LightRune" alpha="0">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK" textureSubLevel="6">
+						<Texture parentKey="BigWhirls" alpha="0" alphaMode="ADD" atlas="AzeriteFX-Whirls" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+							<Color r="1" g="0.83921568627451" b="0.45098039215686"/>
+						</Texture>
+						<Texture parentKey="SpinningGlows" alpha="0" alphaMode="ADD" atlas="ArtifactsFX-SpinningGlowys" useAtlasSize="true" inherits="ArtifactToAzeriteTexture">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="SpinningGlows2" alpha="0" alphaMode="ADD" atlas="ArtifactsFX-SpinningGlowys" useAtlasSize="true" inherits="ArtifactToAzeriteTexture">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="RingBurst" alpha="0" alphaMode="ADD" atlas="ArtifactsFX-YellowRing" useAtlasSize="true" inherits="ArtifactToAzeriteTexture">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+							<Color r="0.45098039215686" g="0.83921568627451" b="1"/>
+						</Texture>
+						<Texture parentKey="WhiteStarBurst" alpha="0" alphaMode="ADD" atlas="AftLevelup-WhiteStarBurst" useAtlasSize="true" inherits="ArtifactToAzeriteTexture">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Ring" alphaMode="ADD" alpha="0" atlas="AzeriteFX-BlueRing" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" />
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK" textureSubLevel="7">
+						<Texture parentKey="StarBurst" alpha="0" alphaMode="ADD" atlas="ArtifactsFX-StarBurst" useAtlasSize="true" inherits="ArtifactToAzeriteTexture">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="SelectedAnim" setToFinalAlpha="true">
+						<Alpha childKey="BigWhirls" startDelay="0.25" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+						<Scale childKey="BigWhirls" startDelay="0.25" duration="0.75" order="1" fromScaleX="0.5" fromScaleY="0.5" toScaleX="1.25" toScaleY="1.25"/>
+						<Rotation childKey="BigWhirls" startDelay="0.25" smoothing="OUT" duration="0.75" order="1" degrees="-90"/>
+						<Alpha childKey="BigWhirls" startDelay="0.5" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+
+						<Alpha childKey="SpinningGlows" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+						<Scale childKey="SpinningGlows" duration="0.75" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.75" toScaleY="0.75"/>
+						<Rotation childKey="SpinningGlows" smoothing="OUT" duration="0.75" order="1" degrees="-180"/>
+						<Alpha childKey="SpinningGlows" startDelay="0.25" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+
+						<Alpha childKey="SpinningGlows2" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+						<Scale childKey="SpinningGlows2" duration="0.75" order="1" fromScaleX="0.9" fromScaleY="0.9" toScaleX="0.6" toScaleY="0.6"/>
+						<Rotation childKey="SpinningGlows2" smoothing="OUT" duration="0.75" order="1" degrees="-200"/>
+						<Alpha childKey="SpinningGlows2" startDelay="0.25" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+
+						<Alpha childKey="StarBurst" smoothing="IN" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+						<Scale childKey="StarBurst" smoothing="IN" duration="0.5" order="1" fromScaleX="0.1" fromScaleY="0.1" toScaleX="1.5" toScaleY="1.5"/>
+						<Alpha childKey="StarBurst" startDelay="0.5" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+
+						<Alpha childKey="RingBurst" smoothing="OUT" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="RingBurst" startDelay="0.5" smoothing="NONE" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+						<Scale childKey="RingBurst" startDelay="0.25" duration="0.5" order="1" fromScaleX="1" fromScaleY="1" toScaleX="1.5" toScaleY="1.5"/>
+						<Scripts>
+							<OnFinished>
+								self:GetParent():GetParent():OnAnimationFinished();
+							</OnFinished>
+						</Scripts>
+					</AnimationGroup>
+
+					<AnimationGroup parentKey="RevealAnim" setToFinalAlpha="true">
+						<Alpha parentKey="Start" childKey="LightRune" duration=".001" order="1" fromAlpha="0" toAlpha="0"/>
+
+						<Alpha childKey="LightRune" smoothing="OUT" duration="0.3" order="2" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="LightRune" startDelay="0.4" smoothing="IN" duration="1.25" order="2" fromAlpha="1" toAlpha="0"/>
+						<Alpha childKey="WhiteStarBurst" smoothing="OUT" duration="0.4" order="2" fromAlpha="0" toAlpha="0.5"/>
+						<Scale childKey="WhiteStarBurst" smoothing="OUT" duration="0.4" order="2" fromScaleX="0.6" fromScaleY="0.6" toScaleX="1" toScaleY="1.25"/>
+						<Alpha childKey="WhiteStarBurst" startDelay="0.3" smoothing="IN" duration="0.75" order="2" fromAlpha="0.5" toAlpha="0"/>
+						<Alpha childKey="$parent.CanSelectEffect" startDelay="0.0" smoothing="IN" duration="0.5" order="2" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="$parent.IconBorder" startDelay="0.8" smoothing="IN" duration="0.5" order="2" fromAlpha="0" toAlpha="0"/>
+						<Alpha childKey="$parent.IconOn" startDelay="0.9" smoothing="IN" duration="0.5" order="2" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="$parent.IconOff" startDelay="0.9" smoothing="IN" duration="0.5" order="2" fromAlpha="0" toAlpha="0"/>
+						<Alpha childKey="$parent.IconDesaturated" startDelay="0.8" smoothing="IN" duration="0.5" order="2" fromAlpha="0" toAlpha="0"/>
+						<Alpha childKey="$parent.IconNotSelectableOverlay" startDelay="0.8" smoothing="IN" duration="0.5" order="2" fromAlpha="0" toAlpha="0"/>
+						<Alpha childKey="$parent.IconBorderSelectable" startDelay="0.8" smoothing="IN" duration="0.5" order="2" fromAlpha=".5" toAlpha="1"/>
+						<Alpha childKey="$parent.CanSelectEffect" startDelay="1.0" smoothing="OUT" duration="1.1" order="2" fromAlpha="1" toAlpha="0"/>
+
+						<Alpha childKey="SpinningGlows" duration="0.25" order="2" fromAlpha="0" toAlpha="1"/>
+						<Scale childKey="SpinningGlows" duration="0.75" order="2" fromScaleX="1.2" fromScaleY="1.2" toScaleX="0.9" toScaleY="0.9"/>
+						<Rotation childKey="SpinningGlows" smoothing="OUT" duration="0.75" order="2" degrees="-180"/>
+						<Alpha childKey="SpinningGlows" startDelay="0.25" duration="0.5" order="2" fromAlpha="1" toAlpha="0"/>
+
+						<Alpha childKey="Ring" startDelay="0.15" duration="0.3" order="2" fromAlpha="0" toAlpha=".5"/>
+						<Scale childKey="Ring" startDelay="0.15" smoothing="OUT" duration="0.3" order="2" fromScaleX="1" fromScaleY="1" toScaleX="1.25" toScaleY="1.25"/>
+						<Scale childKey="Ring" startDelay="0.45" smoothing="IN" duration="0.3" order="2" fromScaleX="1.5" fromScaleY="1.5" toScaleX="0.6" toScaleY="0.6"/>
+						<Alpha childKey="Ring" startDelay="0.65" duration="0.25" order="2" fromAlpha=".5" toAlpha="0"/>
+						<Scripts>
+							<OnFinished>
+								self:GetParent():GetParent():OnAnimationFinished();
+							</OnFinished>
+						</Scripts>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+		</Frames>
+		<Animations>
+			<AnimationGroup parentKey="CanSelectGlowAnim" setToFinalAlpha="true" looping="REPEAT">
+				<Alpha childKey="CanSelectGlow" duration="1.4" order="1" smoothing="IN_OUT" fromAlpha=".1" toAlpha=".5" />
+				<Alpha childKey="CanSelectGlow" startDelay="1.8" smoothing="IN_OUT" duration="1.4" order="1" fromAlpha=".5" toAlpha=".1" />
+			</AnimationGroup>
+			<AnimationGroup parentKey="TransitionAnimation" setToFinalAlpha="true">
+				<Alpha parentKey="Effect" childKey="CanSelectEffect" duration=".25" order="1" fromAlpha="0" toAlpha="1" />
+				<Alpha parentKey="IconOn" childKey="IconOn" duration=".25" order="1" fromAlpha="0" toAlpha="1" />
+				<Alpha parentKey="IconOff" childKey="IconOff" duration=".25" order="1" fromAlpha="0" toAlpha="1" />
+				<Alpha parentKey="Desaturation" childKey="IconDesaturated" duration=".25" order="1" fromAlpha="0" toAlpha="1" />
+				<Alpha parentKey="BorderSelectable" childKey="IconBorderSelectable" duration=".25" order="1" fromAlpha="0" toAlpha="1" />
+				<Alpha parentKey="IconNotSelectableOverlay" childKey="IconNotSelectableOverlay" duration=".25" order="1" fromAlpha="0" toAlpha="1" />
+				<Alpha parentKey="IconBorder" childKey="IconBorder" duration=".25" order="1" fromAlpha="0" toAlpha="1" />
+			</AnimationGroup>
+			<AnimationGroup parentKey="CanSelectArrowAnim" setToFinalAlpha="true" looping="REPEAT">
+				<Translation childKey="Arrow" duration=".6" order="1" smoothing="IN_OUT" offsetY="10"/>
+				<Translation childKey="Arrow" startDelay=".6" duration=".6" order="1" smoothing="IN_OUT" offsetY="-10" />
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnShow method="OnShow" />
+			<OnHide method="OnHide" />
+			<OnEvent method="OnEvent" />
+			<OnEnter method="OnEnter" />
+			<OnLeave method="OnLeave" />
+			<OnClick method="OnClick" />
+		</Scripts>
+	</Button>
+</Ui>

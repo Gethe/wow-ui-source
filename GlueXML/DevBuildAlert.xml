@@ -1,0 +1,77 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="DevBuildAlert.lua"/>
+	<Frame name="DevBuildAlert" setAllPoints="true" frameStrata="DIALOG" toplevel="true" parent="AccountLogin" hidden="true">
+		<Size>
+			<AbsDimension x="400" y="325"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT">
+				<Offset>
+					<AbsDimension x="410" y="-25"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="11" top="11" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Title" inherits="GlueFontNormalLarge" text="DEVELOPER ALERT">
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-20"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<ScrollFrame parentKey="ScrollFrame" name="$parentScrollFrame" inherits="GlueScrollFrameTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="15" y="-46"/>
+					<Anchor point="BOTTOMRIGHT" x="-35" y="13"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						GlueScrollFrame_OnScrollRangeChanged(self);
+					</OnLoad>
+					<OnScrollRangeChanged>
+						GlueScrollFrame_OnScrollRangeChanged(self, yrange);
+						if (floor(self:GetVerticalScrollRange()) > 0) then
+							self.updated = 1;
+						end
+					</OnScrollRangeChanged>
+				</Scripts>
+				<ScrollChild>
+					<SimpleHTML parentKey="Text" name="$parentText" hyperlinkFormat="|cff06ff07|H%s|h[%s]|h|r">
+						<Size>
+							<AbsDimension x="300" y="10"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+						</Anchors>
+						<Scripts>
+							<OnHyperlinkClick>
+								LaunchURL(link);
+							</OnHyperlinkClick>
+						</Scripts>
+						<FontString inherits="GlueFontHighlightSmall" spacing="2" justifyH="LEFT" />
+						<FontStringHeader1 inherits="GlueFontNormalLarge" spacing="4" justifyH="LEFT" />
+						<FontStringHeader2 inherits="GlueFontHighlight" spacing="4" justifyH="LEFT" />
+					</SimpleHTML>
+				</ScrollChild>
+			</ScrollFrame>
+		</Frames>
+		<Scripts>
+			<OnLoad function="DevBuildAlert_OnLoad"/>
+			<OnEvent function="DevBuildAlert_OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

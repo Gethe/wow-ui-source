@@ -1061,6 +1061,7 @@ function AuctionFrameBid_Update()
 	local index;
 	local isLastSlotEmpty;
 	local name, texture, count, quality, canUse, level, levelColHeader, minBid, minIncrement, buyoutPrice, bidAmount, highBidder, bidderFullName, owner, ownerFullName, itemID;
+	local _;
 	local duration;
 	BidBidButton:Disable();
 	BidBuyoutButton:Disable();
@@ -1312,6 +1313,7 @@ function AuctionFrameAuctions_Update()
 	local index;
 	local isLastSlotEmpty;
 	local auction, button, buttonName, buttonHighlight, iconTexture, itemName, color, itemCount, duration, timeToSell;
+	local _;
 	local highBidderFrame;
 	local closingTimeFrame, closingTimeText;
 	local buttonBuyoutFrame, buttonBuyoutMoney;

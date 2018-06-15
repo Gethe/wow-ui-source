@@ -41,7 +41,7 @@ end
 function LayoutMixin:AddLayoutChildren(layoutChildren, ...)
 	for i = 1, select("#", ...) do
 		local region = select(i, ...);
-		if region.layoutIndex and region:IsVisible() then
+		if region.layoutIndex and region:IsShown() then
 			layoutChildren[#layoutChildren + 1] = region;
 		end
 	end
@@ -78,7 +78,6 @@ end
 
 function LayoutMixin:Layout()
 	self.dirty = false;
-	local leftPadding, rightPadding, topPadding, bottomPadding = self:GetPadding(self);
 	
 	local children = {};
 	self:AddLayoutChildren(children, self:GetChildren());

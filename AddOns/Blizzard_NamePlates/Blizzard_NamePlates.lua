@@ -511,7 +511,7 @@ function NameplateBuffContainerMixin:UpdateBuffs(unit, filter, showAll)
 		local buffIndex = 1;
 
 		for i = 1, BUFF_MAX_DISPLAY do
-			local name, rank, texture, count, debuffType, duration, expirationTime, caster, _, nameplateShowPersonal, spellId, _, _, _, nameplateShowAll = UnitAura(unit, i, filter);
+			local name, texture, count, debuffType, duration, expirationTime, caster, _, nameplateShowPersonal, spellId, _, _, _, nameplateShowAll = UnitAura(unit, i, filter);
 
 			if (self:ShouldShowBuff(name, caster, nameplateShowPersonal, nameplateShowAll or showAll, duration)) then
 				if (not self.buffList[buffIndex]) then
@@ -521,7 +521,6 @@ function NameplateBuffContainerMixin:UpdateBuffs(unit, filter, showAll)
 				end
 				local buff = self.buffList[buffIndex];
 				buff:SetID(i);
-				buff.name = name;
 				buff.Icon:SetTexture(texture);
 				if (count > 1) then
 					buff.CountFrame.Count:SetText(count);

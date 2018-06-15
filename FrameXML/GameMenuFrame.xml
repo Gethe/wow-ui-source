@@ -99,8 +99,7 @@
 					</OnShow>
 					<OnClick>
 						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
-						ShowUIPanel(VideoOptionsFrame);
-						VideoOptionsFrame.lastFrame = GameMenuFrame;
+						ShowOptionsPanel(VideoOptionsFrame, GameMenuFrame);
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -115,8 +114,7 @@
 				<Scripts>
 					<OnClick>
 						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
-						ShowUIPanel(InterfaceOptionsFrame);
-						InterfaceOptionsFrame.lastFrame = GameMenuFrame;
+						ShowOptionsPanel(InterfaceOptionsFrame, GameMenuFrame);
 					</OnClick>
 				</Scripts>
 			</Button>

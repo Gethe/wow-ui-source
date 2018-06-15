@@ -138,7 +138,7 @@ function GarrisonMission:ShowMission(missionInfo)
 	end
 
 	-- max level
-	if ( missionPage.missionInfo.level == self.followerMaxLevel and missionPage.missionInfo.iLevel > 0 ) then
+	if ( GarrisonFollowerOptions[self.followerTypeID].showILevelOnMission and missionPage.missionInfo.level == self.followerMaxLevel and missionPage.missionInfo.iLevel > 0 ) then
 		missionPage.showItemLevel = true;
 		missionPage.Stage.Level:SetPoint("CENTER", missionPage.Stage.Header, "TOPLEFT", 30, -28);
 		missionPage.Stage.ItemLevel:Show();
@@ -1223,8 +1223,9 @@ local ENDINGS = {
 	    },
 	}
 };
+ENDINGS[LE_FOLLOWER_TYPE_GARRISON_8_0] = ENDINGS[LE_FOLLOWER_TYPE_GARRISON_7_0];
 
-local positionData = {
+local POSITION_DATA = {
 	[LE_FOLLOWER_TYPE_GARRISON_6_0] = {
 	    [1] = {
 		    [1] = { scale=1.0,		facing=0,		x=0,	y=0		}
@@ -1258,6 +1259,7 @@ local positionData = {
 	    }
 	}
 };
+POSITION_DATA[LE_FOLLOWER_TYPE_GARRISON_8_0] = POSITION_DATA[LE_FOLLOWER_TYPE_GARRISON_7_0];
 
 function GarrisonMissionComplete:SetupEnding(numFollowers, hideExhaustedTroopModels)
 	self.Stage.ModelRight:SetFacingLeft(false);
@@ -1271,7 +1273,7 @@ function GarrisonMissionComplete:SetupEnding(numFollowers, hideExhaustedTroopMod
 			if (hideExhaustedTroopModels and followerInfo.isTroop and followerInfo.durability and followerInfo.durability <= 0) then
 				modelClusterFrame:SetAlpha(0);
 			end
-			local pos = positionData[followerType][#followerInfo.displayIDs];
+			local pos = POSITION_DATA[followerType][#followerInfo.displayIDs];
 			for i = 1, #followerInfo.displayIDs do
 				local modelFrame = modelClusterFrame.Model[i];
 				modelFrame:SetAlpha(1);
@@ -1782,6 +1784,8 @@ function GarrisonMissionComplete:AnimFollowerCheerAndTroopDeath(followerID)
 					if (followerInfo.durability <= 0) then
 						shouldFadeOut = true;
 						shouldCheer = false;
+					else
+						self:SetFollowerLevel(followerFrame, followerInfo);
 					end
 					followerFrame.DurabilityFrame:SetDurability(followerInfo.durability, followerInfo.maxDurability);
 				end
@@ -2019,22 +2023,29 @@ function GarrisonMissionPage_SetReward(frame, reward, missionComplete)
 				frame.tooltip = GetMoneyString(reward.quantity);
 				frame.currencyID = 0;
 				frame.currencyQuantity = reward.quantity;
-				if (frame.Name) then
-					frame.Name:SetText(frame.tooltip);
-				end
+				frame.Name:SetText(frame.tooltip);
 			else
-				local currencyName, _, currencyTexture = GetCurrencyInfo(reward.currencyID);
+				local currencyName, currencyQuantity, currencyTexture, _, _, _, _, currencyQuality = GetCurrencyInfo(reward.currencyID);
+				currencyName, currencyTexture, currencyQuantity, currencyQuality = CurrencyContainerUtil.GetCurrencyContainerInfo(reward.currencyID, reward.quantity, currencyName, currencyTexture, currencyQuality);
+				
 				frame.currencyID = reward.currencyID;
 				frame.currencyQuantity = reward.quantity;
-				if (frame.Name) then
-					frame.Name:SetText(currencyName);
+				
+				frame.Name:SetText(currencyName);
+				local currencyColor = GetColorForCurrencyReward(frame.currencyID, currencyQuantity)
+				frame.Name:SetTextColor(currencyColor:GetRGB());
+				frame.Icon:SetTexture(currencyTexture);
+
+				if (currencyQuality) then 
+					SetItemButtonQuality(frame, currencyQuality, frame.currencyID);
 				end
-				frame.Quantity:SetText(reward.quantity);
-				if ( not missionComplete ) then
-					local currencyColor = GetColorForCurrencyReward(reward.currencyID, reward.quantity);
+				
+				if ( not missionComplete and currencyQuantity > 1 ) then 
+					local currencyColor = GetColorForCurrencyReward(frame.currencyID, currencyQuantity)
 					frame.Quantity:SetTextColor(currencyColor:GetRGB());
+					frame.Quantity:SetText(currencyQuantity);
+					frame.Quantity:Show();
 				end
-				frame.Quantity:Show();
 			end
 		elseif (reward.bonusAbilityID) then
 			frame.bonusAbilityID = reward.bonusAbilityID;
@@ -2079,7 +2090,7 @@ function GarrisonMissionPage_RewardOnEnter(self)
 			return;
 		end
 		if (self.currencyID and self.currencyID ~= 0) then
-			GameTooltip:SetCurrencyByID(self.currencyID);
+			GameTooltip:SetCurrencyByID(self.currencyID, self.currencyQuantity);
 			return;
 		end
 		if (self.title) then
@@ -2568,8 +2579,8 @@ function GarrisonMissionButton_AddThreatsToTooltip(missionID, followerTypeID, no
 			
 			if (GarrisonFollowerOptions[followerTypeID].displayCounterAbilityInPlaceOfMechanic) then
 				local ability = abilityCountersForMechanicTypes[mechanicID];
-				threatFrame.Border:SetShown(ShouldShowFollowerAbilityBorder(followerTypeID, ability));
-				threatFrame.Icon:SetTexture(ability.icon);
+				threatFrame.Border:SetShown(ability and ShouldShowFollowerAbilityBorder(followerTypeID, ability));
+				threatFrame.Icon:SetTexture(ability and ability.icon);
 			else
 				if ( mechanic.factor <= GARRISON_HIGH_THREAT_VALUE and followerTypeID == LE_FOLLOWER_TYPE_SHIPYARD_6_2 ) then
 					threatFrame.Border:SetAtlas("GarrMission_WeakEncounterAbilityBorder");

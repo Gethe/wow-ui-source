@@ -51,7 +51,7 @@ OBJECTIVE_TRACKER_UPDATE_MODULE_ACHIEVEMENT			= 0x08000;
 OBJECTIVE_TRACKER_UPDATE_SCENARIO_SPELLS			= 0x10000;
 -- special updates
 OBJECTIVE_TRACKER_UPDATE_STATIC						= 0x0000;
-OBJECTIVE_TRACKER_UPDATE_ALL						= 0xFFFF;
+OBJECTIVE_TRACKER_UPDATE_ALL						= 0xFFFFFFFF;
 
 OBJECTIVE_TRACKER_UPDATE_REASON = OBJECTIVE_TRACKER_UPDATE_ALL;		-- default
 OBJECTIVE_TRACKER_UPDATE_ID = 0;
@@ -523,6 +523,7 @@ end
 -- *****************************************************************************************************
 
 function ObjectiveTrackerBlockHeader_OnLoad(self)
+
 	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 end
 
@@ -651,6 +652,7 @@ function ObjectiveTracker_Initialize(self)
 	self:RegisterEvent("SCENARIO_UPDATE");
 	self:RegisterEvent("SCENARIO_CRITERIA_UPDATE");
 	self:RegisterEvent("SCENARIO_SPELL_UPDATE");
+	self:RegisterEvent("SCENARIO_BONUS_VISIBILITY_UPDATE");
 	self:RegisterEvent("TRACKED_ACHIEVEMENT_UPDATE");
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
 	self:RegisterEvent("ZONE_CHANGED");
@@ -658,6 +660,7 @@ function ObjectiveTracker_Initialize(self)
 	self:RegisterEvent("VARIABLES_LOADED");
 	self:RegisterEvent("QUEST_TURNED_IN");
 	self:RegisterEvent("PLAYER_MONEY");
+	self:RegisterEvent("CVAR_UPDATE");
 	self.watchMoneyReasons = 0;
 
 	self.initialized = true;
@@ -712,18 +715,17 @@ function ObjectiveTracker_OnEvent(self, event, ...)
 		ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_SCENARIO);
 	elseif ( event == "SCENARIO_SPELL_UPDATE" ) then
 		ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_SCENARIO_SPELLS);
+	elseif ( event == "SCENARIO_BONUS_VISIBILITY_UPDATE") then
+		ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_MODULE_BONUS_OBJECTIVE);
 	elseif ( event == "SUPER_TRACKED_QUEST_CHANGED" ) then
 		local questID = ...;
 		ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_SUPER_TRACK_CHANGED, questID);
 		QuestPOI_SelectButtonByQuestID(self.BlocksFrame, questID);
 	elseif ( event == "ZONE_CHANGED" ) then
-		local inMicroDungeon = IsPlayerInMicroDungeon();
-		if ( inMicroDungeon ~= self.inMicroDungeon ) then
-			if ( not WorldMapFrame:IsShown() and GetCVarBool("questPOI") ) then
-				SetMapToCurrentZone();			-- update the zone to get the right POI numbers for the tracker
-			end
+		local lastMapID = C_Map.GetBestMapForUnit("player");
+		if ( lastMapID ~= self.lastMapID ) then
 			SortQuestWatches();
-			self.inMicroDungeon = inMicroDungeon;
+			self.lastMapID = lastMapID;
 		end
 	elseif ( event == "QUEST_AUTOCOMPLETE" ) then
 		local questId = ...;
@@ -736,9 +738,6 @@ function ObjectiveTracker_OnEvent(self, event, ...)
 			ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_SCENARIO);
 		end
 	elseif ( event == "ZONE_CHANGED_NEW_AREA" ) then
-		if ( not WorldMapFrame:IsShown() and GetCVarBool("questPOI") ) then
-			SetMapToCurrentZone();			-- update the zone to get the right POI numbers for the tracker
-		end
 		SortQuestWatches();
 	elseif ( event == "QUEST_TURNED_IN" ) then
 		local questID, xp, money = ...;
@@ -753,7 +752,12 @@ function ObjectiveTracker_OnEvent(self, event, ...)
 		end
 		ObjectiveTracker_Update();
 		QuestSuperTracking_ChooseClosestQuest();
-		self.inMicroDungeon = IsPlayerInMicroDungeon();
+		self.lastMapID = C_Map.GetBestMapForUnit("player");
+	elseif ( event == "CVAR_UPDATE" ) then
+		local arg1 =...;
+		if ( arg1 == "QUEST_POI" ) then
+			ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_MODULE_QUEST);
+		end
 	elseif ( event == "VARIABLES_LOADED" ) then
 		ObjectiveTracker_Update();
 	end
@@ -1149,18 +1153,3 @@ function ObjectiveTracker_ReorderModules()
 	end
 end
 
-function ObjectiveTracker_Util_ShouldAddDropdownEntryForQuestGroupSearch(questID)
-	return QuestUtils_CanUseAutoGroupFinder(questID, true) and LFGListUtil_CanSearchForGroup();
-end
-
-function ObjectiveTracker_Util_AddDropdownEntryForQuestGroupSearch(questID)
-	if ObjectiveTracker_Util_ShouldAddDropdownEntryForQuestGroupSearch(questID) then
-		local info = UIDropDownMenu_CreateInfo();
-		info.notCheckable = true;
-		info.text = OBJECTIVES_FIND_GROUP;
-		info.func = function()
-			LFGListUtil_FindQuestGroup(questID);
-		end
-		UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
-	end
-end

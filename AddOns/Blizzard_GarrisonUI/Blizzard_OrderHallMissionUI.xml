@@ -1,0 +1,860 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="Blizzard_OrderHallMissionUI.lua"/>
+
+	<Button name="OrderHallMissionListButtonTemplate" inherits="GarrisonMissionListButtonTemplate" virtual="true">
+		<Size x="832" y="75"/>
+	</Button>
+
+	<Frame name="OrderHallMissionPageEnemyTemplate" inherits="GarrisonMissionPageEnemyTemplate" mixin="OrderHallMissionPageEnemyMixin" virtual="true">
+		<Frames>
+			<Frame parentKey="MechanicEffect">
+				<Size x="16" y="16"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Icon">
+							<Color r="1" g="1" b="1"/>
+							<Size x="16" y="16"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="1">
+						<Texture parentKey="CrossLeft" hidden="false" alpha="0" atlas="GarrMission_EncounterBar-Xleft">
+							<Size x="48" y="48"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="CrossRight" hidden="false" alpha="0" atlas="GarrMission_EncounterBar-Xright">
+							<Size x="48" y="48"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="Countered" setToFinalAlpha="true">
+						<Scale childKey="CrossLeft" duration="0.15" order="1" fromScaleX="5" fromScaleY="5" toScaleX="1" toScaleY="1"/>
+						<Alpha childKey="CrossLeft" duration="0.1" order="1" fromAlpha="0" toAlpha="1"/>
+						<Scale childKey="CrossRight" startDelay="0.1" duration="0.15" order="1" fromScaleX="5" fromScaleY="5" toScaleX="1" toScaleY="1"/>
+						<Alpha childKey="CrossRight" startDelay="0.1" duration="0.1" order="1" fromAlpha="0" toAlpha="1"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="OrderHallMissionPageTemplate" inherits="GarrisonMissionPageBaseTemplate" virtual="true">
+		<Size x="556" y="580"/>
+		<Anchors>
+			<Anchor point="TOPRIGHT" x="-55" y="-34"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="EmptyString" inherits="GameFontNormalMed3" justifyH="CENTER">
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-255"/>
+					</Anchors>
+					<Color r="0.910" g="0.835" b="0.706"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="CloseButton" inherits="GarrisonMissionPageCloseButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="4" y="6"/>
+				</Anchors>
+			</Button>
+			<Frame parentKey="Stage" inherits="GarrisonMissionPageStageTemplate"/>
+			<Frame parentKey="ItemLevelHitboxFrame" inherits="GarrisonMissionPageItemLevelHitboxFrame">
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.Stage.Level" x="0" y="3"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="BuffsFrameAnchor" hidden="true">
+				<Size x="1" y="1"/>
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="170"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="BuffsFrame" inherits="GarrisonMissionPartyBuffsFrameTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="BOTTOM" relativeKey="$parent.BuffsFrameAnchor" x="0" y="0"/>
+				</Anchors>
+			</Frame>
+			<Button inherits="StartMissionButtonTemplate">
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.ButtonFrame" x="-50" y="1"/>
+				</Anchors>
+			</Button>
+			<Frame parentKey="CostFrame" inherits="GarrisonMissionPageCostFrameTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.ButtonFrame" x="50"/>
+					<Anchor point="RIGHT" relativeKey="$parent.ButtonFrame" relativePoint="CENTER" />
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="ButtonFrame" atlas="GarrMission_MissionCostStartButtonBg" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOM" x="0" y="-22"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture atlas="GarrMission_LocationCover-Side" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture atlas="GarrMission_LocationCover-Side" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+					<TexCoords left="1.0" right="0.0" top="0.0" bottom="1.0"/>
+				</Texture>
+				<Texture atlas="_GarrMission_LocationCover-Bottom" useAtlasSize="true" horizTile="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" y="333"/>
+						<Anchor point="BOTTOMRIGHT" y="333"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="4">
+				<Texture parentKey="IconBG" atlas="GarrMission_IconLevelBG" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" y="-1"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" a="0.55"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="5">
+				<Texture parentKey="MissionType" atlas="GarrMission_MissionIcon-Combat">
+					<Size x="50" y="50"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="58" y="-10"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="6">
+				<Texture atlas="_GarrMission_TopBorder" useAtlasSize="true" horizTile="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="20" y="4"/>
+						<Anchor point="TOPRIGHT" x="-20" y="4"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="7">
+				<Texture atlas="GarrMission_TopBorderCorner" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-5" y="4"/>
+					</Anchors>
+				</Texture>
+				<Texture atlas="GarrMission_TopBorderCorner" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="4" y="4"/>
+					</Anchors>
+					<TexCoords left="1.0" right="0.0" top="0.0" bottom="1.0"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="RewardsFrame" inherits="GarrisonFollowerMissionRewardsFrameTemplate, GarrisonMissionPageRewardTemplate">
+				<Size x="454" y="80"/>
+				<KeyValues>
+					<KeyValue key="tooltipText" value="GARRISON_MISSION_CHANCE_TOOLTIP_TEXT" type="global"/>
+				</KeyValues>
+			</Frame>
+		</Frames>
+		<Frames>
+			<Frame parentKey="Enemy1" parentArray="Enemies" inherits="OrderHallMissionPageEnemyTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="251" y="-146"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="Enemy2" parentArray="Enemies" inherits="OrderHallMissionPageEnemyTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Enemy1" relativePoint="RIGHT" x="120"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="Enemy3" parentArray="Enemies" inherits="OrderHallMissionPageEnemyTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Enemy2" relativePoint="RIGHT" x="120"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="FollowerAnchor" hidden="true">
+				<Size x="1" y="1"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="0" y="-300"/>
+					<Anchor point="TOPRIGHT" x="0" y="-300"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="Follower1" parentArray="Followers" inherits="GarrisonMissionPageFollowerTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="22" y="0" relativeKey="$parent.FollowerAnchor"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="Follower2" parentArray="Followers" inherits="GarrisonMissionPageFollowerTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Follower1" relativePoint="RIGHT" x="17" y="0"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="Follower3" parentArray="Followers" inherits="GarrisonMissionPageFollowerTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Follower2" relativePoint="RIGHT" x="17" y="0"/>
+				</Anchors>
+			</Frame>
+			<CinematicModel parentKey="FollowerModel" hidden="true" inherits="GarrisonCinematicModelBaseTemplate">
+				<Size x="265" y="275"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="0" y="148"/>
+				</Anchors>
+				<Scripts>
+					<OnShow function="GarrisonMission_SetFollowerModelItems"/>
+				</Scripts>
+			</CinematicModel>
+			<Frame parentKey="EmptyFollowerModel">
+				<Size x="10" y="10"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="0" y="148"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Texture" atlas="GarrMission_Silhouettes-1Alliance" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad function="GarrisonMissionPage_OnLoad"/>
+			<OnEvent function="GarrisonMissionPage_OnEvent"/>
+			<OnShow function="GarrisonMissionPage_OnShow"/>
+			<OnHide function="GarrisonMissionPage_OnHide"/>
+			<OnUpdate function="GarrisonMissionPage_OnUpdate"/>
+			<OnClick>
+				self.CloseButton:Click();
+			</OnClick>
+		</Scripts>
+	</Frame>
+
+	<Button name="OrderHallFrameTabButtonTemplate" inherits="CharacterFrameTabButtonTemplate" virtual="true">
+		<Scripts>
+			<OnClick function="GarrisonMissionController_OnClickTab"/>
+		</Scripts>
+	</Button>
+	
+	<Frame name="OrderHallMissionFrame" inherits="GarrisonMissionFrameTemplate, GarrisonUITemplate" mixin="GarrisonMission, GarrisonFollowerMission, OrderHallMission" frameLevel="1">
+		<Size x="962" y="662"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<KeyValues>
+			<KeyValue key="followerTypeID" value="LE_FOLLOWER_TYPE_GARRISON_7_0" type="global"/>
+		</KeyValues>
+		<Scripts>
+			<OnLoad method="OnLoadMainFrame"/>
+			<OnShow method="OnShowMainFrame"/>
+			<OnHide method="OnHideMainFrame"/>
+			<OnEvent method="OnEventMainFrame"/>
+		</Scripts>
+		<Frames>
+			<Frame parentKey="ClassHallIcon" frameLevel="6" frameStrata="HIGH">
+				<Size x="90" y="88"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="-15" y="15"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Icon" setAllPoints="true"/>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Button parentKey="Tab1" name="$parentTab1" inherits="OrderHallFrameTabButtonTemplate" id="1" text="GARRISON_MISSIONS"/>
+			<Button parentKey="Tab2" name="$parentTab2" inherits="OrderHallFrameTabButtonTemplate" id="2" text="GARRISON_FOLLOWERS"/>
+			<Button parentKey="Tab3" name="$parentTab3" inherits="OrderHallFrameTabButtonTemplate" id="3" text="ADVENTURE_MAP_TITLE"/>
+			<Frame parentKey="FollowerList" inherits="GarrisonListTemplateHeader" name="$parentFollowers" hidden="true" mixin="GarrisonFollowerList" frameStrata="HIGH">
+				<Size x="305" y="535"/>
+				<KeyValues>
+					<KeyValue key="showUncollected" value="true" type="boolean"/>
+					<KeyValue key="canCastSpellsOnFollowers" value="true" type="boolean"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="33" y="-64"/>
+				</Anchors>
+				<Frames>
+					<Frame parentKey="MaterialFrame" inherits="MaterialFrameTemplate">
+						<Size x="316" y="43"/>
+						<Anchors>
+							<Anchor point="TOP" relativePoint="BOTTOM" y="8"/>
+						</Anchors>
+					</Frame>
+					<EditBox parentKey="SearchBox" inherits="SearchBoxTemplate" letters="40">
+						<Size x="218" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.HeaderLeft" x="17" y="-10"/>
+						</Anchors>
+						<Scripts>
+							<OnTextChanged function="GarrisonFollowListEditBox_OnTextChanged"/>
+						</Scripts>
+					</EditBox>
+					<Frame name="OrderHallFollowerOptionDropDown" parentKey="OptionDropDown" inherits="UIDropDownMenuTemplate">
+						<Scripts>
+							<OnLoad>
+								UIDropDownMenu_Initialize(self, GarrisonFollowerOptionDropDown_Initialize, "MENU");
+							</OnLoad>
+						</Scripts>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnShow method="OnShow"/>
+					<OnHide method="OnHide"/>
+					<OnEvent method="OnEvent"/>
+				</Scripts>
+			</Frame>
+			<Frame parentKey="MapTab" mixin="MapCanvasMixin, AdventureMapMixin, OrderHallMissionAdventureMapMixin" setAllPoints="true" useParentLevel="true">
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnUpdate method="OnUpdate"/>
+					<OnShow method="OnShow"/>
+					<OnEvent method="OnEvent"/>
+					<OnHide method="OnHide"/>
+					<OnMouseWheel function="nop" />
+				</Scripts>
+				<Frames>
+					<ScrollFrame parentKey="ScrollContainer" enableMouse="true" mixin="MapCanvasScrollControllerMixin" useParentLevel="true">
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.$parent.Left" relativePoint="RIGHT" x="-6" y="0"/>
+							<Anchor point="RIGHT" relativeKey="$parent.$parent.Right" relativePoint="LEFT" x="6" y="0"/>
+							<Anchor point="TOP" relativeKey="$parent.$parent.Top" relativePoint="BOTTOM" x="0" y="6"/>
+							<Anchor point="BOTTOM" relativeKey="$parent.$parent.Bottom" relativePoint="TOP" x="0" y="-7"/>
+						</Anchors>
+						<ScrollChild>
+							<Frame parentKey="Child" useParentLevel="true">
+								<Anchors>
+									<Anchor point="TOPLEFT"/>
+								</Anchors>
+								<Layers>
+									<Layer level="BACKGROUND" textureSubLevel="-8">
+										<Texture parentKey="TiledBackground" atlas="AdventureMap_TileBg" horizTile="true" vertTile="true">
+											<Anchors>
+												<Anchor point="CENTER"/>
+											</Anchors>
+										</Texture>
+									</Layer>
+									<Layer level="BACKGROUND" textureSubLevel="0">
+										<!-- For debugging -->
+										<Texture parentKey="ZoneArea" hidden="true">
+											<Size x="0" y="0"/>
+											<Color a="0.25" r="0" g="0" b="1"/>
+											<Anchors>
+												<Anchor point="TOPLEFT"/>
+											</Anchors>
+										</Texture>
+									</Layer>
+								</Layers>
+							</Frame>
+						</ScrollChild>
+						<Scripts>
+							<OnLoad method="OnLoad"/>
+							<OnHide method="OnHide"/>
+							<OnUpdate method="OnUpdate"/>
+						</Scripts>
+					</ScrollFrame>
+				</Frames>
+			</Frame>
+			<Frame parentKey="MissionTab" setAllPoints="true" useParentLevel="true">
+				<Frames>
+					<Frame parentKey="MissionList" inherits="GarrisonMissionListTemplate" mixin="OrderHallMissionListMixin" name="$parentMissions">
+						<Frames>
+							<Frame parentKey="CombatAllyUI" mixin="OrderHallCombatAllyMixin">
+								<Size x="890" y="115"/>
+								<Anchors>
+									<Anchor point="TOP" relativeKey="$parent" relativePoint="BOTTOM" x="0" y="-10"/>
+								</Anchors>
+								<Layers>
+									<Layer level="BACKGROUND">
+										<Texture parentKey="Background" atlas="ClassHall-CombatAlly" setAllPoints="true"/>
+									</Layer>
+								</Layers>
+								<Frames>
+									<Frame parentKey="Available" setAllPoints="true">
+										<Frames>
+											<Button parentKey="AddFollowerButton">
+												<Size x="52" y="60"/>
+												<Anchors>
+													<Anchor point="LEFT" x="40" y="0"/>
+												</Anchors>
+												<Layers>
+													<Layer level="BORDER" textureSubLevel="0">
+														<Texture parentKey="EmptyPortrait" atlas="GarrMission_PortraitRing_Empty" useAtlasSize="true">
+															<Anchors>
+																<Anchor point="TOP" relativeKey="$parent.PortraitRing"/>
+															</Anchors>
+														</Texture>
+													</Layer>
+													<Layer level="OVERLAY">
+														<Texture parentKey="Plus" atlas="Garr_Building-AddFollowerPlus" useAtlasSize="true">
+															<Anchors>
+																<Anchor point="CENTER" relativeKey="$parent.PortraitRing" y="5"/>
+															</Anchors>
+														</Texture>
+														<Texture parentKey="PortraitHighlight" atlas="GarrMission_PortraitRing_Highlight" useAtlasSize="true" alphaMode="ADD" hidden="true">
+															<Anchors>
+																<Anchor point="CENTER" relativeKey="$parent.PortraitRing" />
+															</Anchors>
+														</Texture>
+														<FontString parentKey="AddFollowerText" inherits="GameFontHighlight" justifyH="LEFT">
+															<Size x="200" y="0"/>
+															<Anchors>
+																<Anchor point="LEFT" relativePoint="RIGHT" x="10" y="0"/>
+															</Anchors>
+															<Color r="0.804" g="0.725" b="0.616"/>
+														</FontString>
+													</Layer>
+												</Layers>
+												<Scripts>
+													<OnClick>
+														local combatAllyUI = self:GetParent():GetParent();
+														combatAllyUI:GetMissionFrame():OnClickMission(combatAllyUI:GetMissionList().combatAllyMission);
+													</OnClick>
+													<OnEnter>
+														self.PortraitHighlight:Show();
+														GameTooltip:SetOwner(self, "ANCHOR_TOPLEFT")
+														GameTooltip:SetText(GARRISON_BUILDING_SELECT_FOLLOWER_TOOLTIP, nil, nil, nil, nil, true);
+														GameTooltip:Show();
+													</OnEnter>
+													<OnLeave>
+														self.PortraitHighlight:Hide();
+														GameTooltip_Hide();
+													</OnLeave>
+												</Scripts>
+											</Button>
+										</Frames>
+										<Layers>
+											<Layer level="ARTWORK">
+												<FontString parentKey="CombatAllyLabel" inherits="GameFontNormalLarge" text="GARRISON_FOLLOWER_COMBAT_ALLY">
+													<Anchors>
+														<Anchor point="TOPLEFT" relativeKey="$parent.AddFollowerButton" relativePoint="TOPRIGHT" x="10" y="-11"/>
+													</Anchors>
+												</FontString>
+												<FontString parentKey="Description" inherits="GameFontNormal" text="ORDER_HALL_ZONE_SUPPORT_DESCRIPTION_2">
+													<Color r="0.84" g="0.72" b="0.57"/>
+													<Anchors>
+														<Anchor point="TOPLEFT" relativeKey="$parent.CombatAllyLabel" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
+													</Anchors>
+												</FontString>
+											</Layer>
+										</Layers>
+									</Frame>
+									<Frame parentKey="InProgress" setAllPoints="true">
+										<Frames>
+											<Frame parentKey="PortraitFrame" inherits="GarrisonFollowerPortraitTemplate">
+												<Anchors>
+													<Anchor point="LEFT" x="40" y="0"/>
+												</Anchors>
+											</Frame>
+											<Frame parentKey="CombatAllySpell" inherits="GarrisonFollowerCombatAllySpellTemplate">
+												<Size x="24" y="24"/>
+												<Anchors>
+													<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" relativeKey="$parent.PortraitFrame" x="14" y="-4"/>
+												</Anchors>
+											</Frame>
+											<Button parentKey="Unassign" inherits="UIPanelButtonTemplate" text="COMBAT_ALLY_END_MISSION">
+												<Size x="100" y="22"/>
+												<Anchors>
+													<Anchor point="RIGHT" x="-20" y="0"/>
+												</Anchors>
+												<Scripts>
+													<OnClick>
+														self:GetParent():GetParent():UnassignAlly();
+													</OnClick>
+												</Scripts>
+											</Button>
+										</Frames>
+										<Layers>
+											<Layer level="ARTWORK">
+												<FontString parentKey="Name" inherits="GameFontNormalLarge">
+													<Anchors>
+														<Anchor point="TOPLEFT" relativeKey="$parent.PortraitFrame" relativePoint="TOPRIGHT" x="10" y="-1"/>
+													</Anchors>
+												</FontString>
+												<FontString parentKey="Description" inherits="GameFontNormal" text="ORDER_HALL_ZONE_SUPPORT_DESCRIPTION_IN_ZONE">
+													<Color r="0.84" g="0.72" b="0.57"/>
+													<Anchors>
+														<Anchor point="TOPLEFT" relativeKey="$parent.Name" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
+													</Anchors>
+												</FontString>
+												<FontString parentKey="ZoneSupportName" inherits="GameFontNormal">
+													<Color r="0.84" g="0.72" b="0.57"/>
+													<Anchors>
+														<Anchor point="LEFT" relativeKey="$parent.CombatAllySpell" relativePoint="RIGHT" x="8" y="0"/>
+													</Anchors>
+												</FontString>
+											</Layer>
+										</Layers>
+									</Frame>
+								</Frames>
+							</Frame>
+						</Frames>
+					</Frame>
+					<Frame parentKey="ZoneSupportMissionPageBackground" hidden="true" frameLevel="1">
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture parentKey="Background" atlas="legionmission-background-combatally" useAtlasSize="false">
+									<Anchors>
+										<Anchor point="LEFT" relativeKey="$parent.$parent.Left" x="6" y="0"/>
+										<Anchor point="RIGHT" relativeKey="$parent.$parent.Right" x="-6" y="0"/>
+										<Anchor point="TOP" relativeKey="$parent.$parent.Top" x="0" y="-6"/>
+										<Anchor point="BOTTOM" relativeKey="$parent.$parent.Bottom" x="0" y="7"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
+					<Button parentKey="ZoneSupportMissionPage" inherits="GarrisonFollowerMissionRewardsFrameTemplate" hidden="true" mixin="GarrisonMissionPageMixin,GarrisonFollowerMissionPageMixin,ZoneSupportMissionPageMixin">
+						<Size x="520" y="120"/>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" x="-60" y="80"/>
+						</Anchors>
+						<KeyValues>
+							<KeyValue key="debugZoneArea" value="false" type="boolean"/>
+						</KeyValues>
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture parentKey="ButtonFrame" atlas="GarrMission_MissionCostStartButtonBg" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="-4"/>
+									</Anchors>
+								</Texture>
+								<FontString parentKey="CombatAllyDescriptionLabel" inherits="GameFontHighlight" wordwrap="true" text="ORDER_HALL_ZONE_SUPPORT_DESCRIPTION_IN_ZONE">
+									<Size x="290" y="40"></Size>
+									<Anchors>
+										<Anchor point="TOPRIGHT" x="-20" y="-20"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Button parentKey="CloseButton" inherits="GarrisonMissionPageCloseButtonTemplate">
+								<Anchors>
+									<Anchor point="TOPRIGHT" x="4" y="435"/>
+								</Anchors>
+							</Button>
+							<Frame parentKey="CostFrame" inherits="GarrisonMissionPageCostFrameTemplate">
+								<Anchors>
+									<Anchor point="LEFT" relativeKey="$parent.ButtonFrame" x="50"/>
+									<Anchor point="RIGHT" relativeKey="$parent.ButtonFrame" relativePoint="CENTER" />
+								</Anchors>
+							</Frame>
+							<Frame parentKey="Follower1" parentArray="Followers" inherits="GarrisonMissionPageFollowerTemplate" hidden="false">
+								<Anchors>
+									<Anchor point="CENTER" x="-140" y="3"/>
+								</Anchors>
+								<Scripts>
+									<OnLoad inherit="prepend">
+										self.Name:ClearAllPoints();
+										self.Name:SetPoint("LEFT", self.PortraitFrame, "RIGHT", 2, 0);
+										self.Name:SetWidth(100);
+									</OnLoad>
+								</Scripts>
+							</Frame>
+							<Frame parentKey="CombatAllySpell" inherits="GarrisonFollowerCombatAllySpellTemplate">
+								<Anchors>
+									<Anchor point="TOP" relativePoint="BOTTOM" relativeKey="$parent.CombatAllyDescriptionLabel"/>
+								</Anchors>
+							</Frame>
+							<Button inherits="StartMissionButtonTemplate">
+								<Anchors>
+									<Anchor point="RIGHT" relativeKey="$parent.ButtonFrame" x="-50" y="1"/>
+								</Anchors>
+							</Button>
+							<Frame parentKey="CombatAllyLabel" alpha="0">
+								<Size x="455" y="85"/>
+								<Anchors>
+									<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="325"/>
+								</Anchors>
+
+								<Layers>
+									<Layer level="BACKGROUND">
+										<Texture parentKey="TextBackground" atlas="AdventureMapLabel-Large" />
+									</Layer>
+									<Layer level="BORDER">
+										<FontString parentKey="Text" inherits="SystemFont_Shadow_Huge3" text="GARRISON_FOLLOWER_COMBAT_ALLY" setAllPoints="true" justifyH="CENTER" justifyV="MIDDLE">
+											<Color r="1.0" g="0.82" b="0"/>
+										</FontString>
+									</Layer>
+								</Layers>
+								<Animations>
+									<AnimationGroup parentKey="FadeInAnim" setToFinalAlpha="true">
+										<Alpha fromAlpha="0" toAlpha="1" duration=".3" order="1" />
+									</AnimationGroup>
+								</Animations>
+							</Frame>
+						</Frames>
+						<Scripts>
+							<OnLoad>
+								GarrisonMissionPage_OnLoad(self);
+								self.StartMissionButton:SetText(COMBAT_ALLY_START_MISSION);
+							</OnLoad>
+							<OnEvent function="GarrisonMissionPage_OnEvent"/>
+							<OnShow>
+								local mainFrame = self:GetParent():GetParent();
+								mainFrame.FollowerList.filter = GarrisonFollowerFilter_MustHaveZoneSupport;
+								self:GetParent().ZoneSupportMissionPageBackground:Show();
+								self.CombatAllyLabel.FadeInAnim:Play();
+								GarrisonMissionPage_OnShow(self);
+							</OnShow>
+							<OnHide>
+								local mainFrame = self:GetParent():GetParent();
+								mainFrame.FollowerList.filter = nil;
+								GarrisonMissionPage_OnHide(self);
+								self:GetParent().ZoneSupportMissionPageBackground:Hide();
+								self.CombatAllyLabel.FadeInAnim:Stop();
+							</OnHide>
+							<OnUpdate function="GarrisonMissionPage_OnUpdate"/>
+							<OnClick>
+								self.CloseButton:Click();
+							</OnClick>
+						</Scripts>
+					</Button>
+
+					<Button parentKey="MissionPage" inherits="OrderHallMissionPageTemplate" hidden="true" mixin="GarrisonMissionPageMixin,GarrisonFollowerMissionPageMixin,OrderHallFollowerMissionPageMixin"/>
+
+					<!-- We need 13 preload models; 
+						potentially (2 troops with 5 displayIDs each) + (1 follower with 2 displayIDs) + (1 enemy model)
+						= 10 + 2 + 1 = 13 
+						TODO: Convert these to use a frame pool			-->
+					<PlayerModel parentArray="MissionCompletePreloadModels" inherits="MissionCompletePreloadModelTemplate"/>
+					<PlayerModel parentArray="MissionCompletePreloadModels" inherits="MissionCompletePreloadModelTemplate"/>
+					<PlayerModel parentArray="MissionCompletePreloadModels" inherits="MissionCompletePreloadModelTemplate"/>
+					<PlayerModel parentArray="MissionCompletePreloadModels" inherits="MissionCompletePreloadModelTemplate"/>
+					<PlayerModel parentArray="MissionCompletePreloadModels" inherits="MissionCompletePreloadModelTemplate"/>
+					<PlayerModel parentArray="MissionCompletePreloadModels" inherits="MissionCompletePreloadModelTemplate"/>
+					<PlayerModel parentArray="MissionCompletePreloadModels" inherits="MissionCompletePreloadModelTemplate"/>
+					<PlayerModel parentArray="MissionCompletePreloadModels" inherits="MissionCompletePreloadModelTemplate"/>
+					<PlayerModel parentArray="MissionCompletePreloadModels" inherits="MissionCompletePreloadModelTemplate"/>
+					<PlayerModel parentArray="MissionCompletePreloadModels" inherits="MissionCompletePreloadModelTemplate"/>
+					<PlayerModel parentArray="MissionCompletePreloadModels" inherits="MissionCompletePreloadModelTemplate"/>
+					<PlayerModel parentArray="MissionCompletePreloadModels" inherits="MissionCompletePreloadModelTemplate"/>
+					<PlayerModel parentArray="MissionCompletePreloadModels" inherits="MissionCompletePreloadModelTemplate"/>
+				</Frames>
+			</Frame>
+			<Frame parentKey="FollowerTab" inherits="GarrisonFollowerTabTemplate" frameStrata="HIGH" frameLevel="100"/>
+			<Frame parentKey="MissionCompleteBackground" enableMouse="true" frameStrata="HIGH" hidden="true">
+				<Size x="956" y="637"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="2" y="-22"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture setAllPoints="true">
+							<Color r="0" g="0" b="0" a="0.8"/>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="MissionComplete" inherits="GarrisonMissionPageBaseTemplate, GarrisonMissionCompleteTemplate" frameStrata="HIGH" hidden="true" mixin="GarrisonFollowerMissionComplete,OrderHallMissionComplete">
+				<Frames>
+					<Frame parentKey="Stage" inherits="GarrisonFollowerMissionCompleteStageTemplate">
+						<Anchors>
+							<Anchor point="TOP"/>
+						</Anchors>
+					</Frame>
+					<Frame parentKey="BonusRewards" inherits="GarrisonFollowerMissionRewardsFrameTemplate, GarrisonMissionBonusRewardsTemplate">
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString parentKey="BonusChanceLabel" inherits="Game18Font" justifyH="CENTER">
+									<Color r="1.0" g="0.82" b="0"/>
+									<Size x="200" y="0"/>
+									<Anchors>
+										<Anchor point="RIGHT"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Anchors>
+							<Anchor point="BOTTOM" y="40"/>
+						</Anchors>
+					</Frame>
+					<Frame parentKey="BonusChanceFail">
+						<Size x="48" y="48"/>
+						<Anchors>
+							<Anchor point="CENTER" relativeKey="$parent.BonusRewards.BonusChanceLabel"/>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY" textureSubLevel="1">
+								<Texture parentKey="CrossLeft" hidden="false" alpha="0" atlas="GarrMission_EncounterBar-Xleft">
+									<Size x="64" y="64"/>
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="CrossRight" hidden="false" alpha="0" atlas="GarrMission_EncounterBar-Xright">
+									<Size x="64" y="64"/>
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Animations>
+							<AnimationGroup parentKey="BonusFailed" setToFinalAlpha="true">
+								<Scale childKey="CrossLeft" duration="0.15" order="1" fromScaleX="5" fromScaleY="5" toScaleX="1" toScaleY="1"/>
+								<Alpha childKey="CrossLeft" duration="0.1" order="1" fromAlpha="0" toAlpha="1"/>
+								<Scale childKey="CrossRight" startDelay="0.1" duration="0.15" order="1" fromScaleX="5" fromScaleY="5" toScaleX="1" toScaleY="1"/>
+								<Alpha childKey="CrossRight" startDelay="0.1" duration="0.1" order="1" fromAlpha="0" toAlpha="1"/>
+							</AnimationGroup>
+						</Animations>
+					</Frame>
+					<Frame parentKey="BonusText">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.BonusRewards"/>
+							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BonusRewards"/>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<Texture parentKey="BonusGlow" alpha="0" alphaMode="ADD" atlas="BonusChest-BonusTextGlow" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="OVERLAY" textureSubLevel="1">
+								<FontString parentKey="BonusText" inherits="Game48FontShadow" text="GARRISON_MISSION_BONUS_REWARD_MOMENT">
+									<Color r="0.12" g="1.0" b="0.0"/>
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Animations>
+							<AnimationGroup parentKey="BonusTextGlowAnim" setToFinalAlpha="true">
+								<Alpha childKey="BonusGlow" startDelay="0.25" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+								<Scale childKey="BonusGlow" startDelay="0.25" duration="0.25" order="1" fromScaleX="0.75" fromScaleY="0.75" toScaleX="1" toScaleY="1"/>
+								<Alpha childKey="BonusGlow" startDelay="0.5" duration="0.75" order="1" fromAlpha="1" toAlpha="0"/>
+								<Alpha childKey="BonusText" startDelay="0.25" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+								<Alpha childKey="BonusText" startDelay="0.75" duration="0.75" order="1" fromAlpha="1" toAlpha="0"/>
+							</AnimationGroup>
+						</Animations>
+					</Frame>
+					<Frame parentKey="ChanceFrame" inherits="GarrisonMissionChanceFrameTemplate">
+						<Anchors>
+							<Anchor point="BOTTOM" relativeKey="$parent.BonusRewards" relativePoint="TOP" x="0" y="0"/>
+						</Anchors>
+					</Frame>
+				</Frames>
+			</Frame>
+		</Frames>
+	</Frame>
+
+	<Frame name="OrderHallMissionTutorialFrame" frameStrata="DIALOG" enableMouse="false" hidden="true">
+		<Frames>
+			<Frame parentKey="GlowBox" inherits="GlowBoxTemplate">
+				<Size x="210" y="200"/>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="BigText" inherits="GameFontHighlightLeft">
+							<Size x="176" y="0"/>
+							<Anchors>
+								<Anchor point="TOP" x="0" y="-26"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="SmallText" inherits="GameFontHighlightSmallLeft">
+							<Size x="176" y="0"/>
+							<Anchors>
+								<Anchor point="TOP" relativeKey="$parent.BigText" relativePoint="BOTTOM" x="0" y="12"/>
+							</Anchors>
+						</FontString>
+						<Texture parentKey="ArrowUp" inherits="HelpPlateArrowUP">
+							<Size x="53" y="21"/>
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-1"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="ArrowDown" inherits="HelpPlateArrowDOWN">
+							<Size x="53" y="21"/>
+							<Anchors>
+								<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="1"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="ArrowLeft" inherits="HelpPlateArrowDOWN">
+							<Size x="53" y="21"/>
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT" x="1" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="ArrowRight" inherits="HelpPlateArrowDOWN">
+							<Size x="53" y="21"/>
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="RIGHT" x="-1" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER">
+						<Texture parentKey="ArrowGlowDown" inherits="HelpPlateArrow-GlowDOWN" alphaMode="ADD" alpha="0.5">
+							<Size x="53" y="21"/>
+							<Anchors>
+								<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="1"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="ArrowGlowUp" inherits="HelpPlateArrow-GlowUP" alphaMode="ADD" alpha="0.5">
+							<Size x="53" y="21"/>
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-1"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="ArrowGlowLeft" inherits="HelpPlateArrow-GlowDOWN" alphaMode="ADD" alpha="0.5">
+							<Size x="53" y="21"/>
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT" x="-1" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="ArrowGlowRight" inherits="HelpPlateArrow-GlowDOWN" alphaMode="ADD" alpha="0.5">
+							<Size x="53" y="21"/>
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="RIGHT" x="1" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
+						<Anchors>
+							<Anchor point="TOPRIGHT" x="5" y="5"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								OrderHallMissionFrame:CheckTutorials(true);
+							</OnClick>
+						</Scripts>
+					</Button>
+				</Frames>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				SetClampedTextureRotation(self.GlowBox.ArrowLeft, 90);
+				SetClampedTextureRotation(self.GlowBox.ArrowGlowLeft, 90);
+
+				SetClampedTextureRotation(self.GlowBox.ArrowRight, 270);
+				SetClampedTextureRotation(self.GlowBox.ArrowGlowRight, 270);
+			</OnLoad>
+		</Scripts>
+	</Frame>
+</Ui>

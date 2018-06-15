@@ -1,0 +1,43 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="StatusTrackingManager.lua"/>
+	<Frame name="StatusTrackingBarManagerTemplate" frameStrata="MEDIUM" mixin="StatusTrackingManagerMixin" virtual="true">
+		<Size x="804" y="11"/>
+		<Anchors>
+			<Anchor point="BOTTOM"/>
+		</Anchors>
+		<KeyValues>
+			<KeyValue key="endCapWidth" value="5" type="number"/>
+			<KeyValue key="smallBarSeparatorWidth" value="24" type="number"/>
+			<KeyValue key="largeBarSeparatorWidth" value="30" type="number"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="SingleBarLarge" atlas="hud-MainMenuBar-experiencebar-large-single" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="SingleBarLargeUpper" atlas="hud-MainMenuBar-experiencebar-large-single" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.SingleBarLarge" y="8"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="SingleBarSmall" atlas="hud-MainMenuBar-experiencebar-small-single" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture> 
+				<Texture parentKey="SingleBarSmallUpper" atlas="hud-MainMenuBar-experiencebar-small-single" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.SingleBarSmall" y="8"/>
+					</Anchors>
+				</Texture> 
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame> 
+</Ui>

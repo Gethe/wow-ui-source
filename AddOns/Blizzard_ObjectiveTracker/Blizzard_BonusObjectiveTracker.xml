@@ -589,7 +589,7 @@
 			</AnimationGroup>
 		</Animations>
 		<Scripts>
-			<OnLoad function="BonusObjectiveTracker_OnHeaderLoad"/>
+			<OnLoad function="BonusObjectiveTracker_OnHeaderLoad" />
 			<OnEvent function="BonusObjectiveTracker_OnEvent"/>
 		</Scripts>
 	</Frame>

@@ -73,12 +73,18 @@ function ObjectPoolMixin:Acquire()
 end
 
 function ObjectPoolMixin:Release(obj)
-	self.inactiveObjects[#self.inactiveObjects + 1] = obj;
-	self.activeObjects[obj] = nil;
-	self.numActiveObjects = self.numActiveObjects - 1;
-	if self.resetterFunc then
-		self.resetterFunc(self, obj);
+	if self:IsActive(obj) then
+		self.inactiveObjects[#self.inactiveObjects + 1] = obj;
+		self.activeObjects[obj] = nil;
+		self.numActiveObjects = self.numActiveObjects - 1;
+		if self.resetterFunc then
+			self.resetterFunc(self, obj);
+		end
+
+		return true;
 	end
+
+	return false;
 end
 
 function ObjectPoolMixin:ReleaseAll()
@@ -95,6 +101,10 @@ function ObjectPoolMixin:GetNextActive(current)
 	return (next(self.activeObjects, current));
 end
 
+function ObjectPoolMixin:IsActive(object)
+	return (self.activeObjects[object] ~= nil);
+end
+
 function ObjectPoolMixin:GetNumActive()
 	return self.numActiveObjects;
 end
@@ -109,7 +119,7 @@ function CreateObjectPool(creationFunc, resetterFunc)
 	return objectPool;
 end
 
-FramePoolMixin = Mixin({}, ObjectPoolMixin);
+FramePoolMixin = CreateFromMixins(ObjectPoolMixin);
 
 local function FramePoolFactory(framePool)
 	return CreateFrame(framePool.frameType, nil, framePool.parent, framePool.frameTemplate);
@@ -141,7 +151,7 @@ function CreateFramePool(frameType, parent, frameTemplate, resetterFunc)
 	return framePool;
 end
 
-TexturePoolMixin = Mixin({}, ObjectPoolMixin);
+TexturePoolMixin = CreateFromMixins(ObjectPoolMixin);
 
 local function TexturePoolFactory(texturePool)
 	return texturePool.parent:CreateTexture(nil, texturePool.layer, texturePool.textureTemplate, texturePool.subLayer);
@@ -164,7 +174,7 @@ function CreateTexturePool(parent, layer, subLayer, textureTemplate, resetterFun
 	return texturePool;
 end
 
-FontStringPoolMixin = Mixin({}, ObjectPoolMixin);
+FontStringPoolMixin = CreateFromMixins(ObjectPoolMixin);
 
 local function FontStringPoolFactory(fontStringPool)
 	return fontStringPool.parent:CreateFontString(nil, fontStringPool.layer, fontStringPool.fontStringTemplate, fontStringPool.subLayer);
@@ -187,7 +197,7 @@ function CreateFontStringPool(parent, layer, subLayer, fontStringTemplate, reset
 	return fontStringPool;
 end
 
-ActorPoolMixin = Mixin({}, ObjectPoolMixin);
+ActorPoolMixin = CreateFromMixins(ObjectPoolMixin);
 
 local function ActorPoolFactory(actorPool)
 	return actorPool.parent:CreateActor(nil, actorPool.actorTemplate);
@@ -234,20 +244,22 @@ function PoolCollection:GetPool(template)
 	return self.pools[template];
 end
 
-function PoolCollection:Acquire(template, parent, resetterFunc)
+function PoolCollection:Acquire(template)
 	local pool = self:GetPool(template);
-	if pool then
-		return pool:Acquire();
-	end
-
-	return self:CreatePool(template, parent, resetterFunc):Acquire();
+	assert(pool);
+	return pool:Acquire();
 end
 
-function PoolCollection:Release(template, object)
-	local pool = self:GetPool(template);
-	-- If we don't have a pool, then you're releasing an object to a pool that it doesn't belong to, which is very very bad.
-	assert(pool);
-	pool:Release(object);
+function PoolCollection:Release(object)
+	for _, pool in pairs(self.pools) do
+		if pool:Release(object) then
+			-- Found it! Just return
+			return;
+		end
+	end
+
+	-- Huh, we didn't find that object
+	assert(false);
 end
 
 function PoolCollection:ReleaseAllByTemplate(template)

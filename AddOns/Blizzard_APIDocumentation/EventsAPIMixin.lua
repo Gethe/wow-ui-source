@@ -16,6 +16,14 @@ function EventsAPIMixin:GetLinkHexColor()
 	return "77ff22";
 end
 
+function EventsAPIMixin:GetClipboardString()
+	local lines = {};
+	table.insert(lines, ([[if event == "%s" then]]):format(self.LiteralName));
+	table.insert(lines, ("\tlocal %s = ...;"):format(self:GetPayloadString(false, false)));
+	table.insert(lines, "end");
+	return table.concat(lines, "\r\n");
+end
+
 function EventsAPIMixin:GetFullName(decorateOptionals, includeColorCodes) -- override
 	if self.System then
 		return ("Event.%s.%s -> %s"):format(self.System:GetName(), self:GetName(), self:GetPayloadString(decorateOptionals, includeColorCodes));

@@ -404,6 +404,33 @@
 							</OnFinished>
 						</Scripts>
 					</AnimationGroup>
+					<!--TODO: Update this animation-->
+					<AnimationGroup parentKey="TextureKitNewStage" setToFinalAlpha="true">
+						<Scale childKey="BG1" duration="0.33" order="1" fromScaleX="0.001" fromScaleY="1" toScaleX="1" toScaleY="1"/>
+						<Alpha childKey="BG1" duration="0" order="1" fromAlpha="0" toAlpha="1"/>
+						<Scale childKey="BG2" duration="0.33" order="1" fromScaleX="0.001" fromScaleY="1" toScaleX="1" toScaleY="1"/>
+						<Alpha childKey="BG2" duration="0.33" order="1" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="BG2" startDelay="0.33" smoothing="IN" duration="0.33" order="1" fromAlpha="1" toAlpha="0"/>
+
+						<Alpha childKey="level" duration="0.33" order="1" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="name" duration="0.33" order="1" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="levelFlash" duration="0.33" order="1" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="levelFlash" startDelay="0.33" smoothing="IN" duration="0.33" order="1" fromAlpha="1" toAlpha="0"/>
+
+						<!-- The key to fixing the thing where text goes blank is this animation -->
+						<Alpha fromAlpha="0" toAlpha="1" duration="0.7" order="1"/>
+						<Alpha fromAlpha="1" toAlpha="0" duration="0.5" startDelay="4.5" order="1"/>
+						<Scripts>
+							<OnPlay>
+								LevelUpDisplay.blackBg:Hide();
+								LevelUpDisplay.gLine:Hide();
+								LevelUpDisplay.gLine2:Hide();
+							</OnPlay>
+							<OnFinished>
+								LevelUpDisplay_AnimOutFinished();
+							</OnFinished>
+						</Scripts>
+					</AnimationGroup>
 				</Animations>
 				<Size x="418" y="72"/>
 				<Anchors>
@@ -833,6 +860,14 @@
 							</Anchors>
 						</Texture>
 					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="1">
+						<Texture parentKey="IconOverlay" hidden="true">
+							<Size x="37" y="37"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
 				</Layers>
 				<Scripts>
 					<OnLoad>
@@ -848,6 +883,7 @@
 				<Alpha childKey="Background" duration="0.45" order="1" fromAlpha="0" toAlpha="1"/>
 				<Alpha childKey="Icon" startDelay="0.1" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
 				<Alpha childKey="IconHitBox.IconBorder" startDelay="0.1" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="IconHitBox.IconOverlay" startDelay="0.1" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
 				<Translation childKey="Icon" startDelay="0.25" smoothing="OUT" duration="0.4" order="1" offsetX="-110" offsetY="0"/>
 				<Alpha childKey="IconHitBox.Glow" smoothing="IN" duration="0.15" order="1" fromAlpha="0" toAlpha="1"/>
 				<Alpha childKey="IconHitBox.Glow" startDelay="0.25" duration="1" order="1" fromAlpha="1" toAlpha="0"/>
@@ -866,6 +902,7 @@
 						lootFrame.SetName:SetAlpha(0);
 						lootFrame.Icon:SetAlpha(0);
 						lootFrame.IconHitBox.IconBorder:SetAlpha(0);
+						lootFrame.IconHitBox.IconOverlay:SetAlpha(0);
 						lootFrame.Icon:SetPoint("LEFT", 124, 0);
 					</OnPlay>
 					<OnFinished>

@@ -26,10 +26,10 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button name="$parentHideButton" hidden="true" parentKey="HideButton">
-				<Size x="16" y="8"/>
+			<Button name="$parentHideButton" hidden="true" parentKey="HideButton" inherits="UIPanelCloseButtonNoScripts">
+				<Size x="20" y="20"/>
 				<Anchors>
-					<Anchor point="LEFT"/>
+					<Anchor point="LEFT" x="-4"/>
 				</Anchors>
 				<Scripts>
 					<OnClick function="EventTraceFrameEventHideButton_OnClick"/>
@@ -37,11 +37,6 @@
 						EventTraceFrameEvent_OnLeave(self:GetParent());
 					</OnLeave>
 				</Scripts>
-				<ButtonText text="X" inherits="GameFontRedSmall">
-					<Anchors>
-						<Anchor point="LEFT"/>
-					</Anchors>
-				</ButtonText>
 			</Button>
 		</Frames>
 		<Scripts>
@@ -200,7 +195,7 @@
 		</Scripts>
 	</Frame>
 
-	<GameTooltip name="FrameStackTooltip" frameStrata="TOOLTIP" hidden="true" inherits="GameTooltipTemplate">
+	<GameTooltip name="FrameStackTooltip" frameStrata="TOOLTIP" hidden="true" inherits="GameTooltipTemplate" enableKeyboard="true">
 		<Scripts>
 			<OnLoad function="FrameStackTooltip_OnLoad"/>
 			<OnShow function="FrameStackTooltip_OnShow"/>
@@ -228,13 +223,13 @@
 			</Layer>
 		</Layers>
 	</Frame>
-	
+
 	<Frame name="FrameStackHighlight" inherits="FrameHighlightTemplate"/>
-	
+
 	<Frame name="FrameStackAnchorHighlightTemplate" parentArray="AnchorHighlights" virtual="true" enableMouse="false" frameStrata="TOOLTIP">
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture> 
+				<Texture>
 					<Color r="0.6" g="0.6" b="0.2" a=".4"/>
 				</Texture>
 				<Texture parentKey="AnchorPoint">

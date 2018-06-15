@@ -2326,7 +2326,7 @@
 					<Anchor point="TOP" relativeTo="CharacterDeleteText2" relativePoint="BOTTOM" x="0" y="-5"/>
 				</Anchors>
 				<Layers>
-					<Layer level="BACKGROUND">
+					<Layer level="ARTWORK">
 						<Texture file="Interface\ChatFrame\UI-ChatInputBorder-Left">
 							<Size x="75" y="32"/>
 							<Anchors>

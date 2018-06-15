@@ -1,0 +1,105 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<StatusBar name="UIWidgetTemplateDoubleStatusBar_StatusBarTemplate" virtual="true">
+		<Size x="92" y="22"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="BG">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="0">
+				<Texture parentKey="BorderLeft">
+					<Size x="10" y="32"/>
+					<Anchors>
+						<Anchor point="LEFT" x="-4"/>
+					</Anchors>
+				</Texture>
+
+				<Texture parentKey="BorderRight">
+					<Size x="10" y="32"/>
+					<Anchors>
+						<Anchor point="RIGHT" x="4"/>
+					</Anchors>
+				</Texture>
+
+				<Texture parentKey="BorderCenter">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.BorderLeft" relativePoint="TOPRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BorderRight" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="Spark" alphaMode="ADD">
+					<Size x="16" y="39"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<Texture parentKey="Icon">
+					<Size x="34" y="41"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="3">
+				<Texture parentKey="IconGlow" alpha="0" alphaMode="ADD">
+					<Size x="34" y="41"/>
+				</Texture>
+				<Texture parentKey="SparkGlow" alpha="0" alphaMode="ADD" atlas="OBJFX_LineGlow">
+					<Size x="25" y="32"/>
+				</Texture>
+				<Texture parentKey="BorderGlow" alpha="0" alphaMode="ADD" atlas="Legionfall_BarFrame-Glow">
+					<Size x="95" y="32"/>
+					<Anchors>
+						<Anchor point="CENTER"/> 
+					</Anchors>
+					<Color r="1" g="1" b="1"/> 
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Text" inherits="GameFontHighlight">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="Flash" setToFinalAlpha="true">
+				<Alpha childKey="BorderGlow"	duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="BorderGlow" startDelay="0.5" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="SparkGlow"	duration="0.5" order="1" fromAlpha="0" toAlpha=".15"/>
+				<Alpha childKey="SparkGlow" startDelay="0.5" duration="0.5" order="1" fromAlpha=".15" toAlpha="0"/>
+				<Alpha childKey="IconGlow"	duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="IconGlow" startDelay="0.5" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+			</AnimationGroup>
+		</Animations>
+	</StatusBar>
+	
+	<Frame name="UIWidgetTemplateDoubleStatusBar" inherits="UIWidgetBaseTemplate" virtual="true" secureMixin="UIWidgetTemplateDoubleStatusBarMixin">
+		<Size x="232" y="55"/>
+		<Frames>
+			<StatusBar parentKey="LeftBar" inherits="UIWidgetTemplateDoubleStatusBar_StatusBarTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="17"/>
+				</Anchors>
+			</StatusBar>
+			<StatusBar parentKey="RightBar" inherits="UIWidgetTemplateDoubleStatusBar_StatusBarTemplate" reverseFill="true">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-17"/>
+				</Anchors>
+			</StatusBar>
+		</Frames>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Label" inherits="GameFontHighlight" >
+					<Anchors>
+						<Anchor point="BOTTOM" y="5"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+</Ui>

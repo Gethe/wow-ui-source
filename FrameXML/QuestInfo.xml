@@ -34,38 +34,8 @@
 
 	<Button name="QuestInfoRewardItemCodeTemplate" virtual="true">
 		<Scripts>
-			<OnEnter>
-				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-				if ( QuestInfoFrame.questLog ) then
-					if (self.objectType == "item") then
-						GameTooltip:SetQuestLogItem(self.type, self:GetID());
-						GameTooltip_ShowCompareItem(GameTooltip);
-					elseif (self.objectType == "currency") then
-						GameTooltip:SetQuestLogCurrency(self.type, self:GetID());
-					end
-				else
-					if (self.objectType == "item") then
-						GameTooltip:SetQuestItem(self.type, self:GetID());
-						GameTooltip_ShowCompareItem(GameTooltip);
-					elseif (self.objectType == "currency") then
-						GameTooltip:SetQuestCurrency(self.type, self:GetID());
-					end
-				end
-				CursorUpdate(self);
-			</OnEnter>
-			<OnClick>
-				if ( IsModifiedClick() and self.objectType == "item") then
-					if ( QuestInfoFrame.questLog ) then
-						HandleModifiedItemClick(GetQuestLogItemLink(self.type, self:GetID()));
-					else
-						HandleModifiedItemClick(GetQuestItemLink(self.type, self:GetID()));
-					end
-				else
-					if ( QuestInfoFrame.chooseItems ) then
-						QuestInfoItem_OnClick(self);
-					end
-				end
-			</OnClick>
+			<OnEnter function="QuestInfoRewardItemCodeTemplate_OnEnter" />
+			<OnClick function="QuestInfoRewardItemCodeTemplate_OnClick" />
 			<OnLeave>
 				GameTooltip:Hide();
 				ResetCursor();
@@ -80,7 +50,14 @@
 		<Layers>
 			<Layer level="OVERLAY" textureSubLevel="1">
 				<Texture parentKey="IconBorder" file="Interface\Common\WhiteIconFrame" hidden="true">
-					<Size x="37" y="37"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<Texture parentKey="IconOverlay" hidden="true">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Icon"/>
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
@@ -94,7 +71,14 @@
 		<Layers>
 			<Layer level="OVERLAY" textureSubLevel="1">
 				<Texture parentKey="IconBorder" file="Interface\Common\WhiteIconFrame" hidden="true">
-					<Size x="37" y="37"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<Texture parentKey="IconOverlay" hidden="true">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Icon"/>
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
@@ -109,9 +93,8 @@
 			<OnEnter>
 				GarrisonFollowerTooltip:ClearAllPoints();
 				GarrisonFollowerTooltip:SetPoint("BOTTOMLEFT", self, "TOPRIGHT");
-				local link = C_Garrison.GetFollowerLinkByID(self.ID);
-				local _, garrisonFollowerID, quality, level, itemLevel, ability1, ability2, ability3, ability4, trait1, trait2, trait3, trait4, spec1 = strsplit(":", link);
-				GarrisonFollowerTooltip_Show(tonumber(garrisonFollowerID), false, tonumber(quality), tonumber(level), 0, 0, tonumber(itemLevel), tonumber(spec1), tonumber(ability1), tonumber(ability2), tonumber(ability3), tonumber(ability4), tonumber(trait1), tonumber(trait2), tonumber(trait3), tonumber(trait4));
+				local data = GarrisonFollowerTooltipTemplate_BuildDefaultDataForID(self.ID);
+				GarrisonFollowerTooltip_ShowWithData(data);
 			</OnEnter>
 			<OnClick>
 				if ( IsModifiedClick("CHATLINK") ) then

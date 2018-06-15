@@ -1,0 +1,46 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/..\FrameXML\UI.xsd">
+	<Script file="VoiceChatHeadsetButton.lua"/>
+
+	<Frame name="VoiceChatDotsTemplate" mixin="VoiceChatDotsMixin" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Dot1" atlas="voicechat-icon-headphone-pendingdot-1" setAllPoints="true" />
+				<Texture parentKey="Dot2" atlas="voicechat-icon-headphone-pendingdot-2" setAllPoints="true" />
+				<Texture parentKey="Dot3" atlas="voicechat-icon-headphone-pendingdot-3" setAllPoints="true" />
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="PendingAnim" looping="REPEAT">
+				<Alpha childKey="Dot1" fromAlpha="0" toAlpha="1" duration=".1"/>
+				<Alpha childKey="Dot1" fromAlpha="1" toAlpha="0" duration=".1" startDelay=".1" />
+				<Alpha childKey="Dot2" fromAlpha="0" toAlpha="1" duration=".1" startDelay=".1" />
+				<Alpha childKey="Dot2" fromAlpha="1" toAlpha="0" duration=".1" startDelay=".2" />
+				<Alpha childKey="Dot3" fromAlpha="0" toAlpha="1" duration=".1" startDelay=".2" />
+				<Alpha childKey="Dot3" fromAlpha="1" toAlpha="0" duration=".1" startDelay=".3" />
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Button name="VoiceChatHeadsetButtonTemplate" mixin="VoiceChatHeadsetButtonMixin" registerForClicks="LeftButtonUp" hidden="true" virtual="true">
+		<NormalTexture parentKey="NormalTexture"/>
+		<HighlightTexture parentKey="HighlightTexture" alphaMode="ADD" alpha="0.3"/>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnClick method="ToggleActivateChannel"/>
+		</Scripts>
+	</Button>
+
+	<Frame name="VoiceChatHeadsetTemplate" mixin="VoiceChatHeadsetMixin" virtual="true">
+		<Size x="27" y="27"/>
+		<Frames>
+			<Frame parentKey="PendingDots" inherits="VoiceChatDotsTemplate" setAllPoints="true" />
+			<Button parentKey="Button" inherits="VoiceChatHeadsetButtonTemplate" setAllPoints="true" />
+		</Frames>
+	</Frame>
+</Ui>

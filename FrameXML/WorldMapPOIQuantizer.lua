@@ -71,8 +71,8 @@ local function FindBestEnumerator(normalizedX, normalizedY)
 end
 
 function WorldMapPOIQuantizerMixin:Quantize(poiList)
-	for i, poiData in ipairs(poiList) do
-		local normalizedX, normalizedY = poiData.x, poiData.y;
+	for i, poiData in pairs(poiList) do
+		local normalizedX, normalizedY = poiData.normalizedX or poiData.x, poiData.normalizedY or poiData.y;
 		local cellX = normalizedX * self.numCellsWide;
 		local cellY = normalizedY * self.numCellsHigh;
 		local cellIndexX = math.min(math.floor(cellX) + 1, self.numCellsWide);

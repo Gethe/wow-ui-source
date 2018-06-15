@@ -3,10 +3,14 @@
 	<Include file="ModelSceneMixinScripts.xml"/>
 
 	<ScopedModifier scriptsUseGivenEnv="true">
-		<ModelScene name="ModelSceneMixinTemplate" mixin="ModelSceneMixin" virtual="true">
+		<ModelScene name="NonInteractableModelSceneMixinTemplate" mixin="ModelSceneMixin" virtual="true">
 			<Scripts>
 				<OnLoad method="OnLoad" />
 				<OnUpdate method="OnUpdate" />
+			</Scripts>
+		</ModelScene>
+		<ModelScene name="ModelSceneMixinTemplate" inherits="NonInteractableModelSceneMixinTemplate" virtual="true">
+			<Scripts>
 				<OnMouseUp method="OnMouseUp"/>
 				<OnMouseDown method="OnMouseDown"/>
 				<OnMouseWheel method="OnMouseWheel" />

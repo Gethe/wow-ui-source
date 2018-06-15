@@ -54,7 +54,7 @@
 
 	<Frame name="TableAttributeLineEditableTemplate" inherits="TableAttributeLineBaseTemplate" mixin="TableAttributeLineEditableMixin" virtual="true">
 		<Frames>
-			<EditBox parentKey="Value" autoFocus="false">
+			<EditBox parentKey="Value" autoFocus="false" bytes="64">
 				<Size x="310" y="16"/>
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.Key" relativePoint="RIGHT" x="8" y="0"/>
@@ -76,7 +76,7 @@
 						self.Highlight:Hide();
 					</OnLeave>
 				</Scripts>
-				<FontString inherits="ChatFontNormal" bytes="64"/>
+				<FontString inherits="ChatFontNormal"/>
 			</EditBox>
 		</Frames>
 	</Frame>

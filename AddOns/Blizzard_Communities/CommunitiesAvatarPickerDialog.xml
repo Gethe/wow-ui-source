@@ -1,0 +1,68 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="CommunitiesAvatarPickerDialog.lua"/>
+	
+	<Button name="AvatarButtonTemplate" virtual="true">
+		<Size x="64" y="64"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Selected" atlas="communities-create-avatar-border-selected" hidden="true"/>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="Icon"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick>
+				self:GetParent():GetParent():SetAvatarId(self.avatarId);
+				self:GetParent():Refresh();
+			</OnClick>
+		</Scripts>
+		<HighlightTexture atlas="communities-create-avatar-border-hover" alphaMode="ADD"/>
+	</Button>
+	
+	<Frame name="CommunitiesAvatarPickerDialog" parent="UIParent" topLevel="true" inherits="SelectionFrameTemplate" enableMouse="true" mixin="CommunitiesAvatarPickerDialogMixin" hidden="true">
+		<Size x="510" y="480"/>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="UIParent" y="100"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="7" y="-7"/>
+						<Anchor point="BOTTOMRIGHT" x="-7" y="7"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" a="0.8"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString inherits="GameFontHighlightSmall" text="COMMUNITIES_CREATE_DIALOG_AVATAR_PICKER_INSTRUCTIONS">
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-30"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<ScrollFrame parentKey="ScrollFrame" inherits="ListScrollFrameTemplate" mixin="CommunitiesAvatarPickerDialogScrollFrameMixin">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="27" y="-84"/>
+					<Anchor point="BOTTOMRIGHT" x="-40" y="38"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnShow method="OnShow"/>
+					<OnHide method="OnHide"/>
+					<OnEvent method="OnEvent"/>
+					<OnVerticalScroll method="OnVerticalScroll"/>
+				</Scripts>
+			</ScrollFrame>
+		</Frames>
+		<Scripts>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnAttributeChanged method="OnAttributeChanged"/>
+		</Scripts>
+	</Frame>
+</Ui>

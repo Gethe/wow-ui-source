@@ -131,6 +131,17 @@
 			<xs:enumeration value="russian"/>
 		</xs:restriction>
 	</xs:simpleType>
+    
+    <xs:simpleType name="WRAPMODE">
+		<xs:restriction base="xs:NMTOKEN">
+			<xs:enumeration value="CLAMP"/>
+			<xs:enumeration value="REPEAT"/>
+			<xs:enumeration value="CLAMPTOBLACK"/>
+			<xs:enumeration value="CLAMPTOBLACKADDITIVE"/>
+			<xs:enumeration value="CLAMPTOWHITE"/>
+            <xs:enumeration value="MIRROR"/>
+		</xs:restriction>
+	</xs:simpleType>
 
 	<xs:element name="AbsValue">
 		<xs:complexType>
@@ -344,6 +355,8 @@
 				<xs:element name="OnDressModel" type="ScriptType"/>
 				<xs:element name="OnCooldownDone" type="ScriptType"/>
 				<xs:element name="OnPanFinished" type="ScriptType"/>
+                <xs:element name="OnUiMapChanged" type="ScriptType"/>
+                <xs:element name="OnRequestNewSize" type="ScriptType"/>
 			</xs:choice>
 		</xs:sequence>
 	</xs:complexType>
@@ -467,6 +480,7 @@
 		<xs:attribute name="bgFile" type="xs:string"/>
 		<xs:attribute name="edgeFile" type="xs:string"/>
 		<xs:attribute name="tile" type="xs:boolean" default="false"/>
+        <xs:attribute name="tileEdge" type="xs:boolean" default="false"/>
 		<xs:attribute name="alphaMode" type="ALPHAMODE" default="BLEND"/>
 	</xs:complexType>
 
@@ -505,7 +519,11 @@
 				<xs:attribute name="mask" type="xs:string"/>
 				<xs:attribute name="alphaMode" type="ALPHAMODE" default="BLEND"/>
 				<xs:attribute name="alpha" type="xs:float" default="1.0"/>
-				<xs:attribute name="ignoreParentAlpha" type="xs:boolean" default="false"/>
+                <xs:attribute name="scale" type="xs:float" default="1.0"/>
+                <xs:attribute name="rotation" type="xs:float" default="0.0"/>
+                <xs:attribute name="hWrapMode" type="WRAPMODE" default="CLAMP"/>
+                <xs:attribute name="vWrapMode" type="WRAPMODE" default="CLAMP"/>
+                <xs:attribute name="ignoreParentAlpha" type="xs:boolean" default="false"/>
 				<xs:attribute name="ignoreParentScale" type="xs:boolean" default="false"/>
 				<xs:attribute name="nonBlocking" type="xs:boolean" default="false"/>
 				<xs:attribute name="horizTile" type="xs:boolean" default="false"/>
@@ -668,6 +686,7 @@
 					</xs:choice>
 				</xs:sequence>
 				<xs:attribute name="alpha" type="xs:float" default="1.0"/>
+                <xs:attribute name="scale" type="xs:float" default="1.0"/>
 				<xs:attribute name="parent" type="xs:string"/>
 				<xs:attribute name="toplevel" type="xs:boolean" default="false"/>
 				<xs:attribute name="flattenRenderLayers" type="xs:boolean" default="false"/>
@@ -836,7 +855,7 @@
 					<xs:element name="FogColor" type="ColorType"/>
 				</xs:sequence>
 				<xs:attribute name="file" type="xs:string"/>
-				<xs:attribute name="scale" type="xs:float" default="1.0"/>
+				<xs:attribute name="modelScale" type="xs:float" default="1.0"/>
 				<xs:attribute name="fogNear" default="0.0">
 					<xs:simpleType>
 						<xs:restriction base="xs:float"/>
@@ -854,7 +873,6 @@
 				</xs:attribute>
 				<xs:attribute name="drawLayer" type="ui:DRAWLAYER" default="ARTWORK"/>
 			</xs:extension>
-			<xs:element name="ViewInsets" type="Inset"/>
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:element name="Model" type="ModelType" substitutionGroup="ui:Frame"/>
@@ -1036,6 +1054,7 @@
 				<xs:attribute name="drawEdge" type="xs:boolean" default="false"/>
 				<xs:attribute name="drawBling" type="xs:boolean" default="false"/>
 				<xs:attribute name="drawSwipe" type="xs:boolean" default="false"/>
+				<xs:attribute name="rotation" type="xs:float" default="0.0"/>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
@@ -1157,6 +1176,15 @@
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:element name="Checkout" type="CheckoutType" substitutionGroup="ui:Frame"/>
+    
+    <xs:complexType name="FogOfWarFrameType">
+		<xs:complexContent>
+			<xs:extension base="FrameType">
+				<xs:attribute name="IMEFont" type="xs:string"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="FogOfWarFrame" type="FogOfWarFrameType" substitutionGroup="ui:Frame"/>
 
 	<xs:complexType name="ModelSceneType">
 		<xs:complexContent>
@@ -1175,7 +1203,6 @@
 					</xs:choice>
 				</xs:sequence>
 				
-				<xs:element name="ViewInsets" type="Inset"/>
 				<xs:attribute name="fogNear" type="xs:float" default="0.0" />
 				<xs:attribute name="fogFar" type="xs:float" default="1.0" />
 				<xs:attribute name="drawLayer" type="ui:DRAWLAYER" default="ARTWORK"/>

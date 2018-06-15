@@ -70,7 +70,7 @@ function GuildNews_Update()
 	local buttons = scrollFrame.buttons;
 	local button, index;
 	
-	local numEvents = math.min(7, CalendarGetNumGuildEvents());
+	local numEvents = math.min(7, C_Calendar.GetNumGuildEvents());
 	local numNews = GetNumGuildNews();
 	local offset = HybridScrollFrame_GetOffset(scrollFrame);
 	local numButtons = #buttons;
@@ -151,7 +151,16 @@ end
 local SIX_DAYS = 6 * 24 * 60 * 60		-- time in seconds
 function GuildNewsButton_SetEvent( button, event_id )
 	local today = date("*t");
-	local month, day, weekday, hour, minute, eventType, title, calendarType, texture = CalendarGetGuildEventInfo(event_id);
+	local info = C_Calendar.GetGuildEventInfo(event_id);
+	local month = info.month;
+	local day = info.monthDay;
+	local weekday = info.weekday;
+	local hour = info.hour;
+	local minute = info.minute;
+	local eventType = info.eventType;
+	local title = info.title;
+	local calendarType = info.calendarType;
+	local texture = info.texture;
 	local displayTime = GameTime_GetFormattedTime(hour, minute, true);
 	local displayDay;
 	

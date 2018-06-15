@@ -6,8 +6,6 @@ CHARACTER_ROTATION_CONSTANT = 0.6;
 MAX_CHARACTERS_DISPLAYED = 12;
 MAX_CHARACTERS_DISPLAYED_BASE = MAX_CHARACTERS_DISPLAYED;
 
-MAX_CHARACTERS_PER_REALM = 200; -- controled by the server now, so lets set it up high
-
 CHARACTER_LIST_OFFSET = 0;
 
 CHARACTER_SELECT_BACK_FROM_CREATE = false;
@@ -111,16 +109,13 @@ function CharacterSelect_OnLoad(self)
     self.selectedIndex = 0;
     self.selectLast = false;
     self.characterPadlockPool = CreateFramePool("BUTTON", self, "CharSelectLockedButtonTemplate");
-    self:RegisterEvent("ADDON_LIST_UPDATE");
     self:RegisterEvent("CHARACTER_LIST_UPDATE");
     self:RegisterEvent("UPDATE_SELECTED_CHARACTER");
-    self:RegisterEvent("SELECT_LAST_CHARACTER");
-    self:RegisterEvent("SELECT_FIRST_CHARACTER");
     self:RegisterEvent("FORCE_RENAME_CHARACTER");
     self:RegisterEvent("CHAR_RENAME_IN_PROGRESS");
     self:RegisterEvent("STORE_STATUS_CHANGED");
     self:RegisterEvent("CHARACTER_UNDELETE_STATUS_CHANGED");
-    self:RegisterEvent("CLIENT_FEATURE_STATUS_CHANGED)");
+    self:RegisterEvent("CLIENT_FEATURE_STATUS_CHANGED");
 	self:RegisterEvent("CHARACTER_COPY_STATUS_CHANGED")
     self:RegisterEvent("CHARACTER_UNDELETE_FINISHED");
     self:RegisterEvent("TOKEN_CAN_VETERAN_BUY_UPDATE");
@@ -143,6 +138,7 @@ function CharacterSelect_OnLoad(self)
     self:RegisterEvent("CHARACTER_UPGRADE_UNREVOKE_RESULT");
 	self:RegisterEvent("MIN_EXPANSION_LEVEL_UPDATED");
 	self:RegisterEvent("MAX_EXPANSION_LEVEL_UPDATED");
+	self:RegisterEvent("INITIAL_HOTFIXES_APPLIED");
 
     SetCharSelectModelFrame("CharacterSelectModel");
 
@@ -154,9 +150,6 @@ function CharacterSelect_OnLoad(self)
     CHARACTER_SELECT_BACK_FROM_CREATE = false;
 
     CHARACTER_LIST_OFFSET = 0;
-    if (not IsGMClient()) then
-        MAX_CHARACTERS_PER_REALM = 12;
-    end
 end
 
 function CharacterSelect_OnShow(self)
@@ -164,7 +157,7 @@ function CharacterSelect_OnShow(self)
     InitializeCharacterScreenData();
     SetInCharacterSelect(true);
     CHARACTER_LIST_OFFSET = 0;
-    CHARACTER_SELECT_KICKED_FROM_CONVERT = false;
+	CHARACTER_SELECT_KICKED_FROM_CONVERT = false;
     CharacterSelect_ResetVeteranStatus();
     CharacterTemplateConfirmDialog:Hide();
 
@@ -482,15 +475,7 @@ end
 
 VAS_QUEUE_TIMES = {};
 function CharacterSelect_OnEvent(self, event, ...)
-    if ( event == "ADDON_LIST_UPDATE" ) then
-        ADDON_LIST_RECEIVED = true;
-        if (not STORE_IS_LOADED) then
-            STORE_IS_LOADED = LoadAddOn("Blizzard_StoreUI");
-            LoadAddOn("Blizzard_AuthChallengeUI");
-            CharacterSelect_UpdateStoreButton();
-        end
-        UpdateAddonButton();
-    elseif ( event == "CHARACTER_LIST_UPDATE" ) then
+    if ( event == "CHARACTER_LIST_UPDATE" ) then
         PromotionFrame_AwaitingPromotion();
 
         local listSize = ...;
@@ -549,11 +534,6 @@ function CharacterSelect_OnEvent(self, event, ...)
             CHARACTER_LIST_OFFSET = self.selectedIndex - MAX_CHARACTERS_DISPLAYED;
         end
         UpdateCharacterSelection(self);
-    elseif ( event == "SELECT_LAST_CHARACTER" ) then
-        self.selectLast = true;
-    elseif ( event == "SELECT_FIRST_CHARACTER" ) then
-        CHARACTER_LIST_OFFSET = 0;
-        CharacterSelect_SelectCharacter(1, 1);
     elseif ( event == "FORCE_RENAME_CHARACTER" ) then
         GlueDialog_Hide();
         local message = ...;
@@ -580,9 +560,10 @@ function CharacterSelect_OnEvent(self, event, ...)
         else
             CharSelectUndeleteCharacterButton.tooltip = UNDELETE_TOOLTIP;
         end
-    elseif ( event == "CLIENT_FEATURE_STATUS_CHANGED" ) then
+	elseif ( event == "CLIENT_FEATURE_STATUS_CHANGED" ) then
         AccountUpgradePanel_Update(CharSelectAccountUpgradeButton.isExpanded);
 		CopyCharacterButton_UpdateButtonState();
+		UpdateCharacterList();
 	elseif ( event == "CHARACTER_COPY_STATUS_CHANGED" ) then
 		CopyCharacterButton_UpdateButtonState();
     elseif ( event == "CHARACTER_UNDELETE_FINISHED" ) then
@@ -671,7 +652,7 @@ function CharacterSelect_OnEvent(self, event, ...)
 	elseif ( event == "TRIAL_STATUS_UPDATE" ) then
 		AccountUpgradePanel_Update(CharSelectAccountUpgradeButton.isExpanded);
 		UpdateCharacterList();
-	elseif ( event == "UPDATE_EXPANSION_LEVEL" or event == "MIN_EXPANSION_LEVEL_UPDATED" or event == "MAX_EXPANSION_LEVEL_UPDATED" ) then
+	elseif ( event == "UPDATE_EXPANSION_LEVEL" or event == "MIN_EXPANSION_LEVEL_UPDATED" or event == "MAX_EXPANSION_LEVEL_UPDATED" or event == "INITIAL_HOTFIXES_APPLIED" ) then
 		AccountUpgradePanel_Update(CharSelectAccountUpgradeButton.isExpanded);
 	end
 end
@@ -766,12 +747,8 @@ function UpdateCharacterList(skipSelect)
         CharacterSelect.undeleteChanged = false;
     end
 
-    if ( numChars < MAX_CHARACTERS_PER_REALM or
-        ( (CharacterSelect.undeleting and numChars >= MAX_CHARACTERS_DISPLAYED_BASE) or
-        numChars > MAX_CHARACTERS_DISPLAYED_BASE) ) then
-        if (MAX_CHARACTERS_DISPLAYED == MAX_CHARACTERS_DISPLAYED_BASE) then
-            MAX_CHARACTERS_DISPLAYED = MAX_CHARACTERS_DISPLAYED_BASE - 1;
-        end
+    if ( (CanCreateCharacter() or CharacterSelect.undeleting) and numChars >= MAX_CHARACTERS_DISPLAYED_BASE ) then
+		MAX_CHARACTERS_DISPLAYED = MAX_CHARACTERS_DISPLAYED_BASE - 1;
     else
         MAX_CHARACTERS_DISPLAYED = MAX_CHARACTERS_DISPLAYED_BASE;
     end
@@ -1047,7 +1024,7 @@ function UpdateCharacterList(skipSelect)
     CharSelectUndeleteCharacterButton:Hide();
 
     local connected = IsConnectedToServer();
-    if (numChars < MAX_CHARACTERS_PER_REALM and not CharacterSelect.undeleting) then
+    if (CanCreateCharacter() and not CharacterSelect.undeleting) then
         CharacterSelect.createIndex = numChars + 1;
         if ( connected ) then
             --If can create characters position and show the create button
@@ -1652,7 +1629,7 @@ function AccountUpgradePanel_Update(isExpanded)
 	SetExpansionLogo(CharacterSelectLogo, currentExpansionLevel);
     if ( shouldShowBanner ) then
 		CharSelectAccountUpgradeButton:SetText(upgradeButtonText);
-        CharacterSelectServerAlertFrame:SetPoint("TOP", CharSelectAccountUpgradeMiniPanel, "BOTTOM", 0, -25);
+        CharacterSelectServerAlertFrame:SetPoint("TOP", CharSelectAccountUpgradeMiniPanel, "BOTTOM", 0, -35);
         CharSelectAccountUpgradeButton:Show();
         if ( isExpanded ) then
             CharSelectAccountUpgradePanel:Show();
@@ -1973,7 +1950,9 @@ function KioskMode_CheckEnterWorld()
         if (KioskModeSplash_GetAutoEnterWorld()) then
             EnterWorld();
         else
-            KioskDeleteAllCharacters();
+			if (not IsGMClient()) then
+            	KioskDeleteAllCharacters();
+			end
             if (IsKioskGlueEnabled()) then
                 GlueParent_SetScreen("kioskmodesplash");
             end
@@ -2208,7 +2187,6 @@ function CharacterServicesMaster_OnLoad(self)
     self.flows = {};
 
     self:RegisterEvent("PRODUCT_DISTRIBUTIONS_UPDATED");
-    self:RegisterEvent("CHARACTER_UPGRADE_STARTED");
     self:RegisterEvent("PRODUCT_ASSIGN_TO_TARGET_FAILED");
 end
 
@@ -2217,9 +2195,6 @@ local completedGuid;
 function CharacterServicesMaster_OnEvent(self, event, ...)
     if (event == "PRODUCT_DISTRIBUTIONS_UPDATED") then
         CharacterServicesMaster_UpdateServiceButton();
-    elseif (event == "CHARACTER_UPGRADE_STARTED") then
-        UpdateCharacterList(true);
-        UpdateCharacterSelection(CharacterSelect);
     elseif (event == "PRODUCT_ASSIGN_TO_TARGET_FAILED") then
         if (CharacterServicesMaster.pendingGuid and C_CharacterServices.DoesGUIDHavePendingFactionChange(CharacterServicesMaster.pendingGuid)) then
             CharacterServicesMaster.pendingGuid = nil;

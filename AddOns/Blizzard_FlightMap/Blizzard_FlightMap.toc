@@ -1,10 +1,13 @@
-## Interface: 70300
+## Interface: 80000
 ## Title: Blizzard Flight Map UI
 ## Secure: 1
 ## Author: Blizzard Entertainment
 ## RequiredDep: Blizzard_MapCanvas, Blizzard_SharedMapDataProviders
 ## LoadOnDemand: 1
 
+FM_AreaPOIDataProvider.xml
 FM_FlightPathDataProvider.xml
 FM_ZoneSummaryDataProvider.xml
+FM_WorldQuestDataProvider.xml
+FM_QuestDataProvider.xml
 Blizzard_FlightMap.xml

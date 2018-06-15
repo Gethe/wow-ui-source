@@ -8,7 +8,7 @@
 			<Anchor point="TOP" x="0" y="-170"/>
 		</Anchors>
 		<Frames>
-			<ModelScene parentKey="BackgroundModelScene" enableMouse="false" inherits="ModelSceneMixinTemplate">
+			<ModelScene parentKey="BackgroundModelScene" enableMouse="false" inherits="NonInteractableModelSceneMixinTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="UIParent"/>
 					<Anchor point="BOTTOMRIGHT" relativeTo="UIParent"/>

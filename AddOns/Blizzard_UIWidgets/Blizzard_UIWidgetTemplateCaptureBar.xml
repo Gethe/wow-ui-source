@@ -1,0 +1,98 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Frame name="UIWidgetTemplateCaptureBar" inherits="UIWidgetBaseTemplate" virtual="true" secureMixin="UIWidgetTemplateCaptureBarMixin">
+		<Size x="173" y="26"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="LeftBar" atlas="worldstate-capturebar-blue">
+					<Size x="61" y="9"/>
+					<Anchors>
+						<Anchor point="LEFT" x="26" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RightBar" atlas="worldstate-capturebar-red">
+					<Size x="60" y="9"/>
+					<Anchors>
+						<Anchor point="RIGHT" x="-26" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="MiddleBar" atlas="worldstate-capturebar-gray">
+					<Size x="25" y="9"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="BarBackground" atlas="worldstate-capturebar-frame-factions">
+					<Size x="173" y="26"/>
+					<Anchors>
+						<Anchor point="TOP"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RightLine" atlas="worldstate-capturebar-frame-separater">
+					<Size x="3" y="8"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.MiddleBar" relativePoint="RIGHT" x="-1" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="LeftLine" atlas="worldstate-capturebar-frame-separater">
+					<Size x="3" y="8"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.MiddleBar" relativePoint="LEFT" x="1" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="LeftIconHighlight" atlas="worldstate-capturebar-glow" hidden="true" alphaMode="ADD">
+					<Size x="27" y="28"/>
+					<Anchors>
+						<Anchor point="LEFT" x="-1" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RightIconHighlight" atlas="worldstate-capturebar-glow" hidden="true" alphaMode="ADD">
+					<Size x="27" y="28"/>
+					<Anchors>
+						<Anchor point="RIGHT" x="1" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Indicator">
+				<Size x="5" y="18"/>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Middle" atlas="worldstate-capturebar-spark-green" setAllPoints="true"/>
+					</Layer>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Left" atlas="worldstate-capturebar-arrow" useAtlasSize="true" hidden="false">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT" x="1" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Right" atlas="worldstate-capturebar-arrow" useAtlasSize="true" hidden="false">
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="RIGHT" x="-1" y="0"/>
+							</Anchors>
+							<TexCoords left="1" right="0" top="0" bottom="1"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="FlashLeftAnim" setToFinalAlpha="true">
+						<Alpha childKey="Left" fromAlpha="0" toAlpha="1" duration=".1" order="0"/>
+						<Alpha childKey="Left" fromAlpha="1" toAlpha="0" duration=".1" order="1" startDelay="0.9" />
+					</AnimationGroup>
+					<AnimationGroup parentKey="FlashRightAnim">
+						<Alpha childKey="Right" fromAlpha="0" toAlpha="1" duration=".1" order="0"/>
+						<Alpha childKey="Right" fromAlpha="1" toAlpha="0" duration=".1" order="1" startDelay="0.9" />
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+		</Frames>
+	</Frame>
+</Ui>

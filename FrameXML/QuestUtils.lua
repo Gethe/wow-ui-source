@@ -1,18 +1,14 @@
 QUEST_TAG_DUNGEON_TYPES = {
-	[QUEST_TAG_RAID] = true,
-	[QUEST_TAG_DUNGEON] = true,
-	[QUEST_TAG_RAID10] = true,
-	[QUEST_TAG_RAID25] = true,
+	[Enum.QuestTag.Raid] = true,
+	[Enum.QuestTag.Dungeon] = true,
+	[Enum.QuestTag.Raid10] = true,
+	[Enum.QuestTag.Raid25] = true,
 };
 
 WORLD_QUEST_TYPE_DUNGEON_TYPES = {
 	[LE_QUEST_TAG_TYPE_DUNGEON] = true,
 	[LE_QUEST_TAG_TYPE_RAID] = true,
 }
-
-local QUEST_ICONS_FILE = "Interface\\QuestFrame\\QuestTypeIcons";
-local QUEST_ICONS_FILE_WIDTH = 128;
-local QUEST_ICONS_FILE_HEIGHT = 64;
 
 local function IsQuestWorldQuest_Internal(worldQuestType)
 	return worldQuestType ~= nil;
@@ -102,35 +98,16 @@ function QuestUtils_GetQuestName(questID)
 		local questIndex = GetQuestLogIndexByID(questID);
 		if questIndex and questIndex > 0 then
 			questName = GetQuestLogTitle(questIndex);
+		else
+			questName = C_QuestLog.GetQuestInfo(questID);
 		end
 	end
 
 	return questName or "";
 end
 
-function QuestUtils_CanUseAutoGroupFinder(questID, isDropdownRequest)
-	-- Auto-Finder dropdown is enabled for incomplete "group" non-dungeon quests that have a valid activity.
-	-- Auto-Finder button is enabled for all non-dungeon quests that have a valid activity.
-	if not IsQuestComplete(questID) then
-		local tagID, tagName, worldQuestType, rarity, isElite, tradeskillLineIndex, displayTimeLeft = GetQuestTagInfo(questID);
-	 	if not IsQuestDungeonQuest_Internal(tagID, worldQuestType) and C_LFGList.GetActivityIDForQuestID(questID) then
-	 		local isCurrentExpansion = GetQuestExpansion(questID) == LE_EXPANSION_LEVEL_CURRENT;
-
-			if IsQuestWorldQuest_Internal(worldQuestType) then
-				return isDropdownRequest or (isElite and isCurrentExpansion);
-			else
-				local questIndex = GetQuestLogIndexByID(questID);
-				if questIndex and questIndex > 0 then
-					return isDropdownRequest or (isCurrentExpansion and (GetQuestLogGroupNum(questIndex) > 1));
-				end
-			end
-		end
-	end
-
-	return false;
-end
-
-function QuestUtils_AddQuestCurrencyRewardsToTooltip(questID, tooltip)
+--currencyContainerTooltip should be an InternalEmbeddedItemTooltipTemplate
+function QuestUtils_AddQuestCurrencyRewardsToTooltip(questID, tooltip, currencyContainerTooltip)
 	local numQuestCurrencies = GetNumQuestLogRewardCurrencies(questID);
 	local currencies = { };
 	for i = 1, numQuestCurrencies do
@@ -148,11 +125,46 @@ function QuestUtils_AddQuestCurrencyRewardsToTooltip(questID, tooltip)
 			return currency1.currencyID > currency2.currencyID;
 		end
 	);
-
+	local alreadyUsedCurrencyContainerId = 0; --In the case of multiple currency containers needing to displayed, we only display the first. 
 	for i, currencyInfo in ipairs(currencies) do
-		local text = BONUS_OBJECTIVE_REWARD_WITH_COUNT_FORMAT:format(currencyInfo.texture, currencyInfo.numItems, currencyInfo.name);
-		local currencyColor = GetColorForCurrencyReward(currencyInfo.currencyID, currencyInfo.numItems);
-		tooltip:AddLine(text, currencyColor:GetRGB());
+		if ( currencyContainerTooltip and C_CurrencyInfo.IsCurrencyContainer(currencyInfo.currencyID, currencyInfo.numItems) and (alreadyUsedCurrencyContainerId == 0) ) then 
+			local name, texture, numItems, rarity = CurrencyContainerUtil.GetCurrencyContainerInfo(currencyInfo.currencyID,
+			currencyInfo.numItems, currencyInfo.name, currencyInfo.texture, currencyInfo.rarity);
+			
+			EmbeddedItemTooltip_PrepareForItem(currencyContainerTooltip);
+			currencyContainerTooltip:Show(); 
+			currencyContainerTooltip.Tooltip:SetOwner(currencyContainerTooltip, "ANCHOR_NONE");
+			currencyContainerTooltip.Tooltip:SetCurrencyByID(currencyInfo.currencyID, currencyInfo.numItems); 
+			
+			SetItemButtonQuality(currencyContainerTooltip, rarity, currencyInfo.currencyID); 
+					
+			currencyContainerTooltip.Icon:SetTexture(texture); 
+			currencyContainerTooltip.itemTextureSet = (itemTexture ~= nil);
+
+			currencyContainerTooltip.Tooltip:SetPoint("TOPLEFT", currencyContainerTooltip.Icon, "TOPRIGHT", 0, 10);
+			if (C_PvP.IsWarModeDesired() and QuestUtils_IsQuestWorldQuest(questID)) then 
+				currencyContainerTooltip.Tooltip:AddLine(WAR_MODE_BONUS_PERCENTAGE);
+			end
+			currencyContainerTooltip.Tooltip:Show();
+			
+			if (numItems > 1) then 
+				SetItemButtonCount(currencyContainerTooltip, numItems); 
+			end
+
+			if ( not tooltip ) then
+				break;
+			end
+			alreadyUsedCurrencyContainerId = currencyInfo.currencyID; 
+		elseif ( tooltip ) then
+			if( alreadyUsedCurrencyContainerId ~= currencyInfo.currencyID ) then --if there's already a currency container of this same type skip it entirely
+				local text = BONUS_OBJECTIVE_REWARD_WITH_COUNT_FORMAT:format(currencyInfo.texture, currencyInfo.numItems, currencyInfo.name);
+				local currencyColor = GetColorForCurrencyReward(currencyInfo.currencyID, currencyInfo.numItems);
+				tooltip:AddLine(text, currencyColor:GetRGB());
+				if (C_PvP.IsWarModeDesired() and QuestUtils_IsQuestWorldQuest(questID)) then 
+					tooltip:AddLine(WAR_MODE_BONUS_PERCENTAGE);
+				end
+			end
+		end
 	end
 	return numQuestCurrencies;
 end

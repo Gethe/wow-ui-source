@@ -1,0 +1,127 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="CommunitiesInvitationFrame.lua"/>
+	
+	<Frame name="CommunitiesInvitationFrameTemplate" mixin="CommunitiesInvitationFrameMixin" virtual="true">
+		<Frames>
+			<Button parentKey="AcceptButton" inherits="UIPanelButtonTemplate" text="ACCEPT">
+				<Size x="150" y="24"/>
+				<Anchors>
+					<Anchor point="BOTTOM" x="-80" y="22"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
+						self:GetParent():AcceptInvitation();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button parentKey="DeclineButton" inherits="UIPanelButtonTemplate" text="DECLINE">
+				<Size x="150" y="24"/>
+				<Anchors>
+					<Anchor point="BOTTOM" x="80" y="22"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
+						self:GetParent():DeclineInvitation();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Frame parentKey="InsetFrame" inherits="InsetFrameTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="-4" y="3"/>
+					<Anchor point="BOTTOMRIGHT" x="6" y="-3"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.Bg:Hide();
+					</OnLoad>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture atlas="communities-widebackground" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<FontString parentKey="InvitationText" inherits="GameFontNormalLarge">
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-20"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="Icon" file="Interface\CharacterFrame\TempPortraitAlphaMask">
+					<Size x="63" y="63"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.InvitationText" relaitvePoint="BOTTOM" x="0" y="-35"/>
+					</Anchors>
+				</Texture>
+				<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" x="2" y="-2"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" x="-2" y="2"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Icon"/>
+					</MaskedTextures>
+				</MaskTexture>
+				<FontString parentKey="Name" inherits="Game30Font">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Icon" relativePoint="BOTTOM" x="0" y="-15"/>
+						<Anchor point="LEFT"/>
+						<Anchor point="RIGHT"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Type" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Name" relativePoint="BOTTOM" x="0" y="-6"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="MemberCount" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Type" relativePoint="BOTTOM" x="0" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Leader" inherits="GameFontNormal" wordwrap="false">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.MemberCount" relativePoint="BOTTOM" x="0" y="0"/>
+						<Anchor point="LEFT" x="10" y="0"/>
+						<Anchor point="RIGHT" x="-10" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Description" justifyV="TOP" inherits="GameFontDisable">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Leader" relativePoint="BOTTOM" x="0" y="-18"/>
+						<Anchor point="BOTTOM" relativeKey="$parent.AcceptButton" relativePoint="TOP" x="0" y="2"/>
+						<Anchor point="LEFT" x="30"/>
+						<Anchor point="RIGHT" x="-30"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture atlas="bluemenu-Ring">
+					<Size x="94" y="94"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+	
+	<Button name="CommunitiesInviteButtonTemplate" inherits="UIPanelDynamicResizeButtonTemplate" text="COMMUNITIES_INVITE_MEMBERS" virtual="true">
+		<Scripts>
+			<OnClick function="CommunitiesInviteButton_OnClick"/>
+			<OnHide function="CommunitiesInvitebutton_OnHide"/>
+		</Scripts>
+	</Button>
+</Ui>

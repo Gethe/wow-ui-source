@@ -10,7 +10,7 @@
 				InspectPaperDollItemSlotButton_OnEvent(self, event, ...);
 			</OnEvent>
             <OnClick>
-				HandleModifiedItemClick(GetInventoryItemLink(InspectFrame.unit, self:GetID()));
+				InspectPaperDollItemSlotButton_OnClick(self, button);
 			</OnClick>
 			<OnUpdate>
 				CursorOnUpdate(self);

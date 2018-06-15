@@ -29,7 +29,6 @@ function PetFrame_OnLoad (self)
 	self:RegisterEvent("PET_ATTACK_START");
 	self:RegisterEvent("PET_ATTACK_STOP");
 	self:RegisterEvent("PET_UI_UPDATE");
-	self:RegisterEvent("PET_RENAMEABLE");
 	self:RegisterUnitEvent("UNIT_COMBAT", "pet", "player");
 	self:RegisterUnitEvent("UNIT_AURA", "pet", "player");
 	local showmenu = function()
@@ -107,8 +106,6 @@ function PetFrame_OnEvent (self, event, ...)
 		PetAttackModeTexture:Show();
 	elseif ( event == "PET_ATTACK_STOP" ) then
 		PetAttackModeTexture:Hide();
-	elseif ( event == "PET_RENAMEABLE" ) then
-		StaticPopup_Show("RENAME_PET");
 	end
 end
 

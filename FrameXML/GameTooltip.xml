@@ -3,8 +3,16 @@
 	<Script file="HealthBar.lua"/>
 	<Script file="GameTooltip.lua"/>
 	<Include file="..\SharedXML\GameTooltipTemplate.xml"/>
-	<GameTooltip name="ShoppingTooltip1" clampedToScreen="true" frameStrata="TOOLTIP" hidden="true" parent="UIParent" inherits="ShoppingTooltipTemplate"/>
-	<GameTooltip name="ShoppingTooltip2" clampedToScreen="true" frameStrata="TOOLTIP" hidden="true" parent="UIParent" inherits="ShoppingTooltipTemplate"/>
+	<GameTooltip name="ShoppingTooltip1" clampedToScreen="true" frameStrata="TOOLTIP" hidden="true" parent="UIParent" inherits="ShoppingTooltipTemplate">
+		<Scripts>
+			<OnTooltipSetItem function="GameTooltip_OnTooltipSetShoppingItem" />
+		</Scripts>
+	</GameTooltip>
+	<GameTooltip name="ShoppingTooltip2" clampedToScreen="true" frameStrata="TOOLTIP" hidden="true" parent="UIParent" inherits="ShoppingTooltipTemplate">
+		<Scripts>
+			<OnTooltipSetItem function="GameTooltip_OnTooltipSetShoppingItem" />
+		</Scripts>
+	</GameTooltip>
 	<GameTooltip name="GameTooltip" frameStrata="TOOLTIP" hidden="true" parent="UIParent" inherits="GameTooltipTemplate">
 		<Scripts>
 			<OnLoad>
@@ -14,27 +22,9 @@
 					BattlePetTooltip:Hide();
 				end
 			</OnLoad>
-			<OnTooltipSetUnit>
-				if ( self:IsUnit("mouseover") ) then
-					_G[self:GetName().."TextLeft1"]:SetTextColor(GameTooltip_UnitColor("mouseover"));
-				end
-				if (BattlePetTooltip) then
-					BattlePetTooltip:Hide();
-				end
-			</OnTooltipSetUnit>
-			<OnTooltipSetItem>
-				if ( IsModifiedClick("COMPAREITEMS") or
-				     (GetCVarBool("alwaysCompareItems") and not self:IsEquippedItem()) ) then
-					GameTooltip_ShowCompareItem(self);
-				else
-					local shoppingTooltip1, shoppingTooltip2 = unpack(self.shoppingTooltips);
-					shoppingTooltip1:Hide();
-					shoppingTooltip2:Hide();
-				end
-				if (BattlePetTooltip) then
-					BattlePetTooltip:Hide();
-				end
-			</OnTooltipSetItem>
+			<OnTooltipSetUnit function="GameTooltip_OnTooltipSetUnit" />
+			<OnTooltipSetItem function="GameTooltip_OnTooltipSetItem" />
+			<OnTooltipSetSpell function="GameTooltip_OnTooltipSetSpell" />
 			<OnHide>
 				GameTooltip_OnHide(self);
 				ShoppingTooltip1:Hide();
@@ -87,7 +77,7 @@
 			</OnShow>
 		</Scripts>
 	</Frame>
-	<Frame name="EmbeddedItemTooltip" virtual="true">
+	<Frame name="InternalEmbeddedItemTooltipTemplate" virtual="true">
 		<Size x="100" y="100"/>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -118,9 +108,20 @@
 					</Anchors>
 				</Texture>
 			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="IconOverlay" hidden="true">
+					<Size x="28" y="28"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 		</Layers>
 		<Frames>
 			<GameTooltip name="$parentTooltip" parentKey="Tooltip" inherits="GameTooltipTemplate">
+				<KeyValues>
+					<KeyValue key="IsEmbedded" value="true" type="boolean"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPRIGHT" x="0" y="10"/>
 				</Anchors>
@@ -129,8 +130,7 @@
 						self:SetBackdrop(nil);
 					</OnLoad>
 					<OnSizeChanged>
-						local itemTooltipExtraBorderHeight = 22;
-						self:GetParent():SetSize(self:GetWidth() + self:GetParent().Icon:GetWidth(), self:GetHeight() - itemTooltipExtraBorderHeight);
+						EmbeddedItemTooltip_UpdateSize(self:GetParent());
 					</OnSizeChanged>
 					<OnTooltipSetItem>
 						local embeddedItemTooltip = self:GetParent();
@@ -138,6 +138,56 @@
 					</OnTooltipSetItem>
 				</Scripts>
 			</GameTooltip>
+			<Frame name="$parentGarrisonFollowerTooltip" parentKey="FollowerTooltip" inherits="GarrisonFollowerTooltipContentsTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="0" y="0"/>
+				</Anchors>
+			</Frame>
 		</Frames>
 	</Frame>
+
+	<GameTooltip name="EmbeddedItemTooltip" parent="UIParent" inherits="GameTooltipTemplate">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="BottomFontString" font="GameFontNormal" justifyH="LEFT" justifyV="TOP" hidden="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" x="10" y="10"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="ItemTooltip" inherits="InternalEmbeddedItemTooltipTemplate" hidden="true">
+				<Size x="100" y="100"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.BottomFontString" relativePoint="TOPLEFT" x="0" y="10"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad inherit="prepend">
+						self.Tooltip.shoppingTooltips = { ShoppingTooltip1, ShoppingTooltip2 };
+					</OnLoad>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
+				self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
+				self.shoppingTooltips = { ShoppingTooltip1, ShoppingTooltip2 };
+				self.updateTooltip = TOOLTIP_UPDATE_TIME;
+			</OnLoad>
+			<OnUpdate function="GameTooltip_OnUpdate"/>
+			<OnShow inherit="prepend">
+				self.recalculatePadding = true;
+			</OnShow>
+			<OnHide inherit="prepend">
+				self.ItemTooltip:Hide();
+				self:SetPadding(0, 0);
+				self.BottomFontString:Hide();
+			</OnHide>
+			<OnSizeChanged inherit="prepend">
+				self.recalculatePadding = true;
+			</OnSizeChanged>
+		</Scripts>
+	</GameTooltip>
 </Ui>

@@ -199,11 +199,12 @@ AdventureMap_FogPinMixin = CreateFromMixins(MapCanvasPinMixin);
 
 function AdventureMap_FogPinMixin:OnLoad()
 	self:SetAlphaStyle(AM_PIN_ALPHA_STYLE_VISIBLE_WHEN_ZOOMED_IN);
+	self:SetIgnoreGlobalPinScale(true);
 	self:SetScale(2.5);
 end
 
 function AdventureMap_FogPinMixin:OnAcquired(playAnim)
-	if playAnim and self:GetMap():IsZoomedIn() then
+	if playAnim and not self:GetMap():IsAtMinZoom() then
 		self.OnAddAnim:Play();
 	end
 end

@@ -676,11 +676,10 @@ function MultiCastFlyoutFrame_LoadPageSpells(self)
 	local buttons = self.buttons;
 	local numButtons = #buttons;
 
-	local name = self:GetName();
 	local totalHeight = 0;
 	local button;
 	local spellId;
-	local name, rank, icon;
+	local name, _, icon;
 	local buttonIndex = 1;
 	for i, spellId in next, TOTEM_MULTI_CAST_SUMMON_SPELLS do
 		if ( knownMultiCastSummonSpells[i] ) then
@@ -710,7 +709,7 @@ function MultiCastFlyoutFrame_LoadPageSpells(self)
 			button.page = i;
 			spellId = TOTEM_MULTI_CAST_SUMMON_SPELLS[i];
 			button.spellId = spellId;
-			name, rank, icon = GetSpellInfo(spellId);
+			name, _, icon = GetSpellInfo(spellId);
 			button.icon:SetTexture(icon);
 			button.icon:SetTexCoord(0.0, 1.0, 0.0, 1.0);
 
@@ -741,11 +740,10 @@ function MultiCastFlyoutFrame_LoadSlotSpells(self, slot, ...)
 	local buttons = self.buttons;
 	local numButtons = #buttons;
 
-	local name = self:GetName();
 	local totalHeight = 0;
 	local button;
 	local spellId;
-	local name, rank, icon;
+	local name, _, icon;
 	local tcoords;
 	local tcoordLeft, tcoordRight, tcoordTop, tcoordBottom;
 	for i = 1, numSpells do
@@ -781,7 +779,7 @@ function MultiCastFlyoutFrame_LoadSlotSpells(self, slot, ...)
 			tcoordLeft, tcoordRight, tcoordTop, tcoordBottom = tcoords.left, tcoords.right, tcoords.top, tcoords.bottom;
 		else
 			spellId = select(i - 1, ...);
-			name, rank, icon = GetSpellInfo(spellId);
+			name, _, icon = GetSpellInfo(spellId);
 			tcoordLeft, tcoordRight, tcoordTop, tcoordBottom = 0.0, 1.0, 0.0, 1.0;
 		end
 		button.spellId = spellId;
@@ -960,7 +958,7 @@ function MultiCastSummonSpellButton_Update(self)
 	local spellId = knownMultiCastSummonSpells[self:GetID()];
 	self.spellId = spellId;
 	if ( HasMultiCastActionBar() and spellId ) then
-		local name, rank, icon, cost, isFunnel, powerType, castTime, minRage, maxRange = GetSpellInfo(spellId);
+		local name, _, icon, cost, isFunnel, powerType, castTime, minRage, maxRange = GetSpellInfo(spellId);
 		local buttonName = self:GetName();
 		_G[buttonName.."Icon"]:SetTexture(icon);
 
@@ -1037,7 +1035,7 @@ function MultiCastRecallSpellButton_Update(self)
 	local spellId = knownMultiCastRecallSpells[self:GetID()];
 	self.spellId = spellId;
 	if ( HasMultiCastActionBar() and spellId ) then
-		local name, rank, icon, cost, isFunnel, powerType, castTime, minRage, maxRange = GetSpellInfo(spellId);
+		local name, _, icon, cost, isFunnel, powerType, castTime, minRage, maxRange = GetSpellInfo(spellId);
 		local buttonName = self:GetName();
 		_G[buttonName.."Icon"]:SetTexture(icon);
 

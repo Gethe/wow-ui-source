@@ -23,6 +23,7 @@ function AdventureMapMixin:OnLoad()
 	self:SetupTitle();
 
 	self:AddStandardDataProviders();
+	self:ClearAreaTableIDAvailableForInsets();
 end
 
 function AdventureMapMixin:AddStandardDataProviders()
@@ -39,9 +40,9 @@ end
 
 -- Override
 function AdventureMapMixin:OnShow()
-	local continentID = C_AdventureMap.GetContinentInfo();
-	self:SetMapID(continentID);
+	local mapID = C_AdventureMap.GetMapID();
 	self:ClearAreaTableIDAvailableForInsets();
+	self:SetMapID(mapID);
 	MapCanvasMixin.OnShow(self);
 end
 

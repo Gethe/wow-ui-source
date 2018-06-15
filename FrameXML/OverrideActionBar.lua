@@ -86,7 +86,7 @@ function OverrideActionBar_OnEvent(self, event, ...)
 	elseif ( event == "UNIT_ENTERED_VEHICLE" ) then
 		OverrideActionBar_CalcSize();
 	elseif ( event == "UNIT_ENTERING_VEHICLE" ) then
-		self.HasExit, self.HasPitch = select(8, ...);
+		self.HasExit, self.HasPitch = select(6, ...);
 	end
 end
 
@@ -147,13 +147,13 @@ end
 
 
 function OverrideActionBar_GetMicroButtonAnchor()
-	local x, y = 542, 41;
+	local x, y = 548, 43;
 	if OverrideActionBar.HasExit and OverrideActionBar.HasPitch then
-		x = 625;
+		x = 631;
 	elseif OverrideActionBar.HasPitch then
-		x = 629;
+		x = 635;
 	elseif OverrideActionBar.HasExit then
-		x = 537;
+		x = 543;
 	end
 	return x,y
 end
@@ -207,11 +207,26 @@ function OverrideActionBar_Setup(skin, barIndex)
 		end
 	end
 	
+	local shouldShowHealthBar;
+	local shouldShowManaBar;
+	--vehicles always show both bars, override bars check their flags
 	if HasVehicleActionBar() then
+		shouldShowHealthBar = true;
+		shouldShowManaBar = true;
+	else
+		shouldShowHealthBar = C_ActionBar.ShouldOverrideBarShowHealthBar();
+		shouldShowManaBar = C_ActionBar.ShouldOverrideBarShowManaBar();
+	end
+
+	if shouldShowHealthBar then
 		OverrideActionBarHealthBar:Show();
-		OverrideActionBarPowerBar:Show();
 	else
 		OverrideActionBarHealthBar:Hide();
+	end
+
+	if shouldShowManaBar then
+		OverrideActionBarPowerBar:Show();
+	else
 		OverrideActionBarPowerBar:Hide();
 	end
 

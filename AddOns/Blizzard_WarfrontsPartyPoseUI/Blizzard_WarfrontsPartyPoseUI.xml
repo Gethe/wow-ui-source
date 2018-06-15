@@ -1,0 +1,31 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Frame name="WarfrontsPartyPoseFrame" topLevel="true" parent="UIParent" inherits="PartyPoseFrameTemplate" mixin="WarfrontsPartyPoseMixin">
+		<Anchors>
+			<Anchor point="CENTER" x="5" y="5"/>
+		</Anchors>
+		<Frames>
+			<ModelScene parentKey="ModelScene" enableMouse="false" useParentLevel="true" inherits="PartyPoseModelFrameTemplate">
+				<Anchors>
+					<Anchor point="CENTER"/> 
+				</Anchors>
+			</ModelScene>
+			<Button parentKey="LeaveButton" inherits="UIPanelButtonNoTooltipTemplate">
+				<Size x="164" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ModelScene" x="-20" y="-45"/> 
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						ConfirmOrLeaveLFGParty(); 
+						HideUIPanel(self:GetParent());
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

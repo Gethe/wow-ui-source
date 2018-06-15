@@ -19,19 +19,17 @@ function MirrorTimer_Show(timer, value, maxvalue, scale, paused, label)
 
 	-- Pick a free dialog to use
 	local dialog = nil;
-	if ( not dialog ) then
-		-- Find an open dialog of the requested type
-		for index = 1, MIRRORTIMER_NUMTIMERS, 1 do
-			local frame = _G["MirrorTimer"..index];
-			if ( frame:IsShown() and (frame.timer == timer) ) then
-				dialog = frame;
-				break;
-			end
+	-- Find an open dialog of the requested type
+	for index = 1, MIRRORTIMER_NUMTIMERS, 1 do
+		local frame = _G["MirrorTimer"..index];
+		if ( frame:IsShown() and (frame.timer == timer) ) then
+			dialog = frame;
+			break;
 		end
 	end
 	if ( not dialog ) then
 		-- Find a free dialog
-		for index = 1, STATICPOPUP_NUMDIALOGS, 1 do
+		for index = 1, MIRRORTIMER_NUMTIMERS, 1 do
 			local frame = _G["MirrorTimer"..index];
 			if ( not frame:IsShown() ) then
 				dialog = frame;

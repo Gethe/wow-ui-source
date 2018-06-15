@@ -133,6 +133,15 @@
 	<Binding name="COMBATLOGBOTTOM" category="BINDING_HEADER_CHAT">
 		ChatFrame2:ScrollToBottom();
 	</Binding>
+	<Binding name="TOGGLE_VOICE_SELF_MUTE" category="BINDING_HEADER_CHAT">
+		C_VoiceChat.ToggleMuted();
+	</Binding>
+	<Binding name="TOGGLE_VOICE_SELF_DEAFEN" category="BINDING_HEADER_CHAT">
+		C_VoiceChat.ToggleDeafened();
+	</Binding>
+	<Binding name="TOGGLE_VOICE_PUSH_TO_TALK" category="BINDING_HEADER_CHAT" customBindingID="VoicePushToTalk">
+		nop(); -- Action handler is custom
+	</Binding>
 	<!-- Action bar bindings header="ACTIONBAR" -->
 	<Binding name="ACTIONBUTTON1" runOnUp="true" category="BINDING_HEADER_ACTIONBAR">
 		if ( keystate == "down" ) then
@@ -929,9 +938,7 @@
 		TargetUnit("mouseover");
 	</Binding>
 	<Binding name="TARGETTALKER" category="BINDING_HEADER_TARGETING">
-		if ( #VOICECHAT_TALKERS > 0 ) then
-			VoiceChatTalkers.buttons[#VOICECHAT_TALKERS].button:Click();
-		end
+		nop();
 	</Binding>
 
 	<!-- UI Panels header="INTERFACE" -->
@@ -994,9 +1001,7 @@
 		ToggleWorldMap();
 	</Binding>
 	<Binding name="TOGGLEWORLDMAPSIZE" category="BINDING_HEADER_INTERFACE">
-		if ( WorldMapFrame:IsShown() ) then
-			WorldMapFrame_ToggleWindowSize();
-		end
+		-- MAPREFACTORTODO: Reimplement bind
 	</Binding>
 	<Binding name="TOGGLEMINIMAP" category="BINDING_HEADER_INTERFACE">
 		ToggleMinimap();
@@ -1005,7 +1010,7 @@
 		ToggleMiniMapRotation();
 	</Binding>
 	<Binding name="TOGGLEBATTLEFIELDMINIMAP" category="BINDING_HEADER_INTERFACE">
-		ToggleBattlefieldMinimap();
+		ToggleBattlefieldMap();
 	</Binding>
 	<Binding name="TOGGLEWORLDSTATESCORES" category="BINDING_HEADER_INTERFACE">
 		ToggleWorldStateScoreFrame();
@@ -1018,22 +1023,19 @@
 		ToggleFriendsFrame();
 	</Binding>
 	<Binding name="TOGGLEFRIENDSTAB" category="BINDING_HEADER_INTERFACE">
-		ToggleFriendsFrame(1);
+		ToggleFriendsFrame(FRIEND_TAB_FRIENDS);
 	</Binding>
 	<Binding name="TOGGLEQUICKJOINTAB" category="BINDING_HEADER_INTERFACE">
 		ToggleQuickJoinPanel();
 	</Binding>
 	<Binding name="TOGGLEWHOTAB" category="BINDING_HEADER_INTERFACE">
-		ToggleFriendsFrame(2);
+		ToggleFriendsFrame(FRIEND_TAB_WHO);
 	</Binding>
 	<Binding name="TOGGLECHATTAB" category="BINDING_HEADER_INTERFACE">
-		ToggleFriendsFrame(3);
+		ToggleChannelFrame();
 	</Binding>
 	<Binding name="TOGGLERAIDTAB" category="BINDING_HEADER_INTERFACE">
 		ToggleRaidFrame();
-	</Binding>
-	<Binding name="TOGGLECHANNELPULLOUT" category="BINDING_HEADER_INTERFACE">
-		ChannelPullout_ToggleDisplay();
 	</Binding>
 
 	<Binding name="TOGGLEGROUPFINDER" header="BLANK13" category="BINDING_HEADER_INTERFACE">
@@ -1074,8 +1076,6 @@
 		end
 	</Binding>
 
-
-
   <!-- Misc header="MISC" -->
 	<Binding name="STOPCASTING" category="BINDING_HEADER_MISC">
 		SpellStopCasting();
@@ -1103,13 +1103,6 @@
 	</Binding>
 	<Binding name="MASTERVOLUMEDOWN" category="BINDING_HEADER_MISC">
 		Sound_MasterVolumeDown();
-	</Binding>
-	<Binding name="TOGGLESELFMUTE" category="BINDING_HEADER_MISC">
-		if ( GetCVar("VoiceChatSelfMute") == "0" ) then
-			SetCVar("VoiceChatSelfMute", 1);
-		else
-			SetCVar("VoiceChatSelfMute", 0);
-		end
 	</Binding>
 	<Binding name="TOGGLEUI" category="BINDING_HEADER_MISC">
 		if ( UIParent:IsShown() ) then
@@ -1188,6 +1181,9 @@
 	</Binding>
 	<Binding name="TOGGLEANIMKITDISPLAY" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
 		ToggleAnimKitDisplay();
+	</Binding>
+	<Binding name="TOGGLEDEBUGAIDISPLAY" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
+		ToggleDebugAIDisplay();
 	</Binding>
 	<!-- Commentator Mode Bindings -->
 	<Binding name="TOGGLECOMMENTATOR" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
@@ -1344,7 +1340,7 @@
 	<ModifiedClick action="STICKYCAMERA" default="CTRL"/>
 	<ModifiedClick action="CHATLINK" default="SHIFT-BUTTON1"/>
 	<ModifiedClick action="DRESSUP" default="CTRL-BUTTON1"/>
-	<ModifiedClick action="SOCKETITEM" default="SHIFT-BUTTON2"/>
+	<ModifiedClick action="EXPANDITEM" default="SHIFT-BUTTON2"/>
 	<ModifiedClick action="SPLITSTACK" default="SHIFT"/>
 	<ModifiedClick action="PICKUPACTION" default="SHIFT"/>
 	<ModifiedClick action="PICKUPITEM" default="SHIFT"/>

@@ -91,18 +91,20 @@ function VehicleSeatIndicator_OnLoad(self)
 end
 
 function VehicleSeatIndicator_OnEvent(self, event, ...)
-	local arg1, arg2, _, _, _, arg6 = ...;
-	if ( event == "UNIT_ENTERED_VEHICLE" and arg1 == "player" ) then
-		VehicleSeatIndicator_SetUpVehicle(arg6);
-	elseif ( event == "PLAYER_GAINS_VEHICLE_DATA" and arg1 == "player" ) then
-		VehicleSeatIndicator_SetUpVehicle(arg2);
-	elseif ( event == "UNIT_ENTERING_VEHICLE" and arg1 == "player" ) then
+	local unitToken = ...;
+	if ( event == "UNIT_ENTERED_VEHICLE" and unitToken == "player" ) then
+		local vehicleIndicatorID = select(4, ...);
+		VehicleSeatIndicator_SetUpVehicle(vehicleIndicatorID);
+	elseif ( event == "PLAYER_GAINS_VEHICLE_DATA" and unitToken == "player" ) then
+		local vehicleIndicatorID = select(2, ...);
+		VehicleSeatIndicator_SetUpVehicle(vehicleIndicatorID);
+	elseif ( event == "UNIT_ENTERING_VEHICLE" and unitToken == "player" ) then
 		self.hasPulsedPlayer = false;
 	elseif ( event == "VEHICLE_PASSENGERS_CHANGED" ) then
 		VehicleSeatIndicator_Update();
-	elseif ( (event == "UNIT_EXITED_VEHICLE" and arg1 == "player") or
-	(event == "PLAYER_ENTERING_WORLD" and VehicleSeatIndicator.currSkin and UnitVehicleSeatCount("player") == 0 ) or
-	(event == "PLAYER_LOSES_VEHICLE_DATA" and arg1 == "player") ) then
+	elseif ( (event == "UNIT_EXITED_VEHICLE" and unitToken == "player") or
+			 (event == "PLAYER_ENTERING_WORLD" and VehicleSeatIndicator.currSkin and UnitVehicleSeatCount("player") == 0 ) or
+			 (event == "PLAYER_LOSES_VEHICLE_DATA" and unitToken == "player") ) then
 		VehicleSeatIndicator_UnloadTextures();
 	end
 end

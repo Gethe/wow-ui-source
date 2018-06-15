@@ -1,4 +1,4 @@
-DEBUGLOCALS_LEVEL = 5;
+DEBUGLOCALS_LEVEL = 6;
 
 local ERROR_FORMAT = [[|cffffd200Message:|r|cffffffff %s|r
 |cffffd200Time:|r|cffffffff %s|r
@@ -44,6 +44,7 @@ function ScriptErrorsFrameMixin:OnShow()
 end
 
 function ScriptErrorsFrameMixin:DisplayMessageInternal(msg, warnType, keepHidden, locals, msgKey)
+	addframetext("Lua Error: "..msgKey);
 	local index = self.seen[msgKey];
 	if ( index ) then
 		self.count[index] = self.count[index] + 1;

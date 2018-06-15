@@ -1,5 +1,5 @@
 PETACTIONBAR_SLIDETIME = 0.09;
-PETACTIONBAR_YPOS = 98;
+PETACTIONBAR_YPOS = 89;
 PETACTIONBAR_XPOS = 36;
 NUM_PET_ACTION_SLOTS = 10;
 
@@ -32,6 +32,24 @@ function UpdatePetActionHighlightMarks(petAction)
 	end
 end
 
+function PetActionBar_OnShow(self)
+	UIParent_ManageFramePositions(self);
+end
+
+local function PetActionBar_CancelSpellLoadCallback(button)
+	if button.spellDataLoadedCancelFunc then
+		button.spellDataLoadedCancelFunc();
+		button.spellDataLoadedCancelFunc = nil;
+	end
+end
+
+function PetActionBar_OnHide(self)
+	for i=1, NUM_PET_ACTION_SLOTS, 1 do
+		PetActionBar_CancelSpellLoadCallback(_G["PetActionButton" .. i]);
+	end
+	UIParent_ManageFramePositions(self);
+end
+
 function PetActionBar_OnLoad (self)
 	self:RegisterEvent("PLAYER_CONTROL_LOST");
 	self:RegisterEvent("PLAYER_CONTROL_GAINED");
@@ -42,7 +60,6 @@ function PetActionBar_OnLoad (self)
 	self:RegisterEvent("PET_BAR_UPDATE_COOLDOWN");
 	self:RegisterEvent("PET_BAR_SHOWGRID");
 	self:RegisterEvent("PET_BAR_HIDEGRID");
-	self:RegisterEvent("PET_BAR_HIDE");
 	self:RegisterEvent("PET_BAR_UPDATE_USABLE");
 	self:RegisterEvent("PET_UI_UPDATE");
 	self:RegisterEvent("PLAYER_TARGET_CHANGED");
@@ -80,8 +97,6 @@ function PetActionBar_OnEvent (self, event, ...)
 		PetActionBar_ShowGrid();
 	elseif ( event =="PET_BAR_HIDEGRID" ) then
 		PetActionBar_HideGrid();
-	elseif ( event =="PET_BAR_HIDE" ) then
-		HidePetActionBar();
 	end
 end
 
@@ -99,23 +114,19 @@ function PetActionBarFrame_OnUpdate(self, elapsed)
 		if ( self.mode == "show" ) then
 			yPos = (self.slideTimer/self.timeToSlide) * PETACTIONBAR_YPOS;
 			self:SetPoint("TOPLEFT", self:GetParent(), "BOTTOMLEFT", PETACTIONBAR_XPOS, yPos);
-			self.state = "showing";
 			self:Show();
 		elseif ( self.mode == "hide" ) then
 			yPos = (1 - (self.slideTimer/self.timeToSlide)) * PETACTIONBAR_YPOS;
 			self:SetPoint("TOPLEFT", self:GetParent(), "BOTTOMLEFT", PETACTIONBAR_XPOS, yPos);
-			self.state = "hiding";
 		end
 		self.slideTimer = self.slideTimer + elapsed;
 	else
 		self.completed = 1;
 		if ( self.mode == "show" ) then
 			self:SetPoint("TOPLEFT", self:GetParent(), "BOTTOMLEFT", PETACTIONBAR_XPOS, PETACTIONBAR_YPOS);
-			self.state = "top";
 			--Move the chat frame and edit box up a bit
 		elseif ( self.mode == "hide" ) then
 			self:SetPoint("TOPLEFT", self:GetParent(), "BOTTOMLEFT", PETACTIONBAR_XPOS, 0);
-			self.state = "bottom";
 			self:Hide();
 			--Move the chat frame and edit box back down to original position
 		end
@@ -127,7 +138,7 @@ function PetActionBarFrame_OnUpdate(self, elapsed)
 		rangeTimer = rangeTimer - elapsed;
 		if ( rangeTimer <= 0 ) then
 			for i=1, NUM_PET_ACTION_SLOTS, 1 do
-				local name, subtext, texture, isToken, isActive, autoCastAllowed, autoCastEnabled, spellID, checksRange, inRange = GetPetActionInfo(i);
+				local name, texture, isToken, isActive, autoCastAllowed, autoCastEnabled, spellID, checksRange, inRange = GetPetActionInfo(i);
 				ActionButton_UpdateRangeIndicator(_G["PetActionButton" .. i], checksRange, inRange);
 			end
 			rangeTimer = TOOLTIP_UPDATE_TIME;
@@ -144,7 +155,7 @@ function PetActionBar_Update (self)
 		petActionIcon = _G[buttonName.."Icon"];
 		petAutoCastableTexture = _G[buttonName.."AutoCastable"];
 		petAutoCastShine = _G[buttonName.."Shine"];
-		local name, subtext, texture, isToken, isActive, autoCastAllowed, autoCastEnabled = GetPetActionInfo(i);
+		local name, texture, isToken, isActive, autoCastAllowed, autoCastEnabled, spellID = GetPetActionInfo(i);
 		if ( not isToken ) then
 			petActionIcon:SetTexture(texture);
 			petActionButton.tooltipName = name;
@@ -153,7 +164,12 @@ function PetActionBar_Update (self)
 			petActionButton.tooltipName = _G[name];
 		end
 		petActionButton.isToken = isToken;
-		petActionButton.tooltipSubtext = subtext;
+		if spellID then
+			local spell = Spell:CreateFromSpellID(spellID);
+			petActionButton.spellDataLoadedCancelFunc = spell:ContinueWithCancelOnSpellLoad(function()
+				petActionButton.tooltipSubtext = spell:GetSpellSubtext();
+			end);
+		end
 		if ( isActive ) then
 			if ( IsPetAttackAction(i) ) then
 				PetActionButton_StartFlash(petActionButton);

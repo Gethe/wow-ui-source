@@ -120,61 +120,6 @@
 		</Scripts>
 	</Button>
 
-	<Frame name="GarrisonFollowerListButtonAbilityTemplate" virtual="true">
-		<Size x="234" y="20"/>
-		<KeyValues>
-			<KeyValue key="followerTypeID" value="1" type="number"/>
-		</KeyValues>
-		<Layers>
-			<Layer level="ARTWORK">
-				<Texture parentKey="Icon">
-					<Size x="20" y="20"/>
-					<Anchors>
-						<Anchor point="LEFT" x="2"/>
-					</Anchors>
-				</Texture>
-				<FontString parentKey="Name" inherits="GameFontHighlight" justifyH="LEFT">
-					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="2"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnEnter>
-				ShowGarrisonFollowerAbilityTooltip(self, self.abilityID, self.followerTypeID);
-			</OnEnter>
-			<OnLeave>
-				HideGarrisonFollowerAbilityTooltip(self.followerTypeID);
-			</OnLeave>
-		</Scripts>
-	</Frame>
-
-	<Frame name="GarrisonMissionAbilityCounterTemplate" inherits="GarrisonAbilityCounterTemplate" virtual="true">
-		<Layers>
-			<Layer level="ARTWORK">
-				<Texture parentKey="AbilityFeedbackGlow" hidden="false" alpha="0.01" alphaMode="ADD" atlas="GarrMission-AbilityHighlight">
-					<Size x="30" y="30"/>
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Animations>
-			<AnimationGroup parentKey="AbilityFeedbackGlowAnim" setToFinalAlpha="true">
-				<Alpha childKey="AbilityFeedbackGlow" smoothing="IN" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
-				<Scale childKey="AbilityFeedbackGlow" duration="0.25" order="1" fromScaleX="0.8" fromScaleY="0.8" toScaleX="1.4" toScaleY="1.4"/>
-				<Alpha childKey="AbilityFeedbackGlow" startDelay="0.2" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
-			</AnimationGroup>
-		</Animations>
-
-		<Scripts>
-			<OnEnter function="GarrisonMissionMechanicFollowerCounter_OnEnter"/>
-			<OnLeave function="GarrisonMissionMechanicFollowerCounter_OnLeave"/>
-		</Scripts>
-	</Frame>
-
 	<Frame name="GarrisonMissionAbilityLargeCounterTemplate" inherits="GarrisonAbilityLargeCounterTemplate" virtual="true">
 		<Scripts>
 			<OnEnter function="GarrisonMissionMechanicFollowerCounter_OnEnter"/>
@@ -369,25 +314,18 @@
 					</Anchors>
 				</Texture>
 			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="IconOverlay" hidden="true">
+					<Size x="48" y="48"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 		</Layers>
 		<Scripts>
 			<OnEnter>
-				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-				if (self.itemID) then
-					GameTooltip:SetItemByID(self.itemID);
-					return;
-				end
-				if (self.currencyID and self.currencyID ~= 0) then
-					GameTooltip:SetCurrencyByID(self.currencyID);
-					return;
-				end
-				if (self.title) then
-					GameTooltip:SetText(self.title);
-				end
-				if (self.tooltip) then
-					GameTooltip:AddLine(self.tooltip, 1, 1, 1, true);
-				end
-				GameTooltip:Show();
+				GarrisonMissionButtonRewards_OnEnter(self); 
 			</OnEnter>
 			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>

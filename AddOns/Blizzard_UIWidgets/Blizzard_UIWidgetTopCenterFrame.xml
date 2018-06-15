@@ -1,0 +1,12 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Frame name="UIWidgetTopCenterContainerFrame" toplevel="true" parent="UIParent" secureMixin="UIWidgetTopCenterContainerMixin">
+		<Size x="10" y="10"/>
+		<Anchors>
+			<Anchor point="TOP" x="0" y="-15"/>
+		</Anchors>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+</Ui>

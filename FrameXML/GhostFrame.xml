@@ -1,10 +1,8 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
-	<Button name="GhostFrame" inherits="UIPanelLargeSilverButton" parent="UIParent" hidden="true">
+	<Script file="GhostFrame.lua"/>
+	<Button name="GhostFrame" inherits="UIPanelLargeSilverButton" parent="UIParent" hidden="true" secureMixin="GhostFrameMixin">
 		<Size x="1" y="46"/>
-		<Anchors>
-			<Anchor point="TOP" relativeTo="WorldStateAlwaysUpFrame" relativePoint="BOTTOM" x="0" y="-4"/>
-		</Anchors>
 		<Frames>
 			<Frame name="$parentContentsFrame">
 				<Size x="130" y="46"/>
@@ -30,6 +28,8 @@
 			</Frame>
 		</Frames>
 		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
 			<OnShow>
 				self:SetWidth(130);
 			</OnShow>

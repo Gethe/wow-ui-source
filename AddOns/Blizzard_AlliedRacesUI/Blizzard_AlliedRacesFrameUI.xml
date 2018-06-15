@@ -228,7 +228,6 @@
 					</Button>
 				</Frames>
 				<Scripts>
-					<OnHide function="ModelControl_OnHide"/>
 					<OnMouseWheel>
 						Model_OnMouseWheel(self, delta);
 					</OnMouseWheel>
@@ -333,7 +332,12 @@
 														<Anchor point="BOTTOMRIGHT" relativeKey="$parent.RaceDescriptionText" x="9" y="-11"/>
 													</Anchors>
 												</Texture>
-												<Texture parentKey="DescriptionBGBottom" inherits="UI-PaperOverlay-AbilityTextBottomBorder"/>
+												<Texture parentKey="DescriptionBGBottom" inherits="UI-PaperOverlay-AbilityTextBottomBorder">
+													<Anchors>
+														<Anchor point="LEFT" relativeKey="$parent.DescriptionBG" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+														<Anchor point="RIGHT" relativeKey="$parent.DescriptionBG" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+													</Anchors>
+												</Texture>
 											</Layer>
 										</Layers>
 									</Frame>

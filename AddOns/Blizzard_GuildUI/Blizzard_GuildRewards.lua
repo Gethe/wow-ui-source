@@ -118,7 +118,14 @@ function GuildRewardsButton_OnEnter(self)
 		GameTooltip:AddLine(" ", 1, 0, 0, true);
 		GameTooltip:AddLine(string.format(REQUIRES_GUILD_FACTION_TOOLTIP, factionStandingtext), 1, 0, 0, true);
 	end
+	self.UpdateTooltip = GuildRewardsButton_OnEnter;
 	GameTooltip:Show();
+end
+
+function GuildRewardsButton_OnLeave(self)
+	GameTooltip:Hide();
+	GuildRewardsFrame.activeButton = nil;
+	self.UpdateTooltip = nil;
 end
 
 function GuildRewardsButton_OnClick(self, button)

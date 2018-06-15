@@ -1,0 +1,142 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="CreateChannelPopup.lua"/>
+
+	<EditBox name="CreateChannelPopupEditBoxTemplate" letters="31" multiLine="false" enableMouse="true" inherits="InputBoxTemplate" virtual="true">
+		<Size x="170" y="16"/>
+		<Scripts>
+			<OnEnterPressed>
+				self:GetParent():OnOKClicked();
+			</OnEnterPressed>
+			<OnEscapePressed>
+				self:GetParent():OnCancelClicked();
+			</OnEscapePressed>
+			<OnTabPressed>
+				self:GetParent():OnTabPressed();
+			</OnTabPressed>
+		</Scripts>
+	</EditBox>
+
+	<Button name="CreateChannelPopupButtonTemplate" inherits="UIPanelButtonTemplate" virtual="true">
+		<Size x="96" y="22"/>
+		<NormalFont style="GameFontNormalSmall"/>
+		<HighlightFont style="GameFontHighlightSmall"/>
+		<DisabledFont style="GameFontDisableSmall"/>
+	</Button>
+
+	<Frame name="CreateChannelPopup" mixin="CreateChannelPopupMixin" parent="UIParent" frameStrata="DIALOG" hidden="true" enableKeyboard="true" enableMouse="true">
+		<Size x="212" y="200"/>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="BORDER">
+				<FontString parentKey="Title" inherits="GameFontNormal" text="CHANNEL_NEW_CHANNEL">
+					<Size x="0" y="12"/>
+					<Anchors>
+						<Anchor point="TOP" x="-5" y="-13"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="Titlebar" file="Interface\FriendsFrame\UI-ChannelFrame-Titlebar">
+					<Size x="256" y="32"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="8" y="-8"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Corner" file="Interface\DialogFrame\UI-DialogBox-Corner">
+					<Size x="32" y="32"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="-6" y="-7"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<EditBox parentKey="Name" autoFocus="true" inherits="CreateChannelPopupEditBoxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="23" y="-60"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString parentKey="Label" inherits="GameFontNormal" text="CHANNEL_CHANNEL_NAME">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="0" y="5"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</EditBox>
+			<EditBox parentKey="Password" inherits="CreateChannelPopupEditBoxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Name" relativePoint="BOTTOMLEFT" x="0" y="-30"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString parentKey="Label" inherits="GameFontNormal" text="PASSWORD">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="0" y="5"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</EditBox>
+			<CheckButton parentKey="UseVoiceChat" inherits="UICheckButtonTemplate" hidden="true">
+				<Size x="24" y="24"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Password" relativePoint="BOTTOMLEFT" x="-7" y="-14"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.text:SetFontObject(GameFontNormal);
+						self.text:SetText(ENABLE_VOICECHAT);
+						self.text:SetPoint("LEFT", self, "RIGHT", 2, 2);
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-2" y="-3"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent():OnCancelClicked();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button parentKey="OKButton" inherits="CreateChannelPopupButtonTemplate" text="OKAY">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="10" y="12"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent():OnOKClicked();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button parentKey="CancelButton" inherits="CreateChannelPopupButtonTemplate" text="CANCEL">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.OKButton" relativePoint="RIGHT" x="1" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent():OnCancelClicked();
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+</Ui>

@@ -1,9 +1,58 @@
 local arenaFrames;
 
+InspectPvpTalentSlotMixin = CreateFromMixins(PvpTalentSlotMixin);
+
+function InspectPvpTalentSlotMixin:OnLoad()
+	self.Texture:SetSize(34, 34);
+end
+
+function InspectPvpTalentSlotMixin:Update()
+	if (not self.slotIndex) then
+		error("Slot must be setup with a slot index first.");
+	end
+
+	if (not INSPECTED_UNIT) then
+		return;
+	end
+
+	local selectedTalentID = C_SpecializationInfo.GetInspectSelectedPvpTalent(INSPECTED_UNIT, self.slotIndex);
+
+	if (selectedTalentID) then
+		SetPortraitToTexture(self.Texture, select(3, GetPvpTalentInfoByID(selectedTalentID)));
+		self.Texture:Show();
+		self.talentID = selectedTalentID;
+	else
+		self.Texture:Hide();
+	end
+end
+
+function InspectPvpTalentSlotMixin:OnEnter()
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	if (self.talentID) then
+		local IS_INSPECT = true;
+		GameTooltip:SetPvpTalent(self.talentID, IS_INSPECT);
+	else
+		GameTooltip:SetText(TALENT_NOT_SELECTED, HIGHLIGHT_FONT_COLOR:GetRGB());
+	end
+	GameTooltip:Show();
+end
+
+function InspectPvpTalentSlotMixin:OnClick()
+	if (IsModifiedClick("CHATLINK") and self.talentID) then
+		local link = GetPvpTalentLink(self.talentID);
+		if (link) then
+			ChatEdit_InsertLink(link);
+		end
+	end
+end
+
 function InspectPVPFrame_OnLoad(self)
 	self:RegisterEvent("INSPECT_HONOR_UPDATE");
 	self.inspect = true;
 	arenaFrames = {InspectPVPFrame.Arena2v2, InspectPVPFrame.Arena3v3};
+	for i, slot in ipairs(self.Slots) do
+		slot:SetUp(i);
+	end
 end
 
 function InspectPVPFrame_OnEvent(self, event, ...)
@@ -34,31 +83,20 @@ end
 function InspectPVPFrame_Update()
 	local parent = InspectPVPFrame:GetParent();
 	local factionGroup = UnitFactionGroup(INSPECTED_UNIT);
-	local prestigeLevel = UnitPrestige(INSPECTED_UNIT);
 	local _, _, _, _, lifetimeHKs, _ = GetInspectHonorData();
 	local level = UnitLevel(INSPECTED_UNIT);
 
 	InspectPVPFrame.HKs:SetFormattedText(INSPECT_HONORABLE_KILLS, lifetimeHKs);
 
-	if (level < MAX_PLAYER_LEVEL_TABLE[LE_EXPANSION_LEVEL_CURRENT]) then
+	if (level < SHOW_PVP_TALENT_LEVEL) then
 		InspectPVPFrame.SmallWreath:Hide();
 		InspectPVPFrame.HonorLevel:Hide();
 		InspectPVPFrame.RatedBG:Hide();
 		for i = 1, MAX_ARENA_TEAMS do
 			arenaFrames[i]:Hide();
 		end
-		InspectPVPFrame.Talents:Hide();
 	else
-		if (prestigeLevel > 0) then
-			InspectPVPFrame.PortraitBackground:SetAtlas("honorsystem-prestige-laurel-bg-"..factionGroup, false);
-			InspectPVPFrame.PortraitBackground:Show();
-			parent.portrait:SetSize(57,57);
-			parent.portrait:ClearAllPoints();
-			parent.portrait:SetPoint("CENTER", InspectPVPFrame.PortraitBackground, "CENTER", 0, 0);
-			parent.portrait:SetTexture(GetPrestigeInfo(UnitPrestige(INSPECTED_UNIT)));
-		end
-		InspectPVPFrame.SmallWreath:SetShown(prestigeLevel > 0);
-
+		InspectPVPFrame.SmallWreath:SetShown(false);
 		InspectPVPFrame.HonorLevel:SetFormattedText(HONOR_LEVEL_LABEL, UnitHonorLevel(INSPECTED_UNIT));
 		InspectPVPFrame.HonorLevel:Show();
 		local rating, played, won = GetInspectRatedBGData();
@@ -73,43 +111,20 @@ function InspectPVPFrame_Update()
 			frame:Show();
 		end
 		InspectPVPFrame.talentGroup = GetActiveSpecGroup(true);
-		PVPTalentFrame_Update(InspectPVPFrame, INSPECTED_UNIT);
-		InspectPVPFrame.Talents:Show();
-	end
-end
-
-function InspectPVPFramePortraitMouseOverFrame_OnEnter(self)
-	local prestige = UnitPrestige(INSPECTED_UNIT);
-	if (prestige > 0) then
-		GameTooltip:ClearAllPoints();
-		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		GameTooltip:SetText(select(2, GetPrestigeInfo(prestige)), 1, 1, 1, nil, true);
-		GameTooltip:AddLine(" ");
-		for i = 1, GetMaxPrestigeLevel() do
-			local color;
-			if (prestige == i) then
-				color = GREEN_FONT_COLOR;
-			else
-				color = NORMAL_FONT_COLOR;
-			end
-            local texture, name = GetPrestigeInfo(i);
-			GameTooltip:AddLine(PRESTIGE_RANK_TOOLTIP_LINE:format(texture, name), color.r, color.g, color.b);
+		for i, slot in ipairs(InspectPVPFrame.Slots) do
+			slot:Update();
 		end
-		GameTooltip:Show();
 	end
 end
 
 function InspectPvPTalentFrameTalent_OnEnter(self)
 	local classDisplayName, class, classID = UnitClass(INSPECTED_UNIT);
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");	
-	GameTooltip:SetPvpTalent(self.pvpTalentID ,true, self.talentGroup, INSPECTED_UNIT, classID);
+	GameTooltip:SetPvpTalent(self.pvpTalentID, true, self.talentGroup);
 end
 
 function InspectPvPTalentFrameTalent_OnClick(self)
 	if ( IsModifiedClick("CHATLINK") ) then
-		local link = GetPvpTalentLink(self.pvpTalentID);
-		if ( link ) then
-			ChatEdit_InsertLink(link);
-		end
+		ChatEdit_InsertLink(GetPvpTalentLink(self.pvpTalentID));
 	end
 end

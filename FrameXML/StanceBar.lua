@@ -57,14 +57,14 @@ end
 
 function StanceBar_UpdateState ()
 	local numForms = GetNumShapeshiftForms();
-	local texture, name, isActive, isCastable;
+	local texture, isActive, isCastable;
 	local button, icon, cooldown;
 	local start, duration, enable;
 	for i=1, NUM_STANCE_SLOTS do
 		button = StanceBarFrame.StanceButtons[i];
 		icon = button.icon;
 		if ( i <= numForms ) then
-			texture, name, isActive, isCastable = GetShapeshiftFormInfo(i);
+			texture, isActive, isCastable = GetShapeshiftFormInfo(i);
 			icon:SetTexture(texture);
 			
 			--Cooldown stuffs

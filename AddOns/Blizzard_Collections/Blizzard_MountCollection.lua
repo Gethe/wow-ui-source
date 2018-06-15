@@ -445,7 +445,7 @@ end
 
 function MountJournalSummonRandomFavoriteButton_OnLoad(self)
 	self.spellID = SUMMON_RANDOM_FAVORITE_MOUNT_SPELL;
-	local spellName, spellSubname, spellIcon = GetSpellInfo(self.spellID);
+	local spellName, _, spellIcon = GetSpellInfo(self.spellID);
 	self.texture:SetTexture(spellIcon);
 	-- Use the global string instead of the spellName from the db here so that we can have custom newlines in the string
 	self.spellname:SetText(MOUNT_JOURNAL_SUMMON_RANDOM_FAVORITE_MOUNT);

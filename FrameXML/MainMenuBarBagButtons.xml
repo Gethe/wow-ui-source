@@ -96,16 +96,10 @@
 		</Scripts>
 		<CheckedTexture alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight"/>
 	</CheckButton>
-	<CheckButton name="MainMenuBarBackpackButton" inherits="ItemButtonTemplate, ItemAnimTemplate" parent="MainMenuBarArtFrame" id="0">
-		<Size>
-			<AbsDimension x="30" y="30"/>
-		</Size>
+	<CheckButton name="MainMenuBarBackpackButton" inherits="ItemButtonTemplate, ItemAnimTemplate" parent="MicroButtonAndBagsBar" id="0">
+		<Size x="40" y="40"/>
 		<Anchors>
-			<Anchor point="BOTTOMRIGHT">
-				<Offset>
-					<AbsDimension x="-4" y="6"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="TOPRIGHT" x="-4" y="-4"/>
 		</Anchors>
 		<Scripts>
 			<OnLoad>
@@ -116,10 +110,10 @@
 				self:RegisterEvent("CVAR_UPDATE");
 				self:RegisterEvent("BAG_UPDATE");
 				self:RegisterEvent("INVENTORY_SEARCH_UPDATE");
-				_G[self:GetName().."NormalTexture"]:SetWidth(50);
-				_G[self:GetName().."NormalTexture"]:SetHeight(50);
+				_G[self:GetName().."NormalTexture"]:SetWidth(64);
+				_G[self:GetName().."NormalTexture"]:SetHeight(64);
 				_G[self:GetName().."Count"]:ClearAllPoints();
-				_G[self:GetName().."Count"]:SetPoint("CENTER", 1, -7);
+				_G[self:GetName().."Count"]:SetPoint("CENTER", 0, -10);
 			</OnLoad>
 			<OnClick>
 				if ( IsModifiedClick() ) then
@@ -147,16 +141,16 @@
 		</Scripts>
 		<CheckedTexture alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight"/>
 	</CheckButton>
-	<CheckButton name="CharacterBag0Slot" inherits="BagSlotButtonTemplate" parent="MainMenuBarArtFrame">
+	<CheckButton name="CharacterBag0Slot" inherits="BagSlotButtonTemplate" parent="MicroButtonAndBagsBar">
 		<Anchors>
 			<Anchor point="RIGHT" relativeTo="MainMenuBarBackpackButton" relativePoint="LEFT">
 				<Offset>
-					<AbsDimension x="-2" y="0"/>
+					<AbsDimension x="-4" y="-4"/>
 				</Offset>
 			</Anchor>
 		</Anchors>
 	</CheckButton>
-	<CheckButton name="CharacterBag1Slot" inherits="BagSlotButtonTemplate" parent="MainMenuBarArtFrame">
+	<CheckButton name="CharacterBag1Slot" inherits="BagSlotButtonTemplate" parent="MicroButtonAndBagsBar">
 		<Anchors>
 			<Anchor point="RIGHT" relativeTo="CharacterBag0Slot" relativePoint="LEFT">
 				<Offset>
@@ -165,7 +159,7 @@
 			</Anchor>
 		</Anchors>
 	</CheckButton>
-	<CheckButton name="CharacterBag2Slot" inherits="BagSlotButtonTemplate" parent="MainMenuBarArtFrame">
+	<CheckButton name="CharacterBag2Slot" inherits="BagSlotButtonTemplate" parent="MicroButtonAndBagsBar">
 		<Anchors>
 			<Anchor point="RIGHT" relativeTo="CharacterBag1Slot" relativePoint="LEFT">
 				<Offset>
@@ -174,7 +168,7 @@
 			</Anchor>
 		</Anchors>
 	</CheckButton>
-	<CheckButton name="CharacterBag3Slot" inherits="BagSlotButtonTemplate" parent="MainMenuBarArtFrame">
+	<CheckButton name="CharacterBag3Slot" inherits="BagSlotButtonTemplate" parent="MicroButtonAndBagsBar">
 		<Anchors>
 			<Anchor point="RIGHT" relativeTo="CharacterBag2Slot" relativePoint="LEFT">
 				<Offset>

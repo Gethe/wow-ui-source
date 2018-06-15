@@ -1,0 +1,89 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="ChannelFrame.lua"/>
+
+	<Frame name="ChannelFrame" toplevel="true" parent="UIParent" hidden="true" mixin="ChannelFrameMixin" inherits="ButtonFrameTemplate">
+		<Size x="402" y="423"/>
+		<Anchors>
+			<Anchor point="TOPLEFT"/>
+		</Anchors>
+		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="-1">
+				<Texture parentKey="Icon" file="Interface\FriendsFrame\Battlenet-Portrait">
+					<Size x="60" y="60"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-5" y="7"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString parentKey="TitleText" inherits="GameFontNormal" text="CHAT_CHANNELS">
+					<Size x="0" y="16"/>
+					<Anchors>
+						<Anchor point="TOP" y="-3"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="NewButton" inherits="UIPanelButtonTemplate" text="ADD">
+				<Size x="80" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="1.0" y="4.0" />
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent():ToggleCreateChannel();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button parentKey="SettingsButton" inherits="UIPanelButtonTemplate" text="SETTINGS">
+				<Size x="136" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-4" y="4" />
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent():ToggleVoiceSettings();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<ScrollFrame parentKey="ChannelList" inherits="ChannelListTemplate">
+				<Size x="178" y="0"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="7" y="-67" />
+					<Anchor point="BOTTOMLEFT" x="7" y="28" />
+				</Anchors>
+			</ScrollFrame>
+			<Frame parentKey="LeftInset" inherits="InsetFrameTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ChannelList" x="-5" y="7" />
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ChannelList" x="0" y="-2" />
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="ChannelRoster" inherits="ChannelRosterTemplate">
+				<Size x="1" y="0" />
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-26" y="-64" />
+					<Anchor point="BOTTOMRIGHT" x="-26" y="28" />
+				</Anchors>
+			</Frame>
+			<Frame parentKey="RightInset" inherits="InsetFrameTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ChannelRoster" x="0" y="4" />
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ChannelRoster.ScrollFrame.scrollBar" relativePoint="BOTTOMLEFT" x="-2" y="-16" />
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="Dropdown" hidden="true"/>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+			<OnUpdate method="OnUpdate"/>
+		</Scripts>
+	</Frame>
+</Ui>

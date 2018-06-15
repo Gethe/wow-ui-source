@@ -151,7 +151,7 @@
 	<Frame name="NPE_TutorialInterfaceHelp" parent="UIParent" hidden="true" frameStrata="MEDIUM">
 		<Size x="200" y="50" />
 		<Anchors>
-			<Anchor point="BOTTOM" relativeTo="GuildMicroButton" relativePoint="TOP" y="-10" />
+			<Anchor point="BOTTOMRIGHT" relativeTo="ActionButton12" relativePoint="TOPRIGHT" x="4" y="10" />
 		</Anchors>
 		<Backdrop edgeFile="Interface\Glues\Common\TextPanel-Border" tile="true">
 			<EdgeSize val="16" />

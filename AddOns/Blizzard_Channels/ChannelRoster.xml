@@ -1,0 +1,46 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="ChannelRoster.lua"/>
+
+	<Frame name="ChannelRosterTemplate" mixin="ChannelRosterMixin" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString parentKey="ChannelName" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size x="0" y="13"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="2" y="20.0" />
+						<Anchor point="TOPRIGHT" x="0" y="20.0" />
+					</Anchors>
+				</FontString>
+				<FontString parentKey="ChannelCount" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size x="30" y="13"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.ChannelName" relativePoint="RIGHT"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<ScrollFrame parentKey="ScrollFrame" setAllPoints="true" inherits="HybridScrollFrameTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="3" y="0"/>
+					<Anchor point="BOTTOMRIGHT" x="-3" y="3"/>
+				</Anchors>
+				<Frames>
+					<Slider inherits="HybridScrollBarTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="3" y="-13" />
+							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="3" y="11" />
+						</Anchors>
+					</Slider>
+				</Frames>
+			</ScrollFrame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

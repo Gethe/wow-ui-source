@@ -1,0 +1,69 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Frame name="UIWidgetTemplateStatusBar" inherits="UIWidgetBaseTemplate" virtual="true" mixin="UIWidgetTemplateStatusBarMixin">
+		<Frames>
+			<StatusBar parentKey="Bar" drawLayer="BACKGROUND" minValue="0" maxValue="100" defaultValue="0">
+				<Size x="215" y="15"/>
+				<Anchors>
+					<Anchor point="BOTTOM" y="5"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="BGLeft" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="LEFT" x="-2"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="BGRight" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="RIGHT" x="2"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="BGCenter">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.BGLeft" relativePoint="TOPRIGHT"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BGRight" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Label" inherits="GameFontHighlightMedium" justifyH="LEFT">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="BorderLeft" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="LEFT" x="-8"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="BorderRight" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="RIGHT" x="8"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="BorderCenter">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.BorderLeft" relativePoint="TOPRIGHT"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BorderRight" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</Texture>
+
+						<Texture parentKey="Spark" alphaMode="ADD" useAtlasSize="true"/>
+					</Layer>
+				</Layers>
+			</StatusBar>
+		</Frames>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Label" inherits="GameFontHighlight" >
+					<Anchors>
+						<Anchor point="BOTTOM" relativeKey="$parent.Bar" relativePoint="TOP" y="7"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+</Ui>

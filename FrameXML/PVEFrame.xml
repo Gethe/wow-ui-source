@@ -190,6 +190,12 @@
 				</Anchors>
 				<Scripts>
 					<OnClick function="PVEFrame_TabOnClick"/>
+					<OnEnter>
+						if (self.isDisabled) then 
+							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+							GameTooltip:SetText(MYTHIC_PLUS_TAB_DISABLE_TEXT); 
+						end
+					</OnEnter>
 				</Scripts>
 			</Button>
 			<Frame name="GroupFinderFrame" useParentLevel="true" setAllPoints="true">

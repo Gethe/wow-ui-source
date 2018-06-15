@@ -174,3 +174,162 @@ end
 function SparseGridMixin:CalculateLinearIndex(x, y)
 	return x + self.width * (y - 1);
 end
+
+-- Mix this in to make an object a doublyLinkedList
+DoublyLinkedListMixin = {nodeCount = 0};
+
+function DoublyLinkedListMixin:PushFront(nodeToInsert)
+	self:InsertBefore(nodeToInsert, self.front);
+end
+
+function DoublyLinkedListMixin:PushBack(nodeToInsert)
+	self:InsertAfter(nodeToInsert, self.back);
+end
+
+function DoublyLinkedListMixin:PopFront()
+	return self:Remove(self.front);
+end
+
+function DoublyLinkedListMixin:PopBack()
+	return self:Remove(self.back);
+end
+
+function DoublyLinkedListMixin:EnumerateNodes()
+	local index = 0;
+	local currentNode = self.front;
+
+	return function()
+		index = index + 1;
+		if currentNode then
+			local returnNode = currentNode;
+			currentNode = currentNode.next;
+			return index, returnNode;
+		else
+			return nil;
+		end
+	end;
+end
+
+function DoublyLinkedListMixin:EnumerateNodesReverse()
+	local index = 0;
+	local currentNode = self.back;
+
+	return function()
+		index = index + 1;
+		if currentNode then
+			local returnNode = currentNode;
+			currentNode = currentNode.prev;
+			return index, returnNode;
+		else
+			return nil;
+		end
+	end;
+end
+
+function DoublyLinkedListMixin:InsertBefore(nodeToInsert, listNode)
+	nodeToInsert.next = listNode;
+
+	if listNode then
+		if listNode.prev then
+			listNode.prev.next = nodeToInsert;
+		end
+
+		nodeToInsert.prev = listNode.prev;
+		listNode.prev = nodeToInsert;
+	end
+
+	if self.front == listNode then
+		self.front = nodeToInsert;
+	end
+
+	if not self.back then
+		self.back = nodeToInsert;
+	end
+
+	self.nodeCount = self.nodeCount + 1;
+end
+
+function DoublyLinkedListMixin:InsertAfter(nodeToInsert, listNode)
+	nodeToInsert.prev = listNode;
+
+	if listNode then
+		if listNode.next then
+			listNode.next.prev = nodeToInsert;
+		end
+
+		nodeToInsert.next = listNode.next;
+		listNode.next = nodeToInsert;
+	end
+
+	if self.back == listNode then
+		self.back = nodeToInsert;
+	end
+
+	if not self.front then
+		self.front = nodeToInsert;
+	end
+
+	self.nodeCount = self.nodeCount + 1;
+end
+
+function DoublyLinkedListMixin:Remove(node)
+	if node then
+		if self.front == node then
+			self.front = node.next;
+		end
+
+		if self.back == node then
+			self.back = node.prev;
+		end
+
+		if node.prev then
+			node.prev.next = node.next;
+		end
+
+		if node.next then
+			node.next.prev = node.prev;
+		end
+
+		node.prev = nil;
+		node.next = nil;
+
+		self.nodeCount = self.nodeCount - 1;
+	end
+
+	return node;
+end
+
+TextureLoadingGroupMixin = {};
+
+function TextureLoadingGroupMixin:AddTexture(texture)
+	self.textures = self.textures or {};
+	self.textures[texture] = true;
+end
+
+function TextureLoadingGroupMixin:RemoveTexture()
+	if self.textures then
+		self.textures[texture] = nil;
+	end
+end
+
+function TextureLoadingGroupMixin:Reset()
+	self.textures = nil;
+end
+
+function TextureLoadingGroupMixin:EnumerateTextures()
+	if self.textures then
+		return pairs(self.textures);
+	end
+	return nop;
+end
+
+function TextureLoadingGroupMixin:IsFullyLoaded()
+	if self.textures then
+		for texture in pairs(self.textures) do
+			if not texture:IsObjectLoaded() then
+				return false;
+			end
+		end
+	end
+	return true;
+end

@@ -69,11 +69,11 @@ function AdventureMapInsetMixin:BuildDetailTiles(insetIndex, tileIndex, numDetai
 	end
 
 	for tileIndex = 1, numDetailTiles do
-		local texturePath = C_AdventureMap.GetMapInsetDetailTileInfo(insetIndex, tileIndex);
+		local textureFileDataID = C_AdventureMap.GetMapInsetDetailTileInfo(insetIndex, tileIndex);
 
 		local detailTile = self.detailTilePool:Acquire();
 		detailTile:SetSize(EFFECTIVE_TILE_WIDTH, EFFECTIVE_TILE_HEIGHT);
-		detailTile:SetTexture(texturePath);
+		detailTile:SetTexture(textureFileDataID);
 
 		local tileRow = math.floor((tileIndex - 1) / TILES_PER_ROW) + 1;
 		local tileCol = (tileIndex - 1) % TILES_PER_ROW + 1;

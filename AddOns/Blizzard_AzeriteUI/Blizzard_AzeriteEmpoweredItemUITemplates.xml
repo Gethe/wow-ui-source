@@ -1,0 +1,251 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Texture name="AzeriteUITexture" virtual="true" scale=".5855" />
+
+	<Texture name="AzeriteRingBackgroundTexture" inherits="AzeriteUITexture" virtual="true">
+		<Anchors>
+			<Anchor point="CENTER" />
+		</Anchors>
+	</Texture>
+
+	<Texture name="AzeriteGearBackgroundTexture" inherits="AzeriteUITexture" virtual="true">
+		<Anchors>
+			<Anchor point="CENTER" />
+		</Anchors>
+	</Texture>
+
+	<Texture name="AzeriteGearTexture" inherits="AzeriteUITexture" virtual="true">
+		<Anchors>
+			<Anchor point="CENTER" />
+		</Anchors>
+	</Texture>
+
+	<Texture name="AzeriteRingGlowTexture" inherits="AzeriteUITexture" alpha="0.0" alphaMode="ADD" virtual="true">
+		<Anchors>
+			<Anchor point="CENTER" />
+		</Anchors>
+	</Texture>
+
+	<Texture name="AzeriteRingBorderTexture" inherits="AzeriteUITexture" virtual="true">
+		<Anchors>
+			<Anchor point="CENTER" />
+		</Anchors>
+	</Texture>
+
+	<Texture name="AzeriteRingLightsTexture" alpha="0.0" alphaMode="ADD" inherits="AzeriteUITexture" virtual="true">
+		<Anchors>
+			<Anchor point="CENTER" />
+		</Anchors>
+	</Texture>
+
+	<Texture name="AzeritePlugTexture" parentArray="Plugs" inherits="AzeriteUITexture" virtual="true">
+		<Anchors>
+			<Anchor point="CENTER" />
+		</Anchors>
+	</Texture>
+
+	<Texture name="AzeritePlugBackgroundTexture" inherits="AzeriteUITexture" virtual="true">
+		<Anchors>
+			<Anchor point="CENTER" />
+		</Anchors>
+	</Texture>
+
+	<Frame name="AzeriteRankFrameTemplate" useParentLevel="true" parentArray="RankFrames" setAllPoints="true" virtual="true">
+		<Animations>
+			<AnimationGroup parentKey="SelectionActiveFadeAnim" setToFinalAlpha="true">
+				<Alpha parentKey="Alpha" childKey="RingBgGlow" duration=".5" order="1" fromAlpha="1" toAlpha="1" />
+			</AnimationGroup>
+			<AnimationGroup parentKey="SelectionActiveLoopAnim" looping="REPEAT">
+				<Alpha childKey="RingBgGlow" duration="1.4" order="1" smoothing="IN_OUT" fromAlpha=".5" toAlpha="1" />
+				<Alpha childKey="RingBgGlow" startDelay="1.8" smoothing="IN_OUT" duration="1.4" order="1" fromAlpha="1" toAlpha=".5" />
+			</AnimationGroup>
+			<AnimationGroup parentKey="SelectedGlowAnim" setToFinalAlpha="true">
+				<Alpha parentKey="Alpha" childKey="RingBgGlow" duration=".5" order="1" fromAlpha="1" toAlpha="1" />
+				<Alpha childKey="RingBgGlow" duration="1.4" order="2" fromAlpha="1" toAlpha="0" />
+			</AnimationGroup>
+			<AnimationGroup parentKey="SelectedAnim" setToFinalAlpha="true">
+				<Alpha childKey="RingLights" duration="1.4" order="1" smoothing="IN_OUT" fromAlpha="0" toAlpha="1" />
+				<Alpha childKey="RingLights" startDelay="1.8" smoothing="IN_OUT" duration="1.4" order="1" fromAlpha="1" toAlpha="0" />
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnHide>
+				self.SelectionActiveFadeAnim:Stop();
+				self.SelectionActiveLoopAnim:Stop();
+				self.SelectedGlowAnim:Stop();
+				self.SelectedAnim:Stop();
+
+				self.RingBgGlow:SetAlpha(0);
+				self.RingLights:SetAlpha(0);
+			</OnHide>
+		</Scripts>
+	</Frame>
+
+	<Frame name="AzeriteEmpoweredItemUITemplate" frameStrata="LOW" mixin="AzeriteEmpoweredItemUIMixin" toplevel="true" parent="UIParent" enableMouse="true" hidden="true" virtual="true">
+		<Size x="615" y="628"/>
+		<Frames>
+			<Frame parentKey="BorderFrame" inherits="PortraitFrameTemplate" frameStrata="DIALOG" frameLevel="500" setAllPoints="true">
+				<Scripts>
+					<OnLoad>
+						self.onCloseCallback = function() HideParentPanel(self) end;
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame parentKey="PreviewItemOverlayFrame" frameStrata="DIALOG" frameLevel="400" setAllPoints="true">
+				<Layers>
+					<Layer level="OVERLAY" textureSubLevel="7">
+						<Texture>
+							<Color r=".06" g=".65" b=".96" a=".15"/>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="ClipFrame" clipChildren="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="2" y="-22" />
+					<Anchor point="BOTTOMRIGHT" x="-4" y="0" />
+				</Anchors>
+				<Frames>
+					<Frame parentKey="BackgroundFrame" useParentLevel="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="0" y="10" />
+							<Anchor point="BOTTOMRIGHT" x="0" y="0" />
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND" textureSubLevel="-5">
+								<Texture parentKey="Bg" scale=".5955">
+									<Anchors>
+										<Anchor point="CENTER" y="0" />
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Frame parentKey="KeyOverlay" frameStrata="HIGH" setAllPoints="true">
+								<Layers>
+									<Layer level="ARTWORK" textureSubLevel="1">
+										<Texture parentKey="Texture" atlas="Azerite-CenterBG-4Ranks" useAtlasSize="true" inherits="AzeriteUITexture">
+											<Anchors>
+												<Anchor point="CENTER" />
+											</Anchors>
+										</Texture>
+									</Layer>
+									<Layer level="ARTWORK" textureSubLevel="-1">
+										<Texture parentKey="Rank4Plug" atlas="Azerite-Center-TraitPlug-Rune1" useAtlasSize="true" inherits="AzeritePlugTexture" />
+										<Texture parentKey="Rank3Plug" atlas="Azerite-Center-TraitPlug-Rune2" useAtlasSize="true" inherits="AzeritePlugTexture" />
+										<Texture parentKey="Rank2Plug" atlas="Azerite-Center-TraitPlug-Rune3" useAtlasSize="true" inherits="AzeritePlugTexture" />
+									</Layer>
+									<Layer level="ARTWORK" textureSubLevel="6">
+										<Texture parentKey="Shadow" atlas="Azerite-TopShadow" useAtlasSize="true" inherits="AzeriteUITexture">
+											<Anchors>
+												<Anchor point="TOPLEFT" x="90" y="0" />
+												<Anchor point="TOPRIGHT" x="0" y="0" />
+											</Anchors>
+										</Texture>
+									</Layer>
+								</Layers>
+								<Frames>
+									<Frame parentKey="Channel" inherits="AzeriteEmpoweredItemChannelTemplate" setAllPoints="true" />
+									<Frame parentKey="Rank4Slot" inherits="AzeriteEmpoweredItemSlotTemplate" />
+									<Frame parentKey="Rank3Slot" inherits="AzeriteEmpoweredItemSlotTemplate" />
+									<Frame parentKey="Rank2Slot" inherits="AzeriteEmpoweredItemSlotTemplate" />
+									<Frame parentKey="Rank1Slot" frameStrata="DIALOG" inherits="AzeriteEmpoweredItemSlotTemplate" />
+								</Frames>
+							</Frame>
+
+							<Frame inherits="AzeriteRankFrameTemplate">
+								<Layers>
+									<Layer level="BORDER" textureSubLevel="-1">
+										<Texture parentKey="GearBg" atlas="Azerite-TitanBG-GearRank4" useAtlasSize="true" inherits="AzeriteGearBackgroundTexture" />
+									</Layer>
+									<Layer level="BORDER" textureSubLevel="0">
+										<Texture parentKey="Gear" atlas="Azerite-TitanBG-GearRank4-Front" useAtlasSize="true" inherits="AzeriteGearTexture" />
+									</Layer>
+									<Layer level="BORDER" textureSubLevel="1">
+										<Texture parentKey="RingBg" atlas="Azerite-TitanBG-Rank4" useAtlasSize="true" inherits="AzeriteRingBackgroundTexture" />
+									</Layer>
+									<Layer level="BORDER" textureSubLevel="2">
+										<Texture parentKey="RingBgGlow" atlas="Azerite-TitanBG-Glow-Rank4" useAtlasSize="true" inherits="AzeriteRingGlowTexture" />
+									</Layer>
+									<Layer level="BORDER" textureSubLevel="2">
+										<Texture parentKey="RingLights" atlas="Azerite-TitanBG-LightsRank4" useAtlasSize="true" inherits="AzeriteRingLightsTexture" />
+									</Layer>
+									<Layer level="BORDER" textureSubLevel="3">
+										<Texture parentKey="Ring" atlas="Azerite-GoldRing-Rank4" useAtlasSize="true" inherits="AzeriteRingBorderTexture" />
+									</Layer>
+									<Layer level="BORDER" textureSubLevel="4">
+										<Texture parentKey="PlugBg" atlas="Azerite-Center-TraitBG" useAtlasSize="true" inherits="AzeritePlugBackgroundTexture" />
+									</Layer>
+								</Layers>
+							</Frame>
+							<Frame inherits="AzeriteRankFrameTemplate">
+								<Layers>
+									<Layer level="BORDER" textureSubLevel="-1">
+										<Texture parentKey="GearBg" atlas="Azerite-TitanBG-GearRank3" useAtlasSize="true" inherits="AzeriteGearBackgroundTexture" />
+									</Layer>
+									<Layer level="BORDER" textureSubLevel="0">
+										<Texture parentKey="Gear" atlas="Azerite-TitanBG-GearRank3-Front" useAtlasSize="true" inherits="AzeriteGearTexture" />
+									</Layer>
+									<Layer level="BORDER" textureSubLevel="1">
+										<Texture parentKey="RingBg" atlas="Azerite-TitanBG-Rank3" useAtlasSize="true" inherits="AzeriteRingBackgroundTexture" />
+									</Layer>
+									<Layer level="BORDER" textureSubLevel="2">
+										<Texture parentKey="RingBgGlow" atlas="Azerite-TitanBG-Glow-Rank3" useAtlasSize="true" inherits="AzeriteRingGlowTexture" />
+									</Layer>
+									<Layer level="BORDER" textureSubLevel="2">
+										<Texture parentKey="RingLights" atlas="Azerite-TitanBG-LightsRank3" useAtlasSize="true" inherits="AzeriteRingLightsTexture" />
+									</Layer>
+									<Layer level="BORDER" textureSubLevel="3">
+										<Texture parentKey="Ring" atlas="Azerite-GoldRing-Rank3" useAtlasSize="true" inherits="AzeriteRingBorderTexture" />
+									</Layer>
+									<Layer level="BORDER" textureSubLevel="4">
+										<Texture parentKey="PlugBg" atlas="Azerite-Center-TraitBG" useAtlasSize="true" inherits="AzeritePlugBackgroundTexture" />
+									</Layer>
+								</Layers>
+							</Frame>
+							<Frame inherits="AzeriteRankFrameTemplate">
+								<Layers>
+									<Layer level="BORDER" textureSubLevel="-1">
+										<Texture parentKey="GearBg" atlas="Azerite-TitanBG-GearRank2" useAtlasSize="true" inherits="AzeriteGearBackgroundTexture" />
+									</Layer>
+									<Layer level="BORDER" textureSubLevel="0">
+										<Texture parentKey="Gear" atlas="Azerite-TitanBG-GearRank2-Front" useAtlasSize="true" inherits="AzeriteGearTexture" />
+									</Layer>
+									<Layer level="BORDER" textureSubLevel="1">
+										<Texture parentKey="RingBg" atlas="Azerite-TitanBG-Rank2" useAtlasSize="true" inherits="AzeriteRingBackgroundTexture" />
+									</Layer>
+									<Layer level="BORDER" textureSubLevel="2">
+										<Texture parentKey="RingBgGlow" atlas="Azerite-TitanBG-Glow-Rank2" useAtlasSize="true" inherits="AzeriteRingGlowTexture" />
+									</Layer>
+									<Layer level="BORDER" textureSubLevel="2">
+										<Texture parentKey="RingLights" atlas="Azerite-TitanBG-LightsRank2" useAtlasSize="true" inherits="AzeriteRingLightsTexture" />
+									</Layer>
+									<Layer level="BORDER" textureSubLevel="3">
+										<Texture parentKey="Ring" atlas="Azerite-GoldRing-Rank2" useAtlasSize="true" inherits="AzeriteRingBorderTexture" />
+									</Layer>
+									<Layer level="BORDER" textureSubLevel="4">
+										<Texture parentKey="PlugBg" atlas="Azerite-Center-TraitBG" useAtlasSize="true" inherits="AzeritePlugBackgroundTexture" />
+									</Layer>
+								</Layers>
+							</Frame>
+						</Frames>
+					</Frame>
+					<Frame parentKey="PowerContainerFrame" useParentLevel="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.BackgroundFrame" />
+							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BackgroundFrame" />
+						</Anchors>
+					</Frame>
+				</Frames>
+			</Frame>
+
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad" />
+			<OnUpdate method="OnUpdate" />
+			<OnEvent method="OnEvent" />
+			<OnShow method="OnShow" />
+			<OnHide method="OnHide" />
+		</Scripts>
+	</Frame>
+</Ui>

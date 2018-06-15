@@ -28,7 +28,7 @@
 						<Anchor point="BOTTOMRIGHT" relativeTo="$parentIconTexture" x="2" y="0"/>
 					</Anchors>
 				</FontString>
-			</Layer>		
+			</Layer>
 		</Layers>
 		<Scripts>
 			<OnLoad>
@@ -146,30 +146,13 @@
 					</OnEnter>
 				</Scripts>
 			</Button>
-			<Button name="$parentLoot" inherits="RaidRoleIconTemplate">
-				<Size x="11" y="11"/>
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentRole" relativePoint="RIGHT" x="0" y="0"/>
-				</Anchors>
-				<Scripts>
-					<OnEnter>
-						-- Sets the Master Looter Tooltip
-						if ( self:GetParent().loot ) then
-							GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-							GameTooltip:SetText(MASTER_LOOTER, nil, nil, nil, nil, true);
-						else
-							GameTooltip:Hide();
-						end	
-					</OnEnter>
-				</Scripts>
-			</Button>
 			<Frame name="$parentReadyCheck" inherits="ReadyCheckStatusTemplate" hidden="true">
 				<Size x="11" y="11"/>
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentRank" relativePoint="RIGHT"  x="0" y="0"/>
 				</Anchors>
 				<Scripts>
-					<OnLoad>	
+					<OnLoad>
 						RaiseFrameLevelByTwo(self);
 					</OnLoad>
 				</Scripts>
@@ -306,7 +289,7 @@
 						<Anchor point="BOTTOMRIGHT" x="1" y="-1"/>
 					</Anchors>
 					<TexCoords left="0.296875" right="0.5703125" top="0" bottom="0.515625"/>
-				</Texture>	
+				</Texture>
 			</Layer>
 		</Layers>
 		<Scripts>
@@ -457,7 +440,7 @@
 					</OnValueChanged>
 					<OnMouseUp>
 						TargetUnit(self:GetParent().unit.."target");
-					</OnMouseUp> 
+					</OnMouseUp>
 				</Scripts>
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 				<BarColor r="1.0" g="0" b="0"/>
@@ -497,7 +480,7 @@
 					</OnLoad>
 					<OnMouseUp>
 						TargetUnit(self:GetParent().unit.."targettarget");
-					</OnMouseUp> 
+					</OnMouseUp>
 				</Scripts>
 			</Frame>
 			<StatusBar name="$parentTargetTarget" drawLayer="ARTWORK" inherits="TextStatusBar" enableMouse="false" hidden="true">
@@ -540,7 +523,7 @@
 						<Scripts>
 							<OnMouseUp>
 								TargetUnit(self:GetParent():GetParent().unit.."targettarget");
-							</OnMouseUp> 
+							</OnMouseUp>
 						</Scripts>
 					</Frame>
 				</Frames>
@@ -550,7 +533,7 @@
 					</OnValueChanged>
 					<OnMouseUp>
 						TargetUnit(self:GetParent().unit.."targettarget");
-					</OnMouseUp> 
+					</OnMouseUp>
 				</Scripts>
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 			</StatusBar>
@@ -565,17 +548,6 @@
 					<OnLeave>
 						GameTooltip:Hide();
 					</OnLeave>
-				</Scripts>
-			</Button>
-			<Button name="$parentSpeaker" inherits="VoiceChatSpeakerTemplate" hidden="true">
-				<Size x="16" y="16"/>
-				<Anchors>
-					<Anchor point="TOPRIGHT" relativePoint="TOPLEFT" x="-5" y="6"/>
-				</Anchors>
-				<Scripts>
-					<OnUpdate>
-						VoiceChat_OnUpdate(self, elapsed);
-					</OnUpdate>
 				</Scripts>
 			</Button>
 			<Frame name="$parentReadyCheck" inherits="ReadyCheckStatusTemplate" hidden="true">
@@ -706,7 +678,7 @@
 			<OnMouseUp>
 				self:StopMovingOrSizing();
 				self:SetFrameStrata("BACKGROUND");
-			</OnMouseUp> 
+			</OnMouseUp>
 		</Scripts>
 	</Button>
 	<Button name="RaidClassButton15"  parent="RaidFrame" inherits="RaidClassButtonTemplate" id="14">

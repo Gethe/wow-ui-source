@@ -1,0 +1,14 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="StatusTrackingBar.lua"/>
+	<Script file="ReputationBar.lua"/>
+	<Frame name="ReputationStatusBarTemplate" inherits="StatusTrackingBarTemplate" mixin="ReputationBarMixin" virtual="true">
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/> 
+		</Scripts>
+	</Frame>
+</Ui>

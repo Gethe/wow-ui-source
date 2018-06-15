@@ -50,7 +50,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<DressUpModel name="SideDressUpModel" scale="1.0" inherits="ModelWithControlsTemplate">
+			<DressUpModel name="SideDressUpModel" modelScale="1.0" inherits="ModelWithControlsTemplate">
 				<Size>
 					<AbsDimension x="172" y="400"/>
 				</Size>

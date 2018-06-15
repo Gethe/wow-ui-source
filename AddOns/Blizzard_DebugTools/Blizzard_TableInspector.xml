@@ -207,7 +207,7 @@
 				<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
 				<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>		
 			</CheckButton>
-			<EditBox parentKey="FilterBox" inherits="SearchBoxTemplate" autoFocus="false">
+			<EditBox parentKey="FilterBox" inherits="SearchBoxTemplate" autoFocus="false" bytes="64">
 				<Size x="130" y="16"/>
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.DynamicUpdateButton.Label" relativePoint="RIGHT" x="12" y="0"/>
@@ -216,7 +216,7 @@
 					<OnEnterPressed function="TableInspectorFilterBox_OnEnterPressed"/>
 					<OnTextChanged inherit="prepend" function="TableInspectorFilterBox_OnTextChanged"/>
 				</Scripts>
-				<FontString inherits="ChatFontNormal" bytes="64"/>
+				<FontString inherits="ChatFontNormal"/>
 			</EditBox>
 			<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
 				<Size x="32" y="32"/>

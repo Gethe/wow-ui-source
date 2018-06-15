@@ -84,7 +84,7 @@ function TradeFrame_UpdatePlayerItem(id)
 	if ( id == TRADE_ENCHANT_SLOT ) then
 		if ( name ) then
 			if ( enchantment ) then
-				buttonText:SetText(GREEN_FONT_COLOR_CODE..enchantment..FONT_COLOR_CODE_CLOSE);		
+				buttonText:SetText(GREEN_FONT_COLOR_CODE..enchantment..FONT_COLOR_CODE_CLOSE);
 			else
 				buttonText:SetText(HIGHLIGHT_FONT_COLOR_CODE..TRADEFRAME_NOT_MODIFIED_TEXT..FONT_COLOR_CODE_CLOSE);
 			end
@@ -124,7 +124,7 @@ function TradeFrame_UpdateTargetItem(id)
 	if ( id == TRADE_ENCHANT_SLOT ) then
 		if ( name ) then
 			if ( enchantment ) then
-				buttonText:SetText(GREEN_FONT_COLOR_CODE..enchantment..FONT_COLOR_CODE_CLOSE);		
+				buttonText:SetText(GREEN_FONT_COLOR_CODE..enchantment..FONT_COLOR_CODE_CLOSE);
 			else
 				buttonText:SetText(HIGHLIGHT_FONT_COLOR_CODE..TRADEFRAME_NOT_MODIFIED_TEXT..FONT_COLOR_CODE_CLOSE);
 			end

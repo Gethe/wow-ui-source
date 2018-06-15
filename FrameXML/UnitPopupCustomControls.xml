@@ -1,0 +1,84 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="UnitPopupCustomControls.lua"/>
+
+	<Button name="UnitPopupVoiceToggleButtonTemplate" mixin="UnitPopupVoiceToggleButtonMixin" inherits="VoiceToggleButtonTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="fixedWidth" value="14" type="number"/>
+			<KeyValue key="fixedHeight" value="14" type="number"/>
+
+			<KeyValue key="iconKey" value="Icon" type="string"/>
+			<KeyValue key="fixedIconWidth" value="14" type="number"/>
+			<KeyValue key="fixedIconHeight" value="14" type="number"/>
+			<KeyValue key="iconPushedOffsetX" value="1" type="number"/>
+			<KeyValue key="iconPushedOffsetY" value="-1" type="number"/>
+			<KeyValue key="iconPushedAlpha" value="1" type="number"/>
+			<KeyValue key="iconNormalAlpha" value="1" type="number"/>
+
+			<KeyValue key="normalAtlas" value="" type="string"/>
+			<KeyValue key="pushedAtlas" value="" type="string"/>
+			<KeyValue key="highlightAtlas" value="" type="string"/>
+		</KeyValues>
+		<Anchors>
+			<Anchor point="LEFT"/>
+		</Anchors>
+		<Scripts>
+			<OnEnter inherit="prepend" method="OnEnter"/>
+			<OnLeave inherit="prepend" method="OnLeave"/>
+		</Scripts>
+	</Button>
+
+	<Slider name="UnitPopupVoiceSliderTemplate" minValue="0" maxValue="100" inherits="UnitPopupSliderTemplate" virtual="true">
+		<Size x="0" y="17"/>
+		<Anchors>
+			<Anchor point="LEFT" relativeKey="$parent.Toggle" relativePoint="RIGHT" x="5" y="0"/>
+			<Anchor point="RIGHT" relativeKey="$parent.Text" relativePoint="LEFT" x="-5" y="0"/>
+		</Anchors>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Slider>
+
+	<Frame name="UnitPopupVoiceTextTemplate" inherits="PropertyFontStringTemplate" virtual="true">
+		<Size x="32" y="0"/>
+		<Anchors>
+			<Anchor point="TOPRIGHT"/>
+			<Anchor point="BOTTOMRIGHT"/>
+		</Anchors>
+	</Frame>
+
+	<Frame name="UnitPopupVoiceLevelsTemplate" inherits="UIDropDownCustomMenuEntryTemplate" mixin="UnitPopupVoiceLevelsMixin" virtual="true">
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="UnitPopupVoiceSpeakerVolume" inherits="UnitPopupVoiceLevelsTemplate">
+		<Size x="200" y="16"/>
+		<Frames>
+			<Frame parentKey="Text" inherits="UnitPopupVoiceTextTemplate"/>
+			<Button parentKey="Toggle" inherits="UnitPopupVoiceToggleButtonTemplate" mixin="UnitPopupToggleDeafenMixin"/>
+			<Slider parentKey="Slider" inherits="UnitPopupVoiceSliderTemplate" mixin="UnitPopupVoiceSpeakerVolumeSliderMixin"/>
+		</Frames>
+	</Frame>
+
+	<Frame name="UnitPopupVoiceMicrophoneVolume" inherits="UnitPopupVoiceLevelsTemplate">
+		<Size x="200" y="16"/>
+		<Frames>
+			<Frame parentKey="Text" inherits="UnitPopupVoiceTextTemplate"/>
+			<Button parentKey="Toggle" inherits="UnitPopupVoiceToggleButtonTemplate" mixin="UnitPopupToggleMuteMixin"/>
+			<Slider parentKey="Slider" inherits="UnitPopupVoiceSliderTemplate" mixin="UnitPopupVoiceMicrophoneVolumeSliderMixin"/>
+		</Frames>
+	</Frame>
+
+	<Frame name="UnitPopupVoiceUserVolume" inherits="UnitPopupVoiceLevelsTemplate">
+		<Size x="200" y="16"/>
+		<Frames>
+			<Frame parentKey="Text" inherits="UnitPopupVoiceTextTemplate"/>
+			<Button parentKey="Toggle" inherits="UnitPopupVoiceToggleButtonTemplate" mixin="UnitPopupToggleUserMuteMixin, UnitPopupVoiceMemberInfoMixin"/>
+			<Slider parentKey="Slider" inherits="UnitPopupVoiceSliderTemplate" mixin="UnitPopupVoiceUserVolumeSliderMixin, UnitPopupVoiceMemberInfoMixin"/>
+		</Frames>
+	</Frame>
+</Ui>

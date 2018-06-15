@@ -15,7 +15,7 @@ LEVEL_UP_EVENTS = {
 --  Level  = {unlock}
 	[10] = {"SpecializationUnlocked", "BGsUnlocked"},
 	[15] = {"TalentsUnlocked","LFDUnlocked"},
-	[110]= {"HonorTalentsUnlocked"},
+	[20]= {"PvpTalentsUnlocked"},
 }
 
 SUBICON_TEXCOOR_BOOK 	= {0.64257813, 0.72070313, 0.03710938, 0.11132813};
@@ -140,7 +140,7 @@ LEVEL_UP_TYPES = {
 										link=LEVEL_UP_FEATURE2..LEVEL_UP_LFD_LINK
 									},
 									
-	["HonorTalentsUnlocked"] 	= 	{	icon="Interface\\Icons\\Ability_DualWield",
+	["PvpTalentsUnlocked"] 		= 	{	icon="Interface\\Icons\\Ability_DualWield",
 										subIcon=SUBICON_TEXCOOR_LOCK,
 										text=PVP_TALENTS,
 										subText=LEVEL_UP_FEATURE,
@@ -235,7 +235,8 @@ function LevelUpDisplay_OnLoad(self)
 	self:RegisterEvent("PET_BATTLE_FINAL_ROUND"); -- display winner, start listening for additional results
 	self:RegisterEvent("PET_BATTLE_CLOSE");        -- stop listening for additional results
 	self:RegisterEvent("QUEST_BOSS_EMOTE");
-	self:RegisterEvent("CHALLENGE_MODE_NEW_RECORD");
+	self:RegisterEvent("MYTHIC_PLUS_NEW_WEEKLY_RECORD");
+	self:RegisterEvent("MYTHIC_PLUS_NEW_SEASON_RECORD");
 	self:RegisterEvent("PET_JOURNAL_TRAP_LEVEL_SET");
 	self:RegisterEvent("PET_BATTLE_LEVEL_CHANGED");
 	self:RegisterEvent("PET_BATTLE_CAPTURED");
@@ -306,7 +307,7 @@ function LevelUpDisplay_OnEvent(self, event, ...)
 		self.time = displayTime;
 		self.sound = warningSound;
 		LevelUpDisplay_Show(self);
-	elseif ( event == "CHALLENGE_MODE_NEW_RECORD" ) then
+	elseif ( event == "MYTHIC_PLUS_NEW_WEEKLY_RECORD" ) then
 		local mapID, recordTime, level = ...;
 		self.type = TOAST_CHALLENGE_MODE_RECORD;
 		self.mapID = mapID;
@@ -696,6 +697,16 @@ function LevelUpDisplay_Start(self, beginUnlockList)
 										,	LevelUpDisplay_IsExclusiveQueued);
 end
 
+local textureKitRegionFormatStrings = {
+	["BG1"] = "%s-TitleBG",
+	["BG2"] = "%s-TitleBG",
+}
+
+local defaultAtlases = {
+	["BG1"] = "legioninvasion-title-bg",
+	["BG2"] = "legioninvasion-title-bg",
+}
+
 function LevelUpDisplay_StartDisplay(self, beginUnlockList)
 	if ( self:IsShown() ) then
 		return;
@@ -719,16 +730,20 @@ function LevelUpDisplay_StartDisplay(self, beginUnlockList)
 			self.queuedItems = nil;
 		end
 		if ( self.type == LEVEL_UP_TYPE_SCENARIO ) then
-			local name, currentStage, numStages, flags, _;
-			name, currentStage, numStages, flags, _, _, _, _, _, scenarioType = C_Scenario.GetInfo();
+			local name, currentStage, numStages, flags, textureKitID, _;
+			name, currentStage, numStages, flags, _, _, _, _, _, scenarioType, _, textureKitID = C_Scenario.GetInfo();
 			if (not IsBoostTutorialScenario()) then
 				if ( currentStage > 0 and currentStage <= numStages ) then
 					local stageName, stageDescription = C_Scenario.GetStepInfo();
+
+					self.scenarioFrame.level:ClearAllPoints();
 					if( bit.band(flags, SCENARIO_FLAG_SUPRESS_STAGE_TEXT) == SCENARIO_FLAG_SUPRESS_STAGE_TEXT) then
 						-- Bypass the Stage name portion...
 						self.scenarioFrame.level:SetText(stageName);
 						self.scenarioFrame.name:SetText("");
+						self.scenarioFrame.level:SetPoint("TOP", self.scenarioFrame, "TOP", 0, -22);
 					else
+						self.scenarioFrame.level:SetPoint("TOP", self.scenarioFrame, "TOP", 0, -14);
 						if ( currentStage == numStages ) then
 							self.scenarioFrame.level:SetText(SCENARIO_STAGE_FINAL);
 						else
@@ -736,11 +751,20 @@ function LevelUpDisplay_StartDisplay(self, beginUnlockList)
 						end
 						self.scenarioFrame.name:SetText(stageName);
 					end
-					if (scenarioType == LE_SCENARIO_TYPE_LEGION_INVASION) then
-						playAnim = self.scenarioFrame.LegionInvasionNewStage;
+
+					if textureKitID then
+						playAnim = self.scenarioFrame.TextureKitNewStage;
+						SetupTextureKits(textureKitID, self.scenarioFrame, textureKitRegionFormatStrings, false, true);
 					else
-						playAnim = self.scenarioFrame.newStage;
+						if scenarioType == LE_SCENARIO_TYPE_LEGION_INVASION then
+							playAnim = self.scenarioFrame.LegionInvasionNewStage;
+						else
+							playAnim = self.scenarioFrame.newStage;
+						end
+
+						SetupAtlasesOnRegions(self.scenarioFrame, defaultAtlases, true);
 					end
+
 					self.scenarioFrame.description:SetText(stageDescription);
 					LevelUpDisplay:SetPoint("TOP", 0, -250);
 				end

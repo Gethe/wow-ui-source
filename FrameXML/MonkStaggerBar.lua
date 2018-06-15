@@ -81,11 +81,10 @@ function MonkStaggerBar_UpdateValue(self)
 	local percent = currstagger/maxstagger;
 	local info = PowerBarColor[self.powerName];
 	
-	
-	if (percent > STAGGER_YELLOW_TRANSITION and percent < STAGGER_RED_TRANSITION) then
-		info = info[STAGGER_YELLOW_INDEX];
-	elseif (percent > STAGGER_RED_TRANSITION) then
+	if (percent >= STAGGER_RED_TRANSITION) then
 		info = info[STAGGER_RED_INDEX];
+	elseif (percent >= STAGGER_YELLOW_TRANSITION) then
+		info = info[STAGGER_YELLOW_INDEX];
 	else
 		info = info[STAGGER_GREEN_INDEX];
 	end

@@ -155,7 +155,7 @@
 			<StatusBar parentKey="SubSkillRankBar" drawLayer="BACKGROUND" minValue="0" maxValue="1" defaultValue="1">
 				<Size x="58" y="14"/>
 				<Anchors>
-					<Anchor point="RIGHT" x="0" y="0"/>
+					<Anchor point="RIGHT" x="-4" y="0"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
@@ -169,7 +169,7 @@
 						<Texture parentKey="BorderRight" file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder">
 							<Size x="9" y="18"/>
 							<Anchors>
-								<Anchor point="RIGHT" x="2" y="0"/>
+								<Anchor point="RIGHT" x="3" y="0"/>
 							</Anchors>
 							<TexCoords left="0.043137" right="0.007843" top="0.193548" bottom="0.774193"/>
 						</Texture>

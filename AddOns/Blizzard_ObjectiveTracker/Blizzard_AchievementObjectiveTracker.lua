@@ -56,7 +56,7 @@ function AchievementObjectiveTracker_OnOpenDropDown(self)
 	info.notCheckable = 1;
 
 	info.text = OBJECTIVES_VIEW_ACHIEVEMENT;
-	info.func = AchievementObjectiveTracker_OpenAchievement;
+	info.func = function (button, ...) OpenAchievementFrameToAchievement(...); end;
 	info.arg1 = block.id;
 	info.checked = false;
 	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
@@ -66,16 +66,6 @@ function AchievementObjectiveTracker_OnOpenDropDown(self)
 	info.arg1 = block.id;
 	info.checked = false;
 	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
-end
-
-function AchievementObjectiveTracker_OpenAchievement(dropDownButton, achievementID)
-	if ( not AchievementFrame ) then
-		AchievementFrame_LoadUI();
-	end
-	if ( not AchievementFrame:IsShown() ) then
-		AchievementFrame_ToggleAchievementFrame();
-	end
-	AchievementFrame_SelectAchievement(achievementID);	
 end
 
 function AchievementObjectiveTracker_UntrackAchievement(dropDownButton, achievementID)

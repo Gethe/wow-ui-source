@@ -366,7 +366,7 @@
 						if ( event == "CVAR_UPDATE" ) then
 							TextStatusBar_OnEvent(self, event, ...);
 						else
-							ExpBar_Update();
+							StatusTrackingBarManager:UpdateBarsShown();
 						end
 					</OnEvent>
 					<OnShow>

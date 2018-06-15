@@ -1,0 +1,41 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="StatusTrackingBar.lua"/>
+	<Script file="HonorBar.lua"/>
+	<Frame name="HonorStatusBarTemplate" useParentLevel="true" inherits="StatusTrackingBarTemplate" hidden="true" mixin="HonorBarMixin" virtual="true">
+		<Size x="804" y="11"/>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-1">
+				<Texture parentKey="ExhaustionLevelFillBar">
+					<Size x="0" y="10"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.HonorBar" x="0" y="0"/>
+					</Anchors>
+					<Color r="1.0" g="1.0" b="1.0" a="1.0"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="ExhaustionTick" hidden="true" frameStrata="HIGH">
+				<Size x="32" y="32"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.ExhaustionLevelFillBar" relativePoint="RIGHT" x="0" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad function="HonorExhaustionTick_OnLoad"/>
+					<OnEnter function="HonorExhaustionToolTipText"/>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+				<NormalTexture parentKey="Normal" file="Interface\MainMenuBar\UI-ExhaustionTickNormal"/>
+				<HighlightTexture parentKey="Highlight" file="Interface\MainMenuBar\UI-ExhaustionTickHighlight" alphaMode="ADD"/>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Frame>
+</Ui>
